@@ -18,7 +18,7 @@
 
 /// Macros for analysis factory fns
 #define DECLARE_ANALYSIS_FACTORY(ANAME) \
-  Analysis* create_Analysis_ ## ANAME();
+  Analysis* create_Analysis_ ## ANAME()
 #define DEFINE_ANALYSIS_FACTORY(ANAME) \
   Analysis* create_Analysis_ ## ANAME() { return new Analysis_ ## ANAME(); }
 

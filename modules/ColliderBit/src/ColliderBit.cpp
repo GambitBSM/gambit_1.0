@@ -97,7 +97,7 @@ namespace Gambit {
       logger() << "  iteration, event met, thread, counts" << endl;
       logger() << LogTags::info << endl << EOM;
 
-      /// Retrieve runOptions from the YAML file safely... 
+      /// Retrieve runOptions from the YAML file safely...
       GET_COLLIDER_RUNOPTION(pythiaNames, std::vector<std::string>)
       /// @todo Subprocess specific nEvents
       GET_COLLIDER_RUNOPTION(nEvents, int)
@@ -165,7 +165,7 @@ namespace Gambit {
 
 
     /// Standard Event Format Functions
-    void reconstructDelphesEvent(HEP_Simple_Lib::Event &result) {
+    void reconstructDelphesEvent(HEPUtils::Event &result) {
       using namespace Pipes::reconstructDelphesEvent;
       if (*Loop::iteration <= INIT) return;
       debugMe("reconstructDelphesEvent");
@@ -186,7 +186,7 @@ namespace Gambit {
     }
 
 
-    void convertPythia8Event(HEP_Simple_Lib::Event &result) {
+    void convertPythia8Event(HEPUtils::Event &result) {
       using namespace Pipes::convertPythia8Event;
       if (*Loop::iteration <= INIT) return;  //< Only whatever init Gambit needs
       debugMe("convertPythia8Event");
@@ -215,7 +215,7 @@ namespace Gambit {
         if (isFinalTau(i, pevt) && !fromHadron(i, pevt)) {
           /// @todo Nothing is done with taus after this....
           taus.push_back(mk_pseudojet(p.p()));
-          HEP_Simple_Lib::Particle* gp = new HEP_Simple_Lib::Particle(mk_p4(p.p()), p.id());
+          HEPUtils::Particle* gp = new HEPUtils::Particle(mk_p4(p.p()), p.id());
           gp->set_prompt();
           result.add_particle(gp); // Will be automatically categorised
         }
@@ -236,7 +236,7 @@ namespace Gambit {
         const bool prompt = !fromHadron(i, pevt) && !fromTau(i, pevt);
 
         if (prompt) {
-          HEP_Simple_Lib::Particle* gp = new HEP_Simple_Lib::Particle(mk_p4(p.p()), p.id());
+          HEPUtils::Particle* gp = new HEPUtils::Particle(mk_p4(p.p()), p.id());
           gp->set_prompt();
           result.add_particle(gp); // Will be automatically categorised
         } else {
@@ -263,7 +263,7 @@ namespace Gambit {
           }
         }
         /// Add to the event
-        result.addJet(new HEP_Simple_Lib::Jet(MCUtils::mk_p4(pj), isB));
+        result.addJet(new HEPUtils::Jet(HEPUtils::mk_p4(pj), isB));
       }
 
       /// MET (note: NOT just equal to sum of prompt invisibles)

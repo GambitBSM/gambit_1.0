@@ -42,12 +42,13 @@
 #include "classes/DelphesFactory.h"
 #include "ExRootAnalysis/ExRootConfReader.h"
 
-#include "shared_types.hpp"
-#include "Event.hpp"
-#include "Particle.hpp"
-#include "Jet.hpp"
-#include "Py8Utils.hpp"
+#include "HEPUtils/Event.h"
+#include "HEPUtils/Particle.h"
+#include "HEPUtils/Jet.h"
 #include "MCUtils/PIDCodes.h"
+
+#include "shared_types.hpp"
+#include "Py8Utils.hpp"
 
 
 namespace Gambit {
@@ -58,9 +59,9 @@ namespace Gambit {
       Delphes3Backend(string configFilename);
       ~Delphes3Backend();
 
-      void processEvent(const Pythia8::Event& eventIn, HEP_Simple_Lib::Event& eventOut);
+      void processEvent(const Pythia8::Event& eventIn, HEPUtils::Event& eventOut);
       void convertInput(const Pythia8::Event& event);
-      void convertOutput(HEP_Simple_Lib::Event& event);
+      void convertOutput(HEPUtils::Event& event);
 
     private:
       // To read Delphes Config File

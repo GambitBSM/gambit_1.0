@@ -8,8 +8,8 @@
 //
 #pragma once
 
-#include "HEPUtils/Particle.hpp"
-#include "HEPUtils/Jet.hpp"
+#include "HEPUtils/Particle.h"
+#include "HEPUtils/Jet.h"
 #include <algorithm>
 
 namespace HEPUtils {

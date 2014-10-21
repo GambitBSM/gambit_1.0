@@ -14,10 +14,10 @@
 ///
 ///  \author Pat Scott
 ///    \date 2012 Nov
-///    \date 2013 Jan, Feb, May, Dec 
+///    \date 2013 Jan, Feb, May, Dec
 ///
 ///  \author Christoph Weniger
-///    \date 2013 Jan 
+///    \date 2013 Jan
 ///
 ///  \author Anders Kvellestad
 ///          (anders.kvellestad@fys.uio.no)
@@ -51,7 +51,7 @@ namespace Gambit
     std::mt19937 twistor(newseed);
     /// @}
 
-    /// \name Helper functions 
+    /// \name Helper functions
     /// Not wrapped in rollcall header.
     /// @{
 
@@ -61,7 +61,7 @@ namespace Gambit
     /// Some other example function
     double some_other_function(int &input)
     {
-      ostringstream ss;      
+      ostringstream ss;
       ss << "  This is some_other_function, invoked with argument " << input;
       logger().send(ss.str(),info);
       double offset = 2.0;
@@ -84,24 +84,24 @@ namespace Gambit
     void nevents_like (double &result)    { result = 2.0 * (*Pipes::nevents_like::Dep::eventAccumulation); }
     void identity     (str    &result)    { result = "turkion"; }
 
-    void nevents_int(int &result)    
-    { 
-      result = (int) (*Pipes::nevents_int::Dep::nevents); 
+    void nevents_int(int &result)
+    {
+      result = (int) (*Pipes::nevents_int::Dep::nevents);
       // Randomly raise some ficticious alarms about this point in 10% of cases.
       if (random_0to5(twistor) < 0.5)
       {
         //Example of how to raise an error from a module function.
         ExampleBit_A_error().raise(LOCAL_INFO,"Damn, this integer event count is bad.");
         //Example of how to declare a point invalid.
-        invalid_point().raise("I don't like this point.");   
-      }  
+        invalid_point().raise("I don't like this point.");
+      }
     }
 
     void function_pointer_retriever( double(*&result)(int&) )
     {
       using namespace Pipes::function_pointer_retriever;
-      //Two ways to return this result, depending on how the group dependency BEgroup::external_funcs is fulfilled: 
-      if (*BEgroup::external_funcs == "externalFunction") 
+      //Two ways to return this result, depending on how the group dependency BEgroup::external_funcs is fulfilled:
+      if (*BEgroup::external_funcs == "externalFunction")
       {
         //1. A pointer to a fortran function that has been backended (and takes an int as an input by reference):
         result = BEreq::externalFunction.pointer();
@@ -121,9 +121,9 @@ namespace Gambit
 
       using namespace Pipes::Aldo_test;
 
-      cout << "My backend requirement of initialize (detector si,)  has been filled by " << 
+      cout << "My backend requirement of initialize (detector si,)  has been filled by " <<
         BEreq::Read_Aldo_Sim.name() << " from " <<
-        BEreq::Read_Aldo_Sim.backend() << ", v" << 
+        BEreq::Read_Aldo_Sim.backend() << ", v" <<
         BEreq::Read_Aldo_Sim.version() << "." << endl;
 
       cout << " calling function " << BEreq::Read_Aldo_Sim(nevents) << endl;
@@ -132,12 +132,11 @@ namespace Gambit
 
     }
     */
-    
 
-    void Aldos_evgen(HEP_Simple_Lib::Event &how_many) {
 
-      HEP_Simple_Lib::Particle *chosen;
-      chosen = new HEP_Simple_Lib::Particle(40.5, -32.6, 0.5, 51.992884131, 13);
+    void Aldos_evgen(HEPUtils::Event &how_many) {
+
+      HEPUtils::Particle* chosen = new HEPUtils::Particle(40.5, -32.6, 0.5, 51.992884131, 13);
       how_many.add_particle(chosen);
 
       cout << " we created a particle " << endl;
@@ -145,11 +144,11 @@ namespace Gambit
 
     // FastSim
     void fast_sim(double &which) {
-      
+
       using namespace Pipes::fast_sim;
       cout << "My backend requirement of initialize (detector si,)  has been filled by " <<
         BEreq::fast_sim_init.name() << " from " <<
-        BEreq::fast_sim_init.backend() << ", v" << 
+        BEreq::fast_sim_init.backend() << ", v" <<
         BEreq::fast_sim_init.version() << "." << endl;
 
       cout << " calling function from library" << BEreq::fast_sim_init(1) << endl;
@@ -166,49 +165,49 @@ namespace Gambit
       std::cout << "p1: " << *Param["p1"] << std::endl;
       std::cout << "p2: " << *Param["p2"] << std::endl;
       std::cout << "p3: " << *Param["p3"] << std::endl;
-      //A safety_bucket containing the ModelParameters object itself is also 
-      //available as a dependency at Pipes::<functionname>::Dep::<modelname>_parameters, 
+      //A safety_bucket containing the ModelParameters object itself is also
+      //available as a dependency at Pipes::<functionname>::Dep::<modelname>_parameters,
       //in case you want to do something more advanced than just read off the
       //parameter values.
       result = *Param["p1"] * *Param["p2"];
     }
-          
+
     /// Likelihood function for fitting the population parameters of a
     /// normal distribution (with hard-coded "observations")
     void normaldist_loglike (double &result)
     {
-      using namespace Pipes::normaldist_loglike;      
+      using namespace Pipes::normaldist_loglike;
 
       // Say we have a sample of 20 drawn from a normal distribution with
       // parameters muTrue and sigmaTrue. Let the sample mean and standard
       // deviation be as follows (this is our data):
       double N = 20;
-      double samples [] = { 
+      double samples [] = {
         21.32034213,  20.39713359,  19.27957134,  19.81839231,
         20.89474358,  20.11058756,  22.38214557,  21.41479798,
         23.49896999,  17.55991187,  24.9921142 ,  23.90166585,
         20.97913273,  18.59180551,  23.49038072,  19.08201714,
-        21.19538797,  16.42544039,  18.93568891,  22.40925288 
+        21.19538797,  16.42544039,  18.93568891,  22.40925288
         };
-    
+
       double loglTotal = 0.;
-      
+
       // The loglikelihood value for the hypothesised parameters is then:
       for (int i=0; i <= N; ++i)
       {
         //std::cout<<samples[i]<<*Param["mu"]<<*Param["sigma"]<<std::endl;
         loglTotal += logf(samples[i], *Param["mu"], *Param["sigma"]);
       }
-      
+
       result = loglTotal;
     }
 
 
     /// \name Loopmanager Examples
-    /// Some example functions for using loops within the dependency structure 
+    /// Some example functions for using loops within the dependency structure
     /// @{
 
-    /// Run a fake 'event loop' 
+    /// Run a fake 'event loop'
     void eventLoopManager()
     {
       using namespace Pipes::eventLoopManager;
@@ -232,7 +231,7 @@ namespace Gambit
         #pragma omp for
         for(unsigned long it = 1; it < nEvents-1; it++)
         {
-          Loop::executeIteration(it);   
+          Loop::executeIteration(it);
         }
       }
       Loop::executeIteration(nEvents-1); //Do the final iteration separately to make the final result 'serially accessible' to functions that run after this one.
@@ -245,7 +244,7 @@ namespace Gambit
       using namespace Pipes::exampleEventGen;
       result = random_0to5(twistor);                 // Generate and return the random number
       #pragma omp critical (print)
-      { 
+      {
         cout<<"  Running exampleEventGen in iteration "<<*Loop::iteration<<endl;
       }
     }
@@ -256,7 +255,7 @@ namespace Gambit
       using namespace Pipes::exampleCut;
       result = (int) *Dep::event;
       #pragma omp critical (print)
-      { 
+      {
         cout<<"  Running exampleCut in iteration "<<*Loop::iteration<<endl;
       }
     }
@@ -265,7 +264,7 @@ namespace Gambit
     void eventAccumulator(int &result)
     {
       //There is basically just one thing available in nested functions from the Loops namespace:
-      //  int* Loop::iteration -- the iteration number passed down directly by the function managing the loop that this one runs within. 
+      //  int* Loop::iteration -- the iteration number passed down directly by the function managing the loop that this one runs within.
       //You can always get at OpenMP functions too (omp_get_thread_num, omp_get_ancestor_thread_num, etc) -- but it is better not to assume
       //too much about the other functions that might be managing this one, either directly or indirectly.
 
@@ -280,7 +279,7 @@ namespace Gambit
       }
       result = accumulatedCounts;                    // Return the current total
       #pragma omp critical (print)
-      { 
+      {
         cout<<"  Running eventAccumulator in iteration "<<*Loop::iteration<<endl;
         cout<<"  Retrieved event count: "<<*Dep::event<<endl;
         cout<<"  I have thread index: "<<omp_get_thread_num();
@@ -293,61 +292,61 @@ namespace Gambit
         return 0.0;
     }
 
-    void do_Farray_stuff (double &result)          
+    void do_Farray_stuff (double &result)
     {
       using namespace Pipes::do_Farray_stuff;
       using std::cout;
       using std::endl;
-      
+
       typedef double(*fptrType1)(Farray<double,1>&);
       typedef void (*fptrType2)(Gambit::Farray <double,1>& ,int& ,fptrType1);
-      
+
       cout << "do_Farray_stuff has been summoned!" << endl;
       cout << "Ph'nglui mglw'nafh Cthulhu R'lyeh wgah'nagl fhtagn" << endl << endl;
       cout << "Calling printStuff..." << endl;
       BEreq::libFarrayTest_printStuff();
       cout << "Calling set_d() to fill values in 3-dimensional array d..." << endl;
-      BEreq::libFarrayTest_set_d();     
+      BEreq::libFarrayTest_set_d();
       cout << "Calling printStuff again..." << endl;
       BEreq::libFarrayTest_printStuff();
       cout << "Setting d(2,0,-1) = 99 and d(1,1,0) = 77 " << endl;
       libFarrayTest_CB_type commonBlock = *BEreq::libFarrayTestCommonBlock;
       commonBlock.d(2,0,-1) = 99;
-      commonBlock.d(1,1,0) = 77;      
+      commonBlock.d(1,1,0) = 77;
       cout << "Calling printStuff again..." << endl;
-      BEreq::libFarrayTest_printStuff();    
-              
+      BEreq::libFarrayTest_printStuff();
+
       cout << endl << "Calling doubleFunc with argument 100.10..." << endl;
       double tmp = 100.10;
-      double tmp2 = BEreq::libFarrayTest_doubleFunc(tmp);   
-      cout << "Returned value: " << tmp2 << endl;     
+      double tmp2 = BEreq::libFarrayTest_doubleFunc(tmp);
+      cout << "Returned value: " << tmp2 << endl;
 
-      cout << endl << "Retrieving pointer to doubleFuncArray1..." << endl;      
+      cout << endl << "Retrieving pointer to doubleFuncArray1..." << endl;
       double(*function_pointer)(Farray<double,1>&) = BEreq::libFarrayTest_doubleFuncArray1.pointer();
-      cout << "Calling doubleFuncArray1 with commonblock element a as argument..." << endl;            
+      cout << "Calling doubleFuncArray1 with commonblock element a as argument..." << endl;
       tmp = function_pointer(commonBlock.a);
-      cout << "Returned value: " << tmp << endl;          
-      
-      cout << endl << "Retrieving pointer to fptrRoutine..." << endl;      
+      cout << "Returned value: " << tmp << endl;
+
+      cout << endl << "Retrieving pointer to fptrRoutine..." << endl;
       fptrType2 function_pointer2 = BEreq::libFarrayTest_fptrRoutine.pointer();
-            
+
       cout << endl << "Calling fptrRoutine with commonblock elements a and c and function doubleFuncArray1 as arguments..." << endl;
-      function_pointer2(commonBlock.a,*commonBlock.c,function_pointer);             
+      function_pointer2(commonBlock.a,*commonBlock.c,function_pointer);
 
       cout << endl << "Calling fptrRoutine with commonblock elements a and c and function doubleFuncArray2 as arguments..." << endl;
-      BEreq::libFarrayTest_fptrRoutine(commonBlock.a,*commonBlock.c,BEreq::libFarrayTest_doubleFuncArray2.pointer());    
- 
+      BEreq::libFarrayTest_fptrRoutine(commonBlock.a,*commonBlock.c,BEreq::libFarrayTest_doubleFuncArray2.pointer());
+
       // Uncomment to pass an illegal function pointer (a function pointer with no fortran equivalent registered in frontBackFuncMap)
       //double (*function_pointer3)(Farray<double,1>&) = testFunc;
       //cout << endl << "Calling fptrRoutine commonblock elements a and c and an illegal function as arguments..." << endl;
-      //function_pointer2(commonBlock.a,*commonBlock.c,function_pointer3);    
-      
+      //function_pointer2(commonBlock.a,*commonBlock.c,function_pointer3);
+
       // Will not compile without the byVal convertor.
       cout << endl << "Calling fptrRoutine with commonblock elements a and c and function doubleFuncArray1 as arguments in a way that fails without byVal..." << endl;
-      BEreq::libFarrayTest_fptrRoutine(commonBlock.a,*commonBlock.c,byVal(function_pointer));      
- 
-      result = 1.0;     
- 
+      BEreq::libFarrayTest_fptrRoutine(commonBlock.a,*commonBlock.c,byVal(function_pointer));
+
+      result = 1.0;
+
     }
 
     /// @}
@@ -362,7 +361,7 @@ namespace Gambit
         double n_predicted_uncertain = 3.1; // A contribution to the predicted number of events that is not know exactly
         double uncertainty = 0.2;           // A fractional uncertainty on n_predicted_uncertain (e.g. 0.2 from 20% uncertainty on efficencty wrt signal events)
 
-        if (*BEgroup::lnlike_marg_poisson == "lnlike_marg_poisson_lognormal_error") 
+        if (*BEgroup::lnlike_marg_poisson == "lnlike_marg_poisson_lognormal_error")
         {
           // Use a log-normal distribution for the nuisance parameter (more correct)
           result = BEreq::lnlike_marg_poisson_lognormal_error(n_obs,n_predicted_exact,n_predicted_uncertain,uncertainty);
@@ -370,7 +369,7 @@ namespace Gambit
         else if (*BEgroup::lnlike_marg_poisson == "lnlike_marg_poisson_gaussian_error")
         {
           // Use a Gaussian distribution for the nuisance parameter (marginally faster)
-          result = BEreq::lnlike_marg_poisson_gaussian_error(n_obs,n_predicted_exact,n_predicted_uncertain,uncertainty);          
+          result = BEreq::lnlike_marg_poisson_gaussian_error(n_obs,n_predicted_exact,n_predicted_uncertain,uncertainty);
         }
         else ExampleBit_A_error().raise(LOCAL_INFO,"Unrecognised choice from lnlike_marg_poisson BEgroup.");
 
@@ -394,11 +393,11 @@ namespace Gambit
       cout << "After adding 1: " << localX.i << endl;
 
       BOSSMinimalExample_1_0::nspace1::nspace2::X oldX(3);
-      cout << "v1.0 X's int: " << oldX.i << endl;      
+      cout << "v1.0 X's int: " << oldX.i << endl;
 
       result = localX;
-      cout << "Now we set result = localX" << endl;      
-      cout << "result.i: " << result.i << endl;      
+      cout << "Now we set result = localX" << endl;
+      cout << "result.i: " << result.i << endl;
 
       cout << "Testing Y type." << endl;
       cout << "===================" << endl;
@@ -414,13 +413,13 @@ namespace Gambit
       localY.x.i+=1;
       cout << "After adding 1: " << localY.x.i << endl;
       cout << "LocalX's int after LocalY's int has been incremented: " << localX.i << endl;
-      
-      localX = localY.get_x();       
-      cout << "i of X retrieved from localY: " << localX.i << endl; 
+
+      localX = localY.get_x();
+      cout << "i of X retrieved from localY: " << localX.i << endl;
 
       localX.i-=1;
       localY.set_x(localX);
-      cout << "LocalY's int after sending an X to localY: " << localY.x.i << endl;      
+      cout << "LocalY's int after sending an X to localY: " << localY.x.i << endl;
 
       BOSSMinimalExample_1_0::nspace3::Y oldY(oldX);
       cout << "v1.0 Y's int: " << oldY.x.i << endl;
@@ -439,7 +438,7 @@ namespace Gambit
     void bossed_pythia_test_function(bool &result)
     {
       using namespace Pipes::bossed_pythia_test_function;
-      
+
       cout << "Testing BOSSed Pythia." << endl;
       cout << "======================" << endl;
 
@@ -473,7 +472,7 @@ namespace Gambit
 
       cout << "Done testing BOSSed Pythia." << endl;
       cout << "===========================" << endl;
-      
+
       result = true;
     }
 
@@ -481,7 +480,7 @@ namespace Gambit
     /// \name SLHA Examples
     /// Some example functions for getting and manipulating SLHA-style information
     /// @{
- 
+
     /// Calculate some random thing which requires a low energy MSSM spectrum
     // void BRstopneutralino(int &result)
     // {

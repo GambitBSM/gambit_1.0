@@ -85,6 +85,7 @@ YAMLDIR = contrib/yaml-cpp-0.5.1
 SLHAPy8DIR = contrib/SLHAPy8
 SLHAEADIR = contrib/slhaea
 MCUTILSDIR = contrib/mcutils
+HEPUTILSDIR = contrib/heputils
 HEPSIMPLEDIR = contrib/hep_simple_lib
 MCUTILSDIR = contrib/mcutils
 FASTSIMDIR = ../extras/fast_sim
@@ -114,8 +115,9 @@ CFLAGS= -I$(COREDIR)/include \
   -I$(SLHAPy8DIR) \
   -I$(SLHAEADIR) \
   -I$(HEPSIMPLEDIR) \
-  -I$(FASTSIMDIR)/include \
+  -I$(HEPUTILSDIR)/include \
   -I$(MCUTILSDIR)/include \
+  -I$(FASTSIMDIR)/include \
   -I$(MULTINESTINC)
 
 ifdef CPPFLAGS
@@ -392,8 +394,8 @@ DECAYOBJS:=$(addprefix $(DECAYDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(DECAYS
 
 COLLIDERINC:=$(wildcard $(COLLIDERDIR)/include/*hpp) $(wildcard $(COLLIDERDIR)/include/*h)
 COLLIDERSRC:=$(wildcard $(COLLIDERDIR)/src/*cpp) $(wildcard $(COLLIDERDIR)/src/*c) $(wildcard $(COLLIDERDIR)/src/analyses/*cpp) $(wildcard $(COLLIDERDIR)/src/colliders/*cpp)
-COLLIDERDELPHESSRC:=$(wildcard $(COLLIDERDIR)/src/delphes/*Module.cc) 
-COLLIDEROBJS:=$(addprefix $(COLLIDERDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(COLLIDERSRC)))) $(addprefix $(COLLIDERDIR)/build/,$(notdir $(patsubst %Module.cc,%Module.o,$(COLLIDERDELPHESSRC)))) $(addprefix $(COLLIDERDIR)/build/,$(notdir $(patsubst %Module.cc,%Module_dict.o,$(COLLIDERDELPHESSRC)))) 
+COLLIDERDELPHESSRC:=$(wildcard $(COLLIDERDIR)/src/delphes/*Module.cc)
+COLLIDEROBJS:=$(addprefix $(COLLIDERDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(COLLIDERSRC)))) $(addprefix $(COLLIDERDIR)/build/,$(notdir $(patsubst %Module.cc,%Module.o,$(COLLIDERDELPHESSRC)))) $(addprefix $(COLLIDERDIR)/build/,$(notdir $(patsubst %Module.cc,%Module_dict.o,$(COLLIDERDELPHESSRC))))
 
 EXAMPLE_AINC:=$(wildcard $(EXAMPLEADIR)/include/*hpp) $(wildcard $(EXAMPLEADIR)/include/*h)
 EXAMPLE_ASRC:=$(wildcard $(EXAMPLEADIR)/src/*cpp)
@@ -414,7 +416,7 @@ MODULEOBJS = $(SCANOBJS) $(DARKOBJS) $(FLAVOBJS) $(HIGGSOBJS) $(DECAYOBJS) $(EXA
 ifdef COLLIDE
   MODULEOBJS += $(COLLIDEROBJS)
 endif
-ALLOBJECTS = $(STANDALONEOBJS) $(MODULEOBJS) $(PRINTOBJS) $(COREOBJS) 
+ALLOBJECTS = $(STANDALONEOBJS) $(MODULEOBJS) $(PRINTOBJS) $(COREOBJS)
 
 ROLLCALL_HEADERS:=$(wildcard */*/*_rollcall.hpp) $(wildcard */*/*/*_rollcall.hpp)
 FUNCTOR_TYPES:= $(UTILSDIR)/include/all_functor_types.hpp
@@ -429,7 +431,7 @@ endif
 
 ##### Niceties ##############
 
-.PHONY: default all backends clean sterile distclean doxygen minihelp  $(BACKENDS) $(TARGETS) 
+.PHONY: default all backends clean sterile distclean doxygen minihelp  $(BACKENDS) $(TARGETS)
 
 default: minihelp gambit
 
@@ -445,11 +447,11 @@ $(COREDIR)/build/%.o: $(COREDIR)/src/%.cpp $(STANDALONEINC) $(GAMBITINC) $(ROLLC
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
-$(UTILSDIR)/build/%.o: $(UTILSDIR)/src/%.cpp $(STANDALONEINC) 
+$(UTILSDIR)/build/%.o: $(UTILSDIR)/src/%.cpp $(STANDALONEINC)
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
-$(BACKENDDIR)/build/%.o: $(BACKENDDIR)/src/%.cpp $(STANDALONEINC) 
+$(BACKENDDIR)/build/%.o: $(BACKENDDIR)/src/%.cpp $(STANDALONEINC)
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
@@ -585,10 +587,10 @@ $(SLHAPy8DIR)/libslhapy8.a:
 
 $(SCANDIR)/lib/libsample.so: $(SCANDIR)/plugins/twalk.o $(SCANDIR)/plugins/crapsample.o
 	$(CC) -shared $(SCANDIR)/plugins/crapsample.o $(SCANDIR)/plugins/twalk.o -o $(SCANDIR)/lib/libsample.so -L$(YAMLDIR) -lyaml-cpp
-	
+
 $(SCANDIR)/lib/libexamples.so: $(SCANDIR)/plugins/examples.o
-	$(CC) -shared $(SCANDIR)/plugins/examples.o -o $(SCANDIR)/lib/libexamples.so 
-	
+	$(CC) -shared $(SCANDIR)/plugins/examples.o -o $(SCANDIR)/lib/libexamples.so
+
 $(SCANDIR)/lib/libtest.so: $(SCANDIR)/plugins/test.cpp
 	$(CC) $(CFLAGS) -c -fPIC $(SCANDIR)/plugins/test.cpp -o $(SCANDIR)/build/test.o
 	$(CC) -shared -o $(SCANDIR)/lib/libtest.so $(SCANDIR)/build/test.o
@@ -617,7 +619,7 @@ $(BACKENDDIR)/lib/libFarrayTest.so: $(BACKENDDIR)/lib/libFarrayTest.f90
 	$(FC) $(FFLAGS) -c $(BACKENDDIR)/lib/libFarrayTest.f90 -o $(BACKENDDIR)/lib/libFarrayTest.o
 	$(FC) -shared -o $(BACKENDDIR)/lib/libFarrayTest.so $(BACKENDDIR)/lib/libFarrayTest.o
 
-DDCalc0: 
+DDCalc0:
 	cd $(DDCALC0DIR); make libDDCalc0.so FC=$(FC) FFLAGS="$(FFLAGS)"
 	cp $(DDCALC0DIR)/libDDCalc0.so $(BACKENDDIR)/lib/
 
@@ -631,15 +633,15 @@ higgsbounds:
 
 higgssignals:
 
-nulike: 
+nulike:
 	cd $(NULIKEDIR); make libnulike.so FF=$(FC) FOPT="$(FFLAGS)" MODULE="$(FMODULE)"
 	cp $(NULIKEDIR)/lib/libnulike.so $(BACKENDDIR)/lib/
 
-fastsim: 
+fastsim:
 	cd $(FASTSIMDIR); make libfastsim.so FC=$(FC) CC=$(CC) CFLAGS="$(CFLAGS) $(CCEXTRA) -fPIC"
 	cp $(FASTSIMDIR)/lib/libfastsim.so $(BACKENDDIR)/lib/
 
-pythia: 
+pythia:
 	cd $(PYTHIA8DIR); make;
 	cp $(PYTHIA8DIR)/lib/libpythia8.so $(BACKENDDIR)/lib/
 
@@ -721,4 +723,3 @@ clean_backends:
 clean_docs:
 	@rm -rf .minihelp
 	@rm -rf $(DOCDIR)/html
-

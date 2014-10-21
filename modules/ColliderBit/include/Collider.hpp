@@ -4,7 +4,7 @@
 #include <exception>
 
 /// @note To configure a new collider, follow these steps:
-/// @note (To configure a new subprocess group, only do STEPS >= 5) 
+/// @note (To configure a new subprocess group, only do STEPS >= 5)
 /// @note STEP1)  BOSS your favorite collider simulator. Then:
 #include "shared_types.hpp"
 
@@ -13,7 +13,7 @@
 /// @TODO worry about adding Analyses later.
 //#include "Analysis.hpp"
 #include "Py8Utils.hpp"
-#include "Event.hpp"
+#include "HEPUtils/Event.h"
 
 
 namespace Gambit {
@@ -32,7 +32,7 @@ namespace Gambit {
 
       /// @name Initialization functions
       //@{
-      
+
       /// @brief Default settings for each sub-class.
       virtual void defaults() = 0;
       /// @brief Settings parsing and initialization for each sub-class.

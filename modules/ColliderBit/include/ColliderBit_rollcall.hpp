@@ -101,7 +101,7 @@ START_MODULE
   START_CAPABILITY
     /// Detector simulators which directly produce the standard event format
     #define FUNCTION reconstructDelphesEvent
-    START_FUNCTION(HEP_Simple_Lib::Event)
+    START_FUNCTION(HEPUtils::Event)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
     /// DEPENDENCY(delphesConfigFilename, std::string)
     /// instead of this dependency, use runOptions->hasKey("delphesConfigFilename")
@@ -112,7 +112,7 @@ START_MODULE
 
     /// Event converters to the standard Gambit collider event format
     #define FUNCTION convertPythia8Event
-    START_FUNCTION(HEP_Simple_Lib::Event)
+    START_FUNCTION(HEPUtils::Event)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
     NEEDS_CLASSES_FROM(Pythia, default)
     DEPENDENCY(hardScatteringEvent, Pythia8::Event)
@@ -154,7 +154,7 @@ START_MODULE
     START_FUNCTION(ColliderLogLikes) //return type is ColliderLogLikes struct
     ALLOW_MODELS(NormalDist)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
-    DEPENDENCY(GambitColliderEvent, HEP_Simple_Lib::Event)
+    DEPENDENCY(GambitColliderEvent, HEPUtils::Event)
     DEPENDENCY(ListOfAnalyses, AnalysisPointerVector)
     //BACKEND_REQ_FROM_GROUP(lnlike_marg_poisson, lnlike_marg_poisson_lognormal_error, (), double, (int&, double&, double&, double&) )
     //BACKEND_REQ_FROM_GROUP(lnlike_marg_poisson, lnlike_marg_poisson_gaussian_error, (), double, (int&, double&, double&, double&) )
@@ -184,7 +184,7 @@ START_MODULE
     START_FUNCTION(double)   /// Could be a scaled number of events, so double
     ALLOW_MODELS(NormalDist)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
-    DEPENDENCY(GambitColliderEvent, HEP_Simple_Lib::Event)
+    DEPENDENCY(GambitColliderEvent, HEPUtils::Event)
     #undef FUNCTION
     #undef CAPABILITY*/
   /// \todo How many more do we need to define...?

@@ -1,13 +1,12 @@
 #pragma once
 
 #include "shared_types.hpp"
-#include "Event.hpp"
-
+#include "HEPUtils/Event.h"
+#include "HEPUtils/Vectors.h"
+#include "HEPUtils/FastJet.h"
 #include "MCUtils/PIDUtils.h"
-#include "MCUtils/Vectors.h"
-#include "MCUtils/FastJet.h"
 
-
+using namespace HEPUtils;
 using namespace MCUtils;
 
 namespace Gambit {
@@ -21,7 +20,7 @@ namespace Gambit {
       return fastjet::PseudoJet(p.px(), p.py(), p.pz(), p.e());
     }
 
-    using MCUtils::mk_p4;
+    using HEPUtils::mk_p4;
 
     inline P4 mk_p4(const Pythia8::Vec4& p) {
       const double m = p.mCalc();
@@ -47,7 +46,7 @@ namespace Gambit {
     //@{
 
     inline double deltaPhi(const Pythia8::Vec4& a, const Pythia8::Vec4& b) {
-      return MCUtils::deltaphi(a.phi(), b.phi());
+      return HEPUtils::deltaphi(a.phi(), b.phi());
     }
 
     inline double deltaR(const Pythia8::Vec4& a, const Pythia8::Vec4& b) {
@@ -66,7 +65,7 @@ namespace Gambit {
     /// @todo Rewrite using the Py8 > 176 particle-based methods
     inline bool fromBottom(int n, const Pythia8::Event& evt) {
       const Pythia8::Particle& p = evt[n];
-      if (abs(p.id()) == 5 || HEP_Simple_Lib::PID::hasBottom(p.id())) return true;
+      if (abs(p.id()) == 5 || MCUtils::PID::hasBottom(p.id())) return true;
       /// @todo What about partonic decays?
       if (p.isParton()) return false; // stop the walking at hadron level
       for (int m : evt.motherList(n)) {
@@ -122,10 +121,10 @@ namespace Gambit {
 
     inline bool isFinalB(int n, const Pythia8::Event& evt) {
       // *This* particle must be a b or b-hadron
-      if (!HEP_Simple_Lib::PID::hasBottom(evt[n].id())) return false;
+      if (!MCUtils::PID::hasBottom(evt[n].id())) return false;
       // Daughters must *not* include a b or b-hadron
       for (int m : evt.daughterList(n)) {
-        if (HEP_Simple_Lib::PID::hasBottom(evt[m].id())) return false;
+        if (MCUtils::PID::hasBottom(evt[m].id())) return false;
       }
       return true;
     }
@@ -171,7 +170,7 @@ namespace Gambit {
 
 
     /// Fill a Gambit::Event from a Pythia8 event
-    inline void fillGambitEvent(const Pythia8::Event& pevt, HEP_Simple_Lib::Event& gevt) {
+    inline void fillGambitEvent(const Pythia8::Event& pevt, HEPUtils::Event& gevt) {
       Pythia8::Vec4 ptot;
       std::vector<fastjet::PseudoJet> jetparticles;
       std::vector<fastjet::PseudoJet> bhadrons, taus;
@@ -188,7 +187,7 @@ namespace Gambit {
         /// @todo Only accept hadronically decaying taus?
         if (isFinalTau(i, pevt) && !fromHadron(i, pevt)) {
           taus.push_back(mk_pseudojet(p.p()));
-          HEP_Simple_Lib::Particle* gp = new HEP_Simple_Lib::Particle(mk_p4(p.p()), p.id());
+          HEPUtils::Particle* gp = new HEPUtils::Particle(mk_p4(p.p()), p.id());
           gp->set_prompt();
           gevt.add_particle(gp); // Will be automatically categorised
         }
@@ -208,7 +207,7 @@ namespace Gambit {
         const bool prompt = !fromHadron(i, pevt) && !fromTau(i, pevt);
 
         if (prompt) {
-          HEP_Simple_Lib::Particle* gp = new HEP_Simple_Lib::Particle(mk_p4(p.p()), p.id());
+          HEPUtils::Particle* gp = new HEPUtils::Particle(mk_p4(p.p()), p.id());
           gp->set_prompt();
           gevt.add_particle(gp); // Will be automatically categorised
         } else {
@@ -234,7 +233,7 @@ namespace Gambit {
         }
         /// Add to the event
         const P4 p4 = mk_p4(pj);
-        gevt.addJet(new HEP_Simple_Lib::Jet(p4, isB));
+        gevt.addJet(new HEPUtils::Jet(p4, isB));
       }
 
       // MET (not equal to sum of prompt invisibles)
