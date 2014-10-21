@@ -114,9 +114,9 @@ START_MODULE
   #undef CAPABILITY
 
 
-  #define CAPABILITY fast_sim                // calling fastsim
+  #define CAPABILITY fast_sim_init                // calling fastsim
   START_CAPABILITY
-    #define FUNCTION fast_sim                // calling fastsim
+    #define FUNCTION fast_sim_init                // calling fastsim
       START_FUNCTION(double)                 // returns the number of events for now
       BACKEND_REQ(fast_sim_init, (), int, (int))
     #undef FUNCTION

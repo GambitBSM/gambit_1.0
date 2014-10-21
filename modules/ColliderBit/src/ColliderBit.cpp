@@ -24,6 +24,7 @@
 
 #include "gambit_module_headers.hpp"
 #include "ColliderBit_rollcall.hpp"
+#define DEBUG
 
 // Now pulling in some of the code from extras/HEColliderMain.cpp
 // I will leave the KFactorHooks alone for now, since the work on
@@ -47,11 +48,12 @@ namespace Gambit {
     bool isPythiaReady = false;
     std::vector<std::string> pythiaNames;
     std::vector<std::string>::const_iterator iter;
+    int pythiaConfigurations, pythiaNumber;
     std::string slhaFilename;
     /// Events to run  TODO: may no longer need to be global
     int nEvents = 0;
 
-    void debugMe(const std::string label) {
+    void debugMe(const std::string label, bool pause=false) {
       #ifdef DEBUG
       std::cout<<"\n\nHECollider is here: "<<label;
       std::cout<<"\n    Checking locals: ";
@@ -60,8 +62,11 @@ namespace Gambit {
       std::cout<<"\n    delphes (points to): "<<delphes;
       std::cout<<"\n    isDetectorReady: "<<isDetectorReady;
       std::cout<<"\n    isPythiaReady: "<<isPythiaReady;
-      std::cout<<"\n\n [Press Enter]";
-      std::getchar();
+      if (pause) {
+        std::cout<<"\n\n [Press Enter]";
+        std::getchar();
+      }
+      std::cout<<"\n\n";
       #endif
     }
 
@@ -108,12 +113,27 @@ namespace Gambit {
       Loop::executeIteration(INIT);
       /// For every collider requested in the yaml file:
       for(iter=pythiaNames.cbegin(); iter!=pythiaNames.cend(); iter++) {
-        #pragma omp parallel
-        {
-          isPythiaReady = false;
-          #pragma omp for
-          for (int it=0; it<nEvents; it++) {
-            Loop::executeIteration(it);
+        pythiaNumber = 0;
+        try {
+          pythiaConfigurations = runOptions->getValue<int>(*iter);
+        } catch (...) {
+          pythiaConfigurations = 1;
+          std::cout<<"  NOTE: Error downgraded to warning.\n";
+          std::cout<<"  However, you may want to check the options for\n";
+          std::cout<<"    '"<<*iter<<"' within 'operatePythia'.\n\n";
+        }  //< If the user only wants one config of this pythiaName, okay with no options.
+
+        while (pythiaNumber < pythiaConfigurations) {
+          pythiaNumber++;
+          debugMe("operating Pythia named " + *iter
+                  + " number " + std::to_string(pythiaNumber), true);
+          #pragma omp parallel shared(iter,pythiaNumber,pythiaConfigurations)
+          {
+            isPythiaReady = false;
+            #pragma omp for
+            for (int it=0; it<nEvents; it++) {
+              Loop::executeIteration(it);
+            }
           }
         }
       }
@@ -128,7 +148,7 @@ namespace Gambit {
 
 
     /// Hard Scattering Collider Simulators
-    void getPythia(PythiaPtr &result) {
+    void getPythia(shared_ptr<ColliderBit::PythiaBase> &result) {
       using namespace Pipes::getPythia;
       if (*Loop::iteration <= INIT) return;
       debugMe("getPythia");
@@ -136,12 +156,19 @@ namespace Gambit {
       if (!isPythiaReady) {
         /// Should be within omp parallel block now.
         std::vector<std::string> pythiaOptions;
+        std::string pythiaConfigName;
         try {
-          pythiaOptions = runOptions->getValue<std::vector<std::string>>(*iter);
+          pythiaConfigName = "pythiaOptions";
+          if(pythiaConfigurations) {
+            pythiaConfigName += "_";
+            pythiaConfigName += std::to_string(pythiaNumber);
+          }
+          pythiaOptions = runOptions->getValue<std::vector<std::string>>
+                                      (*iter, pythiaConfigName);
         } catch (...) {
           std::cout<<"  NOTE: Error downgraded to warning.\n";
-          std::cout<<"  However, you may want to check the options for:\n";
-          std::cout<<"    "<<*iter<<"\n\n";
+          std::cout<<"  However, you may want to check the options for\n";
+          std::cout<<"    '"<<pythiaConfigName<<"' within 'getPythia'.\n\n";
         }  //< If the PythiaBase subclass is hard-coded, okay with no options.
         pythiaOptions.push_back("SLHA:file = " + slhaFilename);
         pythiaOptions.push_back("Random:seed = " + std::to_string(omp_get_thread_num()));
