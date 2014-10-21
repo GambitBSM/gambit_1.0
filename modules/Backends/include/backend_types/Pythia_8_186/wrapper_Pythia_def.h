@@ -1,5 +1,5 @@
-#ifndef __WRAPPER_PYTHIA_DEF_BOSSedPythia_1_0_H__
-#define __WRAPPER_PYTHIA_DEF_BOSSedPythia_1_0_H__
+#ifndef __WRAPPER_PYTHIA_DEF_Pythia_8_186_H__
+#define __WRAPPER_PYTHIA_DEF_Pythia_8_186_H__
 
 #include "wrapper_Event_decl.h"
 #include "wrapper_Info_decl.h"
@@ -25,7 +25,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline bool Pythia::readString(std::string arg_1)
         {
-            return BEptr->readString_GAMBIT(arg_1);
+            return BEptr->readString__BOSS(arg_1);
         }
         
         inline bool Pythia::readFile(std::string fileName, bool warn, int subrun)
@@ -35,12 +35,12 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline bool Pythia::readFile(std::string fileName, bool warn)
         {
-            return BEptr->readFile_GAMBIT(fileName, warn);
+            return BEptr->readFile__BOSS(fileName, warn);
         }
         
         inline bool Pythia::readFile(std::string fileName)
         {
-            return BEptr->readFile_GAMBIT(fileName);
+            return BEptr->readFile__BOSS(fileName);
         }
         
         inline bool Pythia::readFile(std::string fileName, int subrun)
@@ -55,17 +55,17 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline bool Pythia::readFile(std::istream& is, bool warn)
         {
-            return BEptr->readFile_GAMBIT(is, warn);
+            return BEptr->readFile__BOSS(is, warn);
         }
         
         inline bool Pythia::readFile(std::istream& is)
         {
-            return BEptr->readFile_GAMBIT(is);
+            return BEptr->readFile__BOSS(is);
         }
         
         inline bool Pythia::readFile()
         {
-            return BEptr->readFile_GAMBIT();
+            return BEptr->readFile__BOSS();
         }
         
         inline bool Pythia::readFile(std::istream& is, int subrun)
@@ -100,7 +100,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline bool Pythia::init(std::string LesHouchesEventFile)
         {
-            return BEptr->init_GAMBIT(LesHouchesEventFile);
+            return BEptr->init__BOSS(LesHouchesEventFile);
         }
         
         inline bool Pythia::next()
@@ -115,7 +115,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline int Pythia::forceTimeShower(int iBeg, int iEnd, double pTmax)
         {
-            return BEptr->forceTimeShower_GAMBIT(iBeg, iEnd, pTmax);
+            return BEptr->forceTimeShower__BOSS(iBeg, iEnd, pTmax);
         }
         
         inline bool Pythia::forceHadronLevel(bool findJunctions)
@@ -125,7 +125,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline bool Pythia::forceHadronLevel()
         {
-            return BEptr->forceHadronLevel_GAMBIT();
+            return BEptr->forceHadronLevel__BOSS();
         }
         
         inline bool Pythia::moreDecays()
@@ -145,7 +145,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline void Pythia::LHAeventList()
         {
-            BEptr->LHAeventList_GAMBIT();
+            BEptr->LHAeventList__BOSS();
         }
         
         inline bool Pythia::LHAeventSkip(int nSkip)
@@ -165,12 +165,12 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline void Pythia::statistics(bool all)
         {
-            BEptr->statistics_GAMBIT(all);
+            BEptr->statistics__BOSS(all);
         }
         
         inline void Pythia::statistics()
         {
-            BEptr->statistics_GAMBIT();
+            BEptr->statistics__BOSS();
         }
         
         inline bool Pythia::flag(std::string key)
@@ -197,11 +197,11 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         // Wrappers for original constructors: 
         inline Pythia8::Pythia::Pythia(std::string xmlDir, bool printBanner) :
             WrapperBase<Pythia8::Abstract_Pythia>( __factory0(xmlDir, printBanner), false ),
-            process(&(BEptr->process_ref_GAMBIT())),
-            event(&(BEptr->event_ref_GAMBIT())),
-            info(&(BEptr->info_ref_GAMBIT()))
+            process(&(BEptr->process_ref__BOSS())),
+            event(&(BEptr->event_ref__BOSS())),
+            info(&(BEptr->info_ref__BOSS()))
         {
-            BEptr->wrapper_GAMBIT(this);
+            BEptr->wrapper__BOSS(this);
             (process)._setMemberVariable(true);
             (event)._setMemberVariable(true);
             (info)._setMemberVariable(true);
@@ -209,11 +209,11 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline Pythia8::Pythia::Pythia(std::string xmlDir) :
             WrapperBase<Pythia8::Abstract_Pythia>( __factory1(xmlDir), false ),
-            process(&(BEptr->process_ref_GAMBIT())),
-            event(&(BEptr->event_ref_GAMBIT())),
-            info(&(BEptr->info_ref_GAMBIT()))
+            process(&(BEptr->process_ref__BOSS())),
+            event(&(BEptr->event_ref__BOSS())),
+            info(&(BEptr->info_ref__BOSS()))
         {
-            BEptr->wrapper_GAMBIT(this);
+            BEptr->wrapper__BOSS(this);
             (process)._setMemberVariable(true);
             (event)._setMemberVariable(true);
             (info)._setMemberVariable(true);
@@ -221,11 +221,11 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline Pythia8::Pythia::Pythia() :
             WrapperBase<Pythia8::Abstract_Pythia>( __factory2(), false ),
-            process(&(BEptr->process_ref_GAMBIT())),
-            event(&(BEptr->event_ref_GAMBIT())),
-            info(&(BEptr->info_ref_GAMBIT()))
+            process(&(BEptr->process_ref__BOSS())),
+            event(&(BEptr->event_ref__BOSS())),
+            info(&(BEptr->info_ref__BOSS()))
         {
-            BEptr->wrapper_GAMBIT(this);
+            BEptr->wrapper__BOSS(this);
             (process)._setMemberVariable(true);
             (event)._setMemberVariable(true);
             (info)._setMemberVariable(true);
@@ -234,11 +234,11 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         // Special pointer-based constructor: 
         inline Pythia8::Pythia::Pythia(Pythia8::Abstract_Pythia* in, bool memvar_in) :
             WrapperBase<Pythia8::Abstract_Pythia>( in, memvar_in ),
-            process(&(BEptr->process_ref_GAMBIT())),
-            event(&(BEptr->event_ref_GAMBIT())),
-            info(&(BEptr->info_ref_GAMBIT()))
+            process(&(BEptr->process_ref__BOSS())),
+            event(&(BEptr->event_ref__BOSS())),
+            info(&(BEptr->info_ref__BOSS()))
         {
-            BEptr->wrapper_GAMBIT(this);
+            BEptr->wrapper__BOSS(this);
             (process)._setMemberVariable(true);
             (event)._setMemberVariable(true);
             (info)._setMemberVariable(true);
@@ -247,11 +247,11 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         // Copy constructor: 
         inline Pythia8::Pythia::Pythia(const Pythia& in) :
             WrapperBase<Pythia8::Abstract_Pythia>(in),
-            process(&(BEptr->process_ref_GAMBIT())),
-            event(&(BEptr->event_ref_GAMBIT())),
-            info(&(BEptr->info_ref_GAMBIT()))
+            process(&(BEptr->process_ref__BOSS())),
+            event(&(BEptr->event_ref__BOSS())),
+            info(&(BEptr->info_ref__BOSS()))
         {
-            BEptr->wrapper_GAMBIT(this);
+            BEptr->wrapper__BOSS(this);
             (process)._setMemberVariable(true);
             (event)._setMemberVariable(true);
             (info)._setMemberVariable(true);
@@ -271,4 +271,4 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
 
 #include "backend_undefs.hpp"
 
-#endif /* __WRAPPER_PYTHIA_DEF_BOSSedPythia_1_0_H__ */
+#endif /* __WRAPPER_PYTHIA_DEF_Pythia_8_186_H__ */

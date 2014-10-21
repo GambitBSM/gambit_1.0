@@ -24,8 +24,8 @@
 
 /// Macros for collider factory fns
 #define DECLARE_COLLIDER_FACTORY(CNAME, CCLASS)                          \
-  CCLASS* create_ ## CNAME(const std::vector<std::string>& settings);
-#define DEFINE_COLLIDER_FACTORY(CNAME, CCLASS)                           \
+  CCLASS* create_ ## CNAME(const std::vector<std::string>&);
+#define DEFINE_COLLIDER_FACTORY(CNAME, CCLASS)                         \
   CCLASS* create_ ## CNAME(const std::vector<std::string>& settings) {   \
     CCLASS* result = new CNAME();                                        \
     result->defaults();                                                  \

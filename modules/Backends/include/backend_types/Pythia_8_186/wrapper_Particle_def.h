@@ -1,5 +1,5 @@
-#ifndef __WRAPPER_PARTICLE_DEF_BOSSedPythia_1_0_H__
-#define __WRAPPER_PARTICLE_DEF_BOSSedPythia_1_0_H__
+#ifndef __WRAPPER_PARTICLE_DEF_Pythia_8_186_H__
+#define __WRAPPER_PARTICLE_DEF_Pythia_8_186_H__
 
 #include "wrapper_Vec4_decl.h"
 #include "wrapper_Event_decl.h"
@@ -17,12 +17,12 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         // Member functions: 
         inline void Particle::setEvtPtr(WrapperBase< Pythia8::Abstract_Event >* evtPtrIn)
         {
-            BEptr->setEvtPtr_GAMBIT((*evtPtrIn).BEptr);
+            BEptr->setEvtPtr__BOSS((*evtPtrIn).BEptr);
         }
         
         inline Pythia8::Event* Particle::getEvtPtr()
         {
-            return pointer_returner< Pythia8::Event, Pythia8::Abstract_Event >( BEptr->getEvtPtr_GAMBIT() );
+            return pointer_returner< Pythia8::Event, Pythia8::Abstract_Event >( BEptr->getEvtPtr__BOSS() );
         }
         
         inline void Particle::id(int idIn)
@@ -67,12 +67,12 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline void Particle::mothers(int mother1In)
         {
-            BEptr->mothers_GAMBIT(mother1In);
+            BEptr->mothers__BOSS(mother1In);
         }
         
         inline void Particle::mothers()
         {
-            BEptr->mothers_GAMBIT();
+            BEptr->mothers__BOSS();
         }
         
         inline void Particle::daughter1(int daughter1In)
@@ -92,12 +92,12 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline void Particle::daughters(int daughter1In)
         {
-            BEptr->daughters_GAMBIT(daughter1In);
+            BEptr->daughters__BOSS(daughter1In);
         }
         
         inline void Particle::daughters()
         {
-            BEptr->daughters_GAMBIT();
+            BEptr->daughters__BOSS();
         }
         
         inline void Particle::col(int colIn)
@@ -117,17 +117,17 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline void Particle::cols(int colIn)
         {
-            BEptr->cols_GAMBIT(colIn);
+            BEptr->cols__BOSS(colIn);
         }
         
         inline void Particle::cols()
         {
-            BEptr->cols_GAMBIT();
+            BEptr->cols__BOSS();
         }
         
         inline void Particle::p(WrapperBase< Pythia8::Abstract_Vec4 > pIn)
         {
-            BEptr->p_GAMBIT(*pIn.BEptr);
+            BEptr->p__BOSS(*pIn.BEptr);
         }
         
         inline void Particle::p(double pxIn, double pyIn, double pzIn, double eIn)
@@ -172,7 +172,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline void Particle::vProd(WrapperBase< Pythia8::Abstract_Vec4 > vProdIn)
         {
-            BEptr->vProd_GAMBIT(*vProdIn.BEptr);
+            BEptr->vProd__BOSS(*vProdIn.BEptr);
         }
         
         inline void Particle::vProd(double xProdIn, double yProdIn, double zProdIn, double tProdIn)
@@ -247,7 +247,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline Pythia8::Vec4 Particle::p() const
         {
-            return Pythia8::Vec4( BEptr->p_GAMBIT() );
+            return Pythia8::Vec4( BEptr->p__BOSS() );
         }
         
         inline double Particle::px() const
@@ -292,7 +292,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline Pythia8::Vec4 Particle::vProd() const
         {
-            return Pythia8::Vec4( BEptr->vProd_GAMBIT() );
+            return Pythia8::Vec4( BEptr->vProd__BOSS() );
         }
         
         inline double Particle::xProd() const
@@ -437,7 +437,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline Pythia8::Vec4 Particle::vDec() const
         {
-            return Pythia8::Vec4( BEptr->vDec_GAMBIT() );
+            return Pythia8::Vec4( BEptr->vDec__BOSS() );
         }
         
         inline double Particle::xDec() const
@@ -507,7 +507,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline std::vector<int, std::allocator<int> > Particle::sisterList() const
         {
-            return BEptr->sisterList_GAMBIT();
+            return BEptr->sisterList__BOSS();
         }
         
         inline bool Particle::isAncestor(int iAncestor) const
@@ -532,7 +532,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline std::string Particle::nameWithStatus() const
         {
-            return BEptr->nameWithStatus_GAMBIT();
+            return BEptr->nameWithStatus__BOSS();
         }
         
         inline int Particle::spinType() const
@@ -687,22 +687,22 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline void Particle::bst(const WrapperBase< Pythia8::Abstract_Vec4 >& pBst)
         {
-            BEptr->bst_GAMBIT(*pBst.BEptr);
+            BEptr->bst__BOSS(*pBst.BEptr);
         }
         
         inline void Particle::bst(const WrapperBase< Pythia8::Abstract_Vec4 >& pBst, double mBst)
         {
-            BEptr->bst_GAMBIT(*pBst.BEptr, mBst);
+            BEptr->bst__BOSS(*pBst.BEptr, mBst);
         }
         
         inline void Particle::bstback(const WrapperBase< Pythia8::Abstract_Vec4 >& pBst)
         {
-            BEptr->bstback_GAMBIT(*pBst.BEptr);
+            BEptr->bstback__BOSS(*pBst.BEptr);
         }
         
         inline void Particle::bstback(const WrapperBase< Pythia8::Abstract_Vec4 >& pBst, double mBst)
         {
-            BEptr->bstback_GAMBIT(*pBst.BEptr, mBst);
+            BEptr->bstback__BOSS(*pBst.BEptr, mBst);
         }
         
         inline void Particle::offsetHistory(int minMother, int addMother, int minDaughter, int addDaughter)
@@ -720,135 +720,135 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         inline Pythia8::Particle::Particle() :
             WrapperBase<Pythia8::Abstract_Particle>( __factory0(), false )
         {
-            BEptr->wrapper_GAMBIT(this);
+            BEptr->wrapper__BOSS(this);
         }
         
         inline Pythia8::Particle::Particle(int idIn, int statusIn, int mother1In, int mother2In, int daughter1In, int daughter2In, int colIn, int acolIn, double pxIn, double pyIn, double pzIn, double eIn, double mIn, double scaleIn, double polIn) :
             WrapperBase<Pythia8::Abstract_Particle>( __factory1(idIn, statusIn, mother1In, mother2In, daughter1In, daughter2In, colIn, acolIn, pxIn, pyIn, pzIn, eIn, mIn, scaleIn, polIn), false )
         {
-            BEptr->wrapper_GAMBIT(this);
+            BEptr->wrapper__BOSS(this);
         }
         
         inline Pythia8::Particle::Particle(int idIn, int statusIn, int mother1In, int mother2In, int daughter1In, int daughter2In, int colIn, int acolIn, double pxIn, double pyIn, double pzIn, double eIn, double mIn, double scaleIn) :
             WrapperBase<Pythia8::Abstract_Particle>( __factory2(idIn, statusIn, mother1In, mother2In, daughter1In, daughter2In, colIn, acolIn, pxIn, pyIn, pzIn, eIn, mIn, scaleIn), false )
         {
-            BEptr->wrapper_GAMBIT(this);
+            BEptr->wrapper__BOSS(this);
         }
         
         inline Pythia8::Particle::Particle(int idIn, int statusIn, int mother1In, int mother2In, int daughter1In, int daughter2In, int colIn, int acolIn, double pxIn, double pyIn, double pzIn, double eIn, double mIn) :
             WrapperBase<Pythia8::Abstract_Particle>( __factory3(idIn, statusIn, mother1In, mother2In, daughter1In, daughter2In, colIn, acolIn, pxIn, pyIn, pzIn, eIn, mIn), false )
         {
-            BEptr->wrapper_GAMBIT(this);
+            BEptr->wrapper__BOSS(this);
         }
         
         inline Pythia8::Particle::Particle(int idIn, int statusIn, int mother1In, int mother2In, int daughter1In, int daughter2In, int colIn, int acolIn, double pxIn, double pyIn, double pzIn, double eIn) :
             WrapperBase<Pythia8::Abstract_Particle>( __factory4(idIn, statusIn, mother1In, mother2In, daughter1In, daughter2In, colIn, acolIn, pxIn, pyIn, pzIn, eIn), false )
         {
-            BEptr->wrapper_GAMBIT(this);
+            BEptr->wrapper__BOSS(this);
         }
         
         inline Pythia8::Particle::Particle(int idIn, int statusIn, int mother1In, int mother2In, int daughter1In, int daughter2In, int colIn, int acolIn, double pxIn, double pyIn, double pzIn) :
             WrapperBase<Pythia8::Abstract_Particle>( __factory5(idIn, statusIn, mother1In, mother2In, daughter1In, daughter2In, colIn, acolIn, pxIn, pyIn, pzIn), false )
         {
-            BEptr->wrapper_GAMBIT(this);
+            BEptr->wrapper__BOSS(this);
         }
         
         inline Pythia8::Particle::Particle(int idIn, int statusIn, int mother1In, int mother2In, int daughter1In, int daughter2In, int colIn, int acolIn, double pxIn, double pyIn) :
             WrapperBase<Pythia8::Abstract_Particle>( __factory6(idIn, statusIn, mother1In, mother2In, daughter1In, daughter2In, colIn, acolIn, pxIn, pyIn), false )
         {
-            BEptr->wrapper_GAMBIT(this);
+            BEptr->wrapper__BOSS(this);
         }
         
         inline Pythia8::Particle::Particle(int idIn, int statusIn, int mother1In, int mother2In, int daughter1In, int daughter2In, int colIn, int acolIn, double pxIn) :
             WrapperBase<Pythia8::Abstract_Particle>( __factory7(idIn, statusIn, mother1In, mother2In, daughter1In, daughter2In, colIn, acolIn, pxIn), false )
         {
-            BEptr->wrapper_GAMBIT(this);
+            BEptr->wrapper__BOSS(this);
         }
         
         inline Pythia8::Particle::Particle(int idIn, int statusIn, int mother1In, int mother2In, int daughter1In, int daughter2In, int colIn, int acolIn) :
             WrapperBase<Pythia8::Abstract_Particle>( __factory8(idIn, statusIn, mother1In, mother2In, daughter1In, daughter2In, colIn, acolIn), false )
         {
-            BEptr->wrapper_GAMBIT(this);
+            BEptr->wrapper__BOSS(this);
         }
         
         inline Pythia8::Particle::Particle(int idIn, int statusIn, int mother1In, int mother2In, int daughter1In, int daughter2In, int colIn) :
             WrapperBase<Pythia8::Abstract_Particle>( __factory9(idIn, statusIn, mother1In, mother2In, daughter1In, daughter2In, colIn), false )
         {
-            BEptr->wrapper_GAMBIT(this);
+            BEptr->wrapper__BOSS(this);
         }
         
         inline Pythia8::Particle::Particle(int idIn, int statusIn, int mother1In, int mother2In, int daughter1In, int daughter2In) :
             WrapperBase<Pythia8::Abstract_Particle>( __factory10(idIn, statusIn, mother1In, mother2In, daughter1In, daughter2In), false )
         {
-            BEptr->wrapper_GAMBIT(this);
+            BEptr->wrapper__BOSS(this);
         }
         
         inline Pythia8::Particle::Particle(int idIn, int statusIn, int mother1In, int mother2In, int daughter1In) :
             WrapperBase<Pythia8::Abstract_Particle>( __factory11(idIn, statusIn, mother1In, mother2In, daughter1In), false )
         {
-            BEptr->wrapper_GAMBIT(this);
+            BEptr->wrapper__BOSS(this);
         }
         
         inline Pythia8::Particle::Particle(int idIn, int statusIn, int mother1In, int mother2In) :
             WrapperBase<Pythia8::Abstract_Particle>( __factory12(idIn, statusIn, mother1In, mother2In), false )
         {
-            BEptr->wrapper_GAMBIT(this);
+            BEptr->wrapper__BOSS(this);
         }
         
         inline Pythia8::Particle::Particle(int idIn, int statusIn, int mother1In) :
             WrapperBase<Pythia8::Abstract_Particle>( __factory13(idIn, statusIn, mother1In), false )
         {
-            BEptr->wrapper_GAMBIT(this);
+            BEptr->wrapper__BOSS(this);
         }
         
         inline Pythia8::Particle::Particle(int idIn, int statusIn) :
             WrapperBase<Pythia8::Abstract_Particle>( __factory14(idIn, statusIn), false )
         {
-            BEptr->wrapper_GAMBIT(this);
+            BEptr->wrapper__BOSS(this);
         }
         
         inline Pythia8::Particle::Particle(int idIn) :
             WrapperBase<Pythia8::Abstract_Particle>( __factory15(idIn), false )
         {
-            BEptr->wrapper_GAMBIT(this);
+            BEptr->wrapper__BOSS(this);
         }
         
         inline Pythia8::Particle::Particle(int idIn, int statusIn, int mother1In, int mother2In, int daughter1In, int daughter2In, int colIn, int acolIn, Pythia8::Vec4 pIn, double mIn, double scaleIn, double polIn) :
             WrapperBase<Pythia8::Abstract_Particle>( __factory16(idIn, statusIn, mother1In, mother2In, daughter1In, daughter2In, colIn, acolIn, pIn, mIn, scaleIn, polIn), false )
         {
-            BEptr->wrapper_GAMBIT(this);
+            BEptr->wrapper__BOSS(this);
         }
         
         inline Pythia8::Particle::Particle(int idIn, int statusIn, int mother1In, int mother2In, int daughter1In, int daughter2In, int colIn, int acolIn, Pythia8::Vec4 pIn, double mIn, double scaleIn) :
             WrapperBase<Pythia8::Abstract_Particle>( __factory17(idIn, statusIn, mother1In, mother2In, daughter1In, daughter2In, colIn, acolIn, pIn, mIn, scaleIn), false )
         {
-            BEptr->wrapper_GAMBIT(this);
+            BEptr->wrapper__BOSS(this);
         }
         
         inline Pythia8::Particle::Particle(int idIn, int statusIn, int mother1In, int mother2In, int daughter1In, int daughter2In, int colIn, int acolIn, Pythia8::Vec4 pIn, double mIn) :
             WrapperBase<Pythia8::Abstract_Particle>( __factory18(idIn, statusIn, mother1In, mother2In, daughter1In, daughter2In, colIn, acolIn, pIn, mIn), false )
         {
-            BEptr->wrapper_GAMBIT(this);
+            BEptr->wrapper__BOSS(this);
         }
         
         inline Pythia8::Particle::Particle(int idIn, int statusIn, int mother1In, int mother2In, int daughter1In, int daughter2In, int colIn, int acolIn, Pythia8::Vec4 pIn) :
             WrapperBase<Pythia8::Abstract_Particle>( __factory19(idIn, statusIn, mother1In, mother2In, daughter1In, daughter2In, colIn, acolIn, pIn), false )
         {
-            BEptr->wrapper_GAMBIT(this);
+            BEptr->wrapper__BOSS(this);
         }
         
         // Special pointer-based constructor: 
         inline Pythia8::Particle::Particle(Pythia8::Abstract_Particle* in, bool memvar_in) :
             WrapperBase<Pythia8::Abstract_Particle>( in, memvar_in )
         {
-            BEptr->wrapper_GAMBIT(this);
+            BEptr->wrapper__BOSS(this);
         }
         
         // Copy constructor: 
         inline Pythia8::Particle::Particle(const Particle& in) :
             WrapperBase<Pythia8::Abstract_Particle>(in)
         {
-            BEptr->wrapper_GAMBIT(this);
+            BEptr->wrapper__BOSS(this);
         }
         
         // Assignment operator: 
@@ -865,4 +865,4 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
 
 #include "backend_undefs.hpp"
 
-#endif /* __WRAPPER_PARTICLE_DEF_BOSSedPythia_1_0_H__ */
+#endif /* __WRAPPER_PARTICLE_DEF_Pythia_8_186_H__ */

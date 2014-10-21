@@ -1,11 +1,13 @@
 #pragma once
 
+#include "shared_types.hpp"
 #include "Event.hpp"
-#include "Pythia8/Pythia.h"
 
 #include "MCUtils/PIDUtils.h"
 #include "MCUtils/Vectors.h"
 #include "MCUtils/FastJet.h"
+
+
 using namespace MCUtils;
 
 namespace Gambit {

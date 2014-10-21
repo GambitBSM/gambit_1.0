@@ -1,5 +1,5 @@
-#ifndef __WRAPPER_INFO_DEF_BOSSedPythia_1_0_H__
-#define __WRAPPER_INFO_DEF_BOSSedPythia_1_0_H__
+#ifndef __WRAPPER_INFO_DEF_Pythia_8_186_H__
+#define __WRAPPER_INFO_DEF_Pythia_8_186_H__
 
 #include <map>
 #include <string>
@@ -22,7 +22,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline void Info::list() const
         {
-            BEptr->list_GAMBIT();
+            BEptr->list__BOSS();
         }
         
         inline int Info::idA() const
@@ -142,7 +142,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline bool Info::hasSub() const
         {
-            return BEptr->hasSub_GAMBIT();
+            return BEptr->hasSub__BOSS();
         }
         
         inline std::string Info::nameSub(int i) const
@@ -152,7 +152,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline std::string Info::nameSub() const
         {
-            return BEptr->nameSub_GAMBIT();
+            return BEptr->nameSub__BOSS();
         }
         
         inline int Info::codeSub(int i) const
@@ -162,7 +162,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline int Info::codeSub() const
         {
-            return BEptr->codeSub_GAMBIT();
+            return BEptr->codeSub__BOSS();
         }
         
         inline int Info::nFinalSub(int i) const
@@ -172,7 +172,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline int Info::nFinalSub() const
         {
-            return BEptr->nFinalSub_GAMBIT();
+            return BEptr->nFinalSub__BOSS();
         }
         
         inline int Info::id1(int i) const
@@ -182,7 +182,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline int Info::id1() const
         {
-            return BEptr->id1_GAMBIT();
+            return BEptr->id1__BOSS();
         }
         
         inline int Info::id2(int i) const
@@ -192,7 +192,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline int Info::id2() const
         {
-            return BEptr->id2_GAMBIT();
+            return BEptr->id2__BOSS();
         }
         
         inline double Info::x1(int i) const
@@ -202,7 +202,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline double Info::x1() const
         {
-            return BEptr->x1_GAMBIT();
+            return BEptr->x1__BOSS();
         }
         
         inline double Info::x2(int i) const
@@ -212,7 +212,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline double Info::x2() const
         {
-            return BEptr->x2_GAMBIT();
+            return BEptr->x2__BOSS();
         }
         
         inline double Info::y(int i) const
@@ -222,7 +222,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline double Info::y() const
         {
-            return BEptr->y_GAMBIT();
+            return BEptr->y__BOSS();
         }
         
         inline double Info::tau(int i) const
@@ -232,7 +232,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline double Info::tau() const
         {
-            return BEptr->tau_GAMBIT();
+            return BEptr->tau__BOSS();
         }
         
         inline int Info::id1pdf(int i) const
@@ -242,7 +242,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline int Info::id1pdf() const
         {
-            return BEptr->id1pdf_GAMBIT();
+            return BEptr->id1pdf__BOSS();
         }
         
         inline int Info::id2pdf(int i) const
@@ -252,7 +252,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline int Info::id2pdf() const
         {
-            return BEptr->id2pdf_GAMBIT();
+            return BEptr->id2pdf__BOSS();
         }
         
         inline double Info::x1pdf(int i) const
@@ -262,7 +262,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline double Info::x1pdf() const
         {
-            return BEptr->x1pdf_GAMBIT();
+            return BEptr->x1pdf__BOSS();
         }
         
         inline double Info::x2pdf(int i) const
@@ -272,7 +272,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline double Info::x2pdf() const
         {
-            return BEptr->x2pdf_GAMBIT();
+            return BEptr->x2pdf__BOSS();
         }
         
         inline double Info::pdf1(int i) const
@@ -282,7 +282,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline double Info::pdf1() const
         {
-            return BEptr->pdf1_GAMBIT();
+            return BEptr->pdf1__BOSS();
         }
         
         inline double Info::pdf2(int i) const
@@ -292,7 +292,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline double Info::pdf2() const
         {
-            return BEptr->pdf2_GAMBIT();
+            return BEptr->pdf2__BOSS();
         }
         
         inline double Info::QFac(int i) const
@@ -302,7 +302,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline double Info::QFac() const
         {
-            return BEptr->QFac_GAMBIT();
+            return BEptr->QFac__BOSS();
         }
         
         inline double Info::Q2Fac(int i) const
@@ -312,7 +312,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline double Info::Q2Fac() const
         {
-            return BEptr->Q2Fac_GAMBIT();
+            return BEptr->Q2Fac__BOSS();
         }
         
         inline bool Info::isValence1() const
@@ -332,7 +332,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline double Info::alphaS() const
         {
-            return BEptr->alphaS_GAMBIT();
+            return BEptr->alphaS__BOSS();
         }
         
         inline double Info::alphaEM(int i) const
@@ -342,7 +342,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline double Info::alphaEM() const
         {
-            return BEptr->alphaEM_GAMBIT();
+            return BEptr->alphaEM__BOSS();
         }
         
         inline double Info::QRen(int i) const
@@ -352,7 +352,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline double Info::QRen() const
         {
-            return BEptr->QRen_GAMBIT();
+            return BEptr->QRen__BOSS();
         }
         
         inline double Info::Q2Ren(int i) const
@@ -362,7 +362,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline double Info::Q2Ren() const
         {
-            return BEptr->Q2Ren_GAMBIT();
+            return BEptr->Q2Ren__BOSS();
         }
         
         inline double Info::scalup(int i) const
@@ -372,7 +372,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline double Info::scalup() const
         {
-            return BEptr->scalup_GAMBIT();
+            return BEptr->scalup__BOSS();
         }
         
         inline double Info::mHat(int i) const
@@ -382,7 +382,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline double Info::mHat() const
         {
-            return BEptr->mHat_GAMBIT();
+            return BEptr->mHat__BOSS();
         }
         
         inline double Info::sHat(int i) const
@@ -392,7 +392,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline double Info::sHat() const
         {
-            return BEptr->sHat_GAMBIT();
+            return BEptr->sHat__BOSS();
         }
         
         inline double Info::tHat(int i) const
@@ -402,7 +402,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline double Info::tHat() const
         {
-            return BEptr->tHat_GAMBIT();
+            return BEptr->tHat__BOSS();
         }
         
         inline double Info::uHat(int i) const
@@ -412,7 +412,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline double Info::uHat() const
         {
-            return BEptr->uHat_GAMBIT();
+            return BEptr->uHat__BOSS();
         }
         
         inline double Info::pTHat(int i) const
@@ -422,7 +422,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline double Info::pTHat() const
         {
-            return BEptr->pTHat_GAMBIT();
+            return BEptr->pTHat__BOSS();
         }
         
         inline double Info::pT2Hat(int i) const
@@ -432,7 +432,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline double Info::pT2Hat() const
         {
-            return BEptr->pT2Hat_GAMBIT();
+            return BEptr->pT2Hat__BOSS();
         }
         
         inline double Info::m3Hat(int i) const
@@ -442,7 +442,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline double Info::m3Hat() const
         {
-            return BEptr->m3Hat_GAMBIT();
+            return BEptr->m3Hat__BOSS();
         }
         
         inline double Info::m4Hat(int i) const
@@ -452,7 +452,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline double Info::m4Hat() const
         {
-            return BEptr->m4Hat_GAMBIT();
+            return BEptr->m4Hat__BOSS();
         }
         
         inline double Info::thetaHat(int i) const
@@ -462,7 +462,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline double Info::thetaHat() const
         {
-            return BEptr->thetaHat_GAMBIT();
+            return BEptr->thetaHat__BOSS();
         }
         
         inline double Info::phiHat(int i) const
@@ -472,7 +472,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline double Info::phiHat() const
         {
-            return BEptr->phiHat_GAMBIT();
+            return BEptr->phiHat__BOSS();
         }
         
         inline double Info::weight() const
@@ -582,7 +582,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline std::string Info::nameProc()
         {
-            return BEptr->nameProc_GAMBIT();
+            return BEptr->nameProc__BOSS();
         }
         
         inline long int Info::nTried(int i)
@@ -592,7 +592,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline long int Info::nTried()
         {
-            return BEptr->nTried_GAMBIT();
+            return BEptr->nTried__BOSS();
         }
         
         inline long int Info::nSelected(int i)
@@ -602,7 +602,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline long int Info::nSelected()
         {
-            return BEptr->nSelected_GAMBIT();
+            return BEptr->nSelected__BOSS();
         }
         
         inline long int Info::nAccepted(int i)
@@ -612,7 +612,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline long int Info::nAccepted()
         {
-            return BEptr->nAccepted_GAMBIT();
+            return BEptr->nAccepted__BOSS();
         }
         
         inline double Info::sigmaGen(int i)
@@ -622,7 +622,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline double Info::sigmaGen()
         {
-            return BEptr->sigmaGen_GAMBIT();
+            return BEptr->sigmaGen__BOSS();
         }
         
         inline double Info::sigmaErr(int i)
@@ -632,7 +632,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline double Info::sigmaErr()
         {
-            return BEptr->sigmaErr_GAMBIT();
+            return BEptr->sigmaErr__BOSS();
         }
         
         inline int Info::getCounter(int i) const
@@ -647,7 +647,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline void Info::setCounter(int i)
         {
-            BEptr->setCounter_GAMBIT(i);
+            BEptr->setCounter__BOSS(i);
         }
         
         inline void Info::addCounter(int i, int value)
@@ -657,7 +657,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline void Info::addCounter(int i)
         {
-            BEptr->addCounter_GAMBIT(i);
+            BEptr->addCounter__BOSS(i);
         }
         
         inline void Info::errorReset()
@@ -672,17 +672,17 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline void Info::errorMsg(std::string messageIn, std::string extraIn, bool showAlways)
         {
-            BEptr->errorMsg_GAMBIT(messageIn, extraIn, showAlways);
+            BEptr->errorMsg__BOSS(messageIn, extraIn, showAlways);
         }
         
         inline void Info::errorMsg(std::string messageIn, std::string extraIn)
         {
-            BEptr->errorMsg_GAMBIT(messageIn, extraIn);
+            BEptr->errorMsg__BOSS(messageIn, extraIn);
         }
         
         inline void Info::errorMsg(std::string messageIn)
         {
-            BEptr->errorMsg_GAMBIT(messageIn);
+            BEptr->errorMsg__BOSS(messageIn);
         }
         
         inline int Info::errorTotalNumber()
@@ -697,7 +697,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         inline void Info::errorStatistics()
         {
-            BEptr->errorStatistics_GAMBIT();
+            BEptr->errorStatistics__BOSS();
         }
         
         inline void Info::setTooLowPTmin(bool lowPTminIn)
@@ -785,21 +785,21 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         inline Pythia8::Info::Info() :
             WrapperBase<Pythia8::Abstract_Info>( __factory0(), false )
         {
-            BEptr->wrapper_GAMBIT(this);
+            BEptr->wrapper__BOSS(this);
         }
         
         // Special pointer-based constructor: 
         inline Pythia8::Info::Info(Pythia8::Abstract_Info* in, bool memvar_in) :
             WrapperBase<Pythia8::Abstract_Info>( in, memvar_in )
         {
-            BEptr->wrapper_GAMBIT(this);
+            BEptr->wrapper__BOSS(this);
         }
         
         // Copy constructor: 
         inline Pythia8::Info::Info(const Info& in) :
             WrapperBase<Pythia8::Abstract_Info>(in)
         {
-            BEptr->wrapper_GAMBIT(this);
+            BEptr->wrapper__BOSS(this);
         }
         
         // Assignment operator: 
@@ -816,4 +816,4 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
 
 #include "backend_undefs.hpp"
 
-#endif /* __WRAPPER_INFO_DEF_BOSSedPythia_1_0_H__ */
+#endif /* __WRAPPER_INFO_DEF_Pythia_8_186_H__ */

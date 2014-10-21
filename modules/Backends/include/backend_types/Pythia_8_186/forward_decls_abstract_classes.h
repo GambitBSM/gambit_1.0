@@ -1,5 +1,5 @@
-#ifndef __FORWARD_DECLS_ABSTRACT_CLASSES_BOSSedPythia_1_0_H__
-#define __FORWARD_DECLS_ABSTRACT_CLASSES_BOSSedPythia_1_0_H__
+#ifndef __FORWARD_DECLS_ABSTRACT_CLASSES_Pythia_8_186_H__
+#define __FORWARD_DECLS_ABSTRACT_CLASSES_Pythia_8_186_H__
 
 
 #include "identification.hpp"
@@ -24,4 +24,4 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
 
 #include "backend_undefs.hpp"
 
-#endif /* __FORWARD_DECLS_ABSTRACT_CLASSES_BOSSedPythia_1_0_H__ */
+#endif /* __FORWARD_DECLS_ABSTRACT_CLASSES_Pythia_8_186_H__ */

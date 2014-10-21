@@ -1,5 +1,5 @@
-#ifndef __ABSTRACT_VEC4_BOSSedPythia_1_0_H__
-#define __ABSTRACT_VEC4_BOSSedPythia_1_0_H__
+#ifndef __ABSTRACT_VEC4_Pythia_8_186_H__
+#define __ABSTRACT_VEC4_Pythia_8_186_H__
 
 #include "abstractbase.hpp"
 #include "forward_decls_abstract_classes.h"
@@ -27,15 +27,15 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 // IGNORED: Field  -- Name: tt  -- XML id: _22817
             public:
     
-                virtual Pythia8::Abstract_Vec4* operator_equal_GAMBIT(const Pythia8::Abstract_Vec4&) =0;
+                virtual Pythia8::Abstract_Vec4* operator_equal__BOSS(const Pythia8::Abstract_Vec4&) =0;
     
-                virtual Pythia8::Abstract_Vec4* operator_equal_GAMBIT(double) =0;
+                virtual Pythia8::Abstract_Vec4* operator_equal__BOSS(double) =0;
     
                 virtual void reset() =0;
     
                 virtual void p(double, double, double, double) =0;
     
-                virtual void p_GAMBIT(Pythia8::Abstract_Vec4&) =0;
+                virtual void p__BOSS(Pythia8::Abstract_Vec4&) =0;
     
                 virtual void px(double) =0;
     
@@ -95,45 +95,45 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual void rotaxis(double, double, double, double) =0;
     
-                virtual void rotaxis_GAMBIT(double, const Pythia8::Abstract_Vec4&) =0;
+                virtual void rotaxis__BOSS(double, const Pythia8::Abstract_Vec4&) =0;
     
                 virtual void bst(double, double, double) =0;
     
                 virtual void bst(double, double, double, double) =0;
     
-                virtual void bst_GAMBIT(const Pythia8::Abstract_Vec4&) =0;
+                virtual void bst__BOSS(const Pythia8::Abstract_Vec4&) =0;
     
-                virtual void bst_GAMBIT(const Pythia8::Abstract_Vec4&, double) =0;
+                virtual void bst__BOSS(const Pythia8::Abstract_Vec4&, double) =0;
     
-                virtual void bstback_GAMBIT(const Pythia8::Abstract_Vec4&) =0;
+                virtual void bstback__BOSS(const Pythia8::Abstract_Vec4&) =0;
     
-                virtual void bstback_GAMBIT(const Pythia8::Abstract_Vec4&, double) =0;
+                virtual void bstback__BOSS(const Pythia8::Abstract_Vec4&, double) =0;
     
-                virtual Pythia8::Abstract_Vec4* operator_minus_GAMBIT() =0;
+                virtual Pythia8::Abstract_Vec4* operator_minus__BOSS() =0;
     
-                virtual Pythia8::Abstract_Vec4* operator_plus_equal_GAMBIT(const Pythia8::Abstract_Vec4&) =0;
+                virtual Pythia8::Abstract_Vec4* operator_plus_equal__BOSS(const Pythia8::Abstract_Vec4&) =0;
     
-                virtual Pythia8::Abstract_Vec4* operator_minus_equal_GAMBIT(const Pythia8::Abstract_Vec4&) =0;
+                virtual Pythia8::Abstract_Vec4* operator_minus_equal__BOSS(const Pythia8::Abstract_Vec4&) =0;
     
-                virtual Pythia8::Abstract_Vec4* operator_asterix_equal_GAMBIT(double) =0;
+                virtual Pythia8::Abstract_Vec4* operator_asterix_equal__BOSS(double) =0;
     
-                virtual Pythia8::Abstract_Vec4* operator_slash_equal_GAMBIT(double) =0;
+                virtual Pythia8::Abstract_Vec4* operator_slash_equal__BOSS(double) =0;
     
             public:
-                virtual void pointerAssign_GAMBIT(Abstract_Vec4*) =0;
-                virtual Abstract_Vec4* pointerCopy_GAMBIT() =0;
+                virtual void pointerAssign__BOSS(Abstract_Vec4*) =0;
+                virtual Abstract_Vec4* pointerCopy__BOSS() =0;
     
             private:
                 Vec4* wptr;
     
             public:
-                void wrapper_GAMBIT(Vec4* wptr_in)
+                void wrapper__BOSS(Vec4* wptr_in)
                 {
                     wptr = wptr_in;
                     is_wrapped(true);
                 }
     
-                Vec4* wrapper_GAMBIT()
+                Vec4* wrapper__BOSS()
                 {
                     return wptr;
                 }
@@ -155,4 +155,4 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
 #include "backend_undefs.hpp"
 
 
-#endif /* __ABSTRACT_VEC4_BOSSedPythia_1_0_H__ */
+#endif /* __ABSTRACT_VEC4_Pythia_8_186_H__ */

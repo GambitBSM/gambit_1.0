@@ -23,9 +23,8 @@
 #include <vector>
 
 #include "gambit_module_headers.hpp"
-#include "ColliderBit_types.hpp"
-#include "ColliderBit_macros.hpp"
 #include "ColliderBit_rollcall.hpp"
+#define DEBUG
 
 // Now pulling in some of the code from extras/HEColliderMain.cpp
 // I will leave the KFactorHooks alone for now, since the work on
@@ -38,27 +37,36 @@ namespace Gambit {
     /// Non-rollcalled Functions and Local Variables
     /// ********************************************
 
+    /// Event labels
     enum specialEvents {INIT = -1, FINALIZE = -999};
-    /// @todo backend Pythia properly
-    PythiaPointerVector pythiaPtrVec;
+    /// Delphes stuff
+    /// @todo BOSS delphes? Euthanize delphes?
     Delphes3Backend* delphes = 0;
     std::string delphesConfigFilename = "";
     bool isDetectorReady = false;
+    /// Pythia stuff
+    bool isPythiaReady = false;
+    std::vector<std::string> pythiaNames;
+    std::vector<std::string>::const_iterator iter;
+    int pythiaConfigurations, pythiaNumber;
+    std::string slhaFilename;
+    /// Events to run  TODO: may no longer need to be global
     int nEvents = 0;
 
-    void debugMe(const std::string label) {
+    void debugMe(const std::string label, bool pause=false) {
       #ifdef DEBUG
       std::cout<<"\n\nHECollider is here: "<<label;
       std::cout<<"\n    Checking locals: ";
       std::cout<<"\n    nEvents: "<<nEvents;
-      std::cout<<"\n    pythiaPtrVec: ";
-      for (auto pyPtr : pythiaPtrVec)
-        std::cout<<"\n      "<<pyPtr;
       std::cout<<"\n    delphesConfigFilename: "<<delphesConfigFilename;
       std::cout<<"\n    delphes (points to): "<<delphes;
       std::cout<<"\n    isDetectorReady: "<<isDetectorReady;
-      std::cout<<"\n\n [Press Enter]";
-      std::getchar();
+      std::cout<<"\n    isPythiaReady: "<<isPythiaReady;
+      if (pause) {
+        std::cout<<"\n\n [Press Enter]";
+        std::getchar();
+      }
+      std::cout<<"\n\n";
       #endif
     }
 
@@ -86,7 +94,6 @@ namespace Gambit {
     void operatePythia() {
       using namespace Pipes::operatePythia;
       debugMe("operatePythia");
-      pythiaPtrVec.clear();
 
       logger() << "==================" << endl;
       logger() << "ColliderBit says,";
@@ -95,39 +102,38 @@ namespace Gambit {
       logger() << "  iteration, event met, thread, counts" << endl;
       logger() << LogTags::info << endl << EOM;
 
-      /// Variables for runOptions from the YAML file
-      std::vector<std::string> pythiaNames;
-      std::string slhaFilename;
-
       /// Retrieve runOptions from the YAML file safely... 
       GET_COLLIDER_RUNOPTION(pythiaNames, std::vector<std::string>)
+      /// @todo Subprocess specific nEvents
       GET_COLLIDER_RUNOPTION(nEvents, int)
       /// @todo Get the Spectrum and Decay info from SpecBit and DecayBit
       GET_COLLIDER_RUNOPTION(slhaFilename, std::string)
 
+      /// TODO TODO What should the new loop look like....???
       Loop::executeIteration(INIT);
       /// For every collider requested in the yaml file:
-      for(auto name : pythiaNames) {
-        #pragma omp parallel shared(pythiaPtrVec)
-        {
-          int threadNum = omp_get_thread_num();
-          std::vector<std::string> pythiaOptions;
+      for(iter=pythiaNames.cbegin(); iter!=pythiaNames.cend(); iter++) {
+        pythiaNumber = 0;
+        try {
+          pythiaConfigurations = runOptions->getValue<int>(*iter);
+        } catch (...) {
+          pythiaConfigurations = 1;
+          std::cout<<"  NOTE: Error downgraded to warning.\n";
+          std::cout<<"  However, you may want to check the options for\n";
+          std::cout<<"    '"<<*iter<<"' within 'operatePythia'.\n\n";
+        }  //< If the user only wants one config of this pythiaName, okay with no options.
 
-          try {
-            pythiaOptions = runOptions->getValue<std::vector<std::string>>(name);
-          } catch (...) {}  //< If the PythiaBase subclass is hard-coded, okay with no options.
-          pythiaOptions.push_back("SLHA:file = " + slhaFilename);
-          pythiaOptions.push_back("Random:seed = " + std::to_string(threadNum));
-
-          pythiaPtrVec.push_back( mkPythia(name, pythiaOptions) );
-          pythiaOptions.clear();
-        }
-
-        #pragma omp parallel shared(pythiaPtrVec)
-        {
-          #pragma omp for
-          for (int it=0; it<nEvents; it++) {
-            Loop::executeIteration(it);
+        while (pythiaNumber < pythiaConfigurations) {
+          pythiaNumber++;
+          debugMe("operating Pythia named " + *iter
+                  + " number " + std::to_string(pythiaNumber), true);
+          #pragma omp parallel shared(iter,pythiaNumber,pythiaConfigurations)
+          {
+            isPythiaReady = false;
+            #pragma omp for
+            for (int it=0; it<nEvents; it++) {
+              Loop::executeIteration(it);
+            }
           }
         }
       }
@@ -141,22 +147,54 @@ namespace Gambit {
     }
 
 
+    /// Hard Scattering Collider Simulators
+    void getPythia(shared_ptr<ColliderBit::PythiaBase> &result) {
+      using namespace Pipes::getPythia;
+      if (*Loop::iteration <= INIT) return;
+      debugMe("getPythia");
+
+      if (!isPythiaReady) {
+        /// Should be within omp parallel block now.
+        std::vector<std::string> pythiaOptions;
+        std::string pythiaConfigName;
+        try {
+          pythiaConfigName = "pythiaOptions";
+          if(pythiaConfigurations) {
+            pythiaConfigName += "_";
+            pythiaConfigName += std::to_string(pythiaNumber);
+          }
+          pythiaOptions = runOptions->getValue<std::vector<std::string>>
+                                      (*iter, pythiaConfigName);
+        } catch (...) {
+          std::cout<<"  NOTE: Error downgraded to warning.\n";
+          std::cout<<"  However, you may want to check the options for\n";
+          std::cout<<"    '"<<pythiaConfigName<<"' within 'getPythia'.\n\n";
+        }  //< If the PythiaBase subclass is hard-coded, okay with no options.
+        pythiaOptions.push_back("SLHA:file = " + slhaFilename);
+        pythiaOptions.push_back("Random:seed = " + std::to_string(omp_get_thread_num()));
+
+        result.reset( mkPythia(*iter, pythiaOptions) );
+        pythiaOptions.clear();
+        isPythiaReady = true;
+      }
+    }
+
     /// Hard Scattering Event Generators
     void generatePythia8Event(Pythia8::Event &result) {
       using namespace Pipes::generatePythia8Event;
-      if (*Loop::iteration <= INIT) return;  //< Only whatever init Gambit needs
+      if (*Loop::iteration <= INIT) return;
       debugMe("generatePythia8Event");
       result.clear();
 
       /// Get the next event from Pythia8
-      result = pythiaPtrVec[omp_get_thread_num()]->nextEvent();
+      result = (*Dep::hardScatteringSim)->nextEvent();
     }
 
 
     /// Standard Event Format Functions
     void reconstructDelphesEvent(HEP_Simple_Lib::Event &result) {
       using namespace Pipes::reconstructDelphesEvent;
-      if (*Loop::iteration <= INIT) return;  //< Only whatever init Gambit needs
+      if (*Loop::iteration <= INIT) return;
       debugMe("reconstructDelphesEvent");
       result.clear();
 
