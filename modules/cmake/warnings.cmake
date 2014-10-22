@@ -1,16 +1,34 @@
 option(WERROR "WERROR" ON)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wextra")
+include(CheckCXXCompilerFlag)
+
+CHECK_CXX_COMPILER_FLAG("-Wall" CXX_SUPPORTS_WALL)
+if (CXX_SUPPORTS_WALL)
+  add_definitions("-Wall")
+endif()
+
+CHECK_CXX_COMPILER_FLAG("-Wextra" CXX_SUPPORTS_WEXTRA)
+if (CXX_SUPPORTS_WEXTRA)
+  add_definitions("-Wextra")
+endif()
+
 if(${WERROR})
- set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror")
+  CHECK_CXX_COMPILER_FLAG("-Werror" CXX_SUPPORTS_WERROR)
+  if (CXX_SUPPORTS_WERROR)
+    add_definitions("-Werror")
+  endif()
 else()
  message(STATUS "Werror is disabled")
 endif()
 
-# set gcc and clang warnings
-if(NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unknown-pragmas -Wno-unused-local-typedefs")
+CHECK_CXX_COMPILER_FLAG("-Wno-unused-local-typedefs" CXX_SUPPORTS_WUNUSED_LOCAL_TYPEDEFS)
+ 	if (CXX_SUPPORTS_WUNUSED_LOCAL_TYPEDEFS)
+	add_definitions ("-Wno-unused-local-typedefs")
+endif()
+
+CHECK_CXX_COMPILER_FLAG("-Wno-unknown-pragmas" CXX_SUPPORTS_WNO_UNKNOWN_PRAGMAS)
+if (CXX_SUPPORTS_WNO_UNKNOWN_PRAGMAS)
+  add_definitions("-Wno-unknown-pragmas")
 endif()
 
 # supress additional warnings when using clang and ccache
@@ -19,11 +37,17 @@ if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
                ARGS ${CMAKE_SOURCE_DIR}/cmake/check_for_ccache.sh ${CMAKE_CXX_COMPILER}
                RETURN_VALUE ret)
   if (${ret})
-     message(STATUS "Using ccache with clang - disabling some warnings")
-     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Qunused-arguments -Wno-self-assign")
+    message(STATUS "Using ccache with clang - disabling some warnings")
+    CHECK_CXX_COMPILER_FLAG("-Qunused-arguments" CXX_SUPPORTS_QUNUSED_ARGUMENTS)
+    if (CXX_SUPPORTS_QUNUSED_ARGUMENTS)
+      add_definitions ("-Qunused-arguments")
+    endif()
+    CHECK_CXX_COMPILER_FLAG("-Wno-self-assign" CXX_SUPPORTS_WNO_SELF_ASSIGN)
+    if (CXX_SUPPORTS_WNO_SELF_ASSIGN)
+      add_definitions ("Wno-self-assign")
+    endif()
   endif()
 endif()
-
 
 # set intel warnings
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")

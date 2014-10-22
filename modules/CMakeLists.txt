@@ -20,12 +20,7 @@ foreach(p
   endif()
 endforeach()
 
-# Set a consistent MACOSX_RPATH default across all CMake versions.
-# When CMake 2.8.12 is required, change this default to 1.
-# When CMake 3.0.0 is required, remove this block (see CMP0042).
-if(NOT DEFINED CMAKE_MACOSX_RPATH)
-  set(CMAKE_MACOSX_RPATH 0)
-endif()
+include(cmake/MacOSX.cmake)
 
 # enable Fortran compiler
 enable_language(Fortran)
@@ -45,52 +40,17 @@ configure_file("${PROJECT_SOURCE_DIR}/config.h.in"
 include_directories("${PROJECT_BINARY_DIR}")
 
 ###################### FIXME
-set(HAVE_MAC 1)
+if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+  set(HAVE_MAC 1)
+else()
+  set(HAVE_MAC 0)
+endif()
 set(SSH 1)
 ###################### FIXME
 
 # add -fPIC for 64 bit systems
 if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64")
   add_definitions(-fPIC)
-endif()
-
-# set minimal MacOS SDK version for deployment reasons
-if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-  option(DEPLOY "Deployment build on Mac" 0)
-  if (${DEPLOY})
-    message(STATUS "Deployment build on Mac is on")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mmacosx-version-min=10.7")
-    EXEC_PROGRAM(xcodebuild 
-      ARGS -version -sdk macosx10.9 Path
-      OUTPUT_VARIABLE SDKPATH
-      )
-    set(CMAKE_C_FLAGS "${CMAKE_CXX_FLAGS} -isysroot ${SDKPATH}")
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -mmacosx-version-min=10.7")
-    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -mmacosx-version-min=10.7")
-    set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} -mmacosx-version-min=10.7")
-  endif()
-endif()
-
-if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-# use, i.e. don't skip the full RPATH for the build tree
-  SET(CMAKE_SKIP_BUILD_RPATH  FALSE)
-
-# when building, don't use the install RPATH already
-# (but later on when installing)
-  SET(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
-
-  SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
-
-# add the automatically determined parts of the RPATH
-# which point to directories outside the build tree to the install RPATH
-  SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
-
-
-# the RPATH to be used when installing, but only if it's not a system directory
-  LIST(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/lib" isSystemDir)
-  IF("${isSystemDir}" STREQUAL "-1")
-   SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
-  ENDIF("${isSystemDir}" STREQUAL "-1")
 endif()
 
 # don't relink all binaries when shared lib changes (programs will be rebuilt any way if used headers change)
@@ -131,9 +91,9 @@ include(CheckCXXCompilerFlag)
 CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
 CHECK_CXX_COMPILER_FLAG("-std=c++0x" COMPILER_SUPPORTS_CXX0X)
 if(COMPILER_SUPPORTS_CXX11)
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+	add_definitions("-std=c++11")
 elseif(COMPILER_SUPPORTS_CXX0X)
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
+	add_definitions("-std=c++0x")
 else()
         message(STATUS "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
 endif()
@@ -172,7 +132,6 @@ endif()
 include(cmake/warnings.cmake)
 include(cmake/gambit.cmake)
 include(cmake/contrib.cmake)
-include(cmake/mergestaticlibs.cmake)
 
 # add subdirectories. This does not actually cause another cmake executable to run. The same process will walk through the project's entire directory structure.
 add_subdirectory(Backends)
@@ -180,27 +139,12 @@ add_subdirectory(Logs)
 add_subdirectory(Utils)
 add_subdirectory(Models)
 
-# list static libs to link
-set(GAMBIT_LIBRARIES #Backends
-#Logs
-#                     Utils
-#                     Models
-)
-
 # list of GAMBIT object files to link
-set(GAMBIT_OBJECTS $<TARGET_OBJECTS:Backends>
+set(GAMBIT_SHARED_OBJECTS $<TARGET_OBJECTS:Backends>
                    $<TARGET_OBJECTS:Logs>
                    $<TARGET_OBJECTS:Utils>
                    $<TARGET_OBJECTS:Models>
 )
-
-
-#merge_static_libs(gambitbase ${GAMBIT_LIBRARIES})
-#set_target_properties(gambitbase PROPERTIES VERSION "${GAMBIT_MAJOR_VERSION}.${GAMBIT_MINOR_VERSION}")
-
-#set link_interface_libraries to an empty string, otherwise cmake will link all binaries with the static libs
-#set_target_properties(gambitbase PROPERTIES LINK_INTERFACE_LIBRARIES "")
-#set_target_properties(gambitbase PROPERTIES INTERFACE_LINK_LIBRARIES "")
 
 #add_subdirectory(Printers)
 #add_subdirectory(ScannerBit)
@@ -213,12 +157,10 @@ set(GAMBIT_OBJECTS $<TARGET_OBJECTS:Backends>
 #target_link_libraries(gambit_example ScannerBit)
 
 add_subdirectory(ExampleBit_A)
-add_gambit_executable(ExampleBit_A_standalone SOURCES ExampleBit_A/examples/ExampleBit_A_standalone_example.cpp ${GAMBIT_OBJECTS})
+add_gambit_executable(ExampleBit_A_standalone SOURCES ExampleBit_A/examples/ExampleBit_A_standalone_example.cpp $<TARGET_OBJECTS:ExampleBit_A> ${GAMBIT_SHARED_OBJECTS})
 if(NOT yaml_FOUND)
   add_dependencies(ExampleBit_A_standalone yaml)
 endif()
  
 add_dependencies(ExampleBit_A_standalone slha)
-target_link_libraries(ExampleBit_A_standalone ${GAMBIT_LIBRARIES} ExampleBit_A fortran ${yaml_LDFLAGS} ${slha_LDFLAGS})
-
-export(PACKAGE GAMBIT)
+target_link_libraries(ExampleBit_A_standalone fortran ${yaml_LDFLAGS} ${slha_LDFLAGS})

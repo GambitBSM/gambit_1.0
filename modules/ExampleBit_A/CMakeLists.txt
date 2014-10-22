@@ -5,4 +5,4 @@ set(header_files include/ExampleBit_A_rollcall.hpp
                  include/ExampleBit_A_types.hpp
 )
 
-add_gambit_library(ExampleBit_A SOURCES ${source_files} HEADERS ${header_files})
+add_gambit_library(ExampleBit_A OPTION OBJECT SOURCES ${source_files} HEADERS ${header_files})
