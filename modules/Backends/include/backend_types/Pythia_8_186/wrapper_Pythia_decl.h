@@ -1,5 +1,5 @@
-#ifndef __WRAPPER_PYTHIA_DECL_Pythia_8_186_H__
-#define __WRAPPER_PYTHIA_DECL_Pythia_8_186_H__
+#ifndef __wrapper_Pythia_decl_Pythia_8_186_h__
+#define __wrapper_Pythia_decl_Pythia_8_186_h__
 
 #include <cstddef>
 #include "forward_decls_wrapper_classes.h"
@@ -128,4 +128,4 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
 
 #include "backend_undefs.hpp"
 
-#endif /* __WRAPPER_PYTHIA_DECL_Pythia_8_186_H__ */
+#endif /* __wrapper_Pythia_decl_Pythia_8_186_h__ */

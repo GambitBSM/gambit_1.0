@@ -1,5 +1,5 @@
-#ifndef __WRAPPER_PARTICLE_DEF_Pythia_8_186_H__
-#define __WRAPPER_PARTICLE_DEF_Pythia_8_186_H__
+#ifndef __wrapper_Particle_def_Pythia_8_186_h__
+#define __wrapper_Particle_def_Pythia_8_186_h__
 
 #include "wrapper_Vec4_decl.h"
 #include "wrapper_Event_decl.h"
@@ -865,4 +865,4 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
 
 #include "backend_undefs.hpp"
 
-#endif /* __WRAPPER_PARTICLE_DEF_Pythia_8_186_H__ */
+#endif /* __wrapper_Particle_def_Pythia_8_186_h__ */

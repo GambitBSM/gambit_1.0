@@ -1,5 +1,5 @@
-#ifndef __WRAPPER_HIST_DEF_Pythia_8_186_H__
-#define __WRAPPER_HIST_DEF_Pythia_8_186_H__
+#ifndef __wrapper_Hist_def_Pythia_8_186_h__
+#define __wrapper_Hist_def_Pythia_8_186_h__
 
 #include <string>
 #include <vector>
@@ -235,4 +235,4 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
 
 #include "backend_undefs.hpp"
 
-#endif /* __WRAPPER_HIST_DEF_Pythia_8_186_H__ */
+#endif /* __wrapper_Hist_def_Pythia_8_186_h__ */

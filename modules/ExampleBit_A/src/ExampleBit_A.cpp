@@ -440,7 +440,7 @@ namespace Gambit
     {
       using namespace Pipes::bossed_pythia_test_function;
       
-      cout << "Testing BOSSed Pythia." << endl;
+      cout << "Testing Pythia backend" << endl;
       cout << "======================" << endl;
 
       Pythia8::Pythia pythia("../extras/boss/bossed_pythia_source/xmldoc", false);
@@ -471,7 +471,7 @@ namespace Gambit
 
       pythia.stat();
 
-      cout << "Done testing BOSSed Pythia." << endl;
+      cout << "Done testing Pythia backend" << endl;
       cout << "===========================" << endl;
       
       result = true;

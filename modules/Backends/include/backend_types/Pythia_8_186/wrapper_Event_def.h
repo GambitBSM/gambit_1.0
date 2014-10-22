@@ -1,5 +1,5 @@
-#ifndef __WRAPPER_EVENT_DEF_Pythia_8_186_H__
-#define __WRAPPER_EVENT_DEF_Pythia_8_186_H__
+#ifndef __wrapper_Event_def_Pythia_8_186_h__
+#define __wrapper_Event_def_Pythia_8_186_h__
 
 #include <vector>
 #include <string>
@@ -473,4 +473,4 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
 
 #include "backend_undefs.hpp"
 
-#endif /* __WRAPPER_EVENT_DEF_Pythia_8_186_H__ */
+#endif /* __wrapper_Event_def_Pythia_8_186_h__ */

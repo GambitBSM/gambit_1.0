@@ -1,5 +1,5 @@
-#ifndef __ABSTRACT_INFO_Pythia_8_186_H__
-#define __ABSTRACT_INFO_Pythia_8_186_H__
+#ifndef __abstract_Info_Pythia_8_186_h__
+#define __abstract_Info_Pythia_8_186_h__
 
 #include "abstractbase.hpp"
 #include "forward_decls_abstract_classes.h"
@@ -528,4 +528,4 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
 #include "backend_undefs.hpp"
 
 
-#endif /* __ABSTRACT_INFO_Pythia_8_186_H__ */
+#endif /* __abstract_Info_Pythia_8_186_h__ */

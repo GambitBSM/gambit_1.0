@@ -1,9 +1,9 @@
-#ifndef __WRAPPER_INFO_Pythia_8_186_H__
-#define __WRAPPER_INFO_Pythia_8_186_H__
+#ifndef __wrapper_Info_Pythia_8_186_h__
+#define __wrapper_Info_Pythia_8_186_h__
 
 
 #include "wrapper_Info_decl.h"
 #include "wrapper_Info_def.h"
 
 
-#endif /* __WRAPPER_INFO_Pythia_8_186_H__ */
+#endif /* __wrapper_Info_Pythia_8_186_h__ */
