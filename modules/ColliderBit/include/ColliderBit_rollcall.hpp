@@ -19,7 +19,9 @@
 #define __ColliderBit_rollcall_hpp__
 
 #include <string>
+#include "shared_types.hpp"
 #include "ColliderBit_types.hpp"
+#include "ColliderBit_macros.hpp"
 
 #define MODULE ColliderBit
 START_MODULE
@@ -34,11 +36,22 @@ START_MODULE
   #undef CAPABILITY
 
 
-  /// Controls initialization and looping of Collider simulations
+  /// Controls looping of Collider simulations
   #define CAPABILITY ColliderOperator
   START_CAPABILITY
     #define FUNCTION operatePythia
     START_FUNCTION(void, CAN_MANAGE_LOOPS)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+
+  /// Collider sim capabilities
+  #define CAPABILITY hardScatteringSim
+  START_CAPABILITY
+    #define FUNCTION getPythia
+    START_FUNCTION(shared_ptr<ColliderBit::PythiaBase>)
+    NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
+    NEEDS_CLASSES_FROM(Pythia, default)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -49,6 +62,8 @@ START_MODULE
     #define FUNCTION generatePythia8Event
     START_FUNCTION(Pythia8::Event)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
+    NEEDS_CLASSES_FROM(Pythia, default)
+    DEPENDENCY(hardScatteringSim, shared_ptr<ColliderBit::PythiaBase>)
     #undef FUNCTION
 
   /// For now, let's stick to what we already have running.
@@ -86,18 +101,20 @@ START_MODULE
   START_CAPABILITY
     /// Detector simulators which directly produce the standard event format
     #define FUNCTION reconstructDelphesEvent
-    START_FUNCTION(HEP_Simple_Lib::Event)
+    START_FUNCTION(HEPUtils::Event)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
     /// DEPENDENCY(delphesConfigFilename, std::string)
     /// instead of this dependency, use runOptions->hasKey("delphesConfigFilename")
     /// then adjust the yaml file for each run
+    NEEDS_CLASSES_FROM(Pythia, default)
     DEPENDENCY(hardScatteringEvent, Pythia8::Event)
     #undef FUNCTION
 
     /// Event converters to the standard Gambit collider event format
     #define FUNCTION convertPythia8Event
-    START_FUNCTION(HEP_Simple_Lib::Event)
+    START_FUNCTION(HEPUtils::Event)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
+    NEEDS_CLASSES_FROM(Pythia, default)
     DEPENDENCY(hardScatteringEvent, Pythia8::Event)
     #undef FUNCTION
 
@@ -137,7 +154,7 @@ START_MODULE
     START_FUNCTION(ColliderLogLikes) //return type is ColliderLogLikes struct
     ALLOW_MODELS(NormalDist)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
-    DEPENDENCY(GambitColliderEvent, HEP_Simple_Lib::Event)
+    DEPENDENCY(GambitColliderEvent, HEPUtils::Event)
     DEPENDENCY(ListOfAnalyses, AnalysisPointerVector)
     //BACKEND_REQ_FROM_GROUP(lnlike_marg_poisson, lnlike_marg_poisson_lognormal_error, (), double, (int&, double&, double&, double&) )
     //BACKEND_REQ_FROM_GROUP(lnlike_marg_poisson, lnlike_marg_poisson_gaussian_error, (), double, (int&, double&, double&, double&) )
@@ -167,7 +184,7 @@ START_MODULE
     START_FUNCTION(double)   /// Could be a scaled number of events, so double
     ALLOW_MODELS(NormalDist)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
-    DEPENDENCY(GambitColliderEvent, HEP_Simple_Lib::Event)
+    DEPENDENCY(GambitColliderEvent, HEPUtils::Event)
     #undef FUNCTION
     #undef CAPABILITY*/
   /// \todo How many more do we need to define...?

@@ -1,7 +1,15 @@
+// -*- C++ -*-
+//
+// This file is part of HEPUtils -- https://bitbucket.org/andybuckley/heputils
+// Copyright (C) 2013-2014 Andy Buckley <andy.buckley@cern.ch>
+//
+// Embedding of HEPUtils code in other projects is permitted provided this
+// notice is retained and the HEPUtils namespace and include path are changed.
+//
 #pragma once
 
-#include "MCUtils/MathUtils.h"
-#include "MCUtils/Utils.h"
+#include "HEPUtils/MathUtils.h"
+#include "HEPUtils/Utils.h"
 #include <sstream>
 #include <iostream>
 #include <cmath>
@@ -9,7 +17,7 @@
 /// @file Physics vectors stuff
 /// @author Andy Buckley <andy.buckley@cern.ch>
 
-namespace MCUtils {
+namespace HEPUtils {
 
 
   /// @brief A robust 4-momentum class for on-shell vectors.

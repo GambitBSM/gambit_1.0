@@ -40,11 +40,19 @@ ifdef COLLIDE
   COLLIDE = smashCrashBashBangBoom
 endif
 
+# with COLLIDE set, set BOSS_PYTHIA to anything to attempt the use of the Bossed Pythia classes
+ifdef BOSS_PYTHIA
+  BOSS_PYTHIA = takeThatTorbjorn
+endif
+
 ifndef SHH
   $(info )
   $(info -------- Gambit main compilation --------)
   ifdef COLLIDE
     $(info *** Including ColliderBit $(COLLIDE) ***)
+  endif
+  ifdef BOSS_PYTHIA
+    $(info *** Using only BOSSed Pythia classes ***)
   endif
   $(info )
 endif
@@ -77,6 +85,7 @@ YAMLDIR = contrib/yaml-cpp-0.5.1
 SLHAPy8DIR = contrib/SLHAPy8
 SLHAEADIR = contrib/slhaea
 MCUTILSDIR = contrib/mcutils
+HEPUTILSDIR = contrib/heputils
 HEPSIMPLEDIR = contrib/hep_simple_lib
 MCUTILSDIR = contrib/mcutils
 FASTSIMDIR = ../extras/fast_sim
@@ -106,8 +115,9 @@ CFLAGS= -I$(COREDIR)/include \
   -I$(SLHAPy8DIR) \
   -I$(SLHAEADIR) \
   -I$(HEPSIMPLEDIR) \
-  -I$(FASTSIMDIR)/include \
+  -I$(HEPUTILSDIR)/include \
   -I$(MCUTILSDIR)/include \
+  -I$(FASTSIMDIR)/include \
   -I$(MULTINESTINC)
 
 ifdef CPPFLAGS
@@ -241,37 +251,39 @@ ifdef COLLIDE
   # External code specific flags
   # Ben: looks like environment variables are not inherited by 'shell'. We just need PATH here
   #  so I added this explicitly to the shell environment.
-  PY8_CXXFLAGS := $(shell PATH=$(PATH) pythia8-config --cxxflags)
-  PY8_LDFLAGS := $(shell PATH=$(PATH) pythia8-config --libs)
+  ifndef BOSS_PYTHIA
+    PY8_CXXFLAGS := $(shell PATH=$(PATH) pythia8-config --cxxflags)
+    PY8_LDFLAGS := $(shell PATH=$(PATH) pythia8-config --libs)
 
-  # Ben: I cannot get the linker to find the pythia libraries, and pythia8-config is not returning the full path needed (it gives /path/where/pythia/installs/lib instead of /path/where/pythia/installs/lib/archive which is where the libraries are actually copied to). I am adding this relatively risky hack to fix it for me for now, but it shouldn't mess up other people I think.
-  #   (i.e.
-  #     pythia8-config --libs
-  #   returns:
-  #     -L/home/farmer/bin/lib -lpythia8 -llhapdfdummy
-  #   while I need -L/home/farmer/bin/lib/archive
-  # Andy: lib/archive/ contains just the static libs, lib/ contains the shared one, which is present if Py8 was built with the --enable-shared configure option (as it should be). LD_LIBRARY_PATH also needs to know about that path at runtime.
-  PY8_LDFLAGS := $(PY8_LD_HACK) $(PY8_LDFLAGS)
+    # Ben: I cannot get the linker to find the pythia libraries, and pythia8-config is not returning the full path needed (it gives /path/where/pythia/installs/lib instead of /path/where/pythia/installs/lib/archive which is where the libraries are actually copied to). I am adding this relatively risky hack to fix it for me for now, but it shouldn't mess up other people I think.
+    #   (i.e.
+    #     pythia8-config --libs
+    #   returns:
+    #     -L/home/farmer/bin/lib -lpythia8 -llhapdfdummy
+    #   while I need -L/home/farmer/bin/lib/archive
+    # Andy: lib/archive/ contains just the static libs, lib/ contains the shared one, which is present if Py8 was built with the --enable-shared configure option (as it should be). LD_LIBRARY_PATH also needs to know about that path at runtime.
+    PY8_LDFLAGS := $(PY8_LD_HACK) $(PY8_LDFLAGS)
 
-  ifndef PY8_CXXFLAGS
-    $(warning ***!!!***)
-    $(info Pythia compile flags failed to configure.)
-    $(info Please include /where/pythia/is/bin in your $$PATH variable.)
-    $(info You may also need to include /where/pythia/is/lib and)
-    $(info /where/pythia/is/lib/archive in your)
-    $(info $$LD_LIBRARY_PATH and $$DYLD_LIBRARY_PATH variables)
-    ifdef COLLIDE
-      $(error ColliderBit dependency error....)
+    ifndef PY8_CXXFLAGS
+      $(warning ***!!!***)
+      $(info Pythia compile flags failed to configure.)
+      $(info Please include /where/pythia/is/bin in your $$PATH variable.)
+      $(info You may also need to include /where/pythia/is/lib and)
+      $(info /where/pythia/is/lib/archive in your)
+      $(info $$LD_LIBRARY_PATH and $$DYLD_LIBRARY_PATH variables)
+      ifdef COLLIDE
+        $(error ColliderBit dependency error....)
+      else
+        $(info Be sure to set these PATHs when compiling ColliderBit)
+      endif
     else
-      $(info Be sure to set these PATHs when compiling ColliderBit)
-    endif
-  else
-    ifndef SHH
-      $(info INFO:)
-      $(info -- Pythia8 Flags --)
-      $(info Compile > $(PY8_CXXFLAGS))
-      $(info Link    > $(PY8_LDFLAGS))
-      $(info )
+      ifndef SHH
+        $(info INFO:)
+        $(info -- Pythia8 Flags --)
+        $(info Compile > $(PY8_CXXFLAGS))
+        $(info Link    > $(PY8_LDFLAGS))
+        $(info )
+      endif
     endif
   endif
 
@@ -382,8 +394,8 @@ DECAYOBJS:=$(addprefix $(DECAYDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(DECAYS
 
 COLLIDERINC:=$(wildcard $(COLLIDERDIR)/include/*hpp) $(wildcard $(COLLIDERDIR)/include/*h)
 COLLIDERSRC:=$(wildcard $(COLLIDERDIR)/src/*cpp) $(wildcard $(COLLIDERDIR)/src/*c) $(wildcard $(COLLIDERDIR)/src/analyses/*cpp) $(wildcard $(COLLIDERDIR)/src/colliders/*cpp)
-COLLIDERDELPHESSRC:=$(wildcard $(COLLIDERDIR)/src/delphes/*Module.cc) 
-COLLIDEROBJS:=$(addprefix $(COLLIDERDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(COLLIDERSRC)))) $(addprefix $(COLLIDERDIR)/build/,$(notdir $(patsubst %Module.cc,%Module.o,$(COLLIDERDELPHESSRC)))) $(addprefix $(COLLIDERDIR)/build/,$(notdir $(patsubst %Module.cc,%Module_dict.o,$(COLLIDERDELPHESSRC)))) 
+COLLIDERDELPHESSRC:=$(wildcard $(COLLIDERDIR)/src/delphes/*Module.cc)
+COLLIDEROBJS:=$(addprefix $(COLLIDERDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(COLLIDERSRC)))) $(addprefix $(COLLIDERDIR)/build/,$(notdir $(patsubst %Module.cc,%Module.o,$(COLLIDERDELPHESSRC)))) $(addprefix $(COLLIDERDIR)/build/,$(notdir $(patsubst %Module.cc,%Module_dict.o,$(COLLIDERDELPHESSRC))))
 
 EXAMPLE_AINC:=$(wildcard $(EXAMPLEADIR)/include/*hpp) $(wildcard $(EXAMPLEADIR)/include/*h)
 EXAMPLE_ASRC:=$(wildcard $(EXAMPLEADIR)/src/*cpp)
@@ -404,7 +416,7 @@ MODULEOBJS = $(SCANOBJS) $(DARKOBJS) $(FLAVOBJS) $(HIGGSOBJS) $(DECAYOBJS) $(EXA
 ifdef COLLIDE
   MODULEOBJS += $(COLLIDEROBJS)
 endif
-ALLOBJECTS = $(STANDALONEOBJS) $(MODULEOBJS) $(PRINTOBJS) $(COREOBJS) 
+ALLOBJECTS = $(STANDALONEOBJS) $(MODULEOBJS) $(PRINTOBJS) $(COREOBJS)
 
 ROLLCALL_HEADERS:=$(wildcard */*/*_rollcall.hpp) $(wildcard */*/*/*_rollcall.hpp)
 FUNCTOR_TYPES:= $(UTILSDIR)/include/all_functor_types.hpp
@@ -419,7 +431,7 @@ endif
 
 ##### Niceties ##############
 
-.PHONY: default all backends clean sterile distclean doxygen minihelp  $(BACKENDS) $(TARGETS) 
+.PHONY: default all backends clean sterile distclean doxygen minihelp  $(BACKENDS) $(TARGETS)
 
 default: minihelp gambit
 
@@ -435,11 +447,11 @@ $(COREDIR)/build/%.o: $(COREDIR)/src/%.cpp $(STANDALONEINC) $(GAMBITINC) $(ROLLC
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
-$(UTILSDIR)/build/%.o: $(UTILSDIR)/src/%.cpp $(STANDALONEINC) 
+$(UTILSDIR)/build/%.o: $(UTILSDIR)/src/%.cpp $(STANDALONEINC)
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
-$(BACKENDDIR)/build/%.o: $(BACKENDDIR)/src/%.cpp $(STANDALONEINC) 
+$(BACKENDDIR)/build/%.o: $(BACKENDDIR)/src/%.cpp $(STANDALONEINC)
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
@@ -575,10 +587,10 @@ $(SLHAPy8DIR)/libslhapy8.a:
 
 $(SCANDIR)/lib/libsample.so: $(SCANDIR)/plugins/twalk.o $(SCANDIR)/plugins/crapsample.o
 	$(CC) -shared $(SCANDIR)/plugins/crapsample.o $(SCANDIR)/plugins/twalk.o -o $(SCANDIR)/lib/libsample.so -L$(YAMLDIR) -lyaml-cpp
-	
+
 $(SCANDIR)/lib/libexamples.so: $(SCANDIR)/plugins/examples.o
-	$(CC) -shared $(SCANDIR)/plugins/examples.o -o $(SCANDIR)/lib/libexamples.so 
-	
+	$(CC) -shared $(SCANDIR)/plugins/examples.o -o $(SCANDIR)/lib/libexamples.so
+
 $(SCANDIR)/lib/libtest.so: $(SCANDIR)/plugins/test.cpp
 	$(CC) $(CFLAGS) -c -fPIC $(SCANDIR)/plugins/test.cpp -o $(SCANDIR)/build/test.o
 	$(CC) -shared -o $(SCANDIR)/lib/libtest.so $(SCANDIR)/build/test.o
@@ -607,7 +619,7 @@ $(BACKENDDIR)/lib/libFarrayTest.so: $(BACKENDDIR)/lib/libFarrayTest.f90
 	$(FC) $(FFLAGS) -c $(BACKENDDIR)/lib/libFarrayTest.f90 -o $(BACKENDDIR)/lib/libFarrayTest.o
 	$(FC) -shared -o $(BACKENDDIR)/lib/libFarrayTest.so $(BACKENDDIR)/lib/libFarrayTest.o
 
-DDCalc0: 
+DDCalc0:
 	cd $(DDCALC0DIR); make libDDCalc0.so FC=$(FC) FFLAGS="$(FFLAGS)"
 	cp $(DDCALC0DIR)/libDDCalc0.so $(BACKENDDIR)/lib/
 
@@ -621,15 +633,15 @@ higgsbounds:
 
 higgssignals:
 
-nulike: 
+nulike:
 	cd $(NULIKEDIR); make libnulike.so FF=$(FC) FOPT="$(FFLAGS)" MODULE="$(FMODULE)"
 	cp $(NULIKEDIR)/lib/libnulike.so $(BACKENDDIR)/lib/
 
-fastsim: 
+fastsim:
 	cd $(FASTSIMDIR); make libfastsim.so FC=$(FC) CC=$(CC) CFLAGS="$(CFLAGS) $(CCEXTRA) -fPIC"
 	cp $(FASTSIMDIR)/lib/libfastsim.so $(BACKENDDIR)/lib/
 
-pythia: 
+pythia:
 	cd $(PYTHIA8DIR); make;
 	cp $(PYTHIA8DIR)/lib/libpythia8.so $(BACKENDDIR)/lib/
 
@@ -668,15 +680,19 @@ doxygen: $(DOCDIR)/html/index.html
 
 #### Cleaning #################
 
-clean:  clean_modules clean_executables clean_contributed clean_plugins clean_backends clean_docs
-	@rm -f _*.txt, *.gv, *.ps, central_capabilities.dat central_models.dat
+rinsed: clean_modules clean_executables
+	@rm -f _*.txt *.gv *.ps central_capabilities.dat central_models.dat
+	@rm -f Example_SUSYspecBit/test_output.slha
+	@rm -f output default_output report.txt testmodule.mod
+	@rm -f ../extras/DDCalc0/ddcalc0.mod
+	@rm -fr ../extras/boss/bossed_pythia_source/tmp/*
+
+clean:  rinsed clean_contributed clean_plugins clean_backends clean_docs
+	@true
 
 distclean: clean
         # also removes ~ files and other weirdly generated files
 	@rm -vrf gmon.out $(COREDIR)/src/*~ $(COREDIR)/include/*~
-	@rm -f $(COLLIDERDIR)/src/delphes/*_dict*
-	@rm -f Example_SUSYspecBit/test_output.slha
-	@rm -f output report.txt testmodule.mod
 
 sterile: distclean
 	@true
@@ -707,4 +723,3 @@ clean_backends:
 clean_docs:
 	@rm -rf .minihelp
 	@rm -rf $(DOCDIR)/html
-

@@ -74,7 +74,7 @@ namespace Gambit {
 
 
     void Delphes3Backend::processEvent(const Pythia8::Event& eventIn,
-                                       HEP_Simple_Lib::Event &eventOut) {
+                                       HEPUtils::Event &eventOut) {
       try {
         modularDelphes->Clear();
         convertInput(eventIn);
@@ -127,11 +127,11 @@ namespace Gambit {
 
 
     // See the DelphesGambit.hpp file for details
-    void Delphes3Backend::convertOutput(HEP_Simple_Lib::Event &event) {
+    void Delphes3Backend::convertOutput(HEPUtils::Event &event) {
       event.clear();
 
-      HEP_Simple_Lib::Particle *recoParticle;
-      HEP_Simple_Lib::Jet *recoJet;
+      HEPUtils::Particle *recoParticle;
+      HEPUtils::Jet *recoJet;
       // Delphes particle arrays: Post-Detector Sim
       //    MISSING ET:
       const TObjArray *arrayMissingET = modularDelphes->ImportArray("MissingET/momentum");
@@ -147,7 +147,7 @@ namespace Gambit {
       iteratorPhotons.Reset();
       while ((candidate = static_cast<Candidate*>(iteratorPhotons.Next()))) {
         const TLorentzVector &momentum = candidate->Momentum;
-        recoParticle = new HEP_Simple_Lib::Particle(P4::mkXYZM(momentum.Px(), momentum.Py(), momentum.Pz(), 0.), PID::PHOTON);
+        recoParticle = new HEPUtils::Particle(P4::mkXYZM(momentum.Px(), momentum.Py(), momentum.Pz(), 0.), PID::PHOTON);
         recoParticle->set_prompt(true);
         event.add_particle(recoParticle);
       }
@@ -159,7 +159,7 @@ namespace Gambit {
       iteratorElectrons.Reset();
       while ((candidate = static_cast<Candidate*>(iteratorElectrons.Next()))) {
         const TLorentzVector &momentum = candidate->Momentum;
-        recoParticle = new HEP_Simple_Lib::Particle(P4::mkXYZM(momentum.Px(), momentum.Py(), momentum.Pz(), 0.000510998902),
+        recoParticle = new HEPUtils::Particle(P4::mkXYZM(momentum.Px(), momentum.Py(), momentum.Pz(), 0.000510998902),
                                     -sign(candidate->Charge) * PID::ELECTRON);
         recoParticle->set_prompt(true);
         event.add_particle(recoParticle);
@@ -172,7 +172,7 @@ namespace Gambit {
       iteratorMuons.Reset();
       while ((candidate = static_cast<Candidate*>(iteratorMuons.Next()))) {
         const TLorentzVector &momentum = candidate->Momentum;
-        recoParticle = new HEP_Simple_Lib::Particle(P4::mkXYZM(momentum.Px(), momentum.Py(), momentum.Pz(), 0.105658389),
+        recoParticle = new HEPUtils::Particle(P4::mkXYZM(momentum.Px(), momentum.Py(), momentum.Pz(), 0.105658389),
                                     -sign(candidate->Charge) * PID::MUON);
         recoParticle->set_prompt(true);
         event.add_particle(recoParticle);
@@ -186,7 +186,7 @@ namespace Gambit {
       while ((candidate = static_cast<Candidate*>(iteratorJets.Next()))) {
         const TLorentzVector &momentum = candidate->Momentum;
         if (candidate->TauTag) {
-          recoParticle = new HEP_Simple_Lib::Particle(P4::mkXYZM(momentum.Px(), momentum.Py(), momentum.Pz(), 1e-6),
+          recoParticle = new HEPUtils::Particle(P4::mkXYZM(momentum.Px(), momentum.Py(), momentum.Pz(), 1e-6),
                                       -sign(candidate->Charge) * PID::TAU);
           recoParticle->set_prompt(true);
           event.add_particle(recoParticle);
@@ -194,7 +194,7 @@ namespace Gambit {
         }
         else {
           /// @todo Should the jet mass be assigned properly rather than set as microscopic?
-          recoJet = new HEP_Simple_Lib::Jet(P4::mkXYZM(momentum.Px(), momentum.Py(), momentum.Pz(), 1e-6), candidate->BTag);
+          recoJet = new HEPUtils::Jet(P4::mkXYZM(momentum.Px(), momentum.Py(), momentum.Pz(), 1e-6), candidate->BTag);
           event.addJet(recoJet);
         }
       }

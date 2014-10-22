@@ -1,3 +1,11 @@
+// -*- C++ -*-
+//
+// This file is part of HEPUtils -- https://bitbucket.org/andybuckley/heputils
+// Copyright (C) 2013-2014 Andy Buckley <andy.buckley@cern.ch>
+//
+// Embedding of HEPUtils code in other projects is permitted provided this
+// notice is retained and the HEPUtils namespace and include path are changed.
+//
 #pragma once
 
 #include <cmath>
@@ -9,7 +17,7 @@
 /// @file Convenience maths functions for HEP MC physics
 /// @author Andy Buckley <andy.buckley@cern.ch>
 
-namespace MCUtils {
+namespace HEPUtils {
 
 
   /// @name Numerical helpers
@@ -134,10 +142,12 @@ namespace MCUtils {
     const double logend = std::log(end+offset);
     const std::vector<double> logvals = linspace(nbins, logstart, logend);
     assert(logvals.size() == nbins+1);
-    std::vector<double> rtn;
-    BOOST_FOREACH (double logval, logvals) {
-      rtn.push_back(std::exp(logval) - offset);
+    std::vector<double> rtn; rtn.reserve(logvals.size());
+    rtn.push_back(start);
+    for (size_t i = 1; i < logvals.size()-1; ++i) {
+      rtn.push_back(std::exp(logvals[i]));
     }
+    rtn.push_back(end);
     assert(rtn.size() == nbins+1);
     return rtn;
   }

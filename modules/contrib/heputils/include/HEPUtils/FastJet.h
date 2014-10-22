@@ -1,17 +1,25 @@
+// -*- C++ -*-
+//
+// This file is part of HEPUtils -- https://bitbucket.org/andybuckley/heputils
+// Copyright (C) 2013-2014 Andy Buckley <andy.buckley@cern.ch>
+//
+// Embedding of HEPUtils code in other projects is permitted provided this
+// notice is retained and the HEPUtils namespace and include path are changed.
+//
 #pragma once
 
 /// @file FastJet helper routines
 /// @author Andy Buckley <andy.buckley@cern.ch>
 
-#include "MCUtils/Utils.h"
-#include "MCUtils/Vectors.h"
+#include "HEPUtils/Utils.h"
+#include "HEPUtils/Vectors.h"
 #include "fastjet/PseudoJet.hh"
 #include "fastjet/ClusterSequence.hh"
 
-namespace MCUtils {
+namespace HEPUtils {
 
 
-  /// @name Converters between MCUtils and FastJet momentum types
+  /// @name Converters between HEPUtils and FastJet momentum types
   //@{
 
   /// @todo Enable... conditionally on FJ version?

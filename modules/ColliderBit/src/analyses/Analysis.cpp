@@ -1,5 +1,5 @@
 #include "Analysis.hpp"
-#include "MCUtils/MathUtils.h"
+#include "HEPUtils/MathUtils.h"
 #include <string>
 #include <stdexcept>
 using namespace std;
@@ -40,7 +40,7 @@ namespace Gambit {
           set_xsec(xs, xserr);
         } else {
           _xsec += xs;
-          _xsecerr = MCUtils::add_quad(xsec_err(), xserr);
+          _xsecerr = HEPUtils::add_quad(xsec_err(), xserr);
         }
       }
       msg << " => " << xsec() << " +- " << xsec_err();
@@ -58,7 +58,7 @@ namespace Gambit {
           set_xsec(xs, xserr);
         } else {
           _xsec = _xsec/2.0 + xs/2.0;
-          _xsecerr = MCUtils::add_quad(xsec_err(), xserr) / 2.0;
+          _xsecerr = HEPUtils::add_quad(xsec_err(), xserr) / 2.0;
         }
       }
       msg << " => " << xsec() << " +- " << xsec_err();
