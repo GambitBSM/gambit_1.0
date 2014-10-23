@@ -14,7 +14,7 @@ ExternalProject_Add(yaml-cpp
   set(yaml_LIBRARIES "yaml-cpp")
   set(yaml_LDFLAGS "-L${PROJECT_SOURCE_DIR}/contrib/yaml-cpp-0.5.1 -l${yaml_LIBRARIES}")
 
-include_directories(${yaml_INCLUDE_DIRS})
+include_directories("${yaml_INCLUDE_DIRS}")
 
 # SLHAPy8
 ExternalProject_Add(slhapy8
@@ -31,6 +31,13 @@ set(slha_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}/contrib/SLHAPy8")
 set(slha_LIBRARIES "slhapy8")
 set(slha_LDFLAGS "-L${slha_INCLUDE_DIRS} -l${slha_LIBRARIES}")
 
-set(clean_files "${PROJECT_SOURCE_DIR}/contrib/yaml-cpp-0.5.1/libyaml-cpp.a" "${PROJECT_SOURCE_DIR}/contrib/SLHAPy8/libslhapy8.a")
+include_directories("${PROJECT_SOURCE_DIR}/contrib/SLHAPy8")
 
-set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${clean_files}")
+include_directories("${PROJECT_SOURCE_DIR}/contrib/slhaea")
+include_directories("${PROJECT_SOURCE_DIR}/contrib/hep_simple_lib")
+include_directories("${PROJECT_SOURCE_DIR}/contrib/mcutils/include")
+
+
+set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/contrib/yaml-cpp-0.5.1/libyaml-cpp.a" "${PROJECT_SOURCE_DIR}/contrib/SLHAPy8/libslhapy8.a")
+
+

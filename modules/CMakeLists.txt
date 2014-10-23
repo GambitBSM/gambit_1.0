@@ -121,11 +121,16 @@ include(cmake/FindLibDL.cmake)
 # check for Python and create all_functor_types.hpp
 include(FindPythonInterp)
 find_package (PythonInterp)
-if(EXISTS "${PROJECT_SOURCE_DIR}/Utils/include/all_functor_types.hpp")
-  message(STATUS "${PROJECT_SOURCE_DIR}/Utils/include/all_functor_types.hpp already exists. Do nothing.")
-else(NOT EXISTS "${PROJECT_SOURCE_DIR}/Utils/include/all_functor_types.hpp")
-  execute_process(COMMAND python ${PROJECT_SOURCE_DIR}/Utils/scripts/functor_type_harvester.py WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
-endif()
+
+###################### FIXME
+file(GLOB TYPE_HARVESTER_FILES "${PROJECT_SOURCE_DIR}/*/include/*_rollcall.hpp" "${PROJECT_SOURCE_DIR}/*/include/*_types.hpp")
+list(REMOVE_ITEM TYPE_HARVESTER_FILES "${PROJECT_SOURCE_DIR}/Utils//include//shared_types.hpp" "${PROJECT_SOURCE_DIR}/ColliderBit//include//ColliderBit_types.hpp" "${PROJECT_SOURCE_DIR}/ColliderBit//include//ColliderBit_rollcall.hpp")
+###################### FIXME
+
+add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/Utils/include/all_functor_types.hpp COMMAND python ${PROJECT_SOURCE_DIR}/Utils/scripts/functor_type_harvester.py WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} DEPENDS ${TYPE_HARVESTER_FILES})
+add_custom_target(functor_types DEPENDS ${PROJECT_SOURCE_DIR}/Utils/include/all_functor_types.hpp ${TYPE_HARVESTER_FILES})
+
+set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Utils/include/all_functor_types.hpp")
 
 # include cmake scripts
 include(cmake/warnings.cmake)
@@ -163,5 +168,8 @@ if(NOT yaml_FOUND)
   add_dependencies(ExampleBit_A_standalone yaml)
 endif()
  
-add_dependencies(ExampleBit_A_standalone slha)
+add_dependencies(ExampleBit_A_standalone slha functor_types)
 target_link_libraries(ExampleBit_A_standalone fortran ${yaml_LDFLAGS} ${slha_LDFLAGS})
+
+
+set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${clean_files}")
