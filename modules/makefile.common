@@ -86,13 +86,13 @@ SLHAPy8DIR = contrib/SLHAPy8
 SLHAEADIR = contrib/slhaea
 MCUTILSDIR = contrib/mcutils
 HEPUTILSDIR = contrib/heputils
-HEPSIMPLEDIR = contrib/hep_simple_lib
-MCUTILSDIR = contrib/mcutils
 FASTSIMDIR = ../extras/fast_sim
 NULIKEDIR = ../extras/nulike
 DDCALC0DIR = ../extras/DDCalc0
 PYTHIA8DIR = ../extras/boss/bossed_pythia_source
 BOSSMINIDIR = ../extras/boss
+# TODO obsolete??
+HEPSIMPLEDIR = contrib/hep_simple_lib
 
 GCC++EXTRA= -Woverloaded-virtual
 CFLAGS= -I$(COREDIR)/include \

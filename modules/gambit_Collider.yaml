@@ -113,7 +113,7 @@ Auxiliaries:
 
   - capability: AnalysisNumbers
     dependencies:
-    - {capability: "GambitColliderEvent", type: "HEP_Simple_Lib::Event", function: "reconstructDelphesEvent"}
+    - {capability: "GambitColliderEvent", type: "HEPUtils::Event", function: "reconstructDelphesEvent"}
 
 #########################
 # Logging setup

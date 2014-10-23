@@ -10,10 +10,6 @@
 
 /// Some other includes
 #include "ColliderBit_macros.hpp"
-/// @TODO worry about adding Analyses later.
-//#include "Analysis.hpp"
-#include "Py8Utils.hpp"
-#include "HEPUtils/Event.h"
 
 
 namespace Gambit {
@@ -22,9 +18,6 @@ namespace Gambit {
     /// @note Abstract base class Collider
     template <typename EventT>
     class Collider {
-    protected:
-      double xsec;
-
     public:
       typedef EventT EventType;
       Collider() { }
@@ -87,6 +80,7 @@ namespace Gambit {
         //@{
         /// I might use this to make a copy constructor. still thinking --Abram
         const std::vector<std::string> getSettings() const { return _settings; }
+        Pythia8::Pythia* pythia() { return _pythiaInstance; }
         //@}
 
         /// @name Event generation functions

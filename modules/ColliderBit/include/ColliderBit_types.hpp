@@ -29,8 +29,7 @@
 
 #include <vector>
 #include <memory>
-/// \todo Some of these includes may eventually need to be in shared_types
-/// \note They may be shared between backends, depending on how we backend Pythia, Delphes, FastSim, etc...
+#include "HEPUtils/Event.h"
 #include "Delphes3Backend.hpp"
 #include "Analysis.hpp"
 #include "Collider.hpp"

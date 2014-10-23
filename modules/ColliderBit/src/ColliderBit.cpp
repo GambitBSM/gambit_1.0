@@ -24,7 +24,6 @@
 
 #include "gambit_module_headers.hpp"
 #include "ColliderBit_rollcall.hpp"
-#define DEBUG
 
 // Now pulling in some of the code from extras/HEColliderMain.cpp
 // I will leave the KFactorHooks alone for now, since the work on
@@ -38,37 +37,22 @@ namespace Gambit {
     /// ********************************************
 
     /// Event labels
-    enum specialEvents {INIT = -1, FINALIZE = -999};
+    enum specialEvents {INIT = -1, END_SUBPROCESS = -2, FINALIZE = -3};
     /// Delphes stuff
     /// @todo BOSS delphes? Euthanize delphes?
     Delphes3Backend* delphes = 0;
     std::string delphesConfigFilename = "";
-    bool isDetectorReady = false;
+    bool resetDelphesFlag = true;
     /// Pythia stuff
-    bool isPythiaReady = false;
+    bool resetPythiaFlag = true;
     std::vector<std::string> pythiaNames;
     std::vector<std::string>::const_iterator iter;
     int pythiaConfigurations, pythiaNumber;
     std::string slhaFilename;
-    /// Events to run  TODO: may no longer need to be global
-    int nEvents = 0;
-
-    void debugMe(const std::string label, bool pause=false) {
-      #ifdef DEBUG
-      std::cout<<"\n\nHECollider is here: "<<label;
-      std::cout<<"\n    Checking locals: ";
-      std::cout<<"\n    nEvents: "<<nEvents;
-      std::cout<<"\n    delphesConfigFilename: "<<delphesConfigFilename;
-      std::cout<<"\n    delphes (points to): "<<delphes;
-      std::cout<<"\n    isDetectorReady: "<<isDetectorReady;
-      std::cout<<"\n    isPythiaReady: "<<isPythiaReady;
-      if (pause) {
-        std::cout<<"\n\n [Press Enter]";
-        std::getchar();
-      }
-      std::cout<<"\n\n";
-      #endif
-    }
+    /// General collider sim info stuff
+    double* xsecArray;
+    double* xsecerrArray;
+#define SHARED_OVER_OMP iter,pythiaNumber,pythiaConfigurations,xsecArray,xsecerrArray
 
     /// *************************************************
     /// Rollcalled functions properly hooked up to Gambit
@@ -77,7 +61,6 @@ namespace Gambit {
     /// *** Initialization for analyses ***
     void specifyAnalysisPointerVector (AnalysisPointerVector &result) {
       using namespace Pipes::specifyAnalysisPointerVector;
-      debugMe("specifyAnalysisPointerVector");
       result.clear();
 
       std::vector<std::string> analysisNames;
@@ -93,7 +76,7 @@ namespace Gambit {
     /// *** Loop Managers ***
     void operatePythia() {
       using namespace Pipes::operatePythia;
-      debugMe("operatePythia");
+      int nEvents = 0;
 
       logger() << "==================" << endl;
       logger() << "ColliderBit says,";
@@ -109,10 +92,10 @@ namespace Gambit {
       /// @todo Get the Spectrum and Decay info from SpecBit and DecayBit
       GET_COLLIDER_RUNOPTION(slhaFilename, std::string)
 
-      /// TODO TODO What should the new loop look like....???
-      Loop::executeIteration(INIT);
+      xsecArray = new double[omp_get_max_threads()];
+      xsecerrArray = new double[omp_get_max_threads()];
       /// For every collider requested in the yaml file:
-      for(iter=pythiaNames.cbegin(); iter!=pythiaNames.cend(); iter++) {
+      for(iter=pythiaNames.cbegin(); iter!=pythiaNames.cend(); ++iter) {
         pythiaNumber = 0;
         try {
           pythiaConfigurations = runOptions->getValue<int>(*iter);
@@ -124,22 +107,27 @@ namespace Gambit {
         }  //< If the user only wants one config of this pythiaName, okay with no options.
 
         while (pythiaNumber < pythiaConfigurations) {
-          pythiaNumber++;
-          debugMe("operating Pythia named " + *iter
-                  + " number " + std::to_string(pythiaNumber), true);
-          #pragma omp parallel shared(iter,pythiaNumber,pythiaConfigurations)
+          ++pythiaNumber;
+          Loop::executeIteration(INIT);
+          #pragma omp parallel shared(SHARED_OVER_OMP)
           {
-            isPythiaReady = false;
             #pragma omp for
-            for (int it=0; it<nEvents; it++) {
-              Loop::executeIteration(it);
+            for (int i=1; i<=nEvents; ++i) {
+              Loop::executeIteration(i);
             }
+            Loop::executeIteration(END_SUBPROCESS);
           }
+          std::cout<<"\n\n\n\n Operation of Pythia named "<<*iter
+                   <<" number "<<std::to_string(pythiaNumber)<<" has finished.";
+          for (int i=0; i<omp_get_max_threads(); ++i)
+            std::cout<<"\n  Thread "<<i<<": xsec = "<<xsecArray[i] <<" +- "<<xsecerrArray[i];
+          std::cout<<"\n\n [Press Enter]";
+          std::getchar();
         }
       }
       Loop::executeIteration(FINALIZE);
 
-      isDetectorReady = false;
+      resetDelphesFlag = true;
       logger() << "==================" << endl;
       logger() << "ColliderBit says,";
       logger() << "\"manageVanillaLoop() completed.\"" << endl;
@@ -150,10 +138,8 @@ namespace Gambit {
     /// Hard Scattering Collider Simulators
     void getPythia(shared_ptr<ColliderBit::PythiaBase> &result) {
       using namespace Pipes::getPythia;
-      if (*Loop::iteration <= INIT) return;
-      debugMe("getPythia");
 
-      if (!isPythiaReady) {
+      if (resetPythiaFlag and *Loop::iteration > INIT) {
         /// Should be within omp parallel block now.
         std::vector<std::string> pythiaOptions;
         std::string pythiaConfigName;
@@ -168,14 +154,19 @@ namespace Gambit {
         } catch (...) {
           std::cout<<"  NOTE: Error downgraded to warning.\n";
           std::cout<<"  However, you may want to check the options for\n";
-          std::cout<<"    '"<<pythiaConfigName<<"' within 'getPythia'.\n\n";
+          std::cout<<"    '"<<pythiaConfigName<<"' under '"<<*iter<<"'.\n\n";
         }  //< If the PythiaBase subclass is hard-coded, okay with no options.
         pythiaOptions.push_back("SLHA:file = " + slhaFilename);
         pythiaOptions.push_back("Random:seed = " + std::to_string(omp_get_thread_num()));
 
         result.reset( mkPythia(*iter, pythiaOptions) );
         pythiaOptions.clear();
-        isPythiaReady = true;
+        resetPythiaFlag = false;
+      } else if (*Loop::iteration == END_SUBPROCESS) {
+        xsecArray[omp_get_thread_num()] = result->pythia()->info.sigmaGen();
+        xsecerrArray[omp_get_thread_num()] = result->pythia()->info.sigmaErr();
+        result.reset();
+        resetPythiaFlag = true;
       }
     }
 
@@ -183,7 +174,6 @@ namespace Gambit {
     void generatePythia8Event(Pythia8::Event &result) {
       using namespace Pipes::generatePythia8Event;
       if (*Loop::iteration <= INIT) return;
-      debugMe("generatePythia8Event");
       result.clear();
 
       /// Get the next event from Pythia8
@@ -195,16 +185,15 @@ namespace Gambit {
     void reconstructDelphesEvent(HEPUtils::Event &result) {
       using namespace Pipes::reconstructDelphesEvent;
       if (*Loop::iteration <= INIT) return;
-      debugMe("reconstructDelphesEvent");
       result.clear();
 
       #pragma omp critical (Delphes)
       {
-        if (!isDetectorReady) {
+        if (resetDelphesFlag) {
           GET_COLLIDER_RUNOPTION(delphesConfigFilename, std::string)
           delete delphes;
           delphes = new Delphes3Backend(delphesConfigFilename);
-          isDetectorReady = true;
+          resetDelphesFlag = false;
         }
         /// Feed the Pythia8 event to Delphes for detector simulation
         /// \note Delphes (ROOT) is not thread safe. Critical block necessary.
@@ -215,8 +204,7 @@ namespace Gambit {
 
     void convertPythia8Event(HEPUtils::Event &result) {
       using namespace Pipes::convertPythia8Event;
-      if (*Loop::iteration <= INIT) return;  //< Only whatever init Gambit needs
-      debugMe("convertPythia8Event");
+      if (*Loop::iteration <= INIT) return;
       result.clear();
 
       Pythia8::Vec4 ptot;
@@ -302,14 +290,12 @@ namespace Gambit {
 
     void runAnalyses(ColliderLogLikes& result) {
       using namespace Pipes::runAnalyses;
-      if (*Loop::iteration == INIT) return;  //< Only whatever init Gambit needs
-      debugMe("runAnalyses");
+      if (*Loop::iteration == INIT) return;
 
       if (*Loop::iteration == FINALIZE) {
         // The final iteration: get log likelihoods for the analyses
         result.clear();
         for (auto anaPtr : *Dep::ListOfAnalyses) {
-          // ana->collect_results();
           cout << "SR number test " << anaPtr->get_results()[0].n_signal << endl;
           result.push_back(anaPtr->get_results());
         }
@@ -321,53 +307,47 @@ namespace Gambit {
             anaPtr->analyze(*Dep::GambitColliderEvent);
         }
       }
-
-      #pragma omp critical (print)
-      {
-        #ifdef DEBUG
-        std::cout<<"\n    iteration number: "<<*Loop::iteration;
-        std::cout<<"\n    event met: "<<(*Dep::GambitColliderEvent).met();
-        #endif
-      }
     }
 
 
+    /// Loop over all analyses (and SRs within one analysis) and fill a vector of observed likelihoods
     void calcLogLike(double& result) {
       using namespace Pipes::calcLogLike;
-      debugMe("calcLogLike");
-
       ColliderLogLikes analysisResults = (*Dep::AnalysisNumbers);
-      //Loop over all analyses (and SRs within one analysis) and fill a vector of observed likelihoods
       cout << "In calcLogLike" << endl;
 
       std::vector<double> observedLikelihoods;
-      for(unsigned analysis=0; analysis<analysisResults.size(); analysis++){
-        for(unsigned SR=0; SR<analysisResults[analysis].size(); SR++){
+      for(unsigned analysis=0; analysis<analysisResults.size(); ++analysis) {
+        for(unsigned SR=0; SR<analysisResults[analysis].size(); ++SR) {
           SignalRegionData srData=analysisResults[analysis][SR];
-          int n_obs = (int)srData.n_observed;                      // Actual observed number of events
-          double n_predicted_exact = 0.;     // A contribution to the predicted number of events that is know exactly (e.g. from data-driven background estimate)
-          double n_predicted_uncertain = srData.n_background + srData.n_background; // A contribution to the predicted number of events that is not know exactly
+          /// Actual observed number of events
+          int n_obs = (int)srData.n_observed;
+          /// A contribution to the predicted number of events that is known exactly
+          /// (e.g. from data-driven background estimate)
+          double n_predicted_exact = 0.;
+          // A contribution to the predicted number of events that is not known exactly
+          double n_predicted_uncertain = srData.n_background + srData.n_background;
           double uncertainty=0.;
-          if(srData.n_signal!=0){
-            uncertainty = sqrt((srData.background_sys/srData.n_background)*(srData.background_sys/srData.n_background) * (srData.signal_sys/srData.n_signal)*(srData.signal_sys/srData.n_signal));           // A fractional uncertainty on n_predicted_uncertain (e.g. 0.2 from 20% uncertainty on efficencty wrt signal events)
+          if(srData.n_signal!=0) {
+            /// A fractional uncertainty on n_predicted_uncertain
+            /// (e.g. 0.2 from 20% uncertainty on efficencty wrt signal events)
+            uncertainty = sqrt((srData.background_sys/srData.n_background)
+                             * (srData.background_sys/srData.n_background)
+                             * (srData.signal_sys/srData.n_signal)
+                             * (srData.signal_sys/srData.n_signal));
+          } else { uncertainty = (srData.background_sys/srData.n_background); }
+
+          /// @TODO So... result is changed for **each** analysis and SR? something seems mighty fishy about this loop...
+          if (*BEgroup::lnlike_marg_poisson == "lnlike_marg_poisson_lognormal_error") {
+            /// Use a log-normal distribution for the nuisance parameter (more correct)
+            result = BEreq::lnlike_marg_poisson_lognormal_error(n_obs,n_predicted_exact,n_predicted_uncertain,uncertainty);
           }
-          else {
-            uncertainty = (srData.background_sys/srData.n_background);
+          else if (*BEgroup::lnlike_marg_poisson == "lnlike_marg_poisson_gaussian_error") {
+            /// Use a Gaussian distribution for the nuisance parameter (marginally faster)
+            result = BEreq::lnlike_marg_poisson_gaussian_error(n_obs,n_predicted_exact,n_predicted_uncertain,uncertainty);
+            /// @TODO outside loop??
+            cout << "COLLIDER RESULT" << result << endl;
           }
-
-          if (*BEgroup::lnlike_marg_poisson == "lnlike_marg_poisson_lognormal_error")
-            {
-              // Use a log-normal distribution for the nuisance parameter (more correct)
-              result = BEreq::lnlike_marg_poisson_lognormal_error(n_obs,n_predicted_exact,n_predicted_uncertain,uncertainty);
-            }
-          else if (*BEgroup::lnlike_marg_poisson == "lnlike_marg_poisson_gaussian_error")
-            {
-              // Use a Gaussian distribution for the nuisance parameter (marginally faster)
-              result = BEreq::lnlike_marg_poisson_gaussian_error(n_obs,n_predicted_exact,n_predicted_uncertain,uncertainty);
-
-              cout << "COLLIDER RESULT" << result << endl;
-
-            }
 
 
         }
