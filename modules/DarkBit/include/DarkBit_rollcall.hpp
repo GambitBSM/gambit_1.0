@@ -79,6 +79,13 @@ START_MODULE
 //
 //  #undef CAPABILITY  // PointInit
 
+  #define CAPABILITY MSSMspectrum
+  START_CAPABILITY
+    #define FUNCTION getMSSMspectrum
+      START_FUNCTION(eaSLHA)
+      ALLOW_MODELS(MSSM25)
+    #undef FUNCTION
+  #undef CAPABILITY
 
   #define CAPABILITY RD_spectrum
   START_CAPABILITY 
@@ -165,7 +172,8 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION TH_ProcessCatalog_CMSSM
       START_FUNCTION(Gambit::DarkBit::TH_ProcessCatalog)
-      ALLOW_MODELS(CMSSM_demo)
+      ALLOW_MODELS(CMSSM_demo, MSSM25)
+      DEPENDENCY(MSSMspectrum, eaSLHA) 
       BACKEND_REQ(mspctm, (), DS_MSPCTM)
       BACKEND_REQ(dssigmav, (), double, (int&))
       BACKEND_REQ(dsIBffdxdy, (), double, (int&, double&, double&))

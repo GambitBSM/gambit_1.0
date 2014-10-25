@@ -47,10 +47,10 @@ BE_INI_FUNCTION
     char * path = "/home/weniger/Work/Projects/gamLike/data/like/";
     set_data_path(path);
     fermi_dwarfs_init(0);
-    fermi_gc_init(0, 1);
+    //fermi_gc_init(0, 1);
   }
   scan_level = false;
-  runOptions->getValue<int>("test");
+  //runOptions->getValue<int>("test");
 }
 DONE
 

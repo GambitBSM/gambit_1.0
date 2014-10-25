@@ -167,6 +167,25 @@ namespace Gambit {
     }
     */
 
+    void getMSSMspectrum(eaSLHA &result)
+    {
+      using namespace Pipes::getMSSMspectrum;
+	  eaSLHA spectrum;
+
+      // Read filename from yml ini file
+      std::string filename = runOptions->getValue<std::string>("filename");
+      std::cout << "Filename is " << filename << std::endl;
+
+      std::ifstream ifs(filename.c_str());  // This might require char [] instead
+      if(!ifs.good())
+      {
+          std::cout << "ERROR: File not found." << std::endl;
+          exit(1);
+      }
+      ifs >> spectrum;
+      ifs.close();
+      result = spectrum;
+    }
 
 //////////////////////////////////////////////////////////////////////////
 //
@@ -813,8 +832,8 @@ namespace Gambit {
         int iwar;  // warming flag
         int nfc;  // number of function calls to effective annihilation cross section
         double oh2 = BEreq::dsrdomega(omtype,fast,xf,ierr,iwar,nfc);
-        std::cout << "oh2 is " << oh2 << std::endl;
         result = oh2;
+        std::cout << "oh2 is " << oh2 << std::endl;
     }
 
     void RD_oh2_micromegas(double &oh2)
@@ -925,10 +944,9 @@ namespace Gambit {
         using namespace Pipes::lnL_FermiLATdwarfs_gamLike;
         
         double mass = (*Dep::TH_ProcessCatalog).getParticleProperty("chi_10").mass;
-        BFptr mult (new BFconstant(1/mass/mass/8./3.1415, 0));
 
         std::vector<double> x = logspace(-1, 2.698, 100);  // from 0.1 to 500 GeV
-        std::vector<double> y = (*((*Dep::GA_AnnYield) * mult)->fixPar(1,0.))(x);
+        std::vector<double> y = (*((*Dep::GA_AnnYield)->mult(1/mass/mass/8./3.1415))->fixPar(1,0.))(x);
 
         result = BEreq::lnL_dwarfs(x, y);
 
@@ -964,6 +982,7 @@ namespace Gambit {
       else
           oh2_err = 0.01;
       result = pow(oh2 - oh2_mean, 2)/pow(oh2_err, 2);
+      std::cout << "lnL_oh2_Simple yields " << result << std::endl;
     }
 
     void dump_GammaSpectrum(double &result)

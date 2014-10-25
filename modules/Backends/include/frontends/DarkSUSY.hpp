@@ -139,7 +139,7 @@ BE_VARIABLE(GENERAL_VAR(DS_RDLUN, rdlun),       "rdlun_",     "rdlun")
 BE_VARIABLE(GENERAL_VAR(DS_RDPADD, rdpadd),     "rdpadd_",    "rdpadd")
 
 //BE_INI_DEPENDENCY(MSSMspectrum, eaSLHA)
-BE_INI_CONDITIONAL_DEPENDENCY(MSSMspectrum, eaSLHA, CMSSM_demo)
+BE_INI_CONDITIONAL_DEPENDENCY(MSSMspectrum, eaSLHA, CMSSM_demo, MSSM25)
 
 BE_INI_FUNCTION
 {
@@ -156,7 +156,10 @@ BE_INI_FUNCTION
     }
 
     // Check if model requires SLHA initialization
-    if(std::find(Models->begin(), Models->end(), "CMSSM_demo") != Models->end())
+    if( 
+            std::find(Models->begin(), Models->end(), "CMSSM_demo") != Models->end() or
+            std::find(Models->begin(), Models->end(), "MSSM25") != Models->end()
+      )
     {
         // Save eaSLHA file to disk
         eaSLHA mySLHA = *Dep::MSSMspectrum;
