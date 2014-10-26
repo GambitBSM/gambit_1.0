@@ -9,6 +9,11 @@
 
  
 Parameters: 
+#    SingletDM:
+#        lambda:
+#            range: [0.001, 1]
+#        mass:
+#            range: [10, 100]
     MSSM25:
       Ab:
         fixed_value: 1
@@ -78,7 +83,7 @@ Scanner:
   redirect_output:
      scanner:  xterm
   crapsample:
-    point_number: 1
+    point_number: 0
     output_file:  output
     like:  Likelihood
   loopsample:
@@ -104,39 +109,35 @@ Scanner:
     cut: 100
     
 ObsLikes:
-    #- capability: TH_ProcessCatalog
-    #- capability: RD_oh2
-      #function:   RD_oh2_micromegas
-      #function:   RD_oh2_micromegas
-    #  function:   RD_oh2_general
-    #- capability: dump_GammaSpectrum
-    - capability: lnL_FermiLATdwarfs
-      function: lnL_FermiLATdwarfs_gamLike
-      purpose:  Likelihood
-    #- purpose:    Observable
-    #  capability: RD_oh2 
-    #  function:   RD_oh2_DarkSUSY
-    - purpose:    Likelihood
-      capability: lnL_oh2
+#    - capability: lnL_FermiLATdwarfs
+#      function: lnL_FermiLATdwarfs_gamLike
+#      purpose:  Likelihood
+#    - purpose:    Likelihood
+#      capability: lnL_oh2
     - capability: lnL_Lux2013
       purpose:  Likelihood
-    #- capability: GA_AnnYield
-    #  purpose: Observable
 
 Auxiliaries:
   - capability: lnL_oh2
     dependencies: 
         - capability: RD_oh2
           function: RD_oh2_DarkSUSY
+    options:
+       oh2_err: 0.01
+       oh2_mean: 0.174
   - capability: lnL_Lux2013
     dependencies: 
         - capability: DD_couplings
           function: DD_couplings_DarkSUSY
+          #function: DD_couplings_micrOMEGAs
   - capability: MSSMspectrum
     function: getMSSMspectrum
     module: DarkBit
     options:
         filename: DarkBit/slha-files/test_100.slha
+  - capability: DD_couplings
+    options:
+        rescale_couplings: 1
 #  - capability:   lnL_oh2
 #    options:
 #      fast: 1

@@ -550,7 +550,8 @@ namespace Gambit {
           Emin = runOptions->getValue<double>("Emin");
           Emax = runOptions->getValue<double>("Emax");
       }
-      int n = 230*log10(Emax/Emin);  // 1% energy resolution must be enough
+      //int n = 230*log10(Emax/Emin);  // 1% energy resolution must be enough
+      int n = 10*log10(Emax/Emin);  // 10% energy resolution must be enough
       std::vector<double> xgrid = logspace(-1., 3., n);
       std::vector<double> ygrid = linspace(0., 0., n);
 
@@ -599,6 +600,7 @@ namespace Gambit {
       
           // Build up ygrid
           sigmav = (*it->dSigmadE)(0.);  // (sv)(v=0) for two-body final state
+          std::cout << "ch = " << ch << "; mass = " << mass << "; sigmav = " << sigmav << std::endl;
           for (int i = 0; i<n; i++)
           {
               ygrid[i] += sigmav * BEreq::dshayield(mass, xgrid[i], ch, yieldk, flag);
@@ -981,7 +983,7 @@ namespace Gambit {
           oh2_err = runOptions->getValue<double>("oh2_err");
       else
           oh2_err = 0.01;
-      result = pow(oh2 - oh2_mean, 2)/pow(oh2_err, 2);
+      result = -0.5*pow(oh2 - oh2_mean, 2)/pow(oh2_err, 2);  // lnL = -0.5 * chisq
       std::cout << "lnL_oh2_Simple yields " << result << std::endl;
     }
 
@@ -1011,7 +1013,12 @@ namespace Gambit {
         // Calling DarkSUSY subroutine dsddgpgn(gps,gns,gpa,gna)
         // to set all four couplings.
         BEreq::dsddgpgn(result.gps, result.gns, result.gpa, result.gna);
-        result.M_DM = (*BEreq::mspctm).mass[42];
+        double factor = runOptions->getValue<double>("rescale_couplings");
+        result.gps *= factor;
+        result.gns *= factor;
+        result.gpa *= factor;
+        result.gna *= factor;
+        result.M_DM = (*BEreq::mspctm).mass[41];
         std::cout << "dsddgpgn gives: \n";
         std::cout << " gps: " << result.gps << "\n";
         std::cout << " gns: " << result.gns << "\n";
@@ -1200,8 +1207,8 @@ namespace Gambit {
         double lambda = *Param["lambda"];  // Lambda is interpreted as sv for now
 
         // TODO: Update to real singlet DM
-        double sigma_bb     = 1e-26 * lambda * 0.8;  // partial sv
-        double sigma_tautau = 1e-26 * lambda * 0.2;  // partial sv
+        double sigma_bb     = 1e-26 * lambda * lambda * 0.8;  // partial sv
+        double sigma_tautau = 1e-26 * lambda * lambda * 0.2;  // partial sv
 
         // Initialize catalog
         TH_ProcessCatalog catalog;                                      // Instantiate new ProcessCatalog

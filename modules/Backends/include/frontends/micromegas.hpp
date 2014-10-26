@@ -186,7 +186,9 @@ BE_INI_FUNCTION
 
     // TODO: Add error checking
     err = lesHinput(byVal(filename));
+    std::cout << "MicrOmegas lesHinput error code: " << err << std::endl;
     err = sortOddParticles(byVal(cdmName));
+    std::cout << "MicrOmegas sortOddParticles error code: " << err << std::endl;
 }
 DONE
 
