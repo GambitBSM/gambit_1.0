@@ -184,7 +184,7 @@ target_link_libraries(ExampleBit_A_standalone fortran ${yaml_LDFLAGS} ${slha_LDF
 #target_link_libraries(gambit_example ${yaml_LDFLAGS} ${slha_LDFLAGS})
 
 add_gambit_executable(gambit SOURCES ${PROJECT_SOURCE_DIR}/Core/src/gambit.cpp ${GAMBIT_SHARED_OBJECTS} ${GAMBIT_OBJECTS} ${GAMBIT_BIT_OBJECTS} $<TARGET_OBJECTS:ExampleBit_A>)
-add_dependencies(gambit yaml slha functor_types sample)
+add_dependencies(gambit yaml slha functor_types sample scantest)
 target_link_libraries(gambit ${yaml_LDFLAGS} ${slha_LDFLAGS})
 
 set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${clean_files}")

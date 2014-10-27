@@ -9,6 +9,8 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   set_target_properties(FarrayTest PROPERTIES SUFFIX .so)
 endif()
 
+install(TARGETS first fortran FarrayTest LIBRARY DESTINATION "${PROJECT_SOURCE_DIR}/Backends/lib")
+
 set(source_files src/backend_singleton.cpp)
 
 set(header_files include/backend_singleton.hpp)

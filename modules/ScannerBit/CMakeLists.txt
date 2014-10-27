@@ -49,3 +49,7 @@ add_gambit_library(ScannerBit OPTION OBJECT SOURCES ${source_files} HEADERS ${he
 
 add_gambit_library(sample OPTION SHARED SOURCES plugins/crapsample.cpp plugins/twalk.cpp HEADERS plugins/twalk.hpp)
 target_link_libraries(sample ${yaml_LDFLAGS})
+
+add_gambit_library(scantest OPTION SHARED SOURCES plugins/test.cpp)
+
+install(TARGETS sample scantest LIBRARY DESTINATION "${PROJECT_SOURCE_DIR}/ScannerBit/lib")
