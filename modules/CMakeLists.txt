@@ -1,4 +1,4 @@
-# CMakeLists files in this project can refer to the root source directory of the project as ${GAMBIT_SOURCE_DIR} and to the root binary directory of the project as ${GAMBIT_BINARY_DIR}.
+# CMakeLists files in this project can refer to the root source directory of the project as ${PROJECT_SOURCE_DIR} and to the root binary directory of the project as ${PROJECT_BINARY_DIR}.
 
 # require a minimum cmake version of 2.6
 cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
@@ -60,17 +60,17 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake)
 
 # set output paths to ./bin and ./lib
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib CACHE PATH "Installation directory for libraries.")
-set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin CACHE PATH "Installation directory for executables.")
+set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR} CACHE PATH "Installation directory for executables.")
 set(LIBRARY_OUTPUT_PATH_RELEASE ${PROJECT_SOURCE_DIR}/lib CACHE PATH "Installation directory for libraries.")
-set(EXECUTABLE_OUTPUT_PATH_RELEASE ${PROJECT_SOURCE_DIR}/bin CACHE PATH "Installation directory for executables.")
+set(EXECUTABLE_OUTPUT_PATH_RELEASE ${PROJECT_SOURCE_DIR} CACHE PATH "Installation directory for executables.")
 set(LIBRARY_OUTPUT_PATH_DEBUG ${PROJECT_SOURCE_DIR}/lib CACHE PATH "Installation directory for libraries.")
-set(EXECUTABLE_OUTPUT_PATH_DEBUG ${PROJECT_SOURCE_DIR}/bin CACHE PATH "Installation directory for executables.")
-set(RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/bin")
-set(RUNTIME_OUTPUT_DIRECTORY_RELEASE "${PROJECT_SOURCE_DIR}/bin")
-set(RUNTIME_OUTPUT_DIRECTORY_DEBUG "${PROJECT_SOURCE_DIR}/bin")
+set(EXECUTABLE_OUTPUT_PATH_DEBUG ${PROJECT_SOURCE_DIR} CACHE PATH "Installation directory for executables.")
+set(RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}")
+set(RUNTIME_OUTPUT_DIRECTORY_RELEASE "${PROJECT_SOURCE_DIR}")
+set(RUNTIME_OUTPUT_DIRECTORY_DEBUG "${PROJECT_SOURCE_DIR}")
 
 set(mylibdir ${PROJECT_SOURCE_DIR}/lib)
-set(mybindir ${PROJECT_SOURCE_DIR}/bin)
+set(mybindir ${PROJECT_SOURCE_DIR})
 # First for the generic no-config case (e.g. with mingw)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${mybindir} )
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${mylibdir} )
@@ -124,7 +124,7 @@ find_package (PythonInterp)
 
 ###################### FIXME
 file(GLOB TYPE_HARVESTER_FILES "${PROJECT_SOURCE_DIR}/*/include/*_rollcall.hpp" "${PROJECT_SOURCE_DIR}/*/include/*_types.hpp")
-list(REMOVE_ITEM TYPE_HARVESTER_FILES "${PROJECT_SOURCE_DIR}/Utils//include//shared_types.hpp" "${PROJECT_SOURCE_DIR}/ColliderBit//include//ColliderBit_types.hpp" "${PROJECT_SOURCE_DIR}/ColliderBit//include//ColliderBit_rollcall.hpp")
+list(REMOVE_ITEM TYPE_HARVESTER_FILES "${PROJECT_SOURCE_DIR}/Utils//include//all_functor_types.hpp" "${PROJECT_SOURCE_DIR}/Utils//include//shared_types.hpp" "${PROJECT_SOURCE_DIR}/ColliderBit//include//ColliderBit_types.hpp" "${PROJECT_SOURCE_DIR}/ColliderBit//include//ColliderBit_rollcall.hpp")
 ###################### FIXME
 
 add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/Utils/include/all_functor_types.hpp COMMAND python ${PROJECT_SOURCE_DIR}/Utils/scripts/functor_type_harvester.py WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} DEPENDS ${TYPE_HARVESTER_FILES})
@@ -145,31 +145,46 @@ add_subdirectory(Models)
 
 # list of GAMBIT shared object files to link
 set(GAMBIT_SHARED_OBJECTS $<TARGET_OBJECTS:Backends>
-                   $<TARGET_OBJECTS:Logs>
-                   $<TARGET_OBJECTS:Utils>
-                   $<TARGET_OBJECTS:Models>
+                          $<TARGET_OBJECTS:Logs>
+                          $<TARGET_OBJECTS:Utils>
+                          $<TARGET_OBJECTS:Models>
 )
 
-#add_subdirectory(Core)
-#add_subdirectory(Printers)
-set(GAMBIT_OBJECTS $<TARGET_OBJECTS:Core> $<TARGET_OBJECTS:Printer>)
+add_subdirectory(Core)
+add_subdirectory(Printers)
+# list of GAMBIT object files to link
+set(GAMBIT_OBJECTS $<TARGET_OBJECTS:Core> $<TARGET_OBJECTS:Printers>)
 
-#add_subdirectory(ScannerBit)
+add_subdirectory(ScannerBit)
+add_subdirectory(DarkBit)
+add_subdirectory(DecayBit)
+add_subdirectory(HiggsBit)
+add_subdirectory(FlavBit)
+add_subdirectory(Example_SUSYspecBit)
+add_subdirectory(ExampleBit_B)
 
-#add_gambit_executable(gambit_example SOURCES Core/examples/gambit_example.cpp HEADERS)
-#if(NOT yaml_FOUND)
-#  add_dependencies(gambit_example yaml)
-#endif()
-#target_link_libraries(gambit_example ScannerBit)
+# list of GAMBIT Bit object files to link
+set(GAMBIT_BIT_OBJECTS $<TARGET_OBJECTS:ScannerBit>
+                       $<TARGET_OBJECTS:DarkBit>
+                       $<TARGET_OBJECTS:DecayBit>
+                       $<TARGET_OBJECTS:HiggsBit>
+                       $<TARGET_OBJECTS:FlavBit>
+                       $<TARGET_OBJECTS:SUSYspecBit>
+                       $<TARGET_OBJECTS:ExampleBit_B>
+)
 
 add_subdirectory(ExampleBit_A)
-add_gambit_executable(ExampleBit_A_standalone SOURCES ExampleBit_A/examples/ExampleBit_A_standalone_example.cpp $<TARGET_OBJECTS:ExampleBit_A> ${GAMBIT_SHARED_OBJECTS})
-if(NOT yaml_FOUND)
-  add_dependencies(ExampleBit_A_standalone yaml)
-endif()
- 
-add_dependencies(ExampleBit_A_standalone slha functor_types)
+add_gambit_executable(ExampleBit_A_standalone SOURCES ${PROJECT_SOURCE_DIR}/ExampleBit_A/examples/ExampleBit_A_standalone_example.cpp $<TARGET_OBJECTS:ExampleBit_A> ${GAMBIT_SHARED_OBJECTS})
+
+add_dependencies(ExampleBit_A_standalone yaml slha functor_types)
 target_link_libraries(ExampleBit_A_standalone fortran ${yaml_LDFLAGS} ${slha_LDFLAGS})
 
+add_gambit_executable(gambit_example SOURCES ${PROJECT_SOURCE_DIR}/Core/examples/gambit_example.cpp ${GAMBIT_SHARED_OBJECTS} ${GAMBIT_OBJECTS} ${GAMBIT_BIT_OBJECTS} $<TARGET_OBJECTS:ExampleBit_A>)
+add_dependencies(gambit_example yaml slha functor_types sample)
+target_link_libraries(gambit_example ${yaml_LDFLAGS} ${slha_LDFLAGS})
+
+add_gambit_executable(gambit SOURCES ${PROJECT_SOURCE_DIR}/Core/src/gambit.cpp ${GAMBIT_SHARED_OBJECTS} ${GAMBIT_OBJECTS} ${GAMBIT_BIT_OBJECTS} $<TARGET_OBJECTS:ExampleBit_A>)
+add_dependencies(gambit yaml slha functor_types sample)
+target_link_libraries(gambit ${yaml_LDFLAGS} ${slha_LDFLAGS})
 
 set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${clean_files}")

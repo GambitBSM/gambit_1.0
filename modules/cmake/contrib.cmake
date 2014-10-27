@@ -39,5 +39,3 @@ include_directories("${PROJECT_SOURCE_DIR}/contrib/mcutils/include")
 
 
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/contrib/yaml-cpp-0.5.1/libyaml-cpp.a" "${PROJECT_SOURCE_DIR}/contrib/SLHAPy8/libslhapy8.a")
-
-

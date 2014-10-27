@@ -15,7 +15,11 @@ set(GAMBIT_INCDIRS ${GAMBIT_INCDIRS} "${PROJECT_SOURCE_DIR}/ScannerBit/include")
 set(GAMBIT_INCDIRS ${GAMBIT_INCDIRS} "${PROJECT_SOURCE_DIR}/DarkBit/include")
 set(GAMBIT_INCDIRS ${GAMBIT_INCDIRS} "${PROJECT_SOURCE_DIR}/ExampleBit_A/include")
 
-set(GAMBIT_INCDIRS ${GAMBIT_INCDIRS} "${PROJECT_SOURCE_DIR}/../extras/fast_sim/include")
+set(GAMBIT_INCDIRS ${GAMBIT_INCDIRS} "${PROJECT_SOURCE_DIR}/ExampleBit_B/include")
+set(GAMBIT_INCDIRS ${GAMBIT_INCDIRS} "${PROJECT_SOURCE_DIR}/Example_SUSYspecBit/include")
+set(GAMBIT_INCDIRS ${GAMBIT_INCDIRS} "${PROJECT_SOURCE_DIR}/FlavBit/include")
+set(GAMBIT_INCDIRS ${GAMBIT_INCDIRS} "${PROJECT_SOURCE_DIR}/HiggsBit/include")
+set(GAMBIT_INCDIRS ${GAMBIT_INCDIRS} "${PROJECT_SOURCE_DIR}/DecayBit/include")
 
 include(CMakeParseArguments)
 
@@ -35,11 +39,16 @@ function(add_gambit_library libraryname)
       include_directories(${dir})
     endforeach()
   endif()
+
+  if(${ARG_OPTION} STREQUAL SHARED AND APPLE)
+    set_property(TARGET ${libraryname} PROPERTY SUFFIX .so)
+  endif()
+
 endfunction()
 
 # function to add GAMBIT executable
 function(add_gambit_executable executablename)
-  cmake_parse_arguments(ARG "" "" "SOURCES;HEADERS;DONT_LINK_GAMBIT;" "" ${ARGN})
+  cmake_parse_arguments(ARG "" "" "SOURCES;HEADERS;" "" ${ARGN})
 
   add_executable(${executablename} ${ARG_SOURCES} ${ARG_HEADERS})
 
@@ -53,10 +62,6 @@ function(add_gambit_executable executablename)
     endforeach()
   endif()
 
-
-#  if (NOT ARG_DONT_LINK_GAMBIT)
-#    set(LIBRARIES ${LIBRARIES} gambitbase)
-#  endif()
   if (MPI_FOUND)
     set(LIBRARIES ${LIBRARIES} ${MPI_CXX_LIBRARIES})
   endif()

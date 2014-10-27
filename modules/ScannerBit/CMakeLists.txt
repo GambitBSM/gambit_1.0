@@ -45,4 +45,7 @@ set(header_files include/cholesky.hpp
                  include/test_functions/uniform.hpp
 )
 
-add_gambit_library(ScannerBit SOURCES ${source_files} HEADERS ${header_files})
+add_gambit_library(ScannerBit OPTION OBJECT SOURCES ${source_files} HEADERS ${header_files})
+
+add_gambit_library(sample OPTION SHARED SOURCES plugins/crapsample.cpp plugins/twalk.cpp HEADERS plugins/twalk.hpp)
+target_link_libraries(sample ${yaml_LDFLAGS})
