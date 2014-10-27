@@ -179,9 +179,9 @@ add_gambit_executable(ExampleBit_A_standalone SOURCES ${PROJECT_SOURCE_DIR}/Exam
 add_dependencies(ExampleBit_A_standalone yaml slha functor_types)
 target_link_libraries(ExampleBit_A_standalone fortran ${yaml_LDFLAGS} ${slha_LDFLAGS})
 
-add_gambit_executable(gambit_example SOURCES ${PROJECT_SOURCE_DIR}/Core/examples/gambit_example.cpp ${GAMBIT_SHARED_OBJECTS} ${GAMBIT_OBJECTS} ${GAMBIT_BIT_OBJECTS} $<TARGET_OBJECTS:ExampleBit_A>)
-add_dependencies(gambit_example yaml slha functor_types sample)
-target_link_libraries(gambit_example ${yaml_LDFLAGS} ${slha_LDFLAGS})
+#add_gambit_executable(gambit_example SOURCES ${PROJECT_SOURCE_DIR}/Core/examples/gambit_example.cpp ${GAMBIT_SHARED_OBJECTS} ${GAMBIT_OBJECTS} ${GAMBIT_BIT_OBJECTS} $<TARGET_OBJECTS:ExampleBit_A>)
+#add_dependencies(gambit_example yaml slha functor_types sample)
+#target_link_libraries(gambit_example ${yaml_LDFLAGS} ${slha_LDFLAGS})
 
 add_gambit_executable(gambit SOURCES ${PROJECT_SOURCE_DIR}/Core/src/gambit.cpp ${GAMBIT_SHARED_OBJECTS} ${GAMBIT_OBJECTS} ${GAMBIT_BIT_OBJECTS} $<TARGET_OBJECTS:ExampleBit_A>)
 add_dependencies(gambit yaml slha functor_types sample)

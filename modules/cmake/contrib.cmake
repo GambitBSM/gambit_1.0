@@ -36,6 +36,6 @@ include_directories("${PROJECT_SOURCE_DIR}/contrib/SLHAPy8")
 include_directories("${PROJECT_SOURCE_DIR}/contrib/slhaea")
 include_directories("${PROJECT_SOURCE_DIR}/contrib/hep_simple_lib")
 include_directories("${PROJECT_SOURCE_DIR}/contrib/mcutils/include")
-
+include_directories("${PROJECT_SOURCE_DIR}/contrib/heputils/include")
 
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/contrib/yaml-cpp-0.5.1/libyaml-cpp.a" "${PROJECT_SOURCE_DIR}/contrib/SLHAPy8/libslhapy8.a")
