@@ -147,36 +147,38 @@ add_subdirectory(Printers)
 # list of GAMBIT object files to link
 set(GAMBIT_OBJECTS $<TARGET_OBJECTS:Core> $<TARGET_OBJECTS:Printers>)
 
-add_subdirectory(ScannerBit)
-add_subdirectory(DarkBit)
-add_subdirectory(DecayBit)
-add_subdirectory(HiggsBit)
-add_subdirectory(FlavBit)
-add_subdirectory(Example_SUSYspecBit)
-add_subdirectory(ExampleBit_B)
-
-# list of GAMBIT Bit object files to link
-set(GAMBIT_BIT_OBJECTS $<TARGET_OBJECTS:ScannerBit>
-                       $<TARGET_OBJECTS:DarkBit>
-                       $<TARGET_OBJECTS:DecayBit>
-                       $<TARGET_OBJECTS:HiggsBit>
-                       $<TARGET_OBJECTS:FlavBit>
-                       $<TARGET_OBJECTS:SUSYspecBit>
-                       $<TARGET_OBJECTS:ExampleBit_B>
+set(GAMBIT_BITS ScannerBit
+                DarkBit
+                DecayBit
+                HiggsBit
+                FlavBit
+                Example_SUSYspecBit
+                ExampleBit_A
+                ExampleBit_B
 )
 
-add_subdirectory(ExampleBit_A)
-add_gambit_executable(ExampleBit_A_standalone SOURCES ${PROJECT_SOURCE_DIR}/ExampleBit_A/examples/ExampleBit_A_standalone_example.cpp $<TARGET_OBJECTS:ExampleBit_A> ${GAMBIT_SHARED_OBJECTS})
+foreach(bit ${GAMBIT_BITS})
+  if(EXISTS "${PROJECT_SOURCE_DIR}/${bit}/")
+    add_subdirectory(${bit})
+    if(${bit} STREQUAL Example_SUSYspecBit)
+      set(bit SUSYspecBit)
+    endif()
+    set(GAMBIT_BIT_OBJECTS ${GAMBIT_BIT_OBJECTS} "$<TARGET_OBJECTS:${bit}>")
+  endif()
+endforeach()
+message("${GAMBIT_BIT_OBJECTS}")
 
-add_dependencies(ExampleBit_A_standalone yaml slha functor_types)
-target_link_libraries(ExampleBit_A_standalone fortran ${yaml_LDFLAGS} ${slha_LDFLAGS})
+if(EXISTS "${PROJECT_SOURCE_DIR}/ExampleBit_A/")
+  add_gambit_executable(ExampleBit_A_standalone SOURCES ${PROJECT_SOURCE_DIR}/ExampleBit_A/examples/ExampleBit_A_standalone_example.cpp $<TARGET_OBJECTS:ExampleBit_A> ${GAMBIT_SHARED_OBJECTS})
 
-#add_gambit_executable(gambit_example SOURCES ${PROJECT_SOURCE_DIR}/Core/examples/gambit_example.cpp ${GAMBIT_SHARED_OBJECTS} ${GAMBIT_OBJECTS} ${GAMBIT_BIT_OBJECTS} $<TARGET_OBJECTS:ExampleBit_A>)
-#add_dependencies(gambit_example yaml slha functor_types sample)
-#target_link_libraries(gambit_example ${yaml_LDFLAGS} ${slha_LDFLAGS})
+  add_dependencies(ExampleBit_A_standalone yaml slha)
+  target_link_libraries(ExampleBit_A_standalone fortran ${yaml_LDFLAGS} ${slha_LDFLAGS})
+endif()
 
-add_gambit_executable(gambit SOURCES ${PROJECT_SOURCE_DIR}/Core/src/gambit.cpp ${GAMBIT_SHARED_OBJECTS} ${GAMBIT_OBJECTS} ${GAMBIT_BIT_OBJECTS} $<TARGET_OBJECTS:ExampleBit_A>)
-add_dependencies(gambit yaml slha functor_types sample scantest)
-target_link_libraries(gambit ${yaml_LDFLAGS} ${slha_LDFLAGS})
+if(EXISTS "${PROJECT_SOURCE_DIR}/ExampleBit_A/")
+  add_gambit_executable(gambit SOURCES ${PROJECT_SOURCE_DIR}/Core/src/gambit.cpp ${GAMBIT_SHARED_OBJECTS} ${GAMBIT_OBJECTS} ${GAMBIT_BIT_OBJECTS})
+  add_dependencies(gambit yaml slha sample scantest)
+  target_link_libraries(gambit ${yaml_LDFLAGS} ${slha_LDFLAGS})
+endif()
 
 set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${clean_files}")
