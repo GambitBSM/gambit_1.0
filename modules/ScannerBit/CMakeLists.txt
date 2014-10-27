@@ -52,4 +52,9 @@ target_link_libraries(sample ${yaml_LDFLAGS})
 
 add_gambit_library(scantest OPTION SHARED SOURCES plugins/test.cpp)
 
-install(TARGETS sample scantest LIBRARY DESTINATION "${PROJECT_SOURCE_DIR}/ScannerBit/lib")
+set_target_properties( sample scantest
+PROPERTIES
+ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/lib"
+LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/lib"
+RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin"
+)
