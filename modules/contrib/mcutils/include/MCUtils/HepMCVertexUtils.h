@@ -1,3 +1,11 @@
+// -*- C++ -*-
+//
+// This file is part of MCUtils -- https://bitbucket.org/andybuckley/mcutils
+// Copyright (C) 2013-2014 Andy Buckley <andy.buckley@cern.ch>
+//
+// Embedding of MCUtils code in other projects is permitted provided this
+// notice is retained and the MCUtils namespace and include path are changed.
+//
 #pragma once
 
 /// @file Functions for filtering and classifying HepMC GenVertex objects
@@ -7,9 +15,9 @@
 #include "boost/function.hpp" //< Replace with std::function when possible
 #include <vector>
 
+#include "HEPUtils/Vectors.h"
+#include "HEPUtils/Utils.h"
 #include "MCUtils/HepMCEventUtils.h"
-#include "MCUtils/Vectors.h"
-#include "MCUtils/Utils.h"
 
 namespace MCUtils {
 

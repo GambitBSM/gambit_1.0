@@ -1,8 +1,7 @@
 #pragma once
-#include <vector>
 #include "ColliderBit_macros.hpp"
-#include "Event.hpp"
-using namespace HEP_Simple_Lib;
+#include "HEPUtils/Event.h"
+using namespace HEPUtils;
 
 
 
@@ -29,7 +28,7 @@ namespace Gambit {
 
 
     class Analysis {
- 
+
     private:
 
       /// Number of events and cross-section internal variables
@@ -54,11 +53,11 @@ namespace Gambit {
       virtual void init() {  }
 
       /// Analyze the event (accessed by reference)
-      void analyze(const HEP_Simple_Lib::Event& e) { analyze(&e); }
+      void analyze(const HEPUtils::Event& e) { analyze(&e); }
 
       /// Analyze the event (accessed by pointer)
       /// @note Needs to be called from Derived::analyze()
-      virtual void analyze(const HEP_Simple_Lib::Event*) {
+      virtual void analyze(const HEPUtils::Event*) {
         _ntot += 1; //< @todo Event weight support needed?
       }
 

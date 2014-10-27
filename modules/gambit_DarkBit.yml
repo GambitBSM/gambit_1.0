@@ -9,55 +9,72 @@
 
  
 Parameters: 
-#    CMSSM_demo:
-#        A0:
-#            range: [-1000, 1000]
-#        M0:
-#            prior_type: log
-#            range: [0.001,1000]
-#        M12:
-#        #  same_as: CMSSM_demo::M0
-#        Mstop:
-#        #  same_as: CMSSM_demo::M0
-#        sgnmu:
-#            range: [-1, 1]
-#            fixed_value: 1
-#        tanb:
-#        #  fixed_value: 1
-
-#    NormalDist:
-#        mu:
-#            fixed_value: 1
-#        sigma:
-#            fixed_value: 1
-    SingletDM:
-        lambda:
-            range: [0.001, 0.01]
-        mass:
-            range: [99, 100]
+#    SingletDM:
+#        lambda:
+#            range: [0.001, 1]
+#        mass:
+#            range: [10, 100]
+    MSSM25:
+      Ab:
+        fixed_value: 1
+      At:
+        fixed_value: 1
+      Atau:
+        fixed_value: 1
+      M1:
+        fixed_value: 1
+      M2:
+        fixed_value: 1
+      M3:
+        fixed_value: 1
+      M_input:
+        fixed_value: 1
+      mH12:
+        fixed_value: 1
+      mH22:
+        fixed_value: 1
+      mbR:
+        fixed_value: 1
+      mcR:
+        fixed_value: 1
+      mdR:
+        fixed_value: 1
+      meL:
+        fixed_value: 1
+      meR:
+        fixed_value: 1
+      mmuL:
+        fixed_value: 1
+      mmuR:
+        fixed_value: 1
+      mq1L:
+        fixed_value: 1
+      mq2L:
+        fixed_value: 1
+      mq3L:
+        fixed_value: 1
+      msR:
+        fixed_value: 1
+      mtR:
+        fixed_value: 1
+      mtauL:
+        fixed_value: 1
+      mtauR:
+        fixed_value: 1
+      mu:
+        fixed_value: 1
+      muR:
+        fixed_value: 1
+      tanb:
+        fixed_value: 1
 
 Priors:
-#  m12_prior: 
-#    parameters: [CMSSM_demo::M12]
-#    prior_type: composite
-#    options: 
-#      new_prior: 
-#        parameters: [CMSSM_demo::M12]
-#        prior_type: log
-#        range: [100,2000]
-#
-#  tanbMstop_prior: 
-#    parameters: [CMSSM_demo::tanb, CMSSM_demo::Mstop]
-#    prior_type: cauchy
-#    options:
-#      cov: [[0.5, 0.1],[0.1, 0.6]]
-#      demo: 45
 
 Printer:
   printer: ascii
   options:
-    output_file: "runs/example_minimal_test/samples/gambit_output.txt"
-    info_file: "runs/example_minimal_test/samples/gambit_output.info"
+    output_file: "runs/DarkBit_minimalTest/samples/gambit_output.txt"
+    info_file: "runs/DarkBit_minimalTest/samples/gambit_output.info"
 
 Scanner:
   plugin: crapsample
@@ -66,7 +83,7 @@ Scanner:
   redirect_output:
      scanner:  xterm
   crapsample:
-    point_number: 2
+    point_number: 0
     output_file:  output
     like:  Likelihood
   loopsample:
@@ -92,24 +109,42 @@ Scanner:
     cut: 100
     
 ObsLikes:
-    #- capability: TH_ProcessCatalog
-    #- capability: RD_oh2
-      #function:   RD_oh2_micromegas
-      #function:   RD_oh2_micromegas
-    #  function:   RD_oh2_general
-    - capability: dump_GammaSpectrum
-    #- capability: GA_AnnYield
-    #  purpose: Observable
+#    - capability: lnL_FermiLATdwarfs
+#      function: lnL_FermiLATdwarfs_gamLike
+#      purpose:  Likelihood
+#    - purpose:    Likelihood
+#      capability: lnL_oh2
+    - capability: lnL_Lux2013
+      purpose:  Likelihood
 
 Auxiliaries:
-  - capability:   RD_oh2
-    function:     RD_oh2_micromegas
+  - capability: lnL_oh2
+    dependencies: 
+        - capability: RD_oh2
+          function: RD_oh2_DarkSUSY
     options:
-      fast: 1
-      Beps: 1e-5
+       oh2_err: 0.01
+       oh2_mean: 0.174
+  - capability: lnL_Lux2013
+    dependencies: 
+        - capability: DD_couplings
+          function: DD_couplings_DarkSUSY
+          #function: DD_couplings_micrOMEGAs
+  - capability: MSSMspectrum
+    function: getMSSMspectrum
+    module: DarkBit
+    options:
+        filename: DarkBit/slha-files/test_100.slha
+  - capability: DD_couplings
+    options:
+        rescale_couplings: 1
+#  - capability:   lnL_oh2
+#    options:
+#      fast: 1
+#      Beps: 1e-5
 
 Logger:
-  prefix : "runs/example_minimal_test/logs/"
+  prefix : "runs/DarkBit_minimalTest/logs/"
   redirection:
     [Debug] : "debug.log"
     [Default] : "default.log"

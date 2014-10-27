@@ -1,3 +1,11 @@
+// -*- C++ -*-
+//
+// This file is part of MCUtils -- https://bitbucket.org/andybuckley/mcutils
+// Copyright (C) 2013-2014 Andy Buckley <andy.buckley@cern.ch>
+//
+// Embedding of MCUtils code in other projects is permitted provided this
+// notice is retained and the MCUtils namespace and include path are changed.
+//
 #pragma once
 
 /// @file Functions for working with HepMC particles
@@ -7,10 +15,12 @@
 #include "HepMC/GenEvent.h"
 #include <vector>
 
-#include "MCUtils/Utils.h"
-#include "MCUtils/MathUtils.h"
+#include "HEPUtils/Utils.h"
+#include "HEPUtils/MathUtils.h"
 
 namespace MCUtils {
+
+  using HEPUtils::sqr;
 
 
   /// @name Friendlier HepMC type typedefs

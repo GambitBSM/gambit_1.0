@@ -86,7 +86,7 @@ Printer:
 
 Scanner:
 
-  plugin:  loopsample
+  plugin: loopsample
   file_path:  ScannerBit/lib/libsample.so
 
   loopsample:
@@ -95,7 +95,7 @@ Scanner:
     like:  Likelihood
     files:
       output_file: "weights ..."
-        
+            
 ###############################
 # Observables of interest
 ###############################

@@ -8,40 +8,41 @@
 
 #include "identification.hpp"
 
+// Forward declaration needed by the destructor pattern.
+void wrapper_deleter(CAT_3(BACKENDNAME,_,SAFE_VERSION)::Y*);
+
+
 namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
 {
     
-    
-    // Forward declaration needed by the destructor pattern.
-    void wrapper_deleter(Y*);
     
     class Abstract_Y : virtual public AbstractBase
     {
         public:
     
-            virtual Abstract_X& x_ref_GAMBIT() =0;
+            virtual Abstract_X& x_ref__BOSS() =0;
     
-            virtual Abstract_X* get_x_GAMBIT() =0;
+            virtual Abstract_X* get_x__BOSS() =0;
     
-            virtual void set_x_GAMBIT(Abstract_X&) =0;
+            virtual void set_x__BOSS(Abstract_X&) =0;
     
-            virtual void set_x_ptr_GAMBIT(Abstract_X*) =0;
+            virtual void set_x_ptr__BOSS(Abstract_X*) =0;
     
         public:
-            virtual void pointerAssign_GAMBIT(Abstract_Y*) =0;
-            virtual Abstract_Y* pointerCopy_GAMBIT() =0;
+            virtual void pointerAssign__BOSS(Abstract_Y*) =0;
+            virtual Abstract_Y* pointerCopy__BOSS() =0;
     
         private:
             Y* wptr;
     
         public:
-            void wrapper_GAMBIT(Y* wptr_in)
+            void wrapper__BOSS(Y* wptr_in)
             {
                 wptr = wptr_in;
                 is_wrapped(true);
             }
     
-            Y* wrapper_GAMBIT()
+            Y* wrapper__BOSS()
             {
                 return wptr;
             }

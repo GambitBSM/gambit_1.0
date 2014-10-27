@@ -86,6 +86,9 @@ namespace Gambit
     /// Check whether s1 (wildcard + regex allowed) matches s2
     bool stringComp(str s1, str s2);
 
+    /// Type comparison taking into account equivalence classes
+    bool typeComp(str s1, str s2, const Utils::type_equivalency & eq);
+
     /// Main dependency resolver
     class DependencyResolver
     {

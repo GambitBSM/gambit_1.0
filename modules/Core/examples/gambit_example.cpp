@@ -4,13 +4,13 @@
 ///
 ///  Example of GAMBIT core framework use.
 ///
-///  A program to demo what can be done with the 
-///  current development version of the code. 
+///  A program to demo what can be done with the
+///  current development version of the code.
 ///
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-///   
+///
 ///  \author GAMBIT Collaboration
 ///  \date 2012 Oct --> ??
 ///
@@ -38,9 +38,9 @@ using namespace LogTags;
 void beispiel()
 {
 
-  std::streambuf *coutbuf = std::cout.rdbuf(); 
+  std::streambuf *coutbuf = std::cout.rdbuf();
   std::cout.rdbuf(coutbuf);
-   
+
   cout << endl << "Start MAIN" << endl;
   cout << "----------" << endl;
   cout << "Registered module functors [Core().getModuleFunctors().size()]: " <<
@@ -50,7 +50,7 @@ void beispiel()
 
   //%%%%%% LOGGING DEMO %%%%%%%%%%%%%%%%
   // Probably move to gambit_example.cpp to keep this minimal, but for a little while lets leave it here for educational purposes
-  
+
   // Check the logging tags were registered correctly (for testing)
   Logging::checktags();
 
@@ -76,7 +76,7 @@ void beispiel()
   logger().send(ss,mytags); //of course you can also just do ss.str() to change it to a string yourself; this is all that the send function overload does anyway.
 
   // Finally, you can just stream everything into the logger directly. The only catch is that you need to use a special end of message character to signal to the logger that you are done and it should send the message.
-  // Tags can be anywhere in the stream; they will just be plucked out by the logger 
+  // Tags can be anywhere in the stream; they will just be plucked out by the logger
   logger() << "Logger demo test message " << 5 << core << info << EOM;
 
   // std::endl and other stream manipulators are theoretically allowed, and will just treat the message as a stringstream, but this is not thoroughly tested, so let me (Ben) know if anything weird happens if you try to do this.
@@ -87,7 +87,7 @@ void beispiel()
 
   // Test the log
   logger() << core << "log message with two tags!" << std::endl << "New line, but not new message!" << err << nonfatal << EOM;
-  
+
   // Read INI file
   IniParser::IniFile iniFile;
   iniFile.readFile("gambit.yaml");
@@ -104,7 +104,7 @@ void beispiel()
 
   // Set up the printer (redirection of scan output)
   Printers::PrinterManager printerManager(iniFile.getPrinterNode());
-                                
+
   // Set up dependency resolver
   DRes::DependencyResolver dependencyResolver(Core(), Models::modelClaw(), iniFile, Utils::typeEquivalencies(), *printerManager.printerptr);
 
@@ -193,13 +193,13 @@ int main( int, const char*[] )
   // logsetup::setLogLevel(logsetup::sDEBUG4);   // log all
   // logsetup::setEchoLevel(logsetup::sINFO); // echo only relevant logs
   // GAMBIT_MSG_INFO("starting example");
-  
+
   // ****************
   // Models demo code START
   // ****************
   cout << endl;
   cout << "*** Start Models demo ***" << endl;
-  
+
   // See Models/models/MSSM.hpp for the definitions of the models referenced
   // here.
 
@@ -213,34 +213,34 @@ int main( int, const char*[] )
   //
   // Model selected by user is CMSSM_demo
   //
-  
+
   // ---- Resolve dependencies --------------
-  
+
   // CMSSM_demo parameters dependency
   //Models::CMSSM_demo::Functown::primary_parameters.resolveDependency(
   //                              &TEMP_ScannerBit::Functown::generate_parameters);
-  
+
   // CMSSM_demo interpret_as_parent dependencies
   //Models::CMSSM_demo::Functown::MSSM_demo_parameters.resolveDependency(
   //                              &Models::CMSSM_demo::Functown::primary_parameters);
   //Models::CMSSM_demo::Functown::MSSM_demo_parameters.resolveDependency(
   //                              &ExampleBit_A::Functown::nevents_dbl);
-  
+
   // MSSM_demo interpret_as_parent dependency
   // Note that the MSSM_demo_parameters come from the CMSSM_demo functor, not from
   // the 'primary' functor in the MSSM_demo namespace (this one would only be used
   // if MSSM_demo was the model set for the run)
   //Models::MSSM_demo::Functown::test_parent_I_parameters.resolveDependency(
   //                              &Models::CMSSM_demo::Functown::MSSM_demo_parameters);
-  
+
   // ---- begin run ---------------
-  
+
   // ScannerBit: creates alpha_parameters
   //TEMP_ScannerBit::Functown::generate_parameters.calculate();
-  
+
   // Models: insert alpha_parameters into primary parameters functor
   //Models::CMSSM_demo::Functown::primary_parameters.calculate();
-  
+
   // Model parameters now ready for delivery to other functors
   // e.g. interpret_as_parent
   //ExampleBit_A::Functown::nevents_dbl.calculate(); //interpret_as_parent depends
@@ -248,12 +248,12 @@ int main( int, const char*[] )
   //Models::CMSSM_demo::Functown::MSSM_demo_parameters.calculate();
   // Go up another level:
   //Models::MSSM_demo::Functown::test_parent_I_parameters.calculate();
-  
+
   // -------- check output ----------------------
   // To make sure things ran sensibly, lets see what happened:
   //cout<<endl;
   //cout<<"Results from toy run sequence:"<<endl;
-  
+
   //cout<<"  TEMP_ScannerBit:"<<endl;
   //cout<<"    alpha_parameters:"<<endl;
   //std::map<std::string,double> alphapars = TEMP_ScannerBit::Functown::generate_parameters();
@@ -272,11 +272,11 @@ int main( int, const char*[] )
   //Models::MSSM_demo::Functown::test_parent_I_parameters.valuePtr()->print();
   //cout<<endl;
   //============== end toy sequence ============================================
-    
-    
+
+
   // Now just a bunch of leftover old tests of Models. Deleted some stuff
   // from here that no longer works (mostly old way of setting parameters)
-  
+
 
   cout<<""<<endl;
   cout<<"Retrieving model names and lineages from their namespaces..."<<endl;
@@ -294,10 +294,10 @@ int main( int, const char*[] )
   // So, every model parameterisation is now contained in a structure very
   // similar to a module, and every parameter is wrapped in a functor identical
   // to those wrapping module functions. Let's see what this lets us do,
-  // focusing on CMSSM::I. Note that most of the "capabilities" have ugly names 
+  // focusing on CMSSM::I. Note that most of the "capabilities" have ugly names
   // because they are auto-generated case, with enough info to avoid name
   // clashes. Only explicitly specified capabilities will have a "normal" name.
-  
+
   cout << "My name is " << Models::CMSSM_demo::Accessors::name() << endl;
   cout << " I can calculate: " << endl << Models::CMSSM_demo::Accessors::iCanDo << endl;
   cout << " ...but I may need: " << endl << Models::CMSSM_demo::Accessors::iMayNeed << endl;
@@ -309,16 +309,16 @@ int main( int, const char*[] )
   //       Gambit::MODEL::Tags::FUNCTION is Gambit::MODEL::Tags::M0 (local to module scope, so this name is ok)
   // Which tag is which?
   // Accessors::provides<Gambit::Tags::CAPABILITY>
-  
+
   // FUNCTION == CAPABILITY in this case.
   if (Models::CMSSM_demo::Accessors::provides("Mstop")) {
     cout << "Core says: report on Mstop!" << endl;
     cout << "  " << Models::CMSSM_demo::Accessors::name() << " says: ";
-    // Call the module function by its functor 
+    // Call the module function by its functor
     Models::CMSSM_demo::Functown::Mstop.calculate();
-    cout << "  " << Models::CMSSM_demo::Accessors::name() << " says: " << Models::CMSSM_demo::Functown::Mstop(0) << endl ; 
+    cout << "  " << Models::CMSSM_demo::Accessors::name() << " says: " << Models::CMSSM_demo::Functown::Mstop(0) << endl ;
   }
-  
+
   /* UPDATE! There is now a functor wrapping the ModelParameters objects, so we
      can access the parameters this way now: */
   if (Models::CMSSM_demo::Accessors::provides("CMSSM_demo_parameters"))
@@ -331,11 +331,11 @@ int main( int, const char*[] )
     // First, make sure the functor has "run" so that it has obtained its values
     // from the alpha_parameters map supplied by TEMP_ScannerBit.
     Models::CMSSM_demo::Functown::primary_parameters.calculate(); //Already done, but doing it again won't hurt
-    
+
     // Next, grab a safe pointer to the model object
     // Cannot get the object using the () method because this *copies* the object stored in "value".
     safe_ptr<ModelParameters> CMSSMIsafeptr = Models::CMSSM_demo::Functown::primary_parameters.valuePtr();
-    
+
     // Now we can do stuff with the ModelParameters object!
     cout << "  " << Models::CMSSM_demo::Accessors::name() << " says: M0 = " << \
       CMSSMIsafeptr->getValue("M0")<< " (functor safe_ptr-style)" <<endl ;
@@ -345,7 +345,7 @@ int main( int, const char*[] )
       CMSSMIsafeptr->getValue("tanb")<< " (functor safe_ptr-style)" <<endl ;
     cout<<"Dumping CMSSM::I parameters...";
     CMSSMIsafeptr->print();
-        
+
     // We can change the parameters if we like:
     // update: NOT ANYMORE WE CAN'T. Parameters need to be supplied to models
     // via the dependency system (via alpha_parameters capability)
@@ -353,20 +353,20 @@ int main( int, const char*[] )
        is indeed for use by ScannerBit, not for general use by modules. */
     /*ModelParameters* CMSSMIrawptr = Models::CMSSM_demo::Functown::primary_parameters.rawvaluePtr();
     std::vector<str> keys = CMSSMIsafeptr->getKeys();
-  
+
     srand (time(NULL));    // initialize random seed
     for (std::vector<str>::iterator it = keys.begin(); it!=keys.end(); ++it) {
       CMSSMIrawptr->setValue(*it, rand()%1000);
     }
-    
+
     cout<<"Dumping altered CMSSM_demo parameters...";
     CMSSMIsafeptr->print();
     */
-  }     
-  
+  }
+
   // Model congruency tests
   // ------------------------
-  
+
   cout<<endl;
   cout<<"Model congruency tests:"<<endl;
   cout<<"Checking congruency of "<<Models::CMSSM_demo::Accessors::name()<<"..."<<endl;
@@ -377,23 +377,23 @@ int main( int, const char*[] )
   cout<<"is descendant of DMHalo_base_demo?  :"<<Models::CMSSM_demo::is_descendant_of("DMHalo_base_demo",&Models::modelClaw())<<endl;
   cout<<"is descendant of Gaussian_Halo_demo?:"<<Models::CMSSM_demo::is_descendant_of("Gaussian_Halo_demo",&Models::modelClaw())<<endl;
   cout<<endl;
-  
+
   // New way of checking congruency using global lineage database
   cout<<"Checking congruency of "<<Models::CMSSM_demo::Accessors::name()<<" using database..."<<endl;
   cout<<"lineage is:"<< Models::modelClaw().get_lineage("CMSSM_demo") <<endl;
   cout<<"is descendant of or == MSSM_demo?     :"<<Models::modelClaw().descended_from("CMSSM_demo","MSSM_demo")<<endl;
   cout<<"is descendant of or == CMSSM_demo?    :"<<Models::modelClaw().descended_from("CMSSM_demo","CMSSM_demo")<<endl;
   cout<<"is descendant of or == CMSSM_II_demo? :"<<Models::modelClaw().descended_from("CMSSM_demo","CMSSM_II_demo")<<endl;
-    
+
   // Can now check ancestry using global 'descendants' database
   cout<<"Finding descendants of "<<Models::MSSM_demo::Accessors::name()<<" using database..."<<endl;
   cout<<"descendants are:"<< Models::modelClaw().get_descendants("MSSM_demo") <<endl;
   cout<<"is ancestor of or == MSSM_demo?     :"<<Models::modelClaw().ancestor_of("MSSM_demo","MSSM_demo")<<endl;
   cout<<"is ancestor of or == CMSSM_demo?    :"<<Models::modelClaw().ancestor_of("MSSM_demo","CMSSM_demo")<<endl;
   cout<<"is ancestor of or == CMSSM_II_demo? :"<<Models::modelClaw().ancestor_of("MSSM_demo","CMSSM_II_demo")<<endl;
-            
+
   // Interpret_as_parent features
-  // (currently just function wrapped in a functor, provided PARENT parameter 
+  // (currently just function wrapped in a functor, provided PARENT parameter
   // object as a CAPABILITY)
   // I guess the core needs to do something like this:
   str model = "CMSSM_demo";
@@ -408,20 +408,20 @@ int main( int, const char*[] )
     cout << "Dependencies: "<<deps[0].first<<", "<<deps[0].second<<endl;
     reqs =  Models::CMSSM_demo::Functown::MSSM_demo_parameters.backendreqs();
     //cout << "Requirements: "<<reqs[0].first<<", "<<reqs[0].second<<endl; segfaults if no reqs?
-    
+
     // Resolve dependency by hand
     Models::CMSSM_demo::Functown::MSSM_demo_parameters.resolveDependency(\
         &Models::CMSSM_demo::Functown::primary_parameters);
     // Have now added an extra dependency, resolve this too:
     Models::CMSSM_demo::Functown::MSSM_demo_parameters.resolveDependency(\
         &ExampleBit_A::Functown::nevents_dbl);
-    
+
     // Make sure nevents is computed first!
     ExampleBit_A::Functown::nevents_dbl.calculate();
 
     // Compute the parent parameters
     cout<<"Ok use my parameters to compute the MSSM_demo parameters."<<endl;
-    cout<<"Models::CMSSM_demo::Functown::MSSM_demo_parameters.calculate()"<<endl; 
+    cout<<"Models::CMSSM_demo::Functown::MSSM_demo_parameters.calculate()"<<endl;
     Models::CMSSM_demo::Functown::MSSM_demo_parameters.calculate();
     // safe_ptr to parent parameters object
     safe_ptr<ModelParameters> CMSSMI_parent_safeptr = \
@@ -430,13 +430,13 @@ int main( int, const char*[] )
     CMSSMI_parent_safeptr->print();
     // Currently cannot tell from a parameter object what model the parameters
     // are for. I will add an extra string in there for this purpose.
-    
+
   }
   else
   {
     cout<<"...no.";
   }
-  
+
   /* Climb up the model tree another level
      CMSSM_demo -> MSSM_demo -> test_parent */
   cout<<"Compute test_parent parameters using MSSM_demo parameters which were just\
@@ -447,20 +447,21 @@ int main( int, const char*[] )
   Models::MSSM_demo::Functown::test_parent_I_parameters.resolveDependency(\
       &Models::CMSSM_demo::Functown::MSSM_demo_parameters);
   // Compute the parent parameters
-  cout<<"Models::MSSM_demo::Functown::test_parent_I_parameters.calculate()"<<endl; 
+  cout<<"Models::MSSM_demo::Functown::test_parent_I_parameters.calculate()"<<endl;
   Models::MSSM_demo::Functown::test_parent_I_parameters.calculate();
   // safe_ptr to parent parameters object
   safe_ptr<ModelParameters> MSSMI_parent_safeptr = \
                 Models::MSSM_demo::Functown::test_parent_I_parameters.valuePtr();
   cout<<"test_parent parameters:"<<endl;
   MSSMI_parent_safeptr->print();
-  
-  
+
+
   cout << "*** End Models demo ***" << endl;
   cout << endl;
   // ****************
   // Models demo code END
   // ****************
+
 
   // Necessary by-hand dependency resolution (to avoid segfaults)
   ExampleBit_A::Functown::nevents_int.resolveDependency(&ExampleBit_A::Functown::nevents_dbl);
@@ -468,7 +469,7 @@ int main( int, const char*[] )
   ExampleBit_B::Functown::nevents_postcuts.resolveBackendReq(&Gambit::Backends::LibFirst_1_1::Functown::awesomenessByAnders);
   ExampleBit_B::Functown::nevents_postcuts.resolveBackendReq(&Gambit::Backends::LibFirst_1_1::Functown::byRefExample);
   ExampleBit_B::Functown::nevents_postcuts.resolveBackendReq(&Gambit::Backends::LibFirst_1_1::Functown::byRefExample2);
-  
+
 
   // for the fastsim backend
   ExampleBit_A::Functown::fast_sim.resolveBackendReq(&Gambit::Backends::LibFastSim_1_0::Functown::FastSim_Init);
@@ -480,21 +481,21 @@ int main( int, const char*[] )
   cout << " I can calculate: " << endl << ExampleBit_A::Accessors::iCanDo << endl;
   cout << " ...but I may need: " << endl << ExampleBit_A::Accessors::iMayNeed << endl;
   cout << endl;
-  
+
   cout << "I can do nevents (tag-style): " << ExampleBit_A::Accessors::provides<Tags::nevents>() << endl;
   cout << "I can do nevents (string-style): " << ExampleBit_A::Accessors::provides("nevents") << endl;
-  if (ExampleBit_A::Accessors::requires("nevents_like","nevents")) { 
+  if (ExampleBit_A::Accessors::requires("nevents_like","nevents")) {
     cout << "I require nevents_like to do this though." << endl;
   }
   cout << "I can do nevents_like: " << ExampleBit_A::Accessors::provides("nevents_like") << endl;
-  if (ExampleBit_A::Accessors::requires("nevents","nevents_like")) { 
+  if (ExampleBit_A::Accessors::requires("nevents","nevents_like")) {
     cout << "I require nevents to do this though." << endl;
   }
   //cout << "I can do nevents_postcuts (tag-style) " << ExampleBit_A::Accessors::provides<Tags::nevents_postcuts>() << endl;
   cout << "I can do nevents_postcuts: " << ExampleBit_A::Accessors::provides("nevents_postcuts") << endl;
   cout << "I can do xsection: " << ExampleBit_A::Accessors::provides("xsection") << endl;
   cout << "I can do id: " << ExampleBit_A::Accessors::provides("id") << endl;
- 
+
 
   cout << "Core says: report on n_events!" << endl;
   cout << "  " << ExampleBit_A::Accessors::name() << " says: ";
@@ -524,7 +525,7 @@ int main( int, const char*[] )
  if (ExampleBit_A::Accessors::provides("event_gen"))
   {
     ExampleBit_A::Functown::Aldos_evgen.calculate();
-    HEP_Simple_Lib::Event myevent = ExampleBit_A::Functown::Aldos_evgen(0); 
+    HEPUtils::Event myevent = ExampleBit_A::Functown::Aldos_evgen(0);
     cout << " the number of muons generated " << myevent.visible_particles().size() << endl;
   }
 
@@ -546,7 +547,7 @@ int main( int, const char*[] )
   std::vector<sspair> tempdeps = ExampleBit_B::Functown::nevents_postcuts.dependencies();
   for (std::vector<sspair>::iterator it = tempdeps.begin() ; it != tempdeps.end(); ++it)
   {
-    cout << it->first << "   " << it->second << endl;        
+    cout << it->first << "   " << it->second << endl;
   }
 
   cout << "I can do nevents " << ExampleBit_B::Accessors::provides("nevents") << endl;
@@ -633,7 +634,7 @@ int main( int, const char*[] )
   // cout << "I can do SMparameters " << SUSYspecBit::Accessors::provides("SMparameters") << endl;
   // cout << "I can do CMSSMparameters " << SUSYspecBit::Accessors::provides("CMSSMparameters") << endl;
   // cout << "I can do MSSMsoftmasses " << SUSYspecBit::Accessors::provides("MSSMsoftmasses") << endl;
-  // 
+  //
   // cout << "Core says: tell me about MSSMspectrum!" << endl;
   // deps =  SUSYspecBit::Functown::genMSSMspec.dependencies();
   // cout << "Dependencies: "<<deps[0].first<<", "<<deps[0].second<<endl;
@@ -651,10 +652,10 @@ int main( int, const char*[] )
     cout << "    neut1 mass = " << spectrum->MASS.neut1 << endl;
   }
   */
-  
+
 
   // Logging example
-  // DEPRECATED! 
+  // DEPRECATED!
   // try{
   //   GAMBIT_MSG_LOG("GAMBIT example");
   // }catch( exceptions::GAMBIT_exception_base & e){
@@ -663,13 +664,14 @@ int main( int, const char*[] )
 
   cout << "Testing Farray stuff" << endl;
   ExampleBit_A::Functown::do_Farray_stuff.resolveBackendReq(&Gambit::Backends::LibFarrayTest_1_0::Functown::commonBlock);
-  ExampleBit_A::Functown::do_Farray_stuff.resolveBackendReq(&Gambit::Backends::LibFarrayTest_1_0::Functown::printStuff); 
-  ExampleBit_A::Functown::do_Farray_stuff.resolveBackendReq(&Gambit::Backends::LibFarrayTest_1_0::Functown::set_d);  
-  ExampleBit_A::Functown::do_Farray_stuff.resolveBackendReq(&Gambit::Backends::LibFarrayTest_1_0::Functown::fptrRoutine);    
-  ExampleBit_A::Functown::do_Farray_stuff.resolveBackendReq(&Gambit::Backends::LibFarrayTest_1_0::Functown::doubleFuncArray1);      
+  ExampleBit_A::Functown::do_Farray_stuff.resolveBackendReq(&Gambit::Backends::LibFarrayTest_1_0::Functown::printStuff);
+  ExampleBit_A::Functown::do_Farray_stuff.resolveBackendReq(&Gambit::Backends::LibFarrayTest_1_0::Functown::set_d);
+  ExampleBit_A::Functown::do_Farray_stuff.resolveBackendReq(&Gambit::Backends::LibFarrayTest_1_0::Functown::fptrRoutine);
+  ExampleBit_A::Functown::do_Farray_stuff.resolveBackendReq(&Gambit::Backends::LibFarrayTest_1_0::Functown::doubleFuncArray1);
   ExampleBit_A::Functown::do_Farray_stuff.resolveBackendReq(&Gambit::Backends::LibFarrayTest_1_0::Functown::doubleFuncArray2);
-  ExampleBit_A::Functown::do_Farray_stuff.resolveBackendReq(&Gambit::Backends::LibFarrayTest_1_0::Functown::doubleFunc);            
+  ExampleBit_A::Functown::do_Farray_stuff.resolveBackendReq(&Gambit::Backends::LibFarrayTest_1_0::Functown::doubleFunc);
   ExampleBit_A::Functown::do_Farray_stuff.calculate();
+
 
   }
 

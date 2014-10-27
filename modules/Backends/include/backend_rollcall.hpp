@@ -37,10 +37,11 @@
 #include "frontends/micromegas.hpp"
 #include "frontends/FastSim.hpp"
 #include "frontends/nulike.hpp"
+#include "frontends/gamLike.hpp"
 #include "frontends/DDCalc0.hpp"
 #include "frontends/HiggsBounds.hpp"
 #include "frontends/HiggsSignals.hpp"
-#include "frontends/BOSSedPythia.hpp"
+#include "frontends/Pythia_8_186.hpp"
 
 //#include "frontend_Pythia8.hpp"
 

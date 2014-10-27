@@ -3,17 +3,13 @@
 #include <vector>
 #include <exception>
 
-#include "ColliderBit_macros.hpp"
-/// @TODO worry about adding Analyses later.
-//#include "Analysis.hpp"
-#include "Py8Utils.hpp"
-#include "Event.hpp"
-
 /// @note To configure a new collider, follow these steps:
-/// @note (To configure a new subprocess group, only do STEPS >= 5) 
-/// @note STEP1)  #include the header from your favorite simulation software
-/// @todo ** Backend properly **
-#include "Pythia8/Pythia.h"
+/// @note (To configure a new subprocess group, only do STEPS >= 5)
+/// @note STEP1)  BOSS your favorite collider simulator. Then:
+#include "shared_types.hpp"
+
+/// Some other includes
+#include "ColliderBit_macros.hpp"
 
 
 namespace Gambit {
@@ -22,12 +18,6 @@ namespace Gambit {
     /// @note Abstract base class Collider
     template <typename EventT>
     class Collider {
-    protected:
-      /// @TODO implement these properly!!
-      /// @TODO Is nevts any of this class's fuggin business??
-      double xsec;
-      int nevts;
-
     public:
       typedef EventT EventType;
       Collider() { }
@@ -35,7 +25,7 @@ namespace Gambit {
 
       /// @name Initialization functions
       //@{
-      
+
       /// @brief Default settings for each sub-class.
       virtual void defaults() = 0;
       /// @brief Settings parsing and initialization for each sub-class.
@@ -57,6 +47,7 @@ namespace Gambit {
     class PythiaBase : public Collider<Pythia8::Event> {
       protected:
         Pythia8::Pythia* _pythiaInstance;
+        std::vector<std::string> _settings;
 
         /// @note ColliderBit will catch this, then use ColliderBit_error()
         class EventFailureError : public std::exception {
@@ -66,7 +57,7 @@ namespace Gambit {
         };
 
       public:
-        PythiaBase() { _pythiaInstance = new Pythia8::Pythia("DUMMYPATH", false); }
+        PythiaBase() { _pythiaInstance = new Pythia8::Pythia("../extras/boss/bossed_pythia_source/xmldoc", false); }
         virtual ~PythiaBase() { delete _pythiaInstance; }
 
         /// @name Initialization functions
@@ -76,34 +67,20 @@ namespace Gambit {
         virtual void init(const std::vector<std::string>& settings) {
           /// @note As long as the settings are pythia commands, no parsing!
           for(const auto command : settings) { set(command); }
-
           _pythiaInstance->init();
+        }
+
+        void set(const std::string& command) {
+          _pythiaInstance->readString(command);
+          _settings.push_back(command);
         }
         //@}
 
-        /// @name Access the internal Pythia instance (non-const and const versions)
+        /// @name Access the internals
         //@{
-        Pythia8::Pythia& pythia() { return *_pythiaInstance; }
-        const Pythia8::Pythia& pythia() const { return *_pythiaInstance; }
-        //@}
-
-        /// @name Parameter setting functions
-        /// @todo Throw an exception if already initialized
-        //@{
-        void set(const std::string& key, int val)
-            { _pythiaInstance->settings.mode(key, val); }
-        void set(const std::string& key, bool val)
-            { _pythiaInstance->settings.flag(key, val); }
-        void set(const std::string& key, double val)
-            { _pythiaInstance->settings.parm(key, val); }
-        void set(const std::string& key, const std::string& val)
-            { _pythiaInstance->settings.word(key, val); }
-        void set(const std::string& key, vector<double> val)
-            { _pythiaInstance->settings.pvec(key, val); }
-        void set(const std::string& key, vector<int> val)
-            { _pythiaInstance->settings.mvec(key, val); }
-        void set(const std::string& command)
-            { _pythiaInstance->readString(command); }
+        /// I might use this to make a copy constructor. still thinking --Abram
+        const std::vector<std::string> getSettings() const { return _settings; }
+        Pythia8::Pythia* pythia() { return _pythiaInstance; }
         //@}
 
         /// @name Event generation functions
@@ -120,8 +97,7 @@ namespace Gambit {
     /// @brief Create a new Pythia Collider based on a name string
     ///
     /// The caller is responsible for deleting the returned PythiaBase.
-    PythiaBase* mkPythia(const std::string& name,
-                         const std::vector<std::string>& settings);
+    PythiaBase* mkPythia(const std::string&, const std::vector<std::string>&);
 
 /// @note STEP3)  Continue to Collider.cpp
   }

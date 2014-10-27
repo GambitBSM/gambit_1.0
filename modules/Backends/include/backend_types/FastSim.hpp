@@ -8,7 +8,7 @@
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-///   
+///
 ///  \author Aldo Saavedra
 ///          (a.saavedra@physics.usyd.edu.au)
 //  \date 2014 Feb
@@ -20,8 +20,10 @@
 #define __FastSim_types_hpp__
 
 #include "FastSim.hpp"
-#include "Event.hpp"
+#include "HEPUtils/Event.h"
+
 /*
+#include "Event.hpp"
 #include "Jet.hpp"
 
 namespace Gambit

@@ -177,7 +177,7 @@ ObsLikes:
 
   # Uncomment 'purpose' and one of the 'capability' entries to test BOSS
   - purpose:      Observable
-    capability:   BOSSedPythia_tester
+    capability:   Pythia_tester
   #  capability:   BOSS_tester
 
   # Test multi-required-models

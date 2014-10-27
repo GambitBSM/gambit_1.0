@@ -29,8 +29,7 @@
 
 #include <vector>
 #include <memory>
-/// \todo Some of these includes may eventually need to be in shared_types
-/// \note They may be shared between backends, depending on how we backend Pythia, Delphes, FastSim, etc...
+#include "HEPUtils/Event.h"
 #include "Delphes3Backend.hpp"
 #include "Analysis.hpp"
 #include "Collider.hpp"
@@ -45,7 +44,7 @@ namespace Gambit {
     /// @brief What is this ColliderLogLikes struct mentioned in the rollcall??
     typedef vector<vector<SignalRegionData>> ColliderLogLikes;
 
-    /// @brief ColliderBit is using vectors like this quite often...
+    /// @brief Turns out we will only use this container once. Oh well.
     template <typename T>
     class SharedPointerVector : public vector<shared_ptr<T>> {
       /// @note Not as thread-safe as it looks, since it uses shared_ptr.
@@ -64,9 +63,6 @@ namespace Gambit {
       }
       void inline clear() { while(vector<shared_ptr<T>>::size()) pop_back(); }
     };
-
-    /// @brief A list of collider subclasses to be run during a scan
-    typedef SharedPointerVector<PythiaBase> PythiaPointerVector;
 
     /// @brief A list of analyses to be run on some events
     typedef SharedPointerVector<Analysis> AnalysisPointerVector;

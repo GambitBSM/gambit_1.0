@@ -114,10 +114,10 @@ namespace Gambit
 
     // Check whether functor matches observableType
     // Matches capability, type, function and module name
-    bool funcMatchesIniEntry(functor *f, const IniParser::ObservableType &e)
+    bool funcMatchesIniEntry(functor *f, const IniParser::ObservableType &e, const Utils::type_equivalency & eq)
     {
       if (     stringComp( e.capability, (*f).capability() )
-           and stringComp( e.type, (*f).type() )
+           and typeComp( e.type, (*f).type(), eq)
            and stringComp( e.function, (*f).name() )
            and stringComp( e.module, (*f).origin() ) )
            return true;
@@ -185,6 +185,26 @@ namespace Gambit
       // TODO: Implement wildcard and regex comparison
       return false;
     }
+
+    // Same thing for types
+    bool typeComp(str s1, str s2, const Utils::type_equivalency & eq)
+    {
+      bool match1, match2;
+      if (stringComp(s1, s2)) return true;  // Does it just match?
+      // Otherwise loop over equivalence classes.
+      for (auto it1 = eq.equivalency_classes.begin(); it1 != eq.equivalency_classes.end(); it1++)
+      {
+        match1 = match2 = false;
+        for (auto it2 = it1->begin(); it2 != it1->end(); it2++)
+        {
+          if (s1 == *it2) match1 = true;
+          if (stringComp(*it2, s2)) match2 = true;
+        }
+        if (match1 and match2) return true;
+      }
+      return false;
+    }
+
 
 
     ///////////////////////////////////////////////////
@@ -717,7 +737,7 @@ namespace Gambit
                 ( masterGraph[*vi]->type() == quantity.second  or quantity.second == "" ) )
           // with inifile entry, we check capability, type, function name and
           // module name.
-            and ( entryExists ? funcMatchesIniEntry(masterGraph[*vi], *depEntry) : true ) )
+            and ( entryExists ? funcMatchesIniEntry(masterGraph[*vi], *depEntry, *boundTEs) : true ) )
           {
             // Add to vertex candidate list
             vertexCandidates.push_back(*vi);
@@ -973,7 +993,7 @@ namespace Gambit
       for (IniParser::ObservablesType::const_iterator it =
           entries.begin(); it != entries.end(); ++it)
       {
-        if ( funcMatchesIniEntry(masterGraph[toVertex], *it ) )
+        if ( funcMatchesIniEntry(masterGraph[toVertex], *it, *boundTEs) )
         {
           auxEntryCandidates.push_back(&(*it));
         }
@@ -1149,7 +1169,7 @@ namespace Gambit
         // Without inifile entry, just match any capability-type pair exactly.
         if ( std::find(reqs.begin(), reqs.end(), (*itf)->quantity()) != reqs.end() 
         // With inifile entry, we also check capability, type, function name and module name.
-        and ( entryExists ? funcMatchesIniEntry(*itf, *depEntry) : true ) )
+        and ( entryExists ? funcMatchesIniEntry(*itf, *depEntry, *boundTEs) : true ) )
         {
 
           // Has the backend vertex already been disabled by the backend system?

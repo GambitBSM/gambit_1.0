@@ -80,7 +80,6 @@ ObsLikes:
 Auxiliaries:
 
   #ColliderBit options (note, these ones are mandatory at this moment)
-  #TODO: Put in all the new options from the changes to ColliderBit and test that shite!!!!
 
   - capability: ListOfAnalyses
     function: specifyAnalysisPointerVector
@@ -93,9 +92,14 @@ Auxiliaries:
       nEvents: 20
       slhaFilename: "ColliderBit/data/sps1aWithDecays.spc" 
       pythiaNames: ["Pythia_SUSY_LHC_8TeV", "Pythia_glusq_LHC_8TeV"]
-      # Here's an example of using the yaml file to choose a subgroup
-      # TODO: Oh shit! What if I want to configure them all this way?
-      Pythia_SUSY_LHC_8TeV: ["SUSY:idA = 1000021", "SUSY:idB = 1000021"]
+      Pythia_SUSY_LHC_8TeV: 2  # <-- How many configurations of this one you want
+  
+  - capability:  hardScatteringSim
+    function:  getPythia
+    options:
+      Pythia_SUSY_LHC_8TeV:
+        pythiaOptions_1: ["SUSY:idA = 1000021", "SUSY:idB = 1000021"]
+        pythiaOptions_2: ["SUSY:idVecA = 1000001,1000002,1000003,1000004,2000001,2000002,2000003,2000004", "SUSY:idVecB = 1000001,1000002,1000003,1000004,2000001,2000002,2000003,2000004"]
 
   - capability: GambitColliderEvent
     function: reconstructDelphesEvent
@@ -109,7 +113,7 @@ Auxiliaries:
 
   - capability: AnalysisNumbers
     dependencies:
-    - {capability: "GambitColliderEvent", type: "HEP_Simple_Lib::Event", function: "reconstructDelphesEvent"}
+    - {capability: "GambitColliderEvent", type: "HEPUtils::Event", function: "reconstructDelphesEvent"}
 
 #########################
 # Logging setup

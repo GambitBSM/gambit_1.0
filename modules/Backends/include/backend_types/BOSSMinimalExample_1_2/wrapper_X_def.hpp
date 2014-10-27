@@ -12,49 +12,49 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     // Member functions: 
     inline X& X::return_ref_this()
     {
-        return reference_returner< X, Abstract_X >( BEptr->return_ref_this_GAMBIT() );
+        return reference_returner< X, Abstract_X >( BEptr->return_ref_this__BOSS() );
     }
     
     inline X* X::return_ptr_this()
     {
-        return pointer_returner< X, Abstract_X >( BEptr->return_ptr_this_GAMBIT() );
+        return pointer_returner< X, Abstract_X >( BEptr->return_ptr_this__BOSS() );
     }
     
     inline X X::operator+(X& x_rhs)
     {
-        return X( BEptr->operator_plus_GAMBIT(*x_rhs.BEptr) );
+        return X( BEptr->operator_plus__BOSS(*x_rhs.BEptr) );
     }
     
     
     // Wrappers for original constructors: 
     inline X::X() :
         WrapperBase<Abstract_X>( __factory0(), false ),
-        i(BEptr->i_ref_GAMBIT())
+        i(BEptr->i_ref__BOSS())
     {
-        BEptr->wrapper_GAMBIT(this);
+        BEptr->wrapper__BOSS(this);
     }
     
     inline X::X(int i_in) :
         WrapperBase<Abstract_X>( __factory1(i_in), false ),
-        i(BEptr->i_ref_GAMBIT())
+        i(BEptr->i_ref__BOSS())
     {
-        BEptr->wrapper_GAMBIT(this);
+        BEptr->wrapper__BOSS(this);
     }
     
     // Special pointer-based constructor: 
     inline X::X(Abstract_X* in, bool memvar_in) :
         WrapperBase<Abstract_X>( in, memvar_in ),
-        i(BEptr->i_ref_GAMBIT())
+        i(BEptr->i_ref__BOSS())
     {
-        BEptr->wrapper_GAMBIT(this);
+        BEptr->wrapper__BOSS(this);
     }
     
     // Copy constructor: 
     inline X::X(const X& in) :
         WrapperBase<Abstract_X>(in),
-        i(BEptr->i_ref_GAMBIT())
+        i(BEptr->i_ref__BOSS())
     {
-        BEptr->wrapper_GAMBIT(this);
+        BEptr->wrapper__BOSS(this);
     }
     
     // Assignment operator: 

@@ -37,48 +37,55 @@
 #define MODULE DarkBit
 START_MODULE
 
-  #define CAPABILITY PointInit  // Part of it will be moved to backend initialization
+//  #define CAPABILITY PointInit  // Part of it will be moved to backend initialization
+//  START_CAPABILITY
+//
+//    //The function below has been moved into the DarkSUSY
+//    //backend initialization and should be eventually deleted
+//    #define FUNCTION DarkBit_PointInit_MSSM
+//      START_FUNCTION(void, INIT_FUNCTION)
+//      DEPENDENCY(MSSMspectrum, eaSLHA) 
+//      ALLOW_MODELS(CMSSM_demo)
+//      // Initialize DarkSUSY with SLHA file
+//      BACKEND_REQ(dsinit, (), void, ())
+//      BACKEND_REQ(dsrdinit, (), void, ())
+//      BACKEND_REQ(dsSLHAread, (), void, (char*, int&, int))
+//      BACKEND_REQ(dsprep, (), void, ())
+//    #undef FUNCTION
+//
+//    #define FUNCTION DarkBit_PointInit_CMSSM
+//      START_FUNCTION(void, INIT_FUNCTION)
+//      //ALLOW_MODELS(CMSSM_demo)
+//      // Initialize DarkSUSY with isasugra
+//      BACKEND_REQ(dsinit, (), void, ())
+//      BACKEND_REQ(dsrdinit, (), void, ())
+//      BACKEND_REQ(dsgive_model_isasugra, (), void, (double&,double&,double&,double&,double&))
+//      BACKEND_REQ(dssusy_isasugra, (), void, (int&,int&))
+//    #undef FUNCTION
+//
+//    #define FUNCTION DarkBit_PointInit_MSSM7
+//      START_FUNCTION(void, INIT_FUNCTION)
+//      //ALLOW_MODELS(CMSSM_demo)
+//      // Initialize DarkSUSY with dssusy
+//      BACKEND_REQ(dsinit, (), void, ())
+//      BACKEND_REQ(dsrdinit, (), void, ())
+//      BACKEND_REQ(mssmpar, (), DS_MSSMPAR)
+//      BACKEND_REQ(dssusy, (), void, (int&,int&))
+//    #undef FUNCTION
+//
+//    #define FUNCTION DarkBit_PointInit_Default
+//      START_FUNCTION(void, INIT_FUNCTION)
+//    #undef FUNCTION
+//
+//  #undef CAPABILITY  // PointInit
+
+  #define CAPABILITY MSSMspectrum
   START_CAPABILITY
-
-    //The function below has been moved into the DarkSUSY
-    //backend initialization and should be eventually deleted
-    #define FUNCTION DarkBit_PointInit_MSSM
-      START_FUNCTION(void, INIT_FUNCTION)
-      DEPENDENCY(MSSMspectrum, eaSLHA) 
-      ALLOW_MODELS(CMSSM_demo)
-      // Initialize DarkSUSY with SLHA file
-      BACKEND_REQ(dsinit, (), void, ())
-      BACKEND_REQ(dsrdinit, (), void, ())
-      BACKEND_REQ(dsSLHAread, (), void, (char*, int&, int))
-      BACKEND_REQ(dsprep, (), void, ())
+    #define FUNCTION getMSSMspectrum
+      START_FUNCTION(eaSLHA)
+      ALLOW_MODELS(MSSM25)
     #undef FUNCTION
-
-    #define FUNCTION DarkBit_PointInit_CMSSM
-      START_FUNCTION(void, INIT_FUNCTION)
-      //ALLOW_MODELS(CMSSM_demo)
-      // Initialize DarkSUSY with isasugra
-      BACKEND_REQ(dsinit, (), void, ())
-      BACKEND_REQ(dsrdinit, (), void, ())
-      BACKEND_REQ(dsgive_model_isasugra, (), void, (double&,double&,double&,double&,double&))
-      BACKEND_REQ(dssusy_isasugra, (), void, (int&,int&))
-    #undef FUNCTION
-
-    #define FUNCTION DarkBit_PointInit_MSSM7
-      START_FUNCTION(void, INIT_FUNCTION)
-      //ALLOW_MODELS(CMSSM_demo)
-      // Initialize DarkSUSY with dssusy
-      BACKEND_REQ(dsinit, (), void, ())
-      BACKEND_REQ(dsrdinit, (), void, ())
-      BACKEND_REQ(mssmpar, (), DS_MSSMPAR)
-      BACKEND_REQ(dssusy, (), void, (int&,int&))
-    #undef FUNCTION
-
-    #define FUNCTION DarkBit_PointInit_Default
-      START_FUNCTION(void, INIT_FUNCTION)
-    #undef FUNCTION
-
-  #undef CAPABILITY  // PointInit
-
+  #undef CAPABILITY
 
   #define CAPABILITY RD_spectrum
   START_CAPABILITY 
@@ -165,7 +172,8 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION TH_ProcessCatalog_CMSSM
       START_FUNCTION(Gambit::DarkBit::TH_ProcessCatalog)
-      ALLOW_MODELS(CMSSM_demo)
+      ALLOW_MODELS(CMSSM_demo, MSSM25)
+      DEPENDENCY(MSSMspectrum, eaSLHA) 
       BACKEND_REQ(mspctm, (), DS_MSPCTM)
       BACKEND_REQ(dssigmav, (), double, (int&))
       BACKEND_REQ(dsIBffdxdy, (), double, (int&, double&, double&))
@@ -195,13 +203,13 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
-  #define CAPABILITY lnL_FakeLux
-  START_CAPABILITY
-    #define FUNCTION lnL_FakeLux
-      START_FUNCTION(double)
-      DEPENDENCY(DD_couplings, Gambit::DarkBit::DD_couplings)
-    #undef FUNCTION
-  #undef CAPABILITY
+//  #define CAPABILITY lnL_FakeLux
+//  START_CAPABILITY
+//    #define FUNCTION lnL_FakeLux
+//      START_FUNCTION(double)
+//      DEPENDENCY(DD_couplings, Gambit::DarkBit::DD_couplings)
+//    #undef FUNCTION
+//  #undef CAPABILITY
 
   #define CAPABILITY lnL_FermiLATdwarfs
   START_CAPABILITY
@@ -209,7 +217,24 @@ START_MODULE
       START_FUNCTION(double)
       DEPENDENCY(GA_AnnYield, Gambit::BF::BFptr)
     #undef FUNCTION
+    #define FUNCTION lnL_FermiLATdwarfs_gamLike
+      START_FUNCTION(double)
+      DEPENDENCY(GA_AnnYield, Gambit::BF::BFptr)
+      DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)
+      BACKEND_REQ(lnL_dwarfs, (gamLike), double, (const std::vector<double> &, const std::vector<double> &))
+    #undef FUNCTION
   #undef CAPABILITY
+
+  #define CAPABILITY lnL_FermiGC
+  START_CAPABILITY
+    #define FUNCTION lnL_FermiGC_gamLike
+      START_FUNCTION(double)
+      DEPENDENCY(GA_AnnYield, Gambit::BF::BFptr)
+      DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)
+      BACKEND_REQ(lnL_GC, (gamLike), double, (const std::vector<double> &, const std::vector<double> &))
+    #undef FUNCTION
+  #undef CAPABILITY
+
 
   #define CAPABILITY dump_GammaSpectrum
   START_CAPABILITY

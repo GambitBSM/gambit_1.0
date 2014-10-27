@@ -7,12 +7,13 @@
 
 #include "identification.hpp"
 
+// Forward declaration needed by the destructor pattern.
+void wrapper_deleter(CAT_3(BACKENDNAME,_,SAFE_VERSION)::nspace1::nspace2::X*);
+
+
 namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
 {
     
-    
-    // Forward declaration needed by the destructor pattern.
-    void wrapper_deleter(nspace1::nspace2::X*);
     
     namespace nspace1
     {
@@ -22,29 +23,29 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             {
                 public:
     
-                    virtual int& i_ref_GAMBIT() =0;
+                    virtual int& i_ref__BOSS() =0;
     
-                    virtual nspace1::nspace2::Abstract_X* return_ref_this_GAMBIT() =0;
+                    virtual nspace1::nspace2::Abstract_X* return_ref_this__BOSS() =0;
     
-                    virtual nspace1::nspace2::Abstract_X* return_ptr_this_GAMBIT() =0;
+                    virtual nspace1::nspace2::Abstract_X* return_ptr_this__BOSS() =0;
     
-                    virtual nspace1::nspace2::Abstract_X* operator_plus_GAMBIT(nspace1::nspace2::Abstract_X&) =0;
+                    virtual nspace1::nspace2::Abstract_X* operator_plus__BOSS(nspace1::nspace2::Abstract_X&) =0;
     
                 public:
-                    virtual void pointerAssign_GAMBIT(Abstract_X*) =0;
-                    virtual Abstract_X* pointerCopy_GAMBIT() =0;
+                    virtual void pointerAssign__BOSS(Abstract_X*) =0;
+                    virtual Abstract_X* pointerCopy__BOSS() =0;
     
                 private:
                     X* wptr;
     
                 public:
-                    void wrapper_GAMBIT(X* wptr_in)
+                    void wrapper__BOSS(X* wptr_in)
                     {
                         wptr = wptr_in;
                         is_wrapped(true);
                     }
     
-                    X* wrapper_GAMBIT()
+                    X* wrapper__BOSS()
                     {
                         return wptr;
                     }
