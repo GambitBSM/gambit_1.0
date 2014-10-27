@@ -39,10 +39,9 @@ namespace Gambit {
     /// Event labels
     enum specialEvents {INIT = -1, END_SUBPROCESS = -2, FINALIZE = -3};
     /// Delphes stuff
-    /// @todo BOSS delphes? Euthanize delphes?
-    Delphes3Backend* delphes = 0;
-    std::string delphesConfigFilename = "";
+    /// @TODO BOSS delphes? Euthanize delphes?
     bool resetDelphesFlag = true;
+    std::string delphesConfigFilename;
     /// Pythia stuff
     bool resetPythiaFlag = true;
     std::vector<std::string> pythiaNames;
@@ -73,6 +72,21 @@ namespace Gambit {
     }
 
 
+    /// Detector Simulators
+    void getDelphes(shared_ptr<ColliderBit::Delphes_PythiaToHEPUtils> &result) {
+      using namespace Pipes::getDelphes;
+      std::vector<std::string> delphesOptions;
+      if(resetDelphesFlag) {
+        #pragma omp critical (Delphes)
+        {
+          GET_COLLIDER_RUNOPTION(delphesOptions, std::vector<std::string>)
+          result.reset( mkDelphes("", delphesOptions) );
+          resetDelphesFlag = false;
+        }
+      }
+    }
+
+
     /// *** Loop Managers ***
     void operatePythia() {
       using namespace Pipes::operatePythia;
@@ -81,6 +95,7 @@ namespace Gambit {
       logger() << "==================" << endl;
       logger() << "ColliderBit says,";
       logger() << "\"operatePythia() was called.\"" << endl;
+      logger() << "Using Delphes at " << (*Dep::DetectorSim) << endl;
       logger() << "*** NOTE: Each iteration will report:" << endl;
       logger() << "  iteration, event met, thread, counts" << endl;
       logger() << LogTags::info << endl << EOM;
@@ -177,27 +192,20 @@ namespace Gambit {
       result.clear();
 
       /// Get the next event from Pythia8
-      result = (*Dep::hardScatteringSim)->nextEvent();
+      result = (*Dep::HardScatteringSim)->nextEvent();
     }
 
 
     /// Standard Event Format Functions
     void reconstructDelphesEvent(HEPUtils::Event &result) {
       using namespace Pipes::reconstructDelphesEvent;
+      if (*Loop::iteration == FINALIZE) resetDelphesFlag = true;
       if (*Loop::iteration <= INIT) return;
       result.clear();
 
       #pragma omp critical (Delphes)
       {
-        if (resetDelphesFlag) {
-          GET_COLLIDER_RUNOPTION(delphesConfigFilename, std::string)
-          delete delphes;
-          delphes = new Delphes3Backend(delphesConfigFilename);
-          resetDelphesFlag = false;
-        }
-        /// Feed the Pythia8 event to Delphes for detector simulation
-        /// \note Delphes (ROOT) is not thread safe. Critical block necessary.
-        delphes->processEvent(*Dep::hardScatteringEvent, result);
+        (*Dep::DetectorSim)->processEvent(*Dep::HardScatteringEvent, result);
       }
     }
 
@@ -211,7 +219,7 @@ namespace Gambit {
       std::vector<fastjet::PseudoJet> jetparticles;
       std::vector<fastjet::PseudoJet> bhadrons, taus;
 
-      const auto pevt = *Dep::hardScatteringEvent;
+      const auto pevt = *Dep::HardScatteringEvent;
       ptot.reset();
       jetparticles.clear();
       bhadrons.clear();

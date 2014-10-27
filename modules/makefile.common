@@ -393,7 +393,7 @@ DECAYSRC:=$(wildcard $(DECAYDIR)/src/*cpp)
 DECAYOBJS:=$(addprefix $(DECAYDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(DECAYSRC))))
 
 COLLIDERINC:=$(wildcard $(COLLIDERDIR)/include/*hpp) $(wildcard $(COLLIDERDIR)/include/*h)
-COLLIDERSRC:=$(wildcard $(COLLIDERDIR)/src/*cpp) $(wildcard $(COLLIDERDIR)/src/*c) $(wildcard $(COLLIDERDIR)/src/analyses/*cpp) $(wildcard $(COLLIDERDIR)/src/colliders/*cpp)
+COLLIDERSRC:=$(wildcard $(COLLIDERDIR)/src/*cpp) $(wildcard $(COLLIDERDIR)/src/*c) $(wildcard $(COLLIDERDIR)/src/analyses/*cpp) $(wildcard $(COLLIDERDIR)/src/colliders/*cpp) $(wildcard $(COLLIDERDIR)/src/detectors/*cpp)
 COLLIDERDELPHESSRC:=$(wildcard $(COLLIDERDIR)/src/delphes/*Module.cc)
 COLLIDEROBJS:=$(addprefix $(COLLIDERDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(COLLIDERSRC)))) $(addprefix $(COLLIDERDIR)/build/,$(notdir $(patsubst %Module.cc,%Module.o,$(COLLIDERDELPHESSRC)))) $(addprefix $(COLLIDERDIR)/build/,$(notdir $(patsubst %Module.cc,%Module_dict.o,$(COLLIDERDELPHESSRC))))
 
@@ -512,6 +512,11 @@ $(COLLIDERDIR)/build/mt2_bisect.o: $(COLLIDERDIR)/src/analyses/mt2_bisect.cpp \
 	$(CC) $(CFLAGS) -I$(COLLIDERDIR)/src/analyses $(CCEXTRA) -c $< -o $@
 
 $(COLLIDERDIR)/build/Anal%.o: $(COLLIDERDIR)/src/analyses/Anal%.cpp
+	@echo ___________Compiling $<:
+	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
+
+# Detectors...:
+$(COLLIDERDIR)/build/Detector%.o: $(COLLIDERDIR)/src/detectors/Detector%.cpp
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
