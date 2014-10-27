@@ -492,6 +492,28 @@ namespace Gambit {
 //
 //////////////////////////////////////////////////////////////////////////
 
+    void chain_test(double &result)
+    {
+        std::cout << std::endl << "Running decay chain test!" << std::endl << std::endl;
+        using namespace DecayChain;
+        using namespace Pipes::chain_test;
+        DecayTable dt(*Dep::TH_ProcessCatalog);
+        dt.printTable();
+        ChainParticle testChain(vec3(0), &dt, "test1");
+        testChain.generateDecayChainMC(-1,-1);
+        testChain.printChain();
+        testChain.generateDecayChainMC(-1,-1);
+        testChain.printChain();
+        testChain.generateDecayChainMC(-1,-1);
+        testChain.printChain();
+        testChain.generateDecayChainMC(-1,-1);
+        testChain.printChain();
+        testChain.generateDecayChainMC(-1,-1);
+        testChain.printChain();
+        result = 0;
+    }
+
+
     void GA_AnnYield_DarkSUSY(BFptr &result)
     {
         //////////////////////////////////////////////////////////////////////////
@@ -774,6 +796,54 @@ namespace Gambit {
         // Finally, store properties of "chi" in particleProperty list
         TH_ParticleProperty chiProperty(mass, 1);  // Set mass and 2*spin
         catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("chi_10", chiProperty));
+
+
+        TH_ParticleProperty test1Property(10, 0);
+        TH_ParticleProperty test2Property(5, 0);
+        TH_ParticleProperty test3Property(4, 0);
+        TH_ParticleProperty test4Property(1, 0);
+        TH_ParticleProperty test5Property(1, 0);
+        TH_ParticleProperty test6Property(3, 0);        
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("test1", test1Property));
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("test2", test2Property));
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("test3", test3Property));
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("test4", test4Property));
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("test5", test5Property));
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("test6", test6Property));        
+        
+        BFptr test1_23width( new BFconstant(1.0,1));    
+        BFptr test1_24width( new BFconstant(2.0,1));    
+        BFptr test1_456width(new BFconstant(3.0,1));    
+        BFptr test2_56width( new BFconstant(0.5,1));  
+                   
+                                             
+        std::vector<std::string> finalStates_1_23;
+        std::vector<std::string> finalStates_1_24;
+        std::vector<std::string> finalStates_1_456;
+        std::vector<std::string> finalStates_2_56;  
+                                                 
+        TH_Process test1_decay("test1");     
+        finalStates_1_23.push_back("test2");              
+        finalStates_1_23.push_back("test3");                                            
+        TH_Channel channel_1_23(finalStates_1_23, test1_23width);
+        test1_decay.channelList.push_back(channel_1_23);
+        finalStates_1_24.push_back("test2");              
+        finalStates_1_24.push_back("test4");                                            
+        TH_Channel channel_1_24(finalStates_1_24, test1_24width);
+        test1_decay.channelList.push_back(channel_1_24);
+        finalStates_1_456.push_back("test4");              
+        finalStates_1_456.push_back("test5");      
+        finalStates_1_456.push_back("test6");            
+        TH_Channel channel_1_456(finalStates_1_456, test1_456width);
+        test1_decay.channelList.push_back(channel_1_456);
+        catalog.processList.push_back(test1_decay);
+
+        TH_Process test2_decay("test2");     
+        finalStates_2_56.push_back("test5");              
+        finalStates_2_56.push_back("test6");                                                                                        
+        TH_Channel channel_2_56(finalStates_2_56, test2_56width);
+        test2_decay.channelList.push_back(channel_2_56);
+        catalog.processList.push_back(test2_decay);
 
         result = catalog;
     }

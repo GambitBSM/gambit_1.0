@@ -79,7 +79,6 @@ START_MODULE
 
   #undef CAPABILITY  // PointInit
 
-
   #define CAPABILITY RD_spectrum
   START_CAPABILITY 
     #define FUNCTION RD_spectrum_SUSY
@@ -152,10 +151,20 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
+  // Routine for testing decay chain code
+  #define CAPABILITY chain_test_cap
+  START_CAPABILITY
+    #define FUNCTION chain_test
+      START_FUNCTION(double)
+      DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)
+    #undef FUNCTION
+  #undef CAPABILITY
+
   #define CAPABILITY GA_AnnYield
   START_CAPABILITY
     #define FUNCTION GA_AnnYield_DarkSUSY
       START_FUNCTION(Gambit::BF::BFptr)
+//      DEPENDENCY(chain_test_cap, double) // Just a hack to force decay chain test to run first
       DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)
       BACKEND_REQ(dshayield, (), double, (double&,double&,int&,int&,int&))
       BACKEND_REQ(dsibyieldone, (), double, (double&, int&, int&, int&))

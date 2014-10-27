@@ -167,13 +167,16 @@ ObsLikes:
   #  function:     RD_oh2_DarkSUSY
 
   - purpose:      Observable
+    capability:   chain_test_cap
+
+  - purpose:      Observable
     capability:   GA_AnnYield
 
   #- purpose:       Likelihood
   #  capability:    lnL_FermiLATdwarfs
 
-  - purpose:       Likelihood
-    capability:    lnL_oh2
+  #- purpose:       Likelihood
+  #  capability:    lnL_oh2
 
   #- purpose:       Likelihood
   #  capability:    lnL_FakeLux

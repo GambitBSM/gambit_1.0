@@ -237,11 +237,11 @@ namespace Gambit
             // Member functions that are optionally available for only a subset
             // of derived base function objects.
             //virtual double integrator(const BFargVec &vec, int i, double E0, double E1)
-            double integrator(const BFargVec &vec, vector<unsigned int> i, vector<double> E0, vector<double> E1)
+            double integrator(const BFargVec &vec, std::vector<unsigned int> i, std::vector<double> E0, std::vector<double> E1)
             {
                 return static_cast<T&>(*this).integrator(vec, i, E0, E1);
             }
-            double integrator(const BFargVec &vec, vector<unsigned int> i, vector<shared_ptr<intLimitFunc> > limFuncs)
+            double integrator(const BFargVec &vec, std::vector<unsigned int> i, std::vector<shared_ptr<intLimitFunc> > limFuncs)
             {
                 return static_cast<T&>(*this).integrator(vec, i, limFuncs);
             }            
@@ -268,8 +268,8 @@ namespace Gambit
 
             // Getter Function
             // hasIntegrator(vector<int> indices) needs to be overloaded in derived classes that have an integrator.
-            bool hasIntegrator(unsigned int index){return hasIntegrator(vector<unsigned int>(1,index));}         
-            bool hasIntegrator(vector<unsigned int> indices)
+            bool hasIntegrator(unsigned int index){return hasIntegrator(std::vector<unsigned int>(1,index));}         
+            bool hasIntegrator(std::vector<unsigned int> indices)
             {
                 (void)indices;
                 return false;
@@ -282,8 +282,8 @@ namespace Gambit
                 return myArgIdx;
             }
             // Do I have an integrator that takes functions as limits? Only useful for N>1 dimensional functions
-            bool hasDynamicIntegrator(unsigned int index){return hasDynamicIntegrator(vector<unsigned int>(1,index));}               
-            bool hasDynamicIntegrator(vector<unsigned int> indices)
+            bool hasDynamicIntegrator(unsigned int index){return hasDynamicIntegrator(std::vector<unsigned int>(1,index));}               
+            bool hasDynamicIntegrator(std::vector<unsigned int> indices)
             {
                 (void)indices;
                 return false;
@@ -345,7 +345,7 @@ namespace Gambit
             unsigned int ndim;
                 
     public:
-            BaseFunction(const std::string &str, const int &ndim) : FunctionExpression<BaseFunction>(str, ndim), ndim(ndim) {} //v(ndim) {}
+            BaseFunction(const std::string str, const int ndim) : FunctionExpression<BaseFunction>(str, ndim), ndim(ndim) {} //v(ndim) {}
             
 //             template<typename... args>
 //             typename enable_if_not_one_member_vector<double, args...>::type::type
@@ -375,13 +375,13 @@ namespace Gambit
             
             virtual double value(const BFargVec &vec) = 0;
             
-            virtual double integrator(const BFargVec &vec, vector<unsigned int> i, vector<double> E0, vector<double> E1)
+            virtual double integrator(const BFargVec &vec, std::vector<unsigned int> i, std::vector<double> E0, std::vector<double> E1)
             {
                 (void)vec; (void)i; (void)E0; (void)E1;
                 failHard("Integrator not implemented.");
                 return 0;
             }
-            virtual double integrator(const BFargVec &vec, vector<unsigned int> i, vector<shared_ptr<intLimitFunc> > limFuncs)
+            virtual double integrator(const BFargVec &vec, std::vector<unsigned int> i, std::vector<shared_ptr<intLimitFunc> > limFuncs)
             {
                 (void)vec; (void)i; (void)limFuncs;
                 failHard("Integrator not implemented.");
@@ -610,14 +610,17 @@ namespace Gambit
             {
                 this->myValue = value;
             }
-
-        private:
             double value(const BFargVec &args)
             {
                 (void)args;
                 return myValue;
             }
-
+            double value(const BFargVec &args) const
+            {
+                (void)args;
+                return myValue;
+            }
+        private:
             double myValue;
     };
 
@@ -639,7 +642,7 @@ namespace Gambit
                 }
             };
 
-            bool hasIntegrator(vector<unsigned int> indices)
+            bool hasIntegrator(std::vector<unsigned int> indices)
             {
                 // Can integrate over one argument
                 if(indices.size() == 1)
@@ -653,7 +656,7 @@ namespace Gambit
             }
 
             // Implementation specific integrator
-            double integrator(const BFargVec &vec, vector<unsigned int> i, vector<double> E0, vector<double> E1)
+            double integrator(const BFargVec &vec, std::vector<unsigned int> i, std::vector<double> E0, std::vector<double> E1)
             {
                 (void)i;
                 if (vec.size() != ndim - 1) failHard("Too many vec-arguments in BFinterpolation::integrator.");
@@ -962,20 +965,20 @@ namespace Gambit
                 else return integrand->baseArgIdx(myArgIdx+1);
             }
             
-            bool hasIntegrator(vector<unsigned int> indices)
+            bool hasIntegrator(std::vector<unsigned int> indices)
             {
                 // Add my own parameter to the list of parameters,
                 // then query the integrand if its integrator can integrate over the new list of parameters
                 return integrand->hasIntegrator(indices.push_back(index));
             }
-            bool hasDynamicIntegrator(vector<unsigned int> indices)
+            bool hasDynamicIntegrator(std::vector<unsigned int> indices)
             {
                 // Add my own parameter to the list of parameters,
                 // then query the integrand if its integrator can integrate over the new list of parameters
                 return integrand->hasDynamicIntegrator(indices.push_back(index));
             }            
             
-            double integrator(const BFargVec &vec, vector<unsigned int> indices, vector<double> E0, vector<double> E1)
+            double integrator(const BFargVec &vec, std::vector<unsigned int> indices, std::vector<double> E0, std::vector<double> E1)
             {
                 // Check that the integrator of the integrand really can integrate over the given list of parameters
                 if(this->hasIntegrator(indices))
@@ -992,7 +995,7 @@ namespace Gambit
                     return 0;
                 }
             }
-            double integrator(const BFargVec &vec, vector<unsigned int> indices, vector<shared_ptr<intLimitFunc> > limFuncs)
+            double integrator(const BFargVec &vec, std::vector<unsigned int> indices, std::vector<shared_ptr<intLimitFunc> > limFuncs)
             {
                 // Check that the integrator of the integrand really can integrate over the given list of parameters
                 if(this->hasDynamicIntegrator(indices))
@@ -1017,7 +1020,7 @@ namespace Gambit
                     // If integrand has its own integrator, use that (unless instructed not to).
                     if (!useDefInt && integrand->hasIntegrator(index))
                     {
-                        return integrand->integrator(args, vector<unsigned int>(1,index), vector<double>(1,x0), vector<double>(1,x1));
+                        return integrand->integrator(args, std::vector<unsigned int>(1,index), std::vector<double>(1,x0), std::vector<double>(1,x1));
                     }
                     // Otherwise, integrate using the default techinque
                     return value_defInt(args, x0, x1);
@@ -1028,7 +1031,7 @@ namespace Gambit
                     // If integrand has its own integrator, use that (unless instructed not to).
                     if (!useDefInt && integrand->hasDynamicIntegrator(index))
                     {
-                        return integrand->integrator(args, vector<unsigned int>(1,index), vector<shared_ptr<intLimitFunc> >(1,intLimits));
+                        return integrand->integrator(args, std::vector<unsigned int>(1,index), std::vector<shared_ptr<intLimitFunc> >(1,intLimits));
                     }
                     // Otherwise, integrate using the default techinque
                     // Set integration limits

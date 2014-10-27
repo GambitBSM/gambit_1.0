@@ -5,7 +5,7 @@ import os
 
 IncludeDirs = [
     './Core/include',
-    './ModelBit/include',
+#    './ModelBit/include',
     './Utils/include',
     './Printers/include',
     './ScannerBit/include',

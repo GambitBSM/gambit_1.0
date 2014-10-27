@@ -45,6 +45,8 @@
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/shared_ptr.hpp>
 #include <gsl/gsl_integration.h>
+#include "base_functions.hpp"
+#include "decay_chain.hpp"
 
 namespace Gambit
 {
@@ -82,7 +84,7 @@ namespace Gambit
                 // Argument indices correspond to the indices you would use if passing the arguments to the function (to be integrated) without any integrals.
                 if (!argInList(args,0))
                 {
-                    cout << "Error: Argument 0 not found in argument list" << endl;
+                    std::cout << "Error: Argument 0 not found in argument list" << std::endl;
                 }
                 // Calculate the integration limits on the DS kinematic variable y (see dsIBf_intdy)
                 double Eg = args[0]; // Photon energy
@@ -233,8 +235,7 @@ namespace Gambit
         BF::BFptr dSigmadE;  
 
         // Compare final states
-        bool isChannel(std::string p0, std::string p1, std::string p2 =
-                "", std::string p3 = "")
+        bool isChannel(std::string p0, std::string p1, std::string p2 ="", std::string p3 = "")
         {
             if ( nFinalStates == 2 and p0 == finalStateIDs[0] and p1 == finalStateIDs[1] ) return true;
             if ( nFinalStates == 3 and p0 == finalStateIDs[0] and p1 == finalStateIDs[1] and p2 == finalStateIDs[2] ) return true;
