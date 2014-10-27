@@ -49,7 +49,9 @@ endif()
 
 # add -fPIC for 64 bit systems
 if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64")
-  add_definitions(-fPIC)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+  set(CMAKE_C_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+  set(CMAKE_Fortran_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
 endif()
 
 # don't relink all binaries when shared lib changes (programs will be rebuilt any way if used headers change)
@@ -58,17 +60,7 @@ set(CMAKE_LINK_DEPENDS_NO_SHARED 1)
 # include ./cmake in search path for projects
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake)
 
-# set output paths to ./bin and ./lib
-#set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib CACHE PATH "Installation directory for libraries.")
-#set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR} CACHE PATH "Installation directory for executables.")
-#set(LIBRARY_OUTPUT_PATH_RELEASE ${PROJECT_SOURCE_DIR}/lib CACHE PATH "Installation directory for libraries.")
-#set(EXECUTABLE_OUTPUT_PATH_RELEASE ${PROJECT_SOURCE_DIR} CACHE PATH "Installation directory for executables.")
-#set(LIBRARY_OUTPUT_PATH_DEBUG ${PROJECT_SOURCE_DIR}/lib CACHE PATH "Installation directory for libraries.")
-#set(EXECUTABLE_OUTPUT_PATH_DEBUG ${PROJECT_SOURCE_DIR} CACHE PATH "Installation directory for executables.")
-#set(RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}")
-#set(RUNTIME_OUTPUT_DIRECTORY_RELEASE "${PROJECT_SOURCE_DIR}")
-#set(RUNTIME_OUTPUT_DIRECTORY_DEBUG "${PROJECT_SOURCE_DIR}")
-
+# set output paths
 set(mylibdir ${PROJECT_SOURCE_DIR}/lib)
 set(mybindir ${PROJECT_SOURCE_DIR})
 # First for the generic no-config case (e.g. with mingw)
