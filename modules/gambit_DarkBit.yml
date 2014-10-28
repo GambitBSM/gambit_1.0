@@ -114,7 +114,7 @@ ObsLikes:
 #      purpose:  Likelihood
 #    - purpose:    Likelihood
 #      capability: lnL_oh2
-    - capability: lnL_Lux2013
+    - capability: lnL_LUX_2013
       purpose:  Likelihood
 
 Auxiliaries:
@@ -125,7 +125,7 @@ Auxiliaries:
     options:
        oh2_err: 0.01
        oh2_mean: 0.174
-  - capability: lnL_Lux2013
+  - capability: lnL_LUX_2013
     dependencies: 
         - capability: DD_couplings
           function: DD_couplings_DarkSUSY

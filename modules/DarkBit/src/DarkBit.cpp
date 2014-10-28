@@ -21,7 +21,11 @@
 ///  \author Lars A. Dal  
 ///          (l.a.dal@fys.uio.no)
 ///  \date 2014 Mar, Jul
-///
+///  
+///  \author Christopher Savage
+///          (chris@savage.name)
+///  \date 2014 Oct
+///  
 ///  *********************************************
 
 #include <dlfcn.h>
@@ -993,7 +997,7 @@ namespace Gambit {
 
 //////////////////////////////////////////////////////////////////////////
 //
-//                 Some direct detection toy stuff
+//                 Direct detection couplings
 //
 //////////////////////////////////////////////////////////////////////////
 
@@ -1037,13 +1041,6 @@ namespace Gambit {
         cout << " M_DM = " << result.M_DM << endl;
     }
 
-    /*
-    void lnL_FakeLux(double &result)
-    {
-        using namespace Pipes::lnL_FakeLux;
-        result = pow((*Dep::DD_couplings).gps, 2);  // Utterly nonsense
-    }
-    */
 
 //////////////////////////////////////////////////////////////////////////
 //
@@ -1051,22 +1048,70 @@ namespace Gambit {
 //
 //////////////////////////////////////////////////////////////////////////
 
-    void lnL_Lux2013(double &result)
+    // Uses LUX 2013 result:
+    //   Akerib et al., PRL 112, 091303 (2014) [arxiv:1310.8214]
+    void lnL_LUX_2013(double &result)
     {
-        using namespace Pipes::lnL_Lux2013;
-        BEreq::DDCalc0_InitDetectorLUX2013(NULL);
+        using namespace Pipes::lnL_LUX_2013;
+        // TODO: The WIMP parameters need to be set only once per
+        // model, across all experiments.  Need to figure out
+        // how to do this....
         double M_DM = (*Dep::DD_couplings).M_DM;
         double Gps = (*Dep::DD_couplings).gps;
         double Gpa = (*Dep::DD_couplings).gpa;
         double Gns = (*Dep::DD_couplings).gns;
         double Gna = (*Dep::DD_couplings).gna;                        
-        BEreq::DDCalc0_SetWIMP( &M_DM,&Gps,&Gns,&Gpa,&Gna,
-                                NULL,NULL,NULL,NULL,
-                                NULL,NULL,NULL,NULL,
-                                NULL,NULL);
-        BEreq::DDCalc0_CalcRates();
-        result = BEreq::DDCalc0_LogLikelihood();
-        std::cout << "Lux 2013 likelihood: " << result << std::endl;
+        BEreq::DDCalc0_SetWIMP_mG(&M_DM,&Gps,&Gns,&Gpa,&Gna);
+        // TODO: This calculation needs to be done only once per
+        // model and could also potentially be set up as a
+        // dependency.
+        BEreq::DDCalc0_LUX_2013_CalcRates();
+        result = BEreq::DDCalc0_LUX_2013_LogLikelihood();
+        std::cout << "LUX 2013 likelihood: " << result << std::endl;
+    }
+
+    // Estimated argon-based DARWIN sensitivity:
+    //   Conrad et al., arxiv:14MM.XXXX
+    void lnL_DARWIN_Ar_2014(double &result)
+    {
+        using namespace Pipes::lnL_DARWIN_Ar_2014;
+        // TODO: The WIMP parameters need to be set only once per
+        // model, across all experiments.  Need to figure out
+        // how to do this....
+        double M_DM = (*Dep::DD_couplings).M_DM;
+        double Gps = (*Dep::DD_couplings).gps;
+        double Gpa = (*Dep::DD_couplings).gpa;
+        double Gns = (*Dep::DD_couplings).gns;
+        double Gna = (*Dep::DD_couplings).gna;                        
+        BEreq::DDCalc0_SetWIMP_mG(&M_DM,&Gps,&Gns,&Gpa,&Gna);
+        // TODO: This calculation needs to be done only once per
+        // model and could also potentially be set up as a
+        // dependency.
+        BEreq::DDCalc0_DARWIN_Ar_2014_CalcRates();
+        result = BEreq::DDCalc0_DARWIN_Ar_2014_LogLikelihood();
+        std::cout << "DARWIN argon (2014 estimate) likelihood: " << result << std::endl;
+    }
+
+    // Estimated xenon-based DARWIN sensitivity:
+    //   Conrad et al., arxiv:14MM.XXXX
+    void lnL_DARWIN_Xe_2014(double &result)
+    {
+        using namespace Pipes::lnL_DARWIN_Xe_2014;
+        // TODO: The WIMP parameters need to be set only once per
+        // model, across all experiments.  Need to figure out
+        // how to do this....
+        double M_DM = (*Dep::DD_couplings).M_DM;
+        double Gps = (*Dep::DD_couplings).gps;
+        double Gpa = (*Dep::DD_couplings).gpa;
+        double Gns = (*Dep::DD_couplings).gns;
+        double Gna = (*Dep::DD_couplings).gna;                        
+        BEreq::DDCalc0_SetWIMP_mG(&M_DM,&Gps,&Gns,&Gpa,&Gna);
+        // TODO: This calculation needs to be done only once per
+        // model and could also potentially be set up as a
+        // dependency.
+        BEreq::DDCalc0_DARWIN_Xe_2014_CalcRates();
+        result = BEreq::DDCalc0_DARWIN_Xe_2014_LogLikelihood();
+        std::cout << "DARWIN xenon (2014 estimate) likelihood: " << result << std::endl;
     }
 
 
