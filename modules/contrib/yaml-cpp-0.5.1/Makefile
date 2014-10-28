@@ -12,7 +12,7 @@ YAML_SRC:=$(wildcard src/*.cpp)
 YAML_SRCCONT:=$(wildcard src/contrib/*.cpp)
 YAML_LIBS:=$(addprefix build/,$(notdir $(patsubst %.cpp,%.o,$(YAML_SRC))))
 YAML_LIBSCONT:=$(addprefix build/contrib/,$(notdir $(patsubst %.cpp,%.o,$(YAML_SRCCONT))))
-YAML_CFLAGS:= $(CFLAGS) -Iinclude
+YAML_CFLAGS:= $(CFLAGS) -fPIC -Iinclude
 ifdef BOOST
   YAML_CFLAGS+= -I$(BOOST)
 endif
