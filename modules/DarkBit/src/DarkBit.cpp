@@ -982,10 +982,17 @@ namespace Gambit {
         using namespace Pipes::dump_GammaSpectrum;
         // Construct interpolated function, using GAMBIT base functions.
         BFptr spectrum = (*Dep::GA_AnnYield)->fixPar(1, 0.);
-        for (int i = 0; i<=50; i++)
+        std::string filename = runOptions->getValueOrDef<std::string>("", "filename");
+        std::ofstream myfile (filename);
+        if (myfile.is_open())
         {
-            double energy = pow(10., i/10. - 2.);
-            std::cout << energy << " " << (*spectrum)(energy) << std::endl;
+            for (int i = 0; i<=50; i++)
+            {
+                double energy = pow(10., i/10. - 2.);
+
+                myfile << energy << " " << (*spectrum)(energy) << "\n";
+            }
+            myfile.close();
         }
         result = 0.;
     }
