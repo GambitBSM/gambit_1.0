@@ -166,7 +166,6 @@ foreach(bit ${GAMBIT_BITS})
     set(GAMBIT_BIT_OBJECTS ${GAMBIT_BIT_OBJECTS} "$<TARGET_OBJECTS:${bit}>")
   endif()
 endforeach()
-message("${GAMBIT_BIT_OBJECTS}")
 
 if(EXISTS "${PROJECT_SOURCE_DIR}/ExampleBit_A/")
   add_gambit_executable(ExampleBit_A_standalone SOURCES ${PROJECT_SOURCE_DIR}/ExampleBit_A/examples/ExampleBit_A_standalone_example.cpp $<TARGET_OBJECTS:ExampleBit_A> ${GAMBIT_SHARED_OBJECTS})

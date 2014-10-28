@@ -28,7 +28,6 @@ function(add_gambit_library libraryname)
   cmake_parse_arguments(ARG "" "OPTION" "SOURCES;HEADERS;" "" ${ARGN})
 
   add_library(${libraryname} ${ARG_OPTION} ${ARG_SOURCES} ${ARG_HEADERS})
-#  set_target_properties(${libraryname} PROPERTIES LIBRARY_OUTPUT_DIRECTORY "")
   add_dependencies(${libraryname} functor_types)
 
   if(${CMAKE_VERSION} VERSION_GREATER 2.8.10)
