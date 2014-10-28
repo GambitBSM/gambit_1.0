@@ -89,6 +89,7 @@ HEPUTILSDIR = contrib/heputils
 FASTSIMDIR = ../extras/fast_sim
 NULIKEDIR = ../extras/nulike
 DDCALC0DIR = ../extras/DDCalc0
+GAMLIKEDIR = ../extras/gamLike
 PYTHIA8DIR = ../extras/boss/bossed_pythia_source
 BOSSMINIDIR = ../extras/boss
 # TODO obsolete??
@@ -344,7 +345,7 @@ ifndef SHH
 endif
 
 TARGETS = gambit gambit_example ExampleBit_A_standalone
-BACKENDS = libfirst libfortran libFarrayTest DDCalc0 micromegas darksusy superiso higgsbounds higgssignals nulike BOSSMinimalExample pythia fastsim
+BACKENDS = libfirst libfortran libFarrayTest DDCalc0 gamLike micromegas darksusy superiso higgsbounds higgssignals nulike BOSSMinimalExample pythia fastsim
 
 COREINC:=$(wildcard $(COREDIR)/include/*hpp) $(wildcard $(COREDIR)/include/*h)
 CORESRC:=$(wildcard $(COREDIR)/src/*cpp)
@@ -627,6 +628,10 @@ $(BACKENDDIR)/lib/libFarrayTest.so: $(BACKENDDIR)/lib/libFarrayTest.f90
 DDCalc0:
 	cd $(DDCALC0DIR); make libDDCalc0.so FC=$(FC) FFLAGS="$(FFLAGS)"
 	cp $(DDCALC0DIR)/libDDCalc0.so $(BACKENDDIR)/lib/
+
+gamLike:
+	cd $(GAMLIKEDIR); make FC=$(FC) FFLAGS="$(FFLAGS)"
+	cp $(GAMLIKEDIR)/gamLike.so $(BACKENDDIR)/lib/libgamLike.so
 
 micromegas:
 

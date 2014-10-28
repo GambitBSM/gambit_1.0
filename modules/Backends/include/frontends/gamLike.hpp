@@ -18,7 +18,7 @@
 ///  *********************************************
 
 // Identify backend
-#define LIBPATH      "gamLike.so"
+#define LIBPATH      "libgamLike.so"
 #ifdef BACKENDRENAME
   #define BACKENDNAME BACKENDRENAME
 #else
@@ -50,7 +50,8 @@ BE_INI_FUNCTION
     //fermi_gc_init(0, 1);
   }
   scan_level = false;
-  //runOptions->getValue<int>("test");
+  //std::cout << runOptions->getValue<std::string>("test") << std::endl;
+  //exit(1);
 }
 DONE
 
