@@ -542,14 +542,10 @@ namespace Gambit {
       ////////////////////
 
       // Grid and energy range used in interpolating functions.
-      double Emin = 1e-1; // Default energy range
-      double Emax = 1e4;  
-      if (runOptions->hasKey("Emin") and runOptions->hasKey("Emax"))
-      {
-          // Energy range from ini-file options
-          Emin = runOptions->getValue<double>("Emin");
-          Emax = runOptions->getValue<double>("Emax");
-      }
+      double Emin, Emax; 
+      // Energy range from ini-file options
+      Emin = runOptions->getValueOrDef<double>(1e-1, "Emin");
+      Emax = runOptions->getValueOrDef<double>(1e4,  "Emax");
       //int n = 230*log10(Emax/Emin);  // 1% energy resolution must be enough
       int n = 10*log10(Emax/Emin);  // 10% energy resolution must be enough
       std::vector<double> xgrid = logspace(-1., 3., n);
@@ -821,12 +817,12 @@ namespace Gambit {
     {
         using namespace Pipes::RD_oh2_DarkSUSY;
         // Input
-        int omtype = 1;  // 0: no coann; 1: all coann
-        int fast = 0;  // 0: standard; 1: fast; 2: dirty
+        int omtype;  // 0: no coann; 1: all coann
+        int fast;  // 0: standard; 1: fast; 2: dirty
 
         // Set options via ini-file
-        if (runOptions->hasKey("omtype")) omtype = runOptions->getValue<int>("omtype");
-        if (runOptions->hasKey("fast")) fast = runOptions->getValue<int>("fast");
+        omtype = runOptions->getValueOrDef<int>(1, "omtype");
+        fast = runOptions->getValueOrDef<int>(0, "fast");
 
         // Output
         double xf;  // freeze-out temperature
@@ -842,12 +838,12 @@ namespace Gambit {
     {
     	using namespace Pipes::RD_oh2_micromegas;
         // Input
-        int fast=0;  // fast: 1, accurate: 0
-        double Beps=1.E-5;  // Beps=1e-5 recommended, Beps=1 switches coannihilation off
+        int fast;     // fast: 1, accurate: 0
+        double Beps;  // Beps=1e-5 recommended, Beps=1 switches coannihilation off
 
         // Set options via ini-file
-        if (runOptions->hasKey("fast")) fast = runOptions->getValue<int>("fast");
-        if (runOptions->hasKey("Beps")) Beps = runOptions->getValue<double>("Beps");
+        fast = runOptions->getValueOrDef<int>(0, "fast");
+        Beps = runOptions->getValueOrDef<double>(1e-5, "Beps");
         cout << "Using fast: " << fast << " and Beps: " << Beps << endl;
 
         // Output
@@ -975,14 +971,8 @@ namespace Gambit {
       using namespace Pipes::lnL_oh2_Simple;
       double oh2 = *Dep::RD_oh2;
       double oh2_mean, oh2_err;
-      if (runOptions->hasKey("oh2_mean"))
-          oh2_mean = runOptions->getValue<double>("oh2_mean");
-      else
-          oh2_mean = 0.11;
-      if (runOptions->hasKey("oh2_err"))
-          oh2_err = runOptions->getValue<double>("oh2_err");
-      else
-          oh2_err = 0.01;
+      oh2_mean = runOptions->getValueOrDef<double>(0.11, "oh2_mean");
+      oh2_err  = runOptions->getValueOrDef<double>(0.01, "oh2_err");
       result = -0.5*pow(oh2 - oh2_mean, 2)/pow(oh2_err, 2);  // lnL = -0.5 * chisq
       std::cout << "lnL_oh2_Simple yields " << result << std::endl;
     }
@@ -1013,7 +1003,7 @@ namespace Gambit {
         // Calling DarkSUSY subroutine dsddgpgn(gps,gns,gpa,gna)
         // to set all four couplings.
         BEreq::dsddgpgn(result.gps, result.gns, result.gpa, result.gna);
-        double factor = runOptions->getValue<double>("rescale_couplings");
+        double factor = runOptions->getValueOrDef<double>(1., "rescale_couplings");
         result.gps *= factor;
         result.gns *= factor;
         result.gpa *= factor;
