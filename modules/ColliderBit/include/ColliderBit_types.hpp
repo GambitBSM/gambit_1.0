@@ -30,9 +30,9 @@
 #include <vector>
 #include <memory>
 #include "HEPUtils/Event.h"
-#include "Delphes3Backend.hpp"
-#include "Analysis.hpp"
 #include "Collider.hpp"
+#include "Detector.hpp"
+#include "Analysis.hpp"
 
 using std::vector;
 using std::shared_ptr;
