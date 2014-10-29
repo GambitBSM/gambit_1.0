@@ -133,9 +133,10 @@ BE_INI_FUNCTION
   {
     // Initialize module and experiments
     DDCalc0_Init();
-    DDCalc0_LUX_2013_Init(false);
-    DDCalc0_DARWIN_Ar_2014_Init(false);
-    DDCalc0_DARWIN_Xe_2014_Init(false);
+    bool flag = false;
+    DDCalc0_LUX_2013_Init(&flag);
+    DDCalc0_DARWIN_Ar_2014_Init(&flag);
+    DDCalc0_DARWIN_Xe_2014_Init(&flag);
     // Set Standard Halo Model.
     // The halo is already set to the default values shown
     // here by the DDCalc0_Init() routine.
