@@ -639,10 +639,10 @@ micromegas:
 # DarkSUSY built externally:
 # We only copy an existing compiled object file;
 # we do not build it through this makefile.
-darksusy: $(BACKENDDIR)/libdarksusy.so
+darksusy: $(BACKENDDIR)/lib/libdarksusy.so
 
 # Copy library to GAMBIT (only if it exists)
-$(BACKENDDIR)/libdarksusy.so: $(DARKSUSYDIR)/libdarksusy.so
+$(BACKENDDIR)/lib/libdarksusy.so: $(DARKSUSYDIR)/libdarksusy.so
     # Ensure rule succeeds even if no file to copy (will produce message below)
 	! [ -f "$<" ] || cp -p "$<" "$@"
 
