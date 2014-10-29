@@ -117,9 +117,8 @@ ObsLikes:
 # Simple gaussian relic density likelihood
     - purpose:    Likelihood
       capability: lnL_oh2
-# Direct detection likelihood (for now a simple test version, until DDCalc
-# works again)
-    - capability: lnL_DD_test
+# LUX direct detection likelihood
+    - capability: lnL_LUX_2013
       purpose:  Likelihood
 
 # This function dumps gamma-ray spectra into a ASCII table file.  The filename
@@ -145,10 +144,6 @@ Auxiliaries:
         - capability: DD_couplings
           function: DD_couplings_DarkSUSY  # couplings from darksusy backend
           #function: DD_couplings_micrOMEGAs  # couplings from micromegas backend
-  - capability: lnL_DD_test
-    dependencies: 
-        - capability: DD_couplings
-          function: DD_couplings_DarkSUSY
   - capability: MSSMspectrum
     function: getMSSMspectrum  # For unit test: reads in spectrum from SLHA file
     module: DarkBit
