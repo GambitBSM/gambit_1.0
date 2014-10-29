@@ -328,3 +328,42 @@ to be resolved by functions ending with "ction" from modules starting with
 Note that in the case of ambiguous dependencies entries, none of the candidate
 functions will pass all the filters, and an error is thrown.  The resolution of
 backend requirements proceeds in a similar way.
+
+
+Contributed libraries
+=====================
+
+GAMBIT relies on a number of external codes for the calculation of various
+physics quantities and likelihoods.  These codes are usually compiled as shard
+objects (aka shared libraries), and loaded at startup of GAMBIT if required.
+The source code of some of the backends can be found in the extras/ folder.
+The compiled *.so files will be moved to modules/Backends/lib/.  Lastly, the
+interface between GAMBIT and the backends is defined in header files that are
+collected in modules/Backends/include/frontends/.
+
+Some of the backends are not directly delivered with GAMBIT.  We will describe
+there installation here for convenience.
+
+Note:  To make GAMBIT finding the libraries, it is important to set
+LD_LIBRARY_PATH to include the gambit library directory.  In BASH etc, this can
+be done via
+
+    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/PATH/TO/GAMBIT/modules/Backends/lib/
+
+DarkSUSY
+--------
+
+1) Unpack DarkSUSY (tested for version 5.1.1) into some directory.
+2) Copy make_so_darksusy.5.1.1 from the extras/darksusy_patch folder to that folder
+3) Copy darksusy5.1.1.conf.gfortran.64bit or darksusy5.1.1.conf.gfortran.64bitUbuntu  to the same folder
+4) Run first the darksusy* file, then the make_so_darksusy.5.1.1 files.
+5) Copy the generated libdarksusy.so to the above GAMBIT folder
+
+Finally: (TODO: remove this part)  Send a mail to Christoph or Torsten saying
+what worked or did not work for you, and on what system you are working.
+
+MicrOmegas
+----------
+
+Similar proceedure.  Installation files can be found at extras/micromegas_patch/.
+

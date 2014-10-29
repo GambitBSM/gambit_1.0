@@ -18,7 +18,7 @@
 ///  *********************************************
 
 // Identify backend
-#define LIBPATH      "gamLike.so"
+#define LIBPATH      "Backends/lib/libgamLike.so"
 #ifdef BACKENDRENAME
   #define BACKENDNAME BACKENDRENAME
 #else
@@ -43,14 +43,12 @@ BE_INI_FUNCTION
   static bool scan_level = true;
   if (scan_level)
   {
-    // TODO: This should be an ini-file option
-    char * path = "/home/weniger/Work/Projects/gamLike/data/like/";
-    set_data_path(path);
+    scan_level = false;
+    std::string path = runOptions->getValueOrDef<std::string>("../extras/gamLike/data/", "datapath");
+    set_data_path(path.c_str());
     fermi_dwarfs_init(0);
     //fermi_gc_init(0, 1);
   }
-  scan_level = false;
-  //runOptions->getValue<int>("test");
 }
 DONE
 

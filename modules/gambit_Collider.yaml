@@ -86,6 +86,11 @@ Auxiliaries:
     options:  
       analysisNames: ["ATLAS_0LEPStop_20invfb", "ATLAS_1LEPStop_20invfb"]
 
+  - capability: detectorSim
+    function: getDelphes
+    options:
+      delphesOptions: ["ColliderBit/data/delphes_card_ATLAS.tcl"]
+
   - capability:  ColliderOperator
     function: operatePythia
     options:
@@ -100,11 +105,6 @@ Auxiliaries:
       Pythia_SUSY_LHC_8TeV:
         pythiaOptions_1: ["SUSY:idA = 1000021", "SUSY:idB = 1000021"]
         pythiaOptions_2: ["SUSY:idVecA = 1000001,1000002,1000003,1000004,2000001,2000002,2000003,2000004", "SUSY:idVecB = 1000001,1000002,1000003,1000004,2000001,2000002,2000003,2000004"]
-
-  - capability: GambitColliderEvent
-    function: reconstructDelphesEvent
-    options:
-      delphesConfigFilename: "ColliderBit/data/delphes_card_ATLAS.tcl" 
 
   - capability: LogLikelihood
     function: calcLogLike

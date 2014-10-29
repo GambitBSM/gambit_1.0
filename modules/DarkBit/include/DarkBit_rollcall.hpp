@@ -27,6 +27,11 @@
 ///  \author Lars A. Dal  
 ///          (l.a.dal@fys.uio.no)
 ///  \date 2014 Mar
+///  
+///  \author Christopher Savage
+///          (chris@savage.name)
+///  \date 2014 Oct
+///  
 ///  *********************************************
 
 #ifndef __DarkBit_rollcall_hpp__
@@ -86,6 +91,9 @@ START_MODULE
       ALLOW_MODELS(MSSM25)
     #undef FUNCTION
   #undef CAPABILITY
+
+
+  // Relic density -----------------------------------------
 
   #define CAPABILITY RD_spectrum
   START_CAPABILITY 
@@ -159,6 +167,9 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
+
+  // Gamma rays --------------------------------------------
+
   #define CAPABILITY GA_AnnYield
   START_CAPABILITY
     #define FUNCTION GA_AnnYield_DarkSUSY
@@ -188,29 +199,6 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
-  #define CAPABILITY DD_couplings
-  START_CAPABILITY
-    #define FUNCTION DD_couplings_DarkSUSY
-      START_FUNCTION(Gambit::DarkBit::DD_couplings)
-      BACKEND_REQ(dsddgpgn, (), void, (double&, double&, double&, double&))
-      BACKEND_REQ(mspctm, (), DS_MSPCTM)      
-    #undef FUNCTION
-    #define FUNCTION DD_couplings_micrOMEGAs
-      START_FUNCTION(Gambit::DarkBit::DD_couplings)
-      BACKEND_REQ(nucleonAmplitudes, (micromegas), int, (double(*)(double,double,double,double), double*, double*, double*, double*))
-      BACKEND_REQ(FeScLoop, (micromegas), double, (double, double, double, double))
-      BACKEND_REQ(MOcommon, (micromegas), micrOMEGAs::MOcommonSTR)
-    #undef FUNCTION
-  #undef CAPABILITY
-
-//  #define CAPABILITY lnL_FakeLux
-//  START_CAPABILITY
-//    #define FUNCTION lnL_FakeLux
-//      START_FUNCTION(double)
-//      DEPENDENCY(DD_couplings, Gambit::DarkBit::DD_couplings)
-//    #undef FUNCTION
-//  #undef CAPABILITY
-
   #define CAPABILITY lnL_FermiLATdwarfs
   START_CAPABILITY
     #define FUNCTION lnL_FermiLATdwarfsSimple
@@ -235,7 +223,6 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
-
   #define CAPABILITY dump_GammaSpectrum
   START_CAPABILITY
     #define FUNCTION dump_GammaSpectrum
@@ -252,21 +239,69 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
-  #define CAPABILITY lnL_Lux2013
+
+  // Direct detection --------------------------------------
+
+  #define CAPABILITY DD_couplings
   START_CAPABILITY
-    #define FUNCTION lnL_Lux2013
-      START_FUNCTION(double)
-      DEPENDENCY(DD_couplings, Gambit::DarkBit::DD_couplings)
-      BACKEND_REQ(DDCalc0_SetWIMP, (Same_BE), void, (double*,double*,double*,double*,double*,double*,double*,double*,double*,double*,double*,double*,double*,double*,double*))   
-      BACKEND_REQ(DDCalc0_CalcRates, (Same_BE), void, ())         
-      BACKEND_REQ(DDCalc0_LogLikelihood, (Same_BE), double, ())     
-      BACKEND_REQ(DDCalc0_InitDetectorLUX2013, (Same_BE), void, (bool*))       
-      FORCE_SAME_BACKEND(Same_BE)                 
+    #define FUNCTION DD_couplings_DarkSUSY
+      START_FUNCTION(Gambit::DarkBit::DD_couplings)
+      BACKEND_REQ(dsddgpgn, (), void, (double&, double&, double&, double&))
+      BACKEND_REQ(mspctm, (), DS_MSPCTM)      
+    #undef FUNCTION
+    #define FUNCTION DD_couplings_micrOMEGAs
+      START_FUNCTION(Gambit::DarkBit::DD_couplings)
+      BACKEND_REQ(nucleonAmplitudes, (micromegas), int, (double(*)(double,double,double,double), double*, double*, double*, double*))
+      BACKEND_REQ(FeScLoop, (micromegas), double, (double, double, double, double))
+      BACKEND_REQ(MOcommon, (micromegas), micrOMEGAs::MOcommonSTR)
     #undef FUNCTION
   #undef CAPABILITY
 
+  #define CAPABILITY lnL_LUX_2013
+  START_CAPABILITY
+    #define FUNCTION lnL_LUX_2013
+      START_FUNCTION(double)
+      DEPENDENCY(DD_couplings, Gambit::DarkBit::DD_couplings)
+      BACKEND_REQ(DDCalc0_SetWIMP_mG, (Same_BE), void, (double*,double*,double*,double*,double*))
+      BACKEND_REQ(DDCalc0_LUX_2013_CalcRates, (Same_BE), void, ())
+      BACKEND_REQ(DDCalc0_LUX_2013_LogLikelihood, (Same_BE), double, ())
+      FORCE_SAME_BACKEND(Same_BE)
+    #undef FUNCTION
+  #undef CAPABILITY
 
-  // Neutrino telescope likelihoods
+  #define CAPABILITY lnL_DARWIN_Ar_2014
+  START_CAPABILITY
+    #define FUNCTION lnL_DARWIN_Ar_2014
+      START_FUNCTION(double)
+      DEPENDENCY(DD_couplings, Gambit::DarkBit::DD_couplings)
+      BACKEND_REQ(DDCalc0_SetWIMP_mG, (Same_BE), void, (double*,double*,double*,double*,double*))
+      BACKEND_REQ(DDCalc0_DARWIN_Ar_2014_CalcRates, (Same_BE), void, ())
+      BACKEND_REQ(DDCalc0_DARWIN_Ar_2014_LogLikelihood, (Same_BE), double, ())
+      FORCE_SAME_BACKEND(Same_BE)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY lnL_DARWIN_Xe_2014
+  START_CAPABILITY
+    #define FUNCTION lnL_DARWIN_Xe_2014
+      START_FUNCTION(double)
+      DEPENDENCY(DD_couplings, Gambit::DarkBit::DD_couplings)
+      BACKEND_REQ(DDCalc0_SetWIMP_mG, (Same_BE), void, (double*,double*,double*,double*,double*))
+      BACKEND_REQ(DDCalc0_DARWIN_Xe_2014_CalcRates, (Same_BE), void, ())
+      BACKEND_REQ(DDCalc0_DARWIN_Xe_2014_LogLikelihood, (Same_BE), double, ())
+      FORCE_SAME_BACKEND(Same_BE)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY lnL_DD_test
+  START_CAPABILITY
+    #define FUNCTION lnL_DD_test
+      START_FUNCTION(double)
+      DEPENDENCY(DD_couplings, Gambit::DarkBit::DD_couplings)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  // Neutrino telescope likelihoods ------------------------
 
   #define CAPABILITY IC22_data
   START_CAPABILITY

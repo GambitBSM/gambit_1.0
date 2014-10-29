@@ -89,6 +89,8 @@ HEPUTILSDIR = contrib/heputils
 FASTSIMDIR = ../extras/fast_sim
 NULIKEDIR = ../extras/nulike
 DDCALC0DIR = ../extras/DDCalc0
+GAMLIKEDIR = ../extras/gamLike
+DARKSUSYDIR = ../extras/DarkSUSY
 PYTHIA8DIR = ../extras/boss/bossed_pythia_source
 BOSSMINIDIR = ../extras/boss
 # TODO obsolete??
@@ -344,7 +346,7 @@ ifndef SHH
 endif
 
 TARGETS = gambit gambit_example ExampleBit_A_standalone
-BACKENDS = libfirst libfortran libFarrayTest DDCalc0 micromegas darksusy superiso higgsbounds higgssignals nulike BOSSMinimalExample pythia fastsim
+BACKENDS = libfirst libfortran libFarrayTest DDCalc0 gamLike micromegas darksusy superiso higgsbounds higgssignals nulike BOSSMinimalExample pythia fastsim
 
 COREINC:=$(wildcard $(COREDIR)/include/*hpp) $(wildcard $(COREDIR)/include/*h)
 CORESRC:=$(wildcard $(COREDIR)/src/*cpp)
@@ -393,7 +395,7 @@ DECAYSRC:=$(wildcard $(DECAYDIR)/src/*cpp)
 DECAYOBJS:=$(addprefix $(DECAYDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(DECAYSRC))))
 
 COLLIDERINC:=$(wildcard $(COLLIDERDIR)/include/*hpp) $(wildcard $(COLLIDERDIR)/include/*h)
-COLLIDERSRC:=$(wildcard $(COLLIDERDIR)/src/*cpp) $(wildcard $(COLLIDERDIR)/src/*c) $(wildcard $(COLLIDERDIR)/src/analyses/*cpp) $(wildcard $(COLLIDERDIR)/src/colliders/*cpp)
+COLLIDERSRC:=$(wildcard $(COLLIDERDIR)/src/*cpp) $(wildcard $(COLLIDERDIR)/src/*c) $(wildcard $(COLLIDERDIR)/src/analyses/*cpp) $(wildcard $(COLLIDERDIR)/src/colliders/*cpp) $(wildcard $(COLLIDERDIR)/src/detectors/*cpp)
 COLLIDERDELPHESSRC:=$(wildcard $(COLLIDERDIR)/src/delphes/*Module.cc)
 COLLIDEROBJS:=$(addprefix $(COLLIDERDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(COLLIDERSRC)))) $(addprefix $(COLLIDERDIR)/build/,$(notdir $(patsubst %Module.cc,%Module.o,$(COLLIDERDELPHESSRC)))) $(addprefix $(COLLIDERDIR)/build/,$(notdir $(patsubst %Module.cc,%Module_dict.o,$(COLLIDERDELPHESSRC))))
 
@@ -515,6 +517,11 @@ $(COLLIDERDIR)/build/Anal%.o: $(COLLIDERDIR)/src/analyses/Anal%.cpp
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
+# Detectors...:
+$(COLLIDERDIR)/build/Detector%.o: $(COLLIDERDIR)/src/detectors/Detector%.cpp
+	@echo ___________Compiling $<:
+	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
+
 # Colliders...:
 $(COLLIDERDIR)/build/Collider%.o: $(COLLIDERDIR)/src/colliders/Collider%.cpp
 	@echo ___________Compiling $<:
@@ -623,9 +630,32 @@ DDCalc0:
 	cd $(DDCALC0DIR); make libDDCalc0.so FC=$(FC) FFLAGS="$(FFLAGS)"
 	cp $(DDCALC0DIR)/libDDCalc0.so $(BACKENDDIR)/lib/
 
+gamLike:
+	cd $(GAMLIKEDIR); make FC=$(FC) FFLAGS="$(FFLAGS)"
+	cp $(GAMLIKEDIR)/gamLike.so $(BACKENDDIR)/lib/libgamLike.so
+
 micromegas:
 
-darksusy:
+# DarkSUSY built externally:
+# We only copy an existing compiled object file;
+# we do not build it through this makefile.
+darksusy: $(BACKENDDIR)/lib/libdarksusy.so
+
+# Copy library to GAMBIT (only if it exists)
+$(BACKENDDIR)/lib/libdarksusy.so: $(DARKSUSYDIR)/libdarksusy.so
+    # Ensure rule succeeds even if no file to copy (will produce message below)
+	! [ -f "$<" ] || cp -p "$<" "$@"
+
+# Dummy rule for libdarksusy.so
+$(DARKSUSYDIR)/libdarksusy.so:
+	@echo ""
+	@echo "  ============================== NOTICE =============================="
+	@echo "   A DarkSUSY installation was not found.  To use DarkSUSY, it must"
+	@echo "   first be downloaded and built separately.  To do so, run"
+	@echo "       ./install-DarkSUSY-5.1.1.script"
+	@echo "   from within the extras/DarkSUSY/ directory."
+	@echo "  ===================================================================="
+	@echo ""
 
 superiso:
 
