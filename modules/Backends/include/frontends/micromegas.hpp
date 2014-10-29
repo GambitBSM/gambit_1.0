@@ -5,7 +5,7 @@
  *
  */
 
-#define LIBPATH      "micromegas.so"
+#define LIBPATH      "Backends/lib/micromegas.so"
 #ifdef BACKENDRENAME
   #define BACKENDNAME BACKENDRENAME
 #else

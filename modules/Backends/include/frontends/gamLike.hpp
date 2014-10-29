@@ -18,7 +18,7 @@
 ///  *********************************************
 
 // Identify backend
-#define LIBPATH      "libgamLike.so"
+#define LIBPATH      "Backends/lib/libgamLike.so"
 #ifdef BACKENDRENAME
   #define BACKENDNAME BACKENDRENAME
 #else

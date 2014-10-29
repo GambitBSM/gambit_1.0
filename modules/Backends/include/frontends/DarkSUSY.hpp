@@ -34,7 +34,7 @@
 
 /* Specify the path to the shared library along with a backend name. */
 
-#define LIBPATH      "libdarksusy.so"
+#define LIBPATH      "Backends/lib/libdarksusy.so"
 #ifdef BACKENDRENAME
   #define BACKENDNAME BACKENDRENAME
 #else
