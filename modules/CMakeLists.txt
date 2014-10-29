@@ -112,7 +112,7 @@ include(cmake/FindLibDL.cmake)
 
 # check for Python and create all_functor_types.hpp
 include(FindPythonInterp)
-find_package (PythonInterp)
+find_package(PythonInterp)
 
 ###################### FIXME
 file(GLOB TYPE_HARVESTER_FILES "${PROJECT_SOURCE_DIR}/*/include/*_rollcall.hpp" "${PROJECT_SOURCE_DIR}/*/include/*_types.hpp")
