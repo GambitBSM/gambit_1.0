@@ -133,7 +133,7 @@ BE_INI_FUNCTION
   {
     // Initialize module and experiments
     DDCalc0_Init();
-    bool flag = false;
+    bool flag = false;  // must pass by reference...
     DDCalc0_LUX_2013_Init(&flag);
     DDCalc0_DARWIN_Ar_2014_Init(&flag);
     DDCalc0_DARWIN_Xe_2014_Init(&flag);
@@ -145,7 +145,7 @@ BE_INI_FUNCTION
     double vrot = 235.;  // Local disk rotation speed [km/s]
     double v0   = 235.;  // Maxwellian most-probably speed [km/s]
     double vesc = 550.;  // Local galactic escape speed [km/s]
-    DDCalc0_SetSHM(rho,vrot,v0,vesc);
+    DDCalc0_SetSHM(&rho,&vrot,&v0,&vesc);
     */
   }
   scan_level = false;
