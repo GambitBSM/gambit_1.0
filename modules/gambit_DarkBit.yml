@@ -69,6 +69,7 @@ Parameters:
 ##############################
 
 Priors:
+
   # Here specify the priors, the parameters they work with, and any options as needed for that prior
   # A prior object is built for every entry here (along with any coming from 'ranges' keywords above), 
   # and then they are combined into a "composite" prior 
@@ -99,7 +100,8 @@ Printer:
 
 Scanner:
 
-  plugin: loopsample
+  #plugin: loopsample
+  plugin: crapsample
   file_path:  ScannerBit/lib/libsample.so
 
   loopsample:
@@ -108,7 +110,12 @@ Scanner:
     like:  Likelihood
     files:
       output_file: "weights ..."
-            
+
+  crapsample:
+    point_number: 2
+    output_file:  output
+    like:  Likelihood
+
 ###############################
 # Observables of interest
 ###############################
