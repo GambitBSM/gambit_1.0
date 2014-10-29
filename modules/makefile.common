@@ -90,6 +90,7 @@ FASTSIMDIR = ../extras/fast_sim
 NULIKEDIR = ../extras/nulike
 DDCALC0DIR = ../extras/DDCalc0
 GAMLIKEDIR = ../extras/gamLike
+DARKSUSYDIR = ../extras/DarkSUSY
 PYTHIA8DIR = ../extras/boss/bossed_pythia_source
 BOSSMINIDIR = ../extras/boss
 # TODO obsolete??
@@ -635,7 +636,26 @@ gamLike:
 
 micromegas:
 
-darksusy:
+# DarkSUSY built externally:
+# We only copy an existing compiled object file;
+# we do not build it through this makefile.
+darksusy: $(BACKENDDIR)/libdarksusy.so
+
+# Copy library to GAMBIT (only if it exists)
+$(BACKENDDIR)/libdarksusy.so: $(DARKSUSYDIR)/libdarksusy.so
+    # Ensure rule succeeds even if no file to copy (will produce message below)
+	! [ -f "$<" ] || cp -p "$<" "$@"
+
+# Dummy rule for libdarksusy.so
+$(DARKSUSYDIR)/libdarksusy.so:
+	@echo ""
+	@echo "  ============================== NOTICE =============================="
+	@echo "   A DarkSUSY installation was not found.  To use DarkSUSY, it must"
+	@echo "   first be downloaded and built separately.  To do so, run"
+	@echo "       ./install-DarkSUSY-5.1.1.script"
+	@echo "   from within the extras/DarkSUSY/ directory."
+	@echo "  ===================================================================="
+	@echo ""
 
 superiso:
 
