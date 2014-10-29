@@ -83,16 +83,16 @@ BE_FUNCTION(DDCalc0_SetSHM, void, (double*,double*,double*,double*), "__ddcalc0_
 // used to indicated the corresponding coupling should be taken
 // to be negative.
 //  Units: mass [GeV]; f, G [GeV^-2]; a [unitless]; sigma [pb]
-BE_FUNCTION(DDCalc0_SetWIMP_mfa, void, (double*,double*,double*,double*,double*),    "__ddcalc0_MOD_ddcalc0_setwimp_mfa",    "DDCalc0_SetWIMP")
-BE_FUNCTION(DDCalc0_SetWIMP_mG, void, (double*,double*,double*,double*,double*),     "__ddcalc0_MOD_ddcalc0_setwimp_mg",     "DDCalc0_SetWIMP")
-BE_FUNCTION(DDCalc0_SetWIMP_msigma, void, (double*,double*,double*,double*,double*), "__ddcalc0_MOD_ddcalc0_setwimp_msigma", "DDCalc0_SetWIMP")
+BE_FUNCTION(DDCalc0_SetWIMP_mfa, void, (double*,double*,double*,double*,double*),    "__ddcalc0_MOD_ddcalc0_setwimp_mfa",    "DDCalc0_SetWIMP_mfa")
+BE_FUNCTION(DDCalc0_SetWIMP_mG, void, (double*,double*,double*,double*,double*),     "__ddcalc0_MOD_ddcalc0_setwimp_mg",     "DDCalc0_SetWIMP_mG")
+BE_FUNCTION(DDCalc0_SetWIMP_msigma, void, (double*,double*,double*,double*,double*), "__ddcalc0_MOD_ddcalc0_setwimp_msigma", "DDCalc0_SetWIMP_msigma")
 
 // Experiment-specific calculation routines.
 // Should be run once for each model prior to using event and
 // likelihood routines below.
-BE_FUNCTION(DDCalc0_LUX_2013_CalcRates,       void, (), "__ddcalc0_MOD_lux_2013_calcrates",       "LUX_2013_CalcRates")
-BE_FUNCTION(DDCalc0_DARWIN_Ar_2014_CalcRates, void, (), "__ddcalc0_MOD_darwin_ar_2014_calcrates", "DARWIN_Ar_2014_CalcRates")
-BE_FUNCTION(DDCalc0_DARWIN_Xe_2014_CalcRates, void, (), "__ddcalc0_MOD_darwin_xe_2014_calcrates", "DARWIN_Xe_2014_CalcRates")
+BE_FUNCTION(DDCalc0_LUX_2013_CalcRates,       void, (), "__ddcalc0_MOD_lux_2013_calcrates",       "DDCalc0_LUX_2013_CalcRates")
+BE_FUNCTION(DDCalc0_DARWIN_Ar_2014_CalcRates, void, (), "__ddcalc0_MOD_darwin_ar_2014_calcrates", "DDCalc0_DARWIN_Ar_2014_CalcRates")
+BE_FUNCTION(DDCalc0_DARWIN_Xe_2014_CalcRates, void, (), "__ddcalc0_MOD_darwin_xe_2014_calcrates", "DDCalc0_DARWIN_Xe_2014_CalcRates")
 
 // Observed and expected events (experiment-specific).
 //   Events:     observed events
@@ -120,9 +120,9 @@ BE_FUNCTION(DDCalc0_DARWIN_Xe_2014_SignalSI,   double, (), "__ddcalc0_MOD_darwin
 BE_FUNCTION(DDCalc0_DARWIN_Xe_2014_SignalSD,   double, (), "__ddcalc0_MOD_darwin_xe_2014_signalsd",   "DARWIN_Xe_2014_SignalSD")
 
 // Likelihoods
-BE_FUNCTION(DDCalc0_LUX_2013_LogLikelihood,       double, (), "__ddcalc0_MOD_lux_2013_loglikelihood",       "LUX_2013_LogLikelihood")
-BE_FUNCTION(DDCalc0_DARWIN_Ar_2014_LogLikelihood, double, (), "__ddcalc0_MOD_darwin_ar_2014_loglikelihood", "DARWIN_Ar_2014_LogLikelihood")
-BE_FUNCTION(DDCalc0_DARWIN_Xe_2014_LogLikelihood, double, (), "__ddcalc0_MOD_darwin_xe_2014_loglikelihood", "DARWIN_Xe_2014_LogLikelihood")
+BE_FUNCTION(DDCalc0_LUX_2013_LogLikelihood,       double, (), "__ddcalc0_MOD_lux_2013_loglikelihood",       "DDCalc0_LUX_2013_LogLikelihood")
+BE_FUNCTION(DDCalc0_DARWIN_Ar_2014_LogLikelihood, double, (), "__ddcalc0_MOD_darwin_ar_2014_loglikelihood", "DDCalc0_DARWIN_Ar_2014_LogLikelihood")
+BE_FUNCTION(DDCalc0_DARWIN_Xe_2014_LogLikelihood, double, (), "__ddcalc0_MOD_darwin_xe_2014_loglikelihood", "DDCalc0_DARWIN_Xe_2014_LogLikelihood")
 
 
 BE_INI_FUNCTION

@@ -44,7 +44,7 @@ BE_INI_FUNCTION
   if (scan_level)
   {
     scan_level = false;
-    std::string path = runOptions->getValue<std::string>("datapath");
+    std::string path = runOptions->getValueOrDef<std::string>("../extras/gamLike/data/", "datapath");
     set_data_path(path.c_str());
     fermi_dwarfs_init(0);
     //fermi_gc_init(0, 1);

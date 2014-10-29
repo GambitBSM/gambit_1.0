@@ -1121,6 +1121,13 @@ namespace Gambit {
         std::cout << "DARWIN xenon (2014 estimate) likelihood: " << result << std::endl;
     }
 
+    // Simple test likelihood (in case DDCalc0 does not work)
+    void lnL_DD_test(double &result)
+    {
+        using namespace Pipes::lnL_DD_test;
+        result = 0;
+    }
+
 
 //////////////////////////////////////////////////////////////////////////
 //
