@@ -362,3 +362,8 @@ DarkSUSY
 Finally: (TODO: remove this part)  Send a mail to Christoph or Torsten saying
 what worked or did not work for you, and on what system you are working.
 
+MicrOmegas
+----------
+
+Similar proceedure.  Installation files can be found at extras/micromegas_patch/.
+
