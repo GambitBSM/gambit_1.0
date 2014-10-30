@@ -239,7 +239,7 @@ namespace Gambit
             //  *********************************************
             //  The main decay chain class. 
             //  Each link (particle) in the decay chain is an instance of this class, 
-            //  with pointers to its mother and daughter links.
+            //  with pointers to its parent and child links.
             //  *********************************************
             class ChainParticle
             {

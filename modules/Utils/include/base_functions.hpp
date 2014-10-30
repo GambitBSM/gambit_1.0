@@ -117,9 +117,9 @@ namespace Gambit
     class intLimitFunc
     {
         public:
-            virtual void operator ()(double &x0, double &x1, std::map<unsigned int,double> args)
+            virtual void operator ()(double &x0, double &x1, bool &allowed, std::map<unsigned int,double> args)
             {
-                (void) x0; (void) x1; (void) args;
+                (void) x0; (void) x1; (void) allowed; (void) args;
                 std::cout << "ERROR: Virtual operator () of intLimitFunc called" << std::endl;
                 exit(1); 
             }
@@ -1036,14 +1036,19 @@ namespace Gambit
                     // Otherwise, integrate using the default techinque
                     // Set integration limits
                     double _x0, _x1;
+                    bool allowed;
                     // The integration limits require arguments as a map from argument index for the un-integrated function to argument value.
                     std::map<unsigned int,double> limArgs;
                     for(int i=0;i<args.size();i++)
                     {
                         limArgs[baseArgIdx(i)] = args[i];
                     }
-                    (*intLimits)(_x0,_x1,limArgs);
-                    return value_defInt(args, _x0, _x1);
+                    (*intLimits)(_x0,_x1, allowed,limArgs);
+                    // Do the integral if kinematically allowed, otherwise return 0.
+                    if(allowed)
+                        return value_defInt(args, _x0, _x1);
+                    else
+                        return 0.0;
                 }
             }
                         

@@ -151,6 +151,16 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
+  // Loop manager for decay chains
+  /*
+  #define CAPABILITY decayChainLoopManagement
+  START_CAPABILITY
+    #define FUNCTION decayChainLoopManager
+    START_FUNCTION(void, CAN_MANAGE_LOOPS)  
+    #undef FUNCTION                                                       
+  #undef CAPABILITY    
+  */
+
   // Routine for testing decay chain code
   #define CAPABILITY chain_test_cap
   START_CAPABILITY
@@ -164,10 +174,8 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION GA_AnnYield_DarkSUSY
       START_FUNCTION(Gambit::BF::BFptr)
-//      DEPENDENCY(chain_test_cap, double) // Just a hack to force decay chain test to run first
       DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)
       BACKEND_REQ(dshayield, (), double, (double&,double&,int&,int&,int&))
-      BACKEND_REQ(dsibyieldone, (), double, (double&, int&, int&, int&))
     #undef FUNCTION
   #undef CAPABILITY
 

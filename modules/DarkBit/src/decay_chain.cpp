@@ -374,6 +374,12 @@ namespace Gambit
         }
         void DecayTableEntry::addChannel(const TH_Channel *in)
         {   
+            if(in->nFinalStates > 2) 
+            {
+                cout << "Warning: Trying to add decay with >2 final states to DecayTableEntry. Channel added as disabled." << endl;
+                addDisabled(in);
+                return;
+            }
             enabledDecays.push_back(in);
             totalWidth   += DecayTable::getWidth(in);
             enabledWidth += DecayTable::getWidth(in);

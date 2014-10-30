@@ -72,13 +72,13 @@ namespace Gambit
       double gna;
     };
 
-    // Integration limits for E1 for the DS gamma 3-body decays. Specify mass of WIMP and (non-photon) final states through template parameters.
+    // Integration limits for E1 for the DS gamma 3-body decays.
     class DSg3_IntLims_E1 : public intLimitFunc
     {
         public:
             // Constructor
             DSg3_IntLims_E1(double M_DM,double m1,double m2) : M_DM(M_DM), m1(m1), m2(m2){}
-            void operator ()(double &x0, double &x1, std::map<unsigned int,double> args)
+            void operator ()(double &x0, double &x1, bool &allowed, std::map<unsigned int,double> args)
             {
                 // First, check if the argument list contains argument 0
                 // Argument indices correspond to the indices you would use if passing the arguments to the function (to be integrated) without any integrals.
@@ -87,20 +87,26 @@ namespace Gambit
                     std::cout << "Error: Argument 0 not found in argument list" << std::endl;
                 }
                 // Calculate the integration limits on the DS kinematic variable y (see dsIBf_intdy)
-                double Eg = args[0]; // Photon energy
+                double Eg = args[0];
                 double x = Eg/M_DM;
+                // Check if kinematic constraints are satisfied
+                if((1.-pow(m1+m2,2)/(4*M_DM*M_DM))<=x)
+                {
+                    allowed = false;
+                    return;
+                }
                 double eta = pow(m1/M_DM,2);
                 double diffeta=pow(m2/M_DM,2);
                 diffeta   = 0.25*(eta-diffeta);
                 double f1 = 0.25*eta + diffeta*x/(2*(1-x));
-                double f2 = pow(1+diffeta/(1-x),2);
-                f2 = sqrt(f2-eta/(1-x));
+                double f2 = sqrt(pow(1+diffeta/(1-x),2)-eta/(1-x));
                 double aint = f1 + 0.5*(1-f2)*x;
                 double bint = f1 + 0.5*(1+f2)*x;
                 // Now convert these limits to limits on E1
                 double f3 = pow(0.5*m2/M_DM,2);
                 x0 = M_DM*(1-x+aint-f3);
                 x1 = M_DM*(1-x+bint-f3);
+                allowed = true;
             }
         private:
             double M_DM, m1, m2;
@@ -110,17 +116,13 @@ namespace Gambit
     {
       typedef double(*BEptr)(int&, double&, double&);
       public:
-        DSgamma3bdyKinFunc(int chn, double M, double m1, double m2, BEptr ib, double sv)
-        : BaseFunction("DSgamma3bdyKinFunc", 2)
+        DSgamma3bdyKinFunc(int IBch, double M_DM, double m_1, double m_2, BEptr IBfunc, double sigmav_norm)
+        : BaseFunction("DSgamma3bdyKinFunc", 2), IBfunc(IBfunc), sigmav_norm(sigmav_norm), M_DM(M_DM), m_1(m_1), m_2(m_2), IBch(IBch)
         {
-            M_DM = M;
-            IBch = chn;
-            IBfunc = ib;
-            m_1 = m1;
-            m_2 = m2;
-            sigmav_norm = sv;
             if(IBfunc == NULL)
             {
+                std::cout << "Error: No function pointer passed to DSgamma3bdyKinFunc" << std::endl;
+                exit(1);
                 // TODO: Throw error
             }
         }
@@ -133,16 +135,14 @@ namespace Gambit
             double p22 = E2*E2-m_2*m_2;
             double p22min = Eg*Eg+p12-2*Eg*sqrt(p12);
             double p22max = Eg*Eg+p12+2*Eg*sqrt(p12);
-            
             // Check if the process is kinematically allowed
-            if((E1 < m_1) || (Eg+E1+m_2 > 2*M_DM) || (p22<p22min) || (p22>p22max))
+            if((E1 < m_1) || (E2 < m_2) || (p22<p22min) || (p22>p22max))
             {
                 return 0;
             }
             double x = Eg/M_DM;
-            double y = (m_2*m_2 + 4*M_DM * (M_DM - E2) ) / (4*M_DM*M_DM);
+            double y = (m_2*m_2 + 4*M_DM * (M_DM - E2) ) / (4*M_DM*M_DM);        
             double result = IBfunc(IBch,x,y);          
-            //std::cout << M_DM << "\t" << Eg << "\t" << E1 << "\t" << E2 << "\t" << x << "\t" << y << "\t" << result << std::endl;
             return sigmav_norm * result / (M_DM*M_DM); // M_DM^-2 is from the Jacobi determinant
         }
       private:
