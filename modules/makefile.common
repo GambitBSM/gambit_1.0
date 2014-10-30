@@ -631,7 +631,7 @@ DDCalc0:
 	cp $(DDCALC0DIR)/libDDCalc0.so $(BACKENDDIR)/lib/
 
 gamLike:
-	cd $(GAMLIKEDIR); make FC=$(FC) FFLAGS="$(FFLAGS)"
+	cd $(GAMLIKEDIR); make CC=$(CC) CFLAGS="$(CFLAGS)"
 	cp $(GAMLIKEDIR)/gamLike.so $(BACKENDDIR)/lib/libgamLike.so
 
 micromegas:
