@@ -148,6 +148,18 @@ Ongoing:
 * Organise dedicated scanner section in yaml .ini file structure
 * Organise grouping of parameters into fast and slow subsets (useful for some scanners), possibly via the ini file.
 
+* remove output capture
+* update printer system interface 
+* create plugin registry
+* tidy up plugin interface
+* tidy up scanner section in yaml file 
+* switch to using gambit error system (Pat)
+* add documentation
+  - quick start for each plugin
+  - internal documentation
+* scanner info to core → scanner name, version, library file, library present, YAML options
+* plugin descriptions in plugin files
+
 Done:
 * Interface to MultiNest
 

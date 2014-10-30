@@ -160,8 +160,10 @@ Auxiliaries:
 
 Logger:
 
-  # Redirectory of specific messages according to tags
-  # Can redirect to stdout or stderr by specifying these as the "filenames". Obviously this also means it is impossible to redirect output to actual files with these names.
+  # Redirection of specific messages according to tags
+  # Can redirect to stdout or stderr by specifying these as the "filenames". 
+  # Obviously this also means it is impossible to redirect output to actual
+  # files with these names.
 
   prefix : "runs/spartan/logs/"
   redirection:
