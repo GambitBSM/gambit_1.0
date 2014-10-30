@@ -50,8 +50,16 @@ endif()
 # add -fPIC for 64 bit systems
 if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
-  set(CMAKE_C_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
-  set(CMAKE_Fortran_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
+  set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -fPIC")
+endif()
+
+# add some Fortran compiler flags
+message(${CMAKE_Fortran_COMPILER})
+if(CMAKE_Fortran_COMPILER MATCHES "gfortran*")
+  set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -ffixed-line-length-none -fno-range-check")
+elseif(CMAKE_Fortran_COMPILER MATCHES "ifort*")
+  set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -extend-source")
 endif()
 
 # don't relink all binaries when shared lib changes (programs will be rebuilt any way if used headers change)
@@ -128,6 +136,7 @@ set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Utils/include/all_functor_
 include(cmake/warnings.cmake)
 include(cmake/gambit.cmake)
 include(cmake/contrib.cmake)
+include(cmake/extras.cmake)
 
 # add subdirectories. This does not actually cause another cmake executable to run. The same process will walk through the project's entire directory structure.
 add_subdirectory(Backends)
