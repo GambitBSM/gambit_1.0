@@ -12,11 +12,12 @@ ExternalProject_Add(DDCal0
 
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../extras/DDCalc0/libDDCalc0.so" "${PROJECT_SOURCE_DIR}/Backends/lib/libDDCalc0.so")
 
+set(GAMLIKE_LDFLAGS "${CMAKE_CXX_FLAGS} -dynamiclib -Wl,-headerpad_max_install_names")
 ExternalProject_Add(gamLike
   SOURCE_DIR ${PROJECT_SOURCE_DIR}/../extras/gamLike
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND ""
-  BUILD_COMMAND make FC=${CMAKE_Fortran_COMPILER} FFLAGS=${CMAKE_Fortran_FLAGS} COMMAND cp gamLike.so ${PROJECT_SOURCE_DIR}/Backends/lib/.
+  BUILD_COMMAND make CC=${CMAKE_CXX_COMPILER} CFLAGS=${CMAKE_CXX_FLAGS} COMMAND cp gamLike.so ${PROJECT_SOURCE_DIR}/Backends/lib/#.
   INSTALL_COMMAND ""
   INSTALL_DIR ${CMAKE_BINARY_DIR}/install
   CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/install
