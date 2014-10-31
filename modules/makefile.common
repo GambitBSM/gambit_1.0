@@ -745,6 +745,7 @@ clean_plugins:
 clean_backends:
 	@rm -rf $(BACKENDDIR)/lib/*.so $(BACKENDDIR)/lib/*.o
 	@cd $(NULIKEDIR); make clean
+	@cd $(GAMLIKEDIR); make clean
 	@cd $(FASTSIMDIR); make clean
 	@cd $(BOSSMINIDIR); make clean
 	@cd $(PYTHIA8DIR); make clean
