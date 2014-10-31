@@ -132,6 +132,10 @@ ObsLikes:
 # LUX direct detection likelihood
     - capability: lnL_LUX_2013
       purpose:  Likelihood
+      
+# Uncomment to run cascade decay test code      
+#    - capability: chain_test_cap
+#      purpose:    Observable
 
 # This function dumps gamma-ray spectra into a ASCII table file.  The filename
 # is specified as option in the Auxiliaries section.
