@@ -32,7 +32,7 @@
 ///
 ///  \author Lars A. Dal  
 ///          (l.a.dal@fys.uio.no)
-///  \date 2014 Mar, Jul
+///  \date 2014 Mar, Jul, Sep, Oct
 ///  *********************************************
 
 
@@ -45,6 +45,8 @@
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/shared_ptr.hpp>
 #include <gsl/gsl_integration.h>
+#include "base_functions.hpp"
+#include "decay_chain.hpp"
 
 namespace Gambit
 {
@@ -58,6 +60,8 @@ namespace Gambit
     using boost::dynamic_pointer_cast;
     using boost::static_pointer_cast;
     using boost::enable_shared_from_this;
+    using Gambit::BF::intLimitFunc;
+    using Gambit::BF::BFargVec;
 
     struct DD_couplings
     {
@@ -68,55 +72,82 @@ namespace Gambit
       double gna;
     };
 
+    // Integration limits for E1 for the DS gamma 3-body decays.
+    class DSg3_IntLims_E1 : public intLimitFunc
+    {
+        public:
+            // Constructor
+            DSg3_IntLims_E1(double M_DM,double m1,double m2) : M_DM(M_DM), m1(m1), m2(m2){}
+            void operator ()(double &x0, double &x1, bool &allowed, std::map<unsigned int,double> args)
+            {
+                // First, check if the argument list contains argument 0
+                // Argument indices correspond to the indices you would use if passing the arguments to the function (to be integrated) without any integrals.
+                if (!argInList(args,0))
+                {
+                    std::cout << "Error: Argument 0 not found in argument list" << std::endl;
+                }
+                // Calculate the integration limits on the DS kinematic variable y (see dsIBf_intdy)
+                double Eg = args[0];
+                double x = Eg/M_DM;
+                // Check if kinematic constraints are satisfied
+                if((1.-pow(m1+m2,2)/(4*M_DM*M_DM))<=x)
+                {
+                    allowed = false;
+                    return;
+                }
+                double eta = pow(m1/M_DM,2);
+                double diffeta=pow(m2/M_DM,2);
+                diffeta   = 0.25*(eta-diffeta);
+                double f1 = 0.25*eta + diffeta*x/(2*(1-x));
+                double f2 = sqrt(pow(1+diffeta/(1-x),2)-eta/(1-x));
+                double aint = f1 + 0.5*(1-f2)*x;
+                double bint = f1 + 0.5*(1+f2)*x;
+                // Now convert these limits to limits on E1
+                double f3 = pow(0.5*m2/M_DM,2);
+                x0 = M_DM*(1-x+aint-f3);
+                x1 = M_DM*(1-x+bint-f3);
+                allowed = true;
+            }
+        private:
+            double M_DM, m1, m2;
+    };
+
     class DSgamma3bdyKinFunc : public BF::BaseFunction
     {
       typedef double(*BEptr)(int&, double&, double&);
       public:
-        DSgamma3bdyKinFunc(int& chn, double& M, double& m1, double& m2, BEptr ib, BEptr fsr, bool& doFSR, bool& doIB)
-        : BaseFunction("DSgamma3bdyKinFunc", 2)
+        DSgamma3bdyKinFunc(int IBch, double M_DM, double m_1, double m_2, BEptr IBfunc, double sigmav_norm)
+        : BaseFunction("DSgamma3bdyKinFunc", 2), IBfunc(IBfunc), sigmav_norm(sigmav_norm), M_DM(M_DM), m_1(m_1), m_2(m_2), IBch(IBch)
         {
-          M_DM = M;
-          IBch = chn;
-          IBfunc = ib;
-          FSRfunc = fsr;
-          m_1 = m1;
-          m_2 = m2;
-          calculateFSR = doFSR;
-          calculateIB = doIB;
+            if(IBfunc == NULL)
+            {
+                std::cout << "Error: No function pointer passed to DSgamma3bdyKinFunc" << std::endl;
+                exit(1);
+                // TODO: Throw error
+            }
         }
-        shared_ptr<DSgamma3bdyKinFunc> set_calculateFSR(bool doFSR)
+        double value(const BFargVec &args)
         {
-            this->calculateFSR = doFSR;
-            return static_pointer_cast<DSgamma3bdyKinFunc> (shared_from_this());
-        }        
-        shared_ptr<DSgamma3bdyKinFunc> set_calculateIB(bool doIB)
-        {
-            this->calculateFSR = doIB;
-            return static_pointer_cast<DSgamma3bdyKinFunc> (shared_from_this());
-        }  
-        double value(const BF::BFargVec &args)
-        {
-          double E_gamma = args[0];
-          double E1 = args[1];
-          double E2 = 2*M_DM-E_gamma-E1;  
-          if((E1 < m_1) || (E_gamma+E1 > 2*M_DM) || (E2 < m_2))
-            return 0;
-          double x = E_gamma/M_DM;
-          double y = (m_2*m_2+4*M_DM*(E_gamma+E1-M_DM))/(4*M_DM*M_DM);
-          // TODO: Check if IB and ISR are summed correctly
-          double result = 0;       
-          if(calculateFSR && (FSRfunc != NULL)) 
-            result += FSRfunc(IBch,x,y);
-          if(calculateIB) 
-            result += IBfunc(IBch,x,y);
-          std::cout << E_gamma << "\t" << E1 << "\t" << x << "\t" << y << "\t" << result << std::endl;
-          return result;
+            double Eg = args[0]; // Photon energy
+            double E1 = args[1];
+            double E2 = 2*M_DM - Eg - E1;  
+            double p12 = E1*E1-m_1*m_1;
+            double p22 = E2*E2-m_2*m_2;
+            double p22min = Eg*Eg+p12-2*Eg*sqrt(p12);
+            double p22max = Eg*Eg+p12+2*Eg*sqrt(p12);
+            // Check if the process is kinematically allowed
+            if((E1 < m_1) || (E2 < m_2) || (p22<p22min) || (p22>p22max))
+            {
+                return 0;
+            }
+            double x = Eg/M_DM;
+            double y = (m_2*m_2 + 4*M_DM * (M_DM - E2) ) / (4*M_DM*M_DM);        
+            double result = IBfunc(IBch,x,y);          
+            return sigmav_norm * result / (M_DM*M_DM); // M_DM^-2 is from the Jacobi determinant
         }
       private:
-        bool calculateIB;
-        bool calculateFSR;
         BEptr IBfunc;
-        BEptr FSRfunc;
+        double sigmav_norm;
         double M_DM;
         double m_1;        
         double m_2;
@@ -204,8 +235,7 @@ namespace Gambit
         BF::BFptr dSigmadE;  
 
         // Compare final states
-        bool isChannel(std::string p0, std::string p1, std::string p2 =
-                "", std::string p3 = "")
+        bool isChannel(std::string p0, std::string p1, std::string p2 ="", std::string p3 = "")
         {
             if ( nFinalStates == 2 and p0 == finalStateIDs[0] and p1 == finalStateIDs[1] ) return true;
             if ( nFinalStates == 3 and p0 == finalStateIDs[0] and p1 == finalStateIDs[1] and p2 == finalStateIDs[2] ) return true;

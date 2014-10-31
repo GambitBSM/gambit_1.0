@@ -29,6 +29,11 @@
 
 namespace Gambit
 {
+  struct DS_IBINTVARS
+  {
+    double ibcom_x, ibcom_z, ibcom_mx, ibcom_mp1, ibcom_mp2;
+    int intch, intyield;
+  };
 
   struct DS_MSSMPAR
   {

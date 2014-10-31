@@ -124,7 +124,6 @@ BE_FUNCTION(DDCalc0_LUX_2013_LogLikelihood,       double, (), "__ddcalc0_MOD_lux
 BE_FUNCTION(DDCalc0_DARWIN_Ar_2014_LogLikelihood, double, (), "__ddcalc0_MOD_darwin_ar_2014_loglikelihood", "DDCalc0_DARWIN_Ar_2014_LogLikelihood")
 BE_FUNCTION(DDCalc0_DARWIN_Xe_2014_LogLikelihood, double, (), "__ddcalc0_MOD_darwin_xe_2014_loglikelihood", "DDCalc0_DARWIN_Xe_2014_LogLikelihood")
 
-
 BE_INI_FUNCTION
 {
   // Scan-level initialisation
