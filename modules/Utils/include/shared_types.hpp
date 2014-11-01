@@ -61,7 +61,8 @@
 #include "backend_types/Pythia_8_186/loaded_types.hpp"
 
 // Spectrum object from flexiblesusy backend
-#include "Spectrum.hpp"
+#include "Spectrum.hpp"  // Abstract base class
+#include "MSSMSpec.hpp"  // MSSM derived container 
 
 // GAMBIT BaseFunction Objects
 #include "base_functions.hpp"
@@ -70,8 +71,8 @@
 // organised into new headers and included from here as their number grows.
 namespace Gambit
 {
-  typedef Spectrum* SpectrumPtr;
-  
+  typedef flexiblesusy::MSSMSpec MSSMSpec; 
+ 
   // Pointer to a function that takes an integer by reference and returns a double.
   // Just used for example purposes in ExampleBit_A and ExampleBit_B.
   typedef double(*fptr)(int&);

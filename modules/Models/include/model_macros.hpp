@@ -391,6 +391,7 @@
                                                                                \
   }                                                                            \
 
+
 #define INTERPRET_AS_X__DEPENDENCY(MODEL_X, DEP, TYPE)                         \
   CORE_DEPENDENCY(DEP, TYPE, MODEL, CAT(MODEL_X,_parameters), IS_MODEL)        \
 
@@ -409,6 +410,48 @@
   INTERPRET_AS_PARENT__BEGIN                                                   \
   INTERPRET_AS_PARENT__DEFINE(FUNC)                                            \
 
+// Combo wrapper for "interpret as X"
+#define INTERPRET_AS_X__FUNCTION(MODEL_X,FUNC)                                 \
+  INTERPRET_AS_X__BEGIN(MODEL_X)                                               \
+  INTERPRET_AS_X__DEFINE(MODEL_X,FUNC)                                         \
+
+// We may not want this in the end, but at the moment I have a need for a
+// macro which creates a "blank" interpret as parent funtion, i.e. which
+// returns an empty parent model parameter object.
+#define USE_NULL_INTERPRET_AS_PARENT                                           \
+  INTERPRET_AS_PARENT__BEGIN                                                   \
+                                                                               \
+  namespace Gambit                                                             \
+  {                                                                            \
+                                                                               \
+    namespace Models                                                           \
+    {                                                                          \
+                                                                               \
+      namespace MODEL                                                          \
+      {                                                                        \
+                                                                               \
+        /* Prototype the user-defined function */                              \
+        /*void FUNC (const ModelParameters&, ModelParameters&);           */   \
+                                                                               \
+        /* The actual definition of the interpret_as_X "module" function */    \
+        void CAT(PARENT,_parameters) (ModelParameters &model_x_params)        \
+        {                                                                      \
+          /* Collect MODEL's parameters via dependency system */               \
+          using namespace Pipes::CAT(PARENT,_parameters);                     \
+          const ModelParameters& model_params = *Dep::CAT(MODEL,_parameters);  \
+                                                                               \
+          /* Run user-supplied code (which must take result as an
+             argument, and set the parameters it contains as desired) */       \
+          /* FUNC (model_params,model_x_params); */                            \
+        }                                                                      \
+                                                                               \
+      }                                                                        \
+                                                                               \
+    }                                                                          \
+                                                                               \
+  }                                                                            \
+
+ 
 // Macro to get to model namespace easily
 #define MODEL_NAMESPACE Gambit::Models::MODEL 
 

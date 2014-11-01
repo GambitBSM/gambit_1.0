@@ -76,60 +76,153 @@
              mdR,msR,mbR)
 #undef MODEL
 
-#define MODEL MSSMBen
-#define PARENT MSSM29
+// This is a kind of "abstract" model, with no parameters. Used only
+// so that module functions can say the are enabled for the "MSSM" and
+// therefore are allowed to be used with any of its children.
+#define MODEL MSSM
+   START_MODEL
+   DEFINEPARS(null) // Need to have at least one parameter I think. Stick in a "null" parameter.
+#undef MODEL
+
+// Currently, Gambit will insist that a module function has MSSM_parameters
+// as a dependency if ALLOW_MODELS(MSSM) is set for that function. Since MSSM is an abstraction
+// in this current hierarchy I am advocating, no function which uses ALLOW_MODELS(MSSM) can
+// actually require the model parameters; presumably they really just want the spectrum.
+// They could just ask for an MSSMSpec object via the dependency system, and not use 
+// ALLOW_MODEL(MSSM), however for now I will make it so that they can, by providing a "fake"
+// interpret as parent function which doesn't do anything. This is used by all models which
+// have MSSM as a parent.
+// This "blank" interpret_as_parent function can be created via the macro
+// USE_NULL_INTERPRET_AS_PARENT
+
+
+// General GUT boundary condition parameterisation of the MSSM
+// There are several of these, compatible with different spectrum generators
+// To use a constrained GUT model like the CMSSM, there needs to be an 
+// "interpret_as_X" function which translates the CMSSM parameters into
+// the appropriate general GUT parameterisation for the spectrum generator
+// being used.
+// TODO: Currently just examples, need to look up what each spectrum generator
+// can actually do.
+#define MODEL GUTMSSMA
+  #define PARENT MSSM
   START_MODEL
-  DEFINEPARS(M_input, 
-             M1,M2,M3,
-             At,
+  DEFINEPARS(M1,M2,M3,
+             At,Ab,Atau,
+             mHu2,mHd2,
+             signmu,tanb,
+             meL,mmuL,mtauL,
+             meR,mmuR,mtauR,
+             mq1L,mq2L,mq3L,
+             muR,mcR,mtR,
+             mdR,msR,mbR)
+  USE_NULL_INTERPRET_AS_PARENT
+  #undef PARENT
+#undef MODEL
+
+// Alternate general GUT parameterisation
+#define MODEL GUTMSSMB
+  #define PARENT MSSM
+  START_MODEL
+  DEFINEPARS(M1,M2,M3,
+             At,Ab,Atau,
              mH12,mH22,
              mu,tanb,
-             mq3L,
-             mtR,
-             mbR)
- 
+             meL,mmuL,mtauL,
+             meR,mmuR,mtauR,
+             mq1L,mq2L,mq3L,
+             muR,mcR,mtR,
+             mdR,msR,mbR)
+  USE_NULL_INTERPRET_AS_PARENT
+  #undef PARENT
+#undef MODEL
+
+#define MODEL CMSSM
+  #define PARENT MSSM
+  START_MODEL
+  DEFINEPARS(M0,M12,A0,tanb,signmu)
+
+  // Now, CMSSM cannot actually be translated into MSSM, because MSSM is 
+  // "abstract" and has no parameters. Instead, we translate it into
+  // GUTMSSMA and GUTMSSMB, which are children of MSSM. and which work
+  // with specific spectrum generators. Most module functions just need
+  // to say they work with MSSM, and then CMSSM should be permitted;
+  // meanwhile SpecBit will translate CMSSM into GUTMSSMX in order to
+  // generate a spectrum.
+  //          
+  //         ...__FUNCTION(Model name, translation function name)
+  INTERPRET_AS_X__FUNCTION(GUTMSSMA, CMSSM_to_GUTMSSMA)
+  INTERPRET_AS_X__FUNCTION(GUTMSSMB, CMSSM_to_GUTMSSMB)
+  USE_NULL_INTERPRET_AS_PARENT
+
+  // Now the actual translation function definitions
+  void MODEL_NAMESPACE::CMSSM_to_GUTMSSMA (const ModelParameters &myP, ModelParameters &targetP)
+  {
+     logger()<<"Running interpret_as_X calculations for CMSSM --> GUTMSSMA..."<<LogTags::info<<EOM;
+     
+     targetP.setValue("M1",      myP["M12"] );
+     targetP.setValue("M2",      myP["M12"] );
+     targetP.setValue("M3",      myP["M12"] );
+
+     targetP.setValue("mq1L",    myP["M0"] );
+     targetP.setValue("mq2L",    myP["M0"] );
+     targetP.setValue("mq3L",    myP["M0"] );
+     targetP.setValue("muR",     myP["M0"] );
+     targetP.setValue("mdR",     myP["M0"] );
+     targetP.setValue("mcR",     myP["M0"] );
+     targetP.setValue("msR",     myP["M0"] );
+     targetP.setValue("mtR",     myP["M0"] );
+     targetP.setValue("mbR",     myP["M0"] );
+     targetP.setValue("meL",     myP["M0"] );
+     targetP.setValue("mmuL",    myP["M0"] );
+     targetP.setValue("mtauL",   myP["M0"] );
+     targetP.setValue("meR",     myP["M0"] );
+     targetP.setValue("mmuR",    myP["M0"] );
+     targetP.setValue("mtauR",   myP["M0"] );
+     targetP.setValue("mHu2",    myP["M0"]*myP["M0"] );
+     targetP.setValue("mHd2",    myP["M0"]*myP["M0"] );
+
+     targetP.setValue("At",      myP["A0"] );
+     targetP.setValue("Ab",      myP["A0"] );
+     targetP.setValue("Atau",    myP["A0"] );
+
+     targetP.setValue("tanb",    myP["tanb"] );
+     targetP.setValue("signmu",  myP["signmu"] );
+  } 
+
+  void MODEL_NAMESPACE::CMSSM_to_GUTMSSMB (const ModelParameters &myP, ModelParameters &targetP)
+  {
+     logger()<<"Running interpret_as_X calculations for CMSSM --> GUTMSSMB..."<<LogTags::info<<EOM;
+
+     /// Filler....     
+  } 
+  #undef PARENT
+#undef MODEL
+
+// Extra-constrained CMSSM, to demo interpret_as_parent
+// If we can translate to a model which already has translation functions to 
+// the spectrum-generator compatible parameters, then we only need the one
+// function to translate to that parent model.
+#define MODEL extraCMSSM
+  #define PARENT CMSSM
+  START_MODEL
+  DEFINEPARS(M0,M12,tanb,signmu)
+
   // Add in an INTERPRET_AS_PARENT function (sets the PARENT model's parameter
   // object as a CAPABILITY of this model)
-  INTERPRET_AS_PARENT__FUNCTION(MSSMBen_IAPfunc)
+  INTERPRET_AS_PARENT__FUNCTION(extraCMSSM_to_CMSSM)
 
   // If you need to access the *DEP pointers via the Pipes then you have to know the right namespace in which to find them. You can use the USING_PIPE macro to make this accessible automatically, so long as PARENT and MODEL are correctly defined. See demo.hpp for examples.
-  void MODEL_NAMESPACE::MSSMBen_IAPfunc (const ModelParameters &myP, ModelParameters &parentP)
+  void MODEL_NAMESPACE::extraCMSSM_to_CMSSM (const ModelParameters &myP, ModelParameters &parentP)
   {
-     logger()<<"Running interpret_as_parent calculations for MSSMBen -> MSSM ..."<<LogTags::info<<EOM;
+     logger()<<"Running interpret_as_parent calculations for extraCMSSM -> CMSSM ..."<<LogTags::info<<EOM;
       
-     double MSUSY(myP["M_input"]);
-     
-     parentP.setValue("M_input", MSUSY   );
-     parentP.setValue("M1",      myP["M1"] );
-     parentP.setValue("M2",      myP["M2"] );
-     parentP.setValue("M3",      myP["M3"] );
-     parentP.setValue("At",      myP["At"] );
-     parentP.setValue("Ab",      0 );
-     parentP.setValue("Ae",      0 );
-     parentP.setValue("Amu",     0 );
-     parentP.setValue("Atau",    0 );
-     parentP.setValue("mH12",    myP["MH12"] );
-     parentP.setValue("mH22",    myP["MH22"] );
-     parentP.setValue("mu",      myP["mu"]   );
-     parentP.setValue("mA2",     1.5*MSUSY );
-     parentP.setValue("tanb",    myP["tanb"] );
-     parentP.setValue("meL",     1.5*MSUSY );
-     parentP.setValue("mmuL",    1.5*MSUSY );
-     parentP.setValue("mtauL",   1.5*MSUSY );
-     parentP.setValue("meR",     1.5*MSUSY );
-     parentP.setValue("mmuR",    1.5*MSUSY );
-     parentP.setValue("mtauR",   1.5*MSUSY );
-     parentP.setValue("mq1L",    1.5*MSUSY );
-     parentP.setValue("mq2L",    1.5*MSUSY );
-     parentP.setValue("mq3L",    myP["mq3L"] );
-     parentP.setValue("muR",     1.5*MSUSY );
-     parentP.setValue("mcR",     1.5*MSUSY );
-     parentP.setValue("mtR",     myP["mtR"]  );
-     parentP.setValue("mdR",     1.5*MSUSY );
-     parentP.setValue("msR",     1.5*MSUSY );
-     parentP.setValue("mbR",     myP["mbR"]  );
-  }
-  
+     parentP.setValue("M0",     myP["M0"] );
+     parentP.setValue("A0",     myP["M0"] );
+     parentP.setValue("M12",    myP["M12"] );
+     parentP.setValue("tanb",   myP["tanb"] );
+     parentP.setValue("signmu", myP["signmu"] );
+  } 
 #undef PARENT
 #undef MODEL
 

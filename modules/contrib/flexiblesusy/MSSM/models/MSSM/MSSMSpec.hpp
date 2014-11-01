@@ -155,6 +155,7 @@ namespace flexiblesusy {
       MSSM_Phys mssm_ph;
       MSSM_DRbarPars mssm_drbar_pars;
       //constructors
+      MSSMSpec();
       MSSMSpec(MSSM<Two_scale>);
 
       //Could more constructors to interface with other generators   
@@ -176,10 +177,58 @@ namespace flexiblesusy {
       // inside gambit, but perhaps these functions should return pointers
       // or references to the internal object instead? Though in that case
       // the model object might as well be public I think.
+      // UPDATE: Although do we need the model object ever? It doesn't
+      // seem to be needed when running the spectrum generator, because
+      // we run it seperately and then copy the information into the Spectrum
+      // object.
       MSSM<Two_scale> get_modelobject();
       MssmFS get_bound_spec() const; 
       MSSM_physical get_bound_phys() const; 
 
+      // Write spectrum information in slha format (not including input parameters etc.)
+      virtual void dump2slha(const std::string&) const;
+
+      /// Copy low energy spectrum information from another model object
+      // Should work from any flexiblesusy model object with the same particle content as the MSSM
+      template<class MSSMlike>
+      void get_lowe_data_from(MSSMlike othermodel)
+      {
+        // Maybe we can copy the pole masses etc directly, but since I am not sure how to do that, for now I am just copying the soft parameters and recomputing the pole masses. Will have to chat to Peter about this.
+        // Update: Yeah Peter says we definitely should copy the pole and drbar masses directly :).
+
+        // Actually, we may want to instead write out the data from one object into SLHAea, and then read it into the other. That will let us copy data out of (say) softsusy objects into flexiblesusy ones, and vice-versa, more easily. Of course that will be restricted to the SLHA compatible models... Perhaps we can overload this function to deal with various inputs.
+        model = othermodel;
+
+        model.set_scale( othermodel.get_scale() );
+        model.set_Yu( othermodel.get_Yu() );
+        model.set_Yd( othermodel.get_Yd() );
+        model.set_Ye( othermodel.get_Ye() );
+        model.set_Mu( othermodel.get_Mu() );
+        model.set_g1( othermodel.get_g1() );
+        model.set_g2( othermodel.get_g2() );
+        model.set_g3( othermodel.get_g3() );
+        model.set_vd( othermodel.get_vd() );
+        model.set_vu( othermodel.get_vu() );
+        model.set_TYu( othermodel.get_TYu() );
+        model.set_TYd( othermodel.get_TYd() );
+        model.set_TYe( othermodel.get_TYe() );
+        model.set_BMu( othermodel.get_BMu() );
+        model.set_mq2( othermodel.get_mq2() );
+        model.set_ml2( othermodel.get_ml2() );
+        model.set_mHd2( othermodel.get_mHd2() );
+        model.set_mHu2( othermodel.get_mHu2() );
+        model.set_md2( othermodel.get_md2() );
+        model.set_mu2( othermodel.get_mu2() );
+        model.set_me2( othermodel.get_me2() );
+        model.set_MassB( othermodel.get_MassB() );
+        model.set_MassWB( othermodel.get_MassWB() );
+        model.set_MassG( othermodel.get_MassG() );
+
+        model.calculate_DRbar_parameters(); 
+        model.calculate_pole_masses();
+
+        return;
+      }
 };
 
 
