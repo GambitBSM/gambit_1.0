@@ -35,7 +35,6 @@
 #include "MSSMSpec.hpp"
 #include "numerics.hpp"
 
-
 namespace Gambit
 {
 

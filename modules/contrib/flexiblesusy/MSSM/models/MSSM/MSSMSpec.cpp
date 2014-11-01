@@ -1,6 +1,5 @@
 #include "MSSMSpec.hpp"
 #include "MSSM_slha_io.hpp" // only needed by 'dump2slha'; can remove if this function changes
-
 using namespace flexiblesusy;
 
 MSSMSpec::MSSMSpec(MSSM<Two_scale> m) :

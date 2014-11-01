@@ -64,6 +64,9 @@
 #include "Spectrum.hpp"  // Abstract base class
 #include "MSSMSpec.hpp"  // MSSM derived container 
 
+// Spectrum object from flexiblesusy backend
+#include "Spectrum.hpp"
+
 // GAMBIT BaseFunction Objects
 #include "base_functions.hpp"
 

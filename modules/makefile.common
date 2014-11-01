@@ -543,6 +543,10 @@ $(SPECDIR)/build/%.o: $(SPECDIR)/src/%.cpp $(STANDALONEINC) $(SPECINC)
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
+$(SPECDIR)/build/%.o: $(SPECDIR)/src/%.cpp $(STANDALONEINC) $(SPECINC)
+	@echo ___________Compiling $<:
+	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
+
 $(DECAYDIR)/build/%.o: $(DECAYDIR)/src/%.cpp $(STANDALONEINC) $(DECAYINC)
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
