@@ -12,7 +12,6 @@ ExternalProject_Add(DDCal0
 
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../extras/DDCalc0/libDDCalc0.so" "${PROJECT_SOURCE_DIR}/Backends/lib/libDDCalc0.so")
 
-set(GAMLIKE_LDFLAGS "${CMAKE_CXX_FLAGS} -dynamiclib -Wl,-headerpad_max_install_names")
 ExternalProject_Add(gamLike
   SOURCE_DIR ${PROJECT_SOURCE_DIR}/../extras/gamLike
   BUILD_IN_SOURCE 1
