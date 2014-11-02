@@ -1,4 +1,4 @@
-option(WERROR "WERROR" ON)
+option(WERROR "WERROR" OFF)
 
 include(CheckCXXCompilerFlag)
 

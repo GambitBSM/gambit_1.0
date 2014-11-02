@@ -55,5 +55,7 @@ ExternalProject_Add(nulike
 
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../extras/nulike/lib/libnulike.so" "${PROJECT_SOURCE_DIR}/Backends/lib/libnulike.so")
 
+set_target_properties(DDCal0 gamLike DarkSUSY nulike PROPERTIES EXCLUDE_FROM_ALL 1)
+
 add_custom_target(backends COMMAND make DDCal0 gamLike DarkSUSY nulike)
 
