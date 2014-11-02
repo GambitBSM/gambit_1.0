@@ -57,5 +57,5 @@ set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../extras/nulike/lib/libnu
 
 set_target_properties(DDCal0 gamLike DarkSUSY nulike PROPERTIES EXCLUDE_FROM_ALL 1)
 
-add_custom_target(backends COMMAND make DDCal0 gamLike DarkSUSY nulike)
+add_custom_target(backends COMMAND make gamLike nulike DDCal0) #DarkSUSY
 

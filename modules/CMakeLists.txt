@@ -57,7 +57,7 @@ endif()
 # add some Fortran compiler flags
 message(${CMAKE_Fortran_COMPILER})
 if(CMAKE_Fortran_COMPILER MATCHES "gfortran*" OR CMAKE_Fortran_COMPILER MATCHES "f95*")
-  set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -ffixed-line-length-none -fno-range-check")
+  set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -ffixed-line-length-none")
 elseif(CMAKE_Fortran_COMPILER MATCHES "ifort*")
   set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -extend-source")
 endif()
