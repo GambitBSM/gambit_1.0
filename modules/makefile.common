@@ -422,7 +422,7 @@ ALLOBJECTS = $(STANDALONEOBJS) $(MODULEOBJS) $(PRINTOBJS) $(COREOBJS)
 
 ROLLCALL_HEADERS:=$(wildcard */*/*_rollcall.hpp) $(wildcard */*/*/*_rollcall.hpp)
 FUNCTOR_TYPES:= $(UTILSDIR)/include/all_functor_types.hpp
-HARVESTER:= $(UTILSDIR)/scripts/functor_type_harvester.py
+HARVESTER:= $(UTILSDIR)/scripts/module_harvester.py
 ifndef SHH
   HARVESTER_OPTS += -v
 endif

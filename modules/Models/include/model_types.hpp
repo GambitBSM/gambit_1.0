@@ -39,8 +39,7 @@
 #include <iostream>
 #include <sstream>
 
-#include "error_handlers.hpp"
-//DEPRECIATED #include "logs.hpp"
+#include "standalone_error_handlers.hpp"
 
 namespace Gambit {
 
