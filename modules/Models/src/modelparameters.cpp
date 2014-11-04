@@ -34,7 +34,6 @@
 #include <iostream>
 #include <sstream>
 
-#include "error_handlers.hpp"
 #include "model_types.hpp"
 
 //DEPRECIATED #include "logs.hpp"

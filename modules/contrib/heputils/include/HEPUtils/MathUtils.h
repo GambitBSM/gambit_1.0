@@ -173,4 +173,15 @@ namespace HEPUtils {
 
   //@}
 
+
+  /// @name Random numbers and sampling
+  //@{
+
+  inline double rand01() {
+    return rand() / (double)RAND_MAX;
+  }
+
+  //@}
+
+
 }

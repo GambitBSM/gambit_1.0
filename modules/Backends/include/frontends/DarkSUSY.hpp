@@ -92,6 +92,7 @@ BE_FUNCTION(dsIBwwdxdy, double, (int&, double&, double&), "dsibwwdxdy_", "dsIBww
 BE_FUNCTION(dsddgpgn, void, (double&, double&, double&, double&), "dsddgpgn_", "dsddgpgn")
 BE_FUNCTION(dsSLHAread, void, (char*, int&, int), "dsslharead_", "dsSLHAread")
 BE_FUNCTION(dsprep, void, (), "dsprep_", "dsprep")
+BE_FUNCTION(dsIByieldone, double, (double&, int&, int&, int&), "dsibyieldone_", "dsibyieldone")
 
 
 //BE_FUNCTION(initialize, void, (int), "_Z10initializei", "LibFirst_initialize_capability")
@@ -137,6 +138,7 @@ BE_VARIABLE(GENERAL_VAR(DS_RDPARS, rdpars),     "rdpars_",    "rdpars")
 BE_VARIABLE(GENERAL_VAR(DS_RDSWITCH, rdswitch), "rdswitch_",  "rdswitch")
 BE_VARIABLE(GENERAL_VAR(DS_RDLUN, rdlun),       "rdlun_",     "rdlun")
 BE_VARIABLE(GENERAL_VAR(DS_RDPADD, rdpadd),     "rdpadd_",    "rdpadd")
+BE_VARIABLE(GENERAL_VAR(DS_IBINTVARS,IBintvars),"ibintvars_", "IBintvars")
 
 //BE_INI_DEPENDENCY(MSSMspectrum, eaSLHA)
 BE_INI_CONDITIONAL_DEPENDENCY(MSSMspectrum, eaSLHA, CMSSM_demo, MSSM25)

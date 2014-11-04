@@ -345,7 +345,7 @@ ifndef SHH
   $(info )
 endif
 
-TARGETS = gambit gambit_example ExampleBit_A_standalone
+TARGETS = gambit ExampleBit_A_standalone
 BACKENDS = libfirst libfortran libFarrayTest DDCalc0 gamLike micromegas darksusy superiso higgsbounds higgssignals nulike BOSSMinimalExample pythia fastsim
 
 COREINC:=$(wildcard $(COREDIR)/include/*hpp) $(wildcard $(COREDIR)/include/*h)
@@ -422,7 +422,7 @@ ALLOBJECTS = $(STANDALONEOBJS) $(MODULEOBJS) $(PRINTOBJS) $(COREOBJS)
 
 ROLLCALL_HEADERS:=$(wildcard */*/*_rollcall.hpp) $(wildcard */*/*/*_rollcall.hpp)
 FUNCTOR_TYPES:= $(UTILSDIR)/include/all_functor_types.hpp
-HARVESTER:= $(UTILSDIR)/scripts/functor_type_harvester.py
+HARVESTER:= $(UTILSDIR)/scripts/module_harvester.py
 ifndef SHH
   HARVESTER_OPTS += -v
 endif
@@ -567,10 +567,6 @@ $(EXAMPLEADIR)/build/%.o: $(EXAMPLEADIR)/examples/%.cpp $(STANDALONEINC) $(EXAMP
 gambit: yaml-cpp slhapy8 $(FUNCTOR_TYPES) $(ALLOBJECTS) $(SCANDIR)/lib/libsample.so $(SCANDIR)/lib/libtest.so
 	@echo ___________Linking $@:
 	$(LN) $(COREDIR)/build/gambit.o $(filter-out $(COREDIR)/build/gambit.o,$(ALLOBJECTS)) $(CFLAGS) -o $@ $(LNFLAGS)
-
-gambit_example: yaml-cpp slhapy8 $(FUNCTOR_TYPES) $(ALLOBJECTS) $(COREDIR)/build/gambit_example.o $(SCANDIR)/lib/libsample.so
-	@echo ___________Linking $@:
-	$(LN) $(COREDIR)/build/gambit_example.o $(filter-out $(COREDIR)/build/gambit.o,$(ALLOBJECTS)) $(CFLAGS) -o $@ $(LNFLAGS)
 
 ExampleBit_A_standalone: yaml-cpp slhapy8 libfortran $(FUNCTOR_TYPES) $(STANDALONEOBJS) $(EXAMPLE_AOBJS) $(EXAMPLEADIR)/build/ExampleBit_A_standalone_example.o
 	@echo ___________Linking $@:
@@ -745,6 +741,7 @@ clean_plugins:
 clean_backends:
 	@rm -rf $(BACKENDDIR)/lib/*.so $(BACKENDDIR)/lib/*.o
 	@cd $(NULIKEDIR); make clean
+	@cd $(GAMLIKEDIR); make clean
 	@cd $(FASTSIMDIR); make clean
 	@cd $(BOSSMINIDIR); make clean
 	@cd $(PYTHIA8DIR); make clean

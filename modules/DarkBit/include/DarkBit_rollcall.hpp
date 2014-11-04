@@ -26,7 +26,7 @@
 ///
 ///  \author Lars A. Dal  
 ///          (l.a.dal@fys.uio.no)
-///  \date 2014 Mar
+///  \date 2014 Mar, Sep, Oct
 ///  
 ///  \author Christopher Savage
 ///          (chris@savage.name)
@@ -167,6 +167,26 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
+  // Cascade decays --------------------------------------------
+
+  // Loop manager for decay chains
+  /*
+  #define CAPABILITY decayChainLoopManagement
+  START_CAPABILITY
+    #define FUNCTION decayChainLoopManager
+    START_FUNCTION(void, CAN_MANAGE_LOOPS)  
+    #undef FUNCTION                                                       
+  #undef CAPABILITY    
+  */
+
+  // Routine for testing decay chain code
+  #define CAPABILITY chain_test_cap
+  START_CAPABILITY
+    #define FUNCTION chain_test
+      START_FUNCTION(double)
+      DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)
+    #undef FUNCTION
+  #undef CAPABILITY
 
   // Gamma rays --------------------------------------------
 
@@ -188,10 +208,10 @@ START_MODULE
       BACKEND_REQ(mspctm, (), DS_MSPCTM)
       BACKEND_REQ(dssigmav, (), double, (int&))
       BACKEND_REQ(dsIBffdxdy, (), double, (int&, double&, double&))
-      BACKEND_REQ(dsIBfsrdxdy, (), double, (int&, double&, double&))
       BACKEND_REQ(dsIBhhdxdy, (), double, (int&, double&, double&))
       BACKEND_REQ(dsIBwhdxdy, (), double, (int&, double&, double&))
       BACKEND_REQ(dsIBwwdxdy, (), double, (int&, double&, double&))
+      BACKEND_REQ(IBintvars, (), DS_IBINTVARS)
     #undef FUNCTION
     #define FUNCTION TH_ProcessCatalog_SingletDM
       START_FUNCTION(Gambit::DarkBit::TH_ProcessCatalog)

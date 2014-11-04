@@ -23,7 +23,7 @@ using namespace BackendIniBit::Functown;    // Functors wrapping the backend ini
 
 // Register ad-hoc module functions for use; as many or as few models can be given as desired.
 // Full declaration as per regular rollcall headers such as ExampleBit_A_rollcall.hpp is also allowed.
-QUICK_FUNCTION(ExampleBit_A, xsection, NEW_CAPABILITY, local_xsection, double, MSSM_demo)
+QUICK_FUNCTION(ExampleBit_A, xsection, NEW_CAPABILITY, local_xsection, double, (MSSM_demo))
 QUICK_FUNCTION(ExampleBit_A, nevents, OLD_CAPABILITY, nevents_dummy, double)
 
 // Ad-hoc functions for filling dependencies that cannot or should not otherwise be filled from inside ExampleBit_A.
