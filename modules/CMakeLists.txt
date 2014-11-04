@@ -125,11 +125,15 @@ include(FindPythonInterp)
 find_package(PythonInterp)
 
 ###################### FIXME
-file(GLOB TYPE_HARVESTER_FILES "${PROJECT_SOURCE_DIR}/*/include/*_rollcall.hpp" "${PROJECT_SOURCE_DIR}/*/include/*_types.hpp")
-list(REMOVE_ITEM TYPE_HARVESTER_FILES "${PROJECT_SOURCE_DIR}/Utils//include//all_functor_types.hpp" "${PROJECT_SOURCE_DIR}/Utils//include//shared_types.hpp" "${PROJECT_SOURCE_DIR}/ColliderBit//include//ColliderBit_types.hpp" "${PROJECT_SOURCE_DIR}/ColliderBit//include//ColliderBit_rollcall.hpp")
+file(GLOB TYPE_HARVESTER_FILES "${PROJECT_SOURCE_DIR}/*/include/*_rollcall.hpp")
+list(REMOVE_ITEM TYPE_HARVESTER_FILES "${PROJECT_SOURCE_DIR}/ColliderBit//include//ColliderBit_rollcall.hpp"
+                                      "${PROJECT_SOURCE_DIR}/Printers//include//printer_rollcall.hpp"
+                                      "${PROJECT_SOURCE_DIR}/ScannerBit//include//priors_rollcall.hpp" 
+                                      "${PROJECT_SOURCE_DIR}/ScannerBit//include//test_function_rollcall.hpp" 
+                                      "${PROJECT_SOURCE_DIR}/Models//include//model_rollcall.hpp" )
 ###################### FIXME
 
-add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/Utils/include/all_functor_types.hpp COMMAND python ${PROJECT_SOURCE_DIR}/Utils/scripts/functor_type_harvester.py WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} DEPENDS ${TYPE_HARVESTER_FILES})
+add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/Utils/include/all_functor_types.hpp COMMAND python ${PROJECT_SOURCE_DIR}/Utils/scripts/module_harvester.py WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} DEPENDS ${TYPE_HARVESTER_FILES})
 add_custom_target(functor_types DEPENDS ${PROJECT_SOURCE_DIR}/Utils/include/all_functor_types.hpp ${TYPE_HARVESTER_FILES})
 
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Utils/include/all_functor_types.hpp")

@@ -16,7 +16,6 @@ set(header_files include/container_factory.hpp
                  include/gambit_main.hpp
                  include/likelihood_container.hpp
                  include/modelgraph.hpp
-                 include/module_rollcall.hpp
                  include/register_error_handlers.hpp
                  include/version.hpp
                  include/yaml_parser.hpp
