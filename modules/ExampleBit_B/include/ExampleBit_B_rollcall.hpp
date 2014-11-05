@@ -158,7 +158,13 @@ START_MODULE
 
 #undef MODULE
 
-// Observable: test vector of doubles, declared as a quick function.
+
+// QUICK_FUNCTION examples
+// Arguments: MODULE, CAPABILITY, NEW_CAPABILITY_FLAG, FUNCTION, TYPE, (n x ALLOWED_MODEL), m x (DEPENDENCY, DEPENDENCY_TYPE)
+//            The last two arguments are optional, and n and m can be anything from 0 to 10.
+QUICK_FUNCTION(ExampleBit_B, test_vector, NEW_CAPABILITY, exampleVec, std::vector<double>)                          // Observable: test vector of doubles
+QUICK_FUNCTION(ExampleBit_B, lnL_ExampleBitB, NEW_CAPABILITY, lnL_ExampleBitB, double, (), (nevents_postcuts, int)) // Likelihood of type double that depends on postcuts
+
 // Equivalent to:
 //   #define CAPABILITY test_vector
 //   START_CAPABILITY
@@ -166,11 +172,6 @@ START_MODULE
 //     START_FUNCTION(std::vector<double>)
 //     #undef FUNCTION
 //   #undef CAPABILITY
-// Arguments: MODULE, CAPABILITY, NEW_CAPABILITY_FLAG, FUNCTION, TYPE, n x ALLOWED_MODEL, where 0 <= n <= 10.
-QUICK_FUNCTION(ExampleBit_B, test_vector, NEW_CAPABILITY, exampleVec, std::vector<double>)
-
-// Some likelihood of type double that depends on postcuts, declared as a quick function with dependencies.
-// Equivalent to:
 //   #define CAPABILITY lnL_ExampleBitB
 //   START_CAPABILITY
 //     #define FUNCTION lnL_ExampleBitB
@@ -178,8 +179,6 @@ QUICK_FUNCTION(ExampleBit_B, test_vector, NEW_CAPABILITY, exampleVec, std::vecto
 //     DEPENDENCY(nevents_postcuts, int)
 //   #undef FUNCTION
 //   #undef CAPABILITY
-// Arguments: MODULE, CAPABILITY, NEW_CAPABILITY_FLAG, FUNCTION, TYPE, (n x ALLOWED_MODEL), m x (DEPENDENCY, DEPENDENCY_TYPE) where 0 <= n <= 10, 0 < m <= 10.
-QUICK_FUNCTION_NDEPS(ExampleBit_B, lnL_ExampleBitB, NEW_CAPABILITY, lnL_ExampleBitB, double, (), (nevents_postcuts, int))
 
 
 #endif // defined(__ExampleBit_B_rollcall_hpp__)

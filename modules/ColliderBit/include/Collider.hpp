@@ -30,9 +30,6 @@ namespace Gambit {
       virtual void defaults() = 0;
       /// @brief Settings parsing and initialization for each sub-class.
       virtual void init(const std::vector<std::string>& settings) = 0;
-/// @TODO worry about adding Analyses later.
-//      void addAnalysis(Analysis* a) { analyses.push_back(shared_ptr<Analysis>(a)); }
-
       //@}
 
       /// @name Event generation function. Pure virtual; must override.
@@ -99,6 +96,6 @@ namespace Gambit {
     /// The caller is responsible for deleting the returned PythiaBase.
     PythiaBase* mkPythia(const std::string&, const std::vector<std::string>&);
 
-/// @note STEP3)  Continue to Collider.cpp
+/// @note STEP3)  Continue to colliders/Collide_Pythia.cpp
   }
 }

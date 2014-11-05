@@ -25,7 +25,8 @@
 #
 #  \author Pat Scott 
 #          (patscott@physics.mcgill.ca)
-#    \date 2013 Oct, Nov, 2014 Jan
+#    \date 2013 Oct, Nov
+#    \date 2014 Jan, Nov
 #
 #*********************************************
 import os
@@ -62,7 +63,8 @@ def check_for_declaration(input_snippet,module,local_namespace,candidate_type):
     splitline = neatsplit('\s|\(|\)|\*|\&|\;',input_snippet)
     if len(splitline)>1:
         # If the local namespace matches the module name, and the candidate type is declared here, qualify it
-        # FIXME! If candidate_type is a pointer then candidate_type==splitline[1] fails to match due to the extra *. I have fixed this case, but there might be more cases like this that we need to handle here --Ben.
+        # Note that if candidate_type is a pointer then candidate_type==splitline[1] fails to match due to the extra *.
+        # This case is working, but there might be more cases like this that crop up, which we will need to handle here. --Ben.
         if local_namespace==module:
             if splitline[0] in ["class", "struct"] \
              and ( candidate_type==splitline[1] or candidate_type==splitline[1]+"*" ):
@@ -83,13 +85,15 @@ def check_for_namespace(input_snippet,local_namespace):
     return local_namespace
 
 # Harvest header filename from an include statement
-def addifheader(line,headerset,verbose=False):
+def addifheader(line,headerset,exclude_set,verbose=False):
     splitline = line.split()
     if len(splitline)>1 and splitline[0]=="#include":
         #dig the file name out of the enclosing <> or "" 
         split2 = neatsplit('"|<|>',splitline[1])
-        headerset.add(split2[0])
-        if verbose: print "      Added header '{0}' to set".format(split2[0])
+        split3 = neatsplit('/',split2[0])
+        if split2[0] not in exclude_set and split3[-1] not in exclude_set:
+            headerset.add(split2[0])
+            if verbose: print "  Added header '{0}' to set".format(split2[0])
 
 # Harvest module names from rollcall headers
 def update_module(line,module):
@@ -103,33 +107,46 @@ def update_module(line,module):
 # Harvest type from a START_FUNCTION or QUICK_FUNCTION macro call
 def addiffunctormacro(line,module,typeset,typeheaders,verbose=False):
     splitline = neatsplit('\(|\)|,|\s',line)
-    if len(splitline)>1 and (splitline[0]=="START_FUNCTION" or splitline[0]=="QUICK_FUNCTION"):
-        #This line defines a function and the first or fifth argument defines a candidate type
-        if splitline[0]=="START_FUNCTION": candidate_type = splitline[1]
-        if splitline[0]=="QUICK_FUNCTION": candidate_type = splitline[5]
-        if verbose: print "  {0} located, searching for declaration of {1}...".format(line.strip(),candidate_type)
-        #Now check if the type is declared in any of the module type headers (not very efficient, but simple)
-        for header in typeheaders:
-            local_namespace = ""
-            with open(header) as f:
-                for line in readlines_nocomments(f):
-                    splitline = neatsplit('\{|\}|:|;',line)
-                    # Determine the local namespace and look for a class or struct matching the candidate type 
-                    for i in range(5):
-                        if len(splitline)>i:
-                            local_namespace = check_for_namespace(splitline[i],local_namespace)
-                            candidate_type = check_for_declaration(splitline[i],module,local_namespace,candidate_type)
-                    # Ben: The loop above misses some of the typedefs, so need to re-parse the whole line for these
-                    candidate_type = check_for_declaration(line,module,local_namespace,candidate_type)
-        typeset.add(candidate_type)                    
+    command_index = {"START_FUNCTION":1,
+                     "QUICK_FUNCTION":5, 
+                     "DEPENDENCY":2, 
+                     "START_CONDITIONAL_DEPENDENCY":1,
+                     "BE_INI_DEPENDENCY":2,
+                     "BE_INI_CONDITIONAL_DEPENDENCY":2}
+    if len(splitline)>1 and splitline[0] in command_index.keys():
+        #This line defines a function and one or more of the arguments defines a candidate type
+        candidate_types = set([splitline[command_index[splitline[0]]]])
+        if splitline[0]=="QUICK_FUNCTION" and len(splitline)>6:
+            #Get the dep types out of a QUICK_FUNCTION command
+            splitline = re.findall("\(.*?\)",re.sub("QUICK_FUNCTION\(", "", re.sub("\)\)\s*$",")",line) ) )
+            for dep in splitline[1:]: 
+              splitdep = neatsplit('\(|\)|,',dep)
+              candidate_types.add(splitdep[1].strip())
+        #Iterate over all the candidate types and check if they are defined.
+        for candidate_type in candidate_types:
+            if verbose: print "    {0} located, searching for declaration of {1}...".format(line.strip(),candidate_type)
+            #Now check if the type is declared in any of the module type headers (not very efficient, but simple)
+            for header in typeheaders:
+                local_namespace = ""
+                with open(header) as f:
+                    for newline in readlines_nocomments(f):
+                        splitline = neatsplit('\{|\}|:|;',newline)
+                        # Determine the local namespace and look for a class or struct matching the candidate type 
+                        for i in range(5):
+                            if len(splitline)>i:
+                                local_namespace = check_for_namespace(splitline[i],local_namespace)
+                                candidate_type = check_for_declaration(splitline[i],module,local_namespace,candidate_type)
+                        # Ben: The loop above misses some of the typedefs, so need to re-parse the whole line for these
+                        candidate_type = check_for_declaration(newline,module,local_namespace,candidate_type)
+            typeset.add(candidate_type)                    
 
 # Harvest the list of rollcall headers to be searched, and the list of type headers to be searched.
-def get_headers(path,header_set,verbose=False):
+def get_headers(path,header_set,exclude_set,verbose=False):
     """Parse the file at 'path' and add any headers that are "include"ed therin to the set 'header_set'"""
     with open(path) as f:
         #print "  Parsing header '{0}' for further includes...".format(path)
         for line in readlines_nocomments(f):
-            addifheader(line,header_set,verbose=verbose)        
+            addifheader(line,header_set,exclude_set,verbose=verbose)        
 
 def find_and_harvest_headers(header_set,fullheadlist,exclude_set,verbose=False):
     """Locate 'init_headers' in gambit source tree, then read through them and add any headers that are "include"ed in them to headlist
@@ -141,11 +158,11 @@ def find_and_harvest_headers(header_set,fullheadlist,exclude_set,verbose=False):
     full_header_paths=[]
     for header in header_set:
         # Locate the header in the GAMBIT directory structure...
-        # (we should technically search all the include paths in the make file; could pass these in to this script)i
+        # (we should technically search all the include paths in the make file; could pass these in to this script)
         # Ignores any headers that cannot be found (assumed to be external libraries, etc.)
         for root,dirs,files in os.walk("."):
             for name in files:
-                if name==header:
+                if os.path.join(root,name).endswith(header):
                     if verbose: print "  Located header '{0}' at path '{1}'".format(name,os.path.join(root,name))
                     full_header_paths+=[os.path.join(root,name)]
 
@@ -154,7 +171,7 @@ def find_and_harvest_headers(header_set,fullheadlist,exclude_set,verbose=False):
 
     new_headers=set() 
     for path in full_header_paths:
-        get_headers(path,new_headers,verbose=verbose)
+        get_headers(path,new_headers,exclude_set,verbose=verbose)
 
     # Add headers that we started with to the 'exclude_set' so that we don't search them again.
     new_exclude_set=set()
@@ -165,12 +182,71 @@ def find_and_harvest_headers(header_set,fullheadlist,exclude_set,verbose=False):
     new_headers.difference_update(new_exclude_set)
 
     # Do this again for all the headers we just found, if we found any
-    if verbose: print "Harvested the following new headers:"
-    for header in new_headers:
-        if verbose: print header
     if len(new_headers) > 0:
+        if verbose: print "  Harvested the following new headers:"
+        for header in new_headers:
+            if verbose: print "    "+header
         find_and_harvest_headers(new_headers,fullheadlist,new_exclude_set,verbose=verbose)
 
+#Search the source tree to determine which modules are present, and write a module_rollcall header if the GAMBIT Core exists. 
+def retrieve_rollcall_headers(verbose,install_dir,exclude_headers):
+    rollcall_headers=[]
+    core_exists = False
+    for root,dirs,files in os.walk(install_dir):
+        if (not core_exists and root == install_dir+"/Core/include"): core_exists = True 
+        for name in files:
+            if (name.lower().endswith("_rollcall.hpp") and name.lower().find("bit") != -1):
+                if not name in exclude_headers: 
+                    if verbose: print "  Located module rollcall header '{0}' at path '{1}'".format(name,os.path.join(root,name))
+                    rollcall_headers+=[name]
+    if core_exists: make_module_rollcall(rollcall_headers,verbose)
+    return rollcall_headers
+
+
+#Create the module_rollcall header in the Core directory
+def make_module_rollcall(rollcall_headers,verbose):
+    towrite = "\
+//   GAMBIT: Global and Modular BSM Inference Tool\n\
+//   *********************************************\n\
+///  \\file                                       \n\
+///                                               \n\
+///  Compile-time registration of GAMBIT modules. \n\
+///                                               \n\
+///  This file was automatically generated by     \n\
+///  module_harvester.py. Do not modify.          \n\
+///  The content is harvested from your local     \n\
+///  installation.  If you want to add a new      \n\
+///  module, just create it and make sure it      \n\
+///  contains a rollcall header, and the          \n\
+///  module_harvester.py script will make         \n\
+///  sure it turns up here.                       \n\
+///                                               \n\
+///  By 'rollcall header', we mean a file         \n\
+///  myBit/include/myBit_rollcall.hpp,            \n\
+///  where myBit is the name of your module.      \n\
+///                                               \n\
+///  *********************************************\n\
+///                                               \n\
+///  Authors:                                     \n\
+///                                               \n\
+///  \\author The GAMBIT Collaboration            \n\
+///  \date "+datetime.datetime.now().strftime("%I:%M%p on %B %d, %Y")+"\n\
+///                                               \n\
+///  *********************************************\n\
+                                                  \n\
+#ifndef __module_rollcall_hpp__                   \n\
+#define __module_rollcall_hpp__                   \n\
+                                                  \n\
+#include \"module_macros_incore.hpp\"           \n\n"
+
+    for h in rollcall_headers:
+        towrite+='#include \"{0}\"\n'.format(h)
+    towrite+="\n#endif // defined __module_rollcall_hpp__\n"
+    
+    with open("./Core/include/module_rollcall.hpp","w") as f:
+        f.write(towrite)
+
+    if verbose: print "  Found GAMBIT Core.  Generated module_rollcall.hpp." 
 
 
 def main(argv):
@@ -180,7 +256,7 @@ def main(argv):
     try:
         opts, args = getopt.getopt(argv,"vc",["verbose","collide"])
     except getopt.GetoptError:
-        print 'Usage: functor_type_harvestor.py [flags]'
+        print 'Usage: module_harvestor.py [flags]'
         print ' flags:'
         print '        -v : More verbose output'  
         print '        -c : Turn on HECollider'  
@@ -188,12 +264,12 @@ def main(argv):
     for opt, arg in opts:
       if opt in ('-v','--verbose'):
         verbose = True
-        print 'functor_type_harvester.py: verbose=True'
+        print 'module_harvester.py: verbose=True'
       elif opt in ('-c','--collide'):
         collide = True
 
 
-    headers      = set(["module_rollcall.hpp"])  #FIXME this needs to be different for standalone module compilation
+    headers      = set(["backend_rollcall.hpp"])
     type_headers = set(["types_rollcall.hpp"])
     fullheaders=[]
     fulltypeheaders=[]
@@ -201,25 +277,29 @@ def main(argv):
     # List of headers NOT to search (things we know are not module rollcall headers or module type headers, 
     # but are included in module_rollcall.hpp or types_rollcall.hpp)
     if collide:
-      exclude_header=set(["module_macros_incore.hpp", "shared_types.hpp"])
+      exclude_header=set(["shared_types.hpp", "backend_macros.hpp", "backend_undefs.hpp", "identification.hpp",
+                          "backend_type_macros.hpp", "yaml.h"])
     else:
-      print "Excluding ColliderBit rollcall headers from type harvesting..."
-      exclude_header=set(["module_macros_incore.hpp", "shared_types.hpp", "ColliderBit_rollcall.hpp", "ColliderBit_types.hpp"])
-    
+      print "  Excluding ColliderBit rollcall headers from type harvesting."
+      exclude_header=set(["shared_types.hpp", "backend_macros.hpp", "backend_undefs.hpp", "identification.hpp",
+                          "backend_type_macros.hpp", "yaml.h", "ColliderBit_rollcall.hpp", "ColliderBit_types.hpp"])
+
     # List of types NOT to return (things we know are not printable, but can appear in START_FUNCTION calls)
     exclude_type=set(["void"])
 
-    # Recurse through headers, locating all the included headers therein, and find them all in the gambit source tree so that we can parse
-    # them for types etc.
-    
+    # Get list of header files to search
+    headers.update(retrieve_rollcall_headers(verbose,".",exclude_header))
+
+    # Recurse through chosen headers, locating all the included headers therein, and find them all in the gambit source tree so that we can parse
+    # them for types etc.   
     find_and_harvest_headers(headers,fullheaders,exclude_header,verbose=verbose)
     find_and_harvest_headers(type_headers,fulltypeheaders,exclude_header,verbose=verbose)
      
-    # Search through rollcall headers and look for macro calls which create 'module_functor's     
-    types=set(["ModelParameters"]) #Manually add this one to avoid scanning through modelbit
+    # Search through rollcall headers and look for macro calls that create module_functors or safe pointers to them    
+    types=set(["ModelParameters"]) #Manually add this one to avoid scanning through Models directory
     for header in fullheaders:
         with open(header) as f:
-            if verbose: print "Scanning header {0} for types used to instantiate functor class templates".format(header)
+            if verbose: print "  Scanning header {0} for types used to instantiate functor class templates".format(header)
             module = ""
             for line in readlines_nocomments(f):
                 # If this line defines the module name, update it.
@@ -232,10 +312,10 @@ def main(argv):
     
     print "\nTypes harvested from headers:"
     for t in types:
-        print '   ',t
+        print ' ',t
+    print 
     
     # Generate a c++ header containing the preprocessor sequence needed by Utils/include/printers.hpp, containing all the types we have harvested.
-    
     towrite = "\
 //   GAMBIT: Global and Modular BSM Inference Tool\n\
 //   *********************************************\n\
@@ -245,7 +325,7 @@ def main(argv):
 ///  of functor types.                            \n\
 ///                                               \n\
 ///  This file was automatically generated by     \n\
-///  functor_type_harvester.py. Do not modify.    \n\
+///  module_harvester.py. Do not modify.          \n\
 ///  The content is harvested from the rollcall   \n\
 ///  headers registered in module_rollcall.hpp    \n\
 ///  and the types registered in                  \n\

@@ -151,8 +151,7 @@ scanner_plugin (loopsample)
                                 
                         }
                         double aux = 2;
-                        double like = (*LogLike)(a);
-                        std::cout << "Log Likelihood:  " << like << std::endl;
+                        (*LogLike)(a);
                         //scan_ios << a << scan::endl;
                 }
                 

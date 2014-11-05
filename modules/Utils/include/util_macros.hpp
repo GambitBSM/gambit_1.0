@@ -249,6 +249,17 @@ _110, _111, _112, _113, _114, _115, _116, _117, _118, _119, _120, _121, _122, _1
 #define VARARG_SWITCH_ON_GT_ONE_ABC(base, A, B, C, ...) VARARG_SWITCH_ON_GT_ONE_ABC_IMPL(base, A, B, C, VA_NARGS_SWITCH_ON_GT_ONE_ABC(__VA_ARGS__), __VA_ARGS__)
 /// @}
 
+/// \name Variadic macro expanders for distinguishing between 1, 2 and >2 variadic arguments, taking 3 leading arguments  
+/// @{
+#define VARARG_SWITCH_ON_GT_TWO_ABC_TESTER_2 1)(1
+#define VARARG_SWITCH_ON_GT_TWO_ABC_TESTER_1 1)(1
+#define VA_NARGS_SWITCH_ON_GT_TWO_ABC_IMPL(_1, _2, _3, _4, N, ...) IF_ELSE_EQUAL(VARARG_SWITCH_ON_GT_TWO_ABC_TESTER,N,N,MORE)
+#define VA_NARGS_SWITCH_ON_GT_TWO_ABC(...) VA_NARGS_SWITCH_ON_GT_TWO_ABC_IMPL(X,__VA_ARGS__, 3, 2, 1, 0)
+#define VARARG_SWITCH_ON_GT_TWO_ABC_IMPL2(base, A, B, C, count, ...) CAT_3(base,_,count)(A, B, C, __VA_ARGS__)
+#define VARARG_SWITCH_ON_GT_TWO_ABC_IMPL(base, A, B, C, count, ...) VARARG_SWITCH_ON_GT_TWO_ABC_IMPL2(base, A, B, C, count, __VA_ARGS__) 
+#define VARARG_SWITCH_ON_GT_TWO_ABC(base, A, B, C, ...) VARARG_SWITCH_ON_GT_TWO_ABC_IMPL(base, A, B, C, VA_NARGS_SWITCH_ON_GT_TWO_ABC(__VA_ARGS__), __VA_ARGS__)
+/// @}
+
 /// \name Bottom-level definition-checking macros
 /// Generic macros that can be used from within other macros
 /// to test whether or not some other macro is defined.

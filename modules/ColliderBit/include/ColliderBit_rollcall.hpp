@@ -36,17 +36,28 @@ START_MODULE
   #undef CAPABILITY
 
 
+  /// Detector sim capabilities
+  #define CAPABILITY DetectorSim
+  START_CAPABILITY
+    #define FUNCTION getDelphes
+    START_FUNCTION(shared_ptr<ColliderBit::Delphes_PythiaToHEPUtils>)
+    NEEDS_CLASSES_FROM(Pythia, default)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+
   /// Controls looping of Collider simulations
   #define CAPABILITY ColliderOperator
   START_CAPABILITY
     #define FUNCTION operatePythia
     START_FUNCTION(void, CAN_MANAGE_LOOPS)
+    DEPENDENCY(DetectorSim, shared_ptr<ColliderBit::Delphes_PythiaToHEPUtils>)
     #undef FUNCTION
   #undef CAPABILITY
 
 
   /// Collider sim capabilities
-  #define CAPABILITY hardScatteringSim
+  #define CAPABILITY HardScatteringSim
   START_CAPABILITY
     #define FUNCTION getPythia
     START_FUNCTION(shared_ptr<ColliderBit::PythiaBase>)
@@ -63,7 +74,7 @@ START_MODULE
     START_FUNCTION(Pythia8::Event)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
     NEEDS_CLASSES_FROM(Pythia, default)
-    DEPENDENCY(hardScatteringSim, shared_ptr<ColliderBit::PythiaBase>)
+    DEPENDENCY(HardScatteringSim, shared_ptr<ColliderBit::PythiaBase>)
     #undef FUNCTION
 
   /// For now, let's stick to what we already have running.
@@ -103,11 +114,9 @@ START_MODULE
     #define FUNCTION reconstructDelphesEvent
     START_FUNCTION(HEPUtils::Event)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
-    /// DEPENDENCY(delphesConfigFilename, std::string)
-    /// instead of this dependency, use runOptions->hasKey("delphesConfigFilename")
-    /// then adjust the yaml file for each run
     NEEDS_CLASSES_FROM(Pythia, default)
-    DEPENDENCY(hardScatteringEvent, Pythia8::Event)
+    DEPENDENCY(HardScatteringEvent, Pythia8::Event)
+    DEPENDENCY(DetectorSim, shared_ptr<ColliderBit::Delphes_PythiaToHEPUtils>)
     #undef FUNCTION
 
     /// Event converters to the standard Gambit collider event format
@@ -115,7 +124,7 @@ START_MODULE
     START_FUNCTION(HEPUtils::Event)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
     NEEDS_CLASSES_FROM(Pythia, default)
-    DEPENDENCY(hardScatteringEvent, Pythia8::Event)
+    DEPENDENCY(HardScatteringEvent, Pythia8::Event)
     #undef FUNCTION
 
   /// For now, let's stick to what we already have running.
