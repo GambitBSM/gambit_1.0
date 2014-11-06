@@ -664,18 +664,6 @@ namespace Gambit {
 
         BFptr DiffYield3Body(new BFconstant(0., 1));  // Initial spectrum = 0
 
-        // Masses used by integration limit functions
-        double m_e      = (*Dep::TH_ProcessCatalog).getParticleProperty("e-"    ).mass;
-        double m_mu     = (*Dep::TH_ProcessCatalog).getParticleProperty("mu-"   ).mass;
-        double m_tau    = (*Dep::TH_ProcessCatalog).getParticleProperty("tau-"  ).mass;
-        double m_u      = (*Dep::TH_ProcessCatalog).getParticleProperty("u"     ).mass;
-        double m_d      = (*Dep::TH_ProcessCatalog).getParticleProperty("d"     ).mass;
-        double m_c      = (*Dep::TH_ProcessCatalog).getParticleProperty("c"     ).mass;
-        double m_s      = (*Dep::TH_ProcessCatalog).getParticleProperty("s"     ).mass;
-        double m_t      = (*Dep::TH_ProcessCatalog).getParticleProperty("t"     ).mass;
-        double m_b      = (*Dep::TH_ProcessCatalog).getParticleProperty("b"     ).mass;
-        double m_W      = (*Dep::TH_ProcessCatalog).getParticleProperty("W-"    ).mass;
-
         // Loop over all channels for that process
         for (std::vector<TH_Channel>::iterator it = annProc.channelList.begin();
               it != annProc.channelList.end(); ++it)
@@ -685,19 +673,19 @@ namespace Gambit {
             if ( it->nFinalStates == 3 )
             {
                 // Find channel
-                if      ( it->isChannel("gamma", "W+"    , "W-"     )){m1 = m_W;    m2 = m_W;  }   
-             // else if ( it->isChannel("gamma", "W+"    , "H-"     )){m1 = m_W;    m2 = m_Hc; }
-             // else if ( it->isChannel("gamma", "W-"    , "H+"     )){m1 = m_W;    m2 = m_Hc; }
-             // else if ( it->isChannel("gamma", "H+"    , "H-"     )){m1 = m_Hc;   m2 = m_Hc; }    
-                else if ( it->isChannel("gamma", "e+"    , "e-"     )){m1 = m_e;    m2 = m_e;  }
-                else if ( it->isChannel("gamma", "mu+"   , "mu-"    )){m1 = m_mu;   m2 = m_mu; }
-                else if ( it->isChannel("gamma", "tau+"  , "tau-"   )){m1 = m_tau;  m2 = m_tau;}
-                else if ( it->isChannel("gamma", "u"     , "ubar"   )){m1 = m_u;    m2 = m_u;  }
-                else if ( it->isChannel("gamma", "d"     , "dbar"   )){m1 = m_d;    m2 = m_d;  }
-                else if ( it->isChannel("gamma", "c"     , "cbar"   )){m1 = m_c;    m2 = m_c;  }
-                else if ( it->isChannel("gamma", "s"     , "sbar"   )){m1 = m_s;    m2 = m_s;  }
-                else if ( it->isChannel("gamma", "t"     , "tbar"   )){m1 = m_t;    m2 = m_t;  }
-                else if ( it->isChannel("gamma", "b"     , "bbar"   )){m1 = m_b;    m2 = m_b;  }
+                if      ( it->isChannel("gamma", "W+"    , "W-"     )){m1 = (*Dep::TH_ProcessCatalog).getParticleProperty("W+"  ).mass; m2 = (*Dep::TH_ProcessCatalog).getParticleProperty("W-"  ).mass;  }   
+                else if ( it->isChannel("gamma", "W+"    , "H-"     )){m1 = (*Dep::TH_ProcessCatalog).getParticleProperty("W+"  ).mass; m2 = (*Dep::TH_ProcessCatalog).getParticleProperty("H-"  ).mass;  }   
+                else if ( it->isChannel("gamma", "W-"    , "H+"     )){m1 = (*Dep::TH_ProcessCatalog).getParticleProperty("W-"  ).mass; m2 = (*Dep::TH_ProcessCatalog).getParticleProperty("H+"  ).mass;  }   
+                else if ( it->isChannel("gamma", "H+"    , "H-"     )){m1 = (*Dep::TH_ProcessCatalog).getParticleProperty("H+"  ).mass; m2 = (*Dep::TH_ProcessCatalog).getParticleProperty("H-"  ).mass;  }     
+                else if ( it->isChannel("gamma", "e+"    , "e-"     )){m1 = (*Dep::TH_ProcessCatalog).getParticleProperty("e+"  ).mass; m2 = (*Dep::TH_ProcessCatalog).getParticleProperty("e-"  ).mass;  }   
+                else if ( it->isChannel("gamma", "mu+"   , "mu-"    )){m1 = (*Dep::TH_ProcessCatalog).getParticleProperty("mu+" ).mass; m2 = (*Dep::TH_ProcessCatalog).getParticleProperty("mu-" ).mass;  }   
+                else if ( it->isChannel("gamma", "tau+"  , "tau-"   )){m1 = (*Dep::TH_ProcessCatalog).getParticleProperty("tau+").mass; m2 = (*Dep::TH_ProcessCatalog).getParticleProperty("tau-").mass;  }   
+                else if ( it->isChannel("gamma", "u"     , "ubar"   )){m1 = (*Dep::TH_ProcessCatalog).getParticleProperty("u"   ).mass; m2 = (*Dep::TH_ProcessCatalog).getParticleProperty("ubar").mass;  }   
+                else if ( it->isChannel("gamma", "d"     , "dbar"   )){m1 = (*Dep::TH_ProcessCatalog).getParticleProperty("d"   ).mass; m2 = (*Dep::TH_ProcessCatalog).getParticleProperty("dbar").mass;  }   
+                else if ( it->isChannel("gamma", "c"     , "cbar"   )){m1 = (*Dep::TH_ProcessCatalog).getParticleProperty("c"   ).mass; m2 = (*Dep::TH_ProcessCatalog).getParticleProperty("cbar").mass;  }   
+                else if ( it->isChannel("gamma", "s"     , "sbar"   )){m1 = (*Dep::TH_ProcessCatalog).getParticleProperty("s"   ).mass; m2 = (*Dep::TH_ProcessCatalog).getParticleProperty("sbar").mass;  }   
+                else if ( it->isChannel("gamma", "t"     , "tbar"   )){m1 = (*Dep::TH_ProcessCatalog).getParticleProperty("t"   ).mass; m2 = (*Dep::TH_ProcessCatalog).getParticleProperty("tbar").mass;  }   
+                else if ( it->isChannel("gamma", "b"     , "bbar"   )){m1 = (*Dep::TH_ProcessCatalog).getParticleProperty("b"   ).mass; m2 = (*Dep::TH_ProcessCatalog).getParticleProperty("bbar").mass;  }   
                 else
                 {
                     std::cout << "ERROR: Unsupported three-body final state." << std::endl;
@@ -734,89 +722,127 @@ namespace Gambit {
     {
         using namespace Pipes::TH_ProcessCatalog_CMSSM;
         
+        // Instantiate new ProcessCatalog
+        TH_ProcessCatalog catalog;      
+        // and DM annihilation process                   
+        TH_Process process((std::string)"chi_10", (std::string)"chi_10");   
+        
         // Get DarkSUSY mass spectrum
         DS_MSPCTM mymspctm= *BEreq::mspctm;
-        // DM mass
-        double mass = mymspctm.mass[42];
-        // Instantiate new ProcessCatalog
-        TH_ProcessCatalog catalog;                   
-        // and annihilation process                   
-        TH_Process process((std::string)"chi_10", (std::string)"chi_10");   
-        // Helper variable
-        int index;
-        // Macro for setting up 2-body decays
-        // TODO: Move dshayield from GA_AnnYield into this (?)
-        // TODO: Add check for whether or not process is kinematically allowed
-        #define SETUP_DS_PROCESS(NAME, PARTCH, P1, P2)                                          \
-            /* Set cross-section */                                                             \
-            index = PARTCH;                                                                     \
-            double CAT(sigma_,NAME) = BEreq::dssigmav(index);                                   \
-            /* Create associated kinematical functions (just dependent on vrel)                 \
-            *  here: s-wave, vrel independent 1-dim constant function */                        \
-            BFptr CAT(kinematicFunction_,NAME)(new BFconstant(CAT(sigma_,NAME),1));             \
-            /* Create channel identifier string */                                              \
-            std::vector<std::string> CAT(finalStates_,NAME);                                    \
-            CAT(finalStates_,NAME).push_back(STRINGIFY(P1));                                    \
-            CAT(finalStates_,NAME).push_back(STRINGIFY(P2));                                    \
-            /* Create channel and push it into channel list of process */                       \
-            TH_Channel CAT(channel_,NAME)(CAT(finalStates_,NAME), CAT(kinematicFunction_,NAME));\
-            process.channelList.push_back(CAT(channel_,NAME));
-             
-        // SETUP_DS_PROCESS(H1H1,      1 , H1,     H1      )
-        // SETUP_DS_PROCESS(H1H2,      2 , H1,     H2      )
-        // SETUP_DS_PROCESS(H2H2,      3 , H2,     H2      )
-        // SETUP_DS_PROCESS(H3H3,      4 , H3,     H3      )
-        // SETUP_DS_PROCESS(H1H3,      5 , H1,     H3      )
-        // SETUP_DS_PROCESS(H2H3,      6 , H2,     H3      )
-        // SETUP_DS_PROCESS(HpHm,      7 , H+,     H-      )
-        // SETUP_DS_PROCESS(H1Z0,      8 , H1,     Z0      )
-        // SETUP_DS_PROCESS(H2Z0,      9 , H2,     Z0      )
-        // SETUP_DS_PROCESS(H3Z0,      10, H3,     Z0      )
-        // SETUP_DS_PROCESS(WpHm,      11, W+,     H-      )  // TODO: Check how this is implemented in DS
-        // SETUP_DS_PROCESS(WmHp,      11, W-,     H+      )  // TODO: Check how this is implemented in DS
-        SETUP_DS_PROCESS(Z0Z0,      12, Z0,     Z0      )
-        SETUP_DS_PROCESS(WW,        13, W+,     W-      )
-        SETUP_DS_PROCESS(nuenue,    14, nu_e,   ~nu_e   )
-        SETUP_DS_PROCESS(ee,        15, e+,     e-      )
-        SETUP_DS_PROCESS(numnum,    16, nu_mu,  ~nu_mu  )
-        SETUP_DS_PROCESS(mumu,      17, mu+,    mu-     )
-        SETUP_DS_PROCESS(nutnut,    18, nu_tau, ~nu_tau )
-        SETUP_DS_PROCESS(tautau,    19, tau+,   tau-    )
-        SETUP_DS_PROCESS(uubar,     20, u,      ubar    )
-        SETUP_DS_PROCESS(ddbar,     21, d,      dbar    )
-        SETUP_DS_PROCESS(ccbar,     22, c,      cbar    )
-        SETUP_DS_PROCESS(ssbar,     23, s,      sbar    )
-        SETUP_DS_PROCESS(ttbar,     24, t,      tbar    )
-        SETUP_DS_PROCESS(bbbar,     25, b,      bbar    )
-        SETUP_DS_PROCESS(gluglu,    26, g,      g       )
-        // SETUP_DS_PROCESS(gammagamma,28, gamma,  gamma   )
-        // SETUP_DS_PROCESS(Z0gamma,   29, Z0,     gamma   )
-        #undef SETUP_DS_PROCESS
+        
+        // Store properties of relevant particles. Constructor for TH_ParticleProperty takes particle mass and 2*spin.
+        // Make sure to add any particles used as final states in 2 or 3-body decays.
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("nu_e"   , TH_ParticleProperty(mymspctm.mass[1],     1)));
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("~nu_e"  , TH_ParticleProperty(mymspctm.mass[1],     1)));
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("e-"     , TH_ParticleProperty(mymspctm.mass[2],     1)));
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("e+"     , TH_ParticleProperty(mymspctm.mass[2],     1)));
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("nu_mu"  , TH_ParticleProperty(mymspctm.mass[3],     1)));
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("~nu_mu" , TH_ParticleProperty(mymspctm.mass[3],     1)));
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("mu-"    , TH_ParticleProperty(mymspctm.mass[4],     1)));
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("mu+"    , TH_ParticleProperty(mymspctm.mass[4],     1)));
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("nu_tau" , TH_ParticleProperty(mymspctm.mass[5],     1)));
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("~nu_tau", TH_ParticleProperty(mymspctm.mass[5],     1)));
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("tau-"   , TH_ParticleProperty(mymspctm.mass[6],     1)));
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("tau+"   , TH_ParticleProperty(mymspctm.mass[6],     1)));
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("u"      , TH_ParticleProperty(mymspctm.mass[7],     1)));
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("ubar"   , TH_ParticleProperty(mymspctm.mass[7],     1)));
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("d"      , TH_ParticleProperty(mymspctm.mass[8],     1)));
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("dbar"   , TH_ParticleProperty(mymspctm.mass[8],     1)));
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("c"      , TH_ParticleProperty(mymspctm.mass[9],     1)));
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("cbar"   , TH_ParticleProperty(mymspctm.mass[9],     1)));
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("s"      , TH_ParticleProperty(mymspctm.mass[10],    1)));
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("sbar"   , TH_ParticleProperty(mymspctm.mass[10],    1)));
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("t"      , TH_ParticleProperty(mymspctm.mass[11],    1)));
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("tbar"   , TH_ParticleProperty(mymspctm.mass[11],    1)));
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("b"      , TH_ParticleProperty(mymspctm.mass[12],    1)));
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("bbar"   , TH_ParticleProperty(mymspctm.mass[12],    1)));
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("gamma"  , TH_ParticleProperty(mymspctm.mass[13],    2)));
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("W-"     , TH_ParticleProperty(mymspctm.mass[14],    2)));
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("W+"     , TH_ParticleProperty(mymspctm.mass[14],    2)));   
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("Z0"     , TH_ParticleProperty(mymspctm.mass[15],    2)));   
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("g"      , TH_ParticleProperty(mymspctm.mass[16],    2)));  
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("H1"     , TH_ParticleProperty(mymspctm.mass[17],    0)));  
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("H2"     , TH_ParticleProperty(mymspctm.mass[18],    0)));  
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("H3"     , TH_ParticleProperty(mymspctm.mass[19],    0)));  
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("H-"     , TH_ParticleProperty(mymspctm.mass[20],    0)));     
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("H+"     , TH_ParticleProperty(mymspctm.mass[20],    0)));          
+        // DM mass   
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("chi_10" , TH_ParticleProperty(mymspctm.mass[42],    1)));
         
         // Set DarkSUSY DM mass parameter used in 3-body decays
-        BEreq::IBintvars->ibcom_mx = mass;
+        BEreq::IBintvars->ibcom_mx = catalog.getParticleProperty("chi_10").mass;
+                
+        // Helper variables
+        int index; 
+        double m_1, m_2, sv;
 
-        // Masses of relevant particles
-        double m_e      = mymspctm.mass[2];
-        double m_mu     = mymspctm.mass[4];
-        double m_tau    = mymspctm.mass[6];
-        double m_u      = mymspctm.mass[7];
-        double m_d      = mymspctm.mass[8];
-        double m_c      = mymspctm.mass[9];
-        double m_s      = mymspctm.mass[10];
-        double m_t      = mymspctm.mass[11];
-        double m_b      = mymspctm.mass[12];
-        double m_W      = mymspctm.mass[14];
+        // Macro for setting up 2-body decays
+        // TODO: Move dshayield from GA_AnnYield into this (?)
+        #define SETUP_DS_PROCESS(NAME, PARTCH, P1, P2, PREFACTOR)                                   \
+            /* Check if process is kinematically allowed */                                         \
+            m_1 = catalog.getParticleProperty(STRINGIFY(P1)).mass;                                  \
+            m_2 = catalog.getParticleProperty(STRINGIFY(P1)).mass;                                  \
+            if(m_1 + m_2 < 2*catalog.getParticleProperty("chi_10").mass)                            \
+            {                                                                                       \
+                /* Set cross-section */                                                             \
+                index = PARTCH;                                                                     \
+                double CAT(sigma_,NAME) = BEreq::dssigmav(index);                                   \
+                /* Create associated kinematical functions (just dependent on vrel)                 \
+                *  here: s-wave, vrel independent 1-dim constant function */                        \
+                BFptr CAT(kinematicFunction_,NAME)(new BFconstant(CAT(sigma_,NAME),PREFACTOR));     \
+                /* Create channel identifier string */                                              \
+                std::vector<std::string> CAT(finalStates_,NAME);                                    \
+                CAT(finalStates_,NAME).push_back(STRINGIFY(P1));                                    \
+                CAT(finalStates_,NAME).push_back(STRINGIFY(P2));                                    \
+                /* Create channel and push it into channel list of process */                       \
+                TH_Channel CAT(channel_,NAME)(CAT(finalStates_,NAME), CAT(kinematicFunction_,NAME));\
+                process.channelList.push_back(CAT(channel_,NAME));                                  \
+            }
+             
+//        SETUP_DS_PROCESS(H1H1,      1 , H1,     H1,     1   )
+//        SETUP_DS_PROCESS(H1H2,      2 , H1,     H2,     1   )
+//        SETUP_DS_PROCESS(H2H2,      3 , H2,     H2,     1   )
+//        SETUP_DS_PROCESS(H3H3,      4 , H3,     H3,     1   )
+//        SETUP_DS_PROCESS(H1H3,      5 , H1,     H3,     1   )
+//        SETUP_DS_PROCESS(H2H3,      6 , H2,     H3,     1   )
+//        SETUP_DS_PROCESS(HpHm,      7 , H+,     H-,     1   )
+//        SETUP_DS_PROCESS(H1Z0,      8 , H1,     Z0,     1   )
+//        SETUP_DS_PROCESS(H2Z0,      9 , H2,     Z0,     1   )
+//        SETUP_DS_PROCESS(H3Z0,      10, H3,     Z0,     1   )
+//        SETUP_DS_PROCESS(WpHm,      11, W+,     H-,     0.5 )  // Prefactor 0.5 since W+H- and W-H+ are summed in DS
+//        SETUP_DS_PROCESS(WmHp,      11, W-,     H+,     0.5 )  // Prefactor 0.5 since W+H- and W-H+ are summed in DS
+        SETUP_DS_PROCESS(Z0Z0,      12, Z0,     Z0,     1   )
+        SETUP_DS_PROCESS(WW,        13, W+,     W-,     1   )
+        SETUP_DS_PROCESS(nuenue,    14, nu_e,   ~nu_e,  1   )
+        SETUP_DS_PROCESS(ee,        15, e+,     e-,     1   )
+        SETUP_DS_PROCESS(numnum,    16, nu_mu,  ~nu_mu, 1   )
+        SETUP_DS_PROCESS(mumu,      17, mu+,    mu-,    1   )
+        SETUP_DS_PROCESS(nutnut,    18, nu_tau, ~nu_tau,1   )
+        SETUP_DS_PROCESS(tautau,    19, tau+,   tau-,   1   )
+        SETUP_DS_PROCESS(uubar,     20, u,      ubar,   1   )
+        SETUP_DS_PROCESS(ddbar,     21, d,      dbar,   1   )
+        SETUP_DS_PROCESS(ccbar,     22, c,      cbar,   1   )
+        SETUP_DS_PROCESS(ssbar,     23, s,      sbar,   1   )
+        SETUP_DS_PROCESS(ttbar,     24, t,      tbar,   1   )
+        SETUP_DS_PROCESS(bbbar,     25, b,      bbar,   1   )
+        SETUP_DS_PROCESS(gluglu,    26, g,      g,      1   )
+//        SETUP_DS_PROCESS(gammagamma,28, gamma,  gamma,  1   )
+//        SETUP_DS_PROCESS(Z0gamma,   29, Z0,     gamma,  1   )
+        // Undef the macro so it doesn't propagate through GAMBIT
+        #undef SETUP_DS_PROCESS
         
         // Macro for setting up 3-body decays with gammas
-        // TODO: Channel is now only added if kinematically allowed. Might want to do this in a different way.
-        #define SETUP_DS_PROCESS_GAMMA3BODY(NAME, IBCH, P1, P2, M_1, M_2, IBFUNC, SV_IDX)                                   \
-            if(M_1 + M_2 < 2*mass)                                                                                          \
+        #define SETUP_DS_PROCESS_GAMMA3BODY(NAME, IBCH, P1, P2, IBFUNC, SV_IDX, PREFACTOR)                                  \
+            /* Check if process is kinematically allowed */                                                                 \
+            m_1 = catalog.getParticleProperty(STRINGIFY(P1)).mass;                                                          \
+            m_2 = catalog.getParticleProperty(STRINGIFY(P1)).mass;                                                          \
+            if(m_1 + m_2 < 2*catalog.getParticleProperty("chi_10").mass)                                                    \
             {                                                                                                               \
                 index = SV_IDX;                                                                                             \
-                double sv = BEreq::dssigmav(index);                                                                         \
-                BFptr   CAT(kinematicFunction_,NAME)                                                                        \
-                        (new DSgamma3bdyKinFunc(IBCH, mass, M_1, M_2, STRIP_PARENS(IBFUNC), sv));                           \
+                sv = PREFACTOR*BEreq::dssigmav(index);                                                                      \
+                BFptr CAT(kinematicFunction_,NAME)                                                                          \
+                    (new DSgamma3bdyKinFunc(IBCH, catalog.getParticleProperty("chi_10").mass, m_1, m_2,                     \
+                                            STRIP_PARENS(IBFUNC), sv));                                                     \
                 /* Create channel identifier string */                                                                      \
                 std::vector<std::string> CAT(finalStates_,NAME);                                                            \
                 CAT(finalStates_,NAME).push_back("gamma");                                                                  \
@@ -827,47 +853,24 @@ namespace Gambit {
                 process.channelList.push_back(CAT(channel_,NAME));                                                          \
             }                                        
         
-        SETUP_DS_PROCESS_GAMMA3BODY(gammaWW,        1, W+,     W-,      m_W,    m_W,    (BEreq::dsIBwwdxdy.pointer()),  13 )     
-        // SETUP_DS_PROCESS_GAMMA3BODY(gammaWpHm,      2, W+,     H-,      m_W,    m_Hc,   (BEreq::dsIBwhdxdy.pointer()),  11 )   // TODO: Check how DarkSUSY sums W+H- and W-H+ results.         
-        // SETUP_DS_PROCESS_GAMMA3BODY(gammaWmHp,      2, W-,     H+,      m_W,    m_Hc,   (BEreq::dsIBwhdxdy.pointer()),  11 )   // TODO: Check how DarkSUSY sums W+H- and W-H+ results.
-        // SETUP_DS_PROCESS_GAMMA3BODY(gammaHpHm,      3, H+,     H-,      m_Hc,   m_Hc,   (BEreq::dsIBhhdxdy.pointer()),  0  )                    
-        SETUP_DS_PROCESS_GAMMA3BODY(gammaee,        4, e+,      e-,     m_e,    m_e,    (BEreq::dsIBffdxdy.pointer()) , 15 )
-        SETUP_DS_PROCESS_GAMMA3BODY(gammamumu,      5, mu+,     mu-,    m_mu,   m_mu,   (BEreq::dsIBffdxdy.pointer()) , 17 )
-        SETUP_DS_PROCESS_GAMMA3BODY(gammatautau,    6, tau+,    tau-,   m_tau,  m_tau,  (BEreq::dsIBffdxdy.pointer()) , 19 )
-        SETUP_DS_PROCESS_GAMMA3BODY(gammauubar,     7, u,       ubar,   m_u,    m_u,    (BEreq::dsIBffdxdy.pointer()) , 20 )
-        SETUP_DS_PROCESS_GAMMA3BODY(gammaddbar,     8, d,       dbar,   m_d,    m_d,    (BEreq::dsIBffdxdy.pointer()) , 21 )            
-        SETUP_DS_PROCESS_GAMMA3BODY(gammaccbar,     9, c,       cbar,   m_c,    m_c,    (BEreq::dsIBffdxdy.pointer()) , 22 )
-        SETUP_DS_PROCESS_GAMMA3BODY(gammassbar,     10,s,       sbar,   m_s,    m_s,    (BEreq::dsIBffdxdy.pointer()) , 23 )
-        SETUP_DS_PROCESS_GAMMA3BODY(gammattbar,     11,t,       tbar,   m_t,    m_t,    (BEreq::dsIBffdxdy.pointer()) , 24 )
-        SETUP_DS_PROCESS_GAMMA3BODY(gammabbbar,     12,b,       bbar,   m_b,    m_b,    (BEreq::dsIBffdxdy.pointer()) , 25 )
+        SETUP_DS_PROCESS_GAMMA3BODY(gammaWW,        1, W+,      W-,     (BEreq::dsIBwwdxdy.pointer()),  13, 1   )     
+        SETUP_DS_PROCESS_GAMMA3BODY(gammaWpHm,      2, W+,      H-,     (BEreq::dsIBwhdxdy.pointer()),  11, 0.5 )   // Prefactor 0.5 since W+H- and W-H+ are summed in DS        
+        SETUP_DS_PROCESS_GAMMA3BODY(gammaWmHp,      2, W-,      H+,     (BEreq::dsIBwhdxdy.pointer()),  11, 0.5 )   // Prefactor 0.5 since W+H- and W-H+ are summed in DS
+        SETUP_DS_PROCESS_GAMMA3BODY(gammaHpHm,      3, H+,      H-,     (BEreq::dsIBhhdxdy.pointer()),  0,  1   )                    
+        SETUP_DS_PROCESS_GAMMA3BODY(gammaee,        4, e+,      e-,     (BEreq::dsIBffdxdy.pointer()) , 15, 1   )
+        SETUP_DS_PROCESS_GAMMA3BODY(gammamumu,      5, mu+,     mu-,    (BEreq::dsIBffdxdy.pointer()) , 17, 1   )
+        SETUP_DS_PROCESS_GAMMA3BODY(gammatautau,    6, tau+,    tau-,   (BEreq::dsIBffdxdy.pointer()) , 19, 1   )
+        SETUP_DS_PROCESS_GAMMA3BODY(gammauubar,     7, u,       ubar,   (BEreq::dsIBffdxdy.pointer()) , 20, 1   )
+        SETUP_DS_PROCESS_GAMMA3BODY(gammaddbar,     8, d,       dbar,   (BEreq::dsIBffdxdy.pointer()) , 21, 1   )            
+        SETUP_DS_PROCESS_GAMMA3BODY(gammaccbar,     9, c,       cbar,   (BEreq::dsIBffdxdy.pointer()) , 22, 1   )
+        SETUP_DS_PROCESS_GAMMA3BODY(gammassbar,     10,s,       sbar,   (BEreq::dsIBffdxdy.pointer()) , 23, 1   )
+        SETUP_DS_PROCESS_GAMMA3BODY(gammattbar,     11,t,       tbar,   (BEreq::dsIBffdxdy.pointer()) , 24, 1   )
+        SETUP_DS_PROCESS_GAMMA3BODY(gammabbbar,     12,b,       bbar,   (BEreq::dsIBffdxdy.pointer()) , 25, 1   )
+        // Undef the macro so it doesn't propagate through GAMBIT
         #undef SETUP_DS_PROCESS_GAMMA3BODY
         
         // Add process to provess list
-        catalog.processList.push_back(process);
-
-        // Finally, store properties of the different particles. Constructor for TH_ParticleProperty takes particle mass and 2*spin.
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("chi_10" , TH_ParticleProperty(mass,     1)));
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("e-"     , TH_ParticleProperty(m_e,      1)));
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("e+"     , TH_ParticleProperty(m_e,      1)));
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("mu-"    , TH_ParticleProperty(m_mu,     1)));
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("mu+"    , TH_ParticleProperty(m_mu,     1)));
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("tau-"   , TH_ParticleProperty(m_tau,    1)));
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("tau+"   , TH_ParticleProperty(m_tau,    1)));
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("u"      , TH_ParticleProperty(m_u,      1)));
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("ubar"   , TH_ParticleProperty(m_u,      1)));
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("d"      , TH_ParticleProperty(m_d,      1)));
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("dbar"   , TH_ParticleProperty(m_d,      1)));
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("c"      , TH_ParticleProperty(m_c,      1)));
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("cbar"   , TH_ParticleProperty(m_c,      1)));
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("s"      , TH_ParticleProperty(m_s,      1)));
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("sbar"   , TH_ParticleProperty(m_s,      1)));
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("t"      , TH_ParticleProperty(m_t,      1)));
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("tbar"   , TH_ParticleProperty(m_t,      1)));
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("b"      , TH_ParticleProperty(m_b,      1)));
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("bbar"   , TH_ParticleProperty(m_b,      1)));
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("W-"     , TH_ParticleProperty(m_W,      2)));
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("W+"     , TH_ParticleProperty(m_W,      2)));
-                
+        catalog.processList.push_back(process);                
 
         // Temporary dummy particles for testing the decay chain code
         TH_ParticleProperty test1Property(10, 0);
