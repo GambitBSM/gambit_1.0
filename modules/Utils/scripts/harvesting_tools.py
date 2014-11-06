@@ -187,7 +187,7 @@ def retrieve_rollcall_headers(verbose,install_dir,exclude_headers):
         if (not core_exists and root == install_dir+"/Core/include"): core_exists = True 
         for name in files:
             if (name.lower().endswith("_rollcall.hpp") and name.lower().find("bit") != -1):
-                if not name in exclude_headers: 
+                if not name in exclude_headers and (name.endswith(".hpp") or name.endswith(".h") or name.endswith(".hh")): 
                     if verbose: print "  Located module rollcall header '{0}' at path '{1}'".format(name,os.path.join(root,name))
                     rollcall_headers+=[name]
     if core_exists: make_module_rollcall(rollcall_headers,verbose)
@@ -201,7 +201,7 @@ def retrieve_generic_headers(verbose,starting_dir,kind,to_be_excluded):
             exclude = False
             for x in to_be_excluded:
                 if name.startswith(x): exclude = True
-            if not exclude: 
+            if not exclude and (name.endswith(".hpp") or name.endswith(".h") or name.endswith(".hh")): 
                 if verbose: print "  Located "+kind+" header '{0}' at path '{1}'".format(name,os.path.join(root,name))
                 headers+=[name]
     return headers
