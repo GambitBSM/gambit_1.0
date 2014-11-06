@@ -430,9 +430,6 @@ MODEL_HARVESTER:= $(MODELDIR)/scripts/model_harvester.py
 ifndef SHH
   HARVESTER_OPTS += -v
 endif
-ifdef COLLIDE
-  HARVESTER_OPTS += -c
-endif
 
 
 ##### Niceties ##############

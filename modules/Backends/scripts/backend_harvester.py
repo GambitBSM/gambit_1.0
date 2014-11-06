@@ -36,22 +36,18 @@ def main(argv):
 
     # Handle command line options
     verbose = False
-    collide = False
     try:
-        opts, args = getopt.getopt(argv,"vcx:",["verbose","collide","exclude-backends="])
+        opts, args = getopt.getopt(argv,"vx:",["verbose","exclude-backends="])
     except getopt.GetoptError:
         print 'Usage: backend_harvestor.py [flags]'
         print ' flags:'
         print '        -v                       : More verbose output'  
-        print '        -c                       : Turn on HECollider'  
         print '        -x backend1,backend2,... : Exclude backend1, backend2, etc.' 
         sys.exit(2)
     for opt, arg in opts:
       if opt in ('-v','--verbose'):
         verbose = True
         print 'backend_harvester.py: verbose=True'
-      elif opt in ('-c','--collide'):
-        collide = True
       elif opt in ('-x','--exclude-backends'):
         exclude_backends.update(neatsplit(",",arg))
 

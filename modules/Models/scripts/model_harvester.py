@@ -31,22 +31,18 @@ def main(argv):
 
     # Handle command line options
     verbose = False
-    collide = False
     try:
-        opts, args = getopt.getopt(argv,"vcx:",["verbose","collide","exclude-models="])
+        opts, args = getopt.getopt(argv,"vx:",["verbose","exclude-models="])
     except getopt.GetoptError:
         print 'Usage: model_harvestor.py [flags]'
         print ' flags:'
         print '        -v                   : More verbose output'  
-        print '        -c                   : Turn on HECollider'  
         print '        -x model1,model2,... : Exclude model1, model2, etc.' 
         sys.exit(2)
     for opt, arg in opts:
       if opt in ('-v','--verbose'):
         verbose = True
         print 'model_harvester.py: verbose=True'
-      elif opt in ('-c','--collide'):
-        collide = True
       elif opt in ('-x','--exclude-models'):
         exclude_models.update(neatsplit(",",arg))
 
