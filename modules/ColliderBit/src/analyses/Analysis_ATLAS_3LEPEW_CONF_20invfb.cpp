@@ -22,7 +22,7 @@ namespace Gambit {
 
     using namespace std;
 
-    class Analysis_ATLAS_3LEPEW_20invfb : public Analysis {
+    class Analysis_ATLAS_3LEPEW_CONF_20invfb : public Analysis {
     private:
 
       // Numbers passing cuts
@@ -37,7 +37,7 @@ namespace Gambit {
 
     public:
 
-      Analysis_ATLAS_3LEPEW_20invfb() {
+      Analysis_ATLAS_3LEPEW_CONF_20invfb() {
         _numSRnoZa=0; _numSRnoZb=0; _numSRnoZc=0; _numSRZa=0; _numSRZb=0; _numSRZc=0;
 
         for(int i=0;i<NCUTS;i++){
@@ -475,6 +475,6 @@ namespace Gambit {
 
     };
 
-    DEFINE_ANALYSIS_FACTORY(ATLAS_3LEPEW_20invfb)
+    DEFINE_ANALYSIS_FACTORY(ATLAS_3LEPEW_CONF_20invfb)
   }
 }
