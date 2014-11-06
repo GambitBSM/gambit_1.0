@@ -24,16 +24,22 @@ import os
 execfile("./Utils/scripts/harvesting_tools.py")
 
 def main(argv):
+
+    model_headers=set([])
+    model_type_headers = set([])
+    exclude_models=set([])
+
     # Handle command line options
     verbose = False
     collide = False
     try:
-        opts, args = getopt.getopt(argv,"vc",["verbose","collide"])
+        opts, args = getopt.getopt(argv,"vcx:",["verbose","collide","exclude-models="])
     except getopt.GetoptError:
         print 'Usage: model_harvestor.py [flags]'
         print ' flags:'
-        print '        -v : More verbose output'  
-        print '        -c : Turn on HECollider'  
+        print '        -v                   : More verbose output'  
+        print '        -c                   : Turn on HECollider'  
+        print '        -x model1,model2,... : Exclude model1, model2, etc.' 
         sys.exit(2)
     for opt, arg in opts:
       if opt in ('-v','--verbose'):
@@ -41,12 +47,8 @@ def main(argv):
         print 'model_harvester.py: verbose=True'
       elif opt in ('-c','--collide'):
         collide = True
-
-    model_headers=set([])
-    model_type_headers = set([])
-
-    # List of models to exclude; anything starting with one of these strings is excluded.
-    exclude_models=set([])
+      elif opt in ('-x','--exclude-models'):
+        exclude_models.update(neatsplit(",",arg))
 
     # Get list of models to include in models_rollcall.hpp
     model_headers.update(retrieve_generic_headers(verbose,"./Models/include/models","model",exclude_models))   

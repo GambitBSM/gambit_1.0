@@ -425,7 +425,7 @@ FRONTEND_HEADERS:=$(wildcard Backends/include/frontends/*.hpp)
 MODEL_HEADERS:=$(wildcard Models/include/models/*.hpp)
 FUNCTOR_TYPES:= $(UTILSDIR)/include/all_functor_types.hpp
 MODULE_HARVESTER:= $(UTILSDIR)/scripts/module_harvester.py
-BACKEND_HARVESTER:= $(UTILSDIR)/scripts/backend_harvester.py
+BACKEND_HARVESTER:= $(BACKENDDIR)/scripts/backend_harvester.py
 MODEL_HARVESTER:= $(MODELDIR)/scripts/model_harvester.py
 ifndef SHH
   HARVESTER_OPTS += -v
@@ -449,7 +449,11 @@ all: minihelp doxygen backends $(TARGETS)
 $(FUNCTOR_TYPES): $(BACKEND_HARVESTER) $(MODULE_HARVESTER) $(ROLLCALL_HEADERS) $(FRONTEND_HEADERS) $(MODEL_HEADERS)
 	python $(MODEL_HARVESTER) $(HARVESTER_OPTS)
 	python $(BACKEND_HARVESTER) $(HARVESTER_OPTS)
+ifdef COLLIDE
 	python $(MODULE_HARVESTER) $(HARVESTER_OPTS)
+else
+	python $(MODULE_HARVESTER) $(HARVESTER_OPTS) -x ColliderBit
+endif
 
 $(COREDIR)/build/%.o: $(COREDIR)/src/%.cpp $(STANDALONEINC) $(GAMBITINC) $(ROLLCALL_HEADERS)
 	@echo ___________Compiling $<:

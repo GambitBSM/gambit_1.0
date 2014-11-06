@@ -180,26 +180,27 @@ def find_and_harvest_headers(header_set,fullheadlist,exclude_set,verbose=False):
         find_and_harvest_headers(new_headers,fullheadlist,new_exclude_set,verbose=verbose)
 
 #Search the source tree to determine which modules are present, and write a module_rollcall header if the GAMBIT Core exists. 
-def retrieve_rollcall_headers(verbose,install_dir,exclude_headers):
+def retrieve_rollcall_headers(verbose,install_dir,excludes):
     rollcall_headers=[]
     core_exists = False
     for root,dirs,files in os.walk(install_dir):
         if (not core_exists and root == install_dir+"/Core/include"): core_exists = True 
         for name in files:
             if (name.lower().endswith("_rollcall.hpp") and name.lower().find("bit") != -1):
-                if not name in exclude_headers and (name.endswith(".hpp") or name.endswith(".h") or name.endswith(".hh")): 
+                if not (name in excludes or re.sub("\\.hpp$","",name) in excludes or re.sub("_rollcall\\.hpp$","",name) in excludes) and \
+                (name.endswith(".hpp") or name.endswith(".h") or name.endswith(".hh")): 
                     if verbose: print "  Located module rollcall header '{0}' at path '{1}'".format(name,os.path.join(root,name))
                     rollcall_headers+=[name]
     if core_exists: make_module_rollcall(rollcall_headers,verbose)
     return rollcall_headers
 
 #Search the a directory for headers that are not excluded.
-def retrieve_generic_headers(verbose,starting_dir,kind,to_be_excluded):
+def retrieve_generic_headers(verbose,starting_dir,kind,excludes):
     headers=[]
     for root,dirs,files in os.walk(starting_dir):
         for name in files:
             exclude = False
-            for x in to_be_excluded:
+            for x in excludes:
                 if name.startswith(x): exclude = True
             if not exclude and (name.endswith(".hpp") or name.endswith(".h") or name.endswith(".hh")): 
                 if verbose: print "  Located "+kind+" header '{0}' at path '{1}'".format(name,os.path.join(root,name))

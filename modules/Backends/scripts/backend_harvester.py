@@ -25,19 +25,26 @@
 #    \date 2014 Nov
 #
 #*********************************************
-from harvesting_tools import *
+import os
+execfile("./Utils/scripts/harvesting_tools.py")
 
 def main(argv):
+
+    frontend_headers=set([])
+    backend_type_headers = set([])
+    exclude_backends=set([])
+
     # Handle command line options
     verbose = False
     collide = False
     try:
-        opts, args = getopt.getopt(argv,"vc",["verbose","collide"])
+        opts, args = getopt.getopt(argv,"vcx:",["verbose","collide","exclude-backends="])
     except getopt.GetoptError:
         print 'Usage: backend_harvestor.py [flags]'
         print ' flags:'
-        print '        -v : More verbose output'  
-        print '        -c : Turn on HECollider'  
+        print '        -v                       : More verbose output'  
+        print '        -c                       : Turn on HECollider'  
+        print '        -x backend1,backend2,... : Exclude backend1, backend2, etc.' 
         sys.exit(2)
     for opt, arg in opts:
       if opt in ('-v','--verbose'):
@@ -45,16 +52,12 @@ def main(argv):
         print 'backend_harvester.py: verbose=True'
       elif opt in ('-c','--collide'):
         collide = True
-
-    frontend_headers=set([])
-    backend_type_headers = set([])
-
-    # Lists of backends, models and modules to exclude; anything starting with one of these strings is excluded.
-    exclude_backends=set([])
+      elif opt in ('-x','--exclude-backends'):
+        exclude_backends.update(neatsplit(",",arg))
 
     # Get list of frontend header files to include in backend_rollcall.hpp
     frontend_headers.update(retrieve_generic_headers(verbose,"./Backends/include/frontends","frontend",exclude_backends))   
-    # Get lists of backend, model and module type header files
+    # Get lists of backend type header files
     #backend_type_headers.update(retrieve_type_headers(verbose,"./Backends/include/backend_types",exclude_backends))
 
     print "\nFrontend headers identified:"

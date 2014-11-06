@@ -33,16 +33,21 @@
 from harvesting_tools import *
 
 def main(argv):
+
+    # Lists of backends, models and modules to exclude; anything starting with one of these strings is excluded.
+    exclude_modules=set([])
+
     # Handle command line options
     verbose = False
     collide = False
     try:
-        opts, args = getopt.getopt(argv,"vc",["verbose","collide"])
+        opts, args = getopt.getopt(argv,"vcx:",["verbose","collide","exclude-modules="])
     except getopt.GetoptError:
         print 'Usage: module_harvestor.py [flags]'
         print ' flags:'
-        print '        -v : More verbose output'  
-        print '        -c : Turn on HECollider'  
+        print '        -v                   : More verbose output'  
+        print '        -c                   : Turn on HECollider'  
+        print '        -x model1,model2,... : Exclude model1, model2, etc.' 
         sys.exit(2)
     for opt, arg in opts:
       if opt in ('-v','--verbose'):
@@ -50,22 +55,20 @@ def main(argv):
         print 'module_harvester.py: verbose=True'
       elif opt in ('-c','--collide'):
         collide = True
-
-
-    headers      = set(["backend_rollcall.hpp"])
-    type_headers = set(["types_rollcall.hpp"])
+      elif opt in ('-x','--exclude-modules'):
+        exclude_modules.update(neatsplit(",",arg))
+    exclude_header = exclude_modules
     fullheaders=[]
     fulltypeheaders=[]
 
+    # List of headers to search
+    headers      = set(["backend_rollcall.hpp"])
+    type_headers = set(["types_rollcall.hpp"])
+
     # List of headers NOT to search (things we know are not module rollcall headers or module type headers, 
     # but are included in module_rollcall.hpp or types_rollcall.hpp)
-    if collide:
-      exclude_header=set(["shared_types.hpp", "backend_macros.hpp", "backend_undefs.hpp", "identification.hpp",
-                          "backend_type_macros.hpp", "yaml.h"])
-    else:
-      print "  Excluding ColliderBit rollcall headers from type harvesting."
-      exclude_header=set(["shared_types.hpp", "backend_macros.hpp", "backend_undefs.hpp", "identification.hpp",
-                          "backend_type_macros.hpp", "yaml.h", "ColliderBit_rollcall.hpp", "ColliderBit_types.hpp"])
+    exclude_header.update(["shared_types.hpp", "backend_macros.hpp", "backend_undefs.hpp", "identification.hpp",
+                           "backend_type_macros.hpp", "yaml.h"])
 
     # List of types NOT to return (things we know are not printable, but can appear in START_FUNCTION calls)
     exclude_type=set(["void"])
@@ -139,9 +142,6 @@ def main(argv):
     
 
     module_type_headers = set([])
-
-    # Lists of backends, models and modules to exclude; anything starting with one of these strings is excluded.
-    exclude_modules=set([])
 
     # Now generate module_type_rollcall.hpp
     #module_type_headers.update(retrieve_module_type_headers(verbose,".",exclude_modules))
