@@ -398,7 +398,7 @@ namespace Gambit
                 return false;
             }
             bool found = false;
-            for(vector<const TH_Channel*>::const_iterator it = disabledDecays.begin(); it != disabledDecays.end(); ++it)
+            for(vector<const TH_Channel*>::iterator it = disabledDecays.begin(); it != disabledDecays.end(); ++it)
             {
                 if((*it) == in)
                 {
@@ -416,7 +416,7 @@ namespace Gambit
         bool DecayTableEntry::disableDecay(const TH_Channel *in)
         {
             bool found = false;
-            for(vector<const TH_Channel*>::const_iterator it = enabledDecays.begin(); it != enabledDecays.end(); ++it)
+            for(vector<const TH_Channel*>::iterator it = enabledDecays.begin(); it != enabledDecays.end(); ++it)
             {
                 if((*it) == in)
                 {

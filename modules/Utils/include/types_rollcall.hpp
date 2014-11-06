@@ -5,14 +5,12 @@
 ///  List of headers that define classes, typedefs
 ///  and so forth needed for module, model and 
 ///  backend co-operation with the GAMBIT core. 
-///  If you need to add a new type, you either 
-///  need to include the header containing it from
-///  this header, or include it instead from 
-///  shared_types.hpp.  Which one to choose depends 
-///  on what the type is for (guidelines below).
+///  If you need to add a new type, how you do 
+///  this depends on what the type is associated
+///  with.  Guidelines are given below.
 ///
 ///  Bear in mind throughout that normal C/C++ rules
-///  apply; if your new type is never going to be
+///  apply: if your new type is never going to be
 ///  used except as a local convenience in your new
 ///  module/backend/model, then there is no need to 
 ///  do anything more than put it in a header and 
@@ -26,64 +24,58 @@
 ///  module/backend/model, or if it is to be used for 
 ///  passing things back and forth between modules,  
 ///  backends and/or models, e.g. if it is the result
-///  type of a backend function or a module function.
+///  or argument type of a backend function, module 
+///  function or module dependency.
+///  
+///  Explicit instructions for adding new types:
+///
+///  MODELS
+///  ------
+///  To add a new type that will be used exclusively to 
+///  communicate with some model X, declare it in a header
+///   X/include/X_types.hpp,
+///  and include that file from Models/models/X.hpp.
+///  X_types will be automatically included in 
+///  Utils/include/types_rollcall.hpp by the GAMBIT module
+///  harvester.
+///
+///  MODULES
+///  -------
+///  To add a new type that will be used exclusively to 
+///  communicate with some module Y, declare it in a header
+///   Y/include/Y_types.hpp,
+///  and include that file from Y/include/Y_rollcall.hpp.
+///  Y_types will be automatically included in 
+///  Utils/include/types_rollcall.hpp by the GAMBIT module
+///  harvester.
 ///
 ///  BACKENDS
 ///  --------
-///  To add a new type that will be used to
-///  communicate with a backend X:
-///      Add it to a header
-///      Backends/include/X_types.hpp
-///      **FIXME currently you then do this:**
-///      and include that header from the file
-///      Utils/include/shared_types.hpp.       
-///      **FIXME in future this will be true instead:**
-///      and it will be automatically included in 
-///      Utils/include/shared_types.hpp by the functor
-///      type harvester.
+///  To add a new type that will be used to communicate
+///  with a backend Z, declare it in a header
+///   Backends/include/backend_types/Z_types.hpp
+///  Z_types will be automatically included in 
+///  Utils/include/types_rollcall.hpp by the GAMBIT module
+///  harvester.
 ///
-///  MODELS AND MODULES
-///  ------------------
-///  To add a new type that will be used to
-///  communicate with a model X or module Y:
-///   1. If the type will only be used by a single
-///      model X, add it to a header
-///      Models/models/X_types.hpp,
-///      **FIXME currently you then do this:**
-///      and include that header from 
-///      Models/models/X.hpp
-///      and this file.
-///      **FIXME in future this will be true instead:**
-///      and it will be automatically included in 
-///      this file and in Models/models/X.hpp 
-///      by the functor type harvester.
-///   2. If the type will only be used by a single
-///      module Y, add it to a header
-///      Y/include/Y_types.hpp,
-///      **FIXME currently you then do this:**
-///      and include that header from 
-///      Y/include/Y_rollcall.hpp
-///      and this file.
-///      **FIXME in future this will be true instead:**
-///      and it will be automatically included in 
-///      this file and in Y/include/Y_rollcall.hpp 
-///      by the functor type harvester.
-///
-///  MIXTURES
-///  -------- 
+///  MIXED-USE TYPES
+///  --------------- 
 ///  If the type will be used by multiple modules, 
 ///  multiple models or multiple backends, or any 
-///  mixture thereof:
-///      Add it to or include it from the header
-///      Utils/include/shared_types.hpp.
+///  mixture thereof, make some header 
+///   Utils/include/__your_header_name__.hpp
+///  that decalares the type, and include
+///  that header from 
+///   Utils/include/shared_types.hpp.
 ///  
-/// 
+///  PRINTING
+///  --------
 ///  Remember also that if you want to be able to
 ///  spit instances of your new type out to a file 
 ///  or other output medium, you will need to add 
 ///  specialisations for it in the various printers
 ///  included in 
-///  Utils/include/printers_rollcall.hpp.
+///   Utils/include/printers_rollcall.hpp.
 ///
 ///
 ///  *********************************************
@@ -93,7 +85,7 @@
 ///  \author Pat Scott  
 ///          (patscott@physics.mcgill.ca)
 ///  \date 2013 Oct
-///  \date 2014 Mar
+///  \date 2014 Mar, Nov
 ///
 ///  *********************************************
 
