@@ -2,8 +2,6 @@
 #include <vector>
 #include <cmath>
 #include <memory>
-#include "TLorentzVector.h"
-#include "TVector2.h"
 #include <iomanip>
 #include "mt2_bisect.h"
 
@@ -95,7 +93,7 @@ namespace Gambit {
 
       }
 
-      void LepLepOverlapRemoval(vector<Particle*> &vec1, vector<Particle*> &vec2, double DeltaRMax) {
+      void EleEleOverlapRemoval(vector<Particle*> &vec1, vector<Particle*> &vec2, double DeltaRMax) {
         //Routine to do electron-electron overlap check
         //Discard lowest energy electron if two are found overlapping
         vector<Particle*> Survivors;
@@ -111,6 +109,31 @@ namespace Gambit {
             dR=lep1mom.deltaR_eta(lep2mom);
 
             if(dR <= DeltaRMax && lep1mom.E()<lep2mom.E()) overlap=true;
+          }
+          if(overlap) continue;
+          Survivors.push_back(vec1.at(it1));
+        }
+        vec1=Survivors;
+
+        return;
+      }
+
+
+      void LepLepOverlapRemoval(vector<Particle*> &vec1, vector<Particle*> &vec2, double DeltaRMax) {
+
+        vector<Particle*> Survivors;
+
+        for(unsigned int it1 = 0; it1 < vec1.size(); it1++) {
+          bool overlap = false;
+          P4 lep1mom=vec1.at(it1)->mom();
+          for(unsigned int it2 = 0; it2 < vec2.size(); it2++) {
+            if(it1==it2)continue;
+            P4 lep2mom=vec2.at(it2)->mom();
+            float dR;
+
+            dR=lep1mom.deltaR_eta(lep2mom);
+
+            if(dR <= DeltaRMax) overlap=true;
           }
           if(overlap) continue;
           Survivors.push_back(vec1.at(it1));
@@ -209,7 +232,7 @@ namespace Gambit {
         //Then the signal cut is applied for signal jets
         //cout << "BEFORE REMOVAL nele nmuo njet " << baselineElectrons.size() << " " << baselineMuons.size() << " " << signalJets.size() << endl;
 
-        LepLepOverlapRemoval(signalElectrons,signalElectrons,0.1);
+        EleEleOverlapRemoval(signalElectrons,signalElectrons,0.1);
 	JetLeptonOverlapRemoval(signalJets,signalElectrons,0.2);
 	LepLepOverlapRemoval(signalTaus,signalElectrons,0.2);
 	LepLepOverlapRemoval(signalTaus,signalMuons,0.2);
@@ -406,7 +429,8 @@ namespace Gambit {
         float mT=0;
         if(signalLeptons.size()==3 && extralepID!=-1){
           P4 extralepVec=signalLeptons.at(extralepID)->mom();
-          mT=sqrt(2.*extralepVec.pT()*met*(1. - cos(TVector2::Phi_mpi_pi(extralepVec.phi()-ptot.phi()))));
+          mT=sqrt(2.*extralepVec.pT()*met*(1. - cos(extralepVec.deltaPhi(ptot))));
+
         }
 
 	//Now calculate trilepton invariant mass
@@ -607,51 +631,192 @@ namespace Gambit {
 
       void collect_results() {
 
-        /*_numSRnoZa, _numSRnoZb, _numSRnoZc, _numSRZa, _numSRZb, _numSRZc;
+      SignalRegionData results_SR0tau_a_bin_1;
+      results_SR0tau_a_bin_1.set_observation(36.);
+      results_SR0tau_a_bin_1.set_background(23.);
+      results_SR0tau_a_bin_1.set_backgroundsys(4.);
+      results_SR0tau_a_bin_1.set_signalsys(0.);
+      results_SR0tau_a_bin_1.set_signal(_num_SR0tau_a_bin_1);
 
-        SignalRegionData results_SRnoZa;
-        results_SRnoZa.set_observation(101.);
-        results_SRnoZa.set_background(96.);
-        results_SRnoZa.set_backgroundsys(19.);
-        results_SRnoZa.set_signalsys(0.);
-        results_SRnoZa.set_signal(_numSRnoZa);
+      SignalRegionData results_SR0tau_a_bin_2;
+      results_SR0tau_a_bin_2.set_observation(5.);
+      results_SR0tau_a_bin_2.set_background(4.2);
+      results_SR0tau_a_bin_2.set_backgroundsys(1.5);
+      results_SR0tau_a_bin_2.set_signalsys(0.);
+      results_SR0tau_a_bin_2.set_signal(_num_SR0tau_a_bin_2);
 
-        SignalRegionData results_SRnoZb;
-        results_SRnoZb.set_observation(32.);
-        results_SRnoZb.set_background(29.);
-        results_SRnoZb.set_backgroundsys(6.);
-        results_SRnoZb.set_signalsys(0.);
-        results_SRnoZb.set_signal(_numSRnoZb);
+      SignalRegionData results_SR0tau_a_bin_3;
+      results_SR0tau_a_bin_3.set_observation(9.);
+      results_SR0tau_a_bin_3.set_background(10.6);
+      results_SR0tau_a_bin_3.set_backgroundsys(1.8);
+      results_SR0tau_a_bin_3.set_signalsys(0.);
+      results_SR0tau_a_bin_3.set_signal(_num_SR0tau_a_bin_3);
 
-        SignalRegionData results_SRnoZc;
-        results_SRnoZc.set_observation(5.);
-        results_SRnoZc.set_background(4.4);
-        results_SRnoZc.set_backgroundsys(1.8);
-        results_SRnoZc.set_signalsys(0.);
-        results_SRnoZc.set_signal(_numSRnoZc);
+      SignalRegionData results_SR0tau_a_bin_4;
+      results_SR0tau_a_bin_4.set_observation(9.);
+      results_SR0tau_a_bin_4.set_background(8.5);
+      results_SR0tau_a_bin_4.set_backgroundsys(1.7);
+      results_SR0tau_a_bin_4.set_signalsys(0.);
+      results_SR0tau_a_bin_4.set_signal(_num_SR0tau_a_bin_4);
 
-        SignalRegionData results_SRZa;
-        results_SRZa.set_observation(273.);
-        results_SRZa.set_background(249.);
-        results_SRZa.set_backgroundsys(35.);
-        results_SRZa.set_signalsys(0.);
-        results_SRZa.set_signal(_numSRZa);
+      SignalRegionData results_SR0tau_a_bin_5;
+      results_SR0tau_a_bin_5.set_observation(11.);
+      results_SR0tau_a_bin_5.set_background(12.9);
+      results_SR0tau_a_bin_5.set_backgroundsys(2.4);
+      results_SR0tau_a_bin_5.set_signalsys(0.);
+      results_SR0tau_a_bin_5.set_signal(_num_SR0tau_a_bin_5);
 
-        SignalRegionData results_SRZc;
-        results_SRZc.set_observation(6.);
-        results_SRZc.set_background(6.3);
-        results_SRZc.set_backgroundsys(1.5);
-        results_SRZc.set_signalsys(0.);
-        results_SRZc.set_signal(_numSRZc);
+      SignalRegionData results_SR0tau_a_bin_6;
+      results_SR0tau_a_bin_6.set_observation(13.);
+      results_SR0tau_a_bin_6.set_background(6.6);
+      results_SR0tau_a_bin_6.set_backgroundsys(1.9);
+      results_SR0tau_a_bin_6.set_signalsys(0.);
+      results_SR0tau_a_bin_6.set_signal(_num_SR0tau_a_bin_6);
 
-        SignalRegionData results_SRZb;
-        results_SRZb.set_observation(23.);
-        results_SRZb.set_background(22.);
-        results_SRZb.set_backgroundsys(5.);
-        results_SRZb.set_signalsys(0.);
-        results_SRZb.set_signal(_numSRZb);
+      SignalRegionData results_SR0tau_a_bin_7;
+      results_SR0tau_a_bin_7.set_observation(15.);
+      results_SR0tau_a_bin_7.set_background(14.1);
+      results_SR0tau_a_bin_7.set_backgroundsys(2.2);
+      results_SR0tau_a_bin_7.set_signalsys(0.);
+      results_SR0tau_a_bin_7.set_signal(_num_SR0tau_a_bin_7);
 
-        add_result(results_SRnoZa);
+      SignalRegionData results_SR0tau_a_bin_8;
+      results_SR0tau_a_bin_8.set_observation(1.);
+      results_SR0tau_a_bin_8.set_background(1.1);
+      results_SR0tau_a_bin_8.set_backgroundsys(0.4);
+      results_SR0tau_a_bin_8.set_signalsys(0.);
+      results_SR0tau_a_bin_8.set_signal(_num_SR0tau_a_bin_8);
+
+      SignalRegionData results_SR0tau_a_bin_9;
+      results_SR0tau_a_bin_9.set_observation(28.);
+      results_SR0tau_a_bin_9.set_background(22.4);
+      results_SR0tau_a_bin_9.set_backgroundsys(3.6);
+      results_SR0tau_a_bin_9.set_signalsys(0.);
+      results_SR0tau_a_bin_9.set_signal(_num_SR0tau_a_bin_9);
+
+      SignalRegionData results_SR0tau_a_bin_10;
+      results_SR0tau_a_bin_10.set_observation(24.);
+      results_SR0tau_a_bin_10.set_background(16.4);
+      results_SR0tau_a_bin_10.set_backgroundsys(2.8);
+      results_SR0tau_a_bin_10.set_signalsys(0.);
+      results_SR0tau_a_bin_10.set_signal(_num_SR0tau_a_bin_10);
+
+      SignalRegionData results_SR0tau_a_bin_11;
+      results_SR0tau_a_bin_11.set_observation(29.);
+      results_SR0tau_a_bin_11.set_background(27.);
+      results_SR0tau_a_bin_11.set_backgroundsys(5.);
+      results_SR0tau_a_bin_11.set_signalsys(0.);
+      results_SR0tau_a_bin_11.set_signal(_num_SR0tau_a_bin_11);
+
+      SignalRegionData results_SR0tau_a_bin_12;
+      results_SR0tau_a_bin_12.set_observation(8.);
+      results_SR0tau_a_bin_12.set_background(5.5);
+      results_SR0tau_a_bin_12.set_backgroundsys(1.5);
+      results_SR0tau_a_bin_12.set_signalsys(0.);
+      results_SR0tau_a_bin_12.set_signal(_num_SR0tau_a_bin_12);
+
+      SignalRegionData results_SR0tau_a_bin_13;
+      results_SR0tau_a_bin_13.set_observation(714.);
+      results_SR0tau_a_bin_13.set_background(715.);
+      results_SR0tau_a_bin_13.set_backgroundsys(70.);
+      results_SR0tau_a_bin_13.set_signalsys(0.);
+      results_SR0tau_a_bin_13.set_signal(_num_SR0tau_a_bin_13);
+
+      SignalRegionData results_SR0tau_a_bin_14;
+      results_SR0tau_a_bin_14.set_observation(214.);
+      results_SR0tau_a_bin_14.set_background(219.);
+      results_SR0tau_a_bin_14.set_backgroundsys(33.);
+      results_SR0tau_a_bin_14.set_signalsys(0.);
+      results_SR0tau_a_bin_14.set_signal(_num_SR0tau_a_bin_14);
+
+      SignalRegionData results_SR0tau_a_bin_15;
+      results_SR0tau_a_bin_15.set_observation(63.);
+      results_SR0tau_a_bin_15.set_background(65.);
+      results_SR0tau_a_bin_15.set_backgroundsys(13.);
+      results_SR0tau_a_bin_15.set_signalsys(0.);
+      results_SR0tau_a_bin_15.set_signal(_num_SR0tau_a_bin_15);
+
+      SignalRegionData results_SR0tau_a_bin_16;
+      results_SR0tau_a_bin_16.set_observation(3.);
+      results_SR0tau_a_bin_16.set_background(4.6);
+      results_SR0tau_a_bin_16.set_backgroundsys(1.7);
+      results_SR0tau_a_bin_16.set_signalsys(0.);
+      results_SR0tau_a_bin_16.set_signal(_num_SR0tau_a_bin_16);
+
+      SignalRegionData results_SR0tau_a_bin_17;
+      results_SR0tau_a_bin_17.set_observation(60.);
+      results_SR0tau_a_bin_17.set_background(69.);
+      results_SR0tau_a_bin_17.set_backgroundsys(9.);
+      results_SR0tau_a_bin_17.set_signalsys(0.);
+      results_SR0tau_a_bin_17.set_signal(_num_SR0tau_a_bin_17);
+
+      SignalRegionData results_SR0tau_a_bin_18;
+      results_SR0tau_a_bin_18.set_observation(1.);
+      results_SR0tau_a_bin_18.set_background(3.4);
+      results_SR0tau_a_bin_18.set_backgroundsys(1.4);
+      results_SR0tau_a_bin_18.set_signalsys(0.);
+      results_SR0tau_a_bin_18.set_signal(_num_SR0tau_a_bin_18);
+
+      SignalRegionData results_SR0tau_a_bin_19;
+      results_SR0tau_a_bin_19.set_observation(0.);
+      results_SR0tau_a_bin_19.set_background(1.2);
+      results_SR0tau_a_bin_19.set_backgroundsys(0.4);
+      results_SR0tau_a_bin_19.set_signalsys(0.);
+      results_SR0tau_a_bin_19.set_signal(_num_SR0tau_a_bin_19);
+
+      SignalRegionData results_SR0tau_a_bin_20;
+      results_SR0tau_a_bin_20.set_observation(0.);
+      results_SR0tau_a_bin_20.set_background(0.29);
+      results_SR0tau_a_bin_20.set_backgroundsys(0.18);
+      results_SR0tau_a_bin_20.set_signalsys(0.);
+      results_SR0tau_a_bin_20.set_signal(_num_SR0tau_a_bin_20);
+
+      SignalRegionData results_SR1tau;
+      results_SR1tau.set_observation(13.);
+      results_SR1tau.set_background(10.3);
+      results_SR1tau.set_backgroundsys(1.2);
+      results_SR1tau.set_signalsys(0.);
+      results_SR1tau.set_signal(_num_SR1tau);
+
+      SignalRegionData results_SR2tau_a;
+      results_SR2tau_a.set_observation(6.);
+      results_SR2tau_a.set_background(6.9);
+      results_SR2tau_a.set_backgroundsys(0.8);
+      results_SR2tau_a.set_signalsys(0.);
+      results_SR2tau_a.set_signal(_num_SR1tau);
+
+      SignalRegionData results_SR2tau_b;
+      results_SR2tau_b.set_observation(5.);
+      results_SR2tau_b.set_background(7.2);
+      results_SR2tau_b.set_backgroundsys(0.8);
+      results_SR2tau_b.set_signalsys(0.);
+      results_SR2tau_b.set_signal(_num_SR1tau);
+
+      add_result(results_SR0tau_a_bin_1);
+      add_result(results_SR0tau_a_bin_2);
+      add_result(results_SR0tau_a_bin_3);
+      add_result(results_SR0tau_a_bin_4);
+      add_result(results_SR0tau_a_bin_5);
+      add_result(results_SR0tau_a_bin_6);
+      add_result(results_SR0tau_a_bin_7);
+      add_result(results_SR0tau_a_bin_8);
+      add_result(results_SR0tau_a_bin_9);
+      add_result(results_SR0tau_a_bin_10);
+      add_result(results_SR0tau_a_bin_11);
+      add_result(results_SR0tau_a_bin_12);
+      add_result(results_SR0tau_a_bin_13);
+      add_result(results_SR0tau_a_bin_14);
+      add_result(results_SR0tau_a_bin_15);
+      add_result(results_SR0tau_a_bin_16);
+      add_result(results_SR0tau_a_bin_17);
+      add_result(results_SR0tau_a_bin_18);
+      add_result(results_SR0tau_a_bin_19);
+      add_result(results_SR0tau_a_bin_20);
+      add_result(results_SR1tau);
+      add_result(results_SR2tau_a);
+      add_result(results_SR2tau_b);
+
+      /*  add_result(results_SRnoZa);
         add_result(results_SRnoZb);
         add_result(results_SRnoZc);
         add_result(results_SRZa);
