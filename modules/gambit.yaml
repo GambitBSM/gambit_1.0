@@ -253,8 +253,8 @@ ObsLikes:
   #  capability:  HS_LHCchisq
 
   # Uncomment to test ColliderBit
-  #- purpose:      Observable
-  #  capability:   analysisAccumulator
+  - purpose:      Observable
+    capability:   analysisAccumulator
 
   # Test Pythia8 SLHA reader
   - purpose:      Likelihood
@@ -263,9 +263,9 @@ ObsLikes:
     printme:      false
 
   # Test vector output of printer
-  - purpose:      Observable
-    capability:   test_vector
-    type:         std::vector<double>
+  #- purpose:      Observable
+  #  capability:   test_vector
+  #  type:         std::vector<double>
 
   ## Test DarkBit relic density with Micromegas
   #- purpose:      Likelihood
