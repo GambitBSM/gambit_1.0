@@ -359,30 +359,30 @@ namespace Gambit {
 
 
         SignalRegionData results_SRM90;
-        results_SRM90.set_observation(260.);
+        results_SRM90.set_observation(274.);
         results_SRM90.set_background(300.);
-        results_SRM90.set_backgroundsys(40.);
+        results_SRM90.set_backgroundsys(50.);
         results_SRM90.set_signalsys(0.);
         results_SRM90.set_signal(_numSRM90SF+_numSRM90DF);
 
         SignalRegionData results_SRM100;
         results_SRM100.set_observation(3.);
-        results_SRM100.set_background(4.8);
+        results_SRM100.set_background(5.2);
         results_SRM100.set_backgroundsys(2.2);
         results_SRM100.set_signalsys(0.);
         results_SRM100.set_signal(_numSRM100SF+_numSRM100DF);
 
         SignalRegionData results_SRM110;
-        results_SRM110.set_observation(7.);
-        results_SRM110.set_background(11.);
-        results_SRM110.set_backgroundsys(4.);
+        results_SRM110.set_observation(8.);
+        results_SRM110.set_background(9.3);
+        results_SRM110.set_backgroundsys(3.5);
         results_SRM110.set_signalsys(0.);
         results_SRM110.set_signal(_numSRM110SF+_numSRM110DF);
 
         SignalRegionData results_SRM120;
-        results_SRM120.set_observation(3.);
-        results_SRM120.set_background(4.3);
-        results_SRM120.set_backgroundsys(1.3);
+        results_SRM120.set_observation(18.);
+        results_SRM120.set_background(19.);
+        results_SRM120.set_backgroundsys(9.);
         results_SRM120.set_signalsys(0.);
         results_SRM120.set_signal(_numSRM120SF+_numSRM120DF);
 
