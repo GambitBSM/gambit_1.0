@@ -1,11 +1,5 @@
 # set include directores for GAMBIT
 set(GAMBIT_INCDIRS ${GAMBIT_INCDIRS} "${PROJECT_SOURCE_DIR}/Backends/include")
-set(GAMBIT_INCDIRS ${GAMBIT_INCDIRS} "${PROJECT_SOURCE_DIR}/Backends/include/backend_types")
-set(GAMBIT_INCDIRS ${GAMBIT_INCDIRS} "${PROJECT_SOURCE_DIR}/Backends/include/backend_types/BOSSMinimalExample_1_0")
-set(GAMBIT_INCDIRS ${GAMBIT_INCDIRS} "${PROJECT_SOURCE_DIR}/Backends/include/backend_types/BOSSMinimalExample_1_1")
-set(GAMBIT_INCDIRS ${GAMBIT_INCDIRS} "${PROJECT_SOURCE_DIR}/Backends/include/backend_types/BOSSMinimalExample_1_2")
-set(GAMBIT_INCDIRS ${GAMBIT_INCDIRS} "${PROJECT_SOURCE_DIR}/Backends/include/backend_types/BOSSedPythia_1_0")
-set(GAMBIT_INCDIRS ${GAMBIT_INCDIRS} "${PROJECT_SOURCE_DIR}/Backends/include/frontends")
 set(GAMBIT_INCDIRS ${GAMBIT_INCDIRS} "${PROJECT_SOURCE_DIR}/Logs/include")
 set(GAMBIT_INCDIRS ${GAMBIT_INCDIRS} "${PROJECT_SOURCE_DIR}/Utils/include")
 set(GAMBIT_INCDIRS ${GAMBIT_INCDIRS} "${PROJECT_SOURCE_DIR}/Models/include")
@@ -14,7 +8,6 @@ set(GAMBIT_INCDIRS ${GAMBIT_INCDIRS} "${PROJECT_SOURCE_DIR}/Core/include")
 set(GAMBIT_INCDIRS ${GAMBIT_INCDIRS} "${PROJECT_SOURCE_DIR}/ScannerBit/include")
 set(GAMBIT_INCDIRS ${GAMBIT_INCDIRS} "${PROJECT_SOURCE_DIR}/DarkBit/include")
 set(GAMBIT_INCDIRS ${GAMBIT_INCDIRS} "${PROJECT_SOURCE_DIR}/ExampleBit_A/include")
-
 set(GAMBIT_INCDIRS ${GAMBIT_INCDIRS} "${PROJECT_SOURCE_DIR}/ExampleBit_B/include")
 set(GAMBIT_INCDIRS ${GAMBIT_INCDIRS} "${PROJECT_SOURCE_DIR}/Example_SUSYspecBit/include")
 set(GAMBIT_INCDIRS ${GAMBIT_INCDIRS} "${PROJECT_SOURCE_DIR}/FlavBit/include")
@@ -25,10 +18,12 @@ include(CMakeParseArguments)
 
 # function to add static GAMBIT library
 function(add_gambit_library libraryname)
-  cmake_parse_arguments(ARG "" "OPTION" "SOURCES;HEADERS;" "" ${ARGN})
+  cmake_parse_arguments(ARG "" "OPTION" "SOURCES;HEADERS" "" ${ARGN})
 
   add_library(${libraryname} ${ARG_OPTION} ${ARG_SOURCES} ${ARG_HEADERS})
-  add_dependencies(${libraryname} functor_types)
+  add_dependencies(${libraryname} model_harvest)
+  add_dependencies(${libraryname} backend_harvest)
+  add_dependencies(${libraryname} functor_harvest)
 
   if(${CMAKE_VERSION} VERSION_GREATER 2.8.10)
     foreach (dir ${GAMBIT_INCDIRS})
