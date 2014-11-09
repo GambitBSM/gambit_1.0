@@ -36,6 +36,18 @@ ExternalProject_Add(DarkSUSY
 
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../extras/DarkSUSY/libdarksusy.so" "${PROJECT_SOURCE_DIR}/Backends/lib/libdarksusy.so")
 
+ExternalProject_Add(micromegas
+  SOURCE_DIR ${PROJECT_SOURCE_DIR}/../extras/micromegas
+  BUILD_IN_SOURCE 1
+  CONFIGURE_COMMAND ""
+  BUILD_COMMAND ./install_micromegas.script FC=${CMAKE_Fortran_COMPILER} COMMAND cp libmicromegas.so ${PROJECT_SOURCE_DIR}/Backends/lib/.
+  INSTALL_COMMAND ""
+  INSTALL_DIR ${CMAKE_BINARY_DIR}/install
+  CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/install
+)
+
+set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../extras/micromegas/libmicromegas.so" "${PROJECT_SOURCE_DIR}/Backends/lib/libmicromegas.so")
+
 if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel")
   set(FMODULE "module")
 elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
@@ -55,7 +67,7 @@ ExternalProject_Add(nulike
 
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../extras/nulike/lib/libnulike.so" "${PROJECT_SOURCE_DIR}/Backends/lib/libnulike.so")
 
-set_target_properties(DDCal0 gamLike DarkSUSY nulike PROPERTIES EXCLUDE_FROM_ALL 1)
+set_target_properties(DDCal0 gamLike DarkSUSY micromegas nulike PROPERTIES EXCLUDE_FROM_ALL 1)
 
-add_custom_target(backends COMMAND make gamLike nulike DDCal0) #DarkSUSY
+add_custom_target(backends COMMAND make gamLike nulike DDCal0) #DarkSUSY micromegas
 
