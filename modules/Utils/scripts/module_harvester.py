@@ -36,7 +36,7 @@ from harvesting_tools import *
 
 def main(argv):
 
-    # Lists of backends, models and modules to exclude; anything starting with one of these strings is excluded.
+    # Lists of modules to exclude; anything starting with one of these strings is excluded.
     exclude_modules=set([])
 
     # Handle command line options

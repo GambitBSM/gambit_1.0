@@ -20,13 +20,22 @@ foreach(p
   endif()
 endforeach()
 
+# check for Python
+include(FindPythonInterp)
+find_package(PythonInterp)
+
+# set the project name
+project(GAMBIT)
+
+# generate the CMakeLists.txt files for GAMBIT modules
+set(PRECMAKE ${PROJECT_SOURCE_DIR}/cmake/update_cmakelists.py)
+execute_process(COMMAND python ${PRECMAKE} WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
+
+# do OSX checks
 include(cmake/MacOSX.cmake)
 
 # enable Fortran compiler
 enable_language(Fortran)
-
-# set the project name
-project(GAMBIT)
 
 # set the version number
 set(GAMBIT_VERSION_MAJOR 1)
@@ -120,10 +129,6 @@ include(cmake/FindGSL.cmake)
 # check for DL libraries
 include(cmake/FindLibDL.cmake)
 
-# check for Python
-include(FindPythonInterp)
-find_package(PythonInterp)
-
 # identify the different harvester scripts
 set(MODEL_HARVESTER ${PROJECT_SOURCE_DIR}/Models/scripts/model_harvester.py)
 set(BACKEND_HARVESTER ${PROJECT_SOURCE_DIR}/Backends/scripts/backend_harvester.py)
@@ -145,7 +150,7 @@ add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/Backends/include/backend_rollcal
                    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} 
                    DEPENDS ${BACKEND_HARVESTER} ${BACKEND_HARVESTER_FILES})
 add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/Utils/include/all_functor_types.hpp
-                   COMMAND python ${MODULE_HARVESTER} -x ColliderBit
+                   COMMAND python ${MODULE_HARVESTER} -x ColliderBit  #FIXME when colliderbit works fully
                    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} 
                    DEPENDS ${MODULE_HARVESTER} ${MODULE_HARVESTER_FILES})
 add_custom_target(model_harvest   DEPENDS ${PROJECT_SOURCE_DIR}/Models/include/model_rollcall.hpp ${MODEL_HARVESTER_FILES})
@@ -160,6 +165,7 @@ set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Utils/include/all_functor_
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Core/include/module_rollcall.hpp")
 
 # include cmake scripts
+include(cmake/utilities.cmake)
 include(cmake/warnings.cmake)
 include(cmake/gambit.cmake)
 include(cmake/contrib.cmake)
@@ -171,49 +177,41 @@ add_subdirectory(Logs)
 add_subdirectory(Utils)
 add_subdirectory(Models)
 
-# list of GAMBIT shared object files to link
-set(GAMBIT_SHARED_OBJECTS $<TARGET_OBJECTS:Backends>
+# list of GAMBIT common library object files to link
+set(GAMBIT_COMMON_OBJECTS $<TARGET_OBJECTS:Backends>
                           $<TARGET_OBJECTS:Logs>
                           $<TARGET_OBJECTS:Utils>
                           $<TARGET_OBJECTS:Models>
 )
 
+# list of GAMBIT core library object files to link
 add_subdirectory(Core)
 add_subdirectory(Printers)
-# list of GAMBIT object files to link
 set(GAMBIT_OBJECTS $<TARGET_OBJECTS:Core> $<TARGET_OBJECTS:Printers>)
 
-set(GAMBIT_BITS ScannerBit
-                DarkBit
-                DecayBit
-                HiggsBit
-                FlavBit
-                Example_SUSYspecBit
-                ExampleBit_A
-                ExampleBit_B
-)
-
+# set compilation targets for GAMBIT modules
+set(EXCLUDES "ColliderBit") #FIXME
+retrieve_bits(GAMBIT_BITS ${PROJECT_SOURCE_DIR} ${EXCLUDES})
 foreach(bit ${GAMBIT_BITS})
-  if(EXISTS "${PROJECT_SOURCE_DIR}/${bit}/")
-    add_subdirectory(${bit})
-    if(${bit} STREQUAL Example_SUSYspecBit)
-      set(bit SUSYspecBit)
-    endif()
-    set(GAMBIT_BIT_OBJECTS ${GAMBIT_BIT_OBJECTS} "$<TARGET_OBJECTS:${bit}>")
-  endif()
+  add_subdirectory(${bit})
+  set(GAMBIT_BIT_OBJECTS ${GAMBIT_BIT_OBJECTS} "$<TARGET_OBJECTS:${bit}>")
 endforeach()
 
-if(EXISTS "${PROJECT_SOURCE_DIR}/ExampleBit_A/")
-  add_gambit_executable(ExampleBit_A_standalone SOURCES ${PROJECT_SOURCE_DIR}/ExampleBit_A/examples/ExampleBit_A_standalone_example.cpp $<TARGET_OBJECTS:ExampleBit_A> ${GAMBIT_SHARED_OBJECTS})
+# ensure that clean removes automatically-generated CMakeLists.txt files in modules
+foreach(bit ${GAMBIT_BITS})
+  set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/${bit}/CMakeLists.txt")
+endforeach()
 
-  add_dependencies(ExampleBit_A_standalone yaml slha)
-  target_link_libraries(ExampleBit_A_standalone fortran ${yaml_LDFLAGS} ${slha_LDFLAGS})
+if(EXISTS "${PROJECT_SOURCE_DIR}/Core/")
+  add_gambit_executable(gambit SOURCES ${PROJECT_SOURCE_DIR}/Core/src/gambit.cpp ${GAMBIT_COMMON_OBJECTS} ${GAMBIT_OBJECTS} ${GAMBIT_BIT_OBJECTS})
+  add_dependencies(gambit yaml slha sample scantest)
+  target_link_libraries(gambit ${yaml_LDFLAGS} ${slha_LDFLAGS})
 endif()
 
 if(EXISTS "${PROJECT_SOURCE_DIR}/ExampleBit_A/")
-  add_gambit_executable(gambit SOURCES ${PROJECT_SOURCE_DIR}/Core/src/gambit.cpp ${GAMBIT_SHARED_OBJECTS} ${GAMBIT_OBJECTS} ${GAMBIT_BIT_OBJECTS})
-  add_dependencies(gambit yaml slha sample scantest)
-  target_link_libraries(gambit ${yaml_LDFLAGS} ${slha_LDFLAGS})
+  add_gambit_executable(ExampleBit_A_standalone SOURCES ${PROJECT_SOURCE_DIR}/ExampleBit_A/examples/ExampleBit_A_standalone_example.cpp $<TARGET_OBJECTS:ExampleBit_A> ${GAMBIT_COMMON_OBJECTS})
+  add_dependencies(ExampleBit_A_standalone yaml slha)
+  target_link_libraries(ExampleBit_A_standalone fortran ${yaml_LDFLAGS} ${slha_LDFLAGS})
 endif()
 
 set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${clean_files}")

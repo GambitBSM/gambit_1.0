@@ -57,7 +57,7 @@ def main(argv):
     backend_type_headers.update(retrieve_generic_headers(verbose,"./Backends/include/backend_types","backend type",exclude_backends))
     bossed_backend_type_headers.update(retrieve_bossed_type_headers(verbose,"./Backends/include/backend_types",exclude_backends))
 
-    print "\nFrontend headers identified:"
+    print "Frontend headers identified:"
     for h in frontend_headers:
         print '  frontends/'+h
     print "Backend type headers identified:"
@@ -65,7 +65,7 @@ def main(argv):
         print '  backend_types/'+h
     for h in bossed_backend_type_headers:
         print '  '+h
-    print
+    if verbose: print
 
     # Generate a c++ header containing all the frontend headers we have just harvested.
     towrite = "\
