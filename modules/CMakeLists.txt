@@ -124,22 +124,36 @@ include(cmake/FindLibDL.cmake)
 include(FindPythonInterp)
 find_package(PythonInterp)
 
-# create all_functor_types.hpp, module_rollcall.hpp, models_rollcall.hpp, backend_rollcall.hpp
+# identify the different harvester scripts
+set(MODEL_HARVESTER ${PROJECT_SOURCE_DIR}/Models/scripts/model_harvester.py)
+set(BACKEND_HARVESTER ${PROJECT_SOURCE_DIR}/Backends/scripts/backend_harvester.py)
+set(MODULE_HARVESTER ${PROJECT_SOURCE_DIR}/Utils/scripts/module_harvester.py)
+
+# create all_functor_types.hpp, module_rollcall.hpp, module_types_rollcall.hpp, models_rollcall.hpp, 
+# model_types_rollcall.hpp, backend_rollcall.hpp and backend_types_rollcall.hpp
 file(GLOB MODEL_HARVESTER_FILES   "${PROJECT_SOURCE_DIR}/Models/include/models/*.hpp")
 file(GLOB BACKEND_HARVESTER_FILES "${PROJECT_SOURCE_DIR}/Backends/include/frontends/*.hpp")
 file(GLOB MODULE_HARVESTER_FILES  "${PROJECT_SOURCE_DIR}/*Bit*/include/*_rollcall.hpp")
 list(REMOVE_ITEM MODULE_HARVESTER_FILES "${PROJECT_SOURCE_DIR}/ScannerBit//include//priors_rollcall.hpp" 
                                         "${PROJECT_SOURCE_DIR}/ScannerBit//include//test_function_rollcall.hpp")
-
-add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/Models/include/model_rollcall.hpp COMMAND python ${PROJECT_SOURCE_DIR}/Models/scripts/model_harvester.py WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} DEPENDS ${MODEL_HARVESTER_FILES})
-add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/Backends/include/backend_rollcall.hpp COMMAND python ${PROJECT_SOURCE_DIR}/Backends/scripts/backend_harvester.py WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} DEPENDS ${BACKEND_HARVESTER_FILES})
-add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/Utils/include/all_functor_types.hpp COMMAND python ${PROJECT_SOURCE_DIR}/Utils/scripts/module_harvester.py -x ColliderBit WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} DEPENDS ${MODULE_HARVESTER_FILES})
-
+add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/Models/include/model_rollcall.hpp 
+                   COMMAND python ${MODEL_HARVESTER}
+                   WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} 
+                   DEPENDS ${MODEL_HARVESTER} ${MODEL_HARVESTER_FILES})
+add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/Backends/include/backend_rollcall.hpp 
+                   COMMAND python ${BACKEND_HARVESTER}
+                   WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} 
+                   DEPENDS ${BACKEND_HARVESTER} ${BACKEND_HARVESTER_FILES})
+add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/Utils/include/all_functor_types.hpp
+                   COMMAND python ${MODULE_HARVESTER} -x ColliderBit
+                   WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} 
+                   DEPENDS ${MODULE_HARVESTER} ${MODULE_HARVESTER_FILES})
 add_custom_target(model_harvest   DEPENDS ${PROJECT_SOURCE_DIR}/Models/include/model_rollcall.hpp ${MODEL_HARVESTER_FILES})
 add_custom_target(backend_harvest DEPENDS ${PROJECT_SOURCE_DIR}/Backends/include/backend_rollcall.hpp ${BACKEND_HARVESTER_FILES})
 add_custom_target(functor_harvest DEPENDS ${PROJECT_SOURCE_DIR}/Utils/include/all_functor_types.hpp ${MODULE_HARVESTER_FILES} backend_harvest)
 add_custom_target(module_harvest  DEPENDS ${PROJECT_SOURCE_DIR}/Core/include/module_rollcall.hpp functor_harvest)
 
+# arrange for removal of all_functor_types.hpp and other generated headers upon "make clean". 
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Backends/include/backend_rollcall.hpp")
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Models/include/model_rollcall.hpp")
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Utils/include/all_functor_types.hpp")

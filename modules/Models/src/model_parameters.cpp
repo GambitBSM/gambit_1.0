@@ -1,42 +1,46 @@
-//  GAMBIT: Global and Modular BSM Inference Tool
 //  *********************************************
-//
-//  Class for holding model parameters. Defines the
-//  basic container and get/set functions for
-//  the model parameters. Adapted from SUfit
-//  version (connection is almost gone now though)
-//
-//  *********************************************
-//
-//  Authors
-//  =======
-//
-//  (add name and date if you modify)
-//
-//  Johan Lundberg (SUfit version)
-//  July - August 2011
-//
-//  Ben Farmer
-//  2013 May 01
-//  2013 Jun 17
-//  2014 Aug 15 
-//  Went through and cut out some stuff that seemed unused: removed the old ModelParametersBase class that didn't do much; removed the virtualisation since nothing derives from this class at the moment; incorporated the proper error handling system; put class definitions into a seperate source file.
-//
-//  Pat Scott
-//  2013 Oct
-//  Wow, this file is horrific -- we might want to think about rewriting it sometime...
-//  2014 Jan
-//  Many of the methods of the ModelParameters class can be removed, as they are not used.
-//
-//  *********************************************
+//   GAMBIT: Global and Modular BSM Inference Tool
+//   *********************************************
+///  \file
+///
+///  Class for holding model parameters. Defines the
+///  basic container and get/set functions for
+///  the model parameters. Originally adapted from
+///  SUfit version (the connection is almost gone 
+///  now though.)
+///
+///  *********************************************
+///
+///  Authors (add name and date if you modify):
+///   
+///  \author Johan Lundberg (SUfit version; model_types.hpp)
+///  \date 2011 Jul - Aug
+///
+///  \author Ben Farmer
+///  \date 2013 May, Jun 
+///  \date 2014 Aug:  Went through and cut out some 
+///                   stuff that seemed unused: removed
+///                   the old ModelParametersBase class
+///                   that didn't do much; removed the
+///                   virtualisation since nothing derives
+///                   from this class at the moment; 
+///                   incorporated the proper error 
+///                   handling system; put class 
+///                   definitions into a seperate source file.
+///
+///  \author Pat Scott  
+///          (patscott@physics.mcgill.ca)
+///  \date 2013 Oct
+///  \date 2014 Jan, Nov
+///
+///  *********************************************
+
 
 #include <map>
 #include <iostream>
 #include <sstream>
 
-#include "model_types.hpp"
-
-//DEPRECIATED #include "logs.hpp"
+#include "model_parameters.hpp"
 
 namespace Gambit 
 {
@@ -82,7 +86,9 @@ namespace Gambit
    }
    
    /// Get pointer to map of all parameters 
-   ///TODO I was going to delete this, but it seems to be used in some macros somewhere. I haven't checked what for, but probably whatever the macros want this pointer for can be replaced by a new member function, to maintain better encapsulation.
+   ///TODO(Ben) I was going to delete this, but it seems to be used in some macros somewhere. 
+   ///          I haven't checked what for, but probably whatever the macros want this pointer
+   ///          for can be replaced by a new member function, to maintain better encapsulation.
    const std::map<std::string, double>* ModelParameters::getValuesPtr() const 
    {
      return &_values;

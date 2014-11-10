@@ -194,7 +194,19 @@ def retrieve_rollcall_headers(verbose,install_dir,excludes):
     if core_exists: make_module_rollcall(rollcall_headers,verbose)
     return rollcall_headers
 
-#Search the a directory for headers that are not excluded.
+#Search the source tree to determine which modules type headers are present. 
+def retrieve_module_type_headers(verbose,install_dir,excludes):
+    type_headers=[]
+    for root,dirs,files in os.walk(install_dir):
+        for name in files:
+            if (name.lower().endswith("_types.hpp") and name.lower().find("bit") != -1):
+                if not (name in excludes or re.sub("\\.hpp$","",name) in excludes or re.sub("_types\\.hpp$","",name) in excludes) and \
+                (name.endswith(".hpp") or name.endswith(".h") or name.endswith(".hh")): 
+                    if verbose: print "  Located module type header '{0}' at path '{1}'".format(name,os.path.join(root,name))
+                    type_headers+=[name]
+    return type_headers
+
+#Search a directory for headers that are not excluded.
 def retrieve_generic_headers(verbose,starting_dir,kind,excludes):
     headers=[]
     for root,dirs,files in os.walk(starting_dir):
@@ -250,6 +262,6 @@ def make_module_rollcall(rollcall_headers,verbose):
     with open("./Core/include/module_rollcall.hpp","w") as f:
         f.write(towrite)
 
-    if verbose: print "  Found GAMBIT Core.  Generated module_rollcall.hpp." 
+    if verbose: print "Found GAMBIT Core.  Generated module_rollcall.hpp.\n" 
 
 

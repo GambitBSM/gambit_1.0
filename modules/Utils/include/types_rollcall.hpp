@@ -36,8 +36,8 @@
 ///   X/include/X_types.hpp,
 ///  and include that file from Models/models/X.hpp.
 ///  X_types will be automatically included in 
-///  Utils/include/types_rollcall.hpp by the GAMBIT module
-///  harvester.
+///  Models/include/model_types_rollcall.hpp by the GAMBIT
+///  model harvester.
 ///
 ///  MODULES
 ///  -------
@@ -46,8 +46,8 @@
 ///   Y/include/Y_types.hpp,
 ///  and include that file from Y/include/Y_rollcall.hpp.
 ///  Y_types will be automatically included in 
-///  Utils/include/types_rollcall.hpp by the GAMBIT module
-///  harvester.
+///  Utils/include/module_types_rollcall.hpp by the GAMBIT
+///  module harvester.
 ///
 ///  BACKENDS
 ///  --------
@@ -55,8 +55,8 @@
 ///  with a backend Z, declare it in a header
 ///   Backends/include/backend_types/Z_types.hpp
 ///  Z_types will be automatically included in 
-///  Utils/include/types_rollcall.hpp by the GAMBIT module
-///  harvester.
+///  Backends/include/backend_types_rollcall.hpp 
+///  by the GAMBIT backend harvester.
 ///
 ///  MIXED-USE TYPES
 ///  --------------- 
@@ -64,7 +64,7 @@
 ///  multiple models or multiple backends, or any 
 ///  mixture thereof, make some header 
 ///   Utils/include/__your_header_name__.hpp
-///  that decalares the type, and include
+///  that declares the type, and include
 ///  that header from 
 ///   Utils/include/shared_types.hpp.
 ///  
@@ -92,18 +92,8 @@
 #ifndef __types_rollcall_hpp__
 #define __types_rollcall_hpp__
 
-// All the shared types
-#include "shared_types.hpp"
-
-// Model-specific types
-#include "MSSM_types.hpp"
-
-// Module-specific types
-#include "DarkBit_types.hpp"
-#include "ExampleBit_A_types.hpp"
-
-#ifdef COLLIDE
-  #include "ColliderBit_types.hpp"
-#endif
+#include "shared_types.hpp"          // All the shared types
+#include "model_types_rollcall.hpp"  // Model-specific types
+#include "module_types_rollcall.hpp" // Module-specific types
 
 #endif /* defined __types_rollcall_hpp__ */
