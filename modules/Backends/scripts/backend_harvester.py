@@ -1,20 +1,19 @@
 #!/bin/python
 #
-# GAMBIT: Global and Modular BSM Inference Tool
-#*********************************************
-# \file
+#  GAMBIT: Global and Modular BSM Inference Tool
+#  *********************************************
+#  \file
 #
 #  Backend and type harvesting script.
 #  Generates:
 #    backend_rollcall.hpp
-#    types_rollcall.hpp
-#    backend_type_rollcall.hpp
+#    backend_types_rollcall.hpp
 #  
-#  This script identified all the frontend
+#  This script identifies all the frontend
 #  and type headers, and includes them in the
 #  relevant auto-generated header files.
-#  It also excludes backends and modules from
-#  this process if specifically asked to.
+#  It also excludes specific backends from this
+#  process if specifically asked to.
 #
 #*********************************************
 #
@@ -22,7 +21,7 @@
 #
 #  \author Pat Scott 
 #          (patscott@physics.mcgill.ca)
-#    \date 2014 Nov
+#  \date 2014 Nov
 #
 #*********************************************
 import os
