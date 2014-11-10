@@ -1,5 +1,5 @@
-#ifndef __backend_type_rollcall_hpp__
-#define __backend_type_rollcall_hpp__
+#ifndef __backend_types_rollcall_hpp__
+#define __backend_types_rollcall_hpp__
 
 // Macro definitions
 #include "type_macros.hpp"

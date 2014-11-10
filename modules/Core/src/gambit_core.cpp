@@ -481,6 +481,7 @@ namespace Gambit
        "This function should not run when we don't know if the capability exists! Either there is a bug "
        "in the calling code, or something went wrong creating the capability database.";
       core_error().raise(LOCAL_INFO,errmsg.str());
+      return capability_info();
     }
 
     const model_info gambit_core::get_model_info(const str& name) const
@@ -499,6 +500,7 @@ namespace Gambit
        "should not run when we don't know if the model exists! Either there is a bug in the calling code, or "
        "something went wrong creating the model database.";
       core_error().raise(LOCAL_INFO,errmsg.str());
+      return model_info();
     }
 
     /// Compute the status of a given backend
