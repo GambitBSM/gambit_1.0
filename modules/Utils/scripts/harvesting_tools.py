@@ -206,6 +206,20 @@ def retrieve_module_type_headers(verbose,install_dir,excludes):
                     type_headers+=[name]
     return type_headers
 
+#Search a directory for BOSSed headers that are not excluded.
+def retrieve_bossed_type_headers(verbose,starting_dir,excludes):
+    headers=[]
+    for root,dirs,files in os.walk(starting_dir):
+        for name in files:
+            exclude = False
+            be = re.sub(".*\\/","",root)
+            for x in excludes:
+                if be.startswith(x): exclude = True
+            if not exclude and (name=="loaded_types.hpp" or name=="loaded_types.h" or name=="loaded_types.hh"): 
+                if verbose: print "  Located BOSSed type header at path '{1}'".format(name,os.path.join(root,name))
+                headers+=["backend_types/"+be+"/"+name]
+    return headers
+
 #Search a directory for headers that are not excluded.
 def retrieve_generic_headers(verbose,starting_dir,kind,excludes):
     headers=[]
@@ -217,6 +231,7 @@ def retrieve_generic_headers(verbose,starting_dir,kind,excludes):
             if not exclude and (name.endswith(".hpp") or name.endswith(".h") or name.endswith(".hh")): 
                 if verbose: print "  Located "+kind+" header '{0}' at path '{1}'".format(name,os.path.join(root,name))
                 headers+=[name]
+        break
     return headers
 
 #Create the module_rollcall header in the Core directory

@@ -1,5 +1,5 @@
-//  GAMBIT: Global and Modular BSM Inference Tool
-//  *********************************************
+//   GAMBIT: Global and Modular BSM Inference Tool
+//   *********************************************
 ///  \file
 ///
 ///  Base lineage for starting orphan models.
