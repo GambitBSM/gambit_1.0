@@ -53,10 +53,10 @@ def main(argv):
 
     print "Model headers identified:"
     for h in model_headers:
-        print ' ',h
+        print '  models/'+h
     print "Model type headers identified:"
     for h in model_type_headers:
-        print ' ',h
+        print '  model_types/'+h
 
     # Generate a c++ header containing all the model headers we have just harvested.
     towrite = "\
