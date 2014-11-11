@@ -42,7 +42,7 @@
 
 #include "util_types.hpp"
 #include "util_functions.hpp"
-#include "model_types.hpp"
+#include "model_parameters.hpp"
 #include "yaml_options.hpp"
 #include "log.hpp"
 

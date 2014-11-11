@@ -1,5 +1,5 @@
-//  GAMBIT: Global and Modular BSM Inference Tool
-//  *********************************************
+//   GAMBIT: Global and Modular BSM Inference Tool
+//   *********************************************
 ///  \file
 ///
 ///  Generic observable and likelihood function 
@@ -45,30 +45,9 @@
 
 /// \name Variadic redirectors for \link QUICK_FUNCTION() QUICK_FUNCTION\endlink function.
 /// @{
-#define START_FUNCTION_AND_ALLOW_MODELS_MORE(MODULE, CAPABILITY, FUNCTION, TYPE, ...)        \
- LONG_DECLARE_FUNCTION(MODULE, CAPABILITY, FUNCTION, TYPE, 0)                                \
- ALLOW_MODELS_AB(MODULE, FUNCTION, __VA_ARGS__)
-#define START_FUNCTION_AND_ALLOW_MODELS_1(MODULE, CAPABILITY, FUNCTION, TYPE)                \
- LONG_DECLARE_FUNCTION(MODULE, CAPABILITY, FUNCTION, TYPE, 0)
-#define START_FUNCTION_AND_ALLOW_MODELS(MODULE, CAPABILITY, FUNCTION, ...)                   \
- VARARG_SWITCH_ON_GT_ONE_ABC(START_FUNCTION_AND_ALLOW_MODELS, MODULE, CAPABILITY, FUNCTION,  \
- __VA_ARGS__)
-/// @}
-
-/// Quick, one-line declaration of simple module functions.
-/// Allows declaration of capability, function name and type, as well as up to ten allowed 
-/// models, all in one hit.  Typically used to supplement standalone modules so that all 
-/// dependencies can be dealt with, but can be used in rollcall headers as well.  NEW_CAPABILITY_FLAG
-/// can be either NEW_CAPABILITY or OLD_CAPABILITY.
-#define QUICK_FUNCTION(MODULE, CAPABILITY, NEW_CAPABILITY_FLAG, FUNCTION, ...)               \
- BOOST_PP_IIF(NEW_CAPABILITY_FLAG,LONG_START_CAPABILITY(MODULE,CAPABILITY),BOOST_PP_EMPTY()) \
- START_FUNCTION_AND_ALLOW_MODELS(MODULE, CAPABILITY, FUNCTION, __VA_ARGS__)        
-
-/// \name Variadic redirectors for \link QUICK_FUNCTION_NDEPS() QUICK_FUNCTION_NDEPS\endlink function.
-/// @{
-#define QFND_ALLOW_MODELS_MORE(A, B, ...)                           ALLOW_MODELS_AB(A, B, __VA_ARGS__)
-#define QFND_ALLOW_MODELS_1(A, _1)                                  DUMMYARG(A, _1)
-#define QFND_ALLOW_MODELS(A,...)                                    VARARG_SWITCH_ON_GT_ONE_A(QFND_ALLOW_MODELS, A, __VA_ARGS__)
+#define QF_ALLOW_MODELS_MORE(A, B, ...)                             ALLOW_MODELS_AB(A, B, __VA_ARGS__)
+#define QF_ALLOW_MODELS_1(A, _1)                                    DUMMYARG(A, _1)
+#define QF_ALLOW_MODELS(A,...)                                      VARARG_SWITCH_ON_GT_ONE_A(QF_ALLOW_MODELS, A, __VA_ARGS__)
 #define EXPAND_DEPS_10(A,B,_1, _2, _3, _4, _5, _6, _7, _8, _9, _10) LONG_DEPENDENCY(A,B,STRIP_PARENS(_1)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_2)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_3)) \
                                                                      LONG_DEPENDENCY(A,B,STRIP_PARENS(_4)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_5)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_6)) \
                                                                      LONG_DEPENDENCY(A,B,STRIP_PARENS(_7)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_8)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_9)) \
@@ -100,13 +79,13 @@
 /// dependencies can be dealt with, but can be used in rollcall headers as well.  NEW_CAPABILITY_FLAG
 /// can be either NEW_CAPABILITY or OLD_CAPABILITY.
 /// {@
-#define QUICK_FUNCTION_NDEPS(MODULE, CAPABILITY, NEW_CAPABILITY_FLAG, FUNCTION, TYPE, MODELS, ...) \
- BOOST_PP_IIF(NEW_CAPABILITY_FLAG,LONG_START_CAPABILITY(MODULE,CAPABILITY),BOOST_PP_EMPTY())       \
- START_FUNCTION_AND_ALLOW_MODELS_NDEPS(MODULE, CAPABILITY, FUNCTION, TYPE, MODELS, __VA_ARGS__)    
-#define START_FUNCTION_AND_ALLOW_MODELS_NDEPS(MODULE, CAPABILITY, FUNCTION, TYPE, MODELS, ...)     \
- LONG_DECLARE_FUNCTION(MODULE, CAPABILITY, FUNCTION, TYPE, 0)                                      \
- QFND_ALLOW_MODELS(MODULE, FUNCTION INSERT_NONEMPTY(MODELS))                                       \
- EXPAND_DEPS_AB(MODULE, FUNCTION, __VA_ARGS__)
+#define QUICK_FUNCTION(MODULE, CAPABILITY, NEW_CAPABILITY_FLAG, FUNCTION, ...)                    \
+ BOOST_PP_IIF(NEW_CAPABILITY_FLAG,LONG_START_CAPABILITY(MODULE,CAPABILITY),BOOST_PP_EMPTY())      \
+ QFBODY_ABC(MODULE, CAPABILITY, FUNCTION, __VA_ARGS__)    
+#define QFBODY_MORE(A,B,C,_1,_2,...) QFBODY_2(A,B,C,_1,_2) EXPAND_DEPS_AB(A, C, __VA_ARGS__)                                                           
+#define QFBODY_2(A,B,C,_1,_2)        QFBODY_1(A,B,C,_1) QF_ALLOW_MODELS(A, C INSERT_NONEMPTY(_2))  
+#define QFBODY_1(A,B,C,_1)           LONG_DECLARE_FUNCTION(A,B,C,_1,0)             
+#define QFBODY_ABC(A,B,C,...)        VARARG_SWITCH_ON_GT_TWO_ABC(QFBODY, A, B, C, __VA_ARGS__)
 /// }@
 
 

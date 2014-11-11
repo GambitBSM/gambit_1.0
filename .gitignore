@@ -27,3 +27,6 @@ extras/boss/**/output
 # Chains
 modules/chains/*
 modules/runs/*
+
+# Executables
+modules/build/*

@@ -28,6 +28,10 @@
 ///
 ///  *********************************************
 
+//#ifdef CONFIG_H
+#include "config.h"
+//#endif
+
 #include "functors.hpp"
 #include "models.hpp"
 #include "all_functor_types.hpp"

@@ -86,7 +86,7 @@ Auxiliaries:
     options:  
       analysisNames: ["ATLAS_0LEPStop_20invfb", "ATLAS_1LEPStop_20invfb"]
 
-  - capability: detectorSim
+  - capability: DetectorSim
     function: getDelphes
     options:
       delphesOptions: ["ColliderBit/data/delphes_card_ATLAS.tcl"]
@@ -99,7 +99,7 @@ Auxiliaries:
       pythiaNames: ["Pythia_SUSY_LHC_8TeV", "Pythia_glusq_LHC_8TeV"]
       Pythia_SUSY_LHC_8TeV: 2  # <-- How many configurations of this one you want
   
-  - capability:  hardScatteringSim
+  - capability:  HardScatteringSim
     function:  getPythia
     options:
       Pythia_SUSY_LHC_8TeV:
