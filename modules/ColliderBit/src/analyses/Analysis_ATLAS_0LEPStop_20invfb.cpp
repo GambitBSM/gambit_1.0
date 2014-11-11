@@ -297,40 +297,36 @@ namespace Gambit {
 	  if(bjetcount>1)selectNonBJets.push_back(jet);
 	}
 	
-        if(nJets>=6) {
+        if(nJets>=6 and bjetcount==2) {
           unsigned int j1 = 0 ; unsigned int j2 = 0; unsigned int j4 = 0; unsigned int j5 = 0; //int j6 = 0;
 	  unsigned int b1 = 0;
           for(unsigned int k=0; k<selectNonBJets.size(); k++) {
-            for(unsigned int l=0; l<selectNonBJets.size(); l++) {
-              if(k!=l) {
-                jet1.SetPtEtaPhiE(signalJets[k]->pT(),signalJets[k]->eta(),signalJets[k]->phi(),signalJets[k]->E());
-                jet2.SetPtEtaPhiE(signalJets[l]->pT(),signalJets[l]->eta(),signalJets[l]->phi(),signalJets[l]->E());
-                if(jet1.DeltaR(jet2)<mindphi_12) {
-                  j1 = k;
-                  j2 = l;
-                  mindphi_12 = jet1.DeltaR(jet2);
-                  W1 = jet1+jet2;
-                }
+            for(unsigned int l=k+1; l<selectNonBJets.size(); l++) {
+              jet1.SetPtEtaPhiE(selectNonBJets[k]->pT(),selectNonBJets[k]->eta(),selectNonBJets[k]->phi(),selectNonBJets[k]->E());
+              jet2.SetPtEtaPhiE(selectNonBJets[l]->pT(),selectNonBJets[l]->eta(),selectNonBJets[l]->phi(),selectNonBJets[l]->E());
+              if(jet1.DeltaR(jet2)<mindphi_12) {
+                j1 = k;
+                j2 = l;
+                mindphi_12 = jet1.DeltaR(jet2);
+                W1 = jet1+jet2;
               }
             }
           }
           double mindphi_w1j3 = 9999.;
           for(unsigned int p=0; p<selectBJets.size(); p++) {
-            if(p!=j1 && p!=j2) {
-              jet3.SetPtEtaPhiE(signalJets[p]->pT(),signalJets[p]->eta(),signalJets[p]->phi(),signalJets[p]->E());
-              if(jet3.DeltaR(W1)<mindphi_w1j3) {
-                b1 = p;
-                mindphi_w1j3 = jet3.DeltaR(W1);
-                T1 = W1+jet3;
-              }
+            jet3.SetPtEtaPhiE(selectBJets[p]->pT(),selectBJets[p]->eta(),selectBJets[p]->phi(),selectBJets[p]->E());
+            if(jet3.DeltaR(W1)<mindphi_w1j3) {
+              b1 = p;
+              mindphi_w1j3 = jet3.DeltaR(W1);
+              T1 = W1+jet3;
             }
           }
           double mindphi_45 = 9999.;
           for(unsigned int k=0; k<selectNonBJets.size(); k++) {
-            for(unsigned int l=0; l<selectNonBJets.size(); l++) {
-              if(k!=j1 && k!=j2 && l!=j1 && l!=j2 && k!=l) {
-                jet4.SetPtEtaPhiE(signalJets[k]->pT(),signalJets[k]->eta(),signalJets[k]->phi(),signalJets[k]->E());
-                jet5.SetPtEtaPhiE(signalJets[l]->pT(),signalJets[l]->eta(),signalJets[l]->phi(),signalJets[l]->E());
+            for(unsigned int l=k; l<selectNonBJets.size(); l++) {
+              if(k!=j1 && k!=j2 && l!=j1 && l!=j2) {
+                jet4.SetPtEtaPhiE(selectNonBJets[k]->pT(),selectNonBJets[k]->eta(),selectNonBJets[k]->phi(),selectNonBJets[k]->E());
+                jet5.SetPtEtaPhiE(selectNonBJets[l]->pT(),selectNonBJets[l]->eta(),selectNonBJets[l]->phi(),selectNonBJets[l]->E());
                 if(jet4.DeltaR(jet5)<mindphi_45) {
                   j4 = k;
                   j5 = l;
@@ -343,7 +339,7 @@ namespace Gambit {
           double mindphi_w2j6 = 9999.;
           for(unsigned int p=0; p<selectBJets.size(); p++) {
             if(p!=b1) {
-              jet6.SetPtEtaPhiE(signalJets[p]->pT(),signalJets[p]->eta(),signalJets[p]->phi(),signalJets[p]->E());
+              jet6.SetPtEtaPhiE(selectBJets[p]->pT(),selectBJets[p]->eta(),selectBJets[p]->phi(),selectBJets[p]->E());
               if(jet6.DeltaR(W2)<mindphi_w2j6) {
                 //j6 = p;
                 mindphi_w2j6 = jet6.DeltaR(W2);
