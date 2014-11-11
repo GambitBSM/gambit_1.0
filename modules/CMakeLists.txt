@@ -20,16 +20,18 @@ foreach(p
   endif()
 endforeach()
 
+# set the project name
+project(GAMBIT)
+
 # check for Python
 include(FindPythonInterp)
 find_package(PythonInterp)
 
-# set the project name
-project(GAMBIT)
-
 # generate the CMakeLists.txt files for GAMBIT modules
+message("-- Updating GAMBIT module cmake files")
 set(PRECMAKE ${PROJECT_SOURCE_DIR}/cmake/update_cmakelists.py)
 execute_process(COMMAND python ${PRECMAKE} WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
+message("-- Updating GAMBIT module cmake files - done")
 
 # do OSX checks
 include(cmake/MacOSX.cmake)
@@ -64,7 +66,6 @@ if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64")
 endif()
 
 # add some Fortran compiler flags
-message(${CMAKE_Fortran_COMPILER})
 if(CMAKE_Fortran_COMPILER MATCHES "gfortran*" OR CMAKE_Fortran_COMPILER MATCHES "f95*")
   set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -ffixed-line-length-none")
 elseif(CMAKE_Fortran_COMPILER MATCHES "ifort*")
@@ -199,7 +200,10 @@ endforeach()
 
 # ensure that clean removes automatically-generated CMakeLists.txt files in modules
 foreach(bit ${GAMBIT_BITS})
-  set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/${bit}/CMakeLists.txt")
+  if(NOT ScannerBit STREQUAL ${bit})
+    set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/${bit}/CMakeLists.txt"
+                                   "${PROJECT_SOURCE_DIR}/${bit}/CMakeLists.txt.candidate")
+  endif()
 endforeach()
 
 if(EXISTS "${PROJECT_SOURCE_DIR}/Core/")
