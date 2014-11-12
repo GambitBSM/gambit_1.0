@@ -94,7 +94,7 @@
   //   using namespace Gambit::Models::MODEL::Pipes::PARENT_parameters;
   //
   INTERPRET_AS_PARENT__FUNCTION(CMSSM_demo_IAPfunc)
-  INTERPRET_AS_PARENT__DEPENDENCY(nevents, double)
+  INTERPRET_AS_PARENT__DEPENDENCY(id, std::string)
 
   void MODEL_NAMESPACE::CMSSM_demo_IAPfunc (const ModelParameters &myparams, ModelParameters &parentparams)
   {
@@ -107,7 +107,7 @@
       double A0  = myparams["A0"];
       
       /* Play around with the extra info obtained from dependency */
-      logger()<<"nevents dependency has supplied the value: "<<*Dep::nevents<<EOM;
+      logger()<<"identity dependency has supplied the value: "<<*Dep::id<<EOM;
       
       /* Grab reference to parent parameter object and set some values. 
          The parent parameter object already exists if we have gotten this 

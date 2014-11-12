@@ -109,7 +109,7 @@ START_MODULE
     BACKEND_REQ(SomeInt, (model_dependent_reqs, libfirst1_only), int)
     BACKEND_REQ(someFunction, (libfirst1_only, common_be), void, ())
 
-    ACTIVATE_BACKEND_REQ_FOR_MODELS( (CMSSM_demo, UED), (model_dependent_reqs) )
+    ACTIVATE_BACKEND_REQ_FOR_MODELS( (MSSM_demo, UED), (model_dependent_reqs) )
     BACKEND_OPTION( (LibFirst, 1.1), (libfirst1_only, lib123) )
     BACKEND_OPTION( (LibSecond), (lib123) )
     BACKEND_OPTION( (LibThird, 1.2, 1.3 , 1.5), (lib123) )
@@ -117,7 +117,7 @@ START_MODULE
 
     #define CONDITIONAL_DEPENDENCY id     // A dependency that only counts under certain conditions (must come after all BACKEND_REQs)
     START_CONDITIONAL_DEPENDENCY(std::string)              // Type of the dependency; one type permitted per CONDITIONAL_DEPENDENCY.
-    ACTIVATE_FOR_BACKEND(awesomeness, LibFirst, 1.1, 1.2)  // Dependency counts if awesomeness comes from LibFirst v1.0 or 1.2 
+    ACTIVATE_FOR_BACKEND(awesomeness, LibFirst, 1.1, 1.2)  // Dependency counts if awesomeness comes from LibFirst v1.1 or 1.2 
     ACTIVATE_FOR_BACKEND(awesomeness, LibThird)            // Dependency counts when any version of LibThird is used for awesomeness
     ACTIVATE_FOR_MODEL(MSSM_demo)                          // Dependency counts when scanning the MSSM or one of its sub-models
     #undef CONDITIONAL_DEPENDENCY
