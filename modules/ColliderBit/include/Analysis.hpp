@@ -109,7 +109,11 @@ namespace Gambit {
       /// Randomly get a tag result (can be anything) from a 2D |eta|-pT efficiency map
       /// @todo Also need 1D? Sampling in what variable?
       inline bool has_tag(const HEPUtils::BinnedFn2D<double>& effmap, double eta, double pt) {
-        return random_bool(effmap, fabs(eta), pt);
+        try {
+          return random_bool(effmap, fabs(eta), pt);
+        } catch (...) {
+          return false; // No tag if outside lookup range... be careful!
+        }
       }
 
       //@}
