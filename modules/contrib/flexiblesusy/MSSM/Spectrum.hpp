@@ -6,6 +6,10 @@
 #include <map>
 
 class Spectrum {
+public:
+   /// Dump out spectrum information to slha (not including input parameters etc. just at the moment...)
+   virtual void dump2slha(const std::string&) const = 0;
+
 private:
     class RunningPars {
    public:

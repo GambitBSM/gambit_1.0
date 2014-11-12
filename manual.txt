@@ -1,0 +1,369 @@
+                                                             ___   
+                                                          .'/   \  
+                    __  __   ___   /|        .--.        / /     \ 
+  .--./)           |  |/  `.'   `. ||        |__|        | |     | 
+ /.''\\            |   .-.  .-.   '||        .--.     .| | |     | 
+| |  | |      __   |  |  |  |  |  |||  __    |  |   .' |_|/`.   .' 
+ \`-' /    .:--.'. |  |  |  |  |  |||/'__ '. |  | .'     |`.|   |  
+ /("'`    / |   \ ||  |  |  |  |  ||:/`  '. '|  |'--.  .-' ||___|  
+ \ '---.  `" __ | ||  |  |  |  |  |||     | ||  |   |  |   |/___/  
+  /'""'.\  .'.''| ||__|  |__|  |__|||\    / '|__|   |  |   .'.--.  
+ ||     ||/ /   | |_               |/\'..' /        |  '.'| |    | 
+ \'. __// \ \._,\ '/               '  `'-'`         |   / \_\    / 
+  `'---'   `--'  `"                                 `'-'   `''--' 
+
+                                              Resistance is futile
+
+
+The initialization file
+=======================
+
+The master initialization file of GAMBIT is written in the YAML format
+(http://www.yaml.org).  A compact introduction to the YAML format can be found
+on wikipedia (http://en.wikipedia.org/wiki/YAML).
+
+
+Overview
+--------
+
+The top node of the initialization file is a dictionary with eight main
+entries.  These are "Parameters" and "Priors", which describe the scan
+parameters for different models as well as the priors; "ObsLike" and
+"Auxiliaries", which describe the requested observables and likelihoods that
+will be calculated as well as auxiliary entries that guide the resolution of
+module function dependencies; "Printer" and "Scanner", which respectively
+provide details about the output and the adopted scanning algorithm, and
+finally "Logger" and "KeyValues" which contain information about the general
+logging of GAMBIT output during the scan and an additional globally accessible
+option section.
+
+We will now describe each section in detail.
+
+
+Individual sections
+-------------------
+
+### ObsLike
+
+Each entry in this section of the initialization file lists a likelihood
+function or an observable that is to be calculated during the scan.  The
+minimal required information is simply
+
+    - purpose:      OBSLIKETYPE
+      capability:   CAPABILITY
+      type:         TYPE
+
+which specifies both the requested capability+type pair (which we sometimes
+refer to as `quantity') and their purpose.  The purpose can be either
+"Likelihood" or "Observable".  In the case of "Likelihood", the type *must* be
+double, since the result will be send to the scanner as contribution to the
+total likelihood function.  As a convention in GAMBIT, all likelihoods are
+given in terms of ln(Likelihood), or lnL in short.  In the case of an
+"Observable", the calculated quantity (or capability+type pair) will be simply
+written as additional output in the chain and will be available for later
+post-processing.
+
+In many cases, there will be several module functions that provide a requested
+quantity.  In this case, the above entry is not sufficient to be uniquely
+resolved by the DR.  It must be additionally supplied by information about the
+name of the module function that is supposed to calculated the requested
+quantity as follows.
+
+    - purpose:      OBSLIKETYPE
+      capability:   CAPABILITY
+      type:         TYPE
+      function:     FUNCTION
+      module:       MODULE
+
+Note that specifying either the function name or the module name is already
+enough if this is sufficient to uniquely identify the module function that
+provides the requested quantity.  Even omitting type information is possible if
+this does not cause ambiguities.  Omitting an entry is equivalent to the value
+"" or the wildcard character "*".  If regex is activated, regular expressions
+can be used as well.  However, the capability *must* be specified in plain
+text.  Any key value different from the ones above will be silently ignored.
+
+TODO: 
+- Is lnL correct?
+- Check requirements for capability and type.  Are they always needed?  Do we
+  want to allow entries that for example only specify a module function, and
+  nothing else?
+- Add more details about regular expressions.
+- Something about "printme".
+- Something about "options"?
+
+
+### Auxiliaries
+
+Entries that are listed in the auxiliaries section serve two purposes:  They
+guide the resolution of ambiguous dependencies, and they contain additional
+information (as options) that is channeled to individual module functions.  The
+entries have the following general structure.
+
+    - capability:   CAPABILITY
+      type:         TYPE
+      function:     FUNCTION
+      module:       MODULE
+      dependencies:
+      - {capability: CAPABILITY, type: TYPE, function: FUNCTION, module: MODULE}
+      - {capability: CAPABILITY, type: TYPE, function: FUNCTION, module: MODULE}
+      - ...
+      backends:
+      - {capability: CAPABILITY, function: FUNCTION, backend: BACKEND, version: VERSION}
+      - {capability: CAPABILITY, function: FUNCTION, backend: BACKEND, version: VERSION}
+      - ...
+      options:
+        key: value
+        key: value
+        ...
+
+Each of these keys is optional, can be omitted (or equivalently have the value
+"" or "*"), or the value can be a regular expression if regex is activated.  An
+exception are the key+value pairs in the options section, which are not
+interpreted in terms of wildcard characters or regular expressions.  All
+entries that do not fall into the above pattern will be silently ignored.
+
+We start with the "options" part of the auxiliaries entry.  The key+value pairs
+specified in this section are easily accessible by all module functions that
+match the auxiliaries entry (using the "getValue" function, see module function
+description).  A few examples.  
+
+    - capability:   sun
+      options:
+        surface_temp: 6000K
+
+The "surfance_temp" is here accessible by all module functions that provide the
+capability "sun".
+
+    - type:   ".*d.*"
+      options:
+        foo: bar
+
+Here, "foo" is accessible by all module functions whose type contains at least
+one "d" (if regex is activated).
+
+    - module: DarkBit
+      options:
+        DM_is_made_of: axions
+
+Here, the key "DM_is_made_of" is accessible by all module functions in the
+module "DarkBit".
+
+In the case of ambiguities (an options key that is requested by a module
+function appears in several auxiliary entries that match that module function),
+an error is thrown.  This happens at the initialization stage of GAMBIT.  
+
+
+The "dependencies" part of the auxiliary entries works in a similar manner as
+the "options" part.  In general, several auxiliary entries will match a single
+module function.  The combination of all entries listed in their "dependencies"
+part will be used to resolve ambiguous dependencies of that module function.
+For example,
+
+    - capability:   "moon"
+      dependencies:
+      - {capability: CAPABILITY1, type: TYPE1}
+      options:
+        key1: value1
+    - capability:   "moon"
+      dependencies:
+      - {capability: CAPABILITY2, type: TYPE2}
+      options:
+        key2: value2
+
+and
+
+    - capability:   "moon"
+      dependencies:
+      - {capability: CAPABILITY1, type: TYPE1}
+      - {capability: CAPABILITY2, type: TYPE2}
+      options:
+        key1: value1
+        key2: value2
+
+are equivalent.  The dependencies entries are then evaluated as rules or
+directives.  Details can be found in the section on the dependency resolver,
+where we also describe the resolution of backend requirements.
+
+TODO:
+- Initialization stage should check of option clashes.
+- Discuss whether we need some "ordering" scheme (either zorder or "!force") to
+  avoid option clashes
+
+
+### Parameters
+
+TODO
+
+
+### Priors
+
+TODO
+
+
+### Printer
+
+TODO
+
+
+### Scanner
+
+TODO
+
+
+### Logger
+
+TODO
+
+
+### KeyValues
+
+TODO
+
+
+Known Pitfalls
+--------------
+
+There are a number of common failure modes when using the YAML initialization
+file for GAMBIT.
+
+-  In a dictionary, the colon terminating the key *must* be followed by a
+   whitespace.  Entries like foo:bar will be interpreted as a single string,
+   and in general omitted without notice.
+
+
+The Dependency resolver
+=======================
+
+Introduction
+------------
+
+The dependency resolver (DR) is one of the central units of GAMBIT.  It
+orchestrates the interplay between the individual modules and module functions
+in GAMBIT, deactivates part of the code that is not required for a particular
+scan, and channels information from the initialization files to the appropriate
+module functions.  The DR runs only once at the initialization stage of GAMBIT.
+It constructs a tree of interconnected module functions that starts at the top
+with the model parameters and ends at the bottom with all the likelihoods and
+observables that are requested in the initialization files.
+
+
+Module function characteristics
+-------------------------------
+
+Module functions are uniquely defined by their FUNCTION name and the name of
+the MODULE they belong to.  Each function provides an output, which we refer to
+as CAPABILITY.  The capability has a certain TYPE.  The set of these four
+characteristics of a module function is in context of the DR referred to using
+the syntax
+
+    CAPABILITY (TYPE) [FUNCTION, MODULE] .
+
+Depending on the context, the capability+type or the function+module
+information can be omitted.
+
+
+Module functions depend in general on the result of other module functions.
+These dependencies are dependencies on a specific capabilitiy+type pair, and
+are module function specific.  A given dependency can be resolved by all module
+functions that provide the required capability+type pair.
+
+The job of the dependency resolver is then to build up a consistent
+non-circular dependency tree.  In short, it starts with the module functions
+that calculate the required likelihoods and observables (as specified in the
+initialization file), and analyses and satisfies their dependencies by
+iteratively adding new module functions until all dependencies are resolved.
+This process will in general face ambiguities that are again resolved with
+information from the initialization files.
+
+
+Resolution of ambiguities
+-------------------------
+
+In general, the quantity requested by a given module function can be resolved
+by several other module functions that provide this quantity.  In that case,
+the "auxiliaries" section in the initialization file provides the required
+information to resolve this ambiguity.  This is done using a set of rules or
+directives with the following general structure (see section about the
+initialization file for details).
+
+    - capability:   CAPABILITY
+      ...
+      dependencies:
+      - {capability: CAPABILITY1, type: TYPE1, function: FUNCTION1, module: MODULE1}
+      - {capability: CAPABILITY2, type: TYPE2, function: FUNCTION2, module: MODULE2}
+      ...
+
+The dependency resolution proceeds as follow:  For a given dependency of a
+module function, which is defined by a unique capability+type pair or quantity,
+a list of candidate module function with matching quantities is assembled.  If
+this list contains only one function, there is no ambiguity and the dependency
+can be satisfied immediately.  If this list contains no function at all, an
+error is thrown.  If the list contains however several functions, all entries
+in the dependencies section that match the requested quantity are used as
+subsequent "filters" for the candidate list.  A simple clean example is
+ 
+    - capability:   moon
+      function:   moon_function
+      dependencies:
+      - {capability: light, type: photons, function: light_function, module: MoonModule}
+
+Here the dependency of the module function "moon_function" on the quantity
+"light (photons)" is forced to be resolved by the function+module pair
+"[light_function, MoonModule]".
+
+A extreme example illustrates the flexibility of these rules.
+
+    - function: moon.*function
+      dependencies:
+      - {capability: *, function: .*ction}
+      - {capability: *, module: Moon.*}
+
+This entry does resolve the dependencies of the function moon_function in a
+similar way than the above simpler example, but it in general forces *all*
+dependencies of all functions that match the regex expression "moon.*function"
+to be resolved by functions ending with "ction" from modules starting with
+"Moon".
+
+Note that in the case of ambiguous dependencies entries, none of the candidate
+functions will pass all the filters, and an error is thrown.  The resolution of
+backend requirements proceeds in a similar way.
+
+
+Contributed libraries
+=====================
+
+GAMBIT relies on a number of external codes for the calculation of various
+physics quantities and likelihoods.  These codes are usually compiled as shard
+objects (aka shared libraries), and loaded at startup of GAMBIT if required.
+The source code of some of the backends can be found in the extras/ folder.
+The compiled *.so files will be moved to modules/Backends/lib/.  Lastly, the
+interface between GAMBIT and the backends is defined in header files that are
+collected in modules/Backends/include/frontends/.
+
+Some of the backends are not directly delivered with GAMBIT.  We will describe
+there installation here for convenience.
+
+Note:  To make GAMBIT finding the libraries, it is important to set
+LD_LIBRARY_PATH to include the gambit library directory.  In BASH etc, this can
+be done via
+
+    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/PATH/TO/GAMBIT/modules/Backends/lib/
+
+DarkSUSY
+--------
+
+1) Unpack DarkSUSY (tested for version 5.1.1) into some directory.
+2) Copy make_so_darksusy.5.1.1 from the extras/darksusy_patch folder to that folder
+3) Copy darksusy5.1.1.conf.gfortran.64bit or darksusy5.1.1.conf.gfortran.64bitUbuntu  to the same folder
+4) Run first the darksusy* file, then the make_so_darksusy.5.1.1 files.
+5) Copy the generated libdarksusy.so to the above GAMBIT folder
+
+Finally: (TODO: remove this part)  Send a mail to Christoph or Torsten saying
+what worked or did not work for you, and on what system you are working.
+
+MicrOmegas
+----------
+
+Similar proceedure.  Installation files can be found at extras/micromegas_patch/.
+

@@ -43,15 +43,15 @@ namespace Gambit
                         
                         scanLog::err.check();
                         outputHandler::out.redir("scanner");
-                        try
-                        {
+                        //try
+                        //{
                                 Plugin::Plugin_Interface<int ()> plugin_interface(interface.fileName(), interface.pluginName(), dim, keys, factory, interface, prior);
                                 plugin_interface();
-                        }
-                        catch (std::exception &exception)
-                        {
-                                scanLog::err << exception.what() << scanLog::endl;
-                        }
+                        //}
+                        //catch (std::exception &exception)
+                        //{
+                        //        scanLog::err << exception.what() << scanLog::endl;
+                        //}
                         outputHandler::out.defout();
                         scanLog::err.check();
                         

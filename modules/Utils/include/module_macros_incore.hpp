@@ -8,9 +8,9 @@
 ///
 ///
 ///  Note here that \link FUNCTION() FUNCTION 
-/// \endlink is the actual module function name,
+///  \endlink is the actual module function name,
 ///  whereas both \link CAPABILITY() CAPABILITY 
-/// \endlink and all \em DEPs refer to the 
+///  \endlink and all \em DEPs refer to the 
 ///  abstract physical quantities that functions 
 ///  may provide or require.  Thus, the provides()
 ///  methods expect a quantity input (i.e. 
@@ -57,6 +57,7 @@
 #include "module_macros_common.hpp"
 #include "safety_bucket.hpp"
 #include "log.hpp"
+#include "backend_singleton.hpp"
 #include "claw_singleton.hpp"
 #ifndef STANDALONE
   #include "core_singleton.hpp"
@@ -66,8 +67,7 @@
 #include <boost/preprocessor/tuple/to_seq.hpp>
 #include <boost/preprocessor/tuple/elem.hpp>
 #include <boost/preprocessor/seq/cat.hpp>
-#include <boost/preprocessor/punctuation/comma.hpp>
-#include <boost/preprocessor/control/iif.hpp>
+
 
 
 /// \name Tag-registration macros
@@ -114,13 +114,30 @@
 /// presence of another module function that can supply capability \em DEP, with
 /// return type \em TYPE.
 #define DEPENDENCY(DEP, TYPE)                             CORE_DEPENDENCY(DEP, TYPE, MODULE, FUNCTION, NOT_MODEL)
+/// Long (all argument) version of \link DEPENDENCY() DEPENDENCY\endlink.
+#define LONG_DEPENDENCY(MODULE, FUNCTION, ...)            CORE_DEPENDENCY(__VA_ARGS__, MODULE, FUNCTION, NOT_MODEL)
 
 /// Indicate that the current \link FUNCTION() FUNCTION\endlink may only be used with
-/// specific model \em MODEL.  If this is absent, all models are allowed but no 
-/// model parameters will be accessible from within the module funtion.
-#define ALLOWED_MODEL(MODULE,CAPABILITY,FUNCTION,MODEL)   CORE_ALLOWED_MODEL(MODULE,CAPABILITY,FUNCTION,MODEL)
+/// specific model \em MODEL, or combinations given via ALLOW_MODEL_COMBINATION.
+/// If both this and ALLOW_MODEL_COMBINATION are absent, all models are allowed, but 
+/// model parameters will not generally be accessible from within the module funtion.
+#define ALLOWED_MODEL(MODULE,FUNCTION,MODEL)              CORE_ALLOWED_MODEL(MODULE,FUNCTION,MODEL)
 
-#define LITTLEGUY_ALLOW_MODEL(CAPABILITY,PARAMETER,MODEL) CORE_LITTLEGUY_ALLOWED_MODEL(CAPABILITY,PARAMETER,MODEL)
+/// Indicate that the current \link FUNCTION() FUNCTION\endlink may be used with a
+/// specific model \em MODEL, but only in combination with others given via ALLOW_MODEL_COMBINATION.
+#define ALLOWED_MODEL_ONLY_VIA_GROUPS(MODULE,FUNCTION,MODEL) CORE_ALLOWED_MODEL_ONLY_VIA_GROUPS(MODULE,FUNCTION,MODEL)
+
+/// Indicate that the current \link FUNCTION() FUNCTION\endlink may only be used with
+/// the specific model combination given, with other combinations passed in the same 
+/// way, or with individual models speficied via ALLOW_MODEL(S).  If both this and 
+/// ALLOW_MODEL(s) are absent, all models are allowed but no model parameters will be
+/// accessible from within the module funtion.
+#define ALLOW_MODEL_COMBINATION(...)                      CORE_ALLOW_MODEL_COMBINATION(MODULE,FUNCTION,(__VA_ARGS__))
+
+/// Define a model GROUP of name GROUPNAME for use with ALLOW_MODEL_COMBINATION.
+#define MODEL_GROUP(GROUPNAME,GROUP)                      CORE_MODEL_GROUP(MODULE,FUNCTION,GROUPNAME,GROUP)
+
+#define LITTLEGUY_ALLOW_MODEL(PARAMETER,MODEL)            CORE_LITTLEGUY_ALLOWED_MODEL(PARAMETER,MODEL)
 
 /// BACKEND_REQ indicates that the current \link FUNCTION() FUNCTION\endlink requires one
 /// backend variable or function to be available from a capability group \em GROUP,
@@ -180,9 +197,13 @@
 /// The versions of \em BACKEND that this applies to are passed in \em VERSTRING.
 #define ACTIVATE_DEP_BE(BACKEND_REQ, BACKEND, VERSTRING)  CORE_ACTIVATE_DEP_BE(BACKEND_REQ, BACKEND, VERSTRING)
 
-/// Indicates that the current \link CONDITIONAL_DEPENDENCY() CONDITIONAL_DEPENDENCY\endlink
+/// Indicate that the current \link CONDITIONAL_DEPENDENCY() CONDITIONAL_DEPENDENCY\endlink
 /// should be activated if the model being scanned matches one of the models passed as an argument.
-#define ACTIVATE_FOR_MODELS(...)                         ACTIVATE_DEP_MODEL(MODULE, CAPABILITY, FUNCTION, CONDITIONAL_DEPENDENCY, #__VA_ARGS__)
+#define ACTIVATE_FOR_MODELS(...)                          ACTIVATE_DEP_MODEL(MODULE, CAPABILITY, FUNCTION, CONDITIONAL_DEPENDENCY, #__VA_ARGS__)
+
+/// Indicate that the current \link FUNCTION() FUNCTION\endlink requires classes that
+/// must be loaded from \em BACKEND, version \em VERSION.  
+#define CLASSLOAD_NEEDED(BACKEND, VERSION)               CORE_CLASSLOAD_NEEDED(BACKEND, VERSION)
 /// @}
 
 
@@ -190,6 +211,17 @@
 /// \name Actual in-core rollcall macros
 /// These macros do the actual heavy lifting within the rollcall system.
 /// @{
+
+// Determine whether to make registration calls to the Core in the START_MODULE
+// macro, depending on STANDALONE flag 
+#ifdef STANDALONE
+  #define CORE_START_MODULE_COMMON(MODULE)                                     \
+          CORE_START_MODULE_COMMON_MAIN(MODULE)
+#else
+  #define CORE_START_MODULE_COMMON(MODULE)                                     \
+          CORE_START_MODULE_COMMON_MAIN(MODULE)                                \
+          CORE_START_MODULE_COMMON_SUPP(MODULE)
+#endif
 
 /// Redirection of \link START_MODULE() START_MODULE\endlink when invoked from 
 /// within the core.
@@ -250,8 +282,9 @@
     }                                                                          \
   }                                                                            \
 
+
 /// Central module definition macro, used by modules and models.
-#define CORE_START_MODULE_COMMON(MODULE)                                       \
+#define CORE_START_MODULE_COMMON_MAIN(MODULE)                                  \
                                                                                \
       namespace Accessors                                                      \
       {                                                                        \
@@ -445,6 +478,24 @@
         cout<<STRINGIFY(MODULE)<<" does not"<<endl;                            \
         cout<<"have this backend requirement for this function.";              \
       }                                                                        \
+
+
+/// Supplementary module definition macro, used by modules and models only if
+/// STANDALONE flag is not set.
+#define CORE_START_MODULE_COMMON_SUPP(MODULE)                                  \
+                                                                               \
+  /* Set up the supplementary commands to be called at runtime to register     \
+  the module*/                                                                 \
+  void CAT(rt_register_module_supp_,MODULE)()                                  \
+  {                                                                            \
+    Core().registerModule(STRINGIFY(MODULE));                                  \
+  }                                                                            \
+                                                                               \
+  /* Create the supplementary module initialisation object */                  \
+  namespace Ini                                                                \
+  {                                                                            \
+    ini_code CAT(MODULE,_supp) (&CAT(rt_register_module_supp_,MODULE));        \
+  }                                                                            \
 
 
 /// Redirection of \link START_CAPABILITY() START_CAPABILITY\endlink when  
@@ -802,51 +853,56 @@
   }                                                                            \
 
 /// Redirection of ALLOW_MODEL when invoked from within the core.
-#define CORE_ALLOWED_MODEL(MODULE,CAPABILITY,FUNCTION,MODEL)                   \
+#define CORE_ALLOWED_MODEL(MODULE,FUNCTION,MODEL)                              \
                                                                                \
   IF_TOKEN_UNDEFINED(MODULE,FAIL("You must define MODULE before calling "      \
-   "ALLOWED_MODEL(S)."))                                                       \
-  IF_TOKEN_UNDEFINED(CAPABILITY,FAIL("You must define CAPABILITY before "      \
-   "calling ALLOWED_MODEL(S). Please check the rollcall header "               \
-   "for " STRINGIFY(MODULE) "."))                                              \
+   "ALLOW_MODEL(S)."))                                                         \
   IF_TOKEN_UNDEFINED(FUNCTION,FAIL("You must define FUNCTION before calling "  \
-   "ALLOWED_MODEL(S). Please check the rollcall header for "                   \
+   "ALLOW_MODEL(S). Please check the rollcall header for "                     \
    STRINGIFY(MODULE) "."))                                                     \
                                                                                \
   namespace Gambit                                                             \
   {                                                                            \
     /* Add MODEL to global set of tags of recognised models */                 \
     ADD_MODEL_TAG_IN_CURRENT_NAMESPACE(MODEL)                                  \
-    CORE_ALLOWED_MODEL_GUTS(MODULE,CAPABILITY,FUNCTION,MODEL)                  \
+    CORE_ALLOWED_MODEL_ARRANGE_DEP(MODULE,FUNCTION,MODEL)                      \
+    CORE_ALLOW_MODEL(MODULE,FUNCTION,MODEL)                                    \
+  }                                                                            \
+
+/// Redirection of ALLOW_MODEL_ONLY_VIA_GROUPS when invoked from within the core.
+#define CORE_ALLOWED_MODEL_ONLY_VIA_GROUPS(MODULE,FUNCTION,MODEL)              \
+                                                                               \
+  IF_TOKEN_UNDEFINED(MODULE,FAIL("You must define MODULE before calling "      \
+   "ALLOW_MODEL(S)_ONLY_VIA_GROUPS."))                                         \
+  IF_TOKEN_UNDEFINED(FUNCTION,FAIL("You must define FUNCTION before calling "  \
+   "ALLOW_MODEL(S)_ONLY_VIA_GROUPS. Please check the rollcall header for "     \
+   STRINGIFY(MODULE) "."))                                                     \
+                                                                               \
+  namespace Gambit                                                             \
+  {                                                                            \
+    /* Add MODEL to global set of tags of recognised models */                 \
+    ADD_MODEL_TAG_IN_CURRENT_NAMESPACE(MODEL)                                  \
+    CORE_ALLOWED_MODEL_ARRANGE_DEP(MODULE,FUNCTION,MODEL)                      \
   }                                                                            \
 
 /// "Little guys" wrapper for ALLOW_MODEL
-#define CORE_LITTLEGUY_ALLOWED_MODEL(CAPABILITY,FUNCTION,MODEL)                \
+#define CORE_LITTLEGUY_ALLOWED_MODEL(FUNCTION,MODEL)                           \
   namespace Gambit                                                             \
   {                                                                            \
     /* Add MODEL to global set of tags of recognised models */                 \
     ADD_MODEL_TAG_IN_CURRENT_NAMESPACE(MODEL)                                  \
     namespace Models                                                           \
     {                                                                          \
-      CORE_ALLOWED_MODEL_GUTS(MODEL,CAPABILITY,FUNCTION,MODEL)                 \
+      CORE_ALLOWED_MODEL_ARRANGE_DEP(MODEL,FUNCTION,MODEL)                     \
+      CORE_ALLOW_MODEL(MODEL,FUNCTION,MODEL)                                   \
     }                                                                          \
   }
 
-/// Guts of core version of ALLOW_MODEL
-#define CORE_ALLOWED_MODEL_GUTS(MODULE,CAPABILITY,FUNCTION,MODEL)              \
+/// Set up the dependency on the parameters object of a given model.
+#define CORE_ALLOWED_MODEL_ARRANGE_DEP(MODULE,FUNCTION,MODEL)                  \
                                                                                \
     namespace MODULE                                                           \
     {                                                                          \
-                                                                               \
-      namespace Accessors                                                      \
-      {                                                                        \
-        /* Indicate that FUNCTION can be used with MODEL */                    \
-        template <>                                                            \
-        bool explicitly_allowed_model<ModelTags::MODEL, Tags::FUNCTION>()      \
-        {                                                                      \
-          return true;                                                         \
-        }                                                                      \
-      }                                                                        \
                                                                                \
       /* Create a safety bucket to the model parameter values. To be filled    \
       automatically at runtime when the dependency is resolved. */             \
@@ -917,11 +973,8 @@
       template <>                                                              \
       void rt_register_dependency<ModelTags::MODEL, Tags::FUNCTION> ()         \
       {                                                                        \
-        Accessors::model_bools[STRINGIFY(FUNCTION)][STRINGIFY(MODEL)] =        \
-         &Accessors::explicitly_allowed_model<ModelTags::MODEL,Tags::FUNCTION>;\
         Accessors::iMayNeed[STRINGIFY(CAT(MODEL,_parameters))] =               \
          "ModelParameters";                                                    \
-        Functown::FUNCTION.setAllowedModel(STRINGIFY(MODEL));                  \
         Functown::FUNCTION.setModelConditionalDependency(STRINGIFY(MODEL),     \
          STRINGIFY(CAT(MODEL,_parameters)),"ModelParameters",                  \
          &resolve_dependency<ModelTags::MODEL, Tags::FUNCTION>);               \
@@ -935,6 +988,108 @@
       }                                                                        \
                                                                                \
     }                                                                          \
+
+
+/// Tell the functor that a single model is enough for it to be allowed to run.   
+#define CORE_ALLOW_MODEL(MODULE,FUNCTION,MODEL)                                \
+                                                                               \
+    namespace MODULE                                                           \
+    {                                                                          \
+                                                                               \
+      namespace Accessors                                                      \
+      {                                                                        \
+        /* Indicate that FUNCTION can be used with MODEL */                    \
+        template <>                                                            \
+        bool explicitly_allowed_model<ModelTags::MODEL,Tags::FUNCTION >()      \
+        {                                                                      \
+          return true;                                                         \
+        }                                                                      \
+      }                                                                        \
+                                                                               \
+      /* Set up the commands to be called at runtime to register the           \
+      compatibility of the model with the functor */                           \
+      void CAT_4(rt_register_model_singly_,FUNCTION,_,MODEL)()                 \
+      {                                                                        \
+        Accessors::model_bools[STRINGIFY(FUNCTION)][STRINGIFY(MODEL)] =        \
+         &Accessors::explicitly_allowed_model<ModelTags::MODEL,Tags::FUNCTION>;\
+        Functown::FUNCTION.setAllowedModel(STRINGIFY(MODEL));                  \
+      }                                                                        \
+                                                                               \
+      /* Create the model registration initialisation object */                \
+      namespace Ini                                                            \
+      {                                                                        \
+        ini_code CAT_3(MODEL,_allowed_for_,FUNCTION)                           \
+         (&CAT_4(rt_register_model_singly_,FUNCTION,_,MODEL));                 \
+      }                                                                        \
+                                                                               \
+    }                                                                          \
+
+
+/// Redirection of ALLOW_MODEL_COMBINATION when invoked from the Core.
+#define CORE_ALLOW_MODEL_COMBINATION(MODULE,FUNCTION,COMBO)                    \
+  IF_TOKEN_UNDEFINED(MODULE,FAIL("You must define MODULE before calling "      \
+   "ALLOW_MODEL_COMBINATION."))                                                \
+  IF_TOKEN_UNDEFINED(FUNCTION,FAIL("You must define FUNCTION before calling "  \
+   "ALLOW_MODEL_COMBINATION. Please check the rollcall header for "            \
+   STRINGIFY(MODULE) "."))                                                     \
+                                                                               \
+  /* Register the combination as allowed with the functor */                   \
+  namespace Gambit                                                             \
+  {                                                                            \
+    namespace MODULE                                                           \
+    {                                                                          \
+                                                                               \
+      /* Set up the commands to be called at runtime to register the           \
+      compatibility of the model combination with the functor */               \
+      void CAT_4(rt_register_model_combination_,FUNCTION,_,                    \
+       BOOST_PP_SEQ_CAT(BOOST_PP_TUPLE_TO_SEQ((STRIP_PARENS(COMBO)))))()       \
+      {                                                                        \
+        Functown::FUNCTION.setAllowedModelGroupCombo(#COMBO);                  \
+      }                                                                        \
+                                                                               \
+      /* Create the dependency initialisation object */                        \
+      namespace Ini                                                            \
+      {                                                                        \
+        ini_code CAT_3(FUNCTION,_,                                             \
+         BOOST_PP_SEQ_CAT(BOOST_PP_TUPLE_TO_SEQ((STRIP_PARENS(COMBO)))))       \
+         (&CAT_4(rt_register_model_combination_,FUNCTION,_,                    \
+         BOOST_PP_SEQ_CAT(BOOST_PP_TUPLE_TO_SEQ((STRIP_PARENS(COMBO))))));     \
+      }                                                                        \
+                                                                               \
+    }                                                                          \
+  }                                                                            \
+
+
+/// Redirection of MODEL_GROUP when invoked from within the Core.
+#define CORE_MODEL_GROUP(MODULE,FUNCTION,GROUPNAME,GROUP)                      \
+  IF_TOKEN_UNDEFINED(MODULE,FAIL("You must define MODULE before calling "      \
+   "MODEL_GROUP."))                                                            \
+  IF_TOKEN_UNDEFINED(FUNCTION,FAIL("You must define FUNCTION before calling "  \
+   "MODEL_GROUP. Please check the rollcall header for "                        \
+   STRINGIFY(MODULE) "."))                                                     \
+                                                                               \
+  /* Register the group with the functor */                                    \
+  namespace Gambit                                                             \
+  {                                                                            \
+    namespace MODULE                                                           \
+    {                                                                          \
+                                                                               \
+      /* Set up the commands to be called at runtime to register the           \
+      the model group with the functor */                                      \
+      void CAT_4(rt_register_model_group_,FUNCTION,_,GROUPNAME)()              \
+      {                                                                        \
+       Functown::FUNCTION.setModelGroup(STRINGIFY(GROUPNAME),STRINGIFY(GROUP));\
+      }                                                                        \
+                                                                               \
+      /* Create the model group initialisation object */                       \
+      namespace Ini                                                            \
+      {                                                                        \
+        ini_code CAT_3(GROUPNAME,_model_group_in_,FUNCTION)                    \
+         (&CAT_4(rt_register_model_group_,FUNCTION,_,GROUPNAME));              \
+      }                                                                        \
+                                                                               \
+    }                                                                          \
+  }                                                                            \
 
 /// Redirection of BACKEND_GROUP(GROUP) when invoked from within the Core.
 #define CORE_BE_GROUP(GROUP)                                                   \
@@ -1014,7 +1169,9 @@
             /* Create a safety_bucket for the backend variable/function.       \
             To be initialized by the dependency resolver at runtime. */        \
             typedef BEvariable_bucket<TYPE> CAT(REQUIREMENT,var);              \
-            typedef BEfunction_bucket<TYPE INSERT_NONEMPTY(ARGS)>              \
+            typedef BEfunction_bucket<BOOST_PP_IIF(IS_VARIABLE,int,TYPE(*)     \
+             CONVERT_VARIADIC_ARG(ARGS)), TYPE                                 \
+             INSERT_NONEMPTY(STRIP_VARIADIC_ARG(ARGS))>                        \
              CAT(REQUIREMENT,func);                                            \
             CAT(REQUIREMENT,BOOST_PP_IIF(IS_VARIABLE,var,func)) REQUIREMENT;   \
           }                                                                    \
@@ -1042,8 +1199,10 @@
          Tags::FUNCTION>;                                                      \
                                                                                \
         /* First try casting the pointer passed in to a backend_functor*/      \
-        typedef backend_functor<TYPE*>* var;                                   \
-        typedef backend_functor<TYPE INSERT_NONEMPTY(ARGS)>* func;             \
+        typedef backend_functor<TYPE*(*)(), TYPE*>* var;                       \
+        typedef backend_functor<BOOST_PP_IIF(IS_VARIABLE,int,TYPE(*)           \
+         CONVERT_VARIADIC_ARG(ARGS)), TYPE                                     \
+         INSERT_NONEMPTY(STRIP_VARIADIC_ARG(ARGS))>* func;                     \
         auto ptr =                                                             \
           dynamic_cast<BOOST_PP_IIF(IS_VARIABLE,var,func)>(be_functor);        \
                                                                                \
@@ -1051,8 +1210,9 @@
         if (ptr == 0)  /* It didn't; throw an error. */                        \
         {                                                                      \
           str errmsg = "Null returned from dynamic cast in";                   \
-          errmsg +=  "\nMODULE::resolve_backendreq, for backend requirement"   \
-                     "\nREQUIREMENT of function FUNCTION.  Attempt was to"     \
+          errmsg +=  "\n" STRINGIFY(MODULE) "::resolve_backendreq, for backend"\
+                     " requirement\n" STRINGIFY(REQUIREMENT) " of function "   \
+                     STRINGIFY(FUNCTION) ".  Attempt was to"                   \
                      "\nresolve to " + be_functor->name() + " in " +           \
                      be_functor->origin() + ".";                               \
           utils_error().raise(LOCAL_INFO,errmsg);                              \
@@ -1074,7 +1234,7 @@
          Tags::FUNCTION>;                                                      \
                                                                                \
         str varsig = STRINGIFY(TYPE*);                                         \
-        str funcsig = STRINGIFY(TYPE) STRINGIFY(ARGS);                         \
+        str funcsig = STRINGIFY(TYPE) STRINGIFY(CONVERT_VARIADIC_ARG(ARGS));   \
                                                                                \
         Accessors::iMayNeedFromBackends[STRINGIFY(REQUIREMENT)] =              \
           BOOST_PP_IIF(IS_VARIABLE, varsig, funcsig);                          \
@@ -1263,7 +1423,7 @@
          BETags::BACKEND_REQ, BETags::BACKEND> (str ver)                       \
         {                                                                      \
           typedef std::vector<str> vec;                                        \
-          vec versions = delimiterSplit(VERSTRING, ",");                       \
+          vec versions = Utils::delimiterSplit(VERSTRING, ",");                \
           for (vec::iterator it= versions.begin() ; it != versions.end(); ++it)\
           {                                                                    \
             if (*it == ver) return true;                                       \
@@ -1381,7 +1541,7 @@
          <Gambit::Tags::CONDITIONAL_DEPENDENCY,Tags::FUNCTION> (str model)     \
         {                                                                      \
           typedef std::vector<str> vec;                                        \
-          vec models = delimiterSplit(MODELSTRING, ",");                       \
+          vec models = Utils::delimiterSplit(MODELSTRING, ",");                \
           for (vec::iterator it = models.begin() ; it != models.end(); ++it)   \
           {                                                                    \
             if (*it == model) return true;                                     \
@@ -1413,6 +1573,48 @@
         ini_code CAT_4(CONDITIONAL_DEPENDENCY,_for_,FUNCTION,_with_models)     \
          (&rt_register_conditional_dependency                                  \
          <Gambit::Tags::CONDITIONAL_DEPENDENCY, Tags::FUNCTION>);              \
+      }                                                                        \
+                                                                               \
+    }                                                                          \
+                                                                               \
+  }                                                                            \
+
+
+/// Redirection of NEEDS_CLASSES_FROM when invoked from within the Core.
+#define CORE_CLASSLOAD_NEEDED(BACKEND, VERSTRING)                              \
+                                                                               \
+  IF_TOKEN_UNDEFINED(MODULE,FAIL("You must define MODULE before calling "      \
+   "NEEDS_CLASSES_FROM."))                                                     \
+  IF_TOKEN_UNDEFINED(CAPABILITY,FAIL("You must define CAPABILITY before "      \
+   "calling NEEDS_CLASSES_FROM. Please check the rollcall header "             \
+   "for " STRINGIFY(MODULE) "."))                                              \
+  IF_TOKEN_UNDEFINED(FUNCTION,FAIL("You must define FUNCTION before calling "  \
+   "NEEDS_CLASSES_FROM. Please check the rollcall header for "                 \
+   STRINGIFY(MODULE) "."))                                                     \
+                                                                               \
+  namespace Gambit                                                             \
+  {                                                                            \
+                                                                               \
+    namespace MODULE                                                           \
+    {                                                                          \
+                                                                               \
+      void CAT_4(classload_requirements_for_,FUNCTION,_from_,BACKEND)()        \
+      {                                                                        \
+        typedef std::vector<str> vec;                                          \
+        vec versions = Utils::delimiterSplit(VERSTRING, ",");                  \
+        for (vec::iterator it = versions.begin() ; it != versions.end(); ++it) \
+        {                                                                      \
+          if (*it == "default") *it = Backends::backendInfo().                 \
+           version_from_safe_version(STRINGIFY(BACKEND),                       \
+           STRINGIFY(CAT(Default_,BACKEND)));                                  \
+          Functown::FUNCTION.setRequiredClassloader(STRINGIFY(BACKEND),*it);   \
+        }                                                                      \
+      }                                                                        \
+                                                                               \
+      namespace ini                                                            \
+      {                                                                        \
+        ini_code CAT_4(ini_classload_req_rego_for_,FUNCTION,_from_,BACKEND)    \
+         (&CAT_4(classload_requirements_for_,FUNCTION,_from_,BACKEND));        \
       }                                                                        \
                                                                                \
     }                                                                          \

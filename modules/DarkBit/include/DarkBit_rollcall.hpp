@@ -26,7 +26,12 @@
 ///
 ///  \author Lars A. Dal  
 ///          (l.a.dal@fys.uio.no)
-///  \date 2014 Mar
+///  \date 2014 Mar, Sep, Oct
+///  
+///  \author Christopher Savage
+///          (chris@savage.name)
+///  \date 2014 Oct
+///  
 ///  *********************************************
 
 #ifndef __DarkBit_rollcall_hpp__
@@ -37,48 +42,58 @@
 #define MODULE DarkBit
 START_MODULE
 
-  #define CAPABILITY PointInit  // Part of it will be moved to backend initialization
+//  #define CAPABILITY PointInit  // Part of it will be moved to backend initialization
+//  START_CAPABILITY
+//
+//    //The function below has been moved into the DarkSUSY
+//    //backend initialization and should be eventually deleted
+//    #define FUNCTION DarkBit_PointInit_MSSM
+//      START_FUNCTION(void, INIT_FUNCTION)
+//      DEPENDENCY(MSSMspectrum, eaSLHA) 
+//      ALLOW_MODELS(CMSSM_demo)
+//      // Initialize DarkSUSY with SLHA file
+//      BACKEND_REQ(dsinit, (), void, ())
+//      BACKEND_REQ(dsrdinit, (), void, ())
+//      BACKEND_REQ(dsSLHAread, (), void, (char*, int&, int))
+//      BACKEND_REQ(dsprep, (), void, ())
+//    #undef FUNCTION
+//
+//    #define FUNCTION DarkBit_PointInit_CMSSM
+//      START_FUNCTION(void, INIT_FUNCTION)
+//      //ALLOW_MODELS(CMSSM_demo)
+//      // Initialize DarkSUSY with isasugra
+//      BACKEND_REQ(dsinit, (), void, ())
+//      BACKEND_REQ(dsrdinit, (), void, ())
+//      BACKEND_REQ(dsgive_model_isasugra, (), void, (double&,double&,double&,double&,double&))
+//      BACKEND_REQ(dssusy_isasugra, (), void, (int&,int&))
+//    #undef FUNCTION
+//
+//    #define FUNCTION DarkBit_PointInit_MSSM7
+//      START_FUNCTION(void, INIT_FUNCTION)
+//      //ALLOW_MODELS(CMSSM_demo)
+//      // Initialize DarkSUSY with dssusy
+//      BACKEND_REQ(dsinit, (), void, ())
+//      BACKEND_REQ(dsrdinit, (), void, ())
+//      BACKEND_REQ(mssmpar, (), DS_MSSMPAR)
+//      BACKEND_REQ(dssusy, (), void, (int&,int&))
+//    #undef FUNCTION
+//
+//    #define FUNCTION DarkBit_PointInit_Default
+//      START_FUNCTION(void, INIT_FUNCTION)
+//    #undef FUNCTION
+//
+//  #undef CAPABILITY  // PointInit
+
+  #define CAPABILITY MSSMspectrum
   START_CAPABILITY
-
-    //The function below has been moved into the DarkSUSY
-    //backend initialization and should be eventually deleted
-    #define FUNCTION DarkBit_PointInit_MSSM
-      START_FUNCTION(void, INIT_FUNCTION)
-      DEPENDENCY(MSSMspectrum, eaSLHA) 
-      ALLOW_MODELS(CMSSM_demo)
-      // Initialize DarkSUSY with SLHA file
-      BACKEND_REQ(dsinit, (), void, ())
-      BACKEND_REQ(dsrdinit, (), void, ())
-      BACKEND_REQ(dsSLHAread, (), void, (char*, int&, int))
-      BACKEND_REQ(dsprep, (), void, ())
+    #define FUNCTION getMSSMspectrum
+      START_FUNCTION(eaSLHA)
+      ALLOW_MODELS(MSSM25)
     #undef FUNCTION
+  #undef CAPABILITY
 
-    #define FUNCTION DarkBit_PointInit_CMSSM
-      START_FUNCTION(void, INIT_FUNCTION)
-      //ALLOW_MODELS(CMSSM_demo)
-      // Initialize DarkSUSY with isasugra
-      BACKEND_REQ(dsinit, (), void, ())
-      BACKEND_REQ(dsrdinit, (), void, ())
-      BACKEND_REQ(dsgive_model_isasugra, (), void, (double&,double&,double&,double&,double&))
-      BACKEND_REQ(dssusy_isasugra, (), void, (int&,int&))
-    #undef FUNCTION
 
-    #define FUNCTION DarkBit_PointInit_MSSM7
-      START_FUNCTION(void, INIT_FUNCTION)
-      //ALLOW_MODELS(CMSSM_demo)
-      // Initialize DarkSUSY with dssusy
-      BACKEND_REQ(dsinit, (), void, ())
-      BACKEND_REQ(dsrdinit, (), void, ())
-      BACKEND_REQ(mssmpar, (), DS_MSSMPAR)
-      BACKEND_REQ(dssusy, (), void, (int&,int&))
-    #undef FUNCTION
-
-    #define FUNCTION DarkBit_PointInit_Default
-      START_FUNCTION(void, INIT_FUNCTION)
-    #undef FUNCTION
-
-  #undef CAPABILITY  // PointInit
-
+  // Relic density -----------------------------------------
 
   #define CAPABILITY RD_spectrum
   START_CAPABILITY 
@@ -152,6 +167,29 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
+  // Cascade decays --------------------------------------------
+
+  // Loop manager for decay chains
+  /*
+  #define CAPABILITY decayChainLoopManagement
+  START_CAPABILITY
+    #define FUNCTION decayChainLoopManager
+    START_FUNCTION(void, CAN_MANAGE_LOOPS)  
+    #undef FUNCTION                                                       
+  #undef CAPABILITY    
+  */
+
+  // Routine for testing decay chain code
+  #define CAPABILITY chain_test_cap
+  START_CAPABILITY
+    #define FUNCTION chain_test
+      START_FUNCTION(double)
+      DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  // Gamma rays --------------------------------------------
+
   #define CAPABILITY GA_AnnYield
   START_CAPABILITY
     #define FUNCTION GA_AnnYield_DarkSUSY
@@ -165,31 +203,19 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION TH_ProcessCatalog_CMSSM
       START_FUNCTION(Gambit::DarkBit::TH_ProcessCatalog)
-      ALLOW_MODELS(CMSSM_demo)
+      ALLOW_MODELS(CMSSM_demo, MSSM25)
+      DEPENDENCY(MSSMspectrum, eaSLHA) 
       BACKEND_REQ(mspctm, (), DS_MSPCTM)
       BACKEND_REQ(dssigmav, (), double, (int&))
       BACKEND_REQ(dsIBffdxdy, (), double, (int&, double&, double&))
-      BACKEND_REQ(dsIBfsrdxdy, (), double, (int&, double&, double&))
       BACKEND_REQ(dsIBhhdxdy, (), double, (int&, double&, double&))
       BACKEND_REQ(dsIBwhdxdy, (), double, (int&, double&, double&))
       BACKEND_REQ(dsIBwwdxdy, (), double, (int&, double&, double&))
+      BACKEND_REQ(IBintvars, (), DS_IBINTVARS)
     #undef FUNCTION
-  #undef CAPABILITY
-
-  #define CAPABILITY DD_couplings
-  START_CAPABILITY
-    #define FUNCTION DD_couplings_DarkSUSY
-      START_FUNCTION(Gambit::DarkBit::DD_couplings)
-      BACKEND_REQ(dsddgpgn, (), void, (double&, double&, double&, double&))
-      BACKEND_REQ(mspctm, (), DS_MSPCTM)      
-    #undef FUNCTION
-  #undef CAPABILITY
-
-  #define CAPABILITY lnL_FakeLux
-  START_CAPABILITY
-    #define FUNCTION lnL_FakeLux
-      START_FUNCTION(double)
-      DEPENDENCY(DD_couplings, Gambit::DarkBit::DD_couplings)
+    #define FUNCTION TH_ProcessCatalog_SingletDM
+      START_FUNCTION(Gambit::DarkBit::TH_ProcessCatalog)
+      ALLOW_MODELS(SingletDM)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -198,6 +224,22 @@ START_MODULE
     #define FUNCTION lnL_FermiLATdwarfsSimple
       START_FUNCTION(double)
       DEPENDENCY(GA_AnnYield, Gambit::BF::BFptr)
+    #undef FUNCTION
+    #define FUNCTION lnL_FermiLATdwarfs_gamLike
+      START_FUNCTION(double)
+      DEPENDENCY(GA_AnnYield, Gambit::BF::BFptr)
+      DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)
+      BACKEND_REQ(lnL_dwarfs, (gamLike), double, (const std::vector<double> &, const std::vector<double> &))
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY lnL_FermiGC
+  START_CAPABILITY
+    #define FUNCTION lnL_FermiGC_gamLike
+      START_FUNCTION(double)
+      DEPENDENCY(GA_AnnYield, Gambit::BF::BFptr)
+      DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)
+      BACKEND_REQ(lnL_GC, (gamLike), double, (const std::vector<double> &, const std::vector<double> &))
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -217,21 +259,69 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
-  #define CAPABILITY lnL_Lux2013
+
+  // Direct detection --------------------------------------
+
+  #define CAPABILITY DD_couplings
   START_CAPABILITY
-    #define FUNCTION lnL_Lux2013
-      START_FUNCTION(double)
-      DEPENDENCY(DD_couplings, Gambit::DarkBit::DD_couplings)
-      BACKEND_REQ(DDCalc0_SetWIMP, (Same_BE), void, (double*,double*,double*,double*,double*,double*,double*,double*,double*,double*,double*,double*,double*,double*,double*))   
-      BACKEND_REQ(DDCalc0_CalcRates, (Same_BE), void, ())         
-      BACKEND_REQ(DDCalc0_LogLikelihood, (Same_BE), double, ())     
-      BACKEND_REQ(DDCalc0_InitDetectorLUX2013, (Same_BE), void, (bool*))       
-      FORCE_SAME_BACKEND(Same_BE)                 
+    #define FUNCTION DD_couplings_DarkSUSY
+      START_FUNCTION(Gambit::DarkBit::DD_couplings)
+      BACKEND_REQ(dsddgpgn, (), void, (double&, double&, double&, double&))
+      BACKEND_REQ(mspctm, (), DS_MSPCTM)      
+    #undef FUNCTION
+    #define FUNCTION DD_couplings_micrOMEGAs
+      START_FUNCTION(Gambit::DarkBit::DD_couplings)
+      BACKEND_REQ(nucleonAmplitudes, (micromegas), int, (double(*)(double,double,double,double), double*, double*, double*, double*))
+      BACKEND_REQ(FeScLoop, (micromegas), double, (double, double, double, double))
+      BACKEND_REQ(MOcommon, (micromegas), micrOMEGAs::MOcommonSTR)
     #undef FUNCTION
   #undef CAPABILITY
 
+  #define CAPABILITY lnL_LUX_2013
+  START_CAPABILITY
+    #define FUNCTION lnL_LUX_2013
+      START_FUNCTION(double)
+      DEPENDENCY(DD_couplings, Gambit::DarkBit::DD_couplings)
+      BACKEND_REQ(DDCalc0_SetWIMP_mG, (Same_BE), void, (double*,double*,double*,double*,double*))
+      BACKEND_REQ(DDCalc0_LUX_2013_CalcRates, (Same_BE), void, ())
+      BACKEND_REQ(DDCalc0_LUX_2013_LogLikelihood, (Same_BE), double, ())
+      FORCE_SAME_BACKEND(Same_BE)
+    #undef FUNCTION
+  #undef CAPABILITY
 
-  // Neutrino telescope likelihoods
+  #define CAPABILITY lnL_DARWIN_Ar_2014
+  START_CAPABILITY
+    #define FUNCTION lnL_DARWIN_Ar_2014
+      START_FUNCTION(double)
+      DEPENDENCY(DD_couplings, Gambit::DarkBit::DD_couplings)
+      BACKEND_REQ(DDCalc0_SetWIMP_mG, (Same_BE), void, (double*,double*,double*,double*,double*))
+      BACKEND_REQ(DDCalc0_DARWIN_Ar_2014_CalcRates, (Same_BE), void, ())
+      BACKEND_REQ(DDCalc0_DARWIN_Ar_2014_LogLikelihood, (Same_BE), double, ())
+      FORCE_SAME_BACKEND(Same_BE)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY lnL_DARWIN_Xe_2014
+  START_CAPABILITY
+    #define FUNCTION lnL_DARWIN_Xe_2014
+      START_FUNCTION(double)
+      DEPENDENCY(DD_couplings, Gambit::DarkBit::DD_couplings)
+      BACKEND_REQ(DDCalc0_SetWIMP_mG, (Same_BE), void, (double*,double*,double*,double*,double*))
+      BACKEND_REQ(DDCalc0_DARWIN_Xe_2014_CalcRates, (Same_BE), void, ())
+      BACKEND_REQ(DDCalc0_DARWIN_Xe_2014_LogLikelihood, (Same_BE), double, ())
+      FORCE_SAME_BACKEND(Same_BE)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY lnL_DD_test
+  START_CAPABILITY
+    #define FUNCTION lnL_DD_test
+      START_FUNCTION(double)
+      DEPENDENCY(DD_couplings, Gambit::DarkBit::DD_couplings)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  // Neutrino telescope likelihoods ------------------------
 
   #define CAPABILITY IC22_data
   START_CAPABILITY

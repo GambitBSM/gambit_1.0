@@ -5,11 +5,11 @@
 
 # Hack to remove disconnected vertices (on debian based machines "delete"
 # seems to break gvpr)
-for i in {1..200}
-do
-  gvpr -c 'N[$.degree==0]{delete(0,$);}' $1 > $1.temp
-  mv $1.temp $1
-done
+#for i in {1..200}
+#do
+#  gvpr -c 'N[$.degree==0]{delete(0,$);}' $1 > $1.temp
+#  mv $1.temp $1
+#done
 
 # Make plot
 dot $1 -Tps > ${1%.*}.ps

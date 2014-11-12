@@ -74,7 +74,7 @@ START_MODULE
     START_FUNCTION(double)
        BACKEND_REQ(initialize_HiggsBounds_chisqtables, (libhiggsbounds), void, ())
        BACKEND_REQ(initialize_HiggsBounds_int, (libhiggsbounds), void, (int&, int&, int&))
-       BACKEND_REQ(HiggsBounds_input_SLHA, (libhiggsbounds), void, (char*))
+       BACKEND_REQ(HiggsBounds_input_SLHA, (libhiggsbounds), void, (const char&))
        BACKEND_REQ(HiggsBounds_set_mass_uncertainties, (libhiggsbounds), void, (double*, double*))
        BACKEND_REQ(run_HiggsBounds_classic, (libhiggsbounds), void, (double&, int&, double&, int&))            
        BACKEND_REQ(HB_calc_stats, (libhiggsbounds), void, (double&, double&, double&, int&))
@@ -89,7 +89,7 @@ START_MODULE
       #define FUNCTION HS_LHCchisq
       START_FUNCTION(double)
         BACKEND_REQ(initialize_HiggsSignals_latestresults, (libhiggssignals), void, (int&, int&))
-        BACKEND_REQ(HiggsBounds_input_SLHA, (libhiggssignals), void, (char*))
+        BACKEND_REQ(HiggsBounds_input_SLHA_HS, (libhiggssignals), void, (const char&))
         BACKEND_REQ(setup_pdf, (libhiggssignals), void, (int&))  
         BACKEND_REQ(run_HiggsSignals, (libhiggssignals), void, (int&, double&, double&, double&, int&, double&))  
         BACKEND_REQ(HiggsSignals_neutral_input_MassUncertainty, (libhiggssignals), void, (double*))

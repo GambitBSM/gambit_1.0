@@ -30,7 +30,6 @@
 //#include "slhaea.h" -> now in SLHA_types.hpp
 
 #include "gambit_module_headers.hpp"
-#include "SLHA_types.hpp"
 #include "SUSYspecBit_rollcall.hpp"
 
 namespace Gambit {

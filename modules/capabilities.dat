@@ -17,12 +17,22 @@
 #  appear here. The extent of this string is
 #  indicated by indentation.
 
+# We can break this into categories however we want; yaml will just ignore comments
+
+#-------------------------------------
+#  Test capabilities
+#-------------------------------------
+
 test_vector: |
    Some kind of vector or something
 
 vSigma: |
    Probably a cross-section of some kind
    Lets add an extra line to demo multiline descriptions
+
+#-------------------------------------
+#  Fake particle capabilities
+#-------------------------------------
 
 widths: |
    The width of some particle or other

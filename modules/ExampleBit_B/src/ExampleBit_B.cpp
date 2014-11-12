@@ -106,24 +106,20 @@ namespace Gambit
       logger() << endl << "My dependency on nevents has been filled by " << 
        Dep::nevents.name() << " from " <<
        Dep::nevents.module() << "." << endl;
-      logger() << "Its value is: " << *Dep::nevents << endl;
-      logger() <<info<<EOM;
+      logger() << "Its value is: " << *Dep::nevents << info << EOM;
 
       //cout << "Now let's see what happens when we try to retrieve a conditional dependency." << endl;
       //cout << "The id is: " << *Dep::id << endl;
 
+      int stuff = 2;
+      double doall_local = BEreq::awesomeness(2);
+      double doall_local2 = BEreq::awesomeness(byVal(stuff));
       logger() << "My backend requirement of awesomeness has been filled by " << 
        BEreq::awesomeness.name() << " from " <<
        BEreq::awesomeness.backend() << ", v" << 
        BEreq::awesomeness.version() << "." << endl;
-      logger() << "Its value is: ";
-      double doall_local = BEreq::awesomeness(2);
-      logger() << doall_local << endl << endl;    
-      int stuff = 2;
-      logger() << "Again, its value is: ";
-      double doall_local2 = BEreq::awesomeness(byVal(stuff));
-      logger() << doall_local2 << endl << endl;    
-      logger() <<info<<EOM;
+      logger() << "Its value is: " << doall_local << endl;    
+      logger() << "Again, its value is: " << doall_local2 << info << EOM;
 
       result = (int) (*Dep::nevents + doall_local);
 
@@ -131,13 +127,18 @@ namespace Gambit
       double inputvar1 = 0;
       double inputvar2 = 0;
       double inputvar3 = 2.5;
-      logger() << "Now trying backend functions with parameters passed by reference. First returns double." << endl;
+      logger() << "Now trying backend functions with parameters passed by reference. First returns double." << EOM;
       double refex1 = BEreq::refex(inputvar1);
-      logger() << "Next returns void, takes parameters both by ref and by val." << endl;
+      logger() << "Next returns void, takes parameters both by ref and by val." << EOM;
       BEreq::refex2(inputvar2, byVal(inputvar3));
-      logger() << "Results of backend functions with parameters passed byRef: " 
-           << refex1 << ", " << inputvar1 << ", " << inputvar2 << endl;
-      logger() <<info<<EOM;
+      logger() << "Results of backend functions with parameters passed byRef: "; 
+      logger() << refex1 << ", " << inputvar1 << ", " << inputvar2 << info << EOM;
+
+      //Example showing calling of variadic backend functions
+      double res1 = BEreq::varex(3,2.1,1.0,1.3);
+      double res2 = BEreq::varex2(3,2.1,1.0,1.3);
+      logger() << "Results of first variadic backend function: " << res1 << info << EOM;
+      logger() << "Results of second variadic backend function: " << res2 << info << EOM;
 
       //Example showing passing of function pointer to an external Fortran (or other language) routine
       int arg2 = 15;
@@ -147,21 +148,19 @@ namespace Gambit
       // living in Pipes::[module function name]::BEreq::[backend capability]
       logger() << endl;
       logger() << "Will now set backend variable SomeInt=1000." << endl;
-      logger() << "If this works the next result from 'someFunction' should be PI*1000." << endl;
-      logger() <<info<<EOM;
+      logger() << "If this works the next result from 'someFunction' should be PI*1000.";
+      logger() << info <<EOM;
       *BEreq::SomeInt = 1000;
       BEreq::someFunction();
 
       logger() << endl;
-      logger() << "Will now call 'someFunction' once more, this time using the function pointer." << endl;
-      logger() <<info<<EOM;
+      logger() << "Will now call 'someFunction' once more, this time using the function pointer." << info <<EOM;
       void (*function_pointer)() = BEreq::someFunction.pointer();
       function_pointer();
 
-      logger() << endl;
       logger() << "Print some info on the backend requirement 'SomeInt':" << endl;
-      logger() << "Name: " << BEreq::SomeInt.name() << "   Backend: " << BEreq::SomeInt.backend() << "   Version: " << BEreq::SomeInt.version() << endl;
-      logger() <<info<<EOM;
+      logger() << "Name: " << BEreq::SomeInt.name() << "   Backend: " << BEreq::SomeInt.backend() << "   Version: " << BEreq::SomeInt.version();
+      logger() << info <<EOM;
 
     }
 

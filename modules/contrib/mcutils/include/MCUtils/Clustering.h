@@ -1,10 +1,18 @@
+// -*- C++ -*-
+//
+// This file is part of MCUtils -- https://bitbucket.org/andybuckley/mcutils
+// Copyright (C) 2013-2014 Andy Buckley <andy.buckley@cern.ch>
+//
+// Embedding of MCUtils code in other projects is permitted provided this
+// notice is retained and the MCUtils namespace and include path are changed.
+//
 #pragma once
 
 /// @file FastJet clustering on HepMC events
 /// @author Andy Buckley <andy.buckley@cern.ch>
 
+#include "HEPUtils/FastJet.h"
 #include "MCUtils/HepMCEventUtils.h"
-#include "MCUtils/FastJet.h"
 
 namespace MCUtils {
 

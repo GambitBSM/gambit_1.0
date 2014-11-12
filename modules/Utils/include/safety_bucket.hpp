@@ -14,7 +14,7 @@
 ///
 ///  \author Pat Scott
 ///          (patscott@physics.mcgill.ca) 
-///   \date 2014 Mar
+///   \date 2014 Mar, Sep
 ///
 ///  *********************************************
 
@@ -125,7 +125,7 @@ namespace Gambit
       {
         if (not _initialized) dieGracefully();
         //Choose the index of the thread if the dependency and the dependent functor are running inside the same loop.  If not, just access the first element.
-        int index = dep_bucket::use_thread_index(_functor_ptr, _dependent_functor_ptr) ? omp_get_thread_num() : 0;
+        int index = use_thread_index(_functor_ptr, _dependent_functor_ptr) ? omp_get_thread_num() : 0;
         return _sptr[index];                 
       }
 
@@ -133,7 +133,7 @@ namespace Gambit
       /// Access is allowed to const member functions only
       const TYPE* operator->() const
       { 
-        if (not _initialized) dieGracefully();
+        if (not _initialized) this->dieGracefully();
         //Choose the index of the thread if the dependency and the dependent functor are running inside the same loop.  If not, just choose the first element.
         int index = use_thread_index(_functor_ptr, _dependent_functor_ptr) ? omp_get_thread_num() : 0;
         return _sptr.operator->() + index;   //Call a const member function of the indexth element of the array pointed to by the safe pointer.
@@ -186,20 +186,20 @@ namespace Gambit
 
     protected:
 
-      backend_functor<TYPE*> * _functor_ptr;
+      backend_functor<TYPE*(*)(),TYPE*> * _functor_ptr;
       safe_variable_ptr<TYPE> _svptr;
 
     public:
 
       /// Constructor for BEvariable_bucket.
-      BEvariable_bucket(backend_functor<TYPE*> * functor_ptr_in = NULL)
+      BEvariable_bucket(backend_functor<TYPE*(*)(),TYPE*> * functor_ptr_in = NULL)
       {
         initialize(functor_ptr_in);
       }
 
 
       /// Initialize this bucket with a functor pointer.
-      void initialize(backend_functor<TYPE*> * functor_ptr_in)
+      void initialize(backend_functor<TYPE*(*)(),TYPE*> * functor_ptr_in)
       {
         _functor_ptr      = functor_ptr_in;
         _functor_base_ptr = functor_ptr_in;
@@ -248,20 +248,19 @@ namespace Gambit
 
 
   /// An interface class for backend functions.
-  template <typename TYPE, typename... ARGS>
-  class BEfunction_bucket : public BE_bucket_base
+  template <typename PTR_TYPE, typename TYPE, typename... ARGS>
+  class BEfunction_bucket_common : public BE_bucket_base
   {
+   public:
 
-    public:
-
-      /// Constructor for BEfunction_bucket.
-      BEfunction_bucket(backend_functor<TYPE, ARGS...>* functor_ptr_in = NULL)
+      /// Constructor for BEfunction_bucket_common.
+      BEfunction_bucket_common(backend_functor<PTR_TYPE, TYPE, ARGS...>* functor_ptr_in = NULL)
       {
         initialize(functor_ptr_in);
       }
 
       /// Initialize this bucket with a functor pointer.
-      void initialize(backend_functor<TYPE, ARGS...>* functor_ptr_in)
+      void initialize(backend_functor<PTR_TYPE, TYPE, ARGS...>* functor_ptr_in)
       {
         _functor_ptr      = functor_ptr_in;
         _functor_base_ptr = functor_ptr_in;
@@ -276,15 +275,8 @@ namespace Gambit
         }
       }
 
-      /// Call backend function.
-      TYPE operator ()(ARGS&& ...args)
-      {
-        if (not _initialized) dieGracefully();
-        return (*_functor_ptr)(std::forward<ARGS>(args)...);
-      }
-
       /// Return the underlying function pointer.
-      TYPE (*pointer())(ARGS...)
+      PTR_TYPE pointer()
       {
         if (not _initialized) dieGracefully();
         return _functor_ptr->handoutFunctionPointer();
@@ -293,7 +285,53 @@ namespace Gambit
 
     protected:
 
-      backend_functor<TYPE, ARGS...>* _functor_ptr;
+      backend_functor<PTR_TYPE, TYPE, ARGS...>* _functor_ptr;
+
+  };
+
+   
+  /// The actual usable form of the interface class to backend functions
+  template <typename PTR_TYPE, typename TYPE, typename... ARGS> class BEfunction_bucket;
+
+  /// Partial specialisation for non-variadic backend functions.
+  template <typename TYPE, typename... ARGS>
+  class BEfunction_bucket<TYPE(*)(ARGS...),TYPE,ARGS...> : public BEfunction_bucket_common<TYPE(*)(ARGS...),TYPE,ARGS...>
+  {
+
+    public:
+
+      /// Constructor for non-variadic BEfunction_bucket.
+      BEfunction_bucket(backend_functor<TYPE(*)(ARGS...), TYPE, ARGS...>* functor_ptr_in = NULL)
+       : BEfunction_bucket_common<TYPE(*)(ARGS...),TYPE,ARGS...>(functor_ptr_in) {}
+
+      /// Call backend function.
+      TYPE operator ()(ARGS&& ...args)
+      {
+        if (not this->_initialized) this->dieGracefully();
+        return (*(this->_functor_ptr))(std::forward<ARGS>(args)...);
+      }
+
+  };
+
+  /// Partial specialisation for variadic backend functions.
+  template <typename TYPE, typename... ARGS>
+  class BEfunction_bucket<typename variadic_ptr<TYPE,ARGS...>::type,TYPE,ARGS...>
+   : public BEfunction_bucket_common<typename variadic_ptr<TYPE,ARGS...>::type,TYPE,ARGS...>
+  {
+
+    public:
+
+      /// Constructor for variadic BEfunction_bucket.
+      BEfunction_bucket(backend_functor<typename variadic_ptr<TYPE,ARGS...>::type, TYPE, ARGS...>* functor_ptr_in = NULL)
+       : BEfunction_bucket_common<typename variadic_ptr<TYPE,ARGS...>::type,TYPE,ARGS...>(functor_ptr_in) {}
+
+      /// Call backend function.
+      template <typename... VARARGS>
+      TYPE operator ()(VARARGS&& ...varargs)
+      {
+        if (not this->_initialized) this->dieGracefully();
+        return (*(this->_functor_ptr))(std::forward<VARARGS>(varargs)...);
+      }
 
   };
 

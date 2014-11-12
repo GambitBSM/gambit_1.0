@@ -4,7 +4,7 @@
 ///
 ///  Rollcall header for module ExampleBit_A.
 ///
-///  Compile-time registration of available 
+///  Compile-time registration of available
 ///  observables and likelihoods, as well as their
 ///  dependencies.
 ///
@@ -12,17 +12,17 @@
 ///  or likelihood to this module.
 ///
 ///  Don't put typedefs or other type definitions
-///  in this file; see 
+///  in this file; see
 ///  Core/include/types_rollcall.hpp for further
 ///  instructions on how to add new types.
 ///
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-///   
-///  \author Pat Scott 
+///
+///  \author Pat Scott
 ///          (patscott@physics.mcgill.ca)
-///  \date 2012 Nov 
+///  \date 2012 Nov
 ///  \date 2013 Jan, Feb
 ///
 ///  *********************************************
@@ -40,16 +40,16 @@ START_MODULE
   #define CAPABILITY eventLoopManagement
   START_CAPABILITY
 
-    #define FUNCTION eventLoopManager       // Module functions that have been designed to manage loops over other module functions need to 
+    #define FUNCTION eventLoopManager       // Module functions that have been designed to manage loops over other module functions need to
     START_FUNCTION(void, CAN_MANAGE_LOOPS)  // be declared with the optional CAN_MANAGE_LOOPS flag.  When this flag is absent, or if the
-    #undef FUNCTION                         // flag CANNOT_MANAGE_LOOPS is given instead, GAMBIT assumes that the function should not 
-                                            // be allowed to manage loops.  Functions cannot have void result types unless they CAN_MANAGE_LOOPS. 
-  #undef CAPABILITY                         
+    #undef FUNCTION                         // flag CANNOT_MANAGE_LOOPS is given instead, GAMBIT assumes that the function should not
+                                            // be allowed to manage loops.  Functions cannot have void result types unless they CAN_MANAGE_LOOPS.
+  #undef CAPABILITY
 
 
   #define CAPABILITY event
   START_CAPABILITY
-  
+
     #define FUNCTION exampleEventGen
     START_FUNCTION(singleprec)
     NEEDS_MANAGER_WITH_CAPABILITY(eventLoopManagement) // Declares that the module function can only run inside a loop, and that the loop
@@ -60,7 +60,7 @@ START_MODULE
     NEEDS_MANAGER_WITH_CAPABILITY(eventLoopManagement)
     DEPENDENCY(event, singleprec)
     #undef FUNCTION
-    
+
   #undef CAPABILITY
 
 
@@ -69,14 +69,14 @@ START_MODULE
 
     #define FUNCTION eventAccumulator
     START_FUNCTION(int, CANNOT_MANAGE_LOOPS)
-    NEEDS_MANAGER_WITH_CAPABILITY(eventLoopManagement) 
+    NEEDS_MANAGER_WITH_CAPABILITY(eventLoopManagement)
     DEPENDENCY(event, int)
     #undef FUNCTION
 
   #undef CAPABILITY
 
 
-  #define CAPABILITY nevents                // A physical observable or likelihood that this module can calculate.  There may be one or more 
+  #define CAPABILITY nevents                // A physical observable or likelihood that this module can calculate.  There may be one or more
   START_CAPABILITY                          //  functions in this module that can calculate this particular thing in different ways.
 
     #define FUNCTION nevents_dbl            // Name of an observable function: floating-point number of events in some hypothetical process
@@ -95,9 +95,9 @@ START_MODULE
   #define CAPABILITY nevents_like           // A physical observable or likelihood that this module can calculate
   START_CAPABILITY
 
-    #define FUNCTION nevents_like           // Likelihood: Likelihood of seeing number of events 
-    START_FUNCTION(double)                  // Function calculates the nevents_like likelihood as a double precision variable                  
-    DEPENDENCY(nevents, double)             // Dependency: Likelihood calculation requires number of events       
+    #define FUNCTION nevents_like           // Likelihood: Likelihood of seeing number of events
+    START_FUNCTION(double)                  // Function calculates the nevents_like likelihood as a double precision variable
+    DEPENDENCY(nevents, double)             // Dependency: Likelihood calculation requires number of events
     DEPENDENCY(eventAccumulation, int)      // Depends on the accumulated events that pass the make-believe cuts in the make-believe event loop
     #undef FUNCTION
 
@@ -108,15 +108,15 @@ START_MODULE
   START_CAPABILITY
 
     #define FUNCTION Aldos_evgen          // Name of the function that initializes the fastsim
-    START_FUNCTION(HEP_Simple_Lib::Event) // returns the number of events for now
+    START_FUNCTION(HEPUtils::Event) // returns the number of events for now
     #undef FUNCTION
 
   #undef CAPABILITY
 
 
-  #define CAPABILITY fast_sim                // calling fastsim
+  #define CAPABILITY fast_sim_init                // calling fastsim
   START_CAPABILITY
-    #define FUNCTION fast_sim                // calling fastsim
+    #define FUNCTION fast_sim_init                // calling fastsim
       START_FUNCTION(double)                 // returns the number of events for now
       BACKEND_REQ(fast_sim_init, (), int, (int))
     #undef FUNCTION
@@ -139,7 +139,7 @@ START_MODULE
   #define CAPABILITY id                     // A physical observable or likelihood that this module can calculate
   START_CAPABILITY
 
-    #define FUNCTION identity               // Observable: particle id    
+    #define FUNCTION identity               // Observable: particle id
     START_FUNCTION(std::string)             // Function returns the identity of the particle as a string
     #undef FUNCTION
 
@@ -148,7 +148,7 @@ START_MODULE
 
   #define CAPABILITY damu                   // Muon (g-2) anomalous contribution
   START_CAPABILITY
-  
+
     #define FUNCTION damu
     START_FUNCTION(double)
     ALLOW_MODELS(test_parent_I, NormalDist)
@@ -165,26 +165,30 @@ START_MODULE
 
   #define CAPABILITY normaldist_loglike   // Test likelihood: normal distribution
   START_CAPABILITY
-  
+
     #define FUNCTION normaldist_loglike
     START_FUNCTION(double)
-    ALLOW_MODELS(NormalDist, test_parent_I)
+    ALLOW_MODELS_ONLY_VIA_GROUPS(NormalDist, SingletDM, CMSSM_demo)
+    MODEL_GROUP(group1, (NormalDist))
+    MODEL_GROUP(group2, (CMSSM_demo, SingletDM))
+    MODEL_GROUP(group3, (CMSSM_demo, NormalDist))
+    ALLOW_MODEL_COMBINATION(group1, group2)
     #undef FUNCTION
 
   #undef CAPABILITY
 
 
-  #define CAPABILITY doFarrayStuff 
-  START_CAPABILITY   
+  #define CAPABILITY doFarrayStuff
+  START_CAPABILITY
     #define FUNCTION do_Farray_stuff
     START_FUNCTION(double)
     BACKEND_REQ(libFarrayTestCommonBlock, (match), libFarrayTest_CB_type)
-    BACKEND_REQ(libFarrayTest_printStuff, (match), void, ())      
-    BACKEND_REQ(libFarrayTest_set_d, (match), void, ()) //FIXME the leading Gambit:: qualification will need to get removed automatically by these macros and the backend macros.
-    BACKEND_REQ(libFarrayTest_fptrRoutine, (match), void, (Gambit::Farray<double,1>&, int&, double(*)(Gambit::Farray<double,1>&)) )
+    BACKEND_REQ(libFarrayTest_printStuff, (match), void, ())
+    BACKEND_REQ(libFarrayTest_set_d, (match), void, ())
+    BACKEND_REQ(libFarrayTest_fptrRoutine, (match), void, (Farray<double,1>&, int&, double(*)(Farray<double,1>&)) )
     BACKEND_REQ(libFarrayTest_doubleFuncArray1, (match), double, (Gambit::Farray<double,1>&))
     BACKEND_REQ(libFarrayTest_doubleFuncArray2, (match), double, (Gambit::Farray<double,1>&))
-    BACKEND_REQ(libFarrayTest_doubleFunc, (match), double, (double&))      
+    BACKEND_REQ(libFarrayTest_doubleFunc, (match), double, (double&))
     BACKEND_OPTION((LibFarrayTest), (match))
     #undef FUNCTION
   #undef CAPABILITY
@@ -194,10 +198,39 @@ START_MODULE
   #define CAPABILITY marg_lnlike_test
   START_CAPABILITY
     #define FUNCTION marg_poisson_test
-      START_FUNCTION(double)
-      BACKEND_REQ_FROM_GROUP(lnlike_marg_poisson, lnlike_marg_poisson_lognormal_error, (), double, (int&, double&, double&, double&) )
-      BACKEND_REQ_FROM_GROUP(lnlike_marg_poisson, lnlike_marg_poisson_gaussian_error, (), double, (int&, double&, double&, double&) )
-      BACKEND_GROUP(lnlike_marg_poisson)
+    START_FUNCTION(double)
+    BACKEND_REQ_FROM_GROUP(lnlike_marg_poisson, lnlike_marg_poisson_lognormal_error, (), double, (int&, double&, double&, double&) )
+    BACKEND_REQ_FROM_GROUP(lnlike_marg_poisson, lnlike_marg_poisson_gaussian_error, (), double, (int&, double&, double&, double&) )
+    BACKEND_GROUP(lnlike_marg_poisson)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  // Tester 1 for BOSSed types.
+  #define CAPABILITY BOSSed_X
+  START_CAPABILITY
+    #define FUNCTION bossed_class_example1
+    START_FUNCTION(X)
+    NEEDS_CLASSES_FROM(BOSSMinimalExample, default, 1.0)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  // Tester 2 for BOSSed types.
+  #define CAPABILITY BOSS_tester
+  START_CAPABILITY
+    #define FUNCTION bossed_class_example2
+    START_FUNCTION(int)
+    DEPENDENCY(BOSSed_X, X)
+    NEEDS_CLASSES_FROM(BOSSMinimalExample) // same as NEEDS_CLASSES_FROM(BOSSMinimalExample, default)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+
+  // Pythia backend tester
+  #define CAPABILITY Pythia_tester
+  START_CAPABILITY
+    #define FUNCTION bossed_pythia_test_function
+    START_FUNCTION(bool)
+    NEEDS_CLASSES_FROM(Pythia, default)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -206,4 +239,3 @@ START_MODULE
 
 
 #endif /* defined(__ExampleBit_A_rollcall_hpp__) */
-

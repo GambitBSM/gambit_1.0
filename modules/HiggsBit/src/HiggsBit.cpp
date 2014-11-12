@@ -58,8 +58,6 @@ namespace Gambit
     void HB_LEPchisq(double &result) 
     {
       using namespace Pipes::HB_LEPchisq;
-      
-      char name[100] = "HiggsBit/example_w_decay.slha";
    
       // initialize LEP chisq tables
       BEreq::initialize_HiggsBounds_chisqtables();
@@ -71,8 +69,15 @@ namespace Gambit
       // initialize HiggsBounds to LEP only
       BEreq::initialize_HiggsBounds_int(nHneut,nHplus,ANA);
 
+      const int hb_clen = 100;
+
+      char sname[hb_clen] = "HiggsBit/example_w_decay.slha";
+      for (int i=strlen(sname); i<=hb_clen; ++i) { sname[i] = ' '; }
+
       // initialize decay info from SLHA file
-      BEreq::HiggsBounds_input_SLHA(byVal(name));
+      BEreq::HiggsBounds_input_SLHA(sname[0]);
+      
+      std::cout << sname << endl;
 
       // put in dummy (zero) mass uncertainties
       double dMhneut[3];
@@ -82,7 +87,7 @@ namespace Gambit
       double dMhch[1];
       dMhch[0] = 0.;
       BEreq::HiggsBounds_set_mass_uncertainties(&dMhneut[0],&dMhch[0]);
-
+      
       // run Higgs bounds 'classic'
       double HBresult, obsratio;
       int chan, ncombined;
@@ -108,7 +113,10 @@ namespace Gambit
     {
       using namespace Pipes::HS_LHCchisq;
       
-      char name[100] = "HiggsBit/example_w_decay.slha";
+      const int hb_clen = 100;
+
+      char sname[hb_clen] = "HiggsBit/example_w_decay.slha";
+      for (int i=strlen(sname); i<=hb_clen; ++i) { sname[i] = ' '; }
 
       int nHneut = 3; // number of neutral higgses
       int nHplus = 1; // number of charged higgses
@@ -130,7 +138,7 @@ namespace Gambit
       // BEreq::setup_rate_uncertainties(dCS,dBR);
 
       // initialize decay info from SLHA file
-      BEreq::HiggsBounds_input_SLHA(byVal(name));
+      BEreq::HiggsBounds_input_SLHA_HS(sname[0]);
 
       // run HiggsSignals
       int mode = 1;

@@ -5,7 +5,7 @@
  *
  */
 
-#define LIBPATH      "micromegas.so"
+#define LIBPATH      "Backends/lib/micromegas.so"
 #ifdef BACKENDRENAME
   #define BACKENDNAME BACKENDRENAME
 #else
@@ -22,6 +22,10 @@ BE_FUNCTION(darkOmega, double, (double*, int, double), "darkOmega", "oh2")
 BE_FUNCTION(suspectSUGRA, int, (double, double, double, double, double, double, double, double, double, double, double, double, double, double, double, double, double, double, double, double), "suspectSUGRA", "suspectSUGRA")
 BE_FUNCTION(lesHinput, int, (char*), "lesHinput", "lesHinput")
 BE_FUNCTION(sortOddParticles, int, (char*), "sortOddParticles","mass_spectrum")
+BE_FUNCTION(nucleonAmplitudes, int, (double(*)(double,double,double,double), double*, double*, double*, double*), "nucleonAmplitudes", "nucleonAmplitudes" )
+BE_FUNCTION(FeScLoop, double, (double, double, double, double), "FeScLoop", "FeScLoop")
+
+BE_VARIABLE(GENERAL_VAR(micrOMEGAs::MOcommonSTR, mocommon_), "mocommon_", "MOcommon")
 
 BE_INI_DEPENDENCY(MSSMspectrum, eaSLHA)
 
@@ -180,15 +184,13 @@ BE_INI_FUNCTION
     //Scale = 0?
     BEreq::assignVal("tB",   to<double>(mySLHA.at("HMIX").at(2).at(1))); */
 
-
     // TODO: Add error checking
     err = lesHinput(byVal(filename));
+    std::cout << "MicrOmegas lesHinput error code: " << err << std::endl;
     err = sortOddParticles(byVal(cdmName));
+    std::cout << "MicrOmegas sortOddParticles error code: " << err << std::endl;
 }
 DONE
 
-#undef LIBPATH
-#undef BACKENDNAME
-#undef VERSION
-#undef SAFE_VERSION
+#include "backend_undefs.hpp"
 

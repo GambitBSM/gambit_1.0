@@ -13,7 +13,7 @@
 ///   
 ///  \author Ben Farmer
 ///          (benjamin.farmer@monash.edu.au)
-///  \date 2013 Jul, Sep, 2014 Jan
+///  \date 2013 Jul, Sep, 2014 Jan, May
 ///
 ///  *********************************************
 
@@ -21,7 +21,9 @@
 #ifndef __printers_rollcall_hpp__
 #define __printers_rollcall_hpp__
 
-#include "printers/ostreamprinter.hpp"
+// ostream printer is currently obsolete. Do not use.
+//#include "printers/ostreamprinter.hpp"
+
 #include "printers/asciiprinter.hpp"
 
 #endif

@@ -1,3 +1,11 @@
+// -*- C++ -*-
+//
+// This file is part of MCUtils -- https://bitbucket.org/andybuckley/mcutils
+// Copyright (C) 2013-2014 Andy Buckley <andy.buckley@cern.ch>
+//
+// Embedding of MCUtils code in other projects is permitted provided this
+// notice is retained and the MCUtils namespace and include path are changed.
+//
 #pragma once
 
 /// @file Functions for filtering HepMC record contents
@@ -6,7 +14,7 @@
 #include "HepMC/GenEvent.h"
 #include <vector>
 
-#include "MCUtils/Utils.h"
+#include "HEPUtils/Utils.h"
 #include "MCUtils/HepMCParticleClassifiers.h"
 #include "MCUtils/HepMCVertexClassifiers.h"
 #include "MCUtils/HepMCParticleFilters.h"

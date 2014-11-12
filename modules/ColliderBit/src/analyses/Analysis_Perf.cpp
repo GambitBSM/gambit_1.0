@@ -15,7 +15,7 @@ namespace Gambit {
   namespace ColliderBit {
 
 
-    bool SortPt(Particle *i, Particle *j) { return (i->pT() > j->pT()); }
+    bool SortPt(const Particle* i, const Particle* j) { return (i->pT() > j->pT()); }
 
 
     class Analysis_Perf : public Analysis {
@@ -129,10 +129,15 @@ namespace Gambit {
       }
 
 
+      void collect_results() {
+        // DO NOTHING
+      }
+
+
     };
 
 
-    DEFINE_ANAFACTORY(Perf)
+    DEFINE_ANALYSIS_FACTORY(Perf)
 
 
   }

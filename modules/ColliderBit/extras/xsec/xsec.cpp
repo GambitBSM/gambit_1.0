@@ -12,6 +12,13 @@ using namespace std;
 namespace xsec{
 
 
+  namespace {
+    template <typename T> int sgn(T val) {
+      return (T(0) < val) - (val < T(0));
+    }
+  }
+
+
   void Evaluator::_init_pidmap() {
     // Make pid map
 
@@ -150,6 +157,7 @@ namespace xsec{
 
       }
     }
+    cout << "  => xs_tot = " << xs << " pb" << endl;
     return xs;
   }
 
@@ -172,9 +180,9 @@ namespace xsec{
 
     // Find scales
     double Qxsec = 1000.; // we want params at 1 TeV since that's where the interpolators were fitted
-    double Qmsoft = point.msoft.q(); //*1000; //< hack for ATLAS' SUSY-HIT GeV/TeV corruption DANGER DANGER DANGER!
+    double Qmsoft = point.msoft.q();//*1000; //< hack for ATLAS' SUSY-HIT GeV/TeV corruption DANGER DANGER DANGER!
     double Qextpar = point.extpar(0);
-    double Qhmix = point.hmix.q(); //*1000; //< hack for ATLAS' SUSY-HIT GeV/TeV corruption DANGER DANGER DANGER!
+    double Qhmix = point.hmix.q();//*1000; //< hack for ATLAS' SUSY-HIT GeV/TeV corruption DANGER DANGER DANGER!
     cout << "Qmsoft " << Qmsoft << endl;
     cout << "Qextpar " << Qextpar << endl;
 
@@ -217,13 +225,13 @@ namespace xsec{
     // Order of parameters defined by Martin's NN training string
     // @tanB,@M_1,@M_2,@M_3,@mA,@meL,@mmuL,@mtauL,@meR,@mmuR,@mtauR,@mqL1,@mqL2,@mqL3,@muR,@mcR,@mtR,@mdR,@msR,@mbR,@At,@Ab,@Atau,@mu
     else if (abs(Qmsoft-Qhmix) < 1.0 && abs(Qmsoft) > 0.1){
-      par[0] = point.hmix(3);  // \tan\beta
+      par[0] = point.hmix(2);  // \tan\beta
       par[1] = point.msoft(1);  // M_1
       par[2] = point.msoft(2);  // M_2
       par[3] = point.msoft(3);  // M_3
 
-      cout << endl << "Started with these masses: " << endl;
-      cout << par[1] << " " << par[2] << " " << par[3] << endl;
+      //cout << endl << "Started with these masses: " << endl;
+      //cout << par[1] << " " << par[2] << " " << par[3] << endl;
 
       par[4] = sqrt(point.hmix(4));  // m_A WARNING: not pole
       par[5] = point.msoft(31); // meL
@@ -271,11 +279,9 @@ namespace xsec{
         par[i] = par[i] + 1./8./pow(pi,2)*b[i]*pow(g[i],2)*par[i]*dt;
         g[i] = g[i] + 1./16./pow(pi,2)*b[i]*pow(g[i],3)*dt;
       }
-      cout << par[1] << " " << par[2] << " " << par[3] << endl;
+      //cout << par[1] << " " << par[2] << " " << par[3] << endl;
     }
 
-    cout << "Wanted these masses: " << endl;
-    cout << -1.87089880e+02 << " " << 1.53667310e+02 << " " << -5.32953183e+02 << endl;
   }
 
 
@@ -287,12 +293,13 @@ namespace xsec{
 
 
   double Evaluator::xsec(const string& process, const string& slhafile) const {
+    /// @todo: Do some caching via static variables to avoid reloading the same file... thread safety?
     Pythia8::SusyLesHouches point(slhafile);
     return xsec(process, point);
   }
 
 
-  double Evaluator::xsec(int pid1, int pid2, Pythia8::SusyLesHouches & point) const {
+  double Evaluator::xsec(int pid1, int pid2, Pythia8::SusyLesHouches& point) const {
     const string process = get_process(pid1, pid2);
     // if (process.empty()) {
     //   cout << "Illegal PID in xsec call: " << pid1 << " " << pid2 << endl;
@@ -308,16 +315,13 @@ namespace xsec{
   }
 
 
-  double Evaluator::xsec(const string& process, double * par) const {
+  double Evaluator::xsec(const string& process, double* par) const {
     // Returns cross section in pb
-    // par is expected to be 24 parameter array with MSSM parameters:
-    // tanB, M_1, M_2, M_3, At, Ab, Atau, mu, mA
-    // meL, mmuL, mtauL, meR, mmuR, mtauR
-    // mqL1, muR, mdR, mqL2, mcR, msR, mqL3, mtR, mbR
 
-    // The NN gives log10 of cross section
+    // The NN gives log10 of cross section. If log(xs) = 0 there's an error: return 0
     try {
-      const double xsec = pow(10.,log10xsec(process, par));
+      const double logxs = log10xsec(process, par);
+      const double xsec = (logxs != 0) ? pow(10., logxs) : 0;
       //cout << process << " got evaluated: " << xsec << " pb" << endl;
       return xsec;
     } catch (const std::exception& e) {
@@ -327,27 +331,38 @@ namespace xsec{
   }
 
 
-  double Evaluator::log10xsec(const string& process, double * par) const {
+  double Evaluator::log10xsec(const string& process, double* par) const {
     // Returns log10(cross section in pb)
-    // par is expected to be 24 parameter array with MSSM parameters:
-    // tanB, M_1, M_2, M_3, At, Ab, Atau, mu, mA
-    // meL, mmuL, mtauL, meR, mmuR, mtauR
-    // mqL1, muR, mdR, mqL2, mcR, msR, mqL3, mtR, mbR
 
     //#define NO_IMPL_PROC throw std::runtime_error(("Unimplemented xsec process type, " + process).c_str())
+
+    // Check that parameters are reasonable, reset if not
+    // cout << "CHECKING PARAMS" << endl;
+    for (int i = 0; i < 24; i++) {
+      const double val = par[i];
+      if (i == 0) { // tanB in [2,50]
+        if (val < 2.) par[i] = 2.;
+        if (val > 50.) par[i] = 50.;
+      } else if (i > 0 && i < 20 && abs(val) > 2000.) { // Soft masses in [-2000,2000]
+        par[i] = sgn(val) * 2000.;
+      }
+      if (val != par[i])
+        cout << "Param " << i << " reset to NN validity boundary: "
+             << val << " -> " << par[i] << endl;
+    }
 
     // Gluino pair production
     if(process == "gg") return gg.Value(0,par);
 
     // Neutralino/chargino + gluino production
-    if(process == "chi10g") return ng_n1g.Value(0,par);
-    if(process == "chi20g") return ng_n2g.Value(0,par);
-    if(process == "chi30g") return ng_n3g.Value(0,par);
-    if(process == "chi40g") return ng_n4g.Value(0,par);
-    if(process == "chi1+g") return ng_n5g.Value(0,par);
-    if(process == "chi2+g") return ng_n6g.Value(0,par);
-    if(process == "chi1-g") return ng_n7g.Value(0,par);
-    if(process == "chi2-g") return ng_n8g.Value(0,par);
+    if(process == "chi10g") return ng_chi01.Value(0,par);
+    if(process == "chi20g") return ng_chi02.Value(0,par);
+    if(process == "chi30g") return ng_chi03.Value(0,par);
+    if(process == "chi40g") return ng_chi04.Value(0,par);
+    if(process == "chi1+g") return ng_chiPlus1.Value(0,par);
+    if(process == "chi2+g") return ng_chiPlus2.Value(0,par);
+    if(process == "chi1-g") return ng_chiMinus1.Value(0,par);
+    if(process == "chi2-g") return ng_chiMinus2.Value(0,par);
 
     // Neutralino & chargino pair production
     if(process == "chi10chi10") return nn_n1n1.Value(0,par);
@@ -393,74 +408,59 @@ namespace xsec{
     if(process == "uRg") return uRg.Value(0,par);
 
     // Neutralino/chargino + squark
-    if(process == "chi10dL") return 0;
-    if(process == "chi10dR") return 0;
-    if(process == "chi10uL") return 0;
-    if(process == "chi10uR") return 0;
-    if(process == "chi10sL") return 0;
-    if(process == "chi10sR") return 0;
-    if(process == "chi10cL") return 0;
-    if(process == "chi10cR") return 0;
-    if(process == "chi20dL") return 0;
-    if(process == "chi20dR") return 0;
-    if(process == "chi20uL") return 0;
-    if(process == "chi20uR") return 0;
-    if(process == "chi20sL") return 0;
-    if(process == "chi20sR") return 0;
-    if(process == "chi20cL") return 0;
-    if(process == "chi20cR") return 0;
-    if(process == "chi30dL") return 0;
-    if(process == "chi30dR") return 0;
-    if(process == "chi30uL") return 0;
-    if(process == "chi30uR") return 0;
-    if(process == "chi30sL") return 0;
-    if(process == "chi30sR") return 0;
-    if(process == "chi30cL") return 0;
-    if(process == "chi30cR") return 0;
-    if(process == "chi40dL") return 0;
-    if(process == "chi40dR") return 0;
-    if(process == "chi40uL") return 0;
-    if(process == "chi40uR") return 0;
-    if(process == "chi40sL") return 0;
-    if(process == "chi40sR") return 0;
-    if(process == "chi40cL") return 0;
-    if(process == "chi40cR") return 0;
-    if(process == "chi1+dL") return 0;
-    if(process == "chi1+dR") return 0;
-    if(process == "chi1+uL") return 0;
-    if(process == "chi1+uR") return 0;
-    if(process == "chi1+sL") return 0;
-    if(process == "chi1+sR") return 0;
-    if(process == "chi1+cL") return 0;
-    if(process == "chi1+cR") return 0;
-    if(process == "chi2+dL") return 0;
-    if(process == "chi2+dR") return 0;
-    if(process == "chi2+uL") return 0;
-    if(process == "chi2+uR") return 0;
-    if(process == "chi2+sL") return 0;
-    if(process == "chi2+sR") return 0;
-    if(process == "chi2+cL") return 0;
-    if(process == "chi2+cR") return 0;
-    if(process == "chi1-dL") return 0;
-    if(process == "chi1-dR") return 0;
-    if(process == "chi1-uL") return 0;
-    if(process == "chi1-uR") return 0;
-    if(process == "chi1-sL") return 0;
-    if(process == "chi1-sR") return 0;
-    if(process == "chi1-cL") return 0;
-    if(process == "chi1-cR") return 0;
-    if(process == "chi2-dL") return 0;
-    if(process == "chi2-dR") return 0;
-    if(process == "chi2-uL") return 0;
-    if(process == "chi2-uR") return 0;
-    if(process == "chi2-sL") return 0;
-    if(process == "chi2-sR") return 0;
-    if(process == "chi2-cL") return 0;
-    if(process == "chi2-cR") return 0;
+    if(process == "chi10dL") return ns_chi01_dL.Value(0,par);
+    if(process == "chi10dR") return ns_chi01_dR.Value(0,par);
+    if(process == "chi10uL") return ns_chi01_uL.Value(0,par);
+    if(process == "chi10uR") return ns_chi01_uR.Value(0,par);
+    if(process == "chi10sL") return ns_chi01_sL.Value(0,par);
+    if(process == "chi10sR") return ns_chi01_sR.Value(0,par);
+    if(process == "chi10cL") return ns_chi01_cL.Value(0,par);
+    if(process == "chi10cR") return ns_chi01_cR.Value(0,par);
+    if(process == "chi20dL") return ns_chi02_dL.Value(0,par);
+    if(process == "chi20dR") return ns_chi02_dR.Value(0,par);
+    if(process == "chi20uL") return ns_chi02_uL.Value(0,par);
+    if(process == "chi20uR") return ns_chi02_uR.Value(0,par);
+    if(process == "chi20sL") return ns_chi02_sL.Value(0,par);
+    if(process == "chi20sR") return ns_chi02_sR.Value(0,par);
+    if(process == "chi20cL") return ns_chi02_cL.Value(0,par);
+    if(process == "chi20cR") return ns_chi02_cR.Value(0,par);
+    if(process == "chi30dL") return ns_chi03_dL.Value(0,par);
+    if(process == "chi30dR") return ns_chi03_dR.Value(0,par);
+    if(process == "chi30uL") return ns_chi03_uL.Value(0,par);
+    if(process == "chi30uR") return ns_chi03_uR.Value(0,par);
+    if(process == "chi30sL") return ns_chi03_sL.Value(0,par);
+    if(process == "chi30sR") return ns_chi03_sR.Value(0,par);
+    if(process == "chi30cL") return ns_chi03_cL.Value(0,par);
+    if(process == "chi30cR") return ns_chi03_cR.Value(0,par);
+    if(process == "chi40dL") return ns_chi04_dL.Value(0,par);
+    if(process == "chi40dR") return ns_chi04_dR.Value(0,par);
+    if(process == "chi40uL") return ns_chi04_uL.Value(0,par);
+    if(process == "chi40uR") return ns_chi04_uR.Value(0,par);
+    if(process == "chi40sL") return ns_chi04_sL.Value(0,par);
+    if(process == "chi40sR") return ns_chi04_sR.Value(0,par);
+    if(process == "chi40cL") return ns_chi04_cL.Value(0,par);
+    if(process == "chi40cR") return ns_chi04_cR.Value(0,par);
+    if(process == "chi1+dL") return ns_chiPlus1_dL.Value(0,par);
+    if(process == "chi1+uL") return ns_chiPlus1_uL.Value(0,par);
+    if(process == "chi1+sL") return ns_chiPlus1_sL.Value(0,par);
+    if(process == "chi1+cL") return ns_chiPlus1_cL.Value(0,par);
+    if(process == "chi2+dL") return ns_chiPlus2_dL.Value(0,par);
+    if(process == "chi2+uL") return ns_chiPlus2_uL.Value(0,par);
+    if(process == "chi2+sL") return ns_chiPlus2_sL.Value(0,par);
+    if(process == "chi2+cL") return ns_chiPlus2_cL.Value(0,par);
+    if(process == "chi1-dL") return ns_chiMinus1_dL.Value(0,par);
+    if(process == "chi1-uL") return ns_chiMinus1_uL.Value(0,par);
+    if(process == "chi1-sL") return ns_chiMinus1_sL.Value(0,par);
+    if(process == "chi1-cL") return ns_chiMinus1_cL.Value(0,par);
+    if(process == "chi2-dL") return ns_chiMinus2_dL.Value(0,par);
+    if(process == "chi2-uL") return ns_chiMinus2_uL.Value(0,par);
+    if(process == "chi2-sL") return ns_chiMinus2_sL.Value(0,par);
+    if(process == "chi2-cL") return ns_chiMinus2_cL.Value(0,par);
 
     // Squark + antisquark production
     if(process == "dLcRbar") return sb_dLcR.Value(0,par);
     if(process == "dLdLbar") return sb_dLdL.Value(0,par);
+    if(process == "dLuLbar") return sb_dLuL.Value(0,par);
     if(process == "dLdRbar") return sb_dLdR.Value(0,par);
     if(process == "dLsRbar") return sb_dLsR.Value(0,par);
     if(process == "dLuRbar") return sb_dLuR.Value(0,par);
@@ -485,21 +485,20 @@ namespace xsec{
     if(process == "sLuRbar") return sb_sLuR.Value(0,par);
     if(process == "sRcRbar") return sb_sRcR.Value(0,par);
     if(process == "sRsRbar") return sb_sRsR.Value(0,par);
-    if(process == "cLcLbar") return sb_cLcL.Value(0,par);
+    if(process == "cLcLbar") return 0; // BROKEN!!! return sb_cLcL.Value(0,par); //
     if(process == "cLcRbar") return sb_cLcR.Value(0,par);
     if(process == "cLdLbar") return sb_cLdL.Value(0,par);
     if(process == "cLdRbar") return sb_cLdR.Value(0,par);
-    if(process == "cLsLbar") return sb_cLsL.Value(0,par);
+    if(process == "cLsLbar") return 0; // BROKEN!!! return sb_cLsL.Value(0,par); //
     if(process == "cLsRbar") return sb_cLsR.Value(0,par);
     if(process == "cLuLbar") return sb_cLuL.Value(0,par);
     if(process == "cLuRbar") return sb_cLuR.Value(0,par);
     if(process == "cRcRbar") return sb_cRcR.Value(0,par);
-    if(process == "b1b1bar") return b1b1.Value(0,par);
-    if(process == "b1b2bar") return 0;
-    if(process == "b2b2bar") return b2b2.Value(0,par);
-    if(process == "t1t1bar") return t1t1.Value(0,par);
-    if(process == "t1t2bar") return 0;
-    if(process == "t2t2bar") return t2t2.Value(0,par);
+
+    if(process == "b1b1bar") return bb_b1b1.Value(0,par);
+    if(process == "b2b2bar") return bb_b2b2.Value(0,par);
+    if(process == "t1t1bar") return tb_t1t1.Value(0,par);
+    if(process == "t2t2bar") return tb_t2t2.Value(0,par);
 
     // Squark + squark production
     if(process == "uLcR") return ss_uLcR.Value(0,par);
@@ -515,6 +514,7 @@ namespace xsec{
     if(process == "dLdL") return ss_dLdL.Value(0,par);
     if(process == "dLdR") return ss_dLdR.Value(0,par);
     if(process == "dLsR") return ss_dLsR.Value(0,par);
+    if(process == "dLuL") return ss_dLuL.Value(0,par);
     if(process == "dLuR") return ss_dLuR.Value(0,par);
     if(process == "dRcR") return ss_dRcR.Value(0,par);
     if(process == "dRdR") return ss_dRdR.Value(0,par);
@@ -529,11 +529,11 @@ namespace xsec{
     if(process == "sLuR") return ss_sLuR.Value(0,par);
     if(process == "sRcR") return ss_sRcR.Value(0,par);
     if(process == "sRsR") return ss_sRsR.Value(0,par);
-    if(process == "cLcL") return ss_cLcL.Value(0,par);
+    if(process == "cLcL") return 0; // BROKEN!!! return ss_cLcL.Value(0,par); //
     if(process == "cLcR") return ss_cLcR.Value(0,par);
     if(process == "cLdL") return ss_cLdL.Value(0,par);
     if(process == "cLdR") return ss_cLdR.Value(0,par);
-    if(process == "cLsL") return ss_cLsL.Value(0,par);
+    if(process == "cLsL") return 0; // BROKEN!!! return ss_cLsL.Value(0,par); //
     if(process == "cLsR") return ss_cLsR.Value(0,par);
     if(process == "cLuL") return ss_cLuL.Value(0,par);
     if(process == "cLuR") return ss_cLuR.Value(0,par);

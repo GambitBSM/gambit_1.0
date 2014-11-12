@@ -94,7 +94,7 @@ namespace Gambit {
 
         int nTrueBJets=0;
         for(Jet * tmpJet: jets){
-          if(tmpJet->getPdgId()==5){
+          if(tmpJet->isBJet()){
             trueBjet1=tmpJet;
             nTrueBJets++;
             break;
@@ -102,7 +102,7 @@ namespace Gambit {
         }
 
         for(Jet * tmpJet: jets){
-          if(tmpJet->getPdgId()==5 && tmpJet!=trueBjet1){
+          if(tmpJet->isBJet() && tmpJet!=trueBjet1){
             trueBjet2=tmpJet;
             nTrueBJets++;
             break;
@@ -756,10 +756,60 @@ namespace Gambit {
         return 0;
       }
 
+
+      void collect_results() {
+
+        //Note: am not using shape fit bins
+        //They need to be added (but will probably update to paper result)
+
+        SignalRegionData results_BC1;
+        results_BC1.set_observation(456.);
+        results_BC1.set_background(482.);
+        results_BC1.set_backgroundsys(76.);
+        results_BC1.set_signalsys(0.);
+        results_BC1.set_signal(_numBC1);
+
+        SignalRegionData results_BC2;
+        results_BC2.set_observation(25.);
+        results_BC2.set_background(18.);
+        results_BC2.set_backgroundsys(5.);
+        results_BC2.set_signalsys(0.);
+        results_BC2.set_signal(_numBC2);
+
+        SignalRegionData results_BC3;
+        results_BC3.set_observation(6.);
+        results_BC3.set_background(7.);
+        results_BC3.set_backgroundsys(3.);
+        results_BC3.set_signalsys(0.);
+        results_BC3.set_signal(_numBC3);
+
+        SignalRegionData results_TN2;
+        results_TN2.set_observation(14.);
+        results_TN2.set_background(13.);
+        results_TN2.set_backgroundsys(3.);
+        results_TN2.set_signalsys(0.);
+        results_TN2.set_signal(_numTN2);
+
+        SignalRegionData results_TN3;
+        results_TN3.set_observation(7.);
+        results_TN3.set_background(5.);
+        results_TN3.set_backgroundsys(2.);
+        results_TN3.set_signalsys(0.);
+        results_TN3.set_signal(_numTN3);
+
+        add_result(results_BC1);
+        add_result(results_BC2);
+        add_result(results_BC3);
+        add_result(results_TN2);
+        add_result(results_TN3);
+
+        return;
+      }
+
     };
 
 
-    DEFINE_ANAFACTORY(ATLAS_1LEPStop_20invfb)
+    DEFINE_ANALYSIS_FACTORY(ATLAS_1LEPStop_20invfb)
 
   }
 }

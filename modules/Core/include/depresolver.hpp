@@ -86,12 +86,15 @@ namespace Gambit
     /// Check whether s1 (wildcard + regex allowed) matches s2
     bool stringComp(str s1, str s2);
 
+    /// Type comparison taking into account equivalence classes
+    bool typeComp(str s1, str s2, const Utils::type_equivalency & eq);
+
     /// Main dependency resolver
     class DependencyResolver
     {
       public:
         /// Constructor, provide module and backend functor lists
-        DependencyResolver(const gambit_core&, const Models::ModelFunctorClaw&, const IniParser::IniFile&, Printers::BasePrinter&);
+        DependencyResolver(const gambit_core&, const Models::ModelFunctorClaw&, const IniParser::IniFile&, const Utils::type_equivalency&, Printers::BasePrinter&);
 
         /// The dependency resolution
         void doResolution();
@@ -171,6 +174,9 @@ namespace Gambit
 
         /// ini file to which this dependency resolver is bound
         const IniParser::IniFile *boundIniFile;
+
+        /// Type equivalency object to which this dependency resolver is bound
+        const Utils::type_equivalency *boundTEs;
 
         /// Printer object to which this dependency resolver is bound
         Printers::BasePrinter *boundPrinter;

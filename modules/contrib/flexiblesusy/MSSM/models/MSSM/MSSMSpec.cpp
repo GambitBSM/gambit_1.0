@@ -1,6 +1,5 @@
-# include "MSSMSpec.hpp"
-
-
+#include "MSSMSpec.hpp"
+#include "MSSM_slha_io.hpp" // only needed by 'dump2slha'; can remove if this function changes
 using namespace flexiblesusy;
 
 MSSMSpec::MSSMSpec(MSSM<Two_scale> m) :
@@ -11,10 +10,25 @@ MSSMSpec::MSSMSpec(MSSM<Two_scale> m) :
 {
 }
 
+// Default constructor
+MSSMSpec::MSSMSpec() :
+   mssm_ph(*this),
+   mssm_drbar_pars(*this),
+   Spec(mssm_drbar_pars, mssm_ph)
+{
+}
+
 MSSMSpec::~MSSMSpec()
 {
 }
 
+void MSSMSpec::dump2slha(const std::string& filename) const
+{
+  // Write SLHA file (for debugging purposes...)
+  MSSM_slha_io slha_io;
+  slha_io.set_spectrum(model);
+  slha_io.write_to_file(filename);
+}
 
 MssmFS MSSM_DRbarPars::get_bound_spec() const
 {
@@ -105,11 +119,11 @@ int MSSMSpec::get_numbers_stable_particles() const {
 //these are just wrappers.  Need to test this carefully though
 //inheritance is complicated
 void MSSM_DRbarPars::RunToScale(double scale){
-   std::cout << "In mssm implementation of RunToSacle" << std::endl;
+   std::cout << "In mssm implementation of RunToScale" << std::endl;
    my_parent.model.MSSM<Two_scale>::run_to(scale);
 }
 double MSSM_DRbarPars::GetScale() const {
-   std::cout << "In mssm implementation of GetSacle" << std::endl;
+   std::cout << "In mssm implementation of GetScale" << std::endl;
    return my_parent.model.get_scale();
 }
 void MSSM_DRbarPars::SetScale(double scale){

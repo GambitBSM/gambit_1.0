@@ -31,7 +31,7 @@
 #include "depresolver.hpp"
 #include "models.hpp"
 #include "log.hpp"
-#include "stream_printers.hpp"
+#include "stream_overloads.hpp"
 
 #include <boost/format.hpp>
 #include <boost/graph/graphviz.hpp>
@@ -114,10 +114,10 @@ namespace Gambit
 
     // Check whether functor matches observableType
     // Matches capability, type, function and module name
-    bool funcMatchesIniEntry(functor *f, const IniParser::ObservableType &e)
+    bool funcMatchesIniEntry(functor *f, const IniParser::ObservableType &e, const Utils::type_equivalency & eq)
     {
       if (     stringComp( e.capability, (*f).capability() )
-           and stringComp( e.type, (*f).type() )
+           and typeComp( e.type, (*f).type(), eq)
            and stringComp( e.function, (*f).name() )
            and stringComp( e.module, (*f).origin() ) )
            return true;
@@ -186,6 +186,26 @@ namespace Gambit
       return false;
     }
 
+    // Same thing for types
+    bool typeComp(str s1, str s2, const Utils::type_equivalency & eq)
+    {
+      bool match1, match2;
+      if (stringComp(s1, s2)) return true;  // Does it just match?
+      // Otherwise loop over equivalence classes.
+      for (auto it1 = eq.equivalency_classes.begin(); it1 != eq.equivalency_classes.end(); it1++)
+      {
+        match1 = match2 = false;
+        for (auto it2 = it1->begin(); it2 != it1->end(); it2++)
+        {
+          if (s1 == *it2) match1 = true;
+          if (stringComp(*it2, s2)) match2 = true;
+        }
+        if (match1 and match2) return true;
+      }
+      return false;
+    }
+
+
 
     ///////////////////////////////////////////////////
     // Public definitions of DependencyResolver class
@@ -195,10 +215,20 @@ namespace Gambit
     DependencyResolver::DependencyResolver(const gambit_core &core, 
                                            const Models::ModelFunctorClaw &claw,
                                            const IniParser::IniFile &iniFile,
+                                           const Utils::type_equivalency &equiv_classes,
                                                  Printers::BasePrinter &printer)
-     : boundCore(&core), boundClaw(&claw), boundIniFile(&iniFile), boundPrinter(&printer), index(get(vertex_index,masterGraph))
+     : boundCore(&core), boundClaw(&claw), boundIniFile(&iniFile), boundTEs(&equiv_classes), boundPrinter(&printer), index(get(vertex_index,masterGraph))
     {
       addFunctors();
+      logger() << LogTags::dependency_resolver << endl;
+      logger() << "#######################################"   << endl;
+      logger() << "#  List of Type Equivalency Classes   #"   << endl;
+      logger() << "#######################################"   << endl;
+      for (std::set<std::set<str> >::const_iterator it = boundTEs->equivalency_classes.begin(); it != boundTEs->equivalency_classes.end(); ++it)
+      {
+        logger() << *it << endl;
+      }
+      logger() << EOM;
     }
 
     //
@@ -219,7 +249,7 @@ namespace Gambit
       logger() << "#        List of Target ObsLikes      #"   << endl;
       logger() << "#                                     #"   << endl;
       logger() << "# format: Capability (Type) [Purpose] #"   << endl;
-      logger() << "#######################################"   << endl << endl;
+      logger() << "#######################################"   << endl;
       for (auto it = observables.begin(); it != observables.end(); ++it)
       {
         // TODO: Format output
@@ -311,15 +341,15 @@ namespace Gambit
       std::set<VertexID> done; //set of vertices already accounted for
       std::vector<VertexID> order = getObsLikeOrder();
 
-      str formatString  = "%-5s %-25s %-25s\n";
+      str formatString  = "%-5s %-25s %-25s %-25s\n";
       // Might need to check if terminal supports unicode characters...
-      str formatString0 = "%-7s %-23s %-25s %-6s\n";  // header
-      str formatString1a= "%-9s %-21s %-25s %-6s\n";  // target functors 
-      str formatString1b= "%-4s \u2514\u2500\u2500> %-21s %-25s %-6s\n";  // target functors 
-      str formatString2a= "     \u250C\u2500 %-23s %-25s %-6s\n";  // parents
-      str formatString2b= "     \u251C\u2500 %-23s %-25s %-6s\n";
-      str formatString3a= "     \u250CX %-23s %-25s %-6s\n"; // "already done" parents
-      str formatString3b= "     \u251CX %-23s %-25s %-6s\n";
+      str formatString0 = "%-7s %-23s %-25s %-25s %-6s\n";  // header
+      str formatString1a= "%-9s %-21s %-25s %-25s %-6s\n";  // target functors 
+      str formatString1b= "%-4s \u2514\u2500\u2500> %-21s %-25s %-25s %-6s\n";  // target functors 
+      str formatString2a= "     \u250C\u2500 %-23s %-25s %-25s %-6s\n";  // parents
+      str formatString2b= "     \u251C\u2500 %-23s %-25s %-25s %-6s\n";
+      str formatString3a= "     \u250CX %-23s %-25s %-25s %-6s\n"; // "already done" parents
+      str formatString3b= "     \u251CX %-23s %-25s %-25s %-6s\n";
 
       int i = 0;
 
@@ -327,7 +357,7 @@ namespace Gambit
       std::ostringstream ss;
       ss << endl << "Initial target functor evaluation order" << endl;
       ss << "----------------------------------" << endl;
-      ss << boost::format(formatString)% "#"% "FUNCTION"% "ORIGIN";
+      ss << boost::format(formatString)% "#"% "FUNCTION"% "CAPABILITY"% "ORIGIN";
  
       for (std::vector<VertexID>::const_iterator 
                   vi  = order.begin(); 
@@ -336,6 +366,7 @@ namespace Gambit
         ss << boost::format(formatString)%
          i%
          (*masterGraph[*vi]).name()%
+         (*masterGraph[*vi]).capability()%
          (*masterGraph[*vi]).origin();
         i++;
       }
@@ -347,7 +378,7 @@ namespace Gambit
       // This doesn't figure out the sequence within each target functor group; I'm not 100% sure where that is determined. This does, however, show which groups get evaluated first, and which functors are already evaluated.
       ss << endl << "Full initial functor evaluation order" << endl;
       ss << "----------------------------------" << endl;
-      ss << boost::format(formatString0)% "#"% "FUNCTION"% "ORIGIN"% "PRINT?";
+      ss << boost::format(formatString0)% "#"% "FUNCTION"% "CAPABILITY"% "ORIGIN"% "PRINT?";
  
       for (std::vector<VertexID>::const_iterator 
                   vi  = order.begin(); 
@@ -382,6 +413,7 @@ namespace Gambit
             {
               ss << boost::format(formatstr)%
                 (*masterGraph[*vi2]).name()%
+                (*masterGraph[*vi2]).capability()%
                 (*masterGraph[*vi2]).origin()%
                 (*masterGraph[*vi2]).requiresPrinting();
             }
@@ -396,6 +428,7 @@ namespace Gambit
         ss << boost::format(formatstr)%
          i%
          (*masterGraph[*vi]).name()%
+         (*masterGraph[*vi]).capability()%
          (*masterGraph[*vi]).origin()%
          (*masterGraph[*vi]).requiresPrinting();
         i++;
@@ -593,19 +626,22 @@ namespace Gambit
       std::vector<functor *>::const_iterator fi, fi_end = boundCore->getBackendFunctors().end();
       std::vector<str> modelList = boundClaw->get_activemodels();
 
-      // Activate those functors that match one of the models being scanned.
-      for (std::vector<str>::iterator it = modelList.begin(); it != modelList.end(); ++it)
+      // Activate those module functors that match the combination of models being scanned.
+      for (boost::tie(vi, vi_end) = vertices(masterGraph); vi != vi_end; ++vi)
       {
-        // Module functors
-        for (boost::tie(vi, vi_end) = vertices(masterGraph); vi != vi_end; ++vi)
+        if (masterGraph[*vi]->status() >= 0 and masterGraph[*vi]->modelComboAllowed(modelList))
         {
-          if (masterGraph[*vi]->modelAllowed(*it))
+          for (std::vector<str>::iterator it = modelList.begin(); it != modelList.end(); ++it)
           {
             masterGraph[*vi]->notifyOfModel(*it);
             masterGraph[*vi]->setStatus(1);
           }
         }
-        // Backend functors
+      }
+
+      // Activate those backend functors that match one of the models being scanned.
+      for (std::vector<str>::iterator it = modelList.begin(); it != modelList.end(); ++it)
+      {
         for (fi = boundCore->getBackendFunctors().begin(); fi != fi_end; ++fi)
         {
           // Activate if the backend vertex permits the model and has not been (severely) disabled by the backend system
@@ -701,7 +737,7 @@ namespace Gambit
                 ( masterGraph[*vi]->type() == quantity.second  or quantity.second == "" ) )
           // with inifile entry, we check capability, type, function name and
           // module name.
-            and ( entryExists ? funcMatchesIniEntry(masterGraph[*vi], *depEntry) : true ) )
+            and ( entryExists ? funcMatchesIniEntry(masterGraph[*vi], *depEntry, *boundTEs) : true ) )
           {
             // Add to vertex candidate list
             vertexCandidates.push_back(*vi);
@@ -957,7 +993,7 @@ namespace Gambit
       for (IniParser::ObservablesType::const_iterator it =
           entries.begin(); it != entries.end(); ++it)
       {
-        if ( funcMatchesIniEntry(masterGraph[toVertex], *it ) )
+        if ( funcMatchesIniEntry(masterGraph[toVertex], *it, *boundTEs) )
         {
           auxEntryCandidates.push_back(&(*it));
         }
@@ -1133,7 +1169,7 @@ namespace Gambit
         // Without inifile entry, just match any capability-type pair exactly.
         if ( std::find(reqs.begin(), reqs.end(), (*itf)->quantity()) != reqs.end() 
         // With inifile entry, we also check capability, type, function name and module name.
-        and ( entryExists ? funcMatchesIniEntry(*itf, *depEntry) : true ) )
+        and ( entryExists ? funcMatchesIniEntry(*itf, *depEntry, *boundTEs) : true ) )
         {
 
           // Has the backend vertex already been disabled by the backend system?

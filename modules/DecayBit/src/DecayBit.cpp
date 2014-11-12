@@ -28,11 +28,7 @@ namespace Gambit
     /// \name DecayBit module functions
     /// @{
 
-    void deleteme(int &result)
-    {
-      using namespace Pipes::deleteme;
-      result = 1;
-    }   
+    //void deleteme(int &result) { using namespace Pipes::deleteme; result = 1; }   
 
     /// @}
 
