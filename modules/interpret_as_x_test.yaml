@@ -90,9 +90,9 @@ ObsLikes:
     printme:      false
 
   # Test vector output of printer
-  - purpose:      Observable
-    capability:   test_vector
-    type:         std::vector<double>
+  #- purpose:      Observable
+  #  capability:   test_vector
+  #  type:         std::vector<double>
 
 
 #########################
