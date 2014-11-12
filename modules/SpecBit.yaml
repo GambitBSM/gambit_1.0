@@ -61,28 +61,62 @@ Auxiliaries:
   #   options:
   #     ewsb_loop_order: 2
 
-  - capability: specbit_tests
-    dependencies:
-    #- {capability: particle_spectrum, function: make_test_spectrum}  
-    - {capability: particle_spectrum, function: MSSMSpec_to_Spectrum}  
+  # - capability: specbit_tests
+  #   dependencies:
+  #   #- {capability: particle_spectrum, function: make_test_spectrum}  
+  #   - {capability: particle_spectrum, function: MSSMSpec_to_Spectrum}  
+
+  ## ### Test CMSSM spectrum -----------
+  ## Needs 'prefer_model_specific' turned on
+  ## - capability: particle_spectrum 
+  ##   options:
+  ##     ewsb_loop_order: 2
+  ##   dependencies:
+  ##   - {capability: MSSM_parameters, module: CMSSM}
+  ##   - {capability: CMSSM_parameters, module: CMSSM} 
+
+  ## - capability: MSSM_parameters
+  ##   dependencies:
+  ##   - {capability: CMSSM_parameters, module: CMSSM}  
+
+  ## - capability: dump_spectrum_slha
+  ##   options:
+  ##     filename: "SpecBit/test_generic_dump.slha"
+  ## ### --------------------------------
  
+  ### Test GUTMSSMA spectrum ------
+  - capability: specbit_tests 
+    dependencies:
+    - {capability: particle_spectrum, function: MSSMSpec_to_Spectrum} 
+
+  - capability: dump_spectrum_slha
+    options:
+      filename: "SpecBit/test_generic_dump_GUTMSSMA.slha"
+    dependencies:
+    - {capability: particle_spectrum, function: MSSMSpec_to_Spectrum} 
+
   - capability: particle_spectrum 
     options:
       ewsb_loop_order: 2
     dependencies:
     - {capability: MSSM_parameters, module: GUTMSSMA}
-    - {capability: CMSSM_parameters, module: CMSSM} 
+    - {capability: GUTMSSMA_parameters, module: GUTMSSMA} 
 
-  - capability: GUTMSSMA_parameters
-    dependencies:
-    - {capability: CMSSM_parameters, module: CMSSM} 
+  # - capability: MSSM_parameters
+  #   dependencies:
+  #   - {capability: GUTMSSMA_parameters, module: GUTMSSMA}  
 
-  - capability: dump_spectrum_slha
-    options:
-      filename: "SpecBit/test_generic_dump.slha"
-    dependencies:
-    - {capability: particle_spectrum, function: MSSMSpec_to_Spectrum}  
+  ### --------------------------------
  
+  # - capability: GUTMSSMA_parameters
+  #   dependencies:
+  #   - {capability: CMSSM_parameters, module: CMSSM} 
+
+  #- capability: dump_spectrum_slha
+  #  options:
+  #    filename: "SpecBit/test_generic_dump.slha"
+  #   dependencies:
+  #   - {capability: particle_spectrum, function: MSSMSpec_to_Spectrum}  
 
 Logger:
 

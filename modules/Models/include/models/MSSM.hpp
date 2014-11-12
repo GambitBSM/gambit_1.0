@@ -76,13 +76,15 @@
              mdR,msR,mbR)
 #undef MODEL
 
+
+// EDIT: Maybe don't want this...
 // This is a kind of "abstract" model, with no parameters. Used only
 // so that module functions can say the are enabled for the "MSSM" and
 // therefore are allowed to be used with any of its children.
-#define MODEL MSSM
-   START_MODEL
-   DEFINEPARS(null) // Need to have at least one parameter I think. Stick in a "null" parameter.
-#undef MODEL
+//#define MODEL MSSM
+//   START_MODEL
+//   DEFINEPARS(null) // Need to have at least one parameter I think. Stick in a "null" parameter.
+//#undef MODEL
 
 // Currently, Gambit will insist that a module function has MSSM_parameters
 // as a dependency if ALLOW_MODELS(MSSM) is set for that function. Since MSSM is an abstraction
@@ -105,7 +107,6 @@
 // TODO: Currently just examples, need to look up what each spectrum generator
 // can actually do.
 #define MODEL GUTMSSMA
-  #define PARENT MSSM
   START_MODEL
   DEFINEPARS(M1,M2,M3,
              At,Ab,Atau,
@@ -116,13 +117,11 @@
              mq1L,mq2L,mq3L,
              muR,mcR,mtR,
              mdR,msR,mbR)
-  USE_NULL_INTERPRET_AS_PARENT
-  #undef PARENT
+  //USE_NULL_INTERPRET_AS_PARENT
 #undef MODEL
 
 // Alternate general GUT parameterisation
 #define MODEL GUTMSSMB
-  #define PARENT MSSM
   START_MODEL
   DEFINEPARS(M1,M2,M3,
              At,Ab,Atau,
@@ -133,12 +132,10 @@
              mq1L,mq2L,mq3L,
              muR,mcR,mtR,
              mdR,msR,mbR)
-  USE_NULL_INTERPRET_AS_PARENT
-  #undef PARENT
+  //USE_NULL_INTERPRET_AS_PARENT
 #undef MODEL
 
 #define MODEL CMSSM
-  #define PARENT MSSM
   START_MODEL
   DEFINEPARS(M0,M12,A0,tanb,signmu)
 
@@ -153,7 +150,7 @@
   //         ...__FUNCTION(Model name, translation function name)
   INTERPRET_AS_X__FUNCTION(GUTMSSMA, CMSSM_to_GUTMSSMA)
   INTERPRET_AS_X__FUNCTION(GUTMSSMB, CMSSM_to_GUTMSSMB)
-  USE_NULL_INTERPRET_AS_PARENT
+  //USE_NULL_INTERPRET_AS_PARENT
 
   // Now the actual translation function definitions
   void MODEL_NAMESPACE::CMSSM_to_GUTMSSMA (const ModelParameters &myP, ModelParameters &targetP)
@@ -196,7 +193,6 @@
 
      /// Filler....     
   } 
-  #undef PARENT
 #undef MODEL
 
 // Extra-constrained CMSSM, to demo interpret_as_parent
@@ -223,7 +219,7 @@
      parentP.setValue("tanb",   myP["tanb"] );
      parentP.setValue("signmu", myP["signmu"] );
   } 
-#undef PARENT
+  #undef PARENT
 #undef MODEL
 
 

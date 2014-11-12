@@ -20,7 +20,7 @@
 #include <string>
 #include "gambit_module_headers.hpp"
 #include "SpecBit_rollcall.hpp"
-#include "stream_printers.hpp" // Just for more convenient output to logger
+#include "stream_overloads.hpp" // Just for more convenient output to logger
 
 // Flexible SUSY stuff (should not be needed by the rest of gambit)
 #include "MSSM_input_parameters.hpp"
