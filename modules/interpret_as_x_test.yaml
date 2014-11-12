@@ -1,0 +1,165 @@
+# Test yaml for cross-branch model
+# translation.
+#
+# Pat Scott <p.scott@imperial.ac.uk>
+# Nov 2014
+#
+ 
+###################################
+# Input parameter declarations
+###################################
+
+Parameters: 
+
+  TWOHDM_sub_demo:
+    Y: 
+      range: [-100, 100]
+    Z: 
+      range: [-100, 100]
+      prior_type: log
+
+
+##############################
+# Prior setup
+##############################
+
+Priors:
+
+##############################
+# Printer setup
+##############################
+
+Printer:
+
+  # Select printer to use via string tag
+  # (currently only ascii printer available)
+  printer: ascii
+
+  # This options node is passed on wholesale to
+  # the printer object; required options may
+  # therefore vary according to the selected
+  # printer. 
+  options:
+    # name of output file
+    output_file: "runs/spartan/samples/gambit_output.txt"
+    # name of info file (explains content of output file)
+    info_file: "runs/spartan/samples/gambit_output.info"
+
+##############################
+# Scanner setup
+##############################
+
+Scanner:
+
+  plugin: loopsample
+  file_path:  ScannerBit/lib/libsample.so
+
+  loopsample:
+    point_number: 20
+    output_file:  output
+    like:  Likelihood
+    files:
+      output_file: "weights ..."
+            
+###############################
+# Observables of interest
+###############################
+
+ObsLikes:
+
+  # Test CMSSM_I, ExampleBit_A and ExampleBit_B
+  - purpose:      Likelihood
+    capability:   lnL_ExampleBitB
+    type:         double
+    function:     ""
+    module:       ""
+
+  # Test array and -> operators in safety buckets.
+  - purpose:      Observable
+    capability:   ptrmeth_arr_tester
+
+  # Test loop manager
+  - purpose:      Likelihood
+    capability:   nevents_like
+    type:         double
+
+  # Test Pythia8 SLHA reader
+  - purpose:      Likelihood
+    capability:   MSSMslha_testLogL
+    function:     MSSMtestLogL
+    printme:      false
+
+  # Test vector output of printer
+  - purpose:      Observable
+    capability:   test_vector
+    type:         std::vector<double>
+
+
+#########################
+# Auxiliary entries
+#########################
+
+Auxiliaries:
+
+  - capability:   "LibFirst_1_1_init"
+    dependencies:
+    - {capability: "nevents", module: "ExampleBit_A"}  
+
+  - capability:    "nevents_postcuts"
+    dependencies:
+    - {capability: "id", module: "ExampleBit_B"}
+
+  - capability:    "xsection"
+    options:
+      scale: 15.5
+
+  - capability:    "function_pointer"
+    backends:
+    - {function: "externalFunction2"}
+
+
+#########################
+# Logging setup
+#########################
+
+Logger:
+
+  # Redirection of specific messages according to tags
+  # Can redirect to stdout or stderr by specifying these as the "filenames". 
+  # Obviously this also means it is impossible to redirect output to actual
+  # files with these names.
+
+  prefix : "runs/interpret_as_x_test/logs/"
+  redirection:
+    [Debug] : "debug.log"
+    [Default] : "default.log"
+    [Error] : "errors.log"
+    [Warning] : "warnings.log"
+    [Core,Error] : "core_errors.log"
+    [Core,Error,Fatal] : "fatal_core_errors.log"
+    [Dependency Resolver] : "dependency_resolver.log"
+    [ExampleBit_A] : "ExampleBit_A.log"
+    [ExampleBit_B] : "ExampleBit_B.log"
+
+##########################
+# Name/Value Section
+##########################
+
+KeyValues:
+
+  dependency_resolution:
+    prefer_model_specific_functions: true
+
+  likelihood:
+    model_invalid_for_lnlike_below: -1e6
+
+  #By default, errors are fatal and warnings non-fatal
+  exceptions:
+    dependency_resolver_error: fatal
+    dependency_resolver_warning: non-fatal
+    core_warning: fatal
+    scan_error: non-fatal #make this fatal to see an example error
+    ExampleBit_A_error: non-fatal
+
+  enable_testing: false
+
