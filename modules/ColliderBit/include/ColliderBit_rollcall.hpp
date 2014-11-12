@@ -68,7 +68,7 @@ START_MODULE
 
 
   /// Event capabilities
-  #define CAPABILITY hardScatteringEvent
+  #define CAPABILITY HardScatteringEvent
   START_CAPABILITY
     #define FUNCTION generatePythia8Event
     START_FUNCTION(Pythia8::Event)

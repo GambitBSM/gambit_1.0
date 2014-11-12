@@ -42,7 +42,7 @@
 
 #include "util_types.hpp"
 #include "util_functions.hpp"
-#include "model_types.hpp"
+#include "model_parameters.hpp"
 #include "yaml_options.hpp"
 #include "log.hpp"
 
@@ -270,20 +270,20 @@ namespace Gambit
       /// Attempt to retrieve a dependency or model parameter that has not been resolved
       static void failBigTime(str method);
 
-      /// Test if a model has a parent model in the functor's allowedModels list
-      inline bool allowed_parent_model_exists(str model);
+      /// Test if there is a model in the functor's allowedModels list as which this model can be interpreted
+      inline bool allowed_parent_or_friend_exists(str model);
 
       /// Check that a model is actually part of a combination that is allowed to be used with this functor.
       inline bool in_allowed_combo(str model);
 
-      /// Test whether any of the entries in a given model group has any descendents in a given combination
-      inline bool contains_any_descendents_of(std::vector<str> combo, str group);
+      /// Test whether any of the entries in a given model group is a valid interpretation of any members in a given combination
+      inline bool contains_anything_interpretable_as_member_of(std::vector<str> combo, str group);
 
       /// Work out whether a given combination of models and a model group have any elements in common
       inline bool has_common_elements(std::vector<str> combo, str group);
 
-      /// Try to find a parent model in some user-supplied map from models to sspair vectors
-      str find_parent_model_in_map(str model, std::map< str, std::vector<sspair> > karta);
+      /// Try to find a parent or friend model in some user-supplied map from models to sspair vectors
+      str find_friend_or_parent_model_in_map(str model, std::map< str, std::vector<sspair> > karta);
 
   };
 

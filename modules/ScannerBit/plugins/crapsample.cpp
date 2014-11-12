@@ -167,19 +167,3 @@ scanner_plugin (loopsample)
                 return 0;
         }
 }
-
-#include <test-recon.h>
-
-SCANNER_PLUGIN (classtest)
-{        
-        int PLUGIN_MAIN(void)
-        {
-                ran_test testing(2.0);
-                load.set(&testing);
-                
-                cout << "double = " << testing.Num(2.0) << ", " << testing.baseNum(2.0) << ", " << testing.baseNum2(2.0) << std::endl;
-                getchar();
-                
-                return 0;
-        }
-}

@@ -1,6 +1,7 @@
-//  GAMBIT: Global and Modular BSM Inference Tool
-//  *********************************************
-/// \file
+//   GAMBIT: Global and Modular BSM Inference Tool
+//   *********************************************
+///  \file
+///
 ///  Simple struct for triggering initialisation
 ///  code.
 ///
