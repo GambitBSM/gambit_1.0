@@ -88,17 +88,17 @@ namespace Gambit
         // If there is a parent, add an edge between parent and child
         if (parent != "none")
         {
-          boost::add_edge(vertexIDmap[model], vertexIDmap[parent], modelGraph);
+          boost::add_edge(vertexIDmap[parent], vertexIDmap[model], modelGraph);
           if (verbose) std::cout<<"    Edge added: "<<model<<" ---> "<<parent<<std::endl;
         }
         // Add edges with all this model's best friends.  Might want to make these another colour in future.
         std::set<str> friends = boundClaw->get_best_friends(model);
         for (auto it = friends.begin(); it != friends.end(); ++it)
         {
-          boost::add_edge(vertexIDmap[model], vertexIDmap[*it], modelGraph);
+          boost::add_edge(vertexIDmap[*it], vertexIDmap[model], modelGraph);
 
           // Get the descriptor for the edge we just added
-          ModelEdgeID e = boost::edge(vertexIDmap[model], vertexIDmap[*it], modelGraph).first;
+          ModelEdgeID e = boost::edge(vertexIDmap[*it], vertexIDmap[model], modelGraph).first;
 
           // Set the color property for this edge to "red"
           boost::put(color,e,"red");
@@ -116,7 +116,8 @@ namespace Gambit
       // Also for valid properties see http://www.graphviz.org/pdf/dotguide.pdf
       struct graphWriter{
           void operator()(std::ostream& out) const {
-            out << "rankdir = RL;" << std::endl; // Turn graph orientation left to right.
+            out << "rankdir = LR;"    << std::endl; // Turn graph orientation left to right.
+            out << "edge [dir=back];" << std::endl; // Reverse all the arrows
           }
         };
  
