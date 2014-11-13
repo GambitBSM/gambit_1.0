@@ -498,7 +498,7 @@ module BTaggingWithTruth BTagging {
   # efficiency formula for c-jets (misidentification rate)
   add EfficiencyFormula {4} {0.02}
   # efficiency formula for b-jets
-  add EfficiencyFormula {5} {0.7}
+  add EfficiencyFormula {5} {1.0}
 }
 
 module TauTagging TauTagging {

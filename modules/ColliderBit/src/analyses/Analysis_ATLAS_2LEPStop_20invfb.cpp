@@ -255,7 +255,7 @@ namespace Gambit {
         cutFlowVector_str[22] = "SR M110 [DF] ";
         cutFlowVector_str[23] = "SR M120 [DF] ";
 
-        /*for(int j=0;j<NCUTS;j++){
+        for(int j=0;j<NCUTS;j++){
           if(
              (j==0) ||
 
@@ -306,7 +306,7 @@ namespace Gambit {
              (j==23 && cut_2leptons_base && cut_2leptons && cut_2leptons_emu && isOS && isMLL && ispT && isZsafe && isdphi && isdphib && cut_MT2120 && nJets>=2) )
 
             cutFlowVector[j]++;
-        }*/
+        }
 
         //We're now ready to apply the cuts for each signal region
         //_numSR1, _numSR2, _numSR3;
