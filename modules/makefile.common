@@ -73,6 +73,7 @@ LOGGINGDIR = Logs
 SCANDIR = ScannerBit
 BACKENDDIR = Backends
 COLLIDERDIR = ColliderBit
+EWPODIR = EWPOBit
 DARKDIR = DarkBit
 FLAVDIR = FlavBit
 HIGGSDIR = HiggsBit
@@ -106,6 +107,7 @@ CFLAGS= -I$(COREDIR)/include \
   -I$(BACKENDDIR)/include \
   -I$(DARKDIR)/include \
   -I$(COLLIDERDIR)/include \
+  -I$(EWPODIR)/include \
   -I$(EXAMPLEADIR)/include \
   -I$(EXAMPLEBDIR)/include \
   -I$(DARKDIR)/include \
@@ -399,6 +401,10 @@ COLLIDERSRC:=$(wildcard $(COLLIDERDIR)/src/*cpp) $(wildcard $(COLLIDERDIR)/src/*
 COLLIDERDELPHESSRC:=$(wildcard $(COLLIDERDIR)/src/delphes/*Module.cc)
 COLLIDEROBJS:=$(addprefix $(COLLIDERDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(COLLIDERSRC)))) $(addprefix $(COLLIDERDIR)/build/,$(notdir $(patsubst %Module.cc,%Module.o,$(COLLIDERDELPHESSRC)))) $(addprefix $(COLLIDERDIR)/build/,$(notdir $(patsubst %Module.cc,%Module_dict.o,$(COLLIDERDELPHESSRC))))
 
+EWPOINC:=$(wildcard $(EWPODIR)/include/*hpp) $(wildcard $(EWPODIR)/include/*h)
+EWPOSRC:=$(wildcard $(EWPODIR)/src/*cpp)
+EWPOOBJS:=$(addprefix $(EWPODIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(EWPOSRC))))
+
 EXAMPLE_AINC:=$(wildcard $(EXAMPLEADIR)/include/*hpp) $(wildcard $(EXAMPLEADIR)/include/*h)
 EXAMPLE_ASRC:=$(wildcard $(EXAMPLEADIR)/src/*cpp)
 EXAMPLE_AOBJS:=$(addprefix $(EXAMPLEADIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(EXAMPLE_ASRC))))
@@ -414,7 +420,7 @@ EXSUSYSPECOBJS:=$(addprefix $(EXSUSYSPECDIR)/build/,$(notdir $(patsubst %.cpp,%.
 STANDALONEINC = $(BACKENDINC) $(UTILSINC) $(MODELINC) $(LOGINC)
 GAMBITINC = $(PRINTINC) $(COREINC)
 STANDALONEOBJS = $(MODELOBJS) $(UTILSOBJS) $(LOGOBJS) $(BACKENDOBJS)
-MODULEOBJS = $(SCANOBJS) $(DARKOBJS) $(FLAVOBJS) $(HIGGSOBJS) $(DECAYOBJS) $(EXAMPLE_AOBJS) $(EXAMPLE_BOBJS) $(EXSUSYSPECOBJS)
+MODULEOBJS = $(SCANOBJS) $(DARKOBJS) $(FLAVOBJS) $(HIGGSOBJS) $(DECAYOBJS) $(EXAMPLE_AOBJS) $(EXAMPLE_BOBJS) $(EXSUSYSPECOBJS) $(EWPOOBJS)
 ifdef COLLIDE
   MODULEOBJS += $(COLLIDEROBJS)
 endif
@@ -504,6 +510,10 @@ $(HIGGSDIR)/build/%.o: $(HIGGSDIR)/src/%.cpp $(STANDALONEINC) $(HIGGSINC)
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
 $(DECAYDIR)/build/%.o: $(DECAYDIR)/src/%.cpp $(STANDALONEINC) $(DECAYINC)
+	@echo ___________Compiling $<:
+	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
+
+$(EWPODIR)/build/%.o: $(DECAYDIR)/src/%.cpp $(STANDALONEINC) $(EWPOINC)
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
