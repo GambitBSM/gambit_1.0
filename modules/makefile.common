@@ -81,6 +81,7 @@ DECAYDIR = DecayBit
 EXAMPLEADIR = ExampleBit_A
 EXAMPLEBDIR = ExampleBit_B
 EXSUSYSPECDIR = Example_SUSYspecBit
+EWPOBITDIR = EWPOBit
 DOCDIR = ../doc
 YAMLDIR = contrib/yaml-cpp-0.5.1
 SLHAPy8DIR = contrib/SLHAPy8
@@ -110,8 +111,9 @@ CFLAGS= -I$(COREDIR)/include \
   -I$(EWPODIR)/include \
   -I$(EXAMPLEADIR)/include \
   -I$(EXAMPLEBDIR)/include \
+	-I$(EXSUSYSPECDIR)/include \
   -I$(DARKDIR)/include \
-  -I$(EXSUSYSPECDIR)/include \
+  -I$(EWPOBITDIR)/include \
   -I$(FLAVDIR)/include \
   -I$(HIGGSDIR)/include \
   -I$(DECAYDIR)/include \
