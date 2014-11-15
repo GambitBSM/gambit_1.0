@@ -127,9 +127,19 @@ namespace flexiblesusy {
       static fmap1 PoleMass_map1;
       static fmap fill_PoleMass_map();
       static fmap1 fill_PoleMass_map1();
+      static fmap PoleMixing_map;
+      static fmap1 PoleMixing_map1;
+      static fmap2 PoleMixing_map2;
+      static fmap fill_PoleMixing_map();
+      static fmap1 fill_PoleMixing_map1();
+      static fmap2 fill_PoleMixing_map2();
       
-      fmap& get_PoleMass_map() const;
+      fmap & get_PoleMass_map() const;
       fmap1& get_PoleMass_map1() const;
+      fmap & get_PoleMixing_map() const;
+      fmap1& get_PoleMixing_map1() const;
+      fmap2& get_PoleMixing_map2() const;
+ 
    public:
       //  MSSM_Phys(Spec<MssmFS,MSSM_physical> & x) : my_parent(x) {}
       MSSM_Phys(MSSMSpec & x) : my_parent(x) {}

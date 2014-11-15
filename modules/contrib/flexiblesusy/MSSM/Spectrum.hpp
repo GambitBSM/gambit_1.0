@@ -73,7 +73,9 @@ private:
    /// map based getters
    virtual double get_Pole_Mass(std::string) const = 0;
    virtual double get_Pole_Mass(std::string, int) const = 0;
-   
+   virtual double get_Pole_Mixing(std::string) const = 0;
+   virtual double get_Pole_Mixing(std::string, int) const = 0;
+   virtual double get_Pole_Mixing(std::string, int, int) const = 0;
 
 };
 
@@ -121,11 +123,16 @@ template <class SpecType, class PhysType>
    private:      
       virtual fmap& get_PoleMass_map() const = 0;  
       virtual fmap1& get_PoleMass_map1() const = 0;
+      virtual fmap& get_PoleMixing_map() const = 0;  
+      virtual fmap1& get_PoleMixing_map1() const = 0;
+      virtual fmap2& get_PoleMixing_map2() const = 0;
    virtual SpecType get_bound_spec() const = 0;
    public: 
       virtual double get_Pole_Mass(std::string) const;
       virtual double get_Pole_Mass(std::string, int) const;
-
+      virtual double get_Pole_Mixing(std::string) const;
+      virtual double get_Pole_Mixing(std::string, int) const;
+      virtual double get_Pole_Mixing(std::string, int, int) const;
    };
    template <class SpecType>
    class RunparDer : public Spectrum::RunningPars {
@@ -505,6 +512,74 @@ double  PhysDer<SpecType, PhysType>::get_Pole_Mass(std::string mass, int i) cons
    }
 }
 
+
+template <class SpecType,class PhysType>
+double PhysDer <SpecType, PhysType>::get_Pole_Mixing(std::string mixing) const
+{
+   ///    PhysType phys(get_bound_phys()); ///  Get correct bound spectrum for whatever class this is
+   SpecType spec(get_bound_spec());
+   fmap& polemap(get_PoleMixing_map()); ///  Get correct map for whatever class this is
+   typename fmap::iterator it = polemap.find(mixing); ///  Find desired FlexiSUSY function
+
+   if( it==polemap.end() )
+   {
+      std::cout << "No mass2 with string reference '"
+                << mixing << "' exists!" << std::endl;
+      return -1;
+   }
+   else
+   {
+       ///  Get function out of map and call it on the bound flexiSUSY object
+       FSptr f = it->second;
+       return (spec.*f)();
+   }
+}
+
+template <class SpecType,class PhysType>
+double PhysDer <SpecType, PhysType>::get_Pole_Mixing(std::string mixing, int i) const
+{
+   ///    PhysType phys(get_bound_phys()); ///  Get correct bound spectrum for whatever class this is
+   SpecType spec(get_bound_spec());
+   fmap1& polemap(get_PoleMixing_map1()); ///  Get correct map for whatever class this is
+   typename fmap1::iterator it = polemap.find(mixing); ///  Find desired FlexiSUSY function
+
+   if( it==polemap.end() )
+   {
+      std::cout << "No mass2 with string reference '"
+                << mixing << "' exists!" << std::endl;
+      return -1;
+   }
+   else
+   {
+       ///  Get function out of map and call it on the bound flexiSUSY object
+       FSptr1 f = it->second;
+       return (spec.*f)(i);
+   }
+}
+template <class SpecType,class PhysType>
+double PhysDer <SpecType, PhysType>::get_Pole_Mixing(std::string mixing, 
+                                                     int i, int j) const
+{
+   ///    PhysType phys(get_bound_phys()); ///  Get correct bound spectrum for whatever class this is
+   SpecType spec(get_bound_spec());
+   fmap2& polemap(get_PoleMixing_map2()); ///  Get correct map for whatever class this is
+   typename fmap2::iterator it = polemap.find(mixing); ///  Find desired FlexiSUSY function
+
+   if( it==polemap.end() )
+   {
+      std::cout << "No mass2 with string reference '"
+                << mixing << "' exists!" << std::endl;
+      return -1;
+   }
+   else
+   {
+       ///  Get function out of map and call it on the bound flexiSUSY object
+       FSptr2 f = it->second;
+       return (spec.*f)(i,j);
+   }
+}
+
+
 ///  Need the templating so that the calls to the FlexiSUSY functions 
 /// know which FlexiSUSY classes to use
 template <class S, class P>
@@ -570,7 +645,12 @@ public:
   ClassName::fmap  ClassName::PoleMass_map(ClassName::fill_PoleMass_map()); \
   ClassName::fmap1& ClassName::get_PoleMass_map1() const {return PoleMass_map1;} \
   ClassName::fmap1 ClassName::PoleMass_map1(ClassName::fill_PoleMass_map1()); \
-  
+  ClassName::fmap& ClassName::get_PoleMixing_map() const {return PoleMixing_map;} \
+  ClassName::fmap  ClassName::PoleMixing_map(ClassName::fill_PoleMixing_map()); \
+  ClassName::fmap1& ClassName::get_PoleMixing_map1() const {return PoleMixing_map1;} \
+  ClassName::fmap1 ClassName::PoleMixing_map1(ClassName::fill_PoleMixing_map1()); \
+  ClassName::fmap2& ClassName::get_PoleMixing_map2() const {return PoleMixing_map2;} \
+  ClassName::fmap2 ClassName::PoleMixing_map2(ClassName::fill_PoleMixing_map2()); \
 
 
 #endif
