@@ -145,6 +145,10 @@ Auxiliaries:
     dependencies:
     - {capability: "id", module: "ExampleBit_B"}
 
+  - capability:    "MSSM_demo_parameters"
+    dependencies:
+    - {capability: "id", module: "ExampleBit_B"}
+
   - capability:    "xsection"
     options:
       scale: 15.5

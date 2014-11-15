@@ -29,34 +29,60 @@
 #include "depresolver.hpp"
 #include "models.hpp"
 
-
 namespace Gambit
 {
 
   /// Model hierarchy tree class
   class ModelHierarchy
   {
+    /// Property tag for adding color property to edges
+    struct edge_color_t { typedef boost::edge_property_tag kind; };
+
+    /// Typedefs for central boost (model) graph
+    /// @{  
+    typedef boost::property<edge_color_t, std::string> EdgeColor;
+    typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::bidirectionalS, functor*, EdgeColor> ModelGraphType;
+    typedef boost::graph_traits<ModelGraphType>::vertex_descriptor ModelVertexID;
+    typedef boost::graph_traits<ModelGraphType>::edge_descriptor ModelEdgeID;
+    typedef boost::property_map<ModelGraphType,boost::vertex_index_t>::type ModelIndexMap;
+    /// @}
 
     /// Shorthand for vector of pointers to primary model functors
     typedef std::vector<primary_model_functor*> primodel_vec;
 
     private:
      
-      /// Helper class for drawing the model hierarchy graph
+      /// Helper class for drawing the model hierarchy graph (labels)
       class labelWriter
       {
-
         private:
-
-          const DRes::MasterGraphType * myGraph;
-
+          const ModelGraphType * myGraph;
         public:
-
           /// Constructor
-          labelWriter(const DRes::MasterGraphType*);
+          labelWriter(const ModelGraphType*);
+          void operator()(std::ostream&, const ModelVertexID&) const;
+      };
 
-          void operator()(std::ostream&, const DRes::VertexID&) const;
+      
+      /// Helper class for drawing the model hierarchy graph (edges)
+      class colorWriter
+      {
+        private:
+          const ModelGraphType * myGraph;
+          const boost::property_map<ModelGraphType, edge_color_t>::const_type &color; 
+        public:
+          /// Constructor
+          colorWriter(const ModelGraphType* g)
+             : myGraph(g)
+             , color( boost::get(edge_color_t(),*g) )
+          {}
 
+          template<class VertexOrEdge>
+          void operator()(std::ostream& out, const VertexOrEdge& e) const 
+          {
+            // check if this is the edge we want to color red
+            if( boost::get(color,e) == "red" ) out << "[color=red]";
+          }
       };
 
       /// Turn on verbose operation
@@ -69,7 +95,7 @@ namespace Gambit
       const Models::ModelFunctorClaw* boundClaw;
 
       /// The central boost graph object for the model hierarchy
-      DRes::MasterGraphType modelGraph;
+      ModelGraphType modelGraph;
 
       /// Add model functors (vertices) to model hierarchy graph
       void addFunctorsToGraph(const primodel_vec&);

@@ -59,13 +59,15 @@ namespace Gambit
         /// Internal record of the active models
         std::vector<str> activemodels;         
 
-        /// \name Private lineage/ancestry databases
+        /// \name Private lineage/ancestry/friends databases
         /// @{
         std::set<str> allmodelnames;
         std::map<str, str> myParentsDB;
         std::map<str, std::vector<str> > myLineageDB;
         std::map<str, std::vector<str> > myDescendantsDB;
         std::map<str, LineageFunction  > myIsDescendantOfDB;
+        std::map<str, std::set<str> > myFriendsDB;
+        std::map<str, std::set<str> > myBestFriendsDB;
         /// @}
 
       public:
@@ -87,17 +89,11 @@ namespace Gambit
         /// the user.
         void checkPrimaryModelFunctorUsage(const activemodel_map&) const;
         
-        /// Add a model to those recongnised by GAMBIT
-        void add_model (const str &);
+        /// Add a new model to the model database.
+        void declare_model (const str&, const str&);
 
-        /// Add parents to the parents database
-        void add_parents (const str &, const str &);
-
-        /// Add lineage vector to the lineage database
-        void add_lineage (const str &, const std::vector<str> &);
-
-        /// Add model as a descendent to the descendants and is-descendant-of databases
-        void add_descendant (const str &, const LineageFunction);
+        /// Add a friend, and all its friends and ancestors, to a model's list of friends
+        void add_friend (const str &model, const str &newfriend);
 
         /// Indicate whether a model is recognised by GAMBIT or not
         bool model_exists (const str &) const; 
@@ -117,6 +113,12 @@ namespace Gambit
         /// Retrieve the lineage for a given model
         std::vector<str> get_lineage (const str &) const;
 
+        /// Retrieve the friends for a given model
+        std::set<str> get_friends (const str &model) const;
+
+        /// Retrieve the best friends for a given model
+        std::set<str> get_best_friends (const str &model) const;
+
         /// Retrieve the descendants for a given model
         std::vector<str> get_descendants (const str &) const;
         
@@ -128,6 +130,9 @@ namespace Gambit
 
         /// Check if model 1 is an ancestor of model 2
         bool ancestor_of (const str &, const str &) const;
+
+        /// Check if model 1 can be interpreted as a model 2
+        bool interpretable_as (const str&, const str&) const;
 
     };
  

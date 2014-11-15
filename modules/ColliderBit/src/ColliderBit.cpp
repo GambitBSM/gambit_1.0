@@ -62,13 +62,24 @@ namespace Gambit {
       using namespace Pipes::specifyAnalysisPointerVector;
       result.clear();
 
+      logger() << "\n==================\n";
+      logger() << "ColliderBit says,\n";
+      logger() << "\t\"specifyAnalysisPointerVector() was called.\"\n";
+      logger() << LogTags::info << endl << EOM;
+
       std::vector<std::string> analysisNames;
       GET_COLLIDER_RUNOPTION(analysisNames, std::vector<std::string>)
 
-      for(auto name : analysisNames){
-        cout << "Analysis name " << name << endl;
+      logger() << "\n==================\n";
+      logger() << "ColliderBit says,\n";
+      logger() << "\t\"Setting up analyses...\"\n";
+      for(auto name : analysisNames) {
+        logger() << "\t  Analysis name " << name << endl;
         result.push_back( mkAnalysis(name) );
       }
+      logger() << "ColliderBit says,\n";
+      logger() << "\t\"specifyAnalysisPointerVector() has finished.\"\n";
+      logger() << LogTags::info << endl << EOM;
     }
 
 
@@ -92,12 +103,9 @@ namespace Gambit {
       using namespace Pipes::operatePythia;
       int nEvents = 0;
 
-      logger() << "==================" << endl;
-      logger() << "ColliderBit says,";
-      logger() << "\"operatePythia() was called.\"" << endl;
-      logger() << "Using Delphes at " << (*Dep::DetectorSim) << endl;
-      logger() << "*** NOTE: Each iteration will report:" << endl;
-      logger() << "  iteration, event met, thread, counts" << endl;
+      logger() << "\n==================\n";
+      logger() << "ColliderBit says,\n";
+      logger() << "\t\"operatePythia() was called.\"\n";
       logger() << LogTags::info << endl << EOM;
 
       /// Retrieve runOptions from the YAML file safely...
@@ -145,7 +153,7 @@ namespace Gambit {
       resetDelphesFlag = true;
       logger() << "==================" << endl;
       logger() << "ColliderBit says,";
-      logger() << "\"manageVanillaLoop() completed.\"" << endl;
+      logger() << "\"operatePythia() completed.\"" << endl;
       logger() << LogTags::info << endl << EOM;
     }
 
@@ -298,7 +306,7 @@ namespace Gambit {
 
     void runAnalyses(ColliderLogLikes& result) {
       using namespace Pipes::runAnalyses;
-      if (*Loop::iteration == INIT) return;
+      if (*Loop::iteration == INIT or *Loop::iteration == END_SUBPROCESS) return;
 
       if (*Loop::iteration == FINALIZE) {
         // The final iteration: get log likelihoods for the analyses

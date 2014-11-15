@@ -62,7 +62,6 @@ START_MODULE
     #define FUNCTION MSSMSpec_to_Spectrum
     START_FUNCTION(Spectrum*)
     DEPENDENCY(particle_spectrum, MSSMSpec*)
-    ALLOW_MODELS(MSSM)
     #undef FUNCTION 
 
 
@@ -70,10 +69,6 @@ START_MODULE
     START_FUNCTION(eaSLHA)                  
     DEPENDENCY(particle_spectrum, Spectrum*)           // Takes a (pointer to a) Spectrum object and returns an eaSLHA object
     ALLOW_MODELS(MSSM24, CMSSM)
-    #undef FUNCTION
-
-    #define FUNCTION make_test_spectrum  // Get (pointer to) test MSSM spectrum
-    START_FUNCTION(int) //SpectrumPtr)
     #undef FUNCTION
 
     // #define FUNCTION get_lowE_MSSM_spectrum            // Get (pointer to) MSSM spectrum as a Spectrum object

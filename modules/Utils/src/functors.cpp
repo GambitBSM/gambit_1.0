@@ -28,6 +28,10 @@
 ///
 ///  *********************************************
 
+//#ifdef CONFIG_H
+#include "config.h"
+//#endif
+
 #include "functors.hpp"
 #include "models.hpp"
 #include "all_functor_types.hpp"
@@ -304,7 +308,7 @@ namespace Gambit
     bool functor::modelAllowed(str model)
     {
       if (allowedModels.empty() and allowedGroupCombos.empty()) return true;
-      if (allowed_parent_model_exists(model)) return true;
+      if (allowed_parent_or_friend_exists(model)) return true;
       return false;        
     }
 
@@ -339,7 +343,7 @@ namespace Gambit
         //Loop over each group in the allowed group combination, and check if one of the entries in the passed model combination matches it somehow.
         for(std::vector<str>::const_iterator group = group_combo->begin(); group != group_combo->end(); group++)
         {
-          matches = matches and contains_any_descendents_of(combo, *group);
+          matches = matches and contains_anything_interpretable_as_member_of(combo, *group);
           if (not matches) break;
         }
         //Return true immediately if all entries in the allowed group combination have been matched.
@@ -416,14 +420,14 @@ namespace Gambit
       utils_error().raise(LOCAL_INFO,error_msg);
     }
 
-    /// Test if a model has a parent model in the functor's allowedModels list
-    inline bool functor::allowed_parent_model_exists(str model)
+    /// Test if there is a model in the functor's allowedModels list as which this model can be interpreted
+    inline bool functor::allowed_parent_or_friend_exists(str model)
     {
       for (std::set<str>::reverse_iterator it = allowedModels.rbegin() ; it != allowedModels.rend(); ++it)
       {
         if (myClaw->model_exists(*it))
         {
-          if (myClaw->descended_from(model, *it)) return true;
+          if (myClaw->interpretable_as(model, *it)) return true;
         } 
       }    
       return false;    
@@ -437,7 +441,7 @@ namespace Gambit
       // Loop over the allowed combinations, and check if the passed model matches anything in any of them
       for(std::set<std::vector<str> >::const_iterator group_combo = allowedGroupCombos.begin(); group_combo != allowedGroupCombos.end(); group_combo++)
       {
-        //Loop over each group in the allowed group combination, and check if the model descends from or matches a model in the group.
+        //Loop over each group in the allowed group combination, and check if the model is interpretable as a model in the group.
         for(std::vector<str>::const_iterator group = group_combo->begin(); group != group_combo->end(); group++)
         {
           // Work through the members of the model group
@@ -446,7 +450,7 @@ namespace Gambit
           {
             if (myClaw->model_exists(*it))
             {
-              if (myClaw->descended_from(model, *it)) return true;
+              if (myClaw->interpretable_as(model, *it)) return true;
             }
           }
         }
@@ -454,8 +458,8 @@ namespace Gambit
       return false;
     }
 
-    /// Test whether any of the entries in a given model group has any descendents in a given combination
-    inline bool functor::contains_any_descendents_of(std::vector<str> combo, str group)
+    /// Test whether any of the entries in a given model group is a valid interpretation of any members in a given combination
+    inline bool functor::contains_anything_interpretable_as_member_of(std::vector<str> combo, str group)
     {
       // Work through the members of the model group
       std::set<str> models = modelGroups.at(group);
@@ -468,7 +472,7 @@ namespace Gambit
           {
             if (myClaw->model_exists(*jt))
             {
-              if (myClaw->descended_from(*jt, *it)) return true;
+              if (myClaw->interpretable_as(*jt, *it)) return true;
             }
           } 
         }    
@@ -488,14 +492,14 @@ namespace Gambit
       return false;    
     }
 
-    /// Try to find a parent model in some user-supplied map from models to sspair vectors
-    str functor::find_parent_model_in_map(str model, std::map< str, std::vector<sspair> > karta)
+    /// Try to find a parent or friend model in some user-supplied map from models to sspair vectors
+    str functor::find_friend_or_parent_model_in_map(str model, std::map< str, std::vector<sspair> > karta)
     {
       for (std::map< str, std::vector<sspair> >::reverse_iterator it = karta.rbegin() ; it != karta.rend(); ++it)
       {
         if (myClaw->model_exists(it->first))
         {
-          if (myClaw->descended_from(model, it->first)) return it->first;
+          if (myClaw->interpretable_as(model, it->first)) return it->first;
         } 
       }    
       return "";    
@@ -757,7 +761,7 @@ namespace Gambit
     /// Getter for listing model-specific conditional dependencies
     std::vector<sspair> module_functor_common::model_conditional_dependencies (str model)
     { 
-      str parent = find_parent_model_in_map(model,myModelConditionalDependencies);
+      str parent = find_friend_or_parent_model_in_map(model,myModelConditionalDependencies);
       if (parent != "") return myModelConditionalDependencies[parent];
       std::vector<sspair> empty;
       return empty;
@@ -766,7 +770,7 @@ namespace Gambit
     /// Getter for listing model-specific conditional backend requirements
     std::vector<sspair> module_functor_common::model_conditional_backend_reqs (str model)
     { 
-      str parent = find_parent_model_in_map(model,myModelConditionalBackendReqs);
+      str parent = find_friend_or_parent_model_in_map(model,myModelConditionalBackendReqs);
       if (parent != "") return myModelConditionalBackendReqs[parent];
       std::vector<sspair> empty;
       return empty;
@@ -1211,13 +1215,13 @@ namespace Gambit
     {
       //Add the model to the internal list of models being scanned.
       myModels.push_back(model);
-      //If this model fits any conditional dependencies (or is a descendent of a model that fits any), then activate them.
+      //If this model fits any conditional dependencies (or descended from one that can be interpreted as one that fits any), then activate them.
       std::vector<sspair> deps_to_activate = model_conditional_dependencies(model);          
       for (std::vector<sspair>::iterator it = deps_to_activate.begin() ; it != deps_to_activate.end(); ++it)
       {
         myDependencies.push_back(*it);        
       }
-      //If this model fits any conditional backend requirements (or is a descendent of a model that fits any), then activate them.
+      //If this model fits any conditional backend requirements (or descended from one that can be interpreted as one that fits any), then activate them.
       std::vector<sspair> backend_reqs_to_activate = model_conditional_backend_reqs(model);
       if (verbose) cout << "model: " << model << endl;
       for (std::vector<sspair>::iterator it = backend_reqs_to_activate.begin() ; it != backend_reqs_to_activate.end(); ++it)

@@ -766,7 +766,10 @@ namespace Gambit
       }
 
       // In case of doubt (and if not explicitely disabled in the ini-file), prefer functors 
-      // that are more specifically tailored for the model being scanned.
+      // that are more specifically tailored for the model being scanned. Do not consider functors
+      // that are accessible via INTERPRET_AS_X links, as these are all considered to be equally 'far' 
+      // from the model being scanned, with the 'distance' being one step further than the most distant
+      // ancestor.
       if ( vertexCandidates.size() > 1 and not ( boundIniFile->hasKey("dependency_resolution", "prefer_model_specific_functions") and not
            boundIniFile->getValue<bool>("dependency_resolution", "prefer_model_specific_functions") ) )
       {
