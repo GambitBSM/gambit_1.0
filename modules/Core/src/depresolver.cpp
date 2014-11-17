@@ -1176,7 +1176,7 @@ namespace Gambit
       for (std::vector<sspair>::iterator it = vec.begin(); it != vec.end(); ++it) 
       {
         logger() << (*it).first << " (" << (*it).second << ")" << endl;
-        (*parQueue).push(*(new QueueEntry (*it, vertex, NORMAL_DEPENDENCY, printme_default)));
+        (*parQueue).push(QueueEntry (*it, vertex, NORMAL_DEPENDENCY, printme_default));
       }
       // Digest capability of loop manager (if defined)
       str loopManagerCapability = (*masterGraph[vertex]).loopManagerCapability();
@@ -1184,8 +1184,8 @@ namespace Gambit
       {
         logger() << "Adding module function loop manager to resolution queue:" << endl;
         logger() << loopManagerCapability << " ()" << endl;
-        (*parQueue).push(*(new QueueEntry (*(new sspair
-                  (loopManagerCapability, "")), vertex, LOOP_MANAGER_DEPENDENCY, printme_default)));
+        (*parQueue).push(QueueEntry (sspair
+                  (loopManagerCapability, ""), vertex, LOOP_MANAGER_DEPENDENCY, printme_default));
       }
       //logger() << EOM;
     }
