@@ -66,6 +66,19 @@ namespace Gambit
       const IniParser::ObservableType * iniEntry;
     };
 
+    /// A simple rule for dependency resolution (aka constraints on module and
+    /// function name).
+    struct Rule
+    {
+      Rule(IniParser::ObservableType t)
+      {
+        module = t.module;
+        function = t.function;
+      };
+      std::string module;
+      std::string function;
+    };
+
     /// Information in parameter queue
     struct QueueEntry
     {
@@ -84,10 +97,10 @@ namespace Gambit
     };
 
     /// Check whether s1 (wildcard + regex allowed) matches s2
-    bool stringComp(str s1, str s2);
+    bool stringComp(const str &s1, const str &s2);
 
     /// Type comparison taking into account equivalence classes
-    bool typeComp(str s1, str s2, const Utils::type_equivalency & eq);
+    bool typeComp(const str & s1, const str & s2, const Utils::type_equivalency & eq);
 
     /// Main dependency resolver
     class DependencyResolver
@@ -135,6 +148,9 @@ namespace Gambit
         boost::tuple<const IniParser::ObservableType *, DRes::VertexID>
           resolveDependency(DRes::VertexID toVertex, sspair quantity);
 
+        /// Resolution of individual module function dependencies
+        DRes::VertexID resolveDependencyFromRules(const DRes::VertexID & toVertex, const sspair & quantity);
+
         /// Generate full dependency tree
         void generateTree(std::queue<QueueEntry> parQueue);
 
@@ -161,6 +177,10 @@ namespace Gambit
 
         /// Resolve a specific backend requirement.
         void resolveRequirement(functor*, VertexID);
+
+        /// Find candidate functions that are tailor made for models that are
+        /// scanned over.
+        std::vector<DRes::VertexID> closestCandidateForModel(std::vector<DRes::VertexID> candidates);
 
         //
         // Private data members

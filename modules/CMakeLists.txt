@@ -126,6 +126,9 @@ endif()
 
 # check for Gnu Scientific Library (GSL)
 include(cmake/FindGSL.cmake)
+if(GSL_FOUND)
+  include_directories(${GSL_INCLUDE_DIRS})
+endif()
 
 # check for DL libraries
 include(cmake/FindLibDL.cmake)
