@@ -9,7 +9,6 @@
 #include <iomanip>
 using namespace std;
 
-
 // The ATLAS 2 lepton direct stop analysis (20fb^-1) - `heavy stop'.
 
 // based on: arXiv: 1403.4853
@@ -23,6 +22,15 @@ using namespace std;
 
 namespace Gambit {
   namespace ColliderBit {
+
+    //Function that mimics the TLorentzVector deltaPhi function
+    //Puts dphi in the range -pi to pi
+    double Phi_mpi_pi(double x){
+      double pi=3.14159265359;
+      double two_pi=2*3.14159265359;
+      while (x >= pi) x -= two_pi;
+      while (x < -pi) x += two_pi;
+    }
 
     class Analysis_ATLAS_2LEPStop_20invfb : public Analysis {
     private:
@@ -127,7 +135,9 @@ namespace Gambit {
 
           for (size_t iJet=0;iJet<goodJets.size();iJet++) {
             P4 jetVec=goodJets.at(iJet)->mom();
-            if (muVec.deltaR_eta(jetVec)<0.4)overlap=true;
+            if (muVec.deltaR_eta(jetVec)<0.4){
+	      overlap=true;
+	    }
           }
           if (!overlap && muVec.pT()>10.) {
             signalMuons.push_back(baselineMuons.at(iMu));
@@ -151,8 +161,18 @@ namespace Gambit {
         bool isdphi=false;
         bool isdphib=false;
 
+
+	//TLorentzVector lep1; TLorentzVector lep2;
+
+	//TLorentzVector metvec;
+	//metvec.SetPtEtaPhiE(ptot.pT(),ptot.eta(),ptot.phi(),ptot.E());
+
 	//Calculate MT2
         if (nLeptons==2) {
+
+	  //lep1.SetPtEtaPhiE(signalLeptons.at(0)->pT(),signalLeptons.at(0)->eta(),signalLeptons.at(0)->phi(),signalLeptons.at(0)->E());
+	  //lep2.SetPtEtaPhiE(signalLeptons.at(1)->pT(),signalLeptons.at(1)->eta(),signalLeptons.at(1)->phi(),signalLeptons.at(1)->E());
+
 
           if(((signalLeptons.at(0)->pid()<0 && signalLeptons.at(1)->pid()>0) || (signalLeptons.at(0)->pid()>0 && signalLeptons.at(1)->pid()<0))) isOS=true;
 
@@ -162,21 +182,34 @@ namespace Gambit {
 
           if(signalLeptons[0]->mom().pT()>25. || signalLeptons[1]->mom().pT()>25) ispT=true;
 
-          float dphi_jetmetclose = 9999.;
+          double dphi_jetmetclose = 9999.;
           for(int j=0; j<nJets; j++) {
-            float temp = std::acos(std::cos(signalJets.at(j)->phi()-ptot.phi()));
-            if(fabs(temp)<dphi_jetmetclose) {
+            //float temp = std::acos(std::cos(signalJets.at(j)->phi()-ptot.phi()));
+	    double temp = Phi_mpi_pi(signalJets.at(j)->phi()-ptot.phi());
+	    if(fabs(temp)<dphi_jetmetclose) {
               dphi_jetmetclose = temp;
             }
           }
-          if(dphi_jetmetclose>1.0) isdphi=true;
+          if(fabs(dphi_jetmetclose)>1.0) isdphi=true;
 
           P4 ptllmet;
           ptllmet = signalLeptons[0]->mom() + signalLeptons[1]->mom() + ptot;
-          float temp = ptllmet.deltaPhi(ptot);
-          if(fabs(temp)<1.5) isdphib=true;
+	  
+	  //float temp = ptllmet.deltaPhi(ptot);
+	  float temp=ptllmet.phi()-ptot.phi();
+	  double dphib=Phi_mpi_pi((double)temp);
+	  
+	  //TLorentzVector ptllmet_root;
+	  //ptllmet_root = lep1 + lep2 + metvec;
+	  //float temp_root = ptllmet_root.DeltaPhi(metvec);
+	 
+	  //std::cout << "DPHIB " << dphib << " DPHIBROOT " << temp_root << " ele " << signalElectrons.size() << " muo " << signalMuons.size() << std::endl;
 
+          if(fabs(dphib)<1.5) isdphib=true; 
+	  	  	 	  
         }
+
+	
 
         //if(leptonsForVeto.size()>0 && leptonsForVeto[0]->pT()>25.)cout << "Leptons size " << leptonsForVeto.size() << " muons " << nMuons << " electrons " << nElectrons << endl;
 
@@ -221,9 +254,8 @@ namespace Gambit {
         if(mt2ll>110) cut_MT2110=true;
         if(mt2ll>120) cut_MT2120=true;
 	
-
-        if(baselineElectrons.size()+baselineMuons.size()==2) cut_2leptons_base=true;
-        if(signalElectrons.size()+signalMuons.size()==2) cut_2leptons=true;
+        if((baselineElectrons.size()+baselineMuons.size())==2) cut_2leptons_base=true;
+        if((signalElectrons.size()+signalMuons.size())==2) cut_2leptons=true;
         if(signalElectrons.size()==2 && signalMuons.size()==0) cut_2leptons_ee=true;
         if(signalElectrons.size()==1 && signalMuons.size()==1) cut_2leptons_emu=true;
         if(signalElectrons.size()==0 && signalMuons.size()==2) cut_2leptons_mumu=true;
@@ -240,20 +272,19 @@ namespace Gambit {
         cutFlowVector_str[7] = "dphi_min > 1.0 ";
         cutFlowVector_str[8] = "dphib < 1.5  ";
         cutFlowVector_str[9] = "SR M90 [SF] ";
-        cutFlowVector_str[10] = "SR M100 [SF] ";
-        cutFlowVector_str[11] = "SR M110 [SF] ";
-        cutFlowVector_str[12] = "SR M120 [SF] ";
+        cutFlowVector_str[10] = "SR M120 [SF] ";
+        cutFlowVector_str[11] = "SR M100 + 2 jets [SF] ";
+        cutFlowVector_str[12] = "SR M110 + 2 jets [SF] ";
         cutFlowVector_str[13] = "2 DF Signal Leptons";
         cutFlowVector_str[14] = "2 OS DF Signal Leptons ";
         cutFlowVector_str[15] = "mll > 20 GeV ";
         cutFlowVector_str[16] = "leading lepton pT ";
-        cutFlowVector_str[17] = "|mll-mZ|>20 GeV ";
-        cutFlowVector_str[18] = "dphi_min > 1.0 ";
-        cutFlowVector_str[19] = "dphib < 1.5  ";
-        cutFlowVector_str[20] = "SR M90 [DF] ";
-        cutFlowVector_str[21] = "SR M100 [DF] ";
-        cutFlowVector_str[22] = "SR M110 [DF] ";
-        cutFlowVector_str[23] = "SR M120 [DF] ";
+        cutFlowVector_str[17] = "dphi_min > 1.0 ";
+        cutFlowVector_str[18] = "dphib < 1.5  ";
+        cutFlowVector_str[19] = "SR M90 [DF] ";
+        cutFlowVector_str[20] = "SR M120 [DF] ";
+        cutFlowVector_str[21] = "SR M100 + 2 jets[DF] ";
+        cutFlowVector_str[22] = "SR M110 + 2 jets[DF] ";
 
         for(int j=0;j<NCUTS;j++){
           if(
@@ -277,11 +308,11 @@ namespace Gambit {
 
              (j==9 && cut_2leptons_base && cut_2leptons && (cut_2leptons_ee || cut_2leptons_mumu) && isOS && isMLL && ispT && isZsafe && isdphi && isdphib && cut_MT290) ||
 
-             (j==10 && cut_2leptons_base && cut_2leptons && (cut_2leptons_ee ||cut_2leptons_mumu) && isOS && isMLL && ispT && isZsafe && isdphi && isdphib && cut_MT2100 && cut_2jets) ||
+             (j==10 && cut_2leptons_base && cut_2leptons && (cut_2leptons_ee ||cut_2leptons_mumu) && isOS && isMLL && ispT && isZsafe && isdphi && isdphib && cut_MT2120) ||
 
-             (j==11 && cut_2leptons_base && cut_2leptons && (cut_2leptons_ee ||cut_2leptons_mumu) && isOS && isMLL && ispT && isZsafe && isdphi && isdphib && cut_MT2110 && nJets>=2) ||
+             (j==11 && cut_2leptons_base && cut_2leptons && (cut_2leptons_ee ||cut_2leptons_mumu) && isOS && isMLL && ispT && isZsafe && isdphi && isdphib && cut_MT2100 && cut_2jets) ||
 
-             (j==12 && cut_2leptons_base && cut_2leptons && (cut_2leptons_ee ||cut_2leptons_mumu) && isOS && isMLL && ispT && isZsafe && isdphi && isdphib && cut_MT2120 && nJets>=2) ||
+             (j==12 && cut_2leptons_base && cut_2leptons && (cut_2leptons_ee ||cut_2leptons_mumu) && isOS && isMLL && ispT && isZsafe && isdphi && isdphib && cut_MT2110 && nJets>=2) ||
 
              (j==13 && cut_2leptons && cut_2leptons_emu) ||
 
@@ -290,20 +321,18 @@ namespace Gambit {
              (j==15 && cut_2leptons && cut_2leptons_emu && isOS && isMLL) ||
 
              (j==16 && cut_2leptons && cut_2leptons_emu && isOS && isMLL && ispT) ||
+  
+             (j==17 && cut_2leptons && cut_2leptons_emu && isOS && isMLL && ispT && isdphi) ||
 
-             (j==17 && cut_2leptons && cut_2leptons_emu && isOS && isMLL && ispT && isZsafe) ||
+             (j==18 && cut_2leptons && cut_2leptons_emu && isOS && isMLL && ispT && isdphi && isdphib) ||
 
-             (j==18 && cut_2leptons && cut_2leptons_emu && isOS && isMLL && ispT && isZsafe && isdphi) ||
+             (j==19 && cut_2leptons && cut_2leptons_emu && isOS && isMLL && ispT && isdphi && isdphib && cut_MT290) ||
 
-             (j==19 && cut_2leptons && cut_2leptons_emu && isOS && isMLL && ispT && isZsafe && isdphi && isdphib) ||
+             (j==20 && cut_2leptons_base && cut_2leptons && cut_2leptons_emu && isOS && isMLL && ispT && isdphi && isdphib && cut_MT2100 && cut_2jets) ||
 
-             (j==20 && cut_2leptons && cut_2leptons_emu && isOS && isMLL && ispT && isZsafe && isdphi && isdphib && cut_MT290) ||
+             (j==21 && cut_2leptons_base && cut_2leptons && cut_2leptons_emu && isOS && isMLL && ispT && isdphi && isdphib && cut_MT2110 && nJets>=2) ||
 
-             (j==21 && cut_2leptons_base && cut_2leptons && cut_2leptons_emu && isOS && isMLL && ispT && isZsafe && isdphi && isdphib && cut_MT2100 && cut_2jets) ||
-
-             (j==22 && cut_2leptons_base && cut_2leptons && cut_2leptons_emu && isOS && isMLL && ispT && isZsafe && isdphi && isdphib && cut_MT2110 && nJets>=2) ||
-
-             (j==23 && cut_2leptons_base && cut_2leptons && cut_2leptons_emu && isOS && isMLL && ispT && isZsafe && isdphi && isdphib && cut_MT2120 && nJets>=2) )
+             (j==22 && cut_2leptons_base && cut_2leptons && cut_2leptons_emu && isOS && isMLL && ispT && isdphi && isdphib && cut_MT2120 && nJets>=2) )
 
             cutFlowVector[j]++;
         }
@@ -330,6 +359,7 @@ namespace Gambit {
         using namespace std;
 
         double scale_to = 1339.6;
+	
         double trigger_cleaning_eff = 1;//0.53;
 
         cout << "------------------------------------------------------------------------------------------------------------------------------ "<<std::endl;
@@ -356,7 +386,7 @@ namespace Gambit {
       }
 
       void collect_results() {
-
+	finalize();
 
         SignalRegionData results_SRM90;
         results_SRM90.set_observation(274.);
