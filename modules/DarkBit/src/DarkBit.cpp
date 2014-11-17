@@ -175,11 +175,14 @@ namespace Gambit {
     {
       using namespace Pipes::getMSSMspectrum;
 	  eaSLHA spectrum;
+      static int counter = 0;
 
       // Read filename from yml ini file
-      std::string filename = runOptions->getValue<std::string>("filename");
-      std::cout << "Filename is " << filename << std::endl;
+      std::vector<std::string> filenames = runOptions->getValue<std::vector<std::string> >("filenames");
 
+      std::string filename = filenames[counter];
+
+      std::cout << "Read slha file " << filename << std::endl;
       std::ifstream ifs(filename.c_str());  // This might require char [] instead
       if(!ifs.good())
       {
@@ -189,6 +192,9 @@ namespace Gambit {
       ifs >> spectrum;
       ifs.close();
       result = spectrum;
+      counter++;
+      if ( counter >= filenames.size() )
+          counter == 0;
     }
 
 //////////////////////////////////////////////////////////////////////////
