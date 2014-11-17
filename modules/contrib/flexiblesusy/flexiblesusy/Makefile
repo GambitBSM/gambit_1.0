@@ -26,7 +26,7 @@ ENABLE_SILENT         := no
 ENABLE_VERBOSE        := no
 
 # Makefile modules
-MODELS             :=  models/CMSSM
+MODELS             :=  models/NUHMSSM
 MODULES            := config src fflite legacy slhaea doc
 MODULES            += $(MODELS)
 
@@ -53,7 +53,7 @@ BOOSTFLAGS         :=  -I/usr/include
 EIGENFLAGS         := -I../../../../extras/eigen3
 GSLLIBS            := -L/usr/local/gsl/1.12-gcc/lib -lgsl -lgslcblas -lm
 GSLFLAGS           := -I/usr/local/gsl/1.12-gcc/include
-LAPACKLIBS         := -llapack
+LAPACKLIBS         := -llapack -latlas
 LOOPTOOLSFLAGS     := 
 LOOPTOOLSLIBS      := 
 THREADLIBS         := -lpthread

@@ -124,13 +124,23 @@ namespace flexiblesusy {
       //reference to spectrim class for accessing model object
       //Spec<Model,Model_physical> & my_parent;
       MSSMSpec<Model, Model_physical> &my_parent;
-      static fmap PoleMass_map;
+      static fmap  PoleMass_map;
       static fmap1 PoleMass_map1;
-      static fmap fill_PoleMass_map();
+      static fmap  fill_PoleMass_map();
       static fmap1 fill_PoleMass_map1();
-      
-      fmap& get_PoleMass_map() const;
+      fmap&  get_PoleMass_map() const;
       fmap1& get_PoleMass_map1() const;
+
+      static fmap  PoleMixing_map;
+      static fmap1 PoleMixing_map1;
+      static fmap2 PoleMixing_map2;
+      static fmap  fill_PoleMixing_map();
+      static fmap1 fill_PoleMixing_map1();    
+      static fmap2 fill_PoleMixing_map2();
+      fmap&  get_PoleMixing_map() const; 
+      fmap1& get_PoleMixing_map1() const;
+      fmap2& get_PoleMixing_map2() const;
+
    public:
       //  MSSM_Phys(Spec<Model,Model_physical> & x) : my_parent(x) {}
       MSSM_Phys(MSSMSpec<Model, Model_physical> &x) : my_parent(x) {}
@@ -700,10 +710,46 @@ namespace flexiblesusy {
       return tmp_map;
    }
    
+   //returns empty mass sicne none of these exist in this model
+   template <class Model, class MP>
+   typename MSSM_Phys<Model,MP>::fmap MSSM_Phys<Model,MP>::fill_PoleMixing_map(){
+      fmap tmp_map;
+      
+      return tmp_map;
+   }
    
+   //returns empty mass sicne none of these exist in this model
+   template <class Model, class MP>
+   typename MSSM_Phys<Model,MP>::fmap1 MSSM_Phys<Model,MP>::fill_PoleMixing_map1(){
+      fmap1 tmp_map;
+    
+      return tmp_map;
+   }
    
-   
-   
+   template <class Model, class MP>
+   typename MSSM_Phys<Model,MP>::fmap2 MSSM_Phys<Model,MP>::fill_PoleMixing_map2(){
+      fmap2 tmp_map;
+      //Need to add these to generated code before I can use them here.
+      // tmp_map["ZD"] = &MssmFS::get_Pole_ZD;
+      // tmp_map["ZV"] = &MssmFS::get_Pole_ZV;
+      // tmp_map["ZU"] = &MssmFS::get_Pole_ZU;
+      // tmp_map["ZE"] = &MssmFS::get_Pole_ZE;
+      // tmp_map["ZH"] = &MssmFS::get_Pole_ZH;
+      // tmp_map["ZA"] = &MssmFS::get_Pole_ZA;
+      // tmp_map["ZPM"] = &MssmFS::get_Pole_ZPM;
+      
+      // tmp_map["ZN"] = &MssmFS::get_Pole_ZN;
+      // tmp_map["UM"] = &MssmFS::get_Pole_UM;
+      // tmp_map["UP"] = &MssmFS::get_Pole_UP;
+      
+      /* Could add SM fermion mixing but these are only filled
+         when we actually calculate the SM pole masses
+         which is not necessary */
+      // tmp_map["MFd"] = &MssmFS::get_Pole_MFd;
+      // tmp_map["MFu"] = &MssmFS::get_Pole_MFu;
+      // tmp_map["MFe"] = &MssmFS::get_Pole_MFe;
+      return tmp_map;
+   }
    
    //Would be safer to pass a pair like below:  
    // MSSMSpec::pmap1 MSSMSpec::fill_PoleMass_map1(){

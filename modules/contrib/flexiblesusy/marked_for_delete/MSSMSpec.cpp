@@ -424,8 +424,45 @@ MSSM_Phys::fmap1 MSSM_Phys::fill_PoleMass_map1(){
    return tmp_map;
 }
 
+//returns empty mass sicne none of these exist in this model
+
+MSSM_Phys::fmap MSSM_Phys::fill_PoleMixing_map(){
+   fmap tmp_map;
+   
+   return tmp_map;
+}
+
+//returns empty mass sicne none of these exist in this model
+MSSM_Phys::fmap1 MSSM_Phys::fill_PoleMixing_map1(){
+   fmap1 tmp_map;
+ 
+   return tmp_map;
+}
 
 
+MSSM_Phys::fmap2 MSSM_Phys::fill_PoleMixing_map2(){
+   fmap2 tmp_map;
+   //Need to add these to generated code before I can use them here.
+   // tmp_map["ZD"] = &MssmFS::get_Pole_ZD;
+   // tmp_map["ZV"] = &MssmFS::get_Pole_ZV;
+   // tmp_map["ZU"] = &MssmFS::get_Pole_ZU;
+   // tmp_map["ZE"] = &MssmFS::get_Pole_ZE;
+   // tmp_map["ZH"] = &MssmFS::get_Pole_ZH;
+   // tmp_map["ZA"] = &MssmFS::get_Pole_ZA;
+   // tmp_map["ZPM"] = &MssmFS::get_Pole_ZPM;
+   
+   // tmp_map["ZN"] = &MssmFS::get_Pole_ZN;
+   // tmp_map["UM"] = &MssmFS::get_Pole_UM;
+   // tmp_map["UP"] = &MssmFS::get_Pole_UP;
+   
+   /* Could add SM fermion mixing but these are only filled
+      when we actually calculate the SM pole masses
+      which is not necessary */
+   // tmp_map["MFd"] = &MssmFS::get_Pole_MFd;
+   // tmp_map["MFu"] = &MssmFS::get_Pole_MFu;
+   // tmp_map["MFe"] = &MssmFS::get_Pole_MFe;
+   return tmp_map;
+}
 
 
 
