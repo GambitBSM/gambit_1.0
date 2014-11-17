@@ -1,0 +1,25 @@
+Instructions for adding new flexiblesusy spectrum generators to gambit:
+
+1. Install flexiblesusy on some computer that has mathematica
+2. Follow flexiblesusy README for generating spectrum generator code, using flags to configure for EXPORT
+   e.g.
+      mylaptop FlexibleSUSY> ./configure --with-models=NUHMSSM --with-install-dir=export_NUHMSSM --disable-compile
+      mylaptop FlexibleSUSY> make
+      mylaptop FlexibleSUSY> make install-src
+   This will copy the new spectrum generator's source code into install-dir.
+3. Copy the relevant model dir into the gambit flexiblesusy models folder
+   e.g. continuing the above example:
+      mylaptop FlexibleSUSY> scp -r export_NUHMSSM/models/NUHMSSM \
+         <gambit_install>/GAMBIT/modules/contrib/flexiblesusy/flexiblesusy/models/
+   might change some directory names, but hope this idea is clear.
+   After this, the contents of flexiblesusy/models should be similar to this:
+      gambit_install flexiblesusy> ls flexiblesusy/models/
+         CMSSM  NUHMSSM
+ 
+4. Build the spectrum generator code here
+      gambit_install flexiblesusy> ./configure --with-models=NUHMSSM
+      gambit_install flexiblesusy> make
+5. Modify Spectrum object and SpecBit as needed to deal with the new spectrum generator
+   (details to come...)
+ 
+
