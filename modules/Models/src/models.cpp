@@ -136,7 +136,7 @@ namespace Gambit
         str errmsg = "Some models selected for scanning are not required by any of\n";
         errmsg    += "the requested observables/likelihoods! Please switch these  \n";
         errmsg    += "off in the inifile or add a target that actually uses them. \n";
-        errmsg    += "List of unused models:                                      \n"
+        errmsg    += "List of unused models:                                      \n";
         for (std::vector<std::string>::iterator it = unusedmodels.begin(); it != unusedmodels.end(); ++it)
         {
           errmsg  += (*it + "\n");
