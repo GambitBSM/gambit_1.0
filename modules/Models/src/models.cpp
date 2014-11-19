@@ -83,17 +83,15 @@ namespace Gambit
       if( selectedmodels.size() != 0 )
       {
         // Report error
-        /// TODO: Change to proper gambit error
-        std::cout<<"Error! Some of the requested models could not be activated for ";
-        std::cout<<"scanning! Probably they have not been defined, or you spelled ";
-        std::cout<<"their name wrong in the ini file."<<std::endl;
-        std::cout<<"Un-activatable models:"<<std::endl;
-        for (std::vector<str>::iterator 
-             m = selectedmodels.begin(); m != selectedmodels.end(); ++m)
+        str errmsg = "Error! Some of the requested models could not be activated for \n";
+        errmsg    += "scanning! Probably they have not been defined, or you spelled  \n";
+        errmsg    += "their name wrong in the ini file.                              \n";
+        errmsg    += "Un-activatable models:                                         \n";
+        for (std::vector<str>::iterator m = selectedmodels.begin(); m != selectedmodels.end(); ++m)
         {
-          std::cout<<"  "<<(*m)<<std::endl;
+          errmsg    += ("  " + *m + "\n");
         }
-        exit (EXIT_FAILURE);
+        model_error().raise(LOCAL_INFO,errmsg);
       }
 
       return result;
@@ -133,19 +131,17 @@ namespace Gambit
       }     
     
       // If we found unused models throw an error
-      ///TODO: Make this into a proper GAMBIT error!
       if ( unusedmodels.size() > 0 )
       {
-        std::cout<<"ERROR! Some models selected for scanning are not ";
-        std::cout<<"required by any of the requested observables/likelihoods! Please switch these ";
-        std::cout<<"off in the inifile or add a target which actually uses them."<<std::endl;
-        std::cout<<"List of unused models:"<<std::endl;
-        for (std::vector<std::string>::iterator it = unusedmodels.begin();
-          it != unusedmodels.end(); ++it)
+        str errmsg = "Some models selected for scanning are not required by any of\n";
+        errmsg    += "the requested observables/likelihoods! Please switch these  \n";
+        errmsg    += "off in the inifile or add a target that actually uses them. \n";
+        errmsg    += "List of unused models:                                      \n"
+        for (std::vector<std::string>::iterator it = unusedmodels.begin(); it != unusedmodels.end(); ++it)
         {
-          std::cout<<(*it)<<std::endl;
+          errmsg  += (*it + "\n");
         }
-        exit (EXIT_FAILURE);
+        model_error().raise(LOCAL_INFO,errmsg);
       }
       
     }
@@ -285,8 +281,8 @@ namespace Gambit
       return descended_from(model2, model1);
     }
 
-    /// Check if model 1 can be interpreted as a model 2
-    bool ModelFunctorClaw::interpretable_as (const str &model1, const str &model2) const
+    /// Check if model 1 exists somewhere downstream of (and can be therefore be interpreted as a) model 2
+    bool ModelFunctorClaw::downstream_of (const str &model1, const str &model2) const
     {
       if (descended_from(model1, model2)) return true;
       if (myFriendsDB.find(model1) != myFriendsDB.end())
@@ -295,6 +291,12 @@ namespace Gambit
         return friends.find(model2) != friends.end();
       }
       return false;
+    }
+
+    /// Check if model 1 exists somewhere upstream of model 2, allowing model 2 to be interpreted as model 1
+    bool ModelFunctorClaw::upstream_of (const str &model1, const str &model2) const
+    {
+      return downstream_of(model2, model1);
     }
 
     /// @}

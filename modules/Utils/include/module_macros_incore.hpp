@@ -606,7 +606,7 @@
       module_functor<TYPE>                                                     \
     )                                                                          \
     FUNCTION (&ORIGIN::FUNCTION, STRINGIFY(FUNCTION), STRINGIFY(CAPABILITY),   \
-     STRINGIFY(TYPE), STRINGIFY(ORIGIN), Models::modelClaw());                 \
+     STRINGIFY(TYPE), STRINGIFY(ORIGIN), Models::ModelDB());                   \
   }                                                                            \
                                                                                \
   namespace Pipes                                                              \
