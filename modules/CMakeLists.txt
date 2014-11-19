@@ -128,7 +128,7 @@ endif()
 include(cmake/FindGSL.cmake)
 if(GSL_FOUND)
   include_directories(${GSL_INCLUDE_DIRS})
-else
+else()
   message(FATAL_ERROR "Need gsl libraries")
 endif()
 
