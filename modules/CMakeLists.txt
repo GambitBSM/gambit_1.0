@@ -25,7 +25,7 @@ project(GAMBIT)
 
 # check for Python
 include(FindPythonInterp)
-find_package(PythonInterp)
+find_package(PythonInterp REQUIRED)
 
 # generate the CMakeLists.txt files for GAMBIT modules
 message("-- Updating GAMBIT module cmake files")
@@ -128,6 +128,8 @@ endif()
 include(cmake/FindGSL.cmake)
 if(GSL_FOUND)
   include_directories(${GSL_INCLUDE_DIRS})
+else
+  message(FATAL_ERROR "Need gsl libraries")
 endif()
 
 # check for DL libraries
