@@ -48,28 +48,61 @@
 #define QF_ALLOW_MODELS_MORE(A, B, ...)                             ALLOW_MODELS_AB(A, B, __VA_ARGS__)
 #define QF_ALLOW_MODELS_1(A, _1)                                    DUMMYARG(A, _1)
 #define QF_ALLOW_MODELS(A,...)                                      VARARG_SWITCH_ON_GT_ONE_A(QF_ALLOW_MODELS, A, __VA_ARGS__)
-#define EXPAND_DEPS_10(A,B,_1, _2, _3, _4, _5, _6, _7, _8, _9, _10) LONG_DEPENDENCY(A,B,STRIP_PARENS(_1)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_2)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_3)) \
-                                                                     LONG_DEPENDENCY(A,B,STRIP_PARENS(_4)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_5)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_6)) \
-                                                                     LONG_DEPENDENCY(A,B,STRIP_PARENS(_7)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_8)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_9)) \
-                                                                     LONG_DEPENDENCY(A,B,STRIP_PARENS(_10))
-#define EXPAND_DEPS_9(A,B,_1, _2, _3, _4, _5, _6, _7, _8, _9)       LONG_DEPENDENCY(A,B,STRIP_PARENS(_1)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_2)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_3)) \
-                                                                     LONG_DEPENDENCY(A,B,STRIP_PARENS(_4)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_5)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_6)) \
-                                                                     LONG_DEPENDENCY(A,B,STRIP_PARENS(_7)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_8)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_9)) 
-#define EXPAND_DEPS_8(A,B,_1, _2, _3, _4, _5, _6, _7, _8)           LONG_DEPENDENCY(A,B,STRIP_PARENS(_1)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_2)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_3)) \
-                                                                     LONG_DEPENDENCY(A,B,STRIP_PARENS(_4)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_5)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_6)) \
-                                                                     LONG_DEPENDENCY(A,B,STRIP_PARENS(_7)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_8))
-#define EXPAND_DEPS_7(A,B,_1, _2, _3, _4, _5, _6, _7)               LONG_DEPENDENCY(A,B,STRIP_PARENS(_1)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_2)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_3)) \
-                                                                     LONG_DEPENDENCY(A,B,STRIP_PARENS(_4)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_5)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_6)) \
-                                                                     LONG_DEPENDENCY(A,B,STRIP_PARENS(_7))
-#define EXPAND_DEPS_6(A,B,_1, _2, _3, _4, _5, _6)                   LONG_DEPENDENCY(A,B,STRIP_PARENS(_1)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_2)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_3)) \
-                                                                     LONG_DEPENDENCY(A,B,STRIP_PARENS(_4)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_5)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_6))
-#define EXPAND_DEPS_5(A,B,_1, _2, _3, _4, _5)                       LONG_DEPENDENCY(A,B,STRIP_PARENS(_1)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_2) LONG_DEPENDENCY(A,B,STRIP_PARENS(_3)) \
-                                                                     LONG_DEPENDENCY(A,B,STRIP_PARENS(_4)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_5))
-#define EXPAND_DEPS_4(A,B,_1, _2, _3, _4)                           LONG_DEPENDENCY(A,B,STRIP_PARENS(_1)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_2)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_3)) \
-                                                                     LONG_DEPENDENCY(A,B,STRIP_PARENS(_4)) 
-#define EXPAND_DEPS_3(A,B,_1, _2, _3)                               LONG_DEPENDENCY(A,B,STRIP_PARENS(_1)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_2)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_3)) 
-#define EXPAND_DEPS_2(A,B,_1, _2)                                   LONG_DEPENDENCY(A,B,STRIP_PARENS(_1)) LONG_DEPENDENCY(A,B,STRIP_PARENS(_2))  
-#define EXPAND_DEPS_1(A,B,_1)                                       LONG_DEPENDENCY(A,B,STRIP_PARENS(_1)) 
+#define EXPAND_DEPS_10(A,B,_1, _2, _3, _4, _5, _6, _7, _8, _9, _10) LONG_DEPENDENCY(A,B,BOOST_PP_TUPLE_ELEM(0,_1),BOOST_PP_TUPLE_ELEM(1,_1)) \
+                                                                    LONG_DEPENDENCY(A,B,BOOST_PP_TUPLE_ELEM(0,_2),BOOST_PP_TUPLE_ELEM(1,_2)) \
+                                                                    LONG_DEPENDENCY(A,B,BOOST_PP_TUPLE_ELEM(0,_3),BOOST_PP_TUPLE_ELEM(1,_3)) \
+                                                                    LONG_DEPENDENCY(A,B,BOOST_PP_TUPLE_ELEM(0,_4),BOOST_PP_TUPLE_ELEM(1,_4)) \
+                                                                    LONG_DEPENDENCY(A,B,BOOST_PP_TUPLE_ELEM(0,_5),BOOST_PP_TUPLE_ELEM(1,_5)) \
+                                                                    LONG_DEPENDENCY(A,B,BOOST_PP_TUPLE_ELEM(0,_6),BOOST_PP_TUPLE_ELEM(1,_6)) \
+                                                                    LONG_DEPENDENCY(A,B,BOOST_PP_TUPLE_ELEM(0,_7),BOOST_PP_TUPLE_ELEM(1,_7)) \
+                                                                    LONG_DEPENDENCY(A,B,BOOST_PP_TUPLE_ELEM(0,_8),BOOST_PP_TUPLE_ELEM(1,_8)) \
+                                                                    LONG_DEPENDENCY(A,B,BOOST_PP_TUPLE_ELEM(0,_9),BOOST_PP_TUPLE_ELEM(1,_9)) \
+                                                                    LONG_DEPENDENCY(A,B,BOOST_PP_TUPLE_ELEM(0,_10),BOOST_PP_TUPLE_ELEM(1,_10))
+#define EXPAND_DEPS_9(A,B,_1, _2, _3, _4, _5, _6, _7, _8, _9)       LONG_DEPENDENCY(A,B,BOOST_PP_TUPLE_ELEM(0,_1),BOOST_PP_TUPLE_ELEM(1,_1)) \
+                                                                    LONG_DEPENDENCY(A,B,BOOST_PP_TUPLE_ELEM(0,_2),BOOST_PP_TUPLE_ELEM(1,_2)) \
+                                                                    LONG_DEPENDENCY(A,B,BOOST_PP_TUPLE_ELEM(0,_3),BOOST_PP_TUPLE_ELEM(1,_3)) \
+                                                                    LONG_DEPENDENCY(A,B,BOOST_PP_TUPLE_ELEM(0,_4),BOOST_PP_TUPLE_ELEM(1,_4)) \
+                                                                    LONG_DEPENDENCY(A,B,BOOST_PP_TUPLE_ELEM(0,_5),BOOST_PP_TUPLE_ELEM(1,_5)) \
+                                                                    LONG_DEPENDENCY(A,B,BOOST_PP_TUPLE_ELEM(0,_6),BOOST_PP_TUPLE_ELEM(1,_6)) \
+                                                                    LONG_DEPENDENCY(A,B,BOOST_PP_TUPLE_ELEM(0,_7),BOOST_PP_TUPLE_ELEM(1,_7)) \
+                                                                    LONG_DEPENDENCY(A,B,BOOST_PP_TUPLE_ELEM(0,_8),BOOST_PP_TUPLE_ELEM(1,_8)) \
+                                                                    LONG_DEPENDENCY(A,B,BOOST_PP_TUPLE_ELEM(0,_9),BOOST_PP_TUPLE_ELEM(1,_9)) 
+#define EXPAND_DEPS_8(A,B,_1, _2, _3, _4, _5, _6, _7, _8)           LONG_DEPENDENCY(A,B,BOOST_PP_TUPLE_ELEM(0,_1),BOOST_PP_TUPLE_ELEM(1,_1)) \
+                                                                    LONG_DEPENDENCY(A,B,BOOST_PP_TUPLE_ELEM(0,_2),BOOST_PP_TUPLE_ELEM(1,_2)) \
+                                                                    LONG_DEPENDENCY(A,B,BOOST_PP_TUPLE_ELEM(0,_3),BOOST_PP_TUPLE_ELEM(1,_3)) \
+                                                                    LONG_DEPENDENCY(A,B,BOOST_PP_TUPLE_ELEM(0,_4),BOOST_PP_TUPLE_ELEM(1,_4)) \
+                                                                    LONG_DEPENDENCY(A,B,BOOST_PP_TUPLE_ELEM(0,_5),BOOST_PP_TUPLE_ELEM(1,_5)) \
+                                                                    LONG_DEPENDENCY(A,B,BOOST_PP_TUPLE_ELEM(0,_6),BOOST_PP_TUPLE_ELEM(1,_6)) \
+                                                                    LONG_DEPENDENCY(A,B,BOOST_PP_TUPLE_ELEM(0,_7),BOOST_PP_TUPLE_ELEM(1,_7)) \
+                                                                    LONG_DEPENDENCY(A,B,BOOST_PP_TUPLE_ELEM(0,_8),BOOST_PP_TUPLE_ELEM(1,_8))
+#define EXPAND_DEPS_7(A,B,_1, _2, _3, _4, _5, _6, _7)               LONG_DEPENDENCY(A,B,BOOST_PP_TUPLE_ELEM(0,_1),BOOST_PP_TUPLE_ELEM(1,_1)) \
+                                                                    LONG_DEPENDENCY(A,B,BOOST_PP_TUPLE_ELEM(0,_2),BOOST_PP_TUPLE_ELEM(1,_2)) \
+                                                                    LONG_DEPENDENCY(A,B,BOOST_PP_TUPLE_ELEM(0,_3),BOOST_PP_TUPLE_ELEM(1,_3)) \
+                                                                    LONG_DEPENDENCY(A,B,BOOST_PP_TUPLE_ELEM(0,_4),BOOST_PP_TUPLE_ELEM(1,_4)) \
+                                                                    LONG_DEPENDENCY(A,B,BOOST_PP_TUPLE_ELEM(0,_5),BOOST_PP_TUPLE_ELEM(1,_5)) \
+                                                                    LONG_DEPENDENCY(A,B,BOOST_PP_TUPLE_ELEM(0,_6),BOOST_PP_TUPLE_ELEM(1,_6)) \
+                                                                    LONG_DEPENDENCY(A,B,BOOST_PP_TUPLE_ELEM(0,_7),BOOST_PP_TUPLE_ELEM(1,_7))
+#define EXPAND_DEPS_6(A,B,_1, _2, _3, _4, _5, _6)                   LONG_DEPENDENCY(A,B,BOOST_PP_TUPLE_ELEM(0,_1),BOOST_PP_TUPLE_ELEM(1,_1)) \
+                                                                    LONG_DEPENDENCY(A,B,BOOST_PP_TUPLE_ELEM(0,_2),BOOST_PP_TUPLE_ELEM(1,_2)) \
+                                                                    LONG_DEPENDENCY(A,B,BOOST_PP_TUPLE_ELEM(0,_3),BOOST_PP_TUPLE_ELEM(1,_3)) \
+                                                                    LONG_DEPENDENCY(A,B,BOOST_PP_TUPLE_ELEM(0,_4),BOOST_PP_TUPLE_ELEM(1,_4)) \
+                                                                    LONG_DEPENDENCY(A,B,BOOST_PP_TUPLE_ELEM(0,_5),BOOST_PP_TUPLE_ELEM(1,_5)) \
+                                                                    LONG_DEPENDENCY(A,B,BOOST_PP_TUPLE_ELEM(0,_6),BOOST_PP_TUPLE_ELEM(1,_6))
+#define EXPAND_DEPS_5(A,B,_1, _2, _3, _4, _5)                       LONG_DEPENDENCY(A,B,BOOST_PP_TUPLE_ELEM(0,_1),BOOST_PP_TUPLE_ELEM(1,_1)) \
+                                                                    LONG_DEPENDENCY(A,B,BOOST_PP_TUPLE_ELEM(0,_2),BOOST_PP_TUPLE_ELEM(1,_2)) \
+                                                                    LONG_DEPENDENCY(A,B,BOOST_PP_TUPLE_ELEM(0,_3),BOOST_PP_TUPLE_ELEM(1,_3)) \
+                                                                    LONG_DEPENDENCY(A,B,BOOST_PP_TUPLE_ELEM(0,_4),BOOST_PP_TUPLE_ELEM(1,_4)) \
+                                                                    LONG_DEPENDENCY(A,B,BOOST_PP_TUPLE_ELEM(0,_5),BOOST_PP_TUPLE_ELEM(1,_5))
+#define EXPAND_DEPS_4(A,B,_1, _2, _3, _4)                           LONG_DEPENDENCY(A,B,BOOST_PP_TUPLE_ELEM(0,_1),BOOST_PP_TUPLE_ELEM(1,_1)) \
+                                                                    LONG_DEPENDENCY(A,B,BOOST_PP_TUPLE_ELEM(0,_2),BOOST_PP_TUPLE_ELEM(1,_2)) \
+                                                                    LONG_DEPENDENCY(A,B,BOOST_PP_TUPLE_ELEM(0,_3),BOOST_PP_TUPLE_ELEM(1,_3)) \
+                                                                    LONG_DEPENDENCY(A,B,BOOST_PP_TUPLE_ELEM(0,_4),BOOST_PP_TUPLE_ELEM(1,_4)) 
+#define EXPAND_DEPS_3(A,B,_1, _2, _3)                               LONG_DEPENDENCY(A,B,BOOST_PP_TUPLE_ELEM(0,_1),BOOST_PP_TUPLE_ELEM(1,_1)) \
+                                                                    LONG_DEPENDENCY(A,B,BOOST_PP_TUPLE_ELEM(0,_2),BOOST_PP_TUPLE_ELEM(1,_2)) \
+                                                                    LONG_DEPENDENCY(A,B,BOOST_PP_TUPLE_ELEM(0,_3),BOOST_PP_TUPLE_ELEM(1,_3)) 
+#define EXPAND_DEPS_2(A,B,_1, _2)                                   LONG_DEPENDENCY(A,B,BOOST_PP_TUPLE_ELEM(0,_1),BOOST_PP_TUPLE_ELEM(1,_1)) \
+                                                                    LONG_DEPENDENCY(A,B,BOOST_PP_TUPLE_ELEM(0,_2),BOOST_PP_TUPLE_ELEM(1,_2))  
+#define EXPAND_DEPS_1(A,B,_1)                                       LONG_DEPENDENCY(A,B,BOOST_PP_TUPLE_ELEM(0,_1),BOOST_PP_TUPLE_ELEM(1,_1))
 #define EXPAND_DEPS_AB(A,B,...)                                     VARARG_AB(EXPAND_DEPS, A, B, __VA_ARGS__)
 /// }@
 
