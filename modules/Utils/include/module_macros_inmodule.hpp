@@ -50,8 +50,8 @@
 #define DECLARE_FUNCTION(TYPE, FLAG)                      MODULE_DECLARE_FUNCTION(MODULE, FUNCTION, TYPE, FLAG)
 #define LONG_DECLARE_FUNCTION(MODULE, C, FUNCTION, TYPE, FLAG) \
                                                           MODULE_DECLARE_FUNCTION(MODULE, FUNCTION, TYPE, FLAG)
-#define DEPENDENCY(DEP, TYPE)                             MODULE_DEPENDENCY(DEP, TYPE)
-#define LONG_DEPENDENCY(MODULE, FUNCTION, ...)            MODULE_DEPENDENCY(__VA_ARGS__)
+#define DEPENDENCY(DEP, TYPE)                             MODULE_DEPENDENCY(DEP, TYPE, MODULE, FUNCTION)
+#define LONG_DEPENDENCY(MODULE, FUNCTION, DEP, TYPE)      MODULE_DEPENDENCY(DEP, TYPE, MODULE, FUNCTION)
 #define NEEDS_MANAGER_WITH_CAPABILITY(LOOPMAN)            MODULE_NEEDS_MANAGER_WITH_CAPABILITY(LOOPMAN)                                  
 #define ALLOWED_MODEL(MODULE,FUNCTION,MODEL)              MODULE_ALLOWED_MODEL(MODULE,FUNCTION,MODEL)
 #define ALLOWED_MODEL_ONLY_VIA_GROUPS(MODULE,FUNCTION,MODEL) \
@@ -64,7 +64,7 @@
 #define DECLARE_BACKEND_REQ(GROUP, REQUIREMENT, TAGS, TYPE, ARGS, IS_VARIABLE) \
                                                           MODULE_BACKEND_REQ(GROUP, REQUIREMENT, TAGS, TYPE, ARGS, IS_VARIABLE) 
 #define ACTIVATE_BACKEND_REQ_FOR_MODELS(MODELS,TAGS)      DUMMYARG(MODELS,TAGS)                   
-#define START_CONDITIONAL_DEPENDENCY(TYPE)                MODULE_START_CONDITIONAL_DEPENDENCY(TYPE)
+#define START_CONDITIONAL_DEPENDENCY(TYPE)                MODULE_START_CONDITIONAL_DEPENDENCY(TYPE,MODULE,FUNCTION)
 #define ACTIVATE_DEP_BE(BACKEND_REQ, BACKEND, VERSTRING)  DUMMYARG(BACKEND_REQ, BACKEND, VERSTRING)
 #define ACTIVATE_FOR_MODELS(...)                          DUMMYARG(__VA_ARGS__)
 #define BACKEND_OPTION(BACKEND_AND_VERSIONS,TAGS)         DUMMYARG(BACKEND_AND_VERSIONS,TAGS)
@@ -179,7 +179,7 @@
                                                                                \
 
 /// Redirection of DEPENDENCY(DEP, TYPE) when invoked from within a module.
-#define MODULE_DEPENDENCY(DEP, TYPE)                                           \
+#define MODULE_DEPENDENCY(DEP, TYPE, MODULE, FUNCTION)                         \
                                                                                \
   namespace Gambit                                                             \
   {                                                                            \
@@ -308,8 +308,8 @@
 
 /// Redirection of START_CONDITIONAL_DEPENDENCY(TYPE) when invoked from within 
 /// a module.
-#define MODULE_START_CONDITIONAL_DEPENDENCY(TYPE)                              \
-  MODULE_DEPENDENCY(CONDITIONAL_DEPENDENCY, TYPE)                              \
+#define MODULE_START_CONDITIONAL_DEPENDENCY(TYPE, MODULE, FUNCTION)            \
+  MODULE_DEPENDENCY(CONDITIONAL_DEPENDENCY, TYPE, MODULE, FUNCTION)            \
 
 /// @}
 

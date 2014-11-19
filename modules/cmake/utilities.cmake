@@ -1,17 +1,31 @@
 #macro to retrieve GAMBIT modules
-macro(retrieve_bits bits root excludes)
+macro(retrieve_bits bits root excludes quiet)
 
   set(${bits} "")
   file(GLOB children RELATIVE ${root} ${root}/*Bit*)
 
   foreach(child ${children})
     if(IS_DIRECTORY ${root}/${child})
-      list(APPEND ${bits} ${child})
-    endif()
-  endforeach()
 
-  foreach(x ${excludes})
-    list(REMOVE_ITEM ${bits} ${x})
+      # Work out if this Bit should be excluded or not.
+      set(excluded "NO")
+      foreach(x ${excludes})
+        string(FIND ${child} ${x} location)
+        if(${location} EQUAL 0) 
+          set(excluded "YES")
+        endif()
+      endforeach()      
+
+      # Exclude or add this bit.
+      if(${excluded})
+        if(NOT ${quiet} STREQUAL "Quiet") 
+          message("   Excluding ${child} from GAMBIT configuration.")
+        endif()
+      else()
+        list(APPEND ${bits} ${child})
+      endif()
+
+    endif()
   endforeach()
 
 endmacro()
