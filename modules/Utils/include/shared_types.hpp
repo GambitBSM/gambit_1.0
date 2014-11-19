@@ -36,10 +36,6 @@
 #include "SLHA_readers.hpp"            // SLHA readers from contributed packages
 
 // Spectrum object from flexiblesusy backend
-#include "Spectrum.hpp"  // Abstract base class
-#include "MSSMSpec.hpp"  // MSSM derived container 
-
-// Spectrum object from flexiblesusy backend
 #include "Spectrum.hpp"
 
 // GAMBIT BaseFunction Objects
@@ -49,8 +45,6 @@
 // should be progressively organised into new headers, and those headers included from here.
 namespace Gambit
 {
-  typedef flexiblesusy::MSSMSpec MSSMSpec; 
- 
   // Pointer to a function that takes an integer by reference and returns a double.
   // Just used for example purposes in ExampleBit_A and ExampleBit_B.
   typedef double(*fptr)(int&); 

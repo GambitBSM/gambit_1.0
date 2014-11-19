@@ -45,7 +45,7 @@ ObsLikes:
   - purpose:      Likelihood
     capability:   specbit_tests
     type:         double
-    function:     specbit_test_func1
+    function:     specbit_test_func3
 
   - purpose:      Likelihood
     capability:   dump_spectrum_slha
@@ -87,20 +87,20 @@ Auxiliaries:
   ### Test GUTMSSMA spectrum ------
   - capability: specbit_tests 
     dependencies:
-    - {capability: particle_spectrum, function: MSSMSpec_to_Spectrum} 
+    - {capability: MSSM_spectrum, function: get_GUTMSSMA_spectrum} 
 
   - capability: dump_spectrum_slha
     options:
       filename: "SpecBit/test_generic_dump_GUTMSSMA.slha"
-    dependencies:
-    - {capability: particle_spectrum, function: MSSMSpec_to_Spectrum} 
+    #dependencies:
+    #- {capability: MSSM_spectrum, function: MSSMSpec_to_Spectrum} 
 
-  - capability: particle_spectrum 
+  - capability: MSSM_spectrum 
     options:
       ewsb_loop_order: 2
-    dependencies:
-    - {capability: MSSM_parameters, module: GUTMSSMA}
-    - {capability: GUTMSSMA_parameters, module: GUTMSSMA} 
+  #  dependencies:
+  #  - {capability: MSSM_parameters, module: GUTMSSMA}
+  #  - {capability: GUTMSSMA_parameters, module: GUTMSSMA} 
 
   # - capability: MSSM_parameters
   #   dependencies:
@@ -125,11 +125,12 @@ Logger:
     [Debug] : "debug.log"
     [Default] : "default.log"
     [SpecBit] : "SpecBit.log"
+    [Dependency Resolver] : "dep_resolver.log"
 
 KeyValues:
 
   dependency_resolution:
-    prefer_model_specific_functions: false
+    prefer_model_specific_functions: true
 
   likelihood:
     model_invalid_for_lnlike_below: -1e6

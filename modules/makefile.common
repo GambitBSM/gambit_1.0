@@ -71,30 +71,41 @@ MULTINESTLIBDIR = /home/farmer/apps/MultiNest_v3.3_CMake/multinest/lib#   # path
 # Package information
 PKGNAME         := FlexibleSUSY
 VERSION         := 0.5.3
-ABSBASEDIR      := contrib/flexiblesusy/MSSM/
+ABSBASEDIR      := contrib/flexiblesusy/flexiblesusy/
 
 LIBEXT          := .a
 
-MODEL           := MSSM
+# Perhaps can automate this better in cmake?
+MODEL1          := CMSSM
+MODEL2          := NUHMSSM
 
-MODELDIR        := $(ABSBASEDIR)/models/$(MODEL)
+MODEL1DIR       := $(ABSBASEDIR)/models/$(MODEL1)
+MODEL2DIR       := $(ABSBASEDIR)/models/$(MODEL2)
+
 CONFIGDIR       := $(ABSBASEDIR)/config
 FLEXIDIR        := $(ABSBASEDIR)/src
 LEGACYDIR       := $(ABSBASEDIR)/legacy
 
-INCMODEL        := -I$(MODELDIR)
+INCMODEL1       := -I$(MODEL1DIR)
+INCMODEL2       := -I$(MODEL2DIR)
+INCMODELS       := $(INCMODEL1) $(INCMODEL2)
+
 INCCONFIG       := -I$(CONFIGDIR)
 INCFLEXI        := -I$(FLEXIDIR)
 INCLEGACY       := -I$(LEGACYDIR)
-INCSPECTRUMHPP  := -I$(ABSBASEDIR)
-LIBMODEL        := $(MODELDIR)/lib$(MODEL)$(LIBEXT)
+INCSPECTRUMHPP  := -I$(ABSBASEDIR)/../
+
+LIBMODEL1       := $(MODEL1DIR)/lib$(MODEL1)$(LIBEXT)
+LIBMODEL2       := $(MODEL2DIR)/lib$(MODEL2)$(LIBEXT)
+LIBMODELS       := $(LIBMODEL1) $(LIBMODEL2)
+
 LIBFLEXI        := $(FLEXIDIR)/libflexisusy$(LIBEXT)
 LIBLEGACY       := $(LEGACYDIR)/liblegacy$(LIBEXT)
 
 INCEIGEN        := -I../extras/eigen3
 
-FLEXINCS := $(INCCONFIG) $(INCFLEXI) $(INCLEGACY) $(INCMODEL) $(INCEIGEN) $(INCSPECTRUMHPP)
-FLEXLIBS := $(LIBMODEL) $(LIBFLEXI) $(LIBLEGACY)
+FLEXINCS := $(INCCONFIG) $(INCFLEXI) $(INCLEGACY) $(INCMODELS) $(INCEIGEN) $(INCSPECTRUMHPP)
+FLEXLIBS := $(LIBMODELS) $(LIBFLEXI) $(LIBLEGACY)
 #**********************
 
 # Location of gambit sub-directories
