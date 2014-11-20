@@ -12,9 +12,9 @@ Parameters:
  #     fixed_value: 1
  #   tanb:
  #     fixed_value: 1
-  CMSSM:
-    A0:
-      fixed_value: 100
+  extraCMSSM:
+    #A0:
+    #  fixed_value: 100
     M0:
       fixed_value: 100
     M12:
@@ -87,7 +87,7 @@ Auxiliaries:
   ### Test GUTMSSMA spectrum ------
   - capability: specbit_tests 
     dependencies:
-    - {capability: MSSM_spectrum, function: get_GUTMSSMA_spectrum} 
+    - {capability: MSSM_spectrum, function: get_CMSSM_spectrum} #get_GUTMSSMA_spectrum} 
 
   - capability: dump_spectrum_slha
     options:
@@ -95,11 +95,15 @@ Auxiliaries:
     #dependencies:
     #- {capability: MSSM_spectrum, function: MSSMSpec_to_Spectrum} 
 
+  - capability: SM_spectrum
+    dependencies:
+    - {capability: MSSM_spectrum, function: get_CMSSM_spectrum} #get_GUTMSSMA_spectrum} 
+
   - capability: MSSM_spectrum 
     options:
       ewsb_loop_order: 2
+
   #  dependencies:
-  #  - {capability: MSSM_parameters, module: GUTMSSMA}
   #  - {capability: GUTMSSMA_parameters, module: GUTMSSMA} 
 
   # - capability: MSSM_parameters
@@ -130,7 +134,8 @@ Logger:
 KeyValues:
 
   dependency_resolution:
-    prefer_model_specific_functions: true
+    prefer_model_specific_functions: false
+    use_old_routines: true
 
   likelihood:
     model_invalid_for_lnlike_below: -1e6

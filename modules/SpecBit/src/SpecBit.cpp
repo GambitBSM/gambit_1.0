@@ -69,7 +69,6 @@ namespace Gambit
        static const unsigned number_of_particles = CMSSM_info::NUMBER_OF_PARTICLES;
     };
 
-
     /// Compute an MSSM spectrum using flexiblesusy
     // In GAMBIT there are THREE flexiblesusy MSSM spectrum generators currently in
     // use, for each of three possible boundary condition types:
@@ -155,10 +154,7 @@ Message from flexibleSUSY below:" << std::endl;
       // (below is a placeholder). 
       generic_mssm.get_lowe_data_from(model);
 
-      // Get a point of type Spectrum* to the static MSSMSpec object; this is what we
-      // give to GAMBIT
-      Spectrum* spec = &generic_mssm;
-      return spec;
+      return &generic_mssm;
     }
 
 
@@ -189,6 +185,7 @@ Message from flexibleSUSY below:" << std::endl;
       //{
       //  SpecBit_error().raise(LOCAL_INFO, "Uh oh, a CMSSM-descendant model is not being scanned! This function should not have been permitted to run! Please check the ALLOWED_MODEL list in SpecBit_rollcall.hpp for this function");  
       //}
+      std::cout<<"Models:"<<*Pipe::Models<<std::endl;
 
       // Get input parameters
       CMSSM_input_parameters input;
@@ -221,6 +218,8 @@ Message from flexibleSUSY below:" << std::endl;
       //for(auto iter=Pipe::Param.begin(); iter!=Pipe::Param.end(); ++iter) {
       //  std::cout << iter->first <<", "<< std::endl;
       //}
+
+      std::cout<<"Models:"<<*Pipe::Models<<std::endl;
 
       input.m0      = sqrt(*Pipe::Param["mHu2"]);
       input.m12     = *Pipe::Param["M1"];
