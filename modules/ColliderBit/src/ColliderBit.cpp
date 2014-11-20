@@ -15,6 +15,8 @@
 ///
 ///  *********************************************
 
+// #define HESITATE shallIGoOn
+
 #include <string>
 #include <iostream>
 #include <fstream>
@@ -120,14 +122,8 @@ namespace Gambit {
       /// For every collider requested in the yaml file:
       for(iter=pythiaNames.cbegin(); iter!=pythiaNames.cend(); ++iter) {
         pythiaNumber = 0;
-        try {
-          pythiaConfigurations = runOptions->getValue<int>(*iter);
-        } catch (...) {
-          pythiaConfigurations = 1;
-          std::cout<<"  NOTE: Error downgraded to warning.\n";
-          std::cout<<"  However, you may want to check the options for\n";
-          std::cout<<"    '"<<*iter<<"' within 'operatePythia'.\n\n";
-        }  //< If the user only wants one config of this pythiaName, okay with no options.
+        /// Defaults to 1 if option unspecified
+        pythiaConfigurations = runOptions->getValueOrDef<int>(1, *iter);
 
         while (pythiaNumber < pythiaConfigurations) {
           ++pythiaNumber;
@@ -144,8 +140,10 @@ namespace Gambit {
                    <<" number "<<std::to_string(pythiaNumber)<<" has finished.";
           for (int i=0; i<omp_get_max_threads(); ++i)
             std::cout<<"\n  Thread "<<i<<": xsec = "<<xsecArray[i] <<" +- "<<xsecerrArray[i];
+          #ifdef HESITATE
           std::cout<<"\n\n [Press Enter]";
           std::getchar();
+          #endif
         }
       }
       Loop::executeIteration(FINALIZE);
@@ -166,19 +164,14 @@ namespace Gambit {
         /// Should be within omp parallel block now.
         std::vector<std::string> pythiaOptions;
         std::string pythiaConfigName;
-        try {
-          pythiaConfigName = "pythiaOptions";
-          if(pythiaConfigurations) {
-            pythiaConfigName += "_";
-            pythiaConfigName += std::to_string(pythiaNumber);
-          }
-          pythiaOptions = runOptions->getValue<std::vector<std::string>>
-                                      (*iter, pythiaConfigName);
-        } catch (...) {
-          std::cout<<"  NOTE: Error downgraded to warning.\n";
-          std::cout<<"  However, you may want to check the options for\n";
-          std::cout<<"    '"<<pythiaConfigName<<"' under '"<<*iter<<"'.\n\n";
-        }  //< If the PythiaBase subclass is hard-coded, okay with no options.
+        pythiaConfigName = "pythiaOptions";
+        if(pythiaConfigurations) {
+          pythiaConfigName += "_";
+          pythiaConfigName += std::to_string(pythiaNumber);
+        }
+        /// If the PythiaBase subclass is hard-coded (for some reason), okay with no options.
+        if (runOptions->hasKey(*iter, pythiaConfigName))
+          pythiaOptions = runOptions->getValue<std::vector<std::string>>(*iter, pythiaConfigName);
         pythiaOptions.push_back("SLHA:file = " + slhaFilename);
         pythiaOptions.push_back("Random:seed = " + std::to_string(omp_get_thread_num()));
 

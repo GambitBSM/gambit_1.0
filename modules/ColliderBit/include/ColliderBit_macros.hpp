@@ -33,7 +33,7 @@
     return result;                                                       \
   }
 
-/// Convenience macro for getting runoptions.
+/// Convenience macro for getting mandatory runoptions.
 #define GET_COLLIDER_RUNOPTION(OPTION_NAME, OPTION_TYPE)                 \
   try {                                                                  \
     OPTION_NAME = runOptions->getValue<OPTION_TYPE>(#OPTION_NAME);       \

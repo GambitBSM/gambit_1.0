@@ -142,10 +142,8 @@ Logger:
 KeyValues:
 
   dependency_resolution:
-    prefer_model_specific_functions: true
-
-  dependency_resolution:
     use_old_routines: true
+    prefer_model_specific_functions: true
 
   likelihood:
     model_invalid_for_lnlike_below: -1e6
