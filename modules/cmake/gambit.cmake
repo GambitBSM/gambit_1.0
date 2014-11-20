@@ -15,4 +15,3 @@ foreach(bit ${GAMBIT_BITS})
   set(GAMBIT_INCDIRS ${GAMBIT_INCDIRS} "${PROJECT_SOURCE_DIR}/${bit}/include")
 endforeach()
 
-include(CMakeParseArguments)
