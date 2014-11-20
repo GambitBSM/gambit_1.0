@@ -196,9 +196,14 @@ def retrieve_rollcall_headers(verbose,install_dir,excludes):
     for root,dirs,files in os.walk(install_dir):
         if (not core_exists and root == install_dir+"/Core/include"): core_exists = True 
         for name in files:
-            if (name.lower().endswith("_rollcall.hpp") and name.lower().find("bit") != -1):
-                if not (name in excludes or re.sub("\\.hpp$","",name) in excludes or re.sub("_rollcall\\.hpp$","",name) in excludes) and \
-                (name.endswith(".hpp") or name.endswith(".h") or name.endswith(".hh")): 
+            if ( (name.lower().endswith("_rollcall.hpp") or
+                  name.lower().endswith("_rollcall.h")   or
+                  name.lower().endswith("_rollcall.hh")     ) and name.lower().find("bit") != -1):
+                exclude = False
+                bare_name = re.sub(".*_rollcall\\.[h|hpp|hh]$","",name)
+                for x in excludes:
+                    if bare_name.startswith(x): exclude = True
+                if (not exclude): 
                     if verbose: print "  Located module rollcall header '{0}' at path '{1}'".format(name,os.path.join(root,name))
                     rollcall_headers+=[name]
     if core_exists: make_module_rollcall(rollcall_headers,verbose)
@@ -209,9 +214,14 @@ def retrieve_module_type_headers(verbose,install_dir,excludes):
     type_headers=[]
     for root,dirs,files in os.walk(install_dir):
         for name in files:
-            if (name.lower().endswith("_types.hpp") and name.lower().find("bit") != -1):
-                if not (name in excludes or re.sub("\\.hpp$","",name) in excludes or re.sub("_types\\.hpp$","",name) in excludes) and \
-                (name.endswith(".hpp") or name.endswith(".h") or name.endswith(".hh")): 
+            if ( (name.lower().endswith("_types.hpp") or
+                  name.lower().endswith("_types.h")   or
+                  name.lower().endswith("_types.hh")     ) and name.lower().find("bit") != -1):
+                exclude = False
+                bare_name = re.sub(".*_types\\.[h|hpp|hh]$","",name)
+                for x in excludes:
+                    if bare_name.startswith(x): exclude = True
+                if (not exclude): 
                     if verbose: print "  Located module type header '{0}' at path '{1}'".format(name,os.path.join(root,name))
                     type_headers+=[name]
     return type_headers

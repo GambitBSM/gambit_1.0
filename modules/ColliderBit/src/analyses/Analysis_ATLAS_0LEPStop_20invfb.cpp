@@ -22,7 +22,7 @@ using namespace std;
    b) ETmiss-track cuts ignored...
 
    Known features:
-   a) Must run simulator with 70% b tagging efficiency and ?% mis-id rate
+   a) Cutflow for SRA regions agrees very well (5% or so). SRC cutflow diverges at the initial step (==5 jets) and never quite recovers. Perhaps we are getting the jet multiplicity wrong with ISR turned off in Pythia. For now I suggest that we live with this since there is no obvious bug, and the acceptance of the remaining cuts agrees very well with ATLAS.
    b) Using mt2 bisect method from H. Cheng, Z. Han, arXiv:0810.5178 for mT2 calculation
 
 */
@@ -30,7 +30,7 @@ using namespace std;
 namespace Gambit {
   namespace ColliderBit {
 
-
+    bool sortByPT(Jet* jet1, Jet* jet2) { return (jet1->pT() > jet2->pT()); }
 
     class Analysis_ATLAS_0LEPStop_20invfb : public Analysis {
     private:
@@ -96,16 +96,14 @@ namespace Gambit {
 	return;
       }
       
-      
-      
-      
+            
     public:
 
       Analysis_ATLAS_0LEPStop_20invfb() {
 
         _numSRA1 = 0 ; _numSRA2 = 0; _numSRA3 = 0; _numSRA4 = 0;
 	_numSRC1 = 0 ; _numSRC2 = 0; _numSRC3 = 0;
-        NCUTS=16;
+        NCUTS=23;
 
         for(int i=0;i<NCUTS;i++){
           cutFlowVector.push_back(0);
@@ -114,6 +112,8 @@ namespace Gambit {
         }
 
       }
+      
+      
 
       void analyze(const Event* event) {
 
@@ -123,15 +123,24 @@ namespace Gambit {
 
         // Now define vectors of baseline objects
         vector<Particle*> baselineElectrons;
+
         for (Particle* electron : event->electrons()) {
+
           if (electron->pT() > 10. && fabs(electron->eta()) < 2.47) baselineElectrons.push_back(electron);
         }
+
+
         vector<Particle*> baselineMuons;
         for (Particle* muon : event->muons()) {
+
           if (muon->pT() > 10. && fabs(muon->eta()) < 2.4) baselineMuons.push_back(muon);
         }
+
+	
+
         vector<Particle*> baselineTaus;
         for (Particle* tau : event->taus()) {
+
           if (tau->pT() > 10. && fabs(tau->eta()) < 2.47) baselineTaus.push_back(tau);
         }
 
@@ -139,13 +148,25 @@ namespace Gambit {
         vector<Jet*> bJets;
 	vector<Jet*> nonBJets;
         vector<Jet*> trueBJets; //for debugging
+
+	//Get b jets
+	//Note that we assume that b jets have previously been 100% tagged
+	//Now we use the new Buckley tagger
+      
+	BinnedFn2D<double> _eff2d({{0,10.}}, {{0,10000.}},{{0.7}});
+
+
         for (Jet* jet : event->jets()) {
+
           if (jet->pT() > 20. && fabs(jet->eta()) < 4.5) baselineJets.push_back(jet);
-          if(jet->isBJet() && fabs(jet->eta()) < 2.5 && jet->pT() > 20.){
-	    bJets.push_back(jet);
-	  }
-	  else {
-	    nonBJets.push_back(jet);
+	  bool hasTag=has_tag(_eff2d, jet->eta(), jet->pT());
+	  if (jet->pT() > 20. && fabs(jet->eta()) < 4.5) {
+	    if(jet->isBJet() && hasTag && fabs(jet->eta()) < 2.5 && jet->pT() > 20.){
+	      bJets.push_back(jet);
+	    }
+	    else {
+	      nonBJets.push_back(jet);
+	    }
 	  }
 	}
 
@@ -157,12 +178,13 @@ namespace Gambit {
        
         vector<Jet*> signalJets;
 	vector<Jet*> signalBJets;
+	vector<Jet*> signalNonBJets;
 
-        
         JetLeptonOverlapRemoval(nonBJets,baselineElectrons,0.2);
 	LeptonJetOverlapRemoval(baselineElectrons,nonBJets,0.4);
 	LeptonJetOverlapRemoval(baselineElectrons,bJets,0.4);
-	LeptonJetOverlapRemoval(baselineMuons,signalJets,0.4);
+	LeptonJetOverlapRemoval(baselineMuons,nonBJets,0.4);
+	LeptonJetOverlapRemoval(baselineMuons,bJets,0.4);
 	
 	for (Jet* jet : bJets) {
           if (jet->pT() > 35. && fabs(jet->eta()) < 2.8) {
@@ -172,9 +194,26 @@ namespace Gambit {
 	}
 	
 	for (Jet* jet : nonBJets) {
-          if (jet->pT() > 35. && fabs(jet->eta()) < 2.8) signalJets.push_back(jet); 
+          if (jet->pT() > 35. && fabs(jet->eta()) < 2.8){
+	    signalJets.push_back(jet); 
+	    signalNonBJets.push_back(jet);
+	  }
 	}
 	
+	
+	//Put signal jets in pT order
+	std::sort(signalJets.begin(), signalJets.end(), sortByPT);
+	std::sort(signalBJets.begin(), signalBJets.end(), sortByPT);
+	std::sort(signalNonBJets.begin(), signalNonBJets.end(), sortByPT);
+	
+	std::cout << "JET PT ";
+	//Test jet ordering
+	for(Jet * jet : signalJets){
+	  std::cout << jet->pT() << " ";
+	}
+	std::cout << std::endl;
+
+
 	for (Particle* electron : baselineElectrons) {
 	  signalElectrons.push_back(electron);
 	}
@@ -191,8 +230,8 @@ namespace Gambit {
         int nJets = signalJets.size();
 
 	//Lepton veto
-	bool cut_LeptonVeto=false;
-	if((nElectrons + nMuons)>0)cut_LeptonVeto=true;
+	bool cut_LeptonVeto=true;
+	if((nElectrons + nMuons)>0.)cut_LeptonVeto=false;
 
 	//Calculate dphi(jet,met) for the three leading jets
 	bool cut_dPhiJets=false;
@@ -214,7 +253,6 @@ namespace Gambit {
 	//Number of b jets
 	bool passBJetCut=false;
 	if(signalBJets.size()>=2)passBJetCut=true;
-
 	//MET > 150 GeV
 	bool cut_METGt150=false;
 	if(met>150.)cut_METGt150=true;
@@ -223,18 +261,17 @@ namespace Gambit {
         float dphi_bjetmet_min=9999.;
         float minphi =9999.;
         int whichb=0;
-        for(int j=0; j<nJets; j++) {
-          if(signalJets[j]->isBJet()) {
-            if(fabs(std::acos(std::cos(signalJets.at(j)->phi()-ptot.phi())))<minphi) {
-              minphi = fabs(std::acos(std::cos(signalJets.at(j)->phi()-ptot.phi())));
-              dphi_bjetmet_min = minphi;
-              whichb=j;
-            }
+        for(int j=0; j<signalBJets.size(); j++) {
+	  if(fabs(std::acos(std::cos(signalBJets.at(j)->phi()-ptot.phi())))<minphi) {
+	    minphi = fabs(std::acos(std::cos(signalBJets.at(j)->phi()-ptot.phi())));
+	    dphi_bjetmet_min = minphi;
+	    whichb=j;
+	    
           }
         }
-
+	
         float mT_bjetmet_min = 0;
-        if(passBJetCut) mT_bjetmet_min = sqrt(2*signalJets.at(whichb)->pT()*met*(1-std::cos(dphi_bjetmet_min)));
+        if(passBJetCut) mT_bjetmet_min = sqrt(2*signalBJets.at(whichb)->pT()*met*(1-std::cos(dphi_bjetmet_min)));
 	
 	bool cut_mTbjetmetGt175=false;
 	if(mT_bjetmet_min>175.)cut_mTbjetmetGt175=true;
@@ -243,18 +280,18 @@ namespace Gambit {
 	float dphi_bjetmet_max=0.;
 	float maxphi =0.;
 	int whichb_max=0;
-	for(int j=0; j<nJets; j++) {
-	  if(signalJets[j]->isBJet()) {
-	    if(fabs(std::acos(std::cos(signalJets.at(j)->phi()-ptot.phi())))>maxphi) {
-	      maxphi = fabs(std::acos(std::cos(signalJets.at(j)->phi()-ptot.phi())));
-	      dphi_bjetmet_max = maxphi;
-	      whichb_max=j;
-	    }
+	for(int j=0; j<signalBJets.size(); j++) {
+	  
+	  if(fabs(std::acos(std::cos(signalBJets.at(j)->phi()-ptot.phi())))>maxphi) {
+	    maxphi = fabs(std::acos(std::cos(signalBJets.at(j)->phi()-ptot.phi())));
+	    dphi_bjetmet_max = maxphi;
+	    whichb_max=j;
 	  }
 	}
 	
+	
 	float mT_bjetmet_max = 0;
-	if(passBJetCut) mT_bjetmet_max = sqrt(2*signalJets.at(whichb_max)->pT()*met*(1-std::cos(dphi_bjetmet_max)));
+	if(passBJetCut) mT_bjetmet_max = sqrt(2*signalBJets.at(whichb_max)->pT()*met*(1-std::cos(dphi_bjetmet_max)));
 	
 	//Common preselection for all signal regions in the fully resolved case
         bool passJetCutSRA=false;
@@ -284,17 +321,27 @@ namespace Gambit {
 	
 	//Need to form top quark four vectors from jets
 	//Use the two leading b jets as the b jets (a slight departure from ATLAS which uses the two jets with the highest b weight)
-
+	
 	vector<Jet*> selectBJets;
 	vector<Jet*> selectNonBJets;
 	int bjetcount=0;
-	for (Jet* jet : signalJets) {
-	  if(jet->isBJet() && bjetcount<2){
+
+	for (Jet* jet : signalBJets) {
+	  if(bjetcount<2){
 	    bjetcount++;
 	    selectBJets.push_back(jet);
 	  }
-	  if(!jet->isBJet())selectNonBJets.push_back(jet);
-	  if(bjetcount>1)selectNonBJets.push_back(jet);
+	}
+
+	//Now take any remaining jets in b jet collection plus the non b jets
+	int i=0;
+	for (Jet* jet : signalBJets) {
+	  i++;
+	  if(i>2)selectNonBJets.push_back(jet);
+	}
+	
+	for (Jet* jet : signalNonBJets){
+	  selectNonBJets.push_back(jet);
 	}
 	
         if(nJets>=6 and bjetcount==2) {
@@ -353,15 +400,11 @@ namespace Gambit {
 
         bool cut_tau=true;
         //Tau Veto
-        for (int j=0; j<nJets; j++) {
-          if(!signalJets[j]->isBJet() && std::acos(std::cos(signalJets.at(j)->phi()-ptot.phi()))<0.2*3.14)
+        for (int j=0; j<signalNonBJets.size(); j++) {
+          if(std::acos(std::cos(signalNonBJets.at(j)->phi()-ptot.phi()))<0.2*3.14)
             cut_tau=false;
         }
-        //Calculate met/sqrt(HT) (use four leading jets only)
-        //float HT=0;
-        //if(nJets>=4)HT=signalJets[0]->pT()+signalJets[1]->pT()+signalJets[2]->pT()+signalJets[3]->pT();
-
-       
+               
         //Cutflow flags
         bool cut_mjjj0=false;
         bool cut_mjjj1=false;
@@ -378,7 +421,7 @@ namespace Gambit {
 	
         if(passJetCutSRA)cut_6jets=true;
         if(passBJetCut)cut_Btag=true;
-       
+	if(met>130.)cut_METGt130=true;
         if(met>250.)cut_METGt250=true;
         if(met>300.)cut_METGt300=true;
         if(met>350.)cut_METGt350=true;
@@ -412,7 +455,8 @@ namespace Gambit {
 	//Now do the mixed regions
 
 	//Find highest pT b jet
-	float leadBJetPt=0;
+	//Should no longe be necessary due to sorting of b jet collection
+	/*float leadBJetPt=0;
 	float leadBJetID=0;
 	
 	if(passBJetCut){
@@ -435,16 +479,23 @@ namespace Gambit {
 	      subBJetID=j;
 	    }
 	  }
-	}
+	  }*/
 	
 	//Work out dPhi between B jets
 	float dPhiBB=0;
-	
+	float leadBJetID=0;
+	float subBJetID=1;
 	if(passBJetCut){
-	  dPhiBB=std::acos(std::cos(signalJets.at(leadBJetID)->phi()-signalJets.at(subBJetID)->phi()));
+	  dPhiBB=std::acos(std::cos(signalBJets.at(leadBJetID)->phi()-signalBJets.at(subBJetID)->phi()));
 	}
 
 	bool passJetCutSRC=false;
+
+	/*std::cout << "JET PT CHECK ";
+	for(Jet* jet : signalJets){
+	  std::cout << jet->pT() << " ";
+	}
+	std::cout << endl;*/
 
 	if(nJets==5){
 	  if(signalJets[0]->pT() > 80.
@@ -458,7 +509,7 @@ namespace Gambit {
 	bool isSRC2=false;
 	bool isSRC3=false;
 
-	if(cut_LeptonVeto && cut_Btag && cut_METGt150 && cut_dPhiJets && cut_mTbjetmetGt175){
+	if(cut_LeptonVeto && cut_Btag && cut_METGt150 && cut_dPhiJets && cut_mTbjetmetGt175 && cut_tau){
 
 	  if(passJetCutSRC && mT_bjetmet_min > 185. && mT_bjetmet_max>205. && met>160. && dPhiBB > (0.2*3.14))isSRC1=true;
 
@@ -469,21 +520,78 @@ namespace Gambit {
 	}
 
         cutFlowVector_str[0] = "No cuts ";
-        cutFlowVector_str[1] = "Muon veto ";
-        cutFlowVector_str[2] = "Electron veto ";
-        cutFlowVector_str[3] = "MET > 130 GeV ";
+        cutFlowVector_str[1] = "MET > 130 GeV ";
+        cutFlowVector_str[2] = "Lepton veto ";
+        cutFlowVector_str[3] = "MET > 150 GeV ";
         cutFlowVector_str[4] = "Jet multiplicity and pT ";
         cutFlowVector_str[5] = "dPhi(jet,MET) > pi/5 ";
-        cutFlowVector_str[6] = "Tau veto ";
-        cutFlowVector_str[7] = ">=2 b jets ";
+        cutFlowVector_str[6] = ">=2 b jets ";
+        cutFlowVector_str[7] = "tau veto ";
         cutFlowVector_str[8] = "mT(b,MET) > 175 ";
-        cutFlowVector_str[9] = "80 < mjjj0 < 270 ";
-        cutFlowVector_str[10] = "80 < mjjj1 < 270 ";
-        cutFlowVector_str[11] = "MET > 150 ";
-        cutFlowVector_str[12] = "MET > 200 ";
-        cutFlowVector_str[13] = "MET > 250 ";
-        cutFlowVector_str[14] = "MET > 300 ";
-        cutFlowVector_str[15] = "MET > 350 ";
+        cutFlowVector_str[9] = "SRA1 ";
+        cutFlowVector_str[10] = "SRA2 ";
+        cutFlowVector_str[11] = "SRA3 ";
+        cutFlowVector_str[12] = "SRA4 ";
+        cutFlowVector_str[13] = "SRC: exactly 5 jets ";
+        cutFlowVector_str[14] = "SRC: dPhi(jet,MET) ";
+        cutFlowVector_str[15] = "SRC: >=2 b jets ";
+	cutFlowVector_str[16] = "SRC: tau veto ";
+	cutFlowVector_str[17] = "SRC: dPhi(b,b) ";
+        cutFlowVector_str[18] = "SRC1";
+	cutFlowVector_str[19] = "SRC2";
+	cutFlowVector_str[20] = "SRC3";
+
+	for(int j=0;j<NCUTS;j++){
+	  if(
+             (j==0) ||
+	     
+	     (j==1 && cut_METGt130) ||
+	     
+	     (j==2 && cut_METGt130 && cut_LeptonVeto) ||
+
+	     (j==3 && cut_METGt150 && cut_LeptonVeto) ||
+	    
+	     (j==4 && cut_METGt150 && cut_LeptonVeto && cut_6jets) ||
+
+	     (j==5 && cut_METGt150 && cut_LeptonVeto && cut_6jets && cut_dPhiJets) ||
+
+	     (j==6 && cut_METGt150 && cut_LeptonVeto && cut_6jets && cut_dPhiJets && cut_Btag) ||
+
+	     (j==7 && cut_METGt150 && cut_LeptonVeto && cut_6jets && cut_dPhiJets && cut_Btag && cut_tau) ||
+
+	     (j==8 && cut_METGt150 && cut_LeptonVeto && cut_6jets && cut_dPhiJets && cut_Btag && cut_tau && cut_mTbjetmetGt175) ||
+
+	     (j==9 && cut_METGt150 && cut_LeptonVeto && cut_6jets && cut_dPhiJets && cut_Btag && cut_tau && cut_mTbjetmetGt175 && isSRA1) ||
+
+	     (j==10 && cut_METGt150 && cut_LeptonVeto && cut_6jets && cut_dPhiJets && cut_Btag && cut_tau && cut_mTbjetmetGt175 && isSRA2) ||
+
+	     (j==11 && cut_METGt150 && cut_LeptonVeto && cut_6jets && cut_dPhiJets && cut_Btag && cut_tau && cut_mTbjetmetGt175 && isSRA3) ||
+
+	     (j==12 && cut_METGt150 && cut_LeptonVeto && cut_6jets && cut_dPhiJets && cut_Btag && cut_tau && cut_mTbjetmetGt175 && isSRA4) ||
+
+	     (j==13 && cut_METGt150 && cut_LeptonVeto && passJetCutSRC) ||
+
+	     (j==14 && cut_METGt150 && cut_LeptonVeto && passJetCutSRC && cut_dPhiJets) ||
+
+	     (j==15 && cut_METGt150 && cut_LeptonVeto && passJetCutSRC && cut_dPhiJets && cut_Btag) ||
+
+	     (j==16 && cut_METGt150 && cut_LeptonVeto && passJetCutSRC && cut_dPhiJets && cut_Btag && cut_tau) ||
+
+	     (j==17 && cut_METGt150 && cut_LeptonVeto && passJetCutSRC && cut_dPhiJets && cut_Btag && cut_tau && dPhiBB > (0.2*3.14)) ||
+
+	     (j==18 && isSRC1) ||
+
+	     (j==19 && isSRC2) ||
+
+	     (j==20 && isSRC3)
+
+	     ){
+
+	    cutFlowVector[j]++;
+	    
+	  }
+	}
+	     
 
         /*for(int j=0;j<NCUTS;j++){
           if(
@@ -543,16 +651,16 @@ namespace Gambit {
 
         using namespace std;
 
-        double scale_to = 507.3;
-        double trigger_cleaning_eff = 0.90;
+        double scale_to = 0.0244*1000.*20.1; //sigma * L
+        //double trigger_cleaning_eff = 0.90;
 
         cout << "------------------------------------------------------------------------------------------------------------------------------ "<<std::endl;
-        cout << "CUT FLOW: ATLAS-CONF-2013-024 - Appendix, Table 5 - stop -> top + LSP, stop 600, LSP 0 "<<std::endl;
+        cout << "CUT FLOW: ATLAS 0 Lep Stop paper "<<std::endl;
         cout << "------------------------------------------------------------------------------------------------------------------------------"<<std::endl;
 
-        std::cout<< right << setw(40) << "CUT" << setw(20) << "RAW" << setw(20) << "SCALED" << setw(20) << "%" << setw(20) << "clean adj RAW"<< setw(20) << "clean adj %" << endl;
+        std::cout<< right << setw(40) << "CUT" << setw(20) << "RAW" << setw(20) << "SCALED" << setw(20) << "%" << setw(20) << "clean adj RAW"<< setw(20) << "clean adj %" << std::endl;
         for(int j=0; j<NCUTS; j++) {
-          std::cout << right << setw(40) << cutFlowVector_str[j].c_str() << setw(20) << cutFlowVector[j] << setw(20) << cutFlowVector[j]*scale_to/cutFlowVector[0] << setw(20) << 100.*cutFlowVector[j]/cutFlowVector[0] << "%" << setw(20) << trigger_cleaning_eff*cutFlowVector[j]*scale_to/cutFlowVector[0] << setw(20) << trigger_cleaning_eff*100.*cutFlowVector[j]/cutFlowVector[0]<< "%" << endl;
+          std::cout << right << setw(40) << cutFlowVector_str[j].c_str() << setw(20) << cutFlowVector[j] << setw(20) << cutFlowVector[j]*scale_to/cutFlowVector[0] << setw(20) << 100.*cutFlowVector[j]/cutFlowVector[0] << "%" << setw(20) << cutFlowVector[j]*scale_to/cutFlowVector[0] << setw(20) << 100.*cutFlowVector[j]/cutFlowVector[0]<< "%" << endl;
         }
         cout << "------------------------------------------------------------------------------------------------------------------------------ "<<std::endl;
 
@@ -564,11 +672,14 @@ namespace Gambit {
 
       double loglikelihood() {
         /// @todo Implement!
+	
         return 0;
       }
 
 
       void collect_results() {
+
+	finalize();
 
         SignalRegionData results_SRA1;
         results_SRA1.set_observation(11.);

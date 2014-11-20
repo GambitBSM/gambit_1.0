@@ -16,6 +16,7 @@ set ExecutionPath {
   TrackMerger
   Calorimeter
   EFlowMerger
+  METFlowMerger
 
   PhotonEfficiency
   PhotonIsolation
@@ -273,6 +274,18 @@ module Merger EFlowMerger {
 # add InputArray InputArray
   add InputArray Calorimeter/eflowTracks
   add InputArray Calorimeter/eflowTowers
+#  add InputArray MuonMomentumSmearing/muons
+  set OutputArray eflow
+}
+
+#####################
+# MJW adds MET merger
+#####################
+
+module Merger METFlowMerger {
+# add InputArray InputArray
+  add InputArray Calorimeter/eflowTracks
+  add InputArray Calorimeter/eflowTowers
   add InputArray MuonMomentumSmearing/muons
   set OutputArray eflow
 }
@@ -385,7 +398,7 @@ module AbsoluteIsolation MuonIsolation {
 
 module Merger MissingET {
 # add InputArray InputArray
-  add InputArray EFlowMerger/eflow
+  add InputArray METFlowMerger/eflow
   set MomentumOutputArray momentum
 }
 
@@ -498,7 +511,7 @@ module BTaggingWithTruth BTagging {
   # efficiency formula for c-jets (misidentification rate)
   add EfficiencyFormula {4} {0.02}
   # efficiency formula for b-jets
-  add EfficiencyFormula {5} {0.7}
+  add EfficiencyFormula {5} {1.0}
 }
 
 module TauTagging TauTagging {

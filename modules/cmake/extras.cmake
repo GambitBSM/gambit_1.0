@@ -16,13 +16,13 @@ ExternalProject_Add(gamLike
   SOURCE_DIR ${PROJECT_SOURCE_DIR}/../extras/gamLike
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND ""
-  BUILD_COMMAND make CC=${CMAKE_CXX_COMPILER} CFLAGS=${CMAKE_CXX_FLAGS} COMMAND cp gamLike.so ${PROJECT_SOURCE_DIR}/Backends/lib/libgamLike.so
+  BUILD_COMMAND make CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${CMAKE_CXX_FLAGS} LDFLAGS=${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS} COMMAND cp gamLike.so ${PROJECT_SOURCE_DIR}/Backends/lib/libgamLike.so
   INSTALL_COMMAND ""
   INSTALL_DIR ${CMAKE_BINARY_DIR}/install
   CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/install
 )
 
-set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../extras/gamLike/gamLike.so" "${PROJECT_SOURCE_DIR}/Backends/lib/gamLike.so")
+set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../extras/gamLike/gamLike.so" "${PROJECT_SOURCE_DIR}/Backends/lib/libgamLike.so")
 
 ExternalProject_Add(DarkSUSY
   SOURCE_DIR ${PROJECT_SOURCE_DIR}/../extras/DarkSUSY

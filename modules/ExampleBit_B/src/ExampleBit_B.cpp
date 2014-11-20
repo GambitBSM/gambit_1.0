@@ -50,7 +50,7 @@ namespace Gambit
     void exampleCharge    (int    &result) { result = 1; }
     void identity         (str    &result) { result = "rabbiton"; }
     void nevents          (int    &result) { result = 2; }
-    void lnL_ExampleBitB  (double &result) { result = 0; }   // Some dummy double likelihood function for the scanner
+    void lnL_ExampleBitB  (double &result) { result = *Pipes::lnL_ExampleBitB::Dep::nevents_postcuts; }
      
     // Function that returns a vector of doubles, for testing printer
     void exampleVec (std::vector<double> &result) 

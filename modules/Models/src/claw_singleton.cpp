@@ -23,7 +23,7 @@ namespace Gambit
   {
 
     /// Claw accessor function
-    ModelFunctorClaw& modelClaw()
+    ModelFunctorClaw& ModelDB()
     {
       static ModelFunctorClaw local;
       return local;
