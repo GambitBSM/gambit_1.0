@@ -1,4 +1,5 @@
 #include "Analysis.hpp"
+#include "HEPUtils/MathUtils.h"
 #include <string>
 #include <stdexcept>
 using namespace std;
@@ -6,15 +7,14 @@ using namespace std;
 namespace Gambit {
   namespace ColliderBit {
 
-
     // Fwd declarations
-    DECLARE_ANAFACTORY(Perf);
-    DECLARE_ANAFACTORY(ATLAS_0LEP);
-    DECLARE_ANAFACTORY(ATLAS_0LEPStop_20invfb);
-    DECLARE_ANAFACTORY(ATLAS_1LEPStop_20invfb);
-    DECLARE_ANAFACTORY(ATLAS_2bStop_20invfb);
-    DECLARE_ANAFACTORY(ATLAS_2LEPStop_20invfb);
-    DECLARE_ANAFACTORY(ATLAS_3LEPEW_20invfb);
+    DECLARE_ANALYSIS_FACTORY(Perf);
+    DECLARE_ANALYSIS_FACTORY(ATLAS_0LEP);
+    DECLARE_ANALYSIS_FACTORY(ATLAS_0LEPStop_20invfb);
+    DECLARE_ANALYSIS_FACTORY(ATLAS_1LEPStop_20invfb);
+    DECLARE_ANALYSIS_FACTORY(ATLAS_2bStop_20invfb);
+    DECLARE_ANALYSIS_FACTORY(ATLAS_2LEPStop_20invfb);
+    DECLARE_ANALYSIS_FACTORY(ATLAS_3LEPEW_20invfb);
 
     Analysis* mkAnalysis(const std::string& name) {
       #define IF_X_RTN_CREATEX(A) if (name == #A) return create_Analysis_ ## A()
@@ -27,6 +27,7 @@ namespace Gambit {
       IF_X_RTN_CREATEX(Perf);
       throw std::runtime_error(name + " isn't a known collider analysis, you fool of a Took!");
       return nullptr;
+      #undef IF_X_RTN_CREATEX
     }
 
 
@@ -39,7 +40,7 @@ namespace Gambit {
           set_xsec(xs, xserr);
         } else {
           _xsec += xs;
-          _xsecerr = sqrt(sqr(xsec_err()) + sqr(xserr));
+          _xsecerr = HEPUtils::add_quad(xsec_err(), xserr);
         }
       }
       msg << " => " << xsec() << " +- " << xsec_err();
@@ -57,7 +58,7 @@ namespace Gambit {
           set_xsec(xs, xserr);
         } else {
           _xsec = _xsec/2.0 + xs/2.0;
-          _xsecerr = sqrt(sqr(xsec_err()) + sqr(xserr)) / 2.0;
+          _xsecerr = HEPUtils::add_quad(xsec_err(), xserr) / 2.0;
         }
       }
       msg << " => " << xsec() << " +- " << xsec_err();

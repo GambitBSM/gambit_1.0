@@ -28,6 +28,10 @@
 ///
 ///  *********************************************
 
+//#ifdef CONFIG_H
+#include "config.h"
+//#endif
+
 #include "functors.hpp"
 #include "models.hpp"
 #include "all_functor_types.hpp"
@@ -126,7 +130,7 @@ namespace Gambit
     str functor::version()     const { if (this == NULL) failBigTime("version"); return myVersion; }
     /// Getter for the 'safe' incarnation of the version of the wrapped function's origin (module or backend)
     str functor::safe_version()const { utils_error().raise(LOCAL_INFO,"The safe_version method is only defined for backend functors."); return ""; }
-    /// Getter for the wrapped function current status (-2 = function absent, -1 = origin absent, 0 = model incompatibility (default), 1 = available, 2 = active)
+    /// Getter for the wrapped function current status (-3 = required classes absent, -2 = function absent, -1 = origin absent, 0 = model incompatibility (default), 1 = available, 2 = active)
     int functor::status()      const { if (this == NULL) failBigTime("status"); return myStatus; }
     /// Getter for the  overall quantity provided by the wrapped function (capability-type pair)
     sspair functor::quantity() const { if (this == NULL) failBigTime("quantity"); return std::make_pair(myCapability, myType); }
@@ -279,6 +283,12 @@ namespace Gambit
       utils_error().raise(LOCAL_INFO,"The notifyOfModel method has not been defined in this class.");
     }
 
+    /// Indicate to the functor which backends are actually loaded and working
+    void functor::notifyOfBackends(std::map<str, std::set<str> >)
+    {
+      utils_error().raise(LOCAL_INFO,"The notifyOfBackends method has not been defined in this class.");
+    }
+
     /// Notify the functor about an instance of the options class that contains
     /// information from its corresponding ini-file entry in the auxiliaries or
     /// observables section.
@@ -298,7 +308,7 @@ namespace Gambit
     bool functor::modelAllowed(str model)
     {
       if (allowedModels.empty() and allowedGroupCombos.empty()) return true;
-      if (allowed_parent_model_exists(model)) return true;
+      if (allowed_parent_or_friend_exists(model)) return true;
       return false;        
     }
 
@@ -333,7 +343,7 @@ namespace Gambit
         //Loop over each group in the allowed group combination, and check if one of the entries in the passed model combination matches it somehow.
         for(std::vector<str>::const_iterator group = group_combo->begin(); group != group_combo->end(); group++)
         {
-          matches = matches and contains_any_descendents_of(combo, *group);
+          matches = matches and contains_anything_interpretable_as_member_of(combo, *group);
           if (not matches) break;
         }
         //Return true immediately if all entries in the allowed group combination have been matched.
@@ -410,14 +420,14 @@ namespace Gambit
       utils_error().raise(LOCAL_INFO,error_msg);
     }
 
-    /// Test if a model has a parent model in the functor's allowedModels list
-    inline bool functor::allowed_parent_model_exists(str model)
+    /// Test if there is a model in the functor's allowedModels list as which this model can be interpreted
+    inline bool functor::allowed_parent_or_friend_exists(str model)
     {
       for (std::set<str>::reverse_iterator it = allowedModels.rbegin() ; it != allowedModels.rend(); ++it)
       {
         if (myClaw->model_exists(*it))
         {
-          if (myClaw->descended_from(model, *it)) return true;
+          if (myClaw->interpretable_as(model, *it)) return true;
         } 
       }    
       return false;    
@@ -431,7 +441,7 @@ namespace Gambit
       // Loop over the allowed combinations, and check if the passed model matches anything in any of them
       for(std::set<std::vector<str> >::const_iterator group_combo = allowedGroupCombos.begin(); group_combo != allowedGroupCombos.end(); group_combo++)
       {
-        //Loop over each group in the allowed group combination, and check if the model descends from or matches a model in the group.
+        //Loop over each group in the allowed group combination, and check if the model is interpretable as a model in the group.
         for(std::vector<str>::const_iterator group = group_combo->begin(); group != group_combo->end(); group++)
         {
           // Work through the members of the model group
@@ -440,7 +450,7 @@ namespace Gambit
           {
             if (myClaw->model_exists(*it))
             {
-              if (myClaw->descended_from(model, *it)) return true;
+              if (myClaw->interpretable_as(model, *it)) return true;
             }
           }
         }
@@ -448,8 +458,8 @@ namespace Gambit
       return false;
     }
 
-    /// Test whether any of the entries in a given model group has any descendents in a given combination
-    inline bool functor::contains_any_descendents_of(std::vector<str> combo, str group)
+    /// Test whether any of the entries in a given model group is a valid interpretation of any members in a given combination
+    inline bool functor::contains_anything_interpretable_as_member_of(std::vector<str> combo, str group)
     {
       // Work through the members of the model group
       std::set<str> models = modelGroups.at(group);
@@ -462,7 +472,7 @@ namespace Gambit
           {
             if (myClaw->model_exists(*jt))
             {
-              if (myClaw->descended_from(*jt, *it)) return true;
+              if (myClaw->interpretable_as(*jt, *it)) return true;
             }
           } 
         }    
@@ -482,14 +492,14 @@ namespace Gambit
       return false;    
     }
 
-    /// Try to find a parent model in some user-supplied map from models to sspair vectors
-    str functor::find_parent_model_in_map(str model, std::map< str, std::vector<sspair> > karta)
+    /// Try to find a parent or friend model in some user-supplied map from models to sspair vectors
+    str functor::find_friend_or_parent_model_in_map(str model, std::map< str, std::vector<sspair> > karta)
     {
       for (std::map< str, std::vector<sspair> >::reverse_iterator it = karta.rbegin() ; it != karta.rend(); ++it)
       {
         if (myClaw->model_exists(it->first))
         {
-          if (myClaw->descended_from(model, it->first)) return it->first;
+          if (myClaw->interpretable_as(model, it->first)) return it->first;
         } 
       }    
       return "";    
@@ -503,18 +513,19 @@ namespace Gambit
                                                  str result_type,
                                                  str origin_name,
                                                  Models::ModelFunctorClaw &claw)
-    : functor            (func_name, func_capability, result_type, origin_name, claw),
-      runtime            (FUNCTORS_RUNTIME_INIT),
-      runtime_average    (FUNCTORS_RUNTIME_INIT),           // default 1 micro second
-      fadeRate           (FUNCTORS_FADE_RATE),              // can be set individually for each functor
-      pInvalidation      (FUNCTORS_BASE_INVALIDATION_RATE),
-      iCanManageLoops    (false),
-      iRunNested         (false),
+    : functor                 (func_name, func_capability, result_type, origin_name, claw),
+      runtime                 (FUNCTORS_RUNTIME_INIT),
+      runtime_average         (FUNCTORS_RUNTIME_INIT),           // default 1 micro second
+      fadeRate                (FUNCTORS_FADE_RATE),              // can be set individually for each functor
+      pInvalidation           (FUNCTORS_BASE_INVALIDATION_RATE),
+      iCanManageLoops         (false),
+      iRunNested              (false),
       myLoopManagerCapability ("none"),
       myLoopManagerName       ("none"),
       myLoopManagerOrigin     ("none"),
-      globlMaxThreads    (omp_get_max_threads()),
-      myLogTag(-1)
+      myCurrentIteration      (NULL),
+      globlMaxThreads         (omp_get_max_threads()),
+      myLogTag                (-1)
     {
       if (globlMaxThreads == 0) utils_error().raise(LOCAL_INFO,"Cannot determine number of hardware threads available on this system.");
 
@@ -534,6 +545,12 @@ namespace Gambit
       {
         logger() <<warn<<debug<<EOM;
       }
+    }
+
+    /// Destructor
+    module_functor_common::~module_functor_common() 
+    { 
+      if (myCurrentIteration != NULL)  delete [] myCurrentIteration;
     }
 
     /// Getter for averaged runtime
@@ -606,12 +623,26 @@ namespace Gambit
       }
     } 
 
+    // Initialise the array holding the current iteration(s) of this functor.
+    void module_functor_common::init_myCurrentIteration()
+    {
+      int nslots = (iRunNested ? globlMaxThreads : 1); // Set the number of slots to the max number of threads allowed iff this functor can run in parallel
+      myCurrentIteration = new int[nslots];            // Reserve enough space to hold as many iteration numbers as there are slots (threads) allowed
+      std::fill(myCurrentIteration, myCurrentIteration+nslots, 0); // Zero them to start off
+    }
+
     /// Setter for setting the iteration number in the loop in which this functor runs
-    void module_functor_common::setIteration (int iteration) { myCurrentIteration[omp_get_thread_num()] = iteration; }
+    void module_functor_common::setIteration (int iteration)
+    {
+      if (myCurrentIteration == NULL) init_myCurrentIteration(); // Init memory if this is the first run through. 
+      myCurrentIteration[omp_get_thread_num()] = iteration;
+    }
+
     /// Return a safe pointer to the iteration number in the loop in which this functor runs.
     omp_safe_ptr<int> module_functor_common::iterationPtr() 
     {
       if (this == NULL) functor::failBigTime("iterationPtr");
+      if (myCurrentIteration == NULL) init_myCurrentIteration(); // Init memory if this is the first run through. 
       return omp_safe_ptr<int>(myCurrentIteration); 
     }
 
@@ -730,7 +761,7 @@ namespace Gambit
     /// Getter for listing model-specific conditional dependencies
     std::vector<sspair> module_functor_common::model_conditional_dependencies (str model)
     { 
-      str parent = find_parent_model_in_map(model,myModelConditionalDependencies);
+      str parent = find_friend_or_parent_model_in_map(model,myModelConditionalDependencies);
       if (parent != "") return myModelConditionalDependencies[parent];
       std::vector<sspair> empty;
       return empty;
@@ -739,7 +770,7 @@ namespace Gambit
     /// Getter for listing model-specific conditional backend requirements
     std::vector<sspair> module_functor_common::model_conditional_backend_reqs (str model)
     { 
-      str parent = find_parent_model_in_map(model,myModelConditionalBackendReqs);
+      str parent = find_friend_or_parent_model_in_map(model,myModelConditionalBackendReqs);
       if (parent != "") return myModelConditionalBackendReqs[parent];
       std::vector<sspair> empty;
       return empty;
@@ -1014,6 +1045,32 @@ namespace Gambit
 
     }
 
+    /// Add a rule indicating that classes from a given backend must be available
+    void module_functor_common::setRequiredClassloader(str be, str ver) { required_classloading_backends[be].insert(ver); }
+
+    /// Indicate to the functor which backends are actually loaded and working
+    void module_functor_common::notifyOfBackends(std::map<str, std::set<str> > be_ver_map)
+    {
+      // Loop over all the backends that are needed for this functor to work.
+      for (auto it = required_classloading_backends.begin(); it != required_classloading_backends.end(); ++it)
+      {
+        // Check to make sure some version of the backend in question is connected.
+        if (be_ver_map.find(it->first) == be_ver_map.end())
+        {
+          this->myStatus = -3;
+        }
+        else 
+        {  // Loop over all the versions of the backend that are needed for this functor to work.
+          for (auto jt = it->second.begin(); jt != it->second.end(); ++jt)
+          {
+            std::set<str> versions = be_ver_map.at(it->first);
+            // Check that the specific version needed is connected.
+            if (versions.find(*jt) == versions.end()) this->myStatus = -3;
+          }
+        }
+      }
+    } 
+
     /// Set the ordered list of pointers to other functors that should run nested in a loop managed by this one
     void module_functor_common::setNestedList (std::vector<functor*> &newNestedList)
     { 
@@ -1158,13 +1215,13 @@ namespace Gambit
     {
       //Add the model to the internal list of models being scanned.
       myModels.push_back(model);
-      //If this model fits any conditional dependencies (or is a descendent of a model that fits any), then activate them.
+      //If this model fits any conditional dependencies (or descended from one that can be interpreted as one that fits any), then activate them.
       std::vector<sspair> deps_to_activate = model_conditional_dependencies(model);          
       for (std::vector<sspair>::iterator it = deps_to_activate.begin() ; it != deps_to_activate.end(); ++it)
       {
         myDependencies.push_back(*it);        
       }
-      //If this model fits any conditional backend requirements (or is a descendent of a model that fits any), then activate them.
+      //If this model fits any conditional backend requirements (or descended from one that can be interpreted as one that fits any), then activate them.
       std::vector<sspair> backend_reqs_to_activate = model_conditional_backend_reqs(model);
       if (verbose) cout << "model: " << model << endl;
       for (std::vector<sspair>::iterator it = backend_reqs_to_activate.begin() ; it != backend_reqs_to_activate.end(); ++it)
@@ -1212,38 +1269,22 @@ namespace Gambit
                                    Models::ModelFunctorClaw &claw)
     : module_functor_common(func_name, func_capability, result_type, origin_name, claw),
       myFunction  (inputFunction),
+      myValue     (NULL),
       myPrintFlag (false)
-    {
-      myValue = new TYPE[1];                  // Allocate the memory needed to hold the result of this function
-      myCurrentIteration = new int[1];        // Allocate the memory needed to hold the current iteration of the loop this function runs in
-      myCurrentIteration[0] = 0;              // Zero the iteration counter to start off.
-    }
+    {}
 
     /// Destructor
     template <typename TYPE>
     module_functor<TYPE>::~module_functor() 
     { 
-      delete [] myValue;
-      delete [] myCurrentIteration;
+      if (myValue != NULL) delete [] myValue;
     }
 
-    /// Setter for specifying the capability required of a manager functor, if it is to run this functor nested in a loop.
-    template <typename TYPE>
-    void module_functor<TYPE>::setLoopManagerCapability (str manager) 
-    { 
-      module_functor_common::setLoopManagerCapability(manager); // Call the regular version of this method.
-      delete [] myValue;                              // Get rid of the scalar result container
-      delete [] myCurrentIteration;                   // Get rid of the scalar iteration container
-      myValue = new TYPE[globlMaxThreads];            // Reserve enough space to hold as many results as there are threads allowed
-      myCurrentIteration = new int[globlMaxThreads];  // Reserve enough space to hold as many iteration numbers as there are threads allowed
-      std::fill(myCurrentIteration, myCurrentIteration+globlMaxThreads, 0); // Zero them to start off
-    }
-
-    /// Setter for indicating if the wrapped function's result should to be printed
+    /// Setter for indicating if the wrapped function's result should be printed
     template <typename TYPE>
     void module_functor<TYPE>::setPrintRequirement(bool flag) { if (this == NULL) failBigTime("setPrintRequirement"); myPrintFlag = flag;}
 
-    /// Getter indicating if the wrapped function's result should to be printed
+    /// Getter indicating if the wrapped function's result should be printed
     template <typename TYPE>
     bool module_functor<TYPE>::requiresPrinting() const { if (this == NULL) failBigTime("requiresPrinting"); return myPrintFlag; }
 
@@ -1251,7 +1292,9 @@ namespace Gambit
     template <typename TYPE>
     void module_functor<TYPE>::calculate()
     {
-      if (needs_recalculating)
+      if (myValue == NULL) init_myValue(); // Init memory if this is the first run through. 
+      if (needs_recalculating)             // Do the actual calculation if required.
+
       {
         logger().entering_module(myLogTag);
         double nsec = 0, sec = 0;
@@ -1268,6 +1311,15 @@ namespace Gambit
         this->finishTiming(nsec,sec);                      //Stop timing function evaluation
         logger().leaving_module();
       }
+
+    }
+
+    // Initialise the memory of this functor.
+    template <typename TYPE>
+    void module_functor<TYPE>::init_myValue()
+    {
+      // Reserve enough space to hold as many results as there are slots (threads) allowed
+      myValue = new TYPE[(iRunNested ? globlMaxThreads : 1)];                      
     }
 
     /// Operation (return value)
@@ -1275,6 +1327,7 @@ namespace Gambit
     TYPE module_functor<TYPE>::operator()(int index) 
     { 
       if (this == NULL) functor::failBigTime("operator()");
+      if (myValue == NULL) init_myValue(); // Init memory if this is the first run through. 
       return (iRunNested ? myValue[index] : myValue[0]);
     }
 
@@ -1283,6 +1336,7 @@ namespace Gambit
     safe_ptr<TYPE> module_functor<TYPE>::valuePtr()
     {
       if (this == NULL) functor::failBigTime("valuePtr");
+      if (myValue == NULL) init_myValue(); // Init memory if this is the first run through. 
       return safe_ptr<TYPE>(myValue);
     }
 
@@ -1290,12 +1344,11 @@ namespace Gambit
     template <typename TYPE>
     void module_functor<TYPE>::print(Printers::BasePrinter* printer, int index)
     {
-      // Check if this functor is set to output its contents
-      std::cout<<"printflag?"<<myPrintFlag<<std::endl;
       if(myPrintFlag)
       {
+        if (myValue == NULL) init_myValue(); // Init memory if this is the first run through. 
         if (not iRunNested) index = 0; // Force printing of index=0 if this functor cannot run nested. 
-        printer->print(myValue[0],myLabel,myVertexID);
+        printer->print(myValue[index],myLabel,myVertexID);
       }
     }
 
@@ -1351,7 +1404,10 @@ namespace Gambit
                                  str result_type,
                                  str origin_name,
                                  Models::ModelFunctorClaw &claw)
-    : module_functor<ModelParameters>(inputFunction, func_name, func_capability, result_type, origin_name, claw) {}   
+    : module_functor<ModelParameters>(inputFunction, func_name, func_capability, result_type, origin_name, claw)
+    {
+      init_myValue();
+    }   
     
     /// Function for adding a new parameter to the map inside the ModelParameters object
     void model_functor::addParameter(str parname)

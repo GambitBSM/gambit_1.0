@@ -1,5 +1,5 @@
-//  GAMBIT: Global and Modular BSM Inference Tool
-//  *********************************************
+//   GAMBIT: Global and Modular BSM Inference Tool
+//   *********************************************
 ///  \file
 ///
 ///  Helper macros for model definitions.
@@ -15,7 +15,7 @@
 ///  \author Pat Scott
 ///          (patscott@physics.mcgill.ca)
 ///  \date 2013 July, Aug
-///  \date 2014 Jan
+///  \date 2014 Jan, Nov
 ///
 ///  *********************************************
 
@@ -48,6 +48,7 @@
                                                                                \
     ADD_TAG_IN_CURRENT_NAMESPACE(primary_parameters)                           \
     ADD_TAG_IN_CURRENT_NAMESPACE(CAT(MODEL,_parameters))                       \
+    ADD_MODEL_TAG_IN_CURRENT_NAMESPACE(MODEL)                                  \
                                                                                \
     namespace Models                                                           \
     {                                                                          \
@@ -55,60 +56,19 @@
       namespace MODEL                                                          \
       {                                                                        \
                                                                                \
-        /* Basic machinery, same as for modules 
+        /* Basic machinery, same as for modules                                \
            (macro from module_macros_incore.hpp) */                            \
         CORE_START_MODULE_COMMON_MAIN(MODEL)                                   \
-                                                                               \
-        /* Model lineage                                                       
-           Each model is automatically marked as a child of the parent model.*/\
-        const std::vector<str> lineage = Utils::vecappend( PARENT::lineage,    \
-                                                    STRINGIFY(MODEL) );        \
-                                                                               \
-        /* Congruency function (checks if this model is a descendent of the
-           specified model (or is itself the specified model) ) 
-           Returns 'true' if the supplied string is an element of 'lineage',
-           else returns 'false'. */                                            \
-        bool is_descendant_of(const str testmodel, const ModelFunctorClaw*claw)\
-        {                                                                      \
-          claw->verify_model(testmodel);                                       \
-          for (std::vector<str>::const_iterator it = lineage.begin();          \
-               it!=lineage.end(); ++it)                                        \
-          {                                                                    \
-            if (testmodel==*it) {return true;};                                \
-          }                                                                    \
-          return false;                                                        \
-        }                                                                      \
                                                                                \
         /* Runtime addition of model to GAMBIT (modelClaw) database */         \
         void rt_add_model()                                                    \
         {                                                                      \
-          modelClaw().add_model(STRINGIFY(MODEL));                             \
-        }                                                                      \
-                                                                               \
-        /* Runtime addition of model's parents to ModelClaw database */        \
-        void rt_add_parents()                                                  \
-        {                                                                      \
-          modelClaw().add_parents(STRINGIFY(MODEL), STRINGIFY(PARENT));        \
-        }                                                                      \
-                                                                               \
-        /* Runtime addition of model's lineage to ModelClaw database */        \
-        void rt_add_lineage()                                                  \
-        {                                                                      \
-          modelClaw().add_lineage(STRINGIFY(MODEL), lineage);                  \
-        }                                                                      \
-                                                                               \
-        /* Runtime addition of model-as-a-descendant to ModelClaw databases */ \
-        void rt_add_descendant()                                               \
-        {                                                                      \
-          modelClaw().add_descendant(STRINGIFY(MODEL), &is_descendant_of);     \
+          modelClaw().declare_model(STRINGIFY(MODEL), STRINGIFY(PARENT));      \
         }                                                                      \
                                                                                \
         namespace Ini                                                          \
         {                                                                      \
           ini_code AddModel (&rt_add_model);                                   \
-          ini_code AddParents (&rt_add_parents);                               \
-          ini_code AddLineage (&rt_add_lineage);                               \
-          ini_code AddDescendant (&rt_add_descendant);                         \
         }                                                                      \
                                                                                \
         namespace Accessors                                                    \
@@ -127,23 +87,21 @@
                                    MODEL)                                      \
                                                                                \
       }                                                                        \
+                                                                               \
+      /* Make the functor exclusive to this model and its descendants */       \
+      CORE_ALLOW_MODEL(MODEL,primary_parameters,MODEL)                         \
+                                                                               \
     }                                                                          \
   }                                                                            \
-          
+
 /// Tells the core that the current parameter corresponds to the specified
 /// CAPABILITY, so that module functions can then draw upon them like any
 /// other capabilities. Draws from CORE_START_CAPABILITY macro.
-/// So far I am only allowing parameters of type double (currently the parameter
+/// So far we only allow parameters of type double (currently the parameter
 /// object cannot store anything else anyway). If we really want to allow 
 /// integer or maybe complex parameters later we could extend some things in 
 /// here.
-
 #define MAP_TO_CAPABILITY(PARAMETER,CAPABILITY)                                \
-  LINK_PARAMETER_TO_CAPABILITY(PARAMETER,CAPABILITY)                           \
-
-#define LINK_PARAMETER_TO_CAPABILITY(PARAMETER,CAPABILITY)                     \
-                                                                               \
-  /*DEFINEPAR(PARAMETER) -- Now do this seperately */                          \
                                                                                \
   namespace Gambit                                                             \
   {                                                                            \
@@ -214,15 +172,10 @@
     }                                                                          \
                                                                                \
   }                                                                            \
-  /* Tell this functor to only activate for MODEL */                           \
-  /*LITTLEGUY_ALLOW_MODEL(PARAMETER,MODEL)                */                   \
-//end LINK_PARAMETER_TO_CAPABILITY
 
   
-// Macro to define parameter WITHOUT creating a corresponding CAPABILITY.
-// Decided it just causes zillions of unused functors to be created. Really only
-// need them if a specific capability is wanted, which MAP_TO_CAPABILITY
-// still provides.
+/// Macro to define parameter.  Does not create a corresponding CAPABILITY;
+/// use MAP_TO_CAPABILITY to do this after calling DEFINEPAR(S).
 #define DEFINEPAR(PARAMETER)                                                   \
                                                                                \
   namespace Gambit                                                             \
@@ -254,44 +207,19 @@
                                                                                \
   }                                                                            \
 
-
-// Macro to easily define parameters who don't need special CAPABILITY 
-// definitions. Iteratively calls MAP_TO_CAPABILITY, with CAPABILITYs defined
-// with the same name as the parameters.
-//#define DEFINEPARS(...)                                                      \
-//do{                                                                          \
-//    const char* _arr_[] = {__VA_ARGS__};                                     \
-//    for(int i=0; i<sizeof(_arr_)/sizeof(const char*) ; i++){                 \
-//      LINK_PARAMETER_TO_CAPABILITY(_arr_[i],_arr_[i]));                      \
-//    }                                                                        \
-//}while(0);   
-
-// Ugghh, ok it is not great calling a macro in a loop like that, since it gets
-// expanded first of course. I think this trick using the boost preprocessor
-// does what we want though. Hope it is portable enough for our needs. Note that
-// one needs a relatively up-to-date version of boost to get the variadic stuff.
-
-// No longer want every parameter in its own functor: just the ones with
-// custom CAPABILITIES
-//#define DO_LINK(r,data,elem) LINK_PARAMETER_TO_CAPABILITY(elem,CAT_5(MODEL,_,PARAMETERISATION,_,elem))
-// Changed our minds again: We do want these "miniguys".
-#define DO_LINK(r,data,elem) DEFINEPAR(elem)
-// Want simple names though: can resolve name clashes with dependency resolver,
-// in principle.
-//#define DO_LINK(r,data,elem) \
-//  LINK_PARAMETER_TO_CAPABILITY(elem,elem)
-// Nope, changed our minds again; back to no "little guys" except for those explicitly
-// created by MAP_TO_CAPABILITY
-
-#define DEFINEPARS(...) \
+/// Define multiple model parameters
+/// @{
+#define DEFINEPARS(...)                                                        \
   BOOST_PP_SEQ_FOR_EACH(DO_LINK, _, BOOST_PP_TUPLE_TO_SEQ((__VA_ARGS__)))
+#define DO_LINK(r,data,elem) DEFINEPAR(elem)
+/// @}
 
+/// Real declaration macro for INTERPRET_AS_X functions.
+#define INTERPRET_AS_X__FUNCTION(MODEL_X,FUNC)                                 \
+        INTERPRET_AS_X__FUNCTION_FULL(MODEL_X,FUNC,1)                          \
 
-// Generic constructor macro for INTERPRET_AS_X function wrapper.
-// Need to run INTERPRET_AS_X__DEFINE(MODEL_X,CODE) afterwards to actually
-// define the function.
-#define INTERPRET_AS_X__BEGIN(MODEL_X)                                         \
-                                                                               \
+/// Generic declaration macro for INTERPRET_AS_ functions.
+#define INTERPRET_AS_X__FUNCTION_FULL(MODEL_X,FUNC,ADD_FRIEND)                 \
   namespace Gambit                                                             \
   {                                                                            \
                                                                                \
@@ -318,6 +246,7 @@
         /* Add MODEL_X_parameters to the set of tags of known functions        \
         provided by this model. */                                             \
         ADD_TAG_IN_CURRENT_NAMESPACE(CAT(MODEL_X,_parameters))                 \
+        ADD_TAG_IN_CURRENT_NAMESPACE(FUNC)                                     \
                                                                                \
         /* The function which computes the MODEL_X_parameters object. This     \
            is the analogue of a module function, and is what will be wrapped   \
@@ -331,11 +260,14 @@
          CAT(MODEL_X,_parameters),MODEL,0)                                     \
                                                                                \
         /* Make a function that tells the functor to take its parameter        \
-           definition from MODEL_X's primary_parameters functor. */            \
+           definition from MODEL_X's primary_parameters functor, and           \
+           adds MODEL_X as a friend of MODEL if it is not a parent. */         \
         void CAT(pars_for_,MODEL_X)()                                          \
         {                                                                      \
           MODEL_X::Functown::primary_parameters.donateParameters               \
-           (MODEL::Functown::CAT(MODEL_X,_parameters));                        \
+           (Functown::CAT(MODEL_X,_parameters));                               \
+          BOOST_PP_IIF(ADD_FRIEND,                                             \
+           modelClaw().add_friend(STRINGIFY(MODEL), STRINGIFY(MODEL_X));,)     \
         }                                                                      \
                                                                                \
         /* Call it at initialisation time using an ini_code object. */         \
@@ -352,14 +284,6 @@
                                                                                \
   /* Automatically add a dependency on the host model's parameters */          \
   INTERPRET_AS_X__DEPENDENCY(MODEL_X,CAT(MODEL,_parameters),ModelParameters)   \
-  
-  
-// Actually define the interpret_as_X function. Alternatively this could be
-// moved into a seperate source file, as occurs for module functions, rather
-// than making the user write it in the model header. This would let the
-// compiler help the user debug their code more easily, since stuck into a 
-// macro like this the compiler can't see what line the user's error occurs on.
-#define INTERPRET_AS_X__DEFINE(MODEL_X,FUNC)                                   \
                                                                                \
   namespace Gambit                                                             \
   {                                                                            \
@@ -387,34 +311,32 @@
                                                                                \
       }                                                                        \
                                                                                \
+      /* Make the functor exclusive to this model and its descendants */       \
+      CORE_ALLOW_MODEL(MODEL,CAT(MODEL_X,_parameters),MODEL)                   \
+                                                                               \
     }                                                                          \
                                                                                \
   }                                                                            \
 
+
+/// Add a dependency to an interpret-as-X function.
 #define INTERPRET_AS_X__DEPENDENCY(MODEL_X, DEP, TYPE)                         \
   CORE_DEPENDENCY(DEP, TYPE, MODEL, CAT(MODEL_X,_parameters), IS_MODEL)        \
 
-// Wrappers to convert INTERPRET_AS_X macros to INTERPRET_AS_PARENT macros.
-#define INTERPRET_AS_PARENT__BEGIN                                             \
-  INTERPRET_AS_X__BEGIN(PARENT)                                                \
-
+/// Wrappers to convert INTERPRET_AS_X macros to INTERPRET_AS_PARENT macros.
+/// @{
 #define INTERPRET_AS_PARENT__DEPENDENCY(DEP, TYPE)                             \
-  INTERPRET_AS_X__DEPENDENCY(PARENT, DEP, TYPE)                                \
-
-#define INTERPRET_AS_PARENT__DEFINE(FUNC)                                      \
-  INTERPRET_AS_X__DEFINE(PARENT,FUNC)                                          \
-
-// Full combo wrapper
+  INTERPRET_AS_X__DEPENDENCY(PARENT, DEP, TYPE)                                
 #define INTERPRET_AS_PARENT__FUNCTION(FUNC)                                    \
-  INTERPRET_AS_PARENT__BEGIN                                                   \
-  INTERPRET_AS_PARENT__DEFINE(FUNC)                                            \
+  INTERPRET_AS_X__FUNCTION_FULL(PARENT,FUNC,0)                                        
+/// @}
 
-// Macro to get to model namespace easily
+/// Macro to get to model namespace easily
 #define MODEL_NAMESPACE Gambit::Models::MODEL 
 
-// Macro to easily get the Pipes, for retrieving dependencies
+/// Macro to easily get the Pipes, for retrieving dependencies
 #define USE_MODEL_PIPE                                                         \
-  using namespace MODEL_NAMESPACE::Pipes::CAT(PARENT,_parameters);       \
+  using namespace MODEL_NAMESPACE::Pipes::CAT(PARENT,_parameters);             \
 
 /// Macros to create and register primary model functors. 
 ///

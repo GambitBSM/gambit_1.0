@@ -56,6 +56,9 @@ int main(int argc, char* argv[])
     // Activate "primary" model functors
     Core().registerActiveModelFunctors ( Models::modelClaw().getPrimaryModelFunctorsToActivate ( selectedmodels, Core().getPrimaryModelFunctors() ) );
 
+    // Deactivate module functions reliant on classes from missing backends
+    Core().accountForMissingClasses();
+
     // Set up a printer object
     // (will do this with a factory that reads the inifile, similar to the PriorManager)
     // Printers::ostreamPrinter printer(std::cout,1); 
@@ -83,26 +86,30 @@ int main(int argc, char* argv[])
 
     // Report the proposed (output) functor evaluation order
     dependencyResolver.printFunctorEvalOrder(Core().show_runorder);
-    if(Core().show_runorder) return 0; // Bail out: just wanted the run order, not a scan
- 
-    //Define the prior
-    Gambit::Priors::CompositePrior prior(iniFile.getParametersNode(), iniFile.getPriorsNode());
-  
-    //Define the likelihood container object for the scanner
-    Gambit::Scanner::Factory_Base *factory = new Gambit::Likelihood_Container_Factory (Core(), dependencyResolver, iniFile, prior);
- 
-    //Define the iniFile interface for the scanner
-    Gambit::Scanner::IniFileInterface interface = Scanner::scanner_inifile_input(iniFile.getScannerNode());
 
-    //Run the scanner!
-    Gambit::Scanner::Gambit_Scanner *scanner = new Gambit::Scanner::Gambit_Scanner(*factory, interface, prior);
-    //cout << "keys = " << scanner->getKeys() << endl;
-    //cout << "phantom keys = " << scanner->getPhantomKeys() << endl;
-    logger() << core << "Starting scan." << EOM;
-    scanner->Run(); 
+    // If true, bail out (just wanted the run order, not a scan); otherwise, keep going.
+    if (not Core().show_runorder)
+    {
  
-    std::cout << "GAMBIT has finished successfully! Any errors following this message ";
-    std::cout << "are probably caused by cleanup problems, i.e in destructors etc."<<std::endl;
+      //Define the prior
+      Gambit::Priors::CompositePrior prior(iniFile.getParametersNode(), iniFile.getPriorsNode());
+  
+      //Define the likelihood container object for the scanner
+      Gambit::Scanner::Factory_Base *factory = new Gambit::Likelihood_Container_Factory (Core(), dependencyResolver, iniFile, prior);
+ 
+      //Define the iniFile interface for the scanner
+      Gambit::Scanner::IniFileInterface interface = Scanner::scanner_inifile_input(iniFile.getScannerNode());
+
+      //Run the scanner!
+      Gambit::Scanner::Gambit_Scanner *scanner = new Gambit::Scanner::Gambit_Scanner(*factory, interface, prior);
+      //cout << "keys = " << scanner->getKeys() << endl;
+      //cout << "phantom keys = " << scanner->getPhantomKeys() << endl;
+      logger() << core << "Starting scan." << EOM;
+      scanner->Run(); 
+ 
+      std::cout << "GAMBIT has finished successfully!"<<std::endl;
+
+    }
   
   }
 

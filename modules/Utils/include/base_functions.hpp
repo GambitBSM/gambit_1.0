@@ -19,6 +19,11 @@
 ///  \author Pat Scott
 ///           (patscott@physics.mcgill.ca)
 ///  \date 2014 Apr
+///
+///  \author Lars A. Dal  
+///          (l.a.dal@fys.uio.no)
+///  \date 2014 Sep, Oct
+///
 ///  *********************************************
 
 #ifndef __base_functions_hpp__
@@ -31,6 +36,7 @@
 #include <functional>
 #include <iostream>
 #include <fstream>
+#include <map>
 //#include <memory>
 
 #include "boost/shared_ptr.hpp"
@@ -87,6 +93,7 @@ namespace Gambit
     // Arguments are by default passed as vectors.  Overloads for calls by
     // argument lists exist.
     typedef std::vector<double> BFargVec;
+    // Function(pointer)s specifying integral limits
 
     shared_ptr<BaseFunction> BFinterpolationFactory(const std::vector<double> &Xgrid, const std::vector<double> &Ygrid, unsigned int ndim);
     
@@ -103,13 +110,35 @@ namespace Gambit
     {
             return vec[i];
     }
-    
+
+    ///////////////////////////////////////////////////////////////////////////
+    // Integration limit functor
+    ///////////////////////////////////////////////////////////////////////////
+    class intLimitFunc
+    {
+        public:
+            virtual void operator ()(double &x0, double &x1, bool &allowed, std::map<unsigned int,double> args)
+            {
+                (void) x0; (void) x1; (void) allowed; (void) args;
+                std::cout << "ERROR: Virtual operator () of intLimitFunc called" << std::endl;
+                exit(1); 
+            }
+            // Function for checking whether or not the argument list contains a given argument
+            static bool argInList(std::map<unsigned int,double> &in, unsigned int index)
+            {
+                return in.find(index) != in.end();
+            }
+    };
+
+    ///////////////////////////////////////////////////////////////////////////
+    // FunctionExpression class
+    ///////////////////////////////////////////////////////////////////////////
     template <typename T>
     class FunctionExpression : public enable_shared_from_this<FunctionExpression<T> >
     {
         public:
             // Verbose constructor and destructor
-            FunctionExpression(std::string name, unsigned int ndim) : cachingFlag(false), integratorFlag(false)
+            FunctionExpression(std::string name, unsigned int ndim) : cachingFlag(false)
             {  
                 this->name = name;
                 this->ndim = ndim;
@@ -202,15 +231,20 @@ namespace Gambit
             shared_ptr<BFaddPar<T> > addPar(int i) { return shared_ptr<BFaddPar<T> >(new BFaddPar<T>(this->shared_from_this(), i)); }
             shared_ptr<BFvalidRange<T> > validRange(int i, double x0, double x1) { return shared_ptr<BFvalidRange<T> >(new BFvalidRange<T>(this->shared_from_this(), i, x0, x1)); }
             shared_ptr<BFintegrate<T> > integrate(int i, double x0, double x1) { return shared_ptr<BFintegrate<T> > (new BFintegrate<T>(this->shared_from_this(), i, x0, x1)); }
+            shared_ptr<BFintegrate<T> > integrate(int i, shared_ptr<intLimitFunc> f) { return shared_ptr<BFintegrate<T> > (new BFintegrate<T>(this->shared_from_this(), i, f)); }            
             shared_ptr<BFrotSym<T> > rotSym(int i) { return shared_ptr<BFrotSym<T> >(new BFrotSym<T>(this->shared_from_this(), i)); }
 
             // Member functions that are optionally available for only a subset
             // of derived base function objects.
             //virtual double integrator(const BFargVec &vec, int i, double E0, double E1)
-            double integrator(const BFargVec &vec, int i, double E0, double E1)
+            double integrator(const BFargVec &vec, std::vector<unsigned int> i, std::vector<double> E0, std::vector<double> E1)
             {
                 return static_cast<T&>(*this).integrator(vec, i, E0, E1);
             }
+            double integrator(const BFargVec &vec, std::vector<unsigned int> i, std::vector<shared_ptr<intLimitFunc> > limFuncs)
+            {
+                return static_cast<T&>(*this).integrator(vec, i, limFuncs);
+            }            
 
             // Member functions for file IO
             void writeToFile(std::vector<double> xgrid, std::ofstream & os)
@@ -233,7 +267,28 @@ namespace Gambit
             BF_temp_ptr(T) disableCaching() { cachingFlag = false; return this->shared_from_this(); }
 
             // Getter Function
-            bool hasIntegrator() { return integratorFlag; }
+            // hasIntegrator(vector<int> indices) needs to be overloaded in derived classes that have an integrator.
+            bool hasIntegrator(unsigned int index){return hasIntegrator(std::vector<unsigned int>(1,index));}         
+            bool hasIntegrator(std::vector<unsigned int> indices)
+            {
+                (void)indices;
+                return false;
+            }
+            // Function that is overloaded by integrator baseFunctions. 
+            // This function takes the index of an argument, and returns the corresponding index you would use if passing the argument to the function without any integrals.
+            // Here: No integrals are applied, just return the same index.
+            unsigned int baseArgIdx(unsigned int myArgIdx)
+            {
+                return myArgIdx;
+            }
+            // Do I have an integrator that takes functions as limits? Only useful for N>1 dimensional functions
+            bool hasDynamicIntegrator(unsigned int index){return hasDynamicIntegrator(std::vector<unsigned int>(1,index));}               
+            bool hasDynamicIntegrator(std::vector<unsigned int> indices)
+            {
+                (void)indices;
+                return false;
+            }            
+            
             bool doesCaching() { return cachingFlag; }
 
             // TODO: add information about positions and width of poles
@@ -268,7 +323,6 @@ namespace Gambit
 
             // Internal flags.
             bool cachingFlag;  // TODO: Implement caching (at GAMBIT level)
-            bool integratorFlag;  // True if implementation of abstract base class has its own integrator
 
             // Number of dimensions
             unsigned int ndim;
@@ -279,7 +333,7 @@ namespace Gambit
     };
 
     ///////////////////////////////////////////////////////////////////////////
-    // Base Function Object
+    // BaseFunction class
     ///////////////////////////////////////////////////////////////////////////
 
     class BaseFunction : public FunctionExpression<BaseFunction>
@@ -291,7 +345,7 @@ namespace Gambit
             unsigned int ndim;
                 
     public:
-            BaseFunction(const std::string &str, const int &ndim) : FunctionExpression<BaseFunction>(str, ndim), ndim(ndim) {} //v(ndim) {}
+            BaseFunction(const std::string str, const int ndim) : FunctionExpression<BaseFunction>(str, ndim), ndim(ndim) {} //v(ndim) {}
             
 //             template<typename... args>
 //             typename enable_if_not_one_member_vector<double, args...>::type::type
@@ -321,12 +375,18 @@ namespace Gambit
             
             virtual double value(const BFargVec &vec) = 0;
             
-            virtual double integrator(const BFargVec &vec, int i, double E0, double E1)
+            virtual double integrator(const BFargVec &vec, std::vector<unsigned int> i, std::vector<double> E0, std::vector<double> E1)
             {
                 (void)vec; (void)i; (void)E0; (void)E1;
                 failHard("Integrator not implemented.");
                 return 0;
             }
+            virtual double integrator(const BFargVec &vec, std::vector<unsigned int> i, std::vector<shared_ptr<intLimitFunc> > limFuncs)
+            {
+                (void)vec; (void)i; (void)limFuncs;
+                failHard("Integrator not implemented.");
+                return 0;
+            }            
             
             virtual ~BaseFunction(){}
     };
@@ -550,14 +610,17 @@ namespace Gambit
             {
                 this->myValue = value;
             }
-
-        private:
             double value(const BFargVec &args)
             {
                 (void)args;
                 return myValue;
             }
-
+            double value(const BFargVec &args) const
+            {
+                (void)args;
+                return myValue;
+            }
+        private:
             double myValue;
     };
 
@@ -571,7 +634,6 @@ namespace Gambit
                 if (ndim != 1) failHard("Only 1-dim interpolation implemented right now.");
                 this->Xgrid = Xgrid;
                 this->Ygrid = Ygrid;
-                this->integratorFlag = true;
                 if ( mode == "lin" ) this->ptr = &BFinterpolation::linearInterp;
                 else if( mode == "log" ) this->ptr = &BFinterpolation::logInterp;
                 else
@@ -580,18 +642,31 @@ namespace Gambit
                 }
             };
 
+            bool hasIntegrator(std::vector<unsigned int> indices)
+            {
+                // Can integrate over one argument
+                if(indices.size() == 1)
+                {
+                    if(indices.back() == 0)
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            }
+
             // Implementation specific integrator
-            double integrator(const BFargVec &vec, int i, double E0, double E1)
+            double integrator(const BFargVec &vec, std::vector<unsigned int> i, std::vector<double> E0, std::vector<double> E1)
             {
                 (void)i;
                 if (vec.size() != ndim - 1) failHard("Too many vec-arguments in BFinterpolation::integrator.");
                 // Simple trapezoidal integration in log-log space
                 double sum = 0;
-                if (E1<Xgrid.front() or E0>Xgrid.back()) return 0;
-                int i0 = 0; for (; Xgrid[i0] < E0; i0++) {};  // E[i0] > E0
-                int i1 = 0; for (; Xgrid[i1] < E1; i1++) {};  // E[i1] > E1
-                double x0 = E0;
-                double y0 = this->operator()(E0);  // Get interpolated value
+                if (E1.back()<Xgrid.front() or E0.back()>Xgrid.back()) return 0;
+                int i0 = 0; for (; Xgrid[i0] < E0.back(); i0++) {};  // E[i0] > E0
+                int i1 = 0; for (; Xgrid[i1] < E1.back(); i1++) {};  // E[i1] > E1
+                double x0 = E0.back();
+                double y0 = this->operator()(E0.back());  // Get interpolated value
                 for (int i = i0; i < i1; i++)
                 {
                     double x1 = Xgrid[i];
@@ -600,8 +675,8 @@ namespace Gambit
                     x0 = x1;
                     y0 = y1;
                 }
-                double x1 = E1;
-                double y1 = this->operator()(E1);
+                double x1 = E1.back();
+                double y1 = this->operator()(E1.back());
                 if ( mode == "lin" )  // TODO: Remove string comparison
                 {
                     sum += (x1-x0)*(y0+y1)/2;  // Linear interpolation
@@ -798,15 +873,29 @@ namespace Gambit
     {
         public:
             BFintegrate(BF_temp_ptr(T) integrand, unsigned int i, double x0, double x1):
-                FunctionExpression<BFintegrate<T> >("Integrate", integrand->getNdim()-1), x0(x0),
-                x1(x1), integrand(integrand), index(i), epsabs(0),
+                FunctionExpression<BFintegrate<T> >("Integrate", integrand->getNdim()-1), useDefInt(false), x0(x0),
+                x1(x1), hasFuncIntLimits(false), integrand(integrand), index(i), epsabs(0),
                 epsrel(1e-2), limit(10000)
             {
                 // Setup gsl workspace (just in case)
                 // TODO: Possibly increase workspace size?
                 gsl_workspace = gsl_integration_workspace_alloc (100000);
             }
-
+            
+            BFintegrate(BF_temp_ptr(T) integrand, unsigned int i, shared_ptr<intLimitFunc> intLimits):
+                FunctionExpression<BFintegrate<T> >("Integrate", integrand->getNdim()-1), useDefInt(false), intLimits(intLimits),
+                hasFuncIntLimits(true), integrand(integrand), index(i), epsabs(0),
+                epsrel(1e-2), limit(10000)
+            {
+                if(!integrand->hasDynamicIntegrator(i) && integrand->hasIntegrator(i))
+                {
+                    // TODO: Output warning: The integrator of the integrand doesn't support functions as integration limits. Using default integrator instead.
+                }
+                // Setup gsl workspace (just in case)
+                // TODO: Possibly increase workspace size?
+                gsl_workspace = gsl_integration_workspace_alloc (100000);
+            }
+            
             ~BFintegrate()
             {
                 // Free gsl workspace
@@ -830,6 +919,12 @@ namespace Gambit
                 this->limit = limit;
                 return static_pointer_cast<BFintegrate<T> > (this->shared_from_this());
             }
+            
+            shared_ptr<BFintegrate<T> > set_useDefInt(bool useDefInt)
+            {
+                this->useDefInt = useDefInt;
+                return static_pointer_cast<BFintegrate<T> > (this->shared_from_this());
+            }            
 
             //double value(const BFargVec &args)
 //             template <typename... argss>
@@ -864,17 +959,111 @@ namespace Gambit
 //                 return result;
 //             }//18002216903 4167762466
             
+            unsigned int baseArgIdx(unsigned int myArgIdx)
+            {
+                if(myArgIdx<index) return integrand->baseArgIdx(myArgIdx);
+                else return integrand->baseArgIdx(myArgIdx+1);
+            }
+            
+            bool hasIntegrator(std::vector<unsigned int> indices)
+            {
+                // Add my own parameter to the list of parameters,
+                // then query the integrand if its integrator can integrate over the new list of parameters
+                return integrand->hasIntegrator(indices.push_back(index));
+            }
+            bool hasDynamicIntegrator(std::vector<unsigned int> indices)
+            {
+                // Add my own parameter to the list of parameters,
+                // then query the integrand if its integrator can integrate over the new list of parameters
+                return integrand->hasDynamicIntegrator(indices.push_back(index));
+            }            
+            
+            double integrator(const BFargVec &vec, std::vector<unsigned int> indices, std::vector<double> E0, std::vector<double> E1)
+            {
+                // Check that the integrator of the integrand really can integrate over the given list of parameters
+                if(this->hasIntegrator(indices))
+                {
+                    indices.push_back(index);
+                    E0.push_back(x0);
+                    E1.push_back(x1);
+                    return integrand->integrator(vec, indices, E0, E1);
+                }
+                else
+                {
+                    (void)vec; (void)indices; (void)E0; (void)E1;
+                    this->failHard("Integrator not implemented for given argument list.");
+                    return 0;
+                }
+            }
+            double integrator(const BFargVec &vec, std::vector<unsigned int> indices, std::vector<shared_ptr<intLimitFunc> > limFuncs)
+            {
+                // Check that the integrator of the integrand really can integrate over the given list of parameters
+                if(this->hasDynamicIntegrator(indices))
+                {
+                    indices.push_back(index);
+                    limFuncs.push_back(intLimits);
+                    return integrand->integrator(vec, indices, limFuncs);
+                }
+                else
+                {
+                    (void)vec; (void)indices; (void)limFuncs;
+                    this->failHard("Integrator not implemented for given argument list.");
+                    return 0;
+                }
+            }
+            
             double value(const BFargVec &args)
             {
-                // If integrand has its own integrator, use that.
-                if (integrand->hasIntegrator())
+                // If limits were given as numerical values
+                if (!hasFuncIntLimits)
                 {
-                    return integrand->integrator(args, index, x0, x1);
+                    // If integrand has its own integrator, use that (unless instructed not to).
+                    if (!useDefInt && integrand->hasIntegrator(index))
+                    {
+                        return integrand->integrator(args, std::vector<unsigned int>(1,index), std::vector<double>(1,x0), std::vector<double>(1,x1));
+                    }
+                    // Otherwise, integrate using the default techinque
+                    return value_defInt(args, x0, x1);
                 }
+                // If limits are given by a function
+                else
+                {
+                    // If integrand has its own integrator, use that (unless instructed not to).
+                    if (!useDefInt && integrand->hasDynamicIntegrator(index))
+                    {
+                        return integrand->integrator(args, std::vector<unsigned int>(1,index), std::vector<shared_ptr<intLimitFunc> >(1,intLimits));
+                    }
+                    // Otherwise, integrate using the default techinque
+                    // Set integration limits
+                    double _x0, _x1;
+                    bool allowed;
+                    // The integration limits require arguments as a map from argument index for the un-integrated function to argument value.
+                    std::map<unsigned int,double> limArgs;
+                    for(int i=0;i<args.size();i++)
+                    {
+                        limArgs[baseArgIdx(i)] = args[i];
+                    }
+                    (*intLimits)(_x0,_x1, allowed,limArgs);
+                    // Do the integral if kinematically allowed, otherwise return 0.
+                    if(allowed)
+                        return value_defInt(args, _x0, _x1);
+                    else
+                        return 0.0;
+                }
+            }
+                        
+        private:
+            // Static member function that invokes integrand
+            static double invoke(double x, void *params) {
+                BFintegrate * myBF = static_cast<BFintegrate*>(params);
+                (myBF->fullArgs)[myBF->index] = x;  // Set argument
+                return inputVariadicFunction((*myBF->integrand), (myBF->fullArgs).begin(), (myBF->fullArgs).end());
+                //return (*myBF->integrand).value(myBF->fullArgs);
+            }
 
-                //
-                // Otherwise, we use GSL:
-                //
+            // Integration using the default techinque (GSL)
+            double value_defInt(const BFargVec &args, double _x0, double _x1)
+            {
                 double result, error;
 
                 // Build up n-dim argument vector for integrand from (n-1)-dim args.
@@ -888,24 +1077,18 @@ namespace Gambit
                 params=this;
 
                 //TODO: Add error checks to integration output!!
-                gsl_integration_qags(this, x0, x1, epsabs, epsrel, limit, gsl_workspace, &result, &error);
+                gsl_integration_qags(this, _x0, _x1, epsabs, epsrel, limit, gsl_workspace, &result, &error);
 
                 return result;
-            }
-            
-        private:
-            // Static member function that invokes integrand
-            static double invoke(double x, void *params) {
-                BFintegrate * myBF = static_cast<BFintegrate*>(params);
-                (myBF->fullArgs)[myBF->index] = x;  // Set argument
-                return inputVariadicFunction((*myBF->integrand), (myBF->fullArgs).begin(), (myBF->fullArgs).end());
-                //return (*myBF->integrand).value(myBF->fullArgs);
-            }
+            }            
 
-            double x0, x1;  // Integration range
-            BF_temp_ptr(T) integrand;  // n-dim integrand
-            unsigned int index;  // index of variable to integrate over
-            BFargVec fullArgs;  // n-dim temporary argument list for integrand
+            bool useDefInt;             // Force integration through default integrator
+            double x0, x1;              // Integration range
+            shared_ptr<intLimitFunc> intLimits; // Alternative: Function dynamically specifying integration range
+            bool hasFuncIntLimits;
+            BF_temp_ptr(T) integrand;   // n-dim integrand
+            unsigned int index;         // index of variable to integrate over
+            BFargVec fullArgs;          // n-dim temporary argument list for integrand
             gsl_integration_workspace * gsl_workspace;  // GSL workspace
             double epsabs;
             double epsrel;

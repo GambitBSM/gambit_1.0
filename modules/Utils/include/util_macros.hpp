@@ -20,6 +20,7 @@
 #define __util_macros_hpp__
 
 #include "boost_fallbacks.hpp"
+#include "cats.hpp"
 
 #include <boost/preprocessor/seq/size.hpp>
 #include <boost/preprocessor/control/if.hpp>
@@ -32,6 +33,9 @@
 
 /// \name Compile-time error macro.
 #define FAIL(x) static_assert(false,"GAMBIT precompiler error: " x);
+
+/// \name Token appendment macro for use with BOOST_PP_SEQ_TRANSFORM
+#define APPEND_TOKEN(s,data,elem) CAT(elem,data)
 
 /// \name Dummy macros
 /// Dummy macros that expand to nothing.
@@ -56,19 +60,6 @@
 /// @{
 #define REMFIRST(...) REMFIRST_I(__VA_ARGS__)
 #define REMFIRST_I(A1,...) (__VA_ARGS__)
-/// @}
-
-/// \name Concatenation macros
-/// Concatenate macro arguments for 2-7 arguments.
-/// @{
-#define CAT(X,Y) CAT2(X,Y)
-#define CAT2(X,Y) X##Y
-#define CAT_2 CAT
-#define CAT_3(X,Y,Z) CAT(X,CAT(Y,Z))
-#define CAT_4(A,X,Y,Z) CAT(A,CAT_3(X,Y,Z))
-#define CAT_5(A,B,X,Y,Z) CAT(A,CAT_4(B,X,Y,Z))
-#define CAT_6(A,B,C,X,Y,Z) CAT(A,CAT_5(B,C,X,Y,Z))
-#define CAT_7(A,B,C,D,X,Y,Z) CAT(A,CAT_6(B,C,D,X,Y,Z))
 /// @}
 
 /// \name Macro chain for stripping parantheses off an argument
@@ -256,6 +247,17 @@ _110, _111, _112, _113, _114, _115, _116, _117, _118, _119, _120, _121, _122, _1
 #define VARARG_SWITCH_ON_GT_ONE_ABC_IMPL2(base, A, B, C, count, ...) CAT_3(base,_,count)(A, B, C, __VA_ARGS__)
 #define VARARG_SWITCH_ON_GT_ONE_ABC_IMPL(base, A, B, C, count, ...) VARARG_SWITCH_ON_GT_ONE_ABC_IMPL2(base, A, B, C, count, __VA_ARGS__) 
 #define VARARG_SWITCH_ON_GT_ONE_ABC(base, A, B, C, ...) VARARG_SWITCH_ON_GT_ONE_ABC_IMPL(base, A, B, C, VA_NARGS_SWITCH_ON_GT_ONE_ABC(__VA_ARGS__), __VA_ARGS__)
+/// @}
+
+/// \name Variadic macro expanders for distinguishing between 1, 2 and >2 variadic arguments, taking 3 leading arguments  
+/// @{
+#define VARARG_SWITCH_ON_GT_TWO_ABC_TESTER_2 1)(1
+#define VARARG_SWITCH_ON_GT_TWO_ABC_TESTER_1 1)(1
+#define VA_NARGS_SWITCH_ON_GT_TWO_ABC_IMPL(_1, _2, _3, _4, N, ...) IF_ELSE_EQUAL(VARARG_SWITCH_ON_GT_TWO_ABC_TESTER,N,N,MORE)
+#define VA_NARGS_SWITCH_ON_GT_TWO_ABC(...) VA_NARGS_SWITCH_ON_GT_TWO_ABC_IMPL(X,__VA_ARGS__, 3, 2, 1, 0)
+#define VARARG_SWITCH_ON_GT_TWO_ABC_IMPL2(base, A, B, C, count, ...) CAT_3(base,_,count)(A, B, C, __VA_ARGS__)
+#define VARARG_SWITCH_ON_GT_TWO_ABC_IMPL(base, A, B, C, count, ...) VARARG_SWITCH_ON_GT_TWO_ABC_IMPL2(base, A, B, C, count, __VA_ARGS__) 
+#define VARARG_SWITCH_ON_GT_TWO_ABC(base, A, B, C, ...) VARARG_SWITCH_ON_GT_TWO_ABC_IMPL(base, A, B, C, VA_NARGS_SWITCH_ON_GT_TWO_ABC(__VA_ARGS__), __VA_ARGS__)
 /// @}
 
 /// \name Bottom-level definition-checking macros

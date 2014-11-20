@@ -53,8 +53,8 @@ namespace Gambit
       /// Set of all declared modules
       std::set<str> modules;
       
-      /// List of all declared backends
-      std::set<str> backends;
+      /// Map from backend names to a list of all registered versions of the backend
+      std::map<str, std::set<str> > backend_versions;
 
       /// List of all declared capabilities
       std::set<str> capabilities;
@@ -91,6 +91,9 @@ namespace Gambit
 
       /// Flag specifying whether command line options have been processed yet.
       bool processed_options;
+
+      /// Compute the status of a given backend
+      inline str backend_status(str, str, bool&);
  
     public:
 
@@ -122,6 +125,9 @@ namespace Gambit
       /// Add a new module to modules list
       void registerModule(str);
 
+      /// Register a new backend
+      void registerBackend(str, str);
+
       /// Add a new module functor to functorList
       void registerModuleFunctor(functor&);
 
@@ -136,6 +142,9 @@ namespace Gambit
 
       /// Add entries to the map of activated primary model functors
       void registerActiveModelFunctors(const pmfVec&); 
+
+      /// Get a reference to the map of all registered backends
+      const std::map<str, std::set<str> > getBackends() const ;
 
       /// Get a reference to the list of module functors
       const fVec& getModuleFunctors() const ; 
@@ -152,6 +161,9 @@ namespace Gambit
       /// Get a reference to the map of all user-activated primary model functors
       const pmfMap& getActiveModelFunctors() const ;
     
+      /// Tell the module functors which backends are actually present
+      void accountForMissingClasses() const ;
+
       /// Get the description (and other info) of the named item from the capability database
       const capability_info get_capability_info(const str&) const;
 
@@ -159,7 +171,7 @@ namespace Gambit
       const model_info get_model_info(const str&) const;
  
       /// Check the named database for conflicts and missing descriptions
-      // Emits a report to log in the case of missing descriptions, and causes an error in the case of conflicts
+      /// Emits a report to log in the case of missing descriptions, and causes an error in the case of conflicts.
       void check_databases();
  
       /// Vector of all capability_info objects

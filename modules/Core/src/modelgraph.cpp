@@ -74,7 +74,8 @@ namespace Gambit
       
       // Loop over all vertices (models) in vertexIDmap, look up the 'parent' 
       // of each one in the parents database boundClaw->myParentsDB, and add
-      // an edge from parent to child in the model graph.
+      // an edge from parent to child in the model graph.  Do the same with
+      // direct (best) friends.
       typedef std::map<str, DRes::VertexID>::iterator vertexIDmap_it;
       for (vertexIDmap_it vimap = vertexIDmap.begin(); 
               vimap != vertexIDmap.end(); vimap++) 
@@ -87,6 +88,17 @@ namespace Gambit
         {
           boost::add_edge(vertexIDmap[parent], vertexIDmap[model], modelGraph);
           if (verbose) std::cout<<"    Edge added: "<<model<<" ---> "<<parent<<std::endl;
+        }
+        // Add edges with all this model's best friends.  Might want to make these another colour in future.
+        std::set<str> friends = boundClaw->get_best_friends(model);
+        for (auto it = friends.begin(); it != friends.end(); ++it)
+        {
+          boost::add_edge(vertexIDmap[*it], vertexIDmap[model], modelGraph);
+          if (verbose)
+          {
+            std::cout<<model<<"; friend: "<<*it<<std::endl;;       
+            std::cout<<"    Edge added: "<<model<<" ---> "<<*it<<std::endl;
+          }
         }
       }
       if (verbose) std::cout<<std::endl;

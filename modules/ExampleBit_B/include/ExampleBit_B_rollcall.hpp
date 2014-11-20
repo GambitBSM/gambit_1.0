@@ -73,7 +73,7 @@ START_MODULE
 
     #define FUNCTION xsection               // Name of specific function providing the observable
     START_FUNCTION(double)                  // Function calculates a double precision variable
-    ALLOW_MODELS(CMSSM_demo,NormalDist)
+    ALLOW_MODELS(MSSM_demo,NormalDist)
     #undef FUNCTION
 
   #undef CAPABILITY
@@ -109,7 +109,7 @@ START_MODULE
     BACKEND_REQ(SomeInt, (model_dependent_reqs, libfirst1_only), int)
     BACKEND_REQ(someFunction, (libfirst1_only, common_be), void, ())
 
-    ACTIVATE_BACKEND_REQ_FOR_MODELS( (CMSSM_demo, UED), (model_dependent_reqs) )
+    ACTIVATE_BACKEND_REQ_FOR_MODELS( (MSSM_demo, UED), (model_dependent_reqs) )
     BACKEND_OPTION( (LibFirst, 1.1), (libfirst1_only, lib123) )
     BACKEND_OPTION( (LibSecond), (lib123) )
     BACKEND_OPTION( (LibThird, 1.2, 1.3 , 1.5), (lib123) )
@@ -117,7 +117,7 @@ START_MODULE
 
     #define CONDITIONAL_DEPENDENCY id     // A dependency that only counts under certain conditions (must come after all BACKEND_REQs)
     START_CONDITIONAL_DEPENDENCY(std::string)              // Type of the dependency; one type permitted per CONDITIONAL_DEPENDENCY.
-    ACTIVATE_FOR_BACKEND(awesomeness, LibFirst, 1.1, 1.2)  // Dependency counts if awesomeness comes from LibFirst v1.0 or 1.2 
+    ACTIVATE_FOR_BACKEND(awesomeness, LibFirst, 1.1, 1.2)  // Dependency counts if awesomeness comes from LibFirst v1.1 or 1.2 
     ACTIVATE_FOR_BACKEND(awesomeness, LibThird)            // Dependency counts when any version of LibThird is used for awesomeness
     ACTIVATE_FOR_MODEL(MSSM_demo)                          // Dependency counts when scanning the MSSM or one of its sub-models
     #undef CONDITIONAL_DEPENDENCY
@@ -158,7 +158,13 @@ START_MODULE
 
 #undef MODULE
 
-// Observable: test vector of doubles, declared as a quick function.
+
+// QUICK_FUNCTION examples
+// Arguments: MODULE, CAPABILITY, NEW_CAPABILITY_FLAG, FUNCTION, TYPE, (n x ALLOWED_MODEL), m x (DEPENDENCY, DEPENDENCY_TYPE)
+//            The last two arguments are optional, and n and m can be anything from 0 to 10.
+QUICK_FUNCTION(ExampleBit_B, test_vector, NEW_CAPABILITY, exampleVec, std::vector<double>)                          // Observable: test vector of doubles
+QUICK_FUNCTION(ExampleBit_B, lnL_ExampleBitB, NEW_CAPABILITY, lnL_ExampleBitB, double, (), (nevents_postcuts, int)) // Likelihood of type double that depends on postcuts
+
 // Equivalent to:
 //   #define CAPABILITY test_vector
 //   START_CAPABILITY
@@ -166,11 +172,6 @@ START_MODULE
 //     START_FUNCTION(std::vector<double>)
 //     #undef FUNCTION
 //   #undef CAPABILITY
-// Arguments: MODULE, CAPABILITY, NEW_CAPABILITY_FLAG, FUNCTION, TYPE, n x ALLOWED_MODEL, where 0 <= n <= 10.
-QUICK_FUNCTION(ExampleBit_B, test_vector, NEW_CAPABILITY, exampleVec, std::vector<double>)
-
-// Some likelihood of type double that depends on postcuts, declared as a quick function with dependencies.
-// Equivalent to:
 //   #define CAPABILITY lnL_ExampleBitB
 //   START_CAPABILITY
 //     #define FUNCTION lnL_ExampleBitB
@@ -178,8 +179,6 @@ QUICK_FUNCTION(ExampleBit_B, test_vector, NEW_CAPABILITY, exampleVec, std::vecto
 //     DEPENDENCY(nevents_postcuts, int)
 //   #undef FUNCTION
 //   #undef CAPABILITY
-// Arguments: MODULE, CAPABILITY, NEW_CAPABILITY_FLAG, FUNCTION, TYPE, (n x ALLOWED_MODEL), m x (DEPENDENCY, DEPENDENCY_TYPE) where 0 <= n <= 10, 0 < m <= 10.
-QUICK_FUNCTION_NDEPS(ExampleBit_B, lnL_ExampleBitB, NEW_CAPABILITY, lnL_ExampleBitB, double, (), (nevents_postcuts, int))
 
 
 #endif // defined(__ExampleBit_B_rollcall_hpp__)

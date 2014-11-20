@@ -5,7 +5,7 @@
  *
  */
 
-#define LIBPATH      "micromegas.so"
+#define LIBPATH      "Backends/lib/micromegas.so"
 #ifdef BACKENDRENAME
   #define BACKENDNAME BACKENDRENAME
 #else
@@ -186,12 +186,11 @@ BE_INI_FUNCTION
 
     // TODO: Add error checking
     err = lesHinput(byVal(filename));
+    std::cout << "MicrOmegas lesHinput error code: " << err << std::endl;
     err = sortOddParticles(byVal(cdmName));
+    std::cout << "MicrOmegas sortOddParticles error code: " << err << std::endl;
 }
 DONE
 
-#undef LIBPATH
-#undef BACKENDNAME
-#undef VERSION
-#undef SAFE_VERSION
+#include "backend_undefs.hpp"
 

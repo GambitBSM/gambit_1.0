@@ -1,4 +1,3 @@
-//  *********************************************
 //   GAMBIT: Global and Modular BSM Inference Tool
 //   *********************************************
 ///  \file
@@ -22,18 +21,21 @@
 
 #include "util_macros.hpp"
 #include "equivalency_singleton.hpp"
+#include "backend_singleton.hpp"
 
 #include <boost/preprocessor/seq/for_each.hpp>
 #include <boost/preprocessor/seq/elem.hpp>
 #include <boost/preprocessor/seq/size.hpp>
 #include <boost/preprocessor/seq/subseq.hpp>
 #include <boost/preprocessor/seq/subseq.hpp>
+#include <boost/preprocessor/tuple/elem.hpp>
 #include <boost/preprocessor/repetition/repeat.hpp>
 
 /// Set default backend version for BOSSed types.
 #define SET_DEFAULT_VERSION_FOR_LOADING_TYPES(BE, VER, DEFAULT)                       \
- BOOST_PP_SEQ_FOR_EACH(TYPEDEFAULT, (CAT_3(BE,_,VER))(CAT_3(BE,_,DEFAULT)),           \
- CAT_5(BE,_,DEFAULT,_,all_types))       
+REGISTER_DEFAULT(BE, VER, DEFAULT)                                                    \
+BOOST_PP_SEQ_FOR_EACH(PRE_TYPEDEFAULT, (CAT_3(BE,_,VER))(CAT_3(BE,_,DEFAULT)),        \
+ CAT_5(BE,_,DEFAULT,_,all_data) )       
 
 /// Open a namespace 
 #define START_NAMESPACE(r,data,i,elem) namespace elem { 
@@ -44,10 +46,35 @@
 /// An entry with a trailing namespace qualifier
 #define TRAILING_NSQUALIFIER(r,data,i,elem) elem::
 
+// Strip out the actual type info sequence from the all_data entry.
+#define PRE_TYPEDEFAULT(r,data,elem) TYPEDEFAULT(r,data,BOOST_PP_TUPLE_ELEM(2,0,elem))
 
 // If this file has been included from the main compilation unit, define TYPEDEFAULT
-// differently from the way it is normally defined.
+// and REGISTER_DEFAULT differently from the way they are normally defined.
+#ifdef STANDALONE
+  #define __gambit_main_hpp__
+#endif
 #ifdef __gambit_main_hpp__
+
+  /// Helper macro to register the default version of a classloading backend to use
+  #define REGISTER_DEFAULT(BE, VER, DEFAULT)                                          \
+  namespace Gambit                                                                    \
+  {                                                                                   \
+    namespace Backends                                                                \
+    {                                                                                 \
+      namespace CAT_3(BE,_,VER)                                                       \
+      {                                                                               \
+        void pass_default_to_backendinfo()                                            \
+        {                                                                             \
+          backendInfo().defaults[STRINGIFY(BE)] = STRINGIFY(DEFAULT);                 \
+        }                                                                             \
+        namespace ini                                                                 \
+        {                                                                             \
+          ini_code ini_pass_default(&pass_default_to_backendinfo);                    \
+        }                                                                             \
+      }                                                                               \
+    }                                                                                 \
+  }                                                                                   \
 
   /// Helper macro for setting default backend version for BOSSed types.
   #define TYPEDEFAULT(r,data,elem)                                                    \
@@ -101,6 +128,9 @@
 
 #else 
 
+  /// Helper macro to register the default version of a classloading backend to use
+  #define REGISTER_DEFAULT(BE, VER, DEFAULT)  DUMMYARG(BE, VER, DEFAULT)              \
+
   /// Helper macro for setting default backend version for BOSSed types.
   #define TYPEDEFAULT(r,data,elem)                                                    \
     namespace Gambit                                                                  \
@@ -115,8 +145,11 @@
     }
 
 #endif //__gambit_main_hpp__
+#ifdef STANDALONE
+  #undef __gambit_main_hpp__
+#endif
 
-// For testing whether a given backend versions classes have been loaded or not
+// For testing whether a given backend version's classes have been loaded or not
 #define ALREADY_LOADED(BE) CAT_3(__loaded_types_,BE,_hpp__)
 
 

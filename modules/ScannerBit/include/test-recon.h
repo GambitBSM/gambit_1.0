@@ -63,7 +63,7 @@
         
 #include <class_loader.hpp>
 
-LoadFunction load("ScannerBit/lib/libtest.so");
+LoadFunction load("ScannerBit/lib/libscantest.so");
 
        /*
         * Rebuilding the "test.h" header classes.

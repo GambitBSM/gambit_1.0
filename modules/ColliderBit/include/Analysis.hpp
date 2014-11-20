@@ -1,22 +1,22 @@
 #pragma once
-#include <vector>
-#include "Event.hpp"
-using namespace HEP_Simple_Lib;
-#include "MCUtils/MathUtils.h"
-using namespace MCUtils;
+#include "ColliderBit_macros.hpp"
+#include "HEPUtils/MathUtils.h"
+#include "HEPUtils/BinnedFn.h"
+#include "HEPUtils/Event.h"
+using namespace HEPUtils;
 
 
 
 namespace Gambit {
   namespace ColliderBit {
 
-
-    // Macros for analysis factory fns
-    /// @todo Macros don't care about namespaces right? Move outside?
-    #define DECLARE_ANAFACTORY(A) Analysis* create_Analysis_ ## A()
-    #define DEFINE_ANAFACTORY(A) Analysis* create_Analysis_ ## A() { return new Analysis_ ## A(); }
-
     struct SignalRegionData {
+
+      double n_observed;
+      double n_signal;
+      double n_background;
+      double signal_sys;
+      double background_sys;
 
       SignalRegionData() {}
 
@@ -26,21 +26,21 @@ namespace Gambit {
       void set_signalsys(double a) {signal_sys=a;}
       void set_backgroundsys(double a) {background_sys=a;}
 
-      double n_observed;
-      double n_signal;
-      double n_background;
-      double signal_sys;
-      double background_sys;
-
     };
 
 
     class Analysis {
+    private:
+
+      /// Number of events and cross-section internal variables
+      /// @note C++11 default value syntax
+      double _ntot, _xsec, _xsecerr;
+      std::vector<SignalRegionData> _results;
+
     public:
 
       /// Constructor
-      Analysis() : name(""), //< To be set in derived analysis classes
-                   _ntot(0), _xsec(-1), _xsecerr(-1) {  }
+      Analysis() : _ntot(0), _xsec(-1), _xsecerr(-1) {  }
 
       /// Virtual destructor (needed for correct deletion of inherited classes)
       virtual ~Analysis() { init(); }
@@ -54,11 +54,11 @@ namespace Gambit {
       virtual void init() {  }
 
       /// Analyze the event (accessed by reference)
-      void analyze(const HEP_Simple_Lib::Event& e) { analyze(&e); }
+      void analyze(const HEPUtils::Event& e) { analyze(&e); }
 
       /// Analyze the event (accessed by pointer)
       /// @note Needs to be called from Derived::analyze()
-      virtual void analyze(const HEP_Simple_Lib::Event*) {
+      virtual void analyze(const HEPUtils::Event*) {
         _ntot += 1; //< @todo Event weight support needed?
       }
 
@@ -70,21 +70,51 @@ namespace Gambit {
 
 
 
-
-      /// @name Cross-section and event number info    //@{
+      /// @name Cross-section and event number info
+      //@{
 
       /// Return the total number of events seen so far
       double num_events() const { return _ntot; }
       /// Return the cross-section (in pb)
       double xsec() const { return _xsec; }
       /// Return the cross-section error (in pb)
-      double xsec_err() const { return _xsec; }
+      double xsec_err() const { return _xsecerr; }
       /// Return the cross-section relative error
       double xsec_relerr() const { return xsec() > 0 ? xsec_err()/xsec() : -1; }
       /// Return the cross-section per event seen (in pb)
       double xsec_per_event() const { return (xsec() > 0) ? xsec()/num_events() : -1; }
       /// Set the cross-section and its error
       void set_xsec(double xs, double xserr) { _xsec = xs; _xsecerr = xserr; }
+
+      //@}
+
+
+      /// @name Helper functions for analysis
+      //@{
+
+      /// Return a random true/false at a success rate given by a 1D efficiency map
+      inline bool random_bool(const HEPUtils::BinnedFn1D<double>& effmap, double x) {
+        const double eff = effmap.get_at(x);
+        /// @todo Handle out-of-range x and eff values
+        return HEPUtils::rand01() < eff;
+      }
+
+      /// Return a random true/false at a success rate given by a 2D efficiency map
+      inline bool random_bool(const HEPUtils::BinnedFn2D<double>& effmap, double x, double y) {
+        const double eff = effmap.get_at(x, y);
+        /// @todo Handle out-of-range x,y and eff values
+        return HEPUtils::rand01() < eff;
+      }
+
+      /// Randomly get a tag result (can be anything) from a 2D |eta|-pT efficiency map
+      /// @todo Also need 1D? Sampling in what variable?
+      inline bool has_tag(const HEPUtils::BinnedFn2D<double>& effmap, double eta, double pt) {
+        try {
+          return random_bool(effmap, fabs(eta), pt);
+        } catch (...) {
+          return false; // No tag if outside lookup range... be careful!
+        }
+      }
 
       //@}
 
@@ -127,10 +157,6 @@ namespace Gambit {
       //@}
 
 
-      /// Analysis name (normally the class name, without the Analysis_ prefix)
-      std::string name;
-
-
     protected:
 
       /// Add the given result to the internal results list
@@ -138,14 +164,6 @@ namespace Gambit {
 
       /// Gather together the info for likelihood calculation
       virtual void collect_results() = 0;
-
-
-    private:
-
-      /// Number of events and cross-section internal variables
-      /// @note C++11 default value syntax
-      double _ntot, _xsec, _xsecerr;
-      std::vector<SignalRegionData> _results;
 
     };
 

@@ -77,6 +77,17 @@ namespace Gambit
         }
         return node.as<TYPE>();
       }
+
+      template<typename TYPE, typename... args>
+      TYPE getValueOrDef(TYPE def, const args&... keys) const
+      {
+        const YAML::Node node = getVariadicNode(options, keys...);
+        if (not node)
+        {
+          return def;
+        }
+        return node.as<TYPE>();
+      }
       /// @}
 
       /// Retrieve values from key-value pairs in options node.

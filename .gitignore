@@ -2,6 +2,7 @@
 *.slo
 *.lo
 *.o
+a.out
 
 # Compiled Dynamic libraries
 *.so
@@ -17,6 +18,15 @@
 # Hidden files
 .*
 
+# gccxml files for testing BOSS
+extras/boss/*.xml
+
+# BOSS output folders
+extras/boss/**/output
+
 # Chains
 modules/chains/*
 modules/runs/*
+
+# Executables
+modules/build/*

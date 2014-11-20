@@ -34,7 +34,7 @@
 
 /* Specify the path to the shared library along with a backend name. */
 
-#define LIBPATH      "libdarksusy.so"
+#define LIBPATH      "Backends/lib/libdarksusy.so"
 #ifdef BACKENDRENAME
   #define BACKENDNAME BACKENDRENAME
 #else
@@ -92,6 +92,7 @@ BE_FUNCTION(dsIBwwdxdy, double, (int&, double&, double&), "dsibwwdxdy_", "dsIBww
 BE_FUNCTION(dsddgpgn, void, (double&, double&, double&, double&), "dsddgpgn_", "dsddgpgn")
 BE_FUNCTION(dsSLHAread, void, (char*, int&, int), "dsslharead_", "dsSLHAread")
 BE_FUNCTION(dsprep, void, (), "dsprep_", "dsprep")
+BE_FUNCTION(dsIByieldone, double, (double&, int&, int&, int&), "dsibyieldone_", "dsibyieldone")
 
 
 //BE_FUNCTION(initialize, void, (int), "_Z10initializei", "LibFirst_initialize_capability")
@@ -137,15 +138,14 @@ BE_VARIABLE(GENERAL_VAR(DS_RDPARS, rdpars),     "rdpars_",    "rdpars")
 BE_VARIABLE(GENERAL_VAR(DS_RDSWITCH, rdswitch), "rdswitch_",  "rdswitch")
 BE_VARIABLE(GENERAL_VAR(DS_RDLUN, rdlun),       "rdlun_",     "rdlun")
 BE_VARIABLE(GENERAL_VAR(DS_RDPADD, rdpadd),     "rdpadd_",    "rdpadd")
+BE_VARIABLE(GENERAL_VAR(DS_IBINTVARS,IBintvars),"ibintvars_", "IBintvars")
 
-BE_INI_DEPENDENCY(MSSMspectrum, eaSLHA)
+//BE_INI_DEPENDENCY(MSSMspectrum, eaSLHA)
+BE_INI_CONDITIONAL_DEPENDENCY(MSSMspectrum, eaSLHA, CMSSM_demo, MSSM25)
 
 BE_INI_FUNCTION
 {
-//    using namespace Pipes::DarkBit_PointInit_MSSM;
     using namespace SLHAea;
-
-    eaSLHA mySLHA;
 
     // Initialize DarkSUSY if run for the first time
     bool static scan_level = true;
@@ -154,22 +154,84 @@ BE_INI_FUNCTION
         std::cout << "DarkSUSY initialization" << std::endl;
         dsinit();
         dsrdinit();
+        scan_level = false;
     }
-    scan_level = false;
 
-    // Save eaSLHA file to disk
-    mySLHA = *Dep::MSSMspectrum;
-    ofstream ofs("DarkBit_temp.slha");
-    ofs << mySLHA;
-    ofs.close();
+    // Check if model requires SLHA initialization
+    if( 
+            std::find(Models->begin(), Models->end(), "CMSSM_demo") != Models->end() or
+            std::find(Models->begin(), Models->end(), "MSSM25") != Models->end()
+      )
+    {
+        // Save eaSLHA file to disk
+        eaSLHA mySLHA = *Dep::MSSMspectrum;
+        ofstream ofs("DarkBit_temp.slha");
+        ofs << mySLHA;
+        ofs.close();
 
-    // Initialize SUSY spectrum from SLHA
-    int len = 17;
-    int flag = 15;
-    char * filename = "DarkBit_temp.slha";
-    dsSLHAread(byVal(filename),flag, byVal(len));
-    dsprep();
+        // Initialize SUSY spectrum from SLHA
+        int len = 17;
+        int flag = 15;
+        char * filename = "DarkBit_temp.slha";
+        dsSLHAread(byVal(filename),flag, byVal(len));
+        dsprep();
+    }
 
+    if(std::find(Models->begin(), Models->end(), "CMSSM") != Models->end())
+    {
+        // Setup mSUGRA model from CMSSM parameters
+        double am0 = *Param["M0"];  // m0
+        double amhf = *Param["M12"];  // m_1/2
+        double aa0 = *Param["A0"];  // A0
+        double asgnmu = *Param["sgnmu"];  // sign(mu)
+        double atanbe = *Param["tanb"];  // tan(beta)
+        int unphys, hwarning;
+        std::cout << "Initialize dsgive_model_isasugra with" << std::endl;
+        std::cout << am0 << " " << amhf << " " << aa0 << " " << asgnmu << " " << atanbe << std::endl;
+        dsgive_model_isasugra(am0, amhf, aa0, asgnmu, atanbe);
+        dssusy_isasugra(unphys, hwarning);
+    }
+
+    // MSSM-7 ???
+    /*
+      // Initialize DarkSUSY if run for the first time
+      bool static first_time = true;
+      if (first_time) 
+      {
+          std::cout << "DarkSUSY initialization" << std::endl;
+          BEreq::dsinit();
+          BEreq::dsrdinit();
+          first_time = false;
+      }
+
+      // Set up mssmpar structure
+      // Hard-coded values for now
+      int i, unphys=0, hwarning=0;
+      DS_MSSMPAR mssmpar;
+      mssmpar.m1 = 500;
+      mssmpar.m2 = 1000;
+      mssmpar.m3 = 3500;
+      mssmpar.mu=400;
+      mssmpar.ma=1000;
+      mssmpar.tanbe=10;
+      for(i=0; i<=2; i++){
+        mssmpar.mass2u[i]=mssmpar.mass2q[i]=mssmpar.mass2d[i]=2000*2000;
+        mssmpar.mass2e[i]=mssmpar.mass2l[i]=2000*2000;
+      }
+      for(i=0; i<=1; i++){
+        mssmpar.asoftu[i]=0;
+        mssmpar.asoftd[i]=0;
+      }
+      mssmpar.asofte[0] = 0;
+      mssmpar.asofte[1] = 0;
+      mssmpar.asoftu[2] = 1;
+      mssmpar.asoftd[2] = 1;
+      mssmpar.asofte[2] = 0;
+
+      // And initialize DS
+      *BEreq::mssmpar = mssmpar;
+      BEreq::dssusy(unphys, hwarning);
+      */
 }
 DONE
 
@@ -229,8 +291,5 @@ DONE
 
 
 // Undefine macros to avoid conflict with other backends
-#undef LIBPATH 
-#undef BACKENDNAME
-#undef VERSION
-#undef SAFE_VERSION
+#include "backend_undefs.hpp"
 

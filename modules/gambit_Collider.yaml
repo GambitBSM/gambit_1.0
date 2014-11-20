@@ -82,35 +82,38 @@ Auxiliaries:
   #ColliderBit options (note, these ones are mandatory at this moment)
 
   - capability: ListOfAnalyses
-    function: specifyAnalysisList
+    function: specifyAnalysisPointerVector
     options:  
-      AnalysisList: ["ATLAS_0LEPStop_20invfb","ATLAS_1LEPStop_20invfb"]
+      analysisNames: ["ATLAS_0LEPStop_20invfb", "ATLAS_1LEPStop_20invfb"]
 
-  - capability:  colliderLoopManager
-    function:    manageVanillaLoop
+  - capability: DetectorSim
+    function: getDelphes
     options:
-      nEvents:   2000
+      delphesOptions: ["ColliderBit/data/delphes_card_ATLAS.tcl"]
 
-  - capability: AnalysisList
-
-  - capability:  GambitColliderEvent
-    function:    reconstructDelphesEvent
+  - capability:  ColliderOperator
+    function: operatePythia
     options:
-      delphesConfigFilename: "ColliderBit/data/delphes_card_ATLAS.tcl" 
-
-  - capability:  hardScatteringEvent
-    function:    generatePythia8Event
-    options:
+      nEvents: 20
       slhaFilename: "ColliderBit/data/sps1aWithDecays.spc" 
+      pythiaNames: ["Pythia_SUSY_LHC_8TeV", "Pythia_glusq_LHC_8TeV"]
+      Pythia_SUSY_LHC_8TeV: 2  # <-- How many configurations of this one you want
+  
+  - capability:  HardScatteringSim
+    function:  getPythia
+    options:
+      Pythia_SUSY_LHC_8TeV:
+        pythiaOptions_1: ["SUSY:idA = 1000021", "SUSY:idB = 1000021"]
+        pythiaOptions_2: ["SUSY:idVecA = 1000001,1000002,1000003,1000004,2000001,2000002,2000003,2000004", "SUSY:idVecB = 1000001,1000002,1000003,1000004,2000001,2000002,2000003,2000004"]
 
   - capability: LogLikelihood
-    function:   calcLogLike
+    function: calcLogLike
     backends:
     - {capability: lnlike_marg_poisson_gaussian_error}
 
   - capability: AnalysisNumbers
     dependencies:
-    - {capability: "GambitColliderEvent", type: "HEP_Simple_Lib::Event", function: "reconstructDelphesEvent"}
+    - {capability: "GambitColliderEvent", type: "HEPUtils::Event", function: "reconstructDelphesEvent"}
 
 #########################
 # Logging setup

@@ -175,6 +175,11 @@ ObsLikes:
   - purpose:      Observable
     capability:   ptrmeth_arr_tester
 
+  # Uncomment 'purpose' and one of the 'capability' entries to test BOSS
+  - purpose:      Observable
+    capability:   Pythia_tester
+  #  capability:   BOSS_tester
+
   # Test multi-required-models
   - purpose:      Observable
     capability:   normaldist_loglike
@@ -258,9 +263,9 @@ ObsLikes:
     printme:      false
 
   # Test vector output of printer
-  - purpose:      Observable
-    capability:   test_vector
-    type:         std::vector<double>
+  #- purpose:      Observable
+  #  capability:   test_vector
+  #  type:         std::vector<double>
 
   ## Test DarkBit relic density with Micromegas
   #- purpose:      Likelihood
@@ -334,6 +339,10 @@ Auxiliaries:
     - {capability: "nevents", module: "ExampleBit_A"}  
 
   - capability:    "nevents_postcuts"
+    dependencies:
+    - {capability: "id", module: "ExampleBit_B"}
+
+  - capability:    "MSSM_demo_parameters"
     dependencies:
     - {capability: "id", module: "ExampleBit_B"}
 

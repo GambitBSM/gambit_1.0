@@ -32,7 +32,6 @@ namespace Gambit {
     public:
 
       Analysis_ATLAS_0LEP() {
-        name = "ATLAS_0LEP";
         _numAM = 0; _numAL = 0;
         _numBT = 0; _numBM = 0;
         _numCT = 0; _numCM = 0;
@@ -393,7 +392,7 @@ namespace Gambit {
     };
 
     // Factory fn
-    DEFINE_ANAFACTORY(ATLAS_0LEP)
+    DEFINE_ANALYSIS_FACTORY(ATLAS_0LEP)
 
 
   }

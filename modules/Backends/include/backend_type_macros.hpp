@@ -39,10 +39,6 @@
 #include <boost/preprocessor/tuple/elem.hpp>
 #include <boost/preprocessor/tuple/to_list.hpp>
 
-//#if !BOOST_PP_VARIADICS
-//  #error Variadic Boost preprocessor macros required. BOOST_PP_VARIADICS must be set to 1.
-//#endif
-
 
 // --------------------------------------------------------------------------   
 //                  Fortran common block macros

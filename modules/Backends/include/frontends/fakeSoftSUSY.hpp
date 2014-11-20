@@ -22,14 +22,16 @@
  * when this header file is included somewhere. */
 
 /* LOAD_LIBRARY # Fake library so don't need this. However we still have to register a backend LogTag, which would have been done automatically by this macro, so below we run this 'secret' macro. Most backends should not use this macro, however. */
-REGISTER_BACKEND_LOGTAG 
 
 namespace Gambit
 {
   namespace Backends
   {
-    namespace BACKENDNAME
+    namespace FakeSoftSUSY_1_0
     {
+
+      REGISTER_BACKEND_LOGTAG 
+
       /* Convenience functions go here */
       
       /* In reality we need some sort of initialisation to occur, but I don't
@@ -73,7 +75,5 @@ namespace Gambit
 //BE_CONV_FUNCTION(getgenMSSMspectrum, MSSMspecQ, (put some args here), "BEgenMSSMspectrum")
 
 // Undefine macros to avoid conflict with other backends
-#undef LIBPATH 
-#undef BACKENDNAME
-#undef VERSION
-#undef SAFE_VERSION
+#include "backend_undefs.hpp"
+

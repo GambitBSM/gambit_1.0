@@ -1,5 +1,5 @@
-//  GAMBIT: Global and Modular BSM Inference Tool
-//  *********************************************
+//   GAMBIT: Global and Modular BSM Inference Tool
+//   *********************************************
 ///  \file
 ///
 ///  Generic observable and likelihood function 
@@ -57,6 +57,7 @@
 #include "module_macros_common.hpp"
 #include "safety_bucket.hpp"
 #include "log.hpp"
+#include "backend_singleton.hpp"
 #include "claw_singleton.hpp"
 #ifndef STANDALONE
   #include "core_singleton.hpp"
@@ -196,9 +197,13 @@
 /// The versions of \em BACKEND that this applies to are passed in \em VERSTRING.
 #define ACTIVATE_DEP_BE(BACKEND_REQ, BACKEND, VERSTRING)  CORE_ACTIVATE_DEP_BE(BACKEND_REQ, BACKEND, VERSTRING)
 
-/// Indicates that the current \link CONDITIONAL_DEPENDENCY() CONDITIONAL_DEPENDENCY\endlink
+/// Indicate that the current \link CONDITIONAL_DEPENDENCY() CONDITIONAL_DEPENDENCY\endlink
 /// should be activated if the model being scanned matches one of the models passed as an argument.
-#define ACTIVATE_FOR_MODELS(...)                         ACTIVATE_DEP_MODEL(MODULE, CAPABILITY, FUNCTION, CONDITIONAL_DEPENDENCY, #__VA_ARGS__)
+#define ACTIVATE_FOR_MODELS(...)                          ACTIVATE_DEP_MODEL(MODULE, CAPABILITY, FUNCTION, CONDITIONAL_DEPENDENCY, #__VA_ARGS__)
+
+/// Indicate that the current \link FUNCTION() FUNCTION\endlink requires classes that
+/// must be loaded from \em BACKEND, version \em VERSION.  
+#define CLASSLOAD_NEEDED(BACKEND, VERSION)               CORE_CLASSLOAD_NEEDED(BACKEND, VERSION)
 /// @}
 
 
@@ -1568,6 +1573,48 @@
         ini_code CAT_4(CONDITIONAL_DEPENDENCY,_for_,FUNCTION,_with_models)     \
          (&rt_register_conditional_dependency                                  \
          <Gambit::Tags::CONDITIONAL_DEPENDENCY, Tags::FUNCTION>);              \
+      }                                                                        \
+                                                                               \
+    }                                                                          \
+                                                                               \
+  }                                                                            \
+
+
+/// Redirection of NEEDS_CLASSES_FROM when invoked from within the Core.
+#define CORE_CLASSLOAD_NEEDED(BACKEND, VERSTRING)                              \
+                                                                               \
+  IF_TOKEN_UNDEFINED(MODULE,FAIL("You must define MODULE before calling "      \
+   "NEEDS_CLASSES_FROM."))                                                     \
+  IF_TOKEN_UNDEFINED(CAPABILITY,FAIL("You must define CAPABILITY before "      \
+   "calling NEEDS_CLASSES_FROM. Please check the rollcall header "             \
+   "for " STRINGIFY(MODULE) "."))                                              \
+  IF_TOKEN_UNDEFINED(FUNCTION,FAIL("You must define FUNCTION before calling "  \
+   "NEEDS_CLASSES_FROM. Please check the rollcall header for "                 \
+   STRINGIFY(MODULE) "."))                                                     \
+                                                                               \
+  namespace Gambit                                                             \
+  {                                                                            \
+                                                                               \
+    namespace MODULE                                                           \
+    {                                                                          \
+                                                                               \
+      void CAT_4(classload_requirements_for_,FUNCTION,_from_,BACKEND)()        \
+      {                                                                        \
+        typedef std::vector<str> vec;                                          \
+        vec versions = Utils::delimiterSplit(VERSTRING, ",");                  \
+        for (vec::iterator it = versions.begin() ; it != versions.end(); ++it) \
+        {                                                                      \
+          if (*it == "default") *it = Backends::backendInfo().                 \
+           version_from_safe_version(STRINGIFY(BACKEND),                       \
+           STRINGIFY(CAT(Default_,BACKEND)));                                  \
+          Functown::FUNCTION.setRequiredClassloader(STRINGIFY(BACKEND),*it);   \
+        }                                                                      \
+      }                                                                        \
+                                                                               \
+      namespace ini                                                            \
+      {                                                                        \
+        ini_code CAT_4(ini_classload_req_rego_for_,FUNCTION,_from_,BACKEND)    \
+         (&CAT_4(classload_requirements_for_,FUNCTION,_from_,BACKEND));        \
       }                                                                        \
                                                                                \
     }                                                                          \

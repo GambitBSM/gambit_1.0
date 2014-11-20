@@ -137,7 +137,7 @@ namespace Gambit {
     };
 
 
-    DEFINE_ANAFACTORY(Perf)
+    DEFINE_ANALYSIS_FACTORY(Perf)
 
 
   }

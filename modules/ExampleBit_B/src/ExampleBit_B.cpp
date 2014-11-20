@@ -92,9 +92,9 @@ namespace Gambit
        logger() << "Running at scale: " << runOptions->getValue<double>("scale") << " TeV." << endl;
       logger() << "First model being scanned is: " << Models->at(0) << endl;
       logger() << "  Printing parameter values:" << endl;
-      logger() << "  M0: "  << *Param["M0"] << endl;
-      logger() << "  M12: " << *Param["M12"] << endl;
-      logger() << "  A0: "  << *Param["A0"] << endl;
+      logger() << "  M1: " << *Param["M1"] << endl;
+      logger() << "  M2: " << *Param["M2"] << endl;
+      logger() << "  M3: " << *Param["M3"] << endl;
       logger() <<info<<EOM;
       result = 5.e10; 
     }

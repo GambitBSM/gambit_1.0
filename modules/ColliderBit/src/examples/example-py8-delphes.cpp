@@ -144,7 +144,7 @@ int main() {
       // assert(thread_cfgs[NTHREAD].nevts > 0);
 
       // Run the event loop
-      HEP_Simple_Lib::Event recoEvent;
+      HEPUtils::Event recoEvent;
       for (int counter = 0; counter < sp_num_events_per_thread; counter++) {
         // // Run Pythia8 and run Delphes (not thread safe)
         Pythia8::Event genEvent;
