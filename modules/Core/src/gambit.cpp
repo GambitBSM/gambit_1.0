@@ -54,7 +54,7 @@ int main(int argc, char* argv[])
     //cout << "Your selected models are: " << selectedmodels << endl;
   
     // Activate "primary" model functors
-    Core().registerActiveModelFunctors ( Models::modelClaw().getPrimaryModelFunctorsToActivate ( selectedmodels, Core().getPrimaryModelFunctors() ) );
+    Core().registerActiveModelFunctors( Models::ModelDB().getPrimaryModelFunctorsToActivate( selectedmodels, Core().getPrimaryModelFunctors() ) );
 
     // Deactivate module functions reliant on classes from missing backends
     Core().accountForMissingClasses();
@@ -73,7 +73,7 @@ int main(int argc, char* argv[])
     Printers::BasePrinter& printer (*printerManager.printerptr);   
 
     // Set up dependency resolver
-    DRes::DependencyResolver dependencyResolver(Core(), Models::modelClaw(), iniFile, Utils::typeEquivalencies(), *printerManager.printerptr);
+    DRes::DependencyResolver dependencyResolver(Core(), Models::ModelDB(), iniFile, Utils::typeEquivalencies(), *printerManager.printerptr);
 
     // Log module function infos
     dependencyResolver.printFunctorList();
@@ -82,7 +82,7 @@ int main(int argc, char* argv[])
     dependencyResolver.doResolution();
 
     // Check that all requested models are used for at least one computation
-    Models::modelClaw().checkPrimaryModelFunctorUsage(Core().getActiveModelFunctors());
+    Models::ModelDB().checkPrimaryModelFunctorUsage(Core().getActiveModelFunctors());
 
     // Report the proposed (output) functor evaluation order
     dependencyResolver.printFunctorEvalOrder(Core().show_runorder);

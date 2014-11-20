@@ -60,10 +60,10 @@
            (macro from module_macros_incore.hpp) */                            \
         CORE_START_MODULE_COMMON_MAIN(MODEL)                                   \
                                                                                \
-        /* Runtime addition of model to GAMBIT (modelClaw) database */         \
+        /* Runtime addition of model to GAMBIT model database */               \
         void rt_add_model()                                                    \
         {                                                                      \
-          modelClaw().declare_model(STRINGIFY(MODEL), STRINGIFY(PARENT));      \
+          ModelDB().declare_model(STRINGIFY(MODEL), STRINGIFY(PARENT));        \
         }                                                                      \
                                                                                \
         namespace Ini                                                          \
@@ -267,7 +267,7 @@
           MODEL_X::Functown::primary_parameters.donateParameters               \
            (Functown::CAT(MODEL_X,_parameters));                               \
           BOOST_PP_IIF(ADD_FRIEND,                                             \
-           modelClaw().add_friend(STRINGIFY(MODEL), STRINGIFY(MODEL_X));,)     \
+           ModelDB().add_friend(STRINGIFY(MODEL), STRINGIFY(MODEL_X));,)       \
         }                                                                      \
                                                                                \
         /* Call it at initialisation time using an ini_code object. */         \
@@ -363,7 +363,7 @@
   {                                                                            \
     primary_model_functor FUNCTION                                             \
      (&ORIGIN::FUNCTION, STRINGIFY(FUNCTION), STRINGIFY(CAPABILITY),           \
-     "ModelParameters", STRINGIFY(ORIGIN), modelClaw());                       \
+     "ModelParameters", STRINGIFY(ORIGIN), ModelDB());                         \
   }                                                                            \
                                                                                \
   /* Set up the commands to be called at runtime to register the function. */  \

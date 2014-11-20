@@ -653,7 +653,7 @@ namespace Gambit                                                            \
          STRINGIFY(BACKENDNAME),                                            \
          STRINGIFY(VERSION),                                                \
          STRINGIFY(SAFE_VERSION),                                           \
-         Models::modelClaw() );                                             \
+         Models::ModelDB());                                                \
       } /* end namespace Functown */                                        \
                                                                             \
       /* Set the allowed model properties of the functor. */                \
@@ -909,7 +909,7 @@ namespace Gambit                                                                
          STRINGIFY(BACKENDNAME) BOOST_PP_COMMA()                                                \
          STRINGIFY(VERSION) BOOST_PP_COMMA()                                                    \
          STRINGIFY(SAFE_VERSION) BOOST_PP_COMMA()                                               \
-         Models::modelClaw());                                                                  \
+         Models::ModelDB());                                                                    \
       } /* end namespace Functown */                                                            \
                                                                                                 \
       /* Disable the functor if the library is not present or the symbol not found. */          \
@@ -1029,7 +1029,7 @@ namespace Gambit                                                                
          STRINGIFY(BACKENDNAME),                                                                \
          STRINGIFY(VERSION),                                                                    \
          STRINGIFY(SAFE_VERSION)  BOOST_PP_COMMA()                                              \
-         Models::modelClaw());                                                                  \
+         Models::ModelDB());                                                                    \
       } /* end namespace Functown */                                                            \
       /* Set the allowed model properties of the functor. */                                    \
       SET_ALLOWED_MODELS(NAME, MODELS)                                                          \

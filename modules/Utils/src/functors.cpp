@@ -427,7 +427,7 @@ namespace Gambit
       {
         if (myClaw->model_exists(*it))
         {
-          if (myClaw->interpretable_as(model, *it)) return true;
+          if (myClaw->downstream_of(model, *it)) return true;
         } 
       }    
       return false;    
@@ -450,7 +450,7 @@ namespace Gambit
           {
             if (myClaw->model_exists(*it))
             {
-              if (myClaw->interpretable_as(model, *it)) return true;
+              if (myClaw->downstream_of(model, *it)) return true;
             }
           }
         }
@@ -472,7 +472,7 @@ namespace Gambit
           {
             if (myClaw->model_exists(*jt))
             {
-              if (myClaw->interpretable_as(*jt, *it)) return true;
+              if (myClaw->downstream_of(*jt, *it)) return true;
             }
           } 
         }    
@@ -499,7 +499,7 @@ namespace Gambit
       {
         if (myClaw->model_exists(it->first))
         {
-          if (myClaw->interpretable_as(model, it->first)) return it->first;
+          if (myClaw->downstream_of(model, it->first)) return it->first;
         } 
       }    
       return "";    
