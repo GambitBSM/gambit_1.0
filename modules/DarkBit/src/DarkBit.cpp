@@ -1143,7 +1143,7 @@ namespace Gambit {
         using namespace Pipes::DD_couplings_micrOMEGAs;
         //TODO: Add error catching to below function
         double p1[2], p2[2], p3[2], p4[2];
-        BEreq::nucleonAmplitudes(byVal(BEreq::FeScLoop.pointer()), p1, p2, p3, p4);
+        BEreq::nucleonAmplitudes(byVal(BEreq::FeScLoop.pointer()), byVal(p1), byVal(p2), byVal(p3), byVal(p4));
         // Rescaling to agree with DarkSUSY convention:
         result.gps = p1[0]*2;
         result.gpa = p2[0]*2;
