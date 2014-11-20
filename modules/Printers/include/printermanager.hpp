@@ -51,10 +51,10 @@ namespace Gambit
         ~PrinterManager();
 
         /// Create auxiliary printer object
-        void new_stream(std::string&);
+        void new_stream(const std::string&, const Options&);
 
         /// Getter for auxiliary printer objects
-        BasePrinter* get_stream(std::string&);
+        BasePrinter* get_stream(const std::string&);
     };
 
 

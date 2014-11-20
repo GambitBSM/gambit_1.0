@@ -63,7 +63,7 @@ namespace Gambit
 
     // Create new printer object (of the same type as the primary printer)
     // and attach it to the provided name.
-    void PrinterManager::new_stream(std::string& streamname)
+    void PrinterManager::new_stream(const std::string& streamname, const Options& options)
     {
        //TODO need some way for the scanners to change the options
        //for the auxiliary printers, e.g. so we can print to a different file
@@ -71,7 +71,7 @@ namespace Gambit
     }
 
     // Retrieve pointer to named printer object
-    BasePrinter* PrinterManager::get_stream(std::string& streamname)
+    BasePrinter* PrinterManager::get_stream(const std::string& streamname)
     {
       if(streamname=="")
       {

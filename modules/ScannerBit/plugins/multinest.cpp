@@ -340,10 +340,17 @@ scanner_plugin (multinest)
         									// has done max no. of iterations or convergence criterion (defined through tol) has been satisfied
         	void *context = 0;				// not required by MultiNest, any additional information user wants to pass
                 
+                // Get inifile options for each print stream
+                Gambit::Options txt_options   = get_inifile_value<Gambit::Options>("aux_printer_txt_options");
+                Gambit::Options stats_options = get_inifile_value<Gambit::Options>("aux_printer_stats_options");
+                Gambit::Options live_options  = get_inifile_value<Gambit::Options>("aux_printer_live_options");
+
+                stats_options.setValue("global",1); // Option to set this stream to "global" mode, i.e. it does not operated on a point-by-point basis. Therefore no thread or point number is needed when printing.
+
                 // Initialise auxiliary print streams
-                LogLike->printer.new_stream("stats",1); //Optional parameter sets this stream to "global" mode, i.e. it does not operated on a point-by-point basis. Therefore no thread or point number is needed when printing.
-                LogLike->printer.new_stream("txt");
-                LogLike->printer.new_stream("live");
+                LogLike->printer.new_stream("txt",txt_options);
+                LogLike->printer.new_stream("stats",stats_options);            
+                LogLike->printer.new_stream("live",live_options);
 
                 // Create the object which interfaces to the MultiNest LogLike callback function
                 // Need to give it the loglikelihood function to evaluate, and the function to perform the prior transformation
