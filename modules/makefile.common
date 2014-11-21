@@ -40,10 +40,9 @@ ifdef COLLIDE
   COLLIDE = smashCrashBashBangBoom
 endif
 
-# with COLLIDE set, set BOSS_PYTHIA to anything to attempt the use of the Bossed Pythia classes
-ifdef BOSS_PYTHIA
-  BOSS_PYTHIA = takeThatTorbjorn
-endif
+# NOTE: BOSS_PYTHIA now the default. Seems to be working on 
+#       most people's machines.
+BOSS_PYTHIA = takeThatTorbjorn
 
 ifndef SHH
   $(info )
@@ -87,6 +86,7 @@ SLHAPy8DIR = contrib/SLHAPy8
 SLHAEADIR = contrib/slhaea
 MCUTILSDIR = contrib/mcutils
 HEPUTILSDIR = contrib/heputils
+DELPHESDIR = contrib/Delphes-3.1.2
 FASTSIMDIR = ../extras/fast_sim
 NULIKEDIR = ../extras/nulike
 DDCALC0DIR = ../extras/DDCalc0
@@ -230,28 +230,6 @@ ifdef COLLIDE
   # Flags, switches and directories for external libraries used in ColliderBit.
   # TODO: once the class-loader is ready, these will all either not be required, or just set automatically at BOSS time or configure time
 
-  ifndef DELPHES
-    DELPHES := $(DELPHESDIR)
-    ifndef DELPHES
-      DELPHES := $(DELPSDIR)
-    endif
-  endif
-
-  ifdef DELPHES
-    ifndef SHH
-      $(info INFO:)
-      $(info Delphes path = $(DELPHES))
-      $(info )
-    endif
-  else
-    $(warning $$DELPHESDIR or $$DELPSDIR variable not defined)
-    ifdef COLLIDE
-      $(error ColliderBit dependency error....)
-    else
-      $(info Be sure to set that variable when compiling ColliderBit)
-    endif
-  endif
-
   # External code specific flags
   # Ben: looks like environment variables are not inherited by 'shell'. We just need PATH here
   #  so I added this explicitly to the shell environment.
@@ -309,23 +287,15 @@ ifdef COLLIDE
     endif
   endif
 
-  DELPHES_CXXFLAGS := -I$(DELPHES) -I$(DELPHES)/external
-  DELPHES_LDFLAGS := -L$(DELPHES) -lDelphes
+  DELPHES_CXXFLAGS := -I$(DELPHESDIR) -I$(DELPHESDIR)/external
+  DELPHES_LDFLAGS := -L$(DELPHESDIR) -lDelphes
 
-  ifndef DELPHES_CXXFLAGS
-    $(warning ***!!!***)
-    $(info Delphes compile flags failed to configure.)
-    $(info Please define an environment variable DELPHESDIR containing)
-    $(info the path to the root Delphes directory)
-    $(error ColliderBit dependency error....)
-  else
-    ifndef SHH
-      $(info INFO:)
-      $(info -- Delphes Flags --)
-      $(info Compile > $(DELPHES_CXXFLAGS))
-      $(info Link    > $(DELPHES_LDFLAGS))
-      $(info )
-    endif
+  ifndef SHH
+    $(info INFO:)
+    $(info -- Delphes Flags --)
+    $(info Compile > $(DELPHES_CXXFLAGS))
+    $(info Link    > $(DELPHES_LDFLAGS))
+    $(info )
   endif
 
   CFLAGS += $(PY8_CXXFLAGS) \
@@ -348,7 +318,7 @@ ifndef SHH
 endif
 
 TARGETS = gambit ExampleBit_A_standalone
-BACKENDS = libfirst libfortran libFarrayTest DDCalc0 gamLike micromegas darksusy superiso higgsbounds higgssignals nulike BOSSMinimalExample pythia fastsim
+BACKENDS = libfirst libfortran libFarrayTest DDCalc0 Delphes gamLike micromegas darksusy superiso higgsbounds higgssignals nulike BOSSMinimalExample pythia fastsim
 
 COREINC:=$(wildcard $(COREDIR)/include/*hpp) $(wildcard $(COREDIR)/include/*h)
 CORESRC:=$(wildcard $(COREDIR)/src/*cpp)
@@ -639,6 +609,10 @@ $(BACKENDDIR)/lib/libFarrayTest.so: $(BACKENDDIR)/lib/libFarrayTest.f90
 	$(FC) $(FFLAGS) -c $(BACKENDDIR)/lib/libFarrayTest.f90 -o $(BACKENDDIR)/lib/libFarrayTest.o
 	$(FC) -shared -o $(BACKENDDIR)/lib/libFarrayTest.so $(BACKENDDIR)/lib/libFarrayTest.o
 
+Delphes:
+	cd $(DELPHESDIR); ./configure; mv Makefile Makefile.orig; sed 's,\ ..EXECUTABLE.,,' Makefile.orig > Makefile; make all
+	cp $(DELPHESDIR)/libDelphes* $(BACKENDDIR)/lib/
+
 DDCalc0:
 	cd $(DDCALC0DIR); make libDDCalc0.so FC=$(FC) FFLAGS="$(FFLAGS)"
 	cp $(DDCALC0DIR)/libDDCalc0.so $(BACKENDDIR)/lib/
@@ -763,6 +737,7 @@ clean_backends:
 	@cd $(BOSSMINIDIR); make clean
 	@cd $(PYTHIA8DIR); make clean
 	@cd $(DDCALC0DIR); make clean
+	@cd $(DELPHESDIR); make distclean; rm Makefile*
 
 clean_docs:
 	@rm -rf .minihelp
