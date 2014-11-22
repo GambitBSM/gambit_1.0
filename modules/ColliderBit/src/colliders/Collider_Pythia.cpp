@@ -31,9 +31,8 @@ namespace Gambit {
           set("Beams:eCM = 8000");
           set("Main:numberOfEvents = 1000");
           set("Main:timesAllowErrors = 1000");
-          set("Print:quiet = off");
+          set("Print:quiet = on");
           set("Init:showProcesses = on");
-	  set("Next:numberShowEvent = 10");
 
           // Default to SUSY with all subprocesses
           set("SUSY:all = on");

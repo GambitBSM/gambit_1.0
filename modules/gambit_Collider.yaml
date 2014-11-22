@@ -142,6 +142,7 @@ Logger:
 KeyValues:
 
   dependency_resolution:
+    use_old_routines: true
     prefer_model_specific_functions: true
 
   likelihood:

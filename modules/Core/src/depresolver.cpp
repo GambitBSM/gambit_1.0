@@ -137,6 +137,17 @@ namespace Gambit
       else return false;
     }
 
+    // Check whether functor matches rules
+    bool matchesRules( functor *f, const Rule & rule)
+    {
+      //cout << (*f).name() << " vs " << rule.function << endl;
+      //cout << (*f).origin() << " vs " << rule.module << endl;
+      return ( stringComp( rule.function, (*f).name()) and
+               stringComp( rule.module, (*f).origin())
+             );
+    }
+
+
     //
     // Graphviz output
     //
@@ -747,7 +758,7 @@ namespace Gambit
       std::vector<DRes::VertexID> filteredVertexCandidates_1st;  // List of all candidate vertices
       std::vector<DRes::VertexID> filteredVertexCandidates_2nd;  // List of all candidate vertices
 
-      // 1) Make list of candidate vertices.
+      // Make list of candidate vertices.
       for (tie(vi, vi_end) = vertices(masterGraph); vi != vi_end; ++vi) 
       {
         // Don't allow resolution by deactivated functors.
@@ -763,7 +774,6 @@ namespace Gambit
           }
         }
       }
-
       if (vertexCandidates.size() == 0)
       {
         // TODO: Clarify
@@ -771,19 +781,24 @@ namespace Gambit
         dependency_resolver_error().raise(LOCAL_INFO,errmsg);
       }
 
-      // 2) Make list of all relevant 1st and 2nd level dependency rules.
+      cout << "Vertex candidates: " << vertexCandidates << endl;
+
+      // Make list of all relevant 1st and 2nd level dependency rules.
       IniParser::ObservablesType entries = boundIniFile->getAuxiliaries();
       for (IniParser::ObservablesType::const_iterator it =
           entries.begin(); it != entries.end(); ++it)
       {
-        if ( funcMatchesIniEntry(masterGraph[toVertex], *it, *boundTEs) )
+        if ( toVertex != OBSLIKE_VERTEXID )
         {
-          for (IniParser::ObservablesType::const_iterator it2 =
-          (*it).dependencies.begin(); it2 != (*it).dependencies.end(); ++it2)
+          if ( funcMatchesIniEntry(masterGraph[toVertex], *it, *boundTEs) )
           {
-            if ( quantityMatchesIniEntry(quantity, *it2) )
+            for (IniParser::ObservablesType::const_iterator it2 =
+            (*it).dependencies.begin(); it2 != (*it).dependencies.end(); ++it2)
             {
-              rules_1st_level.push_back(Rule(*it2));
+              if ( quantityMatchesIniEntry(quantity, *it2) )
+              {
+                rules_1st_level.push_back(Rule(*it2));
+              }
             }
           }
         }
@@ -803,27 +818,37 @@ namespace Gambit
         }
       }
 
+      cout << "1st and 2nd class rules: " << rules_1st_level.size() << ", " << rules_2nd_level.size() << endl;
+
       // Make filtered lists
       for (std::vector<DRes::VertexID>::const_iterator it = vertexCandidates.begin(); 
           it != vertexCandidates.end(); it ++)
       {
+        bool valid = true;
         for (std::vector<Rule>::const_iterator it2 = rules_1st_level.begin(); 
             it2 != rules_1st_level.end(); it2 ++)
         {
-          if ( true )
+          if ( not matchesRules(masterGraph[*it], *it2) )
           {
-            filteredVertexCandidates_1st.push_back(*it);
+            valid = false;
           }
         }
+        if ( valid )
+            filteredVertexCandidates_1st.push_back(*it);
+        valid = true;
         for (std::vector<Rule>::const_iterator it2 = rules_2nd_level.begin(); 
             it2 != rules_2nd_level.end(); it2 ++)
         {
-          if ( true )
+          if ( not matchesRules(masterGraph[*it], *it2) )
           {
-            filteredVertexCandidates_2nd.push_back(*it);
+            valid = false;
           }
         }
+        if ( valid )
+          filteredVertexCandidates_2nd.push_back(*it);
       }
+
+      cout << "Filtered vertex candidates (1st, 2nd): " << filteredVertexCandidates_1st << ", " << filteredVertexCandidates_2nd << endl;
 
       // Nothing left?
       if ( filteredVertexCandidates_1st.size() == 0 )
@@ -841,14 +866,14 @@ namespace Gambit
       }
 
       // Apply tailor-made filter
-      if ( filteredVertexCandidates_1st.size() > 1 and 
-           boundIniFile->getValueOrDef<bool>(true, "dependency_resolution", "prefer_model_specific_functions") )
-        cout << "Nothing" << endl;
-        filteredVertexCandidates_1st = closestCandidateForModel(filteredVertexCandidates_1st);
-
-      if ( filteredVertexCandidates_2nd.size() > 1 and 
-           boundIniFile->getValueOrDef<bool>(true, "dependency_resolution", "prefer_model_specific_functions") )
-        filteredVertexCandidates_2nd = closestCandidateForModel(filteredVertexCandidates_2nd);
+      if ( boundIniFile->getValueOrDef<bool>(true, "dependency_resolution", "prefer_model_specific_functions") )
+      {
+        if ( filteredVertexCandidates_1st.size() > 1 )
+          filteredVertexCandidates_1st = closestCandidateForModel(filteredVertexCandidates_1st);
+        if ( filteredVertexCandidates_2nd.size() > 1 )
+          filteredVertexCandidates_2nd = closestCandidateForModel(filteredVertexCandidates_2nd);
+        cout << "Vertex candidates with tailor made functions (1st, 2nd): " << filteredVertexCandidates_1st << ", " << filteredVertexCandidates_2nd << endl;
+      }
 
       // 4) Did vertices survive?
       if ( filteredVertexCandidates_1st.size() == 1 )
@@ -1049,7 +1074,18 @@ namespace Gambit
         //logger() << EOM;
 
         // Figure out how to resolve dependency
-        boost::tie(iniEntry, fromVertex) = resolveDependency(toVertex, quantity);
+        if ( boundIniFile->getValueOrDef<bool>(false, "dependency_resolution", "use_old_routines") )
+        {
+          boost::tie(iniEntry, fromVertex) = resolveDependency(toVertex, quantity);
+        }
+        else
+        {
+          // TODO: Ini-file options still retrieved in the old way:
+          iniEntry = NULL;
+          boost::tie(iniEntry, fromVertex) = resolveDependency(toVertex, quantity);
+          // But fromVertex in the new
+          fromVertex = resolveDependencyFromRules(toVertex, quantity);
+        }
 
         // Print user info.
         logger() << LogTags::dependency_resolver;
@@ -1140,7 +1176,7 @@ namespace Gambit
       for (std::vector<sspair>::iterator it = vec.begin(); it != vec.end(); ++it) 
       {
         logger() << (*it).first << " (" << (*it).second << ")" << endl;
-        (*parQueue).push(*(new QueueEntry (*it, vertex, NORMAL_DEPENDENCY, printme_default)));
+        (*parQueue).push(QueueEntry (*it, vertex, NORMAL_DEPENDENCY, printme_default));
       }
       // Digest capability of loop manager (if defined)
       str loopManagerCapability = (*masterGraph[vertex]).loopManagerCapability();
@@ -1148,8 +1184,8 @@ namespace Gambit
       {
         logger() << "Adding module function loop manager to resolution queue:" << endl;
         logger() << loopManagerCapability << " ()" << endl;
-        (*parQueue).push(*(new QueueEntry (*(new sspair
-                  (loopManagerCapability, "")), vertex, LOOP_MANAGER_DEPENDENCY, printme_default)));
+        (*parQueue).push(QueueEntry (sspair
+                  (loopManagerCapability, ""), vertex, LOOP_MANAGER_DEPENDENCY, printme_default));
       }
       //logger() << EOM;
     }

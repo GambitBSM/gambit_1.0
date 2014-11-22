@@ -25,7 +25,7 @@ project(GAMBIT)
 
 # check for Python
 include(FindPythonInterp)
-find_package(PythonInterp)
+find_package(PythonInterp REQUIRED)
 
 # generate the CMakeLists.txt files for GAMBIT modules
 message("-- Updating GAMBIT module cmake files")
@@ -106,7 +106,7 @@ elseif(COMPILER_SUPPORTS_CXX0X)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c++0x")
 else()
-        message(STATUS "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
+        message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
 endif()
 
 # check for Boost
@@ -128,6 +128,8 @@ endif()
 include(cmake/FindGSL.cmake)
 if(GSL_FOUND)
   include_directories(${GSL_INCLUDE_DIRS})
+else()
+  message(FATAL_ERROR "Need gsl libraries")
 endif()
 
 # check for DL libraries
@@ -146,15 +148,15 @@ file(GLOB MODULE_HARVESTER_FILES  "${PROJECT_SOURCE_DIR}/*Bit*/include/*_rollcal
 list(REMOVE_ITEM MODULE_HARVESTER_FILES "${PROJECT_SOURCE_DIR}/ScannerBit//include//priors_rollcall.hpp" 
                                         "${PROJECT_SOURCE_DIR}/ScannerBit//include//test_function_rollcall.hpp")
 add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/Models/include/model_rollcall.hpp 
-                   COMMAND python ${MODEL_HARVESTER}
+                   COMMAND python ${MODEL_HARVESTER} #-x <models to exclude> FIXME make input args
                    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} 
                    DEPENDS ${MODEL_HARVESTER} ${MODEL_HARVESTER_FILES})
 add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/Backends/include/backend_rollcall.hpp 
-                   COMMAND python ${BACKEND_HARVESTER}
+                   COMMAND python ${BACKEND_HARVESTER} #-x <be to exclude> FIXME make input args
                    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} 
                    DEPENDS ${BACKEND_HARVESTER} ${BACKEND_HARVESTER_FILES})
 add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/Utils/include/all_functor_types.hpp
-                   COMMAND python ${MODULE_HARVESTER} -x ColliderBit  #FIXME when colliderbit works fully
+                   COMMAND python ${MODULE_HARVESTER} -x Collide  #FIXME make input args
                    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} 
                    DEPENDS ${MODULE_HARVESTER} ${MODULE_HARVESTER_FILES})
 add_custom_target(model_harvest   DEPENDS ${PROJECT_SOURCE_DIR}/Models/include/model_rollcall.hpp ${MODEL_HARVESTER_FILES})
@@ -194,8 +196,8 @@ add_subdirectory(Printers)
 set(GAMBIT_OBJECTS $<TARGET_OBJECTS:Core> $<TARGET_OBJECTS:Printers>)
 
 # set compilation targets for GAMBIT modules
-set(EXCLUDES "ColliderBit") #FIXME
-retrieve_bits(GAMBIT_BITS ${PROJECT_SOURCE_DIR} ${EXCLUDES})
+set(EXCLUDES "Coll") #FIXME make input args
+retrieve_bits(GAMBIT_BITS ${PROJECT_SOURCE_DIR} "${EXCLUDES}" "Loud")
 foreach(bit ${GAMBIT_BITS})
   add_subdirectory(${bit})
   set(GAMBIT_BIT_OBJECTS ${GAMBIT_BIT_OBJECTS} "$<TARGET_OBJECTS:${bit}>")

@@ -115,7 +115,7 @@
 /// return type \em TYPE.
 #define DEPENDENCY(DEP, TYPE)                             CORE_DEPENDENCY(DEP, TYPE, MODULE, FUNCTION, NOT_MODEL)
 /// Long (all argument) version of \link DEPENDENCY() DEPENDENCY\endlink.
-#define LONG_DEPENDENCY(MODULE, FUNCTION, ...)            CORE_DEPENDENCY(__VA_ARGS__, MODULE, FUNCTION, NOT_MODEL)
+#define LONG_DEPENDENCY(MODULE, FUNCTION, DEP, TYPE)      CORE_DEPENDENCY(DEP, TYPE, MODULE, FUNCTION, NOT_MODEL)
 
 /// Indicate that the current \link FUNCTION() FUNCTION\endlink may only be used with
 /// specific model \em MODEL, or combinations given via ALLOW_MODEL_COMBINATION.
@@ -606,7 +606,7 @@
       module_functor<TYPE>                                                     \
     )                                                                          \
     FUNCTION (&ORIGIN::FUNCTION, STRINGIFY(FUNCTION), STRINGIFY(CAPABILITY),   \
-     STRINGIFY(TYPE), STRINGIFY(ORIGIN), Models::modelClaw());                 \
+     STRINGIFY(TYPE), STRINGIFY(ORIGIN), Models::ModelDB());                   \
   }                                                                            \
                                                                                \
   namespace Pipes                                                              \
