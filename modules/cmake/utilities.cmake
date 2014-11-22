@@ -30,7 +30,7 @@ macro(retrieve_bits bits root excludes quiet)
 
 endmacro()
 
-
+include(CMakeParseArguments)
 # function to add static GAMBIT library
 function(add_gambit_library libraryname)
   cmake_parse_arguments(ARG "" "OPTION" "SOURCES;HEADERS" "" ${ARGN})
@@ -80,7 +80,7 @@ function(add_gambit_executable executablename)
     set(LIBRARIES ${LIBRARIES} ${yaml_LDFLAGS})
   endif()
   if (GSL_FOUND)
-    set(LIBRARIES ${LIBRARIES} ${GSL_LDFLAGS})
+    set(LIBRARIES ${LIBRARIES} ${GSL_LIBRARIES})
   endif()
   if (LIBDL_FOUND)
     set(LIBRARIES ${LIBRARIES} ${LIBDL_LIBRARY})
