@@ -144,8 +144,8 @@ namespace Gambit {
                    <<" number "<<std::to_string(pythiaNumber)<<" has finished.";
           for (int i=0; i<omp_get_max_threads(); ++i)
             std::cout<<"\n  Thread "<<i<<": xsec = "<<xsecArray[i] <<" +- "<<xsecerrArray[i];
-          std::cout<<"\n\n [Press Enter]";
-          std::getchar();
+          //std::cout<<"\n\n [Press Enter]";
+          //std::getchar();
         }
       }
       Loop::executeIteration(FINALIZE);
@@ -333,8 +333,8 @@ namespace Gambit {
       cout << "In calcLogLike" << endl;
 
       std::vector<double> observedLikelihoods;
-      for(unsigned analysis=0; analysis<analysisResults.size(); ++analysis) {
-        for(unsigned SR=0; SR<analysisResults[analysis].size(); ++SR) {
+      for (size_t analysis=0; analysis<analysisResults.size(); ++analysis) {
+        for (size_t SR=0; SR<analysisResults[analysis].size(); ++SR) {
           SignalRegionData srData=analysisResults[analysis][SR];
           /// Actual observed number of events
           int n_obs = (int)srData.n_observed;
@@ -362,7 +362,7 @@ namespace Gambit {
             /// Use a Gaussian distribution for the nuisance parameter (marginally faster)
             result = BEreq::lnlike_marg_poisson_gaussian_error(n_obs,n_predicted_exact,n_predicted_uncertain,uncertainty);
             /// @TODO outside loop??
-            cout << "COLLIDER RESULT" << result << endl;
+            cout << "COLLIDER_RESULT " << analysis << " " << SR << " " << result << endl;
           }
 
 
