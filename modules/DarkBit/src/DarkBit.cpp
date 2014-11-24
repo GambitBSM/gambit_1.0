@@ -175,7 +175,7 @@ namespace Gambit {
     {
       using namespace Pipes::getMSSMspectrum;
 	  eaSLHA spectrum;
-      static int counter = 0;
+      static unsigned int counter = 0;
 
       // Read filename from yml ini file
       std::vector<std::string> filenames = runOptions->getValue<std::vector<std::string> >("filenames");
@@ -194,7 +194,7 @@ namespace Gambit {
       result = spectrum;
       counter++;
       if ( counter >= filenames.size() )
-          counter == 0;
+          counter = 0;   // Reset counter.
     }
 
 //////////////////////////////////////////////////////////////////////////
@@ -1406,6 +1406,75 @@ namespace Gambit {
         result = catalog;
     }
 
+
+    void UnitTest_DarkBit(int &result)
+    {
+        using namespace Pipes::UnitTest_DarkBit;
+        /* This function depends on all relevant DM observables (indirect and
+         * direct) and dumps them into convenient files in YAML format, which
+         * afterwards can be checked against the expectations.
+         */
+
+        static unsigned int counter = 0;
+
+        double M_DM = (*Dep::DD_couplings).M_DM;
+        double Gps = (*Dep::DD_couplings).gps;
+        double Gpa = (*Dep::DD_couplings).gpa;
+        double Gns = (*Dep::DD_couplings).gns;
+        double Gna = (*Dep::DD_couplings).gna;
+        double oh2 = *Dep::RD_oh2;
+        BFptr spectrum = (*Dep::GA_AnnYield)->fixPar(1, 0.);
+
+        ostringstream filename;
+        filename << runOptions->getValueOrDef<std::string>("UnitTest_DarkBit", "fileroot");
+        filename << "_" << counter << ".yml";
+        counter++;
+
+        std::ofstream os;
+        os.open(filename.str());
+        if(os)
+        {
+          // Standard output.
+          os << "# Direct detection couplings\n";
+          os << "DDcouplings:\n";
+          os << "  gps: " << Gps << "\n";
+          os << "  gpa: " << Gpa << "\n";
+          os << "  gns: " << Gns << "\n";
+          os << "  gna: " << Gna << "\n";
+          os << "\n";
+          os << "# Particle masses [GeV] \n";
+          os << "ParticleMasses:\n";
+          os << "  Mchi: " << M_DM << "\n";
+          os << "\n";
+          os << "# Relic density Omega h^2\n";
+          os << "RelicDensity:\n";
+          os << "  oh2: " << oh2 << "\n";
+          os << "\n";
+
+          // Output gamma-ray spectrum (grid be set in YAML file).
+          double x_min = runOptions->getValueOrDef<double>(0.1, "GA_AnnYield", "Emin");
+          double x_max = runOptions->getValueOrDef<double>(100, "GA_AnnYield", "Emax");
+          int n = runOptions->getValueOrDef<double>(10, "GA_AnnYield", "nbins");
+          std::vector<double> x = logspace(log10(x_min), log10(x_max), n);  // from 0.1 to 500 GeV
+          std::vector<double> y = (*spectrum)(x);
+          os << "# Annihilation spectrum dNdE [1/GeV]\n";
+          os << "AnnihialtionSpectrum:\n";
+          os << "  energy: [";
+          for (std::vector<double>::iterator it = x.begin(); it != x.end(); it++)
+            os << *it << ", ";
+          os  << "]\n";
+          os << "  dNdE: [";
+          for (std::vector<double>::iterator it = y.begin(); it != y.end(); it++)
+            os << *it << ", ";
+          os  << "]\n";
+          os << std::endl;
+        }
+        else
+        {
+          std::cout << "Warning: outputfile not open for writing." << std::endl;
+        }
+        os.close();
+    }
 
 
 /*

@@ -549,6 +549,16 @@ START_MODULE
   QUICK_FUNCTION(DarkBit, mwimp,   NEW_CAPABILITY, mwimp_toy,   double          )
   QUICK_FUNCTION(DarkBit, annrate, NEW_CAPABILITY, annrate_toy, double          )
 
+  #define CAPABILITY UnitTest_DarkBit
+  START_CAPABILITY
+    #define FUNCTION UnitTest_DarkBit
+    START_FUNCTION(int)
+    DEPENDENCY(DD_couplings, Gambit::DarkBit::DD_couplings)
+    DEPENDENCY(RD_oh2, double)
+    DEPENDENCY(GA_AnnYield, Gambit::BF::BFptr)
+    #undef FUNCTION
+  #undef CAPABILITY
+
 #undef MODULE
 
     
