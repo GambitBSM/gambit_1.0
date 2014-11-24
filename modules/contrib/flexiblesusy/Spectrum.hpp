@@ -105,7 +105,7 @@ public:
 
 ///  If we were allowed to use later C++11 compilers we could use template aliases to save some effort, but as
 ///  it is we'll just have to redo these typedefs in the derived classes. Can do this with a macro.
-#define REDO_TYPEDEFS(SpecType,PhysType) \
+#define REDO_TYPEDEFS(SpecType) \
    typedef double(SpecType::*FSptr)(void) const; /* Function pointer signature for FlexiSUSY class member functions with no arguments */ \
    typedef double(SpecType::*FSptr1)(int) const; /* Function pointer signature for FlexiSUSY class member functions with one argument */ \
    typedef double(SpecType::*FSptr2)(int,int) const; /* Function pointer signature for FlexiSUSY class member functions with two arguments */ \
@@ -117,9 +117,9 @@ public:
    
 //forward declaration
 
-template <class SpecType, class PhysType>
+template <class SpecType>
    class PhysDer : public Spectrum::Phys {
-      REDO_TYPEDEFS(SpecType,PhysType)
+      REDO_TYPEDEFS(SpecType)
    private:      
       virtual fmap& get_PoleMass_map() const = 0;  
       virtual fmap1& get_PoleMass_map1() const = 0;
@@ -136,7 +136,7 @@ template <class SpecType, class PhysType>
    };
    template <class SpecType>
    class RunparDer : public Spectrum::RunningPars {
-      REDO_TYPEDEFS(SpecType,PhysType)
+      REDO_TYPEDEFS(SpecType)
    private:
       virtual SpecType get_bound_spec() const = 0;
       virtual fmap& get_mass4_map() const = 0;  
@@ -469,8 +469,8 @@ double  RunparDer<SpecType>::get_dimensionless_parameter(std::string par, int i,
 }
 
 
-template <class SpecType,class PhysType>
-double PhysDer <SpecType, PhysType>::get_Pole_Mass(std::string mass) const
+template <class SpecType>
+double PhysDer <SpecType>::get_Pole_Mass(std::string mass) const
 {
    ///    PhysType phys(get_bound_phys()); ///  Get correct bound spectrum for whatever class this is
    SpecType spec(get_bound_spec());
@@ -491,8 +491,8 @@ double PhysDer <SpecType, PhysType>::get_Pole_Mass(std::string mass) const
 }
 
 
-template <class SpecType, class PhysType>
-double  PhysDer<SpecType, PhysType>::get_Pole_Mass(std::string mass, int i) const
+template <class SpecType>
+double  PhysDer<SpecType>::get_Pole_Mass(std::string mass, int i) const
 {
    SpecType spec(get_bound_spec()); ///  Get correct bound spectrum for whatever class this is
    //   PhysType phys(get_bound_phys());
@@ -513,8 +513,8 @@ double  PhysDer<SpecType, PhysType>::get_Pole_Mass(std::string mass, int i) cons
 }
 
 
-template <class SpecType,class PhysType>
-double PhysDer <SpecType, PhysType>::get_Pole_Mixing(std::string mixing) const
+template <class SpecType>
+double PhysDer <SpecType>::get_Pole_Mixing(std::string mixing) const
 {
    ///    PhysType phys(get_bound_phys()); ///  Get correct bound spectrum for whatever class this is
    SpecType spec(get_bound_spec());
@@ -535,8 +535,8 @@ double PhysDer <SpecType, PhysType>::get_Pole_Mixing(std::string mixing) const
    }
 }
 
-template <class SpecType,class PhysType>
-double PhysDer <SpecType, PhysType>::get_Pole_Mixing(std::string mixing, int i) const
+template <class SpecType>
+double PhysDer <SpecType>::get_Pole_Mixing(std::string mixing, int i) const
 {
    ///    PhysType phys(get_bound_phys()); ///  Get correct bound spectrum for whatever class this is
    SpecType spec(get_bound_spec());
@@ -556,8 +556,8 @@ double PhysDer <SpecType, PhysType>::get_Pole_Mixing(std::string mixing, int i) 
        return (spec.*f)(i);
    }
 }
-template <class SpecType,class PhysType>
-double PhysDer <SpecType, PhysType>::get_Pole_Mixing(std::string mixing, 
+template <class SpecType>
+double PhysDer <SpecType>::get_Pole_Mixing(std::string mixing, 
                                                      int i, int j) const
 {
    ///    PhysType phys(get_bound_phys()); ///  Get correct bound spectrum for whatever class this is
@@ -582,33 +582,33 @@ double PhysDer <SpecType, PhysType>::get_Pole_Mixing(std::string mixing,
 
 ///  Need the templating so that the calls to the FlexiSUSY functions 
 /// know which FlexiSUSY classes to use
-template <class S, class P>
+template <class S>
 class Spec : public Spectrum
 {
 private: 
    /// Internal instances of the derived inner classes
    RunparDer<S>& myrunpar;
-   PhysDer<S,P>& myphys;
+   PhysDer<S>& myphys;
 public: 
-   Spec(RunparDer<S> &rp, PhysDer<S,P> &pp) : 
+   Spec(RunparDer<S> &rp, PhysDer<S> &pp) : 
       myrunpar(rp), 
       myphys(pp),
       Spectrum(rp,pp)
    {}
    virtual S get_bound_spec() const = 0; 
-   virtual P get_bound_phys() const = 0; 
+   //virtual P get_bound_phys() const = 0; 
 };
 
 
 ///  Have to re-write these two functions for each derived class, so that reference to the correct member variables is retrieved.
 ///  Need these functions though so that the original definition of get_mass2_par can be re-used.
 ///  Maybe do this with another macro...
-#define MODEL_SPEC_MEMBER_FUNCTIONS(ClassName,SpecType,PhysType) \
+#define MODEL_SPEC_MEMBER_FUNCTIONS(ClassName,SpecType) \
   SpecType       ClassName::get_bound_spec() const {return model;} \
-  PhysType ClassName::get_bound_phys() const {return model.get_physical();} \
+  /*PhysType ClassName::get_bound_phys() const {return model.get_physical();} */\
 
 
-#define MODEL_RUNNING_MEMBER_FUNCTIONS(ClassName,SpecType,PhysType) \
+#define MODEL_RUNNING_MEMBER_FUNCTIONS(ClassName) \
   ClassName::fmap& ClassName::get_mass4_map() const {return mass4_map;} \
   ClassName::fmap  ClassName::mass4_map(ClassName::fill_mass4_map()); \
   ClassName::fmap1& ClassName::get_mass4_map1() const {return mass4_map1;} \
@@ -640,7 +640,7 @@ public:
   ClassName::fmap1  ClassName::mass0_map1(ClassName::fill_mass0_map1()); \
   ClassName::fmap2  ClassName::mass0_map2(ClassName::fill_mass0_map2()); \
 
-#define MODEL_PHYS_MEMBER_FUNCTIONS(ClassName,SpecType,PhysType) \
+#define MODEL_PHYS_MEMBER_FUNCTIONS(ClassName) \
   ClassName::fmap& ClassName::get_PoleMass_map() const {return PoleMass_map;} \
   ClassName::fmap  ClassName::PoleMass_map(ClassName::fill_PoleMass_map()); \
   ClassName::fmap1& ClassName::get_PoleMass_map1() const {return PoleMass_map1;} \
@@ -654,61 +654,61 @@ public:
 
 // Versions of the above for template classes
 #define MODEL_SPEC_TEMPLATE_MEMBER_FUNCTIONS(ClassName) \
-  template <class M,class MP> M  ClassName<M,MP>::get_bound_spec() const {return model;} \
-  template <class M,class MP> MP ClassName<M,MP>::get_bound_phys() const {return model.get_physical();} \
+  template <class M> M  ClassName<M>::get_bound_spec() const {return model;} \
+  /*template <class M,class MP> MP ClassName<M,MP>::get_bound_phys() const {return model.get_physical();} */\
 
 #define MODEL_RUNNING_TEMPLATE_MEMBER_FUNCTIONS(ClassName) \
-  template <class M,class MP> typename ClassName<M,MP>::fmap&  ClassName<M,MP>::get_mass4_map() const {return mass4_map;} \
-  template <class M,class MP> typename ClassName<M,MP>::fmap   ClassName<M,MP>::mass4_map(ClassName<M,MP>::fill_mass4_map()); \
-  template <class M,class MP> typename ClassName<M,MP>::fmap1& ClassName<M,MP>::get_mass4_map1() const {return mass4_map1;} \
-  template <class M,class MP> typename ClassName<M,MP>::fmap2& ClassName<M,MP>::get_mass4_map2() const {return mass4_map2;} \
-  template <class M,class MP> typename ClassName<M,MP>::fmap1  ClassName<M,MP>::mass4_map1(ClassName<M,MP>::fill_mass4_map1()); \
-  template <class M,class MP> typename ClassName<M,MP>::fmap2  ClassName<M,MP>::mass4_map2(ClassName<M,MP>::fill_mass4_map2()); \
-  template <class M,class MP> typename ClassName<M,MP>::fmap&  ClassName<M,MP>::get_mass3_map() const {return mass3_map;} \
-  template <class M,class MP> typename ClassName<M,MP>::fmap   ClassName<M,MP>::mass3_map(ClassName<M,MP>::fill_mass3_map()); \
-  template <class M,class MP> typename ClassName<M,MP>::fmap1& ClassName<M,MP>::get_mass3_map1() const {return mass3_map1;} \
-  template <class M,class MP> typename ClassName<M,MP>::fmap2& ClassName<M,MP>::get_mass3_map2() const {return mass3_map2;} \
-  template <class M,class MP> typename ClassName<M,MP>::fmap1  ClassName<M,MP>::mass3_map1(ClassName<M,MP>::fill_mass3_map1()); \
-  template <class M,class MP> typename ClassName<M,MP>::fmap2  ClassName<M,MP>::mass3_map2(ClassName<M,MP>::fill_mass3_map2()); \
-  template <class M,class MP> typename ClassName<M,MP>::fmap&  ClassName<M,MP>::get_mass2_map() const {return mass2_map;} \
-  template <class M,class MP> typename ClassName<M,MP>::fmap   ClassName<M,MP>::mass2_map(ClassName<M,MP>::fill_mass2_map()); \
-  template <class M,class MP> typename ClassName<M,MP>::fmap1& ClassName<M,MP>::get_mass2_map1() const {return mass2_map1;} \
-  template <class M,class MP> typename ClassName<M,MP>::fmap2& ClassName<M,MP>::get_mass2_map2() const {return mass2_map2;} \
-  template <class M,class MP> typename ClassName<M,MP>::fmap1  ClassName<M,MP>::mass2_map1(ClassName<M,MP>::fill_mass2_map1()); \
-  template <class M,class MP> typename ClassName<M,MP>::fmap2  ClassName<M,MP>::mass2_map2(ClassName<M,MP>::fill_mass2_map2()); \
-  template <class M,class MP> typename ClassName<M,MP>::fmap&  ClassName<M,MP>::get_mass_map() const {return mass_map;} \
-  template <class M,class MP> typename ClassName<M,MP>::fmap   ClassName<M,MP>::mass_map(ClassName<M,MP>::fill_mass_map()); \
-  template <class M,class MP> typename ClassName<M,MP>::fmap1& ClassName<M,MP>::get_mass_map1() const {return mass_map1;} \
-  template <class M,class MP> typename ClassName<M,MP>::fmap2& ClassName<M,MP>::get_mass_map2() const {return mass_map2;} \
-  template <class M,class MP> typename ClassName<M,MP>::fmap1  ClassName<M,MP>::mass_map1(ClassName<M,MP>::fill_mass_map1()); \
-  template <class M,class MP> typename ClassName<M,MP>::fmap2  ClassName<M,MP>::mass_map2(ClassName<M,MP>::fill_mass_map2()); \
-  template <class M,class MP> typename ClassName<M,MP>::fmap&  ClassName<M,MP>::get_mass0_map() const {return mass0_map;} \
-  template <class M,class MP> typename ClassName<M,MP>::fmap   ClassName<M,MP>::mass0_map(ClassName<M,MP>::fill_mass0_map()); \
-  template <class M,class MP> typename ClassName<M,MP>::fmap1& ClassName<M,MP>::get_mass0_map1() const {return mass0_map1;} \
-  template <class M,class MP> typename ClassName<M,MP>::fmap2& ClassName<M,MP>::get_mass0_map2() const {return mass0_map2;} \
-  template <class M,class MP> typename ClassName<M,MP>::fmap1  ClassName<M,MP>::mass0_map1(ClassName<M,MP>::fill_mass0_map1()); \
-  template <class M,class MP> typename ClassName<M,MP>::fmap2  ClassName<M,MP>::mass0_map2(ClassName<M,MP>::fill_mass0_map2()); \
+  template <class M> typename ClassName<M>::fmap&  ClassName<M>::get_mass4_map() const {return mass4_map;} \
+  template <class M> typename ClassName<M>::fmap   ClassName<M>::mass4_map(ClassName<M>::fill_mass4_map()); \
+  template <class M> typename ClassName<M>::fmap1& ClassName<M>::get_mass4_map1() const {return mass4_map1;} \
+  template <class M> typename ClassName<M>::fmap2& ClassName<M>::get_mass4_map2() const {return mass4_map2;} \
+  template <class M> typename ClassName<M>::fmap1  ClassName<M>::mass4_map1(ClassName<M>::fill_mass4_map1()); \
+  template <class M> typename ClassName<M>::fmap2  ClassName<M>::mass4_map2(ClassName<M>::fill_mass4_map2()); \
+  template <class M> typename ClassName<M>::fmap&  ClassName<M>::get_mass3_map() const {return mass3_map;} \
+  template <class M> typename ClassName<M>::fmap   ClassName<M>::mass3_map(ClassName<M>::fill_mass3_map()); \
+  template <class M> typename ClassName<M>::fmap1& ClassName<M>::get_mass3_map1() const {return mass3_map1;} \
+  template <class M> typename ClassName<M>::fmap2& ClassName<M>::get_mass3_map2() const {return mass3_map2;} \
+  template <class M> typename ClassName<M>::fmap1  ClassName<M>::mass3_map1(ClassName<M>::fill_mass3_map1()); \
+  template <class M> typename ClassName<M>::fmap2  ClassName<M>::mass3_map2(ClassName<M>::fill_mass3_map2()); \
+  template <class M> typename ClassName<M>::fmap&  ClassName<M>::get_mass2_map() const {return mass2_map;} \
+  template <class M> typename ClassName<M>::fmap   ClassName<M>::mass2_map(ClassName<M>::fill_mass2_map()); \
+  template <class M> typename ClassName<M>::fmap1& ClassName<M>::get_mass2_map1() const {return mass2_map1;} \
+  template <class M> typename ClassName<M>::fmap2& ClassName<M>::get_mass2_map2() const {return mass2_map2;} \
+  template <class M> typename ClassName<M>::fmap1  ClassName<M>::mass2_map1(ClassName<M>::fill_mass2_map1()); \
+  template <class M> typename ClassName<M>::fmap2  ClassName<M>::mass2_map2(ClassName<M>::fill_mass2_map2()); \
+  template <class M> typename ClassName<M>::fmap&  ClassName<M>::get_mass_map() const {return mass_map;} \
+  template <class M> typename ClassName<M>::fmap   ClassName<M>::mass_map(ClassName<M>::fill_mass_map()); \
+  template <class M> typename ClassName<M>::fmap1& ClassName<M>::get_mass_map1() const {return mass_map1;} \
+  template <class M> typename ClassName<M>::fmap2& ClassName<M>::get_mass_map2() const {return mass_map2;} \
+  template <class M> typename ClassName<M>::fmap1  ClassName<M>::mass_map1(ClassName<M>::fill_mass_map1()); \
+  template <class M> typename ClassName<M>::fmap2  ClassName<M>::mass_map2(ClassName<M>::fill_mass_map2()); \
+  template <class M> typename ClassName<M>::fmap&  ClassName<M>::get_mass0_map() const {return mass0_map;} \
+  template <class M> typename ClassName<M>::fmap   ClassName<M>::mass0_map(ClassName<M>::fill_mass0_map()); \
+  template <class M> typename ClassName<M>::fmap1& ClassName<M>::get_mass0_map1() const {return mass0_map1;} \
+  template <class M> typename ClassName<M>::fmap2& ClassName<M>::get_mass0_map2() const {return mass0_map2;} \
+  template <class M> typename ClassName<M>::fmap1  ClassName<M>::mass0_map1(ClassName<M>::fill_mass0_map1()); \
+  template <class M> typename ClassName<M>::fmap2  ClassName<M>::mass0_map2(ClassName<M>::fill_mass0_map2()); \
 
 #define MODEL_PHYS_TEMPLATE_MEMBER_FUNCTIONS(ClassName) \
-  template <class M,class MP> typename ClassName<M,MP>::fmap   ClassName<M,MP>::PoleMass_map(ClassName<M,MP>::fill_PoleMass_map()); \
-  template <class M,class MP> typename ClassName<M,MP>::fmap1  ClassName<M,MP>::PoleMass_map1(ClassName<M,MP>::fill_PoleMass_map1()); \
-  template <class M,class MP> typename ClassName<M,MP>::fmap&  ClassName<M,MP>::get_PoleMass_map() const {return PoleMass_map;} \
-  template <class M,class MP> typename ClassName<M,MP>::fmap1& ClassName<M,MP>::get_PoleMass_map1() const {return PoleMass_map1;} \
-  template <class M,class MP> typename ClassName<M,MP>::fmap&  ClassName<M,MP>::get_PoleMixing_map() const {return PoleMixing_map;} \
-  template <class M,class MP> typename ClassName<M,MP>::fmap   ClassName<M,MP>::PoleMixing_map(ClassName<M,MP>::fill_PoleMixing_map()); \
-  template <class M,class MP> typename ClassName<M,MP>::fmap1& ClassName<M,MP>::get_PoleMixing_map1() const {return PoleMixing_map1;} \
-  template <class M,class MP> typename ClassName<M,MP>::fmap1  ClassName<M,MP>::PoleMixing_map1(ClassName<M,MP>::fill_PoleMixing_map1()); \
-  template <class M,class MP> typename ClassName<M,MP>::fmap2& ClassName<M,MP>::get_PoleMixing_map2() const {return PoleMixing_map2;} \
-  template <class M,class MP> typename ClassName<M,MP>::fmap2  ClassName<M,MP>::PoleMixing_map2(ClassName<M,MP>::fill_PoleMixing_map2()); \
+  template <class M> typename ClassName<M>::fmap   ClassName<M>::PoleMass_map(ClassName<M>::fill_PoleMass_map()); \
+  template <class M> typename ClassName<M>::fmap1  ClassName<M>::PoleMass_map1(ClassName<M>::fill_PoleMass_map1()); \
+  template <class M> typename ClassName<M>::fmap&  ClassName<M>::get_PoleMass_map() const {return PoleMass_map;} \
+  template <class M> typename ClassName<M>::fmap1& ClassName<M>::get_PoleMass_map1() const {return PoleMass_map1;} \
+  template <class M> typename ClassName<M>::fmap&  ClassName<M>::get_PoleMixing_map() const {return PoleMixing_map;} \
+  template <class M> typename ClassName<M>::fmap   ClassName<M>::PoleMixing_map(ClassName<M>::fill_PoleMixing_map()); \
+  template <class M> typename ClassName<M>::fmap1& ClassName<M>::get_PoleMixing_map1() const {return PoleMixing_map1;} \
+  template <class M> typename ClassName<M>::fmap1  ClassName<M>::PoleMixing_map1(ClassName<M>::fill_PoleMixing_map1()); \
+  template <class M> typename ClassName<M>::fmap2& ClassName<M>::get_PoleMixing_map2() const {return PoleMixing_map2;} \
+  template <class M> typename ClassName<M>::fmap2  ClassName<M>::PoleMixing_map2(ClassName<M>::fill_PoleMixing_map2()); \
 
 // Need alternate versions of the above for defining these functions inside the class definition. Just has all the namespace qualifications removed. 
 // EDIT: I don't need these anymore but they might be useful...
 
-#define INNER_MODEL_SPEC_MEMBER_FUNCTIONS(SpecType,PhysType) \
+#define INNER_MODEL_SPEC_MEMBER_FUNCTIONS(SpecType) \
   SpecType get_bound_spec() const {return model;} \
-  PhysType get_bound_phys() const {return model.get_physical();} \
+  /*PhysType get_bound_phys() const {return model.get_physical();}*/ \
 
-#define INNER_MODEL_RUNNING_MEMBER_FUNCTIONS(SpecType,PhysType) \
+#define INNER_MODEL_RUNNING_MEMBER_FUNCTIONS \
   fmap& get_mass4_map() const {return mass4_map;} \
   fmap  mass4_map(fill_mass4_map()); \
   fmap1& get_mass4_map1() const {return mass4_map1;} \
@@ -740,7 +740,7 @@ public:
   fmap1  mass0_map1(fill_mass0_map1()); \
   fmap2  mass0_map2(fill_mass0_map2()); \
 
-#define INNER_MODEL_PHYS_MEMBER_FUNCTIONS(SpecType,PhysType) \
+#define INNER_MODEL_PHYS_MEMBER_FUNCTIONS \
   fmap& get_PoleMass_map() const {return PoleMass_map;} \
   fmap  PoleMass_map(fill_PoleMass_map()); \
   fmap1& get_PoleMass_map1() const {return PoleMass_map1;} \

@@ -22,7 +22,7 @@
 
 // Flexible SUSY stuff (should not be needed by the rest of gambit)
 #include "CMSSM_two_scale_model.hpp"
-#include "CMSSM_physical.hpp"
+//#include "CMSSM_physical.hpp"
 
 #include "ew_input.hpp"
 //#include "logger.hpp"
@@ -45,8 +45,8 @@ namespace Gambit
     /// Module convenience functions
     // These are not known to Gambit.
   
-    template <class M, class MP>
-    bool TestMssmParMass2_0(MSSMSpec<M,MP> mssm, M FSmssm){
+    template <class M>
+    bool TestMssmParMass2_0(MSSMSpec<M> mssm, M FSmssm){
        //we test both 
        bool pass = is_equal(mssm.mssm_drbar_pars.get_mass2_parameter("BMu"),FSmssm.get_BMu());
        if(pass == false) return pass;
@@ -65,8 +65,8 @@ namespace Gambit
        return pass;
     }
  
-    template <class M, class MP>   
-    bool TestMssmParMass2_2(MSSMSpec<M,MP> mssm, M FSmssm){
+    template <class M>   
+    bool TestMssmParMass2_2(MSSMSpec<M> mssm, M FSmssm){
        bool pass = false;
        for(int i = 0; i<=2; i++){
           for(int j = 0; j<=2; j++){
@@ -108,8 +108,8 @@ namespace Gambit
        return pass;
     }
     
-    template <class M, class MP>  
-    bool TestMssmParMass1_0(MSSMSpec<M,MP> mssm, M FSmssm){
+    template <class M>  
+    bool TestMssmParMass1_0(MSSMSpec<M> mssm, M FSmssm){
        //we test both 
        bool pass = is_equal(mssm.mssm_drbar_pars.get_mass_parameter("M1"),FSmssm.get_MassB());
        if(pass == false) return pass;
@@ -139,8 +139,8 @@ namespace Gambit
        return pass;
     }
     
-    template <class M, class MP>  
-    bool TestMssmParMass1_2(MSSMSpec<M,MP> mssm, M FSmssm){
+    template <class M>  
+    bool TestMssmParMass1_2(MSSMSpec<M> mssm, M FSmssm){
        bool pass = false;
        for(int i = 0; i<=2; i++){
           for(int j = 0; j<=2; j++){
@@ -170,8 +170,8 @@ namespace Gambit
        return pass;
     }
     
-    template <class M, class MP>
-    bool TestMssmParMass0_0(MSSMSpec<M,MP> mssm, M FSmssm){
+    template <class M>
+    bool TestMssmParMass0_0(MSSMSpec<M> mssm, M FSmssm){
        //we test both 
        bool pass = is_equal(mssm.mssm_drbar_pars.get_dimensionless_parameter("g1"),FSmssm.get_g1());
        if(pass == false) return pass;
@@ -190,8 +190,8 @@ namespace Gambit
        return pass;
     }
     
-    template <class M, class MP>
-    bool TestMssmParMass0_2(MSSMSpec<M,MP> mssm, M FSmssm){
+    template <class M>
+    bool TestMssmParMass0_2(MSSMSpec<M> mssm, M FSmssm){
        bool pass = false;
        for(int i = 0; i<=2; i++){
           for(int j = 0; j<=2; j++){
@@ -223,8 +223,8 @@ namespace Gambit
        return pass;
     }
     
-    template <class M, class MP>
-    bool TestMssmPoleGets0(MSSMSpec<M,MP> mssm, M FSmssm){
+    template <class M>
+    bool TestMssmPoleGets0(MSSMSpec<M> mssm, M FSmssm){
        bool pass = false;
        pass = is_equal(mssm.mssm_ph.get_Pole_Mass("MZ"),FSmssm.get_physical().MVZ);
        if(pass == false) return pass;
@@ -267,8 +267,8 @@ namespace Gambit
        return pass;
     }
     
-    template <class M, class MP>
-    bool TestMssmPoleGets1(MSSMSpec<M,MP> mssm, M FSmssm){
+    template <class M>
+    bool TestMssmPoleGets1(MSSMSpec<M> mssm, M FSmssm){
        bool pass = false;
        logger() << "inside TestMssmPoleGets1 " << std::endl; 
        for(int i=0; i<=5; i++){
@@ -320,8 +320,8 @@ namespace Gambit
        return pass;
     }
     
-    template <class M, class MP> 
-    bool TestMssmPoleGets(MSSMSpec<M,MP> mssm, M FSmssm){
+    template <class M> 
+    bool TestMssmPoleGets(MSSMSpec<M> mssm, M FSmssm){
        bool pass = false;
        pass = TestMssmPoleGets0(mssm,FSmssm);
        if(pass == false) return pass;
@@ -330,8 +330,8 @@ namespace Gambit
        return pass;
     }
 
-    template <class M, class MP>
-    bool TestMssmParGets(MSSMSpec<M,MP> mssm, M FSmssm){
+    template <class M>
+    bool TestMssmParGets(MSSMSpec<M> mssm, M FSmssm){
        bool pass = false; 
        pass = TestMssmParMass2_0(mssm,FSmssm);
        if(pass == false) return pass;
@@ -492,8 +492,8 @@ namespace Gambit
        logger() << "mgluino = " << mgluino<< std::endl;
     }
 
-    template <class M, class MP>
-    void mssm_print(MSSMSpec<M,MP> & mssm){
+    template <class M>
+    void mssm_print(MSSMSpec<M> & mssm){
        
        logger() << "mssm.mssm_drbar_pars.GetScale() =" << mssm.mssm_drbar_pars.GetScale() << std::endl;
        logger() << "map mHd2 "  << mssm.mssm_drbar_pars.get_mass2_parameter("mHd2") <<std::endl;
@@ -538,8 +538,8 @@ namespace Gambit
       
     }
     
-    template <class M, class MP>
-    void mssm_manipulate(MSSMSpec<M,MP> & mssm) {
+    template <class M>
+    void mssm_manipulate(MSSMSpec<M> & mssm) {
        logger() << "inside mssm_manipulate" <<std::endl;
        double lowscale = mssm.mssm_drbar_pars.GetScale();
        //setting to same scale to test
@@ -564,7 +564,7 @@ namespace Gambit
       // Create Spectrum object to wrap flexiblesusy object
       
       //std::unique_ptr<FS::MSSMSpec> mssm(new FS::MSSMSpec(mssm1));      
-      static MSSMSpec<CMSSM<Two_scale>,CMSSM_physical> mssm(FS_model);
+      static MSSMSpec<CMSSM<Two_scale>> mssm(FS_model);
 
       // I think these objects should only get created once since they are static...      
       // ...and they should be destructed automatically when the program ends.

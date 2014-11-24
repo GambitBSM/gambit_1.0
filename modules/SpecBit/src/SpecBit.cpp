@@ -123,7 +123,7 @@ namespace Gambit
       // therefore cannot run the same spectrum generator twice in the same loop and 
       // maintain the spectrum resulting from both. But we should never want to do 
       // this.
-      static MSSMSpec<typename Modelbox::Model,typename Modelbox::Physical> generic_mssm;
+      static MSSMSpec<typename Modelbox::Model> generic_mssm;
 
       if( problems.have_problem() )
       {

@@ -12,17 +12,17 @@
  
 namespace flexiblesusy {
 
-   template <class Model, class Model_physical>
+   template <class Model>
    class MSSMSpec;
 
      //this contains scale and scheme dependent stuff
-   template <class Model, class Model_physical>
+   template <class Model>
    class MSSM_DRbarPars : public RunparDer<Model> {
       
-      REDO_TYPEDEFS(Model,Model_physical)
+      REDO_TYPEDEFS(Model)
    private:
       //reference to spectrum class for accessing model object
-      MSSMSpec<Model, Model_physical> &my_parent;
+      MSSMSpec<Model> &my_parent;
 
       static fmap TreeMass_map;
       static fmap1 TreeMass_map1;
@@ -85,8 +85,7 @@ namespace flexiblesusy {
       fmap2& get_mass0_map2() const;
 
    public:
-      // MSSM_DRbarPars(Spec<Model,Model_physical> & x) : my_parent(x) {}
-      MSSM_DRbarPars(MSSMSpec<Model, Model_physical> &x) : my_parent(x) {}
+      MSSM_DRbarPars(MSSMSpec<Model> &x) : my_parent(x) {}
       
       virtual void RunToScale(double scale);
       virtual double GetScale() const;
@@ -117,13 +116,13 @@ namespace flexiblesusy {
    };
    
    //physical class for accessing physical spectrum
-   template <class Model, class Model_physical>
-   class MSSM_Phys : public PhysDer<Model,Model_physical> {
-      REDO_TYPEDEFS(Model,Model_physical)
+   template <class Model>
+   class MSSM_Phys : public PhysDer<Model> {
+      REDO_TYPEDEFS(Model)
    private:
       //reference to spectrim class for accessing model object
       //Spec<Model,Model_physical> & my_parent;
-      MSSMSpec<Model, Model_physical> &my_parent;
+      MSSMSpec<Model> &my_parent;
       static fmap  PoleMass_map;
       static fmap1 PoleMass_map1;
       static fmap  fill_PoleMass_map();
@@ -143,7 +142,7 @@ namespace flexiblesusy {
 
    public:
       //  MSSM_Phys(Spec<Model,Model_physical> & x) : my_parent(x) {}
-      MSSM_Phys(MSSMSpec<Model, Model_physical> &x) : my_parent(x) {}
+      MSSM_Phys(MSSMSpec<Model> &x) : my_parent(x) {}
       virtual double get_MPole(std::string) const;
       virtual double get_MPole(std::string, int) const;
       virtual double get_MPole(std::string, int, int) const;
@@ -153,18 +152,18 @@ namespace flexiblesusy {
       Model get_bound_spec() const; 
    };
     
-   template <class Model, class Model_physical>
-   class MSSMSpec : public Spec<Model, Model_physical> {
-      friend class MSSM_DRbarPars<Model, Model_physical>;
-      friend class MSSM_Phys<Model, Model_physical>;
+   template <class Model>
+   class MSSMSpec : public Spec<Model> {
+      friend class MSSM_DRbarPars<Model>;
+      friend class MSSM_Phys<Model>;
    private:
       //Model model;
    public:
       Model model;
 
       /// Internal instances of the derived inner classes
-      MSSM_Phys<Model, Model_physical> mssm_ph;
-      MSSM_DRbarPars<Model, Model_physical> mssm_drbar_pars;
+      MSSM_Phys<Model> mssm_ph;
+      MSSM_DRbarPars<Model> mssm_drbar_pars;
       //constructors
       MSSMSpec();
       MSSMSpec(Model&);
@@ -194,7 +193,7 @@ namespace flexiblesusy {
       // object.
       Model get_modelobject();
       Model get_bound_spec() const; 
-      Model_physical get_bound_phys() const; 
+      //Model_physical get_bound_phys() const; 
 
       // Write spectrum information in slha format (not including input parameters etc.)
       virtual void dump2slha(const std::string&) const;
@@ -261,31 +260,31 @@ namespace flexiblesusy {
 
    //#include "MSSM_slha_io.hpp" // only needed by 'dump2slha'; can remove if this function changes
 
-   template <class M, class MP>
-   MSSMSpec<M,MP>::MSSMSpec(M& m) :
+   template <class M>
+   MSSMSpec<M>::MSSMSpec(M& m) :
       model(m),
       mssm_ph(*this),
       mssm_drbar_pars(*this),
-      Spec<M,MP>(mssm_drbar_pars, mssm_ph)
+      Spec<M>(mssm_drbar_pars, mssm_ph)
    {
    }
    
    // Default constructor
-   template <class M, class MP>
-   MSSMSpec<M,MP>::MSSMSpec() :
+   template <class M>
+   MSSMSpec<M>::MSSMSpec() :
       mssm_ph(*this),
       mssm_drbar_pars(*this),
-      Spec<M,MP>(mssm_drbar_pars, mssm_ph)
+      Spec<M>(mssm_drbar_pars, mssm_ph)
    {
    }
    
-   template <class M, class MP>
-   MSSMSpec<M,MP>::~MSSMSpec()
+   template <class M>
+   MSSMSpec<M>::~MSSMSpec()
    {
    }
    
-   template <class M, class MP>
-   void MSSMSpec<M,MP>::dump2slha(const std::string& filename) const
+   template <class M>
+   void MSSMSpec<M>::dump2slha(const std::string& filename) const
    {
    // REMOVED; would need another template parameter to use MSSM_slha_io objects
    //  // Write SLHA file (for debugging purposes...)
@@ -294,14 +293,14 @@ namespace flexiblesusy {
    //  slha_io.write_to_file(filename);
    }
    
-   template <class Model, class MP>
-   Model MSSM_DRbarPars<Model,MP>::get_bound_spec() const
+   template <class Model>
+   Model MSSM_DRbarPars<Model>::get_bound_spec() const
    {
       return my_parent.get_bound_spec();   
    } 
   
-   template <class Model, class MP>
-   Model MSSM_Phys<Model,MP>::get_bound_spec() const
+   template <class Model>
+   Model MSSM_Phys<Model>::get_bound_spec() const
    {
       return my_parent.get_bound_spec();
    } 
@@ -314,8 +313,8 @@ namespace flexiblesusy {
    //(row only is used for vector) 
    //particle_type = 0 (neutralino), 1(Sneutrino), 2(up squark), 
    //3(down squarks), 4(charged slepton), 5(Chargino), 6(gluino)
-   template <class M, class MP>
-   double MSSMSpec<M,MP>::get_lsp_mass(int & particle_type, int & row, int & col) const
+   template <class M>
+   double MSSMSpec<M>::get_lsp_mass(int & particle_type, int & row, int & col) const
    {
       row = -1; col = -1;  particle_type =-1;//set default
       double mlsp = fabs(model.get_physical().MChi(0)); //most common lsp
@@ -380,38 +379,38 @@ namespace flexiblesusy {
    }
 
    //The MSSM has just one LSP - often the lightest neutralino
-   template <class M, class MP>
-   int MSSMSpec<M,MP>::get_numbers_stable_particles() const {
+   template <class M>
+   int MSSMSpec<M>::get_numbers_stable_particles() const {
       return 1;
    }
    
    //these are just wrappers.  Need to test this carefully though
    //inheritance is complicated
-   template <class Model, class MP>
-   void MSSM_DRbarPars<Model,MP>::RunToScale(double scale){
+   template <class Model>
+   void MSSM_DRbarPars<Model>::RunToScale(double scale){
       std::cout << "In mssm implementation of RunToScale" << std::endl;
       my_parent.model.Model::run_to(scale);
    }
-   template <class M, class MP>
-   double MSSM_DRbarPars<M,MP>::GetScale() const {
+   template <class M>
+   double MSSM_DRbarPars<M>::GetScale() const {
       std::cout << "In mssm implementation of GetScale" << std::endl;
       return my_parent.model.get_scale();
    }
-   template <class M, class MP>
-   void MSSM_DRbarPars<M,MP>::SetScale(double scale){
+   template <class M>
+   void MSSM_DRbarPars<M>::SetScale(double scale){
        my_parent.model.set_scale(scale);
    }
    
-   template <class M, class MP>
-   std::string MSSMSpec<M,MP>::AccessError(std::string state) const {
+   template <class M>
+   std::string MSSMSpec<M>::AccessError(std::string state) const {
       std::string errormsg;
       errormsg = "Error accessing "+ state + " element is out of bounds";
       return errormsg;
    }
      
    // Function to initialise mass2_ma
-   template <class M, class MP>
-   typename MSSM_DRbarPars<M,MP>::fmap MSSM_DRbarPars<M,MP>::fill_mass4_map() 
+   template <class M>
+   typename MSSM_DRbarPars<M>::fmap MSSM_DRbarPars<M>::fill_mass4_map() 
    {
       fmap tmp_map;
     
@@ -422,8 +421,8 @@ namespace flexiblesusy {
    
    
    // Function to initialise mass2_map
-   template <class M, class MP>
-   typename MSSM_DRbarPars<M,MP>::fmap1 MSSM_DRbarPars<M,MP>::fill_mass4_map1() 
+   template <class M>
+   typename MSSM_DRbarPars<M>::fmap1 MSSM_DRbarPars<M>::fill_mass4_map1() 
    {
       fmap1 tmp_map;
    
@@ -434,8 +433,8 @@ namespace flexiblesusy {
    
    
    // Function to initialise mass2_map
-   template <class M, class MP>
-   typename MSSM_DRbarPars<M,MP>::fmap2 MSSM_DRbarPars<M,MP>::fill_mass4_map2() 
+   template <class M>
+   typename MSSM_DRbarPars<M>::fmap2 MSSM_DRbarPars<M>::fill_mass4_map2() 
    {
       fmap2 tmp_map;
       
@@ -447,8 +446,8 @@ namespace flexiblesusy {
    
    
    // Function to initialise mass2_map
-   template <class M, class MP>
-   typename MSSM_DRbarPars<M,MP>::fmap MSSM_DRbarPars<M,MP>::fill_mass3_map() 
+   template <class M>
+   typename MSSM_DRbarPars<M>::fmap MSSM_DRbarPars<M>::fill_mass3_map() 
    {
       fmap tmp_map;
     
@@ -459,8 +458,8 @@ namespace flexiblesusy {
    
    
    // Function to initialise mass2_map
-   template <class M, class MP>
-   typename MSSM_DRbarPars<M,MP>::fmap1 MSSM_DRbarPars<M,MP>::fill_mass3_map1() 
+   template <class M>
+   typename MSSM_DRbarPars<M>::fmap1 MSSM_DRbarPars<M>::fill_mass3_map1() 
    {
       fmap1 tmp_map;
    
@@ -471,8 +470,8 @@ namespace flexiblesusy {
    
    
    // Function to initialise mass2_map
-   template <class M, class MP>
-   typename MSSM_DRbarPars<M,MP>::fmap2 MSSM_DRbarPars<M,MP>::fill_mass3_map2() 
+   template <class M>
+   typename MSSM_DRbarPars<M>::fmap2 MSSM_DRbarPars<M>::fill_mass3_map2() 
    {
       fmap2 tmp_map;
       
@@ -484,8 +483,8 @@ namespace flexiblesusy {
    
    
    // Function to initialise mass2_map
-   template <class Model, class MP>
-   typename MSSM_DRbarPars<Model,MP>::fmap MSSM_DRbarPars<Model,MP>::fill_mass2_map() 
+   template <class Model>
+   typename MSSM_DRbarPars<Model>::fmap MSSM_DRbarPars<Model>::fill_mass2_map() 
    {
       fmap tmp_map;
       tmp_map["BMu"] = &Model::get_BMu;
@@ -497,8 +496,8 @@ namespace flexiblesusy {
    
    
    // Function to initialise mass2_map
-   template <class M, class MP>
-   typename MSSM_DRbarPars<M,MP>::fmap1 MSSM_DRbarPars<M,MP>::fill_mass2_map1() 
+   template <class M>
+   typename MSSM_DRbarPars<M>::fmap1 MSSM_DRbarPars<M>::fill_mass2_map1() 
    {
       fmap1 tmp_map;
    
@@ -509,8 +508,8 @@ namespace flexiblesusy {
    
    
    // Function to initialise mass2_map
-   template <class Model, class MP>
-   typename MSSM_DRbarPars<Model,MP>::fmap2 MSSM_DRbarPars<Model,MP>::fill_mass2_map2() 
+   template <class Model>
+   typename MSSM_DRbarPars<Model>::fmap2 MSSM_DRbarPars<Model>::fill_mass2_map2() 
    {
       fmap2 tmp_map;
       tmp_map["mq2"]= &Model::get_mq2;
@@ -525,8 +524,8 @@ namespace flexiblesusy {
    
    
    // Function to initialise mass_map
-   template <class Model, class MP>
-   typename MSSM_DRbarPars<Model,MP>::fmap MSSM_DRbarPars<Model,MP>::fill_mass_map() 
+   template <class Model>
+   typename MSSM_DRbarPars<Model>::fmap MSSM_DRbarPars<Model>::fill_mass_map() 
    {
       fmap tmp_map;
       tmp_map["M1"]= &Model::get_MassB;
@@ -545,8 +544,8 @@ namespace flexiblesusy {
    
    
    // Function to initialise mass2_map
-   template <class M, class MP>
-   typename MSSM_DRbarPars<M,MP>::fmap1 MSSM_DRbarPars<M,MP>::fill_mass_map1() 
+   template <class M>
+   typename MSSM_DRbarPars<M>::fmap1 MSSM_DRbarPars<M>::fill_mass_map1() 
    {
       fmap1 tmp_map;
    
@@ -557,8 +556,8 @@ namespace flexiblesusy {
    
    
    // Function to initialise mass2_map
-   template <class Model, class MP>
-   typename MSSM_DRbarPars<Model,MP>::fmap2 MSSM_DRbarPars<Model,MP>::fill_mass_map2() 
+   template <class Model>
+   typename MSSM_DRbarPars<Model>::fmap2 MSSM_DRbarPars<Model>::fill_mass_map2() 
    {
       fmap2 tmp_map;
       tmp_map["TYd"]= &Model::get_TYd;
@@ -572,8 +571,8 @@ namespace flexiblesusy {
    }
    
    // Function to initialise mass_map
-   template <class Model, class MP>
-   typename MSSM_DRbarPars<Model,MP>::fmap MSSM_DRbarPars<Model,MP>::fill_mass0_map() 
+   template <class Model>
+   typename MSSM_DRbarPars<Model>::fmap MSSM_DRbarPars<Model>::fill_mass0_map() 
    {
       fmap tmp_map;
       tmp_map["g1"]= &Model::get_g1;
@@ -589,8 +588,8 @@ namespace flexiblesusy {
    
    
    // Function to initialise mass2_map
-   template <class M, class MP>
-   typename MSSM_DRbarPars<M,MP>::fmap1 MSSM_DRbarPars<M,MP>::fill_mass0_map1() 
+   template <class M>
+   typename MSSM_DRbarPars<M>::fmap1 MSSM_DRbarPars<M>::fill_mass0_map1() 
    {
       fmap1 tmp_map;
    
@@ -601,8 +600,8 @@ namespace flexiblesusy {
    
    
    // Function to initialise mass2_map
-   template <class Model, class MP>
-   typename MSSM_DRbarPars<Model,MP>::fmap2 MSSM_DRbarPars<Model,MP>::fill_mass0_map2() 
+   template <class Model>
+   typename MSSM_DRbarPars<Model>::fmap2 MSSM_DRbarPars<Model>::fill_mass0_map2() 
    {
       fmap2 tmp_map;
      
@@ -613,8 +612,8 @@ namespace flexiblesusy {
       return tmp_map;
    }
    
-   template <class Model, class MP>
-   typename MSSM_DRbarPars<Model,MP>::fmap MSSM_DRbarPars<Model,MP>::fill_TreeMass_map()
+   template <class Model>
+   typename MSSM_DRbarPars<Model>::fmap MSSM_DRbarPars<Model>::fill_TreeMass_map()
    {
    fmap tmp_map;
     tmp_map["MZ"] = &Model::get_MVZ;
@@ -640,8 +639,8 @@ namespace flexiblesusy {
     return tmp_map;
    }
    //map for string access with an index supplied
-   template <class Model, class MP>
-   typename MSSM_DRbarPars<Model,MP>::fmap1 MSSM_DRbarPars<Model,MP>::fill_TreeMass_map1()
+   template <class Model>
+   typename MSSM_DRbarPars<Model>::fmap1 MSSM_DRbarPars<Model>::fill_TreeMass_map1()
    {
    fmap1 tmp_map;
     tmp_map["MSd"] = &Model::get_MSd;
@@ -665,8 +664,8 @@ namespace flexiblesusy {
    }
    
   
-   template <class Model, class MP>
-   typename MSSM_Phys<Model,MP>::fmap MSSM_Phys<Model,MP>::fill_PoleMass_map(){
+   template <class Model>
+   typename MSSM_Phys<Model>::fmap MSSM_Phys<Model>::fill_PoleMass_map(){
       fmap tmp_map;
      
       // tmp_map["MZ"] = &Model::get_Pole_MZ;
@@ -692,8 +691,8 @@ namespace flexiblesusy {
       return tmp_map;
    }
    
-   template <class Model, class MP>
-   typename MSSM_Phys<Model,MP>::fmap1 MSSM_Phys<Model,MP>::fill_PoleMass_map1(){
+   template <class Model>
+   typename MSSM_Phys<Model>::fmap1 MSSM_Phys<Model>::fill_PoleMass_map1(){
       fmap1 tmp_map;
     
       // tmp_map["MSd"] = &Model::get_Pole_MSd;
@@ -711,23 +710,23 @@ namespace flexiblesusy {
    }
    
    //returns empty mass sicne none of these exist in this model
-   template <class Model, class MP>
-   typename MSSM_Phys<Model,MP>::fmap MSSM_Phys<Model,MP>::fill_PoleMixing_map(){
+   template <class Model>
+   typename MSSM_Phys<Model>::fmap MSSM_Phys<Model>::fill_PoleMixing_map(){
       fmap tmp_map;
       
       return tmp_map;
    }
    
    //returns empty mass sicne none of these exist in this model
-   template <class Model, class MP>
-   typename MSSM_Phys<Model,MP>::fmap1 MSSM_Phys<Model,MP>::fill_PoleMixing_map1(){
+   template <class Model>
+   typename MSSM_Phys<Model>::fmap1 MSSM_Phys<Model>::fill_PoleMixing_map1(){
       fmap1 tmp_map;
     
       return tmp_map;
    }
    
-   template <class Model, class MP>
-   typename MSSM_Phys<Model,MP>::fmap2 MSSM_Phys<Model,MP>::fill_PoleMixing_map2(){
+   template <class Model>
+   typename MSSM_Phys<Model>::fmap2 MSSM_Phys<Model>::fill_PoleMixing_map2(){
       fmap2 tmp_map;
       //Need to add these to generated code before I can use them here.
       // tmp_map["ZD"] = &MssmFS::get_Pole_ZD;
@@ -760,8 +759,8 @@ namespace flexiblesusy {
    
    
    //Takes a string and an index. 
-   template <class M, class MP>
-   double MSSM_DRbarPars<M,MP>::get_tree_MassEigenstate(std::string mass) const {
+   template <class M>
+   double MSSM_DRbarPars<M>::get_tree_MassEigenstate(std::string mass) const {
       if(mass == "MZ") 
          {
             return  my_parent.model.get_MVZ();
@@ -849,8 +848,8 @@ namespace flexiblesusy {
    }
    
    //Takes a string and an index. 
-   template <class M, class MP>
-   double MSSM_DRbarPars<M,MP>::get_tree_MassEigenstate(std::string mass, int i) const {
+   template <class M>
+   double MSSM_DRbarPars<M>::get_tree_MassEigenstate(std::string mass, int i) const {
       if(mass == "MSd") 
          {
             return my_parent.model.get_MSd()(i);
@@ -899,8 +898,8 @@ namespace flexiblesusy {
    
    
    //Takes a string and an index. 
-   template <class M, class MP>
-   double MSSM_DRbarPars<M,MP>::get_tree_MassEigenstate(std::string mass, int i, int j) const {
+   template <class M>
+   double MSSM_DRbarPars<M>::get_tree_MassEigenstate(std::string mass, int i, int j) const {
       std::cout << "Error: The pole mass you requested does not exist in the MSSM" << std::endl;
       return -1.0;
    
@@ -908,8 +907,8 @@ namespace flexiblesusy {
    
    
    //Takes a string and an index. 
-   template <class M, class MP>
-   double MSSM_Phys<M,MP>::get_MPole(std::string polemass) const {
+   template <class M>
+   double MSSM_Phys<M>::get_MPole(std::string polemass) const {
       if(polemass == "MZ") 
          {
             return my_parent.model.get_physical().MVZ;
@@ -997,8 +996,8 @@ namespace flexiblesusy {
    }
    
    //Takes a string and an index. 
-   template <class M, class MP>
-   double MSSM_Phys<M,MP>::get_MPole(std::string polemass, int i) const {
+   template <class M>
+   double MSSM_Phys<M>::get_MPole(std::string polemass, int i) const {
       if(polemass == "MSd") 
          {
             return my_parent.model.get_physical().MSd(i);
@@ -1046,15 +1045,15 @@ namespace flexiblesusy {
    }
    
    
-   template <class M, class MP>
-   double MSSM_DRbarPars<M,MP>::get_tree_Mixing_angle(std::string MixMat) const {
+   template <class M>
+   double MSSM_DRbarPars<M>::get_tree_Mixing_angle(std::string MixMat) const {
     
       std::cout << "Error: Sorry I know nothing" << std::endl;
       return 6666666666666.6666666666666;
    
    }
-   template <class M, class MP>
-   double MSSM_DRbarPars<M,MP>::get_tree_Mixing_element(std::string MixMat, int i, int j) const {
+   template <class M>
+   double MSSM_DRbarPars<M>::get_tree_Mixing_element(std::string MixMat, int i, int j) const {
    
     //Down squark mixing matrix
       if(MixMat == "ZD") {
@@ -1128,8 +1127,8 @@ namespace flexiblesusy {
    }
    
    //Takes a string and an index. 
-   template <class M, class MP>
-   double MSSM_Phys<M,MP>::get_MPole(std::string polemass, int i, int j) const {
+   template <class M>
+   double MSSM_Phys<M>::get_MPole(std::string polemass, int i, int j) const {
       std::cout << "Error: The pole mass you requested does not exist in the MSSM" << std::endl;
       return -1.0;
    
@@ -1137,14 +1136,14 @@ namespace flexiblesusy {
    
    
    
-   template <class M, class MP>
-   double MSSM_Phys<M,MP>::get_Mixing_angle(std::string) const {
+   template <class M>
+   double MSSM_Phys<M>::get_Mixing_angle(std::string) const {
       std::cout << "Error: Sorry I know nothing" << std::endl;
       return 6666666666666.6666666666666;
    }
    
-   template <class M, class MP>
-   double MSSM_Phys<M,MP>::get_Mixing_element(std::string MixMat, int i, int j) const {
+   template <class M>
+   double MSSM_Phys<M>::get_Mixing_element(std::string MixMat, int i, int j) const {
       //Down squark mixing matrix
       if(MixMat == "ZD") {
          return my_parent.model.get_physical().ZD(i,j);
@@ -1238,41 +1237,41 @@ namespace flexiblesusy {
    // }
    
    
-   template <class M, class MP>
-   double MSSM_DRbarPars<M,MP>::get_mass4_par(std::string mass) const {
+   template <class M>
+   double MSSM_DRbarPars<M>::get_mass4_par(std::string mass) const {
     std::cout << "Error: The dimension 4 parameter you requested does not exist in the MSSM" << std::endl;
       return -1.0;   
    }
-   template <class M, class MP>
-   double MSSM_DRbarPars<M,MP>::get_mass4_par(std::string, int i) const {
+   template <class M>
+   double MSSM_DRbarPars<M>::get_mass4_par(std::string, int i) const {
       std::cout << "Error: The dimension 4 parameter you requested does not exist in the MSSM" << std::endl;
       return -1.0;
    }
-   template <class M, class MP>
-   double MSSM_DRbarPars<M,MP>::get_mass4_par(std::string mass, int i, int j) const {
+   template <class M>
+   double MSSM_DRbarPars<M>::get_mass4_par(std::string mass, int i, int j) const {
    std::cout << "Error: The dimension 4 parameter you requested does not exist in the MSSM" << std::endl;
       return -1.0;
    
    }
    
-   template <class M, class MP>
-   double MSSM_DRbarPars<M,MP>::get_mass3_par(std::string mass) const {
+   template <class M>
+   double MSSM_DRbarPars<M>::get_mass3_par(std::string mass) const {
     std::cout << "Error: The dimension 3 parameter you requested does not exist in the MSSM" << std::endl;
       return -1.0;   
    }
-   template <class M, class MP>
-   double MSSM_DRbarPars<M,MP>::get_mass3_par(std::string, int i) const {
+   template <class M>
+   double MSSM_DRbarPars<M>::get_mass3_par(std::string, int i) const {
       std::cout << "Error: The dimension 3 parameter you requested does not exist in the MSSM" << std::endl;
       return -1.0;
    }
-   template <class M, class MP>
-   double MSSM_DRbarPars<M,MP>::get_mass3_par(std::string mass, int i, int j) const {
+   template <class M>
+   double MSSM_DRbarPars<M>::get_mass3_par(std::string mass, int i, int j) const {
    std::cout << "Error: The dimension 3 parameter you requested does not exist in the MSSM" << std::endl;
       return -1.0;
    
    }
-   template <class M, class MP>
-   double MSSM_DRbarPars<M,MP>::get_mass2_par(std::string mass) const {
+   template <class M>
+   double MSSM_DRbarPars<M>::get_mass2_par(std::string mass) const {
       if(mass == "BMu"){
          return my_parent.model.get_BMu();
       }
@@ -1287,13 +1286,13 @@ namespace flexiblesusy {
       return -1.0;
       }
    }
-   template <class M, class MP>
-   double MSSM_DRbarPars<M,MP>::get_mass2_par(std::string, int i) const {
+   template <class M>
+   double MSSM_DRbarPars<M>::get_mass2_par(std::string, int i) const {
       std::cout << "Error: The dimension 2 parameter you requested does not exist in the MSSM" << std::endl;
       return -1.0;
    }
-   template <class M, class MP>
-   double MSSM_DRbarPars<M,MP>::get_mass2_par(std::string mass, int i, int j) const {
+   template <class M>
+   double MSSM_DRbarPars<M>::get_mass2_par(std::string mass, int i, int j) const {
       if(mass == "mq2"){
          return my_parent.model.get_mq2(i,j);
       }
@@ -1315,8 +1314,8 @@ namespace flexiblesusy {
       }
    }
    
-   template <class M, class MP>
-   double MSSM_DRbarPars<M,MP>::get_mass_par(std::string mass) const {
+   template <class M>
+   double MSSM_DRbarPars<M>::get_mass_par(std::string mass) const {
       if(mass == "Mu"){
          return my_parent.model.get_Mu();
       }
@@ -1347,14 +1346,14 @@ namespace flexiblesusy {
       }
    }
    
-   template <class M, class MP>
-   double MSSM_DRbarPars<M,MP>::get_mass_par(std::string, int) const {
+   template <class M>
+   double MSSM_DRbarPars<M>::get_mass_par(std::string, int) const {
    
      std::cout << "Error: The dimension 1 parameter you requested does not exist in the MSSM" << std::endl;
       return -1.0;
    }
-   template <class M, class MP>
-   double MSSM_DRbarPars<M,MP>::get_mass_par(std::string mass, int i, int j) const {
+   template <class M>
+   double MSSM_DRbarPars<M>::get_mass_par(std::string mass, int i, int j) const {
       if (mass == "TYd" || mass == "ad"){
          return my_parent.model.get_TYd(i,j);
       }
@@ -1370,8 +1369,8 @@ namespace flexiblesusy {
       }
    }
       
-   template <class M, class MP>
-      double MSSM_DRbarPars<M,MP>::get_dimensionless_par(std::string coupling) const {
+   template <class M>
+      double MSSM_DRbarPars<M>::get_dimensionless_par(std::string coupling) const {
          if(coupling == "g1"){
             return my_parent.model.get_g1();
          }
@@ -1390,16 +1389,16 @@ namespace flexiblesusy {
          }
    }
    
-   template <class M, class MP>
-      double MSSM_DRbarPars<M,MP>::get_dimensionless_par(std::string coupling, int i) const {   
+   template <class M>
+      double MSSM_DRbarPars<M>::get_dimensionless_par(std::string coupling, int i) const {   
      std::cout << "Error: The dimensionless parameter you requested does not exist in the MSSM" << std::endl;
       return -1.0;
    }
    
    
    
-   template <class M, class MP>
-      double MSSM_DRbarPars<M,MP>::get_dimensionless_par(std::string coupling, int i, int j) const {
+   template <class M>
+      double MSSM_DRbarPars<M>::get_dimensionless_par(std::string coupling, int i, int j) const {
          if(coupling == "Yu"){
             return my_parent.model.get_Yu(i,j);
          }
@@ -1418,8 +1417,8 @@ namespace flexiblesusy {
       }
    
    
-   template <class Model, class MP>
-   Model MSSMSpec<Model,MP>::get_modelobject() {
+   template <class Model>
+   Model MSSMSpec<Model>::get_modelobject() {
       return model;
    }
    
