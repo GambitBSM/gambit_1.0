@@ -22,7 +22,7 @@
 ///  Authors:                                     
 ///                                               
 ///  \author The GAMBIT Collaboration            
-///  \date 04:28PM on November 24, 2014
+///  \date 09:46PM on November 24, 2014
 ///                                               
 ///  *********************************************
                                                   

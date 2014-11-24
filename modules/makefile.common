@@ -177,7 +177,7 @@ LN = $(CC)
 ifdef SHH
   CFLAGS += -O3 -g -fPIC -fopenmp
 else
-  CFLAGS += -O3 -Wall -Werror=uninitialized -g -fPIC -pedantic -fopenmp
+  CFLAGS += -O3 -Wall -Werror=uninitialized -Wfatal-errors -g -fPIC -pedantic -fopenmp
 endif
 FFLAGS = -O3 -fPIC $(FEXTRA)
 

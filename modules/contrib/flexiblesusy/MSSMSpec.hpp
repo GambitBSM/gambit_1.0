@@ -10,7 +10,7 @@
 //#include "MSSM_physical.hpp"
 
  
-namespace flexiblesusy {
+namespace Gambit {
 
    template <class Model>
    class MSSMSpec;
@@ -158,6 +158,8 @@ namespace flexiblesusy {
       friend class MSSM_Phys<Model>;
    private:
       //Model model;
+      virtual int get_index_offset() const {return 0;}
+
    public:
       Model model;
 
@@ -512,11 +514,11 @@ namespace flexiblesusy {
    typename MSSM_DRbarPars<Model>::fmap2 MSSM_DRbarPars<Model>::fill_mass2_map2() 
    {
       fmap2 tmp_map;
-      tmp_map["mq2"]= &Model::get_mq2;
-      tmp_map["ml2"] =&Model::get_ml2;
-      tmp_map["md2"]= &Model::get_md2;
-      tmp_map["mu2"] =&Model::get_mu2;
-      tmp_map["me2"]= &Model::get_me2;
+      tmp_map["mq2"] = FInfo2( &Model::get_mq2, {0,1,2}, {0,1,2} );
+      tmp_map["ml2"] = FInfo2( &Model::get_ml2, {0,1,2}, {0,1,2} );
+      tmp_map["md2"] = FInfo2( &Model::get_md2, {0,1,2}, {0,1,2} );
+      tmp_map["mu2"] = FInfo2( &Model::get_mu2, {0,1,2}, {0,1,2} );
+      tmp_map["me2"] = FInfo2( &Model::get_me2, {0,1,2}, {0,1,2} );
      
       return tmp_map;
    }
@@ -560,12 +562,12 @@ namespace flexiblesusy {
    typename MSSM_DRbarPars<Model>::fmap2 MSSM_DRbarPars<Model>::fill_mass_map2() 
    {
       fmap2 tmp_map;
-      tmp_map["TYd"]= &Model::get_TYd;
-      tmp_map["TYe"]= &Model::get_TYe;
-      tmp_map["TYu"]= &Model::get_TYu;
-      tmp_map["ad"]= &Model::get_TYd;
-      tmp_map["ae"]= &Model::get_TYe;
-      tmp_map["au"]= &Model::get_TYu;
+      tmp_map["TYd"]= FInfo2( &Model::get_TYd, {0}, {0} );
+      tmp_map["TYe"]= FInfo2( &Model::get_TYe, {0}, {0} );
+      tmp_map["TYu"]= FInfo2( &Model::get_TYu, {0}, {0} );
+      tmp_map["ad"] = FInfo2( &Model::get_TYd, {0}, {0} );
+      tmp_map["ae"] = FInfo2( &Model::get_TYe, {0}, {0} );
+      tmp_map["au"] = FInfo2( &Model::get_TYu, {0}, {0} );
    
       return tmp_map;
    }
@@ -605,9 +607,9 @@ namespace flexiblesusy {
    {
       fmap2 tmp_map;
      
-      tmp_map["Yd"]= &Model::get_Yd;
-      tmp_map["Ye"]= &Model::get_Ye;
-      tmp_map["Yu"]= &Model::get_Yu;
+      tmp_map["Yd"]= FInfo2( &Model::get_Yd, {0}, {0} );
+      tmp_map["Ye"]= FInfo2( &Model::get_Ye, {0}, {0} );
+      tmp_map["Yu"]= FInfo2( &Model::get_Yu, {0}, {0} );
      
       return tmp_map;
    }
@@ -643,23 +645,23 @@ namespace flexiblesusy {
    typename MSSM_DRbarPars<Model>::fmap1 MSSM_DRbarPars<Model>::fill_TreeMass_map1()
    {
    fmap1 tmp_map;
-    tmp_map["MSd"] = &Model::get_MSd;
-    tmp_map["MSv"] = &Model::get_MSv;
-    tmp_map["MSu"] = &Model::get_MSu;
-    tmp_map["MSe"] = &Model::get_MSe;
-    tmp_map["Mh0"] = &Model::get_Mhh;
+    tmp_map["MSd"] = FInfo1( &Model::get_MSd, {0} );
+    tmp_map["MSv"] = FInfo1( &Model::get_MSv, {0} );
+    tmp_map["MSu"] = FInfo1( &Model::get_MSu, {0} );
+    tmp_map["MSe"] = FInfo1( &Model::get_MSe, {0} );
+    tmp_map["Mh0"] = FInfo1( &Model::get_Mhh, {0} );
     //Here we may access the goldstone boson
     // and higgs. maybe too dangerous to keep?
-    tmp_map["MA0"] = &Model::get_MAh;      
+    tmp_map["MA0"] = FInfo1( &Model::get_MAh, {0} );      
     //Here we may access the goldstone boson
     //and higgs. maybe too dangerous to keep?
-    tmp_map["MHpm"] = &Model::get_MHpm;   
-    tmp_map["MCha"] = &Model::get_MCha;
-    tmp_map["MChi"] = &Model::get_MChi;
+    tmp_map["MHpm"] = FInfo1( &Model::get_MHpm, {0} );   
+    tmp_map["MCha"] = FInfo1( &Model::get_MCha, {0} );
+    tmp_map["MChi"] = FInfo1( &Model::get_MChi, {0} );
     
-    tmp_map["MFd"] = &Model::get_MFd;
-    tmp_map["MFu"] = &Model::get_MFu;
-    tmp_map["MFe"] = &Model::get_MFe;
+    tmp_map["MFd"] = FInfo1( &Model::get_MFd, {0} );
+    tmp_map["MFu"] = FInfo1( &Model::get_MFu, {0} );
+    tmp_map["MFe"] = FInfo1( &Model::get_MFe, {0} );
     return tmp_map;
    }
    
