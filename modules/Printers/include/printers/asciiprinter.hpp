@@ -67,10 +67,21 @@ namespace Gambit
         // Overload the base class virtual destructor
         ~asciiPrinter();
  
+        /// Virtual function overloads:
+        ///@{
+
         // Initialisation function
         // Run by dependency resolver, which supplies the functors with a vector of VertexIDs whose requiresPrinting flags are set to true.
         void initialise(const std::vector<int>&);
  
+        void flush() {};
+
+        void reset() {};
+
+        ///@}
+      
+        /// Asciiprinter-specific functions
+
         // Clear buffer
         void erase_buffer();
   
@@ -83,6 +94,8 @@ namespace Gambit
         // write the printer buffer to file       
         void dump_buffer();
          
+ 
+    
  
         // PRINT FUNCTIONS
         //----------------------------
