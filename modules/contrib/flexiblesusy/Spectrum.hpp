@@ -14,15 +14,21 @@ inline bool within_bounds(const int i, const std::set<int> allowed)
 }
 
 class Spectrum {
+template<class T> friend class RunparDer; // To allow access to 'get_index_offset'
+template<class T> friend class PhysDer;
 public:
    /// Dump out spectrum information to slha (not including input parameters etc. just at the moment...)
    virtual void dump2slha(const std::string&) const = 0;
 
-private:
+protected:
    /// Get integer offset convention used by internal model class (needed by getters which take indices) 
    virtual int get_index_offset() const = 0;
 
+private:
    class RunningPars {
+   protected:
+      /// Needed for access to parent object member functions
+      virtual Spectrum& get_parent() const = 0;
    public:
       /// run object to a particular scale
       virtual void RunToScale(double scale) = 0;
@@ -54,7 +60,7 @@ private:
       virtual double get_dimensionless_par(std::string, int) const = 0;
       virtual double get_dimensionless_par(std::string, int, int) const = 0;
    
-   /// alternative getter using map
+      /// alternative getter using map
       virtual double get_mass4_parameter(std::string) const = 0;
       virtual double get_mass4_parameter(std::string, int) const = 0;
       virtual double get_mass4_parameter(std::string, int, int) const = 0;
@@ -73,20 +79,23 @@ private:
  };
 
    class Phys {
+   protected:
+      /// Needed for access to parent object member functions
+      virtual Spectrum& get_parent() const = 0;
    public:
-   /// this get uses dumbest possible approach of if-else statements
-   virtual double get_MPole(std::string) const = 0;
-   virtual double get_MPole(std::string, int) const = 0;
-   virtual double get_MPole(std::string, int, int) const = 0;
-   virtual double get_Mixing_angle(std::string) const = 0;
-   virtual double get_Mixing_element(std::string, int, int) const = 0;
-   
-   /// map based getters
-   virtual double get_Pole_Mass(std::string) const = 0;
-   virtual double get_Pole_Mass(std::string, int) const = 0;
-   virtual double get_Pole_Mixing(std::string) const = 0;
-   virtual double get_Pole_Mixing(std::string, int) const = 0;
-   virtual double get_Pole_Mixing(std::string, int, int) const = 0;
+      /// this get uses dumbest possible approach of if-else statements
+      virtual double get_MPole(std::string) const = 0;
+      virtual double get_MPole(std::string, int) const = 0;
+      virtual double get_MPole(std::string, int, int) const = 0;
+      virtual double get_Mixing_angle(std::string) const = 0;
+      virtual double get_Mixing_element(std::string, int, int) const = 0;
+      
+      /// map based getters
+      virtual double get_Pole_Mass(std::string) const = 0;
+      virtual double get_Pole_Mass(std::string, int) const = 0;
+      virtual double get_Pole_Mixing(std::string) const = 0;
+      virtual double get_Pole_Mixing(std::string, int) const = 0;
+      virtual double get_Pole_Mixing(std::string, int, int) const = 0;
 
 };
 
@@ -186,7 +195,7 @@ template <class SpecType>
       virtual fmap& get_PoleMixing_map() const = 0;  
       virtual fmap1& get_PoleMixing_map1() const = 0;
       virtual fmap2& get_PoleMixing_map2() const = 0;
-   virtual SpecType get_bound_spec() const = 0;
+      virtual SpecType get_bound_spec() const = 0;
    public: 
       virtual double get_Pole_Mass(std::string) const;
       virtual double get_Pole_Mass(std::string, int) const;
@@ -267,8 +276,11 @@ double RunparDer<SpecType>::get_mass4_parameter(std::string mass, int i) const
    }
    else
    {
+       /// Switch index convention
+       int offset = get_parent().get_index_offset();
+       int io = i + offset;
        /// Check that index is in the permitted set
-       if( not within_bounds(i, it->second.iset1) )
+       if( not within_bounds(io, it->second.iset1) )
        {
           std::cout << "Index "<<i<<" out of bounds for mass4 with string reference '"<<mass<<"'!" <<std::endl;
           return -1;
@@ -276,7 +288,7 @@ double RunparDer<SpecType>::get_mass4_parameter(std::string mass, int i) const
 
        ///  Get function out of map and call it on the bound flexiSUSY object
        FSptr1 f = it->second.fptr;
-       return (spec.*f)(i);
+       return (spec.*f)(io);
    }
 }
 
@@ -293,14 +305,18 @@ double  RunparDer<SpecType>::get_mass4_parameter(std::string mass, int i, int j)
    }
    else
    {
+       /// Switch index convention
+       int offset = get_parent().get_index_offset();
+       int io = i + offset;
+       int jo = j + offset;
        /// Check that index is in the permitted set
-       if( not within_bounds(i, it->second.iset1) )
+       if( not within_bounds(io, it->second.iset1) )
        {
           std::cout << "First index ("<<i<<") out of bounds for mass4 with string reference '"<<mass<<"'!" <<std::endl;
           return -1;
        }
        /// Check that index is in the permitted set
-       if( not within_bounds(j, it->second.iset2) )
+       if( not within_bounds(jo, it->second.iset2) )
        {
           std::cout << "Second index ("<<j<<") out of bounds for mass4 with string reference '"<<mass<<"'!" <<std::endl;
           return -1;
@@ -308,7 +324,7 @@ double  RunparDer<SpecType>::get_mass4_parameter(std::string mass, int i, int j)
 
       ///  Get function out of map and call it on the bound flexiSUSY object
        FSptr2 f = it->second.fptr;
-       return (spec.*f)(i,j);
+       return (spec.*f)(io,jo);
    }
 }
 
@@ -347,15 +363,18 @@ double RunparDer<SpecType>::get_mass3_parameter(std::string mass, int i) const
    }
    else
    {
+        /// Switch index convention
+       int offset = get_parent().get_index_offset();
+       int io = i + offset;
        /// Check that index is in the permitted set
-       if( not within_bounds(i, it->second.iset1) )
+       if( not within_bounds(io, it->second.iset1) )
        {
           std::cout << "Index "<<i<<" out of bounds for mass3 with string reference '"<<mass<<"'!" <<std::endl;
           return -1;
        }
        ///  Get function out of map and call it on the bound flexiSUSY object
        FSptr1 f = it->second.fptr;
-       return (spec.*f)(i);
+       return (spec.*f)(io);
    }
 }
 
@@ -372,14 +391,18 @@ double  RunparDer<SpecType>::get_mass3_parameter(std::string mass, int i, int j)
    }
    else
    {
-       /// Check that index is in the permitted set
-       if( not within_bounds(i, it->second.iset1) )
+        /// Switch index convention
+       int offset = get_parent().get_index_offset();
+       int io = i + offset;
+       int jo = j + offset;
+      /// Check that index is in the permitted set
+       if( not within_bounds(io, it->second.iset1) )
        {
           std::cout << "First index ("<<i<<") out of bounds for mass3 with string reference '"<<mass<<"'!" <<std::endl;
           return -1;
        }
        /// Check that index is in the permitted set
-       if( not within_bounds(j, it->second.iset2) )
+       if( not within_bounds(jo, it->second.iset2) )
        {
           std::cout << "Second index ("<<j<<") out of bounds for mass3 with string reference '"<<mass<<"'!" <<std::endl;
           return -1;
@@ -387,7 +410,7 @@ double  RunparDer<SpecType>::get_mass3_parameter(std::string mass, int i, int j)
 
        ///  Get function out of map and call it on the bound flexiSUSY object
        FSptr2 f = it->second.fptr;
-       return (spec.*f)(i,j);
+       return (spec.*f)(io,jo);
    }
 }
 
@@ -424,15 +447,18 @@ double  RunparDer<SpecType>::get_mass2_parameter(std::string mass, int i) const
    }
    else
    {
+       /// Switch index convention
+       int offset = get_parent().get_index_offset();
+       int io = i + offset;
        /// Check that index is in the permitted set
-       if( not within_bounds(i, it->second.iset1) )
+       if( not within_bounds(io, it->second.iset1) )
        {
           std::cout << "Index "<<i<<" out of bounds for mass2 with string reference '"<<mass<<"'!" <<std::endl;
           return -1;
        }
        ///  Get function out of map and call it on the bound flexiSUSY object
        FSptr1 f = it->second.fptr;
-       return (spec.*f)(i);
+       return (spec.*f)(io);
    }
 }
 
@@ -449,14 +475,18 @@ double  RunparDer<SpecType>::get_mass2_parameter(std::string mass, int i, int j)
    }
    else
    {
+       /// Switch index convention
+       int offset = get_parent().get_index_offset();
+       int io = i + offset;
+       int jo = j + offset;
        /// Check that index is in the permitted set
-       if( not within_bounds(i, it->second.iset1) )
+       if( not within_bounds(io, it->second.iset1) )
        {
           std::cout << "First index ("<<i<<") out of bounds for mass2 with string reference '"<<mass<<"'!" <<std::endl;
           return -1;
        }
        /// Check that index is in the permitted set
-       if( not within_bounds(j, it->second.iset2) )
+       if( not within_bounds(jo, it->second.iset2) )
        {
           std::cout << "Second index ("<<j<<") out of bounds for mass2 with string reference '"<<mass<<"'!" <<std::endl;
           return -1;
@@ -464,7 +494,7 @@ double  RunparDer<SpecType>::get_mass2_parameter(std::string mass, int i, int j)
 
        ///  Get function out of map and call it on the bound flexiSUSY object
        FSptr2 f = it->second.fptr;
-       return (spec.*f)(i,j);
+       return (spec.*f)(io,jo);
    }
 }
 
@@ -502,15 +532,18 @@ double  RunparDer<SpecType>::get_mass_parameter(std::string mass, int i) const
    }
    else
    {
+       /// Switch index convention
+       int offset = get_parent().get_index_offset();
+       int io = i + offset;
        /// Check that index is in the permitted set
-       if( not within_bounds(i, it->second.iset1) )
+       if( not within_bounds(io, it->second.iset1) )
        {
           std::cout << "Index "<<i<<" out of bounds for mass with string reference '"<<mass<<"'!" <<std::endl;
           return -1;
        }
        ///  Get function out of map and call it on the bound flexiSUSY object
        FSptr1 f = it->second.fptr;
-       return (spec.*f)(i);
+       return (spec.*f)(io);
    }
 }
 
@@ -527,14 +560,18 @@ double  RunparDer<SpecType>::get_mass_parameter(std::string mass, int i, int j) 
    }
    else
    {
+       /// Switch index convention
+       int offset = get_parent().get_index_offset();
+       int io = i + offset;
+       int jo = j + offset;
        /// Check that index is in the permitted set
-       if( not within_bounds(i, it->second.iset1) )
+       if( not within_bounds(io, it->second.iset1) )
        {
           std::cout << "First index ("<<i<<") out of bounds for mass with string reference '"<<mass<<"'!" <<std::endl;
           return -1;
        }
        /// Check that index is in the permitted set
-       if( not within_bounds(j, it->second.iset2) )
+       if( not within_bounds(jo, it->second.iset2) )
        {
           std::cout << "Second index ("<<j<<") out of bounds for mass with string reference '"<<mass<<"'!" <<std::endl;
           return -1;
@@ -542,7 +579,7 @@ double  RunparDer<SpecType>::get_mass_parameter(std::string mass, int i, int j) 
 
        ///  Get function out of map and call it on the bound flexiSUSY object
        FSptr2 f = it->second.fptr;
-       return (spec.*f)(i,j);
+       return (spec.*f)(io,jo);
    }
 }
 
@@ -580,15 +617,18 @@ double  RunparDer<SpecType>::get_dimensionless_parameter(std::string par, int i)
    }
    else
    {
+       /// Switch index convention
+       int offset = get_parent().get_index_offset();
+       int io = i + offset;
        /// Check that index is in the permitted set
-       if( not within_bounds(i, it->second.iset1) )
+       if( not within_bounds(io, it->second.iset1) )
        {
           std::cout << "Index "<<i<<" out of bounds for dimensionless parameter with string reference '"<<par<<"'!" <<std::endl;
           return -1;
        }
        ///  Get function out of map and call it on the bound flexiSUSY object
        FSptr1 f = it->second.fptr;
-       return (spec.*f)(i);
+       return (spec.*f)(io);
    }
 }
 
@@ -605,14 +645,18 @@ double  RunparDer<SpecType>::get_dimensionless_parameter(std::string par, int i,
    }
    else
    {
+       /// Switch index convention
+       int offset = get_parent().get_index_offset();
+       int io = i + offset;
+       int jo = j + offset;
        /// Check that index is in the permitted set
-       if( not within_bounds(i, it->second.iset1) )
+       if( not within_bounds(io, it->second.iset1) )
        {
           std::cout << "First index ("<<i<<") out of bounds for dimensionless parameter with string reference '"<<par<<"'!" <<std::endl;
           return -1;
        }
        /// Check that index is in the permitted set
-       if( not within_bounds(j, it->second.iset2) )
+       if( not within_bounds(jo, it->second.iset2) )
        {
           std::cout << "Second index ("<<j<<") out of bounds for dimensionless parameter with string reference '"<<par<<"'!" <<std::endl;
           return -1;
@@ -620,7 +664,7 @@ double  RunparDer<SpecType>::get_dimensionless_parameter(std::string par, int i,
 
        ///  Get function out of map and call it on the bound flexiSUSY object
        FSptr2 f = it->second.fptr;
-       return (spec.*f)(i,j);
+       return (spec.*f)(io,jo);
    }
 }
 
@@ -661,8 +705,11 @@ double  PhysDer<SpecType>::get_Pole_Mass(std::string mass, int i) const
    }
    else
    {
+       /// Switch index convention
+       int offset = get_parent().get_index_offset();
+       int io = i + offset;
        /// Check that index is in the permitted set
-       if( not within_bounds(i, it->second.iset1) )
+       if( not within_bounds(io, it->second.iset1) )
        {
           std::cout << "Index "<<i<<" out of bounds for Pole Mass with string reference '"<<mass<<"'!" <<std::endl;
           return -1;
@@ -670,7 +717,7 @@ double  PhysDer<SpecType>::get_Pole_Mass(std::string mass, int i) const
       ///  Get function out of map and call it on the bound flexiSUSY object
       ///  Eigen::Array<double,6,1> d = it->second;
       FSptr1 f = it->second.fptr;
-      return (spec.*f)(i);
+      return (spec.*f)(io);
    }
 }
 
@@ -713,15 +760,18 @@ double PhysDer <SpecType>::get_Pole_Mixing(std::string mixing, int i) const
    }
    else
    {
+       /// Switch index convention
+       int offset = get_parent().get_index_offset();
+       int io = i + offset;
        /// Check that index is in the permitted set
-       if( not within_bounds(i, it->second.iset1) )
+       if( not within_bounds(io, it->second.iset1) )
        {
           std::cout << "Index "<<i<<" out of bounds for Pole Mixing with string reference '"<<mixing<<"'!" <<std::endl;
           return -1;
        }
        ///  Get function out of map and call it on the bound flexiSUSY object
        FSptr1 f = it->second.fptr;
-       return (spec.*f)(i);
+       return (spec.*f)(io);
    }
 }
 template <class SpecType>
@@ -741,14 +791,18 @@ double PhysDer <SpecType>::get_Pole_Mixing(std::string mixing,
    }
    else
    {
+       /// Switch index convention
+       int offset = get_parent().get_index_offset();
+       int io = i + offset;
+       int jo = j + offset;
        /// Check that index is in the permitted set
-       if( not within_bounds(i, it->second.iset1) )
+       if( not within_bounds(io, it->second.iset1) )
        {
           std::cout << "First index ("<<i<<") out of bounds for Pole Mixing with string reference '"<<mixing<<"'!" <<std::endl;
           return -1;
        }
        /// Check that index is in the permitted set
-       if( not within_bounds(j, it->second.iset2) )
+       if( not within_bounds(jo, it->second.iset2) )
        {
           std::cout << "Second index ("<<j<<") out of bounds for Pole Mixing with string reference '"<<mixing<<"'!" <<std::endl;
           return -1;
@@ -756,7 +810,7 @@ double PhysDer <SpecType>::get_Pole_Mixing(std::string mixing,
  
        ///  Get function out of map and call it on the bound flexiSUSY object
        FSptr2 f = it->second.fptr;
-       return (spec.*f)(i,j);
+       return (spec.*f)(io,jo);
    }
 }
 

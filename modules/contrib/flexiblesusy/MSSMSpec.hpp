@@ -23,6 +23,7 @@ namespace Gambit {
    private:
       //reference to spectrum class for accessing model object
       MSSMSpec<Model> &my_parent;
+      virtual Spectrum& get_parent() const {return my_parent;}
 
       static fmap TreeMass_map;
       static fmap1 TreeMass_map1;
@@ -123,6 +124,8 @@ namespace Gambit {
       //reference to spectrim class for accessing model object
       //Spec<Model,Model_physical> & my_parent;
       MSSMSpec<Model> &my_parent;
+      virtual Spectrum& get_parent() const {return my_parent;}
+
       static fmap  PoleMass_map;
       static fmap1 PoleMass_map1;
       static fmap  fill_PoleMass_map();
@@ -158,7 +161,8 @@ namespace Gambit {
       friend class MSSM_Phys<Model>;
    private:
       //Model model;
-      virtual int get_index_offset() const {return 0;}
+      int index_offset;
+      virtual int get_index_offset() const {return index_offset;}
 
    public:
       Model model;
@@ -167,8 +171,8 @@ namespace Gambit {
       MSSM_Phys<Model> mssm_ph;
       MSSM_DRbarPars<Model> mssm_drbar_pars;
       //constructors
-      MSSMSpec();
-      MSSMSpec(Model&);
+      MSSMSpec(bool switch_index_convention=false);
+      MSSMSpec(Model&,bool switch_index_convention=false);
 
       //Could more constructors to interface with other generators   
 
@@ -261,23 +265,27 @@ namespace Gambit {
 
 
    //#include "MSSM_slha_io.hpp" // only needed by 'dump2slha'; can remove if this function changes
-
+ 
    template <class M>
-   MSSMSpec<M>::MSSMSpec(M& m) :
+   MSSMSpec<M>::MSSMSpec(M& m, bool switch_index_convention) :
       model(m),
       mssm_ph(*this),
       mssm_drbar_pars(*this),
-      Spec<M>(mssm_drbar_pars, mssm_ph)
+      Spec<M>(mssm_drbar_pars, mssm_ph),
+      index_offset(0)
    {
+      if (switch_index_convention) index_offset = 1;
    }
    
    // Default constructor
    template <class M>
-   MSSMSpec<M>::MSSMSpec() :
+   MSSMSpec<M>::MSSMSpec(bool switch_index_convention) :
       mssm_ph(*this),
       mssm_drbar_pars(*this),
-      Spec<M>(mssm_drbar_pars, mssm_ph)
+      Spec<M>(mssm_drbar_pars, mssm_ph),
+      index_offset(0)
    {
+      if (switch_index_convention) index_offset = 1;
    }
    
    template <class M>
