@@ -32,6 +32,7 @@
 #include <fstream>
 #include <iostream>
 #include <algorithm>
+#include <cmath>
 
 #include "gambit_module_headers.hpp"
 #include "DarkBit_types.hpp"
@@ -1363,43 +1364,118 @@ namespace Gambit {
     void mwimp_toy        (double &result)                  { result = 250.0;            }
     void annrate_toy      (double &result)                  { result = 1.e20;            }
 
+    void RD_thresholds_resonances_SingletDM(RDrestype &result)
+    {
+        using namespace Pipes::RD_thresholds_resonances_SingletDM;
+        result.n_res = 1;
+        result.n_thr = 0;
+        double mh = 125.7;  // TODO: Don't hardcode masses.
+        result.E_res[0] = mh/2;
+        result.dE_res[0] = mh/2/10.;
+
+        // TODO: This part should set up additional parameters in DS, but does
+        // not work at all. --> TB
+        DS_RDMGEV myrdmgev;
+        myrdmgev.nco = 1;
+        myrdmgev.mco[0] = *Param["mass"];
+        myrdmgev.mdof[0] = 1;
+        myrdmgev.kcoann[0] = 42;  // ???
+        *BEreq::rdmgev = myrdmgev;
+    }
+
+    void DD_couplings_SingletDM(Gambit::DarkBit::DD_couplings &result)
+    {
+        using namespace Pipes::DD_couplings_SingletDM;
+        double mass = *Param["mass"];
+        double lambda = *Param["lambda"];
+        result.gps = pow(lambda,2)/pow(mass,4);  // TODO: Use correct values
+        result.gns = pow(lambda,2)/pow(mass,4);
+        result.gpa = 0;
+        result.gna = 0;
+        result.M_DM = *Param["mass"];
+    }
+
+    double sv_for_Weff_from_ProcessCatalog;  // TODO: Get rid of global variable
+    double mass_for_Weff_from_ProcessCatalog;  // TODO: Get rid of global variable
+    double Weff_from_ProcessCatalog(double &peff)
+    {
+        double s = 4*(pow(peff,2) + pow(mass_for_Weff_from_ProcessCatalog,2));
+        return sv_for_Weff_from_ProcessCatalog * s;
+    }
+
+    void RD_eff_annrate_from_ProcessCatalog(double(*&result)(double&))
+    {
+        using namespace Pipes::RD_eff_annrate_from_ProcessCatalog;
+        double sv = 0;  // Assumed to be velocity independent
+
+        // Annihilation process (no coannihilations for now)
+        TH_Process annProc = (*Dep::TH_ProcessCatalog).getProcess((std::string)"chi_10", (std::string)"chi_10");
+
+        for (std::vector<TH_Channel>::iterator it = annProc.channelList.begin();
+                it != annProc.channelList.end(); ++it)
+        {
+            sv += (*it->dSigmadE)(0.);
+        }
+        sv_for_Weff_from_ProcessCatalog = sv;
+        mass_for_Weff_from_ProcessCatalog = *Param["mass"];
+        result = Weff_from_ProcessCatalog;
+    }
 
     void TH_ProcessCatalog_SingletDM(Gambit::DarkBit::TH_ProcessCatalog &result)
     {
         using namespace Pipes::TH_ProcessCatalog_SingletDM;
         std::vector<std::string> finalStates;
 
-        double mass = *Param["mass"];
-        double lambda = *Param["lambda"];  // Lambda is interpreted as sv for now
+        double mass, lambda, mh, Sigma_h, alpha_s, mf, s, Dh2, vf, Xf, x, mW;
+        double sv_bb, sv_WW;
 
-        // TODO: Update to real singlet DM
-        double sigma_bb     = 1e-26 * lambda * lambda * 0.8;  // partial sv
-        double sigma_tautau = 1e-26 * lambda * lambda * 0.2;  // partial sv
+        mass = *Param["mass"];
+        lambda = *Param["lambda"];
+
+        // TODO: Don't hardcode these parameters / update
+        mh = 125.7; 
+        mW = 80.5;
+        Sigma_h = mh*0.1;
+        alpha_s = 0.12;
+
+        s = pow(2*mass, 2);
+        Dh2 = 1/(pow(s-pow(mh,2),2) + pow(mh,2)*pow(Sigma_h,2));
+        double GeV2tocm3s1 = 1.17e-17;
+
+        // Annihilation into b-quarks.
+        mf = 5.;
+        vf = pow(1-4*pow(mf,2)/s, 0.5);
+        Xf = 3 * (1+(3/2*log(pow(mf,2)/s)+9/4)*4*alpha_s/3/M_PI);
+        sv_bb = pow(lambda,2)*pow(mf,2)/4/M_PI*Xf*pow(vf,3) * Dh2;
+        sv_bb *= GeV2tocm3s1;
+
+        // Annihilation into W bosons.
+        x = pow(mW,2)/s;
+        sv_WW = pow(lambda,2)*s/8/M_PI*sqrt(1-4*x)*Dh2*(1-4*x+12*pow(x,2));
+        sv_WW *= GeV2tocm3s1;
 
         // Initialize catalog
-        TH_ProcessCatalog catalog;                                      // Instantiate new ProcessCatalog
-        TH_Process process_ann((std::string)"chi_10", (std::string)"chi_10");   // and annihilation process
+        TH_ProcessCatalog catalog;
+        TH_Process process_ann((std::string)"chi_10", (std::string)"chi_10");
 
         // Initialize channel bb
-        BFptr kinematicFunction_bb(new BFconstant(sigma_bb,1));
+        BFptr kinematicFunction_bb(new BFconstant(sv_bb,1));
         finalStates.clear();
         finalStates.push_back("b");
         finalStates.push_back("bbar");
         TH_Channel channel_bb(finalStates, kinematicFunction_bb);
         process_ann.channelList.push_back(channel_bb);
 
-        // Initialize channel tautau
-        BFptr kinematicFunction_tautau(new BFconstant(sigma_tautau,1));
+        // Initialize channel bb
+        BFptr kinematicFunction_WW(new BFconstant(sv_WW,1));
         finalStates.clear();
-        finalStates.push_back("tau+");
-        finalStates.push_back("tau-");
-        TH_Channel channel_tautau(finalStates, kinematicFunction_tautau);
-        process_ann.channelList.push_back(channel_tautau);
-             
-        // And process on process list
-        catalog.processList.push_back(process_ann);
+        finalStates.push_back("W+");
+        finalStates.push_back("W-");
+        TH_Channel channel_WW(finalStates, kinematicFunction_WW);
+        process_ann.channelList.push_back(channel_WW);
 
         // Finally, store properties of "chi" in particleProperty list
+        catalog.processList.push_back(process_ann);
         TH_ParticleProperty chiProperty(mass, 1);  // Set mass and 2*spin
         catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("chi_10", chiProperty));
 
@@ -1423,6 +1499,7 @@ namespace Gambit {
         double Gns = (*Dep::DD_couplings).gns;
         double Gna = (*Dep::DD_couplings).gna;
         double oh2 = *Dep::RD_oh2;
+        TH_Process annProc = (*Dep::TH_ProcessCatalog).getProcess((std::string)"chi_10", (std::string)"chi_10");
         BFptr spectrum = (*Dep::GA_AnnYield)->fixPar(1, 0.);
 
         ostringstream filename;
@@ -1458,8 +1535,8 @@ namespace Gambit {
           std::vector<double> x = logspace(log10(x_min), log10(x_max), n);  // from 0.1 to 500 GeV
           std::vector<double> y = (*spectrum)(x);
           os << "# Annihilation spectrum dNdE [1/GeV]\n";
-          os << "AnnihialtionSpectrum:\n";
-          os << "  energy: [";
+          os << "GammaRaySpectrum:\n";
+          os << "  E: [";
           for (std::vector<double>::iterator it = x.begin(); it != x.end(); it++)
             os << *it << ", ";
           os  << "]\n";
@@ -1467,6 +1544,24 @@ namespace Gambit {
           for (std::vector<double>::iterator it = y.begin(); it != y.end(); it++)
             os << *it << ", ";
           os  << "]\n";
+          os << std::endl;
+
+          os << "# Annihilation rates\n";
+          os << "AnnihilationRates:\n";
+          for (std::vector<TH_Channel>::iterator it = annProc.channelList.begin();
+              it != annProc.channelList.end(); ++it)
+          {
+            os << "  ";
+            for (std::vector<std::string>::iterator jt = it->finalStateIDs.begin(); jt!=it->finalStateIDs.end(); jt++)
+            {
+              os << *jt << "";
+            }
+            if (it->finalStateIDs.size() == 2)
+              os << ": " << (*it->dSigmadE)(0.);
+            if (it->finalStateIDs.size() == 3)
+              os << ": " << (*it->dSigmadE)(0., 0.);
+            os << "\n";
+          }
           os << std::endl;
         }
         else
