@@ -1391,8 +1391,11 @@ namespace Gambit {
         using namespace Pipes::DD_couplings_SingletDM;
         double mass = *Param["mass"];
         double lambda = *Param["lambda"];
-        result.gps = pow(lambda,2)/pow(mass,4);  // TODO: Use correct values
-        result.gns = pow(lambda,2)/pow(mass,4);
+        double mh = 125.7;  // TODO: Don't hardcode
+        double mN = 0.94;
+        double fN = 0.35;
+        result.gps = lambda*fN*mN/pow(mh,2)/mass;
+        result.gns = lambda*fN*mN/pow(mh,2)/mass;
         result.gpa = 0;
         result.gna = 0;
         result.M_DM = *Param["mass"];
