@@ -1370,8 +1370,9 @@ namespace Gambit {
     void RD_thresholds_resonances_SingletDM(RDrestype &result)
     {
         using namespace Pipes::RD_thresholds_resonances_SingletDM;
-        result.n_res = 1;
-        result.n_thr = 0;
+        result.n_res = 0;
+        result.n_thr = 1;
+        result.E_thr[0] = 2*(*Param["mass"]);
         double mh = 125.7;  // TODO: Don't hardcode masses.
         result.E_res[0] = mh/2;
         result.dE_res[0] = mh/2/10.;
@@ -1422,7 +1423,8 @@ namespace Gambit {
         {
             sv += (*it->dSigmadE)(0.);
         }
-        sv_for_Weff_from_ProcessCatalog = sv;
+        double GeV2tocm3s1 = 1.17e-17;
+        sv_for_Weff_from_ProcessCatalog = sv/GeV2tocm3s1;
         mass_for_Weff_from_ProcessCatalog = *Param["mass"];
         result = Weff_from_ProcessCatalog;
     }
