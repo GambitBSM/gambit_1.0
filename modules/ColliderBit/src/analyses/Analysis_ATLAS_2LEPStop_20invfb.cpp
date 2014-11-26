@@ -106,7 +106,7 @@ namespace Gambit {
           P4 jetVec=baselineJets.at(iJet)->mom();
           for (size_t iEl=0;iEl<baselineElectrons.size();iEl++) {
             P4 elVec=baselineElectrons.at(iEl)->mom();
-            if (elVec.deltaR_eta(jetVec)<0.2)overlap=true;
+            if (fabs(elVec.deltaR_eta(jetVec))<0.2)overlap=true;
           }
           if (!overlap&&fabs(baselineJets.at(iJet)->eta())<2.5)goodJets.push_back(baselineJets.at(iJet));
           if (!overlap&&fabs(baselineJets.at(iJet)->eta())<2.5 && baselineJets.at(iJet)->pT()>20.)signalJets.push_back(baselineJets.at(iJet));
@@ -118,7 +118,7 @@ namespace Gambit {
           P4 elVec=baselineElectrons.at(iEl)->mom();
           for (size_t iJet=0;iJet<goodJets.size();iJet++) {
             P4 jetVec=goodJets.at(iJet)->mom();
-            if (elVec.deltaR_eta(jetVec)<0.4)overlap=true;
+            if (fabs(elVec.deltaR_eta(jetVec))<0.4)overlap=true;
           }
           if (!overlap && elVec.pT()>10.) {
             signalElectrons.push_back(baselineElectrons.at(iEl));
@@ -135,7 +135,7 @@ namespace Gambit {
 
           for (size_t iJet=0;iJet<goodJets.size();iJet++) {
             P4 jetVec=goodJets.at(iJet)->mom();
-            if (muVec.deltaR_eta(jetVec)<0.4){
+            if (fabs(muVec.deltaR_eta(jetVec))<0.4){
 	      overlap=true;
 	    }
           }
