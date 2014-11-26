@@ -32,6 +32,7 @@
 #include <fstream>
 #include <iostream>
 #include <algorithm>
+#include <cmath>
 
 #include "gambit_module_headers.hpp"
 #include "DarkBit_types.hpp"
@@ -175,11 +176,14 @@ namespace Gambit {
     {
       using namespace Pipes::getMSSMspectrum;
 	  eaSLHA spectrum;
+      static unsigned int counter = 0;
 
       // Read filename from yml ini file
-      std::string filename = runOptions->getValue<std::string>("filename");
-      std::cout << "Filename is " << filename << std::endl;
+      std::vector<std::string> filenames = runOptions->getValue<std::vector<std::string> >("filenames");
 
+      std::string filename = filenames[counter];
+
+      std::cout << "Read slha file " << filename << std::endl;
       std::ifstream ifs(filename.c_str());  // This might require char [] instead
       if(!ifs.good())
       {
@@ -189,6 +193,9 @@ namespace Gambit {
       ifs >> spectrum;
       ifs.close();
       result = spectrum;
+      counter++;
+      if ( counter >= filenames.size() )
+          counter = 0;   // Reset counter.
     }
 
 //////////////////////////////////////////////////////////////////////////
@@ -1357,43 +1364,118 @@ namespace Gambit {
     void mwimp_toy        (double &result)                  { result = 250.0;            }
     void annrate_toy      (double &result)                  { result = 1.e20;            }
 
+    void RD_thresholds_resonances_SingletDM(RDrestype &result)
+    {
+        using namespace Pipes::RD_thresholds_resonances_SingletDM;
+        result.n_res = 1;
+        result.n_thr = 0;
+        double mh = 125.7;  // TODO: Don't hardcode masses.
+        result.E_res[0] = mh/2;
+        result.dE_res[0] = mh/2/10.;
+
+        // TODO: This part should set up additional parameters in DS, but does
+        // not work at all. --> TB
+        DS_RDMGEV myrdmgev;
+        myrdmgev.nco = 1;
+        myrdmgev.mco[0] = *Param["mass"];
+        myrdmgev.mdof[0] = 1;
+        myrdmgev.kcoann[0] = 42;  // ???
+        *BEreq::rdmgev = myrdmgev;
+    }
+
+    void DD_couplings_SingletDM(Gambit::DarkBit::DD_couplings &result)
+    {
+        using namespace Pipes::DD_couplings_SingletDM;
+        double mass = *Param["mass"];
+        double lambda = *Param["lambda"];
+        result.gps = pow(lambda,2)/pow(mass,4);  // TODO: Use correct values
+        result.gns = pow(lambda,2)/pow(mass,4);
+        result.gpa = 0;
+        result.gna = 0;
+        result.M_DM = *Param["mass"];
+    }
+
+    double sv_for_Weff_from_ProcessCatalog;  // TODO: Get rid of global variable
+    double mass_for_Weff_from_ProcessCatalog;  // TODO: Get rid of global variable
+    double Weff_from_ProcessCatalog(double &peff)
+    {
+        double s = 4*(pow(peff,2) + pow(mass_for_Weff_from_ProcessCatalog,2));
+        return sv_for_Weff_from_ProcessCatalog * s;
+    }
+
+    void RD_eff_annrate_from_ProcessCatalog(double(*&result)(double&))
+    {
+        using namespace Pipes::RD_eff_annrate_from_ProcessCatalog;
+        double sv = 0;  // Assumed to be velocity independent
+
+        // Annihilation process (no coannihilations for now)
+        TH_Process annProc = (*Dep::TH_ProcessCatalog).getProcess((std::string)"chi_10", (std::string)"chi_10");
+
+        for (std::vector<TH_Channel>::iterator it = annProc.channelList.begin();
+                it != annProc.channelList.end(); ++it)
+        {
+            sv += (*it->dSigmadE)(0.);
+        }
+        sv_for_Weff_from_ProcessCatalog = sv;
+        mass_for_Weff_from_ProcessCatalog = *Param["mass"];
+        result = Weff_from_ProcessCatalog;
+    }
 
     void TH_ProcessCatalog_SingletDM(Gambit::DarkBit::TH_ProcessCatalog &result)
     {
         using namespace Pipes::TH_ProcessCatalog_SingletDM;
         std::vector<std::string> finalStates;
 
-        double mass = *Param["mass"];
-        double lambda = *Param["lambda"];  // Lambda is interpreted as sv for now
+        double mass, lambda, mh, Sigma_h, alpha_s, mf, s, Dh2, vf, Xf, x, mW;
+        double sv_bb, sv_WW;
 
-        // TODO: Update to real singlet DM
-        double sigma_bb     = 1e-26 * lambda * lambda * 0.8;  // partial sv
-        double sigma_tautau = 1e-26 * lambda * lambda * 0.2;  // partial sv
+        mass = *Param["mass"];
+        lambda = *Param["lambda"];
+
+        // TODO: Don't hardcode these parameters / update
+        mh = 125.7; 
+        mW = 80.5;
+        Sigma_h = mh*0.1;
+        alpha_s = 0.12;
+
+        s = pow(2*mass, 2);
+        Dh2 = 1/(pow(s-pow(mh,2),2) + pow(mh,2)*pow(Sigma_h,2));
+        double GeV2tocm3s1 = 1.17e-17;
+
+        // Annihilation into b-quarks.
+        mf = 5.;
+        vf = pow(1-4*pow(mf,2)/s, 0.5);
+        Xf = 3 * (1+(3/2*log(pow(mf,2)/s)+9/4)*4*alpha_s/3/M_PI);
+        sv_bb = pow(lambda,2)*pow(mf,2)/4/M_PI*Xf*pow(vf,3) * Dh2;
+        sv_bb *= GeV2tocm3s1;
+
+        // Annihilation into W bosons.
+        x = pow(mW,2)/s;
+        sv_WW = pow(lambda,2)*s/8/M_PI*sqrt(1-4*x)*Dh2*(1-4*x+12*pow(x,2));
+        sv_WW *= GeV2tocm3s1;
 
         // Initialize catalog
-        TH_ProcessCatalog catalog;                                      // Instantiate new ProcessCatalog
-        TH_Process process_ann((std::string)"chi_10", (std::string)"chi_10");   // and annihilation process
+        TH_ProcessCatalog catalog;
+        TH_Process process_ann((std::string)"chi_10", (std::string)"chi_10");
 
         // Initialize channel bb
-        BFptr kinematicFunction_bb(new BFconstant(sigma_bb,1));
+        BFptr kinematicFunction_bb(new BFconstant(sv_bb,1));
         finalStates.clear();
         finalStates.push_back("b");
         finalStates.push_back("bbar");
         TH_Channel channel_bb(finalStates, kinematicFunction_bb);
         process_ann.channelList.push_back(channel_bb);
 
-        // Initialize channel tautau
-        BFptr kinematicFunction_tautau(new BFconstant(sigma_tautau,1));
+        // Initialize channel bb
+        BFptr kinematicFunction_WW(new BFconstant(sv_WW,1));
         finalStates.clear();
-        finalStates.push_back("tau+");
-        finalStates.push_back("tau-");
-        TH_Channel channel_tautau(finalStates, kinematicFunction_tautau);
-        process_ann.channelList.push_back(channel_tautau);
-             
-        // And process on process list
-        catalog.processList.push_back(process_ann);
+        finalStates.push_back("W+");
+        finalStates.push_back("W-");
+        TH_Channel channel_WW(finalStates, kinematicFunction_WW);
+        process_ann.channelList.push_back(channel_WW);
 
         // Finally, store properties of "chi" in particleProperty list
+        catalog.processList.push_back(process_ann);
         TH_ParticleProperty chiProperty(mass, 1);  // Set mass and 2*spin
         catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("chi_10", chiProperty));
 
@@ -1401,88 +1483,92 @@ namespace Gambit {
     }
 
 
-
-/*
-// Tests for Torsten
-
-    void provideN_func(int &result)
+    void UnitTest_DarkBit(int &result)
     {
-      using namespace Pipes::provideN_func;
-      result=1000;
+        using namespace Pipes::UnitTest_DarkBit;
+        /* This function depends on all relevant DM observables (indirect and
+         * direct) and dumps them into convenient files in YAML format, which
+         * afterwards can be checked against the expectations.
+         */
+
+        static unsigned int counter = 0;
+
+        double M_DM = (*Dep::DD_couplings).M_DM;
+        double Gps = (*Dep::DD_couplings).gps;
+        double Gpa = (*Dep::DD_couplings).gpa;
+        double Gns = (*Dep::DD_couplings).gns;
+        double Gna = (*Dep::DD_couplings).gna;
+        double oh2 = *Dep::RD_oh2;
+        TH_Process annProc = (*Dep::TH_ProcessCatalog).getProcess((std::string)"chi_10", (std::string)"chi_10");
+        BFptr spectrum = (*Dep::GA_AnnYield)->fixPar(1, 0.);
+
+        ostringstream filename;
+        filename << runOptions->getValueOrDef<std::string>("UnitTest_DarkBit", "fileroot");
+        filename << "_" << counter << ".yml";
+        counter++;
+
+        std::ofstream os;
+        os.open(filename.str());
+        if(os)
+        {
+          // Standard output.
+          os << "# Direct detection couplings\n";
+          os << "DDcouplings:\n";
+          os << "  gps: " << Gps << "\n";
+          os << "  gpa: " << Gpa << "\n";
+          os << "  gns: " << Gns << "\n";
+          os << "  gna: " << Gna << "\n";
+          os << "\n";
+          os << "# Particle masses [GeV] \n";
+          os << "ParticleMasses:\n";
+          os << "  Mchi: " << M_DM << "\n";
+          os << "\n";
+          os << "# Relic density Omega h^2\n";
+          os << "RelicDensity:\n";
+          os << "  oh2: " << oh2 << "\n";
+          os << "\n";
+
+          // Output gamma-ray spectrum (grid be set in YAML file).
+          double x_min = runOptions->getValueOrDef<double>(0.1, "GA_AnnYield", "Emin");
+          double x_max = runOptions->getValueOrDef<double>(100, "GA_AnnYield", "Emax");
+          int n = runOptions->getValueOrDef<double>(10, "GA_AnnYield", "nbins");
+          std::vector<double> x = logspace(log10(x_min), log10(x_max), n);  // from 0.1 to 500 GeV
+          std::vector<double> y = (*spectrum)(x);
+          os << "# Annihilation spectrum dNdE [1/GeV]\n";
+          os << "GammaRaySpectrum:\n";
+          os << "  E: [";
+          for (std::vector<double>::iterator it = x.begin(); it != x.end(); it++)
+            os << *it << ", ";
+          os  << "]\n";
+          os << "  dNdE: [";
+          for (std::vector<double>::iterator it = y.begin(); it != y.end(); it++)
+            os << *it << ", ";
+          os  << "]\n";
+          os << std::endl;
+
+          os << "# Annihilation rates\n";
+          os << "AnnihilationRates:\n";
+          for (std::vector<TH_Channel>::iterator it = annProc.channelList.begin();
+              it != annProc.channelList.end(); ++it)
+          {
+            os << "  ";
+            for (std::vector<std::string>::iterator jt = it->finalStateIDs.begin(); jt!=it->finalStateIDs.end(); jt++)
+            {
+              os << *jt << "";
+            }
+            if (it->finalStateIDs.size() == 2)
+              os << ": " << (*it->dSigmadE)(0.);
+            if (it->finalStateIDs.size() == 3)
+              os << ": " << (*it->dSigmadE)(0., 0.);
+            os << "\n";
+          }
+          os << std::endl;
+        }
+        else
+        {
+          std::cout << "Warning: outputfile not open for writing." << std::endl;
+        }
+        os.close();
     }
-
-    void provideF_func(double(*&result)(double&))
-    {
-      using namespace Pipes::provideF_func;
-      result = BEreq::funcGauss.pointer();
-    }
-
-    void CalcAv_func(double &result)
-    {
-      using namespace Pipes::CalcAv_func;
-      int n=*Dep::provideN;
-      result = BEreq::average(byVal(*Dep::provideF), n);
-      std::cout << "CalcAv_func: " << result << std::endl;
-    }
-*/
-/*    
-    void RD_oh2_SingletDM(double &result)
-    {
-      using namespace Pipes::RD_oh2_SingletDM;
-      //double sigmaV = (*Dep::GA_BRs).sigmaV;
-      //result = 0.11/sigmaV * 3e-26;
-      result = 0;
-    }
-
-    void TH_ProcessCatalog_SingletDM(Gambit::DarkBit::TH_ProcessCatalog &result)
-    {
-        using namespace Pipes::TH_ProcessCatalog_CMSSM;
-
-        DS_MSPCTM mymspctm= *BEreq::mspctm;
-        // TODO:  Check if this is really DM mass
-        double mass = mymspctm.mass[41];  // Hardcoded array index
-        double sigmaTot = 3e-26;
-
-        std::cout << "Generate ProcessCatalog for chi with mass=" << mass << " GeV and cs=" << sigmaTot << " cm3/s." << std::endl;
-
-        TH_ProcessCatalog catalog;  // Instantiate new ProcessCatalog
-        TH_Process process((std::string)"chi", (std::string)"chi");  // and annihilation process
-
-        // Set cross-sections
-        double sigma_mumu = 0.5 * sigmaTot;
-        double sigma_bbbar = 0.5 * sigmaTot;
-
-        // Create associated kinematical functions (just dependent on vrel)
-        // here: s-wave, vrel independent 1-dim constant function
-        BFptr kinematicFunction_mumu(new BFconstant(sigma_mumu, 1));
-        BFptr kinematicFunction_bbbar(new BFconstant(sigma_bbbar, 1));
-
-        // Create channel identifier strings
-        std::vector<std::string> finalStates_mumu;// {"mu+", "mu-"};
-        finalStates_mumu.push_back("mu+");
-        finalStates_mumu.push_back("mu-");
-        std::vector<std::string> finalStates_bbbar;// {"b", "bbar"};
-        finalStates_bbbar.push_back("b");
-        finalStates_bbbar.push_back("bbar");
-
-        // Create channels
-        TH_Channel channel_mumu(finalStates_mumu, kinematicFunction_mumu);
-        TH_Channel channel_bbbar(finalStates_bbbar, kinematicFunction_bbbar);
-
-        // Push them on channel list of process
-        process.channelList.push_back(channel_mumu);
-        process.channelList.push_back(channel_bbbar);
-
-        // And process on processe list
-        catalog.processList.push_back(process);
-
-        // Finally, store properties of "chi" in particleProperty list
-        TH_ParticleProperty chiProperty(mass, 1);  // Set mass and 2*spin
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("chi", chiProperty));
-
-        result = catalog;
-    }
-*/
-
   }
 }

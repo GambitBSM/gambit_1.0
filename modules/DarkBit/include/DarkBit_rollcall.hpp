@@ -112,6 +112,11 @@ START_MODULE
       START_FUNCTION(RDrestype)
       DEPENDENCY(RD_spectrum, RDspectype)
     #undef FUNCTION
+    #define FUNCTION RD_thresholds_resonances_SingletDM
+      START_FUNCTION(RDrestype)
+      ALLOW_MODELS(SingletDM)
+      BACKEND_REQ(rdmgev, (), DS_RDMGEV)
+    #undef FUNCTION
   #undef CAPABILITY
 
   #define CAPABILITY RD_eff_annrate_SUSY_DSprep
@@ -129,6 +134,11 @@ START_MODULE
       START_FUNCTION(fptr_dd)
         DEPENDENCY(RD_eff_annrate_SUSY_DSprep, int)
         BACKEND_REQ(dsanwx, (), double, (double&))
+    #undef FUNCTION
+    #define FUNCTION RD_eff_annrate_from_ProcessCatalog
+      START_FUNCTION(fptr_dd)
+      DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)
+      ALLOW_MODELS(SingletDM)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -274,6 +284,10 @@ START_MODULE
       BACKEND_REQ(nucleonAmplitudes, (micromegas), int, (double(*)(double,double,double,double), double*, double*, double*, double*))
       BACKEND_REQ(FeScLoop, (micromegas), double, (double, double, double, double))
       BACKEND_REQ(MOcommon, (micromegas), micrOMEGAs::MOcommonSTR)
+    #undef FUNCTION
+    #define FUNCTION DD_couplings_SingletDM
+      START_FUNCTION(Gambit::DarkBit::DD_couplings)
+      ALLOW_MODELS(SingletDM)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -548,6 +562,17 @@ START_MODULE
   QUICK_FUNCTION(DarkBit, nuyield, NEW_CAPABILITY, nuyield_toy, nuyield_functype)
   QUICK_FUNCTION(DarkBit, mwimp,   NEW_CAPABILITY, mwimp_toy,   double          )
   QUICK_FUNCTION(DarkBit, annrate, NEW_CAPABILITY, annrate_toy, double          )
+
+  #define CAPABILITY UnitTest_DarkBit
+  START_CAPABILITY
+    #define FUNCTION UnitTest_DarkBit
+    START_FUNCTION(int)
+    DEPENDENCY(DD_couplings, Gambit::DarkBit::DD_couplings)
+    DEPENDENCY(RD_oh2, double)
+    DEPENDENCY(GA_AnnYield, Gambit::BF::BFptr)
+    DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)
+    #undef FUNCTION
+  #undef CAPABILITY
 
 #undef MODULE
 
