@@ -125,20 +125,30 @@ BE_FUNCTION(dsIByieldone, double, (double&, int&, int&, int&), "dsibyieldone_", 
  
 // TODO: Replace darksusy types with appropriate commonblock representations and use FORT_COMMONB macros here
 
-BE_VARIABLE(GENERAL_VAR(DS_MSSMPAR, mssmpar),   "mssmpar_",   "mssmpar")
-BE_VARIABLE(GENERAL_VAR(DS_MSPCTM, mspctm),     "mspctm_",    "mspctm")
-BE_VARIABLE(GENERAL_VAR(DS_INTDOF, intdof),     "intdof_",    "intdof")
-BE_VARIABLE(GENERAL_VAR(DS_PACODES, pacodes),   "pacodes_",   "pacodes")
-BE_VARIABLE(GENERAL_VAR(DS_WIDTHS, widths),     "widths_",    "widths")
-BE_VARIABLE(GENERAL_VAR(DS_RDMGEV, rdmgev),     "rdmgev_",    "rdmgev")
-BE_VARIABLE(GENERAL_VAR(DS_RDPTH, rdpth),       "rdpth_",     "rdpth")
-BE_VARIABLE(GENERAL_VAR(DS_RDDOF, rddof),       "rddof_",     "rddof")
-BE_VARIABLE(GENERAL_VAR(DS_RDERRORS, rderrors), "rderrors_", "rderrors")
-BE_VARIABLE(GENERAL_VAR(DS_RDPARS, rdpars),     "rdpars_",    "rdpars")
-BE_VARIABLE(GENERAL_VAR(DS_RDSWITCH, rdswitch), "rdswitch_",  "rdswitch")
-BE_VARIABLE(GENERAL_VAR(DS_RDLUN, rdlun),       "rdlun_",     "rdlun")
-BE_VARIABLE(GENERAL_VAR(DS_RDPADD, rdpadd),     "rdpadd_",    "rdpadd")
-BE_VARIABLE(GENERAL_VAR(DS_IBINTVARS,IBintvars),"ibintvars_", "IBintvars")
+BE_VARIABLE(GENERAL_VAR(DS_MSSMPAR, mssmpar),   "mssmpar_",   "mssmpar")   // Required to set up e.g. MSSM7
+
+// Only read from
+BE_VARIABLE(GENERAL_VAR(DS_MSPCTM, mspctm),     "mspctm_",    "mspctm")    // Mass spectrum
+BE_VARIABLE(GENERAL_VAR(DS_INTDOF, intdof),     "intdof_",    "intdof")    // Particle degrees of freedom
+BE_VARIABLE(GENERAL_VAR(DS_PACODES, pacodes),   "pacodes_",   "pacodes")   // Particles codes (mapped onto mssmpar etc)
+
+// Used in RD_eff_annrate_SUSY_DSprep_func, RD_oh2_general and RD_thresholds_resonances_SingletDM
+BE_VARIABLE(GENERAL_VAR(DS_RDMGEV, rdmgev),     "rdmgev_",    "rdmgev")    // more RD Contains information about coannihilation
+
+// Used in RD_oh2_general and RD_spectrum_SUSY
+// This is only written to for some narrow-width approximation to the SM higgs
+BE_VARIABLE(GENERAL_VAR(DS_WIDTHS, widths),     "widths_",    "widths")    // Particle widths
+
+// Appears only in RD_oh2_general
+BE_VARIABLE(GENERAL_VAR(DS_RDPTH, rdpth),       "rdpth_",     "rdpth")     // gRD thresholds
+BE_VARIABLE(GENERAL_VAR(DS_RDDOF, rddof),       "rddof_",     "rddof")     // gRD dofs
+BE_VARIABLE(GENERAL_VAR(DS_RDERRORS, rderrors), "rderrors_", "rderrors")   // gRD errors
+BE_VARIABLE(GENERAL_VAR(DS_RDPARS, rdpars),     "rdpars_",    "rdpars")    // gRD Parameters 
+BE_VARIABLE(GENERAL_VAR(DS_RDSWITCH, rdswitch), "rdswitch_",  "rdswitch")  // gRD Switches
+BE_VARIABLE(GENERAL_VAR(DS_RDLUN, rdlun),       "rdlun_",     "rdlun")     // gRD ???
+BE_VARIABLE(GENERAL_VAR(DS_RDPADD, rdpadd),     "rdpadd_",    "rdpadd")    // gRD ???
+
+BE_VARIABLE(GENERAL_VAR(DS_IBINTVARS,IBintvars),"ibintvars_", "IBintvars") // IB stuff
 
 //BE_INI_DEPENDENCY(MSSMspectrum, eaSLHA)
 BE_INI_CONDITIONAL_DEPENDENCY(MSSMspectrum, eaSLHA, CMSSM_demo, MSSM25)

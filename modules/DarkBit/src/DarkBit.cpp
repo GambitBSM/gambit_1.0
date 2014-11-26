@@ -1435,7 +1435,8 @@ namespace Gambit {
         std::vector<std::string> finalStates;
 
         double mass, lambda, mh, Sigma_h, alpha_s, mf, s, Dh2, vf, Xf, x, mW;
-        double sv_bb, sv_WW;
+        double sv_bb = 0;
+        double sv_WW = 0;
 
         mass = *Param["mass"];
         lambda = *Param["lambda"];
