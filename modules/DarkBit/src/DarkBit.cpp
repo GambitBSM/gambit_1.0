@@ -1050,7 +1050,7 @@ namespace Gambit {
         std::cout << "AnnYieldInt (1-100 GeV): " << AnnYieldint << std::endl;
 
         // Calculate phi-value
-        double phi = AnnYieldint / 8. / 3.14159265 * 1e26;
+        double phi = AnnYieldint / 8. / M_PI * 1e26;
 
         // And return final likelihood
         result = 0.5*(*dwarf_likelihood)(phi);
@@ -1065,7 +1065,7 @@ namespace Gambit {
         double mass = (*Dep::TH_ProcessCatalog).getParticleProperty("chi_10").mass;
 
         std::vector<double> x = logspace(-1, 2.698, 100);  // from 0.1 to 500 GeV
-        std::vector<double> y = (*((*Dep::GA_AnnYield)->mult(1/mass/mass/8./3.1415))->fixPar(1,0.))(x);
+        std::vector<double> y = (*((*Dep::GA_AnnYield)->mult(1/8./M_PI))->fixPar(1,0.))(x);
 
         result = BEreq::lnL_dwarfs(x, y);
 
@@ -1077,7 +1077,7 @@ namespace Gambit {
         using namespace Pipes::lnL_FermiGC_gamLike;
         
         double mass = (*Dep::TH_ProcessCatalog).getParticleProperty("chi_10").mass;
-        BFptr mult (new BFconstant(1/mass/mass/8./3.1415, 0));
+        BFptr mult (new BFconstant(1/mass/mass/8./M_PI, 0));
 
         std::vector<double> x = logspace(-1, 2.698, 100);  // from 0.1 to 500 GeV
         std::vector<double> y = (*((*Dep::GA_AnnYield) * mult)->fixPar(1,0.))(x);
