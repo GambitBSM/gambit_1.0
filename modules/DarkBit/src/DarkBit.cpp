@@ -1061,13 +1061,16 @@ namespace Gambit {
     void lnL_FermiLATdwarfs_gamLike(double &result)
     {
         using namespace Pipes::lnL_FermiLATdwarfs_gamLike;
-        
-        double mass = (*Dep::TH_ProcessCatalog).getParticleProperty("chi_10").mass;
+
+        result = 0;
 
         std::vector<double> x = logspace(-1, 2.698, 100);  // from 0.1 to 500 GeV
         std::vector<double> y = (*((*Dep::GA_AnnYield)->mult(1/8./M_PI))->fixPar(1,0.))(x);
 
-        result = BEreq::lnL_dwarfs(x, y);
+        if ( runOptions->getValueOrDef<bool>(true, "use_dwarfs") )
+          result += BEreq::lnL_dwarfs(x, y);
+        if ( runOptions->getValueOrDef<bool>(false, "use_GC") )
+          result += BEreq::lnL_GC(x, y);
 
         std::cout << "GamLike likelihood is lnL = " << result << std::endl;
     }
@@ -1450,9 +1453,12 @@ namespace Gambit {
         sv_bb *= GeV2tocm3s1;
 
         // Annihilation into W bosons.
-        x = pow(mW,2)/s;
-        sv_WW = pow(lambda,2)*s/8/M_PI*sqrt(1-4*x)*Dh2*(1-4*x+12*pow(x,2));
-        sv_WW *= GeV2tocm3s1;
+        if ( mass > mW )
+        {
+            x = pow(mW,2)/s;
+            sv_WW = pow(lambda,2)*s/8/M_PI*sqrt(1-4*x)*Dh2*(1-4*x+12*pow(x,2));
+            sv_WW *= GeV2tocm3s1;
+        }
 
         // Initialize catalog
         TH_ProcessCatalog catalog;
@@ -1467,12 +1473,15 @@ namespace Gambit {
         process_ann.channelList.push_back(channel_bb);
 
         // Initialize channel bb
-        BFptr kinematicFunction_WW(new BFconstant(sv_WW,1));
-        finalStates.clear();
-        finalStates.push_back("W+");
-        finalStates.push_back("W-");
-        TH_Channel channel_WW(finalStates, kinematicFunction_WW);
-        process_ann.channelList.push_back(channel_WW);
+        if ( mass > mW)
+        {
+            BFptr kinematicFunction_WW(new BFconstant(sv_WW,1));
+            finalStates.clear();
+            finalStates.push_back("W+");
+            finalStates.push_back("W-");
+            TH_Channel channel_WW(finalStates, kinematicFunction_WW);
+            process_ann.channelList.push_back(channel_WW);
+        }
 
         // Finally, store properties of "chi" in particleProperty list
         catalog.processList.push_back(process_ann);
