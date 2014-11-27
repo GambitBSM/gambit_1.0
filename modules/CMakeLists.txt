@@ -214,7 +214,10 @@ endforeach()
 if(EXISTS "${PROJECT_SOURCE_DIR}/Core/")
   add_gambit_executable(gambit SOURCES ${PROJECT_SOURCE_DIR}/Core/src/gambit.cpp ${GAMBIT_COMMON_OBJECTS} ${GAMBIT_OBJECTS} ${GAMBIT_BIT_OBJECTS})
   add_dependencies(gambit yaml slha sample scantest)
-  target_link_libraries(gambit ${yaml_LDFLAGS} ${slha_LDFLAGS})
+  #bjf> manually adding link commands
+  #target_link_libraries(gambit ${yaml_LDFLAGS} ${slha_LDFLAGS})
+  target_link_libraries(gambit ${yaml_LDFLAGS} ${slha_LDFLAGS} gsl gslcblas
+lapack atlas blas)
 endif()
 
 if(EXISTS "${PROJECT_SOURCE_DIR}/ExampleBit_A/")
