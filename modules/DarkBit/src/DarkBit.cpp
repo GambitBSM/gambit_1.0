@@ -1050,7 +1050,7 @@ namespace Gambit {
         std::cout << "AnnYieldInt (1-100 GeV): " << AnnYieldint << std::endl;
 
         // Calculate phi-value
-        double phi = AnnYieldint / 8. / 3.14159265 * 1e26;
+        double phi = AnnYieldint / 8. / M_PI * 1e26;
 
         // And return final likelihood
         result = 0.5*(*dwarf_likelihood)(phi);
@@ -1061,13 +1061,16 @@ namespace Gambit {
     void lnL_FermiLATdwarfs_gamLike(double &result)
     {
         using namespace Pipes::lnL_FermiLATdwarfs_gamLike;
-        
-        double mass = (*Dep::TH_ProcessCatalog).getParticleProperty("chi_10").mass;
+
+        result = 0;
 
         std::vector<double> x = logspace(-1, 2.698, 100);  // from 0.1 to 500 GeV
-        std::vector<double> y = (*((*Dep::GA_AnnYield)->mult(1/mass/mass/8./3.1415))->fixPar(1,0.))(x);
+        std::vector<double> y = (*((*Dep::GA_AnnYield)->mult(1/8./M_PI))->fixPar(1,0.))(x);
 
-        result = BEreq::lnL_dwarfs(x, y);
+        if ( runOptions->getValueOrDef<bool>(true, "use_dwarfs") )
+          result += BEreq::lnL_dwarfs(x, y);
+        if ( runOptions->getValueOrDef<bool>(false, "use_GC") )
+          result += BEreq::lnL_GC(x, y);
 
         std::cout << "GamLike likelihood is lnL = " << result << std::endl;
     }
@@ -1077,7 +1080,7 @@ namespace Gambit {
         using namespace Pipes::lnL_FermiGC_gamLike;
         
         double mass = (*Dep::TH_ProcessCatalog).getParticleProperty("chi_10").mass;
-        BFptr mult (new BFconstant(1/mass/mass/8./3.1415, 0));
+        BFptr mult (new BFconstant(1/mass/mass/8./M_PI, 0));
 
         std::vector<double> x = logspace(-1, 2.698, 100);  // from 0.1 to 500 GeV
         std::vector<double> y = (*((*Dep::GA_AnnYield) * mult)->fixPar(1,0.))(x);
@@ -1367,8 +1370,9 @@ namespace Gambit {
     void RD_thresholds_resonances_SingletDM(RDrestype &result)
     {
         using namespace Pipes::RD_thresholds_resonances_SingletDM;
-        result.n_res = 1;
-        result.n_thr = 0;
+        result.n_res = 0;
+        result.n_thr = 1;
+        result.E_thr[0] = 2*(*Param["mass"]);
         double mh = 125.7;  // TODO: Don't hardcode masses.
         result.E_res[0] = mh/2;
         result.dE_res[0] = mh/2/10.;
@@ -1388,8 +1392,11 @@ namespace Gambit {
         using namespace Pipes::DD_couplings_SingletDM;
         double mass = *Param["mass"];
         double lambda = *Param["lambda"];
-        result.gps = pow(lambda,2)/pow(mass,4);  // TODO: Use correct values
-        result.gns = pow(lambda,2)/pow(mass,4);
+        double mh = 125.7;  // TODO: Don't hardcode
+        double mN = 0.94;
+        double fN = 0.35;
+        result.gps = lambda*fN*mN/pow(mh,2)/mass;
+        result.gns = lambda*fN*mN/pow(mh,2)/mass;
         result.gpa = 0;
         result.gna = 0;
         result.M_DM = *Param["mass"];
@@ -1416,7 +1423,8 @@ namespace Gambit {
         {
             sv += (*it->dSigmadE)(0.);
         }
-        sv_for_Weff_from_ProcessCatalog = sv;
+        double GeV2tocm3s1 = 1.17e-17;
+        sv_for_Weff_from_ProcessCatalog = sv/GeV2tocm3s1;
         mass_for_Weff_from_ProcessCatalog = *Param["mass"];
         result = Weff_from_ProcessCatalog;
     }
@@ -1427,7 +1435,8 @@ namespace Gambit {
         std::vector<std::string> finalStates;
 
         double mass, lambda, mh, Sigma_h, alpha_s, mf, s, Dh2, vf, Xf, x, mW;
-        double sv_bb, sv_WW;
+        double sv_bb = 0;
+        double sv_WW = 0;
 
         mass = *Param["mass"];
         lambda = *Param["lambda"];
@@ -1450,9 +1459,12 @@ namespace Gambit {
         sv_bb *= GeV2tocm3s1;
 
         // Annihilation into W bosons.
-        x = pow(mW,2)/s;
-        sv_WW = pow(lambda,2)*s/8/M_PI*sqrt(1-4*x)*Dh2*(1-4*x+12*pow(x,2));
-        sv_WW *= GeV2tocm3s1;
+        if ( mass > mW )
+        {
+            x = pow(mW,2)/s;
+            sv_WW = pow(lambda,2)*s/8/M_PI*sqrt(1-4*x)*Dh2*(1-4*x+12*pow(x,2));
+            sv_WW *= GeV2tocm3s1;
+        }
 
         // Initialize catalog
         TH_ProcessCatalog catalog;
@@ -1467,12 +1479,15 @@ namespace Gambit {
         process_ann.channelList.push_back(channel_bb);
 
         // Initialize channel bb
-        BFptr kinematicFunction_WW(new BFconstant(sv_WW,1));
-        finalStates.clear();
-        finalStates.push_back("W+");
-        finalStates.push_back("W-");
-        TH_Channel channel_WW(finalStates, kinematicFunction_WW);
-        process_ann.channelList.push_back(channel_WW);
+        if ( mass > mW)
+        {
+            BFptr kinematicFunction_WW(new BFconstant(sv_WW,1));
+            finalStates.clear();
+            finalStates.push_back("W+");
+            finalStates.push_back("W-");
+            TH_Channel channel_WW(finalStates, kinematicFunction_WW);
+            process_ann.channelList.push_back(channel_WW);
+        }
 
         // Finally, store properties of "chi" in particleProperty list
         catalog.processList.push_back(process_ann);

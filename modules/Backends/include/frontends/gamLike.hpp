@@ -47,7 +47,7 @@ BE_INI_FUNCTION
     std::string path = runOptions->getValueOrDef<std::string>("../extras/gamLike/data/", "datapath");
     set_data_path(path.c_str());
     fermi_dwarfs_init(0);
-    //fermi_gc_init(0, 1);
+    fermi_gc_init(0, 1);
   }
 }
 DONE
