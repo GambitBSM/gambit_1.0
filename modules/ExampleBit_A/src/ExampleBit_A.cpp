@@ -61,7 +61,7 @@ namespace Gambit
     /// Some other example function
     double some_other_function(int &input)
     {
-      ostringstream ss;
+      std::ostringstream ss;
       ss << "  This is some_other_function, invoked with argument " << input;
       logger().send(ss.str(),info);
       double offset = 2.0;
