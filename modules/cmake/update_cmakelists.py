@@ -76,16 +76,20 @@ def main(argv):
         for root,dirs,files in os.walk("./"+mod+"/src"):
             for name in files:
                 if name.endswith(".c") or name.endswith(".cc") or name.endswith(".cpp"):
-                    if verbose: print "    Located {0} source file '{1}'".format(mod,name)
-                    srcs+=[name]
+                    short_root = re.sub("\\./"+mod+"/src/?","",root)
+                    if short_root != "" : short_root += "/" 
+                    if verbose: print "    Located {0} source file '{1}'".format(mod,short_root+name)
+                    srcs+=[short_root+name]
     
         # Retrieve the list of module header files.
         headers = []
         for root,dirs,files in os.walk("./"+mod+"/include"):
             for name in files:
                 if name.endswith(".h") or name.endswith(".hh") or name.endswith(".hpp"):
-                    if verbose: print "    Located {0} header file '{1}'".format(mod,name)
-                    headers+=[name]
+                    short_root = re.sub("\\./"+mod+"/include/?","",root)
+                    if short_root != "" : short_root += "/" 
+                    if verbose: print "    Located {0} header file '{1}'".format(mod,short_root+name)
+                    headers+=[short_root+name]
 
         # Make a candidate CMakeLists.txt file for this module.
         towrite = "\

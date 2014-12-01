@@ -297,22 +297,27 @@ namespace Gambit {
 
     /// Analysis Accumulators
 
-    void runAnalyses(ColliderLogLikes& result) {
+    void runAnalyses(ColliderLogLikes& result)
+    {
       using namespace Pipes::runAnalyses;
       if (*Loop::iteration == INIT or *Loop::iteration == END_SUBPROCESS) return;
 
-      if (*Loop::iteration == FINALIZE) {
+      if (*Loop::iteration == FINALIZE)
+      {
         // The final iteration: get log likelihoods for the analyses
         result.clear();
-        for (auto anaPtr : *Dep::ListOfAnalyses) {
+        for (auto anaPtr : *Dep::ListOfAnalyses)
+        {
           cout << "SR number test " << anaPtr->get_results()[0].n_signal << endl;
           result.push_back(anaPtr->get_results());
         }
-      } else {
-        #pragma omp critical (accumulatorUpdate)
+      }
+      else
+      {
+        //FIXME #pragma omp critical (accumulatorUpdate)
         {
           // Loop over analyses and run them
-          for (auto anaPtr : *Dep::ListOfAnalyses)
+          for (auto anaPtr : *Dep::ListOfAnalyses)        
             anaPtr->analyze(*Dep::GambitColliderEvent);
         }
       }

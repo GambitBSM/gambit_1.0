@@ -293,7 +293,10 @@ namespace Gambit {
         }
 
         //Make b jet container
-	BinnedFn2D<double> _eff2d({{0,10.}}, {{0,10000.}},{{0.8}});
+        const std::vector<float>  a = {0,10.};      
+        const std::vector<float>  b = {0,10000.};      
+        const std::vector<double> c = {0.8};      
+	BinnedFn2D<double> _eff2d(a,b,c);
 	
         for (Jet* jet : signalJets) {
 	  bool hasTag=has_tag(_eff2d, jet->eta(), jet->pT());

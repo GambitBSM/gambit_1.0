@@ -103,10 +103,10 @@ if(COMPILER_SUPPORTS_CXX11)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c++11")
 elseif(COMPILER_SUPPORTS_CXX0X)
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c++0x")
 else()
-        message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
+   message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
 endif()
 
 # check for Boost
@@ -156,7 +156,7 @@ add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/Backends/include/backend_rollcal
                    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} 
                    DEPENDS ${BACKEND_HARVESTER} ${BACKEND_HARVESTER_FILES})
 add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/Utils/include/all_functor_types.hpp
-                   COMMAND python ${MODULE_HARVESTER} -x Collide  #FIXME make input args
+                   COMMAND python ${MODULE_HARVESTER} #-x Collide  #FIXME make input args
                    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} 
                    DEPENDS ${MODULE_HARVESTER} ${MODULE_HARVESTER_FILES})
 add_custom_target(model_harvest   DEPENDS ${PROJECT_SOURCE_DIR}/Models/include/model_rollcall.hpp ${MODEL_HARVESTER_FILES})
@@ -196,7 +196,7 @@ add_subdirectory(Printers)
 set(GAMBIT_OBJECTS $<TARGET_OBJECTS:Core> $<TARGET_OBJECTS:Printers>)
 
 # set compilation targets for GAMBIT modules
-set(EXCLUDES "Coll") #FIXME make input args
+#set(EXCLUDES "Coll") #FIXME make input args
 retrieve_bits(GAMBIT_BITS ${PROJECT_SOURCE_DIR} "${EXCLUDES}" "Loud")
 foreach(bit ${GAMBIT_BITS})
   add_subdirectory(${bit})
@@ -213,16 +213,14 @@ endforeach()
 
 if(EXISTS "${PROJECT_SOURCE_DIR}/Core/")
   add_gambit_executable(gambit SOURCES ${PROJECT_SOURCE_DIR}/Core/src/gambit.cpp ${GAMBIT_COMMON_OBJECTS} ${GAMBIT_OBJECTS} ${GAMBIT_BIT_OBJECTS})
-  add_dependencies(gambit yaml slha sample scantest)
-  #bjf> manually adding link commands
-  #target_link_libraries(gambit ${yaml_LDFLAGS} ${slha_LDFLAGS})
-  target_link_libraries(gambit ${yaml_LDFLAGS} ${slha_LDFLAGS})
+  add_dependencies(gambit yaml sample scantest delphes)
+  target_link_libraries(gambit ${yaml_LDFLAGS} ${delphes_LDFLAGS})
 endif()
 
 if(EXISTS "${PROJECT_SOURCE_DIR}/ExampleBit_A/")
   add_gambit_executable(ExampleBit_A_standalone SOURCES ${PROJECT_SOURCE_DIR}/ExampleBit_A/examples/ExampleBit_A_standalone_example.cpp $<TARGET_OBJECTS:ExampleBit_A> ${GAMBIT_COMMON_OBJECTS})
-  add_dependencies(ExampleBit_A_standalone yaml slha)
-  target_link_libraries(ExampleBit_A_standalone fortran ${yaml_LDFLAGS} ${slha_LDFLAGS})
+  add_dependencies(ExampleBit_A_standalone yaml delphes)
+  target_link_libraries(ExampleBit_A_standalone ${yaml_LDFLAGS} ${delphes_LDFLAGS})
 endif()
 
 set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${clean_files}")
