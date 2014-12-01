@@ -341,7 +341,7 @@ namespace Gambit
       }
       out << YAML::EndSeq;
       // Create file and write YAML output there
-      ofstream outfile;
+      std::ofstream outfile;
       outfile.open(capability_dbase_file);
       outfile << "# Auto-generated capability description library. Edits will be erased." << endl;;
       outfile << "# Edit \"" << input_capability_descriptions << "\" instead." << endl << endl << out.c_str();
@@ -441,7 +441,7 @@ namespace Gambit
       }
       out2 << YAML::EndSeq;
       // Create file and write YAML output there
-      ofstream outfile2;
+      std::ofstream outfile2;
       outfile2.open(model_dbase_file);
       outfile2 << "# Auto-generated model description library. Edits will be erased." << endl;;
       outfile2 << "# Edit \"" << input_model_descriptions << "\" instead." << endl << endl << out2.c_str();
@@ -593,7 +593,7 @@ namespace Gambit
             }
 
             // Print the info
-            ostringstream ss1, ss2;
+            std::ostringstream ss1, ss2;
             str ss1a, ss2a;
             const str firstentry = (jt == it->second.begin() ? it->first : "");
             cout << firstentry << spacing(firstentry.length(),maxlens[0]);

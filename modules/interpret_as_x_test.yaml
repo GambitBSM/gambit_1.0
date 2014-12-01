@@ -83,12 +83,6 @@ ObsLikes:
     capability:   nevents_like
     type:         double
 
-  # Test Pythia8 SLHA reader
-  - purpose:      Likelihood
-    capability:   MSSMslha_testLogL
-    function:     MSSMtestLogL
-    printme:      false
-
   # Test vector output of printer
   - purpose:      Observable
     capability:   test_vector

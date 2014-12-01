@@ -44,8 +44,6 @@ namespace Gambit
     /// Local module declarations
     /// Note that the stuff from <random> isn't actually guaranteed threadsafe, but it will do for an example.
     /// @{
-    double count = 3.5;
-    int accumulatedCounts = 0;
     std::uniform_real_distribution<double> random_0to5(0.0, 5.0);
     unsigned newseed = std::chrono::system_clock::now().time_since_epoch().count();
     std::mt19937 twistor(newseed);
@@ -80,7 +78,7 @@ namespace Gambit
 
     /// \name Module functions
     /// @{
-    void nevents_dbl  (double &result)    { result = count++; cout << "My xsection dep: " << *Pipes::nevents_dbl::Dep::xsection << endl;}
+    void nevents_dbl  (double &result)    { static double count = 3.5; result = count++; cout << "My xsection dep: " << *Pipes::nevents_dbl::Dep::xsection << endl;}
     void nevents_like (double &result)    { result = 2.0 * (*Pipes::nevents_like::Dep::eventAccumulation); }
     void identity     (str    &result)    { result = "turkion"; }
 
@@ -270,15 +268,30 @@ namespace Gambit
       //too much about the other functions that might be managing this one, either directly or indirectly.
 
       using namespace Pipes::eventAccumulator;
-      if (*Loop::iteration == 0)                     // In the first iteration of a loop
+
+      // Do the actual computations in each thread seperately
+      int increment = *Dep::event + 1;
+
+      // Only let one thread at a time mess with the accumulator.
+      #pragma omp critical (eventAccumulator_update)
       {
-        accumulatedCounts = 0;                       // Zero the total accumulated counts
+        static int accumulatedCounts = 0;
+        // In the first iteration of a loop
+        if (*Loop::iteration == 0)
+        {
+          // Zero the total accumulated counts
+          accumulatedCounts = 0;
+        }
+        else
+        {
+          // Add the latest event count to the total
+          accumulatedCounts += increment;              
+        }
+        // Return the current total
+        result = accumulatedCounts;                    
       }
-      #pragma omp critical (eventAccumulator_update) // Only let one thread at a time accumulate results
-      {
-        accumulatedCounts += *Dep::event;            // Add the latest event count to the total
-      }
-      result = accumulatedCounts;                    // Return the current total
+
+      // Print some diagnostic info
       #pragma omp critical (print)
       {
         cout<<"  Running eventAccumulator in iteration "<<*Loop::iteration<<endl;

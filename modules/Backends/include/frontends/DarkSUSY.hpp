@@ -175,7 +175,7 @@ BE_INI_FUNCTION
     {
         // Save eaSLHA file to disk
         eaSLHA mySLHA = *Dep::MSSMspectrum;
-        ofstream ofs("DarkBit_temp.slha");
+        std::ofstream ofs("DarkBit_temp.slha");
         ofs << mySLHA;
         ofs.close();
 

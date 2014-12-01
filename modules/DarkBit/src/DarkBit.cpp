@@ -1517,7 +1517,7 @@ namespace Gambit {
         TH_Process annProc = (*Dep::TH_ProcessCatalog).getProcess((std::string)"chi_10", (std::string)"chi_10");
         BFptr spectrum = (*Dep::GA_AnnYield)->fixPar(1, 0.);
 
-        ostringstream filename;
+        std::ostringstream filename;
         filename << runOptions->getValueOrDef<std::string>("UnitTest_DarkBit", "fileroot");
         filename << "_" << counter << ".yml";
         counter++;
