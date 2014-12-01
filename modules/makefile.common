@@ -115,7 +115,8 @@ CFLAGS= -I$(COREDIR)/include \
   -I$(HEPUTILSDIR)/include \
   -I$(MCUTILSDIR)/include \
   -I$(FASTSIMDIR)/include \
-  -I$(MULTINESTINC)
+  -I$(MULTINESTINC) \
+  -I$cmake
 
 ifdef CPPFLAGS
   CFLAGS += $(CPPFLAGS)
