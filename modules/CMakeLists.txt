@@ -216,8 +216,7 @@ if(EXISTS "${PROJECT_SOURCE_DIR}/Core/")
   add_dependencies(gambit yaml slha sample scantest)
   #bjf> manually adding link commands
   #target_link_libraries(gambit ${yaml_LDFLAGS} ${slha_LDFLAGS})
-  target_link_libraries(gambit ${yaml_LDFLAGS} ${slha_LDFLAGS} gsl gslcblas
-lapack atlas blas)
+  target_link_libraries(gambit ${yaml_LDFLAGS} ${slha_LDFLAGS})
 endif()
 
 if(EXISTS "${PROJECT_SOURCE_DIR}/ExampleBit_A/")

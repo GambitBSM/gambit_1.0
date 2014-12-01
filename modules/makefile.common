@@ -79,10 +79,8 @@ HIGGSDIR = HiggsBit
 DECAYDIR = DecayBit
 EXAMPLEADIR = ExampleBit_A
 EXAMPLEBDIR = ExampleBit_B
-EXSUSYSPECDIR = Example_SUSYspecBit
 DOCDIR = ../doc
 YAMLDIR = contrib/yaml-cpp-0.5.1
-SLHAPy8DIR = contrib/SLHAPy8
 SLHAEADIR = contrib/slhaea
 MCUTILSDIR = contrib/mcutils
 HEPUTILSDIR = contrib/heputils
@@ -94,8 +92,6 @@ GAMLIKEDIR = ../extras/gamLike
 DARKSUSYDIR = ../extras/DarkSUSY
 PYTHIA8DIR = ../extras/boss/bossed_pythia_source
 BOSSMINIDIR = ../extras/boss
-# TODO obsolete??
-HEPSIMPLEDIR = contrib/hep_simple_lib
 
 GCC++EXTRA= -Woverloaded-virtual
 CFLAGS= -I$(COREDIR)/include \
@@ -110,19 +106,17 @@ CFLAGS= -I$(COREDIR)/include \
   -I$(EWPODIR)/include \
   -I$(EXAMPLEADIR)/include \
   -I$(EXAMPLEBDIR)/include \
-	-I$(EXSUSYSPECDIR)/include \
   -I$(DARKDIR)/include \
   -I$(FLAVDIR)/include \
   -I$(HIGGSDIR)/include \
   -I$(DECAYDIR)/include \
   -I$(YAMLDIR)/include \
-  -I$(SLHAPy8DIR) \
   -I$(SLHAEADIR) \
-  -I$(HEPSIMPLEDIR) \
   -I$(HEPUTILSDIR)/include \
   -I$(MCUTILSDIR)/include \
   -I$(FASTSIMDIR)/include \
-  -I$(MULTINESTINC)
+  -I$(MULTINESTINC) \
+  -I$cmake
 
 ifdef CPPFLAGS
   CFLAGS += $(CPPFLAGS)
@@ -216,7 +210,7 @@ ifndef SHH
   $(info )
 endif
 
-LNFLAGS = -L$(YAMLDIR) -lyaml-cpp -L$(SLHAPy8DIR) -lslhapy8 $(BOOST_LDFLAGS) $(GSL_LDFLAGS) -lstdc++ -ldl -lgfortran -Wl,-rpath,$(MULTINESTLIBDIR)
+LNFLAGS = -L$(YAMLDIR) -lyaml-cpp $(BOOST_LDFLAGS) $(GSL_LDFLAGS) -lstdc++ -ldl -lgfortran -Wl,-rpath,$(MULTINESTLIBDIR)
 ifdef HAVE_MAC
   LNFLAGS += -dynamic
 else
@@ -383,14 +377,10 @@ EXAMPLE_BINC:=$(wildcard $(EXAMPLEBDIR)/include/*hpp) $(wildcard $(EXAMPLEBDIR)/
 EXAMPLE_BSRC:=$(wildcard $(EXAMPLEBDIR)/src/*cpp)
 EXAMPLE_BOBJS:=$(addprefix $(EXAMPLEBDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(EXAMPLE_BSRC))))
 
-EXSUSYSPECINC:=$(wildcard $(EXSUSYSPECDIR)/include/*hpp) $(wildcard $(EXSUSYSPECDIR)/include/*h)
-EXSUSYSPECSRC:=$(wildcard $(EXSUSYSPECDIR)/src/*cpp)
-EXSUSYSPECOBJS:=$(addprefix $(EXSUSYSPECDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(EXSUSYSPECSRC))))
-
 STANDALONEINC = $(BACKENDINC) $(UTILSINC) $(MODELINC) $(LOGINC)
 GAMBITINC = $(PRINTINC) $(COREINC)
 STANDALONEOBJS = $(MODELOBJS) $(UTILSOBJS) $(LOGOBJS) $(BACKENDOBJS)
-MODULEOBJS = $(SCANOBJS) $(DARKOBJS) $(FLAVOBJS) $(HIGGSOBJS) $(DECAYOBJS) $(EXAMPLE_AOBJS) $(EXAMPLE_BOBJS) $(EXSUSYSPECOBJS) $(EWPOOBJS)
+MODULEOBJS = $(SCANOBJS) $(DARKOBJS) $(FLAVOBJS) $(HIGGSOBJS) $(DECAYOBJS) $(EXAMPLE_AOBJS) $(EXAMPLE_BOBJS) $(EWPOOBJS)
 ifdef COLLIDE
   MODULEOBJS += $(COLLIDEROBJS)
 endif
@@ -487,10 +477,6 @@ $(EWPODIR)/build/%.o: $(DECAYDIR)/src/%.cpp $(STANDALONEINC) $(EWPOINC)
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
-$(EXSUSYSPECDIR)/build/%.o: $(EXSUSYSPECDIR)/src/%.cpp $(STANDALONEINC) $(EXSUSYSPECINC)
-	@echo ___________Compiling $<:
-	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
-
 
 ifdef COLLIDE
 
@@ -551,11 +537,11 @@ $(EXAMPLEADIR)/build/%.o: $(EXAMPLEADIR)/examples/%.cpp $(STANDALONEINC) $(EXAMP
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
-gambit: yaml-cpp slhapy8 $(FUNCTOR_TYPES) $(ALLOBJECTS) $(SCANDIR)/lib/libsample.so $(SCANDIR)/lib/libtest.so
+gambit: yaml-cpp $(FUNCTOR_TYPES) $(ALLOBJECTS) $(SCANDIR)/lib/libsample.so $(SCANDIR)/lib/libtest.so
 	@echo ___________Linking $@:
 	$(LN) $(COREDIR)/build/gambit.o $(filter-out $(COREDIR)/build/gambit.o,$(ALLOBJECTS)) $(CFLAGS) -o $@ $(LNFLAGS)
 
-ExampleBit_A_standalone: yaml-cpp slhapy8 libfortran $(FUNCTOR_TYPES) $(STANDALONEOBJS) $(EXAMPLE_AOBJS) $(EXAMPLEADIR)/build/ExampleBit_A_standalone_example.o
+ExampleBit_A_standalone: yaml-cpp libfortran $(FUNCTOR_TYPES) $(STANDALONEOBJS) $(EXAMPLE_AOBJS) $(EXAMPLEADIR)/build/ExampleBit_A_standalone_example.o
 	@echo ___________Linking $@:
 	$(LN) $(EXAMPLEADIR)/build/ExampleBit_A_standalone_example.o $(STANDALONEOBJS) $(EXAMPLE_AOBJS) $(CFLAGS) -o $@ $(LNFLAGS)
 
@@ -566,12 +552,6 @@ yaml-cpp: $(YAMLDIR)/libyaml-cpp.a
 $(YAMLDIR)/libyaml-cpp.a:
 	@echo ___________Building YAML:
 	cd contrib/yaml-cpp-0.5.1; make YAML_CC=$(CC) CFLAGS="$(CFLAGS)"
-
-slhapy8: $(SLHAPy8DIR)/libslhapy8.a
-$(SLHAPy8DIR)/libslhapy8.a:
-	@echo ___________Building SLHA interface library \(from Pythia 8\):
-	cd contrib/SLHAPy8; make SLHAPy8_CC=$(CC)
-
 
 #### Scanner plugins ##########
 
@@ -699,7 +679,6 @@ doxygen: $(DOCDIR)/html/index.html
 
 rinsed: clean_modules clean_executables
 	@rm -f _*.txt *.gv *.ps central_capabilities.dat central_models.dat
-	@rm -f Example_SUSYspecBit/test_output.slha
 	@rm -f output default_output report.txt testmodule.mod
 	@rm -f ../extras/DDCalc0/ddcalc0.mod
 	@rm -fr ../extras/boss/bossed_pythia_source/tmp/*
@@ -724,7 +703,6 @@ clean_executables:
 
 clean_contributed:
 	@cd contrib/yaml-cpp-0.5.1; make clean
-	@cd contrib/SLHAPy8; make clean
 
 clean_plugins:
 	@rm -rf $(SCANDIR)/lib/*.so $(SCANDIR)/plugins/*.o

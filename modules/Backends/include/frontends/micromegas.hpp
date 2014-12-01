@@ -36,7 +36,7 @@ BE_INI_FUNCTION
     eaSLHA mySLHA;
 
     mySLHA = *Dep::MSSMspectrum;
-    ofstream ofs("DarkBit_temp.slha");
+    std::ofstream ofs("DarkBit_temp.slha");
     ofs << mySLHA;
     ofs.close();
 
