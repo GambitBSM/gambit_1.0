@@ -113,7 +113,7 @@ namespace Gambit {
 
             dR=lep1mom.deltaR_eta(lep2mom);
 
-            if(dR <= DeltaRMax && lep1mom.E()<lep2mom.E()) overlap=true;
+            if(fabs(dR) <= DeltaRMax && lep1mom.E()<lep2mom.E()) overlap=true;
           }
           if(overlap) continue;
           Survivors.push_back(vec1.at(it1));
@@ -138,7 +138,7 @@ namespace Gambit {
 
             dR=lep1mom.deltaR_eta(lep2mom);
 
-            if(dR <= DeltaRMax) overlap=true;
+            if(fabs(dR) <= DeltaRMax) overlap=true;
           }
           if(overlap) continue;
           Survivors.push_back(vec1.at(it1));
@@ -163,7 +163,7 @@ namespace Gambit {
 
             dR=jetmom.deltaR_eta(lepmom);
 
-            if(dR <= DeltaRMax) overlap=true;
+            if(fabs(dR) <= DeltaRMax) overlap=true;
           }
           if(overlap) continue;
           Survivors.push_back(jetvec.at(itjet));
@@ -188,7 +188,7 @@ namespace Gambit {
          
             dR=jetmom.deltaR_eta(lepmom);
 
-            if(dR <= DeltaRMax) overlap=true;
+            if(fabs(dR) <= DeltaRMax) overlap=true;
           }
           if(overlap) continue;
           Survivors.push_back(lepvec.at(itlep));
@@ -312,7 +312,7 @@ namespace Gambit {
 		P4 elVec1=signalElectrons.at(iEl1)->mom();
 		P4 elVec2=signalElectrons.at(iEl2)->mom();
 		double dR=elVec1.deltaR_eta(elVec2);
-		if(dR<=0.3){
+		if(fabs(dR)<=0.3){
 		  separationCut=false;
 		  std::cout << "Failed ele-ele separation cut: " << iEl1 << " " << iEl2 << std::endl;
 		}
@@ -326,7 +326,7 @@ namespace Gambit {
               P4 elVec1=signalElectrons.at(iEl1)->mom();
               P4 muVec1=signalMuons.at(iMu1)->mom();
               double dR=elVec1.deltaR_eta(muVec1);
-	      if(dR<=0.3){
+	      if(fabs(dR)<=0.3){
 		separationCut=false;
 		std::cout << "Failed ele-muo separation cut: " << iEl1 << " " << iMu1 << std::endl;
 	      }
@@ -340,7 +340,7 @@ namespace Gambit {
 		P4 muVec1=signalMuons.at(iMu1)->mom();
 		P4 muVec2=signalMuons.at(iMu2)->mom();
 		double dR=muVec1.deltaR_eta(muVec2);
-		if(dR<=0.3){
+		if(fabs(dR)<=0.3){
 		  separationCut=false;
 		  std::cout << "Failed muo-muo separation cut: " << iMu1 << " " << iMu2 << std::endl;
 		}
@@ -689,7 +689,7 @@ namespace Gambit {
 	      
 	      (j==7 && trigger && signalLeptons.size()==3 && atLeastOneEorMu && separationCut && mSFOS12Cut && signalTaus.size()==0 && massesOfSFOSPairs.size()>0) || //SFOS
 	      
-	      (j==8 && trigger && signalLeptons.size()==3 && atLeastOneEorMu && separationCut && mSFOS12Cut && signalTaus.size()==0 && massesOfSFOSPairs.size()>0 && bJets.size()==0) || //SFOS
+	      (j==8 && trigger && signalLeptons.size()==3 && atLeastOneEorMu && separationCut && mSFOS12Cut && signalTaus.size()==0 && massesOfSFOSPairs.size()>0 && bJets.size()==0) || //b jet veto
 	      
 	      (j==9 && trigger && signalLeptons.size()==3 && atLeastOneEorMu && separationCut && mSFOS12Cut && signalTaus.size()==0 && massesOfSFOSPairs.size()>0 && bJets.size()==0 && met>50. && met<90.) || //MET
 

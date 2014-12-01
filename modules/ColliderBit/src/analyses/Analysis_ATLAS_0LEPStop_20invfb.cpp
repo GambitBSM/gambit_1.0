@@ -22,7 +22,7 @@ using namespace std;
    b) ETmiss-track cuts ignored...
 
    Known features:
-   a) Cutflow for SRA regions agrees very well (5% or so). SRC cutflow diverges at the initial step (==5 jets) and never quite recovers. Perhaps we are getting the jet multiplicity wrong with ISR turned off in Pythia. For now I suggest that we live with this since there is no obvious bug, and the acceptance of the remaining cuts agrees very well with ATLAS.
+   a) Have removed the tau veto since it disagrees with ATLAS cutflow (we lose ~2/3 of the events whilst ATLAS see a minimal effect. So ditching it is fine. In fact the implementation below is incorrect since it does not take into account the number of tracks associated to the jets.
    b) Using mt2 bisect method from H. Cheng, Z. Han, arXiv:0810.5178 for mT2 calculation
 
 */
@@ -61,7 +61,7 @@ namespace Gambit {
 	    
 	    dR=jetmom.deltaR_eta(lepmom);
 	    
-	    if(dR <= DeltaRMax) overlap=true;
+	    if(fabs(dR) <= DeltaRMax) overlap=true;
 	  }
 	  if(overlap) continue;
 	  Survivors.push_back(jetvec.at(itjet));
@@ -86,7 +86,7 @@ namespace Gambit {
 	    
 	    dR=jetmom.deltaR_eta(lepmom);
 	    
-	    if(dR <= DeltaRMax) overlap=true;
+	    if(fabs(dR) <= DeltaRMax) overlap=true;
 	  }
 	  if(overlap) continue;
 	  Survivors.push_back(lepvec.at(itlep));
@@ -399,11 +399,13 @@ namespace Gambit {
 	}
 
         bool cut_tau=true;
-        //Tau Veto
+        
+	/*
+	//Tau Veto
         for (int j=0; j<signalNonBJets.size(); j++) {
           if(std::acos(std::cos(signalNonBJets.at(j)->phi()-ptot.phi()))<0.2*3.14)
             cut_tau=false;
-        }
+	    }*/
                
         //Cutflow flags
         bool cut_mjjj0=false;
