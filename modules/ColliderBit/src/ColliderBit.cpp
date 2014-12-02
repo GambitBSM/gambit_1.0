@@ -306,19 +306,19 @@ namespace Gambit {
       {
         // The final iteration: get log likelihoods for the analyses
         result.clear();
-        for (auto anaPtr : *Dep::ListOfAnalyses)
+        for (auto anaPtr = Dep::ListOfAnalyses->begin(); anaPtr != Dep::ListOfAnalyses->end(); ++anaPtr)
         {
-          cout << "SR number test " << anaPtr->get_results()[0].n_signal << endl;
-          result.push_back(anaPtr->get_results());
+          cout << "SR number test " << (*anaPtr)->get_results()[0].n_signal << endl;
+          result.push_back((*anaPtr)->get_results());
         }
       }
       else
       {
-        //FIXME #pragma omp critical (accumulatorUpdate)
+        #pragma omp critical (accumulatorUpdate)
         {
           // Loop over analyses and run them
-          for (auto anaPtr : *Dep::ListOfAnalyses)        
-            anaPtr->analyze(*Dep::GambitColliderEvent);
+          for (auto anaPtr = Dep::ListOfAnalyses->begin(); anaPtr != Dep::ListOfAnalyses->end(); ++anaPtr)        
+            (*anaPtr)->analyze(*Dep::GambitColliderEvent);
         }
       }
     }

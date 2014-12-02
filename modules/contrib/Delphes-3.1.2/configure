@@ -4,7 +4,3 @@
 
 # test Makefile && make distclean
 tclsh ./doc/genMakefile.tcl > Makefile
-echo "Makefile ready"
-echo "To build Delphes type "
-echo "   make"
-

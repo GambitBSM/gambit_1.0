@@ -50,14 +50,6 @@ configure_file("${PROJECT_SOURCE_DIR}/config.h.in"
 # add the binary tree to the search path for include files so that we will find config.h
 include_directories("${PROJECT_BINARY_DIR}")
 
-###################### FIXME
-if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-  set(HAVE_MAC 1)
-else()
-  set(HAVE_MAC 0)
-endif()
-###################### FIXME
-
 # add -fPIC for 64 bit systems
 if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
@@ -77,6 +69,9 @@ set(CMAKE_LINK_DEPENDS_NO_SHARED 1)
 
 # include ./cmake in search path for projects
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake)
+
+# when building, use the install RPATH already
+set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE) 
 
 # set output paths
 set(mylibdir ${PROJECT_SOURCE_DIR}/lib)
@@ -118,6 +113,7 @@ if(Boost_FOUND)
   include_directories(${Boost_INCLUDE_DIR})
 endif()
 
+# check for OpenMP
 find_package(OpenMP REQUIRED)
 if (OPENMP_FOUND)
     set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
@@ -156,7 +152,7 @@ add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/Backends/include/backend_rollcal
                    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} 
                    DEPENDS ${BACKEND_HARVESTER} ${BACKEND_HARVESTER_FILES})
 add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/Utils/include/all_functor_types.hpp
-                   COMMAND python ${MODULE_HARVESTER} #-x Collide  #FIXME make input args
+                   COMMAND python ${MODULE_HARVESTER} #-x <modules to exclude>  #FIXME make input args
                    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} 
                    DEPENDS ${MODULE_HARVESTER} ${MODULE_HARVESTER_FILES})
 add_custom_target(model_harvest   DEPENDS ${PROJECT_SOURCE_DIR}/Models/include/model_rollcall.hpp ${MODEL_HARVESTER_FILES})
@@ -211,12 +207,14 @@ foreach(bit ${GAMBIT_BITS})
   endif()
 endforeach()
 
+# Add the main GAMBIT executable
 if(EXISTS "${PROJECT_SOURCE_DIR}/Core/")
   add_gambit_executable(gambit SOURCES ${PROJECT_SOURCE_DIR}/Core/src/gambit.cpp ${GAMBIT_COMMON_OBJECTS} ${GAMBIT_OBJECTS} ${GAMBIT_BIT_OBJECTS})
   add_dependencies(gambit yaml sample scantest delphes)
   target_link_libraries(gambit ${yaml_LDFLAGS} ${delphes_LDFLAGS})
 endif()
 
+# Add the ExampleBit_A_standalone exectable
 if(EXISTS "${PROJECT_SOURCE_DIR}/ExampleBit_A/")
   add_gambit_executable(ExampleBit_A_standalone SOURCES ${PROJECT_SOURCE_DIR}/ExampleBit_A/examples/ExampleBit_A_standalone_example.cpp $<TARGET_OBJECTS:ExampleBit_A> ${GAMBIT_COMMON_OBJECTS})
   add_dependencies(ExampleBit_A_standalone yaml delphes)
