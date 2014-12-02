@@ -105,10 +105,10 @@ namespace Gambit {
     }
 
 
-    inline void finalDescendants(int n, const Pythia8::Event& evt, vector<int>& rtn) {
+    inline void finalDescendants(int n, const Pythia8::Event& evt, std::vector<int>& rtn) {
       const Pythia8::Particle& p = evt[n];
       //assert(!p.isParton());
-      if (p.isParton()) cerr << "PARTON IN DESCENDANT CHAIN FROM HADRON! NUM, ID = " << n << ", " << p.id() << endl;
+      if (p.isParton()) std::cerr << "PARTON IN DESCENDANT CHAIN FROM HADRON! NUM, ID = " << n << ", " << p.id() << std::endl;
       for (int m : evt.daughterList(n)) {
         if (evt[m].isFinal()) {
           rtn.push_back(m);
@@ -220,7 +220,7 @@ namespace Gambit {
       // Currently hard-coded to use anti-kT R=0.4 jets above 30 GeV
       const fastjet::JetDefinition jet_def(fastjet::antikt_algorithm, 0.4);
       fastjet::ClusterSequence cseq(jetparticles, jet_def);
-      vector<fastjet::PseudoJet> pjets = sorted_by_pt(cseq.inclusive_jets(30));
+      std::vector<fastjet::PseudoJet> pjets = sorted_by_pt(cseq.inclusive_jets(30));
 
       // Do jet b-tagging, etc. and add to the Event
       for (auto& pj : pjets) {

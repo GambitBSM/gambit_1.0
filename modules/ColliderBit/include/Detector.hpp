@@ -91,8 +91,8 @@ namespace Gambit {
           pdg = TDatabasePDG::Instance();
 
           modularDelphes->InitTask();
-        } catch(runtime_error &e) {
-          cerr << "** ERROR: " << e.what() << endl;
+        } catch(std::runtime_error &e) {
+	  std::cerr << "** ERROR: " << e.what() << endl;
           exit(EXIT_FAILURE);
         }
       }
@@ -106,8 +106,8 @@ namespace Gambit {
           convertInput(eventIn);
           modularDelphes->ProcessTask();
           convertOutput(eventOut);
-        } catch(runtime_error &e) {
-          cerr << "** ERROR: " << e.what() << endl;
+        } catch(std::runtime_error &e) {
+	  std::cerr << "** ERROR: " << e.what() << endl;
           exit(EXIT_FAILURE);
         }
       }
