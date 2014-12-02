@@ -1,10 +1,6 @@
 #include "Analysis.hpp"
 #include "mt2_bisect.h"
 
-/// @todo Remove the ROOT...
-#include "TLorentzVector.h"
-#include "TVector2.h"
-
 #include <vector>
 #include <cmath>
 #include <memory>
@@ -47,7 +43,7 @@ namespace Gambit {
       Analysis_ATLAS_2bStop_20invfb() {
 
         _numSRA = 0 ; _numSRB = 0; _numSRA15 = 0; _numSRA20 = 0; _numSRA25 = 0; _numSRA30 = 0; _numSRA35 = 0;
-        NCUTS=2;
+        NCUTS=30;
 
         for(int i=0;i<NCUTS;i++){
           cutFlowVector.push_back(0);
@@ -320,6 +316,10 @@ namespace Gambit {
 	cutFlowVector_str[7] = "mCT > 200 ";
 	cutFlowVector_str[8] = "mCT > 250 ";
 	cutFlowVector_str[9] = "mCT > 300 ";
+	cutFlowVector_str[10] = "SRB: lepton veto ";
+	cutFlowVector_str[11] = "SRB: MET > 250 ";
+	cutFlowVector_str[12] = "SRB: Jet selection ";
+	cutFlowVector_str[13] = "SRB: HT3 < 50  ";
 	
         for(int j=0;j<NCUTS;j++){
           if(
@@ -341,7 +341,15 @@ namespace Gambit {
 
 	     (j==8 && met>150. && cut_MuonVeto && cut_ElectronVeto && passSRAbJetCut && passSRAJetCut && mbb > 200. && mCT > 250.) ||
 	     
-	     (j==9 && met>150. && cut_MuonVeto && cut_ElectronVeto && passSRAbJetCut && passSRAJetCut && mbb > 200. && mCT > 300.)
+	     (j==9 && met>150. && cut_MuonVeto && cut_ElectronVeto && passSRAbJetCut && passSRAJetCut && mbb > 200. && mCT > 300.) ||
+
+	     (j==10 && met>150. && cut_MuonVeto && cut_ElectronVeto) ||
+
+	     (j==11 && met>250. && cut_MuonVeto && cut_ElectronVeto) ||
+
+	     (j==12 && met>250. && cut_MuonVeto && cut_ElectronVeto && passSRBJetCut && passSRBbJetCut) ||
+
+	     (j==13 && met>250. && cut_MuonVeto && cut_ElectronVeto && passSRBJetCut && passSRBbJetCut && ht3<50.)
 
 
 	     )cutFlowVector[j]++;
@@ -395,6 +403,7 @@ namespace Gambit {
 
 
       void collect_results() {
+	finalize();
 
         SignalRegionData results_SRA15;
         results_SRA15.set_observation(102.);
