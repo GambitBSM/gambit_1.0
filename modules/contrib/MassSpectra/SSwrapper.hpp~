@@ -1,0 +1,15 @@
+/// This file contains a wrapper classes for softsusy designed top
+/// ensure that all methods for MSSM models are named the same.  This
+/// in turn allows us to use a single MSSM class which contains the
+/// model object and defines the string maps to function pointers.  In
+/// so doing we ensure that the string names fro the MSSM are always
+/// the same in the getters.
+
+class MssmSSwrapper : public MssmSoftsusy
+{
+public:
+   double get_BMu() const {return displayM3Squared() / displaySusyMu(); }
+   double get_mHd2() const {return displayMh1Squared();}
+
+
+}
