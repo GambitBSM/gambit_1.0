@@ -92,7 +92,7 @@ namespace Gambit {
 
           modularDelphes->InitTask();
         } catch(std::runtime_error &e) {
-	  std::cerr << "** ERROR: " << e.what() << endl;
+          std::cerr << "** ERROR: " << e.what() << endl;
           exit(EXIT_FAILURE);
         }
       }
@@ -107,7 +107,7 @@ namespace Gambit {
           modularDelphes->ProcessTask();
           convertOutput(eventOut);
         } catch(std::runtime_error &e) {
-	  std::cerr << "** ERROR: " << e.what() << endl;
+          std::cerr << "** ERROR: " << e.what() << endl;
           exit(EXIT_FAILURE);
         }
       }

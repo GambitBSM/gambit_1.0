@@ -35,7 +35,7 @@
 #include <map>
 #include <set>
 #include <vector>
-#include <time.h>
+#include <chrono>    
 #include <sstream>
 #include <algorithm>
 #include <omp.h>
@@ -50,8 +50,8 @@
 #define FUNCTORS_FADE_RATE 0.01
 // Minimum invaldiation rate (should be 0<...<<1)
 #define FUNCTORS_BASE_INVALIDATION_RATE 0.01
-// Initial runtime estimate
-#define FUNCTORS_RUNTIME_INIT 1000
+// Initial runtime estimate (s)
+#define FUNCTORS_RUNTIME_INIT 0.000001
 
 namespace Gambit
 {
@@ -444,8 +444,11 @@ namespace Gambit
       /// Do post-calculate timing things
       virtual void finishTiming(double nsec, double sec);
 
-      /// Current runtime in ns
-      double runtime;
+      /// Current runtime
+      std::chrono::duration<double> runtime;
+
+      /// Beginning and end timing points
+      std::chrono::time_point<std::chrono::system_clock> start, end;
 
       /// Averaged runtime in ns
       double runtime_average;

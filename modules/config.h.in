@@ -1,4 +1,2 @@
 // the configured options and settings for GAMBIT
-#define HAVE_MAC @HAVE_MAC@
-#define SSH @SSH@
-#define SSH @STANDALONE@
+//#define some_option @SOME_OPTION@

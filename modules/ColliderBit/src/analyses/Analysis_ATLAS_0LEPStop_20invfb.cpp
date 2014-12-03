@@ -152,8 +152,11 @@ namespace Gambit {
 	//Get b jets
 	//Note that we assume that b jets have previously been 100% tagged
 	//Now we use the new Buckley tagger
-      
-	BinnedFn2D<double> _eff2d({{0,10.}}, {{0,10000.}},{{0.7}});
+
+        const std::vector<float>  a = {0,10.};      
+        const std::vector<float>  b = {0,10000.};      
+        const std::vector<double> c = {0.7};      
+	BinnedFn2D<double> _eff2d(a,b,c);
 
 
         for (Jet* jet : event->jets()) {

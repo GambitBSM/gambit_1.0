@@ -69,7 +69,10 @@ namespace Gambit {
           if (muon->pT() > 6. && fabs(muon->eta()) < 2.4) baselineMuons.push_back(muon);
         }
 
-	BinnedFn2D<double> _eff2d({{0,10.}}, {{0,10000.}},{{0.60}});
+        const std::vector<float>  a = {0,10.};      
+        const std::vector<float>  b = {0,10000.};      
+        const std::vector<double> c = {0.60};      
+	BinnedFn2D<double> _eff2d(a,b,c);
 
         vector<Jet*> baselineJets;
         vector<Jet*> bJets;

@@ -23,6 +23,18 @@ endforeach()
 # set the project name
 project(GAMBIT)
 
+# don't relink all binaries when shared lib changes (programs will be rebuilt any way if used headers change)
+set(CMAKE_LINK_DEPENDS_NO_SHARED 1)
+
+# include ./cmake in search path for projects
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake)
+
+# when building, use the install RPATH already
+set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE) 
+
+# check for optional packages and disable sections of GAMBIT accordingly
+include(cmake/optional.cmake)
+
 # check for Python
 include(FindPythonInterp)
 find_package(PythonInterp REQUIRED)
@@ -50,14 +62,6 @@ configure_file("${PROJECT_SOURCE_DIR}/config.h.in"
 # add the binary tree to the search path for include files so that we will find config.h
 include_directories("${PROJECT_BINARY_DIR}")
 
-###################### FIXME
-if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-  set(HAVE_MAC 1)
-else()
-  set(HAVE_MAC 0)
-endif()
-###################### FIXME
-
 # add -fPIC for 64 bit systems
 if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
@@ -71,12 +75,6 @@ if(CMAKE_Fortran_COMPILER MATCHES "gfortran*" OR CMAKE_Fortran_COMPILER MATCHES 
 elseif(CMAKE_Fortran_COMPILER MATCHES "ifort*")
   set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -extend-source")
 endif()
-
-# don't relink all binaries when shared lib changes (programs will be rebuilt any way if used headers change)
-set(CMAKE_LINK_DEPENDS_NO_SHARED 1)
-
-# include ./cmake in search path for projects
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake)
 
 # set output paths
 set(mylibdir ${PROJECT_SOURCE_DIR}/lib)
@@ -103,10 +101,10 @@ if(COMPILER_SUPPORTS_CXX11)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c++11")
 elseif(COMPILER_SUPPORTS_CXX0X)
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c++0x")
 else()
-        message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
+   message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
 endif()
 
 # check for Boost
@@ -118,6 +116,7 @@ if(Boost_FOUND)
   include_directories(${Boost_INCLUDE_DIR})
 endif()
 
+# check for OpenMP
 find_package(OpenMP REQUIRED)
 if (OPENMP_FOUND)
     set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
@@ -142,23 +141,24 @@ set(MODULE_HARVESTER ${PROJECT_SOURCE_DIR}/Utils/scripts/module_harvester.py)
 
 # create all_functor_types.hpp, module_rollcall.hpp, module_types_rollcall.hpp, models_rollcall.hpp, 
 # model_types_rollcall.hpp, backend_rollcall.hpp and backend_types_rollcall.hpp
+string (REPLACE ";" "," itch_with_commas "${itch}")
 file(GLOB MODEL_HARVESTER_FILES   "${PROJECT_SOURCE_DIR}/Models/include/models/*.hpp")
 file(GLOB BACKEND_HARVESTER_FILES "${PROJECT_SOURCE_DIR}/Backends/include/frontends/*.hpp")
 file(GLOB MODULE_HARVESTER_FILES  "${PROJECT_SOURCE_DIR}/*Bit*/include/*_rollcall.hpp")
 list(REMOVE_ITEM MODULE_HARVESTER_FILES "${PROJECT_SOURCE_DIR}/ScannerBit//include//priors_rollcall.hpp" 
                                         "${PROJECT_SOURCE_DIR}/ScannerBit//include//test_function_rollcall.hpp")
 add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/Models/include/model_rollcall.hpp 
-                   COMMAND python ${MODEL_HARVESTER} #-x <models to exclude> FIXME make input args
+                   COMMAND python ${MODEL_HARVESTER} -x __not_a_real_name__,${itch_with_commas}
                    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} 
-                   DEPENDS ${MODEL_HARVESTER} ${MODEL_HARVESTER_FILES})
+                   DEPENDS ${MODEL_HARVESTER} ${MODEL_HARVESTER_FILES} ${PROJECT_SOURCE_DIR}/cmake/CMakeCache.txt)
 add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/Backends/include/backend_rollcall.hpp 
-                   COMMAND python ${BACKEND_HARVESTER} #-x <be to exclude> FIXME make input args
+                   COMMAND python ${BACKEND_HARVESTER} -x __not_a_real_name__,${itch_with_commas}
                    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} 
-                   DEPENDS ${BACKEND_HARVESTER} ${BACKEND_HARVESTER_FILES})
+                   DEPENDS ${BACKEND_HARVESTER} ${BACKEND_HARVESTER_FILES} ${PROJECT_SOURCE_DIR}/cmake/CMakeCache.txt)
 add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/Utils/include/all_functor_types.hpp
-                   COMMAND python ${MODULE_HARVESTER} -x Collide  #FIXME make input args
+                   COMMAND python ${MODULE_HARVESTER} -x __not_a_real_name__,${itch_with_commas}
                    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} 
-                   DEPENDS ${MODULE_HARVESTER} ${MODULE_HARVESTER_FILES})
+                   DEPENDS ${MODULE_HARVESTER} ${MODULE_HARVESTER_FILES} ${PROJECT_SOURCE_DIR}/cmake/CMakeCache.txt)
 add_custom_target(model_harvest   DEPENDS ${PROJECT_SOURCE_DIR}/Models/include/model_rollcall.hpp ${MODEL_HARVESTER_FILES})
 add_custom_target(backend_harvest DEPENDS ${PROJECT_SOURCE_DIR}/Backends/include/backend_rollcall.hpp ${BACKEND_HARVESTER_FILES})
 add_custom_target(functor_harvest DEPENDS ${PROJECT_SOURCE_DIR}/Utils/include/all_functor_types.hpp ${MODULE_HARVESTER_FILES} backend_harvest)
@@ -196,8 +196,7 @@ add_subdirectory(Printers)
 set(GAMBIT_OBJECTS $<TARGET_OBJECTS:Core> $<TARGET_OBJECTS:Printers>)
 
 # set compilation targets for GAMBIT modules
-set(EXCLUDES "Coll") #FIXME make input args
-retrieve_bits(GAMBIT_BITS ${PROJECT_SOURCE_DIR} "${EXCLUDES}" "Loud")
+retrieve_bits(GAMBIT_BITS ${PROJECT_SOURCE_DIR} "${itch}" "Loud")
 foreach(bit ${GAMBIT_BITS})
   add_subdirectory(${bit})
   set(GAMBIT_BIT_OBJECTS ${GAMBIT_BIT_OBJECTS} "$<TARGET_OBJECTS:${bit}>")
@@ -211,18 +210,8 @@ foreach(bit ${GAMBIT_BITS})
   endif()
 endforeach()
 
-if(EXISTS "${PROJECT_SOURCE_DIR}/Core/")
-  add_gambit_executable(gambit SOURCES ${PROJECT_SOURCE_DIR}/Core/src/gambit.cpp ${GAMBIT_COMMON_OBJECTS} ${GAMBIT_OBJECTS} ${GAMBIT_BIT_OBJECTS})
-  add_dependencies(gambit yaml slha sample scantest)
-  #bjf> manually adding link commands
-  #target_link_libraries(gambit ${yaml_LDFLAGS} ${slha_LDFLAGS})
-  target_link_libraries(gambit ${yaml_LDFLAGS} ${slha_LDFLAGS})
-endif()
+# Add the executables
+include(cmake/executables.cmake)
 
-if(EXISTS "${PROJECT_SOURCE_DIR}/ExampleBit_A/")
-  add_gambit_executable(ExampleBit_A_standalone SOURCES ${PROJECT_SOURCE_DIR}/ExampleBit_A/examples/ExampleBit_A_standalone_example.cpp $<TARGET_OBJECTS:ExampleBit_A> ${GAMBIT_COMMON_OBJECTS})
-  add_dependencies(ExampleBit_A_standalone yaml slha)
-  target_link_libraries(ExampleBit_A_standalone fortran ${yaml_LDFLAGS} ${slha_LDFLAGS})
-endif()
-
+# Add all the clean files
 set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${clean_files}")
