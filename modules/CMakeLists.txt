@@ -108,9 +108,6 @@ else()
 endif()
 
 # check for Boost
-set(BOOST_ROOT
-    "/usr/local/Cellar/boost/1.55.0_2"
-    CACHE PATH "")
 find_package(Boost 1.42 REQUIRED)
 if(Boost_FOUND)
   include_directories(${Boost_INCLUDE_DIR})
