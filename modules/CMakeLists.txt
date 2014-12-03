@@ -23,6 +23,18 @@ endforeach()
 # set the project name
 project(GAMBIT)
 
+# don't relink all binaries when shared lib changes (programs will be rebuilt any way if used headers change)
+set(CMAKE_LINK_DEPENDS_NO_SHARED 1)
+
+# include ./cmake in search path for projects
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake)
+
+# when building, use the install RPATH already
+set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE) 
+
+# check for optional packages and disable sections of GAMBIT accordingly
+include(cmake/optional.cmake)
+
 # check for Python
 include(FindPythonInterp)
 find_package(PythonInterp REQUIRED)
@@ -63,15 +75,6 @@ if(CMAKE_Fortran_COMPILER MATCHES "gfortran*" OR CMAKE_Fortran_COMPILER MATCHES 
 elseif(CMAKE_Fortran_COMPILER MATCHES "ifort*")
   set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -extend-source")
 endif()
-
-# don't relink all binaries when shared lib changes (programs will be rebuilt any way if used headers change)
-set(CMAKE_LINK_DEPENDS_NO_SHARED 1)
-
-# include ./cmake in search path for projects
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake)
-
-# when building, use the install RPATH already
-set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE) 
 
 # set output paths
 set(mylibdir ${PROJECT_SOURCE_DIR}/lib)
@@ -138,23 +141,24 @@ set(MODULE_HARVESTER ${PROJECT_SOURCE_DIR}/Utils/scripts/module_harvester.py)
 
 # create all_functor_types.hpp, module_rollcall.hpp, module_types_rollcall.hpp, models_rollcall.hpp, 
 # model_types_rollcall.hpp, backend_rollcall.hpp and backend_types_rollcall.hpp
+string (REPLACE ";" "," itch_with_commas "${itch}")
 file(GLOB MODEL_HARVESTER_FILES   "${PROJECT_SOURCE_DIR}/Models/include/models/*.hpp")
 file(GLOB BACKEND_HARVESTER_FILES "${PROJECT_SOURCE_DIR}/Backends/include/frontends/*.hpp")
 file(GLOB MODULE_HARVESTER_FILES  "${PROJECT_SOURCE_DIR}/*Bit*/include/*_rollcall.hpp")
 list(REMOVE_ITEM MODULE_HARVESTER_FILES "${PROJECT_SOURCE_DIR}/ScannerBit//include//priors_rollcall.hpp" 
                                         "${PROJECT_SOURCE_DIR}/ScannerBit//include//test_function_rollcall.hpp")
 add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/Models/include/model_rollcall.hpp 
-                   COMMAND python ${MODEL_HARVESTER} #-x <models to exclude> FIXME make input args
+                   COMMAND python ${MODEL_HARVESTER} -x ${itch_with_commas}
                    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} 
-                   DEPENDS ${MODEL_HARVESTER} ${MODEL_HARVESTER_FILES})
+                   DEPENDS ${MODEL_HARVESTER} ${MODEL_HARVESTER_FILES} ${PROJECT_SOURCE_DIR}/cmake/CMakeCache.txt)
 add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/Backends/include/backend_rollcall.hpp 
-                   COMMAND python ${BACKEND_HARVESTER} #-x <be to exclude> FIXME make input args
+                   COMMAND python ${BACKEND_HARVESTER} -x ${itch_with_commas}
                    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} 
-                   DEPENDS ${BACKEND_HARVESTER} ${BACKEND_HARVESTER_FILES})
+                   DEPENDS ${BACKEND_HARVESTER} ${BACKEND_HARVESTER_FILES} ${PROJECT_SOURCE_DIR}/cmake/CMakeCache.txt)
 add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/Utils/include/all_functor_types.hpp
-                   COMMAND python ${MODULE_HARVESTER} #-x <modules to exclude>  #FIXME make input args
+                   COMMAND python ${MODULE_HARVESTER} -x ${itch_with_commas}
                    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} 
-                   DEPENDS ${MODULE_HARVESTER} ${MODULE_HARVESTER_FILES})
+                   DEPENDS ${MODULE_HARVESTER} ${MODULE_HARVESTER_FILES} ${PROJECT_SOURCE_DIR}/cmake/CMakeCache.txt)
 add_custom_target(model_harvest   DEPENDS ${PROJECT_SOURCE_DIR}/Models/include/model_rollcall.hpp ${MODEL_HARVESTER_FILES})
 add_custom_target(backend_harvest DEPENDS ${PROJECT_SOURCE_DIR}/Backends/include/backend_rollcall.hpp ${BACKEND_HARVESTER_FILES})
 add_custom_target(functor_harvest DEPENDS ${PROJECT_SOURCE_DIR}/Utils/include/all_functor_types.hpp ${MODULE_HARVESTER_FILES} backend_harvest)
@@ -192,8 +196,7 @@ add_subdirectory(Printers)
 set(GAMBIT_OBJECTS $<TARGET_OBJECTS:Core> $<TARGET_OBJECTS:Printers>)
 
 # set compilation targets for GAMBIT modules
-#set(EXCLUDES "Coll") #FIXME make input args
-retrieve_bits(GAMBIT_BITS ${PROJECT_SOURCE_DIR} "${EXCLUDES}" "Loud")
+retrieve_bits(GAMBIT_BITS ${PROJECT_SOURCE_DIR} "${itch}" "Loud")
 foreach(bit ${GAMBIT_BITS})
   add_subdirectory(${bit})
   set(GAMBIT_BIT_OBJECTS ${GAMBIT_BIT_OBJECTS} "$<TARGET_OBJECTS:${bit}>")
@@ -207,18 +210,8 @@ foreach(bit ${GAMBIT_BITS})
   endif()
 endforeach()
 
-# Add the main GAMBIT executable
-if(EXISTS "${PROJECT_SOURCE_DIR}/Core/")
-  add_gambit_executable(gambit SOURCES ${PROJECT_SOURCE_DIR}/Core/src/gambit.cpp ${GAMBIT_COMMON_OBJECTS} ${GAMBIT_OBJECTS} ${GAMBIT_BIT_OBJECTS})
-  add_dependencies(gambit yaml sample scantest delphes)
-  target_link_libraries(gambit ${yaml_LDFLAGS} ${delphes_LDFLAGS})
-endif()
+# Add the executables
+include(cmake/executables.cmake)
 
-# Add the ExampleBit_A_standalone exectable
-if(EXISTS "${PROJECT_SOURCE_DIR}/ExampleBit_A/")
-  add_gambit_executable(ExampleBit_A_standalone SOURCES ${PROJECT_SOURCE_DIR}/ExampleBit_A/examples/ExampleBit_A_standalone_example.cpp $<TARGET_OBJECTS:ExampleBit_A> ${GAMBIT_COMMON_OBJECTS})
-  add_dependencies(ExampleBit_A_standalone yaml delphes)
-  target_link_libraries(ExampleBit_A_standalone ${yaml_LDFLAGS} ${delphes_LDFLAGS})
-endif()
-
+# Add all the clean files
 set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${clean_files}")
