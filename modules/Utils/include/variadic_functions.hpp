@@ -13,7 +13,7 @@
 ///  \date Feb 2014
 //
 ///  \author Christoph Weniger
-///          (c.weniger@uva.nl
+///          <c.weniger@uva.nl>
 ///  \date Dec 2014
 ///
 ///  *********************************************
