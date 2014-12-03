@@ -55,10 +55,13 @@ namespace Gambit
         }
 
         // This function causes a (readable) compile-time error when T != U.
+        // In case types are convertable, they are converted.
         template <typename T, typename U, typename... Args>
         std::vector<T> initVector(std::vector<T> vector, U value, Args... args)
         {
-            T t = value;
+            T value_converted = value;
+            vector.push_back(value_converted);
+            return initVector(vector, args...);
         }
 
         template <typename T, typename... Args>
