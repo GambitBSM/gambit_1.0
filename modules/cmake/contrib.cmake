@@ -10,11 +10,12 @@ include_directories("${PROJECT_SOURCE_DIR}/contrib/mcutils/include")
 include_directories("${PROJECT_SOURCE_DIR}/contrib/heputils/include")
 
 #contrib/yaml-cpp-0.5.1
+set(yaml_CXXFLAGS ${CMAKE_CXX_FLAGS} "-I${Boost_INCLUDE_DIR}")
 ExternalProject_Add(yaml-cpp
   SOURCE_DIR ${PROJECT_SOURCE_DIR}/contrib/yaml-cpp-0.5.1
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND ""
-  BUILD_COMMAND make YAML_CC=${CMAKE_CXX_COMPILER} CFLAGS=${CMAKE_CXX_FLAGS}
+  BUILD_COMMAND make YAML_CC=${CMAKE_CXX_COMPILER} CFLAGS=${yaml_CXXFLAGS}
   INSTALL_COMMAND ""
   INSTALL_DIR ${CMAKE_BINARY_DIR}/install
   CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/install
