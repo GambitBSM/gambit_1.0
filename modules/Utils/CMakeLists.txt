@@ -6,7 +6,6 @@ set(source_files src/equivalency_singleton.cpp
                  src/terminator.cpp
                  src/type_equivalency.cpp
                  src/util_functions.cpp
-                 src/yaml_description_database.cpp
 )
 
 set(header_files include/SLHA_readers.hpp
@@ -37,7 +36,6 @@ set(header_files include/SLHA_readers.hpp
                  include/util_macros.hpp
                  include/util_types.hpp
                  include/variadic_functions.hpp
-                 include/yaml_description_database.hpp
                  include/yaml_options.hpp
 )
 

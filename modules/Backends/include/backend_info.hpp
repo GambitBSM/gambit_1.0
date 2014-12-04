@@ -31,7 +31,7 @@ namespace Gambit
     struct backend_info
     {
       public: 
-        std::map<str,str> paths;                   // Key: backend name
+        backend_info();                            // Constructor
         std::map<str,str> dlerrors;                // Key: backend name
         std::map<str,str> defaults;                // Key: backend name
         std::map<str,bool> works;                  // Key: backend name + version
@@ -40,10 +40,12 @@ namespace Gambit
         std::map<str,std::set<str> > classes;      // Key: backend name + version
         std::map<str,std::set<str> > factory_args; // Key: backend name + version + class name
         std::map<str,str> constructor_status;      // Key: backend name + version + class name + factory args
-        str version_from_safe_version (str be, str sv) const { return safe_version_map.at(be).at(sv); } 
-        void link_versions(str be, str v, str sv) { safe_version_map[be][sv] = v; }
+        str version_from_safe_version (str, str) const;
+        void link_versions(str, str, str);
+        str path_of(str, str);
       private: 
         std::map<str,std::map<str,str> > safe_version_map;
+        std::map<str,str> paths;                   // Key: backend name
     };
 
   }

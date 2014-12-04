@@ -5,6 +5,7 @@ set(source_files src/container_factory.cpp
                  src/gambit_core.cpp
                  src/likelihood_container.cpp
                  src/modelgraph.cpp
+                 src/yaml_description_database.cpp
                  src/yaml_parser.cpp
 )
 
@@ -18,6 +19,7 @@ set(header_files include/container_factory.hpp
                  include/modelgraph.hpp
                  include/register_error_handlers.hpp
                  include/version.hpp
+                 include/yaml_description_database.hpp
                  include/yaml_parser.hpp
 )
 

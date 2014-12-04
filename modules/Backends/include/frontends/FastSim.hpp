@@ -13,7 +13,7 @@
 #ifdef BACKENDRENAME
   #define BACKENDNAME BACKENDRENAME
 #else
-  #define BACKENDNAME LibFastSim
+  #define BACKENDNAME FastSim
 #endif
 #define VERSION 1.0
 #define SAFE_VERSION 1_0
