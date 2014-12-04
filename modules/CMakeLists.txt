@@ -56,8 +56,8 @@ set(GAMBIT_VERSION_MAJOR 1)
 set(GAMBIT_VERSION_MINOR 0)
 
 # configure a header file to pass some of the CMake settings to the source code
-configure_file("${PROJECT_SOURCE_DIR}/config.h.in"
-               "${PROJECT_BINARY_DIR}/config.h")
+configure_file("${PROJECT_SOURCE_DIR}/cmake/cmake_variables.hpp.in"
+               "${PROJECT_BINARY_DIR}/cmake_variables.hpp")
  
 # add the binary tree to the search path for include files so that we will find config.h
 include_directories("${PROJECT_BINARY_DIR}")
@@ -108,9 +108,6 @@ else()
 endif()
 
 # check for Boost
-set(BOOST_ROOT
-    "/usr/local/Cellar/boost/1.55.0_2"
-    CACHE PATH "")
 find_package(Boost 1.42 REQUIRED)
 if(Boost_FOUND)
   include_directories(${Boost_INCLUDE_DIR})
@@ -210,8 +207,12 @@ foreach(bit ${GAMBIT_BITS})
   endif()
 endforeach()
 
-# Add the executables
-include(cmake/executables.cmake)
+# ensure that clean sweeps out the scratch directory
+set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/scratch/*")
 
 # Add all the clean files
 set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${clean_files}")
+
+# Add the executables
+include(cmake/executables.cmake)
+

@@ -24,6 +24,7 @@
 #include <getopt.h>
 
 // Gambit headers
+#include "cmake_variables.hpp"
 #include "gambit_core.hpp"
 #include "error_handlers.hpp"
 #include "version.hpp"
@@ -43,11 +44,11 @@ namespace Gambit
     gambit_core::gambit_core(const Models::ModelFunctorClaw &claw, const Backends::backend_info &beinfo ) :
      modelInfo(&claw),
      backendData(&beinfo),
-     capability_dbase_file("central_capabilities.dat"),
-     model_dbase_file("central_models.dat"),
-     input_capability_descriptions("capabilities.dat"),
-     input_model_descriptions("models.dat"),
-     report_file("report.txt"),
+     capability_dbase_file(GAMBIT_DIR "/scratch/central_capabilities.dat"),
+     model_dbase_file(GAMBIT_DIR "/scratch/central_models.dat"),
+     input_capability_descriptions(GAMBIT_DIR "/config/capabilities.dat"),
+     input_model_descriptions(GAMBIT_DIR "/config/models.dat"),
+     report_file(GAMBIT_DIR "/config/report.txt"),
      report(report_file.c_str()),
      /* command line flags */ 
      processed_options(false),
@@ -624,11 +625,11 @@ namespace Gambit
           cout << model << spacing(model.length(),maxlen1) << parentof << spacing(parentof.length(),maxlen2) << nparams << endl;
         }
         // Create and spit out graph of the model hierarchy.
-        str graphfile = "GAMBIT_model_hierarchy.gv";
+        str graphfile = GAMBIT_DIR "/scratch/GAMBIT_model_hierarchy.gv";
         ModelHierarchy modelGraph(*modelInfo,primaryModelFunctorList,graphfile,false);
         cout << endl << "Created graphviz model hierarchy graph in "+graphfile+"." << endl; 
-        cout << "Please run ./graphviz.sh "+graphfile+" to get postscript plot." << endl; 
-
+        cout << endl << "To get postscript plot of model hierarchy, please run: " << endl;
+        cout << GAMBIT_DIR << "/Core/scripts/./graphviz.sh "+graphfile << endl;
         no_scan = true;
       }
     

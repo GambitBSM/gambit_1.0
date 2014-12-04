@@ -201,13 +201,13 @@ namespace Gambit
         /// Printer object to which this dependency resolver is bound
         Printers::BasePrinter *boundPrinter;
 
-        /// *** Output Vertex Infos
+        /// Output Vertex Infos
         std::vector<OutputVertexInfo> outputVertexInfos;
 
-        /// *** The central boost graph object
+        /// The central boost graph object
         MasterGraphType masterGraph;
 
-        /// *** Saved calling order for functions
+        /// Saved calling order for functions
         std::list<VertexID> function_order;
 
         /// Temporary map for loop manager -> list of nested functions
@@ -216,6 +216,8 @@ namespace Gambit
         /// Indices associated with graph vertices (used by printers to identify functors)
         IndexMap index;
 
+        /// Output filename for graph of active functors.
+        const str activeFunctorGraphFile;
     };
   }
 }

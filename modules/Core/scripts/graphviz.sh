@@ -12,4 +12,8 @@
 #done
 
 # Make plot
-dot $1 -Tps > ${1%.*}.ps
+filename_in=${1##*/}
+filename_out=${filename_in%.*}.ps
+dot $1 -Tps > $filename_out
+echo "Created "$filename_out" in current directory."
+

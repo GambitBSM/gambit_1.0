@@ -28,6 +28,7 @@
 #include <limits>
 
 // Gambit
+#include "cmake_variables.hpp"
 #include "logging.hpp"
 #include "util_functions.hpp"
 #include "standalone_error_handlers.hpp"
@@ -199,7 +200,7 @@ namespace Gambit
            if (not loggers_readyQ)
            {
              std::cout<<"Logger was never initialised! Creating default log messenger..."<<std::endl;
-             StdLogger* deflogger = new StdLogger("default.log");
+             StdLogger* deflogger = new StdLogger(GAMBIT_DIR "/scratch/default.log");
              std::set<int> deftag;
              deftag.insert(def);
              loggers[deftag] = deflogger; 
@@ -208,7 +209,7 @@ namespace Gambit
            std::cout<<"Delivering messages..."<<std::endl;
            // Dump buffered messages
            dump_prelim_buffer();
-           std::cout<<"Messages delivered to 'modules/default.log'"<<std::endl;
+           std::cout<<"Messages delivered to '" << GAMBIT_DIR << "/scratch/default.log'"<<std::endl;
          }
 
          // Check if there is anything in the output stream that has not been sent, and send it if there is

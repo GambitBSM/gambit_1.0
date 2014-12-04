@@ -27,8 +27,10 @@
 ///  *********************************************
 
 #include <sstream>
+#include <fstream>
 
 #include "depresolver.hpp"
+#include "cmake_variables.hpp"
 #include "models.hpp"
 #include "log.hpp"
 #include "stream_overloads.hpp"
@@ -241,7 +243,13 @@ namespace Gambit
                                            const IniParser::IniFile &iniFile,
                                            const Utils::type_equivalency &equiv_classes,
                                                  Printers::BasePrinter &printer)
-     : boundCore(&core), boundClaw(&claw), boundIniFile(&iniFile), boundTEs(&equiv_classes), boundPrinter(&printer), index(get(vertex_index,masterGraph))
+     : boundCore(&core), 
+       boundClaw(&claw), 
+       boundIniFile(&iniFile), 
+       boundTEs(&equiv_classes), 
+       boundPrinter(&printer), 
+       index(get(vertex_index,masterGraph)),
+       activeFunctorGraphFile(GAMBIT_DIR "/scratch/GAMBIT_active_functor_graph.gv")
     {
       addFunctors();
       logger() << LogTags::dependency_resolver << endl;
@@ -317,7 +325,7 @@ namespace Gambit
       initialisePrinter();
 
       // Generate graphviz plot
-      std::ofstream outf("GAMBIT_active_functor_graph.gv");
+      std::ofstream outf(activeFunctorGraphFile);
       write_graphviz(outf, masterGraph, labelWriter(&masterGraph), edgeWriter(&masterGraph));
 
       // Done
@@ -464,11 +472,14 @@ namespace Gambit
       
       if (toterminal)
       {
-        // There is a command line flag to get this information, since it is very handy to check before launching a full job. It can always be checked via the logs, but I found myself wanting to see this often so I added this feature for convenience.
+        // There is a command line flag to get this information, since it is very 
+        // handy to check before launching a full job. It can always be checked via 
+        // the logs, but this feature is more convenient.
         cout << ss.str();
-        str graphfile = "GAMBIT_active_functor_graph.gv"; // make sure this stays in sync with name in "doResolution" function. Probably should make a common variable for this.
-        cout << endl << "Please run ./graphviz.sh "+graphfile+" to get postscript plot of active functors." << endl;
+        cout << "To get postscript plot of active functors, please run: " << endl;
+        cout << GAMBIT_DIR << "/Core/scripts/./graphviz.sh "+activeFunctorGraphFile << endl;
       }
+
       logger() << LogTags::dependency_resolver << ss.str() << EOM;
     }
 
