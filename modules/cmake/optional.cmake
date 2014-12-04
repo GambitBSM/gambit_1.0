@@ -1,5 +1,5 @@
 # check for ROOT.
-#find_package(ROOT)
+find_package(ROOT)
 if (NOT ROOT_FOUND)
   #phew, no ROOT.  Gotta kill ColliderBit, but them's the breaks.
   message("   Woot! Woot! No ROOT!")
