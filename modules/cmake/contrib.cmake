@@ -39,7 +39,7 @@ if (NOT EXCLUDE_DELPHES)
     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/install
   )
   execute_process(COMMAND root-config --libs OUTPUT_VARIABLE ROOT_LDFLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -I${ROOT_INCLUDE_DIR}")
+  include_directories(${ROOT_INCLUDE_DIR})
   set(delphes_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}/contrib/Delphes-3.1.2" "${PROJECT_SOURCE_DIR}/contrib/Delphes-3.1.2/external")
   set(delphes_LIBRARIES "Delphes")
   set(delphes_LDFLAGS "${ROOT_LDFLAGS} -lEG -L${PROJECT_SOURCE_DIR}/contrib/Delphes-3.1.2 -l${delphes_LIBRARIES}")

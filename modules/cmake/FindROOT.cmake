@@ -46,7 +46,9 @@ foreach(_cpt ${rootlibs} ${ROOT_FIND_COMPONENTS})
     list(REMOVE_ITEM ROOT_FIND_COMPONENTS ${_cpt})
   endif()
 endforeach()
-list(REMOVE_DUPLICATES ROOT_LIBRARIES)
+if(ROOT_LIBRARIES)
+  list(REMOVE_DUPLICATES ROOT_LIBRARIES)
+endif()
 
 execute_process(
   COMMAND ${ROOT_CONFIG_EXECUTABLE} --features
