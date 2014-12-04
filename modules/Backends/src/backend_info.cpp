@@ -15,8 +15,6 @@
 ///
 ///  *********************************************
 
-#include <yaml-cpp/yaml.h>
-
 #include "backend_info.hpp"
 #include "cmake_variables.hpp"
 
@@ -43,14 +41,15 @@ namespace Gambit
       utils_error().raise(LOCAL_INFO,msg.str());
     }
 
-      /// Check for duplicate entries
-
-    for(YAML::const_iterator it=bepathfile.begin(); it!=bepathfile.end(); ++it)
+    for(YAML::const_iterator it = bepathfile.begin(); it != bepathfile.end(); ++it)
     {
       // Get the path entry for a given version of a given backend
-      backend_path_info pathinfo = it->as<??>();
+      backend_path_info pinfo; 
+      *it >> pinfo;
+      // Check for duplicate entries
       // Populate paths map with this info
 
+      
     }
   }
 
