@@ -21,15 +21,6 @@
 namespace Gambit
 {
 
-  /// Overload of the YAML stream operator, for reading the path info into a backend_path_info object
-  void Backends::operator >> (const YAML::Node& node, backend_path_info& pinfo)
-  {
-    //node[0] >> pinfo.backend;
-    //node[1] >> pinfo.version;
-    //node[2] >> pinfo.path;
-  }
-
-
   // Public method definitions for backend_info class 
 
   /// Constructor
@@ -40,27 +31,24 @@ namespace Gambit
     YAML::Node bepathfile;
     try
     { 
-      //bepathfile = YAML::LoadFile(filename);
+      bepathfile = YAML::LoadFile(filename);
     } 
     catch (YAML::Exception &e)
     {
       std::ostringstream msg;
       msg << "Error reading backend locations file \""<<filename<<"\"! ";
       msg << "Please check that file exists!" << endl;
-      msg << "(yaml-cpp error: "<<e.what()<<" )";
+      msg << "("<<e.what()<<")";
       utils_error().raise(LOCAL_INFO,msg.str());
     }
 
-    for(YAML::const_iterator it = bepathfile.begin(); it != bepathfile.end(); ++it)
-    {
-      // Get the path entry for a given version of a given backend
-      //backend_path_info pinfo; 
-      //*it >> pinfo;
-      // Check for duplicate entries
-      // Populate paths map with this info
+  }
 
-      
-    }
+  /// Return the path to a backend library, given a backend name and version.
+  str Backends::backend_info::path(str be, str ver)
+  {
+    // FIXME check for existence
+    return bepathfile[be][ver].as<str>() << endl;
   }
 
   /// Given a backend and a safe version (with no periods), return the true version
