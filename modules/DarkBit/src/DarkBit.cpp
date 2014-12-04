@@ -1370,7 +1370,7 @@ namespace Gambit {
     void RD_thresholds_resonances_SingletDM(RDrestype &result)
     {
         using namespace Pipes::RD_thresholds_resonances_SingletDM;
-        result.n_res = 0;
+        result.n_res = 1;
         result.n_thr = 1;
         result.E_thr[0] = 2*(*Param["mass"]);
         double mh = 125.7;  // TODO: Don't hardcode masses.
@@ -1437,9 +1437,22 @@ namespace Gambit {
         double mass, lambda, mh, Sigma_h, alpha_s, mf, s, Dh2, vf, Xf, x, mW;
         double sv_bb = 0;
         double sv_WW = 0;
+        double GeV2tocm3s1 = 1.17e-17;  // Conversion factor  TODO: Update
 
         mass = *Param["mass"];
         lambda = *Param["lambda"];
+
+        // TODO:
+        // Final states to implement
+        // - tautau
+        // - cc
+        // - bb
+        // - WW*
+        // - WW
+        // - ZZ*
+        // - ZZ
+        // - hh
+        // - tt
 
         // TODO: Don't hardcode these parameters / update
         mh = 125.7; 
@@ -1449,14 +1462,16 @@ namespace Gambit {
 
         s = pow(2*mass, 2);
         Dh2 = 1/(pow(s-pow(mh,2),2) + pow(mh,2)*pow(Sigma_h,2));
-        double GeV2tocm3s1 = 1.17e-17;
 
         // Annihilation into b-quarks.
         mf = 5.;
-        vf = pow(1-4*pow(mf,2)/s, 0.5);
-        Xf = 3 * (1+(3/2*log(pow(mf,2)/s)+9/4)*4*alpha_s/3/M_PI);
-        sv_bb = pow(lambda,2)*pow(mf,2)/4/M_PI*Xf*pow(vf,3) * Dh2;
-        sv_bb *= GeV2tocm3s1;
+        if ( mass > mf )
+        {
+            vf = pow(1-4*pow(mf,2)/s, 0.5);
+            Xf = 3 * (1+(3/2*log(pow(mf,2)/s)+9/4)*4*alpha_s/3/M_PI);
+            sv_bb = pow(lambda,2)*pow(mf,2)/4/M_PI*Xf*pow(vf,3) * Dh2;
+            sv_bb *= GeV2tocm3s1;
+        }
 
         // Annihilation into W bosons.
         if ( mass > mW )
