@@ -28,6 +28,12 @@ namespace Gambit
   namespace Backends
   {
 
+    /// Structure for reading in the path info for a single backend-version combination
+    struct backend_path_info { str backend, version, path; };
+
+    /// Overload of the YAML stream operator, for reading the path info into a backend_path_info object
+    void operator >> (const YAML::Node&, backend_path_info&);
+
     /// Structure providing some basic info on backend libraries
     struct backend_info
     {
@@ -48,17 +54,6 @@ namespace Gambit
       private: 
         std::map<str,std::map<str,str> > safe_version_map;
     };
-
-    /// Structure for reading in the path info for a single backend-version combination
-    struct backend_path_info { str backend, version, path; };
-
-    /// Overload of the YAML stream operator, for reading the path info into a backend_path_info object
-    void operator >> (const YAML::Node& node, backend_path_info& pinfo)
-    {
-      node[0] >> pinfo.backend;
-      node[1] >> pinfo.version;
-      node[2] >> pinfo.path;
-    }
 
   }
 
