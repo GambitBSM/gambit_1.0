@@ -10,7 +10,7 @@ include_directories("${PROJECT_SOURCE_DIR}/contrib/mcutils/include")
 include_directories("${PROJECT_SOURCE_DIR}/contrib/heputils/include")
 
 #contrib/yaml-cpp-0.5.1
-set(yaml_CXXFLAGS ${CMAKE_CXX_FLAGS} "-I${Boost_INCLUDE_DIR}")
+set(yaml_CXXFLAGS "${CMAKE_CXX_FLAGS} -I${Boost_INCLUDE_DIR}")
 ExternalProject_Add(yaml-cpp
   SOURCE_DIR ${PROJECT_SOURCE_DIR}/contrib/yaml-cpp-0.5.1
   BUILD_IN_SOURCE 1
