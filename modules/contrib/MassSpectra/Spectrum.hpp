@@ -4,6 +4,7 @@
 #define SPECTRUM_H
 
 #include <map>
+#include <set>
 
 namespace Gambit {
 

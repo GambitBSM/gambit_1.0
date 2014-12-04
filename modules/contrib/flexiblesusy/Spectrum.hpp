@@ -4,6 +4,7 @@
 #define SPECTRUM_H
 
 #include <map>
+#include <set>
 
 namespace Gambit {
 
@@ -322,7 +323,7 @@ double  RunparDer<SpecType>::get_mass4_parameter(std::string mass, int i, int j)
           return -1;
        }
 
-      ///  Get function out of map and call it on the bound flexiSUSY object
+       ///  Get function out of map and call it on the bound flexiSUSY object
        FSptr2 f = it->second.fptr;
        return (spec.*f)(io,jo);
    }

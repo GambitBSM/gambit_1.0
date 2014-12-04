@@ -123,7 +123,7 @@ START_MODULE
   /// TEST FUNCTIONS
   // Just some functions for testing SpecBit and Spectrum object components
 
-  #define CAPABILITY specbit_tests
+  #define CAPABILITY specbit_tests1
   START_CAPABILITY
 
      #define FUNCTION specbit_test_func1
@@ -131,10 +131,20 @@ START_MODULE
      DEPENDENCY(MSSM_spectrum, Spectrum*)
      #undef FUNCTION
 
+  #undef CAPABILITY
+
+  #define CAPABILITY specbit_tests2
+  START_CAPABILITY
+
      #define FUNCTION specbit_test_func2
      START_FUNCTION(double)
      DEPENDENCY(MSSM_spectrum, eaSLHA)
      #undef FUNCTION
+ 
+  #undef CAPABILITY
+
+  #define CAPABILITY specbit_tests3
+  START_CAPABILITY
 
      #define FUNCTION specbit_test_func3
      START_FUNCTION(double)
