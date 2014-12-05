@@ -87,7 +87,7 @@ Printer:
 Scanner:
 
   plugin: loopsample
-  file_path:  /home/pat/gambit-hepforge/modules/ScannerBit/lib/libsample.so
+  file_path:  ScannerBit/lib/libsample.so
 
   loopsample:
     point_number: 20
