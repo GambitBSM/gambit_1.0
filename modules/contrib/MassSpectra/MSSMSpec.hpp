@@ -570,12 +570,12 @@ namespace Gambit {
    typename MSSM_DRbarPars<Model>::fmap2 MSSM_DRbarPars<Model>::fill_mass_map2() 
    {
       fmap2 tmp_map;
-      tmp_map["TYd"]= FInfo2( &Model::get_TYd, {0}, {0} );
-      tmp_map["TYe"]= FInfo2( &Model::get_TYe, {0}, {0} );
-      tmp_map["TYu"]= FInfo2( &Model::get_TYu, {0}, {0} );
-      tmp_map["ad"] = FInfo2( &Model::get_TYd, {0}, {0} );
-      tmp_map["ae"] = FInfo2( &Model::get_TYe, {0}, {0} );
-      tmp_map["au"] = FInfo2( &Model::get_TYu, {0}, {0} );
+      tmp_map["TYd"]= FInfo2( &Model::get_TYd, {0,1,2}, {0,1,2} );
+      tmp_map["TYe"]= FInfo2( &Model::get_TYe, {0,1,2}, {0,1,2} );
+      tmp_map["TYu"]= FInfo2( &Model::get_TYu, {0,1,2}, {0,1,2} );
+      tmp_map["ad"] = FInfo2( &Model::get_TYd, {0,1,2}, {0,1,2} );
+      tmp_map["ae"] = FInfo2( &Model::get_TYe, {0,1,2}, {0,1,2} );
+      tmp_map["au"] = FInfo2( &Model::get_TYu, {0,1,2}, {0,1,2} );
    
       return tmp_map;
    }
@@ -615,9 +615,9 @@ namespace Gambit {
    {
       fmap2 tmp_map;
      
-      tmp_map["Yd"]= FInfo2( &Model::get_Yd, {0}, {0} );
-      tmp_map["Ye"]= FInfo2( &Model::get_Ye, {0}, {0} );
-      tmp_map["Yu"]= FInfo2( &Model::get_Yu, {0}, {0} );
+      tmp_map["Yd"]= FInfo2( &Model::get_Yd, {0,1,2}, {0,1,2} );
+      tmp_map["Ye"]= FInfo2( &Model::get_Ye, {0,1,2}, {0,1,2} );
+      tmp_map["Yu"]= FInfo2( &Model::get_Yu, {0,1,2}, {0,1,2} );
      
       return tmp_map;
    }
@@ -653,23 +653,23 @@ namespace Gambit {
    typename MSSM_DRbarPars<Model>::fmap1 MSSM_DRbarPars<Model>::fill_TreeMass_map1()
    {
    fmap1 tmp_map;
-    tmp_map["MSd"] = FInfo1( &Model::get_MSd, {0} );
-    tmp_map["MSv"] = FInfo1( &Model::get_MSv, {0} );
-    tmp_map["MSu"] = FInfo1( &Model::get_MSu, {0} );
-    tmp_map["MSe"] = FInfo1( &Model::get_MSe, {0} );
-    tmp_map["Mh0"] = FInfo1( &Model::get_Mhh, {0} );
+   tmp_map["MSd"] = FInfo1( &Model::get_MSd, {0,1,2,3,4,5} );
+    tmp_map["MSv"] = FInfo1( &Model::get_MSv, {0,1,2} );
+    tmp_map["MSu"] = FInfo1( &Model::get_MSu, {0,1,2,3,4,5} );
+    tmp_map["MSe"] = FInfo1( &Model::get_MSe, {0,1,2,3,4,5} );
+    tmp_map["Mh0"] = FInfo1( &Model::get_Mhh, {0,1} );
     //Here we may access the goldstone boson
     // and higgs. maybe too dangerous to keep?
-    tmp_map["MA0"] = FInfo1( &Model::get_MAh, {0} );      
+    tmp_map["MA0"] = FInfo1( &Model::get_MAh, {0,1} );      
     //Here we may access the goldstone boson
     //and higgs. maybe too dangerous to keep?
-    tmp_map["MHpm"] = FInfo1( &Model::get_MHpm, {0} );   
-    tmp_map["MCha"] = FInfo1( &Model::get_MCha, {0} );
-    tmp_map["MChi"] = FInfo1( &Model::get_MChi, {0} );
+    tmp_map["MHpm"] = FInfo1( &Model::get_MHpm, {0,1} );   
+    tmp_map["MCha"] = FInfo1( &Model::get_MCha, {0,1} );
+    tmp_map["MChi"] = FInfo1( &Model::get_MChi, {0,1,2,3} );
     
-    tmp_map["MFd"] = FInfo1( &Model::get_MFd, {0} );
-    tmp_map["MFu"] = FInfo1( &Model::get_MFu, {0} );
-    tmp_map["MFe"] = FInfo1( &Model::get_MFe, {0} );
+    tmp_map["MFd"] = FInfo1( &Model::get_MFd, {0,1,2} );
+    tmp_map["MFu"] = FInfo1( &Model::get_MFu, {0,1,2} );
+    tmp_map["MFe"] = FInfo1( &Model::get_MFe, {0,1,2} );
     return tmp_map;
    }
    
