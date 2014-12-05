@@ -28,16 +28,14 @@ namespace Gambit
   namespace Backends
   {
 
-    /// Structure for reading in the path info for a single backend-version combination
-    struct backend_path_info { str backend, version, path; };
-
     /// Structure providing some basic info on backend libraries
     struct backend_info
     {
       public: 
         backend_info();                            // Constructor
-        path(str, str);                            // Return the path to a backend library
-        std::map<str,str> dlerrors;                // Key: backend name
+        str path(str, str) const;                  // Return the path to a backend library
+        str corrected_path(str, str) const;        // Return the path to a backend library with GAMBIT_DIR expanded
+        std::map<str,str> dlerrors;                // Key: backend name + version
         std::map<str,str> defaults;                // Key: backend name
         std::map<str,bool> works;                  // Key: backend name + version
         std::map<str,bool> classloader;            // Key: backend name + version
@@ -47,10 +45,10 @@ namespace Gambit
         std::map<str,str> constructor_status;      // Key: backend name + version + class name + factory args
         str version_from_safe_version (str, str) const;
         void link_versions(str, str, str);
-        str path_of(str, str);
-        std::map<str,str> paths;                   // Key: backend name
       private: 
         std::map<str,std::map<str,str> > safe_version_map;
+        const str filename;
+        YAML::Node bepathfile;
     };
 
   }

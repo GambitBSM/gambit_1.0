@@ -24,11 +24,10 @@ namespace Gambit
   // Public method definitions for backend_info class 
 
   /// Constructor
-  Backends::backend_info::backend_info()
+  Backends::backend_info::backend_info() : 
+   filename(GAMBIT_DIR "/config/backend_locations.yaml")
   {
     // Read yaml configuration file
-    const str filename(GAMBIT_DIR "/config/backend_locations.yaml");
-    YAML::Node bepathfile;
     try
     { 
       bepathfile = YAML::LoadFile(filename);
@@ -36,19 +35,39 @@ namespace Gambit
     catch (YAML::Exception &e)
     {
       std::ostringstream msg;
-      msg << "Error reading backend locations file \""<<filename<<"\"! ";
-      msg << "Please check that file exists!" << endl;
+      msg << "Could not read backend locations file \""<<filename<<"\"!" << endl;
+      msg << "Please check that file exists and contains valid YAML." << endl;
       msg << "("<<e.what()<<")";
       utils_error().raise(LOCAL_INFO,msg.str());
     }
-
   }
 
   /// Return the path to a backend library, given a backend name and version.
-  str Backends::backend_info::path(str be, str ver)
+  str Backends::backend_info::path(str be, str ver) const
   {
-    // FIXME check for existence
-    return bepathfile[be][ver].as<str>() << endl;
+    if (not bepathfile[be][ver])
+    {
+      cout << bepathfile[be][ver].as<str>();
+      std::ostringstream msg;
+      msg << "Could not find path for backend "<< be <<" v" << ver << endl;
+      msg << "in " << filename << "." << endl;
+      msg << "Please check the contents of the backend path config file.";
+      utils_error().raise(LOCAL_INFO,msg.str());
+    }
+    str p = bepathfile[be][ver].as<str>();
+    if (p.substr(0,2) == "./") p = p.substr(2,p.npos);
+    return p;
+  }
+
+  /// Return the complete path to a backend library, given a backend name and version.
+  str Backends::backend_info::corrected_path(str be, str ver) const
+  {
+    str p = path(be,ver);
+    if (p.substr(0,1) != "/")
+    {
+      p = GAMBIT_DIR "/"+p;
+    }
+    return p;
   }
 
   /// Given a backend and a safe version (with no periods), return the true version

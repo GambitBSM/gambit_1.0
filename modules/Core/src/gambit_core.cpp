@@ -558,7 +558,7 @@ namespace Gambit
         int maxlens[6] = {18, 7, 40, 13, 3, 3};
         bool all_good = true;
         cout << "\nThis is GAMBIT." << endl << endl; 
-        cout << "Backends               Version     Path to lib (relative to GAMBIT directory)   Status          #funcs  #types  #ctors" << endl;
+        cout << "Backends               Version     Path to lib                                  Status          #funcs  #types  #ctors" << endl;
         cout << "----------------------------------------------------------------------------------------------------------------------" << endl;
 
         // Loop over all registered backends
@@ -570,11 +570,10 @@ namespace Gambit
             int nfuncs = 0;
             int ntypes = 0;
             int nctors = 0;
-            str path, status;
 
             // Retrieve the status and path info.
-            path = backendData->paths.at(it->first+*jt);                          // Get the path of this backend
-            status = backend_status(it->first, *jt, all_good);                    // Save the status of this backend
+            const str path = backendData->path(it->first,*jt);                              // Get the path of this backend
+            const str status = backend_status(it->first, *jt, all_good);                    // Save the status of this backend
 
             // Count up the number of functions in this version of the backend, using the registered functors.
             for (fVec::const_iterator kt = backendFunctorList.begin(); kt != backendFunctorList.end(); ++kt)
@@ -586,7 +585,7 @@ namespace Gambit
             if (backendData->classloader.at(it->first+*jt))
             {
               std::set<str> classes = backendData->classes.at(it->first+*jt);     // Retrieve classes loaded by this version
-              ntypes = classes.size();                                      // Get the number of classes loaded by this backend
+              ntypes = classes.size();                                            // Get the number of classes loaded by this backend
               for (std::set<str>::const_iterator kt = classes.begin(); kt != classes.end(); ++kt)
               {
                 nctors += backendData->factory_args.at(it->first+*jt+*kt).size(); // Add the number of factories for this class to the total
@@ -607,7 +606,10 @@ namespace Gambit
           }
         }
 
+        cout << "----------------------------------------------------------------------------------------------------------------------" << endl;
+        cout << "All relative paths are given with reference to " << GAMBIT_DIR << ".";
         if (all_good) cout << endl << "All your backend are belong to us." << endl;
+        cout << endl;
         no_scan = true;
       }
       else if (command == "models")
@@ -765,7 +767,7 @@ namespace Gambit
             for (std::set<str>::const_iterator jt = versions.begin(); jt != versions.end(); ++jt)
             {
               bool who_cares;
-              const str path = backendData->paths.at(it->first+*jt);        // Save the path of this backend
+              const str path = backendData->corrected_path(it->first,*jt);  // Save the path of this backend
               const str status = backend_status(it->first, *jt, who_cares); // Save the status of this backend
               cout << "Version: " << *jt << endl;
               cout << "Path to library: " << path << endl;

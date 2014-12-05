@@ -32,9 +32,6 @@
 ///  \date 2014 Mar
 ///  *********************************************
 
-/* Specify the path to the shared library along with a backend name. */
-
-#define LIBPATH      "Backends/lib/libdarksusy.so"
 #ifdef BACKENDRENAME
   #define BACKENDNAME BACKENDRENAME
 #else
@@ -44,7 +41,7 @@
 #define SAFE_VERSION 0_1
 
 
-/* The following macro loads the library (using dlmopen) in LIBPATH 
+/* The following macro loads the library using dlmopen 
  * when this header file is included somewhere. */
 
 LOAD_LIBRARY
