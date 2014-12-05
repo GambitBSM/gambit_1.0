@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Thu 13 Nov 2014 16:03:52
+// File generated at Wed 3 Dec 2014 11:58:06
 
 #ifndef CMSSM_TWO_SCALE_HIGH_SCALE_CONSTRAINT_H
 #define CMSSM_TWO_SCALE_HIGH_SCALE_CONSTRAINT_H
@@ -36,7 +36,7 @@ template<>
 class CMSSM_high_scale_constraint<Two_scale> : public Constraint<Two_scale> {
 public:
    CMSSM_high_scale_constraint();
-   CMSSM_high_scale_constraint(const CMSSM_input_parameters&);
+   CMSSM_high_scale_constraint(CMSSM<Two_scale>*, const CMSSM_input_parameters&);
    virtual ~CMSSM_high_scale_constraint();
    virtual void apply();
    virtual double get_scale() const;

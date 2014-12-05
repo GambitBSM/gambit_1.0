@@ -16,13 +16,12 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Thu 13 Nov 2014 16:05:50
+// File generated at Wed 3 Dec 2014 11:59:47
 
 #include "CMSSM_input_parameters.hpp"
 #include "CMSSM_slha_io.hpp"
 #include "CMSSM_spectrum_generator.hpp"
 
-#include "error.hpp"
 #include "spectrum_generator_settings.hpp"
 #include "lowe.h"
 #include "command_line_options.hpp"
@@ -93,8 +92,7 @@ int main(int argc, const char* argv[])
 
    spectrum_generator.run(oneset, input);
 
-   const CMSSM<algorithm_type>& model
-      = spectrum_generator.get_model();
+   const CMSSM_slha<algorithm_type> model(spectrum_generator.get_model());
    const Problems<CMSSM_info::NUMBER_OF_PARTICLES>& problems
       = spectrum_generator.get_problems();
 

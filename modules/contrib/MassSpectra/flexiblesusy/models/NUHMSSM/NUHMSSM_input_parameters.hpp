@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Thu 13 Nov 2014 12:22:17
+// File generated at Thu 4 Dec 2014 21:44:08
 
 #ifndef NUHMSSM_INPUT_PARAMETERS_H
 #define NUHMSSM_INPUT_PARAMETERS_H
@@ -40,6 +40,8 @@ struct NUHMSSM_input_parameters {
 
    {}
 };
+
+std::ostream& operator<<(std::ostream&, const NUHMSSM_input_parameters&);
 
 } // namespace flexiblesusy
 

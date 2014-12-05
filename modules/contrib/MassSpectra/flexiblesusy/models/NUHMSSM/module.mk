@@ -7,12 +7,18 @@ NUHMSSM_INSTALL_DIR := $(INSTALL_DIR)/$(DIR)
 NUHMSSM_MK     := \
 		$(DIR)/module.mk
 
-NUHMSSM_TWO_SCALE_MK := \
-		$(DIR)/two_scale_susy.mk \
+NUHMSSM_TWO_SCALE_SUSY_MK := \
+		$(DIR)/two_scale_susy.mk
+
+NUHMSSM_TWO_SCALE_SOFT_MK := \
 		$(DIR)/two_scale_soft.mk
 
+NUHMSSM_TWO_SCALE_MK := \
+		$(NUHMSSM_TWO_SCALE_SUSY_MK) \
+		$(NUHMSSM_TWO_SCALE_SOFT_MK)
+
 NUHMSSM_SLHA_INPUT := \
-		$(DIR)/LesHouches.in.NUHMSSM
+
 
 NUHMSSM_GNUPLOT := \
 		$(DIR)/NUHMSSM_plot_rgflow.gnuplot \
@@ -29,6 +35,7 @@ LIBNUHMSSM_HDR :=
 ifneq ($(findstring two_scale,$(ALGORITHMS)),)
 LIBNUHMSSM_SRC += \
 		$(DIR)/NUHMSSM_info.cpp \
+		$(DIR)/NUHMSSM_input_parameters.cpp \
 		$(DIR)/NUHMSSM_slha_io.cpp \
 		$(DIR)/NUHMSSM_physical.cpp \
 		$(DIR)/NUHMSSM_utilities.cpp \
@@ -37,11 +44,13 @@ LIBNUHMSSM_SRC += \
 		$(DIR)/NUHMSSM_two_scale_initial_guesser.cpp \
 		$(DIR)/NUHMSSM_two_scale_low_scale_constraint.cpp \
 		$(DIR)/NUHMSSM_two_scale_model.cpp \
+		$(DIR)/NUHMSSM_two_scale_model_slha.cpp \
 		$(DIR)/NUHMSSM_two_scale_susy_parameters.cpp \
 		$(DIR)/NUHMSSM_two_scale_soft_parameters.cpp \
 		$(DIR)/NUHMSSM_two_scale_susy_scale_constraint.cpp
 EXENUHMSSM_SRC += \
 		$(DIR)/run_NUHMSSM.cpp \
+		$(DIR)/run_cmd_line_NUHMSSM.cpp \
 		$(DIR)/scan_NUHMSSM.cpp
 LIBNUHMSSM_HDR += \
 		$(DIR)/NUHMSSM_convergence_tester.hpp \
@@ -51,6 +60,7 @@ LIBNUHMSSM_HDR += \
 		$(DIR)/NUHMSSM_input_parameters.hpp \
 		$(DIR)/NUHMSSM_low_scale_constraint.hpp \
 		$(DIR)/NUHMSSM_model.hpp \
+		$(DIR)/NUHMSSM_model_slha.hpp \
 		$(DIR)/NUHMSSM_physical.hpp \
 		$(DIR)/NUHMSSM_slha_io.hpp \
 		$(DIR)/NUHMSSM_spectrum_generator.hpp \
@@ -61,6 +71,7 @@ LIBNUHMSSM_HDR += \
 		$(DIR)/NUHMSSM_two_scale_initial_guesser.hpp \
 		$(DIR)/NUHMSSM_two_scale_low_scale_constraint.hpp \
 		$(DIR)/NUHMSSM_two_scale_model.hpp \
+		$(DIR)/NUHMSSM_two_scale_model_slha.hpp \
 		$(DIR)/NUHMSSM_two_scale_soft_parameters.hpp \
 		$(DIR)/NUHMSSM_two_scale_susy_parameters.hpp \
 		$(DIR)/NUHMSSM_two_scale_susy_scale_constraint.hpp
@@ -69,17 +80,17 @@ ifneq ($(MAKECMDGOALS),showbuild)
 ifneq ($(MAKECMDGOALS),tag)
 ifneq ($(MAKECMDGOALS),release)
 ifneq ($(MAKECMDGOALS),doc)
--include $(DIR)/two_scale_susy.mk
--include $(DIR)/two_scale_soft.mk
+-include $(NUHMSSM_TWO_SCALE_SUSY_MK)
+-include $(NUHMSSM_TWO_SCALE_SOFT_MK)
 ifneq ($(MAKECMDGOALS),clean)
 ifneq ($(MAKECMDGOALS),distclean)
 ifneq ($(MAKECMDGOALS),pack-$(MODNAME)-src)
 ifeq ($(findstring clean-,$(MAKECMDGOALS)),)
 ifeq ($(findstring distclean-,$(MAKECMDGOALS)),)
 ifeq ($(findstring doc-,$(MAKECMDGOALS)),)
-$(DIR)/two_scale_susy.mk: run-metacode-$(MODNAME)
+$(NUHMSSM_TWO_SCALE_SUSY_MK): run-metacode-$(MODNAME)
 		@$(CONVERT_DOS_PATHS) $@
-$(DIR)/two_scale_soft.mk: run-metacode-$(MODNAME)
+$(NUHMSSM_TWO_SCALE_SOFT_MK): run-metacode-$(MODNAME)
 		@$(CONVERT_DOS_PATHS) $@
 endif
 endif
@@ -116,6 +127,9 @@ LIBNUHMSSM     := $(DIR)/lib$(MODNAME)$(LIBEXT)
 
 RUN_NUHMSSM_OBJ := $(DIR)/run_NUHMSSM.o
 RUN_NUHMSSM_EXE := $(DIR)/run_NUHMSSM.x
+
+RUN_CMD_LINE_NUHMSSM_OBJ := $(DIR)/run_cmd_line_NUHMSSM.o
+RUN_CMD_LINE_NUHMSSM_EXE := $(DIR)/run_cmd_line_NUHMSSM.x
 
 SCAN_NUHMSSM_OBJ := $(DIR)/scan_NUHMSSM.o
 SCAN_NUHMSSM_EXE := $(DIR)/scan_NUHMSSM.x
@@ -159,6 +173,7 @@ clean-$(MODNAME)-obj:
 clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-obj
 		-rm -f $(LIBNUHMSSM)
 		-rm -f $(RUN_NUHMSSM_EXE)
+		-rm -f $(RUN_CMD_LINE_NUHMSSM_EXE)
 		-rm -f $(SCAN_NUHMSSM_EXE)
 
 distclean-$(MODNAME): clean-$(MODNAME)
@@ -206,10 +221,13 @@ $(LIBNUHMSSM): $(LIBNUHMSSM_OBJ)
 $(RUN_NUHMSSM_EXE): $(RUN_NUHMSSM_OBJ) $(LIBNUHMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS)
 
+$(RUN_CMD_LINE_NUHMSSM_EXE): $(RUN_CMD_LINE_NUHMSSM_OBJ) $(LIBNUHMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
+		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS)
+
 $(SCAN_NUHMSSM_EXE): $(SCAN_NUHMSSM_OBJ) $(LIBNUHMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS)
 
 ALLDEP += $(LIBNUHMSSM_DEP) $(EXENUHMSSM_DEP)
 ALLSRC += $(LIBNUHMSSM_SRC) $(EXENUHMSSM_SRC)
 ALLLIB += $(LIBNUHMSSM)
-ALLEXE += $(RUN_NUHMSSM_EXE) $(SCAN_NUHMSSM_EXE)
+ALLEXE += $(RUN_NUHMSSM_EXE) $(RUN_CMD_LINE_NUHMSSM_EXE) $(SCAN_NUHMSSM_EXE)

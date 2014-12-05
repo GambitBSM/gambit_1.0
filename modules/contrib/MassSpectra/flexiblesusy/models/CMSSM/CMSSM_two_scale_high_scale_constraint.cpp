@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Thu 13 Nov 2014 16:03:52
+// File generated at Wed 3 Dec 2014 11:58:06
 
 #include "CMSSM_two_scale_high_scale_constraint.hpp"
 #include "CMSSM_two_scale_model.hpp"
@@ -55,10 +55,12 @@ CMSSM_high_scale_constraint<Two_scale>::CMSSM_high_scale_constraint()
 {
 }
 
-CMSSM_high_scale_constraint<Two_scale>::CMSSM_high_scale_constraint(const CMSSM_input_parameters& inputPars_)
+CMSSM_high_scale_constraint<Two_scale>::CMSSM_high_scale_constraint(
+   CMSSM<Two_scale>* model_,
+   const CMSSM_input_parameters& inputPars_)
    : Constraint<Two_scale>()
    , fixed_scale(0.)
-   , model(0)
+   , model(model_)
    , inputPars(inputPars_)
 {
    initialize();
@@ -70,7 +72,7 @@ CMSSM_high_scale_constraint<Two_scale>::~CMSSM_high_scale_constraint()
 
 void CMSSM_high_scale_constraint<Two_scale>::apply()
 {
-   assert(model && "Error: CMSSM_high_scale_constraint:"
+   assert(model && "Error: CMSSM_high_scale_constraint::apply():"
           " model pointer must not be zero");
 
    if (std::fabs(model->get_g1()) > 3.0) {
@@ -132,7 +134,7 @@ double CMSSM_high_scale_constraint<Two_scale>::get_initial_scale_guess() const
 
 void CMSSM_high_scale_constraint<Two_scale>::set_model(Two_scale_model* model_)
 {
-   model = cast_model<CMSSM<Two_scale> >(model_);
+   model = cast_model<CMSSM<Two_scale>*>(model_);
 }
 
 void CMSSM_high_scale_constraint<Two_scale>::set_input_parameters(const CMSSM_input_parameters& inputPars_)
@@ -155,6 +157,9 @@ void CMSSM_high_scale_constraint<Two_scale>::clear()
 
 void CMSSM_high_scale_constraint<Two_scale>::initialize()
 {
+   assert(model && "CMSSM_high_scale_constraint<Two_scale>::"
+          "initialize(): model pointer is zero.");
+
    initial_scale_guess = 2.e16;
 
    scale = initial_scale_guess;
@@ -162,6 +167,9 @@ void CMSSM_high_scale_constraint<Two_scale>::initialize()
 
 void CMSSM_high_scale_constraint<Two_scale>::update_scale()
 {
+   assert(model && "CMSSM_high_scale_constraint<Two_scale>::"
+          "update_scale(): model pointer is zero.");
+
    if (!is_zero(fixed_scale)) {
       scale = fixed_scale;
       return;

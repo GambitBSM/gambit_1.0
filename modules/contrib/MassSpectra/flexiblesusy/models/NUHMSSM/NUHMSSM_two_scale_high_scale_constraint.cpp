@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Thu 13 Nov 2014 12:22:27
+// File generated at Thu 4 Dec 2014 21:44:13
 
 #include "NUHMSSM_two_scale_high_scale_constraint.hpp"
 #include "NUHMSSM_two_scale_model.hpp"
@@ -55,10 +55,12 @@ NUHMSSM_high_scale_constraint<Two_scale>::NUHMSSM_high_scale_constraint()
 {
 }
 
-NUHMSSM_high_scale_constraint<Two_scale>::NUHMSSM_high_scale_constraint(const NUHMSSM_input_parameters& inputPars_)
+NUHMSSM_high_scale_constraint<Two_scale>::NUHMSSM_high_scale_constraint(
+   NUHMSSM<Two_scale>* model_,
+   const NUHMSSM_input_parameters& inputPars_)
    : Constraint<Two_scale>()
    , fixed_scale(0.)
-   , model(0)
+   , model(model_)
    , inputPars(inputPars_)
 {
    initialize();
@@ -70,7 +72,7 @@ NUHMSSM_high_scale_constraint<Two_scale>::~NUHMSSM_high_scale_constraint()
 
 void NUHMSSM_high_scale_constraint<Two_scale>::apply()
 {
-   assert(model && "Error: NUHMSSM_high_scale_constraint:"
+   assert(model && "Error: NUHMSSM_high_scale_constraint::apply():"
           " model pointer must not be zero");
 
    if (std::fabs(model->get_g1()) > 3.0) {
@@ -134,7 +136,7 @@ double NUHMSSM_high_scale_constraint<Two_scale>::get_initial_scale_guess() const
 
 void NUHMSSM_high_scale_constraint<Two_scale>::set_model(Two_scale_model* model_)
 {
-   model = cast_model<NUHMSSM<Two_scale> >(model_);
+   model = cast_model<NUHMSSM<Two_scale>*>(model_);
 }
 
 void NUHMSSM_high_scale_constraint<Two_scale>::set_input_parameters(const NUHMSSM_input_parameters& inputPars_)
@@ -157,6 +159,9 @@ void NUHMSSM_high_scale_constraint<Two_scale>::clear()
 
 void NUHMSSM_high_scale_constraint<Two_scale>::initialize()
 {
+   assert(model && "NUHMSSM_high_scale_constraint<Two_scale>::"
+          "initialize(): model pointer is zero.");
+
    initial_scale_guess = 2.e16;
 
    scale = initial_scale_guess;
@@ -164,6 +169,9 @@ void NUHMSSM_high_scale_constraint<Two_scale>::initialize()
 
 void NUHMSSM_high_scale_constraint<Two_scale>::update_scale()
 {
+   assert(model && "NUHMSSM_high_scale_constraint<Two_scale>::"
+          "update_scale(): model pointer is zero.");
+
    if (!is_zero(fixed_scale)) {
       scale = fixed_scale;
       return;

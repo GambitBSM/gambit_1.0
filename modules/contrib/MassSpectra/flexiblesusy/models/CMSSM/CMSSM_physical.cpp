@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Thu 13 Nov 2014 16:05:49
+// File generated at Wed 3 Dec 2014 11:59:47
 
 #include "CMSSM_physical.hpp"
 
@@ -52,40 +52,40 @@ CMSSM_physical::CMSSM_physical()
 
 void CMSSM_physical::clear()
 {
-   MVG = 0.0;
-   MGlu = 0.0;
-   MFv = Eigen::Array<double,3,1>::Zero();
-   MVP = 0.0;
-   MVZ = 0.0;
-   MSd = Eigen::Array<double,6,1>::Zero();
+   MVG = 0.;
+   MGlu = 0.;
+   MFv = Eigen::Matrix<double,3,1>::Zero();
+   MVP = 0.;
+   MVZ = 0.;
+   MSd = Eigen::Matrix<double,6,1>::Zero();
    ZD = Eigen::Matrix<double,6,6>::Zero();
-   MSv = Eigen::Array<double,3,1>::Zero();
+   MSv = Eigen::Matrix<double,3,1>::Zero();
    ZV = Eigen::Matrix<double,3,3>::Zero();
-   MSu = Eigen::Array<double,6,1>::Zero();
+   MSu = Eigen::Matrix<double,6,1>::Zero();
    ZU = Eigen::Matrix<double,6,6>::Zero();
-   MSe = Eigen::Array<double,6,1>::Zero();
+   MSe = Eigen::Matrix<double,6,1>::Zero();
    ZE = Eigen::Matrix<double,6,6>::Zero();
-   Mhh = Eigen::Array<double,2,1>::Zero();
+   Mhh = Eigen::Matrix<double,2,1>::Zero();
    ZH = Eigen::Matrix<double,2,2>::Zero();
-   MAh = Eigen::Array<double,2,1>::Zero();
+   MAh = Eigen::Matrix<double,2,1>::Zero();
    ZA = Eigen::Matrix<double,2,2>::Zero();
-   MHpm = Eigen::Array<double,2,1>::Zero();
+   MHpm = Eigen::Matrix<double,2,1>::Zero();
    ZP = Eigen::Matrix<double,2,2>::Zero();
-   MChi = Eigen::Array<double,4,1>::Zero();
+   MChi = Eigen::Matrix<double,4,1>::Zero();
    ZN = Eigen::Matrix<std::complex<double>,4,4>::Zero();
-   MCha = Eigen::Array<double,2,1>::Zero();
+   MCha = Eigen::Matrix<double,2,1>::Zero();
    UM = Eigen::Matrix<std::complex<double>,2,2>::Zero();
    UP = Eigen::Matrix<std::complex<double>,2,2>::Zero();
-   MFe = Eigen::Array<double,3,1>::Zero();
+   MFe = Eigen::Matrix<double,3,1>::Zero();
    ZEL = Eigen::Matrix<std::complex<double>,3,3>::Zero();
    ZER = Eigen::Matrix<std::complex<double>,3,3>::Zero();
-   MFd = Eigen::Array<double,3,1>::Zero();
+   MFd = Eigen::Matrix<double,3,1>::Zero();
    ZDL = Eigen::Matrix<std::complex<double>,3,3>::Zero();
    ZDR = Eigen::Matrix<std::complex<double>,3,3>::Zero();
-   MFu = Eigen::Array<double,3,1>::Zero();
+   MFu = Eigen::Matrix<double,3,1>::Zero();
    ZUL = Eigen::Matrix<std::complex<double>,3,3>::Zero();
    ZUR = Eigen::Matrix<std::complex<double>,3,3>::Zero();
-   MVWm = 0.0;
+   MVWm = 0.;
 
 }
 
@@ -137,7 +137,7 @@ void CMSSM_physical::print(std::ostream& ostr) const
 
 std::ostream& operator<<(std::ostream& ostr, const CMSSM_physical& phys_pars)
 {
-   phys_pars.print(std::cout);
+   phys_pars.print(ostr);
    return ostr;
 }
 

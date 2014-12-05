@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Thu 13 Nov 2014 16:03:46
+// File generated at Wed 3 Dec 2014 11:58:03
 
 #include "CMSSM_slha_io.hpp"
 #include "CMSSM_input_parameters.hpp"
@@ -133,6 +133,7 @@ void CMSSM_slha_io::set_mass(const CMSSM_physical& physical,
 
    mass << "Block MASS\n"
       << FORMAT_MASS(1000021, LOCALPHYSICAL(MGlu), "Glu")
+      << FORMAT_MASS(24, SM(MW), "VWm")
       << FORMAT_MASS(1000024, LOCALPHYSICAL(MCha(0)), "Cha(1)")
       << FORMAT_MASS(1000037, LOCALPHYSICAL(MCha(1)), "Cha(2)")
       << FORMAT_MASS(25, LOCALPHYSICAL(Mhh(0)), "hh(1)")
@@ -183,7 +184,6 @@ void CMSSM_slha_io::set_mass(const CMSSM_physical& physical,
          << FORMAT_MASS(2, LOCALPHYSICAL(MFu(0)), "Fu(1)")
          << FORMAT_MASS(4, LOCALPHYSICAL(MFu(1)), "Fu(2)")
          << FORMAT_MASS(6, LOCALPHYSICAL(MFu(2)), "Fu(3)")
-         << FORMAT_MASS(24, LOCALPHYSICAL(MVWm), "VWm")
       ;
    }
 
@@ -312,11 +312,6 @@ void CMSSM_slha_io::fill_minpar_tuple(CMSSM_input_parameters& input,
 void CMSSM_slha_io::fill_extpar_tuple(CMSSM_input_parameters& input,
                                                 int key, double value)
 {
-   // key 0 is the model parameter input scale, which is read in
-   // slha_io.{hpp,cpp}
-   if (key == 0)
-      return;
-
    switch (key) {
    default: WARNING("Unrecognized key: " << key); break;
    }

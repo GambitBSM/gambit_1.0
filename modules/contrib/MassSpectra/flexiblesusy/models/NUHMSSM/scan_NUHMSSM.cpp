@@ -16,13 +16,13 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Thu 13 Nov 2014 12:32:27
+// File generated at Thu 4 Dec 2014 21:45:33
 
 #include "NUHMSSM_input_parameters.hpp"
 #include "NUHMSSM_spectrum_generator.hpp"
+#include "NUHMSSM_two_scale_model_slha.hpp"
 
 #include "command_line_options.hpp"
-#include "error.hpp"
 #include "scan.hpp"
 #include "lowe.h"
 #include "logger.hpp"
@@ -121,8 +121,8 @@ int main(int argc, char* argv[])
 
       spectrum_generator.run(oneset, input);
 
-      const NUHMSSM<algorithm_type>& model = spectrum_generator.get_model();
-      const NUHMSSM_physical& pole_masses = model.get_physical();
+      const NUHMSSM_slha<algorithm_type> model(spectrum_generator.get_model());
+      const NUHMSSM_physical& pole_masses = model.get_physical_slha();
       const Problems<NUHMSSM_info::NUMBER_OF_PARTICLES>& problems
          = spectrum_generator.get_problems();
       const double higgs = pole_masses.Mhh(0);

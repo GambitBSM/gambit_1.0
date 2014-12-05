@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Thu 13 Nov 2014 12:22:22
+// File generated at Thu 4 Dec 2014 21:44:10
 
 #include "NUHMSSM_info.hpp"
 
@@ -25,17 +25,17 @@
 namespace flexiblesusy {
 
 namespace NUHMSSM_info {
-   const unsigned particle_multiplicities[NUMBER_OF_PARTICLES] = {1, 3, 1, 6, 3
-      , 6, 6, 2, 2, 2, 4, 2, 3, 3, 3, 1, 1, 1};
+   const unsigned particle_multiplicities[NUMBER_OF_PARTICLES] = {1, 1, 3, 1, 1
+      , 6, 3, 6, 6, 2, 2, 2, 4, 2, 3, 3, 3, 1};
 
-   const char* particle_names[NUMBER_OF_PARTICLES] = {"Glu", "Fv", "VZ", "Sd",
-      "Sv", "Su", "Se", "hh", "Ah", "Hpm", "Chi", "Cha", "Fe", "Fd", "Fu", "VG",
-      "VP", "VWm"};
+   const char* particle_names[NUMBER_OF_PARTICLES] = {"VG", "Glu", "Fv", "VP",
+      "VZ", "Sd", "Sv", "Su", "Se", "hh", "Ah", "Hpm", "Chi", "Cha", "Fe", "Fd",
+      "Fu", "VWm"};
 
-   const char* particle_latex_names[NUMBER_OF_PARTICLES] = {   "\\tilde{g}",
-      "\\nu", "Z", "\\tilde{d}", "\\tilde{\\nu}", "\\tilde{u}", "\\tilde{e}", "h",
-      "A^0", "H^-", "\\tilde{\\chi}^0", "\\tilde{\\chi}^-", "e", "d", "u", "g",
-      "\\gamma", "W^-"};
+   const char* particle_latex_names[NUMBER_OF_PARTICLES] = {   "g",
+      "\\tilde{g}", "\\nu", "\\gamma", "Z", "\\tilde{d}", "\\tilde{\\nu}",
+      "\\tilde{u}", "\\tilde{e}", "h", "A^0", "H^-", "\\tilde{\\chi}^0",
+      "\\tilde{\\chi}^-", "e", "d", "u", "W^-"};
 
    const char* parameter_names[NUMBER_OF_PARAMETERS] = {"Yd(0,0)", "Yd(0,1)",
       "Yd(0,2)", "Yd(1,0)", "Yd(1,1)", "Yd(1,2)", "Yd(2,0)", "Yd(2,1)", "Yd(2,2)",
@@ -58,21 +58,24 @@ namespace NUHMSSM_info {
 
    const char* model_name = "NUHMSSM";
    const bool is_low_energy_model = false;
+   const bool is_supersymmetric_model = true;
 
 void print(std::ostream& ostr)
 {
    ostr
       << "Model information\n"
       << "=================\n"
-      << "Model name:            " << model_name << '\n'
-      << "Is a low-energy model: "
-      << (is_low_energy_model ? "true" : "false") << '\n'
-      << "Number of multiplets:  " << NUMBER_OF_PARTICLES << '\n'
-      << "Number of parameters:  " << NUMBER_OF_PARAMETERS << '\n'
+      << "Model name:                " << model_name << '\n'
+      << "Is a low-energy model:     "
+      << (is_low_energy_model ? "yes" : "no") << '\n'
+      << "Is a supersymmetric model: "
+      << (is_supersymmetric_model ? "yes" : "no") << '\n'
+      << "Number of multiplets:      " << NUMBER_OF_PARTICLES << '\n'
+      << "Number of parameters:      " << NUMBER_OF_PARAMETERS << '\n'
       ;
 
    ostr << "\n"
-      "Multiplets:            ";
+      "Multiplets:                ";
    for (unsigned i = 0; i < NUMBER_OF_PARTICLES; i++) {
       ostr << particle_names[i]
            << '[' << particle_multiplicities[i] << ']';
@@ -81,7 +84,7 @@ void print(std::ostream& ostr)
    }
 
    ostr << "\n\n"
-      "Parameters:            ";
+      "Parameters:                ";
    for (unsigned i = 0; i < NUMBER_OF_PARAMETERS; i++) {
       ostr << parameter_names[i];
       if (i + 1 < NUMBER_OF_PARAMETERS)

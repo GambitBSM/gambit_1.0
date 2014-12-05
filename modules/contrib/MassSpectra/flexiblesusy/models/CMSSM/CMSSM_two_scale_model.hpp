@@ -15,13 +15,18 @@
 // along with FlexibleSUSY.  If not, see
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
+
+// File generated at Wed 3 Dec 2014 11:59:47
+
 /**
  * @file CMSSM_two_scale_model.hpp
- * @brief contains class for model with routines needed to solve boundary 
- *        value problem using the two_scale solver by solvingt EWSB 
+ * @brief contains class for model with routines needed to solve boundary
+ *        value problem using the two_scale solver by solvingt EWSB
  *        and determine the pole masses and mixings
+ *
+ * This file was generated at Wed 3 Dec 2014 11:59:47 with FlexibleSUSY
+ * 1.0.3 and SARAH 4.2.1 .
  */
-// File generated at Thu 13 Nov 2014 16:05:49
 
 #ifndef CMSSM_TWO_SCALE_H
 #define CMSSM_TWO_SCALE_H
@@ -97,38 +102,67 @@ public:
    double get_MVG() const { return MVG; }
    double get_MGlu() const { return MGlu; }
    const Eigen::Array<double,3,1>& get_MFv() const { return MFv; }
+   double get_MFv(int i) const { return MFv(i); }
    double get_MVP() const { return MVP; }
    double get_MVZ() const { return MVZ; }
    const Eigen::Array<double,6,1>& get_MSd() const { return MSd; }
+   double get_MSd(int i) const { return MSd(i); }
    const Eigen::Array<double,3,1>& get_MSv() const { return MSv; }
+   double get_MSv(int i) const { return MSv(i); }
    const Eigen::Array<double,6,1>& get_MSu() const { return MSu; }
+   double get_MSu(int i) const { return MSu(i); }
    const Eigen::Array<double,6,1>& get_MSe() const { return MSe; }
+   double get_MSe(int i) const { return MSe(i); }
    const Eigen::Array<double,2,1>& get_Mhh() const { return Mhh; }
+   double get_Mhh(int i) const { return Mhh(i); }
    const Eigen::Array<double,2,1>& get_MAh() const { return MAh; }
+   double get_MAh(int i) const { return MAh(i); }
    const Eigen::Array<double,2,1>& get_MHpm() const { return MHpm; }
+   double get_MHpm(int i) const { return MHpm(i); }
    const Eigen::Array<double,4,1>& get_MChi() const { return MChi; }
+   double get_MChi(int i) const { return MChi(i); }
    const Eigen::Array<double,2,1>& get_MCha() const { return MCha; }
+   double get_MCha(int i) const { return MCha(i); }
    const Eigen::Array<double,3,1>& get_MFe() const { return MFe; }
+   double get_MFe(int i) const { return MFe(i); }
    const Eigen::Array<double,3,1>& get_MFd() const { return MFd; }
+   double get_MFd(int i) const { return MFd(i); }
    const Eigen::Array<double,3,1>& get_MFu() const { return MFu; }
+   double get_MFu(int i) const { return MFu(i); }
    double get_MVWm() const { return MVWm; }
 
    const Eigen::Matrix<double,6,6>& get_ZD() const { return ZD; }
+   double get_ZD(int i, int k) const { return ZD(i,k); }
    const Eigen::Matrix<double,3,3>& get_ZV() const { return ZV; }
+   double get_ZV(int i, int k) const { return ZV(i,k); }
    const Eigen::Matrix<double,6,6>& get_ZU() const { return ZU; }
+   double get_ZU(int i, int k) const { return ZU(i,k); }
    const Eigen::Matrix<double,6,6>& get_ZE() const { return ZE; }
+   double get_ZE(int i, int k) const { return ZE(i,k); }
    const Eigen::Matrix<double,2,2>& get_ZH() const { return ZH; }
+   double get_ZH(int i, int k) const { return ZH(i,k); }
    const Eigen::Matrix<double,2,2>& get_ZA() const { return ZA; }
+   double get_ZA(int i, int k) const { return ZA(i,k); }
    const Eigen::Matrix<double,2,2>& get_ZP() const { return ZP; }
+   double get_ZP(int i, int k) const { return ZP(i,k); }
    const Eigen::Matrix<std::complex<double>,4,4>& get_ZN() const { return ZN; }
+   const std::complex<double>& get_ZN(int i, int k) const { return ZN(i,k); }
    const Eigen::Matrix<std::complex<double>,2,2>& get_UM() const { return UM; }
+   const std::complex<double>& get_UM(int i, int k) const { return UM(i,k); }
    const Eigen::Matrix<std::complex<double>,2,2>& get_UP() const { return UP; }
+   const std::complex<double>& get_UP(int i, int k) const { return UP(i,k); }
    const Eigen::Matrix<std::complex<double>,3,3>& get_ZEL() const { return ZEL; }
+   const std::complex<double>& get_ZEL(int i, int k) const { return ZEL(i,k); }
    const Eigen::Matrix<std::complex<double>,3,3>& get_ZER() const { return ZER; }
+   const std::complex<double>& get_ZER(int i, int k) const { return ZER(i,k); }
    const Eigen::Matrix<std::complex<double>,3,3>& get_ZDL() const { return ZDL; }
+   const std::complex<double>& get_ZDL(int i, int k) const { return ZDL(i,k); }
    const Eigen::Matrix<std::complex<double>,3,3>& get_ZDR() const { return ZDR; }
+   const std::complex<double>& get_ZDR(int i, int k) const { return ZDR(i,k); }
    const Eigen::Matrix<std::complex<double>,3,3>& get_ZUL() const { return ZUL; }
+   const std::complex<double>& get_ZUL(int i, int k) const { return ZUL(i,k); }
    const Eigen::Matrix<std::complex<double>,3,3>& get_ZUR() const { return ZUR; }
+   const std::complex<double>& get_ZUR(int i, int k) const { return ZUR(i,k); }
 
    void set_PhaseGlu(const std::complex<double>& PhaseGlu_) { PhaseGlu = PhaseGlu_; }
    const std::complex<double>& get_PhaseGlu() const { return PhaseGlu; }

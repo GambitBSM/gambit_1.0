@@ -16,13 +16,13 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Thu 13 Nov 2014 16:05:50
+// File generated at Wed 3 Dec 2014 11:59:47
 
 #include "CMSSM_input_parameters.hpp"
 #include "CMSSM_spectrum_generator.hpp"
+#include "CMSSM_two_scale_model_slha.hpp"
 
 #include "command_line_options.hpp"
-#include "error.hpp"
 #include "scan.hpp"
 #include "lowe.h"
 #include "logger.hpp"
@@ -113,8 +113,8 @@ int main(int argc, char* argv[])
 
       spectrum_generator.run(oneset, input);
 
-      const CMSSM<algorithm_type>& model = spectrum_generator.get_model();
-      const CMSSM_physical& pole_masses = model.get_physical();
+      const CMSSM_slha<algorithm_type> model(spectrum_generator.get_model());
+      const CMSSM_physical& pole_masses = model.get_physical_slha();
       const Problems<CMSSM_info::NUMBER_OF_PARTICLES>& problems
          = spectrum_generator.get_problems();
       const double higgs = pole_masses.Mhh(0);

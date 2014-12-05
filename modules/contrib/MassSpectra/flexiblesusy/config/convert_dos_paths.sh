@@ -8,6 +8,8 @@
 #   config/convert_dos_paths.sh models/MSSM/two_scale_susy.mk
 
 for makefile in "$@"; do
-    grep '\\[^[:space:]]' "$makefile" > /dev/null 2>&1 &&
-    sed -i -e 's,\\\([^[:space:]]\),/\1,g' "$makefile"
+    grep '\\[^[:space:]]' "$makefile" > /dev/null &&
+    { sed -i -e 's,\\\([^[:space:]]\),/\1,g' "$makefile" || exit; }
 done
+
+exit 0

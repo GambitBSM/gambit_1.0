@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Thu 13 Nov 2014 12:22:31
+// File generated at Thu 4 Dec 2014 21:44:15
 
 #include "NUHMSSM_two_scale_low_scale_constraint.hpp"
 #include "NUHMSSM_two_scale_model.hpp"
@@ -58,9 +58,11 @@ NUHMSSM_low_scale_constraint<Two_scale>::NUHMSSM_low_scale_constraint()
 {
 }
 
-NUHMSSM_low_scale_constraint<Two_scale>::NUHMSSM_low_scale_constraint(const NUHMSSM_input_parameters& inputPars_, const QedQcd& oneset_)
+NUHMSSM_low_scale_constraint<Two_scale>::NUHMSSM_low_scale_constraint(
+   NUHMSSM<Two_scale>* model_,
+   const NUHMSSM_input_parameters& inputPars_, const QedQcd& oneset_)
    : Constraint<Two_scale>()
-   , model(0)
+   , model(model_)
    , inputPars(inputPars_)
    , oneset(oneset_)
    , new_g1(0.)
@@ -76,7 +78,7 @@ NUHMSSM_low_scale_constraint<Two_scale>::~NUHMSSM_low_scale_constraint()
 
 void NUHMSSM_low_scale_constraint<Two_scale>::apply()
 {
-   assert(model && "Error: NUHMSSM_low_scale_constraint:"
+   assert(model && "Error: NUHMSSM_low_scale_constraint::apply():"
           " model pointer must not be zero");
 
    model->calculate_DRbar_masses();
@@ -113,7 +115,7 @@ double NUHMSSM_low_scale_constraint<Two_scale>::get_initial_scale_guess() const
 
 void NUHMSSM_low_scale_constraint<Two_scale>::set_model(Two_scale_model* model_)
 {
-   model = cast_model<NUHMSSM<Two_scale> >(model_);
+   model = cast_model<NUHMSSM<Two_scale>*>(model_);
 }
 
 void NUHMSSM_low_scale_constraint<Two_scale>::set_input_parameters(const NUHMSSM_input_parameters& inputPars_)
@@ -140,6 +142,9 @@ void NUHMSSM_low_scale_constraint<Two_scale>::clear()
 
 void NUHMSSM_low_scale_constraint<Two_scale>::initialize()
 {
+   assert(model && "NUHMSSM_low_scale_constraint<Two_scale>::"
+          "initialize(): model pointer is zero.");
+
    initial_scale_guess = SM(MZ);
 
    scale = initial_scale_guess;
@@ -152,6 +157,9 @@ void NUHMSSM_low_scale_constraint<Two_scale>::initialize()
 
 void NUHMSSM_low_scale_constraint<Two_scale>::update_scale()
 {
+   assert(model && "NUHMSSM_low_scale_constraint<Two_scale>::"
+          "update_scale(): model pointer is zero.");
+
    scale = SM(MZ);
 
 

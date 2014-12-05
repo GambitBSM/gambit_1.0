@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Thu 13 Nov 2014 12:22:31
+// File generated at Thu 4 Dec 2014 21:44:15
 
 #ifndef NUHMSSM_TWO_SCALE_LOW_SCALE_CONSTRAINT_H
 #define NUHMSSM_TWO_SCALE_LOW_SCALE_CONSTRAINT_H
@@ -38,7 +38,7 @@ template<>
 class NUHMSSM_low_scale_constraint<Two_scale> : public Constraint<Two_scale> {
 public:
    NUHMSSM_low_scale_constraint();
-   NUHMSSM_low_scale_constraint(const NUHMSSM_input_parameters&, const QedQcd&);
+   NUHMSSM_low_scale_constraint(NUHMSSM<Two_scale>*, const NUHMSSM_input_parameters&, const QedQcd&);
    virtual ~NUHMSSM_low_scale_constraint();
    virtual void apply();
    virtual double get_scale() const;

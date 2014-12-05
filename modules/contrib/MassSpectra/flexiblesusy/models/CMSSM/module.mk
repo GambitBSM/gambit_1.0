@@ -7,12 +7,18 @@ CMSSM_INSTALL_DIR := $(INSTALL_DIR)/$(DIR)
 CMSSM_MK     := \
 		$(DIR)/module.mk
 
-CMSSM_TWO_SCALE_MK := \
-		$(DIR)/two_scale_susy.mk \
+CMSSM_TWO_SCALE_SUSY_MK := \
+		$(DIR)/two_scale_susy.mk
+
+CMSSM_TWO_SCALE_SOFT_MK := \
 		$(DIR)/two_scale_soft.mk
 
+CMSSM_TWO_SCALE_MK := \
+		$(CMSSM_TWO_SCALE_SUSY_MK) \
+		$(CMSSM_TWO_SCALE_SOFT_MK)
+
 CMSSM_SLHA_INPUT := \
-		$(DIR)/LesHouches.in.MSSM
+
 
 CMSSM_GNUPLOT := \
 		$(DIR)/CMSSM_plot_rgflow.gnuplot \
@@ -29,6 +35,7 @@ LIBCMSSM_HDR :=
 ifneq ($(findstring two_scale,$(ALGORITHMS)),)
 LIBCMSSM_SRC += \
 		$(DIR)/CMSSM_info.cpp \
+		$(DIR)/CMSSM_input_parameters.cpp \
 		$(DIR)/CMSSM_slha_io.cpp \
 		$(DIR)/CMSSM_physical.cpp \
 		$(DIR)/CMSSM_utilities.cpp \
@@ -37,11 +44,13 @@ LIBCMSSM_SRC += \
 		$(DIR)/CMSSM_two_scale_initial_guesser.cpp \
 		$(DIR)/CMSSM_two_scale_low_scale_constraint.cpp \
 		$(DIR)/CMSSM_two_scale_model.cpp \
+		$(DIR)/CMSSM_two_scale_model_slha.cpp \
 		$(DIR)/CMSSM_two_scale_susy_parameters.cpp \
 		$(DIR)/CMSSM_two_scale_soft_parameters.cpp \
 		$(DIR)/CMSSM_two_scale_susy_scale_constraint.cpp
 EXECMSSM_SRC += \
 		$(DIR)/run_CMSSM.cpp \
+		$(DIR)/run_cmd_line_CMSSM.cpp \
 		$(DIR)/scan_CMSSM.cpp
 LIBCMSSM_HDR += \
 		$(DIR)/CMSSM_convergence_tester.hpp \
@@ -51,6 +60,7 @@ LIBCMSSM_HDR += \
 		$(DIR)/CMSSM_input_parameters.hpp \
 		$(DIR)/CMSSM_low_scale_constraint.hpp \
 		$(DIR)/CMSSM_model.hpp \
+		$(DIR)/CMSSM_model_slha.hpp \
 		$(DIR)/CMSSM_physical.hpp \
 		$(DIR)/CMSSM_slha_io.hpp \
 		$(DIR)/CMSSM_spectrum_generator.hpp \
@@ -61,6 +71,7 @@ LIBCMSSM_HDR += \
 		$(DIR)/CMSSM_two_scale_initial_guesser.hpp \
 		$(DIR)/CMSSM_two_scale_low_scale_constraint.hpp \
 		$(DIR)/CMSSM_two_scale_model.hpp \
+		$(DIR)/CMSSM_two_scale_model_slha.hpp \
 		$(DIR)/CMSSM_two_scale_soft_parameters.hpp \
 		$(DIR)/CMSSM_two_scale_susy_parameters.hpp \
 		$(DIR)/CMSSM_two_scale_susy_scale_constraint.hpp
@@ -69,17 +80,17 @@ ifneq ($(MAKECMDGOALS),showbuild)
 ifneq ($(MAKECMDGOALS),tag)
 ifneq ($(MAKECMDGOALS),release)
 ifneq ($(MAKECMDGOALS),doc)
--include $(DIR)/two_scale_susy.mk
--include $(DIR)/two_scale_soft.mk
+-include $(CMSSM_TWO_SCALE_SUSY_MK)
+-include $(CMSSM_TWO_SCALE_SOFT_MK)
 ifneq ($(MAKECMDGOALS),clean)
 ifneq ($(MAKECMDGOALS),distclean)
 ifneq ($(MAKECMDGOALS),pack-$(MODNAME)-src)
 ifeq ($(findstring clean-,$(MAKECMDGOALS)),)
 ifeq ($(findstring distclean-,$(MAKECMDGOALS)),)
 ifeq ($(findstring doc-,$(MAKECMDGOALS)),)
-$(DIR)/two_scale_susy.mk: run-metacode-$(MODNAME)
+$(CMSSM_TWO_SCALE_SUSY_MK): run-metacode-$(MODNAME)
 		@$(CONVERT_DOS_PATHS) $@
-$(DIR)/two_scale_soft.mk: run-metacode-$(MODNAME)
+$(CMSSM_TWO_SCALE_SOFT_MK): run-metacode-$(MODNAME)
 		@$(CONVERT_DOS_PATHS) $@
 endif
 endif
@@ -116,6 +127,9 @@ LIBCMSSM     := $(DIR)/lib$(MODNAME)$(LIBEXT)
 
 RUN_CMSSM_OBJ := $(DIR)/run_CMSSM.o
 RUN_CMSSM_EXE := $(DIR)/run_CMSSM.x
+
+RUN_CMD_LINE_CMSSM_OBJ := $(DIR)/run_cmd_line_CMSSM.o
+RUN_CMD_LINE_CMSSM_EXE := $(DIR)/run_cmd_line_CMSSM.x
 
 SCAN_CMSSM_OBJ := $(DIR)/scan_CMSSM.o
 SCAN_CMSSM_EXE := $(DIR)/scan_CMSSM.x
@@ -159,6 +173,7 @@ clean-$(MODNAME)-obj:
 clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-obj
 		-rm -f $(LIBCMSSM)
 		-rm -f $(RUN_CMSSM_EXE)
+		-rm -f $(RUN_CMD_LINE_CMSSM_EXE)
 		-rm -f $(SCAN_CMSSM_EXE)
 
 distclean-$(MODNAME): clean-$(MODNAME)
@@ -206,10 +221,13 @@ $(LIBCMSSM): $(LIBCMSSM_OBJ)
 $(RUN_CMSSM_EXE): $(RUN_CMSSM_OBJ) $(LIBCMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS)
 
+$(RUN_CMD_LINE_CMSSM_EXE): $(RUN_CMD_LINE_CMSSM_OBJ) $(LIBCMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
+		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS)
+
 $(SCAN_CMSSM_EXE): $(SCAN_CMSSM_OBJ) $(LIBCMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS)
 
 ALLDEP += $(LIBCMSSM_DEP) $(EXECMSSM_DEP)
 ALLSRC += $(LIBCMSSM_SRC) $(EXECMSSM_SRC)
 ALLLIB += $(LIBCMSSM)
-ALLEXE += $(RUN_CMSSM_EXE) $(SCAN_CMSSM_EXE)
+ALLEXE += $(RUN_CMSSM_EXE) $(RUN_CMD_LINE_CMSSM_EXE) $(SCAN_CMSSM_EXE)

@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Thu 13 Nov 2014 16:03:46
+// File generated at Wed 3 Dec 2014 11:58:03
 
 #include "CMSSM_info.hpp"
 
@@ -58,21 +58,24 @@ namespace CMSSM_info {
 
    const char* model_name = "CMSSM";
    const bool is_low_energy_model = false;
+   const bool is_supersymmetric_model = true;
 
 void print(std::ostream& ostr)
 {
    ostr
       << "Model information\n"
       << "=================\n"
-      << "Model name:            " << model_name << '\n'
-      << "Is a low-energy model: "
-      << (is_low_energy_model ? "true" : "false") << '\n'
-      << "Number of multiplets:  " << NUMBER_OF_PARTICLES << '\n'
-      << "Number of parameters:  " << NUMBER_OF_PARAMETERS << '\n'
+      << "Model name:                " << model_name << '\n'
+      << "Is a low-energy model:     "
+      << (is_low_energy_model ? "yes" : "no") << '\n'
+      << "Is a supersymmetric model: "
+      << (is_supersymmetric_model ? "yes" : "no") << '\n'
+      << "Number of multiplets:      " << NUMBER_OF_PARTICLES << '\n'
+      << "Number of parameters:      " << NUMBER_OF_PARAMETERS << '\n'
       ;
 
    ostr << "\n"
-      "Multiplets:            ";
+      "Multiplets:                ";
    for (unsigned i = 0; i < NUMBER_OF_PARTICLES; i++) {
       ostr << particle_names[i]
            << '[' << particle_multiplicities[i] << ']';
@@ -81,7 +84,7 @@ void print(std::ostream& ostr)
    }
 
    ostr << "\n\n"
-      "Parameters:            ";
+      "Parameters:                ";
    for (unsigned i = 0; i < NUMBER_OF_PARAMETERS; i++) {
       ostr << parameter_names[i];
       if (i + 1 < NUMBER_OF_PARAMETERS)

@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Thu 13 Nov 2014 12:22:28
+// File generated at Thu 4 Dec 2014 21:44:14
 
 #include "NUHMSSM_two_scale_susy_scale_constraint.hpp"
 #include "NUHMSSM_two_scale_model.hpp"
@@ -51,9 +51,11 @@ NUHMSSM_susy_scale_constraint<Two_scale>::NUHMSSM_susy_scale_constraint()
 {
 }
 
-NUHMSSM_susy_scale_constraint<Two_scale>::NUHMSSM_susy_scale_constraint(const NUHMSSM_input_parameters& inputPars_)
+NUHMSSM_susy_scale_constraint<Two_scale>::NUHMSSM_susy_scale_constraint(
+   NUHMSSM<Two_scale>* model_,
+   const NUHMSSM_input_parameters& inputPars_)
    : Constraint<Two_scale>()
-   , model(0)
+   , model(model_)
    , inputPars(inputPars_)
 {
    initialize();
@@ -65,7 +67,7 @@ NUHMSSM_susy_scale_constraint<Two_scale>::~NUHMSSM_susy_scale_constraint()
 
 void NUHMSSM_susy_scale_constraint<Two_scale>::apply()
 {
-   assert(model && "Error: NUHMSSM_susy_scale_constraint:"
+   assert(model && "Error: NUHMSSM_susy_scale_constraint::apply():"
           " model pointer must not be zero");
 
    model->calculate_DRbar_masses();
@@ -92,7 +94,7 @@ double NUHMSSM_susy_scale_constraint<Two_scale>::get_initial_scale_guess() const
 
 void NUHMSSM_susy_scale_constraint<Two_scale>::set_model(Two_scale_model* model_)
 {
-   model = cast_model<NUHMSSM<Two_scale> >(model_);
+   model = cast_model<NUHMSSM<Two_scale>*>(model_);
 }
 
 void NUHMSSM_susy_scale_constraint<Two_scale>::set_input_parameters(const NUHMSSM_input_parameters& inputPars_)
@@ -109,6 +111,9 @@ void NUHMSSM_susy_scale_constraint<Two_scale>::clear()
 
 void NUHMSSM_susy_scale_constraint<Two_scale>::initialize()
 {
+   assert(model && "NUHMSSM_susy_scale_constraint<Two_scale>::"
+          "initialize(): model pointer is zero.");
+
    const auto m0 = INPUTPARAMETER(m0);
    const auto m12 = INPUTPARAMETER(m12);
 
@@ -119,6 +124,9 @@ void NUHMSSM_susy_scale_constraint<Two_scale>::initialize()
 
 void NUHMSSM_susy_scale_constraint<Two_scale>::update_scale()
 {
+   assert(model && "NUHMSSM_susy_scale_constraint<Two_scale>::"
+          "update_scale(): model pointer is zero.");
+
    const auto ZU = MODELPARAMETER(ZU);
    const auto MSu = MODELPARAMETER(MSu);
 

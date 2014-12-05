@@ -16,15 +16,16 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Thu 13 Nov 2014 12:22:22
+// File generated at Thu 4 Dec 2014 21:44:10
 
 #ifndef NUHMSSM_SLHA_IO_H
 #define NUHMSSM_SLHA_IO_H
 
-#include "NUHMSSM_two_scale_model.hpp"
+#include "NUHMSSM_two_scale_model_slha.hpp"
 #include "NUHMSSM_info.hpp"
 #include "NUHMSSM_physical.hpp"
 #include "slha_io.hpp"
+#include "ew_input.hpp"
 
 #include <Eigen/Core>
 #include <string>
@@ -38,6 +39,7 @@
    typename std::remove_const<typename std::remove_reference<decltype(MODELPARAMETER(p))>::type>::type p;
 #define DEFINE_POLE_MASS(p)                                            \
    typename std::remove_const<typename std::remove_reference<decltype(PHYSICAL(p))>::type>::type p;
+#define SM(p) Electroweak_constants::p
 
 namespace flexiblesusy {
 
@@ -53,15 +55,17 @@ public:
 
    void fill(QedQcd& qedqcd) const { slha_io.fill(qedqcd); }
    void fill(NUHMSSM_input_parameters&) const;
-   template <class T> void fill(NUHMSSM<T>&) const;
+   template <class T> void fill(NUHMSSM_slha<T>&) const;
    void fill(Spectrum_generator_settings&) const;
    double get_input_scale() const;
    double get_parameter_output_scale() const;
+   const SLHA_io& get_slha_io() const { return slha_io; }
    void read_from_file(const std::string&);
    void set_extpar(const NUHMSSM_input_parameters&);
-   template <class T> void set_extra(const NUHMSSM<T>&);
+   template <class T> void set_extra(const NUHMSSM_slha<T>&);
    void set_minpar(const NUHMSSM_input_parameters&);
    void set_sminputs(const softsusy::QedQcd&);
+   template <class T> void set_spectrum(const NUHMSSM_slha<T>&);
    template <class T> void set_spectrum(const NUHMSSM<T>&);
    void set_spinfo(const Problems<NUHMSSM_info::NUMBER_OF_PARTICLES>&);
    void write_to_file(const std::string&);
@@ -71,18 +75,25 @@ public:
    static void fill_extpar_tuple(NUHMSSM_input_parameters&, int, double);
    static void fill_flexiblesusy_tuple(Spectrum_generator_settings&, int, double);
 
+   static void convert_to_slha_convention(NUHMSSM_physical&);
+
+   template <class T>
+   static void fill_slhaea(SLHAea::Coll&, const NUHMSSM_slha<T>&, const QedQcd& qedqcd);
+
+   template <class T>
+   static SLHAea::Coll fill_slhaea(const NUHMSSM_slha<T>&, const QedQcd& qedqcd);
+
 private:
    SLHA_io slha_io; ///< SLHA io class
    static unsigned const NUMBER_OF_DRBAR_BLOCKS = 14;
    static char const * const drbar_blocks[NUMBER_OF_DRBAR_BLOCKS];
 
-   static void convert_to_slha_convention(NUHMSSM_physical&);
    void set_mass(const NUHMSSM_physical&, bool);
    void set_mixing_matrices(const NUHMSSM_physical&, bool);
-   template <class T> void set_model_parameters(const NUHMSSM<T>&);
+   template <class T> void set_model_parameters(const NUHMSSM_slha<T>&);
    double read_scale() const;
-   template <class T> void fill_drbar_parameters(NUHMSSM<T>&) const;
-   template <class T> void fill_physical(NUHMSSM<T>&) const;
+   template <class T> void fill_drbar_parameters(NUHMSSM_slha<T>&) const;
+   template <class T> void fill_physical(NUHMSSM_slha<T>&) const;
 };
 
 /**
@@ -90,7 +101,7 @@ private:
  * SLHA output file.
  */
 template <class T>
-void NUHMSSM_slha_io::fill(NUHMSSM<T>& model) const
+void NUHMSSM_slha_io::fill(NUHMSSM_slha<T>& model) const
 {
    fill_drbar_parameters(model);
    fill_physical(model);
@@ -100,7 +111,7 @@ void NUHMSSM_slha_io::fill(NUHMSSM<T>& model) const
  * Reads DR-bar parameters from a SLHA output file.
  */
 template <class T>
-void NUHMSSM_slha_io::fill_drbar_parameters(NUHMSSM<T>& model) const
+void NUHMSSM_slha_io::fill_drbar_parameters(NUHMSSM_slha<T>& model) const
 {
    model.set_g1(slha_io.read_entry("gauge", 1) * 1.2909944487358056);
    model.set_g2(slha_io.read_entry("gauge", 2));
@@ -178,7 +189,7 @@ void NUHMSSM_slha_io::fill_drbar_parameters(NUHMSSM<T>& model) const
  * Reads pole masses and mixing matrices from a SLHA output file.
  */
 template <class T>
-void NUHMSSM_slha_io::fill_physical(NUHMSSM<T>& model) const
+void NUHMSSM_slha_io::fill_physical(NUHMSSM_slha<T>& model) const
 {
    {
       DEFINE_PARAMETER(ZD);
@@ -261,10 +272,12 @@ void NUHMSSM_slha_io::fill_physical(NUHMSSM<T>& model) const
       PHYSICAL(ZUR) = ZUR;
    }
 
+   PHYSICAL(MVG) = slha_io.read_entry("MASS", 21);
    PHYSICAL(MGlu) = slha_io.read_entry("MASS", 1000021);
    PHYSICAL(MFv)(0) = slha_io.read_entry("MASS", 12);
    PHYSICAL(MFv)(1) = slha_io.read_entry("MASS", 14);
    PHYSICAL(MFv)(2) = slha_io.read_entry("MASS", 16);
+   PHYSICAL(MVP) = slha_io.read_entry("MASS", 22);
    PHYSICAL(MVZ) = slha_io.read_entry("MASS", 23);
    PHYSICAL(MSd)(0) = slha_io.read_entry("MASS", 1000001);
    PHYSICAL(MSd)(1) = slha_io.read_entry("MASS", 1000003);
@@ -306,10 +319,38 @@ void NUHMSSM_slha_io::fill_physical(NUHMSSM<T>& model) const
    PHYSICAL(MFu)(0) = slha_io.read_entry("MASS", 2);
    PHYSICAL(MFu)(1) = slha_io.read_entry("MASS", 4);
    PHYSICAL(MFu)(2) = slha_io.read_entry("MASS", 6);
-   PHYSICAL(MVG) = slha_io.read_entry("MASS", 21);
-   PHYSICAL(MVP) = slha_io.read_entry("MASS", 22);
    PHYSICAL(MVWm) = slha_io.read_entry("MASS", 24);
 
+}
+
+template <class T>
+void NUHMSSM_slha_io::fill_slhaea(SLHAea::Coll& slhaea, const NUHMSSM_slha<T>& model, const QedQcd& qedqcd)
+{
+   NUHMSSM_slha_io slha_io;
+   const NUHMSSM_input_parameters& input = model.get_input();
+   const Problems<NUHMSSM_info::NUMBER_OF_PARTICLES>& problems
+      = model.get_problems();
+   const bool error = problems.have_problem();
+
+   slha_io.set_spinfo(problems);
+   slha_io.set_sminputs(qedqcd);
+   slha_io.set_minpar(input);
+   slha_io.set_extpar(input);
+   if (!error) {
+      slha_io.set_spectrum(model);
+      slha_io.set_extra(model);
+   }
+
+   slhaea = slha_io.get_slha_io().get_data();
+}
+
+template <class T>
+SLHAea::Coll NUHMSSM_slha_io::fill_slhaea(const NUHMSSM_slha<T>& model, const QedQcd& qedqcd)
+{
+   SLHAea::Coll slhaea;
+   NUHMSSM_slha_io::fill_slhaea(slhaea, model, qedqcd);
+
+   return slhaea;
 }
 
 /**
@@ -318,7 +359,7 @@ void NUHMSSM_slha_io::fill_physical(NUHMSSM<T>& model) const
  * @param model model class
  */
 template <class T>
-void NUHMSSM_slha_io::set_model_parameters(const NUHMSSM<T>& model)
+void NUHMSSM_slha_io::set_model_parameters(const NUHMSSM_slha<T>& model)
 {
    {
       std::ostringstream block;
@@ -370,10 +411,9 @@ void NUHMSSM_slha_io::set_model_parameters(const NUHMSSM<T>& model)
  * @param model model class
  */
 template <class T>
-void NUHMSSM_slha_io::set_extra(const NUHMSSM<T>& model)
+void NUHMSSM_slha_io::set_extra(const NUHMSSM_slha<T>& model)
 {
-   NUHMSSM_physical physical(model.get_physical());
-   convert_to_slha_convention(physical);
+   const NUHMSSM_physical physical(model.get_physical_slha());
 
 
 }
@@ -382,14 +422,25 @@ void NUHMSSM_slha_io::set_extra(const NUHMSSM<T>& model)
  * Stores the model (DR-bar) parameters, masses and mixing matrices in
  * the SLHA object.
  *
- * @param model model class
+ * @param model model class in BPMZ convention
  */
 template <class T>
 void NUHMSSM_slha_io::set_spectrum(const NUHMSSM<T>& model)
 {
-   NUHMSSM_physical physical(model.get_physical());
-   convert_to_slha_convention(physical);
+   const NUHMSSM_slha<T> model_slha(model);
+   set_spectrum(model_slha);
+}
 
+/**
+ * Stores the model (DR-bar) parameters, masses and mixing matrices in
+ * the SLHA object.
+ *
+ * @param model model class in SLHA convention
+ */
+template <class T>
+void NUHMSSM_slha_io::set_spectrum(const NUHMSSM_slha<T>& model)
+{
+   const NUHMSSM_physical physical(model.get_physical_slha());
    const bool write_sm_masses = model.do_calculate_sm_pole_masses();
 
    set_model_parameters(model);

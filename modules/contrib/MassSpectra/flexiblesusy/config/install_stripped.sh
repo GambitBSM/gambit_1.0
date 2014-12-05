@@ -4,7 +4,7 @@
 # install arguments can be given in [$3].
 
 if test $# -lt 2; then
-    echo "Usage: ./install_stripped source destination [install args]"
+    echo "Usage: ./`basename $0` source destination [install args]"
     exit 1
 fi
 

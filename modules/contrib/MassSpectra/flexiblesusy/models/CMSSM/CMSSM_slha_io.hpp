@@ -16,15 +16,16 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Thu 13 Nov 2014 16:03:46
+// File generated at Wed 3 Dec 2014 11:58:03
 
 #ifndef CMSSM_SLHA_IO_H
 #define CMSSM_SLHA_IO_H
 
-#include "CMSSM_two_scale_model.hpp"
+#include "CMSSM_two_scale_model_slha.hpp"
 #include "CMSSM_info.hpp"
 #include "CMSSM_physical.hpp"
 #include "slha_io.hpp"
+#include "ew_input.hpp"
 
 #include <Eigen/Core>
 #include <string>
@@ -38,6 +39,7 @@
    typename std::remove_const<typename std::remove_reference<decltype(MODELPARAMETER(p))>::type>::type p;
 #define DEFINE_POLE_MASS(p)                                            \
    typename std::remove_const<typename std::remove_reference<decltype(PHYSICAL(p))>::type>::type p;
+#define SM(p) Electroweak_constants::p
 
 namespace flexiblesusy {
 
@@ -53,15 +55,17 @@ public:
 
    void fill(QedQcd& qedqcd) const { slha_io.fill(qedqcd); }
    void fill(CMSSM_input_parameters&) const;
-   template <class T> void fill(CMSSM<T>&) const;
+   template <class T> void fill(CMSSM_slha<T>&) const;
    void fill(Spectrum_generator_settings&) const;
    double get_input_scale() const;
    double get_parameter_output_scale() const;
+   const SLHA_io& get_slha_io() const { return slha_io; }
    void read_from_file(const std::string&);
    void set_extpar(const CMSSM_input_parameters&);
-   template <class T> void set_extra(const CMSSM<T>&);
+   template <class T> void set_extra(const CMSSM_slha<T>&);
    void set_minpar(const CMSSM_input_parameters&);
    void set_sminputs(const softsusy::QedQcd&);
+   template <class T> void set_spectrum(const CMSSM_slha<T>&);
    template <class T> void set_spectrum(const CMSSM<T>&);
    void set_spinfo(const Problems<CMSSM_info::NUMBER_OF_PARTICLES>&);
    void write_to_file(const std::string&);
@@ -71,18 +75,25 @@ public:
    static void fill_extpar_tuple(CMSSM_input_parameters&, int, double);
    static void fill_flexiblesusy_tuple(Spectrum_generator_settings&, int, double);
 
+   static void convert_to_slha_convention(CMSSM_physical&);
+
+   template <class T>
+   static void fill_slhaea(SLHAea::Coll&, const CMSSM_slha<T>&, const QedQcd& qedqcd);
+
+   template <class T>
+   static SLHAea::Coll fill_slhaea(const CMSSM_slha<T>&, const QedQcd& qedqcd);
+
 private:
    SLHA_io slha_io; ///< SLHA io class
    static unsigned const NUMBER_OF_DRBAR_BLOCKS = 14;
    static char const * const drbar_blocks[NUMBER_OF_DRBAR_BLOCKS];
 
-   static void convert_to_slha_convention(CMSSM_physical&);
    void set_mass(const CMSSM_physical&, bool);
    void set_mixing_matrices(const CMSSM_physical&, bool);
-   template <class T> void set_model_parameters(const CMSSM<T>&);
+   template <class T> void set_model_parameters(const CMSSM_slha<T>&);
    double read_scale() const;
-   template <class T> void fill_drbar_parameters(CMSSM<T>&) const;
-   template <class T> void fill_physical(CMSSM<T>&) const;
+   template <class T> void fill_drbar_parameters(CMSSM_slha<T>&) const;
+   template <class T> void fill_physical(CMSSM_slha<T>&) const;
 };
 
 /**
@@ -90,7 +101,7 @@ private:
  * SLHA output file.
  */
 template <class T>
-void CMSSM_slha_io::fill(CMSSM<T>& model) const
+void CMSSM_slha_io::fill(CMSSM_slha<T>& model) const
 {
    fill_drbar_parameters(model);
    fill_physical(model);
@@ -100,7 +111,7 @@ void CMSSM_slha_io::fill(CMSSM<T>& model) const
  * Reads DR-bar parameters from a SLHA output file.
  */
 template <class T>
-void CMSSM_slha_io::fill_drbar_parameters(CMSSM<T>& model) const
+void CMSSM_slha_io::fill_drbar_parameters(CMSSM_slha<T>& model) const
 {
    model.set_g1(slha_io.read_entry("gauge", 1) * 1.2909944487358056);
    model.set_g2(slha_io.read_entry("gauge", 2));
@@ -178,7 +189,7 @@ void CMSSM_slha_io::fill_drbar_parameters(CMSSM<T>& model) const
  * Reads pole masses and mixing matrices from a SLHA output file.
  */
 template <class T>
-void CMSSM_slha_io::fill_physical(CMSSM<T>& model) const
+void CMSSM_slha_io::fill_physical(CMSSM_slha<T>& model) const
 {
    {
       DEFINE_PARAMETER(ZD);
@@ -312,13 +323,43 @@ void CMSSM_slha_io::fill_physical(CMSSM<T>& model) const
 
 }
 
+template <class T>
+void CMSSM_slha_io::fill_slhaea(SLHAea::Coll& slhaea, const CMSSM_slha<T>& model, const QedQcd& qedqcd)
+{
+   CMSSM_slha_io slha_io;
+   const CMSSM_input_parameters& input = model.get_input();
+   const Problems<CMSSM_info::NUMBER_OF_PARTICLES>& problems
+      = model.get_problems();
+   const bool error = problems.have_problem();
+
+   slha_io.set_spinfo(problems);
+   slha_io.set_sminputs(qedqcd);
+   slha_io.set_minpar(input);
+   slha_io.set_extpar(input);
+   if (!error) {
+      slha_io.set_spectrum(model);
+      slha_io.set_extra(model);
+   }
+
+   slhaea = slha_io.get_slha_io().get_data();
+}
+
+template <class T>
+SLHAea::Coll CMSSM_slha_io::fill_slhaea(const CMSSM_slha<T>& model, const QedQcd& qedqcd)
+{
+   SLHAea::Coll slhaea;
+   CMSSM_slha_io::fill_slhaea(slhaea, model, qedqcd);
+
+   return slhaea;
+}
+
 /**
  * Stores the model (DR-bar) parameters in the SLHA object.
  *
  * @param model model class
  */
 template <class T>
-void CMSSM_slha_io::set_model_parameters(const CMSSM<T>& model)
+void CMSSM_slha_io::set_model_parameters(const CMSSM_slha<T>& model)
 {
    {
       std::ostringstream block;
@@ -370,15 +411,14 @@ void CMSSM_slha_io::set_model_parameters(const CMSSM<T>& model)
  * @param model model class
  */
 template <class T>
-void CMSSM_slha_io::set_extra(const CMSSM<T>& model)
+void CMSSM_slha_io::set_extra(const CMSSM_slha<T>& model)
 {
-   CMSSM_physical physical(model.get_physical());
-   convert_to_slha_convention(physical);
+   const CMSSM_physical physical(model.get_physical_slha());
 
    {
       std::ostringstream block;
       block << "Block ALPHA Q= " << FORMAT_SCALE(model.get_scale()) << '\n'
-            << FORMAT_NUMBER((ArcCos(Pole(ZH(0,1)))), "ArcCos(Pole(ZH(0,1)))")
+            << FORMAT_NUMBER((ArcSin(Pole(ZH(1,1)))), "ArcSin(Pole(ZH(1,1)))")
       ;
       slha_io.set_block(block);
    }
@@ -455,14 +495,25 @@ void CMSSM_slha_io::set_extra(const CMSSM<T>& model)
  * Stores the model (DR-bar) parameters, masses and mixing matrices in
  * the SLHA object.
  *
- * @param model model class
+ * @param model model class in BPMZ convention
  */
 template <class T>
 void CMSSM_slha_io::set_spectrum(const CMSSM<T>& model)
 {
-   CMSSM_physical physical(model.get_physical());
-   convert_to_slha_convention(physical);
+   const CMSSM_slha<T> model_slha(model);
+   set_spectrum(model_slha);
+}
 
+/**
+ * Stores the model (DR-bar) parameters, masses and mixing matrices in
+ * the SLHA object.
+ *
+ * @param model model class in SLHA convention
+ */
+template <class T>
+void CMSSM_slha_io::set_spectrum(const CMSSM_slha<T>& model)
+{
+   const CMSSM_physical physical(model.get_physical_slha());
    const bool write_sm_masses = model.do_calculate_sm_pole_masses();
 
    set_model_parameters(model);

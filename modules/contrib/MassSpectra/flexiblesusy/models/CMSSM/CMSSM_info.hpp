@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Thu 13 Nov 2014 16:03:46
+// File generated at Wed 3 Dec 2014 11:58:03
 
 #ifndef CMSSM_INFO_H
 #define CMSSM_INFO_H
@@ -47,6 +47,7 @@ namespace CMSSM_info {
    extern const char* parameter_names[NUMBER_OF_PARAMETERS];
    extern const char* model_name;
    extern const bool is_low_energy_model;
+   extern const bool is_supersymmetric_model;
 
    void print(std::ostream&);
 }

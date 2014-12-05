@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Thu 13 Nov 2014 16:03:37
+// File generated at Wed 3 Dec 2014 11:57:58
 
 #ifndef CMSSM_INPUT_PARAMETERS_H
 #define CMSSM_INPUT_PARAMETERS_H
@@ -38,6 +38,8 @@ struct CMSSM_input_parameters {
 
    {}
 };
+
+std::ostream& operator<<(std::ostream&, const CMSSM_input_parameters&);
 
 } // namespace flexiblesusy
 

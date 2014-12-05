@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Thu 13 Nov 2014 16:03:54
+// File generated at Wed 3 Dec 2014 11:58:07
 
 #include "CMSSM_two_scale_susy_scale_constraint.hpp"
 #include "CMSSM_two_scale_model.hpp"
@@ -51,9 +51,11 @@ CMSSM_susy_scale_constraint<Two_scale>::CMSSM_susy_scale_constraint()
 {
 }
 
-CMSSM_susy_scale_constraint<Two_scale>::CMSSM_susy_scale_constraint(const CMSSM_input_parameters& inputPars_)
+CMSSM_susy_scale_constraint<Two_scale>::CMSSM_susy_scale_constraint(
+   CMSSM<Two_scale>* model_,
+   const CMSSM_input_parameters& inputPars_)
    : Constraint<Two_scale>()
-   , model(0)
+   , model(model_)
    , inputPars(inputPars_)
 {
    initialize();
@@ -65,7 +67,7 @@ CMSSM_susy_scale_constraint<Two_scale>::~CMSSM_susy_scale_constraint()
 
 void CMSSM_susy_scale_constraint<Two_scale>::apply()
 {
-   assert(model && "Error: CMSSM_susy_scale_constraint:"
+   assert(model && "Error: CMSSM_susy_scale_constraint::apply():"
           " model pointer must not be zero");
 
    model->calculate_DRbar_masses();
@@ -92,7 +94,7 @@ double CMSSM_susy_scale_constraint<Two_scale>::get_initial_scale_guess() const
 
 void CMSSM_susy_scale_constraint<Two_scale>::set_model(Two_scale_model* model_)
 {
-   model = cast_model<CMSSM<Two_scale> >(model_);
+   model = cast_model<CMSSM<Two_scale>*>(model_);
 }
 
 void CMSSM_susy_scale_constraint<Two_scale>::set_input_parameters(const CMSSM_input_parameters& inputPars_)
@@ -109,6 +111,9 @@ void CMSSM_susy_scale_constraint<Two_scale>::clear()
 
 void CMSSM_susy_scale_constraint<Two_scale>::initialize()
 {
+   assert(model && "CMSSM_susy_scale_constraint<Two_scale>::"
+          "initialize(): model pointer is zero.");
+
    const auto m0 = INPUTPARAMETER(m0);
    const auto m12 = INPUTPARAMETER(m12);
 
@@ -119,6 +124,9 @@ void CMSSM_susy_scale_constraint<Two_scale>::initialize()
 
 void CMSSM_susy_scale_constraint<Two_scale>::update_scale()
 {
+   assert(model && "CMSSM_susy_scale_constraint<Two_scale>::"
+          "update_scale(): model pointer is zero.");
+
    const auto ZU = MODELPARAMETER(ZU);
    const auto MSu = MODELPARAMETER(MSu);
 
