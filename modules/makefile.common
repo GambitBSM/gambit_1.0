@@ -71,7 +71,7 @@ MULTINESTLIBDIR = /home/farmer/apps/MultiNest_v3.3_CMake/multinest/lib#   # path
 # Package information
 PKGNAME         := FlexibleSUSY
 VERSION         := 0.5.3
-ABSBASEDIR      := contrib/flexiblesusy/flexiblesusy/
+ABSBASEDIR      := contrib/MassSpectra/flexiblesusy/
 
 LIBEXT          := .a
 
