@@ -23,6 +23,7 @@
 
 // Flexible SUSY stuff (should not be needed by the rest of gambit)
 #include "CMSSM_two_scale_model.hpp"
+#include "CMSSM_two_scale_model_slha.hpp"
 //#include "CMSSM_physical.hpp"
 
 #include "ew_input.hpp"

@@ -13,10 +13,10 @@ int main(int argc, char* argv[])
    std::cout << "Running Spectrum tests..." << std::endl;
 
    // Create spectrum for testing
-   CMSSM<Two_scale> FS_model; //start with empty flexiblesusy object
+   CMSSM_slha<Two_scale> FS_model; //start with empty flexiblesusy object
    
    // Create Spectrum object to wrap flexiblesusy object
-   MSSMSpec<CMSSM<Two_scale>> mssm(FS_model);
+   MSSMSpec<CMSSM_slha<Two_scale>> mssm(FS_model);
 
    // I think these objects should only get created once since they are static...      
    // ...and they should be destructed automatically when the program ends.

@@ -22,6 +22,7 @@
 
 // Flexible SUSY stuff (should not be needed by the rest of gambit)
 #include "CMSSM_two_scale_model.hpp"
+#include "CMSSM_two_scale_model_slha.hpp"
 //#include "CMSSM_physical.hpp"
 
 #include "ew_input.hpp"
@@ -49,12 +50,12 @@ namespace Gambit
     /// Create a spectrum object for testing purposes
     void make_test_spectrum(Spectrum* &result)
     {
-      static CMSSM<Two_scale> FS_model; //start with empty flexiblesusy object
+      static CMSSM_slha<Two_scale> FS_model; //start with empty flexiblesusy object
    
       // Create Spectrum object to wrap flexiblesusy object
       
       //std::unique_ptr<FS::MSSMSpec> mssm(new FS::MSSMSpec(mssm1));      
-      static MSSMSpec<CMSSM<Two_scale>> mssm(FS_model);
+      static MSSMSpec<CMSSM_slha<Two_scale>> mssm(FS_model);
 
       // I think these objects should only get created once since they are static...      
       // ...and they should be destructed automatically when the program ends.

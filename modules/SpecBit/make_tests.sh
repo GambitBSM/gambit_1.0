@@ -1,4 +1,4 @@
-MS=../contrib/flexiblesusy #MassSpectra
+MS=../contrib/MassSpectra
 FS=$MS/flexiblesusy
 
 FSMODEL1=$FS/models/CMSSM
@@ -11,7 +11,8 @@ FSLIBS="$LIBMODEL $LIBFLEXI $LIBLEGACY"
 
 EIGEN=../../extras/eigen3
 
-GSL=/usr/local/gsl/1.12-gcc/include
+#GSL=/usr/local/gsl/1.12-gcc/include
+GSL=/usr/include/gsl/
 
 g++ -Wfatal-errors -std=c++11 -c -o run_tests.o run_tests.cpp -Iinclude -I$MS $FSINCLUDES -I$EIGEN -I$GSL
-g++ -Wfatal-errors -std=c++11 -o run_tests run_tests.o $FSLIBS -lgsl -lcblas -latlas -lgfortran
+g++ -Wfatal-errors -pthread -std=c++11 -o run_tests run_tests.o $FSLIBS -lgsl -lgslcblas -llapack -lgfortran -L/usr/lib/gcc/x86_64-linux-gnu/4.6/
