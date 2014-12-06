@@ -94,7 +94,9 @@ PYTHIA8DIR = ../extras/boss/bossed_pythia_source
 BOSSMINIDIR = ../extras/boss
 
 GCC++EXTRA= -Woverloaded-virtual
+# added -I. as a hack to find cmake_variables.hpp 
 CFLAGS= -I$(COREDIR)/include \
+  -I. \
   -I$(MODELDIR)/include \
   -I$(UTILSDIR)/include \
   -I$(PRINTERSDIR)/include \
@@ -400,11 +402,11 @@ endif
 
 ##### Niceties ##############
 
-.PHONY: default all backends clean sterile distclean doxygen minihelp  $(BACKENDS) $(TARGETS)
+.PHONY: default all backends clean sterile distclean doxygen minihelp cmakehackery $(BACKENDS) $(TARGETS)
 
-default: minihelp gambit
+default: cmakehackery minihelp gambit
 
-all: minihelp doxygen backends $(TARGETS)
+all: cmakehackery minihelp doxygen backends $(TARGETS)
 
 
 ##### Modules ###############
@@ -482,9 +484,9 @@ ifdef COLLIDE
 
 # Analysis...:
 $(COLLIDERDIR)/build/mt2_bisect.o: $(COLLIDERDIR)/src/analyses/mt2_bisect.cpp \
-   $(COLLIDERDIR)/src/analyses/mt2_bisect.h
+   $(COLLIDERDIR)/include/mt2_bisect.h
 	@echo ___________Compiling $<:
-	$(CC) $(CFLAGS) -I$(COLLIDERDIR)/src/analyses $(CCEXTRA) -c $< -o $@
+	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
 $(COLLIDERDIR)/build/Anal%.o: $(COLLIDERDIR)/src/analyses/Anal%.cpp
 	@echo ___________Compiling $<:
@@ -571,6 +573,9 @@ multinest:
 
 
 #### Backends #################
+
+cmakehackery:
+	cmake .
 
 backends: $(BACKENDS)
 
@@ -697,6 +702,7 @@ clean_modules:
 	@rm -rf $(FUNCTOR_TYPES)
 	@rm -rf */build/*
 	@rm -f $(COLLIDERDIR)/src/analyses/*.o
+	@rm -f $(COLLIDERDIR)/src/delphes/*_dict.*
 
 clean_executables:
 	@rm -rf $(TARGETS)
