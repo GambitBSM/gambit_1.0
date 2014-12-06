@@ -1231,12 +1231,14 @@ namespace Gambit
     /// Do pre-calculate timing things
     void module_functor_common::startTiming(double & nsec, double & sec)
     {
+      (void)nsec; (void)sec;
       start = std::chrono::system_clock::now();
     }
 
     /// Do post-calculate timing things
     void module_functor_common::finishTiming(double nsec, double sec)
     {
+      (void)nsec; (void) sec;
       end = std::chrono::system_clock::now();
       runtime = end-start;
       runtime_average = runtime_average*(1-fadeRate) + fadeRate*runtime.count();
