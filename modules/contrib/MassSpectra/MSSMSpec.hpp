@@ -511,7 +511,7 @@ namespace Gambit {
    {
       fmap1 tmp_map;
    
-      //there are no mappings for this case.
+      //there are no mappings for this case in the MSSM.
    
       return tmp_map;
    }
@@ -631,8 +631,10 @@ namespace Gambit {
     tmp_map["MGluino"] = &Model::get_MGlu; 
     tmp_map["MGluon"] = &Model::get_MVG; 
     tmp_map["MPhoton"] = &Model::get_MVP;
-   
-   tmp_map["MGoldstone0"] = &Model::get_DRbar_neut_goldstone;
+    
+    // these are nort present in the model object currently
+    // But maybe we should add them
+    tmp_map["MGoldstone0"] = &Model::get_DRbar_neut_goldstone;
     tmp_map["MA0"] = &Model::get_DRbar_neut_CPodd_higgs;
     tmp_map["MGoldstonePM"] = &Model::get_DRbar_ch_goldstone; 
     tmp_map["MHpm"] = &Model::get_DRbar_ch_higgs; 
@@ -654,7 +656,7 @@ namespace Gambit {
    {
    fmap1 tmp_map;
    tmp_map["MSd"] = FInfo1( &Model::get_MSd, {0,1,2,3,4,5} );
-    tmp_map["MSv"] = FInfo1( &Model::get_MSv, {0,1,2} );
+   tmp_map["MSv"] = FInfo1( &Model::get_MSv, {0,1,2} );
     tmp_map["MSu"] = FInfo1( &Model::get_MSu, {0,1,2,3,4,5} );
     tmp_map["MSe"] = FInfo1( &Model::get_MSe, {0,1,2,3,4,5} );
     tmp_map["Mh0"] = FInfo1( &Model::get_Mhh, {0,1} );
@@ -680,10 +682,16 @@ namespace Gambit {
      
       // tmp_map["MZ"] = &Model::get_Pole_MZ;
       // tmp_map["MW"] = &Model::get_Pole_MW;
-      // tmp_map["MGluino"] = &Model::get_Pole_MGlu; 
-      // tmp_map["MGluon"] = &Model::get_Pole_MGluon; 
-      // tmp_map["MPhoton"] = &Model::get_Pole_MPhoton;
-   
+
+      tmp_map["MZ"] = &Model::get_MVZ_pole_slha;
+      tmp_map["MW"] = &Model::get_MVWm_pole_slha;
+
+      tmp_map["MGluino"] = &Model::get_MGlu_pole_slha; 
+      //tmp_map["MGluon"] = &Model::get_MGluon_pole_slha;
+      tmp_map["MGluon"] = &Model::get_MVG_pole_slha;
+         //tmp_map["MPhoton"] = &Model::get_pole_MPhoton;
+      tmp_map["MPhoton"] = &Model::get_MVP_pole_slha;
+
       // tmp_map["MGoldstone0"] = &Model::get_Pole_neut_goldstone;
       // tmp_map["MA0"] = &Model::get_Pole_neut_CPodd_higgs;
       // tmp_map["MGoldstonePM"] = &Model::get_Pole_ch_goldstone; 
@@ -704,18 +712,25 @@ namespace Gambit {
    template <class Model>
    typename MSSM_Phys<Model>::fmap1 MSSM_Phys<Model>::fill_PoleMass_map1(){
       fmap1 tmp_map;
+
+      tmp_map["MSd"] = FInfo1( &Model::get_MSd_pole_slha, {0,1,2,3,4,5} );
+      tmp_map["MSv"] = FInfo1( &Model::get_MSv_pole_slha, {0,1,2} );
+      tmp_map["MSu"] = FInfo1( &Model::get_MSu_pole_slha, {0,1,2,3,4,5} );
+      tmp_map["MSe"] = FInfo1( &Model::get_MSe_pole_slha, {0,1,2,3,4,5} );
+      tmp_map["Mh0"] = FInfo1( &Model::get_Mhh_pole_slha, {0,1} );
+      //Here we may access the goldstone boson
+    // and higgs. maybe too dangerous to keep?
+      tmp_map["MA0"] = FInfo1( &Model::get_MAh_pole_slha, {0,1} );      
+      //Here we may access the goldstone boson
+      //and higgs. maybe too dangerous to keep?
+      tmp_map["MHpm"] = FInfo1( &Model::get_MHpm_pole_slha, {0,1} );   
+      tmp_map["MCha"] = FInfo1( &Model::get_MCha_pole_slha, {0,1} );
+      tmp_map["MChi"] = FInfo1( &Model::get_MChi_pole_slha, {0,1,2,3} );
     
-      // tmp_map["MSd"] = &Model::get_Pole_MSd;
-      // tmp_map["MSv"] = &Model::get_Pole_MSv;
-      // tmp_map["MSu"] = &Model::get_Pole_MSu;
-      // tmp_map["MSe"] = &Model::get_Pole_MSe;
-      // tmp_map["Mhh"] = &Model::get_Pole_Mhh;
-      // tmp_map["MChi"] = &Model::get_Pole_MChi;
-      // tmp_map["MCha"] = &Model::get_Pole_MCha;
-   
-      // tmp_map["MFd"] = &Model::get_Pole_MFd;
-      // tmp_map["MFu"] = &Model::get_Pole_MFu;
-      // tmp_map["MFe"] = &Model::get_Pole_MFe;
+      tmp_map["MFd"] = FInfo1( &Model::get_MFd_pole_slha, {0,1,2} );
+      tmp_map["MFu"] = FInfo1( &Model::get_MFu_pole_slha, {0,1,2} );
+      tmp_map["MFe"] = FInfo1( &Model::get_MFe_pole_slha, {0,1,2} );
+
       return tmp_map;
    }
    
@@ -723,7 +738,7 @@ namespace Gambit {
    template <class Model>
    typename MSSM_Phys<Model>::fmap MSSM_Phys<Model>::fill_PoleMixing_map(){
       fmap tmp_map;
-      
+      // this is currently empty in MSSM, could add Higgs mixing, alpha 
       return tmp_map;
    }
    
@@ -731,7 +746,7 @@ namespace Gambit {
    template <class Model>
    typename MSSM_Phys<Model>::fmap1 MSSM_Phys<Model>::fill_PoleMixing_map1(){
       fmap1 tmp_map;
-    
+    // this is currently empty in MSSM,
       return tmp_map;
    }
    
@@ -739,34 +754,46 @@ namespace Gambit {
    typename MSSM_Phys<Model>::fmap2 MSSM_Phys<Model>::fill_PoleMixing_map2(){
       fmap2 tmp_map;
       //Need to add these to generated code before I can use them here.
-      // tmp_map["ZD"] = &MssmFS::get_Pole_ZD;
-      // tmp_map["ZV"] = &MssmFS::get_Pole_ZV;
-      // tmp_map["ZU"] = &MssmFS::get_Pole_ZU;
-      // tmp_map["ZE"] = &MssmFS::get_Pole_ZE;
-      // tmp_map["ZH"] = &MssmFS::get_Pole_ZH;
-      // tmp_map["ZA"] = &MssmFS::get_Pole_ZA;
-      // tmp_map["ZPM"] = &MssmFS::get_Pole_ZPM;
+      tmp_map["ZD"] = FInfo2( &Model::get_ZD_pole_slha, 
+                              {0,1,2,3,4,5},{0,1,2,3,4,5} );
+      tmp_map["ZV"] = FInfo2( &Model::get_ZV_pole_slha, 
+                              {0,1,2},{0,1,2} );
+      tmp_map["ZU"] = FInfo2( &Model::get_ZU_pole_slha, 
+                              {0,1,2,3,4,5},{0,1,2,3,4,5} );
+      tmp_map["ZE"] = FInfo2( &Model::get_ZE_pole_slha, 
+                              {0,1,2,3,4,5},{0,1,2,3,4,5} );
+      tmp_map["ZH"] = FInfo2( &Model::get_ZH_pole_slha, 
+                              {0,1},{0,1} );
+      tmp_map["ZA"] = FInfo2( &Model::get_ZA_pole_slha, 
+                               {0,1},{0,1} );
+      tmp_map["ZHPM"] = FInfo2( &Model::get_ZP_pole_slha, 
+                                {0,1},{0,1} );
+      tmp_map["ZN"] = FInfo2( &Model::get_ZN_pole_slha, 
+                              {0,1,2,3},{0,1,2,3} );
+
+      tmp_map["UM"] = FInfo2( &Model::get_UM_pole_slha, 
+                              {0,1},{0,1} );
+      tmp_map["UP"] = FInfo2( &Model::get_UP_pole_slha, 
+                              {0,1},{0,1} );
+
+
+      // tmp_map["ZV"] = &Model::get_ZV_pole_slha;
+      // tmp_map["ZU"] = &Model::get_ZU_pole_slha;
+      // tmp_map["ZE"] = &Model::get_ZE_pole_slha;
+      // tmp_map["ZH"] = &Model::get_ZH_pole_slha;
+      // tmp_map["ZA"] = &Model::get_ZA_pole_slha;
+      // tmp_map["ZPM"] = &Model::get_ZP_pole_slha;
       
-      // tmp_map["ZN"] = &MssmFS::get_Pole_ZN;
-      // tmp_map["UM"] = &MssmFS::get_Pole_UM;
-      // tmp_map["UP"] = &MssmFS::get_Pole_UP;
-      
+      // tmp_map["ZN"] = &Model::get_ZN_pole_slha;
+      // tmp_map["UM"] = &Model::get_UM_pole_slha;
+      // tmp_map["UP"] = &Model::get_UP_pole_slha;
+   
       /* Could add SM fermion mixing but these are only filled
          when we actually calculate the SM pole masses
          which is not necessary */
-      // tmp_map["MFd"] = &MssmFS::get_Pole_MFd;
-      // tmp_map["MFu"] = &MssmFS::get_Pole_MFu;
-      // tmp_map["MFe"] = &MssmFS::get_Pole_MFe;
+     
       return tmp_map;
    }
-   
-   //Would be safer to pass a pair like below:  
-   // MSSMSpec::pmap1 MSSMSpec::fill_PoleMass_map1(){
-   //    pmap1 tmp_map;
-   //    tmp_map[std::make_pair("MSd",0)] = &Model_physical::MSd;
-      
-   // }
-   
    
    //Takes a string and an index. 
    template <class M>
