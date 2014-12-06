@@ -61,7 +61,7 @@ int main(int argc, char* argv[])
 
     // Set up a printer object
     // (will do this with a factory that reads the inifile, similar to the PriorManager)
-    // Printers::ostreamPrinter printer(std::cout,1); 
+    // Printers::ostreamPrinter printer(cout,1); 
     // For now the asciiPrinter can be constructed using any stream, so for file output
     // we need to give it a file stream object.
     //std::ofstream outfile("gambit_output.txt", std::ofstream::out);
@@ -107,7 +107,7 @@ int main(int argc, char* argv[])
       logger() << core << "Starting scan." << EOM;
       scanner->Run(); 
  
-      std::cout << "GAMBIT has finished successfully!"<<std::endl;
+      cout << "GAMBIT has finished successfully!" << endl;
 
     }
   
@@ -115,7 +115,12 @@ int main(int argc, char* argv[])
 
   catch (std::exception& e)
   {
-    if (not logger().disabled()) cout << "GAMBIT has exited with fatal exception: " << e.what() << endl;
+    if (not logger().disabled())
+    {
+      cout << endl << " \033[00;31;1mFATAL ERROR\033[00m" << endl << endl;
+      cout << "GAMBIT has exited with fatal exception: " << e.what() << endl;
+    }
+      
   }
 
   return 0;
