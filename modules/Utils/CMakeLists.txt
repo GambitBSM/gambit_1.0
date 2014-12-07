@@ -7,7 +7,6 @@ set(source_files src/equivalency_singleton.cpp
                  src/type_equivalency.cpp
                  src/util_functions.cpp
                  src/ASCIItableReader.cpp
-                 src/yaml_description_database.cpp
 )
 
 set(header_files include/SLHA_readers.hpp
@@ -22,7 +21,6 @@ set(header_files include/SLHA_readers.hpp
                  include/module_macros_common.hpp
                  include/module_macros_incore.hpp
                  include/module_macros_inmodule.hpp
-                 include/register_standalone_error_handlers.hpp
                  include/safety_bucket.hpp
                  include/shared_types.hpp
                  include/standalone_module.hpp
@@ -39,7 +37,6 @@ set(header_files include/SLHA_readers.hpp
                  include/util_types.hpp
                  include/variadic_functions.hpp
                  include/ASCIItableReader.hpp
-                 include/yaml_description_database.hpp
                  include/yaml_options.hpp
 )
 

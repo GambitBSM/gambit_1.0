@@ -18,7 +18,6 @@
 ///  *********************************************
 
 // Identify backend
-#define LIBPATH      "Backends/lib/libgamLike.so"
 #ifdef BACKENDRENAME
   #define BACKENDNAME BACKENDRENAME
 #else
@@ -53,8 +52,5 @@ BE_INI_FUNCTION
 DONE
 
 // Undefine macros to avoid conflict with other backends
-#undef LIBPATH 
-#undef BACKENDNAME
-#undef VERSION
-#undef SAFE_VERSION
+#include "backend_undefs.hpp"
 

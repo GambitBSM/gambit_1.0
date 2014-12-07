@@ -10,11 +10,12 @@ include_directories("${PROJECT_SOURCE_DIR}/contrib/mcutils/include")
 include_directories("${PROJECT_SOURCE_DIR}/contrib/heputils/include")
 
 #contrib/yaml-cpp-0.5.1
+set(yaml_CXXFLAGS "${CMAKE_CXX_FLAGS} -I${Boost_INCLUDE_DIR}")
 ExternalProject_Add(yaml-cpp
   SOURCE_DIR ${PROJECT_SOURCE_DIR}/contrib/yaml-cpp-0.5.1
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND ""
-  BUILD_COMMAND make YAML_CC=${CMAKE_CXX_COMPILER} CFLAGS=${CMAKE_CXX_FLAGS}
+  BUILD_COMMAND make YAML_CC=${CMAKE_CXX_COMPILER} CFLAGS=${yaml_CXXFLAGS}
   INSTALL_COMMAND ""
   INSTALL_DIR ${CMAKE_BINARY_DIR}/install
   CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/install
@@ -25,6 +26,8 @@ set(yaml_LIBRARIES "yaml-cpp")
 set(yaml_LDFLAGS "-L${PROJECT_SOURCE_DIR}/contrib/yaml-cpp-0.5.1 -l${yaml_LIBRARIES}")
 include_directories("${yaml_INCLUDE_DIRS}")
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/contrib/yaml-cpp-0.5.1/libyaml-cpp.a")
+set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/contrib/yaml-cpp-0.5.1/build/*.o")
+set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/contrib/yaml-cpp-0.5.1/build/contrib/*.o")
 
 #contrib/Delphes-3.1.2
 if (NOT EXCLUDE_DELPHES)
@@ -37,13 +40,13 @@ if (NOT EXCLUDE_DELPHES)
     INSTALL_DIR ${CMAKE_BINARY_DIR}/install
     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/install
   )
-  execute_process(COMMAND root-config --cflags OUTPUT_VARIABLE ROOT_CFLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
   execute_process(COMMAND root-config --libs OUTPUT_VARIABLE ROOT_LDFLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${ROOT_CFLAGS}")
+  include_directories(${ROOT_INCLUDE_DIR})
   set(delphes_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}/contrib/Delphes-3.1.2" "${PROJECT_SOURCE_DIR}/contrib/Delphes-3.1.2/external")
   set(delphes_LIBRARIES "Delphes")
   set(delphes_LDFLAGS "${ROOT_LDFLAGS} -lEG -L${PROJECT_SOURCE_DIR}/contrib/Delphes-3.1.2 -l${delphes_LIBRARIES}")
   include_directories("${delphes_INCLUDE_DIRS}")
   set(CMAKE_INSTALL_RPATH "${PROJECT_SOURCE_DIR}/contrib/Delphes-3.1.2")
   set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/contrib/Delphes-3.1.2/libDelphes*" "${PROJECT_SOURCE_DIR}/contrib/Delphes-3.1.2/Makefile*")
+  set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/contrib/Delphes-3.1.2/tmp" "${PROJECT_SOURCE_DIR}/contrib/Delphes-3.1.2/core")
 endif()

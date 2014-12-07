@@ -70,7 +70,10 @@ namespace Gambit {
       logger() << LogTags::info << endl << EOM;
 
       std::vector<std::string> analysisNames;
-      GET_COLLIDER_RUNOPTION(analysisNames, std::vector<std::string>)
+      #pragma omp critical (runOptions)
+      {
+        GET_COLLIDER_RUNOPTION(analysisNames, std::vector<std::string>)
+      }
 
       logger() << "\n==================\n";
       logger() << "ColliderBit says,\n";
@@ -110,12 +113,15 @@ namespace Gambit {
       logger() << "\t\"operatePythia() was called.\"\n";
       logger() << LogTags::info << endl << EOM;
 
-      /// Retrieve runOptions from the YAML file safely...
-      GET_COLLIDER_RUNOPTION(pythiaNames, std::vector<std::string>)
-      /// @todo Subprocess specific nEvents
-      GET_COLLIDER_RUNOPTION(nEvents, int)
-      /// @todo Get the Spectrum and Decay info from SpecBit and DecayBit
-      GET_COLLIDER_RUNOPTION(slhaFilename, std::string)
+      #pragma omp critical (runOptions)
+      {
+        /// Retrieve runOptions from the YAML file safely...
+        GET_COLLIDER_RUNOPTION(pythiaNames, std::vector<std::string>)
+        /// @todo Subprocess specific nEvents
+        GET_COLLIDER_RUNOPTION(nEvents, int)
+        /// @todo Get the Spectrum and Decay info from SpecBit and DecayBit
+        GET_COLLIDER_RUNOPTION(slhaFilename, std::string)
+      }
 
       xsecArray = new double[omp_get_max_threads()];
       xsecerrArray = new double[omp_get_max_threads()];
@@ -123,7 +129,10 @@ namespace Gambit {
       for(iter=pythiaNames.cbegin(); iter!=pythiaNames.cend(); ++iter) {
         pythiaNumber = 0;
         /// Defaults to 1 if option unspecified
-        pythiaConfigurations = runOptions->getValueOrDef<int>(1, *iter);
+        #pragma omp critical (runOptions)
+        {
+          pythiaConfigurations = runOptions->getValueOrDef<int>(1, *iter);
+        }
 
         while (pythiaNumber < pythiaConfigurations) {
           ++pythiaNumber;
@@ -170,8 +179,11 @@ namespace Gambit {
           pythiaConfigName += std::to_string(pythiaNumber);
         }
         /// If the PythiaBase subclass is hard-coded (for some reason), okay with no options.
-        if (runOptions->hasKey(*iter, pythiaConfigName))
-          pythiaOptions = runOptions->getValue<std::vector<std::string>>(*iter, pythiaConfigName);
+        #pragma omp critical (runOptions)
+        {
+          if (runOptions->hasKey(*iter, pythiaConfigName))
+            pythiaOptions = runOptions->getValue<std::vector<std::string>>(*iter, pythiaConfigName);
+        }
         pythiaOptions.push_back("SLHA:file = " + slhaFilename);
         pythiaOptions.push_back("Random:seed = " + std::to_string(omp_get_thread_num()));
 

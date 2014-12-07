@@ -257,7 +257,9 @@ namespace Gambit
             {
               // If we didn't find the tag, raise an exception (probably means there was an error in the yaml file)
               std::ostringstream errormsg;
-              errormsg << "Error in Logging::str2tag function! Tag name received could not be found in str2tag map! Probably this is because you specified an invalid LogTag name in the logging redirection part of the inifile! Tag string was ["<<*stag<<"]";
+              errormsg << "Tag name received in Logging::str2tag function could not be found in str2tag map!";
+              errormsg << "Probably this is because you specified an invalid LogTag name in the logging redirection";
+              errormsg << "part of your YAML input file. Tag string was: "<<*stag<<".";
               logging_error().raise(LOCAL_INFO,errormsg.str());
             }
             *this << *stag <<", ";
@@ -518,12 +520,6 @@ namespace Gambit
          //std::cout<<"Ignoring message..."<<std::endl;
          return; 
        }
-
-       // If 'fatal' tag is received, print the message to stdout as well
-       if ( mail.tags.find(fatal) != mail.tags.end() )
-       {
-         std::cout<<" \033[00;31;1mFATAL ERROR\033[00m"<<std::endl<<mail.message<<std::endl;
-       } 
 
        // Sort the tags
        const SortedMessage sortedmsg(mail);

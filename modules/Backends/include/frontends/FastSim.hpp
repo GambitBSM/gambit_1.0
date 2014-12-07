@@ -7,18 +7,15 @@
  * 
  */
 
-/* Specify the path to the shared library along with a backend name. */
-
-#define LIBPATH      "Backends/lib/libfastsim.so"
 #ifdef BACKENDRENAME
   #define BACKENDNAME BACKENDRENAME
 #else
-  #define BACKENDNAME LibFastSim
+  #define BACKENDNAME FastSim
 #endif
 #define VERSION 1.0
 #define SAFE_VERSION 1_0
 
-/* The following macro loads the library (using dlopen) in LIBPATH 
+/* The following macro loads the library using dlopen 
  * when this header file is included somewhere. */
 
 LOAD_LIBRARY

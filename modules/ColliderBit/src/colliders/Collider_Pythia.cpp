@@ -33,15 +33,8 @@ namespace Gambit {
           set("Main:timesAllowErrors = 1000");
           set("Print:quiet = on");
           set("Init:showProcesses = on");
-
           // Default to SUSY with all subprocesses
           set("SUSY:all = on");
-
-          // Modelling elements
-          set("PartonLevel:MPI = off");
-          // set("PartonLevel:ISR = off");
-          // set("PartonLevel:FSR = off");
-          // set("HadronLevel:all = off");
 
           // Random seed setup
           set("Random:setSeed = on");

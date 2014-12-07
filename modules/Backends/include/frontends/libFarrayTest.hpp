@@ -4,7 +4,6 @@
  * \author Lars A. Dal
  */
 
-#define LIBPATH      "Backends/lib/libFarrayTest.so"
 #ifdef BACKENDRENAME
   #define BACKENDNAME BACKENDRENAME
 #else
