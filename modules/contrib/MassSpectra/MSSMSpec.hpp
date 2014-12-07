@@ -632,7 +632,7 @@ namespace Gambit {
     tmp_map["MGluon"] = &Model::get_MVG; 
     tmp_map["MPhoton"] = &Model::get_MVP;
     
-    // these are nort present in the model object currently
+    // these are not present in the model object currently
     // But maybe we should add them
     tmp_map["MGoldstone0"] = &Model::get_DRbar_neut_goldstone;
     tmp_map["MA0"] = &Model::get_DRbar_neut_CPodd_higgs;
