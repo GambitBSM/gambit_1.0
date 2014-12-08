@@ -272,9 +272,9 @@ namespace Gambit {
       mssm_ph(*this),
       mssm_drbar_pars(*this),
       Spec<M>(mssm_drbar_pars, mssm_ph),
-      index_offset(0)
+      index_offset(-1)
    {
-      if (switch_index_convention) index_offset = 1;
+      if (switch_index_convention) index_offset = 0;
    }
    
    // Default constructor
@@ -283,9 +283,9 @@ namespace Gambit {
       mssm_ph(*this),
       mssm_drbar_pars(*this),
       Spec<M>(mssm_drbar_pars, mssm_ph),
-      index_offset(0)
+      index_offset(-1)
    {
-      if (switch_index_convention) index_offset = 1;
+      if (switch_index_convention) index_offset = 0;
    }
    
    template <class M>
@@ -775,18 +775,6 @@ namespace Gambit {
                               {0,1},{0,1} );
       tmp_map["UP"] = FInfo2( &Model::get_UP_pole_slha, 
                               {0,1},{0,1} );
-
-
-      // tmp_map["ZV"] = &Model::get_ZV_pole_slha;
-      // tmp_map["ZU"] = &Model::get_ZU_pole_slha;
-      // tmp_map["ZE"] = &Model::get_ZE_pole_slha;
-      // tmp_map["ZH"] = &Model::get_ZH_pole_slha;
-      // tmp_map["ZA"] = &Model::get_ZA_pole_slha;
-      // tmp_map["ZPM"] = &Model::get_ZP_pole_slha;
-      
-      // tmp_map["ZN"] = &Model::get_ZN_pole_slha;
-      // tmp_map["UM"] = &Model::get_UM_pole_slha;
-      // tmp_map["UP"] = &Model::get_UP_pole_slha;
    
       /* Could add SM fermion mixing but these are only filled
          when we actually calculate the SM pole masses
@@ -1120,44 +1108,8 @@ namespace Gambit {
       else if(MixMat == "ZPM") {
          return my_parent.model.get_ZP()(i,j);
       }
-      // //Neutralino mass matrix
-      // else if(MixMat == "ZN") {
-      //    return my_parent.model.get_get_physical().ZN()(i,j);
-      // }
-      //  //Chargino mass matrices
-      // else if(MixMat == "UM") {
-      //    return my_parent.model.get_physical().UM()(i,j);
-      // }
-      // //Chargino mass matrices
-      // else if(MixMat == "UP") {
-      //    return my_parent.model.get_physical().UP()(i,j);
-      // }  
-       
-      // //Down quark left mixing matrix
-      // if(MixMat == "ZDL") {
-      //    return my_parent.model.get_physical().ZDL()(i,j);
-      // }
-      // //Down quark right mixing matrix
-      // if(MixMat == "ZDR") {
-      //    return my_parent.model.get_physical().ZDL()(i,j);
-      // }
-      // //Up quark left mixing matrix
-      // else if(MixMat == "ZUL") {
-      //    return my_parent.model.get_physical().ZUL()(i,j);
-      // }
-      //  //Up quark right mixing matrix
-      // else if(MixMat == "ZUR") {
-      //    return my_parent.model.get_physical().ZUR()(i,j);
-      // }
-      // //Charged lepton left mixing matrix
-      // else if(MixMat == "ZEL") {
-      //    return my_parent.model.get_physical().ZEL()(i,j);
-      // }
-      // //Charged lepton left mixing matrix
-      // else if(MixMat == "ZER") {
-      //    return my_parent.model.get_physical().ZER()(i,j);
-      // }
-   
+      
+  
    std::cout << "Error: Sorry I know nothing" << std::endl;
       return 6666666666666.6666666666666;
    
