@@ -31,6 +31,7 @@
 #include "CMSSM_slha_io.hpp"
 #include "CMSSM_spectrum_generator.hpp"
 #include "CMSSM_two_scale_model.hpp"
+#include "CMSSM_two_scale_model_slha.hpp"
 #include "CMSSM_physical.hpp"
 #include "CMSSM_info.hpp"
 
@@ -63,7 +64,7 @@ namespace Gambit
     {
        typedef CMSSM_input_parameters                   InputParameters;
        typedef CMSSM_spectrum_generator<algorithm_type> SpectrumGenerator;
-       typedef CMSSM<algorithm_type>                    Model;
+       typedef CMSSM_slha<algorithm_type>                    Model;
        typedef CMSSM_physical                           Physical;
        typedef CMSSM_slha_io                            SlhaIo;
        static const unsigned number_of_particles = CMSSM_info::NUMBER_OF_PARTICLES;
@@ -112,7 +113,7 @@ namespace Gambit
       spectrum_generator.run(oneset, input);
      
       // Extract references to flexiblesusy model object, and problems report
-      const typename Modelbox::Model& model = spectrum_generator.get_model();
+      const typename Modelbox::Model model(spectrum_generator.get_model());
 
       // Extract report on problems...
       const Problems<Modelbox::number_of_particles>& problems
