@@ -222,7 +222,7 @@ namespace Gambit {
 
 // Interface to ScannerBit
 
-scanner_plugin (multinest)
+scanner_plugin (multinest, version(0, 0, 0, bens_version))
 {
         int plugin_main ()
         {
