@@ -157,9 +157,18 @@ Message from flexibleSUSY below:" << std::endl;
       return &generic_mssm;
     }
 
-
-
-
+    /// Helper function for setting 3x3 matrix-valued parameters
+    //  Names must conform to convention "<parname>_ij" 
+    Eigen::Matrix<double,3,3> fill_parameter_matrix(std::string& rootname, std::map<str, safe_ptr<const double> >& Param)
+    {
+       Eigen::Matrix<double,3,3> output;
+       for(int i=0; i<3; ++i) { for(int j=0; j<3; ++j) { 
+         std::sstring parname;
+         parname << rootname << "_" << i << j;
+         /// TODO: Error checking...
+         output(i,j) = *Param[parname];
+       }}
+    }
 
 
     /// Gambit module functions
@@ -208,26 +217,34 @@ Message from flexibleSUSY below:" << std::endl;
       //result->dump2slha("SpecBit/CMSSM_fromSpectrumObject.slha");
     }
 
-    void get_GUTMSSMA_spectrum (Spectrum* &result)
+    void get_MSSMatGUT_spectrum (Spectrum* &result)
     {
       using namespace softsusy;
-      namespace Pipe = Pipes::get_GUTMSSMA_spectrum;
-      CMSSM_input_parameters input;
-
-      //std::cout<<"accessible params:"<<std::endl;
-      //for(auto iter=Pipe::Param.begin(); iter!=Pipe::Param.end(); ++iter) {
-      //  std::cout << iter->first <<", "<< std::endl;
-      //}
+      namespace Pipe = Pipes::get_MSSMatGUT_spectrum;
+      MSSMatMGUT_input_parameters input;
 
       std::cout<<"Models:"<<*Pipe::Models<<std::endl;
 
-      input.m0      = sqrt(*Pipe::Param["mHu2"]);
-      input.m12     = *Pipe::Param["M1"];
-      input.Azero   = *Pipe::Param["At"];
-      input.TanBeta = *Pipe::Param["tanb"];
-      input.SignMu  = *Pipe::Param["signmu"];
+      //double valued parameters
+      input.TanBeta     = *Pipe::Param["TanBeta"];
+      input.SignMu      = *Pipe::Param["SignMu"];
+      input.mHu2IN      = *Pipe::Param["mHu2"];
+      input.mHd2IN      = *Pipe::Param["mHd2"];
+      input.MassBInput  = *Pipe::Param["M1"];
+      input.MassWBInput = *Pipe::Param["M2"];
+      input.MassGInput  = *Pipe::Param["M3"];
 
-      result = run_FS_spectrum_generator<CMSSMbox<Two_scale>>(input,*Pipe::runOptions);
+      //3x3 matrices; filled with the help of a convenience function
+      mq2Input = fill_parameter_matrix("mq2", Pipe::Param)
+      ml2Input = fill_parameter_matrix("ml2", Pipe::Param)
+      md2Input = fill_parameter_matrix("md2", Pipe::Param)
+      mu2Input = fill_parameter_matrix("mu2", Pipe::Param)
+      me2Input = fill_parameter_matrix("me2", Pipe::Param)
+      Aeij = fill_parameter_matrix("Ae", Pipe::Param)
+      Adij = fill_parameter_matrix("Ad", Pipe::Param)
+      Auij = fill_parameter_matrix("Au", Pipe::Param)
+
+      result = run_FS_spectrum_generator<MSSMatGUTbox<Two_scale>>(input,*Pipe::runOptions);
     }
 
     void get_GUTMSSMB_spectrum (Spectrum* &result)

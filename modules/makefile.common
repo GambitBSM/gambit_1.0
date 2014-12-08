@@ -77,7 +77,7 @@ LIBEXT          := .a
 
 # Perhaps can automate this better in cmake?
 MODEL1          := CMSSM
-MODEL2          := NUHMSSM
+MODEL2          := MSSMatMGUT
 
 MODEL1DIR       := $(ABSBASEDIR)/models/$(MODEL1)
 MODEL2DIR       := $(ABSBASEDIR)/models/$(MODEL2)

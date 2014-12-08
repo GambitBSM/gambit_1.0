@@ -104,20 +104,44 @@
 // "interpret_as_X" function which translates the CMSSM parameters into
 // the appropriate general GUT parameterisation for the spectrum generator
 // being used.
-// TODO: Currently just examples, need to look up what each spectrum generator
-// can actually do.
-#define MODEL GUTMSSMA
+
+/// FlexibleSUSY compatible general (31 parameters plus sign) GUT scale MSSM parameterisation
+#define MODEL MSSMatGUT
   START_MODEL
-  DEFINEPARS(M1,M2,M3,
-             At,Ab,Atau,
-             mHu2,mHd2,
-             signmu,tanb,
-             meL,mmuL,mtauL,
-             meR,mmuR,mtauR,
-             mq1L,mq2L,mq3L,
-             muR,mcR,mtR,
-             mdR,msR,mbR)
-  //USE_NULL_INTERPRET_AS_PARENT
+  DEFINEPARS(TanBeta,SignMu,
+             mHu2,mHd2,M1,M2,M3,
+             //
+             mq2_11, mq2_12, mq2_13,
+             mq2_21, mq2_22, mq2_23,
+             mq2_31, mq2_32, mq2_33,
+             //
+             ml2_11, ml2_12, ml2_13,
+             ml2_21, ml2_22, ml2_23,
+             ml2_31, ml2_32, ml2_33,
+             //
+             md2_11, md2_12, md2_13,
+             md2_21, md2_22, md2_23,
+             md2_31, md2_32, md2_33,
+             //
+             mu2_11, mu2_12, mu2_13,
+             mu2_21, mu2_22, mu2_23,
+             mu2_31, mu2_32, mu2_33,
+             //
+             me2_11, me2_12, me2_13,
+             me2_21, me2_22, me2_23,
+             me2_31, me2_32, me2_33,
+             //
+             Ae2_11, Ae2_12, Ae2_13,
+             Ae2_21, Ae2_22, Ae2_23,
+             Ae2_31, Ae2_32, Ae2_33,
+             //
+             Ad2_11, Ad2_12, Ad2_13,
+             Ad2_21, Ad2_22, Ad2_23,
+             Ad2_31, Ad2_32, Ad2_33,
+             //
+             Au2_11, Au2_12, Au2_13,
+             Au2_21, Au2_22, Au2_23,
+             Au2_31, Au2_32, Au2_33)
 #undef MODEL
 
 // Alternate general GUT parameterisation

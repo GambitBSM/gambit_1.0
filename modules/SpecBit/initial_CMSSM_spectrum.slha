@@ -1,6 +1,6 @@
 Block SPINFO
      1   FlexibleSUSY
-     2   1.0.2
+     2   1.0.3
 Block SMINPUTS
      1     1.27916000E+02   # alpha^(-1) SM MSbar(MZ)
      2     1.16637000E-05   # G_Fermi
@@ -151,6 +151,7 @@ Block MSOFT Q= 2.40316181E+02
      3     2.50262534E+02   # MassG
 Block MASS
    1000021     2.69870148E+02   # Glu
+        24     8.04040000E+01   # VWm
    1000024     3.82430229E+01   # Cha(1)
    1000037     2.00718863E+02   # Cha(2)
         25     8.27008596E+01   # hh(1)

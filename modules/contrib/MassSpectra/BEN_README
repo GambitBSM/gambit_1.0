@@ -21,5 +21,6 @@ Instructions for adding new flexiblesusy spectrum generators to gambit:
       gambit_install flexiblesusy> make
 5. Modify Spectrum object and SpecBit as needed to deal with the new spectrum generator
    (details to come...)
- 
+
+6. NOTE: if you are using the eigen3 installation that is in the gambit extras folder, you will need to add the flag "--with-eigen-incdir=../../../../extras/eigen3" to the configure step. 
 
