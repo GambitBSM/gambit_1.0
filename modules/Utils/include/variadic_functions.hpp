@@ -11,6 +11,10 @@
 ///  \author Gregory Martinez
 ///          (gregory.david.martinez@gmail.com)
 ///  \date Feb 2014
+//
+///  \author Christoph Weniger
+///          <c.weniger@uva.nl>
+///  \date Dec 2014
 ///
 ///  *********************************************
 
@@ -27,6 +31,49 @@
 
 namespace Gambit
 {       
+        ///////////////////////////////
+        // Lazy vector initialization
+        //
+        // usage:
+        // auto vec = initVector("this", "is", "the", "initializer", "list");
+        // auto vec = initVector(2.3, 4.2, 1.3);
+        // ...
+        //
+        ///////////////////////////////
+
+        template <typename T>
+        std::vector<T> initVector(std::vector<T> vector)
+        {
+            return vector;
+        }
+
+        template <typename T, typename... Args>
+        std::vector<T> initVector(std::vector<T> vector, T value, Args... args)
+        {
+            vector.push_back(value);
+            return initVector(vector, args...);
+        }
+
+        // This function causes a (readable) compile-time error when T != U.
+        // In case types are convertable, they are converted.
+        template <typename T, typename U, typename... Args>
+        std::vector<T> initVector(std::vector<T> vector, U value, Args... args)
+        {
+            T value_converted = value;
+            vector.push_back(value_converted);
+            return initVector(vector, args...);
+        }
+
+        template <typename T, typename... Args>
+        std::vector<T> initVector(T value, Args... args)
+        {
+            std::vector<T> vector;
+            vector.push_back(value);
+            vector = initVector(vector, args...);
+            return vector;
+        }
+
+
         //////////////////////
         //div_ints_by_half
         //////////////////////

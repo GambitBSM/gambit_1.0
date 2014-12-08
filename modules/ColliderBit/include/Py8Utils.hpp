@@ -105,10 +105,10 @@ namespace Gambit {
     }
 
 
-    inline void finalDescendants(int n, const Pythia8::Event& evt, vector<int>& rtn) {
+    inline void finalDescendants(int n, const Pythia8::Event& evt, std::vector<int>& rtn) {
       const Pythia8::Particle& p = evt[n];
       //assert(!p.isParton());
-      if (p.isParton()) cerr << "PARTON IN DESCENDANT CHAIN FROM HADRON! NUM, ID = " << n << ", " << p.id() << endl;
+      if (p.isParton()) std::cerr << "PARTON IN DESCENDANT CHAIN FROM HADRON! NUM, ID = " << n << ", " << p.id() << endl;
       for (int m : evt.daughterList(n)) {
         if (evt[m].isFinal()) {
           rtn.push_back(m);
@@ -141,19 +141,19 @@ namespace Gambit {
     }
 
 
-    // inline vector<int> get_anaparticles(const Pythia8::Event& evt) {
+    // inline std::vector<int> get_anaparticles(const Pythia8::Event& evt) {
     //   // Get the most physical b hadron and tau IDs
-    //   vector<int> unstables;
+    //   std::vector<int> unstables;
     //   for (int n = 0; n < evt.size(); ++n) {
     //     if (isFinalB(n, evt)) unstables.push_back(n);
     //     if (isFinalTau(n, evt)) unstables.push_back(n);
     //   }
     //   // Identify the final state particles from those decays
-    //   vector<int> rmparticles;
+    //   std::vector<int> rmparticles;
     //   // for (int n : unstables) finalDescendants(n, evt, rmparticles);
     //   for (size_t i = 0; i < unstables.size(); ++i) finalDescendants(unstables[i], evt, rmparticles);
     //   // Identify all final state particles, except those from b and tau decays where the parents are used
-    //   vector<int> rtn = unstables;
+    //   std::vector<int> rtn = unstables;
     //   for (int n = 0; n < evt.size(); ++n) {
     //     if (!evt[n].isFinal()) continue;
     //     if (find(rmparticles.begin(), rmparticles.end(), n) == rmparticles.end()) rtn.push_back(n);
@@ -220,7 +220,7 @@ namespace Gambit {
       // Currently hard-coded to use anti-kT R=0.4 jets above 30 GeV
       const fastjet::JetDefinition jet_def(fastjet::antikt_algorithm, 0.4);
       fastjet::ClusterSequence cseq(jetparticles, jet_def);
-      vector<fastjet::PseudoJet> pjets = sorted_by_pt(cseq.inclusive_jets(30));
+      std::vector<fastjet::PseudoJet> pjets = sorted_by_pt(cseq.inclusive_jets(30));
 
       // Do jet b-tagging, etc. and add to the Event
       for (auto& pj : pjets) {

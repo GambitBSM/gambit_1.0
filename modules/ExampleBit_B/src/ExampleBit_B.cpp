@@ -50,7 +50,7 @@ namespace Gambit
     void exampleCharge    (int    &result) { result = 1; }
     void identity         (str    &result) { result = "rabbiton"; }
     void nevents          (int    &result) { result = 2; }
-    void lnL_ExampleBitB  (double &result) { result = 0; }   // Some dummy double likelihood function for the scanner
+    void lnL_ExampleBitB  (double &result) { result = *Pipes::lnL_ExampleBitB::Dep::nevents_postcuts; }
      
     // Function that returns a vector of doubles, for testing printer
     void exampleVec (std::vector<double> &result) 
@@ -92,9 +92,9 @@ namespace Gambit
        logger() << "Running at scale: " << runOptions->getValue<double>("scale") << " TeV." << endl;
       logger() << "First model being scanned is: " << Models->at(0) << endl;
       logger() << "  Printing parameter values:" << endl;
-      logger() << "  M0: "  << *Param["M0"] << endl;
-      logger() << "  M12: " << *Param["M12"] << endl;
-      logger() << "  A0: "  << *Param["A0"] << endl;
+      logger() << "  M1: " << *Param["M1"] << endl;
+      logger() << "  M2: " << *Param["M2"] << endl;
+      logger() << "  M3: " << *Param["M3"] << endl;
       logger() <<info<<EOM;
       result = 5.e10; 
     }

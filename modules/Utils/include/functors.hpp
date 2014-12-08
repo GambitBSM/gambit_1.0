@@ -35,7 +35,7 @@
 #include <map>
 #include <set>
 #include <vector>
-#include <time.h>
+#include <chrono>    
 #include <sstream>
 #include <algorithm>
 #include <omp.h>
@@ -50,8 +50,8 @@
 #define FUNCTORS_FADE_RATE 0.01
 // Minimum invaldiation rate (should be 0<...<<1)
 #define FUNCTORS_BASE_INVALIDATION_RATE 0.01
-// Initial runtime estimate
-#define FUNCTORS_RUNTIME_INIT 1000
+// Initial runtime estimate (s)
+#define FUNCTORS_RUNTIME_INIT 0.000001
 
 namespace Gambit
 {
@@ -270,20 +270,20 @@ namespace Gambit
       /// Attempt to retrieve a dependency or model parameter that has not been resolved
       static void failBigTime(str method);
 
-      /// Test if a model has a parent model in the functor's allowedModels list
-      inline bool allowed_parent_model_exists(str model);
+      /// Test if there is a model in the functor's allowedModels list as which this model can be interpreted
+      inline bool allowed_parent_or_friend_exists(str model);
 
       /// Check that a model is actually part of a combination that is allowed to be used with this functor.
       inline bool in_allowed_combo(str model);
 
-      /// Test whether any of the entries in a given model group has any descendents in a given combination
-      inline bool contains_any_descendents_of(std::vector<str> combo, str group);
+      /// Test whether any of the entries in a given model group is a valid interpretation of any members in a given combination
+      inline bool contains_anything_interpretable_as_member_of(std::vector<str> combo, str group);
 
       /// Work out whether a given combination of models and a model group have any elements in common
       inline bool has_common_elements(std::vector<str> combo, str group);
 
-      /// Try to find a parent model in some user-supplied map from models to sspair vectors
-      str find_parent_model_in_map(str model, std::map< str, std::vector<sspair> > karta);
+      /// Try to find a parent or friend model in some user-supplied map from models to sspair vectors
+      str find_friend_or_parent_model_in_map(str model, std::map< str, std::vector<sspair> > karta);
 
   };
 
@@ -444,8 +444,11 @@ namespace Gambit
       /// Do post-calculate timing things
       virtual void finishTiming(double nsec, double sec);
 
-      /// Current runtime in ns
-      double runtime;
+      /// Current runtime
+      std::chrono::duration<double> runtime;
+
+      /// Beginning and end timing points
+      std::chrono::time_point<std::chrono::system_clock> start, end;
 
       /// Averaged runtime in ns
       double runtime_average;

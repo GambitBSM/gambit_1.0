@@ -94,7 +94,7 @@
   //   using namespace Gambit::Models::MODEL::Pipes::PARENT_parameters;
   //
   INTERPRET_AS_PARENT__FUNCTION(CMSSM_demo_IAPfunc)
-  INTERPRET_AS_PARENT__DEPENDENCY(nevents, double)
+  INTERPRET_AS_PARENT__DEPENDENCY(id, std::string)
 
   void MODEL_NAMESPACE::CMSSM_demo_IAPfunc (const ModelParameters &myparams, ModelParameters &parentparams)
   {
@@ -107,7 +107,7 @@
       double A0  = myparams["A0"];
       
       /* Play around with the extra info obtained from dependency */
-      logger()<<"nevents dependency has supplied the value: "<<*Dep::nevents<<EOM;
+      logger()<<"identity dependency has supplied the value: "<<*Dep::id<<EOM;
       
       /* Grab reference to parent parameter object and set some values. 
          The parent parameter object already exists if we have gotten this 
@@ -156,6 +156,59 @@
   MAP_TO_CAPABILITY(blah0,   blah0cap)
 #undef PARENT
 #undef MODEL
+
+
+// Make third branch of model tree, and connect it to the first branch by INTERPRET_AS_X
+
+#define MODEL TWOHDM_demo_parent
+  START_MODEL
+  DEFINEPARS(X, Y, Z)
+#undef MODEL
+
+#define MODEL TWOHDM_demo
+#define PARENT TWOHDM_demo_parent
+  START_MODEL
+  DEFINEPARS(X, Y, Z)
+  INTERPRET_AS_PARENT__FUNCTION(to_parent)
+  INTERPRET_AS_X__FUNCTION(MSSM_demo,to_MSSM)
+  void MODEL_NAMESPACE::to_parent(const ModelParameters &myparams, ModelParameters &parentparams)
+  {
+      USE_MODEL_PIPE
+      logger()<<"Running interpret_as_parent calculations for TWOHDM_demo -> TWOHDM_demo_parent ..."<<EOM;     
+      parentparams.setValue("X",myparams["X"]);
+      parentparams.setValue("Y",2.0*myparams["Y"]);
+      parentparams.setValue("Z",myparams["Z"]);
+  }
+  void MODEL_NAMESPACE::to_MSSM(const ModelParameters &myparams, ModelParameters &MSSM_params)
+  {
+      USE_MODEL_PIPE
+      logger()<<"Running interpret_as_X calculations for TWOHDM_demo -> MSSM_demo ..."<<EOM;     
+      MSSM_params.setValue("M1",myparams["X"]);
+      MSSM_params.setValue("M2",myparams["Y"]);
+      MSSM_params.setValue("M3",myparams["Z"]);
+      MSSM_params.setValue("AU1",1.0);
+      MSSM_params.setValue("AU2",2.0);
+      MSSM_params.setValue("AU3",3.0);
+  }
+#undef PARENT
+#undef MODEL
+
+#define MODEL TWOHDM_sub_demo
+#define PARENT TWOHDM_demo
+  START_MODEL
+  DEFINEPARS(Y,Z)
+  INTERPRET_AS_PARENT__FUNCTION(to_parent)
+  void MODEL_NAMESPACE::to_parent(const ModelParameters &myparams, ModelParameters &parentparams)
+  {
+      USE_MODEL_PIPE
+      logger()<<"Running interpret_as_parent calculations for TWOHDM_sub_demo -> TWOHDM_demo ..."<<EOM;     
+      parentparams.setValue("X",1.0);
+      parentparams.setValue("Y",myparams["Y"]);
+      parentparams.setValue("Z",myparams["Z"]);
+  }
+#undef PARENT
+#undef MODEL
+
 
 
 // Currently cannot create "supermodels" as we could before, but I can

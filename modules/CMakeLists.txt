@@ -20,32 +20,47 @@ foreach(p
   endif()
 endforeach()
 
+# set the project name
+project(GAMBIT)
+
+# don't relink all binaries when shared lib changes (programs will be rebuilt any way if used headers change)
+set(CMAKE_LINK_DEPENDS_NO_SHARED 1)
+
+# include ./cmake in search path for projects
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake)
+
+# when building, use the install RPATH already
+set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE) 
+
+# check for optional packages and disable sections of GAMBIT accordingly
+include(cmake/optional.cmake)
+
+# check for Python
+include(FindPythonInterp)
+find_package(PythonInterp REQUIRED)
+
+# generate the CMakeLists.txt files for GAMBIT modules
+message("-- Updating GAMBIT module cmake files")
+set(PRECMAKE ${PROJECT_SOURCE_DIR}/cmake/update_cmakelists.py)
+execute_process(COMMAND python ${PRECMAKE} WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
+message("-- Updating GAMBIT module cmake files - done")
+
+# do OSX checks
 include(cmake/MacOSX.cmake)
 
 # enable Fortran compiler
 enable_language(Fortran)
-
-# set the project name
-project(GAMBIT)
 
 # set the version number
 set(GAMBIT_VERSION_MAJOR 1)
 set(GAMBIT_VERSION_MINOR 0)
 
 # configure a header file to pass some of the CMake settings to the source code
-configure_file("${PROJECT_SOURCE_DIR}/config.h.in"
-               "${PROJECT_BINARY_DIR}/config.h")
+configure_file("${PROJECT_SOURCE_DIR}/cmake/cmake_variables.hpp.in"
+               "${PROJECT_BINARY_DIR}/cmake_variables.hpp")
  
 # add the binary tree to the search path for include files so that we will find config.h
 include_directories("${PROJECT_BINARY_DIR}")
-
-###################### FIXME
-if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-  set(HAVE_MAC 1)
-else()
-  set(HAVE_MAC 0)
-endif()
-###################### FIXME
 
 # add -fPIC for 64 bit systems
 if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64")
@@ -55,18 +70,11 @@ if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64")
 endif()
 
 # add some Fortran compiler flags
-message(${CMAKE_Fortran_COMPILER})
 if(CMAKE_Fortran_COMPILER MATCHES "gfortran*" OR CMAKE_Fortran_COMPILER MATCHES "f95*")
   set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -ffixed-line-length-none")
 elseif(CMAKE_Fortran_COMPILER MATCHES "ifort*")
   set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -extend-source")
 endif()
-
-# don't relink all binaries when shared lib changes (programs will be rebuilt any way if used headers change)
-set(CMAKE_LINK_DEPENDS_NO_SHARED 1)
-
-# include ./cmake in search path for projects
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake)
 
 # set output paths
 set(mylibdir ${PROJECT_SOURCE_DIR}/lib)
@@ -93,21 +101,19 @@ if(COMPILER_SUPPORTS_CXX11)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c++11")
 elseif(COMPILER_SUPPORTS_CXX0X)
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c++0x")
 else()
-        message(STATUS "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
+   message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
 endif()
 
 # check for Boost
-set(BOOST_ROOT
-    "/usr/local/Cellar/boost/1.55.0_2"
-    CACHE PATH "")
 find_package(Boost 1.42 REQUIRED)
 if(Boost_FOUND)
   include_directories(${Boost_INCLUDE_DIR})
 endif()
 
+# check for OpenMP
 find_package(OpenMP REQUIRED)
 if (OPENMP_FOUND)
     set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
@@ -116,13 +122,14 @@ endif()
 
 # check for Gnu Scientific Library (GSL)
 include(cmake/FindGSL.cmake)
+if(GSL_FOUND)
+  include_directories(${GSL_INCLUDE_DIRS})
+else()
+  message(FATAL_ERROR "Need gsl libraries")
+endif()
 
 # check for DL libraries
 include(cmake/FindLibDL.cmake)
-
-# check for Python
-include(FindPythonInterp)
-find_package(PythonInterp)
 
 # identify the different harvester scripts
 set(MODEL_HARVESTER ${PROJECT_SOURCE_DIR}/Models/scripts/model_harvester.py)
@@ -131,23 +138,24 @@ set(MODULE_HARVESTER ${PROJECT_SOURCE_DIR}/Utils/scripts/module_harvester.py)
 
 # create all_functor_types.hpp, module_rollcall.hpp, module_types_rollcall.hpp, models_rollcall.hpp, 
 # model_types_rollcall.hpp, backend_rollcall.hpp and backend_types_rollcall.hpp
+string (REPLACE ";" "," itch_with_commas "${itch}")
 file(GLOB MODEL_HARVESTER_FILES   "${PROJECT_SOURCE_DIR}/Models/include/models/*.hpp")
 file(GLOB BACKEND_HARVESTER_FILES "${PROJECT_SOURCE_DIR}/Backends/include/frontends/*.hpp")
 file(GLOB MODULE_HARVESTER_FILES  "${PROJECT_SOURCE_DIR}/*Bit*/include/*_rollcall.hpp")
 list(REMOVE_ITEM MODULE_HARVESTER_FILES "${PROJECT_SOURCE_DIR}/ScannerBit//include//priors_rollcall.hpp" 
                                         "${PROJECT_SOURCE_DIR}/ScannerBit//include//test_function_rollcall.hpp")
 add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/Models/include/model_rollcall.hpp 
-                   COMMAND python ${MODEL_HARVESTER}
+                   COMMAND python ${MODEL_HARVESTER} -x __not_a_real_name__,${itch_with_commas}
                    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} 
-                   DEPENDS ${MODEL_HARVESTER} ${MODEL_HARVESTER_FILES})
+                   DEPENDS ${MODEL_HARVESTER} ${MODEL_HARVESTER_FILES} ${PROJECT_BINARY_DIR}/CMakeCache.txt)
 add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/Backends/include/backend_rollcall.hpp 
-                   COMMAND python ${BACKEND_HARVESTER}
+                   COMMAND python ${BACKEND_HARVESTER} -x __not_a_real_name__,${itch_with_commas}
                    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} 
-                   DEPENDS ${BACKEND_HARVESTER} ${BACKEND_HARVESTER_FILES})
+                   DEPENDS ${BACKEND_HARVESTER} ${BACKEND_HARVESTER_FILES} ${PROJECT_BINARY_DIR}/CMakeCache.txt)
 add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/Utils/include/all_functor_types.hpp
-                   COMMAND python ${MODULE_HARVESTER} -x ColliderBit
+                   COMMAND python ${MODULE_HARVESTER} -x __not_a_real_name__,${itch_with_commas}
                    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} 
-                   DEPENDS ${MODULE_HARVESTER} ${MODULE_HARVESTER_FILES})
+                   DEPENDS ${MODULE_HARVESTER} ${MODULE_HARVESTER_FILES} ${PROJECT_BINARY_DIR}/CMakeCache.txt)
 add_custom_target(model_harvest   DEPENDS ${PROJECT_SOURCE_DIR}/Models/include/model_rollcall.hpp ${MODEL_HARVESTER_FILES})
 add_custom_target(backend_harvest DEPENDS ${PROJECT_SOURCE_DIR}/Backends/include/backend_rollcall.hpp ${BACKEND_HARVESTER_FILES})
 add_custom_target(functor_harvest DEPENDS ${PROJECT_SOURCE_DIR}/Utils/include/all_functor_types.hpp ${MODULE_HARVESTER_FILES} backend_harvest)
@@ -160,6 +168,7 @@ set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Utils/include/all_functor_
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Core/include/module_rollcall.hpp")
 
 # include cmake scripts
+include(cmake/utilities.cmake)
 include(cmake/warnings.cmake)
 include(cmake/gambit.cmake)
 include(cmake/contrib.cmake)
@@ -171,49 +180,39 @@ add_subdirectory(Logs)
 add_subdirectory(Utils)
 add_subdirectory(Models)
 
-# list of GAMBIT shared object files to link
-set(GAMBIT_SHARED_OBJECTS $<TARGET_OBJECTS:Backends>
+# list of GAMBIT common library object files to link
+set(GAMBIT_COMMON_OBJECTS $<TARGET_OBJECTS:Backends>
                           $<TARGET_OBJECTS:Logs>
                           $<TARGET_OBJECTS:Utils>
                           $<TARGET_OBJECTS:Models>
 )
 
+# list of GAMBIT core library object files to link
 add_subdirectory(Core)
 add_subdirectory(Printers)
-# list of GAMBIT object files to link
 set(GAMBIT_OBJECTS $<TARGET_OBJECTS:Core> $<TARGET_OBJECTS:Printers>)
 
-set(GAMBIT_BITS ScannerBit
-                DarkBit
-                DecayBit
-                HiggsBit
-                FlavBit
-                Example_SUSYspecBit
-                ExampleBit_A
-                ExampleBit_B
-)
-
+# set compilation targets for GAMBIT modules
+retrieve_bits(GAMBIT_BITS ${PROJECT_SOURCE_DIR} "${itch}" "Loud")
 foreach(bit ${GAMBIT_BITS})
-  if(EXISTS "${PROJECT_SOURCE_DIR}/${bit}/")
-    add_subdirectory(${bit})
-    if(${bit} STREQUAL Example_SUSYspecBit)
-      set(bit SUSYspecBit)
-    endif()
-    set(GAMBIT_BIT_OBJECTS ${GAMBIT_BIT_OBJECTS} "$<TARGET_OBJECTS:${bit}>")
+  add_subdirectory(${bit})
+  set(GAMBIT_BIT_OBJECTS ${GAMBIT_BIT_OBJECTS} "$<TARGET_OBJECTS:${bit}>")
+endforeach()
+
+# ensure that clean removes automatically-generated CMakeLists.txt files in modules
+foreach(bit ${GAMBIT_BITS})
+  if(NOT ScannerBit STREQUAL ${bit})
+    set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/${bit}/CMakeLists.txt"
+                                   "${PROJECT_SOURCE_DIR}/${bit}/CMakeLists.txt.candidate")
   endif()
 endforeach()
 
-if(EXISTS "${PROJECT_SOURCE_DIR}/ExampleBit_A/")
-  add_gambit_executable(ExampleBit_A_standalone SOURCES ${PROJECT_SOURCE_DIR}/ExampleBit_A/examples/ExampleBit_A_standalone_example.cpp $<TARGET_OBJECTS:ExampleBit_A> ${GAMBIT_SHARED_OBJECTS})
+# ensure that clean sweeps out the scratch directory
+set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/scratch/*")
 
-  add_dependencies(ExampleBit_A_standalone yaml slha)
-  target_link_libraries(ExampleBit_A_standalone fortran ${yaml_LDFLAGS} ${slha_LDFLAGS})
-endif()
-
-if(EXISTS "${PROJECT_SOURCE_DIR}/ExampleBit_A/")
-  add_gambit_executable(gambit SOURCES ${PROJECT_SOURCE_DIR}/Core/src/gambit.cpp ${GAMBIT_SHARED_OBJECTS} ${GAMBIT_OBJECTS} ${GAMBIT_BIT_OBJECTS})
-  add_dependencies(gambit yaml slha sample scantest)
-  target_link_libraries(gambit ${yaml_LDFLAGS} ${slha_LDFLAGS})
-endif()
-
+# Add all the clean files
 set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${clean_files}")
+
+# Add the executables
+include(cmake/executables.cmake)
+

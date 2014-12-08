@@ -15,7 +15,6 @@
 ///
 ///  *********************************************
 
-#undef LIBPATH 
 #undef BACKENDNAME
 #undef VERSION
 #undef SAFE_VERSION

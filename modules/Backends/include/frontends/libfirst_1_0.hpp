@@ -10,9 +10,6 @@
  * Anders Kvellestad 2013, Nov
  */
 
-/* Specify the path to the shared library along with a backend name. */
-
-#define LIBPATH      "Backends/lib/libfirst.so"
 #ifdef BACKENDRENAME
   #define BACKENDNAME BACKENDRENAME
 #else
@@ -21,7 +18,7 @@
 #define VERSION 1.0
 #define SAFE_VERSION 1_0
 
-/* The following macro loads the library (using dlopen) in LIBPATH 
+/* The following macro loads the library using dlopen 
  * when this header file is included somewhere. */
 
 LOAD_LIBRARY

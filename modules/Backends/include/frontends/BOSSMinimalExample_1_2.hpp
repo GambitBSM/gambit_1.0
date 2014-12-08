@@ -14,7 +14,6 @@
 ///
 ///  *********************************************
 
-// Specify the path to the shared library along with a backend name. */
 #include "backend_types/BOSSMinimalExample_1_2/identification.hpp"
 
 // Begin

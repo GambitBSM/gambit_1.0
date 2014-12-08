@@ -28,6 +28,7 @@
 ///
 ///  *********************************************
 
+#include <algorithm>
 #include "models.hpp"
 
 namespace Gambit
@@ -82,17 +83,15 @@ namespace Gambit
       if( selectedmodels.size() != 0 )
       {
         // Report error
-        /// TODO: Change to proper gambit error
-        std::cout<<"Error! Some of the requested models could not be activated for ";
-        std::cout<<"scanning! Probably they have not been defined, or you spelled ";
-        std::cout<<"their name wrong in the ini file."<<std::endl;
-        std::cout<<"Un-activatable models:"<<std::endl;
-        for (std::vector<str>::iterator 
-             m = selectedmodels.begin(); m != selectedmodels.end(); ++m)
+        str errmsg = "Error! Some of the requested models could not be activated for \n";
+        errmsg    += "scanning! Probably they have not been defined, or you spelled  \n";
+        errmsg    += "their name wrong in the ini file.                              \n";
+        errmsg    += "Un-activatable models:                                         \n";
+        for (std::vector<str>::iterator m = selectedmodels.begin(); m != selectedmodels.end(); ++m)
         {
-          std::cout<<"  "<<(*m)<<std::endl;
+          errmsg    += ("  " + *m + "\n");
         }
-        exit (EXIT_FAILURE);
+        model_error().raise(LOCAL_INFO,errmsg);
       }
 
       return result;
@@ -132,51 +131,77 @@ namespace Gambit
       }     
     
       // If we found unused models throw an error
-      ///TODO: Make this into a proper GAMBIT error!
       if ( unusedmodels.size() > 0 )
       {
-        std::cout<<"ERROR! Some models selected for scanning are not ";
-        std::cout<<"required by any of the requested observables/likelihoods! Please switch these ";
-        std::cout<<"off in the inifile or add a target which actually uses them."<<std::endl;
-        std::cout<<"List of unused models:"<<std::endl;
-        for (std::vector<std::string>::iterator it = unusedmodels.begin();
-          it != unusedmodels.end(); ++it)
+        str errmsg = "Some models selected for scanning are not required by any of\n";
+        errmsg    += "the requested observables/likelihoods! Please switch these  \n";
+        errmsg    += "off in the inifile or add a target that actually uses them. \n";
+        errmsg    += "List of unused models:                                      \n";
+        for (std::vector<std::string>::iterator it = unusedmodels.begin(); it != unusedmodels.end(); ++it)
         {
-          std::cout<<(*it)<<std::endl;
+          errmsg  += (*it + "\n");
         }
-        exit (EXIT_FAILURE);
+        model_error().raise(LOCAL_INFO,errmsg);
       }
       
     }
 
-
-    /// Add a model to those recongnised by GAMBIT
-    void ModelFunctorClaw::add_model (const str &model)
+    /// Add a new model to the model database.
+    void ModelFunctorClaw::declare_model (const str &model, const str &parent)
     {
+      // Register the new model.
       allmodelnames.insert(model);
-    }  
-
-    /// Add parents to the parents database
-    void ModelFunctorClaw::add_parents (const str &model, const str &parent)
-    {
-      if (parent != "PARENT") myParentsDB[model] = parent; 
-    }          
-
-    /// Add lineage vector to the lineage database
-    void ModelFunctorClaw::add_lineage (const str &model, const std::vector<str> &lineage)
-    {
-      myLineageDB[model] = lineage;
-    }
-
-    /// Add model to the descendants and is-descendant-of databases
-    void ModelFunctorClaw::add_descendant (const str &model, const LineageFunction is_descendant_func)
-    {
-      myIsDescendantOfDB[model] = is_descendant_func;
+      if (parent != "PARENT")
+      {
+        // If the parent actually doesn't exist yet, die.
+        if (not model_exists(parent))
+        {
+          str errmsg = "Requested parent model \""+parent+ "\" for model \""+model;
+          errmsg += "\nis not in the GAMBIT database. Recognised models are:\n" + list_models();
+          model_error().raise(LOCAL_INFO,errmsg);
+        }
+        // Add the parent to the parents database.
+        myParentsDB[model] = parent;
+        // Inherit friends from the model's parent.
+        myFriendsDB[model] = myFriendsDB[parent]; 
+        // Inherit lineage from the model's parent.
+        myLineageDB[model] = myLineageDB[parent];
+      }
+      else
+      {
+        // Seed empty friend sets and inheritance vector.
+        myFriendsDB[model] = std::set<str>(); 
+        myBestFriendsDB[model] = std::set<str>(); 
+        myLineageDB[model] = std::vector<str>();
+      }
+      // Add the new model to its own lineage vector.
+      myLineageDB[model].push_back(model);
+      // Register the model in each of its parents' descendents vectors.
       for (std::set<str>::iterator parent = allmodelnames.begin(); parent != allmodelnames.end(); ++parent)               
       {
         // If this model descends from parent, add it to the parent's descendents vector                               
         if (descended_from(model,*parent)) myDescendantsDB[*parent].push_back(model);
       }                                                                    
+    }          
+
+    /// Add a friend, and all its friends and ancestors, to a model's list of friends
+    void ModelFunctorClaw::add_friend (const str &model, const str &newfriend)
+    {
+      // If the new friend actually doesn't exist yet, die.
+      if (not model_exists(newfriend))
+      {
+        str errmsg = "Requested friend model \""+newfriend + "\" for model \""+model;
+        errmsg += "\nis not in the GAMBIT database. Recognised models are:\n" + list_models();
+        model_error().raise(LOCAL_INFO,errmsg);
+      }
+      // Add the new friend as a best friend.
+      myBestFriendsDB[model].insert(newfriend);
+      // Add the new friend's whole lineage vector as regular friends.
+      std::set<str> temp1, temp2, lineage(myLineageDB[newfriend].begin(), myLineageDB[newfriend].end());
+      set_union(myFriendsDB[model].begin(), myFriendsDB[model].end(), lineage.begin(), lineage.end(), inserter(temp1, temp1.begin()));
+      // Also inherit the new friend's friends as regular friends.
+      set_union(temp1.begin(), temp1.end(), myFriendsDB[newfriend].begin(), myFriendsDB[newfriend].end(), inserter(temp2, temp2.begin()));
+      myFriendsDB[model] = temp2;
     }                                                                      
 
     /// Indicate whether a model is recognised by GAMBIT or not
@@ -201,17 +226,11 @@ namespace Gambit
     {
       if (not model_exists(model))
       {
-        str errmsg = "Error: model \"";
+        str errmsg = "Model \"";
         errmsg += model + "\" is not in the GAMBIT database.";
         errmsg += "\nRecognised models are:" + list_models();
         model_error().raise(LOCAL_INFO,errmsg); 
       }
-    }
-
-    /// Retrieve the lineage for a given model
-    std::vector<str> ModelFunctorClaw::get_lineage (const str &model) const
-    {      
-      return myLineageDB.find(model) == myLineageDB.end() ? std::vector<str>() : myLineageDB.at(model);
     }
 
     /// Retrieve the descendants for a given model
@@ -226,17 +245,58 @@ namespace Gambit
       return myParentsDB.find(model) == myParentsDB.end() ? "none" : myParentsDB.at(model);
     }
 
+    /// Retrieve the lineage for a given model
+    std::vector<str> ModelFunctorClaw::get_lineage (const str &model) const
+    {      
+      return myLineageDB.find(model) == myLineageDB.end() ? std::vector<str>() : myLineageDB.at(model);
+    }
+
+    /// Retrieve the friends for a given model
+    std::set<str> ModelFunctorClaw::get_friends (const str &model) const
+    {      
+      return myFriendsDB.find(model) == myFriendsDB.end() ? std::set<str>() : myFriendsDB.at(model);
+    }
+
+    /// Retrieve the best friends for a given model
+    std::set<str> ModelFunctorClaw::get_best_friends (const str &model) const
+    {      
+      return myBestFriendsDB.find(model) == myBestFriendsDB.end() ? std::set<str>() : myBestFriendsDB.at(model);
+    }
+
     /// Check if model 1 is descended from model 2
     bool ModelFunctorClaw::descended_from (const str &model1, const str &model2) const
     {
-      if (myIsDescendantOfDB.find(model1) == myIsDescendantOfDB.end()) model_error().raise(LOCAL_INFO,"Unrecognised model: "+model1);
-      return myIsDescendantOfDB.at(model1)(model2,this);
+      verify_model(model1);
+      auto lineage = myLineageDB.at(model1);         
+      for (std::vector<str>::const_iterator it = lineage.begin(); it != lineage.end(); ++it)
+      {
+        if (model2==*it) return true; 
+      }
+      return false;
     }
 
     /// Check if model 1 is an ancestor of model 2
     bool ModelFunctorClaw::ancestor_of (const str &model1, const str &model2) const
     {
       return descended_from(model2, model1);
+    }
+
+    /// Check if model 1 exists somewhere downstream of (and can be therefore be interpreted as a) model 2
+    bool ModelFunctorClaw::downstream_of (const str &model1, const str &model2) const
+    {
+      if (descended_from(model1, model2)) return true;
+      if (myFriendsDB.find(model1) != myFriendsDB.end())
+      {
+        std::set<str> friends = myFriendsDB.at(model1);
+        return friends.find(model2) != friends.end();
+      }
+      return false;
+    }
+
+    /// Check if model 1 exists somewhere upstream of model 2, allowing model 2 to be interpreted as model 1
+    bool ModelFunctorClaw::upstream_of (const str &model1, const str &model2) const
+    {
+      return downstream_of(model2, model1);
     }
 
     /// @}

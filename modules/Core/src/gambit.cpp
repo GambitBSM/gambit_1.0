@@ -53,14 +53,14 @@ int main(int argc, char* argv[])
     //cout << "Your selected models are: " << selectedmodels << endl;
   
     // Activate "primary" model functors
-    Core().registerActiveModelFunctors ( Models::modelClaw().getPrimaryModelFunctorsToActivate ( selectedmodels, Core().getPrimaryModelFunctors() ) );
+    Core().registerActiveModelFunctors( Models::ModelDB().getPrimaryModelFunctorsToActivate( selectedmodels, Core().getPrimaryModelFunctors() ) );
 
     // Deactivate module functions reliant on classes from missing backends
     Core().accountForMissingClasses();
 
     // Set up a printer object
     // (will do this with a factory that reads the inifile, similar to the PriorManager)
-    // Printers::ostreamPrinter printer(std::cout,1); 
+    // Printers::ostreamPrinter printer(cout,1); 
     // For now the asciiPrinter can be constructed using any stream, so for file output
     // we need to give it a file stream object.
     //std::ofstream outfile("gambit_output.txt", std::ofstream::out);
@@ -72,7 +72,7 @@ int main(int argc, char* argv[])
     Printers::BasePrinter& printer (*printerManager.printerptr);   
 
     // Set up dependency resolver
-    DRes::DependencyResolver dependencyResolver(Core(), Models::modelClaw(), iniFile, Utils::typeEquivalencies(), *printerManager.printerptr);
+    DRes::DependencyResolver dependencyResolver(Core(), Models::ModelDB(), iniFile, Utils::typeEquivalencies(), *printerManager.printerptr);
 
     // Log module function infos
     dependencyResolver.printFunctorList();
@@ -81,7 +81,7 @@ int main(int argc, char* argv[])
     dependencyResolver.doResolution();
 
     // Check that all requested models are used for at least one computation
-    Models::modelClaw().checkPrimaryModelFunctorUsage(Core().getActiveModelFunctors());
+    Models::ModelDB().checkPrimaryModelFunctorUsage(Core().getActiveModelFunctors());
 
     // Report the proposed (output) functor evaluation order
     dependencyResolver.printFunctorEvalOrder(Core().show_runorder);
@@ -103,7 +103,7 @@ int main(int argc, char* argv[])
       logger() << core << "Starting scan." << EOM;
       scanner->Run(); 
  
-      std::cout << "GAMBIT has finished successfully!"<<std::endl;
+      cout << "GAMBIT has finished successfully!" << endl;
 
     }
   
@@ -111,7 +111,12 @@ int main(int argc, char* argv[])
 
   catch (std::exception& e)
   {
-    if (not logger().disabled()) cout << "GAMBIT has exited with fatal exception: " << e.what() << endl;
+    if (not logger().disabled())
+    {
+      cout << endl << " \033[00;31;1mFATAL ERROR\033[00m" << endl << endl;
+      cout << "GAMBIT has exited with fatal exception: " << e.what() << endl;
+    }
+      
   }
 
   return 0;

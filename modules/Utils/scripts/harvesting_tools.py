@@ -96,14 +96,16 @@ def update_module(line,module):
     return module
 
 # Harvest type from a START_FUNCTION or QUICK_FUNCTION macro call
-def addiffunctormacro(line,module,typeset,typeheaders,verbose=False):
-    splitline = neatsplit('\(|\)|,|\s',line)
+def addiffunctormacro(line,module,typeset,typeheaders,intrinsic_types,exclude_types,verbose=False):
+
     command_index = {"START_FUNCTION":1,
                      "QUICK_FUNCTION":5, 
                      "DEPENDENCY":2, 
                      "START_CONDITIONAL_DEPENDENCY":1,
                      "BE_INI_DEPENDENCY":2,
                      "BE_INI_CONDITIONAL_DEPENDENCY":2}
+    splitline = neatsplit('\(|\)|,|\s',line)
+
     if len(splitline)>1 and splitline[0] in command_index.keys():
         #This line defines a function and one or more of the arguments defines a candidate type
         candidate_types = set([splitline[command_index[splitline[0]]]])
@@ -113,23 +115,31 @@ def addiffunctormacro(line,module,typeset,typeheaders,verbose=False):
             for dep in splitline[1:]: 
               splitdep = neatsplit('\(|\)|,',dep)
               candidate_types.add(splitdep[1].strip())
+        # Remove excluded types from the set
+        candidate_types.difference_update(exclude_types)
+
         #Iterate over all the candidate types and check if they are defined.
         for candidate_type in candidate_types:
-            if verbose: print "    {0} located, searching for declaration of {1}...".format(line.strip(),candidate_type)
-            #Now check if the type is declared in any of the module type headers (not very efficient, but simple)
-            for header in typeheaders:
-                local_namespace = ""
-                with open(header) as f:
-                    for newline in readlines_nocomments(f):
-                        splitline = neatsplit('\{|\}|:|;',newline)
-                        # Determine the local namespace and look for a class or struct matching the candidate type 
-                        for i in range(5):
-                            if len(splitline)>i:
-                                local_namespace = check_for_namespace(splitline[i],local_namespace)
-                                candidate_type = check_for_declaration(splitline[i],module,local_namespace,candidate_type)
-                        # Ben: The loop above misses some of the typedefs, so need to re-parse the whole line for these
-                        candidate_type = check_for_declaration(newline,module,local_namespace,candidate_type)
-            typeset.add(candidate_type)                    
+            #Skip out now if the type is already found.
+            if (candidate_type in typeset or
+                module+"::"+candidate_type in typeset or
+                "Gambit::"+module+"::"+candidate_type in typeset): continue            
+            #If the type is not an intrinsic, check if it is declared in any of the module type headers
+            if (candidate_type not in intrinsic_types):
+                if verbose: print "    {0} located, searching for declaration of {1}...".format(line.strip(),candidate_type)
+                for header in typeheaders:
+                    local_namespace = ""
+                    with open(header) as f:
+                        for newline in readlines_nocomments(f):
+                            splitline = neatsplit('\{|\}|:|;',newline)
+                            # Determine the local namespace and look for a class or struct matching the candidate type 
+                            for i in range(5):
+                                if len(splitline)>i:
+                                    local_namespace = check_for_namespace(splitline[i],local_namespace)
+                                    candidate_type = check_for_declaration(splitline[i],module,local_namespace,candidate_type)
+                            # Ben: The loop above misses some of the typedefs, so need to re-parse the whole line for these
+                            candidate_type = check_for_declaration(newline,module,local_namespace,candidate_type)
+            typeset.add(candidate_type)                 
 
 # Harvest the list of rollcall headers to be searched, and the list of type headers to be searched.
 def get_headers(path,header_set,exclude_set,verbose=False):
@@ -186,9 +196,14 @@ def retrieve_rollcall_headers(verbose,install_dir,excludes):
     for root,dirs,files in os.walk(install_dir):
         if (not core_exists and root == install_dir+"/Core/include"): core_exists = True 
         for name in files:
-            if (name.lower().endswith("_rollcall.hpp") and name.lower().find("bit") != -1):
-                if not (name in excludes or re.sub("\\.hpp$","",name) in excludes or re.sub("_rollcall\\.hpp$","",name) in excludes) and \
-                (name.endswith(".hpp") or name.endswith(".h") or name.endswith(".hh")): 
+            if ( (name.lower().endswith("_rollcall.hpp") or
+                  name.lower().endswith("_rollcall.h")   or
+                  name.lower().endswith("_rollcall.hh")     ) and name.lower().find("bit") != -1):
+                exclude = False
+                bare_name = re.sub(".*_rollcall\\.[h|hpp|hh]$","",name)
+                for x in excludes:
+                    if bare_name.startswith(x): exclude = True
+                if (not exclude): 
                     if verbose: print "  Located module rollcall header '{0}' at path '{1}'".format(name,os.path.join(root,name))
                     rollcall_headers+=[name]
     if core_exists: make_module_rollcall(rollcall_headers,verbose)
@@ -199,9 +214,14 @@ def retrieve_module_type_headers(verbose,install_dir,excludes):
     type_headers=[]
     for root,dirs,files in os.walk(install_dir):
         for name in files:
-            if (name.lower().endswith("_types.hpp") and name.lower().find("bit") != -1):
-                if not (name in excludes or re.sub("\\.hpp$","",name) in excludes or re.sub("_types\\.hpp$","",name) in excludes) and \
-                (name.endswith(".hpp") or name.endswith(".h") or name.endswith(".hh")): 
+            if ( (name.lower().endswith("_types.hpp") or
+                  name.lower().endswith("_types.h")   or
+                  name.lower().endswith("_types.hh")     ) and name.lower().find("bit") != -1):
+                exclude = False
+                bare_name = re.sub(".*_types\\.[h|hpp|hh]$","",name)
+                for x in excludes:
+                    if bare_name.startswith(x): exclude = True
+                if (not exclude): 
                     if verbose: print "  Located module type header '{0}' at path '{1}'".format(name,os.path.join(root,name))
                     type_headers+=[name]
     return type_headers

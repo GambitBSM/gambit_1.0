@@ -24,7 +24,7 @@ using namespace BackendIniBit::Functown;    // Functors wrapping the backend ini
 // Register ad-hoc module functions for use; as many or as few models can be given as desired.
 // Full declaration as per regular rollcall headers such as ExampleBit_A_rollcall.hpp is also allowed.
 QUICK_FUNCTION(ExampleBit_A, xsection, NEW_CAPABILITY, local_xsection, double, (MSSM_demo))
-QUICK_FUNCTION(ExampleBit_A, nevents, OLD_CAPABILITY, nevents_dummy, double)
+QUICK_FUNCTION(ExampleBit_A, id, OLD_CAPABILITY, id_dummy, std::string)
 
 // Ad-hoc functions for filling dependencies that cannot or should not otherwise be filled from inside ExampleBit_A.
 namespace Gambit 
@@ -32,7 +32,7 @@ namespace Gambit
   namespace ExampleBit_A
   {
     void local_xsection(double &result) { result = *Pipes::local_xsection::Param["M1"];}
-    void nevents_dummy(double &result) { result = 5.; }
+    void id_dummy(std::string &result) { result = "identity_example"; }
   }
 }
 
@@ -109,7 +109,7 @@ int main()
     // Resolve dependencies 'by hand'.  The ordering is unimportant, but *something* in the chain must 
     // have one of its dependencies filled by Models::PRI::Functown::primary_parameters, where PRI is a primary model.
     Models::CMSSM_demo::Functown::MSSM_demo_parameters.resolveDependency(&Models::CMSSM_demo::Functown::primary_parameters);
-    Models::CMSSM_demo::Functown::MSSM_demo_parameters.resolveDependency(&nevents_dummy);
+    Models::CMSSM_demo::Functown::MSSM_demo_parameters.resolveDependency(&id_dummy);
     local_xsection.resolveDependency(&Models::CMSSM_demo::Functown::MSSM_demo_parameters);
     nevents_dbl.resolveDependency(&local_xsection);
     nevents_int.resolveDependency(&nevents_dbl);
@@ -129,9 +129,9 @@ int main()
     std::cout << std::endl << "My function local_xsection has had its dependency on MSSM parameters filled by:" << std::endl;
     std::cout << ExampleBit_A::Pipes::local_xsection::Dep::MSSM_demo_parameters.origin() << "::";
     std::cout << ExampleBit_A::Pipes::local_xsection::Dep::MSSM_demo_parameters.name() << std::endl;
-    std::cout << std::endl << "The model function CMSSM_demo::Functown::MSSM_demo_parameters has had its dependency on nevents filled by:" << std::endl;
-    std::cout << Models::CMSSM_demo::Pipes::MSSM_demo_parameters::Dep::nevents.origin() << "::";
-    std::cout << Models::CMSSM_demo::Pipes::MSSM_demo_parameters::Dep::nevents.name() << std::endl;
+    std::cout << std::endl << "The model function CMSSM_demo::Functown::MSSM_demo_parameters has had its dependency on id filled by:" << std::endl;
+    std::cout << Models::CMSSM_demo::Pipes::MSSM_demo_parameters::Dep::id.origin() << "::";
+    std::cout << Models::CMSSM_demo::Pipes::MSSM_demo_parameters::Dep::id.name() << std::endl;
     std::cout << std::endl << "The model function CMSSM_demo::Functown::MSSM_demo_parameters has had its dependency on CMSSM parameters filled by:" << endl;
     std::cout << Models::CMSSM_demo::Pipes::MSSM_demo_parameters::Dep::CMSSM_demo_parameters.origin() << "::";
     std::cout << Models::CMSSM_demo::Pipes::MSSM_demo_parameters::Dep::CMSSM_demo_parameters.name() << std::endl << std::endl;
@@ -156,7 +156,7 @@ int main()
 
         // Call the actual module functions, taking care to calculate in the order implied by how the dependencies have been filled;
         // i.e. calculate quantities that other quantities depend on first.
-        nevents_dummy.reset_and_calculate();
+        id_dummy.reset_and_calculate();
         Models::CMSSM_demo::Functown::MSSM_demo_parameters.reset_and_calculate();
         local_xsection.reset_and_calculate();
         nevents_dbl.reset_and_calculate();

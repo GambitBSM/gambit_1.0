@@ -252,18 +252,18 @@ namespace Gambit                                                            \
       std::vector<str> allowed_models;                                      \
       void loadLibrary()                                                    \
       {                                                                     \
-        backendInfo().paths[STRINGIFY(BACKENDNAME)STRINGIFY(VERSION)] =     \
-         LIBPATH;                                                           \
-        backendInfo().link_versions(STRINGIFY(BACKENDNAME),                 \
-         STRINGIFY(VERSION), STRINGIFY(SAFE_VERSION));                      \
-        pHandle = dlopen(LIBPATH, RTLD_LAZY);                               \
+        const str be   = STRINGIFY(BACKENDNAME);                            \
+        const str ver  = STRINGIFY(VERSION);                                \
+        const str sv   = STRINGIFY(SAFE_VERSION);                           \
+        const str path = backendInfo().corrected_path(be,ver);              \
+        backendInfo().link_versions(be, ver, sv);                           \
+        pHandle = dlopen(path.c_str(), RTLD_LAZY);                          \
         if(not pHandle)                                                     \
         {                                                                   \
           std::ostringstream err;                                           \
           str error = dlerror();                                            \
-          backendInfo().dlerrors[STRINGIFY(BACKENDNAME)STRINGIFY(VERSION)] =\
-           error;                                                           \
-          err << "Failed loading library from " << LIBPATH                  \
+          backendInfo().dlerrors[be+ver] = error;                           \
+          err << "Failed loading library from " << path                     \
               << " due to error: " << error << std::endl                    \
               << "All functors generated from this library will get "       \
                  "status=-1.";                                              \
@@ -272,26 +272,26 @@ namespace Gambit                                                            \
         }                                                                   \
         else                                                                \
         {                                                                   \
-          logger() << "Succeeded in loading " << LIBPATH << std::endl       \
+          logger() << "Succeeded in loading " << path << std::endl          \
                    << LogTags::backends << LogTags::info << EOM;            \
           present = true;                                                   \
         }                                                                   \
-        backendInfo().works[STRINGIFY(BACKENDNAME)STRINGIFY(VERSION)] =     \
-         present;                                                           \
+        backendInfo().works[be+ver] = present;                              \
       }                                                                     \
                                                                             \
       void ibinBOSSd()                                                      \
       {                                                                     \
-        backendInfo().classloader[STRINGIFY(BACKENDNAME)                    \
-         STRINGIFY(VERSION)] = true;                                        \
-        backendInfo().classes_OK[STRINGIFY(BACKENDNAME)                     \
-         STRINGIFY(VERSION)] = true;                                        \
+        const str be   = STRINGIFY(BACKENDNAME);                            \
+        const str ver  = STRINGIFY(VERSION);                                \
+        backendInfo().classloader[be+ver] = true;                           \
+        backendInfo().classes_OK[be+ver] = true;                            \
       }                                                                     \
                                                                             \
       void noBOSS()                                                         \
       {                                                                     \
-        backendInfo().classloader[STRINGIFY(BACKENDNAME)                    \
-         STRINGIFY(VERSION)] = false;                                       \
+        const str be   = STRINGIFY(BACKENDNAME);                            \
+        const str ver  = STRINGIFY(VERSION);                                \
+        backendInfo().classloader[be+ver] = false;                          \
       }                                                                     \
                                                                             \
       /*The code within the void functions are executed                     \
@@ -485,35 +485,38 @@ namespace Gambit                                                                
       is not present or the symbol not found, save this info in the backend info object. */     \
       void CAT(handoverFactoryPointer_,NAME)()                                                  \
       {                                                                                         \
-        backendInfo().factory_args[STRINGIFY(BACKENDNAME)STRINGIFY(VERSION)+                    \
-         fixns(STRINGIFY(BARENAME))].insert(STRINGIFY(CONVERT_VARIADIC_ARG(ARGS)));             \
+        const str be   = STRINGIFY(BACKENDNAME);                                                \
+        const str ver  = STRINGIFY(VERSION);                                                    \
+        const str path = backendInfo().corrected_path(be,ver);                                  \
+        backendInfo().factory_args[be+ver+fixns(STRINGIFY(BARENAME))].                          \
+         insert(STRINGIFY(CONVERT_VARIADIC_ARG(ARGS)));                                         \
         if(!present)                                                                            \
         {                                                                                       \
           PTRNAME = CAT(backend_not_loaded_,NAME);                                              \
-          backendInfo().classes_OK[STRINGIFY(BACKENDNAME)STRINGIFY(VERSION)] = false;           \
-          backendInfo().constructor_status[STRINGIFY(BACKENDNAME)STRINGIFY(VERSION)+            \
-           fixns(STRINGIFY(BARENAME) STRINGIFY(CONVERT_VARIADIC_ARG(ARGS)))] = "lib absent";    \
+          backendInfo().classes_OK[be+ver] = false;                                             \
+          backendInfo().constructor_status[be+ver+fixns(STRINGIFY(BARENAME)                     \
+           STRINGIFY(CONVERT_VARIADIC_ARG(ARGS)))] = "lib absent";    \
         }                                                                                       \
         else if(dlerror() != NULL)                                                              \
         {                                                                                       \
           std::ostringstream err;                                                               \
-          err << "Library symbol " << SYMBOLNAME << " not found in " << LIBPATH << "."          \
+          err << "Library symbol " << SYMBOLNAME << " not found in " << path << "."             \
               << std::endl << "The BOSSed type relying on factory " << STRINGIFY(NAME)          \
               << STRINGIFY(CONVERT_VARIADIC_ARG(ARGS)) << " will be unavailable." << std::endl; \
           backend_warning().raise(LOCAL_INFO BOOST_PP_COMMA() err.str());                       \
           PTRNAME = CAT(factory_not_loaded_,NAME);                                              \
-          backendInfo().classes_OK[STRINGIFY(BACKENDNAME)STRINGIFY(VERSION)] = false;           \
-          backendInfo().constructor_status[STRINGIFY(BACKENDNAME)STRINGIFY(VERSION)+            \
-           fixns(STRINGIFY(BARENAME) STRINGIFY(CONVERT_VARIADIC_ARG(ARGS)))] = "broken";        \
+          backendInfo().classes_OK[be+ver] = false;                                             \
+          backendInfo().constructor_status[be+ver+fixns(STRINGIFY(BARENAME)                     \
+           STRINGIFY(CONVERT_VARIADIC_ARG(ARGS)))] = "broken";                                  \
         }                                                                                       \
         else                                                                                    \
         {                                                                                       \
           PTRNAME = NAME;                                                                       \
           logger() << "Succeeded in loading constructor " << fixns(STRINGIFY(BARENAME)          \
                       STRINGIFY(CONVERT_VARIADIC_ARG(ARGS))) << " from "<< std::endl            \
-                   << LIBPATH << "." << LogTags::backends << LogTags::info << EOM;              \
-          backendInfo().constructor_status[STRINGIFY(BACKENDNAME)STRINGIFY(VERSION)+            \
-           fixns(STRINGIFY(BARENAME) STRINGIFY(CONVERT_VARIADIC_ARG(ARGS)))] = "OK";            \
+                   << path << "." << LogTags::backends << LogTags::info << EOM;              \
+          backendInfo().constructor_status[be+ver+fixns(STRINGIFY(BARENAME)                     \
+           STRINGIFY(CONVERT_VARIADIC_ARG(ARGS)))] = "OK";                                      \
         }                                                                                       \
       }                                                                                         \
                                                                                                 \
@@ -653,7 +656,7 @@ namespace Gambit                                                            \
          STRINGIFY(BACKENDNAME),                                            \
          STRINGIFY(VERSION),                                                \
          STRINGIFY(SAFE_VERSION),                                           \
-         Models::modelClaw() );                                             \
+         Models::ModelDB());                                                \
       } /* end namespace Functown */                                        \
                                                                             \
       /* Set the allowed model properties of the functor. */                \
@@ -909,7 +912,7 @@ namespace Gambit                                                                
          STRINGIFY(BACKENDNAME) BOOST_PP_COMMA()                                                \
          STRINGIFY(VERSION) BOOST_PP_COMMA()                                                    \
          STRINGIFY(SAFE_VERSION) BOOST_PP_COMMA()                                               \
-         Models::modelClaw());                                                                  \
+         Models::ModelDB());                                                                    \
       } /* end namespace Functown */                                                            \
                                                                                                 \
       /* Disable the functor if the library is not present or the symbol not found. */          \
@@ -1029,7 +1032,7 @@ namespace Gambit                                                                
          STRINGIFY(BACKENDNAME),                                                                \
          STRINGIFY(VERSION),                                                                    \
          STRINGIFY(SAFE_VERSION)  BOOST_PP_COMMA()                                              \
-         Models::modelClaw());                                                                  \
+         Models::ModelDB());                                                                    \
       } /* end namespace Functown */                                                            \
       /* Set the allowed model properties of the functor. */                                    \
       SET_ALLOWED_MODELS(NAME, MODELS)                                                          \

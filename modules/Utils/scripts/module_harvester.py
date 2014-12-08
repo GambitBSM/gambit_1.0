@@ -36,7 +36,7 @@ from harvesting_tools import *
 
 def main(argv):
 
-    # Lists of backends, models and modules to exclude; anything starting with one of these strings is excluded.
+    # Lists of modules to exclude; anything starting with one of these strings is excluded.
     exclude_modules=set([])
 
     # Handle command line options
@@ -69,8 +69,11 @@ def main(argv):
     exclude_header.update(["shared_types.hpp", "backend_macros.hpp", "backend_undefs.hpp", "identification.hpp",
                            "backend_type_macros.hpp", "yaml.h"])
 
+    # List of types not to bother looking for the definitions of.
+    intrinsic_types=set(["char", "bool", "short", "int", "long", "float", "double", "std::string"])
+
     # List of types NOT to return (things we know are not printable, but can appear in START_FUNCTION calls)
-    exclude_type=set(["void"])
+    exclude_types=set(["void"])
 
     # Get list of rollcall header files to search
     rollcall_headers.update(retrieve_rollcall_headers(verbose,".",exclude_header))
@@ -106,7 +109,7 @@ def main(argv):
 ///                                               \n\
 ///  *********************************************\n\
 ///                                               \n\
-///  Authors (add name and date if you modify):   \n\
+///  Authors:                                     \n\
 ///                                               \n\
 ///  \\author The GAMBIT Collaboration            \n\
 ///  \date "+datetime.datetime.now().strftime("%I:%M%p on %B %d, %Y")+"\n\
@@ -125,6 +128,8 @@ def main(argv):
     with open("./Utils/include/module_types_rollcall.hpp","w") as f:
         f.write(towrite)
 
+    print "Harvesting types from headers..."
+
     # Recurse through chosen rollcall headers, locating all the included headers therein, and find them all 
     # in the gambit source tree so that we can parse them for types etc.   
     find_and_harvest_headers(rollcall_headers,full_rollcall_headers,exclude_header,verbose=verbose)
@@ -140,12 +145,9 @@ def main(argv):
                 # If this line defines the module name, update it.
                 module = update_module(line,module)
                 # Check for calls to functor creation macros, and harvest the types used.
-                addiffunctormacro(line,module,types,full_type_headers,verbose=verbose)
-    
-    # Remove excluded types from the set
-    types.difference_update(exclude_type)
-    
-    print "Types harvested from headers:"
+                addiffunctormacro(line,module,types,full_type_headers,intrinsic_types,exclude_types,verbose=verbose)
+        
+    print "Found:"
     for t in types:
         print ' ',t
     
@@ -167,7 +169,7 @@ def main(argv):
 ///                                               \n\
 ///  *********************************************\n\
 ///                                               \n\
-///  Authors (add name and date if you modify):   \n\
+///  Authors:                                     \n\
 ///                                               \n\
 ///  \\author The GAMBIT Collaboration            \n\
 ///  \date "+datetime.datetime.now().strftime("%I:%M%p on %B %d, %Y")+"\n\

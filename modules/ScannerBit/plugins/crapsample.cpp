@@ -73,7 +73,7 @@ scanner_plugin (crapsample, version(0, 0, 1, beta))
                 //Function_Base *LogLike             = get_functor("Scanner_Function", "Likelihood");
                 //int ma                             = get_dimension();
                 //int na = get_inifile_value<int>("not_there");
-                std::ofstream out(output_file.c_str());
+                //std::ofstream out(output_file.c_str());
                 double ans, chisq, chisqnext;
                 int mult = 1, count = 0, total = 0;
                 std::vector<double> a(ma);
@@ -101,13 +101,13 @@ scanner_plugin (crapsample, version(0, 0, 1, beta))
                         // if ((ans <= 0.0)||(-std::log(gDev.Doub()) >= ans))
                         if (true)
                         {
-                                out << mult << "   ";
+                                //out << mult << "   ";
                                 for (int k = 0; k < ma; k++)
                                 {
-                                        out << a[k] << "   ";
+                                        //out << a[k] << "   ";
                                         a[k] = aNext[k];
                                 }
-                                out << "   " << 2.0*chisq << std::endl;
+                                //out << "   " << 2.0*chisq << std::endl;
                                 
                                 chisq = chisqnext;
                                 mult = 1;
@@ -141,6 +141,7 @@ scanner_plugin (loopsample, version(0, 0, 1, beta))
                 Ran gDev(0);
 
                 std::cout << "entering loop sampler.  \n\tOutputing to:  " << output_file << "\n\tnumber of points to calculate:  " << N << std::endl;
+
                 for (int k = 0; k < N; k++)
                 {
                         for (int i = 0; i < ma; i++)
