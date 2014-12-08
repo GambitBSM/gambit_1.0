@@ -14,7 +14,7 @@
 ///  *********************************************
 
 #include "gambit_main.hpp"
-
+#include "plugin_interface.hpp"
 
 using namespace Gambit;
 using namespace LogTags;
@@ -22,7 +22,6 @@ using namespace LogTags;
 /// Main GAMBIT program
 int main(int argc, char* argv[])
 {
-
   std::set_terminate(terminator);
 
   try
@@ -86,7 +85,7 @@ int main(int argc, char* argv[])
 
     // Report the proposed (output) functor evaluation order
     dependencyResolver.printFunctorEvalOrder(Core().show_runorder);
-
+    
     // If true, bail out (just wanted the run order, not a scan); otherwise, keep going.
     if (not Core().show_runorder)
     {
@@ -97,11 +96,8 @@ int main(int argc, char* argv[])
       //Define the likelihood container object for the scanner
       Gambit::Scanner::Factory_Base *factory = new Gambit::Likelihood_Container_Factory (Core(), dependencyResolver, iniFile, prior);
  
-      //Define the iniFile interface for the scanner
-      Gambit::Scanner::IniFileInterface interface = Scanner::scanner_inifile_input(iniFile.getScannerNode());
-
       //Run the scanner!
-      Gambit::Scanner::Gambit_Scanner *scanner = new Gambit::Scanner::Gambit_Scanner(*factory, interface, prior);
+      Gambit::Scanner::Gambit_Scanner *scanner = new Gambit::Scanner::Gambit_Scanner(*factory, iniFile.getScannerNode(), prior);
       //cout << "keys = " << scanner->getKeys() << endl;
       //cout << "phantom keys = " << scanner->getPhantomKeys() << endl;
       logger() << core << "Starting scan." << EOM;

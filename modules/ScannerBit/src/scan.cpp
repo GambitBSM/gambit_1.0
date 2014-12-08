@@ -26,6 +26,7 @@
 
 #include "scan.hpp"
 #include "plugin_interface.hpp"
+#include "inifile_interface.hpp"
 
 namespace Gambit
 {
@@ -33,19 +34,36 @@ namespace Gambit
         { 
                 int Gambit_Scanner::Run()
                 {
-                        if (interface.fileName() == "")
+                        std::string version = "", lib = "";
+                        Plugin::PluginStruct plugin;
+                        
+                        auto names = options.getNames();
+                        for (auto it = names.begin(), end = names.end(); it != end; it++)
                         {
-                                scanLog::err << "Did not specify module library path." << scanLog::endl;
+                                if (options.hasKey(*it, "version"))
+                                        version = options.getValue<std::string>("version");
+                                if (options.hasKey(*it, "library"))
+                                        lib = "ScannerBit/lib/" + options.getValue<std::string>("library");
+                                if (options.hasKey(*it, "library_path"))
+                                        lib = options.getValue<std::string>("library_path");
+                                auto pluginVec = plugins.find("scan", *it, version, lib);
+                                if (pluginVec.size() > 0)
+                                {
+                                        plugin = pluginVec[0];
+                                        break;
+                                }
+                                
                         }
                         
-                        unsigned int dim = factory.getDim();
-                        auto keys = factory.getKeys();
+                        Gambit::Scanner::IniFileInterface interface(plugin.plugin, plugin.library_path, options);
                         
-                        scanLog::err.check();
-                        outputHandler::out.redir("scanner");
+                        unsigned int dim = factory.getDim();
+                        
+                        //scanLog::err.check();
+                        //outputHandler::out.redir("scanner");
                         //try
                         //{
-                                Plugin::Plugin_Interface<int ()> plugin_interface(interface.fileName(), interface.pluginName(), dim, keys, factory, interface, prior);
+                                Plugin::Plugin_Interface<int ()> plugin_interface(interface.fileName(), interface.pluginName(), dim, factory, interface, prior);
                                 plugin_interface();
                         //}
                         //catch (std::exception &exception)
