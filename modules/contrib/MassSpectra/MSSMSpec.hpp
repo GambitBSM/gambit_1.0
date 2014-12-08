@@ -634,20 +634,20 @@ namespace Gambit {
     
     // these are not present in the model object currently
     // But maybe we should add them
-    tmp_map["MGoldstone0"] = &Model::get_DRbar_neut_goldstone;
-    tmp_map["MA0"] = &Model::get_DRbar_neut_CPodd_higgs;
-    tmp_map["MGoldstonePM"] = &Model::get_DRbar_ch_goldstone; 
-    tmp_map["MHpm"] = &Model::get_DRbar_ch_higgs; 
+    // tmp_map["MGoldstone0"] = &Model::get_DRbar_neut_goldstone;
+    // tmp_map["MA0"] = &Model::get_DRbar_neut_CPodd_higgs;
+    // tmp_map["MGoldstonePM"] = &Model::get_DRbar_ch_goldstone; 
+    // tmp_map["MHpm"] = &Model::get_DRbar_ch_higgs; 
     
-    tmp_map["Mtop"] = &Model::get_DRbar_mtop;
-    tmp_map["Mcharm"] = &Model::get_DRbar_mcharm;
-    tmp_map["Mup"] = &Model::get_DRbar_mup;
-    tmp_map["Mbottom"] = &Model::get_DRbar_mbottom;
-    tmp_map["Mstrange"] = &Model::get_DRbar_mstrange;
-    tmp_map["Mdown"] = &Model::get_DRbar_mdown;
-    tmp_map["Mtau"] = &Model::get_DRbar_mtau; 
-    tmp_map["Mmuon"] = &Model::get_DRbar_mmuon; 
-    tmp_map["Melectron"] = &Model::get_DRbar_melectron; 
+    // tmp_map["Mtop"] = &Model::get_DRbar_mtop;
+    // tmp_map["Mcharm"] = &Model::get_DRbar_mcharm;
+    // tmp_map["Mup"] = &Model::get_DRbar_mup;
+    // tmp_map["Mbottom"] = &Model::get_DRbar_mbottom;
+    // tmp_map["Mstrange"] = &Model::get_DRbar_mstrange;
+    // tmp_map["Mdown"] = &Model::get_DRbar_mdown;
+    // tmp_map["Mtau"] = &Model::get_DRbar_mtau; 
+    // tmp_map["Mmuon"] = &Model::get_DRbar_mmuon; 
+    // tmp_map["Melectron"] = &Model::get_DRbar_melectron; 
     return tmp_map;
    }
    //map for string access with an index supplied
