@@ -72,12 +72,15 @@ namespace Gambit
                         Plugin::Plugin_Loader plugins;
 
                 public:
-                        Gambit_Scanner (const Factory_Base &factory, const Options &options, printer_interface *printerInterface = 0) 
+                        Gambit_Scanner (const Factory_Base &factory, const Options &options, const Priors::BasePrior &prior, printer_interface *printerInterface = 0) 
                                 : factory(factory), prior(prior), printerInterface(printerInterface), options(options)
                         {       
                         }
 
                         int Run();
+                        
+                        std::vector<Plugin::PluginStruct> getPluginsVec() const {return plugins.getPluginsVec();}
+                        std::map<std::string, std::map<std::string, std::vector<Plugin::PluginStruct>>> getPluginsMap() const {return plugins.getPluginsMap();}
                         
                         ~Gambit_Scanner();
                 };             

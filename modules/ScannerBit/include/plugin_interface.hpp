@@ -369,6 +369,9 @@ namespace Gambit
                                 }
                         }
                         
+                        std::vector<PluginStruct> getPluginsVec() const {return plugins;}
+                        std::map<std::string, std::map<std::string, std::vector<PluginStruct>>> getPluginsMap() const {return plugin_map;}
+                        
                         void print ()
                         {
                                 for (auto it = plugins.begin(), end = plugins.end(); it != end; it++)
