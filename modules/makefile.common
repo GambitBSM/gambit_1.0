@@ -177,7 +177,7 @@ LN = $(CC)
 ifdef SHH
   CFLAGS += -O3 -g -fPIC -fopenmp
 else
-  CFLAGS += -O3 -Wall -Werror=uninitialized -Wfatal-errors -g -fPIC -pedantic -fopenmp
+  CFLAGS += -O3 -Wall -Werror=uninitialized -g -fPIC -pedantic -fopenmp
 endif
 FFLAGS = -O3 -fPIC $(FEXTRA)
 
@@ -401,10 +401,12 @@ COREINC:=$(wildcard $(COREDIR)/include/*hpp) $(wildcard $(COREDIR)/include/*h)
 CORESRC:=$(wildcard $(COREDIR)/src/*cpp)
 COREOBJS:=$(addprefix $(COREDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(CORESRC))))
 
-MODELINC:=$(wildcard $(MODELDIR)/include/*hpp) $(wildcard $(MODELDIR)/include/*/*hpp) \
+MODELINC:=$(wildcard $(MODELDIR)/include/*hpp) $(wildcard $(MODELDIR)/models/*hpp) \
  $(wildcard $(MODELDIR)/include/*h) $(wildcard $(MODELDIR)/include/*/*h)
 MODELSRC:=$(wildcard $(MODELDIR)/src/*cpp)
-MODELOBJS:=$(addprefix $(MODELDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(MODELSRC))))
+MODELSRCmodels:= $(wildcard $(MODELDIR)/models/*cpp)
+MODELOBJS:=$(addprefix $(MODELDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$(MODELSRC)))) \
+           $(addprefix $(MODELDIR)/models/,$(notdir $(patsubst %.cpp,%.o,$(MODELSRCmodels))))
 
 UTILSINC:=$(wildcard $(UTILSDIR)/include/*hpp) $(wildcard $(UTILSDIR)/include/*h)
 UTILSSRC:=$(wildcard $(UTILSDIR)/src/*cpp)
@@ -476,7 +478,7 @@ ALLOBJECTS = $(STANDALONEOBJS) $(MODULEOBJS) $(PRINTOBJS) $(COREOBJS)
 
 ROLLCALL_HEADERS:=$(wildcard */*/*_rollcall.hpp) $(wildcard */*/*/*_rollcall.hpp)
 FRONTEND_HEADERS:=$(wildcard Backends/include/frontends/*.hpp)
-MODEL_HEADERS:=$(wildcard Models/include/models/*.hpp)
+MODEL_HEADERS:=$(wildcard Models/models/*.hpp)
 FUNCTOR_TYPES:= $(UTILSDIR)/include/all_functor_types.hpp
 MODULE_HARVESTER:= $(UTILSDIR)/scripts/module_harvester.py
 BACKEND_HARVESTER:= $(BACKENDDIR)/scripts/backend_harvester.py
@@ -527,6 +529,10 @@ $(LOGGINGDIR)/build/%.o: $(LOGGINGDIR)/src/%.cpp $(STANDALONEINC)
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
 $(MODELDIR)/build/%.o: $(MODELDIR)/src/%.cpp $(STANDALONEINC)
+	@echo ___________Compiling $<:
+	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
+
+$(MODELDIR)/models/%.o: $(MODELDIR)/models/%.cpp $(STANDALONEINC)
 	@echo ___________Compiling $<:
 	$(CC) $(CFLAGS) $(CCEXTRA) -c $< -o $@
 
@@ -796,6 +802,7 @@ clean_modules:
 	@rm -rf $(FUNCTOR_TYPES)
 	@rm -rf */build/*
 	@rm -f $(COLLIDERDIR)/src/analyses/*.o
+	@rm -f $(MODELDIR)/models/*.o
 
 clean_executables:
 	@rm -rf $(TARGETS)

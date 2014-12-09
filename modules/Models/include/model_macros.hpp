@@ -24,7 +24,6 @@
 
 #include "util_macros.hpp"
 #include "util_types.hpp"
-#include "module_macros_incore.hpp"
 #include "orphan.hpp"
 #include "types_rollcall.hpp"
 #include "claw_singleton.hpp"
@@ -39,10 +38,80 @@
 /// "Rollcall" macros. These are lifted straight from module_macros_incore.hpp
 /// but are modified here and there to suit the role of models.
 
+// New addition: Now with core vs module macro redirections similar to those
+// in the module macros, to permit translation ("interpret as") functions to
+// be defined in source files and be compiled separately from the gambit core.
+// (Note: this is not yet throughly tested. Might be missing some currently
+// unused  macros)
+
+#define STRING2(x) #x
+#define STRING(x) STRING2(x)
+
+#ifdef __gambit_main_hpp__
+  #include "module_macros_incore.hpp"
+  #pragma message "In model_macros.hpp: Using CORE versions of macros"
+  #define START_MODEL             CORE_START_MODEL
+  #define DEFINEPARS(...)         CORE_DEFINEPARS(__VA_ARGS__)
+  #define MAP_TO_CAPABILITY(PARAMETER,CAPABILITY)  \
+                                  CORE_MAP_TO_CAPABILITY(PARAMETER,CAPABILITY)
+  #define INTERPRET_AS_X__FUNCTION(MODEL_X,FUNC)  \
+                                  CORE_INTERPRET_AS_X__FUNCTION(MODEL_X,FUNC)
+  #define INTERPRET_AS_PARENT__FUNCTION(FUNC)  \
+                                  CORE_INTERPRET_AS_PARENT__FUNCTION(FUNC)
+#else
+  #pragma message "In model_macros.hpp: Using MODULE versions of macros"
+  #define START_MODEL             MODULE_START_MODEL
+  #define DEFINEPARS(...)         /* Do nothing */
+  #define MAP_TO_CAPABILITY(PARAMETER,CAPABILITY) /* Do nothing */
+  #define INTERPRET_AS_X__FUNCTION(MODEL_X,FUNC) \
+                                  MODULE_INTERPRET_AS_X__FUNCTION(FUNC)
+  #define INTERPRET_AS_PARENT__FUNCTION(FUNC) \
+                                  MODULE_INTERPRET_AS_X__FUNCTION(FUNC)
+#endif
+
+//#pragma message "Big macro:" STRING(CORE_START_MODULE_COMMON_MAIN(MODEL))
+
+/// "in module" version of the START_MODEL macro
+#define MODULE_START_MODEL                                                     \
+  IF_TOKEN_UNDEFINED(MODEL,FAIL("You must define MODEL before calling "        \
+   "START_MODEL."))                                                            \
+  _Pragma("message declaring model...") \
+  _Pragma( STRINGIFY(CAT("message Forward declaring model: ",MODEL)) )         \
+  namespace Gambit                                                             \
+  {                                                                            \
+   namespace Models                                                            \
+   {                                                                           \
+    namespace MODEL                                                            \
+    {                                                                          \
+      /* Module errors */                                                      \
+      error& CAT(MODEL,_error)();                                              \
+      /* Module warnings */                                                    \
+      warning& CAT(MODEL,_warning)();                                          \
+    }                                                                          \
+   }                                                                           \
+  }                                                                            \
+
+/// "in module" version of the INTERPRET_AS_X__FUNCTION macro
+#define MODULE_INTERPRET_AS_X__FUNCTION(FUNC)                                  \
+  namespace Gambit                                                             \
+  {                                                                            \
+    namespace Models                                                           \
+    {                                                                          \
+      namespace MODEL                                                          \
+      {                                                                        \
+        /* Declare this function as defined elsewhere */                       \
+        extern void FUNC (const ModelParameters&, ModelParameters&);           \
+      }                                                                        \
+    }                                                                          \
+  }                                                                            
+
 /// Piggybacks off the CORE_START_MODULE_COMMON macro, as we need all the same 
 /// machinery.
-#define START_MODEL                                                            \
-                                                                               \
+#define CORE_START_MODEL                                                       \
+  IF_TOKEN_UNDEFINED(MODEL,FAIL("You must define MODEL before calling "        \
+   "START_MODEL."))                                                            \
+  _Pragma("message creating model...") \
+  _Pragma( STRINGIFY(CAT("message  Creating model: ",MODEL)) )                 \
   namespace Gambit                                                             \
   {                                                                            \
                                                                                \
@@ -101,7 +170,7 @@
 /// object cannot store anything else anyway). If we really want to allow 
 /// integer or maybe complex parameters later we could extend some things in 
 /// here.
-#define MAP_TO_CAPABILITY(PARAMETER,CAPABILITY)                                \
+#define CORE_MAP_TO_CAPABILITY(PARAMETER,CAPABILITY)                           \
                                                                                \
   namespace Gambit                                                             \
   {                                                                            \
@@ -209,13 +278,13 @@
 
 /// Define multiple model parameters
 /// @{
-#define DEFINEPARS(...)                                                        \
+#define CORE_DEFINEPARS(...)                                                   \
   BOOST_PP_SEQ_FOR_EACH(DO_LINK, _, BOOST_PP_TUPLE_TO_SEQ((__VA_ARGS__)))
 #define DO_LINK(r,data,elem) DEFINEPAR(elem)
 /// @}
 
 /// Real declaration macro for INTERPRET_AS_X functions.
-#define INTERPRET_AS_X__FUNCTION(MODEL_X,FUNC)                                 \
+#define CORE_INTERPRET_AS_X__FUNCTION(MODEL_X,FUNC)                            \
         INTERPRET_AS_X__FUNCTION_FULL(MODEL_X,FUNC,1)                          \
 
 /// Generic declaration macro for INTERPRET_AS_ functions.
@@ -327,7 +396,7 @@
 /// @{
 #define INTERPRET_AS_PARENT__DEPENDENCY(DEP, TYPE)                             \
   INTERPRET_AS_X__DEPENDENCY(PARENT, DEP, TYPE)                                
-#define INTERPRET_AS_PARENT__FUNCTION(FUNC)                                    \
+#define CORE_INTERPRET_AS_PARENT__FUNCTION(FUNC)                               \
   INTERPRET_AS_X__FUNCTION_FULL(PARENT,FUNC,0)                                        
 /// @}
 

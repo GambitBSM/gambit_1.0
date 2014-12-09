@@ -44,9 +44,9 @@ START_MODULE
     #undef FUNCTION
 
     // FlexibleSUSY compatible maximal CMSSM generalisation (GUT boundary conditions) 
-    #define FUNCTION get_MSSMatGUT_spectrum
+    #define FUNCTION get_MSSMatMGUT_spectrum
     START_FUNCTION(Spectrum*)                  
-    ALLOW_MODELS(MSSMatGUT)
+    ALLOW_MODELS(MSSMatMGUT)
     #undef FUNCTION
 
     // (Example only) SoftSUSY compatible maximal CMSSM generalisation (GUT boundary conditions) 

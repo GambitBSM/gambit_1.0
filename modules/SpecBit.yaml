@@ -100,7 +100,7 @@ Auxiliaries:
   ##{ currently need to do these individually; inifile rules should simply this
   - capability: specbit_tests1
     dependencies:
-    - {capability: MSSM_spectrum, function: get_CMSSM_spectrum} #get_GUTMSSMA_spectrum} 
+    - {capability: MSSM_spectrum, function: get_MSSMatMGUT_spectrum} #get_CMSSM_spectrum} 
 
   #- capability: specbit_tests2 
   #  dependencies:
@@ -108,7 +108,7 @@ Auxiliaries:
 
   - capability: specbit_tests3
     dependencies:
-    - {capability: MSSM_spectrum, function: get_CMSSM_spectrum} #get_GUTMSSMA_spectrum} 
+    - {capability: MSSM_spectrum, function: get_MSSMatMGUT_spectrum} #get_CMSSM_spectrum} 
 
   ##}
 
@@ -120,7 +120,7 @@ Auxiliaries:
 
   - capability: SM_spectrum
     dependencies:
-    - {capability: MSSM_spectrum, function: get_CMSSM_spectrum} #get_GUTMSSMA_spectrum} 
+    - {capability: MSSM_spectrum, function: get_MSSMatMGUT_spectrum} #get_CMSSM_spectrum} 
 
   - capability: MSSM_spectrum 
     options:
