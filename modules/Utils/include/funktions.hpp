@@ -192,6 +192,7 @@ namespace Funk
             template <typename... Args> double eval(Args... args);
             template <typename... Args> double get(Args... argss);
             template <typename... Args> double operator() (Args... argss) { return this->eval(argss...); }
+            std::vector<double> vector(const char*, const std::vector<double>&);
 
             // Extension handles
             // TODO: Implement
@@ -483,6 +484,17 @@ namespace Funk
     //
     // Definition of FunkBase member functions
     //
+
+    inline std::vector<double> FunkBase::vector(const char* arg, const std::vector<double> & X)
+    {
+        unsigned n = X.size();
+        std::vector<double> Y(n);
+        for ( unsigned i = 0; i < n; i++ )
+        {
+            Y[i] = eval(arg, X[i]);
+        }
+        return Y;
+    }
 
     template <typename... Args> inline Funk FunkBase::set (Args... args)
     {
