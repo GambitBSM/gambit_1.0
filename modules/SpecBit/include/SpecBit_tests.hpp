@@ -411,18 +411,8 @@ namespace Gambit
                                       iter->second, i, j);
                   if(immediate_exit == true && pass == false) return pass; 
                }
-              pass = is_equal(mssm.mssm_ph.get_Pole_Mixing("ZH",i,j),
-                              FSmssm.get_physical_slha().ZH(i-1,j-1)); 
-              if(pass == false){
-                 OUTPUT << "returning test fail on ZH getter with indices " 
-                        << i << "," << j << std::endl;
-                 OUTPUT << "string getter gives " 
-                        << mssm.mssm_ph.get_Pole_Mixing("ZH",i,j) << std::endl;
-                 OUTPUT << "struct in model has " 
-                        << FSmssm.get_physical_slha().ZH(i-1,j-1);
-              }     
            }
-        }
+       }
         
         return pass;
     }
@@ -581,22 +571,20 @@ namespace Gambit
        OUTPUT << "map mHd2 "  << spec->runningpars.get_mass2_parameter("mHd2") <<std::endl;
        OUTPUT << "map mHu2 "  << spec->runningpars.get_mass2_parameter("mHu2") <<std::endl;
        OUTPUT << "map BMu "  << spec->runningpars.get_mass2_parameter("BMu") <<std::endl;
-       OUTPUT << "map mHd2 "  << spec->runningpars.get_mass2_par("mHd2") <<std::endl;
-       OUTPUT << "map mHu2 "  << spec->runningpars.get_mass2_par("mHu2") <<std::endl;
-       OUTPUT << "map BMu "  << spec->runningpars.get_mass2_par("BMu") <<std::endl;
+       
       
-       OUTPUT << "diff mHd2 "  << spec->runningpars.get_mass2_parameter("mHd2") 
-                 -  spec->runningpars.get_mass2_par("mHd2") <<std::endl;
-       OUTPUT << "diff mHu2 "  << spec->runningpars.get_mass2_parameter("mHu2") 
-                 - spec->runningpars.get_mass2_par("mHu2") <<std::endl;
-       OUTPUT << "diff BMu "  << spec->runningpars.get_mass2_parameter("BMu") 
-                 -  spec->runningpars.get_mass2_par("BMu") <<std::endl;
+       // OUTPUT << "diff mHd2 "  << spec->runningpars.get_mass2_parameter("mHd2") 
+       //           -  spec->runningpars.get_mass2_par("mHd2") <<std::endl;
+       // OUTPUT << "diff mHu2 "  << spec->runningpars.get_mass2_parameter("mHu2") 
+       //           - spec->runningpars.get_mass2_par("mHu2") <<std::endl;
+       // OUTPUT << "diff BMu "  << spec->runningpars.get_mass2_parameter("BMu") 
+       //           -  spec->runningpars.get_mass2_par("BMu") <<std::endl;
     
        OUTPUT << "mq2(1,1) =  " <<  spec->runningpars.get_mass2_parameter("mq2",1,1) << std::endl;
        OUTPUT << "fake mq2(1) =  " <<  spec->runningpars.get_mass2_parameter("mq2",1) << std::endl;
     
-       double mgluino_drbar =  spec->runningpars.get_tree_MassEigenstate("MGluino");
-       OUTPUT << "mgluino_drbar = " <<mgluino_drbar  << std::endl;
+       //double mgluino_drbar =  spec->runningpars.get_tree_MassEigenstate("MGluino");
+       //OUTPUT << "mgluino_drbar = " <<mgluino_drbar  << std::endl;
        double mgluino = spec->phys.get_Pole_Mass("MGluino");
        OUTPUT << "mgluino = " << mgluino<< std::endl;
     }
@@ -608,22 +596,20 @@ namespace Gambit
        OUTPUT << "map mHd2 "  << mssm.mssm_drbar_pars.get_mass2_parameter("mHd2") <<std::endl;
        OUTPUT << "map mHu2 "  << mssm.mssm_drbar_pars.get_mass2_parameter("mHu2") <<std::endl;
        OUTPUT << "map BMu "  << mssm.mssm_drbar_pars.get_mass2_parameter("BMu") <<std::endl;
-       OUTPUT << "map mHd2 "  << mssm.mssm_drbar_pars.get_mass2_par("mHd2") <<std::endl;
-       OUTPUT << "map mHu2 "  << mssm.mssm_drbar_pars.get_mass2_par("mHu2") <<std::endl;
-       OUTPUT << "map BMu "  << mssm.mssm_drbar_pars.get_mass2_par("BMu") <<std::endl;
+       
       
-       OUTPUT << "diff mHd2 "  << mssm.mssm_drbar_pars.get_mass2_parameter("mHd2") 
-                 -  mssm.mssm_drbar_pars.get_mass2_par("mHd2") <<std::endl;
-       OUTPUT << "diff mHu2 "  << mssm.mssm_drbar_pars.get_mass2_parameter("mHu2") 
-                 - mssm.mssm_drbar_pars.get_mass2_par("mHu2") <<std::endl;
-       OUTPUT << "diff BMu "  << mssm.mssm_drbar_pars.get_mass2_parameter("BMu") 
-                 -  mssm.mssm_drbar_pars.get_mass2_par("BMu") <<std::endl;
+       // OUTPUT << "diff mHd2 "  << mssm.mssm_drbar_pars.get_mass2_parameter("mHd2") 
+       //           -  mssm.mssm_drbar_pars.get_mass2_par("mHd2") <<std::endl;
+       // OUTPUT << "diff mHu2 "  << mssm.mssm_drbar_pars.get_mass2_parameter("mHu2") 
+       //           - mssm.mssm_drbar_pars.get_mass2_par("mHu2") <<std::endl;
+       // OUTPUT << "diff BMu "  << mssm.mssm_drbar_pars.get_mass2_parameter("BMu") 
+       //           -  mssm.mssm_drbar_pars.get_mass2_par("BMu") <<std::endl;
     
        OUTPUT << "mq2(1,1) =  " <<  mssm.mssm_drbar_pars.get_mass2_parameter("mq2",1,1) << std::endl;
        OUTPUT << "fake mq2(1) =  " <<  mssm.mssm_drbar_pars.get_mass2_parameter("mq2",1) << std::endl;
     
-       double mgluino_drbar =  mssm.mssm_drbar_pars.get_tree_MassEigenstate("MGluino");
-       OUTPUT << "mgluino_drbar = " <<mgluino_drbar  << std::endl;
+       // double mgluino_drbar =  mssm.mssm_drbar_pars.get_tree_MassEigenstate("MGluino");
+       // OUTPUT << "mgluino_drbar = " <<mgluino_drbar  << std::endl;
        double mgluino = mssm.mssm_ph.get_Pole_Mass("MGluino");
        OUTPUT << "mgluino = " << mgluino<< std::endl;
     
