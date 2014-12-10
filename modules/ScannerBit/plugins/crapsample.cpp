@@ -51,11 +51,10 @@ class Ran
       inline unsigned int int32(){return (unsigned int)int64();}
 };  
 
-scanner_plugin (crapsample)
+scanner_plugin (crapsample, version(0, 0, 1, beta))
 {      
         int N, ma;
         Function_Base *LogLike;
-        std::vector<std::string> keys;
         std::string output_file;
         void hiFunc(){std::cout << "This is crapsample " << std::endl;}
         
@@ -127,23 +126,22 @@ scanner_plugin (crapsample)
         }
 }
 
-scanner_plugin (loopsample)
+scanner_plugin (loopsample, version(0, 0, 1, beta))
 {
         int plugin_main ()
         {
                 //SET_SCAN_IOS(files);
-                std::vector<std::string> &keys     = get_keys();
                 std::string output_file            = get_inifile_value<std::string>("output_file", "default_output");
                 int N                              = get_inifile_value<int>("point_number", 10);
                 Function_Base *LogLike             = get_functor("Scanner_Function", get_inifile_value<std::string>("like"));
                 typedef void (*func)(double a);
-                //std::ofstream out(output_file.c_str());
-                int ma = keys.size();
+                std::ofstream out(output_file.c_str());
+                int ma = get_dimension();
                 std::vector<double> a(ma);
                 Ran gDev(0);
 
-                std::cout << "entering loop sampler.  \n\tnumber of points to calculate:  " << N << "\n\tFirst key is:  " << keys[0] << std::endl;
-                //std::cout << "\n\tOutputing to:  " << output_file << std::endl;
+                std::cout << "entering loop sampler.  \n\tOutputing to:  " << output_file << "\n\tnumber of points to calculate:  " << N << std::endl;
+
                 for (int k = 0; k < N; k++)
                 {
                         for (int i = 0; i < ma; i++)

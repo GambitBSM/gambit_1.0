@@ -10,7 +10,7 @@ include_directories("${PROJECT_SOURCE_DIR}/contrib/mcutils/include")
 include_directories("${PROJECT_SOURCE_DIR}/contrib/heputils/include")
 
 #contrib/yaml-cpp-0.5.1
-set(yaml_CXXFLAGS "${CMAKE_CXX_FLAGS} -I${Boost_INCLUDE_DIR}")
+set(yaml_CXXFLAGS "${CMAKE_CXX_FLAGS} -I${Boost_INCLUDE_DIR} -I${GSL_INCLUDE_DIRS}")
 ExternalProject_Add(yaml-cpp
   SOURCE_DIR ${PROJECT_SOURCE_DIR}/contrib/yaml-cpp-0.5.1
   BUILD_IN_SOURCE 1
@@ -40,11 +40,9 @@ if (NOT EXCLUDE_DELPHES)
     INSTALL_DIR ${CMAKE_BINARY_DIR}/install
     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/install
   )
-  execute_process(COMMAND root-config --libs OUTPUT_VARIABLE ROOT_LDFLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
-  include_directories(${ROOT_INCLUDE_DIR})
   set(delphes_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}/contrib/Delphes-3.1.2" "${PROJECT_SOURCE_DIR}/contrib/Delphes-3.1.2/external")
   set(delphes_LIBRARIES "Delphes")
-  set(delphes_LDFLAGS "${ROOT_LDFLAGS} -lEG -L${PROJECT_SOURCE_DIR}/contrib/Delphes-3.1.2 -l${delphes_LIBRARIES}")
+  set(delphes_LDFLAGS "-L${PROJECT_SOURCE_DIR}/contrib/Delphes-3.1.2 -l${delphes_LIBRARIES}")
   include_directories("${delphes_INCLUDE_DIRS}")
   set(CMAKE_INSTALL_RPATH "${PROJECT_SOURCE_DIR}/contrib/Delphes-3.1.2")
   set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/contrib/Delphes-3.1.2/libDelphes*" "${PROJECT_SOURCE_DIR}/contrib/Delphes-3.1.2/Makefile*")

@@ -5,7 +5,7 @@ if(EXISTS "${PROJECT_SOURCE_DIR}/Core/")
   target_link_libraries(gambit ${yaml_LDFLAGS})
   if (NOT EXCLUDE_DELPHES)
     add_dependencies(gambit delphes)
-    target_link_libraries(gambit ${delphes_LDFLAGS})
+    target_link_libraries(gambit ${delphes_LDFLAGS} ${ROOT_LIBRARIES} ${ROOT_LIBRARY_DIR}/libEG.so)
   endif()
 endif()
 
@@ -16,7 +16,7 @@ if(EXISTS "${PROJECT_SOURCE_DIR}/ExampleBit_A/" AND ";${GAMBIT_BITS};" MATCHES "
   target_link_libraries(ExampleBit_A_standalone ${yaml_LDFLAGS})
   if (NOT EXCLUDE_DELPHES)
     add_dependencies(ExampleBit_A_standalone delphes)
-    target_link_libraries(ExampleBit_A_standalone ${delphes_LDFLAGS})
+    target_link_libraries(ExampleBit_A_standalone ${delphes_LDFLAGS} ${ROOT_LIBRARIES} ${ROOT_LIBRARY_DIR}/libEG.so)
   endif()
 endif()
 

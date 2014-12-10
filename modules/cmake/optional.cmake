@@ -6,5 +6,7 @@ if (NOT ROOT_FOUND)
   message("   Good for you, kid.  Sadly, that means no ColliderBit either for now.  Too bad, so sad.")
   set (itch "${itch}" "ColliderBit")
   set (EXCLUDE_DELPHES TRUE)
+else()
+  include_directories(${ROOT_INCLUDE_DIR})
 endif()
 

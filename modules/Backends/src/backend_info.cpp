@@ -45,17 +45,22 @@ namespace Gambit
   /// Return the path to a backend library, given a backend name and version.
   str Backends::backend_info::path(str be, str ver) const
   {
-    if (not bepathfile[be][ver])
+    const str default_path("/no/path/in/config/backend_locations/"); 
+    str p;
+    if (bepathfile[be][ver])
     {
-      cout << bepathfile[be][ver].as<str>();
+      p = bepathfile[be][ver].as<str>();
+      if (p.substr(0,2) == "./") p = p.substr(2,p.npos);
+    }
+    else
+    {      
+      p = default_path;
       std::ostringstream msg;
       msg << "Could not find path for backend "<< be <<" v" << ver << endl;
       msg << "in " << filename << "." << endl;
-      msg << "Please check the contents of the backend path config file.";
-      utils_error().raise(LOCAL_INFO,msg.str());
+      msg << "Setting path to default (" << default_path << ").";
+      utils_warning().raise(LOCAL_INFO,msg.str());
     }
-    str p = bepathfile[be][ver].as<str>();
-    if (p.substr(0,2) == "./") p = p.substr(2,p.npos);
     return p;
   }
 

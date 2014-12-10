@@ -43,7 +43,7 @@ LibFirst:
 LibFortran:
   1.0:         ./Backends/lib/libfortran.so
 
-Pythia
+Pythia:
   8.186:       ./Backends/lib/libpythia8.so
 
 SuperIso:
