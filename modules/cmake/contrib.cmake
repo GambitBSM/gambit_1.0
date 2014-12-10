@@ -34,7 +34,7 @@ include_directories("${yaml_INCLUDE_DIRS}")
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/contrib/yaml-cpp-0.5.1/libyaml-cpp.a")
 file(GLOB yaml_o ${PROJECT_SOURCE_DIR}/contrib/yaml-cpp-0.5.1/build/*.o)
 file(GLOB yaml_contrib_o ${PROJECT_SOURCE_DIR}/contrib/yaml-cpp-0.5.1/build/contrib/*.o)
-set(clean_files ${clean_files} ";${yaml_o};${yaml_contrib_o}")
+set(clean_files ${clean_files} "${yaml_o}" "${yaml_contrib_o}")
 
 #contrib/Delphes-3.1.2
 if (NOT EXCLUDE_DELPHES)

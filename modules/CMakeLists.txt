@@ -59,8 +59,8 @@ set(GAMBIT_VERSION_MINOR 0)
 configure_file("${PROJECT_SOURCE_DIR}/cmake/cmake_variables.hpp.in"
                "${PROJECT_BINARY_DIR}/cmake_variables.hpp")
  
-# add the binary tree to the search path for include files so that we will find config.h
-include_directories("${PROJECT_BINARY_DIR}")
+# add the binary tree to the search path for include files so that we will find cmake_variables.hpp
+include_directories(${PROJECT_BINARY_DIR})
 
 # add -fPIC for 64 bit systems
 if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64")
@@ -197,6 +197,9 @@ retrieve_bits(GAMBIT_BITS ${PROJECT_SOURCE_DIR} "${itch}" "Loud")
 foreach(bit ${GAMBIT_BITS})
   add_subdirectory(${bit})
   set(GAMBIT_BIT_OBJECTS ${GAMBIT_BIT_OBJECTS} "$<TARGET_OBJECTS:${bit}>")
+  if(bit STREQUAL "ColliderBit")
+    include_directories(${PROJECT_SOURCE_DIR}/ColliderBit/include/delphes)
+  endif()
 endforeach()
 
 # ensure that clean removes automatically-generated CMakeLists.txt files in modules
