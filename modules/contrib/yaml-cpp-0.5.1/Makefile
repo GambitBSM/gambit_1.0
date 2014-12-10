@@ -18,6 +18,7 @@ ifdef BOOST
 endif
 
 build/%.o: src/%.cpp
+	echo $(YAML_CFLAGS)
 	$(YAML_CC) -c -o $@ $< $(YAML_CFLAGS)
 
 build/contrib/%.o: src/contrib/%.cpp
