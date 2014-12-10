@@ -203,7 +203,7 @@ START_MODULE
   #define CAPABILITY GA_AnnYield
   START_CAPABILITY
     #define FUNCTION GA_AnnYield_DarkSUSY
-      START_FUNCTION(Gambit::BF::BFptr)
+      START_FUNCTION(Funk::Funk)
       DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)
       BACKEND_REQ(dshayield, (), double, (double&,double&,int&,int&,int&))
     #undef FUNCTION
@@ -233,11 +233,11 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION lnL_FermiLATdwarfsSimple
       START_FUNCTION(double)
-      DEPENDENCY(GA_AnnYield, Gambit::BF::BFptr)
+      DEPENDENCY(GA_AnnYield, Funk::Funk)
     #undef FUNCTION
     #define FUNCTION lnL_FermiLATdwarfs_gamLike
       START_FUNCTION(double)
-      DEPENDENCY(GA_AnnYield, Gambit::BF::BFptr)
+      DEPENDENCY(GA_AnnYield, Funk::Funk)
       DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)
       BACKEND_REQ(lnL_dwarfs, (gamLike), double, (const std::vector<double> &, const std::vector<double> &))
       BACKEND_REQ(lnL_GC, (gamLike), double, (const std::vector<double> &, const std::vector<double> &))
@@ -248,7 +248,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION lnL_FermiGC_gamLike
       START_FUNCTION(double)
-      DEPENDENCY(GA_AnnYield, Gambit::BF::BFptr)
+      DEPENDENCY(GA_AnnYield, Funk::Funk)
       DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)
       BACKEND_REQ(lnL_GC, (gamLike), double, (const std::vector<double> &, const std::vector<double> &))
     #undef FUNCTION
@@ -258,7 +258,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION dump_GammaSpectrum
       START_FUNCTION(double)
-      DEPENDENCY(GA_AnnYield, Gambit::BF::BFptr)
+      DEPENDENCY(GA_AnnYield, Funk::Funk)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -570,7 +570,7 @@ START_MODULE
     START_FUNCTION(int)
     DEPENDENCY(DD_couplings, Gambit::DarkBit::DD_couplings)
     DEPENDENCY(RD_oh2, double)
-    DEPENDENCY(GA_AnnYield, Gambit::BF::BFptr)
+    DEPENDENCY(GA_AnnYield, Funk::Funk)
     DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)
     #undef FUNCTION
   #undef CAPABILITY

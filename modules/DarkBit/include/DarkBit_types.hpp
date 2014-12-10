@@ -46,6 +46,7 @@
 #include <boost/shared_ptr.hpp>
 #include <gsl/gsl_integration.h>
 #include "base_functions.hpp"
+#include "funktions.hpp"
 #include "decay_chain.hpp"
 
 namespace Gambit
@@ -212,7 +213,7 @@ namespace Gambit
     struct TH_Channel
     {
         // Constructor
-        TH_Channel(std::vector<std::string> finalStateIDs, BF::BFptr dSigmadE) :
+        TH_Channel(std::vector<std::string> finalStateIDs, Funk::Funk dSigmadE) :
             finalStateIDs(finalStateIDs), nFinalStates(finalStateIDs.size()),
             dSigmadE(dSigmadE)
         {
@@ -232,7 +233,7 @@ namespace Gambit
         // Energy dependence of final state particles
         // Includes v_rel as last argument in case of annihilation
         // TODO: Implement checks
-        BF::BFptr dSigmadE;  
+        Funk::Funk dSigmadE;  
 
         // Compare final states
         bool isChannel(std::string p0, std::string p1, std::string p2 ="", std::string p3 = "")

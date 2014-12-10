@@ -578,8 +578,35 @@ namespace Gambit {
 //
 //////////////////////////////////////////////////////////////////////////
 
+    template <int i>
+    double gamma3bdy_limits(double Eg, double M_DM, double m1, double m2)
+    {
+        double x = Eg/M_DM;
+        double x0, x1;
+        // Check if kinematic constraints are satisfied
+        if((1.-pow(m1+m2,2)/(4*M_DM*M_DM))<=x)
+        {
+            x0 = x1 = 0;
+        }
+        else
+        {
+            double eta = pow(m1/M_DM,2);
+            double diffeta=pow(m2/M_DM,2);
+            diffeta   = 0.25*(eta-diffeta);
+            double f1 = 0.25*eta + diffeta*x/(2*(1-x));
+            double f2 = sqrt(pow(1+diffeta/(1-x),2)-eta/(1-x));
+            double aint = f1 + 0.5*(1-f2)*x;
+            double bint = f1 + 0.5*(1+f2)*x;
+            // Now convert these limits to limits on E1
+            double f3 = pow(0.5*m2/M_DM,2);
+            x0 = M_DM*(1-x+aint-f3);
+            x1 = M_DM*(1-x+bint-f3);
+        }
+        if ( i == 0 ) return x0;
+        else return x1;
+    }
 
-    void GA_AnnYield_DarkSUSY(BFptr &result)
+    void GA_AnnYield_DarkSUSY(Funk::Funk &result)
     {
         //////////////////////////////////////////////////////////////////////////
         // Calculates annihilation spectra for general process catalogs, using
@@ -609,7 +636,7 @@ namespace Gambit {
       //int n = 230*log10(Emax/Emin);  // 1% energy resolution must be enough
       int n = 10*log10(Emax/Emin);  // 10% energy resolution must be enough
       std::vector<double> xgrid = logspace(-1., 3., n);
-      std::vector<double> ygrid = linspace(0., 0., n);
+      std::vector<double> ygrid(n);
 
         // Get annihilation process from process catalog
         TH_Process annProc = (*Dep::TH_ProcessCatalog).getProcess((std::string)"chi_10", (std::string)"chi_10");
@@ -623,6 +650,9 @@ namespace Gambit {
         ///////////////////////////////////////////////////////////
 
         // Loop over all channels for that process
+
+        Funk::Funk DiffYield2Body = Funk::zero("E", "v");
+
         for (std::vector<TH_Channel>::iterator it = annProc.channelList.begin();
               it != annProc.channelList.end(); ++it)
         {
@@ -653,30 +683,25 @@ namespace Gambit {
                     std::cout << "ERROR: Unsupported two-body final state." << std::endl;
                     exit(1);
                 }
-                // Build up ygrid
-                sigmav = (*it->dSigmadE)(0.);  // (sv)(v=0) for two-body final state
-                for (int i = 0; i<n; i++)
-                {
-                    ygrid[i] += sigmav * BEreq::dshayield(mass, xgrid[i], ch, yieldk, flag);
-                }
+
+                sigmav = it->dSigmadE->eval("v",0.);  // (sv)(v=0) for two-body final state
+                DiffYield2Body = DiffYield2Body + 
+                    Funk::func(BEreq::dshayield.pointer(), mass, Funk::var("E"), ch, yieldk, flag) * sigmav;
             }
         }
 
-        // Construct base function object from table interpolation
-        BFptr DiffYield2Body(new BFinterpolation(xgrid, ygrid, 1));
 
         /////////////////////////////
         // 3) Three-body final states
         /////////////////////////////
 
-        BFptr DiffYield3Body(new BFconstant(0., 1));  // Initial spectrum = 0
+        Funk::Funk DiffYield3Body = Funk::zero("E", "v");  // Initial spectrum = 0
 
         // Loop over all channels for that process
         for (std::vector<TH_Channel>::iterator it = annProc.channelList.begin();
               it != annProc.channelList.end(); ++it)
         {
             double m1,m2;
-            BFptr dsigmavde;
             if ( it->nFinalStates == 3 )
             {
                 // Find channel
@@ -702,20 +727,21 @@ namespace Gambit {
                 // (we just ignore the contributions from the second and third
                 // particle and integrate out the corresponding kinematical
                 // variable).
-                typedef shared_ptr<intLimitFunc> ILptr;
-                dsigmavde = it->dSigmadE->integrate(1,ILptr(new DSg3_IntLims_E1(mass,m1,m2)));
-                // Add up individual constributions
-                DiffYield3Body = DiffYield3Body->sum(dsigmavde);
+                Funk::Funk E1_low =  Funk::func(gamma3bdy_limits<0>, Funk::var("Eg"), mass, m1, m2);
+                Funk::Funk E1_high =  Funk::func(gamma3bdy_limits<1>, Funk::var("Eg"), mass, m1, m2);
+                Funk::Funk dsigmavde = it->dSigmadE->gsl_integration("E1", E1_low, E1_high);
+                DiffYield3Body = DiffYield3Body + dsigmavde;
             }
         }
         cout << "Yield calculated!" << endl;
         // Resample function
-        DiffYield3Body = DiffYield3Body->tabulate(xgrid);
+        //DiffYield3Body = DiffYield3Body->tabulate(xgrid);
 
         // Sum two- and three-body spectra, devide by mass squared, fix valid
         // range, and add additional parameter for velocity (though the result is
         // velocity independent).
-        result = DiffYield2Body->sum(DiffYield3Body)->mult(pow(mass, -2.))->validRange(0, Emin, Emax)->addPar(1);
+        // TODO: Add validity range
+        result = (DiffYield2Body + DiffYield2Body)/(mass*mass);
     }
 
 
@@ -724,6 +750,25 @@ namespace Gambit {
 //      General catalogue for annihilation/decay process definition
 //
 //////////////////////////////////////////////////////////////////////////
+
+    double DSgamma3bdy(double(*IBfunc)(int&,double&,double&), int IBch, double Eg, double E1, double M_DM, double m_1, double m_2)
+    {
+        double sigmav_norm = 1; // TODO: Check with Lars' old codes
+        double E2 = 2*M_DM - Eg - E1;  
+        double p12 = E1*E1-m_1*m_1;
+        double p22 = E2*E2-m_2*m_2;
+        double p22min = Eg*Eg+p12-2*Eg*sqrt(p12);
+        double p22max = Eg*Eg+p12+2*Eg*sqrt(p12);
+        // Check if the process is kinematically allowed
+        if((E1 < m_1) || (E2 < m_2) || (p22<p22min) || (p22>p22max))
+        {
+            return 0;
+        }
+        double x = Eg/M_DM;
+        double y = (m_2*m_2 + 4*M_DM * (M_DM - E2) ) / (4*M_DM*M_DM);        
+        double result = IBfunc(IBch,x,y);          
+        return sigmav_norm * result / (M_DM*M_DM); // M_DM^-2 is from the Jacobi determinant
+    }
 
     void TH_ProcessCatalog_CMSSM(Gambit::DarkBit::TH_ProcessCatalog &result)
     {
@@ -796,7 +841,7 @@ namespace Gambit {
                 double CAT(sigma_,NAME) = BEreq::dssigmav(index);                                   \
                 /* Create associated kinematical functions (just dependent on vrel)                 \
                 *  here: s-wave, vrel independent 1-dim constant function */                        \
-                BFptr CAT(kinematicFunction_,NAME)(new BFconstant(CAT(sigma_,NAME),PREFACTOR));     \
+                Funk::Funk CAT(kinematicFunction_,NAME) = Funk::cnst(CAT(sigma_,NAME)*PREFACTOR);   \
                 /* Create channel identifier string */                                              \
                 std::vector<std::string> CAT(finalStates_,NAME);                                    \
                 CAT(finalStates_,NAME).push_back(STRINGIFY(P1));                                    \
@@ -838,18 +883,18 @@ namespace Gambit {
         // Undef the macro so it doesn't propagate through GAMBIT
         #undef SETUP_DS_PROCESS
         
+        double M_DM = catalog.getParticleProperty("chi_10").mass;
+
         // Macro for setting up 3-body decays with gammas
         #define SETUP_DS_PROCESS_GAMMA3BODY(NAME, IBCH, P1, P2, IBFUNC, SV_IDX, PREFACTOR)                                  \
             /* Check if process is kinematically allowed */                                                                 \
             m_1 = catalog.getParticleProperty(STRINGIFY(P1)).mass;                                                          \
             m_2 = catalog.getParticleProperty(STRINGIFY(P1)).mass;                                                          \
-            if(m_1 + m_2 < 2*catalog.getParticleProperty("chi_10").mass)                                                    \
+            if(m_1 + m_2 < 2*M_DM)                                                    \
             {                                                                                                               \
                 index = SV_IDX;                                                                                             \
                 sv = PREFACTOR*BEreq::dssigmav(index);                                                                      \
-                BFptr CAT(kinematicFunction_,NAME)                                                                          \
-                    (new DSgamma3bdyKinFunc(IBCH, catalog.getParticleProperty("chi_10").mass, m_1, m_2,                     \
-                                            STRIP_PARENS(IBFUNC), sv));                                                     \
+                Funk::Funk CAT(kinematicFunction_,NAME) = sv*Funk::func(DSgamma3bdy, STRIP_PARENS(IBFUNC), IBCH, Funk::var("E"), Funk::var("E1"), M_DM, m_1, m_2);\
                 /* Create channel identifier string */                                                                      \
                 std::vector<std::string> CAT(finalStates_,NAME);                                                            \
                 CAT(finalStates_,NAME).push_back("gamma");                                                                  \
@@ -892,10 +937,10 @@ namespace Gambit {
         catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("test4", test4Property));
         catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("test5", test5Property));
         catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("test6", test6Property));        
-        BFptr test1_23width( new BFconstant(1.0,1));    
-        BFptr test1_24width( new BFconstant(2.0,1));    
-        BFptr test1_456width(new BFconstant(3.0,1));    
-        BFptr test2_56width( new BFconstant(0.5,1));                                 
+        Funk::Funk test1_23width = Funk::one();
+        Funk::Funk test1_24width = 2*Funk::one();
+        Funk::Funk test1_456width = 3*Funk::one();
+        Funk::Funk test2_56width = 0.5*Funk::one();
         std::vector<std::string> finalStates_1_23;
         std::vector<std::string> finalStates_1_24;
         std::vector<std::string> finalStates_1_456;
@@ -1037,7 +1082,7 @@ namespace Gambit {
         std::vector<double> xgrid(xgridArray, xgridArray + sizeof xgridArray / sizeof xgridArray[0]);
         std::vector<double> ygrid(ygridArray, ygridArray + sizeof ygridArray / sizeof ygridArray[0]);
         // Construct interpolated function, using GAMBIT base functions.
-        BFptr dwarf_likelihood(new BFinterpolation(xgrid, ygrid, 1, "lin"));
+        auto dwarf_likelihood = Funk::interp("phi", xgrid, ygrid);
 
         // Integate spectrum 
         // (the zero velocity limit of the differential annihilation
@@ -1046,14 +1091,15 @@ namespace Gambit {
         //os.open("test.dat");
         //(*Dep::GA_AnnYield)->writeToFile(logspace(-1., 5., 10000), os);
         //os.close();
-        double AnnYieldint = (*(*Dep::GA_AnnYield)->fixPar(1, 0.)->integrate(0, 1, 100)->set_epsrel(1e-3))();
+        // TODO: Make this take ->set_epsrel(1e-3)
+        double AnnYieldint = (*Dep::GA_AnnYield)->set("v", 0.)->gsl_integration("E", 1, 100)->eval();
         std::cout << "AnnYieldInt (1-100 GeV): " << AnnYieldint << std::endl;
 
         // Calculate phi-value
         double phi = AnnYieldint / 8. / M_PI * 1e26;
 
         // And return final likelihood
-        result = 0.5*(*dwarf_likelihood)(phi);
+        result = 0.5*dwarf_likelihood->eval("phi", phi);
         std::cout << "dwarf_likelihood: " << result << std::endl;
         std::cout << "phi: " << phi << std::endl;
     }
@@ -1065,7 +1111,7 @@ namespace Gambit {
         result = 0;
 
         std::vector<double> x = logspace(-1, 2.698, 100);  // from 0.1 to 500 GeV
-        std::vector<double> y = (*((*Dep::GA_AnnYield)->mult(1/8./M_PI))->fixPar(1,0.))(x);
+        std::vector<double> y = ((*Dep::GA_AnnYield)/8./M_PI)->set("v", 0)->vector("E", x);
 
         if ( runOptions->getValueOrDef<bool>(true, "use_dwarfs") )
           result += BEreq::lnL_dwarfs(x, y);
@@ -1080,10 +1126,9 @@ namespace Gambit {
         using namespace Pipes::lnL_FermiGC_gamLike;
         
         double mass = (*Dep::TH_ProcessCatalog).getParticleProperty("chi_10").mass;
-        BFptr mult (new BFconstant(1/mass/mass/8./M_PI, 0));
 
         std::vector<double> x = logspace(-1, 2.698, 100);  // from 0.1 to 500 GeV
-        std::vector<double> y = (*((*Dep::GA_AnnYield) * mult)->fixPar(1,0.))(x);
+        std::vector<double> y = (*Dep::GA_AnnYield/(mass*mass*8*M_PI))->set("v",0.)->vector("E", x);
 
         result = BEreq::lnL_GC(x, y);
 
@@ -1105,7 +1150,7 @@ namespace Gambit {
     {
         using namespace Pipes::dump_GammaSpectrum;
         // Construct interpolated function, using GAMBIT base functions.
-        BFptr spectrum = (*Dep::GA_AnnYield)->fixPar(1, 0.);
+        Funk::Funk spectrum = (*Dep::GA_AnnYield)->set("v", 0.);
         std::string filename = runOptions->getValueOrDef<std::string>("", "filename");
         std::ofstream myfile (filename);
         if (myfile.is_open())
@@ -1114,7 +1159,7 @@ namespace Gambit {
             {
                 double energy = pow(10., i/10. - 2.);
 
-                myfile << energy << " " << (*spectrum)(energy) << "\n";
+                myfile << energy << " " << spectrum->set("E", energy) << "\n";
             }
             myfile.close();
         }
@@ -1421,7 +1466,7 @@ namespace Gambit {
         for (std::vector<TH_Channel>::iterator it = annProc.channelList.begin();
                 it != annProc.channelList.end(); ++it)
         {
-            sv += (*it->dSigmadE)(0.);
+            sv += it->dSigmadE->eval("v", 0.);
         }
         double GeV2tocm3s1 = 1.17e-17;
         sv_for_Weff_from_ProcessCatalog = sv/GeV2tocm3s1;
@@ -1486,7 +1531,7 @@ namespace Gambit {
         TH_Process process_ann((std::string)"chi_10", (std::string)"chi_10");
 
         // Initialize channel bb
-        BFptr kinematicFunction_bb(new BFconstant(sv_bb,1));
+        Funk::Funk kinematicFunction_bb = Funk::cnst(sv_bb);
         finalStates.clear();
         finalStates.push_back("b");
         finalStates.push_back("bbar");
@@ -1496,7 +1541,7 @@ namespace Gambit {
         // Initialize channel bb
         if ( mass > mW)
         {
-            BFptr kinematicFunction_WW(new BFconstant(sv_WW,1));
+            Funk::Funk kinematicFunction_WW = Funk::cnst(sv_WW);
             finalStates.clear();
             finalStates.push_back("W+");
             finalStates.push_back("W-");
@@ -1530,7 +1575,7 @@ namespace Gambit {
         double Gna = (*Dep::DD_couplings).gna;
         double oh2 = *Dep::RD_oh2;
         TH_Process annProc = (*Dep::TH_ProcessCatalog).getProcess((std::string)"chi_10", (std::string)"chi_10");
-        BFptr spectrum = (*Dep::GA_AnnYield)->fixPar(1, 0.);
+        Funk::Funk spectrum = (*Dep::GA_AnnYield)->set("v", 0.);
 
         std::ostringstream filename;
         filename << runOptions->getValueOrDef<std::string>("UnitTest_DarkBit", "fileroot");
@@ -1563,7 +1608,7 @@ namespace Gambit {
           double x_max = runOptions->getValueOrDef<double>(100, "GA_AnnYield", "Emax");
           int n = runOptions->getValueOrDef<double>(10, "GA_AnnYield", "nbins");
           std::vector<double> x = logspace(log10(x_min), log10(x_max), n);  // from 0.1 to 500 GeV
-          std::vector<double> y = (*spectrum)(x);
+          std::vector<double> y = spectrum->vector("E", x);
           os << "# Annihilation spectrum dNdE [1/GeV]\n";
           os << "GammaRaySpectrum:\n";
           os << "  E: [";
@@ -1586,10 +1631,10 @@ namespace Gambit {
             {
               os << *jt << "";
             }
-            if (it->finalStateIDs.size() == 2)
-              os << ": " << (*it->dSigmadE)(0.);
-            if (it->finalStateIDs.size() == 3)
-              os << ": " << (*it->dSigmadE)(0., 0.);
+            //if (it->finalStateIDs.size() == 2)
+              //os << ": " << (*it->dSigmadE)(0.);
+            //if (it->finalStateIDs.size() == 3)
+              //os << ": " << (*it->dSigmadE)(0., 0.);
             os << "\n";
           }
           os << std::endl;

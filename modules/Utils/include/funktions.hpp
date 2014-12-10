@@ -1,11 +1,11 @@
 /*
- *  ______           _    _   _                 
- *  |  ___|         | |  | | (_)                
- *  | |_ _   _ _ __ | | _| |_ _  ___  _ __  ___ 
- *  |  _| | | | '_ \| |/ / __| |/ _ \| '_ \/ __|
- *  | | | |_| | | | |   <| |_| | (_) | | | \__ \
- *  \_|  \__,_|_| |_|_|\_\\__|_|\___/|_| |_|___/
- * 
+ *  ______           _    _   _                             
+ *  |  ___|         | |  | | (_)                  _     _   
+ *  | |_ _   _ _ __ | | _| |_ _  ___  _ __  ___ _| |_ _| |_ 
+ *  |  _| | | | '_ \| |/ / __| |/ _ \| '_ \/ __|_   _|_   _|
+ *  | | | |_| | | | |   <| |_| | (_) | | | \__ \ |_|   |_|  
+ *  \_|  \__,_|_| |_|_|\_\\__|_|\___/|_| |_|___/            
+ *                                    
  *  v0.1
  *
  *  Christoph Weniger, Dec 2014
@@ -41,8 +41,6 @@
 // Extensions
 #include <gsl/gsl_integration.h>
 
-namespace Gambit
-{
 namespace Funk
 {
     //
@@ -143,6 +141,42 @@ namespace Funk
 
 
     //
+    // Index lists (taken from stackoverflow)
+    //
+
+    // The structure that encapsulates index lists
+    template <size_t... Is>
+    struct index_list
+    {
+    };
+
+    // Collects internal details for generating index ranges [MIN, MAX)
+    namespace detail
+    {
+        // Declare primary template for index range builder
+        template <size_t MIN, size_t N, size_t... Is>
+        struct range_builder;
+
+        // Base step
+        template <size_t MIN, size_t... Is>
+        struct range_builder<MIN, MIN, Is...>
+        {
+            typedef index_list<Is...> type;
+        };
+
+        // Induction step
+        template <size_t MIN, size_t N, size_t... Is>
+        struct range_builder : public range_builder<MIN, N - 1, N - 1, Is...>
+        {
+        };
+    }
+
+    // Meta-function that returns a [MIN, MAX) index range
+    template<size_t MIN, size_t MAX>
+    using index_range = typename detail::range_builder<MIN, MAX>::type;
+
+
+    //
     // Central virtual base class
     //
 
@@ -157,6 +191,8 @@ namespace Funk
             template <typename... Args> Funk bind(Args... argss);
             template <typename... Args> double eval(Args... args);
             template <typename... Args> double get(Args... argss);
+            template <typename... Args> double operator() (Args... argss) { return this->eval(argss...); }
+            std::vector<double> vector(const char*, const std::vector<double>&);
 
             // Extension handles
             // TODO: Implement
@@ -339,35 +375,59 @@ namespace Funk
     //
 
     template <typename... funcargs>
-    class FunkFunc: public FunkBase
+    class FunkFunc : public FunkBase
     {
         public:
             template <typename... Args>
             FunkFunc(double (*f)(funcargs...), Args... argss)
             {
                 ptr = f;
-                args = vec<const char*>(argss...);
+                digest_input(argss...);
             }
 
             double value(const std::vector<double> & X)
             {
-                return args_from_vec(X);
+                for ( unsigned int i = 0; i < X.size() ; i++ )
+                {
+                    *map[i] = X[i];
+                }
+                return ppp(index_range<0, sizeof...(funcargs)>());
+            }
+
+            template <size_t... Args>
+            double ppp(index_list<Args...>)
+            {
+                return (*ptr)(std::get<Args>(input)...);
             }
 
         private:
+            std::tuple<typename std::remove_reference<funcargs>::type...> input;
+            std::vector<double*> map;
             double (*ptr)(funcargs...);
 
-            // Return value according to map
-            template <typename... Args>
-            double args_from_vec(const std::vector<double> & X, Args... args)
+            // Digest input parameters 
+            // (forwarding everything except Funk::Funk types, which is mapped onto
+            // funktion parameters)
+            template<typename T, typename... Args>
+            void digest_input(T x, Args... argss)
             {
-                return args_from_vec(X, args..., X[sizeof...(args)]);
+                const int i = sizeof...(funcargs) - sizeof...(argss) - 1;
+                std::get<i>(input) = x;
+                digest_input(argss...);
             }
-            double args_from_vec(const std::vector<double> & X, funcargs... args)
+            template<typename... Args>
+            void digest_input(Funk x, Args... argss)
             {
-                return (*ptr)(args...);
+                const int i = sizeof...(funcargs) - sizeof...(argss) - 1;
+                map.push_back(&std::get<i>(input));
+                assert(x->getArgs().size() == 1);
+                // TODO: Check that variable is indeed linear variable
+                args.push_back(x->getArgs()[0]);
+                digest_input(argss...);
             }
+            void digest_input() {};
     };
+
 
     template <typename... funcargs, typename... Args>
     Funk func(double (*f)(funcargs...), Args... args) {
@@ -382,21 +442,24 @@ namespace Funk
     class FunkConst: public FunkBase
     {
         public:
-            FunkConst(double x) : x(x)
-            {
-                args.resize(0);
-            }
+            template <typename... Args>
+            FunkConst(double c, Args ...argss) : c(c) { args = vec(argss...); }
+            FunkConst(double c) : c(c) { args.resize(0); }
 
             double value(const std::vector<double> & X)
             {
                 (void)X;
-                return x;
+                return c;
             }
         private:
-            double x;
+            double c;
     };
-    inline Funk cnst(double x) { return Funk(new FunkConst(x)); }
-
+    template <typename... Args>
+    inline Funk one(Args... argss) { return Funk(new FunkConst(1., argss...)); }
+    template <typename... Args>
+    inline Funk zero(Args... argss) { return Funk(new FunkConst(0., argss...)); }
+    template <typename... Args>
+    inline Funk cnst(double x, Args... argss) { return Funk(new FunkConst(x, argss...)); }
 
     //
     // Derived class that implements simple linear variable
@@ -421,6 +484,17 @@ namespace Funk
     //
     // Definition of FunkBase member functions
     //
+
+    inline std::vector<double> FunkBase::vector(const char* arg, const std::vector<double> & X)
+    {
+        unsigned n = X.size();
+        std::vector<double> Y(n);
+        for ( unsigned i = 0; i < n; i++ )
+        {
+            Y[i] = eval(arg, X[i]);
+        }
+        return Y;
+    }
 
     template <typename... Args> inline Funk FunkBase::set (Args... args)
     {
@@ -682,7 +756,7 @@ namespace Funk
     };                                                                                                    \
     inline Funk operator SYMBOL (Funk f1, Funk f2) { return Funk(new FunkMath_##OPERATION(f1, f2)); }\
     inline Funk operator SYMBOL (double x, Funk f) { return Funk(new FunkMath_##OPERATION(x, f)); }     \
-    inline Funk operator SYMBOL (Funk f, double x) { return Funk(new FunkMath_##OPERATION(x, f)); }
+    inline Funk operator SYMBOL (Funk f, double x) { return Funk(new FunkMath_##OPERATION(f, x)); }
     MATH_OPERATION(Sum,+)
     MATH_OPERATION(Mul,*)
     MATH_OPERATION(Div,/)
@@ -927,7 +1001,6 @@ namespace Funk
     inline Funk getIntegrate_gsl1d(Funk fptr, const char *arg, Funk g1, Funk g2) { return Funk(new FunkIntegrate_gsl1d(fptr, arg, TMPID1, TMPID2))->set(TMPID1, g1)->set(TMPID2, g2); }
     inline Funk getIntegrate_gsl1d(Funk fptr, const char *arg, double x, Funk g) { return Funk(new FunkIntegrate_gsl1d(fptr, arg, TMPID1, TMPID2))->set(TMPID1, x, TMPID2, g); }
     inline Funk getIntegrate_gsl1d(Funk fptr, const char *arg, Funk g, double x) { return Funk(new FunkIntegrate_gsl1d(fptr, arg, TMPID1, TMPID2))->set(TMPID1, g, TMPID2, x); }
-}
 }
 
 #undef TMPID1
