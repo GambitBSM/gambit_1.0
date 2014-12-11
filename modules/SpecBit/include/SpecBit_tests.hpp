@@ -1096,11 +1096,6 @@ namespace Gambit
                    << std::endl;
             return pass;              
          }
-          else {
-             OUTPUT << "objects match after run to MGUT."  << std::endl;
-          }
-
-
           mssm.mssm_drbar_pars.RunToScale(lowscale);
          FS_model_slha.run_to(lowscale);
          pass = test_exact(mssm, FS_model_slha);
@@ -1110,12 +1105,7 @@ namespace Gambit
                    << std::endl;
             return pass;              
          }
-          else {
-             OUTPUT << "objects match after run to lowscale."  << std::endl;
-          }
-
-
-          
+                  
 
          return pass;
       }
@@ -1144,10 +1134,6 @@ namespace Gambit
                    << std::endl;
             return pass;              
          }
-          else {
-             OUTPUT << "objects match after run to MGUT."  << std::endl;
-          }
-
          spec->runningpars.RunToScale(lowscale);
          FS_model_slha.run_to(lowscale);
          pass = test_exact(spec, FS_model_slha);
@@ -1157,13 +1143,6 @@ namespace Gambit
                    << std::endl;
             return pass;              
          }
-          else {
-             OUTPUT << "objects match after run to lowscale."  << std::endl;
-          }
-
-         // double diff = compare(spec, FS_model_slha);
-         // if(diff < tol) pass = true;
-         // else pass = false;
          
          return pass;
       }
