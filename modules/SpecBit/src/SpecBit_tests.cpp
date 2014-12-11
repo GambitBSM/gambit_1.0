@@ -35,7 +35,7 @@
 #define IN_SPECBIT
 // Spectrum object test functions
 #include "SpecBit_tests.hpp"
-
+#include "SpecBit_examples.hpp"
 namespace Gambit
 {
 

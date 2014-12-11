@@ -10,17 +10,7 @@
 #include "numerics.hpp"
 #include "wrappers.hpp"
 
-#ifdef IN_SPECBIT
-  #define OUTPUT logger()
-  #define TAGerr LogTags::err
-  #define TAGfatal LogTags::fatal
-  #define TAGeom EOM
-#else
-  #define OUTPUT std::cerr
-  #define TAGerr "" 
-  #define TAGfatal ""
-  #define TAGeom ""
-#endif
+#define PRINTOUT std::cout
 
 template <class Model> 
 void setpars(Model& mssm)
@@ -140,66 +130,95 @@ void setpars(Model& mssm)
     
       
 void spec_print(Gambit::Spectrum * spec){
-   
-   OUTPUT << "spec->runningpars.GetScale() =" 
+
+   PRINTOUT << "spec->runningpars.GetScale() =" 
           << spec->runningpars.GetScale() << std::endl;
-   OUTPUT << "map mHd2 "  
+   PRINTOUT << "mHd2 = "  
           << spec->runningpars.get_mass2_parameter("mHd2") 
           <<std::endl;
-   OUTPUT << "map mHu2 "  << spec->runningpars.get_mass2_parameter("mHu2") 
+   PRINTOUT << " mHu2 = "  << spec->runningpars.get_mass2_parameter("mHu2") 
           <<std::endl;
-   OUTPUT << "map BMu "  << spec->runningpars.get_mass2_parameter("BMu") 
-                <<std::endl;
+   PRINTOUT << "BMu ="  << spec->runningpars.get_mass2_parameter("BMu") 
+                <<std::endl; 
    
-   OUTPUT << "mq2(1,1) = " 
+   PRINTOUT << "mq2(1,1) = " 
           << spec->runningpars.get_mass2_parameter("mq2",1,1) << std::endl;
-   OUTPUT << "fake mq2(1) =  " 
-          <<  spec->runningpars.get_mass2_parameter("mq2",1) << std::endl;
+
+   PRINTOUT << "mu2(1,2) = " 
+          << spec->runningpars.get_mass2_parameter("mq2",1,2) << std::endl;
    
+   PRINTOUT << "me2(3,3) = " 
+          << spec->runningpars.get_mass2_parameter("mq2",3,3) << std::endl;
+
+   PRINTOUT << "Mu = " 
+          << spec->runningpars.get_mass_parameter("Mu",3,3) << std::endl;
+
+   //what mot to do here
+   PRINTOUT << "mistake mq2(1) =  " 
+          <<  spec->runningpars.get_mass2_parameter("mq2",1) << std::endl;
+   PRINTOUT << "mistake 2 mq2(1) =  " 
+          <<  spec->runningpars.get_mass2_parameter("mqL2",1,1) << std::endl;
+    PRINTOUT << "mistake 3 mq2(1) =  " 
+          <<  spec->runningpars.get_mass_parameter("mq2",1) << std::endl;
+
    double mgluino = spec->phys.get_Pole_Mass("MGluino");
-   OUTPUT << "mgluino = " << mgluino<< std::endl;
+   PRINTOUT << "mgluino = " << mgluino<< std::endl;
 }
 
 template <class M>
 void mssm_print(Gambit::MSSMSpec<M> & mssm)
 {
    
-   OUTPUT << "mssm.mssm_drbar_pars.GetScale() =" 
+   PRINTOUT << "mssm.mssm_drbar_pars.GetScale() =" 
           << mssm.mssm_drbar_pars.GetScale() << std::endl;
-   OUTPUT << "map mHd2 "  
+   PRINTOUT << "map mHd2 "  
           << mssm.mssm_drbar_pars.get_mass2_parameter("mHd2") <<std::endl;
-   OUTPUT << "map mHu2 "  
+   PRINTOUT << "map mHu2 "  
           << mssm.mssm_drbar_pars.get_mass2_parameter("mHu2") <<std::endl;
-   OUTPUT << "map BMu "  
+   PRINTOUT << "map BMu "  
           << mssm.mssm_drbar_pars.get_mass2_parameter("BMu") <<std::endl; 
    
-   OUTPUT << "mq2(1,1) = " 
+   PRINTOUT << "mq2(1,1) = " 
           << mssm.mssm_drbar_pars.get_mass2_parameter("mq2",1,1) 
           << std::endl;
-   OUTPUT << "fake mq2(1) = " 
+     PRINTOUT << "mu2(1,2) = " 
+          <<  mssm.mssm_drbar_pars.get_mass2_parameter("mq2",1,2) << std::endl;
+   
+   PRINTOUT << "me2(3,3) = " 
+          <<   mssm.mssm_drbar_pars.get_mass2_parameter("mq2",3,3) << std::endl;
+
+   PRINTOUT << "Mu = " 
+          << mssm.mssm_drbar_pars.get_mass_parameter("Mu",3,3) << std::endl;
+
+   //what not to do
+   PRINTOUT << "mistake  mq2(1) = " 
           << mssm.mssm_drbar_pars.get_mass2_parameter("mq2",1) 
           << std::endl;
+   PRINTOUT << "mistake 2 mq2(1) =  " 
+          <<  mssm.mssm_drbar_pars.get_mass2_parameter("mqL2",1,1) << std::endl;
+    PRINTOUT << "mistake 3 mq2(1) =  " 
+          <<  mssm.mssm_drbar_pars.get_mass_parameter("mq2",1) << std::endl;
    
-   double mgluino = mssm.mssm_ph.get_Pole_Mass("MGluino");
-   OUTPUT << "mgluino = " << mgluino<< std::endl;
+    double mgluino = mssm.mssm_ph.get_Pole_Mass("MGluino");
+   PRINTOUT << "mgluino = " << mgluino<< std::endl;
    
 }
 
 
 void spec_manipulate(Gambit::Spectrum * spec) 
 {
-   OUTPUT << "inside spectrum_manipulate" <<std::endl;
+   PRINTOUT << "inside spectrum_manipulate" <<std::endl;
    double lowscale = spec->runningpars.GetScale();
    double highscale = 1e+15;
-   OUTPUT << "lowscale  = " << lowscale << std::endl;
-   OUTPUT << "highscale = " << highscale << std::endl;
+   PRINTOUT << "lowscale  = " << lowscale << std::endl;
+   PRINTOUT << "highscale = " << highscale << std::endl;
    spec_print(spec);
-   OUTPUT << "Testing stability after running..." << std::endl;
+   PRINTOUT << "Testing stability after running..." << std::endl;
    spec->runningpars.RunToScale(highscale);
-   OUTPUT << "after run scale to high scale" << std::endl;
+   PRINTOUT << "after run scale to high scale" << std::endl;
    spec_print(spec);
    spec->runningpars.RunToScale(lowscale);
-   OUTPUT << "After run scale back to low scale" 
+   PRINTOUT << "After run scale back to low scale" 
           << spec->runningpars.GetScale() << std::endl;
    spec_print(spec);
    
@@ -208,46 +227,46 @@ void spec_manipulate(Gambit::Spectrum * spec)
 template <class M>
 void mssm_manipulate(Gambit::MSSMSpec<M> & mssm) 
 {
-   OUTPUT << "inside mssm_manipulate" <<std::endl;
+   PRINTOUT << "inside mssm_manipulate" <<std::endl;
    double lowscale = mssm.mssm_drbar_pars.GetScale();
    //setting to same scale to test
    mssm.mssm_drbar_pars.SetScale(lowscale);
    double highscale = 1e+15;
-   OUTPUT << "Mssm start at lowscale = " << lowscale << std::endl;
+   PRINTOUT << "Mssm start at lowscale = " << lowscale << std::endl;
    mssm_print(mssm);
    mssm.mssm_drbar_pars.RunToScale(highscale);
-   OUTPUT << "after run to highscale" << std::endl;
+   PRINTOUT << "after run to highscale" << std::endl;
    mssm_print(mssm);
    mssm.mssm_drbar_pars.RunToScale(lowscale);
-   OUTPUT << "after run scale back top low scale" <<  std::endl;
+   PRINTOUT << "after run scale back top low scale" <<  std::endl;
    mssm_print(mssm);
    
 }
 
 void SM_checks(Gambit::Spectrum* spec) {
-   OUTPUT << "In specbit_test_func3: " 
+   PRINTOUT << "In specbit_test_func3: " 
           << " testing retrieval from Spectrum*"
           << " with capability SM_spectrum..." << endl;
-   OUTPUT << "  Scale: " << spec->runningpars.GetScale() << endl;
-   OUTPUT << "  Gauge couplings:" << endl;
-   OUTPUT << "  g1: " 
+   PRINTOUT << "  Scale: " << spec->runningpars.GetScale() << endl;
+   PRINTOUT << "  Gauge couplings:" << endl;
+   PRINTOUT << "  g1: " 
           << spec->runningpars.get_dimensionless_parameter("g1") << endl;
-   OUTPUT << "  g2: " 
+   PRINTOUT << "  g2: " 
           << spec->runningpars.get_dimensionless_parameter("g2") << endl;
-   OUTPUT << "  g3: " 
+   PRINTOUT << "  g3: " 
           << spec->runningpars.get_dimensionless_parameter("g3") << endl;
-   OUTPUT << "  Yukawa couplings:" << endl;
+   PRINTOUT << "  Yukawa couplings:" << endl;
    
    for (int i=1; i<=3; i++) { for (int j=1; j<=3; j++) {
-         OUTPUT << "  Yu("<<i<<","<<j<<"): " << spec->runningpars.get_dimensionless_parameter("Yu", i, j) << endl;
+         PRINTOUT << "  Yu("<<i<<","<<j<<"): " << spec->runningpars.get_dimensionless_parameter("Yu", i, j) << endl;
       }
    }
    for (int i=1; i<=3; i++) { for (int j=1; j<=3; j++) {
-         OUTPUT << "  Yd("<<i<<","<<j<<"): " << spec->runningpars.get_dimensionless_parameter("Yd", i, j) << endl;
+         PRINTOUT << "  Yd("<<i<<","<<j<<"): " << spec->runningpars.get_dimensionless_parameter("Yd", i, j) << endl;
       }
    }
    for (int i=1; i<=3; i++) { for (int j=1; j<=3; j++) {
-         OUTPUT << "  Ye("<<i<<","<<j<<"): " << spec->runningpars.get_dimensionless_parameter("Ye", i, j) << endl;
+         PRINTOUT << "  Ye("<<i<<","<<j<<"): " << spec->runningpars.get_dimensionless_parameter("Ye", i, j) << endl;
       }
    }
 }
