@@ -50,9 +50,7 @@ namespace Gambit
    
    namespace SpecBit
    {
-      //using namespace LogTags;
-      using namespace flexiblesusy;
-      
+    
       bool print_error(bool pass, std::string get_type, std::string data, 
                        double sting_get_out, double data_member,  
                        int i = -1, int j = -1) 
@@ -89,7 +87,7 @@ namespace Gambit
                         std::string name, double getter_output, 
                         double data_member, int i = -1, int j = -1)
       {
-         bool pass = is_equal(getter_output,data_member);
+         bool pass = flexiblesusy::is_equal(getter_output,data_member);
          // if(pass == false) return pass;
          if(pass == false)
             print_error(get_type, name, getter_output, data_member,i,j); 
@@ -681,8 +679,10 @@ namespace Gambit
                  {"ZH", FSmssm.get_physical_slha().ZH(i-1,j-1)},
                  {"ZA", FSmssm.get_physical_slha().ZA(i-1,j-1)},
                  {"ZHPM", FSmssm.get_physical_slha().ZP(i-1,j-1)},
-                 {"UM", Re(FSmssm.get_physical_slha().UM(i-1,j-1))}, 
-                 {"UP", Re(FSmssm.get_physical_slha().UP(i-1,j-1))}
+                 {"UM", flexiblesusy::Re(FSmssm.get_physical_slha()
+                                         .UM(i-1,j-1))}, 
+                 {"UP", flexiblesusy::Re(FSmssm.get_physical_slha()
+                                         .UP(i-1,j-1))}
                 };     
                   
                std::set<std::pair<std::string, double>>::iterator iter;
@@ -745,8 +745,10 @@ namespace Gambit
                  {"ZH", FSmssm.get_physical_slha().ZH(i-1,j-1)},
                  {"ZA", FSmssm.get_physical_slha().ZA(i-1,j-1)},
                  {"ZHPM", FSmssm.get_physical_slha().ZP(i-1,j-1)},
-                 {"UM", Re(FSmssm.get_physical_slha().UM(i-1,j-1))}, 
-                 {"UP", Re(FSmssm.get_physical_slha().UP(i-1,j-1))}
+                 {"UM", flexiblesusy::Re(FSmssm.get_physical_slha()
+                                         .UM(i-1,j-1))}, 
+                 {"UP", flexiblesusy::Re(FSmssm.get_physical_slha()
+                                         .UP(i-1,j-1))}
                 };     
                   
                std::set<std::pair<std::string, double>>::iterator iter;
@@ -923,7 +925,7 @@ namespace Gambit
        MassG = 1114.45;
     
        // set parameters
-       mssm.set_scale(Electroweak_constants::MZ);
+       mssm.set_scale(flexiblesusy::Electroweak_constants::MZ);
        mssm.set_Yu(Yu);
        mssm.set_Yd(Yd);
        mssm.set_Ye(Ye);
@@ -951,7 +953,7 @@ namespace Gambit
     
     
       template <class M>
-      bool test_exact(MSSMSpec<M> mssm, CMSSM_slha<Two_scale> FS_model_slha)
+      bool test_exact(MSSMSpec<M> mssm, M FS_model_slha)
       {
          bool pass = TestMssmParGets(mssm,FS_model_slha);
          if(pass == false)
@@ -970,7 +972,8 @@ namespace Gambit
          return pass;
       }
 
-      double test_exact(Spectrum * spec, CMSSM_slha<Two_scale> FS_model_slha)
+      template <class M>
+      double test_exact(Spectrum * spec, M FS_model_slha)
       {
          bool pass = TestMssmParGets(spec,FS_model_slha);
          if(pass == false)
@@ -996,7 +999,7 @@ namespace Gambit
          double highscale = 1e+16;
          double lowscale = mssm.mssm_drbar_pars.GetScale();
          double lowscale2 = FS_model_slha.get_scale();
-         bool pass = is_equal(lowscale,lowscale2);
+         bool pass = flexiblesusy::is_equal(lowscale,lowscale2);
          if(!pass) {
             OUTPUT << "test fail: " 
                    << "objects not at same scale at start of runtest."
@@ -1027,14 +1030,14 @@ namespace Gambit
          return pass;
       }
 
-
-      bool running_test(Spectrum * spec, CMSSM_slha<Two_scale> & FS_model_slha, 
+      template <class M>
+      bool running_test(Spectrum * spec, M & FS_model_slha, 
                    double tol)
       {
          double highscale = 1e+16;
          double lowscale = spec->runningpars.GetScale();
          double lowscale2 = FS_model_slha.get_scale();
-         bool pass = is_equal(lowscale,lowscale2);
+         bool pass = flexiblesusy::is_equal(lowscale,lowscale2);
          if(!pass) {
             OUTPUT << "test fail: " 
                    << "objects not at same scale at start of runtest."
@@ -1065,30 +1068,7 @@ namespace Gambit
       }
 
 
-    void SM_checks(Spectrum* spec) {
-       OUTPUT << "In specbit_test_func3: " 
-              << " testing retrieval from Spectrum*"
-              << " with capability SM_spectrum..." << endl;
-      OUTPUT << "  Scale: " << spec->runningpars.GetScale() << endl;
-      OUTPUT << "  Gauge couplings:" << endl;
-      OUTPUT << "  g1: " 
-             << spec->runningpars.get_dimensionless_parameter("g1") << endl;
-      OUTPUT << "  g2: " 
-             << spec->runningpars.get_dimensionless_parameter("g2") << endl;
-      OUTPUT << "  g3: " 
-             << spec->runningpars.get_dimensionless_parameter("g3") << endl;
-      OUTPUT << "  Yukawa couplings:" << endl;
-
-      for (int i=1; i<=3; i++) { for (int j=1; j<=3; j++) {
-        OUTPUT << "  Yu("<<i<<","<<j<<"): " << spec->runningpars.get_dimensionless_parameter("Yu", i, j) << endl;
-      }}
-      for (int i=1; i<=3; i++) { for (int j=1; j<=3; j++) {
-        OUTPUT << "  Yd("<<i<<","<<j<<"): " << spec->runningpars.get_dimensionless_parameter("Yd", i, j) << endl;
-      }}
-      for (int i=1; i<=3; i++) { for (int j=1; j<=3; j++) {
-            OUTPUT << "  Ye("<<i<<","<<j<<"): " << spec->runningpars.get_dimensionless_parameter("Ye", i, j) << endl;
-      }}
-    }
+   
       
    }
 }
