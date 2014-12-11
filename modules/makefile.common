@@ -142,6 +142,7 @@ GCC++EXTRA= -Woverloaded-virtual
 # added -I. as a hack to find cmake_variables.hpp 
 CFLAGS= -I$(COREDIR)/include \
   -I$(MODELDIR)/include -I$(MODELDIR)/models\
+  -I. \
   -I$(UTILSDIR)/include \
   -I$(PRINTERSDIR)/include \
   -I$(LOGGINGDIR)/include \
@@ -641,8 +642,9 @@ multinest:
 
 #### Backends #################
 
-cmakehackery:
-	cmake .
+# Ben: fails for me!
+#cmakehackery:
+#	cmake .
 
 backends: $(BACKENDS)
 
