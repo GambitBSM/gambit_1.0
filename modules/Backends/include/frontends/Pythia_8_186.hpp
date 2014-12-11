@@ -18,7 +18,6 @@
 ///
 ///  *********************************************
 
-// Specify the path to the shared library along with a backend name. */
 #include "backend_types/Pythia_8_186/identification.hpp"
 
 // Begin

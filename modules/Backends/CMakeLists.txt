@@ -16,8 +16,10 @@ PROPERTIES
   RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin"
 )
 
-set(source_files src/backend_singleton.cpp)
+set(source_files src/backend_singleton.cpp
+                 src/backend_info.cpp)
 
-set(header_files include/backend_singleton.hpp)
+set(header_files include/backend_singleton.hpp
+                 include/backend_info.hpp)
 
 add_gambit_library(Backends OPTION OBJECT SOURCES ${source_files} HEADERS ${header_files})

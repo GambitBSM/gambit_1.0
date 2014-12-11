@@ -62,7 +62,7 @@ namespace Gambit
                                 name = "";
                         }
                         
-                        return IniFileInterface(name, options);
+                        return IniFileInterface(name, "", options);
                 }
                 
                 std::map<std::string, std::vector<IniFileInterface>> function_inifile_input(const Options &options)
@@ -78,22 +78,15 @@ namespace Gambit
                         
                         for (auto it = names.begin(), end = names.end(); it != end; it++)
                         {
-                                ret[it->second].emplace_back(it->first, options);
+                                ret[it->second].emplace_back(it->first, "", options);
                         }
                         
                         return ret;
                 }
                 
-                IniFileInterface::IniFileInterface(const std::string &name, const Options &options) : name(name), options(options)
+                IniFileInterface::IniFileInterface(const std::string &name, const std::string &file, const Options &options) 
+                        : name(name), file(file), options(options)
                 {       
-                        if (options.hasKey("file_path"))
-                        {
-                                file = options.getValue<std::string>("file_path");
-                        }
-                        else
-                        {
-                                file = "";
-                        }
                 }
         }
 }

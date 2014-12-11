@@ -25,32 +25,9 @@
 #define gambit_plugin(...)              GAMBIT_PLUGIN( __VA_ARGS__ )
 #define plugin_constructor              PLUGIN_CONSTRUCTOR
 #define plugin_deconstructor            PLUGIN_DECONSTRUCTOR
+#define version(...)                    VERSION( __VA_ARGS__ )
 
-#define VERSION(...)                                                                                                    \
-namespace __gambit_plugin_namespace__                                                                                   \
-{                                                                                                                       \
-        namespace VersionTags                                                                                           \
-        {                                                                                                               \
-                struct version{};                                                                                       \
-        }                                                                                                               \
-                                                                                                                        \
-        namespace                                                                                                       \
-        {                                                                                                               \
-                template<>                                                                                              \
-                class interface <VersionTags::version>                                                                  \
-                {                                                                                                       \
-                public:                                                                                                 \
-                                                                                                                        \
-                        interface(gambitData &pluginData)                                                               \
-                        {                                                                                               \
-                                pluginData.version = #__VA_ARGS__;                                                      \
-                        }                                                                                               \
-                };                                                                                                      \
-                                                                                                                        \
-                template <>                                                                                             \
-                interface <VersionTags::version> reg_init <VersionTags::version>::reg(pluginData);                      \
-        }                                                                                                               \
-}    
+#define VERSION(major, minor, patch, release) major ## _ ## minor ## _ ## patch ## _ ## release 
 
 /*Allows Gambit to declare an object of type "..."*/
 #define EXPORT_ABSTRACT(name, ...)                                                                                      \
@@ -233,7 +210,7 @@ namespace __gambit_plugin_namespace__                                           
 decltype(__gambit_plugin_ret_val__()) __gambit_plugin_main__ (__VA_ARGS__)                                              \
 
 /*Defines a Gambit plugin*/
-#define GAMBIT_PLUGIN(plug_name)                                                                                        \
+#define GAMBIT_PLUGIN_INTERNAL(plug_name)                                                                                        \
 namespace __gambit_plugin_ ## plug_name ##  _namespace__                                                                \
 {                                                                                                                       \
         namespace __gambit_plugin_namespace__                                                                           \
@@ -266,7 +243,7 @@ namespace __gambit_plugin_ ## plug_name ##  _namespace__                        
                                                                                                                         \
                         for(auto it = pluginData.inits.begin(), end = pluginData.inits.end(); it != end; it++)          \
                         {                                                                                               \
-                                (*it)(pluginData);                                                                       \
+                                (*it)(pluginData);                                                                      \
                         }                                                                                               \
                                                                                                                         \
                         pluginData.inits.clear();                                                                       \
@@ -298,5 +275,8 @@ namespace __gambit_plugin_ ## plug_name ##  _namespace__                        
         }                                                                                                               \
 }                                                                                                                       \
 namespace __gambit_plugin_ ## plug_name ## _namespace__                                                                 \
+
+#define GAMBIT_PLUGIN(plug_name, plug_type, plug_version)                                                               \
+        GAMBIT_PLUGIN_INTERNAL( plug_name ## __t__ ## plug_type ## __v__ ## plug_version )                                    \
 
 #endif

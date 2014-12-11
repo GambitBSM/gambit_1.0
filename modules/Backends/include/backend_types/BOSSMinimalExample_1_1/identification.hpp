@@ -8,8 +8,6 @@
   #define BACKENDNAME BOSSMinimalExample
 #endif
 
-#define LIBPATH "Backends/lib/libminimal_1_1.so"
-
 #define VERSION 1.1
 #define SAFE_VERSION 1_1
 

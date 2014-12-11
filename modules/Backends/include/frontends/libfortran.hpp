@@ -4,7 +4,6 @@
  * \author Anders Kvellestad
  */
 
-#define LIBPATH      "Backends/lib/libfortran.so"
 #ifdef BACKENDRENAME
   #define BACKENDNAME BACKENDRENAME
 #else

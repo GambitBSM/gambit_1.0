@@ -23,7 +23,7 @@ namespace Gambit
   /// Core accessor function
   gambit_core& Core()
   {
-    static gambit_core local(Models::modelClaw(), Backends::backendInfo());
+    static gambit_core local(Models::ModelDB(), Backends::backendInfo());
     return local;
   }
 

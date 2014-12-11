@@ -2,6 +2,8 @@
 # Order of execution of various modules
 #######################################
 
+# NOTE: Below is Martin's METFlowMerger
+# CHANGE in 3.1.2: 'ConstituentFilter' => 'JetEnergyScale'... TODO: Should we also change?
 set ExecutionPath {
   ParticlePropagator
 
@@ -16,6 +18,7 @@ set ExecutionPath {
   TrackMerger
   Calorimeter
   EFlowMerger
+  METFlowMerger
 
   PhotonEfficiency
   PhotonIsolation
@@ -39,6 +42,7 @@ set ExecutionPath {
   UniqueObjectFinder
 
   ScalarHT
+
 
 }
 
@@ -170,6 +174,7 @@ module MomentumSmearing MuonMomentumSmearing {
 
   # set ResolutionFormula {resolution formula as a function of eta and pt}
 
+# CHANGE in 3.1.2: Some of the pt ranges... TODO: Should we also change?
   # resolution formula for muons
   set ResolutionFormula {                  (abs(eta) <= 1.5) * (pt > 0.1   && pt <= 1.0)   * (0.03) + \
                                            (abs(eta) <= 1.5) * (pt > 1.0   && pt <= 1.0e1) * (0.02) + \
@@ -189,6 +194,8 @@ module Merger TrackMerger {
 # add InputArray InputArray
   add InputArray ChargedHadronMomentumSmearing/chargedHadrons
   add InputArray ElectronEnergySmearing/electrons
+# CHANGE in 3.1.2: muons added... TODO: Should we also add them?
+#  add InputArray MuonMomentumSmearing/muons
   set OutputArray tracks
 }
 
@@ -204,7 +211,10 @@ module Calorimeter Calorimeter {
   set PhotonOutputArray photons
 
   set EFlowTrackOutputArray eflowTracks
-  set EFlowTowerOutputArray eflowTowers
+# TODO: This change was truly necessary... May have to check analyses and limits again.
+# CHANGE in 3.1.2: EFlowTower split into Photon and NeutralHadron
+  set EFlowPhotonOutputArray eflowPhotons
+  set EFlowNeutralHadronOutputArray eflowNeutralHadrons
 
   set pi [expr {acos(-1)}]
 
@@ -272,7 +282,25 @@ module Calorimeter Calorimeter {
 module Merger EFlowMerger {
 # add InputArray InputArray
   add InputArray Calorimeter/eflowTracks
-  add InputArray Calorimeter/eflowTowers
+# TODO: This change was truly necessary... May have to check analyses and limits again.
+# CHANGE in 3.1.2: EFlowTower split into Photon and NeutralHadron
+  add InputArray Calorimeter/eflowPhotons
+  add InputArray Calorimeter/eflowNeutralHadrons
+#  add InputArray MuonMomentumSmearing/muons
+  set OutputArray eflow
+}
+
+#####################
+# MJW adds MET merger
+#####################
+
+module Merger METFlowMerger {
+# add InputArray InputArray
+  add InputArray Calorimeter/eflowTracks
+# TODO: This change was truly necessary... May have to check analyses and limits again.
+# CHANGE in 3.1.2: eFlowTower split into Photon and NeutralHadron
+  add InputArray Calorimeter/eflowPhotons
+  add InputArray Calorimeter/eflowNeutralHadrons
   add InputArray MuonMomentumSmearing/muons
   set OutputArray eflow
 }
@@ -385,7 +413,7 @@ module AbsoluteIsolation MuonIsolation {
 
 module Merger MissingET {
 # add InputArray InputArray
-  add InputArray EFlowMerger/eflow
+  add InputArray METFlowMerger/eflow
   set MomentumOutputArray momentum
 }
 
@@ -398,6 +426,7 @@ module Merger ScalarHT {
   add InputArray UniqueObjectFinder/jets
   add InputArray UniqueObjectFinder/electrons
   add InputArray UniqueObjectFinder/photons
+# CHANGE in 3.1.2: They have a UniqueObjectFinder/muons now... TODO: Should we change?
   add InputArray MuonIsolation/muons
   set EnergyOutputArray energy
 }
@@ -418,7 +447,7 @@ module FastJetFinder GenJetFinder {
   set ConeRadius 0.4
   set SeedThreshold 1.0
   set ConeAreaFraction 1.0
-  set AdjacencyCut 2.0
+  set AdjacencyCut 2
   set OverlapThreshold 0.75
 
   set MaxIterations 100
@@ -445,7 +474,7 @@ module FastJetFinder FastJetFinder {
   set ConeRadius 0.4
   set SeedThreshold 1.0
   set ConeAreaFraction 1.0
-  set AdjacencyCut 2.0
+  set AdjacencyCut 2
   set OverlapThreshold 0.75
 
   set MaxIterations 100
@@ -455,6 +484,7 @@ module FastJetFinder FastJetFinder {
   set JetPTMin 20.0
 }
 
+# CHANGE in 3.1.2: 'ConstituentFilter' => 'JetEnergyScale'... TODO: Should we also change?
 ####################
 # Constituent filter
 ####################
@@ -468,16 +498,20 @@ module ConstituentFilter ConstituentFilter {
 # add ConstituentInputArray InputArray OutputArray
   add ConstituentInputArray Delphes/stableParticles stableParticles
   add ConstituentInputArray Calorimeter/eflowTracks eflowTracks
-  add ConstituentInputArray Calorimeter/eflowTowers eflowTowers
+# TODO: This change was truly necessary... May have to check analyses and limits again.
+# CHANGE in 3.1.2: EFlowTower split into Photon and NeutralHadron
+  add InputArray Calorimeter/eflowPhotons
+  add InputArray Calorimeter/eflowNeutralHadrons
   add ConstituentInputArray MuonMomentumSmearing/muons muons
 }
 
+# CHANGE in 3.1.2: They have b-tagging efficiency curves now... TODO: Should we change?
 ###########
 # b-tagging
 ###########
 
 module BTaggingWithTruth BTagging {
-
+# CHANGE in 3.1.2: They use the JetEnergyScale output as input here... TODO: Should we change?
   set PartonInputArray Delphes/partons
   set JetInputArray FastJetFinder/jets
 
@@ -498,12 +532,13 @@ module BTaggingWithTruth BTagging {
   # efficiency formula for c-jets (misidentification rate)
   add EfficiencyFormula {4} {0.02}
   # efficiency formula for b-jets
-  add EfficiencyFormula {5} {0.7}
+  add EfficiencyFormula {5} {1.0}
 }
 
 module TauTagging TauTagging {
   set ParticleInputArray Delphes/allParticles
   set PartonInputArray Delphes/partons
+# CHANGE in 3.1.2: They use the JetEnergyScale output as input here... TODO: Should we change?
   set JetInputArray FastJetFinder/jets
 
   set DeltaR 0.5
@@ -530,6 +565,7 @@ module UniqueObjectFinder UniqueObjectFinder {
   add InputArray PhotonIsolation/photons photons
   add InputArray ElectronIsolation/electrons electrons
   add InputArray MuonIsolation/muons muons
+# CHANGE in 3.1.2: They use the JetEnergyScale output as input here... TODO: Should we change?
   add InputArray FastJetFinder/jets jets
 }
 
@@ -542,8 +578,10 @@ module TreeWriter TreeWriter {
   add Branch Delphes/allParticles Particle GenParticle
   add Branch TrackMerger/tracks Track Track
   add Branch Calorimeter/towers Tower Tower
+
   add Branch ConstituentFilter/eflowTracks EFlowTrack Track
-  add Branch ConstituentFilter/eflowTowers EFlowTower Tower
+  add Branch Calorimeter/eflowPhotons EFlowPhoton Tower
+  add Branch Calorimeter/eflowNeutralHadrons EFlowNeutralHadron Tower
   add Branch ConstituentFilter/muons EFlowMuon Muon
   add Branch GenJetFinder/jets GenJet Jet
   add Branch UniqueObjectFinder/jets Jet Jet

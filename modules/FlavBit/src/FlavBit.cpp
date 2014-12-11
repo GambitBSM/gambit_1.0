@@ -63,10 +63,11 @@ namespace Gambit
     void SI_fill(struct parameters &result) 
     {
       using namespace Pipes::SI_fill;
+      using namespace std;
 	  
       char name[]="Example_SUSYspecBit/softsusy_example.slha";
 
-	  eaSLHA spectrum;
+      eaSLHA spectrum;
       std::ifstream ifs(name);
       ifs >> spectrum;
       ifs.close();
@@ -268,13 +269,20 @@ namespace Gambit
 
 	  if(!spectrum["ALPHA"].empty()) if(spectrum["ALPHA"].back().is_data_line()) result.alpha=SLHAea::to<double>(spectrum["ALPHA"].back().at(0));
 
-	  if(!spectrum["STOPMIX"].empty()) for(ie=1;ie<=2;ie++) for(je=1;je<=2;je++) if(spectrum["STOPMIX"][max(ie,je)].is_data_line()) result.stop_mix[ie][je]=SLHAea::to<double>(spectrum["STOPMIX"].at(ie,je)[2]);
-	  if(!spectrum["SBOTMIX"].empty()) for(ie=1;ie<=2;ie++) for(je=1;je<=2;je++) if(spectrum["SBOTMIX"][max(ie,je)].is_data_line()) result.sbot_mix[ie][je]=SLHAea::to<double>(spectrum["SBOTMIX"].at(ie,je)[2]);
-	  if(!spectrum["STAUMIX"].empty()) for(ie=1;ie<=2;ie++) for(je=1;je<=2;je++) if(spectrum["STAUMIX"][max(ie,je)].is_data_line()) result.stau_mix[ie][je]=SLHAea::to<double>(spectrum["STAUMIX"].at(ie,je)[2]);
-	  if(!spectrum["NMIX"].empty()) for(ie=1;ie<=4;ie++) for(je=1;je<=4;je++) if(spectrum["NMIX"][max(ie,je)].is_data_line()) result.neut_mix[ie][je]=SLHAea::to<double>(spectrum["NMIX"].at(ie,je)[2]);
-	  if(!spectrum["NMNMIX"].empty()) for(ie=1;ie<=5;ie++) for(je=1;je<=5;je++) if(spectrum["NMNMIX"][max(ie,je)].is_data_line()) result.neut_mix[ie][je]=SLHAea::to<double>(spectrum["NMNMIX"].at(ie,je)[2]);
-	  if(!spectrum["UMIX"].empty()) for(ie=1;ie<=2;ie++) for(je=1;je<=2;je++) if(spectrum["UMIX"][max(ie,je)].is_data_line()) result.charg_Umix[ie][je]=SLHAea::to<double>(spectrum["UMIX"].at(ie,je)[2]);
-	  if(!spectrum["VMIX"].empty()) for(ie=1;ie<=2;ie++) for(je=1;je<=2;je++) if(spectrum["VMIX"][max(ie,je)].is_data_line()) result.charg_Vmix[ie][je]=SLHAea::to<double>(spectrum["VMIX"].at(ie,je)[2]);
+	  if(!spectrum["STOPMIX"].empty()) for(ie=1;ie<=2;ie++) for(je=1;je<=2;je++) 
+           if(spectrum["STOPMIX"][max(ie,je)].is_data_line()) result.stop_mix[ie][je]=SLHAea::to<double>(spectrum["STOPMIX"].at(ie,je)[2]);
+	  if(!spectrum["SBOTMIX"].empty()) for(ie=1;ie<=2;ie++) for(je=1;je<=2;je++)
+           if(spectrum["SBOTMIX"][max(ie,je)].is_data_line()) result.sbot_mix[ie][je]=SLHAea::to<double>(spectrum["SBOTMIX"].at(ie,je)[2]);
+	  if(!spectrum["STAUMIX"].empty()) for(ie=1;ie<=2;ie++) for(je=1;je<=2;je++)
+           if(spectrum["STAUMIX"][max(ie,je)].is_data_line()) result.stau_mix[ie][je]=SLHAea::to<double>(spectrum["STAUMIX"].at(ie,je)[2]);
+	  if(!spectrum["NMIX"].empty()) for(ie=1;ie<=4;ie++) for(je=1;je<=4;je++)
+           if(spectrum["NMIX"][max(ie,je)].is_data_line()) result.neut_mix[ie][je]=SLHAea::to<double>(spectrum["NMIX"].at(ie,je)[2]);
+	  if(!spectrum["NMNMIX"].empty()) for(ie=1;ie<=5;ie++) for(je=1;je<=5;je++)
+           if(spectrum["NMNMIX"][max(ie,je)].is_data_line()) result.neut_mix[ie][je]=SLHAea::to<double>(spectrum["NMNMIX"].at(ie,je)[2]);
+	  if(!spectrum["UMIX"].empty()) for(ie=1;ie<=2;ie++) for(je=1;je<=2;je++)
+           if(spectrum["UMIX"][max(ie,je)].is_data_line()) result.charg_Umix[ie][je]=SLHAea::to<double>(spectrum["UMIX"].at(ie,je)[2]);
+	  if(!spectrum["VMIX"].empty()) for(ie=1;ie<=2;ie++) for(je=1;je<=2;je++)
+           if(spectrum["VMIX"][max(ie,je)].is_data_line()) result.charg_Vmix[ie][je]=SLHAea::to<double>(spectrum["VMIX"].at(ie,je)[2]);
 
 	  if(!spectrum["GAUGE"].empty())
 	  {
@@ -295,9 +303,11 @@ namespace Gambit
 		if(spectrum["HMIX"][4].is_data_line()) result.mA2_Q=SLHAea::to<double>(spectrum["HMIX"][4][1]);
 	  }
 
-	  if(!spectrum["NMHMIX"].empty()) for(ie=1;ie<=3;ie++) for(je=1;je<=3;je++) if(spectrum["NMHMIX"][max(ie,je)].is_data_line()) result.H0_mix[ie][je]=SLHAea::to<double>(spectrum["NMHMIX"].at(ie,je)[2]);
+	  if(!spectrum["NMHMIX"].empty()) for(ie=1;ie<=3;ie++) for(je=1;je<=3;je++)
+           if(spectrum["NMHMIX"][max(ie,je)].is_data_line()) result.H0_mix[ie][je]=SLHAea::to<double>(spectrum["NMHMIX"].at(ie,je)[2]);
 
-	  if(!spectrum["NMAMIX"].empty()) for(ie=1;ie<=2;ie++) for(je=1;je<=2;je++) if(spectrum["NMAMIX"][max(ie,je)].is_data_line()) result.A0_mix[ie][je]=SLHAea::to<double>(spectrum["NMAMIX"].at(ie,je)[2]);
+	  if(!spectrum["NMAMIX"].empty()) for(ie=1;ie<=2;ie++) for(je=1;je<=2;je++)
+           if(spectrum["NMAMIX"][max(ie,je)].is_data_line()) result.A0_mix[ie][je]=SLHAea::to<double>(spectrum["NMAMIX"].at(ie,je)[2]);
 
 	  if(!spectrum["MSOFT"].empty())
 	  {
@@ -359,25 +369,40 @@ namespace Gambit
 		if(spectrum["NMSSMRUN"][10].is_data_line()) result.mS2NMSSM=SLHAea::to<double>(spectrum["NMSSMRUN"][10][1]);
 	  }
 	  
-	  if(!spectrum["USQMIX"].empty()) for(ie=1;ie<=6;ie++) for(je=1;je<=6;je++) if(spectrum["USQMIX"][max(ie,je)].is_data_line()) result.sU_mix[ie][je]=SLHAea::to<double>(spectrum["USQMIX"].at(ie,je)[2]);
-	  if(!spectrum["DSQMIX"].empty()) for(ie=1;ie<=6;ie++) for(je=1;je<=6;je++) if(spectrum["DSQMIX"][max(ie,je)].is_data_line()) result.sD_mix[ie][je]=SLHAea::to<double>(spectrum["DSQMIX"].at(ie,je)[2]);
-	  if(!spectrum["SELMIX"].empty()) for(ie=1;ie<=6;ie++) for(je=1;je<=6;je++) if(spectrum["SELMIX"][max(ie,je)].is_data_line()) result.sE_mix[ie][je]=SLHAea::to<double>(spectrum["SELMIX"].at(ie,je)[2]);
-	  if(!spectrum["SNUMIX"].empty()) for(ie=1;ie<=3;ie++) for(je=1;je<=3;je++) if(spectrum["SNUMIX"][max(ie,je)].is_data_line()) result.sNU_mix[ie][je]=SLHAea::to<double>(spectrum["SNUMIX"].at(ie,je)[2]);
+	  if(!spectrum["USQMIX"].empty()) for(ie=1;ie<=6;ie++) for(je=1;je<=6;je++)
+           if(spectrum["USQMIX"][max(ie,je)].is_data_line()) result.sU_mix[ie][je]=SLHAea::to<double>(spectrum["USQMIX"].at(ie,je)[2]);
+	  if(!spectrum["DSQMIX"].empty()) for(ie=1;ie<=6;ie++) for(je=1;je<=6;je++)
+           if(spectrum["DSQMIX"][max(ie,je)].is_data_line()) result.sD_mix[ie][je]=SLHAea::to<double>(spectrum["DSQMIX"].at(ie,je)[2]);
+	  if(!spectrum["SELMIX"].empty()) for(ie=1;ie<=6;ie++) for(je=1;je<=6;je++)
+           if(spectrum["SELMIX"][max(ie,je)].is_data_line()) result.sE_mix[ie][je]=SLHAea::to<double>(spectrum["SELMIX"].at(ie,je)[2]);
+	  if(!spectrum["SNUMIX"].empty()) for(ie=1;ie<=3;ie++) for(je=1;je<=3;je++)
+           if(spectrum["SNUMIX"][max(ie,je)].is_data_line()) result.sNU_mix[ie][je]=SLHAea::to<double>(spectrum["SNUMIX"].at(ie,je)[2]);
 
-	  if(!spectrum["MSQ2"].empty()) for(ie=1;ie<=3;ie++) for(je=1;je<=3;je++) if(spectrum["MSQ2"][max(ie,je)].is_data_line()) result.sCKM_msq2[ie][je]=SLHAea::to<double>(spectrum["MSQ2"].at(ie,je)[2]);
-	  if(!spectrum["MSL2"].empty()) for(ie=1;ie<=3;ie++) for(je=1;je<=3;je++) if(spectrum["MSL2"][max(ie,je)].is_data_line()) result.sCKM_msl2[ie][je]=SLHAea::to<double>(spectrum["MSL2"].at(ie,je)[2]);
-	  if(!spectrum["MSD2"].empty()) for(ie=1;ie<=3;ie++) for(je=1;je<=3;je++) if(spectrum["MSD2"][max(ie,je)].is_data_line()) result.sCKM_msd2[ie][je]=SLHAea::to<double>(spectrum["MSD2"].at(ie,je)[2]);
-	  if(!spectrum["MSU2"].empty()) for(ie=1;ie<=3;ie++) for(je=1;je<=3;je++) if(spectrum["MSU2"][max(ie,je)].is_data_line()) result.sCKM_msu2[ie][je]=SLHAea::to<double>(spectrum["MSU2"].at(ie,je)[2]);
-	  if(!spectrum["MSE2"].empty()) for(ie=1;ie<=3;ie++) for(je=1;je<=3;je++) if(spectrum["MSE2"][max(ie,je)].is_data_line()) result.sCKM_mse2[ie][je]=SLHAea::to<double>(spectrum["MSE2"].at(ie,je)[2]);
+	  if(!spectrum["MSQ2"].empty()) for(ie=1;ie<=3;ie++) for(je=1;je<=3;je++)
+           if(spectrum["MSQ2"][max(ie,je)].is_data_line()) result.sCKM_msq2[ie][je]=SLHAea::to<double>(spectrum["MSQ2"].at(ie,je)[2]);
+	  if(!spectrum["MSL2"].empty()) for(ie=1;ie<=3;ie++) for(je=1;je<=3;je++)
+           if(spectrum["MSL2"][max(ie,je)].is_data_line()) result.sCKM_msl2[ie][je]=SLHAea::to<double>(spectrum["MSL2"].at(ie,je)[2]);
+	  if(!spectrum["MSD2"].empty()) for(ie=1;ie<=3;ie++) for(je=1;je<=3;je++)
+           if(spectrum["MSD2"][max(ie,je)].is_data_line()) result.sCKM_msd2[ie][je]=SLHAea::to<double>(spectrum["MSD2"].at(ie,je)[2]);
+	  if(!spectrum["MSU2"].empty()) for(ie=1;ie<=3;ie++) for(je=1;je<=3;je++)
+           if(spectrum["MSU2"][max(ie,je)].is_data_line()) result.sCKM_msu2[ie][je]=SLHAea::to<double>(spectrum["MSU2"].at(ie,je)[2]);
+	  if(!spectrum["MSE2"].empty()) for(ie=1;ie<=3;ie++) for(je=1;je<=3;je++)
+           if(spectrum["MSE2"][max(ie,je)].is_data_line()) result.sCKM_mse2[ie][je]=SLHAea::to<double>(spectrum["MSE2"].at(ie,je)[2]);
 
-	  if(!spectrum["IMVCKM"].empty()) for(ie=1;ie<=3;ie++) for(je=1;je<=3;je++) if(spectrum["IMVCKM"][max(ie,je)].is_data_line()) result.IMCKM[ie][je]=SLHAea::to<double>(spectrum["IMVCKM"].at(ie,je)[2]);
-	  if(!spectrum["IMVCKM"].empty()) for(ie=1;ie<=3;ie++) for(je=1;je<=3;je++) if(spectrum["IMVCKM"][max(ie,je)].is_data_line()) result.IMCKM[ie][je]=SLHAea::to<double>(spectrum["IMVCKM"].at(ie,je)[2]);
+	  if(!spectrum["IMVCKM"].empty()) for(ie=1;ie<=3;ie++) for(je=1;je<=3;je++)
+           if(spectrum["IMVCKM"][max(ie,je)].is_data_line()) result.IMCKM[ie][je]=SLHAea::to<double>(spectrum["IMVCKM"].at(ie,je)[2]);
+	  if(!spectrum["IMVCKM"].empty()) for(ie=1;ie<=3;ie++) for(je=1;je<=3;je++)
+           if(spectrum["IMVCKM"][max(ie,je)].is_data_line()) result.IMCKM[ie][je]=SLHAea::to<double>(spectrum["IMVCKM"].at(ie,je)[2]);
 
-	  if(!spectrum["UPMNS"].empty()) for(ie=1;ie<=3;ie++) for(je=1;je<=3;je++) if(spectrum["UPMNS"][max(ie,je)].is_data_line()) result.PMNS_U[ie][je]=SLHAea::to<double>(spectrum["UPMNS"].at(ie,je)[2]);
+	  if(!spectrum["UPMNS"].empty()) for(ie=1;ie<=3;ie++) for(je=1;je<=3;je++)
+           if(spectrum["UPMNS"][max(ie,je)].is_data_line()) result.PMNS_U[ie][je]=SLHAea::to<double>(spectrum["UPMNS"].at(ie,je)[2]);
 
-	  if(!spectrum["TU"].empty()) for(ie=1;ie<=3;ie++) for(je=1;je<=3;je++) if(spectrum["TU"][max(ie,je)].is_data_line()) result.TU[ie][je]=SLHAea::to<double>(spectrum["TU"].at(ie,je)[2]);
-	  if(!spectrum["TD"].empty()) for(ie=1;ie<=3;ie++) for(je=1;je<=3;je++) if(spectrum["TD"][max(ie,je)].is_data_line()) result.TD[ie][je]=SLHAea::to<double>(spectrum["TD"].at(ie,je)[2]);  
-	  if(!spectrum["TE"].empty()) for(ie=1;ie<=3;ie++) for(je=1;je<=3;je++) if(spectrum["TE"][max(ie,je)].is_data_line()) result.TE[ie][je]=SLHAea::to<double>(spectrum["TE"].at(ie,je)[2]);
+	  if(!spectrum["TU"].empty()) for(ie=1;ie<=3;ie++) for(je=1;je<=3;je++)
+           if(spectrum["TU"][max(ie,je)].is_data_line()) result.TU[ie][je]=SLHAea::to<double>(spectrum["TU"].at(ie,je)[2]);
+	  if(!spectrum["TD"].empty()) for(ie=1;ie<=3;ie++) for(je=1;je<=3;je++)
+           if(spectrum["TD"][max(ie,je)].is_data_line()) result.TD[ie][je]=SLHAea::to<double>(spectrum["TD"].at(ie,je)[2]);  
+	  if(!spectrum["TE"].empty()) for(ie=1;ie<=3;ie++) for(je=1;je<=3;je++)
+           if(spectrum["TE"][max(ie,je)].is_data_line()) result.TE[ie][je]=SLHAea::to<double>(spectrum["TE"].at(ie,je)[2]);
 
 
       BEreq::slha_adjust(&result);
@@ -973,14 +998,4 @@ namespace Gambit
   }
 
 }
-
-      //Master plan for making parameter values available (define ModelA as the model being scanned):
-      //1.  Each module function gets assigned implicit conditional dependencies by the VALID_MODEL() macro, on modelParameters_{X,Y,...}, where X, Y and ... are the models declared as VALID_MODELs.  (Pat)
-      //2.  The dependency resolver uses the model congruency operation to poll all candidate functions for compatibility with modelA, by testing isCongruent(modelA, X), isCongruent(modelA, Y), etc.  (Ben to write congruency function, Christoph to use it in dependency resolver.)
-      //3.  The dependency resolver activates the relevant dependencies upon the modelParameters_{X,Y,...} capabilities according to what model is being scanned.  This means that every candidate function that has as a VALID_MODEL either ModelA or one of its ancestor, will have exactly one dependency on modelParameters_something activated, corresponding to the specific ancestor of ModelA that the function has declared as VALID.  (Christoph)
-      //4.  ModelParameters_modelA dependencies are automatically filled by a functor created for this pupose from the outset.  This is the single-functor equivalnet of of the alpha nodes. (Christoph I guess?)
-      //5.  The dependency resolver fills other modelParameters_ancestors capabilities using interpret_as_parent functions of the models down the hierarchy from the one required, until modelA is reached. (Ben to write to write the model functions, Christoph to use them.)
-      //6.  Macros automatically create additional helper functors (alpha nodes per Christoph's terminology) and pointers to the actual parameter values in the dependent modelParameters functors at init.  The pointers get placed in Gambit::Module::function_name::parameter_name and are then available for use from within module functions.  The pointers are not bare pointers, but instances of the new GAMBIT-issue safe pointer, which foils attempts to use it when it is NULL or to use it to write to the address it points to.  (Pat)
-      //7.  Macros also also automatically create safe pointers to dependency values (Pat; this is implemented already).
-
 

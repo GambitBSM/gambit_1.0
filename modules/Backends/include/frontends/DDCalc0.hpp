@@ -22,7 +22,6 @@
 ///  *********************************************
 
 // Identify backend
-#define LIBPATH      "Backends/lib/libDDCalc0.so"
 #ifdef BACKENDRENAME
   #define BACKENDNAME BACKENDRENAME
 #else

@@ -27,8 +27,10 @@
 ///  *********************************************
 
 #include <sstream>
+#include <fstream>
 
 #include "depresolver.hpp"
+#include "cmake_variables.hpp"
 #include "models.hpp"
 #include "log.hpp"
 #include "stream_overloads.hpp"
@@ -78,10 +80,10 @@ namespace Gambit
 
     // Sort given list of vertices (according to topological sort result)
     std::vector<VertexID> sortVertices(const std::set<VertexID> & set,
-        std::list<VertexID> topoOrder)
+        const std::list<VertexID> & topoOrder)
     {
       std::vector<VertexID> result;
-      for(std::list<VertexID>::iterator it = topoOrder.begin(); it != topoOrder.end(); it++)
+      for(std::list<VertexID>::const_iterator it = topoOrder.begin(); it != topoOrder.end(); it++)
       {
         if (set.find(*it) != set.end())
           result.push_back(*it);
@@ -91,7 +93,7 @@ namespace Gambit
 
     // Get sorted list of parent vertices
     std::vector<VertexID> getSortedParentVertices(const VertexID & vertex, const
-        DRes::MasterGraphType & graph, std::list<VertexID> topoOrder)
+        DRes::MasterGraphType & graph, const std::list<VertexID> & topoOrder)
     {
       std::set<VertexID> set = getParentVertices(vertex, graph);
       return sortVertices(set, topoOrder);
@@ -102,8 +104,21 @@ namespace Gambit
     //
 
     // Check whether quantity matches observableType
-    // Matches capability
+    // Matches capability and type
     bool quantityMatchesIniEntry(const sspair & quantity, const IniParser::ObservableType & observable)
+    {
+      // Compares dependency specifications of auxiliary entries or observable
+      // entries with capability (capabilities have to be unique for these
+      // lists))
+      if ( stringComp( observable.capability, quantity.first ) and
+           stringComp( observable.type, quantity.second )) 
+          return true;
+      else return false;
+    }
+
+    // Check whether quantity matches observableType
+    // Matches capability
+    bool capabilityMatchesIniEntry(const sspair & quantity, const IniParser::ObservableType & observable)
     {
       // Compares dependency specifications of auxiliary entries or observable
       // entries with capability (capabilities have to be unique for these
@@ -123,6 +138,17 @@ namespace Gambit
            return true;
       else return false;
     }
+
+    // Check whether functor matches rules
+    bool matchesRules( functor *f, const Rule & rule)
+    {
+      //cout << (*f).name() << " vs " << rule.function << endl;
+      //cout << (*f).origin() << " vs " << rule.module << endl;
+      return ( stringComp( rule.function, (*f).name()) and
+               stringComp( rule.module, (*f).origin())
+             );
+    }
+
 
     //
     // Graphviz output
@@ -165,7 +191,7 @@ namespace Gambit
     //
 
     // Return runtime estimate for a set of nodes
-    double getTimeEstimate(std::set<VertexID> vertexList, const DRes::MasterGraphType &graph)
+    double getTimeEstimate(const std::set<VertexID> & vertexList, const DRes::MasterGraphType &graph)
     {
       double result = 0;
       for (std::set<VertexID>::iterator it = vertexList.begin(); it != vertexList.end(); ++it)
@@ -176,7 +202,7 @@ namespace Gambit
     }
 
     // Check whether s1 (wildcard + regex allowed) matches s2
-    bool stringComp(str s1, str s2)
+    bool stringComp(const str & s1, const str & s2)
     {
       if ( s1 == s2 ) return true;
       if ( s1 == "" ) return true;
@@ -186,8 +212,8 @@ namespace Gambit
       return false;
     }
 
-    // Same thing for types
-    bool typeComp(str s1, str s2, const Utils::type_equivalency & eq)
+    // Same thing for types (taking into account equivalence classes)
+    bool typeComp(const str & s1, const str & s2, const Utils::type_equivalency & eq)
     {
       bool match1, match2;
       if (stringComp(s1, s2)) return true;  // Does it just match?
@@ -217,7 +243,13 @@ namespace Gambit
                                            const IniParser::IniFile &iniFile,
                                            const Utils::type_equivalency &equiv_classes,
                                                  Printers::BasePrinter &printer)
-     : boundCore(&core), boundClaw(&claw), boundIniFile(&iniFile), boundTEs(&equiv_classes), boundPrinter(&printer), index(get(vertex_index,masterGraph))
+     : boundCore(&core), 
+       boundClaw(&claw), 
+       boundIniFile(&iniFile), 
+       boundTEs(&equiv_classes), 
+       boundPrinter(&printer), 
+       index(get(vertex_index,masterGraph)),
+       activeFunctorGraphFile(GAMBIT_DIR "/scratch/GAMBIT_active_functor_graph.gv")
     {
       addFunctors();
       logger() << LogTags::dependency_resolver << endl;
@@ -293,7 +325,7 @@ namespace Gambit
       initialisePrinter();
 
       // Generate graphviz plot
-      std::ofstream outf("GAMBIT_active_functor_graph.gv");
+      std::ofstream outf(activeFunctorGraphFile);
       write_graphviz(outf, masterGraph, labelWriter(&masterGraph), edgeWriter(&masterGraph));
 
       // Done
@@ -440,11 +472,14 @@ namespace Gambit
       
       if (toterminal)
       {
-        // There is a command line flag to get this information, since it is very handy to check before launching a full job. It can always be checked via the logs, but I found myself wanting to see this often so I added this feature for convenience.
+        // There is a command line flag to get this information, since it is very 
+        // handy to check before launching a full job. It can always be checked via 
+        // the logs, but this feature is more convenient.
         cout << ss.str();
-        str graphfile = "GAMBIT_active_functor_graph.gv"; // make sure this stays in sync with name in "doResolution" function. Probably should make a common variable for this.
-        cout << endl << "Please run ./graphviz.sh "+graphfile+" to get postscript plot of active functors." << endl;
+        cout << "To get postscript plot of active functors, please run: " << endl;
+        cout << GAMBIT_DIR << "/Core/scripts/./graphviz.sh "+activeFunctorGraphFile << endl;
       }
+
       logger() << LogTags::dependency_resolver << ss.str() << EOM;
     }
 
@@ -542,6 +577,7 @@ namespace Gambit
     // Returns pointer to ini-file entry associated with ObsLike
     const IniParser::ObservableType * DependencyResolver::getIniEntry(VertexID v)
     {
+      // TODO: Needs to be changed to follow rules style
       for (std::vector<OutputVertexInfo>::iterator it = outputVertexInfos.begin();
           it != outputVertexInfos.end(); it++)
       {
@@ -589,7 +625,8 @@ namespace Gambit
       return stream.str();
     }
 
-    // Add module functors in bound core to class-internal masterGraph object
+    // Add module and primary model functors in bound core to class-internal
+    // masterGraph object
     void DependencyResolver::addFunctors()
     {
       // Add primary model functors to masterGraph
@@ -619,7 +656,7 @@ namespace Gambit
     /// Also activate the model-conditional dependencies and backend requirements of those functors.
     void DependencyResolver::makeFunctorsModelCompatible()
     {
-      static bool already_run = false;
+      static bool already_run = false;  // TODO: CW: this function should probably be called somewhere else.
       if (already_run) return;
 
       graph_traits<DRes::MasterGraphType>::vertex_iterator vi, vi_end;
@@ -687,6 +724,179 @@ namespace Gambit
       // initial list, whose "requiresPrinting" flag later gets set to 'true'
       // somehow.)
       boundPrinter->initialise(functors_to_print);
+    }
+
+    std::vector<DRes::VertexID> DependencyResolver::closestCandidateForModel(std::vector<DRes::VertexID> candidates)
+    {
+      // In case of doubt (and if not explicitely disabled in the ini-file), prefer functors 
+      // that are more specifically tailored for the model being scanned. Do not consider functors
+      // that are accessible via INTERPRET_AS_X links, as these are all considered to be equally 'far' 
+      // from the model being scanned, with the 'distance' being one step further than the most distant
+      // ancestor.
+
+      // Work up the model ancestry one step at a time, and stop as soon as one or more valid model-specific functors is 
+      // found at a given level in the hierarchy.
+      std::vector<DRes::VertexID> newCandidates;
+      std::vector<str> parentModelList = boundClaw->get_activemodels();
+      while (newCandidates.size() == 0 and not parentModelList.empty())
+      {
+        for (std::vector<str>::iterator mit = parentModelList.begin(); mit != parentModelList.end(); ++mit)
+        {            
+          // Test each vertex candidate to see if it has been explicitly set up to work with the model *mit
+          for (std::vector<DRes::VertexID>::iterator it = candidates.begin(); it != candidates.end(); ++it)
+          {
+            if ( masterGraph[*it]->modelExplicitlyAllowed(*mit) ) newCandidates.push_back(*it);
+          }
+          // Step up a level in the model hierarchy for this model.
+          *mit = boundClaw->get_parent(*mit);
+        }
+        parentModelList.erase(std::remove(parentModelList.begin(), parentModelList.end(), "none"), parentModelList.end());
+      }
+      if (newCandidates.size() != 0)
+        return newCandidates;
+      else
+        return candidates;
+    }
+
+    /// Resolve dependency
+    DRes::VertexID DependencyResolver::resolveDependencyFromRules(const DRes::VertexID & toVertex, const sspair & quantity)
+    {
+      graph_traits<DRes::MasterGraphType>::vertex_iterator vi, vi_end;
+
+      std::vector<DRes::VertexID> vertexCandidates;  // List of all candidate vertices
+      std::vector<Rule> rules_1st_level;  // Rules from dependency entries
+      std::vector<Rule> rules_2nd_level;  // Rules from plain entries
+      std::vector<DRes::VertexID> filteredVertexCandidates_1st;  // List of all candidate vertices
+      std::vector<DRes::VertexID> filteredVertexCandidates_2nd;  // List of all candidate vertices
+
+      // Make list of candidate vertices.
+      for (tie(vi, vi_end) = vertices(masterGraph); vi != vi_end; ++vi) 
+      {
+        // Don't allow resolution by deactivated functors.
+        if (masterGraph[*vi]->status() > 0)
+        {
+          // Match capabilities and types (no type comparison when no types are
+          // given; this should only happen for output nodes).
+          if ( masterGraph[*vi]->capability() == quantity.first and
+                ( masterGraph[*vi]->type() == quantity.second or quantity.second == "" ) )
+          {
+            // Add to vertex candidate list
+            vertexCandidates.push_back(*vi);
+          }
+        }
+      }
+      if (vertexCandidates.size() == 0)
+      {
+        // TODO: Clarify
+        str errmsg = "No candidates found.";
+        dependency_resolver_error().raise(LOCAL_INFO,errmsg);
+      }
+
+      cout << "Vertex candidates: " << vertexCandidates << endl;
+
+      // Make list of all relevant 1st and 2nd level dependency rules.
+      IniParser::ObservablesType entries = boundIniFile->getAuxiliaries();
+      for (IniParser::ObservablesType::const_iterator it =
+          entries.begin(); it != entries.end(); ++it)
+      {
+        if ( toVertex != OBSLIKE_VERTEXID )
+        {
+          if ( funcMatchesIniEntry(masterGraph[toVertex], *it, *boundTEs) )
+          {
+            for (IniParser::ObservablesType::const_iterator it2 =
+            (*it).dependencies.begin(); it2 != (*it).dependencies.end(); ++it2)
+            {
+              if ( quantityMatchesIniEntry(quantity, *it2) )
+              {
+                rules_1st_level.push_back(Rule(*it2));
+              }
+            }
+          }
+        }
+        if ( quantityMatchesIniEntry(quantity, *it) )
+        {
+          rules_2nd_level.push_back(Rule(*it));
+        }
+      }
+      // Add also entries in ObsLike section as 2nd order
+      entries = boundIniFile->getObservables();
+      for (IniParser::ObservablesType::const_iterator it =
+          entries.begin(); it != entries.end(); ++it)
+      {
+        if ( quantityMatchesIniEntry(quantity, *it) )
+        {
+          rules_2nd_level.push_back(Rule(*it));
+        }
+      }
+
+      cout << "1st and 2nd class rules: " << rules_1st_level.size() << ", " << rules_2nd_level.size() << endl;
+
+      // Make filtered lists
+      for (std::vector<DRes::VertexID>::const_iterator it = vertexCandidates.begin(); 
+          it != vertexCandidates.end(); it ++)
+      {
+        bool valid = true;
+        for (std::vector<Rule>::const_iterator it2 = rules_1st_level.begin(); 
+            it2 != rules_1st_level.end(); it2 ++)
+        {
+          if ( not matchesRules(masterGraph[*it], *it2) )
+          {
+            valid = false;
+          }
+        }
+        if ( valid )
+            filteredVertexCandidates_1st.push_back(*it);
+        valid = true;
+        for (std::vector<Rule>::const_iterator it2 = rules_2nd_level.begin(); 
+            it2 != rules_2nd_level.end(); it2 ++)
+        {
+          if ( not matchesRules(masterGraph[*it], *it2) )
+          {
+            valid = false;
+          }
+        }
+        if ( valid )
+          filteredVertexCandidates_2nd.push_back(*it);
+      }
+
+      cout << "Filtered vertex candidates (1st, 2nd): " << filteredVertexCandidates_1st << ", " << filteredVertexCandidates_2nd << endl;
+
+      // Nothing left?
+      if ( filteredVertexCandidates_1st.size() == 0 )
+      {
+        // TODO: Clarify
+        str errmsg = "First-level rules rule out everything.";
+        dependency_resolver_error().raise(LOCAL_INFO,errmsg);
+      }
+
+      if ( filteredVertexCandidates_2nd.size() == 0 )
+      {
+        // TODO: Clarify
+        str errmsg = "Second-level rules rule out everything.";
+        dependency_resolver_error().raise(LOCAL_INFO,errmsg);
+      }
+
+      // Apply tailor-made filter
+      if ( boundIniFile->getValueOrDef<bool>(true, "dependency_resolution", "prefer_model_specific_functions") )
+      {
+        if ( filteredVertexCandidates_1st.size() > 1 )
+          filteredVertexCandidates_1st = closestCandidateForModel(filteredVertexCandidates_1st);
+        if ( filteredVertexCandidates_2nd.size() > 1 )
+          filteredVertexCandidates_2nd = closestCandidateForModel(filteredVertexCandidates_2nd);
+        cout << "Vertex candidates with tailor made functions (1st, 2nd): " << filteredVertexCandidates_1st << ", " << filteredVertexCandidates_2nd << endl;
+      }
+
+      // 4) Did vertices survive?
+      if ( filteredVertexCandidates_1st.size() == 1 )
+        return filteredVertexCandidates_1st[0];  // Done!
+      if ( filteredVertexCandidates_2nd.size() == 1 )
+        return filteredVertexCandidates_2nd[0];  // Done1
+
+      // TODO: Clarify
+      str errmsg = "Still amiguous.";
+      dependency_resolver_error().raise(LOCAL_INFO,errmsg);
+
+      return 0;
     }
 
     /// Resolve dependency
@@ -875,7 +1085,18 @@ namespace Gambit
         //logger() << EOM;
 
         // Figure out how to resolve dependency
-        boost::tie(iniEntry, fromVertex) = resolveDependency(toVertex, quantity);
+        if ( boundIniFile->getValueOrDef<bool>(false, "dependency_resolution", "use_old_routines") )
+        {
+          boost::tie(iniEntry, fromVertex) = resolveDependency(toVertex, quantity);
+        }
+        else
+        {
+          // TODO: Ini-file options still retrieved in the old way:
+          iniEntry = NULL;
+          boost::tie(iniEntry, fromVertex) = resolveDependency(toVertex, quantity);
+          // But fromVertex in the new
+          fromVertex = resolveDependencyFromRules(toVertex, quantity);
+        }
 
         // Print user info.
         logger() << LogTags::dependency_resolver;
@@ -966,7 +1187,7 @@ namespace Gambit
       for (std::vector<sspair>::iterator it = vec.begin(); it != vec.end(); ++it) 
       {
         logger() << (*it).first << " (" << (*it).second << ")" << endl;
-        (*parQueue).push(*(new QueueEntry (*it, vertex, NORMAL_DEPENDENCY, printme_default)));
+        (*parQueue).push(QueueEntry (*it, vertex, NORMAL_DEPENDENCY, printme_default));
       }
       // Digest capability of loop manager (if defined)
       str loopManagerCapability = (*masterGraph[vertex]).loopManagerCapability();
@@ -974,8 +1195,8 @@ namespace Gambit
       {
         logger() << "Adding module function loop manager to resolution queue:" << endl;
         logger() << loopManagerCapability << " ()" << endl;
-        (*parQueue).push(*(new QueueEntry (*(new sspair
-                  (loopManagerCapability, "")), vertex, LOOP_MANAGER_DEPENDENCY, printme_default)));
+        (*parQueue).push(QueueEntry (sspair
+                  (loopManagerCapability, ""), vertex, LOOP_MANAGER_DEPENDENCY, printme_default));
       }
       //logger() << EOM;
     }
@@ -1022,7 +1243,7 @@ namespace Gambit
       for (IniParser::ObservablesType::const_iterator it =
           entries.begin(); it != entries.end(); ++it)
       {
-        if ( quantityMatchesIniEntry(quantity, *it) ) // use same criteria than for normal dependencies
+        if ( capabilityMatchesIniEntry(quantity, *it) ) // use same criteria than for normal dependencies
         {
           obsEntryCandidates.push_back(&(*it));
         }

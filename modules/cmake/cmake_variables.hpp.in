@@ -1,0 +1,22 @@
+//   GAMBIT: Global and Modular BSM Inference Tool
+//   *********************************************
+///  \file
+///
+///  The configured options and settings for GAMBIT
+///
+///  *********************************************
+///
+///  Authors (add name and date if you modify):
+///   
+///  \author Pat Scott 
+///          (p.scott@imperial.ac.uk)
+///  \date 2014 Dec        
+///
+///  *********************************************
+
+#ifndef __cmake_variables_hpp__
+#define __cmake_variables_hpp__
+
+#define GAMBIT_DIR "@PROJECT_SOURCE_DIR@"
+
+#endif // defined __cmake_variables_hpp__

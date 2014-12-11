@@ -24,6 +24,7 @@
 #include <getopt.h>
 
 // Gambit headers
+#include "cmake_variables.hpp"
 #include "gambit_core.hpp"
 #include "error_handlers.hpp"
 #include "version.hpp"
@@ -43,11 +44,11 @@ namespace Gambit
     gambit_core::gambit_core(const Models::ModelFunctorClaw &claw, const Backends::backend_info &beinfo ) :
      modelInfo(&claw),
      backendData(&beinfo),
-     capability_dbase_file("central_capabilities.dat"),
-     model_dbase_file("central_models.dat"),
-     input_capability_descriptions("capabilities.dat"),
-     input_model_descriptions("models.dat"),
-     report_file("report.txt"),
+     capability_dbase_file(GAMBIT_DIR "/scratch/central_capabilities.dat"),
+     model_dbase_file(GAMBIT_DIR "/scratch/central_models.dat"),
+     input_capability_descriptions(GAMBIT_DIR "/config/capabilities.dat"),
+     input_model_descriptions(GAMBIT_DIR "/config/models.dat"),
+     report_file(GAMBIT_DIR "/config/report.txt"),
      report(report_file.c_str()),
      /* command line flags */ 
      processed_options(false),
@@ -341,7 +342,7 @@ namespace Gambit
       }
       out << YAML::EndSeq;
       // Create file and write YAML output there
-      ofstream outfile;
+      std::ofstream outfile;
       outfile.open(capability_dbase_file);
       outfile << "# Auto-generated capability description library. Edits will be erased." << endl;;
       outfile << "# Edit \"" << input_capability_descriptions << "\" instead." << endl << endl << out.c_str();
@@ -441,7 +442,7 @@ namespace Gambit
       }
       out2 << YAML::EndSeq;
       // Create file and write YAML output there
-      ofstream outfile2;
+      std::ofstream outfile2;
       outfile2.open(model_dbase_file);
       outfile2 << "# Auto-generated model description library. Edits will be erased." << endl;;
       outfile2 << "# Edit \"" << input_model_descriptions << "\" instead." << endl << endl << out2.c_str();
@@ -557,7 +558,7 @@ namespace Gambit
         int maxlens[6] = {18, 7, 40, 13, 3, 3};
         bool all_good = true;
         cout << "\nThis is GAMBIT." << endl << endl; 
-        cout << "Backends               Version     Path to lib (relative to GAMBIT directory)   Status          #funcs  #types  #ctors" << endl;
+        cout << "Backends               Version     Path to lib                                  Status          #funcs  #types  #ctors" << endl;
         cout << "----------------------------------------------------------------------------------------------------------------------" << endl;
 
         // Loop over all registered backends
@@ -569,11 +570,10 @@ namespace Gambit
             int nfuncs = 0;
             int ntypes = 0;
             int nctors = 0;
-            str path, status;
 
             // Retrieve the status and path info.
-            path = backendData->paths.at(it->first+*jt);                          // Get the path of this backend
-            status = backend_status(it->first, *jt, all_good);                    // Save the status of this backend
+            const str path = backendData->path(it->first,*jt);                              // Get the path of this backend
+            const str status = backend_status(it->first, *jt, all_good);                    // Save the status of this backend
 
             // Count up the number of functions in this version of the backend, using the registered functors.
             for (fVec::const_iterator kt = backendFunctorList.begin(); kt != backendFunctorList.end(); ++kt)
@@ -585,7 +585,7 @@ namespace Gambit
             if (backendData->classloader.at(it->first+*jt))
             {
               std::set<str> classes = backendData->classes.at(it->first+*jt);     // Retrieve classes loaded by this version
-              ntypes = classes.size();                                      // Get the number of classes loaded by this backend
+              ntypes = classes.size();                                            // Get the number of classes loaded by this backend
               for (std::set<str>::const_iterator kt = classes.begin(); kt != classes.end(); ++kt)
               {
                 nctors += backendData->factory_args.at(it->first+*jt+*kt).size(); // Add the number of factories for this class to the total
@@ -593,7 +593,7 @@ namespace Gambit
             }
 
             // Print the info
-            ostringstream ss1, ss2;
+            std::ostringstream ss1, ss2;
             str ss1a, ss2a;
             const str firstentry = (jt == it->second.begin() ? it->first : "");
             cout << firstentry << spacing(firstentry.length(),maxlens[0]);
@@ -606,7 +606,10 @@ namespace Gambit
           }
         }
 
+        cout << "----------------------------------------------------------------------------------------------------------------------" << endl;
+        cout << "All relative paths are given with reference to " << GAMBIT_DIR << ".";
         if (all_good) cout << endl << "All your backend are belong to us." << endl;
+        cout << endl;
         no_scan = true;
       }
       else if (command == "models")
@@ -624,11 +627,11 @@ namespace Gambit
           cout << model << spacing(model.length(),maxlen1) << parentof << spacing(parentof.length(),maxlen2) << nparams << endl;
         }
         // Create and spit out graph of the model hierarchy.
-        str graphfile = "GAMBIT_model_hierarchy.gv";
+        str graphfile = GAMBIT_DIR "/scratch/GAMBIT_model_hierarchy.gv";
         ModelHierarchy modelGraph(*modelInfo,primaryModelFunctorList,graphfile,false);
         cout << endl << "Created graphviz model hierarchy graph in "+graphfile+"." << endl; 
-        cout << "Please run ./graphviz.sh "+graphfile+" to get postscript plot." << endl; 
-
+        cout << endl << "To get postscript plot of model hierarchy, please run: " << endl;
+        cout << GAMBIT_DIR << "/Core/scripts/./graphviz.sh "+graphfile << endl;
         no_scan = true;
       }
     
@@ -764,7 +767,7 @@ namespace Gambit
             for (std::set<str>::const_iterator jt = versions.begin(); jt != versions.end(); ++jt)
             {
               bool who_cares;
-              const str path = backendData->paths.at(it->first+*jt);        // Save the path of this backend
+              const str path = backendData->corrected_path(it->first,*jt);  // Save the path of this backend
               const str status = backend_status(it->first, *jt, who_cares); // Save the status of this backend
               cout << "Version: " << *jt << endl;
               cout << "Path to library: " << path << endl;

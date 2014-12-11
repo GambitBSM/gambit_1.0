@@ -45,7 +45,7 @@ namespace Gambit
                         std::string name;
                         
                 public:
-                        IniFileInterface(const std::string &, const Options &);
+                        IniFileInterface(const std::string &, const std::string &, const Options &);
                         
                         const std::string pluginName() const {return name;}
                         

@@ -1161,24 +1161,16 @@ namespace Gambit
       OUTPUT << "  g3: " 
              << spec->runningpars.get_dimensionless_parameter("g3") << endl;
       OUTPUT << "  Yukawa couplings:" << endl;
-      for (int i=0; i<3; i++) { for (int j=0; j<3; j++) {
-        OUTPUT << "  Yu("<<i<<","<<j<<"): " 
-               << spec->runningpars.get_dimensionless_parameter("Yu", i, j) 
-               << endl;
-         }
-      }
-      for (int i=0; i<3; i++) { for (int j=0; j<3; j++) {
-        OUTPUT << "  Yd("<<i<<","<<j<<"): " 
-               << spec->runningpars.get_dimensionless_parameter("Yd",i,j) 
-               << endl;
-         }
-      }
-      for (int i=0; i<3; i++) { for (int j=0; j<3; j++) {
-            OUTPUT << "  Ye("<<i<<","<<j<<"): " 
-                   << spec->runningpars.get_dimensionless_parameter("Ye",i,j) 
-                   << endl;
-         }
-      }
+
+      for (int i=1; i<=3; i++) { for (int j=1; j<=3; j++) {
+        OUTPUT << "  Yu("<<i<<","<<j<<"): " << spec->runningpars.get_dimensionless_parameter("Yu", i, j) << endl;
+      }}
+      for (int i=1; i<=3; i++) { for (int j=1; j<=3; j++) {
+        OUTPUT << "  Yd("<<i<<","<<j<<"): " << spec->runningpars.get_dimensionless_parameter("Yd", i, j) << endl;
+      }}
+      for (int i=1; i<=3; i++) { for (int j=1; j<=3; j++) {
+            OUTPUT << "  Ye("<<i<<","<<j<<"): " << spec->runningpars.get_dimensionless_parameter("Ye", i, j) << endl;
+      }}
     }
       
    }

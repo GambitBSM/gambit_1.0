@@ -24,8 +24,7 @@ using namespace std;
 //
 //    Known features:
 //    a) Must run simulator with 75% b tagging efficiency and 2% mis-id rate
-//    b) For now have nicked ATLAS MT2 code. Need to check status of this for public release. The better option is to write a non-ROOT version later.
-//    ===> STF: Now using mt2 bisect method from H. Cheng, Z. Han, arXiv:0810.5178 for mT2 calculation
+
 
 namespace Gambit {
   namespace ColliderBit {
@@ -88,7 +87,10 @@ namespace Gambit {
 
         //ATLAS use the two jets with highest MV1 weights
         //DELPHES does not have a continuous b weight
-        //Thus must approximate using the two true b jets
+
+	//We have all b jets tagged (with 100% efficiency), so can use the two highest pT b jets
+	//This corresponds to using the 2 b jets that are first in the collection
+
         Jet * trueBjet1=0; //need to assign this
         Jet * trueBjet2=0; //nee to assign this
 
@@ -216,9 +218,16 @@ namespace Gambit {
         vector<Jet*> baselineJets;
         vector<Jet*> bJets;
         vector<Jet*> trueBJets; //for debugging
+
+        const std::vector<float>  a = {0,10.};      
+        const std::vector<float>  b = {0,10000.};      
+        const std::vector<double> c = {0.75};      
+	BinnedFn2D<double> _eff2d(a,b,c);
+	
         for (Jet* jet : event->jets()) {
+	  bool hasTag=has_tag(_eff2d, jet->eta(), jet->pT());
           if (jet->pT() > 20. && fabs(jet->eta()) < 10.0) baselineJets.push_back(jet);
-          if(jet->isBJet() && fabs(jet->eta()) < 2.5 && jet->pT() > 25.) bJets.push_back(jet);
+          if(jet->isBJet() && hasTag && fabs(jet->eta()) < 2.5 && jet->pT() > 25.) bJets.push_back(jet);
         }
 
         // Overlap removal
@@ -239,7 +248,7 @@ namespace Gambit {
           P4 jetVec=baselineJets.at(iJet)->mom();
           for (size_t iEl=0;iEl<baselineElectrons.size();iEl++) {
             P4 elVec=baselineElectrons.at(iEl)->mom();
-            if (elVec.deltaR_eta(jetVec)<0.2)overlap=true;
+            if (fabs(elVec.deltaR_eta(jetVec))<0.2)overlap=true;
           }
           if (!overlap&&fabs(baselineJets.at(iJet)->eta())<2.8)goodJets.push_back(baselineJets.at(iJet));
           if (!overlap&&fabs(baselineJets.at(iJet)->eta())<2.5 && baselineJets.at(iJet)->pT()>25.)signalJets.push_back(baselineJets.at(iJet));
@@ -251,7 +260,7 @@ namespace Gambit {
           P4 elVec=baselineElectrons.at(iEl)->mom();
           for (size_t iJet=0;iJet<goodJets.size();iJet++) {
             P4 jetVec=goodJets.at(iJet)->mom();
-            if (elVec.deltaR_eta(jetVec)<0.4)overlap=true;
+            if (fabs(elVec.deltaR_eta(jetVec))<0.4)overlap=true;
           }
           if (!overlap && elVec.pT()>25.)signalElectrons.push_back(baselineElectrons.at(iEl));
           if(!overlap)electronsForVeto.push_back(baselineElectrons.at(iEl));
@@ -265,7 +274,7 @@ namespace Gambit {
 
           for (size_t iJet=0;iJet<goodJets.size();iJet++) {
             P4 jetVec=goodJets.at(iJet)->mom();
-            if (muVec.deltaR_eta(jetVec)<0.4)overlap=true;
+            if (fabs(muVec.deltaR_eta(jetVec))<0.4)overlap=true;
           }
           if (!overlap && muVec.pT()>25.)signalMuons.push_back(baselineMuons.at(iMu));
           if(!overlap)muonsForVeto.push_back(baselineMuons.at(iMu));
@@ -758,6 +767,8 @@ namespace Gambit {
 
 
       void collect_results() {
+
+	finalize();
 
         //Note: am not using shape fit bins
         //They need to be added (but will probably update to paper result)
