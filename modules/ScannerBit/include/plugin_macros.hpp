@@ -96,6 +96,7 @@ namespace __gambit_plugin_namespace__                                           
 
 //constructor
 #define PLUGIN_CONSTRUCTOR                                                                                              \
+void __gambit_plugin_constructor__(); \
 RUN_FUNCTION(__gambit_plugin_constructor__)                                                                             \
 void __gambit_plugin_constructor__()                                                                                    \
 

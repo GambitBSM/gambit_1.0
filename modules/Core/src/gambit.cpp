@@ -14,7 +14,6 @@
 ///  *********************************************
 
 #include "gambit_main.hpp"
-#include "plugin_interface.hpp"
 
 using namespace Gambit;
 using namespace LogTags;

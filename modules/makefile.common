@@ -563,9 +563,9 @@ $(SCANDIR)/lib/libsample.so: $(SCANDIR)/plugins/twalk.o $(SCANDIR)/plugins/craps
 $(SCANDIR)/lib/libexamples.so: $(SCANDIR)/plugins/examples.o
 	$(CC) -shared $(SCANDIR)/plugins/examples.o -o $(SCANDIR)/lib/libexamples.so
 
-$(SCANDIR)/lib/libtest.so: $(SCANDIR)/plugins/test.cpp
-	$(CC) $(CFLAGS) -c -fPIC $(SCANDIR)/plugins/test.cpp -o $(SCANDIR)/build/test.o
-	$(CC) -shared -o $(SCANDIR)/lib/libtest.so $(SCANDIR)/build/test.o
+$(SCANDIR)/lib/libtest.so: $(SCANDIR)/plugins/examples.cpp
+	$(CC) $(CFLAGS) -c -fPIC $(SCANDIR)/plugins/examples.cpp -o $(SCANDIR)/build/examples.o
+	$(CC) -shared -o $(SCANDIR)/lib/libtest.so $(SCANDIR)/build/examples.o
 
 multinest:
 	$(CC) $(CFLAGS) -c -fPIC $(SCANDIR)/plugins/multinest.cpp -o $(SCANDIR)/build/multinest.o -I$(MULTINESTINC) -L$(MULTINESTLIBDIR) -lmultinest

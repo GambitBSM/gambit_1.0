@@ -29,6 +29,7 @@
 #include "priors.hpp"
 #include "printer_interface.hpp"
 #include "plugin_interface.hpp"
+#include "priors/composite.hpp"
 
 namespace Gambit
 {
@@ -65,17 +66,14 @@ namespace Gambit
                 class Gambit_Scanner
                 {
                 private:
-                        const Factory_Base &factory;
-                        const Priors::BasePrior &prior;
+                        const Factory_Base *factory;
+                        const Priors::CompositePrior &prior;
                         printer_interface *printerInterface;
                         Options options;
                         Plugin::Plugin_Loader plugins;
 
                 public:
-                        Gambit_Scanner (const Factory_Base &factory, const Options &options, const Priors::BasePrior &prior, printer_interface *printerInterface = 0) 
-                                : factory(factory), prior(prior), printerInterface(printerInterface), options(options)
-                        {       
-                        }
+                        Gambit_Scanner (const Factory_Base &factory, const Options &options, const Priors::CompositePrior &prior, printer_interface *printerInterface = 0);
 
                         int Run();
                         

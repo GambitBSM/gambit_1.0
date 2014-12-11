@@ -89,6 +89,10 @@ Scanner:
 #multinest:
   #library_path:  ScannerBit/lib/libmultinest_interface.so 
       
+#use_likelihood_plugins:
+#   uniform:
+#      some_param: 10
+      
   crapsample:
     point_number: 2
     output_file:  output
