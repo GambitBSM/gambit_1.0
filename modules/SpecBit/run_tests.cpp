@@ -2,7 +2,7 @@
 // to make sure the Spectrum class and related classes are working correctly
 
 #include "SpecBit_tests.hpp"
-
+#include "SpecBit_examples.hpp"
 using namespace Gambit;
 using namespace SpecBit;
 using namespace flexiblesusy;
@@ -54,14 +54,6 @@ int main(int argc, char* argv[])
    if(pass) std::cout << "running test passed."  << std::endl;
    else std::cout << "running test failed."  << std::endl;
 
-   mssm_manipulate(mssm);  //function can manipulate knowing the model
-
-
   
-  
-   spec_manipulate(spec); //function can manipulate without knowing model.
-
-   SM_checks(spec); // Run some tests on standard model parameters 
-
    return 0;
 }
