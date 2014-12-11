@@ -38,30 +38,8 @@ private:
       /// Sets the renormalisation scale of parameters 
       /// somewhat dangerous to allow this but may be needed
       virtual void SetScale(double scale) = 0;
-      /// return data member matching string
-      virtual double get_tree_MassEigenstate(std::string) const = 0;
-      virtual double get_tree_MassEigenstate(std::string, int) const = 0;
-      virtual double get_tree_MassEigenstate(std::string, int, int) const = 0;
-      virtual double get_tree_Mixing_angle(std::string) const = 0;
-      virtual double get_tree_Mixing_element(std::string, int, int) const = 0;
-
-      virtual double get_mass4_par(std::string) const = 0;
-      virtual double get_mass4_par(std::string, int) const = 0;
-      virtual double get_mass4_par(std::string, int, int) const = 0;
-      virtual double get_mass3_par(std::string) const = 0;
-      virtual double get_mass3_par(std::string, int) const = 0;
-      virtual double get_mass3_par(std::string, int, int) const = 0;
-      virtual double get_mass2_par(std::string) const = 0;
-      virtual double get_mass2_par(std::string, int) const = 0;
-      virtual double get_mass2_par(std::string, int, int) const = 0;
-      virtual double get_mass_par(std::string) const = 0;
-      virtual double get_mass_par(std::string, int) const = 0;
-      virtual double get_mass_par(std::string, int, int) const = 0;
-      virtual double get_dimensionless_par(std::string) const = 0;
-      virtual double get_dimensionless_par(std::string, int) const = 0;
-      virtual double get_dimensionless_par(std::string, int, int) const = 0;
-   
-      /// alternative getter using map
+      
+      /// getters using map
       virtual double get_mass4_parameter(std::string) const = 0;
       virtual double get_mass4_parameter(std::string, int) const = 0;
       virtual double get_mass4_parameter(std::string, int, int) const = 0;
@@ -83,14 +61,7 @@ private:
    protected:
       /// Needed for access to parent object member functions
       virtual Spectrum& get_parent() const = 0;
-   public:
-      /// this get uses dumbest possible approach of if-else statements
-      virtual double get_MPole(std::string) const = 0;
-      virtual double get_MPole(std::string, int) const = 0;
-      virtual double get_MPole(std::string, int, int) const = 0;
-      virtual double get_Mixing_angle(std::string) const = 0;
-      virtual double get_Mixing_element(std::string, int, int) const = 0;
-      
+   public: 
       /// map based getters
       virtual double get_Pole_Mass(std::string) const = 0;
       virtual double get_Pole_Mass(std::string, int) const = 0;

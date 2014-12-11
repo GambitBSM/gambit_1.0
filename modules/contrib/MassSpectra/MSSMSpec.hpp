@@ -91,28 +91,7 @@ namespace Gambit {
       virtual void RunToScale(double scale);
       virtual double GetScale() const;
       virtual void SetScale(double scale);
-      //these are alternative getters taht will be removed eventually.
-      virtual double get_tree_MassEigenstate(std::string) const;
-      virtual double get_tree_MassEigenstate(std::string, int) const;
-      virtual double get_tree_MassEigenstate(std::string, int, int) const;
-      virtual double get_tree_Mixing_angle(std::string) const;
-      virtual double get_tree_Mixing_element(std::string, int, int) const;
-      virtual double get_mass4_par(std::string) const;
-      virtual double get_mass4_par(std::string, int) const;
-      virtual double get_mass4_par(std::string, int, int) const;
-      virtual double get_mass3_par(std::string) const;
-      virtual double get_mass3_par(std::string, int) const;
-      virtual double get_mass3_par(std::string, int, int) const;
-      virtual double get_mass2_par(std::string) const;
-      virtual double get_mass2_par(std::string, int) const;
-      virtual double get_mass2_par(std::string, int, int) const;
-      virtual double get_mass_par(std::string) const;
-      virtual double get_mass_par(std::string, int) const;
-      virtual double get_mass_par(std::string, int, int) const;
-      virtual double get_dimensionless_par(std::string) const;
-      virtual double get_dimensionless_par(std::string, int) const;
-      virtual double get_dimensionless_par(std::string, int, int) const;
-      
+        
       Model get_bound_spec() const; 
    };
    
@@ -144,13 +123,7 @@ namespace Gambit {
       fmap2& get_PoleMixing_map2() const;
 
    public:
-      //  MSSM_Phys(Spec<Model,Model_physical> & x) : my_parent(x) {}
       MSSM_Phys(MSSMSpec<Model> &x) : my_parent(x) {}
-      virtual double get_MPole(std::string) const;
-      virtual double get_MPole(std::string, int) const;
-      virtual double get_MPole(std::string, int, int) const;
-      virtual double get_Mixing_angle(std::string) const;
-      virtual double get_Mixing_element(std::string, int, int) const;
       
       Model get_bound_spec() const; 
    };
@@ -272,9 +245,9 @@ namespace Gambit {
       mssm_ph(*this),
       mssm_drbar_pars(*this),
       Spec<M>(mssm_drbar_pars, mssm_ph),
-      index_offset(0)
+      index_offset(-1)
    {
-      if (switch_index_convention) index_offset = 1;
+      if (switch_index_convention) index_offset = 0;
    }
    
    // Default constructor
@@ -283,9 +256,9 @@ namespace Gambit {
       mssm_ph(*this),
       mssm_drbar_pars(*this),
       Spec<M>(mssm_drbar_pars, mssm_ph),
-      index_offset(0)
+      index_offset(-1)
    {
-      if (switch_index_convention) index_offset = 1;
+      if (switch_index_convention) index_offset = 0;
    }
    
    template <class M>
@@ -632,22 +605,22 @@ namespace Gambit {
     tmp_map["MGluon"] = &Model::get_MVG; 
     tmp_map["MPhoton"] = &Model::get_MVP;
     
-    // these are nort present in the model object currently
+    // these are not present in the model object currently
     // But maybe we should add them
-    tmp_map["MGoldstone0"] = &Model::get_DRbar_neut_goldstone;
-    tmp_map["MA0"] = &Model::get_DRbar_neut_CPodd_higgs;
-    tmp_map["MGoldstonePM"] = &Model::get_DRbar_ch_goldstone; 
-    tmp_map["MHpm"] = &Model::get_DRbar_ch_higgs; 
+    // tmp_map["MGoldstone0"] = &Model::get_DRbar_neut_goldstone;
+    // tmp_map["MA0"] = &Model::get_DRbar_neut_CPodd_higgs;
+    // tmp_map["MGoldstonePM"] = &Model::get_DRbar_ch_goldstone; 
+    // tmp_map["MHpm"] = &Model::get_DRbar_ch_higgs; 
     
-    tmp_map["Mtop"] = &Model::get_DRbar_mtop;
-    tmp_map["Mcharm"] = &Model::get_DRbar_mcharm;
-    tmp_map["Mup"] = &Model::get_DRbar_mup;
-    tmp_map["Mbottom"] = &Model::get_DRbar_mbottom;
-    tmp_map["Mstrange"] = &Model::get_DRbar_mstrange;
-    tmp_map["Mdown"] = &Model::get_DRbar_mdown;
-    tmp_map["Mtau"] = &Model::get_DRbar_mtau; 
-    tmp_map["Mmuon"] = &Model::get_DRbar_mmuon; 
-    tmp_map["Melectron"] = &Model::get_DRbar_melectron; 
+    // tmp_map["Mtop"] = &Model::get_DRbar_mtop;
+    // tmp_map["Mcharm"] = &Model::get_DRbar_mcharm;
+    // tmp_map["Mup"] = &Model::get_DRbar_mup;
+    // tmp_map["Mbottom"] = &Model::get_DRbar_mbottom;
+    // tmp_map["Mstrange"] = &Model::get_DRbar_mstrange;
+    // tmp_map["Mdown"] = &Model::get_DRbar_mdown;
+    // tmp_map["Mtau"] = &Model::get_DRbar_mtau; 
+    // tmp_map["Mmuon"] = &Model::get_DRbar_mmuon; 
+    // tmp_map["Melectron"] = &Model::get_DRbar_melectron; 
     return tmp_map;
    }
    //map for string access with an index supplied
@@ -775,18 +748,6 @@ namespace Gambit {
                               {0,1},{0,1} );
       tmp_map["UP"] = FInfo2( &Model::get_UP_pole_slha, 
                               {0,1},{0,1} );
-
-
-      // tmp_map["ZV"] = &Model::get_ZV_pole_slha;
-      // tmp_map["ZU"] = &Model::get_ZU_pole_slha;
-      // tmp_map["ZE"] = &Model::get_ZE_pole_slha;
-      // tmp_map["ZH"] = &Model::get_ZH_pole_slha;
-      // tmp_map["ZA"] = &Model::get_ZA_pole_slha;
-      // tmp_map["ZPM"] = &Model::get_ZP_pole_slha;
-      
-      // tmp_map["ZN"] = &Model::get_ZN_pole_slha;
-      // tmp_map["UM"] = &Model::get_UM_pole_slha;
-      // tmp_map["UP"] = &Model::get_UP_pole_slha;
    
       /* Could add SM fermion mixing but these are only filled
          when we actually calculate the SM pole masses
@@ -794,665 +755,7 @@ namespace Gambit {
      
       return tmp_map;
    }
-   
-   //Takes a string and an index. 
-   template <class M>
-   double MSSM_DRbarPars<M>::get_tree_MassEigenstate(std::string mass) const {
-      if(mass == "MZ") 
-         {
-            return  my_parent.model.get_MVZ();
-         }
-      else if(mass == "MW") 
-         {
-            return  my_parent.model.get_MVWm();
-         }
-      //I really need to know goldstone index here!
-      //Dangerous otherwise
-      else if(mass == "MA0") 
-         {
-            return  my_parent.model.get_MAh()(1);
-         }
-      //I really need to know goldstone index here!
-      //Dangerous otherwise
-       else if(mass == "MHpm") 
-         {
-            return  my_parent.model.get_MHpm()(1);
-         }
-      //I really need to know goldstone index here!
-      //Dangerous otherwise
-      else if(mass == "MGoldstone0") 
-         {
-            return  my_parent.model.get_MAh()(0);
-         }
-      //I really need to know goldstone index here!
-      //Dangerous otherwise
-       else if(mass == "MGoldstonePM") 
-         {
-            return  my_parent.model.get_MHpm()(0);
-         }
-       else if (mass == "MGluino")
-          {
-             return  my_parent.model.get_MGlu();
-          }
-       else if(mass == "MGluon")
-         {
-            return  my_parent.model.get_MVG();
-         }
-      else if(mass == "MPhoton")
-         {
-            return  my_parent.model.get_MVP();
-         }
-      else if(mass == "Mtop")
-         {
-            return  my_parent.model.get_MFu()(2);
-         }
-       else if(mass == "Mcharm")
-         {
-            return  my_parent.model.get_MFu()(1);
-         }
-       else if(mass == "Mup")
-         {
-            return  my_parent.model.get_MFu()(0);
-         }
-       else if(mass == "Mbottom")
-         {
-            return  my_parent.model.get_MFd()(2);
-         }
-       else if(mass == "Mstrange")
-         {
-            return  my_parent.model.get_MFd()(1);
-         }
-       else if(mass == "Mdown")
-         {
-            return  my_parent.model.get_MFd()(0);
-         }
-       else if(mass == "Mtau")
-         {
-            return  my_parent.model.get_MFe()(2);
-         }
-       else if(mass == "Mmuon")
-         {
-            return  my_parent.model.get_MFe()(1);
-         }
-       else if(mass == "Melectron")
-         {
-            return  my_parent.model.get_MFe()(0);
-         }
-      else{ 
-      std::cout << "Error: The pole mass you requested does not exist in the MSSM" << std::endl;
-      return -1.0;
-      }
-   }
-   
-   //Takes a string and an index. 
-   template <class M>
-   double MSSM_DRbarPars<M>::get_tree_MassEigenstate(std::string mass, int i) const {
-      if(mass == "MSd") 
-         {
-            return my_parent.model.get_MSd()(i);
-         }
-      else if(mass == "MSv") 
-         {
-            return my_parent.model.get_MSv()(i);
-         }
-      else if(mass == "MSu")
-         {
-            return my_parent.model.get_MSu()(i);
-         }
-      else if(mass == "MSe")
-         {
-            return my_parent.model.get_MSe()(i);
-         } 
-      else if(mass == "Mh0") 
-         {
-            return my_parent.model.get_Mhh()(i);
-         }
-      //Here we may access the goldstone boson
-      //this is probably too dangerous to keep!
-      else if(mass == "MA0") 
-         {
-            return my_parent.model.get_MAh()(i);
-         }
-      //Here we may access the goldstone boson
-      //this is probably too dangerous to keep!
-       else if(mass == "MHpm") 
-         {
-            return my_parent.model.get_MHpm()(i);
-         }
-      else if(mass == "MCha") 
-         {
-            return my_parent.model.get_MCha()(i);
-         }
-      else if(mass == "MChi") 
-         {
-            return my_parent.model.get_MChi()(i);
-         }
-      else{ 
-      std::cout << "Error: The pole mass you requested does not exist in the MSSM" << std::endl;
-      return -1.0;
-      }
-   }
-   
-   
-   //Takes a string and an index. 
-   template <class M>
-   double MSSM_DRbarPars<M>::get_tree_MassEigenstate(std::string mass, int i, int j) const {
-      std::cout << "Error: The pole mass you requested does not exist in the MSSM" << std::endl;
-      return -1.0;
-   
-   }
-   
-   
-   //Takes a string and an index. 
-   template <class M>
-   double MSSM_Phys<M>::get_MPole(std::string polemass) const {
-      if(polemass == "MZ") 
-         {
-            return my_parent.model.get_physical().MVZ;
-         }
-      else if(polemass == "MW") 
-         {
-            return my_parent.model.get_physical().MVWm;
-         }
-      //I really need to know goldstone index here!
-      //Dangerous otherwise
-      else if(polemass == "MA0") 
-         {
-            return my_parent.model.get_physical().MAh(1);
-         }
-      //I really need to know goldstone index here!
-      //Dangerous otherwise
-       else if(polemass == "MHpm") 
-         {
-            return my_parent.model.get_physical().MHpm(1);
-         }
-      //I really need to know goldstone index here!
-      //Dangerous otherwise
-      else if(polemass == "MGoldstone0") 
-         {
-            return my_parent.model.get_physical().MAh(0);
-         }
-      //I really need to know goldstone index here!
-      //Dangerous otherwise
-       else if(polemass == "MGoldstonePM") 
-         {
-            return my_parent.model.get_physical().MHpm(0);
-         }
-       else if (polemass == "MGluino")
-          {
-             return my_parent.model.get_physical().MGlu;
-          }
-       else if(polemass == "MGluon")
-         {
-            return my_parent.model.get_physical().MVG;
-         }
-      else if(polemass == "MPhoton")
-         {
-            return my_parent.model.get_physical().MVP;
-         }
-      else if(polemass == "Mtop")
-         {
-            return my_parent.model.get_physical().MFu(2);
-         }
-       else if(polemass == "Mcharm")
-         {
-            return my_parent.model.get_physical().MFu(1);
-         }
-       else if(polemass == "Mup")
-         {
-            return my_parent.model.get_physical().MFu(0);
-         }
-       else if(polemass == "Mbottom")
-         {
-            return my_parent.model.get_physical().MFd(2);
-         }
-       else if(polemass == "Mstrange")
-         {
-            return my_parent.model.get_physical().MFd(1);
-         }
-       else if(polemass == "Mdown")
-         {
-            return my_parent.model.get_physical().MFd(0);
-         }
-       else if(polemass == "Mtau")
-         {
-            return my_parent.model.get_physical().MFe(2);
-         }
-       else if(polemass == "Mmuon")
-         {
-            return my_parent.model.get_physical().MFe(1);
-         }
-       else if(polemass == "Melectron")
-         {
-            return my_parent.model.get_physical().MFe(0);
-         }
-      else{ 
-      std::cout << "Error: The pole mass you requested does not exist in the MSSM" << std::endl;
-      return -1.0;
-      }
-   }
-   
-   //Takes a string and an index. 
-   template <class M>
-   double MSSM_Phys<M>::get_MPole(std::string polemass, int i) const {
-      if(polemass == "MSd") 
-         {
-            return my_parent.model.get_physical().MSd(i);
-         }
-      else if(polemass == "MSv") 
-         {
-            return my_parent.model.get_physical().MSv(i);
-         }
-      else if(polemass == "MSu")
-         {
-            return my_parent.model.get_physical().MSu(i);
-         }
-      else if(polemass == "MSe")
-         {
-            return my_parent.model.get_physical().MSe(i);
-         } 
-      else if(polemass == "Mh0") 
-         {
-            return my_parent.model.get_physical().Mhh(i);
-         }
-      //Here we may access the goldstone boson
-      //this is probably too dangerous to keep!
-      else if(polemass == "MA0") 
-         {
-            return my_parent.model.get_physical().MAh(i);
-         }
-      //Here we may access the goldstone boson
-      //this is probably too dangerous to keep!
-       else if(polemass == "MHpm") 
-         {
-            return my_parent.model.get_physical().MHpm(i);
-         }
-      else if(polemass == "MCha") 
-         {
-            return my_parent.model.get_physical().MCha(i);
-         }
-      else if(polemass == "MChi") 
-         {
-            return my_parent.model.get_physical().MChi(i);
-         }
-      else{ 
-      std::cout << "Error: The pole mass you requested does not exist in the MSSM" << std::endl;
-      return -1.0;
-      }
-   }
-   
-   
-   template <class M>
-   double MSSM_DRbarPars<M>::get_tree_Mixing_angle(std::string MixMat) const {
     
-      std::cout << "Error: Sorry I know nothing" << std::endl;
-      return 6666666666666.6666666666666;
-   
-   }
-   template <class M>
-   double MSSM_DRbarPars<M>::get_tree_Mixing_element(std::string MixMat, int i, int j) const {
-   
-    //Down squark mixing matrix
-      if(MixMat == "ZD") {
-         return my_parent.model.get_ZD()(i,j);
-      }
-      //Up squark mixing matrix
-      else if(MixMat == "ZU") {
-         return my_parent.model.get_ZU()(i,j);
-      }
-      //Charged slepton mixing matrix
-      else if(MixMat == "ZE") {
-         return my_parent.model.get_ZE()(i,j);
-      }
-      //Charged sneutrino mixing matrix
-      else if(MixMat == "ZV") {
-         return my_parent.model.get_ZV()(i,j);
-      }
-      //CP even Higgs mixing matrix
-      else if(MixMat == "ZH") {
-         return my_parent.model.get_ZH()(i,j);
-      }
-       //CP odd Higgs mixing matrix
-      else if(MixMat == "ZA") {
-         return my_parent.model.get_ZA()(i,j);
-      }
-      //Charged Higgs mixing matrix
-      else if(MixMat == "ZPM") {
-         return my_parent.model.get_ZP()(i,j);
-      }
-      // //Neutralino mass matrix
-      // else if(MixMat == "ZN") {
-      //    return my_parent.model.get_get_physical().ZN()(i,j);
-      // }
-      //  //Chargino mass matrices
-      // else if(MixMat == "UM") {
-      //    return my_parent.model.get_physical().UM()(i,j);
-      // }
-      // //Chargino mass matrices
-      // else if(MixMat == "UP") {
-      //    return my_parent.model.get_physical().UP()(i,j);
-      // }  
-       
-      // //Down quark left mixing matrix
-      // if(MixMat == "ZDL") {
-      //    return my_parent.model.get_physical().ZDL()(i,j);
-      // }
-      // //Down quark right mixing matrix
-      // if(MixMat == "ZDR") {
-      //    return my_parent.model.get_physical().ZDL()(i,j);
-      // }
-      // //Up quark left mixing matrix
-      // else if(MixMat == "ZUL") {
-      //    return my_parent.model.get_physical().ZUL()(i,j);
-      // }
-      //  //Up quark right mixing matrix
-      // else if(MixMat == "ZUR") {
-      //    return my_parent.model.get_physical().ZUR()(i,j);
-      // }
-      // //Charged lepton left mixing matrix
-      // else if(MixMat == "ZEL") {
-      //    return my_parent.model.get_physical().ZEL()(i,j);
-      // }
-      // //Charged lepton left mixing matrix
-      // else if(MixMat == "ZER") {
-      //    return my_parent.model.get_physical().ZER()(i,j);
-      // }
-   
-   std::cout << "Error: Sorry I know nothing" << std::endl;
-      return 6666666666666.6666666666666;
-   
-   }
-   
-   //Takes a string and an index. 
-   template <class M>
-   double MSSM_Phys<M>::get_MPole(std::string polemass, int i, int j) const {
-      std::cout << "Error: The pole mass you requested does not exist in the MSSM" << std::endl;
-      return -1.0;
-   
-   }
-   
-   
-   
-   template <class M>
-   double MSSM_Phys<M>::get_Mixing_angle(std::string) const {
-      std::cout << "Error: Sorry I know nothing" << std::endl;
-      return 6666666666666.6666666666666;
-   }
-   
-   template <class M>
-   double MSSM_Phys<M>::get_Mixing_element(std::string MixMat, int i, int j) const {
-      //Down squark mixing matrix
-      if(MixMat == "ZD") {
-         return my_parent.model.get_physical().ZD(i,j);
-      }
-      //Up squark mixing matrix
-      else if(MixMat == "ZU") {
-         return my_parent.model.get_physical().ZU(i,j);
-      }
-      //Charged slepton mixing matrix
-      else if(MixMat == "ZE") {
-         return my_parent.model.get_physical().ZE(i,j);
-      }
-      //Charged sneutrino mixing matrix
-      else if(MixMat == "ZV") {
-         return my_parent.model.get_physical().ZV(i,j);
-      }
-      //CP even Higgs mixing matrix
-      else if(MixMat == "ZH") {
-         return my_parent.model.get_physical().ZH(i,j);
-      }
-       //CP odd Higgs mixing matrix
-      else if(MixMat == "ZA") {
-         return my_parent.model.get_physical().ZA(i,j);
-      }
-      //Charged Higgs mixing matrix
-      else if(MixMat == "ZPM") {
-         return my_parent.model.get_physical().ZP(i,j);
-      }
-      // //Neutralino mass matrix
-      // else if(MixMat == "ZN") {
-      //    return my_parent.model.get_physical().ZN(i,j);
-      // }
-      //  //Chargino mass matrices
-      // else if(MixMat == "UM") {
-      //    return my_parent.model.get_physical().UM(i,j);
-      // }
-      // //Chargino mass matrices
-      // else if(MixMat == "UP") {
-      //    return my_parent.model.get_physical().UP(i,j);
-      // }  
-       
-      // //Down quark left mixing matrix
-      // if(MixMat == "ZDL") {
-      //    return my_parent.model.get_physical().ZDL(i,j);
-      // }
-      // //Down quark right mixing matrix
-      // if(MixMat == "ZDR") {
-      //    return my_parent.model.get_physical().ZDL(i,j);
-      // }
-      // //Up quark left mixing matrix
-      // else if(MixMat == "ZUL") {
-      //    return my_parent.model.get_physical().ZUL(i,j);
-      // }
-      //  //Up quark right mixing matrix
-      // else if(MixMat == "ZUR") {
-      //    return my_parent.model.get_physical().ZUR(i,j);
-      // }
-      // //Charged lepton left mixing matrix
-      // else if(MixMat == "ZEL") {
-      //    return my_parent.model.get_physical().ZEL(i,j);
-      // }
-      // //Charged lepton left mixing matrix
-      // else if(MixMat == "ZER") {
-      //    return my_parent.model.get_physical().ZER(i,j);
-      // }
-    
-      std::cout << "Error: Sorry I know nothing" << std::endl;
-      return 6666666666666.6666666666666;
-   }
-   
-   // void Model::mass2_par_mapping() {
-   //       mass2_par_map["mHd2"] = &Model::model.get_mHd2;
-   //       mass2_par_map["mHu2"] = &Model::model.get_mHu2;
-   //       mass2_par_map["BMu"] = &Model::model.get_BMu;
-   
-   //    }
-   
-   // double Model::get_mass2_par(std::string masssq) const {
-   //    std::map<std::string,getmethod>::const_iterator found= mass2_par_map.find(masssq);
-   //    if(found!=mass2_par_map.end()){
-   //       getmethod func = found->second;
-   //       double result = (this->*func)();
-   //       return result;
-   //    }
-      
-   // }
-   
-   
-   // double MSSMSpec::get_mass2_par(std::string masssq) const {
-   //    std::cout<< "this has no implementation yet." << std::endl;   
-   // }
-   
-   
-   template <class M>
-   double MSSM_DRbarPars<M>::get_mass4_par(std::string mass) const {
-    std::cout << "Error: The dimension 4 parameter you requested does not exist in the MSSM" << std::endl;
-      return -1.0;   
-   }
-   template <class M>
-   double MSSM_DRbarPars<M>::get_mass4_par(std::string, int i) const {
-      std::cout << "Error: The dimension 4 parameter you requested does not exist in the MSSM" << std::endl;
-      return -1.0;
-   }
-   template <class M>
-   double MSSM_DRbarPars<M>::get_mass4_par(std::string mass, int i, int j) const {
-   std::cout << "Error: The dimension 4 parameter you requested does not exist in the MSSM" << std::endl;
-      return -1.0;
-   
-   }
-   
-   template <class M>
-   double MSSM_DRbarPars<M>::get_mass3_par(std::string mass) const {
-    std::cout << "Error: The dimension 3 parameter you requested does not exist in the MSSM" << std::endl;
-      return -1.0;   
-   }
-   template <class M>
-   double MSSM_DRbarPars<M>::get_mass3_par(std::string, int i) const {
-      std::cout << "Error: The dimension 3 parameter you requested does not exist in the MSSM" << std::endl;
-      return -1.0;
-   }
-   template <class M>
-   double MSSM_DRbarPars<M>::get_mass3_par(std::string mass, int i, int j) const {
-   std::cout << "Error: The dimension 3 parameter you requested does not exist in the MSSM" << std::endl;
-      return -1.0;
-   
-   }
-   template <class M>
-   double MSSM_DRbarPars<M>::get_mass2_par(std::string mass) const {
-      if(mass == "BMu"){
-         return my_parent.model.get_BMu();
-      }
-      else if (mass == "mHd2"){
-         return my_parent.model.get_mHd2();
-      }
-       else if (mass == "mHu2"){
-         return my_parent.model.get_mHu2();
-      }
-      else{
-    std::cout << "Error: The dimension 2 parameter you requested does not exist in the MSSM" << std::endl;
-      return -1.0;
-      }
-   }
-   template <class M>
-   double MSSM_DRbarPars<M>::get_mass2_par(std::string, int i) const {
-      std::cout << "Error: The dimension 2 parameter you requested does not exist in the MSSM" << std::endl;
-      return -1.0;
-   }
-   template <class M>
-   double MSSM_DRbarPars<M>::get_mass2_par(std::string mass, int i, int j) const {
-      if(mass == "mq2"){
-         return my_parent.model.get_mq2(i,j);
-      }
-      else if (mass == "ml2"){
-         return my_parent.model.get_ml2(i,j);
-      }
-       else if (mass == "md2"){
-         return my_parent.model.get_md2(i,j);
-      }
-       else if (mass == "mu2"){
-         return my_parent.model.get_mu2(i,j);
-      }
-       else if (mass == "me2"){
-         return my_parent.model.get_me2(i,j);
-      }
-    else{
-     std::cout << "Error: The dimension 1 parameter you requested does not exist in the MSSM" << std::endl;
-      return -1.0;
-      }
-   }
-   
-   template <class M>
-   double MSSM_DRbarPars<M>::get_mass_par(std::string mass) const {
-      if(mass == "Mu"){
-         return my_parent.model.get_Mu();
-      }
-      else if (mass == "vu") {
-         return my_parent.model.get_vu();
-      }
-      else if (mass == "vd") {
-         return my_parent.model.get_vd();
-      }
-      else if (mass == "vev") {
-         return sqrt(my_parent.model.get_vu()*my_parent.model.get_vu() + my_parent.model.get_vd()*my_parent.model.get_vd());
-      }
-      else if (mass == "M1") {
-         //This name may change at some point.
-         return my_parent.model.get_MassB();
-      } 
-       else if (mass == "M2") {
-         //This name may change at some point.
-         return my_parent.model.get_MassWB();
-      } 
-       else if (mass == "M3") {
-         //This name may change at some point.
-         return my_parent.model.get_MassG();
-      } 
-      else{
-     std::cout << "Error: The dimension 1 parameter you requested does not exist in the MSSM" << std::endl;
-      return -1.0;
-      }
-   }
-   
-   template <class M>
-   double MSSM_DRbarPars<M>::get_mass_par(std::string, int) const {
-   
-     std::cout << "Error: The dimension 1 parameter you requested does not exist in the MSSM" << std::endl;
-      return -1.0;
-   }
-   template <class M>
-   double MSSM_DRbarPars<M>::get_mass_par(std::string mass, int i, int j) const {
-      if (mass == "TYd" || mass == "ad"){
-         return my_parent.model.get_TYd(i,j);
-      }
-      else if (mass == "TYe" || mass == "ae"){
-         return my_parent.model.get_TYe(i,j);
-      } 
-      else if (mass == "TYu" || mass == "au"){
-         return my_parent.model.get_TYu(i,j);
-      } 
-      else{
-     std::cout << "Error: The dimension 1 parameter you requested does not exist in the MSSM" << std::endl;
-      return -1.0;
-      }
-   }
-      
-   template <class M>
-      double MSSM_DRbarPars<M>::get_dimensionless_par(std::string coupling) const {
-         if(coupling == "g1"){
-            return my_parent.model.get_g1();
-         }
-         else if (coupling == "g2"){
-            return my_parent.model.get_g2();
-         }
-         else if (coupling == "g3"){
-            return my_parent.model.get_g3();
-         }
-         else if (coupling == "tanbeta"){
-            return my_parent.model.get_vu() / my_parent.model.get_vd();
-         }
-         else{
-     std::cout << "Error: The dimensionless parameter you requested does not exist in the MSSM" << std::endl;
-      return -1.0;
-         }
-   }
-   
-   template <class M>
-      double MSSM_DRbarPars<M>::get_dimensionless_par(std::string coupling, int i) const {   
-     std::cout << "Error: The dimensionless parameter you requested does not exist in the MSSM" << std::endl;
-      return -1.0;
-   }
-   
-   
-   
-   template <class M>
-      double MSSM_DRbarPars<M>::get_dimensionless_par(std::string coupling, int i, int j) const {
-         if(coupling == "Yu"){
-            return my_parent.model.get_Yu(i,j);
-         }
-         else if(coupling == "Yd"){
-            return my_parent.model.get_Yd(i,j);
-         }
-         else if(coupling == "Ye"){
-            return my_parent.model.get_Ye(i,j);
-         }
-         else{
-     std::cout << "Error: The pole mass you requested does not exist in the MSSM" << std::endl;
-      return -1.0;
-         }
-   
-   
-      }
-   
    
    template <class Model>
    Model MSSMSpec<Model>::get_modelobject() {
@@ -1460,12 +763,6 @@ namespace Gambit {
    }
    
    
-   
-   // MSSMSpec::fmap& MSSMSpec::get_mass2_map() const {return mass2_map;} \
-   //   Model MSSMSpec::get_bound_spec() const {return model;} \
-   //   MSSMSpec::fmap  MSSMSpec::mass2_map(MSSMSpec::fill_mass2_map());
-
-
    // Use our time-saving macro to define common member functions
    MODEL_SPEC_TEMPLATE_MEMBER_FUNCTIONS(MSSMSpec)
    MODEL_RUNNING_TEMPLATE_MEMBER_FUNCTIONS(MSSM_DRbarPars)
