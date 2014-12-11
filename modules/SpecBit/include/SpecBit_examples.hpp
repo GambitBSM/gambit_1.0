@@ -24,7 +24,7 @@
 
  using namespace Gambit;
 // using namespace SpecBit;
-using namespace flexiblesusy;
+//using namespace flexiblesusy;
 
 template <class Model> 
 void setpars(Model& mssm)
@@ -116,7 +116,7 @@ void setpars(Model& mssm)
    MassG = 1114.45;
    
    // set parameters
-   mssm.set_scale(Electroweak_constants::MZ);
+   mssm.set_scale(flexiblesusy::Electroweak_constants::MZ);
    mssm.set_Yu(Yu);
    mssm.set_Yd(Yd);
    mssm.set_Ye(Ye);
