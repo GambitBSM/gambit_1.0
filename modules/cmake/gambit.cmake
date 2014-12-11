@@ -9,10 +9,8 @@ set(GAMBIT_INCDIRS ${GAMBIT_INCDIRS} "${PROJECT_SOURCE_DIR}/Printers/include")
 set(GAMBIT_INCDIRS ${GAMBIT_INCDIRS} "${PROJECT_SOURCE_DIR}/Core/include")
 
 #set include directores for GAMBIT modules
-set(EXCLUDES "ColliderBit")  #FIXME
-retrieve_bits(GAMBIT_BITS ${PROJECT_SOURCE_DIR} ${EXCLUDES})
+retrieve_bits(GAMBIT_BITS ${PROJECT_SOURCE_DIR} "${itch}" "Quiet")
 foreach(bit ${GAMBIT_BITS})
   set(GAMBIT_INCDIRS ${GAMBIT_INCDIRS} "${PROJECT_SOURCE_DIR}/${bit}/include")
 endforeach()
 
-include(CMakeParseArguments)

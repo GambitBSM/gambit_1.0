@@ -91,8 +91,8 @@ namespace Gambit {
           pdg = TDatabasePDG::Instance();
 
           modularDelphes->InitTask();
-        } catch(runtime_error &e) {
-          cerr << "** ERROR: " << e.what() << endl;
+        } catch(std::runtime_error &e) {
+          std::cerr << "** ERROR: " << e.what() << endl;
           exit(EXIT_FAILURE);
         }
       }
@@ -106,8 +106,8 @@ namespace Gambit {
           convertInput(eventIn);
           modularDelphes->ProcessTask();
           convertOutput(eventOut);
-        } catch(runtime_error &e) {
-          cerr << "** ERROR: " << e.what() << endl;
+        } catch(std::runtime_error &e) {
+          std::cerr << "** ERROR: " << e.what() << endl;
           exit(EXIT_FAILURE);
         }
       }
@@ -223,7 +223,7 @@ namespace Gambit {
           /// @TODO How to convert Py8 events without hadronisation?
           candidate->PID = p.id();
           pdgCode = abs(candidate->PID);
-
+	  
           candidate->Status=p.status();
           pdgParticle = pdg->GetParticle(p.id());
 
@@ -232,11 +232,13 @@ namespace Gambit {
 
           candidate->Momentum.SetPxPyPzE(p.px(), p.py(), p.pz(), p.e());
           candidate->Position.SetXYZT(p.xProd(), p.yProd(), p.zProd(), p.tProd());
-
+	  candidate->D1 = p.daughter1();
+	  candidate->D2 = p.daughter2();
           /// @TODO Why do the non-final particles (other than B's and taus) need to be passed? Speedup?
           allParticleOutputArray->Add(candidate);
           if (!pdgParticle) continue;
           if (p.isFinal()) stableParticleOutputArray->Add(candidate);
+
           if (pdgCode <= 5 || pdgCode == 21 || pdgCode == 15) partonOutputArray->Add(candidate);
         }
       }

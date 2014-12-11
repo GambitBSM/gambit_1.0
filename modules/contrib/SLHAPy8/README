@@ -1,6 +1,0 @@
-Ben Farmer
-
-3 Mar 2014
-
-These files are ripped straight out of Pythia8. The idea is not to modify them in any way, and to compile them into a static library which we link against. Pythia 8 is distributed under the GNU GPL v2, so I think that means we can use it and even modify it however we like, so long as it gets re-released under that same license.
-

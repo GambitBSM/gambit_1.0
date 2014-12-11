@@ -191,6 +191,16 @@ namespace Gambit
           return node.as<TYPE>();
         }
 
+        template<typename TYPE, typename... args> TYPE getValueOrDef(TYPE def, const args&... keys) const
+        {
+          const YAML::Node node = getVariadicNode(keyValuePairNode, keys...);
+          if (not node)
+          {
+              return def;
+          }
+          return node.as<TYPE>();
+        }
+
         //
         // Getters for model/parameter section
         //

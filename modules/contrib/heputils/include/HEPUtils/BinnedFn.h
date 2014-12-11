@@ -88,7 +88,8 @@ namespace HEPUtils {
   };
 
 
-  // Simple class just to do 1D bin index lookups. Not a container.
+
+  // Simple class just to do 2D bin index lookups. Not a container.
   template <typename TX=float, typename TY=float>
   class Binning2D {
   public:
@@ -161,6 +162,7 @@ namespace HEPUtils {
     Binning1D<TX> binningX, binningY;
 
   };
+
 
 
   /// Binned container of Ts in 1D

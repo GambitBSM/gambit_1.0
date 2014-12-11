@@ -33,6 +33,7 @@
 
 #include "model_parameters.hpp"        // Definitions required to understand model parameter objects
 #include "base_functions.hpp"          // GAMBIT BaseFunction Objects
+#include "funktions.hpp"               // GAMBIT Funktions (replaces BaseFunctions)
 #include "SLHA_readers.hpp"            // SLHA readers from contributed packages
 
 // Spectrum object from flexiblesusy backend

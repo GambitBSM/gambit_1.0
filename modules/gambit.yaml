@@ -86,18 +86,8 @@ Printer:
 
 Scanner:
 
-  #plugin:  loopsample
-  plugin: crapsample
-  file_path:  ScannerBit/lib/libsample.so
-
-  #plugin:  multinest
-  #file_path:  ScannerBit/lib/libmultinest_interface.so 
-      
-  enable_redirect: false
-
-  redirect_output:
-     scanner:  xterm
-  #   error:  test_errors
+#multinest:
+  #library_path:  ScannerBit/lib/libmultinest_interface.so 
       
   crapsample:
     point_number: 2
@@ -255,12 +245,6 @@ ObsLikes:
   # Uncomment to test ColliderBit
   #- purpose:      Observable
   #  capability:   analysisAccumulator
-
-  # Test Pythia8 SLHA reader
-  - purpose:      Likelihood
-    capability:   MSSMslha_testLogL
-    function:     MSSMtestLogL
-    printme:      false
 
   # Test vector output of printer
   #- purpose:      Observable

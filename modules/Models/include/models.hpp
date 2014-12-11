@@ -131,8 +131,11 @@ namespace Gambit
         /// Check if model 1 is an ancestor of model 2
         bool ancestor_of (const str &, const str &) const;
 
-        /// Check if model 1 can be interpreted as a model 2
-        bool interpretable_as (const str&, const str&) const;
+        /// Check if model 1 exists somewhere downstream of (and can be therefore be interpreted as a) model 2
+        bool downstream_of (const str&, const str&) const;
+
+        /// Check if model 1 exists somewhere upstream of model 2, allowing model 2 to be interpreted as model 1
+        bool upstream_of (const str&, const str&) const;
 
     };
  

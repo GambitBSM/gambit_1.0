@@ -28,9 +28,7 @@
 ///
 ///  *********************************************
 
-//#ifdef CONFIG_H
-#include "config.h"
-//#endif
+#include <chrono>
 
 #include "functors.hpp"
 #include "models.hpp"
@@ -427,7 +425,7 @@ namespace Gambit
       {
         if (myClaw->model_exists(*it))
         {
-          if (myClaw->interpretable_as(model, *it)) return true;
+          if (myClaw->downstream_of(model, *it)) return true;
         } 
       }    
       return false;    
@@ -450,7 +448,7 @@ namespace Gambit
           {
             if (myClaw->model_exists(*it))
             {
-              if (myClaw->interpretable_as(model, *it)) return true;
+              if (myClaw->downstream_of(model, *it)) return true;
             }
           }
         }
@@ -472,7 +470,7 @@ namespace Gambit
           {
             if (myClaw->model_exists(*jt))
             {
-              if (myClaw->interpretable_as(*jt, *it)) return true;
+              if (myClaw->downstream_of(*jt, *it)) return true;
             }
           } 
         }    
@@ -499,7 +497,7 @@ namespace Gambit
       {
         if (myClaw->model_exists(it->first))
         {
-          if (myClaw->interpretable_as(model, it->first)) return it->first;
+          if (myClaw->downstream_of(model, it->first)) return it->first;
         } 
       }    
       return "";    
@@ -514,7 +512,6 @@ namespace Gambit
                                                  str origin_name,
                                                  Models::ModelFunctorClaw &claw)
     : functor                 (func_name, func_capability, result_type, origin_name, claw),
-      runtime                 (FUNCTORS_RUNTIME_INIT),
       runtime_average         (FUNCTORS_RUNTIME_INIT),           // default 1 micro second
       fadeRate                (FUNCTORS_FADE_RATE),              // can be set individually for each functor
       pInvalidation           (FUNCTORS_BASE_INVALIDATION_RATE),
@@ -563,7 +560,6 @@ namespace Gambit
     void module_functor_common::reset()
     {
       needs_recalculating = true;
-      runtime = .0;
     }
 
     /// Tell the functor that it invalidated the current point in model space, pass a message explaining why, and throw an exception.
@@ -1235,26 +1231,20 @@ namespace Gambit
     /// Do pre-calculate timing things
     void module_functor_common::startTiming(double & nsec, double & sec)
     {
-#ifndef HAVE_MAC
-      clock_gettime(CLOCK_MONOTONIC, &tp);
-#endif
-      nsec = (double)-tp.tv_nsec;
-      sec = (double)-tp.tv_sec;
+      (void)nsec; (void)sec;
+      start = std::chrono::system_clock::now();
     }
 
     /// Do post-calculate timing things
     void module_functor_common::finishTiming(double nsec, double sec)
     {
-#ifndef HAVE_MAC
-      clock_gettime(CLOCK_MONOTONIC, &tp);
-#endif
-      nsec += (double)tp.tv_nsec;
-      sec += (double)tp.tv_sec;
-      runtime = sec*1e9 + nsec;
-      needs_recalculating = false;
-      runtime_average = runtime_average*(1-fadeRate) + fadeRate*runtime;
+      (void)nsec; (void) sec;
+      end = std::chrono::system_clock::now();
+      runtime = end-start;
+      runtime_average = runtime_average*(1-fadeRate) + fadeRate*runtime.count();
       pInvalidation = pInvalidation*(1-fadeRate) + fadeRate*FUNCTORS_BASE_INVALIDATION_RATE;
-      if (not omp_in_parallel()) cout << "Runtime " << myName << ": " << runtime << " ns (" << runtime_average << " ns)" << endl;
+      if (not omp_in_parallel()) cout << "Runtime " << myName << ": " << runtime.count() << " s (" << runtime_average << " s)" << endl;
+      needs_recalculating = false;
     }
 
 
