@@ -14,5 +14,8 @@ EIGEN=../../extras/eigen3
 GSL=/usr/local/gsl/1.12-gcc/include
 #GSL=/usr/include/gsl/
 
-g++ -Wfatal-errors -std=c++11 -c -o run_tests.o run_tests.cpp -Iinclude -I$MS $FSINCLUDES -I$EIGEN -I$GSL
-g++ -Wfatal-errors -pthread -std=c++11 -o run_tests run_tests.o $FSLIBS -lgsl -lgslcblas -llapack -latlas -lblas -lgfortran -L/usr/lib/gcc/x86_64-linux-gnu/4.6/
+g++ -std=c++11 -c -o run_tests.o run_tests.cpp -Iinclude -I$MS $FSINCLUDES -I$EIGEN -I$GSL
+g++ -pthread -std=c++11 -o run_tests run_tests.o $FSLIBS -lgsl -lgslcblas -llapack  -lblas -lgfortran -L/usr/lib/gcc/x86_64-linux-gnu/4.6/
+
+g++  -std=c++11 -c -o run_examples.o run_examples.cpp -Iinclude -I$MS $FSINCLUDES -I$EIGEN -I$GSL
+g++ -pthread -std=c++11 -o run_examples run_examples.o $FSLIBS -lgsl -lgslcblas -llapack  -lblas -lgfortran -L/usr/lib/gcc/x86_64-linux-gnu/4.6/

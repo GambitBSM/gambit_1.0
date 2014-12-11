@@ -2,7 +2,7 @@
 // to make sure the Spectrum class and related classes are working correctly
 
 #include "SpecBit_tests.hpp"
-
+#include "SpecBit_examples.hpp"
 using namespace Gambit;
 using namespace SpecBit;
 using namespace flexiblesusy;
@@ -26,7 +26,8 @@ int main(int argc, char* argv[])
    MSSMSpec<CMSSM_slha<Two_scale>> mssm(FS_model_slha);
 
    // Check contents
-   std::cout << "This is specbit_tests. Checking Spectrum object contents..." << std::endl;
+   std::cout << "This is specbit_tests. Checking Spectrum object contents..." 
+             << std::endl;
    if(TestMssmParGets(mssm, mssm.model)==false){
        std::cout << "TestMssmParGets fail." << std::endl;
        //return 1;
@@ -41,14 +42,18 @@ int main(int argc, char* argv[])
    //stored in Gambit after the spectrum generator has run
    // mssm.mass2_par_mapping(); //call mapping - this needs to be changed.
    
-   mssm_manipulate(mssm);  //function can manipulate knowing the model
-
-
+   //test if things cahnge after running up and down
+   double tol = 1e-6;
+   std::cout << "Starting running test..." << std::endl;
+   bool pass = running_test(mssm,FS_model_slha,tol);
+   if(pass) std::cout << "running test passed."  << std::endl;
+   else std::cout << "running test failed."  << std::endl;
+   
    Spectrum* spec = &mssm; //Convert pointer to Spectrum type
+   pass = running_test(spec,FS_model_slha,tol); 
+   if(pass) std::cout << "running test passed."  << std::endl;
+   else std::cout << "running test failed."  << std::endl;
+
   
-   spec_manipulate(spec); //function can manipulate without knowing model.
-
-   SM_checks(spec); // Run some tests on standard model parameters 
-
    return 0;
 }

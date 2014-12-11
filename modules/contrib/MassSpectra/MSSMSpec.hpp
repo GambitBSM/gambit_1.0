@@ -371,12 +371,10 @@ namespace Gambit {
    //inheritance is complicated
    template <class Model>
    void MSSM_DRbarPars<Model>::RunToScale(double scale){
-      std::cout << "In mssm implementation of RunToScale" << std::endl;
       my_parent.model.Model::run_to(scale);
    }
    template <class M>
    double MSSM_DRbarPars<M>::GetScale() const {
-      std::cout << "In mssm implementation of GetScale" << std::endl;
       return my_parent.model.get_scale();
    }
    template <class M>

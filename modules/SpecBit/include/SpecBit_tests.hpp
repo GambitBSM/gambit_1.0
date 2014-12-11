@@ -50,13 +50,11 @@ namespace Gambit
    
    namespace SpecBit
    {
-      //using namespace LogTags;
-      using namespace flexiblesusy;
-      
+    
       bool print_error(bool pass, std::string get_type, std::string data, 
                        double sting_get_out, double data_member,  
-                       int i = -1, int j = -1) { 
-         
+                       int i = -1, int j = -1) 
+      {    
          OUTPUT << " returning fail on test for: " << std::endl;
          if (i > -1) OUTPUT << "with first index = " << i << std::endl;
          if (j > -1) OUTPUT << "with second index = " << j << std::endl;
@@ -72,8 +70,8 @@ namespace Gambit
       
       void print_error(std::string get_type, std::string name, 
                        double sting_get_out, double data_member,  
-                       int i = -1, int j = -1) { 
-         
+                       int i = -1, int j = -1) 
+      {    
          OUTPUT << " returning fail on test for: " << std::endl;
          if (i > -1) OUTPUT << "with first index = " << i << std::endl;
          if (j > -1) OUTPUT << "with second index = " << j << std::endl;
@@ -87,8 +85,9 @@ namespace Gambit
 
       bool test_getters(std::string get_type, 
                         std::string name, double getter_output, 
-                        double data_member, int i = -1, int j = -1){
-         bool pass = is_equal(getter_output,data_member);
+                        double data_member, int i = -1, int j = -1)
+      {
+         bool pass = flexiblesusy::is_equal(getter_output,data_member);
          // if(pass == false) return pass;
          if(pass == false)
             print_error(get_type, name, getter_output, data_member,i,j); 
@@ -100,10 +99,36 @@ namespace Gambit
       // These are not known to Gambit
     
       template <class M>
-      bool TestMssmParMass2_0(MSSMSpec<M> mssm, M FSmssm, 
-                              bool immediate_exit = true){      
+      bool TestMssmParMass2_0(Spectrum * spec, M FSmssm, 
+                              bool immediate_exit = true)
+      {      
          bool pass = false;
+         //do all in loop 
+         std::set<std::pair<std::string,double>> name_value = {
+            {"BMu", FSmssm.get_BMu()},
+            {"mHd2", FSmssm.get_mHd2()},
+            {"mHu2", FSmssm.get_mHu2()} 
+         };
+            
+         std::set<std::pair<std::string, double>>::iterator iter;
+         for(iter=name_value.begin(); iter != name_value.end(); ++iter)
+            {
+               pass = test_getters("get_mass2_parameter", iter->first,  
+                                   spec->runningpars.
+                                   get_mass2_parameter(iter->first), 
+                                   iter->second);
+               if(immediate_exit == true && pass == false) return pass; 
+            }
          
+         return pass;
+      }
+
+     
+      template <class M>
+      bool TestMssmParMass2_0(MSSMSpec<M> mssm, M FSmssm, 
+                              bool immediate_exit = true)
+      {      
+         bool pass = false;
          //do all in loop 
          std::set<std::pair<std::string,double>> name_value = {
             {"BMu", FSmssm.get_BMu()},
@@ -123,10 +148,47 @@ namespace Gambit
          
          return pass;
       }
+
+
+
      
     template <class M>  
+    bool TestMssmParMass2_2(Spectrum * spec, M FSmssm, 
+                            bool immediate_exit=true)
+    {
+       bool pass = false;
+       
+       for(int i=1; i<=3; i++){
+          for(int j=1; j<=3; j++){
+             //Would be smarter to take these out of for loop and
+             // use function pointers, but I won't.
+             std::set<std::pair<std::string,double>> name_value = {
+                {"mq2", FSmssm.get_mq2(i-1,j-1)},
+                {"mu2", FSmssm.get_mu2(i-1,j-1)},
+                {"md2", FSmssm.get_md2(i-1,j-1)},
+                {"ml2", FSmssm.get_ml2(i-1,j-1)},
+                {"me2", FSmssm.get_me2(i-1,j-1)}               
+             };     
+             
+             std::set<std::pair<std::string, double>>::iterator iter;
+             for(iter=name_value.begin(); iter != name_value.end(); ++iter)
+                {
+                   pass = test_getters("get_mass2_parameter", iter->first,  
+                                       spec->runningpars.
+                                       get_mass2_parameter(iter->first,i,j), 
+                                       iter->second, i, j);
+                   if(immediate_exit == true && pass == false) return pass; 
+                }              
+          }
+       }
+       return pass;
+    }
+
+
+      template <class M>  
     bool TestMssmParMass2_2(MSSMSpec<M> mssm, M FSmssm, 
-                            bool immediate_exit=true){
+                            bool immediate_exit=true)
+    {
        bool pass = false;
        
        for(int i=1; i<=3; i++){
@@ -154,10 +216,40 @@ namespace Gambit
        }
        return pass;
     }
+
+
+      template <class M>  
+      bool TestMssmParMass1_0(Spectrum * spec, M FSmssm, 
+                              bool immediate_exit=true)
+      {
+         bool pass = false;
+         
+         std::set<std::pair<std::string,double>> name_value = {
+            {"M1", FSmssm.get_MassB()},
+            {"M2", FSmssm.get_MassWB()},
+            {"M3", FSmssm.get_MassG()},
+            {"vu", FSmssm.get_vu()},
+            {"vd", FSmssm.get_vd()}
+            
+         };
+          
+         std::set<std::pair<std::string, double>>::iterator iter;
+         for(iter=name_value.begin(); iter != name_value.end(); ++iter)
+            {
+               pass = test_getters("get_mass_parameter", iter->first,  
+                                   spec->runningpars.
+                                   get_mass_parameter(iter->first), 
+                                   iter->second);
+               if(immediate_exit == true && pass == false) return pass; 
+            }
+         
+         return pass;
+      }
     
       template <class M>  
       bool TestMssmParMass1_0(MSSMSpec<M> mssm, M FSmssm, 
-                              bool immediate_exit=true){
+                              bool immediate_exit=true)
+      {
          bool pass = false;
          
          std::set<std::pair<std::string,double>> name_value = {
@@ -181,10 +273,41 @@ namespace Gambit
          
          return pass;
       }
+
+
       
       template <class M>  
+      bool TestMssmParMass1_2(Spectrum * spec, M FSmssm, 
+                              bool immediate_exit =true)
+      {
+         bool pass = false;
+         for(int i=1; i<=3; i++){
+            for(int j=1; j<=3; j++){
+                std::set<std::pair<std::string,double>> name_value = {
+                   {"TYd", FSmssm.get_TYd(i-1,j-1)},
+                   {"TYu", FSmssm.get_TYu(i-1,j-1)},
+                   {"TYe", FSmssm.get_TYe(i-1,j-1)}
+                };     
+            
+                std::set<std::pair<std::string, double>>::iterator iter;
+            for(iter=name_value.begin(); iter != name_value.end(); ++iter)
+               {
+                  pass = test_getters("get_mass_parameter", iter->first,  
+                                      spec->runningpars.
+                                      get_mass_parameter(iter->first,i,j), 
+                                      iter->second, i, j);
+                  if(immediate_exit == true && pass == false) return pass; 
+               }              
+         }
+      }
+       return pass;
+    }
+
+
+      template <class M>  
       bool TestMssmParMass1_2(MSSMSpec<M> mssm, M FSmssm, 
-                              bool immediate_exit =true){
+                              bool immediate_exit =true)
+      {
          bool pass = false;
          for(int i=1; i<=3; i++){
             for(int j=1; j<=3; j++){
@@ -209,8 +332,34 @@ namespace Gambit
     }
     
     template <class M>
-       bool TestMssmParMass0_0(MSSMSpec<M> mssm, M FSmssm, 
-                               bool immediate_exit =true ){
+       bool TestMssmParMass0_0(Spectrum * spec, M FSmssm, 
+                               bool immediate_exit =true )
+    {
+       bool pass = false;
+       std::set<std::pair<std::string,double>> name_value = {
+            {"g1", FSmssm.get_g1()},
+            {"g2", FSmssm.get_g2()},
+            {"g3", FSmssm.get_g3()} 
+         };
+          
+         std::set<std::pair<std::string, double>>::iterator iter;
+         for(iter=name_value.begin(); iter != name_value.end(); ++iter)
+            {
+               pass = test_getters("get_dimensionless_parameter", iter->first,  
+                                   spec->runningpars.
+                                   get_dimensionless_parameter(iter->first), 
+                                   iter->second);
+               if(immediate_exit == true && pass == false) return pass; 
+            }
+
+       return pass;
+    }
+
+
+      template <class M>
+      bool TestMssmParMass0_0(MSSMSpec<M> mssm, M FSmssm, 
+                               bool immediate_exit =true )
+    {
        bool pass = false;
        std::set<std::pair<std::string,double>> name_value = {
             {"g1", FSmssm.get_g1()},
@@ -232,8 +381,40 @@ namespace Gambit
     }
     
     template <class M>
-    bool TestMssmParMass0_2(MSSMSpec<M> mssm, M FSmssm, 
-                               bool immediate_exit = true){
+    bool TestMssmParMass0_2(Spectrum * spec, M FSmssm, 
+                               bool immediate_exit = true)
+    {
+       bool pass = false;
+       for(int i=1; i<=3; i++){
+          for(int j=1; j<=3; j++){
+             
+             std::set<std::pair<std::string,double>> name_value = {
+                   {"Yd", FSmssm.get_Yd(i-1,j-1)},
+                   {"Yu", FSmssm.get_Yu(i-1,j-1)},
+                   {"Ye", FSmssm.get_Ye(i-1,j-1)}
+                };     
+            
+                std::set<std::pair<std::string, double>>::iterator iter;
+            for(iter=name_value.begin(); iter != name_value.end(); ++iter)
+               {
+                  pass = test_getters("get_dimensionless_parameter", 
+                                      iter->first,  
+                                      spec->runningpars.
+                                      get_dimensionless_parameter(iter->first,
+                                                                  i,j), 
+                                      iter->second, i, j);
+                  if(immediate_exit == true && pass == false) return pass; 
+               }              
+          }
+       }
+       return pass;
+    }
+
+      
+      template <class M>
+      bool TestMssmParMass0_2(MSSMSpec<M> mssm, M FSmssm, 
+                               bool immediate_exit = true)
+      {
        bool pass = false;
        for(int i=1; i<=3; i++){
           for(int j=1; j<=3; j++){
@@ -261,8 +442,35 @@ namespace Gambit
     }
     
     template <class M>
+    bool TestMssmPoleGets0(Spectrum * spec, M FSmssm, 
+                           bool immediate_exit = true)
+    {
+       bool pass = false;
+       //do all in loop 
+         std::set<std::pair<std::string,double>> name_value = {
+            {"MZ", FSmssm.get_physical().MVZ},
+            {"MW", FSmssm.get_physical().MVWm},
+            {"MGluino", FSmssm.get_physical().MGlu},
+            {"MGluon", FSmssm.get_physical().MVG},
+            {"MPhoton", FSmssm.get_physical().MVP}
+         };
+            
+         std::set<std::pair<std::string, double>>::iterator iter;
+         for(iter=name_value.begin(); iter != name_value.end(); ++iter)
+            {
+               pass = test_getters("get_Pole_Mass", iter->first,  
+                                   spec->phys.get_Pole_Mass(iter->first), 
+                                   iter->second);
+               if(immediate_exit == true && pass == false) return pass; 
+            }
+       return pass;
+    }
+
+
+    template <class M>
     bool TestMssmPoleGets0(MSSMSpec<M> mssm, M FSmssm, 
-                           bool immediate_exit = true){
+                           bool immediate_exit = true)
+    {
        bool pass = false;
        //do all in loop 
          std::set<std::pair<std::string,double>> name_value = {
@@ -282,11 +490,84 @@ namespace Gambit
                if(immediate_exit == true && pass == false) return pass; 
             }
        return pass;
-    }
-   
+    }  
+       
+
     template <class M>
+    bool TestMssmPoleGets1(Spectrum * spec, M FSmssm, 
+                           bool immediate_exit = true)
+    {
+       bool pass = false;
+     
+       for(int i=1; i<=6; i++){
+         std::set<std::pair<std::string,double>> name_value = {
+                   {"MSd", FSmssm.get_physical().MSd(i-1)},
+                   {"MSu", FSmssm.get_physical().MSu(i-1)},
+                   {"MSe", FSmssm.get_physical().MSe(i-1)}
+                   
+                };     
+            
+            std::set<std::pair<std::string, double>>::iterator iter;
+            for(iter=name_value.begin(); iter != name_value.end(); ++iter)
+               {
+                  pass = test_getters("get_Pole_Mass", iter->first,  
+                                      spec->phys.get_Pole_Mass(iter->first,i),
+                                      iter->second, i);
+                  if(immediate_exit == true && pass == false) return pass; 
+               } 
+          
+       }
+       for(int i=1; i<=3; i++){
+          
+          std::set<std::pair<std::string,double>> name_value = {
+                   {"MSv", FSmssm.get_physical().MSv(i-1)},
+                   {"MFd", FSmssm.get_physical().MFd(i-1)},
+                   {"MFu", FSmssm.get_physical().MFu(i-1)},
+                   {"MFe", FSmssm.get_physical().MFe(i-1)}
+                   
+                };     
+            
+            std::set<std::pair<std::string, double>>::iterator iter;
+            for(iter=name_value.begin(); iter != name_value.end(); ++iter)
+               {
+                  pass = test_getters("get_Pole_Mass", iter->first,  
+                                      spec->phys.get_Pole_Mass(iter->first,i),
+                                      iter->second, i);
+                  if(immediate_exit == true && pass == false) return pass; 
+               } 
+        
+       }
+       for(int i=1; i<=2; i++){ 
+          std::string name = "Mh0";
+          pass = test_getters("get_Pole_Mass", name,  
+                                      spec->phys.get_Pole_Mass(name,i),
+                                      FSmssm.get_physical().Mhh(i-1), i);
+          if(immediate_exit == true && pass == false) return pass; 
+          name = "MCha";
+          pass = test_getters("get_Pole_Mass", name,  
+                              spec->phys.get_Pole_Mass(name,i),
+                              FSmssm.get_physical_slha().MCha(i-1), i);
+          if(immediate_exit == true && pass == false) return pass; 
+       }
+       //In the the neutralino and chargino tests I compare against 
+       // value in physical_slha struct since the value in
+       // physical may differ by a sign since it stores positive masses
+       // and a complex mixing matrix.
+       for(int i=1; i<=4; i++){
+          std::string name = "MChi";
+          pass = test_getters("get_Pole_Mass", name,  
+                              spec->phys.get_Pole_Mass(name,i),
+                              FSmssm.get_physical_slha().MChi(i-1), i);
+          if(immediate_exit == true && pass == false) return pass;
+       }
+       return pass;
+    }
+     
+
+     template <class M>
     bool TestMssmPoleGets1(MSSMSpec<M> mssm, M FSmssm, 
-                           bool immediate_exit = true){
+                           bool immediate_exit = true)
+    {
        bool pass = false;
      
        for(int i=1; i<=6; i++){
@@ -352,9 +633,75 @@ namespace Gambit
        }
        return pass;
     }
-    
+
      
      template <class M>
+     bool TestMssmPoleMixingGets2(Spectrum * spec, M FSmssm, 
+                                  bool immediate_exit = true)
+     {
+        bool pass = false;
+        for(int i=1; i<=6; i++){
+           for(int j=1; j<=6; j++){
+              std::set<std::pair<std::string,double>> name_value = {
+                 {"ZD", FSmssm.get_physical_slha().ZD(i-1,j-1)},
+                 {"ZU", FSmssm.get_physical_slha().ZU(i-1,j-1)},
+                 {"ZE", FSmssm.get_physical_slha().ZE(i-1,j-1)}
+                };     
+                 
+                std::set<std::pair<std::string, double>>::iterator iter;
+            for(iter=name_value.begin(); iter != name_value.end(); ++iter)
+               {
+                  pass = test_getters("get_Pole_Mixing", iter->first,  
+                                      spec->phys.
+                                      get_Pole_Mixing(iter->first,i,j), 
+                                      iter->second, i, j);
+                  if(immediate_exit == true && pass == false) return pass; 
+               }              
+           }
+        }
+                             
+          
+        for(int i=1; i<=3; i++){
+           for(int j=1; j<=3; j++){
+              string name = "ZV";
+              pass = test_getters("get_Pole_Mixing", name,  
+                                  spec->phys.get_Pole_Mixing(name,i,j),
+                                  FSmssm.get_physical_slha().ZV(i-1, j-1), i,j);
+              if(immediate_exit == true && pass == false) return pass; 
+             
+              }
+           }
+        
+     
+        for(int i=1; i<=2; i++){
+           for(int j=1; j<=2; j++){
+            std::set<std::pair<std::string,double>> name_value = {
+                 {"ZH", FSmssm.get_physical_slha().ZH(i-1,j-1)},
+                 {"ZA", FSmssm.get_physical_slha().ZA(i-1,j-1)},
+                 {"ZHPM", FSmssm.get_physical_slha().ZP(i-1,j-1)},
+                 {"UM", flexiblesusy::Re(FSmssm.get_physical_slha()
+                                         .UM(i-1,j-1))}, 
+                 {"UP", flexiblesusy::Re(FSmssm.get_physical_slha()
+                                         .UP(i-1,j-1))}
+                };     
+                  
+               std::set<std::pair<std::string, double>>::iterator iter;
+            for(iter=name_value.begin(); iter != name_value.end(); ++iter)
+               {
+                  pass = test_getters("get_Pole_Mixing", iter->first,  
+                                      spec->phys.
+                                      get_Pole_Mixing(iter->first,i,j), 
+                                      iter->second, i, j);
+                  if(immediate_exit == true && pass == false) return pass; 
+               }
+           }
+       }
+        
+        return pass;
+    }
+
+
+       template <class M>
      bool TestMssmPoleMixingGets2(MSSMSpec<M> mssm, M FSmssm, 
                                   bool immediate_exit = true)
      {
@@ -398,8 +745,10 @@ namespace Gambit
                  {"ZH", FSmssm.get_physical_slha().ZH(i-1,j-1)},
                  {"ZA", FSmssm.get_physical_slha().ZA(i-1,j-1)},
                  {"ZHPM", FSmssm.get_physical_slha().ZP(i-1,j-1)},
-                 {"UM", Re(FSmssm.get_physical_slha().UM(i-1,j-1))}, 
-                 {"UP", Re(FSmssm.get_physical_slha().UP(i-1,j-1))}
+                 {"UM", flexiblesusy::Re(FSmssm.get_physical_slha()
+                                         .UM(i-1,j-1))}, 
+                 {"UP", flexiblesusy::Re(FSmssm.get_physical_slha()
+                                         .UP(i-1,j-1))}
                 };     
                   
                std::set<std::pair<std::string, double>>::iterator iter;
@@ -416,9 +765,24 @@ namespace Gambit
         
         return pass;
     }
-                                                                  
+
+     
     template <class M> 
-    bool TestMssmPoleGets(MSSMSpec<M> mssm, M FSmssm){
+    bool TestMssmPoleGets(Spectrum * spec, M FSmssm)
+    {
+       bool pass = false;
+       pass = TestMssmPoleGets0(spec,FSmssm);
+       if(pass == false) return pass;
+        pass = TestMssmPoleGets1(spec,FSmssm);
+       if(pass == false) return pass;
+       pass = TestMssmPoleMixingGets2(spec,FSmssm);
+       if(pass == false) return pass;
+       return pass;
+    }
+                                                             
+    template <class M> 
+    bool TestMssmPoleGets(MSSMSpec<M> mssm, M FSmssm)
+    {
        bool pass = false;
        pass = TestMssmPoleGets0(mssm,FSmssm);
        if(pass == false) return pass;
@@ -430,7 +794,29 @@ namespace Gambit
     }
 
     template <class M>
-    bool TestMssmParGets(MSSMSpec<M> mssm, M FSmssm){
+    bool TestMssmParGets(Spectrum * spec, M FSmssm)
+    {
+       bool pass = false; 
+       pass = TestMssmParMass2_0(spec,FSmssm);
+       if(pass == false) return pass;
+       pass = TestMssmParMass2_2(spec,FSmssm);
+       if(pass == false) return pass;
+       pass = TestMssmParMass1_0(spec,FSmssm);
+       if(pass == false) return pass;
+       pass = TestMssmParMass1_2(spec,FSmssm);
+       if(pass == false) return pass;
+       pass = TestMssmParMass0_0(spec,FSmssm);
+       if(pass == false) return pass;
+       pass = TestMssmParMass0_2(spec,FSmssm);
+       if(pass == false) return pass;
+    
+       return pass;
+    
+    }
+
+     template <class M>
+    bool TestMssmParGets(MSSMSpec<M> mssm, M FSmssm)
+    {
        bool pass = false; 
        pass = TestMssmParMass2_0(mssm,FSmssm);
        if(pass == false) return pass;
@@ -539,7 +925,7 @@ namespace Gambit
        MassG = 1114.45;
     
        // set parameters
-       mssm.set_scale(Electroweak_constants::MZ);
+       mssm.set_scale(flexiblesusy::Electroweak_constants::MZ);
        mssm.set_Yu(Yu);
        mssm.set_Yd(Yd);
        mssm.set_Ye(Ye);
@@ -565,110 +951,124 @@ namespace Gambit
        mssm.set_MassG(MassG);
     }
     
-    void spec_print(Spectrum * spec){
     
-       OUTPUT << "spec->runningpars.GetScale() =" << spec->runningpars.GetScale() << std::endl;
-       OUTPUT << "map mHd2 "  << spec->runningpars.get_mass2_parameter("mHd2") <<std::endl;
-       OUTPUT << "map mHu2 "  << spec->runningpars.get_mass2_parameter("mHu2") <<std::endl;
-       OUTPUT << "map BMu "  << spec->runningpars.get_mass2_parameter("BMu") <<std::endl;
-       
-      
-       // OUTPUT << "diff mHd2 "  << spec->runningpars.get_mass2_parameter("mHd2") 
-       //           -  spec->runningpars.get_mass2_par("mHd2") <<std::endl;
-       // OUTPUT << "diff mHu2 "  << spec->runningpars.get_mass2_parameter("mHu2") 
-       //           - spec->runningpars.get_mass2_par("mHu2") <<std::endl;
-       // OUTPUT << "diff BMu "  << spec->runningpars.get_mass2_parameter("BMu") 
-       //           -  spec->runningpars.get_mass2_par("BMu") <<std::endl;
-    
-       OUTPUT << "mq2(1,1) =  " <<  spec->runningpars.get_mass2_parameter("mq2",1,1) << std::endl;
-       OUTPUT << "fake mq2(1) =  " <<  spec->runningpars.get_mass2_parameter("mq2",1) << std::endl;
-    
-       //double mgluino_drbar =  spec->runningpars.get_tree_MassEigenstate("MGluino");
-       //OUTPUT << "mgluino_drbar = " <<mgluino_drbar  << std::endl;
-       double mgluino = spec->phys.get_Pole_Mass("MGluino");
-       OUTPUT << "mgluino = " << mgluino<< std::endl;
-    }
+      template <class M>
+      bool test_exact(MSSMSpec<M> mssm, M FS_model_slha)
+      {
+         bool pass = TestMssmParGets(mssm,FS_model_slha);
+         if(pass == false)
+            {
+               OUTPUT << "TestMssmParGets failing."  <<std::endl;
+               return pass;
+            }
+         pass = TestMssmPoleGets(mssm,FS_model_slha);
+         if(pass == false)
+            {
+               OUTPUT << "TestMssmParGets failing."  <<std::endl;
+               return pass;
+            }
+         
+         
+         return pass;
+      }
 
-    template <class M>
-    void mssm_print(MSSMSpec<M> & mssm){
-       
-       OUTPUT << "mssm.mssm_drbar_pars.GetScale() =" << mssm.mssm_drbar_pars.GetScale() << std::endl;
-       OUTPUT << "map mHd2 "  << mssm.mssm_drbar_pars.get_mass2_parameter("mHd2") <<std::endl;
-       OUTPUT << "map mHu2 "  << mssm.mssm_drbar_pars.get_mass2_parameter("mHu2") <<std::endl;
-       OUTPUT << "map BMu "  << mssm.mssm_drbar_pars.get_mass2_parameter("BMu") <<std::endl;
-       
-      
-       // OUTPUT << "diff mHd2 "  << mssm.mssm_drbar_pars.get_mass2_parameter("mHd2") 
-       //           -  mssm.mssm_drbar_pars.get_mass2_par("mHd2") <<std::endl;
-       // OUTPUT << "diff mHu2 "  << mssm.mssm_drbar_pars.get_mass2_parameter("mHu2") 
-       //           - mssm.mssm_drbar_pars.get_mass2_par("mHu2") <<std::endl;
-       // OUTPUT << "diff BMu "  << mssm.mssm_drbar_pars.get_mass2_parameter("BMu") 
-       //           -  mssm.mssm_drbar_pars.get_mass2_par("BMu") <<std::endl;
-    
-       OUTPUT << "mq2(1,1) =  " <<  mssm.mssm_drbar_pars.get_mass2_parameter("mq2",1,1) << std::endl;
-       OUTPUT << "fake mq2(1) =  " <<  mssm.mssm_drbar_pars.get_mass2_parameter("mq2",1) << std::endl;
-    
-       // double mgluino_drbar =  mssm.mssm_drbar_pars.get_tree_MassEigenstate("MGluino");
-       // OUTPUT << "mgluino_drbar = " <<mgluino_drbar  << std::endl;
-       double mgluino = mssm.mssm_ph.get_Pole_Mass("MGluino");
-       OUTPUT << "mgluino = " << mgluino<< std::endl;
-    
-    }
-    
-     
-    void spec_manipulate(Spectrum * spec) {
-       OUTPUT << "inside spectrum_manipulate" <<std::endl;
-       double lowscale = spec->runningpars.GetScale();
-       double highscale = 1e+15;
-       OUTPUT << "lowscale  = " << lowscale << std::endl;
-       OUTPUT << "highscale = " << highscale << std::endl;
-       spec_print(spec);
-       OUTPUT << "Testing stability after running..." << std::endl;
-       spec->runningpars.RunToScale(highscale);
-       OUTPUT << "after run scale to high scale" << std::endl;
-       spec_print(spec);
-       spec->runningpars.RunToScale(lowscale);
-       OUTPUT << "After run scale back to low scale" << spec->runningpars.GetScale() << std::endl;
-       spec_print(spec);
-      
-    }
-    
-    template <class M>
-    void mssm_manipulate(MSSMSpec<M> & mssm) {
-       OUTPUT << "inside mssm_manipulate" <<std::endl;
-       double lowscale = mssm.mssm_drbar_pars.GetScale();
-       //setting to same scale to test
-       mssm.mssm_drbar_pars.SetScale(lowscale);
-       double highscale = 1e+15;
-       OUTPUT << "Mssm start at lowscale = " << lowscale << std::endl;
-       mssm_print(mssm);
-       mssm.mssm_drbar_pars.RunToScale(highscale);
-       OUTPUT << "after run to highscale" << std::endl;
-       mssm_print(mssm);
-       mssm.mssm_drbar_pars.RunToScale(lowscale);
-       OUTPUT << "after run scale back top low scale" <<  std::endl;
-       mssm_print(mssm);
-    
-    }
+      template <class M>
+      double test_exact(Spectrum * spec, M FS_model_slha)
+      {
+         bool pass = TestMssmParGets(spec,FS_model_slha);
+         if(pass == false)
+            {
+               OUTPUT << "TestMssmParGets failing."  <<std::endl;
+               return pass;
+            }
+         pass = TestMssmPoleGets(spec,FS_model_slha);
+         if(pass == false)
+            {
+               OUTPUT << "TestMssmParGets failing."  <<std::endl;
+               return pass;
+            }
+         
+         return pass;
 
-    void SM_checks(Spectrum* spec) {
-      OUTPUT << "In specbit_test_func3: testing retrieval from Spectrum* with capability SM_spectrum..." << endl;
-      OUTPUT << "  Scale: " << spec->runningpars.GetScale() << endl;
-      OUTPUT << "  Gauge couplings:" << endl;
-      OUTPUT << "  g1: " << spec->runningpars.get_dimensionless_parameter("g1") << endl;
-      OUTPUT << "  g2: " << spec->runningpars.get_dimensionless_parameter("g2") << endl;
-      OUTPUT << "  g3: " << spec->runningpars.get_dimensionless_parameter("g3") << endl;
-      OUTPUT << "  Yukawa couplings:" << endl;
-      for (int i=1; i<=3; i++) { for (int j=1; j<=3; j++) {
-        OUTPUT << "  Yu("<<i<<","<<j<<"): " << spec->runningpars.get_dimensionless_parameter("Yu", i, j) << endl;
-      }}
-      for (int i=1; i<=3; i++) { for (int j=1; j<=3; j++) {
-        OUTPUT << "  Yd("<<i<<","<<j<<"): " << spec->runningpars.get_dimensionless_parameter("Yd", i, j) << endl;
-      }}
-      for (int i=1; i<=3; i++) { for (int j=1; j<=3; j++) {
-        OUTPUT << "  Ye("<<i<<","<<j<<"): " << spec->runningpars.get_dimensionless_parameter("Ye", i, j) << endl;
-      }}
-    }
+      }
+      //This gives identical results after running up, so don't need messy
+      // Test_close
+      template <class M>
+       bool running_test(MSSMSpec<M> & mssm, M & FS_model_slha, double tol)
+      {
+         double highscale = 1e+16;
+         double lowscale = mssm.mssm_drbar_pars.GetScale();
+         double lowscale2 = FS_model_slha.get_scale();
+         bool pass = flexiblesusy::is_equal(lowscale,lowscale2);
+         if(!pass) {
+            OUTPUT << "test fail: " 
+                   << "objects not at same scale at start of runtest."
+                   << std::endl;
+            return pass;              
+         }
+         
+         mssm.mssm_drbar_pars.RunToScale(highscale);
+         FS_model_slha.run_to(highscale);
+         pass = test_exact(mssm, FS_model_slha);
+          if(!pass) {
+            OUTPUT << "test fail: " 
+                   << "objects not the same after running to MGUT."
+                   << std::endl;
+            return pass;              
+         }
+          mssm.mssm_drbar_pars.RunToScale(lowscale);
+         FS_model_slha.run_to(lowscale);
+         pass = test_exact(mssm, FS_model_slha);
+          if(!pass) {
+            OUTPUT << "test fail: " 
+                   << "objects not the same after running to lowscale."
+                   << std::endl;
+            return pass;              
+         }
+                  
 
-  }
+         return pass;
+      }
+
+      template <class M>
+      bool running_test(Spectrum * spec, M & FS_model_slha, 
+                   double tol)
+      {
+         double highscale = 1e+16;
+         double lowscale = spec->runningpars.GetScale();
+         double lowscale2 = FS_model_slha.get_scale();
+         bool pass = flexiblesusy::is_equal(lowscale,lowscale2);
+         if(!pass) {
+            OUTPUT << "test fail: " 
+                   << "objects not at same scale at start of runtest."
+                   << std::endl;
+            return pass;              
+         }
+         
+         spec->runningpars.RunToScale(highscale);
+         FS_model_slha.run_to(highscale);
+         pass = test_exact(spec, FS_model_slha);
+          if(!pass) {
+            OUTPUT << "test fail: " 
+                   << "objects not the same after running to MGUT."
+                   << std::endl;
+            return pass;              
+         }
+         spec->runningpars.RunToScale(lowscale);
+         FS_model_slha.run_to(lowscale);
+         pass = test_exact(spec, FS_model_slha);
+          if(!pass) {
+            OUTPUT << "test fail: " 
+                   << "objects not the same after running to lowscale."
+                   << std::endl;
+            return pass;              
+         }
+         
+         return pass;
+      }
+
+
+   
+      
+   }
 }
