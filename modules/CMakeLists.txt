@@ -59,7 +59,12 @@ set(GAMBIT_VERSION_MINOR 0)
 configure_file("${PROJECT_SOURCE_DIR}/cmake/cmake_variables.hpp.in"
                "${PROJECT_BINARY_DIR}/cmake_variables.hpp")
  
-# add the binary tree to the search path for include files so that we will find config.h
+# Generate the backend_locations.yaml file if there isn't one
+if(NOT EXISTS "${PROJECT_SOURCE_DIR}/config/backend_locations.yaml")
+  configure_file("${PROJECT_SOURCE_DIR}/config/backend_locations.yaml.example" "${PROJECT_SOURCE_DIR}/config/backend_locations.yaml" COPYONLY)
+endif()
+
+# add the binary tree to the search path for include files so that we will find cmake_variables.hpp
 include_directories("${PROJECT_BINARY_DIR}")
 
 # add -fPIC for 64 bit systems
@@ -110,7 +115,9 @@ endif()
 # check for Boost
 find_package(Boost 1.42 REQUIRED)
 if(Boost_FOUND)
-  include_directories(${Boost_INCLUDE_DIR})
+  if (NOT Boost_INCLUDE_DIR STREQUAL "")
+    include_directories("${Boost_INCLUDE_DIR}")
+  endif()
 endif()
 
 # check for OpenMP
@@ -123,7 +130,9 @@ endif()
 # check for Gnu Scientific Library (GSL)
 include(cmake/FindGSL.cmake)
 if(GSL_FOUND)
-  include_directories(${GSL_INCLUDE_DIRS})
+  if (NOT GSL_INCLUDE_DIRS STREQUAL "")
+    include_directories("${GSL_INCLUDE_DIRS}")
+  endif()
 else()
   message(FATAL_ERROR "Need gsl libraries")
 endif()
@@ -195,6 +204,9 @@ set(GAMBIT_OBJECTS $<TARGET_OBJECTS:Core> $<TARGET_OBJECTS:Printers>)
 # set compilation targets for GAMBIT modules
 retrieve_bits(GAMBIT_BITS ${PROJECT_SOURCE_DIR} "${itch}" "Loud")
 foreach(bit ${GAMBIT_BITS})
+  if(bit STREQUAL "ColliderBit")
+    include_directories("${PROJECT_SOURCE_DIR}/ColliderBit/include/delphes")
+  endif()
   add_subdirectory(${bit})
   set(GAMBIT_BIT_OBJECTS ${GAMBIT_BIT_OBJECTS} "$<TARGET_OBJECTS:${bit}>")
 endforeach()
@@ -215,4 +227,5 @@ set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${clean_files}"
 
 # Add the executables
 include(cmake/executables.cmake)
+
 

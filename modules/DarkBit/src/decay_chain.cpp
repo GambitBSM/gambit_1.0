@@ -530,6 +530,7 @@ namespace Gambit
         double DecayTable::getWidth(const TH_Channel *ch)
         {
             // Note: It is ESSENTIAL that the TH_Channel is a decay channel, or more precisely that dSigmadE is of type BFconstant.
+            /*  Commented out to make darkbit compile 2014-12-08 CW
             const shared_ptr<FunctionExpression<BaseFunction> > *ptr = &(ch->dSigmadE);
             const shared_ptr<BFconstant> BFc_ptr = (boost::dynamic_pointer_cast<BFconstant>(boost::dynamic_pointer_cast<BaseFunction>(*ptr)));
             if(BFc_ptr == 0)
@@ -538,6 +539,7 @@ namespace Gambit
                 exit(1);
             }
             return BFc_ptr->value(vector<double>());
+            */
         }
         void DecayTable::printTable() const
         {
