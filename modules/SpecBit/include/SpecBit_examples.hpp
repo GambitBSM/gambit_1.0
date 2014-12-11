@@ -22,10 +22,6 @@
   #define TAGeom ""
 #endif
 
- using namespace Gambit;
-// using namespace SpecBit;
-//using namespace flexiblesusy;
-
 template <class Model> 
 void setpars(Model& mssm)
 {
@@ -143,7 +139,7 @@ void setpars(Model& mssm)
 }
     
       
-void spec_print(Spectrum * spec){
+void spec_print(Gambit::Spectrum * spec){
    
    OUTPUT << "spec->runningpars.GetScale() =" 
           << spec->runningpars.GetScale() << std::endl;
@@ -165,7 +161,7 @@ void spec_print(Spectrum * spec){
 }
 
 template <class M>
-void mssm_print(MSSMSpec<M> & mssm)
+void mssm_print(Gambit::MSSMSpec<M> & mssm)
 {
    
    OUTPUT << "mssm.mssm_drbar_pars.GetScale() =" 
@@ -190,7 +186,7 @@ void mssm_print(MSSMSpec<M> & mssm)
 }
 
 
-void spec_manipulate(Spectrum * spec) 
+void spec_manipulate(Gambit::Spectrum * spec) 
 {
    OUTPUT << "inside spectrum_manipulate" <<std::endl;
    double lowscale = spec->runningpars.GetScale();
@@ -210,7 +206,7 @@ void spec_manipulate(Spectrum * spec)
 }
 
 template <class M>
-void mssm_manipulate(MSSMSpec<M> & mssm) 
+void mssm_manipulate(Gambit::MSSMSpec<M> & mssm) 
 {
    OUTPUT << "inside mssm_manipulate" <<std::endl;
    double lowscale = mssm.mssm_drbar_pars.GetScale();
@@ -228,7 +224,7 @@ void mssm_manipulate(MSSMSpec<M> & mssm)
    
 }
 
-void SM_checks(Spectrum* spec) {
+void SM_checks(Gambit::Spectrum* spec) {
    OUTPUT << "In specbit_test_func3: " 
           << " testing retrieval from Spectrum*"
           << " with capability SM_spectrum..." << endl;
