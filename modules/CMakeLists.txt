@@ -59,6 +59,11 @@ set(GAMBIT_VERSION_MINOR 0)
 configure_file("${PROJECT_SOURCE_DIR}/cmake/cmake_variables.hpp.in"
                "${PROJECT_BINARY_DIR}/cmake_variables.hpp")
  
+# Generate the backend_locations.yaml file if there isn't one
+if(NOT EXISTS "${PROJECT_SOURCE_DIR}/config/backend_locations.yaml")
+  configure_file("${PROJECT_SOURCE_DIR}/config/backend_locations.yaml.example" "${PROJECT_SOURCE_DIR}/config/backend_locations.yaml" COPYONLY)
+endif()
+
 # add the binary tree to the search path for include files so that we will find cmake_variables.hpp
 include_directories("${PROJECT_BINARY_DIR}")
 
@@ -222,4 +227,5 @@ set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${clean_files}"
 
 # Add the executables
 include(cmake/executables.cmake)
+
 
