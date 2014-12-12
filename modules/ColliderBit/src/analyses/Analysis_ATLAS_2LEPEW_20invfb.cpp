@@ -36,23 +36,24 @@ namespace Gambit {
     class Analysis_ATLAS_2LEPEW_20invfb : public Analysis {
     private:
 
-      // Numbers passing cuts
-      int _num_MT2_90_SF;
-      int _num_MT2_90_DF;
-      int _num_MT2_120_SF;
-      int _num_MT2_120_DF;
-      int _num_MT2_150_SF;
-      int _num_MT2_150_DF;
-      int _num_WWa_SF;
-      int _num_WWa_DF;
-      int _num_WWb_SF;
-      int _num_WWb_DF;
-      int _num_WWc_SF;
-      int _num_WWc_DF;
-      int _num_Zjets;
+      // Numbers passing cuts (floats because we will use the trigger eff)
+      float _num_MT2_90_SF;
+      float _num_MT2_90_DF;
+      float _num_MT2_120_SF;
+      float _num_MT2_120_DF;
+      float _num_MT2_150_SF;
+      float _num_MT2_150_DF;
+      float _num_WWa_SF;
+      float _num_WWa_DF;
+      float _num_WWb_SF;
+      float _num_WWb_DF;
+      float _num_WWc_SF;
+      float _num_WWc_DF;
+      float _num_Zjets;
 
       vector<int> cutFlowVector_alt;
-      vector<int> cutFlowVector;
+      vector<float> cutFlowVector;
+      vector<float> cutFlowIncrements;
       vector<string> cutFlowVector_str;
       const static int NCUTS=90;
 
@@ -79,6 +80,7 @@ namespace Gambit {
           cutFlowVector.push_back(0);
           cutFlowVector_str.push_back("");
           cutFlowVector_alt.push_back(0);
+	  cutFlowIncrements.push_back(0.);
         }
 
       }
@@ -256,6 +258,8 @@ namespace Gambit {
 	RemoveLeptonsMllLt12(signalMuons);
 	JetLeptonOverlapRemoval(signalJets,signalTaus,0.2);
 
+	ApplyTightIDElectronSelection(signalElectrons);
+
 	int numElectrons=signalElectrons.size();
         int numMuons=signalMuons.size();
 	int numTaus=signalTaus.size();
@@ -350,17 +354,21 @@ namespace Gambit {
 	  if(mt2>120.)cut_SRMT2120=true;
 	  if(mt2>150.)cut_SRMT2150=true;
 
-	  if(mt2 > 90. && (numElectrons==1 && numMuons==1))_num_MT2_90_DF++;
-	  if(passZVeto && mt2 > 90. && ((numElectrons==2 && fabs(mll-91.)>10) || (numMuons==2 && fabs(mll-91.)>10)))_num_MT2_90_SF++;
+	  //Signal region increments use the trigger efficiencies for ee, emu and mumu triggers
+	  if(mt2 > 90. && (numElectrons==1 && numMuons==1))_num_MT2_90_DF=_num_MT2_90_DF+0.89;
+	  if(passZVeto && mt2 > 90. && (numElectrons==2 && fabs(mll-91.)>10))_num_MT2_90_SF=_num_MT2_90_SF+0.97;
+	  if(passZVeto && mt2 > 90. && (numMuons==2 && fabs(mll-91.)>10))_num_MT2_90_SF=_num_MT2_90_SF+0.75;
 
-	  if(mt2 > 120. && (numElectrons==1 && numMuons==1))_num_MT2_120_DF++;
-	  if(passZVeto && mt2 > 120. && ((numElectrons==2 && fabs(mll-91.)>10) || (numMuons==2 && fabs(mll-91.)>10)))_num_MT2_120_SF++;
-
-	  if(mt2 > 150. && (numElectrons==1 && numMuons==1))_num_MT2_150_DF++;
-	  if(passZVeto && mt2 > 150. && ((numElectrons==2 && fabs(mll-91.)>10) || (numMuons==2 && fabs(mll-91.)>10)))_num_MT2_150_SF++;
+	  if(mt2 > 120. && (numElectrons==1 && numMuons==1))_num_MT2_120_DF=_num_MT2_120_DF+0.89;
+	  if(passZVeto && mt2 > 120. && (numElectrons==2 && fabs(mll-91.)>10))_num_MT2_120_SF=_num_MT2_120_SF+0.97;
+	  if(passZVeto && mt2 > 120. &&  (numMuons==2 && fabs(mll-91.)>10))_num_MT2_120_SF=_num_MT2_120_SF+0.75;
+	  
+	  if(mt2 > 150. && (numElectrons==1 && numMuons==1))_num_MT2_150_DF=_num_MT2_150_DF+0.89;
+	  if(passZVeto && mt2 > 150. && (numElectrons==2 && fabs(mll-91.)>10))_num_MT2_150_SF=_num_MT2_150_SF+0.97;
+	  if(passZVeto && mt2 > 150. && (numMuons==2 && fabs(mll-91.)>10))_num_MT2_150_SF=_num_MT2_150_SF+0.75;
 	  
 	}
-      
+	
 	//Now do the WW channels
 	bool passZVeto_WWa=false;
 	bool passPTll_WWa=false;
@@ -428,24 +436,36 @@ namespace Gambit {
 	  if((signalLeptons[0]->mom() + signalLeptons[1]->mom()).pT() > 80. &&
 	     ETmiss_rel > 80. &&
 	     mll < 120. &&
-	     (numElectrons==1 && numMuons==1))_num_WWa_DF++;
+	     (numElectrons==1 && numMuons==1))_num_WWa_DF=_num_WWa_DF+0.89;
 
 	  if((signalLeptons[0]->mom() + signalLeptons[1]->mom()).pT() > 80. &&
 	     ETmiss_rel > 80. &&
 	     mll < 120. &&
-	     ((numElectrons==2 && fabs(mll-91.)>10.) || (numMuons==2 && fabs(mll-91.)>10.)))_num_WWa_SF++;
+	     (numElectrons==2 && fabs(mll-91.)>10.))_num_WWa_SF=_num_WWa_SF+0.97;
+
+	  if((signalLeptons[0]->mom() + signalLeptons[1]->mom()).pT() > 80. &&
+	     ETmiss_rel > 80. &&
+	     mll < 120. &&
+	     (numMuons==2 && fabs(mll-91.)>10.))_num_WWa_SF=_num_WWa_SF+0.75;
 
 	  if(mt2 > 90. &&
 	     mll < 170. &&
-	     (numElectrons==1 && numMuons==1))_num_WWb_DF++;
+	     (numElectrons==1 && numMuons==1))_num_WWb_DF=_num_WWb_DF+0.89;
 
 	  if(mt2 > 90. &&
 	     mll < 170. &&
-	     ((numElectrons==2 && fabs(mll-91.)>10.) || (numMuons==2 && fabs(mll-91.)>10.)))_num_WWb_SF++;
+	     (numElectrons==2 && fabs(mll-91.)>10.))_num_WWb_SF=_num_WWb_SF+0.97;
 
-	  if(mt2 > 100. && (numElectrons==1 && numMuons==1))_num_WWc_DF++;
+	  
+	  if(mt2 > 90. &&
+	     mll < 170. &&
+	     (numMuons==2 && fabs(mll-91.)>10.))_num_WWb_SF=_num_WWb_SF+0.75;
+
+	  if(mt2 > 100. && (numElectrons==1 && numMuons==1))_num_WWc_DF=_num_WWc_DF+0.89;
 	  	  
-	  if(mt2 > 100. && ((numElectrons==2 && fabs(mll-91.)>10.) || (numMuons==2 && fabs(mll-91.)>10.)))_num_WWc_SF++;
+	  if(mt2 > 100. && (numElectrons==2 && fabs(mll-91.)>10.))_num_WWc_SF=_num_WWc_SF+0.97;
+
+	  if(mt2 > 100. && (numMuons==2 && fabs(mll-91.)>10.))_num_WWc_SF=_num_WWc_SF+0.75;
 	  
 	}
 	
@@ -458,7 +478,7 @@ namespace Gambit {
 	bool passMjj=true;
 	bool passJetPT=true;
 
-	if(leptonPTCut && mllCut && isOS && tauVeto && numCentralNonBJets>=2 && numCentralBJets==0 && numForwardJets==0 && ((numElectrons==2 && numMuons==0) || (numMuons==2 && numElectrons==0))){
+	if(leptonPTCut && mllCut && isOS && tauVeto && numCentralNonBJets>=2 && numCentralBJets==0 && numForwardJets==0){
 	
 	  double mll=(signalLeptons[0]->mom() + signalLeptons[1]->mom()).m();
 
@@ -501,7 +521,9 @@ namespace Gambit {
 	  if(!(mjj > 50. && mjj<100.))passMjj=false;
 	  if(!(centralNonBJets[0]->pT()>45. && centralNonBJets[1]->pT()>45.))passJetPT=false;
 
-	  if(fabs(mll-91.)<10 && ETmiss_rel>80. && (signalLeptons[0]->mom()+signalLeptons[1]->mom()).pT()>80. && dRll > 0.3 && dRll < 1.5 && mjj > 50. && mjj<100. && passJetPT)_num_Zjets++;
+	  if(fabs(mll-91.)<10 && ETmiss_rel>80. && (signalLeptons[0]->mom()+signalLeptons[1]->mom()).pT()>80. && dRll > 0.3 && dRll < 1.5 && mjj > 50. && mjj<100. && passJetPT && (numElectrons==2 && numMuons==0))_num_Zjets=_num_Zjets+0.97;
+	  
+	  if(fabs(mll-91.)<10 && ETmiss_rel>80. && (signalLeptons[0]->mom()+signalLeptons[1]->mom()).pT()>80. && dRll > 0.3 && dRll < 1.5 && mjj > 50. && mjj<100. && passJetPT && (numElectrons==0 && numMuons==2))_num_Zjets=_num_Zjets+0.75;
 
 	}
       
@@ -580,14 +602,35 @@ namespace Gambit {
 	cutFlowVector_str[72] = "SRWWc e+e-: 2 leptons ";
 	cutFlowVector_str[73] = "SRWWc e+e-: Jet veto ";
 	cutFlowVector_str[74] = "SRWWc e+e-: Z veto ";
-	cutFlowVector_str[75] = "SRWWc e+e-: mT2 > 90 ";
+	cutFlowVector_str[75] = "SRWWc e+e-: mT2 > 100 ";
 	cutFlowVector_str[76] = "SRWWc mu+mu-: 2 leptons ";
 	cutFlowVector_str[77] = "SRWWc mu+mu-: Jet veto ";
 	cutFlowVector_str[78] = "SRWWc mu+mu-: Z veto ";
-	cutFlowVector_str[79] = "SRWWc mu+mu-: mT2 > 90 ";
+	cutFlowVector_str[79] = "SRWWc mu+mu-: mT2 > 100 ";
 	cutFlowVector_str[80] = "SRWWc e+mu-: 2 leptons ";
 	cutFlowVector_str[81] = "SRWWc e+mu-: Jet veto ";
-	cutFlowVector_str[82] = "SRWWc e+mu-: mT2 > 90 ";
+	cutFlowVector_str[82] = "SRWWc e+mu-: mT2 > 100 ";
+
+	for(int j=0;j<NCUTS;j++){
+	  if(j>=0 && j<=10)cutFlowIncrements[j]=0.97;
+	  if(j>=11 && j<=16)cutFlowIncrements[j]=0.75;
+	  if(j>=17 && j<=22)cutFlowIncrements[j]=0.89;
+
+	  if(j>=23 && j<=31)cutFlowIncrements[j]=0.97;
+	  if(j>=32 && j<=40)cutFlowIncrements[j]=0.75;
+
+	  if(j>=41 && j<=46)cutFlowIncrements[j]=0.97;
+	  if(j>=47 && j<=52)cutFlowIncrements[j]=0.75;
+	  if(j>=53 && j<=57)cutFlowIncrements[j]=0.89;
+
+	  if(j>=58 && j<=62)cutFlowIncrements[j]=0.97;
+	  if(j>=63 && j<=67)cutFlowIncrements[j]=0.75;
+	  if(j>=68 && j<=71)cutFlowIncrements[j]=0.89;
+
+	  if(j>=72 && j<=75)cutFlowIncrements[j]=0.97;
+	  if(j>=76 && j<=79)cutFlowIncrements[j]=0.75;
+	  if(j>=80 && j<=82)cutFlowIncrements[j]=0.89;
+	}
 
 
        	for(int j=0;j<NCUTS;j++){
@@ -757,24 +800,24 @@ namespace Gambit {
 	      
 	      (j==75 && tauVeto && leptonPTCut && mllCut && isOS && (numElectrons==2 && numMuons==0) && numCentralNonBJets==0 && numCentralBJets==0 && numForwardJets==0 && passZVeto_WWa && passMT2_WWc) ||
 
-	      //WWb mu+ mu-
+	      //WWc mu+ mu-
 	      (j==76 && tauVeto && leptonPTCut && mllCut && isOS && (numElectrons==0 && numMuons==2)) || 
 
 	      (j==77 && tauVeto && leptonPTCut && mllCut && isOS && (numElectrons==0 && numMuons==2) && numCentralNonBJets==0 && numCentralBJets==0 && numForwardJets==0) ||
 	      
 	      (j==78 && tauVeto && leptonPTCut && mllCut && isOS && (numElectrons==0 && numMuons==2) && numCentralNonBJets==0 && numCentralBJets==0 && numForwardJets==0 && passZVeto_WWa) ||
 	      
-	      (j==79 && tauVeto && leptonPTCut && mllCut && isOS && (numElectrons==0 && numMuons==2) && numCentralNonBJets==0 && numCentralBJets==0 && numForwardJets==0 && passZVeto_WWa && passMT2_WWb) ||
+	      (j==79 && tauVeto && leptonPTCut && mllCut && isOS && (numElectrons==0 && numMuons==2) && numCentralNonBJets==0 && numCentralBJets==0 && numForwardJets==0 && passZVeto_WWa && passMT2_WWc) ||
 
-	      //WWb e+mu-
+	      //WWc e+mu-
 	  
 	      (j==80 && tauVeto && leptonPTCut && mllCut && isOS && (numElectrons==1 && numMuons==1)) || 
 
 	      (j==81 && tauVeto && leptonPTCut && mllCut && isOS && (numElectrons==1 && numMuons==1) && numCentralNonBJets==0 && numCentralBJets==0 && numForwardJets==0) ||
 	      
-	      (j==82 && tauVeto && leptonPTCut && mllCut && isOS && (numElectrons==1 && numMuons==1) && numCentralNonBJets==0 && numCentralBJets==0 && numForwardJets==0 && passZVeto_WWa && passMT2_WWb) 
+	      (j==82 && tauVeto && leptonPTCut && mllCut && isOS && (numElectrons==1 && numMuons==1) && numCentralNonBJets==0 && numCentralBJets==0 && numForwardJets==0 && passZVeto_WWa && passMT2_WWc) 
 
-	      )cutFlowVector[j]++;
+	      )cutFlowVector[j]=cutFlowVector[j]+cutFlowIncrements[j];
 	      
 	}
 	

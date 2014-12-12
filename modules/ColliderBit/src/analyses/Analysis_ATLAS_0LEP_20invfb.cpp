@@ -110,6 +110,8 @@ namespace Gambit {
         // We now have the signal electrons, muons and jets: move on to the 0 lepton 2012 analysis
 
         // Calculate common variables and cuts first
+	ApplyMediumIDElectronSelection(signalElectrons);
+
         int nElectrons = signalElectrons.size();
         int nMuons = signalMuons.size();
         int nJets = signalJets.size();
