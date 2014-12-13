@@ -38,9 +38,8 @@
 #include "DarkBit_types.hpp"
 #include "DarkBit_rollcall.hpp"
 #include "util_macros.hpp"
+#include "SingletDM.hpp"
 
-//PS: this is OK here, in a source file, *but not in headers like DarkBit_types.hpp*!!!
-using namespace Gambit::BF;
 
 namespace Gambit {
 
@@ -1423,7 +1422,7 @@ namespace Gambit {
         result.dE_res[0] = mh/2/10.;
 
         // TODO: This part should set up additional parameters in DS, but does
-        // not work at all. --> TB
+        // not work at all??? --> TB
         DS_RDMGEV myrdmgev;
         myrdmgev.nco = 1;
         myrdmgev.mco[0] = *Param["mass"];
@@ -1447,106 +1446,63 @@ namespace Gambit {
         result.M_DM = *Param["mass"];
     }
 
-    double sv_for_Weff_from_ProcessCatalog;  // TODO: Get rid of global variable
-    double mass_for_Weff_from_ProcessCatalog;  // TODO: Get rid of global variable
-    double Weff_from_ProcessCatalog(double &peff)
-    {
-        double s = 4*(pow(peff,2) + pow(mass_for_Weff_from_ProcessCatalog,2));
-        return sv_for_Weff_from_ProcessCatalog * s;
-    }
+    DEF_FUNKTRAIT(RD_EFF_ANNRATE_FROM_PROCESSCATALOG_TRAIT)  // carries pointer to Weff
 
     void RD_eff_annrate_from_ProcessCatalog(double(*&result)(double&))
     {
         using namespace Pipes::RD_eff_annrate_from_ProcessCatalog;
-        double sv = 0;  // Assumed to be velocity independent
 
-        // Annihilation process (no coannihilations for now)
         TH_Process annProc = (*Dep::TH_ProcessCatalog).getProcess((std::string)"chi_10", (std::string)"chi_10");
+        double mDM = *Param["mass"];
+        const double GeV2tocm3s1 = 1.17e-17;
+
+        auto Weff = Funk::zero("peff");
+        auto peff = Funk::var("peff");
+        auto s = 4*(peff*peff + mDM*mDM);
 
         for (std::vector<TH_Channel>::iterator it = annProc.channelList.begin();
                 it != annProc.channelList.end(); ++it)
         {
-            sv += it->dSigmadE->eval("v", 0.);
+            Weff = Weff + it->dSigmadE->set("v", peff/mDM)*s/GeV2tocm3s1;
         }
-        double GeV2tocm3s1 = 1.17e-17;
-        sv_for_Weff_from_ProcessCatalog = sv/GeV2tocm3s1;
-        mass_for_Weff_from_ProcessCatalog = *Param["mass"];
-        result = Weff_from_ProcessCatalog;
+        result = Weff->plain<RD_EFF_ANNRATE_FROM_PROCESSCATALOG_TRAIT>("peff");
     }
 
     void TH_ProcessCatalog_SingletDM(Gambit::DarkBit::TH_ProcessCatalog &result)
     {
         using namespace Pipes::TH_ProcessCatalog_SingletDM;
-        std::vector<std::string> finalStates;
 
-        double mass, lambda, mh, Sigma_h, alpha_s, mf, s, Dh2, vf, Xf, x, mW;
-        double sv_bb = 0;
-        double sv_WW = 0;
-        double GeV2tocm3s1 = 1.17e-17;  // Conversion factor  TODO: Update
+        static SingletDM singletDM("/home/weniger/");
+
+        std::vector<std::string> finalStates;
+        double mass, lambda, mW, mb, mZ;
 
         mass = *Param["mass"];
         lambda = *Param["lambda"];
-
-        // TODO:
-        // Final states to implement
-        // - tautau
-        // - cc
-        // - bb
-        // - WW*
-        // - WW
-        // - ZZ*
-        // - ZZ
-        // - hh
-        // - tt
-
-        // TODO: Don't hardcode these parameters / update
-        mh = 125.7; 
         mW = 80.5;
-        Sigma_h = mh*0.1;
-        alpha_s = 0.12;
-
-        s = pow(2*mass, 2);
-        Dh2 = 1/(pow(s-pow(mh,2),2) + pow(mh,2)*pow(Sigma_h,2));
-
-        // Annihilation into b-quarks.
-        mf = 5.;
-        if ( mass > mf )
-        {
-            vf = pow(1-4*pow(mf,2)/s, 0.5);
-            Xf = 3 * (1+(3/2*log(pow(mf,2)/s)+9/4)*4*alpha_s/3/M_PI);
-            sv_bb = pow(lambda,2)*pow(mf,2)/4/M_PI*Xf*pow(vf,3) * Dh2;
-            sv_bb *= GeV2tocm3s1;
-        }
-
-        // Annihilation into W bosons.
-        if ( mass > mW )
-        {
-            x = pow(mW,2)/s;
-            sv_WW = pow(lambda,2)*s/8/M_PI*sqrt(1-4*x)*Dh2*(1-4*x+12*pow(x,2));
-            sv_WW *= GeV2tocm3s1;
-        }
+        mZ = 90.0;
+        mb = 5;
 
         // Initialize catalog
         TH_ProcessCatalog catalog;
         TH_Process process_ann((std::string)"chi_10", (std::string)"chi_10");
 
-        // Initialize channel bb
-        Funk::Funk kinematicFunction_bb = Funk::cnst(sv_bb);
-        finalStates.clear();
-        finalStates.push_back("b");
-        finalStates.push_back("bbar");
-        TH_Channel channel_bb(finalStates, kinematicFunction_bb);
-        process_ann.channelList.push_back(channel_bb);
-
-        // Initialize channel bb
-        if ( mass > mW)
+        // Populate channel list
+        auto m_th = Funk::vec(mb, mW, 0., 0., 0., mZ);
+        // WW*, hh, tt, ZZ*
+        auto channel = Funk::vec<std::string>("bb", "WW", "cc", "tautau", "ZZ");
+        auto p1 = Funk::vec<std::string>("b", "W+", "c", "tau+", "Z");
+        auto p2 = Funk::vec<std::string>("bbar", "W-", "cbar", "tau-", "Z");
+        for ( int i = 0; i < 3; i++ )
         {
-            Funk::Funk kinematicFunction_WW = Funk::cnst(sv_WW);
-            finalStates.clear();
-            finalStates.push_back("W+");
-            finalStates.push_back("W-");
-            TH_Channel channel_WW(finalStates, kinematicFunction_WW);
-            process_ann.channelList.push_back(channel_WW);
+            if ( mass > m_th[i] )
+            {
+                Funk::Funk kinematicFunction_bb = 
+                    Funk::funcM(&singletDM, &SingletDM::sv, channel[i], lambda, mass, Funk::var("v"));
+                finalStates = Funk::vec<std::string>(p1[i], p2[i]);
+                TH_Channel channel_bb(finalStates, kinematicFunction_bb);
+                process_ann.channelList.push_back(channel_bb);
+            }
         }
 
         // Finally, store properties of "chi" in particleProperty list
@@ -1556,7 +1512,6 @@ namespace Gambit {
 
         result = catalog;
     }
-
 
     void UnitTest_DarkBit(int &result)
     {
@@ -1644,6 +1599,7 @@ namespace Gambit {
           std::cout << "Warning: outputfile not open for writing." << std::endl;
         }
         os.close();
+        result = 0;
     }
   }
 }

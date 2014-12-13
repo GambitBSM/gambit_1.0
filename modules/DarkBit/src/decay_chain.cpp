@@ -19,7 +19,6 @@
 
 #include <iostream>
 #include "DarkBit_types.hpp"
-#include "base_functions.hpp"
 
 namespace Gambit 
 {
@@ -27,8 +26,6 @@ namespace Gambit
   {
     namespace DecayChain
     {
-        using namespace Gambit::BF;
-        
         //  *********************************************
         //  3-vector related
         //  *********************************************
