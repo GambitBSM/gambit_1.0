@@ -52,7 +52,7 @@ namespace Gambit
                         //std::vector<double> &params;
                         
                 public:
-                        Scanner_Plugin_Function(const std::vector<std::string> &params, const Priors::BasePrior &prior, const IniFileInterface_Base &interface) 
+                        Scanner_Plugin_Function(const std::vector<std::string> &params, const Priors::BasePrior &prior, const IniFileInterface &interface) 
                                 : Plugin::Plugin_Interface<double (const std::vector<double> &)>(interface.fileName(), interface.pluginName(), params, prior, interface)
                         {
                         }
@@ -121,7 +121,7 @@ namespace Gambit
                                 }
                                 else if (it->second.size() == 1)
                                 {
-                                        return new Scanner_Plugin_Function(parameters.at(it->second.at(0).pluginName()), prior, it->second.at(0));
+                                        return new Scanner_Plugin_Function(parameters.at(it->second.at(0).getTag()), prior, it->second.at(0));
                                 }
                                 else if (it->second.size() > 1)
                                 {

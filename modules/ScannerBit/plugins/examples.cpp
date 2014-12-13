@@ -21,12 +21,18 @@
 
 #include "function_plugin.hpp"
 
-function_plugin(uniform, version(,,,))
+function_plugin(uniform, version(0,0,0,))
 {
         double plugin_main (const std::vector<double> &vec)
         {
-                std::vector<std::string> &keys     = get_keys();
-                std::vector<double> &params = prior_transform(vec);
+                //std::vector<std::string> &keys     = get_keys();
+                //std::vector<double> params = prior_transform(vec);
+                //std::cout << "param = " << get_inifile_value<int>("some_param") << std::endl;
+                //std::cout << "dim = " << params.size() << std::endl;
+                //std::cout << "keys = " << keys[0] << "   " << keys[1] << std::endl;
+                //std::cout << "pts = " << params[0] << "   " << params[1] << std::endl;
+                //std::cout << "vec size = " << vec.size() << "   " << vec[0] << "   " << vec[1] << std::endl;
+                //getchar();
                 
                 return 0;
         }
@@ -102,7 +108,7 @@ function_plugin(gaussian, version(,,,))
         
         double plugin_main(const std::vector<double> &vec)
         {
-                std::vector<double> &params = prior_transform(vec);
+                //std::vector<double> &params = prior_transform(vec);
                 
                 
         }

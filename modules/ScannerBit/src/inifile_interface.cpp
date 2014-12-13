@@ -27,65 +27,9 @@
 namespace Gambit
 {
         namespace Scanner
-        {
-                IniFileInterface scanner_inifile_input(const Options &options)
-                {
-                        bool redirect = false;
-                        if (options.hasKey("enable_redirect"))
-                        {
-                                redirect = options.getValue<bool>("enable_redirect");
-                        }
-
-                        if (redirect)
-                        {
-                                if (options.hasKey("redirect_output", "scanner"))
-                                {
-                                        std::string file = options.getValue<std::string>("redirect_output", "scanner");
-                                        outputHandler::out.set("scanner", file);
-                                }
-                                
-                                if (options.hasKey("redirect_output", "error"))
-                                {
-                                        std::string file = options.getValue<std::string>("redirect_output", "error");
-                                        scanLog::err << scanLog::set_output(file);
-                                }
-                        }
-                        
-                        std::string name;
-                        
-                        if (options.hasKey("plugin")) 
-                        {
-                                name = options.getValue<std::string>("plugin");
-                        }
-                        else
-                        {
-                                name = "";
-                        }
-                        
-                        return IniFileInterface(name, "", options);
-                }
-                
-                std::map<std::string, std::vector<IniFileInterface>> function_inifile_input(const Options &options)
-                {       
-                        std::vector<std::pair<std::string, std::string>> names;
-                        
-                        if (options.hasKey("plugins")) 
-                        {
-                                names = options.getValue<std::vector<std::pair<std::string, std::string>>>("plugins");
-                        }
-                        
-                        std::map<std::string, std::vector<IniFileInterface>> ret;
-                        
-                        for (auto it = names.begin(), end = names.end(); it != end; it++)
-                        {
-                                ret[it->second].emplace_back(it->first, "", options);
-                        }
-                        
-                        return ret;
-                }
-                
-                IniFileInterface::IniFileInterface(const std::string &name, const std::string &file, const Options &options) 
-                        : name(name), file(file), options(options)
+        {       
+                IniFileInterface::IniFileInterface(const std::string &tag, const Plugin::PluginStruct &plugin, const Options &options) 
+                        : tag(tag), plugin(plugin), options(options)
                 {       
                 }
         }

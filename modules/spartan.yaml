@@ -86,12 +86,32 @@ Printer:
 
 Scanner:
 
-  loopsample:
-    point_number: 20
-    output_file:  output
-    like:  Likelihood
-    files:
-      output_file: "weights ..."
+#  use_likelihood_plugins: [uniform]
+  use_scanner_plugin: loopsample
+
+  plugins:
+  
+    loopsample:
+      plugin: loopsample
+      point_number: 20
+      output_file:  output
+      like:  Likelihood
+      files:
+        output_file: "weights ..."
+        
+    uniform:
+      plugin: uniform
+      some_param: 10
+      
+  parameters:
+  
+    uniform:
+      param_0:
+        range: [-1, 1]
+      param_1:
+        range: [-1, 1]
+        
+  priors:
             
 ###############################
 # Observables of interest
