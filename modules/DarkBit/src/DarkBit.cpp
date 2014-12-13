@@ -38,8 +38,10 @@
 #include "DarkBit_types.hpp"
 #include "DarkBit_rollcall.hpp"
 #include "util_macros.hpp"
+#include "base_functions.hpp"
 #include "SingletDM.hpp"
 
+using namespace Gambit::BF;
 
 namespace Gambit {
 
