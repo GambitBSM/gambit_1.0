@@ -283,6 +283,9 @@ namespace Gambit {
         // We now have the signal electrons, muons, jets and b jets- move on to the analysis
 
         // Calculate common variables and cuts first
+	
+	ApplyTightIDElectronSelection(signalElectrons);
+
         int nElectrons = signalElectrons.size();
         int nMuons = signalMuons.size();
         int nJets = signalJets.size();
