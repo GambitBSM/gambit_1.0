@@ -1505,8 +1505,8 @@ namespace Gambit {
             {
               os << *jt << "";
             }
-            //if (it->finalStateIDs.size() == 2)
-              //os << ": " << (*it->dSigmadE)(0.);
+            if (it->finalStateIDs.size() == 2)
+            os << ": " << it->dSigmadE->eval("v", 0);
             //if (it->finalStateIDs.size() == 3)
               //os << ": " << (*it->dSigmadE)(0., 0.);
             os << "\n";

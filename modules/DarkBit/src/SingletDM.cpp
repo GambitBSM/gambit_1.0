@@ -137,7 +137,7 @@ namespace Gambit
         TH_Process process_ann((std::string)"chi_10", (std::string)"chi_10");
 
         // Populate channel list
-        auto m_th = Funk::vec(mb, mW, 0., 0., 0., mZ);
+        auto m_th = Funk::vec(mb, mW, 0., 0., mZ);
         // WW*, hh, tt, ZZ*
         auto channel = Funk::vec<std::string>("bb", "WW", "cc", "tautau", "ZZ");
         auto p1 = Funk::vec<std::string>("b", "W+", "c", "tau+", "Z");
