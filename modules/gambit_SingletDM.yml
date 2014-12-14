@@ -9,7 +9,7 @@ Parameters:
         lambda:
             range: [0.02, 0.021]
         mass:
-            range: [62.8, 62.9]
+            range: [63.8, 63.9]
 
 ##############################
 # Prior setup
@@ -66,13 +66,13 @@ ObsLikes:
 #      function: lnL_FermiLATdwarfs_gamLike
 #      purpose:  Likelihood
 # Simple gaussian relic density likelihood
-#    - purpose:    Likelihood
-#      capability: lnL_oh2
+    - purpose:    Likelihood
+      capability: lnL_oh2
 # LUX direct detection likelihood
 # Direct detection likelihood (for now a simple test version, until DDCalc
 # works again)
-    - capability: lnL_LUX_2013
-      purpose:  Likelihood
+#    - capability: lnL_LUX_2013
+#      purpose:  Likelihood
 #    - capability: UnitTest_DarkBit
 #      purpose:  Observable
 

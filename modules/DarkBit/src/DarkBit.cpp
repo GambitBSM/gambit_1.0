@@ -39,7 +39,6 @@
 #include "DarkBit_rollcall.hpp"
 #include "util_macros.hpp"
 #include "base_functions.hpp"
-#include "SingletDM.hpp"
 
 using namespace Gambit::BF;
 
@@ -1404,7 +1403,6 @@ namespace Gambit {
       result = *Dep::IC22_loglike + *Dep::IC79WH_loglike + *Dep::IC79WL_loglike + *Dep::IC79SL_loglike; 
     }
 
-
     //The following are just toy functions to allow the neutrino likelihoods to be tested.  
     //They should be deleted when real functions are added to provide the WIMP mass, solar
     //annihilation rate and neutrino yield.
@@ -1413,43 +1411,7 @@ namespace Gambit {
     void mwimp_toy        (double &result)                  { result = 250.0;            }
     void annrate_toy      (double &result)                  { result = 1.e20;            }
 
-    void RD_thresholds_resonances_SingletDM(RDrestype &result)
-    {
-        using namespace Pipes::RD_thresholds_resonances_SingletDM;
-        result.n_res = 1;
-        result.n_thr = 1;
-        result.E_thr[0] = 2*(*Param["mass"]);
-        double mh = 125.7;  // TODO: Don't hardcode masses.
-        result.E_res[0] = mh/2;
-        result.dE_res[0] = mh/2/10.;
-
-        // TODO: This part should set up additional parameters in DS, but does
-        // not work at all??? --> TB
-        DS_RDMGEV myrdmgev;
-        myrdmgev.nco = 1;
-        myrdmgev.mco[0] = *Param["mass"];
-        myrdmgev.mdof[0] = 1;
-        myrdmgev.kcoann[0] = 42;  // ???
-        *BEreq::rdmgev = myrdmgev;
-    }
-
-    void DD_couplings_SingletDM(Gambit::DarkBit::DD_couplings &result)
-    {
-        using namespace Pipes::DD_couplings_SingletDM;
-        double mass = *Param["mass"];
-        double lambda = *Param["lambda"];
-        double mh = 125.7;  // TODO: Don't hardcode
-        double mN = 0.94;
-        double fN = 0.35;
-        result.gps = lambda*fN*mN/pow(mh,2)/mass;
-        result.gns = lambda*fN*mN/pow(mh,2)/mass;
-        result.gpa = 0;
-        result.gna = 0;
-        result.M_DM = *Param["mass"];
-    }
-
     DEF_FUNKTRAIT(RD_EFF_ANNRATE_FROM_PROCESSCATALOG_TRAIT)  // carries pointer to Weff
-
     void RD_eff_annrate_from_ProcessCatalog(double(*&result)(double&))
     {
         using namespace Pipes::RD_eff_annrate_from_ProcessCatalog;
@@ -1465,54 +1427,9 @@ namespace Gambit {
         for (std::vector<TH_Channel>::iterator it = annProc.channelList.begin();
                 it != annProc.channelList.end(); ++it)
         {
-            Weff = Weff + it->dSigmadE->set("v", peff/mDM)*s/GeV2tocm3s1;
+            Weff = Weff + it->dSigmadE->set("v", 2*peff/sqrt(mDM*mDM+peff*peff))*s/GeV2tocm3s1;
         }
         result = Weff->plain<RD_EFF_ANNRATE_FROM_PROCESSCATALOG_TRAIT>("peff");
-    }
-
-    void TH_ProcessCatalog_SingletDM(Gambit::DarkBit::TH_ProcessCatalog &result)
-    {
-        using namespace Pipes::TH_ProcessCatalog_SingletDM;
-
-        static SingletDM singletDM("/home/weniger/");
-
-        std::vector<std::string> finalStates;
-        double mass, lambda, mW, mb, mZ;
-
-        mass = *Param["mass"];
-        lambda = *Param["lambda"];
-        mW = 80.5;
-        mZ = 90.0;
-        mb = 5;
-
-        // Initialize catalog
-        TH_ProcessCatalog catalog;
-        TH_Process process_ann((std::string)"chi_10", (std::string)"chi_10");
-
-        // Populate channel list
-        auto m_th = Funk::vec(mb, mW, 0., 0., 0., mZ);
-        // WW*, hh, tt, ZZ*
-        auto channel = Funk::vec<std::string>("bb", "WW", "cc", "tautau", "ZZ");
-        auto p1 = Funk::vec<std::string>("b", "W+", "c", "tau+", "Z");
-        auto p2 = Funk::vec<std::string>("bbar", "W-", "cbar", "tau-", "Z");
-        for ( int i = 0; i < 3; i++ )
-        {
-            if ( mass > m_th[i] )
-            {
-                Funk::Funk kinematicFunction_bb = 
-                    Funk::funcM(&singletDM, &SingletDM::sv, channel[i], lambda, mass, Funk::var("v"));
-                finalStates = Funk::vec<std::string>(p1[i], p2[i]);
-                TH_Channel channel_bb(finalStates, kinematicFunction_bb);
-                process_ann.channelList.push_back(channel_bb);
-            }
-        }
-
-        // Finally, store properties of "chi" in particleProperty list
-        catalog.processList.push_back(process_ann);
-        TH_ParticleProperty chiProperty(mass, 1);  // Set mass and 2*spin
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("chi_10", chiProperty));
-
-        result = catalog;
     }
 
     void UnitTest_DarkBit(int &result)
