@@ -440,10 +440,9 @@ namespace Funk
     {
         public:
             template <typename... Args>
-            FunkFuncM(O* obj, double (O::* f)(funcargs...), Args... argss)
+            FunkFuncM(O* obj, double (O::* f)(funcargs...), Args... argss) : obj(obj)
             {
                 ptr = f;
-                obj = obj;
                 digest_input(argss...);
             }
 
@@ -903,7 +902,7 @@ namespace Funk
         public:
             FunkInterp(const char * arg, std::vector<double> & Xgrid, std::vector<double> & Ygrid, std::string mode = "lin")
             {
-                this->arg = arg;
+                args.push_back(arg);
                 this->Xgrid = Xgrid;
                 this->Ygrid = Ygrid;
                 if ( mode == "lin" ) this->ptr = &FunkInterp::linearInterp;
@@ -941,7 +940,6 @@ namespace Funk
             }
 
             double(FunkInterp::*ptr)(double);
-            const char * arg;
             std::vector<double> Xgrid;
             std::vector<double> Ygrid;
             std::string mode;
