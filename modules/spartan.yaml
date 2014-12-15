@@ -86,15 +86,32 @@ Printer:
 
 Scanner:
 
-  plugin: loopsample
-  file_path:  ScannerBit/lib/libsample.so
+#  use_likelihood_plugins: [uniform]
+  use_scanner_plugin: loopsample
 
-  loopsample:
-    point_number: 20
-    output_file:  output
-    like:  Likelihood
-    files:
-      output_file: "weights ..."
+  plugins:
+  
+    loopsample:
+      plugin: loopsample
+      point_number: 20
+      output_file:  output
+      like:  Likelihood
+      files:
+        output_file: "weights ..."
+        
+    uniform:
+      plugin: uniform
+      some_param: 10
+      
+  parameters:
+  
+    uniform:
+      param_0:
+        range: [-1, 1]
+      param_1:
+        range: [-1, 1]
+        
+  priors:
             
 ###############################
 # Observables of interest

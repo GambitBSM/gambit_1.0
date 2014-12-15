@@ -21,88 +21,94 @@
 
 #include "function_plugin.hpp"
 
-function_plugin(uniform)
+function_plugin(uniform, version(0,0,0,))
 {
         double plugin_main (const std::vector<double> &vec)
         {
-                std::vector<std::string> &keys     = get_keys();
-                std::vector<double> &params = prior_transform(vec);
+                //std::vector<std::string> &keys     = get_keys();
+                //std::vector<double> params = prior_transform(vec);
+                //std::cout << "param = " << get_inifile_value<int>("some_param") << std::endl;
+                //std::cout << "dim = " << params.size() << std::endl;
+                //std::cout << "keys = " << keys[0] << "   " << keys[1] << std::endl;
+                //std::cout << "pts = " << params[0] << "   " << params[1] << std::endl;
+                //std::cout << "vec size = " << vec.size() << "   " << vec[0] << "   " << vec[1] << std::endl;
+                //getchar();
                 
                 return 0;
         }
 }
 
-function_plugin(gaussian)
+function_plugin(gaussian, version(,,,))
 {
         plugin_constructor
         {
-                std::vector<std::vector<double>> cov;
-                        
-                cov = get_inifile_value<std::vector<std::vector<double>>> ("cov", cov);
-                
-                if (options.hasKey("cov"))
-                {
-                        if (cov.size() != param.size())
-                        {
-                                good = false;
-                                scanLog::err << "Gaussian (test):  Covariance matrix is not the same dimension has the parameters." << scanLog::endl;
-                        }
-                        
-                        for (std::vector<std::vector<double>>::iterator it = cov.begin(); it != cov.end(); it++)
-                        {
-                                if (it->size() != cov.size())
-                                {
-                                        good = false;
-                                        scanLog::err << "Gaussian (test):  Covariance matrix is not square." << scanLog::endl;
-                                }
-                        }
-                }
-                else if (options.hasKey("sigs"))
-                {
-                        std::vector <double> sigs = options.getValue <std::vector <double>> ("sigs");
-                        if (sigs.size() != param.size())
-                        {
-                                good = false;
-                                scanLog::err << "Gaussian (test):  Sigma vector is not the same dimension has the parameters." << scanLog::endl;
-                        }
-                        else
-                        {
-                                for (int i = 0, end = sigs.size(); i < end; i++)
-                                {
-                                        cov[i][i] = sigs[i]*sigs[i];
-                                }
-                        }
-                }
-                else
-                {
-                        good = false;
-                        scanLog::err << "Gaussian (test):  Covariance matrix is not defined in inifile." << scanLog::endl;
-                }
-                
-                if (options.hasKey("mean"))
-                {
-                        std::vector <double> temp = options.getValue <std::vector <double>> ("mean");
-                        if (temp.size() == mean.size())
-                        {
-                                mean = temp;
-                        }
-                        else
-                        {
-                                good = false;
-                                scanLog::err << "Gaussian (test):  Mean vector is not the same dimension has the parameters." << scanLog::endl;
-                        }
-                }
-                
-                if (good)
-                {
-                        if (!chol.EnterMat(cov))
-                                scanLog::err << "Gaussian (test):  Covariance matrix is not postive definite." << scanLog::endl;
-                }
+//                 std::vector<std::vector<double>> cov;
+//                         
+//                 cov = get_inifile_value<std::vector<std::vector<double>>> ("cov", cov);
+//                 
+//                 if (options.hasKey("cov"))
+//                 {
+//                         if (cov.size() != param.size())
+//                         {
+//                                 good = false;
+//                                 scanLog::err << "Gaussian (test):  Covariance matrix is not the same dimension has the parameters." << scanLog::endl;
+//                         }
+//                         
+//                         for (std::vector<std::vector<double>>::iterator it = cov.begin(); it != cov.end(); it++)
+//                         {
+//                                 if (it->size() != cov.size())
+//                                 {
+//                                         good = false;
+//                                         scanLog::err << "Gaussian (test):  Covariance matrix is not square." << scanLog::endl;
+//                                 }
+//                         }
+//                 }
+//                 else if (options.hasKey("sigs"))
+//                 {
+//                         std::vector <double> sigs = options.getValue <std::vector <double>> ("sigs");
+//                         if (sigs.size() != param.size())
+//                         {
+//                                 good = false;
+//                                 scanLog::err << "Gaussian (test):  Sigma vector is not the same dimension has the parameters." << scanLog::endl;
+//                         }
+//                         else
+//                         {
+//                                 for (int i = 0, end = sigs.size(); i < end; i++)
+//                                 {
+//                                         cov[i][i] = sigs[i]*sigs[i];
+//                                 }
+//                         }
+//                 }
+//                 else
+//                 {
+//                         good = false;
+//                         scanLog::err << "Gaussian (test):  Covariance matrix is not defined in inifile." << scanLog::endl;
+//                 }
+//                 
+//                 if (options.hasKey("mean"))
+//                 {
+//                         std::vector <double> temp = options.getValue <std::vector <double>> ("mean");
+//                         if (temp.size() == mean.size())
+//                         {
+//                                 mean = temp;
+//                         }
+//                         else
+//                         {
+//                                 good = false;
+//                                 scanLog::err << "Gaussian (test):  Mean vector is not the same dimension has the parameters." << scanLog::endl;
+//                         }
+//                 }
+//                 
+//                 if (good)
+//                 {
+//                         if (!chol.EnterMat(cov))
+//                                 scanLog::err << "Gaussian (test):  Covariance matrix is not postive definite." << scanLog::endl;
+//                 }
         }
         
         double plugin_main(const std::vector<double> &vec)
         {
-                std::vector &params = prior_transform(vec);
+                //std::vector<double> &params = prior_transform(vec);
                 
                 
         }

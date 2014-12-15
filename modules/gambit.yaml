@@ -86,37 +86,45 @@ Printer:
 
 Scanner:
 
-#multinest:
-  #library_path:  ScannerBit/lib/libmultinest_interface.so 
-      
-  crapsample:
-    point_number: 2
-    output_file:  output
-    like:  Likelihood
+#  use_likelihood_plugins: [uniform]
+  use_scanner_plugin: crapsample
+  
+  plugins:
+    crapsample:
+      plugin: crapsample
+      point_number: 2
+      output_file:  output
+      like:  Likelihood
 
-  loopsample:
-    point_number: 20
-    output_file:  output
-    like:  Likelihood
-    files:
-      output_file: "weights ..."
+    loopsample:
+      plugin: loopsample
+      point_number: 20
+      output_file:  output
+      like:  Likelihood
+      files:
+        output_file: "weights ..."
     
-  multinest:
-    nlive: 500
-    tol: 0.1
-    output_file:  output
+    multinest:
+      plugin: multinest
+      nlive: 500
+      tol: 0.1
+      output_file:  output
     
-  twalk_beta:
-    kwalk_ratio: 0.9836
-    projection_dimension: 4
-    gaussian_distance: 2.4
-    walk_distance: 2.5
-    transverse_distance: 6.0
-    ran_seed: 0
-    file_name: output_file
-    tolorance: 1.01
-    thread_number: 10
-    cut: 100
+    twalk_beta:
+      plugin: twalk
+      kwalk_ratio: 0.9836
+      projection_dimension: 4
+      gaussian_distance: 2.4
+      walk_distance: 2.5
+      transverse_distance: 6.0
+      ran_seed: 0
+      file_name: output_file
+      tolorance: 1.01
+      thread_number: 10
+      cut: 100
+      
+    uniform:
+      plugin: uniform
     
 ###############################
 # Observables of interest

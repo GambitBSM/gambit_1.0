@@ -25,7 +25,7 @@ namespace Gambit {
   namespace ColliderBit {
 
     using namespace std;
-
+    
     class Analysis_ATLAS_3LEPEW_20invfb : public Analysis {
     private:
 
@@ -247,6 +247,9 @@ namespace Gambit {
 
         //cout << "AFTER REMOVAL nele nmuo njet " << signalElectrons.size() << " " << signalMuons.size() << " " << signalJets.size() << endl;
 
+	//Now apply the tight electron selection
+	ApplyTightIDElectronSelection(signalElectrons);
+	
         int numElectrons=signalElectrons.size();
         int numMuons=signalMuons.size();
 	int numTaus=signalTaus.size();
@@ -351,7 +354,9 @@ namespace Gambit {
             }
           }
         }
-	
+
+
+
 	//Lepton pT trigger cuts
         bool triggerE=false;
         bool triggerMU=false;
@@ -797,7 +802,7 @@ namespace Gambit {
 	
         using namespace std;
 
-        double scale_to = 20.7*4.24*1000./cutFlowVector[0];
+        double scale_to = 20.7*0.24*1000./cutFlowVector[0];
         double trigger_cleaning_eff = 0.9;
 
         cout << "------------------------------------------------------------------------------------------------------------------------------ "<<std::endl;

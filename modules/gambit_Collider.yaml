@@ -44,15 +44,7 @@ Printer:
 ##############################
 
 Scanner:
-
-  plugin: crapsample
-  file_path:  ScannerBit/lib/libsample.so
-
-  enable_redirect: false
-  redirect_output:
-     scanner:  xterm
-  #   error:  test_errors
-      
+    
   crapsample:
     point_number: 1
     output_file:  output

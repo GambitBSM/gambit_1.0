@@ -119,6 +119,7 @@ namespace Gambit
                         std::string library;
                         std::string plugin;
                         std::string type;
+                        std::string full_string;
                         
                         std::string print()
                         {
@@ -338,6 +339,7 @@ namespace Gambit
                                                         int pos = str.find("__gambit_plugin_pluginInit_");
                                                         int posLast = str.rfind("__");
                                                         int posMid = str.rfind("__v__", posLast - 1);
+                                                        temp.full_string = str.substr(pos + 27, posLast - pos - 27);
                                                         temp.version = str.substr(posMid + 5, posLast - posMid - 5);
                                                         posLast = str.rfind("__t__", posMid - 1);
                                                         temp.type = str.substr(posLast + 5, posMid - posLast - 5);

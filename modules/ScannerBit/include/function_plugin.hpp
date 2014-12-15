@@ -33,6 +33,7 @@ namespace Gambit
                 {
                 public:
                         virtual void transform(const std::vector<double> &, std::map<std::string, double> &) const = 0;
+                        virtual ~PriorTransform() = 0;
                 };
                 
                 /*Inifile Interface*/
@@ -44,13 +45,6 @@ namespace Gambit
                         virtual const std::string getValue(const std::string &in) const = 0;
                         virtual ~IniFileInterface() = 0;
                 };
-                
-                /*Prior class*/
-                class Prior_Base
-                {
-                public:
-                        virtual void transform(const std::vector<double> &, std::map<std::string, double> &) const = 0;
-                };
         }
 }
 
@@ -58,8 +52,6 @@ namespace Gambit
 #define init_keys(exp)                  INIT_KEYS(exp) enum{}
 #define get_keys()                      GET_KEYS()
 #define function_plugin(...)            FUNCTION_PLUGIN( __VA_ARGS__ )
-
-#define prior_transform(...)            PRIOR_TRANSFORM(__VA_ARGS__)
 
 #define INIT_INIFILE_VALUE(exp, ...)    INITIALIZE(exp, get_inifile_value<decltype(exp)>( __VA_ARGS__ ))
 #define INIT_KEYS(exp)                  INITIALIZE(exp, GET_KEYS())
@@ -116,9 +108,9 @@ inline const std::vector<std::string> add_gambit_prefix(const std::vector<std::s
 inline std::vector<double> &prior_transform(const std::vector<double> &in)                                              \
 {                                                                                                                       \
         const static std::vector<std::string> key = add_gambit_prefix(get_input_value<std::vector<std::string>>(0));    \
-        const static PriorTransform &prior = get_input_value<PriorTransform>(2);                                        \
+        const static PriorTransform &prior = get_input_value<PriorTransform>(1);                                        \
         static std::map<std::string, double> key_map;                                                                   \
-        static std::vector<double> ret;                                                                                 \
+        static std::vector<double> ret(key.size());                                                                     \
                                                                                                                         \
         prior.transform(in, key_map);                                                                                   \
                                                                                                                         \
@@ -131,11 +123,11 @@ inline std::vector<double> &prior_transform(const std::vector<double> &in)      
         return ret;                                                                                                     \
 }                                                                                                                       \
 
-#define FUNCTION_PLUGIN(mod_name, mod_version)                                                                                       \
-GAMBIT_PLUGIN(mod_name, like, mod_version)                                                                                                 \
+#define FUNCTION_PLUGIN(mod_name, mod_version)                                                                          \
+GAMBIT_PLUGIN(mod_name, like, mod_version)                                                                              \
 {                                                                                                                       \
         FUNCTION_SETUP(mod_name)                                                                                        \
 }                                                                                                                       \
-namespace __gambit_plugin_ ## mod_name ## __t__like__v__ ## mod_version ##  _namespace__                                                                 \
+namespace __gambit_plugin_ ## mod_name ## __t__like__v__ ## mod_version ##  _namespace__                                \
 
 #endif

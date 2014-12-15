@@ -32,6 +32,7 @@
 #include "scanner_utils.hpp"
 #include "scan.hpp"
 #include "yaml_options.hpp"
+#include "plugin_interface.hpp"
 
 namespace Gambit
 {
@@ -41,21 +42,23 @@ namespace Gambit
                 {
                 private:
                         Options options;
-                        std::string file;
-                        std::string name;
+                        Plugin::PluginStruct plugin;
+                        std::string tag;
                         
                 public:
-                        IniFileInterface(const std::string &, const std::string &, const Options &);
+                        IniFileInterface(const std::string &tag, const Plugin::PluginStruct &, const Options &);
                         
-                        const std::string pluginName() const {return name;}
+                        const std::string pluginName() const {return plugin.full_string;}
                         
-                        const std::string fileName() const {return file;}
+                        const std::string fileName() const {return plugin.library_path;}
+                        
+                        const std::string getTag() const {return tag;} 
                         
                         const std::string getValue(const std::string &in) const
                         {
-                                if (options.hasKey(name.c_str(), in.c_str()))
+                                if (options.hasKey(tag.c_str(), in.c_str()))
                                 {
-                                        return options.getValue<std::string>(name.c_str(), in.c_str());
+                                        return options.getValue<std::string>(tag.c_str(), in.c_str());
                                 }
                                 else
                                 {
@@ -67,10 +70,6 @@ namespace Gambit
                         
                         ~IniFileInterface(){}
                 };
-                
-                IniFileInterface scanner_inifile_input(const Options &);
-                
-                std::map<std::string, std::vector<IniFileInterface>> function_inifile_input(const Options &);
         }
 }
 

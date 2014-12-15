@@ -59,9 +59,9 @@ namespace Gambit
                         
                         CompositePrior(const std::vector<std::string> &params, const Options &options);
                         
-                        inline std::vector<std::string> & getShownParameters() {return shown_param_names;}
+                        inline const std::vector<std::string> & getShownParameters() const {return shown_param_names;}
                         
-                        inline std::vector<std::string> & getParameters() {return param_names;}
+                        inline const std::vector<std::string> & getParameters() const {return param_names;}
                         
                         // Transformation from unit hypercube to my_ranges
                         void transform(const std::vector<double> &unitPars, std::map<std::string,double> &outputMap) const

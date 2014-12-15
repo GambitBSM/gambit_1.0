@@ -261,7 +261,7 @@ ifndef SHH
   $(info )
 endif
 
-LNFLAGS = $(LDFLAGS) -L$(YAMLDIR) -lyaml-cpp -L$(SLHAPy8DIR) -lslhapy8 $(BOOST_LDFLAGS) $(GSL_LDFLAGS) -lstdc++ -ldl -lgfortran -Wl,-rpath,$(MULTINESTLIBDIR)
+LNFLAGS = -L$(YAMLDIR) -lyaml-cpp $(BOOST_LDFLAGS) $(GSL_LDFLAGS) -lstdc++ -ldl -lgfortran -Wl,-rpath,$(MULTINESTLIBDIR)
 ifdef HAVE_MAC
   LNFLAGS += -dynamic
 else
@@ -437,7 +437,7 @@ EXAMPLE_BOBJS:=$(addprefix $(EXAMPLEBDIR)/build/,$(notdir $(patsubst %.cpp,%.o,$
 STANDALONEINC = $(BACKENDINC) $(UTILSINC) $(MODELINC) $(LOGINC)
 GAMBITINC = $(PRINTINC) $(COREINC)
 STANDALONEOBJS = $(MODELOBJS) $(UTILSOBJS) $(LOGOBJS) $(BACKENDOBJS)
-MODULEOBJS = $(SCANOBJS) $(DARKOBJS) $(FLAVOBJS) $(HIGGSOBJS) $(SPECOBJS) $(DECAYOBJS) $(EXAMPLE_AOBJS) $(EXAMPLE_BOBJS) $(EXSUSYSPECOBJS) $(FLEXLIBS) $(EWPOOBJS)
+MODULEOBJS = $(SCANOBJS) $(DARKOBJS) $(FLAVOBJS) $(HIGGSOBJS) $(SPECOBJS) $(DECAYOBJS) $(EXAMPLE_AOBJS) $(EXAMPLE_BOBJS) $(FLEXLIBS) $(EWPOOBJS)
 
 ifdef COLLIDE
   MODULEOBJS += $(COLLIDEROBJS)
@@ -631,9 +631,9 @@ $(SCANDIR)/lib/libsample.so: $(SCANDIR)/plugins/twalk.o $(SCANDIR)/plugins/craps
 $(SCANDIR)/lib/libexamples.so: $(SCANDIR)/plugins/examples.o
 	$(CC) -shared $(SCANDIR)/plugins/examples.o -o $(SCANDIR)/lib/libexamples.so
 
-$(SCANDIR)/lib/libtest.so: $(SCANDIR)/plugins/test.cpp
-	$(CC) $(CFLAGS) -c -fPIC $(SCANDIR)/plugins/test.cpp -o $(SCANDIR)/build/test.o
-	$(CC) -shared -o $(SCANDIR)/lib/libtest.so $(SCANDIR)/build/test.o
+$(SCANDIR)/lib/libtest.so: $(SCANDIR)/plugins/examples.cpp
+	$(CC) $(CFLAGS) -c -fPIC $(SCANDIR)/plugins/examples.cpp -o $(SCANDIR)/build/examples.o
+	$(CC) -shared -o $(SCANDIR)/lib/libtest.so $(SCANDIR)/build/examples.o
 
 multinest:
 	$(CC) $(CFLAGS) -c -fPIC $(SCANDIR)/plugins/multinest.cpp -o $(SCANDIR)/build/multinest.o -I$(MULTINESTINC) -L$(MULTINESTLIBDIR) -lmultinest
@@ -642,9 +642,8 @@ multinest:
 
 #### Backends #################
 
-# Ben: fails for me!
-#cmakehackery:
-#	cmake .
+cmakehackery:
+	cmake .
 
 backends: $(BACKENDS)
 
