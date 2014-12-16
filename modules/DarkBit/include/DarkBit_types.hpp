@@ -248,6 +248,16 @@ namespace Gambit
             return false;
         }
 
+        void printChannel()
+        {
+            std::cout << "Channel: ";
+            for ( auto it = finalStateIDs.begin(); it != finalStateIDs.end(); it++ )
+            {
+                std::cout << *it << " ";
+            }
+            std::cout << std::endl;
+        }
+
         // New version that allows permutations of the final states
         //bool isChannel(std::string p0, std::string p1, std::string p2 = "", std::string p3 = "")
         //{
