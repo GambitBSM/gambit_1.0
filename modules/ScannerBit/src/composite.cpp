@@ -114,14 +114,18 @@ namespace Gambit
                                                                 }
                                                                 else
                                                                 {
-                                                                        scanLog::err << "Same_as prior for parameter \"" << mod << "\" in model \""<< par << "\" has no \"same_as\" entry." << scanLog::endl;
+                                                                        std::stringstream ss;
+                                                                        ss << "Same_as prior for parameter \"" << mod << "\" in model \""<< par << "\" has no \"same_as\" entry." << std::endl;
+                                                                        Scanner::scan_error().raise(LOCAL_INFO, ss.str());
                                                                 }
                                                         }
                                                         else
                                                         {
                                                                 if (prior_creators.find(priortype) == prior_creators.end())
                                                                 {
-                                                                        scanLog::err << "Parameter '"<< mod <<"' of model '" << par << "' is of type '"<<priortype<<"', but no entry for this type exists in the factory function map.\n" << prior_creators.print() << scanLog::endl;
+                                                                        std::stringstream ss;
+                                                                        ss << "Parameter '"<< mod <<"' of model '" << par << "' is of type '"<<priortype<<"', but no entry for this type exists in the factory function map.\n" << prior_creators.print() << std::endl;
+                                                                        Scanner::scan_error().raise(LOCAL_INFO, ss.str());
                                                                 }
                                                                 else
                                                                 {
@@ -170,14 +174,18 @@ namespace Gambit
                                         {
                                                 if (paramSet.find(*par_it) == paramSet.end())
                                                 {
-                                                        scanLog::err << "Parameter " << *par_it << " requested by " << priorname << " is either not defined by the inifile, is fixed, or is the \"same as\" another parameter." << scanLog::endl;
+                                                        std::stringstream ss;
+                                                        ss << "Parameter " << *par_it << " requested by " << priorname << " is either not defined by the inifile, is fixed, or is the \"same as\" another parameter." << std::endl;
+                                                        Scanner::scan_error().raise(LOCAL_INFO, ss.str());
                                                 }
                                                 else
                                                 {
                                                         auto find_it = needSet.find(*par_it);
                                                         if (find_it == needSet.end())
                                                         {
-                                                                scanLog::err << "Parameter " << *par_it << " requested by prior '"<< priorname <<"' is reserved by a different prior." << scanLog::endl;
+                                                                std::stringstream ss;
+                                                                ss << "Parameter " << *par_it << " requested by prior '"<< priorname <<"' is reserved by a different prior." << std::endl;
+                                                                Scanner::scan_error().raise(LOCAL_INFO, ss.str());
                                                         }
                                                         else
                                                         {
@@ -191,7 +199,9 @@ namespace Gambit
                                         
                                         if (prior_creators.find(priortype) == prior_creators.end())
                                         {
-                                                scanLog::err << "Prior '"<< priorname <<"' is of type '"<< priortype <<"', but no entry for this type exists in the factory function map.\n" << prior_creators.print() << scanLog::endl;
+                                                std::stringstream ss;
+                                                ss << "Prior '"<< priorname <<"' is of type '"<< priortype <<"', but no entry for this type exists in the factory function map.\n" << prior_creators.print() << std::endl;
+                                                Scanner::scan_error().raise(LOCAL_INFO, ss.str());
                                         }
                                         else
                                         {
@@ -223,7 +233,9 @@ namespace Gambit
                                                         }
                                                         else
                                                         {
-                                                                scanLog::err << "Same_as prior \"" << priorname << "\" has no \"same_as\" entry." << scanLog::endl;
+                                                                std::stringstream ss;
+                                                                ss << "Same_as prior \"" << priorname << "\" has no \"same_as\" entry." << std::endl;
+                                                                Scanner::scan_error().raise(LOCAL_INFO, ss.str());
                                                         }
                                                 }
                                                 else
@@ -234,20 +246,24 @@ namespace Gambit
                                 }
                                 else
                                 {
-                                        scanLog::err << "\"parameters\" and \"prior_type\" need to be defined for prior \"" << priorname << "\"" << scanLog::endl;
+                                        std::stringstream ss;
+                                        ss << "\"parameters\" and \"prior_type\" need to be defined for prior \"" << priorname << "\"" << std::endl;
+                                        Scanner::scan_error().raise(LOCAL_INFO, ss.str());
                                 }
                         }
                         
                         if (needSet.size() != 0)
                         {
-                                scanLog::err << "Priors are not defined for the following parameters:  [";
+                                std::stringstream ss;
+                                ss << "Priors are not defined for the following parameters:  [";
                                 auto it = needSet.begin();
-                                scanLog::err << *(it++);
+                                ss << *(it++);
                                 for (; it != needSet.end(); it++)
                                 {
-                                        scanLog::err << ", "<< *it;
+                                        ss << ", "<< *it;
                                 }
-                                scanLog::err << "]" << scanLog::endl;
+                                ss << "]" << std::endl;
+                                Scanner::scan_error().raise(LOCAL_INFO, ss.str());
                         }
                         
                         std::unordered_map<std::string, std::string> keyMap;
@@ -265,13 +281,17 @@ namespace Gambit
                                         
                                         if (result == strMap->first)
                                         {
-                                                scanLog::err << "Parameter " << strMap->first << " is \"same as\" itself." << scanLog::endl;
+                                                std::stringstream ss;
+                                                ss << "Parameter " << strMap->first << " is \"same as\" itself." << std::endl;
+                                                Scanner::scan_error().raise(LOCAL_INFO, ss.str());
                                                 break;
                                         }
                                         
                                         if (reps > sameMap.size())
                                         {
-                                                scanLog::err << "Parameter's \"same as\"'s are loop in on each other." << scanLog::endl;
+                                                std::stringstream ss;
+                                                ss << "Parameter's \"same as\"'s are loop in on each other." << std::endl;
+                                                Scanner::scan_error().raise(LOCAL_INFO, ss.str());
                                                 break;
                                         }
                                         reps++;
@@ -296,7 +316,9 @@ namespace Gambit
                         {
                                 if (paramSet.find(key_it->first) == paramSet.end())
                                 {
-                                        scanLog::err << "same_as:  " << key_it->first << " is not defined in inifile." << scanLog::endl;
+                                        std::stringstream ss;
+                                        ss << "same_as:  " << key_it->first << " is not defined in inifile." << std::endl;
+                                        Scanner::scan_error().raise(LOCAL_INFO, ss.str());
                                 }
                                 else
                                 {
@@ -335,14 +357,18 @@ namespace Gambit
                                                 std::string &par = *par_it;
                                                 if (paramSet.find(par) == paramSet.end())
                                                 {
-                                                        scanLog::err << "Parameter " << par << " requested by " << priorname << " is either not defined by the inifile, is fixed, or is the \"same as\" another parameter." << scanLog::endl;
+                                                        std::stringstream ss;
+                                                        ss << "Parameter " << par << " requested by " << priorname << " is either not defined by the inifile, is fixed, or is the \"same as\" another parameter." << std::endl;
+                                                        Scanner::scan_error().raise(LOCAL_INFO, ss.str());
                                                 }
                                                 else
                                                 {
                                                         auto find_it = needSet.find(par);
                                                         if (find_it == needSet.end())
                                                         {
-                                                                scanLog::err << "Parameter " << par << " requested by prior '"<< priorname <<"' is reserved by a different prior." << scanLog::endl;
+                                                                std::stringstream ss;
+                                                                ss << "Parameter " << par << " requested by prior '"<< priorname <<"' is reserved by a different prior." << std::endl;
+                                                                Scanner::scan_error().raise(LOCAL_INFO, ss.str());
                                                         }
                                                         else
                                                         {
@@ -356,7 +382,9 @@ namespace Gambit
                                         
                                         if (prior_creators.find(priortype) == prior_creators.end())
                                         {
-                                                scanLog::err << "Prior '"<< priorname <<"' is of type '"<< priortype <<"', but no entry for this type exists in the factory function map.\n" << prior_creators.print() << scanLog::endl;
+                                                std::stringstream ss;
+                                                ss << "Prior '"<< priorname <<"' is of type '"<< priortype <<"', but no entry for this type exists in the factory function map.\n" << prior_creators.print() << std::endl;
+                                                Scanner::scan_error().raise(LOCAL_INFO, ss.str());
                                         }
                                         else
                                         {
@@ -388,7 +416,9 @@ namespace Gambit
                                                         }
                                                         else
                                                         {
-                                                                scanLog::err << "Same_as prior \"" << priorname << "\" has no \"same_as\" entry." << scanLog::endl;
+                                                                std::stringstream ss;
+                                                                ss << "Same_as prior \"" << priorname << "\" has no \"same_as\" entry." << std::endl;
+                                                                Scanner::scan_error().raise(LOCAL_INFO, ss.str());
                                                         }
                                                 }
                                                 else
@@ -399,20 +429,24 @@ namespace Gambit
                                 }
                                 else
                                 {
-                                        scanLog::err << "\"parameters\" and \"prior_type\" need to be defined for prior \"" << priorname << "\"" << scanLog::endl;
+                                        std::stringstream ss;
+                                        ss << "\"parameters\" and \"prior_type\" need to be defined for prior \"" << priorname << "\"" << std::endl;
+                                        Scanner::scan_error().raise(LOCAL_INFO, ss.str());
                                 }
                         }
                         
                         if (needSet.size() != 0)
                         {
-                                scanLog::err << "Priors are not defined for the following parameters:  [";
+                                std::stringstream ss;
+                                ss << "Priors are not defined for the following parameters:  [";
                                 auto it = needSet.begin();
-                                scanLog::err << *(it++);
+                                ss << *(it++);
                                 for (; it != needSet.end(); it++)
                                 {
-                                        scanLog::err << ", "<< *it;
+                                        ss << ", "<< *it;
                                 }
-                                scanLog::err << "]" << scanLog::endl;
+                                ss << "]" << std::endl;
+                                Scanner::scan_error().raise(LOCAL_INFO, ss.str());
                         }
                         
                         std::unordered_map<std::string, std::string> keyMap;
@@ -430,13 +464,17 @@ namespace Gambit
                                         
                                         if (result == strMap_it->first)
                                         {
-                                                scanLog::err << "Parameter " << strMap_it->first << " is \"same as\" itself." << scanLog::endl;
+                                                std::stringstream ss;
+                                                ss << "Parameter " << strMap_it->first << " is \"same as\" itself." << std::endl;
+                                                Scanner::scan_error().raise(LOCAL_INFO, ss.str());
                                                 break;
                                         }
                                         
                                         if (reps > sameMap.size())
                                         {
-                                                scanLog::err << "Parameter's \"same as\"'s are loop in on each other." << scanLog::endl;
+                                                std::stringstream ss;
+                                                ss << "Parameter's \"same as\"'s are loop in on each other." << std::endl;
+                                                Scanner::scan_error().raise(LOCAL_INFO, ss.str());
                                                 break;
                                         }
                                         reps++;
@@ -461,7 +499,9 @@ namespace Gambit
                         {
                                 if (paramSet.find(key_it->first) == paramSet.end())
                                 {
-                                        scanLog::err << "same_as:  " << key_it->first << " is not defined in inifile." << scanLog::endl;
+                                        std::stringstream ss;
+                                        ss << "same_as:  " << key_it->first << " is not defined in inifile." << std::endl;
+                                        Scanner::scan_error().raise(LOCAL_INFO, ss.str());
                                 }
                                 else
                                 {

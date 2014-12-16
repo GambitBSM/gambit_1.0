@@ -56,9 +56,9 @@ namespace Gambit
                         
                         const std::string getValue(const std::string &in) const
                         {
-                                if (options.hasKey(tag.c_str(), in.c_str()))
+                                if (options.hasKey(in.c_str()))
                                 {
-                                        return options.getValue<std::string>(tag.c_str(), in.c_str());
+                                        return options.getValue<std::string>(in.c_str());
                                 }
                                 else
                                 {

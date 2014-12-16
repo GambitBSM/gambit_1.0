@@ -31,7 +31,6 @@
 #include <unordered_map>
 #include <algorithm>
 
-#include "scanlog.hpp"
 #include "outputhandler.hpp"
 #include "exceptions.hpp"
 #include "log.hpp"
@@ -51,11 +50,6 @@ namespace Gambit
                 {
                         extern OutputHandler out;
                 }
-        }
-        
-        namespace scanLog
-        {
-                extern ErrorLog err;
         }
 }
 

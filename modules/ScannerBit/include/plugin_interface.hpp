@@ -138,6 +138,51 @@ namespace Gambit
                         }
                 };
                 
+                inline bool operator == (const PluginStruct &plug1, const PluginStruct &plug2)
+                {
+                        if ((plug1.major_version != plug2.major_version) ||
+                                (plug1.major_version != plug2.major_version) ||
+                                (plug1.minor_version != plug2.minor_version) ||
+                                (plug1.release_version == "" && plug2.release_version != "") ||
+                                (plug1.release_version != "" && plug2.release_version == ""))
+                        {
+                                return false;
+                        }
+                        
+                        return false;
+                }
+                
+                inline bool PluginStructComp(const PluginStruct &plug1, const PluginStruct &plug2)
+                {
+                        if (plug1.major_version > plug2.major_version)
+                        {
+                                return true;
+                        }
+                        else if (plug1.major_version == plug2.major_version)
+                        {
+                                if (plug1.minor_version > plug2.minor_version)
+                                {
+                                        return true;
+                                }
+                                else if (plug1.minor_version == plug2.minor_version)
+                                {
+                                        if (plug1.patch_version > plug2.patch_version)
+                                        {
+                                                return true;
+                                        }
+                                        else if (plug1.patch_version == plug2.patch_version)
+                                        {
+                                                if (plug1.release_version == "" && plug2.release_version != "")
+                                                {
+                                                        return true;
+                                                }
+                                        }
+                                }
+                        }
+                        
+                        return false;
+                }
+                
                 class VersionCompare
                 {
                         const unsigned char GREATER = 0x01;
@@ -147,9 +192,9 @@ namespace Gambit
                         const unsigned char MINOR = 0x10;
                         const unsigned char PATCH = 0x20;
                         const unsigned char RELEASE = 0x40;
-                        int major_version;
-                        int minor_version;
-                        int patch_version;
+                        unsigned int major_version;
+                        unsigned int minor_version;
+                        unsigned int patch_version;
                         std::string release_version;
                         bool (*f)(int, int);
                         unsigned char flag;
@@ -272,19 +317,10 @@ namespace Gambit
                         
                         bool operator() (const PluginStruct &plugin)
                         {
-                                if (bool(flag&MAJOR) && (!f(plugin.major_version, major_version)))
-                                {
-                                        return false;
-                                }
-                                if (bool(flag&MINOR) && (!f(plugin.minor_version, minor_version)))
-                                {
-                                        return false;
-                                }
-                                if (bool(flag&PATCH) && (!f(plugin.patch_version, patch_version)))
-                                {
-                                        return false;
-                                }
-                                if (bool(flag&RELEASE) && plugin.release_version != release_version)
+                                if ((bool(flag&MAJOR) && (!f(plugin.major_version, major_version))) ||
+                                        (bool(flag&MINOR) && (!f(plugin.minor_version, minor_version))) ||
+                                        (bool(flag&PATCH) && (!f(plugin.patch_version, patch_version))) ||
+                                        (bool(flag&RELEASE) && plugin.release_version != release_version))
                                 {
                                         return false;
                                 }
@@ -382,7 +418,7 @@ namespace Gambit
                                 }
                         }
                         
-                        std::vector<PluginStruct> find (const std::string &type, const std::string &plugin, const std::string &version, const std::string &lib)
+                        PluginStruct find (const std::string &type, const std::string &plugin, const std::string &version, const std::string &lib)
                         {
                                 std::vector<PluginStruct> plugins;
                                 for (auto it = plugin_map[type][plugin].begin(), end = plugin_map[type][plugin].end(); it != end; it++)
@@ -391,7 +427,32 @@ namespace Gambit
                                                 plugins.push_back(*it);
                                 }
                                 
-                                return plugins;
+                                if (plugins.size() > 1)
+                                {
+                                        std::sort(plugins.begin(), plugins.end(), PluginStructComp);
+                                        auto it2 = plugins.begin();
+                                        for (auto it = it2 + 1, end = plugins.end(); it != end; it++)
+                                        {
+                                                if (*it == *it2)
+                                                {
+                                                        //NOTE:  put error message here
+                                                }
+                                                else
+                                                {
+                                                        break;
+                                                }
+                                        }
+                                }
+                                else if (plugins.size() == 0)
+                                {
+                                        std::stringstream ss;
+                                        ss << "Plugin \"" << plugin << "\" is type \"" << type 
+                                                << "\" version \"" << version << "\" is not found." << std::endl;
+                                        Scanner::scan_error().raise(LOCAL_INFO, ss.str());
+                                        plugins.resize(1);
+                                }
+                                
+                                return plugins[0];
                         }
                 };
                 

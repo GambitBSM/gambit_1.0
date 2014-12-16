@@ -124,7 +124,9 @@ namespace Gambit
                         // Read the entries we need from the options
                         if ( not options.hasKey("range") )
                         {
-                                std::cout<<"Error! No 'range' keyword found in options supplied for building RangePrior1D prior (i.e. some instance of this, probably 'flat' or 'log')"<<std::endl;
+                                std::stringstream err;
+                                err << "Error! No 'range' keyword found in options supplied for building RangePrior1D prior (i.e. some instance of this, probably 'flat' or 'log')"<<std::endl;
+                                Scanner::scan_error().raise(LOCAL_INFO, err.str());
                                 //std::cout<<"Dumping content of options:"<<std::endl;
                                 //options.dumpcontents();
                         }
@@ -138,8 +140,10 @@ namespace Gambit
                         if (param.size()!=1)
                         {
                                 /// TODO: insert proper gambit error
-                                std::cout << "Invalid input to some prior derived from RangePrior1D (in constructor): 'myparameters' must be a vector of size 1! (has size="<<param.size()<<")"<< std::endl;
-                                exit(1);
+                                std::stringstream err;
+                                err << "Invalid input to some prior derived from RangePrior1D (in constructor): 'myparameters' must be a vector of size 1! (has size="<<param.size()<<")"<< std::endl;
+                                Scanner::scan_error().raise(LOCAL_INFO, err.str());
+                                //exit(1);
                         }
                         lower = range.first;
                         upper = range.second;            

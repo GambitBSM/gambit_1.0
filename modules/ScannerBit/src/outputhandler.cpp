@@ -16,15 +16,9 @@
 //  *********************************************
 
 #include <outputhandler.hpp>
-#include <scanlog.hpp>
 
 namespace Gambit
 {
-        namespace scanLog
-        {
-                extern ErrorLog err;
-        }
-        
         namespace Scanner
         {       
                 namespace outputHandler
