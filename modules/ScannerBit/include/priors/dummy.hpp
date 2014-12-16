@@ -33,7 +33,7 @@ namespace Gambit
                         
                 public: 
                         // Constructor
-                        Dummy(const std::vector<std::string>& param, const Options& options) : BasePrior(param.size()), param_names(param)
+                        Dummy(const std::vector<std::string>& param, const Options&) : BasePrior(param.size()), param_names(param)
                         { 
                         }
                         
