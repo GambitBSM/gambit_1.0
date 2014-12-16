@@ -25,8 +25,8 @@ namespace Gambit
                         std::vector<std::vector<double>> cov(param.size(), std::vector<double>(param.size(), 0.0));
                         
                         bool good = true;
+                        std::stringstream err;
                         
-                        //std::cout << "line:  " << options.getLine("cov") << std::endl; getchar();
                         if (options.hasKey("cov"))
                         {
                                 cov = options.getValue< std::vector<std::vector<double>> >("cov");
@@ -34,7 +34,7 @@ namespace Gambit
                                 if (cov.size() != param.size())
                                 {
                                         good = false;
-                                        scanLog::err << "Cauchy (prior):  Covariance matrix is not the same dimension has the parameters." << scanLog::endl;
+                                        err << "Cauchy (prior):  Covariance matrix is not the same dimension has the parameters." << std::endl;
                                 }
                                 
                                 for (std::vector<std::vector<double>>::iterator it = cov.begin(); it != cov.end(); it++)
@@ -42,7 +42,7 @@ namespace Gambit
                                         if (it->size() != cov.size())
                                         {
                                                 good = false;
-                                                scanLog::err << "Cauchy (prior):  Covariance matrix is not square." << scanLog::endl;
+                                                err << "Cauchy (prior):  Covariance matrix is not square." << std::endl;
                                         }
                                 }
                         }
@@ -52,7 +52,7 @@ namespace Gambit
                                 if (sigs.size() != param.size())
                                 {
                                         good = false;
-                                        scanLog::err << "Cauchy (prior):  Sigma vector is not the same dimension has the parameters." << scanLog::endl;
+                                        err << "Cauchy (prior):  Sigma vector is not the same dimension has the parameters." << std::endl;
                                 }
                                 else
                                 {
@@ -65,7 +65,7 @@ namespace Gambit
                         else
                         {
                                 good = false;
-                                scanLog::err << "Cauchy (prior):  Covariance matrix is not defined in inifile." << scanLog::endl;
+                                err << "Cauchy (prior):  Covariance matrix is not defined in inifile." << std::endl;
                         }
                         
                         if (options.hasKey("mean"))
@@ -78,14 +78,21 @@ namespace Gambit
                                 else
                                 {
                                         good = false;
-                                        scanLog::err << "Cauchy (prior):  Mean vector is not the same dimension has the parameters." << scanLog::endl;
+                                        err << "Cauchy (prior):  Mean vector is not the same dimension has the parameters." << std::endl;
                                 }
                         }
                         
                         if (good)
                         {
                                 if (!col.EnterMat(cov))
-                                        scanLog::err << "Cauchy (prior):  Covariance matrix is not postive definite." << scanLog::endl;
+                                {
+                                        err << "Cauchy (prior):  Covariance matrix is not postive definite." << std::endl;
+                                        Scanner::scan_error().raise(LOCAL_INFO, err.str());
+                                }
+                        }
+                        else
+                        {
+                                Scanner::scan_error().raise(LOCAL_INFO, err.str());
                         }
                 }
         }

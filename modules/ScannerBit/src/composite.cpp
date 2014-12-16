@@ -234,7 +234,7 @@ namespace Gambit
                                                         else
                                                         {
                                                                 std::stringstream ss;
-                                                                ss << "Same_as prior \"" << priorname << "\" has no \"same_as\" entry." << scanLog::endl;
+                                                                ss << "Same_as prior \"" << priorname << "\" has no \"same_as\" entry." << std::endl;
                                                                 Scanner::scan_error().raise(LOCAL_INFO, ss.str());
                                                         }
                                                 }

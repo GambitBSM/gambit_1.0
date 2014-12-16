@@ -42,7 +42,9 @@ namespace Gambit
                                 }
                                 else
                                 {
-                                        scanLog::err << "Did not give fixed_value for parameter " << names[0] << "..." << scanLog::endl;
+                                        std::stringstream err;
+                                        err << "Did not give fixed_value for parameter " << names[0] << "..." << std::endl;
+                                        Scanner::scan_error().raise(LOCAL_INFO, err.str());
                                 }
                         }
                         
@@ -73,7 +75,9 @@ namespace Gambit
                                 }
                                 else
                                 {
-                                        scanLog::err << "Did not give same_as parameters for parameter " << name << scanLog::endl;
+                                        std::stringstream err;
+                                        err << "Did not give same_as parameters for parameter " << name << std::endl;
+                                        Scanner::scan_error().raise(LOCAL_INFO, err.str());
                                 }
                                 
                                 names = param;
