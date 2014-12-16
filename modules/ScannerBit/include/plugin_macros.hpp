@@ -27,7 +27,14 @@
 #define plugin_deconstructor            PLUGIN_DECONSTRUCTOR
 #define version(...)                    VERSION( __VA_ARGS__ )
 
-#define VERSION(major, minor, patch, release) major ## _ ## minor ## _ ## patch ## _ ## release 
+#define ARG_N_INTERNAL(_1_, _2_, _3_, _4_, ret, ...) ret
+#define ARG_N(...) ARG_N_INTERNAL(__VA_ARGS__ , 4, 3, 2, 1, 0)
+#define COMBINE(a, b) a ## b
+#define ENTER_FUNC(func, num, ...) COMBINE(func, num)( __VA_ARGS__ )
+
+#define VERSION_4(major, minor, patch, release) major ## _ ## minor ## _ ## patch ## _ ## release
+#define VERSION_3(major, minor, patch) VERSION_4(major, minor, patch, )
+#define VERSION(...) ENTER_FUNC(VERSION_, ARG_N(__VA_ARGS__), __VA_ARGS__ )
 
 /*Allows Gambit to declare an object of type "..."*/
 #define EXPORT_ABSTRACT(name, ...)                                                                                      \

@@ -24,8 +24,6 @@
 #include "scannerbit.hpp"
 #include "stream_overloads.hpp"
 #include "printermanager.hpp"
-#include "inifile_interface.hpp"
-#include "test_function_rollcall.hpp"
 #include "priors_rollcall.hpp"
 #include "model_rollcall.hpp"
 #include "backend_rollcall.hpp"

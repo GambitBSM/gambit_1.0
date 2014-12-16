@@ -92,9 +92,10 @@ Scanner:
   plugins:
     crapsample:
       plugin: crapsample
-      point_number: 2
-      output_file:  output
-      like:  Likelihood
+      options:
+        point_number: 2
+        output_file:  output
+        like:  Likelihood
 
     loopsample:
       plugin: loopsample
@@ -125,6 +126,11 @@ Scanner:
       
     uniform:
       plugin: uniform
+        parameters:
+          0:
+            range: [-1, 1]
+          1:
+            range: [-1, 1]
     
 ###############################
 # Observables of interest
@@ -410,7 +416,7 @@ KeyValues:
     dependency_resolver_error: fatal
     dependency_resolver_warning: non-fatal
     core_warning: fatal
-    scan_error: non-fatal #make this fatal to see an example error
+   # scan_error: non-fatal #make this fatal to see an example error
     ExampleBit_A_error: non-fatal
 
   enable_testing: false
