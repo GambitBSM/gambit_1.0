@@ -46,20 +46,20 @@ namespace Gambit
     return 0;
   }
 
-  void ASCIItableReader::setmapping(std::vector<std::string> names)
+  void ASCIItableReader::setcolnames(std::vector<std::string> names)
   { 
     if ( names.size() == ncol ) 
     {
       int i = 0;
       for (auto it = names.begin(); it != names.end(); it++)
       {
-        mapping[*it] = i;
+        colnames[*it] = i;
         i++;
       }
     }
     else
     {
-      std::cout << "Warning in ASCIItableReader: Column number incompatible. Mapping not set." << std::endl;
+      std::cout << "Warning in ASCIItableReader: Column number incompatible." << std::endl;
     }
   }
 }

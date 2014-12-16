@@ -54,7 +54,7 @@ namespace Funk
     typedef std::vector<const char *> ArgsType;
 
     template <typename... Args>
-    using PlainPtr = double(*)(Args...);
+    using PlainPtr = double(*)(Args&...);
 
     template <typename... Args>
     using PlainPtrs = std::pair<double(*)(Args...,void*), void*>;
@@ -276,25 +276,25 @@ namespace Funk
             }
 
             template <typename T>
-            static double plain1(double x1)
+            static double plain1(double& x1)
             {
                 FunkPlain * funkPtrPtr = static_cast<FunkPlain*>(T::ptr);
                 return funkPtrPtr->f->get(x1);
             }
             template <typename T>
-            static double plain2(double x1, double x2)
+            static double plain2(double& x1, double& x2)
             {
                 FunkPlain * funkPtrPtr = static_cast<FunkPlain*>(T::ptr);
                 return funkPtrPtr->f->get(x1, x2);
             }
             template <typename T>
-            static double plain3(double x1, double x2, double x3)
+            static double plain3(double& x1, double& x2, double& x3)
             {
                 FunkPlain * funkPtrPtr = static_cast<FunkPlain*>(T::ptr);
                 return funkPtrPtr->f->get(x1, x2, x3);
             }
             template <typename T>
-            static double plain4(double x1, double x2, double x3, double x4)
+            static double plain4(double& x1, double& x2, double& x3, double& x4)
             {
                 FunkPlain * funkPtrPtr = static_cast<FunkPlain*>(T::ptr);
                 return funkPtrPtr->f->get(x1, x2, x3, x4);
@@ -434,6 +434,67 @@ namespace Funk
         return Funk(new FunkFunc<funcargs...>(f, args...));
     }
 
+
+    template <typename O, typename... funcargs>
+    class FunkFuncM : public FunkBase
+    {
+        public:
+            template <typename... Args>
+            FunkFuncM(O* obj, double (O::* f)(funcargs...), Args... argss) : obj(obj)
+            {
+                ptr = f;
+                digest_input(argss...);
+            }
+
+            double value(const std::vector<double> & X)
+            {
+                for ( unsigned int i = 0; i < X.size() ; i++ )
+                {
+                    *map[i] = X[i];
+                }
+                return ppp(index_range<0, sizeof...(funcargs)>());
+            }
+
+            template <size_t... Args>
+            double ppp(index_list<Args...>)
+            {
+                return (*obj.*ptr)(std::get<Args>(input)...);
+            }
+
+        private:
+            std::tuple<typename std::remove_reference<funcargs>::type...> input;
+            std::vector<double*> map;
+            double (O::* ptr)(funcargs...);
+            O* obj;
+
+            // Digest input parameters 
+            // (forwarding everything except Funk::Funk types, which is mapped onto
+            // funktion parameters)
+            template<typename T, typename... Args>
+            void digest_input(T x, Args... argss)
+            {
+                const int i = sizeof...(funcargs) - sizeof...(argss) - 1;
+                std::get<i>(input) = x;
+                digest_input(argss...);
+            }
+            template<typename... Args>
+            void digest_input(Funk x, Args... argss)
+            {
+                const int i = sizeof...(funcargs) - sizeof...(argss) - 1;
+                map.push_back(&std::get<i>(input));
+                assert(x->getArgs().size() == 1);
+                // TODO: Check that variable is indeed linear variable
+                args.push_back(x->getArgs()[0]);
+                digest_input(argss...);
+            }
+            void digest_input() {};
+    };
+
+
+    template <typename O, typename... funcargs, typename... Args>
+    Funk funcM(O* obj, double (O::* f)(funcargs...), Args... args) {
+        return Funk(new FunkFuncM<O, funcargs...>(obj, f, args...));
+    }
 
     //
     // Derived class that implements constant
@@ -841,7 +902,7 @@ namespace Funk
         public:
             FunkInterp(const char * arg, std::vector<double> & Xgrid, std::vector<double> & Ygrid, std::string mode = "lin")
             {
-                this->arg = arg;
+                args.push_back(arg);
                 this->Xgrid = Xgrid;
                 this->Ygrid = Ygrid;
                 if ( mode == "lin" ) this->ptr = &FunkInterp::linearInterp;
@@ -879,7 +940,6 @@ namespace Funk
             }
 
             double(FunkInterp::*ptr)(double);
-            const char * arg;
             std::vector<double> Xgrid;
             std::vector<double> Ygrid;
             std::string mode;

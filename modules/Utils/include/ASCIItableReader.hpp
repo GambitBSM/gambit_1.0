@@ -26,7 +26,7 @@
 
 // Usage:
 //    ASCIItableReader ascii(filename);
-//    ascii.setmapping("mass", "BR1", "BR2");
+//    ascii.setcolnames("mass", "BR1", "BR2");
 //    std::cout << ascii["mass"][0] << std::endl;
 //    std::cout << ascii["BR1"][1] << std::endl;
 //    std::cout << ascii["BR2"][2] << std::endl;
@@ -45,30 +45,30 @@ namespace Gambit
       ~ASCIItableReader() {}
 
       int read(std::string filename);
-      void setmapping(std::vector<std::string> names);
+      void setcolnames(std::vector<std::string> names);
 
       template <typename... Args>
-      void setmapping(std::string name, Args... args)
+      void setcolnames(std::string name, Args... args)
       {
         std::vector<std::string> vec;
         vec.push_back(name);
-        setmapping(vec, args...);
+        setcolnames(vec, args...);
       }
       template <typename... Args>
-      void setmapping(std::vector<std::string> vec, std::string name, Args... args)
+      void setcolnames(std::vector<std::string> vec, std::string name, Args... args)
       {
         vec.push_back(name);
-        setmapping(vec, args...);
+        setcolnames(vec, args...);
       }
 
       const std::vector<double> & operator[] (int i) { return data[i]; };
-      const std::vector<double> & operator[] (std::string name) { return data[mapping[name]]; };
+      const std::vector<double> & operator[] (std::string name) { return data[colnames[name]]; };
       int getncol() { return ncol; }
       int getnrow() { return nrow; }
 
     private:
       std::vector<std::vector<double> > data;
-      std::map<std::string, int> mapping;
+      std::map<std::string, int> colnames;
       int ncol;
       int nrow;
   };

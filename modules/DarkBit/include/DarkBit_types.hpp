@@ -61,8 +61,8 @@ namespace Gambit
     using boost::dynamic_pointer_cast;
     using boost::static_pointer_cast;
     using boost::enable_shared_from_this;
-    using Gambit::BF::intLimitFunc;
-    using Gambit::BF::BFargVec;
+    //using Gambit::BF::intLimitFunc;
+    //using Gambit::BF::BFargVec;
 
     struct DD_couplings
     {
@@ -73,6 +73,7 @@ namespace Gambit
       double gna;
     };
 
+    /*
     // Integration limits for E1 for the DS gamma 3-body decays.
     class DSg3_IntLims_E1 : public intLimitFunc
     {
@@ -112,7 +113,9 @@ namespace Gambit
         private:
             double M_DM, m1, m2;
     };
+    */
 
+    /*
     class DSgamma3bdyKinFunc : public BF::BaseFunction
     {
       typedef double(*BEptr)(int&, double&, double&);
@@ -154,6 +157,7 @@ namespace Gambit
         double m_2;
         int IBch;
     };
+    */
 
     // A simple example
     struct Wstruct
@@ -323,6 +327,7 @@ namespace Gambit
     // General Dark Matter Halos and Halo Catalog
     //////////////////////////////////////////////
 
+    /*
     struct DMhalo
     {
         public:
@@ -377,6 +382,7 @@ namespace Gambit
       private:
         std::vector<shared_ptr<DMhalo> > myHalos;
     };
+    */
 
 
     /////////////////////
@@ -431,6 +437,7 @@ namespace Gambit
     // Physics implementation 
     //////////////////////////
 
+    /*
     class BFdmradialProfile: public BF::BaseFunction
     {
         public:
@@ -487,6 +494,7 @@ namespace Gambit
             return rhos / (r/rs) / (1+r/rs) / (1+r/rs);
             }
     };
+    */
 
 
     //////////////////////////////////////////////
