@@ -33,12 +33,42 @@ namespace Gambit
 {
         namespace Scanner
         {
+                inline YAML::Node combineNodes(const std::map<std::string, YAML::Node> &nodesMap, const YAML::Node &node = YAML::Node())
+                {
+                        std::stringstream ss;
+                        
+                        if (!node.IsNull())
+                                ss << node << std::endl;
+                        
+                        for (auto it = nodesMap.begin(), end = nodesMap.end(); it != end; it++)
+                        {
+                                ss << it->first << ": ";
+                                if (it->second.IsScalar())
+                                {
+                                        ss << it->second.Scalar() << std::endl;
+                                }
+                                else
+                                {
+                                        std::stringstream ssNode;
+                                        ssNode << it->second << std::endl;
+                                        std::string temp;
+                                        ss << std::endl;
+                                        while (std::getline(ssNode, temp))
+                                                ss << "  " << temp << std::endl;
+                                }
+                        }
+                        
+                        return YAML::Load(ss.str());
+                }
+        
                 Gambit_Scanner::Gambit_Scanner (const Factory_Base &factoryIn, const Options &options, const Priors::CompositePrior &priorIn, printer_interface *printerInterface) 
                                 : printerInterface(printerInterface), options(options)
                 {
                         if (!options.hasKey("plugins"))
                         {
-                                //NOTE:  put error message here.
+                                std::stringstream ss;
+                                ss << "There is no \"plugins\" subsection in the scanner inifile section." << std::endl;
+                                scan_error().raise(LOCAL_INFO, ss.str());
                                 return;
                         }
                         
@@ -46,60 +76,132 @@ namespace Gambit
                         
                         for (auto it = iniPlugNames.begin(), end = iniPlugNames.end(); it != end; it++)
                         {
+                                iniPluginStruct temp;
                                 if (options.hasKey("plugins", *it, "plugin"))
                                 {
-                                        iniPluginStruct temp;
                                         temp.plugin = options.getValue<std::string>("plugins", *it, "plugin");
-                                        if (options.hasKey("plugins", *it, "version"))
-                                                temp.version = options.getValue<std::string>("version");
-                                        if (options.hasKey("plugins", *it, "library"))
-                                                temp.library = "ScannerBit/lib/" + options.getValue<std::string>("library");
-                                        if (options.hasKey("plugins", *it, "library_path"))
-                                                temp.library = options.getValue<std::string>("library_path");
-                                        
-                                        iniPlugs[*it] = temp;
                                 }
                                 else
                                 {
-                                        //NOTE:  put warning here
+                                        std::stringstream ss;
+                                        ss << "Plugin name is not defined under the \"" << *it << "\" tag.  "
+                                                << "using the tag \"" << *it << "\" as the plugin name." << std::endl;
+                                        scan_warning().raise(LOCAL_INFO, ss.str());
+                                        temp.plugin = *it;
                                 }
+                                if (options.hasKey("plugins", *it, "version"))
+                                        temp.version = options.getValue<std::string>("plugins", *it, "version");
+                                if (options.hasKey("plugins", *it, "library"))
+                                        temp.library = "ScannerBit/lib/" + options.getValue<std::string>("plugins", *it, "library");
+                                if (options.hasKey("plugins", *it, "library_path"))
+                                        temp.library = options.getValue<std::string>("plugins", *it, "library_path");
                                         
+                                iniPlugs[*it] = temp;
                         }
                         
                         if (options.hasKey("use_likelihood_plugins"))
                         {
-                                auto plugs = options.getValue<std::vector<std::string>>("use_likelihood_plugins");
                                 std::map<std::string, std::vector<IniFileInterface>> interfaces;
-                                std::string version, lib;
+                                std::map<std::string, YAML::Node> nodes;
                                 
-                                for (auto it = plugs.begin(), end = plugs.end(); it != end; it++)
+                                if (options.getNode("use_likelihood_plugins").IsSequence())
                                 {
-                                        auto it2 = iniPlugs.find(*it);
+                                        auto plugs = options.getValue<std::vector<std::string>>("use_likelihood_plugins");
+                                        for (auto it = plugs.begin(), end = plugs.end(); it != end; it++)
+                                        {
+                                                auto it2 = iniPlugs.find(*it);
+                                                if (it2 != iniPlugs.end())
+                                                {
+                                                        Plugin::PluginStruct pls = plugins.find("like", it2->second.plugin, it2->second.version, it2->second.library);
+                                                        interfaces["Likelihood"].emplace_back(*it, pls, options.getOptions("plugins", *it));
+                                                        if (options.hasKey("plugins", *it, "parameters"))
+                                                        {
+                                                                if (options.hasKey("parameters") && options.hasKey("parameters", *it))
+                                                                {
+                                                                        std::stringstream ss;
+                                                                        ss << "Plugin \"" << *it << "\"'s parameters are defined in "
+                                                                                << "both the \"parameters\" section and the \"plugins\" "
+                                                                                << "section in the inifile." << std::endl;
+                                                                        scan_error().raise(LOCAL_INFO, ss.str());
+                                                                }
+                                                                nodes[*it] = options.getNode("plugins", *it, "parameters");
+                                                        }
+                                                }
+                                                else
+                                                {
+                                                        std::stringstream ss;
+                                                        ss << "Plugin \"" << *it << "\" (requested by \"use_likelihood_plugins:\") "
+                                                                << "is not defined under the \"plugins\" subsection in the inifile" << std::endl;
+                                                        scan_error().raise(LOCAL_INFO, ss.str());
+                                                }
+                                        }
+                                }
+                                else if (options.getNode("use_likelihood_plugins").IsScalar())
+                                {
+                                        std::string plug = options.getValue<std::string>("use_likelihood_plugins");
+                                        auto it2 = iniPlugs.find(plug);
                                         if (it2 != iniPlugs.end())
                                         {
-                                                auto pluginVec = plugins.find("like", it2->second.plugin, it2->second.version, it2->second.library);
-                                                if (pluginVec.size() > 0)
+                                                Plugin::PluginStruct pls = plugins.find("like", it2->second.plugin, it2->second.version, it2->second.library);
+                                                interfaces["Likelihood"].emplace_back(plug, pls, options.getOptions("plugins", plug));
+                                                if (options.hasKey("plugins", plug, "parameters"))
                                                 {
-                                                        Plugin::PluginStruct &pls = pluginVec[0];
-                                                        //NOTE:  put error checking stuff here.
-                                                        interfaces["Likelihood"].emplace_back(*it, pls, options.getOptions("plugins"));
+                                                        if (options.hasKey("parameters") && options.hasKey("parameters", plug))
+                                                        {
+                                                                std::stringstream ss;
+                                                                ss << "Plugin \"" << plug << "\"'s parameters are defined in "
+                                                                        << "both the \"parameters\" section and the \"plugins\" "
+                                                                        << "section in the inifile." << std::endl;
+                                                                scan_error().raise(LOCAL_INFO, ss.str());
+                                                        }
+                                                        nodes[plug] = options.getNode("plugins", plug, "parameters");
                                                 }
                                         }
                                         else
                                         {
-                                                //NOTE:  put error message here.
+                                                std::stringstream ss;
+                                                ss << "Plugin \"" << plug << "\" (requested by \"use_likelihood_plugins:\") is not "
+                                                        << "defined under the \"plugins\" subsection in the inifile" << std::endl;
+                                                scan_error().raise(LOCAL_INFO, ss.str());
                                         }
+                                }
+                                else
+                                {
+                                        std::stringstream ss;
+                                        ss << "\"use_likelihood_plugins:\" input value not usable in the inifile." << std::endl;
+                                        scan_error().raise(LOCAL_INFO, ss.str());
                                 }
                                 
                                 if (interfaces.size() > 0)
                                 {
-                                        if (!options.hasKey("parameters") || !options.hasKey("priors"))
+                                        YAML::Node paramNode;
+                                        YAML::Node priorNode;
+                                        
+                                        if (options.hasKey("parameters"))
                                         {
-                                                //NOTE:  put error message here.
-                                                return;
+                                                if (nodes.size() > 0)
+                                                {
+                                                        paramNode = combineNodes(nodes, options.getNode("parameters"));
+                                                }
+                                                else
+                                                {
+                                                        paramNode = options.getNode("parameters");
+                                                }
+                                        }
+                                        else
+                                        {
+                                                if (nodes.size() > 0)
+                                                {
+                                                        paramNode = combineNodes(nodes);
+                                                }
                                         }
                                         
-                                        prior = new Gambit::Priors::CompositePrior(options.getOptions("parameters"), options.getOptions("priors"));
+                                        if (options.hasKey("priors"))
+                                        {
+                                                priorNode = options.getNode("priors");
+                                        }
+                                        
+                                        prior = new Gambit::Priors::CompositePrior(paramNode, priorNode);
                                         factory = new Plugin_Function_Factory(*prior, interfaces);
                                 }
                                 else
@@ -111,6 +213,7 @@ namespace Gambit
                         else
                         {
                                 factory = &factoryIn;
+                                prior = &priorIn;
                         }
                 }
                 
@@ -123,39 +226,29 @@ namespace Gambit
                                 auto it2 = iniPlugs.find(pluginName = options.getValue<std::string>("use_scanner_plugin"));
                                 if (it2 != iniPlugs.end())
                                 {
-                                        auto pluginVec = plugins.find("scan", it2->second.plugin, it2->second.version, it2->second.library);
-                                        if (pluginVec.size() > 0)
-                                        {
-                                                plugin = pluginVec[0];
-                                        }
+                                        plugin = plugins.find("scan", it2->second.plugin, it2->second.version, it2->second.library);
                                 }
                                 else
                                 {
-                                        //NOTE:  put error message here.
+                                        std::stringstream ss;
+                                        ss << "Plugin \"" << pluginName << "\" (requested by \"use_scanner_plugin:\") is not defined under the \"plugins\""
+                                                << " subsection in the inifile" << std::endl;
+                                        scan_error().raise(LOCAL_INFO, ss.str());
                                 }
                         }
                         else
                         {
-                                //NOTE:  put error message here.
+                                std::stringstream ss;
+                                ss << "\"use_scanner_plugin:\" input value not usable in the inifile." << std::endl;
+                                scan_error().raise(LOCAL_INFO, ss.str());
                         }
 
-                        Gambit::Scanner::IniFileInterface interface(pluginName, plugin, options.getOptions("plugins"));
+                        Gambit::Scanner::IniFileInterface interface(pluginName, plugin, options.getOptions("plugins", pluginName));
                         
                         unsigned int dim = factory->getDim();
                         
-                        //scanLog::err.check();
-                        //outputHandler::out.redir("scanner");
-                        //try
-                        //{
-                                Plugin::Plugin_Interface<int ()> plugin_interface(interface.fileName(), plugin.full_string, dim, *factory, interface, *prior);
-                                plugin_interface();
-                        //}
-                        //catch (std::exception &exception)
-                        //{
-                        //        scanLog::err << exception.what() << scanLog::endl;
-                        //}
-                        //outputHandler::out.defout();
-                        //scanLog::err.check();
+                        Plugin::Plugin_Interface<int ()> plugin_interface(interface.fileName(), plugin.full_string, dim, *factory, interface, *prior);
+                        plugin_interface();
                         
                         return 0;
                 }

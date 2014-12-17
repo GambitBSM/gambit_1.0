@@ -86,32 +86,34 @@ Printer:
 
 Scanner:
 
-#  use_likelihood_plugins: [uniform]
+  #use_likelihood_plugins: uniform
   use_scanner_plugin: loopsample
 
   plugins:
   
     loopsample:
       plugin: loopsample
-      point_number: 20
-      output_file:  output
-      like:  Likelihood
-      files:
-        output_file: "weights ..."
+      options:
+        point_number: 20
+        output_file:  output
+        like:  Likelihood
+        files:
+          output_file: "weights ..."
         
     uniform:
       plugin: uniform
-      some_param: 10
-      
-  parameters:
-  
-    uniform:
-      param_0:
-        range: [-1, 1]
-      param_1:
-        range: [-1, 1]
-        
-  priors:
+      version: ">=1.0 & <2.0"
+      options:
+        some_param: 10
+      parameters:
+        default_params:
+          default_number: 2
+          default_prefix: params
+          range: [-10, 10]
+        #param_0:
+        #  range: [-10, 10]
+        #param_1:
+        #  range: [-10, 10]
             
 ###############################
 # Observables of interest
@@ -223,7 +225,7 @@ KeyValues:
     dependency_resolver_error: fatal
     dependency_resolver_warning: non-fatal
     core_warning: fatal
-    scan_error: non-fatal #make this fatal to see an example error
+    #scan_error: non-fatal #make this fatal to see an example error
     ExampleBit_A_error: non-fatal
 
   enable_testing: false

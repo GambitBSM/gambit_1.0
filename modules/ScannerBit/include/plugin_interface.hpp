@@ -33,6 +33,7 @@
 
 #include "scanner_utils.hpp"
 #include "plugin_exception.hpp"
+#include "cmake_variables.hpp"
 
 namespace Gambit
 {
@@ -121,7 +122,7 @@ namespace Gambit
                         std::string type;
                         std::string full_string;
                         
-                        std::string print()
+                        std::string print() const
                         {
                                 stringstream out;
                                 out << "plugin:  " << plugin << std::endl;
@@ -138,18 +139,81 @@ namespace Gambit
                         }
                 };
                 
-                class VersionCompare
+                inline bool operator == (const PluginStruct &plug1, const PluginStruct &plug2)
                 {
+                        if ((plug1.major_version != plug2.major_version) ||
+                                (plug1.major_version != plug2.major_version) ||
+                                (plug1.minor_version != plug2.minor_version) ||
+                                (plug1.release_version == "" && plug2.release_version != "") ||
+                                (plug1.release_version != "" && plug2.release_version == ""))
+                        {
+                                return false;
+                        }
+                        
+                        return false;
+                }
+                
+                inline bool PluginStructComp(const PluginStruct &plug1, const PluginStruct &plug2)
+                {
+                        if (plug1.major_version > plug2.major_version)
+                        {
+                                return true;
+                        }
+                        else if (plug1.major_version == plug2.major_version)
+                        {
+                                if (plug1.minor_version > plug2.minor_version)
+                                {
+                                        return true;
+                                }
+                                else if (plug1.minor_version == plug2.minor_version)
+                                {
+                                        if (plug1.patch_version > plug2.patch_version)
+                                        {
+                                                return true;
+                                        }
+                                        else if (plug1.patch_version == plug2.patch_version)
+                                        {
+                                                if (plug1.release_version == "" && plug2.release_version != "")
+                                                {
+                                                        return true;
+                                                }
+                                        }
+                                }
+                        }
+                        
+                        return false;
+                }
+                
+                class VersionCompareBase
+                {
+                private:
+                        bool empty;
+                public:
+                        VersionCompareBase() : empty(false) {}
+                        
+                        virtual bool operator() (const PluginStruct &) = 0;
+                        
+                        bool isEmpty() const {return empty;}
+                        
+                        void setEmpty(bool in) {empty = in;}
+                        
+                        virtual ~VersionCompareBase() {}
+                };
+                
+                class VersionCompareBottom : public VersionCompareBase
+                {
+                private:
                         const unsigned char GREATER = 0x01;
                         const unsigned char EQUAL = 0x02;
                         const unsigned char LESS = 0x04;
-                        const unsigned char MAJOR = 0x08;
-                        const unsigned char MINOR = 0x10;
-                        const unsigned char PATCH = 0x20;
-                        const unsigned char RELEASE = 0x40;
-                        int major_version;
-                        int minor_version;
-                        int patch_version;
+                        const unsigned char NEG = 0x08;
+                        const unsigned char MAJOR = 0x10;
+                        const unsigned char MINOR = 0x20;
+                        const unsigned char PATCH = 0x40;
+                        const unsigned char RELEASE = 0x80;
+                        unsigned int major_version;
+                        unsigned int minor_version;
+                        unsigned int patch_version;
                         std::string release_version;
                         bool (*f)(int, int);
                         unsigned char flag;
@@ -159,14 +223,16 @@ namespace Gambit
                         static bool gte (int a, int b) {return a >= b;}
                         static bool lte (int a, int b) {return a <= b;}
                         static bool eq (int a, int b) {return a == b;}
+                        static bool neq (int a, int b) {return a != b;}
                         
                 public:
                         
-                        VersionCompare(const std::string &version) : flag (0x00)
+                        VersionCompareBottom (const std::string &version) : flag (0x00)
                         {
-                                if (version == "")
+                                if (version.find_first_not_of(" !()|&=<>") == std::string::npos)
                                 {
                                         flag = 0x00;
+                                        setEmpty(true);
                                         return;
                                 }
                                 else
@@ -180,7 +246,9 @@ namespace Gambit
                                                         flag |= GREATER;
                                                 else if (version[i] == '=')
                                                         flag |= EQUAL;
-                                                else if (version[i] != ' ')
+                                                else if (version[i] == '!')
+                                                        flag |= NEG;
+                                                else if (version[i] != ' ' && version[i] != '|' && version[i] != '&')
                                                         break;
                                         }
                                         
@@ -190,8 +258,8 @@ namespace Gambit
                                                 return;
                                         }
                                         
-                                        if (!(bool(flag&LESS) || bool(flag&GREATER) || bool(flag&EQUAL)))
-                                                flag |= EQUAL;
+                                        if (!bool(flag))
+                                                flag = EQUAL;
                                         
                                         std::string::size_type pos = version.find("-", i);
                                         std::string number;
@@ -241,55 +309,181 @@ namespace Gambit
                                         }
                                 }
                                 
-                                if (bool(flag&EQUAL))
-                                {
-                                        if (bool(flag&GREATER))
-                                        {
-                                                f = gte;
-                                        }
-                                        else if (bool(flag&LESS))
-                                        {
-                                                f = lte;
-                                        }
-                                        else
-                                        {
-                                                f = eq;
-                                        }
-                                }
-                                else
-                                {
-                                        if (bool(flag&GREATER))
-                                        {
-                                                f = gt;
-                                        }
-                                        else if (bool(flag&LESS))
-                                        {
-                                                f = lt;
-                                        }
-                                }
+                                unsigned char comp = (flag << 4);
+                                comp >>= 4;
                                 
+                                if (comp == (EQUAL|GREATER|LESS|NEG) ||
+                                        comp == (GREATER|LESS|NEG) ||
+                                        comp == (EQUAL|NEG) ||
+                                        comp == (NEG))
+                                                f = neq;
+                                else if (comp == (EQUAL|GREATER|LESS) ||
+                                        comp == (GREATER|LESS) ||
+                                        comp == (EQUAL))
+                                                f = eq;
+                                else if (comp == (EQUAL|GREATER|NEG) ||
+                                        comp == (LESS))
+                                                f = lt;
+                                else if (comp == (EQUAL|LESS|NEG) ||
+                                        comp == (GREATER))
+                                                f = gt;
+                                else if (comp == (LESS|NEG) ||
+                                        comp == (EQUAL|GREATER))
+                                                f = gte;
+                                else if (comp == (GREATER|NEG) ||
+                                        comp == (EQUAL|LESS))
+                                                f = lte;
                         }
                         
                         bool operator() (const PluginStruct &plugin)
                         {
-                                if (bool(flag&MAJOR) && (!f(plugin.major_version, major_version)))
-                                {
-                                        return false;
-                                }
-                                if (bool(flag&MINOR) && (!f(plugin.minor_version, minor_version)))
-                                {
-                                        return false;
-                                }
-                                if (bool(flag&PATCH) && (!f(plugin.patch_version, patch_version)))
-                                {
-                                        return false;
-                                }
-                                if (bool(flag&RELEASE) && plugin.release_version != release_version)
+                                if ((bool(flag&MAJOR) && (!f(plugin.major_version, major_version))) ||
+                                        (bool(flag&MINOR) && (!f(plugin.minor_version, minor_version))) ||
+                                        (bool(flag&PATCH) && (!f(plugin.patch_version, patch_version))) ||
+                                        (bool(flag&RELEASE) && plugin.release_version != release_version))
                                 {
                                         return false;
                                 }
                                 
                                 return true;
+                        }
+                };
+                
+                class VersionCompare : public VersionCompareBase
+                {
+                private:
+                        const unsigned char OR = 0x02;
+                        const unsigned char AND = 0x04;
+                        
+                        VersionCompareBase *compare1;
+                        VersionCompareBase *compare2;
+                        unsigned char flag;
+                        
+                public:
+                        VersionCompare(const std::string &version) : compare1(NULL), compare2(NULL), flag(0x00)
+                        {
+                                std::string::size_type p_pos = version.find_first_of("(|&");
+                                
+                                if (version.find_first_not_of(" !()|&=<>") == std::string::npos)
+                                {
+                                        setEmpty(true);
+                                }
+                                else if (p_pos == std::string::npos)
+                                {
+                                        compare1 = new VersionCompareBottom(version);
+                                }
+                                else if (version[p_pos] == '|')
+                                {
+                                        flag |= OR;
+                                        compare1 = new VersionCompare(version.substr(0, p_pos));
+                                        compare2 = new VersionCompare(version.substr(p_pos + 1));
+                                }
+                                else if (version[p_pos] == '&')
+                                {
+                                        flag |= AND;
+                                        compare1 = new VersionCompare(version.substr(0, p_pos));
+                                        compare2 = new VersionCompare(version.substr(p_pos + 1));
+                                }
+                                else if (version[p_pos] == '(' && p_pos == version.find_first_not_of(" "))
+                                {
+                                        unsigned int p_num = 1;
+                                        std::string::size_type pos = p_pos;
+                                        
+                                        for (;;)
+                                        {
+                                                pos = version.find_first_of("()", pos + 1);
+                                                if (pos != std::string::npos)
+                                                {
+                                                        if (version[pos] == '(')
+                                                        {
+                                                                p_num++;
+                                                        }
+                                                        else
+                                                        {
+                                                                p_num--;
+                                                                if (p_num == 0)
+                                                                {
+                                                                        compare1 = new VersionCompare(version.substr(p_pos +1, pos - p_pos - 1));
+                                                                        pos = version.find_first_of("&|", pos + 1);
+                                                                        if (pos == std::string::npos)
+                                                                        {
+                                                                        }
+                                                                        else if (version[pos] == '|')
+                                                                        {
+                                                                                flag |= OR;
+                                                                                compare2 = new VersionCompare(version.substr(pos + 1));
+                                                                        }
+                                                                        else if (version[pos] == '&')
+                                                                        {
+                                                                                flag |= AND;
+                                                                                compare2 = new VersionCompare(version.substr(pos + 1));
+                                                                        }
+                                                                        
+                                                                        break;
+                                                                }
+                                                        }
+                                                }
+                                                else
+                                                {
+                                                        compare1 = new VersionCompare(version.substr(pos + 1));
+                                                        break;
+                                                }
+                                        }
+                                }
+                                else
+                                {
+                                        std::stringstream ss;
+                                        ss << "Could not parse version string \"" << version << "\"." << std::endl;
+                                        Scanner::scan_error().raise(LOCAL_INFO, ss.str());
+                                }
+                                
+                                if (compare1 != NULL && compare1->isEmpty())
+                                {
+                                        delete compare1;
+                                        compare1 = NULL;
+                                }
+                                
+                                if (compare2 != NULL && compare2->isEmpty())
+                                {
+                                        delete compare1;
+                                        compare2 = NULL;
+                                }
+                                
+                                if (compare1 == NULL && compare2 == NULL)
+                                        setEmpty(true);
+                                
+                                return;
+                        }
+                        
+                        bool operator() (const PluginStruct &plugin)
+                        {
+                                if (compare1 == NULL && compare2 == NULL)
+                                {
+                                        return true;
+                                }
+                                else if (compare1 == NULL && compare2 != NULL)
+                                {
+                                        return (*compare2)(plugin);
+                                }
+                                else if (compare1 != NULL && compare2 == NULL)
+                                {
+                                        return (*compare1)(plugin);
+                                }
+                                else
+                                {
+                                        if (bool(flag&OR))
+                                                return (*compare1)(plugin) || (*compare2)(plugin);
+                                        else if (bool(flag&AND))
+                                                return (*compare1)(plugin) && (*compare2)(plugin);
+                                }
+                        }
+                        
+                        ~VersionCompare()
+                        {
+                                if (compare1 != NULL)
+                                        delete compare1;
+                                if (compare2 != NULL)
+                                        delete compare2;
                         }
                 };
                 
@@ -301,7 +495,7 @@ namespace Gambit
                         std::map<std::string, std::map<std::string, std::vector<PluginStruct>>> plugin_map;
                         
                 public:
-                        Plugin_Loader() : path("ScannerBit/lib/")
+                        Plugin_Loader() : path(GAMBIT_DIR "/ScannerBit/lib/")
                         {
                                 std::string p_str;
                                 if (FILE* p_f = popen((std::string("ls ") + path).c_str(), "r"))
@@ -382,7 +576,7 @@ namespace Gambit
                                 }
                         }
                         
-                        std::vector<PluginStruct> find (const std::string &type, const std::string &plugin, const std::string &version, const std::string &lib)
+                        PluginStruct find (const std::string &type, const std::string &plugin, const std::string &version, const std::string &lib)
                         {
                                 std::vector<PluginStruct> plugins;
                                 for (auto it = plugin_map[type][plugin].begin(), end = plugin_map[type][plugin].end(); it != end; it++)
@@ -391,7 +585,32 @@ namespace Gambit
                                                 plugins.push_back(*it);
                                 }
                                 
-                                return plugins;
+                                if (plugins.size() > 1)
+                                {
+                                        std::sort(plugins.begin(), plugins.end(), PluginStructComp);
+                                        auto it2 = plugins.begin();
+                                        for (auto it = it2 + 1, end = plugins.end(); it != end; it++)
+                                        {
+                                                if (*it == *it2)
+                                                {
+                                                        scan_err << "There are two plugins that met the input"
+                                                                << " criteria in the inifile:\n" << it->print()
+                                                                << "\n and ... \n" << it2->print() << scan_end;
+                                                }
+                                                else
+                                                {
+                                                        break;
+                                                }
+                                        }
+                                }
+                                else if (plugins.size() == 0)
+                                {
+                                        scan_err << "Plugin \"" << plugin << "\" is type \"" << type << " and " 
+                                                << "\" version \"" << version << "\" is not found." << scan_end;
+                                        plugins.resize(1);
+                                }
+                                
+                                return plugins[0];
                         }
                 };
                 
@@ -485,33 +704,26 @@ namespace Gambit
                                                 
                                                 if (main == 0)
                                                 {
-                                                        ostringstream ss;
-                                                        ss << "Could not find main function in plugin \"" << name << "\".";
-                                                        throw Gambit::Plugin::PluginException(ss.str());
+                                                        scan_err << "Could not find main function in plugin \"" << name << "\"." << scan_end;
                                                 }
                                                 
                                                 if(diff)
                                                 {
-                                                        ostringstream ss;
-                                                        ss << "Plugin interface requires the plugin_main function in plugin \"" << name << "\" to be of the form \"" << typeid(ret).name() << " (" << stringify_variadic_inputs(typeid(args).name()...) << ")\"";
-                                                        throw Gambit::Plugin::PluginException(ss.str());
+                                                        scan_err << "Plugin interface requires the plugin_main function in plugin \"" << name << "\" to be of the form \"" 
+                                                                << typeid(ret).name() << " (" << stringify_variadic_inputs(typeid(args).name()...) << ")\"" << scan_end;
                                                 }
                                                 
                                                 deconFunc = (deconFuncType)getFunc("__gambit_plugin_deconstructor__");
                                         }
                                         else
                                         {
-                                                ostringstream ss;
-                                                ss << "Could not find any modules in file \"" << file << "\".";
-                                                throw Gambit::Plugin::PluginException(ss.str()); 
+                                                scan_err << "Could not find any modules in file \"" << file << "\"." << scan_end;
                                         }
                                 }
                                 else
                                 {
-                                        ostringstream ss;
-                                        ss << "Cannot load " << file << ":  " << dlerror();
+                                        scan_err << "Cannot load " << file << ":  " << dlerror() << scan_end;
                                         plugin = 0;
-                                        throw Gambit::Plugin::PluginException(ss.str()); 
                                 }
                         }
                         
