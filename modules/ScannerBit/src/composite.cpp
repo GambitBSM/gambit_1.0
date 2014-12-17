@@ -77,34 +77,75 @@ namespace Gambit
                                 std::string &mod = *mod_it;
                                 std::vector <std::string> parameterNames = model_options.getNames(mod);
                                 
+                                int default_N = 0;
+                                bool isDefault = false;
+                                std::string default_prefix;
+                                
                                 for (auto par_it = parameterNames.begin(), par_end = parameterNames.end(); par_it != par_end; par_it++)
                                 {//loop over iniFile parameters
-                                        std::string &par = *par_it;
-                                        param_names.push_back(mod + std::string("::") + par);
+                                        std::string &par_options = *par_it;
+                                        std::string par_name;
                                         
-                                        if (model_options.hasKey(mod, par, "same_as"))
+                                        if (!isDefault && *par_it == "default_params")
                                         {
-                                                std::string connectedName = model_options.getValue<std::string>(mod, par, "same_as");
+                                                isDefault = true;
+                                                if (model_options.hasKey(mod, par_options, "default_number"))
+                                                {
+                                                        default_N = model_options.getValue<int>(mod, par_options, "default_number");
+                                                }
+                                                else
+                                                {
+                                                        default_N = 1;
+                                                }
+                                                
+                                                if (model_options.hasKey(mod, par_options, "default_prefix"))
+                                                {
+                                                        default_prefix = model_options.getValue<std::string>(mod, par_options, "default_prefix") + "_";
+                                                }
+                                                else
+                                                {
+                                                        default_prefix = "";
+                                                }
+                                        }
+                                        
+                                        if (isDefault)
+                                        {
+                                                default_N--;
+                                                std::stringstream ss;
+                                                ss << default_N;
+                                                ss >> par_name;
+                                                par_name = default_prefix + par_name;
+                                        }
+                                        else
+                                        {
+                                                par_name = *par_it;
+                                        }
+                                        
+                                        param_names.push_back(mod + std::string("::") + par_name);
+                                        
+                                        if (model_options.hasKey(mod, par_options, "same_as"))
+                                        {
+                                                std::string connectedName = model_options.getValue<std::string>(mod, par_options, "same_as");
                                                 std::string::size_type pos = connectedName.rfind("::");
                                                 if (pos == std::string::npos)
                                                 {
-                                                        connectedName += std::string("::") + par;
+                                                        connectedName += std::string("::") + par_name;
                                                 }
                                                 
-                                                sameMap[mod + std::string("::") + par] = connectedName;
+                                                sameMap[mod + std::string("::") + par_name] = connectedName;
                                         }
-                                        else if (model_options.hasKey(mod, par, "fixed_value"))
+                                        else if (model_options.hasKey(mod, par_options, "fixed_value"))
                                         {
-                                                phantomPriors.push_back(new FixedPrior(mod + std::string("::") + par, model_options.getValue<double>(mod, par, "fixed_value")));
+                                                phantomPriors.push_back(new FixedPrior(mod + std::string("::") + par_name, model_options.getValue<double>(mod, par_options, "fixed_value")));
                                         }
                                         else   
                                         {
-                                                std::string joined_parname = mod + std::string("::") + par;
+                                                std::string joined_parname = mod + std::string("::") + par_name;
                                                 
-                                                if (model_options.hasKey(mod, par, "prior_type"))
+                                                if (model_options.hasKey(mod, par_options, "prior_type"))
                                                 {
-                                                        Options options = model_options.getOptions(mod, par);
-                                                        std::string priortype = model_options.getValue<std::string>(mod, par, "prior_type");
+                                                        Options options = model_options.getOptions(mod, par_options);
+                                                        std::string priortype = model_options.getValue<std::string>(mod, par_options, "prior_type");
                                                         
                                                         if(priortype == "same_as")
                                                         {
@@ -115,7 +156,7 @@ namespace Gambit
                                                                 else
                                                                 {
                                                                         std::stringstream ss;
-                                                                        ss << "Same_as prior for parameter \"" << mod << "\" in model \""<< par << "\" has no \"same_as\" entry." << std::endl;
+                                                                        ss << "Same_as prior for parameter \"" << mod << "\" in model \""<< par_name << "\" has no \"same_as\" entry." << std::endl;
                                                                         Scanner::scan_error().raise(LOCAL_INFO, ss.str());
                                                                 }
                                                         }
@@ -124,7 +165,7 @@ namespace Gambit
                                                                 if (prior_creators.find(priortype) == prior_creators.end())
                                                                 {
                                                                         std::stringstream ss;
-                                                                        ss << "Parameter '"<< mod <<"' of model '" << par << "' is of type '"<<priortype<<"', but no entry for this type exists in the factory function map.\n" << prior_creators.print() << std::endl;
+                                                                        ss << "Parameter '"<< mod <<"' of model '" << par_name << "' is of type '"<<priortype<<"', but no entry for this type exists in the factory function map.\n" << prior_creators.print() << std::endl;
                                                                         Scanner::scan_error().raise(LOCAL_INFO, ss.str());
                                                                 }
                                                                 else
@@ -137,10 +178,10 @@ namespace Gambit
                                                                 }
                                                         }
                                                 }
-                                                else if (model_options.hasKey(mod, par, "range"))
+                                                else if (model_options.hasKey(mod, par_options, "range"))
                                                 {
                                                         shown_param_names.push_back(joined_parname);
-                                                        std::pair<double, double> range = model_options.getValue< std::pair<double, double> >(mod, par, "range");
+                                                        std::pair<double, double> range = model_options.getValue< std::pair<double, double> >(mod, par_options, "range");
                                                         if (range.first > range.second)
                                                         {
                                                                 double temp = range.first;
@@ -155,6 +196,11 @@ namespace Gambit
                                                         shown_param_names.push_back(joined_parname);
                                                         needSet.insert(joined_parname);
                                                 }
+                                        }
+                                        
+                                        if (isDefault && default_N > 0)
+                                        {
+                                                par_it--;
                                         }
                                 }
                         }
