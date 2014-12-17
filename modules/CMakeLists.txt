@@ -148,7 +148,7 @@ set(MODULE_HARVESTER ${PROJECT_SOURCE_DIR}/Utils/scripts/module_harvester.py)
 # create all_functor_types.hpp, module_rollcall.hpp, module_types_rollcall.hpp, models_rollcall.hpp, 
 # model_types_rollcall.hpp, backend_rollcall.hpp and backend_types_rollcall.hpp
 string (REPLACE ";" "," itch_with_commas "${itch}")
-file(GLOB MODEL_HARVESTER_FILES   "${PROJECT_SOURCE_DIR}/Models/include/models/*.hpp")
+file(GLOB MODEL_HARVESTER_FILES   "${PROJECT_SOURCE_DIR}/Models/models/*.hpp")
 file(GLOB BACKEND_HARVESTER_FILES "${PROJECT_SOURCE_DIR}/Backends/include/frontends/*.hpp")
 file(GLOB MODULE_HARVESTER_FILES  "${PROJECT_SOURCE_DIR}/*Bit*/include/*_rollcall.hpp")
 list(REMOVE_ITEM MODULE_HARVESTER_FILES "${PROJECT_SOURCE_DIR}/ScannerBit//include//priors_rollcall.hpp" 
@@ -200,6 +200,9 @@ set(GAMBIT_COMMON_OBJECTS $<TARGET_OBJECTS:Backends>
 add_subdirectory(Core)
 add_subdirectory(Printers)
 set(GAMBIT_OBJECTS $<TARGET_OBJECTS:Core> $<TARGET_OBJECTS:Printers>)
+
+# Ben: this seems a little hacky but I couldn't figure out where else to put it:
+include_directories("${PROJECT_SOURCE_DIR}/Models/models")
 
 # set compilation targets for GAMBIT modules
 retrieve_bits(GAMBIT_BITS ${PROJECT_SOURCE_DIR} "${itch}" "Loud")

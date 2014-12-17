@@ -9,6 +9,18 @@ include_directories("${PROJECT_SOURCE_DIR}/contrib/mcutils/include")
 #contrib/heputils
 include_directories("${PROJECT_SOURCE_DIR}/contrib/heputils/include")
 
+#contrib/flexiblesusy
+include_directories("${PROJECT_SOURCE_DIR}/contrib/MassSpectra/flexiblesusy/src")
+include_directories("${PROJECT_SOURCE_DIR}/contrib/MassSpectra/flexiblesusy/config")
+include_directories("${PROJECT_SOURCE_DIR}/contrib/MassSpectra/flexiblesusy/legacy")
+
+set(MODELS CMSSM
+           MSSMatMGUT )
+
+foreach(model ${MODELS})
+  include_directories("${PROJECT_SOURCE_DIR}/contrib/MassSpectra/flexiblesusy/models/${model}")
+endforeach(model)
+
 #contrib/yaml-cpp-0.5.1
 set(yaml_CXXFLAGS "${CMAKE_CXX_FLAGS}")
 if (NOT Boost_INCLUDE_DIR STREQUAL "") 

@@ -47,8 +47,8 @@
 #define STRING2(x) #x
 #define STRING(x) STRING2(x)
 
-#ifdef __gambit_main_hpp__
-  #include "module_macros_incore.hpp"
+#ifdef __model_rollcall_hpp__
+  // #include "module_macros_incore.hpp"
   #pragma message "In model_macros.hpp: Using CORE versions of macros"
   #define START_MODEL             CORE_START_MODEL
   #define DEFINEPARS(...)         CORE_DEFINEPARS(__VA_ARGS__)
@@ -58,25 +58,27 @@
                                   CORE_INTERPRET_AS_X__FUNCTION(MODEL_X,FUNC)
   #define INTERPRET_AS_PARENT__FUNCTION(FUNC)  \
                                   CORE_INTERPRET_AS_PARENT__FUNCTION(FUNC)
+  #define INTERPRET_AS_X__DEPENDENCY(MODEL_X, DEP, TYPE)  \
+                                  CORE_INTERPRET_AS_X__DEPENDENCY(MODEL_X, DEP, TYPE)
 #else
   #pragma message "In model_macros.hpp: Using MODULE versions of macros"
   #define START_MODEL             MODULE_START_MODEL
   #define DEFINEPARS(...)         /* Do nothing */
   #define MAP_TO_CAPABILITY(PARAMETER,CAPABILITY) /* Do nothing */
   #define INTERPRET_AS_X__FUNCTION(MODEL_X,FUNC) \
-                                  MODULE_INTERPRET_AS_X__FUNCTION(FUNC)
+                                  MODULE_INTERPRET_AS_X__FUNCTION(MODEL_X,FUNC)
   #define INTERPRET_AS_PARENT__FUNCTION(FUNC) \
-                                  MODULE_INTERPRET_AS_X__FUNCTION(FUNC)
+                                  MODULE_INTERPRET_AS_X__FUNCTION(PARENT,FUNC)
+  #define INTERPRET_AS_X__DEPENDENCY(MODEL_X, DEP, TYPE)  \
+                                  MODULE_INTERPRET_AS_X__DEPENDENCY(MODEL_X, DEP, TYPE)
 #endif
-
-//#pragma message "Big macro:" STRING(CORE_START_MODULE_COMMON_MAIN(MODEL))
 
 /// "in module" version of the START_MODEL macro
 #define MODULE_START_MODEL                                                     \
   IF_TOKEN_UNDEFINED(MODEL,FAIL("You must define MODEL before calling "        \
    "START_MODEL."))                                                            \
-  _Pragma("message declaring model...") \
-  _Pragma( STRINGIFY(CAT("message Forward declaring model: ",MODEL)) )         \
+  /*_Pragma("message declaring model...") \
+  _Pragma( STRINGIFY(CAT("message Forward declaring model: ",MODEL)) )      */ \
   namespace Gambit                                                             \
   {                                                                            \
    namespace Models                                                            \
@@ -92,26 +94,68 @@
   }                                                                            \
 
 /// "in module" version of the INTERPRET_AS_X__FUNCTION macro
-#define MODULE_INTERPRET_AS_X__FUNCTION(FUNC)                                  \
+#define MODULE_INTERPRET_AS_X__FUNCTION(MODEL_X,FUNC)                          \
   namespace Gambit                                                             \
   {                                                                            \
     namespace Models                                                           \
     {                                                                          \
       namespace MODEL                                                          \
       {                                                                        \
-        /* Declare this function as defined elsewhere */                       \
+        /* Declare the user-defined function as defined elsewhere */           \
         extern void FUNC (const ModelParameters&, ModelParameters&);           \
+                                                                               \
+        /* Let the module source know that this functor is declared*/          \
+        namespace Functown { extern module_functor<ModelParameters>            \
+                                            CAT(MODEL_X,_parameters); }        \
+                                                                               \
+        namespace Pipes                                                        \
+        {                                                                      \
+          namespace CAT(MODEL_X,_parameters)                                   \
+          {                                                                    \
+            /* Declare the parameters safe-pointer map as external. */         \
+            extern std::map<str, safe_ptr<double> > Param;                     \
+            /* Declare the safe-pointer to the models vector as external. */   \
+            extern safe_ptr< std::vector<str> > Models;                        \
+            /* Declare the safe pointer to the run options as external. */     \
+            extern safe_ptr<Options> runOptions;                               \
+          }                                                                    \
+        }                                                                      \
+      }                                                                        \
+    }                                                                          \
+  }                                                                            \
+
+/// "in module" version of the INTERPRET_AS_X__DEPENDENCY macro
+#define MODULE_INTERPRET_AS_X__DEPENDENCY(MODEL_X, DEP, TYPE)                  \
+  namespace Gambit                                                             \
+  {                                                                            \
+    namespace Models                                                           \
+    {                                                                          \
+      namespace MODEL                                                          \
+      {                                                                        \
+        /* Given that TYPE is not void, create a safety_bucket for the         \
+        dependency result. To be initialized automatically at runtime          \
+        when the dependency is resolved. */                                    \
+        namespace Pipes                                                        \
+        {                                                                      \
+          namespace CAT(MODEL_X,_parameters)                                  \
+          {                                                                    \
+            BOOST_PP_IIF(IS_TYPE(void,TYPE),,                                  \
+              namespace Dep { extern dep_bucket<TYPE> DEP; } )                 \
+          }                                                                    \
+                                                                               \
+        }                                                                      \
       }                                                                        \
     }                                                                          \
   }                                                                            
+
 
 /// Piggybacks off the CORE_START_MODULE_COMMON macro, as we need all the same 
 /// machinery.
 #define CORE_START_MODEL                                                       \
   IF_TOKEN_UNDEFINED(MODEL,FAIL("You must define MODEL before calling "        \
    "START_MODEL."))                                                            \
-  _Pragma("message creating model...") \
-  _Pragma( STRINGIFY(CAT("message  Creating model: ",MODEL)) )                 \
+  /* _Pragma("message creating model...") \
+  _Pragma( STRINGIFY(CAT("message  Creating model: ",MODEL)) )              */ \
   namespace Gambit                                                             \
   {                                                                            \
                                                                                \
@@ -389,7 +433,7 @@
 
 
 /// Add a dependency to an interpret-as-X function.
-#define INTERPRET_AS_X__DEPENDENCY(MODEL_X, DEP, TYPE)                         \
+#define CORE_INTERPRET_AS_X__DEPENDENCY(MODEL_X, DEP, TYPE)                    \
   CORE_DEPENDENCY(DEP, TYPE, MODEL, CAT(MODEL_X,_parameters), IS_MODEL)        \
 
 /// Wrappers to convert INTERPRET_AS_X macros to INTERPRET_AS_PARENT macros.
@@ -403,9 +447,10 @@
 /// Macro to get to model namespace easily
 #define MODEL_NAMESPACE Gambit::Models::MODEL 
 
-/// Macro to easily get the Pipes, for retrieving dependencies
-#define USE_MODEL_PIPE                                                         \
-  using namespace MODEL_NAMESPACE::Pipes::CAT(PARENT,_parameters);             \
+/// Macro to easily get the Pipes for an INTERPRET_AS_X function, for retrieving 
+/// dependencies
+#define USE_MODEL_PIPE(MODEL_X)                                                 \
+  using namespace MODEL_NAMESPACE::Pipes::CAT(MODEL_X,_parameters);             \
 
 /// Macros to create and register primary model functors. 
 ///

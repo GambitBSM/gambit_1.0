@@ -26,7 +26,12 @@ namespace Gambit {
   namespace Models {
   
     // Set many string-named ModelParameters to a single value
-    void set_many_to_one(ModelParameters&, const std::vector<std::string>&, const double);
+    inline void set_many_to_one(ModelParameters &myP, const std::vector<std::string>& v, const double value)
+    {
+       for(std::vector<std::string>::const_iterator it = v.begin(); it != v.end(); ++it) {
+         myP.setValue(*it, value);
+       }       
+    }
 
   }
 }
