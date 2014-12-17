@@ -286,16 +286,14 @@ namespace Gambit
                         
                         if (needSet.size() != 0)
                         {
-                                std::stringstream ss;
-                                ss << "Priors are not defined for the following parameters:  [";
+                                scan_err << "Priors are not defined for the following parameters:  [";
                                 auto it = needSet.begin();
-                                ss << *(it++);
+                                scan_err << *(it++);
                                 for (; it != needSet.end(); it++)
                                 {
-                                        ss << ", "<< *it;
+                                        scan_err << ", "<< *it;
                                 }
-                                ss << "]" << std::endl;
-                                Scanner::scan_error().raise(LOCAL_INFO, ss.str());
+                                scan_err << "]" << scan_end;
                         }
                         
                         std::unordered_map<std::string, std::string> keyMap;
@@ -456,16 +454,14 @@ namespace Gambit
                         
                         if (needSet.size() != 0)
                         {
-                                std::stringstream ss;
-                                ss << "Priors are not defined for the following parameters:  [";
+                                scan_err << "Priors are not defined for the following parameters:  [";
                                 auto it = needSet.begin();
-                                ss << *(it++);
+                                scan_err << *(it++);
                                 for (; it != needSet.end(); it++)
                                 {
-                                        ss << ", "<< *it;
+                                        scan_err << ", "<< *it;
                                 }
-                                ss << "]" << std::endl;
-                                Scanner::scan_error().raise(LOCAL_INFO, ss.str());
+                                scan_err << "]" << scan_end;
                         }
                         
                         std::unordered_map<std::string, std::string> keyMap;
