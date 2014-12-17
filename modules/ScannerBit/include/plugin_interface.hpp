@@ -593,7 +593,9 @@ namespace Gambit
                                         {
                                                 if (*it == *it2)
                                                 {
-                                                        //NOTE:  put error message here
+                                                        scan_err << "There are two plugins that met the input"
+                                                                << " criteria in the inifile:\n" << it->print()
+                                                                << "\n and ... \n" << it2->print() << scan_end;
                                                 }
                                                 else
                                                 {
@@ -603,10 +605,8 @@ namespace Gambit
                                 }
                                 else if (plugins.size() == 0)
                                 {
-                                        std::stringstream ss;
-                                        ss << "Plugin \"" << plugin << "\" is type \"" << type 
-                                                << "\" version \"" << version << "\" is not found." << std::endl;
-                                        Scanner::scan_error().raise(LOCAL_INFO, ss.str());
+                                        scan_err << "Plugin \"" << plugin << "\" is type \"" << type << " and " 
+                                                << "\" version \"" << version << "\" is not found." << scan_end;
                                         plugins.resize(1);
                                 }
                                 
@@ -704,33 +704,26 @@ namespace Gambit
                                                 
                                                 if (main == 0)
                                                 {
-                                                        ostringstream ss;
-                                                        ss << "Could not find main function in plugin \"" << name << "\".";
-                                                        throw Gambit::Plugin::PluginException(ss.str());
+                                                        scan_err << "Could not find main function in plugin \"" << name << "\"." << scan_end;
                                                 }
                                                 
                                                 if(diff)
                                                 {
-                                                        ostringstream ss;
-                                                        ss << "Plugin interface requires the plugin_main function in plugin \"" << name << "\" to be of the form \"" << typeid(ret).name() << " (" << stringify_variadic_inputs(typeid(args).name()...) << ")\"";
-                                                        throw Gambit::Plugin::PluginException(ss.str());
+                                                        scan_err << "Plugin interface requires the plugin_main function in plugin \"" << name << "\" to be of the form \"" 
+                                                                << typeid(ret).name() << " (" << stringify_variadic_inputs(typeid(args).name()...) << ")\"" << scan_end;
                                                 }
                                                 
                                                 deconFunc = (deconFuncType)getFunc("__gambit_plugin_deconstructor__");
                                         }
                                         else
                                         {
-                                                ostringstream ss;
-                                                ss << "Could not find any modules in file \"" << file << "\".";
-                                                throw Gambit::Plugin::PluginException(ss.str()); 
+                                                scan_err << "Could not find any modules in file \"" << file << "\"." << scan_end;
                                         }
                                 }
                                 else
                                 {
-                                        ostringstream ss;
-                                        ss << "Cannot load " << file << ":  " << dlerror();
+                                        scan_err << "Cannot load " << file << ":  " << dlerror() << scan_end;
                                         plugin = 0;
-                                        throw Gambit::Plugin::PluginException(ss.str()); 
                                 }
                         }
                         
