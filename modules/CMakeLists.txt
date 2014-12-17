@@ -176,11 +176,24 @@ set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Models/include/model_rollc
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Utils/include/all_functor_types.hpp")
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Core/include/module_rollcall.hpp")
 
-# include cmake scripts
+# include cmake utility scripts 
 include(cmake/utilities.cmake)
+
+# work out which modules to include in the compile
+retrieve_bits(GAMBIT_BITS ${PROJECT_SOURCE_DIR} "${itch}" "Loud")
+
+# include Delphes only if ColliderBit is in use
+if(";${GAMBIT_BITS};" MATCHES ";ColliderBit;")
+  include_directories("${PROJECT_SOURCE_DIR}/ColliderBit/include/delphes")
+  set (EXCLUDE_DELPHES FALSE)
+else()
+  set (EXCLUDE_DELPHES TRUE)
+endif()
+
+# include other cmake scripts
+include(cmake/contrib.cmake)
 include(cmake/warnings.cmake)
 include(cmake/gambit.cmake)
-include(cmake/contrib.cmake)
 include(cmake/extras.cmake)
 
 # add subdirectories. This does not actually cause another cmake executable to run. The same process will walk through the project's entire directory structure.
@@ -202,11 +215,7 @@ add_subdirectory(Printers)
 set(GAMBIT_OBJECTS $<TARGET_OBJECTS:Core> $<TARGET_OBJECTS:Printers>)
 
 # set compilation targets for GAMBIT modules
-retrieve_bits(GAMBIT_BITS ${PROJECT_SOURCE_DIR} "${itch}" "Loud")
 foreach(bit ${GAMBIT_BITS})
-  if(bit STREQUAL "ColliderBit")
-    include_directories("${PROJECT_SOURCE_DIR}/ColliderBit/include/delphes")
-  endif()
   add_subdirectory(${bit})
   set(GAMBIT_BIT_OBJECTS ${GAMBIT_BIT_OBJECTS} "$<TARGET_OBJECTS:${bit}>")
 endforeach()
