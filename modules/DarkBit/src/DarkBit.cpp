@@ -727,10 +727,25 @@ namespace Gambit {
                 // (we just ignore the contributions from the second and third
                 // particle and integrate out the corresponding kinematical
                 // variable).
-                Funk::Funk E1_low =  Funk::func(gamma3bdy_limits<0>, Funk::var("Eg"), mass, m1, m2);
-                Funk::Funk E1_high =  Funk::func(gamma3bdy_limits<1>, Funk::var("Eg"), mass, m1, m2);
+                Funk::Funk E1_low =  Funk::func(gamma3bdy_limits<0>, Funk::var("E"), mass, m1, m2);
+                Funk::Funk E1_high =  Funk::func(gamma3bdy_limits<1>, Funk::var("E"), mass, m1, m2);
                 Funk::Funk dsigmavde = it->dSigmadE->gsl_integration("E1", E1_low, E1_high);
                 DiffYield3Body = DiffYield3Body + dsigmavde;
+
+                /*
+                std::cout << "Test output three-body annihilation:" << std::endl;
+                it->printChannel();
+                std::cout << "  m1  = " << m1 << std::endl;
+                std::cout << "  m2  = " << m2 << std::endl;
+                std::cout << "  mDM = " << mass << std::endl;
+                std::cout << "Boundaries (E=10 GeV):" << std::endl;
+                std::cout << "  E1 = " << E1_low->eval("E", 10) << std::endl;
+                std::cout << "  E2 = " << E1_high->eval("E", 10) << std::endl;
+                std::cout << "dsigmavde (E=10 GeV) = " << it->dSigmadE->set("E1", E1_low*1.02)->eval("E", 10) << std::endl;
+                std::cout << "dsigmavde (E=10 GeV) = " << it->dSigmadE->set("E1", E1_high/1.02)->eval("E", 10) << std::endl;
+                std::cout << "dsigmavde (E=10 GeV) = " << it->dSigmadE->set("E1", sqrt(E1_low*E1_high))->eval("E", 10) << std::endl;
+                std::cout << "dsigmavde (E=10 GeV) = " << it->dSigmadE->gsl_integration("E1", E1_low, E1_high)->eval("E", 10) << std::endl;
+                */
             }
         }
         cout << "Yield calculated!" << endl;
@@ -741,7 +756,7 @@ namespace Gambit {
         // range, and add additional parameter for velocity (though the result is
         // velocity independent).
         // TODO: Add validity range
-        result = (DiffYield2Body + DiffYield2Body)/(mass*mass);
+        result = (DiffYield2Body + DiffYield3Body)/(mass*mass);
     }
 
 
@@ -753,7 +768,6 @@ namespace Gambit {
 
     double DSgamma3bdy(double(*IBfunc)(int&,double&,double&), int IBch, double Eg, double E1, double M_DM, double m_1, double m_2)
     {
-        double sigmav_norm = 1; // TODO: Check with Lars' old codes
         double E2 = 2*M_DM - Eg - E1;  
         double p12 = E1*E1-m_1*m_1;
         double p22 = E2*E2-m_2*m_2;
@@ -764,10 +778,18 @@ namespace Gambit {
         {
             return 0;
         }
-        double x = Eg/M_DM;
-        double y = (m_2*m_2 + 4*M_DM * (M_DM - E2) ) / (4*M_DM*M_DM);        
+        double x = Eg/M_DM;  // x = E_gamma/mx
+        double y = (m_2*m_2 + 4*M_DM * (M_DM - E2) ) / (4*M_DM*M_DM);  // y = (p+k)^2/(4 mx^2),
+            // where p denotes the W+ momentum and k the photon momentum.
+            // (note that the expressions above and below only apply to the v->0 limit)
         double result = IBfunc(IBch,x,y);          
-        return sigmav_norm * result / (M_DM*M_DM); // M_DM^-2 is from the Jacobi determinant
+        /*
+        std::cout << "  x, y = " << x << ", " << y << std::endl;
+        std::cout << "  E, E1, E2 = " << Eg << ", " << E1 << ", " << E2 << std::endl;
+        std::cout << "  mDM, m1, m2 = " << M_DM << ", " << m_1 << ", " << m_2 << std::endl;
+        std::cout << "  IBfunc = " << result << std::endl;
+        */
+        return std::max(0., result) / (M_DM*M_DM); // M_DM^-2 is from the Jacobi determinant
     }
 
     void TH_ProcessCatalog_CMSSM(Gambit::DarkBit::TH_ProcessCatalog &result)
@@ -889,11 +911,11 @@ namespace Gambit {
         #define SETUP_DS_PROCESS_GAMMA3BODY(NAME, IBCH, P1, P2, IBFUNC, SV_IDX, PREFACTOR)                                  \
             /* Check if process is kinematically allowed */                                                                 \
             m_1 = catalog.getParticleProperty(STRINGIFY(P1)).mass;                                                          \
-            m_2 = catalog.getParticleProperty(STRINGIFY(P1)).mass;                                                          \
-            if(m_1 + m_2 < 2*M_DM)                                                    \
+            m_2 = catalog.getParticleProperty(STRINGIFY(P2)).mass;                                                          \
+            if(m_1 + m_2 < 2*M_DM)                                                                                          \
             {                                                                                                               \
                 index = SV_IDX;                                                                                             \
-                sv = PREFACTOR*BEreq::dssigmav(index);                                                                      \
+                sv = PREFACTOR*BEreq::dssigmav(index);  /* TODO: Check whether this works */                                \
                 Funk::Funk CAT(kinematicFunction_,NAME) = sv*Funk::func(DSgamma3bdy, STRIP_PARENS(IBFUNC), IBCH, Funk::var("E"), Funk::var("E1"), M_DM, m_1, m_2);\
                 /* Create channel identifier string */                                                                      \
                 std::vector<std::string> CAT(finalStates_,NAME);                                                            \
@@ -1151,7 +1173,8 @@ namespace Gambit {
         using namespace Pipes::dump_GammaSpectrum;
         // Construct interpolated function, using GAMBIT base functions.
         Funk::Funk spectrum = (*Dep::GA_AnnYield)->set("v", 0.);
-        std::string filename = runOptions->getValueOrDef<std::string>("", "filename");
+        std::string filename = runOptions->getValueOrDef<std::string>("dNdE.dat", "filename");
+        std::cout << "FILENAME for gamma dump: " << filename << std::endl;
         std::ofstream myfile (filename);
         if (myfile.is_open())
         {
@@ -1159,7 +1182,7 @@ namespace Gambit {
             {
                 double energy = pow(10., i/10. - 2.);
 
-                myfile << energy << " " << spectrum->set("E", energy) << "\n";
+                myfile << energy << " " << spectrum->eval("E", energy) << "\n";
             }
             myfile.close();
         }
