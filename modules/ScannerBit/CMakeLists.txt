@@ -4,10 +4,7 @@ set(source_files src/cauchy.cpp
                  src/inifile_interface.cpp
                  src/outputhandler.cpp
                  src/scan.cpp
-                 src/scanlog.cpp
                  src/scanner_utils.cpp
-                 src/test_factory.cpp
-                 src/test_gaussian.cpp
 )
 
 set(header_files include/cholesky.hpp
@@ -26,23 +23,17 @@ set(header_files include/cholesky.hpp
                  include/priors_rollcall.hpp
                  include/scan.hpp
                  include/scan_file.hpp
-                 include/scanlog.hpp
                  include/scanner_plugin.hpp
                  include/scanner_utils.hpp
                  include/scannerbit.hpp
                  include/test-recon.h
                  include/test.h
-                 include/test_factory.hpp
-                 include/test_function_rollcall.hpp
                  include/priors/cauchy.hpp
                  include/priors/composite.hpp
                  include/priors/dummy.hpp
                  include/priors/fixed_same_as.hpp
                  include/priors/flat_log.hpp
                  include/priors/gaussian.hpp
-                 include/test_functions/eggbox.hpp
-                 include/test_functions/gaussian.hpp
-                 include/test_functions/uniform.hpp
 )
 
 add_gambit_library(ScannerBit OPTION OBJECT SOURCES ${source_files} HEADERS ${header_files})
