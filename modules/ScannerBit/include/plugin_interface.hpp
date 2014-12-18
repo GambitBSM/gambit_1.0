@@ -605,8 +605,8 @@ namespace Gambit
                                 }
                                 else if (plugins.size() == 0)
                                 {
-                                        scan_err << "Plugin \"" << plugin << "\" is type \"" << type << " and " 
-                                                << "\" version \"" << version << "\" is not found." << scan_end;
+                                        scan_err << "Plugin \"" << plugin << "\" of type \"" << type << "\" and " 
+                                                << " version \"" << version << "\" is not found." << scan_end;
                                         plugins.resize(1);
                                 }
                                 
