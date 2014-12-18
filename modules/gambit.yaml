@@ -131,6 +131,13 @@ Scanner:
           range: [-1, 1]
         1:
           range: [-1, 1]
+          
+    square_grid:
+      plugin: square_grid
+      verion: ">=1.0"
+      options:
+        purpose: Likelihood
+        grid_pts: 3 #NxN grid
     
 ###############################
 # Observables of interest

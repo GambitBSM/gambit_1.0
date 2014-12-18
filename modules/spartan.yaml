@@ -110,10 +110,13 @@ Scanner:
           default_number: 2
           default_prefix: params
           range: [-10, 10]
-        #param_0:
-        #  range: [-10, 10]
-        #param_1:
-        #  range: [-10, 10]
+          
+    square_grid:
+      plugin: square_grid
+      verion: ">=1.0"
+      options:
+        purpose: Likelihood
+        grid_pts: 3 #NxN grid
             
 ###############################
 # Observables of interest
