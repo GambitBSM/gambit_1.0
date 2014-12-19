@@ -45,10 +45,18 @@ Printer:
 
 Scanner:
     
-  crapsample:
-    point_number: 1
-    output_file:  output
-    like:  Observable
+  use_scanner_plugin: loopsample
+
+  plugins:
+  
+    loopsample:
+      plugin: loopsample
+      options:
+        point_number: 20
+        output_file:  output
+        like:  Likelihood
+        files:
+          output_file: "weights ..."
 
 ###############################
 # Observables of interest
