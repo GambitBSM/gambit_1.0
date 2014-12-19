@@ -224,16 +224,26 @@ namespace Gambit
       //}
 
       //A simple loop example using OpenMP
-      Loop::executeIteration(0);         //Do the zero iteration separately to allow nested functions to self-init.
+      int it = 0;
+      Loop::executeIteration(it);         //Do the zero iteration separately to allow nested functions to self-init.
       #pragma omp parallel
       {
-        #pragma omp for
-        for(unsigned long it = 1; it < nEvents-1; it++)
-        {
-          Loop::executeIteration(it);
-        }
+        while(not *Loop::done) { Loop::executeIteration(it++); }
       }
-      Loop::executeIteration(nEvents-1); //Do the final iteration separately to make the final result 'serially accessible' to functions that run after this one.
+
+      // Start over again, just to demonstrate the reset function.  This just sets the Loop::done flag
+      // false again.  Note that when you do this, you need to beware to re-initialise the nested functions themselves 
+      // by re-running iteration zero again, unless you want them to just set Loop::done true again straight away.
+      it = 0;
+      Loop::reset();
+      Loop::executeIteration(it);         //Do the zero iteration separately to allow nested functions to self-init.
+      #pragma omp parallel
+      {
+        while(not *Loop::done) { Loop::executeIteration(it++); }
+      }
+
+      //Do the final iteration separately to make the final result 'serially accessible' to functions that run after this one.
+      Loop::executeIteration(it++); 
 
     }
 
@@ -262,8 +272,9 @@ namespace Gambit
     /// Adds an integral event count to a total number of accumulated events.
     void eventAccumulator(int &result)
     {
-      //There is basically just one thing available in nested functions from the Loops namespace:
+      //There are basically just two things available in nested functions from the Loops namespace:
       //  int* Loop::iteration -- the iteration number passed down directly by the function managing the loop that this one runs within.
+      //  void Loop::wrapup()  -- a function to call if you want to cause the loop to end.
       //You can always get at OpenMP functions too (omp_get_thread_num, omp_get_ancestor_thread_num, etc) -- but it is better not to assume
       //too much about the other functions that might be managing this one, either directly or indirectly.
 
@@ -299,6 +310,10 @@ namespace Gambit
         cout<<"  I have thread index: "<<omp_get_thread_num();
         cout<<"  Current total counts is: "<<result<<endl;
       }
+
+      // If we have reached 50 counts, quit the loop.
+      if (result >= 50) { Loop::wrapup(); }
+
     }
 
     double testFunc(Farray<double,1>&)

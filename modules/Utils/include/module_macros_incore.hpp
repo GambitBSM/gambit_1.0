@@ -621,6 +621,16 @@
       safe_ptr< std::vector<str> > Models;                                     \
       /* Declare a safe pointer to the functor's run options. */               \
       safe_ptr<Options> runOptions;                                            \
+      BOOST_PP_IIF(CAN_MANAGE,                                                 \
+       namespace Loop                                                          \
+       {                                                                       \
+         /* Declare a safe pointer to the flag indicating that a managed loop  \
+         is ready for breaking. */                                             \
+         safe_ptr<bool> done;                                                  \
+         /* Declare a function that is used to reset the done flag. */         \
+         void reset() { Functown::FUNCTION.resetLoop(); }                      \
+       }                                                                       \
+      ,)                                                                       \
     }                                                                          \
   }                                                                            \
                                                                                \
@@ -628,7 +638,10 @@
   template <>                                                                  \
   void rt_register_function<Tags::FUNCTION> ()                                 \
   {                                                                            \
-    BOOST_PP_IIF(CAN_MANAGE,Functown::FUNCTION.setCanBeLoopManager(true);,)    \
+    BOOST_PP_IIF(CAN_MANAGE,                                                   \
+     Functown::FUNCTION.setCanBeLoopManager(true);                             \
+     Pipes::FUNCTION::Loop::done = Functown::FUNCTION.loopIsDone();            \
+    ,)                                                                         \
     Accessors::map_bools[STRINGIFY(CAPABILITY)] =                              \
      &Accessors::provides<Gambit::Tags::CAPABILITY>;                           \
     Accessors::iCanDo[STRINGIFY(FUNCTION)] = STRINGIFY(TYPE);                  \
@@ -698,6 +711,9 @@
             /* Create a safe pointer to the iteration number of the loop this  \
             functor is running within. */                                      \
             omp_safe_ptr<int> iteration;                                       \
+            /* Create a loop-breaking function that can be called to tell the  \
+            functor's loop manager that it is time to break. */                \
+            void wrapup() { Functown::FUNCTION.breakLoopFromManagedFunctor(); }\
           }                                                                    \
         }                                                                      \
       }                                                                        \

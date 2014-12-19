@@ -47,9 +47,9 @@
 #define START_MODULE                                      MODULE_START_MODULE
 #define START_CAPABILITY                                  MODULE_START_CAPABILITY(MODULE)
 #define LONG_START_CAPABILITY(MODULE, C)                  MODULE_START_CAPABILITY(MODULE)
-#define DECLARE_FUNCTION(TYPE, FLAG)                      MODULE_DECLARE_FUNCTION(MODULE, FUNCTION, TYPE, FLAG)
-#define LONG_DECLARE_FUNCTION(MODULE, C, FUNCTION, TYPE, FLAG) \
-                                                          MODULE_DECLARE_FUNCTION(MODULE, FUNCTION, TYPE, FLAG)
+#define DECLARE_FUNCTION(TYPE, CAN_MANAGE)                MODULE_DECLARE_FUNCTION(MODULE, FUNCTION, TYPE, CAN_MANAGE)
+#define LONG_DECLARE_FUNCTION(MODULE, C, FUNCTION, TYPE, CAN_MANAGE) \
+                                                          MODULE_DECLARE_FUNCTION(MODULE, FUNCTION, TYPE, CAN_MANAGE)
 #define DEPENDENCY(DEP, TYPE)                             MODULE_DEPENDENCY(DEP, TYPE, MODULE, FUNCTION)
 #define LONG_DEPENDENCY(MODULE, FUNCTION, DEP, TYPE)      MODULE_DEPENDENCY(DEP, TYPE, MODULE, FUNCTION)
 #define NEEDS_MANAGER_WITH_CAPABILITY(LOOPMAN)            MODULE_NEEDS_MANAGER_WITH_CAPABILITY(LOOPMAN)                                  
@@ -104,7 +104,7 @@
 
 /// Redirection of \link START_FUNCTION() START_FUNCTION\endlink when invoked 
 /// from within a module.
-#define MODULE_DECLARE_FUNCTION(MODULE, FUNCTION, TYPE, FLAG)                  \
+#define MODULE_DECLARE_FUNCTION(MODULE, FUNCTION, TYPE, CAN_MANAGE)            \
                                                                                \
   namespace Gambit                                                             \
   {                                                                            \
@@ -119,7 +119,7 @@
       able to manage loops. */                                                 \
       namespace Functown                                                       \
       {                                                                        \
-        BOOST_PP_IIF(BOOST_PP_EQUAL(FLAG, 1),                                  \
+        BOOST_PP_IIF(BOOST_PP_EQUAL(CAN_MANAGE, 1),                            \
           void CAT(FUNCTION,_iterate)(int it)                                  \
           {                                                                    \
             FUNCTION.iterate(it);                                              \
@@ -137,13 +137,18 @@
           extern safe_ptr< std::vector<str> > Models;                          \
           /* Declare the safe pointer to the run options as external. */       \
           extern safe_ptr<Options> runOptions;                                 \
-          /* Create a pointer to the single iteration of the loop that can be  \
-          executed by this functor */                                          \
           namespace Loop                                                       \
           {                                                                    \
-            BOOST_PP_IIF(BOOST_PP_EQUAL(FLAG, 1),                              \
+            BOOST_PP_IIF(BOOST_PP_EQUAL(CAN_MANAGE, 1),                        \
+              /* Create a pointer to the single iteration of the loop that can \
+              be executed by this functor */                                   \
               void (*executeIteration)(int) =                                  \
                &Functown::CAT(FUNCTION,_iterate);                              \
+              /* Declare a safe pointer to the flag indicating that a managed  \
+              loop is ready for breaking. */                                   \
+              extern safe_ptr<bool> done;                                      \
+              /* Declare a function that is used to reset the done flag. */    \
+              extern void reset();                                             \
             ,)                                                                 \
           }                                                                    \
         }                                                                      \
@@ -171,6 +176,9 @@
             /* Declare the safe pointer to the iteration number of the loop    \
             this functor is running within, as external. */                    \
             extern omp_safe_ptr<int> iteration;                                \
+            /* Create a loop-breaking function that can be called to tell the  \
+            functor's loop manager that it is time to break. */                \
+            extern void wrapup();                                              \
           }                                                                    \
         }                                                                      \
       }                                                                        \
