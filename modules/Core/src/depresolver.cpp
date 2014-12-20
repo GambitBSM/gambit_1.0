@@ -1132,6 +1132,7 @@ namespace Gambit
             }
             v.insert(toVertex);
             loopManagerMap[fromVertex] = v;
+            (*masterGraph[toVertex]).resolveLoopManager(masterGraph[fromVertex]);
           }
           // Default is to resovle dependency on functor level of toVertex
           else

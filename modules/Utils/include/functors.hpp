@@ -149,6 +149,9 @@ namespace Gambit
       /// Getter for revealing the required capability of the wrapped function's loop manager
       virtual str loopManagerCapability();
 
+      /// Tell the functor that the loop it manages should break now.
+      virtual void breakLoop();
+
       /// Getter for listing currently activated dependencies
       virtual std::vector<sspair> dependencies();
       /// Getter for listing backend requirement groups
@@ -181,6 +184,9 @@ namespace Gambit
 
       /// Resolve a dependency using a pointer to another functor object
       virtual void resolveDependency (functor*);
+
+      /// Set this functor's loop manager (if it has one)
+      virtual void resolveLoopManager (functor*);
 
       /// Resolve a backend requirement using a pointer to another functor object
       virtual void resolveBackendReq (functor*);
@@ -347,6 +353,15 @@ namespace Gambit
       /// Getter for revealing the module of the wrapped function's assigned loop manager
       virtual str loopManagerOrigin();
 
+      /// Tell the manager of the loop in which this functor runs that it is time to break the loop.
+      virtual void breakLoopFromManagedFunctor();
+      /// Return a safe pointer to the flag indicating that a loop managed by this functor should break now.
+      virtual safe_ptr<bool> loopIsDone();    
+      /// Provide a way to reset the flag indicating that a loop managed by this functor should break.
+      virtual void resetLoop(); 
+      /// Tell the functor that the loop it manages should break now.
+      virtual void breakLoop();
+
       /// Getter for listing currently activated dependencies
       virtual std::vector<sspair> dependencies();
       /// Getter for listing backend requirement groups
@@ -426,6 +441,9 @@ namespace Gambit
       /// Resolve a dependency using a pointer to another functor object
       virtual void resolveDependency (functor* dep_functor);
 
+      // Set this functor's loop manager (if it has one)
+      virtual void resolveLoopManager (functor*);
+
       /// Resolve a backend requirement using a pointer to another functor object
       virtual void resolveBackendReq (functor* be_functor);
 
@@ -436,7 +454,7 @@ namespace Gambit
     protected:
 
       /// Acknowledge that this functor invalidated the current point in model space.
-      void acknowledgeInvalidation(invalid_point_exception&);
+      virtual void acknowledgeInvalidation(invalid_point_exception&);
 
       /// Do pre-calculate timing things
       virtual void startTiming(double & nsec, double & sec);
@@ -465,15 +483,16 @@ namespace Gambit
       /// Flag indicating whether this function can manage a loop over other functions
       bool iCanManageLoops;
 
+      /// Flag indicating whether this function is ready to finish its loop (only relevant if iCanManageLoops = true)
+      bool myLoopIsDone;
+
       /// Flag indicating whether this function can run nested in a loop over functions
       bool iRunNested;
 
       /// Capability of a function that mangages a loop that this function can run inside of.
       str myLoopManagerCapability;
-      /// Name of a function that mangages a loop that this function can run inside of.
-      str myLoopManagerName;
-      /// Module of a function that mangages a loop that this function can run inside of.
-      str myLoopManagerOrigin;
+      /// Pointer to the functor that mangages the loop that this function runs inside of.
+      functor* myLoopManager;
 
       /// Vector of functors that have been set up to run nested within this one.
       std::vector<functor*> myNestedFunctorList;

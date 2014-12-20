@@ -234,6 +234,12 @@ namespace Gambit
       return empty;
     }
     
+    /// Tell the functor that the loop it manages should break now.
+    void functor::breakLoop()
+    { 
+      utils_error().raise(LOCAL_INFO,"The breakLoop method has not been defined in this class.");
+    }
+
     /// Getter for backend-specific conditional dependencies (3-string version)
     std::vector<sspair> functor::backend_conditional_dependencies (str req, str type, str be)  
     { 
@@ -267,6 +273,12 @@ namespace Gambit
     void functor::resolveDependency (functor*)
     {
       utils_error().raise(LOCAL_INFO,"The resolveDependency method has not been defined in this class.");
+    }
+
+    // Set this functor's loop manager (if it has one)
+    void functor::resolveLoopManager (functor*)
+    {
+      utils_error().raise(LOCAL_INFO,"The resolveLoopManager method has not been defined in this class.");
     }
 
     /// Resolve a backend requirement using a pointer to another functor object
@@ -511,18 +523,17 @@ namespace Gambit
                                                  str result_type,
                                                  str origin_name,
                                                  Models::ModelFunctorClaw &claw)
-    : functor                 (func_name, func_capability, result_type, origin_name, claw),
-      runtime_average         (FUNCTORS_RUNTIME_INIT),           // default 1 micro second
-      fadeRate                (FUNCTORS_FADE_RATE),              // can be set individually for each functor
-      pInvalidation           (FUNCTORS_BASE_INVALIDATION_RATE),
-      iCanManageLoops         (false),
-      iRunNested              (false),
-      myLoopManagerCapability ("none"),
-      myLoopManagerName       ("none"),
-      myLoopManagerOrigin     ("none"),
-      myCurrentIteration      (NULL),
-      globlMaxThreads         (omp_get_max_threads()),
-      myLogTag                (-1)
+    : functor                  (func_name, func_capability, result_type, origin_name, claw),
+      runtime_average          (FUNCTORS_RUNTIME_INIT),           // default 1 micro second
+      fadeRate                 (FUNCTORS_FADE_RATE),              // can be set individually for each functor
+      pInvalidation            (FUNCTORS_BASE_INVALIDATION_RATE),
+      iCanManageLoops          (false),
+      iRunNested               (false),
+      myLoopManagerCapability  ("none"),
+      myLoopManager            (NULL),
+      myCurrentIteration       (NULL),
+      globlMaxThreads          (omp_get_max_threads()),
+      myLogTag                 (-1)
     {
       if (globlMaxThreads == 0) utils_error().raise(LOCAL_INFO,"Cannot determine number of hardware threads available on this system.");
 
@@ -560,6 +571,7 @@ namespace Gambit
     void module_functor_common::reset()
     {
       needs_recalculating = true;
+      if (iCanManageLoops) resetLoop();
     }
 
     /// Tell the functor that it invalidated the current point in model space, pass a message explaining why, and throw an exception.
@@ -627,6 +639,38 @@ namespace Gambit
       std::fill(myCurrentIteration, myCurrentIteration+nslots, 0); // Zero them to start off
     }
 
+    /// Tell the manager of the loop in which this functor runs that it is time to break the loop.
+    void module_functor_common::breakLoopFromManagedFunctor()
+    {
+      if (myLoopManager == NULL)
+      {
+        str errmsg = "Problem whilst attempting to break out of loop:";
+        errmsg +=  "\n Loop Manager not properly defined." 
+                   "\n This is " + this->name() + " in " + this->origin() + ".";
+        utils_error().raise(LOCAL_INFO,errmsg); //FIXME this seems to cause a crash if it is ever triggered -- why??
+      }
+      else
+      {
+        myLoopManager->breakLoop();
+      }
+    }
+
+    /// Tell the functor that the loop it manages should break now.
+    void module_functor_common::breakLoop() { myLoopIsDone = true; }
+
+    /// Return a safe pointer to the flag indicating that a loop managed by this functor should break now.
+    safe_ptr<bool> module_functor_common::loopIsDone() 
+    {
+      if (this == NULL) functor::failBigTime("loopIsDone");
+      return safe_ptr<bool>(&myLoopIsDone); 
+    }
+
+    /// Provide a way to reset the flag indicating that a loop managed by this functor should break.
+    void module_functor_common::resetLoop() 
+    {
+      myLoopIsDone = false;
+    }
+
     /// Setter for setting the iteration number in the loop in which this functor runs
     void module_functor_common::setIteration (int iteration)
     {
@@ -652,9 +696,9 @@ namespace Gambit
     /// Getter for revealing the required capability of the wrapped function's loop manager
     str module_functor_common::loopManagerCapability() { if (this == NULL) failBigTime("loopManagerCapability"); return myLoopManagerCapability; }
     /// Getter for revealing the name of the wrapped function's assigned loop manager
-    str module_functor_common::loopManagerName() { if (this == NULL) failBigTime("loopManagerName"); return myLoopManagerName; }
+    str module_functor_common::loopManagerName() { if (this == NULL) failBigTime("loopManagerName"); return (myLoopManager == NULL ? "none" : myLoopManager->name()); }
     /// Getter for revealing the module of the wrapped function's assigned loop manager
-    str module_functor_common::loopManagerOrigin() { if (this == NULL) failBigTime("loopManagerOrigin"); return myLoopManagerOrigin; }
+    str module_functor_common::loopManagerOrigin() { if (this == NULL) failBigTime("loopManagerOrigin"); return (myLoopManager == NULL ? "none" : myLoopManager->origin()); }
 
     /// Getter for listing currently activated dependencies
     std::vector<sspair> module_functor_common::dependencies() { return myDependencies; }
@@ -1099,13 +1143,21 @@ namespace Gambit
         if (dependency_map.find(key) != dependency_map.end()) (*dependency_map[key])(dep_functor,this);
         // propagate purpose from next to next-to-output nodes
         dep_functor->setPurpose(this->myPurpose);
-        // save the identity of this functor's loop manager (if it has one)
-        if (dep_functor->capability() == myLoopManagerCapability and dep_functor->canBeLoopManager()) 
-        { 
-          myLoopManagerName = dep_functor->name();
-          myLoopManagerOrigin = dep_functor->origin();
-        }
       }
+    }
+
+    // Set this functor's loop manager (if it has one)
+    void module_functor_common::resolveLoopManager (functor* dep_functor)
+    { 
+      if (dep_functor->capability() != myLoopManagerCapability or not dep_functor->canBeLoopManager()) 
+      {                                                                      
+        sspair key (dep_functor->quantity());
+        str errmsg = "Cannot set loop manager for nested functor:";
+        errmsg +=  "\nFunction " + myName + " in " + myOrigin + " does not need a loop manager with"
+                   "\ncapability " + key.first + ".";
+        utils_error().raise(LOCAL_INFO,errmsg);
+      }
+      myLoopManager = dep_functor;
     }
 
     /// Resolve a backend requirement using a pointer to another functor object
