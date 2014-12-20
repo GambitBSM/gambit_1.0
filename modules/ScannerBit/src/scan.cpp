@@ -33,12 +33,12 @@ namespace Gambit
 {
         namespace Scanner
         {
-                inline YAML::Node combineNodes(const std::map<std::string, YAML::Node> &nodesMap, const YAML::Node &node = YAML::Node())
+                inline YAML::Node combineNodes(const std::map<std::string, YAML::Node> &nodesMap, const YAML::Node &node)
                 {
                         std::stringstream ss;
                         
-                        if (!node.IsNull())
-                                ss << node << std::endl;
+                        //if (!node.IsNull())
+                        //        ss << node << std::endl;
                         
                         for (auto it = nodesMap.begin(), end = nodesMap.end(); it != end; it++)
                         {
@@ -47,14 +47,21 @@ namespace Gambit
                                 {
                                         ss << it->second.Scalar() << std::endl;
                                 }
-                                else
+                                else if (it->second.IsMap())
                                 {
                                         std::stringstream ssNode;
                                         ssNode << it->second << std::endl;
                                         std::string temp;
                                         ss << std::endl;
+                                        std::string::size_type pos;
                                         while (std::getline(ssNode, temp))
+                                        {
                                                 ss << "  " << temp << std::endl;
+                                        }
+                                }
+                                else
+                                {
+                                        ss << std::endl;
                                 }
                         }
                         
@@ -83,10 +90,8 @@ namespace Gambit
                                 }
                                 else
                                 {
-                                        std::stringstream ss;
-                                        ss << "Plugin name is not defined under the \"" << *it << "\" tag.  "
-                                                << "using the tag \"" << *it << "\" as the plugin name." << std::endl;
-                                        scan_warning().raise(LOCAL_INFO, ss.str());
+                                        scan_warn << "Plugin name is not defined under the \"" << *it << "\" tag.  "
+                                                << "using the tag \"" << *it << "\" as the plugin name." << scan_end;
                                         temp.plugin = *it;
                                 }
                                 if (options.hasKey("plugins", *it, "version"))
@@ -118,21 +123,17 @@ namespace Gambit
                                                         {
                                                                 if (options.hasKey("parameters") && options.hasKey("parameters", *it))
                                                                 {
-                                                                        std::stringstream ss;
-                                                                        ss << "Plugin \"" << *it << "\"'s parameters are defined in "
+                                                                        scan_err << "Plugin \"" << *it << "\"'s parameters are defined in "
                                                                                 << "both the \"parameters\" section and the \"plugins\" "
-                                                                                << "section in the inifile." << std::endl;
-                                                                        scan_error().raise(LOCAL_INFO, ss.str());
+                                                                                << "section in the inifile." << scan_end;
                                                                 }
                                                                 nodes[*it] = options.getNode("plugins", *it, "parameters");
                                                         }
                                                 }
                                                 else
                                                 {
-                                                        std::stringstream ss;
-                                                        ss << "Plugin \"" << *it << "\" (requested by \"use_likelihood_plugins:\") "
-                                                                << "is not defined under the \"plugins\" subsection in the inifile" << std::endl;
-                                                        scan_error().raise(LOCAL_INFO, ss.str());
+                                                        scan_err << "Plugin \"" << *it << "\" (requested by \"use_likelihood_plugins:\") "
+                                                                << "is not defined under the \"plugins\" subsection in the inifile" << scan_end;
                                                 }
                                         }
                                 }
@@ -148,28 +149,22 @@ namespace Gambit
                                                 {
                                                         if (options.hasKey("parameters") && options.hasKey("parameters", plug))
                                                         {
-                                                                std::stringstream ss;
-                                                                ss << "Plugin \"" << plug << "\"'s parameters are defined in "
+                                                                scan_err << "Plugin \"" << plug << "\"'s parameters are defined in "
                                                                         << "both the \"parameters\" section and the \"plugins\" "
-                                                                        << "section in the inifile." << std::endl;
-                                                                scan_error().raise(LOCAL_INFO, ss.str());
+                                                                        << "section in the inifile." << scan_end;
                                                         }
                                                         nodes[plug] = options.getNode("plugins", plug, "parameters");
                                                 }
                                         }
                                         else
                                         {
-                                                std::stringstream ss;
-                                                ss << "Plugin \"" << plug << "\" (requested by \"use_likelihood_plugins:\") is not "
-                                                        << "defined under the \"plugins\" subsection in the inifile" << std::endl;
-                                                scan_error().raise(LOCAL_INFO, ss.str());
+                                                scan_err << "Plugin \"" << plug << "\" (requested by \"use_likelihood_plugins:\") is not "
+                                                        << "defined under the \"plugins\" subsection in the inifile" << scan_end;
                                         }
                                 }
                                 else
                                 {
-                                        std::stringstream ss;
-                                        ss << "\"use_likelihood_plugins:\" input value not usable in the inifile." << std::endl;
-                                        scan_error().raise(LOCAL_INFO, ss.str());
+                                        scan_err << "\"use_likelihood_plugins:\" input value not usable in the inifile." << scan_end;
                                 }
                                 
                                 if (interfaces.size() > 0)
@@ -192,7 +187,7 @@ namespace Gambit
                                         {
                                                 if (nodes.size() > 0)
                                                 {
-                                                        paramNode = combineNodes(nodes);
+                                                        paramNode = combineNodes(nodes, YAML::Node());
                                                 }
                                         }
                                         
@@ -230,17 +225,13 @@ namespace Gambit
                                 }
                                 else
                                 {
-                                        std::stringstream ss;
-                                        ss << "Plugin \"" << pluginName << "\" (requested by \"use_scanner_plugin:\") is not defined under the \"plugins\""
-                                                << " subsection in the inifile" << std::endl;
-                                        scan_error().raise(LOCAL_INFO, ss.str());
+                                        scan_err << "Plugin \"" << pluginName << "\" (requested by \"use_scanner_plugin:\") is not defined under the \"plugins\""
+                                                << " subsection in the inifile" << scan_end;
                                 }
                         }
                         else
                         {
-                                std::stringstream ss;
-                                ss << "\"use_scanner_plugin:\" input value not usable in the inifile." << std::endl;
-                                scan_error().raise(LOCAL_INFO, ss.str());
+                                scan_err << "\"use_scanner_plugin:\" input value not usable in the inifile." << scan_end;
                         }
 
                         Gambit::Scanner::IniFileInterface interface(pluginName, plugin, options.getOptions("plugins", pluginName));

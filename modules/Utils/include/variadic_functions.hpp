@@ -127,6 +127,11 @@ namespace Gambit
         //Variadic Node functions
         //////////////////////////////////////
         
+        inline const YAML::Node getVariadicNode(const YAML::Node &node)
+        {
+                return node;
+        }
+        
         inline const YAML::Node getVariadicNode(const YAML::Node &node, std::string key) 
         {
                 return node[key];

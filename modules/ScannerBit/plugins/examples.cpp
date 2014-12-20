@@ -29,6 +29,7 @@ function_plugin(uniform, version(1,0,0))
         double plugin_main (const std::vector<double> &vec)
         {
 //                 std::vector<std::string> &keys     = get_keys();
+//                 std::cout << "unform info:" <<std::endl;
 //                 std::vector<double> params = prior_transform(vec);
 //                 std::cout << "param = " << get_inifile_value<int>("some_param") << std::endl;
 //                 std::cout << "dim = " << params.size() << std::endl;

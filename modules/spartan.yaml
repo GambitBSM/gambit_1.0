@@ -106,9 +106,7 @@ Scanner:
       options:
         some_param: 10
       parameters:
-        default_params:
-          default_number: 2
-          default_prefix: params
+        param...2:
           range: [-10, 10]
           
     square_grid:

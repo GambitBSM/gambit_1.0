@@ -127,9 +127,7 @@ Scanner:
     uniform:
       plugin: uniform
       parameters:
-        0:
-          range: [-1, 1]
-        1:
+        param...2:
           range: [-1, 1]
           
     square_grid:

@@ -55,6 +55,39 @@ namespace Gambit
  
         namespace Priors 
         {
+                inline std::vector<std::string> expand_dots(const std::vector<std::string> &param_names_in)
+                {
+                        std::vector<std::string> param_names = param_names_in;
+                        
+                        for (int i = 0, end = param_names.size(); i < end; i++)
+                        {
+                                if (param_names[i].find("...") != std::string::npos)
+                                {
+                                        auto p_it = param_names.begin() + i;
+                                        std::string::size_type pos = p_it->find("...");
+                                        std::string prefix = p_it->substr(0, pos) + "_";
+                                        std::stringstream ss(p_it->substr(pos+3));
+                                        int N = 0;
+                                        if (bool(ss >> N) && N >0)
+                                        {
+                                                p_it = param_names.erase(p_it);
+                                                std::vector<std::string> temps;
+                                                
+                                                for (int j = 0; j < N; j++)
+                                                {
+                                                        std::stringstream ss;
+                                                        ss << j;
+                                                        temps.push_back(prefix + ss.str());
+                                                }
+                                                
+                                                param_names.insert(p_it, temps.begin(), temps.end());
+                                                i += N - 1;
+                                        }
+                                }
+                        }
+                        
+                        return param_names;
+                }
                 /// Special "build-a-prior" classi
                 // Combines prior objects together, so that the Scanner can deal with just one object in a standard way.
                 // This is the class to use for setting simple 1D priors (from the library above) on individual parameters.
@@ -77,44 +110,36 @@ namespace Gambit
                                 std::string &mod = *mod_it;
                                 std::vector <std::string> parameterNames = model_options.getNames(mod);
                                 
-                                int default_N = 0;
+                                int default_N = 0, default_i = 0;
                                 bool isDefault = false;
                                 std::string default_prefix;
+                                std::string::size_type par_pos;
                                 
                                 for (auto par_it = parameterNames.begin(), par_end = parameterNames.end(); par_it != par_end; par_it++)
                                 {//loop over iniFile parameters
-                                        std::string &par_options = *par_it;
+                                        Options par_options;
                                         std::string par_name;
+                                        if (!model_options.getNode(mod, *par_it).IsScalar())
+                                                par_options = Options(model_options.getNode(mod, *par_it));
                                         
-                                        if (!isDefault && *par_it == "default_params")
+                                        par_pos = par_it->find("...");
+                                        if (!isDefault && par_pos != std::string::npos)
                                         {
+                                                std::stringstream ss(par_it->substr(par_pos + 3));
                                                 isDefault = true;
-                                                if (model_options.hasKey(mod, par_options, "default_number"))
+                                                if (bool(ss >> default_N) && default_N > 0)
                                                 {
-                                                        default_N = model_options.getValue<int>(mod, par_options, "default_number");
-                                                }
-                                                else
-                                                {
-                                                        default_N = 1;
-                                                }
-                                                
-                                                if (model_options.hasKey(mod, par_options, "default_prefix"))
-                                                {
-                                                        default_prefix = model_options.getValue<std::string>(mod, par_options, "default_prefix") + "_";
-                                                }
-                                                else
-                                                {
-                                                        default_prefix = "";
+                                                        isDefault = true;
+                                                        default_prefix = par_it->substr(0, par_pos) + "_";
+                                                        default_i = 0;
                                                 }
                                         }
                                         
                                         if (isDefault)
                                         {
-                                                default_N--;
                                                 std::stringstream ss;
-                                                ss << default_N;
-                                                ss >> par_name;
-                                                par_name = default_prefix + par_name;
+                                                ss << default_i++;
+                                                par_name = default_prefix + ss.str();
                                         }
                                         else
                                         {
@@ -123,9 +148,9 @@ namespace Gambit
                                         
                                         param_names.push_back(mod + std::string("::") + par_name);
                                         
-                                        if (model_options.hasKey(mod, par_options, "same_as"))
+                                        if (par_options.hasKey("same_as"))
                                         {
-                                                std::string connectedName = model_options.getValue<std::string>(mod, par_options, "same_as");
+                                                std::string connectedName = par_options.getValue<std::string>("same_as");
                                                 std::string::size_type pos = connectedName.rfind("::");
                                                 if (pos == std::string::npos)
                                                 {
@@ -134,18 +159,18 @@ namespace Gambit
                                                 
                                                 sameMap[mod + std::string("::") + par_name] = connectedName;
                                         }
-                                        else if (model_options.hasKey(mod, par_options, "fixed_value"))
+                                        else if (par_options.hasKey("fixed_value"))
                                         {
-                                                phantomPriors.push_back(new FixedPrior(mod + std::string("::") + par_name, model_options.getValue<double>(mod, par_options, "fixed_value")));
+                                                phantomPriors.push_back(new FixedPrior(mod + std::string("::") + par_name, par_options.getValue<double>("fixed_value")));
                                         }
                                         else   
                                         {
                                                 std::string joined_parname = mod + std::string("::") + par_name;
                                                 
-                                                if (model_options.hasKey(mod, par_options, "prior_type"))
+                                                if (par_options.hasKey("prior_type"))
                                                 {
-                                                        Options options = model_options.getOptions(mod, par_options);
-                                                        std::string priortype = model_options.getValue<std::string>(mod, par_options, "prior_type");
+                                                        Options options = par_options.getOptions();
+                                                        std::string priortype = par_options.getValue<std::string>("prior_type");
                                                         
                                                         if(priortype == "same_as")
                                                         {
@@ -174,10 +199,10 @@ namespace Gambit
                                                                 }
                                                         }
                                                 }
-                                                else if (model_options.hasKey(mod, par_options, "range"))
+                                                else if (par_options.hasKey("range"))
                                                 {
                                                         shown_param_names.push_back(joined_parname);
-                                                        std::pair<double, double> range = model_options.getValue< std::pair<double, double> >(mod, par_options, "range");
+                                                        std::pair<double, double> range = par_options.getValue< std::pair<double, double> >("range");
                                                         if (range.first > range.second)
                                                         {
                                                                 double temp = range.first;
@@ -196,7 +221,10 @@ namespace Gambit
                                         
                                         if (isDefault && default_N > 0)
                                         {
-                                                par_it--;
+                                                if (default_N > default_i)
+                                                        par_it--;
+                                                else
+                                                        isDefault = false;
                                         }
                                 }
                         }
@@ -210,7 +238,7 @@ namespace Gambit
                                 std::string &priorname = *priorname_it;
                                 if (prior_options.hasKey(priorname, "parameters") && prior_options.hasKey(priorname, "prior_type"))
                                 {
-                                        auto params = prior_options.getValue<std::vector<std::string>>(priorname, "parameters");
+                                        auto params = expand_dots(prior_options.getValue<std::vector<std::string>>(priorname, "parameters"));
                                         
                                         for (auto par_it = params.begin(), par_end = params.end(); par_it != par_end; par_it++)
                                         {
