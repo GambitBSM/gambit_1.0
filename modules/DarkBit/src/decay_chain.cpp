@@ -530,6 +530,9 @@ namespace Gambit
         }  
         double DecayTable::getWidth(const TH_Channel *ch)
         {
+            // Should be replaced by code getting the width from the particle
+            // properties table.
+            /*
             // Note: It is ESSENTIAL that the TH_Channel is a decay channel, or more precisely that dSigmadE is of type BFconstant.
             const shared_ptr<FunctionExpression<BaseFunction> > *ptr = &(ch->dSigmadE);
             const shared_ptr<BFconstant> BFc_ptr = (boost::dynamic_pointer_cast<BFconstant>(boost::dynamic_pointer_cast<BaseFunction>(*ptr)));
@@ -539,6 +542,7 @@ namespace Gambit
                 exit(1);
             }
             return BFc_ptr->value(vector<double>());
+            */
         }
         void DecayTable::printTable() const
         {
