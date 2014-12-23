@@ -197,7 +197,7 @@ START_MODULE
   #undef CAPABILITY    
 
   // Loop manager for cascade decays
-  /*
+  
   #define CAPABILITY cascadeMC_LoopManagement
   START_CAPABILITY
     #define FUNCTION cascadeMC_LoopManager
@@ -207,7 +207,7 @@ START_MODULE
       DEPENDENCY(cascadeMC_DecayTable, Gambit::DarkBit::DecayChain::DecayTable)
     #undef FUNCTION                                                       
   #undef CAPABILITY    
-  */
+  
   
   // Function selecting initial state for decay chain
   #define CAPABILITY cascadeMC_InitialState

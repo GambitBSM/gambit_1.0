@@ -115,18 +115,6 @@
       /* Let the module source know that this functor is declared*/            \
       namespace Functown { extern module_functor<TYPE> FUNCTION; }             \
                                                                                \
-      /* Set up a helper function to call the iterate method if the functor is \
-      able to manage loops. */                                                 \
-      namespace Functown                                                       \
-      {                                                                        \
-        BOOST_PP_IIF(BOOST_PP_EQUAL(CAN_MANAGE, 1),                            \
-          void CAT(FUNCTION,_iterate)(int it)                                  \
-          {                                                                    \
-            FUNCTION.iterate(it);                                              \
-          }                                                                    \
-        ,)                                                                     \
-      }                                                                        \
-                                                                               \
       namespace Pipes                                                          \
       {                                                                        \
         namespace FUNCTION                                                     \
@@ -142,8 +130,7 @@
             BOOST_PP_IIF(BOOST_PP_EQUAL(CAN_MANAGE, 1),                        \
               /* Create a pointer to the single iteration of the loop that can \
               be executed by this functor */                                   \
-              void (*executeIteration)(int) =                                  \
-               &Functown::CAT(FUNCTION,_iterate);                              \
+              extern void (*executeIteration)(int);                            \
               /* Declare a safe pointer to the flag indicating that a managed  \
               loop is ready for breaking. */                                   \
               extern safe_ptr<bool> done;                                      \

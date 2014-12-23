@@ -552,7 +552,7 @@ namespace Gambit {
         table = DecayTable(*Dep::TH_ProcessCatalog);
     }
     
-    /*
+    
     // Loop manager for cascade decays
     void cascadeMC_LoopManager()
     {
@@ -591,7 +591,7 @@ namespace Gambit {
         }
         Loop::executeIteration(MC_FINALIZE);
     }
-    */
+    
     
     // Function selecting initial state for decay chain
     void cascadeMC_InitialState(std::string &pID)

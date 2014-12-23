@@ -597,9 +597,9 @@
 /// Main parts of the functor creation
 #define MAKE_FUNCTOR_MAIN(FUNCTION,TYPE,CAPABILITY,ORIGIN,CAN_MANAGE)          \
                                                                                \
-  /* Create the function wrapper object (functor) */                           \
   namespace Functown                                                           \
   {                                                                            \
+    /* Create the function wrapper object (functor) */                         \
     BOOST_PP_IIF(IS_TYPE(ModelParameters,TYPE),                                \
       model_functor                                                            \
     ,                                                                          \
@@ -607,6 +607,11 @@
     )                                                                          \
     FUNCTION (&ORIGIN::FUNCTION, STRINGIFY(FUNCTION), STRINGIFY(CAPABILITY),   \
      STRINGIFY(TYPE), STRINGIFY(ORIGIN), Models::ModelDB());                   \
+    /* Set up a helper function to call the iterate method if the functor is   \
+    able to manage loops. */                                                   \
+    BOOST_PP_IIF(BOOST_PP_EQUAL(CAN_MANAGE, 1),                                \
+     void CAT(FUNCTION,_iterate)(int it) { FUNCTION.iterate(it); }             \
+    ,)                                                                         \
   }                                                                            \
                                                                                \
   namespace Pipes                                                              \
@@ -624,6 +629,9 @@
       BOOST_PP_IIF(CAN_MANAGE,                                                 \
        namespace Loop                                                          \
        {                                                                       \
+         /* Create a pointer to the single iteration of the loop that can      \
+         be executed by this functor */                                        \
+         void (*executeIteration)(int) = &Functown::CAT(FUNCTION,_iterate);    \
          /* Declare a safe pointer to the flag indicating that a managed loop  \
          is ready for breaking. */                                             \
          safe_ptr<bool> done;                                                  \
