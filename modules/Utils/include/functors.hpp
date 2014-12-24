@@ -321,7 +321,10 @@ namespace Gambit
       double getInvalidationRate();
 
       /// Setter for the fade rate 
-      void setFadeRate(double new_rate);
+      void setFadeRate(double);
+
+      /// Indicate whether or not a known model is activated or not.
+      bool getActiveModelFlag(str);
 
       /// Return a safe pointer to the vector of models that this functor is currently configured to run with.
       safe_ptr< std::vector<str> > getModels();
@@ -529,6 +532,9 @@ namespace Gambit
 
       /// Map from models to (vector of {conditional backend requirement-type} pairs)
       std::map< str, std::vector<sspair> > myModelConditionalBackendReqs;
+
+      /// Map from known models to flags indicating if they are activated or not (known = allowed, in allowed groups or conditions for conditional dependencies)
+      std::map<str, bool> activeModelFlags;
 
       /// Map from (dependency-type pairs) to (pointers to templated void functions 
       /// that set dependency functor pointers)

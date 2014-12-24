@@ -121,6 +121,9 @@
         {                                                                      \
           /* Declare the parameters safe-pointer map as external. */           \
           extern std::map<str, safe_ptr<double> > Param;                       \
+          /* Declare pointer to model-in-use function as external. */          \
+          BOOST_PP_IIF(IS_TYPE(ModelParameters,TYPE), ,                        \
+           extern bool (*ModelInUse)(str); )                                   \
           /* Declare the safe-pointer to the models vector as external. */     \
           extern safe_ptr< std::vector<str> > Models;                          \
           /* Declare the safe pointer to the run options as external. */       \
