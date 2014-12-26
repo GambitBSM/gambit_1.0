@@ -93,11 +93,14 @@ namespace Gambit
       logger() << "First model being scanned is: " << Models->at(0) << endl;
       logger() << "Is MSSM_demo being scanned? " << ModelInUse("MSSM_demo") << endl;
       logger() << "Is NormalDist being scanned? " << ModelInUse("NormalDist") << endl;;
-      logger() << "  Printing parameter values:" << endl;
-      logger() << "  M1: " << *Param["M1"] << endl;
-      logger() << "  M2: " << *Param["M2"] << endl;
-      logger() << "  M3: " << *Param["M3"] << endl;
-      logger() <<info<<EOM;
+      if (ModelInUse("MSSM_demo"))
+      {
+        logger() << "  Printing parameter values:" << endl;
+        logger() << "  M1: " << *Param["M1"] << endl;
+        logger() << "  M2: " << *Param["M2"] << endl;
+        logger() << "  M3: " << *Param["M3"] << endl;
+        logger() <<info<<EOM;
+      }
       result = 5.e10; 
     }
 

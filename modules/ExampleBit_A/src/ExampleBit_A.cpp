@@ -191,10 +191,14 @@ namespace Gambit
 
       double loglTotal = 0.;
 
+      logger() << "Is CMSSM_demo being scanned? " << ModelInUse("CMSSM_demo") << endl;
+      logger() << "Is NormalDist being scanned? " << ModelInUse("NormalDist") << endl;;
+      logger() << "Is SingletDM being scanned? "  << ModelInUse("SingletDM");;
+      logger() << info << EOM;
+
       // The loglikelihood value for the hypothesised parameters is then:
       for (int i=0; i <= N; ++i)
       {
-        //std::cout<<samples[i]<<*Param["mu"]<<*Param["sigma"]<<std::endl;
         if (ModelInUse("NormalDist")) loglTotal += logf(samples[i], *Param["mu"], *Param["sigma"]);
       }
 
