@@ -59,6 +59,7 @@
 #include "log.hpp"
 #include "backend_singleton.hpp"
 #include "claw_singleton.hpp"
+#include "safe_param_map.hpp"
 #ifndef STANDALONE
   #include "core_singleton.hpp"
 #endif
@@ -125,7 +126,7 @@
 
 /// Indicate that the current \link FUNCTION() FUNCTION\endlink may be used with a
 /// specific model \em MODEL, but only in combination with others given via ALLOW_MODEL_COMBINATION.
-#define ALLOWED_MODEL_ONLY_VIA_GROUPS(MODULE,FUNCTION,MODEL) CORE_ALLOWED_MODEL_ONLY_VIA_GROUPS(MODULE,FUNCTION,MODEL)
+#define ALLOWED_MODEL_DEPENDENCE(MODULE,FUNCTION,MODEL)   CORE_ALLOW_MODEL_DEPENDENCE(MODULE,FUNCTION,MODEL)
 
 /// Indicate that the current \link FUNCTION() FUNCTION\endlink may only be used with
 /// the specific model combination given, with other combinations passed in the same 
@@ -627,7 +628,7 @@
     {                                                                          \
       /* Create a map to hold pointers to all the model parameters accessible  \
       to this functor */                                                       \
-      std::map<str, safe_ptr<const double> > Param;                            \
+      Models::safe_param_map<safe_ptr<const double> > Param;              \
       /* Pointer to function indicating whether a given model is in use.*/     \
       BOOST_PP_IIF(IS_TYPE(ModelParameters,TYPE), ,                            \
        bool (*ModelInUse)(str) = &Functown::CAT(FUNCTION,_modelInUse); )       \
@@ -903,13 +904,13 @@
     CORE_ALLOW_MODEL(MODULE,FUNCTION,MODEL)                                    \
   }                                                                            \
 
-/// Redirection of ALLOW_MODEL_ONLY_VIA_GROUPS when invoked from within the core.
-#define CORE_ALLOWED_MODEL_ONLY_VIA_GROUPS(MODULE,FUNCTION,MODEL)              \
+/// Redirection of ALLOW_MODEL_DEPENDENCE when invoked from within the core.
+#define CORE_ALLOW_MODEL_DEPENDENCE(MODULE,FUNCTION,MODEL)                     \
                                                                                \
   IF_TOKEN_UNDEFINED(MODULE,FAIL("You must define MODULE before calling "      \
-   "ALLOW_MODEL(S)_ONLY_VIA_GROUPS."))                                         \
+   "ALLOW_MODEL_DEPENDENCE."))                                                 \
   IF_TOKEN_UNDEFINED(FUNCTION,FAIL("You must define FUNCTION before calling "  \
-   "ALLOW_MODEL(S)_ONLY_VIA_GROUPS. Please check the rollcall header for "     \
+   "ALLOW_MODEL_DEPENDENCE. Please check the rollcall header for "             \
    STRINGIFY(MODULE) "."))                                                     \
                                                                                \
   namespace Gambit                                                             \
@@ -984,19 +985,21 @@
           if (Pipes::FUNCTION::Param.find(it->first) ==                        \
               Pipes::FUNCTION::Param.end())                                    \
           { /* Add a safe pointer to the value of this parameter to the map*/  \
-            Pipes::FUNCTION::Param[it->first] =                                \
-             safe_ptr<const double>(&(parameterMap->at(it->first)));           \
+            Pipes::FUNCTION::Param.insert(                                     \
+             std::pair<str,safe_ptr<const double> >(it->first,                 \
+             safe_ptr<const double>(&(parameterMap->at(it->first))))           \
+            );                                                                 \
           }                                                                    \
           else                                                                 \
           { /* This parameter already exists in the map! Fail. */              \
-            str errmsg = "Problem in " STRINGIFY(MODULE) "::resolve_dependency,";\
-            errmsg +=    " for model " STRINGIFY(MODEL) " with function\n"       \
-                         STRINGIFY(FUNCTION) ".  Attempt was to resolve to\n" + \
-                         params_functor->name() + " in " +                     \
-                         params_functor->origin() + ".\nYou have tried to scan"\
-                         "two models simultaneously that have one or more\n"   \
-                         "parameters in common.\nProblem parameter: " +        \
-                         it->first;                                            \
+            str errmsg = "Problem in " STRINGIFY(MODULE) "::resolve_";         \
+            errmsg +=    "dependency, for model " STRINGIFY(MODEL)             \
+                         " with function\n" STRINGIFY(FUNCTION) ".  Attempt "  \
+                         "was to resolve to\n" + params_functor->name() +      \
+                         " in " + params_functor->origin()                     \
+                         + ".\nYou have tried to scan two models "             \
+                         "simultaneously that have one or more\n parameters "  \
+                         "in common.\nProblem parameter: " + it->first;        \
             utils_error().raise(LOCAL_INFO,errmsg);                            \
           }                                                                    \
         }                                                                      \

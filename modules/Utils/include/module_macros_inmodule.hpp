@@ -36,6 +36,7 @@
 #include "exceptions.hpp"
 #include "util_macros.hpp"
 #include "safety_bucket.hpp"
+#include "safe_param_map.hpp"
 #include "module_macros_common.hpp"
 
 /// \name Rollcall macros
@@ -54,8 +55,7 @@
 #define LONG_DEPENDENCY(MODULE, FUNCTION, DEP, TYPE)      MODULE_DEPENDENCY(DEP, TYPE, MODULE, FUNCTION)
 #define NEEDS_MANAGER_WITH_CAPABILITY(LOOPMAN)            MODULE_NEEDS_MANAGER_WITH_CAPABILITY(LOOPMAN)                                  
 #define ALLOWED_MODEL(MODULE,FUNCTION,MODEL)              MODULE_ALLOWED_MODEL(MODULE,FUNCTION,MODEL)
-#define ALLOWED_MODEL_ONLY_VIA_GROUPS(MODULE,FUNCTION,MODEL) \
-                                                          MODULE_ALLOWED_MODEL(MODULE,FUNCTION,MODEL) 
+#define ALLOWED_MODEL_DEPENDENCE(MODULE,FUNCTION,MODEL)   MODULE_ALLOWED_MODEL(MODULE,FUNCTION,MODEL) 
 #define LITTLEGUY_ALLOW_MODEL(PARAMETER,MODEL)            LITTLEGUY_ALLOWED_MODEL(PARAMETER,MODEL)
 #define ALLOW_MODEL_COMBINATION(...)                      DUMMYARG(__VA_ARGS__)
 #define MODEL_GROUP(GROUPNAME, GROUP)                     DUMMYARG(GROUPNAME, GROUP)
@@ -120,7 +120,7 @@
         namespace FUNCTION                                                     \
         {                                                                      \
           /* Declare the parameters safe-pointer map as external. */           \
-          extern std::map<str, safe_ptr<double> > Param;                       \
+          extern Models::safe_param_map<safe_ptr<double> > Param;              \
           /* Declare pointer to model-in-use function as external. */          \
           BOOST_PP_IIF(IS_TYPE(ModelParameters,TYPE), ,                        \
            extern bool (*ModelInUse)(str); )                                   \
