@@ -195,7 +195,7 @@ namespace Gambit
       for (int i=0; i <= N; ++i)
       {
         //std::cout<<samples[i]<<*Param["mu"]<<*Param["sigma"]<<std::endl;
-        loglTotal += logf(samples[i], *Param["mu"], *Param["sigma"]);
+        if (ModelInUse("NormalDist")) loglTotal += logf(samples[i], *Param["mu"], *Param["sigma"]);
       }
 
       result = loglTotal;

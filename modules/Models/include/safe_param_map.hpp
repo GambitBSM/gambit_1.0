@@ -41,7 +41,7 @@ namespace Gambit
           }
           catch(std::out_of_range)
           {
-            model_error().raise("call to [] operator of Param map in a module function.", "Requested parameter \""+key+"\" is not available. \n"
+            model_error().raise("call to [] operator of Param map in a module function", "Requested parameter \""+key+"\" is not available. \n"
                                 "Generally this happens because you have requested a parameter of a model that\n"
                                 "is not being scanned (check that you are using the ModelInUse() function), or\n"
                                 "because you have failed to declare the dependency on the model's parameters  \n"

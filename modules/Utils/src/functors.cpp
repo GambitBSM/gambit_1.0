@@ -609,10 +609,11 @@ namespace Gambit
       if (activeModelFlags.find(model) == activeModelFlags.end())
       {
         std::ostringstream ss;
-        ss << "Problem in getActiveModelFlag()." << endl
-           << "Requested model " << model << " is not one of my known models." << endl
-           << "I am " << myName << ", from " << myOrigin << "."; 
-        utils_error().raise(LOCAL_INFO,ss.str());
+        ss << "Problem with ModelInUse(\"" << model << "\")." << endl
+           << "This model is not known by " << myOrigin << "::" << myName << "." << endl
+           << "Please make sure that it has been mentioned in some context in the" << endl
+           << "rollcall header declaration of this function."; 
+        model_error().raise(LOCAL_INFO,ss.str());
       }
       return activeModelFlags.at(model);       
     }
@@ -1279,16 +1280,27 @@ namespace Gambit
       // Add the model to the internal list of models being scanned.
       myModels.push_back(model);
 
-      // Construct the list of known models. First get all the explicitly allowed models.
-      for (auto it = allowedModels.begin(); it != allowedModels.end(); ++it) { activeModelFlags[*it] = false; }
-      // Next get all the models in allowed groups
-      for (auto it = allowedGroupCombos.begin(); it != allowedGroupCombos.end(); ++it)
-      { for (auto jt = it->begin(); jt != it->end(); ++jt) { activeModelFlags[*jt] = false; } }
-      // Next get all the models mentioned in conditional dependencies and backend reqs
-      for (auto it = myModelConditionalDependencies.begin(); it != myModelConditionalDependencies.end(); ++it) { activeModelFlags[it->first] = false; }
-      for (auto it = myModelConditionalBackendReqs.begin();  it != myModelConditionalBackendReqs.end();  ++it) { activeModelFlags[it->first] = false; }
+      // Construct the list of known models only if it doesn't yet exist
+      if (activeModelFlags.empty()) 
+      {
+        // First get all the explicitly allowed models.
+        for (auto it = allowedModels.begin(); it != allowedModels.end(); ++it) { activeModelFlags[*it] = false; }
+        // Next get all the models in groups
+        for (auto it = modelGroups.begin(); it != modelGroups.end(); ++it)
+        { for (auto jt = it->second.begin(); jt != it->second.end(); ++jt) { activeModelFlags[*jt] = false; } }
+        // Next get all the models mentioned in conditional dependencies and backend reqs
+        for (auto it = myModelConditionalDependencies.begin(); it != myModelConditionalDependencies.end(); ++it) { activeModelFlags[it->first] = false; }
+        for (auto it = myModelConditionalBackendReqs.begin();  it != myModelConditionalBackendReqs.end();  ++it) { activeModelFlags[it->first] = false; }
+      }
 
-      // Now activate the flags for the models that are being used. TODO make this follow fulfillment of modelparameter deps (how?)
+      // Now activate the flags for the models that are being used.
+      for (auto it = activeModelFlags.begin(); it != activeModelFlags.end(); ++it)
+      {
+        if (myClaw->model_exists(it->first))
+        {
+          if (myClaw->downstream_of(model, it->first)) it->second = true;
+        } 
+      }
 
       // If this model fits any conditional dependencies (or descended from one that can be interpreted as one that fits any), then activate them.
       std::vector<sspair> deps_to_activate = model_conditional_dependencies(model);          
