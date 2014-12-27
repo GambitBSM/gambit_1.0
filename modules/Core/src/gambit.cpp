@@ -51,8 +51,7 @@ int main(int argc, char* argv[])
     Random::create_rng_engine(iniFile.getValueOrDef<str>("default", "rng"));
 
     // Determine selected model(s)
-    std::vector<std::string> selectedmodels = iniFile.getModelNames();
-    //cout << "Your selected models are: " << selectedmodels << endl;
+    std::set<str> selectedmodels = iniFile.getModelNames();
   
     // Activate "primary" model functors
     Core().registerActiveModelFunctors( Models::ModelDB().getPrimaryModelFunctorsToActivate( selectedmodels, Core().getPrimaryModelFunctors() ) );

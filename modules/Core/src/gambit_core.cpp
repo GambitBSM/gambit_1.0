@@ -725,13 +725,13 @@ namespace Gambit
                 str t = (*jt)->type();
                 str islm = (*jt)->canBeLoopManager() ? "Yes" : "No ";
                 str nlm  = (*jt)->loopManagerCapability();
-                std::vector<sspair> deps = (*jt)->dependencies();
-                std::vector<sspair> reqs = (*jt)->backendreqs();
+                std::set<sspair> deps = (*jt)->dependencies();
+                std::set<sspair> reqs = (*jt)->backendreqs();
                 cout << f << spacing(f.length()-2,30) << c << spacing(c.length(),35);
                 cout << t << spacing(t.length(),35) << islm << "  " << nlm << spacing(nlm.length(),19);
                 if (not deps.empty())
                 {
-                  for (std::vector<sspair>::const_iterator kt = deps.begin(); kt != deps.end(); ++kt)
+                  for (std::set<sspair>::const_iterator kt = deps.begin(); kt != deps.end(); ++kt)
                   {
                     if (kt != deps.begin()) cout << std::string(146,' ');
                     cout << kt->first << "[" << kt->second << "]" << endl;
@@ -739,7 +739,7 @@ namespace Gambit
                 } 
                 if (not reqs.empty())
                 {
-                  for (std::vector<sspair>::const_iterator kt = reqs.begin(); kt != reqs.end(); ++kt)
+                  for (std::set<sspair>::const_iterator kt = reqs.begin(); kt != reqs.end(); ++kt)
                   {
                     if (kt != reqs.begin() or not deps.empty()) cout << std::string(146,' ');
                     cout << kt->first << "{" << kt->second << "}" << endl;
