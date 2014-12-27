@@ -618,13 +618,6 @@ namespace Gambit
       return activeModelFlags.at(model);       
     }
 
-    /// Return a safe pointer to the vector of models that this functor is currently configured to run with.
-    safe_ptr< std::vector<str> > module_functor_common::getModels()
-    {
-      if (this == NULL) functor::failBigTime("getModels");
-      return safe_ptr< std::vector<str> >(&myModels);       
-    }
-
     /// Return a safe pointer to a string indicating which backend requirement has been activated for a given backend group.
     safe_ptr<str> module_functor_common::getChosenReqFromGroup(str group)
     {
@@ -1277,9 +1270,6 @@ namespace Gambit
     /// Notify the functor that a certain model is being scanned, so that it can activate its dependencies and backend reqs accordingly.
     void module_functor_common::notifyOfModel(str model)
     {
-      // Add the model to the internal list of models being scanned.
-      myModels.push_back(model);
-
       // Construct the list of known models only if it doesn't yet exist
       if (activeModelFlags.empty()) 
       {

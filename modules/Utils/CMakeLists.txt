@@ -28,6 +28,7 @@ set(header_files include/SLHA_readers.hpp
                  include/static_members.hpp
                  include/stream_overloads.hpp
                  include/terminator.hpp
+                 include/threadsafe_rng.hpp
                  include/type_equivalency.hpp
                  include/type_index.hpp
                  include/type_macros.hpp

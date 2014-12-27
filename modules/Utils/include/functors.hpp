@@ -326,9 +326,6 @@ namespace Gambit
       /// Indicate whether or not a known model is activated or not.
       bool getActiveModelFlag(str);
 
-      /// Return a safe pointer to the vector of models that this functor is currently configured to run with.
-      safe_ptr< std::vector<str> > getModels();
-
       /// Return a safe pointer to a string indicating which backend requirement has been activated for a given backend group.
       safe_ptr<str> getChosenReqFromGroup(str);
 
@@ -479,9 +476,6 @@ namespace Gambit
 
       /// Probability that functors invalidates point in model parameter space
       double pInvalidation;
-
-      /// Internal list of models that this functor is currently configured to work with
-      std::vector<str> myModels;
 
       /// Flag indicating whether this function can manage a loop over other functions
       bool iCanManageLoops;

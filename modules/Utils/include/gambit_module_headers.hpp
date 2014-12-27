@@ -37,5 +37,6 @@
 #include "shared_types.hpp"
 #include "util_types.hpp"
 #include "util_functions.hpp"
+#include "threadsafe_rng.hpp"
 
 #endif /* defined(__gambit_module_headers_hpp__) */

@@ -47,6 +47,9 @@ int main(int argc, char* argv[])
     IniParser::IniFile iniFile;
     iniFile.readFile(filename);
  
+    // Initialise the random number generator, letting the RNG class choose its own default.
+    Random::create_rng_engine(iniFile.getValueOrDef<str>("default", "rng"));
+
     // Determine selected model(s)
     std::vector<std::string> selectedmodels = iniFile.getModelNames();
     //cout << "Your selected models are: " << selectedmodels << endl;
@@ -101,7 +104,7 @@ int main(int argc, char* argv[])
       //cout << "phantom keys = " << scanner->getPhantomKeys() << endl;
       logger() << core << "Starting scan." << EOM;
       scanner->Run(); 
- 
+
       cout << "GAMBIT has finished successfully!" << endl;
 
     }
@@ -117,6 +120,9 @@ int main(int argc, char* argv[])
     }
       
   }
+
+  // Free the memory held by the RNG
+  Random::delete_rng_engine();
 
   return 0;
 

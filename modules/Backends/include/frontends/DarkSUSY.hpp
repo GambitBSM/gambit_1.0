@@ -165,10 +165,7 @@ BE_INI_FUNCTION
     }
 
     // Check if model requires SLHA initialization
-    if( 
-            std::find(Models->begin(), Models->end(), "CMSSM_demo") != Models->end() or
-            std::find(Models->begin(), Models->end(), "MSSM25") != Models->end()
-      )
+    if (ModelInUse("CMSSM_demo") or ModelInUse("MSSM25"))
     {
         // Save eaSLHA file to disk
         eaSLHA mySLHA = *Dep::MSSMspectrum;
@@ -184,7 +181,7 @@ BE_INI_FUNCTION
         dsprep();
     }
 
-    if(std::find(Models->begin(), Models->end(), "CMSSM") != Models->end())
+    if (ModelInUse("CMSSM"))
     {
         // Setup mSUGRA model from CMSSM parameters
         double am0 = *Param["M0"];  // m0

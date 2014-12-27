@@ -215,6 +215,8 @@ KeyValues:
     subkey3:
       subsubkey1: value2
 
+  rng: ranlux48
+
   dependency_resolution:
     prefer_model_specific_functions: true
 

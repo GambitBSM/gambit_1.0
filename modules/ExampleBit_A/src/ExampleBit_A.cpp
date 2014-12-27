@@ -26,8 +26,6 @@
 
 #include <string>
 #include <iostream>
-#include <random>
-#include <chrono>
 #include <cmath>
 #include <functional>
 
@@ -40,14 +38,6 @@ namespace Gambit
   namespace ExampleBit_A
   {
     using namespace LogTags;
-
-    /// Local module declarations
-    /// Note that the stuff from <random> isn't actually guaranteed threadsafe, but it will do for an example.
-    /// @{
-    std::uniform_real_distribution<double> random_0to5(0.0, 5.0);
-    unsigned newseed = std::chrono::system_clock::now().time_since_epoch().count();
-    std::mt19937 twistor(newseed);
-    /// @}
 
     /// \name Helper functions
     /// Not wrapped in rollcall header.
@@ -86,7 +76,7 @@ namespace Gambit
     {
       result = (int) (*Pipes::nevents_int::Dep::nevents);
       // Randomly raise some ficticious alarms about this point in 10% of cases.
-      if (random_0to5(twistor) < 0.5)
+      if (Random::draw() < 0.1)
       {
         //Example of how to raise an error from a module function.
         ExampleBit_A_error().raise(LOCAL_INFO,"Damn, this integer event count is bad.");
@@ -255,7 +245,7 @@ namespace Gambit
     void exampleEventGen(singleprec &result)
     {
       using namespace Pipes::exampleEventGen;
-      result = random_0to5(twistor);                 // Generate and return the random number
+      result = Random::draw()*5.0;                 // Generate and return the random number
       #pragma omp critical (print)
       {
         cout<<"  Running exampleEventGen in iteration "<<*Loop::iteration<<endl;

@@ -90,7 +90,6 @@ namespace Gambit
       logger() << "In ExampleBit_B, function xsection." << endl;
       if (runOptions->hasKey("scale"))
        logger() << "Running at scale: " << runOptions->getValue<double>("scale") << " TeV." << endl;
-      logger() << "First model being scanned is: " << Models->at(0) << endl;
       logger() << "Is MSSM_demo being scanned? " << ModelInUse("MSSM_demo") << endl;
       logger() << "Is NormalDist being scanned? " << ModelInUse("NormalDist") << endl;;
       if (ModelInUse("MSSM_demo"))
