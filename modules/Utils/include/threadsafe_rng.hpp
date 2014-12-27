@@ -45,15 +45,7 @@
 #include <random>
 #include <chrono>
 
-#include "util_macros.hpp"
 #include "util_types.hpp"
-
-#include <boost/preprocessor/seq/for_each.hpp>
-#include <boost/preprocessor/tuple/to_seq.hpp>
-
-#define ALL_RNGS (default_random_engine, minstd_rand, minstd_rand0, mt19937, mt19937_64, ranlux24_base, ranlux48_base, ranlux24, ranlux48, knuth_b)
-#define MAKE_SPECIALISED_RNG(r, data, elem) else if (engine == STRINGIFY(elem)) local_rng = new Utils::specialised_threadsafe_rng<elem>;
-#define ENABLE_ALL_RNGS BOOST_PP_SEQ_FOR_EACH(MAKE_SPECIALISED_RNG, , BOOST_PP_TUPLE_TO_SEQ(ALL_RNGS))
 
 namespace Gambit
 {
@@ -125,19 +117,13 @@ namespace Gambit
     public:
 
       /// Choose the engine to use for random number generation, based on the contents of the ini file.
-      static void create_rng_engine(str engine)
-      { 
-        using namespace std;
-        if (engine == "default") local_rng = new Utils::specialised_threadsafe_rng<mt19937_64>;
-        ENABLE_ALL_RNGS
-        else utils_error().raise(LOCAL_INFO, "Unknown random number generation engine: "+engine+".  Please check your yaml file.");
-      }
+      static void create_rng_engine(str);
 
       /// Destroy the dynamically-declared RNG engine
-      static void delete_rng_engine() { delete local_rng; }
+      static void delete_rng_engine();
 
       /// Draw a single uniform random deviate using the chosen RNG engine
-      static double draw() { return (*local_rng)(); }
+      static double draw();
 
     private:
 

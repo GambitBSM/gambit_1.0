@@ -4,6 +4,7 @@ set(source_files src/equivalency_singleton.cpp
                  src/standalone_error_handlers.cpp
                  src/stream_overloads.cpp
                  src/terminator.cpp
+                 src/threadsafe_rng.cpp
                  src/type_equivalency.cpp
                  src/util_functions.cpp
                  src/ASCIItableReader.cpp
