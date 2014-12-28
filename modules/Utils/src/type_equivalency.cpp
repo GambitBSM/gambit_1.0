@@ -37,7 +37,7 @@ Gambit::Utils::type_equivalency::type_equivalency() :
     std::ostringstream msg;
     msg << "Could not read resolution type equivalency class file \""<<filename<<"\"!" << endl;
     msg << "Please check that file exists and contains valid YAML." << endl;
-    //msg << "("<<e.what()<<")";
+    msg << "("<<e.what()<<")";
     utils_error().raise(LOCAL_INFO,msg.str());
   }
   // Iterate over the entries in the configuration file and add them to the set of equivalency classes
