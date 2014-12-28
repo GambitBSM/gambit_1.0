@@ -42,7 +42,7 @@ add_gambit_library(sample OPTION SHARED SOURCES plugins/crapsample.cpp plugins/t
 target_link_libraries(sample ${yaml_LDFLAGS})
 
 add_gambit_library(scantest OPTION SHARED SOURCES plugins/examples.cpp)
-target_link_libraries(sample ${yaml_LDFLAGS})
+target_link_libraries(scantest ${yaml_LDFLAGS})
 
 set_target_properties( sample scantest
 PROPERTIES
