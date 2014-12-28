@@ -7,14 +7,16 @@ macro(retrieve_bits bits root excludes quiet)
   foreach(child ${children})
     if(IS_DIRECTORY ${root}/${child})
 
-      # Work out if this Bit should be excluded or not.
+      # Work out if this Bit should be excluded or not.  Never exclude ScannerBit.
       set(excluded "NO")
-      foreach(x ${excludes})
-        string(FIND ${child} ${x} location)
-        if(${location} EQUAL 0) 
-          set(excluded "YES")
-        endif()
-      endforeach()      
+      if(NOT ${child} STREQUAL "ScannerBit")
+        foreach(x ${excludes})
+          string(FIND ${child} ${x} location)
+          if(${location} EQUAL 0) 
+            set(excluded "YES")
+          endif()
+        endforeach()      
+      endif()
 
       # Exclude or add this bit.
       if(${excluded})
