@@ -1,0 +1,5 @@
+To build GAMBIT:
+  cd modules/
+  cmake .
+  make
+
