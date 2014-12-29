@@ -73,6 +73,8 @@
                                   MODULE_INTERPRET_AS_X__DEPENDENCY(MODEL_X, DEP, TYPE)
 #endif
 
+#pragma STRINGIFY(CAT("message  Creating model: ",START_MODEL)) 
+
 /// "in module" version of the START_MODEL macro
 #define MODULE_START_MODEL                                                     \
   IF_TOKEN_UNDEFINED(MODEL,FAIL("You must define MODEL before calling "        \
@@ -151,17 +153,18 @@
 
 /// Piggybacks off the CORE_START_MODULE_COMMON macro, as we need all the same 
 /// machinery.
-#define CORE_START_MODEL                                                       \
-  IF_TOKEN_UNDEFINED(MODEL,FAIL("You must define MODEL before calling "        \
-   "START_MODEL."))                                                            \
-  /* _Pragma("message creating model...") \
+  /* _Pragma("message creating model...")                                      \
   _Pragma( STRINGIFY(CAT("message  Creating model: ",MODEL)) )              */ \
+//  IF_TOKEN_UNDEFINED(MODEL,FAIL("You must define MODEL before calling "        \
+//   "START_MODEL."))                                                            \
+
+#define CORE_START_MODEL                                                       \
+                                                                               \
   namespace Gambit                                                             \
   {                                                                            \
-                                                                               \
-    ADD_TAG_IN_CURRENT_NAMESPACE(primary_parameters)                           \
-    ADD_TAG_IN_CURRENT_NAMESPACE(CAT(MODEL,_parameters))                       \
-    ADD_MODEL_TAG_IN_CURRENT_NAMESPACE(MODEL)                                  \
+    ADD_TAG_IN_CURRENT_NAMESPACE(primary_parameters)                          \
+    ADD_TAG_IN_CURRENT_NAMESPACE(CAT(MODEL,_parameters))                      \
+    ADD_MODEL_TAG_IN_CURRENT_NAMESPACE(MODEL)                                 \
                                                                                \
     namespace Models                                                           \
     {                                                                          \
@@ -171,12 +174,12 @@
                                                                                \
         /* Basic machinery, same as for modules                                \
            (macro from module_macros_incore.hpp) */                            \
-        CORE_START_MODULE_COMMON_MAIN(MODEL)                                   \
+        CORE_START_MODULE_COMMON_MAIN(MODEL)                                 \
                                                                                \
         /* Runtime addition of model to GAMBIT model database */               \
         void rt_add_model()                                                    \
         {                                                                      \
-          ModelDB().declare_model(STRINGIFY(MODEL), STRINGIFY(PARENT));        \
+          ModelDB().declare_model(STRINGIFY(MODEL), STRINGIFY(PARENT));         \
         }                                                                      \
                                                                                \
         namespace Ini                                                          \
@@ -205,7 +208,7 @@
       CORE_ALLOW_MODEL(MODEL,primary_parameters,MODEL)                         \
                                                                                \
     }                                                                          \
-  }                                                                            \
+  }                                                                           \
 
 /// Tells the core that the current parameter corresponds to the specified
 /// CAPABILITY, so that module functions can then draw upon them like any

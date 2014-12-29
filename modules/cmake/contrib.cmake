@@ -10,16 +10,43 @@ include_directories("${PROJECT_SOURCE_DIR}/contrib/mcutils/include")
 include_directories("${PROJECT_SOURCE_DIR}/contrib/heputils/include")
 
 #contrib/flexiblesusy
-include_directories("${PROJECT_SOURCE_DIR}/contrib/MassSpectra/flexiblesusy/src")
-include_directories("${PROJECT_SOURCE_DIR}/contrib/MassSpectra/flexiblesusy/config")
-include_directories("${PROJECT_SOURCE_DIR}/contrib/MassSpectra/flexiblesusy/legacy")
+set(FLEXIBLESUSY_DIR "${PROJECT_SOURCE_DIR}/contrib/MassSpectra/flexiblesusy")
+# We need to include some stuff from the eigen3 library... I'm not sure what the proper
+# way to do this is so for now I am just sticking the include in here
+set(EIGEN3_DIR "${PROJECT_SOURCE_DIR}/../extras/eigen3")
+include_directories("${EIGEN3_DIR}")
+# The flexiblesusy configure script doesn't find all the libraries needed to link to
+# lapack on my system, so I am using CMake to find them instead
+include(FindLAPACK)
+foreach(_LIB ${LAPACK_LIBRARIES})
+  set(LAPACK_LIBS "${LAPACK_LIBS} -L${_LIB}")
+endforeach(_LIB)
+message("Adding LAPACK paths to flexiblesusy build: ${LAPACK_LIBS}")
 
-set(MODELS CMSSM
-           MSSMatMGUT )
-
-foreach(model ${MODELS})
-  include_directories("${PROJECT_SOURCE_DIR}/contrib/MassSpectra/flexiblesusy/models/${model}")
-endforeach(model)
+# Set the models (spectrum generators) which exist in the flexiblesusy source (could
+# autogenerate this, but we'd end up building some stuff we don't need at the moment)
+set(BUILT_FS_MODELS CMSSM MSSMatMGUT)
+#message("-- Building FlexibleSUSY core object files")
+#ExternalProject_Add(flexiblesusy
+#  SOURCE_DIR ${FLEXIBLESUSY_DIR}
+#  BUILD_IN_SOURCE 1
+#  CONFIGURE_COMMAND ./configure --with-models=${_MODEL}
+#  BUILD_COMMAND make YAML_CC=${CMAKE_CXX_COMPILER} CFLAGS=${yaml_CXXFLAGS}
+#  INSTALL_COMMAND ""
+#  INSTALL_DIR ${CMAKE_BINARY_DIR}/install
+#  CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/install
+#)
+foreach(_MODEL ${BUILT_FS_MODELS})
+  ExternalProject_Add(flexiblesusy-${_MODEL}
+    SOURCE_DIR ${FLEXIBLESUSY_DIR}
+    BUILD_IN_SOURCE 1
+    CONFIGURE_COMMAND ./configure --with-models=${_MODEL} --with-eigen-incdir=${EIGEN3_DIR}
+    BUILD_COMMAND make LAPACKLIBS=${LAPACK_LIBS}
+    INSTALL_COMMAND ""
+    #INSTALL_DIR ${CMAKE_BINARY_DIR}/install
+    #CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/install
+  )
+endforeach()
 
 #contrib/yaml-cpp-0.5.1
 set(yaml_CXXFLAGS "${CMAKE_CXX_FLAGS}")

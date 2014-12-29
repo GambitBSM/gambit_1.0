@@ -214,6 +214,23 @@ foreach(bit ${GAMBIT_BITS})
   set(GAMBIT_BIT_OBJECTS ${GAMBIT_BIT_OBJECTS} "$<TARGET_OBJECTS:${bit}>")
 endforeach()
 
+# Ben: My attempt to add "SpecBit only" include targets
+target_include_directories(SpecBit PRIVATE
+                             ${FLEXIBLESUSY_DIR}/config
+                             ${FLEXIBLESUSY_DIR}/legacy
+                             ${FLEXIBLESUSY_DIR}/src)
+message("-- Adding FlexibleSUSY model headers to SpecBit include list")
+# Dig through flexiblesusy "models" directory and add all subdirectories to the include list
+# (these contain the headers for the generated spectrum generators)
+#file(GLOB _ALL_FILES ${FLEXIBLESUSY_DIR}/models ${FLEXIBLESUSY_DIR}/models/*)
+foreach(_MODEL ${BUILT_FS_MODELS})
+  #if(IS_DIRECTORY ${_FILE})
+    message("      ${_MODEL}")
+    target_include_directories(SpecBit PRIVATE ${FLEXIBLESUSY_DIR}/models/${_MODEL})
+  #endif()
+endforeach()
+
+
 # ensure that clean removes automatically-generated CMakeLists.txt files in modules
 foreach(bit ${GAMBIT_BITS})
   if(NOT ScannerBit STREQUAL ${bit})
