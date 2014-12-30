@@ -1,0 +1,168 @@
+Parameters:
+ # CMSSM:
+ #   A0:
+ #     range: [-1000, 1000]
+ #   M0:
+ #     prior_type: log
+ #     range: [0.001,1000]
+ #   M12:
+ #     same_as: CMSSM::M0
+ #   signmu:
+ #     range: [-1, 1]
+ #     fixed_value: 1
+ #   tanb:
+ #     fixed_value: 1
+  extraCMSSM:
+    #A0:
+    #  fixed_value: 100
+    M0:
+      fixed_value: 100
+    M12:
+      fixed_value: 100
+    signmu:
+      fixed_value: 1
+    tanb:
+      fixed_value: 3
+  
+Priors:
+
+Printer:
+  printer: ascii
+  options:
+    output_file: "runs/SpecBit_test/samples/gambit_output.txt"
+    info_file: "runs/SpecBit_test/samples/gambit_output.info"
+
+Scanner:
+  use_scanner_plugin: crapsample
+  
+  plugins:
+    crapsample:
+      plugin: crapsample
+      options:
+        point_number: 2
+        output_file:  output
+        like:  Likelihood
+
+
+ObsLikes:
+  - purpose:      Likelihood
+    capability:   specbit_tests1
+    type:         double
+    function:     specbit_test_func1
+
+  # Needs SLHAea object; so doesn't work yet
+  #- purpose:      Likelihood
+  #  capability:   specbit_tests2
+  #  type:         double
+  #  function:     specbit_test_func2
+
+  - purpose:      Likelihood
+    capability:   specbit_tests3
+    type:         double
+    function:     specbit_test_func3
+
+  - purpose:      Likelihood
+    capability:   dump_spectrum_slha
+    type:         double
+    function:     dump_spectrum
+
+
+Auxiliaries:
+  # - capability: particle_spectrum
+  #   dependencies:
+  #   #- {capability: particle_spectrum, function: make_test_spectrum}  
+  #   - {capability: particle_spectrum, function: get_MSSM_spectrum}  
+  #   options:
+  #     ewsb_loop_order: 2
+
+  # - capability: specbit_tests
+  #   dependencies:
+  #   #- {capability: particle_spectrum, function: make_test_spectrum}  
+  #   - {capability: particle_spectrum, function: MSSMSpec_to_Spectrum}  
+
+  ## ### Test CMSSM spectrum -----------
+  ## Needs 'prefer_model_specific' turned on
+  ## - capability: particle_spectrum 
+  ##   options:
+  ##     ewsb_loop_order: 2
+  ##   dependencies:
+  ##   - {capability: MSSM_parameters, module: CMSSM}
+  ##   - {capability: CMSSM_parameters, module: CMSSM} 
+
+  ## - capability: MSSM_parameters
+  ##   dependencies:
+  ##   - {capability: CMSSM_parameters, module: CMSSM}  
+
+  ## - capability: dump_spectrum_slha
+  ##   options:
+  ##     filename: "SpecBit/test_generic_dump.slha"
+  ## ### --------------------------------
+ 
+  ### Test GUTMSSMA spectrum ------
+
+  ##{ currently need to do these individually; inifile rules should simply this
+  - capability: specbit_tests1
+    dependencies:
+    - {capability: MSSM_spectrum, function: get_MSSMatMGUT_spectrum} #get_CMSSM_spectrum} 
+
+  #- capability: specbit_tests2 
+  #  dependencies:
+  #  - {capability: MSSM_spectrum, function: get_CMSSM_spectrum} #get_GUTMSSMA_spectrum} 
+
+  - capability: specbit_tests3
+    dependencies:
+    - {capability: MSSM_spectrum, function: get_MSSMatMGUT_spectrum} #get_CMSSM_spectrum} 
+
+  ##}
+
+  - capability: dump_spectrum_slha
+    options:
+      filename: "SpecBit/test_generic_dump_GUTMSSMA.slha"
+    #dependencies:
+    #- {capability: MSSM_spectrum, function: MSSMSpec_to_Spectrum} 
+
+  - capability: SM_spectrum
+    dependencies:
+    - {capability: MSSM_spectrum, function: get_MSSMatMGUT_spectrum} #get_CMSSM_spectrum} 
+
+  - capability: MSSM_spectrum 
+    options:
+      ewsb_loop_order: 2
+
+  #  dependencies:
+  #  - {capability: GUTMSSMA_parameters, module: GUTMSSMA} 
+
+  # - capability: MSSM_parameters
+  #   dependencies:
+  #   - {capability: GUTMSSMA_parameters, module: GUTMSSMA}  
+
+  ### --------------------------------
+ 
+  # - capability: GUTMSSMA_parameters
+  #   dependencies:
+  #   - {capability: CMSSM_parameters, module: CMSSM} 
+
+  #- capability: dump_spectrum_slha
+  #  options:
+  #    filename: "SpecBit/test_generic_dump.slha"
+  #   dependencies:
+  #   - {capability: particle_spectrum, function: MSSMSpec_to_Spectrum}  
+
+Logger:
+
+  prefix : "runs/SpecBit_test/logs/"
+  redirection:
+    [Debug] : "debug.log"
+    [Default] : "default.log"
+    [SpecBit] : "SpecBit.log"
+    [Dependency Resolver] : "dep_resolver.log"
+
+KeyValues:
+
+  dependency_resolution:
+    prefer_model_specific_functions: false
+    use_old_routines: true
+
+  likelihood:
+    model_invalid_for_lnlike_below: -1e6
+ 

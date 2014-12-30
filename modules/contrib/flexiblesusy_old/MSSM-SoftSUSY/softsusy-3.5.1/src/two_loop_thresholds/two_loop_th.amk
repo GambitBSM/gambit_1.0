@@ -1,0 +1,66 @@
+# library that stores all the calculation procedures for two-loop decoupling
+
+lib_LTLIBRARIES += lib2lthresh.la
+lib2lthresh_la_SOURCES = \
+src/two_loop_thresholds/gs_corrections.hpp \
+src/two_loop_thresholds/tquark_corrections.hpp \
+src/two_loop_thresholds/bquark_corrections.hpp \
+src/two_loop_thresholds/tau_corrections.hpp 
+
+nodist_lib2lthresh_la_SOURCES = \
+src/two_loop_thresholds/tau_corrections.cpp \
+src/two_loop_thresholds/gs_corrections.cpp \
+src/two_loop_thresholds/tquark_corrections.cpp \
+src/two_loop_thresholds/bquark_corrections.cpp 
+ 
+BUILT_SOURCES += \
+src/two_loop_thresholds/bquark_corrections.cpp \
+src/two_loop_thresholds/gs_corrections.cpp \
+src/two_loop_thresholds/tau_corrections.cpp \
+src/two_loop_thresholds/tquark_corrections.cpp 
+
+CLEANFILES += \
+src/two_loop_thresholds/tau_corrections.cpp \
+src/two_loop_thresholds/gs_corrections.cpp \
+src/two_loop_thresholds/tquark_corrections.cpp \
+src/two_loop_thresholds/bquark_corrections.cpp 
+
+EXTRA_DIST += \
+src/two_loop_thresholds/bquark_corrections.cpp.in \
+src/two_loop_thresholds/gs_corrections.cpp.in \
+src/two_loop_thresholds/tau_corrections.cpp.in \
+src/two_loop_thresholds/tquark_corrections.cpp.in 
+
+# data will be stored here
+th_datadir = $(abs_builddir)/src/two_loop_thresholds/two_loop_archives
+
+# data is located here 
+#th_data_DATA = \
+#$(addprefix src/two_loop_thresholds/two_loop_archives/, \
+#bquark_2loop_strong_dec.gar \
+#bquark_2loop_yukawa_dec.gar \
+#bquark_2loop_yukawa_dec.tad.gar \
+#gs_twoloop_dec.gar \
+#tau_dec_2.gar \
+#tquark_2loop_strong_pole.gar)
+
+# distribute data
+dist_data_DATA = \
+$(addprefix src/two_loop_thresholds/two_loop_archives/, \
+bquark_2loop_strong_dec.gar \
+bquark_2loop_yukawa_dec.gar \
+bquark_2loop_yukawa_dec.tad.gar \
+gs_twoloop_dec.gar \
+tau_dec_2.gar \
+tquark_2loop_strong_pole.gar)
+
+%.cpp : %.cpp.in
+	sed -e 's,\@th_datadir\@,$(th_datadir),g' $< > $@
+
+pkginclude_HEADERS += \
+src/two_loop_thresholds/dec_cor_helper.hpp \
+src/two_loop_thresholds/twoloopbubble.hpp \
+src/two_loop_thresholds/gs_corrections.hpp \
+src/two_loop_thresholds/tquark_corrections.hpp \
+src/two_loop_thresholds/bquark_corrections.hpp \
+src/two_loop_thresholds/tau_corrections.hpp 

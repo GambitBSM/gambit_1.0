@@ -1,0 +1,40 @@
+TESTOUTPUT = inOutFiles/slha2Output inOutFiles/lesHouchesOutput inOutFiles/rpvHouchesOutput \
+inOutFiles/nmssmSLHAZ3Output inOutFiles/nmssmSLHAnoZ3Output inOutFiles/lesHouchesOutput
+
+INPUTFILES = inOutFiles/slha2Input inOutFiles/rpvHouchesInput \
+inOutFiles/nmssmSLHAZ3Input inOutFiles/nmssmSLHAnoZ3Input \
+inOutFiles/lesHouchesInput 
+OUTPUTFILES = $(TESTOUTPUT) inOutFiles/neutOutputTest inOutFiles/rpvOutputTest \
+inOutFiles/outputTest inOutFiles/outputTest-nmssm
+
+inOutFiles/%Output : inOutFiles/%Input softpoint.x 
+	$(install_sh) -d inOutFiles
+	./softpoint.x leshouches < $< > $@
+
+inOutFiles/outputTest: softsusy.x
+	$(install_sh) -d inOutFiles
+	./softsusy.x > inOutFiles/outputTest
+
+inOutFiles/outputTest-nmssm: softsusy-nmssm.x
+	$(install_sh) -d inOutFiles
+	./softsusy-nmssm.x > inOutFiles/outputTest-nmssm
+
+inOutFiles/rpvOutputTest: rpvsoftsusy.x
+	$(install_sh) -d inOutFiles
+	./rpvsoftsusy.x > inOutFiles/rpvOutputTest
+
+inOutFiles/neutOutputTest: rpvneut.x
+	$(install_sh) -d inOutFiles
+	./rpvneut.x > inOutFiles/neutOutputTest
+
+test:   softpoint.x
+	git checkout $(TESTOUTPUT)
+	cp $(TESTOUTPUT) .test; rm $(TESTOUTPUT); make $(TESTOUTPUT); \
+	ndiff --relative-error 1.0e-3 inOutFiles/lesHouchesOutput .test/lesHouchesOutput; 
+	ndiff --relative-error 1.0e-3 inOutFiles/slha2Output .test/slha2Output; \
+	ndiff --relative-error 1.0e-3 inOutFiles/rpvHouchesOutput .test/rpvHouchesOutput; \
+	ndiff --relative-error 1.0e-3 inOutFiles/nmssmSLHAZ3Output .test/nmssmSLHAZ3Output; \
+	ndiff --relative-error 1.0e-3 inOutFiles/nmssmSLHAnoZ3Output .test/nmssmSLHAnoZ3Output
+
+dist_pkgdata_DATA += $(INPUTFILES) $(OUTPUTFILES) 
+

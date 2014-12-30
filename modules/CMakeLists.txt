@@ -118,6 +118,8 @@ if(Boost_FOUND)
   if (NOT Boost_INCLUDE_DIR STREQUAL "")
     include_directories("${Boost_INCLUDE_DIR}")
   endif()
+   # Ben> I had a need to create directories in the logging system, and boost_filesystem seemed the most portable option. However, it is not a header-only library, so we need to link to it now, and also to boost_system which it apparently depends on.
+  set(BOOST_LDFLAGS -lboost_system -lboost_filesystem)
 endif()
 
 # check for OpenMP
@@ -148,7 +150,7 @@ set(MODULE_HARVESTER ${PROJECT_SOURCE_DIR}/Utils/scripts/module_harvester.py)
 # create all_functor_types.hpp, module_rollcall.hpp, module_types_rollcall.hpp, models_rollcall.hpp, 
 # model_types_rollcall.hpp, backend_rollcall.hpp and backend_types_rollcall.hpp
 string (REPLACE ";" "," itch_with_commas "${itch}")
-file(GLOB MODEL_HARVESTER_FILES   "${PROJECT_SOURCE_DIR}/Models/include/models/*.hpp")
+file(GLOB MODEL_HARVESTER_FILES   "${PROJECT_SOURCE_DIR}/Models/models/*.hpp")
 file(GLOB BACKEND_HARVESTER_FILES "${PROJECT_SOURCE_DIR}/Backends/include/frontends/*.hpp")
 file(GLOB MODULE_HARVESTER_FILES  "${PROJECT_SOURCE_DIR}/*Bit*/include/*_rollcall.hpp")
 list(REMOVE_ITEM MODULE_HARVESTER_FILES "${PROJECT_SOURCE_DIR}/ScannerBit//include//priors_rollcall.hpp" 
@@ -214,11 +216,31 @@ add_subdirectory(Core)
 add_subdirectory(Printers)
 set(GAMBIT_OBJECTS $<TARGET_OBJECTS:Core> $<TARGET_OBJECTS:Printers>)
 
+# Ben: this seems a little hacky but I couldn't figure out where else to put it:
+include_directories("${PROJECT_SOURCE_DIR}/Models/models")
+
 # set compilation targets for GAMBIT modules
 foreach(bit ${GAMBIT_BITS})
   add_subdirectory(${bit})
   set(GAMBIT_BIT_OBJECTS ${GAMBIT_BIT_OBJECTS} "$<TARGET_OBJECTS:${bit}>")
 endforeach()
+
+# Ben: My attempt to add "SpecBit only" include targets
+target_include_directories(SpecBit PRIVATE
+                             ${FLEXIBLESUSY_DIR}/config
+                             ${FLEXIBLESUSY_DIR}/legacy
+                             ${FLEXIBLESUSY_DIR}/src)
+message("-- Adding FlexibleSUSY model headers to SpecBit include list")
+# Dig through flexiblesusy "models" directory and add all subdirectories to the include list
+# (these contain the headers for the generated spectrum generators)
+#file(GLOB _ALL_FILES ${FLEXIBLESUSY_DIR}/models ${FLEXIBLESUSY_DIR}/models/*)
+foreach(_MODEL ${BUILT_FS_MODELS})
+  #if(IS_DIRECTORY ${_FILE})
+    message("      ${_MODEL}")
+    target_include_directories(SpecBit PRIVATE ${FLEXIBLESUSY_DIR}/models/${_MODEL})
+  #endif()
+endforeach()
+
 
 # ensure that clean removes automatically-generated CMakeLists.txt files in modules
 foreach(bit ${GAMBIT_BITS})

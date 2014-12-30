@@ -12,7 +12,12 @@
 ///  \author Pat Scott
 ///  \date 2014 Jan, Feb
 ///
+///  \author Ben Farmer
+///  \date 2014 Dec
+///
 ///  *********************************************
+
+#include <boost/filesystem.hpp>
 
 #include "standalone_module.hpp"
 #include "ExampleBit_A_rollcall.hpp"
@@ -58,7 +63,11 @@ int main()
     
     // Define where the logs will end up
     std::string prefix("runs/ExampleBit_A_standalone/logs/");
-  
+    
+    // Ensure that the above directory exists
+    boost::filesystem::path dir(prefix);
+    if(!(boost::filesystem::exists(dir))) boost::filesystem::create_directories(dir);
+ 
     // Add entries to the loggerinfo map
     loggerinfo["Core, Error"] = prefix+"core_errors.log";
     loggerinfo["Default"]     = prefix+"default.log";
