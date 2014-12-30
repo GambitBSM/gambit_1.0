@@ -66,24 +66,34 @@ find_library(flexiblesusy-core
    NAMES flexisusy
    HINTS "${FLEXIBLESUSY_DIR}/src"
 )
-if(flexiblesusy-core) #FOUND
-  message(" -- Found flexiblesusy library: ${flexiblesusy-core}")
-  set(flexiblesusy_LIBRARIES ${flexiblesusy_LIBRARIES} ${flexiblesusy-core}) 
-else()                     #NOTFOUND
-  set(flexiblesusy_LIBRARIES_MISSING true)
-  set(missing_FS_LIBS "${missing_FS_LIBS} libflexisusy;")
-endif()
 find_library(flexiblesusy-legacy
    NAMES legacy
    HINTS "${FLEXIBLESUSY_DIR}/legacy"
 )
-if(flexiblesusy-legacy) #FOUND
+if(flexiblesusy-core AND flexiblesusy-legacy) #FOUND
+  message(" -- Found flexiblesusy library: ${flexiblesusy-core}")
   message(" -- Found flexiblesusy library: ${flexiblesusy-legacy}")
-  set(flexiblesusy_LIBRARIES ${flexiblesusy_LIBRARIES} ${flexiblesusy-legacy}) 
+  set(flexiblesusy_LIBRARIES ${flexiblesusy_LIBRARIES} ${flexiblesusy-core} ${flexiblesusy-legacy}) 
 else()                     #NOTFOUND
   set(flexiblesusy_LIBRARIES_MISSING true)
-  set(missing_FS_LIBS "${missing_FS_LIBS} liblegacy;")
+  if(NOT flexiblesusy-core)
+    set(missing_FS_LIBS "${missing_FS_LIBS} libflexisusy;")
+  endif()
+  if(NOT flexiblesusy-legacy)
+    set(missing_FS_LIBS "${missing_FS_LIBS} liblegacy;")
+  endif()
+  # Rebuild them
+  # Currently doesn't seem to be a way to rebuilt only the core libraries, so we'll have to
+  # rebuild one of the model libraries as well. I picked MSSMatMGUT.
+  ExternalProject_Add(flexiblesusy-corelibs
+      SOURCE_DIR ${FLEXIBLESUSY_DIR}
+      BUILD_IN_SOURCE 1
+      CONFIGURE_COMMAND ./configure --with-models=MSSMatMGUT --with-eigen-incdir=${EIGEN3_DIR}
+      BUILD_COMMAND make LAPACKLIBS=${LAPACK_LIBS}
+      INSTALL_COMMAND ""
+  )
 endif()
+
 # This feels a little hacky but I'm not sure what a better way is right now...
 # Run a python script to suck necessary fortran linker flags from one of the 
 # flexiblesusy configure files (stuff like -lgfortran, in GNU case)

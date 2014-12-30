@@ -43,9 +43,11 @@ namespace Gambit
     using namespace flexiblesusy;
 
     /// Quick macro to simplify the check of Pipe::Models
-    #define QUERYMODELS(MODEL) (std::find(Pipe::Models->begin(), \
+    //#define QUERYMODELS(MODEL) (std::find(Pipe::Models->begin(), \
                                           Pipe::Models->end(), \
                                           MODEL) != Pipe::Models->end())
+    //OBSOLETE! Use the following instead:
+    //bool Pipes::<fname>::ModelInUse(str model_name)
 
     /// Module convenience functions
     // These are not known to Gambit.
@@ -177,7 +179,7 @@ Message from flexibleSUSY below:" << std::endl;
       //{
       //  SpecBit_error().raise(LOCAL_INFO, "Uh oh, a CMSSM-descendant model is not being scanned! This function should not have been permitted to run! Please check the ALLOWED_MODEL list in SpecBit_rollcall.hpp for this function");  
       //}
-      std::cout<<"Models:"<<*Pipe::Models<<std::endl;
+      //std::cout<<"Models:"<<*Pipe::Models<<std::endl;
 
       // Get input parameters
       CMSSM_input_parameters input;
