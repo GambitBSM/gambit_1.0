@@ -10,7 +10,6 @@ set(source_files src/cauchy.cpp
 )
 
 set(header_files include/cholesky.hpp
-                 include/class_loader.hpp
                  include/factory_registry.hpp
                  include/function_plugin.hpp
                  include/inifile_interface.hpp
@@ -18,7 +17,6 @@ set(header_files include/cholesky.hpp
                  include/plugin_comparators.hpp
                  include/plugin_defs.hpp
                  include/plugin_details.hpp
-                 include/plugin_exception.hpp
                  include/plugin_factory.hpp
                  include/plugin_interface.hpp
                  include/plugin_loader.hpp
@@ -32,8 +30,6 @@ set(header_files include/cholesky.hpp
                  include/scanner_plugin.hpp
                  include/scanner_utils.hpp
                  include/scannerbit.hpp
-                 include/test-recon.h
-                 include/test.h
                  include/priors/cauchy.hpp
                  include/priors/composite.hpp
                  include/priors/dummy.hpp

@@ -31,6 +31,7 @@
 #include "modelgraph.hpp"
 #include "stream_overloads.hpp"
 #include "yaml_description_database.hpp"
+#include "plugin_loader.hpp"
 
 // Boost
 #include <boost/algorithm/string/replace.hpp>
@@ -687,7 +688,7 @@ namespace Gambit
 
       else if (command == "scanners")
       {
-        //scanners = 
+        std::map<std::string, std::map<std::string, std::vector<Plugin::Plugin_Details> > > scanners = Scanner::scannerInfo().getPluginsMap();
         cout << "\nThis is GAMBIT." << endl << endl; 
         cout << "Scanner            Version          Accepted options" << endl;
         cout << "----------------------------------------------------" << endl;

@@ -28,8 +28,6 @@
 #include <algorithm>
 #include <typeinfo>
 
-#include "plugin_exception.hpp"
-
 namespace Gambit
 {
         namespace Plugin

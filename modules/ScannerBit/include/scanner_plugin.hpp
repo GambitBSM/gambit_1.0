@@ -22,6 +22,7 @@
 #ifndef SCANNER_PLUGIN_HPP
 #define SCANNER_PLUGIN_HPP
 
+#include "scanner_utils.hpp"
 #include "plugin_defs.hpp"
 #include "plugin_macros.hpp"
 
@@ -94,44 +95,38 @@ template <typename T>                                                           
 T get_inifile_value(std::string in)                                                                                     \
 {                                                                                                                       \
         std::string temp = (get_input_value<IniFileInterface>(2)).getValue(in);                                         \
-        if (temp != "")                                                                                                 \
-        {                                                                                                               \
-                YAML::Node conv = YAML::Load(temp);                                                                     \
-                return conv.as<T>();                                                                                    \
-        }                                                                                                               \
-        else                                                                                                            \
+        if (temp == "")                                                                                                 \
         {                                                                                                               \
                 std::ostringstream ss;                                                                                  \
                 ss << "Missing iniFile entry needed by plugin \""                                                       \
                                 << (__gambit_plugin_namespace__::pluginData.name) << "\":  " << in;                     \
-                throw Gambit::Plugin::PluginException(ss.str());                                                        \
+                Gambit::Scanner::scan_error().raise(LOCAL_INFO, ss.str());                                              \
         }                                                                                                               \
+        YAML::Node conv = YAML::Load(temp);                                                                             \
+        return conv.as<T>();                                                                                            \
 }                                                                                                                       \
                                                                                                                         \
 template <typename T>                                                                                                   \
 T get_inifile_value(std::string in, T defaults)                                                                         \
 {                                                                                                                       \
         std::string temp = (get_input_value<IniFileInterface>(2)).getValue(in);                                         \
-        if (temp != "")                                                                                                 \
-        {                                                                                                               \
-                YAML::Node conv = YAML::Load(temp);                                                                     \
-                return conv.as<T>();                                                                                    \
-        }                                                                                                               \
-        else                                                                                                            \
+        if (temp == "")                                                                                                 \
         {                                                                                                               \
                 return defaults;                                                                                        \
         }                                                                                                               \
+        YAML::Node conv = YAML::Load(temp);                                                                             \
+        return conv.as<T>();                                                                                            \
 }                                                                                                                       \
 //Gambit::Scanner::scan::ScanFileOutput scan_ios(get_keys(), &get_input_value<PriorTransform>(2));                      \
 
 //#define SET_SCAN_IOS(file) \
 //scan_ios.setOutput((get_input_value<IniFileInterface>(3)).getNode(#file)); \
 
-#define SCANNER_PLUGIN(mod_name, mod_version)                                                                                        \
-GAMBIT_PLUGIN(mod_name, scan, mod_version)                                                                                                 \
+#define SCANNER_PLUGIN(mod_name, mod_version)                                                                           \
+GAMBIT_PLUGIN(mod_name, scan, mod_version)                                                                              \
 {                                                                                                                       \
         SCANNER_SETUP                                                                                                   \
 }                                                                                                                       \
-namespace __gambit_plugin_ ## mod_name ## __t__scan__v__ ## mod_version ##  _namespace__                                                                 \
+namespace __gambit_plugin_ ## mod_name ## __t__scan__v__ ## mod_version ##  _namespace__                                
 
 #endif
