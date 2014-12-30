@@ -42,11 +42,11 @@ namespace Gambit
                 {
                 private:
                         Options options;
-                        Plugin::Plugin_Details plugin;
+                        Plugins::Plugin_Details plugin;
                         std::string tag;
                         
                 public:
-                        IniFileInterface(const std::string &tag, const Plugin::Plugin_Details &, const Options &);
+                        IniFileInterface(const std::string &tag, const Plugins::Plugin_Details &, const Options &);
                         
                         const std::string pluginName() const {return plugin.full_string;}
                         

@@ -46,26 +46,26 @@ namespace Gambit
                         return ret;
                 }
                 
-                class Scanner_Plugin_Function : public Plugin::Plugin_Interface<double (const std::vector<double> &)>, public Scanner::Function_Base
+                class Scanner_Plugin_Function : public Plugins::Plugin_Interface<double (const std::vector<double> &)>, public Function_Base
                 {
                 private:
                         //std::vector<double> &params;
                         
                 public:
                         Scanner_Plugin_Function(const std::vector<std::string> &params, const Priors::BasePrior &prior, const IniFileInterface &interface) 
-                                : Plugin::Plugin_Interface<double (const std::vector<double> &)>(interface.fileName(), interface.pluginName(), params, prior, interface)
+                                : Plugins::Plugin_Interface<double (const std::vector<double> &)>(interface.fileName(), interface.pluginName(), params, prior, interface)
                         {
                         }
                         
                         double operator()(const std::vector<double> &in)
                         {
-                                return this->Plugin::Plugin_Interface<double (const std::vector<double> &)>::operator()(in);
+                                return this->Plugins::Plugin_Interface<double (const std::vector<double> &)>::operator()(in);
                         }
                         
                         void print(double a, const std::string &b) const {}
                 };
                 
-                class Multi_Scanner_Plugin_Function : public Scanner::Function_Base
+                class Multi_Scanner_Plugin_Function : public Function_Base
                 {
                 private:
                         std::vector<Scanner_Plugin_Function> functions;
@@ -93,15 +93,15 @@ namespace Gambit
                         void print(double a, const std::string &b) const {}
                 };
                 
-                class Plugin_Function_Factory : public Scanner::Factory_Base
+                class Plugin_Function_Factory : public Factory_Base
                 {
                 private:
-                        std::map<std::string, std::vector<Scanner::IniFileInterface>> interfaces;
+                        std::map<std::string, std::vector<IniFileInterface>> interfaces;
                         std::map<std::string, std::vector<std::string>> parameters;
                         const Priors::CompositePrior &prior;
                         
                 public:
-                        Plugin_Function_Factory(const Priors::CompositePrior &prior, const std::map<std::string, std::vector<Scanner::IniFileInterface>> &interfaces) 
+                        Plugin_Function_Factory(const Priors::CompositePrior &prior, const std::map<std::string, std::vector<IniFileInterface>> &interfaces) 
                                 : interfaces(interfaces), prior(prior)
                         {
                                 parameters = convert_to_map(prior.getParameters());

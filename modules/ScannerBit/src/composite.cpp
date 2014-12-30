@@ -187,7 +187,8 @@ namespace Gambit
                                                         {
                                                                 if (prior_creators.find(priortype) == prior_creators.end())
                                                                 {
-                                                                        scan_err << "Parameter '"<< mod <<"' of model '" << par_name << "' is of type '"<<priortype<<"', but no entry for this type exists in the factory function map.\n" << prior_creators.print() << scan_end;
+                                                                        scan_err << "Parameter '"<< mod <<"' of model '" << par_name << "' is of type '"<<priortype
+                                                                         <<"', but no entry for this type exists in the factory function map.\n" << prior_creators.print() << scan_end;
                                                                 }
                                                                 else
                                                                 {

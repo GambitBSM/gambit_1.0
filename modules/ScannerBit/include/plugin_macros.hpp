@@ -10,7 +10,12 @@
 //
 ///  \author Gregory Martinez
 ///          (gregory.david.martinez@gmail.com)
-///  \date 2013 August 2013 Feb 2014
+///  \date 2013 August
+///  \date 2014 Feb
+///
+///  \author Pat Scott
+///          (p.scott@imperial.ac.uk)   
+///  \date 2014 Dec
 ///
 ///  *********************************************
 
@@ -52,19 +57,19 @@ namespace __gambit_plugin_namespace__                                           
                 {                                                                                                       \
                 public:                                                                                                 \
                                                                                                                         \
-                        interface(gambitData &pluginData)                                                               \
+                        interface(pluginData &myData)                                                                   \
                         {                                                                                               \
-                                pluginData.inits.push_back(interface <LoadTags::name>::init);                           \
+                                myData.inits.push_back(interface <LoadTags::name>::init);                               \
                         }                                                                                               \
                                                                                                                         \
-                        static void init(gambitData &pluginData)                                                        \
+                        static void init(pluginData &myData)                                                            \
                         {                                                                                               \
-                                pluginData.outputFuncs[#name] = new Gambit::Plugin::classFactory<__VA_ARGS__>;          \
+                                myData.outputFuncs[#name] = new Gambit::Scanner::Plugins::classFactory<__VA_ARGS__>;    \
                         }                                                                                               \
                 };                                                                                                      \
                                                                                                                         \
                 template <>                                                                                             \
-                interface <LoadTags::name> reg_init <LoadTags::name>::reg(pluginData);                                  \
+                interface <LoadTags::name> reg_init <LoadTags::name>::reg(myData);                                      \
         }                                                                                                               \
 }                                                                                                                       \
 
@@ -84,20 +89,20 @@ namespace __gambit_plugin_namespace__                                           
                 {                                                                                                       \
                 public:                                                                                                 \
                                                                                                                         \
-                        interface(gambitData &pluginData)                                                               \
+                        interface(pluginData &myData)                                                                   \
                         {                                                                                               \
-                                pluginData.inits.push_back(interface <LoadTags::name>::init);                           \
+                                myData.inits.push_back(interface <LoadTags::name>::init);                               \
                         }                                                                                               \
                                                                                                                         \
-                        static void init(gambitData &pluginData)                                                        \
+                        static void init(pluginData &myData)                                                            \
                         {                                                                                               \
-                                pluginData.outputFuncs[#name]                                                           \
-                                        = new Gambit::Plugin::funcFactory <decltype(__VA_ARGS__)>(&__VA_ARGS__);        \
+                                myData.outputFuncs[#name]                                                               \
+                                 = new Gambit::Scanner::Plugins::funcFactory <decltype(__VA_ARGS__)>(&__VA_ARGS__);     \
                         }                                                                                               \
                 };                                                                                                      \
                                                                                                                         \
                 template <>                                                                                             \
-                interface <LoadTags::name> reg_init <LoadTags::name>::reg(pluginData);                                  \
+                interface <LoadTags::name> reg_init <LoadTags::name>::reg(myData);                                      \
         }                                                                                                               \
 }                                                                                                                       \
 
@@ -127,19 +132,19 @@ namespace __gambit_plugin_namespace__                                           
                 {                                                                                                       \
                 public:                                                                                                 \
                                                                                                                         \
-                        interface(gambitData &pluginData)                                                               \
+                        interface(pluginData &myData)                                                                   \
                         {                                                                                               \
-                                pluginData.inits.push_back(interface <RunTags::name>::init);                            \
+                                myData.inits.push_back(interface <RunTags::name>::init);                                \
                         }                                                                                               \
                                                                                                                         \
-                        static void init(gambitData &pluginData)                                                        \
+                        static void init(pluginData &myData)                                                            \
                         {                                                                                               \
                                 name( __VA_ARGS__ );                                                                    \
                         }                                                                                               \
                 };                                                                                                      \
                                                                                                                         \
                 template <>                                                                                             \
-                interface <RunTags::name> reg_init <RunTags::name>::reg(pluginData);                                    \
+                interface <RunTags::name> reg_init <RunTags::name>::reg(myData);                                        \
         }                                                                                                               \
 }                                                                                                                       \
 
@@ -159,19 +164,19 @@ namespace __gambit_plugin_namespace__                                           
                 {                                                                                                       \
                 public:                                                                                                 \
                                                                                                                         \
-                        interface(gambitData &pluginData)                                                               \
+                        interface(pluginData &myData)                                                                   \
                         {                                                                                               \
-                                pluginData.inits.push_back(interface <InitTags::name>::init);                           \
+                                myData.inits.push_back(interface <InitTags::name>::init);                               \
                         }                                                                                               \
                                                                                                                         \
-                        static void init(gambitData &pluginData)                                                        \
+                        static void init(pluginData &myData)                                                            \
                         {                                                                                               \
                                 name = __VA_ARGS__;                                                                     \
                         }                                                                                               \
                 };                                                                                                      \
                                                                                                                         \
                 template <>                                                                                             \
-                interface <InitTags::name> reg_init <InitTags::name>::reg(pluginData);                                  \
+                interface <InitTags::name> reg_init <InitTags::name>::reg(myData);                                      \
         }                                                                                                               \
 }                                                                                                                       \
 
@@ -193,15 +198,15 @@ namespace __gambit_plugin_namespace__                                           
                 {                                                                                                       \
                 public:                                                                                                 \
                                                                                                                         \
-                        interface(gambitData &pluginData)                                                               \
+                        interface(pluginData &myData)                                                                   \
                         {                                                                                               \
-                                pluginData.inits.push_back(interface <MainTags::main>::init);                           \
+                                myData.inits.push_back(interface <MainTags::main>::init);                               \
                         }                                                                                               \
                                                                                                                         \
-                        static void init(gambitData &pluginData)                                                        \
+                        static void init(pluginData &myData)                                                            \
                         {                                                                                               \
-                                pluginData.main_type = interface <MainTags::main>::main_type;                           \
-                                pluginData.outputFuncs[pluginData.name] = new Gambit::Plugin::funcFactory               \
+                                myData.main_type = interface <MainTags::main>::main_type;                               \
+                                myData.outputFuncs[myData.name] = new Gambit::Scanner::Plugins::funcFactory             \
                                         <decltype(__gambit_plugin_ret_val__()) (__VA_ARGS__)>(__gambit_plugin_main__);  \
                         }                                                                                               \
                                                                                                                         \
@@ -212,18 +217,18 @@ namespace __gambit_plugin_namespace__                                           
                 };                                                                                                      \
                                                                                                                         \
                 template <>                                                                                             \
-                interface <MainTags::main> reg_init <MainTags::main>::reg(pluginData);                                  \
+                interface <MainTags::main> reg_init <MainTags::main>::reg(myData);                                      \
         }                                                                                                               \
 }                                                                                                                       \
 decltype(__gambit_plugin_ret_val__()) __gambit_plugin_main__ (__VA_ARGS__)                                              \
 
 /*Defines a Gambit plugin*/
-#define GAMBIT_PLUGIN_INTERNAL(plug_name)                                                                                        \
+#define GAMBIT_PLUGIN_INTERNAL(plug_name)                                                                               \
 namespace __gambit_plugin_ ## plug_name ##  _namespace__                                                                \
 {                                                                                                                       \
         namespace __gambit_plugin_namespace__                                                                           \
         {                                                                                                               \
-                using Gambit::Plugin::gambitData;                                                                       \
+                using Gambit::Scanner::Plugins::pluginData;                                                             \
                                                                                                                         \
                 namespace LoadTags                                                                                      \
                 {                                                                                                       \
@@ -232,7 +237,7 @@ namespace __gambit_plugin_ ## plug_name ##  _namespace__                        
                                                                                                                         \
                 namespace                                                                                               \
                 {                                                                                                       \
-                        gambitData pluginData( #plug_name );                                                            \
+                        pluginData myData( #plug_name );                                                                \
                                                                                                                         \
                         template <class T>                                                                              \
                         class interface {};                                                                             \
@@ -248,23 +253,23 @@ namespace __gambit_plugin_ ## plug_name ##  _namespace__                        
                  ## __(std::vector<void *> *input)  \
                 {                                                                                                       \
                         if (input != 0)                                                                                 \
-                                pluginData.inputData = *input;                                                          \
+                                myData.inputData = *input;                                                              \
                                                                                                                         \
-                        for(auto it = pluginData.inits.begin(), end = pluginData.inits.end(); it != end; it++)          \
+                        for(auto it = myData.inits.begin(), end = myData.inits.end(); it != end; it++)                  \
                         {                                                                                               \
-                                (*it)(pluginData);                                                                      \
+                                (*it)(myData);                                                                          \
                         }                                                                                               \
                                                                                                                         \
-                        pluginData.inits.clear();                                                                       \
+                        myData.inits.clear();                                                                           \
                                                                                                                         \
-                        return pluginData.main_type();                                                                  \
+                        return myData.main_type();                                                                      \
                 }                                                                                                       \
                                                                                                                         \
                 extern "C" void * __gambit_plugin_getMember_ ## plug_name ## __(std::string in)                         \
                 {                                                                                                       \
-                        if (pluginData.outputFuncs.find(in) != pluginData.outputFuncs.end())                            \
+                        if (myData.outputFuncs.find(in) != myData.outputFuncs.end())                                    \
                         {                                                                                               \
-                                return (*pluginData.outputFuncs[in])();                                                 \
+                                return (*myData.outputFuncs[in])();                                                     \
                         }                                                                                               \
                         else                                                                                            \
                                 return NULL;                                                                            \
@@ -272,20 +277,20 @@ namespace __gambit_plugin_ ## plug_name ##  _namespace__                        
                                                                                                                         \
                 extern "C" void __gambit_plugin_rmMember_ ## plug_name ## __(void *ptr, std::string in)                 \
                 {                                                                                                       \
-                        if (pluginData.outputFuncs.find(in) != pluginData.outputFuncs.end())                            \
-                                pluginData.outputFuncs[in]->remove(ptr);                                                \
+                        if (myData.outputFuncs.find(in) != myData.outputFuncs.end())                                    \
+                                myData.outputFuncs[in]->remove(ptr);                                                    \
                 }                                                                                                       \
         }                                                                                                               \
                                                                                                                         \
         template <typename T>                                                                                           \
         T &get_input_value(int i)                                                                                       \
         {                                                                                                               \
-                return *static_cast<T*>(__gambit_plugin_namespace__::pluginData.inputData[i]);                          \
+                return *static_cast<T*>(__gambit_plugin_namespace__::myData.inputData[i]);                              \
         }                                                                                                               \
 }                                                                                                                       \
 namespace __gambit_plugin_ ## plug_name ## _namespace__                                                                 \
 
 #define GAMBIT_PLUGIN(plug_name, plug_type, plug_version)                                                               \
-        GAMBIT_PLUGIN_INTERNAL( plug_name ## __t__ ## plug_type ## __v__ ## plug_version )                                    \
+        GAMBIT_PLUGIN_INTERNAL( plug_name ## __t__ ## plug_type ## __v__ ## plug_version )                              \
 
 #endif

@@ -688,7 +688,9 @@ namespace Gambit
 
       else if (command == "scanners")
       {
-        std::map<std::string, std::map<std::string, std::vector<Plugin::Plugin_Details> > > scanners = Scanner::scannerInfo().getPluginsMap();
+        typedef std::map<std::string, std::vector<Scanner::Plugins::Plugin_Details> > plugin_map;
+        typedef std::map<std::string, plugin_map> plugin_mapmap;
+        plugin_mapmap scanners = Scanner::scannerInfo().getPluginsMap();
         cout << "\nThis is GAMBIT." << endl << endl; 
         cout << "Scanner            Version          Accepted options" << endl;
         cout << "----------------------------------------------------" << endl;

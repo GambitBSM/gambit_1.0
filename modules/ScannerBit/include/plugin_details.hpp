@@ -31,84 +31,88 @@
 namespace Gambit
 {
 
-        namespace Plugin
+        namespace Scanner
         {
-                
-                struct Plugin_Details
+
+                namespace Plugins
                 {
-                        std::string version;
-                        int major_version;
-                        int minor_version;
-                        int patch_version;
-                        std::string release_version;
-                        std::string library_path;
-                        std::string library;
-                        std::string plugin;
-                        std::string type;
-                        std::string full_string;
                         
-                        std::string print() const
+                        struct Plugin_Details
                         {
-                                std::stringstream out;
-                                out << "plugin:  " << plugin << std::endl;
-                                out << "\tversion:  " << version << std::endl;
-                                out << "\tmajor version:  " << major_version << std::endl;
-                                out << "\tminor version:  " << minor_version << std::endl;
-                                out << "\tpatch version:  " << patch_version << std::endl;
-                                out << "\trelease version:  " << release_version << std::endl;
-                                out << "\tlibrary_path:  " << library_path << std::endl;
-                                out << "\tlibrary:  " << library << std::endl;
-                                out << "\ttype:  " << type << std::endl;
+                                std::string version;
+                                int major_version;
+                                int minor_version;
+                                int patch_version;
+                                std::string release_version;
+                                std::string library_path;
+                                std::string library;
+                                std::string plugin;
+                                std::string type;
+                                std::string full_string;
                                 
-                                return out.str();
-                        }
-                };
-                
-                inline bool operator == (const Plugin_Details &plug1, const Plugin_Details &plug2)
-                {
-                        if ((plug1.major_version != plug2.major_version) ||
-                                (plug1.major_version != plug2.major_version) ||
-                                (plug1.minor_version != plug2.minor_version) ||
-                                (plug1.release_version == "" && plug2.release_version != "") ||
-                                (plug1.release_version != "" && plug2.release_version == ""))
+                                std::string print() const
+                                {
+                                        std::stringstream out;
+                                        out << "plugin:  " << plugin << std::endl;
+                                        out << "\tversion:  " << version << std::endl;
+                                        out << "\tmajor version:  " << major_version << std::endl;
+                                        out << "\tminor version:  " << minor_version << std::endl;
+                                        out << "\tpatch version:  " << patch_version << std::endl;
+                                        out << "\trelease version:  " << release_version << std::endl;
+                                        out << "\tlibrary_path:  " << library_path << std::endl;
+                                        out << "\tlibrary:  " << library << std::endl;
+                                        out << "\ttype:  " << type << std::endl;
+                                        
+                                        return out.str();
+                                }
+                        };
+                        
+                        inline bool operator == (const Plugin_Details &plug1, const Plugin_Details &plug2)
                         {
+                                if ((plug1.major_version != plug2.major_version) ||
+                                        (plug1.major_version != plug2.major_version) ||
+                                        (plug1.minor_version != plug2.minor_version) ||
+                                        (plug1.release_version == "" && plug2.release_version != "") ||
+                                        (plug1.release_version != "" && plug2.release_version == ""))
+                                {
+                                        return false;
+                                }
+                                
                                 return false;
                         }
                         
-                        return false;
-                }
-                
-                inline bool Plugin_Version_Supersedes(const Plugin_Details &plug1, const Plugin_Details &plug2)
-                {
-                        if (plug1.major_version > plug2.major_version)
+                        inline bool Plugin_Version_Supersedes(const Plugin_Details &plug1, const Plugin_Details &plug2)
                         {
-                                return true;
-                        }
-                        else if (plug1.major_version == plug2.major_version)
-                        {
-                                if (plug1.minor_version > plug2.minor_version)
+                                if (plug1.major_version > plug2.major_version)
                                 {
                                         return true;
                                 }
-                                else if (plug1.minor_version == plug2.minor_version)
+                                else if (plug1.major_version == plug2.major_version)
                                 {
-                                        if (plug1.patch_version > plug2.patch_version)
+                                        if (plug1.minor_version > plug2.minor_version)
                                         {
                                                 return true;
                                         }
-                                        else if (plug1.patch_version == plug2.patch_version)
+                                        else if (plug1.minor_version == plug2.minor_version)
                                         {
-                                                if (plug1.release_version == "" && plug2.release_version != "")
+                                                if (plug1.patch_version > plug2.patch_version)
                                                 {
                                                         return true;
                                                 }
+                                                else if (plug1.patch_version == plug2.patch_version)
+                                                {
+                                                        if (plug1.release_version == "" && plug2.release_version != "")
+                                                        {
+                                                                return true;
+                                                        }
+                                                }
                                         }
                                 }
+                                return false;
                         }
-                        
-                        return false;
+                                        
                 }
-                                
+
         }
 
 }

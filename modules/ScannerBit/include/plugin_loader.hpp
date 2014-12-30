@@ -31,34 +31,34 @@
 namespace Gambit
 {
 
-        namespace Plugin
-        {
-                
-                class Plugin_Loader
-                {
-                private:
-                        std::string path;
-                        std::vector<Plugin_Details> plugins;
-                        std::map<std::string, std::map<std::string, std::vector<Plugin_Details>>> plugin_map;
-                        
-                public:
-                        Plugin_Loader();                       
-                        std::vector<Plugin_Details> getPluginsVec() const;
-                        std::map<std::string, std::map<std::string, std::vector<Plugin_Details>>> getPluginsMap() const;
-                        void loadLibrary (const std::string&, const std::string& = "");                        
-                        void print ();
-                        Plugin_Details find (const std::string&, const std::string&, const std::string&, const std::string&) const;
-                };
-                
-        }
-          
         namespace Scanner
         {
 
+                namespace Plugins
+                {
+                        
+                        class Plugin_Loader
+                        {
+                        private:
+                                std::string path;
+                                std::vector<Plugin_Details> plugins;
+                                std::map<std::string, std::map<std::string, std::vector<Plugin_Details>>> plugin_map;
+                                
+                        public:
+                                Plugin_Loader();                       
+                                std::vector<Plugin_Details> getPluginsVec() const;
+                                std::map<std::string, std::map<std::string, std::vector<Plugin_Details>>> getPluginsMap() const;
+                                void loadLibrary (const std::string&, const std::string& = "");                        
+                                void print ();
+                                Plugin_Details find (const std::string&, const std::string&, const std::string&, const std::string&) const;
+                        };
+                        
+                }
+                  
                 /// Scanner info accessor function
-                Plugin::Plugin_Loader& scannerInfo();
+                Plugins::Plugin_Loader& scannerInfo();
 
-        }
+         }
 
 }
 

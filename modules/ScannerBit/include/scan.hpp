@@ -79,12 +79,12 @@ namespace Gambit
                         const Factory_Base *factory;
                         const Options *options;
                         const Priors::CompositePrior *prior;
-                        const Plugin::Plugin_Loader *plugins;
+                        const Plugins::Plugin_Loader *plugins;
                         printer_interface *printerInterface;
                         std::map<std::string, Proto_Plugin_Details> selectedPlugins;
 
                 public:
-                        Scan_Manager (const Factory_Base&, const Options&, const Priors::CompositePrior&, const Plugin::Plugin_Loader&, printer_interface* = 0);
+                        Scan_Manager (const Factory_Base&, const Options&, const Priors::CompositePrior&, const Plugins::Plugin_Loader&, printer_interface* = 0);
                         ~Scan_Manager();
                         int Run();                       
                 };             

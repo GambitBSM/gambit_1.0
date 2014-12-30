@@ -20,7 +20,7 @@
 ///  \author Pat Scott
 ///          (patscott@physics.mcgill.ca)
 ///  \date 2013 Aug
-///  \date 2014 Mar
+///  \date 2014 Mar, Dec
 ///
 ///  *********************************************
 
@@ -31,8 +31,10 @@
 
 namespace Gambit
 {
+
         namespace Scanner
         {
+
                 inline YAML::Node combineNodes(const std::map<std::string, YAML::Node> &nodesMap, const YAML::Node &node)
                 {
                         std::stringstream ss;
@@ -68,8 +70,9 @@ namespace Gambit
                         return YAML::Load(ss.str());
                 }
         
-                Scan_Manager::Scan_Manager (const Factory_Base &factoryIn, const Options &options_in, const Priors::CompositePrior &priorIn, const Plugin::Plugin_Loader &plugins_in, printer_interface *printerInterface) 
-                                : printerInterface(printerInterface), options(&options_in), plugins(&plugins_in)
+                Scan_Manager::Scan_Manager (const Factory_Base &factoryIn, const Options &options_in, const Priors::CompositePrior &priorIn, 
+                 const Plugins::Plugin_Loader &plugins_in, printer_interface *printerInterface) 
+                : printerInterface(printerInterface), options(&options_in), plugins(&plugins_in)
                 {
                         if (!options->hasKey("plugins"))
                         {
@@ -117,7 +120,7 @@ namespace Gambit
                                                 auto it2 = selectedPlugins.find(*it);
                                                 if (it2 != selectedPlugins.end())
                                                 {
-                                                        Plugin::Plugin_Details pls = plugins->find("like", it2->second.plugin, it2->second.version, it2->second.library);
+                                                        Plugins::Plugin_Details pls = plugins->find("like", it2->second.plugin, it2->second.version, it2->second.library);
                                                         interfaces["Likelihood"].emplace_back(*it, pls, options->getOptions("plugins", *it));
                                                         if (options->hasKey("plugins", *it, "parameters"))
                                                         {
@@ -143,7 +146,7 @@ namespace Gambit
                                         auto it2 = selectedPlugins.find(plug);
                                         if (it2 != selectedPlugins.end())
                                         {
-                                                Plugin::Plugin_Details pls = plugins->find("like", it2->second.plugin, it2->second.version, it2->second.library);
+                                                Plugins::Plugin_Details pls = plugins->find("like", it2->second.plugin, it2->second.version, it2->second.library);
                                                 interfaces["Likelihood"].emplace_back(plug, pls, options->getOptions("plugins", plug));
                                                 if (options->hasKey("plugins", plug, "parameters"))
                                                 {
@@ -214,7 +217,7 @@ namespace Gambit
                 
                 int Scan_Manager::Run()
                 {
-                        Plugin::Plugin_Details plugin;
+                        Plugins::Plugin_Details plugin;
                         std::string pluginName;
                         if (options->hasKey("use_scanner_plugin"))
                         {
@@ -238,7 +241,7 @@ namespace Gambit
                         
                         unsigned int dim = factory->getDim();
                         
-                        Plugin::Plugin_Interface<int ()> plugin_interface(interface.fileName(), plugin.full_string, dim, *factory, interface, *prior);
+                        Plugins::Plugin_Interface<int ()> plugin_interface(interface.fileName(), plugin.full_string, dim, *factory, interface, *prior);
                         plugin_interface();
                         
                         return 0;

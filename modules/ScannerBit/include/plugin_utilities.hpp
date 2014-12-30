@@ -31,79 +31,84 @@
 namespace Gambit
 {
 
-        namespace Plugin
+        namespace Scanner
         {
 
-                const unsigned char FORCE = 0x01;
-                const std::string sblank = std::string("       \033[7D");
-                const std::string blank = std::string("               \033[15D");
-                const std::string bblank = std::string("                              \033[30D");          
-                
-                inline bool vector_elem_check(std::vector<std::string> &vec, std::string elem)
+                namespace Plugins
                 {
-                        for (auto it = vec.begin(); it != vec.end(); it++)
+
+                        const unsigned char FORCE = 0x01;
+                        const std::string sblank = std::string("       \033[7D");
+                        const std::string blank = std::string("               \033[15D");
+                        const std::string bblank = std::string("                              \033[30D");          
+                        
+                        inline bool vector_elem_check(std::vector<std::string> &vec, std::string elem)
                         {
-                                if ((*it) == elem)
+                                for (auto it = vec.begin(); it != vec.end(); it++)
                                 {
-                                        return true;
+                                        if ((*it) == elem)
+                                        {
+                                                return true;
+                                        }
                                 }
+                                
+                                return false;
                         }
                         
-                        return false;
-                }
-                
-                inline void clearInputBuffer()
-                {
-                        char c;
-                        do 
+                        inline void clearInputBuffer()
                         {
-                                c = getchar();
-                        } 
-                        while (c != '\n' && c != EOF);
+                                char c;
+                                do 
+                                {
+                                        c = getchar();
+                                } 
+                                while (c != '\n' && c != EOF);
+                        }
+                        
+                        inline std::string stringify_variadic_inputs()
+                        {
+                                return "";
+                        }
+                        
+                        inline std::string stringify_variadic_inputs(const std::string &in)
+                        {
+                                return in;
+                        }
+                        
+                        template <typename... args>
+                        inline std::string stringify_variadic_inputs(const std::string &in, const args&... params)
+                        {
+                                return in + ", " + stringify_variadic_inputs(params...);
+                        }
+                        
+                        inline void input_variadic_vector(std::vector<void *> &input){}
+                        
+                        template <typename T, typename... args>
+                        inline void input_variadic_vector(std::vector<void *> &input, const T& value, const args&... params)
+                        {
+                                input.push_back((void *)&value);
+                                input_variadic_vector(input, params...);
+                        }
+                        
+                        inline int StringToInt(const std::string &str)
+                        {
+                                int ret;
+                                std::stringstream ss(str);
+                                if (ss >> ret)
+                                        return ret;
+                                else
+                                        return 0;
+                        }
+                        
+                        inline std::string IntToString(const int &in)
+                        {
+                                std::stringstream ss;
+                                ss << in;
+                                return ss.str();
+                        }
+                                                  
                 }
-                
-                inline std::string stringify_variadic_inputs()
-                {
-                        return "";
-                }
-                
-                inline std::string stringify_variadic_inputs(const std::string &in)
-                {
-                        return in;
-                }
-                
-                template <typename... args>
-                inline std::string stringify_variadic_inputs(const std::string &in, const args&... params)
-                {
-                        return in + ", " + stringify_variadic_inputs(params...);
-                }
-                
-                inline void input_variadic_vector(std::vector<void *> &input){}
-                
-                template <typename T, typename... args>
-                inline void input_variadic_vector(std::vector<void *> &input, const T& value, const args&... params)
-                {
-                        input.push_back((void *)&value);
-                        input_variadic_vector(input, params...);
-                }
-                
-                inline int StringToInt(const std::string &str)
-                {
-                        int ret;
-                        std::stringstream ss(str);
-                        if (ss >> ret)
-                                return ret;
-                        else
-                                return 0;
-                }
-                
-                inline std::string IntToString(const int &in)
-                {
-                        std::stringstream ss;
-                        ss << in;
-                        return ss.str();
-                }
-                                          
+
         }
 
 }
