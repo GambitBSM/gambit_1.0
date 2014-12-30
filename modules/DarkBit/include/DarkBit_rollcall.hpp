@@ -30,7 +30,7 @@
 ///  
 ///  \author Christopher Savage
 ///          (chris@savage.name)
-///  \date 2014 Oct
+///  \date 2014 Oct, Dec
 ///  
 ///  *********************************************
 
@@ -363,6 +363,18 @@ START_MODULE
     #define FUNCTION DD_couplings_SingletDM
       START_FUNCTION(Gambit::DarkBit::DD_couplings)
       ALLOW_MODELS(SingletDM)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY lnL_XENON100_2012
+  START_CAPABILITY
+    #define FUNCTION lnL_XENON100_2012
+      START_FUNCTION(double)
+      DEPENDENCY(DD_couplings, Gambit::DarkBit::DD_couplings)
+      BACKEND_REQ(DDCalc0_SetWIMP_mG, (Same_BE), void, (double*,double*,double*,double*,double*))
+      BACKEND_REQ(DDCalc0_XENON100_2012_CalcRates, (Same_BE), void, ())
+      BACKEND_REQ(DDCalc0_XENON100_2012_LogLikelihood, (Same_BE), double, ())
+      FORCE_SAME_BACKEND(Same_BE)
     #undef FUNCTION
   #undef CAPABILITY
 
