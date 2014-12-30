@@ -59,6 +59,7 @@
 #include "log.hpp"
 #include "backend_singleton.hpp"
 #include "claw_singleton.hpp"
+#include "safe_param_map.hpp"
 #ifndef STANDALONE
   #include "core_singleton.hpp"
 #endif
@@ -125,7 +126,7 @@
 
 /// Indicate that the current \link FUNCTION() FUNCTION\endlink may be used with a
 /// specific model \em MODEL, but only in combination with others given via ALLOW_MODEL_COMBINATION.
-#define ALLOWED_MODEL_ONLY_VIA_GROUPS(MODULE,FUNCTION,MODEL) CORE_ALLOWED_MODEL_ONLY_VIA_GROUPS(MODULE,FUNCTION,MODEL)
+#define ALLOWED_MODEL_DEPENDENCE(MODULE,FUNCTION,MODEL)   CORE_ALLOW_MODEL_DEPENDENCE(MODULE,FUNCTION,MODEL)
 
 /// Indicate that the current \link FUNCTION() FUNCTION\endlink may only be used with
 /// the specific model combination given, with other combinations passed in the same 
@@ -597,9 +598,9 @@
 /// Main parts of the functor creation
 #define MAKE_FUNCTOR_MAIN(FUNCTION,TYPE,CAPABILITY,ORIGIN,CAN_MANAGE)          \
                                                                                \
-  /* Create the function wrapper object (functor) */                           \
   namespace Functown                                                           \
   {                                                                            \
+    /* Create the function wrapper object (functor) */                         \
     BOOST_PP_IIF(IS_TYPE(ModelParameters,TYPE),                                \
       model_functor                                                            \
     ,                                                                          \
@@ -607,6 +608,18 @@
     )                                                                          \
     FUNCTION (&ORIGIN::FUNCTION, STRINGIFY(FUNCTION), STRINGIFY(CAPABILITY),   \
      STRINGIFY(TYPE), STRINGIFY(ORIGIN), Models::ModelDB());                   \
+    /* Set up a helper function to call the iterate method if the functor is   \
+    able to manage loops. */                                                   \
+    BOOST_PP_IIF(BOOST_PP_EQUAL(CAN_MANAGE, 1),                                \
+     void CAT(FUNCTION,_iterate)(int it) { FUNCTION.iterate(it); }             \
+    ,)                                                                         \
+    /* Create a helper function to indicate whether a given model is in use. */\
+    BOOST_PP_IIF(IS_TYPE(ModelParameters,TYPE), ,                              \
+     bool CAT(FUNCTION,_modelInUse)(str model)                                 \
+     {                                                                         \
+       return FUNCTION.getActiveModelFlag(model);                              \
+     }                                                                         \
+    )                                                                          \
   }                                                                            \
                                                                                \
   namespace Pipes                                                              \
@@ -615,12 +628,25 @@
     {                                                                          \
       /* Create a map to hold pointers to all the model parameters accessible  \
       to this functor */                                                       \
-      std::map<str, safe_ptr<const double> > Param;                            \
-      /* Declare a safe pointer to the functor's internal vector of currently- \
-      activated models. */                                                     \
-      safe_ptr< std::vector<str> > Models;                                     \
+      Models::safe_param_map<safe_ptr<const double> > Param;              \
+      /* Pointer to function indicating whether a given model is in use.*/     \
+      BOOST_PP_IIF(IS_TYPE(ModelParameters,TYPE), ,                            \
+       bool (*ModelInUse)(str) = &Functown::CAT(FUNCTION,_modelInUse); )       \
       /* Declare a safe pointer to the functor's run options. */               \
       safe_ptr<Options> runOptions;                                            \
+      BOOST_PP_IIF(CAN_MANAGE,                                                 \
+       namespace Loop                                                          \
+       {                                                                       \
+         /* Create a pointer to the single iteration of the loop that can      \
+         be executed by this functor */                                        \
+         void (*executeIteration)(int) = &Functown::CAT(FUNCTION,_iterate);    \
+         /* Declare a safe pointer to the flag indicating that a managed loop  \
+         is ready for breaking. */                                             \
+         safe_ptr<bool> done;                                                  \
+         /* Declare a function that is used to reset the done flag. */         \
+         void reset() { Functown::FUNCTION.resetLoop(); }                      \
+       }                                                                       \
+      ,)                                                                       \
     }                                                                          \
   }                                                                            \
                                                                                \
@@ -628,11 +654,13 @@
   template <>                                                                  \
   void rt_register_function<Tags::FUNCTION> ()                                 \
   {                                                                            \
-    BOOST_PP_IIF(CAN_MANAGE,Functown::FUNCTION.setCanBeLoopManager(true);,)    \
+    BOOST_PP_IIF(CAN_MANAGE,                                                   \
+     Functown::FUNCTION.setCanBeLoopManager(true);                             \
+     Pipes::FUNCTION::Loop::done = Functown::FUNCTION.loopIsDone();            \
+    ,)                                                                         \
     Accessors::map_bools[STRINGIFY(CAPABILITY)] =                              \
      &Accessors::provides<Gambit::Tags::CAPABILITY>;                           \
     Accessors::iCanDo[STRINGIFY(FUNCTION)] = STRINGIFY(TYPE);                  \
-    Pipes::FUNCTION::Models = Functown::FUNCTION.getModels();                  \
     Pipes::FUNCTION::runOptions = Functown::FUNCTION.getOptions();             \
   }                                                                            \
                                                                                \
@@ -698,6 +726,9 @@
             /* Create a safe pointer to the iteration number of the loop this  \
             functor is running within. */                                      \
             omp_safe_ptr<int> iteration;                                       \
+            /* Create a loop-breaking function that can be called to tell the  \
+            functor's loop manager that it is time to break. */                \
+            void wrapup() { Functown::FUNCTION.breakLoopFromManagedFunctor(); }\
           }                                                                    \
         }                                                                      \
       }                                                                        \
@@ -869,13 +900,13 @@
     CORE_ALLOW_MODEL(MODULE,FUNCTION,MODEL)                                    \
   }                                                                            \
 
-/// Redirection of ALLOW_MODEL_ONLY_VIA_GROUPS when invoked from within the core.
-#define CORE_ALLOWED_MODEL_ONLY_VIA_GROUPS(MODULE,FUNCTION,MODEL)              \
+/// Redirection of ALLOW_MODEL_DEPENDENCE when invoked from within the core.
+#define CORE_ALLOW_MODEL_DEPENDENCE(MODULE,FUNCTION,MODEL)                     \
                                                                                \
   IF_TOKEN_UNDEFINED(MODULE,FAIL("You must define MODULE before calling "      \
-   "ALLOW_MODEL(S)_ONLY_VIA_GROUPS."))                                         \
+   "ALLOW_MODEL_DEPENDENCE."))                                                 \
   IF_TOKEN_UNDEFINED(FUNCTION,FAIL("You must define FUNCTION before calling "  \
-   "ALLOW_MODEL(S)_ONLY_VIA_GROUPS. Please check the rollcall header for "     \
+   "ALLOW_MODEL_DEPENDENCE. Please check the rollcall header for "             \
    STRINGIFY(MODULE) "."))                                                     \
                                                                                \
   namespace Gambit                                                             \
@@ -950,19 +981,21 @@
           if (Pipes::FUNCTION::Param.find(it->first) ==                        \
               Pipes::FUNCTION::Param.end())                                    \
           { /* Add a safe pointer to the value of this parameter to the map*/  \
-            Pipes::FUNCTION::Param[it->first] =                                \
-             safe_ptr<const double>(&(parameterMap->at(it->first)));           \
+            Pipes::FUNCTION::Param.insert(                                     \
+             std::pair<str,safe_ptr<const double> >(it->first,                 \
+             safe_ptr<const double>(&(parameterMap->at(it->first))))           \
+            );                                                                 \
           }                                                                    \
           else                                                                 \
           { /* This parameter already exists in the map! Fail. */              \
-            str errmsg = "Problem in " STRINGIFY(MODULE) "::resolve_dependency,";\
-            errmsg +=    " for model " STRINGIFY(MODEL) " with function\n"       \
-                         STRINGIFY(FUNCTION) ".  Attempt was to resolve to\n" + \
-                         params_functor->name() + " in " +                     \
-                         params_functor->origin() + ".\nYou have tried to scan"\
-                         "two models simultaneously that have one or more\n"   \
-                         "parameters in common.\nProblem parameter: " +        \
-                         it->first;                                            \
+            str errmsg = "Problem in " STRINGIFY(MODULE) "::resolve_";         \
+            errmsg +=    "dependency, for model " STRINGIFY(MODEL)             \
+                         " with function\n" STRINGIFY(FUNCTION) ".  Attempt "  \
+                         "was to resolve to\n" + params_functor->name() +      \
+                         " in " + params_functor->origin()                     \
+                         + ".\nYou have tried to scan two models "             \
+                         "simultaneously that have one or more\n parameters "  \
+                         "in common.\nProblem parameter: " + it->first;        \
             utils_error().raise(LOCAL_INFO,errmsg);                            \
           }                                                                    \
         }                                                                      \

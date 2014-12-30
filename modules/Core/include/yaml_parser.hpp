@@ -139,49 +139,41 @@ namespace YAML {
   // }
 }
 
+
 namespace Gambit
 {
   namespace IniParser
   {
     typedef std::vector<Types::Observable> ObservablesType;
-    // typedef std::vector<Types::Parameter> ParametersType;
     typedef Types::Observable ObservableType;
-    // typedef Types::Parameter ParameterType;
 
     /// Main inifile class
     class IniFile
     {
+
       public:
+
         // Read the file
         void readFile(std::string filename);
 
-        //
-        // Getters for private observable and auxiliaries entries
-        //
-        const ObservablesType & getObservables() const
-        {
-          return observables;
-        }
+        /// Getters for private observable and auxiliary entries
+        /// @{
+        const ObservablesType & getObservables() const;
+        const ObservablesType & getAuxiliaries() const;
+        /// @}
 
-        const ObservablesType & getAuxiliaries() const
-        {
-          return auxiliaries;
-        }
-
-        //
-        // Getters for key/value section
-        //
-        
-        YAML::Node getParametersNode() const {return parametersNode;}
-        YAML::Node getPriorsNode() const {return priorsNode;}
-        YAML::Node getPrinterNode() const {return printerNode;}
-        YAML::Node getScannerNode() const {return scannerNode;}
-        YAML::Node getKeyValuePairNode() const {return keyValuePairNode;}
+        /// Getters for key/value section
+        /// @{
+        YAML::Node getParametersNode() const;
+        YAML::Node getPriorsNode() const;
+        YAML::Node getPrinterNode() const;
+        YAML::Node getScannerNode() const;
+        YAML::Node getKeyValuePairNode() const;
         
         template <typename... args>
         bool hasKey(args... keys) const
         {
-                return getVariadicNode(keyValuePairNode, keys...);
+          return getVariadicNode(keyValuePairNode, keys...);
         }
 
         template<typename TYPE, typename... args> TYPE getValue(args... keys) const
@@ -200,59 +192,24 @@ namespace Gambit
           }
           return node.as<TYPE>();
         }
+        /// @}
 
-        //
-        // Getters for model/parameter section
-        //
+        /// Getters for model/parameter section
+        /// @{
         template<typename TYPE> TYPE getModelParameterEntry(std::string model,
             std::string param, std::string key) const
         {
           if (not parametersNode[model][param][key]) inifile_error().raise(LOCAL_INFO,model + "." + param + "." + key + "not found in inifile.");
           return parametersNode[model][param][key].as<TYPE>();
         }
+        bool hasModelParameterEntry(std::string model, std::string param, std::string key) const;
+        /// Return list of model names (without "adhoc" model!)
+        const std::set<std::string> getModelNames() const;
+        const std::vector<std::string> getModelParameters(std::string model) const;
+        /// @}
 
-        bool hasModelParameterEntry(std::string model, std::string param, std::string key) const
-        {
-          return parametersNode[model][param][key];
-        }
-
-        // Return list of model names (without "adhoc" model!)
-        const std::vector<std::string> getModelNames() const
-        {
-          std::vector<std::string> result;
-          for (YAML::const_iterator it = parametersNode.begin(); it!=parametersNode.end(); ++it)
-          {
-            if (it->first.as<std::string>() != "adhoc")
-              result.push_back( it->first.as<std::string>() );
-          }
-          return result;
-        }
-
-        const std::vector<std::string> getModelParameters(std::string model) const
-        {
-          std::vector<std::string> result;
-          if (parametersNode[model])
-          {
-            for (YAML::const_iterator it = parametersNode[model].begin(); it!=parametersNode[model].end(); ++it)
-            {
-              result.push_back( it->first.as<std::string>() );
-            }
-          }
-          return result;
-        }
-
-        // Greg: added getOptions
-        const Options getOptions(std::string key) const
-        {
-          if (hasKey(key, "options"))
-          {
-            return Options(keyValuePairNode[key]["options"]);
-          }
-          else
-          {
-            return Options(keyValuePairNode[key]);
-          }
-        }
+        /// Getter for options
+        const Options getOptions(std::string key) const;
 
       private:
         YAML::Node keyValuePairNode;
@@ -260,12 +217,10 @@ namespace Gambit
         YAML::Node priorsNode;
         YAML::Node printerNode;
         YAML::Node scannerNode;
-        // Central inifile structures: observables and scan parameteres 
         ObservablesType observables;
         ObservablesType auxiliaries;
+
     };
-
-
 
 
   }

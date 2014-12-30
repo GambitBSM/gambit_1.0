@@ -48,12 +48,12 @@ namespace Gambit
         
     /// Model activation function
     /// Returns a vector of primary_model_functors to be activated, according to the model(s) being scanned
-    primodel_vec ModelFunctorClaw::getPrimaryModelFunctorsToActivate (std::vector<str> selectedmodels, const primodel_vec& primaryModelFunctors)
+    primodel_vec ModelFunctorClaw::getPrimaryModelFunctorsToActivate (std::set<str> selectedmodels, const primodel_vec& primaryModelFunctors)
     {
       // Holder for result
       primodel_vec result;
       // Iterator to elements of 'selectedmodels'
-      std::vector<str>::iterator el;      
+      std::set<str>::iterator el;      
 
       // Loop through functor list and activate functor if it matches a member of 'selectedmodels'.
       for (primodel_vec::const_iterator 
@@ -73,7 +73,7 @@ namespace Gambit
           // Add it to the vector of primary model functors to make active (to be returned)
           result.push_back(*it);
           // Add it to the internal list of active models
-          activemodels.push_back(*el);
+          activemodels.insert(*el);
           // Remove it from the input 'selectedmodels' list
           selectedmodels.erase(el);
         } 
@@ -87,7 +87,7 @@ namespace Gambit
         errmsg    += "scanning! Probably they have not been defined, or you spelled  \n";
         errmsg    += "their name wrong in the ini file.                              \n";
         errmsg    += "Un-activatable models:                                         \n";
-        for (std::vector<str>::iterator m = selectedmodels.begin(); m != selectedmodels.end(); ++m)
+        for (std::set<str>::iterator m = selectedmodels.begin(); m != selectedmodels.end(); ++m)
         {
           errmsg    += ("  " + *m + "\n");
         }
@@ -102,7 +102,7 @@ namespace Gambit
     const std::set<str>& ModelFunctorClaw::get_allmodels() const { return allmodelnames; }
 
     /// Retrieve the internally stored vector of activated models
-    std::vector<str> ModelFunctorClaw::get_activemodels() const { return activemodels; }
+    std::set<str> ModelFunctorClaw::get_activemodels() const { return activemodels; }
 
     /// Active model functor "usefulness" checker
     ///

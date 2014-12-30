@@ -106,14 +106,15 @@ Scanner:
       options:
         some_param: 10
       parameters:
-        default_params:
-          default_number: 2
-          default_prefix: params
+        param...2:
           range: [-10, 10]
-        #param_0:
-        #  range: [-10, 10]
-        #param_1:
-        #  range: [-10, 10]
+          
+    square_grid:
+      plugin: square_grid
+      verion: ">=1.0"
+      options:
+        purpose: Likelihood
+        grid_pts: 3 #NxN grid
             
 ###############################
 # Observables of interest
@@ -213,6 +214,8 @@ KeyValues:
   another_key:
     subkey3:
       subsubkey1: value2
+
+  rng: ranlux48
 
   dependency_resolution:
     prefer_model_specific_functions: true

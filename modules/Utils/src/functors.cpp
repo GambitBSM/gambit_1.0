@@ -177,89 +177,95 @@ namespace Gambit
     }
 
     /// Getter for listing currently activated dependencies
-    std::vector<sspair> functor::dependencies()          
+    std::set<sspair> functor::dependencies()          
     { 
       utils_error().raise(LOCAL_INFO,"The dependencies method has not been defined in this class.");
-      std::vector<sspair> empty;
+      std::set<sspair> empty;
       return empty;
     }
     /// Getter for listing backend requirement groups
-    std::vector<str> functor::backendgroups()                   
+    std::set<str> functor::backendgroups()                   
     {
       utils_error().raise(LOCAL_INFO,"The backendgroups method has not been defined in this class.");
-      std::vector<str> empty;
+      std::set<str> empty;
       return empty;
     }
     /// Getter for listing all backend requirements
-    std::vector<sspair> functor::backendreqs()                   
+    std::set<sspair> functor::backendreqs()                   
     {
       utils_error().raise(LOCAL_INFO,"The backendreqs method has not been defined in this class.");
-      std::vector<sspair> empty;
+      std::set<sspair> empty;
       return empty;
     }
     /// Getter for listing backend requirements from a specific group
-    std::vector<sspair> functor::backendreqs(str)                   
+    std::set<sspair> functor::backendreqs(str)                   
     {
       utils_error().raise(LOCAL_INFO,"The backendreqs method has not been defined in this class.");
-      std::vector<sspair> empty;
+      std::set<sspair> empty;
       return empty;
     }
     /// Getter for listing permitted backends
-    std::vector<sspair> functor::backendspermitted(sspair) 
+    std::set<sspair> functor::backendspermitted(sspair) 
     { 
       utils_error().raise(LOCAL_INFO,"The backendspermitted method has not been defined in this class.");
-      std::vector<sspair> empty;
+      std::set<sspair> empty;
       return empty;
     }
     /// Getter for listing tags associated with backend requirements
-    std::vector<str> functor::backendreq_tags(sspair)
+    std::set<str> functor::backendreq_tags(sspair)
     { 
       utils_error().raise(LOCAL_INFO,"The backendreq_tags method has not been defined in this class.");
-      std::vector<str> empty;
+      std::set<str> empty;
       return empty;
     }
     /// Getter for listing backend requirements that must be resolved from the same backend
-    std::vector<sspair> functor::forcematchingbackend(str)
+    std::set<sspair> functor::forcematchingbackend(str)
     { 
       utils_error().raise(LOCAL_INFO,"The forcematchingbackend method has not been defined in this class.");
-      std::vector<sspair> empty;
+      std::set<sspair> empty;
       return empty;
     }
 
     /// Getter for listing backend-specific conditional dependencies (4-string version)
-    std::vector<sspair> functor::backend_conditional_dependencies (str, str, str, str)  
+    std::set<sspair> functor::backend_conditional_dependencies (str, str, str, str)  
     { 
       utils_error().raise(LOCAL_INFO,"The backend_conditional_dependencies method has not been defined in this class.");
-      std::vector<sspair> empty;
+      std::set<sspair> empty;
       return empty;
     }
     
+    /// Tell the functor that the loop it manages should break now.
+    void functor::breakLoop()
+    { 
+      utils_error().raise(LOCAL_INFO,"The breakLoop method has not been defined in this class.");
+    }
+
     /// Getter for backend-specific conditional dependencies (3-string version)
-    std::vector<sspair> functor::backend_conditional_dependencies (str req, str type, str be)  
+    std::set<sspair> functor::backend_conditional_dependencies (str req, str type, str be)  
     { 
       return backend_conditional_dependencies(req, type, be, "any");
     }
     
     /// Getter for backend-specific conditional dependencies (backend functor pointer version)
-    std::vector<sspair> functor::backend_conditional_dependencies (functor* be_functor)  
+    std::set<sspair> functor::backend_conditional_dependencies (functor* be_functor)  
     { 
       return backend_conditional_dependencies (be_functor->capability(), be_functor->type(),
        be_functor->origin(), be_functor->version());
     }
 
     /// Getter for listing model-specific conditional dependencies
-    std::vector<sspair> functor::model_conditional_dependencies (str)
+    std::set<sspair> functor::model_conditional_dependencies (str)
     { 
       utils_error().raise(LOCAL_INFO,"The model_conditional_dependencies method has not been defined in this class.");
-      std::vector<sspair> empty;
+      std::set<sspair> empty;
       return empty;
     }
 
     /// Getter for listing model-specific conditional backend requirements
-    std::vector<sspair> functor::model_conditional_backend_reqs (str)
+    std::set<sspair> functor::model_conditional_backend_reqs (str)
     { 
       utils_error().raise(LOCAL_INFO,"The model_conditional_backend_reqs method has not been defined in this class.");
-      std::vector<sspair> empty;
+      std::set<sspair> empty;
       return empty;
     }
 
@@ -267,6 +273,12 @@ namespace Gambit
     void functor::resolveDependency (functor*)
     {
       utils_error().raise(LOCAL_INFO,"The resolveDependency method has not been defined in this class.");
+    }
+
+    // Set this functor's loop manager (if it has one)
+    void functor::resolveLoopManager (functor*)
+    {
+      utils_error().raise(LOCAL_INFO,"The resolveLoopManager method has not been defined in this class.");
     }
 
     /// Resolve a backend requirement using a pointer to another functor object
@@ -327,19 +339,19 @@ namespace Gambit
     void functor::setAllowedModel(str model) { allowedModels.insert(model); }
 
     /// Test whether the functor is allowed (either explicitly or implicitly) to be used with a given combination of models
-    bool functor::modelComboAllowed(std::vector<str> combo)
+    bool functor::modelComboAllowed(std::set<str> combo)
     {
       // If any model in the combo is always allowed, then give the combo a thumbs up.
-      for(std::vector<str>::const_iterator model = combo.begin(); model != combo.end(); model++)
+      for(std::set<str>::const_iterator model = combo.begin(); model != combo.end(); model++)
       {
         if (modelAllowed(*model)) return true;
       }
       // Loop over the allowed combinations, and check if the passed combo matches any of them
-      for(std::set<std::vector<str> >::const_iterator group_combo = allowedGroupCombos.begin(); group_combo != allowedGroupCombos.end(); group_combo++)
+      for(std::set<std::set<str> >::const_iterator group_combo = allowedGroupCombos.begin(); group_combo != allowedGroupCombos.end(); group_combo++)
       {  
         bool matches = true;
         //Loop over each group in the allowed group combination, and check if one of the entries in the passed model combination matches it somehow.
-        for(std::vector<str>::const_iterator group = group_combo->begin(); group != group_combo->end(); group++)
+        for(std::set<str>::const_iterator group = group_combo->begin(); group != group_combo->end(); group++)
         {
           matches = matches and contains_anything_interpretable_as_member_of(combo, *group);
           if (not matches) break;
@@ -351,19 +363,19 @@ namespace Gambit
     }
 
     /// Test whether the functor has been explictly allowed to be used with a given combination of models 
-    bool functor::modelComboExplicitlyAllowed(std::vector<str> combo)
+    bool functor::modelComboExplicitlyAllowed(std::set<str> combo)
     {
       // If any model in the combo is always explicitly allowed, then give the combo a thumbs up.
-      for(std::vector<str>::const_iterator model = combo.begin(); model != combo.end(); model++)
+      for(std::set<str>::const_iterator model = combo.begin(); model != combo.end(); model++)
       {
         if (modelExplicitlyAllowed(*model)) return true;
       }
       // Loop over the allowed combinations, and check if the passed combo matches any of them
-      for(std::set<std::vector<str> >::const_iterator group_combo = allowedGroupCombos.begin(); group_combo != allowedGroupCombos.end(); group_combo++)
+      for(std::set<std::set<str> >::const_iterator group_combo = allowedGroupCombos.begin(); group_combo != allowedGroupCombos.end(); group_combo++)
       {
         bool matches = true;
         //Loop over each group in the allowed group combination, and check if one of the entries in the passed model combination matches it explicitly.
-        for(std::vector<str>::const_iterator group = group_combo->begin(); group != group_combo->end(); group++)
+        for(std::set<str>::const_iterator group = group_combo->begin(); group != group_combo->end(); group++)
         {
           matches = matches and has_common_elements(combo, *group);
           if (not matches) break;
@@ -389,7 +401,8 @@ namespace Gambit
     {
       //Strip the group combo of its parentheses, then split it and save it in the vector of allowed combos
       Utils::strip_parentheses(groups);
-      std::vector<str> group_combo = Utils::delimiterSplit(groups, ",");
+      std::vector<str> v = Utils::delimiterSplit(groups, ",");
+      std::set<str> group_combo(v.begin(), v.end());
       allowedGroupCombos.insert(group_combo);
     }
 
@@ -437,10 +450,10 @@ namespace Gambit
       // If the model is allowed on its own, just give the thumbs up immediately.
       if (modelAllowed(model)) return true;
       // Loop over the allowed combinations, and check if the passed model matches anything in any of them
-      for(std::set<std::vector<str> >::const_iterator group_combo = allowedGroupCombos.begin(); group_combo != allowedGroupCombos.end(); group_combo++)
+      for(std::set<std::set<str> >::const_iterator group_combo = allowedGroupCombos.begin(); group_combo != allowedGroupCombos.end(); group_combo++)
       {
         //Loop over each group in the allowed group combination, and check if the model is interpretable as a model in the group.
-        for(std::vector<str>::const_iterator group = group_combo->begin(); group != group_combo->end(); group++)
+        for(std::set<str>::const_iterator group = group_combo->begin(); group != group_combo->end(); group++)
         {
           // Work through the members of the model group
           std::set<str> models = modelGroups.at(*group);
@@ -457,7 +470,7 @@ namespace Gambit
     }
 
     /// Test whether any of the entries in a given model group is a valid interpretation of any members in a given combination
-    inline bool functor::contains_anything_interpretable_as_member_of(std::vector<str> combo, str group)
+    inline bool functor::contains_anything_interpretable_as_member_of(std::set<str> combo, str group)
     {
       // Work through the members of the model group
       std::set<str> models = modelGroups.at(group);
@@ -466,7 +479,7 @@ namespace Gambit
         if (myClaw->model_exists(*it))
         {
           // Work through the members of the combination
-          for (std::vector<str>::const_iterator jt = combo.begin() ; jt != combo.end(); ++jt)
+          for (std::set<str>::const_iterator jt = combo.begin() ; jt != combo.end(); ++jt)
           {
             if (myClaw->model_exists(*jt))
             {
@@ -479,7 +492,7 @@ namespace Gambit
     }
 
     /// Work out whether a given combination of models and a model group have any elements in common
-    inline bool functor::has_common_elements(std::vector<str> combo, str group)
+    inline bool functor::has_common_elements(std::set<str> combo, str group)
     {
       // Work through the members of the model group
       std::set<str> models = modelGroups.at(group);
@@ -491,9 +504,9 @@ namespace Gambit
     }
 
     /// Try to find a parent or friend model in some user-supplied map from models to sspair vectors
-    str functor::find_friend_or_parent_model_in_map(str model, std::map< str, std::vector<sspair> > karta)
+    str functor::find_friend_or_parent_model_in_map(str model, std::map< str, std::set<sspair> > karta)
     {
-      for (std::map< str, std::vector<sspair> >::reverse_iterator it = karta.rbegin() ; it != karta.rend(); ++it)
+      for (std::map< str, std::set<sspair> >::reverse_iterator it = karta.rbegin() ; it != karta.rend(); ++it)
       {
         if (myClaw->model_exists(it->first))
         {
@@ -511,18 +524,17 @@ namespace Gambit
                                                  str result_type,
                                                  str origin_name,
                                                  Models::ModelFunctorClaw &claw)
-    : functor                 (func_name, func_capability, result_type, origin_name, claw),
-      runtime_average         (FUNCTORS_RUNTIME_INIT),           // default 1 micro second
-      fadeRate                (FUNCTORS_FADE_RATE),              // can be set individually for each functor
-      pInvalidation           (FUNCTORS_BASE_INVALIDATION_RATE),
-      iCanManageLoops         (false),
-      iRunNested              (false),
-      myLoopManagerCapability ("none"),
-      myLoopManagerName       ("none"),
-      myLoopManagerOrigin     ("none"),
-      myCurrentIteration      (NULL),
-      globlMaxThreads         (omp_get_max_threads()),
-      myLogTag                (-1)
+    : functor                  (func_name, func_capability, result_type, origin_name, claw),
+      runtime_average          (FUNCTORS_RUNTIME_INIT),           // default 1 micro second
+      fadeRate                 (FUNCTORS_FADE_RATE),              // can be set individually for each functor
+      pInvalidation            (FUNCTORS_BASE_INVALIDATION_RATE),
+      iCanManageLoops          (false),
+      iRunNested               (false),
+      myLoopManagerCapability  ("none"),
+      myLoopManager            (NULL),
+      myCurrentIteration       (NULL),
+      globlMaxThreads          (omp_get_max_threads()),
+      myLogTag                 (-1)
     {
       if (globlMaxThreads == 0) utils_error().raise(LOCAL_INFO,"Cannot determine number of hardware threads available on this system.");
 
@@ -560,6 +572,7 @@ namespace Gambit
     void module_functor_common::reset()
     {
       needs_recalculating = true;
+      if (iCanManageLoops) resetLoop();
     }
 
     /// Tell the functor that it invalidated the current point in model space, pass a message explaining why, and throw an exception.
@@ -590,11 +603,20 @@ namespace Gambit
       fadeRate = new_rate;
     }
 
-    /// Return a safe pointer to the vector of models that this functor is currently configured to run with.
-    safe_ptr< std::vector<str> > module_functor_common::getModels()
+    /// Indicate whether or not a known model is activated or not.
+    bool module_functor_common::getActiveModelFlag(str model)
     {
-      if (this == NULL) functor::failBigTime("getModels");
-      return safe_ptr< std::vector<str> >(&myModels);       
+      if (this == NULL) functor::failBigTime("getActiveModelFlag");
+      if (activeModelFlags.find(model) == activeModelFlags.end())
+      {
+        std::ostringstream ss;
+        ss << "Problem with ModelInUse(\"" << model << "\")." << endl
+           << "This model is not known by " << myOrigin << "::" << myName << "." << endl
+           << "Please make sure that it has been mentioned in some context in the" << endl
+           << "rollcall header declaration of this function."; 
+        model_error().raise(LOCAL_INFO,ss.str());
+      }
+      return activeModelFlags.at(model);       
     }
 
     /// Return a safe pointer to a string indicating which backend requirement has been activated for a given backend group.
@@ -627,6 +649,38 @@ namespace Gambit
       std::fill(myCurrentIteration, myCurrentIteration+nslots, 0); // Zero them to start off
     }
 
+    /// Tell the manager of the loop in which this functor runs that it is time to break the loop.
+    void module_functor_common::breakLoopFromManagedFunctor()
+    {
+      if (myLoopManager == NULL)
+      {
+        str errmsg = "Problem whilst attempting to break out of loop:";
+        errmsg +=  "\n Loop Manager not properly defined." 
+                   "\n This is " + this->name() + " in " + this->origin() + ".";
+        utils_error().raise(LOCAL_INFO,errmsg); //FIXME this seems to cause a crash if it is ever triggered -- why??
+      }
+      else
+      {
+        myLoopManager->breakLoop();
+      }
+    }
+
+    /// Tell the functor that the loop it manages should break now.
+    void module_functor_common::breakLoop() { myLoopIsDone = true; }
+
+    /// Return a safe pointer to the flag indicating that a loop managed by this functor should break now.
+    safe_ptr<bool> module_functor_common::loopIsDone() 
+    {
+      if (this == NULL) functor::failBigTime("loopIsDone");
+      return safe_ptr<bool>(&myLoopIsDone); 
+    }
+
+    /// Provide a way to reset the flag indicating that a loop managed by this functor should break.
+    void module_functor_common::resetLoop() 
+    {
+      myLoopIsDone = false;
+    }
+
     /// Setter for setting the iteration number in the loop in which this functor runs
     void module_functor_common::setIteration (int iteration)
     {
@@ -652,18 +706,18 @@ namespace Gambit
     /// Getter for revealing the required capability of the wrapped function's loop manager
     str module_functor_common::loopManagerCapability() { if (this == NULL) failBigTime("loopManagerCapability"); return myLoopManagerCapability; }
     /// Getter for revealing the name of the wrapped function's assigned loop manager
-    str module_functor_common::loopManagerName() { if (this == NULL) failBigTime("loopManagerName"); return myLoopManagerName; }
+    str module_functor_common::loopManagerName() { if (this == NULL) failBigTime("loopManagerName"); return (myLoopManager == NULL ? "none" : myLoopManager->name()); }
     /// Getter for revealing the module of the wrapped function's assigned loop manager
-    str module_functor_common::loopManagerOrigin() { if (this == NULL) failBigTime("loopManagerOrigin"); return myLoopManagerOrigin; }
+    str module_functor_common::loopManagerOrigin() { if (this == NULL) failBigTime("loopManagerOrigin"); return (myLoopManager == NULL ? "none" : myLoopManager->origin()); }
 
     /// Getter for listing currently activated dependencies
-    std::vector<sspair> module_functor_common::dependencies() { return myDependencies; }
+    std::set<sspair> module_functor_common::dependencies() { return myDependencies; }
     /// Getter for listing backend requirement groups
-    std::vector<str> module_functor_common::backendgroups() { return myGroups; }                    
+    std::set<str> module_functor_common::backendgroups() { return myGroups; }                    
     /// Getter for listing all backend requirements
-    std::vector<sspair> module_functor_common::backendreqs() { return myResolvableBackendReqs; }
+    std::set<sspair> module_functor_common::backendreqs() { return myResolvableBackendReqs; }
     /// Getter for listing backend requirements from a specific group
-    std::vector<sspair> module_functor_common::backendreqs(str group)
+    std::set<sspair> module_functor_common::backendreqs(str group)
     { 
       if (myGroupedBackendReqs.find(group) != myGroupedBackendReqs.end())
       {
@@ -671,12 +725,12 @@ namespace Gambit
       }
       else
       {
-        std::vector<sspair> empty;
+        std::set<sspair> empty;
         return empty;
       }
     }
     /// Getter for listing permitted backends
-    std::vector<sspair> module_functor_common::backendspermitted(sspair quant) 
+    std::set<sspair> module_functor_common::backendspermitted(sspair quant) 
     { 
       if (permitted_map.find(quant) != permitted_map.end())
       {
@@ -684,12 +738,12 @@ namespace Gambit
       }
       else
       {
-        std::vector<sspair> empty;
+        std::set<sspair> empty;
         return empty;
       }
     }
     /// Getter for listing tags associated with backend requirements
-    std::vector<str> module_functor_common::backendreq_tags(sspair quant)
+    std::set<str> module_functor_common::backendreq_tags(sspair quant)
     { 
       if (backendreq_tagmap.find(quant) != backendreq_tagmap.end())
       {
@@ -697,12 +751,12 @@ namespace Gambit
       }
       else
       {
-        std::vector<str> empty;
+        std::set<str> empty;
         return empty;
       }
     }
     /// Getter for listing backend requirements that must be resolved from the same backend
-    std::vector<sspair> module_functor_common::forcematchingbackend(str tag)
+    std::set<sspair> module_functor_common::forcematchingbackend(str tag)
     { 
       if (myForcedMatches.find(tag) != myForcedMatches.end())
       {
@@ -710,15 +764,15 @@ namespace Gambit
       }
       else
       {
-        std::vector<sspair> empty;
+        std::set<sspair> empty;
         return empty;
       }
     }
 
     /// Getter for listing backend-specific conditional dependencies (4-string version)
-    std::vector<sspair> module_functor_common::backend_conditional_dependencies (str req, str type, str be, str ver)  
+    std::set<sspair> module_functor_common::backend_conditional_dependencies (str req, str type, str be, str ver)  
     { 
-      std::vector<sspair> generic_deps, specific_deps, total_deps;
+      std::set<sspair> generic_deps, specific_deps, total_deps;
       std::vector<str> quad;
       quad.push_back(req);
       quad.push_back(type);
@@ -735,40 +789,39 @@ namespace Gambit
         specific_deps = myBackendConditionalDependencies[quad];
       }
       //Now put them together
-      total_deps.reserve(generic_deps.size() + specific_deps.size());
-      total_deps.insert(total_deps.end(), generic_deps.begin(), generic_deps.end());
-      total_deps.insert(total_deps.end(), specific_deps.begin(), specific_deps.end());        
+      total_deps.insert(generic_deps.begin(), generic_deps.end());
+      total_deps.insert(specific_deps.begin(), specific_deps.end());        
       return total_deps;
     }
     
     /// Getter for backend-specific conditional dependencies (3-string version)
-    std::vector<sspair> module_functor_common::backend_conditional_dependencies (str req, str type, str be)  
+    std::set<sspair> module_functor_common::backend_conditional_dependencies (str req, str type, str be)  
     { 
       return backend_conditional_dependencies(req, type, be, "any");
     }
     
     /// Getter for backend-specific conditional dependencies (backend functor pointer version)
-    std::vector<sspair> module_functor_common::backend_conditional_dependencies (functor* be_functor)  
+    std::set<sspair> module_functor_common::backend_conditional_dependencies (functor* be_functor)  
     { 
       return backend_conditional_dependencies (be_functor->capability(), be_functor->type(),
        be_functor->origin(), be_functor->version());
     }
 
     /// Getter for listing model-specific conditional dependencies
-    std::vector<sspair> module_functor_common::model_conditional_dependencies (str model)
+    std::set<sspair> module_functor_common::model_conditional_dependencies (str model)
     { 
       str parent = find_friend_or_parent_model_in_map(model,myModelConditionalDependencies);
       if (parent != "") return myModelConditionalDependencies[parent];
-      std::vector<sspair> empty;
+      std::set<sspair> empty;
       return empty;
     }
 
     /// Getter for listing model-specific conditional backend requirements
-    std::vector<sspair> module_functor_common::model_conditional_backend_reqs (str model)
+    std::set<sspair> module_functor_common::model_conditional_backend_reqs (str model)
     { 
       str parent = find_friend_or_parent_model_in_map(model,myModelConditionalBackendReqs);
       if (parent != "") return myModelConditionalBackendReqs[parent];
-      std::vector<sspair> empty;
+      std::set<sspair> empty;
       return empty;
     }
 
@@ -776,7 +829,7 @@ namespace Gambit
     void module_functor_common::setDependency(str dep, str type, void(*resolver)(functor*, module_functor_common*), str purpose)
     {
       sspair key (dep, Utils::fix_type(type));
-      myDependencies.push_back(key);
+      myDependencies.insert(key);
       dependency_map[key] = resolver;
       this->myPurpose = purpose; // only relevant for output nodes
     }
@@ -816,10 +869,10 @@ namespace Gambit
       }
       if (myBackendConditionalDependencies.find(quad) == myBackendConditionalDependencies.end())
       {
-        std::vector<sspair> newvec;
+        std::set<sspair> newvec;
         myBackendConditionalDependencies[quad] = newvec;
       }
-      myBackendConditionalDependencies[quad].push_back(key);
+      myBackendConditionalDependencies[quad].insert(key);
       dependency_map[key] = resolver;
     }
 
@@ -842,10 +895,10 @@ namespace Gambit
       sspair key (dep, Utils::fix_type(dep_type));
       if (myModelConditionalDependencies.find(model) == myModelConditionalDependencies.end())
       {
-        std::vector<sspair> newvec;
+        std::set<sspair> newvec;
         myModelConditionalDependencies[model] = newvec;
       }
-      myModelConditionalDependencies[model].push_back(key);
+      myModelConditionalDependencies[model].insert(key);
       dependency_map[key] = resolver;
     }
 
@@ -856,18 +909,19 @@ namespace Gambit
       type = Utils::fix_type(type);
       sspair key (req, type);
       backendreq_types[req] = type;
-      myBackendReqs.push_back(key);
-      myResolvableBackendReqs.push_back(key);
+      myBackendReqs.insert(key);
+      myResolvableBackendReqs.insert(key);
       if ( std::find(myGroups.begin(), myGroups.end(), group) == myGroups.end() )
       {
-        myGroups.push_back(group);
-        std::vector<sspair> empty;
+        myGroups.insert(group);
+        std::set<sspair> empty;
         myGroupedBackendReqs[group] = empty;
       }
-      myGroupedBackendReqs[group].push_back(key);
+      myGroupedBackendReqs[group].insert(key);
       backendreq_map[key] = resolver;
       Utils::strip_parentheses(tags);
-      backendreq_tagmap[key] = Utils::delimiterSplit(tags, ",");      
+      std::vector<str> v = Utils::delimiterSplit(tags, ",");      
+      backendreq_tagmap[key] = std::set<str>(v.begin(), v.end());
       backendreq_groups[key] = group;
     }
 
@@ -879,14 +933,13 @@ namespace Gambit
       Utils::strip_parentheses(model);
 
       //Split the tag string and sort it.
-      std::vector<str> tags = Utils::delimiterSplit(tag, ",");
-      std::sort(tags.begin(), tags.end());
+      std::vector<str> v = Utils::delimiterSplit(tag, ",");
+      std::set<str> tags(v.begin(), v.end());
 
       //Find all declared backend requirements that fit one of the tags within the passed tag set.
-      for (std::vector<sspair>::iterator it = myBackendReqs.begin(); it != myBackendReqs.end(); ++it)
+      for (std::set<sspair>::iterator it = myBackendReqs.begin(); it != myBackendReqs.end(); ++it)
       {
-        std::vector<str> tagset = backendreq_tagmap[*it];
-        std::sort(tagset.begin(), tagset.end());
+        std::set<str> tagset = backendreq_tagmap[*it];
         if (not Utils::is_disjoint(tags, tagset))
         {
           // Make each of the matching backend requirements conditional on the models passed in.
@@ -915,21 +968,15 @@ namespace Gambit
       sspair key (req, Utils::fix_type(type));
 
       // Remove the entry from the resolvable backend reqs list...
-      myResolvableBackendReqs.erase(std::remove(myResolvableBackendReqs.begin(), 
-       myResolvableBackendReqs.end(), key), myResolvableBackendReqs.end());
-
-      // Remove the entry from the resolvable backend reqs list of the group this req is in...
-      std::vector<sspair>* resolvableGroupBackendReqs = &(myGroupedBackendReqs[backendreq_groups[key]]);
-      resolvableGroupBackendReqs->erase(std::remove(resolvableGroupBackendReqs->begin(), 
-       resolvableGroupBackendReqs->end(), key), resolvableGroupBackendReqs->end());
+      myResolvableBackendReqs.erase(key);
 
       // Check that the model is not already in the conditional backend reqs list, then add it
       if (myModelConditionalBackendReqs.find(model) == myModelConditionalBackendReqs.end())
       {
-        std::vector<sspair> newvec;
+        std::set<sspair> newvec;
         myModelConditionalBackendReqs[model] = newvec;
       }
-      myModelConditionalBackendReqs[model].push_back(key);
+      myModelConditionalBackendReqs[model].insert(key);
     }
 
     /// Add a rule for dictating which backends can be used to fulfill which backend requirements.
@@ -938,7 +985,8 @@ namespace Gambit
       //Strip the tag and be-ver strings of their parentheses, then split them
       Utils::strip_parentheses(tag);
       Utils::strip_parentheses(be_and_ver);
-      std::vector<str> tags = Utils::delimiterSplit(tag, ",");
+      std::vector<str> v = Utils::delimiterSplit(tag, ",");
+      std::set<str> tags(v.begin(), v.end());
       std::vector<str> be_plus_versions = Utils::delimiterSplit(be_and_ver, ",");
 
       //Die if no backend and/or no tags were given.      
@@ -950,19 +998,15 @@ namespace Gambit
         utils_error().raise(LOCAL_INFO,errmsg);
       }
      
-      //Sort the tags vector.
-      std::sort(tags.begin(), tags.end());
-
       //Seperate the backend from the versions
       str be = be_plus_versions.at(0);
       std::vector<str> versions(be_plus_versions.begin()+1,be_plus_versions.end());
       if (versions.empty()) versions.push_back("any");
 
       //Find all declared backend requirements that fit one of the tags within the passed tag set.
-      for (std::vector<sspair>::iterator it = myBackendReqs.begin(); it != myBackendReqs.end(); ++it)
+      for (std::set<sspair>::iterator it = myBackendReqs.begin(); it != myBackendReqs.end(); ++it)
       {
-        std::vector<str> tagset = backendreq_tagmap[*it];
-        std::sort(tagset.begin(), tagset.end());
+        std::set<str> tagset = backendreq_tagmap[*it];
         if (not Utils::is_disjoint(tags, tagset))
         {
           // For each of the matching backend requirements, set the chosen backend-version pairs as permitted 
@@ -994,10 +1038,10 @@ namespace Gambit
       sspair vector_entry (be,  ver);
       if (permitted_map.find(key) == permitted_map.end())
       {
-        std::vector<sspair> newvec;
+        std::set<sspair> newvec;
         permitted_map[key] = newvec;
       }
-      permitted_map[key].push_back(vector_entry);       
+      permitted_map[key].insert(vector_entry);       
     }
 
     /// Add one or more rules that force backends reqs with the same tag to always be resolved from the same backend.
@@ -1019,16 +1063,16 @@ namespace Gambit
       //Work with one tag at a time
       for (std::vector<str>::iterator tagit = tags.begin(); tagit != tags.end(); ++tagit)
       {
-        std::vector<sspair> matches;
+        std::set<sspair> matches;
         //Find all declared backend requirements that fit the current tag
-        for (std::vector<sspair>::iterator it = myBackendReqs.begin(); it != myBackendReqs.end(); ++it)
+        for (std::set<sspair>::iterator it = myBackendReqs.begin(); it != myBackendReqs.end(); ++it)
         {
           //Test if the current tag is amongst the tags listed for the current backend requirement
-          std::vector<str> its_tags = backendreq_tagmap[*it];
+          std::set<str> its_tags = backendreq_tagmap[*it];
           if ( std::find(its_tags.begin(), its_tags.end(), *tagit) != its_tags.end() )
           {
             //It is; now place the current backend requirement into the set of matches
-            matches.push_back(*it);
+            matches.insert(*it);
           }
         }
         //Save the matched set of backend requirements as needing to be filled using the same backend.
@@ -1099,13 +1143,21 @@ namespace Gambit
         if (dependency_map.find(key) != dependency_map.end()) (*dependency_map[key])(dep_functor,this);
         // propagate purpose from next to next-to-output nodes
         dep_functor->setPurpose(this->myPurpose);
-        // save the identity of this functor's loop manager (if it has one)
-        if (dep_functor->capability() == myLoopManagerCapability and dep_functor->canBeLoopManager()) 
-        { 
-          myLoopManagerName = dep_functor->name();
-          myLoopManagerOrigin = dep_functor->origin();
-        }
       }
+    }
+
+    // Set this functor's loop manager (if it has one)
+    void module_functor_common::resolveLoopManager (functor* dep_functor)
+    { 
+      if (dep_functor->capability() != myLoopManagerCapability or not dep_functor->canBeLoopManager()) 
+      {                                                                      
+        sspair key (dep_functor->quantity());
+        str errmsg = "Cannot set loop manager for nested functor:";
+        errmsg +=  "\nFunction " + myName + " in " + myOrigin + " does not need a loop manager with"
+                   "\ncapability " + key.first + ".";
+        utils_error().raise(LOCAL_INFO,errmsg);
+      }
+      myLoopManager = dep_functor;
     }
 
     /// Resolve a backend requirement using a pointer to another functor object
@@ -1139,17 +1191,17 @@ namespace Gambit
           be_functor->setStatus(2);
        
           //If this is also the condition under which any backend-conditional dependencies should be activated, do it.
-          std::vector<sspair> deps_to_activate = backend_conditional_dependencies(be_functor);
-          for (std::vector<sspair>::iterator it = deps_to_activate.begin() ; it != deps_to_activate.end(); ++it)
+          std::set<sspair> deps_to_activate = backend_conditional_dependencies(be_functor);
+          for (std::set<sspair>::iterator it = deps_to_activate.begin() ; it != deps_to_activate.end(); ++it)
           {
-            myDependencies.push_back(*it);        
+            myDependencies.insert(*it);        
           }
    
           // Add a dependency on the initialisation function of the backend that this backend function hails from (if not done already).          
           sspair be_ini_quantity(be_functor->origin() + "_" + be_functor->safe_version() + "_init", "void");
           if (std::find(myDependencies.begin(), myDependencies.end(), be_ini_quantity) == myDependencies.end()) 
           {
-            myDependencies.push_back(be_ini_quantity);
+            myDependencies.insert(be_ini_quantity);
           }
 
           //Check if this backend requirement is part of a group.
@@ -1209,22 +1261,42 @@ namespace Gambit
     /// Notify the functor that a certain model is being scanned, so that it can activate its dependencies and backend reqs accordingly.
     void module_functor_common::notifyOfModel(str model)
     {
-      //Add the model to the internal list of models being scanned.
-      myModels.push_back(model);
-      //If this model fits any conditional dependencies (or descended from one that can be interpreted as one that fits any), then activate them.
-      std::vector<sspair> deps_to_activate = model_conditional_dependencies(model);          
-      for (std::vector<sspair>::iterator it = deps_to_activate.begin() ; it != deps_to_activate.end(); ++it)
+      // Construct the list of known models only if it doesn't yet exist
+      if (activeModelFlags.empty()) 
       {
-        myDependencies.push_back(*it);        
+        // First get all the explicitly allowed models.
+        for (auto it = allowedModels.begin(); it != allowedModels.end(); ++it) { activeModelFlags[*it] = false; }
+        // Next get all the models in groups
+        for (auto it = modelGroups.begin(); it != modelGroups.end(); ++it)
+        { for (auto jt = it->second.begin(); jt != it->second.end(); ++jt) { activeModelFlags[*jt] = false; } }
+        // Next get all the models mentioned in conditional dependencies and backend reqs
+        for (auto it = myModelConditionalDependencies.begin(); it != myModelConditionalDependencies.end(); ++it) { activeModelFlags[it->first] = false; }
+        for (auto it = myModelConditionalBackendReqs.begin();  it != myModelConditionalBackendReqs.end();  ++it) { activeModelFlags[it->first] = false; }
       }
-      //If this model fits any conditional backend requirements (or descended from one that can be interpreted as one that fits any), then activate them.
-      std::vector<sspair> backend_reqs_to_activate = model_conditional_backend_reqs(model);
+
+      // Now activate the flags for the models that are being used.
+      for (auto it = activeModelFlags.begin(); it != activeModelFlags.end(); ++it)
+      {
+        if (myClaw->model_exists(it->first))
+        {
+          if (myClaw->downstream_of(model, it->first)) it->second = true;
+        } 
+      }
+
+      // If this model fits any conditional dependencies (or descended from one that can be interpreted as one that fits any), then activate them.
+      std::set<sspair> deps_to_activate = model_conditional_dependencies(model);          
+      for (std::set<sspair>::iterator it = deps_to_activate.begin() ; it != deps_to_activate.end(); ++it)
+      {
+        myDependencies.insert(*it);        
+      }
+      // If this model fits any conditional backend requirements (or descended from one that can be interpreted as one that fits any), then activate them.
+      std::set<sspair> backend_reqs_to_activate = model_conditional_backend_reqs(model);
       if (verbose) cout << "model: " << model << endl;
-      for (std::vector<sspair>::iterator it = backend_reqs_to_activate.begin() ; it != backend_reqs_to_activate.end(); ++it)
+      for (std::set<sspair>::iterator it = backend_reqs_to_activate.begin() ; it != backend_reqs_to_activate.end(); ++it)
       {
         if (verbose) cout << "req: " << it->first << " " << it->second << endl;
-        myResolvableBackendReqs.push_back(*it);
-        myGroupedBackendReqs[backendreq_groups[*it]].push_back(*it);
+        myResolvableBackendReqs.insert(*it);
+        myGroupedBackendReqs[backendreq_groups[*it]].insert(*it);
       }
     }
 

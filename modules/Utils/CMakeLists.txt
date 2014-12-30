@@ -4,6 +4,7 @@ set(source_files src/equivalency_singleton.cpp
                  src/standalone_error_handlers.cpp
                  src/stream_overloads.cpp
                  src/terminator.cpp
+                 src/threadsafe_rng.cpp
                  src/type_equivalency.cpp
                  src/util_functions.cpp
                  src/ASCIItableReader.cpp
@@ -28,6 +29,7 @@ set(header_files include/SLHA_readers.hpp
                  include/static_members.hpp
                  include/stream_overloads.hpp
                  include/terminator.hpp
+                 include/threadsafe_rng.hpp
                  include/type_equivalency.hpp
                  include/type_index.hpp
                  include/type_macros.hpp

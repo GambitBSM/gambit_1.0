@@ -19,12 +19,16 @@
 #define __static_members_hpp__
 
 #include "exceptions.hpp"
+#include "threadsafe_rng.hpp"
 
 namespace Gambit
 {
 
   /// Map of pointers to all instances of the exception class.
   std::map<const char*,exception*> exception::exception_map;
+
+  /// Pointer to chosen random number generation engine
+  Utils::threadsafe_rng* Random::local_rng = NULL;
 
 }
 

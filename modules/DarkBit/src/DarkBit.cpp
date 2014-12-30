@@ -37,6 +37,7 @@
 #include "gambit_module_headers.hpp"
 #include "DarkBit_types.hpp"
 #include "DarkBit_rollcall.hpp"
+
 #include "util_macros.hpp"
 #include "base_functions.hpp"
 
@@ -530,24 +531,266 @@ namespace Gambit {
 //
 //////////////////////////////////////////////////////////////////////////
 
-    /*
-    void decayChainLoopManager()
+
+    // Global variables needed for decay chain loop
+    bool cascadeMC_Finished;
+    enum cascadeMC_SpecialEvents {MC_INIT=-1, MC_NEXT_STATE=-2, MC_FINALIZE=-3};
+
+    // Function specifying initial states for the cascade decays
+    void cascadeMC_TestList(std::vector<std::string> &list)
     {
-      using namespace Pipes::decayChainLoopManager;
-      unsigned int nEvents = 5;
-      Loop::executeIteration(0);
-      unsigned int 
-      #pragma omp parallel shared()
-      {
-        #pragma omp for
-        for(unsigned long it = 1; it < nEvents-1; it++)
-        {
-          Loop::executeIteration(it);   
-        }
-      }
-      Loop::executeIteration(nEvents-1);
+        list.clear();
+        list.push_back("test1");
+        list.push_back("test7");        
     }
-    */
+    
+    // Function setting up the decay table used in decay chains
+    void cascadeMC_DecayTable(Gambit::DarkBit::DecayChain::DecayTable &table)
+    {           
+        using namespace DecayChain;
+        using namespace Pipes::cascadeMC_DecayTable;     
+        table = DecayTable(*Dep::TH_ProcessCatalog);
+    }
+    
+    
+    // Loop manager for cascade decays
+    void cascadeMC_LoopManager()
+    {
+        using namespace Pipes::cascadeMC_LoopManager;     
+        std::vector<std::string> chainList = *Dep::cascadeMC_ChainList;
+        
+        // TODO: Fix yaml. Hardcode for now
+        unsigned cMC_minEvents = 100;   //runOptions->getValueOrDef<unsigned>(100, "cMC_minEvents");        
+        unsigned cMC_maxEvents = 10000; //runOptions->getValueOrDef<unsigned>(10000, "cMC_maxEvents"); 
+        
+        // Initialization run
+        Loop::executeIteration(MC_INIT);
+        // Iterate over initial state particles
+        for(std::vector<std::string>::const_iterator cit =chainList.begin(); cit != chainList.end(); cit++)
+        {
+            unsigned it;
+            unsigned counter = 0;
+            bool finished = false;
+            // Set next initial state
+            Loop::executeIteration(MC_NEXT_STATE);
+            // Event generation loop
+            #pragma omp parallel private(it) shared(counter, finished)
+            {
+                while (!finished)
+                {
+                    #pragma omp critical (cascadeMC_Counter)
+                    {
+                        counter++;
+                        it = counter;
+                    }
+                    Loop::executeIteration(it);
+                    #pragma omp critical (cascadeMC_Complete)
+                        if((cascadeMC_Finished  and (it >= cMC_minEvents)) or (it >= cMC_maxEvents)) finished=true;
+                }
+            }
+        }
+        Loop::executeIteration(MC_FINALIZE);
+    }
+    
+    
+    // Function selecting initial state for decay chain
+    void cascadeMC_InitialState(std::string &pID)
+    {
+        using namespace DecayChain;
+        using namespace Pipes::cascadeMC_InitialState;  
+        std::vector<std::string> chainList = *Dep::cascadeMC_ChainList;
+        static int iteration;
+        switch(*Loop::iteration)
+        {
+            case MC_INIT:
+                iteration = -1;
+                return;
+            case MC_NEXT_STATE:
+                iteration++;
+                break;
+        }
+        if(chainList.size() <= iteration)
+        {
+            std::cout << "Error: Desync between cascadeMC_LoopManager and cascadeMC_InitialState" << std::endl;
+            exit(1);
+        }
+        else
+            pID = chainList[iteration];
+    }    
+    
+    // Event counter for cascade decays
+    void cascadeMC_EventCount(std::map<std::string, unsigned> &counts)
+    {
+        using namespace Pipes::cascadeMC_EventCount;
+        static std::map<std::string, unsigned> counters;
+        switch(*Loop::iteration)
+        {
+            case MC_INIT:
+                counters.clear();
+                break;
+            case MC_NEXT_STATE:
+                counters[*Dep::cascadeMC_InitialState] = 0;
+                break;    
+            case MC_FINALIZE:
+                // For performance, only return the actual result once finished    
+                counts=counters;
+                break;
+            default:
+                #pragma omp atomic
+                    counters[*Dep::cascadeMC_InitialState]++;
+        }
+    }    
+    
+    // Function for generating decay chains
+    void cascadeMC_GenerateChain(Gambit::DarkBit::DecayChain::ChainContainer &chain)
+    {
+        using namespace DecayChain;
+        using namespace Pipes::cascadeMC_GenerateChain;     
+        if(*Loop::iteration == MC_INIT or *Loop::iteration == MC_FINALIZE) return;
+        // Keep the below commented out until static function variable initialization in decay chain is fixed
+        //if(*Loop::iteration == MC_NEXT) return;
+        ChainParticle* chn = new ChainParticle(vec3(0), &(*Dep::cascadeMC_DecayTable), *Dep::cascadeMC_InitialState);
+
+        // TODO: Fix yaml. Hardcode for now        
+        int cMC_maxChainLength = -1; //runOptions->getValueOrDef<int>(-1, "cMC_maxChainLength");
+        double cMC_Emin  = -1;       //runOptions->getValueOrDef<double>(-1, "cMC_Emin");
+        
+        // TODO: Create thread safe random number generation
+        chn->generateDecayChainMC(cMC_maxChainLength,cMC_Emin); 
+        chain=ChainContainer(chn);
+    }
+    
+    // Function responsible for histogramming, and evaluating end conditions for event loop
+    void cascadeMC_Histograms(std::map<std::string, std::map<std::string, SimpleHist> > &result)
+    { 
+        using namespace DecayChain;
+        using namespace Pipes::cascadeMC_Histograms;   
+        // Histogram list shared between all threads
+        static std::map<std::string, std::map<std::string, SimpleHist> > histList;
+        
+        // TODO: Fix yaml. Hardcode for now
+        std::vector<std::string> cMC_finalStates; //runOptions->getValue<std::vector<std::string> >("cMC_finalStates");   
+        cMC_finalStates.push_back("test6");
+
+        switch(*Loop::iteration)
+        {
+            case MC_INIT:
+                // Initialization
+                histList.clear();
+                return;
+            case MC_NEXT_STATE:
+                // Initialize histograms and break flag.
+                cascadeMC_Finished = false;
+                for(std::vector<std::string>::const_iterator it = cMC_finalStates.begin(); it!=cMC_finalStates.end(); ++it)
+                {
+                    histList[*Dep::cascadeMC_InitialState][*it]=SimpleHist(10,0.0,1.0);
+                }
+                return;
+            case MC_FINALIZE:
+                // For performance, only return the actual result once finished
+                result = histList;
+                return;
+        }
+        // Get list of endpoint states for this chain
+        vector<const ChainParticle*> endpoints;
+        (*Dep::cascadeMC_ChainEvent).chain->collectEndpointStates(endpoints, false);
+        // Iterate over final states of interest
+        for(std::vector<std::string>::const_iterator pit = cMC_finalStates.begin(); pit!=cMC_finalStates.end(); ++pit)
+        {
+            // Iterate over all endpoint states of the decay chain. These can either be final state particles themselves or parents of final state particles.
+            // The reason for not using only final state particles is that certain endpoints (e.g. quark-antiquark pairs) cannot be handled as separate particles.
+            for(vector<const ChainParticle*>::const_iterator it =endpoints.begin(); it != endpoints.end(); it++)
+            {
+                // Analyze single particle endpoints            
+                if((*it)->getnChildren() ==0)
+                {
+                    if((*it)->getpID()==*pit)
+                    {
+                        double E = (*it)->E_Lab();
+                        #pragma omp critical (cascadeMC_histList)
+                            histList[*Dep::cascadeMC_InitialState][*pit].addEvent(E);
+                    }
+                }
+                // Analyze multiparticle endpoints (the endpoint particle is here the parent of final state particles)  
+                else
+                {
+                    // Search for *pit particles among the final states
+                    for(unsigned i=0; i<((*it)->getnChildren()); i++)
+                    {
+                        const ChainParticle* child = (*(*it))[i];
+                        if(child->getpID()==*pit)
+                        {
+                            double E = child->E_Lab();
+                            #pragma omp critical (cascadeMC_histList)
+                                histList[*Dep::cascadeMC_InitialState][*pit].addEvent(E);
+                        }
+                    }
+                    // In general, the final states might be a quark-antiquark pair, and one should then sample the spectrum of *pit particles from the resulting shower.
+                    // Dummy code below.
+                    // TODO: Perhaps generate general histograms for decays into e.g. b bbar, and sample the spectra based on the histograms?
+                    if((*it)->getnChildren() == 2)
+                    {
+                        if(((*(*it))[0]->getpID() == "b" and (*(*it))[1]->getpID() == "bbar")
+                        or ((*(*it))[0]->getpID() == "bbar" and (*(*it))[1]->getpID() == "b"))
+                        {
+                            // Sample *pit spectrum from b bbar shower and add to histogram here
+                        }
+                    }
+                }  
+            }
+        }
+        
+        ////////////////////////////////////////////////////
+        // Check end conditions (just dummy example for now)
+        ////////////////////////////////////////////////////
+   
+        // TODO: Fix yaml. Hardcode for now   
+        unsigned cMC_endCheckFrequency  = 25; //runOptions->getValueOrDef<unsigned>(25, "cMC_endCheckFrequency");    
+        
+        // Check if complete every cMC_endCheckFrequency events
+        if((*Loop::iteration % cMC_endCheckFrequency) == 0)
+        {   
+            double binVal;   
+            #pragma omp critical (cascadeMC_histList)
+                binVal = histList[*Dep::cascadeMC_InitialState]["test6"].vals[4];
+            // For demonstration purposes, just check accuracy of a specific bin (also requiring more than 1 event).
+            // For the final version, we must check if the relevant particle is actually among the final states
+            if((binVal > double(0.0)) and (1.0/std::sqrt(binVal) <= 0.05))
+            {
+                #pragma omp critical (cascadeMC_Complete)
+                    cascadeMC_Finished = true;
+            }
+        }        
+    }
+        
+    void cascadeMC_PrintResult(bool &dummy)
+    {
+        dummy=true;
+        using namespace Pipes::cascadeMC_PrintResult; 
+        std::cout << "************************" << std::endl;     
+        std::cout << "Cascade decay results:" << std::endl;  
+        std::cout << "------------------------" << std::endl;     
+        std::map<std::string, std::map<std::string,SimpleHist> > cascadeMC_HistList = *Dep::cascadeMC_Histograms;
+                    
+        for(std::map<std::string, std::map<std::string,SimpleHist> >::const_iterator it = cascadeMC_HistList.begin(); it != cascadeMC_HistList.end(); ++it )
+        {
+            std::cout << "Initial state: " << (it->first) << ":" << std::endl;
+            unsigned nEvents = (*Dep::cascadeMC_EventCount).at(it->first);
+            std::cout << "Number of events: " << nEvents << std::endl;
+            for(std::map<std::string,SimpleHist>::const_iterator it2 = (it->second).begin(); it2 != (it->second).end(); ++it2 )
+            {
+                std::cout << (it2->first) << ": ";
+                for(int i=0;i<10;i++)
+                {
+                    std:: cout << ((it2->second).vals[i]/nEvents) << "  ";
+                }
+                std::cout << std::endl;
+            }
+            std::cout << "------------------------" << std::endl;    
+        }
+        std::cout << "************************" << std::endl;
+    }
+    
 
     void chain_test(double &result)
     {
@@ -988,6 +1231,15 @@ namespace Gambit {
         TH_Channel channel_2_56(finalStates_2_56, test2_56width);
         test2_decay.channelList.push_back(channel_2_56);
         catalog.processList.push_back(test2_decay);
+
+        /*
+        TH_Process test7_decay("test7");     
+        finalStates_7_46.push_back("test4");              
+        finalStates_7_46.push_back("test6");                                                                                        
+        TH_Channel channel_7_46(finalStates_7_46, test7_46width);
+        test7_decay.channelList.push_back(channel_7_46);
+        catalog.processList.push_back(test7_decay);
+        */
         
         // Return the finished process catalog
         result = catalog;
@@ -1243,6 +1495,28 @@ namespace Gambit {
 //                Direct detection likelihoods
 //
 //////////////////////////////////////////////////////////////////////////
+
+    // Uses XENON100 2012 result:
+    //   Aprile et al., PRL 109, 181301 (2013) [arxiv:1207.5988]
+    void lnL_XENON100_2012(double &result)
+    {
+        using namespace Pipes::lnL_XENON100_2012;
+        // TODO: The WIMP parameters need to be set only once per
+        // model, across all experiments.  Need to figure out
+        // how to do this....
+        double M_DM = (*Dep::DD_couplings).M_DM;
+        double Gps = (*Dep::DD_couplings).gps;
+        double Gpa = (*Dep::DD_couplings).gpa;
+        double Gns = (*Dep::DD_couplings).gns;
+        double Gna = (*Dep::DD_couplings).gna;                        
+        BEreq::DDCalc0_SetWIMP_mG(&M_DM,&Gps,&Gns,&Gpa,&Gna);
+        // TODO: This calculation needs to be done only once per
+        // model and could also potentially be set up as a
+        // dependency.
+        BEreq::DDCalc0_XENON100_2012_CalcRates();
+        result = BEreq::DDCalc0_XENON100_2012_LogLikelihood();
+        std::cout << "XENON100 2012 likelihood: " << result << std::endl;
+    }
 
     // Uses LUX 2013 result:
     //   Akerib et al., PRL 112, 091303 (2014) [arxiv:1310.8214]

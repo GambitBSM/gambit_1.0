@@ -12,7 +12,7 @@
 ///   
 ///  \author Pat Scott  
 ///          (patscott@physics.mcgill.ca)
-///  \date 2014 Oct
+///  \date 2014 Oct, Dec
 ///
 ///  *********************************************
 
@@ -20,6 +20,7 @@
 #define __type_equivalency_hpp__
 
 #include <set>
+#include <vector>
 #include "util_types.hpp"
 
 namespace Gambit
@@ -31,16 +32,22 @@ namespace Gambit
     /// Structure providing type equivalency classes to the dep resolver.
     struct type_equivalency
     {
-      /// Define a new equivalency relation
-      /// {@
-      void add(str,str);
-      void add(str,str,str);
-      void add(str,str,str,str);
-      void add(str,str,str,str,str);
-      void add(str,str,str,str,str,str);
-      /// }@
-      /// The total set of equivalency classes
-      std::set< std::set<str> > equivalency_classes;
+      public:
+        /// Define a new equivalency relation
+        /// {@
+        void add(str,str);
+        void add(str,str,str);
+        void add(str,str,str,str);
+        void add(str,str,str,str,str);
+        void add(str,str,str,str,str,str);
+        void add(std::vector<str>);
+        /// }@
+        /// The total set of equivalency classes
+        std::set< std::set<str> > equivalency_classes;
+        /// Constructor
+        type_equivalency();
+      private:
+        str filename;
     };
 
   }

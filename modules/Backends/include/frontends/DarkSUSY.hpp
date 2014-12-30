@@ -148,7 +148,7 @@ BE_VARIABLE(GENERAL_VAR(DS_RDPADD, rdpadd),     "rdpadd_",    "rdpadd")    // gR
 BE_VARIABLE(GENERAL_VAR(DS_IBINTVARS,IBintvars),"ibintvars_", "IBintvars") // IB stuff
 
 //BE_INI_DEPENDENCY(MSSMspectrum, eaSLHA)
-BE_INI_CONDITIONAL_DEPENDENCY(MSSMspectrum, eaSLHA, CMSSM_demo, MSSM25)
+BE_INI_CONDITIONAL_DEPENDENCY(MSSMspectrum, eaSLHA, CMSSM_demo, CMSSM, MSSM25)
 
 BE_INI_FUNCTION
 {
@@ -165,10 +165,7 @@ BE_INI_FUNCTION
     }
 
     // Check if model requires SLHA initialization
-    if( 
-            std::find(Models->begin(), Models->end(), "CMSSM_demo") != Models->end() or
-            std::find(Models->begin(), Models->end(), "MSSM25") != Models->end()
-      )
+    if (ModelInUse("CMSSM_demo") or ModelInUse("MSSM25"))
     {
         // Save eaSLHA file to disk
         eaSLHA mySLHA = *Dep::MSSMspectrum;
@@ -184,7 +181,7 @@ BE_INI_FUNCTION
         dsprep();
     }
 
-    if(std::find(Models->begin(), Models->end(), "CMSSM") != Models->end())
+    if (ModelInUse("CMSSM"))
     {
         // Setup mSUGRA model from CMSSM parameters
         double am0 = *Param["M0"];  // m0

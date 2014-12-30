@@ -3,21 +3,25 @@ set(source_files src/cauchy.cpp
                  src/gaussian.cpp
                  src/inifile_interface.cpp
                  src/outputhandler.cpp
+                 src/plugin_comparators.cpp
+                 src/plugin_loader.cpp
                  src/scan.cpp
                  src/scanner_utils.cpp
 )
 
 set(header_files include/cholesky.hpp
-                 include/class_loader.hpp
                  include/factory_registry.hpp
                  include/function_plugin.hpp
                  include/inifile_interface.hpp
                  include/outputhandler.hpp
+                 include/plugin_comparators.hpp
                  include/plugin_defs.hpp
-                 include/plugin_exception.hpp
+                 include/plugin_details.hpp
                  include/plugin_factory.hpp
                  include/plugin_interface.hpp
+                 include/plugin_loader.hpp
                  include/plugin_macros.hpp
+                 include/plugin_utilities.hpp
                  include/printer_interface.hpp
                  include/priors.hpp
                  include/priors_rollcall.hpp
@@ -26,8 +30,6 @@ set(header_files include/cholesky.hpp
                  include/scanner_plugin.hpp
                  include/scanner_utils.hpp
                  include/scannerbit.hpp
-                 include/test-recon.h
-                 include/test.h
                  include/priors/cauchy.hpp
                  include/priors/composite.hpp
                  include/priors/dummy.hpp
@@ -41,7 +43,8 @@ add_gambit_library(ScannerBit OPTION OBJECT SOURCES ${source_files} HEADERS ${he
 add_gambit_library(sample OPTION SHARED SOURCES plugins/crapsample.cpp plugins/twalk.cpp HEADERS plugins/twalk.hpp)
 target_link_libraries(sample ${yaml_LDFLAGS})
 
-add_gambit_library(scantest OPTION SHARED SOURCES plugins/test.cpp)
+add_gambit_library(scantest OPTION SHARED SOURCES plugins/examples.cpp)
+target_link_libraries(scantest ${yaml_LDFLAGS})
 
 set_target_properties( sample scantest
 PROPERTIES

@@ -81,6 +81,9 @@ int main()
     model_warning().set_fatal(true);
     ExampleBit_A::ExampleBit_A_error().set_fatal(false);
 
+    // Initialise the random number generator.
+    Random::create_rng_engine("default");
+
     // Test message
     // Note: we are not actually "inside" ExampleBit_A here, so the log message will not receive an 'ExampleBit_A' tag.
     logger()<<"Running ExampleBit_A standalone example"<<LogTags::info<<EOM;

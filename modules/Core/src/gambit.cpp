@@ -47,9 +47,11 @@ int main(int argc, char* argv[])
     IniParser::IniFile iniFile;
     iniFile.readFile(filename);
  
+    // Initialise the random number generator, letting the RNG class choose its own default.
+    Random::create_rng_engine(iniFile.getValueOrDef<str>("default", "rng"));
+
     // Determine selected model(s)
-    std::vector<std::string> selectedmodels = iniFile.getModelNames();
-    //cout << "Your selected models are: " << selectedmodels << endl;
+    std::set<str> selectedmodels = iniFile.getModelNames();
   
     // Activate "primary" model functors
     Core().registerActiveModelFunctors( Models::ModelDB().getPrimaryModelFunctorsToActivate( selectedmodels, Core().getPrimaryModelFunctors() ) );
@@ -90,18 +92,18 @@ int main(int argc, char* argv[])
     {
  
       //Define the prior
-      Gambit::Priors::CompositePrior prior(iniFile.getParametersNode(), iniFile.getPriorsNode());
+      Priors::CompositePrior prior(iniFile.getParametersNode(), iniFile.getPriorsNode());
   
       //Define the likelihood container object for the scanner
-      Gambit::Scanner::Factory_Base *factory = new Gambit::Likelihood_Container_Factory (Core(), dependencyResolver, iniFile, prior);
+      Likelihood_Container_Factory factory(Core(), dependencyResolver, iniFile, prior);
  
-      //Run the scanner!
-      Gambit::Scanner::Gambit_Scanner *scanner = new Gambit::Scanner::Gambit_Scanner(*factory, iniFile.getScannerNode(), prior);
-      //cout << "keys = " << scanner->getKeys() << endl;
-      //cout << "phantom keys = " << scanner->getPhantomKeys() << endl;
+      //Create the master scan manager 
+      Scanner::Scan_Manager scan(factory, iniFile.getScannerNode(), prior, Scanner::scannerInfo());
+
+      //Do the scan!
       logger() << core << "Starting scan." << EOM;
-      scanner->Run(); 
- 
+      scan.Run(); 
+
       cout << "GAMBIT has finished successfully!" << endl;
 
     }
@@ -117,6 +119,9 @@ int main(int argc, char* argv[])
     }
       
   }
+
+  // Free the memory held by the RNG
+  Random::delete_rng_engine();
 
   return 0;
 

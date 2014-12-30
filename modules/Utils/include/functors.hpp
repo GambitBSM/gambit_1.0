@@ -149,38 +149,44 @@ namespace Gambit
       /// Getter for revealing the required capability of the wrapped function's loop manager
       virtual str loopManagerCapability();
 
+      /// Tell the functor that the loop it manages should break now.
+      virtual void breakLoop();
+
       /// Getter for listing currently activated dependencies
-      virtual std::vector<sspair> dependencies();
+      virtual std::set<sspair> dependencies();
       /// Getter for listing backend requirement groups
-      virtual std::vector<str> backendgroups();                   
+      virtual std::set<str> backendgroups();                   
       /// Getter for listing all backend requirements
-      virtual std::vector<sspair> backendreqs();
+      virtual std::set<sspair> backendreqs();
       /// Getter for listing backend requirements from a specific group
-      virtual std::vector<sspair> backendreqs(str);
+      virtual std::set<sspair> backendreqs(str);
       /// Getter for listing permitted backends
-      virtual std::vector<sspair> backendspermitted(sspair);
+      virtual std::set<sspair> backendspermitted(sspair);
       /// Getter for listing tags associated with backend requirements
-      virtual std::vector<str> backendreq_tags(sspair);
+      virtual std::set<str> backendreq_tags(sspair);
       /// Getter for listing backend requirements that must be resolved from the same backend
-      virtual std::vector<sspair> forcematchingbackend(str);
+      virtual std::set<sspair> forcematchingbackend(str);
 
       /// Getter for listing backend-specific conditional dependencies (4-string version)
-      virtual std::vector<sspair> backend_conditional_dependencies (str, str, str, str);
+      virtual std::set<sspair> backend_conditional_dependencies (str, str, str, str);
       
       /// Getter for backend-specific conditional dependencies (3-string version)
-      virtual std::vector<sspair> backend_conditional_dependencies (str req, str type, str be);
+      virtual std::set<sspair> backend_conditional_dependencies (str req, str type, str be);
       
       /// Getter for backend-specific conditional dependencies (backend functor pointer version)
-      virtual std::vector<sspair> backend_conditional_dependencies (functor* be_functor);
+      virtual std::set<sspair> backend_conditional_dependencies (functor*);
 
       /// Getter for listing model-specific conditional dependencies
-      virtual std::vector<sspair> model_conditional_dependencies (str);
+      virtual std::set<sspair> model_conditional_dependencies (str);
 
       /// Getter for listing model-specific conditional backend requirements
-      virtual std::vector<sspair> model_conditional_backend_reqs (str);
+      virtual std::set<sspair> model_conditional_backend_reqs (str);
 
       /// Resolve a dependency using a pointer to another functor object
       virtual void resolveDependency (functor*);
+
+      /// Set this functor's loop manager (if it has one)
+      virtual void resolveLoopManager (functor*);
 
       /// Resolve a backend requirement using a pointer to another functor object
       virtual void resolveBackendReq (functor*);
@@ -212,10 +218,10 @@ namespace Gambit
       void setAllowedModel(str model);
 
       /// Test whether the functor is allowed (either explicitly or implicitly) to be used with a given combination of models
-      bool modelComboAllowed(std::vector<str> combo);
+      bool modelComboAllowed(std::set<str> combo);
 
       /// Test whether the functor has been explictly allowed to be used with a given combination of models 
-      bool modelComboExplicitlyAllowed(std::vector<str> combo);
+      bool modelComboExplicitlyAllowed(std::set<str> combo);
 
       /// Add a model group definition to the internal list of model groups.
       void setModelGroup(str group, str contents);
@@ -259,7 +265,7 @@ namespace Gambit
       std::set<str> allowedModels;
 
       /// List of allowed model group combinations
-      std::set<std::vector<str> > allowedGroupCombos;
+      std::set<std::set<str> > allowedGroupCombos;
 
       /// Map from model group names to group contents
       std::map<str, std::set<str> > modelGroups;
@@ -277,13 +283,13 @@ namespace Gambit
       inline bool in_allowed_combo(str model);
 
       /// Test whether any of the entries in a given model group is a valid interpretation of any members in a given combination
-      inline bool contains_anything_interpretable_as_member_of(std::vector<str> combo, str group);
+      inline bool contains_anything_interpretable_as_member_of(std::set<str> combo, str group);
 
       /// Work out whether a given combination of models and a model group have any elements in common
-      inline bool has_common_elements(std::vector<str> combo, str group);
+      inline bool has_common_elements(std::set<str> combo, str group);
 
       /// Try to find a parent or friend model in some user-supplied map from models to sspair vectors
-      str find_friend_or_parent_model_in_map(str model, std::map< str, std::vector<sspair> > karta);
+      str find_friend_or_parent_model_in_map(str model, std::map< str, std::set<sspair> > karta);
 
   };
 
@@ -315,10 +321,10 @@ namespace Gambit
       double getInvalidationRate();
 
       /// Setter for the fade rate 
-      void setFadeRate(double new_rate);
+      void setFadeRate(double);
 
-      /// Return a safe pointer to the vector of models that this functor is currently configured to run with.
-      safe_ptr< std::vector<str> > getModels();
+      /// Indicate whether or not a known model is activated or not.
+      bool getActiveModelFlag(str);
 
       /// Return a safe pointer to a string indicating which backend requirement has been activated for a given backend group.
       safe_ptr<str> getChosenReqFromGroup(str);
@@ -347,35 +353,44 @@ namespace Gambit
       /// Getter for revealing the module of the wrapped function's assigned loop manager
       virtual str loopManagerOrigin();
 
+      /// Tell the manager of the loop in which this functor runs that it is time to break the loop.
+      virtual void breakLoopFromManagedFunctor();
+      /// Return a safe pointer to the flag indicating that a loop managed by this functor should break now.
+      virtual safe_ptr<bool> loopIsDone();    
+      /// Provide a way to reset the flag indicating that a loop managed by this functor should break.
+      virtual void resetLoop(); 
+      /// Tell the functor that the loop it manages should break now.
+      virtual void breakLoop();
+
       /// Getter for listing currently activated dependencies
-      virtual std::vector<sspair> dependencies();
+      virtual std::set<sspair> dependencies();
       /// Getter for listing backend requirement groups
-      virtual std::vector<str> backendgroups();                   
+      virtual std::set<str> backendgroups();                   
       /// Getter for listing all backend requirements
-      virtual std::vector<sspair> backendreqs();
+      virtual std::set<sspair> backendreqs();
       /// Getter for listing backend requirements from a specific group
-      virtual std::vector<sspair> backendreqs(str);
+      virtual std::set<sspair> backendreqs(str);
       /// Getter for listing permitted backends
-      virtual std::vector<sspair> backendspermitted(sspair quant);
+      virtual std::set<sspair> backendspermitted(sspair quant);
       /// Getter for listing tags associated with backend requirements
-      virtual std::vector<str> backendreq_tags(sspair);
+      virtual std::set<str> backendreq_tags(sspair);
       /// Getter for listing backend requirements that must be resolved from the same backend
-      virtual std::vector<sspair> forcematchingbackend(str);
+      virtual std::set<sspair> forcematchingbackend(str);
 
       /// Getter for listing backend-specific conditional dependencies (4-string version)
-      virtual std::vector<sspair> backend_conditional_dependencies (str req, str type, str be, str ver);
+      virtual std::set<sspair> backend_conditional_dependencies (str req, str type, str be, str ver);
       
       /// Getter for backend-specific conditional dependencies (3-string version)
-      virtual std::vector<sspair> backend_conditional_dependencies (str req, str type, str be);
+      virtual std::set<sspair> backend_conditional_dependencies (str req, str type, str be);
       
       /// Getter for backend-specific conditional dependencies (backend functor pointer version)
-      virtual std::vector<sspair> backend_conditional_dependencies (functor* be_functor);
+      virtual std::set<sspair> backend_conditional_dependencies (functor* be_functor);
 
       /// Getter for listing model-specific conditional dependencies
-      virtual std::vector<sspair> model_conditional_dependencies (str model);
+      virtual std::set<sspair> model_conditional_dependencies (str model);
 
       /// Getter for listing model-specific conditional backend requirements
-      virtual std::vector<sspair> model_conditional_backend_reqs (str model);
+      virtual std::set<sspair> model_conditional_backend_reqs (str model);
 
       /// Add and activate unconditional dependencies.
       void setDependency(str, str, void(*)(functor*, module_functor_common*), str purpose= "");
@@ -426,6 +441,9 @@ namespace Gambit
       /// Resolve a dependency using a pointer to another functor object
       virtual void resolveDependency (functor* dep_functor);
 
+      // Set this functor's loop manager (if it has one)
+      virtual void resolveLoopManager (functor*);
+
       /// Resolve a backend requirement using a pointer to another functor object
       virtual void resolveBackendReq (functor* be_functor);
 
@@ -436,7 +454,7 @@ namespace Gambit
     protected:
 
       /// Acknowledge that this functor invalidated the current point in model space.
-      void acknowledgeInvalidation(invalid_point_exception&);
+      virtual void acknowledgeInvalidation(invalid_point_exception&);
 
       /// Do pre-calculate timing things
       virtual void startTiming(double & nsec, double & sec);
@@ -459,21 +477,19 @@ namespace Gambit
       /// Probability that functors invalidates point in model parameter space
       double pInvalidation;
 
-      /// Internal list of models that this functor is currently configured to work with
-      std::vector<str> myModels;
-
       /// Flag indicating whether this function can manage a loop over other functions
       bool iCanManageLoops;
+
+      /// Flag indicating whether this function is ready to finish its loop (only relevant if iCanManageLoops = true)
+      bool myLoopIsDone;
 
       /// Flag indicating whether this function can run nested in a loop over functions
       bool iRunNested;
 
       /// Capability of a function that mangages a loop that this function can run inside of.
       str myLoopManagerCapability;
-      /// Name of a function that mangages a loop that this function can run inside of.
-      str myLoopManagerName;
-      /// Module of a function that mangages a loop that this function can run inside of.
-      str myLoopManagerOrigin;
+      /// Pointer to the functor that mangages the loop that this function runs inside of.
+      functor* myLoopManager;
 
       /// Vector of functors that have been set up to run nested within this one.
       std::vector<functor*> myNestedFunctorList;
@@ -485,31 +501,34 @@ namespace Gambit
       const int globlMaxThreads;
 
       /// Internal list of backend groups that this functor's requirements fall into.
-      std::vector<str> myGroups;
+      std::set<str> myGroups;
 
       /// Map from groups to backend reqs, indicating which backend req has been activated for which backend group.
       std::map<str,str> chosenReqsFromGroups;
 
-      /// Vector of all backend requirement-type string pairs.
-      std::vector<sspair> myBackendReqs;
+      /// Set of all backend requirement-type string pairs.
+      std::set<sspair> myBackendReqs;
 
-      /// Vector of all backend requirement-type string pairs currently available for resolution.        
-      std::vector<sspair> myResolvableBackendReqs;
+      /// Set of all backend requirement-type string pairs currently available for resolution.        
+      std::set<sspair> myResolvableBackendReqs;
 
-      /// Vector of backend requirement-type string pairs for specific backend groups       
-      std::map<str,std::vector<sspair> > myGroupedBackendReqs;
+      /// Set of backend requirement-type string pairs for specific backend groups       
+      std::map<str,std::set<sspair> > myGroupedBackendReqs;
 
       /// Vector of dependency-type string pairs 
-      std::vector<sspair> myDependencies;
+      std::set<sspair> myDependencies;
 
-      /// Map from (vector with 4 strings: backend req, type, backend, version) to (vector of {conditional dependency-type} pairs)
-      std::map< std::vector<str>, std::vector<sspair> > myBackendConditionalDependencies;
+      /// Map from (vector with 4 strings: backend req, type, backend, version) to (set of {conditional dependency-type} pairs)
+      std::map< std::vector<str>, std::set<sspair> > myBackendConditionalDependencies;
 
-      /// Map from models to (vector of {conditional dependency-type} pairs)
-      std::map< str, std::vector<sspair> > myModelConditionalDependencies;
+      /// Map from models to (set of {conditional dependency-type} pairs)
+      std::map< str, std::set<sspair> > myModelConditionalDependencies;
 
-      /// Map from models to (vector of {conditional backend requirement-type} pairs)
-      std::map< str, std::vector<sspair> > myModelConditionalBackendReqs;
+      /// Map from models to (set of {conditional backend requirement-type} pairs)
+      std::map< str, std::set<sspair> > myModelConditionalBackendReqs;
+
+      /// Map from known models to flags indicating if they are activated or not (known = allowed, in allowed groups or conditions for conditional dependencies)
+      std::map<str, bool> activeModelFlags;
 
       /// Map from (dependency-type pairs) to (pointers to templated void functions 
       /// that set dependency functor pointers)
@@ -522,17 +541,17 @@ namespace Gambit
       std::map<sspair, str> backendreq_groups;
 
       /// Map from backend requirements to their rule tags
-      std::map<sspair, std::vector<str> > backendreq_tagmap; 
+      std::map<sspair, std::set<str> > backendreq_tagmap; 
 
       /// Map from (backend requirement-type pairs) to (pointers to templated void functions 
       /// that set backend requirement functor pointers)
       std::map<sspair, void(*)(functor*)> backendreq_map;
 
-      /// Map from (backend requirement-type pairs) to (vector of permitted {backend-version} pairs)
-      std::map< sspair, std::vector<sspair> > permitted_map;
+      /// Map from (backend requirement-type pairs) to (set of permitted {backend-version} pairs)
+      std::map< sspair, std::set<sspair> > permitted_map;
 
       /// Map from tags to sets of matching (backend requirement-type pairs) that are forced to use the same backend
-      std::map< str, std::vector<sspair> > myForcedMatches;
+      std::map< str, std::set<sspair> > myForcedMatches;
 
       /// Map from required classloading backends to their versions
       std::map< str, std::set<str> > required_classloading_backends;

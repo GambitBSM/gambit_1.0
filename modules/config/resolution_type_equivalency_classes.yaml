@@ -1,0 +1,22 @@
+# GAMBIT central type equivalency database
+#
+# GAMBIT will parse this file and use it to define
+# type equivalency classes for use in performing
+# dependency resolution.
+#
+# Add additional equivalencies/typedefs by hand
+# here if you want them to be considered during
+# dependency resolution.  You can place as many 
+# entries as you want in each class, just make
+# sure to put them in the same square-bracket-
+# enclosed list.
+#
+# Note that namespace issues with BOSSed types 
+# and the Gambit namespace itself both automatically
+# get taken care of, so there is no need to add
+# entries to deal with those.
+
+[std::string, str]
+
+
+

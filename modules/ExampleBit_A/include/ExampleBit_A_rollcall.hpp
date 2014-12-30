@@ -168,7 +168,7 @@ START_MODULE
 
     #define FUNCTION normaldist_loglike
     START_FUNCTION(double)
-    ALLOW_MODELS_ONLY_VIA_GROUPS(NormalDist, SingletDM, CMSSM_demo)
+    ALLOW_MODEL_DEPENDENCE(NormalDist, SingletDM, CMSSM_demo)
     MODEL_GROUP(group1, (NormalDist))
     MODEL_GROUP(group2, (CMSSM_demo, SingletDM))
     MODEL_GROUP(group3, (CMSSM_demo, NormalDist))

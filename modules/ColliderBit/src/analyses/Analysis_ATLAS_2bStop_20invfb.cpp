@@ -323,6 +323,9 @@ namespace Gambit {
 	cutFlowVector_str[11] = "SRB: MET > 250 ";
 	cutFlowVector_str[12] = "SRB: Jet selection ";
 	cutFlowVector_str[13] = "SRB: HT3 < 50  ";
+	cutFlowVector_str[14] = "SRA: Jet selection  ";
+	cutFlowVector_str[15] = "SRA: B jet selection  ";
+
 	
         for(int j=0;j<NCUTS;j++){
           if(
@@ -352,7 +355,11 @@ namespace Gambit {
 
 	     (j==12 && met>250. && cut_MuonVeto && cut_ElectronVeto && passSRBJetCut && passSRBbJetCut) ||
 
-	     (j==13 && met>250. && cut_MuonVeto && cut_ElectronVeto && passSRBJetCut && passSRBbJetCut && ht3<50.)
+	     (j==13 && met>250. && cut_MuonVeto && cut_ElectronVeto && passSRBJetCut && passSRBbJetCut && ht3<50.) ||
+
+	     (j==14 && met>150. && cut_MuonVeto && cut_ElectronVeto && passSRAJetCut) ||
+
+	     (j==15 && met>150. && cut_MuonVeto && cut_ElectronVeto && passSRAJetCut && passSRAbJetCut)
 
 
 	     )cutFlowVector[j]++;

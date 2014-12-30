@@ -112,6 +112,9 @@ namespace Gambit
         /// The dependency resolution
         void doResolution();
 
+        /// Helper function that returns a new graph with all inactive vertices removed.
+        static MasterGraphType cullInactiveFunctors(MasterGraphType&);
+
         /// Pretty print module functor information
         void printFunctorList();
 
@@ -173,7 +176,7 @@ namespace Gambit
         void resolveVertexBackend(VertexID);
 
         /// Find backend function matching any one of a number of capability-type pairs. 
-        functor* solveRequirement(std::vector<sspair>, const IniParser::ObservableType*, VertexID, std::vector<functor*>, bool, str group="none");
+        functor* solveRequirement(std::set<sspair>, const IniParser::ObservableType*, VertexID, std::vector<functor*>, bool, str group="none");
 
         /// Resolve a specific backend requirement.
         void resolveRequirement(functor*, VertexID);

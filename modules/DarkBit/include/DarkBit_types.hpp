@@ -64,6 +64,41 @@ namespace Gambit
     //using Gambit::BF::intLimitFunc;
     //using Gambit::BF::BFargVec;
 
+    // Temporary minimal histogram class for cascade decay testing
+    struct SimpleHist
+    {
+        SimpleHist(){}
+        SimpleHist(unsigned nBins, double Emin, double dE): nBins(nBins), Emin(Emin), dE(dE)
+        {
+            for(unsigned i=0; i<nBins; i++)
+            {
+                vals.push_back(0.0);
+            }
+        }
+        void addEvent(double E)
+        {
+            long int bin = (E-Emin)/dE;
+            if(bin>=0 and unsigned(abs(bin))<nBins )
+            {
+                vals[bin]+=1.0;
+            }
+        }
+        void addEvent(double E, double weight)
+        {
+            long int bin = (E-Emin)/dE;
+            if(bin>0 and unsigned(abs(bin))<nBins )
+            {
+                vals[bin]+=weight;
+            }
+        }
+        std::vector<double> vals;
+        unsigned nBins;
+        double Emin;
+        double dE;
+    };
+    typedef std::map<std::string, std::map<std::string, Gambit::DarkBit::SimpleHist> > simpleHistContainter;
+    typedef std::map<std::string, unsigned> stringUnsignedMap;
+
     struct DD_couplings
     {
       double M_DM;
