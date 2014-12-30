@@ -22,7 +22,7 @@
 #ifndef FUNCTION_PLUGIN_HPP
 #define FUNCTION_PLUGIN_HPP
 
-#include "scanner_utils.hpp"
+//#include "scanner_utils.hpp"
 #include "plugin_defs.hpp"
 #include "plugin_macros.hpp"
 
