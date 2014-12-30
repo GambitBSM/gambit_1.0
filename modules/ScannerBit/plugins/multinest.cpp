@@ -227,8 +227,6 @@ scanner_plugin (multinest, version(0, 0, 0, bens_version))
 {
         int plugin_main ()
         {
-                std::vector<std::string> &keys     = get_keys();
-
                 //std::string output_file            = get_inifile_value<std::string>("output_file", "default_output");
 
                 // Have to discuss with Greg the best thing to do here.
