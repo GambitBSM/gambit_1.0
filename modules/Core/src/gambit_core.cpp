@@ -643,7 +643,6 @@ namespace Gambit
 
         // Display capability information
         cout << "\nThis is GAMBIT." << endl << endl; 
-
         
         // Default, list-format output header
         cout << "Capabilities                           Available in (modules/models)  Available in (backends)" << endl;
@@ -688,16 +687,83 @@ namespace Gambit
 
       else if (command == "scanners")
       {
+        const int maxlen1 = 20;
+        const int maxlen2 = 20;
         typedef std::map<std::string, std::vector<Scanner::Plugins::Plugin_Details> > plugin_map;
         typedef std::map<std::string, plugin_map> plugin_mapmap;
-        plugin_mapmap scanners = Scanner::scannerInfo().getPluginsMap();
+
+        // Display capability information
         cout << "\nThis is GAMBIT." << endl << endl; 
-        cout << "Scanner            Version          Accepted options" << endl;
-        cout << "----------------------------------------------------" << endl;
-        //for (std::set<str>::const_iterator it = scanners.begin(); it != scanners.end(); ++it)
-        //{
-        //  cout << *it << endl;
-        //}
+
+        // Import scanner plugin info from ScannerBit 
+        plugin_mapmap scanners = Scanner::scannerInfo().getPluginsMap();
+
+        // Default, list-format output header
+        cout << "Scanners                 Version                  Accepted options" << endl;
+        cout << "----------------------------------------------------------------------------" << endl;
+
+        // Loop over all entries in the plugins map map
+        for (plugin_mapmap::const_iterator it = scanners.begin(); it != scanners.end(); ++it)
+        {
+          if (it->first == "scan")  // Only bother with scanners here          
+          {
+            // Loop over the different scanners
+            for (plugin_map::const_iterator jt = it->second.begin(); jt != it->second.end(); ++jt)
+            {
+              // Loop over the available versions of the scanner 
+              for (auto kt = jt->second.begin(); kt != jt->second.end(); ++kt)
+              {
+                // Print the scanner name if this is the first version, otherwise just space
+                const str firstentry = (kt == jt->second.begin() ? jt->first : "");
+                cout << firstentry << spacing(firstentry.length(),maxlen1); 
+                // Print the scanner info.
+                cout << kt->version << spacing(kt->version.length(),maxlen2) << "<no info available>" << endl;
+              }
+            }
+            cout << endl;
+          }
+        }
+        no_scan = true;
+      }
+
+      else if (command == "test-functions")
+      { 
+        const int maxlen1 = 20;
+        const int maxlen2 = 20;
+        typedef std::map<std::string, std::vector<Scanner::Plugins::Plugin_Details> > plugin_map;
+        typedef std::map<std::string, plugin_map> plugin_mapmap;
+
+        // Display capability information
+        cout << "\nThis is GAMBIT." << endl << endl; 
+
+        // Import scanner plugin info from ScannerBit 
+        plugin_mapmap scanners = Scanner::scannerInfo().getPluginsMap();
+
+        // Default, list-format output header
+        cout << "Test Functions           Version                  Accepted options" << endl;
+        cout << "----------------------------------------------------------------------------" << endl;
+
+        // Loop over all entries in the plugins map map
+        for (plugin_mapmap::const_iterator it = scanners.begin(); it != scanners.end(); ++it)
+        {
+          if (it->first == "like")  // Only bother with scanners here          
+          {
+            // Loop over the different scanners
+            for (plugin_map::const_iterator jt = it->second.begin(); jt != it->second.end(); ++jt)
+            {
+              // Loop over the available versions of the scanner 
+              for (auto kt = jt->second.begin(); kt != jt->second.end(); ++kt)
+              {
+                // Print the scanner name if this is the first version, otherwise just space
+                const str firstentry = (kt == jt->second.begin() ? jt->first : "");
+                cout << firstentry << spacing(firstentry.length(),maxlen1); 
+                // Print the scanner info.
+                cout << kt->version << spacing(kt->version.length(),maxlen2) << "<no info available>" << endl;
+              }
+            }
+            cout << endl;
+          }
+        }
         no_scan = true;
       }
 
