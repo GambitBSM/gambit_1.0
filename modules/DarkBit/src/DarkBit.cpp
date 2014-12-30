@@ -1496,6 +1496,28 @@ namespace Gambit {
 //
 //////////////////////////////////////////////////////////////////////////
 
+    // Uses XENON100 2012 result:
+    //   Aprile et al., PRL 109, 181301 (2013) [arxiv:1207.5988]
+    void lnL_XENON100_2012(double &result)
+    {
+        using namespace Pipes::lnL_XENON100_2012;
+        // TODO: The WIMP parameters need to be set only once per
+        // model, across all experiments.  Need to figure out
+        // how to do this....
+        double M_DM = (*Dep::DD_couplings).M_DM;
+        double Gps = (*Dep::DD_couplings).gps;
+        double Gpa = (*Dep::DD_couplings).gpa;
+        double Gns = (*Dep::DD_couplings).gns;
+        double Gna = (*Dep::DD_couplings).gna;                        
+        BEreq::DDCalc0_SetWIMP_mG(&M_DM,&Gps,&Gns,&Gpa,&Gna);
+        // TODO: This calculation needs to be done only once per
+        // model and could also potentially be set up as a
+        // dependency.
+        BEreq::DDCalc0_XENON100_2012_CalcRates();
+        result = BEreq::DDCalc0_XENON100_2012_LogLikelihood();
+        std::cout << "XENON100 2012 likelihood: " << result << std::endl;
+    }
+
     // Uses LUX 2013 result:
     //   Akerib et al., PRL 112, 091303 (2014) [arxiv:1310.8214]
     void lnL_LUX_2013(double &result)
