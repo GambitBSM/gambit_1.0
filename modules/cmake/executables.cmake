@@ -2,10 +2,9 @@
 if(EXISTS "${PROJECT_SOURCE_DIR}/Core/")
   add_gambit_executable(gambit SOURCES ${PROJECT_SOURCE_DIR}/Core/src/gambit.cpp ${GAMBIT_COMMON_OBJECTS} ${GAMBIT_OBJECTS} ${GAMBIT_BIT_OBJECTS})
   add_dependencies(gambit yaml sample scantest)
-  if (flexiblesusy_LIBRARIES_MISSING)
-     message("-- Some FlexibleSUSY spectrum generator libraries were not yet built during cmake configuration (${missing_FS_LIBS}). Linking will fail, but the necessary libraries should be built when you run make. After that, please rerun cmake, and linking should succeed the second time around.")
-  endif()
+  message("checking FS flags: ${flexiblesusy_LDFLAGS}")
   target_link_libraries(gambit ${yaml_LDFLAGS} ${flexiblesusy_LDFLAGS} ${BOOST_LDFLAGS})
+  add_dependencies(gambit ${flexiblesusy_projects})  #make sure flexiblesusy stuff gets built
   if (NOT EXCLUDE_DELPHES)
     add_dependencies(gambit delphes)
     target_link_libraries(gambit ${delphes_LDFLAGS} ${ROOT_LIBRARIES} ${ROOT_LIBRARY_DIR}/libEG.so)
