@@ -79,7 +79,7 @@ namespace Gambit
                                 }
                         }
                         
-                        double operator()(const vector<double> &in)
+                        double operator()(const std::vector<double> &in)
                         {
                                 double ret = 0.0;
                                 for (auto it = functions.begin(), end = functions.end(); it != end; it++)

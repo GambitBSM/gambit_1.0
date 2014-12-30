@@ -21,8 +21,6 @@
 #include <string>
 #include <exception>
 
-using namespace std;
-
 namespace Gambit
 {
         namespace Plugin

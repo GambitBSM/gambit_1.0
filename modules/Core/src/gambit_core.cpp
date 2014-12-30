@@ -10,7 +10,7 @@
 ///   
 ///  \author Pat Scott
 ///  \date 2013 Aug
-///  \date 2014 Mar, Aug
+///  \date 2014 Mar, Aug, Dec
 ///
 ///  *********************************************
 
@@ -687,9 +687,10 @@ namespace Gambit
 
       else if (command == "scanners")
       {
+        //scanners = 
         cout << "\nThis is GAMBIT." << endl << endl; 
-        cout << "Scanners            Accepted options" << endl;
-        cout << "------------------------------------" << endl;
+        cout << "Scanner            Version          Accepted options" << endl;
+        cout << "----------------------------------------------------" << endl;
         //for (std::set<str>::const_iterator it = scanners.begin(); it != scanners.end(); ++it)
         //{
         //  cout << *it << endl;

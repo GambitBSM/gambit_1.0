@@ -32,7 +32,7 @@
 #include "scanner_utils.hpp"
 #include "scan.hpp"
 #include "yaml_options.hpp"
-#include "plugin_interface.hpp"
+#include "plugin_details.hpp"
 
 namespace Gambit
 {
@@ -42,11 +42,11 @@ namespace Gambit
                 {
                 private:
                         Options options;
-                        Plugin::PluginStruct plugin;
+                        Plugin::Plugin_Details plugin;
                         std::string tag;
                         
                 public:
-                        IniFileInterface(const std::string &tag, const Plugin::PluginStruct &, const Options &);
+                        IniFileInterface(const std::string &tag, const Plugin::Plugin_Details &, const Options &);
                         
                         const std::string pluginName() const {return plugin.full_string;}
                         

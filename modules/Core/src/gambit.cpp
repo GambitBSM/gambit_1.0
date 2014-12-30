@@ -92,17 +92,17 @@ int main(int argc, char* argv[])
     {
  
       //Define the prior
-      Gambit::Priors::CompositePrior prior(iniFile.getParametersNode(), iniFile.getPriorsNode());
+      Priors::CompositePrior prior(iniFile.getParametersNode(), iniFile.getPriorsNode());
   
       //Define the likelihood container object for the scanner
-      Gambit::Scanner::Factory_Base *factory = new Gambit::Likelihood_Container_Factory (Core(), dependencyResolver, iniFile, prior);
+      Likelihood_Container_Factory factory(Core(), dependencyResolver, iniFile, prior);
  
-      //Run the scanner!
-      Gambit::Scanner::Gambit_Scanner *scanner = new Gambit::Scanner::Gambit_Scanner(*factory, iniFile.getScannerNode(), prior);
-      //cout << "keys = " << scanner->getKeys() << endl;
-      //cout << "phantom keys = " << scanner->getPhantomKeys() << endl;
+      //Create the master scan manager 
+      Scanner::Scan_Manager scan(factory, iniFile.getScannerNode(), prior, Scanner::scannerInfo());
+
+      //Do the scan!
       logger() << core << "Starting scan." << EOM;
-      scanner->Run(); 
+      scan.Run(); 
 
       cout << "GAMBIT has finished successfully!" << endl;
 

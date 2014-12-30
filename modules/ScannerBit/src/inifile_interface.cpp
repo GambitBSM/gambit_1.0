@@ -22,13 +22,13 @@
 ///
 ///  *********************************************
 
-#include <inifile_interface.hpp>
+#include "inifile_interface.hpp"
 
 namespace Gambit
 {
         namespace Scanner
         {       
-                IniFileInterface::IniFileInterface(const std::string &tag, const Plugin::PluginStruct &plugin, const Options &options) 
+                IniFileInterface::IniFileInterface(const std::string &tag, const Plugin::Plugin_Details &plugin, const Options &options) 
                         : tag(tag), plugin(plugin), options(options)
                 {       
                 }

@@ -29,6 +29,7 @@
 #include "priors.hpp"
 #include "printer_interface.hpp"
 #include "plugin_interface.hpp"
+#include "plugin_loader.hpp"
 #include "priors/composite.hpp"
 
 namespace Gambit
@@ -63,34 +64,29 @@ namespace Gambit
                         virtual ~IniFileInterface_Base() {};
                 };
                 
-                struct iniPluginStruct
+                struct Proto_Plugin_Details
                 {
                         std::string plugin;
                         std::string version;
                         std::string library;
                         
-                        iniPluginStruct() : plugin(""), version(""), library("") {}
+                        Proto_Plugin_Details() : plugin(""), version(""), library("") {}
                 };
                 
-                class Gambit_Scanner
+                class Scan_Manager
                 {
                 private:
                         const Factory_Base *factory;
+                        const Options *options;
                         const Priors::CompositePrior *prior;
+                        const Plugin::Plugin_Loader *plugins;
                         printer_interface *printerInterface;
-                        Options options;
-                        Plugin::Plugin_Loader plugins;
-                        std::map<std::string, iniPluginStruct> iniPlugs;
+                        std::map<std::string, Proto_Plugin_Details> selectedPlugins;
 
                 public:
-                        Gambit_Scanner (const Factory_Base &factory, const Options &options, const Priors::CompositePrior &prior, printer_interface *printerInterface = 0);
-
-                        int Run();
-                        
-                        std::vector<Plugin::PluginStruct> getPluginsVec() const {return plugins.getPluginsVec();}
-                        std::map<std::string, std::map<std::string, std::vector<Plugin::PluginStruct>>> getPluginsMap() const {return plugins.getPluginsMap();}
-                        
-                        ~Gambit_Scanner();
+                        Scan_Manager (const Factory_Base&, const Options&, const Priors::CompositePrior&, const Plugin::Plugin_Loader&, printer_interface* = 0);
+                        ~Scan_Manager();
+                        int Run();                       
                 };             
 
         }
