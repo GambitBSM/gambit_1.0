@@ -168,6 +168,7 @@ scanner_plugin (loopsample, version(0, 0, 1, beta))
 }
 
 scanner_plugin(square_grid, version(1, 0, 0))
+//scanner_plugin(square_grid, version(1, 0, 0), external_library_required)// TODO make it work like this!  (extra argument should be optional)
 {
         int plugin_main()
         {
