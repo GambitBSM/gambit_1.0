@@ -1,5 +1,12 @@
 To build GAMBIT:
-  cd modules/
-  cmake .
+  mkdir modules/build
+  cd modules/build/
+  cmake ..
   make
+
+Issues:
+ * The above process may fail to work correctly if files from the
+   older build system are still around.  Try clearing out untracked
+   project files if you are having problems (see 'git clean').
+
 
