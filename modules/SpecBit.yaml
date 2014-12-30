@@ -33,13 +33,16 @@ Printer:
     info_file: "runs/SpecBit_test/samples/gambit_output.info"
 
 Scanner:
-  plugin: crapsample
-  file_path:  ScannerBit/lib/libsample.so
-  enable_redirect: false
-  crapsample:
-    point_number: 2
-    output_file:  output
-    like:  Likelihood
+  use_scanner_plugin: crapsample
+  
+  plugins:
+    crapsample:
+      plugin: crapsample
+      options:
+        point_number: 2
+        output_file:  output
+        like:  Likelihood
+
 
 ObsLikes:
   - purpose:      Likelihood

@@ -48,7 +48,7 @@
 #define STRING(x) STRING2(x)
 
 #ifdef __model_rollcall_hpp__
-  // #include "module_macros_incore.hpp"
+  #include "module_macros_incore.hpp"
   #pragma message "In model_macros.hpp: Using CORE versions of macros"
   #define START_MODEL             CORE_START_MODEL
   #define DEFINEPARS(...)         CORE_DEFINEPARS(__VA_ARGS__)
@@ -158,6 +158,43 @@
 //  IF_TOKEN_UNDEFINED(MODEL,FAIL("You must define MODEL before calling "        \
 //   "START_MODEL."))                                                            \
 
+//compiles...
+// #define CORE_START_MODEL                                                       \
+//                                                                                \
+//   namespace Gambit                                                             \
+//   {                                                                            \
+//     ADD_TAG_IN_CURRENT_NAMESPACE(primary_parameters)                          \
+//     ADD_TAG_IN_CURRENT_NAMESPACE(CAT(MODEL,_parameters))                      \
+//     ADD_MODEL_TAG_IN_CURRENT_NAMESPACE(MODEL)                                 \
+//                                                                                \
+//     namespace Models                                                           \
+//     {                                                                          \
+//                                                                                \
+//       namespace MODEL                                                          \
+//       {                                                                        \
+//                                                                                \
+//         /* Basic machinery, same as for modules                                \
+//            (macro from module_macros_incore.hpp) */                            \
+//         CORE_START_MODULE_COMMON_MAIN(MODEL)                                 \
+//                                                                               \
+//         /* Runtime addition of model to GAMBIT model database */               \
+//         void rt_add_model()                                                    \
+//         {                                                                      \
+//           /*ModelDB().declare_model(STRINGIFY(MODEL), STRINGIFY(PARENT));   */      \
+//         }                                                                      \
+//                                                                                \
+//         /* Functor's actual "calculate" function.  Doesn't do anything. */     \
+//         void primary_parameters (ModelParameters&) {}                          \
+//                                                                                \
+//         /* Wrap it up in a primary_model_functor */                            \
+//         MAKE_PRIMARY_MODEL_FUNCTOR(primary_parameters, CAT(MODEL,_parameters), \
+//                                    MODEL)                                      \
+//                                                                                \
+//       }                                                                           \
+//     }                                                                           \
+//   }                                                                            \
+
+//backup
 #define CORE_START_MODEL                                                       \
                                                                                \
   namespace Gambit                                                             \
@@ -209,6 +246,8 @@
                                                                                \
     }                                                                          \
   }                                                                           \
+
+
 
 /// Tells the core that the current parameter corresponds to the specified
 /// CAPABILITY, so that module functions can then draw upon them like any

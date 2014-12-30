@@ -118,6 +118,8 @@ if(Boost_FOUND)
   if (NOT Boost_INCLUDE_DIR STREQUAL "")
     include_directories("${Boost_INCLUDE_DIR}")
   endif()
+   # Ben> I had a need to create directories in the logging system, and boost_filesystem seemed the most portable option. However, it is not a header-only library, so we need to link to it now, and also to boost_system which it apparently depends on.
+  set(BOOST_LDFLAGS -lboost_system -lboost_filesystem)
 endif()
 
 # check for OpenMP

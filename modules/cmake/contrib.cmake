@@ -36,17 +36,67 @@ set(BUILT_FS_MODELS CMSSM MSSMatMGUT)
 #  INSTALL_DIR ${CMAKE_BINARY_DIR}/install
 #  CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/install
 #)
+set(flexiblesusy_LIBRARIES_MISSING false)
 foreach(_MODEL ${BUILT_FS_MODELS})
-  ExternalProject_Add(flexiblesusy-${_MODEL}
-    SOURCE_DIR ${FLEXIBLESUSY_DIR}
-    BUILD_IN_SOURCE 1
-    CONFIGURE_COMMAND ./configure --with-models=${_MODEL} --with-eigen-incdir=${EIGEN3_DIR}
-    BUILD_COMMAND make LAPACKLIBS=${LAPACK_LIBS}
-    INSTALL_COMMAND ""
-    #INSTALL_DIR ${CMAKE_BINARY_DIR}/install
-    #CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/install
+  # Find or build each flexiblesusy spectrum generator
+  find_library(flexiblesusy-${_MODEL}
+     NAMES ${_MODEL}
+     HINTS "${FLEXIBLESUSY_DIR}/models/${_MODEL}"
   )
+  if(flexiblesusy-${_MODEL}) #FOUND
+    message(" -- Found flexiblesusy library: ${flexiblesusy-${_MODEL}}")
+    set(flexiblesusy_LIBRARIES ${flexiblesusy_LIBRARIES} ${flexiblesusy-${_MODEL}}) 
+  else()                     #NOTFOUND
+    ExternalProject_Add(flexiblesusy-${_MODEL}
+      SOURCE_DIR ${FLEXIBLESUSY_DIR}
+      BUILD_IN_SOURCE 1
+      CONFIGURE_COMMAND ./configure --with-models=${_MODEL} --with-eigen-incdir=${EIGEN3_DIR}
+      BUILD_COMMAND make LAPACKLIBS=${LAPACK_LIBS}
+      INSTALL_COMMAND ""
+      #INSTALL_DIR ${CMAKE_BINARY_DIR}/install
+      #CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/install
+    )
+    set(flexiblesusy_LIBRARIES_MISSING true)
+    set(missing_FS_LIBS "${missing_FS_LIBS} lib${_MODEL};")
+  endif()
 endforeach()
+
+# Find the central flexiblesusy libraries (should be built if the spectrum generator libraries are built) 
+find_library(flexiblesusy-core
+   NAMES flexisusy
+   HINTS "${FLEXIBLESUSY_DIR}/src"
+)
+if(flexiblesusy-core) #FOUND
+  message(" -- Found flexiblesusy library: ${flexiblesusy-core}")
+  set(flexiblesusy_LIBRARIES ${flexiblesusy_LIBRARIES} ${flexiblesusy-core}) 
+else()                     #NOTFOUND
+  set(flexiblesusy_LIBRARIES_MISSING true)
+  set(missing_FS_LIBS "${missing_FS_LIBS} libflexisusy;")
+endif()
+find_library(flexiblesusy-legacy
+   NAMES legacy
+   HINTS "${FLEXIBLESUSY_DIR}/legacy"
+)
+if(flexiblesusy-legacy) #FOUND
+  message(" -- Found flexiblesusy library: ${flexiblesusy-legacy}")
+  set(flexiblesusy_LIBRARIES ${flexiblesusy_LIBRARIES} ${flexiblesusy-legacy}) 
+else()                     #NOTFOUND
+  set(flexiblesusy_LIBRARIES_MISSING true)
+  set(missing_FS_LIBS "${missing_FS_LIBS} liblegacy;")
+endif()
+# This feels a little hacky but I'm not sure what a better way is right now...
+# Run a python script to suck necessary fortran linker flags from one of the 
+# flexiblesusy configure files (stuff like -lgfortran, in GNU case)
+set(errorcode true)
+execute_process(COMMAND python ${PROJECT_SOURCE_DIR}/contrib/MassSpectra/get_flexiblesusy_link_flags.py 
+                OUTPUT_VARIABLE flexiblesusy_LDFLAGS 
+                RESULT_VARIABLE errorcode)
+if(errorcode)
+  message(" -- Error retrieving flexiblesusy FLIB contents from config.h")
+else()
+  message(" -- Retrieved flexiblesusy FLIB contents from config.h : ${flexiblesusy_LDFLAGS}")
+endif()
+set(flexiblesusy_LDFLAGS ${flexiblesusy_LDFLAGS} ${flexiblesusy_LIBRARIES})  # consolidate variables...
 
 #contrib/yaml-cpp-0.5.1
 set(yaml_CXXFLAGS "${CMAKE_CXX_FLAGS}")
