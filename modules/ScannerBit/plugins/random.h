@@ -995,7 +995,7 @@ public:
                 currentVec = rotVec;
         }
         
-        const int Dim() const {return proj;}
+        int Dim() const {return proj;}
         
         ~RandomPlane()
         {

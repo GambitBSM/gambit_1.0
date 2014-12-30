@@ -7,10 +7,15 @@
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-//
+///
 ///  \author Gregory Martinez
 ///          (gregory.david.martinez@gmail.com)
-///  \date 2013 August 2013 Feb 2014
+///  \date 2013 August
+///        2014 Feb
+///
+///  \author Pat Scott
+///          (p.scott@imperial.ac.uk)   
+///  \date 2014 Dec
 ///
 ///  *********************************************
 
@@ -20,8 +25,6 @@
 #include "plugin_defs.hpp"
 #include "plugin_macros.hpp"
 #include <yaml-cpp/yaml.h>
-
-using namespace std;
 
 namespace Gambit
 {
