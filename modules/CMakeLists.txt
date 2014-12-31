@@ -23,7 +23,7 @@ endforeach()
 # Set the project name
 project(GAMBIT)
 
-# Don't relink all binaries when shared lib changes (programs will be rebuilt any way if used headers change)
+# Don't relink all binaries when shared lib changes (programs will be rebuilt anyway if used headers change)
 set(CMAKE_LINK_DEPENDS_NO_SHARED 1)
 
 # Include ./cmake in search path for projects
@@ -32,33 +32,53 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake)
 # When building, use the install RPATH already
 set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE) 
 
+# add the automatically determined parts of the RPATH
+# which point to directories outside the build tree to the install RPATH
+SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+
 # Check for optional packages and disable sections of GAMBIT accordingly
 include(cmake/optional.cmake)
 
 # Include cmake utility scripts 
 include(cmake/utilities.cmake)
 
-# Check for Python
+# Check for Python and required libs
 include(FindPythonInterp)
 find_package(PythonInterp REQUIRED)
+foreach(module yaml os re datetime sys getopt shutil itertools)
+  find_python_module(${module} REQUIRED)
+endforeach()
 
-# Check for PyYAML
-find_python_module(yaml REQUIRED)
+# Reprocess the ditch set into a comma-separated list
+string (REPLACE ";" "," itch_with_commas "${itch}")
 
 # Generate the cmake_variables.hpp.in file
-message("-- Updating GAMBIT with cmake-time data")
-set(PRECMAKE ${PROJECT_SOURCE_DIR}/cmake/locate_scanners.py)
-execute_process(COMMAND python ${PRECMAKE} WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
-message("-- Updating GAMBIT with cmake-time data - done.")
+message("-- Updating GAMBIT with config data")
+set(locate_scanners ${PROJECT_SOURCE_DIR}/cmake/locate_scanners.py -x __not_a_real_name__,${itch_with_commas})
+execute_process(COMMAND python ${locate_scanners} WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} OUTPUT_VARIABLE result)
+#FIXME this is temporary -- this stuff will be written by python once the multinest interface is working again, and the OUTPUT_VARIABLE removed above
+#the python script should put stuff like 
+# target_link_libraries(gambit "-L/home/pat/gambit-hepforge/modules/ScannerBit/lib -lmultinest")
+#in the linking.cmake file, and also generate the Scannerbit CMakelists.txt file
+string (REPLACE "\n" ";" result "${result}")
+list(REVERSE result)
+list(GET result 1 scanner_plugin_link_commands)
+string(STRIP ${scanner_plugin_link_commands} scanner_plugin_link_commands)
+list(REMOVE_AT result 1)
+foreach(line ${result})
+  message("${line}")
+endforeach()
+message("-- Updating GAMBIT with config data - done.")
  
 # Generate the CMakeLists.txt files for GAMBIT modules
 message("-- Updating GAMBIT module cmake files")
-set(PRECMAKE ${PROJECT_SOURCE_DIR}/cmake/update_cmakelists.py)
-execute_process(COMMAND python ${PRECMAKE} WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
+set(update_cmakelists ${PROJECT_SOURCE_DIR}/cmake/update_cmakelists.py -x __not_a_real_name__,${itch_with_commas})
+execute_process(COMMAND python ${update_cmakelists} WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
 message("-- Updating GAMBIT module cmake files - done.")
 
 # Haha
 message("-- Downloading latest ATLAS proprietary data files...") 
+message("-- That was fast!") 
 
 # Do OSX checks
 include(cmake/MacOSX.cmake)
@@ -162,7 +182,6 @@ set(MODULE_HARVESTER ${PROJECT_SOURCE_DIR}/Utils/scripts/module_harvester.py)
 
 # Create all_functor_types.hpp, module_rollcall.hpp, module_types_rollcall.hpp, models_rollcall.hpp, 
 # model_types_rollcall.hpp, backend_rollcall.hpp and backend_types_rollcall.hpp
-string (REPLACE ";" "," itch_with_commas "${itch}")
 file(GLOB MODEL_HARVESTER_FILES   "${PROJECT_SOURCE_DIR}/Models/include/models/*.hpp")
 file(GLOB BACKEND_HARVESTER_FILES "${PROJECT_SOURCE_DIR}/Backends/include/frontends/*.hpp")
 file(GLOB MODULE_HARVESTER_FILES  "${PROJECT_SOURCE_DIR}/*Bit*/include/*_rollcall.hpp")
@@ -258,4 +277,8 @@ set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${clean_files}"
 # Add the executables
 include(cmake/executables.cmake)
 
-
+#FIXME this to be put in a python-generated file linking.cmake, with all the rpaths arising from the scanner and test function locations, and the link commands.  Should also do that same for scannerbit standalone compilation
+target_link_libraries( gambit ${scanner_plugin_link_commands})
+set_target_properties( gambit 
+                       PROPERTIES
+                       INSTALL_RPATH "${PROJECT_SOURCE_DIR}/ScannerBit/lib")

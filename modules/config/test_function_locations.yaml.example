@@ -1,7 +1,8 @@
 # GAMBIT central scanner location database
 #
 # Cmake will parse this file and use it to locate
-# scanner libraries before writing makefiles
+# libraries needed for different test functions
+# offered by ScannerBit before writing makefiles
 # that link to them.
 #
 # Paths can be given as full absolute paths, or 
@@ -11,8 +12,6 @@
 # be interpreted as relative to the GAMBIT dir.
 
 
-MultiNest: 
-  0.0.0-bens_version:		./ScannerBit/lib/libmultinest.so
+Eggbox: 
+  1.0.0:             ./ScannerBit/lib/blahdy.so
 
-square_grid:
-  1.0.0:			./ScannerBit/lib/doesntexist.so
