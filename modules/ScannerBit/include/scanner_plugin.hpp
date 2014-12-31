@@ -22,9 +22,10 @@
 #ifndef SCANNER_PLUGIN_HPP
 #define SCANNER_PLUGIN_HPP
 
-//#include "scanner_utils.hpp"
+#include "scanner_utils.hpp"
 #include "plugin_defs.hpp"
 #include "plugin_macros.hpp"
+//#include "scan_file.hpp"
 
 #include <yaml-cpp/yaml.h>
 
@@ -72,8 +73,6 @@ namespace Gambit
                 };
         }
 }
-
-//#include "scan_file.hpp"
 
 #define init_inifile_value(exp, ...)    INIT_INIFILE_VALUE(exp, __VA_ARGS__) enum{}
 #define init_dimension(exp)             INIT_DIMENSION(exp) enum{}
