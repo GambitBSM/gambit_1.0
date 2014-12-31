@@ -48,12 +48,21 @@ else()
    # they are forced to build one at a time in parallel builds.
    set(previous_FSlib false) 
 
+   # FlexibleSUSY configure options
+   set(FS_OPTIONS ${FS_OPTIONS} 
+        --with-cxx=${CMAKE_CXX_COMPILER}
+        --with-cxxflags=${CMAKE_CXX_FLAGS}
+        --with-fc=${CMAKE_Fortran_COMPILER}
+        --with-fflags=${CMAKE_Fortran_FLAGS}
+        --with-eigen-incdir=${EIGEN3_DIR}
+      )
+
    # Explain how to build each of the flexiblesusy spectrum generators we need
    foreach(_MODEL ${BUILT_FS_MODELS})
        ExternalProject_Add(flexiblesusy_project${_MODEL}
          SOURCE_DIR ${FLEXIBLESUSY_DIR}
          BUILD_IN_SOURCE 1
-         CONFIGURE_COMMAND ./configure --with-models=${_MODEL} --with-eigen-incdir=${EIGEN3_DIR}
+         CONFIGURE_COMMAND ./configure --with-models=${_MODEL} ${FS_OPTIONS}
          BUILD_COMMAND make LAPACKLIBS=${LAPACK_LIBS}
          INSTALL_COMMAND ""
        )
