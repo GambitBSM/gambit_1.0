@@ -88,9 +88,8 @@ namespace Gambit {
                    double lnew;
                    //int i;
    
-                   // No scan_error?
-                   //if (ndim!=my_ndim) {scan_error().raise(LOCAL_INFO,"ndim!=my_ndim in multinest LogLike function!");}
-                   //if (ndim!=parameter_keys.size()) {scan_error().raise(LOCAL_INFO,"ndim!=parameter_keys.size() in multinest LogLike function!");}
+                   if (ndim!=my_ndim) {scan_error().raise(LOCAL_INFO,"ndim!=my_ndim in multinest LogLike function!");}
+                   if (ndim!=parameter_keys.size()) {scan_error().raise(LOCAL_INFO,"ndim!=parameter_keys.size() in multinest LogLike function!");}
                    
                    // WANT TO DO THIS:
              	   //lnew = (*boundLogLike)(physicalpars);

@@ -74,7 +74,7 @@ T get_inifile_value(std::string in)                                             
                 std::ostringstream ss;                                                                                  \
                 ss << "Missing iniFile entry needed by plugin \""                                                       \
                                 << (__gambit_plugin_namespace__::myData.name) << "\":  " << in;                         \
-                /*Gambit::Scanner::scan_error().raise(LOCAL_INFO, ss.str());   */                                           \
+                Gambit::Scanner::scan_error().raise(LOCAL_INFO, ss.str());                                              \
         }                                                                                                               \
         YAML::Node conv = YAML::Load(temp);                                                                             \
         return conv.as<T>();                                                                                            \

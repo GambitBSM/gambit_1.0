@@ -39,16 +39,10 @@ set(header_files include/cholesky.hpp
 )
 
 add_gambit_library(ScannerBit OPTION OBJECT SOURCES ${source_files} HEADERS ${header_files})
-
 add_gambit_library(sample OPTION SHARED SOURCES plugins/crapsample.cpp plugins/twalk.cpp HEADERS plugins/twalk.hpp)
-target_link_libraries(sample ${yaml_LDFLAGS})
-
 add_gambit_library(scantest OPTION SHARED SOURCES plugins/examples.cpp)
-target_link_libraries(scantest ${yaml_LDFLAGS})
-
-set_target_properties( sample scantest
-PROPERTIES
-ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/lib"
-LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/lib"
-RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin"
-)
+set_target_properties( sample scantest 
+                       PROPERTIES
+                       ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/lib"
+                       LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/lib"
+                       RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin")
