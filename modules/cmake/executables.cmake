@@ -2,7 +2,6 @@
 if(EXISTS "${PROJECT_SOURCE_DIR}/Core/")
   add_gambit_executable(gambit SOURCES ${PROJECT_SOURCE_DIR}/Core/src/gambit.cpp ${GAMBIT_COMMON_OBJECTS} ${GAMBIT_OBJECTS} ${GAMBIT_BIT_OBJECTS})
   add_dependencies(gambit yaml sample scantest)
-  message("checking FS flags: ${flexiblesusy_LDFLAGS}")
   target_link_libraries(gambit ${yaml_LDFLAGS} ${flexiblesusy_LDFLAGS} ${BOOST_LDFLAGS})
   add_dependencies(gambit ${flexiblesusy_projects})  #make sure flexiblesusy stuff gets built
   if (NOT EXCLUDE_DELPHES)
