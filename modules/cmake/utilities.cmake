@@ -1,4 +1,6 @@
-#macro to retrieve GAMBIT modules
+include(CMakeParseArguments)
+
+#Macro to retrieve GAMBIT modules
 macro(retrieve_bits bits root excludes quiet)
 
   set(${bits} "")
@@ -32,8 +34,7 @@ macro(retrieve_bits bits root excludes quiet)
 
 endmacro()
 
-include(CMakeParseArguments)
-# function to add static GAMBIT library
+# Function to add static GAMBIT library
 function(add_gambit_library libraryname)
   cmake_parse_arguments(ARG "" "OPTION" "SOURCES;HEADERS" "" ${ARGN})
 
@@ -59,7 +60,7 @@ function(add_gambit_library libraryname)
 endfunction()
 
 
-# function to add GAMBIT executable
+# Function to add GAMBIT executable
 function(add_gambit_executable executablename)
   cmake_parse_arguments(ARG "" "" "SOURCES;HEADERS;" "" ${ARGN})
 
@@ -99,3 +100,18 @@ function(add_gambit_executable executablename)
 
   target_link_libraries(${executablename} ${LIBRARIES})
 endfunction()
+
+# Simple function to find specific Python modules
+function(find_python_module module)
+  execute_process(COMMAND python -c "import ${module}" RESULT_VARIABLE return_value ERROR_QUIET)
+  if (NOT return_value)
+    message("-- Found Python module ${module}.")
+  else()
+    if(ARGC GREATER 1 AND ARGV1 STREQUAL "REQUIRED")
+      message(FATAL_ERROR "-- FAILED to find Python module ${module}.")
+    else()      	
+      message("-- FAILED to find Python module ${module}.")
+    endif()	
+  endif()
+endfunction()
+
