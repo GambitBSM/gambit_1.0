@@ -1,0 +1,85 @@
+#ACLOCAL_AMFLAGS += ${ACLOCAL_FLAGS}
+
+lib_LTLIBRARIES += libsoft.la 
+
+bin_PROGRAMS += softsusy.x \
+                softsusy-nmssm.x \
+                softpoint.x \
+                rpvsoftsusy.x \
+                rpvneut.x 
+
+softsusy_x_SOURCES = src/main.cpp 
+softsusy_x_LDADD = libsoft.la 
+
+softsusy_nmssm_x_SOURCES = src/main-nmssm.cpp 
+softsusy_nmssm_x_LDADD = libsoft.la
+
+softpoint_x_SOURCES = src/softpoint.cpp 
+softpoint_x_LDADD = libsoft.la 
+
+rpvsoftsusy_x_SOURCES = src/rpvmain.cpp 
+rpvsoftsusy_x_LDADD = libsoft.la 
+
+rpvneut_x_SOURCES = src/rpvneutmain.cpp 
+rpvneut_x_LDADD = libsoft.la 
+
+if LOOPTOOLS
+softsusy_x_LDADD += -looptools
+softsusy_nmssm_x_LDADD += -looptools
+softpoint_x_LDADD += -looptools
+rpvsoftsusy_x_LDADD += -looptools
+rpvneut_x_LDADD += -looptools
+endif
+
+if COMPILE_FULL_SUSY_THRESHOLD
+
+CPPFLAGS += -I$(srcdir)/src
+
+include src/two_loop_thresholds/mssmparam.amk
+include src/two_loop_thresholds/two_loop_th.amk
+
+softsusy_x_SOURCES += src/two_loop_thresholds/twoloopbubble.cpp 
+softsusy_x_LDADD += lib2lthresh.la libmssmparam.la 
+
+softsusy_nmssm_x_SOURCES += src/two_loop_thresholds/twoloopbubble.cpp 
+softsusy_nmssm_x_LDADD += lib2lthresh.la libmssmparam.la 
+
+softpoint_x_SOURCES += src/two_loop_thresholds/twoloopbubble.cpp 
+softpoint_x_LDADD += lib2lthresh.la libmssmparam.la 
+
+rpvsoftsusy_x_LDADD += lib2lthresh.la libmssmparam.la 
+rpvneut_x_LDADD += lib2lthresh.la libmssmparam.la 
+
+
+endif
+
+pkginclude_HEADERS += \
+$(addprefix src/, \
+def.h main.h numerics.h \
+softpars.h softpars.cpp susy.h linalg.h \
+physpars.h softpoint.h twoloophiggs.h \
+nmssm2loop.h dilogwrap.h \
+lowe.h mycomplex.h rge.h softsusy.h softsusy.cpp \
+utils.h mssmUtils.h rpvsoft.h rpvsusypars.h \
+tensor.h rpvmain.h flavoursoft.h \
+xpr-base.h xpr-matrix.h xpr-vector.h rpvneut.h \
+nmssmsusy.h nmssmsoftpars.h  \
+nmssmsoftsusy.h nmssmUtils.h)
+
+libsoft_la_SOURCES = \
+src/def.cpp src/linalg.cpp src/lowe.cpp src/numerics.cpp  src/rpvneut.cpp \
+src/physpars.cpp src/rge.cpp src/nmssm2loop.f src/dilogwrap.f \
+ src/nmssmsoftsusy.cpp src/nmssmsusy.cpp src/nmssmsoftpars.cpp src/nmssmUtils.cpp \
+src/susy.cpp src/utils.cpp src/mssmUtils.cpp \
+src/tensor.cpp src/rpvsusypars.cpp src/rpvsoft.cpp src/flavoursoft.cpp src/twoloophiggs.f
+
+libsoft_la_LDFLAGS = @FLIBS@
+
+EXTRA_DIST += src/nmspec.f src/two_loop_thresholds/bquark_corrections.cpp.in \
+src/two_loop_thresholds/bquark_corrections.hpp \
+src/two_loop_thresholds/gs_corrections.cpp.in \
+src/two_loop_thresholds/gs_corrections.hpp \
+src/two_loop_thresholds/tau_corrections.cpp.in \
+src/two_loop_thresholds/tau_corrections.hpp \
+src/two_loop_thresholds/tquark_corrections.cpp.in \
+src/two_loop_thresholds/tquark_corrections.hpp

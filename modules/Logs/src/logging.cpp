@@ -673,16 +673,32 @@ namespace Gambit
     BaseLogger::~BaseLogger() {}
 
     /// "Standard" logger class
-  
+
     /// Constructor
     /// Attach logger object to an existing stream
     StdLogger::StdLogger(std::ostream& logstream) : my_stream(logstream)
-    {}
+    {
+      // Check error bits on stream and throw exception in anything is bad
+      if( my_stream.fail() | my_stream.bad() )
+      {
+        std::ostringstream ss;
+        ss << "IO error while constructing StdLogger! Error bit on in supplied ostream.";
+        throw std::runtime_error( ss.str() ); 
+      }
+    }
  
     /// Open new file stream and manage it internally
     StdLogger::StdLogger(const std::string& filename) 
      : my_own_fstream(filename, std::ofstream::out), my_stream(my_own_fstream)
-    {}
+    {
+      // Check error bits on stream and throw exception in anything is bad
+      if( my_stream.fail() | my_stream.bad() )
+      {
+         std::ostringstream ss;
+         ss << "IO error while constructing StdLogger! Tried to open ofstream to file \""<<filename<<"\", but encountered error bit in the created ostream.";
+         throw std::runtime_error( ss.str() ); 
+      }
+    }
 
     StdLogger::~StdLogger() {}
  

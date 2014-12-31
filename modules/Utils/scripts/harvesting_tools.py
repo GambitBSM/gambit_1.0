@@ -157,12 +157,12 @@ def find_and_harvest_headers(header_set,fullheadlist,exclude_set,verbose=False):
     exclude_set - set of names of headers to ignore if we find them.
     """
     full_header_paths=[]
-    for header in header_set:
-        # Locate the header in the GAMBIT directory structure...
-        # (we should technically search all the include paths in the make file; could pass these in to this script)
-        # Ignores any headers that cannot be found (assumed to be external libraries, etc.)
-        for root,dirs,files in os.walk("."):
-            for name in files:
+    # Locate the header in the GAMBIT directory structure...
+    # (we should technically search all the include paths in the make file; could pass these in to this script)
+    # Ignores any headers that cannot be found (assumed to be external libraries, etc.)
+    for root,dirs,files in os.walk("."):
+       for name in files:
+          for header in header_set:
                 if os.path.join(root,name).endswith(header):
                     if verbose: print "  Located header '{0}' at path '{1}'".format(name,os.path.join(root,name))
                     full_header_paths+=[os.path.join(root,name)]

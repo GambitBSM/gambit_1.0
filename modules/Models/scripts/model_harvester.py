@@ -47,8 +47,10 @@ def main(argv):
         exclude_models.update(neatsplit(",",arg))
 
     # Get list of models to include in models_rollcall.hpp
-    model_headers.update(retrieve_generic_headers(verbose,"./Models/include/models","model",exclude_models))   
+    model_headers.update(retrieve_generic_headers(verbose,"./Models/models","model",exclude_models))   
     # Get lists of model type header files
+    # ///TODO: Ben: I moved some stuff in Models around, and actually there are no "model_types" headers at the moment.
+    #  I'll come back and revise this....
     model_type_headers.update(retrieve_generic_headers(verbose,"./Models/include/model_types","model type",exclude_models))
 
     print "Model headers identified:"
@@ -71,7 +73,7 @@ def main(argv):
 ///                                               \n\
 ///  Do not add to this if you want to add a new  \n\
 ///  model -- just add your model header to       \n\
-///  Models/include/models and rest assured that  \n\
+///  Models/models and rest assured that          \n\
 ///  model_harvester.py will make sure it ends    \n\
 ///  up here.                                     \n\
 ///                                               \n\
@@ -93,7 +95,7 @@ def main(argv):
 // Automatically-generated list of models.        \n"
 
     for h in model_headers:
-        towrite+='#include \"models/{0}\"\n'.format(h)
+        towrite+='#include \"{0}\"\n'.format(h)
     towrite+="\n#endif // defined __model_rollcall_hpp__\n"
     
     with open("./Models/include/model_rollcall.hpp","w") as f:

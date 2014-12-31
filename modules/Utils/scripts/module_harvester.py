@@ -132,10 +132,12 @@ def main(argv):
 
     # Recurse through chosen rollcall headers, locating all the included headers therein, and find them all 
     # in the gambit source tree so that we can parse them for types etc.   
+    if verbose: print "  Searching rollcall headers..."
     find_and_harvest_headers(rollcall_headers,full_rollcall_headers,exclude_header,verbose=verbose)
+    if verbose: print "  Searching type headers..."
     find_and_harvest_headers(type_headers,full_type_headers,exclude_header,verbose=verbose)
      
-    # Search through rollcall headers and look for macro calls that create module_functors or safe pointers to them    
+    # Search through rollcall headers and look for macro calls that create module_functors or safe pointers to them 
     types=set(["ModelParameters"]) #Manually add this one to avoid scanning through Models directory
     for header in full_rollcall_headers:
         with open(header) as f:

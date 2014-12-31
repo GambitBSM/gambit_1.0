@@ -1,0 +1,71 @@
+#
+# This is just a little make script I made to help me with macro debugging. It 
+# expands out all the GAMBIT macros, which is pretty awful but at least 
+# can help track down problems. Use it as follows:
+#
+# make -f see_expanded_code
+#
+
+# Location of gambit sub-directories
+COREDIR = Core
+MODELDIR = Models
+UTILSDIR = Utils
+PRINTERSDIR = Printers
+LOGGINGDIR = Logs
+SCANDIR = ScannerBit
+BACKENDDIR = Backends
+COLLIDERDIR = ColliderBit
+EWPODIR = EWPOBit
+DARKDIR = DarkBit
+FLAVDIR = FlavBit
+HIGGSDIR = HiggsBit
+SPECDIR = SpecBit
+DECAYDIR = DecayBit
+EXAMPLEADIR = ExampleBit_A
+EXAMPLEBDIR = ExampleBit_B
+DOCDIR = ../doc
+YAMLDIR = contrib/yaml-cpp-0.5.1
+SLHAEADIR = contrib/slhaea
+MCUTILSDIR = contrib/mcutils
+HEPUTILSDIR = contrib/heputils
+DELPHESDIR = contrib/Delphes-3.1.2
+FASTSIMDIR = ../extras/fast_sim
+NULIKEDIR = ../extras/nulike
+DDCALC0DIR = ../extras/DDCalc0
+GAMLIKEDIR = ../extras/gamLike
+DARKSUSYDIR = ../extras/DarkSUSY
+PYTHIA8DIR = ../extras/boss/bossed_pythia_source
+BOSSMINIDIR = ../extras/boss
+
+GCC++EXTRA= -Woverloaded-virtual
+# added -I. as a hack to find cmake_variables.hpp 
+CFLAGS= -I$(COREDIR)/include \
+  -I$(MODELDIR)/include -I$(MODELDIR)/models\
+  -I. \
+  -I$(UTILSDIR)/include \
+  -I$(PRINTERSDIR)/include \
+  -I$(LOGGINGDIR)/include \
+  -I$(SCANDIR)/include \
+  -I$(BACKENDDIR)/include \
+  -I$(DARKDIR)/include \
+  -I$(COLLIDERDIR)/include \
+  -I$(EWPODIR)/include \
+  -I$(EXAMPLEADIR)/include \
+  -I$(EXAMPLEBDIR)/include \
+  -I$(DARKDIR)/include \
+  -I$(FLAVDIR)/include \
+  -I$(HIGGSDIR)/include \
+  -I$(SPECDIR)/include \
+  -I$(DECAYDIR)/include \
+  -I$(YAMLDIR)/include \
+  -I$(SLHAEADIR) \
+  -I$(HEPUTILSDIR)/include \
+  -I$(MCUTILSDIR)/include \
+  -I$(FASTSIMDIR)/include \
+  -I$(MULTINESTINC) \
+  $(FLEXINCS) \
+  -I$cmake
+
+default:
+	gcc -std=c++11 -E -dD -C Core/src/gambit.cpp $(CFLAGS) > expanded_code_gambitcpp.txt 
+

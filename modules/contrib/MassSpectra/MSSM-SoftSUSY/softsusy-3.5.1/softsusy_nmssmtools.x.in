@@ -1,0 +1,58 @@
+#!/bin/sh
+
+# directory of this script
+BASEDIR=$(dirname $0)
+
+# path to the NMSSMTools directory
+NMSSMTOOLS_PATH="@NMSSMTOOLS_PATH@"
+
+if test $# -ne 1 -o "x$1" != "xleshouches"; then
+    cat <<EOF > /dev/stderr
+Usage: ./`basename $0` leshouches < slha-input-file
+EOF
+    exit 1
+fi
+
+if ! test -d "${NMSSMTOOLS_PATH}"; then
+    echo "# Error: Cannot find NMSSMTools directory \"${nmssmtools_dir}\""
+    exit 1
+fi
+
+if ! test -x "${NMSSMTOOLS_PATH}/main/nmh_slhainp"; then
+    echo "# Error: Cannot find ${NMSSMTOOLS_PATH}/main/nmh_slhainp"
+    echo "   Please run ./setup_nmssmtools.sh --nmssmtools-dir=/path/to/NMSSMTools --compile"
+    exit 1
+fi
+
+nmssmtools_input_file="${NMSSMTOOLS_PATH}/main/inp"
+
+${BASEDIR}/softpoint.x leshouches < /dev/stdin | tee ${nmssmtools_input_file}
+
+if test $? -ne 0; then
+    echo "# Error: invalid point in Softsusy"
+    exit 1
+fi
+
+(cd ${NMSSMTOOLS_PATH}/main/ && ./nmh_slhainp)
+
+if test $? -ne 0; then
+    echo "# Error: NMSSMTools could not calculate the decays"
+    exit 1
+fi
+
+decay_output_file="${NMSSMTOOLS_PATH}/main/decay"
+omega_output_file="${NMSSMTOOLS_PATH}/main/omega"
+
+echo ""
+
+if test -r "${decay_output_file}"; then
+    cat "${decay_output_file}"
+else
+    echo "# Error: cannot open decay output file \"${decay_output_file}\""
+fi
+
+if test -r "${omega_output_file}"; then
+    cat "${omega_output_file}"
+else
+    echo "# Error: cannot open micrOmegas output file \"${omega_output_file}\""
+fi
