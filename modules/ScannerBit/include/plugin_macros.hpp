@@ -137,7 +137,7 @@ namespace __gambit_plugin_namespace__                                           
                                 myData.inits.push_back(interface <RunTags::name>::init);                                \
                         }                                                                                               \
                                                                                                                         \
-                        static void init(pluginData &myData)                                                            \
+                        static void init(pluginData&)                                                                   \
                         {                                                                                               \
                                 name( __VA_ARGS__ );                                                                    \
                         }                                                                                               \
@@ -169,7 +169,7 @@ namespace __gambit_plugin_namespace__                                           
                                 myData.inits.push_back(interface <InitTags::name>::init);                               \
                         }                                                                                               \
                                                                                                                         \
-                        static void init(pluginData &myData)                                                            \
+                        static void init(pluginData&)                                                                   \
                         {                                                                                               \
                                 name = __VA_ARGS__;                                                                     \
                         }                                                                                               \
