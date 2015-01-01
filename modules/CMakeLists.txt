@@ -234,9 +234,6 @@ add_subdirectory(Core)
 add_subdirectory(Printers)
 set(GAMBIT_OBJECTS $<TARGET_OBJECTS:Core> $<TARGET_OBJECTS:Printers>)
 
-# Ben: this seems a little hacky but I couldn't figure out where else to put it:
-include_directories("${PROJECT_SOURCE_DIR}/Models/models")
-
 # Set compilation targets for GAMBIT modules
 foreach(bit ${GAMBIT_BITS})
   add_subdirectory(${bit})

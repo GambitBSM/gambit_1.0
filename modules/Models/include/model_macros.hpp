@@ -49,7 +49,6 @@
 
 #ifdef __model_rollcall_hpp__
   #include "module_macros_incore.hpp"
-  #pragma message "In model_macros.hpp: Using CORE versions of macros"
   #define START_MODEL             CORE_START_MODEL
   #define DEFINEPARS(...)         CORE_DEFINEPARS(__VA_ARGS__)
   #define MAP_TO_CAPABILITY(PARAMETER,CAPABILITY)  \
@@ -61,7 +60,6 @@
   #define INTERPRET_AS_X__DEPENDENCY(MODEL_X, DEP, TYPE)  \
                                   CORE_INTERPRET_AS_X__DEPENDENCY(MODEL_X, DEP, TYPE)
 #else
-  #pragma message "In model_macros.hpp: Using MODULE versions of macros"
   #define START_MODEL             MODULE_START_MODEL
   #define DEFINEPARS(...)         /* Do nothing */
   #define MAP_TO_CAPABILITY(PARAMETER,CAPABILITY) /* Do nothing */

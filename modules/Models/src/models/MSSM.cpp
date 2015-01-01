@@ -27,7 +27,8 @@
 #include "util_functions.hpp"
 #include "model_macros.hpp"
 #include "model_helpers.hpp"
-#include "MSSM.hpp"
+
+#include "models/MSSM.hpp"
 
 using namespace Gambit::Utils;
 
