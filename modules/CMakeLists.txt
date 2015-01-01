@@ -1,4 +1,27 @@
-# CMakeLists files in this project can refer to the root source directory of the project as ${PROJECT_SOURCE_DIR} and to the root binary directory of the project as ${PROJECT_BINARY_DIR}.
+# GAMBIT: Global and Modular BSM Inference Tool  
+#************************************************
+# \file                                          
+#                                                
+#  Master cmake configuration script for GAMBIT.
+#    
+#  CMakeLists files in this project can refer to
+#  the root source directory of the project as 
+#  ${PROJECT_SOURCE_DIR} and to the root binary 
+#  directory of the project as ${PROJECT_BINARY_DIR}.
+#                                                
+#************************************************
+#                                                
+#  Authors (add name and date if you modify):                                    
+#                                                
+#  \author Antje Putzerator
+#          (antje.putze@lapth.cnrs.fr)              
+#  \date 2014 Sep, Oct, Nov
+#
+#  \author Pat Scott
+#          (p.scott@imperial.ac.uk)              
+#  \date 2014 Nov, Dec
+#                                               
+#************************************************
 
 # Require a minimum cmake version of 2.6
 cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
@@ -23,7 +46,7 @@ endforeach()
 # Set the project name
 project(GAMBIT)
 
-# Don't relink all binaries when shared lib changes (programs will be rebuilt any way if used headers change)
+# Don't relink all binaries when shared lib changes (programs will be rebuilt anyway if used headers change)
 set(CMAKE_LINK_DEPENDS_NO_SHARED 1)
 
 # Include ./cmake in search path for projects
@@ -32,33 +55,40 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake)
 # When building, use the install RPATH already
 set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE) 
 
+# Add the automatically determined parts of the RPATH that point to directories outside the build tree to the install RPATH
+SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+
 # Check for optional packages and disable sections of GAMBIT accordingly
 include(cmake/optional.cmake)
 
 # Include cmake utility scripts 
 include(cmake/utilities.cmake)
 
-# Check for Python
+# Check for Python and required libs
 include(FindPythonInterp)
 find_package(PythonInterp REQUIRED)
+foreach(module yaml os re datetime sys getopt shutil itertools)
+  find_python_module(${module} REQUIRED)
+endforeach()
 
-# Check for PyYAML
-find_python_module(yaml REQUIRED)
+# Reprocess the ditch set into a comma-separated list
+string (REPLACE ";" "," itch_with_commas "${itch}")
 
 # Generate the cmake_variables.hpp.in file
-message("-- Updating GAMBIT with cmake-time data")
-set(PRECMAKE ${PROJECT_SOURCE_DIR}/cmake/locate_scanners.py)
-execute_process(COMMAND python ${PRECMAKE} WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
-message("-- Updating GAMBIT with cmake-time data - done.")
+message("-- Updating GAMBIT with config data")
+set(locate_scanners ${PROJECT_SOURCE_DIR}/cmake/locate_scanners.py -x __not_a_real_name__,${itch_with_commas})
+execute_process(COMMAND python ${locate_scanners} WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
+message("-- Updating GAMBIT with config data - done.")
  
 # Generate the CMakeLists.txt files for GAMBIT modules
 message("-- Updating GAMBIT module cmake files")
-set(PRECMAKE ${PROJECT_SOURCE_DIR}/cmake/update_cmakelists.py)
-execute_process(COMMAND python ${PRECMAKE} WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
+set(update_cmakelists ${PROJECT_SOURCE_DIR}/cmake/update_cmakelists.py -x __not_a_real_name__,${itch_with_commas})
+execute_process(COMMAND python ${update_cmakelists} WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
 message("-- Updating GAMBIT module cmake files - done.")
 
 # Haha
 message("-- Downloading latest ATLAS proprietary data files...") 
+message("-- That was fast!") 
 
 # Do OSX checks
 include(cmake/MacOSX.cmake)
@@ -128,13 +158,14 @@ else()
 endif()
 
 # Check for Boost
-find_package(Boost 1.42 REQUIRED)
+find_package(Boost 1.41 REQUIRED system filesystem)
 if(Boost_FOUND)
   if (NOT Boost_INCLUDE_DIR STREQUAL "")
     include_directories("${Boost_INCLUDE_DIR}")
   endif()
-   # Ben> I had a need to create directories in the logging system, and boost_filesystem seemed the most portable option. However, it is not a header-only library, so we need to link to it now, and also to boost_system which it apparently depends on.
   set(BOOST_LDFLAGS -lboost_system -lboost_filesystem)
+else()
+  message(FATAL_ERROR "GAMBIT requires Boost v1.41 or greater.")
 endif()
 
 # Check for OpenMP
@@ -151,7 +182,7 @@ if(GSL_FOUND)
     include_directories("${GSL_INCLUDE_DIRS}")
   endif()
 else()
-  message(FATAL_ERROR "Need gsl libraries")
+  message(FATAL_ERROR "GAMBIT requires the GSL libraries.")
 endif()
 
 # Check for DL libraries
@@ -164,8 +195,7 @@ set(MODULE_HARVESTER ${PROJECT_SOURCE_DIR}/Utils/scripts/module_harvester.py)
 
 # Create all_functor_types.hpp, module_rollcall.hpp, module_types_rollcall.hpp, models_rollcall.hpp, 
 # model_types_rollcall.hpp, backend_rollcall.hpp and backend_types_rollcall.hpp
-string (REPLACE ";" "," itch_with_commas "${itch}")
-file(GLOB MODEL_HARVESTER_FILES   "${PROJECT_SOURCE_DIR}/Models/models/*.hpp")
+file(GLOB MODEL_HARVESTER_FILES   "${PROJECT_SOURCE_DIR}/Models/include/models/*.hpp")
 file(GLOB BACKEND_HARVESTER_FILES "${PROJECT_SOURCE_DIR}/Backends/include/frontends/*.hpp")
 file(GLOB MODULE_HARVESTER_FILES  "${PROJECT_SOURCE_DIR}/*Bit*/include/*_rollcall.hpp")
 list(REMOVE_ITEM MODULE_HARVESTER_FILES "${PROJECT_SOURCE_DIR}/ScannerBit//include//priors_rollcall.hpp" 
@@ -210,6 +240,13 @@ else()
   set (EXCLUDE_DELPHES TRUE)
 endif()
 
+# Include FlexibleSUSY only if SpecBit is in use
+if(";${GAMBIT_BITS};" MATCHES ";SpecBit;")
+  set (EXCLUDE_FLEXIBLESUSY FALSE)
+else()
+  set (EXCLUDE_FLEXIBLESUSY TRUE)
+endif()
+
 # Include other cmake scripts
 include(cmake/contrib.cmake)
 include(cmake/warnings.cmake)
@@ -234,56 +271,35 @@ add_subdirectory(Core)
 add_subdirectory(Printers)
 set(GAMBIT_OBJECTS $<TARGET_OBJECTS:Core> $<TARGET_OBJECTS:Printers>)
 
-# Ben: this seems a little hacky but I couldn't figure out where else to put it:
-include_directories("${PROJECT_SOURCE_DIR}/Models/models")
-
 # Set compilation targets for GAMBIT modules
 foreach(bit ${GAMBIT_BITS})
   add_subdirectory(${bit})
   set(GAMBIT_BIT_OBJECTS ${GAMBIT_BIT_OBJECTS} "$<TARGET_OBJECTS:${bit}>")
-endforeach()
 
-# Ben: My attempt to add "SpecBit only" include targets. Seems to work.
-target_include_directories(SpecBit PRIVATE
-                             ${FLEXIBLESUSY_DIR}/config
-                             ${FLEXIBLESUSY_DIR}/legacy
-                             ${FLEXIBLESUSY_DIR}/src)
-message("-- Adding FlexibleSUSY model headers to SpecBit include list")
-# Dig through flexiblesusy "models" directory and add all subdirectories to the include list
-# (these contain the headers for the generated spectrum generators)
-#file(GLOB _ALL_FILES ${FLEXIBLESUSY_DIR}/models ${FLEXIBLESUSY_DIR}/models/*)
-foreach(_MODEL ${BUILT_FS_MODELS})
-  #if(IS_DIRECTORY ${_FILE})
-    message("      ${_MODEL}")
-    target_include_directories(SpecBit PRIVATE ${FLEXIBLESUSY_DIR}/models/${_MODEL})
-  #endif()
-endforeach()
-
-
-# Ensure that clean removes automatically-generated cmake_variables.hpp file
-set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/cmake/cmake_variables.hpp.in"
-                               "${PROJECT_SOURCE_DIR}/cmake/cmake_variable.hpp.in.candidate")
-
-# Ensure that clean removes automatically-generated CMakeLists.txt files in modules
-foreach(bit ${GAMBIT_BITS})
-  if(NOT ScannerBit STREQUAL ${bit})
-    set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/${bit}/CMakeLists.txt"
-                                   "${PROJECT_SOURCE_DIR}/${bit}/CMakeLists.txt.candidate")
+  if (SpecBit STREQUAL ${bit})
+    # Ben: My attempt to add "SpecBit only" include targets. Seems to work.
+    target_include_directories(SpecBit PRIVATE
+                               ${FLEXIBLESUSY_DIR}/config
+                               ${FLEXIBLESUSY_DIR}/legacy
+                               ${FLEXIBLESUSY_DIR}/src)
+    message("-- Adding FlexibleSUSY model headers to SpecBit include list")
+    # Dig through flexiblesusy "models" directory and add all subdirectories to the include list
+    # (these contain the headers for the generated spectrum generators)
+    #file(GLOB _ALL_FILES ${FLEXIBLESUSY_DIR}/models ${FLEXIBLESUSY_DIR}/models/*)
+    foreach(_MODEL ${BUILT_FS_MODELS})
+      #if(IS_DIRECTORY ${_FILE})
+        message("      ${_MODEL}")
+        target_include_directories(SpecBit PRIVATE ${FLEXIBLESUSY_DIR}/models/${_MODEL})
+      #endif()
+    endforeach()
   endif()
 endforeach()
-
-# Ensure that clean removes .pyc files
-file(GLOB more_clean_files "${PROJECT_SOURCE_DIR}/*/*.pyc" "${PROJECT_SOURCE_DIR}/*/*/*.pyc")
-set(clean_files ${clean_files} ${more_clean_files})
-
-# Ensure that clean sweeps out the scratch directory
-file(GLOB more_clean_files "${PROJECT_SOURCE_DIR}/scratch/*?.*")
-set(clean_files ${clean_files} ${more_clean_files})
-
-# Add all the clean files
-set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${clean_files}")
 
 # Add the executables
 include(cmake/executables.cmake)
 
+# Finish setting the link commands and rpath variables
+include(cmake/linkedout.cmake)
 
+# Arrange clean commands
+include(cmake/cleaning.cmake)

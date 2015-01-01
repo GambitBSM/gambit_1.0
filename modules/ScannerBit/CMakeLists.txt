@@ -1,4 +1,5 @@
-set(source_files src/cauchy.cpp
+set(scannerbit_sources
+                 src/cauchy.cpp
                  src/composite.cpp
                  src/gaussian.cpp
                  src/inifile_interface.cpp
@@ -9,7 +10,8 @@ set(source_files src/cauchy.cpp
                  src/scanner_utils.cpp
 )
 
-set(header_files include/cholesky.hpp
+set(scannerbit_headers 
+                 include/cholesky.hpp
                  include/factory_registry.hpp
                  include/function_plugin.hpp
                  include/inifile_interface.hpp
@@ -38,17 +40,25 @@ set(header_files include/cholesky.hpp
                  include/priors/gaussian.hpp
 )
 
-add_gambit_library(ScannerBit OPTION OBJECT SOURCES ${source_files} HEADERS ${header_files})
-
-add_gambit_library(sample OPTION SHARED SOURCES plugins/crapsample.cpp plugins/twalk.cpp HEADERS plugins/twalk.hpp)
-target_link_libraries(sample ${yaml_LDFLAGS})
-
-add_gambit_library(scantest OPTION SHARED SOURCES plugins/examples.cpp)
-target_link_libraries(scantest ${yaml_LDFLAGS})
-
-set_target_properties( sample scantest
-PROPERTIES
-ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/lib"
-LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/lib"
-RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin"
+set(scanner_plugin_sources
+                 src/scanners/crapsample.cpp
+                 src/scanners/twalk.cpp
 )
+
+set(scanner_plugin_headers
+                 include/scanners/random.h
+                 include/scanners/twalk.hpp
+)
+
+set(scanner_test_sources
+                 src/test_functions/examples.cpp
+)
+
+add_gambit_library(ScannerBit OPTION OBJECT SOURCES ${scannerbit_sources} HEADERS ${scannerbit_headers})
+add_gambit_library(sample OPTION SHARED SOURCES ${scanner_plugin_sources} HEADERS ${scanner_plugin_sources})
+add_gambit_library(scantest OPTION SHARED SOURCES ${scanner_test_sources})
+set_target_properties( sample scantest 
+                       PROPERTIES
+                       ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/lib"
+                       LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/lib"
+                       RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin")

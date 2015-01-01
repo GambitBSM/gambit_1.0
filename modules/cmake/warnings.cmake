@@ -1,3 +1,20 @@
+# GAMBIT: Global and Modular BSM Inference Tool  
+#************************************************
+# \file                                          
+#                                                
+#  Cmake configuration script to arrange warning
+#  options when compiling GAMBIT.  
+#    
+#************************************************
+#                                                
+#  Authors (add name and date if you modify):                                    
+#                                                
+#  \author Antje Putze
+#          (antje.putze@lapth.cnrs.fr)              
+#  \date 2014 Sep, Oct, Nov
+#
+#************************************************
+
 option(WERROR "WERROR" OFF)
 
 include(CheckCXXCompilerFlag)

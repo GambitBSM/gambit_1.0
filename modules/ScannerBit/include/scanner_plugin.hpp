@@ -74,8 +74,6 @@ namespace Gambit
         }
 }
 
-//#include "scan_file.hpp"
-
 #define init_inifile_value(exp, ...)    INIT_INIFILE_VALUE(exp, __VA_ARGS__) enum{}
 #define init_dimension(exp)             INIT_DIMENSION(exp) enum{}
 #define init_functor(exp, ...)          INIT_FUNCTOR(exp, __VA_ARGS__) enum{}

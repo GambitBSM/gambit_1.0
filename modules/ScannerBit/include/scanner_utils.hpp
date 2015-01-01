@@ -17,7 +17,7 @@
 ///
 ///  \author Pat Scott 
 ///          (patscott@physics.mcgill.ca)
-///  \date 2014 Mar
+///  \date 2014 Mar, Dec
 ///
 ///  *********************************************
 
@@ -53,13 +53,13 @@ Gambit::Scanner::Errors::_warn_()                               \
 (Gambit::Scanner::Errors::_bool_()) ?                           \
 (                                                               \
         Gambit::Scanner::scan_error().raise(LOCAL_INFO,         \
-                Gambit::Scanner::Errors::_err_().str()),        \
+         Gambit::Scanner::Errors::_err_().str()),               \
         Gambit::Scanner::Errors::_err_().str("")                \
 )                                                               \
 :                                                               \
 (                                                               \
         Gambit::Scanner::scan_warning().raise(LOCAL_INFO,       \
-                Gambit::Scanner::Errors::_warn_().str()),       \
+         Gambit::Scanner::Errors::_warn_().str()),              \
         Gambit::Scanner::Errors::_warn_().str("")               \
 )                                                               \
 
