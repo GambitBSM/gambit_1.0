@@ -17,7 +17,7 @@
 ///
 ///  \author Pat Scott 
 ///          (patscott@physics.mcgill.ca)
-///  \date 2014 Mar
+///  \date 2014 Mar, Dec
 ///
 ///  *********************************************
 
@@ -42,25 +42,25 @@
 #define scan_flush      SCAN_FLUSH
 
 #define SCAN_ERR                                                \
-Gambit::Scanner::Errors::_bool_() = true,                       \
-Gambit::Scanner::Errors::_err_()                                \
+Scanner::Errors::_bool_() = true,                               \
+Scanner::Errors::_err_()                                        \
 
 #define SCAN_WARN                                               \
-Gambit::Scanner::Errors::_bool_() = false,                      \
-Gambit::Scanner::Errors::_warn_()                               \
+Scanner::Errors::_bool_() = false,                              \
+Scanner::Errors::_warn_()                                       \
 
 #define SCAN_END_INTERNAL                                       \
-(Gambit::Scanner::Errors::_bool_()) ?                           \
+(Scanner::Errors::_bool_()) ?                                   \
 (                                                               \
-        Gambit::Scanner::scan_error().raise(LOCAL_INFO,         \
-                Gambit::Scanner::Errors::_err_().str()),        \
-        Gambit::Scanner::Errors::_err_().str("")                \
+        Scanner::scan_error().raise(LOCAL_INFO,                 \
+         Scanner::Errors::_err_().str()),                       \
+        Scanner::Errors::_err_().str("")                        \
 )                                                               \
 :                                                               \
 (                                                               \
-        Gambit::Scanner::scan_warning().raise(LOCAL_INFO,       \
-                Gambit::Scanner::Errors::_warn_().str()),       \
-        Gambit::Scanner::Errors::_warn_().str("")               \
+        Scanner::scan_warning().raise(LOCAL_INFO,               \
+         Scanner::Errors::_warn_().str()),                      \
+        Scanner::Errors::_warn_().str("")                       \
 )                                                               \
 
 #define SCAN_END std::endl, SCAN_END_INTERNAL
