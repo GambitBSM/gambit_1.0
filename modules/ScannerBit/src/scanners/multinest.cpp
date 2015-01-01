@@ -88,9 +88,8 @@ namespace Gambit {
                    double lnew;
                    //int i;
    
-                   // No scan_error?
-                   //if (ndim!=my_ndim) {scan_error().raise(LOCAL_INFO,"ndim!=my_ndim in multinest LogLike function!");}
-                   //if (ndim!=parameter_keys.size()) {scan_error().raise(LOCAL_INFO,"ndim!=parameter_keys.size() in multinest LogLike function!");}
+                   if (ndim!=my_ndim) {scan_error().raise(LOCAL_INFO,"ndim!=my_ndim in multinest LogLike function!");}
+                   if (ndim!=parameter_keys.size()) {scan_error().raise(LOCAL_INFO,"ndim!=parameter_keys.size() in multinest LogLike function!");}
                    
                    // WANT TO DO THIS:
              	   //lnew = (*boundLogLike)(physicalpars);
@@ -222,8 +221,7 @@ namespace Gambit {
 
 // Interface to ScannerBit
 
-scanner_plugin (multinest, version(0, 0, 0, bens_version))
-//scanner_plugin (multinest, version(0, 0, 0, bens_version), external_library_required) // TODO make it work like this!  (extra argument should be optional)
+scanner_plugin (MultiNest, version(0, 0, 0, bens_version), external_library_required) // TODO make it work like this!  (extra argument should be optional)
 {
         int plugin_main ()
         {

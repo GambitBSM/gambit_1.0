@@ -2,7 +2,8 @@
 //  *********************************************
 ///  \file
 ///
-///  declaration for scanner module
+///  Macros and related classes for declaring
+///  scanner test functions.
 ///
 ///  *********************************************
 ///
