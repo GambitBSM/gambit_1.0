@@ -211,6 +211,13 @@ else()
   set (EXCLUDE_DELPHES TRUE)
 endif()
 
+# Include FlexibleSUSY only if SpecBit is in use
+if(";${GAMBIT_BITS};" MATCHES ";SpecBit;")
+  set (EXCLUDE_FLEXIBLESUSY FALSE)
+else()
+  set (EXCLUDE_FLEXIBLESUSY TRUE)
+endif()
+
 # Include other cmake scripts
 include(cmake/contrib.cmake)
 include(cmake/warnings.cmake)
@@ -239,24 +246,25 @@ set(GAMBIT_OBJECTS $<TARGET_OBJECTS:Core> $<TARGET_OBJECTS:Printers>)
 foreach(bit ${GAMBIT_BITS})
   add_subdirectory(${bit})
   set(GAMBIT_BIT_OBJECTS ${GAMBIT_BIT_OBJECTS} "$<TARGET_OBJECTS:${bit}>")
-endforeach()
 
-# Ben: My attempt to add "SpecBit only" include targets. Seems to work.
-target_include_directories(SpecBit PRIVATE
-                             ${FLEXIBLESUSY_DIR}/config
-                             ${FLEXIBLESUSY_DIR}/legacy
-                             ${FLEXIBLESUSY_DIR}/src)
-message("-- Adding FlexibleSUSY model headers to SpecBit include list")
-# Dig through flexiblesusy "models" directory and add all subdirectories to the include list
-# (these contain the headers for the generated spectrum generators)
-#file(GLOB _ALL_FILES ${FLEXIBLESUSY_DIR}/models ${FLEXIBLESUSY_DIR}/models/*)
-foreach(_MODEL ${BUILT_FS_MODELS})
-  #if(IS_DIRECTORY ${_FILE})
-    message("      ${_MODEL}")
-    target_include_directories(SpecBit PRIVATE ${FLEXIBLESUSY_DIR}/models/${_MODEL})
-  #endif()
+  if (SpecBit STREQUAL ${bit})
+    # Ben: My attempt to add "SpecBit only" include targets. Seems to work.
+    target_include_directories(SpecBit PRIVATE
+                               ${FLEXIBLESUSY_DIR}/config
+                               ${FLEXIBLESUSY_DIR}/legacy
+                               ${FLEXIBLESUSY_DIR}/src)
+    message("-- Adding FlexibleSUSY model headers to SpecBit include list")
+    # Dig through flexiblesusy "models" directory and add all subdirectories to the include list
+    # (these contain the headers for the generated spectrum generators)
+    #file(GLOB _ALL_FILES ${FLEXIBLESUSY_DIR}/models ${FLEXIBLESUSY_DIR}/models/*)
+    foreach(_MODEL ${BUILT_FS_MODELS})
+      #if(IS_DIRECTORY ${_FILE})
+        message("      ${_MODEL}")
+        target_include_directories(SpecBit PRIVATE ${FLEXIBLESUSY_DIR}/models/${_MODEL})
+      #endif()
+    endforeach()
+  endif()
 endforeach()
-
 
 # Ensure that clean removes automatically-generated cmake_variables.hpp file
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/cmake/cmake_variables.hpp.in"

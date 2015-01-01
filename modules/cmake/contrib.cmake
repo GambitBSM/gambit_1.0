@@ -22,20 +22,19 @@ foreach(_LIB ${LAPACK_LIBRARIES})
   set(LAPACK_LIBS "${LAPACK_LIBS} -L${_LIB}")
 endforeach(_LIB)
 message("Adding LAPACK paths to flexiblesusy build: ${LAPACK_LIBS}")
-
 # Set the models (spectrum generators) which exist in the flexiblesusy source (could
 # autogenerate this, but we'd end up building some stuff we don't need at the moment)
 set(BUILT_FS_MODELS CMSSM MSSMatMGUT)
 
-
-# To skip flexiblesusy build, run cmake with SKIP_FS=1 set as an environment variable (e.g. run "SKIP_FS=1 cmake ..")
-
-if($ENV{SKIP_FS})
-   message("-- SKIP_FS flag detected: skipping build of flexiblesusy libraries")
-   foreach(_MODEL ${BUILT_FS_MODELS})
-      set(flexiblesusy_LDFLAGS "${flexiblesusy_LDFLAGS} -L${FLEXIBLESUSY_DIR}/models/${_MODEL} -l${_MODEL}")
-   endforeach()
+# To skip flexiblesusy build, run cmake with SKIP_FS=1 set as an environment variable, or just ditch SpecBit (e.g. run "SKIP_FS=1 cmake .." or "cmake .. -Ditch="SpecBit")
+if(($ENV{SKIP_FS}) OR (${EXCLUDE_FLEXIBLESUSY}))
+   message("-- SKIP_FS flag detected or SpecBit excluded: skipping build of flexiblesusy libraries")
    set(flexiblesusy_projects false)
+   if (NOT ${EXCLUDE_FLEXIBLESUSY})
+     foreach(_MODEL ${BUILT_FS_MODELS})
+       set(flexiblesusy_LDFLAGS "${flexiblesusy_LDFLAGS} -L${FLEXIBLESUSY_DIR}/models/${_MODEL} -l${_MODEL}")
+     endforeach()
+   endif()
 else()
    message("-- NOTE! FlexibleSUSY takes kind of a while to build, so you probably")
    message("   don't want to build it every time you compile gambit. It is built")
@@ -73,9 +72,10 @@ else()
        list(APPEND flexiblesusy_projects flexiblesusy_project${_MODEL})
        set(flexiblesusy_LDFLAGS "${flexiblesusy_LDFLAGS} -L${FLEXIBLESUSY_DIR}/models/${_MODEL} -l${_MODEL}")
    endforeach()
+
+  # Link order matters! The core flexiblesusy libraries need to come after the model libraries
+  set(flexiblesusy_LDFLAGS "${flexiblesusy_LDFLAGS} -L${FLEXIBLESUSY_DIR}/src -lflexisusy -L${FLEXIBLESUSY_DIR}/legacy -llegacy")
 endif()
-# Link order matters! The core flexiblesusy libraries need to come after the model libraries
-set(flexiblesusy_LDFLAGS "${flexiblesusy_LDFLAGS} -L${FLEXIBLESUSY_DIR}/src -lflexisusy -L${FLEXIBLESUSY_DIR}/legacy -llegacy")
 
 # Determine compiler libraries needed by flexiblesusy. The below simply clones the logic
 # used in "contrib/MassSpectra/flexiblesusy/configure": 
