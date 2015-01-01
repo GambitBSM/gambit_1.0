@@ -128,13 +128,14 @@ else()
 endif()
 
 # Check for Boost
-find_package(Boost 1.42 REQUIRED)
+find_package(Boost 1.41 REQUIRED system filesystem)
 if(Boost_FOUND)
   if (NOT Boost_INCLUDE_DIR STREQUAL "")
     include_directories("${Boost_INCLUDE_DIR}")
   endif()
-   # Ben> I had a need to create directories in the logging system, and boost_filesystem seemed the most portable option. However, it is not a header-only library, so we need to link to it now, and also to boost_system which it apparently depends on.
   set(BOOST_LDFLAGS -lboost_system -lboost_filesystem)
+else()
+  message(FATAL_ERROR "GAMBIT requires Boost v1.41 or greater.")
 endif()
 
 # Check for OpenMP
@@ -151,7 +152,7 @@ if(GSL_FOUND)
     include_directories("${GSL_INCLUDE_DIRS}")
   endif()
 else()
-  message(FATAL_ERROR "Need gsl libraries")
+  message(FATAL_ERROR "GAMBIT requires the GSL libraries.")
 endif()
 
 # Check for DL libraries

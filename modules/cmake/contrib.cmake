@@ -56,10 +56,6 @@ else()
         --with-fortran-dep-gen=${CMAKE_Fortran_COMPILER}
         --with-eigen-incdir=${EIGEN3_DIR}
       )
-   # Crap, flexiblesusy is not building for me with the intel compilers. And from my googling it might not really be their fault, there seem to be some weird bugs in the intel compilers. Anyway, for now I am forcing flexiblesusy to build with GNU compilers... I guess this screws up people on Macs though.
-   #set(FS_OPTIONS ${FS_OPTIONS} 
-   #     --with-eigen-incdir=${EIGEN3_DIR}
-   #   )
 
    # Explain how to build each of the flexiblesusy spectrum generators we need
    # Note; using $(MAKE) rather than "make" so that -jN flags get passed on (for parallel build)
