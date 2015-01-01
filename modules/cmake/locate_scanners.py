@@ -155,13 +155,15 @@ def main(argv):
 #                                               \n\
 #***********************************************\n\
                                                 \n\
-foreach(program ${uses_scannerbit})             \n\
-    target_link_libraries( ${program} "+linkcommands+")\n\
-    set_target_properties( ${program} PROPERTIES"
+foreach(program ${uses_scannerbit})             \n"
 
+    if linkcommands: towrite += "target_link_libraries( ${program} "+linkcommands+")\n"
     unique_libdirs = set(p[5] for p in plugins if p[3] == "found")
-    for libdir in unique_libdirs: towrite += "\n"+" "*27+"INSTALL_RPATH "+libdir
-    towrite += ")\nendforeach()"
+    if unique_libdirs:
+      towrite += "set_target_properties( ${program} PROPERTIES"
+      for libdir in unique_libdirs: towrite += "\n"+" "*27+"INSTALL_RPATH "+libdir
+      towrite += ")\n"
+    towrite += "endforeach()"
     cmake = "./cmake/linkedout.cmake"
     with open(cmake+".candidate","w") as f: f.write(towrite)
     update_cmakelists.update_only_if_different(cmake, cmake+".candidate")
