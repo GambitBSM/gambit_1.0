@@ -27,6 +27,7 @@
 #include <string>
 #include <ostream>
 #include <sstream>
+#include <plugin_utilities.hpp>
 
 namespace Gambit
 {
@@ -49,6 +50,38 @@ namespace Gambit
                                 std::string plugin;
                                 std::string type;
                                 std::string full_string;
+                                
+                                Plugin_Details(){}
+                                
+                                Plugin_Details(const std::string &str) : full_string(str)
+                                {
+                                        int posMid = str.rfind("__v__");
+                                        version = str.substr(posMid + 5);
+                                        int posLast = str.rfind("__t__", posMid - 1);
+                                        type = str.substr(posLast + 5, posMid - posLast - 5);
+                                        plugin = str.substr(0, posLast);
+                                        
+                                        posLast = version.find("_");
+                                        major_version = StringToInt(version.substr(0, posLast));
+                                        posMid = version.find("_", posLast + 1);
+                                        minor_version = StringToInt(version.substr(posLast + 1, posMid - posLast - 1));
+                                        posLast = version.find("_", posMid + 1);
+                                        patch_version = StringToInt(version.substr(posMid + 1, posLast - posMid - 1));
+                                        release_version = version.substr(posLast + 1);
+                                        version = IntToString(major_version) + "." + IntToString(minor_version) + "." + IntToString(patch_version);
+                                        if (release_version != "") 
+                                                version += "-" + release_version;  
+                                }
+                                
+                                std::string printMin() const
+                                {
+                                        std::stringstream out;
+                                        out << "plugin:  " << plugin << std::endl;
+                                        out << "version:  " << version << std::endl;
+                                        out << "type:  " << type << std::endl;
+                                        
+                                        return out.str();
+                                }
                                 
                                 std::string print() const
                                 {

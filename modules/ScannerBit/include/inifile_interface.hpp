@@ -66,7 +66,14 @@ namespace Gambit
                                 }
                         }
                         
-                        YAML::Node getNode(const std::string &str) const {return options.getNode(str);}
+                        YAML::Node getNode(const std::string &str) const 
+                        {
+                                if (options.hasKey(str))
+                                        return options.getNode(str);
+                                else
+                                        return YAML::Node();
+                                
+                        }
                         
                         ~IniFileInterface(){}
                 };

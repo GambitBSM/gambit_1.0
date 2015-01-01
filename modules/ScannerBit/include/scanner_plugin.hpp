@@ -25,6 +25,7 @@
 #include "scanner_utils.hpp"
 #include "plugin_defs.hpp"
 #include "plugin_macros.hpp"
+#include "plugin_details.hpp"
 
 #include <yaml-cpp/yaml.h>
 
@@ -94,27 +95,26 @@ using namespace Gambit::Scanner;                                                
 template <typename T>                                                                                                   \
 T get_inifile_value(std::string in)                                                                                     \
 {                                                                                                                       \
-        std::string temp = (get_input_value<IniFileInterface>(2)).getValue(in);                                         \
-        if (temp == "")                                                                                                 \
+        YAML::Node conv = (get_input_value<IniFileInterface>(2)).getNode(in);                                           \
+        if (conv.IsNull())                                                                                              \
         {                                                                                                               \
-                std::ostringstream ss;                                                                                  \
-                ss << "Missing iniFile entry needed by plugin \""                                                       \
-                                << (__gambit_plugin_namespace__::myData.name) << "\":  " << in;                         \
-                Gambit::Scanner::scan_error().raise(LOCAL_INFO, ss.str());                                              \
+                scan_err << "Missing iniFile entry needed by a gambit plugin \n"                                        \
+                        << Gambit::Scanner::Plugins::Plugin_Details(__gambit_plugin_namespace__::myData.name).printMin()\
+                        << scan_end;                                                                                    \
         }                                                                                                               \
-        YAML::Node conv = YAML::Load(temp);                                                                             \
+                                                                                                                        \
         return conv.as<T>();                                                                                            \
 }                                                                                                                       \
                                                                                                                         \
 template <typename T>                                                                                                   \
 T get_inifile_value(std::string in, T defaults)                                                                         \
 {                                                                                                                       \
-        std::string temp = (get_input_value<IniFileInterface>(2)).getValue(in);                                         \
-        if (temp == "")                                                                                                 \
+        YAML::Node conv = (get_input_value<IniFileInterface>(2)).getNode(in);                                           \
+        if (conv.IsNull())                                                                                              \
         {                                                                                                               \
                 return defaults;                                                                                        \
         }                                                                                                               \
-        YAML::Node conv = YAML::Load(temp);                                                                             \
+                                                                                                                        \
         return conv.as<T>();                                                                                            \
 }                                                                                                                       \
 //Gambit::Scanner::scan::ScanFileOutput scan_ios(get_keys(), &get_input_value<PriorTransform>(2));                      \

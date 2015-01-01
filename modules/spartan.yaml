@@ -116,6 +116,13 @@ Scanner:
         purpose: Likelihood
         grid_pts: 3 #NxN grid
             
+    grid:
+      plugin: grid
+      verion: ">=1.0"
+      options:
+        purpose: Likelihood
+        grid_pts: [2, 2]
+            
 ###############################
 # Observables of interest
 ###############################
