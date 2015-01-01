@@ -119,8 +119,8 @@ T get_inifile_value(std::string in, T defaults)                                 
 }                                                                                                                       \
 //Gambit::Scanner::scan::ScanFileOutput scan_ios(get_keys(), &get_input_value<PriorTransform>(2));                      \
 
-//#define SET_SCAN_IOS(file) \
-//scan_ios.setOutput((get_input_value<IniFileInterface>(3)).getNode(#file)); \
+/*#define SET_SCAN_IOS(file) \
+scan_ios.setOutput((get_input_value<IniFileInterface>(3)).getNode(#file)); \*/
 
 #define SCANNER_PLUGIN(mod_name, mod_version)                                                                           \
 GAMBIT_PLUGIN(mod_name, scan, mod_version)                                                                              \

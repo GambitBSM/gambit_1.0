@@ -52,14 +52,14 @@ namespace Gambit
                         class VersionCompareBottom : public VersionCompareBase
                         {
                         private:
-                                const unsigned char GREATER;
-                                const unsigned char EQUAL;
-                                const unsigned char LESS;
-                                const unsigned char NEG;
-                                const unsigned char MAJOR;
-                                const unsigned char MINOR;
-                                const unsigned char PATCH;
-                                const unsigned char RELEASE;
+                                static const unsigned char GREATER = 0x01;
+                                static const unsigned char EQUAL =0x02;
+                                static const unsigned char LESS = 0x04;
+                                static const unsigned char NEG = 0x08;
+                                static const unsigned char MAJOR = 0x10;
+                                static const unsigned char MINOR = 0x20;
+                                static const unsigned char PATCH = 0x40;
+                                static const unsigned char RELEASE = 0x80;
                                 unsigned int major_version;
                                 unsigned int minor_version;
                                 unsigned int patch_version;
@@ -82,8 +82,8 @@ namespace Gambit
                         class VersionCompare : public VersionCompareBase
                         {
                         private:
-                                const unsigned char OR;
-                                const unsigned char AND;                        
+                                static const unsigned char OR = 0x02;
+                                static const unsigned char AND = 0x04;                        
                                 VersionCompareBase *compare1;
                                 VersionCompareBase *compare2;
                                 unsigned char flag;

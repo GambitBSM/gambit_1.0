@@ -39,8 +39,8 @@ namespace Gambit
                 {
                         std::stringstream ss;
                         
-                        //if (!node.IsNull())
-                        //        ss << node << std::endl;
+                        if (!node.IsNull())
+                                ss << node << std::endl;
                         
                         for (auto it = nodesMap.begin(), end = nodesMap.end(); it != end; it++)
                         {
@@ -72,7 +72,7 @@ namespace Gambit
         
                 Scan_Manager::Scan_Manager (const Factory_Base &factoryIn, const Options &options_in, const Priors::CompositePrior &priorIn, 
                  const Plugins::Plugin_Loader &plugins_in, printer_interface *printerInterface) 
-                : printerInterface(printerInterface), options(&options_in), plugins(&plugins_in)
+                : options(&options_in), plugins(&plugins_in), printerInterface(printerInterface)
                 {
                         if (!options->hasKey("plugins"))
                         {

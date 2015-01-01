@@ -111,7 +111,7 @@ namespace Gambit
                                         return false;
                                 }
                                 
-                                return false;
+                                return true;
                         }
                         
                         inline bool Plugin_Version_Supersedes(const Plugin_Details &plug1, const Plugin_Details &plug2)
@@ -141,6 +141,7 @@ namespace Gambit
                                                 }
                                         }
                                 }
+                                
                                 return false;
                         }
                                         

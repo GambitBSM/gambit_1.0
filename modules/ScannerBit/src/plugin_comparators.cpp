@@ -33,16 +33,7 @@ namespace Gambit
                 namespace Plugins
                 {
                 
-                        VersionCompareBottom::VersionCompareBottom (const std::string &version) :
-                         flag (0x00),
-                         GREATER (0x01),
-                         EQUAL (0x02),
-                         LESS (0x04),
-                         NEG (0x08),
-                         MAJOR (0x10),
-                         MINOR (0x20),
-                         PATCH (0x40),
-                         RELEASE (0x80)
+                        VersionCompareBottom::VersionCompareBottom (const std::string &version) : flag (0x00)
                         {
                                 if (version.find_first_not_of(" !()|&=<>") == std::string::npos)
                                 {
@@ -163,7 +154,7 @@ namespace Gambit
                                 return true;
                         }
                 
-                        VersionCompare::VersionCompare(const std::string &version) : compare1(NULL), compare2(NULL), flag(0x00), OR(0x02), AND(0x04)
+                        VersionCompare::VersionCompare(const std::string &version) : compare1(NULL), compare2(NULL), flag(0x00)
                         {
                                 std::string::size_type p_pos = version.find_first_of("(|&");
                                 

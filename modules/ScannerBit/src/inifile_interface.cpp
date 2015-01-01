@@ -29,7 +29,7 @@ namespace Gambit
         namespace Scanner
         {       
                 IniFileInterface::IniFileInterface(const std::string &tag, const Plugins::Plugin_Details &plugin, const Options &options) 
-                        : tag(tag), plugin(plugin), options(options)
+                        : options(options), plugin(plugin), tag(tag)
                 {       
                 }
         }
