@@ -1,4 +1,27 @@
-# CMakeLists files in this project can refer to the root source directory of the project as ${PROJECT_SOURCE_DIR} and to the root binary directory of the project as ${PROJECT_BINARY_DIR}.
+# GAMBIT: Global and Modular BSM Inference Tool  
+#************************************************
+# \file                                          
+#                                                
+#  Master cmake configuration script for GAMBIT.
+#    
+#  CMakeLists files in this project can refer to
+#  the root source directory of the project as 
+#  ${PROJECT_SOURCE_DIR} and to the root binary 
+#  directory of the project as ${PROJECT_BINARY_DIR}.
+#                                                
+#************************************************
+#                                                
+#  Authors (add name and date if you modify):                                    
+#                                                
+#  \author Antje Putzerator
+#          (antje.putze@lapth.cnrs.fr)              
+#  \date 2014 Sep, Oct, Nov
+#
+#  \author Pat Scott
+#          (p.scott@imperial.ac.uk)              
+#  \date 2014 Nov, Dec
+#                                               
+#************************************************
 
 # Require a minimum cmake version of 2.6
 cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
@@ -54,19 +77,7 @@ string (REPLACE ";" "," itch_with_commas "${itch}")
 # Generate the cmake_variables.hpp.in file
 message("-- Updating GAMBIT with config data")
 set(locate_scanners ${PROJECT_SOURCE_DIR}/cmake/locate_scanners.py -x __not_a_real_name__,${itch_with_commas})
-execute_process(COMMAND python ${locate_scanners} WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} OUTPUT_VARIABLE result)
-#FIXME this is temporary -- this stuff will be written by python once the multinest interface is working again, and the OUTPUT_VARIABLE removed above
-#the python script should put stuff like 
-# target_link_libraries(gambit "-L/home/pat/gambit-hepforge/modules/ScannerBit/lib -lmultinest")
-#in the linking.cmake file, and also generate the Scannerbit CMakelists.txt file
-string (REPLACE "\n" ";" result "${result}")
-list(REVERSE result)
-list(GET result 1 scanner_plugin_link_commands)
-string(STRIP ${scanner_plugin_link_commands} scanner_plugin_link_commands)
-list(REMOVE_AT result 1)
-foreach(line ${result})
-  message("${line}")
-endforeach()
+execute_process(COMMAND python ${locate_scanners} WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
 message("-- Updating GAMBIT with config data - done.")
  
 # Generate the CMakeLists.txt files for GAMBIT modules
@@ -250,34 +261,11 @@ foreach(bit ${GAMBIT_BITS})
   set(GAMBIT_BIT_OBJECTS ${GAMBIT_BIT_OBJECTS} "$<TARGET_OBJECTS:${bit}>")
 endforeach()
 
-# Ensure that clean removes automatically-generated cmake_variables.hpp file
-set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/cmake/cmake_variables.hpp.in"
-                               "${PROJECT_SOURCE_DIR}/cmake/cmake_variable.hpp.in.candidate")
-
-# Ensure that clean removes automatically-generated CMakeLists.txt files in modules
-foreach(bit ${GAMBIT_BITS})
-  if(NOT ScannerBit STREQUAL ${bit})
-    set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/${bit}/CMakeLists.txt"
-                                   "${PROJECT_SOURCE_DIR}/${bit}/CMakeLists.txt.candidate")
-  endif()
-endforeach()
-
-# Ensure that clean removes .pyc files
-file(GLOB more_clean_files "${PROJECT_SOURCE_DIR}/*/*.pyc" "${PROJECT_SOURCE_DIR}/*/*/*.pyc")
-set(clean_files ${clean_files} ${more_clean_files})
-
-# Ensure that clean sweeps out the scratch directory
-file(GLOB more_clean_files "${PROJECT_SOURCE_DIR}/scratch/*?.*")
-set(clean_files ${clean_files} ${more_clean_files})
-
-# Add all the clean files
-set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${clean_files}")
-
 # Add the executables
 include(cmake/executables.cmake)
 
-#FIXME this to be put in a python-generated file linking.cmake, with all the rpaths arising from the scanner and test function locations, and the link commands.  Should also do that same for scannerbit standalone compilation
-target_link_libraries( gambit ${scanner_plugin_link_commands})
-set_target_properties( gambit 
-                       PROPERTIES
-                       INSTALL_RPATH "${PROJECT_SOURCE_DIR}/ScannerBit/lib")
+# Finish setting the link commands and rpath variables
+include(cmake/linkedout.cmake)
+
+# Arrange clean commands
+include(cmake/cleaning.cmake)

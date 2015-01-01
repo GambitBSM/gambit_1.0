@@ -1,3 +1,27 @@
+# GAMBIT: Global and Modular BSM Inference Tool  
+#************************************************
+# \file                                          
+#                                                
+#  Cmake configuration script for final executables
+#  of GAMBIT.
+#    
+#************************************************
+#                                                
+#  Authors (add name and date if you modify):                                    
+#                                                
+#  \author Antje Putze
+#          (antje.putze@lapth.cnrs.fr)              
+#  \date 2014 Sep, Oct, Nov
+#
+#  \author Pat Scott
+#          (p.scott@imperial.ac.uk)              
+#  \date 2014 Nov, Dec
+#                                               
+#************************************************
+
+# Indicate which executables need ScannerBit
+set(uses_scannerbit gambit)
+
 # Add the main GAMBIT executable
 if(EXISTS "${PROJECT_SOURCE_DIR}/Core/")
   add_gambit_executable(gambit SOURCES ${PROJECT_SOURCE_DIR}/Core/src/gambit.cpp ${GAMBIT_COMMON_OBJECTS} ${GAMBIT_OBJECTS} ${GAMBIT_BIT_OBJECTS})
@@ -19,4 +43,3 @@ if(EXISTS "${PROJECT_SOURCE_DIR}/ExampleBit_A/" AND ";${GAMBIT_BITS};" MATCHES "
     target_link_libraries(ExampleBit_A_standalone ${delphes_LDFLAGS} ${ROOT_LIBRARIES} ${ROOT_LIBRARY_DIR}/libEG.so)
   endif()
 endif()
-

@@ -1,3 +1,29 @@
+# GAMBIT: Global and Modular BSM Inference Tool  
+#************************************************
+# \file                                          
+#                                                
+#  Cmake configuration script for 'extra'
+#  packages in GAMBIT, i.e. backend codes that
+#  we want to make accessible via the cmake 
+#  system.  Note that this is not the canonical
+#  way to manage the compilation of backends,
+#  and GAMBIT support for backend compilation is
+#  minimal, even with this method!  
+#    
+#************************************************
+#                                                
+#  Authors (add name and date if you modify):                                    
+#                                                
+#  \author Antje Putze
+#          (antje.putze@lapth.cnrs.fr)              
+#  \date 2014 Sep, Oct, Nov
+#
+#  \author Pat Scott
+#          (p.scott@imperial.ac.uk)              
+#  \date 2014 Nov, Dec
+#                                               
+#************************************************
+
 include(ExternalProject)
 
 ExternalProject_Add(DDCalc0

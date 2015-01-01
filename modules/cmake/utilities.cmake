@@ -1,3 +1,24 @@
+# GAMBIT: Global and Modular BSM Inference Tool  
+#************************************************
+# \file                                          
+#                                                
+#  Helpful cmake utility macros and functions for
+#  GAMBIT.  
+#    
+#************************************************
+#                                                
+#  Authors (add name and date if you modify):                                    
+#                                                
+#  \author Antje Putze
+#          (antje.putze@lapth.cnrs.fr)              
+#  \date 2014 Sep, Oct, Nov
+#
+#  \author Pat Scott
+#          (p.scott@imperial.ac.uk)              
+#  \date 2014 Nov, Dec
+#                                               
+#************************************************
+
 include(CMakeParseArguments)
 
 #Macro to retrieve GAMBIT modules
