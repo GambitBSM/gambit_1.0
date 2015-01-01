@@ -161,7 +161,7 @@ foreach(program ${uses_scannerbit})             \n"
     unique_libdirs = set(p[5] for p in plugins if p[3] == "found")
     if unique_libdirs:
       towrite += "set_target_properties( ${program} PROPERTIES"
-      for libdir in unique_libdirs: towrite += "\n"+" "*27+"INSTALL_RPATH "+libdir
+      for libdir in unique_libdirs: towrite += "\n"+" "*34+"INSTALL_RPATH "+libdir
       towrite += ")\n"
     towrite += "endforeach()"
     cmake = "./cmake/linkedout.cmake"
