@@ -22,7 +22,7 @@
 #ifndef FUNCTION_PLUGIN_HPP
 #define FUNCTION_PLUGIN_HPP
 
-//#include "scanner_utils.hpp"
+#include "scanner_utils.hpp"
 #include "plugin_defs.hpp"
 #include "plugin_macros.hpp"
 
@@ -48,6 +48,7 @@ namespace Gambit
                         virtual const std::string pluginName() const = 0;
                         virtual const std::string fileName() const = 0;
                         virtual const std::string getValue(const std::string &in) const = 0;
+                        virtual YAML::Node getNode(const std::string &str) const = 0;
                         virtual ~IniFileInterface() = 0;
                 };
         }
@@ -68,28 +69,26 @@ using namespace Gambit::Scanner;                                                
 template <typename T>                                                                                                   \
 T get_inifile_value(std::string in)                                                                                     \
 {                                                                                                                       \
-        std::string temp = (get_input_value<IniFileInterface>(2)).getValue(in);                                         \
-        if (temp == "")                                                                                                 \
+        YAML::Node conv = (get_input_value<IniFileInterface>(2)).getNode(in);                                           \
+        if (conv.IsNull())                                                                                              \
         {                                                                                                               \
-                std::ostringstream ss;                                                                                  \
-                ss << "Missing iniFile entry needed by plugin \""                                                       \
-                                << (__gambit_plugin_namespace__::myData.name) << "\":  " << in;                         \
-                /*Gambit::Scanner::scan_error().raise(LOCAL_INFO, ss.str());   */                                           \
+                scan_err << "Missing iniFile entry needed by plugin \""                                                 \
+                                << (__gambit_plugin_namespace__::myData.name) << "\":  " << scan_end;                   \
         }                                                                                                               \
-        YAML::Node conv = YAML::Load(temp);                                                                             \
+                                                                                                                        \
         return conv.as<T>();                                                                                            \
 }                                                                                                                       \
                                                                                                                         \
 template <typename T>                                                                                                   \
 T get_inifile_value(std::string in, T defaults)                                                                         \
 {                                                                                                                       \
-        std::string temp = (get_input_value<IniFileInterface>(2)).getValue(in);                                         \
-        if (temp != "")                                                                                                 \
+        YAML::Node conv = (get_input_value<IniFileInterface>(2)).getNode(in);                                           \
+        if (conv.IsNull())                                                                                              \
         {                                                                                                               \
-                YAML::Node conv = YAML::Load(temp);                                                                     \
-                return conv.as<T>();                                                                                    \
+                return defaults;                                                                                        \
         }                                                                                                               \
-        return defaults;                                                                                                \
+                                                                                                                        \
+        return conv.as<T>();                                                                                            \
 }                                                                                                                       \
                                                                                                                         \
 inline const std::vector<std::string> add_gambit_prefix(const std::vector<std::string> &key)                            \

@@ -39,6 +39,9 @@
 
 #define VERSION_4(major, minor, patch, release) major ## _ ## minor ## _ ## patch ## _ ## release
 #define VERSION_3(major, minor, patch) VERSION_4(major, minor, patch, )
+#define VERSION_2(major, minor) VERSION_4(major, minor,,)
+#define VERSION_1(major) VERSION_4(major,,,)
+#define VERSION_0() VERSION(,,,)
 #define VERSION(...) ENTER_FUNC(VERSION_, ARG_N(__VA_ARGS__), __VA_ARGS__ )
 
 /*Allows Gambit to declare an object of type "..."*/
@@ -290,7 +293,9 @@ namespace __gambit_plugin_ ## plug_name ##  _namespace__                        
 }                                                                                                                       \
 namespace __gambit_plugin_ ## plug_name ## _namespace__                                                                 \
 
-#define GAMBIT_PLUGIN(plug_name, plug_type, plug_version)                                                               \
+#define GAMBIT_PLUGIN_3(plug_name, plug_type, plug_version)                                                             \
         GAMBIT_PLUGIN_INTERNAL( plug_name ## __t__ ## plug_type ## __v__ ## plug_version )                              \
 
+#define GAMBIT_PLUGIN(...) ENTER_FUNC(GAMBIT_PLUGIN_, ARG_N(__VA_ARGS__), __VA_ARGS__ )
+        
 #endif

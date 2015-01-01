@@ -71,27 +71,11 @@ namespace Gambit
                                                 std::stringstream ss(std::string(buffer, n));
                                                 while(getline(ss, str))
                                                 {
-                                                        Plugin_Details temp;
                                                         int pos = str.find("__gambit_plugin_pluginInit_");
-                                                        int posLast = str.rfind("__");
-                                                        int posMid = str.rfind("__v__", posLast - 1);
-                                                        temp.full_string = str.substr(pos + 27, posLast - pos - 27);
-                                                        temp.version = str.substr(posMid + 5, posLast - posMid - 5);
-                                                        posLast = str.rfind("__t__", posMid - 1);
-                                                        temp.type = str.substr(posLast + 5, posMid - posLast - 5);
-                                                        temp.plugin = str.substr(pos + 27, posLast - pos - 27);
+                                                        Plugin_Details temp(str.substr(pos + 27, str.rfind("__") - pos - 27));
                                                         
                                                         if (plug == "" || temp.plugin == plug)
                                                         {
-                                                                posLast = temp.version.find("_");
-                                                                temp.major_version = StringToInt(temp.version.substr(0, posLast));
-                                                                posMid = temp.version.find("_", posLast + 1);
-                                                                temp.minor_version = StringToInt(temp.version.substr(posLast + 1, posMid - posLast - 1));
-                                                                posLast = temp.version.find("_", posMid + 1);
-                                                                temp.patch_version = StringToInt(temp.version.substr(posMid + 1, posLast - posMid - 1));
-                                                                temp.release_version = temp.version.substr(posLast + 1);
-                                                                temp.version = IntToString(temp.major_version) + "." + IntToString(temp.minor_version) + "." + IntToString(temp.patch_version);
-                                                                if (temp.release_version != "") temp.version += "-" + temp.release_version;  
                                                                 if (p_str.rfind("/") != std::string::npos)
                                                                         temp.library = p_str.substr(p_str.rfind("/") + 1);
                                                                 else
