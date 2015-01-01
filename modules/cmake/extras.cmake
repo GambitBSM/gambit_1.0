@@ -1,10 +1,10 @@
 include(ExternalProject)
 
-ExternalProject_Add(DDCal0
+ExternalProject_Add(DDCalc0
   SOURCE_DIR ${PROJECT_SOURCE_DIR}/../extras/DDCalc0
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND ""
-  BUILD_COMMAND make libDDCalc0.so FC=${CMAKE_Fortran_COMPILER} FFLAGS=${CMAKE_Fortran_FLAGS} COMMAND cp libDDCalc0.so ${PROJECT_SOURCE_DIR}/Backends/lib/.
+  BUILD_COMMAND make libDDCalc0.so FC=${CMAKE_Fortran_COMPILER} FFLAGS=${CMAKE_Fortran_FLAGS} OUTPUT_PIPE=>/dev/null COMMAND cp libDDCalc0.so ${PROJECT_SOURCE_DIR}/Backends/lib/.
   INSTALL_COMMAND ""
   INSTALL_DIR ${CMAKE_BINARY_DIR}/install
   CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/install
@@ -103,7 +103,7 @@ ExternalProject_Add(nulike
 
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../extras/nulike/lib/libnulike.so" "${PROJECT_SOURCE_DIR}/Backends/lib/libnulike.so")
 
-set_target_properties(DDCal0 gamLike DarkSUSY micromegas nulike pythia FastSim BOSSMinimalExample PROPERTIES EXCLUDE_FROM_ALL 1)
+set_target_properties(DDCalc0 gamLike DarkSUSY micromegas nulike pythia FastSim BOSSMinimalExample PROPERTIES EXCLUDE_FROM_ALL 1)
 
-add_custom_target(backends COMMAND make gamLike nulike DDCal0 pythia FastSim BOSSMinimalExample) #DarkSUSY micromegas
+add_custom_target(backends COMMAND make gamLike nulike DDCalc0 pythia FastSim BOSSMinimalExample) #DarkSUSY micromegas
 
