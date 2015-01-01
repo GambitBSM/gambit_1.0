@@ -135,7 +135,7 @@ def main(argv):
 
     if verbose: print "Finished writing cmake_variables.hpp.in"
 
-    # Make a candidate cmake_variables.hpp.in file
+    # Make a candidate linkedout.cmake file
     towrite = "\
 # GAMBIT: Global and Modular BSM Inference Tool  \n\
 #************************************************\n\
