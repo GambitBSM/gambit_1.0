@@ -72,6 +72,16 @@ namespace Gambit
     /// Strips leading and/or trailing parentheses from a string.
     void strip_parentheses(str&);
 
+    /// Get pointers to beginning and end of array. 
+    // Useful for initialising vectors with arrays, e.g.
+    //   int vv[] = { 12,43 };
+    //   std::vector<int> v(beginA(vv), endA(vv));
+    // Though 'begin' is unnecessary, can just do
+    //   std::vector<int> v(vv, endA(vv));
+    template <typename T, size_t N>
+    T* beginA(T(&arr)[N]) { return &arr[0]; }
+    template <typename T, size_t N>
+    T* endA(T(&arr)[N]) { return &arr[0]+N; }
 
     /// Test if two sets are disjoint (works on any sorted std container I think)
     // From http://stackoverflow.com/questions/1964150/c-test-if-2-sets-are-disjoint

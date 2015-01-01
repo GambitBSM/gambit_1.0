@@ -73,8 +73,6 @@
                                   MODULE_INTERPRET_AS_X__DEPENDENCY(MODEL_X, DEP, TYPE)
 #endif
 
-#pragma STRINGIFY(CAT("message  Creating model: ",START_MODEL)) 
-
 /// "in module" version of the START_MODEL macro
 #define MODULE_START_MODEL                                                     \
   IF_TOKEN_UNDEFINED(MODEL,FAIL("You must define MODEL before calling "        \
