@@ -32,8 +32,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake)
 # When building, use the install RPATH already
 set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE) 
 
-# add the automatically determined parts of the RPATH
-# which point to directories outside the build tree to the install RPATH
+# Add the automatically determined parts of the RPATH that point to directories outside the build tree to the install RPATH
 SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 # Check for optional packages and disable sections of GAMBIT accordingly
