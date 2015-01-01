@@ -106,6 +106,7 @@ function_plugin(gaussian, version(1, 0, 0))
 }
 
 function_plugin(EggBox, version(1, 0, 0))
+//function_plugin(EggBox, version(1, 0, 0), external_library_required)
 {
 
         std::vector <double> params;
