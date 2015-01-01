@@ -49,11 +49,15 @@ else()
    set(previous_FSlib false) 
 
    # FlexibleSUSY configure options
+   ###set(FS_OPTIONS ${FS_OPTIONS} 
+   ###     --with-cxx=${CMAKE_CXX_COMPILER}
+   ###     --with-cxx-dep-gen=${CMAKE_CXX_COMPILER}
+   ###     --with-fc=${CMAKE_Fortran_COMPILER}
+   ###     --with-fortran-dep-gen=${CMAKE_Fortran_COMPILER}
+   ###     --with-eigen-incdir=${EIGEN3_DIR}
+   ###   )
+   # Crap, flexiblesusy is not building for me with the intel compilers. And from my googling it might not really be their fault, there seem to be some weird bugs in the intel compilers. Anyway, for now I will let flexiblesusy do its own default thing, which I think is probably GNU compilers...
    set(FS_OPTIONS ${FS_OPTIONS} 
-        --with-cxx=${CMAKE_CXX_COMPILER}
-        --with-cxxflags=${CMAKE_CXX_FLAGS}
-        --with-fc=${CMAKE_Fortran_COMPILER}
-        --with-fflags=${CMAKE_Fortran_FLAGS}
         --with-eigen-incdir=${EIGEN3_DIR}
       )
 
