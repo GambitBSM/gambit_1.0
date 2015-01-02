@@ -62,7 +62,7 @@ namespace Gambit
                                 return this->Plugins::Plugin_Interface<double (const std::vector<double> &)>::operator()(in);
                         }
                         
-                        void print(double a, const std::string &b) const {}
+                        void print(double, const std::string &) const {}
                 };
                 
                 class Multi_Scanner_Plugin_Function : public Function_Base
@@ -90,7 +90,7 @@ namespace Gambit
                                 return ret;
                         }
                         
-                        void print(double a, const std::string &b) const {}
+                        void print(double, const std::string &) const {}
                 };
                 
                 class Plugin_Function_Factory : public Factory_Base
@@ -111,7 +111,7 @@ namespace Gambit
                         
                         unsigned int getDim() const {return prior.size();}
                         
-                        void * operator() (const std::string &in, const std::string &purpose) const
+                        void * operator() (const std::string &, const std::string &purpose) const
                         {
                                 auto it = interfaces.find(purpose);
                                 
@@ -133,7 +133,7 @@ namespace Gambit
                                 }
                         }
                         
-                        void remove(void *a) const
+                        void remove(void *) const
                         {
                         }
 

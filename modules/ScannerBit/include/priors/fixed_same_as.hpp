@@ -50,7 +50,7 @@ namespace Gambit
                         
                         FixedPrior(std::string name, double value) : value(value), names(1, name) {}
                         
-                        void transform(const std::vector<double> &unitPars, std::map<std::string, double> &outputMap) const
+                        void transform(const std::vector<double> &, std::map<std::string, double> &outputMap) const
                         {
                                 for (auto it = names.begin(), end = names.end(); it != end; it++)
                                 {
@@ -98,7 +98,7 @@ namespace Gambit
                                 names.push_back(name_in);
                         }
                         
-                        void transform (const std::vector<double> &unitPars, std::map<std::string, double> &outputMap) const
+                        void transform (const std::vector<double> &, std::map<std::string, double> &outputMap) const
                         {
                                 double value = outputMap[name];
                                 

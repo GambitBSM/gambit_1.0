@@ -49,8 +49,8 @@ namespace Gambit
                 private:
                         // References to component prior objects
                         std::vector<BasePrior*> my_subpriors;
-                        std::vector<std::string> shown_param_names;
                         std::vector<std::string> param_names;
+                        std::vector<std::string> shown_param_names;
                         
                 public:
                 

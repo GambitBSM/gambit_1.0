@@ -149,18 +149,18 @@ scanner_plugin (loopsample, version(0, 0, 1, beta))
                                 a[i] = gDev.Doub();
                                 
                         }
-                        double aux = 2;
+                        //double aux = 2;
                         (*LogLike)(a);
                         //scan_ios << a << scan::endl;
                 }
                 
                 //scanner_ios.setOutput(output_file.c_str());
-                for (int k = 0; k < N; k++)
-                {
-                        double weight = 1;
+                //for (int k = 0; k < N; k++)
+                //{
+                //        double weight = 1;
                         //scan_ios[k] << scan::aux("weight", weight);
                         //scanner_ios.output(k);
-                }
+                //}
                 //scan_ios.print();
                 
                 return 0;
@@ -223,7 +223,7 @@ scanner_plugin(grid, version(1, 0, 0))
                         NTot *= *it;
                 }
                 
-                if (N.size() != ma)
+                if (N.size() != (unsigned int)ma)
                         scan_err << "Grid Plugin:  The dimension of gambit (" << ma 
                         << ") does not match the dimension of the inputed grid_pts (" << N.size() << ")" << scan_end;
                 
