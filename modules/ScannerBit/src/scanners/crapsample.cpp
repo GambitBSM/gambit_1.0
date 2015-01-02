@@ -209,7 +209,7 @@ scanner_plugin(grid, version(1, 0, 0))
 {
         int plugin_main()
         {
-                unsigned int ma = get_dimension();
+                int ma = get_dimension();
                 
                 std::vector<int> N = get_inifile_value<std::vector<int>>("grid_pts");
                 int NTot = 1;
@@ -223,7 +223,7 @@ scanner_plugin(grid, version(1, 0, 0))
                         NTot *= *it;
                 }
                 
-                if (N.size() != ma)
+                if (N.size() != (unsigned int)ma)
                         scan_err << "Grid Plugin:  The dimension of gambit (" << ma 
                         << ") does not match the dimension of the inputed grid_pts (" << N.size() << ")" << scan_end;
                 
