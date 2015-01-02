@@ -101,12 +101,12 @@ namespace Gambit
                                                                         std::cout << "\n\e[01;33mWARNING:\e[00m  Plugin was not specified in ini-file.\n\n";
                                                                 
                                                                 std::cout << "Plugins in \"" << file << "\" are:\n";
-                                                                for (int i = 0; i < mod_names.size(); i++)
+                                                                for (int i = 0, end = mod_names.size(); i < end; i++)
                                                                 {
                                                                         std::cout << "   Plugin " << i << ":  " << mod_names[i] << "\n";
                                                                 }
                                                                 std::cout << "\nPlease choose a module number:  " << std::flush;
-                                                                int iin;
+                                                                unsigned int iin;
                                                                 std::getline(std::cin, str);
                                                                 std::istringstream ss(str);
                                                                 bool is_not_int = !(ss >> iin);

@@ -81,7 +81,7 @@ namespace Gambit
                                 return in + ", " + stringify_variadic_inputs(params...);
                         }
                         
-                        inline void input_variadic_vector(std::vector<void *> &input){}
+                        inline void input_variadic_vector(std::vector<void *> &){}
                         
                         template <typename T, typename... args>
                         inline void input_variadic_vector(std::vector<void *> &input, const T& value, const args&... params)
