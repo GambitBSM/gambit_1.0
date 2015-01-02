@@ -141,7 +141,6 @@ namespace Gambit
                                                 }
                                         }
                                 }
-                                
                                 return false;
                         }
                                         

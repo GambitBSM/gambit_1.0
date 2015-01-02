@@ -140,7 +140,7 @@ namespace __gambit_plugin_namespace__                                           
                                 myData.inits.push_back(interface <RunTags::name>::init);                                \
                         }                                                                                               \
                                                                                                                         \
-                        static void init(pluginData &)                                                                  \
+                        static void init(pluginData&)                                                                   \
                         {                                                                                               \
                                 name( __VA_ARGS__ );                                                                    \
                         }                                                                                               \
@@ -172,7 +172,7 @@ namespace __gambit_plugin_namespace__                                           
                                 myData.inits.push_back(interface <InitTags::name>::init);                               \
                         }                                                                                               \
                                                                                                                         \
-                        static void init(pluginData &)                                                                  \
+                        static void init(pluginData&)                                                                   \
                         {                                                                                               \
                                 name = __VA_ARGS__;                                                                     \
                         }                                                                                               \
@@ -293,15 +293,9 @@ namespace __gambit_plugin_ ## plug_name ##  _namespace__                        
 }                                                                                                                       \
 namespace __gambit_plugin_ ## plug_name ## _namespace__                                                                 \
 
-#define external_library_required(name)\
-GAMBIT_PLUGIN_INTERNAL( plug_name ## __t__ ## plug_type ## __v__ ## plug_version )\
-
 #define GAMBIT_PLUGIN_3(plug_name, plug_type, plug_version)                                                             \
         GAMBIT_PLUGIN_INTERNAL( plug_name ## __t__ ## plug_type ## __v__ ## plug_version )                              \
 
-#define GAMBIT_PLUGIN_4(plug_name, plug_type, plug_version, func)                                                       \
-        func(plug_name ## __t__ ## plug_type ## __v__ ## plug_version)                                                  \
-        
 #define GAMBIT_PLUGIN(...) ENTER_FUNC(GAMBIT_PLUGIN_, ARG_N(__VA_ARGS__), __VA_ARGS__ )
         
 #endif

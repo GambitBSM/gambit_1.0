@@ -26,7 +26,6 @@
 #include "scanner_utils.hpp"
 #include "plugin_defs.hpp"
 #include "plugin_macros.hpp"
-#include "plugin_details.hpp"
 
 #include <yaml-cpp/yaml.h>
 
@@ -74,9 +73,8 @@ T get_inifile_value(std::string in)                                             
         YAML::Node conv = (get_input_value<IniFileInterface>(2)).getNode(in);                                           \
         if (conv.IsNull())                                                                                              \
         {                                                                                                               \
-                scan_err << "Missing iniFile entry needed by a gambit plugin \n"                                        \
-                        << Gambit::Scanner::Plugins::Plugin_Details(__gambit_plugin_namespace__::myData.name).printMin()\
-                        << scan_end;                                                                                    \
+                scan_err << "Missing iniFile entry needed by plugin \""                                                 \
+                                << (__gambit_plugin_namespace__::myData.name) << "\":  " << scan_end;                   \
         }                                                                                                               \
                                                                                                                         \
         return conv.as<T>();                                                                                            \

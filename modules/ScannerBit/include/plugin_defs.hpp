@@ -50,7 +50,7 @@ namespace Gambit
                                 T *func;
                                 funcFactory (T *in) : func(in) {}
                                 void *operator()(){return *(void**)&func;}
-                                void remove(void *){};
+                                void remove(void*){};
                         };
                         
                         template <typename T>

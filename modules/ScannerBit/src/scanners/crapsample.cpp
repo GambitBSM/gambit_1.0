@@ -149,18 +149,18 @@ scanner_plugin (loopsample, version(0, 0, 1, beta))
                                 a[i] = gDev.Doub();
                                 
                         }
-                        double aux = 2;
+                        //double aux = 2;
                         (*LogLike)(a);
                         //scan_ios << a << scan::endl;
                 }
                 
                 //scanner_ios.setOutput(output_file.c_str());
-                for (int k = 0; k < N; k++)
-                {
-                        double weight = 1;
+                //for (int k = 0; k < N; k++)
+                //{
+                //        double weight = 1;
                         //scan_ios[k] << scan::aux("weight", weight);
                         //scanner_ios.output(k);
-                }
+                //}
                 //scan_ios.print();
                 
                 return 0;
@@ -209,7 +209,7 @@ scanner_plugin(grid, version(1, 0, 0))
 {
         int plugin_main()
         {
-                int ma = get_dimension();
+                unsigned int ma = get_dimension();
                 
                 std::vector<int> N = get_inifile_value<std::vector<int>>("grid_pts");
                 int NTot = 1;
