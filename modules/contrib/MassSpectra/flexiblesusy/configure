@@ -186,7 +186,7 @@ std_cxx11_clang_version="3.0.0"
 std_cxx11_icpc_version="13.0.0"
 
 # required boost version
-required_boost_version="1.49.0"
+required_boost_version="1.41.0"
 
 # required Mathematica version
 required_mathematica_version="7"
