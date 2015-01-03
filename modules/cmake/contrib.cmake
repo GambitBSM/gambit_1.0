@@ -77,6 +77,7 @@ if (NOT ${EXCLUDE_FLEXIBLESUSY})
           --with-eigen-incdir=${EIGEN3_DIR}
           --with-boost-libdir=${Boost_LIBRARY_DIR}
           --with-boost-incdir=${Boost_INCLUDE_DIR}
+          --enable-verbose
         )
   
      # Explain how to build each of the flexiblesusy spectrum generators we need
@@ -86,7 +87,7 @@ if (NOT ${EXCLUDE_FLEXIBLESUSY})
            SOURCE_DIR ${FLEXIBLESUSY_DIR}
            BUILD_IN_SOURCE 1
            CONFIGURE_COMMAND ./configure --with-models=${_MODEL} ${FS_OPTIONS}
-           BUILD_COMMAND $(MAKE) LAPACKLIBS=${LAPACK_LIBS}
+           BUILD_COMMAND $(MAKE) alllib LAPACKLIBS=${LAPACK_LIBS}
            INSTALL_COMMAND ""
          )
          set(previous_FSlib flexiblesusy_project${_MODEL}) 
