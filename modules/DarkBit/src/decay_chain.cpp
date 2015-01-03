@@ -250,6 +250,7 @@ namespace Gambit
         {
             return -1.0 + 2.0 * rand_0_1();
         }
+        // TODO: Make this thread safe
         double rand_0_1()
         {
             static unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
@@ -312,19 +313,19 @@ namespace Gambit
         //  DecayTableEntry functions
         //  *********************************************
            
-        int DecayTableEntry::findChannelIdx(double pick)
+        int DecayTableEntry::findChannelIdx(double pick) const
         {
             if(!randInit) generateRandTable();            
-            vector<double>::iterator pos = upper_bound(randLims.begin(),randLims.end(),pick);   
+            vector<double>::const_iterator pos = upper_bound(randLims.begin(),randLims.end(),pick);   
             return pos - randLims.begin();
         }        
-        const TH_Channel* DecayTableEntry::randomDecay()
+        const TH_Channel* DecayTableEntry::randomDecay() const
         {
             double pick = rand_0_1();
             int idx = findChannelIdx(pick);
             return enabledDecays[idx];
         }    
-        void DecayTableEntry::generateRandTable()
+        void DecayTableEntry::generateRandTable() const
         {
             randLims.clear();            
             double tmp=0;
@@ -511,7 +512,7 @@ namespace Gambit
                 }
             }
         }
-        bool DecayTable::hasEntry(string index)
+        bool DecayTable::hasEntry(string index) const
         {
             return table.find(index) != table.end();
         }
@@ -523,12 +524,15 @@ namespace Gambit
         {
             table.insert ( pair<string,DecayTableEntry>(pID,entry) );
         }
-        const TH_Channel* DecayTable::randomDecay(string pID)
+        const TH_Channel* DecayTable::randomDecay(string pID) const
         {
-            return table[pID].randomDecay();
+            return (table.at(pID)).randomDecay();
         }  
         double DecayTable::getWidth(const TH_Channel *ch)
         {
+            // Should be replaced by code getting the width from the particle
+            // properties table.
+            /*
             // Note: It is ESSENTIAL that the TH_Channel is a decay channel, or more precisely that dSigmadE is of type BFconstant.
             const shared_ptr<FunctionExpression<BaseFunction> > *ptr = &(ch->dSigmadE);
             const shared_ptr<BFconstant> BFc_ptr = (boost::dynamic_pointer_cast<BFconstant>(boost::dynamic_pointer_cast<BaseFunction>(*ptr)));
@@ -538,6 +542,7 @@ namespace Gambit
                 exit(1);
             }
             return BFc_ptr->value(vector<double>());
+            */
         }
         void DecayTable::printTable() const
         {
@@ -580,7 +585,7 @@ namespace Gambit
         //  ChainParticle functions
         //  *********************************************
 
-        ChainParticle::ChainParticle(vec3 ipLab, DecayTable *dc, string pID) : 
+        ChainParticle::ChainParticle(vec3 ipLab, const DecayTable *dc, string pID) : 
             m((*dc)[pID].m), weight(1), decayTable(dc), pID(pID), 
             chainGeneration(0), abortedDecay(false), isEndpoint(false), nChildren(0), parent(NULL)
             {
@@ -697,7 +702,7 @@ namespace Gambit
             }
             return E;
         }
-        void ChainParticle::collectEndpointStates(vector<ChainParticle*> &endpointStates, bool includeAborted, string ipID)
+        void ChainParticle::collectEndpointStates(vector<const ChainParticle*> &endpointStates, bool includeAborted, string ipID) const
         {
             if(abortedDecay)
             {
@@ -705,20 +710,20 @@ namespace Gambit
             }
             else
             {
-                if(nChildren!=0 && !isEndpoint)
+                if(nChildren!=0 and !isEndpoint)
                 {
-                    for(vector<ChainParticle*>::iterator it=children.begin(); it!=children.end(); ++it)
+                    for(vector<ChainParticle*>::const_iterator it=children.begin(); it!=children.end(); ++it)
                     {
                         (*it)->collectEndpointStates(endpointStates,includeAborted,pID);          
                     }
                 }       
-                else if((ipID=="") || (ipID==pID))
+                else if((ipID=="") or (ipID==pID) or isEndpoint)
                 {
                     endpointStates.push_back(this);
                 }
             }
         }
-        ChainParticle* ChainParticle::operator[](unsigned int i)
+        const ChainParticle* ChainParticle::operator[](unsigned int i) const
         {
             if(i<nChildren)
                 return children[i];
@@ -791,7 +796,7 @@ namespace Gambit
             boostMatrixParentFrame(boostToParentFrame,p_parent);
             boostToLabFrame = parent->boostToLabFrame*boostToParentFrame;                 
         }
-        ChainParticle::ChainParticle(const vec4 &pp, double m, double weight, DecayTable *dc, ChainParticle *parent, int chainGeneration, string pID) : 
+        ChainParticle::ChainParticle(const vec4 &pp, double m, double weight, const DecayTable *dc, ChainParticle *parent, int chainGeneration, string pID) : 
             m(m), weight(weight), decayTable(dc), p_parent(pp), pID(pID), 
             chainGeneration(chainGeneration), abortedDecay(false), isEndpoint(false), nChildren(0), parent(parent)
             {

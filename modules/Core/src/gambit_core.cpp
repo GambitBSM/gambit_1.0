@@ -10,7 +10,7 @@
 ///   
 ///  \author Pat Scott
 ///  \date 2013 Aug
-///  \date 2014 Mar, Aug
+///  \date 2014 Mar, Aug, Dec
 ///
 ///  *********************************************
 
@@ -24,12 +24,14 @@
 #include <getopt.h>
 
 // Gambit headers
+#include "cmake_variables.hpp"
 #include "gambit_core.hpp"
 #include "error_handlers.hpp"
 #include "version.hpp"
 #include "modelgraph.hpp"
 #include "stream_overloads.hpp"
 #include "yaml_description_database.hpp"
+#include "plugin_loader.hpp"
 
 // Boost
 #include <boost/algorithm/string/replace.hpp>
@@ -43,11 +45,11 @@ namespace Gambit
     gambit_core::gambit_core(const Models::ModelFunctorClaw &claw, const Backends::backend_info &beinfo ) :
      modelInfo(&claw),
      backendData(&beinfo),
-     capability_dbase_file("central_capabilities.dat"),
-     model_dbase_file("central_models.dat"),
-     input_capability_descriptions("capabilities.dat"),
-     input_model_descriptions("models.dat"),
-     report_file("report.txt"),
+     capability_dbase_file(GAMBIT_DIR "/scratch/central_capabilities.dat"),
+     model_dbase_file(GAMBIT_DIR "/scratch/central_models.dat"),
+     input_capability_descriptions(GAMBIT_DIR "/config/capabilities.dat"),
+     input_model_descriptions(GAMBIT_DIR "/config/models.dat"),
+     report_file(GAMBIT_DIR "/config/report.txt"),
      report(report_file.c_str()),
      /* command line flags */ 
      processed_options(false),
@@ -341,7 +343,7 @@ namespace Gambit
       }
       out << YAML::EndSeq;
       // Create file and write YAML output there
-      ofstream outfile;
+      std::ofstream outfile;
       outfile.open(capability_dbase_file);
       outfile << "# Auto-generated capability description library. Edits will be erased." << endl;;
       outfile << "# Edit \"" << input_capability_descriptions << "\" instead." << endl << endl << out.c_str();
@@ -441,7 +443,7 @@ namespace Gambit
       }
       out2 << YAML::EndSeq;
       // Create file and write YAML output there
-      ofstream outfile2;
+      std::ofstream outfile2;
       outfile2.open(model_dbase_file);
       outfile2 << "# Auto-generated model description library. Edits will be erased." << endl;;
       outfile2 << "# Edit \"" << input_model_descriptions << "\" instead." << endl << endl << out2.c_str();
@@ -557,7 +559,7 @@ namespace Gambit
         int maxlens[6] = {18, 7, 40, 13, 3, 3};
         bool all_good = true;
         cout << "\nThis is GAMBIT." << endl << endl; 
-        cout << "Backends               Version     Path to lib (relative to GAMBIT directory)   Status          #funcs  #types  #ctors" << endl;
+        cout << "Backends               Version     Path to lib                                  Status          #funcs  #types  #ctors" << endl;
         cout << "----------------------------------------------------------------------------------------------------------------------" << endl;
 
         // Loop over all registered backends
@@ -569,11 +571,10 @@ namespace Gambit
             int nfuncs = 0;
             int ntypes = 0;
             int nctors = 0;
-            str path, status;
 
             // Retrieve the status and path info.
-            path = backendData->paths.at(it->first+*jt);                          // Get the path of this backend
-            status = backend_status(it->first, *jt, all_good);                    // Save the status of this backend
+            const str path = backendData->path(it->first,*jt);                              // Get the path of this backend
+            const str status = backend_status(it->first, *jt, all_good);                    // Save the status of this backend
 
             // Count up the number of functions in this version of the backend, using the registered functors.
             for (fVec::const_iterator kt = backendFunctorList.begin(); kt != backendFunctorList.end(); ++kt)
@@ -585,7 +586,7 @@ namespace Gambit
             if (backendData->classloader.at(it->first+*jt))
             {
               std::set<str> classes = backendData->classes.at(it->first+*jt);     // Retrieve classes loaded by this version
-              ntypes = classes.size();                                      // Get the number of classes loaded by this backend
+              ntypes = classes.size();                                            // Get the number of classes loaded by this backend
               for (std::set<str>::const_iterator kt = classes.begin(); kt != classes.end(); ++kt)
               {
                 nctors += backendData->factory_args.at(it->first+*jt+*kt).size(); // Add the number of factories for this class to the total
@@ -593,7 +594,7 @@ namespace Gambit
             }
 
             // Print the info
-            ostringstream ss1, ss2;
+            std::ostringstream ss1, ss2;
             str ss1a, ss2a;
             const str firstentry = (jt == it->second.begin() ? it->first : "");
             cout << firstentry << spacing(firstentry.length(),maxlens[0]);
@@ -606,7 +607,10 @@ namespace Gambit
           }
         }
 
+        cout << "----------------------------------------------------------------------------------------------------------------------" << endl;
+        cout << "All relative paths are given with reference to " << GAMBIT_DIR << ".";
         if (all_good) cout << endl << "All your backend are belong to us." << endl;
+        cout << endl;
         no_scan = true;
       }
       else if (command == "models")
@@ -624,11 +628,11 @@ namespace Gambit
           cout << model << spacing(model.length(),maxlen1) << parentof << spacing(parentof.length(),maxlen2) << nparams << endl;
         }
         // Create and spit out graph of the model hierarchy.
-        str graphfile = "GAMBIT_model_hierarchy.gv";
+        str graphfile = GAMBIT_DIR "/scratch/GAMBIT_model_hierarchy.gv";
         ModelHierarchy modelGraph(*modelInfo,primaryModelFunctorList,graphfile,false);
         cout << endl << "Created graphviz model hierarchy graph in "+graphfile+"." << endl; 
-        cout << "Please run ./graphviz.sh "+graphfile+" to get postscript plot." << endl; 
-
+        cout << endl << "To get postscript plot of model hierarchy, please run: " << endl;
+        cout << GAMBIT_DIR << "/Core/scripts/./graphviz.sh "+graphfile << endl;
         no_scan = true;
       }
     
@@ -639,7 +643,6 @@ namespace Gambit
 
         // Display capability information
         cout << "\nThis is GAMBIT." << endl << endl; 
-
         
         // Default, list-format output header
         cout << "Capabilities                           Available in (modules/models)  Available in (backends)" << endl;
@@ -684,13 +687,83 @@ namespace Gambit
 
       else if (command == "scanners")
       {
+        const int maxlen1 = 20;
+        const int maxlen2 = 20;
+        typedef std::map<std::string, std::vector<Scanner::Plugins::Plugin_Details> > plugin_map;
+        typedef std::map<std::string, plugin_map> plugin_mapmap;
+
+        // Display capability information
         cout << "\nThis is GAMBIT." << endl << endl; 
-        cout << "Scanners            Accepted options" << endl;
-        cout << "------------------------------------" << endl;
-        //for (std::set<str>::const_iterator it = scanners.begin(); it != scanners.end(); ++it)
-        //{
-        //  cout << *it << endl;
-        //}
+
+        // Import scanner plugin info from ScannerBit 
+        plugin_mapmap scanners = Scanner::scannerInfo().getPluginsMap();
+
+        // Default, list-format output header
+        cout << "Scanners                 Version                  Accepted options" << endl;
+        cout << "----------------------------------------------------------------------------" << endl;
+
+        // Loop over all entries in the plugins map map
+        for (plugin_mapmap::const_iterator it = scanners.begin(); it != scanners.end(); ++it)
+        {
+          if (it->first == "scan")  // Only bother with scanners here          
+          {
+            // Loop over the different scanners
+            for (plugin_map::const_iterator jt = it->second.begin(); jt != it->second.end(); ++jt)
+            {
+              // Loop over the available versions of the scanner 
+              for (auto kt = jt->second.begin(); kt != jt->second.end(); ++kt)
+              {
+                // Print the scanner name if this is the first version, otherwise just space
+                const str firstentry = (kt == jt->second.begin() ? jt->first : "");
+                cout << firstentry << spacing(firstentry.length(),maxlen1); 
+                // Print the scanner info.
+                cout << kt->version << spacing(kt->version.length(),maxlen2) << "<no info available>" << endl;
+              }
+            }
+            cout << endl;
+          }
+        }
+        no_scan = true;
+      }
+
+      else if (command == "test-functions")
+      { 
+        const int maxlen1 = 20;
+        const int maxlen2 = 20;
+        typedef std::map<std::string, std::vector<Scanner::Plugins::Plugin_Details> > plugin_map;
+        typedef std::map<std::string, plugin_map> plugin_mapmap;
+
+        // Display capability information
+        cout << "\nThis is GAMBIT." << endl << endl; 
+
+        // Import scanner plugin info from ScannerBit 
+        plugin_mapmap scanners = Scanner::scannerInfo().getPluginsMap();
+
+        // Default, list-format output header
+        cout << "Test Functions           Version                  Accepted options" << endl;
+        cout << "----------------------------------------------------------------------------" << endl;
+
+        // Loop over all entries in the plugins map map
+        for (plugin_mapmap::const_iterator it = scanners.begin(); it != scanners.end(); ++it)
+        {
+          if (it->first == "like")  // Only bother with scanners here          
+          {
+            // Loop over the different scanners
+            for (plugin_map::const_iterator jt = it->second.begin(); jt != it->second.end(); ++jt)
+            {
+              // Loop over the available versions of the scanner 
+              for (auto kt = jt->second.begin(); kt != jt->second.end(); ++kt)
+              {
+                // Print the scanner name if this is the first version, otherwise just space
+                const str firstentry = (kt == jt->second.begin() ? jt->first : "");
+                cout << firstentry << spacing(firstentry.length(),maxlen1); 
+                // Print the scanner info.
+                cout << kt->version << spacing(kt->version.length(),maxlen2) << "<no info available>" << endl;
+              }
+            }
+            cout << endl;
+          }
+        }
         no_scan = true;
       }
 
@@ -722,13 +795,13 @@ namespace Gambit
                 str t = (*jt)->type();
                 str islm = (*jt)->canBeLoopManager() ? "Yes" : "No ";
                 str nlm  = (*jt)->loopManagerCapability();
-                std::vector<sspair> deps = (*jt)->dependencies();
-                std::vector<sspair> reqs = (*jt)->backendreqs();
+                std::set<sspair> deps = (*jt)->dependencies();
+                std::set<sspair> reqs = (*jt)->backendreqs();
                 cout << f << spacing(f.length()-2,30) << c << spacing(c.length(),35);
                 cout << t << spacing(t.length(),35) << islm << "  " << nlm << spacing(nlm.length(),19);
                 if (not deps.empty())
                 {
-                  for (std::vector<sspair>::const_iterator kt = deps.begin(); kt != deps.end(); ++kt)
+                  for (std::set<sspair>::const_iterator kt = deps.begin(); kt != deps.end(); ++kt)
                   {
                     if (kt != deps.begin()) cout << std::string(146,' ');
                     cout << kt->first << "[" << kt->second << "]" << endl;
@@ -736,7 +809,7 @@ namespace Gambit
                 } 
                 if (not reqs.empty())
                 {
-                  for (std::vector<sspair>::const_iterator kt = reqs.begin(); kt != reqs.end(); ++kt)
+                  for (std::set<sspair>::const_iterator kt = reqs.begin(); kt != reqs.end(); ++kt)
                   {
                     if (kt != reqs.begin() or not deps.empty()) cout << std::string(146,' ');
                     cout << kt->first << "{" << kt->second << "}" << endl;
@@ -764,7 +837,7 @@ namespace Gambit
             for (std::set<str>::const_iterator jt = versions.begin(); jt != versions.end(); ++jt)
             {
               bool who_cares;
-              const str path = backendData->paths.at(it->first+*jt);        // Save the path of this backend
+              const str path = backendData->corrected_path(it->first,*jt);  // Save the path of this backend
               const str status = backend_status(it->first, *jt, who_cares); // Save the status of this backend
               cout << "Version: " << *jt << endl;
               cout << "Path to library: " << path << endl;

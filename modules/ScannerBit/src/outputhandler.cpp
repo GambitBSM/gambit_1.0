@@ -16,15 +16,9 @@
 //  *********************************************
 
 #include <outputhandler.hpp>
-#include <scanlog.hpp>
 
 namespace Gambit
 {
-        namespace scanLog
-        {
-                extern ErrorLog err;
-        }
-        
         namespace Scanner
         {       
                 namespace outputHandler
@@ -46,7 +40,7 @@ namespace Gambit
                         OutputHandler::OutputHandler()
                         {
                                 //do you have xterm?
-                                hasXTerm = (std::system("which xterm") == 0) ? true : false;
+                                hasXTerm = (std::system("which xterm > /dev/null") == 0) ? true : false;
                         
                                 //saving std output
                                 default_out = dup(STDOUT_FILENO);

@@ -53,10 +53,12 @@ namespace Gambit
     /// Figure out relationships between primary model functors    
     void ModelHierarchy::makeGraph(const primodel_vec& primaryModelFunctors)
     {
-      boost::graph_traits<DRes::MasterGraphType>::vertex_iterator vi, vi_end;
-      std::map<str, DRes::VertexID> vertexIDmap;
+      boost::graph_traits<ModelGraphType>::vertex_iterator vi, vi_end;
+      std::map<str, ModelVertexID> vertexIDmap;
       str model;
-      
+      // The property map which holds the edge colors:
+      boost::property_map<ModelGraphType, edge_color_t>::type color(boost::get(edge_color_t(),modelGraph));
+
       if (verbose) std::cout<<std::endl<<"Determining model hierarchy graph..."<<std::endl;
 
       // Add all primary model functors to the model hierarchy graph
@@ -76,7 +78,7 @@ namespace Gambit
       // of each one in the parents database boundClaw->myParentsDB, and add
       // an edge from parent to child in the model graph.  Do the same with
       // direct (best) friends.
-      typedef std::map<str, DRes::VertexID>::iterator vertexIDmap_it;
+      typedef std::map<str, ModelVertexID>::iterator vertexIDmap_it;
       for (vertexIDmap_it vimap = vertexIDmap.begin(); 
               vimap != vertexIDmap.end(); vimap++) 
       {
@@ -94,6 +96,13 @@ namespace Gambit
         for (auto it = friends.begin(); it != friends.end(); ++it)
         {
           boost::add_edge(vertexIDmap[*it], vertexIDmap[model], modelGraph);
+
+          // Get the descriptor for the edge we just added
+          ModelEdgeID e = boost::edge(vertexIDmap[*it], vertexIDmap[model], modelGraph).first;
+
+          // Set the color property for this edge to "red"
+          boost::put(color,e,"red");
+
           if (verbose)
           {
             std::cout<<model<<"; friend: "<<*it<<std::endl;;       
@@ -107,14 +116,15 @@ namespace Gambit
       // Also for valid properties see http://www.graphviz.org/pdf/dotguide.pdf
       struct graphWriter{
           void operator()(std::ostream& out) const {
-            out << "rankdir = LR;" << std::endl; // Turn graph orientation left to right.
+            out << "rankdir = LR;"    << std::endl; // Turn graph orientation left to right.
+            out << "edge [dir=back];" << std::endl; // Reverse all the arrows
           }
         };
  
       // Generate graphviz plot
       std::ofstream outf(filename);
       // args: output stream, vertex list, vertex property writer (PW), edge PW, graph PW. 
-      write_graphviz(outf, modelGraph, labelWriter(&modelGraph), boost::default_writer(), graphWriter()); 
+      write_graphviz(outf, modelGraph, labelWriter(&modelGraph), colorWriter(&modelGraph), graphWriter()); 
       
     }
 
@@ -138,9 +148,9 @@ namespace Gambit
   /// @{
 
     /// Constructor
-    ModelHierarchy::labelWriter::labelWriter(const DRes::MasterGraphType * modelGraph) : myGraph(modelGraph) {}
+    ModelHierarchy::labelWriter::labelWriter(const ModelGraphType * modelGraph) : myGraph(modelGraph) {}
 
-    void ModelHierarchy::labelWriter::operator()(std::ostream& out, const DRes::VertexID& v) const
+    void ModelHierarchy::labelWriter::operator()(std::ostream& out, const ModelVertexID& v) const
     {
       if ( (*myGraph)[v]->status() == 2 )
       {
@@ -159,6 +169,5 @@ namespace Gambit
       out <<  "Module: " << (*myGraph)[v]->origin();*/
       out << ">]";
     }
-
 
 }

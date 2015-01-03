@@ -5,9 +5,6 @@
  * Christopher Rogan 2014-08-29
  */
 
-/* Specify the path to the shared library along with a backend name. */
-
-#define LIBPATH      "Backends/lib/libHB.so"
 #ifdef BACKENDRENAME
   #define BACKENDNAME BACKENDRENAME
 #else
@@ -16,7 +13,7 @@
 #define VERSION 4.1
 #define SAFE_VERSION 4_1
 
-/* The following macro loads the library (using dlmopen) in LIBPATH 
+/* The following macro loads the library using dlopen 
  * when this header file is included somewhere. */
 
 LOAD_LIBRARY

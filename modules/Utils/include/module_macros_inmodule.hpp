@@ -36,6 +36,7 @@
 #include "exceptions.hpp"
 #include "util_macros.hpp"
 #include "safety_bucket.hpp"
+#include "safe_param_map.hpp"
 #include "module_macros_common.hpp"
 
 /// \name Rollcall macros
@@ -47,15 +48,14 @@
 #define START_MODULE                                      MODULE_START_MODULE
 #define START_CAPABILITY                                  MODULE_START_CAPABILITY(MODULE)
 #define LONG_START_CAPABILITY(MODULE, C)                  MODULE_START_CAPABILITY(MODULE)
-#define DECLARE_FUNCTION(TYPE, FLAG)                      MODULE_DECLARE_FUNCTION(MODULE, FUNCTION, TYPE, FLAG)
-#define LONG_DECLARE_FUNCTION(MODULE, C, FUNCTION, TYPE, FLAG) \
-                                                          MODULE_DECLARE_FUNCTION(MODULE, FUNCTION, TYPE, FLAG)
+#define DECLARE_FUNCTION(TYPE, CAN_MANAGE)                MODULE_DECLARE_FUNCTION(MODULE, FUNCTION, TYPE, CAN_MANAGE)
+#define LONG_DECLARE_FUNCTION(MODULE, C, FUNCTION, TYPE, CAN_MANAGE) \
+                                                          MODULE_DECLARE_FUNCTION(MODULE, FUNCTION, TYPE, CAN_MANAGE)
 #define DEPENDENCY(DEP, TYPE)                             MODULE_DEPENDENCY(DEP, TYPE, MODULE, FUNCTION)
 #define LONG_DEPENDENCY(MODULE, FUNCTION, DEP, TYPE)      MODULE_DEPENDENCY(DEP, TYPE, MODULE, FUNCTION)
 #define NEEDS_MANAGER_WITH_CAPABILITY(LOOPMAN)            MODULE_NEEDS_MANAGER_WITH_CAPABILITY(LOOPMAN)                                  
 #define ALLOWED_MODEL(MODULE,FUNCTION,MODEL)              MODULE_ALLOWED_MODEL(MODULE,FUNCTION,MODEL)
-#define ALLOWED_MODEL_ONLY_VIA_GROUPS(MODULE,FUNCTION,MODEL) \
-                                                          MODULE_ALLOWED_MODEL(MODULE,FUNCTION,MODEL) 
+#define ALLOWED_MODEL_DEPENDENCE(MODULE,FUNCTION,MODEL)   MODULE_ALLOWED_MODEL(MODULE,FUNCTION,MODEL) 
 #define LITTLEGUY_ALLOW_MODEL(PARAMETER,MODEL)            LITTLEGUY_ALLOWED_MODEL(PARAMETER,MODEL)
 #define ALLOW_MODEL_COMBINATION(...)                      DUMMYARG(__VA_ARGS__)
 #define MODEL_GROUP(GROUPNAME, GROUP)                     DUMMYARG(GROUPNAME, GROUP)
@@ -104,7 +104,7 @@
 
 /// Redirection of \link START_FUNCTION() START_FUNCTION\endlink when invoked 
 /// from within a module.
-#define MODULE_DECLARE_FUNCTION(MODULE, FUNCTION, TYPE, FLAG)                  \
+#define MODULE_DECLARE_FUNCTION(MODULE, FUNCTION, TYPE, CAN_MANAGE)            \
                                                                                \
   namespace Gambit                                                             \
   {                                                                            \
@@ -115,35 +115,28 @@
       /* Let the module source know that this functor is declared*/            \
       namespace Functown { extern module_functor<TYPE> FUNCTION; }             \
                                                                                \
-      /* Set up a helper function to call the iterate method if the functor is \
-      able to manage loops. */                                                 \
-      namespace Functown                                                       \
-      {                                                                        \
-        BOOST_PP_IIF(BOOST_PP_EQUAL(FLAG, 1),                                  \
-          void CAT(FUNCTION,_iterate)(int it)                                  \
-          {                                                                    \
-            FUNCTION.iterate(it);                                              \
-          }                                                                    \
-        ,)                                                                     \
-      }                                                                        \
-                                                                               \
       namespace Pipes                                                          \
       {                                                                        \
         namespace FUNCTION                                                     \
         {                                                                      \
           /* Declare the parameters safe-pointer map as external. */           \
-          extern std::map<str, safe_ptr<double> > Param;                       \
-          /* Declare the safe-pointer to the models vector as external. */     \
-          extern safe_ptr< std::vector<str> > Models;                          \
+          extern Models::safe_param_map<safe_ptr<double> > Param;              \
+          /* Declare pointer to model-in-use function as external. */          \
+          BOOST_PP_IIF(IS_TYPE(ModelParameters,TYPE), ,                        \
+           extern bool (*ModelInUse)(str); )                                   \
           /* Declare the safe pointer to the run options as external. */       \
           extern safe_ptr<Options> runOptions;                                 \
-          /* Create a pointer to the single iteration of the loop that can be  \
-          executed by this functor */                                          \
           namespace Loop                                                       \
           {                                                                    \
-            BOOST_PP_IIF(BOOST_PP_EQUAL(FLAG, 1),                              \
-              void (*executeIteration)(int) =                                  \
-               &Functown::CAT(FUNCTION,_iterate);                              \
+            BOOST_PP_IIF(BOOST_PP_EQUAL(CAN_MANAGE, 1),                        \
+              /* Create a pointer to the single iteration of the loop that can \
+              be executed by this functor */                                   \
+              extern void (*executeIteration)(int);                            \
+              /* Declare a safe pointer to the flag indicating that a managed  \
+              loop is ready for breaking. */                                   \
+              extern safe_ptr<bool> done;                                      \
+              /* Declare a function that is used to reset the done flag. */    \
+              extern void reset();                                             \
             ,)                                                                 \
           }                                                                    \
         }                                                                      \
@@ -171,6 +164,9 @@
             /* Declare the safe pointer to the iteration number of the loop    \
             this functor is running within, as external. */                    \
             extern omp_safe_ptr<int> iteration;                                \
+            /* Create a loop-breaking function that can be called to tell the  \
+            functor's loop manager that it is time to break. */                \
+            extern void wrapup();                                              \
           }                                                                    \
         }                                                                      \
       }                                                                        \

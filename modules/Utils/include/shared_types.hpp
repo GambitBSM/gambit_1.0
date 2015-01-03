@@ -32,8 +32,9 @@
 #define __shared_types_hpp__
 
 #include "model_parameters.hpp"        // Definitions required to understand model parameter objects
-#include "base_functions.hpp"          // GAMBIT BaseFunction Objects
+#include "funktions.hpp"               // Generalized functions
 #include "SLHA_readers.hpp"            // SLHA readers from contributed packages
+#include "Spectrum.hpp"                // Spectrum object (carries particle spectrum info)
 
 // Other types that don't belong in any of the existing includes.  As the number of such types grows, they
 // should be progressively organised into new headers, and those headers included from here.

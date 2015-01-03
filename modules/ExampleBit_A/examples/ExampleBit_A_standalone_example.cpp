@@ -12,7 +12,12 @@
 ///  \author Pat Scott
 ///  \date 2014 Jan, Feb
 ///
+///  \author Ben Farmer
+///  \date 2014 Dec
+///
 ///  *********************************************
+
+#include <boost/filesystem.hpp>
 
 #include "standalone_module.hpp"
 #include "ExampleBit_A_rollcall.hpp"
@@ -58,7 +63,11 @@ int main()
     
     // Define where the logs will end up
     std::string prefix("runs/ExampleBit_A_standalone/logs/");
-  
+    
+    // Ensure that the above directory exists
+    boost::filesystem::path dir(prefix);
+    if(!(boost::filesystem::exists(dir))) boost::filesystem::create_directories(dir);
+ 
     // Add entries to the loggerinfo map
     loggerinfo["Core, Error"] = prefix+"core_errors.log";
     loggerinfo["Default"]     = prefix+"default.log";
@@ -71,6 +80,9 @@ int main()
     // Change the fatality of different errors and warnings from the defaults, if desired.
     model_warning().set_fatal(true);
     ExampleBit_A::ExampleBit_A_error().set_fatal(false);
+
+    // Initialise the random number generator.
+    Random::create_rng_engine("default");
 
     // Test message
     // Note: we are not actually "inside" ExampleBit_A here, so the log message will not receive an 'ExampleBit_A' tag.

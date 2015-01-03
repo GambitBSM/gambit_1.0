@@ -133,7 +133,7 @@ namespace Gambit
       /// Access is allowed to const member functions only
       const TYPE* operator->() const
       { 
-        if (not _initialized) dieGracefully();
+        if (not _initialized) this->dieGracefully();
         //Choose the index of the thread if the dependency and the dependent functor are running inside the same loop.  If not, just choose the first element.
         int index = use_thread_index(_functor_ptr, _dependent_functor_ptr) ? omp_get_thread_num() : 0;
         return _sptr.operator->() + index;   //Call a const member function of the indexth element of the array pointed to by the safe pointer.

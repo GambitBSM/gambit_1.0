@@ -161,12 +161,12 @@ namespace HEPUtils {
   inline double deltaphi(double a, double b) {
     double rtn = a - b;
     rtn = fmod(rtn, 2*M_PI);
-    if (rtn == 0) return 0;
     assert(rtn >= -2*M_PI && rtn <= 2*M_PI);
-    rtn = (rtn >   M_PI ? rtn-2*M_PI :
-           rtn <= -M_PI ? rtn+2*M_PI : rtn);
+    if (rtn == 0) return 0;
+    if (rtn > M_PI) rtn -= 2*M_PI;
+    if (rtn <= -M_PI) rtn += 2*M_PI;
     assert(rtn > -M_PI && rtn <= M_PI);
-    if (rtn < 0) rtn += M_PI;
+    rtn = fabs(rtn);
     assert(rtn > 0 && rtn <= M_PI);
     return rtn;
   }

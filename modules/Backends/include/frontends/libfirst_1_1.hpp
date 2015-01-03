@@ -21,8 +21,6 @@
 ///
 ///  *********************************************
 
-// Specify the path to the shared library along with a backend name. */
-#define LIBPATH      "Backends/lib/libfirst.so"
 #ifdef BACKENDRENAME
   #define BACKENDNAME BACKENDRENAME
 #else

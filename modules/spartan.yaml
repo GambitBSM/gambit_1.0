@@ -86,15 +86,42 @@ Printer:
 
 Scanner:
 
-  plugin: loopsample
-  file_path:  ScannerBit/lib/libsample.so
+  #use_likelihood_plugins: uniform
+  use_scanner_plugin: loopsample
 
-  loopsample:
-    point_number: 20
-    output_file:  output
-    like:  Likelihood
-    files:
-      output_file: "weights ..."
+  plugins:
+  
+    loopsample:
+      plugin: loopsample
+      options:
+        point_number: 20
+        output_file:  output
+        like:  Likelihood
+        files:
+          output_file: "weights ..."
+        
+    uniform:
+      plugin: uniform
+      version: ">=1.0 & <2.0"
+      options:
+        some_param: 10
+      parameters:
+        param...2:
+          range: [-10, 10]
+          
+    square_grid:
+      plugin: square_grid
+      verion: ">=1.0"
+      options:
+        purpose: Likelihood
+        grid_pts: 3 #NxN grid
+            
+    grid:
+      plugin: grid
+      verion: ">=1.0"
+      options:
+        purpose: Likelihood
+        grid_pts: [2, 2]
             
 ###############################
 # Observables of interest
@@ -118,12 +145,6 @@ ObsLikes:
   - purpose:      Likelihood
     capability:   nevents_like
     type:         double
-
-  # Test Pythia8 SLHA reader
-  - purpose:      Likelihood
-    capability:   MSSMslha_testLogL
-    function:     MSSMtestLogL
-    printme:      false
 
   # Test vector output of printer
   - purpose:      Observable
@@ -201,6 +222,8 @@ KeyValues:
     subkey3:
       subsubkey1: value2
 
+  rng: ranlux48
+
   dependency_resolution:
     prefer_model_specific_functions: true
 
@@ -212,7 +235,7 @@ KeyValues:
     dependency_resolver_error: fatal
     dependency_resolver_warning: non-fatal
     core_warning: fatal
-    scan_error: non-fatal #make this fatal to see an example error
+    #scan_error: non-fatal #make this fatal to see an example error
     ExampleBit_A_error: non-fatal
 
   enable_testing: false

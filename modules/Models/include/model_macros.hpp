@@ -24,7 +24,6 @@
 
 #include "util_macros.hpp"
 #include "util_types.hpp"
-#include "module_macros_incore.hpp"
 #include "orphan.hpp"
 #include "types_rollcall.hpp"
 #include "claw_singleton.hpp"
@@ -39,16 +38,166 @@
 /// "Rollcall" macros. These are lifted straight from module_macros_incore.hpp
 /// but are modified here and there to suit the role of models.
 
+// New addition: Now with core vs module macro redirections similar to those
+// in the module macros, to permit translation ("interpret as") functions to
+// be defined in source files and be compiled separately from the gambit core.
+// (Note: this is not yet throughly tested. Might be missing some currently
+// unused  macros)
+
+#define STRING2(x) #x
+#define STRING(x) STRING2(x)
+
+#ifdef __model_rollcall_hpp__
+  #include "module_macros_incore.hpp"
+  #define START_MODEL             CORE_START_MODEL
+  #define DEFINEPARS(...)         CORE_DEFINEPARS(__VA_ARGS__)
+  #define MAP_TO_CAPABILITY(PARAMETER,CAPABILITY)  \
+                                  CORE_MAP_TO_CAPABILITY(PARAMETER,CAPABILITY)
+  #define INTERPRET_AS_X__FUNCTION(MODEL_X,FUNC)  \
+                                  CORE_INTERPRET_AS_X__FUNCTION(MODEL_X,FUNC)
+  #define INTERPRET_AS_PARENT__FUNCTION(FUNC)  \
+                                  CORE_INTERPRET_AS_PARENT__FUNCTION(FUNC)
+  #define INTERPRET_AS_X__DEPENDENCY(MODEL_X, DEP, TYPE)  \
+                                  CORE_INTERPRET_AS_X__DEPENDENCY(MODEL_X, DEP, TYPE)
+#else
+  #define START_MODEL             MODULE_START_MODEL
+  #define DEFINEPARS(...)         /* Do nothing */
+  #define MAP_TO_CAPABILITY(PARAMETER,CAPABILITY) /* Do nothing */
+  #define INTERPRET_AS_X__FUNCTION(MODEL_X,FUNC) \
+                                  MODULE_INTERPRET_AS_X__FUNCTION(MODEL_X,FUNC)
+  #define INTERPRET_AS_PARENT__FUNCTION(FUNC) \
+                                  MODULE_INTERPRET_AS_X__FUNCTION(PARENT,FUNC)
+  #define INTERPRET_AS_X__DEPENDENCY(MODEL_X, DEP, TYPE)  \
+                                  MODULE_INTERPRET_AS_X__DEPENDENCY(MODEL_X, DEP, TYPE)
+#endif
+
+/// "in module" version of the START_MODEL macro
+#define MODULE_START_MODEL                                                     \
+  IF_TOKEN_UNDEFINED(MODEL,FAIL("You must define MODEL before calling "        \
+   "START_MODEL."))                                                            \
+  /*_Pragma("message declaring model...") \
+  _Pragma( STRINGIFY(CAT("message Forward declaring model: ",MODEL)) )      */ \
+  namespace Gambit                                                             \
+  {                                                                            \
+   namespace Models                                                            \
+   {                                                                           \
+    namespace MODEL                                                            \
+    {                                                                          \
+      /* Module errors */                                                      \
+      error& CAT(MODEL,_error)();                                              \
+      /* Module warnings */                                                    \
+      warning& CAT(MODEL,_warning)();                                          \
+    }                                                                          \
+   }                                                                           \
+  }                                                                            \
+
+/// "in module" version of the INTERPRET_AS_X__FUNCTION macro
+#define MODULE_INTERPRET_AS_X__FUNCTION(MODEL_X,FUNC)                          \
+  namespace Gambit                                                             \
+  {                                                                            \
+    namespace Models                                                           \
+    {                                                                          \
+      namespace MODEL                                                          \
+      {                                                                        \
+        /* Declare the user-defined function as defined elsewhere */           \
+        extern void FUNC (const ModelParameters&, ModelParameters&);           \
+                                                                               \
+        /* Let the module source know that this functor is declared*/          \
+        namespace Functown { extern module_functor<ModelParameters>            \
+                                            CAT(MODEL_X,_parameters); }        \
+                                                                               \
+        namespace Pipes                                                        \
+        {                                                                      \
+          namespace CAT(MODEL_X,_parameters)                                   \
+          {                                                                    \
+            /* Declare the parameters safe-pointer map as external. */         \
+            extern std::map<str, safe_ptr<double> > Param;                     \
+            /* Declare the safe-pointer to the models vector as external. */   \
+            extern safe_ptr< std::vector<str> > Models;                        \
+            /* Declare the safe pointer to the run options as external. */     \
+            extern safe_ptr<Options> runOptions;                               \
+          }                                                                    \
+        }                                                                      \
+      }                                                                        \
+    }                                                                          \
+  }                                                                            \
+
+/// "in module" version of the INTERPRET_AS_X__DEPENDENCY macro
+#define MODULE_INTERPRET_AS_X__DEPENDENCY(MODEL_X, DEP, TYPE)                  \
+  namespace Gambit                                                             \
+  {                                                                            \
+    namespace Models                                                           \
+    {                                                                          \
+      namespace MODEL                                                          \
+      {                                                                        \
+        /* Given that TYPE is not void, create a safety_bucket for the         \
+        dependency result. To be initialized automatically at runtime          \
+        when the dependency is resolved. */                                    \
+        namespace Pipes                                                        \
+        {                                                                      \
+          namespace CAT(MODEL_X,_parameters)                                  \
+          {                                                                    \
+            BOOST_PP_IIF(IS_TYPE(void,TYPE),,                                  \
+              namespace Dep { extern dep_bucket<TYPE> DEP; } )                 \
+          }                                                                    \
+                                                                               \
+        }                                                                      \
+      }                                                                        \
+    }                                                                          \
+  }                                                                            
+
+
 /// Piggybacks off the CORE_START_MODULE_COMMON macro, as we need all the same 
 /// machinery.
-#define START_MODEL                                                            \
+  /* _Pragma("message creating model...")                                      \
+  _Pragma( STRINGIFY(CAT("message  Creating model: ",MODEL)) )              */ \
+//  IF_TOKEN_UNDEFINED(MODEL,FAIL("You must define MODEL before calling "        \
+//   "START_MODEL."))                                                            \
+
+//compiles...
+// #define CORE_START_MODEL                                                       \
+//                                                                                \
+//   namespace Gambit                                                             \
+//   {                                                                            \
+//     ADD_TAG_IN_CURRENT_NAMESPACE(primary_parameters)                          \
+//     ADD_TAG_IN_CURRENT_NAMESPACE(CAT(MODEL,_parameters))                      \
+//     ADD_MODEL_TAG_IN_CURRENT_NAMESPACE(MODEL)                                 \
+//                                                                                \
+//     namespace Models                                                           \
+//     {                                                                          \
+//                                                                                \
+//       namespace MODEL                                                          \
+//       {                                                                        \
+//                                                                                \
+//         /* Basic machinery, same as for modules                                \
+//            (macro from module_macros_incore.hpp) */                            \
+//         CORE_START_MODULE_COMMON_MAIN(MODEL)                                 \
+//                                                                               \
+//         /* Runtime addition of model to GAMBIT model database */               \
+//         void rt_add_model()                                                    \
+//         {                                                                      \
+//           /*ModelDB().declare_model(STRINGIFY(MODEL), STRINGIFY(PARENT));   */      \
+//         }                                                                      \
+//                                                                                \
+//         /* Functor's actual "calculate" function.  Doesn't do anything. */     \
+//         void primary_parameters (ModelParameters&) {}                          \
+//                                                                                \
+//         /* Wrap it up in a primary_model_functor */                            \
+//         MAKE_PRIMARY_MODEL_FUNCTOR(primary_parameters, CAT(MODEL,_parameters), \
+//                                    MODEL)                                      \
+//                                                                                \
+//       }                                                                           \
+//     }                                                                           \
+//   }                                                                            \
+
+//backup
+#define CORE_START_MODEL                                                       \
                                                                                \
   namespace Gambit                                                             \
   {                                                                            \
-                                                                               \
-    ADD_TAG_IN_CURRENT_NAMESPACE(primary_parameters)                           \
-    ADD_TAG_IN_CURRENT_NAMESPACE(CAT(MODEL,_parameters))                       \
-    ADD_MODEL_TAG_IN_CURRENT_NAMESPACE(MODEL)                                  \
+    ADD_TAG_IN_CURRENT_NAMESPACE(primary_parameters)                          \
+    ADD_TAG_IN_CURRENT_NAMESPACE(CAT(MODEL,_parameters))                      \
+    ADD_MODEL_TAG_IN_CURRENT_NAMESPACE(MODEL)                                 \
                                                                                \
     namespace Models                                                           \
     {                                                                          \
@@ -58,12 +207,12 @@
                                                                                \
         /* Basic machinery, same as for modules                                \
            (macro from module_macros_incore.hpp) */                            \
-        CORE_START_MODULE_COMMON_MAIN(MODEL)                                   \
+        CORE_START_MODULE_COMMON_MAIN(MODEL)                                 \
                                                                                \
         /* Runtime addition of model to GAMBIT model database */               \
         void rt_add_model()                                                    \
         {                                                                      \
-          ModelDB().declare_model(STRINGIFY(MODEL), STRINGIFY(PARENT));        \
+          ModelDB().declare_model(STRINGIFY(MODEL), STRINGIFY(PARENT));         \
         }                                                                      \
                                                                                \
         namespace Ini                                                          \
@@ -92,7 +241,9 @@
       CORE_ALLOW_MODEL(MODEL,primary_parameters,MODEL)                         \
                                                                                \
     }                                                                          \
-  }                                                                            \
+  }                                                                           \
+
+
 
 /// Tells the core that the current parameter corresponds to the specified
 /// CAPABILITY, so that module functions can then draw upon them like any
@@ -101,7 +252,7 @@
 /// object cannot store anything else anyway). If we really want to allow 
 /// integer or maybe complex parameters later we could extend some things in 
 /// here.
-#define MAP_TO_CAPABILITY(PARAMETER,CAPABILITY)                                \
+#define CORE_MAP_TO_CAPABILITY(PARAMETER,CAPABILITY)                           \
                                                                                \
   namespace Gambit                                                             \
   {                                                                            \
@@ -209,13 +360,13 @@
 
 /// Define multiple model parameters
 /// @{
-#define DEFINEPARS(...)                                                        \
+#define CORE_DEFINEPARS(...)                                                   \
   BOOST_PP_SEQ_FOR_EACH(DO_LINK, _, BOOST_PP_TUPLE_TO_SEQ((__VA_ARGS__)))
 #define DO_LINK(r,data,elem) DEFINEPAR(elem)
 /// @}
 
 /// Real declaration macro for INTERPRET_AS_X functions.
-#define INTERPRET_AS_X__FUNCTION(MODEL_X,FUNC)                                 \
+#define CORE_INTERPRET_AS_X__FUNCTION(MODEL_X,FUNC)                            \
         INTERPRET_AS_X__FUNCTION_FULL(MODEL_X,FUNC,1)                          \
 
 /// Generic declaration macro for INTERPRET_AS_ functions.
@@ -320,23 +471,24 @@
 
 
 /// Add a dependency to an interpret-as-X function.
-#define INTERPRET_AS_X__DEPENDENCY(MODEL_X, DEP, TYPE)                         \
+#define CORE_INTERPRET_AS_X__DEPENDENCY(MODEL_X, DEP, TYPE)                    \
   CORE_DEPENDENCY(DEP, TYPE, MODEL, CAT(MODEL_X,_parameters), IS_MODEL)        \
 
 /// Wrappers to convert INTERPRET_AS_X macros to INTERPRET_AS_PARENT macros.
 /// @{
 #define INTERPRET_AS_PARENT__DEPENDENCY(DEP, TYPE)                             \
   INTERPRET_AS_X__DEPENDENCY(PARENT, DEP, TYPE)                                
-#define INTERPRET_AS_PARENT__FUNCTION(FUNC)                                    \
+#define CORE_INTERPRET_AS_PARENT__FUNCTION(FUNC)                               \
   INTERPRET_AS_X__FUNCTION_FULL(PARENT,FUNC,0)                                        
 /// @}
 
 /// Macro to get to model namespace easily
 #define MODEL_NAMESPACE Gambit::Models::MODEL 
 
-/// Macro to easily get the Pipes, for retrieving dependencies
-#define USE_MODEL_PIPE                                                         \
-  using namespace MODEL_NAMESPACE::Pipes::CAT(PARENT,_parameters);             \
+/// Macro to easily get the Pipes for an INTERPRET_AS_X function, for retrieving 
+/// dependencies
+#define USE_MODEL_PIPE(MODEL_X)                                                 \
+  using namespace MODEL_NAMESPACE::Pipes::CAT(MODEL_X,_parameters);             \
 
 /// Macros to create and register primary model functors. 
 ///

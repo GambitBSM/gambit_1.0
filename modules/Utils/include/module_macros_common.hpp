@@ -163,8 +163,6 @@
 
 ///Simple alias for ALLOW_MODEL/S
 #define ALLOW_MODEL ALLOW_MODELS
-///Simple alias for ALLOW_MODEL/S_ONLY_VIA_GROUPS
-#define ALLOW_MODEL_ONLY_VIA_GROUPS ALLOW_MODELS_ONLY_VIA_GROUPS
 ///Simple alias for ACTIVATE_FOR_MODEL/S
 #define ACTIVATE_FOR_MODEL ACTIVATE_FOR_MODELS
 ///Simple alias for BACKEND_GROUP/S
@@ -205,71 +203,71 @@
 /// @}
 
 
-/// \name Variadic redirection macros for ALLOW_MODELS_ONLY_VIA_GROUPS([MODELS])
+/// \name Variadic redirection macros for ALLOW_MODEL_DEPENDENCE([MODELS])
 /// Register that the current \link FUNCTION() FUNCTION\endlink may only be used
 /// with the listed models, but only in certain combinations.  The current maximum
 /// number of models that can be indicated this way is 10; if more models
-/// should be allowed, ALLOW_MODELS_ONLY_VIA_GROUPS can be called multiple times.
+/// should be allowed, ALLOW_MODEL_DEPENDENCE can be called multiple times.
 /// If ALLOW_MODELS and ALLOW_MODEL_COMBINATION are both absent, all models are 
 /// considered to be allowed.
 /// @{
-#define ALLOW_MODELS_ONLY_VIA_GROUPS_10(A,B,_1, _2, _3, _4, _5, _6, _7, _8, _9, _10) ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_1) \
-                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_2) \
-                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_3) \
-                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_4) \
-                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_5) \
-                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_6) \
-                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_7) \
-                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_8) \
-                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_9) \
-                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_10)
-#define ALLOW_MODELS_ONLY_VIA_GROUPS_9(A,B,_1, _2, _3, _4, _5, _6, _7, _8, _9)       ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_1) \
-                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_2) \
-                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_3) \
-                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_4) \
-                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_5) \
-                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_6) \
-                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_7) \
-                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_8) \
-                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_9) 
-#define ALLOW_MODELS_ONLY_VIA_GROUPS_8(A,B,_1, _2, _3, _4, _5, _6, _7, _8)           ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_1) \
-                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_2) \
-                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_3) \
-                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_4) \
-                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_5) \
-                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_6) \
-                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_7) \
-                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_8)
-#define ALLOW_MODELS_ONLY_VIA_GROUPS_7(A,B,_1, _2, _3, _4, _5, _6, _7)               ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_1) \
-                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_2) \
-                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_3) \
-                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_4) \
-                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_5) \
-                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_6) \
-                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_7)
-#define ALLOW_MODELS_ONLY_VIA_GROUPS_6(A,B,_1, _2, _3, _4, _5, _6)                   ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_1) \
-                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_2) \
-                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_3) \
-                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_4) \
-                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_5) \
-                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_6)
-#define ALLOW_MODELS_ONLY_VIA_GROUPS_5(A,B,_1, _2, _3, _4, _5)                       ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_1) \
-                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_2) \
-                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_3) \
-                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_4) \
-                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_5)
-#define ALLOW_MODELS_ONLY_VIA_GROUPS_4(A,B,_1, _2, _3, _4)                           ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_1) \
-                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_2) \
-                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_3) \
-                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_4) 
-#define ALLOW_MODELS_ONLY_VIA_GROUPS_3(A,B,_1, _2, _3)                               ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_1) \
-                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_2) \
-                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_3) 
-#define ALLOW_MODELS_ONLY_VIA_GROUPS_2(A,B,_1, _2)                                   ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_1) \
-                                                                                     ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_2)  
-#define ALLOW_MODELS_ONLY_VIA_GROUPS_1(A,B,_1)                                       ALLOWED_MODEL_ONLY_VIA_GROUPS(A,B,_1) 
-#define ALLOW_MODELS_ONLY_VIA_GROUPS_AB(A,B,...)                                     VARARG_AB(ALLOW_MODELS_ONLY_VIA_GROUPS, A, B, __VA_ARGS__)
-#define ALLOW_MODELS_ONLY_VIA_GROUPS(...)                                            ALLOW_MODELS_ONLY_VIA_GROUPS_AB(MODULE, FUNCTION, __VA_ARGS__)
+#define ALLOW_MODEL_DEPENDENCE_10(A,B,_1, _2, _3, _4, _5, _6, _7, _8, _9, _10) ALLOWED_MODEL_DEPENDENCE(A,B,_1) \
+                                                                               ALLOWED_MODEL_DEPENDENCE(A,B,_2) \
+                                                                               ALLOWED_MODEL_DEPENDENCE(A,B,_3) \
+                                                                               ALLOWED_MODEL_DEPENDENCE(A,B,_4) \
+                                                                               ALLOWED_MODEL_DEPENDENCE(A,B,_5) \
+                                                                               ALLOWED_MODEL_DEPENDENCE(A,B,_6) \
+                                                                               ALLOWED_MODEL_DEPENDENCE(A,B,_7) \
+                                                                               ALLOWED_MODEL_DEPENDENCE(A,B,_8) \
+                                                                               ALLOWED_MODEL_DEPENDENCE(A,B,_9) \
+                                                                               ALLOWED_MODEL_DEPENDENCE(A,B,_10)
+#define ALLOW_MODEL_DEPENDENCE_9(A,B,_1, _2, _3, _4, _5, _6, _7, _8, _9)       ALLOWED_MODEL_DEPENDENCE(A,B,_1) \
+                                                                               ALLOWED_MODEL_DEPENDENCE(A,B,_2) \
+                                                                               ALLOWED_MODEL_DEPENDENCE(A,B,_3) \
+                                                                               ALLOWED_MODEL_DEPENDENCE(A,B,_4) \
+                                                                               ALLOWED_MODEL_DEPENDENCE(A,B,_5) \
+                                                                               ALLOWED_MODEL_DEPENDENCE(A,B,_6) \
+                                                                               ALLOWED_MODEL_DEPENDENCE(A,B,_7) \
+                                                                               ALLOWED_MODEL_DEPENDENCE(A,B,_8) \
+                                                                               ALLOWED_MODEL_DEPENDENCE(A,B,_9) 
+#define ALLOW_MODEL_DEPENDENCE_8(A,B,_1, _2, _3, _4, _5, _6, _7, _8)           ALLOWED_MODEL_DEPENDENCE(A,B,_1) \
+                                                                               ALLOWED_MODEL_DEPENDENCE(A,B,_2) \
+                                                                               ALLOWED_MODEL_DEPENDENCE(A,B,_3) \
+                                                                               ALLOWED_MODEL_DEPENDENCE(A,B,_4) \
+                                                                               ALLOWED_MODEL_DEPENDENCE(A,B,_5) \
+                                                                               ALLOWED_MODEL_DEPENDENCE(A,B,_6) \
+                                                                               ALLOWED_MODEL_DEPENDENCE(A,B,_7) \
+                                                                               ALLOWED_MODEL_DEPENDENCE(A,B,_8)
+#define ALLOW_MODEL_DEPENDENCE_7(A,B,_1, _2, _3, _4, _5, _6, _7)               ALLOWED_MODEL_DEPENDENCE(A,B,_1) \
+                                                                               ALLOWED_MODEL_DEPENDENCE(A,B,_2) \
+                                                                               ALLOWED_MODEL_DEPENDENCE(A,B,_3) \
+                                                                               ALLOWED_MODEL_DEPENDENCE(A,B,_4) \
+                                                                               ALLOWED_MODEL_DEPENDENCE(A,B,_5) \
+                                                                               ALLOWED_MODEL_DEPENDENCE(A,B,_6) \
+                                                                               ALLOWED_MODEL_DEPENDENCE(A,B,_7)
+#define ALLOW_MODEL_DEPENDENCE_6(A,B,_1, _2, _3, _4, _5, _6)                   ALLOWED_MODEL_DEPENDENCE(A,B,_1) \
+                                                                               ALLOWED_MODEL_DEPENDENCE(A,B,_2) \
+                                                                               ALLOWED_MODEL_DEPENDENCE(A,B,_3) \
+                                                                               ALLOWED_MODEL_DEPENDENCE(A,B,_4) \
+                                                                               ALLOWED_MODEL_DEPENDENCE(A,B,_5) \
+                                                                               ALLOWED_MODEL_DEPENDENCE(A,B,_6)
+#define ALLOW_MODEL_DEPENDENCE_5(A,B,_1, _2, _3, _4, _5)                       ALLOWED_MODEL_DEPENDENCE(A,B,_1) \
+                                                                               ALLOWED_MODEL_DEPENDENCE(A,B,_2) \
+                                                                               ALLOWED_MODEL_DEPENDENCE(A,B,_3) \
+                                                                               ALLOWED_MODEL_DEPENDENCE(A,B,_4) \
+                                                                               ALLOWED_MODEL_DEPENDENCE(A,B,_5)
+#define ALLOW_MODEL_DEPENDENCE_4(A,B,_1, _2, _3, _4)                           ALLOWED_MODEL_DEPENDENCE(A,B,_1) \
+                                                                               ALLOWED_MODEL_DEPENDENCE(A,B,_2) \
+                                                                               ALLOWED_MODEL_DEPENDENCE(A,B,_3) \
+                                                                               ALLOWED_MODEL_DEPENDENCE(A,B,_4) 
+#define ALLOW_MODEL_DEPENDENCE_3(A,B,_1, _2, _3)                               ALLOWED_MODEL_DEPENDENCE(A,B,_1) \
+                                                                               ALLOWED_MODEL_DEPENDENCE(A,B,_2) \
+                                                                               ALLOWED_MODEL_DEPENDENCE(A,B,_3) 
+#define ALLOW_MODEL_DEPENDENCE_2(A,B,_1, _2)                                   ALLOWED_MODEL_DEPENDENCE(A,B,_1) \
+                                                                               ALLOWED_MODEL_DEPENDENCE(A,B,_2)  
+#define ALLOW_MODEL_DEPENDENCE_1(A,B,_1)                                       ALLOWED_MODEL_DEPENDENCE(A,B,_1) 
+#define ALLOW_MODEL_DEPENDENCE_AB(A,B,...)                                     VARARG_AB(ALLOW_MODEL_DEPENDENCE, A, B, __VA_ARGS__)
+#define ALLOW_MODEL_DEPENDENCE(...)                                            ALLOW_MODEL_DEPENDENCE_AB(MODULE, FUNCTION, __VA_ARGS__)
 /// @}
 
 

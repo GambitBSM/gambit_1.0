@@ -42,6 +42,15 @@ def same(f1,f2):
         if l1 != l2 and not l1.startswith("#  \\date "): return False
     return True
 
+# Compare a candidate file to an existing file, replacing only if they differ.
+def update_only_if_different(existing, candidate):
+    if os.path.isfile(existing) and same(existing, candidate): 
+        os.remove(candidate)
+    else:
+        os.rename(candidate,existing)
+    print "   Updated "+re.sub("\\.\\/","",existing)
+
+
 # Actual updater program
 def main(argv):
 
@@ -62,7 +71,7 @@ def main(argv):
         if opt in ('-v','--verbose'):
             verbose = True
             print 'update_cmakelists.py: verbose=True'
-        elif opt in ('-x','--exclude-modules'):
+        elif opt in ('-x','--exclude-modules','--exclude-module'):
             exclude_modules.update(neatsplit(",",arg))
 
     # Find all the modules.
@@ -76,16 +85,20 @@ def main(argv):
         for root,dirs,files in os.walk("./"+mod+"/src"):
             for name in files:
                 if name.endswith(".c") or name.endswith(".cc") or name.endswith(".cpp"):
-                    if verbose: print "    Located {0} source file '{1}'".format(mod,name)
-                    srcs+=[name]
+                    short_root = re.sub("\\./"+mod+"/src/?","",root)
+                    if short_root != "" : short_root += "/" 
+                    if verbose: print "    Located {0} source file '{1}'".format(mod,short_root+name)
+                    srcs+=[short_root+name]
     
         # Retrieve the list of module header files.
         headers = []
         for root,dirs,files in os.walk("./"+mod+"/include"):
             for name in files:
                 if name.endswith(".h") or name.endswith(".hh") or name.endswith(".hpp"):
-                    if verbose: print "    Located {0} header file '{1}'".format(mod,name)
-                    headers+=[name]
+                    short_root = re.sub("\\./"+mod+"/include/?","",root)
+                    if short_root != "" : short_root += "/" 
+                    if verbose: print "    Located {0} header file '{1}'".format(mod,short_root+name)
+                    headers+=[short_root+name]
 
         # Make a candidate CMakeLists.txt file for this module.
         towrite = "\
@@ -120,13 +133,7 @@ set(source_files                                \n"
         towrite+="add_gambit_library("+mod+" OPTION OBJECT SOURCES ${source_files} HEADERS ${header_files})"
         cmakelist = "./"+mod+"/CMakeLists.txt"
         with open(cmakelist+".candidate","w") as f: f.write(towrite)
-
-        # Compare the candidate file to any existing file, replacing only if they differ.
-        if os.path.isfile(cmakelist) and same(cmakelist, cmakelist+".candidate"): 
-            os.remove(cmakelist+".candidate")
-        else:
-            os.rename(cmakelist+".candidate",cmakelist)
-            print "   Updated "+re.sub("\\.\\/","",cmakelist)
+        update_only_if_different(cmakelist, cmakelist+".candidate")
 
     if verbose: print "Finished updating module CMakeLists.txt files."
 

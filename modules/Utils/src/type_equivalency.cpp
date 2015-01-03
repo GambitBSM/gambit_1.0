@@ -13,12 +13,39 @@
 ///   
 ///  \author Pat Scott  
 ///          (patscott@physics.mcgill.ca)
-///  \date 2014 Oct
+///  \date 2014 Oct, Dec
 ///
 ///  *********************************************
 
 #include "type_equivalency.hpp"
+#include "util_types.hpp"
 #include "util_functions.hpp"
+#include "cmake_variables.hpp"
+
+/// Constructor
+Gambit::Utils::type_equivalency::type_equivalency() :
+ filename(GAMBIT_DIR "/config/resolution_type_equivalency_classes.yaml")
+{
+  // Read yaml configuration file
+  std::vector<YAML::Node> yaml_entries;
+  try
+  { 
+    yaml_entries = YAML::LoadAllFromFile(filename);
+  } 
+  catch (YAML::Exception &e)
+  {
+    std::ostringstream msg;
+    msg << "Could not read resolution type equivalency class file \""<<filename<<"\"!" << endl;
+    msg << "Please check that file exists and contains valid YAML." << endl;
+    msg << "("<<e.what()<<")";
+    utils_error().raise(LOCAL_INFO,msg.str());
+  }
+  // Iterate over the entries in the configuration file and add them to the set of equivalency classes
+  for (auto it = yaml_entries.begin(); it != yaml_entries.end(); ++it)
+  {  
+    add(it->as< std::vector<str> >());
+  }
+}
 
 /// Define a new equivalency relation
 /// {@
@@ -54,4 +81,6 @@ void Gambit::Utils::type_equivalency::add(str t1, str t2, str t3) { add(t1,t2); 
 void Gambit::Utils::type_equivalency::add(str t1, str t2, str t3, str t4) { add(t1,t2); add(t1,t3); add(t1,t4); }
 void Gambit::Utils::type_equivalency::add(str t1, str t2, str t3, str t4, str t5) { add(t1,t2); add(t1,t3); add(t1,t4); add(t1,t5); }
 void Gambit::Utils::type_equivalency::add(str t1, str t2, str t3, str t4, str t5, str t6) { add(t1,t2); add(t1,t3); add(t1,t4); add(t1,t5); add(t1,t6); }
+void Gambit::Utils::type_equivalency::add(std::vector<str> v) { for (auto it = v.begin()+1; it != v.end(); ++it) { add(v[0],*it); } }
+/// }@
 

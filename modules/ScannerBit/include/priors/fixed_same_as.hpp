@@ -42,13 +42,15 @@ namespace Gambit
                                 }
                                 else
                                 {
-                                        scanLog::err << "Did not give fixed_value for parameter " << names[0] << "..." << scanLog::endl;
+                                        std::stringstream err;
+                                        err << "Did not give fixed_value for parameter " << names[0] << "..." << std::endl;
+                                        Scanner::scan_error().raise(LOCAL_INFO, err.str());
                                 }
                         }
                         
                         FixedPrior(std::string name, double value) : value(value), names(1, name) {}
                         
-                        void transform(const std::vector<double> &unitPars, std::map<std::string, double> &outputMap) const
+                        void transform(const std::vector<double> &, std::map<std::string, double> &outputMap) const
                         {
                                 for (auto it = names.begin(), end = names.end(); it != end; it++)
                                 {
@@ -73,7 +75,9 @@ namespace Gambit
                                 }
                                 else
                                 {
-                                        scanLog::err << "Did not give same_as parameters for parameter " << name << scanLog::endl;
+                                        std::stringstream err;
+                                        err << "Did not give same_as parameters for parameter " << name << std::endl;
+                                        Scanner::scan_error().raise(LOCAL_INFO, err.str());
                                 }
                                 
                                 names = param;
@@ -94,7 +98,7 @@ namespace Gambit
                                 names.push_back(name_in);
                         }
                         
-                        void transform (const std::vector<double> &unitPars, std::map<std::string, double> &outputMap) const
+                        void transform (const std::vector<double> &, std::map<std::string, double> &outputMap) const
                         {
                                 double value = outputMap[name];
                                 

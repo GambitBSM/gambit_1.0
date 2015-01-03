@@ -27,6 +27,7 @@
 #include <chrono>
 #include <string>
 #include <set>
+#include "boost/shared_ptr.hpp"
 
 namespace Gambit
 {
@@ -46,6 +47,7 @@ namespace Gambit
             using std::ostream;
             using std::string;
             using std::set;
+            using boost::shared_ptr;
             
             //  *********************************************
             //  Generic 3-vector class
@@ -171,7 +173,7 @@ namespace Gambit
                         m(0), stable(false), enabledWidth(0), 
                         totalWidth(0), useForcedTotalWidth(false), forcedTotalWidth(0), pID(""),  randInit(false){}
                     // Pick a random decay channel
-                    const TH_Channel* randomDecay();
+                    const TH_Channel* randomDecay() const;
                     // Update decay widths and if necessary Monte Carlo table
                     void update();
                     // Functions for checking if a decay exists in the decay tables
@@ -196,7 +198,7 @@ namespace Gambit
                     vector<const TH_Channel*> enabledDecays;
                     vector<const TH_Channel*> disabledDecays;
                     // Table used for picking random decays
-                    vector<double> randLims;
+                    mutable vector<double> randLims;
                     // Decay widths of enabled channels and all channels
                     double enabledWidth;
                     double totalWidth; 
@@ -205,11 +207,11 @@ namespace Gambit
                     // String particle identifier
                     string pID;
                     // Initialization status of Monte Carlo table
-                    bool randInit;
+                    mutable bool randInit;
                     // Function used in picking a random decay
-                    int findChannelIdx(double pick);    
+                    int findChannelIdx(double pick) const;    
                     // Generate table for picking a random decay in Monte Carlo decay chains
-                    void generateRandTable();
+                    void generateRandTable() const;
             };
             
             //  *********************************************
@@ -220,12 +222,13 @@ namespace Gambit
             {
                 public:
                     DecayTable(const TH_ProcessCatalog &cat);
-                    bool hasEntry(string);
+                    DecayTable(){};
+                    bool hasEntry(string) const;
                     // Add particle to decay table, specifying particle ID, mass and whether or not it should be decayed in decay chains
                     void addEntry(string pID, double m, bool stable);
                     void addEntry(string pID, DecayTableEntry entry);
-                    const TH_Channel* randomDecay(string pID); 
-                    DecayTableEntry& operator[](string i){ return table[i];} 
+                    const TH_Channel* randomDecay(string pID) const; 
+                    const DecayTableEntry& operator[](string i) const{return table.at(i);} 
                     // Retrieve width of decay channel
                     // Note: It is ESSENTIAL that the TH_Channel is a decay channel, or more precisely that dSigmadE is of type BFconstant. 
                     static double getWidth(const TH_Channel *ch);
@@ -247,7 +250,7 @@ namespace Gambit
                     // Invariant (rest) mass    
                     const double m; 
                     // Constructor for the base node (top particle in the decay chain).
-                    ChainParticle(vec3 ipLab, DecayTable *dc, string pID);
+                    ChainParticle(vec3 ipLab, const DecayTable *dc, string pID);
                     // Iteratively add random links to the decay chain by Monte Carlo to a maximum length of maxSteps or minimum energy of Emin.
                     // Use negative numbers to turn off limits
                     void generateDecayChainMC(int maxSteps, double Emin);
@@ -263,11 +266,13 @@ namespace Gambit
                     double E_Lab() const;
                     // Iteratively collect decay chain endpoint states. Optional argument to only collect particles of certain types.
                     // Note that this function will not collect decay products of endpoint states. These must be extracted manually.
-                    void collectEndpointStates(vector<ChainParticle*> &endpointStates, bool includeAborted, string ipID="");
-                    // Iteratively collect endpoint states. See description of isEndpoint variable.
-                    ChainParticle* operator[](unsigned int i);     
-                    // Collect string identifieres for child particles
-                    vector<string> childIDs();
+                    void collectEndpointStates(vector<const ChainParticle*> &endpointStates, bool includeAborted, string ipID="") const;
+                    // Get number of child particles
+                    unsigned int getnChildren() const {return nChildren;}
+                    // Get child particle
+                    const ChainParticle* operator[](unsigned int i) const;     
+                    // Get particle ID
+                    string getpID() const {return pID;}
                     // Print the decay chain (to cout)
                     void printChain() const;
                     // Destructor
@@ -279,7 +284,7 @@ namespace Gambit
                     // missing/disabled decay channels. Only relevant for Monte Carlo generated chains.
                     double weight;
                     // Pointer to decay table
-                    DecayTable *decayTable;        
+                    const DecayTable *decayTable;        
                     // Lorentz matrices
                     mat4 boostToParentFrame;
                     mat4 boostToLabFrame;
@@ -303,10 +308,20 @@ namespace Gambit
                     // Function for updating the Lorentz boost matrices according to a new 4-momentum.
                     void update(vec4 &ip_parent);
                     // Constructor used by member functions during chain generation.
-                    ChainParticle(const vec4 &pp, double m, double weight, DecayTable *dc, ChainParticle *parent, int chainGeneration, string pID);
+                    ChainParticle(const vec4 &pp, double m, double weight, const DecayTable *dc, ChainParticle *parent, int chainGeneration, string pID);
+                    // Disable copy constructor and assignment operator. These would cause mayhem. 
+                    ChainParticle(const ChainParticle&);
+                    ChainParticle & operator=(const ChainParticle&);
             };
+            typedef std::vector<const Gambit::DarkBit::DecayChain::ChainParticle*> ChainParticleVector;
             
-            
+            // Container for passing around ChainParticle objects.
+            struct ChainContainer
+            {
+                ChainContainer(){}
+                ChainContainer(ChainParticle* ch){chain = shared_ptr<const ChainParticle>(ch);}
+                shared_ptr<const ChainParticle> chain;
+            };
             
             
         }

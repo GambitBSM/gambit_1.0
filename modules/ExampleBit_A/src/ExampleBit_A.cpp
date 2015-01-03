@@ -26,8 +26,6 @@
 
 #include <string>
 #include <iostream>
-#include <random>
-#include <chrono>
 #include <cmath>
 #include <functional>
 
@@ -41,16 +39,6 @@ namespace Gambit
   {
     using namespace LogTags;
 
-    /// Local module declarations
-    /// Note that the stuff from <random> isn't actually guaranteed threadsafe, but it will do for an example.
-    /// @{
-    double count = 3.5;
-    int accumulatedCounts = 0;
-    std::uniform_real_distribution<double> random_0to5(0.0, 5.0);
-    unsigned newseed = std::chrono::system_clock::now().time_since_epoch().count();
-    std::mt19937 twistor(newseed);
-    /// @}
-
     /// \name Helper functions
     /// Not wrapped in rollcall header.
     /// @{
@@ -61,7 +49,7 @@ namespace Gambit
     /// Some other example function
     double some_other_function(int &input)
     {
-      ostringstream ss;
+      std::ostringstream ss;
       ss << "  This is some_other_function, invoked with argument " << input;
       logger().send(ss.str(),info);
       double offset = 2.0;
@@ -80,7 +68,7 @@ namespace Gambit
 
     /// \name Module functions
     /// @{
-    void nevents_dbl  (double &result)    { result = count++; cout << "My xsection dep: " << *Pipes::nevents_dbl::Dep::xsection << endl;}
+    void nevents_dbl  (double &result)    { static double count = 3.5; result = count++; cout << "My xsection dep: " << *Pipes::nevents_dbl::Dep::xsection << endl;}
     void nevents_like (double &result)    { result = 2.0 * (*Pipes::nevents_like::Dep::eventAccumulation); }
     void identity     (str    &result)    { result = "turkion"; }
 
@@ -88,7 +76,7 @@ namespace Gambit
     {
       result = (int) (*Pipes::nevents_int::Dep::nevents);
       // Randomly raise some ficticious alarms about this point in 10% of cases.
-      if (random_0to5(twistor) < 0.5)
+      if (Random::draw() < 0.1)
       {
         //Example of how to raise an error from a module function.
         ExampleBit_A_error().raise(LOCAL_INFO,"Damn, this integer event count is bad.");
@@ -193,11 +181,15 @@ namespace Gambit
 
       double loglTotal = 0.;
 
+      logger() << "Is CMSSM_demo being scanned? " << ModelInUse("CMSSM_demo") << endl;
+      logger() << "Is NormalDist being scanned? " << ModelInUse("NormalDist") << endl;;
+      logger() << "Is SingletDM being scanned? "  << ModelInUse("SingletDM");;
+      logger() << info << EOM;
+
       // The loglikelihood value for the hypothesised parameters is then:
       for (int i=0; i <= N; ++i)
       {
-        //std::cout<<samples[i]<<*Param["mu"]<<*Param["sigma"]<<std::endl;
-        loglTotal += logf(samples[i], *Param["mu"], *Param["sigma"]);
+        if (ModelInUse("NormalDist")) loglTotal += logf(samples[i], *Param["mu"], *Param["sigma"]);
       }
 
       result = loglTotal;
@@ -226,16 +218,26 @@ namespace Gambit
       //}
 
       //A simple loop example using OpenMP
-      Loop::executeIteration(0);         //Do the zero iteration separately to allow nested functions to self-init.
+      int it = 0;
+      Loop::executeIteration(it);         //Do the zero iteration separately to allow nested functions to self-init.
       #pragma omp parallel
       {
-        #pragma omp for
-        for(unsigned long it = 1; it < nEvents-1; it++)
-        {
-          Loop::executeIteration(it);
-        }
+        while(not *Loop::done) { Loop::executeIteration(it++); }
       }
-      Loop::executeIteration(nEvents-1); //Do the final iteration separately to make the final result 'serially accessible' to functions that run after this one.
+
+      // Start over again, just to demonstrate the reset function.  This just sets the Loop::done flag
+      // false again.  Note that when you do this, you need to beware to re-initialise the nested functions themselves 
+      // by re-running iteration zero again, unless you want them to just set Loop::done true again straight away.
+      it = 0;
+      Loop::reset();
+      Loop::executeIteration(it);         //Do the zero iteration separately to allow nested functions to self-init.
+      #pragma omp parallel
+      {
+        while(not *Loop::done) { Loop::executeIteration(it++); }
+      }
+
+      //Do the final iteration separately to make the final result 'serially accessible' to functions that run after this one.
+      Loop::executeIteration(it++); 
 
     }
 
@@ -243,7 +245,7 @@ namespace Gambit
     void exampleEventGen(singleprec &result)
     {
       using namespace Pipes::exampleEventGen;
-      result = random_0to5(twistor);                 // Generate and return the random number
+      result = Random::draw()*5.0;                 // Generate and return the random number
       #pragma omp critical (print)
       {
         cout<<"  Running exampleEventGen in iteration "<<*Loop::iteration<<endl;
@@ -264,21 +266,37 @@ namespace Gambit
     /// Adds an integral event count to a total number of accumulated events.
     void eventAccumulator(int &result)
     {
-      //There is basically just one thing available in nested functions from the Loops namespace:
+      //There are basically just two things available in nested functions from the Loops namespace:
       //  int* Loop::iteration -- the iteration number passed down directly by the function managing the loop that this one runs within.
+      //  void Loop::wrapup()  -- a function to call if you want to cause the loop to end.
       //You can always get at OpenMP functions too (omp_get_thread_num, omp_get_ancestor_thread_num, etc) -- but it is better not to assume
       //too much about the other functions that might be managing this one, either directly or indirectly.
 
       using namespace Pipes::eventAccumulator;
-      if (*Loop::iteration == 0)                     // In the first iteration of a loop
+
+      // Do the actual computations in each thread seperately
+      int increment = *Dep::event + 1;
+
+      // Only let one thread at a time mess with the accumulator.
+      #pragma omp critical (eventAccumulator_update)
       {
-        accumulatedCounts = 0;                       // Zero the total accumulated counts
+        static int accumulatedCounts = 0;
+        // In the first iteration of a loop
+        if (*Loop::iteration == 0)
+        {
+          // Zero the total accumulated counts
+          accumulatedCounts = 0;
+        }
+        else
+        {
+          // Add the latest event count to the total
+          accumulatedCounts += increment;              
+        }
+        // Return the current total
+        result = accumulatedCounts;                    
       }
-      #pragma omp critical (eventAccumulator_update) // Only let one thread at a time accumulate results
-      {
-        accumulatedCounts += *Dep::event;            // Add the latest event count to the total
-      }
-      result = accumulatedCounts;                    // Return the current total
+
+      // Print some diagnostic info
       #pragma omp critical (print)
       {
         cout<<"  Running eventAccumulator in iteration "<<*Loop::iteration<<endl;
@@ -286,6 +304,10 @@ namespace Gambit
         cout<<"  I have thread index: "<<omp_get_thread_num();
         cout<<"  Current total counts is: "<<result<<endl;
       }
+
+      // If we have reached 50 counts, quit the loop.
+      if (result >= 50) { Loop::wrapup(); }
+
     }
 
     double testFunc(Farray<double,1>&)

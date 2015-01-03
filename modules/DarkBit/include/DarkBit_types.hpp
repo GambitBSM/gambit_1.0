@@ -46,6 +46,7 @@
 #include <boost/shared_ptr.hpp>
 #include <gsl/gsl_integration.h>
 #include "base_functions.hpp"
+#include "funktions.hpp"
 #include "decay_chain.hpp"
 
 namespace Gambit
@@ -60,8 +61,43 @@ namespace Gambit
     using boost::dynamic_pointer_cast;
     using boost::static_pointer_cast;
     using boost::enable_shared_from_this;
-    using Gambit::BF::intLimitFunc;
-    using Gambit::BF::BFargVec;
+    //using Gambit::BF::intLimitFunc;
+    //using Gambit::BF::BFargVec;
+
+    // Temporary minimal histogram class for cascade decay testing
+    struct SimpleHist
+    {
+        SimpleHist(){}
+        SimpleHist(unsigned nBins, double Emin, double dE): nBins(nBins), Emin(Emin), dE(dE)
+        {
+            for(unsigned i=0; i<nBins; i++)
+            {
+                vals.push_back(0.0);
+            }
+        }
+        void addEvent(double E)
+        {
+            long int bin = (E-Emin)/dE;
+            if(bin>=0 and unsigned(abs(bin))<nBins )
+            {
+                vals[bin]+=1.0;
+            }
+        }
+        void addEvent(double E, double weight)
+        {
+            long int bin = (E-Emin)/dE;
+            if(bin>0 and unsigned(abs(bin))<nBins )
+            {
+                vals[bin]+=weight;
+            }
+        }
+        std::vector<double> vals;
+        unsigned nBins;
+        double Emin;
+        double dE;
+    };
+    typedef std::map<std::string, std::map<std::string, Gambit::DarkBit::SimpleHist> > simpleHistContainter;
+    typedef std::map<std::string, unsigned> stringUnsignedMap;
 
     struct DD_couplings
     {
@@ -72,6 +108,7 @@ namespace Gambit
       double gna;
     };
 
+    /*
     // Integration limits for E1 for the DS gamma 3-body decays.
     class DSg3_IntLims_E1 : public intLimitFunc
     {
@@ -111,7 +148,9 @@ namespace Gambit
         private:
             double M_DM, m1, m2;
     };
+    */
 
+    /*
     class DSgamma3bdyKinFunc : public BF::BaseFunction
     {
       typedef double(*BEptr)(int&, double&, double&);
@@ -153,6 +192,7 @@ namespace Gambit
         double m_2;
         int IBch;
     };
+    */
 
     // A simple example
     struct Wstruct
@@ -212,7 +252,7 @@ namespace Gambit
     struct TH_Channel
     {
         // Constructor
-        TH_Channel(std::vector<std::string> finalStateIDs, BF::BFptr dSigmadE) :
+        TH_Channel(std::vector<std::string> finalStateIDs, Funk::Funk dSigmadE) :
             finalStateIDs(finalStateIDs), nFinalStates(finalStateIDs.size()),
             dSigmadE(dSigmadE)
         {
@@ -232,7 +272,7 @@ namespace Gambit
         // Energy dependence of final state particles
         // Includes v_rel as last argument in case of annihilation
         // TODO: Implement checks
-        BF::BFptr dSigmadE;  
+        Funk::Funk dSigmadE;  
 
         // Compare final states
         bool isChannel(std::string p0, std::string p1, std::string p2 ="", std::string p3 = "")
@@ -241,6 +281,16 @@ namespace Gambit
             if ( nFinalStates == 3 and p0 == finalStateIDs[0] and p1 == finalStateIDs[1] and p2 == finalStateIDs[2] ) return true;
             if ( nFinalStates == 4 and p0 == finalStateIDs[0] and p1 == finalStateIDs[1] and p2 == finalStateIDs[2] and p3 == finalStateIDs[3] ) return true;
             return false;
+        }
+
+        void printChannel()
+        {
+            std::cout << "Channel: ";
+            for ( auto it = finalStateIDs.begin(); it != finalStateIDs.end(); it++ )
+            {
+                std::cout << *it << " ";
+            }
+            std::cout << std::endl;
         }
 
         // New version that allows permutations of the final states
@@ -322,6 +372,7 @@ namespace Gambit
     // General Dark Matter Halos and Halo Catalog
     //////////////////////////////////////////////
 
+    /*
     struct DMhalo
     {
         public:
@@ -376,6 +427,7 @@ namespace Gambit
       private:
         std::vector<shared_ptr<DMhalo> > myHalos;
     };
+    */
 
 
     /////////////////////
@@ -430,6 +482,7 @@ namespace Gambit
     // Physics implementation 
     //////////////////////////
 
+    /*
     class BFdmradialProfile: public BF::BaseFunction
     {
         public:
@@ -486,6 +539,7 @@ namespace Gambit
             return rhos / (r/rs) / (1+r/rs) / (1+r/rs);
             }
     };
+    */
 
 
     //////////////////////////////////////////////

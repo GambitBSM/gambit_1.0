@@ -30,7 +30,7 @@
 ///  
 ///  \author Christopher Savage
 ///          (chris@savage.name)
-///  \date 2014 Oct
+///  \date 2014 Oct, Dec
 ///  
 ///  *********************************************
 
@@ -112,6 +112,11 @@ START_MODULE
       START_FUNCTION(RDrestype)
       DEPENDENCY(RD_spectrum, RDspectype)
     #undef FUNCTION
+    #define FUNCTION RD_thresholds_resonances_SingletDM
+      START_FUNCTION(RDrestype)
+      ALLOW_MODELS(SingletDM)
+      BACKEND_REQ(rdmgev, (), DS_RDMGEV)
+    #undef FUNCTION
   #undef CAPABILITY
 
   #define CAPABILITY RD_eff_annrate_SUSY_DSprep
@@ -129,6 +134,11 @@ START_MODULE
       START_FUNCTION(fptr_dd)
         DEPENDENCY(RD_eff_annrate_SUSY_DSprep, int)
         BACKEND_REQ(dsanwx, (), double, (double&))
+    #undef FUNCTION
+    #define FUNCTION RD_eff_annrate_from_ProcessCatalog
+      START_FUNCTION(fptr_dd)
+      DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)
+      ALLOW_MODELS(SingletDM)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -169,17 +179,91 @@ START_MODULE
 
   // Cascade decays --------------------------------------------
 
-  // Loop manager for decay chains
-  /*
-  #define CAPABILITY decayChainLoopManagement
+  // Function specifying initial states for the cascade decays
+  #define CAPABILITY cascadeMC_ChainList
   START_CAPABILITY
-    #define FUNCTION decayChainLoopManager
-    START_FUNCTION(void, CAN_MANAGE_LOOPS)  
+    #define FUNCTION cascadeMC_TestList
+      START_FUNCTION(std::vector<std::string>)  
     #undef FUNCTION                                                       
   #undef CAPABILITY    
-  */
 
-  // Routine for testing decay chain code
+  // Function setting up the decay table used in decay chains
+  #define CAPABILITY cascadeMC_DecayTable
+  START_CAPABILITY
+    #define FUNCTION cascadeMC_DecayTable
+      START_FUNCTION(Gambit::DarkBit::DecayChain::DecayTable)
+      DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)
+    #undef FUNCTION                                                       
+  #undef CAPABILITY    
+
+  // Loop manager for cascade decays
+  
+  #define CAPABILITY cascadeMC_LoopManagement
+  START_CAPABILITY
+    #define FUNCTION cascadeMC_LoopManager
+      START_FUNCTION(void, CAN_MANAGE_LOOPS)  
+      DEPENDENCY(cascadeMC_ChainList,std::vector<std::string>)
+      // FIXME: Hack to make sure cascadeMC_DecayTable actually runs.
+      DEPENDENCY(cascadeMC_DecayTable, Gambit::DarkBit::DecayChain::DecayTable)
+    #undef FUNCTION                                                       
+  #undef CAPABILITY    
+  
+  
+  // Function selecting initial state for decay chain
+  #define CAPABILITY cascadeMC_InitialState
+  START_CAPABILITY
+    #define FUNCTION cascadeMC_InitialState
+      START_FUNCTION(std::string)
+      DEPENDENCY(cascadeMC_ChainList,std::vector<std::string>)
+      NEEDS_MANAGER_WITH_CAPABILITY(cascadeMC_LoopManagement) 
+    #undef FUNCTION          
+  #undef CAPABILITY
+  
+  // Event counter for cascade decays
+  #define CAPABILITY cascadeMC_EventCount
+  START_CAPABILITY
+    #define FUNCTION cascadeMC_EventCount
+      START_FUNCTION(Gambit::DarkBit::stringUnsignedMap)
+      DEPENDENCY(cascadeMC_InitialState, std::string)
+      NEEDS_MANAGER_WITH_CAPABILITY(cascadeMC_LoopManagement) 
+    #undef FUNCTION          
+  #undef CAPABILITY
+  
+  // Function for generating decay chains
+  #define CAPABILITY cascadeMC_ChainEvent
+  START_CAPABILITY
+    #define FUNCTION cascadeMC_GenerateChain
+      START_FUNCTION(Gambit::DarkBit::DecayChain::ChainContainer)
+      DEPENDENCY(cascadeMC_InitialState, std::string)
+      DEPENDENCY(cascadeMC_DecayTable, Gambit::DarkBit::DecayChain::DecayTable)
+      NEEDS_MANAGER_WITH_CAPABILITY(cascadeMC_LoopManagement) 
+    #undef FUNCTION          
+  #undef CAPABILITY
+
+  // Function responsible for histogramming and evaluating end conditions for event loop
+  #define CAPABILITY cascadeMC_Histograms
+  START_CAPABILITY
+    #define FUNCTION cascadeMC_Histograms
+      START_FUNCTION(Gambit::DarkBit::simpleHistContainter)
+      DEPENDENCY(cascadeMC_InitialState, std::string)
+      DEPENDENCY(cascadeMC_ChainEvent, Gambit::DarkBit::DecayChain::ChainContainer)
+      NEEDS_MANAGER_WITH_CAPABILITY(cascadeMC_LoopManagement) 
+    #undef FUNCTION          
+  #undef CAPABILITY
+
+
+  // Function for printing test result of cascade decays
+  #define CAPABILITY cascadeMC_PrintResult
+  START_CAPABILITY
+    #define FUNCTION cascadeMC_PrintResult
+      START_FUNCTION(bool)
+      DEPENDENCY(cascadeMC_Histograms, Gambit::DarkBit::simpleHistContainter)
+      DEPENDENCY(cascadeMC_EventCount, Gambit::DarkBit::stringUnsignedMap)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+
+  // Very simple routine for testing decay chain code
   #define CAPABILITY chain_test_cap
   START_CAPABILITY
     #define FUNCTION chain_test
@@ -193,7 +277,7 @@ START_MODULE
   #define CAPABILITY GA_AnnYield
   START_CAPABILITY
     #define FUNCTION GA_AnnYield_DarkSUSY
-      START_FUNCTION(Gambit::BF::BFptr)
+      START_FUNCTION(Funk::Funk)
       DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)
       BACKEND_REQ(dshayield, (), double, (double&,double&,int&,int&,int&))
     #undef FUNCTION
@@ -223,13 +307,14 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION lnL_FermiLATdwarfsSimple
       START_FUNCTION(double)
-      DEPENDENCY(GA_AnnYield, Gambit::BF::BFptr)
+      DEPENDENCY(GA_AnnYield, Funk::Funk)
     #undef FUNCTION
     #define FUNCTION lnL_FermiLATdwarfs_gamLike
       START_FUNCTION(double)
-      DEPENDENCY(GA_AnnYield, Gambit::BF::BFptr)
+      DEPENDENCY(GA_AnnYield, Funk::Funk)
       DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)
       BACKEND_REQ(lnL_dwarfs, (gamLike), double, (const std::vector<double> &, const std::vector<double> &))
+      BACKEND_REQ(lnL_GC, (gamLike), double, (const std::vector<double> &, const std::vector<double> &))
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -237,7 +322,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION lnL_FermiGC_gamLike
       START_FUNCTION(double)
-      DEPENDENCY(GA_AnnYield, Gambit::BF::BFptr)
+      DEPENDENCY(GA_AnnYield, Funk::Funk)
       DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)
       BACKEND_REQ(lnL_GC, (gamLike), double, (const std::vector<double> &, const std::vector<double> &))
     #undef FUNCTION
@@ -247,7 +332,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION dump_GammaSpectrum
       START_FUNCTION(double)
-      DEPENDENCY(GA_AnnYield, Gambit::BF::BFptr)
+      DEPENDENCY(GA_AnnYield, Funk::Funk)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -274,6 +359,22 @@ START_MODULE
       BACKEND_REQ(nucleonAmplitudes, (micromegas), int, (double(*)(double,double,double,double), double*, double*, double*, double*))
       BACKEND_REQ(FeScLoop, (micromegas), double, (double, double, double, double))
       BACKEND_REQ(MOcommon, (micromegas), micrOMEGAs::MOcommonSTR)
+    #undef FUNCTION
+    #define FUNCTION DD_couplings_SingletDM
+      START_FUNCTION(Gambit::DarkBit::DD_couplings)
+      ALLOW_MODELS(SingletDM)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY lnL_XENON100_2012
+  START_CAPABILITY
+    #define FUNCTION lnL_XENON100_2012
+      START_FUNCTION(double)
+      DEPENDENCY(DD_couplings, Gambit::DarkBit::DD_couplings)
+      BACKEND_REQ(DDCalc0_SetWIMP_mG, (Same_BE), void, (double*,double*,double*,double*,double*))
+      BACKEND_REQ(DDCalc0_XENON100_2012_CalcRates, (Same_BE), void, ())
+      BACKEND_REQ(DDCalc0_XENON100_2012_LogLikelihood, (Same_BE), double, ())
+      FORCE_SAME_BACKEND(Same_BE)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -548,6 +649,17 @@ START_MODULE
   QUICK_FUNCTION(DarkBit, nuyield, NEW_CAPABILITY, nuyield_toy, nuyield_functype)
   QUICK_FUNCTION(DarkBit, mwimp,   NEW_CAPABILITY, mwimp_toy,   double          )
   QUICK_FUNCTION(DarkBit, annrate, NEW_CAPABILITY, annrate_toy, double          )
+
+  #define CAPABILITY UnitTest_DarkBit
+  START_CAPABILITY
+    #define FUNCTION UnitTest_DarkBit
+    START_FUNCTION(int)
+    DEPENDENCY(DD_couplings, Gambit::DarkBit::DD_couplings)
+    DEPENDENCY(RD_oh2, double)
+    DEPENDENCY(GA_AnnYield, Funk::Funk)
+    DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)
+    #undef FUNCTION
+  #undef CAPABILITY
 
 #undef MODULE
 

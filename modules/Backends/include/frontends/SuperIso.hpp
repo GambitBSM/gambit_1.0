@@ -5,9 +5,6 @@
  * Nazila Mahmoudi 2014-09-03
  */
 
-/* Specify the path to the shared library along with a backend name. */
-
-#define LIBPATH      "Backends/lib/libsuperiso.so"
 #ifdef BACKENDRENAME
   #define BACKENDNAME BACKENDRENAME
 #else
@@ -16,7 +13,7 @@
 #define VERSION 3.4
 #define SAFE_VERSION 3_4
 
-/* The following macro loads the library (using dlmopen) in LIBPATH 
+/* The following macro loads the library using dlopen 
  * when this header file is included somewhere. */
 
 LOAD_LIBRARY

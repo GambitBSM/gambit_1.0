@@ -44,19 +44,19 @@ Printer:
 ##############################
 
 Scanner:
+    
+  use_scanner_plugin: loopsample
 
-  plugin: crapsample
-  file_path:  ScannerBit/lib/libsample.so
-
-  enable_redirect: false
-  redirect_output:
-     scanner:  xterm
-  #   error:  test_errors
-      
-  crapsample:
-    point_number: 1
-    output_file:  output
-    like:  Observable
+  plugins:
+  
+    loopsample:
+      plugin: loopsample
+      options:
+        point_number: 20
+        output_file:  output
+        like:  Likelihood
+        files:
+          output_file: "weights ..."
 
 ###############################
 # Observables of interest
@@ -98,13 +98,29 @@ Auxiliaries:
       slhaFilename: "ColliderBit/data/sps1aWithDecays.spc" 
       pythiaNames: ["Pythia_SUSY_LHC_8TeV", "Pythia_glusq_LHC_8TeV"]
       Pythia_SUSY_LHC_8TeV: 2  # <-- How many configurations of this one you want
+      #Pythia_glusq_LHC_8TeV: 1  # <-- One is the default anyways
   
   - capability:  HardScatteringSim
     function:  getPythia
     options:
+      Pythia_glusq_LHC_8TeV:
+        pythiaOptions_1: ["PartonLevel:MPI = off",
+                          "PartonLevel:ISR = on",
+                          "PartonLevel:FSR = off",
+                          "HadronLevel:all = off"]
       Pythia_SUSY_LHC_8TeV:
-        pythiaOptions_1: ["SUSY:idA = 1000021", "SUSY:idB = 1000021"]
-        pythiaOptions_2: ["SUSY:idVecA = 1000001,1000002,1000003,1000004,2000001,2000002,2000003,2000004", "SUSY:idVecB = 1000001,1000002,1000003,1000004,2000001,2000002,2000003,2000004"]
+        pythiaOptions_1: ["PartonLevel:MPI = off",
+                          "PartonLevel:ISR = on",
+                          "PartonLevel:FSR = off",
+                          "HadronLevel:all = off",
+                          "SUSY:idA = 1000021",
+                          "SUSY:idB = 1000021"]
+        pythiaOptions_2: ["PartonLevel:MPI off",
+                          "PartonLevel:ISR = on",
+                          "PartonLevel:FSR = off",
+                          "HadronLevel:all = off",
+                          "SUSY:idVecA = 1000001,1000002,1000003,1000004,2000001,2000002,2000003,2000004",
+                          "SUSY:idVecB = 1000001,1000002,1000003,1000004,2000001,2000002,2000003,2000004"]
 
   - capability: LogLikelihood
     function: calcLogLike
@@ -142,6 +158,7 @@ Logger:
 KeyValues:
 
   dependency_resolution:
+    use_old_routines: true
     prefer_model_specific_functions: true
 
   likelihood:

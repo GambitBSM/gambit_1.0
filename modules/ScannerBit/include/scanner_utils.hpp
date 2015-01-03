@@ -17,7 +17,7 @@
 ///
 ///  \author Pat Scott 
 ///          (patscott@physics.mcgill.ca)
-///  \date 2014 Mar
+///  \date 2014 Mar, Dec
 ///
 ///  *********************************************
 
@@ -31,17 +31,66 @@
 #include <unordered_map>
 #include <algorithm>
 
-#include "scanlog.hpp"
 #include "outputhandler.hpp"
 #include "exceptions.hpp"
 #include "log.hpp"
 #include "factory_registry.hpp"
 
+#define scan_err        SCAN_ERR
+#define scan_warn       SCAN_WARN
+#define scan_end        SCAN_END
+#define scan_flush      SCAN_FLUSH
+
+#define SCAN_ERR                                                \
+Gambit::Scanner::Errors::_bool_() = true,                       \
+Gambit::Scanner::Errors::_err_()                                \
+
+#define SCAN_WARN                                               \
+Gambit::Scanner::Errors::_bool_() = false,                      \
+Gambit::Scanner::Errors::_warn_()                               \
+
+#define SCAN_END_INTERNAL                                       \
+(Gambit::Scanner::Errors::_bool_()) ?                           \
+(                                                               \
+        Gambit::Scanner::scan_error().raise(LOCAL_INFO,         \
+         Gambit::Scanner::Errors::_err_().str()),               \
+        Gambit::Scanner::Errors::_err_().str("")                \
+)                                                               \
+:                                                               \
+(                                                               \
+        Gambit::Scanner::scan_warning().raise(LOCAL_INFO,       \
+         Gambit::Scanner::Errors::_warn_().str()),              \
+        Gambit::Scanner::Errors::_warn_().str("")               \
+)                                                               \
+
+#define SCAN_END std::endl, SCAN_END_INTERNAL
+
+#define SCAN_FLUSH std::flush, SCAN_END_INTERNAL
+
 namespace Gambit
 {
         namespace Scanner
         {       
-
+                namespace Errors
+                {
+                        inline std::stringstream &_err_()
+                        {
+                                static std::stringstream error;
+                                return error;
+                        }
+                        
+                        inline std::stringstream &_warn_()
+                        {
+                                static std::stringstream warn;
+                                return warn;
+                        }
+                        
+                        inline bool &_bool_()
+                        {
+                                static bool error;
+                                return error;
+                        }
+                }
                 /// Scanner errors
                 error& scan_error();
                 /// Scanner warnings
@@ -51,11 +100,6 @@ namespace Gambit
                 {
                         extern OutputHandler out;
                 }
-        }
-        
-        namespace scanLog
-        {
-                extern ErrorLog err;
         }
 }
 

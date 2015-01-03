@@ -24,16 +24,11 @@
 #ifndef __SLHA_types_hpp__
 #define __SLHA_types_hpp__
 
-// Pythia8 SLHA reader classes (no writer!)
-#include "Pythia8/SusyLesHouches.h"
 // SLHAea reader/writer class
 #include "slhaea.h"
 
 namespace Gambit
 {
-  // Pythia 8 SLHA class
-  typedef ::Pythia8::SusyLesHouches Py8SLHA;
-
   // SLHAea class SLHA class
   typedef ::SLHAea::Coll eaSLHA;
 }

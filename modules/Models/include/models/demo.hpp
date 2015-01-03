@@ -85,14 +85,11 @@
   // object as a CAPABILITY of this model)
   
   // Need to go to a little effort to find the correct pipes to retrieve the dependency.
-  // To save this effort, I made the USE_MODEL_PIPE macro. This requires the PARENT and MODEL
-  // macros to be defined correctly to work (just a warning in case you define the IAP 
-  // function elsewhere, which is perfectly legitimate to do, say in a cpp file so that
-  // recompiling is not necessary whenever you change it. Just #define PARENT and MODEL
-  // if you do this.)
+  // To save this effort, I made the USE_MODEL_PIPE(MODEL_X) macro. 
   // The macro just expands to the following:
-  //   using namespace Gambit::Models::MODEL::Pipes::PARENT_parameters;
-  //
+  //   using namespace Gambit::Models::MODEL::Pipes::MODEL_X_parameters;
+  // which points to the pipes for the "module" function wrapping the user-defined
+  // "interpret" function.
   INTERPRET_AS_PARENT__FUNCTION(CMSSM_demo_IAPfunc)
   INTERPRET_AS_PARENT__DEPENDENCY(id, std::string)
 
@@ -100,7 +97,7 @@
   {
       logger()<<"Running interpret_as_parent calculations for CMSSM_demo -> MSSM_demo ..."<<EOM;
       
-      USE_MODEL_PIPE
+      USE_MODEL_PIPE(PARENT) // get pipe for "interpret as PARENT" function
 
       double M0  = myparams["M0"];
       double M12 = myparams["M12"];
@@ -173,7 +170,7 @@
   INTERPRET_AS_X__FUNCTION(MSSM_demo,to_MSSM)
   void MODEL_NAMESPACE::to_parent(const ModelParameters &myparams, ModelParameters &parentparams)
   {
-      USE_MODEL_PIPE
+      USE_MODEL_PIPE(PARENT)
       logger()<<"Running interpret_as_parent calculations for TWOHDM_demo -> TWOHDM_demo_parent ..."<<EOM;     
       parentparams.setValue("X",myparams["X"]);
       parentparams.setValue("Y",2.0*myparams["Y"]);
@@ -181,7 +178,7 @@
   }
   void MODEL_NAMESPACE::to_MSSM(const ModelParameters &myparams, ModelParameters &MSSM_params)
   {
-      USE_MODEL_PIPE
+      USE_MODEL_PIPE(MSSM_demo)
       logger()<<"Running interpret_as_X calculations for TWOHDM_demo -> MSSM_demo ..."<<EOM;     
       MSSM_params.setValue("M1",myparams["X"]);
       MSSM_params.setValue("M2",myparams["Y"]);
@@ -200,7 +197,7 @@
   INTERPRET_AS_PARENT__FUNCTION(to_parent)
   void MODEL_NAMESPACE::to_parent(const ModelParameters &myparams, ModelParameters &parentparams)
   {
-      USE_MODEL_PIPE
+      USE_MODEL_PIPE(PARENT)
       logger()<<"Running interpret_as_parent calculations for TWOHDM_sub_demo -> TWOHDM_demo ..."<<EOM;     
       parentparams.setValue("X",1.0);
       parentparams.setValue("Y",myparams["Y"]);

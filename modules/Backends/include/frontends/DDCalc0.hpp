@@ -22,7 +22,6 @@
 ///  *********************************************
 
 // Identify backend
-#define LIBPATH      "Backends/lib/libDDCalc0.so"
 #ifdef BACKENDRENAME
   #define BACKENDNAME BACKENDRENAME
 #else
@@ -56,6 +55,7 @@ BE_FUNCTION(DDCalc0_Init, void, (), "__ddcalc0_MOD_ddcalc0_init", "DDCalc0_Initi
 // Single boolean argument indicates if extra calculations
 // should be performed for some no-background-subtraction
 // limits.  Not necessary for likelihoods.
+BE_FUNCTION(DDCalc0_XENON100_2012_Init,  void, (bool*), "__ddcalc0_MOD_xenon100_2012_init",  "XENON100_2012_Initialize")
 BE_FUNCTION(DDCalc0_LUX_2013_Init,       void, (bool*), "__ddcalc0_MOD_lux_2013_init",       "LUX_2013_Initialize")
 BE_FUNCTION(DDCalc0_DARWIN_Ar_2014_Init, void, (bool*), "__ddcalc0_MOD_darwin_ar_2014_init", "DARWIN_Ar_2014_Initialize")
 BE_FUNCTION(DDCalc0_DARWIN_Xe_2014_Init, void, (bool*), "__ddcalc0_MOD_darwin_xe_2014_init", "DARWIN_Xe_2014_Initialize")
@@ -90,6 +90,7 @@ BE_FUNCTION(DDCalc0_SetWIMP_msigma, void, (double*,double*,double*,double*,doubl
 // Experiment-specific calculation routines.
 // Should be run once for each model prior to using event and
 // likelihood routines below.
+BE_FUNCTION(DDCalc0_XENON100_2012_CalcRates,  void, (), "__ddcalc0_MOD_xenon100_2012_calcrates",  "DDCalc0_XENON100_2012_CalcRates")
 BE_FUNCTION(DDCalc0_LUX_2013_CalcRates,       void, (), "__ddcalc0_MOD_lux_2013_calcrates",       "DDCalc0_LUX_2013_CalcRates")
 BE_FUNCTION(DDCalc0_DARWIN_Ar_2014_CalcRates, void, (), "__ddcalc0_MOD_darwin_ar_2014_calcrates", "DDCalc0_DARWIN_Ar_2014_CalcRates")
 BE_FUNCTION(DDCalc0_DARWIN_Xe_2014_CalcRates, void, (), "__ddcalc0_MOD_darwin_xe_2014_calcrates", "DDCalc0_DARWIN_Xe_2014_CalcRates")
@@ -100,6 +101,12 @@ BE_FUNCTION(DDCalc0_DARWIN_Xe_2014_CalcRates, void, (), "__ddcalc0_MOD_darwin_xe
 //   Signal:     average signal expectation
 //   SignalSI:   average signal expectation (spin-independent only)
 //   SignalSD:   average signal expectation (spin-dependent only)
+// XENON100 2012
+BE_FUNCTION(DDCalc0_XENON100_2012_Events,     int,    (), "__ddcalc0_MOD_xenon100_2012_events",     "XENON100_2012_Events")
+BE_FUNCTION(DDCalc0_XENON100_2012_Background, double, (), "__ddcalc0_MOD_xenon100_2012_background", "XENON100_2012_Background")
+BE_FUNCTION(DDCalc0_XENON100_2012_Signal,     double, (), "__ddcalc0_MOD_xenon100_2012_signal",     "XENON100_2012_Signal")
+BE_FUNCTION(DDCalc0_XENON100_2012_SignalSI,   double, (), "__ddcalc0_MOD_xenon100_2012_signalsi",   "XENON100_2012_SignalSI")
+BE_FUNCTION(DDCalc0_XENON100_2012_SignalSD,   double, (), "__ddcalc0_MOD_xenon100_2012_signalsd",   "XENON100_2012_SignalSD")
 // LUX 2013
 BE_FUNCTION(DDCalc0_LUX_2013_Events,     int,    (), "__ddcalc0_MOD_lux_2013_events",     "LUX_2013_Events")
 BE_FUNCTION(DDCalc0_LUX_2013_Background, double, (), "__ddcalc0_MOD_lux_2013_background", "LUX_2013_Background")
@@ -120,6 +127,7 @@ BE_FUNCTION(DDCalc0_DARWIN_Xe_2014_SignalSI,   double, (), "__ddcalc0_MOD_darwin
 BE_FUNCTION(DDCalc0_DARWIN_Xe_2014_SignalSD,   double, (), "__ddcalc0_MOD_darwin_xe_2014_signalsd",   "DARWIN_Xe_2014_SignalSD")
 
 // Likelihoods
+BE_FUNCTION(DDCalc0_XENON100_2012_LogLikelihood,  double, (), "__ddcalc0_MOD_xenon100_2012_loglikelihood",  "DDCalc0_XENON100_2012_LogLikelihood")
 BE_FUNCTION(DDCalc0_LUX_2013_LogLikelihood,       double, (), "__ddcalc0_MOD_lux_2013_loglikelihood",       "DDCalc0_LUX_2013_LogLikelihood")
 BE_FUNCTION(DDCalc0_DARWIN_Ar_2014_LogLikelihood, double, (), "__ddcalc0_MOD_darwin_ar_2014_loglikelihood", "DDCalc0_DARWIN_Ar_2014_LogLikelihood")
 BE_FUNCTION(DDCalc0_DARWIN_Xe_2014_LogLikelihood, double, (), "__ddcalc0_MOD_darwin_xe_2014_loglikelihood", "DDCalc0_DARWIN_Xe_2014_LogLikelihood")
@@ -133,6 +141,7 @@ BE_INI_FUNCTION
     // Initialize module and experiments
     DDCalc0_Init();
     bool flag = false;  // must pass by reference...
+    DDCalc0_XENON100_2012_Init(&flag);
     DDCalc0_LUX_2013_Init(&flag);
     DDCalc0_DARWIN_Ar_2014_Init(&flag);
     DDCalc0_DARWIN_Xe_2014_Init(&flag);

@@ -28,6 +28,7 @@
 #include <limits>
 
 // Gambit
+#include "cmake_variables.hpp"
 #include "logging.hpp"
 #include "util_functions.hpp"
 #include "standalone_error_handlers.hpp"
@@ -199,7 +200,7 @@ namespace Gambit
            if (not loggers_readyQ)
            {
              std::cout<<"Logger was never initialised! Creating default log messenger..."<<std::endl;
-             StdLogger* deflogger = new StdLogger("default.log");
+             StdLogger* deflogger = new StdLogger(GAMBIT_DIR "/scratch/default.log");
              std::set<int> deftag;
              deftag.insert(def);
              loggers[deftag] = deflogger; 
@@ -208,7 +209,7 @@ namespace Gambit
            std::cout<<"Delivering messages..."<<std::endl;
            // Dump buffered messages
            dump_prelim_buffer();
-           std::cout<<"Messages delivered to 'modules/default.log'"<<std::endl;
+           std::cout<<"Messages delivered to '" << GAMBIT_DIR << "/scratch/default.log'"<<std::endl;
          }
 
          // Check if there is anything in the output stream that has not been sent, and send it if there is
@@ -256,7 +257,9 @@ namespace Gambit
             {
               // If we didn't find the tag, raise an exception (probably means there was an error in the yaml file)
               std::ostringstream errormsg;
-              errormsg << "Error in Logging::str2tag function! Tag name received could not be found in str2tag map! Probably this is because you specified an invalid LogTag name in the logging redirection part of the inifile! Tag string was ["<<*stag<<"]";
+              errormsg << "Tag name received in Logging::str2tag function could not be found in str2tag map!";
+              errormsg << "Probably this is because you specified an invalid LogTag name in the logging redirection";
+              errormsg << "part of your YAML input file. Tag string was: "<<*stag<<".";
               logging_error().raise(LOCAL_INFO,errormsg.str());
             }
             *this << *stag <<", ";
@@ -518,12 +521,6 @@ namespace Gambit
          return; 
        }
 
-       // If 'fatal' tag is received, print the message to stdout as well
-       if ( mail.tags.find(fatal) != mail.tags.end() )
-       {
-         std::cout<<" \033[00;31;1mFATAL ERROR\033[00m"<<std::endl<<mail.message<<std::endl;
-       } 
-
        // Sort the tags
        const SortedMessage sortedmsg(mail);
 
@@ -676,16 +673,32 @@ namespace Gambit
     BaseLogger::~BaseLogger() {}
 
     /// "Standard" logger class
-  
+
     /// Constructor
     /// Attach logger object to an existing stream
     StdLogger::StdLogger(std::ostream& logstream) : my_stream(logstream)
-    {}
+    {
+      // Check error bits on stream and throw exception in anything is bad
+      if( my_stream.fail() | my_stream.bad() )
+      {
+        std::ostringstream ss;
+        ss << "IO error while constructing StdLogger! Error bit on in supplied ostream.";
+        throw std::runtime_error( ss.str() ); 
+      }
+    }
  
     /// Open new file stream and manage it internally
     StdLogger::StdLogger(const std::string& filename) 
      : my_own_fstream(filename, std::ofstream::out), my_stream(my_own_fstream)
-    {}
+    {
+      // Check error bits on stream and throw exception in anything is bad
+      if( my_stream.fail() | my_stream.bad() )
+      {
+         std::ostringstream ss;
+         ss << "IO error while constructing StdLogger! Tried to open ofstream to file \""<<filename<<"\", but encountered error bit in the created ostream.";
+         throw std::runtime_error( ss.str() ); 
+      }
+    }
 
     StdLogger::~StdLogger() {}
  

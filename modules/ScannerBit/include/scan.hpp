@@ -28,6 +28,9 @@
 #include "yaml_parser.hpp"
 #include "priors.hpp"
 #include "printer_interface.hpp"
+#include "plugin_interface.hpp"
+#include "plugin_loader.hpp"
+#include "priors/composite.hpp"
 
 namespace Gambit
 {
@@ -61,22 +64,29 @@ namespace Gambit
                         virtual ~IniFileInterface_Base() {};
                 };
                 
-                class Gambit_Scanner
+                struct Proto_Plugin_Details
+                {
+                        std::string plugin;
+                        std::string version;
+                        std::string library;
+                        
+                        Proto_Plugin_Details() : plugin(""), version(""), library("") {}
+                };
+                
+                class Scan_Manager
                 {
                 private:
-                        const Factory_Base &factory;
-                        const IniFileInterface_Base &interface;
-                        const Priors::BasePrior &prior;
+                        const Factory_Base *factory;
+                        const Options *options;
+                        const Priors::CompositePrior *prior;
+                        const Plugins::Plugin_Loader *plugins;
                         printer_interface *printerInterface;
+                        std::map<std::string, Proto_Plugin_Details> selectedPlugins;
 
                 public:
-                        Gambit_Scanner (const Factory_Base &factory, const IniFileInterface_Base &interface, const Priors::BasePrior &prior, printer_interface *printerInterface = 0) : factory(factory), interface(interface), prior(prior), printerInterface(printerInterface)
-                        {       
-                        }
-
-                        int Run();
-                        
-                        ~Gambit_Scanner();
+                        Scan_Manager (const Factory_Base&, const Options&, const Priors::CompositePrior&, const Plugins::Plugin_Loader&, printer_interface* = 0);
+                        ~Scan_Manager();
+                        int Run();                       
                 };             
 
         }

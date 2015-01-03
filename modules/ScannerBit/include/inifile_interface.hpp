@@ -32,6 +32,7 @@
 #include "scanner_utils.hpp"
 #include "scan.hpp"
 #include "yaml_options.hpp"
+#include "plugin_details.hpp"
 
 namespace Gambit
 {
@@ -41,21 +42,23 @@ namespace Gambit
                 {
                 private:
                         Options options;
-                        std::string file;
-                        std::string name;
+                        Plugins::Plugin_Details plugin;
+                        std::string tag;
                         
                 public:
-                        IniFileInterface(const std::string &, const Options &);
+                        IniFileInterface(const std::string &tag, const Plugins::Plugin_Details &, const Options &);
                         
-                        const std::string pluginName() const {return name;}
+                        const std::string pluginName() const {return plugin.full_string;}
                         
-                        const std::string fileName() const {return file;}
+                        const std::string fileName() const {return plugin.library_path;}
+                        
+                        const std::string getTag() const {return tag;} 
                         
                         const std::string getValue(const std::string &in) const
                         {
-                                if (options.hasKey(name.c_str(), in.c_str()))
+                                if (options.hasKey(in.c_str()))
                                 {
-                                        return options.getValue<std::string>(name.c_str(), in.c_str());
+                                        return options.getValue<std::string>(in.c_str());
                                 }
                                 else
                                 {
@@ -63,14 +66,17 @@ namespace Gambit
                                 }
                         }
                         
-                        YAML::Node getNode(const std::string &str) const {return options.getNode(str);}
+                        YAML::Node getNode(const std::string &str) const 
+                        {
+                                if (options.hasKey(str))
+                                        return options.getNode(str);
+                                else
+                                        return YAML::Node();
+                                
+                        }
                         
                         ~IniFileInterface(){}
                 };
-                
-                IniFileInterface scanner_inifile_input(const Options &);
-                
-                std::map<std::string, std::vector<IniFileInterface>> function_inifile_input(const Options &);
         }
 }
 

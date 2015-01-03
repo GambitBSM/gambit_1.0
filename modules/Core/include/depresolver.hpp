@@ -112,6 +112,9 @@ namespace Gambit
         /// The dependency resolution
         void doResolution();
 
+        /// Helper function that returns a new graph with all inactive vertices removed.
+        static MasterGraphType cullInactiveFunctors(MasterGraphType&);
+
         /// Pretty print module functor information
         void printFunctorList();
 
@@ -173,7 +176,7 @@ namespace Gambit
         void resolveVertexBackend(VertexID);
 
         /// Find backend function matching any one of a number of capability-type pairs. 
-        functor* solveRequirement(std::vector<sspair>, const IniParser::ObservableType*, VertexID, std::vector<functor*>, bool, str group="none");
+        functor* solveRequirement(std::set<sspair>, const IniParser::ObservableType*, VertexID, std::vector<functor*>, bool, str group="none");
 
         /// Resolve a specific backend requirement.
         void resolveRequirement(functor*, VertexID);
@@ -201,13 +204,13 @@ namespace Gambit
         /// Printer object to which this dependency resolver is bound
         Printers::BasePrinter *boundPrinter;
 
-        /// *** Output Vertex Infos
+        /// Output Vertex Infos
         std::vector<OutputVertexInfo> outputVertexInfos;
 
-        /// *** The central boost graph object
+        /// The central boost graph object
         MasterGraphType masterGraph;
 
-        /// *** Saved calling order for functions
+        /// Saved calling order for functions
         std::list<VertexID> function_order;
 
         /// Temporary map for loop manager -> list of nested functions
@@ -216,6 +219,8 @@ namespace Gambit
         /// Indices associated with graph vertices (used by printers to identify functors)
         IndexMap index;
 
+        /// Output filename for graph of active functors.
+        const str activeFunctorGraphFile;
     };
   }
 }

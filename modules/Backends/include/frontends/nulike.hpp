@@ -17,8 +17,6 @@
 ///
 ///  *********************************************
 
-// Identify backend
-#define LIBPATH      "Backends/lib/libnulike.so"
 #ifdef BACKENDRENAME
   #define BACKENDNAME BACKENDRENAME
 #else

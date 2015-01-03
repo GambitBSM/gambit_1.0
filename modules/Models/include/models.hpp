@@ -57,7 +57,7 @@ namespace Gambit
         typedef bool (*LineageFunction)(const str, const ModelFunctorClaw*);
 
         /// Internal record of the active models
-        std::vector<str> activemodels;         
+        std::set<str> activemodels;         
 
         /// \name Private lineage/ancestry/friends databases
         /// @{
@@ -80,7 +80,7 @@ namespace Gambit
         /// Model activation function
         ///
         /// Returns a vector of primary_model_functors to be activated, according to the model(s) being scanned
-        primodel_vec getPrimaryModelFunctorsToActivate (std::vector<str>, const primodel_vec&);
+        primodel_vec getPrimaryModelFunctorsToActivate (std::set<str>, const primodel_vec&);
         
         /// Active model functor "usefulness" checker
         ///
@@ -107,8 +107,8 @@ namespace Gambit
         /// Return set of all models recognised by GAMBIT
         const std::set<str>& get_allmodels() const;
 
-        /// Return vector of the active models;
-        std::vector<str> get_activemodels() const;
+        /// Return the set of active models;
+        std::set<str> get_activemodels() const;
 
         /// Retrieve the lineage for a given model
         std::vector<str> get_lineage (const str &) const;

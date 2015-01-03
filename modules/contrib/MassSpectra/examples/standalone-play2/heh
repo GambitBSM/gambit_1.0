@@ -1,0 +1,94 @@
+g++ -std=c++11 -O2 -I. -I/home/peter/Gambit/GAMBIT/modules/SpecBit/MSSM//config -I/home/peter/Gambit/GAMBIT/modules/SpecBit/MSSM//src -I/home/peter/Gambit/GAMBIT/modules/SpecBit/MSSM//legacy -I/home/peter/Gambit/GAMBIT/modules/SpecBit/MSSM//models/MSSM -I/usr/include -I/usr/include/eigen3   -c -o standalone.o standalone.cpp
+In file included from /usr/include/eigen3/Eigen/Core:277:0,
+                 from /usr/include/eigen3/Eigen/Dense:1,
+                 from /home/peter/Gambit/GAMBIT/modules/SpecBit/MSSM//src/rk.hpp:13,
+                 from /home/peter/Gambit/GAMBIT/modules/SpecBit/MSSM//src/betafunction.hpp:22,
+                 from /home/peter/Gambit/GAMBIT/modules/SpecBit/MSSM//models/MSSM/MSSM_two_scale_susy_parameters.hpp:24,
+                 from /home/peter/Gambit/GAMBIT/modules/SpecBit/MSSM//models/MSSM/MSSM_two_scale_soft_parameters.hpp:25,
+                 from /home/peter/Gambit/GAMBIT/modules/SpecBit/MSSM//models/MSSM/MSSM_two_scale_model.hpp:25,
+                 from standalone.cpp:2:
+/usr/include/eigen3/Eigen/src/Core/DenseBase.h: In instantiation of ‘class Eigen::DenseBase<Eigen::Matrix<float, 4, 1> >’:
+/usr/include/eigen3/Eigen/src/Core/MatrixBase.h:61:34:   required from ‘class Eigen::MatrixBase<Eigen::Matrix<float, 4, 1> >’
+/usr/include/eigen3/Eigen/src/Core/PlainObjectBase.h:65:7:   required from ‘class Eigen::PlainObjectBase<Eigen::Matrix<float, 4, 1> >’
+/usr/include/eigen3/Eigen/src/Core/Matrix.h:140:7:   required from ‘class Eigen::Matrix<float, 4, 1>’
+/usr/include/eigen3/Eigen/src/Geometry/Quaternion.h:287:16:   required from ‘class Eigen::Quaternion<float>’
+/usr/include/eigen3/Eigen/src/Geometry/arch/Geometry_SSE.h:35:3:   required from here
+/usr/include/eigen3/Eigen/src/Core/DenseBase.h:103:10: warning: enumeral mismatch in conditional expression: ‘Eigen::internal::size_at_compile_time<4, 1>::<anonymous enum>’ vs ‘Eigen::internal::traits<Eigen::Matrix<float, 4, 1> >::<anonymous enum>’ [-Wenum-compare]
+/usr/include/eigen3/Eigen/src/Core/DenseBase.h: In instantiation of ‘class Eigen::DenseBase<Eigen::Matrix<double, 4, 1> >’:
+/usr/include/eigen3/Eigen/src/Core/MatrixBase.h:61:34:   required from ‘class Eigen::MatrixBase<Eigen::Matrix<double, 4, 1> >’
+/usr/include/eigen3/Eigen/src/Core/PlainObjectBase.h:65:7:   required from ‘class Eigen::PlainObjectBase<Eigen::Matrix<double, 4, 1> >’
+/usr/include/eigen3/Eigen/src/Core/Matrix.h:140:7:   required from ‘class Eigen::Matrix<double, 4, 1>’
+/usr/include/eigen3/Eigen/src/Geometry/Quaternion.h:287:16:   required from ‘class Eigen::Quaternion<double>’
+/usr/include/eigen3/Eigen/src/Geometry/arch/Geometry_SSE.h:76:3:   required from here
+/usr/include/eigen3/Eigen/src/Core/DenseBase.h:103:10: warning: enumeral mismatch in conditional expression: ‘Eigen::internal::size_at_compile_time<4, 1>::<anonymous enum>’ vs ‘Eigen::internal::traits<Eigen::Matrix<double, 4, 1> >::<anonymous enum>’ [-Wenum-compare]
+/usr/include/eigen3/Eigen/src/Core/DenseBase.h: In instantiation of ‘class Eigen::DenseBase<Eigen::Matrix<double, 3, 3> >’:
+/usr/include/eigen3/Eigen/src/Core/MatrixBase.h:61:34:   required from ‘class Eigen::MatrixBase<Eigen::Matrix<double, 3, 3> >’
+/usr/include/eigen3/Eigen/src/Core/PlainObjectBase.h:65:7:   required from ‘class Eigen::PlainObjectBase<Eigen::Matrix<double, 3, 3> >’
+/usr/include/eigen3/Eigen/src/Core/Matrix.h:140:7:   required from ‘class Eigen::Matrix<double, 3, 3>’
+/home/peter/Gambit/GAMBIT/modules/SpecBit/MSSM//models/MSSM/MSSM_two_scale_susy_parameters.hpp:93:30:   required from here
+/usr/include/eigen3/Eigen/src/Core/DenseBase.h:103:10: warning: enumeral mismatch in conditional expression: ‘Eigen::internal::size_at_compile_time<3, 3>::<anonymous enum>’ vs ‘Eigen::internal::traits<Eigen::Matrix<double, 3, 3> >::<anonymous enum>’ [-Wenum-compare]
+/usr/include/eigen3/Eigen/src/Core/DenseBase.h: In instantiation of ‘class Eigen::DenseBase<Eigen::Array<double, 3, 1> >’:
+/usr/include/eigen3/Eigen/src/Core/ArrayBase.h:52:34:   required from ‘class Eigen::ArrayBase<Eigen::Array<double, 3, 1> >’
+/usr/include/eigen3/Eigen/src/Core/PlainObjectBase.h:65:7:   required from ‘class Eigen::PlainObjectBase<Eigen::Array<double, 3, 1> >’
+/usr/include/eigen3/Eigen/src/Core/Array.h:55:7:   required from ‘class Eigen::Array<double, 3, 1>’
+/home/peter/Gambit/GAMBIT/modules/SpecBit/MSSM//models/MSSM/MSSM_physical.hpp:38:29:   required from here
+/usr/include/eigen3/Eigen/src/Core/DenseBase.h:103:10: warning: enumeral mismatch in conditional expression: ‘Eigen::internal::size_at_compile_time<3, 1>::<anonymous enum>’ vs ‘Eigen::internal::traits<Eigen::Matrix<double, 3, 1> >::<anonymous enum>’ [-Wenum-compare]
+/usr/include/eigen3/Eigen/src/Core/DenseBase.h: In instantiation of ‘class Eigen::DenseBase<Eigen::Array<double, 6, 1> >’:
+/usr/include/eigen3/Eigen/src/Core/ArrayBase.h:52:34:   required from ‘class Eigen::ArrayBase<Eigen::Array<double, 6, 1> >’
+/usr/include/eigen3/Eigen/src/Core/PlainObjectBase.h:65:7:   required from ‘class Eigen::PlainObjectBase<Eigen::Array<double, 6, 1> >’
+/usr/include/eigen3/Eigen/src/Core/Array.h:55:7:   required from ‘class Eigen::Array<double, 6, 1>’
+/home/peter/Gambit/GAMBIT/modules/SpecBit/MSSM//models/MSSM/MSSM_physical.hpp:40:29:   required from here
+/usr/include/eigen3/Eigen/src/Core/DenseBase.h:103:10: warning: enumeral mismatch in conditional expression: ‘Eigen::internal::size_at_compile_time<6, 1>::<anonymous enum>’ vs ‘Eigen::internal::traits<Eigen::Matrix<double, 6, 1, 0, 6, 1> >::<anonymous enum>’ [-Wenum-compare]
+/usr/include/eigen3/Eigen/src/Core/DenseBase.h: In instantiation of ‘class Eigen::DenseBase<Eigen::Array<double, 2, 1> >’:
+/usr/include/eigen3/Eigen/src/Core/ArrayBase.h:52:34:   required from ‘class Eigen::ArrayBase<Eigen::Array<double, 2, 1> >’
+/usr/include/eigen3/Eigen/src/Core/PlainObjectBase.h:65:7:   required from ‘class Eigen::PlainObjectBase<Eigen::Array<double, 2, 1> >’
+/usr/include/eigen3/Eigen/src/Core/Array.h:55:7:   required from ‘class Eigen::Array<double, 2, 1>’
+/home/peter/Gambit/GAMBIT/modules/SpecBit/MSSM//models/MSSM/MSSM_physical.hpp:44:29:   required from here
+/usr/include/eigen3/Eigen/src/Core/DenseBase.h:103:10: warning: enumeral mismatch in conditional expression: ‘Eigen::internal::size_at_compile_time<2, 1>::<anonymous enum>’ vs ‘Eigen::internal::traits<Eigen::Matrix<double, 2, 1> >::<anonymous enum>’ [-Wenum-compare]
+/usr/include/eigen3/Eigen/src/Core/DenseBase.h: In instantiation of ‘class Eigen::DenseBase<Eigen::Array<double, 4, 1> >’:
+/usr/include/eigen3/Eigen/src/Core/ArrayBase.h:52:34:   required from ‘class Eigen::ArrayBase<Eigen::Array<double, 4, 1> >’
+/usr/include/eigen3/Eigen/src/Core/PlainObjectBase.h:65:7:   required from ‘class Eigen::PlainObjectBase<Eigen::Array<double, 4, 1> >’
+/usr/include/eigen3/Eigen/src/Core/Array.h:55:7:   required from ‘class Eigen::Array<double, 4, 1>’
+/home/peter/Gambit/GAMBIT/modules/SpecBit/MSSM//models/MSSM/MSSM_physical.hpp:47:29:   required from here
+/usr/include/eigen3/Eigen/src/Core/DenseBase.h:103:10: warning: enumeral mismatch in conditional expression: ‘Eigen::internal::size_at_compile_time<4, 1>::<anonymous enum>’ vs ‘Eigen::internal::traits<Eigen::Matrix<double, 4, 1> >::<anonymous enum>’ [-Wenum-compare]
+/usr/include/eigen3/Eigen/src/Core/DenseBase.h: In instantiation of ‘class Eigen::DenseBase<Eigen::Matrix<double, 6, 6> >’:
+/usr/include/eigen3/Eigen/src/Core/MatrixBase.h:61:34:   required from ‘class Eigen::MatrixBase<Eigen::Matrix<double, 6, 6> >’
+/usr/include/eigen3/Eigen/src/Core/PlainObjectBase.h:65:7:   required from ‘class Eigen::PlainObjectBase<Eigen::Matrix<double, 6, 6> >’
+/usr/include/eigen3/Eigen/src/Core/Matrix.h:140:7:   required from ‘class Eigen::Matrix<double, 6, 6>’
+/home/peter/Gambit/GAMBIT/modules/SpecBit/MSSM//models/MSSM/MSSM_physical.hpp:56:30:   required from here
+/usr/include/eigen3/Eigen/src/Core/DenseBase.h:103:10: warning: enumeral mismatch in conditional expression: ‘Eigen::internal::size_at_compile_time<6, 6>::<anonymous enum>’ vs ‘Eigen::internal::traits<Eigen::Matrix<double, 6, 6> >::<anonymous enum>’ [-Wenum-compare]
+/usr/include/eigen3/Eigen/src/Core/DenseBase.h: In instantiation of ‘class Eigen::DenseBase<Eigen::Matrix<double, 2, 2> >’:
+/usr/include/eigen3/Eigen/src/Core/MatrixBase.h:61:34:   required from ‘class Eigen::MatrixBase<Eigen::Matrix<double, 2, 2> >’
+/usr/include/eigen3/Eigen/src/Core/PlainObjectBase.h:65:7:   required from ‘class Eigen::PlainObjectBase<Eigen::Matrix<double, 2, 2> >’
+/usr/include/eigen3/Eigen/src/Core/Matrix.h:140:7:   required from ‘class Eigen::Matrix<double, 2, 2>’
+/home/peter/Gambit/GAMBIT/modules/SpecBit/MSSM//models/MSSM/MSSM_physical.hpp:60:30:   required from here
+/usr/include/eigen3/Eigen/src/Core/DenseBase.h:103:10: warning: enumeral mismatch in conditional expression: ‘Eigen::internal::size_at_compile_time<2, 2>::<anonymous enum>’ vs ‘Eigen::internal::traits<Eigen::Matrix<double, 2, 2> >::<anonymous enum>’ [-Wenum-compare]
+/usr/include/eigen3/Eigen/src/Core/DenseBase.h: In instantiation of ‘class Eigen::DenseBase<Eigen::Matrix<std::complex<double>, 4, 4> >’:
+/usr/include/eigen3/Eigen/src/Core/MatrixBase.h:61:34:   required from ‘class Eigen::MatrixBase<Eigen::Matrix<std::complex<double>, 4, 4> >’
+/usr/include/eigen3/Eigen/src/Core/PlainObjectBase.h:65:7:   required from ‘class Eigen::PlainObjectBase<Eigen::Matrix<std::complex<double>, 4, 4> >’
+/usr/include/eigen3/Eigen/src/Core/Matrix.h:140:7:   required from ‘class Eigen::Matrix<std::complex<double>, 4, 4>’
+/home/peter/Gambit/GAMBIT/modules/SpecBit/MSSM//models/MSSM/MSSM_physical.hpp:63:44:   required from here
+/usr/include/eigen3/Eigen/src/Core/DenseBase.h:103:10: warning: enumeral mismatch in conditional expression: ‘Eigen::internal::size_at_compile_time<4, 4>::<anonymous enum>’ vs ‘Eigen::internal::traits<Eigen::Matrix<std::complex<double>, 4, 4> >::<anonymous enum>’ [-Wenum-compare]
+/usr/include/eigen3/Eigen/src/Core/DenseBase.h: In instantiation of ‘class Eigen::DenseBase<Eigen::Matrix<std::complex<double>, 2, 2> >’:
+/usr/include/eigen3/Eigen/src/Core/MatrixBase.h:61:34:   required from ‘class Eigen::MatrixBase<Eigen::Matrix<std::complex<double>, 2, 2> >’
+/usr/include/eigen3/Eigen/src/Core/PlainObjectBase.h:65:7:   required from ‘class Eigen::PlainObjectBase<Eigen::Matrix<std::complex<double>, 2, 2> >’
+/usr/include/eigen3/Eigen/src/Core/Matrix.h:140:7:   required from ‘class Eigen::Matrix<std::complex<double>, 2, 2>’
+/home/peter/Gambit/GAMBIT/modules/SpecBit/MSSM//models/MSSM/MSSM_physical.hpp:64:44:   required from here
+/usr/include/eigen3/Eigen/src/Core/DenseBase.h:103:10: warning: enumeral mismatch in conditional expression: ‘Eigen::internal::size_at_compile_time<2, 2>::<anonymous enum>’ vs ‘Eigen::internal::traits<Eigen::Matrix<std::complex<double>, 2, 2> >::<anonymous enum>’ [-Wenum-compare]
+/usr/include/eigen3/Eigen/src/Core/DenseBase.h: In instantiation of ‘class Eigen::DenseBase<Eigen::Matrix<std::complex<double>, 3, 3> >’:
+/usr/include/eigen3/Eigen/src/Core/MatrixBase.h:61:34:   required from ‘class Eigen::MatrixBase<Eigen::Matrix<std::complex<double>, 3, 3> >’
+/usr/include/eigen3/Eigen/src/Core/PlainObjectBase.h:65:7:   required from ‘class Eigen::PlainObjectBase<Eigen::Matrix<std::complex<double>, 3, 3> >’
+/usr/include/eigen3/Eigen/src/Core/Matrix.h:140:7:   required from ‘class Eigen::Matrix<std::complex<double>, 3, 3>’
+/home/peter/Gambit/GAMBIT/modules/SpecBit/MSSM//models/MSSM/MSSM_physical.hpp:66:44:   required from here
+/usr/include/eigen3/Eigen/src/Core/DenseBase.h:103:10: warning: enumeral mismatch in conditional expression: ‘Eigen::internal::size_at_compile_time<3, 3>::<anonymous enum>’ vs ‘Eigen::internal::traits<Eigen::Matrix<std::complex<double>, 3, 3> >::<anonymous enum>’ [-Wenum-compare]
+standalone.cpp: In function ‘void spectrum_example()’:
+standalone.cpp:304:27: error: no matching function for call to ‘flexiblesusy::MSSMSpectrum::MSSMSpectrum(flexiblesusy::MSSM<flexiblesusy::Two_scale>&)’
+standalone.cpp:304:27: note: candidates are:
+In file included from standalone.cpp:7:0:
+/home/peter/Gambit/GAMBIT/modules/SpecBit/MSSM//models/MSSM/MSSMSpectrum.hpp:27:4: note: flexiblesusy::MSSMSpectrum::MSSMSpectrum(flexiblesusy::MSSM_soft_parameters, flexiblesusy::MSSM_physical, flexiblesusy::MSSM_physical, flexiblesusy::Problems<18u>)
+/home/peter/Gambit/GAMBIT/modules/SpecBit/MSSM//models/MSSM/MSSMSpectrum.hpp:27:4: note:   candidate expects 4 arguments, 1 provided
+/home/peter/Gambit/GAMBIT/modules/SpecBit/MSSM//models/MSSM/MSSMSpectrum.hpp:26:4: note: flexiblesusy::MSSMSpectrum::MSSMSpectrum()
+/home/peter/Gambit/GAMBIT/modules/SpecBit/MSSM//models/MSSM/MSSMSpectrum.hpp:26:4: note:   candidate expects 0 arguments, 1 provided
+/home/peter/Gambit/GAMBIT/modules/SpecBit/MSSM//models/MSSM/MSSMSpectrum.hpp:16:7: note: flexiblesusy::MSSMSpectrum::MSSMSpectrum(const flexiblesusy::MSSMSpectrum&)
+/home/peter/Gambit/GAMBIT/modules/SpecBit/MSSM//models/MSSM/MSSMSpectrum.hpp:16:7: note:   no known conversion for argument 1 from ‘flexiblesusy::MSSM<flexiblesusy::Two_scale>’ to ‘const flexiblesusy::MSSMSpectrum&’
+make: *** [standalone.o] Error 1

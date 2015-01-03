@@ -1,0 +1,8 @@
+<li>  01/8/14 Corrected flavoured SLHA input: before, it would throw a problem
+if you only gave on element of the diagonal. Thanks to M Iskrzynski for
+noticing the bug.
+<li>  30/7/14 Corrected the A^0 tachyon fix at MZ back to a version where mh differs by 0.5 GeV. Previously, large corrections to MZ(MZ) resulted from the MA/MH loop, changing yt and therefore mh
+<li>  28/7/14 Fixed small yt bug when compiling but not using higher order corrections
+<li>  28/7/14 Hopefully fixed the MAC compilation problems. 
+<li>  24/7/14 When MA^2(MZ)<0, use MA(pole) internally within loops. Thanks to
+P Slavich.

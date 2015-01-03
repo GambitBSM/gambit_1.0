@@ -22,6 +22,8 @@
 #include <fstream>
 #include <string>
 
+#include <boost/filesystem.hpp>
+
 #include "util_types.hpp"
 #include "yaml_parser.hpp"
 #include "log.hpp"
@@ -31,9 +33,11 @@
 
 namespace Gambit
 {
+
   namespace IniParser
   {
-    // Recursive import
+
+    /// Recursive import
     int importRound(YAML::Node node)
     {
       int counter = 0;
@@ -94,6 +98,9 @@ namespace Gambit
         std::cout << "WARNING: YAML imports were truncated after 10 recursions." << std::endl;
       }
     }
+
+
+    // Implementations of main inifile class
 
     void IniFile::readFile(std::string filename)
     {
@@ -187,6 +194,9 @@ namespace Gambit
           else
           {
             loggerinfo[tags] = prefix + filename;
+            // The logger won't be able to create the log files if the prefix directory doesn't exist, so let us now make sure that it does
+            boost::filesystem::path dir(prefix);
+            if(!(boost::filesystem::exists(dir))) boost::filesystem::create_directories(dir);
           }
       }
       // Initialise global LogMaster object
@@ -207,5 +217,69 @@ namespace Gambit
       }
 
     }
+
+    /// Getters for private observable and auxiliary entries
+    /// @{
+    const ObservablesType& IniFile::getObservables() const { return observables; }
+    const ObservablesType& IniFile::getAuxiliaries() const { return auxiliaries; }
+    /// @}
+
+    /// Getters for key/value section
+    /// @{
+    YAML::Node IniFile::getParametersNode()   const {return parametersNode;}
+    YAML::Node IniFile::getPriorsNode()       const {return priorsNode;}
+    YAML::Node IniFile::getPrinterNode()      const {return printerNode;}
+    YAML::Node IniFile::getScannerNode()      const {return scannerNode;}
+    YAML::Node IniFile::getKeyValuePairNode() const {return keyValuePairNode;}
+    /// @}
+
+    /// Getters for model/parameter section
+    /// @{
+    bool IniFile::hasModelParameterEntry(std::string model, std::string param, std::string key) const
+    {
+      return parametersNode[model][param][key];
+    }
+
+    /// Return list of model names (without "adhoc" model!)
+    const std::set<str> IniFile::getModelNames() const
+    {
+      std::set<str> result;
+      for (YAML::const_iterator it = parametersNode.begin(); it!=parametersNode.end(); ++it)
+      {
+        if (it->first.as<std::string>() != "adhoc")
+          result.insert( it->first.as<std::string>() );
+      }
+      return result;
+    }
+
+    const std::vector<std::string> IniFile::getModelParameters(std::string model) const
+    {
+      std::vector<std::string> result;
+      if (parametersNode[model])
+      {
+        for (YAML::const_iterator it = parametersNode[model].begin(); it!=parametersNode[model].end(); ++it)
+        {
+          result.push_back( it->first.as<std::string>() );
+        }
+      }
+      return result;
+    }
+
+    /// Getter for options
+    const Options IniFile::getOptions(std::string key) const
+    {
+      if (hasKey(key, "options"))
+      {
+        return Options(keyValuePairNode[key]["options"]);
+      }
+      else
+      {
+        return Options(keyValuePairNode[key]);
+      }
+    }
+
+    /// @}
+
+
   }
 }

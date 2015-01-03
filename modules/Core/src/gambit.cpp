@@ -15,14 +15,12 @@
 
 #include "gambit_main.hpp"
 
-
 using namespace Gambit;
 using namespace LogTags;
 
 /// Main GAMBIT program
 int main(int argc, char* argv[])
 {
-
   std::set_terminate(terminator);
 
   try
@@ -49,9 +47,11 @@ int main(int argc, char* argv[])
     IniParser::IniFile iniFile;
     iniFile.readFile(filename);
  
+    // Initialise the random number generator, letting the RNG class choose its own default.
+    Random::create_rng_engine(iniFile.getValueOrDef<str>("default", "rng"));
+
     // Determine selected model(s)
-    std::vector<std::string> selectedmodels = iniFile.getModelNames();
-    //cout << "Your selected models are: " << selectedmodels << endl;
+    std::set<str> selectedmodels = iniFile.getModelNames();
   
     // Activate "primary" model functors
     Core().registerActiveModelFunctors( Models::ModelDB().getPrimaryModelFunctorsToActivate( selectedmodels, Core().getPrimaryModelFunctors() ) );
@@ -61,7 +61,7 @@ int main(int argc, char* argv[])
 
     // Set up a printer object
     // (will do this with a factory that reads the inifile, similar to the PriorManager)
-    // Printers::ostreamPrinter printer(std::cout,1); 
+    // Printers::ostreamPrinter printer(cout,1); 
     // For now the asciiPrinter can be constructed using any stream, so for file output
     // we need to give it a file stream object.
     //std::ofstream outfile("gambit_output.txt", std::ofstream::out);
@@ -86,28 +86,25 @@ int main(int argc, char* argv[])
 
     // Report the proposed (output) functor evaluation order
     dependencyResolver.printFunctorEvalOrder(Core().show_runorder);
-
+    
     // If true, bail out (just wanted the run order, not a scan); otherwise, keep going.
     if (not Core().show_runorder)
     {
  
       //Define the prior
-      Gambit::Priors::CompositePrior prior(iniFile.getParametersNode(), iniFile.getPriorsNode());
+      Priors::CompositePrior prior(iniFile.getParametersNode(), iniFile.getPriorsNode());
   
       //Define the likelihood container object for the scanner
-      Gambit::Scanner::Factory_Base *factory = new Gambit::Likelihood_Container_Factory (Core(), dependencyResolver, iniFile, prior);
+      Likelihood_Container_Factory factory(Core(), dependencyResolver, iniFile, prior);
  
-      //Define the iniFile interface for the scanner
-      Gambit::Scanner::IniFileInterface interface = Scanner::scanner_inifile_input(iniFile.getScannerNode());
+      //Create the master scan manager 
+      Scanner::Scan_Manager scan(factory, iniFile.getScannerNode(), prior, Scanner::scannerInfo());
 
-      //Run the scanner!
-      Gambit::Scanner::Gambit_Scanner *scanner = new Gambit::Scanner::Gambit_Scanner(*factory, interface, prior);
-      //cout << "keys = " << scanner->getKeys() << endl;
-      //cout << "phantom keys = " << scanner->getPhantomKeys() << endl;
+      //Do the scan!
       logger() << core << "Starting scan." << EOM;
-      scanner->Run(); 
- 
-      std::cout << "GAMBIT has finished successfully!"<<std::endl;
+      scan.Run(); 
+
+      cout << "GAMBIT has finished successfully!" << endl;
 
     }
   
@@ -115,8 +112,16 @@ int main(int argc, char* argv[])
 
   catch (std::exception& e)
   {
-    if (not logger().disabled()) cout << "GAMBIT has exited with fatal exception: " << e.what() << endl;
+    if (not logger().disabled())
+    {
+      cout << endl << " \033[00;31;1mFATAL ERROR\033[00m" << endl << endl;
+      cout << "GAMBIT has exited with fatal exception: " << e.what() << endl;
+    }
+      
   }
+
+  // Free the memory held by the RNG
+  Random::delete_rng_engine();
 
   return 0;
 
