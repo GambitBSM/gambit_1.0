@@ -4,9 +4,14 @@ To build GAMBIT:
   cmake ..
   make
 
+
 Issues:
+
  * The above process may fail to work correctly if files from the
    older build system are still around.  Try clearing out untracked
    project files if you are having problems (see 'git clean').
 
+ * If you have problems compiling FlexibleSUSY/SpecBit and do not
+   have need of them, disable them in the cmake command:
+       cmake -Ditch="Spec" ..
 
