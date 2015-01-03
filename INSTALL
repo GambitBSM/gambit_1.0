@@ -28,4 +28,5 @@ Issues:
    backend, scanner, model or test function, will be excluded from
    the compile.
 
- 
+ * In the case the gambit stops complaining about IO errors when opening a
+   file in some non-existing path, create the path by hand.
