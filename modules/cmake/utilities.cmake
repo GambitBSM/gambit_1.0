@@ -116,9 +116,11 @@ function(add_gambit_executable executablename)
   if (LIBDL_FOUND)
     set(LIBRARIES ${LIBRARIES} ${LIBDL_LIBRARY})
   endif()
-
-#  message(STATUS ${LIBRARIES})
-
+  if (Boost_FOUND)
+    set(LIBRARIES ${LIBRARIES} ${Boost_LIBRARIES})
+  endif()
+  #For checking if all the needed libs are present.  Don't add them manually with -lsomelib!!
+  #message(STATUS ${LIBRARIES})
   target_link_libraries(${executablename} ${LIBRARIES})
 endfunction()
 
