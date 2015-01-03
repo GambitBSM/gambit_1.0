@@ -75,6 +75,8 @@ if (NOT ${EXCLUDE_FLEXIBLESUSY})
           --with-fc=${CMAKE_Fortran_COMPILER}
           --with-fortran-dep-gen=${CMAKE_Fortran_COMPILER}
           --with-eigen-incdir=${EIGEN3_DIR}
+          --with-boost-libdir=${Boost_LIBRARY_DIR}
+          --with-boost-incdir=${Boost_INCLUDE_DIR}
         )
   
      # Explain how to build each of the flexiblesusy spectrum generators we need
@@ -87,8 +89,6 @@ if (NOT ${EXCLUDE_FLEXIBLESUSY})
            BUILD_COMMAND $(MAKE) LAPACKLIBS=${LAPACK_LIBS}
            INSTALL_COMMAND ""
          )
-         add_dependencies(flexiblesusy_project${_MODEL} ${previous_FSlib}) #to force building one at a time
-         add_dependencies(me_first flexiblesusy_project${_MODEL}) #to force flexiblesusy to build very early (to create config.h)
          set(previous_FSlib flexiblesusy_project${_MODEL}) 
          list(APPEND flexiblesusy_projects flexiblesusy_project${_MODEL})
          set(flexiblesusy_LDFLAGS "${flexiblesusy_LDFLAGS} -L${FLEXIBLESUSY_DIR}/models/${_MODEL} -l${_MODEL}")
