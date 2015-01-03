@@ -4,6 +4,8 @@ To build GAMBIT:
   cmake ..
   make
 
+To choose compilers, change the cmake step to, e.g.
+  FC=gfortran CC=gcc CXX=g++ cmake ..
 
 Issues:
 
@@ -19,4 +21,14 @@ Issues:
  * If you have problems compiling FlexibleSUSY/SpecBit and do not
    have need of them, disable them in the cmake command:
        cmake -Ditch="Spec" ..
+
+ * If you run the gambit CMake setting gcc as the C++ complier,
+   then FlexibleSUSY may fail to find the C++ standard libraries.
+   It should work if you set CXX=g++ instead.
+
+ * FlexibleSUSY currently doesn't seem to build under Intel
+   compilers. If you try this and it doesn't work, please send
+   your cmake and make output to Ben and Peter, along with the
+   FlexibleSUSY config.log file 
+   (contrib/MassSpectra/flexiblesusy/config.log).
 
