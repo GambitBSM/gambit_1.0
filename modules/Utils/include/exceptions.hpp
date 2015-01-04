@@ -42,23 +42,23 @@ namespace Gambit
       /// Constructors
       /// @{
       /// Constructor without log tags
-      exception(const char*, char*, const char*, const char*, bool);
+      exception(const char*, const char*, const char*, const char*, bool);
       /// Constructor with 1 log tag
-      exception(const char*, char*, const char*, const char*, bool, LogTag);
+      exception(const char*, const char*, const char*, const char*, bool, LogTag);
       /// Constructor with 2 log tags
-      exception(const char*, char*, const char*, const char*, bool, LogTag, LogTag);
+      exception(const char*, const char*, const char*, const char*, bool, LogTag, LogTag);
       /// Constructor with 3 log tags
-      exception(const char*, char*, const char*, const char*, bool, LogTag, LogTag, LogTag);
+      exception(const char*, const char*, const char*, const char*, bool, LogTag, LogTag, LogTag);
       /// Constructor with 4 log tags
-      exception(const char*, char*, const char*, const char*, bool, LogTag, LogTag, LogTag, LogTag);
+      exception(const char*, const char*, const char*, const char*, bool, LogTag, LogTag, LogTag, LogTag);
       /// Constructor with 5 log tags
-      exception(const char*, char*, const char*, const char*, bool, LogTag, LogTag, LogTag, LogTag, LogTag);
+      exception(const char*, const char*, const char*, const char*, bool, LogTag, LogTag, LogTag, LogTag, LogTag);
       /// Constructor with 6 log tags
-      exception(const char*, char*, const char*, const char*, bool, LogTag, LogTag, LogTag, LogTag, LogTag, LogTag);
+      exception(const char*, const char*, const char*, const char*, bool, LogTag, LogTag, LogTag, LogTag, LogTag, LogTag);
       /// Constructor with 7 log tags
-      exception(const char*, char*, const char*, const char*, bool, LogTag, LogTag, LogTag, LogTag, LogTag, LogTag, LogTag);
+      exception(const char*, const char*, const char*, const char*, bool, LogTag, LogTag, LogTag, LogTag, LogTag, LogTag, LogTag);
       /// Constructor with log tags as a set
-      exception(const char*, char*, const char*, const char*, bool, std::set<LogTag>);
+      exception(const char*, const char*, const char*, const char*, bool, std::set<LogTag>);
       /// @}
 
       /// Destructor
