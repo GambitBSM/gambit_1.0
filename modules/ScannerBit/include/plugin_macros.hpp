@@ -22,10 +22,10 @@
 #ifndef SCANNER_PLUGIN_MACROS_HPP
 #define SCANNER_PLUGIN_MACROS_HPP
 
-#define export_abstract(name, ...)      EXPORT_ABSTRACT(name, __VA_ARGS__) enum{}
-#define export_object(name, ...)        EXPORT_OBJECT(name, __VA_ARGS__) enum{}
-#define initialize(name, ...)           INITIALIZE(name, __VA_ARGS__) enum{}
-#define run_function(name, ...)         RUN_FUNCTION(name, __VA_ARGS__) enum{}
+#define export_abstract(name, ...)      EXPORT_ABSTRACT(name, __VA_ARGS__)
+#define export_object(name, ...)        EXPORT_OBJECT(name, __VA_ARGS__)
+#define initialize(name, ...)           INITIALIZE(name, __VA_ARGS__)
+#define run_function(name, ...)         RUN_FUNCTION(name, __VA_ARGS__)
 #define plugin_main(...)                PLUGIN_MAIN( __VA_ARGS__ )
 #define gambit_plugin(...)              GAMBIT_PLUGIN( __VA_ARGS__ )
 #define plugin_constructor              PLUGIN_CONSTRUCTOR
