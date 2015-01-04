@@ -22,10 +22,10 @@
 #ifndef SCANNER_PLUGIN_MACROS_HPP
 #define SCANNER_PLUGIN_MACROS_HPP
 
-#define export_abstract(name, ...)      EXPORT_ABSTRACT(name, __VA_ARGS__) enum{}
-#define export_object(name, ...)        EXPORT_OBJECT(name, __VA_ARGS__) enum{}
-#define initialize(name, ...)           INITIALIZE(name, __VA_ARGS__) enum{}
-#define run_function(name, ...)         RUN_FUNCTION(name, __VA_ARGS__) enum{}
+#define export_abstract(name, ...)      EXPORT_ABSTRACT(name, __VA_ARGS__)
+#define export_object(name, ...)        EXPORT_OBJECT(name, __VA_ARGS__)
+#define initialize(name, ...)           INITIALIZE(name, __VA_ARGS__)
+#define run_function(name, ...)         RUN_FUNCTION(name, __VA_ARGS__)
 #define plugin_main(...)                PLUGIN_MAIN( __VA_ARGS__ )
 #define gambit_plugin(...)              GAMBIT_PLUGIN( __VA_ARGS__ )
 #define plugin_constructor              PLUGIN_CONSTRUCTOR
@@ -135,7 +135,36 @@ RUN_FUNCTION(__gambit_plugin_constructor__)                                     
 void __gambit_plugin_constructor__()                                                                                    \
 
 #define PLUGIN_DECONSTRUCTOR                                                                                            \
-EXPORT_OBJECT(__gambit_plugin_deconstructor__, __gambit_plugin_deconstructor__);                                        \
+void __gambit_plugin_deconstructor__();                                                                                 \
+namespace __gambit_plugin_namespace__                                                                                   \
+{                                                                                                                       \
+        namespace ConstructTags                                                                                         \
+        {                                                                                                               \
+                struct deconstructor{};                                                                                 \
+        }                                                                                                               \
+                                                                                                                        \
+        namespace                                                                                                       \
+        {                                                                                                               \
+                template<>                                                                                              \
+                class interface <ConstructTags::deconstructor>                                                          \
+                {                                                                                                       \
+                public:                                                                                                 \
+                                                                                                                        \
+                        interface(pluginData &myData)                                                                   \
+                        {                                                                                               \
+                                myData.inits.push_back(interface <ConstructTags::deconstructor>::init);                 \
+                        }                                                                                               \
+                                                                                                                        \
+                        static void init(pluginData &myData)                                                            \
+                        {                                                                                               \
+                                myData.deconstructor = __gambit_plugin_deconstructor__;                                 \
+                        }                                                                                               \
+                };                                                                                                      \
+                                                                                                                        \
+                template <>                                                                                             \
+                interface <ConstructTags::deconstructor> reg_init <ConstructTags::deconstructor>::reg(myData);          \
+        }                                                                                                               \
+}                                                                                                                       \
 void __gambit_plugin_deconstructor__()                                                                                  \
 
 //initalizes global variable
