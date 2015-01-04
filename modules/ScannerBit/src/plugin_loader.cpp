@@ -71,7 +71,7 @@ namespace Gambit
                                                 std::stringstream ss(std::string(buffer, n));
                                                 while(getline(ss, str))
                                                 {
-                                                        int pos = str.find("__gambit_plugin_pluginInit_");
+                                                        std::string::size_type pos = str.find("__gambit_plugin_pluginInit_");
                                                         Plugin_Details temp(str.substr(pos + 27, str.rfind("__") - pos - 27));
                                                         
                                                         if (plug == "" || temp.plugin == plug)

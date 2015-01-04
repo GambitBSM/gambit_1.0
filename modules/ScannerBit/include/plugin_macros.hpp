@@ -31,6 +31,8 @@
 #define plugin_constructor              PLUGIN_CONSTRUCTOR
 #define plugin_deconstructor            PLUGIN_DECONSTRUCTOR
 #define version(...)                    VERSION( __VA_ARGS__ )
+#define no_version                      VERSION()
+#define external_library_required       EXTERNAL_LIBRARY_REQUIRED
 
 #define ARG_N_INTERNAL(_1_, _2_, _3_, _4_, ret, ...) ret
 #define ARG_N(...) ARG_N_INTERNAL(__VA_ARGS__ , 4, 3, 2, 1, 0)
@@ -43,6 +45,23 @@
 #define VERSION_1(major) VERSION_4(major,,,)
 #define VERSION_0() VERSION(,,,)
 #define VERSION(...) ENTER_FUNC(VERSION_, ARG_N(__VA_ARGS__), __VA_ARGS__ )
+
+#define NO_EXTERNAL_LIBRARY_REQUIRED(plugin) inline int plugin_status(){return 0;}
+
+#define ADD_STRUCT(a) ADD_STRUCT_INTERNAL(a)
+#define ADD_STRUCT_INTERNAL(a) _struct_ ## a
+
+#define EXTERNAL_LIBRARY_REQUIRED(plugin)                                               \
+struct _struct_ ## prefix ## plugin {};                                                 \
+struct _struct_0 {};                                                                    \
+struct _struct_1 {};                                                                    \
+struct _struct_2 {};                                                                    \
+template <typename T> struct number{static const int num = 0;};                         \
+template <> struct _number_<struct_ ## prefix ## plugin>{static const int num = 1;};    \
+template <> struct _number_<struct_0>{static const int num = 0;};                       \
+template <> struct _number_<struct_1>{static const int num = 1;};                       \
+template <> struct _number_<struct_2>{static const int num = 2;};                       \
+int plugin_status(){return number<ADD_STRUCT(prefix ## plugin) >::num;}                 \
 
 /*Allows Gambit to declare an object of type "..."*/
 #define EXPORT_ABSTRACT(name, ...)                                                                                      \
@@ -111,7 +130,7 @@ namespace __gambit_plugin_namespace__                                           
 
 //constructor
 #define PLUGIN_CONSTRUCTOR                                                                                              \
-void __gambit_plugin_constructor__(); \
+void __gambit_plugin_constructor__();                                                                                   \
 RUN_FUNCTION(__gambit_plugin_constructor__)                                                                             \
 void __gambit_plugin_constructor__()                                                                                    \
 
@@ -226,11 +245,13 @@ namespace __gambit_plugin_namespace__                                           
 decltype(__gambit_plugin_ret_val__()) __gambit_plugin_main__ (__VA_ARGS__)                                              \
 
 /*Defines a Gambit plugin*/
-#define GAMBIT_PLUGIN_INTERNAL(plug_name)                                                                               \
+#define GAMBIT_PLUGIN_INTERNAL(plug_name, command)                                                                      \
 namespace __gambit_plugin_ ## plug_name ##  _namespace__                                                                \
 {                                                                                                                       \
         namespace __gambit_plugin_namespace__                                                                           \
         {                                                                                                               \
+                command(plugin)                                                                                         \
+                                                                                                                        \
                 using Gambit::Scanner::Plugins::pluginData;                                                             \
                                                                                                                         \
                 namespace LoadTags                                                                                      \
@@ -253,17 +274,18 @@ namespace __gambit_plugin_ ## plug_name ##  _namespace__                        
                 }                                                                                                       \
                                                                                                                         \
                 extern "C" const std::type_info &__gambit_plugin_pluginInit_ ## plug_name                               \
-                 ## __(std::vector<void *> *input)  \
+                 ## __(std::vector<void *> *input)                                                                      \
                 {                                                                                                       \
                         if (input != 0)                                                                                 \
                                 myData.inputData = *input;                                                              \
                                                                                                                         \
+                        if (plugin_status() == 0){ \
                         for(auto it = myData.inits.begin(), end = myData.inits.end(); it != end; it++)                  \
                         {                                                                                               \
                                 (*it)(myData);                                                                          \
                         }                                                                                               \
                                                                                                                         \
-                        myData.inits.clear();                                                                           \
+                        myData.inits.clear();  }                                                                        \
                                                                                                                         \
                         return myData.main_type();                                                                      \
                 }                                                                                                       \
@@ -277,12 +299,6 @@ namespace __gambit_plugin_ ## plug_name ##  _namespace__                        
                         else                                                                                            \
                                 return NULL;                                                                            \
                 }                                                                                                       \
-                                                                                                                        \
-                extern "C" void __gambit_plugin_rmMember_ ## plug_name ## __(void *ptr, std::string in)                 \
-                {                                                                                                       \
-                        if (myData.outputFuncs.find(in) != myData.outputFuncs.end())                                    \
-                                myData.outputFuncs[in]->remove(ptr);                                                    \
-                }                                                                                                       \
         }                                                                                                               \
                                                                                                                         \
         template <typename T>                                                                                           \
@@ -294,7 +310,11 @@ namespace __gambit_plugin_ ## plug_name ##  _namespace__                        
 namespace __gambit_plugin_ ## plug_name ## _namespace__                                                                 \
 
 #define GAMBIT_PLUGIN_3(plug_name, plug_type, plug_version)                                                             \
-        GAMBIT_PLUGIN_INTERNAL( plug_name ## __t__ ## plug_type ## __v__ ## plug_version )                              \
+        GAMBIT_PLUGIN_INTERNAL( plug_name ## __t__ ## plug_type ## __v__ ## plug_version, NO_EXTERNAL_LIBRARY_REQUIRED) \
+
+#define GAMBIT_PLUGIN_4(plug_name, plug_type, plug_version, option)                                                     \
+        GAMBIT_PLUGIN_INTERNAL( COMBINE(plug_name ## __t__ ## plug_type ## __v__ ## plug_version ## __reqd_libs__,      \
+        prefix ## plug_name ## __t__ ## plug_type ## __v__ ## plug_version), option)                                    \
 
 #define GAMBIT_PLUGIN(...) ENTER_FUNC(GAMBIT_PLUGIN_, ARG_N(__VA_ARGS__), __VA_ARGS__ )
         
