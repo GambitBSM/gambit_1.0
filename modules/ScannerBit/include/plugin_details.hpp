@@ -44,6 +44,7 @@ namespace Gambit
                                 int major_version;
                                 int minor_version;
                                 int patch_version;
+                                int status;
                                 std::string release_version;
                                 std::string library_path;
                                 std::string library;
@@ -55,9 +56,32 @@ namespace Gambit
                                 
                                 Plugin_Details(const std::string &str) : full_string(str)
                                 {
-                                        int posMid = str.rfind("__v__");
+                                        std::string::size_type posMid = str.rfind("__reqd_libs__");
+                                        if (posMid != std::string::npos)
+                                        {
+                                                std::string temp = str.substr(posMid + 13);
+                                                if (temp == "0")
+                                                {
+                                                        status = 0;
+                                                }
+                                                else if (temp == "1")
+                                                {
+                                                        status = -1;
+                                                }
+                                                else if (temp == "2")
+                                                {
+                                                        status = -2;
+                                                }
+                                                else
+                                                {
+                                                        status = -3;
+                                                }
+                                        }
+                                        else
+                                                status= 0;
+                                        posMid = str.rfind("__v__", posMid);
                                         version = str.substr(posMid + 5);
-                                        int posLast = str.rfind("__t__", posMid - 1);
+                                        std::string::size_type posLast = str.rfind("__t__", posMid - 1);
                                         type = str.substr(posLast + 5, posMid - posLast - 5);
                                         plugin = str.substr(0, posLast);
                                         

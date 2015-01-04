@@ -51,20 +51,19 @@ namespace Gambit
                                 std::vector<void *> input;
                                 typedef const std::type_info &(*initFuncType)(std::vector<void *> *);                              
                                 typedef void * (*getFuncType)(std::string);
-                                typedef void (*rmFuncType)(void *, std::string);
                                 typedef ret (*mainFuncType)(args...);
                                 typedef void (*deconFuncType)();
                                 initFuncType initFunc;
                                 getFuncType getFunc;
-                                rmFuncType rmFunc;
                                 mainFuncType main;
                                 deconFuncType deconFunc;
+                                static ret dummy(args...){return ret();}
                                 
                         public:
                                 template <typename... plug_args>
                                 Plugin_Interface(const std::string &file, const std::string &name_in, const plug_args&... inputs) : name(name_in)
                                 {
-                                        plugin = dlopen (file.c_str(), RTLD_NOW);
+                                        plugin = dlopen (file.c_str(), RTLD_LAZY);
                                         std::string str;
                                         
                                         input_variadic_vector(input, inputs...);
@@ -122,23 +121,26 @@ namespace Gambit
                                                 
                                                         initFunc = (initFuncType)dlsym(plugin, (std::string("__gambit_plugin_pluginInit_") + name + std::string("__")).c_str());
                                                         getFunc = (getFuncType)dlsym(plugin, (std::string("__gambit_plugin_getMember_") + name + std::string("__")).c_str());
-                                                        rmFunc = (rmFuncType)dlsym(plugin, (std::string("__gambit_plugin_rmMember_") + name + std::string("__")).c_str());
                                                         bool diff = typeid(ret (args...)) != initFunc(&input);
                                                         
                                                         main = (mainFuncType)getFunc(name);
                                                         
                                                         if (main == 0)
                                                         {
-                                                                scan_err << "Could not find main function in plugin \"" << name << "\"." << scan_end;
+                                                                scan_warn << "Could not find main function in plugin \"" << name << "\". Using dummy main function." << scan_end;
+                                                                main = dummy;
                                                         }
-                                                        
-                                                        if(diff)
+                                                        else if(diff)
                                                         {
                                                                 scan_err << "Plugin interface requires the plugin_main function in plugin \"" << name << "\" to be of the form \"" 
                                                                         << typeid(ret).name() << " (" << stringify_variadic_inputs(typeid(args).name()...) << ")\"" << scan_end;
                                                         }
                                                         
                                                         deconFunc = (deconFuncType)getFunc("__gambit_plugin_deconstructor__");
+                                                        
+                                                        char *errmesg = dlerror();
+                                                        if (errmesg != NULL)
+                                                                scan_err << "error loading plugin " << name_in << ":  " << errmesg << scan_end;
                                                 }
                                                 else
                                                 {
@@ -158,7 +160,6 @@ namespace Gambit
                                 }
                                 
                                 void *getMember(std::string in){return getFunc(in);}
-                                void deleteMember(void *ptr, std::string in){rmFunc(ptr, in);}
                                 
                                 ~Plugin_Interface()
                                 {
