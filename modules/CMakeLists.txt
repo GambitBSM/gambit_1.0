@@ -23,8 +23,8 @@
 #                                               
 #************************************************
 
-# Require a minimum cmake version of 2.6
-cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
+# Require a minimum cmake version of 2.8.11
+cmake_minimum_required(VERSION 2.8.11 FATAL_ERROR)
 
 if(NOT CMAKE_BUILD_TYPE)
   SET(CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING
@@ -158,14 +158,24 @@ else()
 endif()
 
 # Check for Boost
-find_package(Boost 1.41 REQUIRED system filesystem)
+set(required_boost_libs system filesystem)
+find_package(Boost 1.41 REQUIRED ${required_boost_libs})
 if(Boost_FOUND)
   if (NOT Boost_INCLUDE_DIR STREQUAL "")
     include_directories("${Boost_INCLUDE_DIR}")
   endif()
-  set(BOOST_LDFLAGS -lboost_system -lboost_filesystem)
 else()
-  message(FATAL_ERROR "GAMBIT requires Boost v1.41 or greater.")
+  set(err "GAMBIT requires Boost v1.41 or greater")
+  if (NOT "${required_boost_libs}" STREQUAL "") 
+    set(err "${err} and compiled libraries:\n")
+    foreach(lib ${required_boost_libs})
+      set(err "${err} boost_${lib}\n")
+    endforeach()
+    set(err "${err}Please install these and rerun cmake.")
+  else()
+    set(err "${err}.\nPlease install a suitable version of Boost and rerun cmake.")
+  endif()
+  message(FATAL_ERROR ${err})
 endif()
 
 # Check for OpenMP
@@ -200,12 +210,6 @@ file(GLOB BACKEND_HARVESTER_FILES "${PROJECT_SOURCE_DIR}/Backends/include/fronte
 file(GLOB MODULE_HARVESTER_FILES  "${PROJECT_SOURCE_DIR}/*Bit*/include/*_rollcall.hpp")
 list(REMOVE_ITEM MODULE_HARVESTER_FILES "${PROJECT_SOURCE_DIR}/ScannerBit//include//priors_rollcall.hpp" 
                                         "${PROJECT_SOURCE_DIR}/ScannerBit//include//test_function_rollcall.hpp")
-
-# Command and target for helping forcing flexiblesusy to build first (but still allow other stuff to build in parallel)
-add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/cmake/trigger.empty 
-                   COMMAND echo "GAH"; {CMAKE_COMMAND} -E touch ${PROJECT_SOURCE_DIR}/cmake/trigger.empty)
-add_custom_target(me_first DEPENDS ${PROJECT_SOURCE_DIR}/cmake/trigger.empty)
-
 add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/Models/include/model_rollcall.hpp 
                    COMMAND python ${MODEL_HARVESTER} -x __not_a_real_name__,${itch_with_commas}
                    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} 
@@ -275,7 +279,6 @@ set(GAMBIT_OBJECTS $<TARGET_OBJECTS:Core> $<TARGET_OBJECTS:Printers>)
 foreach(bit ${GAMBIT_BITS})
   add_subdirectory(${bit})
   set(GAMBIT_BIT_OBJECTS ${GAMBIT_BIT_OBJECTS} "$<TARGET_OBJECTS:${bit}>")
-
   if (SpecBit STREQUAL ${bit})
     # Ben: My attempt to add "SpecBit only" include targets. Seems to work.
     target_include_directories(SpecBit PRIVATE

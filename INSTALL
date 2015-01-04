@@ -2,11 +2,31 @@ To build GAMBIT:
   mkdir modules/build
   cd modules/build/
   cmake ..
-  make
+  make backends    # If backends not already installed
+  make DarkSUSY    # If intending to use DarkBit
+  make             # Ordering of make commands is unimportant.
+                 
 
 Issues:
+
  * The above process may fail to work correctly if files from the
    older build system are still around.  Try clearing out untracked
    project files if you are having problems (see 'git clean').
 
+ * Delphes may fail to build unless the following is performed:
+      cd modules/ColliderBit/src/delphes/
+      ./make_dicts.sh
+   (TODO: do this automatically through cmake)
 
+ * If you have problems compiling FlexibleSUSY/SpecBit and do not
+   have need of them, disable them in the cmake command:
+       cmake -Ditch="Spec" ..
+
+ * The above is a special case of ditching multiple things, which goes as
+       cmake -Ditch="foo;bar;etc",
+   where *anything* starting with "foo", "bar" or "etc", be it a module,
+   backend, scanner, model or test function, will be excluded from
+   the compile.
+
+ * In the case the gambit stops complaining about IO errors when opening a
+   file in some non-existing path, create the path by hand.
