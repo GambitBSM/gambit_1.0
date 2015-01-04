@@ -85,10 +85,14 @@ namespace Gambit
                                 std::vector <void (*)(pluginData &)> inits;
                                 std::map<std::string, factoryBase *> outputFuncs;
                                 std::type_info const &(*main_type)(void);
+                                void (*deconstructor)();
                                 
-                                pluginData(std::string name) : name(name) {}
+                                pluginData(std::string name) : name(name), deconstructor(NULL) {}
                                 ~pluginData()
                                 {
+                                        if (deconstructor != NULL)
+                                                deconstructor();
+                                        
                                         for (auto it = outputFuncs.begin(), end = outputFuncs.end(); it != end; it++)
                                         {
                                                 delete it->second;

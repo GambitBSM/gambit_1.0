@@ -135,7 +135,36 @@ RUN_FUNCTION(__gambit_plugin_constructor__)                                     
 void __gambit_plugin_constructor__()                                                                                    \
 
 #define PLUGIN_DECONSTRUCTOR                                                                                            \
-EXPORT_OBJECT(__gambit_plugin_deconstructor__, __gambit_plugin_deconstructor__);                                        \
+void __gambit_plugin_deconstructor__();                                                                                 \
+namespace __gambit_plugin_namespace__                                                                                   \
+{                                                                                                                       \
+        namespace ConstructTags                                                                                         \
+        {                                                                                                               \
+                struct deconstructor{};                                                                                 \
+        }                                                                                                               \
+                                                                                                                        \
+        namespace                                                                                                       \
+        {                                                                                                               \
+                template<>                                                                                              \
+                class interface <ConstructTags::deconstructor>                                                          \
+                {                                                                                                       \
+                public:                                                                                                 \
+                                                                                                                        \
+                        interface(pluginData &myData)                                                                   \
+                        {                                                                                               \
+                                myData.inits.push_back(interface <ConstructTags::deconstructor>::init);                 \
+                        }                                                                                               \
+                                                                                                                        \
+                        static void init(pluginData &myData)                                                            \
+                        {                                                                                               \
+                                myData.deconstructor = __gambit_plugin_deconstructor__;                                 \
+                        }                                                                                               \
+                };                                                                                                      \
+                                                                                                                        \
+                template <>                                                                                             \
+                interface <ConstructTags::deconstructor> reg_init <ConstructTags::deconstructor>::reg(myData);          \
+        }                                                                                                               \
+}                                                                                                                       \
 void __gambit_plugin_deconstructor__()                                                                                  \
 
 //initalizes global variable

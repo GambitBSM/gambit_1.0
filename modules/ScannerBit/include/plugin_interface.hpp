@@ -52,11 +52,9 @@ namespace Gambit
                                 typedef const std::type_info &(*initFuncType)(std::vector<void *> *);                              
                                 typedef void * (*getFuncType)(std::string);
                                 typedef ret (*mainFuncType)(args...);
-                                typedef void (*deconFuncType)();
                                 initFuncType initFunc;
                                 getFuncType getFunc;
                                 mainFuncType main;
-                                deconFuncType deconFunc;
                                 static ret dummy(args...){return ret();}
                                 
                         public:
@@ -87,8 +85,6 @@ namespace Gambit
                                                                 << typeid(ret).name() << " (" << stringify_variadic_inputs(typeid(args).name()...) << ")\"" << scan_end;
                                                 }
                                                 
-                                                deconFunc = (deconFuncType)getFunc("__gambit_plugin_deconstructor__");
-                                                
                                                 char *errmesg = dlerror();
                                                 if (errmesg != NULL)
                                                         scan_err << "error loading plugin " << name_in << ":  " << errmesg << scan_end;
@@ -109,9 +105,6 @@ namespace Gambit
                                 
                                 ~Plugin_Interface()
                                 {
-                                        if (deconFunc != NULL)
-                                                deconFunc();
-                                        
                                         if (plugin != 0) dlclose(plugin);
                                 }
                         };
