@@ -52,7 +52,7 @@ Scanner:
     loopsample:
       plugin: loopsample
       options:
-        point_number: 20
+        point_number: 1
         output_file:  output
         like:  Likelihood
         files:
