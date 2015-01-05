@@ -51,27 +51,21 @@ class Ran
       inline unsigned int int32(){return (unsigned int)int64();}
 };  
 
-scanner_plugin (crapsample, version(0, 0, 1, beta))
+scanner_plugin(crapsample, version(0, 0, 1))
 {      
-        int N, ma;
-        Function_Base *LogLike;
-        std::string output_file;
         void hiFunc(){std::cout << "This is crapsample " << std::endl;}
-        
-        init_inifile_value(N, "point_number", 10);
-        init_inifile_value(output_file, "output_file", "default_output");
-        init_dimension(ma);
-        init_functor(LogLike, "Scanner_Function", "Likelihood");
-        run_function(hiFunc);
+        plugin_constructor
+        {
+                hiFunc();
+        }
         
         /*defined main module function.  Can input and return any types or type (exp. cannot return void).*/
         int plugin_main (void)
         {
-                //std::vector<std::string> &keys     = get_keys();
-                //std::string output_file            = get_inifile_value<std::string>("output_file", "default_output");
-                //int N                              = get_inifile_value<int>("point_number", 10);
-                //Function_Base *LogLike             = get_functor("Scanner_Function", "Likelihood");
-                //int ma                             = get_dimension();
+                std::string output_file            = get_inifile_value<std::string>("output_file", "default_output");
+                int N                              = get_inifile_value<int>("point_number", 10);
+                Function_Base *LogLike             = get_functor("Scanner_Function", "Likelihood");
+                int ma                             = get_dimension();
                 //int na = get_inifile_value<int>("not_there");
                 //std::ofstream out(output_file.c_str());
                 double ans, chisq, chisqnext;
@@ -126,7 +120,7 @@ scanner_plugin (crapsample, version(0, 0, 1, beta))
         }
 }
 //int no_func(double);
-scanner_plugin (loopsample, version(0, 0, 1, beta))
+scanner_plugin(loopsample, version(0, 0, 1, beta))
 {
         plugin_constructor
         {
@@ -173,7 +167,6 @@ scanner_plugin (loopsample, version(0, 0, 1, beta))
 }
 
 scanner_plugin(square_grid, version(1, 0, 0))
-//scanner_plugin(square_grid, version(1, 0, 0), external_library_required)// TODO make it work like this!  (extra argument should be optional)
 {
         int plugin_main()
         {
@@ -209,8 +202,7 @@ scanner_plugin(square_grid, version(1, 0, 0))
         }
 }
 
-scanner_plugin(grid, version(1, 0, 0))
-//scanner_plugin(square_grid, version(1, 0, 0), external_library_required)// TODO make it work like this!  (extra argument should be optional)
+scanner_plugin(grid, version(1, 0, 0, beta))
 {
         int plugin_main()
         {
