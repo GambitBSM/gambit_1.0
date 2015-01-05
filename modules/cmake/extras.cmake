@@ -38,11 +38,27 @@ ExternalProject_Add(DDCalc0
 
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../extras/DDCalc0/libDDCalc0.so" "${PROJECT_SOURCE_DIR}/Backends/lib/libDDCalc0.so")
 
+if(GSL_FOUND)
+  execute_process(
+    COMMAND sh gsl-config --libs
+    OUTPUT_VARIABLE GAMLIKE_GSL_LIBS
+    RESULT_VARIABLE RET
+  )
+  if( RET EQUAL 0 )
+    string( STRIP "${GAMLIKE_GSL_LIBS}" GAMLIKE_GSL_LIBS )
+  endif()
+endif()
+
+set(gamlike_CXXFLAGS "${CMAKE_CXX_FLAGS}")
+if (NOT GSL_INCLUDE_DIRS STREQUAL "")
+  set(gamlike_CXXFLAGS "${gamlike_CXXFLAGS} -I${GSL_INCLUDE_DIRS}")
+endif()
+
 ExternalProject_Add(gamLike
   SOURCE_DIR ${PROJECT_SOURCE_DIR}/../extras/gamLike
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND ""
-  BUILD_COMMAND make CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${CMAKE_CXX_FLAGS} LDFLAGS=${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS} COMMAND cp gamLike.so ${PROJECT_SOURCE_DIR}/Backends/lib/libgamLike.so
+  BUILD_COMMAND make CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${gamlike_CXXFLAGS} LDFLAGS=${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS} LDLIBS=${GAMLIKE_GSL_LIBS} COMMAND cp gamLike.so ${PROJECT_SOURCE_DIR}/Backends/lib/libgamLike.so
   INSTALL_COMMAND ""
   INSTALL_DIR ${CMAKE_BINARY_DIR}/install
   CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/install
