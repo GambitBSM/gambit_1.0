@@ -53,11 +53,19 @@ namespace Funk
     typedef shared_ptr<FunkBase> Funk;
     typedef std::vector<const char *> ArgsType;
 
-    template <typename... Args>
-    using PlainPtr = double(*)(Args&...);
+    //template <typename... Args>
+    //using PlainPtr = double(*)(Args&...);
+    typedef double(*PlainPtr1)(double&);
+    typedef double(*PlainPtr2)(double&,double&);
+    typedef double(*PlainPtr3)(double&,double&,double&);
+    typedef double(*PlainPtr4)(double&,double&,double&,double&);
 
-    template <typename... Args>
-    using PlainPtrs = std::pair<double(*)(Args...,void*), void*>;
+    //template <typename... Args>
+    //using PlainPtrs = std::pair<double(*)(Args...,void*), void*>;
+    typedef std::pair<double(*)(double,void*), void*> PlainPtrs1;
+    typedef std::pair<double(*)(double,double,void*), void*> PlainPtrs2;
+    typedef std::pair<double(*)(double,double,double,void*), void*> PlainPtrs3;
+    typedef std::pair<double(*)(double,double,double,double,void*), void*> PlainPtrs4;
 
 
     //
@@ -204,18 +212,18 @@ namespace Funk
             Funk help();
 
             // Plain function generators (up to four arguments)
-            PlainPtrs<double> plain(const char*);
-            PlainPtrs<double,double> plain(const char*, const char*);
-            PlainPtrs<double,double,double> plain(const char*, const char*, const char*);
-            PlainPtrs<double,double,double,double> plain(const char*, const char*, const char*, const char*);
+            PlainPtrs1 plain(const char*);
+            PlainPtrs2 plain(const char*, const char*);
+            PlainPtrs3 plain(const char*, const char*, const char*);
+            PlainPtrs4 plain(const char*, const char*, const char*, const char*);
             template <typename T>
-            PlainPtr<double> plain(const char*);
+            PlainPtr1 plain(const char*);
             template <typename T>
-            PlainPtr<double,double> plain(const char*, const char*);
+            PlainPtr2 plain(const char*, const char*);
             template <typename T>
-            PlainPtr<double,double,double> plain(const char*, const char*, const char*);
+            PlainPtr3 plain(const char*, const char*, const char*);
             template <typename T>
-            PlainPtr<double,double,double,double> plain(const char*, const char*, const char*, const char*);
+            PlainPtr4 plain(const char*, const char*, const char*, const char*);
 
             // Return value
             virtual double value(const std::vector<double> &) = 0;
@@ -661,47 +669,47 @@ namespace Funk
         digest_arguments(args...);
     }
 
-    inline PlainPtrs<double> FunkBase::plain(const char* arg1)
+    inline PlainPtrs1 FunkBase::plain(const char* arg1)
     {
         void* ptr = new FunkPlain(shared_from_this(), arg1);
-        return PlainPtrs<double>(&FunkPlain::plain1p, ptr);
+        return PlainPtrs1(&FunkPlain::plain1p, ptr);
     }
-    inline PlainPtrs<double,double> FunkBase::plain(const char* arg1, const char* arg2)
+    inline PlainPtrs2 FunkBase::plain(const char* arg1, const char* arg2)
     {
         void* ptr = new FunkPlain(shared_from_this(), arg1, arg2);
-        return PlainPtrs<double,double>(&FunkPlain::plain2p, ptr);
+        return PlainPtrs2(&FunkPlain::plain2p, ptr);
     }
-    inline PlainPtrs<double,double,double> FunkBase::plain(const char* arg1, const char* arg2, const char* arg3)
+    inline PlainPtrs3 FunkBase::plain(const char* arg1, const char* arg2, const char* arg3)
     {
         void* ptr = new FunkPlain(shared_from_this(), arg1, arg2, arg3);
-        return PlainPtrs<double,double,double>(&FunkPlain::plain3p, ptr);
+        return PlainPtrs3(&FunkPlain::plain3p, ptr);
     }
-    inline PlainPtrs<double,double,double,double> FunkBase::plain(const char* arg1, const char* arg2, const char* arg3, const char* arg4)
+    inline PlainPtrs4 FunkBase::plain(const char* arg1, const char* arg2, const char* arg3, const char* arg4)
     {
         void* ptr = new FunkPlain(shared_from_this(), arg1, arg2, arg3, arg4);
-        return PlainPtrs<double,double,double,double>(&FunkPlain::plain4p, ptr);
+        return PlainPtrs4(&FunkPlain::plain4p, ptr);
     }
 
     template <typename T>
-    inline PlainPtr<double> FunkBase::plain(const char* arg1)
+    inline PlainPtr1 FunkBase::plain(const char* arg1)
     {
         T::ptr = new FunkPlain(shared_from_this(), arg1);
         return &FunkPlain::plain1<T>;
     }
     template <typename T>
-    inline PlainPtr<double,double> FunkBase::plain(const char* arg1, const char* arg2)
+    inline PlainPtr2 FunkBase::plain(const char* arg1, const char* arg2)
     {
         T::ptr = new FunkPlain(shared_from_this(), arg1, arg2);
         return &FunkPlain::plain2<T>;
     }
     template <typename T>
-    inline PlainPtr<double,double,double> FunkBase::plain(const char* arg1, const char* arg2, const char* arg3)
+    inline PlainPtr3 FunkBase::plain(const char* arg1, const char* arg2, const char* arg3)
     {
         T::ptr = new FunkPlain(shared_from_this(), arg1, arg2, arg3);
         return &FunkPlain::plain3<T>;
     }
     template <typename T>
-    inline PlainPtr<double,double,double,double> FunkBase::plain(const char* arg1, const char* arg2, const char* arg3, const char* arg4)
+    inline PlainPtr4 FunkBase::plain(const char* arg1, const char* arg2, const char* arg3, const char* arg4)
     {
         T::ptr = new FunkPlain(shared_from_this(), arg1, arg2, arg3, arg4);
         return &FunkPlain::plain4<T>;

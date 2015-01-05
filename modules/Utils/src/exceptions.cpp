@@ -29,7 +29,7 @@ namespace Gambit
   // Public members of GAMBIT exception base class.
 
     /// Constructor without log tags
-    exception::exception(const char* kind, char* what, const char* message, const char* inikey, bool fatal) :
+    exception::exception(const char* kind, const char* what, const char* message, const char* inikey, bool fatal) :
      myKind                (kind),
      myWhat                (what),
      myShortWhat           (what),
@@ -40,7 +40,7 @@ namespace Gambit
     }
 
     /// Constructor with 1 log tag
-    exception::exception(const char* kind, char* what, const char* message, const char* inikey, bool fatal,
+    exception::exception(const char* kind, const char* what, const char* message, const char* inikey, bool fatal,
      LogTag t1) :
      myKind                (kind),
      myWhat                (what),
@@ -53,7 +53,7 @@ namespace Gambit
     }
 
     /// Constructor with 2 log tags
-    exception::exception(const char* kind, char* what, const char* message, const char* inikey, bool fatal,
+    exception::exception(const char* kind, const char* what, const char* message, const char* inikey, bool fatal,
      LogTag t1, LogTag t2) :
      myKind                (kind),
      myWhat                (what),
@@ -67,7 +67,7 @@ namespace Gambit
     }
 
     /// Constructor with 3 log tags
-    exception::exception(const char* kind, char* what, const char* message, const char* inikey, bool fatal,
+    exception::exception(const char* kind, const char* what, const char* message, const char* inikey, bool fatal,
      LogTag t1, LogTag t2, LogTag t3) :
      myKind                (kind),
      myWhat                (what),
@@ -82,7 +82,7 @@ namespace Gambit
     }
 
     /// Constructor with 4 log tags
-    exception::exception(const char* kind, char* what, const char* message, const char* inikey, bool fatal,
+    exception::exception(const char* kind, const char* what, const char* message, const char* inikey, bool fatal,
      LogTag t1, LogTag t2, LogTag t3, LogTag t4) :
      myKind                (kind),
      myWhat                (what),
@@ -98,7 +98,7 @@ namespace Gambit
     }
 
     /// Constructor with 5 log tags
-    exception::exception(const char* kind, char* what, const char* message, const char* inikey, bool fatal,
+    exception::exception(const char* kind, const char* what, const char* message, const char* inikey, bool fatal,
      LogTag t1, LogTag t2, LogTag t3, LogTag t4, LogTag t5) :
      myKind                (kind),
      myWhat                (what),
@@ -115,7 +115,7 @@ namespace Gambit
     }
 
     /// Constructor with 6 log tags
-    exception::exception(const char* kind, char* what, const char* message, const char* inikey, bool fatal,
+    exception::exception(const char* kind, const char* what, const char* message, const char* inikey, bool fatal,
      LogTag t1, LogTag t2, LogTag t3, LogTag t4, LogTag t5, LogTag t6) :
      myKind                (kind),
      myWhat                (what),
@@ -133,7 +133,7 @@ namespace Gambit
     }
 
     /// Constructor with 7 log tags
-    exception::exception(const char* kind, char* what, const char* message, const char* inikey, bool fatal,
+    exception::exception(const char* kind, const char* what, const char* message, const char* inikey, bool fatal,
      LogTag t1, LogTag t2, LogTag t3, LogTag t4, LogTag t5, LogTag t6, LogTag t7) :
      myKind                (kind),
      myWhat                (what),
@@ -152,7 +152,7 @@ namespace Gambit
     }
 
     /// Constructor with log tags as a set
-    exception::exception(const char* kind, char* what, const char* message, const char* inikey, bool fatal, std::set<LogTag> tags) :
+    exception::exception(const char* kind, const char* what, const char* message, const char* inikey, bool fatal, std::set<LogTag> tags) :
      myLogTags             (tags),
      myKind                (kind),
      myWhat                (what),

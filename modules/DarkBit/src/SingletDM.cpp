@@ -121,7 +121,7 @@ namespace Gambit
     {
         using namespace Pipes::TH_ProcessCatalog_SingletDM;
 
-        static SingletDM singletDM("/home/weniger/Higgs_decay_1101.0593.dat");
+        static SingletDM singletDM("DarkBit/data/Higgs_decay_1101.0593.dat");
 
         std::vector<std::string> finalStates;
         double mass, lambda, mW, mb, mZ;

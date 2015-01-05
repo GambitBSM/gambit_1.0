@@ -28,15 +28,15 @@ function_plugin(uniform, version(1,0,0))
 {
         double plugin_main (const std::vector<double> &vec)
         {
-                std::vector<std::string> &keys     = get_keys();
-                std::cout << "unform info:" <<std::endl;
-                std::vector<double> params = prior_transform(vec);
-                std::cout << "param = " << get_inifile_value<int>("some_param") << std::endl;
-                std::cout << "dim = " << params.size() << std::endl;
-                std::cout << "keys = " << keys[0] << "   " << keys[1] << std::endl;
-                std::cout << "pts = " << params[0] << "   " << params[1] << std::endl;
-                std::cout << "vec size = " << vec.size() << "   " << vec[0] << "   " << vec[1] << std::endl;
-                getchar();
+//                 std::vector<std::string> &keys     = get_keys();
+//                 std::cout << "unform info:" <<std::endl;
+//                 std::vector<double> params = prior_transform(vec);
+//                 std::cout << "param = " << get_inifile_value<int>("some_param") << std::endl;
+//                 std::cout << "dim = " << params.size() << std::endl;
+//                 std::cout << "keys = " << keys[0] << "   " << keys[1] << std::endl;
+//                 std::cout << "pts = " << params[0] << "   " << params[1] << std::endl;
+//                 std::cout << "vec size = " << vec.size() << "   " << vec[0] << "   " << vec[1] << std::endl;
+//                 getchar();
                 
                 return 0;
         }
@@ -58,14 +58,14 @@ function_plugin(gaussian, version(1, 0, 0))
                 
                 if (cov.size() != dim)
                 {
-                        //NOTE:  put error here.
+                        scan_err << "Gaussian: Coverance matrix size of " << cov.size() << " is different than the parameter size of " << dim << scan_end;
                 }
                 
                 for (std::vector<std::vector<double>>::iterator it = cov.begin(); it != cov.end(); it++)
                 {
                         if (it->size() != cov.size())
                         {
-                                //Note:  put error here.
+                                scan_err << "Gaussian: Coverance matrix is not square" << scan_end;
                         }
                 }
                 
@@ -74,7 +74,7 @@ function_plugin(gaussian, version(1, 0, 0))
                         std::vector <double> sigs = get_inifile_value <std::vector <double>> ("sigs", std::vector<double>(dim, 1));
                         if (sigs.size() != dim)
                         {
-                                //NOTE:  put error message here.
+                                scan_err << "Gaussian: Sigma vector size of " << sigs.size() << " is different than the parameter size of " << dim << scan_end;
                         }
                         else
                         {
@@ -86,14 +86,14 @@ function_plugin(gaussian, version(1, 0, 0))
                 }
                 else
                 {
-                        //NOTE:  put error message here.
+                        scan_err << "Gaussian: Need to enter a sigma or covariance matrix." << scan_end;
                 }
                 
                 mean = get_inifile_value<std::vector <double>> ("mean", std::vector <double>(dim, 0));
                 
                 if (!chol.EnterMat(cov))
                 {
-                        //Note:  put error message here: "Gaussian (test):  Covariance matrix is not postive definite."       
+                        scan_err << "Gaussian: Covariance matrix is not positive definite." << scan_end;
                 }
         }
         
@@ -106,7 +106,6 @@ function_plugin(gaussian, version(1, 0, 0))
 }
 
 function_plugin(EggBox, version(1, 0, 0))
-//function_plugin(EggBox, version(1, 0, 0), external_library_required)
 {
 
         std::vector <double> params;
@@ -118,7 +117,7 @@ function_plugin(EggBox, version(1, 0, 0))
                 dim = get_keys().size();
                 if (dim != 2)
                 {
-                        //NOTE:  put error message here.
+                        scan_err << "EggBox: Need to have two parameters." << scan_end;
                 }
                 length = get_inifile_value<std::pair<double, double> > ("length", std::pair<double, double>(10.0, 10.0));
         }

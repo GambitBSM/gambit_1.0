@@ -125,9 +125,14 @@ scanner_plugin (crapsample, version(0, 0, 1, beta))
                 return 0;
         }
 }
-
+//int no_func(double);
 scanner_plugin (loopsample, version(0, 0, 1, beta))
 {
+        plugin_constructor
+        {
+                //int i = no_func(0.0);
+        }
+        
         int plugin_main ()
         {
                 //SET_SCAN_IOS(files);
@@ -141,7 +146,7 @@ scanner_plugin (loopsample, version(0, 0, 1, beta))
                 Ran gDev(0);
 
                 std::cout << "entering loop sampler.  \n\tOutputing to:  " << output_file << "\n\tnumber of points to calculate:  " << N << std::endl;
-
+                //int b = no_func(0.0);
                 for (int k = 0; k < N; k++)
                 {
                         for (int i = 0; i < ma; i++)

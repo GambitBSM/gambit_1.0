@@ -5,12 +5,12 @@
 ###################################
 
 Parameters: 
-    SingletDM:
-        lambda:
-            range: [0.2, 0.01]
-        mass:
-            range: [45., 70.]
-            #fixed_value: 63.0
+    MSSM25:
+# No number need to be specified?
+      muR:
+        fixed_value: 1
+      tanb:
+        fixed_value: 1
 
 ##############################
 # Prior setup
@@ -25,6 +25,8 @@ Priors:
 
 Printer:
 
+  # Select printer to use via string tag
+  # (currently only ascii printer available)
   printer: ascii
 
   # This options node is passed on wholesale to
@@ -33,10 +35,9 @@ Printer:
   # printer. 
   options:
     # name of output file
-    output_file: "runs/DarkBit_SingletDM/samples/gambit_output.txt"
+    output_file: "runs/DarkBit_UnitTest/samples/gambit_output.txt"
     # name of info file (explains content of output file)
-    info_file: "runs/DarkBit_SingletDM/samples/gambit_output.info"
-
+    info_file: "runs/DarkBit_UnitTest/samples/gambit_output.info"
 
 ##############################
 # Scanner setup
@@ -47,7 +48,10 @@ Scanner:
   
   plugins:
     crapsample:
-      point_number: 1000
+      plugin: crapsample
+      point_number: 3
+      output_file:  output
+      like:  Likelihood
 
 
 ###############################
@@ -55,20 +59,40 @@ Scanner:
 ###############################
 
 ObsLikes:
-    - capability: lnL_FermiLATdwarfs
-      purpose:  Likelihood
-      function: lnL_FermiLATdwarfs_gamLike
-    - purpose:    Likelihood
-      capability: lnL_oh2
-    - capability: lnL_LUX_2013
-      purpose:  Likelihood
-    #- capability: UnitTest_DarkBit
-    #  purpose:  Observable
-
+    - capability: UnitTest_DarkBit
+      
 Auxiliaries:
-  #- capability: UnitTest_DarkBit
-  #  options:
-  #      fileroot: UnitTest_SingletDM
+  - capability: UnitTest_DarkBit
+    dependencies:
+        - capability: DD_couplings
+          #function: DD_couplings_DarkSUSY
+          function: DD_couplings_micrOMEGAs
+        - capability: RD_oh2
+          #function: RD_oh2_DarkSUSY
+          function: RD_oh2_micromegas
+    options:
+        #fileroot: UnitTest_MSSMbenchmarks_DarkSUSY
+        fileroot: UnitTest_MSSMbenchmarks_micromegas
+  - capability: MSSMspectrum
+    function: getMSSMspectrum  # For unit test: reads in spectrum from SLHA file
+    module: DarkBit
+    options:
+        filenames: 
+            - DarkBit/slha-benchmarks/01-01-2013_torsten/test_co.slha
+            - DarkBit/slha-benchmarks/01-01-2013_torsten/test_100.slha
+            - DarkBit/slha-benchmarks/01-01-2013_torsten/test_200.slha
+            - DarkBit/slha-benchmarks/01-01-2013_torsten/test_300.slha
+            #- DarkBit/slha-benchmarks/14-12-2014_joakim/FMCp03000765.slha
+            #- DarkBit/slha-benchmarks/14-12-2014_joakim/JE56C_003717.slha
+            #- DarkBit/slha-benchmarks/14-12-2014_joakim/JE58D_007879.slha
+            #- DarkBit/slha-benchmarks/14-12-2014_joakim/JE67B_006998.slha
+            #- DarkBit/slha-benchmarks/14-12-2014_joakim/JE67D_001840.slha
+            #- DarkBit/slha-benchmarks/14-12-2014_joakim/JE87O_006600.slha
+  - capability: RD_oh2
+    options:
+      fast: 1  # Accuracy options (used by micromegas)
+      Beps: 1e-2
+
 
 #########################
 # Logging setup
@@ -81,7 +105,7 @@ Logger:
   # Obviously this also means it is impossible to redirect output to actual
   # files with these names.
 
-  prefix : "runs/DarkBit_SingletDM/logs/"
+  prefix : "runs/DarkBit_minimalTest/logs/"
   redirection:
     [Debug] : "debug.log"
     [Default] : "default.log"
@@ -97,7 +121,6 @@ Logger:
   #  [Logger, Debug] : "stdout"
   #  [Core] : "stdout"
   #  [Dependency Resolver] : "stdout"
-
 
 ##########################
 # Name/Value Section
@@ -121,3 +144,4 @@ KeyValues:
     ExampleBit_A_error: non-fatal
 
   enable_testing: false
+
