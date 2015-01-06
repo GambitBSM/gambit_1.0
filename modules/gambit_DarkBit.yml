@@ -120,6 +120,9 @@ Scanner:
 ###############################
 
 ObsLikes:
+# Uncomment to test cascade decay code 
+#    - capability: cascadeMC_PrintResult
+#      purpose:  Observable
 
 # Fermi LAT dwarf limits
     - capability: lnL_FermiLATdwarfs
@@ -132,7 +135,7 @@ ObsLikes:
     - capability: lnL_LUX_2013
       purpose:  Likelihood
       
-# Uncomment to run cascade decay test code      
+# Uncomment to run cascade decay test code (old)     
 #    - capability: chain_test_cap
 #      purpose:    Observable
 
