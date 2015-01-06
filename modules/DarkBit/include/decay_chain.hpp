@@ -28,6 +28,7 @@
 #include <string>
 #include <set>
 #include "boost/shared_ptr.hpp"
+#include "threadsafe_rng.hpp"
 
 namespace Gambit
 {
@@ -134,7 +135,7 @@ namespace Gambit
             // Generate a random number between -1 and 1
             double rand_m1_1();
             // Generate a random number between 0 and 1
-            double rand_0_1();
+            inline double rand_0_1(){return Random::draw();}
             // Generate a 3-vector to a random point on the unit sphere
             vec3 randOnSphere();
             // Calculate Lorentz boost matrix corresponding to beta_xyz
@@ -275,6 +276,8 @@ namespace Gambit
                     string getpID() const {return pID;}
                     // Print the decay chain (to cout)
                     void printChain() const;
+                    // Get weight factor (see description of the weight variable)
+                    double getWeight() const {return weight;}
                     // Destructor
                     ~ChainParticle();
                 private:  
