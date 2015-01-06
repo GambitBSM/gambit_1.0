@@ -104,18 +104,21 @@ Auxiliaries:
     function:  getPythia
     options:
       Pythia_glusq_LHC_8TeV:
-        pythiaOptions_1: ["PartonLevel:MPI = off",
+        pythiaOptions_1: ["../extras/boss/bossed_pythia_source/xmldoc/",
+                          "PartonLevel:MPI = off",
                           "PartonLevel:ISR = on",
                           "PartonLevel:FSR = off",
                           "HadronLevel:all = off"]
       Pythia_SUSY_LHC_8TeV:
-        pythiaOptions_1: ["PartonLevel:MPI = off",
+        pythiaOptions_1: ["../extras/boss/bossed_pythia_source/xmldoc/",
+                          "PartonLevel:MPI = off",
                           "PartonLevel:ISR = on",
                           "PartonLevel:FSR = off",
                           "HadronLevel:all = off",
                           "SUSY:idA = 1000021",
                           "SUSY:idB = 1000021"]
-        pythiaOptions_2: ["PartonLevel:MPI off",
+        pythiaOptions_2: ["../extras/boss/bossed_pythia_source/xmldoc/",
+                          "PartonLevel:MPI off",
                           "PartonLevel:ISR = on",
                           "PartonLevel:FSR = off",
                           "HadronLevel:all = off",
