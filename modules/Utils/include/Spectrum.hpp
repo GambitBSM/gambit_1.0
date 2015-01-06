@@ -18,8 +18,11 @@ class Spectrum {
 template<class T> friend class RunparDer; // To allow access to 'get_index_offset'
 template<class T> friend class PhysDer;
 public:
-   /// Dump out spectrum information to slha (not including input parameters etc. just at the moment...)
-   virtual void dump2slha(const std::string&) const = 0;
+   /// Dump out spectrum information to slha (if possible, and not including input parameters etc. just at the moment...)
+   virtual void dump2slha(const std::string&) = 0;
+
+   /// Get spectrum information in SLHAea format (if possible)
+   virtual SLHAea::Coll getSLHAea() = 0;
 
 protected:
    /// Get integer offset convention used by internal model class (needed by getters which take indices) 
@@ -860,8 +863,8 @@ public:
   ClassName::fmap2 ClassName::PoleMixing_map2(ClassName::fill_PoleMixing_map2()); \
 
 // Versions of the above for template classes
-#define MODEL_SPEC_TEMPLATE_MEMBER_FUNCTIONS(ClassName) \
-  template <class M> M  ClassName<M>::get_bound_spec() const {return model;} \
+#define MODEL_SPEC_TEMPLATE_MEMBER_FUNCTIONS(ClassName,SpecType,M) \
+  template <class M> typename SpecType ClassName<M>::get_bound_spec() const {return model;} \
   /*template <class M,class MP> MP ClassName<M,MP>::get_bound_phys() const {return model.get_physical();} */\
 
 #define MODEL_RUNNING_TEMPLATE_MEMBER_FUNCTIONS(ClassName) \

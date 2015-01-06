@@ -99,6 +99,9 @@ namespace Gambit
 
         /// Signal printer to reset contents, i.e. delete old data in preperation for replacement
         virtual void reset() = 0;
+
+        /// Retrieve MPI rank
+        virtual int getRank() = 0;
     };
 
     // Need to implement the destructor, even though it is pure virtual. Seems like it will be called even if using derived classes, or something.

@@ -30,6 +30,7 @@
 // Gambit
 #include "printers/asciiprinter.hpp"
 #include "stream_overloads.hpp"
+#include "error_handlers.hpp"
 
 // Code!
 namespace Gambit
@@ -38,152 +39,208 @@ namespace Gambit
   namespace Printers 
   {
 
+    Record::Record() : readyToPrint(false) {};
+
+    void Record::reset()
+    {
+       data.clear();
+       readyToPrint = false;
+    }
+ 
     // Printer to ascii file (i.e. table of doubles)
 
-    // Old Constructor (no longer allowing arbitrary filestreams; printer will create and take care of its own streams now)
-    // asciiPrinter::asciiPrinter(std::ofstream& myfstrm, std::ofstream& inffstrm) :
-    //   my_fstream(myfstrm), info_fstream(inffstrm)
-    // {
-    //   buf_loc = 0;
-    //   info_file_written = false;
-    //   bufferlength = 10;
-    //   buffer.resize(bufferlength); 
-    //   my_fstream.precision(6); // Precision of output; could easily supply this to the constructor instead.
-    // }
- 
-    // Constructor (accepts 
+    // Constructor
     asciiPrinter::asciiPrinter(const Options& options):
-      buf_loc(0),
       info_file_written(false),
       bufferlength(10),
-      my_fstream(options.getValue<std::string>("output_file"), std::ofstream::out),
-      info_fstream(options.getValue<std::string>("info_file"), std::ofstream::out)
+      myRank(0),
+      my_fstream( Utils::ensure_path_exists(options.getValue<std::string>("output_file")), 
+                  std::ofstream::out),
+      info_fstream( Utils::ensure_path_exists(options.getValue<std::string>("info_file")), 
+                    std::ofstream::out)
     {
-      // Could set these things via options also if we like.
-      buffer.resize(bufferlength); 
       my_fstream.precision(6); // Precision of output; could easily supply this to the constructor instead.
+
+      // (Needs modifying when full MPI implentation is done)
+      // Initialise "lastPointID" map to -1 (i.e. no last point)
+      lastPointID[0] = -1; // Only rank 0 process for now; parallel mode not implemented
     }
  
     /// Auxiliary mode constructor 
-    asciiPrinter::asciiPrinter(const Options& options, std::string& name, bool global=0):
-      buf_loc(0),
+    asciiPrinter::asciiPrinter(const Options& options, std::string& name, bool global):
       info_file_written(false),
       bufferlength(10),
-      my_fstream(name+"-"+options.getValue<std::string>("output_file"), std::ofstream::out),
-      info_fstream(name+"-"+options.getValue<std::string>("info_file"), std::ofstream::out)
+      myRank(0),
+      my_fstream( Utils::ensure_path_exists(name+"-"+options.getValue<std::string>("output_file")), 
+                  std::ofstream::out),
+      info_fstream( Utils::ensure_path_exists(name+"-"+options.getValue<std::string>("info_file")), 
+                    std::ofstream::out)
     {
       // Could set these things via options also if we like.
-      buffer.resize(bufferlength); 
       my_fstream.precision(6); // Precision of output; could easily supply this to the constructor instead.
     }
  
     /// Destructor
     // Overload the base class virtual destructor
-    asciiPrinter::~asciiPrinter() {}
+    asciiPrinter::~asciiPrinter()
+    {
+      // Make sure buffer is completely written to disk
+      dump_buffer(true);
+    }
  
-    // Initialisation function
+    /// Initialisation function
     // Run by dependency resolver, which supplies the functors with a vector of VertexIDs whose requiresPrinting flags are set to true.
     void asciiPrinter::initialise(const std::vector<int>& printmevec)
     {
-      //std::cout << "Initialising asciiprinter..." << std::endl;
-      // Loop through buffer and initialise all the elements
-      for (int i=0; i<bufferlength; i++)
-      {
-        for (std::vector<int>::const_iterator it = printmevec.begin();
-        it != printmevec.end(); it++)
-        {
-          // Add element to line of buffer (uses default (empty) constructor)
-          buffer[i][*it];
-        }
-      } 
+      // Currently don't seem to need this... could use it to check if all VertexID's have submitted print requests.
+      // //std::cout << "Initialising asciiprinter..." << std::endl;
+      // // Loop through buffer and initialise all the elements
+      // for (int i=0; i<bufferlength; i++)
+      // {
+      //   for (std::vector<int>::const_iterator it = printmevec.begin();
+      //   it != printmevec.end(); it++)
+      //   {
+      //     // Add element to line of buffer (uses default (empty) constructor)
+      //     buffer[i][*it];
+      //   }
+      // } 
     }
+
+    void asciiPrinter::flush() {};
+
+    void asciiPrinter::reset() {};
+
+    /// Retrieve MPI rank
+    int asciiPrinter::getRank() {return myRank;}
  
-    // Clear buffer
+    /// Clear buffer
     void asciiPrinter::erase_buffer()
     {
-      for (int i=0; i<bufferlength; i++)
-      {
-        for (LineBuf::iterator 
-          it = buffer[i].begin(); it != buffer[i].end(); it++)
-        {
-          // We want to preserve the vertex ID's and just erase the vector part (second) of the map
-          (it->second).clear();
-        }
-      }
+      // Obsolete; redo this
+      // for (int i=0; i<bufferlength; i++)
+      // {
+      //   for (LineBuf::iterator 
+      //     it = buffer[i].begin(); it != buffer[i].end(); it++)
+      //   {
+      //     // We want to preserve the vertex ID's and just erase the vector part (second) of the map
+      //     (it->second).clear();
+      //   }
+      // }
     }
   
     // Tell printer to start a new line of the ascii output file
     void asciiPrinter::endline()
     {
+      // Obsolete; no longer a virtual function either I think.
+      // std::cout<<"In acsiiPrinter: starting new printer line!"<<std::endl; 
 
-      std::cout<<"In acsiiPrinter: starting new printer line!"<<std::endl; 
-
-      // Move buffer location index to the next line
-      buf_loc += 1;
-      
-      // Check if we have filled the buffer
-      if (buf_loc >= bufferlength)
-      {
-        std::map<int,int> newlineindexrecord;
-        // Work out how to organise the output file            
-        // To do this we need to go through the buffer and find the maximum length of vector associated with each VertexID.
-        for (int i=0; i<bufferlength; i++)
-        {
-          for (LineBuf::iterator 
-            it = buffer[i].begin(); it != buffer[i].end(); it++)
-          { 
-            //(*it)->first  - VertexID
-            //(*it)->second - std::vector<double> (result values)
-            int oldlen = newlineindexrecord[it->first];
-            int newlen = (it->second).size();
-            newlineindexrecord[it->first] = std::max(oldlen, newlen);
-          }
-        }
-        // Check if the output format has changed, and raise an error if so
-        if (lineindexrecord.size()!=0)
-        {
-          if (lineindexrecord!=newlineindexrecord)
-          {
-            printer_error().raise(LOCAL_INFO,"Error! Output format has changed during run! The asciiPrinter cannot handle this!");
-          }
-        }
-        else
-        {
-          lineindexrecord = newlineindexrecord;
-        }
- 
-        // Write to file and reset buffer
-        dump_buffer();
-        erase_buffer();
-        buf_loc = 0;
-      }
+      // // Move buffer location index to the next line
+      // buf_loc += 1;
+      // 
+      // // Check if we have filled the buffer
+      // if (buf_loc >= bufferlength)
+      // {
+      //  // Write to file and reset buffer
+      //   dump_buffer();
+      //   erase_buffer();
+      //   buf_loc = 0;
+      // }
     }
   
     // add results to printer buffer
-    void asciiPrinter::addtobuffer(const std::vector<double>& functor_data, const std::vector<std::string>& functor_labels, const int vID, const int thread, const int pointID) 
-    {
+    void asciiPrinter::addtobuffer(const std::vector<double>& functor_data, const std::vector<std::string>& functor_labels, const int vID, const int rank, const int pointID) 
+    { 
       //TODO: If a functor gets called twice without the printer advancing the data will currently just be overwritten. Should generate an error or something.
+
+      // Key for accessing buffer
+      std::pair<int,int> bkey = std::make_pair(rank,pointID);
+ 
+      // Register <pointID> as coming from process <rank>.
+      std::cout << "My rank is (reported) " << rank << std::endl;
+      if(lastPointID.at(rank)==pointID)
+      {
+        // Don't need to do anything
+      }
+      else if(lastPointID.at(rank)==-1)
+      {
+        lastPointID.at(rank) = pointID;
+      }
+      else
+      {
+        std::pair<int,int> prevbkey = std::make_pair(rank,lastPointID[rank]);
+        // Set previous model point accessed by this rank as ready to print
+        buffer.at(prevbkey).readyToPrint = true;
+        lastPointID.at(rank) = pointID;
+
+        // Check whether it is time to dump the (completed) buffer points to disk
+        if(buffer.size()>bufferlength) dump_buffer();
+      }
+
       std::cout << "asciiprinter: adding "<<functor_labels<<" to buffer"<<std::endl;
-      buffer[buf_loc][vID] = functor_data;
-      
+  
+      if(buffer.at(bkey).readyToPrint == true)
+      {
+         std::string errmsg = "Error! Attempted to write to \"old\" model point \
+buffer! Bug in asciiprinter.cpp somewhere. Buffer records are initialised with \
+readyToPrint=false, and should not be written to again after this flag is set to \
+true. The records are destroyed upon writing their contents to disk, and there \
+is a unique record for every rank/pointID pair.";
+         printer_error().raise(LOCAL_INFO, errmsg);
+      }
+
+      buffer.at(bkey).data.at(vID) = functor_data;
+
       if ( info_file_written == false )
       {
-        if ( functor_labels.size() > label_record[vID].size() )
+        if ( functor_labels.size() > label_record.at(vID).size() )
         {
-           // Assume the new, longer label list is better to use. This variation of functor_data length from point to point is kind of dangerous for an ascii output file though and we might want to forbid it. There is some probability that my method of allocating the columns according to the most used by each functor in the first buffer dump will fail.
+           // Assume the new, longer label list is better to use. This variation of functor_data length from point to point is kind of dangerous for an ascii output file though and we might want to forbid it. There is some probability that my method of allocating the columns according to the longest used by each functor in the first buffer dump will fail.
            label_record[vID] = functor_labels;
         }
       }
     }
  
     // write the printer buffer to file       
-    void asciiPrinter::dump_buffer()
+    void asciiPrinter::dump_buffer(bool force)
     {
       // Write record of what is in each column if we haven't done so yet
       // Note the downside of using a map as the buffer; the order of stuff in the output file is going
       // to be kind of haphazard due to the sorted order used by map. Will have to do more work to achieve
       // an ordering that reflects the order of stuff in, say, the inifile.
+      //  force=true -- dumps all records regardless if they are "readyToPrint"
       std::cout << "dumping asciiprinter buffer" << std::endl;
+
+      std::map<int,int> newlineindexrecord;
+      // Work out how to organise the output file            
+      // To do this we need to go through the buffer and find the maximum length of vector associated with each VertexID.
+      for (Buffer::iterator 
+        bufentry = buffer.begin(); bufentry != buffer.end(); ++bufentry)
+      {
+        Record& record = bufentry->second; 
+        for (LineBuf::iterator 
+          item = record.data.begin(); item != record.data.end(); ++item)
+        { 
+          //item->first  - VertexID
+          //item->second - std::vector<double> (result values)
+          int oldlen = newlineindexrecord[item->first];
+          int newlen = (item->second).size();
+          newlineindexrecord[item->first] = std::max(oldlen, newlen);
+        }
+      }
+      // Check if the output format has changed, and raise an error if so
+      if (lineindexrecord.size()!=0)
+      {
+        if (lineindexrecord!=newlineindexrecord)
+        {
+          printer_error().raise(LOCAL_INFO,"Error! Output format has changed since last buffer dump! The asciiPrinter cannot handle this!");
+        }
+      }
+      else
+      {
+        lineindexrecord = newlineindexrecord;
+      }
+  
+      // Write the file explaining what is in each column of the output file
       if (info_file_written==false)
       {
         int column_index = 1;
@@ -203,34 +260,45 @@ namespace Gambit
       }
 
       // Actual dump of buffer to file
-      for (int i=0; i<bufferlength; i++)
+      for (Buffer::iterator 
+        bufentry = buffer.begin(); bufentry != buffer.end(); /* Will increment in loop */ )
       {
-        for (std::map<int,int>::iterator
-          it = lineindexrecord.begin(); it != lineindexrecord.end(); it++)
-        { 
-          //(*it)->first  - VertexID
-          //(*it)->second - std::pair<int,int> containing startindex and length
-          std::vector<double>& results = buffer[i][it->first];
-          int reslength  = results.size(); // actual length of the current results vector
-          int length     = it->second;     // slots reserved in output file for these results
-          // print to the fstream!
-          for (int j=0;j<length;j++)
-          {
-            if(j>=reslength)
+        //std::pair<int,int> bkey = bufentry->first;
+        Record& record = bufentry->second; 
+        if(force or record.readyToPrint)
+        {
+          for (std::map<int,int>::iterator
+            it = lineindexrecord.begin(); it != lineindexrecord.end(); ++it)
+          { 
+            //(*it)->first  - VertexID
+            //(*it)->second - int length
+            std::vector<double>& results = record.data.at(it->first);
+            int reslength  = results.size(); // actual length of the current results vector
+            int length     = it->second;     // slots reserved in output file for these results
+           
+            // Delete the record from the buffer
+            // Post-increment:  Increment the iterator first, THEN delete old one.
+            buffer.erase(bufentry++);
+
+            // Print to the fstream!
+            for (int j=0;j<length;j++)
             {
-              // Allocated space exceeded; fill remaining slots with 'none'
-              my_fstream<<std::setw(14)<<" none ";
+              if(j>=reslength)
+              {
+                // Allocated space exceeded; fill remaining slots with 'none'
+                my_fstream<<std::setw(14)<<" none ";
+              }
+              else
+              {
+                // print an entry from the results vector
+                my_fstream<<std::scientific<<results[j]<<"\t";
+              }
             }
-            else
-            {
-              // print an entry from the results vector
-              my_fstream<<std::scientific<<results[j]<<"\t";
-            }
-          }
-          // result printed, do next result                
-        } 
-        // line printed, print endline character and go to next line
-        my_fstream<<std::endl;
+            // result printed, do next result                
+          } 
+          // line printed, print endline character and go to next line
+          my_fstream<<std::endl;
+        }
       }
       // buffer dump complete! Flush the fstream to ensure write to file happens.
       my_fstream.flush();

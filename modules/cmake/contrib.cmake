@@ -84,11 +84,12 @@ else()
          SOURCE_DIR ${FLEXIBLESUSY_DIR}
          BUILD_IN_SOURCE 1
          CONFIGURE_COMMAND ./configure --with-models=${_MODEL} ${FS_OPTIONS}
-         BUILD_COMMAND $(MAKE) LAPACKLIBS=${LAPACK_LIBS}
+         BUILD_COMMAND $(MAKE) alllib LAPACKLIBS=${LAPACK_LIBS}
          INSTALL_COMMAND ""
        )
-       add_dependencies(flexiblesusy_project${_MODEL} ${previous_FSlib}) #to force building one at a time
-       add_dependencies(me_first flexiblesusy_project${_MODEL}) #to force flexiblesusy to build very early (to create config.h)
+       if(${previous_FSlib})
+         add_dependencies(flexiblesusy_project${_MODEL} ${previous_FSlib}) #to force building one at a time
+       endif()
        set(previous_FSlib flexiblesusy_project${_MODEL}) 
        list(APPEND flexiblesusy_projects flexiblesusy_project${_MODEL})
        set(flexiblesusy_LDFLAGS "${flexiblesusy_LDFLAGS} -L${FLEXIBLESUSY_DIR}/models/${_MODEL} -l${_MODEL}")

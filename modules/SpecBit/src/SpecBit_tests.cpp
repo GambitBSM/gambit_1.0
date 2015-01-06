@@ -50,12 +50,16 @@ namespace Gambit
     /// Create a spectrum object for testing purposes
     void make_test_spectrum(Spectrum* &result)
     {
-      static CMSSM_slha<Two_scale> FS_model; //start with empty flexiblesusy object
-   
+      typedef CMSSM_interface<ALGORITHM1> MI;
+      static MI::Model FS_model; //start with empty flexiblesusy object
+      // Or could use flexiblesusy classes directly; these two are equivalent in this case:
+      //static CMSSM_slha<Two_scale> FS_model; //start with empty flexiblesusy object
+
+      // Create model interface class (leaving input stuff with default values)
+      MI model_interface(FS_model);
+
       // Create Spectrum object to wrap flexiblesusy object
-      
-      //std::unique_ptr<FS::MSSMSpec> mssm(new FS::MSSMSpec(mssm1));      
-      static MSSMSpec<CMSSM_slha<Two_scale>> mssm(FS_model);
+      static MSSMSpec<MI> mssm(FS_model);
 
       // I think these objects should only get created once since they are static...      
       // ...and they should be destructed automatically when the program ends.

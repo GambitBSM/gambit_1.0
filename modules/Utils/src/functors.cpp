@@ -38,7 +38,7 @@
 
 #include <boost/preprocessor/seq/for_each.hpp>
 
-#define FWDPRINT(r,data,elem) virtual void print(elem const&, const std::string&, const int) = 0;
+#define FWDPRINT(r,data,elem) virtual void print(elem const&, const std::string&, const int, const int, const int) = 0;
 
 namespace Gambit
 {
@@ -53,8 +53,9 @@ namespace Gambit
     {
       public:
         BOOST_PP_SEQ_FOR_EACH(FWDPRINT, _, PRINTABLE_TYPES)
-        virtual void initialise(const std::vector<int>&) = 0;
-        virtual void endline() = 0;
+        virtual int getRank() = 0;
+        // This leaves off the other virtual functions. If you need them in
+        // this file, add their declarations in here.
     };
   }
 
@@ -407,8 +408,9 @@ namespace Gambit
     }
 
 
+    // Ben: I think we can delete these: only module_functors need to know about print functions
     /// Print function
-    void functor::print(Printers::BasePrinter*)
+    void functor::print(Printers::BasePrinter*, const int pointID, int index)
     { 
       str warn_msg = "This is the functor base class print function! This should not\n";
       warn_msg += "be used; the print function should be redefined in daughter\n"
@@ -419,6 +421,11 @@ namespace Gambit
       utils_warning().raise(LOCAL_INFO,warn_msg);
     }    
 
+    void functor::print(Printers::BasePrinter* printer, const int pointID)
+    {
+      print(printer,pointID,0);
+    }
+    
     /// Attempt to retrieve a dependency or model parameter that has not been resolved
     void functor::failBigTime(str method)
     {
@@ -1404,19 +1411,22 @@ namespace Gambit
 
     /// Printer function
     template <typename TYPE>
-    void module_functor<TYPE>::print(Printers::BasePrinter* printer, int index)
+    void module_functor<TYPE>::print(Printers::BasePrinter* printer, const int pointID, int index)
     {
       if(myPrintFlag)
       {
         if (myValue == NULL) init_myValue(); // Init memory if this is the first run through. 
-        if (not iRunNested) index = 0; // Force printing of index=0 if this functor cannot run nested. 
-        printer->print(myValue[index],myLabel,myVertexID);
+        if (not iRunNested) index = 0; // Force printing of index=0 if this functor cannot run nested.
+        int rank = printer->getRank(); // This is "first pass" printing, so use the actual rank of this process.
+                                       // In the auxilliary printing system we may tell the printer to overwrite
+                                       // the output of other ranks.
+        printer->print(myValue[index],myLabel,myVertexID,rank,pointID);
       }
     }
 
     /// Printer function (no-thread-index short-circuit)
     template <typename TYPE>
-    void module_functor<TYPE>::print(Printers::BasePrinter* printer) { print(printer,0); }
+    void module_functor<TYPE>::print(Printers::BasePrinter* printer, const int pointID) { print(printer,pointID,0); }
 
 
   /// Class methods for actual module functors for TYPE=void
@@ -1453,9 +1463,9 @@ namespace Gambit
       }
     }
 
-    /// Blank print method
-    void module_functor<void>::print(Printers::BasePrinter*, int) {} 
-
+    /// Blank print methods
+    void module_functor<void>::print(Printers::BasePrinter*, const int, int) {} 
+    void module_functor<void>::print(Printers::BasePrinter*, const int) {} 
 
   /// Model functor class method definitions
     

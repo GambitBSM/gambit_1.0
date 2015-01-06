@@ -75,7 +75,7 @@ namespace Gambit
     {
       if(streamname=="")
       {
-        return printerptr
+        return printerptr;
       }
       else
       {

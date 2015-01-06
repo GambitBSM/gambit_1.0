@@ -109,6 +109,15 @@ namespace Gambit
       if (s.at(0) == '(')       s = s.substr(1, s.size());
       if (*s.rbegin() == ')')   s = s.substr(0, s.size()-1);
     }
+
+    /// Ensure that a path exists (and then return the path, for chaining purposes)
+    std::string ensure_path_exists(const std::string& path)
+    { 
+       boost::filesystem::path dir(path);
+       if( !( boost::filesystem::exists( dir.parent_path() ) )) 
+       { boost::filesystem::create_directories( dir.parent_path() ); }
+       return path;
+    }
     
   }
 

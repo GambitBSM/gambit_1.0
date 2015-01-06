@@ -40,9 +40,26 @@ namespace Gambit
   namespace Printers 
   {
 
-    // Printer to ascii file (i.e. table of doubles)
-    typedef std::map<int,std::vector<double>> LineBuf;
- 
+    typedef std::map<int, std::vector<double>> LineBuf;
+
+    /// Structure to hold data for a single model point 
+    struct Record
+    {
+       /// The data; each functor outputs a vector of doubles. We index these by vertexID.
+       //  One map entry per "printme" functor.
+       LineBuf data;
+
+       /// Flag to indicate if record is available to send for output
+       // This flag is set when the process which created it begins creating another record.
+       bool readyToPrint;
+
+       Record();
+       void reset();
+    };
+
+    typedef std::map<std::pair<int,int>,Record> Buffer;
+
+
     class asciiPrinter : public BasePrinter
     {
       public:
@@ -63,6 +80,9 @@ namespace Gambit
         // Constructor (for construction via inifile options)
         asciiPrinter(const Options&);
 
+        // Auxilliary mode constructor (for construction in scanner plugins)
+        asciiPrinter(const Options&, std::string&, bool global=0);
+
         /// Destructor
         // Overload the base class virtual destructor
         ~asciiPrinter();
@@ -73,10 +93,9 @@ namespace Gambit
         // Initialisation function
         // Run by dependency resolver, which supplies the functors with a vector of VertexIDs whose requiresPrinting flags are set to true.
         void initialise(const std::vector<int>&);
- 
-        void flush() {};
-
-        void reset() {};
+        void flush();
+        void reset();
+        int getRank();
 
         ///@}
       
@@ -89,36 +108,43 @@ namespace Gambit
         void endline();
          
         // add results to printer buffer
-        void addtobuffer(const int&, const std::vector<double>&, const std::vector<std::string>&);
- 
+        void addtobuffer(const std::vector<double>&, const std::vector<std::string>&, const int, const int, const int); 
+
         // write the printer buffer to file       
-        void dump_buffer();
+        void dump_buffer(bool force=false);
          
- 
-    
  
         // PRINT FUNCTIONS
         //----------------------------
         // Need to define one of these for every type we want to print!
         // Could use macros again to generate identical print functions 
         // for all types that have a << operator already defined.
-        void print(double const&,              const std::string& label, const int IDcode, const int thread, const int pointID);
-        void print(std::vector<double> const&, const std::string& label, const int IDcode, const int thread, const int pointID);
-        void print(ModelParameters const&,     const std::string& label, const int IDcode, const int thread, const int pointID);
+        void print(double const&,              const std::string& label, const int IDcode, const int rank, const int pointID);
+        void print(std::vector<double> const&, const std::string& label, const int IDcode, const int rank, const int pointID);
+        void print(ModelParameters const&,     const std::string& label, const int IDcode, const int rank, const int pointID);
       
       private:
-        // Main output file stream
+        /// Main output file stream
         std::ofstream my_fstream;
-        // "Info file" output stream
+        /// "Info file" output stream
         std::ofstream info_fstream;
 
-        // Buffer of results to print on a single line
-        LineBuf linebuffer; //(std::map<int,std::vector<double>>)
-        // Buffer containing many lines
-        int bufferlength; //number of lines to store in buffer before printing
-        int buf_loc; // current line of the buffer
-        std::vector<LineBuf> buffer; // full buffer of output to be printed
+        //number of lines to store in buffer before printing
+        int bufferlength;
+
+        // MPI rank (currently not hooked up to MPI, just hardcoded to 0)
+        int myRank;
  
+        /// Full buffer of output to be printed
+        // Key is <int rank, int pointID>; value is a Record (for a single model point)
+        //std::map<std::pair<int,int>,Record> buffer;  
+        Buffer buffer; 
+
+        /// Map recording which model point each process is working on 
+        // Need this so that we can compute when (at least initial) writing to a model point has ceased
+        // Key: rank; Value: last pointID sent by that rank.
+        std::map<int,int> lastPointID;
+
         // Record of number of slots occupied by each printer item.
         // If this changes after the first buffer dump an error will occur. Functors which return mutable output are not currently supported by this printer type, and may never be since it is pretty hard to deal with in an ascii table. Actually strictly speaking a functor can use fewer slots than it uses in the first buffer dump (the max of its first 'bufferlength' uses), but not more.
         std::map<int,int> lineindexrecord;

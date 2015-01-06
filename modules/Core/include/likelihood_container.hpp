@@ -65,8 +65,16 @@ namespace Gambit
     private:
       /// Value of the log likelihood at which a point is considered so unlikely that it can be ruled out (invalid).
       double min_valid_lnlike;
+      
+      /// TODO: Temporary counter for scan iteration. Ask Greg where this should really be
+      // Ack, to be able to use this I needed to overwrite the inherited Likelihood_Container_Base "calcObsLike" function, 
+      // so that it can see this variable.
+      int pointID;
 
     public:
+      /// TODO: As above, I had to add this, probably temporarily
+      inline void calcObsLike(DRes::VertexID &it);
+
       /// Constructor
       Likelihood_Container (const std::map<str, primary_model_functor *> &functorMap, 
        DRes::DependencyResolver &dependencyResolver, IniParser::IniFile &iniFile, 
