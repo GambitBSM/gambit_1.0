@@ -99,16 +99,15 @@ Printer:
 ##############################
 
 Scanner:
-  use_scanner_plugin: crapsample
+  use_scanner_plugin: toy_mcmc
   
   plugins:
-    crapsample:
-      plugin: crapsample
+    toy_mcmc:
       point_number: 1
       output_file:  output
       like:  Likelihood
 
-    loopsample:
+    random_sampler:
       point_number: 20
       output_file:  output
       like:  Likelihood
