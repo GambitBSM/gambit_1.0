@@ -86,8 +86,8 @@ Printer:
 
 Scanner:
 
-  #plugin:  loopsample
-  plugin: crapsample
+  #plugin:  random_sampler
+  plugin: toy_mcmc
   file_path:  ScannerBit/lib/libsample.so
 
   #plugin:  multinest
@@ -99,12 +99,12 @@ Scanner:
      scanner:  xterm
   #   error:  test_errors
       
-  crapsample:
+  toy_mcmc:
     point_number: 2
     output_file:  output
     like:  Likelihood
 
-  loopsample:
+  random_sampler:
     point_number: 20
     output_file:  output
     like:  Likelihood
