@@ -119,7 +119,6 @@ namespace Gambit
   {
     double lnlike = 0;
     bool compute_aux = true;     
-    Scanner::outputHandler::out.defout();
     setParameters(in);      
     logger() << LogTags::core << "Number of vertices to calculate: " << (target_vertices.size() + aux_vertices.size()) << EOM;
       
@@ -164,7 +163,6 @@ namespace Gambit
     }
       
     resetAll();     
-    Scanner::outputHandler::out.redir("scanner");				
     return lnlike;
   }
 

@@ -3,7 +3,6 @@ set(scannerbit_sources
                  src/composite.cpp
                  src/gaussian.cpp
                  src/inifile_interface.cpp
-                 src/outputhandler.cpp
                  src/plugin_comparators.cpp
                  src/plugin_loader.cpp
                  src/scan.cpp
@@ -15,7 +14,6 @@ set(scannerbit_headers
                  include/factory_registry.hpp
                  include/function_plugin.hpp
                  include/inifile_interface.hpp
-                 include/outputhandler.hpp
                  include/plugin_comparators.hpp
                  include/plugin_defs.hpp
                  include/plugin_details.hpp
