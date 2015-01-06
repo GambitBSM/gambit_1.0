@@ -24,6 +24,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unordered_map>
+#include <cstdio>
 
 namespace Gambit
 {
@@ -65,7 +66,7 @@ namespace Gambit
                                 
                                 static FILE *LaunchLogWindow(std::string &file)
                                 {
-                                        char *name = tempnam(NULL, NULL);
+                                        char *name = std::tmpnam(NULL);
                                         mkfifo(name, 0777);
                                         if(fork() == 0)
                                         {

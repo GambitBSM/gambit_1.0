@@ -26,7 +26,30 @@
 
 include(ExternalProject)
 
-ExternalProject_Add(DDCalc0
+set(remove_files_from_libdarksusy dssetdsinstall.o dssetdsversion.o ddilog.o drkstp.o eisrs1.o tql2.o tred2.o)
+set(remove_files_from_libisajet fa12.o  func_int.o  func.o  isalhd.o  isared.o)
+if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+  set(_ld_prefix "-Wl,-all_load")
+  set(_ld_suffix "")
+elseif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+  set(_ld_prefix "-Wl,--whole-archive")
+  set(_ld_suffix "-Wl,--no-whole-archive")
+endif()
+set(libs ${_ld_prefix} <SOURCE_DIR>/lib/libFH.a <SOURCE_DIR>/lib/libHB.a <SOURCE_DIR>/lib/libdarksusy.a <SOURCE_DIR>/lib/libisajet.a ${_ld_suffix})
+
+ExternalProject_Add(darksusy
+  URL http://www.fysik.su.se/~edsjo/darksusy/tars/darksusy-5.1.1.tar.gz
+  DOWNLOAD_DIR ${PROJECT_SOURCE_DIR}/../extras/DarkSUSY
+  SOURCE_DIR ${PROJECT_SOURCE_DIR}/../extras/DarkSUSY/DarkSUSY
+  BUILD_IN_SOURCE 1
+  CONFIGURE_COMMAND <SOURCE_DIR>/configure FC=${CMAKE_Fortran_COMPILER} FCFLAGS=${CMAKE_Fortran_FLAGS} FFLAGS=${CMAKE_Fortran_FLAGS} CC=${CMAKE_C_COMPILER} CFLAGS=${CMAKE_C_FLAGS} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${CMAKE_CXX_FLAGS}
+  BUILD_COMMAND make COMMAND ar d <SOURCE_DIR>/lib/libdarksusy.a ${remove_files_from_libdarksusy} COMMAND ar d <SOURCE_DIR>/lib/libisajet.a ${remove_files_from_libisajet}
+  INSTALL_COMMAND ${CMAKE_Fortran_COMPILER} -shared ${libs} -o <SOURCE_DIR>/lib/libdarksusy.so COMMAND cp <SOURCE_DIR>/lib/libdarksusy.so ${PROJECT_SOURCE_DIR}/Backends/lib/.
+)
+
+set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../extras/DarkSUSY/libdarksusy.so" "${PROJECT_SOURCE_DIR}/Backends/lib/libdarksusy.so")
+
+ExternalProject_Add(ddcalc
   SOURCE_DIR ${PROJECT_SOURCE_DIR}/../extras/DDCalc0
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND ""
@@ -40,7 +63,7 @@ set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../extras/DDCalc0/libDDCal
 
 if(GSL_FOUND)
   execute_process(
-    COMMAND sh gsl-config --libs
+    COMMAND gsl-config --libs
     OUTPUT_VARIABLE GAMLIKE_GSL_LIBS
     RESULT_VARIABLE RET
   )
@@ -54,7 +77,7 @@ if (NOT GSL_INCLUDE_DIRS STREQUAL "")
   set(gamlike_CXXFLAGS "${gamlike_CXXFLAGS} -I${GSL_INCLUDE_DIRS}")
 endif()
 
-ExternalProject_Add(gamLike
+ExternalProject_Add(gamlike
   SOURCE_DIR ${PROJECT_SOURCE_DIR}/../extras/gamLike
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND ""
@@ -65,18 +88,6 @@ ExternalProject_Add(gamLike
 )
 
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../extras/gamLike/gamLike.so" "${PROJECT_SOURCE_DIR}/Backends/lib/libgamLike.so")
-
-ExternalProject_Add(DarkSUSY
-  SOURCE_DIR ${PROJECT_SOURCE_DIR}/../extras/DarkSUSY
-  BUILD_IN_SOURCE 1
-  CONFIGURE_COMMAND ""
-  BUILD_COMMAND ./install_DarkSUSY.script FC=${CMAKE_Fortran_COMPILER} COMMAND cp libdarksusy.so ${PROJECT_SOURCE_DIR}/Backends/lib/.
-  INSTALL_COMMAND ""
-  INSTALL_DIR ${CMAKE_BINARY_DIR}/install
-  CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/install
-)
-
-set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../extras/DarkSUSY/libdarksusy.so" "${PROJECT_SOURCE_DIR}/Backends/lib/libdarksusy.so")
 
 ExternalProject_Add(micromegas
   SOURCE_DIR ${PROJECT_SOURCE_DIR}/../extras/micromegas
@@ -102,7 +113,7 @@ ExternalProject_Add(pythia
 
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../extras/boss/bossed_pythia_source/lib/libpythia8.so" "${PROJECT_SOURCE_DIR}/Backends/lib/libpythia8.so")
 
-ExternalProject_Add(FastSim
+ExternalProject_Add(fastsim
   SOURCE_DIR ${PROJECT_SOURCE_DIR}/../extras/fast_sim
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND ""
@@ -145,7 +156,7 @@ ExternalProject_Add(nulike
 
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../extras/nulike/lib/libnulike.so" "${PROJECT_SOURCE_DIR}/Backends/lib/libnulike.so")
 
-set_target_properties(DDCalc0 gamLike DarkSUSY micromegas nulike pythia FastSim BOSSMinimalExample PROPERTIES EXCLUDE_FROM_ALL 1)
+set_target_properties(ddcalc gamlike darksusy micromegas nulike pythia fastsim BOSSMinimalExample PROPERTIES EXCLUDE_FROM_ALL 1)
 
-add_custom_target(backends COMMAND make gamLike nulike DDCalc0 pythia FastSim BOSSMinimalExample) #DarkSUSY micromegas
+add_custom_target(backends COMMAND make gamlike nulike ddcalc pythia BOSSMinimalExample darksusy) #fastsim micromegas
 
