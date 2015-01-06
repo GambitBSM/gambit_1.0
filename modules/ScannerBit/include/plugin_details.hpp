@@ -62,11 +62,11 @@ namespace Gambit
                                                 std::string temp = str.substr(posMid + 13);
                                                 if (temp == "0")
                                                 {
-                                                        status = 0;
+                                                        status = -1;
                                                 }
                                                 else if (temp == "1")
                                                 {
-                                                        status = -1;
+                                                        status = 0;
                                                 }
                                                 else if (temp == "2")
                                                 {
@@ -74,11 +74,13 @@ namespace Gambit
                                                 }
                                                 else
                                                 {
-                                                        status = -3;
+                                                        scan_err << "Extern libraries are required for plugin "
+                                                                << full_string << " but is not in header file." << scan_end;
                                                 }
                                         }
                                         else
-                                                status= 0;
+                                                status= 1;
+                                        
                                         posMid = str.rfind("__v__", posMid);
                                         version = str.substr(posMid + 5);
                                         std::string::size_type posLast = str.rfind("__t__", posMid - 1);
@@ -94,7 +96,7 @@ namespace Gambit
                                         release_version = version.substr(posLast + 1);
                                         version = IntToString(major_version) + "." + IntToString(minor_version) + "." + IntToString(patch_version);
                                         if (release_version != "") 
-                                                version += "-" + release_version;  
+                                                version += "-" + release_version;
                                 }
                                 
                                 std::string printMin() const

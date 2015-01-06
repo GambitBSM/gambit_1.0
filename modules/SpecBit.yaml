@@ -33,11 +33,11 @@ Printer:
     info_file: "runs/SpecBit_test/samples/gambit_output.info"
 
 Scanner:
-  use_scanner_plugin: crapsample
+  use_scanner_plugin: toy_mcmc
   
   plugins:
-    crapsample:
-      plugin: crapsample
+    toy_mcmc:
+      plugin: toy_mcmc
       options:
         point_number: 2
         output_file:  output
