@@ -16,7 +16,7 @@
 
 #include "scanners/twalk.hpp"
 
-scanner_plugin(twalk_beta, version(0, 0, 1, beta))
+scanner_plugin(twalk, version(0, 0, 1, beta))
 {
         int plugin_main ()
         {
