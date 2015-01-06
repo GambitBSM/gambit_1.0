@@ -43,10 +43,10 @@ Printer:
 ##############################
 
 Scanner:
-  use_scanner_plugin: crapsample
+  use_scanner_plugin: toy_mcmc
   
   plugins:
-    crapsample:
+    toy_mcmc:
       point_number: 1000
 
 

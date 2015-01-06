@@ -41,7 +41,10 @@ set(scannerbit_headers
 )
 
 set(scanner_plugin_sources
-                 src/scanners/crapsample.cpp
+                 src/scanners/grid.cpp
+                 src/scanners/square_grid.cpp
+                 src/scanners/toy_mcmc.cpp
+                 src/scanners/random_sampler.cpp
                  src/scanners/twalk.cpp
 )
 
