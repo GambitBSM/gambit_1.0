@@ -15,8 +15,8 @@ inline bool within_bounds(const int i, const std::set<int> allowed)
 }
 
 class Spectrum {
-template<class T> friend class RunparDer; // To allow access to 'get_index_offset'
-template<class T> friend class PhysDer;
+template<class SpecType> friend class RunparDer; // To allow access to 'get_index_offset'
+template<class SpecType> friend class PhysDer;
 public:
    /// Dump out spectrum information to slha (if possible, and not including input parameters etc. just at the moment...)
    virtual void dump2slha(const std::string&) = 0;
@@ -43,21 +43,21 @@ private:
       virtual void SetScale(double scale) = 0;
       
       /// getters using map
-      virtual double get_mass4_parameter(std::string) const = 0;
-      virtual double get_mass4_parameter(std::string, int) const = 0;
-      virtual double get_mass4_parameter(std::string, int, int) const = 0;
-      virtual double get_mass3_parameter(std::string) const = 0;
-      virtual double get_mass3_parameter(std::string, int) const = 0;
-      virtual double get_mass3_parameter(std::string, int, int) const = 0;
-      virtual double get_mass2_parameter(std::string) const = 0;
-      virtual double get_mass2_parameter(std::string, int i) const = 0;
-      virtual double get_mass2_parameter(std::string, int i, int j) const = 0;
-      virtual double get_mass_parameter(std::string) const = 0;
-      virtual double get_mass_parameter(std::string, int) const = 0;
-      virtual double get_mass_parameter(std::string, int, int) const = 0;
-      virtual double get_dimensionless_parameter(std::string) const = 0;
-      virtual double get_dimensionless_parameter(std::string, int) const = 0;
-      virtual double get_dimensionless_parameter(std::string, int, int) const = 0;
+      virtual double get_mass4_parameter(const std::string&) const = 0;
+      virtual double get_mass4_parameter(const std::string&, int) const = 0;
+      virtual double get_mass4_parameter(const std::string&, int, int) const = 0;
+      virtual double get_mass3_parameter(const std::string&) const = 0;
+      virtual double get_mass3_parameter(const std::string&, int) const = 0;
+      virtual double get_mass3_parameter(const std::string&, int, int) const = 0;
+      virtual double get_mass2_parameter(const std::string&) const = 0;
+      virtual double get_mass2_parameter(const std::string&, int i) const = 0;
+      virtual double get_mass2_parameter(const std::string&, int i, int j) const = 0;
+      virtual double get_mass_parameter(const std::string&) const = 0;
+      virtual double get_mass_parameter(const std::string&, int) const = 0;
+      virtual double get_mass_parameter(const std::string&, int, int) const = 0;
+      virtual double get_dimensionless_parameter(const std::string&) const = 0;
+      virtual double get_dimensionless_parameter(const std::string&, int) const = 0;
+      virtual double get_dimensionless_parameter(const std::string&, int, int) const = 0;
  };
 
    class Phys {
@@ -66,11 +66,11 @@ private:
       virtual Spectrum& get_parent() const = 0;
    public: 
       /// map based getters
-      virtual double get_Pole_Mass(std::string) const = 0;
-      virtual double get_Pole_Mass(std::string, int) const = 0;
-      virtual double get_Pole_Mixing(std::string) const = 0;
-      virtual double get_Pole_Mixing(std::string, int) const = 0;
-      virtual double get_Pole_Mixing(std::string, int, int) const = 0;
+      virtual double get_Pole_Mass(const std::string&) const = 0;
+      virtual double get_Pole_Mass(const std::string&, int) const = 0;
+      virtual double get_Pole_Mixing(const std::string&) const = 0;
+      virtual double get_Pole_Mixing(const std::string&, int) const = 0;
+      virtual double get_Pole_Mixing(const std::string&, int, int) const = 0;
 
 };
 
@@ -172,12 +172,13 @@ template <class SpecType>
       virtual fmap2& get_PoleMixing_map2() const = 0;
       virtual SpecType get_bound_spec() const = 0;
    public: 
-      virtual double get_Pole_Mass(std::string) const;
-      virtual double get_Pole_Mass(std::string, int) const;
-      virtual double get_Pole_Mixing(std::string) const;
-      virtual double get_Pole_Mixing(std::string, int) const;
-      virtual double get_Pole_Mixing(std::string, int, int) const;
+      virtual double get_Pole_Mass(const std::string&) const;
+      virtual double get_Pole_Mass(const std::string&, int) const;
+      virtual double get_Pole_Mixing(const std::string&) const;
+      virtual double get_Pole_Mixing(const std::string&, int) const;
+      virtual double get_Pole_Mixing(const std::string&, int, int) const;
    };
+
    template <class SpecType>
    class RunparDer : public Spectrum::RunningPars {
       REDO_TYPEDEFS(SpecType)
@@ -200,26 +201,26 @@ template <class SpecType>
       virtual fmap2& get_mass0_map2() const = 0;        
  
    public:
-      virtual double get_mass4_parameter(std::string) const;
-      virtual double get_mass4_parameter(std::string, int i) const;
-      virtual double get_mass4_parameter(std::string, int i, int j) const;
-      virtual double get_mass3_parameter(std::string) const;
-      virtual double get_mass3_parameter(std::string, int i) const;
-      virtual double get_mass3_parameter(std::string, int i, int j) const;
-      virtual double get_mass2_parameter(std::string) const;
-      virtual double get_mass2_parameter(std::string, int i) const;
-      virtual double get_mass2_parameter(std::string, int i, int j) const;
-      virtual double get_mass_parameter(std::string) const;
-      virtual double get_mass_parameter(std::string, int i) const;
-      virtual double get_mass_parameter(std::string, int i, int j) const;
-      virtual double get_dimensionless_parameter(std::string) const;
-      virtual double get_dimensionless_parameter(std::string, int i) const;
-      virtual double get_dimensionless_parameter(std::string, int i, int j) const;
+      virtual double get_mass4_parameter(const std::string&) const;
+      virtual double get_mass4_parameter(const std::string&, int i) const;
+      virtual double get_mass4_parameter(const std::string&, int i, int j) const;
+      virtual double get_mass3_parameter(const std::string&) const;
+      virtual double get_mass3_parameter(const std::string&, int i) const;
+      virtual double get_mass3_parameter(const std::string&, int i, int j) const;
+      virtual double get_mass2_parameter(const std::string&) const;
+      virtual double get_mass2_parameter(const std::string&, int i) const;
+      virtual double get_mass2_parameter(const std::string&, int i, int j) const;
+      virtual double get_mass_parameter(const std::string&) const;
+      virtual double get_mass_parameter(const std::string&, int i) const;
+      virtual double get_mass_parameter(const std::string&, int i, int j) const;
+      virtual double get_dimensionless_parameter(const std::string&) const;
+      virtual double get_dimensionless_parameter(const std::string&, int i) const;
+      virtual double get_dimensionless_parameter(const std::string&, int i, int j) const;
    };
 
 
 template<class SpecType>
-double RunparDer<SpecType>::get_mass4_parameter(std::string mass) const
+double RunparDer<SpecType>::get_mass4_parameter(const std::string& mass) const
 {
    SpecType spec(get_bound_spec()); /// Get correct bound spectrum for whatever class this is
    fmap& mass4map(get_mass4_map()); /// Get correct map for whatever class this is
@@ -239,7 +240,7 @@ double RunparDer<SpecType>::get_mass4_parameter(std::string mass) const
 }
 
 template <class SpecType>
-double RunparDer<SpecType>::get_mass4_parameter(std::string mass, int i) const
+double RunparDer<SpecType>::get_mass4_parameter(const std::string& mass, int i) const
 {
    SpecType spec(get_bound_spec()); ///  Get correct bound spectrum for whatever class this is
    fmap1& mass4map(get_mass4_map1()); ///  Get correct map for whatever class this is
@@ -268,7 +269,7 @@ double RunparDer<SpecType>::get_mass4_parameter(std::string mass, int i) const
 }
 
 template <class SpecType>
-double  RunparDer<SpecType>::get_mass4_parameter(std::string mass, int i, int j) const
+double  RunparDer<SpecType>::get_mass4_parameter(const std::string& mass, int i, int j) const
 {
    SpecType spec(get_bound_spec()); ///  Get correct bound spectrum for whatever class this is
    fmap2& mass4map(get_mass4_map2()); ///  Get correct map for whatever class this is
@@ -306,7 +307,7 @@ double  RunparDer<SpecType>::get_mass4_parameter(std::string mass, int i, int j)
 
 
 template <class SpecType>
-double RunparDer<SpecType>::get_mass3_parameter(std::string mass) const
+double RunparDer<SpecType>::get_mass3_parameter(const std::string& mass) const
 {
    SpecType spec(get_bound_spec()); ///  Get correct bound spectrum for whatever class this is
    fmap& mass3map(get_mass3_map()); ///  Get correct map for whatever class this is
@@ -326,7 +327,7 @@ double RunparDer<SpecType>::get_mass3_parameter(std::string mass) const
 }
 
 template <class SpecType>
-double RunparDer<SpecType>::get_mass3_parameter(std::string mass, int i) const
+double RunparDer<SpecType>::get_mass3_parameter(const std::string& mass, int i) const
 {
    SpecType spec(get_bound_spec()); ///  Get correct bound spectrum for whatever class this is
    fmap1& mass3map(get_mass3_map1()); ///  Get correct map for whatever class this is
@@ -354,7 +355,7 @@ double RunparDer<SpecType>::get_mass3_parameter(std::string mass, int i) const
 }
 
 template <class SpecType>
-double  RunparDer<SpecType>::get_mass3_parameter(std::string mass, int i, int j) const
+double  RunparDer<SpecType>::get_mass3_parameter(const std::string& mass, int i, int j) const
 {
    SpecType spec(get_bound_spec()); ///  Get correct bound spectrum for whatever class this is
    fmap2& mass3map(get_mass3_map2()); ///  Get correct map for whatever class this is
@@ -390,7 +391,7 @@ double  RunparDer<SpecType>::get_mass3_parameter(std::string mass, int i, int j)
 }
 
 template <class SpecType>
-double  RunparDer<SpecType>::get_mass2_parameter(std::string mass) const
+double  RunparDer<SpecType>::get_mass2_parameter(const std::string& mass) const
 {
    SpecType spec(get_bound_spec()); ///  Get correct bound spectrum for whatever class this is
    fmap& mass2map(get_mass2_map()); ///  Get correct map for whatever class this is
@@ -404,13 +405,14 @@ double  RunparDer<SpecType>::get_mass2_parameter(std::string mass) const
    else
    {
        ///  Get function out of map and call it on the bound flexiSUSY object
+       std::cout << "Accessing function pointer for string \"" << mass <<"\"" <<std::endl;;// Testing:
        FSptr f = it->second;
        return (spec.*f)();
    }
 }
 
 template <class SpecType>
-double  RunparDer<SpecType>::get_mass2_parameter(std::string mass, int i) const
+double  RunparDer<SpecType>::get_mass2_parameter(const std::string& mass, int i) const
 {
    SpecType spec(get_bound_spec()); ///  Get correct bound spectrum for whatever class this is
    fmap1& mass2map(get_mass2_map1()); ///  Get correct map for whatever class this is
@@ -438,7 +440,7 @@ double  RunparDer<SpecType>::get_mass2_parameter(std::string mass, int i) const
 }
 
 template <class SpecType>
-double  RunparDer<SpecType>::get_mass2_parameter(std::string mass, int i, int j) const
+double  RunparDer<SpecType>::get_mass2_parameter(const std::string& mass, int i, int j) const
 {
    SpecType spec(get_bound_spec()); ///  Get correct bound spectrum for whatever class this is
    fmap2& mass2map(get_mass2_map2()); ///  Get correct map for whatever class this is
@@ -475,7 +477,7 @@ double  RunparDer<SpecType>::get_mass2_parameter(std::string mass, int i, int j)
 
 /// mass1
 template <class SpecType>
-double  RunparDer<SpecType>::get_mass_parameter(std::string mass) const
+double  RunparDer<SpecType>::get_mass_parameter(const std::string& mass) const
 {
    SpecType spec(get_bound_spec()); ///  Get correct bound spectrum for whatever class this is
    fmap& massmap(get_mass_map()); ///  Get correct map for whatever class this is
@@ -495,7 +497,7 @@ double  RunparDer<SpecType>::get_mass_parameter(std::string mass) const
 }
 
 template <class SpecType>
-double  RunparDer<SpecType>::get_mass_parameter(std::string mass, int i) const
+double  RunparDer<SpecType>::get_mass_parameter(const std::string& mass, int i) const
 {
    SpecType spec(get_bound_spec()); ///  Get correct bound spectrum for whatever class this is
    fmap1& massmap(get_mass_map1()); ///  Get correct map for whatever class this is
@@ -523,7 +525,7 @@ double  RunparDer<SpecType>::get_mass_parameter(std::string mass, int i) const
 }
 
 template <class SpecType>
-double  RunparDer<SpecType>::get_mass_parameter(std::string mass, int i, int j) const
+double  RunparDer<SpecType>::get_mass_parameter(const std::string& mass, int i, int j) const
 {
    SpecType spec(get_bound_spec()); ///  Get correct bound spectrum for whatever class this is
    fmap2& massmap(get_mass_map2()); ///  Get correct map for whatever class this is
@@ -560,7 +562,7 @@ double  RunparDer<SpecType>::get_mass_parameter(std::string mass, int i, int j) 
 
 /// mass0
 template <class SpecType>
-double  RunparDer<SpecType>::get_dimensionless_parameter(std::string par) const
+double  RunparDer<SpecType>::get_dimensionless_parameter(const std::string& par) const
 {
    SpecType spec(get_bound_spec()); ///  Get correct bound spectrum for whatever class this is
    fmap& mass0map(get_mass0_map()); ///  Get correct map for whatever class this is
@@ -580,7 +582,7 @@ double  RunparDer<SpecType>::get_dimensionless_parameter(std::string par) const
 }
 
 template <class SpecType>
-double  RunparDer<SpecType>::get_dimensionless_parameter(std::string par, int i) const
+double  RunparDer<SpecType>::get_dimensionless_parameter(const std::string& par, int i) const
 {
    SpecType spec(get_bound_spec()); ///  Get correct bound spectrum for whatever class this is
    fmap1& mass0map(get_mass0_map1()); ///  Get correct map for whatever class this is
@@ -608,7 +610,7 @@ double  RunparDer<SpecType>::get_dimensionless_parameter(std::string par, int i)
 }
 
 template <class SpecType>
-double  RunparDer<SpecType>::get_dimensionless_parameter(std::string par, int i, int j) const
+double  RunparDer<SpecType>::get_dimensionless_parameter(const std::string& par, int i, int j) const
 {
    SpecType spec(get_bound_spec()); ///  Get correct bound spectrum for whatever class this is
    fmap2& mass0map(get_mass0_map2()); ///  Get correct map for whatever class this is
@@ -645,7 +647,7 @@ double  RunparDer<SpecType>::get_dimensionless_parameter(std::string par, int i,
 
 
 template <class SpecType>
-double PhysDer <SpecType>::get_Pole_Mass(std::string mass) const
+double PhysDer <SpecType>::get_Pole_Mass(const std::string& mass) const
 {
    ///    PhysType phys(get_bound_phys()); ///  Get correct bound spectrum for whatever class this is
    SpecType spec(get_bound_spec());
@@ -667,7 +669,7 @@ double PhysDer <SpecType>::get_Pole_Mass(std::string mass) const
 
 
 template <class SpecType>
-double  PhysDer<SpecType>::get_Pole_Mass(std::string mass, int i) const
+double  PhysDer<SpecType>::get_Pole_Mass(const std::string& mass, int i) const
 {
    SpecType spec(get_bound_spec()); ///  Get correct bound spectrum for whatever class this is
    //   PhysType phys(get_bound_phys());
@@ -698,7 +700,7 @@ double  PhysDer<SpecType>::get_Pole_Mass(std::string mass, int i) const
 
 
 template <class SpecType>
-double PhysDer <SpecType>::get_Pole_Mixing(std::string mixing) const
+double PhysDer <SpecType>::get_Pole_Mixing(const std::string& mixing) const
 {
    ///    PhysType phys(get_bound_phys()); ///  Get correct bound spectrum for whatever class this is
    SpecType spec(get_bound_spec());
@@ -720,7 +722,7 @@ double PhysDer <SpecType>::get_Pole_Mixing(std::string mixing) const
 }
 
 template <class SpecType>
-double PhysDer <SpecType>::get_Pole_Mixing(std::string mixing, int i) const
+double PhysDer <SpecType>::get_Pole_Mixing(const std::string& mixing, int i) const
 {
    ///    PhysType phys(get_bound_phys()); ///  Get correct bound spectrum for whatever class this is
    SpecType spec(get_bound_spec());
@@ -750,7 +752,7 @@ double PhysDer <SpecType>::get_Pole_Mixing(std::string mixing, int i) const
    }
 }
 template <class SpecType>
-double PhysDer <SpecType>::get_Pole_Mixing(std::string mixing, 
+double PhysDer <SpecType>::get_Pole_Mixing(const std::string& mixing, 
                                                      int i, int j) const
 {
    ///    PhysType phys(get_bound_phys()); ///  Get correct bound spectrum for whatever class this is

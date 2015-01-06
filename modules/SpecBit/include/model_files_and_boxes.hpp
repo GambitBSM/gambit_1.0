@@ -132,6 +132,13 @@
           }                                                                            \
                                                                                        \
       };                                                                               \
+      /* I think that there is a need to ensure that these templates actually get 
+         instantiated; was getting weird segfaults accessing the (virtual) getters 
+         via a Spectrum*. 
+
+         Should add instantiations for each algorithm we want to use 
+         (just one for now) */                                                         \
+      template class CAT_3(MODELNAME,_,interface)<ALGORITHM1>;                         \
     }                                                                                  \
   }
 

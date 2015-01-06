@@ -817,8 +817,28 @@ namespace Gambit {
    
    // Use our time-saving macro to define common member functions
    MODEL_SPEC_TEMPLATE_MEMBER_FUNCTIONS(MSSMSpec,MI::Model,MI)
+// ClassName=MSSMSpec, SpecType=MI::Model, M=MI
+// e.g.:  template <class M> typename SpecType ClassName<M>::get_bound_spec() const {return model;}
+// goes to
+// template <class MI> 
+// typename MI::Model MSSMSpec<MI>::get_bound_spec() const {
+//    return model;
+// }
+
    MODEL_RUNNING_TEMPLATE_MEMBER_FUNCTIONS(MSSM_DRbarPars)
+// e.g.:  template <class M> typename ClassName<M>::fmap&  ClassName<M>::get_mass4_map() const {return mass4_map;}
+// goes to
+// template <class M> 
+// typename MSSM_DRbarPars<M>::fmap&  MSSM_DRbarPars<M>::get_mass4_map() const {
+//    return mass4_map;
+// }
+
    MODEL_PHYS_TEMPLATE_MEMBER_FUNCTIONS(MSSM_Phys)
+// e.g.:  template <class M> typename ClassName<M>::fmap   ClassName<M>::PoleMass_map(ClassName<M>::fill_PoleMass_map());
+// goes to
+// template <class M> 
+// typename MSSM_Phys<M>::fmap   MSSMPhys<M>::PoleMass_map(ClassName<M>::fill_PoleMass_map());
+
  
 }
 

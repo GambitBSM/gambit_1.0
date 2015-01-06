@@ -46,20 +46,19 @@ Scanner:
 
 ObsLikes:
   - purpose:      Likelihood
+    capability:   specbit_tests2
+    type:         double
+    function:     specbit_test_func2
+
+  - purpose:      Likelihood
     capability:   specbit_tests1
     type:         double
     function:     specbit_test_func1
 
-  # Needs SLHAea object; so doesn't work yet
   #- purpose:      Likelihood
-  #  capability:   specbit_tests2
+  #  capability:   specbit_tests3
   #  type:         double
-  #  function:     specbit_test_func2
-
-  - purpose:      Likelihood
-    capability:   specbit_tests3
-    type:         double
-    function:     specbit_test_func3
+  #  function:     specbit_test_func3
 
   - purpose:      Likelihood
     capability:   dump_spectrum_slha
@@ -109,9 +108,9 @@ Auxiliaries:
   #  dependencies:
   #  - {capability: MSSM_spectrum, function: get_CMSSM_spectrum} #get_GUTMSSMA_spectrum} 
 
-  - capability: specbit_tests3
-    dependencies:
-    - {capability: MSSM_spectrum, function: get_MSSMatMGUT_spectrum} #get_CMSSM_spectrum} 
+  #- capability: specbit_tests3
+  #  dependencies:
+  #  - {capability: MSSM_spectrum, function: get_MSSMatMGUT_spectrum} #get_CMSSM_spectrum} 
 
   ##}
 
