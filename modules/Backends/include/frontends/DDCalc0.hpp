@@ -41,24 +41,45 @@ LOAD_LIBRARY
     * Function name used within GAMBIT.
     * Function return type (void for fortran subroutines).
     * Argument type list (pointers for fortran routines).
-    * Symbol name in compiled object file; note fortran module
-      routines are typically named '__<modulename>_MOD_<routinename>'
-      where the module name and routine name are in lower case.
+    * Symbol name in compiled object file (see below).
     * Capability name.
   The primary DDCalc0 routines meant to be accessible to GAMBIT
   have been designed to avoid array or optional arguments.
+
+  Naming conventions for the object/library symbols of Fortran module
+  routines are typically:
+     __<modulename>_MOD_<routinename>  [gfortran]
+     <modulename>_mp_<routinename>_    [ifort]
+  where the module and routine names are in lower case.  To avoid
+  compiler-dependendent symbol names, BIND() statements are used in
+  the Fortran source code to explicitly specify the symbol names.
+  We chose as our naming convention the gfortran naming convention.
+  [n.b.: For non-module routines, '<routinename>_' (again in lower
+  case) is the convention for both compilers.]
  */
 
 // Initialization (global)
 BE_FUNCTION(DDCalc0_Init, void, (), "__ddcalc0_MOD_ddcalc0_init", "DDCalc0_Initialize")
+
 // Initialization (specific experiments).
 // Single boolean argument indicates if extra calculations
 // should be performed for some no-background-subtraction
-// limits.  Not necessary for likelihoods.
+// limits (not necessary for likelihoods).
 BE_FUNCTION(DDCalc0_XENON100_2012_Init,  void, (bool*), "__ddcalc0_MOD_xenon100_2012_init",  "XENON100_2012_Initialize")
 BE_FUNCTION(DDCalc0_LUX_2013_Init,       void, (bool*), "__ddcalc0_MOD_lux_2013_init",       "LUX_2013_Initialize")
 BE_FUNCTION(DDCalc0_DARWIN_Ar_2014_Init, void, (bool*), "__ddcalc0_MOD_darwin_ar_2014_init", "DARWIN_Ar_2014_Initialize")
 BE_FUNCTION(DDCalc0_DARWIN_Xe_2014_Init, void, (bool*), "__ddcalc0_MOD_darwin_xe_2014_init", "DARWIN_Xe_2014_Initialize")
+
+// Specify the minimum recoil energy to be included in the rate
+// calculations [keV].  Note the efficiency curves already account for
+// detector and analysis thresholds regardless of this setting, so
+// setting this to 0 keV (the default behavior when initialization is
+// performed) does not imply that very low energy recoils actually
+// contribute to the signal.
+BE_FUNCTION(DDCalc0_XENON100_2012_SetEmin,  void, (bool*), "__ddcalc0_MOD_xenon100_2012_setemin",  "XENON100_2012_SetEmin")
+BE_FUNCTION(DDCalc0_LUX_2013_SetEmin,       void, (bool*), "__ddcalc0_MOD_lux_2013_setemin",       "LUX_2013_SetEmin")
+BE_FUNCTION(DDCalc0_DARWIN_Ar_2014_SetEmin, void, (bool*), "__ddcalc0_MOD_darwin_ar_2014_setemin", "DARWIN_Ar_2014_SetEmin")
+BE_FUNCTION(DDCalc0_DARWIN_Xe_2014_SetEmin, void, (bool*), "__ddcalc0_MOD_darwin_xe_2014_setemin", "DARWIN_Xe_2014_SetEmin")
 
 // Set halo parameters (Standard Halo Model):
 //   rho [GeV/cm^3], vrot [km/s], v0 [km/s], vesc [km/s]
