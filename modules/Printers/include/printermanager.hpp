@@ -30,15 +30,31 @@ namespace Gambit
     /// Manager class for creating printer objects  
     class PrinterManager 
     {
+      private:
+        /// Map containing pointers to auxiliary printer objects
+        std::map<std::string, BasePrinter*> auxprinters;
+
+        /// Name specifying the printer type
+        std::string tag;
+    
+        /// Storage for printer options (needed for creating new streams)
+        Options options;
+
       public:
-        /// Pointer to printer object 
-        BasePrinter* printerptr; 
+        /// Pointer to main printer object 
+        BasePrinter* printerptr;
 
         /// Constructor
         PrinterManager(const Options&);
   
         /// Destructor
         ~PrinterManager();
+
+        /// Create auxiliary printer object
+        void new_stream(const std::string&, const Options&);
+
+        /// Getter for auxiliary printer objects
+        BasePrinter* get_stream(const std::string&);
     };
 
 

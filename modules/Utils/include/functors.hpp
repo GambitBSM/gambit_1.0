@@ -197,6 +197,12 @@ namespace Gambit
       /// Indicate to the functor which backends are actually loaded and working
       virtual void notifyOfBackends(std::map<str, std::set<str> >);
 
+      /// Printer function
+      virtual void print(Printers::BasePrinter* printer, const int pointID, int index);
+
+      /// Printer function (no-thread-index short-circuit)
+      virtual void print(Printers::BasePrinter* printer, const int pointID);
+
       /// Notify the functor about an instance of the options class that contains
       /// information from its corresponding ini-file entry in the auxiliaries or
       /// observables section.
@@ -228,9 +234,6 @@ namespace Gambit
 
       /// Add a combination of model groups to the internal list of combinations for which this functor is allowed to be used.
       void setAllowedModelGroupCombo(str groups);
-
-      /// Print function
-      virtual void print(Printers::BasePrinter*);
 
     protected:
           
@@ -594,10 +597,10 @@ namespace Gambit
       safe_ptr<TYPE> valuePtr();
 
       /// Printer function
-      virtual void print(Printers::BasePrinter* printer, int index);
+      virtual void print(Printers::BasePrinter* printer, const int pointID, int index);
 
       /// Printer function (no-thread-index short-circuit)
-      virtual void print(Printers::BasePrinter* printer);
+      virtual void print(Printers::BasePrinter* printer, const int pointID);
 
 
     protected:
@@ -631,7 +634,10 @@ namespace Gambit
       void calculate();
 
       /// Blank print method
-      virtual void print(Printers::BasePrinter*, int);
+      virtual void print(Printers::BasePrinter*, const int, int);
+
+      /// Blank print method
+      virtual void print(Printers::BasePrinter*, const int);
 
     protected:
 

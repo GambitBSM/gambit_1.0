@@ -29,6 +29,7 @@
 
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/classification.hpp>
+#include <boost/filesystem.hpp>
 
 # if GAMBIT_CONFIG_FLAG_use_std_regex
   #include <regex>
@@ -108,6 +109,9 @@ namespace Gambit
   
       return true;
     }
+
+    /// Ensure that a path exists (and then return the path, for chaining purposes)
+    std::string ensure_path_exists(const std::string&);
 
   }
 
