@@ -29,7 +29,10 @@
 
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/classification.hpp>
-#include <boost/filesystem.hpp>
+
+extern "C" {
+  #include "mkpath.h"  
+}
 
 # if GAMBIT_CONFIG_FLAG_use_std_regex
   #include <regex>

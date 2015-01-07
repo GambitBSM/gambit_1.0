@@ -22,7 +22,6 @@
 #include <sstream>
 #include "gambit_module_headers.hpp"
 #include "SpecBit_rollcall.hpp"
-#include "SpecBit_types.hpp"
 #include "stream_overloads.hpp" // Just for more convenient output to logger
 
 // Flexible SUSY stuff (should not be needed by the rest of gambit)
