@@ -87,25 +87,27 @@ Printer:
 Scanner:
 
 #  use_likelihood_plugins: [uniform]
-  use_scanner_plugin: crapsample
+  use_scanner_plugin: mcmc
   
+# Scanners
+
   plugins:
-    crapsample:
-      plugin: crapsample
+    mcmc:
+      plugin: toy_mcmc
       options:
         point_number: 2
         output_file:  output
         like:  Likelihood
 
-    loopsample:
-      plugin: loopsample
+    random:
+      plugin: random_sampler
       point_number: 20
       output_file:  output
       like:  Likelihood
       files:
         output_file: "weights ..."
     
-    multinest:
+    nested:
       plugin: multinest
       nlive: 500
       tol: 0.1
@@ -123,13 +125,7 @@ Scanner:
       tolorance: 1.01
       thread_number: 10
       cut: 100
-      
-    uniform:
-      plugin: uniform
-      parameters:
-        param...2:
-          range: [-1, 1]
-          
+                
     square_grid:
       plugin: square_grid
       verion: ">=1.0"
@@ -144,6 +140,16 @@ Scanner:
         purpose: Likelihood
         grid_pts: [4, 2]
     
+# Test functions
+
+    uniform:
+      plugin: uniform
+      parameters:
+        param...2:
+          range: [-1, 1]
+
+
+
 ###############################
 # Observables of interest
 ###############################

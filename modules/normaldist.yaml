@@ -51,23 +51,19 @@ sigma_prior:
 --- # Name/Value Section
 ##########################
 
-#scanner:
-#  module:  loopsample
-#  file_path:  ScannerBit/lib/libsample.so
-
 scanner:
   module:  multinest
   file_path:  ScannerBit/lib/libmultinest_interface.so
     
-crapsample:
+toy_mcmc:
   point_number: 1000
   output_file:  output
   like:  Likelihood
 
-loopsample:
+random_sampler:
   point_number: 1000
   output_file:  output
   like:  Likelihood
  
-multnest:
+multinest:
   output_file:  output

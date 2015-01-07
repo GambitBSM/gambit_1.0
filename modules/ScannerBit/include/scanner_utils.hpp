@@ -31,7 +31,6 @@
 #include <unordered_map>
 #include <algorithm>
 
-#include "outputhandler.hpp"
 #include "exceptions.hpp"
 #include "log.hpp"
 #include "factory_registry.hpp"
@@ -95,11 +94,6 @@ namespace Gambit
                 error& scan_error();
                 /// Scanner warnings
                 warning& scan_warning();
-
-                namespace outputHandler
-                {
-                        extern OutputHandler out;
-                }
         }
 }
 

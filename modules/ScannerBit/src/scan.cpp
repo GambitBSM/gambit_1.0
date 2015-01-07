@@ -239,7 +239,7 @@ namespace Gambit
 
                         Gambit::Scanner::IniFileInterface interface(pluginName, plugin, options->getOptions("plugins", pluginName));
                         
-                        unsigned int dim = factory->getDim();
+                        unsigned int dim = prior->size();
                         
                         Plugins::Plugin_Interface<int ()> plugin_interface(interface.fileName(), plugin.full_string, dim, *factory, interface, *prior);
                         plugin_interface();

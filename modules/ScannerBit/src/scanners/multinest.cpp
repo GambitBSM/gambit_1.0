@@ -228,7 +228,7 @@ scanner_plugin (MultiNest, version(0, 0, 0, bens_version), external_library_requ
                 //std::string output_file            = get_inifile_value<std::string>("output_file", "default_output");
 
                 // Have to discuss with Greg the best thing to do here.
-                Function_Base *LogLike             = get_functor("Scanner_Function", "Likelihood");
+                Function_Base *LogLike             = get_functor("Likelihood");
                 int ma = keys.size();
 
                 // set the MultiNest sampling parameters 

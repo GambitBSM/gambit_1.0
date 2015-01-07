@@ -93,9 +93,6 @@ namespace Gambit
   {
     dependencyResolver.resetAll();
   }
-    
-  const std::vector<double>& Likelihood_Container_Base::getParameters() const  {return realParameters;} 
-  const std::vector<str>& Likelihood_Container_Base::getKeys() const {return prior.getShownParameters();}
 
   void Likelihood_Container_Base::print(double in, const str &type) const
   {
@@ -115,11 +112,10 @@ namespace Gambit
    
   /// Evaluate total likelihood function
   // TODO sort out print statements for invalid points and invalid observables associated with otherwise valid points (ie ones with valid like calculations).				
-  double Likelihood_Container::operator() (const std::vector<double> &in)
+  double Likelihood_Container::main (const std::vector<double> &in)
   {
     double lnlike = 0;
     bool compute_aux = true;     
-    Scanner::outputHandler::out.defout();
     setParameters(in);      
     logger() << LogTags::core << "Number of vertices to calculate: " << (target_vertices.size() + aux_vertices.size()) << EOM;
       
@@ -164,7 +160,6 @@ namespace Gambit
     }
       
     resetAll();     
-    Scanner::outputHandler::out.redir("scanner");				
     return lnlike;
   }
 

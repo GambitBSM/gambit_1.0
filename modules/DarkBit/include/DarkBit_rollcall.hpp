@@ -167,12 +167,14 @@ START_MODULE
     // Routine for cross checking RD density results
     #define FUNCTION RD_oh2_DarkSUSY
       START_FUNCTION(double)
+      ALLOW_MODELS(MSSM25)  // TODO: (CW) Check for which models this works
       BACKEND_REQ(dsrdomega, (), double, (int&,int&,double&,int&,int&,int&))
     #undef FUNCTION
 
     // Routine for cross checking RD density results
     #define FUNCTION RD_oh2_micromegas
       START_FUNCTION(double)
+      ALLOW_MODELS(MSSM25)  // TODO: (CW) Check for which models this works
       BACKEND_REQ(oh2, (), double, (double*,int,double))
     #undef FUNCTION
   #undef CAPABILITY

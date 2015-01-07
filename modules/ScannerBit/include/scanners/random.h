@@ -3,6 +3,8 @@
 #include <iostream>
 #include <cstdio>
 
+#include "threadsafe_rng.hpp"
+
 using namespace std;
 
 template <typename T>
@@ -450,13 +452,13 @@ class Cholesky
 		}
 };
 
-class Ran
+class Ran_old
 {
 	private:
 		unsigned long long int u, v, w;
 		
 	public:
-		Ran(unsigned long long int j) : v(4101842887655102017LL), w(1)
+		Ran_old(unsigned long long int j) : v(4101842887655102017LL), w(1)
 		{
 			u = j ^ v; int64();
 			v = u; int64(); int64();
@@ -472,6 +474,13 @@ class Ran
 		}
 		inline double Doub(){return 5.42101086242752217E-20 * int64();}
 		inline unsigned int int32(){return (unsigned int)int64();}
+};
+
+class Ran
+{
+public:
+        Ran(unsigned long long int){}
+        inline double Doub(){return Gambit::Random::draw();}
 };
 
 class ExponDev : public Ran

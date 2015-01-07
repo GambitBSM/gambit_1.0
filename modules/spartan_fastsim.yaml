@@ -86,10 +86,10 @@ Printer:
 
 Scanner:
 
-  plugin: loopsample
+  plugin: random_sampler
   file_path:  ScannerBit/lib/libsample.so
 
-  loopsample:
+  random_sampler:
     point_number: 20
     output_file:  output
     like:  Likelihood

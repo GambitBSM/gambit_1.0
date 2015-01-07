@@ -28,16 +28,16 @@ namespace Gambit {
       public:
         virtual void defaults() {
           // Basic setup for a general SUSY LHC run
-          set("Beams:eCM = 8000");
-          set("Main:numberOfEvents = 1000");
-          set("Main:timesAllowErrors = 1000");
-          set("Print:quiet = on");
-          set("Init:showProcesses = on");
+          _settings.push_back("Beams:eCM = 8000");
+          _settings.push_back("Main:numberOfEvents = 1000");
+          _settings.push_back("Main:timesAllowErrors = 1000");
+          _settings.push_back("Print:quiet = on");
+          _settings.push_back("Init:showProcesses = on");
           // Default to SUSY with all subprocesses
-          set("SUSY:all = on");
+          _settings.push_back("SUSY:all = on");
 
           // Random seed setup
-          set("Random:setSeed = on");
+          _settings.push_back("Random:setSeed = on");
         }
     };
 
@@ -48,8 +48,8 @@ namespace Gambit {
         virtual void defaults() {
           Pythia_SUSY_LHC_8TeV::defaults();
 
-          set("SUSY:idA = 1000021");
-          set("SUSY:idVecB = 1000001, 1000002, 1000003, 1000004, 2000001, 2000002, 2000003, 2000004");
+          _settings.push_back("SUSY:idA = 1000021");
+          _settings.push_back("SUSY:idVecB = 1000001, 1000002, 1000003, 1000004, 2000001, 2000002, 2000003, 2000004");
         }
     };
 

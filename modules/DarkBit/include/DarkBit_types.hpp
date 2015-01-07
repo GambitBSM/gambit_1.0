@@ -345,6 +345,9 @@ namespace Gambit
 
         // List of channels
         std::vector<TH_Channel> channelList;
+
+        // Total decay rate or sigma v
+        double genRateTotal;
     };
 
     struct TH_ProcessCatalog
