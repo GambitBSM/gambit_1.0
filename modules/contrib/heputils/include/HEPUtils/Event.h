@@ -65,14 +65,43 @@ namespace HEPUtils {
       clear();
     }
 
+    /// Copy assignment (shallow-copies Particle pointers)
+    void operator = (const Event& e) {
+      clear(); //< Delete current particles
+      _photons = e._photons;
+      _electrons = e._electrons;
+      _muons = e._muons;
+      _taus = e._taus;
+      _invisibles = e._invisibles;
+      _jets = e._jets;
+      _pmiss = e._pmiss;
+      //return *this;
+    }
+
+    /// Clone a copy on the heap
+    Event clone() {
+      Event rtn;
+      std::vector<Particle*> ps = particles();
+      for (size_t i = 0; i < ps.size(); ++i) {
+        rtn.add_particle(new Particle(*ps[i]));
+      }
+      std::vector<Jet*> js = jets();
+      for (size_t i = 0; i < js.size(); ++i) {
+        rtn.add_jet(new Jet(*js[i]));
+      }
+      rtn._pmiss = _pmiss;
+      return rtn;
+    }
+
     //@}
+
 
     /// Empty the event's particle, jet and MET collections
     void clear() {
       /// @todo Prefer this form when we can use C++11's range-for
       // for (Particle* p : particles()) delete p;
       std::vector<Particle*> ps = particles();
-      for (size_t i = 0; i < particles().size(); ++i) { delete ps[i]; }
+      for (size_t i = 0; i < ps.size(); ++i) { delete ps[i]; }
       ps.clear();
       _photons.clear();
       _electrons.clear();
@@ -194,14 +223,14 @@ namespace HEPUtils {
     /// @brief Set the jets collection
     ///
     /// The Jets should be new'd; Event will take ownership.
-    void setJets(const std::vector<Jet*>& jets) {
+    void set_jets(const std::vector<Jet*>& jets) {
       _jets = jets;
     }
 
     /// @brief Add a jet to the jets collection
     ///
     /// The Jet should be new'd; Event will take ownership.
-    void addJet(Jet* j) {
+    void add_jet(Jet* j) {
       _jets.push_back(j);
     }
 
