@@ -26,6 +26,7 @@
 #include "plugin_defs.hpp"
 #include "plugin_macros.hpp"
 #include "plugin_details.hpp"
+#include "factory_defs.hpp"
 
 #include <yaml-cpp/yaml.h>
 
@@ -34,13 +35,6 @@ namespace Gambit
         /*ScannerBit specific stuff.*/
         namespace Scanner
         {       
-                /*Prior Transform*/
-                class PriorTransform
-                {
-                public:
-                        virtual void transform(const std::vector<double> &, std::map<std::string, double> &) const = 0;
-                };
-                
                 /*Inifile Interface*/
                 class IniFileInterface
                 {
@@ -50,32 +44,6 @@ namespace Gambit
                         virtual const std::string getValue(const std::string &in) const = 0;
                         virtual YAML::Node getNode(const std::string &str) const = 0;
                         virtual ~IniFileInterface() = 0;
-                };
-                
-                class Function_Base
-                {
-                private:
-                        unsigned long long int pointID;
-                        
-                public:
-                        Function_Base() : pointID(0) {}
-                        virtual double main(const std::vector<double> &) = 0;
-                        virtual ~Function_Base(){} 
-                        
-                        double operator () (const std::vector<double> &params) 
-                        {
-                                pointID++;
-                                return main(params);
-                        }
-                        
-                        unsigned long long int getPtID() const {return pointID;}
-                };
-                
-                class Factory_Base
-                {
-                public:
-                        virtual void * operator() (const std::string &purpose) const = 0;
-                        virtual ~Factory_Base() {};
                 };
         }
 }
@@ -92,7 +60,7 @@ namespace Gambit
 #define INIT_FUNCTOR(exp, ...)          INITIALIZE(exp, GET_FUNCTOR(__VA_ARGS__))
 
 #define GET_DIMENSION()                 get_input_value<unsigned int>(0)
-#define GET_FUNCTOR(...)                (Function_Base *)(get_input_value<Factory_Base>(1))(__VA_ARGS__)
+#define GET_FUNCTOR(...)                (Function_Base<double (const std::vector<double>&)> *)(get_input_value<Factory_Base>(1))(__VA_ARGS__)
 
 #define SCANNER_SETUP                                                                                                   \
 using namespace Gambit::Scanner;                                                                                        \
