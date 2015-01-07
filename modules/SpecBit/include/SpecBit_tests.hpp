@@ -22,12 +22,14 @@
 ///  *********************************************
 
 // Flexible SUSY stuff (should not be needed by the rest of gambit)
-#include "CMSSM_two_scale_model.hpp"
-#include "CMSSM_two_scale_model_slha.hpp"
+// Now in model_files_and_boxes.hpp
+//#include "CMSSM_two_scale_model.hpp"
+//#include "CMSSM_two_scale_model_slha.hpp"
 //#include "CMSSM_physical.hpp"
 
 #include "ew_input.hpp"
 #include "MSSMSpec.hpp"
+#include "model_files_and_boxes.hpp"
 #include "numerics.hpp"
 #include "wrappers.hpp"
 // Switch test output depending on where this is being compiled
@@ -131,8 +133,8 @@ namespace Gambit
       }
 
      
-      template <class M>
-      bool TestMssmParMass2_0(MSSMSpec<M> mssm, M FSmssm, 
+      template <class MI>
+      bool TestMssmParMass2_0(MSSMSpec<MI>& mssm, typename MI::Model& FSmssm, 
                               bool immediate_exit = true)
       {      
          bool pass = false;
@@ -190,8 +192,8 @@ namespace Gambit
     }
 
 
-      template <class M>  
-    bool TestMssmParMass2_2(MSSMSpec<M> mssm, M FSmssm, 
+      template <class MI>  
+    bool TestMssmParMass2_2(MSSMSpec<MI>& mssm, typename MI::Model& FSmssm, 
                             bool immediate_exit=true)
     {
        bool pass = false;
@@ -248,8 +250,8 @@ namespace Gambit
          return pass;
       }
     
-      template <class M>  
-      bool TestMssmParMass1_0(MSSMSpec<M> mssm, M FSmssm, 
+      template <class MI>  
+      bool TestMssmParMass1_0(MSSMSpec<MI>& mssm, typename MI::Model& FSmssm, 
                               bool immediate_exit=true)
       {
          bool pass = false;
@@ -303,8 +305,8 @@ namespace Gambit
        }
 
 
-      template <class M>  
-      bool TestMssmParMass1_2(MSSMSpec<M> mssm, M FSmssm, 
+      template <class MI>  
+      bool TestMssmParMass1_2(MSSMSpec<MI>& mssm, typename MI::Model& FSmssm, 
                               bool immediate_exit =true)
       {
          bool pass = false;
@@ -353,9 +355,9 @@ namespace Gambit
     }
 
 
-    template <class M>
-    bool TestMssmParMass0_0(MSSMSpec<M> mssm, M FSmssm, 
-                            bool immediate_exit =true )
+    template <class MI>
+    bool TestMssmParMass0_0(MSSMSpec<MI>& mssm, typename MI::Model& FSmssm, 
+                               bool immediate_exit =true )
     {
        bool pass = false;
        std::set<std::pair<std::string,double>> name_value;
@@ -406,8 +408,8 @@ namespace Gambit
     }
 
       
-      template <class M>
-      bool TestMssmParMass0_2(MSSMSpec<M> mssm, M FSmssm, 
+      template <class MI>
+      bool TestMssmParMass0_2(MSSMSpec<MI>& mssm, typename MI::Model& FSmssm, 
                                bool immediate_exit = true)
       {
        bool pass = false;
@@ -460,8 +462,8 @@ namespace Gambit
     }
 
 
-    template <class M>
-    bool TestMssmPoleGets0(MSSMSpec<M> mssm, M FSmssm, 
+    template <class MI>
+    bool TestMssmPoleGets0(MSSMSpec<MI>& mssm, typename MI::Model& FSmssm, 
                            bool immediate_exit = true)
     {
        bool pass = false;
@@ -553,8 +555,8 @@ namespace Gambit
     }
      
 
-     template <class M>
-    bool TestMssmPoleGets1(MSSMSpec<M> mssm, M FSmssm, 
+     template <class MI>
+    bool TestMssmPoleGets1(MSSMSpec<MI>& mssm, typename MI::Model& FSmssm, 
                            bool immediate_exit = true)
     {
        bool pass = false;
@@ -685,8 +687,8 @@ namespace Gambit
     }
 
 
-       template <class M>
-     bool TestMssmPoleMixingGets2(MSSMSpec<M> mssm, M FSmssm, 
+       template <class MI>
+     bool TestMssmPoleMixingGets2(MSSMSpec<MI>& mssm, typename MI::Model& FSmssm, 
                                   bool immediate_exit = true)
      {
         bool pass = false;
@@ -762,8 +764,8 @@ namespace Gambit
        return pass;
     }
                                                              
-    template <class M> 
-    bool TestMssmPoleGets(MSSMSpec<M> mssm, M FSmssm)
+    template <class MI> 
+    bool TestMssmPoleGets(MSSMSpec<MI>& mssm, typename MI::Model& FSmssm)
     {
        bool pass = false;
        pass = TestMssmPoleGets0(mssm,FSmssm);
@@ -796,8 +798,8 @@ namespace Gambit
     
     }
 
-     template <class M>
-    bool TestMssmParGets(MSSMSpec<M> mssm, M FSmssm)
+     template <class MI>
+    bool TestMssmParGets(MSSMSpec<MI>& mssm, typename MI::Model& FSmssm)
     {
        bool pass = false; 
        pass = TestMssmParMass2_0(mssm,FSmssm);
@@ -934,8 +936,8 @@ namespace Gambit
     }
     
     
-      template <class M>
-      bool test_exact(MSSMSpec<M> mssm, M FS_model_slha)
+      template <class MI>
+      bool test_exact(MSSMSpec<MI>& mssm, typename MI::Model& FS_model_slha)
       {
          bool pass = TestMssmParGets(mssm,FS_model_slha);
          if(pass == false)
@@ -975,8 +977,8 @@ namespace Gambit
       }
       //This gives identical results after running up, so don't need messy
       // Test_close
-      template <class M>
-       bool running_test(MSSMSpec<M> & mssm, M & FS_model_slha, double tol)
+      template <class MI>
+       bool running_test(MSSMSpec<MI> & mssm, typename MI::Model & FS_model_slha, double tol)
       {
          double highscale = 1e+16;
          double lowscale = mssm.mssm_drbar_pars.GetScale();
@@ -1012,8 +1014,8 @@ namespace Gambit
          return pass;
       }
 
-      template <class M>
-      bool running_test(Spectrum * spec, M & FS_model_slha, 
+      template <class Model>
+      bool running_test(Spectrum * spec, Model & FS_model_slha, 
                    double tol)
       {
          double highscale = 1e+16;

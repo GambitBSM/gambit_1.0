@@ -50,12 +50,16 @@ namespace Gambit
     /// Create a spectrum object for testing purposes
     void make_test_spectrum(Spectrum* &result)
     {
-      static CMSSM_slha<Two_scale> FS_model; //start with empty flexiblesusy object
-   
+      typedef CMSSM_interface<ALGORITHM1> MI;
+      static MI::Model FS_model; //start with empty flexiblesusy object
+      // Or could use flexiblesusy classes directly; these two are equivalent in this case:
+      //static CMSSM_slha<Two_scale> FS_model; //start with empty flexiblesusy object
+
+      // Create model interface class (leaving input stuff with default values)
+      MI model_interface(FS_model);
+
       // Create Spectrum object to wrap flexiblesusy object
-      
-      //std::unique_ptr<FS::MSSMSpec> mssm(new FS::MSSMSpec(mssm1));      
-      static MSSMSpec<CMSSM_slha<Two_scale>> mssm(FS_model);
+      static MSSMSpec<MI> mssm(FS_model);
 
       // I think these objects should only get created once since they are static...      
       // ...and they should be destructed automatically when the program ends.
@@ -87,22 +91,66 @@ namespace Gambit
     /// Function to test out SpecBit features
     void specbit_test_func1 (double &result)
     {
-
       // Access the pipes for this function to get model and parameter information
       using namespace Pipes::specbit_test_func1;
 
+      std::cout << "Running specbit_test_func1" << std::endl;
+      std::cout << "Retrieving Spectrum*" << std::endl;
       Spectrum* spec = *Dep::MSSM_spectrum; //Test retrieve pointer to Spectrum object 
 
       //const Spectrum& spec(*(Dep::particle_spectrum->get())); // Get Spectrum object ptr out of dependency pipe and make a nice reference out of it.
-
+      std::cout << "Running spec_manipulate" << std::endl;
       spec_manipulate(spec); //function can manipulate without knowing model.
 
-      logger() << EOM;  
     }
 
     /// Function to test out SpecBit features
     void specbit_test_func2 (double &result)
     {
+      std::cout << "Running specbit_test_func2" << std::endl;
+
+      // TESTING
+      // Direct access to flexiblesusy function, for testing
+      std::cout << "Creating CMSSM_slha<Two_scale> object" << std::endl;
+      CMSSM_slha<Two_scale> FS_model; //start with empty flexiblesusy object
+
+      // Create model interface class (leaving input stuff with default values)
+      std::cout << "Creating CMSSM_interface<Two_scale> object" << std::endl;
+      CMSSM_interface<Two_scale> model_interface(FS_model);
+
+      // Create Spectrum object to wrap flexiblesusy object
+      std::cout << "Creating MSSMSpec<CMSSM_interface<Two_scale>> object" << std::endl;
+      MSSMSpec<CMSSM_interface<Two_scale>> mssm(model_interface);
+
+      // Test run functions
+      std::cout << "Spectrum via MSSMSpec" << std::endl;
+      std::cout << "mssm.runningpars.GetScale() =" 
+          << mssm.runningpars.GetScale() << std::endl;
+      std::cout << "mHd2 = "  
+          << mssm.runningpars.get_mass2_parameter("mHd2") << std::endl;
+      std::cout << "mHu2 = "  
+          << mssm.runningpars.get_mass2_parameter("mHu2") << std::endl;
+
+      // Do it again using a Spectrum base pointer
+      Spectrum* spec = &mssm;
+      std::cout << "Spectrum via Spectrum*" << std::endl;
+      std::cout << "spec->runningpars.GetScale() =" 
+          << spec->runningpars.GetScale() << std::endl;
+      std::cout << "mHd2 = "  
+          << spec->runningpars.get_mass2_parameter("mHd2") << std::endl;
+      std::cout << "mHu2 = "  
+          << spec->runningpars.get_mass2_parameter("mHu2") << std::endl;
+
+      // Fill the model and do it again
+      std::cout << "Spectrum via Spectrum* (filled)" << std::endl;
+      setup(mssm.model);
+      std::cout << "spec->runningpars.GetScale() =" 
+          << spec->runningpars.GetScale() << std::endl;
+      std::cout << "mHd2 = "  
+          << spec->runningpars.get_mass2_parameter("mHd2") << std::endl;
+      std::cout << "mHu2 = "  
+          << spec->runningpars.get_mass2_parameter("mHu2") << std::endl;
+
     }
 
     /// Function to test out SpecBit features

@@ -22,12 +22,13 @@
 #include <sstream>
 #include "gambit_module_headers.hpp"
 #include "SpecBit_rollcall.hpp"
+#include "SpecBit_types.hpp"
 #include "stream_overloads.hpp" // Just for more convenient output to logger
 
 // Flexible SUSY stuff (should not be needed by the rest of gambit)
 #include "ew_input.hpp"
-#include "lowe.h" // From softsusy; used by fleiblesusy
-#include "model_files_and_boxes.hpp" // All the flexiblesusy model header files (file is in SpecBit/include)
+#include "lowe.h" // From softsusy; used by flexiblesusy
+#include "model_files_and_boxes.hpp" // #includes lots of other flexiblesusy headers and defines interface classes
 
 //#include "logger.hpp"
 //#include "wrappers.hpp"
@@ -61,8 +62,8 @@ namespace Gambit
     // These each require slightly different setup, but once that is done the rest
     // of the code required to run them is the same; this is what is contained in
     // the below template function.
-    template <class Modelbox>
-    Spectrum* run_FS_spectrum_generator(const typename Modelbox::InputParameters &input, const Options &runOptions)
+    template <class MI>  // MI for Model_interface
+    Spectrum* run_FS_spectrum_generator(const typename MI::InputParameters &input, const Options &runOptions)
     {
       // SoftSUSY object used to set quark and lepton masses and gauge
       // couplings in QEDxQCD effective theory
@@ -73,7 +74,7 @@ namespace Gambit
       oneset.toMz();
    
       // Create spectrum generator object
-      typename Modelbox::SpectrumGenerator spectrum_generator;
+      typename MI::SpectrumGenerator spectrum_generator;
 
       // Spectrum generator settings
       // Leave most with whatever the defaults are for now, but change one thing to 
@@ -93,20 +94,28 @@ namespace Gambit
      
       // Generate spectrum
       spectrum_generator.run(oneset, input);
-     
-      // Extract references to flexiblesusy model object, and problems report
-      const typename Modelbox::Model model(spectrum_generator.get_model());
-
+   
       // Extract report on problems...
-      const Problems<Modelbox::number_of_particles>& problems
-        = spectrum_generator.get_problems();
+      const typename MI::Problems& problems = spectrum_generator.get_problems();
      
-      // Create Spectrum object to wrap flexiblesusy object 
+      // Create Model_interface to carry the input and results, and know
+      // how to access the flexiblesusy routines.
+      // Note: Output of spectrum_generator.get_model() returns type, e.g. CMSSM.
+      // Need to convert it to type CMSSM_slha (which alters some conventions of
+      // parameters into SLHA format)
+      MI model_interface(typename MI::Model(spectrum_generator.get_model()),oneset,input);
+
+      // Create Spectrum object to wrap flexiblesusy data
       // THIS IS STATIC so that it lives on once we leave this module function. We 
       // therefore cannot run the same spectrum generator twice in the same loop and 
       // maintain the spectrum resulting from both. But we should never want to do 
       // this.
-      static MSSMSpec<typename Modelbox::Model> generic_mssm;
+      // A pointer to this object is what gets turned into a Spectrum pointer and
+      // passed around Gambit.
+      //
+      // This object will COPY the interface data members into itself, so it is now the 
+      // one-stop-shop for all spectrum information, including the model interface object.
+      static MSSMSpec<MI> mssmspec(model_interface);
 
       if( problems.have_problem() )
       {
@@ -121,24 +130,29 @@ Message from flexibleSUSY below:" << std::endl;
       }  
  
       // Write SLHA file (for debugging purposes...)
-      typename Modelbox::SlhaIo slha_io;
+      typename MI::SlhaIo slha_io;
       slha_io.set_spinfo(problems);
       slha_io.set_sminputs(oneset);
       slha_io.set_minpar(input);
       slha_io.set_extpar(input);
-      slha_io.set_spectrum(model);
+      slha_io.set_spectrum(mssmspec.get_bound_spec()); //get_bound_spec retrieves the Model
       slha_io.write_to_file("SpecBit/initial_CMSSM_spectrum.slha");
 
-      // We want to store things in a "generic" flexiblesusy MSSM object. But in 
-      // flexiblesusy, there are different classes for each different MSSM-variant,
-      // even for simple changes like altering boundary conditions. So we need to take
-      // the low-scale spectrum data that results from the spectrum computation, and 
-      // copy it into the generic container. Need to write some routines to do this 
-      // (below is a placeholder). 
-      generic_mssm.get_lowe_data_from(model);
-
-      return &generic_mssm;
+      // Return a pointer to the Spectrum object
+      return &mssmspec;
     }
+    //
+    //
+    //   // We want to store things in a "generic" flexiblesusy MSSM object. But in 
+    //   // flexiblesusy, there are different classes for each different MSSM-variant,
+    //   // even for simple changes like altering boundary conditions. So we need to take
+    //   // the low-scale spectrum data that results from the spectrum computation, and 
+    //   // copy it into the generic container. Need to write some routines to do this 
+    //   // (below is a placeholder). 
+    //   generic_mssm.get_lowe_data_from(model);
+    //
+    //   return &generic_mssm;
+    // }
 
     /// Helper function for setting 3x3 matrix-valued parameters
     //  Names must conform to convention "<parname>_ij"
@@ -166,20 +180,11 @@ Message from flexibleSUSY below:" << std::endl;
     //void convert_NMSSM_to_SM  (Spectrum* &result) {result = *Pipes::convert_NMSSM_to_SM::Dep::NMSSM_spectrum;}
     //void convert_E6MSSM_to_SM (Spectrum* &result) {result = *Pipes::convert_E6MSSM_to_SM::Dep::E6MSSM_spectrum;}
 
-    
     void get_CMSSM_spectrum (Spectrum* &result)
     {
 
       // Access the pipes for this function to get model and parameter information
-      using namespace softsusy;
       namespace Pipe = Pipes::get_CMSSM_spectrum;
-
-      // Double-check that a CMSSM-descendant model is being scanned
-      //if( not QUERYMODELS("CMSSM") )
-      //{
-      //  SpecBit_error().raise(LOCAL_INFO, "Uh oh, a CMSSM-descendant model is not being scanned! This function should not have been permitted to run! Please check the ALLOWED_MODEL list in SpecBit_rollcall.hpp for this function");  
-      //}
-      //std::cout<<"Models:"<<*Pipe::Models<<std::endl;
 
       // Get input parameters
       CMSSM_input_parameters input;
@@ -191,15 +196,10 @@ Message from flexibleSUSY below:" << std::endl;
       input.Azero   = *Pipe::Param["A0"];
   
       // Run spectrum generator
-      result = run_FS_spectrum_generator<CMSSMbox<Two_scale>>(input,*Pipe::runOptions);
+      result = run_FS_spectrum_generator<CMSSM_interface<ALGORITHM1>>(input,*Pipe::runOptions);
       
       // Dump spectrum information to slha file (for testing...)
-      // Also, It should be relatively simple to alter flexiblesusy so that it can 
-      // return an slhaea object. It already uses one internally to do the slha
-      // writing, and there are routines to fill it from "model". But currently it is
-      // a private member; just need a routine to return it, and then need to write an
-      // interface function in the Spectrum object.
-      //result->dump2slha("SpecBit/CMSSM_fromSpectrumObject.slha");
+      result->dump2slha("SpecBit/CMSSM_fromSpectrumObject.slha");
     }
 
     void get_MSSMatMGUT_spectrum (Spectrum* &result)
@@ -227,7 +227,11 @@ Message from flexibleSUSY below:" << std::endl;
       input.Adij = fill_3x3_parameter_matrix("Ad", Pipe::Param);
       input.Auij = fill_3x3_parameter_matrix("Au", Pipe::Param);
 
-      result = run_FS_spectrum_generator<MSSMatMGUTbox<Two_scale>>(input,*Pipe::runOptions);
+      result = run_FS_spectrum_generator<MSSMatMGUT_interface<ALGORITHM1>>(input,*Pipe::runOptions);
+
+      std::cout << "Spectrum via Spectrum* (inside get_MSSMatMGUT)" << std::endl;
+      std::cout << "mHd2 = " << result->runningpars.get_mass2_parameter("mHd2") << std::endl;
+
     }
 
     void get_GUTMSSMB_spectrum (Spectrum* &result)
@@ -238,78 +242,22 @@ Message from flexibleSUSY below:" << std::endl;
 
     // Dump whatever is in the spectrum object to SLHA
     // This is mostly for testing purposes.
-    void dump_spectrum(double& result)
+    void dump_spectrum(double &result)
     {
       namespace Pipe = Pipes::dump_spectrum;
-
       Spectrum* spec(*Pipe::Dep::SM_spectrum);
       std::string filename(Pipe::runOptions->getValue<std::string>("filename"));
-
-      //spec->dump2slha(filename);
-
+      spec->dump2slha(filename);
       result = 1;
     }
 
-    // I think spectrum objects will just be able to return SLHAea objects of
-    // themselves, so probably don't need this.
-    void get_MSSM_spectrum_as_SLHAea (eaSLHA &result)
+    // Extract an SLHAea version of the spectrum contained in a Spectrum object
+    // (with capability MSSM_spectrum)
+    void get_MSSM_spectrum_as_SLHAea (SLHAea::Coll &result)
     {
-
-      using namespace Pipes::get_MSSM_spectrum_as_SLHAea;
-
-      Spectrum* spec = *Dep::MSSM_spectrum; //Test retrieve pointer to Spectrum object 
-
-      // Erase previous contents of container
-      for (eaSLHA::iterator block = result.begin(); block != result.end();)
-      {
-        result.erase(block);
-      }
-
-      // Copy Spectrum information into SLHAea container
-      std::stringstream ss;
-      ss.precision(8);
-      ss.setf(ios_base::scientific);
-
-      // Block MASS
-      ///TODO Cannot get pole masses right now...
-      // ss << "BLOCK MASS\n"
-      //    << "     24 " << spec->phys.get_Pole_Mass("MW")     << "  # MW\n"
-      //    << "     25 " << spec->phys.get_Pole_Mass("Mhh",0)  << "  # h0\n"
-      //    << "     35 " << spec->phys.get_Pole_Mass("Mhh",1)  << "  # H0\n"
-      //    << "     36 " << spec->phys.get_Pole_Mass("MA0")    << "  # A0\n"
-      //    << "     37 " << spec->phys.get_Pole_Mass("MHpm")   << "  # H+\n"
-      //    << "1000012 " << spec->phys.get_Pole_Mass("MSv",0)  << "  # ~nu_e_L\n"
-      //    << "1000014 " << spec->phys.get_Pole_Mass("MSv",1)  << "  # ~nu_mu_L\n"
-      //    << "1000016 " << spec->phys.get_Pole_Mass("MSv",2)  << "  # ~nu_tau_L\n"
-      //    << "1000022 " << spec->phys.get_Pole_Mass("MChi",0) << "  # ~neutralino(1)\n"
-      //    << "1000023 " << spec->phys.get_Pole_Mass("MChi",1) << "  # ~neutralino(2)\n"
-      //    << "1000025 " << spec->phys.get_Pole_Mass("MChi",2) << "  # ~neutralino(3)\n"
-      //    << "1000035 " << spec->phys.get_Pole_Mass("MChi",3) << "  # ~neutralino(4)\n"
-      //    << "1000024 " << spec->phys.get_Pole_Mass("MCha",0) << "  # ~chargino(1)\n"
-      //    << "1000037 " << spec->phys.get_Pole_Mass("MCha",1) << "  # ~chargino(2)\n";
-
-      // Block NMIX
-      //ss << "BLOCK NMIX\n"
-      //   << "     24 " << spec->phys.get_Pole_Mass("MW")     << "  # MW\n"
-      //   << "     25 " << spec->phys.get_Pole_Mass("Mhh",0)  << "  # h0\n"
-      //   << "     35 " << spec->phys.get_Pole_Mass("Mhh",1)  << "  # H0\n"
-      //   << "     36 " << spec->phys.get_Pole_Mass("MA0")    << "  # A0\n"
-      //   << "     37 " << spec->phys.get_Pole_Mass("MHpm")   << "  # H+\n"
- 
-      ss >> result;
-
-      // Write files like this (for testing):
-      ofstream ofs("SpecBit/test_output.slha");
-      if (ofs.is_open()) 
-      {
-        // Probably need to do some stream flushing if we really must write files every loop for whatever reason
-        ofs << result;
-        ofs.close();
-      }
-      else
-      {
-        SpecBit_error().raise(LOCAL_INFO,"Error opening SpecBit/test_output.slha for writing!");
-      }
+      namespace Pipe = Pipes::get_MSSM_spectrum_as_SLHAea;
+      Spectrum* spec(*Pipe::Dep::MSSM_spectrum);
+      result = spec->getSLHAea();
     }
 
   } // end namespace SpecBit

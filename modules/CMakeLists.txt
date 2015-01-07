@@ -210,6 +210,7 @@ file(GLOB BACKEND_HARVESTER_FILES "${PROJECT_SOURCE_DIR}/Backends/include/fronte
 file(GLOB MODULE_HARVESTER_FILES  "${PROJECT_SOURCE_DIR}/*Bit*/include/*_rollcall.hpp")
 list(REMOVE_ITEM MODULE_HARVESTER_FILES "${PROJECT_SOURCE_DIR}/ScannerBit//include//priors_rollcall.hpp" 
                                         "${PROJECT_SOURCE_DIR}/ScannerBit//include//test_function_rollcall.hpp")
+
 add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/Models/include/model_rollcall.hpp 
                    COMMAND python ${MODEL_HARVESTER} -x __not_a_real_name__,${itch_with_commas}
                    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} 
