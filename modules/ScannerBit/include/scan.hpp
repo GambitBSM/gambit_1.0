@@ -36,22 +36,30 @@ namespace Gambit
 {
         namespace Scanner
         {       
+                class Function_Base
+                {
+                private:
+                        unsigned long long int pointID;
+                        
+                public:
+                        Function_Base() : pointID(0) {}
+                        virtual double main(const std::vector<double> &) = 0;
+                        virtual ~Function_Base(){} 
+                        
+                        double operator () (const std::vector<double> &params) 
+                        {
+                                pointID++;
+                                return main(params);
+                        }
+                        
+                        unsigned long long int getPtID() const {return pointID;}
+                };
+                
                 class Factory_Base
                 {
                 public:
-                        virtual const std::vector<std::string> & getKeys() const = 0;
-                        virtual unsigned int getDim() const = 0;
-                        virtual void * operator() (const std::string &in, const std::string &purpose) const = 0;
-                        virtual void remove(void *a) const = 0;
+                        virtual void * operator() (const std::string &purpose) const = 0;
                         virtual ~Factory_Base() {};
-                };
-                
-                class Function_Base
-                {
-                public:
-                        virtual double operator () (const std::vector<double> &) = 0;
-                        virtual void print(double, const std::string &) const = 0;
-                        virtual ~Function_Base(){} 
                 };
 
                 class IniFileInterface_Base

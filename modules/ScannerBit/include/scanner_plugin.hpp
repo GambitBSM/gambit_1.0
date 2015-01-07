@@ -52,24 +52,30 @@ namespace Gambit
                         virtual ~IniFileInterface() = 0;
                 };
                 
-                /*Generic Functor*/
                 class Function_Base
                 {
+                private:
+                        unsigned long long int pointID;
+                        
                 public:
-                        virtual double operator () (const std::vector<double> &) = 0;
-                        virtual void print(double, const std::string &) const = 0;
-                        virtual ~Function_Base() = 0;
+                        Function_Base() : pointID(0) {}
+                        virtual double main(const std::vector<double> &) = 0;
+                        virtual ~Function_Base(){} 
+                        
+                        double operator () (const std::vector<double> &params) 
+                        {
+                                pointID++;
+                                return main(params);
+                        }
+                        
+                        unsigned long long int getPtID() const {return pointID;}
                 };
                 
-                /*Factory imported by ScannerBit*/
-                class Function_Factory_Base
+                class Factory_Base
                 {
                 public:
-                        virtual const std::vector<std::string> & getKeys() const = 0;
-                        virtual unsigned int getDim() const = 0;
-                        virtual void * operator() (const std::string &, const std::string &) const = 0;
-                        virtual void remove(void *) const = 0;
-                        virtual ~Function_Factory_Base() = 0;
+                        virtual void * operator() (const std::string &purpose) const = 0;
+                        virtual ~Factory_Base() {};
                 };
         }
 }
@@ -86,7 +92,7 @@ namespace Gambit
 #define INIT_FUNCTOR(exp, ...)          INITIALIZE(exp, GET_FUNCTOR(__VA_ARGS__))
 
 #define GET_DIMENSION()                 get_input_value<unsigned int>(0)
-#define GET_FUNCTOR(...)                (Function_Base *)(get_input_value<Function_Factory_Base>(1))(__VA_ARGS__)
+#define GET_FUNCTOR(...)                (Function_Base *)(get_input_value<Factory_Base>(1))(__VA_ARGS__)
 
 #define SCANNER_SETUP                                                                                                   \
 using namespace Gambit::Scanner;                                                                                        \
