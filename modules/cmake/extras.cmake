@@ -47,6 +47,8 @@ ExternalProject_Add(darksusy
   INSTALL_COMMAND ${CMAKE_Fortran_COMPILER} -shared ${libs} -o <SOURCE_DIR>/lib/libdarksusy.so COMMAND cp <SOURCE_DIR>/lib/libdarksusy.so ${PROJECT_SOURCE_DIR}/Backends/lib/.
 )
 
+set_property(TARGET darksusy PROPERTY _EP_DOWNLOAD_ALWAYS 0)
+
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../extras/DarkSUSY/libdarksusy.so" "${PROJECT_SOURCE_DIR}/Backends/lib/libdarksusy.so")
 
 ExternalProject_Add(ddcalc
