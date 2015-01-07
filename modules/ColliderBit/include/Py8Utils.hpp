@@ -233,7 +233,7 @@ namespace Gambit {
         }
         /// Add to the event
         const P4 p4 = mk_p4(pj);
-        gevt.addJet(new HEPUtils::Jet(p4, isB));
+        gevt.add_jet(new HEPUtils::Jet(p4, isB));
       }
 
       // MET (not equal to sum of prompt invisibles)
