@@ -47,7 +47,7 @@
 // Virtual print methods for base printer class
 #define VPRINT(r,data,elem)                                 \
   virtual void print(elem const&, const std::string& label, \
-                     const int vertexID, const int thread = -1, const int pointID = -1) \
+                     const int vertexID, const int /*rank*/, const int /*pointID*/) \
   {                                                         \
     std::ostringstream err;                                 \
                                                             \
@@ -88,24 +88,49 @@ namespace Gambit
 
         /// Destructor
         // Need this to be virtual so that the PrinterManager can destroy any printer object via a pointer to base
-        virtual ~BasePrinter() = 0;
+        // Give it a message so we know if it ever isn't overridden properly
+        //virtual ~BasePrinter() = 0;
+        virtual ~BasePrinter()
+        {
+           /// TODO: convert to actual Gambit warning or error
+           // Actually, this will always run when derived type objects are destructed, so not an error.
+           //std::cout << "Warning! BasePrinter destructor has been called! This should be overridden in the derived printer classes, and never run!" << std::endl;
+        }
 
         /// Initialisation function
         // Run by dependency resolver, which supplies the functors with a vector of VertexIDs whose requiresPrinting flags are set to true. (TODO: probably extend this to be a list of functors THIS printer is supposed to print, since we may want several printers handling different functors, for SLHA output or some such perhaps).
-        virtual void initialise(const std::vector<int>&) = 0;
+        //virtual void initialise(const std::vector<int>&) = 0;
+        virtual void initialise(const std::vector<int>&)
+        {
+           std::cout << "Warning! In BasePrinter::initialise!" << std::cout;
+        }
 
         /// Function to signal to the printer to write buffer contents to disk
-        virtual void flush() = 0;
+        //virtual void flush() = 0;
+        virtual void flush()
+        {
+           std::cout << "Warning! In BasePrinter::flush()!" << std::cout;
+        }
 
         /// Signal printer to reset contents, i.e. delete old data in preperation for replacement
-        virtual void reset() = 0;
+        //virtual void reset() = 0;
+        virtual void reset()
+        {
+           std::cout << "Warning! In BasePrinter::reset()!" << std::cout;
+        }
 
         /// Retrieve MPI rank
-        virtual int getRank() = 0;
+        //virtual int getRank() = 0;
+        virtual int getRank()
+        {
+           std::cout << "Warning! In BasePrinter::getRank()!" << std::cout;
+           return -1;
+        }
+
     };
 
     // Need to implement the destructor, even though it is pure virtual. Seems like it will be called even if using derived classes, or something.
-    inline BasePrinter::~BasePrinter() { }
+    //inline BasePrinter::~BasePrinter() { }
 
     /// Map in which to keep factory functions for the printers (printer_creators)
     // (uses the same machinery as in priors.hpp)

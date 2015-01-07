@@ -95,13 +95,13 @@ namespace Gambit
       using namespace Pipes::specbit_test_func1;
 
       std::cout << "Running specbit_test_func1" << std::endl;
-
+      std::cout << "Retrieving Spectrum*" << std::endl;
       Spectrum* spec = *Dep::MSSM_spectrum; //Test retrieve pointer to Spectrum object 
 
       //const Spectrum& spec(*(Dep::particle_spectrum->get())); // Get Spectrum object ptr out of dependency pipe and make a nice reference out of it.
+      std::cout << "Running spec_manipulate" << std::endl;
       spec_manipulate(spec); //function can manipulate without knowing model.
 
-      logger() << EOM;  
     }
 
     /// Function to test out SpecBit features
@@ -111,12 +111,15 @@ namespace Gambit
 
       // TESTING
       // Direct access to flexiblesusy function, for testing
+      std::cout << "Creating CMSSM_slha<Two_scale> object" << std::endl;
       CMSSM_slha<Two_scale> FS_model; //start with empty flexiblesusy object
 
       // Create model interface class (leaving input stuff with default values)
+      std::cout << "Creating CMSSM_interface<Two_scale> object" << std::endl;
       CMSSM_interface<Two_scale> model_interface(FS_model);
 
       // Create Spectrum object to wrap flexiblesusy object
+      std::cout << "Creating MSSMSpec<CMSSM_interface<Two_scale>> object" << std::endl;
       MSSMSpec<CMSSM_interface<Two_scale>> mssm(model_interface);
 
       // Test run functions

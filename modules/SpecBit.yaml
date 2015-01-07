@@ -45,10 +45,10 @@ Scanner:
 
 
 ObsLikes:
-  - purpose:      Likelihood
-    capability:   specbit_tests2
-    type:         double
-    function:     specbit_test_func2
+  #- purpose:      Likelihood
+  #  capability:   specbit_tests2
+  #  type:         double
+  #  function:     specbit_test_func2
 
   - purpose:      Likelihood
     capability:   specbit_tests1

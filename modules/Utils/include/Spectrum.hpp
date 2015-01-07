@@ -170,7 +170,7 @@ template <class SpecType>
       virtual fmap& get_PoleMixing_map() const = 0;  
       virtual fmap1& get_PoleMixing_map1() const = 0;
       virtual fmap2& get_PoleMixing_map2() const = 0;
-      virtual SpecType get_bound_spec() const = 0;
+      virtual SpecType& get_bound_spec() const = 0;
    public: 
       virtual double get_Pole_Mass(const std::string&) const;
       virtual double get_Pole_Mass(const std::string&, int) const;
@@ -183,7 +183,7 @@ template <class SpecType>
    class RunparDer : public Spectrum::RunningPars {
       REDO_TYPEDEFS(SpecType)
    private:
-      virtual SpecType get_bound_spec() const = 0;
+      virtual SpecType& get_bound_spec() const = 0;
       virtual fmap& get_mass4_map() const = 0;  
       virtual fmap1& get_mass4_map1() const = 0;
       virtual fmap2& get_mass4_map2() const = 0;  
@@ -222,7 +222,7 @@ template <class SpecType>
 template<class SpecType>
 double RunparDer<SpecType>::get_mass4_parameter(const std::string& mass) const
 {
-   SpecType spec(get_bound_spec()); /// Get correct bound spectrum for whatever class this is
+   SpecType& spec(get_bound_spec()); /// Get correct bound spectrum for whatever class this is
    fmap& mass4map(get_mass4_map()); /// Get correct map for whatever class this is
    typename fmap::iterator it = mass4map.find(mass); ///  Find desired FlexiSUSY function
 
@@ -242,7 +242,7 @@ double RunparDer<SpecType>::get_mass4_parameter(const std::string& mass) const
 template <class SpecType>
 double RunparDer<SpecType>::get_mass4_parameter(const std::string& mass, int i) const
 {
-   SpecType spec(get_bound_spec()); ///  Get correct bound spectrum for whatever class this is
+   SpecType& spec(get_bound_spec()); ///  Get correct bound spectrum for whatever class this is
    fmap1& mass4map(get_mass4_map1()); ///  Get correct map for whatever class this is
    typename fmap1::iterator it = mass4map.find(mass); ///  Find desired FlexiSUSY function
    if( it==mass4map.end() )
@@ -271,7 +271,7 @@ double RunparDer<SpecType>::get_mass4_parameter(const std::string& mass, int i) 
 template <class SpecType>
 double  RunparDer<SpecType>::get_mass4_parameter(const std::string& mass, int i, int j) const
 {
-   SpecType spec(get_bound_spec()); ///  Get correct bound spectrum for whatever class this is
+   SpecType& spec(get_bound_spec()); ///  Get correct bound spectrum for whatever class this is
    fmap2& mass4map(get_mass4_map2()); ///  Get correct map for whatever class this is
    typename fmap2::iterator it = mass4map.find(mass); ///  Find desired FlexiSUSY function
    if( it==mass4map.end() )
@@ -309,7 +309,7 @@ double  RunparDer<SpecType>::get_mass4_parameter(const std::string& mass, int i,
 template <class SpecType>
 double RunparDer<SpecType>::get_mass3_parameter(const std::string& mass) const
 {
-   SpecType spec(get_bound_spec()); ///  Get correct bound spectrum for whatever class this is
+   SpecType& spec(get_bound_spec()); ///  Get correct bound spectrum for whatever class this is
    fmap& mass3map(get_mass3_map()); ///  Get correct map for whatever class this is
    typename fmap::iterator it = mass3map.find(mass); ///  Find desired FlexiSUSY function
 
@@ -329,7 +329,7 @@ double RunparDer<SpecType>::get_mass3_parameter(const std::string& mass) const
 template <class SpecType>
 double RunparDer<SpecType>::get_mass3_parameter(const std::string& mass, int i) const
 {
-   SpecType spec(get_bound_spec()); ///  Get correct bound spectrum for whatever class this is
+   SpecType& spec(get_bound_spec()); ///  Get correct bound spectrum for whatever class this is
    fmap1& mass3map(get_mass3_map1()); ///  Get correct map for whatever class this is
    typename fmap1::iterator it = mass3map.find(mass); ///  Find desired FlexiSUSY function
    if( it==mass3map.end() )
@@ -357,7 +357,7 @@ double RunparDer<SpecType>::get_mass3_parameter(const std::string& mass, int i) 
 template <class SpecType>
 double  RunparDer<SpecType>::get_mass3_parameter(const std::string& mass, int i, int j) const
 {
-   SpecType spec(get_bound_spec()); ///  Get correct bound spectrum for whatever class this is
+   SpecType& spec(get_bound_spec()); ///  Get correct bound spectrum for whatever class this is
    fmap2& mass3map(get_mass3_map2()); ///  Get correct map for whatever class this is
    typename fmap2::iterator it = mass3map.find(mass); ///  Find desired FlexiSUSY function
    if( it==mass3map.end() )
@@ -393,7 +393,7 @@ double  RunparDer<SpecType>::get_mass3_parameter(const std::string& mass, int i,
 template <class SpecType>
 double  RunparDer<SpecType>::get_mass2_parameter(const std::string& mass) const
 {
-   SpecType spec(get_bound_spec()); ///  Get correct bound spectrum for whatever class this is
+   SpecType& spec(get_bound_spec()); ///  Get correct bound spectrum for whatever class this is
    fmap& mass2map(get_mass2_map()); ///  Get correct map for whatever class this is
    typename fmap::iterator it = mass2map.find(mass); ///  Find desired FlexiSUSY function
 
@@ -414,7 +414,7 @@ double  RunparDer<SpecType>::get_mass2_parameter(const std::string& mass) const
 template <class SpecType>
 double  RunparDer<SpecType>::get_mass2_parameter(const std::string& mass, int i) const
 {
-   SpecType spec(get_bound_spec()); ///  Get correct bound spectrum for whatever class this is
+   SpecType& spec(get_bound_spec()); ///  Get correct bound spectrum for whatever class this is
    fmap1& mass2map(get_mass2_map1()); ///  Get correct map for whatever class this is
    typename fmap1::iterator it = mass2map.find(mass); ///  Find desired FlexiSUSY function
    if( it==mass2map.end() )
@@ -442,7 +442,7 @@ double  RunparDer<SpecType>::get_mass2_parameter(const std::string& mass, int i)
 template <class SpecType>
 double  RunparDer<SpecType>::get_mass2_parameter(const std::string& mass, int i, int j) const
 {
-   SpecType spec(get_bound_spec()); ///  Get correct bound spectrum for whatever class this is
+   SpecType& spec(get_bound_spec()); ///  Get correct bound spectrum for whatever class this is
    fmap2& mass2map(get_mass2_map2()); ///  Get correct map for whatever class this is
    typename fmap2::iterator it = mass2map.find(mass); ///  Find desired FlexiSUSY function
    if( it==mass2map.end() )
@@ -479,7 +479,7 @@ double  RunparDer<SpecType>::get_mass2_parameter(const std::string& mass, int i,
 template <class SpecType>
 double  RunparDer<SpecType>::get_mass_parameter(const std::string& mass) const
 {
-   SpecType spec(get_bound_spec()); ///  Get correct bound spectrum for whatever class this is
+   SpecType& spec(get_bound_spec()); ///  Get correct bound spectrum for whatever class this is
    fmap& massmap(get_mass_map()); ///  Get correct map for whatever class this is
    typename fmap::iterator it = massmap.find(mass); ///  Find desired FlexiSUSY function
 
@@ -499,7 +499,7 @@ double  RunparDer<SpecType>::get_mass_parameter(const std::string& mass) const
 template <class SpecType>
 double  RunparDer<SpecType>::get_mass_parameter(const std::string& mass, int i) const
 {
-   SpecType spec(get_bound_spec()); ///  Get correct bound spectrum for whatever class this is
+   SpecType& spec(get_bound_spec()); ///  Get correct bound spectrum for whatever class this is
    fmap1& massmap(get_mass_map1()); ///  Get correct map for whatever class this is
    typename fmap1::iterator it = massmap.find(mass); ///  Find desired FlexiSUSY function
    if( it==massmap.end() )
@@ -527,7 +527,7 @@ double  RunparDer<SpecType>::get_mass_parameter(const std::string& mass, int i) 
 template <class SpecType>
 double  RunparDer<SpecType>::get_mass_parameter(const std::string& mass, int i, int j) const
 {
-   SpecType spec(get_bound_spec()); ///  Get correct bound spectrum for whatever class this is
+   SpecType& spec(get_bound_spec()); ///  Get correct bound spectrum for whatever class this is
    fmap2& massmap(get_mass_map2()); ///  Get correct map for whatever class this is
    typename fmap2::iterator it = massmap.find(mass); ///  Find desired FlexiSUSY function
    if( it==massmap.end() )
@@ -564,7 +564,7 @@ double  RunparDer<SpecType>::get_mass_parameter(const std::string& mass, int i, 
 template <class SpecType>
 double  RunparDer<SpecType>::get_dimensionless_parameter(const std::string& par) const
 {
-   SpecType spec(get_bound_spec()); ///  Get correct bound spectrum for whatever class this is
+   SpecType& spec(get_bound_spec()); ///  Get correct bound spectrum for whatever class this is
    fmap& mass0map(get_mass0_map()); ///  Get correct map for whatever class this is
    typename fmap::iterator it = mass0map.find(par); ///  Find desired FlexiSUSY function
 
@@ -584,7 +584,7 @@ double  RunparDer<SpecType>::get_dimensionless_parameter(const std::string& par)
 template <class SpecType>
 double  RunparDer<SpecType>::get_dimensionless_parameter(const std::string& par, int i) const
 {
-   SpecType spec(get_bound_spec()); ///  Get correct bound spectrum for whatever class this is
+   SpecType& spec(get_bound_spec()); ///  Get correct bound spectrum for whatever class this is
    fmap1& mass0map(get_mass0_map1()); ///  Get correct map for whatever class this is
    typename fmap1::iterator it = mass0map.find(par); ///  Find desired FlexiSUSY function
    if( it==mass0map.end() )
@@ -612,7 +612,7 @@ double  RunparDer<SpecType>::get_dimensionless_parameter(const std::string& par,
 template <class SpecType>
 double  RunparDer<SpecType>::get_dimensionless_parameter(const std::string& par, int i, int j) const
 {
-   SpecType spec(get_bound_spec()); ///  Get correct bound spectrum for whatever class this is
+   SpecType& spec(get_bound_spec()); ///  Get correct bound spectrum for whatever class this is
    fmap2& mass0map(get_mass0_map2()); ///  Get correct map for whatever class this is
    typename fmap2::iterator it = mass0map.find(par); ///  Find desired FlexiSUSY function
    if( it==mass0map.end() )
@@ -650,7 +650,7 @@ template <class SpecType>
 double PhysDer <SpecType>::get_Pole_Mass(const std::string& mass) const
 {
    ///    PhysType phys(get_bound_phys()); ///  Get correct bound spectrum for whatever class this is
-   SpecType spec(get_bound_spec());
+   SpecType& spec(get_bound_spec());
    fmap& polemap(get_PoleMass_map()); ///  Get correct map for whatever class this is
    typename fmap::iterator it = polemap.find(mass); ///  Find desired FlexiSUSY function
 
@@ -671,7 +671,7 @@ double PhysDer <SpecType>::get_Pole_Mass(const std::string& mass) const
 template <class SpecType>
 double  PhysDer<SpecType>::get_Pole_Mass(const std::string& mass, int i) const
 {
-   SpecType spec(get_bound_spec()); ///  Get correct bound spectrum for whatever class this is
+   SpecType& spec(get_bound_spec()); ///  Get correct bound spectrum for whatever class this is
    //   PhysType phys(get_bound_phys());
    fmap1& polemap(get_PoleMass_map1()); ///  Get correct map for whatever class this is
    typename fmap1::iterator it = polemap.find(mass); ///  Find desired FlexiSUSY function
@@ -703,7 +703,7 @@ template <class SpecType>
 double PhysDer <SpecType>::get_Pole_Mixing(const std::string& mixing) const
 {
    ///    PhysType phys(get_bound_phys()); ///  Get correct bound spectrum for whatever class this is
-   SpecType spec(get_bound_spec());
+   SpecType& spec(get_bound_spec());
    fmap& polemap(get_PoleMixing_map()); ///  Get correct map for whatever class this is
    typename fmap::iterator it = polemap.find(mixing); ///  Find desired FlexiSUSY function
 
@@ -725,7 +725,7 @@ template <class SpecType>
 double PhysDer <SpecType>::get_Pole_Mixing(const std::string& mixing, int i) const
 {
    ///    PhysType phys(get_bound_phys()); ///  Get correct bound spectrum for whatever class this is
-   SpecType spec(get_bound_spec());
+   SpecType& spec(get_bound_spec());
    fmap1& polemap(get_PoleMixing_map1()); ///  Get correct map for whatever class this is
    typename fmap1::iterator it = polemap.find(mixing); ///  Find desired FlexiSUSY function
 
@@ -756,7 +756,7 @@ double PhysDer <SpecType>::get_Pole_Mixing(const std::string& mixing,
                                                      int i, int j) const
 {
    ///    PhysType phys(get_bound_phys()); ///  Get correct bound spectrum for whatever class this is
-   SpecType spec(get_bound_spec());
+   SpecType& spec(get_bound_spec());
    fmap2& polemap(get_PoleMixing_map2()); ///  Get correct map for whatever class this is
    typename fmap2::iterator it = polemap.find(mixing); ///  Find desired FlexiSUSY function
 
@@ -807,7 +807,7 @@ public:
       myphys(pp),
       Spectrum(rp,pp)
    {}
-   virtual S get_bound_spec() const = 0; 
+   virtual S& get_bound_spec() const = 0; 
    //virtual P get_bound_phys() const = 0; 
 };
 
@@ -816,7 +816,7 @@ public:
 ///  Need these functions though so that the original definition of get_mass2_par can be re-used.
 ///  Maybe do this with another macro...
 #define MODEL_SPEC_MEMBER_FUNCTIONS(ClassName,SpecType) \
-  SpecType       ClassName::get_bound_spec() const {return model;} \
+  SpecType&      ClassName::get_bound_spec() const {return model;} \
   /*PhysType ClassName::get_bound_phys() const {return model.get_physical();} */\
 
 
@@ -866,7 +866,7 @@ public:
 
 // Versions of the above for template classes
 #define MODEL_SPEC_TEMPLATE_MEMBER_FUNCTIONS(ClassName,SpecType,M) \
-  template <class M> typename SpecType ClassName<M>::get_bound_spec() const {return model;} \
+  template <class M> typename SpecType& ClassName<M>::get_bound_spec() const {return model;} \
   /*template <class M,class MP> MP ClassName<M,MP>::get_bound_phys() const {return model.get_physical();} */\
 
 #define MODEL_RUNNING_TEMPLATE_MEMBER_FUNCTIONS(ClassName) \
@@ -917,7 +917,7 @@ public:
 // EDIT: I don't need these anymore but they might be useful...
 
 #define INNER_MODEL_SPEC_MEMBER_FUNCTIONS(SpecType) \
-  SpecType get_bound_spec() const {return model;} \
+  SpecType& get_bound_spec() const {return model;} \
   /*PhysType get_bound_phys() const {return model.get_physical();}*/ \
 
 #define INNER_MODEL_RUNNING_MEMBER_FUNCTIONS \

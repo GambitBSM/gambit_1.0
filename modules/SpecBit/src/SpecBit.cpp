@@ -228,6 +228,10 @@ Message from flexibleSUSY below:" << std::endl;
       input.Auij = fill_3x3_parameter_matrix("Au", Pipe::Param);
 
       result = run_FS_spectrum_generator<MSSMatMGUT_interface<ALGORITHM1>>(input,*Pipe::runOptions);
+
+      std::cout << "Spectrum via Spectrum* (inside get_MSSMatMGUT)" << std::endl;
+      std::cout << "mHd2 = " << result->runningpars.get_mass2_parameter("mHd2") << std::endl;
+
     }
 
     void get_GUTMSSMB_spectrum (Spectrum* &result)

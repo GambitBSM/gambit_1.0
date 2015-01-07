@@ -92,7 +92,7 @@ namespace Gambit {
       virtual double GetScale() const;
       virtual void SetScale(double scale);
         
-      typename MI::Model get_bound_spec() const; 
+      typename MI::Model& get_bound_spec() const; 
    };
    
    //physical class for accessing physical spectrum
@@ -125,7 +125,7 @@ namespace Gambit {
    public:
       MSSM_Phys(MSSMSpec<MI> &x) : my_parent(x) {}
       
-      typename MI::Model get_bound_spec() const; 
+      typename MI::Model& get_bound_spec() const; 
    };
     
    template <class MI>
@@ -148,7 +148,7 @@ namespace Gambit {
          //Could more constructors to interface with other generators   
           
          // These are public for now so that SpecBit_tests.cpp can access them
-         MI model_interface;
+         MI model_interface; // Must be declared before 'model', since model just points inside of model_interface
          typename MI::Model& model;
 
          //Destructor
@@ -173,7 +173,7 @@ namespace Gambit {
          // we run it seperately and then copy the information into the Spectrum
          // object.
          typename MI::Model get_modelobject();
-         typename MI::Model get_bound_spec() const; 
+         typename MI::Model& get_bound_spec() const; 
          //Model_physical get_bound_phys() const; 
 
          // Write spectrum information in slha format (not including input parameters etc.)
@@ -242,10 +242,14 @@ namespace Gambit {
    //
 
  
+   // NOTE!! mi is COPIED into the object, so when we get the reference to the 
+   // actual Model object to store in 'model', we need to use the copy inside
+   // the object. So also need to make sure 'model_interface' is initialised first
+   // (i.e. it should be declared first)
    template <class MI>
    MSSMSpec<MI>::MSSMSpec(MI mi, bool switch_index_convention):
       model_interface(mi),
-      model(mi.model),
+      model(model_interface.model),
       mssm_ph(*this),
       mssm_drbar_pars(*this),
       Spec<typename MI::Model>(mssm_drbar_pars, mssm_ph),
@@ -284,13 +288,13 @@ namespace Gambit {
    }
 
    template <class MI>
-   typename MI::Model MSSM_DRbarPars<MI>::get_bound_spec() const
+   typename MI::Model& MSSM_DRbarPars<MI>::get_bound_spec() const
    {
       return my_parent.get_bound_spec();   
    } 
   
    template <class MI>
-   typename MI::Model MSSM_Phys<MI>::get_bound_spec() const
+   typename MI::Model& MSSM_Phys<MI>::get_bound_spec() const
    {
       return my_parent.get_bound_spec();
    } 
