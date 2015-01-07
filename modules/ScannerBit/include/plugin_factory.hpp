@@ -57,12 +57,10 @@ namespace Gambit
                         {
                         }
                         
-                        double operator()(const std::vector<double> &in)
+                        double main(const std::vector<double> &in)
                         {
                                 return this->Plugins::Plugin_Interface<double (const std::vector<double> &)>::operator()(in);
                         }
-                        
-                        void print(double, const std::string &) const {}
                 };
                 
                 class Multi_Scanner_Plugin_Function : public Function_Base
@@ -79,18 +77,16 @@ namespace Gambit
                                 }
                         }
                         
-                        double operator()(const std::vector<double> &in)
+                        double main(const std::vector<double> &in)
                         {
                                 double ret = 0.0;
                                 for (auto it = functions.begin(), end = functions.end(); it != end; it++)
                                 {
-                                        ret += (*it)(in);
+                                        ret += it->main(in);
                                 }
                                 
                                 return ret;
                         }
-                        
-                        void print(double, const std::string &) const {}
                 };
                 
                 class Plugin_Function_Factory : public Factory_Base
@@ -107,11 +103,7 @@ namespace Gambit
                                 parameters = convert_to_map(prior.getParameters());
                         }
                         
-                        const std::vector<std::string> & getKeys() const {return prior.getShownParameters();}
-                        
-                        unsigned int getDim() const {return prior.size();}
-                        
-                        void * operator() (const std::string &, const std::string &purpose) const
+                        void * operator() (const std::string &purpose) const
                         {
                                 auto it = interfaces.find(purpose);
                                 
@@ -131,10 +123,6 @@ namespace Gambit
                                 {
                                         return NULL;
                                 }
-                        }
-                        
-                        void remove(void *) const
-                        {
                         }
 
                         ~Plugin_Function_Factory()

@@ -87,12 +87,14 @@ Printer:
 Scanner:
 
   #use_likelihood_plugins: uniform
-  use_scanner_plugin: loopsample
+  use_scanner_plugin: random
+
+# Scanners
 
   plugins:
   
-    loopsample:
-      plugin: loopsample
+    random:
+      plugin: random_sampler
       options:
         point_number: 20
         output_file:  output
@@ -100,15 +102,6 @@ Scanner:
         files:
           output_file: "weights ..."
         
-    uniform:
-      plugin: uniform
-      version: ">=1.0 & <2.0"
-      options:
-        some_param: 10
-      parameters:
-        param...2:
-          range: [-10, 10]
-          
     square_grid:
       plugin: square_grid
       verion: ">=1.0"
@@ -122,6 +115,18 @@ Scanner:
       options:
         purpose: Likelihood
         grid_pts: [2, 2]
+
+# Test functions
+
+    uniform:
+      plugin: uniform
+      version: ">=1.0 & <2.0"
+      options:
+        some_param: 10
+      parameters:
+        param...2:
+          range: [-10, 10]          
+
             
 ###############################
 # Observables of interest

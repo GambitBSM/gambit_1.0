@@ -2,8 +2,11 @@ To build GAMBIT:
   mkdir modules/build
   cd modules/build/
   cmake ..
-  make
-
+  make backends    # If backends not already installed
+  make DarkSUSY    # If intending to use DarkBit
+  make micromegas  # If intending to use micromegas
+  make             # Ordering of make commands is unimportant.
+                 
 
 Issues:
 
@@ -20,3 +23,11 @@ Issues:
    have need of them, disable them in the cmake command:
        cmake -Ditch="Spec" ..
 
+ * The above is a special case of ditching multiple things, which goes as
+       cmake -Ditch="foo;bar;etc",
+   where *anything* starting with "foo", "bar" or "etc", be it a module,
+   backend, scanner, model or test function, will be excluded from
+   the compile.
+
+ * In the case the gambit stops complaining about IO errors when opening a
+   file in some non-existing path, create the path by hand.

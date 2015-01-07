@@ -228,7 +228,6 @@ namespace Gambit
         template <typename TYPE>
         LogMaster& operator << (const TYPE& input)
         {
-           // TODO: Can we do anything to raise a gambit exception if someone tries to stream something into the log for which no stream operator has been defined? I guess not because it will be a compiler error...
            stream << input;
            return *this;
         }

@@ -120,11 +120,23 @@ inline std::vector<double> &prior_transform(const std::vector<double> &in)      
         return ret;                                                                                                     \
 }                                                                                                                       \
 
-#define FUNCTION_PLUGIN(mod_name, mod_version)                                                                          \
+#define ENTER_FUNC_FUNC(func, num, ...) COMBINE(func, num)( __VA_ARGS__ )
+
+#define FUNCTION_PLUGIN(...) ENTER_FUNC_FUNC(FUNCTION_PLUGIN_, ARG_N(__VA_ARGS__), __VA_ARGS__ )
+
+#define FUNCTION_PLUGIN_2(mod_name, mod_version)                                                                        \
 GAMBIT_PLUGIN(mod_name, like, mod_version)                                                                              \
 {                                                                                                                       \
         FUNCTION_SETUP(mod_name)                                                                                        \
 }                                                                                                                       \
 namespace __gambit_plugin_ ## mod_name ## __t__like__v__ ## mod_version ##  _namespace__                                \
+
+#define FUNCTION_PLUGIN_3(mod_name, mod_version, option)                                                                \
+GAMBIT_PLUGIN(mod_name, like, mod_version, option)                                                                      \
+{                                                                                                                       \
+        FUNCTION_SETUP(mod_name)                                                                                        \
+}                                                                                                                       \
+namespace COMBINE_3(mod_name ## __t__like__v__ ## mod_version ## __reqd_libs__,                                         \
+        libs_present_ ## mod_name ## __t__like__v__ ## mod_version)                                                     \
 
 #endif

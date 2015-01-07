@@ -52,8 +52,6 @@ namespace Gambit
       inline double getObsLike(DRes::VertexID &it);
       void setParameters (const std::vector<double> &vec); 
       void resetAll();
-      const std::vector<double> & getParameters() const;
-      const std::vector<str> & getKeys() const;
       void print(double, const str &) const;
 
   };
@@ -81,7 +79,7 @@ namespace Gambit
        Priors::CompositePrior &prior, const str &purpose);
 
       /// Evaluate total likelihood function
-      double operator() (const std::vector<double> &in);
+      double main (const std::vector<double> &in);
 
   };
   

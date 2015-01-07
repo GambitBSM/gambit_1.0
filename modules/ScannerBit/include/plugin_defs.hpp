@@ -37,27 +37,44 @@ namespace Gambit
                 namespace Plugins
                 {
 
-                        struct factoryBase
+                        class factoryBase
                         {
+                        public:
                                 virtual void *operator()() = 0;
-                                virtual void remove(void *) = 0;
-                                virtual ~factoryBase(){}
+                                virtual ~factoryBase() {}
                         };
                         
                         template <typename T>
-                        struct funcFactory : factoryBase
+                        class funcFactory : public factoryBase
                         {
+                        private:
                                 T *func;
+                                
+                        public:
                                 funcFactory (T *in) : func(in) {}
                                 void *operator()(){return *(void**)&func;}
-                                void remove(void*){};
+                                ~funcFactory(){}
                         };
                         
                         template <typename T>
-                        struct classFactory : factoryBase
+                        class classFactory : public factoryBase
                         {
-                                void *operator()(){return (void*) new T;}
-                                void remove(void *in){delete (T *) in;}
+                        private:
+                                std::vector<T *> ptrs;
+                                
+                        public:
+                                void *operator()()
+                                {
+                                        T *ptr = new T;
+                                        ptrs.push_back(ptr);
+                                        return (void*) ptr;
+                                }
+                                
+                                ~classFactory()
+                                {
+                                        for (auto it = ptrs.begin(), end = ptrs.end(); it != end; it++)
+                                                delete *it;
+                                }
                         };
                         
                         /// Structure that holds all the data provided by plugins about themselves.
@@ -68,12 +85,15 @@ namespace Gambit
                                 std::vector <void (*)(pluginData &)> inits;
                                 std::map<std::string, factoryBase *> outputFuncs;
                                 std::type_info const &(*main_type)(void);
+                                void (*deconstructor)();
                                 
-                                pluginData(std::string name) : name(name) {}
+                                pluginData(std::string name) : name(name), deconstructor(NULL) {}
                                 ~pluginData()
                                 {
+                                        if (deconstructor != NULL)
+                                                deconstructor();
+                                        
                                         for (auto it = outputFuncs.begin(), end = outputFuncs.end(); it != end; it++)
-
                                         {
                                                 delete it->second;
                                         }

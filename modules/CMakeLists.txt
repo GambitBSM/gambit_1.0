@@ -23,8 +23,8 @@
 #                                               
 #************************************************
 
-# Require a minimum cmake version of 2.6
-cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
+# Require a minimum cmake version of 2.8.11
+cmake_minimum_required(VERSION 2.8.11 FATAL_ERROR)
 
 if(NOT CMAKE_BUILD_TYPE)
   SET(CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING
@@ -280,7 +280,6 @@ set(GAMBIT_OBJECTS $<TARGET_OBJECTS:Core> $<TARGET_OBJECTS:Printers>)
 foreach(bit ${GAMBIT_BITS})
   add_subdirectory(${bit})
   set(GAMBIT_BIT_OBJECTS ${GAMBIT_BIT_OBJECTS} "$<TARGET_OBJECTS:${bit}>")
-
   if (SpecBit STREQUAL ${bit})
     # Ben: My attempt to add "SpecBit only" include targets. Seems to work.
     target_include_directories(SpecBit PRIVATE
