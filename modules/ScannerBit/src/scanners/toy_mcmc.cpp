@@ -40,7 +40,7 @@ scanner_plugin(toy_mcmc, version(1, 0, 0))
         {
                 std::string output_file            = get_inifile_value<std::string>("output_file", "default_output");
                 int N                              = get_inifile_value<int>("point_number", 10);
-                Function_Base *LogLike             = get_functor("Scanner_Function", "Likelihood");
+                Function_Base<double (const std::vector<double>&)> *LogLike             = get_functor("Likelihood");
                 int ma                             = get_dimension();
                 //int na = get_inifile_value<int>("not_there");
                 //std::ofstream out(output_file.c_str());

@@ -33,7 +33,7 @@
 namespace Gambit
 {
 
-  class Likelihood_Container_Base : public Scanner::Function_Base
+  class Likelihood_Container_Base : public Scanner::Function_Base<double (const std::vector<double>&)>
   {
 
     protected:
@@ -52,8 +52,6 @@ namespace Gambit
       inline double getObsLike(DRes::VertexID &it);
       void setParameters (const std::vector<double> &vec); 
       void resetAll();
-      const std::vector<double> & getParameters() const;
-      const std::vector<str> & getKeys() const;
       void print(double, const str &) const;
 
   };
@@ -65,15 +63,23 @@ namespace Gambit
     private:
       /// Value of the log likelihood at which a point is considered so unlikely that it can be ruled out (invalid).
       double min_valid_lnlike;
+      
+      /// TODO: Temporary counter for scan iteration. Ask Greg where this should really be
+      // Ack, to be able to use this I needed to overwrite the inherited Likelihood_Container_Base "calcObsLike" function, 
+      // so that it can see this variable.
+      int pointID;
 
     public:
+      /// TODO: As above, I had to add this, probably temporarily
+      inline void calcObsLike(DRes::VertexID &it);
+
       /// Constructor
       Likelihood_Container (const std::map<str, primary_model_functor *> &functorMap, 
        DRes::DependencyResolver &dependencyResolver, IniParser::IniFile &iniFile, 
        Priors::CompositePrior &prior, const str &purpose);
 
       /// Evaluate total likelihood function
-      double operator() (const std::vector<double> &in);
+      double main (const std::vector<double> &in);
 
   };
   

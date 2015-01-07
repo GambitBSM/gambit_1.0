@@ -22,12 +22,14 @@
 ///  *********************************************
 
 // Flexible SUSY stuff (should not be needed by the rest of gambit)
-#include "CMSSM_two_scale_model.hpp"
-#include "CMSSM_two_scale_model_slha.hpp"
+// Now in model_files_and_boxes.hpp
+//#include "CMSSM_two_scale_model.hpp"
+//#include "CMSSM_two_scale_model_slha.hpp"
 //#include "CMSSM_physical.hpp"
 
 #include "ew_input.hpp"
 #include "MSSMSpec.hpp"
+#include "model_files_and_boxes.hpp"
 #include "numerics.hpp"
 #include "wrappers.hpp"
 // Switch test output depending on where this is being compiled
@@ -104,12 +106,19 @@ namespace Gambit
       {      
          bool pass = false;
          //do all in loop 
-         std::set<std::pair<std::string,double>> name_value = {
-            {"BMu", FSmssm.get_BMu()},
-            {"mHd2", FSmssm.get_mHd2()},
-            {"mHu2", FSmssm.get_mHu2()} 
-         };
-            
+
+         // Ben: No initializer lists allowed; changing all these.
+         //std::set<std::pair<std::string,double>> name_value = {
+         //   {"BMu", FSmssm.get_BMu()},
+         //   {"mHd2", FSmssm.get_mHd2()},
+         //   {"mHu2", FSmssm.get_mHu2()} 
+         //};
+ 
+         std::set<std::pair<std::string,double>> name_value;
+         name_value.insert(std::make_pair( "BMu" , FSmssm.get_BMu()  ));
+         name_value.insert(std::make_pair( "mHd2", FSmssm.get_mHd2() ));
+         name_value.insert(std::make_pair( "mHu2", FSmssm.get_mHu2() )); 
+           
          std::set<std::pair<std::string, double>>::iterator iter;
          for(iter=name_value.begin(); iter != name_value.end(); ++iter)
             {
@@ -124,18 +133,17 @@ namespace Gambit
       }
 
      
-      template <class M>
-      bool TestMssmParMass2_0(MSSMSpec<M> mssm, M FSmssm, 
+      template <class MI>
+      bool TestMssmParMass2_0(MSSMSpec<MI>& mssm, typename MI::Model& FSmssm, 
                               bool immediate_exit = true)
       {      
          bool pass = false;
          //do all in loop 
-         std::set<std::pair<std::string,double>> name_value = {
-            {"BMu", FSmssm.get_BMu()},
-            {"mHd2", FSmssm.get_mHd2()},
-            {"mHu2", FSmssm.get_mHu2()} 
-         };
-            
+         std::set<std::pair<std::string,double>> name_value;
+         name_value.insert(std::make_pair( "BMu" , FSmssm.get_BMu()  ));
+         name_value.insert(std::make_pair( "mHd2", FSmssm.get_mHd2() ));
+         name_value.insert(std::make_pair( "mHu2", FSmssm.get_mHu2() ));
+           
          std::set<std::pair<std::string, double>>::iterator iter;
          for(iter=name_value.begin(); iter != name_value.end(); ++iter)
             {
@@ -162,14 +170,13 @@ namespace Gambit
           for(int j=1; j<=3; j++){
              //Would be smarter to take these out of for loop and
              // use function pointers, but I won't.
-             std::set<std::pair<std::string,double>> name_value = {
-                {"mq2", FSmssm.get_mq2(i-1,j-1)},
-                {"mu2", FSmssm.get_mu2(i-1,j-1)},
-                {"md2", FSmssm.get_md2(i-1,j-1)},
-                {"ml2", FSmssm.get_ml2(i-1,j-1)},
-                {"me2", FSmssm.get_me2(i-1,j-1)}               
-             };     
-             
+             std::set<std::pair<std::string,double>> name_value;
+             name_value.insert(std::make_pair( "mq2", FSmssm.get_mq2(i-1,j-1) ));
+             name_value.insert(std::make_pair( "mu2", FSmssm.get_mu2(i-1,j-1) ));
+             name_value.insert(std::make_pair( "md2", FSmssm.get_md2(i-1,j-1) ));
+             name_value.insert(std::make_pair( "ml2", FSmssm.get_ml2(i-1,j-1) ));
+             name_value.insert(std::make_pair( "me2", FSmssm.get_me2(i-1,j-1) ));          
+    
              std::set<std::pair<std::string, double>>::iterator iter;
              for(iter=name_value.begin(); iter != name_value.end(); ++iter)
                 {
@@ -185,8 +192,8 @@ namespace Gambit
     }
 
 
-      template <class M>  
-    bool TestMssmParMass2_2(MSSMSpec<M> mssm, M FSmssm, 
+      template <class MI>  
+    bool TestMssmParMass2_2(MSSMSpec<MI>& mssm, typename MI::Model& FSmssm, 
                             bool immediate_exit=true)
     {
        bool pass = false;
@@ -195,14 +202,13 @@ namespace Gambit
           for(int j=1; j<=3; j++){
              //Would be smarter to take these out of for loop and
              // use function pointers, but I won't.
-             std::set<std::pair<std::string,double>> name_value = {
-                {"mq2", FSmssm.get_mq2(i-1,j-1)},
-                {"mu2", FSmssm.get_mu2(i-1,j-1)},
-                {"md2", FSmssm.get_md2(i-1,j-1)},
-                {"ml2", FSmssm.get_ml2(i-1,j-1)},
-                {"me2", FSmssm.get_me2(i-1,j-1)}               
-             };     
-             
+             std::set<std::pair<std::string,double>> name_value;
+             name_value.insert(std::make_pair( "mq2", FSmssm.get_mq2(i-1,j-1) ));
+             name_value.insert(std::make_pair( "mu2", FSmssm.get_mu2(i-1,j-1) ));
+             name_value.insert(std::make_pair( "md2", FSmssm.get_md2(i-1,j-1) ));
+             name_value.insert(std::make_pair( "ml2", FSmssm.get_ml2(i-1,j-1) ));
+             name_value.insert(std::make_pair( "me2", FSmssm.get_me2(i-1,j-1) ));          
+            
              std::set<std::pair<std::string, double>>::iterator iter;
              for(iter=name_value.begin(); iter != name_value.end(); ++iter)
                 {
@@ -224,14 +230,12 @@ namespace Gambit
       {
          bool pass = false;
          
-         std::set<std::pair<std::string,double>> name_value = {
-            {"M1", FSmssm.get_MassB()},
-            {"M2", FSmssm.get_MassWB()},
-            {"M3", FSmssm.get_MassG()},
-            {"vu", FSmssm.get_vu()},
-            {"vd", FSmssm.get_vd()}
-            
-         };
+         std::set<std::pair<std::string,double>> name_value;
+         name_value.insert(std::make_pair( "M1", FSmssm.get_MassB()  ));
+         name_value.insert(std::make_pair( "M2", FSmssm.get_MassWB() ));
+         name_value.insert(std::make_pair( "M3", FSmssm.get_MassG()  ));
+         name_value.insert(std::make_pair( "vu", FSmssm.get_vu()     ));
+         name_value.insert(std::make_pair( "vd", FSmssm.get_vd()     ));
           
          std::set<std::pair<std::string, double>>::iterator iter;
          for(iter=name_value.begin(); iter != name_value.end(); ++iter)
@@ -246,21 +250,19 @@ namespace Gambit
          return pass;
       }
     
-      template <class M>  
-      bool TestMssmParMass1_0(MSSMSpec<M> mssm, M FSmssm, 
+      template <class MI>  
+      bool TestMssmParMass1_0(MSSMSpec<MI>& mssm, typename MI::Model& FSmssm, 
                               bool immediate_exit=true)
       {
          bool pass = false;
          
-         std::set<std::pair<std::string,double>> name_value = {
-            {"M1", FSmssm.get_MassB()},
-            {"M2", FSmssm.get_MassWB()},
-            {"M3", FSmssm.get_MassG()},
-            {"vu", FSmssm.get_vu()},
-            {"vd", FSmssm.get_vd()}
-            
-         };
-          
+         std::set<std::pair<std::string,double>> name_value;
+         name_value.insert(std::make_pair( "M1", FSmssm.get_MassB()  ));
+         name_value.insert(std::make_pair( "M2", FSmssm.get_MassWB() ));
+         name_value.insert(std::make_pair( "M3", FSmssm.get_MassG()  ));
+         name_value.insert(std::make_pair( "vu", FSmssm.get_vu()     ));
+         name_value.insert(std::make_pair( "vd", FSmssm.get_vd()     ));
+         
          std::set<std::pair<std::string, double>>::iterator iter;
          for(iter=name_value.begin(); iter != name_value.end(); ++iter)
             {
@@ -283,99 +285,95 @@ namespace Gambit
          bool pass = false;
          for(int i=1; i<=3; i++){
             for(int j=1; j<=3; j++){
-                std::set<std::pair<std::string,double>> name_value = {
-                   {"TYd", FSmssm.get_TYd(i-1,j-1)},
-                   {"TYu", FSmssm.get_TYu(i-1,j-1)},
-                   {"TYe", FSmssm.get_TYe(i-1,j-1)}
-                };     
+                std::set<std::pair<std::string,double>> name_value;
+                name_value.insert(std::make_pair( "TYd", FSmssm.get_TYd(i-1,j-1) ));
+                name_value.insert(std::make_pair( "TYu", FSmssm.get_TYu(i-1,j-1) ));
+                name_value.insert(std::make_pair( "TYe", FSmssm.get_TYe(i-1,j-1) ));
             
                 std::set<std::pair<std::string, double>>::iterator iter;
-            for(iter=name_value.begin(); iter != name_value.end(); ++iter)
-               {
-                  pass = test_getters("get_mass_parameter", iter->first,  
-                                      spec->runningpars.
-                                      get_mass_parameter(iter->first,i,j), 
-                                      iter->second, i, j);
-                  if(immediate_exit == true && pass == false) return pass; 
-               }              
-         }
-      }
-       return pass;
-    }
+                for(iter=name_value.begin(); iter != name_value.end(); ++iter)
+                {
+                   pass = test_getters("get_mass_parameter", iter->first,  
+                                       spec->runningpars.
+                                       get_mass_parameter(iter->first,i,j), 
+                                       iter->second, i, j);
+                   if(immediate_exit == true && pass == false) return pass; 
+                }              
+             }
+          }
+          return pass;
+       }
 
 
-      template <class M>  
-      bool TestMssmParMass1_2(MSSMSpec<M> mssm, M FSmssm, 
+      template <class MI>  
+      bool TestMssmParMass1_2(MSSMSpec<MI>& mssm, typename MI::Model& FSmssm, 
                               bool immediate_exit =true)
       {
          bool pass = false;
          for(int i=1; i<=3; i++){
             for(int j=1; j<=3; j++){
-                std::set<std::pair<std::string,double>> name_value = {
-                   {"TYd", FSmssm.get_TYd(i-1,j-1)},
-                   {"TYu", FSmssm.get_TYu(i-1,j-1)},
-                   {"TYe", FSmssm.get_TYe(i-1,j-1)}
-                };     
-            
+                std::set<std::pair<std::string,double>> name_value;
+                name_value.insert(std::make_pair( "TYd", FSmssm.get_TYd(i-1,j-1) ));
+                name_value.insert(std::make_pair( "TYu", FSmssm.get_TYu(i-1,j-1) ));
+                name_value.insert(std::make_pair( "TYe", FSmssm.get_TYe(i-1,j-1) ));
+           
                 std::set<std::pair<std::string, double>>::iterator iter;
-            for(iter=name_value.begin(); iter != name_value.end(); ++iter)
-               {
-                  pass = test_getters("get_mass_parameter", iter->first,  
-                                      mssm.mssm_drbar_pars.
-                                      get_mass_parameter(iter->first,i,j), 
-                                      iter->second, i, j);
-                  if(immediate_exit == true && pass == false) return pass; 
-               }              
+                for(iter=name_value.begin(); iter != name_value.end(); ++iter)
+                {
+                   pass = test_getters("get_mass_parameter", iter->first,  
+                                       mssm.mssm_drbar_pars.
+                                       get_mass_parameter(iter->first,i,j), 
+                                       iter->second, i, j);
+                   if(immediate_exit == true && pass == false) return pass; 
+                }              
+            }
          }
+         return pass;
       }
-       return pass;
-    }
     
     template <class M>
-       bool TestMssmParMass0_0(Spectrum * spec, M FSmssm, 
-                               bool immediate_exit =true )
+    bool TestMssmParMass0_0(Spectrum * spec, M FSmssm, 
+                            bool immediate_exit =true )
     {
        bool pass = false;
-       std::set<std::pair<std::string,double>> name_value = {
-            {"g1", FSmssm.get_g1()},
-            {"g2", FSmssm.get_g2()},
-            {"g3", FSmssm.get_g3()} 
-         };
+       std::set<std::pair<std::string,double>> name_value;
+       name_value.insert(std::make_pair( "g1", FSmssm.get_g1() ));
+       name_value.insert(std::make_pair( "g2", FSmssm.get_g2() ));
+       name_value.insert(std::make_pair( "g3", FSmssm.get_g3() ));
           
-         std::set<std::pair<std::string, double>>::iterator iter;
-         for(iter=name_value.begin(); iter != name_value.end(); ++iter)
-            {
-               pass = test_getters("get_dimensionless_parameter", iter->first,  
-                                   spec->runningpars.
-                                   get_dimensionless_parameter(iter->first), 
-                                   iter->second);
-               if(immediate_exit == true && pass == false) return pass; 
-            }
+       std::set<std::pair<std::string, double>>::iterator iter;
+       for(iter=name_value.begin(); iter != name_value.end(); ++iter)
+       {
+          pass = test_getters("get_dimensionless_parameter", iter->first,  
+                              spec->runningpars.
+                              get_dimensionless_parameter(iter->first), 
+                              iter->second);
+          if(immediate_exit == true && pass == false) return pass; 
+       }
 
        return pass;
     }
 
 
-      template <class M>
-      bool TestMssmParMass0_0(MSSMSpec<M> mssm, M FSmssm, 
+    template <class MI>
+    bool TestMssmParMass0_0(MSSMSpec<MI>& mssm, typename MI::Model& FSmssm, 
                                bool immediate_exit =true )
     {
        bool pass = false;
-       std::set<std::pair<std::string,double>> name_value = {
-            {"g1", FSmssm.get_g1()},
-            {"g2", FSmssm.get_g2()},
-            {"g3", FSmssm.get_g3()} 
-         };
-          
-         std::set<std::pair<std::string, double>>::iterator iter;
-         for(iter=name_value.begin(); iter != name_value.end(); ++iter)
-            {
-               pass = test_getters("get_dimensionless_parameter", iter->first,  
-                                   mssm.mssm_drbar_pars.
-                                   get_dimensionless_parameter(iter->first), 
-                                   iter->second);
-               if(immediate_exit == true && pass == false) return pass; 
-            }
+       std::set<std::pair<std::string,double>> name_value;
+       name_value.insert(std::make_pair( "g1", FSmssm.get_g1() ));
+       name_value.insert(std::make_pair( "g2", FSmssm.get_g2() ));
+       name_value.insert(std::make_pair( "g3", FSmssm.get_g3() ));
+     
+       std::set<std::pair<std::string, double>>::iterator iter;
+       for(iter=name_value.begin(); iter != name_value.end(); ++iter)
+       {
+          pass = test_getters("get_dimensionless_parameter", iter->first,  
+                              mssm.mssm_drbar_pars.
+                              get_dimensionless_parameter(iter->first), 
+                              iter->second);
+          if(immediate_exit == true && pass == false) return pass; 
+       }
 
        return pass;
     }
@@ -388,54 +386,52 @@ namespace Gambit
        for(int i=1; i<=3; i++){
           for(int j=1; j<=3; j++){
              
-             std::set<std::pair<std::string,double>> name_value = {
-                   {"Yd", FSmssm.get_Yd(i-1,j-1)},
-                   {"Yu", FSmssm.get_Yu(i-1,j-1)},
-                   {"Ye", FSmssm.get_Ye(i-1,j-1)}
-                };     
+             std::set<std::pair<std::string,double>> name_value;
+             name_value.insert(std::make_pair( "Yd", FSmssm.get_Yd(i-1,j-1) ));
+             name_value.insert(std::make_pair( "Yu", FSmssm.get_Yu(i-1,j-1) ));
+             name_value.insert(std::make_pair( "Ye", FSmssm.get_Ye(i-1,j-1) ));
             
-                std::set<std::pair<std::string, double>>::iterator iter;
-            for(iter=name_value.begin(); iter != name_value.end(); ++iter)
-               {
-                  pass = test_getters("get_dimensionless_parameter", 
-                                      iter->first,  
-                                      spec->runningpars.
-                                      get_dimensionless_parameter(iter->first,
-                                                                  i,j), 
-                                      iter->second, i, j);
-                  if(immediate_exit == true && pass == false) return pass; 
-               }              
+             std::set<std::pair<std::string, double>>::iterator iter;
+             for(iter=name_value.begin(); iter != name_value.end(); ++iter)
+             {
+                pass = test_getters("get_dimensionless_parameter", 
+                                    iter->first,  
+                                    spec->runningpars.
+                                    get_dimensionless_parameter(iter->first,
+                                                                i,j), 
+                                    iter->second, i, j);
+                if(immediate_exit == true && pass == false) return pass; 
+             }              
           }
        }
        return pass;
     }
 
       
-      template <class M>
-      bool TestMssmParMass0_2(MSSMSpec<M> mssm, M FSmssm, 
+      template <class MI>
+      bool TestMssmParMass0_2(MSSMSpec<MI>& mssm, typename MI::Model& FSmssm, 
                                bool immediate_exit = true)
       {
        bool pass = false;
        for(int i=1; i<=3; i++){
           for(int j=1; j<=3; j++){
              
-             std::set<std::pair<std::string,double>> name_value = {
-                   {"Yd", FSmssm.get_Yd(i-1,j-1)},
-                   {"Yu", FSmssm.get_Yu(i-1,j-1)},
-                   {"Ye", FSmssm.get_Ye(i-1,j-1)}
-                };     
+             std::set<std::pair<std::string,double>> name_value;
+             name_value.insert(std::make_pair( "Yd", FSmssm.get_Yd(i-1,j-1) ));
+             name_value.insert(std::make_pair( "Yu", FSmssm.get_Yu(i-1,j-1) ));
+             name_value.insert(std::make_pair( "Ye", FSmssm.get_Ye(i-1,j-1) ));
             
-                std::set<std::pair<std::string, double>>::iterator iter;
-            for(iter=name_value.begin(); iter != name_value.end(); ++iter)
-               {
-                  pass = test_getters("get_dimensionless_parameter", 
-                                      iter->first,  
-                                      mssm.mssm_drbar_pars.
-                                      get_dimensionless_parameter(iter->first,
-                                                                  i,j), 
-                                      iter->second, i, j);
-                  if(immediate_exit == true && pass == false) return pass; 
-               }              
+             std::set<std::pair<std::string, double>>::iterator iter;
+             for(iter=name_value.begin(); iter != name_value.end(); ++iter)
+             {
+                pass = test_getters("get_dimensionless_parameter", 
+                                    iter->first,  
+                                    mssm.mssm_drbar_pars.
+                                    get_dimensionless_parameter(iter->first,
+                                                                i,j), 
+                                    iter->second, i, j);
+                if(immediate_exit == true && pass == false) return pass; 
+             }              
           }
        }
        return pass;
@@ -447,48 +443,46 @@ namespace Gambit
     {
        bool pass = false;
        //do all in loop 
-         std::set<std::pair<std::string,double>> name_value = {
-            {"MZ", FSmssm.get_physical().MVZ},
-            {"MW", FSmssm.get_physical().MVWm},
-            {"MGluino", FSmssm.get_physical().MGlu},
-            {"MGluon", FSmssm.get_physical().MVG},
-            {"MPhoton", FSmssm.get_physical().MVP}
-         };
-            
-         std::set<std::pair<std::string, double>>::iterator iter;
-         for(iter=name_value.begin(); iter != name_value.end(); ++iter)
-            {
-               pass = test_getters("get_Pole_Mass", iter->first,  
-                                   spec->phys.get_Pole_Mass(iter->first), 
-                                   iter->second);
-               if(immediate_exit == true && pass == false) return pass; 
-            }
+       std::set<std::pair<std::string,double>> name_value;
+       name_value.insert(std::make_pair( "MZ", FSmssm.get_physical().MVZ       ));
+       name_value.insert(std::make_pair( "MW", FSmssm.get_physical().MVWm      ));
+       name_value.insert(std::make_pair( "MGluino", FSmssm.get_physical().MGlu ));
+       name_value.insert(std::make_pair( "MGluon", FSmssm.get_physical().MVG   ));
+       name_value.insert(std::make_pair( "MPhoton", FSmssm.get_physical().MVP  ));
+          
+       std::set<std::pair<std::string, double>>::iterator iter;
+       for(iter=name_value.begin(); iter != name_value.end(); ++iter)
+       {
+          pass = test_getters("get_Pole_Mass", iter->first,  
+                              spec->phys.get_Pole_Mass(iter->first), 
+                              iter->second);
+          if(immediate_exit == true && pass == false) return pass; 
+       }
        return pass;
     }
 
 
-    template <class M>
-    bool TestMssmPoleGets0(MSSMSpec<M> mssm, M FSmssm, 
+    template <class MI>
+    bool TestMssmPoleGets0(MSSMSpec<MI>& mssm, typename MI::Model& FSmssm, 
                            bool immediate_exit = true)
     {
        bool pass = false;
        //do all in loop 
-         std::set<std::pair<std::string,double>> name_value = {
-            {"MZ", FSmssm.get_physical().MVZ},
-            {"MW", FSmssm.get_physical().MVWm},
-            {"MGluino", FSmssm.get_physical().MGlu},
-            {"MGluon", FSmssm.get_physical().MVG},
-            {"MPhoton", FSmssm.get_physical().MVP}
-         };
+       std::set<std::pair<std::string,double>> name_value;
+       name_value.insert(std::make_pair( "MZ", FSmssm.get_physical().MVZ       ));
+       name_value.insert(std::make_pair( "MW", FSmssm.get_physical().MVWm      ));
+       name_value.insert(std::make_pair( "MGluino", FSmssm.get_physical().MGlu ));
+       name_value.insert(std::make_pair( "MGluon", FSmssm.get_physical().MVG   ));
+       name_value.insert(std::make_pair( "MPhoton", FSmssm.get_physical().MVP  ));
             
-         std::set<std::pair<std::string, double>>::iterator iter;
-         for(iter=name_value.begin(); iter != name_value.end(); ++iter)
-            {
-               pass = test_getters("get_Pole_Mass", iter->first,  
-                                   mssm.mssm_ph.get_Pole_Mass(iter->first), 
-                                   iter->second);
-               if(immediate_exit == true && pass == false) return pass; 
-            }
+       std::set<std::pair<std::string, double>>::iterator iter;
+       for(iter=name_value.begin(); iter != name_value.end(); ++iter)
+       {
+          pass = test_getters("get_Pole_Mass", iter->first,  
+                              mssm.mssm_ph.get_Pole_Mass(iter->first), 
+                              iter->second);
+          if(immediate_exit == true && pass == false) return pass; 
+       }
        return pass;
     }  
        
@@ -500,41 +494,38 @@ namespace Gambit
        bool pass = false;
      
        for(int i=1; i<=6; i++){
-         std::set<std::pair<std::string,double>> name_value = {
-                   {"MSd", FSmssm.get_physical().MSd(i-1)},
-                   {"MSu", FSmssm.get_physical().MSu(i-1)},
-                   {"MSe", FSmssm.get_physical().MSe(i-1)}
+         std::set<std::pair<std::string,double>> name_value;
+         name_value.insert(std::make_pair( "MSd", FSmssm.get_physical().MSd(i-1) ));
+         name_value.insert(std::make_pair( "MSu", FSmssm.get_physical().MSu(i-1) ));
+         name_value.insert(std::make_pair( "MSe", FSmssm.get_physical().MSe(i-1) ));
                    
-                };     
-            
-            std::set<std::pair<std::string, double>>::iterator iter;
-            for(iter=name_value.begin(); iter != name_value.end(); ++iter)
-               {
-                  pass = test_getters("get_Pole_Mass", iter->first,  
-                                      spec->phys.get_Pole_Mass(iter->first,i),
-                                      iter->second, i);
-                  if(immediate_exit == true && pass == false) return pass; 
-               } 
+         
+         std::set<std::pair<std::string, double>>::iterator iter;
+         for(iter=name_value.begin(); iter != name_value.end(); ++iter)
+         {
+            pass = test_getters("get_Pole_Mass", iter->first,  
+                                spec->phys.get_Pole_Mass(iter->first,i),
+                                iter->second, i);
+            if(immediate_exit == true && pass == false) return pass; 
+         } 
           
        }
        for(int i=1; i<=3; i++){
           
-          std::set<std::pair<std::string,double>> name_value = {
-                   {"MSv", FSmssm.get_physical().MSv(i-1)},
-                   {"MFd", FSmssm.get_physical().MFd(i-1)},
-                   {"MFu", FSmssm.get_physical().MFu(i-1)},
-                   {"MFe", FSmssm.get_physical().MFe(i-1)}
-                   
-                };     
-            
-            std::set<std::pair<std::string, double>>::iterator iter;
-            for(iter=name_value.begin(); iter != name_value.end(); ++iter)
-               {
-                  pass = test_getters("get_Pole_Mass", iter->first,  
-                                      spec->phys.get_Pole_Mass(iter->first,i),
-                                      iter->second, i);
-                  if(immediate_exit == true && pass == false) return pass; 
-               } 
+          std::set<std::pair<std::string,double>> name_value;
+          name_value.insert(std::make_pair( "MSv", FSmssm.get_physical().MSv(i-1) ));
+          name_value.insert(std::make_pair( "MFd", FSmssm.get_physical().MFd(i-1) ));
+          name_value.insert(std::make_pair( "MFu", FSmssm.get_physical().MFu(i-1) ));
+          name_value.insert(std::make_pair( "MFe", FSmssm.get_physical().MFe(i-1) ));
+           
+          std::set<std::pair<std::string, double>>::iterator iter;
+          for(iter=name_value.begin(); iter != name_value.end(); ++iter)
+          {
+             pass = test_getters("get_Pole_Mass", iter->first,  
+                                 spec->phys.get_Pole_Mass(iter->first,i),
+                                 iter->second, i);
+             if(immediate_exit == true && pass == false) return pass; 
+          } 
         
        }
        for(int i=1; i<=2; i++){ 
@@ -564,48 +555,44 @@ namespace Gambit
     }
      
 
-     template <class M>
-    bool TestMssmPoleGets1(MSSMSpec<M> mssm, M FSmssm, 
+     template <class MI>
+    bool TestMssmPoleGets1(MSSMSpec<MI>& mssm, typename MI::Model& FSmssm, 
                            bool immediate_exit = true)
     {
        bool pass = false;
      
        for(int i=1; i<=6; i++){
-         std::set<std::pair<std::string,double>> name_value = {
-                   {"MSd", FSmssm.get_physical().MSd(i-1)},
-                   {"MSu", FSmssm.get_physical().MSu(i-1)},
-                   {"MSe", FSmssm.get_physical().MSe(i-1)}
-                   
-                };     
+         std::set<std::pair<std::string,double>> name_value;
+         name_value.insert(std::make_pair( "MSd", FSmssm.get_physical().MSd(i-1) ));
+         name_value.insert(std::make_pair( "MSu", FSmssm.get_physical().MSu(i-1) ));
+         name_value.insert(std::make_pair( "MSe", FSmssm.get_physical().MSe(i-1) ));
             
-            std::set<std::pair<std::string, double>>::iterator iter;
-            for(iter=name_value.begin(); iter != name_value.end(); ++iter)
-               {
-                  pass = test_getters("get_Pole_Mass", iter->first,  
-                                      mssm.mssm_ph.get_Pole_Mass(iter->first,i),
-                                      iter->second, i);
-                  if(immediate_exit == true && pass == false) return pass; 
-               } 
+         std::set<std::pair<std::string, double>>::iterator iter;
+         for(iter=name_value.begin(); iter != name_value.end(); ++iter)
+         {
+            pass = test_getters("get_Pole_Mass", iter->first,  
+                                mssm.mssm_ph.get_Pole_Mass(iter->first,i),
+                                iter->second, i);
+            if(immediate_exit == true && pass == false) return pass; 
+         } 
           
        }
        for(int i=1; i<=3; i++){
           
-          std::set<std::pair<std::string,double>> name_value = {
-                   {"MSv", FSmssm.get_physical().MSv(i-1)},
-                   {"MFd", FSmssm.get_physical().MFd(i-1)},
-                   {"MFu", FSmssm.get_physical().MFu(i-1)},
-                   {"MFe", FSmssm.get_physical().MFe(i-1)}
-                   
-                };     
+          std::set<std::pair<std::string,double>> name_value;
+          name_value.insert(std::make_pair( "MSv", FSmssm.get_physical().MSv(i-1) ));
+          name_value.insert(std::make_pair( "MFd", FSmssm.get_physical().MFd(i-1) ));
+          name_value.insert(std::make_pair( "MFu", FSmssm.get_physical().MFu(i-1) ));
+          name_value.insert(std::make_pair( "MFe", FSmssm.get_physical().MFe(i-1) ));
             
-            std::set<std::pair<std::string, double>>::iterator iter;
-            for(iter=name_value.begin(); iter != name_value.end(); ++iter)
-               {
-                  pass = test_getters("get_Pole_Mass", iter->first,  
-                                      mssm.mssm_ph.get_Pole_Mass(iter->first,i),
-                                      iter->second, i);
-                  if(immediate_exit == true && pass == false) return pass; 
-               } 
+          std::set<std::pair<std::string, double>>::iterator iter;
+          for(iter=name_value.begin(); iter != name_value.end(); ++iter)
+          {
+             pass = test_getters("get_Pole_Mass", iter->first,  
+                                 mssm.mssm_ph.get_Pole_Mass(iter->first,i),
+                                 iter->second, i);
+             if(immediate_exit == true && pass == false) return pass; 
+          } 
         
        }
        for(int i=1; i<=2; i++){ 
@@ -642,21 +629,20 @@ namespace Gambit
         bool pass = false;
         for(int i=1; i<=6; i++){
            for(int j=1; j<=6; j++){
-              std::set<std::pair<std::string,double>> name_value = {
-                 {"ZD", FSmssm.get_physical_slha().ZD(i-1,j-1)},
-                 {"ZU", FSmssm.get_physical_slha().ZU(i-1,j-1)},
-                 {"ZE", FSmssm.get_physical_slha().ZE(i-1,j-1)}
-                };     
+              std::set<std::pair<std::string,double>> name_value;
+              name_value.insert(std::make_pair( "ZD", FSmssm.get_physical_slha().ZD(i-1,j-1) ));
+              name_value.insert(std::make_pair( "ZU", FSmssm.get_physical_slha().ZU(i-1,j-1) ));
+              name_value.insert(std::make_pair( "ZE", FSmssm.get_physical_slha().ZE(i-1,j-1) ));
                  
-                std::set<std::pair<std::string, double>>::iterator iter;
-            for(iter=name_value.begin(); iter != name_value.end(); ++iter)
-               {
-                  pass = test_getters("get_Pole_Mixing", iter->first,  
-                                      spec->phys.
-                                      get_Pole_Mixing(iter->first,i,j), 
-                                      iter->second, i, j);
-                  if(immediate_exit == true && pass == false) return pass; 
-               }              
+              std::set<std::pair<std::string, double>>::iterator iter;
+              for(iter=name_value.begin(); iter != name_value.end(); ++iter)
+              {
+                 pass = test_getters("get_Pole_Mixing", iter->first,  
+                                     spec->phys.
+                                     get_Pole_Mixing(iter->first,i,j), 
+                                     iter->second, i, j);
+                 if(immediate_exit == true && pass == false) return pass; 
+              }              
            }
         }
                              
@@ -675,25 +661,25 @@ namespace Gambit
      
         for(int i=1; i<=2; i++){
            for(int j=1; j<=2; j++){
-            std::set<std::pair<std::string,double>> name_value = {
-                 {"ZH", FSmssm.get_physical_slha().ZH(i-1,j-1)},
-                 {"ZA", FSmssm.get_physical_slha().ZA(i-1,j-1)},
-                 {"ZHPM", FSmssm.get_physical_slha().ZP(i-1,j-1)},
-                 {"UM", flexiblesusy::Re(FSmssm.get_physical_slha()
-                                         .UM(i-1,j-1))}, 
-                 {"UP", flexiblesusy::Re(FSmssm.get_physical_slha()
-                                         .UP(i-1,j-1))}
-                };     
-                  
-               std::set<std::pair<std::string, double>>::iterator iter;
-            for(iter=name_value.begin(); iter != name_value.end(); ++iter)
-               {
-                  pass = test_getters("get_Pole_Mixing", iter->first,  
-                                      spec->phys.
-                                      get_Pole_Mixing(iter->first,i,j), 
-                                      iter->second, i, j);
-                  if(immediate_exit == true && pass == false) return pass; 
-               }
+              std::set<std::pair<std::string,double>> name_value;
+              name_value.insert(std::make_pair( "ZH",   FSmssm.get_physical_slha().ZH(i-1,j-1) ));
+              name_value.insert(std::make_pair( "ZA",   FSmssm.get_physical_slha().ZA(i-1,j-1) ));
+              name_value.insert(std::make_pair( "ZHPM", FSmssm.get_physical_slha().ZP(i-1,j-1) ));
+              name_value.insert(std::make_pair( "UM", flexiblesusy::Re(FSmssm.get_physical_slha()
+                                     .UM(i-1,j-1)) ));
+              name_value.insert(std::make_pair( "UP", flexiblesusy::Re(FSmssm.get_physical_slha()
+                                     .UP(i-1,j-1)) ));
+                   
+                    
+              std::set<std::pair<std::string, double>>::iterator iter;
+              for(iter=name_value.begin(); iter != name_value.end(); ++iter)
+              {
+                 pass = test_getters("get_Pole_Mixing", iter->first,  
+                                     spec->phys.
+                                     get_Pole_Mixing(iter->first,i,j), 
+                                     iter->second, i, j);
+                 if(immediate_exit == true && pass == false) return pass; 
+              }
            }
        }
         
@@ -701,28 +687,27 @@ namespace Gambit
     }
 
 
-       template <class M>
-     bool TestMssmPoleMixingGets2(MSSMSpec<M> mssm, M FSmssm, 
+       template <class MI>
+     bool TestMssmPoleMixingGets2(MSSMSpec<MI>& mssm, typename MI::Model& FSmssm, 
                                   bool immediate_exit = true)
      {
         bool pass = false;
         for(int i=1; i<=6; i++){
            for(int j=1; j<=6; j++){
-              std::set<std::pair<std::string,double>> name_value = {
-                 {"ZD", FSmssm.get_physical_slha().ZD(i-1,j-1)},
-                 {"ZU", FSmssm.get_physical_slha().ZU(i-1,j-1)},
-                 {"ZE", FSmssm.get_physical_slha().ZE(i-1,j-1)}
-                };     
+              std::set<std::pair<std::string,double>> name_value;
+              name_value.insert(std::make_pair( "ZD", FSmssm.get_physical_slha().ZD(i-1,j-1) ));
+              name_value.insert(std::make_pair( "ZU", FSmssm.get_physical_slha().ZU(i-1,j-1) ));
+              name_value.insert(std::make_pair( "ZE", FSmssm.get_physical_slha().ZE(i-1,j-1) ));
                  
-                std::set<std::pair<std::string, double>>::iterator iter;
-            for(iter=name_value.begin(); iter != name_value.end(); ++iter)
-               {
-                  pass = test_getters("get_Pole_Mixing", iter->first,  
-                                      mssm.mssm_ph.
-                                      get_Pole_Mixing(iter->first,i,j), 
-                                      iter->second, i, j);
-                  if(immediate_exit == true && pass == false) return pass; 
-               }              
+              std::set<std::pair<std::string, double>>::iterator iter;
+              for(iter=name_value.begin(); iter != name_value.end(); ++iter)
+              {
+                 pass = test_getters("get_Pole_Mixing", iter->first,  
+                                     mssm.mssm_ph.
+                                     get_Pole_Mixing(iter->first,i,j), 
+                                     iter->second, i, j);
+                 if(immediate_exit == true && pass == false) return pass; 
+              }              
            }
         }
                              
@@ -741,29 +726,28 @@ namespace Gambit
      
         for(int i=1; i<=2; i++){
            for(int j=1; j<=2; j++){
-            std::set<std::pair<std::string,double>> name_value = {
-                 {"ZH", FSmssm.get_physical_slha().ZH(i-1,j-1)},
-                 {"ZA", FSmssm.get_physical_slha().ZA(i-1,j-1)},
-                 {"ZHPM", FSmssm.get_physical_slha().ZP(i-1,j-1)},
-                 {"UM", flexiblesusy::Re(FSmssm.get_physical_slha()
-                                         .UM(i-1,j-1))}, 
-                 {"UP", flexiblesusy::Re(FSmssm.get_physical_slha()
-                                         .UP(i-1,j-1))}
-                };     
+              std::set<std::pair<std::string,double>> name_value;
+              name_value.insert(std::make_pair( "ZH",   FSmssm.get_physical_slha().ZH(i-1,j-1) ));
+              name_value.insert(std::make_pair( "ZA",   FSmssm.get_physical_slha().ZA(i-1,j-1) ));
+              name_value.insert(std::make_pair( "ZHPM", FSmssm.get_physical_slha().ZP(i-1,j-1) ));
+              name_value.insert(std::make_pair( "UM", flexiblesusy::Re(FSmssm.get_physical_slha()
+                                     .UM(i-1,j-1)) ));
+              name_value.insert(std::make_pair( "UP", flexiblesusy::Re(FSmssm.get_physical_slha()
+                                     .UP(i-1,j-1)) ));
                   
-               std::set<std::pair<std::string, double>>::iterator iter;
-            for(iter=name_value.begin(); iter != name_value.end(); ++iter)
-               {
-                  pass = test_getters("get_Pole_Mixing", iter->first,  
-                                      mssm.mssm_ph.
-                                      get_Pole_Mixing(iter->first,i,j), 
-                                      iter->second, i, j);
-                  if(immediate_exit == true && pass == false) return pass; 
-               }
+              std::set<std::pair<std::string, double>>::iterator iter;
+              for(iter=name_value.begin(); iter != name_value.end(); ++iter)
+              {
+                 pass = test_getters("get_Pole_Mixing", iter->first,  
+                                     mssm.mssm_ph.
+                                     get_Pole_Mixing(iter->first,i,j), 
+                                     iter->second, i, j);
+                 if(immediate_exit == true && pass == false) return pass; 
+              }
            }
        }
         
-        return pass;
+       return pass;
     }
 
      
@@ -780,8 +764,8 @@ namespace Gambit
        return pass;
     }
                                                              
-    template <class M> 
-    bool TestMssmPoleGets(MSSMSpec<M> mssm, M FSmssm)
+    template <class MI> 
+    bool TestMssmPoleGets(MSSMSpec<MI>& mssm, typename MI::Model& FSmssm)
     {
        bool pass = false;
        pass = TestMssmPoleGets0(mssm,FSmssm);
@@ -814,8 +798,8 @@ namespace Gambit
     
     }
 
-     template <class M>
-    bool TestMssmParGets(MSSMSpec<M> mssm, M FSmssm)
+     template <class MI>
+    bool TestMssmParGets(MSSMSpec<MI>& mssm, typename MI::Model& FSmssm)
     {
        bool pass = false; 
        pass = TestMssmParMass2_0(mssm,FSmssm);
@@ -952,8 +936,8 @@ namespace Gambit
     }
     
     
-      template <class M>
-      bool test_exact(MSSMSpec<M> mssm, M FS_model_slha)
+      template <class MI>
+      bool test_exact(MSSMSpec<MI>& mssm, typename MI::Model& FS_model_slha)
       {
          bool pass = TestMssmParGets(mssm,FS_model_slha);
          if(pass == false)
@@ -993,8 +977,8 @@ namespace Gambit
       }
       //This gives identical results after running up, so don't need messy
       // Test_close
-      template <class M>
-       bool running_test(MSSMSpec<M> & mssm, M & FS_model_slha, double tol)
+      template <class MI>
+       bool running_test(MSSMSpec<MI> & mssm, typename MI::Model & FS_model_slha, double tol)
       {
          double highscale = 1e+16;
          double lowscale = mssm.mssm_drbar_pars.GetScale();
@@ -1030,8 +1014,8 @@ namespace Gambit
          return pass;
       }
 
-      template <class M>
-      bool running_test(Spectrum * spec, M & FS_model_slha, 
+      template <class Model>
+      bool running_test(Spectrum * spec, Model & FS_model_slha, 
                    double tol)
       {
          double highscale = 1e+16;
