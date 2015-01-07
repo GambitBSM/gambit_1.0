@@ -52,6 +52,7 @@ START_MODULE
     #define FUNCTION operatePythia
     START_FUNCTION(void, CAN_MANAGE_LOOPS)
     DEPENDENCY(DetectorSim, shared_ptr<ColliderBit::Delphes_PythiaToHEPUtils>)
+    DEPENDENCY(ListOfAnalyses, AnalysisPointerVector)
     #undef FUNCTION
   #undef CAPABILITY
 

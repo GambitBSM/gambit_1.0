@@ -533,8 +533,10 @@ namespace Gambit
 
     // Evaluates ObsLike vertex, and everything it depends on, and prints
     // results
-    void DependencyResolver::calcObsLike(VertexID vertex)
+    void DependencyResolver::calcObsLike(VertexID vertex, const int pointID)
     {
+      // pointID supplied by scanner, and is used to tell the printer which model
+      // point the results should be associated with.
       std::vector<VertexID> order;
       //typedef property_map<MasterGraphType, vertex_index_t>::type IndexMap;
       //IndexMap index = get(vertex_index, masterGraph);
@@ -553,9 +555,9 @@ namespace Gambit
         // Ben: may want to do this call elsewhere; I added it here for testing.
         // Pat: note that this prints from thread index 0 only, i.e. results created by 
         //      threads other than the main one need to be accessed with 
-        //        masterGraph[*it]->print(boundPrinter,index);
+        //        masterGraph[*it]->print(boundPrinter,pointID,index);
         //      where index is some integer s.t. 0 <= index <= number of hardware threads
-        if (masterGraph[*it]->type() != "void") masterGraph[*it]->print(boundPrinter);
+        if (masterGraph[*it]->type() != "void") masterGraph[*it]->print(boundPrinter,pointID);
       }
     }
 
@@ -568,7 +570,6 @@ namespace Gambit
       // the 'final result' when more than one thread has run the functor, and is the 
       // only result when the functor has not been run in parallel); accessing the results
       // from any other threads requires passing the desired thread index explicity instead of 0.
-      std::cout<<"ben: bug here?"<<std::endl;
       return (*(dynamic_cast<module_functor<double>*>(masterGraph[vertex])))(0);
     }
 
@@ -599,8 +600,6 @@ namespace Gambit
       {
         masterGraph[*vi]->reset();
       }
-      // TODO: Ben - this is temporary; the command to tell the printer to start a new point should probably be in ScannerBit or something.
-      boundPrinter->endline();
     }
 
 

@@ -7,6 +7,8 @@ To build GAMBIT:
   make micromegas  # If intending to use micromegas
   make             # Ordering of make commands is unimportant.
                  
+To choose compilers, change the cmake step to, e.g.
+  FC=gfortran CC=gcc CXX=g++ cmake ..
 
 Issues:
 
@@ -31,3 +33,8 @@ Issues:
 
  * In the case the gambit stops complaining about IO errors when opening a
    file in some non-existing path, create the path by hand.
+
+ * If you run the gambit CMake setting gcc as the C++ complier,
+   then FlexibleSUSY may fail to find the C++ standard libraries.
+   It should work if you set CXX=g++ instead.
+

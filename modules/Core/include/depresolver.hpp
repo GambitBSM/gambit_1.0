@@ -124,7 +124,7 @@ namespace Gambit
         /// New IO routines
         std::vector<VertexID> getObsLikeOrder();
 
-        void calcObsLike(VertexID);
+        void calcObsLike(VertexID, const int);
 
         double getObsLike(VertexID);
 

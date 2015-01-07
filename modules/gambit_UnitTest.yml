@@ -44,11 +44,10 @@ Printer:
 ##############################
 
 Scanner:
-  use_scanner_plugin: crapsample
+  use_scanner_plugin: toy_mcmc
   
   plugins:
-    crapsample:
-      plugin: crapsample
+    toy_mcmc:
       point_number: 3
       output_file:  output
       like:  Likelihood
@@ -65,14 +64,14 @@ Auxiliaries:
   - capability: UnitTest_DarkBit
     dependencies:
         - capability: DD_couplings
-          #function: DD_couplings_DarkSUSY
-          function: DD_couplings_micrOMEGAs
+          function: DD_couplings_DarkSUSY
+          #function: DD_couplings_micrOMEGAs
         - capability: RD_oh2
-          #function: RD_oh2_DarkSUSY
-          function: RD_oh2_micromegas
+          function: RD_oh2_DarkSUSY
+          #function: RD_oh2_micromegas
     options:
-        #fileroot: UnitTest_MSSMbenchmarks_DarkSUSY
-        fileroot: UnitTest_MSSMbenchmarks_micromegas
+        fileroot: UnitTest_MSSMbenchmarks_DarkSUSY
+        #fileroot: UnitTest_MSSMbenchmarks_micromegas
   - capability: MSSMspectrum
     function: getMSSMspectrum  # For unit test: reads in spectrum from SLHA file
     module: DarkBit

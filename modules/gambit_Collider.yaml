@@ -45,12 +45,12 @@ Printer:
 
 Scanner:
     
-  use_scanner_plugin: loopsample
+  use_scanner_plugin: random
 
   plugins:
   
-    loopsample:
-      plugin: loopsample
+    random:
+      plugin: random_sampler
       options:
         point_number: 1
         output_file:  output

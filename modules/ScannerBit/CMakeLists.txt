@@ -3,7 +3,6 @@ set(scannerbit_sources
                  src/composite.cpp
                  src/gaussian.cpp
                  src/inifile_interface.cpp
-                 src/outputhandler.cpp
                  src/plugin_comparators.cpp
                  src/plugin_loader.cpp
                  src/scan.cpp
@@ -15,7 +14,6 @@ set(scannerbit_headers
                  include/factory_registry.hpp
                  include/function_plugin.hpp
                  include/inifile_interface.hpp
-                 include/outputhandler.hpp
                  include/plugin_comparators.hpp
                  include/plugin_defs.hpp
                  include/plugin_details.hpp
@@ -41,7 +39,10 @@ set(scannerbit_headers
 )
 
 set(scanner_plugin_sources
-                 src/scanners/crapsample.cpp
+                 src/scanners/grid.cpp
+                 src/scanners/square_grid.cpp
+                 src/scanners/toy_mcmc.cpp
+                 src/scanners/random_sampler.cpp
                  src/scanners/twalk.cpp
 )
 

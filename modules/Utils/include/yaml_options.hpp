@@ -89,6 +89,16 @@ namespace Gambit
         return node.as<TYPE>();
       }
       /// @}
+     
+      /// Basic setter, for adding extra options 
+      /// @{
+      template<typename KEYTYPE, typename VALTYPE>
+      void setValue(const KEYTYPE &key, const VALTYPE &val)
+      {
+         options[key] = val;
+         return;
+      }
+      /// @}
 
       /// Retrieve values from key-value pairs in options node.
       /// Works for an arbitrary set of input keys (of any type), and returns

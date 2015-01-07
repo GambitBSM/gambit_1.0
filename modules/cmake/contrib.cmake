@@ -77,9 +77,9 @@ if (NOT ${EXCLUDE_FLEXIBLESUSY})
           --with-eigen-incdir=${EIGEN3_DIR}
           --with-boost-libdir=${Boost_LIBRARY_DIR}
           --with-boost-incdir=${Boost_INCLUDE_DIR}
-          --enable-verbose
         )
-  
+     #--enable-verbose flag causes verbose output at runtime as well. Set it dynamically somehow.
+
      # Explain how to build each of the flexiblesusy spectrum generators we need
      # Note; using $(MAKE) rather than "make" so that -jN flags get passed on (for parallel build)
      foreach(_MODEL ${BUILT_FS_MODELS})
@@ -95,6 +95,9 @@ if (NOT ${EXCLUDE_FLEXIBLESUSY})
          set(flexiblesusy_LDFLAGS "${flexiblesusy_LDFLAGS} -L${FLEXIBLESUSY_DIR}/models/${_MODEL} -l${_MODEL}")
      endforeach()
   
+  endif()
+
+  if( NOT ${EXCLUDE_FLEXIBLESUSY} )
     # Link order matters! The core flexiblesusy libraries need to come after the model libraries
     set(flexiblesusy_LDFLAGS "${flexiblesusy_LDFLAGS} -L${FLEXIBLESUSY_DIR}/src -lflexisusy -L${FLEXIBLESUSY_DIR}/legacy -llegacy")
   endif()

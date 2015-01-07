@@ -1,11 +1,11 @@
 BLOCK SPINFO
      1   DarkSUSY
-     2   trunk (rev 979)
+     2   trunk (rev 1049)
      3   Model: FMCp03000765
 BLOCK MODSEL
          1                  1   # Model
          4                  0   # RPV
-         5                  0   # CPV
+         5                  1   # CPV
          6                  3   # FV
 BLOCK SMINPUTS
          1     1.27918000E+02   # invAlfaMZ

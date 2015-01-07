@@ -64,10 +64,7 @@ namespace Gambit
       Likelihood_Container_Factory(const gambit_core &core, DRes::DependencyResolver &dependencyResolver, 
        IniParser::IniFile &iniFile, Priors::CompositePrior &prior);
       ~Likelihood_Container_Factory(){}
-      const std::vector<str> & getKeys() const;
-      unsigned int getDim() const;    
-      void * operator() (const str &in, const str &purpose) const;   
-      void remove(void *a) const;
+      void * operator() (const str &purpose) const;
   };
 
 }

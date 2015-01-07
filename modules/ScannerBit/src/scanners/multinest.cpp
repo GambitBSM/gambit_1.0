@@ -111,6 +111,16 @@ namespace Gambit {
                    //   Cube[i] = physicalpars[i];
                    //}
 
+                   Cube[ndim+0] = boundLogLike.printer.get_threadID()   // thread ID number
+                   Cube[ndim+1] = boundLogLike.printer.get_pointID()    // point ID number
+       
+                   // If we want the printer to record anything extra, can send 
+                   // the data to the usual print function by calling, e.g.:
+                   //    boundLogLike.printer.print(lnew, "extra_logl", -1)
+                   // (need to make sure the IDcode doesn't clash with anything coming from the functors)
+                   // Can also send data to auxiliary printers rather than the main printer. See dumper
+                   // function for usage of this.
+
                    // Done! (lnew will be used by MultiNest to guide the search)
                    return lnew;                  
             }
@@ -152,8 +162,67 @@ namespace Gambit {
                 //boundLogLike.print(logZ, "logZ",-2);
                 //boundLogLike.print(logZerr, "logZerr",-3);
 
-                // ------Old default stuff below---------
+                // Access the interface to the printer to send dumper information to auxilliary print stream
+                // Might need a flag to specify whether (e.g. for "stats") information is global to scan, i.e. not
+                // related to any given model point.
+                // Aux stream setup done at beginning of scan
 
+                // Get printers for each auxiliary stream
+                Printers::BasePrinter* stats_stream(boundLogLike.printer.get_stream("stats"));
+                Printers::BasePrinter* txt_stream(boundLogLike.printer.get_stream("txt"));
+                Printers::BasePrinter* live_stream(boundLogLike.printer.get_stream("live"));
+
+                stats_stream->reset(); // WARNING! (potentially) Deletes the old data
+                txt_stream->reset();   // WARNING! (potentially) Deletes the old data
+                live_stream->reset();  // WARNING! (potentially) Deletes the old data
+
+                // Ensure the "quantity" IDcode is UNIQUE across all printers! This way fancy printers
+                // have the option of ignoring duplicate writes and doing things like combine all the
+                // auxiliary streams into a single database. But must be able to assume IDcodes are
+                // unique for a given quanity to do this.
+                // Negative numbers not used by functors, so those are 'safe' to use here
+
+                //                  Quantity    Label         IDcode
+                // stats file stuff
+                stats_stream->print(maxLogLike, "maxLogLike", -1);
+                stats_stream->print(logZ,       "logZ",       -2);
+                stats_stream->print(logZerr,    "logZerr",    -3);
+                stats_stream->flush(); // Empty printer buffer
+
+                // txt file stuff
+                // Send info for each point to printer one command at a time
+                int pointID; // ID number for each point 
+                int thread;  // thread number which wrote each point
+
+                // The posterior distribution
+                for( int i = 0; i < nSamples; i++ )
+                   thread  = (*posterior)[0][(nPar-1) * nSamples + i]; //thread number stored in second last entry of cube
+                   pointID = (*posterior)[0][(nPar-0) * nSamples + i]; //pointID stored in last entry of cube
+                   txt_stream->print((*posterior)[0][(nPar+1) * nSamples + i], "LogLike",   -4, thread, pointID);
+                   txt_stream->print((*posterior)[0][(nPar+2) * nSamples + i], "Posterior", -5, thread, pointID);
+                   // Put rest of parameters into a vector for printing all together
+                   std::vector<double> parameters;
+                   for( int j = 0; j < nPar-1; j++ )
+                       parameters->push_back( (*posterior)[0][j * nSamples + i] );
+                   txt_stream->print(parameters, "Parameters", -6, thread, pointID);
+                txt_stream->flush(); // Empty the printer buffer
+
+                /// Therefore stick thread/point numbers into print function directly                  
+ 
+                // The last set of live points
+                for( int i = 0; i < nlive; i++ )
+                   thread  = (*physLive)[0][(nPars-1) * nlive + i]; //thread number stored in second last entry of cube
+                   pointID = (*physLive)[0][(nPars-0) * nlive + i]; //pointID stored in last entry of cube
+                   live_stream->print((*physLive)[0][(nPar+1) * nlive + i], "LogLike", -4, thread, pointID);
+                   // Put rest of parameters into a vector for printing all together
+                   std::vector<double> parameters;
+                   for( int j = 0; j < nPar-1; j++ )
+                       parameters.push_back( (*physLive)[0][j * nlive + i] );
+                   live_stream->print(parameters, "Parameters", -6, thread, pointID);
+                live_stream->flush(); 
+
+                // ------Old default stuff below---------
+                
             	// convert the 2D Fortran arrays to C++ arrays
             	
             	
@@ -228,7 +297,7 @@ scanner_plugin (MultiNest, version(0, 0, 0, bens_version), external_library_requ
                 //std::string output_file            = get_inifile_value<std::string>("output_file", "default_output");
 
                 // Have to discuss with Greg the best thing to do here.
-                Function_Base *LogLike             = get_functor("Scanner_Function", "Likelihood");
+                Function_Base *LogLike             = get_functor("Likelihood");
                 int ma = keys.size();
 
                 // set the MultiNest sampling parameters 
@@ -241,7 +310,7 @@ scanner_plugin (MultiNest, version(0, 0, 0, bens_version), external_library_requ
         	double efr ( 	get_inifile_value<double>("efr", 0.8) );				// set the required efficiency
         	double tol ( 	get_inifile_value<double>("tol", 0.5) );				// tol, defines the stopping criteria
         	int ndims ( 	get_inifile_value<int>("ndims", ma) );					// dimensionality (no. of free parameters)
-        	int nPar ( 	get_inifile_value<int>("nPar", ma) );					// total no. of parameters including free & derived parameters
+        	int nPar ( 	get_inifile_value<int>("nPar", ma+2) );					// total no. of parameters including free & derived parameters. The "plus 2" is for the only "derived" parameters we deal with in this interface, namely the ID code for each point and the thread number
         	int nClsPar ( 	get_inifile_value<int>("nClsPar", ma) );				// no. of parameters to do mode separation on
         	int updInt ( 	get_inifile_value<int>("updInt", 1000) );				// after how many iterations feedback is required & the output files should be updated
         									// note: posterior files are updated & dumper routine is called after every updInt*10 iterations
@@ -268,6 +337,18 @@ scanner_plugin (MultiNest, version(0, 0, 0, bens_version), external_library_requ
         									// has done max no. of iterations or convergence criterion (defined through tol) has been satisfied
         	void *context = 0;				// not required by MultiNest, any additional information user wants to pass
                 
+                // Get inifile options for each print stream
+                Gambit::Options txt_options   = get_inifile_value<Gambit::Options>("aux_printer_txt_options");
+                Gambit::Options stats_options = get_inifile_value<Gambit::Options>("aux_printer_stats_options");
+                Gambit::Options live_options  = get_inifile_value<Gambit::Options>("aux_printer_live_options");
+
+                stats_options.setValue("global",1); // Option to set this stream to "global" mode, i.e. it does not operated on a point-by-point basis. Therefore no thread or point number is needed when printing.
+
+                // Initialise auxiliary print streams
+                LogLike->printer.new_stream("txt",txt_options);
+                LogLike->printer.new_stream("stats",stats_options);            
+                LogLike->printer.new_stream("live",live_options);
+
                 // Create the object which interfaces to the MultiNest LogLike callback function
                 // Need to give it the loglikelihood function to evaluate, and the function to perform the prior transformation
                 // NOTE TO SELF: Can't pull function pointer out of object like that, since it has a 'this' argument so the call signatures won't match. Just pass in wrapping oject instead.
