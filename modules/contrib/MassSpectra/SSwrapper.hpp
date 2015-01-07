@@ -17,8 +17,8 @@ public:
    double get_mq2(int i, int j) const {displaySoftMassSquaredElement(mQl,i,j);}
    double get_ml2(int i, int j) const {displaySoftMassSquaredElement(mLl,i,j);}
    double get_md2(int i, int j) const {displaySoftMassSquaredElement(mDr,i,j);}
-   double get_mu2(int i, int j)) const {displaySoftMassSquaredElement(mUr,i,j);}
-   double get_me2(int i, int j)) const {displaySoftMassSquaredElement(mEr,i,j);}
+   double get_mu2(int i, int j) const {displaySoftMassSquaredElement(mUr,i,j);}
+   double get_me2(int i, int j) const {displaySoftMassSquaredElement(mEr,i,j);}
    double get_MassB() const {return displayGaugino(1);}
    double get_MassWB() const {return displayGaugino(2);}
    double get_MassG() const {return displayGaugino(3);}
@@ -38,6 +38,10 @@ public:
    double get_Ye(int i, int j) const {return displayYukawaElement(YE,i,j);}
    double get_Yu(int i, int j) const {return displayYukawaElement(YU,i,j);}
    
+   /// Pole mass getters
+   double get_MSd_pole_slha(int i, int j) const {return displayPhys().md(i,j);}
+   double get_MSu_pole_slha(int i, int j) const {return displayPhys().mu(i,j);}
+   double get_MSe_pole_slha(int i, int j) const {return displayPhys().me(i,j);}
    
 
 }
