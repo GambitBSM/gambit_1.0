@@ -46,7 +46,7 @@ namespace Gambit
                         return ret;
                 }
                 
-                class Scanner_Plugin_Function : public Plugins::Plugin_Interface<double (const std::vector<double> &)>, public Function_Base
+                class Scanner_Plugin_Function : public Plugins::Plugin_Interface<double (const std::vector<double> &)>, public Function_Base<double (const std::vector<double>&)>
                 {
                 private:
                         //std::vector<double> &params;
@@ -63,7 +63,7 @@ namespace Gambit
                         }
                 };
                 
-                class Multi_Scanner_Plugin_Function : public Function_Base
+                class Multi_Scanner_Plugin_Function : public Function_Base<double (const std::vector<double>&)>
                 {
                 private:
                         std::vector<Scanner_Plugin_Function> functions;
