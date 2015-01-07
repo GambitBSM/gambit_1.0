@@ -7,14 +7,14 @@
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-///   
-///  \author Pat Scott 
+///
+///  \author Pat Scott
 ///          (patscott@physics.mcgill.ca)
 ///  \date 2013 Apr-July, Dec
 ///  \date 2014 Jan, Mar-May, Sep
 ///
 ///  \author Anders Kvellestad
-///          (anders.kvellestad@fys.uio.no) 
+///          (anders.kvellestad@fys.uio.no)
 ///   \date 2013 Apr, Nov
 ///
 ///  \author Christoph Weniger
@@ -58,7 +58,7 @@ namespace Gambit
     };
   }
 
-   
+
   // Functor class methods
 
     /// Constructor
@@ -66,7 +66,7 @@ namespace Gambit
                       str func_capability,
                       str result_type,
                       str origin_name,
-                      Models::ModelFunctorClaw &claw) :      
+                      Models::ModelFunctorClaw &claw) :
      myName          (func_name),
      myCapability    (func_capability),
      myType          (Utils::fix_type(result_type)),
@@ -79,10 +79,10 @@ namespace Gambit
      needs_recalculating (true)
     {
        std::stringstream ss;
-       ss<<"#"<<capability()<<" @"<<origin()<<"::"<<name(); 
+       ss<<"#"<<capability()<<" @"<<origin()<<"::"<<name();
        setLabel(ss.str());
     }
-    
+
     /// Virtual calculate(); needs to be redefined in daughters.
     void functor::calculate() {}
 
@@ -97,25 +97,25 @@ namespace Gambit
     /// @}
 
     /// Reset-then-recalculate method
-    void functor::reset_and_calculate() { this->reset(); this->calculate(); } 
+    void functor::reset_and_calculate() { this->reset(); this->calculate(); }
 
     /// Setter for purpose (relevant only for next-to-output functors)
     void functor::setPurpose(str purpose) { if (this == NULL) failBigTime("setPurpose"); myPurpose = purpose; }
 
     /// Setter for vertex ID (used in printer system)
     void functor::setVertexID(int vertexID) { if (this == NULL) failBigTime("setVertexID"); myVertexID = vertexID; }
-    
+
     /// Setter for status (-2 = function absent, -1 = origin absent, 0 = model incompatibility (default), 1 = available, 2 = active)
     void functor::setStatus(int stat)
     {
       if (this == NULL) failBigTime("setStatus");
       myStatus = stat;
-      setInUse(myStatus == 2);       
+      setInUse(myStatus == 2);
     }
 
     /// Setter for label (used in printer system)
-    void functor::setLabel(str label) { if (this == NULL) failBigTime("setLabel"); myLabel = label; } 
-   
+    void functor::setLabel(str label) { if (this == NULL) failBigTime("setLabel"); myLabel = label; }
+
     /// Getter for the wrapped function's name
     str functor::name()        const { if (this == NULL) failBigTime("name"); return myName; }
     /// Getter for the wrapped function's reported capability
@@ -135,7 +135,7 @@ namespace Gambit
     /// Getter for purpose (relevant for output nodes, aka helper structures for the dep. resolution)
     str functor::purpose()     const { if (this == NULL) failBigTime("purpose"); return myPurpose; }
     /// Getter for vertex ID
-    int functor::vertexID()    const { if (this == NULL) failBigTime("vertexID"); return myVertexID; }   
+    int functor::vertexID()    const { if (this == NULL) failBigTime("vertexID"); return myVertexID; }
     /// Getter indicating if the wrapped function's result should to be printed
     bool functor::requiresPrinting() const { if (this == NULL) failBigTime("requiresPrinting"); return false; }
     /// Getter for the printer label
@@ -152,13 +152,13 @@ namespace Gambit
 
     /// Set the ordered list of pointers to other functors that should run nested in a loop managed by this one
     void functor::setNestedList (std::vector<functor*>&)
-    { 
+    {
       utils_error().raise(LOCAL_INFO,"The setNestedList method has not been defined in this class.");
-    } 
+    }
 
     /// Set the iteration number in a loop in which this functor runs
     void functor::setIteration (int)
-    { 
+    {
       utils_error().raise(LOCAL_INFO,"The setIteration method has not been defined in this class.");
     }
 
@@ -177,85 +177,85 @@ namespace Gambit
     }
 
     /// Getter for listing currently activated dependencies
-    std::set<sspair> functor::dependencies()          
-    { 
+    std::set<sspair> functor::dependencies()
+    {
       utils_error().raise(LOCAL_INFO,"The dependencies method has not been defined in this class.");
       std::set<sspair> empty;
       return empty;
     }
     /// Getter for listing backend requirement groups
-    std::set<str> functor::backendgroups()                   
+    std::set<str> functor::backendgroups()
     {
       utils_error().raise(LOCAL_INFO,"The backendgroups method has not been defined in this class.");
       std::set<str> empty;
       return empty;
     }
     /// Getter for listing all backend requirements
-    std::set<sspair> functor::backendreqs()                   
+    std::set<sspair> functor::backendreqs()
     {
       utils_error().raise(LOCAL_INFO,"The backendreqs method has not been defined in this class.");
       std::set<sspair> empty;
       return empty;
     }
     /// Getter for listing backend requirements from a specific group
-    std::set<sspair> functor::backendreqs(str)                   
+    std::set<sspair> functor::backendreqs(str)
     {
       utils_error().raise(LOCAL_INFO,"The backendreqs method has not been defined in this class.");
       std::set<sspair> empty;
       return empty;
     }
     /// Getter for listing permitted backends
-    std::set<sspair> functor::backendspermitted(sspair) 
-    { 
+    std::set<sspair> functor::backendspermitted(sspair)
+    {
       utils_error().raise(LOCAL_INFO,"The backendspermitted method has not been defined in this class.");
       std::set<sspair> empty;
       return empty;
     }
     /// Getter for listing tags associated with backend requirements
     std::set<str> functor::backendreq_tags(sspair)
-    { 
+    {
       utils_error().raise(LOCAL_INFO,"The backendreq_tags method has not been defined in this class.");
       std::set<str> empty;
       return empty;
     }
     /// Getter for listing backend requirements that must be resolved from the same backend
     std::set<sspair> functor::forcematchingbackend(str)
-    { 
+    {
       utils_error().raise(LOCAL_INFO,"The forcematchingbackend method has not been defined in this class.");
       std::set<sspair> empty;
       return empty;
     }
 
     /// Getter for listing backend-specific conditional dependencies (4-string version)
-    std::set<sspair> functor::backend_conditional_dependencies (str, str, str, str)  
-    { 
+    std::set<sspair> functor::backend_conditional_dependencies (str, str, str, str)
+    {
       utils_error().raise(LOCAL_INFO,"The backend_conditional_dependencies method has not been defined in this class.");
       std::set<sspair> empty;
       return empty;
     }
-    
+
     /// Tell the functor that the loop it manages should break now.
     void functor::breakLoop()
-    { 
+    {
       utils_error().raise(LOCAL_INFO,"The breakLoop method has not been defined in this class.");
     }
 
     /// Getter for backend-specific conditional dependencies (3-string version)
-    std::set<sspair> functor::backend_conditional_dependencies (str req, str type, str be)  
-    { 
+    std::set<sspair> functor::backend_conditional_dependencies (str req, str type, str be)
+    {
       return backend_conditional_dependencies(req, type, be, "any");
     }
-    
+
     /// Getter for backend-specific conditional dependencies (backend functor pointer version)
-    std::set<sspair> functor::backend_conditional_dependencies (functor* be_functor)  
-    { 
+    std::set<sspair> functor::backend_conditional_dependencies (functor* be_functor)
+    {
       return backend_conditional_dependencies (be_functor->capability(), be_functor->type(),
        be_functor->origin(), be_functor->version());
     }
 
     /// Getter for listing model-specific conditional dependencies
     std::set<sspair> functor::model_conditional_dependencies (str)
-    { 
+    {
       utils_error().raise(LOCAL_INFO,"The model_conditional_dependencies method has not been defined in this class.");
       std::set<sspair> empty;
       return empty;
@@ -263,7 +263,7 @@ namespace Gambit
 
     /// Getter for listing model-specific conditional backend requirements
     std::set<sspair> functor::model_conditional_backend_reqs (str)
-    { 
+    {
       utils_error().raise(LOCAL_INFO,"The model_conditional_backend_reqs method has not been defined in this class.");
       std::set<sspair> empty;
       return empty;
@@ -311,7 +311,7 @@ namespace Gambit
     safe_ptr<Options> functor::getOptions()
     {
       if (this == NULL) functor::failBigTime("getOptions");
-      return safe_ptr<Options>(&myOptions);       
+      return safe_ptr<Options>(&myOptions);
     }
 
     /// Test whether the functor is allowed (either explicitly or implicitly) to be used with a given model
@@ -319,10 +319,10 @@ namespace Gambit
     {
       if (allowedModels.empty() and allowedGroupCombos.empty()) return true;
       if (allowed_parent_or_friend_exists(model)) return true;
-      return false;        
+      return false;
     }
 
-    /// Test whether the functor has been explictly allowed to be used with a given model 
+    /// Test whether the functor has been explictly allowed to be used with a given model
     bool functor::modelExplicitlyAllowed(str model)
     {
       if (allowedModels.find(model) != allowedModels.end()) return true;
@@ -348,7 +348,7 @@ namespace Gambit
       }
       // Loop over the allowed combinations, and check if the passed combo matches any of them
       for(std::set<std::set<str> >::const_iterator group_combo = allowedGroupCombos.begin(); group_combo != allowedGroupCombos.end(); group_combo++)
-      {  
+      {
         bool matches = true;
         //Loop over each group in the allowed group combination, and check if one of the entries in the passed model combination matches it somehow.
         for(std::set<str>::const_iterator group = group_combo->begin(); group != group_combo->end(); group++)
@@ -362,7 +362,7 @@ namespace Gambit
       return false;
     }
 
-    /// Test whether the functor has been explictly allowed to be used with a given combination of models 
+    /// Test whether the functor has been explictly allowed to be used with a given combination of models
     bool functor::modelComboExplicitlyAllowed(std::set<str> combo)
     {
       // If any model in the combo is always explicitly allowed, then give the combo a thumbs up.
@@ -409,7 +409,7 @@ namespace Gambit
 
     /// Print function
     void functor::print(Printers::BasePrinter*)
-    { 
+    {
       str warn_msg = "This is the functor base class print function! This should not\n";
       warn_msg += "be used; the print function should be redefined in daughter\n"
                   "functor classes. If this is running there is a problem somewhere.\n"
@@ -417,15 +417,15 @@ namespace Gambit
                   "are allowed to try to print themselves; i.e. backend and void\n"
                   "functors may not do this (they inherit this default message).";
       utils_warning().raise(LOCAL_INFO,warn_msg);
-    }    
+    }
 
     /// Attempt to retrieve a dependency or model parameter that has not been resolved
     void functor::failBigTime(str method)
     {
       str error_msg = "Attempted to use a functor method from a null pointer.";
       error_msg  += "\nProbably you tried to use a conditional dependency that has"
-                    "\nnot been activated, or a model parameter that is not defined"    
-                    "\nin the model for which this function has been invoked."   
+                    "\nnot been activated, or a model parameter that is not defined"
+                    "\nin the model for which this function has been invoked."
                     "\nPlease check your module function source code."
                     "\nMethod invoked: " + method + ".";
       utils_error().raise(LOCAL_INFO,error_msg);
@@ -439,9 +439,9 @@ namespace Gambit
         if (myClaw->model_exists(*it))
         {
           if (myClaw->downstream_of(model, *it)) return true;
-        } 
-      }    
-      return false;    
+        }
+      }
+      return false;
     }
 
     /// Check that a model is actually part of a combination that is allowed to be used with this functor.
@@ -485,10 +485,10 @@ namespace Gambit
             {
               if (myClaw->downstream_of(*jt, *it)) return true;
             }
-          } 
-        }    
+          }
+        }
       }
-      return false;    
+      return false;
     }
 
     /// Work out whether a given combination of models and a model group have any elements in common
@@ -500,7 +500,7 @@ namespace Gambit
       {
         if ( std::find(combo.begin(), combo.end(), *it) == combo.end() ) return true;
       }
-      return false;    
+      return false;
     }
 
     /// Try to find a parent or friend model in some user-supplied map from models to sspair vectors
@@ -511,9 +511,9 @@ namespace Gambit
         if (myClaw->model_exists(it->first))
         {
           if (myClaw->downstream_of(model, it->first)) return it->first;
-        } 
-      }    
-      return "";    
+        }
+      }
+      return "";
     }
 
     // Module_functor_common class methods
@@ -557,8 +557,8 @@ namespace Gambit
     }
 
     /// Destructor
-    module_functor_common::~module_functor_common() 
-    { 
+    module_functor_common::~module_functor_common()
+    {
       if (myCurrentIteration != NULL)  delete [] myCurrentIteration;
     }
 
@@ -613,10 +613,10 @@ namespace Gambit
         ss << "Problem with ModelInUse(\"" << model << "\")." << endl
            << "This model is not known by " << myOrigin << "::" << myName << "." << endl
            << "Please make sure that it has been mentioned in some context in the" << endl
-           << "rollcall header declaration of this function."; 
+           << "rollcall header declaration of this function.";
         model_error().raise(LOCAL_INFO,ss.str());
       }
-      return activeModelFlags.at(model);       
+      return activeModelFlags.at(model);
     }
 
     /// Return a safe pointer to a string indicating which backend requirement has been activated for a given backend group.
@@ -624,22 +624,22 @@ namespace Gambit
     {
       if (this == NULL) functor::failBigTime("getChosenReqFromGroup");
       chosenReqsFromGroups[group] = "none";
-      return safe_ptr<str>(&chosenReqsFromGroups[group]);       
+      return safe_ptr<str>(&chosenReqsFromGroups[group]);
     }
 
     /// Execute a single iteration in the loop managed by this functor.
     void module_functor_common::iterate(int iteration)
     {
       if (not myNestedFunctorList.empty())
-      {          
+      {
         for (std::vector<functor*>::iterator it = myNestedFunctorList.begin();
-         it != myNestedFunctorList.end(); ++it) 
+         it != myNestedFunctorList.end(); ++it)
         {
           (*it)->setIteration(iteration);   // Tell the nested functor what iteration this is.
           (*it)->reset_and_calculate();     // Reset the nested functor so that it recalculates, then set it off
         }
       }
-    } 
+    }
 
     // Initialise the array holding the current iteration(s) of this functor.
     void module_functor_common::init_myCurrentIteration()
@@ -655,7 +655,7 @@ namespace Gambit
       if (myLoopManager == NULL)
       {
         str errmsg = "Problem whilst attempting to break out of loop:";
-        errmsg +=  "\n Loop Manager not properly defined." 
+        errmsg +=  "\n Loop Manager not properly defined."
                    "\n This is " + this->name() + " in " + this->origin() + ".";
         utils_error().raise(LOCAL_INFO,errmsg); //FIXME this seems to cause a crash if it is ever triggered -- why??
       }
@@ -669,14 +669,14 @@ namespace Gambit
     void module_functor_common::breakLoop() { myLoopIsDone = true; }
 
     /// Return a safe pointer to the flag indicating that a loop managed by this functor should break now.
-    safe_ptr<bool> module_functor_common::loopIsDone() 
+    safe_ptr<bool> module_functor_common::loopIsDone()
     {
       if (this == NULL) functor::failBigTime("loopIsDone");
-      return safe_ptr<bool>(&myLoopIsDone); 
+      return safe_ptr<bool>(&myLoopIsDone);
     }
 
     /// Provide a way to reset the flag indicating that a loop managed by this functor should break.
-    void module_functor_common::resetLoop() 
+    void module_functor_common::resetLoop()
     {
       myLoopIsDone = false;
     }
@@ -684,16 +684,16 @@ namespace Gambit
     /// Setter for setting the iteration number in the loop in which this functor runs
     void module_functor_common::setIteration (int iteration)
     {
-      if (myCurrentIteration == NULL) init_myCurrentIteration(); // Init memory if this is the first run through. 
+      if (myCurrentIteration == NULL) init_myCurrentIteration(); // Init memory if this is the first run through.
       myCurrentIteration[omp_get_thread_num()] = iteration;
     }
 
     /// Return a safe pointer to the iteration number in the loop in which this functor runs.
-    omp_safe_ptr<int> module_functor_common::iterationPtr() 
+    omp_safe_ptr<int> module_functor_common::iterationPtr()
     {
       if (this == NULL) functor::failBigTime("iterationPtr");
-      if (myCurrentIteration == NULL) init_myCurrentIteration(); // Init memory if this is the first run through. 
-      return omp_safe_ptr<int>(myCurrentIteration); 
+      if (myCurrentIteration == NULL) init_myCurrentIteration(); // Init memory if this is the first run through.
+      return omp_safe_ptr<int>(myCurrentIteration);
     }
 
     /// Setter for specifying whether this is permitted to be a manager functor, which runs other functors nested in a loop.
@@ -713,15 +713,15 @@ namespace Gambit
     /// Getter for listing currently activated dependencies
     std::set<sspair> module_functor_common::dependencies() { return myDependencies; }
     /// Getter for listing backend requirement groups
-    std::set<str> module_functor_common::backendgroups() { return myGroups; }                    
+    std::set<str> module_functor_common::backendgroups() { return myGroups; }
     /// Getter for listing all backend requirements
     std::set<sspair> module_functor_common::backendreqs() { return myResolvableBackendReqs; }
     /// Getter for listing backend requirements from a specific group
     std::set<sspair> module_functor_common::backendreqs(str group)
-    { 
+    {
       if (myGroupedBackendReqs.find(group) != myGroupedBackendReqs.end())
       {
-        return myGroupedBackendReqs[group]; 
+        return myGroupedBackendReqs[group];
       }
       else
       {
@@ -730,11 +730,11 @@ namespace Gambit
       }
     }
     /// Getter for listing permitted backends
-    std::set<sspair> module_functor_common::backendspermitted(sspair quant) 
-    { 
+    std::set<sspair> module_functor_common::backendspermitted(sspair quant)
+    {
       if (permitted_map.find(quant) != permitted_map.end())
       {
-        return permitted_map[quant]; 
+        return permitted_map[quant];
       }
       else
       {
@@ -744,10 +744,10 @@ namespace Gambit
     }
     /// Getter for listing tags associated with backend requirements
     std::set<str> module_functor_common::backendreq_tags(sspair quant)
-    { 
+    {
       if (backendreq_tagmap.find(quant) != backendreq_tagmap.end())
       {
-        return backendreq_tagmap[quant]; 
+        return backendreq_tagmap[quant];
       }
       else
       {
@@ -757,10 +757,10 @@ namespace Gambit
     }
     /// Getter for listing backend requirements that must be resolved from the same backend
     std::set<sspair> module_functor_common::forcematchingbackend(str tag)
-    { 
+    {
       if (myForcedMatches.find(tag) != myForcedMatches.end())
       {
-        return myForcedMatches[tag]; 
+        return myForcedMatches[tag];
       }
       else
       {
@@ -770,8 +770,8 @@ namespace Gambit
     }
 
     /// Getter for listing backend-specific conditional dependencies (4-string version)
-    std::set<sspair> module_functor_common::backend_conditional_dependencies (str req, str type, str be, str ver)  
-    { 
+    std::set<sspair> module_functor_common::backend_conditional_dependencies (str req, str type, str be, str ver)
+    {
       std::set<sspair> generic_deps, specific_deps, total_deps;
       std::vector<str> quad;
       quad.push_back(req);
@@ -790,26 +790,26 @@ namespace Gambit
       }
       //Now put them together
       total_deps.insert(generic_deps.begin(), generic_deps.end());
-      total_deps.insert(specific_deps.begin(), specific_deps.end());        
+      total_deps.insert(specific_deps.begin(), specific_deps.end());
       return total_deps;
     }
-    
+
     /// Getter for backend-specific conditional dependencies (3-string version)
-    std::set<sspair> module_functor_common::backend_conditional_dependencies (str req, str type, str be)  
-    { 
+    std::set<sspair> module_functor_common::backend_conditional_dependencies (str req, str type, str be)
+    {
       return backend_conditional_dependencies(req, type, be, "any");
     }
-    
+
     /// Getter for backend-specific conditional dependencies (backend functor pointer version)
-    std::set<sspair> module_functor_common::backend_conditional_dependencies (functor* be_functor)  
-    { 
+    std::set<sspair> module_functor_common::backend_conditional_dependencies (functor* be_functor)
+    {
       return backend_conditional_dependencies (be_functor->capability(), be_functor->type(),
        be_functor->origin(), be_functor->version());
     }
 
     /// Getter for listing model-specific conditional dependencies
     std::set<sspair> module_functor_common::model_conditional_dependencies (str model)
-    { 
+    {
       str parent = find_friend_or_parent_model_in_map(model,myModelConditionalDependencies);
       if (parent != "") return myModelConditionalDependencies[parent];
       std::set<sspair> empty;
@@ -818,7 +818,7 @@ namespace Gambit
 
     /// Getter for listing model-specific conditional backend requirements
     std::set<sspair> module_functor_common::model_conditional_backend_reqs (str model)
-    { 
+    {
       str parent = find_friend_or_parent_model_in_map(model,myModelConditionalBackendReqs);
       if (parent != "") return myModelConditionalBackendReqs[parent];
       std::set<sspair> empty;
@@ -862,7 +862,7 @@ namespace Gambit
       else
       {
         str errmsg = "Problem whilst attempting to set backend-conditional dependency:";
-        errmsg +=  "\nThe type of the backend requirement " + req + "on which the" 
+        errmsg +=  "\nThe type of the backend requirement " + req + "on which the"
                    "\ndependency " + dep + " is conditional has not been set.  This"
                    "\nis " + this->name() + " in " + this->origin() + ".";
         utils_error().raise(LOCAL_INFO,errmsg);
@@ -891,7 +891,7 @@ namespace Gambit
     /// Add a model conditional dependency for a single model
     void module_functor_common::setModelConditionalDependencySingular
      (str model, str dep, str dep_type, void(*resolver)(functor*, module_functor_common*))
-    { 
+    {
       sspair key (dep, Utils::fix_type(dep_type));
       if (myModelConditionalDependencies.find(model) == myModelConditionalDependencies.end())
       {
@@ -903,9 +903,9 @@ namespace Gambit
     }
 
     /// Add an unconditional backend requirement
-    /// The info gets updated later if this turns out to be conditional on a model. 
+    /// The info gets updated later if this turns out to be conditional on a model.
     void module_functor_common::setBackendReq(str group, str req, str tags, str type, void(*resolver)(functor*))
-    { 
+    {
       type = Utils::fix_type(type);
       sspair key (req, type);
       backendreq_types[req] = type;
@@ -920,7 +920,7 @@ namespace Gambit
       myGroupedBackendReqs[group].insert(key);
       backendreq_map[key] = resolver;
       Utils::strip_parentheses(tags);
-      std::vector<str> v = Utils::delimiterSplit(tags, ",");      
+      std::vector<str> v = Utils::delimiterSplit(tags, ",");
       backendreq_tagmap[key] = std::set<str>(v.begin(), v.end());
       backendreq_groups[key] = group;
     }
@@ -964,7 +964,7 @@ namespace Gambit
     /// Add a model conditional backend requirement for a single model
     void module_functor_common::setModelConditionalBackendReqSingular
      (str model, str req, str type)
-    { 
+    {
       sspair key (req, Utils::fix_type(type));
 
       // Remove the entry from the resolvable backend reqs list...
@@ -989,15 +989,15 @@ namespace Gambit
       std::set<str> tags(v.begin(), v.end());
       std::vector<str> be_plus_versions = Utils::delimiterSplit(be_and_ver, ",");
 
-      //Die if no backend and/or no tags were given.      
-      if (tags.empty() or be_plus_versions.empty())  
+      //Die if no backend and/or no tags were given.
+      if (tags.empty() or be_plus_versions.empty())
       {
         str errmsg = "Error whilst attempting to set permitted backends:";
         errmsg +=  "\nA BACKEND_OPTION must include a backend name and at least one tag."
                    "\nThis is " + this->name() + " in " + this->origin() + ".";
         utils_error().raise(LOCAL_INFO,errmsg);
       }
-     
+
       //Seperate the backend from the versions
       str be = be_plus_versions.at(0);
       std::vector<str> versions(be_plus_versions.begin()+1,be_plus_versions.end());
@@ -1009,7 +1009,7 @@ namespace Gambit
         std::set<str> tagset = backendreq_tagmap[*it];
         if (not Utils::is_disjoint(tags, tagset))
         {
-          // For each of the matching backend requirements, set the chosen backend-version pairs as permitted 
+          // For each of the matching backend requirements, set the chosen backend-version pairs as permitted
           for (std::vector<str>::iterator vit = versions.begin() ; vit != versions.end(); ++vit)
           {
             setPermittedBackend(it->first, be, *vit);
@@ -1021,7 +1021,7 @@ namespace Gambit
 
     /// Add a single permitted backend version
     void module_functor_common::setPermittedBackend(str req, str be, str ver)
-    { 
+    {
       sspair key;
       if (backendreq_types.find(req) != backendreq_types.end())
       {
@@ -1030,7 +1030,7 @@ namespace Gambit
       else
       {
         str errmsg = "Error whilst attempting to set permitted backend:";
-        errmsg += "\nThe return type of the backend requirement " + req + "is not set." 
+        errmsg += "\nThe return type of the backend requirement " + req + "is not set."
                   "\nThis probably means the backend requirement has not been declared."
                   "\nThis is " + this->name() + " in " + this->origin() + ".";
         utils_error().raise(LOCAL_INFO,errmsg);
@@ -1041,7 +1041,7 @@ namespace Gambit
         std::set<sspair> newvec;
         permitted_map[key] = newvec;
       }
-      permitted_map[key].insert(vector_entry);       
+      permitted_map[key].insert(vector_entry);
     }
 
     /// Add one or more rules that force backends reqs with the same tag to always be resolved from the same backend.
@@ -1051,8 +1051,8 @@ namespace Gambit
       Utils::strip_parentheses(tag);
       std::vector<str> tags = Utils::delimiterSplit(tag, ",");
 
-      //Die if no tags were given.      
-      if (tags.empty())  
+      //Die if no tags were given.
+      if (tags.empty())
       {
         str errmsg = "Problem whilst attempting to set backend-matching rule:";
         errmsg +=  "\nA call to FORCE_SAME_BACKEND must include at least one tag!"
@@ -1079,8 +1079,8 @@ namespace Gambit
         myForcedMatches[*tagit] = matches;
       }
 
-      //Note that overlapping sets are explicitly left unmerged, as the common elements 
-      //may or may not be activated in a given scan, making the disjointedness of the 
+      //Note that overlapping sets are explicitly left unmerged, as the common elements
+      //may or may not be activated in a given scan, making the disjointedness of the
       //different sets determinable only at resolution time, not initialisation time.
 
     }
@@ -1099,7 +1099,7 @@ namespace Gambit
         {
           this->myStatus = -3;
         }
-        else 
+        else
         {  // Loop over all the versions of the backend that are needed for this functor to work.
           for (auto jt = it->second.begin(); jt != it->second.end(); ++jt)
           {
@@ -1109,12 +1109,12 @@ namespace Gambit
           }
         }
       }
-    } 
+    }
 
     /// Set the ordered list of pointers to other functors that should run nested in a loop managed by this one
     void module_functor_common::setNestedList (std::vector<functor*> &newNestedList)
-    { 
-      if (iCanManageLoops) 
+    {
+      if (iCanManageLoops)
       {
         myNestedFunctorList = newNestedList;
       }
@@ -1125,14 +1125,14 @@ namespace Gambit
                    "\nThis is " + this->name() + " in " + this->origin() + ".";
         utils_error().raise(LOCAL_INFO,errmsg);
       }
-    } 
+    }
 
     /// Resolve a dependency using a pointer to another functor object
     void module_functor_common::resolveDependency (functor* dep_functor)
     {
       sspair key (dep_functor->quantity());
-      if (std::find(myDependencies.begin(), myDependencies.end(), key) == myDependencies.end())                            
-      {                                                                      
+      if (std::find(myDependencies.begin(), myDependencies.end(), key) == myDependencies.end())
+      {
         str errmsg = "Cannot resolve dependency:";
         errmsg +=  "\nFunction " + myName + " in " + myOrigin + " does not depend on"
                    "\ncapability " + key.first + " with type = " + key.second + ".";
@@ -1148,9 +1148,9 @@ namespace Gambit
 
     // Set this functor's loop manager (if it has one)
     void module_functor_common::resolveLoopManager (functor* dep_functor)
-    { 
-      if (dep_functor->capability() != myLoopManagerCapability or not dep_functor->canBeLoopManager()) 
-      {                                                                      
+    {
+      if (dep_functor->capability() != myLoopManagerCapability or not dep_functor->canBeLoopManager())
+      {
         sspair key (dep_functor->quantity());
         str errmsg = "Cannot set loop manager for nested functor:";
         errmsg +=  "\nFunction " + myName + " in " + myOrigin + " does not need a loop manager with"
@@ -1167,21 +1167,21 @@ namespace Gambit
       sspair key (be_functor->quantity());
 
       //First make sure that the proposed backend function fulfills a known requirement of the module function.
-      if (backendreq_map.find(key) != backendreq_map.end())                            
-      { 
+      if (backendreq_map.find(key) != backendreq_map.end())
+      {
 
         sspair proposal (be_functor->origin(), be_functor->version());  //Proposed backend-version pair
-        sspair generic_proposal (be_functor->origin(), "any");          //Proposed backend, any version 
+        sspair generic_proposal (be_functor->origin(), "any");          //Proposed backend, any version
 
         if ( //Check for a condition under which the proposed backend function is an acceptable fit for this requirement.
          //Check whether there are have been any permitted backends stated for this requirement (if not, anything goes).
-         (permitted_map.find(key) == permitted_map.end()) || 
-         //Iterate over the vector of backend-version pairs for this requirement to see if all versions of the 
+         (permitted_map.find(key) == permitted_map.end()) ||
+         //Iterate over the vector of backend-version pairs for this requirement to see if all versions of the
          //proposed backend have been explicitly permitted.
          (std::find(permitted_map[key].begin(), permitted_map[key].end(), generic_proposal) != permitted_map[key].end()) ||
-         //Iterate over the vector of backend-version pairs again to see if the specific backend version 
+         //Iterate over the vector of backend-version pairs again to see if the specific backend version
          //proposed had been explicitly permitted.
-         (std::find(permitted_map[key].begin(), permitted_map[key].end(), proposal) != permitted_map[key].end()) )         
+         (std::find(permitted_map[key].begin(), permitted_map[key].end(), proposal) != permitted_map[key].end()) )
         {
 
           //One of the conditions was met, so do the resolution.
@@ -1189,38 +1189,38 @@ namespace Gambit
 
           //Set this backend functor's status to active.
           be_functor->setStatus(2);
-       
+
           //If this is also the condition under which any backend-conditional dependencies should be activated, do it.
           std::set<sspair> deps_to_activate = backend_conditional_dependencies(be_functor);
           for (std::set<sspair>::iterator it = deps_to_activate.begin() ; it != deps_to_activate.end(); ++it)
           {
-            myDependencies.insert(*it);        
+            myDependencies.insert(*it);
           }
-   
-          // Add a dependency on the initialisation function of the backend that this backend function hails from (if not done already).          
+
+          // Add a dependency on the initialisation function of the backend that this backend function hails from (if not done already).
           sspair be_ini_quantity(be_functor->origin() + "_" + be_functor->safe_version() + "_init", "void");
-          if (std::find(myDependencies.begin(), myDependencies.end(), be_ini_quantity) == myDependencies.end()) 
+          if (std::find(myDependencies.begin(), myDependencies.end(), be_ini_quantity) == myDependencies.end())
           {
             myDependencies.insert(be_ini_quantity);
           }
 
           //Check if this backend requirement is part of a group.
           str group = backendreq_groups[key];
-          if (group != "none")           
-          {                                                      
+          if (group != "none")
+          {
             //If it is part of a group, make sure that group has actually been declared.
             if (chosenReqsFromGroups.find(group) != chosenReqsFromGroups.end() )
             {
               //If it is part of a group, make sure another backend requirement from the same group has not already been activated.
-              if (chosenReqsFromGroups[group] == "none")          
+              if (chosenReqsFromGroups[group] == "none")
               {
                 //If not, then this this specific backend requirement is now the active one within its group.
-                chosenReqsFromGroups[group] = key.first; 
+                chosenReqsFromGroups[group] = key.first;
               }
               else //This backend requirement is not the first from its group to be resolved.
               {
                 str errmsg = "Cannot resolve backend requirement in group " + group + ":";
-                errmsg +=  "\nFunction " + myName + " in " + myOrigin + " has already had backend " 
+                errmsg +=  "\nFunction " + myName + " in " + myOrigin + " has already had backend "
                            "\nrequirement " + chosenReqsFromGroups[group] + " from the same group filled.";
                 utils_error().raise(LOCAL_INFO,errmsg);
               }
@@ -1238,23 +1238,23 @@ namespace Gambit
         }
 
         else //The proposed backend function is not an acceptable fit for this requirement.
-        { 
+        {
           str errmsg = "Cannot resolve backend requirement:";
           errmsg +=  "\nBackend capability " + key.first + " with type " + key.second +
                      "\nrequired by function " + myName + " in " + myOrigin + " is not permitted"
                      "\nto use " + proposal.first + ", version " + proposal.second + ".";
           utils_error().raise(LOCAL_INFO,errmsg);
-        } 
+        }
 
       }
 
       else //The proposed backend function does not fulfill any known requirement of the module function.
-      {                                                                      
+      {
         str errmsg = "Cannot resolve backend requirement:";
         errmsg +=  "\nFunction " + myName + " in " + myOrigin + " does not require"
                    "\nbackend capability " + key.first + " with type " + key.second + ".";
         utils_error().raise(LOCAL_INFO,errmsg);
-      }        
+      }
 
     }
 
@@ -1262,7 +1262,7 @@ namespace Gambit
     void module_functor_common::notifyOfModel(str model)
     {
       // Construct the list of known models only if it doesn't yet exist
-      if (activeModelFlags.empty()) 
+      if (activeModelFlags.empty())
       {
         // First get all the explicitly allowed models.
         for (auto it = allowedModels.begin(); it != allowedModels.end(); ++it) { activeModelFlags[*it] = false; }
@@ -1280,14 +1280,14 @@ namespace Gambit
         if (myClaw->model_exists(it->first))
         {
           if (myClaw->downstream_of(model, it->first)) it->second = true;
-        } 
+        }
       }
 
       // If this model fits any conditional dependencies (or descended from one that can be interpreted as one that fits any), then activate them.
-      std::set<sspair> deps_to_activate = model_conditional_dependencies(model);          
+      std::set<sspair> deps_to_activate = model_conditional_dependencies(model);
       for (std::set<sspair>::iterator it = deps_to_activate.begin() ; it != deps_to_activate.end(); ++it)
       {
-        myDependencies.insert(*it);        
+        myDependencies.insert(*it);
       }
       // If this model fits any conditional backend requirements (or descended from one that can be interpreted as one that fits any), then activate them.
       std::set<sspair> backend_reqs_to_activate = model_conditional_backend_reqs(model);
@@ -1337,8 +1337,8 @@ namespace Gambit
 
     /// Destructor
     template <typename TYPE>
-    module_functor<TYPE>::~module_functor() 
-    { 
+    module_functor<TYPE>::~module_functor()
+    {
       if (myValue != NULL) delete [] myValue;
     }
 
@@ -1354,14 +1354,14 @@ namespace Gambit
     template <typename TYPE>
     void module_functor<TYPE>::calculate()
     {
-      if (myValue == NULL) init_myValue(); // Init memory if this is the first run through. 
+      if (myValue == NULL) init_myValue(); // Init memory if this is the first run through.
       if (needs_recalculating)             // Do the actual calculation if required.
 
       {
         logger().entering_module(myLogTag);
         double nsec = 0, sec = 0;
         this->startTiming(nsec,sec);                       //Begin timing function evaluation
-        try 
+        try
         {
           this->myFunction(myValue[omp_get_thread_num()]); //Run and place result in the appropriate slot in myValue
         }
@@ -1381,15 +1381,15 @@ namespace Gambit
     void module_functor<TYPE>::init_myValue()
     {
       // Reserve enough space to hold as many results as there are slots (threads) allowed
-      myValue = new TYPE[(iRunNested ? globlMaxThreads : 1)];                      
+      myValue = new TYPE[(iRunNested ? globlMaxThreads : 1)];
     }
 
     /// Operation (return value)
     template <typename TYPE>
-    TYPE module_functor<TYPE>::operator()(int index) 
-    { 
+    TYPE module_functor<TYPE>::operator()(int index)
+    {
       if (this == NULL) functor::failBigTime("operator()");
-      if (myValue == NULL) init_myValue(); // Init memory if this is the first run through. 
+      if (myValue == NULL) init_myValue(); // Init memory if this is the first run through.
       return (iRunNested ? myValue[index] : myValue[0]);
     }
 
@@ -1398,7 +1398,7 @@ namespace Gambit
     safe_ptr<TYPE> module_functor<TYPE>::valuePtr()
     {
       if (this == NULL) functor::failBigTime("valuePtr");
-      if (myValue == NULL) init_myValue(); // Init memory if this is the first run through. 
+      if (myValue == NULL) init_myValue(); // Init memory if this is the first run through.
       return safe_ptr<TYPE>(myValue);
     }
 
@@ -1408,8 +1408,8 @@ namespace Gambit
     {
       if(myPrintFlag)
       {
-        if (myValue == NULL) init_myValue(); // Init memory if this is the first run through. 
-        if (not iRunNested) index = 0; // Force printing of index=0 if this functor cannot run nested. 
+        if (myValue == NULL) init_myValue(); // Init memory if this is the first run through.
+        if (not iRunNested) index = 0; // Force printing of index=0 if this functor cannot run nested.
         printer->print(myValue[index],myLabel,myVertexID);
       }
     }
@@ -1454,11 +1454,11 @@ namespace Gambit
     }
 
     /// Blank print method
-    void module_functor<void>::print(Printers::BasePrinter*, int) {} 
+    void module_functor<void>::print(Printers::BasePrinter*, int) {}
 
 
   /// Model functor class method definitions
-    
+
     /// Constructor
     model_functor::model_functor(void (*inputFunction)(ModelParameters &),
                                  str func_name,
@@ -1469,8 +1469,8 @@ namespace Gambit
     : module_functor<ModelParameters>(inputFunction, func_name, func_capability, result_type, origin_name, claw)
     {
       init_myValue();
-    }   
-    
+    }
+
     /// Function for adding a new parameter to the map inside the ModelParameters object
     void model_functor::addParameter(str parname)
     {
@@ -1481,7 +1481,7 @@ namespace Gambit
     void model_functor::donateParameters(model_functor &receiver)
     {
       for(std::map<std::string,double>::const_iterator it = myValue->getValuesPtr()->begin();
-          it != myValue->getValuesPtr()->end(); 
+          it != myValue->getValuesPtr()->end();
           it++)
       {
         receiver.addParameter(it->first);
@@ -1490,7 +1490,7 @@ namespace Gambit
 
 
   /// Primary model functor class method definitions
-   
+
     /// Constructor
     primary_model_functor::primary_model_functor(void (*inputFunction)(ModelParameters &),
                                                  str func_name,
@@ -1498,11 +1498,11 @@ namespace Gambit
                                                  str result_type,
                                                  str origin_name,
                                                  Models::ModelFunctorClaw &claw)
-    : model_functor(inputFunction, func_name, func_capability, result_type, origin_name, claw) {}   
-    
+    : model_functor(inputFunction, func_name, func_capability, result_type, origin_name, claw) {}
+
     /// Functor contents raw pointer "get" function
-    /// Returns a raw pointer to myValue, so that the contents may be 
-    /// modified (intended for setting parameter values in primary 
+    /// Returns a raw pointer to myValue, so that the contents may be
+    /// modified (intended for setting parameter values in primary
     /// ModelParameters objects)
     ModelParameters* primary_model_functor::getcontentsPtr()
     {
@@ -1510,11 +1510,11 @@ namespace Gambit
       return myValue;
     }
 
-#define INSTANTIATE_MODULE_FUNCTOR_TEMPLATE(r,x,TYPE)  template class module_functor<TYPE>; 
+#define INSTANTIATE_MODULE_FUNCTOR_TEMPLATE(r,x,TYPE)  template class module_functor<TYPE>;
 INSTANTIATE_MODULE_FUNCTOR_TEMPLATE(,,void)
 BOOST_PP_SEQ_FOR_EACH(INSTANTIATE_MODULE_FUNCTOR_TEMPLATE,,PRINTABLE_TYPES)
 
-//Maybe one day... 
+//Maybe one day...
 //#define INSTANTIATE_BACKEND_FUNCTOR_TEMPLATE(...)      template class backend_functor<__VA_ARGS__>;
 //BOOST_PP_SEQ_FOR_EACH(INSTANTIATE_BACKEND_FUNCTOR_TEMPLATE,,BACKEND_TYPES)
 
