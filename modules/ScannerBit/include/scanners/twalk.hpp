@@ -142,7 +142,7 @@ class Group2
 };
 
 //template <class T>
-void TWalk(Gambit::Scanner::Function_Base &LogLike, const int ma, const double div, const int proj, const double din, const double alim, const double alimt, const long long rand, const char *name, const double tol, const int NThreads, const int cut, const char flag)
+void TWalk(Gambit::Scanner::Function_Base<double(const std::vector<double>&)> &LogLike, const int ma, const double div, const int proj, const double din, const double alim, const double alimt, const long long rand, const char *name, const double tol, const int NThreads, const int cut, const char flag)
 {
         //const int NThreads = Threads > ma ? Threads : 2*ma + 1;
         double chisq[NThreads];
