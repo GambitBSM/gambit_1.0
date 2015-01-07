@@ -79,17 +79,17 @@ namespace HEPUtils {
     }
 
     /// Clone a copy on the heap
-    Event clone() {
-      Event rtn;
+    Event* clone() {
+      Event* rtn = new Event();
       std::vector<Particle*> ps = particles();
       for (size_t i = 0; i < ps.size(); ++i) {
-        rtn.add_particle(new Particle(*ps[i]));
+        rtn->add_particle(new Particle(*ps[i]));
       }
       std::vector<Jet*> js = jets();
       for (size_t i = 0; i < js.size(); ++i) {
-        rtn.add_jet(new Jet(*js[i]));
+        rtn->add_jet(new Jet(*js[i]));
       }
-      rtn._pmiss = _pmiss;
+      rtn->_pmiss = _pmiss;
       return rtn;
     }
 
