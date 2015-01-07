@@ -138,7 +138,8 @@
 
          Should add instantiations for each algorithm we want to use 
          (just one for now) */                                                         \
-      template class CAT_3(MODELNAME,_,interface)<ALGORITHM1>;                         \
+      /* Actually maybe we don't need these (and they cause duplicate symbol errors in clang */ \
+      /*template class CAT_3(MODELNAME,_,interface)<ALGORITHM1>; */                        \
     }                                                                                  \
   }
 
