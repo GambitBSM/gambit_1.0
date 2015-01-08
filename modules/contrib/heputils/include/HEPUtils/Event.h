@@ -254,6 +254,16 @@ namespace HEPUtils {
       _pmiss = pmiss;
     }
 
+    /// @brief Set the missing energy vector from the -ve sum of visible particles
+    void calc_missingmom() {
+      std::vector<Particle*> visibles = visible_particles();
+      P4 pvis;
+      for (size_t i = 0; i < visibles.size(); ++i) {
+        pvis += visibles[i]->mom();
+      }
+      set_missingmom(-pvis);
+    }
+
     /// Get the missing ET in GeV
     double met() const {
       return missingmom().pT();
