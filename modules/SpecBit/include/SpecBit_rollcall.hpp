@@ -20,8 +20,6 @@
 #ifndef __SpecBit_rollcall_hpp__
 #define __SpecBit_rollcall_hpp__
 
-#include "SpecBit_types.hpp"
-
 #define MODULE SpecBit
 START_MODULE
 

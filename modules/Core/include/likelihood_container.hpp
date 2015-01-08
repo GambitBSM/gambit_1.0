@@ -33,7 +33,7 @@
 namespace Gambit
 {
 
-  class Likelihood_Container_Base : public Scanner::Function_Base
+  class Likelihood_Container_Base : public Scanner::Function_Base<double (const std::vector<double>&)>
   {
 
     protected:
