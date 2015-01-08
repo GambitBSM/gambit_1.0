@@ -1,4 +1,5 @@
 #include "Analysis.hpp"
+#include "ATLASEfficiencies.hpp"
 #include "mt2_bisect.h"
 
 /// @todo Remove the ROOT classes
@@ -219,11 +220,11 @@ namespace Gambit {
         vector<Jet*> bJets;
         vector<Jet*> trueBJets; //for debugging
 
-        const std::vector<float>  a = {0,10.};      
-        const std::vector<float>  b = {0,10000.};      
-        const std::vector<double> c = {0.75};      
+        const std::vector<float>  a = {0,10.};
+        const std::vector<float>  b = {0,10000.};
+        const std::vector<double> c = {0.75};
 	BinnedFn2D<double> _eff2d(a,b,c);
-	
+
         for (Jet* jet : event->jets()) {
 	  bool hasTag=has_tag(_eff2d, jet->eta(), jet->pT());
           if (jet->pT() > 20. && fabs(jet->eta()) < 10.0) baselineJets.push_back(jet);
@@ -283,8 +284,8 @@ namespace Gambit {
         // We now have the signal electrons, muons, jets and b jets- move on to the analysis
 
         // Calculate common variables and cuts first
-	
-	ApplyTightIDElectronSelection(signalElectrons);
+
+	applyTightIDElectronSelection(signalElectrons);
 
         int nElectrons = signalElectrons.size();
         int nMuons = signalMuons.size();
