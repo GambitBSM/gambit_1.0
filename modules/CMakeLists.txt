@@ -158,7 +158,7 @@ else()
 endif()
 
 # Check for Boost
-set(required_boost_libs system filesystem)
+set(required_boost_libs "")  # Don't need these anymore: system filesystem
 find_package(Boost 1.41 REQUIRED ${required_boost_libs})
 if(Boost_FOUND)
   if (NOT Boost_INCLUDE_DIR STREQUAL "")
