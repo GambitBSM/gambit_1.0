@@ -208,8 +208,10 @@ namespace Funk
             template <typename... Args> Funk gsl_integration(Args... args);
 
             // Convenience functions
-            const std::vector<const char*> & getArgs() { return args; };
+            const std::vector<const char*> & getArgs() { return this->args; };
             Funk help();
+            bool hasArgs();
+            std::size_t getNArgs() {return this->args.size();};
 
             // Plain function generators (up to four arguments)
             PlainPtrs1 plain(const char*);
@@ -640,6 +642,14 @@ namespace Funk
         applyMap(Xout, bind_map, vec<double>(argss...), nout);
         return this->value(Xout);
     }
+
+  inline bool FunkBase::hasArgs()
+  {
+    if(this->args.size() == 0)
+      return false;
+    else
+      return true;
+  }
 
     template <typename... Args> inline Funk FunkBase::gsl_integration(Args... args)
     {
