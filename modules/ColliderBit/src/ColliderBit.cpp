@@ -344,6 +344,7 @@ namespace Gambit {
 
     void reconstructBuckFastEvent(HEPUtils::Event &result) {
       using namespace Pipes::reconstructBuckFastEvent;
+      if (*Loop::iteration == FINALIZE) resetBuckFastFlag = true;
       if (*Loop::iteration <= INIT) return;
       result.clear();
 
