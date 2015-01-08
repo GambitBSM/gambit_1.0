@@ -1828,5 +1828,10 @@ namespace Gambit {
         os.close();
         result = 0;
     }
+
+    void TwoBodySpectra_general(TwoBodyContainer & result)
+    {
+        using namespace Pipes::TwoBodySpectra_general;
+    }
   }
 }

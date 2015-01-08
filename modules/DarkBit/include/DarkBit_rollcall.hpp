@@ -663,6 +663,13 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
+  #define CAPABILITY TwoBodySpectra
+  START_CAPABILITY
+    #define FUNCTION TwoBodySpectra_general
+    START_FUNCTION(Gambit::DarkBit::TwoBodyContainer)
+    #undef FUNCTION 
+  #undef CAPABILITY
+
 #undef MODULE
 
     
