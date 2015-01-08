@@ -179,10 +179,6 @@ namespace Funk
         };
     }
 
-    // Meta-function that returns a [MIN, MAX) index range
-    template<size_t MIN, size_t MAX>
-    using index_range = typename detail::range_builder<MIN, MAX>::type;
-
 
     //
     // Central virtual base class
@@ -208,8 +204,10 @@ namespace Funk
             template <typename... Args> Funk gsl_integration(Args... args);
 
             // Convenience functions
-            const std::vector<const char*> & getArgs() { return args; };
+            const std::vector<const char*> & getArgs() { return this->args; };
             Funk help();
+            bool hasArgs();
+            std::size_t getNArgs() {return this->args.size();};
 
             // Plain function generators (up to four arguments)
             PlainPtrs1 plain(const char*);
@@ -399,7 +397,7 @@ namespace Funk
                 {
                     *map[i] = X[i];
                 }
-                return ppp(index_range<0, sizeof...(funcargs)>());
+                return ppp(typename detail::range_builder<0, sizeof...(funcargs)>::type());
             }
 
             template <size_t... Args>
@@ -460,7 +458,7 @@ namespace Funk
                 {
                     *map[i] = X[i];
                 }
-                return ppp(index_range<0, sizeof...(funcargs)>());
+                return ppp(typename detail::range_builder<0, sizeof...(funcargs)>::type());
             }
 
             template <size_t... Args>
@@ -640,6 +638,14 @@ namespace Funk
         applyMap(Xout, bind_map, vec<double>(argss...), nout);
         return this->value(Xout);
     }
+
+  inline bool FunkBase::hasArgs()
+  {
+    if(this->args.size() == 0)
+      return false;
+    else
+      return true;
+  }
 
     template <typename... Args> inline Funk FunkBase::gsl_integration(Args... args)
     {

@@ -31,7 +31,11 @@
 ///  \author Christopher Savage
 ///          (chris@savage.name)
 ///  \date 2014 Oct, Dec
-///  
+///
+///  \author Antje Putze
+///          (antje.putze@lapth.cnrs.fr)
+///  \date 2015 Jan
+///
 ///  *********************************************
 
 #ifndef __DarkBit_rollcall_hpp__
@@ -433,8 +437,8 @@ START_MODULE
       DEPENDENCY(mwimp, double)
       DEPENDENCY(annrate, double)
       DEPENDENCY(nuyield, nuyield_functype)  
-      BACKEND_REQ(nubounds, (), void, (const char&, const double&, const double&, double(*)(double&, int&), double&, 
-                                       double&, int&, double&, double&, const int&, const bool&, const double&, const double&))
+      BACKEND_REQ(nubounds, (), void, (const char&, const double&, const double&, double(*)(const double&, const int&, void*&), double&, double&,
+                                       int&, double&, double&, const int&, const bool&, const double&, const double&, void*&))
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -485,8 +489,8 @@ START_MODULE
       DEPENDENCY(mwimp, double)
       DEPENDENCY(annrate, double)
       DEPENDENCY(nuyield, nuyield_functype)  
-      BACKEND_REQ(nubounds, (), void, (const char&, const double&, const double&, double(*)(double&, int&), double&, 
-                                       double&, int&, double&, double&, const int&, const bool&, const double&, const double&))
+      BACKEND_REQ(nubounds, (), void, (const char&, const double&, const double&, double(*)(const double&, const int&, void*&), double&, double&,
+                                       int&, double&, double&, const int&, const bool&, const double&, const double&, void*&))
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -537,8 +541,8 @@ START_MODULE
       DEPENDENCY(mwimp, double)
       DEPENDENCY(annrate, double)
       DEPENDENCY(nuyield, nuyield_functype)  
-      BACKEND_REQ(nubounds, (), void, (const char&, const double&, const double&, double(*)(double&, int&), double&, 
-                                       double&, int&, double&, double&, const int&, const bool&, const double&, const double&))
+      BACKEND_REQ(nubounds, (), void, (const char&, const double&, const double&, double(*)(const double&, const int&, void*&), double&, double&,
+                                       int&, double&, double&, const int&, const bool&, const double&, const double&, void*&))
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -589,8 +593,8 @@ START_MODULE
       DEPENDENCY(mwimp, double)
       DEPENDENCY(annrate, double)
       DEPENDENCY(nuyield, nuyield_functype)  
-      BACKEND_REQ(nubounds, (), void, (const char&, const double&, const double&, double(*)(double&, int&), double&, 
-                                       double&, int&, double&, double&, const int&, const bool&, const double&, const double&))
+      BACKEND_REQ(nubounds, (), void, (const char&, const double&, const double&, double(*)(const double&, const int&, void*&), double&, double&,
+                                       int&, double&, double&, const int&, const bool&, const double&, const double&, void*&))
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -661,6 +665,13 @@ START_MODULE
     DEPENDENCY(GA_AnnYield, Funk::Funk)
     DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)
     #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY TwoBodySpectra
+  START_CAPABILITY
+    #define FUNCTION TwoBodySpectra_general
+    START_FUNCTION(Gambit::DarkBit::TwoBodyContainer)
+    #undef FUNCTION 
   #undef CAPABILITY
 
 #undef MODULE

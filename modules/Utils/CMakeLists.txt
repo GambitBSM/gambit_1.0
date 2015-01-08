@@ -8,6 +8,7 @@ set(source_files src/equivalency_singleton.cpp
                  src/type_equivalency.cpp
                  src/util_functions.cpp
                  src/ASCIItableReader.cpp
+                 src/mkpath.c
 )
 
 set(header_files include/SLHA_readers.hpp
@@ -40,6 +41,7 @@ set(header_files include/SLHA_readers.hpp
                  include/variadic_functions.hpp
                  include/ASCIItableReader.hpp
                  include/yaml_options.hpp
+                 include/mkpath.h
 )
 
 add_gambit_library(Utils OPTION OBJECT SOURCES ${source_files} HEADERS ${header_files})

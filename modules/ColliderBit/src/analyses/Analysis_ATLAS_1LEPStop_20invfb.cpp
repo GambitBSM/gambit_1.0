@@ -1,4 +1,5 @@
 #include "Analysis.hpp"
+#include "ATLASEfficiencies.hpp"
 #include "mt2_bisect.h"
 
 /// @todo Remove the ROOT classes
@@ -219,11 +220,11 @@ namespace Gambit {
         vector<Jet*> bJets;
         vector<Jet*> trueBJets; //for debugging
 
-        const std::vector<float>  a = {0,10.};      
-        const std::vector<float>  b = {0,10000.};      
-        const std::vector<double> c = {0.75};      
+        const std::vector<float>  a = {0,10.};
+        const std::vector<float>  b = {0,10000.};
+        const std::vector<double> c = {0.75};
 	BinnedFn2D<double> _eff2d(a,b,c);
-	
+
         for (Jet* jet : event->jets()) {
 	  bool hasTag=has_tag(_eff2d, jet->eta(), jet->pT());
           if (jet->pT() > 20. && fabs(jet->eta()) < 10.0) baselineJets.push_back(jet);
@@ -283,8 +284,8 @@ namespace Gambit {
         // We now have the signal electrons, muons, jets and b jets- move on to the analysis
 
         // Calculate common variables and cuts first
-	
-	ApplyTightIDElectronSelection(signalElectrons);
+
+	applyTightIDElectronSelection(signalElectrons);
 
         int nElectrons = signalElectrons.size();
         int nMuons = signalMuons.size();
@@ -738,16 +739,19 @@ namespace Gambit {
         double scale_to = 100000.0;
         double trigger_cleaning_eff = 0.85;
 
+        /*
         cout << "------------------------------------------------------------------------------------------------------------------------------ "<<std::endl;
         cout << "CUT FLOW: ATLAS-CONF-2013-037 - Appendix, Table 10 - stop -> top + LSP, stop 500, LSP 200 "<<std::endl;
         cout << "------------------------------------------------------------------------------------------------------------------------------"<<std::endl;
         cout << "(NB: In Cut-flows in Appendices mjjj/mHadTop cut doesn't appear - is apparantly applied for all SRtN regions)"<<std::endl;
         cout << "------------------------------------------------------------------------------------------------------------------------------ "<<std::endl;
+        */
 
         std::cout<< right << setw(40) << "CUT" << setw(20) << "RAW" << setw(20) << "SCALED" << setw(20) << "%" << setw(20) << "clean adj RAW"<< setw(20) << "clean adj %" << endl;
         for(int j=0; j<NCUTS; j++) {
           std::cout << right << setw(40) << cutFlowVector_str[j].c_str() << setw(20) << cutFlowVector[j] << setw(20) << cutFlowVector[j]*scale_to/cutFlowVector[0] << setw(20) << 100.*cutFlowVector[j]/cutFlowVector[0] << "%" << setw(20) << trigger_cleaning_eff*cutFlowVector[j]*scale_to/cutFlowVector[0] << setw(20) << trigger_cleaning_eff*100.*cutFlowVector[j]/cutFlowVector[0]<< "%" << endl;
         }
+        /*
         cout << "------------------------------------------------------------------------------------------------------------------------------ "<<std::endl;
         cout << "BONUS amt2/mt2tau check - needs stop 700, LSP 1 "<<std::endl;
         cout << "up to and incl. b-tag (1413) " << cutFlowVector_alt[0] << " " << cutFlowVector_alt[0]*1413/cutFlowVector_alt[0] << endl;
@@ -757,6 +761,7 @@ namespace Gambit {
         cout << "MET sig > 11 (438) " << cutFlowVector_alt[4] << " " << cutFlowVector_alt[4]*1413/cutFlowVector_alt[0] << endl;
         cout << "amT2 > 200 (318) " << cutFlowVector_alt[5] <<  " " << cutFlowVector_alt[5]*1413/cutFlowVector_alt[0] <<endl;
         cout << "mT2tau > 120 (298) " <<cutFlowVector_alt[6] <<  " " << cutFlowVector_alt[6]*1413/cutFlowVector_alt[0] <<endl;
+        */
 
         cout << "RESULTS 1LEP " << _numTN1Shape_bin1 << " " <<  _numTN1Shape_bin2 << " " << _numTN1Shape_bin3 << " " << _numTN2 << " " <<  _numTN3 << " " << _numBC1 << " " << _numBC2 << " " << _numBC3 << endl;
 

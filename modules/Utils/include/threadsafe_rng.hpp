@@ -42,10 +42,11 @@
 #ifndef __threadsafe_rng_hpp__
 #define __threadsafe_rng_hpp__
 
-#include <random>
 #include <chrono>
 
 #include "util_types.hpp"
+
+#include <boost/random.hpp>
 
 namespace Gambit
 {

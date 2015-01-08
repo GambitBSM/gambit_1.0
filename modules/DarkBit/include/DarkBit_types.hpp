@@ -33,6 +33,10 @@
 ///  \author Lars A. Dal  
 ///          (l.a.dal@fys.uio.no)
 ///  \date 2014 Mar, Jul, Sep, Oct
+///
+///  \author Christopher Savage
+///          (chris@savage.name)
+///  \date 2015 Jan
 ///  *********************************************
 
 
@@ -41,6 +45,10 @@
 
 #include <cmath>
 #include <algorithm>
+#include <string>
+#include <vector>
+#include <map>
+#include <array>
 
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/shared_ptr.hpp>
@@ -98,15 +106,6 @@ namespace Gambit
     };
     typedef std::map<std::string, std::map<std::string, Gambit::DarkBit::SimpleHist> > simpleHistContainter;
     typedef std::map<std::string, unsigned> stringUnsignedMap;
-
-    struct DD_couplings
-    {
-      double M_DM;
-      double gps;
-      double gns;
-      double gpa;
-      double gna;
-    };
 
     /*
     // Integration limits for E1 for the DS gamma 3-body decays.
@@ -272,7 +271,7 @@ namespace Gambit
         // Energy dependence of final state particles
         // Includes v_rel as last argument in case of annihilation
         // TODO: Implement checks
-        Funk::Funk dSigmadE;  
+      Funk::Funk dSigmadE; // rename to genRate
 
         // Compare final states
         bool isChannel(std::string p0, std::string p1, std::string p2 ="", std::string p3 = "")
@@ -346,8 +345,11 @@ namespace Gambit
         // List of channels
         std::vector<TH_Channel> channelList;
 
+        //List of resonances and thresholds => rename RDrestype
+        std::vector<RDrestype> thresholdResonances;
+
         // Total decay rate or sigma v
-        double genRateTotal;
+        Funk::Funk genRateTotal; // was a double, but needs to be a Funk of velocity
     };
 
     struct TH_ProcessCatalog
@@ -550,7 +552,7 @@ namespace Gambit
     //////////////////////////////////////////////
 
     // Neutrino yield function signature
-    typedef double(*nuyield_functype)(double&, int&);
+    typedef double(*nuyield_functype)(const double&, const int&, void*&);
     
     // Neutrino telescope data container
     struct nudata
@@ -561,6 +563,216 @@ namespace Gambit
         double bg;
         double loglike;
         double pvalue;
+    };
+
+
+    //////////////////////////////////////////////
+    // Direct detection data structures
+    //////////////////////////////////////////////
+    
+    // NOTE:
+    // Except for DD_couplings, the structures here are
+    // preliminary ideas for generic, robust means of
+    // specifying the DM particle(s), interactions, and
+    // distributions in the local halo.  These structures
+    // cannot get too fancy as everything here gets off-
+    // loaded to DDCalc, where all the calculations are
+    // performed.
+
+    // Velocities are specified in Galactic coordinates UVW:
+    //   U is towards Galactic center
+    //   V is in direction if disk rotation
+    //   W is perpendicular to disk plane
+    // Velocities are typically specified in the Galactic
+    // rest frame, i.e. the frame with no rotation.
+
+    //------------------------------------------------------
+    // Initial DM coupling structure definition used for early
+    // GAMBIT development; to be superceded by structures below.
+    struct DD_couplings
+    {
+      double M_DM;
+      double gps;
+      double gns;
+      double gpa;
+      double gna;
+    };
+
+    //------------------------------------------------------
+    // Structure to contain the Sun & Earth's motion relative
+    // to the Galactic rest frame in Galactic coordinates.
+    struct DDEarthMotionS
+    {
+      // To ensure consistency, elements can only be accessed
+      // via an appropriate function.
+      private:
+        // Sun's motion ---------------
+        // These quantities are not all independent, but are maintained
+        // separately to allow for different means of specifying the
+        // motion.
+        double vrot;     // Disk rotation speed [km/s]
+        double vLSR[3];  // Local Standard of Rest [km/s]; usually (0,vrot,0)
+        double vpec[3];  // Sun's peculiar velocity
+        double vsun[3];  // Sun's total velocity: vsun = vLSR + vpec
+        // Earth's motion -------------
+        // At some point in the future, this structure may 
+        // contain parameterizations of the Earth's motion
+        // relative to the Sun.
+    };
+
+    //------------------------------------------------------
+    // Halo component type.
+    // Only Maxwell-Boltzmann (MB) implemented at the moment.
+    enum class HCType {None,File,MaxwellBoltzmann};
+
+    // Structure to describe the local density and velocity
+    //  distribution of a single population of DM particles.
+    struct DDHaloComponentS
+    {
+      std::string label; // Population label (optional)
+      // To ensure consistency, these elements can only be
+      //  accessed via an appropriate function.
+      private:
+        HCType type;
+        bool   enabled;  // Can disable
+        double rho;      // Local DM density [GeV/cm^3]
+        // Maxwell-Boltzmann (MB) -----
+        // Each "component" is the weighted sum over MB
+        // distributed populations.  Use vectors to store
+        // list of these sub-components.
+        // Mean population motion [km/s] (Galactic rest frame)
+        std::vector<std::array<double,3>> v;
+        // MB dispersion [km/s]; technically most probable MB speed
+        std::vector<double> v0;
+        // Cutoff velocity at which MB distribution will be truncated
+        std::vector<double> vesc;
+        // Relative weight of each MB population
+        std::vector<double> w;
+    };
+
+    // Structure containing (keyed?) set of halo components,
+    // where the key can be used to associate a DM particle
+    // with a halo component.
+    // TODO:
+    //  * How to handle keys? Actually associations must be
+    //    made within DDCalc, where the calculations are
+    //    done.
+    //  * Use array of smart pointers instead?
+    struct DDHaloS
+    {
+      // To ensure consistency, these elements can only be
+      //  accessed via an appropriate function.
+      private:
+        // Use index as key.  A map would be preferable if
+        // only used here, but this is meant to mirror the
+        // distributions in external DDCalc package.
+        std::vector<DDHaloComponentS> C;
+        // A key-value array 
+        //std::map<int,DDHaloComponentS> C;
+    };
+
+    //------------------------------------------------------
+    // Spin interaction type: spin-independent (SI) or spin-
+    // dependent (SD).
+    enum class SpinType {SI,SD};
+
+    // Structure to describe a DM particle + interaction
+    // combination.  The neutralino requires two of these:
+    // one each for spin-independent and spin-dependent
+    // interactions.
+    struct DDParticleS
+    {
+      std::string label; // Particle+interaction label (optional)
+      // To ensure consistency, these elements can only be
+      //  accessed via an appropriate function.
+      private:
+        bool   enabled;  // Can disable
+        int    halo_key; // Key for particle's halo component (0 to sum over all components)
+        double m;        // DM mass [GeV]
+        double Gp,Gn;    // DM-nucleon couplings [GeV^-2]
+        SpinType spin;   // Spin dependence of interaction
+        // Additional parameters for velocity and momentum
+        // -dependent interactions.  How to generically
+        // parameterize this is far from certain.
+        //int nv;          // dsigma/dq^2 ~ v^{nv-2}
+        //int nq;          // extra (q/q0)^nq factor
+        //double q0;       // extra (q/q0)^nq factor
+        //...
+    };
+
+    // Structure containing set of DM particle + interaction
+    // combinations.
+    struct DDParticlesS  // DDDarkMatterS?
+    {
+      // To ensure consistency, these elements can only be
+      //  accessed via an appropriate function.
+      private:
+        std::vector<DDParticleS> P;
+    };
+
+    // Channel container
+    class TwoBodyContainer
+    {
+    public:
+        TwoBodyContainer()
+        {
+        }
+
+        void addChannel(Funk::Funk dNdE, std::string p1, std::string p2, double m0, double m1)
+        {
+            if ( this->hasChannel(p1, p2) )
+            {
+                std::cout << "WARNING: Channel already exists.  Ignoring." << std::endl;
+                return;
+            }
+            funktion_list.push_back(dNdE);
+            p1_list.push_back(p1);
+            p2_list.push_back(p2);
+            m0_list.push_back(m0);
+            m1_list.push_back(m1);
+        }
+
+        bool hasChannel(std::string p1, std::string p2)
+        {
+            if ( findChannel(p1, p2) == -1 ) return false;
+            return true;
+        }
+
+        Funk::Funk operator()(std::string p1, std::string p2, double mass)
+        {
+            return this->operator()(p1, p2)->set("mass", mass);
+        }
+
+        Funk::Funk operator()(std::string p1, std::string p2)
+        {
+            int index = findChannel(p1, p2);
+            if ( index == 1 )
+            {
+                std::cout << "WARNING: Channel not known.  Returning zero." << std::endl;
+                return Funk::zero("E");
+            }
+            return funktion_list[index];
+        }
+
+    private:
+        std::vector<Funk::Funk> funktion_list;
+        std::vector<std::string> p1_list;
+        std::vector<std::string> p2_list;
+        std::vector<double> m0_list;
+        std::vector<double> m1_list;
+
+        int findChannel(std::string p1, std::string p2)
+        {
+            for ( unsigned int i = 0; i < p1_list.size(); i++ )
+            {
+                if (( p1 == p1_list[i] and p2 == p2_list[i] ) or ( p1 == p2_list[i] and p2 == p1_list[i] ))
+                {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
     };
 
   }
