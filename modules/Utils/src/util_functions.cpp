@@ -20,8 +20,11 @@
 ///  *********************************************
   
 #include "util_functions.hpp"
-#include <sstream>
 #include <cstring>
+#include <chrono>  // chrono::system_clock
+#include <ctime>   // localtime
+#include <sstream> // stringstream
+#include <string>  // string
 
 namespace Gambit
 {
@@ -129,6 +132,22 @@ namespace Gambit
        recursive_mkdir( prefix.c_str() );
 
        return path;
+    }
+
+    /// Get current system clock time
+    time_point get_clock_now()
+    {
+        return std::chrono::system_clock::now();
+    }
+
+    /// Return (locally defined) date and time corresponding to time_point
+    std::string return_time_and_date(const time_point& in)
+    {
+        std::time_t t = std::chrono::system_clock::to_time_t(in);
+
+        std::string ts = std::ctime(&t); // for example : Tue Sep 27 14:21:13 2011\n
+        ts.resize(ts.size()-1); // Remove the annoying trailing newline
+        return ts;
     }
     
   }
