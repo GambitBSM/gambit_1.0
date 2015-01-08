@@ -4,6 +4,9 @@
 *.o
 a.out
 
+# Dependency files
+*.d
+
 # Compiled Dynamic libraries
 *.so
 

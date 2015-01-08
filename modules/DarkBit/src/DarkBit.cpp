@@ -319,6 +319,13 @@ namespace Gambit {
 
     } // function RD_spectrum_SUSY
 
+    void RD_spectrum_from_ProcessCatalog(RDspectype &result)
+    {
+      //TH_Process annihilation = (*Dep::TH_ProcessCatalog).getProcess((std::string)"chi_10", (std::string)"chi_10");
+
+      //result = 0;
+    }
+
     void RD_thresholds_resonances_ordered(RDrestype &result)
     {
       using namespace Pipes::RD_thresholds_resonances_ordered;
@@ -1213,7 +1220,7 @@ namespace Gambit {
         TH_Process test1_decay("test1");     
         finalStates_1_23.push_back("test2");              
         finalStates_1_23.push_back("test3");             
-        test1_decay.genRateTotal = (test1_23width->eval() + test1_24width->eval() + test1_456width->eval())*2;             
+        test1_decay.genRateTotal = (test1_23width->eval() + test1_24width->eval() + test1_456width->eval())*2*Funk::one();
         TH_Channel channel_1_23(finalStates_1_23, test1_23width);
         test1_decay.channelList.push_back(channel_1_23);
         finalStates_1_24.push_back("test2");              
@@ -1229,7 +1236,7 @@ namespace Gambit {
         TH_Process test2_decay("test2");     
         finalStates_2_56.push_back("test5");              
         finalStates_2_56.push_back("test6");                                                               
-        test2_decay.genRateTotal = test2_56width->eval();                                 
+        test2_decay.genRateTotal = test2_56width->eval()*Funk::one();
         TH_Channel channel_2_56(finalStates_2_56, test2_56width);
         test2_decay.channelList.push_back(channel_2_56);
         catalog.processList.push_back(test2_decay);

@@ -48,7 +48,7 @@ scanner_plugin(grid, version(1, 0, 0))
                         scan_err << "Grid Plugin:  The dimension of gambit (" << ma 
                         << ") does not match the dimension of the inputed grid_pts (" << N.size() << ")" << scan_end;
                 
-                Function_Base<double (const std::vector<double>&)> *LogLike = get_functor(get_inifile_value<std::string>("purpose", "Likelihood"));
+                scan_ptr<double (const std::vector<double>&)> LogLike = get_functor(get_inifile_value<std::string>("purpose", "Likelihood"));
                 std::vector<double> vec(ma, 0.0);
                 
                 for (int i = 0, end = NTot; i < end; i++)
@@ -64,7 +64,7 @@ scanner_plugin(grid, version(1, 0, 0))
                                 n /= N[j];
                         }
                         
-                        (*LogLike)(vec);
+                        LogLike(vec);
                 }
                 
                 return 0;

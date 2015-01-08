@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <exception>
+#include <memory>
 
 /// @note To configure a new detector, follow these steps:
 /// @note (To configure a new subprocess group, only do STEPS >= 5)
@@ -59,11 +60,39 @@ namespace Gambit {
     };
 
 
-    /// @TODO Ugh, do I really need to have ALL of this here?
-    ///       Answer: yep, otherwise some error about "incomplete type"
-    /// @note Abstract base class DelphesToHEPUtilsBase
-    template <typename EventIn>
-    class DelphesToHEPUtilsBase : public Detector<EventIn, HEPUtils::Event> {
+    /// @note Abstract base class BuckFastBase
+    class BuckFastBase : public Detector<HEPUtils::Event, HEPUtils::Event> {
+    public:
+      /// @name Initialization functions
+      //@{
+      virtual void defaults() {}
+      virtual void init(const std::vector<std::string>& settings) {}
+      virtual void init() {}
+      //@}
+
+      /// @name Event detection simulation.
+      //@{
+      virtual void processEvent(const HEPUtils::Event&, HEPUtils::Event&) = 0; //< @note Pure virtual.
+      //@}
+    protected:
+      /// @name Event conversion functions.
+      //@{
+      virtual void convertInput(const HEPUtils::Event& event) {
+        /// Make a local deep copy of the input event to be modified by processEvent.
+        _processedEvent.reset(event.clone());
+      }
+
+      virtual void convertOutput(HEPUtils::Event& event) {
+        event = *(_processedEvent->clone());
+      }
+      //@}
+
+      std::shared_ptr<HEPUtils::Event> _processedEvent;
+    };
+
+
+    /// @note Abstract base class Delphes_ToHEPUtilsBase
+    class DelphesBase : public Detector<Pythia8::Event, HEPUtils::Event> {
     public:
       /// @name Initialization functions
       //@{
@@ -100,7 +129,7 @@ namespace Gambit {
 
       /// @name Event detection simulation.
       //@{
-      virtual void processEvent(const EventIn& eventIn, HEPUtils::Event& eventOut)  {
+      virtual void processEvent(const Pythia8::Event& eventIn, HEPUtils::Event& eventOut)  {
         try {
           modularDelphes->Clear();
           convertInput(eventIn);
@@ -116,7 +145,34 @@ namespace Gambit {
     protected:
       /// @name Event conversion functions.
       //@{
-      virtual void convertInput(const EventIn&) = 0; //< @note Pure virtual.
+      virtual void convertInput(const Pythia8::Event& event) {
+        for (int ip = 0; ip < event.size(); ++ip) {
+          const Pythia8::Particle& p = event[ip];
+          candidate = factory->NewCandidate();
+
+          /// @TODO How to convert Py8 events without hadronisation?
+          candidate->PID = p.id();
+          pdgCode = abs(candidate->PID);
+	  
+          candidate->Status=p.status();
+          pdgParticle = pdg->GetParticle(p.id());
+
+          candidate->Charge = pdgParticle ? Int_t(pdgParticle->Charge()/3.0) : -999;
+          candidate->Mass = pdgParticle ? pdgParticle->Mass() : -999.9;
+
+          candidate->Momentum.SetPxPyPzE(p.px(), p.py(), p.pz(), p.e());
+          candidate->Position.SetXYZT(p.xProd(), p.yProd(), p.zProd(), p.tProd());
+	  candidate->D1 = p.daughter1();
+	  candidate->D2 = p.daughter2();
+          /// @TODO Why do the non-final particles (other than B's and taus) need to be passed? Speedup?
+          allParticleOutputArray->Add(candidate);
+          if (!pdgParticle) continue;
+          if (p.isFinal()) stableParticleOutputArray->Add(candidate);
+
+          if (pdgCode <= 5 || pdgCode == 21 || pdgCode == 15) partonOutputArray->Add(candidate);
+        }
+      }
+
       virtual void convertOutput(HEPUtils::Event &event) {
         event.clear();
 
@@ -211,45 +267,9 @@ namespace Gambit {
     };
 
 
-    class Delphes_PythiaToHEPUtils : public DelphesToHEPUtilsBase<Pythia8::Event> {
-    protected:
-      /// @name Event conversion functions.
-      //@{
-      virtual void convertInput(const Pythia8::Event& event) {
-        for (int ip = 0; ip < event.size(); ++ip) {
-          const Pythia8::Particle& p = event[ip];
-          candidate = factory->NewCandidate();
-
-          /// @TODO How to convert Py8 events without hadronisation?
-          candidate->PID = p.id();
-          pdgCode = abs(candidate->PID);
-
-          candidate->Status=p.status();
-          pdgParticle = pdg->GetParticle(p.id());
-
-          candidate->Charge = pdgParticle ? Int_t(pdgParticle->Charge()/3.0) : -999;
-          candidate->Mass = pdgParticle ? pdgParticle->Mass() : -999.9;
-
-          candidate->Momentum.SetPxPyPzE(p.px(), p.py(), p.pz(), p.e());
-          candidate->Position.SetXYZT(p.xProd(), p.yProd(), p.zProd(), p.tProd());
-          candidate->D1 = p.daughter1();
-          candidate->D2 = p.daughter2();
-          /// @TODO Why do the non-final particles (other than B's and taus) need to be passed? Speedup?
-          allParticleOutputArray->Add(candidate);
-          if (!pdgParticle) continue;
-          if (p.isFinal()) stableParticleOutputArray->Add(candidate);
-
-          if (pdgCode <= 5 || pdgCode == 21 || pdgCode == 15) partonOutputArray->Add(candidate);
-        }
-      }
-      //@}
-    };
-
     /// @TODO subclass further to configure different detector configurations?
     ///       Or just continue to use Delphes configuration file?
-
-    /// Extra simple factory function, until we decide to make more subclasses
-    DECLARE_COLLIDER_FACTORY(Delphes_PythiaToHEPUtils, Delphes_PythiaToHEPUtils)
-    Delphes_PythiaToHEPUtils* mkDelphes(const std::string&, const std::vector<std::string>& settings);
+    DelphesBase* mkDelphes(const std::string&, const std::vector<std::string>&);
+    BuckFastBase* mkBuckFast(const std::string&);
   }
 }

@@ -44,7 +44,7 @@ namespace Gambit {
     /// @brief What is this ColliderLogLikes struct mentioned in the rollcall??
     typedef vector<vector<SignalRegionData>> ColliderLogLikes;
 
-    /// @brief Turns out we will only use this container once. Oh well.
+    /// @brief Threadsafe container for shared pointers
     template <typename T>
     class SharedPointerVector : public vector<shared_ptr<T>> {
       /// @note Not as thread-safe as it looks, since it uses shared_ptr.

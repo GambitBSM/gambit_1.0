@@ -455,6 +455,8 @@ namespace Gambit
             {
                 // Only interested in decay processes
                 if(it->isAnnihilation) continue;
+                if(it->genRateTotal->hasArgs()) continue;
+
                 string pID = it->particle1ID;
                 double m = cat.getParticleProperty(pID).mass;
                 bool stable = ((it->channelList).size()<1);
@@ -477,7 +479,7 @@ namespace Gambit
                     }
                 }
                 // Use specified total width (instead of summing widths of registered channels)
-                entry.forceTotalWidth(true,it->genRateTotal);
+                entry.forceTotalWidth(true,it->genRateTotal->eval());
                 addEntry(pID,entry);
             }
             // Flag channels where all final final states are stable as endpoints.

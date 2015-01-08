@@ -60,7 +60,7 @@ namespace Gambit
 #define INIT_FUNCTOR(exp, ...)          INITIALIZE(exp, GET_FUNCTOR(__VA_ARGS__))
 
 #define GET_DIMENSION()                 get_input_value<unsigned int>(0)
-#define GET_FUNCTOR(...)                (Function_Base<double (const std::vector<double>&)> *)(get_input_value<Factory_Base>(1))(__VA_ARGS__)
+#define GET_FUNCTOR(...)                (get_input_value<Factory_Base>(1))(__VA_ARGS__)
 
 #define SCANNER_SETUP                                                                                                   \
 using namespace Gambit::Scanner;                                                                                        \
