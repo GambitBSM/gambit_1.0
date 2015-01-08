@@ -132,7 +132,7 @@ Auxiliaries:
 
   - capability: AnalysisNumbers
     dependencies:
-    - {capability: "GambitColliderEvent", type: "HEPUtils::Event", function: "reconstructDelphesEvent"}
+    - {capability: "ReconstructedEvent", type: "HEPUtils::Event", function: "reconstructBuckFastEvent"}
 
 #########################
 # Logging setup
