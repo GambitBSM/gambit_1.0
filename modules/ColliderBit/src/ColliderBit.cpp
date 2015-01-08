@@ -367,7 +367,6 @@ namespace Gambit {
                              * (srData.signal_sys/srData.n_signal));
           } else { uncertainty = (srData.background_sys/srData.n_background); }
 
-          /// @TODO So... result is changed for **each** analysis and SR? something seems mighty fishy about this loop...
           if (*BEgroup::lnlike_marg_poisson == "lnlike_marg_poisson_lognormal_error") {
             /// Use a log-normal distribution for the nuisance parameter (more correct)
             result = BEreq::lnlike_marg_poisson_lognormal_error(n_obs,n_predicted_exact,n_predicted_uncertain,uncertainty);
@@ -375,16 +374,16 @@ namespace Gambit {
           else if (*BEgroup::lnlike_marg_poisson == "lnlike_marg_poisson_gaussian_error") {
             /// Use a Gaussian distribution for the nuisance parameter (marginally faster)
             result = BEreq::lnlike_marg_poisson_gaussian_error(n_obs,n_predicted_exact,n_predicted_uncertain,uncertainty);
-            /// @TODO outside loop??
-            cout << "COLLIDER_RESULT " << analysis << " " << SR << " " << result << endl;
           }
+          cout << "COLLIDER_RESULT " << analysis << " " << SR << " " << result << endl;
 
 
-        }
-      }
+        } // end SR loop
+      } // end ana loop
 
-      return;
+      /// @TODO Need to combine { ana+SR } to return the single most stringent likelihood / other combined-as-well-as-we-can LL number
     }
+
 
   }
 }
