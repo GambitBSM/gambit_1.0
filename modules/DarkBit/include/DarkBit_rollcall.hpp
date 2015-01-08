@@ -667,10 +667,10 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
-  #define CAPABILITY TwoBodySpectra
+  #define CAPABILITY SimYieldTable
   START_CAPABILITY
-    #define FUNCTION TwoBodySpectra_general
-    START_FUNCTION(Gambit::DarkBit::TwoBodyContainer)
+    #define FUNCTION SimYieldTable_DarkSusy
+    START_FUNCTION(Gambit::DarkBit::SimYieldTable)
     #undef FUNCTION 
   #undef CAPABILITY
 
