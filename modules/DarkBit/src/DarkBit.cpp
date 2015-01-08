@@ -1836,9 +1836,9 @@ namespace Gambit {
         result = 0;
     }
 
-    void TwoBodySpectra_general(TwoBodyContainer & result)
+    void SimYieldTable_DarkSusy(SimYieldTable& result)
     {
-        using namespace Pipes::TwoBodySpectra_general;
+        using namespace Pipes::SimYieldTable_DarkSusy;
     }
   }
 }
