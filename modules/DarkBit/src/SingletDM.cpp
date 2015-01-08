@@ -77,8 +77,8 @@ namespace Gambit
         std::map<std::string, Funk::Funk> f_vs_mass;
         std::vector<std::string> colnames;
 
-        const double mh = 125.7;
-        const double v0 = 246.0;
+        static constexpr double mh = 125.7;
+        static constexpr double v0 = 246.0;
 
     };
 
