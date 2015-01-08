@@ -368,7 +368,7 @@ namespace Gambit {
           cout << "SR number test " << (*anaPtr)->get_results()[0].n_signal << endl;
           result.push_back((*anaPtr)->get_results());
         }
-        resetAnalysisFlag = true
+        resetAnalysisFlag = true;
       }
       else
       {
