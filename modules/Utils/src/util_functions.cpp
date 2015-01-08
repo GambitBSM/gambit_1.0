@@ -20,7 +20,9 @@
 ///  *********************************************
   
 #include "util_functions.hpp"
-  
+#include <sstream>
+#include <cstring>
+
 namespace Gambit
 {
   
@@ -113,9 +115,19 @@ namespace Gambit
     /// Ensure that a path exists (and then return the path, for chaining purposes)
     std::string ensure_path_exists(const std::string& path)
     { 
-       boost::filesystem::path dir(path);
-       if( !( boost::filesystem::exists( dir.parent_path() ) )) 
-       { boost::filesystem::create_directories( dir.parent_path() ); }
+       // Boost was causing some people problems: now using J Leffler's 'mkdir'
+       // boost::filesystem::path dir(path);
+       // if( !( boost::filesystem::exists( dir.parent_path() ) )) 
+       // { boost::filesystem::create_directories( dir.parent_path() ); }
+       // return path;
+
+       // Split off potential filename
+       // If only path is provided, it must end in a slash!!!
+       size_t found = path.find_last_of("/\\");
+       std::string prefix = path.substr(0,found);
+
+       recursive_mkdir( prefix.c_str() );
+
        return path;
     }
     

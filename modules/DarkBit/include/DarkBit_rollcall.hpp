@@ -31,7 +31,11 @@
 ///  \author Christopher Savage
 ///          (chris@savage.name)
 ///  \date 2014 Oct, Dec
-///  
+///
+///  \author Antje Putze
+///          (antje.putze@lapth.cnrs.fr)
+///  \date 2015 Jan
+///
 ///  *********************************************
 
 #ifndef __DarkBit_rollcall_hpp__
@@ -117,6 +121,11 @@ START_MODULE
       ALLOW_MODELS(SingletDM)
       BACKEND_REQ(rdmgev, (), DS_RDMGEV)
     #undef FUNCTION
+    #define FUNCTION RD_thresholds_resonances_EffWIMP
+      START_FUNCTION(RDrestype)
+      ALLOW_MODELS(EffWIMP)
+      BACKEND_REQ(rdmgev, (), DS_RDMGEV)
+    #undef FUNCTION
   #undef CAPABILITY
 
   #define CAPABILITY RD_eff_annrate_SUSY_DSprep
@@ -138,7 +147,7 @@ START_MODULE
     #define FUNCTION RD_eff_annrate_from_ProcessCatalog
       START_FUNCTION(fptr_dd)
       DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)
-      ALLOW_MODELS(SingletDM)
+      ALLOW_MODELS(SingletDM,EffWIMP)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -303,6 +312,10 @@ START_MODULE
       START_FUNCTION(Gambit::DarkBit::TH_ProcessCatalog)
       ALLOW_MODELS(SingletDM)
     #undef FUNCTION
+    #define FUNCTION TH_ProcessCatalog_EffWIMP
+      START_FUNCTION(Gambit::DarkBit::TH_ProcessCatalog)
+      ALLOW_MODELS(EffWIMP)
+      #undef FUNCTION
   #undef CAPABILITY
 
   #define CAPABILITY lnL_FermiLATdwarfs
@@ -433,8 +446,8 @@ START_MODULE
       DEPENDENCY(mwimp, double)
       DEPENDENCY(annrate, double)
       DEPENDENCY(nuyield, nuyield_functype)  
-      BACKEND_REQ(nubounds, (), void, (const char&, const double&, const double&, double(*)(double&, int&), double&, 
-                                       double&, int&, double&, double&, const int&, const bool&, const double&, const double&))
+      BACKEND_REQ(nubounds, (), void, (const char&, const double&, const double&, double(*)(const double&, const int&, void*&), double&, double&,
+                                       int&, double&, double&, const int&, const bool&, const double&, const double&, void*&))
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -485,8 +498,8 @@ START_MODULE
       DEPENDENCY(mwimp, double)
       DEPENDENCY(annrate, double)
       DEPENDENCY(nuyield, nuyield_functype)  
-      BACKEND_REQ(nubounds, (), void, (const char&, const double&, const double&, double(*)(double&, int&), double&, 
-                                       double&, int&, double&, double&, const int&, const bool&, const double&, const double&))
+      BACKEND_REQ(nubounds, (), void, (const char&, const double&, const double&, double(*)(const double&, const int&, void*&), double&, double&,
+                                       int&, double&, double&, const int&, const bool&, const double&, const double&, void*&))
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -537,8 +550,8 @@ START_MODULE
       DEPENDENCY(mwimp, double)
       DEPENDENCY(annrate, double)
       DEPENDENCY(nuyield, nuyield_functype)  
-      BACKEND_REQ(nubounds, (), void, (const char&, const double&, const double&, double(*)(double&, int&), double&, 
-                                       double&, int&, double&, double&, const int&, const bool&, const double&, const double&))
+      BACKEND_REQ(nubounds, (), void, (const char&, const double&, const double&, double(*)(const double&, const int&, void*&), double&, double&,
+                                       int&, double&, double&, const int&, const bool&, const double&, const double&, void*&))
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -589,8 +602,8 @@ START_MODULE
       DEPENDENCY(mwimp, double)
       DEPENDENCY(annrate, double)
       DEPENDENCY(nuyield, nuyield_functype)  
-      BACKEND_REQ(nubounds, (), void, (const char&, const double&, const double&, double(*)(double&, int&), double&, 
-                                       double&, int&, double&, double&, const int&, const bool&, const double&, const double&))
+      BACKEND_REQ(nubounds, (), void, (const char&, const double&, const double&, double(*)(const double&, const int&, void*&), double&, double&,
+                                       int&, double&, double&, const int&, const bool&, const double&, const double&, void*&))
     #undef FUNCTION
   #undef CAPABILITY
 

@@ -44,6 +44,8 @@ namespace Gambit {
     /// @TODO BOSS delphes? Euthanize delphes?
     bool resetDelphesFlag = true;
     std::string delphesConfigFilename;
+    /// BuckFast stuff
+    bool resetBuckFastFlag = true;
     /// Pythia stuff
     bool resetPythiaFlag = true;
     /// Analysis stuff
@@ -57,11 +59,14 @@ namespace Gambit {
     double* xsecerrArray;
     #define SHARED_OVER_OMP iter,pythiaNumber,pythiaConfigurations,xsecArray,xsecerrArray
 
+
     /// *************************************************
     /// Rollcalled functions properly hooked up to Gambit
     /// *************************************************
 
+
     /// *** Initialization for analyses ***
+
     void specifyAnalysisPointerVector (AnalysisPointerVector &result) {
       using namespace Pipes::specifyAnalysisPointerVector;
       if(resetAnalysisFlag) {
@@ -92,22 +97,38 @@ namespace Gambit {
     }
 
 
-    /// Detector Simulators
-    void getDelphes(shared_ptr<ColliderBit::Delphes_PythiaToHEPUtils> &result) {
+
+    /// *** Detector Simulators ***
+
+    void getDelphes(shared_ptr<Gambit::ColliderBit::DelphesBase> &result) {
       using namespace Pipes::getDelphes;
       std::vector<std::string> delphesOptions;
       if(resetDelphesFlag) {
         #pragma omp critical (Delphes)
         {
           GET_COLLIDER_RUNOPTION(delphesOptions, std::vector<std::string>)
-          result.reset( mkDelphes("", delphesOptions) );
+          result.reset( mkDelphes("DelphesVanilla", delphesOptions) );
           resetDelphesFlag = false;
         }
       }
     }
 
 
+    void getBuckFast_Identity(shared_ptr<Gambit::ColliderBit::BuckFastBase> &result) {
+      using namespace Pipes::getBuckFast_Identity;
+      if(resetBuckFastFlag) {
+        #pragma omp critical (BuckFast)
+        {
+          result.reset( mkBuckFast("BuckFastIdentity") );
+          resetBuckFastFlag = false;
+        }
+      }
+    }
+
+
+
     /// *** Loop Managers ***
+
     void operatePythia() {
       using namespace Pipes::operatePythia;
       int nEvents = 0;
@@ -162,6 +183,7 @@ namespace Gambit {
       Loop::executeIteration(FINALIZE);
 
       resetDelphesFlag = true;
+      resetBuckFastFlag = true;
       logger() << "==================" << endl;
       logger() << "ColliderBit says,";
       logger() << "\"operatePythia() completed.\"" << endl;
@@ -169,8 +191,10 @@ namespace Gambit {
     }
 
 
-    /// Hard Scattering Collider Simulators
-    void getPythia(shared_ptr<ColliderBit::PythiaBase> &result) {
+
+    /// *** Hard Scattering Collider Simulators ***
+
+    void getPythia(shared_ptr<Gambit::ColliderBit::PythiaBase> &result) {
       using namespace Pipes::getPythia;
 
       if (resetPythiaFlag and *Loop::iteration > INIT) {
@@ -202,7 +226,10 @@ namespace Gambit {
       }
     }
 
-    /// Hard Scattering Event Generators
+
+
+    /// *** Hard Scattering Event Generators ***
+
     void generatePythia8Event(Pythia8::Event &result) {
       using namespace Pipes::generatePythia8Event;
       if (*Loop::iteration <= INIT) return;
@@ -213,30 +240,18 @@ namespace Gambit {
     }
 
 
-    /// Standard Event Format Functions
-    void reconstructDelphesEvent(HEPUtils::Event &result) {
-      using namespace Pipes::reconstructDelphesEvent;
-      if (*Loop::iteration == FINALIZE) resetDelphesFlag = true;
-      if (*Loop::iteration <= INIT) return;
-      result.clear();
-
-      #pragma omp critical (Delphes)
-      {
-        (*Dep::DetectorSim)->processEvent(*Dep::HardScatteringEvent, result);
-      }
-    }
-
-
     void convertPythia8Event(HEPUtils::Event &result) {
       using namespace Pipes::convertPythia8Event;
       if (*Loop::iteration <= INIT) return;
       result.clear();
 
+      /// Get the next event from Pythia8
+      const auto pevt = (*Dep::HardScatteringSim)->nextEvent();
+
       Pythia8::Vec4 ptot;
       std::vector<fastjet::PseudoJet> jetparticles;
       std::vector<fastjet::PseudoJet> bhadrons, taus;
 
-      const auto pevt = *Dep::HardScatteringEvent;
       ptot.reset();
       jetparticles.clear();
       bhadrons.clear();
@@ -303,7 +318,7 @@ namespace Gambit {
           }
         }
         /// Add to the event
-        result.addJet(new HEPUtils::Jet(HEPUtils::mk_p4(pj), isB));
+        result.add_jet(new HEPUtils::Jet(HEPUtils::mk_p4(pj), isB));
       }
 
       /// MET (note: NOT just equal to sum of prompt invisibles)
@@ -311,7 +326,34 @@ namespace Gambit {
     }
 
 
-    /// Analysis Accumulators
+
+    /// *** Standard Event Format Functions ***
+
+    void reconstructDelphesEvent(HEPUtils::Event &result) {
+      using namespace Pipes::reconstructDelphesEvent;
+      if (*Loop::iteration == FINALIZE) resetDelphesFlag = true;
+      if (*Loop::iteration <= INIT) return;
+      result.clear();
+
+      #pragma omp critical (Delphes)
+      {
+        (*Dep::DetectorSim)->processEvent(*Dep::HardScatteringEvent, result);
+      }
+    }
+
+
+    void reconstructBuckFastEvent(HEPUtils::Event &result) {
+      using namespace Pipes::reconstructBuckFastEvent;
+      if (*Loop::iteration == FINALIZE) resetBuckFastFlag = true;
+      if (*Loop::iteration <= INIT) return;
+      result.clear();
+
+      (*Dep::SimpleSmearingSim)->processEvent(*Dep::HardScatteringEvent, result);
+    }
+
+
+
+    /// *** Analysis Accumulators ***
 
     void runAnalyses(ColliderLogLikes& result)
     {
@@ -327,6 +369,7 @@ namespace Gambit {
           cout << "SR number test " << (*anaPtr)->get_results()[0].n_signal << endl;
           result.push_back((*anaPtr)->get_results());
         }
+        resetAnalysisFlag = true;
       }
       else
       {
@@ -334,7 +377,7 @@ namespace Gambit {
         {
           // Loop over analyses and run them
           for (auto anaPtr = Dep::ListOfAnalyses->begin(); anaPtr != Dep::ListOfAnalyses->end(); ++anaPtr)        
-            (*anaPtr)->analyze(*Dep::GambitColliderEvent);
+            (*anaPtr)->analyze(*Dep::ReconstructedEvent);
         }
       }
     }

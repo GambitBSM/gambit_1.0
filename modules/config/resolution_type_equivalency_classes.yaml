@@ -17,6 +17,5 @@
 # entries to deal with those.
 
 [std::string, str]
-
-
+[double(*)(double&, int&, void*), nuyield_functype]
 
