@@ -28,7 +28,7 @@
 /// FlexibleSUSY compatible general (78 parameters plus sign) MSSM parameterisation
 #define MODEL MSSM78
   START_MODEL
-  DEFINEPARS(TanBeta,SignMu,
+  DEFINEPARS(Qin,TanBeta,SignMu,
              mHu2,mHd2,M1,M2,M3)
   
   DEFINEPARS(mq2_11, mq2_12, mq2_13,

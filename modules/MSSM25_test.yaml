@@ -1,16 +1,17 @@
 Parameters:
   MSSM25:
+    Qin:
+      fixed_value: 5000  
     SignMu:
       fixed_value: 1
     TanBeta:
       range: [1, 10]
 
+    # Note which of these are mass squared parameters 
     mHu2:
-      prior_type: flat
-      range: [0, 100]
+      range: [0, 10000]
     mHd2:
-      prior_type: log
-      range: [0, 100]
+      range: [0, 10000]
 
     M1:
       range: [0, 100]
@@ -20,39 +21,39 @@ Parameters:
       range: [0, 100]
 
     mq2_1:
-      range: [0, 100]
+      range: [0, 10000]
     mq2_2:
-      range: [0, 100]
+      range: [0, 10000]
     mq2_3:
-      range: [0, 100]
+      range: [0, 10000]
 
     ml2_1:
-      range: [0, 100]
+      range: [0, 10000]
     ml2_2:
-      range: [0, 100]
+      range: [0, 10000]
     ml2_3:
-      range: [0, 100]
+      range: [0, 10000]
 
     md2_1:
-      range: [0, 100]
+      range: [0, 10000]
     md2_2:
-      range: [0, 100]
+      range: [0, 10000]
     md2_3:
-      range: [0, 100]
+      range: [0, 10000]
 
     mu2_1:
-      range: [0, 100]
+      range: [0, 10000]
     mu2_2:
-      range: [0, 100]
+      range: [0, 10000]
     mu2_3:
-      range: [0, 100]
+      range: [0, 10000]
 
     me2_1:
-      range: [0, 100]
+      range: [0, 10000]
     me2_2:
-      range: [0, 100]
+      range: [0, 10000]
     me2_3:
-      range: [0, 100]
+      range: [0, 10000]
 
     Ae_12:
       range: [-100, 100]
@@ -79,7 +80,7 @@ Scanner:
     toy_mcmc:
       plugin: toy_mcmc
       options:
-        point_number: 20
+        point_number: 100
         output_file:  output
         like:  Likelihood
 
@@ -92,7 +93,7 @@ ObsLikes:
 Auxiliaries:
   - capability: SpecBit_examples
     dependencies:
-    - {capability: MSSM_spectrum, function: get_MSSMatEWSB_spectrum} 
+    - {capability: MSSM_spectrum, function: get_MSSMatQ_spectrum} 
 
   - capability: MSSM_spectrum 
     options:

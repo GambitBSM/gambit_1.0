@@ -43,8 +43,8 @@ START_MODULE
     ALLOW_MODELS(CMSSM)
     #undef FUNCTION
 
-    // FlexibleSUSY compatible maximal MSSM parameterisation (EWSB scale boundary conditions) 
-    #define FUNCTION get_MSSMatEWSB_spectrum
+    // FlexibleSUSY compatible maximal MSSM parameterisation (boundary conditions set at custom scale Q) 
+    #define FUNCTION get_MSSMatQ_spectrum
     START_FUNCTION(Spectrum*)                  
     ALLOW_MODELS(MSSM78)
     #undef FUNCTION

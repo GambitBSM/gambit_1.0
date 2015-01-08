@@ -207,6 +207,7 @@ Message from flexibleSUSY below:" << std::endl;
     template <class T>
     void fill_MSSM_input(T& input, const std::map<str, safe_ptr<double> >& Param )
     {
+
       //double valued parameters
       input.TanBeta     = *Param.at("TanBeta");
       input.SignMu      = *Param.at("SignMu");
@@ -227,16 +228,41 @@ Message from flexibleSUSY below:" << std::endl;
       input.Auij = fill_3x3_parameter_matrix("Au", Param);
 
       #ifdef SpecBit_DBUG
-        std::cout << input << std::endl;
+        #define INPUT(p) input.p
+        #define ostr std::cout
+        #define oend std::endl
+        ostr << "TanBeta = " << INPUT(TanBeta) << ", " << oend ;
+        ostr << "SignMu = " << INPUT(SignMu) << ", " << oend;
+        ostr << "mHd2IN = " << INPUT(mHd2IN) << ", " << oend;
+        ostr << "mHu2IN = " << INPUT(mHu2IN) << ", " << oend;
+        ostr << "mq2Input = " << INPUT(mq2Input) << ", " << oend;
+        ostr << "ml2Input = " << INPUT(ml2Input) << ", " << oend;
+        ostr << "md2Input = " << INPUT(md2Input) << ", " << oend;
+        ostr << "mu2Input = " << INPUT(mu2Input) << ", " << oend;
+        ostr << "me2Input = " << INPUT(me2Input) << ", " << oend;
+        ostr << "MassBInput = " << INPUT(MassBInput) << ", " << oend;
+        ostr << "MassWBInput = " << INPUT(MassWBInput) << ", " << oend;
+        ostr << "MassGInput = " << INPUT(MassGInput) << ", " << oend;
+        ostr << "Aeij = " << INPUT(Aeij) << ", " << oend;
+        ostr << "Adij = " << INPUT(Adij) << ", " << oend;
+        ostr << "Auij = " << INPUT(Auij) << ", " << oend;
+        #undef INPUT
+        #undef ostr
+        #undef oend
       #endif
+
     }
 
     // Runs MSSM spectrum generator with EWSB scale input
-    void get_MSSMatEWSB_spectrum (Spectrum* &result)
+    void get_MSSMatQ_spectrum (Spectrum* &result)
     {
       using namespace softsusy;
-      namespace Pipe = Pipes::get_MSSMatEWSB_spectrum;
+      namespace Pipe = Pipes::get_MSSMatQ_spectrum;
       MSSM_input_parameters input;
+      input.Qin = *Pipe::Param.at("Qin"); // MSSMatQ also requires input scale to be supplied
+      #ifdef SpecBit_DBUG
+        std::cout << "Qin = " << input.Qin << ", ";
+      #endif
       fill_MSSM_input(input,Pipe::Param);
       result = run_FS_spectrum_generator<MSSM_interface<ALGORITHM1>>(input,*Pipe::runOptions);
     }

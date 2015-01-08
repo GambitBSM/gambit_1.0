@@ -23,7 +23,7 @@
 #define PARENT MSSM78
   START_MODEL
 
-  DEFINEPARS(TanBeta,SignMu,
+  DEFINEPARS(Qin,TanBeta,SignMu,
              mHu2,mHd2,M1,M2,M3)
 
   DEFINEPARS(mq2_1, mq2_2, mq2_3)

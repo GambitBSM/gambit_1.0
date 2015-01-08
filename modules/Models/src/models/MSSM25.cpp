@@ -24,13 +24,17 @@
 
 #include "models/MSSM25.hpp"
 
+// Activate debug output
+//#define MSSM25_DBUG
+
 using namespace Gambit::Utils;
 
 #define MODEL MSSM25 
   void MODEL_NAMESPACE::MSSM25_to_MSSM78 (const ModelParameters &myP, ModelParameters &targetP)
   {
      logger()<<"Running interpret_as_parent calculations for MSSM25 --> MSSM78..."<<LogTags::info<<EOM;
-     
+    
+     targetP.setValue("Qin",     myP["Qin"] );
      targetP.setValue("TanBeta", myP["TanBeta"] );
      targetP.setValue("SignMu",  myP["SignMu"] );
 
@@ -159,6 +163,10 @@ using namespace Gambit::Utils;
      targetP.setValue("Au_33",  myP["Au_3"] );
 
      // Whew, done!
+     #ifdef MSSM25_DBUG
+       std::cout << "MSSM25 parameters:" << myP << std::endl;
+       std::cout << "MSSM78 parameters:" << targetP << std::endl;
+     #endif
   }
 
 #undef MODEL
