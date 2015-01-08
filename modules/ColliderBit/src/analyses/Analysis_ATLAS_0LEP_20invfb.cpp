@@ -1,4 +1,5 @@
 #include "Analysis.hpp"
+#include "ATLASEfficiencies.hpp"
 #include <vector>
 #include <cmath>
 #include <memory>
@@ -110,7 +111,7 @@ namespace Gambit {
         // We now have the signal electrons, muons and jets: move on to the 0 lepton 2012 analysis
 
         // Calculate common variables and cuts first
-	ApplyMediumIDElectronSelection(signalElectrons);
+	applyMediumIDElectronSelection(signalElectrons);
 
         int nElectrons = signalElectrons.size();
         int nMuons = signalMuons.size();

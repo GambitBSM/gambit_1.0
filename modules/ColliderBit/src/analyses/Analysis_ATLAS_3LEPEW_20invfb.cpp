@@ -1,4 +1,5 @@
 #include "Analysis.hpp"
+#include "ATLASEfficiencies.hpp"
 #include <vector>
 #include <cmath>
 #include <memory>
@@ -13,7 +14,7 @@
 
    Known features: Signal leptons in the paper have certain isolation plus ID cuts (these are ignored here by default)
 
-   a) Should probably try and reproduce the ATLAS lepton ID. For now I could multiply all yields by 0.85^3, assuming that lepton ID efficiency is roughly 85%. In fact numbers look ok without this. 
+   a) Should probably try and reproduce the ATLAS lepton ID. For now I could multiply all yields by 0.85^3, assuming that lepton ID efficiency is roughly 85%. In fact numbers look ok without this.
 
    b) tau effiiency was taken to be DELPHES default (40%)
 
@@ -25,7 +26,7 @@ namespace Gambit {
   namespace ColliderBit {
 
     using namespace std;
-    
+
     class Analysis_ATLAS_3LEPEW_20invfb : public Analysis {
     private:
 
@@ -64,7 +65,7 @@ namespace Gambit {
     public:
 
       Analysis_ATLAS_3LEPEW_20invfb() {
-     
+
 	_num_SR0tau_a_bin_1=0;
 	_num_SR0tau_a_bin_2=0;
 	_num_SR0tau_a_bin_3=0;
@@ -89,7 +90,7 @@ namespace Gambit {
 	_num_SR1tau=0;
 	_num_SR2tau_a=0;
 	_num_SR2tau_b=0;
-	
+
         for(int i=0;i<NCUTS;i++){
           cutFlowVector.push_back(0);
           cutFlowVector_str.push_back("");
@@ -185,7 +186,7 @@ namespace Gambit {
           for(unsigned int itjet= 0; itjet < jetvec.size(); itjet++) {
             P4 jetmom=jetvec.at(itjet)->mom();
             float dR;
-         
+
             dR=jetmom.deltaR_eta(lepmom);
 
             if(fabs(dR) <= DeltaRMax) overlap=true;
@@ -224,7 +225,7 @@ namespace Gambit {
         }
 
 	vector<Particle*> signalTaus;
-	
+
 	for (Particle* tau : event->taus()) {
 	  if (tau->pT() > 20. && fabs(tau->eta()) < 2.47) signalTaus.push_back(tau);
 	}
@@ -248,8 +249,8 @@ namespace Gambit {
         //cout << "AFTER REMOVAL nele nmuo njet " << signalElectrons.size() << " " << signalMuons.size() << " " << signalJets.size() << endl;
 
 	//Now apply the tight electron selection
-	ApplyTightIDElectronSelection(signalElectrons);
-	
+	applyTightIDElectronSelection(signalElectrons);
+
         int numElectrons=signalElectrons.size();
         int numMuons=signalMuons.size();
 	int numTaus=signalTaus.size();
@@ -296,11 +297,11 @@ namespace Gambit {
         }
 
         //Make b jet container
-        const std::vector<float>  a = {0,10.};      
-        const std::vector<float>  b = {0,10000.};      
-        const std::vector<double> c = {0.8};      
+        const std::vector<float>  a = {0,10.};
+        const std::vector<float>  b = {0,10000.};
+        const std::vector<double> c = {0.8};
 	BinnedFn2D<double> _eff2d(a,b,c);
-	
+
         for (Jet* jet : signalJets) {
 	  bool hasTag=has_tag(_eff2d, jet->eta(), jet->pT());
           if(jet->isBJet() && hasTag)bJets.push_back(jet);
@@ -325,7 +326,7 @@ namespace Gambit {
 	      }
             }
           }
-	  
+
 	  //Check electrons against muons
 	  for(int iEl1=0;iEl1<numElectrons;iEl1++){
 	    for(int iMu1=0;iMu1<numMuons;iMu1++){
@@ -410,7 +411,7 @@ namespace Gambit {
 	//Start the signal regions here
 
 	//SR0tau_a: 20 bins!
-	
+
         //Find m_SFOS that is closest to the Z mass
         double smallestDiff=9999;
         double mSFOS=0;
@@ -469,9 +470,9 @@ namespace Gambit {
 
 	//Now apply the actual cuts for SR0tau_a
 
-	
+
 	if(trigger && signalLeptons.size()==3 && mSFOS12Cut && atLeastOneEorMu && separationCut && bJets.size()==0 && signalTaus.size()==0){
-	  
+
 	  if(mSFOS>12. && mSFOS < 40. && mT>0. && mT<80. && met>50. && met<90.)_num_SR0tau_a_bin_1++;
 	  if(mSFOS>12. && mSFOS < 40. && mT>0. && mT<80. && met>90.)_num_SR0tau_a_bin_2++;
 	  if(mSFOS>12. && mSFOS < 40. && mT>80. && met>50. && met<75.)_num_SR0tau_a_bin_3++;
@@ -504,12 +505,12 @@ namespace Gambit {
 	bool leptonTypeCut_SR0taub=false;
 	float dPhiLLMin=9999;
 	if(numElectrons==2 && numMuons==1){
-	  if((signalElectrons[0]->pid()==signalElectrons[1]->pid()) && 
+	  if((signalElectrons[0]->pid()==signalElectrons[1]->pid()) &&
 	     (signalElectrons[0]->pid()*signalMuons[0]->pid())<0)leptonTypeCut_SR0taub=true;
-	  
+
 	  float dPhiLL1=signalElectrons[0]->mom().deltaPhi(signalMuons[0]->mom());
 	  float dPhiLL2=signalElectrons[1]->mom().deltaPhi(signalMuons[0]->mom());
-	  
+
 	  if(dPhiLL1<dPhiLL2){
 	    dPhiLLMin=dPhiLL1;
 	  }
@@ -517,14 +518,14 @@ namespace Gambit {
 	    dPhiLLMin=dPhiLL2;
 	  }
 	}
-	
+
 	if(numElectrons==1 && numMuons==2){
-	  if((signalMuons[0]->pid()==signalMuons[1]->pid()) && 
+	  if((signalMuons[0]->pid()==signalMuons[1]->pid()) &&
 	     (signalElectrons[0]->pid()*signalMuons[0]->pid())<0)leptonTypeCut_SR0taub=true;
-	  
+
 	  float dPhiLL1=signalMuons[0]->mom().deltaPhi(signalElectrons[0]->mom());
 	  float dPhiLL2=signalMuons[1]->mom().deltaPhi(signalElectrons[0]->mom());
-	  
+
 	  if(dPhiLL1<dPhiLL2){
 	    dPhiLLMin=dPhiLL1;
 	  }
@@ -532,16 +533,16 @@ namespace Gambit {
 	    dPhiLLMin=dPhiLL2;
 	  }
 	}
-	
+
 	bool leptonPTCut_SR0taub=true;
 	for(unsigned int iLep=0;iLep<signalLeptons.size();iLep++){
 	  if(signalLeptons[iLep]->pT()<20.)leptonPTCut_SR0taub=false;
 	}
-	
+
 	if(trigger && signalLeptons.size()==3 && mSFOS12Cut && atLeastOneEorMu && separationCut && leptonTypeCut_SR0taub && bJets.size()==0 && signalTaus.size()==0){
-	 
+
 	  if(met > 50. && leptonPTCut_SR0taub && dPhiLLMin < 1.)_num_SR0tau_b++;
- 
+
 	}
 
 	//Now do SR1tau
@@ -551,7 +552,7 @@ namespace Gambit {
 	std::cout << "NUMTAUS " << numTaus << std::endl;
 	if(numTaus==1 && (numElectrons+numMuons)==2 && (signalLeptons[0]->pid() * signalLeptons[1]->pid())>0){
 	  leptonTypeCut_SR1tau=true;
-	  
+
 	  //Find the lepton and tau combination that has mltau closest to the Higgs mass
 	  float mltau1=(signalLeptons[0]->mom()+signalTaus[0]->mom()).m();
 	  float mltau2=(signalLeptons[1]->mom()+signalTaus[0]->mom()).m();
@@ -568,35 +569,35 @@ namespace Gambit {
 	  float mEE=(signalElectrons[0]->mom()+signalElectrons[1]->mom()).m();
 	  if(mEE>81.2 && mEE<101.2)eePairVeto=true;
 	}
-	
+
 	//Lepton pT cuts (assumes leptons are pT ordered: NEEDS CHECKING)
 	bool leptonPTCut_SR1tau=false;
 	if(leptonTypeCut_SR1tau && signalLeptons[1]->pT()>30. && (signalLeptons[0]->pT()+signalLeptons[1]->pT())>70.)leptonPTCut_SR1tau=true;
-	
+
 	if(trigger && mSFOS12Cut && atLeastOneEorMu && separationCut && leptonTypeCut_SR1tau && bJets.size()==0){
 	  if(met>50. && leptonPTCut_SR1tau && mltau < 120. && !eePairVeto)_num_SR1tau++;
 	}
-	
+
 	//Now do SR2taua
 	float mT2max=0;
-	
+
 	if(numTaus==2 && (numElectrons + numMuons)==1){
-	  
+
 	  //Calculate MT2 for all pairs of leptonsand take the largest
 	  vector<Particle*> mt2Leptons;
 
 	  for (Particle* ele : signalElectrons) {
 	    mt2Leptons.push_back(ele);
 	  }
-	  
+
 	  for (Particle* muo : signalMuons) {
 	    mt2Leptons.push_back(muo);
 	  }
-	  
+
 	  for (Particle* tau : signalTaus) {
 	    mt2Leptons.push_back(tau);
 	  }
-	  
+
 	  for(unsigned int iLep1=0;iLep1 < 3;iLep1++){
 	    for(unsigned int iLep2=iLep1;iLep2 < 3;iLep2++){
 
@@ -604,9 +605,9 @@ namespace Gambit {
 	      double pb_b[3] = { 0, mt2Leptons[iLep2]->mom().px(), mt2Leptons[iLep2]->mom().py() };
 	      double pmiss_b[3] = { 0, ptot.px(), ptot.py() };
 	      double mn_b = 0.;
-	      
+
 	      mt2_bisect::mt2 mt2_calc;
-	      
+
 	      mt2_calc.set_momenta(pa_b,pb_b,pmiss_b);
 	      mt2_calc.set_mn(mn_b);
 	      double mt2 = mt2_calc.get_mt2();
@@ -614,10 +615,10 @@ namespace Gambit {
 	    }
 	  }
 	}
-	
+
 	if(numTaus==2 && (numElectrons + numMuons)==1 && trigger && mSFOS12Cut && atLeastOneEorMu && separationCut && bJets.size()==0 && met > 50. && mT2max > 100.)_num_SR2tau_a++;
-	  
-	
+
+
 	//Finally do SR2taub
 	float mtautau=0;
 	if(numTaus==2)mtautau=(signalTaus[0]->mom()+signalTaus[1]->mom()).m();
@@ -626,9 +627,9 @@ namespace Gambit {
 
 	//Now do cutflow (for debugging)
 
-	cutFlowVector_str[0] = "No cuts ";		
+	cutFlowVector_str[0] = "No cuts ";
 	cutFlowVector_str[1] = "3 signal leptons ";
-	cutFlowVector_str[2] = "Trigger ";	
+	cutFlowVector_str[2] = "Trigger ";
 	cutFlowVector_str[3] = "At least one e or mu ";
 	cutFlowVector_str[4] = "Separation of leptons ";
 	cutFlowVector_str[5] = "mSFOS > 12 cut ";
@@ -679,10 +680,10 @@ namespace Gambit {
 	cutFlowVector_str[50] = "SR2taub: Sum of tau pT ";
 
 	if(signalLeptons.size()==3 && trigger && atLeastOneEorMu)std::cout << "LEPTONID " << signalLeptons[0]->pid() << " " << signalLeptons[1]->pid() << " " << signalLeptons[2]->pid() << " mSFOS12Cut " << mSFOS12Cut << " LEPTONTYPE " << leptonTypeCut_SR0taub << std::endl;
-	
+
 	for(int j=0;j<NCUTS;j++){
 	  if( (j==0) ||
-	      
+
 	      (j==1 && signalLeptons.size()==3) ||
 
 	      (j==2 && signalLeptons.size()==3 && trigger) ||
@@ -694,77 +695,77 @@ namespace Gambit {
 	      (j==5 && signalLeptons.size()==3 && trigger && atLeastOneEorMu && separationCut && mSFOS12Cut) ||
 
 	      (j==6 && trigger && signalLeptons.size()==3 && atLeastOneEorMu && separationCut && mSFOS12Cut && signalTaus.size()==0) || //lepton requirement
-	      
+
 	      (j==7 && trigger && signalLeptons.size()==3 && atLeastOneEorMu && separationCut && mSFOS12Cut && signalTaus.size()==0 && massesOfSFOSPairs.size()>0) || //SFOS
-	      
+
 	      (j==8 && trigger && signalLeptons.size()==3 && atLeastOneEorMu && separationCut && mSFOS12Cut && signalTaus.size()==0 && massesOfSFOSPairs.size()>0 && bJets.size()==0) || //b jet veto
-	      
+
 	      (j==9 && trigger && signalLeptons.size()==3 && atLeastOneEorMu && separationCut && mSFOS12Cut && signalTaus.size()==0 && massesOfSFOSPairs.size()>0 && bJets.size()==0 && met>50. && met<90.) || //MET
 
 	      (j==10 && trigger && signalLeptons.size()==3 && atLeastOneEorMu && separationCut && mSFOS12Cut && signalTaus.size()==0 && massesOfSFOSPairs.size()>0 && bJets.size()==0 && met>50. && met<90. && mT>0. && mT<80.) || //mT
 
-	      (j==11 && trigger && signalLeptons.size()==3 && atLeastOneEorMu && separationCut && mSFOS12Cut && signalTaus.size()==0 && massesOfSFOSPairs.size()>0 && bJets.size()==0 && mSFOS>12. && mSFOS < 40. && mT>0. && mT<80. && met>50. && met<90.) || 
-	      
+	      (j==11 && trigger && signalLeptons.size()==3 && atLeastOneEorMu && separationCut && mSFOS12Cut && signalTaus.size()==0 && massesOfSFOSPairs.size()>0 && bJets.size()==0 && mSFOS>12. && mSFOS < 40. && mT>0. && mT<80. && met>50. && met<90.) ||
+
 	      (j==12 && trigger && signalLeptons.size()==3 && atLeastOneEorMu && separationCut && mSFOS12Cut && signalTaus.size()==0 && massesOfSFOSPairs.size()>0 && bJets.size()==0 && mSFOS>12. && mSFOS < 40. && mT>0. && mT<80. && met>90.) ||
 
 	      (j==13 && trigger && signalLeptons.size()==3 && atLeastOneEorMu && separationCut && mSFOS12Cut && signalTaus.size()==0 && massesOfSFOSPairs.size()>0 && bJets.size()==0 && mSFOS>12. && mSFOS < 40. && mT>80. && met>50. && met<75.) ||
-	      
+
 	      (j==14 && trigger && signalLeptons.size()==3 && atLeastOneEorMu && separationCut && mSFOS12Cut && signalTaus.size()==0 && massesOfSFOSPairs.size()>0 && bJets.size()==0 && mSFOS>12. && mSFOS < 40. && mT>80. && met>75.) ||
 
 	      (j==15 && trigger && signalLeptons.size()==3 && atLeastOneEorMu && separationCut && mSFOS12Cut && signalTaus.size()==0 && massesOfSFOSPairs.size()>0 && bJets.size()==0 && mSFOS>40. && mSFOS < 60. && mT>0. && mT<80. && met>50. && met<75. && !threelZVeto) ||
-	      
+
 	      (j==16 && trigger && signalLeptons.size()==3 && atLeastOneEorMu && separationCut && mSFOS12Cut && signalTaus.size()==0 && massesOfSFOSPairs.size()>0 && bJets.size()==0 && mSFOS>40. && mSFOS < 60. && mT>0. && mT<80. && met>75.) ||
-	      
+
 	      (j==17 && trigger && signalLeptons.size()==3 && atLeastOneEorMu && separationCut && mSFOS12Cut && signalTaus.size()==0 && massesOfSFOSPairs.size()>0 && bJets.size()==0 && mSFOS>40. && mSFOS < 60. && mT>80. && met>50. && met<135.) ||
-	      
+
 	      (j==18 && trigger && signalLeptons.size()==3 && atLeastOneEorMu && separationCut && mSFOS12Cut && signalTaus.size()==0 && massesOfSFOSPairs.size()>0 && bJets.size()==0 && mSFOS>40. && mSFOS < 60. && mT>80. && met>135.) ||
 
 	      (j==19 && trigger && signalLeptons.size()==3 && atLeastOneEorMu && separationCut && mSFOS12Cut && signalTaus.size()==0 && massesOfSFOSPairs.size()>0 && bJets.size()==0 && mSFOS>60. && mSFOS < 81.2 && mT>0. && mT<80. && met>50. && met<75. && !threelZVeto) ||
 
 	      (j==20 && trigger && signalLeptons.size()==3 && atLeastOneEorMu && separationCut && mSFOS12Cut && signalTaus.size()==0 && massesOfSFOSPairs.size()>0 && bJets.size()==0 && mSFOS>60. && mSFOS < 81.2 && mT>80. && met>50. && met<75.) ||
-	      
+
 	      (j==21 && trigger && signalLeptons.size()==3 && atLeastOneEorMu && separationCut && mSFOS12Cut && signalTaus.size()==0 && massesOfSFOSPairs.size()>0 && bJets.size()==0 && mSFOS>60. && mSFOS < 81.2 && mT>0. && mT<110. && met>75.) ||
-	      
+
 	      (j==22 && trigger && signalLeptons.size()==3 && atLeastOneEorMu && separationCut && mSFOS12Cut && signalTaus.size()==0 && massesOfSFOSPairs.size()>0 && bJets.size()==0 && mSFOS>60. && mSFOS < 81.2 && mT>110. && met>75.) ||
-	      
+
 	      (j==23 && trigger && signalLeptons.size()==3 && atLeastOneEorMu && separationCut && mSFOS12Cut && signalTaus.size()==0 && massesOfSFOSPairs.size()>0 && bJets.size()==0 && mSFOS>81.2 && mSFOS < 101.2 && mT>0. && mT<110. && met>50. && met<90. && !threelZVeto) ||
-	      
+
 	      (j==24 && trigger && signalLeptons.size()==3 && atLeastOneEorMu && separationCut && mSFOS12Cut && signalTaus.size()==0 && massesOfSFOSPairs.size()>0 && bJets.size()==0 && mSFOS>81.2 && mSFOS < 101.2 && mT>0. && mT < 110. && met>90.) ||
-	      
+
 	      (j==25 && trigger && signalLeptons.size()==3 && atLeastOneEorMu && separationCut && mSFOS12Cut && signalTaus.size()==0 && massesOfSFOSPairs.size()>0 && bJets.size()==0 && mSFOS>81.2 && mSFOS < 101.2 && mT>110. && met>50. && met < 135.) ||
-	      
+
 	      (j==26 && trigger && signalLeptons.size()==3 && atLeastOneEorMu && separationCut && mSFOS12Cut && signalTaus.size()==0 && massesOfSFOSPairs.size()>0 && bJets.size()==0 && mSFOS>81.2 && mSFOS < 101.2 && mT>110. && met>135.) ||
 
 	      (j==27 && trigger && signalLeptons.size()==3 && atLeastOneEorMu && separationCut && mSFOS12Cut && signalTaus.size()==0 && massesOfSFOSPairs.size()>0 && bJets.size()==0 && mSFOS > 101.2 && mT>0. && mT<180. && met>50. && met<210.) ||
-	      
+
 	      (j==28 && trigger && signalLeptons.size()==3 && atLeastOneEorMu && separationCut && mSFOS12Cut && signalTaus.size()==0 && massesOfSFOSPairs.size()>0 && bJets.size()==0 && mSFOS > 101.2 && mT > 180. && met>50. && met<210.) ||
-	      
+
 	      (j==29 && trigger && signalLeptons.size()==3 && atLeastOneEorMu && separationCut && mSFOS12Cut && signalTaus.size()==0 && massesOfSFOSPairs.size()>0 && bJets.size()==0 && mSFOS > 101.2 && mT>0. && mT<120. && met>210.) ||
-	      
+
 	      (j==30 && trigger && signalLeptons.size()==3 && atLeastOneEorMu && separationCut && mSFOS12Cut && signalTaus.size()==0 && massesOfSFOSPairs.size()>0 && bJets.size()==0 && mSFOS > 101.2 && mT>120. && met>210.) ||
-	      
+
 	      //Start SR0taub
 
 	      (j==31 && trigger && signalLeptons.size()==3 && mSFOS12Cut && atLeastOneEorMu && separationCut && leptonTypeCut_SR0taub && signalTaus.size()==0) ||
 
 	      (j==32 && trigger && signalLeptons.size()==3 && mSFOS12Cut && atLeastOneEorMu && separationCut && leptonTypeCut_SR0taub && signalTaus.size()==0 && bJets.size()==0) ||
-	      
+
 	      (j==33 && trigger && signalLeptons.size()==3 && mSFOS12Cut && atLeastOneEorMu && separationCut && leptonTypeCut_SR0taub && signalTaus.size()==0 && bJets.size()==0 && met > 50.) ||
-	      
+
 	      (j==34 && trigger && signalLeptons.size()==3 && mSFOS12Cut && atLeastOneEorMu && separationCut && leptonTypeCut_SR0taub && signalTaus.size()==0 && bJets.size()==0 && met > 50. && leptonPTCut_SR0taub) ||
 
 	      (j==35 && trigger && signalLeptons.size()==3 && mSFOS12Cut && atLeastOneEorMu && separationCut && leptonTypeCut_SR0taub && signalTaus.size()==0 && bJets.size()==0 && met > 50. && leptonPTCut_SR0taub && dPhiLLMin < 1.) ||
-	 
+
 	      //SR1tau
-	      
+
 	      (j==36 && trigger && mSFOS12Cut && atLeastOneEorMu && separationCut && leptonTypeCut_SR1tau) ||
-	      
+
 	      (j==37 && trigger && mSFOS12Cut && atLeastOneEorMu && separationCut && leptonTypeCut_SR1tau && !eePairVeto) ||
 
 	      (j==38 && trigger && mSFOS12Cut && atLeastOneEorMu && separationCut && leptonTypeCut_SR1tau && !eePairVeto && bJets.size()==0) ||
 
 	      (j==39 && trigger && mSFOS12Cut && atLeastOneEorMu && separationCut && leptonTypeCut_SR1tau && !eePairVeto && bJets.size()==0 && met>50.) ||
-	      
+
 	      (j==40 && trigger && mSFOS12Cut && atLeastOneEorMu && separationCut && leptonTypeCut_SR1tau && !eePairVeto && bJets.size()==0 && met>50. && leptonPTCut_SR1tau) ||
 
 	      (j==41 && trigger && mSFOS12Cut && atLeastOneEorMu && separationCut && leptonTypeCut_SR1tau && !eePairVeto && bJets.size()==0 && met>50. && leptonPTCut_SR1tau && mltau < 120.) ||
@@ -774,14 +775,14 @@ namespace Gambit {
 	      (j==42 &&numTaus==2 && (numElectrons + numMuons)==1 && trigger && mSFOS12Cut && atLeastOneEorMu && separationCut) ||
 
 	      (j==43 &&numTaus==2 && (numElectrons + numMuons)==1 && trigger && mSFOS12Cut && atLeastOneEorMu && separationCut && bJets.size()==0) ||
-	      
+
 	      (j==44 &&numTaus==2 && (numElectrons + numMuons)==1 && trigger && mSFOS12Cut && atLeastOneEorMu && separationCut && bJets.size()==0 && met > 50.) ||
 
 	      (j==45 && numTaus==2 && (numElectrons + numMuons)==1 && trigger && mSFOS12Cut && atLeastOneEorMu && separationCut && bJets.size()==0 && met > 50. && mT2max > 100.) ||
-	  
+
 	      //SR2taub
 	      (j==46 && numTaus==2 && (numElectrons + numMuons)==1 && trigger && mSFOS12Cut && atLeastOneEorMu && separationCut && (signalTaus[0]->pid() == -1*signalTaus[1]->pid())) ||
-	      
+
 	      (j==47 && numTaus==2 && (numElectrons + numMuons)==1 && trigger && mSFOS12Cut && atLeastOneEorMu && separationCut && (signalTaus[0]->pid() == -1*signalTaus[1]->pid()) && bJets.size()==0) ||
 
 	      (j==48 && numTaus==2 && (numElectrons + numMuons)==1 && trigger && mSFOS12Cut && atLeastOneEorMu && separationCut && (signalTaus[0]->pid() == -1*signalTaus[1]->pid()) && bJets.size()==0 && met > 60) ||
@@ -789,17 +790,17 @@ namespace Gambit {
 	      (j==49 && numTaus==2 && (numElectrons + numMuons)==1 && trigger && mSFOS12Cut && atLeastOneEorMu && separationCut && (signalTaus[0]->pid() == -1*signalTaus[1]->pid()) && bJets.size()==0 && met > 60 && mtautau>70. && mtautau < 120.) ||
 
 	      (j==50 && numTaus==2 && (numElectrons + numMuons)==1 && trigger && mSFOS12Cut && atLeastOneEorMu && separationCut && (signalTaus[0]->pid() == -1*signalTaus[1]->pid()) && bJets.size()==0 && met > 60 && mtautau>70. && mtautau < 120. && (signalTaus[0]->mom().pT() + signalTaus[1]->mom().pT())>110.)
-	   
+
 
 	      )cutFlowVector[j]++;
-	  
+
 	}
-	
+
 	return;
       }
-      
+
       void finalize() {
-	
+
         using namespace std;
 
         double scale_to = 20.7*0.24*1000./cutFlowVector[0];
@@ -817,7 +818,7 @@ namespace Gambit {
         cout << "------------------------------------------------------------------------------------------------------------------------------ "<<std::endl;
 
         //cout << "RESULTS 2LEP " << _numSRM90SF << " " << _numSRM100SF << " " << _numSRM110SF << " " << _numSRM120SF << " " << _numSRM90DF << " " << _numSRM100DF << " " << _numSRM110DF << " " << _numSRM120DF << endl;
-    
+
       }
 
 

@@ -21,8 +21,13 @@
 ///          (patscott@physics.mcgill.ca)
 ///  \date 2013 Oct
 ///
+///  \author Jonathan Cornell
+///          (jcornell@ucsc.edu)
+///  \date 2014 Oct
+///
 ///  *********************************************
 
+#include "backend_type_macros.hpp"
 
 #ifndef __DarkSUSY_types_hpp__
 #define __DarkSUSY_types_hpp__
@@ -111,7 +116,16 @@ namespace Gambit
       double hstep,hmin,compeps,xinit,xfinal,umax,cfr,pmax;
   };
 
-
+  DECLARE_FORTRAN_COMMONBLOCK(DS_DDCOM, FORTRAN_ARRAY(double, ftp, (7,12))
+                                        FORTRAN_ARRAY(double, ftn, (7,12))
+                                        GENERAL_VAR(double, delu)
+                                        GENERAL_VAR(double, deld)
+                                        GENERAL_VAR(double, dels)
+                                        GENERAL_VAR(int, ddpole)
+                                        GENERAL_VAR(int, dddn)
+//TODO: Fix the below. It will cause problems since the length of the character string is undefined.
+                                        GENERAL_VAR(char*, ddfsi)
+                                        GENERAL_VAR(char*, ddfsd) )
 }
 
 #endif /* defined __DarkSUSY_types_hpp__ */
