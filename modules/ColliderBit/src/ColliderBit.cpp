@@ -356,14 +356,14 @@ namespace Gambit {
           /// (e.g. from data-driven background estimate)
           double n_predicted_exact = 0.;
           // A contribution to the predicted number of events that is not known exactly
-          double n_predicted_uncertain = srData.n_background + srData.n_background;
+          double n_predicted_uncertain = srData.n_signal + srData.n_background;
           double uncertainty=0.;
           if(srData.n_signal!=0) {
             /// A fractional uncertainty on n_predicted_uncertain
             /// (e.g. 0.2 from 20% uncertainty on efficencty wrt signal events)
             uncertainty = sqrt((srData.background_sys/srData.n_background)
                              * (srData.background_sys/srData.n_background)
-                             * (srData.signal_sys/srData.n_signal)
+                             + (srData.signal_sys/srData.n_signal)
                              * (srData.signal_sys/srData.n_signal));
           } else { uncertainty = (srData.background_sys/srData.n_background); }
 
@@ -374,18 +374,25 @@ namespace Gambit {
           }
           else if (*BEgroup::lnlike_marg_poisson == "lnlike_marg_poisson_gaussian_error") {
             /// Use a Gaussian distribution for the nuisance parameter (marginally faster)
-            result = BEreq::lnlike_marg_poisson_gaussian_error(n_obs,n_predicted_exact,n_predicted_uncertain,uncertainty);
-            /// @TODO outside loop??
-            cout << "COLLIDER_RESULT " << analysis << " " << SR << " " << result << endl;
-          }
-
-
-        }
+	cout << "INPUTS " << analysis << " " << SR << " " << n_obs << " " << n_predicted_exact << " " << n_predicted_uncertain << " " << uncertainty << endl;
+	if(n_obs==0){
+	result=0;
       }
-
+	else {
+	result = BEreq::lnlike_marg_poisson_gaussian_error(n_obs,n_predicted_exact,n_predicted_uncertain,uncertainty);
+      }
+	/// @TODO outside loop??
+	cout << "COLLIDER_RESULT " << analysis << " " << SR << " " << result << endl;
+      }
+	  
+	  
+      }
+      }
+      
       return;
-    }
-
-  }
-}
+      }
+    
+      }
+      }
 #undef DEBUG
+	
