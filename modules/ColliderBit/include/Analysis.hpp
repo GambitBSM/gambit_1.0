@@ -339,6 +339,7 @@ namespace Gambit {
 	    if(e_pt>50. && e_pt <= 60.)hasTag = random_bool(_eff_E50_60, e_eta);
 	    if(e_pt>60. && e_pt <= 80.)hasTag = random_bool(_eff_E60_80, e_eta);
 	    if(e_pt>80.)hasTag = random_bool(_eff_E80, e_eta);
+	    std::cout << "has_tag " << hasTag << std::endl;
 	  }
 	  if(hasTag)Survivors.push_back(electron);
 	  

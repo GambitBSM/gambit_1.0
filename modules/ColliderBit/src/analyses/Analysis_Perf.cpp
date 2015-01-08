@@ -1,4 +1,5 @@
 // Written by A Saavedra 19-06-2013 to test the FastSim module
+// Edited by MJW on 07-01-2015 to test generic sims
 #include "Analysis.hpp"
 
 // ROOT
@@ -28,6 +29,14 @@ namespace Gambit {
       TH1F *_hNelec,*_hNelec_truth, *_hNjet;
       TH1F *_hinv, *_hmet;
       TH1F *_hinv_truth, *_hmet_truth;
+      
+      //Plots added by MJW
+      TH1F *_hElectronPt, *_hElectronEta, *_hElectronPhi, *_hElectronE;
+      TH1F *_hMuonPt, *_hMuonEta, *_hMuonPhi, *_hMuonE;
+      TH1F *_hJetPt, *_hJetEta, *_hJetPhi, *_hJetE;
+
+      TH1F *_hNmuon;
+
 
       std::string _output_filename;
       TFile *_ROOToutFile;
@@ -35,14 +44,14 @@ namespace Gambit {
 
     public:
 
-
       ~Analysis_Perf() {
         delete _ROOToutFile;
       }
 
 
-      void init() {
-        _output_filename = "FastSim_PythiaOutput.root";
+      Analysis_Perf() {
+	std::cout << "Opening ROOT file" << endl;
+        _output_filename = "SimOutput.root";
 
         _ROOToutFile = new TFile(_output_filename.c_str(),"RECREATE");
 
@@ -77,6 +86,23 @@ namespace Gambit {
         _hinv_truth = new TH1F( "InvTruth","Z Invariant Mass (Truth);GeV",100, 0, 200);
         _hmet_truth = new TH1F( "METTruth","MET (Truth);GeV",100, 0, 200);
 
+	//MJW plots
+	_hElectronPt = new TH1F("ElectronPt","Electron Pt;GeV;",100, 0., 200.);
+	_hElectronEta = new TH1F("Electroneta","Electron eta;",100, -5., 5.);
+        _hElectronPhi = new TH1F( "ElectronPhi","Electron Phi;",100, -6.0, 6.0);
+	_hElectronE = new TH1F("ElectronE","Electron E;GeV;",100, 0., 200.);
+	_hMuonPt = new TH1F("MuonPt","Muon Pt;GeV;",100, 0., 200.);
+	_hMuonEta = new TH1F("Muoneta","Muon eta;",100, -5., 5.);
+        _hMuonPhi = new TH1F( "MuonPhi","Muon Phi;",100, -6.0, 6.0);
+	_hMuonE = new TH1F("MuonE","Muon E;GeV;",100, 0., 200.);
+
+	_hJetPt = new TH1F("JetPt","Jet Pt;GeV;",100, 0., 200.);
+	_hJetEta = new TH1F("Jeteta","Jet eta;",100, -5., 5.);
+        _hJetPhi = new TH1F( "JetPhi","Jet Phi;",100, -6.0, 6.0);
+	_hJetE = new TH1F("JetE","Jet E;GeV;",100, 0., 200.);
+
+	_hNmuon = new TH1F("Nmuon","Number of Muons;Number/Event",5,-0.5,4.5);
+
       }
 
 
@@ -84,11 +110,12 @@ namespace Gambit {
       void analyze(const Event* event) {
 
         P4 temp;
-        P4 ptot = event->missingmom();
+        //P4 ptot = event->missingmom();
         //double met= event->met();
 
         //    cout << " met is "<< met << " ptot " << ptot.pT() << endl;
-        _hmet->Fill(ptot.pT());
+	
+        _hmet->Fill(event->met());
 
         vector<Jet *> jets=event->jets();
         vector<Particle *> electrons=event->electrons();
@@ -103,6 +130,38 @@ namespace Gambit {
         //    for (size_t iEl=0;iEl<electrons.size();iEl++) {
         //      cout << " Electron: " << iEl << " Pt " << electrons[iEl]->pT() << endl;
         //    }
+
+	int numElectrons=0;
+	int numMuons=0;
+	int numJets=0;
+
+	for(Particle * electron : electrons){
+	  if(electron->pT()>10. && fabs(electron->eta())<2.5)numElectrons++;
+	  _hElectronPt->Fill(electron->pT(),1.);
+	  _hElectronEta->Fill(electron->eta(),1.);
+	  _hElectronPhi->Fill(electron->phi(),1.);
+	  _hElectronE->Fill(electron->E(),1.);
+	}
+
+	for(Particle * muon : muons){
+	  if(muon->pT()>10. && fabs(muon->eta())<2.5)numMuons++;
+	  _hMuonPt->Fill(muon->pT(),1.);
+	  _hMuonEta->Fill(muon->eta(),1.);
+	  _hMuonPhi->Fill(muon->phi(),1.);
+	  _hMuonE->Fill(muon->E(),1.);
+	}
+
+	for(Jet * jet:jets){
+	  if(jet->pT()>10. && fabs(jet->eta())<2.5)numJets++;
+	  _hJetPt->Fill(jet->pT(),1.);
+	  _hJetEta->Fill(jet->eta(),1.);
+	  _hJetPhi->Fill(jet->phi(),1.);
+	  _hJetE->Fill(jet->E(),1.);
+	}
+
+	_hNelec->Fill(numElectrons,1.);
+	_hNmuon->Fill(numMuons,1.);
+	_hNjet->Fill(numJets,1.);
 
         if (electrons.size() > 1) {
           temp = electrons[0]->mom()+electrons[1]->mom();
@@ -120,7 +179,40 @@ namespace Gambit {
 
 
       void finalize() {
+
+	std::cout << "Writing histograms " << _hElectron1Pt->GetTitle() << std::endl;
+
+	/*_ROOToutFile->cd();
+	_hElectron1Pt->Write();
+        _hElectron1eta->Write();
+        _hElectron1phi->Write();
+	
+        _hElectron2Pt->Write();
+        _hElectron2eta->Write();
+        _hElectron2phi->Write();
+	
+        _hNelec->Write();
+        _hNjet->Write();
+        _hmet->Write();
+
+	_hElectronPt->Write();
+	_hElectronEta->Write();
+        _hElectronPhi->Write();
+	_hElectronE->Write();
+	_hMuonPt->Write();
+	_hMuonEta->Write();
+        _hMuonPhi->Write();
+	_hMuonE->Write();
+
+	_hJetPt->Write();
+	_hJetEta->Write();
+        _hJetPhi->Write();
+	_hJetE->Write();
+
+	_hNmuon->Write();*/
+
         _ROOToutFile->Write();
+	//_ROOToutFile->Close();
       }
 
 
@@ -131,9 +223,19 @@ namespace Gambit {
 
       void collect_results() {
         // DO NOTHING
+
+	finalize();
+
+	SignalRegionData dummy;
+        dummy.set_observation(10.);
+        dummy.set_background(10.);
+        dummy.set_backgroundsys(1.);
+        dummy.set_signalsys(0.);
+        dummy.set_signal(1.);
+
+	add_result(dummy);
+	
       }
-
-
     };
 
 
