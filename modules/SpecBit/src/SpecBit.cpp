@@ -34,6 +34,9 @@
 #include "MSSMSpec.hpp"
 #include "numerics.hpp"
 
+// Switch for debug mode
+#define SpecBit_DBUG 
+
 namespace Gambit
 {
 
@@ -162,7 +165,6 @@ Message from flexibleSUSY below:" << std::endl;
          std::stringstream parname;
          parname << rootname << "_" << (i+1) << (j+1); // Assumes names in 1,2,3 convention
          /// TODO: Error checking...
-         std::cout << parname.str() << std::endl; 
          output(i,j) = *Param.at(parname.str());
        }}
        return output;
@@ -201,36 +203,43 @@ Message from flexibleSUSY below:" << std::endl;
       result->dump2slha("SpecBit/CMSSM_fromSpectrumObject.slha");
     }
 
+    // Helper function for filling MSSM78-compatible input parameter objects
+    template <class T>
+    void fill_MSSM_input(T& input, const std::map<str, safe_ptr<double> >& Param )
+    {
+      //double valued parameters
+      input.TanBeta     = *Param.at("TanBeta");
+      input.SignMu      = *Param.at("SignMu");
+      input.mHu2IN      = *Param.at("mHu2");
+      input.mHd2IN      = *Param.at("mHd2");
+      input.MassBInput  = *Param.at("M1");
+      input.MassWBInput = *Param.at("M2");
+      input.MassGInput  = *Param.at("M3");
+
+      //3x3 matrices; filled with the help of a convenience function
+      input.mq2Input = fill_3x3_parameter_matrix("mq2", Param);
+      input.ml2Input = fill_3x3_parameter_matrix("ml2", Param);
+      input.md2Input = fill_3x3_parameter_matrix("md2", Param);
+      input.mu2Input = fill_3x3_parameter_matrix("mu2", Param);
+      input.me2Input = fill_3x3_parameter_matrix("me2", Param);
+      input.Aeij = fill_3x3_parameter_matrix("Ae", Param);
+      input.Adij = fill_3x3_parameter_matrix("Ad", Param);
+      input.Auij = fill_3x3_parameter_matrix("Au", Param);
+
+      #ifdef SpecBit_DBUG
+        std::cout << input << std::endl;
+      #endif
+    }
+
     // Runs MSSM spectrum generator with EWSB scale input
     void get_MSSMatEWSB_spectrum (Spectrum* &result)
     {
       using namespace softsusy;
       namespace Pipe = Pipes::get_MSSMatEWSB_spectrum;
       MSSM_input_parameters input;
-
-      //double valued parameters
-      input.TanBeta     = *Pipe::Param["TanBeta"];
-      input.SignMu      = *Pipe::Param["SignMu"];
-      input.mHu2IN      = *Pipe::Param["mHu2"];
-      input.mHd2IN      = *Pipe::Param["mHd2"];
-      input.MassBInput  = *Pipe::Param["M1"];
-      input.MassWBInput = *Pipe::Param["M2"];
-      input.MassGInput  = *Pipe::Param["M3"];
-
-      //3x3 matrices; filled with the help of a convenience function
-      input.mq2Input = fill_3x3_parameter_matrix("mq2", Pipe::Param);
-      input.ml2Input = fill_3x3_parameter_matrix("ml2", Pipe::Param);
-      input.md2Input = fill_3x3_parameter_matrix("md2", Pipe::Param);
-      input.mu2Input = fill_3x3_parameter_matrix("mu2", Pipe::Param);
-      input.me2Input = fill_3x3_parameter_matrix("me2", Pipe::Param);
-      input.Aeij = fill_3x3_parameter_matrix("Ae", Pipe::Param);
-      input.Adij = fill_3x3_parameter_matrix("Ad", Pipe::Param);
-      input.Auij = fill_3x3_parameter_matrix("Au", Pipe::Param);
-
+      fill_MSSM_input(input,Pipe::Param);
       result = run_FS_spectrum_generator<MSSM_interface<ALGORITHM1>>(input,*Pipe::runOptions);
-
     }
-
 
     // Runs MSSM spectrum generator with GUT scale input
     void get_MSSMatMGUT_spectrum (Spectrum* &result)
@@ -238,28 +247,8 @@ Message from flexibleSUSY below:" << std::endl;
       using namespace softsusy;
       namespace Pipe = Pipes::get_MSSMatMGUT_spectrum;
       MSSMatMGUT_input_parameters input;
-
-      //double valued parameters
-      input.TanBeta     = *Pipe::Param["TanBeta"];
-      input.SignMu      = *Pipe::Param["SignMu"];
-      input.mHu2IN      = *Pipe::Param["mHu2"];
-      input.mHd2IN      = *Pipe::Param["mHd2"];
-      input.MassBInput  = *Pipe::Param["M1"];
-      input.MassWBInput = *Pipe::Param["M2"];
-      input.MassGInput  = *Pipe::Param["M3"];
-
-      //3x3 matrices; filled with the help of a convenience function
-      input.mq2Input = fill_3x3_parameter_matrix("mq2", Pipe::Param);
-      input.ml2Input = fill_3x3_parameter_matrix("ml2", Pipe::Param);
-      input.md2Input = fill_3x3_parameter_matrix("md2", Pipe::Param);
-      input.mu2Input = fill_3x3_parameter_matrix("mu2", Pipe::Param);
-      input.me2Input = fill_3x3_parameter_matrix("me2", Pipe::Param);
-      input.Aeij = fill_3x3_parameter_matrix("Ae", Pipe::Param);
-      input.Adij = fill_3x3_parameter_matrix("Ad", Pipe::Param);
-      input.Auij = fill_3x3_parameter_matrix("Au", Pipe::Param);
-
+      fill_MSSM_input(input,Pipe::Param);
       result = run_FS_spectrum_generator<MSSMatMGUT_interface<ALGORITHM1>>(input,*Pipe::runOptions);
-
     }
 
     void get_GUTMSSMB_spectrum (Spectrum* &result)
