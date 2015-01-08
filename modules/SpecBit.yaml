@@ -65,6 +65,10 @@ ObsLikes:
     type:         double
     function:     dump_spectrum
 
+  - purpose:      Test
+    capability:   SpecBit_examples
+    type:         bool
+    function:     exampleRead
 
 Auxiliaries:
   # - capability: particle_spectrum
@@ -104,6 +108,10 @@ Auxiliaries:
     dependencies:
     - {capability: MSSM_spectrum, function: get_MSSMatMGUT_spectrum} #get_CMSSM_spectrum} 
 
+  - capability: SpecBit_examples
+    dependencies:
+    - {capability: MSSM_spectrum, function: get_MSSMatMGUT_spectrum} 
+
   #- capability: specbit_tests2 
   #  dependencies:
   #  - {capability: MSSM_spectrum, function: get_CMSSM_spectrum} #get_GUTMSSMA_spectrum} 
@@ -127,6 +135,7 @@ Auxiliaries:
   - capability: MSSM_spectrum 
     options:
       ewsb_loop_order: 2
+      invalid_point_fatal: false
 
   #  dependencies:
   #  - {capability: GUTMSSMA_parameters, module: GUTMSSMA} 

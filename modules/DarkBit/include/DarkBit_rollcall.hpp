@@ -667,6 +667,13 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
+  #define CAPABILITY SimYieldTable
+  START_CAPABILITY
+    #define FUNCTION SimYieldTable_DarkSusy
+    START_FUNCTION(Gambit::DarkBit::SimYieldTable)
+    #undef FUNCTION 
+  #undef CAPABILITY
+
 #undef MODULE
 
     

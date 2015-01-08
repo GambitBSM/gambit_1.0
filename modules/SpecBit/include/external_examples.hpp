@@ -1,4 +1,4 @@
-/// contains examples of haw to use SpecBit objects.  
+/// contains examples of haw to use Spectrum objects.  
 /// This is not really part of gambit and exists
 /// only for illustration.
 

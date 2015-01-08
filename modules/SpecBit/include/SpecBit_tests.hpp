@@ -21,17 +21,12 @@
 ///  
 ///  *********************************************
 
-// Flexible SUSY stuff (should not be needed by the rest of gambit)
-// Now in model_files_and_boxes.hpp
-//#include "CMSSM_two_scale_model.hpp"
-//#include "CMSSM_two_scale_model_slha.hpp"
-//#include "CMSSM_physical.hpp"
-
 #include "ew_input.hpp"
 #include "MSSMSpec.hpp"
 #include "model_files_and_boxes.hpp"
 #include "numerics.hpp"
 #include "wrappers.hpp"
+
 // Switch test output depending on where this is being compiled
 #ifdef IN_SPECBIT
   #define OUTPUT logger()

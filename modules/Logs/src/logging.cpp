@@ -26,15 +26,13 @@
 #include <stdexcept>
 #include <algorithm>
 #include <limits>
+#include <chrono> 
 
 // Gambit
 #include "cmake_variables.hpp"
 #include "logging.hpp"
 #include "util_functions.hpp"
 #include "standalone_error_handlers.hpp"
-
-// Boost (Ben: Any problem using boost for the timing? Don't know if we need any fallbacks...)
-#include "boost/date_time/posix_time/posix_time.hpp" //include all types plus i/o
 
 // Code!
 namespace Gambit
@@ -706,10 +704,10 @@ namespace Gambit
     void StdLogger::write(const SortedMessage& mail)
     {
       // Message reception time (UTC)
-      my_stream<<"("<<pt::to_iso_extended_string(mail.received_at)<<")";
-      // milliseconds elapsed since start_time
-      pt::time_duration diff = mail.received_at - start_time;
-      my_stream<<"("<<diff.total_milliseconds()<<"ms)";
+      my_stream<<"("<<Utils::return_time_and_date(mail.received_at)<<")";
+      // Seconds elapsed since start_time
+      std::chrono::duration<double> diff = mail.received_at - start_time;
+      my_stream<<"("<<diff.count()<<" [s])";
       // Message tags
       writetags(mail.component_tags);
       writetags(mail.type_tags);
