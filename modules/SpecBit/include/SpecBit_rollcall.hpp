@@ -43,10 +43,16 @@ START_MODULE
     ALLOW_MODELS(CMSSM)
     #undef FUNCTION
 
-    // FlexibleSUSY compatible maximal CMSSM generalisation (GUT boundary conditions) 
+    // FlexibleSUSY compatible maximal MSSM parameterisation (EWSB scale boundary conditions) 
+    #define FUNCTION get_MSSMatEWSB_spectrum
+    START_FUNCTION(Spectrum*)                  
+    ALLOW_MODELS(MSSM78)
+    #undef FUNCTION
+
+    // FlexibleSUSY compatible maximal CMSSM generalisation (MSSM with GUT boundary conditions) 
     #define FUNCTION get_MSSMatMGUT_spectrum
     START_FUNCTION(Spectrum*)                  
-    ALLOW_MODELS(MSSMatMGUT)
+    ALLOW_MODELS(MSSM78atMGUT)
     #undef FUNCTION
 
     // (Example only) SoftSUSY compatible maximal CMSSM generalisation (GUT boundary conditions) 
@@ -159,6 +165,17 @@ START_MODULE
      #define FUNCTION dump_spectrum
      START_FUNCTION(double)
      DEPENDENCY(SM_spectrum, Spectrum*)
+     #undef FUNCTION
+
+ #undef CAPABILITY
+
+
+ #define CAPABILITY SpecBit_examples
+ START_CAPABILITY
+
+     #define FUNCTION exampleRead
+     START_FUNCTION(bool)
+     DEPENDENCY(MSSM_spectrum, Spectrum*)
      #undef FUNCTION
 
  #undef CAPABILITY

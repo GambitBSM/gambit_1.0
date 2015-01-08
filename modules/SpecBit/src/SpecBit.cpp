@@ -116,7 +116,7 @@ namespace Gambit
       // one-stop-shop for all spectrum information, including the model interface object.
       static MSSMSpec<MI> mssmspec(model_interface);
 
-      if( problems.have_problem() )
+      if( runOptions.getValue<bool>("invalid_point_fatal") and problems.have_problem() )
       {
          ///TODO: Need to tell gambit that the spectrum is not viable somehow. For now
          // just die.
@@ -201,6 +201,38 @@ Message from flexibleSUSY below:" << std::endl;
       result->dump2slha("SpecBit/CMSSM_fromSpectrumObject.slha");
     }
 
+    // Runs MSSM spectrum generator with EWSB scale input
+    void get_MSSMatEWSB_spectrum (Spectrum* &result)
+    {
+      using namespace softsusy;
+      namespace Pipe = Pipes::get_MSSMatEWSB_spectrum;
+      MSSM_input_parameters input;
+
+      //double valued parameters
+      input.TanBeta     = *Pipe::Param["TanBeta"];
+      input.SignMu      = *Pipe::Param["SignMu"];
+      input.mHu2IN      = *Pipe::Param["mHu2"];
+      input.mHd2IN      = *Pipe::Param["mHd2"];
+      input.MassBInput  = *Pipe::Param["M1"];
+      input.MassWBInput = *Pipe::Param["M2"];
+      input.MassGInput  = *Pipe::Param["M3"];
+
+      //3x3 matrices; filled with the help of a convenience function
+      input.mq2Input = fill_3x3_parameter_matrix("mq2", Pipe::Param);
+      input.ml2Input = fill_3x3_parameter_matrix("ml2", Pipe::Param);
+      input.md2Input = fill_3x3_parameter_matrix("md2", Pipe::Param);
+      input.mu2Input = fill_3x3_parameter_matrix("mu2", Pipe::Param);
+      input.me2Input = fill_3x3_parameter_matrix("me2", Pipe::Param);
+      input.Aeij = fill_3x3_parameter_matrix("Ae", Pipe::Param);
+      input.Adij = fill_3x3_parameter_matrix("Ad", Pipe::Param);
+      input.Auij = fill_3x3_parameter_matrix("Au", Pipe::Param);
+
+      result = run_FS_spectrum_generator<MSSM_interface<ALGORITHM1>>(input,*Pipe::runOptions);
+
+    }
+
+
+    // Runs MSSM spectrum generator with GUT scale input
     void get_MSSMatMGUT_spectrum (Spectrum* &result)
     {
       using namespace softsusy;
@@ -227,9 +259,6 @@ Message from flexibleSUSY below:" << std::endl;
       input.Auij = fill_3x3_parameter_matrix("Au", Pipe::Param);
 
       result = run_FS_spectrum_generator<MSSMatMGUT_interface<ALGORITHM1>>(input,*Pipe::runOptions);
-
-      std::cout << "Spectrum via Spectrum* (inside get_MSSMatMGUT)" << std::endl;
-      std::cout << "mHd2 = " << result->runningpars.get_mass2_parameter("mHd2") << std::endl;
 
     }
 

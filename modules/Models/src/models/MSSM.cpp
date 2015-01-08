@@ -33,11 +33,10 @@
 using namespace Gambit::Utils;
 
 #define MODEL CMSSM 
-  void MODEL_NAMESPACE::CMSSM_to_MSSMatMGUT (const ModelParameters &myP, ModelParameters &targetP)
+  void MODEL_NAMESPACE::CMSSM_to_MSSM78atMGUT (const ModelParameters &myP, ModelParameters &targetP)
   {
-     USE_MODEL_PIPE(MSSMatMGUT) //testing only
 
-     logger()<<"Running interpret_as_X calculations for CMSSM --> MSSMatMGUT..."<<LogTags::info<<EOM;
+     logger()<<"Running interpret_as_X calculations for CMSSM --> MSSM78atMGUT..."<<LogTags::info<<EOM;
      
      targetP.setValue("TanBeta", myP["tanb"] );
      targetP.setValue("SignMu",  myP["signmu"] );
@@ -92,12 +91,12 @@ using namespace Gambit::Utils;
      set_many_to_one(targetP, A0vec, myP["A0"]);
   }
 
-  void MODEL_NAMESPACE::CMSSM_to_GUTMSSMB (const ModelParameters &myP, ModelParameters &targetP)
-  {
-     logger()<<"Running interpret_as_X calculations for CMSSM --> GUTMSSMB..."<<LogTags::info<<EOM;
+  //void MODEL_NAMESPACE::CMSSM_to_GUTMSSMB (const ModelParameters &myP, ModelParameters &targetP)
+  //{
+  //   logger()<<"Running interpret_as_X calculations for CMSSM --> GUTMSSMB..."<<LogTags::info<<EOM;
 
-     /// Filler....     
-  }
+  //   /// Filler....     
+  //}
 #undef MODEL
 
 #define MODEL extraCMSSM

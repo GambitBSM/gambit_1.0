@@ -22,81 +22,6 @@
 #ifndef __MSSM_hpp__
 #define __MSSM_hpp__
 
-// Standard Model parameters in SLHA conventions
-// (i.e. as in block SMINPUTS)
-// alpha_em^(-1)(MZ) SM MSbar
-// G_Fermi
-// alpha_s(MZ)MSbar
-// MZ(pole)
-// mb(mb)
-// Mtop(pole)
-// Mtau(pole)
-#define SMPARS_slha alpha_emi,G_F,alpha_s,mZ,mb,mt,mtau
-
-// #define MODEL Standard_Model
-//   START_MODEL
-//   DEFINEPARS(SMPARS_slha)
-// #undef MODEL
-
-// MSSM
-// These are the soft parameters, not the spectrum. Spectrum is to be computed by SpectrumBit.
-// Parameters according to SLHA conventions 
-// TODO: According to the SLHA conventions, one can provide mA0 or mH+ instead of mA^2.
-//  To use this MSSM model you have to provide mA^2.
-// All parameters are defined at M_input.
-#define MODEL MSSM29
-  START_MODEL
-  // NOTE! Don't leave a comma after the last argument, or else you'll get weird compiler errors.
-  DEFINEPARS(M_input, 
-             M1,M2,M3,
-             At,Ab,
-             Ae,Amu,Atau,
-             mH12,mH22,
-             mu,mA2,tanb,
-             meL,mmuL,mtauL,
-             meR,mmuR,mtauR,
-             mq1L,mq2L,mq3L,
-             muR,mcR,mtR,
-             mdR,msR,mbR)
-         /* mA0, mH+ */ 
-#undef MODEL
-
-#define MODEL MSSM25
-  START_MODEL
-  DEFINEPARS(M_input, 
-             M1,M2,M3,
-             At,Ab,Atau,
-             mH12,mH22,
-             mu,tanb,
-             meL,mmuL,mtauL,
-             meR,mmuR,mtauR,
-             mq1L,mq2L,mq3L,
-             muR,mcR,mtR,
-             mdR,msR,mbR)
-#undef MODEL
-
-
-// EDIT: Maybe don't want this...
-// This is a kind of "abstract" model, with no parameters. Used only
-// so that module functions can say the are enabled for the "MSSM" and
-// therefore are allowed to be used with any of its children.
-//#define MODEL MSSM
-//   START_MODEL
-//   DEFINEPARS(null) // Need to have at least one parameter I think. Stick in a "null" parameter.
-//#undef MODEL
-
-// Currently, Gambit will insist that a module function has MSSM_parameters
-// as a dependency if ALLOW_MODELS(MSSM) is set for that function. Since MSSM is an abstraction
-// in this current hierarchy I am advocating, no function which uses ALLOW_MODELS(MSSM) can
-// actually require the model parameters; presumably they really just want the spectrum.
-// They could just ask for an MSSMSpec object via the dependency system, and not use 
-// ALLOW_MODEL(MSSM), however for now I will make it so that they can, by providing a "fake"
-// interpret as parent function which doesn't do anything. This is used by all models which
-// have MSSM as a parent.
-// This "blank" interpret_as_parent function can be created via the macro
-// USE_NULL_INTERPRET_AS_PARENT
-
-
 // General GUT boundary condition parameterisation of the MSSM
 // There are several of these, compatible with different spectrum generators
 // To use a constrained GUT model like the CMSSM, there needs to be an 
@@ -105,7 +30,7 @@
 // being used.
 
 /// FlexibleSUSY compatible general (31 parameters plus sign) GUT scale MSSM parameterisation
-#define MODEL MSSMatMGUT
+#define MODEL MSSM78atMGUT
   START_MODEL
   DEFINEPARS(TanBeta,SignMu,
              mHu2,mHd2,M1,M2,M3)
@@ -143,37 +68,13 @@
              Au_31, Au_32, Au_33)
 #undef MODEL
 
-// Alternate general GUT parameterisation
-#define MODEL GUTMSSMB
-  START_MODEL
-  DEFINEPARS(M1,M2,M3,
-             At,Ab,Atau,
-             mH12,mH22,
-             mu,tanb,
-             meL,mmuL,mtauL,
-             meR,mmuR,mtauR,
-             mq1L,mq2L,mq3L,
-             muR,mcR,mtR,
-             mdR,msR,mbR)
-  //USE_NULL_INTERPRET_AS_PARENT
-#undef MODEL
-
 #define MODEL CMSSM
   START_MODEL
   DEFINEPARS(M0,M12,A0,tanb,signmu)
 
-  // Now, CMSSM cannot actually be translated into MSSM, because MSSM is 
-  // "abstract" and has no parameters. Instead, we translate it into
-  // GUTMSSMA and GUTMSSMB, which are children of MSSM. and which work
-  // with specific spectrum generators. Most module functions just need
-  // to say they work with MSSM, and then CMSSM should be permitted;
-  // meanwhile SpecBit will translate CMSSM into GUTMSSMX in order to
-  // generate a spectrum.
-  //          
   //         ...__FUNCTION(Model name, translation function name)
-  INTERPRET_AS_X__FUNCTION(MSSMatMGUT, CMSSM_to_MSSMatMGUT)
-  INTERPRET_AS_X__FUNCTION(GUTMSSMB, CMSSM_to_GUTMSSMB)
-  //USE_NULL_INTERPRET_AS_PARENT
+  INTERPRET_AS_X__FUNCTION(MSSM78atMGUT, CMSSM_to_MSSM78atMGUT)
+  //INTERPRET_AS_X__FUNCTION(GUTMSSMB, CMSSM_to_GUTMSSMB)
   
   // Translation functions defined in MSSM.cpp
 
