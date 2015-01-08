@@ -29,6 +29,7 @@
 
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/classification.hpp>
+#include <chrono> 
 
 extern "C" {
   #include "mkpath.h"  
@@ -115,6 +116,14 @@ namespace Gambit
 
     /// Ensure that a path exists (and then return the path, for chaining purposes)
     std::string ensure_path_exists(const std::string&);
+
+    typedef std::chrono::time_point<std::chrono::system_clock> time_point;
+
+    /// Get clock time
+    time_point get_clock_now();
+
+    /// Get date and time
+    std::string return_time_and_date(const time_point& in);
 
   }
 
