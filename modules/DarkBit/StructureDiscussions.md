@@ -3,170 +3,129 @@ DarkBit Structure discussions
 
 ## Annihilation and Decay Channels for Indirect Searches
 
-To represent this information, we can use a hierarchy of the form
+## TB: updated 01/2015 (after long discussion with CW)
 
-* DecayTableList
-    * DecayTable
+To represent this information, we can use the "ProcessCatalogue",
+a structure with a hierarchy of the following form:
+
+* ParticleProperties
+* ProcessList (table of all relevant processes) 
+    * Process (defined by given inital state)
         * Channel
         * Channel
         * ((Channel with additional model-dependent contributions))
-    * DecayTable
+    * Process
         * Channel
         * Channel
         * Channel
 
-which contains all information about DM annihilation, the annihilation of
-several DM particles, velocity dependence, cascade decays, etc.
+This contains all information about DM annihilation or decay relevant for
+indirect detection; e.g. the annihilation of several DM particles, velocity
+dependence, cascade decays, etc.
+NB: The ProcessCatalogue is initialized once for each model parameter set;
+this is done in such a way that no indirect detection routines needs
+to know about *how* this was done. 
+
 
 The inner-most part of the setup is the decay/annihilation "Channel", which
 contains the following information
 
 * Channel
-  * List of string identifiers for final state particles ("eL+, eL-, gamma, A,
-    ...")
+    * List of string identifiers for final state particles ("eL+, eL-, gamma, A,
+      ...")
 
-    In case of DM DM --> e+ e- gamma, this is obviously ["e+", "e-", "gamma"].
-    This list includes all SM particles, but also - in general - all relevant
-    additional particles that our BSM theory might contain.
+      In case of DM DM --> e+ e- gamma, this is obviously ["e+", "e-", "gamma"].
+      This list can include all SM particles, but also - in general - all relevant
+      additional particles that our BSM theory might contain.
 
-    Questions:
-        - Do we want to use integers instead for some reason?
-        - Do we need to distinguish at this level between left- and
-          right-handed particles?
+      NB : This must be set up in such a way that no channels "knows" about any
+           other channel! (relevant for 3-body final states)
 
-    Comments:
-        - Use PDG MC instead
-        - Use string and table for PDG
+      Comments:
+          - Identifiers need to be extended to include helicities;
+            make sure that this is consistently treated here and in 
+            spectrum / decay Bit (-> PDG codes!?)
 
-  * Function for kinematic variables
 
-    In case of two-body final states, this is trivial. In case of three-body,
-    we would have f(E_1, E_2), normalized to one, etc.
+    * "genRate": Function for kinematic variables
 
-    Questions:
-        - Can we get that information directly and easily from DS, if needed?
-
-  * Branching ratio
+      In case of two-body final states, this is a constant *function* given 
+      by the Decay rate (for decays) or sigma*v (for annihilation, i.e. 2-body
+      initial states). For more final states, the function contains the 
+      dependence on the final state particle energies. For 2->3, e.g., this
+      would be d(sv)/dE1 dE2
     
-    The branching ratio into this channel.  In general, it can depend on the
-    relative velocity of annihilating DM particles.
+      Comments:
+          - The genRate for 2-body initial states is also always a function of 
+            velocity v. The v=0 case, however, 
+              - typically features a strongly reduced number of possibilities
+              - is sometimes the only thing that Backends provide 
+              - is much faster to integrate 
+            -> probably worth to have independent routines for v = 0 and v>0!
+          - (think about where a class of "typical" v-dependence would help:
+             v^0,v^2,v^4,Breit-Wigner s-channel, simplified Sommerfeld)
 
-    Questions:
-        - We had last time the discussion that it might sometimes be not easy
-          to make a clear cut between VIB, FSR, etc.  I still think we do not
-          get around talking about branching ratios.  What possible problems
-          could arise here, and how would we have to extend the BR concept to
-          account for them?
-        - To take velocity dependent annihilation spectra into account, I
-          expect it is enough to make the branching ratios velocity dependent
-          (that everything splits into non-interfering contributions with
-          different v^n dependence).  Where does this break down?  Would this
-          be relevant for us?
 
-    Comments:
-        - Use (differential) partial cross-sections instead of BRs.
-        - In some cases (p-wave), the v^0 and v^2 dependenent terms can be
-          considered separately, but not in general (resonances/Sommerfeld).
+Different "channels" (characterized by final states) would be combined into a
+table and included in the "Process" table.  This process table describes all 
+we need to know (in the DarkBit/indirect detection context) about the decay 
+or annihilation properties of (combinations of) specific BSM or "DM" initial 
+states. It looks like
 
-    Question II:
-        - What simplifications for the velocity dependence can we think of
-          (general resonances of Breit-Wigner form, v^n dependence, etc)?
-          Finding the a few relevant subsets of a general f(v) dependence would
-          simplify subsequent calculations considerably.
+* "Process" table
+    * Initial Particle type(s)
 
-  * Flags
+      This can be either "DM DM", or any other BSM particle that might appear in
+      cascade decays of DM annihilation products. NB: This can contain any number 
+      of particles, thus allowing for both annihilation and decay 
+      (as well as 3->n processses).
 
-    These flags might contain information about whether f(E_1, E_2) -- in case
-    of e.g. VIB -- already includes FSR, or whether it has to be included when
-    adding the e.g. "mu+" and "mu-" components.
+      Comment:
+          - "SM DM" should also be possible
+          - To be implemented: *list* of DM particles with properties (names & 
+            abundances; NB: whether these DM components are decaying or 
+            annihilating is determined by the ProcessTable) 
 
-    Questions:
-        - What other flags can you think of?
+    * Flags -> not needed anymore in the present setup!?
 
-    Comments:
-        - DM = anti-DM
-        - On-shell kinematics included
-        - What kind of look-up tables
-        - Python dictionary, string -> string, ini-file options parser
+    * List of Channels
 
-Different "channels" would be combined into a "DecayTable".  This decay table
-describes all we need to know (in the DarkBit context) about the decay
-properties of BSM particles, as well as the decay properties of the "DM DM"
-initial state. They look like
+      This is a list of "channels" in the above format.  
 
-* DecayTable
-  * Particle type
+    * List of Thresholds and resonances
+    
+      Relevant thresholds and resonances for a specific process (specified by
+      initial state)
 
-    This can be either "DM DM", or any other BSM particle that might appear in
-    cascade decays of DM annihilation products.
-
-    Question:
-        - Is there a good reason to treat "DM DM" and, say, some SUSY scalars,
-          not on the same footing in the way I describe here?
-        - If we have multiple dark matter particles, we can include "DM1 DM2"
-          channels. Would this be general enough for all models you can think
-          of?
-
-    Comment:
-        - "SM DM" should also be possible
-        - Two options for velocity dependence (a + b v^2 + c v^4) 
+    * genRateTotal
+    
+      total decay rate or sigmav, as function of v
+    
+    
+The last layer is the "ProcessList", which is simply a list of all the above 
+described processes. On top of that, the "ProcessCatalogue" contains the 
 
   * Particle properties
 
-    This includes spin, mass (or center-of-mass energy for DM DM), charge, (and
-    lifetime, if it is not "DM DM").
-
-    Question:
-        - Do we need more information for some reason?
-
-    Comments:
-        - Lifetime should be included
-        - Wait for central table
-
-  * List of Channels
-
-    This is a list of "channels" in the above format.  Branching ratios should
-    sum up to one.
-
-    Question:
-        - Again, what problems could arise here from the difficulties in
-          separating VIB + FSR, or making a difference between on-shell and
-          off-shell contributions from unstable particles etc.?  How to
-          incorporate this in the given framework?
-
-The last layer is the "DecayTableList".
-
-* DecayTableList
-  * Annihilation rate (velocity dependent) of "DM DM"
-  
-    In case of multiple DM particles, we could also give the rates for "DM1 DM2" etc.
-
-  * List of DecayTable
-
-    This list must contain obviously the decay table for "DM DM", but also for
-    all BSM particles that can be potentially produced by "DM DM", and so on.
+    This includes spin, mass, ... 
+    (NB: partial decay rates already contained in the "Channel", 
+    total as separate entry in ProcessTable)
 
 
-This DecayTableList would be the return type of some module function that
-calculates the particle physics side of the DM annihilation process, and would
-be the input type for some module function that calculates dNdE for different
-astrophysical objects.  This calculation can be done by reading precomputed
-tables from DarkSUSY and boosting them appropriately, or by calling Pythia or
-Herwig directly to do a MC for each and every point (which naively should be
-still much less time-consuming than a collider MC).
-
-More Questions:
-    - Can you think of a natural way to extend this framework to also be
-      applicable to annihilation during freeze-out?
-    - How does this framework compare to what happens inside DarkSUSY (Torsten,
-      Joakim?) or MicrOmegas (Jonathan?).  Is it general enough to accommodate
-      all the complexity of these backends?
-    - Could you think of a more compact way of parametrizing all the required
-      information?
 
 Comments:
-    - No chance for freeze-out
-    - Too close to DS
+    - As long as we only consider 2-body final states, the very same frameworks
+      also works for freeze-out
+
+
+
+
+
+
+
+
+
+
 
 
 ## Halo Catalog

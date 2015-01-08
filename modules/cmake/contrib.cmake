@@ -47,7 +47,7 @@ if (NOT ${EXCLUDE_FLEXIBLESUSY})
   message("Adding LAPACK paths to flexiblesusy build: ${LAPACK_LIBS}")
   # Set the models (spectrum generators) which exist in the flexiblesusy source (could
   # autogenerate this, but we'd end up building some stuff we don't need at the moment)
-  set(BUILT_FS_MODELS CMSSM MSSMatMGUT)
+  set(BUILT_FS_MODELS CMSSM MSSMatMGUT MSSM)
   
   # To skip flexiblesusy build, run cmake with SKIP_FS=1 set as an environment variable, or just ditch SpecBit (e.g. run "SKIP_FS=1 cmake .." or "cmake .. -Ditch="SpecBit")
   if(($ENV{SKIP_FS}) OR (${EXCLUDE_FLEXIBLESUSY}))

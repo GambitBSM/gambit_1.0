@@ -1835,5 +1835,10 @@ namespace Gambit {
         os.close();
         result = 0;
     }
+
+    void SimYieldTable_DarkSusy(SimYieldTable& result)
+    {
+        using namespace Pipes::SimYieldTable_DarkSusy;
+    }
   }
 }

@@ -28,15 +28,15 @@ function_plugin(uniform, version(1,0,0))
 {
         double plugin_main (const std::vector<double> &vec)
         {
-//                 std::vector<std::string> &keys     = get_keys();
-//                 std::cout << "unform info:" <<std::endl;
-//                 std::vector<double> params = prior_transform(vec);
-//                 std::cout << "param = " << get_inifile_value<int>("some_param") << std::endl;
-//                 std::cout << "dim = " << params.size() << std::endl;
-//                 std::cout << "keys = " << keys[0] << "   " << keys[1] << std::endl;
-//                 std::cout << "pts = " << params[0] << "   " << params[1] << std::endl;
-//                 std::cout << "vec size = " << vec.size() << "   " << vec[0] << "   " << vec[1] << std::endl;
-//                 getchar();
+                std::vector<std::string> &keys     = get_keys();
+                std::cout << "unform info:" <<std::endl;
+                std::vector<double> params = prior_transform(vec);
+                std::cout << "param = " << get_inifile_value<int>("some_param") << std::endl;
+                std::cout << "dim = " << params.size() << std::endl;
+                std::cout << "keys = " << keys[0] << "   " << keys[1] << std::endl;
+                std::cout << "pts = " << params[0] << "   " << params[1] << std::endl;
+                std::cout << "vec size = " << vec.size() << "   " << vec[0] << "   " << vec[1] << std::endl;
+                getchar();
                 
                 return 0;
         }

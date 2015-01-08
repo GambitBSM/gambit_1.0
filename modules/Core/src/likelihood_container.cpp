@@ -109,14 +109,13 @@ namespace Gambit
   Likelihood_Container::Likelihood_Container (const std::map<str, primary_model_functor *> &functorMap, 
    DRes::DependencyResolver &dependencyResolver, IniParser::IniFile &iniFile, Priors::CompositePrior &prior, const str &purpose) :
    Likelihood_Container_Base (functorMap, dependencyResolver, prior, purpose),
-   min_valid_lnlike (iniFile.getValue<double>("likelihood", "model_invalid_for_lnlike_below")),
-   pointID(0)
+   min_valid_lnlike (iniFile.getValue<double>("likelihood", "model_invalid_for_lnlike_below"))
   {}
   
   /// TODO: Had to overwrite this so that pointID can be accessed
   inline void Likelihood_Container::calcObsLike(DRes::VertexID &it)
   {
-    dependencyResolver.calcObsLike(it,pointID);
+    dependencyResolver.calcObsLike(it,getPtID());
   }
  
   /// Evaluate total likelihood function
@@ -126,9 +125,6 @@ namespace Gambit
     double lnlike = 0;
     bool compute_aux = true;     
     setParameters(in);      
-
-    /// TODO: Figure out with Greg where pointID should come from. For now I am just going to make a "fake" one which increments every time this function is called.
-    ++pointID; // TODO: Might need to be a long int, going to be a lot of iterations.
 
     logger() << LogTags::core << "Number of vertices to calculate: " << (target_vertices.size() + aux_vertices.size()) << EOM;
       

@@ -102,28 +102,28 @@ namespace Gambit
         //virtual void initialise(const std::vector<int>&) = 0;
         virtual void initialise(const std::vector<int>&)
         {
-           std::cout << "Warning! In BasePrinter::initialise!" << std::cout;
+           std::cout << "Warning! In BasePrinter::initialise!" << std::endl;
         }
 
         /// Function to signal to the printer to write buffer contents to disk
         //virtual void flush() = 0;
         virtual void flush()
         {
-           std::cout << "Warning! In BasePrinter::flush()!" << std::cout;
+           std::cout << "Warning! In BasePrinter::flush()!" << std::endl;
         }
 
         /// Signal printer to reset contents, i.e. delete old data in preperation for replacement
         //virtual void reset() = 0;
         virtual void reset()
         {
-           std::cout << "Warning! In BasePrinter::reset()!" << std::cout;
+           std::cout << "Warning! In BasePrinter::reset()!" << std::endl;
         }
 
         /// Retrieve MPI rank
         //virtual int getRank() = 0;
         virtual int getRank()
         {
-           std::cout << "Warning! In BasePrinter::getRank()!" << std::cout;
+           std::cout << "Warning! In BasePrinter::getRank()!" << std::endl;
            return -1;
         }
 

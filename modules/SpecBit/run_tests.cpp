@@ -2,7 +2,8 @@
 // to make sure the Spectrum class and related classes are working correctly
 
 #include "SpecBit_tests.hpp"
-#include "SpecBit_examples.hpp"
+#include "external_examples.hpp"
+
 using namespace Gambit;
 using namespace SpecBit;
 using namespace flexiblesusy;
