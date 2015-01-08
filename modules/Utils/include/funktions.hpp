@@ -179,10 +179,6 @@ namespace Funk
         };
     }
 
-    // Meta-function that returns a [MIN, MAX) index range
-    template<size_t MIN, size_t MAX>
-    using index_range = typename detail::range_builder<MIN, MAX>::type;
-
 
     //
     // Central virtual base class
@@ -401,7 +397,7 @@ namespace Funk
                 {
                     *map[i] = X[i];
                 }
-                return ppp(index_range<0, sizeof...(funcargs)>());
+                return ppp(typename detail::range_builder<0, sizeof...(funcargs)>::type());
             }
 
             template <size_t... Args>
@@ -462,7 +458,7 @@ namespace Funk
                 {
                     *map[i] = X[i];
                 }
-                return ppp(index_range<0, sizeof...(funcargs)>());
+                return ppp(typename detail::range_builder<0, sizeof...(funcargs)>::type());
             }
 
             template <size_t... Args>
