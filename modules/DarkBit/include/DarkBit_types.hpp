@@ -711,70 +711,88 @@ namespace Gambit
     };
 
     // Channel container
-    class TwoBodyContainer
+    class SimYieldTable
     {
-    public:
-        TwoBodyContainer()
-        {
-        }
+        /* Object containing tabularized yields for particle decay and two-body
+         * final states.
+         */
+        public:
+            SimYieldTable() {};
 
-        void addChannel(Funk::Funk dNdE, std::string p1, std::string p2, double m0, double m1)
-        {
-            if ( this->hasChannel(p1, p2) )
+            void addChannel(Funk::Funk dNdE, std::string p1, std::string p2, double Ecm_min, double Ecm_max)
             {
-                std::cout << "WARNING: Channel already exists.  Ignoring." << std::endl;
-                return;
-            }
-            funktion_list.push_back(dNdE);
-            p1_list.push_back(p1);
-            p2_list.push_back(p2);
-            m0_list.push_back(m0);
-            m1_list.push_back(m1);
-        }
-
-        bool hasChannel(std::string p1, std::string p2)
-        {
-            if ( findChannel(p1, p2) == -1 ) return false;
-            return true;
-        }
-
-        Funk::Funk operator()(std::string p1, std::string p2, double mass)
-        {
-            return this->operator()(p1, p2)->set("mass", mass);
-        }
-
-        Funk::Funk operator()(std::string p1, std::string p2)
-        {
-            int index = findChannel(p1, p2);
-            if ( index == 1 )
-            {
-                std::cout << "WARNING: Channel not known.  Returning zero." << std::endl;
-                return Funk::zero("E");
-            }
-            return funktion_list[index];
-        }
-
-    private:
-        std::vector<Funk::Funk> funktion_list;
-        std::vector<std::string> p1_list;
-        std::vector<std::string> p2_list;
-        std::vector<double> m0_list;
-        std::vector<double> m1_list;
-
-        int findChannel(std::string p1, std::string p2)
-        {
-            for ( unsigned int i = 0; i < p1_list.size(); i++ )
-            {
-                if (( p1 == p1_list[i] and p2 == p2_list[i] ) or ( p1 == p2_list[i] and p2 == p1_list[i] ))
+                if ( this->hasChannel(p1, p2) )
                 {
-                    return i;
+                    std::cout << "WARNING: Channel already exists.  Ignoring." << std::endl;
+                    return;
                 }
+                funktion_list.push_back(dNdE);
+                p1_list.push_back(p1);
+                p2_list.push_back(p2);
+                Ecm_min_list.push_back(Ecm_min);
+                Ecm_max_list.push_back(Ecm_max);
             }
-            return -1;
-        }
 
+            void addChannel(Funk::Funk dNdE, std::string p1, double Ecm_min, double Ecm_max)
+            {
+                this->addChannel(dNdE, p1, "", Ecm_min, Ecm_max);
+            }
+
+            bool hasChannel(std::string p1, std::string p2)
+            {
+                return ( findChannel(p1, p2) != -1 );
+            }
+
+            bool hasChannel(std::string p1)
+            {
+                return this->findChannel(p1, "");
+            }
+
+            Funk::Funk operator()(std::string p1, std::string p2, double Ecm)
+            {
+                return this->operator()(p1, p2)->set("Ecm", Ecm);
+            }
+
+            Funk::Funk operator()(std::string p1, double Ecm)
+            {
+                return this->operator()(p1)->set("Ecm", Ecm);
+            }
+
+            Funk::Funk operator()(std::string p1, std::string p2)
+            {
+                int index = findChannel(p1, p2);
+                if ( index == 1 )
+                {
+                    std::cout << "WARNING: Channel not known.  Returning zero." << std::endl;
+                    return Funk::zero("E", "Ecm");
+                }
+                return funktion_list[index];
+            }
+
+            Funk::Funk operator()(std::string p1)
+            {
+                return this->operator()(p1, "");
+            }
+
+        private:
+            std::vector<Funk::Funk> funktion_list;
+            std::vector<std::string> p1_list;
+            std::vector<std::string> p2_list;
+            std::vector<double> Ecm_min_list;
+            std::vector<double> Ecm_max_list;
+
+            int findChannel(std::string p1, std::string p2)
+            {
+                for ( unsigned int i = 0; i < p1_list.size(); i++ )
+                {
+                    if (( p1 == p1_list[i] and p2 == p2_list[i] ) or ( p1 == p2_list[i] and p2 == p1_list[i] ))
+                    {
+                        return i;
+                    }
+                }
+                return -1;
+            }
     };
-
   }
 }
 
