@@ -17,10 +17,9 @@
 ///
 ///  *********************************************
 
-#include <boost/filesystem.hpp>
-
 #include "standalone_module.hpp"
 #include "ExampleBit_A_rollcall.hpp"
+#include "util_functions.hpp"
 
 using namespace ExampleBit_A::Accessors;    // Helper functions that provide some info about the module
 using namespace ExampleBit_A::Functown;     // Functors wrapping the module's actual module functions
@@ -65,8 +64,7 @@ int main()
     std::string prefix("runs/ExampleBit_A_standalone/logs/");
     
     // Ensure that the above directory exists
-    boost::filesystem::path dir(prefix);
-    if(!(boost::filesystem::exists(dir))) boost::filesystem::create_directories(dir);
+    Utils::ensure_path_exists(prefix);
  
     // Add entries to the loggerinfo map
     loggerinfo["Core, Error"] = prefix+"core_errors.log";

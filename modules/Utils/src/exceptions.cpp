@@ -209,7 +209,7 @@ namespace Gambit
         myWhat = myShortWhat; 
       }
       for (std::set<LogTag>::iterator it = myLogTags.begin(); it != myLogTags.end(); ++it) { logger() << *it; }	
-      logger() << msg1 << msg2 << EOM;
+      logger() << msg1.str() << msg1.str() << EOM;
     }
 
   /// GAMBIT error class constructors

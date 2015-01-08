@@ -532,16 +532,14 @@ namespace Gambit {
 //////////////////////////////////////////////////////////////////////////
 
 
-    // Global variables needed for decay chain loop
-    bool cascadeMC_Finished;
+    // Special events for event loop
     enum cascadeMC_SpecialEvents {MC_INIT=-1, MC_NEXT_STATE=-2, MC_FINALIZE=-3};
 
     // Function specifying initial states for the cascade decays
     void cascadeMC_TestList(std::vector<std::string> &list)
     {
         list.clear();
-        list.push_back("test1");
-        list.push_back("test7");        
+        list.push_back("test1");      
     }
     
     // Function setting up the decay table used in decay chains
@@ -585,7 +583,7 @@ namespace Gambit {
                     }
                     Loop::executeIteration(it);
                     #pragma omp critical (cascadeMC_Complete)
-                        if((cascadeMC_Finished  and (it >= cMC_minEvents)) or (it >= cMC_maxEvents)) finished=true;
+                        if((*Loop::done and (it >= cMC_minEvents)) or (it >= cMC_maxEvents)) finished=true;
                 }
             }
         }
@@ -679,8 +677,7 @@ namespace Gambit {
                 histList.clear();
                 return;
             case MC_NEXT_STATE:
-                // Initialize histograms and break flag.
-                cascadeMC_Finished = false;
+                // Initialize histograms
                 for(std::vector<std::string>::const_iterator it = cMC_finalStates.begin(); it!=cMC_finalStates.end(); ++it)
                 {
                     histList[*Dep::cascadeMC_InitialState][*it]=SimpleHist(10,0.0,1.0);
@@ -707,8 +704,10 @@ namespace Gambit {
                     if((*it)->getpID()==*pit)
                     {
                         double E = (*it)->E_Lab();
+                        // Get weighting factor (correction for mismatch between decay width of available decay channels and total decay width)
+                        double weight = (*it)->getWeight();
                         #pragma omp critical (cascadeMC_histList)
-                            histList[*Dep::cascadeMC_InitialState][*pit].addEvent(E);
+                            histList[*Dep::cascadeMC_InitialState][*pit].addEvent(E,weight);
                     }
                 }
                 // Analyze multiparticle endpoints (the endpoint particle is here the parent of final state particles)  
@@ -721,8 +720,10 @@ namespace Gambit {
                         if(child->getpID()==*pit)
                         {
                             double E = child->E_Lab();
+                            // Get weighting factor (correction for mismatch between decay width of available decay channels and total decay width)
+                            double weight = (*it)->getWeight();
                             #pragma omp critical (cascadeMC_histList)
-                                histList[*Dep::cascadeMC_InitialState][*pit].addEvent(E);
+                                histList[*Dep::cascadeMC_InitialState][*pit].addEvent(E,weight);
                         }
                     }
                     // In general, the final states might be a quark-antiquark pair, and one should then sample the spectrum of *pit particles from the resulting shower.
@@ -757,8 +758,7 @@ namespace Gambit {
             // For the final version, we must check if the relevant particle is actually among the final states
             if((binVal > double(0.0)) and (1.0/std::sqrt(binVal) <= 0.05))
             {
-                #pragma omp critical (cascadeMC_Complete)
-                    cascadeMC_Finished = true;
+                Loop::wrapup();
             }
         }        
     }
@@ -1212,7 +1212,8 @@ namespace Gambit {
         std::vector<std::string> finalStates_2_56;                                  
         TH_Process test1_decay("test1");     
         finalStates_1_23.push_back("test2");              
-        finalStates_1_23.push_back("test3");                                            
+        finalStates_1_23.push_back("test3");             
+        test1_decay.genRateTotal = (test1_23width->eval() + test1_24width->eval() + test1_456width->eval())*2;             
         TH_Channel channel_1_23(finalStates_1_23, test1_23width);
         test1_decay.channelList.push_back(channel_1_23);
         finalStates_1_24.push_back("test2");              
@@ -1227,19 +1228,11 @@ namespace Gambit {
         catalog.processList.push_back(test1_decay);
         TH_Process test2_decay("test2");     
         finalStates_2_56.push_back("test5");              
-        finalStates_2_56.push_back("test6");                                                                                        
+        finalStates_2_56.push_back("test6");                                                               
+        test2_decay.genRateTotal = test2_56width->eval();                                 
         TH_Channel channel_2_56(finalStates_2_56, test2_56width);
         test2_decay.channelList.push_back(channel_2_56);
         catalog.processList.push_back(test2_decay);
-
-        /*
-        TH_Process test7_decay("test7");     
-        finalStates_7_46.push_back("test4");              
-        finalStates_7_46.push_back("test6");                                                                                        
-        TH_Channel channel_7_46(finalStates_7_46, test7_46width);
-        test7_decay.channelList.push_back(channel_7_46);
-        catalog.processList.push_back(test7_decay);
-        */
         
         // Return the finished process catalog
         result = catalog;
@@ -1605,6 +1598,22 @@ namespace Gambit {
     //            --> Enu       neutrino energy (GeV)
     //            --> p         p=1 for neutrino yield, p=2 for nubar yield 
 
+    //The following are just toy functions to allow the neutrino likelihoods to be tested.  
+    //They should be deleted when real functions are added to provide the WIMP mass, solar
+    //annihilation rate and neutrino yield.
+    typedef void (*context_func)();
+    void DarkBit_context  ()                                {}// cout << "test" << endl; }
+    double DarkBit_toyield(const double&, const int&, void*& context)
+    {
+      context_func* context_function_ptr = static_cast<context_func*>(context);
+      context_func context_function = *context_function_ptr;
+      context_function();
+      return 1.e-26;
+    }
+    void nuyield_toy      (nuyield_functype &result)        { result = &DarkBit_toyield; }
+    void mwimp_toy        (double &result)                  { result = 250.0;            }
+    void annrate_toy      (double &result)                  { result = 1.e20;            }
+
     // 22-string IceCube sample: predicted signal and background counts, observed counts and likelihoods.
     void IC22_full(nudata &result)
     {
@@ -1612,8 +1621,10 @@ namespace Gambit {
       double sigpred, bgpred, lnLike, pval;
       int totobs;
       char experiment[300] = "IC-22";
+      context_func cf = DarkBit_context;
+      void* context = &cf;
       BEreq::nubounds(experiment[0], *Dep::mwimp, *Dep::annrate, byVal(*Dep::nuyield), sigpred, bgpred, 
-       totobs, lnLike, pval, 4, false, 0.0, 0.0);
+       totobs, lnLike, pval, 4, false, 0.0, 0.0, context);
       result.signal = sigpred;
       result.bg = bgpred;
       result.nobs = totobs;
@@ -1634,8 +1645,10 @@ namespace Gambit {
       double sigpred, bgpred, lnLike, pval;
       int totobs;
       char experiment[300] = "IC-79 WH";
+      context_func cf = DarkBit_context;
+      void* context = &cf;
       BEreq::nubounds(experiment[0], *Dep::mwimp, *Dep::annrate, byVal(*Dep::nuyield), sigpred, bgpred, 
-       totobs, lnLike, pval, 4, false, 0.0, 0.0);
+       totobs, lnLike, pval, 4, false, 0.0, 0.0, context);
       result.signal = sigpred;
       result.bg = bgpred;
       result.nobs = totobs;
@@ -1656,8 +1669,10 @@ namespace Gambit {
       double sigpred, bgpred, lnLike, pval;
       int totobs;
       char experiment[300] = "IC-79 WL";
+      context_func cf = DarkBit_context;
+      void* context = &cf;
       BEreq::nubounds(experiment[0], *Dep::mwimp, *Dep::annrate, byVal(*Dep::nuyield), sigpred, bgpred, 
-       totobs, lnLike, pval, 4, false, 0.0, 0.0);
+       totobs, lnLike, pval, 4, false, 0.0, 0.0, context);
       result.signal = sigpred;
       result.bg = bgpred;
       result.nobs = totobs;
@@ -1678,8 +1693,10 @@ namespace Gambit {
       double sigpred, bgpred, lnLike, pval;
       int totobs;
       char experiment[300] = "IC-79 SL";
+      context_func cf = DarkBit_context;
+      void* context = &cf;
       BEreq::nubounds(experiment[0], *Dep::mwimp, *Dep::annrate, byVal(*Dep::nuyield), sigpred, bgpred, 
-       totobs, lnLike, pval, 4, false, 0.0, 0.0);
+       totobs, lnLike, pval, 4, false, 0.0, 0.0, context);
       result.signal = sigpred;
       result.bg = bgpred;
       result.nobs = totobs;
@@ -1700,13 +1717,7 @@ namespace Gambit {
       result = *Dep::IC22_loglike + *Dep::IC79WH_loglike + *Dep::IC79WL_loglike + *Dep::IC79SL_loglike; 
     }
 
-    //The following are just toy functions to allow the neutrino likelihoods to be tested.  
-    //They should be deleted when real functions are added to provide the WIMP mass, solar
-    //annihilation rate and neutrino yield.
-    double DarkBit_toyield(double&, int&)                   { return 1.e-26;             }
-    void nuyield_toy      (nuyield_functype &result)        { result = &DarkBit_toyield; }
-    void mwimp_toy        (double &result)                  { result = 250.0;            }
-    void annrate_toy      (double &result)                  { result = 1.e20;            }
+///////////////////////////////////////////////////
 
     DEF_FUNKTRAIT(RD_EFF_ANNRATE_FROM_PROCESSCATALOG_TRAIT)  // carries pointer to Weff
     void RD_eff_annrate_from_ProcessCatalog(double(*&result)(double&))

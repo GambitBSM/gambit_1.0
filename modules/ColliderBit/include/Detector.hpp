@@ -185,7 +185,7 @@ namespace Gambit {
           else {
             /// @todo Should the jet mass be assigned properly rather than set as microscopic?
             recoJet = new HEPUtils::Jet(P4::mkXYZM(momentum.Px(), momentum.Py(), momentum.Pz(), 1e-6), candidate->BTag);
-            event.addJet(recoJet);
+            event.add_jet(recoJet);
           }
         }
       }
@@ -209,7 +209,7 @@ namespace Gambit {
       TParticlePDG *pdgParticle;
       Int_t pdgCode;
     };
-    
+
 
     class Delphes_PythiaToHEPUtils : public DelphesToHEPUtilsBase<Pythia8::Event> {
     protected:
@@ -223,7 +223,7 @@ namespace Gambit {
           /// @TODO How to convert Py8 events without hadronisation?
           candidate->PID = p.id();
           pdgCode = abs(candidate->PID);
-	  
+
           candidate->Status=p.status();
           pdgParticle = pdg->GetParticle(p.id());
 
@@ -232,8 +232,8 @@ namespace Gambit {
 
           candidate->Momentum.SetPxPyPzE(p.px(), p.py(), p.pz(), p.e());
           candidate->Position.SetXYZT(p.xProd(), p.yProd(), p.zProd(), p.tProd());
-	  candidate->D1 = p.daughter1();
-	  candidate->D2 = p.daughter2();
+          candidate->D1 = p.daughter1();
+          candidate->D2 = p.daughter2();
           /// @TODO Why do the non-final particles (other than B's and taus) need to be passed? Speedup?
           allParticleOutputArray->Add(candidate);
           if (!pdgParticle) continue;

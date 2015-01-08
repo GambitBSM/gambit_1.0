@@ -76,7 +76,7 @@ namespace Gambit
                                                 
                                                 if (main == 0)
                                                 {
-                                                        scan_warn << "Could not find main function in plugin \"" << name << "\". Using dummy main function." << scan_end;
+                                                        scan_err << "Could not find main function in plugin \"" << name << "\". Using dummy main function." << scan_end;
                                                         main = dummy;
                                                 }
                                                 else if(diff)

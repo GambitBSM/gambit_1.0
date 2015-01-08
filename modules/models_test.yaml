@@ -73,7 +73,7 @@ another_key:
     subsubkey1: value2
 
 scanner:
-  module:  crapsample
+  module:  toy_mcmc
   file_path:  ScannerBit/lib/libsample.so
     
 enable_redirect: false
@@ -81,12 +81,12 @@ enable_redirect: false
 redirect_output:
    CMSSM_I:  xterm
     
-crapsample:
+toy_mcmc:
   point_number: 3
   output_file:  test.txt
   like:  Likelihood
 
-loopsample:
+random_sampler:
   point_number: 3
   output_file:  test.txt
   like:  Likelihood

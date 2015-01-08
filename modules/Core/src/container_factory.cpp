@@ -72,24 +72,9 @@ namespace Gambit
       }
     }
   }
-
-  const std::vector<std::string>& Likelihood_Container_Factory::getKeys() const
-  {
-    return prior.getShownParameters();
-  }
     
-  unsigned int Likelihood_Container_Factory::getDim() const
+  void * Likelihood_Container_Factory::operator() (const std::string &purpose) const
   {
-    return prior.size();
-  }
-    
-  void * Likelihood_Container_Factory::operator() (const std::string &in, const std::string &purpose) const
-  {
-    return __scanner_factories__[in](functorMap, dependencyResolver, iniFile, prior, purpose);
-  }
-    
-  void Likelihood_Container_Factory::remove(void *a) const
-  {
-    delete (Scanner::Function_Base *)a;
+    return __scanner_factories__["Scanner_Function"](functorMap, dependencyResolver, iniFile, prior, purpose);
   }
 }

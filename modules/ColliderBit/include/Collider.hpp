@@ -54,7 +54,6 @@ namespace Gambit {
         };
 
       public:
-        PythiaBase() { _pythiaInstance = new Pythia8::Pythia("../extras/boss/bossed_pythia_source/xmldoc", false); }
         virtual ~PythiaBase() { delete _pythiaInstance; }
 
         /// @name Initialization functions
@@ -63,13 +62,20 @@ namespace Gambit {
 
         virtual void init(const std::vector<std::string>& settings) {
           /// @note As long as the settings are pythia commands, no parsing!
-          for(const auto command : settings) { set(command); }
+          for(const auto command : settings) {
+            if(command.find(":") == (size_t) -1)
+              _pythiaInstance = new Pythia8::Pythia(command, false);
+            else
+              _settings.push_back(command);
+          }
+          for(const auto command : _settings)
+            set(command);
+
           _pythiaInstance->init();
         }
 
         void set(const std::string& command) {
           _pythiaInstance->readString(command);
-          _settings.push_back(command);
         }
         //@}
 

@@ -148,10 +148,6 @@ another_key:
   subkey3:
     subsubkey1: value2
 
-#scanner:
-#  module:  crapsample
-#  file_path:  ScannerBit/lib/libsample.so
-
 scanner:
   module:  multinest
   file_path:  ScannerBit/lib/libmultinest_interface.so
@@ -161,15 +157,15 @@ enable_redirect: true
 redirect_output:
    CMSSM_I:  xterm
     
-crapsample:
+toy_mcmc:
   point_number: 1
   output_file:  output
   like:  Likelihood
 
-loopsample:
+random_sampler:
   point_number: 1
   output_file:  output
   like:  Likelihood
   
-multnest:
+multinest:
   output_file:  output

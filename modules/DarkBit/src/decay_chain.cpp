@@ -19,7 +19,7 @@
 
 #include <iostream>
 #include "DarkBit_types.hpp"
-#include "base_functions.hpp"
+#include "funktions.hpp"
 
 namespace Gambit 
 {
@@ -250,13 +250,6 @@ namespace Gambit
         {
             return -1.0 + 2.0 * rand_0_1();
         }
-        // TODO: Make this thread safe
-        double rand_0_1()
-        {
-            static unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
-            static std::mt19937 rnd(seed);
-            return static_cast<double>(rnd()) / rnd.max();
-        }
         vec3 randOnSphere()
         {
             // Marsaglia 1972 rejection method
@@ -315,7 +308,11 @@ namespace Gambit
            
         int DecayTableEntry::findChannelIdx(double pick) const
         {
-            if(!randInit) generateRandTable();            
+            if(!randInit) 
+            {
+                cout << "Warning: Generating rand table at runtime. This should have happened during initialization, and might not be threadsafe here." << endl;
+                generateRandTable();
+            }            
             vector<double>::const_iterator pos = upper_bound(randLims.begin(),randLims.end(),pick);   
             return pos - randLims.begin();
         }        
@@ -479,6 +476,8 @@ namespace Gambit
                         finalStates.insert(*it3);
                     }
                 }
+                // Use specified total width (instead of summing widths of registered channels)
+                entry.forceTotalWidth(true,it->genRateTotal);
                 addEntry(pID,entry);
             }
             // Flag channels where all final final states are stable as endpoints.
@@ -501,6 +500,7 @@ namespace Gambit
                     }
                     it->second.endpointFlags[*it2] = isEndpoint;
                 }
+                it->second.generateRandTable();
             }
             // Iterate over final states and register particles that have not already been registered (because they are considered stable)
             for(set<string>::iterator it = finalStates.begin(); it != finalStates.end(); ++it)
@@ -530,19 +530,7 @@ namespace Gambit
         }  
         double DecayTable::getWidth(const TH_Channel *ch)
         {
-            // Should be replaced by code getting the width from the particle
-            // properties table.
-            /*
-            // Note: It is ESSENTIAL that the TH_Channel is a decay channel, or more precisely that dSigmadE is of type BFconstant.
-            const shared_ptr<FunctionExpression<BaseFunction> > *ptr = &(ch->dSigmadE);
-            const shared_ptr<BFconstant> BFc_ptr = (boost::dynamic_pointer_cast<BFconstant>(boost::dynamic_pointer_cast<BaseFunction>(*ptr)));
-            if(BFc_ptr == 0)
-            {
-                cout << "Error: dSigmadE in TH_Channel passed to DecayTable::getWidth is not of underlying type BFconstant." << endl;
-                exit(1);
-            }
-            return BFc_ptr->value(vector<double>());
-            */
+            return ch->dSigmadE->eval();
         }
         void DecayTable::printTable() const
         {

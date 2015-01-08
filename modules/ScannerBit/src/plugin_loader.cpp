@@ -102,6 +102,12 @@ namespace Gambit
                         Plugin_Details Plugin_Loader::find (const std::string &type, const std::string &plugin, const std::string &version, const std::string &lib) const
                         {
                                 std::vector<Plugin_Details> plugins;
+
+                                if((plugin_map.find(type) == plugin_map.end()) || (plugin_map.at(type).find(plugin) == plugin_map.at(type).end()))
+                                {
+                                        scan_err << "There is no plugin named \"" << plugin <<"\" of type \"" << type << "\"" << scan_end;
+                                }
+                                
                                 for (auto it = plugin_map.at(type).at(plugin).begin(), end = plugin_map.at(type).at(plugin).end(); it != end; it++)
                                 {
                                         if (VersionCompare(version)(*it) && (lib == "" || lib == it->library_path))

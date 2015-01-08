@@ -16,11 +16,11 @@
 
 #include "scanners/twalk.hpp"
 
-scanner_plugin(twalk_beta, version(0, 0, 1, beta))
+scanner_plugin(twalk, version(0, 0, 1, beta))
 {
         int plugin_main ()
         {
-                Function_Base *LogLike             = get_functor("Scanner_Function", "Likelihood");
+                Function_Base<double (const std::vector<double>&)> *LogLike             = get_functor("Likelihood");
                 int dim = get_dimension();
                 TWalk(*LogLike, dim,
                                 get_inifile_value<double>("kwalk_ratio", 0.9836),

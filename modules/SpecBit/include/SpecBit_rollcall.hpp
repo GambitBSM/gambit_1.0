@@ -138,7 +138,7 @@ START_MODULE
 
      #define FUNCTION specbit_test_func2
      START_FUNCTION(double)
-     DEPENDENCY(MSSM_spectrum, eaSLHA)
+     //DEPENDENCY(MSSM_spectrum, eaSLHA)
      #undef FUNCTION
  
   #undef CAPABILITY

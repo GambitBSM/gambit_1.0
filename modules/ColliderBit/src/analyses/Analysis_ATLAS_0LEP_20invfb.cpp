@@ -138,9 +138,9 @@ namespace Gambit {
               if (met/sqrt(HT)>15. && meff_incl>1200.) _num2jm += 1;
 	      if (met/sqrt(HT)>15. && meff_incl>1600.) _num2jt += 1;
             }
-	    
+
           }
-	  
+
         }
 
         // Do the 3 jet regions
@@ -234,22 +234,22 @@ namespace Gambit {
 	cutFlowVector_str[28] = "6jt: met/meff6j > 0.25 ";
 	cutFlowVector_str[29] = "6jt: meff incl > 1500. ";
 
-	
+
 
 
 	for(int j=0;j<NCUTS;j++){
           if(
              (j==0) ||
-	     
+
 	     (j==1 && signalJets.size()>1 && signalJets[0]->pT()>130. && signalJets[1]->pT()>60. && metCut && leptonCut) ||
 
-	     (j==2 && signalJets.size()>1 && signalJets[0]->pT()>130. && signalJets[1]->pT()>60. && metCut && dPhiMin2j>0.4) ||
-	     
-	     (j==3 && signalJets.size()>1 && signalJets[0]->pT()>130. && signalJets[1]->pT()>60. && metCut && dPhiMin2j>0.4 && met/sqrt(HT)>15. ) ||
+	     (j==2 && signalJets.size()>1 && signalJets[0]->pT()>130. && signalJets[1]->pT()>60. && metCut && dPhiMin2j>0.4 && leptonCut) ||
 
-	     (j==4 && signalJets.size()>1 && signalJets[0]->pT()>130. && signalJets[1]->pT()>60. && metCut && dPhiMin2j>0.4 && met/sqrt(HT)>15. && meff_incl>1200.) ||
+	     (j==3 && signalJets.size()>1 && signalJets[0]->pT()>130. && signalJets[1]->pT()>60. && metCut && dPhiMin2j>0.4 && met/sqrt(HT)>15. && leptonCut) ||
 
-	     (j==5 && signalJets.size()>1 && signalJets[0]->pT()>130. && signalJets[1]->pT()>60. && metCut && dPhiMin2j>0.4 && met/sqrt(HT)>15. && meff_incl>1600.) ||
+	     (j==4 && signalJets.size()>1 && signalJets[0]->pT()>130. && signalJets[1]->pT()>60. && metCut && dPhiMin2j>0.4 && met/sqrt(HT)>15. && leptonCut && meff_incl>1200.) ||
+
+	     (j==5 && signalJets.size()>1 && signalJets[0]->pT()>130. && signalJets[1]->pT()>60. && metCut && dPhiMin2j>0.4 && met/sqrt(HT)>15. && leptonCut && meff_incl>1600.) ||
 
 	     (j==6 && signalJets.size()>2 && signalJets.at(0)->pT()>130. && signalJets.at(1)->pT()>60. && signalJets.at(2)->pT()>60. && metCut && leptonCut) ||
 
@@ -262,7 +262,7 @@ namespace Gambit {
 	     (j==10 && signalJets.size() > 3 && signalJets.at(0)->pT()>130. && signalJets.at(1)->pT()>60. && signalJets.at(2)->pT()>60. && signalJets.at(3)->pT()>60. && metCut) ||
 
 	     (j==11 && signalJets.size() > 3 && signalJets.at(0)->pT()>130. && signalJets.at(1)->pT()>60. && signalJets.at(2)->pT()>60. && signalJets.at(3)->pT()>60. && metCut && dPhiMin4 > 0.4) ||
-	     
+
 	     (j==12 && signalJets.size() > 3 && signalJets.at(0)->pT()>130. && signalJets.at(1)->pT()>60. && signalJets.at(2)->pT()>60. && signalJets.at(3)->pT()>60. && metCut && dPhiMin4 > 0.4 && dPhiMin2 > 0.2) ||
 
 	     (j==13 && signalJets.size() > 3 && signalJets.at(0)->pT()>130. && signalJets.at(1)->pT()>60. && signalJets.at(2)->pT()>60. && signalJets.at(3)->pT()>60. && metCut && dPhiMin4 > 0.4 && dPhiMin2 > 0.2 && met/sqrt(HT) > 10.) ||
@@ -301,18 +301,18 @@ namespace Gambit {
 
 	     (j==28 && signalJets.size() > 5 && signalJets.at(0)->pT()>130. && signalJets.at(1)->pT()>60. && signalJets.at(2)->pT()>60. && signalJets.at(3)->pT()>60. && signalJets.at(4)->pT()>60. && signalJets.at(5)->pT()>60. && leptonCut && metCut && dPhiMin4>0.4 && dPhiMin2 > 0.2 && met/meff6j>0.2 && meff_incl > 900. && met/meff6j>0.25) ||
 
-	     (j==29 && signalJets.size() > 5 && signalJets.at(0)->pT()>130. && signalJets.at(1)->pT()>60. && signalJets.at(2)->pT()>60. && signalJets.at(3)->pT()>60. && signalJets.at(4)->pT()>60. && signalJets.at(5)->pT()>60. && leptonCut && metCut && dPhiMin4>0.4 && dPhiMin2 > 0.2 && met/meff6j>0.2 && meff_incl > 900. && met/meff6j>0.25 && meff_incl>1500.) 
+	     (j==29 && signalJets.size() > 5 && signalJets.at(0)->pT()>130. && signalJets.at(1)->pT()>60. && signalJets.at(2)->pT()>60. && signalJets.at(3)->pT()>60. && signalJets.at(4)->pT()>60. && signalJets.at(5)->pT()>60. && leptonCut && metCut && dPhiMin4>0.4 && dPhiMin2 > 0.2 && met/meff6j>0.2 && meff_incl > 900. && met/meff6j>0.25 && meff_incl>1500.)
 
 	     ){
 
             cutFlowVector[j]++;
-	    
+
           }
         }
-	
-	
+
+
       }
-      
+
 
       void add(const Analysis* a) {
         const Analysis_ATLAS_0LEP_20invfb* aa = dynamic_cast<const Analysis_ATLAS_0LEP_20invfb*>(a);
@@ -324,17 +324,17 @@ namespace Gambit {
       }
 
       void finalize() {
-        
+
 	//Print cutflow here
 	using namespace std;
-	
+
         double scale_to = 1.; //0.0244*1000.*20.1; //sigma * L
         //double trigger_cleaning_eff = 0.90;
-	
+
         cout << "------------------------------------------------------------------------------------------------------------------------------ "<<std::endl;
         cout << "CUT FLOW: ATLAS 0 Lep paper "<<std::endl;
         cout << "------------------------------------------------------------------------------------------------------------------------------"<<std::endl;
-	
+
         std::cout<< right << setw(40) << "CUT" << setw(20) << "RAW" << setw(20) << "SCALED" << setw(20) << "%" << setw(20) << "clean adj RAW"<< setw(20) << "clean adj %" << std::endl;
         for(int j=0; j<NCUTS; j++) {
           std::cout << right << setw(40) << cutFlowVector_str[j].c_str() << setw(20) << cutFlowVector[j] << setw(20) << cutFlowVector[j]*scale_to/cutFlowVector[0] << setw(20) << 100.*cutFlowVector[j]/cutFlowVector[0] << "%" << setw(20) << cutFlowVector[j]*scale_to/cutFlowVector[0] << setw(20) << 100.*cutFlowVector[j]/cutFlowVector[0]<< "%" << endl;
@@ -402,7 +402,7 @@ namespace Gambit {
         results_4jm.set_backgroundsys(6.);
         results_4jm.set_signalsys(0.);
         results_4jm.set_signal(_num4jm);
-	
+
 	SignalRegionData results_4jt;
         results_4jt.set_observation(0.);
         results_4jt.set_background(2.5);

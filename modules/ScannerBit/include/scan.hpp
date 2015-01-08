@@ -31,29 +31,12 @@
 #include "plugin_interface.hpp"
 #include "plugin_loader.hpp"
 #include "priors/composite.hpp"
+#include "factory_defs.hpp"
 
 namespace Gambit
 {
         namespace Scanner
         {       
-                class Factory_Base
-                {
-                public:
-                        virtual const std::vector<std::string> & getKeys() const = 0;
-                        virtual unsigned int getDim() const = 0;
-                        virtual void * operator() (const std::string &in, const std::string &purpose) const = 0;
-                        virtual void remove(void *a) const = 0;
-                        virtual ~Factory_Base() {};
-                };
-                
-                class Function_Base
-                {
-                public:
-                        virtual double operator () (const std::vector<double> &) = 0;
-                        virtual void print(double, const std::string &) const = 0;
-                        virtual ~Function_Base(){} 
-                };
-
                 class IniFileInterface_Base
                 {
                 public:

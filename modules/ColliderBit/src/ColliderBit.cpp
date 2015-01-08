@@ -46,6 +46,8 @@ namespace Gambit {
     std::string delphesConfigFilename;
     /// Pythia stuff
     bool resetPythiaFlag = true;
+    /// Analysis stuff
+    bool resetAnalysisFlag = true;
     std::vector<std::string> pythiaNames;
     std::vector<std::string>::const_iterator iter;
     int pythiaConfigurations, pythiaNumber;
@@ -62,29 +64,31 @@ namespace Gambit {
     /// *** Initialization for analyses ***
     void specifyAnalysisPointerVector (AnalysisPointerVector &result) {
       using namespace Pipes::specifyAnalysisPointerVector;
-      result.clear();
+      if(resetAnalysisFlag) {
+        result.clear();
 
-      logger() << "\n==================\n";
-      logger() << "ColliderBit says,\n";
-      logger() << "\t\"specifyAnalysisPointerVector() was called.\"\n";
-      logger() << LogTags::info << endl << EOM;
+        logger() << "\n==================\n";
+        logger() << "ColliderBit says,\n";
+        logger() << "\t\"specifyAnalysisPointerVector() was called.\"\n";
+        logger() << LogTags::info << endl << EOM;
 
-      std::vector<std::string> analysisNames;
-      #pragma omp critical (runOptions)
-      {
-        GET_COLLIDER_RUNOPTION(analysisNames, std::vector<std::string>)
+        std::vector<std::string> analysisNames;
+        #pragma omp critical (runOptions)
+        {
+          GET_COLLIDER_RUNOPTION(analysisNames, std::vector<std::string>)
+        }
+
+        logger() << "\n==================\n";
+        logger() << "ColliderBit says,\n";
+        logger() << "\t\"Setting up analyses...\"\n";
+        for(auto name : analysisNames) {
+          logger() << "\t  Analysis name " << name << endl;
+          result.push_back( mkAnalysis(name) );
+        }
+        logger() << "ColliderBit says,\n";
+        logger() << "\t\"specifyAnalysisPointerVector() has finished.\"\n";
+        logger() << LogTags::info << endl << EOM;
       }
-
-      logger() << "\n==================\n";
-      logger() << "ColliderBit says,\n";
-      logger() << "\t\"Setting up analyses...\"\n";
-      for(auto name : analysisNames) {
-        logger() << "\t  Analysis name " << name << endl;
-        result.push_back( mkAnalysis(name) );
-      }
-      logger() << "ColliderBit says,\n";
-      logger() << "\t\"specifyAnalysisPointerVector() has finished.\"\n";
-      logger() << LogTags::info << endl << EOM;
     }
 
 
@@ -299,7 +303,7 @@ namespace Gambit {
           }
         }
         /// Add to the event
-        result.addJet(new HEPUtils::Jet(HEPUtils::mk_p4(pj), isB));
+        result.add_jet(new HEPUtils::Jet(HEPUtils::mk_p4(pj), isB));
       }
 
       /// MET (note: NOT just equal to sum of prompt invisibles)
@@ -329,7 +333,7 @@ namespace Gambit {
         #pragma omp critical (accumulatorUpdate)
         {
           // Loop over analyses and run them
-          for (auto anaPtr = Dep::ListOfAnalyses->begin(); anaPtr != Dep::ListOfAnalyses->end(); ++anaPtr)        
+          for (auto anaPtr = Dep::ListOfAnalyses->begin(); anaPtr != Dep::ListOfAnalyses->end(); ++anaPtr)
             (*anaPtr)->analyze(*Dep::GambitColliderEvent);
         }
       }

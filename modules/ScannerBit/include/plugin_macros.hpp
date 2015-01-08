@@ -19,6 +19,8 @@
 ///
 ///  *********************************************
 
+#include "cmake_variables.hpp"
+
 #ifndef SCANNER_PLUGIN_MACROS_HPP
 #define SCANNER_PLUGIN_MACROS_HPP
 
@@ -32,11 +34,15 @@
 #define plugin_deconstructor            PLUGIN_DECONSTRUCTOR
 #define version(...)                    VERSION( __VA_ARGS__ )
 #define no_version                      VERSION()
-#define external_library_required       EXTERNAL_LIBRARY_REQUIRED
+#define external_library_required(...)  EXTERNAL_LIBRARY_REQUIRED ( __VA_ARGS__ )
 
 #define ARG_N_INTERNAL(_1_, _2_, _3_, _4_, ret, ...) ret
 #define ARG_N(...) ARG_N_INTERNAL(__VA_ARGS__ , 4, 3, 2, 1, 0)
-#define COMBINE(a, b) a ## b
+#define COMBINE(a, b) COMBINE_INTERNAL(a, b)
+#define COMBINE_INTERNAL(a, b) a ## b
+#define EXPAND(a) a
+#define COMBINE_3(a, b) COMBINE_3_INTERNAL(a, b)
+#define COMBINE_3_INTERNAL(a, b) __gambit_plugin_ ## a ## b ## _namespace__
 #define ENTER_FUNC(func, num, ...) COMBINE(func, num)( __VA_ARGS__ )
 
 #define VERSION_4(major, minor, patch, release) major ## _ ## minor ## _ ## patch ## _ ## release
@@ -46,22 +52,22 @@
 #define VERSION_0() VERSION(,,,)
 #define VERSION(...) ENTER_FUNC(VERSION_, ARG_N(__VA_ARGS__), __VA_ARGS__ )
 
-#define NO_EXTERNAL_LIBRARY_REQUIRED(plugin) inline int plugin_status(){return 0;}
+#define NO_EXTERNAL_LIBRARY_REQUIRED(plugin) inline int plugin_status(){return 1;}
 
 #define ADD_STRUCT(a) ADD_STRUCT_INTERNAL(a)
 #define ADD_STRUCT_INTERNAL(a) _struct_ ## a
 
-#define EXTERNAL_LIBRARY_REQUIRED(plugin)                                               \
-struct _struct_ ## prefix ## plugin {};                                                 \
-struct _struct_0 {};                                                                    \
-struct _struct_1 {};                                                                    \
-struct _struct_2 {};                                                                    \
-template <typename T> struct number{static const int num = 0;};                         \
-template <> struct _number_<struct_ ## prefix ## plugin>{static const int num = 1;};    \
-template <> struct _number_<struct_0>{static const int num = 0;};                       \
-template <> struct _number_<struct_1>{static const int num = 1;};                       \
-template <> struct _number_<struct_2>{static const int num = 2;};                       \
-int plugin_status(){return number<ADD_STRUCT(prefix ## plugin) >::num;}                 \
+#define EXTERNAL_LIBRARY_REQUIRED(plugin)                                                       \
+struct _struct_ ## libs_present_ ## plugin {};                                                  \
+struct _struct_0 {};                                                                            \
+struct _struct_1 {};                                                                            \
+struct _struct_2 {};                                                                            \
+template <typename T> struct _number_{static const int num = 0;};                               \
+template <> struct _number_<_struct_ ## libs_present_ ## plugin>{static const int num = 3;};    \
+template <> struct _number_<_struct_0>{static const int num = 0;};                              \
+template <> struct _number_<_struct_1>{static const int num = 1;};                              \
+template <> struct _number_<_struct_2>{static const int num = 2;};                              \
+int plugin_status(){return _number_<ADD_STRUCT(libs_present_ ## plugin) >::num;}                \
 
 /*Allows Gambit to declare an object of type "..."*/
 #define EXPORT_ABSTRACT(name, ...)                                                                                      \
@@ -274,12 +280,12 @@ namespace __gambit_plugin_namespace__                                           
 decltype(__gambit_plugin_ret_val__()) __gambit_plugin_main__ (__VA_ARGS__)                                              \
 
 /*Defines a Gambit plugin*/
-#define GAMBIT_PLUGIN_INTERNAL(plug_name, command)                                                                      \
+#define GAMBIT_PLUGIN_INTERNAL(plug_name, command, arg)                                                                 \
 namespace __gambit_plugin_ ## plug_name ##  _namespace__                                                                \
 {                                                                                                                       \
         namespace __gambit_plugin_namespace__                                                                           \
         {                                                                                                               \
-                command(plugin)                                                                                         \
+                command(arg)                                                                                            \
                                                                                                                         \
                 using Gambit::Scanner::Plugins::pluginData;                                                             \
                                                                                                                         \
@@ -308,15 +314,19 @@ namespace __gambit_plugin_ ## plug_name ##  _namespace__                        
                         if (input != 0)                                                                                 \
                                 myData.inputData = *input;                                                              \
                                                                                                                         \
-                        if (plugin_status() == 0){ \
-                        for(auto it = myData.inits.begin(), end = myData.inits.end(); it != end; it++)                  \
+                        if (plugin_status() == 1)                                                                       \
                         {                                                                                               \
-                                (*it)(myData);                                                                          \
+                                for(auto it = myData.inits.begin(), end = myData.inits.end(); it != end; it++)          \
+                                {                                                                                       \
+                                        (*it)(myData);                                                                  \
+                                }                                                                                       \
+                                                                                                                        \
+                                myData.inits.clear();                                                                   \
+                                                                                                                        \
+                                return myData.main_type();                                                              \
                         }                                                                                               \
-                                                                                                                        \
-                        myData.inits.clear();  }                                                                        \
-                                                                                                                        \
-                        return myData.main_type();                                                                      \
+                        else                                                                                            \
+                                return typeid(void(void));                                                              \
                 }                                                                                                       \
                                                                                                                         \
                 extern "C" void * __gambit_plugin_getMember_ ## plug_name ## __(std::string in)                         \
@@ -338,12 +348,15 @@ namespace __gambit_plugin_ ## plug_name ##  _namespace__                        
 }                                                                                                                       \
 namespace __gambit_plugin_ ## plug_name ## _namespace__                                                                 \
 
+#define GAMBIT_PLUGIN_INTERNAL_INT(...) GAMBIT_PLUGIN_INTERNAL(__VA_ARGS__)
+
 #define GAMBIT_PLUGIN_3(plug_name, plug_type, plug_version)                                                             \
-        GAMBIT_PLUGIN_INTERNAL( plug_name ## __t__ ## plug_type ## __v__ ## plug_version, NO_EXTERNAL_LIBRARY_REQUIRED) \
+        GAMBIT_PLUGIN_INTERNAL_INT( plug_name ## __t__ ## plug_type ## __v__ ## plug_version, NO_EXTERNAL_LIBRARY_REQUIRED, 0)   \
 
 #define GAMBIT_PLUGIN_4(plug_name, plug_type, plug_version, option)                                                     \
-        GAMBIT_PLUGIN_INTERNAL( COMBINE(plug_name ## __t__ ## plug_type ## __v__ ## plug_version ## __reqd_libs__,      \
-        prefix ## plug_name ## __t__ ## plug_type ## __v__ ## plug_version), option)                                    \
+        GAMBIT_PLUGIN_INTERNAL_INT( COMBINE(plug_name ## __t__ ## plug_type ## __v__ ## plug_version ## __reqd_libs__,  \
+        libs_present_ ## plug_name ## __t__ ## plug_type ## __v__ ## plug_version),                                     \
+        option, plug_name ## __t__ ## plug_type ## __v__ ## plug_version)                                               \
 
 #define GAMBIT_PLUGIN(...) ENTER_FUNC(GAMBIT_PLUGIN_, ARG_N(__VA_ARGS__), __VA_ARGS__ )
         
