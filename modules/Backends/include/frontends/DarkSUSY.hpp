@@ -91,7 +91,6 @@ BE_FUNCTION(dsSLHAread, void, (char*, int&, int), "dsslharead_", "dsSLHAread")
 BE_FUNCTION(dsprep, void, (), "dsprep_", "dsprep")
 BE_FUNCTION(dsIByieldone, double, (double&, int&, int&, int&), "dsibyieldone_", "dsibyieldone")
 
-
 //BE_FUNCTION(initialize, void, (int), "_Z10initializei", "LibFirst_initialize_capability")
 //BE_FUNCTION(someFunction, void, (), "_Z12someFunctionv", "LibFirst_someFunction_capability")
 //BE_FUNCTION(returnResult, double, (), "_Z12returnResultv", "LibFirst_returnResult_capability")
@@ -147,6 +146,8 @@ BE_VARIABLE(GENERAL_VAR(DS_RDPADD, rdpadd),     "rdpadd_",    "rdpadd")    // gR
 
 BE_VARIABLE(GENERAL_VAR(DS_IBINTVARS,IBintvars),"ibintvars_", "IBintvars") // IB stuff
 
+BE_VARIABLE(FORTRAN_COMMONBLOCK(DS_DDCOM, ddcom),"ddcom_",    "ddcom")
+
 //BE_INI_DEPENDENCY(MSSMspectrum, eaSLHA)
 BE_INI_CONDITIONAL_DEPENDENCY(MSSMspectrum, eaSLHA, CMSSM_demo, CMSSM, MSSM25)
 
@@ -195,6 +196,25 @@ BE_INI_FUNCTION
         dsgive_model_isasugra(am0, amhf, aa0, asgnmu, atanbe);
         dssusy_isasugra(unphys, hwarning);
     }
+
+    // Setting nuclear spin/quark content to micromegas values:
+    *ddcom->deld = -0.427;
+    *ddcom->delu = 0.842;
+    *ddcom->dels = -0.085;
+
+    ddcom->ftp(7) = 0.0153;
+    ddcom->ftp(8) = 0.0191;
+    ddcom->ftp(9) = 0.0682;
+    ddcom->ftp(10) = 0.0447;
+    ddcom->ftp(11) = 0.0682;
+    ddcom->ftp(12) = 0.0682;
+
+    ddcom->ftn(7) = 0.011;
+    ddcom->ftn(8) = 0.0273;
+    ddcom->ftn(9) = 0.0679;
+    ddcom->ftn(10) = 0.0447;
+    ddcom->ftn(11) = 0.0679;
+    ddcom->ftn(12) = 0.0679;
 
     // MSSM-7 ???
     /*
