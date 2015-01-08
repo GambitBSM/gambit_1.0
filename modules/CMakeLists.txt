@@ -16,6 +16,7 @@
 #  \author Antje Putzerator
 #          (antje.putze@lapth.cnrs.fr)              
 #  \date 2014 Sep, Oct, Nov
+#        2015 Jan
 #
 #  \author Pat Scott
 #          (p.scott@imperial.ac.uk)              
@@ -149,10 +150,8 @@ CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
 CHECK_CXX_COMPILER_FLAG("-std=c++0x" COMPILER_SUPPORTS_CXX0X)
 if(COMPILER_SUPPORTS_CXX11)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c++11")
 elseif(COMPILER_SUPPORTS_CXX0X)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c++0x")
 else()
    message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
 endif()
@@ -282,10 +281,16 @@ foreach(bit ${GAMBIT_BITS})
   set(GAMBIT_BIT_OBJECTS ${GAMBIT_BIT_OBJECTS} "$<TARGET_OBJECTS:${bit}>")
   if (SpecBit STREQUAL ${bit})
     # Ben: My attempt to add "SpecBit only" include targets. Seems to work.
-    target_include_directories(SpecBit PRIVATE
+    if(${CMAKE_VERSION} VERSION_GREATER 2.8.10)
+      target_include_directories(SpecBit PRIVATE
                                ${FLEXIBLESUSY_DIR}/config
                                ${FLEXIBLESUSY_DIR}/legacy
                                ${FLEXIBLESUSY_DIR}/src)
+    else()
+      include_directories(${FLEXIBLESUSY_DIR}/config
+                          ${FLEXIBLESUSY_DIR}/legacy
+                          ${FLEXIBLESUSY_DIR}/src)
+    endif()
     message("-- Adding FlexibleSUSY model headers to SpecBit include list")
     # Dig through flexiblesusy "models" directory and add all subdirectories to the include list
     # (these contain the headers for the generated spectrum generators)
@@ -293,7 +298,11 @@ foreach(bit ${GAMBIT_BITS})
     foreach(_MODEL ${BUILT_FS_MODELS})
       #if(IS_DIRECTORY ${_FILE})
         message("      ${_MODEL}")
-        target_include_directories(SpecBit PRIVATE ${FLEXIBLESUSY_DIR}/models/${_MODEL})
+        if(${CMAKE_VERSION} VERSION_GREATER 2.8.10)
+          target_include_directories(SpecBit PRIVATE ${FLEXIBLESUSY_DIR}/models/${_MODEL})
+        else()
+          include_directories(${FLEXIBLESUSY_DIR}/models/${_MODEL})
+        endif()
       #endif()
     endforeach()
   endif()

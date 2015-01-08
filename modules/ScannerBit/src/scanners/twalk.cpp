@@ -20,9 +20,9 @@ scanner_plugin(twalk, version(0, 0, 1, beta))
 {
         int plugin_main ()
         {
-                Function_Base<double (const std::vector<double>&)> *LogLike             = get_functor("Likelihood");
+                scan_ptr<double (const std::vector<double>&)> LogLike = get_functor("Likelihood");
                 int dim = get_dimension();
-                TWalk(*LogLike, dim,
+                TWalk(LogLike, dim,
                                 get_inifile_value<double>("kwalk_ratio", 0.9836),
                                 get_inifile_value<int>("projection_dimension", 4),
                                 get_inifile_value<double>("gaussian_distance", 2.4),

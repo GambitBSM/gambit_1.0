@@ -319,6 +319,13 @@ namespace Gambit {
 
     } // function RD_spectrum_SUSY
 
+    void RD_spectrum_from_ProcessCatalog(RDspectype &result)
+    {
+      //TH_Process annihilation = (*Dep::TH_ProcessCatalog).getProcess((std::string)"chi_10", (std::string)"chi_10");
+
+      //result = 0;
+    }
+
     void RD_thresholds_resonances_ordered(RDrestype &result)
     {
       using namespace Pipes::RD_thresholds_resonances_ordered;
@@ -1213,7 +1220,7 @@ namespace Gambit {
         TH_Process test1_decay("test1");     
         finalStates_1_23.push_back("test2");              
         finalStates_1_23.push_back("test3");             
-        test1_decay.genRateTotal = (test1_23width->eval() + test1_24width->eval() + test1_456width->eval())*2;             
+        test1_decay.genRateTotal = (test1_23width->eval() + test1_24width->eval() + test1_456width->eval())*2*Funk::one();
         TH_Channel channel_1_23(finalStates_1_23, test1_23width);
         test1_decay.channelList.push_back(channel_1_23);
         finalStates_1_24.push_back("test2");              
@@ -1229,7 +1236,7 @@ namespace Gambit {
         TH_Process test2_decay("test2");     
         finalStates_2_56.push_back("test5");              
         finalStates_2_56.push_back("test6");                                                               
-        test2_decay.genRateTotal = test2_56width->eval();                                 
+        test2_decay.genRateTotal = test2_56width->eval()*Funk::one();
         TH_Channel channel_2_56(finalStates_2_56, test2_56width);
         test2_decay.channelList.push_back(channel_2_56);
         catalog.processList.push_back(test2_decay);
@@ -1598,6 +1605,22 @@ namespace Gambit {
     //            --> Enu       neutrino energy (GeV)
     //            --> p         p=1 for neutrino yield, p=2 for nubar yield 
 
+    //The following are just toy functions to allow the neutrino likelihoods to be tested.  
+    //They should be deleted when real functions are added to provide the WIMP mass, solar
+    //annihilation rate and neutrino yield.
+    typedef void (*context_func)();
+    void DarkBit_context  ()                                {}// cout << "test" << endl; }
+    double DarkBit_toyield(const double&, const int&, void*& context)
+    {
+      context_func* context_function_ptr = static_cast<context_func*>(context);
+      context_func context_function = *context_function_ptr;
+      context_function();
+      return 1.e-26;
+    }
+    void nuyield_toy      (nuyield_functype &result)        { result = &DarkBit_toyield; }
+    void mwimp_toy        (double &result)                  { result = 250.0;            }
+    void annrate_toy      (double &result)                  { result = 1.e20;            }
+
     // 22-string IceCube sample: predicted signal and background counts, observed counts and likelihoods.
     void IC22_full(nudata &result)
     {
@@ -1605,8 +1628,10 @@ namespace Gambit {
       double sigpred, bgpred, lnLike, pval;
       int totobs;
       char experiment[300] = "IC-22";
+      context_func cf = DarkBit_context;
+      void* context = &cf;
       BEreq::nubounds(experiment[0], *Dep::mwimp, *Dep::annrate, byVal(*Dep::nuyield), sigpred, bgpred, 
-       totobs, lnLike, pval, 4, false, 0.0, 0.0);
+       totobs, lnLike, pval, 4, false, 0.0, 0.0, context);
       result.signal = sigpred;
       result.bg = bgpred;
       result.nobs = totobs;
@@ -1627,8 +1652,10 @@ namespace Gambit {
       double sigpred, bgpred, lnLike, pval;
       int totobs;
       char experiment[300] = "IC-79 WH";
+      context_func cf = DarkBit_context;
+      void* context = &cf;
       BEreq::nubounds(experiment[0], *Dep::mwimp, *Dep::annrate, byVal(*Dep::nuyield), sigpred, bgpred, 
-       totobs, lnLike, pval, 4, false, 0.0, 0.0);
+       totobs, lnLike, pval, 4, false, 0.0, 0.0, context);
       result.signal = sigpred;
       result.bg = bgpred;
       result.nobs = totobs;
@@ -1649,8 +1676,10 @@ namespace Gambit {
       double sigpred, bgpred, lnLike, pval;
       int totobs;
       char experiment[300] = "IC-79 WL";
+      context_func cf = DarkBit_context;
+      void* context = &cf;
       BEreq::nubounds(experiment[0], *Dep::mwimp, *Dep::annrate, byVal(*Dep::nuyield), sigpred, bgpred, 
-       totobs, lnLike, pval, 4, false, 0.0, 0.0);
+       totobs, lnLike, pval, 4, false, 0.0, 0.0, context);
       result.signal = sigpred;
       result.bg = bgpred;
       result.nobs = totobs;
@@ -1671,8 +1700,10 @@ namespace Gambit {
       double sigpred, bgpred, lnLike, pval;
       int totobs;
       char experiment[300] = "IC-79 SL";
+      context_func cf = DarkBit_context;
+      void* context = &cf;
       BEreq::nubounds(experiment[0], *Dep::mwimp, *Dep::annrate, byVal(*Dep::nuyield), sigpred, bgpred, 
-       totobs, lnLike, pval, 4, false, 0.0, 0.0);
+       totobs, lnLike, pval, 4, false, 0.0, 0.0, context);
       result.signal = sigpred;
       result.bg = bgpred;
       result.nobs = totobs;
@@ -1693,13 +1724,7 @@ namespace Gambit {
       result = *Dep::IC22_loglike + *Dep::IC79WH_loglike + *Dep::IC79WL_loglike + *Dep::IC79SL_loglike; 
     }
 
-    //The following are just toy functions to allow the neutrino likelihoods to be tested.  
-    //They should be deleted when real functions are added to provide the WIMP mass, solar
-    //annihilation rate and neutrino yield.
-    double DarkBit_toyield(double&, int&)                   { return 1.e-26;             }
-    void nuyield_toy      (nuyield_functype &result)        { result = &DarkBit_toyield; }
-    void mwimp_toy        (double &result)                  { result = 250.0;            }
-    void annrate_toy      (double &result)                  { result = 1.e20;            }
+///////////////////////////////////////////////////
 
     DEF_FUNKTRAIT(RD_EFF_ANNRATE_FROM_PROCESSCATALOG_TRAIT)  // carries pointer to Weff
     void RD_eff_annrate_from_ProcessCatalog(double(*&result)(double&))

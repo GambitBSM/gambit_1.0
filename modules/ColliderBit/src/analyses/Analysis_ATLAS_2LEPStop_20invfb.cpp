@@ -1,4 +1,5 @@
 #include "Analysis.hpp"
+#include "ATLASEfficiencies.hpp"
 #include "mt2_bisect.h"
 
 /// @todo Remove the ROOT classes...
@@ -149,7 +150,7 @@ namespace Gambit {
         // We now have the signal electrons, muons, jets and b jets- move on to the analysis
 
         // Calculate common variables and cuts first
-	ApplyTightIDElectronSelection(signalElectrons);
+	applyTightIDElectronSelection(signalElectrons);
 
         int nElectrons = signalElectrons.size();
         int nMuons = signalMuons.size();
@@ -196,22 +197,22 @@ namespace Gambit {
 
           P4 ptllmet;
           ptllmet = signalLeptons[0]->mom() + signalLeptons[1]->mom() + ptot;
-	  
+
 	  //float temp = ptllmet.deltaPhi(ptot);
 	  float temp=ptllmet.phi()-ptot.phi();
 	  double dphib=Phi_mpi_pi((double)temp);
-	  
+
 	  //TLorentzVector ptllmet_root;
 	  //ptllmet_root = lep1 + lep2 + metvec;
 	  //float temp_root = ptllmet_root.DeltaPhi(metvec);
-	 
+
 	  //std::cout << "DPHIB " << dphib << " DPHIBROOT " << temp_root << " ele " << signalElectrons.size() << " muo " << signalMuons.size() << std::endl;
 
-          if(fabs(dphib)<1.5) isdphib=true; 
-	  	  	 	  
+          if(fabs(dphib)<1.5) isdphib=true;
+
         }
 
-	
+
 
         //if(leptonsForVeto.size()>0 && leptonsForVeto[0]->pT()>25.)cout << "Leptons size " << leptonsForVeto.size() << " muons " << nMuons << " electrons " << nElectrons << endl;
 
@@ -223,8 +224,8 @@ namespace Gambit {
           if(signalJets[0]->pT() > 100.
              && signalJets[1]->pT() > 50.)passJetCut=true;
         }
-	
-	//Calculate MT2 
+
+	//Calculate MT2
 	double mt2ll=0;
 	if(nLeptons==2){
 	  double pa_a[3] = { 0, signalLeptons[0]->mom().px(), signalLeptons[0]->mom().py() };
@@ -255,7 +256,7 @@ namespace Gambit {
         if(mt2ll>100) cut_MT2100=true;
         if(mt2ll>110) cut_MT2110=true;
         if(mt2ll>120) cut_MT2120=true;
-	
+
         if((baselineElectrons.size()+baselineMuons.size())==2) cut_2leptons_base=true;
         if((signalElectrons.size()+signalMuons.size())==2) cut_2leptons=true;
         if(signalElectrons.size()==2 && signalMuons.size()==0) cut_2leptons_ee=true;
@@ -263,7 +264,7 @@ namespace Gambit {
         if(signalElectrons.size()==0 && signalMuons.size()==2) cut_2leptons_mumu=true;
 
 	if(passJetCut)cut_2jets=true;
-      
+
         cutFlowVector_str[0] = "No cuts ";
         cutFlowVector_str[1] = "2 Baseline Leptons ";
         cutFlowVector_str[2] = "2 SF Signal Leptons";
@@ -323,7 +324,7 @@ namespace Gambit {
              (j==15 && cut_2leptons && cut_2leptons_emu && isOS && isMLL) ||
 
              (j==16 && cut_2leptons && cut_2leptons_emu && isOS && isMLL && ispT) ||
-  
+
              (j==17 && cut_2leptons && cut_2leptons_emu && isOS && isMLL && ispT && isdphi) ||
 
              (j==18 && cut_2leptons && cut_2leptons_emu && isOS && isMLL && ispT && isdphi && isdphib) ||
@@ -361,7 +362,7 @@ namespace Gambit {
         using namespace std;
 
         double scale_to = 1339.6;
-	
+
         double trigger_cleaning_eff = 1;//0.53;
 
         cout << "------------------------------------------------------------------------------------------------------------------------------ "<<std::endl;
