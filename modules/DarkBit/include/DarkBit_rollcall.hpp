@@ -121,11 +121,6 @@ START_MODULE
       ALLOW_MODELS(SingletDM)
       BACKEND_REQ(rdmgev, (), DS_RDMGEV)
     #undef FUNCTION
-    #define FUNCTION RD_thresholds_resonances_EffWIMP
-      START_FUNCTION(RDrestype)
-      ALLOW_MODELS(EffWIMP)
-      BACKEND_REQ(rdmgev, (), DS_RDMGEV)
-    #undef FUNCTION
   #undef CAPABILITY
 
   #define CAPABILITY RD_eff_annrate_SUSY_DSprep
@@ -147,7 +142,7 @@ START_MODULE
     #define FUNCTION RD_eff_annrate_from_ProcessCatalog
       START_FUNCTION(fptr_dd)
       DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)
-      ALLOW_MODELS(SingletDM,EffWIMP)
+      ALLOW_MODELS(SingletDM)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -312,10 +307,6 @@ START_MODULE
       START_FUNCTION(Gambit::DarkBit::TH_ProcessCatalog)
       ALLOW_MODELS(SingletDM)
     #undef FUNCTION
-    #define FUNCTION TH_ProcessCatalog_EffWIMP
-      START_FUNCTION(Gambit::DarkBit::TH_ProcessCatalog)
-      ALLOW_MODELS(EffWIMP)
-      #undef FUNCTION
   #undef CAPABILITY
 
   #define CAPABILITY lnL_FermiLATdwarfs
