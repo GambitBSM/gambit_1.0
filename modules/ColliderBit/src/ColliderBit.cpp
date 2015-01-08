@@ -347,25 +347,25 @@ namespace Gambit {
       cout << "In calcLogLike" << endl;
 
       std::vector<double> observedLikelihoods;
-      for (size_t analysis=0; analysis<analysisResults.size(); ++analysis) {
-        for (size_t SR=0; SR<analysisResults[analysis].size(); ++SR) {
-          SignalRegionData srData=analysisResults[analysis][SR];
+      for (size_t analysis = 0; analysis < analysisResults.size(); ++analysis) {
+        for (size_t SR = 0; SR < analysisResults[analysis].size(); ++SR) {
+          SignalRegionData srData = analysisResults[analysis][SR];
+
           /// Actual observed number of events
-          int n_obs = (int)srData.n_observed;
+          int n_obs = (int) srData.n_observed;
+
           /// A contribution to the predicted number of events that is known exactly
           /// (e.g. from data-driven background estimate)
           double n_predicted_exact = 0.;
+
           // A contribution to the predicted number of events that is not known exactly
-          double n_predicted_uncertain = srData.n_background + srData.n_background;
-          double uncertainty=0.;
-          if(srData.n_signal!=0) {
+          double n_predicted_uncertain = srData.n_signal + srData.n_background;
+
             /// A fractional uncertainty on n_predicted_uncertain
             /// (e.g. 0.2 from 20% uncertainty on efficencty wrt signal events)
-            uncertainty = sqrt((srData.background_sys/srData.n_background)
-                             * (srData.background_sys/srData.n_background)
-                             * (srData.signal_sys/srData.n_signal)
-                             * (srData.signal_sys/srData.n_signal));
-          } else { uncertainty = (srData.background_sys/srData.n_background); }
+          double bkg_ratio = srData.background_sys/srData.n_background;
+          double sig_ratio = (srData.n_signal != 0) ? srData.signal_sys/srData.n_signal : 0;
+          double uncertainty = sqrt(bkg_ratio*bkg_ratio + sig_ratio*sig_ratio);
 
           if (*BEgroup::lnlike_marg_poisson == "lnlike_marg_poisson_lognormal_error") {
             /// Use a log-normal distribution for the nuisance parameter (more correct)
