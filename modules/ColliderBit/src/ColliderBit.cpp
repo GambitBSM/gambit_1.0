@@ -114,12 +114,14 @@ namespace Gambit {
     }
 
 
-    void getBuckFast_Identity(shared_ptr<Gambit::ColliderBit::BuckFastBase> &result) {
-      using namespace Pipes::getBuckFast_Identity;
+    void getBuckFast(shared_ptr<Gambit::ColliderBit::BuckFastBase> &result) {
+      using namespace Pipes::getBuckFast;
+      std::string buckFastOption;
       if(resetBuckFastFlag) {
         #pragma omp critical (BuckFast)
         {
-          result.reset( mkBuckFast("BuckFastIdentity") );
+	  GET_COLLIDER_RUNOPTION(buckFastOption, std::string)
+          result.reset( mkBuckFast(buckFastOption) );
           resetBuckFastFlag = false;
         }
       }
@@ -246,7 +248,7 @@ namespace Gambit {
       result.clear();
 
       /// Get the next event from Pythia8
-      const auto pevt = (*Dep::HardScatteringSim)->nextEvent();
+      const auto &pevt = (*Dep::HardScatteringSim)->nextEvent();
 
       Pythia8::Vec4 ptot;
       std::vector<fastjet::PseudoJet> jetparticles;
@@ -280,10 +282,16 @@ namespace Gambit {
         const Pythia8::Particle& p = pevt[i];
 
         // Only consider final state particles within ATLAS/CMS acceptance
-        if (!p.isFinal()) continue;
-        if (abs(p.eta()) > 5.0) continue;
+	
+        if (!p.isFinal()){
+	  continue;
+	}
+        if (abs(p.eta()) > 5.0){
+	  continue;
+	}
         // Add to total final state momentum
-        ptot += p.p();
+	//@todo need to add a proper system for handling invisible particle pid codes
+        if(p.id()!=1000022)ptot += p.p();
 
         // Promptness: for leptons and photons we're only interested if they don't come from hadron/tau decays
         /// @todo Don't exclude hadronic tau decay products from jet finding: ATLAS treats them as jets
@@ -322,6 +330,7 @@ namespace Gambit {
       }
 
       /// MET (note: NOT just equal to sum of prompt invisibles)
+
       result.set_missingmom(-mk_p4(ptot));
     }
 
