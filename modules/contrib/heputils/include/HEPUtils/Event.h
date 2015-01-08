@@ -79,7 +79,7 @@ namespace HEPUtils {
     }
 
     /// Clone a copy on the heap
-    Event* clone() {
+    Event* clone() const {
       Event* rtn = new Event();
       std::vector<Particle*> ps = particles();
       for (size_t i = 0; i < ps.size(); ++i) {
