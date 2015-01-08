@@ -317,7 +317,7 @@ namespace Gambit {
           }
         }
         /// Add to the event
-        result.addJet(new HEPUtils::Jet(HEPUtils::mk_p4(pj), isB));
+        result.add_jet(new HEPUtils::Jet(HEPUtils::mk_p4(pj), isB));
       }
 
       /// MET (note: NOT just equal to sum of prompt invisibles)

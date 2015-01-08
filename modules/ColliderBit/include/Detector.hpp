@@ -241,7 +241,7 @@ namespace Gambit {
           else {
             /// @todo Should the jet mass be assigned properly rather than set as microscopic?
             recoJet = new HEPUtils::Jet(P4::mkXYZM(momentum.Px(), momentum.Py(), momentum.Pz(), 1e-6), candidate->BTag);
-            event.addJet(recoJet);
+            event.add_jet(recoJet);
           }
         }
       }
