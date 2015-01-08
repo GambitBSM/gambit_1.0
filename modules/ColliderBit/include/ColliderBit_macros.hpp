@@ -16,18 +16,38 @@
 #ifndef __ColliderBit_macros_hpp__
 #define __ColliderBit_macros_hpp__
 
-/// Macros for analysis factory fns
+/// Macros for factory fns
 #define DECLARE_ANALYSIS_FACTORY(ANAME) \
   Analysis* create_Analysis_ ## ANAME()
 #define DEFINE_ANALYSIS_FACTORY(ANAME) \
   Analysis* create_Analysis_ ## ANAME() { return new Analysis_ ## ANAME(); }
 
-/// Macros for collider factory fns
 #define DECLARE_COLLIDER_FACTORY(CNAME, CCLASS)                          \
   CCLASS* create_ ## CNAME(const std::vector<std::string>&);
 #define DEFINE_COLLIDER_FACTORY(CNAME, CCLASS)                           \
   CCLASS* create_ ## CNAME(const std::vector<std::string>& settings) {   \
     CCLASS* result = new CNAME();                                        \
+    result->defaults();                                                  \
+    result->init(settings);                                              \
+    return result;                                                       \
+  }
+
+#define DECLARE_DETECTOR_FACTORY_NO_SETTINGS(DNAME, DCLASS)              \
+  DCLASS* create_ ## DNAME();
+#define DEFINE_DETECTOR_FACTORY_NO_SETTINGS(DNAME, DCLASS)               \
+  DCLASS* create_ ## DNAME() {                                           \
+    DCLASS* result = new DNAME();                                        \
+    result->defaults();                                                  \
+    result->init();                                                      \
+    return result;                                                       \
+  }
+
+// TODO: may need to be different than collider factory at some point
+#define DECLARE_DETECTOR_FACTORY(DNAME, DCLASS)                          \
+  DCLASS* create_ ## DNAME(const std::vector<std::string>&);
+#define DEFINE_DETECTOR_FACTORY(DNAME, DCLASS)                           \
+  DCLASS* create_ ## DNAME(const std::vector<std::string>& settings) {   \
+    DCLASS* result = new DNAME();                                        \
     result->defaults();                                                  \
     result->init(settings);                                              \
     return result;                                                       \

@@ -31,7 +31,11 @@
 ///  \author Christopher Savage
 ///          (chris@savage.name)
 ///  \date 2014 Oct, Dec
-///  
+///
+///  \author Antje Putze
+///          (antje.putze@lapth.cnrs.fr)
+///  \date 2015 Jan
+///
 ///  *********************************************
 
 #ifndef __DarkBit_rollcall_hpp__

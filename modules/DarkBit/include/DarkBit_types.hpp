@@ -271,7 +271,7 @@ namespace Gambit
         // Energy dependence of final state particles
         // Includes v_rel as last argument in case of annihilation
         // TODO: Implement checks
-        Funk::Funk dSigmadE;  
+      Funk::Funk dSigmadE; // rename to genRate
 
         // Compare final states
         bool isChannel(std::string p0, std::string p1, std::string p2 ="", std::string p3 = "")
@@ -345,8 +345,11 @@ namespace Gambit
         // List of channels
         std::vector<TH_Channel> channelList;
 
+        //List of resonances and thresholds => rename RDrestype
+        std::vector<RDrestype> thresholdResonances;
+
         // Total decay rate or sigma v
-        double genRateTotal;
+        Funk::Funk genRateTotal; // was a double, but needs to be a Funk of velocity
     };
 
     struct TH_ProcessCatalog
