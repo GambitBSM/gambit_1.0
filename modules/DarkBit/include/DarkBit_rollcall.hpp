@@ -433,7 +433,7 @@ START_MODULE
       DEPENDENCY(mwimp, double)
       DEPENDENCY(annrate, double)
       DEPENDENCY(nuyield, nuyield_functype)  
-      BACKEND_REQ(nubounds, (), void, (const char&, const double&, const double&, double(*)(double&, int&, void*&), double&, double&,
+      BACKEND_REQ(nubounds, (), void, (const char&, const double&, const double&, double(*)(const double&, const int&, void*&), double&, double&,
                                        int&, double&, double&, const int&, const bool&, const double&, const double&, void*&))
     #undef FUNCTION
   #undef CAPABILITY
@@ -485,7 +485,7 @@ START_MODULE
       DEPENDENCY(mwimp, double)
       DEPENDENCY(annrate, double)
       DEPENDENCY(nuyield, nuyield_functype)  
-      BACKEND_REQ(nubounds, (), void, (const char&, const double&, const double&, double(*)(double&, int&, void*&), double&, double&,
+      BACKEND_REQ(nubounds, (), void, (const char&, const double&, const double&, double(*)(const double&, const int&, void*&), double&, double&,
                                        int&, double&, double&, const int&, const bool&, const double&, const double&, void*&))
     #undef FUNCTION
   #undef CAPABILITY
@@ -537,7 +537,7 @@ START_MODULE
       DEPENDENCY(mwimp, double)
       DEPENDENCY(annrate, double)
       DEPENDENCY(nuyield, nuyield_functype)  
-      BACKEND_REQ(nubounds, (), void, (const char&, const double&, const double&, double(*)(double&, int&, void*&), double&, double&,
+      BACKEND_REQ(nubounds, (), void, (const char&, const double&, const double&, double(*)(const double&, const int&, void*&), double&, double&,
                                        int&, double&, double&, const int&, const bool&, const double&, const double&, void*&))
     #undef FUNCTION
   #undef CAPABILITY
@@ -589,7 +589,7 @@ START_MODULE
       DEPENDENCY(mwimp, double)
       DEPENDENCY(annrate, double)
       DEPENDENCY(nuyield, nuyield_functype)  
-      BACKEND_REQ(nubounds, (), void, (const char&, const double&, const double&, double(*)(double&, int&, void*&), double&, double&,
+      BACKEND_REQ(nubounds, (), void, (const char&, const double&, const double&, double(*)(const double&, const int&, void*&), double&, double&,
                                        int&, double&, double&, const int&, const bool&, const double&, const double&, void*&))
     #undef FUNCTION
   #undef CAPABILITY

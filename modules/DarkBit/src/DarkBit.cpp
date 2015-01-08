@@ -1602,14 +1602,14 @@ namespace Gambit {
     //They should be deleted when real functions are added to provide the WIMP mass, solar
     //annihilation rate and neutrino yield.
     typedef void (*context_func)();
-    double DarkBit_toyield(double&, int&, void*& context)
+    void DarkBit_context  ()                                {}// cout << "test" << endl; }
+    double DarkBit_toyield(const double&, const int&, void*& context)
     {
       context_func* context_function_ptr = static_cast<context_func*>(context);
       context_func context_function = *context_function_ptr;
-      context_function();  
+      context_function();
       return 1.e-26;
     }
-    void DarkBit_context  ()                                {} //cout << "test" << endl; }
     void nuyield_toy      (nuyield_functype &result)        { result = &DarkBit_toyield; }
     void mwimp_toy        (double &result)                  { result = 250.0;            }
     void annrate_toy      (double &result)                  { result = 1.e20;            }
