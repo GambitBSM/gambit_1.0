@@ -8,3 +8,11 @@ JE58D_007879: upper left corner in DMA plot, heavy model, MSSM-7
 JE87O_006600: lower left corner in DMA plot, heavy model, MSSM-7
 JE67B_006998: lower right corner in DMA plot, medium heavy model, MSSM-7
 FMCp03000765: BM3 from IB paper, light selectron, CMSSM model
+
+The *.slha files are full SLHA2 files, whereas the *.slha1 files are
+written out as SLHA1 files (some shortcuts taken to do this, but
+approximately correct). Whenever possible, use the *.slha files.
+
+Joakim Edsjö
+edsjo@fysik.su.se
+
