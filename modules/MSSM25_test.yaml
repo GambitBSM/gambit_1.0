@@ -1,0 +1,124 @@
+Parameters:
+  MSSM25:
+    Qin:
+      fixed_value: 5000  
+    SignMu:
+      fixed_value: 1
+    TanBeta:
+      range: [1, 10]
+
+    # Note which of these are mass squared parameters 
+    mHu2:
+      range: [0, 10000]
+    mHd2:
+      range: [0, 10000]
+
+    M1:
+      range: [0, 100]
+    M2:
+      range: [0, 100]
+    M3:
+      range: [0, 100]
+
+    mq2_1:
+      range: [0, 10000]
+    mq2_2:
+      range: [0, 10000]
+    mq2_3:
+      range: [0, 10000]
+
+    ml2_1:
+      range: [0, 10000]
+    ml2_2:
+      range: [0, 10000]
+    ml2_3:
+      range: [0, 10000]
+
+    md2_1:
+      range: [0, 10000]
+    md2_2:
+      range: [0, 10000]
+    md2_3:
+      range: [0, 10000]
+
+    mu2_1:
+      range: [0, 10000]
+    mu2_2:
+      range: [0, 10000]
+    mu2_3:
+      range: [0, 10000]
+
+    me2_1:
+      range: [0, 10000]
+    me2_2:
+      range: [0, 10000]
+    me2_3:
+      range: [0, 10000]
+
+    Ae_12:
+      range: [-100, 100]
+    Ae_3:
+      range: [-100, 100]
+    Ad_3:
+      range: [-100, 100]
+    Au_3:
+      range: [-100, 100]
+
+Priors:
+    # default: flat
+
+Printer:
+  printer: ascii
+  options:
+    output_file: "runs/MSSM25_test/samples/gambit_output.txt"
+    info_file: "runs/MSSM25_test/samples/gambit_output.info"
+
+Scanner:
+  use_scanner_plugin: toy_mcmc
+  
+  plugins:
+    toy_mcmc:
+      plugin: toy_mcmc
+      options:
+        point_number: 100
+        output_file:  output
+        like:  Likelihood
+
+ObsLikes:
+  - purpose:      Test
+    capability:   SpecBit_examples
+    type:         bool
+    function:     exampleRead
+
+Auxiliaries:
+  - capability: SpecBit_examples
+    dependencies:
+    - {capability: MSSM_spectrum, function: get_MSSMatQ_spectrum} 
+
+  - capability: MSSM_spectrum 
+    options:
+      ewsb_loop_order: 2
+      invalid_point_fatal: false
+
+Logger:
+
+  prefix : "runs/MSSM25_test/logs/"
+  redirection:
+    [Debug] : "debug.log"
+    [Default] : "default.log"
+    [SpecBit] : "SpecBit.log"
+    [Dependency Resolver] : "dep_resolver.log"
+
+KeyValues:
+
+  dependency_resolution:
+    prefer_model_specific_functions: false
+    use_old_routines: true
+
+  likelihood:
+    model_invalid_for_lnlike_below: -1e6
+ 
+  exceptions:
+    # To trigger stop in 'exampleRead' function
+    SpecBit_warning: fatal
+

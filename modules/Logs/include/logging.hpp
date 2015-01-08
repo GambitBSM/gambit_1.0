@@ -25,15 +25,13 @@
 #include <set>
 #include <fstream>
 #include <stdexcept>
+#include <chrono> 
 
 // Gambit
 #include "log_tags.hpp"
+#include "util_functions.hpp"
 
-// Boost (Ben: Any problem using boost for the timing? Don't know if we need any fallbacks...)
-#include "boost/date_time/posix_time/posix_time.hpp" //include all types plus i/o
-namespace pt = boost::posix_time;
 
-// Code!
 namespace Gambit
 {
 
@@ -41,13 +39,7 @@ namespace Gambit
   {
 
     // Global reference start time. Can only be used in this compile unit.
-    static const pt::ptime start_time(pt::microsec_clock::universal_time());
-
-    // // If we move away from boost, need something like this: (using <ctime>)
-    // // Global clock object for the logger
-    // static const std::time_t log_clock;
-    // // Global reference start time. Can only be used in this compile unit.
-    // static const std::time start_time(&log_clock);
+    static const Utils::time_point start_time(Utils::get_clock_now());
 
     /// Special struct for signalling end of message to LogMaster stream
     struct endofmessage { endofmessage(){} ~endofmessage(){} };
@@ -82,13 +74,13 @@ namespace Gambit
     {
         std::string message;
         std::set<int> tags;
-        pt::ptime received_at;
+        Utils::time_point received_at;
         /// Constructor
         Message(const std::string& msgIN, 
                 const std::set<int>& tagsIN)
           : message(msgIN), 
             tags(tagsIN), 
-            received_at(pt::microsec_clock::universal_time())
+            received_at(Utils::get_clock_now())
         {}
     };
 
@@ -96,7 +88,7 @@ namespace Gambit
     struct SortedMessage
     {
         const std::string& message; //lives on in original Message object, so can be a reference safely I think
-        const pt::ptime& received_at; //ditto
+        const Utils::time_point& received_at; //ditto
         // couldn't figure out how to nicely initialise these in the constructor list, so not const
         // now happens in body of constructor
         std::set<LogTag> type_tags;      //message types

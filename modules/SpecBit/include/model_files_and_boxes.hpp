@@ -30,7 +30,6 @@
 // Abstraction of algorithm name
 #define ALGORITHM1 Two_scale
 
-#define INCLUDE_FILE(TAIL) STRINGIFY( CAT_3(MODELNAME,_,TAIL) )
 
 // Make flexiblesusy interface struct for MSSMSpec template class
 // We need this so that we can match spectrum objects with different 
@@ -144,26 +143,20 @@
   }
 
 
-/// CMSSM includes and Modelbox definition
+/// All the includes and Model_interface definitions
+
 #define MODELNAME CMSSM
-#include INCLUDE_FILE(input_parameters.hpp)     //includes the file "CMSSM_input_parameters.hpp"
-#include INCLUDE_FILE(slha_io.hpp)
-#include INCLUDE_FILE(spectrum_generator.hpp)
-#include INCLUDE_FILE(two_scale_model.hpp)
-#include INCLUDE_FILE(two_scale_model_slha.hpp)
-#include INCLUDE_FILE(physical.hpp)
-#include INCLUDE_FILE(info.hpp)
+#include "flexiblesusy_include_automater.hpp" // Automatically includes necessary CMSSM model headers
 MAKE_INTERFACE  // Creates CMSSM_interface class
 #undef MODELNAME
 
 #define MODELNAME MSSMatMGUT
-#include INCLUDE_FILE(input_parameters.hpp)
-#include INCLUDE_FILE(slha_io.hpp)
-#include INCLUDE_FILE(spectrum_generator.hpp)
-#include INCLUDE_FILE(two_scale_model.hpp)
-#include INCLUDE_FILE(two_scale_model_slha.hpp)
-#include INCLUDE_FILE(physical.hpp)
-#include INCLUDE_FILE(info.hpp)
+#include "flexiblesusy_include_automater.hpp" // Automatically includes necessary MSSMatMGUT model headers etc.
+MAKE_INTERFACE
+#undef MODELNAME
+
+#define MODELNAME MSSM
+#include "flexiblesusy_include_automater.hpp" // Automatically includes necessary MSSMatMGUT model headers etc.
 MAKE_INTERFACE
 #undef MODELNAME
 

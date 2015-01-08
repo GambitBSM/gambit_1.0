@@ -100,7 +100,7 @@ namespace Gambit {
       void print() const;
 
       /// Dump parameter names and values to stream (again for debugging only I think)
-      friend std::ostream &operator<<(std::ostream &strm, ModelParameters &me)
+      friend std::ostream &operator<<(std::ostream &strm, const ModelParameters &me)
       {
         strm << "ModelParameters: Printing: "<<std::endl;
         for (std::map<std::string,double>::const_iterator it=me._values.begin();it!=me._values.end();it++)
