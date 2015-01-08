@@ -43,8 +43,9 @@ namespace Gambit {
     /// Delphes stuff
     /// @TODO BOSS delphes? Euthanize delphes?
     bool resetDelphesFlag = true;
-    bool resetBuckFastFlag = true;
     std::string delphesConfigFilename;
+    /// BuckFast stuff
+    bool resetBuckFastFlag = true;
     /// Pythia stuff
     bool resetPythiaFlag = true;
     /// Analysis stuff
@@ -115,7 +116,7 @@ namespace Gambit {
 
     void getBuckFast_Identity(shared_ptr<Gambit::ColliderBit::BuckFastBase> &result) {
       using namespace Pipes::getBuckFast_Identity;
-      if(resetDelphesFlag) {
+      if(resetBuckFastFlag) {
         #pragma omp critical (BuckFast)
         {
           result.reset( mkBuckFast("BuckFastIdentity") );

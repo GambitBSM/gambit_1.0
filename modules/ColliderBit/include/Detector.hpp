@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <exception>
+#include <memory>
 
 /// @note To configure a new detector, follow these steps:
 /// @note (To configure a new subprocess group, only do STEPS >= 5)
@@ -59,7 +60,7 @@ namespace Gambit {
     };
 
 
-    /// @note Abstract base class BuckFastToHEPUtilsBase
+    /// @note Abstract base class BuckFastBase
     class BuckFastBase : public Detector<HEPUtils::Event, HEPUtils::Event> {
     public:
       /// @name Initialization functions
@@ -77,17 +78,16 @@ namespace Gambit {
       /// @name Event conversion functions.
       //@{
       virtual void convertInput(const HEPUtils::Event& event) {
-        /// Make a local copy of the input event to be modified by processEvent.
-        _processedEvent.clear();
-        _processedEvent = event;
+        /// Make a local deep copy of the input event to be modified by processEvent.
+        _processedEvent.reset(event.clone());
       }
 
       virtual void convertOutput(HEPUtils::Event& event) {
-        event = _processedEvent;
+        event = *(_processedEvent->clone());
       }
       //@}
 
-      HEPUtils::Event _processedEvent;
+      std::shared_ptr<HEPUtils::Event> _processedEvent;
     };
 
 
