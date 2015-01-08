@@ -40,8 +40,15 @@ START_MODULE
   #define CAPABILITY DetectorSim
   START_CAPABILITY
     #define FUNCTION getDelphes
-    START_FUNCTION(shared_ptr<ColliderBit::Delphes_PythiaToHEPUtils>)
+    START_FUNCTION(shared_ptr<Gambit::ColliderBit::DelphesBase>)
     NEEDS_CLASSES_FROM(Pythia, default)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY SimpleSmearingSim
+  START_CAPABILITY
+    #define FUNCTION getBuckFast_Identity
+    START_FUNCTION(shared_ptr<Gambit::ColliderBit::BuckFastBase>)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -51,7 +58,9 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION operatePythia
     START_FUNCTION(void, CAN_MANAGE_LOOPS)
-    DEPENDENCY(DetectorSim, shared_ptr<ColliderBit::Delphes_PythiaToHEPUtils>)
+    NEEDS_CLASSES_FROM(Pythia, default)
+    DEPENDENCY(DetectorSim, shared_ptr<Gambit::ColliderBit::DelphesBase>)
+    DEPENDENCY(SimpleSmearingSim, shared_ptr<Gambit::ColliderBit::BuckFastBase>)
     DEPENDENCY(ListOfAnalyses, AnalysisPointerVector)
     #undef FUNCTION
   #undef CAPABILITY
@@ -61,7 +70,7 @@ START_MODULE
   #define CAPABILITY HardScatteringSim
   START_CAPABILITY
     #define FUNCTION getPythia
-    START_FUNCTION(shared_ptr<ColliderBit::PythiaBase>)
+    START_FUNCTION(shared_ptr<Gambit::ColliderBit::PythiaBase>)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
     NEEDS_CLASSES_FROM(Pythia, default)
     #undef FUNCTION
@@ -75,7 +84,15 @@ START_MODULE
     START_FUNCTION(Pythia8::Event)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
     NEEDS_CLASSES_FROM(Pythia, default)
-    DEPENDENCY(HardScatteringSim, shared_ptr<ColliderBit::PythiaBase>)
+    DEPENDENCY(HardScatteringSim, shared_ptr<Gambit::ColliderBit::PythiaBase>)
+    #undef FUNCTION
+
+    /// Event converters to the standard Gambit collider event format
+    #define FUNCTION convertPythia8Event
+    START_FUNCTION(HEPUtils::Event)
+    NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
+    NEEDS_CLASSES_FROM(Pythia, default)
+    DEPENDENCY(HardScatteringSim, shared_ptr<Gambit::ColliderBit::PythiaBase>)
     #undef FUNCTION
 
   /// For now, let's stick to what we already have running.
@@ -109,7 +126,7 @@ START_MODULE
   #undef CAPABILITY
 */
 
-  #define CAPABILITY GambitColliderEvent
+  #define CAPABILITY ReconstructedEvent
   START_CAPABILITY
     /// Detector simulators which directly produce the standard event format
     #define FUNCTION reconstructDelphesEvent
@@ -117,17 +134,15 @@ START_MODULE
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
     NEEDS_CLASSES_FROM(Pythia, default)
     DEPENDENCY(HardScatteringEvent, Pythia8::Event)
-    DEPENDENCY(DetectorSim, shared_ptr<ColliderBit::Delphes_PythiaToHEPUtils>)
+    DEPENDENCY(DetectorSim, shared_ptr<Gambit::ColliderBit::DelphesBase>)
     #undef FUNCTION
 
-    /// Event converters to the standard Gambit collider event format
-    #define FUNCTION convertPythia8Event
+    #define FUNCTION reconstructBuckFastEvent
     START_FUNCTION(HEPUtils::Event)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
-    NEEDS_CLASSES_FROM(Pythia, default)
-    DEPENDENCY(HardScatteringEvent, Pythia8::Event)
+    DEPENDENCY(HardScatteringEvent, HEPUtils::Event)
+    DEPENDENCY(SimpleSmearingSim, shared_ptr<Gambit::ColliderBit::BuckFastBase>)
     #undef FUNCTION
-
   /// For now, let's stick to what we already have running.
   /// \todo Replace BLAH_* with the proper types.  Put those types in the proper place for typedefs.
   /// \todo ... these later:
@@ -164,7 +179,7 @@ START_MODULE
     START_FUNCTION(ColliderLogLikes) //return type is ColliderLogLikes struct
     ALLOW_MODELS(NormalDist)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
-    DEPENDENCY(GambitColliderEvent, HEPUtils::Event)
+    DEPENDENCY(ReconstructedEvent, HEPUtils::Event)
     DEPENDENCY(ListOfAnalyses, AnalysisPointerVector)
     //BACKEND_REQ_FROM_GROUP(lnlike_marg_poisson, lnlike_marg_poisson_lognormal_error, (), double, (int&, double&, double&, double&) )
     //BACKEND_REQ_FROM_GROUP(lnlike_marg_poisson, lnlike_marg_poisson_gaussian_error, (), double, (int&, double&, double&, double&) )
@@ -194,7 +209,7 @@ START_MODULE
     START_FUNCTION(double)   /// Could be a scaled number of events, so double
     ALLOW_MODELS(NormalDist)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
-    DEPENDENCY(GambitColliderEvent, HEPUtils::Event)
+    DEPENDENCY(ReconstructedEvent, HEPUtils::Event)
     #undef FUNCTION
     #undef CAPABILITY*/
   /// \todo How many more do we need to define...?
