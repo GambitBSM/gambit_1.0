@@ -64,6 +64,10 @@ namespace Gambit
          std::cout << "Good spectrum found! Inspecting contents..." << std::endl;
          std::cout << std::endl << slhaea << std::endl;
          
+         // Write to file so we can check it
+         std::string filename(Pipe::runOptions->getValue<std::string>("output_slha_filename"));
+         spec->dump2slha(filename);
+
          // Comparison of Spectrum getters vs slhaea readout
          // Pole masses:
          // (Standard Model)
@@ -73,12 +77,29 @@ namespace Gambit
          std::cout << "Spectrum object running parameters are defined at scale Q=" 
                    << spec->runningpars.GetScale() << " [GeV]" << endl;
          std::cout << std::endl;
-         std::cout << ECHO(  spec->phys.get_Pole_Mass("MZ")       ) << std::endl;
-         std::cout << ECHO(  slhaea.at("SMINPUTS").at(4).at(1)    ) << std::endl;
-         std::cout << std::endl;
+
+         /* ----------------- Pole masses --------------------------- */
+     
+         // Gauge bosons / gauginos  
+     
+    
+         // MZ was a bad first example; it is empty unless you switch on the SM pole mass
+         // calculator for flexiblesusy. We do not yet pass any input value of MZ though
+         // Similar issues with other gauge boson masses, so skip these for now
+
+         //std::cout << ECHO(  spec->phys.get_Pole_Mass("MZ")       ) << std::endl;
+         //std::cout << ECHO(  slhaea.at("SMINPUTS").at(4).at(1)    ) << std::endl;
+         //std::cout << std::endl;
+
          std::cout << ECHO(  spec->phys.get_Pole_Mass("MGluino")  ) << std::endl;
          std::cout << ECHO(  slhaea.at("MASS").at(1000021).at(1)  ) << std::endl;
          std::cout << std::endl;
+
+
+
+
+
+
 
          SpecBit_warning().raise(LOCAL_INFO,"Stopped to examine spectrum contents");  
          result = 0;

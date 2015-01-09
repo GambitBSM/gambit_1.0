@@ -69,27 +69,56 @@ namespace Gambit
       TYPE getValue(const args&... keys) const
       {
         const YAML::Node node = getVariadicNode(options, keys...);
+        TYPE result;
         if (not node)
         {
           std::ostringstream os;
           os << "No options entry for [" << stringifyVariadic(keys...) << "]\n Node contents:  " << options;
           utils_error().raise(LOCAL_INFO,os.str());
         }
-        return node.as<TYPE>();
+        else
+        {
+          try {
+            result = node.as<TYPE>();
+          } catch(YAML::Exception& e) {
+            std::ostringstream os;
+            os << "Error retrieving options entry for [" << stringifyVariadic(keys...) 
+               << "] as type " << typeid(TYPE).name() << " (template parameter: see below)" << std::endl 
+               << "YAML message follows: " << std::endl
+               << e.what();
+            utils_error().raise(LOCAL_INFO,os.str());
+          }
+        }
+        return result;
       }
 
       template<typename TYPE, typename... args>
       TYPE getValueOrDef(TYPE def, const args&... keys) const
       {
         const YAML::Node node = getVariadicNode(options, keys...);
+        TYPE result;
         if (not node)
         {
-          return def;
+          result = def;
         }
-        return node.as<TYPE>();
+        else
+        {
+          try {
+            result = node.as<TYPE>();
+          } catch(YAML::Exception& e) {
+            std::ostringstream os;
+            os << "Error retrieving options entry for [" << stringifyVariadic(keys...) 
+               << "] as type " << typeid(TYPE).name() << " (template parameter: see below)" << std::endl 
+               << "YAML message follows: " << std::endl
+               << e.what();
+            utils_error().raise(LOCAL_INFO,os.str());
+          }
+        }
+        return result;
       }
       /// @}
-     
+    
+
       /// Basic setter, for adding extra options 
       /// @{
       template<typename KEYTYPE, typename VALTYPE>

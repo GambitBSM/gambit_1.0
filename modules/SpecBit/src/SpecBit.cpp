@@ -97,12 +97,26 @@ namespace Gambit
       // | higgs_2loop_correction_at_at     | 0, 1                         | 1 (= enabled)   |
       // | higgs_2loop_correction_atau_atau | 0, 1                         | 1 (= enabled)   |
 
+     
       #define SPECGEN_SET(NAME,TYPE,DEFAULTVAL) \
          CAT_2(spectrum_generator.set_, NAME) BOOST_PP_LPAREN() runOptions.getValueOrDef< TYPE > \
                BOOST_PP_LPAREN() DEFAULTVAL BOOST_PP_COMMA() STRINGIFY(NAME) \
                BOOST_PP_RPAREN() BOOST_PP_RPAREN()
-        /* Ugly I know. It expands to:
-      spectrum_generator.set_NAME(runOptions.getValueOrDef<TYPE>(DEFAULTVAL,"NAME")); */
+      // Ugly I know. It expands to:
+      // spectrum_generator.set_NAME(runOptions.getValueOrDef<TYPE>(DEFAULTVAL,"NAME"))
+
+      // For debugging only; check expansions
+      #ifdef SpecBit_DBUG
+         #define ECHO(COMMAND) std::cout << SAFE_STRINGIFY(COMMAND) << std::endl
+         ECHO(  SPECGEN_SET(precision_goal,                 double, 1.0e-4)  );
+         ECHO(  SPECGEN_SET(max_iterations,                 double, 0 )      );
+         ECHO(  SPECGEN_SET(calculate_sm_masses,              bool, false )  );
+         ECHO(  SPECGEN_SET(pole_mass_loop_order,              int, 2 )      );
+         ECHO(  SPECGEN_SET(ewsb_loop_order,                   int, 2 )      );
+         ECHO(  SPECGEN_SET(beta_loop_order,                   int, 2 )      );
+         ECHO(  SPECGEN_SET(threshold_corrections_loop_order,  int, 1 )      );
+         #undef ECHO
+      #endif
 
       SPECGEN_SET(precision_goal,                 double, 1.0e-4);
       SPECGEN_SET(max_iterations,                 double, 0 );
