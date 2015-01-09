@@ -1,0 +1,63 @@
+\documentclass[11pt,a4paper]{article}
+% Presumably we will have a modified template header for the final papers
+% For now we hard code things below
+
+\usepackage{fancyhdr}
+\usepackage{parskip}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage[colorlinks=true, linkcolor=BrickRed, citecolor=Blue, urlcolor=Blue, filecolor=Blue]{hyperref}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{amssymb, amsmath}
+%\pagestyle{fancy}
+
+\newcommand{\mail}[1]{\href{mailto:#1}{#1}}
+
+\title{Comparison of statistical scanning methods with ScannerBit: a GAMBIT module for parameter scanning}
+
+\author{GAMBIT Scanner Working Group}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+blah
+\end{abstract}
+
+\section{Introduction}
+Context of GAMBIT
+
+\section{Background}
+\subsection{Statistics}
+brief background on frequentist profile likelihood and bayesian methods 
+\subsection{Scanning methods}
+background on scanning methods in global fits (mastercode, superbayes, fittino, cosmomc, etc)
+
+\section{Package description}
+general, including description of "purposes"
+\subsection{Scanner plugins}
+including plugin design and handles for interface with ScannerBit + interface to external libs (cmake + python system)
+\subsection{Target plugins}
+
+\section{Implemented Scanners}
+\subsection{Toy scanners: toy\_mcmc, random, grid}
+\subsection{Nested sampling}
+\subsection{Differential evolution}
+\subsection{T-walk}
+
+\section{Scanner comparison and examples}
+\begin{itemize}
+\item test target function performance of each scanner
+\item implementation examples in gambit and standalone
+\end{itemize}
+
+\section{Conclusions}
+
+\section{Acknowledgements}
+
+\appendix
+\section{Input file options}
+\section{Dependencies}
+
+\end{document}
