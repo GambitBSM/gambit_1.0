@@ -200,6 +200,8 @@ namespace Gambit
       double valB;
     };
 
+
+    // Obsolete structure; replaced with RD_spectrum_type
     struct RDspectype
     {
     //coannihilating particles
@@ -208,12 +210,51 @@ namespace Gambit
       double mass_co[1000];
     //location and type of resonances
       int n_res;
-      int part_res[10];
+      int part_res[10]; // never used. Do we need this?
       double mass_res[10], width_res[10];
     //location of thresholds
       int n_thr;
       double E_thr[100];
     };
+
+    struct TH_Resonance
+    {
+      TH_Resonance() : energy(0.), width (0.) {}
+      TH_Resonance(const double & energy, const double & width) : energy(energy), width(width) {}
+      double energy;
+      double width;
+    };
+
+    struct TH_resonances_thresholds
+    {
+      //location of resonances and thresholds in energy [GeV]
+      TH_resonances_thresholds() {}
+      TH_resonances_thresholds(const TH_resonances_thresholds & copy) : resonances(copy.resonances), threshold_energy(copy.threshold_energy) {}
+      TH_resonances_thresholds(const std::vector<TH_Resonance> & resonances, const std::vector<double> & thresholds) : resonances(resonances), threshold_energy(thresholds) {}
+
+      std::vector<TH_Resonance> resonances;
+      std::vector<double> threshold_energy;
+    };
+
+    struct RD_coannihilating_particle
+    {
+      RD_coannihilating_particle(const unsigned int & index, const unsigned int & dof, const double & mass) : index(index), degreesOfFreedom(dof), mass(mass) {}
+
+      unsigned int index;
+      unsigned int degreesOfFreedom;
+      double mass;
+    };
+
+    struct RD_spectrum_type
+    {
+      RD_spectrum_type() {}
+      RD_spectrum_type(const std::vector<RD_coannihilating_particle> & coannPart, const std::vector<TH_Resonance> & resonances, const std::vector<double> & thresholds) : coannihilatingParticles(coannPart), resonances(resonances), threshold_energy(thresholds) {}
+
+      std::vector<RD_coannihilating_particle> coannihilatingParticles;
+      std::vector<TH_Resonance> resonances;
+      std::vector<double> threshold_energy;
+    };
+    
 
     // A double in, double out function pointer.  FIXME Probably actually better if this goes in
     // shared_types.hpp eventually, as it will likely be needed by other modules too at some stage. 
@@ -231,16 +272,6 @@ namespace Gambit
     // e.g. chi --> everything, chi chi --> everything
     //
     // TH_ProcessCatalog describes all initial states relevant for DarkBit
-    
-    struct TH_resonances_thresholds
-    {
-      //location of resonances and thresholds in energy [GeV]
-      //int n_res, n_thr; //  number of resonances and thresholds -> not needed if we use vectors
-      //double E_res[10], dE_res[10], E_thr[100];
-      std::vector<double> resonance_energy;
-      std::vector<double> resonance_width;
-      std::vector<double> threshold_energy;
-    };
 
     struct TH_ParticleProperty
     {
@@ -353,7 +384,7 @@ namespace Gambit
         std::vector<TH_Channel> channelList;
 
         //List of resonances and thresholds => rename TH_resonances_thresholds
-        std::vector<TH_resonances_thresholds> thresholdResonances;
+        TH_resonances_thresholds thresholdResonances;
 
         // Total decay rate or sigma v
         Funk::Funk genRateTotal; // was a double, but needs to be a Funk of velocity
