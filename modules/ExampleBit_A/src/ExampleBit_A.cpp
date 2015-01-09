@@ -87,8 +87,8 @@ namespace Gambit
         invalid_point().raise("I don't like this point.");
       }
 
-      cout << Models::ParticleDB().long_name(std::pair<int,int>(25,0))<<endl;
-      model_error().raise(LOCAL_INFO,"die now");
+      //cout << Models::ParticleDB().long_name(std::pair<int,int>(25,0))<<endl;
+      //model_error().raise(LOCAL_INFO,"die now");
 
     }
 

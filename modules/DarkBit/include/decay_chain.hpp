@@ -230,7 +230,7 @@ namespace Gambit
                     const TH_Channel* randomDecay(string pID) const; 
                     const DecayTableEntry& operator[](string i) const{return table.at(i);} 
                     // Retrieve width of decay channel
-                    // Note: It is ESSENTIAL that the TH_Channel is a decay channel, or more precisely that dSigmadE is of type BFconstant. 
+                    // Note: It is ESSENTIAL that the TH_Channel is a decay channel, or more precisely that genRate is of type BFconstant. 
                     static double getWidth(const TH_Channel *ch);
                     // Print the decay table (to cout)
                     void printTable() const;
