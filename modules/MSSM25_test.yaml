@@ -1,68 +1,135 @@
 Parameters:
-  MSSM25:
+  ## MSSM25atQ:
+  ##   Qin:
+  ##     fixed_value: 5000  
+  ##   SignMu:
+  ##     fixed_value: 1
+  ##   TanBeta:
+  ##     range: [1, 10]
+
+  ##   # Note which of these are mass squared parameters 
+  ##   mHu2:
+  ##     range: [0, 10000]
+  ##   mHd2:
+  ##     range: [0, 10000]
+
+  ##   M1:
+  ##     range: [0, 100]
+  ##   M2:
+  ##     range: [0, 100]
+  ##   M3:
+  ##     range: [0, 100]
+
+  ##   mq2_1:
+  ##     range: [0, 10000]
+  ##   mq2_2:
+  ##     range: [0, 10000]
+  ##   mq2_3:
+  ##     range: [0, 10000]
+
+  ##   ml2_1:
+  ##     range: [0, 10000]
+  ##   ml2_2:
+  ##     range: [0, 10000]
+  ##   ml2_3:
+  ##     range: [0, 10000]
+
+  ##   md2_1:
+  ##     range: [0, 10000]
+  ##   md2_2:
+  ##     range: [0, 10000]
+  ##   md2_3:
+  ##     range: [0, 10000]
+
+  ##   mu2_1:
+  ##     range: [0, 10000]
+  ##   mu2_2:
+  ##     range: [0, 10000]
+  ##   mu2_3:
+  ##     range: [0, 10000]
+
+  ##   me2_1:
+  ##     range: [0, 10000]
+  ##   me2_2:
+  ##     range: [0, 10000]
+  ##   me2_3:
+  ##     range: [0, 10000]
+
+  ##   Ae_12:
+  ##     range: [-100, 100]
+  ##   Ae_3:
+  ##     range: [-100, 100]
+  ##   Ad_3:
+  ##     range: [-100, 100]
+  ##   Au_3:
+  ##     range: [-100, 100]
+
+  # Test point, similar to CMSSM
+  MSSM25atQ:
     Qin:
-      fixed_value: 5000  
+      fixed_value: 1e16  
     SignMu:
       fixed_value: 1
     TanBeta:
-      range: [1, 10]
+      fixed_value: 3
 
     # Note which of these are mass squared parameters 
     mHu2:
-      range: [0, 10000]
+      fixed_value: 100
     mHd2:
-      range: [0, 10000]
+      fixed_value: 100
 
     M1:
-      range: [0, 100]
+      fixed_value: 100
     M2:
-      range: [0, 100]
+      fixed_value: 100
     M3:
-      range: [0, 100]
+      fixed_value: 100
 
     mq2_1:
-      range: [0, 10000]
+      fixed_value: 100
     mq2_2:
-      range: [0, 10000]
+      fixed_value: 100
     mq2_3:
-      range: [0, 10000]
+      fixed_value: 100
 
     ml2_1:
-      range: [0, 10000]
+      fixed_value: 100
     ml2_2:
-      range: [0, 10000]
+      fixed_value: 100
     ml2_3:
-      range: [0, 10000]
+      fixed_value: 100
 
     md2_1:
-      range: [0, 10000]
+      fixed_value: 100
     md2_2:
-      range: [0, 10000]
+      fixed_value: 100
     md2_3:
-      range: [0, 10000]
+      fixed_value: 100
 
     mu2_1:
-      range: [0, 10000]
+      fixed_value: 100
     mu2_2:
-      range: [0, 10000]
+      fixed_value: 100
     mu2_3:
-      range: [0, 10000]
+      fixed_value: 100
 
     me2_1:
-      range: [0, 10000]
+      fixed_value: 100
     me2_2:
-      range: [0, 10000]
+      fixed_value: 100
     me2_3:
-      range: [0, 10000]
+      fixed_value: 100
 
     Ae_12:
-      range: [-100, 100]
+      fixed_value: 100
     Ae_3:
-      range: [-100, 100]
+      fixed_value: 100
     Ad_3:
-      range: [-100, 100]
+      fixed_value: 100
     Au_3:
-      range: [-100, 100]
+      fixed_value: 100
+
 
 Priors:
     # default: flat
@@ -80,7 +147,7 @@ Scanner:
     toy_mcmc:
       plugin: toy_mcmc
       options:
-        point_number: 100
+        point_number: 1
         output_file:  output
         like:  Likelihood
 

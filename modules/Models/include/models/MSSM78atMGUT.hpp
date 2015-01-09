@@ -1,8 +1,7 @@
 //  GAMBIT: Global and Modular BSM Inference Tool
 //  *********************************************
 //
-//  MSSM model and prior definitions
-//
+//  MSSM78 model declaration
 //   
 //
 //  *********************************************
@@ -13,14 +12,14 @@
 //  (add name and date if you modify)
 //
 //  Ben Farmer
-//  2013 May, ???, 2014 Mar
+//  2013 May, ???, 2014 Mar, 2015 Jan
 //  Pat Scott
 //  2013 Sep
 //
 //  *********************************************
 
-#ifndef __MSSM_hpp__
-#define __MSSM_hpp__
+#ifndef __MSSM78atMGUT_hpp__
+#define __MSSM78atMGUT_hpp__
 
 // General GUT boundary condition parameterisation of the MSSM
 // There are several of these, compatible with different spectrum generators
@@ -29,7 +28,7 @@
 // the appropriate general GUT parameterisation for the spectrum generator
 // being used.
 
-/// FlexibleSUSY compatible general (31 parameters plus sign) GUT scale MSSM parameterisation
+/// FlexibleSUSY compatible general (78 parameters plus sign) GUT scale MSSM parameterisation
 #define MODEL MSSM78atMGUT
   START_MODEL
   DEFINEPARS(TanBeta,SignMu,
@@ -67,35 +66,5 @@
              Au_21, Au_22, Au_23,
              Au_31, Au_32, Au_33)
 #undef MODEL
-
-#define MODEL CMSSM
-  START_MODEL
-  DEFINEPARS(M0,M12,A0,tanb,signmu)
-
-  //         ...__FUNCTION(Model name, translation function name)
-  INTERPRET_AS_X__FUNCTION(MSSM78atMGUT, CMSSM_to_MSSM78atMGUT)
-  //INTERPRET_AS_X__FUNCTION(GUTMSSMB, CMSSM_to_GUTMSSMB)
-  
-  // Translation functions defined in MSSM.cpp
-
-#undef MODEL
-
-// Extra-constrained CMSSM, to demo interpret_as_parent
-// If we can translate to a model which already has translation functions to 
-// the spectrum-generator compatible parameters, then we only need the one
-// function to translate to that parent model.
-#define MODEL extraCMSSM
-  #define PARENT CMSSM
-  START_MODEL
-  DEFINEPARS(M0,M12,tanb,signmu)
-
-  // Add in an INTERPRET_AS_PARENT function (sets the PARENT model's parameter
-  // object as a CAPABILITY of this model)
-  INTERPRET_AS_PARENT__FUNCTION(extraCMSSM_to_CMSSM)
-
-  #undef PARENT
-#undef MODEL
-
-
 
 #endif

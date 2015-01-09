@@ -63,6 +63,23 @@ namespace Gambit
       {
          std::cout << "Good spectrum found! Inspecting contents..." << std::endl;
          std::cout << std::endl << slhaea << std::endl;
+         
+         // Comparison of Spectrum getters vs slhaea readout
+         // Pole masses:
+         // (Standard Model)
+
+         #define ECHO(COMMAND) "  " << STRINGIFY(COMMAND) << " = " << COMMAND
+
+         std::cout << "Spectrum object running parameters are defined at scale Q=" 
+                   << spec->runningpars.GetScale() << " [GeV]" << endl;
+         std::cout << std::endl;
+         std::cout << ECHO(  spec->phys.get_Pole_Mass("MZ")       ) << std::endl;
+         std::cout << ECHO(  slhaea.at("SMINPUTS").at(4).at(1)    ) << std::endl;
+         std::cout << std::endl;
+         std::cout << ECHO(  spec->phys.get_Pole_Mass("MGluino")  ) << std::endl;
+         std::cout << ECHO(  slhaea.at("MASS").at(1000021).at(1)  ) << std::endl;
+         std::cout << std::endl;
+
          SpecBit_warning().raise(LOCAL_INFO,"Stopped to examine spectrum contents");  
          result = 0;
       }
