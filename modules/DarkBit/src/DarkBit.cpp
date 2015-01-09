@@ -856,6 +856,7 @@ namespace Gambit {
         else return x1;
     }
 
+
     void GA_AnnYield_DarkSUSY(Funk::Funk &result)
     {
         //////////////////////////////////////////////////////////////////////////
@@ -912,6 +913,12 @@ namespace Gambit {
             double sigmav;
             if ( it->nFinalStates == 2 )
             {
+
+//               if (Channel exists in SimYieldTable then readout
+//                                                   else determine from cascade routine
+//                                                   else error: unsupported)
+// TODO: implement above, delete block below            
+            
                 // Find channel
                 if      ( it->isChannel("Z0"    , "Z0"     )) ch = 12;
                 else if ( it->isChannel("W+"    , "W-"     )) ch = 13;
@@ -955,6 +962,11 @@ namespace Gambit {
             if ( it->nFinalStates == 3 )
             {
                 // Find channel
+                
+
+//                if channel=(gamma,X,Y)  m1=mass(X), m2=mass(Y) 
+// TODO: replace the following block by the above line                
+                
                 if      ( it->isChannel("gamma", "W+"    , "W-"     )){m1 = (*Dep::TH_ProcessCatalog).getParticleProperty("W+"  ).mass; m2 = (*Dep::TH_ProcessCatalog).getParticleProperty("W-"  ).mass;  }   
                 else if ( it->isChannel("gamma", "W+"    , "H-"     )){m1 = (*Dep::TH_ProcessCatalog).getParticleProperty("W+"  ).mass; m2 = (*Dep::TH_ProcessCatalog).getParticleProperty("H-"  ).mass;  }   
                 else if ( it->isChannel("gamma", "W-"    , "H+"     )){m1 = (*Dep::TH_ProcessCatalog).getParticleProperty("W-"  ).mass; m2 = (*Dep::TH_ProcessCatalog).getParticleProperty("H+"  ).mass;  }   
