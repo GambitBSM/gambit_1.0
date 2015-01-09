@@ -26,9 +26,10 @@ namespace HEPUtils {
     int _pdgId;
     /// Promptness flag
     bool _prompt;
-    /// Isolation value
-    float _isol4;
+    // /// Isolation value
+    // double _isol4;
     //@}
+
 
   public:
 
@@ -37,11 +38,11 @@ namespace HEPUtils {
 
     /// Default constructor
     Particle()
-      : _pdgId(0), _prompt(false), _isol4(0.0) {  }
+      : _pdgId(0), _prompt(false) { } //, _isol4(0.0) {  }
 
     /// "Cartesian" constructor
     Particle(double px, double py, double pz, double E, int pdgid)
-      : _p4(px, py, pz, E), _pdgId(pdgid), _prompt(false), _isol4(0.0) {  }
+      : _p4(px, py, pz, E), _pdgId(pdgid), _prompt(false) { } //, _isol4(0.0) {  }
 
     /// "Cartesian" constructor for massless particles - or close enough
     /// @todo AB: WTF?
@@ -50,22 +51,22 @@ namespace HEPUtils {
 
     /// 4-mom + PDG ID constructor
     Particle(const P4& mom, int pdgid)
-      : _p4(mom), _pdgId(pdgid), _prompt(false), _isol4(0.0) {  }
+      : _p4(mom), _pdgId(pdgid), _prompt(false) { } //, _isol4(0.0) {  }
 
     /// Copy constructor
     Particle(const Particle& p)
-      : _p4(p.mom()), _pdgId(p.pid()), _prompt(p.is_prompt()), _isol4(p.isol()) {  }
+      : _p4(p.mom()), _pdgId(p.pid()), _prompt(p.is_prompt()) { } //, _isol4(p.isol()) {  }
 
     /// Copy constructor from a pointer
     Particle(const Particle* p)
-      : _p4(p->mom()), _pdgId(p->pid()), _prompt(p->is_prompt()), _isol4(p->isol()) {  }
+      : _p4(p->mom()), _pdgId(p->pid()), _prompt(p->is_prompt()) { } //, _isol4(p->isol()) {  }
 
     /// Copy assignment operator
     Particle& operator=(const Particle& p) {
       _p4 = p.mom();
       _pdgId = p.pid();
       _prompt = p.is_prompt();
-      _isol4 = p.isol();
+      //_isol4 = p.isol();
       return *this;
     }
 
@@ -73,6 +74,8 @@ namespace HEPUtils {
 
 
     /// @name Momentum
+    ///
+    /// Access to the P4 object, plus convenience mapping of a few popular properties
     //@{
 
     /// Get the 4 vector
@@ -80,18 +83,30 @@ namespace HEPUtils {
     /// Set the 4 vector
     void set_mom(const P4& p4) { _p4 = p4; }
 
-    //Set the mass of the 4 vector
-    void set_mass(double mass) {_p4.setM(mass);}
 
-    /// @name Convenience mapping of a few popular momentum properties
-    //@{
+    /// Get the mass (of the 4 vector)
+    double mass() { return _p4.m(); }
+    /// Set the mass (of the 4 vector)
+    void set_mass(double mass) { _p4.setM(mass); }
+
+
+    /// Get the pseudorapidity
     double eta() const { return mom().eta(); }
+
+    /// Get the rapidity
     double rap() const { return mom().rap(); }
+
+    /// Get the azimuthal angle
     double phi() const { return mom().phi(); }
+
+    /// Get the energy
     double E() const { return mom().E(); }
+
+    /// Get the squared transverse momentum
     double pT2() const { return mom().pT2(); }
+
+    /// Get the squared transverse momentum
     double pT() const { return mom().pT(); }
-    //@}
 
     //@}
 
@@ -115,15 +130,17 @@ namespace HEPUtils {
     /// Set PDG ID code
     void set_pid(int pid) { _pdgId = pid; }
 
-    /// @ Isolation of particle
-    //@{
-
-    /// Get isolation
-    double isol() const { return _isol4;}
-    void set_isol(float isol) {_isol4 = isol;}
-
-
     //@}
+
+
+    // /// @name Isolation of particle
+    // //@{
+
+    // /// Get isolation
+    // double isol() const { return _isol4;}
+    // void set_isol(double isol) { _isol4 = isol;}
+
+    // //@}
 
 
   };

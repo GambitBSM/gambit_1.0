@@ -34,6 +34,7 @@
 namespace Gambit {
   namespace ColliderBit {
 
+
     /// ********************************************
     /// Non-rollcalled Functions and Local Variables
     /// ********************************************
@@ -240,6 +241,7 @@ namespace Gambit {
     }
 
 
+    /// @todo Split into convertPythia8PartonEvent and convertPythia8ParticleEvent strategies
     void convertPythia8Event(HEPUtils::Event &result) {
       using namespace Pipes::convertPythia8Event;
       if (*Loop::iteration <= INIT) return;
@@ -248,11 +250,9 @@ namespace Gambit {
       /// Get the next event from Pythia8
       const auto pevt = (*Dep::HardScatteringSim)->nextEvent();
 
-      Pythia8::Vec4 ptot;
       std::vector<fastjet::PseudoJet> jetparticles;
       std::vector<fastjet::PseudoJet> bhadrons, taus;
 
-      ptot.reset();
       jetparticles.clear();
       bhadrons.clear();
       taus.clear();
@@ -262,6 +262,7 @@ namespace Gambit {
         const Pythia8::Particle& p = pevt[i];
 
         // Find last b-hadrons in b decay chains as the best proxy for b-tagging
+        /// @todo Needs to also work for parton events
         if (isFinalB(i, pevt)) bhadrons.push_back(mk_pseudojet(p.p()));
 
         // Find last tau in tau replica chains as a proxy for tau-tagging
@@ -282,8 +283,6 @@ namespace Gambit {
         // Only consider final state particles within ATLAS/CMS acceptance
         if (!p.isFinal()) continue;
         if (abs(p.eta()) > 5.0) continue;
-        // Add to total final state momentum
-        ptot += p.p();
 
         // Promptness: for leptons and photons we're only interested if they don't come from hadron/tau decays
         /// @todo Don't exclude hadronic tau decay products from jet finding: ATLAS treats them as jets
@@ -322,7 +321,7 @@ namespace Gambit {
       }
 
       /// MET (note: NOT just equal to sum of prompt invisibles)
-      result.set_missingmom(-mk_p4(ptot));
+      result.calc_missingmom();
     }
 
 
@@ -376,7 +375,7 @@ namespace Gambit {
         #pragma omp critical (accumulatorUpdate)
         {
           // Loop over analyses and run them
-          for (auto anaPtr = Dep::ListOfAnalyses->begin(); anaPtr != Dep::ListOfAnalyses->end(); ++anaPtr)        
+          for (auto anaPtr = Dep::ListOfAnalyses->begin(); anaPtr != Dep::ListOfAnalyses->end(); ++anaPtr)
             (*anaPtr)->analyze(*Dep::ReconstructedEvent);
         }
       }

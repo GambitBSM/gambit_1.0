@@ -130,7 +130,7 @@ namespace Gambit {
 
 	for (Jet* jet : signalJets) {
 	  bool hasTag=has_tag(_eff2d, jet->eta(), jet->pT());
-	  if(jet->isBJet() && hasTag && fabs(jet->eta()) < 2.5 && jet->pT() > 20.) bJets.push_back(jet);
+	  if(jet->btag() && hasTag && fabs(jet->eta()) < 2.5 && jet->pT() > 20.) bJets.push_back(jet);
 	}
 		
         // We now have the signal electrons, muons, jets and b jets- move on to the analysis
