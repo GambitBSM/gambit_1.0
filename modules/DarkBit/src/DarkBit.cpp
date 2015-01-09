@@ -326,42 +326,47 @@ namespace Gambit {
       //result = 0;
     }
 
-    void RD_thresholds_resonances_ordered(RDrestype &result)
+    void RD_thresholds_resonances_ordered(TH_resonances_thresholds &result)
     {
       using namespace Pipes::RD_thresholds_resonances_ordered;
 
       //read out location and number of resonances and thresholds provided by
       //capability RD_spectrum
       RDspectype specres = *Dep::RD_spectrum;
-      result.n_res=specres.n_res;
-      result.n_thr=specres.n_thr;
-      for (int i=0; i<result.n_res; i++) {
-        result.E_res[i]=specres.mass_res[i];
-        result.dE_res[i]=specres.width_res[i];       
+      result.resonance_energy.resize(specres.n_res);
+      result.threshold_energy.resize(specres.n_thr);
+      for (std::size_t i=0; i<result.resonance_energy.size(); i++)
+      {
+        result.resonance_energy[i]=specres.mass_res[i];
+        result.resonance_width[i]=specres.width_res[i];
       }
-      for (int i=0; i<result.n_thr; i++) {
-        result.E_thr[i]=specres.E_thr[i];
+      for (std::size_t i=0; i<result.threshold_energy.size(); i++)
+      {
+        result.threshold_energy[i]=specres.E_thr[i];
       }
       //now order
       double tmp;
-      for (int i=0; i<result.n_thr-1; i++) {
-        for (int j=i+1; j<result.n_thr; j++) {
-          if (result.E_thr[j]<result.E_thr[i]) {
-            tmp=result.E_thr[i];
-            result.E_thr[i]=result.E_thr[j];
-            result.E_thr[j]=tmp;
+      for (std::size_t i=0; i<result.threshold_energy.size()-1; i++)
+      {
+        for (std::size_t j=i+1; j<result.threshold_energy.size(); j++)
+        {
+          if (result.threshold_energy[j]<result.threshold_energy[i])
+          {
+            tmp=result.threshold_energy[i];
+            result.threshold_energy[i]=result.threshold_energy[j];
+            result.threshold_energy[j]=tmp;
           }
         }
       }
-      for (int i=0; i<result.n_res-1; i++) {
-        for (int j=i+1; j<result.n_res; j++) {
-          if (result.E_res[j]<result.E_res[i]) {
-            tmp=result.E_res[i];
-            result.E_res[i]=result.E_res[j];
-            result.E_res[j]=tmp;
-            tmp=result.dE_res[i];
-            result.dE_res[i]=result.dE_res[j];
-            result.dE_res[j]=tmp;
+      for (std::size_t i=0; i<result.resonance_energy.size()-1; i++) {
+        for (std::size_t j=i+1; j<result.resonance_energy.size(); j++) {
+          if (result.resonance_energy[j]<result.resonance_energy[i]) {
+            tmp=result.resonance_energy[i];
+            result.resonance_energy[i]=result.resonance_energy[j];
+            result.resonance_energy[j]=tmp;
+            tmp=result.resonance_width[i];
+            result.resonance_width[i]=result.resonance_width[j];
+            result.resonance_width[j]=tmp;
           }
         }
       }
@@ -435,8 +440,8 @@ namespace Gambit {
       using namespace Pipes::RD_oh2_general;
 
       //retrieve ordered list of resonances and thresholds from RD_thresholds_resonances
-      RDrestype myres = *Dep::RD_thresholds_resonances;
-      double mwimp=myres.E_thr[0]/2;
+      TH_resonances_thresholds myres = *Dep::RD_thresholds_resonances;
+      double mwimp=myres.threshold_energy[0]/2;
 
       // HERE STARTS A GIANT IF STATEMENT (which tb does not like and) WHICH 
       // SPECIFIES THAT THE FOLLOWING CODE USES BE=DS FOR THE RD CALCULATION
@@ -470,17 +475,17 @@ namespace Gambit {
         // [this is the model-independent part of dsrdstart]
         DS_RDMGEV myrdmgev = *BEreq::rdmgev; //NB:the other variables in that block have already been set!!!
         DS_RDPTH myrdpth;
-        myrdmgev.nres=myres.n_res;
-        for (int i=0; i<myres.n_res; i++) {
-          myrdmgev.rgev[i]=myres.E_res[i];
-          myrdmgev.rwid[i]=myres.dE_res[i];
+        myrdmgev.nres=myres.resonance_energy.size();
+        for (std::size_t i=0; i<myres.resonance_energy.size(); i++) {
+          myrdmgev.rgev[i]=myres.resonance_energy[i];
+          myrdmgev.rwid[i]=myres.resonance_width[i];
         }
         // convert to momenta
         *BEreq::rdmgev = myrdmgev;
-        myrdpth.nth=myres.n_thr-1;   // NB: DS does not count 2* WIMP rest mass as thr
+        myrdpth.nth=myres.threshold_energy.size()-1;   // NB: DS does not count 2* WIMP rest mass as thr
         myrdpth.pth[0]=0; myrdpth.incth[0]=1;
-        for (int i=2; i<=myres.n_thr; i++) {
-          myrdpth.pth[i-1]=sqrt(pow(myres.E_thr[i-1],2)/4-pow(mwimp,2));
+        for (std::size_t i=2; i<=myres.threshold_energy.size(); i++) {
+          myrdpth.pth[i-1]=sqrt(pow(myres.threshold_energy[i-1],2)/4-pow(mwimp,2));
           myrdpth.incth[i-1]=1;
         }
         *BEreq::rdpth = myrdpth;
@@ -941,7 +946,7 @@ namespace Gambit {
                     exit(1);
                 }
 
-                sigmav = it->dSigmadE->eval("v",0.);  // (sv)(v=0) for two-body final state
+                sigmav = it->genRate->eval("v",0.);  // (sv)(v=0) for two-body final state
                 DiffYield2Body = DiffYield2Body + 
                     Funk::func(BEreq::dshayield.pointer(), mass, Funk::var("E"), ch, yieldk, flag) * sigmav;
             }
@@ -995,7 +1000,7 @@ namespace Gambit {
                 // variable).
                 Funk::Funk E1_low =  Funk::func(gamma3bdy_limits<0>, Funk::var("E"), mass, m1, m2);
                 Funk::Funk E1_high =  Funk::func(gamma3bdy_limits<1>, Funk::var("E"), mass, m1, m2);
-                Funk::Funk dsigmavde = it->dSigmadE->gsl_integration("E1", E1_low, E1_high);
+                Funk::Funk dsigmavde = it->genRate->gsl_integration("E1", E1_low, E1_high);
                 DiffYield3Body = DiffYield3Body + dsigmavde;
 
                 /*
@@ -1007,10 +1012,10 @@ namespace Gambit {
                 std::cout << "Boundaries (E=10 GeV):" << std::endl;
                 std::cout << "  E1 = " << E1_low->eval("E", 10) << std::endl;
                 std::cout << "  E2 = " << E1_high->eval("E", 10) << std::endl;
-                std::cout << "dsigmavde (E=10 GeV) = " << it->dSigmadE->set("E1", E1_low*1.02)->eval("E", 10) << std::endl;
-                std::cout << "dsigmavde (E=10 GeV) = " << it->dSigmadE->set("E1", E1_high/1.02)->eval("E", 10) << std::endl;
-                std::cout << "dsigmavde (E=10 GeV) = " << it->dSigmadE->set("E1", sqrt(E1_low*E1_high))->eval("E", 10) << std::endl;
-                std::cout << "dsigmavde (E=10 GeV) = " << it->dSigmadE->gsl_integration("E1", E1_low, E1_high)->eval("E", 10) << std::endl;
+                std::cout << "dsigmavde (E=10 GeV) = " << it->genRate->set("E1", E1_low*1.02)->eval("E", 10) << std::endl;
+                std::cout << "dsigmavde (E=10 GeV) = " << it->genRate->set("E1", E1_high/1.02)->eval("E", 10) << std::endl;
+                std::cout << "dsigmavde (E=10 GeV) = " << it->genRate->set("E1", sqrt(E1_low*E1_high))->eval("E", 10) << std::endl;
+                std::cout << "dsigmavde (E=10 GeV) = " << it->genRate->gsl_integration("E1", E1_low, E1_high)->eval("E", 10) << std::endl;
                 */
             }
         }
@@ -1758,7 +1763,7 @@ namespace Gambit {
         for (std::vector<TH_Channel>::iterator it = annProc.channelList.begin();
                 it != annProc.channelList.end(); ++it)
         {
-            Weff = Weff + it->dSigmadE->set("v", 2*peff/sqrt(mDM*mDM+peff*peff))*s/GeV2tocm3s1;
+            Weff = Weff + it->genRate->set("v", 2*peff/sqrt(mDM*mDM+peff*peff))*s/GeV2tocm3s1;
         }
         result = Weff->plain<RD_EFF_ANNRATE_FROM_PROCESSCATALOG_TRAIT>("peff");
     }
@@ -1837,9 +1842,9 @@ namespace Gambit {
               os << *jt << "";
             }
             if (it->finalStateIDs.size() == 2)
-            os << ": " << it->dSigmadE->eval("v", 0);
+            os << ": " << it->genRate->eval("v", 0);
             //if (it->finalStateIDs.size() == 3)
-              //os << ": " << (*it->dSigmadE)(0., 0.);
+              //os << ": " << (*it->genRate)(0., 0.);
             os << "\n";
           }
           os << std::endl;

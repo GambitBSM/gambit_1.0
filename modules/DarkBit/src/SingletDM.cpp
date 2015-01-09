@@ -82,15 +82,13 @@ namespace Gambit
 
     };
 
-    void RD_thresholds_resonances_SingletDM(RDrestype &result)
+    void RD_thresholds_resonances_SingletDM(TH_resonances_thresholds &result)
     {
         using namespace Pipes::RD_thresholds_resonances_SingletDM;
-        result.n_res = 1;
-        result.n_thr = 1;
-        result.E_thr[0] = 2*(*Param["mass"]);
+        result.threshold_energy.push_back(2*(*Param["mass"]));
         double mh = 125.7;  // TODO: Don't hardcode masses.
-        result.E_res[0] = mh/2;
-        result.dE_res[0] = mh/2/10.;
+        result.resonance_energy.push_back(mh/2.);
+        result.resonance_width.push_back(mh/2./10.);
 
         // TODO: This part should set up additional parameters in DS, but does
         // not work at all??? --> TB

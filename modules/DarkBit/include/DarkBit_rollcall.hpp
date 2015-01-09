@@ -113,11 +113,11 @@ START_MODULE
   #define CAPABILITY RD_thresholds_resonances
   START_CAPABILITY 
     #define FUNCTION RD_thresholds_resonances_ordered
-      START_FUNCTION(RDrestype)
+      START_FUNCTION(TH_resonances_thresholds)
       DEPENDENCY(RD_spectrum, RDspectype)
     #undef FUNCTION
     #define FUNCTION RD_thresholds_resonances_SingletDM
-      START_FUNCTION(RDrestype)
+      START_FUNCTION(TH_resonances_thresholds)
       ALLOW_MODELS(SingletDM)
       BACKEND_REQ(rdmgev, (), DS_RDMGEV)
     #undef FUNCTION
@@ -150,7 +150,7 @@ START_MODULE
   START_CAPABILITY 
     #define FUNCTION RD_oh2_general
       START_FUNCTION(double)
-      DEPENDENCY(RD_thresholds_resonances, RDrestype)
+      DEPENDENCY(RD_thresholds_resonances, TH_resonances_thresholds)
       DEPENDENCY(RD_eff_annrate, fptr_dd)
       BACKEND_REQ(dsrdthlim, (), void, ())
       BACKEND_REQ(dsrdtab, (), void, (double(*)(double&), double&))

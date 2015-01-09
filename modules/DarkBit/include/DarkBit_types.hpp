@@ -215,14 +215,7 @@ namespace Gambit
       double E_thr[100];
     };
 
-    struct RDrestype
-    {
-    //location of resonances and thresholds
-      int n_res, n_thr;
-      double E_res[10], dE_res[10], E_thr[100];
-    };
-
-    // A double in, double out function pointer.  FIXME Probably actually better if this goes in 
+    // A double in, double out function pointer.  FIXME Probably actually better if this goes in
     // shared_types.hpp eventually, as it will likely be needed by other modules too at some stage. 
     typedef double(*fptr_dd)(double&);
 
@@ -239,6 +232,15 @@ namespace Gambit
     //
     // TH_ProcessCatalog describes all initial states relevant for DarkBit
     
+    struct TH_resonances_thresholds
+    {
+      //location of resonances and thresholds in energy [GeV]
+      //int n_res, n_thr; //  number of resonances and thresholds -> not needed if we use vectors
+      //double E_res[10], dE_res[10], E_thr[100];
+      std::vector<double> resonance_energy;
+      std::vector<double> resonance_width;
+      std::vector<double> threshold_energy;
+    };
 
     struct TH_ParticleProperty
     {
@@ -251,9 +253,9 @@ namespace Gambit
     struct TH_Channel
     {
         // Constructor
-        TH_Channel(std::vector<std::string> finalStateIDs, Funk::Funk dSigmadE) :
+        TH_Channel(std::vector<std::string> finalStateIDs, Funk::Funk genRate) :
             finalStateIDs(finalStateIDs), nFinalStates(finalStateIDs.size()),
-            dSigmadE(dSigmadE)
+            genRate(genRate)
         {
             if ( nFinalStates < 2 )
             {
@@ -271,7 +273,7 @@ namespace Gambit
         // Energy dependence of final state particles
         // Includes v_rel as last argument in case of annihilation
         // TODO: Implement checks
-      Funk::Funk dSigmadE; // rename to genRate
+        Funk::Funk genRate;
 
         // Compare final states
         bool isChannel(std::string p0, std::string p1, std::string p2 ="", std::string p3 = "")
@@ -350,8 +352,8 @@ namespace Gambit
         // List of channels
         std::vector<TH_Channel> channelList;
 
-        //List of resonances and thresholds => rename RDrestype
-        std::vector<RDrestype> thresholdResonances;
+        //List of resonances and thresholds => rename TH_resonances_thresholds
+        std::vector<TH_resonances_thresholds> thresholdResonances;
 
         // Total decay rate or sigma v
         Funk::Funk genRateTotal; // was a double, but needs to be a Funk of velocity
