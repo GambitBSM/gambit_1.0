@@ -13,7 +13,7 @@
 
 \newcommand{\mail}[1]{\href{mailto:#1}{#1}}
 
-\title{HEColliderBit: A GAMBIT module for the calculation of high energy collider observables}
+\title{ColliderBit: A GAMBIT module for the calculation of high energy collider observables}
 
 \author{The GAMBIT Collaboration: Alphabetical author list} % will presumably have a standard author list
 
@@ -22,7 +22,7 @@
 \maketitle
 
 \begin{abstract}
-We present a new code for the calculation of high energy collider observables, given a generic theory of beyond the Standard Model physics. Describe novel features of HEColliderBit (parallelised MC generation, fast SUSY cross-section calculations, generic interface to BSM models, lots of LHC analyses). Mention link to GAMBIT framework, but emphasise that the package presents a standalone solution to the problem of applying LHC constraints to new physics theories.
+We present a new code for the calculation of high energy collider observables, given a generic theory of beyond the Standard Model physics. Describe novel features of ColliderBit (parallelised MC generation, fast SUSY cross-section calculations, generic interface to BSM models, lots of LHC analyses). Mention link to GAMBIT framework, but emphasise that the package presents a standalone solution to the problem of applying LHC constraints to new physics theories.
 \end{abstract}
 
 \section{Introduction}
@@ -33,20 +33,18 @@ We present a new, fully general solution based on parallelised Monte Carlo simul
 
 This paper is organised as follows. In Section ?? we..., etc. 
 
+\section{Quick Start Guide}
+
 \section{Physics background}
 Describe the basic design elements of the package, i.e. what we calculate given a model of BSM physics, but with the full details of the calculation deferred to the following section. Need to emphasise that the user may pick and choose each element of the calculation.
 
 \begin{itemize}
 \item Number of signal events for cut and count analyses (or in a particular bin of a binned likelihood fit) is $\sigma \times A \times \epsilon \times \mathcal{L}$.
-\item State very briefly how each element of the calculation above is performed in HEColliderBit.
+\item State very briefly how each element of the calculation above is performed in ColliderBit.
 \item Define likelihoods used in LHC searches based on the signal yields.
 \end{itemize}
 
-\section{Code description}
-
-For each part of the calculation outlined above: describe the code that exists within GAMBIT and/or the ready-made interface to a standard HEP code. Show validation plots (with possible links to appendices).
-
-\subsection{User interface}
+\section{User interface}
 
 \begin{itemize}
 \item Describe interface to GAMBIT framework.
@@ -56,6 +54,10 @@ For each part of the calculation outlined above: describe the code that exists w
 \item Explain how to run code in single core or multicore form (i.e using the standard OpenMP commands).
 \item Describe parameters that can be varied in yaml file.
 \end{itemize}
+
+\section{Code description}
+
+For each part of the calculation outlined above: describe the code that exists within GAMBIT and/or the ready-made interface to a standard HEP code. Show validation plots (with possible links to appendices).
 
 \subsection{Cross-section calculations}
 
@@ -96,7 +98,7 @@ For each part of the calculation outlined above: describe the code that exists w
 \subsection{Statistics}
 
 \begin{itemize}
-\item Describe the various likelihoods one may calculate given a signal yield (overlaps with main GAMBIT framework- perhaps we need to release a small stats offshoot within HEColliderBit for standlone users?))
+\item Describe the various likelihoods one may calculate given a signal yield (overlaps with main GAMBIT framework- perhaps we need to release a small stats offshoot within ColliderBit for standlone users?))
 \item Describe parameters that can be varied in yaml file.
 \end{itemize}
 

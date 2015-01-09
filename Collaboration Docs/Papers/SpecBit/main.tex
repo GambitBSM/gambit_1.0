@@ -13,7 +13,7 @@
 
 \newcommand{\mail}[1]{\href{mailto:#1}{#1}}
 
-\title{SpecBit: A GAMBIT module for the linking and running spectrum genetaors and decay codes}
+\title{SpecBit: GAMBIT modules for linking and running spectrum genetaors, decay codes and EWPO calculators}
 
 \author{The GAMBIT Collaboration: Alphabetical author list} % will presumably have a standard author list
 
@@ -22,8 +22,7 @@
 \maketitle
 
 \begin{abstract}
-Write in exactly same style as CollierBit if possible.
-%% We present a new code for the calculation of high energy collider observables, given a generic theory of beyond the Standard Model physics. Describe novel features of HEColliderBit (parallelised MC generation, fast SUSY cross-section calculations, generic interface to BSM models, lots of LHC analyses). Mention link to GAMBIT framework, but emphasise that the package presents a standalone solution to the problem of applying LHC constraints to new physics theories.
+We present a new code which can link all publically available spectrum generators, decay codes and electroweak precision observable calculators together without writing to any files internally [this may be too ambitious]. Describe novel features, FeynHiggs linking, easy to replace any code. Mention link to GAMBIT framework, but emphasise that the package presents a standalone solution to the problem of linking these codes together and maybe physics problem of matching too FeynHiggs.
 \end{abstract}
 
 \tableofcontents
@@ -114,7 +113,7 @@ adding new NMSSM generator (can just use FS example)
 May not be possible in time
 
 \section{Conclusions}
-
+Gambit SpecBit,DeacyBayBit and EWPOBit will rule the world.  the rest of gambit is kind of useful too.
 \section{Acknowledgements}
 
 \section{Appendix: ?}
