@@ -221,7 +221,7 @@ namespace Gambit {
 
         for (Jet* jet : event->jets()) {
           if (jet->pT() > 20. && fabs(jet->eta()) < 2.5) signalJets.push_back(jet);
-          //if(jet->isBJet() && fabs(jet->eta()) < 2.5 && jet->pT() > 20.) bJets.push_back(jet);
+          //if(jet->btag() && fabs(jet->eta()) < 2.5 && jet->pT() > 20.) bJets.push_back(jet);
         }
 
 	vector<Particle*> signalTaus;
@@ -304,7 +304,7 @@ namespace Gambit {
 
         for (Jet* jet : signalJets) {
 	  bool hasTag=has_tag(_eff2d, jet->eta(), jet->pT());
-          if(jet->isBJet() && hasTag)bJets.push_back(jet);
+          if(jet->btag() && hasTag)bJets.push_back(jet);
         }
 
         bool leptonCut=((numElectrons+numMuons)==3 && massesOfSFOSPairs.size()>0);
