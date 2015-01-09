@@ -92,7 +92,7 @@ ExternalProject_Add(micromegas
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND ""
   BUILD_COMMAND ./install_micromegas.script FC=${CMAKE_Fortran_COMPILER}
-  INSTALL_COMMAND cp libmicromegas.so ${PROJECT_SOURCE_DIR}/Backends/lib/.
+  INSTALL_COMMAND cp <SOURCE_DIR>/micromegas_3.5.5/MSSM/libmicromegas.so ${PROJECT_SOURCE_DIR}/Backends/lib/.
 )
 
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../extras/micromegas/libmicromegas.so" "${PROJECT_SOURCE_DIR}/Backends/lib/libmicromegas.so")

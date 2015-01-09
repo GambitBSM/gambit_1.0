@@ -134,13 +134,27 @@ namespace Gambit
         
         inline const YAML::Node getVariadicNode(const YAML::Node &node, std::string key) 
         {
-                return node[key];
+                if (node.IsMap())
+                {
+                        return node[key];
+                }
+                else
+                {
+                        return YAML::Node();
+                }
         }
 
         template <typename... args>
         inline const YAML::Node getVariadicNode(const YAML::Node &node, const std::string &key, const args&... keys)
         {
-                return getVariadicNode(node[key], keys...);
+                if (node.IsMap())
+                {
+                        return getVariadicNode(node[key], keys...);
+                }
+                else
+                {
+                        return YAML::Node();
+                }
         }
         
         inline const std::string stringifyVariadic(const std::string &str) {return str;}

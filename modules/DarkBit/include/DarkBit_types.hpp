@@ -282,6 +282,11 @@ namespace Gambit
             return false;
         }
 
+        bool channelContains(std::string p)
+        {
+            return std::find(finalStateIDs.begin(), finalStateIDs.end(), p) != finalStateIDs.end();
+        }
+
         void printChannel()
         {
             std::cout << "Channel: ";
@@ -738,27 +743,27 @@ namespace Gambit
                 this->addChannel(dNdE, p1, "", Ecm_min, Ecm_max);
             }
 
-            bool hasChannel(std::string p1, std::string p2)
+            bool hasChannel(std::string p1, std::string p2) const
             {
                 return ( findChannel(p1, p2) != -1 );
             }
 
-            bool hasChannel(std::string p1)
+            bool hasChannel(std::string p1) const
             {
                 return this->findChannel(p1, "");
             }
 
-            Funk::Funk operator()(std::string p1, std::string p2, double Ecm)
+            Funk::Funk operator()(std::string p1, std::string p2, double Ecm) const
             {
                 return this->operator()(p1, p2)->set("Ecm", Ecm);
             }
 
-            Funk::Funk operator()(std::string p1, double Ecm)
+            Funk::Funk operator()(std::string p1, double Ecm) const
             {
                 return this->operator()(p1)->set("Ecm", Ecm);
             }
 
-            Funk::Funk operator()(std::string p1, std::string p2)
+            Funk::Funk operator()(std::string p1, std::string p2) const
             {
                 int index = findChannel(p1, p2);
                 if ( index == 1 )
@@ -769,7 +774,7 @@ namespace Gambit
                 return funktion_list[index];
             }
 
-            Funk::Funk operator()(std::string p1)
+            Funk::Funk operator()(std::string p1) const
             {
                 return this->operator()(p1, "");
             }
@@ -781,7 +786,7 @@ namespace Gambit
             std::vector<double> Ecm_min_list;
             std::vector<double> Ecm_max_list;
 
-            int findChannel(std::string p1, std::string p2)
+            int findChannel(std::string p1, std::string p2) const
             {
                 for ( unsigned int i = 0; i < p1_list.size(); i++ )
                 {

@@ -22,17 +22,41 @@
 #include <string>
 #include <unordered_map>
 #include <sstream>
+#include <unordered_map>
+#include <typeinfo>
 
 #include "scanner_utils.hpp"
 #include "scan.hpp"
 #include "yaml_options.hpp"
+#include "type_index.hpp"
 #include "plugin_interface.hpp"
 #include "priors/composite.hpp"
+
+#define LOAD_FUNC_TEMPLATE(name, ...) REGISTER_ELEM(__functions__, typeid(__VA_ARGS__), name<__VA_ARGS__>) 
+#define LOAD_MULTI_FUNC_TEMPLATE(name, ...) REGISTER_ELEM(__multi_functions__, typeid(__VA_ARGS__), name<__VA_ARGS__>) 
 
 namespace Gambit
 {
         namespace Scanner
         {       
+                using Gambit::type_index;
+                registry
+                {
+                        typedef void* func_type(const std::vector<std::string> &, const Priors::BasePrior &, const IniFileInterface &);
+                        typedef void* multi_func_type(const std::map<std::string, std::vector<std::string>> &, const Priors::BasePrior &, const std::vector<IniFileInterface> &);
+                        std::unordered_map<type_index, func_type *> __functions__;
+                        std::unordered_map<type_index, multi_func_type *> __multi_functions__;
+                }
+                
+                template <typename T>
+                class Scanner_Plugin_Function;
+                
+                template <typename T>
+                class Multi_Scanner_Plugin_Function;
+                
+                LOAD_FUNC_TEMPLATE(Scanner_Plugin_Function, double(const std::vector<double> &));
+                LOAD_MULTI_FUNC_TEMPLATE(Multi_Scanner_Plugin_Function, double(const std::vector<double> &));
+                
                 inline std::map<std::string, std::vector<std::string>> convert_to_map(const std::vector<std::string> &vec)
                 {
                         std::map<std::string, std::vector<std::string>> ret;
@@ -46,7 +70,8 @@ namespace Gambit
                         return ret;
                 }
                 
-                class Scanner_Plugin_Function : public Plugins::Plugin_Interface<double (const std::vector<double> &)>, public Function_Base<double (const std::vector<double>&)>
+                template <typename ret, typename... args>
+                class Scanner_Plugin_Function<ret (args...)> : public Plugins::Plugin_Interface<ret (args...)>, public Function_Base<ret (args...)>
                 {
                 private:
                         //std::vector<double> &params;
@@ -57,19 +82,20 @@ namespace Gambit
                         {
                         }
                         
-                        double main(const std::vector<double> &in)
+                        ret main(const args&... in)
                         {
-                                return this->Plugins::Plugin_Interface<double (const std::vector<double> &)>::operator()(in);
+                                return this->Plugins::Plugin_Interface<ret (args...)>::operator()(in...);
                         }
                 };
                 
-                class Multi_Scanner_Plugin_Function : public Function_Base<double (const std::vector<double>&)>
+                template <typename ret, typename... args>
+                class Multi_Scanner_Plugin_Function <ret (args...)> : public Function_Base<ret (args...)>
                 {
                 private:
-                        std::vector<Scanner_Plugin_Function> functions;
+                        std::vector< Scanner_Plugin_Function<ret (args...)> > functions;
                         
                 public:
-                        Multi_Scanner_Plugin_Function(const std::map<std::string, std::vector<std::string>> &params, const Priors::BasePrior &prior, std::vector<IniFileInterface> interfaces)
+                        Multi_Scanner_Plugin_Function(const std::map<std::string, std::vector<std::string>> &params, const Priors::BasePrior &prior, const std::vector<IniFileInterface> &interfaces)
                         {
                                 for (auto it = interfaces.begin(), end = interfaces.end(); it != end; it++)
                                 {
@@ -77,15 +103,15 @@ namespace Gambit
                                 }
                         }
                         
-                        double main(const std::vector<double> &in)
+                        ret main(const args&... in)
                         {
-                                double ret = 0.0;
+                                ret retval = 0.0;
                                 for (auto it = functions.begin(), end = functions.end(); it != end; it++)
                                 {
-                                        ret += it->main(in);
+                                        retval += it->main(in...);
                                 }
                                 
-                                return ret;
+                                return retval;
                         }
                 };
                 
@@ -95,12 +121,14 @@ namespace Gambit
                         std::map<std::string, std::vector<IniFileInterface>> interfaces;
                         std::map<std::string, std::vector<std::string>> parameters;
                         const Priors::CompositePrior &prior;
+                        std::unordered_map<std::string, Gambit::type_index> purpose_index;
                         
                 public:
                         Plugin_Function_Factory(const Priors::CompositePrior &prior, const std::map<std::string, std::vector<IniFileInterface>> &interfaces) 
                                 : interfaces(interfaces), prior(prior)
                         {
                                 parameters = convert_to_map(prior.getParameters());
+                                purpose_index.emplace("Likelihood", typeid(double (const std::vector<double> &)));
                         }
                         
                         void * operator() (const std::string &purpose) const
@@ -113,11 +141,11 @@ namespace Gambit
                                 }
                                 else if (it->second.size() == 1)
                                 {
-                                        return new Scanner_Plugin_Function(parameters.at(it->second.at(0).getTag()), prior, it->second.at(0));
+                                        return __functions__.at(purpose_index.at(purpose))(parameters.at(it->second.at(0).getTag()), prior, it->second.at(0));
                                 }
                                 else if (it->second.size() > 1)
                                 {
-                                        return new Multi_Scanner_Plugin_Function(parameters, prior, it->second);
+                                        return __multi_functions__.at(purpose_index.at(purpose))(parameters, prior, it->second);
                                 }
                                 else
                                 {
