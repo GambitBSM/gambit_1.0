@@ -1,0 +1,262 @@
+%%%%%%%%%%%%%%%%%%%%%%% file template.tex %%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% This is a  template file for the LaTeX package SVJour3 width change file svepjc3.clo
+% for Springer journal:
+% The European Physical Journal C
+%
+% Copy it to a new file with a new name and use it as the basis
+% for your article. Delete % signs as needed.
+%
+% This template includes a few options for different layouts and
+% content for various journals. Please consult a previous issue of
+% your journal as needed.
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% First comes an example EPS file -- just ignore it and
+% proceed on the \documentclass line
+% your LaTeX will extract the file if required
+%\begin{filecontents*}{example.eps}
+%!PS-Adobe-3.0 EPSF-3.0
+%%BoundingBox: 19 19 221 221
+%%CreationDate: Mon Sep 29 1997
+%%Creator: programmed by hand (JK)
+%%EndComments
+%gsave
+%newpath
+%  20 20 moveto
+%  20 220 lineto
+%  220 220 lineto
+%  220 20 lineto
+%closepath
+%2 setlinewidth
+%gsave
+%  .4 setgray fill
+%grestore
+%stroke
+%grestore
+%\end{filecontents*}
+%
+\RequirePackage{fix-cm}
+%
+\documentclass[twocolumn,epjc3]{svjour3}  
+%
+\smartqed  % flush right qed marks, e.g. at end of proof
+%
+\RequirePackage{graphicx}
+%
+% \RequirePackage{mathptmx}      % use Times fonts if available on your TeX system
+%
+% insert here the call for the packages your document requires
+\RequirePackage{latexsym}
+%\RequirePackage[numbers,sort&compress]{natbib}
+%\RequirePackage[colorlinks,citecolor=blue,urlcolor=blue,linkcolor=blue]{hyperref}
+% etc.
+%
+% please place your own definitions here and don't use \def but
+% \newcommand{}{}
+%
+\journalname{Eur. Phys. J. C}
+%
+\begin{document}
+
+\title{DarkBit -- a Modular Tool and Interface to Compute Dark Matter Properties%\thanksref{t1}
+}
+%\subtitle{Do you have a subtitle?\\ If so, write it here}
+
+\titlerunning{DarkBit}        % if too long for running head
+
+\author{First Author\thanksref{e1,addr1}
+        \and
+        Second Author\thanksref{e2,addr2,addr3} %etc.
+}
+
+\thankstext{e1}{e-mail: fauthor@example.com}
+
+%\authorrunning{Short form of author list} % if too long for running head
+
+\institute{First address \label{addr1}
+           \and
+           Second address \label{addr2}
+           \and
+           \emph{Present Address:} if needed\label{addr3}
+}
+
+\date{\today}
+
+
+\maketitle
+
+\begin{abstract}
+
+Introducing DarkBit, main features (flexible and efficient interface; more realistic likelihoods
+than typically implemented; further new features?). 
+Some examples for illustration...
+
+%\keywords{First keyword \and Second keyword \and More}
+% \PACS{PACS code1 \and PACS code2 \and more}
+% \subclass{MSC code1 \and MSC code2 \and more}
+\end{abstract}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introduction}
+\label{intro}
+
+\begin{itemize}
+\item intro to physics
+\item outline scope of DarkBit; relations to backends \& genuinely new aspects
+\item relation to GAMBIT
+\end{itemize}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Physics background}
+\label{phys}
+
+$\to$ Here, we briefly describe the background necessary to understand what the code modules do...
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Relic density}
+\label{phys_rd}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Direct detection}
+\label{phys_dd}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Indirect detection}
+\label{phys_id}
+
+$\to$ general physics \& concepts; specifics go to next two subsections 
+(including descriptions of respective likelihood)
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Indirect detection with gamma rays}
+\label{phys_ga}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Indirect detection with neutrinos}
+\label{phys_nu}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Code description}
+\label{code}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Getting started (?)}
+\label{code_init}
+
+$\to$ Installation, how to run test example
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{General code framework}
+\label{code_gen}
+
+$\to$ connection to GAMBIT(?), introduce concept of backends, setup and initialization of particle models
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Backends}
+\label{code_gen}
+
+$\to$ briefly describe which backends are used, and what they contribute 
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Relic density}
+\label{code_rd}
+\begin{itemize}
+\item two possibilities: $W_\mathrm{eff}$ directly from DS or built from process catalogue (as introduced below)
+\item Different final states: "basic" 2-body vs. cascade vs higher-order corrections
+\item...
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Direct detection}
+\label{code_dd}
+\begin{itemize}
+\item Differences between mO and DS: relic density, DD couplings, ...
+\item spectra comparison: Cascade code vs. other codes and/or analytical spectra
+\item reproducing limits ? (lines, DD, ...)
+\item...
+\end{itemize}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Indirect detection}
+\label{code_id}
+
+$\to$ general physics \& concepts; specifics go to next two subsections
+\begin{itemize}
+\item Describe process catalogue 
+\item Different final states: "basic" 2-body vs. cascade vs higher-order corrections
+\item...
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Indirect detection with gamma rays}
+\label{code_ga}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Indirect detection with neutrinos}
+\label{code_nu}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Examples}
+\label{examples}
+
+A few nice \& simple physics applications; to be discussed and worked out...
+
+E.g.
+\begin{itemize}
+\item Differences between mO and DS: relic density, DD couplings, maybe spectra...
+\item spectra comparison: Cascade code vs. other codes and/or analytical spectra
+\item Results for MSSM and/or Singlet DM benchmark points
+\item  ...
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Conclusions}
+\label{conc}
+
+
+\begin{acknowledgements}
+...
+\end{acknowledgements}
+
+
+% BibTeX users please use one of
+%\bibliographystyle{spbasic}      % basic style, author-year citations
+%\bibliographystyle{spmpsci}      % mathematics and physical sciences
+%\bibliographystyle{spphys}       % APS-like style for physics
+%\bibliography{}   % name your BibTeX data base
+
+% Non-BibTeX users please use
+\begin{thebibliography}{}
+%
+% and use \bibitem to create references. Consult the Instructions
+% for authors for reference list style.
+%
+\bibitem{RefJ}
+% Format for Journal Reference
+Author, Article title, Journal, Volume, page numbers (year)
+% Format for books
+\bibitem{RefB}
+Author, Book title, page numbers. Publisher, place (year)
+% etc
+\end{thebibliography}
+
+\end{document}
+% end of file template.tex
+

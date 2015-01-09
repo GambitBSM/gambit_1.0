@@ -93,7 +93,7 @@ namespace Gambit
                                 }
                                 else
                                 {
-                                        scan_warn << "Plugin name is not defined under the \"" << *it << "\" tag.  "
+                                        scan_err << "Plugin name is not defined under the \"" << *it << "\" tag.  "
                                                 << "using the tag \"" << *it << "\" as the plugin name." << scan_end;
                                         temp.plugin = *it;
                                 }
@@ -121,7 +121,15 @@ namespace Gambit
                                                 if (it2 != selectedPlugins.end())
                                                 {
                                                         Plugins::Plugin_Details pls = plugins->find("like", it2->second.plugin, it2->second.version, it2->second.library);
-                                                        interfaces["Likelihood"].emplace_back(*it, pls, options->getOptions("plugins", *it));
+                                                        if (options->hasKey("plugins", *it, "purpose"))
+                                                        {
+                                                                interfaces[options->getValue<std::string>("plugins", *it, "purpose")].emplace_back(*it, pls, options->getOptions("plugins", *it));
+                                                        }
+                                                        else
+                                                        {
+                                                                scan_err << "Must specify purpose under the plugin tag \"" << *it << "\"." << scan_end;
+                                                        }
+                                                        
                                                         if (options->hasKey("plugins", *it, "parameters"))
                                                         {
                                                                 if (options->hasKey("parameters") && options->hasKey("parameters", *it))
@@ -147,12 +155,20 @@ namespace Gambit
                                         if (it2 != selectedPlugins.end())
                                         {
                                                 Plugins::Plugin_Details pls = plugins->find("like", it2->second.plugin, it2->second.version, it2->second.library);
-                                                interfaces["Likelihood"].emplace_back(plug, pls, options->getOptions("plugins", plug));
+                                                if (options->hasKey("plugins", plug, "purpose"))
+                                                {
+                                                        interfaces[options->getValue<std::string>("plugins", plug, "purpose")].emplace_back(plug, pls, options->getOptions("plugins", plug));
+                                                }
+                                                else
+                                                {
+                                                        scan_err << "Must specify purpose under the plugin tag \"" << plug << "\"." << scan_end;
+                                                }
+                                                
                                                 if (options->hasKey("plugins", plug, "parameters"))
                                                 {
                                                         if (options->hasKey("parameters") && options->hasKey("parameters", plug))
                                                         {
-                                                                scan_err << "Plugin \"" << plug << "\"'s parameters are defined in "
+                                                                scan_err << "Plugin tagged by \"" << plug << "\" has parameters that are defined in "
                                                                         << "both the \"parameters\" section and the \"plugins\" "
                                                                         << "section in the inifile." << scan_end;
                                                         }

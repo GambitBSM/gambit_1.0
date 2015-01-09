@@ -25,6 +25,7 @@ namespace HEPUtils {
     bool _isB;
     //@}
 
+
   public:
 
     /// @name Constructors
@@ -47,18 +48,32 @@ namespace HEPUtils {
     /// Get the 4 vector
     const P4& mom() const { return _p4; }
     /// Set the 4 vector
-    void setMom(const P4& p4) { _p4 = p4; }
-    //Set the mass of the 4 vector
-    void setM(double mass) { _p4.setM(mass); }
-    /// @name Convenience mapping of a few popular momentum properties
-    //@{
+    void set_mom(const P4& p4) { _p4 = p4; }
+
+
+    /// Get the mass (of the 4 vector)
+    double mass() { return _p4.m(); }
+    /// Set the mass (of the 4 vector)
+    void set_mass(double mass) { _p4.setM(mass); }
+
+
+    /// Get the pseudorapidity
     double eta() const { return mom().eta(); }
+
+    /// Get the rapidity
     double rap() const { return mom().rap(); }
+
+    /// Get the azimuthal angle
     double phi() const { return mom().phi(); }
+
+    /// Get the energy
     double E() const { return mom().E(); }
+
+    /// Get the squared transverse momentum
     double pT2() const { return mom().pT2(); }
+
+    /// Get the squared transverse momentum
     double pT() const { return mom().pT(); }
-    //@}
 
     //@}
 
@@ -67,11 +82,11 @@ namespace HEPUtils {
     //@{
 
     /// Is this particle tagged as a b?
-    bool isBJet() const { return _isB; }
+    bool btag() const { return _isB; }
     /// Set BTag value
-    void setBJet(bool isb=true) { _isB = isb; }
+    void set_btag(bool isb) { _isB = isb; }
 
-    /// @todo Generalize for c, tau, continuous tagging???
+    /// @todo Generalize for charm tags, tau tags, multiple tags of a single type?
 
     //@}
 
