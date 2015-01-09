@@ -74,8 +74,24 @@ namespace Gambit
       // input any Standard Model values which we want to vary with the scan. Also need
       // to implement a strategy for carrying SM parameters around gambit consistently.
       QedQcd oneset; 
+      #ifdef SpecBit_DBUG
+         // Get QedQcd values to match LesHouches.in.MSSM_1 
+         oneset.setPoleMt(1.73300000e2);
+         //oneset.setPoleMb(...);
+         oneset.setPoleMtau(1.77700000);
+         oneset.setMbMb(4.20000000);
+         /// sets a running quark mass
+         oneset.setMass(mDown,    4.76052706e-3);
+         oneset.setMass(mUp,      2.40534062e-3);
+         oneset.setMass(mStrange, 1.04230487E-01);
+         oneset.setMass(mCharm, 1.27183378);
+         /// sets QED or QCD structure constant
+         oneset.setAlpha(ALPHA, 1./1.27934000e2 );
+         oneset.setAlpha(ALPHAS, 1.17600000e-1 );
+         // Not sure how to set other stuff.
+      #endif 
       oneset.toMz();
-   
+ 
       // Create spectrum generator object
       typename MI::SpectrumGenerator spectrum_generator;
 
@@ -127,7 +143,8 @@ namespace Gambit
       SPECGEN_SET(threshold_corrections_loop_order,  int, 1 );
 
       #undef SPECGEN_SET
-     
+
+      // Higgs loop corrections are a little different... sort them out now     
       Higgs_2loop_corrections higgs_2loop_settings;
 
       // alpha_t alpha_s
@@ -138,6 +155,8 @@ namespace Gambit
       higgs_2loop_settings.at_at = runOptions.getValueOrDef<bool>(true,"use_higgs_2loop_at_at");
       // alpha_tau^2
       higgs_2loop_settings.atau_atau = runOptions.getValueOrDef<bool>(true,"use_higgs_2loop_atau_atau");
+
+      spectrum_generator.set_higgs_2loop_corrections(higgs_2loop_settings);
 
  
       // Generate spectrum
