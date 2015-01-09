@@ -39,7 +39,7 @@ scanner_plugin(toy_mcmc, version(1, 0, 0))
         int plugin_main (void)
         {
                 std::string output_file            = get_inifile_value<std::string>("output_file", "default_output");
-                int N                              = get_inifile_value<int>("point_number", 10);
+                int N                              = get_inifile_value<int>("point_number", 10)-1;
                 scan_ptr<double (const std::vector<double>&)> LogLike = get_functor("Likelihood");
                 int ma                             = get_dimension();
                 //int na = get_inifile_value<int>("not_there");
@@ -49,11 +49,14 @@ scanner_plugin(toy_mcmc, version(1, 0, 0))
                 std::vector<double> a(ma);
                 std::vector<double> aNext(ma);
                 
+                if (N <= 0)
+                        scan_err << "You need to choose at least 2 points" << scan_end;
+                
                 for (int i = 0; i < ma; i++) a[i] = Gambit::Random::draw();
                 
                 std::cout << "Metropolis Hastings Algorthm Started" << std::endl; // << "tpoints = " << "\n\taccept ratio = " << std::endl;
                 
-                chisq = (*LogLike)(a);
+                chisq = -LogLike(a);
                 
                 do
                 {
@@ -63,11 +66,11 @@ scanner_plugin(toy_mcmc, version(1, 0, 0))
                                 aNext[i] = Gambit::Random::draw();
                         }
 
-                        chisqnext = (*LogLike)(aNext);
+                        chisqnext = -LogLike(aNext);
 
                         ans = chisqnext - chisq;
-                        // if ((ans <= 0.0)||(-std::log(Gambit::Random::draw()) >= ans))
-                        if (true)
+                        if ((ans <= 0.0)||(-std::log(Gambit::Random::draw()) >= ans))
+                        //if (true)
                         {
                                 //out << mult << "   ";
                                 for (int k = 0; k < ma; k++)
