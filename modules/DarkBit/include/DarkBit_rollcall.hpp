@@ -287,6 +287,11 @@ START_MODULE
       DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)
       BACKEND_REQ(dshayield, (), double, (double&,double&,int&,int&,int&))
     #undef FUNCTION
+    #define FUNCTION ToyAnnYield
+      START_FUNCTION(Funk::Funk)
+      DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)
+      DEPENDENCY(SimYieldTable, Gambit::DarkBit::SimYieldTable)
+    #undef FUNCTION
   #undef CAPABILITY
 
   #define CAPABILITY TH_ProcessCatalog
@@ -671,6 +676,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION SimYieldTable_DarkSusy
     START_FUNCTION(Gambit::DarkBit::SimYieldTable)
+    BACKEND_REQ(dshayield, (), double, (double&,double&,int&,int&,int&))
     #undef FUNCTION 
   #undef CAPABILITY
 
