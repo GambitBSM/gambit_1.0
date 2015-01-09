@@ -40,9 +40,6 @@
 #include "standalone_error_handlers.hpp"
 #include "variadic_functions.hpp"
 
-// SLHAea reader/writer class
-#include "slhaea.h"
-
 namespace Gambit
 {
 
@@ -50,12 +47,6 @@ namespace Gambit
   typedef std::string str;
   /// Shorthand for a pair of standard strings
   typedef std::pair<str, str> sspair;
-
-  /// Less confusing name for SLHAea container class
-  typedef SLHAea::Coll SLHAstruct;
-
-  /// DEPRECATED name for SLHAea container class. Please replace all instances of this with SLHAstruct (or SLHAea::Coll)
-  typedef SLHAea::Coll eaSLHA;
 
   // Useful unqualified functions
   using std::cout;

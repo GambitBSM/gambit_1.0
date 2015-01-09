@@ -177,13 +177,13 @@ Auxiliaries:
       ewsb_loop_order:       2
       beta_loop_order:       2
       threshold_corrections_loop_order: 1
-      # not yet implemented:
-      # 8   1                    # Higgs 2-loop corrections O(alpha_t alpha_s)
-      # 9   1                    # Higgs 2-loop corrections O(alpha_b alpha_s)
-      #10   1                    # Higgs 2-loop corrections O(alpha_t^2 + alpha_t alpha_b + alpha_b^2)
-      #11   1                    # Higgs 2-loop corrections O(alpha_tau^2)
+      use_higgs_2loop_at_as: true
+      use_higgs_2loop_ab_as: true
+      use_higgs_2loop_at_at: true
+      use_higgs_2loop_atau_atau: true
       invalid_point_fatal: false
-                   
+                 
+ 
 Logger:
 
   prefix : "runs/MSSM25_test/logs/"

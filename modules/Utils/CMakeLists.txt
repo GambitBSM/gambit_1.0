@@ -11,8 +11,7 @@ set(source_files src/equivalency_singleton.cpp
                  src/mkpath.c
 )
 
-set(header_files include/SLHA_readers.hpp
-                 include/base_functions.hpp
+set(header_files include/base_functions.hpp
                  include/boost_fallbacks.hpp
                  include/cats.hpp
                  include/equivalency_singleton.hpp

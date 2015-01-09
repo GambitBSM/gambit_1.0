@@ -125,11 +125,20 @@ namespace Gambit
       SPECGEN_SET(ewsb_loop_order,                   int, 2 );
       SPECGEN_SET(beta_loop_order,                   int, 2 );
       SPECGEN_SET(threshold_corrections_loop_order,  int, 1 );
-      
-      // This one is more complicated; talk to Peter
-      //void set_higgs_2loop_corrections(const Higgs_2loop_corrections& c) { model.set_higgs_2loop_corrections(c); }
 
       #undef SPECGEN_SET
+     
+      Higgs_2loop_corrections higgs_2loop_settings;
+
+      // alpha_t alpha_s
+      higgs_2loop_settings.at_as = runOptions.getValueOrDef<bool>(true,"use_higgs_2loop_at_as");
+      // alpha_b alpha_s
+      higgs_2loop_settings.ab_as = runOptions.getValueOrDef<bool>(true,"use_higgs_2loop_ab_as");
+      // alpha_t^2 + alpha_t alpha_b + alpha_b^2
+      higgs_2loop_settings.at_at = runOptions.getValueOrDef<bool>(true,"use_higgs_2loop_at_at");
+      // alpha_tau^2
+      higgs_2loop_settings.atau_atau = runOptions.getValueOrDef<bool>(true,"use_higgs_2loop_atau_atau");
+
  
       // Generate spectrum
       spectrum_generator.run(oneset, input);

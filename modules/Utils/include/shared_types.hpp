@@ -31,10 +31,11 @@
 #ifndef __shared_types_hpp__
 #define __shared_types_hpp__
 
-#include "model_parameters.hpp"        // Definitions required to understand model parameter objects
 #include "funktions.hpp"               // Generalized functions
-#include "SLHA_readers.hpp"            // SLHA readers from contributed packages
+#include "slhaea.h"                    // SLHAea reader/writer class
+#include "model_parameters.hpp"        // Definitions required to understand model parameter objects
 #include "Spectrum.hpp"                // Spectrum object (carries particle spectrum info)
+
 
 // Other types that don't belong in any of the existing includes.  As the number of such types grows, they
 // should be progressively organised into new headers, and those headers included from here.
@@ -42,7 +43,14 @@ namespace Gambit
 { 
   // Pointer to a function that takes an integer by reference and returns a double.
   // Just used for example purposes in ExampleBit_A and ExampleBit_B.
-  typedef double(*fptr)(int&); 
+  typedef double(*fptr)(int&);
+
+   /// Less confusing name for SLHAea container class
+  typedef SLHAea::Coll SLHAstruct;
+
+  /// DEPRECATED name for SLHAea container class. Please replace all instances of this with SLHAstruct (or SLHAea::Coll)
+  typedef SLHAea::Coll eaSLHA;
+
 }
 
 #include "default_bossed_versions.hpp" // Default versions of backends to use when employing BOSSed types
