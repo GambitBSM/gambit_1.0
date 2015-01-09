@@ -1,0 +1,122 @@
+\documentclass[11pt,a4paper]{article}
+% Presumably we will have a modified template header for the final papers
+% For now we hard code things below
+
+\usepackage{fancyhdr}
+\usepackage{parskip}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage[colorlinks=true, linkcolor=BrickRed, citecolor=Blue, urlcolor=Blue, filecolor=Blue]{hyperref}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{amssymb, amsmath}
+%\pagestyle{fancy}
+
+\newcommand{\mail}[1]{\href{mailto:#1}{#1}}
+
+\title{SpecBit: A GAMBIT module for the linking and running spectrum genetaors and decay codes}
+
+\author{The GAMBIT Collaboration: Alphabetical author list} % will presumably have a standard author list
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Write in exactly same style as CollierBit if possible.
+%% We present a new code for the calculation of high energy collider observables, given a generic theory of beyond the Standard Model physics. Describe novel features of HEColliderBit (parallelised MC generation, fast SUSY cross-section calculations, generic interface to BSM models, lots of LHC analyses). Mention link to GAMBIT framework, but emphasise that the package presents a standalone solution to the problem of applying LHC constraints to new physics theories.
+\end{abstract}
+
+\tableofcontents
+
+
+\section{Introduction}
+motivation, literature review, summary of advances in this paper
+%% Wealth of recent LHC data provides strong constraints on new physics models. It remains difficult to apply LHC constraints to generic physics models in a rigorous fashion. Various attempts have been made to automate the process (SmodelS, CheckMATE, etc). No attempt has attacked the problem in a fully rigorous way, and neither have any existing attempts been integrated into a fully general framework for statistical fits of generic BSM theories. 
+
+%% We present a new, fully general solution based on parallelised Monte Carlo simulation, fast detector simulation and fast cross-section calculations for SUSY processes. Part of the Global and Module BSM Inference Tool, which will include, etc. 
+
+%% This paper is organised as follows. In Section ?? we..., etc. 
+
+\section{Quick Start}
+
+\section{Physics background}
+MSSM Superpotential etc to lay out conventions
+\section{Overview of physics models supported}
+MSSM will be most common, just list ones that are fully supported without user modification?
+\begin{itemize} 
+\item MSSM
+  \begin{itemize}
+  \item CMSSM  
+  \item NUHM 
+  \item MSSM-25
+  \end{itemize} 
+\item NMSSM
+  \begin{itemize}
+  \item CNMSSM  
+  \item NUHNMSSM 
+  \item NMSSM-30
+  \end{itemize}
+\item other models?
+\end{itemize}  
+
+\section{User Interface}
+
+\subsection{MSSM setup} 
+         default codes 
+         (may not want this but softsusy and FS at least 
+                         are special to Gambit at some level) 
+
+         codes already implemented
+
+         addding new codes: more advanced options if user adds own decay code
+                            or FeynHiggs alternative
+ 
+\subsection{NMSSM setup}
+    quick repeat of MSSM but with MSSM specifics
+
+\subsection{Other models}
+    SUSY
+
+    Non-SUSY
+
+
+Most of this list from ColliderBit actually applies and should be in stuff above or just below them.
+\begin{itemize}
+\item Describe interface to GAMBIT framework.
+\item Describe standalone interface (how to configure and run the package, what the defaults are).
+\item Describe the interface to the models that we include and how to change the input parameters of those models.
+\item Explain how to interface with a new model.
+\item Explain how to run code in single core or multicore form (i.e using the standard OpenMP commands).
+\item Describe parameters that can be varied in yaml file.
+\end{itemize}
+
+
+
+\section{Code description}
+horrible horrible details
+
+
+%%\subsection{User interface}
+
+
+\section{Examples}
+Give some tutorial-style examples for common use cases.
+
+\subsection{MSSM example}
+MSSM run even needed?
+
+adding new MSSM generator (can just use FS example)
+\subsection{NMSSM example}
+NMSSM run even needed?
+
+adding new NMSSM generator (can just use FS example)
+\subsection{exotic SUSY with own tools example - E6SSM?}
+May not be possible in time
+
+\section{Conclusions}
+
+\section{Acknowledgements}
+
+\section{Appendix: ?}
+
+\end{document}
