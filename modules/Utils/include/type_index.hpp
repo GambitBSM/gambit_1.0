@@ -24,7 +24,7 @@ namespace Gambit
         struct type_index
         {
         public:
-                type_index(const type_info& __rhs) noexcept
+                type_index(const std::type_info& __rhs) noexcept
                 : _M_target(&__rhs) { }
 
                 bool operator==(const type_index& __rhs) const noexcept
@@ -52,7 +52,7 @@ namespace Gambit
                 { return _M_target->name(); }
 
         private:
-                const type_info* _M_target;
+                const std::type_info* _M_target;
         };
 }
 

@@ -12,6 +12,7 @@ set(scannerbit_sources
 set(scannerbit_headers 
                  include/cholesky.hpp
                  include/factory_registry.hpp
+                 include/factory_defs.hpp
                  include/function_plugin.hpp
                  include/inifile_interface.hpp
                  include/plugin_comparators.hpp

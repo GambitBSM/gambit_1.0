@@ -41,10 +41,25 @@ namespace Gambit
                 class scan_ptr<ret (args...)> : public shared_ptr<Function_Base<ret (args...)>>
                 {
                 public:
-                        scan_ptr(void *in) : shared_ptr<Function_Base<ret (args...)> >(static_cast<Function_Base<ret (args...)>*>(in)) {}
+                        scan_ptr(){}
+                        scan_ptr(const scan_ptr &in) : shared_ptr< Function_Base<ret (args...)> >(in){}
+                        scan_ptr(scan_ptr &&in) : shared_ptr< Function_Base<ret (args...)> >(in) {}
+                        scan_ptr(void *in) : shared_ptr< Function_Base<ret (args...)> >(static_cast< Function_Base<ret (args...)>* >(in)) {}
+                        
+                        scan_ptr<ret (args...)> &operator=(void *in)
+                        {
+                                this->shared_ptr< Function_Base<ret (args...)> >::operator=
+                                (
+                                        shared_ptr< Function_Base<ret (args...) > >(
+                                                static_cast< Function_Base<ret (args...)>* >(in))
+                                );
+                        
+                                return *this;
+                        }
+                        
                         ret operator()(const args&... params)
                         {
-                                return this->operator()(params...);
+                                return (*this)->operator()(params...);
                         }
                 };
                 

@@ -18,6 +18,8 @@
 #ifndef __MSSM25_hpp__
 #define __MSSM25_hpp__
 
+#include "MSSM78.hpp" // Parent model must be declared first! Include it here to ensure that this happens.
+
 /// FlexibleSUSY compatible general (78 parameters plus sign) MSSM parameterisation
 #define MODEL MSSM25
 #define PARENT MSSM78
