@@ -135,10 +135,11 @@ namespace Gambit
         inline const YAML::Node getVariadicNode(const YAML::Node &node, std::string key) 
         {
                 if (node.IsMap())
+                {
                         return node[key];
+                }
                 else
                 {
-                        std::cout << node << std::endl;getchar();
                         return YAML::Node();
                 }
         }
@@ -147,10 +148,11 @@ namespace Gambit
         inline const YAML::Node getVariadicNode(const YAML::Node &node, const std::string &key, const args&... keys)
         {
                 if (node.IsMap())
+                {
                         return getVariadicNode(node[key], keys...);
+                }
                 else
                 {
-                        std::cout << node << std::endl;getchar();
                         return YAML::Node();
                 }
         }
