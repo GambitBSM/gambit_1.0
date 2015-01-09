@@ -857,12 +857,6 @@ namespace Gambit {
     }
 
 
-    void SimYieldTable_DarkSusy(SimYieldTable& result)
-    {
-        using namespace Pipes::SimYieldTable_DarkSusy;
-    }
-
-
     void GA_AnnYield_DarkSUSY(Funk::Funk &result)
     {
         //////////////////////////////////////////////////////////////////////////
@@ -970,9 +964,13 @@ namespace Gambit {
                 // Find channel
                 
 
-//                if channel=(gamma,X,Y)  m1=mass(X), m2=mass(Y) 
-// TODO: replace the following block by the above line                
-                
+//                if channel=("gamma",X,Y)  m1=mass(X), m2=mass(Y) 
+// TODO: replace the following block by the above line      
+          
+// it-> channelContains("gamma")          
+//                it->FinalStateIDs[0]=="gamma"
+  
+                              
                 if      ( it->isChannel("gamma", "W+"    , "W-"     )){m1 = (*Dep::TH_ProcessCatalog).getParticleProperty("W+"  ).mass; m2 = (*Dep::TH_ProcessCatalog).getParticleProperty("W-"  ).mass;  }   
                 else if ( it->isChannel("gamma", "W+"    , "H-"     )){m1 = (*Dep::TH_ProcessCatalog).getParticleProperty("W+"  ).mass; m2 = (*Dep::TH_ProcessCatalog).getParticleProperty("H-"  ).mass;  }   
                 else if ( it->isChannel("gamma", "W-"    , "H+"     )){m1 = (*Dep::TH_ProcessCatalog).getParticleProperty("W-"  ).mass; m2 = (*Dep::TH_ProcessCatalog).getParticleProperty("H+"  ).mass;  }   
@@ -1854,5 +1852,38 @@ namespace Gambit {
         result = 0;
     }
 
+    void SimYieldTable_DarkSusy(SimYieldTable& result)
+    {
+        using namespace Pipes::SimYieldTable_DarkSusy;
+
+        static bool initialized = false;
+        if ( not initialized )
+        {
+            int flag = 0;      // some flag
+            int yieldk = 152;  // gamma ray yield
+            int ch = 0;        // channel information
+            Funk::Funk dNdE;
+
+            #define ADD_CHANNEL(ch, P1, P2, EcmMin, EcmMax)                                                           \
+                dNdE = Funk::func(BEreq::dshayield.pointer(), Funk::var("Ecm")/2, Funk::var("E"), ch, yieldk, flag);  \
+                result.addChannel(dNdE, P1, P2, EcmMin, EcmMax);  // specifies also center of mass energy range
+            ADD_CHANNEL(25, "b", "bbar", 10., 10000.)
+            ADD_CHANNEL(12, "Z0", "Z0", 10., 10000.)
+            #undef ADD_CHANNEL
+            initialized = true;
+        }
+    }
+
+    void ToyAnnYield(Funk::Funk& result)
+    {
+        using namespace Pipes::ToyAnnYield;
+
+        double mass = 100;
+        Funk::Funk dNdE_bb = (*Dep::SimYieldTable)("b", "bbar", mass);
+
+        std::cout << dNdE_bb->eval("E", 10) << std::endl;
+
+        result = dNdE_bb;  // Fix units
+    }
   }
 }
