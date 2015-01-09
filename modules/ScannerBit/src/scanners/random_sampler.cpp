@@ -37,7 +37,6 @@ scanner_plugin(random_sampler, version(1, 0, 0))
         
         int plugin_main ()
         {
-                std::cout << "Csaba's error checking" << std::endl;
                 //SET_SCAN_IOS(files);
                 std::string output_file            = get_inifile_value<std::string>("output_file", "default_output");
                 int N                              = get_inifile_value<int>("point_number", 10);

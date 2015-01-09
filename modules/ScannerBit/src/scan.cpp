@@ -93,7 +93,7 @@ namespace Gambit
                                 }
                                 else
                                 {
-                                        scan_warn << "Plugin name is not defined under the \"" << *it << "\" tag.  "
+                                        scan_err << "Plugin name is not defined under the \"" << *it << "\" tag.  "
                                                 << "using the tag \"" << *it << "\" as the plugin name." << scan_end;
                                         temp.plugin = *it;
                                 }

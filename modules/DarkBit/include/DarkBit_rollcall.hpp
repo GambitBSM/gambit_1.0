@@ -100,9 +100,9 @@ START_MODULE
   // Relic density -----------------------------------------
 
   #define CAPABILITY RD_spectrum
-  START_CAPABILITY 
+  START_CAPABILITY
     #define FUNCTION RD_spectrum_SUSY
-      START_FUNCTION(RDspectype)
+      START_FUNCTION(Gambit::DarkBit::RD_spectrum_type)
       BACKEND_REQ(mspctm, (), DS_MSPCTM)
       BACKEND_REQ(widths, (), DS_WIDTHS)
       BACKEND_REQ(intdof, (), DS_INTDOF)
@@ -111,13 +111,18 @@ START_MODULE
   #undef CAPABILITY
 
   #define CAPABILITY RD_thresholds_resonances
-  START_CAPABILITY 
-    #define FUNCTION RD_thresholds_resonances_ordered
-      START_FUNCTION(RDrestype)
-      DEPENDENCY(RD_spectrum, RDspectype)
+  START_CAPABILITY
+    #define FUNCTION RD_thresholds_resonances_from_ProcessCatalog
+      START_FUNCTION(Gambit::DarkBit::TH_resonances_thresholds)
+      DEPENDENCY(RD_spectrum, Gambit::DarkBit::RD_spectrum_type)
+      DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)
+    #undef FUNCTION
+    #define FUNCTION RD_thresholds_resonances_from_spectrum
+      START_FUNCTION(Gambit::DarkBit::TH_resonances_thresholds)
+      DEPENDENCY(RD_spectrum, Gambit::DarkBit::RD_spectrum_type)
     #undef FUNCTION
     #define FUNCTION RD_thresholds_resonances_SingletDM
-      START_FUNCTION(RDrestype)
+      START_FUNCTION(Gambit::DarkBit::TH_resonances_thresholds)
       ALLOW_MODELS(SingletDM)
       BACKEND_REQ(rdmgev, (), DS_RDMGEV)
     #undef FUNCTION
@@ -127,7 +132,7 @@ START_MODULE
   START_CAPABILITY 
     #define FUNCTION RD_eff_annrate_SUSY_DSprep_func
       START_FUNCTION(int)
-      DEPENDENCY(RD_spectrum, RDspectype)
+      DEPENDENCY(RD_spectrum, Gambit::DarkBit::RD_spectrum_type)
       BACKEND_REQ(rdmgev, (), DS_RDMGEV)
     #undef FUNCTION
   #undef CAPABILITY
@@ -150,7 +155,7 @@ START_MODULE
   START_CAPABILITY 
     #define FUNCTION RD_oh2_general
       START_FUNCTION(double)
-      DEPENDENCY(RD_thresholds_resonances, RDrestype)
+      DEPENDENCY(RD_thresholds_resonances, Gambit::DarkBit::TH_resonances_thresholds)
       DEPENDENCY(RD_eff_annrate, fptr_dd)
       BACKEND_REQ(dsrdthlim, (), void, ())
       BACKEND_REQ(dsrdtab, (), void, (double(*)(double&), double&))
@@ -286,6 +291,11 @@ START_MODULE
       START_FUNCTION(Funk::Funk)
       DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)
       BACKEND_REQ(dshayield, (), double, (double&,double&,int&,int&,int&))
+    #undef FUNCTION
+    #define FUNCTION ToyAnnYield
+      START_FUNCTION(Funk::Funk)
+      DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)
+      DEPENDENCY(SimYieldTable, Gambit::DarkBit::SimYieldTable)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -671,6 +681,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION SimYieldTable_DarkSusy
     START_FUNCTION(Gambit::DarkBit::SimYieldTable)
+    BACKEND_REQ(dshayield, (), double, (double&,double&,int&,int&,int&))
     #undef FUNCTION 
   #undef CAPABILITY
 
