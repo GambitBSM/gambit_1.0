@@ -532,7 +532,7 @@ namespace Gambit
         }  
         double DecayTable::getWidth(const TH_Channel *ch)
         {
-            return ch->dSigmadE->eval();
+            return ch->genRate->eval();
         }
         void DecayTable::printTable() const
         {

@@ -18,34 +18,37 @@
 #define TYPE_INDEX_HPP
 
 #include <typeinfo>
+#include <functional>
 
 namespace Gambit
 {
         struct type_index
         {
         public:
-                type_index(const std::type_info& __rhs) noexcept
+                friend struct type_equal_to;
+                
+                type_index(const std::type_info& __rhs)
                 : _M_target(&__rhs) { }
 
-                bool operator==(const type_index& __rhs) const noexcept
+                bool operator==(const Gambit::type_index& __rhs) const
                 { return *_M_target == *__rhs._M_target; }
 
-                bool operator!=(const type_index& __rhs) const noexcept
+                bool operator!=(const Gambit::type_index& __rhs) const
                 { return *_M_target != *__rhs._M_target; }
 
-                bool operator<(const type_index& __rhs) const noexcept
+                bool operator<(const Gambit::type_index& __rhs) const
                 { return _M_target->before(*__rhs._M_target); }
 
-                bool operator<=(const type_index& __rhs) const noexcept
+                bool operator<=(const Gambit::type_index& __rhs) const
                 { return !__rhs._M_target->before(*_M_target); }
 
-                bool operator>(const type_index& __rhs) const noexcept
+                bool operator>(const Gambit::type_index& __rhs) const
                 { return __rhs._M_target->before(*_M_target); }
 
-                bool operator>=(const type_index& __rhs) const noexcept
+                bool operator>=(const Gambit::type_index& __rhs) const
                 { return !_M_target->before(*__rhs._M_target); }
 
-                size_t hash_code() const noexcept
+                size_t hash_code() const
                 { return _M_target->hash_code(); }
 
                 const char* name() const
@@ -54,20 +57,41 @@ namespace Gambit
         private:
                 const std::type_info* _M_target;
         };
+        
+        struct type_hasher 
+        {
+                std::size_t operator()(const Gambit::type_index& code) const
+                {
+                        return code.hash_code();
+                }
+        };
+        
+        struct type_equal_to 
+        {
+                bool operator()(const Gambit::type_index& lhs, const Gambit::type_index& rhs) const
+                {
+                        return *lhs._M_target == *rhs._M_target;
+                }
+        };
 }
 
 namespace std
 {
         template<typename _Tp> struct hash;
-
+        template<typename _Tp> struct equal_to;
+        
         template<>
         struct hash<Gambit::type_index>
         {
-                typedef size_t        result_type;
-                typedef Gambit::type_index  argument_type;
-
-                size_t operator()(const Gambit::type_index& __ti) const noexcept
+                size_t operator()(const Gambit::type_index& __ti) const
                 { return __ti.hash_code(); }
+        };
+        
+        template<>
+        struct equal_to<Gambit::type_index>
+        {
+                size_t operator()(const Gambit::type_index& lhs, const Gambit::type_index& rhs) const
+                { return lhs == rhs; }
         };
 }
 
