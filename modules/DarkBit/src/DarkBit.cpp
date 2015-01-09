@@ -970,9 +970,13 @@ namespace Gambit {
                 // Find channel
                 
 
-//                if channel=(gamma,X,Y)  m1=mass(X), m2=mass(Y) 
-// TODO: replace the following block by the above line                
-                
+//                if channel=("gamma",X,Y)  m1=mass(X), m2=mass(Y) 
+// TODO: replace the following block by the above line      
+          
+// it-> channelContains("gamma")          
+//                it->FinalStateIDs[0]=="gamma"
+  
+                              
                 if      ( it->isChannel("gamma", "W+"    , "W-"     )){m1 = (*Dep::TH_ProcessCatalog).getParticleProperty("W+"  ).mass; m2 = (*Dep::TH_ProcessCatalog).getParticleProperty("W-"  ).mass;  }   
                 else if ( it->isChannel("gamma", "W+"    , "H-"     )){m1 = (*Dep::TH_ProcessCatalog).getParticleProperty("W+"  ).mass; m2 = (*Dep::TH_ProcessCatalog).getParticleProperty("H-"  ).mass;  }   
                 else if ( it->isChannel("gamma", "W-"    , "H+"     )){m1 = (*Dep::TH_ProcessCatalog).getParticleProperty("W-"  ).mass; m2 = (*Dep::TH_ProcessCatalog).getParticleProperty("H+"  ).mass;  }   
