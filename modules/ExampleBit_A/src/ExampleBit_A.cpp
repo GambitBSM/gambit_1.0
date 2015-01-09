@@ -32,7 +32,7 @@
 #include "gambit_module_headers.hpp"
 #include "ExampleBit_A_rollcall.hpp"
 
-#include "partmap.hpp"
+//#include "partmap.hpp"
 
 
 namespace Gambit
