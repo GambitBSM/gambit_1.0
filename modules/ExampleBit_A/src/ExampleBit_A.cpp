@@ -32,6 +32,9 @@
 #include "gambit_module_headers.hpp"
 #include "ExampleBit_A_rollcall.hpp"
 
+#include "partmap.hpp"
+
+
 namespace Gambit
 {
 
@@ -83,6 +86,10 @@ namespace Gambit
         //Example of how to declare a point invalid.
         invalid_point().raise("I don't like this point.");
       }
+
+      cout << Models::ParticleDB().long_name(std::pair<int,int>(25,0))<<endl;
+      model_error().raise(LOCAL_INFO,"die now");
+
     }
 
     void function_pointer_retriever( double(*&result)(int&) )
