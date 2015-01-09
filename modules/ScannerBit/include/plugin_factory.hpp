@@ -129,7 +129,7 @@ namespace Gambit
                                 : interfaces(interfaces), prior(prior)
                         {
                                 parameters = convert_to_map(prior.getParameters());
-                                purpose_index.emplace("Likelihood", typeid(double (const std::vector<double> &)));
+                                purpose_index["Likelihood"] = typeid(double (const std::vector<double> &));
                         }
                         
                         void * operator() (const std::string &purpose) const
