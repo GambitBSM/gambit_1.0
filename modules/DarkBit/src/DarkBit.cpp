@@ -205,14 +205,20 @@ namespace Gambit {
 //
 //////////////////////////////////////////////////////////////////////////
 
-    void RD_spectrum_SUSY(RDspectype &result)
+    // TODO: Needs to be cleaned up!
+    void RD_spectrum_SUSY(RD_spectrum_type &result)
     {
       using namespace Pipes::RD_spectrum_SUSY;
 
-      RDspectype myres;
-      int copr[2];           // flag for which coannihilation processes to include
-      double mcofr;          // maximal coannihilating particle mass
-      int colist[26],lcolist; //potential coannihilating partilces
+      std::vector<int> colist; //potential coannihilating partilces (indices)
+
+      // flags for which coannihilation processes to include
+      // set by hand which coannihilation processes to include
+      // this should eventually be done via some driver/init file
+      bool wantCharginosNeutralinos = true;
+      bool wantSfermions = true;
+      // maximal coannihilating particle mass
+      double maximalMass = 2.1;
 
       // NB: eventually, this function should not be BE-dependent anymore!
       // DarkSUSY conventions like the ones below are only used until we have 
@@ -227,169 +233,135 @@ namespace Gambit {
       DS_INTDOF myintdof= *BEreq::intdof;
       DS_WIDTHS mywidths= *BEreq::widths;
 
-      // determine relevant coannihilating particles
-      // set by hand which coannihilation processes to include
-      // this should eventually be done via some driver/init file
-      copr[0]=1;    // charginos and neutrlino
-      copr[1]=1;    // sfermions
-      mcofr=2.1;
-
       // first add neutralino=WIMP=least massive 'coannihilating particle'
-      lcolist=0; myres.n_co=1;
-      myres.mass_co[0]=mymspctm.mass[DSpart.kn[0]];
-      myres.dof_co[0]=myintdof.kdof[DSpart.kn[0]];
-      myres.part_co[0]=DSpart.kn[0]; 
-      if  (copr[0]!=0){     //include  neutralino & chargino coannihilation
-        for (int i=1; i<4; i++) {
-         colist[i-1]=DSpart.kn[i];
-        }
-        colist[3]=DSpart.kcha[0];
-        colist[4]=DSpart.kcha[1];
-        lcolist=5;
+      result.coannihilatingParticles.push_back(RD_coannihilating_particle(DSpart.kn[0], myintdof.kdof[DSpart.kn[0]],mymspctm.mass[DSpart.kn[0]]));
+
+      //include  neutralino & chargino coannihilation
+      if(wantCharginosNeutralinos)
+      {
+        for (int i=1; i<4; i++)
+          colist.push_back(DSpart.kn[i]);
+        colist.push_back(DSpart.kcha[0]);
+        colist.push_back(DSpart.kcha[1]);
       }
-      if (copr[1]!=0){     //include sfermion coannihilation
-        for (int i=0; i<6; i++) {
-         colist[lcolist+i]=DSpart.ksl[i];
-        }
-        for (int i=0; i<3; i++) {
-         colist[lcolist+6+i]=DSpart.ksnu[i];
-        }
-        for (int i=0; i<6; i++) {
-         colist[lcolist+9+i]=DSpart.ksqu[i];
-        }
-        for (int i=0; i<6; i++) {
-         colist[lcolist+15+i]=DSpart.ksqd[i];
-        }
-        lcolist += 21;
+
+      //include sfermion coannihilation
+      if(wantSfermions)
+      {
+        for (int i=0; i<6; i++)
+         colist.push_back(DSpart.ksl[i]);
+        for (int i=0; i<3; i++)
+         colist.push_back(DSpart.ksnu[i]);
+        for (int i=0; i<6; i++)
+         colist.push_back(DSpart.ksqu[i]);
+        for (int i=0; i<6; i++)
+         colist.push_back(DSpart.ksqd[i]);
       }
+
       // only keep sparticles that are not too heavy
-      for (int i=0; i<lcolist; i++) {
-        if (mymspctm.mass[colist[i]]/myres.mass_co[0]< mcofr){        
-          myres.n_co += 1;
-          myres.mass_co[myres.n_co-1]=mymspctm.mass[colist[i]];
-          myres.dof_co[myres.n_co-1]=myintdof.kdof[colist[i]];
-          myres.part_co[myres.n_co-1]=colist[i];
-//          std::cout << "coann type, mass: " << colist[i] <<", "<< myres.mass_co[myres.n_co-1] << std::endl;
-        }
-      }
-            
+      for (size_t i=0; i<colist.size(); i++)
+        if (mymspctm.mass[colist[i]]/mymspctm.mass[DSpart.kn[0]] < maximalMass)
+          result.coannihilatingParticles.push_back(RD_coannihilating_particle(colist[i], myintdof.kdof[colist[i]], mymspctm.mass[colist[i]]));
+
+      colist.clear();
+
       // determine resonances for LSP annihilation
-      myres.n_res=0;
       int reslist[] = {kz,kh1,kh2,kh3,kw,khc};
       int resmax=sizeof(reslist) / sizeof(reslist[0]);
-      if (myres.n_co==1){
+
+      if (result.coannihilatingParticles.size() == 1)
         resmax -= 2;    // the last 2 resonances in the list can only appear for coannihilations
-      }
-      for (int i=0; i<resmax; i++) {
-        if (mymspctm.mass[reslist[i]]/myres.mass_co[0]>2){        
-          myres.mass_res[myres.n_res]=mymspctm.mass[reslist[i]];
-          myres.width_res[myres.n_res]=mywidths.width[reslist[i]];
-          if (reslist[i]==kh1 && mywidths.width[kh1]<0.1){
-            myres.width_res[myres.n_res]=0.1; // narrow res treatment adopted in DS
-          }
-          myres.n_res += 1;
-//          std::cout << "res type, mass: " << reslist[i] <<", "<< myres.mass_res[myres.n_res-1] << std::endl;
+
+      for (int i=0; i<resmax; i++)
+      {
+        if (mymspctm.mass[reslist[i]]/result.coannihilatingParticles[0].mass > 2.)
+        {
+          if (reslist[i]==kh1 && mywidths.width[kh1] < 0.1)
+            result.resonances.push_back(TH_Resonance(mymspctm.mass[reslist[i]], 0.1)); // narrow res treatment adopted in DS
+          else
+            result.resonances.push_back(TH_Resonance(mymspctm.mass[reslist[i]], mywidths.width[reslist[i]]));
         }
       }
 
       // determine thresholds; lowest threshold = 2*WIMP rest mass  (unlike DS convention!)
-      myres.E_thr[0]=2*myres.mass_co[0];
-      myres.n_thr=1;
+      result.threshold_energy.push_back(2*result.coannihilatingParticles[0].mass);
       int thrlist[] = {kw,kz,kt};
       int thrmax=sizeof(thrlist) / sizeof(thrlist[0]);
-      for (int i=0; i<thrmax; i++) {
-        if (mymspctm.mass[thrlist[i]]>myres.mass_co[0]){        
-          myres.E_thr[myres.n_thr]=2*mymspctm.mass[thrlist[i]];
-          myres.n_thr += 1;
-//          std::cout << "thr type, energy: " << thrlist[i] <<", "<< myres.E_thr[myres.n_thr-1] << std::endl;   
-        }
-      }
-      // now add coannihilation thresholds
-      if (myres.n_co > 1){
-        for (int i=0; i<myres.n_co; i++) {
-          for (int j=std::max(1,i); j<myres.n_co; j++) {
-            myres.E_thr[myres.n_thr]=myres.mass_co[i]+myres.mass_co[j];
-            myres.n_thr += 1;
-//           std::cout << "coann thr mass1, mass2: " << myres.mass_co[i] <<", "<< myres.mass_co[j] << std::endl;   
-          }
-        }
-      }
+      for (int i=0; i<thrmax; i++)
+        if (mymspctm.mass[thrlist[i]]>result.coannihilatingParticles[0].mass)
+          result.threshold_energy.push_back(2*mymspctm.mass[thrlist[i]]);
 
-      result=myres;
+      // now add coannihilation thresholds
+      if (result.coannihilatingParticles.size() > 1)
+        for (int i=0; i<(int)result.coannihilatingParticles.size(); i++)
+          for (int j=std::max(1,i); j<(int)result.coannihilatingParticles.size(); j++)
+            result.threshold_energy.push_back(result.coannihilatingParticles[i].mass+result.coannihilatingParticles[j].mass);
 
     } // function RD_spectrum_SUSY
 
-    void RD_spectrum_from_ProcessCatalog(RDspectype &result)
+    void RD_thresholds_resonances_from_ProcessCatalog(TH_resonances_thresholds &result)
     {
-      //TH_Process annihilation = (*Dep::TH_ProcessCatalog).getProcess((std::string)"chi_10", (std::string)"chi_10");
+      using namespace Pipes::RD_thresholds_resonances_from_ProcessCatalog;
 
-      //result = 0;
+      TH_Process annihilation = (*Dep::TH_ProcessCatalog).getProcess((std::string)"chi_10", (std::string)"chi_10");
+
+      result = TH_resonances_thresholds(annihilation.thresholdResonances);
     }
 
-    void RD_thresholds_resonances_ordered(RDrestype &result)
+    void RD_thresholds_resonances_from_spectrum(TH_resonances_thresholds &result)
     {
-      using namespace Pipes::RD_thresholds_resonances_ordered;
+      using namespace Pipes::RD_thresholds_resonances_from_spectrum;
 
       //read out location and number of resonances and thresholds provided by
       //capability RD_spectrum
-      RDspectype specres = *Dep::RD_spectrum;
-      result.n_res=specres.n_res;
-      result.n_thr=specres.n_thr;
-      for (int i=0; i<result.n_res; i++) {
-        result.E_res[i]=specres.mass_res[i];
-        result.dE_res[i]=specres.width_res[i];       
-      }
-      for (int i=0; i<result.n_thr; i++) {
-        result.E_thr[i]=specres.E_thr[i];
-      }
+      RD_spectrum_type spectype = *Dep::RD_spectrum;
+      result = TH_resonances_thresholds(spectype.resonances, spectype.threshold_energy);
+
       //now order
       double tmp;
-      for (int i=0; i<result.n_thr-1; i++) {
-        for (int j=i+1; j<result.n_thr; j++) {
-          if (result.E_thr[j]<result.E_thr[i]) {
-            tmp=result.E_thr[i];
-            result.E_thr[i]=result.E_thr[j];
-            result.E_thr[j]=tmp;
+      for (std::size_t i=0; i<result.threshold_energy.size()-1; i++)
+      {
+        for (std::size_t j=i+1; j<result.threshold_energy.size(); j++)
+        {
+          if (result.threshold_energy[j]<result.threshold_energy[i])
+          {
+            tmp=result.threshold_energy[i];
+            result.threshold_energy[i]=result.threshold_energy[j];
+            result.threshold_energy[j]=tmp;
           }
         }
       }
-      for (int i=0; i<result.n_res-1; i++) {
-        for (int j=i+1; j<result.n_res; j++) {
-          if (result.E_res[j]<result.E_res[i]) {
-            tmp=result.E_res[i];
-            result.E_res[i]=result.E_res[j];
-            result.E_res[j]=tmp;
-            tmp=result.dE_res[i];
-            result.dE_res[i]=result.dE_res[j];
-            result.dE_res[j]=tmp;
-          }
-        }
-      }
-//      for (int i=0; i<result.n_res; i++) {
-//        std::cout << "res "<<i<<": " << result.E_res[i] << std::endl;
-//    }
-//      for (int i=0; i<result.n_thr; i++) {
-//        std::cout << "thr "<<i<<": " << result.E_thr[i] << std::endl;
-//    }
 
- 
-    } // function RD_thresholds_resonances_ordered
+      TH_Resonance tmp2;
+      for (std::size_t i=0; i<result.resonances.size()-1; i++)
+      {
+        for (std::size_t j=i+1; j<result.resonances.size(); j++)
+        {
+          if (result.resonances[j].energy < result.resonances[i].energy)
+          {
+            tmp2=result.resonances[i];
+            result.resonances[i]=result.resonances[j];
+            result.resonances[j]=tmp2;
+          }
+        }
+      }
+    } // function RD_thresholds_resonances_from_spectrum
 
     void RD_eff_annrate_SUSY_DSprep_func(int &result)
     {
       using namespace Pipes::RD_eff_annrate_SUSY_DSprep_func;
 
       //read out location and number of resonances and thresholds from RDspectrum
-      RDspectype specres = *Dep::RD_spectrum;
+      RD_spectrum_type specres = *Dep::RD_spectrum;
 
       //write info about coannihilating particles to DS common blocks
       //[this is essentially the model-dependent part of dsrdstart]
       DS_RDMGEV myrdmgev;
-      myrdmgev.nco = specres.n_co;
+      myrdmgev.nco = specres.coannihilatingParticles.size();
       for (int i=0; i<myrdmgev.nco; i++) {
-         myrdmgev.mco[i]=fabs(specres.mass_co[i]);
-         myrdmgev.mdof[i]=specres.dof_co[i];
-         myrdmgev.kcoann[i]=specres.part_co[i];
+         myrdmgev.mco[i]=fabs(specres.coannihilatingParticles[i].mass);
+         myrdmgev.mdof[i]=specres.coannihilatingParticles[i].degreesOfFreedom;
+         myrdmgev.kcoann[i]=specres.coannihilatingParticles[i].index;
       }
       // now order
       double tmp; int itmp;
@@ -435,8 +407,8 @@ namespace Gambit {
       using namespace Pipes::RD_oh2_general;
 
       //retrieve ordered list of resonances and thresholds from RD_thresholds_resonances
-      RDrestype myres = *Dep::RD_thresholds_resonances;
-      double mwimp=myres.E_thr[0]/2;
+      TH_resonances_thresholds myres = *Dep::RD_thresholds_resonances;
+      double mwimp=myres.threshold_energy[0]/2;
 
       // HERE STARTS A GIANT IF STATEMENT (which tb does not like and) WHICH 
       // SPECIFIES THAT THE FOLLOWING CODE USES BE=DS FOR THE RD CALCULATION
@@ -470,17 +442,17 @@ namespace Gambit {
         // [this is the model-independent part of dsrdstart]
         DS_RDMGEV myrdmgev = *BEreq::rdmgev; //NB:the other variables in that block have already been set!!!
         DS_RDPTH myrdpth;
-        myrdmgev.nres=myres.n_res;
-        for (int i=0; i<myres.n_res; i++) {
-          myrdmgev.rgev[i]=myres.E_res[i];
-          myrdmgev.rwid[i]=myres.dE_res[i];
+        myrdmgev.nres=myres.resonances.size();
+        for (std::size_t i=0; i<myres.resonances.size(); i++) {
+          myrdmgev.rgev[i]=myres.resonances[i].energy;
+          myrdmgev.rwid[i]=myres.resonances[i].width;
         }
         // convert to momenta
         *BEreq::rdmgev = myrdmgev;
-        myrdpth.nth=myres.n_thr-1;   // NB: DS does not count 2* WIMP rest mass as thr
+        myrdpth.nth=myres.threshold_energy.size()-1;   // NB: DS does not count 2* WIMP rest mass as thr
         myrdpth.pth[0]=0; myrdpth.incth[0]=1;
-        for (int i=2; i<=myres.n_thr; i++) {
-          myrdpth.pth[i-1]=sqrt(pow(myres.E_thr[i-1],2)/4-pow(mwimp,2));
+        for (std::size_t i=2; i<=myres.threshold_energy.size(); i++) {
+          myrdpth.pth[i-1]=sqrt(pow(myres.threshold_energy[i-1],2)/4-pow(mwimp,2));
           myrdpth.incth[i-1]=1;
         }
         *BEreq::rdpth = myrdpth;
@@ -941,7 +913,7 @@ namespace Gambit {
                     exit(1);
                 }
 
-                sigmav = it->dSigmadE->eval("v",0.);  // (sv)(v=0) for two-body final state
+                sigmav = it->genRate->eval("v",0.);  // (sv)(v=0) for two-body final state
                 DiffYield2Body = DiffYield2Body + 
                     Funk::func(BEreq::dshayield.pointer(), mass, Funk::var("E"), ch, yieldk, flag) * sigmav;
             }
@@ -995,7 +967,7 @@ namespace Gambit {
                 // variable).
                 Funk::Funk E1_low =  Funk::func(gamma3bdy_limits<0>, Funk::var("E"), mass, m1, m2);
                 Funk::Funk E1_high =  Funk::func(gamma3bdy_limits<1>, Funk::var("E"), mass, m1, m2);
-                Funk::Funk dsigmavde = it->dSigmadE->gsl_integration("E1", E1_low, E1_high);
+                Funk::Funk dsigmavde = it->genRate->gsl_integration("E1", E1_low, E1_high);
                 DiffYield3Body = DiffYield3Body + dsigmavde;
 
                 /*
@@ -1007,10 +979,10 @@ namespace Gambit {
                 std::cout << "Boundaries (E=10 GeV):" << std::endl;
                 std::cout << "  E1 = " << E1_low->eval("E", 10) << std::endl;
                 std::cout << "  E2 = " << E1_high->eval("E", 10) << std::endl;
-                std::cout << "dsigmavde (E=10 GeV) = " << it->dSigmadE->set("E1", E1_low*1.02)->eval("E", 10) << std::endl;
-                std::cout << "dsigmavde (E=10 GeV) = " << it->dSigmadE->set("E1", E1_high/1.02)->eval("E", 10) << std::endl;
-                std::cout << "dsigmavde (E=10 GeV) = " << it->dSigmadE->set("E1", sqrt(E1_low*E1_high))->eval("E", 10) << std::endl;
-                std::cout << "dsigmavde (E=10 GeV) = " << it->dSigmadE->gsl_integration("E1", E1_low, E1_high)->eval("E", 10) << std::endl;
+                std::cout << "dsigmavde (E=10 GeV) = " << it->genRate->set("E1", E1_low*1.02)->eval("E", 10) << std::endl;
+                std::cout << "dsigmavde (E=10 GeV) = " << it->genRate->set("E1", E1_high/1.02)->eval("E", 10) << std::endl;
+                std::cout << "dsigmavde (E=10 GeV) = " << it->genRate->set("E1", sqrt(E1_low*E1_high))->eval("E", 10) << std::endl;
+                std::cout << "dsigmavde (E=10 GeV) = " << it->genRate->gsl_integration("E1", E1_low, E1_high)->eval("E", 10) << std::endl;
                 */
             }
         }
@@ -1758,7 +1730,7 @@ namespace Gambit {
         for (std::vector<TH_Channel>::iterator it = annProc.channelList.begin();
                 it != annProc.channelList.end(); ++it)
         {
-            Weff = Weff + it->dSigmadE->set("v", 2*peff/sqrt(mDM*mDM+peff*peff))*s/GeV2tocm3s1;
+            Weff = Weff + it->genRate->set("v", 2*peff/sqrt(mDM*mDM+peff*peff))*s/GeV2tocm3s1;
         }
         result = Weff->plain<RD_EFF_ANNRATE_FROM_PROCESSCATALOG_TRAIT>("peff");
     }
@@ -1837,9 +1809,9 @@ namespace Gambit {
               os << *jt << "";
             }
             if (it->finalStateIDs.size() == 2)
-            os << ": " << it->dSigmadE->eval("v", 0);
+            os << ": " << it->genRate->eval("v", 0);
             //if (it->finalStateIDs.size() == 3)
-              //os << ": " << (*it->dSigmadE)(0., 0.);
+              //os << ": " << (*it->genRate)(0., 0.);
             os << "\n";
           }
           os << std::endl;
