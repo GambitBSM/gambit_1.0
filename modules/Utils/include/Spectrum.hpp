@@ -75,8 +75,11 @@ private:
 };
 
 protected:
+   partmap& particle_database;
    /// Constructor
    Spectrum(RunningPars& rp, Phys& p) : phys(p), runningpars(rp) {}
+   /// new constructor.  Pass Models::ParticleDB() in as the third argument in all cases.  You will need to include partmap.hpp in order to be able to do this.
+   //Spectrum(RunningPars& rp, Phys& p, partmap& pdb) : phys(p), runningpars(rp), particle_database(pdb) {}
 
 public:
    Phys& phys;
