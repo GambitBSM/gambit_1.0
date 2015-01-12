@@ -66,7 +66,7 @@ namespace Gambit {
       /// @name Initialization functions
       //@{
       virtual void defaults() {}
-      virtual void init(const std::vector<std::string>& settings) {}
+      virtual void init(const std::vector<std::string>&) {} // arg is a list of "settings"
       virtual void init() {}
       //@}
 
@@ -153,7 +153,7 @@ namespace Gambit {
           /// @TODO How to convert Py8 events without hadronisation?
           candidate->PID = p.id();
           pdgCode = abs(candidate->PID);
-	  
+
           candidate->Status=p.status();
           pdgParticle = pdg->GetParticle(p.id());
 

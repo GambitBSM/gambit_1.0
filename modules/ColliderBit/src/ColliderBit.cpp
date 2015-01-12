@@ -241,6 +241,7 @@ namespace Gambit {
     }
 
 
+
     /// @todo Split into convertPythia8PartonEvent and convertPythia8ParticleEvent strategies
     void convertPythia8Event(HEPUtils::Event &result) {
       using namespace Pipes::convertPythia8Event;
@@ -253,6 +254,7 @@ namespace Gambit {
       std::vector<fastjet::PseudoJet> jetparticles;
       std::vector<fastjet::PseudoJet> bhadrons, taus;
 
+      /// @todo These lines *really* shouldn't be needed...
       jetparticles.clear();
       bhadrons.clear();
       taus.clear();
@@ -281,6 +283,7 @@ namespace Gambit {
         const Pythia8::Particle& p = pevt[i];
 
         // Only consider final state particles within ATLAS/CMS acceptance
+        /// @todo Remove this and let the det sim or analysis code do the analysis acceptance cut
         if (!p.isFinal()) continue;
         if (abs(p.eta()) > 5.0) continue;
 
@@ -316,7 +319,74 @@ namespace Gambit {
             break;
           }
         }
-        /// Add to the event
+        // Add to the event
+        result.add_jet(new HEPUtils::Jet(HEPUtils::mk_p4(pj), isB));
+      }
+
+      /// MET (note: NOT just equal to sum of prompt invisibles)
+      result.calc_missingmom();
+    }
+
+
+
+    /// Convert a partonic (no hadrons) Pythia8::Event into an unsmeared HEPUtils::Event
+    void convertPythia8PartonEvent(HEPUtils::Event &result) {
+      using namespace Pipes::convertPythia8Event;
+      if (*Loop::iteration <= INIT) return;
+      result.clear();
+
+      /// Get the next event from Pythia8
+      const auto pevt = (*Dep::HardScatteringSim)->nextEvent();
+
+      std::vector<fastjet::PseudoJet> jetparticles;
+      std::vector<fastjet::PseudoJet> bhadrons, taus;
+
+
+      // Make a single pass over the event to gather final leptons, partons, and photons
+      for (int i = 0; i < pevt.size(); ++i) {
+        const Pythia8::Particle& p = pevt[i];
+
+        // Only consider partons within ATLAS/CMS acceptance
+        if (!p.isFinal()) continue;
+        if (abs(p.eta()) > 5.0) continue;
+
+        // Find b-quarks
+        /// @todo DO IT
+        // if (isFinalB(i, pevt)) bhadrons.push_back(mk_pseudojet(p.p()));
+
+        // Find taus
+        /// @todo DO IT
+        // if (isFinalTau(i, pevt) && !fromHadron(i, pevt)) {
+        //   /// @todo Nothing is done with taus after this....
+        //   taus.push_back(mk_pseudojet(p.p()));
+        //   HEPUtils::Particle* gp = new HEPUtils::Particle(mk_p4(p.p()), p.id());
+        //   gp->set_prompt();
+        //   result.add_particle(gp); // Will be automatically categorised
+        // }
+
+        // Collect electrons, muons, taus, and prompt photons (?) + jet particles
+        /// @todo DO IT
+        // if (prompt) {
+        //   HEPUtils::Particle* gp = new HEPUtils::Particle(mk_p4(p.p()), p.id());
+        //   gp->set_prompt();
+        //   result.add_particle(gp); // Will be automatically categorised
+        // } else {
+        //   // Choose jet constituents
+        //   jetparticles.push_back(mk_pseudojet(p.p()));
+        // }
+
+      }
+
+      /// Jet finding
+      /// Currently hard-coded to use anti-kT R=0.4 jets above 30 GeV
+      /// @todo choose jet algorithm via _settings?
+      const fastjet::JetDefinition jet_def(fastjet::antikt_algorithm, 0.4);
+      fastjet::ClusterSequence cseq(jetparticles, jet_def);
+      std::vector<fastjet::PseudoJet> pjets = sorted_by_pt(cseq.inclusive_jets(30));
+      // Add to the event, with b-tagging info
+      BOOST_FOREACH (const fastjet::PseudoJet& pj, pjets) {
+        /// @todo Do jet b-tagging, etc. by looking for b quark constituents
+        const bool isB = false;
         result.add_jet(new HEPUtils::Jet(HEPUtils::mk_p4(pj), isB));
       }
 
@@ -339,6 +409,7 @@ namespace Gambit {
         (*Dep::DetectorSim)->processEvent(*Dep::HardScatteringEvent, result);
       }
     }
+
 
 
     void reconstructBuckFastEvent(HEPUtils::Event &result) {
@@ -380,6 +451,7 @@ namespace Gambit {
         }
       }
     }
+
 
 
     /// Loop over all analyses (and SRs within one analysis) and fill a vector of observed likelihoods
