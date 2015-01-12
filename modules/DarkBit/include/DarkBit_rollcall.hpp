@@ -121,11 +121,6 @@ START_MODULE
       ALLOW_MODELS(SingletDM)
       BACKEND_REQ(rdmgev, (), DS_RDMGEV)
     #undef FUNCTION
-    #define FUNCTION RD_thresholds_resonances_EffWIMP
-      START_FUNCTION(RDrestype)
-      ALLOW_MODELS(EffWIMP)
-      BACKEND_REQ(rdmgev, (), DS_RDMGEV)
-    #undef FUNCTION
   #undef CAPABILITY
 
   #define CAPABILITY RD_eff_annrate_SUSY_DSprep
@@ -258,6 +253,7 @@ START_MODULE
       START_FUNCTION(Gambit::DarkBit::simpleHistContainter)
       DEPENDENCY(cascadeMC_InitialState, std::string)
       DEPENDENCY(cascadeMC_ChainEvent, Gambit::DarkBit::DecayChain::ChainContainer)
+      DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)      
       NEEDS_MANAGER_WITH_CAPABILITY(cascadeMC_LoopManagement) 
     #undef FUNCTION          
   #undef CAPABILITY
@@ -312,10 +308,6 @@ START_MODULE
       START_FUNCTION(Gambit::DarkBit::TH_ProcessCatalog)
       ALLOW_MODELS(SingletDM)
     #undef FUNCTION
-    #define FUNCTION TH_ProcessCatalog_EffWIMP
-      START_FUNCTION(Gambit::DarkBit::TH_ProcessCatalog)
-      ALLOW_MODELS(EffWIMP)
-      #undef FUNCTION
   #undef CAPABILITY
 
   #define CAPABILITY lnL_FermiLATdwarfs

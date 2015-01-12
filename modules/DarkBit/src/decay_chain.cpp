@@ -622,7 +622,12 @@ namespace Gambit
                 nChildren = 2; // chn->nFinalStates;
                 // Kinematics for 2-body decays
                 double m1 = (*decayTable)[(chn->finalStateIDs)[0]].m;
-                double m2 = (*decayTable)[(chn->finalStateIDs)[1]].m;            
+                double m2 = (*decayTable)[(chn->finalStateIDs)[1]].m; 
+                if(m1+m2>m)
+                {
+                    cout << "Error: Kinematically impossible decay in decay chain. Please check your process catalog." << endl;
+                    exit(1);
+                }           
                 const double &Etot = m;
                 double E1 = 0.5*(Etot*Etot+m1*m1-m2*m2)/Etot;
                 double E2 = Etot-E1; 
@@ -776,6 +781,12 @@ namespace Gambit
             if(nChildren>0) return true;
             return false;
         }
+        void getBoost(double& gamma, double& beta)
+        {
+            mat4& b=boostToLabFrame;
+            gamma = b[0][0];
+            beta = sqrt(b[0][1]*b[0][1]+b[0][2]*b[0][2]+b[0][3]*b[0][3])/gamma;
+        }        
         ChainParticle::~ChainParticle()
         {
             for(unsigned int i=0;i<nChildren; i++) delete children[i];
