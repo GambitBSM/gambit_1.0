@@ -532,7 +532,7 @@ namespace Gambit
         }  
         double DecayTable::getWidth(const TH_Channel *ch)
         {
-            return ch->dSigmadE->eval();
+            return ch->genRate->eval();
         }
         void DecayTable::printTable() const
         {
@@ -781,11 +781,11 @@ namespace Gambit
             if(nChildren>0) return true;
             return false;
         }
-        void getBoost(double& gamma, double& beta)
+        void ChainParticle::getBoost(double& gamma, double& beta) const
         {
-            mat4& b=boostToLabFrame;
-            gamma = b[0][0];
-            beta = sqrt(b[0][1]*b[0][1]+b[0][2]*b[0][2]+b[0][3]*b[0][3])/gamma;
+            const mat4& b=boostToLabFrame;
+            gamma = b.vals[0][0];
+            beta = sqrt(b.vals[0][1]*b.vals[0][1]+b.vals[0][2]*b.vals[0][2]+b.vals[0][3]*b.vals[0][3])/gamma;
         }        
         ChainParticle::~ChainParticle()
         {

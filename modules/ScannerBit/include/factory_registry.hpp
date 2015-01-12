@@ -37,7 +37,9 @@
 #include <unordered_map>
 #include <algorithm>
 
-#define REGISTER(reg_map, tag, ...)                                                                             \
+#define REGISTER(reg_map, tag, ...) REGISTER_ELEM(reg_map, #tag, __VA_ARGS__)
+
+#define REGISTER_ELEM(reg_map, tag, ...)                                                                        \
 namespace __gambit_registry__                                                                                   \
 {                                                                                                               \
         namespace                                                                                               \
@@ -48,7 +50,7 @@ namespace __gambit_registry__                                                   
                 public:                                                                                         \
                         __create_class__(decltype(reg_map) &creators)                                           \
                         {                                                                                       \
-                                creators[ #tag ] = __create_class__< __VA_ARGS__ >::init;                       \
+                                creators[ tag ] = __create_class__< __VA_ARGS__ >::init;                        \
                         }                                                                                       \
                                                                                                                 \
                         template<typename T, typename... args>                                                  \

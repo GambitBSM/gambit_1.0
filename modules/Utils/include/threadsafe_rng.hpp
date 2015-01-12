@@ -47,6 +47,7 @@
 
 #include "util_types.hpp"
 
+
 namespace Gambit
 {
 

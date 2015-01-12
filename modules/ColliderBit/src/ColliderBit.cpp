@@ -34,6 +34,7 @@
 namespace Gambit {
   namespace ColliderBit {
 
+
     /// ********************************************
     /// Non-rollcalled Functions and Local Variables
     /// ********************************************
@@ -240,6 +241,7 @@ namespace Gambit {
     }
 
 
+    /// @todo Split into convertPythia8PartonEvent and convertPythia8ParticleEvent strategies
     void convertPythia8Event(HEPUtils::Event &result) {
       using namespace Pipes::convertPythia8Event;
       if (*Loop::iteration <= INIT) return;
@@ -248,11 +250,9 @@ namespace Gambit {
       /// Get the next event from Pythia8
       const auto pevt = (*Dep::HardScatteringSim)->nextEvent();
 
-      Pythia8::Vec4 ptot;
       std::vector<fastjet::PseudoJet> jetparticles;
       std::vector<fastjet::PseudoJet> bhadrons, taus;
 
-      ptot.reset();
       jetparticles.clear();
       bhadrons.clear();
       taus.clear();
@@ -262,6 +262,7 @@ namespace Gambit {
         const Pythia8::Particle& p = pevt[i];
 
         // Find last b-hadrons in b decay chains as the best proxy for b-tagging
+        /// @todo Needs to also work for parton events
         if (isFinalB(i, pevt)) bhadrons.push_back(mk_pseudojet(p.p()));
 
         // Find last tau in tau replica chains as a proxy for tau-tagging
@@ -282,8 +283,6 @@ namespace Gambit {
         // Only consider final state particles within ATLAS/CMS acceptance
         if (!p.isFinal()) continue;
         if (abs(p.eta()) > 5.0) continue;
-        // Add to total final state momentum
-        ptot += p.p();
 
         // Promptness: for leptons and photons we're only interested if they don't come from hadron/tau decays
         /// @todo Don't exclude hadronic tau decay products from jet finding: ATLAS treats them as jets
@@ -322,7 +321,7 @@ namespace Gambit {
       }
 
       /// MET (note: NOT just equal to sum of prompt invisibles)
-      result.set_missingmom(-mk_p4(ptot));
+      result.calc_missingmom();
     }
 
 
@@ -376,7 +375,7 @@ namespace Gambit {
         #pragma omp critical (accumulatorUpdate)
         {
           // Loop over analyses and run them
-          for (auto anaPtr = Dep::ListOfAnalyses->begin(); anaPtr != Dep::ListOfAnalyses->end(); ++anaPtr)        
+          for (auto anaPtr = Dep::ListOfAnalyses->begin(); anaPtr != Dep::ListOfAnalyses->end(); ++anaPtr)
             (*anaPtr)->analyze(*Dep::ReconstructedEvent);
         }
       }
@@ -390,27 +389,26 @@ namespace Gambit {
       cout << "In calcLogLike" << endl;
 
       std::vector<double> observedLikelihoods;
-      for (size_t analysis=0; analysis<analysisResults.size(); ++analysis) {
-        for (size_t SR=0; SR<analysisResults[analysis].size(); ++SR) {
-          SignalRegionData srData=analysisResults[analysis][SR];
+      for (size_t analysis = 0; analysis < analysisResults.size(); ++analysis) {
+        for (size_t SR = 0; SR < analysisResults[analysis].size(); ++SR) {
+          SignalRegionData srData = analysisResults[analysis][SR];
+
           /// Actual observed number of events
-          int n_obs = (int)srData.n_observed;
+          int n_obs = (int) srData.n_observed;
+
           /// A contribution to the predicted number of events that is known exactly
           /// (e.g. from data-driven background estimate)
           double n_predicted_exact = 0.;
+
           // A contribution to the predicted number of events that is not known exactly
-          double n_predicted_uncertain = srData.n_background + srData.n_background;
-          double uncertainty=0.;
-          if(srData.n_signal!=0) {
+          double n_predicted_uncertain = srData.n_signal + srData.n_background;
+
             /// A fractional uncertainty on n_predicted_uncertain
             /// (e.g. 0.2 from 20% uncertainty on efficencty wrt signal events)
-            uncertainty = sqrt((srData.background_sys/srData.n_background)
-                             * (srData.background_sys/srData.n_background)
-                             * (srData.signal_sys/srData.n_signal)
-                             * (srData.signal_sys/srData.n_signal));
-          } else { uncertainty = (srData.background_sys/srData.n_background); }
+          double bkg_ratio = srData.background_sys/srData.n_background;
+          double sig_ratio = (srData.n_signal != 0) ? srData.signal_sys/srData.n_signal : 0;
+          double uncertainty = sqrt(bkg_ratio*bkg_ratio + sig_ratio*sig_ratio);
 
-          /// @TODO So... result is changed for **each** analysis and SR? something seems mighty fishy about this loop...
           if (*BEgroup::lnlike_marg_poisson == "lnlike_marg_poisson_lognormal_error") {
             /// Use a log-normal distribution for the nuisance parameter (more correct)
             result = BEreq::lnlike_marg_poisson_lognormal_error(n_obs,n_predicted_exact,n_predicted_uncertain,uncertainty);
@@ -418,16 +416,16 @@ namespace Gambit {
           else if (*BEgroup::lnlike_marg_poisson == "lnlike_marg_poisson_gaussian_error") {
             /// Use a Gaussian distribution for the nuisance parameter (marginally faster)
             result = BEreq::lnlike_marg_poisson_gaussian_error(n_obs,n_predicted_exact,n_predicted_uncertain,uncertainty);
-            /// @TODO outside loop??
-            cout << "COLLIDER_RESULT " << analysis << " " << SR << " " << result << endl;
           }
+          cout << "COLLIDER_RESULT " << analysis << " " << SR << " " << result << endl;
 
 
-        }
-      }
+        } // end SR loop
+      } // end ana loop
 
-      return;
+      /// @TODO Need to combine { ana+SR } to return the single most stringent likelihood / other combined-as-well-as-we-can LL number
     }
+
 
   }
 }

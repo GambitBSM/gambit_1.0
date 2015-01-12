@@ -313,6 +313,8 @@ namespace Gambit
       double valB;
     };
 
+
+    // Obsolete structure; replaced with RD_spectrum_type
     struct RDspectype
     {
     //coannihilating particles
@@ -321,21 +323,53 @@ namespace Gambit
       double mass_co[1000];
     //location and type of resonances
       int n_res;
-      int part_res[10];
+      int part_res[10]; // never used. Do we need this?
       double mass_res[10], width_res[10];
     //location of thresholds
       int n_thr;
       double E_thr[100];
     };
 
-    struct RDrestype
+    struct TH_Resonance
     {
-    //location of resonances and thresholds
-      int n_res, n_thr;
-      double E_res[10], dE_res[10], E_thr[100];
+      TH_Resonance() : energy(0.), width (0.) {}
+      TH_Resonance(const double & energy, const double & width) : energy(energy), width(width) {}
+      double energy;
+      double width;
     };
 
-    // A double in, double out function pointer.  FIXME Probably actually better if this goes in 
+    struct TH_resonances_thresholds
+    {
+      //location of resonances and thresholds in energy [GeV]
+      TH_resonances_thresholds() {}
+      TH_resonances_thresholds(const TH_resonances_thresholds & copy) : resonances(copy.resonances), threshold_energy(copy.threshold_energy) {}
+      TH_resonances_thresholds(const std::vector<TH_Resonance> & resonances, const std::vector<double> & thresholds) : resonances(resonances), threshold_energy(thresholds) {}
+
+      std::vector<TH_Resonance> resonances;
+      std::vector<double> threshold_energy;
+    };
+
+    struct RD_coannihilating_particle
+    {
+      RD_coannihilating_particle(const unsigned int & index, const unsigned int & dof, const double & mass) : index(index), degreesOfFreedom(dof), mass(mass) {}
+
+      unsigned int index;
+      unsigned int degreesOfFreedom;
+      double mass;
+    };
+
+    struct RD_spectrum_type
+    {
+      RD_spectrum_type() {}
+      RD_spectrum_type(const std::vector<RD_coannihilating_particle> & coannPart, const std::vector<TH_Resonance> & resonances, const std::vector<double> & thresholds) : coannihilatingParticles(coannPart), resonances(resonances), threshold_energy(thresholds) {}
+
+      std::vector<RD_coannihilating_particle> coannihilatingParticles;
+      std::vector<TH_Resonance> resonances;
+      std::vector<double> threshold_energy;
+    };
+    
+
+    // A double in, double out function pointer.  FIXME Probably actually better if this goes in
     // shared_types.hpp eventually, as it will likely be needed by other modules too at some stage. 
     typedef double(*fptr_dd)(double&);
 
@@ -351,7 +385,6 @@ namespace Gambit
     // e.g. chi --> everything, chi chi --> everything
     //
     // TH_ProcessCatalog describes all initial states relevant for DarkBit
-    
 
     struct TH_ParticleProperty
     {
@@ -364,9 +397,9 @@ namespace Gambit
     struct TH_Channel
     {
         // Constructor
-        TH_Channel(std::vector<std::string> finalStateIDs, Funk::Funk dSigmadE) :
+        TH_Channel(std::vector<std::string> finalStateIDs, Funk::Funk genRate) :
             finalStateIDs(finalStateIDs), nFinalStates(finalStateIDs.size()),
-            dSigmadE(dSigmadE)
+            genRate(genRate)
         {
             if ( nFinalStates < 2 )
             {
@@ -384,7 +417,7 @@ namespace Gambit
         // Energy dependence of final state particles
         // Includes v_rel as last argument in case of annihilation
         // TODO: Implement checks
-      Funk::Funk dSigmadE; // rename to genRate
+        Funk::Funk genRate;
 
         // Compare final states
         bool isChannel(std::string p0, std::string p1, std::string p2 ="", std::string p3 = "")
@@ -393,6 +426,11 @@ namespace Gambit
             if ( nFinalStates == 3 and p0 == finalStateIDs[0] and p1 == finalStateIDs[1] and p2 == finalStateIDs[2] ) return true;
             if ( nFinalStates == 4 and p0 == finalStateIDs[0] and p1 == finalStateIDs[1] and p2 == finalStateIDs[2] and p3 == finalStateIDs[3] ) return true;
             return false;
+        }
+
+        bool channelContains(std::string p)
+        {
+            return std::find(finalStateIDs.begin(), finalStateIDs.end(), p) != finalStateIDs.end();
         }
 
         void printChannel()
@@ -458,8 +496,8 @@ namespace Gambit
         // List of channels
         std::vector<TH_Channel> channelList;
 
-        //List of resonances and thresholds => rename RDrestype
-        std::vector<RDrestype> thresholdResonances;
+        //List of resonances and thresholds => rename TH_resonances_thresholds
+        TH_resonances_thresholds thresholdResonances;
 
         // Total decay rate or sigma v
         Funk::Funk genRateTotal; // was a double, but needs to be a Funk of velocity
@@ -823,6 +861,89 @@ namespace Gambit
         std::vector<DDParticleS> P;
     };
 
+    // Channel container
+    class SimYieldTable
+    {
+        /* Object containing tabularized yields for particle decay and two-body
+         * final states.
+         */
+        public:
+            SimYieldTable() {};
+
+            void addChannel(Funk::Funk dNdE, std::string p1, std::string p2, double Ecm_min, double Ecm_max)
+            {
+                if ( this->hasChannel(p1, p2) )
+                {
+                    std::cout << "WARNING: Channel already exists.  Ignoring." << std::endl;
+                    return;
+                }
+                funktion_list.push_back(dNdE);
+                p1_list.push_back(p1);
+                p2_list.push_back(p2);
+                Ecm_min_list.push_back(Ecm_min);
+                Ecm_max_list.push_back(Ecm_max);
+            }
+
+            void addChannel(Funk::Funk dNdE, std::string p1, double Ecm_min, double Ecm_max)
+            {
+                this->addChannel(dNdE, p1, "", Ecm_min, Ecm_max);
+            }
+
+            bool hasChannel(std::string p1, std::string p2) const
+            {
+                return ( findChannel(p1, p2) != -1 );
+            }
+
+            bool hasChannel(std::string p1) const
+            {
+                return this->findChannel(p1, "");
+            }
+
+            Funk::Funk operator()(std::string p1, std::string p2, double Ecm) const
+            {
+                return this->operator()(p1, p2)->set("Ecm", Ecm);
+            }
+
+            Funk::Funk operator()(std::string p1, double Ecm) const
+            {
+                return this->operator()(p1)->set("Ecm", Ecm);
+            }
+
+            Funk::Funk operator()(std::string p1, std::string p2) const
+            {
+                int index = findChannel(p1, p2);
+                if ( index == 1 )
+                {
+                    std::cout << "WARNING: Channel not known.  Returning zero." << std::endl;
+                    return Funk::zero("E", "Ecm");
+                }
+                return funktion_list[index];
+            }
+
+            Funk::Funk operator()(std::string p1) const
+            {
+                return this->operator()(p1, "");
+            }
+
+        private:
+            std::vector<Funk::Funk> funktion_list;
+            std::vector<std::string> p1_list;
+            std::vector<std::string> p2_list;
+            std::vector<double> Ecm_min_list;
+            std::vector<double> Ecm_max_list;
+
+            int findChannel(std::string p1, std::string p2) const
+            {
+                for ( unsigned int i = 0; i < p1_list.size(); i++ )
+                {
+                    if (( p1 == p1_list[i] and p2 == p2_list[i] ) or ( p1 == p2_list[i] and p2 == p1_list[i] ))
+                    {
+                        return i;
+                    }
+                }
+                return -1;
+            }
+    };
   }
 }
 

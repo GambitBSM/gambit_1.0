@@ -1,4 +1,5 @@
 #include "Analysis.hpp"
+#include "ATLASEfficiencies.hpp"
 #include "mt2_bisect.h"
 
 /// @todo Remove the ROOT classes
@@ -96,7 +97,7 @@ namespace Gambit {
 
         int nTrueBJets=0;
         for(Jet * tmpJet: jets){
-          if(tmpJet->isBJet()){
+          if(tmpJet->btag()){
             trueBjet1=tmpJet;
             nTrueBJets++;
             break;
@@ -104,7 +105,7 @@ namespace Gambit {
         }
 
         for(Jet * tmpJet: jets){
-          if(tmpJet->isBJet() && tmpJet!=trueBjet1){
+          if(tmpJet->btag() && tmpJet!=trueBjet1){
             trueBjet2=tmpJet;
             nTrueBJets++;
             break;
@@ -219,15 +220,15 @@ namespace Gambit {
         vector<Jet*> bJets;
         vector<Jet*> trueBJets; //for debugging
 
-        const std::vector<float>  a = {0,10.};      
-        const std::vector<float>  b = {0,10000.};      
-        const std::vector<double> c = {0.75};      
+        const std::vector<float>  a = {0,10.};
+        const std::vector<float>  b = {0,10000.};
+        const std::vector<double> c = {0.75};
 	BinnedFn2D<double> _eff2d(a,b,c);
-	
+
         for (Jet* jet : event->jets()) {
 	  bool hasTag=has_tag(_eff2d, jet->eta(), jet->pT());
           if (jet->pT() > 20. && fabs(jet->eta()) < 10.0) baselineJets.push_back(jet);
-          if(jet->isBJet() && hasTag && fabs(jet->eta()) < 2.5 && jet->pT() > 25.) bJets.push_back(jet);
+          if(jet->btag() && hasTag && fabs(jet->eta()) < 2.5 && jet->pT() > 25.) bJets.push_back(jet);
         }
 
         // Overlap removal
@@ -283,8 +284,8 @@ namespace Gambit {
         // We now have the signal electrons, muons, jets and b jets- move on to the analysis
 
         // Calculate common variables and cuts first
-	
-	ApplyTightIDElectronSelection(signalElectrons);
+
+	applyTightIDElectronSelection(signalElectrons);
 
         int nElectrons = signalElectrons.size();
         int nMuons = signalMuons.size();
@@ -303,10 +304,10 @@ namespace Gambit {
              && signalJets[2]->pT() > 40.
              && signalJets[3]->pT() > 25.)passJetCut=true;
 
-          if(signalJets[0]->isBJet() ||
-             signalJets[1]->isBJet() ||
-             signalJets[2]->isBJet() ||
-             signalJets[3]->isBJet())passBJetCut=true;
+          if(signalJets[0]->btag() ||
+             signalJets[1]->btag() ||
+             signalJets[2]->btag() ||
+             signalJets[3]->btag())passBJetCut=true;
         }
 
         //Must have exactly one lepton

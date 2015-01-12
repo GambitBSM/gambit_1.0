@@ -1,26 +1,27 @@
-# GAMBIT: Global and Modular BSM Inference Tool  
+# GAMBIT: Global and Modular BSM Inference Tool
 #************************************************
-# \file                                          
-#                                                
+# \file
+#
 #  Master cmake configuration script for GAMBIT.
-#    
+#
 #  CMakeLists files in this project can refer to
-#  the root source directory of the project as 
-#  ${PROJECT_SOURCE_DIR} and to the root binary 
+#  the root source directory of the project as
+#  ${PROJECT_SOURCE_DIR} and to the root binary
 #  directory of the project as ${PROJECT_BINARY_DIR}.
-#                                                
+#
 #************************************************
-#                                                
-#  Authors (add name and date if you modify):                                    
-#                                                
+#
+#  Authors (add name and date if you modify):
+#
 #  \author Antje Putzerator
-#          (antje.putze@lapth.cnrs.fr)              
+#          (antje.putze@lapth.cnrs.fr)
 #  \date 2014 Sep, Oct, Nov
+#        2015 Jan
 #
 #  \author Pat Scott
-#          (p.scott@imperial.ac.uk)              
+#          (p.scott@imperial.ac.uk)
 #  \date 2014 Nov, Dec
-#                                               
+#
 #************************************************
 
 # Require a minimum cmake version of 2.8.11
@@ -37,6 +38,7 @@ foreach(p
   CMP0022 # CMake 2.8.12
   CMP0025 # CMake 3.0
   CMP0042 # CMake 3.0
+  CMP0054 # CMake 3.1
   )
   if(POLICY ${p})
     cmake_policy(SET ${p} NEW)
@@ -53,7 +55,7 @@ set(CMAKE_LINK_DEPENDS_NO_SHARED 1)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake)
 
 # When building, use the install RPATH already
-set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE) 
+set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
 
 # Add the automatically determined parts of the RPATH that point to directories outside the build tree to the install RPATH
 SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
@@ -61,7 +63,7 @@ SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 # Check for optional packages and disable sections of GAMBIT accordingly
 include(cmake/optional.cmake)
 
-# Include cmake utility scripts 
+# Include cmake utility scripts
 include(cmake/utilities.cmake)
 
 # Check for Python and required libs
@@ -79,7 +81,7 @@ message("-- Updating GAMBIT with config data")
 set(locate_scanners ${PROJECT_SOURCE_DIR}/cmake/locate_scanners.py -x __not_a_real_name__,${itch_with_commas})
 execute_process(COMMAND python ${locate_scanners} WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
 message("-- Updating GAMBIT with config data - done.")
- 
+
 # Generate the CMakeLists.txt files for GAMBIT modules
 message("-- Updating GAMBIT module cmake files")
 set(update_cmakelists ${PROJECT_SOURCE_DIR}/cmake/update_cmakelists.py -x __not_a_real_name__,${itch_with_commas})
@@ -87,8 +89,8 @@ execute_process(COMMAND python ${update_cmakelists} WORKING_DIRECTORY ${PROJECT_
 message("-- Updating GAMBIT module cmake files - done.")
 
 # Haha
-message("-- Downloading latest ATLAS proprietary data files...") 
-message("-- That was fast!") 
+message("-- Downloading latest ATLAS proprietary data files...")
+message("-- That was fast!")
 
 # Do OSX checks
 include(cmake/MacOSX.cmake)
@@ -149,15 +151,14 @@ CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
 CHECK_CXX_COMPILER_FLAG("-std=c++0x" COMPILER_SUPPORTS_CXX0X)
 if(COMPILER_SUPPORTS_CXX11)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c++11")
 elseif(COMPILER_SUPPORTS_CXX0X)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c++0x")
 else()
    message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
 endif()
 
 # Check for Boost
+set(Boost_NO_BOOST_CMAKE ON)
 set(required_boost_libs "")  # Don't need these anymore: system filesystem
 find_package(Boost 1.41 REQUIRED ${required_boost_libs})
 if(Boost_FOUND)
@@ -166,7 +167,7 @@ if(Boost_FOUND)
   endif()
 else()
   set(err "GAMBIT requires Boost v1.41 or greater")
-  if (NOT "${required_boost_libs}" STREQUAL "") 
+  if (NOT "${required_boost_libs}" STREQUAL "")
     set(err "${err} and compiled libraries:\n")
     foreach(lib ${required_boost_libs})
       set(err "${err} boost_${lib}\n")
@@ -203,32 +204,31 @@ set(MODEL_HARVESTER ${PROJECT_SOURCE_DIR}/Models/scripts/model_harvester.py)
 set(BACKEND_HARVESTER ${PROJECT_SOURCE_DIR}/Backends/scripts/backend_harvester.py)
 set(MODULE_HARVESTER ${PROJECT_SOURCE_DIR}/Utils/scripts/module_harvester.py)
 
-# Create all_functor_types.hpp, module_rollcall.hpp, module_types_rollcall.hpp, models_rollcall.hpp, 
+# Create all_functor_types.hpp, module_rollcall.hpp, module_types_rollcall.hpp, models_rollcall.hpp,
 # model_types_rollcall.hpp, backend_rollcall.hpp and backend_types_rollcall.hpp
 file(GLOB MODEL_HARVESTER_FILES   "${PROJECT_SOURCE_DIR}/Models/include/models/*.hpp")
 file(GLOB BACKEND_HARVESTER_FILES "${PROJECT_SOURCE_DIR}/Backends/include/frontends/*.hpp")
 file(GLOB MODULE_HARVESTER_FILES  "${PROJECT_SOURCE_DIR}/*Bit*/include/*_rollcall.hpp")
-list(REMOVE_ITEM MODULE_HARVESTER_FILES "${PROJECT_SOURCE_DIR}/ScannerBit//include//priors_rollcall.hpp" 
+list(REMOVE_ITEM MODULE_HARVESTER_FILES "${PROJECT_SOURCE_DIR}/ScannerBit//include//priors_rollcall.hpp"
                                         "${PROJECT_SOURCE_DIR}/ScannerBit//include//test_function_rollcall.hpp")
-
-add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/Models/include/model_rollcall.hpp 
+add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/Models/include/model_rollcall.hpp
                    COMMAND python ${MODEL_HARVESTER} -x __not_a_real_name__,${itch_with_commas}
-                   WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} 
+                   WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
                    DEPENDS ${MODEL_HARVESTER} ${MODEL_HARVESTER_FILES} ${PROJECT_BINARY_DIR}/CMakeCache.txt)
-add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/Backends/include/backend_rollcall.hpp 
+add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/Backends/include/backend_rollcall.hpp
                    COMMAND python ${BACKEND_HARVESTER} -x __not_a_real_name__,${itch_with_commas}
-                   WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} 
+                   WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
                    DEPENDS ${BACKEND_HARVESTER} ${BACKEND_HARVESTER_FILES} ${PROJECT_BINARY_DIR}/CMakeCache.txt)
 add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/Utils/include/all_functor_types.hpp
                    COMMAND python ${MODULE_HARVESTER} -x __not_a_real_name__,${itch_with_commas}
-                   WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} 
+                   WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
                    DEPENDS ${MODULE_HARVESTER} ${MODULE_HARVESTER_FILES} ${PROJECT_BINARY_DIR}/CMakeCache.txt)
 add_custom_target(model_harvest   DEPENDS ${PROJECT_SOURCE_DIR}/Models/include/model_rollcall.hpp ${MODEL_HARVESTER_FILES})
 add_custom_target(backend_harvest DEPENDS ${PROJECT_SOURCE_DIR}/Backends/include/backend_rollcall.hpp ${BACKEND_HARVESTER_FILES})
 add_custom_target(functor_harvest DEPENDS ${PROJECT_SOURCE_DIR}/Utils/include/all_functor_types.hpp ${MODULE_HARVESTER_FILES} backend_harvest)
 add_custom_target(module_harvest  DEPENDS ${PROJECT_SOURCE_DIR}/Core/include/module_rollcall.hpp functor_harvest)
 
-# Arrange for removal of all_functor_types.hpp and other generated headers upon "make clean". 
+# Arrange for removal of all_functor_types.hpp and other generated headers upon "make clean".
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Backends/include/backend_rollcall.hpp")
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Models/include/model_rollcall.hpp")
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Utils/include/all_functor_types.hpp")
@@ -282,10 +282,16 @@ foreach(bit ${GAMBIT_BITS})
   set(GAMBIT_BIT_OBJECTS ${GAMBIT_BIT_OBJECTS} "$<TARGET_OBJECTS:${bit}>")
   if (SpecBit STREQUAL ${bit})
     # Ben: My attempt to add "SpecBit only" include targets. Seems to work.
-    target_include_directories(SpecBit PRIVATE
+    if(${CMAKE_VERSION} VERSION_GREATER 2.8.10)
+      target_include_directories(SpecBit PRIVATE
                                ${FLEXIBLESUSY_DIR}/config
                                ${FLEXIBLESUSY_DIR}/legacy
                                ${FLEXIBLESUSY_DIR}/src)
+    else()
+      include_directories(${FLEXIBLESUSY_DIR}/config
+                          ${FLEXIBLESUSY_DIR}/legacy
+                          ${FLEXIBLESUSY_DIR}/src)
+    endif()
     message("-- Adding FlexibleSUSY model headers to SpecBit include list")
     # Dig through flexiblesusy "models" directory and add all subdirectories to the include list
     # (these contain the headers for the generated spectrum generators)
@@ -293,7 +299,11 @@ foreach(bit ${GAMBIT_BITS})
     foreach(_MODEL ${BUILT_FS_MODELS})
       #if(IS_DIRECTORY ${_FILE})
         message("      ${_MODEL}")
-        target_include_directories(SpecBit PRIVATE ${FLEXIBLESUSY_DIR}/models/${_MODEL})
+        if(${CMAKE_VERSION} VERSION_GREATER 2.8.10)
+          target_include_directories(SpecBit PRIVATE ${FLEXIBLESUSY_DIR}/models/${_MODEL})
+        else()
+          include_directories(${FLEXIBLESUSY_DIR}/models/${_MODEL})
+        endif()
       #endif()
     endforeach()
   endif()

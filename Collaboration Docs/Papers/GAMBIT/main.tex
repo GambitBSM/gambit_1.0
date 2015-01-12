@@ -1,0 +1,92 @@
+\documentclass[11pt,a4paper]{article}
+% Presumably we will have a modified template header for the final papers
+% For now we hard code things below
+
+\usepackage{fancyhdr}
+\usepackage{parskip}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage[colorlinks=true, linkcolor=BrickRed, citecolor=Blue, urlcolor=Blue, filecolor=Blue]{hyperref}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{amssymb, amsmath}
+%\pagestyle{fancy}
+
+\newcommand{\mail}[1]{\href{mailto:#1}{#1}}
+
+\title{GAMBIT: The Global and Modular Beyond-the-Standard-Model Inference Tool}
+
+\author{The GAMBIT Collaboration}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+blah
+\end{abstract}
+
+\section{Introduction}
+Context of GAMBIT:\\
+Brief history of BSM global fitting code/collabs/studies\\
+What we do better (in a nutshell)
+
+\section{Design concept}
+general description\\
+including rollcall system, functor graph, definitions of "modules", "backends", "capabilities", "dependencies"
+
+\section{Modules}
+Short summary (1-2 paragraphs) of the modules we have already
+\subsection{Module function declaration}
+
+\section{Backends}
+Details of backend system
+\subsection{BOSS}
+\subsection{Backend function declaration}
+
+\section{Hierarchical model database}
+\subsection{Model declaration}
+model definition process\\
+map to capability
+\subsection{Recasting models}
+interpretation functions (as parent, as X)\\
+
+\section{Dependency Resolver}
+graph design + solution
+
+\section{Statistics and scanning}
+general overview of statistical framework(s) and scannerbit.\\
+specific likelihood forms in appendix.
+
+\section{User interface and input file}
+command line switches, general usage\\
+yaml file parsing and syntax, structure, etc.
+
+\section{Utilities}
+\subsection{Type handling}
+\subsection{Logging}
+\subsection{Output}
+\subsection{Exceptions}
+\subsection{Random numbers}
+\subsection{Funktions? Base Fuctions?}
+
+\section{Configuration and automatic component registration}
+build system + harvester scripts
+
+\section{Minimal examples}
+using ExampleBits + spartan
+
+\section{Releases and support}
+Describe different releases 
+Website and support feat. FAQ and known issue + bugs, serving, code availability, release strategy
+
+\section{Summary}
+
+\section{Acknowledgements}
+
+\appendix
+\section{Quick start guide}
+\section{Dependencies and supported compilers}
+\section{Likelihood forms}
+\section{Glossary}
+
+\end{document}
