@@ -114,13 +114,15 @@ namespace Gambit {
       }
     }
 
-
-    void getBuckFast_Identity(shared_ptr<Gambit::ColliderBit::BuckFastBase> &result) {
-      using namespace Pipes::getBuckFast_Identity;
-      if(resetBuckFastFlag) {
-        #pragma omp critical (BuckFast)
+	
+	void getBuckFast(shared_ptr<Gambit::ColliderBit::BuckFastBase> &result) {
+	using namespace Pipes::getBuckFast;
+	std::string buckFastOption;
+	if(resetBuckFastFlag) {
+#pragma omp critical (BuckFast)
         {
-          result.reset( mkBuckFast("BuckFastIdentity") );
+	  GET_COLLIDER_RUNOPTION(buckFastOption, std::string)
+	    result.reset( mkBuckFast(buckFastOption) );
           resetBuckFastFlag = false;
         }
       }
@@ -258,6 +260,9 @@ namespace Gambit {
       bhadrons.clear();
       taus.clear();
 
+      Pythia8::Vec4 ptot;
+      ptot.reset();
+      
       // Make a first pass to gather unstable final B hadrons and taus
       for (int i = 0; i < pevt.size(); ++i) {
         const Pythia8::Particle& p = pevt[i];
@@ -286,8 +291,12 @@ namespace Gambit {
         if (!p.isFinal()) continue;
         if (abs(p.eta()) > 5.0) continue;
 
+	if(p.id()==1000022 || p.id()==12 || p.id()==14 || p.id()==16)continue;
+	ptot += p.p();
+	
+
         // Promptness: for leptons and photons we're only interested if they don't come from hadron/tau decays
-        const bool prompt = !fromHadron(i, pevt) && !fromTau(i, pevt);
+        const bool prompt = !fromHadron(i, pevt); //&& !fromTau(i, pevt);
         if (prompt) {
           HEPUtils::Particle* gp = new HEPUtils::Particle(mk_p4(p.p()), p.id());
           gp->set_prompt();
@@ -300,11 +309,11 @@ namespace Gambit {
       }
 
       /// Jet finding
-      /// Currently hard-coded to use anti-kT R=0.4 jets above 30 GeV
+      /// Currently hard-coded to use anti-kT R=0.4 jets above 20 GeV
       /// @todo choose jet algorithm via _settings?
       const fastjet::JetDefinition jet_def(fastjet::antikt_algorithm, 0.4);
       fastjet::ClusterSequence cseq(jetparticles, jet_def);
-      std::vector<fastjet::PseudoJet> pjets = sorted_by_pt(cseq.inclusive_jets(30));
+      std::vector<fastjet::PseudoJet> pjets = sorted_by_pt(cseq.inclusive_jets(20));
 
       /// Do jet b-tagging, etc. and add to the Event
       for (auto& pj : pjets) {
@@ -320,7 +329,8 @@ namespace Gambit {
       }
 
       /// MET (note: NOT just equal to sum of prompt invisibles)
-      result.calc_missingmom();
+      //result.calc_missingmom();
+      result.set_missingmom(-mk_p4(ptot));
     }
 
 

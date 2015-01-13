@@ -1327,7 +1327,7 @@ namespace Gambit
       runtime = end-start;
       runtime_average = runtime_average*(1-fadeRate) + fadeRate*runtime.count();
       pInvalidation = pInvalidation*(1-fadeRate) + fadeRate*FUNCTORS_BASE_INVALIDATION_RATE;
-      if (not omp_in_parallel()) cout << "Runtime " << myName << ": " << runtime.count() << " s (" << runtime_average << " s)" << endl;
+      //if (not omp_in_parallel()) cout << "Runtime " << myName << ": " << runtime.count() << " s (" << runtime_average << " s)" << endl;
       needs_recalculating = false;
     }
 

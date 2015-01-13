@@ -47,7 +47,7 @@ START_MODULE
 
   #define CAPABILITY SimpleSmearingSim
   START_CAPABILITY
-    #define FUNCTION getBuckFast_Identity
+    #define FUNCTION getBuckFast
     START_FUNCTION(shared_ptr<Gambit::ColliderBit::BuckFastBase>)
     #undef FUNCTION
   #undef CAPABILITY
