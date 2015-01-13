@@ -91,6 +91,11 @@ Auxiliaries:
     options:
       delphesOptions: ["ColliderBit/data/delphes_card_ATLAS.tcl"]
 
+  - capability: SimpleSmearingSim
+    function: getBuckFast
+    options:
+      buckFastOption: "BuckFastIdentity"
+ 
   - capability:  ColliderOperator
     function: operatePythia
     options:

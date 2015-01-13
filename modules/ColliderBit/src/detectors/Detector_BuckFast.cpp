@@ -27,10 +27,20 @@ namespace Gambit {
       //@{
       virtual void processEvent(const HEPUtils::Event& eventIn, HEPUtils::Event& eventOut) { 
         convertInput(eventIn);
-        ///
-        /// Do stuff with _processedEvent...
-        ///
-        convertOutput(eventOut);
+	
+	ApplyDelphesElectronTrackingEff(_processedEvent->electrons());
+	SmearElectronEnergy(_processedEvent->electrons());
+	ApplyDelphesElectronEff(_processedEvent->electrons());
+
+	ApplyDelphesMuonTrackEff(_processedEvent->muons());
+	SmearMuonMomentum(_processedEvent->muons());
+	ApplyDelphesMuonEff(_processedEvent->muons());
+	
+	ApplyTauEfficiency(_processedEvent->taus());
+
+	SmearJets(_processedEvent->jets());
+	
+	convertOutput(eventOut);
       }
       //@}
     };

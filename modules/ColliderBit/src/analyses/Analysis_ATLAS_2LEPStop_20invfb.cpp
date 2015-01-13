@@ -24,14 +24,15 @@ using namespace std;
 namespace Gambit {
   namespace ColliderBit {
 
+
     //Function that mimics the TLorentzVector deltaPhi function
     //Puts dphi in the range -pi to pi
     double Phi_mpi_pi(double x){
-      double pi=3.14159265359;
-      double two_pi=2*3.14159265359;
-      while (x >= pi) x -= two_pi;
-      while (x < -pi) x += two_pi;
+      while (x >= M_PI) x -= 2*M_PI;
+      while (x < -M_PI) x += 2*M_PI;
+      return x;
     }
+
 
     class Analysis_ATLAS_2LEPStop_20invfb : public Analysis {
     private:
@@ -85,7 +86,7 @@ namespace Gambit {
         vector<Jet*> trueBJets; //for debugging
         for (Jet* jet : event->jets()) {
           if (jet->pT() > 20. && fabs(jet->eta()) < 2.5) baselineJets.push_back(jet);
-          if(jet->isBJet() && fabs(jet->eta()) < 2.5 && jet->pT() > 20.) bJets.push_back(jet);
+          if(jet->btag() && fabs(jet->eta()) < 2.5 && jet->pT() > 20.) bJets.push_back(jet);
         }
 
         // Overlap removal

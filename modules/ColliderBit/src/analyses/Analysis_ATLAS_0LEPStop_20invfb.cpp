@@ -164,7 +164,7 @@ namespace Gambit {
           if (jet->pT() > 20. && fabs(jet->eta()) < 4.5) baselineJets.push_back(jet);
 	  bool hasTag=has_tag(_eff2d, jet->eta(), jet->pT());
 	  if (jet->pT() > 20. && fabs(jet->eta()) < 4.5) {
-	    if(jet->isBJet() && hasTag && fabs(jet->eta()) < 2.5 && jet->pT() > 20.){
+	    if(jet->btag() && hasTag && fabs(jet->eta()) < 2.5 && jet->pT() > 20.){
 	      bJets.push_back(jet);
 	    }
 	    else {
@@ -466,7 +466,7 @@ namespace Gambit {
 	
 	if(passBJetCut){
 	  for(int j=0; j<nJets; j++) {
-	    if(signalJets[j]->isBJet()&&signalJets[j]->pT()>leadBJetPt){
+	    if(signalJets[j]->btag()&&signalJets[j]->pT()>leadBJetPt){
 	      leadBJetPt=signalJets[j]->pT();
 	      leadBJetID=j;
 	    }
@@ -479,7 +479,7 @@ namespace Gambit {
 	
 	if(passBJetCut){
 	  for(int j=0; j<nJets; j++) {
-	    if(signalJets[j]->isBJet()&&signalJets[j]->pT()>subBJetPt && j!=leadBJetPt){
+	    if(signalJets[j]->btag()&&signalJets[j]->pT()>subBJetPt && j!=leadBJetPt){
 	      subBJetPt=signalJets[j]->pT();
 	      subBJetID=j;
 	    }

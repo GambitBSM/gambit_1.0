@@ -53,10 +53,10 @@ namespace Gambit {
         //Discard lowest energy electron if two are found overlapping
         vector<Particle*> Survivors;
 
-        for(int it1 = 0; it1 < vec1.size(); it1++) {
+        for(size_t it1 = 0; it1 < vec1.size(); it1++) {
           bool overlap = false;
           P4 lep1mom=vec1.at(it1)->mom();
-          for(int it2 = 0; it2 < vec2.size(); it2++) {
+          for(size_t it2 = 0; it2 < vec2.size(); it2++) {
             if(it1==it2)continue;
             P4 lep2mom=vec2.at(it2)->mom();
             float dR;
@@ -79,10 +79,10 @@ namespace Gambit {
 
         vector<Jet*> Survivors;
 
-        for(int itjet = 0; itjet < jetvec.size(); itjet++) {
+        for(size_t itjet = 0; itjet < jetvec.size(); itjet++) {
           bool overlap = false;
           P4 jetmom=jetvec.at(itjet)->mom();
-          for(int itlep = 0; itlep < lepvec.size(); itlep++) {
+          for(size_t itlep = 0; itlep < lepvec.size(); itlep++) {
             P4 lepmom=lepvec.at(itlep)->mom();
             float dR;
 
@@ -104,10 +104,10 @@ namespace Gambit {
 
         vector<Particle*> Survivors;
 
-        for(int itlep = 0; itlep < lepvec.size(); itlep++) {
+        for(size_t itlep = 0; itlep < lepvec.size(); itlep++) {
           bool overlap = false;
           P4 lepmom=lepvec.at(itlep)->mom();
-          for(int itjet= 0; itjet < jetvec.size(); itjet++) {
+          for(size_t itjet= 0; itjet < jetvec.size(); itjet++) {
             P4 jetmom=jetvec.at(itjet)->mom();
             float dR;
 
@@ -145,7 +145,7 @@ namespace Gambit {
 
         for (Jet* jet : event->jets()) {
           if (jet->pT() > 20. && fabs(jet->eta()) < 2.5) signalJets.push_back(jet);
-          //if(jet->isBJet() && fabs(jet->eta()) < 2.5 && jet->pT() > 20.) bJets.push_back(jet);
+          //if(jet->btag() && fabs(jet->eta()) < 2.5 && jet->pT() > 20.) bJets.push_back(jet);
         }
 
         // Overlap removal
@@ -163,20 +163,20 @@ namespace Gambit {
         LeptonJetOverlapRemoval(baselineMuons,signalJets,0.4);
 
         //Now do final overlap stage (reject both electrons and muons within 0.1 of each other)
-        for(int iEl=0;iEl<baselineElectrons.size();iEl++){
+        for(size_t iEl=0;iEl<baselineElectrons.size();iEl++){
           bool overlap=false;
           P4 elVec=baselineElectrons.at(iEl)->mom();
-          for(int iMu=0;iMu<baselineMuons.size();iMu++){
+          for(size_t iMu=0;iMu<baselineMuons.size();iMu++){
             P4 muVec=baselineMuons.at(iMu)->mom();
             if (elVec.deltaR_eta(muVec)<0.1)overlap=true;
           }
           if(!overlap)signalElectrons.push_back(baselineElectrons.at(iEl));
         }
 
-        for(int iMu=0;iMu<baselineMuons.size();iMu++){
+        for(size_t iMu=0;iMu<baselineMuons.size();iMu++){
           bool overlap=false;
           P4 muVec=baselineMuons.at(iMu)->mom();
-          for(int iEl=0;iEl<baselineElectrons.size();iEl++){
+          for(size_t iEl=0;iEl<baselineElectrons.size();iEl++){
             P4 elVec=baselineElectrons.at(iEl)->mom();
             if (elVec.deltaR_eta(muVec)<0.1)overlap=true;
           }
@@ -220,7 +220,7 @@ namespace Gambit {
 
         //Make b jet container
         for (Jet* jet : signalJets) {
-          if(jet->isBJet())bJets.push_back(jet);
+          if(jet->btag())bJets.push_back(jet);
         }
 
         bool leptonCut=((numElectrons+numMuons)==3 && massesOfSFOSPairs.size()>0);
@@ -268,8 +268,8 @@ namespace Gambit {
         int extralepID=-1;
         int lep1ID=-1;
         int lep2ID=-1;
-        for(int iLep=0;iLep<signalLeptons.size();iLep++){
-          for(int jLep=iLep;jLep<signalLeptons.size();jLep++){
+        for(size_t iLep=0;iLep<signalLeptons.size();iLep++){
+          for(size_t jLep=iLep;jLep<signalLeptons.size();jLep++){
             P4 lepVec1=signalLeptons.at(iLep)->mom();
             P4 lepVec2=signalLeptons.at(jLep)->mom();
             double invMass=(lepVec1+lepVec2).m();

@@ -24,12 +24,10 @@ namespace Gambit {
 
     using namespace std;
 
-    double Phi_mpi_pi_2lep(double x){
-      double pi=3.14159265359;
-      double two_pi=2*3.14159265359;
-      while (x >= pi) x -= two_pi;
-      while (x < -pi) x += two_pi;
-    }
+    // double phi_mpi_pi_2lep(double x){
+    //   while (x >= pi) x -= 2*M_PI;
+    //   while (x < -pi) x += 2*M_PI;
+    // }
 
 
     bool sortByPT_2lep(Particle* lep1, Particle* lep2) { return (lep1->pT() > lep2->pT()); }
@@ -186,8 +184,8 @@ namespace Gambit {
 
       void RemoveLeptonsMllLt12(vector<Particle*> &lepvec){
 
-	int removeLep1=-1;
-	int removeLep2=-1;
+	ssize_t removeLep1=-1;
+	ssize_t removeLep2=-1;
 	vector<Particle*> Survivors;
 
 	//Function removes SF lepton pairs with m_ll < 12 GeV
@@ -205,7 +203,7 @@ namespace Gambit {
 	  }
 	}
 	for(unsigned int itlep = 0; itlep < lepvec.size(); itlep++) {
-	  if(itlep!=removeLep1 && itlep!=removeLep2)Survivors.push_back(lepvec.at(itlep));
+	  if(itlep!=removeLep1 && itlep!=removeLep2) Survivors.push_back(lepvec.at(itlep));
 	}
 
 	lepvec=Survivors;
@@ -232,7 +230,7 @@ namespace Gambit {
         for (Jet* jet : event->jets()) {
           if (jet->pT() > 20. && fabs(jet->eta()) < 4.5) signalJets.push_back(jet);
 
-          //if(jet->isBJet() && fabs(jet->eta()) < 2.5 && jet->pT() > 20.) bJets.push_back(jet);
+          //if(jet->btag() && fabs(jet->eta()) < 2.5 && jet->pT() > 20.) bJets.push_back(jet);
         }
 
 	vector<Particle*> signalTaus;
@@ -281,9 +279,9 @@ namespace Gambit {
 
 	for (Jet* jet : signalJets) {
 	  bool hasTag=has_tag(_eff2d, jet->eta(), jet->pT());
-
+	  std::cout << "signalJets btag " << jet->btag() << " fabs(eta) " << fabs(jet->eta()) << std::endl;
 	  if(fabs(jet->eta()) < 2.4){
-	    if(jet->isBJet() && hasTag){
+	    if(jet->btag() && hasTag){
 	      centralBJets.push_back(jet);
 	    }
 	    else {
@@ -331,6 +329,8 @@ namespace Gambit {
 	int numCentralNonBJets=centralNonBJets.size();
 	int numCentralBJets=centralBJets.size();
 	int numForwardJets=forwardJets.size();
+
+	std::cout << "numCentralNonBJets " << numCentralNonBJets << std::endl;
 
 	//Now do the MT2 signal regions
 

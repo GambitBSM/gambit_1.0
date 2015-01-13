@@ -34,6 +34,7 @@
 namespace Gambit {
   namespace ColliderBit {
 
+
     /// ********************************************
     /// Non-rollcalled Functions and Local Variables
     /// ********************************************
@@ -242,6 +243,7 @@ namespace Gambit {
     }
 
 
+    /// @todo Split into convertPythia8PartonEvent and convertPythia8ParticleEvent strategies
     void convertPythia8Event(HEPUtils::Event &result) {
       using namespace Pipes::convertPythia8Event;
       if (*Loop::iteration <= INIT) return;
@@ -250,20 +252,22 @@ namespace Gambit {
       /// Get the next event from Pythia8
       const auto &pevt = (*Dep::HardScatteringSim)->nextEvent();
 
-      Pythia8::Vec4 ptot;
       std::vector<fastjet::PseudoJet> jetparticles;
       std::vector<fastjet::PseudoJet> bhadrons, taus;
 
-      ptot.reset();
       jetparticles.clear();
       bhadrons.clear();
       taus.clear();
+
+      Pythia8::Vec4 ptot;
+      ptot.reset();
 
       // Make a first pass to gather unstable final B hadrons and taus
       for (int i = 0; i < pevt.size(); ++i) {
         const Pythia8::Particle& p = pevt[i];
 
         // Find last b-hadrons in b decay chains as the best proxy for b-tagging
+        /// @todo Needs to also work for parton events
         if (isFinalB(i, pevt)) bhadrons.push_back(mk_pseudojet(p.p()));
 
         // Find last tau in tau replica chains as a proxy for tau-tagging
@@ -289,14 +293,18 @@ namespace Gambit {
         if (abs(p.eta()) > 5.0){
 	  continue;
 	}
+
+	if(p.id()==1000022 || p.id()==12 || p.id()==14 || p.id()==16)continue;
+	ptot += p.p();
+	
         // Add to total final state momentum
 	//@todo need to add a proper system for handling invisible particle pid codes
-        if(p.id()!=1000022)ptot += p.p();
-
+   
         // Promptness: for leptons and photons we're only interested if they don't come from hadron/tau decays
         /// @todo Don't exclude hadronic tau decay products from jet finding: ATLAS treats them as jets
         /// @todo Should we set up Pythia to make taus stable?
-        const bool prompt = !fromHadron(i, pevt) && !fromTau(i, pevt);
+	//MJW removes tau check to try matching with DELPHES
+        const bool prompt = !fromHadron(i, pevt);// && !fromTau(i, pevt);
 
         if (prompt) {
           HEPUtils::Particle* gp = new HEPUtils::Particle(mk_p4(p.p()), p.id());
@@ -310,11 +318,11 @@ namespace Gambit {
       }
 
       /// Jet finding
-      /// Currently hard-coded to use anti-kT R=0.4 jets above 30 GeV
+      /// Currently hard-coded to use anti-kT R=0.4 jets above 10 GeV
       /// @todo choose jet algorithm via _settings?
       const fastjet::JetDefinition jet_def(fastjet::antikt_algorithm, 0.4);
       fastjet::ClusterSequence cseq(jetparticles, jet_def);
-      std::vector<fastjet::PseudoJet> pjets = sorted_by_pt(cseq.inclusive_jets(30));
+      std::vector<fastjet::PseudoJet> pjets = sorted_by_pt(cseq.inclusive_jets(20));
 
       /// Do jet b-tagging, etc. and add to the Event
       for (auto& pj : pjets) {
@@ -329,9 +337,10 @@ namespace Gambit {
         result.add_jet(new HEPUtils::Jet(HEPUtils::mk_p4(pj), isB));
       }
 
-      /// MET (note: NOT just equal to sum of prompt invisibles)
-
+   
+      //result.calc_missingmom();
       result.set_missingmom(-mk_p4(ptot));
+
     }
 
 
@@ -385,7 +394,7 @@ namespace Gambit {
         #pragma omp critical (accumulatorUpdate)
         {
           // Loop over analyses and run them
-          for (auto anaPtr = Dep::ListOfAnalyses->begin(); anaPtr != Dep::ListOfAnalyses->end(); ++anaPtr)        
+          for (auto anaPtr = Dep::ListOfAnalyses->begin(); anaPtr != Dep::ListOfAnalyses->end(); ++anaPtr)
             (*anaPtr)->analyze(*Dep::ReconstructedEvent);
         }
       }
