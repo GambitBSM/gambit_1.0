@@ -242,8 +242,7 @@ namespace Gambit {
 
 
 
-    /// @todo Split into convertPythia8PartonEvent and convertPythia8ParticleEvent strategies
-    void convertPythia8Event(HEPUtils::Event &result) {
+    void convertPythia8ParticleEvent(HEPUtils::Event &result) {
       using namespace Pipes::convertPythia8Event;
       if (*Loop::iteration <= INIT) return;
       result.clear();
@@ -288,19 +287,16 @@ namespace Gambit {
         if (abs(p.eta()) > 5.0) continue;
 
         // Promptness: for leptons and photons we're only interested if they don't come from hadron/tau decays
-        /// @todo Don't exclude hadronic tau decay products from jet finding: ATLAS treats them as jets
-        /// @todo Should we set up Pythia to make taus stable?
         const bool prompt = !fromHadron(i, pevt) && !fromTau(i, pevt);
-
         if (prompt) {
           HEPUtils::Particle* gp = new HEPUtils::Particle(mk_p4(p.p()), p.id());
           gp->set_prompt();
           result.add_particle(gp); // Will be automatically categorised
-        } else {
-          // Choose jet constituents
-          jetparticles.push_back(mk_pseudojet(p.p()));
         }
 
+        // All particles other than invisibles are jet constituents
+        if (MCUtils::PID::isStrongInteracting(p.id()) || MCUtils::PID::isEMInteracting(p.id()))
+          jetparticles.push_back(mk_pseudojet(p.p()));
       }
 
       /// Jet finding
@@ -380,6 +376,17 @@ namespace Gambit {
       /// MET (note: NOT just equal to sum of prompt invisibles)
       result.calc_missingmom();
     }
+
+
+
+    /// Gambit0facing interface function
+    void convertPythia8Event(HEPUtils::Event &result) {
+      //convertPythia8PartonEvent(result);
+      convertPythia8ParticleEvent(result);
+    }
+
+
+
 
 
 
