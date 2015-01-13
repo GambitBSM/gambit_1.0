@@ -49,6 +49,7 @@
 #include <vector>
 #include <map>
 #include <array>
+#include <cmath>
 
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/shared_ptr.hpp>
@@ -72,38 +73,150 @@ namespace Gambit
     //using Gambit::BF::intLimitFunc;
     //using Gambit::BF::BFargVec;
 
-    // Temporary minimal histogram class for cascade decay testing
+    // Histogram class for cascade decays
     struct SimpleHist
     {
         SimpleHist(){}
-        SimpleHist(unsigned nBins, double Emin, double dE): nBins(nBins), Emin(Emin), dE(dE)
+        SimpleHist(unsigned nBins, double Emin, double Emax, bool logscale): nBins(nBins)
         {
-            for(unsigned i=0; i<nBins; i++)
+            if(logscale)
             {
-                vals.push_back(0.0);
+                if(Emin<=0)
+                {
+                    std::cout << "Error: Lower histogram bin limit must be greater than 0 when using logarithmic binning." << endl;
+                    exit(1);
+                }
+                double factor = pow(Emax/Emin,(1.0/nBins));
+                double binL=Emin;
+                for(unsigned i=0; i<nBins; i++)
+                {
+                    binLower.push_back(binL);
+                    binVals.push_back(0.0);
+                    wtSq.push_back(0.0);
+                    binL*=factor;
+                }
+                binLower.push_back(binL);
+            }
+            else
+            {
+                double dE = (Emax-Emin)/nBins;
+                for(unsigned i=0; i<nBins; i++)
+                {
+                    double binL = Emin+i*dE; 
+                    binLower.push_back(binL);
+                    binVals.push_back(0.0);
+                    wtSq.push_back(0.0);                
+                }
+                binLower.push_back(Emin+nBins*dE);
             }
         }
-        void addEvent(double E)
+        // Add an entry to histogram
+        void addEvent(double E, double weight=1.0)
         {
-            long int bin = (E-Emin)/dE;
+            int bin = findIndex(E);
             if(bin>=0 and unsigned(abs(bin))<nBins )
             {
-                vals[bin]+=1.0;
+                binVals[bin]+=weight;
+                wtSq[bin]+=weight*weight;
             }
         }
-        void addEvent(double E, double weight)
+        // Add an entry to a specified bin
+        void addToBin(unsigned bin, double weight=1.0)
         {
-            long int bin = (E-Emin)/dE;
-            if(bin>0 and unsigned(abs(bin))<nBins )
+            if(bin<nBins)
             {
-                vals[bin]+=weight;
+                binVals[bin]+=weight;
+                wtSq[bin]+=weight*weight;
             }
         }
-        std::vector<double> vals;
+        // Add a box spectrum to the histogram
+        void addBox(double Emin, double Emax, double weight=1.0)
+        {
+            int imin = findIndex(Emin);
+            int imax = findIndex(Emax);
+            if(imax<0 or unsigned(abs(imin))>nBins) 
+            {
+                // Do nothing
+            }
+            else if(imin==imax)
+            {
+                addToBin(imin,weight);
+            }            
+            else
+            {
+                double binSize_low = 1;
+                double binSize_high = 1;
+                double dE = Emax-Emin;
+                double norm = weight/dE;            
+                double tmp;
+                // Calculate part of lower bin covered by box
+                if(imin>=0)
+                    binSize_low = binLower[imin+1]-Emin;
+                // Calculate part of upper bin covered by box
+                if(imax<nBins) 
+                    binSize_high = Emax-binLower[imax];
+                // Add contribution to lower bin
+                addToBin(imin,binSize_low*norm);
+                // Add contribution to upper bin
+                addToBin(imax,binSize_high*norm);                    
+                // Add contributions to remaining bins
+                for(int i=imin+1;i<imax;i++)
+                {
+                    addToBin(i,binSize(i)*norm);
+                }
+            }
+        }
+        // Get error for a specified bin
+        double getError(unsigned bin) const
+        {
+            return sqrt(wtSq[bin]);
+        }
+        // Get relative error for a specified bin
+        double getRelError(unsigned bin) const
+        {
+            return sqrt(wtSq[bin])/binVals[bin];
+        }
+        // Divide all histogram bins by the respective bin size
+        void divideByBinSize()
+        {
+            for(unsigned i=0;i<nBins;i++)
+            {
+                binVals[i]/=binSize(i);
+                wtSq[i]   /=(binSize(i)*binSize(i));
+            }
+        }
+        // Multiply all bin contents by x
+        void multiply(double x)
+        {
+            for(unsigned i=0;i<nBins;i++)
+            {
+                binVals[i]*=x;
+                wtSq[i]   *=x*x;
+            } 
+        }       
+        // Find bin index for given value
+        int findIndex(double val) const
+        {
+            if(val < binLower[0]) return -1;
+            std::vector<double>::const_iterator pos = upper_bound(binLower.begin(),binLower.end(),val);   
+            return pos - binLower.begin() -1;       
+        }
+        // Retrieve size of given bins
+        double binSize(unsigned bin) const
+        {
+            return binLower[bin+1]-binLower[bin];
+        }  
+        // Get central value of bin
+        double binCenter(unsigned bin) const
+        {
+            return 0.5*(binLower[bin+1]+binLower[bin]);
+        }
+        std::vector<double> binLower;
+        std::vector<double> binVals;
+        std::vector<double> wtSq; // Sum of the squares of all weights
         unsigned nBins;
-        double Emin;
-        double dE;
     };
+
     typedef std::map<std::string, std::map<std::string, Gambit::DarkBit::SimpleHist> > simpleHistContainter;
     typedef std::map<std::string, unsigned> stringUnsignedMap;
 
@@ -200,6 +313,8 @@ namespace Gambit
       double valB;
     };
 
+
+    // Obsolete structure; replaced with RD_spectrum_type
     struct RDspectype
     {
     //coannihilating particles
@@ -208,21 +323,53 @@ namespace Gambit
       double mass_co[1000];
     //location and type of resonances
       int n_res;
-      int part_res[10];
+      int part_res[10]; // never used. Do we need this?
       double mass_res[10], width_res[10];
     //location of thresholds
       int n_thr;
       double E_thr[100];
     };
 
-    struct RDrestype
+    struct TH_Resonance
     {
-    //location of resonances and thresholds
-      int n_res, n_thr;
-      double E_res[10], dE_res[10], E_thr[100];
+      TH_Resonance() : energy(0.), width (0.) {}
+      TH_Resonance(const double & energy, const double & width) : energy(energy), width(width) {}
+      double energy;
+      double width;
     };
 
-    // A double in, double out function pointer.  FIXME Probably actually better if this goes in 
+    struct TH_resonances_thresholds
+    {
+      //location of resonances and thresholds in energy [GeV]
+      TH_resonances_thresholds() {}
+      TH_resonances_thresholds(const TH_resonances_thresholds & copy) : resonances(copy.resonances), threshold_energy(copy.threshold_energy) {}
+      TH_resonances_thresholds(const std::vector<TH_Resonance> & resonances, const std::vector<double> & thresholds) : resonances(resonances), threshold_energy(thresholds) {}
+
+      std::vector<TH_Resonance> resonances;
+      std::vector<double> threshold_energy;
+    };
+
+    struct RD_coannihilating_particle
+    {
+      RD_coannihilating_particle(const unsigned int & index, const unsigned int & dof, const double & mass) : index(index), degreesOfFreedom(dof), mass(mass) {}
+
+      unsigned int index;
+      unsigned int degreesOfFreedom;
+      double mass;
+    };
+
+    struct RD_spectrum_type
+    {
+      RD_spectrum_type() {}
+      RD_spectrum_type(const std::vector<RD_coannihilating_particle> & coannPart, const std::vector<TH_Resonance> & resonances, const std::vector<double> & thresholds) : coannihilatingParticles(coannPart), resonances(resonances), threshold_energy(thresholds) {}
+
+      std::vector<RD_coannihilating_particle> coannihilatingParticles;
+      std::vector<TH_Resonance> resonances;
+      std::vector<double> threshold_energy;
+    };
+    
+
+    // A double in, double out function pointer.  FIXME Probably actually better if this goes in
     // shared_types.hpp eventually, as it will likely be needed by other modules too at some stage. 
     typedef double(*fptr_dd)(double&);
 
@@ -238,7 +385,6 @@ namespace Gambit
     // e.g. chi --> everything, chi chi --> everything
     //
     // TH_ProcessCatalog describes all initial states relevant for DarkBit
-    
 
     struct TH_ParticleProperty
     {
@@ -251,9 +397,9 @@ namespace Gambit
     struct TH_Channel
     {
         // Constructor
-        TH_Channel(std::vector<std::string> finalStateIDs, Funk::Funk dSigmadE) :
+        TH_Channel(std::vector<std::string> finalStateIDs, Funk::Funk genRate) :
             finalStateIDs(finalStateIDs), nFinalStates(finalStateIDs.size()),
-            dSigmadE(dSigmadE)
+            genRate(genRate)
         {
             if ( nFinalStates < 2 )
             {
@@ -271,7 +417,7 @@ namespace Gambit
         // Energy dependence of final state particles
         // Includes v_rel as last argument in case of annihilation
         // TODO: Implement checks
-      Funk::Funk dSigmadE; // rename to genRate
+        Funk::Funk genRate;
 
         // Compare final states
         bool isChannel(std::string p0, std::string p1, std::string p2 ="", std::string p3 = "")
@@ -280,6 +426,11 @@ namespace Gambit
             if ( nFinalStates == 3 and p0 == finalStateIDs[0] and p1 == finalStateIDs[1] and p2 == finalStateIDs[2] ) return true;
             if ( nFinalStates == 4 and p0 == finalStateIDs[0] and p1 == finalStateIDs[1] and p2 == finalStateIDs[2] and p3 == finalStateIDs[3] ) return true;
             return false;
+        }
+
+        bool channelContains(std::string p)
+        {
+            return std::find(finalStateIDs.begin(), finalStateIDs.end(), p) != finalStateIDs.end();
         }
 
         void printChannel()
@@ -345,8 +496,8 @@ namespace Gambit
         // List of channels
         std::vector<TH_Channel> channelList;
 
-        //List of resonances and thresholds => rename RDrestype
-        std::vector<RDrestype> thresholdResonances;
+        //List of resonances and thresholds => rename TH_resonances_thresholds
+        TH_resonances_thresholds thresholdResonances;
 
         // Total decay rate or sigma v
         Funk::Funk genRateTotal; // was a double, but needs to be a Funk of velocity
@@ -738,27 +889,27 @@ namespace Gambit
                 this->addChannel(dNdE, p1, "", Ecm_min, Ecm_max);
             }
 
-            bool hasChannel(std::string p1, std::string p2)
+            bool hasChannel(std::string p1, std::string p2) const
             {
                 return ( findChannel(p1, p2) != -1 );
             }
 
-            bool hasChannel(std::string p1)
+            bool hasChannel(std::string p1) const
             {
                 return this->findChannel(p1, "");
             }
 
-            Funk::Funk operator()(std::string p1, std::string p2, double Ecm)
+            Funk::Funk operator()(std::string p1, std::string p2, double Ecm) const
             {
                 return this->operator()(p1, p2)->set("Ecm", Ecm);
             }
 
-            Funk::Funk operator()(std::string p1, double Ecm)
+            Funk::Funk operator()(std::string p1, double Ecm) const
             {
                 return this->operator()(p1)->set("Ecm", Ecm);
             }
 
-            Funk::Funk operator()(std::string p1, std::string p2)
+            Funk::Funk operator()(std::string p1, std::string p2) const
             {
                 int index = findChannel(p1, p2);
                 if ( index == 1 )
@@ -769,7 +920,7 @@ namespace Gambit
                 return funktion_list[index];
             }
 
-            Funk::Funk operator()(std::string p1)
+            Funk::Funk operator()(std::string p1) const
             {
                 return this->operator()(p1, "");
             }
@@ -781,7 +932,7 @@ namespace Gambit
             std::vector<double> Ecm_min_list;
             std::vector<double> Ecm_max_list;
 
-            int findChannel(std::string p1, std::string p2)
+            int findChannel(std::string p1, std::string p2) const
             {
                 for ( unsigned int i = 0; i < p1_list.size(); i++ )
                 {

@@ -6,6 +6,8 @@
 #include <map>
 #include <set>
 
+#include "partmap.hpp"
+
 namespace Gambit {
 
 /// Helper function for checking if indices are valid
@@ -77,6 +79,10 @@ private:
 protected:
    /// Constructor
    Spectrum(RunningPars& rp, Phys& p) : phys(p), runningpars(rp) {}
+   // new member variable.  Uncomment when using new constructor.
+   //Models::partmap& particle_database;
+   /// new constructor.  Pass Models::ParticleDB() in as the third argument in all cases.  You will need to include partmap.hpp in order to be able to do this.
+   //Spectrum(RunningPars& rp, Phys& p, Models::partmap& pdb) : phys(p), runningpars(rp), particle_database(pdb) {}
 
 public:
    Phys& phys;

@@ -144,11 +144,18 @@ ObsLikes:
 
 
 Auxiliaries:
+  - capability: lnL_FermiLATdwarfs
+    dependencies: 
+        - capability: GA_AnnYield
+          function: GA_AnnYield_DarkSUSY
   - capability: GA_AnnYield
     function: GA_AnnYield_DarkSUSY
     options:
         Emin: "test"
   - capability: dump_GammaSpectrum  # For unit tests: dump gamma-ray spectrum
+    dependencies: 
+        - capability: GA_AnnYield
+          function: GA_AnnYield_DarkSUSY
     options:
         filename: dNdE.dat
   - capability: lnL_oh2
