@@ -287,7 +287,7 @@ namespace HEPUtils {
       for (size_t i = 0; i < visibles.size(); ++i) {
         pvis += visibles[i]->mom();
       }
-      std::vector<Particle*> jets = jets();
+      std::vector<Jet*> jets = jets();
       for (size_t i = 0; i < jets.size(); ++i) {
         pvis += jets[i]->mom();
       }
