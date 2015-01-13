@@ -115,14 +115,12 @@ namespace Gambit {
     }
 
 
-    void getBuckFast(shared_ptr<Gambit::ColliderBit::BuckFastBase> &result) {
-      using namespace Pipes::getBuckFast;
-      std::string buckFastOption;
+    void getBuckFast_Identity(shared_ptr<Gambit::ColliderBit::BuckFastBase> &result) {
+      using namespace Pipes::getBuckFast_Identity;
       if(resetBuckFastFlag) {
         #pragma omp critical (BuckFast)
         {
-	  GET_COLLIDER_RUNOPTION(buckFastOption, std::string)
-          result.reset( mkBuckFast(buckFastOption) );
+          result.reset( mkBuckFast("BuckFastIdentity") );
           resetBuckFastFlag = false;
         }
       }
@@ -244,14 +242,13 @@ namespace Gambit {
 
 
 
-    /// @todo Split into convertPythia8PartonEvent and convertPythia8ParticleEvent strategies
-    void convertPythia8Event(HEPUtils::Event &result) {
+    void convertPythia8ParticleEvent(HEPUtils::Event &result) {
       using namespace Pipes::convertPythia8Event;
       if (*Loop::iteration <= INIT) return;
       result.clear();
 
       /// Get the next event from Pythia8
-      const auto &pevt = (*Dep::HardScatteringSim)->nextEvent();
+      const auto pevt = (*Dep::HardScatteringSim)->nextEvent();
 
       std::vector<fastjet::PseudoJet> jetparticles;
       std::vector<fastjet::PseudoJet> bhadrons, taus;
@@ -260,9 +257,6 @@ namespace Gambit {
       jetparticles.clear();
       bhadrons.clear();
       taus.clear();
-
-      Pythia8::Vec4 ptot;
-      ptot.reset();
 
       // Make a first pass to gather unstable final B hadrons and taus
       for (int i = 0; i < pevt.size(); ++i) {
@@ -291,32 +285,26 @@ namespace Gambit {
         /// @todo Remove this and let the det sim or analysis code do the analysis acceptance cut
         if (!p.isFinal()) continue;
         if (abs(p.eta()) > 5.0) continue;
-	if(p.id()==1000022 || p.id()==12 || p.id()==14 || p.id()==16)continue;
-	ptot += p.p();
 
         // Promptness: for leptons and photons we're only interested if they don't come from hadron/tau decays
-        /// @todo Don't exclude hadronic tau decay products from jet finding: ATLAS treats them as jets
-        /// @todo Should we set up Pythia to make taus stable?
-	//MJW removes tau check to try matching with DELPHES
-        const bool prompt = !fromHadron(i, pevt);// && !fromTau(i, pevt);
-
+        const bool prompt = !fromHadron(i, pevt) && !fromTau(i, pevt);
         if (prompt) {
           HEPUtils::Particle* gp = new HEPUtils::Particle(mk_p4(p.p()), p.id());
           gp->set_prompt();
           result.add_particle(gp); // Will be automatically categorised
-        } else {
-          // Choose jet constituents
-          jetparticles.push_back(mk_pseudojet(p.p()));
         }
 
+        // All particles other than invisibles are jet constituents
+        if (MCUtils::PID::isStrongInteracting(p.id()) || MCUtils::PID::isEMInteracting(p.id()))
+          jetparticles.push_back(mk_pseudojet(p.p()));
       }
 
       /// Jet finding
-      /// Currently hard-coded to use anti-kT R=0.4 jets above 10 GeV
+      /// Currently hard-coded to use anti-kT R=0.4 jets above 30 GeV
       /// @todo choose jet algorithm via _settings?
       const fastjet::JetDefinition jet_def(fastjet::antikt_algorithm, 0.4);
       fastjet::ClusterSequence cseq(jetparticles, jet_def);
-      std::vector<fastjet::PseudoJet> pjets = sorted_by_pt(cseq.inclusive_jets(20));
+      std::vector<fastjet::PseudoJet> pjets = sorted_by_pt(cseq.inclusive_jets(30));
 
       /// Do jet b-tagging, etc. and add to the Event
       for (auto& pj : pjets) {
@@ -332,9 +320,7 @@ namespace Gambit {
       }
 
       /// MET (note: NOT just equal to sum of prompt invisibles)
-      //result.calc_missingmom();
-      result.set_missingmom(-mk_p4(ptot));
-
+      result.calc_missingmom();
     }
 
 
@@ -387,11 +373,20 @@ namespace Gambit {
         result.add_jet(new HEPUtils::Jet(HEPUtils::mk_p4(pj), isB));
       }
 
-   
+      /// MET (note: NOT just equal to sum of prompt invisibles)
       result.calc_missingmom();
-      //result.set_missingmom(-mk_p4(ptot));
-
     }
+
+
+
+    /// Gambit0facing interface function
+    void convertPythia8Event(HEPUtils::Event &result) {
+      //convertPythia8PartonEvent(result);
+      convertPythia8ParticleEvent(result);
+    }
+
+
+
 
 
 
@@ -474,12 +469,11 @@ namespace Gambit {
           // A contribution to the predicted number of events that is not known exactly
           double n_predicted_uncertain = srData.n_signal + srData.n_background;
 
-	  /// A fractional uncertainty on n_predicted_uncertain
-	  /// (e.g. 0.2 from 20% uncertainty on efficencty wrt signal events)
+            /// A fractional uncertainty on n_predicted_uncertain
+            /// (e.g. 0.2 from 20% uncertainty on efficencty wrt signal events)
           double bkg_ratio = srData.background_sys/srData.n_background;
           double sig_ratio = (srData.n_signal != 0) ? srData.signal_sys/srData.n_signal : 0;
           double uncertainty = sqrt(bkg_ratio*bkg_ratio + sig_ratio*sig_ratio);
-
 
           if (*BEgroup::lnlike_marg_poisson == "lnlike_marg_poisson_lognormal_error") {
             /// Use a log-normal distribution for the nuisance parameter (more correct)
@@ -487,7 +481,6 @@ namespace Gambit {
           }
           else if (*BEgroup::lnlike_marg_poisson == "lnlike_marg_poisson_gaussian_error") {
             /// Use a Gaussian distribution for the nuisance parameter (marginally faster)
-
             result = BEreq::lnlike_marg_poisson_gaussian_error(n_obs,n_predicted_exact,n_predicted_uncertain,uncertainty);
           }
           cout << "COLLIDER_RESULT " << analysis << " " << SR << " " << result << endl;
@@ -502,6 +495,4 @@ namespace Gambit {
 
   }
 }
-
 #undef DEBUG
-	
