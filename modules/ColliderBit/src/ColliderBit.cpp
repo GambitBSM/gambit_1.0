@@ -339,42 +339,29 @@ namespace Gambit {
       const auto pevt = (*Dep::HardScatteringSim)->nextEvent();
 
       std::vector<fastjet::PseudoJet> jetparticles;
-      std::vector<fastjet::PseudoJet> bhadrons, taus;
-
 
       // Make a single pass over the event to gather final leptons, partons, and photons
       for (int i = 0; i < pevt.size(); ++i) {
         const Pythia8::Particle& p = pevt[i];
 
         // Only consider partons within ATLAS/CMS acceptance
+        /// @todo We should leave this for the detector sim / analysis to deal with
         if (!p.isFinal()) continue;
         if (abs(p.eta()) > 5.0) continue;
 
-        // Find b-quarks
-        /// @todo DO IT
-        // if (isFinalB(i, pevt)) bhadrons.push_back(mk_pseudojet(p.p()));
-
-        // Find taus
-        /// @todo DO IT
-        // if (isFinalTau(i, pevt) && !fromHadron(i, pevt)) {
-        //   /// @todo Nothing is done with taus after this....
-        //   taus.push_back(mk_pseudojet(p.p()));
-        //   HEPUtils::Particle* gp = new HEPUtils::Particle(mk_p4(p.p()), p.id());
-        //   gp->set_prompt();
-        //   result.add_particle(gp); // Will be automatically categorised
-        // }
-
-        // Collect electrons, muons, taus, and prompt photons (?) + jet particles
-        /// @todo DO IT
-        // if (prompt) {
-        //   HEPUtils::Particle* gp = new HEPUtils::Particle(mk_p4(p.p()), p.id());
-        //   gp->set_prompt();
-        //   result.add_particle(gp); // Will be automatically categorised
-        // } else {
-        //   // Choose jet constituents
-        //   jetparticles.push_back(mk_pseudojet(p.p()));
-        // }
-
+        // Find electrons/muons/photons to be treated as prompt & taus/partons to be jet constituents
+        /// @todo Apply a hadronic tau BR fraction?
+        /// @todo *Some* photons should be included in jets!!! Ignore for now since no FSR
+        /// @todo Lepton dressing
+        if (isFinalPhoton(i, pevt) || (isFinalLepton(i, pevt) && abs(p.id()) != 15)) {
+          HEPUtils::Particle* gp = new HEPUtils::Particle(mk_p4(p.p()), p.id());
+          gp->set_prompt();
+          result.add_particle(gp); // Will be automatically categorised
+        } else if (isFinalParton(i, pevt) || isFinalTau(i, pevt)) {
+          fastjet::PseudoJet pj = mk_pseudojet(p.p());
+          pj.set_user_index(abs(p.id()));
+          jetparticles.push_back(pj);
+        }
       }
 
       /// Jet finding
@@ -385,8 +372,8 @@ namespace Gambit {
       std::vector<fastjet::PseudoJet> pjets = sorted_by_pt(cseq.inclusive_jets(30));
       // Add to the event, with b-tagging info
       BOOST_FOREACH (const fastjet::PseudoJet& pj, pjets) {
-        /// @todo Do jet b-tagging, etc. by looking for b quark constituents
-        const bool isB = false;
+        /// @todo Do jet b-tagging, etc. by looking for b quark constituents (i.e. user index = |parton ID| = 5)
+        const bool isB = HEPUtils::any(pj.constituents(), [](const fastjet::PseudoJet& c){ return c.user_index() == 5; });
         result.add_jet(new HEPUtils::Jet(HEPUtils::mk_p4(pj), isB));
       }
 
