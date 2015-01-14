@@ -33,8 +33,8 @@ namespace Gambit
                 
                 type_index(){}
                 
-                const type_index operator=(const std::type_info& __rhs)
-                {_M_target = &__rhs;}
+                const std::type_info &operator=(const std::type_info& __rhs)
+                {return *(_M_target = &__rhs);}
 
                 bool operator==(const Gambit::type_index& __rhs) const
                 { return *_M_target == *__rhs._M_target; }

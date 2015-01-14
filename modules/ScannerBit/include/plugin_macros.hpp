@@ -20,6 +20,7 @@
 ///  *********************************************
 
 #include "cmake_variables.hpp"
+#include "plugin_details.hpp"
 
 #ifndef SCANNER_PLUGIN_MACROS_HPP
 #define SCANNER_PLUGIN_MACROS_HPP
@@ -309,13 +310,15 @@ namespace __gambit_plugin_ ## plug_name ##  _namespace__                        
                 }                                                                                                       \
                                                                                                                         \
                 extern "C" const std::type_info &__gambit_plugin_pluginInit_ ## plug_name                               \
-                 ## __(std::vector<void *> *input)                                                                      \
+                 ## __(const YAML::Node *node, std::vector<void *> *input)                                              \
                 {                                                                                                       \
                         if (input != 0)                                                                                 \
                                 myData.inputData = *input;                                                              \
                                                                                                                         \
                         if (plugin_status() == 1)                                                                       \
                         {                                                                                               \
+                                myData.node = *node;                                                                    \
+                                                                                                                        \
                                 for(auto it = myData.inits.begin(), end = myData.inits.end(); it != end; it++)          \
                                 {                                                                                       \
                                         (*it)(myData);                                                                  \
@@ -338,6 +341,32 @@ namespace __gambit_plugin_ ## plug_name ##  _namespace__                        
                         else                                                                                            \
                                 return NULL;                                                                            \
                 }                                                                                                       \
+        }                                                                                                               \
+                                                                                                                        \
+        template <typename T>                                                                                           \
+        T get_inifile_value(std::string in)                                                                             \
+        {                                                                                                               \
+                YAML::Node conv = __gambit_plugin_namespace__::myData.node[in];                                         \
+                if (conv.IsNull())                                                                                      \
+                {                                                                                                       \
+                        scan_err << "Missing iniFile entry needed by a gambit plugin \n"                                \
+                                << Gambit::Scanner::Plugins::Plugin_Details(#plug_name).printMin()                      \
+                                << scan_end;                                                                            \
+                }                                                                                                       \
+                                                                                                                        \
+                return conv.as<T>();                                                                                    \
+        }                                                                                                               \
+                                                                                                                        \
+        template <typename T>                                                                                           \
+        T get_inifile_value(std::string in, T defaults)                                                                 \
+        {                                                                                                               \
+                YAML::Node conv = __gambit_plugin_namespace__::myData.node[in];                                         \
+                if (conv.IsNull())                                                                                      \
+                {                                                                                                       \
+                        return defaults;                                                                                \
+                }                                                                                                       \
+                                                                                                                        \
+                return conv.as<T>();                                                                                    \
         }                                                                                                               \
                                                                                                                         \
         template <typename T>                                                                                           \

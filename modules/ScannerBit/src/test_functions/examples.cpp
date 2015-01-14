@@ -21,10 +21,10 @@
 #include <utility>
 #include <algorithm>
 
-#include "function_plugin.hpp"
+#include "objective_plugin.hpp"
 #include "cholesky.hpp"
 
-function_plugin(uniform, version(1,0,0))
+objective_plugin(uniform, version(1,0,0))
 {
         double plugin_main (const std::vector<double> &vec)
         {
@@ -42,7 +42,7 @@ function_plugin(uniform, version(1,0,0))
         }
 }
 
-function_plugin(gaussian, version(1, 0, 0))
+objective_plugin(gaussian, version(1, 0, 0))
 {
         Gambit::Cholesky chol;
         std::vector <double> mean;
@@ -105,7 +105,7 @@ function_plugin(gaussian, version(1, 0, 0))
         }
 }
 
-function_plugin(EggBox, version(1, 0, 0))
+objective_plugin(EggBox, version(1, 0, 0))
 {
 
         std::vector <double> params;

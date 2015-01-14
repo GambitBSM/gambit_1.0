@@ -76,8 +76,7 @@ namespace Gambit
                                 else
                                 {
                                         std::stringstream err;
-                                        err << "Did not give same_as parameters for parameter " << name << std::endl;
-                                        Scanner::scan_error().raise(LOCAL_INFO, err.str());
+                                        scan_err << "Did not give same_as parameters for parameter " << name << scan_end;
                                 }
                                 
                                 names = param;
