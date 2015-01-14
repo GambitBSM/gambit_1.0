@@ -79,7 +79,7 @@ namespace Gambit
                         
                 public:
                         Scanner_Plugin_Function(const std::vector<std::string> &params, const Priors::BasePrior &prior, const std::string &name) 
-                                : Plugins::Plugin_Interface<double (const std::vector<double> &)>("like", name, params, prior)
+                                : Plugins::Plugin_Interface<ret (args...)>("like", name, params, prior)
                         {
                         }
                         

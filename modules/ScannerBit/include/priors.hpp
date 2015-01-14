@@ -61,6 +61,8 @@ namespace Gambit
                         inline unsigned int size() const {return param_size;}
                         
                         inline void setSize(const unsigned int size){param_size = size;}
+                        
+                        inline unsigned int & sizeRef(){return param_size;}
 
                         virtual ~BasePrior () {}
                 };
