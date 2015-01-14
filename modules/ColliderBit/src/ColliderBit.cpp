@@ -395,11 +395,6 @@ namespace Gambit {
       convertPythia8ParticleEvent(result);
     }
 
-
-
-
-
-
     /// *** Standard Event Format Functions ***
 
     void reconstructDelphesEvent(HEPUtils::Event &result) {
@@ -413,8 +408,6 @@ namespace Gambit {
         (*Dep::DetectorSim)->processEvent(*Dep::HardScatteringEvent, result);
       }
     }
-
-
 
     void reconstructBuckFastEvent(HEPUtils::Event &result) {
       using namespace Pipes::reconstructBuckFastEvent;
