@@ -114,7 +114,7 @@ namespace Gambit {
       }
     }
 
-	
+
 	void getBuckFast(shared_ptr<Gambit::ColliderBit::BuckFastBase> &result) {
 	using namespace Pipes::getBuckFast;
 	std::string buckFastOption;
@@ -243,7 +243,8 @@ namespace Gambit {
     }
 
 
-
+    /// Convert a hadron-level Pythia8::Event into an unsmeared HEPUtils::Event
+    /// @todo Overlap between jets and prompt containers: need some isolation in MET calculation
     void convertPythia8ParticleEvent(HEPUtils::Event &result) {
       using namespace Pipes::convertPythia8Event;
       if (*Loop::iteration <= INIT) return;
@@ -252,17 +253,11 @@ namespace Gambit {
       /// Get the next event from Pythia8
       const auto pevt = (*Dep::HardScatteringSim)->nextEvent();
 
-      std::vector<fastjet::PseudoJet> jetparticles;
-      std::vector<fastjet::PseudoJet> bhadrons, taus;
+      std::vector<fastjet::PseudoJet> jetparticles, bhadrons, taus;
 
-      /// @todo These lines *really* shouldn't be needed...
-      jetparticles.clear();
-      bhadrons.clear();
-      taus.clear();
+      // /// @todo This should be replaced
+      // Pythia8::Vec4 ptot;
 
-      Pythia8::Vec4 ptot;
-      ptot.reset();
-      
       // Make a first pass to gather unstable final B hadrons and taus
       for (int i = 0; i < pevt.size(); ++i) {
         const Pythia8::Particle& p = pevt[i];
@@ -291,9 +286,8 @@ namespace Gambit {
         if (!p.isFinal()) continue;
         if (abs(p.eta()) > 5.0) continue;
 
-	if(p.id()==1000022 || p.id()==12 || p.id()==14 || p.id()==16)continue;
-	ptot += p.p();
-	
+        // if (p.id()==1000022 || p.idAbs()==12 || p.idAbs()==14 || p.idAbs()==16) continue;
+        // ptot += p.p();
 
         // Promptness: for leptons and photons we're only interested if they don't come from hadron/tau decays
         const bool prompt = !fromHadron(i, pevt); //&& !fromTau(i, pevt);
@@ -316,6 +310,7 @@ namespace Gambit {
       std::vector<fastjet::PseudoJet> pjets = sorted_by_pt(cseq.inclusive_jets(20));
 
       /// Do jet b-tagging, etc. and add to the Event
+      /// @todo Use ghost tagging
       for (auto& pj : pjets) {
         bool isB = false;
         for (auto& pb : bhadrons) {
@@ -329,13 +324,15 @@ namespace Gambit {
       }
 
       /// MET (note: NOT just equal to sum of prompt invisibles)
-      //result.calc_missingmom();
-      result.set_missingmom(-mk_p4(ptot));
+      /// @todo Need to deal with overlap with leptons and photons
+      result.calc_missingmom();
+      // result.set_missingmom(-mk_p4(ptot));
     }
 
 
 
     /// Convert a partonic (no hadrons) Pythia8::Event into an unsmeared HEPUtils::Event
+    /// @todo Overlap between jets and prompt containers: need some isolation in MET calculation
     void convertPythia8PartonEvent(HEPUtils::Event &result) {
       using namespace Pipes::convertPythia8Event;
       if (*Loop::iteration <= INIT) return;
@@ -355,7 +352,7 @@ namespace Gambit {
         if (!p.isFinal()) continue;
         if (abs(p.eta()) > 5.0) continue;
 
-        // Find electrons/muons/photons to be treated as prompt & taus/partons to be jet constituents
+        // Find electrons/muons/photons to be treated as prompt &
         /// @todo Apply a hadronic tau BR fraction?
         /// @todo *Some* photons should be included in jets!!! Ignore for now since no FSR
         /// @todo Lepton dressing
@@ -363,10 +360,14 @@ namespace Gambit {
           HEPUtils::Particle* gp = new HEPUtils::Particle(mk_p4(p.p()), p.id());
           gp->set_prompt();
           result.add_particle(gp); // Will be automatically categorised
-        } else if (isFinalParton(i, pevt) || isFinalTau(i, pevt)) {
-          fastjet::PseudoJet pj = mk_pseudojet(p.p());
-          pj.set_user_index(abs(p.id()));
-          jetparticles.push_back(pj);
+        }
+        // Everything other than invisibles, including taus & partons are jet constituents
+        if (isFinalParton(i, pevt) || isFinalTau(i, pevt)) {
+          if (MCUtils::PID::isStrongInteracting(p.id()) || MCUtils::PID::isEMInteracting(p.id())) {
+            fastjet::PseudoJet pj = mk_pseudojet(p.p());
+            pj.set_user_index(abs(p.id()));
+            jetparticles.push_back(pj);
+          }
         }
       }
 
@@ -384,18 +385,17 @@ namespace Gambit {
       }
 
       /// MET (note: NOT just equal to sum of prompt invisibles)
+      /// @todo Need to deal with overlap with leptons and photons
       result.calc_missingmom();
     }
 
 
 
-    /// Gambit0facing interface function
+    /// Gambit facing interface function
     void convertPythia8Event(HEPUtils::Event &result) {
       //convertPythia8PartonEvent(result);
       convertPythia8ParticleEvent(result);
     }
-
-
 
 
 
