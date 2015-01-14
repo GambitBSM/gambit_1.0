@@ -258,6 +258,7 @@ START_MODULE
       START_FUNCTION(Gambit::DarkBit::simpleHistContainter)
       DEPENDENCY(cascadeMC_InitialState, std::string)
       DEPENDENCY(cascadeMC_ChainEvent, Gambit::DarkBit::DecayChain::ChainContainer)
+      DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)      
       NEEDS_MANAGER_WITH_CAPABILITY(cascadeMC_LoopManagement) 
     #undef FUNCTION          
   #undef CAPABILITY

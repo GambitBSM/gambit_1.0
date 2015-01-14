@@ -114,13 +114,15 @@ namespace Gambit {
       }
     }
 
-
-    void getBuckFast_Identity(shared_ptr<Gambit::ColliderBit::BuckFastBase> &result) {
-      using namespace Pipes::getBuckFast_Identity;
-      if(resetBuckFastFlag) {
-        #pragma omp critical (BuckFast)
+	
+	void getBuckFast(shared_ptr<Gambit::ColliderBit::BuckFastBase> &result) {
+	using namespace Pipes::getBuckFast;
+	std::string buckFastOption;
+	if(resetBuckFastFlag) {
+#pragma omp critical (BuckFast)
         {
-          result.reset( mkBuckFast("BuckFastIdentity") );
+	  GET_COLLIDER_RUNOPTION(buckFastOption, std::string)
+	    result.reset( mkBuckFast(buckFastOption) );
           resetBuckFastFlag = false;
         }
       }
@@ -241,8 +243,8 @@ namespace Gambit {
     }
 
 
-    /// @todo Split into convertPythia8PartonEvent and convertPythia8ParticleEvent strategies
-    void convertPythia8Event(HEPUtils::Event &result) {
+
+    void convertPythia8ParticleEvent(HEPUtils::Event &result) {
       using namespace Pipes::convertPythia8Event;
       if (*Loop::iteration <= INIT) return;
       result.clear();
@@ -253,10 +255,14 @@ namespace Gambit {
       std::vector<fastjet::PseudoJet> jetparticles;
       std::vector<fastjet::PseudoJet> bhadrons, taus;
 
+      /// @todo These lines *really* shouldn't be needed...
       jetparticles.clear();
       bhadrons.clear();
       taus.clear();
 
+      Pythia8::Vec4 ptot;
+      ptot.reset();
+      
       // Make a first pass to gather unstable final B hadrons and taus
       for (int i = 0; i < pevt.size(); ++i) {
         const Pythia8::Particle& p = pevt[i];
@@ -281,31 +287,33 @@ namespace Gambit {
         const Pythia8::Particle& p = pevt[i];
 
         // Only consider final state particles within ATLAS/CMS acceptance
+        /// @todo Remove this and let the det sim or analysis code do the analysis acceptance cut
         if (!p.isFinal()) continue;
         if (abs(p.eta()) > 5.0) continue;
 
-        // Promptness: for leptons and photons we're only interested if they don't come from hadron/tau decays
-        /// @todo Don't exclude hadronic tau decay products from jet finding: ATLAS treats them as jets
-        /// @todo Should we set up Pythia to make taus stable?
-        const bool prompt = !fromHadron(i, pevt) && !fromTau(i, pevt);
+	if(p.id()==1000022 || p.id()==12 || p.id()==14 || p.id()==16)continue;
+	ptot += p.p();
+	
 
+        // Promptness: for leptons and photons we're only interested if they don't come from hadron/tau decays
+        const bool prompt = !fromHadron(i, pevt); //&& !fromTau(i, pevt);
         if (prompt) {
           HEPUtils::Particle* gp = new HEPUtils::Particle(mk_p4(p.p()), p.id());
           gp->set_prompt();
           result.add_particle(gp); // Will be automatically categorised
-        } else {
-          // Choose jet constituents
-          jetparticles.push_back(mk_pseudojet(p.p()));
         }
 
+        // All particles other than invisibles are jet constituents
+        if (MCUtils::PID::isStrongInteracting(p.id()) || MCUtils::PID::isEMInteracting(p.id()))
+          jetparticles.push_back(mk_pseudojet(p.p()));
       }
 
       /// Jet finding
-      /// Currently hard-coded to use anti-kT R=0.4 jets above 30 GeV
+      /// Currently hard-coded to use anti-kT R=0.4 jets above 20 GeV
       /// @todo choose jet algorithm via _settings?
       const fastjet::JetDefinition jet_def(fastjet::antikt_algorithm, 0.4);
       fastjet::ClusterSequence cseq(jetparticles, jet_def);
-      std::vector<fastjet::PseudoJet> pjets = sorted_by_pt(cseq.inclusive_jets(30));
+      std::vector<fastjet::PseudoJet> pjets = sorted_by_pt(cseq.inclusive_jets(20));
 
       /// Do jet b-tagging, etc. and add to the Event
       for (auto& pj : pjets) {
@@ -316,13 +324,79 @@ namespace Gambit {
             break;
           }
         }
-        /// Add to the event
+        // Add to the event
+        result.add_jet(new HEPUtils::Jet(HEPUtils::mk_p4(pj), isB));
+      }
+
+      /// MET (note: NOT just equal to sum of prompt invisibles)
+      //result.calc_missingmom();
+      result.set_missingmom(-mk_p4(ptot));
+    }
+
+
+
+    /// Convert a partonic (no hadrons) Pythia8::Event into an unsmeared HEPUtils::Event
+    void convertPythia8PartonEvent(HEPUtils::Event &result) {
+      using namespace Pipes::convertPythia8Event;
+      if (*Loop::iteration <= INIT) return;
+      result.clear();
+
+      /// Get the next event from Pythia8
+      const auto pevt = (*Dep::HardScatteringSim)->nextEvent();
+
+      std::vector<fastjet::PseudoJet> jetparticles;
+
+      // Make a single pass over the event to gather final leptons, partons, and photons
+      for (int i = 0; i < pevt.size(); ++i) {
+        const Pythia8::Particle& p = pevt[i];
+
+        // Only consider partons within ATLAS/CMS acceptance
+        /// @todo We should leave this for the detector sim / analysis to deal with
+        if (!p.isFinal()) continue;
+        if (abs(p.eta()) > 5.0) continue;
+
+        // Find electrons/muons/photons to be treated as prompt & taus/partons to be jet constituents
+        /// @todo Apply a hadronic tau BR fraction?
+        /// @todo *Some* photons should be included in jets!!! Ignore for now since no FSR
+        /// @todo Lepton dressing
+        if (isFinalPhoton(i, pevt) || (isFinalLepton(i, pevt) && abs(p.id()) != 15)) {
+          HEPUtils::Particle* gp = new HEPUtils::Particle(mk_p4(p.p()), p.id());
+          gp->set_prompt();
+          result.add_particle(gp); // Will be automatically categorised
+        } else if (isFinalParton(i, pevt) || isFinalTau(i, pevt)) {
+          fastjet::PseudoJet pj = mk_pseudojet(p.p());
+          pj.set_user_index(abs(p.id()));
+          jetparticles.push_back(pj);
+        }
+      }
+
+      /// Jet finding
+      /// Currently hard-coded to use anti-kT R=0.4 jets above 30 GeV
+      /// @todo choose jet algorithm via _settings?
+      const fastjet::JetDefinition jet_def(fastjet::antikt_algorithm, 0.4);
+      fastjet::ClusterSequence cseq(jetparticles, jet_def);
+      std::vector<fastjet::PseudoJet> pjets = sorted_by_pt(cseq.inclusive_jets(30));
+      // Add to the event, with b-tagging info
+      BOOST_FOREACH (const fastjet::PseudoJet& pj, pjets) {
+        /// @todo Do jet b-tagging, etc. by looking for b quark constituents (i.e. user index = |parton ID| = 5)
+        const bool isB = HEPUtils::any(pj.constituents(), [](const fastjet::PseudoJet& c){ return c.user_index() == 5; });
         result.add_jet(new HEPUtils::Jet(HEPUtils::mk_p4(pj), isB));
       }
 
       /// MET (note: NOT just equal to sum of prompt invisibles)
       result.calc_missingmom();
     }
+
+
+
+    /// Gambit0facing interface function
+    void convertPythia8Event(HEPUtils::Event &result) {
+      //convertPythia8PartonEvent(result);
+      convertPythia8ParticleEvent(result);
+    }
+
+
+
 
 
 
@@ -339,6 +413,7 @@ namespace Gambit {
         (*Dep::DetectorSim)->processEvent(*Dep::HardScatteringEvent, result);
       }
     }
+
 
 
     void reconstructBuckFastEvent(HEPUtils::Event &result) {
@@ -380,6 +455,7 @@ namespace Gambit {
         }
       }
     }
+
 
 
     /// Loop over all analyses (and SRs within one analysis) and fill a vector of observed likelihoods

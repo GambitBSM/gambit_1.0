@@ -659,7 +659,7 @@ namespace Gambit {
                 // Initialize histograms
                 for(std::vector<std::string>::const_iterator it = cMC_finalStates.begin(); it!=cMC_finalStates.end(); ++it)
                 {
-                    histList[*Dep::cascadeMC_InitialState][*it]=SimpleHist(10,0.0,1.0);
+                    histList[*Dep::cascadeMC_InitialState][*it]=SimpleHist(10,0.001,10.0,true);
                 }
                 return;
             case MC_FINALIZE:
@@ -710,32 +710,95 @@ namespace Gambit {
                     // TODO: Perhaps generate general histograms for decays into e.g. b bbar, and sample the spectra based on the histograms?
                     if((*it)->getnChildren() == 2)
                     {
-                        if(((*(*it))[0]->getpID() == "b" and (*(*it))[1]->getpID() == "bbar")
-                        or ((*(*it))[0]->getpID() == "bbar" and (*(*it))[1]->getpID() == "b"))
+                        if(/* Tabulated spectra exist for this process */ false)
                         {
-                            // Sample *pit spectrum from b bbar shower and add to histogram here
+                            // Temporary variables used for parts of equations
+                            double tmp1, tmp2;                          
+                            // Get boost variables
+                            double gamma,beta;
+                            (*it)->getBoost(gamma,beta);               
+                            double bsq=beta*beta;
+                            double gsq=gamma*gamma;          
+                            // Mass of final state
+                            double m = (*Dep::TH_ProcessCatalog).particleProperties.at(*pit).mass;
+                            // Number of times to sample spectrum
+                            unsigned cMC_NspecSamples = 10;
+                            // TODO: Read from yaml file
+                            double cMC_Emin = -1;
+                            // TODO: Calculate sampling limits
+                            double histEmin=0;
+                            histEmin=std::min(std::max(cMC_Emin,0.0),histEmin);
+                            double histEmax=10;
+                            // Calculate energies to sample between. 
+                            // Limits are chosen such that contributions from line broadening (from angle in CoM frame) are always included.
+                            double denom = (1-bsq)*gamma;
+                            double Ecmin = (histEmin - sqrt( bsq*( (bsq-1)*gsq*m*m + histEmin*histEmin) ) ) / denom;
+                            double Ecmax = (histEmax + sqrt( bsq*( (bsq-1)*gsq*m*m + histEmax*histEmax) ) ) / denom;                            
+                            
+                            // This should include the boost, commented out for now.
+                            //Emin = min(max(cMC_Emin,0),Emin);
+                            for(int i=0;i<cMC_NspecSamples;i++)
+                            {
+                                double E_CoM = Ecmin+(Ecmax-Ecmin)*Random::draw();
+                                // dN/dE read from tables
+                                double dN_dE = 0.6;
+                                double weight = (Ecmax-Ecmin)*dN_dE/cMC_NspecSamples;
+                                // Calculate box limits
+                                tmp1 = gamma*E_CoM;
+                                tmp2 = beta*gamma*sqrt(E_CoM*E_CoM-m*m);
+                                // Add box spectrum to histogram
+                                #pragma omp critical (cascadeMC_histList)
+                                    histList[*Dep::cascadeMC_InitialState][*pit].addBox(tmp1-tmp2,tmp1+tmp2,weight);
+                            }
                         }
                     }
                 }  
             }
         }
         
-        ////////////////////////////////////////////////////
-        // Check end conditions (just dummy example for now)
-        ////////////////////////////////////////////////////
+        /////////////////////////
+        // Check end conditions 
+        /////////////////////////
    
         // TODO: Fix yaml. Hardcode for now   
         unsigned cMC_endCheckFrequency  = 25; //runOptions->getValueOrDef<unsigned>(25, "cMC_endCheckFrequency");    
+        double cMC_gammaBGPower = -2.5;       //runOptions->getValueOrDef<double>(-2.5, "cMC_gammaBGPower");
+        double cMC_gammaRelError=0.01;        //runOptions->getValueOrDef<double>(0.01, "cMC_gammaRelError");
         
-        // Check if complete every cMC_endCheckFrequency events
+        // Check if finished every cMC_endCheckFrequency events
         if((*Loop::iteration % cMC_endCheckFrequency) == 0)
         {   
-            double binVal;   
-            #pragma omp critical (cascadeMC_histList)
-                binVal = histList[*Dep::cascadeMC_InitialState]["test6"].vals[4];
-            // For demonstration purposes, just check accuracy of a specific bin (also requiring more than 1 event).
-            // For the final version, we must check if the relevant particle is actually among the final states
-            if((binVal > double(0.0)) and (1.0/std::sqrt(binVal) <= 0.05))
+            enum status{untouched,unfinished,finished};
+            status cond = untouched;
+            for(std::vector<std::string>::const_iterator it = cMC_finalStates.begin(); it != cMC_finalStates.end(); ++it)
+            {
+                // End conditions currently only implemented for gamma final state
+                if(*it=="gamma")
+                {                  
+                    SimpleHist hist;
+                    #pragma omp critical (cascadeMC_histList)
+                        hist = histList[*Dep::cascadeMC_InitialState][*it];
+                    double sbRatioMax=-1.0;
+                    unsigned maxBin=0;
+                    for(unsigned i=0; i<hist.nBins; i++)
+                    {
+                        double E = hist.binCenter(i);
+                        double background = pow(E,cMC_gammaBGPower);
+                        double sbRatio = hist.binVals[i]/background;
+                        if(sbRatio>sbRatioMax)
+                        {
+                            sbRatioMax = sbRatio;
+                            maxBin=i;
+                        }
+                    }
+                    // Check if end condition is fulfilled. If not, set cond to unfinished
+                    if(hist.getRelError(maxBin) > cMC_gammaRelError) cond = unfinished;
+                    // If end condition is fulfilled, set cond to finished, unless already set to unfinished by another condition
+                    else if(cond != unfinished) cond = finished;
+                }
+            }
+            // Break Monte Carlo loop if all end conditions are fulfilled
+            if(cond==finished)
             {
                 Loop::wrapup();
             }
@@ -751,17 +814,19 @@ namespace Gambit {
         std::cout << "------------------------" << std::endl;     
         std::map<std::string, std::map<std::string,SimpleHist> > cascadeMC_HistList = *Dep::cascadeMC_Histograms;
                     
-        for(std::map<std::string, std::map<std::string,SimpleHist> >::const_iterator it = cascadeMC_HistList.begin(); it != cascadeMC_HistList.end(); ++it )
+        for(std::map<std::string, std::map<std::string,SimpleHist> >::iterator it = cascadeMC_HistList.begin(); it != cascadeMC_HistList.end(); ++it )
         {
             std::cout << "Initial state: " << (it->first) << ":" << std::endl;
             unsigned nEvents = (*Dep::cascadeMC_EventCount).at(it->first);
             std::cout << "Number of events: " << nEvents << std::endl;
-            for(std::map<std::string,SimpleHist>::const_iterator it2 = (it->second).begin(); it2 != (it->second).end(); ++it2 )
+            for(std::map<std::string,SimpleHist>::iterator it2 = (it->second).begin(); it2 != (it->second).end(); ++it2 )
             {
                 std::cout << (it2->first) << ": ";
+                //(it2->second).divideByBinSize();
+                (it2->second).multiply(1.0/nEvents);
                 for(int i=0;i<10;i++)
                 {
-                    std:: cout << ((it2->second).vals[i]/nEvents) << "  ";
+                    std:: cout << (it2->second).binVals[i] << "  ";
                 }
                 std::cout << std::endl;
             }

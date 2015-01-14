@@ -23,7 +23,6 @@
 #include <math.h>
 #include <map>
 #include <fstream>
-#include <chrono>
 #include <string>
 #include <set>
 #include "boost/shared_ptr.hpp"
@@ -277,6 +276,10 @@ namespace Gambit
                     void printChain() const;
                     // Get weight factor (see description of the weight variable)
                     double getWeight() const {return weight;}
+                    // Get boost between lab frame and CoM frame of this particle
+                    void getBoost(double& gamma, double& beta) const;
+                    // Get pointer to decay table
+                    const DecayTable* getDecayTable() const {return decayTable;}
                     // Destructor
                     ~ChainParticle();
                 private:  
