@@ -81,6 +81,7 @@ namespace Gambit
                         struct pluginData
                         {
                                 std::string name;
+                                YAML::Node node;
                                 std::vector <void *> inputData;
                                 std::vector <void (*)(pluginData &)> inits;
                                 std::map<std::string, factoryBase *> outputFuncs;

@@ -98,7 +98,7 @@ int main(int argc, char* argv[])
       Likelihood_Container_Factory factory(Core(), dependencyResolver, iniFile, prior);
  
       //Create the master scan manager 
-      Scanner::Scan_Manager scan(factory, iniFile.getScannerNode(), prior, Scanner::scannerInfo());
+      Scanner::Scan_Manager scan(factory, iniFile.getScannerNode(), prior);
 
       //Do the scan!
       logger() << core << "Starting scan." << EOM;
