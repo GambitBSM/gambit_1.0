@@ -32,7 +32,6 @@ namespace Gambit
 
                 namespace Plugins
                 {
-                
                         Plugin_Loader::Plugin_Loader() : path(GAMBIT_DIR "/ScannerBit/lib/")
                         {
                                 std::string p_str;
@@ -142,16 +141,60 @@ namespace Gambit
                                 return plugins[0];
                         }
 
+                        void pluginInfo::iniFile(const Options &options_in)
+                        {
+                                options = options_in;
+                                if (options.getNode().IsMap())
+                                {
+                                        std::vector<std::string> selectedPluginNames = options.getNames();
+                                        
+                                        for (auto it = selectedPluginNames.begin(), end = selectedPluginNames.end(); it != end; it++)
+                                        {
+                                                Proto_Plugin_Details temp;
+                                                if (options.hasKey(*it, "plugin"))
+                                                {
+                                                        temp.plugin = options.getValue<std::string>(*it, "plugin");
+                                                }
+                                                else
+                                                {
+                                                        scan_err << "Plugin name is not defined under the \"" << *it << "\" tag.  "
+                                                                << "using the tag \"" << *it << "\" as the plugin name." << scan_end;
+                                                        temp.plugin = *it;
+                                                }
+                                                if (options.hasKey(*it, "version"))
+                                                        temp.version = options.getValue<std::string>(*it, "version");
+                                                if (options.hasKey(*it, "library"))
+                                                        temp.library = "ScannerBit/lib/" + options.getValue<std::string>(*it, "library");
+                                                if (options.hasKey(*it, "library_path"))
+                                                        temp.library = options.getValue<std::string>(*it, "library_path");
+                                                        
+                                                selectedPlugins[*it] = temp;
+                                        }
+                                }
+                                else
+                                {
+                                        scan_err << "Plugins subsection is not of the \"Map\" YAML format." << scan_end;
+                                }
+                        }
+                        
+                        const Plugins::Plugin_Interface_Details& pluginInfo::operator()(const std::string &type, const std::string &pluginName)
+                        {
+                                auto it2 = selectedPlugins.find(pluginName);
+                                if (it2 != selectedPlugins.end())
+                                {
+                                        return Plugin_Interface_Details(plugins.find(type, it2->second.plugin, it2->second.version, it2->second.library), options.getOptions(pluginName).getNode());
+                                }
+                                else
+                                {
+                                        scan_err << "Plugin \"" << pluginName << "\" is not defined under the \"plugins\""
+                                                << " subsection in the inifile" << scan_end;
+                                                
+                                        return Plugin_Interface_Details();
+                                }
+                        }
+                        
+                        pluginInfo plugin_info;
                 }
-
-                /// Scanner info accessor function
-                Plugins::Plugin_Loader& scannerInfo()
-                {
-                        static Plugins::Plugin_Loader local;
-                        return local;
-                }
-
         }
-
 }
 

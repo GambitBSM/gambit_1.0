@@ -43,8 +43,8 @@ namespace Gambit
                 
                 registry
                 {
-                        typedef void* func_type(const std::vector<std::string> &, const Priors::BasePrior &, const IniFileInterface &);
-                        typedef void* multi_func_type(const std::map<std::string, std::vector<std::string>> &, const Priors::BasePrior &, const std::vector<IniFileInterface> &);
+                        typedef void* func_type(const std::vector<std::string> &, const Priors::BasePrior &, const std::string &);
+                        typedef void* multi_func_type(const std::map<std::string, std::vector<std::string>> &, const Priors::BasePrior &, const std::vector<std::string> &);
                         std::unordered_map<type_index, func_type *, Gambit::type_hasher, Gambit::type_equal_to> __functions__;
                         std::unordered_map<type_index, multi_func_type *, Gambit::type_hasher, Gambit::type_equal_to> __multi_functions__;
                 }
@@ -78,8 +78,8 @@ namespace Gambit
                         //std::vector<double> &params;
                         
                 public:
-                        Scanner_Plugin_Function(const std::vector<std::string> &params, const Priors::BasePrior &prior, const IniFileInterface &interface) 
-                                : Plugins::Plugin_Interface<double (const std::vector<double> &)>(interface.fileName(), interface.pluginName(), params, prior, interface)
+                        Scanner_Plugin_Function(const std::vector<std::string> &params, const Priors::BasePrior &prior, const std::string &name) 
+                                : Plugins::Plugin_Interface<double (const std::vector<double> &)>("like", name, params, prior)
                         {
                         }
                         
@@ -96,11 +96,11 @@ namespace Gambit
                         std::vector< Scanner_Plugin_Function<ret (args...)> > functions;
                         
                 public:
-                        Multi_Scanner_Plugin_Function(const std::map<std::string, std::vector<std::string>> &params, const Priors::BasePrior &prior, const std::vector<IniFileInterface> &interfaces)
+                        Multi_Scanner_Plugin_Function(const std::map< std::string, std::vector<std::string> > &params, const Priors::BasePrior &prior, const std::vector<std::string> &names)
                         {
-                                for (auto it = interfaces.begin(), end = interfaces.end(); it != end; it++)
+                                for (auto it = names.begin(), end = names.end(); it != end; it++)
                                 {
-                                        functions.emplace_back(params.at(it->pluginName()), prior, *it);
+                                        functions.emplace_back(params.at(*it), prior, *it);
                                 }
                         }
                         
@@ -119,14 +119,14 @@ namespace Gambit
                 class Plugin_Function_Factory : public Factory_Base
                 {
                 private:
-                        std::map<std::string, std::vector<IniFileInterface>> interfaces;
-                        std::map<std::string, std::vector<std::string>> parameters;
+                        std::map< std::string, std::vector<std::string> > names;
+                        std::map< std::string, std::vector<std::string> > parameters;
                         const Priors::CompositePrior &prior;
                         std::unordered_map<std::string, Gambit::type_index> purpose_index;
                         
                 public:
-                        Plugin_Function_Factory(const Priors::CompositePrior &prior, const std::map<std::string, std::vector<IniFileInterface>> &interfaces) 
-                                : interfaces(interfaces), prior(prior)
+                        Plugin_Function_Factory(const Priors::CompositePrior &prior, const std::map< std::string, std::vector<std::string> > &names) 
+                                : names(names), prior(prior)
                         {
                                 parameters = convert_to_map(prior.getParameters());
                                 purpose_index["Likelihood"] = typeid(double (const std::vector<double> &));
@@ -134,15 +134,15 @@ namespace Gambit
                         
                         void * operator() (const std::string &purpose) const
                         {
-                                auto it = interfaces.find(purpose);
+                                auto it = names.find(purpose);
                                 
-                                if (it == interfaces.end())
+                                if (it == names.end())
                                 {
                                         return NULL;
                                 }
                                 else if (it->second.size() == 1)
                                 {
-                                        return __functions__.at(purpose_index.at(purpose))(parameters.at(it->second.at(0).getTag()), prior, it->second.at(0));
+                                        return __functions__.at(purpose_index.at(purpose))(parameters.at(it->second.at(0)), prior, it->second.at(0));
                                 }
                                 else if (it->second.size() > 1)
                                 {
