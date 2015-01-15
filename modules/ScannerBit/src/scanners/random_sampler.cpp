@@ -56,7 +56,7 @@ scanner_plugin(random_sampler, version(1, 0, 0))
                                 
                         }
                         //double aux = 2;
-                        (*LogLike)(a);
+                        LogLike(a);
                         //std::cout << "point id = " << LogLike->getPtID() << std::endl;
                         //scan_ios << a << scan::endl;
                 }
