@@ -83,14 +83,14 @@ namespace Gambit
                         
                         
                         
-                        if (options->hasKey("use_likelihood_plugins"))
+                        if (options->hasKey("use_objective_plugins"))
                         {
                                 std::map< std::string, std::vector<std::string> > names;
                                 std::map< std::string, YAML::Node > nodes;
                                 
-                                if (options->getNode("use_likelihood_plugins").IsSequence())
+                                if (options->getNode("use_objective_plugins").IsSequence())
                                 {
-                                        auto plugs = options->getValue< std::vector<std::string> >("use_likelihood_plugins");
+                                        auto plugs = options->getValue< std::vector<std::string> >("use_objective_plugins");
                                         
                                         for (auto it = plugs.begin(), end = plugs.end(); it != end; it++)
                                         {
@@ -115,9 +115,9 @@ namespace Gambit
                                                 }
                                         }
                                 }
-                                else if (options->getNode("use_likelihood_plugins").IsScalar())
+                                else if (options->getNode("use_objective_plugins").IsScalar())
                                 {
-                                        std::string plug = options->getValue<std::string>("use_likelihood_plugins");
+                                        std::string plug = options->getValue<std::string>("use_objective_plugins");
                                         
                                         if (options->hasKey("plugins", plug, "purpose"))
                                         {

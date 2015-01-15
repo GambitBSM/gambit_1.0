@@ -50,7 +50,6 @@ namespace Gambit
                         ~Scan_Manager();
                         int Run();                       
                 };             
-
         }
 }
 

@@ -59,6 +59,20 @@ namespace Gambit
                                 return *this;
                         }
                         
+                        scan_ptr<ret (args...)> &operator=(const scan_ptr<ret (args...)> &in)
+                        {
+                                this->shared_ptr< Function_Base<ret (args...)> >::operator=(in);
+                        
+                                return *this;
+                        }
+                        
+                        scan_ptr<ret (args...)> &operator=(scan_ptr<ret (args...)> &&in)
+                        {
+                                this->shared_ptr< Function_Base<ret (args...)> >::operator=(std::move(in));
+                        
+                                return *this;
+                        }
+                        
                         ret operator()(const args&... params)
                         {
                                 return (*this)->operator()(params...);

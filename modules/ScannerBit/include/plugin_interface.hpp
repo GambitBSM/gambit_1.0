@@ -26,6 +26,7 @@
 #include <string>
 #include <sstream>
 #include <dlfcn.h>
+#include <link.h>
 #include <typeinfo>
 
 #include "plugin_utilities.hpp"
@@ -76,12 +77,12 @@ namespace Gambit
                                                 
                                                 if (main == 0)
                                                 {
-                                                        scan_err << "Could not find main function in plugin \"" << details.full_string << "\". Using dummy main function." << scan_end;
+                                                        scan_err << "Could not find main function in plugin \"" << name << "\". Using dummy main function." << scan_end;
                                                         main = dummy;
                                                 }
                                                 else if(diff)
                                                 {
-                                                        scan_err << "Plugin interface requires the plugin_main function in plugin \"" << details.full_string << "\" to be of the form \"" 
+                                                        scan_err << "Plugin interface requires the plugin_main function in plugin \"" << name << "\" to be of the form \"" 
                                                                 << typeid(ret).name() << " (" << stringify_variadic_inputs(typeid(args).name()...) << ")\"" << scan_end;
                                                 }
                                                 

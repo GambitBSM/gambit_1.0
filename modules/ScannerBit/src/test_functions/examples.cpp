@@ -143,7 +143,7 @@ objective_plugin(flat_prior, version(1, 0, 0))
                 range = get_inifile_value<decltype(range)>("range", decltype(range)(0.0, 1.0));
         }
         
-        void plugin_main(const std::vector<double> &unitpars, std::map<std::string, double> &outputMap)
+        void plugin_main(const std::vector<double> &unitpars, std::unordered_map<std::string, double> &outputMap)
         {
                 auto u_it = unitpars.begin();
                 for (auto it = keys.begin(), end = keys.end(); it != end; it++)

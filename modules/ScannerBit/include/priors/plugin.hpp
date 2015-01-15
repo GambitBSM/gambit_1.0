@@ -24,7 +24,7 @@ namespace Gambit
 {
         namespace Priors
         {
-                class Plugin : public BasePrior, public Scanner::Plugins::Plugin_Interface<void (const std::vector<double> &, std::map<std::string,double> &)>
+                class Plugin : public BasePrior, public Scanner::Plugins::Plugin_Interface<void (const std::vector<double> &, std::unordered_map<std::string,double> &)>
                 {
                 private:
                         inline std::string inputName(const Options& options)
@@ -43,14 +43,14 @@ namespace Gambit
                         
                 public: 
                         Plugin(const std::vector<std::string>& params, const Options& options) : 
-                                Scanner::Plugins::Plugin_Interface<void (const std::vector<double> &, std::map<std::string,double> &)>("like", inputName(options), params, sizeRef())
+                                Scanner::Plugins::Plugin_Interface<void (const std::vector<double> &, std::unordered_map<std::string,double> &)>("like", inputName(options), params, sizeRef())
                         {
                         }
                         
-                        void transform(const std::vector<double> &unitpars, std::map<std::string,double> &outputMap) const
+                        void transform(const std::vector<double> &unitpars, std::unordered_map<std::string,double> &outputMap) const
                         {
                                 std::cout << "size = " << size() << std::endl;
-                                return const_cast<Plugin *>(this)->Scanner::Plugins::Plugin_Interface<void (const std::vector<double> &, std::map<std::string,double> &)>::operator()(unitpars, outputMap);
+                                return const_cast<Plugin *>(this)->Scanner::Plugins::Plugin_Interface<void (const std::vector<double> &, std::unordered_map<std::string,double> &)>::operator()(unitpars, outputMap);
                         }
                 };
                 
