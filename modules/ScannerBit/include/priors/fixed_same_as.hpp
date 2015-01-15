@@ -50,7 +50,7 @@ namespace Gambit
                         
                         FixedPrior(std::string name, double value) : value(value), names(1, name) {}
                         
-                        void transform(const std::vector<double> &, std::map<std::string, double> &outputMap) const
+                        void transform(const std::vector<double> &, std::unordered_map<std::string, double> &outputMap) const
                         {
                                 for (auto it = names.begin(), end = names.end(); it != end; it++)
                                 {
@@ -76,8 +76,7 @@ namespace Gambit
                                 else
                                 {
                                         std::stringstream err;
-                                        err << "Did not give same_as parameters for parameter " << name << std::endl;
-                                        Scanner::scan_error().raise(LOCAL_INFO, err.str());
+                                        scan_err << "Did not give same_as parameters for parameter " << name << scan_end;
                                 }
                                 
                                 names = param;
@@ -98,7 +97,7 @@ namespace Gambit
                                 names.push_back(name_in);
                         }
                         
-                        void transform (const std::vector<double> &, std::map<std::string, double> &outputMap) const
+                        void transform (const std::vector<double> &, std::unordered_map<std::string, double> &outputMap) const
                         {
                                 double value = outputMap[name];
                                 

@@ -282,10 +282,14 @@ namespace HEPUtils {
 
     /// @brief Set the missing energy vector from the -ve sum of visible particles
     void calc_missingmom() {
-      std::vector<Particle*> visibles = visible_particles();
+      const std::vector<Particle*> visibles = visible_particles();
       P4 pvis;
       for (size_t i = 0; i < visibles.size(); ++i) {
         pvis += visibles[i]->mom();
+      }
+      const std::vector<Jet*>& js = jets();
+      for (size_t i = 0; i < js.size(); ++i) {
+        pvis += js[i]->mom();
       }
       set_missingmom(-pvis);
     }

@@ -64,11 +64,13 @@ namespace Gambit {
 
     /// @todo Rewrite using the Py8 > 176 particle-based methods
     inline bool fromBottom(int n, const Pythia8::Event& evt) {
+      // Root particle is invalid
+      if (n == 0) return false;
       const Pythia8::Particle& p = evt[n];
       if (abs(p.id()) == 5 || MCUtils::PID::hasBottom(p.id())) return true;
       /// @todo What about partonic decays?
       if (p.isParton()) return false; // stop the walking at hadron level
-      for (int m : evt.motherList(n)) {
+      BOOST_FOREACH (int m, evt.motherList(n)) {
         if (fromBottom(m, evt)) return true;
       }
       return false;
@@ -77,10 +79,12 @@ namespace Gambit {
 
     /// @todo Rewrite using the Py8 > 176 particle-based methods
     inline bool fromTau(int n, const Pythia8::Event& evt) {
+      // Root particle is invalid
+      if (n == 0) return false;
       const Pythia8::Particle& p = evt[n];
       if (abs(p.id()) == 15) return true;
       if (p.isParton()) return false; // stop the walking at the end of the hadron level
-      for (int m : evt.motherList(n)) {
+      BOOST_FOREACH (int m, evt.motherList(n)) {
         if (fromTau(m, evt)) return true;
       }
       return false;
@@ -89,10 +93,12 @@ namespace Gambit {
 
     /// @todo Rewrite using the Py8 > 176 particle-based methods
     inline bool fromHadron(int n, const Pythia8::Event& evt) {
+      // Root particle is invalid
+      if (n == 0) return false;
       const Pythia8::Particle& p = evt[n];
       if (p.isHadron()) return true;
       if (p.isParton()) return false; // stop the walking at the end of the hadron level
-      for (int m : evt.motherList(n)) {
+      BOOST_FOREACH (int m, evt.motherList(n)) {
         if (fromHadron(m, evt)) return true;
       }
       return false;
@@ -100,6 +106,8 @@ namespace Gambit {
 
 
     inline bool isReplica(int n, const Pythia8::Event& evt) {
+      // Root particle is invalid
+      if (n == 0) return false;
       const Pythia8::Particle& p = evt[n];
       return p.daughter1() != 0 && p.daughter1() == p.daughter2();
     }
@@ -109,7 +117,7 @@ namespace Gambit {
       const Pythia8::Particle& p = evt[n];
       //assert(!p.isParton());
       if (p.isParton()) std::cerr << "PARTON IN DESCENDANT CHAIN FROM HADRON! NUM, ID = " << n << ", " << p.id() << endl;
-      for (int m : evt.daughterList(n)) {
+      BOOST_FOREACH (int m, evt.daughterList(n)) {
         if (evt[m].isFinal()) {
           rtn.push_back(m);
         } else {
@@ -120,10 +128,12 @@ namespace Gambit {
 
 
     inline bool isFinalB(int n, const Pythia8::Event& evt) {
+      // Root particle is invalid
+      if (n == 0) return false;
       // *This* particle must be a b or b-hadron
       if (!MCUtils::PID::hasBottom(evt[n].id())) return false;
       // Daughters must *not* include a b or b-hadron
-      for (int m : evt.daughterList(n)) {
+      BOOST_FOREACH (int m, evt.daughterList(n)) {
         if (MCUtils::PID::hasBottom(evt[m].id())) return false;
       }
       return true;
@@ -131,13 +141,61 @@ namespace Gambit {
 
 
     inline bool isFinalTau(int n, const Pythia8::Event& evt) {
+      // Root particle is invalid
+      if (n == 0) return false;
       // *This* particle must be a tau
       if (abs(evt[n].id()) != 15) return false;
       // Daughters must *not* include a tau
-      for (int m : evt.daughterList(n)) {
+      BOOST_FOREACH (int m, evt.daughterList(n)) {
         if (abs(evt[m].id()) == 15) return false;
       }
       return true;
+    }
+
+
+    inline bool isParton(int n, const Pythia8::Event& evt) {
+      // Root particle is invalid
+      if (n == 0) return false;
+      // This particle must be a parton (could use Py8 P::isParton() + apid == 6?)
+      int apid = abs(evt[n].id());
+      if (!HEPUtils::in_closed_range(apid, 1, 6) && apid != 21) return false;
+      return true;
+    }
+
+
+    inline bool isFinalParton(int n, const Pythia8::Event& evt) {
+      // Root particle is invalid
+      if (n == 0) return false;
+      // Check if it's a parton at all & early exit
+      if (!isParton(n, evt)) return false;
+      // Daughters must *not* be partons
+      BOOST_FOREACH (int m, evt.daughterList(n)) {
+        if (m == 0) continue; // 0 shouldn't be possible here, but just to be sure...
+        if (isParton(m, evt)) return false;
+      }
+      return true;
+    }
+
+
+    inline bool isFinalPhoton(int n, const Pythia8::Event& evt) {
+      // Root particle is invalid
+      if (n == 0) return false;
+      const Pythia8::Particle& p = evt[n];
+      // Check if it's a photon at all & early exit
+      if (p.id() != 22) return false;
+      // Must have no daughters
+      return evt.daughterList(n).empty();
+    }
+
+
+    inline bool isFinalLepton(int n, const Pythia8::Event& evt) {
+      // Root particle is invalid
+      if (n == 0) return false;
+      const Pythia8::Particle& p = evt[n];
+      // Check if it's a lepton at all (including taus and neutrinos) & early exit
+      if (!HEPUtils::in_closed_range(abs(p.id()), 11, 16)) return false;
+      // Must have no daughters
+      return evt.daughterList(n).empty();
     }
 
 

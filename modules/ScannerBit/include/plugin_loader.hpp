@@ -27,6 +27,7 @@
 #include <string>
 
 #include "plugin_details.hpp"
+#include "yaml_options.hpp"
 
 namespace Gambit
 {
@@ -36,7 +37,29 @@ namespace Gambit
 
                 namespace Plugins
                 {
+                        ///Plugin info from inifile
+                        struct Proto_Plugin_Details
+                        {
+                                std::string plugin;
+                                std::string version;
+                                std::string library;
+                                
+                                Proto_Plugin_Details() : plugin(""), version(""), library("") {}
+                        };
                         
+                        ///Plugin info to be given to the interface class
+                        struct Plugin_Interface_Details
+                        {
+                                std::string full_string;
+                                std::string library_path;
+                                YAML::Node node;
+                                
+                                Plugin_Interface_Details(){}
+                                Plugin_Interface_Details(const Plugin_Details &details, const YAML::Node &node) 
+                                        : full_string(details.full_string), library_path(details.library_path), node(node) {}
+                        };
+                
+                        ///container class for the actual plugins detected my ScannerBit
                         class Plugin_Loader
                         {
                         private:
@@ -53,11 +76,23 @@ namespace Gambit
                                 Plugin_Details find (const std::string&, const std::string&, const std::string&, const std::string&) const;
                         };
                         
+                        ///Container for all the plugin info from the inifile and Scannerbit
+                        class pluginInfo
+                        {
+                        private:
+                                std::map<std::string, Proto_Plugin_Details> selectedPlugins;
+                                const Plugins::Plugin_Loader plugins;
+                                Options options;
+                                
+                        public:
+                                void iniFile(const Options &);
+                                const Plugin_Loader &operator()(){return plugins;}
+                                const Plugin_Interface_Details &operator()(const std::string &, const std::string &);
+                        };
+                        
+                        ///Access Functor for plugin info
+                        extern pluginInfo plugin_info;
                 }
-                  
-                /// Scanner info accessor function
-                Plugins::Plugin_Loader& scannerInfo();
-
          }
 
 }

@@ -86,7 +86,7 @@ Printer:
 
 Scanner:
 
-  #use_likelihood_plugins: uniform
+  #use_objective_plugins: uniform
   use_scanner_plugin: random
 
 # Scanners
@@ -104,14 +104,14 @@ Scanner:
         
     square_grid:
       plugin: square_grid
-      verion: ">=1.0"
+      version: ">=1.0"
       options:
         purpose: Likelihood
         grid_pts: 3 #NxN grid
             
     grid:
       plugin: grid
-      verion: ">=1.0"
+      version: ">=1.0"
       options:
         purpose: Likelihood
         grid_pts: [2, 2]

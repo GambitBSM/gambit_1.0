@@ -26,9 +26,11 @@
 #include <string>
 #include <sstream>
 #include <dlfcn.h>
+#include <link.h>
 #include <typeinfo>
 
 #include "plugin_utilities.hpp"
+#include "plugin_loader.hpp"
 
 namespace Gambit
 {
@@ -46,10 +48,9 @@ namespace Gambit
                         {
                         private:
                                 void *plugin;
-                                std::string name;
-                                std::vector<std::string> mod_names;
                                 std::vector<void *> input;
-                                typedef const std::type_info &(*initFuncType)(std::vector<void *> *);                              
+                                std::string tag;
+                                typedef const std::type_info &(*initFuncType)(const std::string &, const YAML::Node &, std::vector<void *> &);                              
                                 typedef void * (*getFuncType)(std::string);
                                 typedef ret (*mainFuncType)(args...);
                                 initFuncType initFunc;
@@ -59,20 +60,20 @@ namespace Gambit
                                 
                         public:
                                 template <typename... plug_args>
-                                Plugin_Interface(const std::string &file, const std::string &name_in, const plug_args&... inputs) : name(name_in)
+                                Plugin_Interface(const std::string &type, const std::string &name, const plug_args&... inputs) : tag(name)
                                 {
-                                        plugin = dlopen (file.c_str(), RTLD_LAZY);
-                                        std::string str;
+                                        Plugin_Interface_Details details = plugin_info(type, name);
+                                        plugin = dlopen (details.library_path.c_str(), RTLD_LAZY);
                                         
                                         input_variadic_vector(input, inputs...);
                                         
                                         if (bool(plugin))
                                         {
-                                                initFunc = (initFuncType)dlsym(plugin, (std::string("__gambit_plugin_pluginInit_") + name + std::string("__")).c_str());
-                                                getFunc = (getFuncType)dlsym(plugin, (std::string("__gambit_plugin_getMember_") + name + std::string("__")).c_str());
-                                                bool diff = typeid(ret (args...)) != initFunc(&input);
+                                                initFunc = (initFuncType)dlsym(plugin, (std::string("__gambit_plugin_pluginInit_") + details.full_string + std::string("__")).c_str());
+                                                getFunc = (getFuncType)dlsym(plugin, (std::string("__gambit_plugin_getMember_") + details.full_string + std::string("__")).c_str());
+                                                bool diff = typeid(ret (args...)) != initFunc(tag, details.node, input);
                                                 
-                                                main = (mainFuncType)getFunc(name);
+                                                main = (mainFuncType)getFunc(details.full_string);
                                                 
                                                 if (main == 0)
                                                 {
@@ -87,11 +88,11 @@ namespace Gambit
                                                 
                                                 char *errmesg = dlerror();
                                                 if (errmesg != NULL)
-                                                        scan_err << "error loading plugin " << name_in << ":  " << errmesg << scan_end;
+                                                        scan_err << "error loading plugin " << name << ":  " << errmesg << scan_end;
                                         }
                                         else
                                         {
-                                                scan_err << "Cannot load " << file << ":  " << dlerror() << scan_end;
+                                                scan_err << "Cannot load " << details.library_path << ":  " << dlerror() << scan_end;
                                                 plugin = 0;
                                         }
                                 }
