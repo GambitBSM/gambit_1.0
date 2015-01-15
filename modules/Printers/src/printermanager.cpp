@@ -23,6 +23,15 @@
 #include "printermanager.hpp"
 #include "yaml_options.hpp"
 
+// Switch for debugging output (manual at the moment)
+#define DEBUG_MODE
+
+#ifdef DEBUG_MODE 
+  #define DBUG(x) x
+#else 
+  #define DBUG(x)
+#endif
+
 namespace Gambit
 {
   namespace Printers 
@@ -38,7 +47,7 @@ namespace Gambit
       if( printer_creators.find(tag)!=printer_creators.end() )
       {
          // If "tag" names a valid printer, create it.
-         std::cout << "PrinterManager: Creating Primary printer \"" << tag << "\"" << std::endl;
+         DBUG( std::cout << "PrinterManager: Creating Primary printer \"" << tag << "\"" << std::endl; )
          printerptr = printer_creators.at(tag)(options);
       }
       else
@@ -59,7 +68,7 @@ namespace Gambit
     PrinterManager::~PrinterManager()
     {
       // Delete all the printer objects
-      std::cout << "PrinterManager: Destructing printer..." << std::endl;
+      DBUG( std::cout << "PrinterManager: Destructing printer..." << std::endl; )
       delete printerptr;
     }
 
@@ -69,14 +78,14 @@ namespace Gambit
     {
        //TODO need some way for the scanners to change the options
        //for the auxiliary printers, e.g. so we can print to a different file
-       std::cout << "PrinterManager: Creating Auxilliary printer \"" << tag << "\" with name \"" << streamname << "\"" << std::endl;
+       DBUG( std::cout << "PrinterManager: Creating Auxilliary printer \"" << tag << "\" with name \"" << streamname << "\"" << std::endl; )
        auxprinters[streamname] = printer_creators.at(tag)(options);
     }
 
     // Retrieve pointer to named printer object
     BasePrinter* PrinterManager::get_stream(const std::string& streamname)
     {
-      std::cout << "PrinterManager: Retrieving printer stream \"" << streamname << "\"" << std::endl;
+      DBUG( std::cout << "PrinterManager: Retrieving printer stream \"" << streamname << "\"" << std::endl; )
       if(streamname=="")
       {
         return printerptr;
@@ -91,3 +100,5 @@ namespace Gambit
   }
 }
 
+#undef DBUG
+#undef DEBUG_MODE

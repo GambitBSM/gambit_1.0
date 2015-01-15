@@ -369,6 +369,20 @@ namespace __gambit_plugin_ ## plug_name ##  _namespace__                        
                 return __gambit_plugin_namespace__::myData.node[in].as<T>();                                            \
         }                                                                                                               \
                                                                                                                         \
+        YAML::Node get_inifile_node(std::string in)                                                                     \
+        {                                                                                                               \
+                if (!__gambit_plugin_namespace__::myData.node[in])                                                      \
+                {                                                                                                       \
+                        scan_err << "Missing iniFile node \""<< in << "\" needed by a gambit plugin:  \n"               \
+                                << Gambit::Scanner::Plugins::Plugin_Details(#plug_name).printMin()                      \
+                                << scan_end;                                                                            \
+                        YAML::Node node;                                                                                \
+                        return node;                                                                                    \
+                }                                                                                                       \
+                                                                                                                        \
+                return __gambit_plugin_namespace__::myData.node[in];                                                    \
+        }                                                                                                               \
+                                                                                                                        \
         template <typename T>                                                                                           \
         T get_inifile_value(std::string in, T defaults)                                                                 \
         {                                                                                                               \

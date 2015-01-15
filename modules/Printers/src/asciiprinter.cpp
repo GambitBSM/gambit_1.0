@@ -33,7 +33,7 @@
 #include "error_handlers.hpp"
 
 // Switch for debugging output (manual at the moment)
-//#define DEBUG_MODE
+#define DEBUG_MODE
 
 #ifdef DEBUG_MODE 
   #define DBUG(x) x
@@ -412,3 +412,6 @@ is a unique record for every rank/pointID pair.";
      
   } // end namespace printers
 } // end namespace Gambit
+
+#undef DBUG
+#undef DEBUG_MODE
