@@ -184,10 +184,18 @@ namespace HEPUtils {
     const std::vector<Particle*>& invisible_particles() const {
       return _invisibles;
     }
+    /// Get invisible final state particles (non-const)
+    std::vector<Particle*>& invisible_particles() {
+      return _invisibles;
+    }
 
 
     /// Get prompt electrons
     const std::vector<Particle*>& electrons() const {
+      return _electrons;
+    }
+    /// Get prompt electrons (non-const)
+    std::vector<Particle*>& electrons() {
       return _electrons;
     }
 
@@ -196,16 +204,28 @@ namespace HEPUtils {
     const std::vector<Particle*>& muons() const {
       return _muons;
     }
+    /// Get prompt muons (non-const)
+    std::vector<Particle*>& muons() {
+      return _muons;
+    }
 
 
     /// Get prompt (hadronic) taus
     const std::vector<Particle*>& taus() const {
       return _taus;
     }
+    /// Get prompt (hadronic) taus (non-const)
+    std::vector<Particle*>& taus() {
+      return _taus;
+    }
 
 
     /// Get prompt photons
     const std::vector<Particle*>& photons() const {
+      return _photons;
+    }
+    /// Get prompt photons (non-const)
+    std::vector<Particle*>& photons() {
       return _photons;
     }
 
@@ -216,6 +236,12 @@ namespace HEPUtils {
 
     /// @brief Get anti-kT 0.4 jets (not including charged leptons or photons)
     const std::vector<Jet*>& jets() const {
+      std::sort(_jets.begin(), _jets.end(), _cmpPtDesc);
+      return _jets;
+    }
+
+    /// @brief Get anti-kT 0.4 jets (not including charged leptons or photons) (non-const)
+    std::vector<Jet*>& jets()  {
       std::sort(_jets.begin(), _jets.end(), _cmpPtDesc);
       return _jets;
     }
@@ -252,6 +278,16 @@ namespace HEPUtils {
     /// Not _necessarily_ the sum over momenta of final state invisibles
     void set_missingmom(const P4& pmiss) {
       _pmiss = pmiss;
+    }
+
+    /// @brief Set the missing energy vector from the -ve sum of visible particles
+    void calc_missingmom() {
+      std::vector<Particle*> visibles = visible_particles();
+      P4 pvis;
+      for (size_t i = 0; i < visibles.size(); ++i) {
+        pvis += visibles[i]->mom();
+      }
+      set_missingmom(-pvis);
     }
 
     /// Get the missing ET in GeV
