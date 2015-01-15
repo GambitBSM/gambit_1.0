@@ -81,14 +81,16 @@ namespace Gambit
                         struct pluginData
                         {
                                 std::string name;
+                                std::string tag;
                                 YAML::Node node;
                                 std::vector <void *> inputData;
                                 std::vector <void (*)(pluginData &)> inits;
                                 std::map<std::string, factoryBase *> outputFuncs;
                                 std::type_info const &(*main_type)(void);
                                 void (*deconstructor)();
+                                bool loaded;
                                 
-                                pluginData(std::string name) : name(name), deconstructor(NULL) {}
+                                pluginData(std::string name) : name(name), deconstructor(NULL), loaded(false) {}
                                 ~pluginData()
                                 {
                                         if (deconstructor != NULL)

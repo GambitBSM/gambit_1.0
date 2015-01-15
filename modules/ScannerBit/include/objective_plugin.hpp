@@ -44,17 +44,17 @@ namespace Gambit
         }
 }
 
-#define init_inifile_value(exp, ...)    INIT_INIFILE_VALUE(exp, __VA_ARGS__) enum{}
-#define init_keys(exp)                  INIT_KEYS(exp) enum{}
+#define init_keys(exp)                  INIT_KEYS(exp)
 #define get_keys()                      GET_KEYS()
+#define set_size(size)                  SET_SIZE(size)
 #define objective_plugin(...)           OBJECTIVE_PLUGIN( __VA_ARGS__ )
 
-#define INIT_INIFILE_VALUE(exp, ...)    INITIALIZE(exp, get_inifile_value<decltype(exp)>( __VA_ARGS__ ))
 #define INIT_KEYS(exp)                  INITIALIZE(exp, GET_KEYS())
 
 #define GET_KEYS()                      get_input_value<std::vector<std::string>>(0)
+#define SET_SIZE(size)                  get_input_value<unsigned int>(1) = size
 
-#define OBJECTIVE_SETUP(mod_name)                                                                                       \
+#define OBJECTIVE_SETUP                                                                                                 \
 using namespace Gambit::Scanner;                                                                                        \
                                                                                                                         \
 inline const std::vector<std::string> add_gambit_prefix(const std::vector<std::string> &key)                            \
@@ -62,7 +62,7 @@ inline const std::vector<std::string> add_gambit_prefix(const std::vector<std::s
         std::vector<std::string> vec;                                                                                   \
         for (auto it = key.begin(), end = key.end(); it != end; it++)                                                   \
         {                                                                                                               \
-                vec.push_back(std::string( #mod_name ) + "::" + *it);                                                   \
+                vec.push_back(__gambit_plugin_namespace__::myData.tag + "::" + *it);                                    \
         }                                                                                                               \
         return vec;                                                                                                     \
 }                                                                                                                       \
@@ -89,17 +89,17 @@ inline std::vector<double> &prior_transform(const std::vector<double> &in)      
 
 #define OBJECTIVE_PLUGIN(...) ENTER_FUNC_FUNC(OBJECTIVE_PLUGIN_, ARG_N(__VA_ARGS__), __VA_ARGS__ )
 
-#define OBJECTIVE_PLUGIN_2(mod_name, mod_version)                                                                        \
+#define OBJECTIVE_PLUGIN_2(mod_name, mod_version)                                                                       \
 GAMBIT_PLUGIN(mod_name, like, mod_version)                                                                              \
 {                                                                                                                       \
-        OBJECTIVE_SETUP(mod_name)                                                                                        \
+        OBJECTIVE_SETUP                                                                                                 \
 }                                                                                                                       \
 namespace __gambit_plugin_ ## mod_name ## __t__like__v__ ## mod_version ##  _namespace__                                \
 
-#define OBJECTIVE_PLUGIN_3(mod_name, mod_version, option)                                                                \
+#define OBJECTIVE_PLUGIN_3(mod_name, mod_version, option)                                                               \
 GAMBIT_PLUGIN(mod_name, like, mod_version, option)                                                                      \
 {                                                                                                                       \
-        OBJECTIVE_SETUP(mod_name)                                                                                        \
+        OBJECTIVE_SETUP                                                                                                 \
 }                                                                                                                       \
 namespace COMBINE_3(mod_name ## __t__like__v__ ## mod_version ## __reqd_libs__,                                         \
         libs_present_ ## mod_name ## __t__like__v__ ## mod_version)                                                     \

@@ -48,7 +48,8 @@ namespace Gambit
                         private:
                                 void *plugin;
                                 std::vector<void *> input;
-                                typedef const std::type_info &(*initFuncType)(const YAML::Node &, std::vector<void *> *);                              
+                                std::string tag;
+                                typedef const std::type_info &(*initFuncType)(const std::string &, const YAML::Node &, std::vector<void *> &);                              
                                 typedef void * (*getFuncType)(std::string);
                                 typedef ret (*mainFuncType)(args...);
                                 initFuncType initFunc;
@@ -58,7 +59,7 @@ namespace Gambit
                                 
                         public:
                                 template <typename... plug_args>
-                                Plugin_Interface(const std::string &type, const std::string &name, const plug_args&... inputs)
+                                Plugin_Interface(const std::string &type, const std::string &name, const plug_args&... inputs) : tag(name)
                                 {
                                         Plugin_Interface_Details details = plugin_info(type, name);
                                         plugin = dlopen (details.library_path.c_str(), RTLD_LAZY);
@@ -69,7 +70,7 @@ namespace Gambit
                                         {
                                                 initFunc = (initFuncType)dlsym(plugin, (std::string("__gambit_plugin_pluginInit_") + details.full_string + std::string("__")).c_str());
                                                 getFunc = (getFuncType)dlsym(plugin, (std::string("__gambit_plugin_getMember_") + details.full_string + std::string("__")).c_str());
-                                                bool diff = typeid(ret (args...)) != initFunc(details.node, &input);
+                                                bool diff = typeid(ret (args...)) != initFunc(tag, details.node, input);
                                                 
                                                 main = (mainFuncType)getFunc(details.full_string);
                                                 
