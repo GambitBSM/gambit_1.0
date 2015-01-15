@@ -42,7 +42,7 @@ namespace Gambit
       DRes::DependencyResolver &dependencyResolver;
       std::vector<double> realParameters;
       Priors::CompositePrior &prior;
-      std::map<str, double> parameterMap;
+      std::unordered_map<str, double> parameterMap;
       std::map<str, primary_model_functor *> functorMap;
 			
     public:

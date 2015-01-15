@@ -87,7 +87,6 @@ namespace Gambit {
 
       //@}
 
-
       /// @name Analysis combination operations
       //@{
 

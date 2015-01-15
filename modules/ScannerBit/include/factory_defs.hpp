@@ -11,6 +11,7 @@ namespace Gambit
                 using boost::shared_ptr;
                 using boost::enable_shared_from_this;
                 
+                ///Generic function base used my the scanner.  Can be Likelihood, observables, etc.
                 template<typename T>
                 class Function_Base;
                 
@@ -34,6 +35,7 @@ namespace Gambit
                         unsigned long long int getPtID() const {return pointID;}
                 };
                 
+                ///Generic ptr that takes ownership of a Function_Base.  This is how a plugin will call a function.
                 template<typename T>
                 class scan_ptr;
                 
@@ -43,7 +45,7 @@ namespace Gambit
                 public:
                         scan_ptr(){}
                         scan_ptr(const scan_ptr &in) : shared_ptr< Function_Base<ret (args...)> >(in){}
-                        scan_ptr(scan_ptr &&in) : shared_ptr< Function_Base<ret (args...)> >(in) {}
+                        scan_ptr(scan_ptr &&in) : shared_ptr< Function_Base<ret (args...)> >(std::move(in)) {}
                         scan_ptr(void *in) : shared_ptr< Function_Base<ret (args...)> >(static_cast< Function_Base<ret (args...)>* >(in)) {}
                         
                         scan_ptr<ret (args...)> &operator=(void *in)
@@ -57,12 +59,27 @@ namespace Gambit
                                 return *this;
                         }
                         
+                        scan_ptr<ret (args...)> &operator=(const scan_ptr<ret (args...)> &in)
+                        {
+                                this->shared_ptr< Function_Base<ret (args...)> >::operator=(in);
+                        
+                                return *this;
+                        }
+                        
+                        scan_ptr<ret (args...)> &operator=(scan_ptr<ret (args...)> &&in)
+                        {
+                                this->shared_ptr< Function_Base<ret (args...)> >::operator=(std::move(in));
+                        
+                                return *this;
+                        }
+                        
                         ret operator()(const args&... params)
                         {
                                 return (*this)->operator()(params...);
                         }
                 };
                 
+                ///Pure Base class of a plugin Factory function.
                 class Factory_Base
                 {
                 public:

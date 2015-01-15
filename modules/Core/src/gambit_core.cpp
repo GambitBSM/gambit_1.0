@@ -696,7 +696,7 @@ namespace Gambit
         cout << "\nThis is GAMBIT." << endl << endl; 
 
         // Import scanner plugin info from ScannerBit 
-        plugin_mapmap scanners = Scanner::scannerInfo().getPluginsMap();
+        plugin_mapmap scanners = Scanner::Plugins::plugin_info().getPluginsMap();
 
         // Default, list-format output header
         cout << "Scanners                 Version                  Accepted options" << endl;
@@ -737,7 +737,7 @@ namespace Gambit
         cout << "\nThis is GAMBIT." << endl << endl; 
 
         // Import scanner plugin info from ScannerBit 
-        plugin_mapmap scanners = Scanner::scannerInfo().getPluginsMap();
+        plugin_mapmap scanners = Scanner::Plugins::plugin_info().getPluginsMap();
 
         // Default, list-format output header
         cout << "Test Functions           Version                  Accepted options" << endl;

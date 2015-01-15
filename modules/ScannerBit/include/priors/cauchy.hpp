@@ -49,7 +49,7 @@ namespace Gambit
                         Cauchy(const std::vector<std::string>& param, const Options& options);
                         
                         // Transformation from unit interval to the Gaussian
-                        void transform(const std::vector <double> &unitpars, std::map <std::string, double> &outputMap) const
+                        void transform(const std::vector <double> &unitpars, std::unordered_map <std::string, double> &outputMap) const
                         {
                                 std::vector<double> vec(unitpars.size());
                                 

@@ -125,8 +125,7 @@ namespace Gambit
                         if ( not options.hasKey("range") )
                         {
                                 std::stringstream err;
-                                err << "Error! No 'range' keyword found in options supplied for building RangePrior1D prior (i.e. some instance of this, probably 'flat' or 'log')"<<std::endl;
-                                Scanner::scan_error().raise(LOCAL_INFO, err.str());
+                                scan_err << "Error! No 'range' keyword found in options supplied for building RangePrior1D prior (i.e. some instance of this, probably 'flat' or 'log')" << scan_end;
                                 //std::cout<<"Dumping content of options:"<<std::endl;
                                 //options.dumpcontents();
                         }
@@ -141,8 +140,7 @@ namespace Gambit
                         {
                                 /// TODO: insert proper gambit error
                                 std::stringstream err;
-                                err << "Invalid input to some prior derived from RangePrior1D (in constructor): 'myparameters' must be a vector of size 1! (has size="<<param.size()<<")"<< std::endl;
-                                Scanner::scan_error().raise(LOCAL_INFO, err.str());
+                                scan_err << "Invalid input to some prior derived from RangePrior1D (in constructor): 'myparameters' must be a vector of size 1! (has size=" << param.size() << ")" << scan_end;
                                 //exit(1);
                         }
                         lower = range.first;
@@ -166,7 +164,7 @@ namespace Gambit
                 
                 // Transformation from unit interval to specified range
                 // (need to use vectors to be compatible with BasePrior virtual function)
-                void transform(const std::vector<double> &unitpars, std::map<std::string,double> &output) const
+                void transform(const std::vector<double> &unitpars, std::unordered_map<std::string,double> &output) const
                 {
                         output[myparameter] = Func(unitpars[0],lower,upper);
                 }

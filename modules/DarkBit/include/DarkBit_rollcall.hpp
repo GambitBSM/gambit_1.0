@@ -190,6 +190,64 @@ START_MODULE
 
   // Cascade decays --------------------------------------------
 
+  // Function returning an empty, mutable list of final states to search for.
+  // This list will be populated (modified) by other capabilities, and returned by cascadeMC_FinalStates once filled.
+  #define CAPABILITY cascadeMC_FinalStates_Constructor
+  START_CAPABILITY
+    #define FUNCTION cascadeMC_FinalStates_Constructor
+      START_FUNCTION(Gambit::DarkBit::mutableFinalStateContainer)  
+    #undef FUNCTION                                                       
+  #undef CAPABILITY   
+
+  // Functions adding various particles to final state list. Modifies cascadeMC_FinalStates_Constructor.
+  // NEEDS_MANAGER_WITH_CAPABILITY(cascadeMC_FinalStates) must be present to ensure that it is run early enough.
+  #define CAPABILITY cascadeMC_FinalStates_Enable_gamma
+  START_CAPABILITY
+    #define FUNCTION cascadeMC_FinalStates_Enable_gamma
+      START_FUNCTION(bool)
+      DEPENDENCY(cascadeMC_FinalStates_Constructor, Gambit::DarkBit::mutableFinalStateContainer)       
+      NEEDS_MANAGER_WITH_CAPABILITY(cascadeMC_FinalStates) 
+    #undef FUNCTION                                                       
+  #undef CAPABILITY    
+
+  #define CAPABILITY cascadeMC_FinalStates_Enable_test6
+  START_CAPABILITY
+    #define FUNCTION cascadeMC_FinalStates_Enable_test6
+      START_FUNCTION(bool)
+      DEPENDENCY(cascadeMC_FinalStates_Constructor, Gambit::DarkBit::mutableFinalStateContainer)       
+      NEEDS_MANAGER_WITH_CAPABILITY(cascadeMC_FinalStates) 
+    #undef FUNCTION                                                       
+  #undef CAPABILITY 
+  // Function allowing adding or removing final states from the list through yaml input.
+  #define CAPABILITY cascadeMC_FinalStates_SetThroughYaml
+  START_CAPABILITY
+    #define FUNCTION cascadeMC_FinalStates_SetThroughYaml
+      START_FUNCTION(bool)
+      DEPENDENCY(cascadeMC_FinalStates_Constructor, Gambit::DarkBit::mutableFinalStateContainer)       
+      NEEDS_MANAGER_WITH_CAPABILITY(cascadeMC_FinalStates) 
+    #undef FUNCTION                                                       
+  #undef CAPABILITY 
+
+  // Function returning all final state particles to search for in cascade decays.
+  // This is a single-iteration loop manager that should manage all capabilities that add new final states to the list.
+  // This ensures that those capabilities are evaluated before the cascadeMC_FinalStates capability.
+  #define CAPABILITY cascadeMC_FinalStates
+  START_CAPABILITY
+    #define FUNCTION cascadeMC_FinalStates
+      START_FUNCTION(std::vector<std::string>, CAN_MANAGE_LOOPS)  
+      DEPENDENCY(cascadeMC_FinalStates_Constructor, Gambit::DarkBit::mutableFinalStateContainer)      
+    #undef FUNCTION                                                       
+  #undef CAPABILITY 
+
+  // Print list of final states for debug purposes
+  #define CAPABILITY cascadeMC_printFinalStates
+  START_CAPABILITY
+    #define FUNCTION cascadeMC_printFinalStates
+      START_FUNCTION(bool)      
+      DEPENDENCY(cascadeMC_FinalStates,std::vector<std::string>)      
+    #undef FUNCTION                                                       
+  #undef CAPABILITY 
+
   // Function specifying initial states for the cascade decays
   #define CAPABILITY cascadeMC_ChainList
   START_CAPABILITY
@@ -204,22 +262,25 @@ START_MODULE
     #define FUNCTION cascadeMC_DecayTable
       START_FUNCTION(Gambit::DarkBit::DecayChain::DecayTable)
       DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)
+      DEPENDENCY(SimYieldTable, Gambit::DarkBit::SimYieldTable)       
     #undef FUNCTION                                                       
   #undef CAPABILITY    
 
   // Loop manager for cascade decays
-  
   #define CAPABILITY cascadeMC_LoopManagement
   START_CAPABILITY
     #define FUNCTION cascadeMC_LoopManager
       START_FUNCTION(void, CAN_MANAGE_LOOPS)  
       DEPENDENCY(cascadeMC_ChainList,std::vector<std::string>)
-      // FIXME: Hack to make sure cascadeMC_DecayTable actually runs.
+      // This dependency ensures that final states can always be added through Yaml input.
+      DEPENDENCY(cascadeMC_FinalStates_SetThroughYaml, bool)      
+      // FIXME: Hack to make sure these capabilities are run before the loop
       DEPENDENCY(cascadeMC_DecayTable, Gambit::DarkBit::DecayChain::DecayTable)
+      DEPENDENCY(SimYieldTable, Gambit::DarkBit::SimYieldTable)      
+      DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)        
     #undef FUNCTION                                                       
   #undef CAPABILITY    
-  
-  
+    
   // Function selecting initial state for decay chain
   #define CAPABILITY cascadeMC_InitialState
   START_CAPABILITY
@@ -234,7 +295,7 @@ START_MODULE
   #define CAPABILITY cascadeMC_EventCount
   START_CAPABILITY
     #define FUNCTION cascadeMC_EventCount
-      START_FUNCTION(Gambit::DarkBit::stringUnsignedMap)
+      START_FUNCTION(Gambit::DarkBit::stringIntMap)
       DEPENDENCY(cascadeMC_InitialState, std::string)
       NEEDS_MANAGER_WITH_CAPABILITY(cascadeMC_LoopManagement) 
     #undef FUNCTION          
@@ -258,9 +319,25 @@ START_MODULE
       START_FUNCTION(Gambit::DarkBit::simpleHistContainter)
       DEPENDENCY(cascadeMC_InitialState, std::string)
       DEPENDENCY(cascadeMC_ChainEvent, Gambit::DarkBit::DecayChain::ChainContainer)
+      DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)      
+      DEPENDENCY(SimYieldTable, Gambit::DarkBit::SimYieldTable)      
+      DEPENDENCY(cascadeMC_FinalStates,std::vector<std::string>)       
       NEEDS_MANAGER_WITH_CAPABILITY(cascadeMC_LoopManagement) 
     #undef FUNCTION          
   #undef CAPABILITY
+
+  // Function requesting and returning gamma ray spectra from cascade decays.
+  // Dependency on cascadeMC_FinalStates_Enable_gamma makes sure the spectrum is calculated.
+  #define CAPABILITY cascadeMC_gammaSpectra
+  START_CAPABILITY
+    #define FUNCTION cascadeMC_gammaSpectra
+      START_FUNCTION(Gambit::DarkBit::stringFunkMap)
+      DEPENDENCY(cascadeMC_FinalStates_Enable_gamma, bool)
+      DEPENDENCY(cascadeMC_ChainList,std::vector<std::string>)      
+      DEPENDENCY(cascadeMC_FinalStates,std::vector<std::string>)       
+      DEPENDENCY(cascadeMC_Histograms, Gambit::DarkBit::simpleHistContainter)       
+    #undef FUNCTION                                                       
+  #undef CAPABILITY 
 
 
   // Function for printing test result of cascade decays
@@ -268,8 +345,9 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION cascadeMC_PrintResult
       START_FUNCTION(bool)
+      DEPENDENCY(cascadeMC_FinalStates_Enable_test6, bool)      
       DEPENDENCY(cascadeMC_Histograms, Gambit::DarkBit::simpleHistContainter)
-      DEPENDENCY(cascadeMC_EventCount, Gambit::DarkBit::stringUnsignedMap)
+      DEPENDENCY(cascadeMC_EventCount, Gambit::DarkBit::stringIntMap)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -280,6 +358,7 @@ START_MODULE
     #define FUNCTION chain_test
       START_FUNCTION(double)
       DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)
+      DEPENDENCY(SimYieldTable, Gambit::DarkBit::SimYieldTable)           
     #undef FUNCTION
   #undef CAPABILITY
 

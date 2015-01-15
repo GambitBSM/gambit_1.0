@@ -37,41 +37,19 @@ namespace Gambit
 {
         namespace Scanner
         {       
-                class IniFileInterface_Base
-                {
-                public:
-                        virtual const std::string pluginName() const = 0;
-                        virtual const std::string fileName() const = 0;
-                        virtual const std::string getValue(const std::string &in) const = 0;
-                        virtual YAML::Node getNode(const std::string &str) const = 0;
-                        virtual ~IniFileInterface_Base() {};
-                };
-                
-                struct Proto_Plugin_Details
-                {
-                        std::string plugin;
-                        std::string version;
-                        std::string library;
-                        
-                        Proto_Plugin_Details() : plugin(""), version(""), library("") {}
-                };
-                
                 class Scan_Manager
                 {
                 private:
                         const Factory_Base *factory;
                         const Options *options;
                         const Priors::CompositePrior *prior;
-                        const Plugins::Plugin_Loader *plugins;
                         printer_interface *printerInterface;
-                        std::map<std::string, Proto_Plugin_Details> selectedPlugins;
 
                 public:
-                        Scan_Manager (const Factory_Base&, const Options&, const Priors::CompositePrior&, const Plugins::Plugin_Loader&, printer_interface* = 0);
+                        Scan_Manager (const Factory_Base&, const Options&, const Priors::CompositePrior&, printer_interface* = 0);
                         ~Scan_Manager();
                         int Run();                       
                 };             
-
         }
 }
 

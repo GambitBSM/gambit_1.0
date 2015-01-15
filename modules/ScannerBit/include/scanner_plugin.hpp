@@ -25,37 +25,16 @@
 #include "scanner_utils.hpp"
 #include "plugin_defs.hpp"
 #include "plugin_macros.hpp"
-#include "plugin_details.hpp"
 #include "factory_defs.hpp"
 
 #include <yaml-cpp/yaml.h>
 
-namespace Gambit
-{
-        /*ScannerBit specific stuff.*/
-        namespace Scanner
-        {       
-                /*Inifile Interface*/
-                class IniFileInterface
-                {
-                public:
-                        virtual const std::string pluginName() const = 0;
-                        virtual const std::string fileName() const = 0;
-                        virtual const std::string getValue(const std::string &in) const = 0;
-                        virtual YAML::Node getNode(const std::string &str) const = 0;
-                        virtual ~IniFileInterface() = 0;
-                };
-        }
-}
-
-#define init_inifile_value(exp, ...)    INIT_INIFILE_VALUE(exp, __VA_ARGS__)
 #define init_dimension(exp)             INIT_DIMENSION(exp)
 #define init_functor(exp, ...)          INIT_FUNCTOR(exp, __VA_ARGS__)
 #define get_dimension()                 GET_DIMENSION()
 #define get_functor(...)                GET_FUNCTOR( __VA_ARGS__ )
 #define scanner_plugin(...)             SCANNER_PLUGIN(__VA_ARGS__)
 
-#define INIT_INIFILE_VALUE(exp, ...)    INITIALIZE(exp, get_inifile_value<decltype(exp)>( __VA_ARGS__ ))
 #define INIT_DIMENSION(exp)             INITIALIZE(exp, GET_DIMENSION())
 #define INIT_FUNCTOR(exp, ...)          INITIALIZE(exp, GET_FUNCTOR(__VA_ARGS__))
 
@@ -64,31 +43,6 @@ namespace Gambit
 
 #define SCANNER_SETUP                                                                                                   \
 using namespace Gambit::Scanner;                                                                                        \
-template <typename T>                                                                                                   \
-T get_inifile_value(std::string in)                                                                                     \
-{                                                                                                                       \
-        YAML::Node conv = (get_input_value<IniFileInterface>(2)).getNode(in);                                           \
-        if (conv.IsNull())                                                                                              \
-        {                                                                                                               \
-                scan_err << "Missing iniFile entry needed by a gambit plugin \n"                                        \
-                        << Gambit::Scanner::Plugins::Plugin_Details(__gambit_plugin_namespace__::myData.name).printMin()\
-                        << scan_end;                                                                                    \
-        }                                                                                                               \
-                                                                                                                        \
-        return conv.as<T>();                                                                                            \
-}                                                                                                                       \
-                                                                                                                        \
-template <typename T>                                                                                                   \
-T get_inifile_value(std::string in, T defaults)                                                                         \
-{                                                                                                                       \
-        YAML::Node conv = (get_input_value<IniFileInterface>(2)).getNode(in);                                           \
-        if (conv.IsNull())                                                                                              \
-        {                                                                                                               \
-                return defaults;                                                                                        \
-        }                                                                                                               \
-                                                                                                                        \
-        return conv.as<T>();                                                                                            \
-}                                                                                                                       \
 /*Gambit::Scanner::scan::ScanFileOutput scan_ios(get_keys(), &get_input_value<PriorTransform>(2));*/                    \
 
 /*#define SET_SCAN_IOS(file) 

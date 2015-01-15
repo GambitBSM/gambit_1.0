@@ -21,10 +21,10 @@
 #include <utility>
 #include <algorithm>
 
-#include "function_plugin.hpp"
+#include "objective_plugin.hpp"
 #include "cholesky.hpp"
 
-function_plugin(uniform, version(1,0,0))
+objective_plugin(uniform, version(1,0,0))
 {
         double plugin_main (const std::vector<double> &vec)
         {
@@ -42,7 +42,7 @@ function_plugin(uniform, version(1,0,0))
         }
 }
 
-function_plugin(gaussian, version(1, 0, 0))
+objective_plugin(gaussian, version(1, 0, 0))
 {
         Gambit::Cholesky chol;
         std::vector <double> mean;
@@ -105,9 +105,8 @@ function_plugin(gaussian, version(1, 0, 0))
         }
 }
 
-function_plugin(EggBox, version(1, 0, 0))
+objective_plugin(EggBox, version(1, 0, 0))
 {
-
         std::vector <double> params;
         std::pair <double, double> length;
         unsigned int dim;
@@ -129,5 +128,25 @@ function_plugin(EggBox, version(1, 0, 0))
                 params[1] *= length.second;
                 
                 return pow((2.0 + cos(params[0]*M_PI_2)*cos(params[1]*M_PI_2)), 5.0);
+        }
+}
+
+objective_plugin(flat_prior, version(1, 0, 0))
+{
+        std::vector<std::string> keys;
+        std::pair<double, double> range;
+        
+        plugin_constructor
+        {
+                keys = get_keys();
+                set_size(keys.size());
+                range = get_inifile_value<decltype(range)>("range", decltype(range)(0.0, 1.0));
+        }
+        
+        void plugin_main(const std::vector<double> &unitpars, std::unordered_map<std::string, double> &outputMap)
+        {
+                auto u_it = unitpars.begin();
+                for (auto it = keys.begin(), end = keys.end(); it != end; it++)
+                        outputMap[*it] = range.first + (range.second - range.first)*(*u_it++);
         }
 }

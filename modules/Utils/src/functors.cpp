@@ -26,6 +26,10 @@
 ///  \date 2013 July, Sep
 ///  \date 2014 Jan
 ///
+///  \author Lars A. Dal  
+///          (l.a.dal@fys.uio.no)
+///  \date 2015 Jan
+///
 ///  *********************************************
 
 #include <chrono>
@@ -91,6 +95,7 @@ namespace Gambit
 
     /// Virtual calculate(); needs to be redefined in daughters.
     void functor::calculate() {}
+    void functor::force_calculate() {}
 
     /// Interfaces for runtime optimization
     /// Need to be implemented by daughters
@@ -648,7 +653,9 @@ namespace Gambit
          it != myNestedFunctorList.end(); ++it)
         {
           (*it)->setIteration(iteration);   // Tell the nested functor what iteration this is.
-          (*it)->reset_and_calculate();     // Reset the nested functor so that it recalculates, then set it off
+          //(*it)->reset_and_calculate();     // Reset the nested functor so that it recalculates, then set it off          
+          // Temporary, incomplete fix for theadsafety issues
+          (*it)->force_calculate();     // Reset the nested functor so that it recalculates, then set it off          
         }
       }
     }
@@ -656,9 +663,15 @@ namespace Gambit
     // Initialise the array holding the current iteration(s) of this functor.
     void module_functor_common::init_myCurrentIteration()
     {
-      int nslots = (iRunNested ? globlMaxThreads : 1); // Set the number of slots to the max number of threads allowed iff this functor can run in parallel
-      myCurrentIteration = new int[nslots];            // Reserve enough space to hold as many iteration numbers as there are slots (threads) allowed
-      std::fill(myCurrentIteration, myCurrentIteration+nslots, 0); // Zero them to start off
+      #pragma omp critical(module_functor_init_myCurrentIteration)
+      {
+        if(myCurrentIteration==NULL)
+        {
+          int nslots = (iRunNested ? globlMaxThreads : 1); // Set the number of slots to the max number of threads allowed iff this functor can run in parallel
+          myCurrentIteration = new int[nslots];            // Reserve enough space to hold as many iteration numbers as there are slots (threads) allowed
+          std::fill(myCurrentIteration, myCurrentIteration+nslots, 0); // Zero them to start off
+        }
+      }
     }
 
     /// Tell the manager of the loop in which this functor runs that it is time to break the loop.
@@ -1327,7 +1340,7 @@ namespace Gambit
       runtime = end-start;
       runtime_average = runtime_average*(1-fadeRate) + fadeRate*runtime.count();
       pInvalidation = pInvalidation*(1-fadeRate) + fadeRate*FUNCTORS_BASE_INVALIDATION_RATE;
-      if (not omp_in_parallel()) cout << "Runtime " << myName << ": " << runtime.count() << " s (" << runtime_average << " s)" << endl;
+      //if (not omp_in_parallel()) cout << "Runtime " << myName << ": " << runtime.count() << " s (" << runtime_average << " s)" << endl;
       needs_recalculating = false;
     }
 
@@ -1387,13 +1400,40 @@ namespace Gambit
       }
 
     }
+    
+    /// Calculate method
+    template <typename TYPE>
+    void module_functor<TYPE>::force_calculate()
+    {
+      if (myValue == NULL) init_myValue(); // Init memory if this is the first run through.
+      //if (needs_recalculating)             // Do the actual calculation if required.
+      //{
+        //logger().entering_module(myLogTag);
+        //double nsec = 0, sec = 0;
+        //this->startTiming(nsec,sec);                       //Begin timing function evaluation
+        try
+        {
+          this->myFunction(myValue[omp_get_thread_num()]); //Run and place result in the appropriate slot in myValue
+        }
+        catch (invalid_point_exception& e)
+        {
+          acknowledgeInvalidation(e);
+          throw(e);
+        }
+        //this->finishTiming(nsec,sec);                      //Stop timing function evaluation
+        //logger().leaving_module();
+      //}
+    }    
 
     // Initialise the memory of this functor.
     template <typename TYPE>
     void module_functor<TYPE>::init_myValue()
     {
-      // Reserve enough space to hold as many results as there are slots (threads) allowed
-      myValue = new TYPE[(iRunNested ? globlMaxThreads : 1)];
+      #pragma omp critical(module_functor_init_myValue)
+      {
+        // Reserve enough space to hold as many results as there are slots (threads) allowed
+        if(myValue==NULL) myValue = new TYPE[(iRunNested ? globlMaxThreads : 1)];
+      }
     }
 
     /// Operation (return value)
@@ -1466,6 +1506,27 @@ namespace Gambit
         this->finishTiming(nsec,sec);
         logger().leaving_module();
       }
+    }
+
+    void module_functor<void>::force_calculate()
+    {
+      //if (needs_recalculating)
+      //{
+        //logger().entering_module(myLogTag);
+        //double nsec = 0, sec = 0;
+        //this->startTiming(nsec,sec);
+        try
+        {
+          this->myFunction();
+        }
+        catch (invalid_point_exception& e)
+        {
+          acknowledgeInvalidation(e);
+          throw(e);
+        }
+        //this->finishTiming(nsec,sec);
+        //logger().leaving_module();
+      //}
     }
 
     /// Blank print methods

@@ -2,7 +2,6 @@ set(scannerbit_sources
                  src/cauchy.cpp
                  src/composite.cpp
                  src/gaussian.cpp
-                 src/inifile_interface.cpp
                  src/plugin_comparators.cpp
                  src/plugin_loader.cpp
                  src/scan.cpp
@@ -13,8 +12,6 @@ set(scannerbit_headers
                  include/cholesky.hpp
                  include/factory_registry.hpp
                  include/factory_defs.hpp
-                 include/function_plugin.hpp
-                 include/inifile_interface.hpp
                  include/plugin_comparators.hpp
                  include/plugin_defs.hpp
                  include/plugin_details.hpp
@@ -31,12 +28,14 @@ set(scannerbit_headers
                  include/scanner_plugin.hpp
                  include/scanner_utils.hpp
                  include/scannerbit.hpp
+                 include/objective_plugin.hpp
                  include/priors/cauchy.hpp
                  include/priors/composite.hpp
                  include/priors/dummy.hpp
                  include/priors/fixed_same_as.hpp
                  include/priors/flat_log.hpp
                  include/priors/gaussian.hpp
+                 include/priors/plugin.hpp
 )
 
 set(scanner_plugin_sources
