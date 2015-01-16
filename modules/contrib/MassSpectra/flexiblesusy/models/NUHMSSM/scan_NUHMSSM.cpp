@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Thu 4 Dec 2014 21:45:33
+// File generated at Fri 16 Jan 2015 14:39:22
 
 #include "NUHMSSM_input_parameters.hpp"
 #include "NUHMSSM_spectrum_generator.hpp"
@@ -28,6 +28,7 @@
 #include "logger.hpp"
 
 #include <iostream>
+#include <cstring>
 
 namespace flexiblesusy {
 
@@ -52,7 +53,7 @@ void set_command_line_parameters(int argc, char* argv[],
                                  NUHMSSM_input_parameters& input)
 {
    for (int i = 1; i < argc; ++i) {
-      const std::string option(argv[i]);
+      const char* option = argv[i];
 
       if(Command_line_options::get_parameter_value(option, "--m0=", input.m0))
          continue;
@@ -76,7 +77,7 @@ void set_command_line_parameters(int argc, char* argv[],
          continue;
 
       
-      if (option == "--help" || option == "-h") {
+      if (strcmp(option,"--help") == 0 || strcmp(option,"-h") == 0) {
          print_usage();
          exit(EXIT_SUCCESS);
       }
