@@ -21,7 +21,7 @@
  * @brief contains wrapper class for model class in SLHA convention
  */
 
-// File generated at Wed 3 Dec 2014 11:09:35
+// File generated at Fri 16 Jan 2015 13:14:25
 
 #ifndef MSSM_TWO_SCALE_SLHA_H
 #define MSSM_TWO_SCALE_SLHA_H
@@ -29,7 +29,6 @@
 #include "MSSM_two_scale_model.hpp"
 #include "MSSM_physical.hpp"
 #include "MSSM_model_slha.hpp"
-#include "wrappers.hpp"
 
 namespace flexiblesusy {
 
@@ -48,6 +47,7 @@ public:
    virtual ~MSSM_slha();
 
    virtual void clear();
+   void convert_to_slha(); ///< converts pole masses to SLHA convention
    const MSSM_physical& get_physical_slha() const; ///< returns pole masses to SLHA convention
    MSSM_physical& get_physical_slha(); ///< returns pole masses to SLHA convention
 
@@ -102,11 +102,11 @@ public:
    const Eigen::Matrix<double,2,2>& get_ZP_pole_slha() const { return physical_slha.ZP; }
    double get_ZP_pole_slha(int i, int k) const { return physical_slha.ZP(i,k); }
    const Eigen::Matrix<std::complex<double>,4,4>& get_ZN_pole_slha() const { return physical_slha.ZN; }
-   double get_ZN_pole_slha(int i, int k) const { return Re(physical_slha.ZN(i,k)); }
+   const std::complex<double>& get_ZN_pole_slha(int i, int k) const { return physical_slha.ZN(i,k); }
    const Eigen::Matrix<std::complex<double>,2,2>& get_UM_pole_slha() const { return physical_slha.UM; }
-   double get_UM_pole_slha(int i, int k) const { return Re(physical_slha.UM(i,k)); }
+   const std::complex<double>& get_UM_pole_slha(int i, int k) const { return physical_slha.UM(i,k); }
    const Eigen::Matrix<std::complex<double>,2,2>& get_UP_pole_slha() const { return physical_slha.UP; }
-   double get_UP_pole_slha(int i, int k) const { return Re(physical_slha.UP(i,k)); }
+   const std::complex<double>& get_UP_pole_slha(int i, int k) const { return physical_slha.UP(i,k); }
    const Eigen::Matrix<std::complex<double>,3,3>& get_ZEL_pole_slha() const { return physical_slha.ZEL; }
    const std::complex<double>& get_ZEL_pole_slha(int i, int k) const { return physical_slha.ZEL(i,k); }
    const Eigen::Matrix<std::complex<double>,3,3>& get_ZER_pole_slha() const { return physical_slha.ZER; }
@@ -123,8 +123,6 @@ public:
 
 private:
    MSSM_physical physical_slha; ///< contains the pole masses and mixings in slha convention
-
-   void convert_to_slha(); ///< converts pole masses to SLHA convention
 };
 
 } // namespace flexiblesusy

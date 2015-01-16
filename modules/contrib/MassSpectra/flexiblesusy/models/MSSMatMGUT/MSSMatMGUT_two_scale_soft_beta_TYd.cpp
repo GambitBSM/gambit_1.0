@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Wed 3 Dec 2014 11:34:15
+// File generated at Fri 16 Jan 2015 13:02:43
 
 #include "MSSMatMGUT_two_scale_soft_parameters.hpp"
 #include "wrappers.hpp"

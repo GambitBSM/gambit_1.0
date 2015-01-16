@@ -32,4 +32,4 @@ double MaxRelDiff(double a, double b)
    return fabs(1.0 - std::min(sTin, sTout) / maxx);
 }
 
-}
+} // namespace flexiblesusy

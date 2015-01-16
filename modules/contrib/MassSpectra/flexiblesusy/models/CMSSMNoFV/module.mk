@@ -18,7 +18,7 @@ CMSSMNoFV_TWO_SCALE_MK := \
 		$(CMSSMNoFV_TWO_SCALE_SOFT_MK)
 
 CMSSMNoFV_SLHA_INPUT := \
-
+		$(DIR)/LesHouches.in.CMSSMNoFV
 
 CMSSMNoFV_GNUPLOT := \
 		$(DIR)/CMSSMNoFV_plot_rgflow.gnuplot \
@@ -142,6 +142,7 @@ SARAH_MODEL_FILES_CMSSMNoFV := \
 endif
 
 .PHONY:         all-$(MODNAME) clean-$(MODNAME) clean-$(MODNAME)-src \
+		clean-$(MODNAME)-dep clean-$(MODNAME)-obj \
 		distclean-$(MODNAME) run-metacode-$(MODNAME) \
 		pack-$(MODNAME)-src
 

@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Wed 3 Dec 2014 11:46:01
+// File generated at Fri 16 Jan 2015 12:36:20
 
 #include "MSSMNoFVatMGUT_slha_io.hpp"
 #include "MSSMNoFVatMGUT_input_parameters.hpp"
@@ -264,14 +264,6 @@ void MSSMNoFVatMGUT_slha_io::write_to_file(const std::string& file_name)
 }
 
 /**
- * Read (DR-bar) model parameter input scale from EXTPAR entry 0
- */
-double MSSMNoFVatMGUT_slha_io::get_input_scale() const
-{
-   return slha_io.get_extpar().input_scale;
-}
-
-/**
  * Read (DR-bar) model parameter output scale from MODSEL entry 12
  */
 double MSSMNoFVatMGUT_slha_io::get_parameter_output_scale() const
@@ -288,7 +280,6 @@ void MSSMNoFVatMGUT_slha_io::read_from_file(const std::string& file_name)
 {
    slha_io.read_from_file(file_name);
    slha_io.read_modsel();
-   slha_io.read_extpar();
 }
 
 /**

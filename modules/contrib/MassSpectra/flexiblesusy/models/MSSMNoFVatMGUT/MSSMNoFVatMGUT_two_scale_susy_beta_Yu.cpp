@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Wed 3 Dec 2014 11:44:48
+// File generated at Fri 16 Jan 2015 12:35:04
 
 #include "MSSMNoFVatMGUT_two_scale_susy_parameters.hpp"
 #include "wrappers.hpp"

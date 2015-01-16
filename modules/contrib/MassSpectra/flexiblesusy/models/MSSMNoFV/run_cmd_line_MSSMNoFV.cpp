@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Wed 3 Dec 2014 10:52:18
+// File generated at Fri 16 Jan 2015 12:55:38
 
 #include "MSSMNoFV_input_parameters.hpp"
 #include "MSSMNoFV_spectrum_generator.hpp"
@@ -27,6 +27,7 @@
 #include "logger.hpp"
 
 #include <iostream>
+#include <cstring>
 
 namespace flexiblesusy {
 
@@ -76,7 +77,7 @@ void set_command_line_parameters(int argc, char* argv[],
                                  MSSMNoFV_input_parameters& input)
 {
    for (int i = 1; i < argc; ++i) {
-      const std::string option(argv[i]);
+      const char* option = argv[i];
 
       if(Command_line_options::get_parameter_value(option, "--TanBeta=", input.TanBeta))
          continue;
@@ -175,7 +176,7 @@ void set_command_line_parameters(int argc, char* argv[],
          continue;
 
       
-      if (option == "--help" || option == "-h") {
+      if (strcmp(option,"--help") == 0 || strcmp(option,"-h") == 0) {
          print_usage();
          exit(EXIT_SUCCESS);
       }
@@ -215,8 +216,13 @@ int main(int argc, char* argv[])
    const int exit_code = spectrum_generator.get_exit_code();
    const MSSMNoFV_slha<algorithm_type> model(spectrum_generator.get_model());
 
+   MSSMNoFV_scales scales;
+   scales.HighScale = spectrum_generator.get_high_scale();
+   scales.SUSYScale = spectrum_generator.get_susy_scale();
+   scales.LowScale  = spectrum_generator.get_low_scale();
+
    // SLHA output
-   SLHAea::Coll slhaea(MSSMNoFV_slha_io::fill_slhaea(model, oneset));
+   SLHAea::Coll slhaea(MSSMNoFV_slha_io::fill_slhaea(model, oneset, scales));
 
    std::cout << slhaea;
 

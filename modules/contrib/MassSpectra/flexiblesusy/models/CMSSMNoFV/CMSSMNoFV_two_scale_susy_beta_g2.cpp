@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Wed 3 Dec 2014 13:11:21
+// File generated at Fri 16 Jan 2015 12:43:44
 
 #include "CMSSMNoFV_two_scale_susy_parameters.hpp"
 #include "wrappers.hpp"
