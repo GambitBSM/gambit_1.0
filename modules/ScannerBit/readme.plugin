@@ -1,0 +1,130 @@
+How to make a scanner plugin.  
+
+Lets start with an example of a scanner plugin, after which 
+I'll explain what each macro does.  The relevant inifile
+entry is included at the end.
+
+Quick discription of this example:
+
+This example declares a scanner named "my_cool_scanner" of 
+version "0.0.0-beta".  Inside it, it declares a "scan_ptr"
+(named "loglike") which is a function of the form
+"double (const vector<double> &)", int num which
+will be set to the inifile entry "number", and an int
+"dim" which will be set to the dimension.  The actual
+scanner will be ran in "int plugin_main()".
+
+////////////////////// START PLUGIN DECLARATION ///////////////////////////
+
+#include "scanner_plugin.hpp"
+
+//declare a plugin of name "my_cool_scanner" of version "0.0.0-beta"
+scanner_plugin(my_cool_scanner, version(0, 0, 0, beta))
+{
+        //declare a scanner function "loglike" that inputs a "std::vector<double> &" and outout a "double"
+        scan_ptr<double (const std::vector<double> &)> loglike;
+        
+        int num, dim;
+        
+        //this macro runs when the plugin is loaded
+        plugin_constructor
+        {
+                //Get a functor corresponding to the purpose "Likelihood".
+                likelihood = get_functor("Likelihood");
+                
+                //get the inifile entry "number" with the default value of "0"
+                num = get_inifile_value<int>("number", 0);
+                
+                //get the dimension of the parameter space.
+                dim = get_dimension();
+        }
+        
+        //main function that will run the scanner.
+        int plugin_main(void)
+        {
+                std::vector<double> a(dim);
+                for (int j = 0; j < num; j++)
+                {
+                        for (int i = 0; i < ma; i++)
+                        {
+                                a[i] = Gambit::Random::draw();
+                        }
+                        loglike(a);
+                }
+                
+                return 0;
+        }
+        
+        //this runs when the plugin is closed
+        plugin_deconstructor
+        {
+                std::cout << "no more plugin" << std::endl;
+        }
+}
+
+///////////////////// END PLUGIN DECLARATION ///////////////////////////
+
+Here are the different macros and functions that can be used:
+
+scanner_plugin(plugin_name, version, required_library) {...}
+-- declared a plugin with the name "plugin_name" of
+   version "version".  the third parameter is optional.
+   If it is set, it will require that the required 
+   libraries are loaded.
+   
+version(majar, minor, patch, release)
+-- declares the version number to be "major.minor.patch-release"
+   major, minor, and patch must be integers.  release is optional.
+   
+ret plugin_main(args... params) {...}
+-- The function that is called when the plugin is run.  For the
+   scanner, it must be of the form "int plugin_name(void)"
+   
+plugin_constructor {...}
+-- This function will be ran when the plugin to loaded.
+
+plugin_deconstructor {...}
+-- This function will be ran when the plugin to closed.
+
+get_inifile_value<ret_type>("tag", default);
+-- Gets the inifile value corresponding to the tag "tag".
+   If "tag" is not specified, then the results defaults
+   to "default".  The default entry is optional. If
+   the default entry and the "tag" infile entry is not
+   specified, ScannerBit will throw an error.
+   
+get_dimension()
+-- Gets the dimension of the unit hypercube being explored.
+
+get_functor("purpose")
+-- gets the functor corresponding to the purpose "purpose"
+
+scan_ptr<ret (args...)>
+-- a container functor of the form "ret scan_ptr(args ...)".
+   Used to contain the output of "get_functor".
+   
+   
+Here is an example of an inifile entry for a scanner.
+   
+#################### inifile entries ####################
+
+Scanner:
+
+  use_scanner_plugin: my_plugin_tag
+  
+  plugins:
+  
+    my_plugin_tag:
+      plugin: my_cool_scanner
+      options:
+        number: 1
+
+#################### end infile entry ###################
+
+The plugins are declared under the "plugins" tag in the
+section section.  Each plugin is specified by an unique
+tag (in this case "my_plugin_tag").  The plugin name is
+specified by the "plugin" tag.  The options for that
+plugin either specified under the plugin tag or the
+"options" tag.  The "use_scanner_plugin" tag is used to
+specify which scanner to use.
