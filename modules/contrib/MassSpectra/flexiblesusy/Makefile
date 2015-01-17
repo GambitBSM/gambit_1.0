@@ -7,7 +7,7 @@ FLEXIBLESUSY_PATCH := 4
 FLEXIBLESUSY_EXTRA := 
 FLEXIBLESUSY_PKG   := $(PKGNAME)-$(FLEXIBLESUSY_VERSION)
 FLEXIBLESUSY_TAG   := v$(FLEXIBLESUSY_VERSION)
-ABSBASEDIR         := /home/peter/FlexibleSUSY/Latest/FS-forGAMBIT-1.0.4
+ABSBASEDIR         := /home/peter/Gambit/Fresh/gambit/modules/contrib/MassSpectra/flexiblesusy
 INSTALL_DIR        := 
 
 # Makefile switches
@@ -36,22 +36,22 @@ MATH               := math
 ALGORITHMS         := two_scale
 
 # Variables for compilation
-CXX                := g++
+CXX                := /usr/bin/g++-4.6
 CPPFLAGS           :=  $(patsubst %,-I%,$(MODULES)) -I.
-CXXFLAGS           := -std=c++11 -O2
-CXX_DEP_GEN        := g++
-CXXFLAGS_DEP_GEN   := -std=c++11
-FC                 := gfortran
-FFLAGS             := -O2 -frecursive
-FLIBS              := -L/usr/lib/gcc/x86_64-linux-gnu/4.6/ -lgfortran -lm
-FOR_DEP_GEN        := gfortran
+CXXFLAGS           := -std=c++0x -O2
+CXX_DEP_GEN        := /usr/bin/g++-4.6
+CXXFLAGS_DEP_GEN   := -std=c++0x
+FC                 := /usr/bin/gfortran
+FFLAGS             := -O2
+FLIBS              := 
+FOR_DEP_GEN        := /usr/bin/gfortran
 MAKELIB            := ar cru
 LIBEXT             := .a
 BLASLIBS           := -lblas
 BOOSTTESTLIBS      := -lboost_unit_test_framework
 BOOSTTHREADLIBS    := 
 BOOSTFLAGS         :=  -I/usr/local/include
-EIGENFLAGS         := -I/usr/include/eigen3
+EIGENFLAGS         := -I/home/peter/Gambit/Fresh/gambit/modules/../extras/eigen3
 GSLLIBS            := -L/usr/lib -lgsl -lgslcblas -lm
 GSLFLAGS           := -I/usr/include
 LAPACKLIBS         := -llapack
