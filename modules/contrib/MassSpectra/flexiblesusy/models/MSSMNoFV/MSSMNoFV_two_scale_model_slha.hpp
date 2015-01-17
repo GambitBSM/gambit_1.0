@@ -29,6 +29,7 @@
 #include "MSSMNoFV_two_scale_model.hpp"
 #include "MSSMNoFV_physical.hpp"
 #include "MSSMNoFV_model_slha.hpp"
+#include "wrappers.hpp"
 
 namespace flexiblesusy {
 
@@ -129,11 +130,11 @@ public:
    const Eigen::Matrix<double,2,2>& get_ZP_pole_slha() const { return physical_slha.ZP; }
    double get_ZP_pole_slha(int i, int k) const { return physical_slha.ZP(i,k); }
    const Eigen::Matrix<std::complex<double>,4,4>& get_ZN_pole_slha() const { return physical_slha.ZN; }
-   const std::complex<double>& get_ZN_pole_slha(int i, int k) const { return physical_slha.ZN(i,k); }
+   double get_ZN_pole_slha(int i, int k) const { return Re(physical_slha.ZN(i,k)); }
    const Eigen::Matrix<std::complex<double>,2,2>& get_UM_pole_slha() const { return physical_slha.UM; }
-   const std::complex<double>& get_UM_pole_slha(int i, int k) const { return physical_slha.UM(i,k); }
+   double get_UM_pole_slha(int i, int k) const { return Re(physical_slha.UM(i,k)); }
    const Eigen::Matrix<std::complex<double>,2,2>& get_UP_pole_slha() const { return physical_slha.UP; }
-   const std::complex<double>& get_UP_pole_slha(int i, int k) const { return physical_slha.UP(i,k); }
+   double get_UP_pole_slha(int i, int k) const { return Re(physical_slha.UP(i,k)); }
 
 
 private:
