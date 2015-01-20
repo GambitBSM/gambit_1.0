@@ -26,7 +26,6 @@
 #include <string>
 #include <sstream>
 #include <dlfcn.h>
-#include <link.h>
 #include <typeinfo>
 
 #include "plugin_utilities.hpp"

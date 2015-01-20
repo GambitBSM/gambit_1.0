@@ -33,46 +33,46 @@ Quick discription of this example:
 /* declare a plugin of name "my_cool_scanner" of version "0.0.0-beta" */
 scanner_plugin(my_cool_scanner, version(0, 0, 0, beta))
 {
-        /* declare a scanner function "loglike" that inputs 
-           a "std::vector<double> &" and outout a "double" */
-        scan_ptr<double (const std::vector<double> &)> loglike;
+   /* declare a scanner function "loglike" that inputs 
+      a "std::vector<double> &" and outout a "double" */
+   scan_ptr<double (const std::vector<double> &)> loglike;
         
-        int num, dim;
+   int num, dim;
         
-        /* this macro runs when the plugin is loaded */
-        plugin_constructor
-        {
-                /* Get a functor corresponding to the purpose "Likelihood" */
-                likelihood = get_functor("Likelihood");
+   /* this macro runs when the plugin is loaded */
+   plugin_constructor
+   {
+      /* Get a functor corresponding to the purpose "Likelihood" */
+      likelihood = get_functor("Likelihood");
                 
-                /* get the inifile entry "number" with the default value of "0" */
-                num = get_inifile_value<int>("number", 0);
+      /* get the inifile entry "number" with the default value of "0" */
+      num = get_inifile_value<int>("number", 0);
                 
-                /* get the dimension of the parameter space. */
-                dim = get_dimension();
-        }
+      /* get the dimension of the parameter space. */
+      dim = get_dimension();
+   }
         
-        /* main function that will run the scanner. */
-        int plugin_main(void)
-        {
-                std::vector<double> a(dim);
-                for (int j = 0; j < num; j++)
-                {
-                        for (int i = 0; i < ma; i++)
-                        {
-                                a[i] = Gambit::Random::draw();
-                        }
-                        loglike(a);
-                }
+   /* main function that will run the scanner. */
+   int plugin_main(void)
+   {
+      std::vector<double> a(dim);
+      for (int j = 0; j < num; j++)
+      {
+         for (int i = 0; i < ma; i++)
+         {
+            a[i] = Gambit::Random::draw();
+         }
+         loglike(a);
+      }
                 
-                return 0;
-        }
+      return 0;
+   }
         
-        /* this runs when the plugin is closed */
-        plugin_deconstructor
-        {
-                std::cout << "no more plugin" << std::endl;
-        }
+   /* this runs when the plugin is closed */
+   plugin_deconstructor
+   {
+      std::cout << "no more plugin" << std::endl;
+   }
 }
 
 ///////////////////// END PLUGIN DECLARATION ///////////////////////////
