@@ -32,7 +32,8 @@
 ///
 ///  \author Lars A. Dal  
 ///          (l.a.dal@fys.uio.no)
-///  \date 2014 Mar, Jul, Sep, Oct
+///  \date 2014 Mar, Jul, Sep, Oct, Dec
+///  \date 2015 Jan
 ///
 ///  \author Christopher Savage
 ///          (chris@savage.name)
@@ -77,7 +78,7 @@ namespace Gambit
     struct SimpleHist
     {
         SimpleHist(){}
-        SimpleHist(unsigned nBins, double Emin, double Emax, bool logscale): nBins(nBins)
+        SimpleHist(int nBins, double Emin, double Emax, bool logscale): nBins(nBins)
         {
             if(logscale)
             {
@@ -88,7 +89,7 @@ namespace Gambit
                 }
                 double factor = pow(Emax/Emin,(1.0/nBins));
                 double binL=Emin;
-                for(unsigned i=0; i<nBins; i++)
+                for(int i=0; i<nBins; i++)
                 {
                     binLower.push_back(binL);
                     binVals.push_back(0.0);
@@ -100,7 +101,7 @@ namespace Gambit
             else
             {
                 double dE = (Emax-Emin)/nBins;
-                for(unsigned i=0; i<nBins; i++)
+                for(int i=0; i<nBins; i++)
                 {
                     double binL = Emin+i*dE; 
                     binLower.push_back(binL);
@@ -114,14 +115,14 @@ namespace Gambit
         void addEvent(double E, double weight=1.0)
         {
             int bin = findIndex(E);
-            if(bin>=0 and unsigned(abs(bin))<nBins )
+            if(bin>=0 and bin<nBins )
             {
                 binVals[bin]+=weight;
                 wtSq[bin]+=weight*weight;
             }
         }
         // Add an entry to a specified bin
-        void addToBin(unsigned bin, double weight=1.0)
+        void addToBin(int bin, double weight=1.0)
         {
             if(bin<nBins)
             {
@@ -134,7 +135,7 @@ namespace Gambit
         {
             int imin = findIndex(Emin);
             int imax = findIndex(Emax);
-            if(imax<0 or unsigned(abs(imin))>nBins) 
+            if(imax<0 or imin>nBins) 
             {
                 // Do nothing
             }
@@ -167,19 +168,19 @@ namespace Gambit
             }
         }
         // Get error for a specified bin
-        double getError(unsigned bin) const
+        double getError(int bin) const
         {
             return sqrt(wtSq[bin]);
         }
         // Get relative error for a specified bin
-        double getRelError(unsigned bin) const
+        double getRelError(int bin) const
         {
-            return sqrt(wtSq[bin])/binVals[bin];
+            return ((binVals[bin]!=0) ? sqrt(wtSq[bin])/binVals[bin] : 0);
         }
         // Divide all histogram bins by the respective bin size
         void divideByBinSize()
         {
-            for(unsigned i=0;i<nBins;i++)
+            for(int i=0;i<nBins;i++)
             {
                 binVals[i]/=binSize(i);
                 wtSq[i]   /=(binSize(i)*binSize(i));
@@ -188,7 +189,7 @@ namespace Gambit
         // Multiply all bin contents by x
         void multiply(double x)
         {
-            for(unsigned i=0;i<nBins;i++)
+            for(int i=0;i<nBins;i++)
             {
                 binVals[i]*=x;
                 wtSq[i]   *=x*x;
@@ -202,23 +203,48 @@ namespace Gambit
             return pos - binLower.begin() -1;       
         }
         // Retrieve size of given bins
-        double binSize(unsigned bin) const
+        double binSize(int bin) const
         {
             return binLower[bin+1]-binLower[bin];
         }  
         // Get central value of bin
-        double binCenter(unsigned bin) const
+        double binCenter(int bin) const
         {
             return 0.5*(binLower[bin+1]+binLower[bin]);
+        }
+        // Double get central values of all bins
+        std::vector<double> getBinCenters() const
+        {
+            std::vector<double> centers;
+            for(int i=0;i<nBins;i++)
+            {
+                centers.push_back(binCenter(i));
+            }
+        }
+        const std::vector<double>& getBinValues() const
+        {
+            return binVals;
+        }
+        void getEdges(double& lower, double& upper) const
+        {
+            lower=binVals[0];
+            upper=binVals[nBins];
         }
         std::vector<double> binLower;
         std::vector<double> binVals;
         std::vector<double> wtSq; // Sum of the squares of all weights
-        unsigned nBins;
+        int nBins;
+    };
+
+    struct mutableFinalStateContainer
+    {
+        mutable std::vector<std::string> enable;
+        mutable std::vector<std::string> disable;
     };
 
     typedef std::map<std::string, std::map<std::string, Gambit::DarkBit::SimpleHist> > simpleHistContainter;
-    typedef std::map<std::string, unsigned> stringUnsignedMap;
+    typedef std::map<std::string, int> stringIntMap;
+    typedef std::map<std::string, Funk::Funk> stringFunkMap;
 
     /*
     // Integration limits for E1 for the DS gamma 3-body decays.
@@ -420,7 +446,7 @@ namespace Gambit
         Funk::Funk genRate;
 
         // Compare final states
-        bool isChannel(std::string p0, std::string p1, std::string p2 ="", std::string p3 = "")
+        bool isChannel(std::string p0, std::string p1, std::string p2 ="", std::string p3 = "") const
         {
             if ( nFinalStates == 2 and p0 == finalStateIDs[0] and p1 == finalStateIDs[1] ) return true;
             if ( nFinalStates == 3 and p0 == finalStateIDs[0] and p1 == finalStateIDs[1] and p2 == finalStateIDs[2] ) return true;
@@ -428,12 +454,12 @@ namespace Gambit
             return false;
         }
 
-        bool channelContains(std::string p)
+        bool channelContains(std::string p) const
         {
             return std::find(finalStateIDs.begin(), finalStateIDs.end(), p) != finalStateIDs.end();
         }
 
-        void printChannel()
+        void printChannel() const
         {
             std::cout << "Channel: ";
             for ( auto it = finalStateIDs.begin(); it != finalStateIDs.end(); it++ )
@@ -861,6 +887,18 @@ namespace Gambit
         std::vector<DDParticleS> P;
     };
 
+    struct SimYieldChannel
+    {
+        SimYieldChannel(Funk::Funk dNdE, std::string p1, std::string p2, std::string finalState, double Ecm_min, double Ecm_max):
+            dNdE(dNdE), p1(p1), p2(p2), finalState(finalState), Ecm_min(Ecm_min), Ecm_max(Ecm_max) {}
+        Funk::Funk dNdE;            
+        std::string p1;
+        std::string p2;
+        std::string finalState;
+        double Ecm_min;
+        double Ecm_max;        
+    };
+
     // Channel container
     class SimYieldTable
     {
@@ -868,75 +906,99 @@ namespace Gambit
          * final states.
          */
         public:
-            SimYieldTable() {};
+            SimYieldTable() : 
+                dummy_channel(Funk::zero("E", "Ecm"), "", "", "", 0.0, 0.0) {}
 
-            void addChannel(Funk::Funk dNdE, std::string p1, std::string p2, double Ecm_min, double Ecm_max)
+            void addChannel(Funk::Funk dNdE, std::string p1, std::string p2, std::string finalState, double Ecm_min, double Ecm_max)
             {
-                if ( this->hasChannel(p1, p2) )
+                if ( hasChannel(p1, p2) )
                 {
                     std::cout << "WARNING: Channel already exists.  Ignoring." << std::endl;
                     return;
                 }
-                funktion_list.push_back(dNdE);
-                p1_list.push_back(p1);
-                p2_list.push_back(p2);
-                Ecm_min_list.push_back(Ecm_min);
-                Ecm_max_list.push_back(Ecm_max);
+                channel_list.push_back(SimYieldChannel(dNdE, p1, p2, finalState, Ecm_min, Ecm_max));
+            }
+            
+            void addChannel(Funk::Funk dNdE, std::string p1, std::string finalState, double Ecm_min, double Ecm_max)
+            {
+                addChannel(dNdE, p1, "", finalState, Ecm_min, Ecm_max);
             }
 
-            void addChannel(Funk::Funk dNdE, std::string p1, double Ecm_min, double Ecm_max)
+            bool hasChannel(std::string p1, std::string p2, std::string finalState) const
             {
-                this->addChannel(dNdE, p1, "", Ecm_min, Ecm_max);
+                return ( findChannel(p1, p2, finalState) != -1 );
             }
 
-            bool hasChannel(std::string p1, std::string p2) const
+            bool hasChannel(std::string p1, std::string finalState) const
             {
-                return ( findChannel(p1, p2) != -1 );
+                return hasChannel(p1, "", finalState);
+            }
+            
+            bool hasAnyChannel(std::string p1) const
+            {
+                return hasAnyChannel(p1, "");
+            }         
+            
+            bool hasAnyChannel(std::string p1, std::string p2) const
+            {
+                const std::vector<SimYieldChannel> &cl = channel_list;
+                for ( unsigned int i = 0; i < channel_list.size(); i++ )
+                {
+                    if ((p1==cl[i].p1 and p2==cl[i].p2) or (p1==cl[i].p2 and p2==cl[i].p1) )
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            }
+            
+            const SimYieldChannel& getChannel(std::string p1, std::string p2, std::string finalState) const
+            {
+                int index = findChannel(p1, p2, finalState);
+                if ( index == -1 )
+                {
+                    std::cout << "WARNING: Channel not known.  Returning dummy." << std::endl;
+                    return dummy_channel;
+                }
+                return channel_list[index];
             }
 
-            bool hasChannel(std::string p1) const
+            Funk::Funk operator()(std::string p1, std::string p2, std::string finalState, double Ecm) const
             {
-                return this->findChannel(p1, "");
+                return this->operator()(p1, p2, finalState)->set("Ecm", Ecm);
             }
 
-            Funk::Funk operator()(std::string p1, std::string p2, double Ecm) const
+            Funk::Funk operator()(std::string p1, std::string finalState, double Ecm) const
             {
-                return this->operator()(p1, p2)->set("Ecm", Ecm);
+                return this->operator()(p1,finalState)->set("Ecm", Ecm);
             }
 
-            Funk::Funk operator()(std::string p1, double Ecm) const
+            Funk::Funk operator()(std::string p1, std::string p2, std::string finalState) const
             {
-                return this->operator()(p1)->set("Ecm", Ecm);
-            }
-
-            Funk::Funk operator()(std::string p1, std::string p2) const
-            {
-                int index = findChannel(p1, p2);
-                if ( index == 1 )
+                int index = findChannel(p1, p2, finalState);
+                if ( index == -1 )
                 {
                     std::cout << "WARNING: Channel not known.  Returning zero." << std::endl;
                     return Funk::zero("E", "Ecm");
                 }
-                return funktion_list[index];
+                return channel_list[index].dNdE;
             }
 
-            Funk::Funk operator()(std::string p1) const
+            Funk::Funk operator()(std::string p1, std::string finalState) const
             {
-                return this->operator()(p1, "");
+                return this->operator()(p1, "", finalState);
             }
 
         private:
-            std::vector<Funk::Funk> funktion_list;
-            std::vector<std::string> p1_list;
-            std::vector<std::string> p2_list;
-            std::vector<double> Ecm_min_list;
-            std::vector<double> Ecm_max_list;
+            SimYieldChannel dummy_channel;
+            std::vector<SimYieldChannel> channel_list;
 
-            int findChannel(std::string p1, std::string p2) const
+            int findChannel(std::string p1, std::string p2, std::string finalState) const
             {
-                for ( unsigned int i = 0; i < p1_list.size(); i++ )
+                const std::vector<SimYieldChannel> &cl = channel_list;
+                for ( unsigned int i = 0; i < channel_list.size(); i++ )
                 {
-                    if (( p1 == p1_list[i] and p2 == p2_list[i] ) or ( p1 == p2_list[i] and p2 == p1_list[i] ))
+                    if ((p1==cl[i].p1 and p2==cl[i].p2 and finalState==cl[i].finalState) or (p1==cl[i].p2 and p2==cl[i].p1 and finalState==cl[i].finalState) )
                     {
                         return i;
                     }

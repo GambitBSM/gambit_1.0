@@ -11,7 +11,8 @@
 ///   
 ///  \author Lars A. Dal  
 ///          (l.a.dal@fys.uio.no)
-///  \date 2014 Oct
+///  \date 2014 Oct, Nov, Dec
+///  \date 2015 Jan
 ///  *********************************************
 
 #ifndef __decay_chain_hpp__
@@ -21,7 +22,7 @@
 #include <algorithm>
 #include <vector>
 #include <math.h>
-#include <map>
+#include <unordered_map>
 #include <fstream>
 #include <string>
 #include <set>
@@ -34,12 +35,12 @@ namespace Gambit
     {
         class TH_Channel;
         class TH_ProcessCatalog;
+        class SimYieldTable;
         namespace DecayChain
         {
             using std::vector;
             using std::cout;
             using std::endl;
-            using std::map;
             using std::ofstream;
             using std::ios;
             using std::pair;
@@ -47,6 +48,7 @@ namespace Gambit
             using std::string;
             using std::set;
             using boost::shared_ptr;
+            using std::unordered_map;
             
             //  *********************************************
             //  Generic 3-vector class
@@ -66,8 +68,8 @@ namespace Gambit
                     // Normalize vector to length len
                     void normalize(const double len);
                     // Operators
-                    double& operator[](unsigned int i){ return vals[i];}
-                    double operator[](unsigned int i)const{ return vals[i];}      
+                    double& operator[](int i){ return vals[i];}
+                    double operator[](int i)const{ return vals[i];}      
                     vec3 operator-()const{return vec3(-vals[0],-vals[1],-vals[2]);	} 
             };
             vec3 operator* (double x, const vec3 &y);
@@ -92,8 +94,8 @@ namespace Gambit
                     // Returns vec3 containting elements 1,2,3
                     vec3 xyz() const{return vec3(vals[1],vals[2],vals[3]);}   
                     // Operators 
-                    double& operator[](unsigned int i){ return vals[i];}     
-                    double operator[](unsigned int i)const{ return vals[i];}    
+                    double& operator[](int i){ return vals[i];}     
+                    double operator[](int i)const{ return vals[i];}    
                     vec4 operator-(){return vec4(-vals[0],-vals[1],-vals[2],-vals[3]);}
             };      
             vec4 operator* (double x, const vec4 &y);
@@ -162,7 +164,7 @@ namespace Gambit
                     // Is the particle stable in the context of the decay chain?
                     bool stable;        
                     // Flags indicating whether or not the various decay states are endpoints
-                    map<const TH_Channel*, bool> endpointFlags;
+                    unordered_map<const TH_Channel*, bool> endpointFlags;
                     // Constructor
                     DecayTableEntry(string pID, double m, bool stable) : 
                         m(m), stable(stable), enabledWidth(0), 
@@ -172,7 +174,7 @@ namespace Gambit
                         m(0), stable(false), enabledWidth(0), 
                         totalWidth(0), useForcedTotalWidth(false), forcedTotalWidth(0), pID(""),  randInit(false){}
                     // Pick a random decay channel
-                    const TH_Channel* randomDecay() const;
+                    bool randomDecay(const TH_Channel* &decay) const;
                     // Update decay widths and if necessary Monte Carlo table
                     void update();
                     // Functions for checking if a decay exists in the decay tables
@@ -192,6 +194,7 @@ namespace Gambit
                     void forceTotalWidth(bool enabled, double width);
                     // Get total decay width
                     double getTotalWidth() const;
+                    bool hasEnabledDecays() const;
                 private:
                     // Lists of decays
                     vector<const TH_Channel*> enabledDecays;
@@ -220,21 +223,20 @@ namespace Gambit
             class DecayTable
             {
                 public:
-                    DecayTable(const TH_ProcessCatalog &cat);
+                    DecayTable(const TH_ProcessCatalog &cat, const SimYieldTable &tab);
                     DecayTable(){};
                     bool hasEntry(string) const;
                     // Add particle to decay table, specifying particle ID, mass and whether or not it should be decayed in decay chains
                     void addEntry(string pID, double m, bool stable);
                     void addEntry(string pID, DecayTableEntry entry);
-                    const TH_Channel* randomDecay(string pID) const; 
+                    bool randomDecay(string pID, const TH_Channel* &decay) const; 
                     const DecayTableEntry& operator[](string i) const{return table.at(i);} 
                     // Retrieve width of decay channel
-                    // Note: It is ESSENTIAL that the TH_Channel is a decay channel, or more precisely that genRate is of type BFconstant. 
                     static double getWidth(const TH_Channel *ch);
                     // Print the decay table (to cout)
                     void printTable() const;
                 private:
-                    map<string,DecayTableEntry> table;
+                    unordered_map<string,DecayTableEntry> table;
             };
             
             
@@ -267,9 +269,9 @@ namespace Gambit
                     // Note that this function will not collect decay products of endpoint states. These must be extracted manually.
                     void collectEndpointStates(vector<const ChainParticle*> &endpointStates, bool includeAborted, string ipID="") const;
                     // Get number of child particles
-                    unsigned int getnChildren() const {return nChildren;}
+                    int getnChildren() const {return nChildren;}
                     // Get child particle
-                    const ChainParticle* operator[](unsigned int i) const;     
+                    const ChainParticle* operator[](int i) const;     
                     // Get particle ID
                     string getpID() const {return pID;}
                     // Print the decay chain (to cout)
@@ -284,7 +286,7 @@ namespace Gambit
                     ~ChainParticle();
                 private:  
                     // Helper function for printChain() 
-                    bool printChain(unsigned generation, vector<unsigned> ancestry) const;
+                    bool printChain(int generation, vector<int> ancestry) const;
                     // How much the decay chain (to this point) should be weighted down due to
                     // missing/disabled decay channels. Only relevant for Monte Carlo generated chains.
                     double weight;
@@ -298,7 +300,7 @@ namespace Gambit
                     // Particle identifier           
                     string pID;                 
                     // How many ancestors do I have?
-                    unsigned chainGeneration;        
+                    int chainGeneration;        
                     // Has this particle been kept from decaying by an energy or chain length cut?
                     bool abortedDecay;   
                     // Is this particle stable, or has it decayed to a final state consisting entirely of stable particles?
@@ -306,7 +308,7 @@ namespace Gambit
                     // This is to avoid having final states that can't be treated as free particles (such as quarks).
                     bool isEndpoint;     
                     // Number of child particles       
-                    unsigned int nChildren;
+                    int nChildren;
                     // Pointers to parent and child particles
                     ChainParticle *parent;  
                     vector<ChainParticle*> children;
@@ -327,7 +329,6 @@ namespace Gambit
                 ChainContainer(ChainParticle* ch){chain = shared_ptr<const ChainParticle>(ch);}
                 shared_ptr<const ChainParticle> chain;
             };
-            
             
         }
     }

@@ -26,6 +26,10 @@
 ///  \date 2013 July, Sep
 ///  \date 2014 Jan
 ///
+///  \author Lars A. Dal  
+///          (l.a.dal@fys.uio.no)
+///  \date 2015 Jan
+///
 ///  *********************************************
 
 
@@ -79,7 +83,9 @@ namespace Gambit
       functor (str, str, str, str, Models::ModelFunctorClaw&);
       
       /// Virtual calculate(); needs to be redefined in daughters.
-      virtual void calculate();
+      virtual void calculate();      
+      virtual void force_calculate();
+      
 
       // It may be safer to have some of the following things accessible 
       // only to the likelihood wrapper class and/or dependency resolver, i.e. so they cannot be used 
@@ -589,6 +595,7 @@ namespace Gambit
 
       /// Calculate method
       void calculate();
+      void force_calculate();
 
       /// Operation (return value)
       TYPE operator()(int index);
@@ -632,6 +639,7 @@ namespace Gambit
 
       /// Calculate method
       void calculate();
+      void force_calculate();
 
       /// Blank print method
       virtual void print(Printers::BasePrinter*, const int, int);

@@ -71,17 +71,21 @@ namespace Gambit
                                                 while(getline(ss, str))
                                                 {
                                                         std::string::size_type pos = str.find("__gambit_plugin_pluginInit_");
-                                                        Plugin_Details temp(str.substr(pos + 27, str.rfind("__") - pos - 27));
                                                         
-                                                        if (plug == "" || temp.plugin == plug)
+                                                        if (pos != std::string::npos)
                                                         {
-                                                                if (p_str.rfind("/") != std::string::npos)
-                                                                        temp.library = p_str.substr(p_str.rfind("/") + 1);
-                                                                else
-                                                                        temp.library = p_str;
-                                                                temp.library_path = p_str;
-                                                                plugins.push_back(temp);
-                                                                plugin_map[temp.type][temp.plugin].push_back(temp);
+                                                                Plugin_Details temp(str.substr(pos + 27, str.rfind("__") - pos - 27));
+                                                                
+                                                                if (plug == "" || temp.plugin == plug)
+                                                                {
+                                                                        if (p_str.rfind("/") != std::string::npos)
+                                                                                temp.library = p_str.substr(p_str.rfind("/") + 1);
+                                                                        else
+                                                                                temp.library = p_str;
+                                                                        temp.library_path = p_str;
+                                                                        plugins.push_back(temp);
+                                                                        plugin_map[temp.type][temp.plugin].push_back(temp);
+                                                                }
                                                         }
                                                 }
                                         }

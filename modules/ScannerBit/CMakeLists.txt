@@ -35,6 +35,7 @@ set(scannerbit_headers
                  include/priors/fixed_same_as.hpp
                  include/priors/flat_log.hpp
                  include/priors/gaussian.hpp
+                 include/priors/plugin.hpp
 )
 
 set(scanner_plugin_sources

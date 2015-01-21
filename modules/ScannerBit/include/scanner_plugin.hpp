@@ -29,14 +29,12 @@
 
 #include <yaml-cpp/yaml.h>
 
-#define init_inifile_value(exp, ...)    INIT_INIFILE_VALUE(exp, __VA_ARGS__)
 #define init_dimension(exp)             INIT_DIMENSION(exp)
 #define init_functor(exp, ...)          INIT_FUNCTOR(exp, __VA_ARGS__)
 #define get_dimension()                 GET_DIMENSION()
 #define get_functor(...)                GET_FUNCTOR( __VA_ARGS__ )
 #define scanner_plugin(...)             SCANNER_PLUGIN(__VA_ARGS__)
 
-#define INIT_INIFILE_VALUE(exp, ...)    INITIALIZE(exp, get_inifile_value<decltype(exp)>( __VA_ARGS__ ))
 #define INIT_DIMENSION(exp)             INITIALIZE(exp, GET_DIMENSION())
 #define INIT_FUNCTOR(exp, ...)          INITIALIZE(exp, GET_FUNCTOR(__VA_ARGS__))
 
