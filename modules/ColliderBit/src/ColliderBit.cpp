@@ -119,12 +119,12 @@ namespace Gambit {
 	using namespace Pipes::getBuckFast;
 	std::string buckFastOption;
 	if(resetBuckFastFlag) {
-#pragma omp critical (BuckFast)
-        {
+      #pragma omp critical (BuckFast)
+      {
 	  GET_COLLIDER_RUNOPTION(buckFastOption, std::string)
 	    result.reset( mkBuckFast(buckFastOption) );
           resetBuckFastFlag = false;
-        }
+      }
       }
     }
 
@@ -299,8 +299,8 @@ namespace Gambit {
           result.add_particle(gp); // Will be automatically categorised
         }
 
-        // All particles other than invisibles are jet constituents
-        if (visible) jetparticles.push_back(mk_pseudojet(p.p()));
+        // All particles other than invisibles and muons are jet constituents
+        if (visible && p.idAbs() != MCUtils::PID::MUON) jetparticles.push_back(mk_pseudojet(p.p()));
       }
 
       /// Jet finding
@@ -385,9 +385,9 @@ namespace Gambit {
           result.add_particle(gp); // Will be automatically categorised
         }
 
-        // Everything other than invisibles, including taus & partons are jet constituents
+        // Everything other than invisibles and muons, including taus & partons are jet constituents
         // if (visible && (isFinalParton(i, pevt) || isFinalTau(i, pevt))) {
-        if (visible) {
+        if (visible && p.idAbs() != MCUtils::PID::MUON) {
           fastjet::PseudoJet pj = mk_pseudojet(p.p());
           pj.set_user_index(abs(p.id()));
           jetparticles.push_back(pj);
