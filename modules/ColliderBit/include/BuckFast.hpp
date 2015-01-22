@@ -192,7 +192,6 @@ namespace Gambit {
         // Smear by a Gaussian centered on 1 with width given by the (fractional) resolution
         std::normal_distribution<> d(1.,resolution);
         double smear_factor = d(gen);
-        if (smear_factor < 0) smear_factor = 0;
         jet->set_mom(P4::mkXYZM(jet->mom().px()*smear_factor, jet->mom().py()*smear_factor, jet->mom().pz()*smear_factor, jet->mass()));
       }
     }
