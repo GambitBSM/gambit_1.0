@@ -304,14 +304,15 @@ namespace Gambit {
       }
 
       /// Jet finding
-      /// Currently hard-coded to use anti-kT R=0.4 jets above 30 GeV
+      /// Currently hard-coded to use anti-kT R=0.4 jets above 10 GeV (could remove pT cut entirely)
       /// @todo choose jet algorithm via _settings?
       const fastjet::JetDefinition jet_def(fastjet::antikt_algorithm, 0.4);
       fastjet::ClusterSequence cseq(jetparticles, jet_def);
-      std::vector<fastjet::PseudoJet> pjets = sorted_by_pt(cseq.inclusive_jets(30));
+      std::vector<fastjet::PseudoJet> pjets = sorted_by_pt(cseq.inclusive_jets(10));
 
       /// Do jet b-tagging, etc. and add to the Event
-      /// @todo Use ghost tagging
+      /// @todo Use ghost tagging?
+      /// @note We need to _remove_ this b-tag in the detector sim if outside the tracker acceptance!
       for (auto& pj : pjets) {
         bool isB = false;
         for (auto& pb : bhadrons) {
@@ -377,7 +378,7 @@ namespace Gambit {
         /// @todo Apply a hadronic tau BR fraction?
         /// @todo *Some* photons should be included in jets!!! Ignore for now since no FSR
         /// @todo Lepton dressing
-        const bool prompt = isFinalPhoton(i, pevt) || (isFinalLepton(i, pevt) && abs(p.id()) != 15);
+        const bool prompt = isFinalPhoton(i, pevt) || (isFinalLepton(i, pevt) && abs(p.id()) != MCUtils::PID::TAU);
         const bool visible = MCUtils::PID::isStrongInteracting(p.id()) || MCUtils::PID::isEMInteracting(p.id());
         if (prompt || !visible) {
           HEPUtils::Particle* gp = new HEPUtils::Particle(mk_p4(p.p()), p.id());
@@ -396,15 +397,17 @@ namespace Gambit {
       }
 
       /// Jet finding
-      /// Currently hard-coded to use anti-kT R=0.4 jets above 30 GeV
+      /// Currently hard-coded to use anti-kT R=0.4 jets above 10 GeV (could remove pT cut entirely)
       /// @todo choose jet algorithm via _settings?
       const fastjet::JetDefinition jet_def(fastjet::antikt_algorithm, 0.4);
       fastjet::ClusterSequence cseq(jetparticles, jet_def);
-      std::vector<fastjet::PseudoJet> pjets = sorted_by_pt(cseq.inclusive_jets(30));
+      std::vector<fastjet::PseudoJet> pjets = sorted_by_pt(cseq.inclusive_jets(10));
       // Add to the event, with b-tagging info
-      BOOST_FOREACH (const fastjet::PseudoJet& pj, pjets) {
-        /// @todo Do jet b-tagging, etc. by looking for b quark constituents (i.e. user index = |parton ID| = 5)
-        const bool isB = HEPUtils::any(pj.constituents(), [](const fastjet::PseudoJet& c){ return c.user_index() == 5; });
+      for (const fastjet::PseudoJet& pj : pjets) {
+        // Do jet b-tagging, etc. by looking for b quark constituents (i.e. user index = |parton ID| = 5)
+        /// @note We need to _remove_ this b-tag in the detector sim if outside the tracker acceptance!
+        const bool isB = HEPUtils::any(pj.constituents(),
+                                       [](const fastjet::PseudoJet& c){ return c.user_index() == MCUtils::PID::BQUARK; });
         result.add_jet(new HEPUtils::Jet(HEPUtils::mk_p4(pj), isB));
       }
 
@@ -422,9 +425,8 @@ namespace Gambit {
       // set_missingmom(-pvis);
       //
       // From sum of invisibles, including those out of range
-      for (size_t i = 0; i < result.invisible_particles().size(); ++i) {
-        pout += result.invisible_particles()[i]->mom();
-      }
+      for (const Particle* p : result.invisible_particles())
+        pout += p->mom();
       result.set_missingmom(pout);
     }
 
@@ -433,7 +435,7 @@ namespace Gambit {
     /// Gambit facing interface function
     void convertPythia8Event(HEPUtils::Event &result) {
       convertPythia8PartonEvent(result);
-    //convertPythia8ParticleEvent(result);
+      //convertPythia8ParticleEvent(result);
     }
 
 
