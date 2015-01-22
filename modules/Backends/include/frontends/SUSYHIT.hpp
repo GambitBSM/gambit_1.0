@@ -1,0 +1,72 @@
+//   GAMBIT: Global and Modular BSM Inference Tool
+//   *********************************************
+///  \file
+///
+///  Frontend for SUSY-HIT 1.4 backend
+///
+///  *********************************************
+///
+///  Authors (add name and date if you modify):
+///  
+/// \author Peter Athron
+/// \author Csaba Balazs
+/// \date 2015 Jan
+///
+///  *********************************************
+
+#ifdef BACKENDRENAME
+  #define BACKENDNAME BACKENDRENAME
+#else
+  #define BACKENDNAME SUSYHIT
+#endif
+#define VERSION 0.1
+#define SAFE_VERSION 0_1
+
+LOAD_LIBRARY
+
+BE_VARIABLE(FORTRAN_COMMONBLOCK(top2body_CB_type, top2body), "sd_top2body_", "top2body")
+
+/* Syntax for BE_FUNCTION:
+ * BE_FUNCTION([choose function name], [type], [arguement types], "[exact symbol name]", "[choose capability name]")
+ */
+BE_FUNCTION(SUSYHIT_MAIN, void, (), "MAIN__", "SUSYHIT_MAIN")
+
+/* 
+BE_FUNCTION(printStuff, void, (), "printstuff_", "libFarrayTest_printStuff")
+
+BE_FUNCTION(set_d, void, (), "set_d_", "libFarrayTest_set_d")
+
+BE_FUNCTION(fptrRoutine, void, (   ARG_FARRAY(double,1), int&,                     \
+                                        ARG_FARRAY_FPTR(double,(ARG_FARRAY(double,1)))  \
+                                    ), "fptrroutine_", "libFarrayTest_fptrRoutine")
+
+BE_FUNCTION(doubleFuncArray1, double, (ARG_FARRAY(double,1)), "doublefuncarray1_", "libFarrayTest_doubleFuncArray1", (), 1)
+
+BE_FUNCTION(doubleFuncArray2, double, (ARG_FARRAY(double,1)), "doublefuncarray2_", "libFarrayTest_doubleFuncArray2", (), 1)
+
+BE_FUNCTION(doubleFunc, double, (double&), "doublefunc_", "libFarrayTest_doubleFunc")
+
+*/
+
+namespace Gambit
+{
+  namespace Backends
+  {
+    namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
+    {
+
+      /* Convenience functions go here */
+
+    } /* end namespace BACKENDNAME_SAFE_VERSION */                                          
+  } /* end namespace Backends */                                                
+} /* end namespace Gambit */                                                   
+
+
+//BE_CONV_FUNCTION(awesomenessByAnders, double, "awesomeness")
+
+BE_INI_FUNCTION{}
+DONE
+
+// Undefine macros to avoid conflict with other backends
+#include "backend_undefs.hpp"
+

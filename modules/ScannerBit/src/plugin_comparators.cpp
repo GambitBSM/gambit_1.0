@@ -226,9 +226,7 @@ namespace Gambit
                                 }
                                 else
                                 {
-                                        std::stringstream ss;
-                                        ss << "Could not parse version string \"" << version << "\"." << std::endl;
-                                        Scanner::scan_error().raise(LOCAL_INFO, ss.str());
+                                        scan_err << "Could not parse version string \"" << version << "\"." << scan_end;
                                 }
                                 
                                 if (compare1 != NULL && compare1->isEmpty())
@@ -268,7 +266,7 @@ namespace Gambit
                                 if (bool(flag&AND)) return (*compare1)(plugin) && (*compare2)(plugin);
 
                                 // None of the previous pieces of code have triggered; something must be wrong.
-                                Scanner::scan_error().raise(LOCAL_INFO,"Unknown logical operator in VersionCompare () operator.");
+                                scan_err << "Unknown logical operator in VersionCompare () operator." << scan_end;
                                 return false;                                
                         }
                         

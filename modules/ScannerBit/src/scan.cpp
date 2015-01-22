@@ -26,7 +26,6 @@
 
 #include "scan.hpp"
 #include "plugin_interface.hpp"
-#include "inifile_interface.hpp"
 #include "plugin_factory.hpp"
 
 namespace Gambit
@@ -71,114 +70,73 @@ namespace Gambit
                 }
         
                 Scan_Manager::Scan_Manager (const Factory_Base &factoryIn, const Options &options_in, const Priors::CompositePrior &priorIn, 
-                 const Plugins::Plugin_Loader &plugins_in, printer_interface *printerInterface) 
-                : options(&options_in), plugins(&plugins_in), printerInterface(printerInterface)
+                 printer_interface *printerInterface) 
+                : options(&options_in), printerInterface(printerInterface)
                 {
                         if (!options->hasKey("plugins"))
                         {
-                                std::stringstream ss;
-                                ss << "There is no \"plugins\" subsection in the scanner inifile section." << std::endl;
-                                scan_error().raise(LOCAL_INFO, ss.str());
+                                scan_err << "There is no \"plugins\" subsection in the scanner inifile section." << scan_end;
                                 return;
                         }
                         
-                        std::vector<std::string> selectedPluginNames = options->getNames("plugins");
+                        Plugins::plugin_info.iniFile(options->getOptions("plugins"));
                         
-                        for (auto it = selectedPluginNames.begin(), end = selectedPluginNames.end(); it != end; it++)
-                        {
-                                Proto_Plugin_Details temp;
-                                if (options->hasKey("plugins", *it, "plugin"))
-                                {
-                                        temp.plugin = options->getValue<std::string>("plugins", *it, "plugin");
-                                }
-                                else
-                                {
-                                        scan_err << "Plugin name is not defined under the \"" << *it << "\" tag.  "
-                                                << "using the tag \"" << *it << "\" as the plugin name." << scan_end;
-                                        temp.plugin = *it;
-                                }
-                                if (options->hasKey("plugins", *it, "version"))
-                                        temp.version = options->getValue<std::string>("plugins", *it, "version");
-                                if (options->hasKey("plugins", *it, "library"))
-                                        temp.library = "ScannerBit/lib/" + options->getValue<std::string>("plugins", *it, "library");
-                                if (options->hasKey("plugins", *it, "library_path"))
-                                        temp.library = options->getValue<std::string>("plugins", *it, "library_path");
-                                        
-                                selectedPlugins[*it] = temp;
-                        }
                         
-                        if (options->hasKey("use_likelihood_plugins"))
+                        
+                        if (options->hasKey("use_objective_plugins"))
                         {
-                                std::map<std::string, std::vector<IniFileInterface>> interfaces;
-                                std::map<std::string, YAML::Node> nodes;
+                                std::map< std::string, std::vector<std::string> > names;
+                                std::map< std::string, YAML::Node > nodes;
                                 
-                                if (options->getNode("use_likelihood_plugins").IsSequence())
+                                if (options->getNode("use_objective_plugins").IsSequence())
                                 {
-                                        auto plugs = options->getValue<std::vector<std::string>>("use_likelihood_plugins");
+                                        auto plugs = options->getValue< std::vector<std::string> >("use_objective_plugins");
+                                        
                                         for (auto it = plugs.begin(), end = plugs.end(); it != end; it++)
                                         {
-                                                auto it2 = selectedPlugins.find(*it);
-                                                if (it2 != selectedPlugins.end())
+                                                if (options->hasKey("plugins", *it, "purpose"))
                                                 {
-                                                        Plugins::Plugin_Details pls = plugins->find("like", it2->second.plugin, it2->second.version, it2->second.library);
-                                                        if (options->hasKey("plugins", *it, "purpose"))
-                                                        {
-                                                                interfaces[options->getValue<std::string>("plugins", *it, "purpose")].emplace_back(*it, pls, options->getOptions("plugins", *it));
-                                                        }
-                                                        else
-                                                        {
-                                                                scan_err << "Must specify purpose under the plugin tag \"" << *it << "\"." << scan_end;
-                                                        }
-                                                        
-                                                        if (options->hasKey("plugins", *it, "parameters"))
-                                                        {
-                                                                if (options->hasKey("parameters") && options->hasKey("parameters", *it))
-                                                                {
-                                                                        scan_err << "Plugin \"" << *it << "\"'s parameters are defined in "
-                                                                                << "both the \"parameters\" section and the \"plugins\" "
-                                                                                << "section in the inifile." << scan_end;
-                                                                }
-                                                                nodes[*it] = options->getNode("plugins", *it, "parameters");
-                                                        }
+                                                        names[options->getValue<std::string>("plugins", *it, "purpose")].push_back(*it);
                                                 }
                                                 else
                                                 {
-                                                        scan_err << "Plugin \"" << *it << "\" (requested by \"use_likelihood_plugins:\") "
-                                                                << "is not defined under the \"plugins\" subsection in the inifile" << scan_end;
-                                                }
-                                        }
-                                }
-                                else if (options->getNode("use_likelihood_plugins").IsScalar())
-                                {
-                                        std::string plug = options->getValue<std::string>("use_likelihood_plugins");
-                                        auto it2 = selectedPlugins.find(plug);
-                                        if (it2 != selectedPlugins.end())
-                                        {
-                                                Plugins::Plugin_Details pls = plugins->find("like", it2->second.plugin, it2->second.version, it2->second.library);
-                                                if (options->hasKey("plugins", plug, "purpose"))
-                                                {
-                                                        interfaces[options->getValue<std::string>("plugins", plug, "purpose")].emplace_back(plug, pls, options->getOptions("plugins", plug));
-                                                }
-                                                else
-                                                {
-                                                        scan_err << "Must specify purpose under the plugin tag \"" << plug << "\"." << scan_end;
+                                                        scan_err << "Must specify purpose under the plugin tag \"" << *it << "\"." << scan_end;
                                                 }
                                                 
-                                                if (options->hasKey("plugins", plug, "parameters"))
+                                                if (options->hasKey("plugins", *it, "parameters"))
                                                 {
-                                                        if (options->hasKey("parameters") && options->hasKey("parameters", plug))
+                                                        if (options->hasKey("parameters") && options->hasKey("parameters", *it))
                                                         {
-                                                                scan_err << "Plugin tagged by \"" << plug << "\" has parameters that are defined in "
+                                                                scan_err << "Plugin \"" << *it << "\"'s parameters are defined in "
                                                                         << "both the \"parameters\" section and the \"plugins\" "
                                                                         << "section in the inifile." << scan_end;
                                                         }
-                                                        nodes[plug] = options->getNode("plugins", plug, "parameters");
+                                                        nodes[*it] = options->getNode("plugins", *it, "parameters");
                                                 }
+                                        }
+                                }
+                                else if (options->getNode("use_objective_plugins").IsScalar())
+                                {
+                                        std::string plug = options->getValue<std::string>("use_objective_plugins");
+                                        
+                                        if (options->hasKey("plugins", plug, "purpose"))
+                                        {
+                                                names[options->getValue<std::string>("plugins", plug, "purpose")].push_back(plug);
                                         }
                                         else
                                         {
-                                                scan_err << "Plugin \"" << plug << "\" (requested by \"use_likelihood_plugins:\") is not "
-                                                        << "defined under the \"plugins\" subsection in the inifile" << scan_end;
+                                                scan_err << "Must specify purpose under the plugin tag \"" << plug << "\"." << scan_end;
+                                        }
+                                        
+                                        if (options->hasKey("plugins", plug, "parameters"))
+                                        {
+                                                if (options->hasKey("parameters") && options->hasKey("parameters", plug))
+                                                {
+                                                        scan_err << "Plugin tagged by \"" << plug << "\" has parameters that are defined in "
+                                                                << "both the \"parameters\" section and the \"plugins\" "
+                                                                << "section in the inifile." << scan_end;
+                                                }
+                                                nodes[plug] = options->getNode("plugins", plug, "parameters");
                                         }
                                 }
                                 else
@@ -186,7 +144,7 @@ namespace Gambit
                                         scan_err << "\"use_likelihood_plugins:\" input value not usable in the inifile." << scan_end;
                                 }
                                 
-                                if (interfaces.size() > 0)
+                                if (names.size() > 0)
                                 {
                                         YAML::Node paramNode;
                                         YAML::Node priorNode;
@@ -216,7 +174,7 @@ namespace Gambit
                                         }
                                         
                                         prior = new Gambit::Priors::CompositePrior(paramNode, priorNode);
-                                        factory = new Plugin_Function_Factory(*prior, interfaces);
+                                        factory = new Plugin_Function_Factory(*prior, names);
                                 }
                                 else
                                 {
@@ -237,27 +195,16 @@ namespace Gambit
                         std::string pluginName;
                         if (options->hasKey("use_scanner_plugin"))
                         {
-                                auto it2 = selectedPlugins.find(pluginName = options->getValue<std::string>("use_scanner_plugin"));
-                                if (it2 != selectedPlugins.end())
-                                {
-                                        plugin = plugins->find("scan", it2->second.plugin, it2->second.version, it2->second.library);
-                                }
-                                else
-                                {
-                                        scan_err << "Plugin \"" << pluginName << "\" (requested by \"use_scanner_plugin:\") is not defined under the \"plugins\""
-                                                << " subsection in the inifile" << scan_end;
-                                }
+                                pluginName = options->getValue<std::string>("use_scanner_plugin");
                         }
                         else
                         {
                                 scan_err << "\"use_scanner_plugin:\" input value not usable in the inifile." << scan_end;
                         }
 
-                        Gambit::Scanner::IniFileInterface interface(pluginName, plugin, options->getOptions("plugins", pluginName));
-                        
                         unsigned int dim = prior->size();
                         
-                        Plugins::Plugin_Interface<int ()> plugin_interface(interface.fileName(), plugin.full_string, dim, *factory, interface, *prior);
+                        Plugins::Plugin_Interface<int ()> plugin_interface("scan", pluginName, dim, *factory);
                         plugin_interface();
                         
                         return 0;

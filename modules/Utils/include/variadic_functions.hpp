@@ -143,6 +143,8 @@ namespace Gambit
                 return getVariadicNode(node[key], keys...);
         }
         
+        inline const std::string stringifyVariadic() {return "";}
+        
         inline const std::string stringifyVariadic(const std::string &str) {return str;}
         
         template<typename... args>

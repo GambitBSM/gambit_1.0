@@ -2,7 +2,6 @@ set(scannerbit_sources
                  src/cauchy.cpp
                  src/composite.cpp
                  src/gaussian.cpp
-                 src/inifile_interface.cpp
                  src/plugin_comparators.cpp
                  src/plugin_loader.cpp
                  src/scan.cpp
@@ -13,8 +12,6 @@ set(scannerbit_headers
                  include/cholesky.hpp
                  include/factory_registry.hpp
                  include/factory_defs.hpp
-                 include/function_plugin.hpp
-                 include/inifile_interface.hpp
                  include/plugin_comparators.hpp
                  include/plugin_defs.hpp
                  include/plugin_details.hpp
@@ -31,12 +28,14 @@ set(scannerbit_headers
                  include/scanner_plugin.hpp
                  include/scanner_utils.hpp
                  include/scannerbit.hpp
+                 include/objective_plugin.hpp
                  include/priors/cauchy.hpp
                  include/priors/composite.hpp
                  include/priors/dummy.hpp
                  include/priors/fixed_same_as.hpp
                  include/priors/flat_log.hpp
                  include/priors/gaussian.hpp
+                 include/priors/plugin.hpp
 )
 
 set(scanner_plugin_sources
@@ -52,14 +51,19 @@ set(scanner_plugin_headers
                  include/scanners/twalk.hpp
 )
 
-set(scanner_test_sources
-                 src/test_functions/examples.cpp
+set(scanner_objective_sources
+                 src/objectives/examples.cpp
+)
+
+set(scanner_scanlibs_sources 
+                src/scanlibs.cpp
 )
 
 add_gambit_library(ScannerBit OPTION OBJECT SOURCES ${scannerbit_sources} HEADERS ${scannerbit_headers})
-add_gambit_library(sample OPTION SHARED SOURCES ${scanner_plugin_sources} HEADERS ${scanner_plugin_sources})
-add_gambit_library(scantest OPTION SHARED SOURCES ${scanner_test_sources})
-set_target_properties( sample scantest 
+add_gambit_library(sample OPTION SHARED SOURCES ${scanner_plugin_sources} HEADERS ${scanner_plugin_headers})
+add_gambit_library(scantest OPTION SHARED SOURCES ${scanner_objective_sources})
+add_gambit_executable(scanlibs SOURCES ${scanner_scanlibs_sources})
+set_target_properties( sample scantest scanlibs
                        PROPERTIES
                        ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/lib"
                        LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/lib"

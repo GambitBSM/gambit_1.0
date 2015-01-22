@@ -23,5 +23,6 @@
 #include "priors/fixed_same_as.hpp"
 #include "priors/cauchy.hpp"
 #include "priors/composite.hpp"
+#include "priors/plugin.hpp"
 
 #endif

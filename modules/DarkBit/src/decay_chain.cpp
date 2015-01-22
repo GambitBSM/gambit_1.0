@@ -13,7 +13,8 @@
 ///   
 ///  \author Lars A. Dal  
 ///          (l.a.dal@fys.uio.no)
-///  \date 2014 Oct
+///  \date 2014 Oct, Nov, Dec
+///  \date 2015 Jan
 ///
 ///  *********************************************
 
@@ -316,11 +317,13 @@ namespace Gambit
             vector<double>::const_iterator pos = upper_bound(randLims.begin(),randLims.end(),pick);   
             return pos - randLims.begin();
         }        
-        const TH_Channel* DecayTableEntry::randomDecay() const
+        bool DecayTableEntry::randomDecay(const TH_Channel* &decay) const
         {
+            if(!hasEnabledDecays()) return false;
             double pick = rand_0_1();
             int idx = findChannelIdx(pick);
-            return enabledDecays[idx];
+            decay = enabledDecays[idx];
+            return true;
         }    
         void DecayTableEntry::generateRandTable() const
         {
@@ -442,12 +445,16 @@ namespace Gambit
         {
             return useForcedTotalWidth ? forcedTotalWidth : totalWidth;
         }
+        bool DecayTableEntry::hasEnabledDecays() const
+        {
+            return (enabledDecays.size()>0);
+        }
 
         //  *********************************************
         //  DecayTable functions
         //  *********************************************
 
-        DecayTable::DecayTable(const TH_ProcessCatalog &cat)
+        DecayTable::DecayTable(const TH_ProcessCatalog &cat, const SimYieldTable &tab)
         {
             set<string> finalStates;
             // Register all decaying particles and their decays
@@ -460,6 +467,8 @@ namespace Gambit
                 string pID = it->particle1ID;
                 double m = cat.getParticleProperty(pID).mass;
                 bool stable = ((it->channelList).size()<1);
+                // If tabulated spectra exist for decays of this particle, consider it stable for the purpose of decay chain generation
+                if(tab.hasAnyChannel(pID)) stable = true;             
                 // Create DecayTableEntry and insert decay channels
                 DecayTableEntry entry(pID,m,stable);
                 for(vector<TH_Channel>::const_iterator it2 = (it->channelList).begin(); it2 != (it->channelList).end(); ++it2)
@@ -484,7 +493,7 @@ namespace Gambit
             }
             // Flag channels where all final final states are stable as endpoints.
             // Loop over all particles
-            for(map<string,DecayTableEntry>::iterator it = table.begin(); it != table.end(); ++it)
+            for(unordered_map<string,DecayTableEntry>::iterator it = table.begin(); it != table.end(); ++it)
             {
                 // Loop over all decays
                 for(vector<const TH_Channel*>::const_iterator it2 = (it->second.enabledDecays).begin(); it2 != (it->second.enabledDecays).end(); ++it2)
@@ -526,9 +535,9 @@ namespace Gambit
         {
             table.insert ( pair<string,DecayTableEntry>(pID,entry) );
         }
-        const TH_Channel* DecayTable::randomDecay(string pID) const
+        bool DecayTable::randomDecay(string pID, const TH_Channel* &decay) const
         {
-            return (table.at(pID)).randomDecay();
+            return (table.at(pID)).randomDecay(decay);
         }  
         double DecayTable::getWidth(const TH_Channel *ch)
         {
@@ -537,7 +546,7 @@ namespace Gambit
         void DecayTable::printTable() const
         {
             cout << "DecayTable printout:" << endl;
-            for(map<string,DecayTableEntry>::const_iterator it = table.begin(); it != table.end(); ++it)
+            for(unordered_map<string,DecayTableEntry>::const_iterator it = table.begin(); it != table.end(); ++it)
             {
                 cout << "Particle: " <<(it->first) << endl;
                 cout << "Total width: " << (it->second.getTotalWidth())<< endl;
@@ -590,16 +599,23 @@ namespace Gambit
                 cout << "Warning: Overwriting existing decay in decay chain." << endl;
                 cutChain();
             }
-            // Stable particles flagged as endpoints. Currently not strictly necessary
+            // Stable particles flagged as endpoints
             if((*decayTable)[pID].stable)
             { 
                 isEndpoint = true;
             }
-            else if(
-                ((maxSteps < 0) || (int(chainGeneration) < maxSteps)) 
-                 && ((Emin < 0) || (E_Lab()> Emin)) )
+            // Check whether or not to proceed with decay
+            else if( ((maxSteps < 0) or (int(chainGeneration) < maxSteps)) 
+                 and ((Emin < 0) or (E_Lab()> Emin)) )
             {
-                const TH_Channel *chn = decayTable->randomDecay(pID);
+                const TH_Channel *chn; 
+                bool canDecay = decayTable->randomDecay(pID, chn); 
+                if(!canDecay)
+                {
+                    cout << "Warning: Unable to pick allowed decay. Keeping particle stable." << endl;
+                    abortedDecay = true;
+                    return;
+                }
                 int failed = 0;
                 // Only 2-body decays are currently allowed
                 while((chn->nFinalStates) != 2)
@@ -610,9 +626,9 @@ namespace Gambit
                                 "N!=2 body decays are currently not supported." << endl
                              << "Trying to pick new decay channel." << endl;
                     }
-                    chn = decayTable->randomDecay(pID);
+                    canDecay = decayTable->randomDecay(pID, chn);
                     failed++;
-                    if(failed >= 100)
+                    if(failed >= 100 or !canDecay)
                     {
                         cout << "Warning: Unable to pick allowed decay. Keeping particle stable." << endl;
                         abortedDecay = true;
@@ -622,7 +638,12 @@ namespace Gambit
                 nChildren = 2; // chn->nFinalStates;
                 // Kinematics for 2-body decays
                 double m1 = (*decayTable)[(chn->finalStateIDs)[0]].m;
-                double m2 = (*decayTable)[(chn->finalStateIDs)[1]].m;            
+                double m2 = (*decayTable)[(chn->finalStateIDs)[1]].m; 
+                if(m1+m2>m)
+                {
+                    cout << "Error: Kinematically impossible decay in decay chain. Please check your process catalog." << endl;
+                    exit(1);
+                }           
                 const double &Etot = m;
                 double E1 = 0.5*(Etot*Etot+m1*m1-m2*m2)/Etot;
                 double E2 = Etot-E1; 
@@ -643,11 +664,15 @@ namespace Gambit
                 // Continue chain from child links.                
                 else
                 {
-                    for(unsigned int i=0;i<nChildren;i++)
+                    for(int i=0;i<nChildren;i++)
                     {
                         children[i]->generateDecayChainMC(maxSteps, Emin);  
                     }
                 }
+            }
+            else
+            {
+                abortedDecay = true;
             }
         } 
         void ChainParticle::reDrawAngles()
@@ -669,7 +694,7 @@ namespace Gambit
         }
         void ChainParticle::cutChain()
         {
-            for(unsigned int i=0;i<nChildren; i++) delete children[i];
+            for(int i=0;i<nChildren; i++) delete children[i];
             children.clear();
             nChildren = 0;
         }  
@@ -713,7 +738,7 @@ namespace Gambit
                 }
             }
         }
-        const ChainParticle* ChainParticle::operator[](unsigned int i) const
+        const ChainParticle* ChainParticle::operator[](int i) const
         {
             if(i<nChildren)
                 return children[i];
@@ -735,14 +760,14 @@ namespace Gambit
             if(nChildren>0)
             {
                 bool run = false;
-                unsigned gen = 1;
+                int gen = 1;
                 do
                 {
                     cout << "Generation " << gen <<":" << endl;
                     run= false;
-                    for(unsigned i=0;i<nChildren;i++)
+                    for(int i=0;i<nChildren;i++)
                     {
-                        vector<unsigned> ancestry;
+                        vector<int> ancestry;
                         ancestry.push_back(0);
                         ancestry.push_back(i);
                         bool more = children[i]->printChain(gen,ancestry);
@@ -754,21 +779,21 @@ namespace Gambit
                 while(run);
             }
         }
-        bool ChainParticle::printChain(unsigned generation, vector<unsigned> ancestry) const
+        bool ChainParticle::printChain(int generation, vector<int> ancestry) const
         {
             if(generation < chainGeneration) return false;
             if(generation > chainGeneration)
             {
                 bool more = false;
-                for(unsigned i=0;i<nChildren;i++)
+                for(int i=0;i<nChildren;i++)
                 {
-                    vector<unsigned> ancestry2 = ancestry;
+                    vector<int> ancestry2 = ancestry;
                     ancestry2.push_back(i);
                     if(children[i]->printChain(generation,ancestry2)) more = true;
                 }  
                 return more;
             }
-            for(vector<unsigned>::const_iterator it=ancestry.begin(); it!=ancestry.end(); ++it)
+            for(vector<int>::const_iterator it=ancestry.begin(); it!=ancestry.end(); ++it)
             {
                 cout << *it << "  ";
             }
@@ -776,9 +801,15 @@ namespace Gambit
             if(nChildren>0) return true;
             return false;
         }
+        void ChainParticle::getBoost(double& gamma, double& beta) const
+        {
+            const mat4& b=boostToLabFrame;
+            gamma = b.vals[0][0];
+            beta = sqrt(b.vals[0][1]*b.vals[0][1]+b.vals[0][2]*b.vals[0][2]+b.vals[0][3]*b.vals[0][3])/gamma;
+        }        
         ChainParticle::~ChainParticle()
         {
-            for(unsigned int i=0;i<nChildren; i++) delete children[i];
+            for(int i=0;i<nChildren; i++) delete children[i];
         }
         void ChainParticle::update(vec4 &ip_parent)
         {

@@ -27,7 +27,7 @@ import itertools
 execfile("./Utils/scripts/harvesting_tools.py")
 
 scan_config = "./config/scanner_locations.yaml"
-test_config = "./config/test_function_locations.yaml"
+test_config = "./config/objective_locations.yaml"
 
 # Actual updater program
 def main(argv):
@@ -56,7 +56,7 @@ def main(argv):
 
     # Find all source files in the ScannerBit scanner and test_function plugin directories
     for root,dirs,files in os.walk("./ScannerBit/src/scanners"): sources = [root + "/" + f for f in files if f.endswith((".c",".cc",".cpp"))]
-    for root,dirs,files in os.walk("./ScannerBit/src/test_functions"): sources.extend([root + "/" + f for f in files if f.endswith((".c",".cc",".cpp"))])
+    for root,dirs,files in os.walk("./ScannerBit/src/objectives"): sources.extend([root + "/" + f for f in files if f.endswith((".c",".cc",".cpp"))])
  
     # Work through the source files to find all plugins that need external linkage
     for source in sources:

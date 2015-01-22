@@ -27,7 +27,7 @@
 #include "scanner_plugin.hpp"
 #include "threadsafe_rng.hpp"
 
-scanner_plugin(toy_mcmc, version(1, 0, 0))
+scanner_plugin(toy_mcmc, version(1, 0, 0), external_library_required)
 {      
         void hiFunc(){std::cout << "This is the GAMBIT toy MCMC.  Don't run serious scans with this." << std::endl;}
         plugin_constructor

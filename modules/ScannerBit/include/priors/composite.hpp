@@ -64,7 +64,7 @@ namespace Gambit
                         inline const std::vector<std::string> & getParameters() const {return param_names;}
                         
                         // Transformation from unit hypercube to my_ranges
-                        void transform(const std::vector<double> &unitPars, std::map<std::string,double> &outputMap) const
+                        void transform(const std::vector<double> &unitPars, std::unordered_map<std::string,double> &outputMap) const
                         {
                                 std::vector<double>::const_iterator unit_it = unitPars.begin(), unit_next;
                                 for (auto it = my_subpriors.begin(), end = my_subpriors.end(); it != end; it++)

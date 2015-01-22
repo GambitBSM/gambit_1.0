@@ -20,8 +20,8 @@
 ///
 ///  *********************************************
 
-#ifndef FUNCTION_PLUGIN_HPP
-#define FUNCTION_PLUGIN_HPP
+#ifndef OBJECTIVE_PLUGIN_HPP
+#define OBJECTIVE_PLUGIN_HPP
 
 #include "scanner_utils.hpp"
 #include "plugin_defs.hpp"
@@ -38,66 +38,40 @@ namespace Gambit
                 class PriorTransform
                 {
                 public:
-                        virtual void transform(const std::vector<double> &, std::map<std::string, double> &) const = 0;
+                        virtual void transform(const std::vector<double> &, std::unordered_map<std::string, double> &) const = 0;
                         virtual ~PriorTransform() = 0;
-                };
-                
-                /*Inifile Interface*/
-                class IniFileInterface
-                {
-                public:
-                        virtual const std::string pluginName() const = 0;
-                        virtual const std::string fileName() const = 0;
-                        virtual const std::string getValue(const std::string &in) const = 0;
-                        virtual YAML::Node getNode(const std::string &str) const = 0;
-                        virtual ~IniFileInterface() = 0;
                 };
         }
 }
 
-#define init_inifile_value(exp, ...)    INIT_INIFILE_VALUE(exp, __VA_ARGS__) enum{}
-#define init_keys(exp)                  INIT_KEYS(exp) enum{}
+///\name Objective Plugin Macros
+///Macros used by the objective plugins.
+///@{
+///Initialize "exp" to the parameter names.
+#define init_keys(exp)                  INIT_KEYS(exp)
+///Gets the parameter names.
 #define get_keys()                      GET_KEYS()
-#define function_plugin(...)            FUNCTION_PLUGIN( __VA_ARGS__ )
+///Used only if the plugin is doing to be used as a prior.
+///Sets the sub-hypercube size that is need by the prior.
+#define set_size(size)                  SET_SIZE(size)
+///Objective plugin declaration.  Is of the form:  objective_plugin(name, version)
+#define objective_plugin(...)           OBJECTIVE_PLUGIN( __VA_ARGS__ )
+///@}
 
-#define INIT_INIFILE_VALUE(exp, ...)    INITIALIZE(exp, get_inifile_value<decltype(exp)>( __VA_ARGS__ ))
 #define INIT_KEYS(exp)                  INITIALIZE(exp, GET_KEYS())
 
 #define GET_KEYS()                      get_input_value<std::vector<std::string>>(0)
+#define SET_SIZE(size)                  get_input_value<unsigned int>(1) = size
 
-#define FUNCTION_SETUP(mod_name)                                                                                        \
+#define OBJECTIVE_SETUP                                                                                                 \
 using namespace Gambit::Scanner;                                                                                        \
-template <typename T>                                                                                                   \
-T get_inifile_value(std::string in)                                                                                     \
-{                                                                                                                       \
-        YAML::Node conv = (get_input_value<IniFileInterface>(2)).getNode(in);                                           \
-        if (conv.IsNull())                                                                                              \
-        {                                                                                                               \
-                scan_err << "Missing iniFile entry needed by plugin \""                                                 \
-                                << (__gambit_plugin_namespace__::myData.name) << "\":  " << scan_end;                   \
-        }                                                                                                               \
-                                                                                                                        \
-        return conv.as<T>();                                                                                            \
-}                                                                                                                       \
-                                                                                                                        \
-template <typename T>                                                                                                   \
-T get_inifile_value(std::string in, T defaults)                                                                         \
-{                                                                                                                       \
-        YAML::Node conv = (get_input_value<IniFileInterface>(2)).getNode(in);                                           \
-        if (conv.IsNull())                                                                                              \
-        {                                                                                                               \
-                return defaults;                                                                                        \
-        }                                                                                                               \
-                                                                                                                        \
-        return conv.as<T>();                                                                                            \
-}                                                                                                                       \
                                                                                                                         \
 inline const std::vector<std::string> add_gambit_prefix(const std::vector<std::string> &key)                            \
 {                                                                                                                       \
         std::vector<std::string> vec;                                                                                   \
         for (auto it = key.begin(), end = key.end(); it != end; it++)                                                   \
         {                                                                                                               \
-                vec.push_back(std::string( #mod_name ) + "::" + *it);                                                   \
+                vec.push_back(__gambit_plugin_namespace__::myData.tag + "::" + *it);                                    \
         }                                                                                                               \
         return vec;                                                                                                     \
 }                                                                                                                       \
@@ -106,7 +80,7 @@ inline std::vector<double> &prior_transform(const std::vector<double> &in)      
 {                                                                                                                       \
         const static std::vector<std::string> key = add_gambit_prefix(get_input_value<std::vector<std::string>>(0));    \
         const static PriorTransform &prior = get_input_value<PriorTransform>(1);                                        \
-        static std::map<std::string, double> key_map;                                                                   \
+        static std::unordered_map<std::string, double> key_map;                                                         \
         static std::vector<double> ret(key.size());                                                                     \
                                                                                                                         \
         prior.transform(in, key_map);                                                                                   \
@@ -122,19 +96,19 @@ inline std::vector<double> &prior_transform(const std::vector<double> &in)      
 
 #define ENTER_FUNC_FUNC(func, num, ...) COMBINE(func, num)( __VA_ARGS__ )
 
-#define FUNCTION_PLUGIN(...) ENTER_FUNC_FUNC(FUNCTION_PLUGIN_, ARG_N(__VA_ARGS__), __VA_ARGS__ )
+#define OBJECTIVE_PLUGIN(...) ENTER_FUNC_FUNC(OBJECTIVE_PLUGIN_, ARG_N(__VA_ARGS__), __VA_ARGS__ )
 
-#define FUNCTION_PLUGIN_2(mod_name, mod_version)                                                                        \
+#define OBJECTIVE_PLUGIN_2(mod_name, mod_version)                                                                       \
 GAMBIT_PLUGIN(mod_name, like, mod_version)                                                                              \
 {                                                                                                                       \
-        FUNCTION_SETUP(mod_name)                                                                                        \
+        OBJECTIVE_SETUP                                                                                                 \
 }                                                                                                                       \
 namespace __gambit_plugin_ ## mod_name ## __t__like__v__ ## mod_version ##  _namespace__                                \
 
-#define FUNCTION_PLUGIN_3(mod_name, mod_version, option)                                                                \
+#define OBJECTIVE_PLUGIN_3(mod_name, mod_version, option)                                                               \
 GAMBIT_PLUGIN(mod_name, like, mod_version, option)                                                                      \
 {                                                                                                                       \
-        FUNCTION_SETUP(mod_name)                                                                                        \
+        OBJECTIVE_SETUP                                                                                                 \
 }                                                                                                                       \
 namespace COMBINE_3(mod_name ## __t__like__v__ ## mod_version ## __reqd_libs__,                                         \
         libs_present_ ## mod_name ## __t__like__v__ ## mod_version)                                                     \
