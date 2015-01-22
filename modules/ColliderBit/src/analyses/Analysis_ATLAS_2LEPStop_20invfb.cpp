@@ -138,8 +138,8 @@ namespace Gambit {
           for (size_t iJet=0;iJet<goodJets.size();iJet++) {
             P4 jetVec=goodJets.at(iJet)->mom();
             if (fabs(muVec.deltaR_eta(jetVec))<0.4){
-	      overlap=true;
-	    }
+              overlap=true;
+            }
           }
           if (!overlap && muVec.pT()>10.) {
             signalMuons.push_back(baselineMuons.at(iMu));
@@ -151,7 +151,7 @@ namespace Gambit {
         // We now have the signal electrons, muons, jets and b jets- move on to the analysis
 
         // Calculate common variables and cuts first
-	applyTightIDElectronSelection(signalElectrons);
+        applyTightIDElectronSelection(signalElectrons);
 
         int nElectrons = signalElectrons.size();
         int nMuons = signalMuons.size();
@@ -166,16 +166,16 @@ namespace Gambit {
         bool isdphib=false;
 
 
-	//TLorentzVector lep1; TLorentzVector lep2;
+        //TLorentzVector lep1; TLorentzVector lep2;
 
-	//TLorentzVector metvec;
-	//metvec.SetPtEtaPhiE(ptot.pT(),ptot.eta(),ptot.phi(),ptot.E());
+        //TLorentzVector metvec;
+        //metvec.SetPtEtaPhiE(ptot.pT(),ptot.eta(),ptot.phi(),ptot.E());
 
-	//Calculate MT2
+        //Calculate MT2
         if (nLeptons==2) {
 
-	  //lep1.SetPtEtaPhiE(signalLeptons.at(0)->pT(),signalLeptons.at(0)->eta(),signalLeptons.at(0)->phi(),signalLeptons.at(0)->E());
-	  //lep2.SetPtEtaPhiE(signalLeptons.at(1)->pT(),signalLeptons.at(1)->eta(),signalLeptons.at(1)->phi(),signalLeptons.at(1)->E());
+          //lep1.SetPtEtaPhiE(signalLeptons.at(0)->pT(),signalLeptons.at(0)->eta(),signalLeptons.at(0)->phi(),signalLeptons.at(0)->E());
+          //lep2.SetPtEtaPhiE(signalLeptons.at(1)->pT(),signalLeptons.at(1)->eta(),signalLeptons.at(1)->phi(),signalLeptons.at(1)->E());
 
 
           if(((signalLeptons.at(0)->pid()<0 && signalLeptons.at(1)->pid()>0) || (signalLeptons.at(0)->pid()>0 && signalLeptons.at(1)->pid()<0))) isOS=true;
@@ -189,8 +189,8 @@ namespace Gambit {
           double dphi_jetmetclose = 9999.;
           for(int j=0; j<nJets; j++) {
             //float temp = std::acos(std::cos(signalJets.at(j)->phi()-ptot.phi()));
-	    double temp = Phi_mpi_pi(signalJets.at(j)->phi()-ptot.phi());
-	    if(fabs(temp)<dphi_jetmetclose) {
+            double temp = Phi_mpi_pi(signalJets.at(j)->phi()-ptot.phi());
+            if(fabs(temp)<dphi_jetmetclose) {
               dphi_jetmetclose = temp;
             }
           }
@@ -199,15 +199,15 @@ namespace Gambit {
           P4 ptllmet;
           ptllmet = signalLeptons[0]->mom() + signalLeptons[1]->mom() + ptot;
 
-	  //float temp = ptllmet.deltaPhi(ptot);
-	  float temp=ptllmet.phi()-ptot.phi();
-	  double dphib=Phi_mpi_pi((double)temp);
+          //float temp = ptllmet.deltaPhi(ptot);
+          float temp=ptllmet.phi()-ptot.phi();
+          double dphib=Phi_mpi_pi((double)temp);
 
-	  //TLorentzVector ptllmet_root;
-	  //ptllmet_root = lep1 + lep2 + metvec;
-	  //float temp_root = ptllmet_root.DeltaPhi(metvec);
+          //TLorentzVector ptllmet_root;
+          //ptllmet_root = lep1 + lep2 + metvec;
+          //float temp_root = ptllmet_root.DeltaPhi(metvec);
 
-	  //std::cout << "DPHIB " << dphib << " DPHIBROOT " << temp_root << " ele " << signalElectrons.size() << " muo " << signalMuons.size() << std::endl;
+          //std::cout << "DPHIB " << dphib << " DPHIBROOT " << temp_root << " ele " << signalElectrons.size() << " muo " << signalMuons.size() << std::endl;
 
           if(fabs(dphib)<1.5) isdphib=true;
 
@@ -226,29 +226,29 @@ namespace Gambit {
              && signalJets[1]->pT() > 50.)passJetCut=true;
         }
 
-	//Calculate MT2
-	double mt2ll=0;
-	if(nLeptons==2){
-	  double pa_a[3] = { 0, signalLeptons[0]->mom().px(), signalLeptons[0]->mom().py() };
-	  double pb_a[3] = { 0, signalLeptons[1]->mom().px(), signalLeptons[1]->mom().py() };
-	  double pmiss_a[3] = { 0, ptot.px(), ptot.py() };
-	  double mn_a = 0.;
+        //Calculate MT2
+        double mt2ll=0;
+        if(nLeptons==2){
+          double pa_a[3] = { 0, signalLeptons[0]->mom().px(), signalLeptons[0]->mom().py() };
+          double pb_a[3] = { 0, signalLeptons[1]->mom().px(), signalLeptons[1]->mom().py() };
+          double pmiss_a[3] = { 0, ptot.px(), ptot.py() };
+          double mn_a = 0.;
 
-	  mt2_bisect::mt2 mt2_event_a;
+          mt2_bisect::mt2 mt2_event_a;
 
-	  mt2_event_a.set_momenta(pa_a,pb_a,pmiss_a);
-	  mt2_event_a.set_mn(mn_a);
+          mt2_event_a.set_momenta(pa_a,pb_a,pmiss_a);
+          mt2_event_a.set_mn(mn_a);
 
-	  mt2ll = mt2_event_a.get_mt2();
-	}
+          mt2ll = mt2_event_a.get_mt2();
+        }
 
-	bool cut_2leptons_ee=false;
+        bool cut_2leptons_ee=false;
         bool cut_2leptons_emu=false;
         bool cut_2leptons_mumu=false;
         bool cut_2leptons_base=false;
         bool cut_2leptons=false;
-	bool cut_2jets=false;
-	bool cut_MT290=false;
+        bool cut_2jets=false;
+        bool cut_MT290=false;
         bool cut_MT2100=false;
         bool cut_MT2110=false;
         bool cut_MT2120=false;
@@ -264,7 +264,7 @@ namespace Gambit {
         if(signalElectrons.size()==1 && signalMuons.size()==1) cut_2leptons_emu=true;
         if(signalElectrons.size()==0 && signalMuons.size()==2) cut_2leptons_mumu=true;
 
-	if(passJetCut)cut_2jets=true;
+        if(passJetCut)cut_2jets=true;
 
         cutFlowVector_str[0] = "No cuts ";
         cutFlowVector_str[1] = "2 Baseline Leptons ";
@@ -390,7 +390,7 @@ namespace Gambit {
       }
 
       void collect_results() {
-	finalize();
+        finalize();
 
         SignalRegionData results_SRM90;
         results_SRM90.set_observation(274.);

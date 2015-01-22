@@ -69,17 +69,17 @@ namespace Gambit {
           if (muon->pT() > 6. && fabs(muon->eta()) < 2.4) baselineMuons.push_back(muon);
         }
 
-        const std::vector<float>  a = {0,10.};      
-        const std::vector<float>  b = {0,10000.};      
-        const std::vector<double> c = {0.60};      
-	BinnedFn2D<double> _eff2d(a,b,c);
+        const std::vector<float>  a = {0,10.};
+        const std::vector<float>  b = {0,10000.};
+        const std::vector<double> c = {0.60};
+        BinnedFn2D<double> _eff2d(a,b,c);
 
         vector<Jet*> baselineJets;
         vector<Jet*> bJets;
         vector<Jet*> trueBJets; //for debugging
-	
+
         for (Jet* jet : event->jets()) {
-	  if (jet->pT() > 20. && fabs(jet->eta()) < 4.9) baselineJets.push_back(jet);
+          if (jet->pT() > 20. && fabs(jet->eta()) < 4.9) baselineJets.push_back(jet);
         }
 
         // Overlap removal
@@ -128,11 +128,11 @@ namespace Gambit {
           if(!overlap)muonsForVeto.push_back(baselineMuons.at(iMu));
         }
 
-	for (Jet* jet : signalJets) {
-	  bool hasTag=has_tag(_eff2d, jet->eta(), jet->pT());
-	  if(jet->btag() && hasTag && fabs(jet->eta()) < 2.5 && jet->pT() > 20.) bJets.push_back(jet);
-	}
-		
+        for (Jet* jet : signalJets) {
+          bool hasTag=has_tag(_eff2d, jet->eta(), jet->pT());
+          if(jet->btag() && hasTag && fabs(jet->eta()) < 2.5 && jet->pT() > 20.) bJets.push_back(jet);
+        }
+
         // We now have the signal electrons, muons, jets and b jets- move on to the analysis
 
         // Calculate common variables and cuts first
@@ -161,43 +161,43 @@ namespace Gambit {
                 mbb = (bJets[0]->mom()+bJets[1]->mom()).m();
 
                 float bjet1_ET = sqrt(bJets[0]->mom().pT()*bJets[0]->mom().pT()+bJets[0]->mom().m()*bJets[0]->mom().m());
-		float bjet2_ET = sqrt(bJets[1]->mom().pT()*bJets[1]->mom().pT()+bJets[1]->mom().m()*bJets[1]->mom().m());
+                float bjet2_ET = sqrt(bJets[1]->mom().pT()*bJets[1]->mom().pT()+bJets[1]->mom().m()*bJets[1]->mom().m());
                 //TVector2 bjet1_pT;
                 //TVector2 bjet2_pT;
                 //bjet1_pT.Set(bjet1.Px(),bjet1.Py());
                 //bjet2_pT.Set(bjet2.Px(),bjet2.Py());
-                
-		double modPTdiff_squared=(bJets[0]->mom().px()-bJets[1]->mom().px())*(bJets[0]->mom().px()-bJets[1]->mom().px())
-		  +                      (bJets[0]->mom().py()-bJets[1]->mom().py())*(bJets[0]->mom().py()-bJets[1]->mom().py());
-		
-		double mct_squared = pow(bjet1_ET+bjet2_ET,2)-modPTdiff_squared;
-		mCT = sqrt(mct_squared);
+
+                double modPTdiff_squared=(bJets[0]->mom().px()-bJets[1]->mom().px())*(bJets[0]->mom().px()-bJets[1]->mom().px())
+                  +                      (bJets[0]->mom().py()-bJets[1]->mom().py())*(bJets[0]->mom().py()-bJets[1]->mom().py());
+
+                double mct_squared = pow(bjet1_ET+bjet2_ET,2)-modPTdiff_squared;
+                mCT = sqrt(mct_squared);
               }
             }
             if(nJets>2) {
               if(signalJets[2]->pT() < 50.) {
                 passSRAJetCut=true;
-		//Check that the two leading jets are the b jets
-		if(bJets.size()==2 && (signalJets[0]->pT()==bJets[0]->pT()) && (signalJets[1]->pT()==bJets[1]->pT())){
+                //Check that the two leading jets are the b jets
+                if(bJets.size()==2 && (signalJets[0]->pT()==bJets[0]->pT()) && (signalJets[1]->pT()==bJets[1]->pT())){
                   passSRAbJetCut=true;
                   //TLorentzVector bjet1;
                   //TLorentzVector bjet2;
                   //bjet1.SetPtEtaPhiE(signalJets[0]->pT(),signalJets[0]->eta(),signalJets[0]->phi(),signalJets[0]->E());
                   //bjet2.SetPtEtaPhiE(signalJets[1]->pT(),signalJets[1]->eta(),signalJets[1]->phi(),signalJets[1]->E());
                   mbb = (bJets[0]->mom()+bJets[1]->mom()).m();
-		  float bjet1_ET = sqrt(bJets[0]->mom().pT()*bJets[0]->mom().pT()+bJets[0]->mom().m()*bJets[0]->mom().m());
-		  float bjet2_ET = sqrt(bJets[1]->mom().pT()*bJets[1]->mom().pT()+bJets[1]->mom().m()*bJets[1]->mom().m());
-		  //TVector2 bjet1_pT;
-		  //TVector2 bjet2_pT;
-		  //bjet1_pT.Set(bjet1.Px(),bjet1.Py());
-		  //bjet2_pT.Set(bjet2.Px(),bjet2.Py());
-		  
-		  double modPTdiff_squared=(bJets[0]->mom().px()-bJets[1]->mom().px())*(bJets[0]->mom().px()-bJets[1]->mom().px())
-		    +                      (bJets[0]->mom().py()-bJets[1]->mom().py())*(bJets[0]->mom().py()-bJets[1]->mom().py());
-		  
-		  double mct_squared = pow(bjet1_ET+bjet2_ET,2)-modPTdiff_squared;
-		  mCT = sqrt(mct_squared);
-		  		  
+                  float bjet1_ET = sqrt(bJets[0]->mom().pT()*bJets[0]->mom().pT()+bJets[0]->mom().m()*bJets[0]->mom().m());
+                  float bjet2_ET = sqrt(bJets[1]->mom().pT()*bJets[1]->mom().pT()+bJets[1]->mom().m()*bJets[1]->mom().m());
+                  //TVector2 bjet1_pT;
+                  //TVector2 bjet2_pT;
+                  //bjet1_pT.Set(bjet1.Px(),bjet1.Py());
+                  //bjet2_pT.Set(bjet2.Px(),bjet2.Py());
+
+                  double modPTdiff_squared=(bJets[0]->mom().px()-bJets[1]->mom().px())*(bJets[0]->mom().px()-bJets[1]->mom().px())
+                    +                      (bJets[0]->mom().py()-bJets[1]->mom().py())*(bJets[0]->mom().py()-bJets[1]->mom().py());
+
+                  double mct_squared = pow(bjet1_ET+bjet2_ET,2)-modPTdiff_squared;
+                  mCT = sqrt(mct_squared);
+
                   //float bjet1_ET = sqrt(bjet1.Pt()*bjet1.Pt()+bjet1.M()*bjet1.M());
                   //float bjet2_ET = sqrt(bjet2.Pt()*bjet2.Pt()+bjet2.M()*bjet2.M());
                   //TVector2 bjet1_pT;
@@ -217,28 +217,28 @@ namespace Gambit {
              && signalJets[1]->pT() > 30.
              && signalJets[2]->pT() > 30.) {
             passSRBJetCut=true;
-	    //Check that the 2nd and 3rd leading jets are the b jets
+            //Check that the 2nd and 3rd leading jets are the b jets
             if(bJets.size()==2 && (bJets[0]->pT()==signalJets[1]->pT()) && (bJets[1]->pT()==signalJets[2]->pT())) {
               passSRBbJetCut=true;
               //TLorentzVector bjet1;
               //TLorentzVector bjet2;
               //bjet1.SetPtEtaPhiE(signalJets[1]->pT(),signalJets[1]->eta(),signalJets[1]->phi(),signalJets[1]->E());
               //bjet2.SetPtEtaPhiE(signalJets[2]->pT(),signalJets[2]->eta(),signalJets[2]->phi(),signalJets[2]->E());
-	      
-	      mbb = (bJets[0]->mom()+bJets[1]->mom()).m();
-	      float bjet1_ET = sqrt(bJets[0]->mom().pT()*bJets[0]->mom().pT()+bJets[0]->mom().m()*bJets[0]->mom().m());
-	      float bjet2_ET = sqrt(bJets[1]->mom().pT()*bJets[1]->mom().pT()+bJets[1]->mom().m()*bJets[1]->mom().m());
-	      //TVector2 bjet1_pT;
-	      //TVector2 bjet2_pT;
-	      //bjet1_pT.Set(bjet1.Px(),bjet1.Py());
-	      //bjet2_pT.Set(bjet2.Px(),bjet2.Py());
-	      
-	      double modPTdiff_squared=(bJets[0]->mom().px()-bJets[1]->mom().px())*(bJets[0]->mom().px()-bJets[1]->mom().px())
-		+                      (bJets[0]->mom().py()-bJets[1]->mom().py())*(bJets[0]->mom().py()-bJets[1]->mom().py());
-	      
-	      double mct_squared = pow(bjet1_ET+bjet2_ET,2)-modPTdiff_squared;
-	      mCT = sqrt(mct_squared);
-	      
+
+              mbb = (bJets[0]->mom()+bJets[1]->mom()).m();
+              float bjet1_ET = sqrt(bJets[0]->mom().pT()*bJets[0]->mom().pT()+bJets[0]->mom().m()*bJets[0]->mom().m());
+              float bjet2_ET = sqrt(bJets[1]->mom().pT()*bJets[1]->mom().pT()+bJets[1]->mom().m()*bJets[1]->mom().m());
+              //TVector2 bjet1_pT;
+              //TVector2 bjet2_pT;
+              //bjet1_pT.Set(bjet1.Px(),bjet1.Py());
+              //bjet2_pT.Set(bjet2.Px(),bjet2.Py());
+
+              double modPTdiff_squared=(bJets[0]->mom().px()-bJets[1]->mom().px())*(bJets[0]->mom().px()-bJets[1]->mom().px())
+                +                      (bJets[0]->mom().py()-bJets[1]->mom().py())*(bJets[0]->mom().py()-bJets[1]->mom().py());
+
+              double mct_squared = pow(bjet1_ET+bjet2_ET,2)-modPTdiff_squared;
+              mCT = sqrt(mct_squared);
+
 
               //mbb = (bjet1+bjet2).M();
               //float bjet1_ET = sqrt(bjet1.Pt()*bjet1.Pt()+bjet1.M()*bjet1.M());
@@ -311,58 +311,58 @@ namespace Gambit {
 
         cutFlowVector_str[0] = "No cuts ";
         cutFlowVector_str[1] = "MET > 80 ";
-	cutFlowVector_str[2] = "Lepton veto ";
-	cutFlowVector_str[3] = "MET > 150 ";
-	cutFlowVector_str[4] = "Jet selection ";
-	cutFlowVector_str[5] = "mbb > 200 ";
-	cutFlowVector_str[6] = "mCT > 150 ";
-	cutFlowVector_str[7] = "mCT > 200 ";
-	cutFlowVector_str[8] = "mCT > 250 ";
-	cutFlowVector_str[9] = "mCT > 300 ";
-	cutFlowVector_str[10] = "SRB: lepton veto ";
-	cutFlowVector_str[11] = "SRB: MET > 250 ";
-	cutFlowVector_str[12] = "SRB: Jet selection ";
-	cutFlowVector_str[13] = "SRB: HT3 < 50  ";
-	cutFlowVector_str[14] = "SRA: Jet selection  ";
-	cutFlowVector_str[15] = "SRA: B jet selection  ";
+        cutFlowVector_str[2] = "Lepton veto ";
+        cutFlowVector_str[3] = "MET > 150 ";
+        cutFlowVector_str[4] = "Jet selection ";
+        cutFlowVector_str[5] = "mbb > 200 ";
+        cutFlowVector_str[6] = "mCT > 150 ";
+        cutFlowVector_str[7] = "mCT > 200 ";
+        cutFlowVector_str[8] = "mCT > 250 ";
+        cutFlowVector_str[9] = "mCT > 300 ";
+        cutFlowVector_str[10] = "SRB: lepton veto ";
+        cutFlowVector_str[11] = "SRB: MET > 250 ";
+        cutFlowVector_str[12] = "SRB: Jet selection ";
+        cutFlowVector_str[13] = "SRB: HT3 < 50  ";
+        cutFlowVector_str[14] = "SRA: Jet selection  ";
+        cutFlowVector_str[15] = "SRA: B jet selection  ";
 
-	
+
         for(int j=0;j<NCUTS;j++){
           if(
              (j==0) ||
 
-	     (j==1 && met>80.) || 
+             (j==1 && met>80.) ||
 
              (j==2 && met>80. && cut_MuonVeto && cut_ElectronVeto) ||
 
-	     (j==3 && met>150. && cut_MuonVeto && cut_ElectronVeto) ||
+             (j==3 && met>150. && cut_MuonVeto && cut_ElectronVeto) ||
 
-	     (j==4 && met>150. && cut_MuonVeto && cut_ElectronVeto && passSRAbJetCut && passSRAJetCut) ||
+             (j==4 && met>150. && cut_MuonVeto && cut_ElectronVeto && passSRAbJetCut && passSRAJetCut) ||
 
-	     (j==5 && met>150. && cut_MuonVeto && cut_ElectronVeto && passSRAbJetCut && passSRAJetCut && mbb > 200.) ||
+             (j==5 && met>150. && cut_MuonVeto && cut_ElectronVeto && passSRAbJetCut && passSRAJetCut && mbb > 200.) ||
 
-	     (j==6 && met>150. && cut_MuonVeto && cut_ElectronVeto && passSRAbJetCut && passSRAJetCut && mbb > 200. && mCT > 150.) ||
+             (j==6 && met>150. && cut_MuonVeto && cut_ElectronVeto && passSRAbJetCut && passSRAJetCut && mbb > 200. && mCT > 150.) ||
 
-	     (j==7 && met>150. && cut_MuonVeto && cut_ElectronVeto && passSRAbJetCut && passSRAJetCut && mbb > 200. && mCT > 200.) ||
+             (j==7 && met>150. && cut_MuonVeto && cut_ElectronVeto && passSRAbJetCut && passSRAJetCut && mbb > 200. && mCT > 200.) ||
 
-	     (j==8 && met>150. && cut_MuonVeto && cut_ElectronVeto && passSRAbJetCut && passSRAJetCut && mbb > 200. && mCT > 250.) ||
-	     
-	     (j==9 && met>150. && cut_MuonVeto && cut_ElectronVeto && passSRAbJetCut && passSRAJetCut && mbb > 200. && mCT > 300.) ||
+             (j==8 && met>150. && cut_MuonVeto && cut_ElectronVeto && passSRAbJetCut && passSRAJetCut && mbb > 200. && mCT > 250.) ||
 
-	     (j==10 && met>150. && cut_MuonVeto && cut_ElectronVeto) ||
+             (j==9 && met>150. && cut_MuonVeto && cut_ElectronVeto && passSRAbJetCut && passSRAJetCut && mbb > 200. && mCT > 300.) ||
 
-	     (j==11 && met>250. && cut_MuonVeto && cut_ElectronVeto) ||
+             (j==10 && met>150. && cut_MuonVeto && cut_ElectronVeto) ||
 
-	     (j==12 && met>250. && cut_MuonVeto && cut_ElectronVeto && passSRBJetCut && passSRBbJetCut) ||
+             (j==11 && met>250. && cut_MuonVeto && cut_ElectronVeto) ||
 
-	     (j==13 && met>250. && cut_MuonVeto && cut_ElectronVeto && passSRBJetCut && passSRBbJetCut && ht3<50.) ||
+             (j==12 && met>250. && cut_MuonVeto && cut_ElectronVeto && passSRBJetCut && passSRBbJetCut) ||
 
-	     (j==14 && met>150. && cut_MuonVeto && cut_ElectronVeto && passSRAJetCut) ||
+             (j==13 && met>250. && cut_MuonVeto && cut_ElectronVeto && passSRBJetCut && passSRBbJetCut && ht3<50.) ||
 
-	     (j==15 && met>150. && cut_MuonVeto && cut_ElectronVeto && passSRAJetCut && passSRAbJetCut)
+             (j==14 && met>150. && cut_MuonVeto && cut_ElectronVeto && passSRAJetCut) ||
+
+             (j==15 && met>150. && cut_MuonVeto && cut_ElectronVeto && passSRAJetCut && passSRAbJetCut)
 
 
-	     )cutFlowVector[j]++;
+             )cutFlowVector[j]++;
         }
 
         //We're now ready to apply the cuts for each signal region
@@ -413,7 +413,7 @@ namespace Gambit {
 
 
       void collect_results() {
-	finalize();
+        finalize();
 
         SignalRegionData results_SRA15;
         results_SRA15.set_observation(102.);
