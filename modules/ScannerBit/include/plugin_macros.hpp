@@ -332,13 +332,8 @@ namespace __gambit_plugin_ ## plug_name ##  _namespace__                        
                 extern "C" const std::type_info &__gambit_plugin_pluginInit_ ## plug_name                               \
                  ## __(const std::string *tag, const YAML::Node *node, std::vector<void *> *input)                      \
                 {                                                                                                       \
-                        if (plugin_status() == 1)                                                                       \
+                        if (plugin_status() == 1 && !myData.loaded)                                                     \
                         {                                                                                               \
-                                if (myData.loaded)                                                                      \
-                                        scan_err << "The following plugin is already loaded:  \n"                       \
-                                                << Gambit::Scanner::Plugins::Plugin_Details(#plug_name).printMin()      \
-                                                << scan_end;                                                            \
-                                                                                                                        \
                                 myData.tag = *tag;                                                                      \
                                                                                                                         \
                                 myData.loaded = true;                                                                   \

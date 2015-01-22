@@ -38,7 +38,7 @@ namespace Gambit
                 class PriorTransform
                 {
                 public:
-                        virtual void transform(const std::vector<double> &, std::map<std::string, double> &) const = 0;
+                        virtual void transform(const std::vector<double> &, std::unordered_map<std::string, double> &) const = 0;
                         virtual ~PriorTransform() = 0;
                 };
         }
@@ -80,7 +80,7 @@ inline std::vector<double> &prior_transform(const std::vector<double> &in)      
 {                                                                                                                       \
         const static std::vector<std::string> key = add_gambit_prefix(get_input_value<std::vector<std::string>>(0));    \
         const static PriorTransform &prior = get_input_value<PriorTransform>(1);                                        \
-        static std::map<std::string, double> key_map;                                                                   \
+        static std::unordered_map<std::string, double> key_map;                                                         \
         static std::vector<double> ret(key.size());                                                                     \
                                                                                                                         \
         prior.transform(in, key_map);                                                                                   \
