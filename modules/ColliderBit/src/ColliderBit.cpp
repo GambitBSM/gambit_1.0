@@ -253,10 +253,9 @@ namespace Gambit {
       /// Get the next event from Pythia8
       const auto pevt = (*Dep::HardScatteringSim)->nextEvent();
 
-      std::vector<fastjet::PseudoJet> jetparticles, bhadrons, taus;
-
-      // /// @todo This should be replaced
+      std::vector<fastjet::PseudoJet> jetparticles, bhadrons, taus; //< Pseudojets for input to FastJet
       // Pythia8::Vec4 ptot;
+      P4 pout; //< Sum of momenta outside acceptance
 
       // Make a first pass to gather unstable final B hadrons and taus
       for (int i = 0; i < pevt.size(); ++i) {
@@ -284,22 +283,24 @@ namespace Gambit {
         // Only consider final state particles within ATLAS/CMS acceptance
         /// @todo Remove this and let the det sim or analysis code do the analysis acceptance cut
         if (!p.isFinal()) continue;
-        if (abs(p.eta()) > 5.0) continue;
-
-        // if (p.id()==1000022 || p.idAbs()==12 || p.idAbs()==14 || p.idAbs()==16) continue;
-        // ptot += p.p();
+        if (abs(p.eta()) > 5.0) {
+          pout += mk_p4(p.p());
+          continue;
+        }
 
         // Promptness: for leptons and photons we're only interested if they don't come from hadron/tau decays
         const bool prompt = !fromHadron(i, pevt); //&& !fromTau(i, pevt);
-        if (prompt) {
+        const bool visible = MCUtils::PID::isStrongInteracting(p.id()) || MCUtils::PID::isEMInteracting(p.id());
+
+        // Add prompt and invisible particles as individual particles
+        if (prompt || !visible) {
           HEPUtils::Particle* gp = new HEPUtils::Particle(mk_p4(p.p()), p.id());
           gp->set_prompt();
           result.add_particle(gp); // Will be automatically categorised
         }
 
         // All particles other than invisibles are jet constituents
-        if (MCUtils::PID::isStrongInteracting(p.id()) || MCUtils::PID::isEMInteracting(p.id()))
-          jetparticles.push_back(mk_pseudojet(p.p()));
+        if (visible) jetparticles.push_back(mk_pseudojet(p.p()));
       }
 
       /// Jet finding
@@ -323,10 +324,24 @@ namespace Gambit {
         result.add_jet(new HEPUtils::Jet(HEPUtils::mk_p4(pj), isB));
       }
 
-      /// MET (note: NOT just equal to sum of prompt invisibles)
-      /// @todo Need to deal with overlap with leptons and photons
-      result.calc_missingmom();
-      // result.set_missingmom(-mk_p4(ptot));
+      /// Calculate missing momentum
+      //
+      // From balance of all visible momenta (requires isolation)
+      // const std::vector<Particle*> visibles = result.visible_particles();
+      // P4 pvis;
+      // for (size_t i = 0; i < visibles.size(); ++i) {
+      //   pvis += visibles[i]->mom();
+      // }
+      // for (size_t i = 0; i < result.jets.size(); ++i) {
+      //   pvis += result.jets[i]->mom();
+      // }
+      // set_missingmom(-pvis);
+      //
+      // From sum of invisibles, including those out of range
+      for (size_t i = 0; i < result.invisible_particles().size(); ++i) {
+        pout += result.invisible_particles()[i]->mom();
+      }
+      result.set_missingmom(pout);
     }
 
 
@@ -341,34 +356,43 @@ namespace Gambit {
       /// Get the next event from Pythia8
       const auto pevt = (*Dep::HardScatteringSim)->nextEvent();
 
-      std::vector<fastjet::PseudoJet> jetparticles;
+      std::vector<fastjet::PseudoJet> jetparticles; //< Pseudojets for input to FastJet
+      P4 pout; //< Sum of momenta outside acceptance
 
       // Make a single pass over the event to gather final leptons, partons, and photons
       for (int i = 0; i < pevt.size(); ++i) {
         const Pythia8::Particle& p = pevt[i];
 
+        // We only use "final" particles, i.e. those with no children. So Py8 must have hadronization disabled
+        if (!p.isFinal()) continue;
+
         // Only consider partons within ATLAS/CMS acceptance
         /// @todo We should leave this for the detector sim / analysis to deal with
-        if (!p.isFinal()) continue;
-        if (abs(p.eta()) > 5.0) continue;
+        if (abs(p.eta()) > 5.0) {
+          pout += mk_p4(p.p());
+          continue;
+        }
 
-        // Find electrons/muons/photons to be treated as prompt &
+        // Find electrons/muons/photons to be treated as prompt (+ invisibles)
         /// @todo Apply a hadronic tau BR fraction?
         /// @todo *Some* photons should be included in jets!!! Ignore for now since no FSR
         /// @todo Lepton dressing
-        if (isFinalPhoton(i, pevt) || (isFinalLepton(i, pevt) && abs(p.id()) != 15)) {
+        const bool prompt = isFinalPhoton(i, pevt) || (isFinalLepton(i, pevt) && abs(p.id()) != 15);
+        const bool visible = MCUtils::PID::isStrongInteracting(p.id()) || MCUtils::PID::isEMInteracting(p.id());
+        if (prompt || !visible) {
           HEPUtils::Particle* gp = new HEPUtils::Particle(mk_p4(p.p()), p.id());
           gp->set_prompt();
           result.add_particle(gp); // Will be automatically categorised
         }
+
         // Everything other than invisibles, including taus & partons are jet constituents
-        if (isFinalParton(i, pevt) || isFinalTau(i, pevt)) {
-          if (MCUtils::PID::isStrongInteracting(p.id()) || MCUtils::PID::isEMInteracting(p.id())) {
-            fastjet::PseudoJet pj = mk_pseudojet(p.p());
-            pj.set_user_index(abs(p.id()));
-            jetparticles.push_back(pj);
-          }
+        // if (visible && (isFinalParton(i, pevt) || isFinalTau(i, pevt))) {
+        if (visible) {
+          fastjet::PseudoJet pj = mk_pseudojet(p.p());
+          pj.set_user_index(abs(p.id()));
+          jetparticles.push_back(pj);
         }
+
       }
 
       /// Jet finding
@@ -384,9 +408,24 @@ namespace Gambit {
         result.add_jet(new HEPUtils::Jet(HEPUtils::mk_p4(pj), isB));
       }
 
-      /// MET (note: NOT just equal to sum of prompt invisibles)
-      /// @todo Need to deal with overlap with leptons and photons
-      result.calc_missingmom();
+      /// Calculate missing momentum
+      //
+      // From balance of all visible momenta (requires isolation)
+      // const std::vector<Particle*> visibles = result.visible_particles();
+      // P4 pvis;
+      // for (size_t i = 0; i < visibles.size(); ++i) {
+      //   pvis += visibles[i]->mom();
+      // }
+      // for (size_t i = 0; i < result.jets.size(); ++i) {
+      //   pvis += result.jets[i]->mom();
+      // }
+      // set_missingmom(-pvis);
+      //
+      // From sum of invisibles, including those out of range
+      for (size_t i = 0; i < result.invisible_particles().size(); ++i) {
+        pout += result.invisible_particles()[i]->mom();
+      }
+      result.set_missingmom(pout);
     }
 
 
