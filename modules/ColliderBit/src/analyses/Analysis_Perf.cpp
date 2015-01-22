@@ -32,7 +32,7 @@ namespace Gambit {
       TH1F *_hNelec,*_hNelec_truth, *_hNjet;
       TH1F *_hinv, *_hmet;
       TH1F *_hinv_truth, *_hmet_truth;
-      
+
       //Plots added by MJW
       TH1F *_hElectronPt, *_hElectronEta, *_hElectronPhi, *_hElectronE;
       TH1F *_hMuonPt, *_hMuonEta, *_hMuonPhi, *_hMuonE;
@@ -53,7 +53,7 @@ namespace Gambit {
 
 
       Analysis_Perf() {
-	std::cout << "Opening ROOT file" << endl;
+        std::cout << "Opening ROOT file" << endl;
         _output_filename = "SimOutput.root";
 
         _ROOToutFile = new TFile(_output_filename.c_str(),"RECREATE");
@@ -75,12 +75,12 @@ namespace Gambit {
         _hElectron1phi = new TH1F( "Electron1Phi","Leading Electron Phi;",100, -6.0, 6.0);
 
 
-	_hElectron2Pt = new TH1F("Electron2Pt","SubLeading Electron Pt;GeV;",100, 0., 200.);
+        _hElectron2Pt = new TH1F("Electron2Pt","SubLeading Electron Pt;GeV;",100, 0., 200.);
         _hElectron2eta = new TH1F("Electron2eta","SubLeading  Electron eta;",100, -5., 5.);
         _hElectron2phi = new TH1F( "Electron2Phi","SubLeading Electron Phi;",100, -6.0, 6.0);
 
-	_hMuon1Pt = new TH1F("Muon1Pt","Leading Muon Pt;GeV;",100, 0., 200.);
-	_hMuon2Pt = new TH1F("Muon2Pt","Leading Muon Pt;GeV;",100, 0., 200.);
+        _hMuon1Pt = new TH1F("Muon1Pt","Leading Muon Pt;GeV;",100, 0., 200.);
+        _hMuon2Pt = new TH1F("Muon2Pt","Leading Muon Pt;GeV;",100, 0., 200.);
 
         _hNelec = new TH1F("Nelec","Number of Isolated Electrons;Number/Event",5,-0.5,4.5);
         _hNelec_truth = new TH1F("NelecTruth","Number of Electrons (Truth);Number/Event",5,-0.5,4.5);
@@ -93,22 +93,22 @@ namespace Gambit {
         _hinv_truth = new TH1F( "InvTruth","Z Invariant Mass (Truth);GeV",100, 0, 200);
         _hmet_truth = new TH1F( "METTruth","MET (Truth);GeV",100, 0, 200);
 
-	//MJW plots
-	_hElectronPt = new TH1F("ElectronPt","Electron Pt;GeV;",50, 0., 500.);
-	_hElectronEta = new TH1F("Electroneta","Electron eta;",50, -5., 5.);
+        //MJW plots
+        _hElectronPt = new TH1F("ElectronPt","Electron Pt;GeV;",50, 0., 500.);
+        _hElectronEta = new TH1F("Electroneta","Electron eta;",50, -5., 5.);
         _hElectronPhi = new TH1F( "ElectronPhi","Electron Phi;",50, -6.0, 6.0);
-	_hElectronE = new TH1F("ElectronE","Electron E;GeV;",50, 0., 500.);
-	_hMuonPt = new TH1F("MuonPt","Muon Pt;GeV;",50, 0., 500.);
-	_hMuonEta = new TH1F("Muoneta","Muon eta;",50, -5., 5.);
+        _hElectronE = new TH1F("ElectronE","Electron E;GeV;",50, 0., 500.);
+        _hMuonPt = new TH1F("MuonPt","Muon Pt;GeV;",50, 0., 500.);
+        _hMuonEta = new TH1F("Muoneta","Muon eta;",50, -5., 5.);
         _hMuonPhi = new TH1F( "MuonPhi","Muon Phi;",50, -6.0, 6.0);
-	_hMuonE = new TH1F("MuonE","Muon E;GeV;",50, 0., 500.);
+        _hMuonE = new TH1F("MuonE","Muon E;GeV;",50, 0., 500.);
 
-	_hJetPt = new TH1F("JetPt","Jet Pt;GeV;",50, 0., 500.);
-	_hJetEta = new TH1F("Jeteta","Jet eta;",50, -5., 5.);
+        _hJetPt = new TH1F("JetPt","Jet Pt;GeV;",50, 0., 500.);
+        _hJetEta = new TH1F("Jeteta","Jet eta;",50, -5., 5.);
         _hJetPhi = new TH1F( "JetPhi","Jet Phi;",50, -6.0, 6.0);
-	_hJetE = new TH1F("JetE","Jet E;GeV;",50, 0., 500.);
+        _hJetE = new TH1F("JetE","Jet E;GeV;",50, 0., 500.);
 
-	_hNmuon = new TH1F("Nmuon","Number of Muons;Number/Event",5,-0.5,4.5);
+        _hNmuon = new TH1F("Nmuon","Number of Muons;Number/Event",5,-0.5,4.5);
 
       }
 
@@ -116,8 +116,8 @@ namespace Gambit {
 
       void analyze(const Event* event) {
 
-	//Do overlap removal
-	// Now define vectors of baseline objects
+        //Do overlap removal
+        // Now define vectors of baseline objects
         vector<Particle*> baselineElectrons;
         for (Particle* electron : event->electrons()) {
           if (electron->pT() > 10. && fabs(electron->eta()) < 2.47) baselineElectrons.push_back(electron);
@@ -136,7 +136,7 @@ namespace Gambit {
         vector<Particle*> signalMuons;
         vector<Jet*> signalJets;
 
-	 // Remove any jet within dR=0.2 of an electrons
+        // Remove any jet within dR=0.2 of an electrons
         for (size_t iJet=0;iJet<baselineJets.size();iJet++) {
           bool overlap=false;
           P4 jetVec=baselineJets.at(iJet)->mom();
@@ -160,7 +160,7 @@ namespace Gambit {
           if (!overlap)signalElectrons.push_back(baselineElectrons.at(iEl));
         }
 
-	// Remove muons with dR=0.4 or surviving jets
+        // Remove muons with dR=0.4 or surviving jets
         for (size_t iMu=0;iMu<baselineMuons.size();iMu++) {
           bool overlap=false;
           P4 muVec=baselineMuons.at(iMu)->mom();
@@ -171,7 +171,7 @@ namespace Gambit {
           if (!overlap)signalMuons.push_back(baselineMuons.at(iMu));
         }
 
-	 // We now have the signal electrons, muons and jets
+        // We now have the signal electrons, muons and jets
 
         // Calculate common variables and cuts first
         applyMediumIDElectronSelection(signalElectrons);
@@ -185,53 +185,53 @@ namespace Gambit {
         //double met= event->met();
 
         //    cout << " met is "<< met << " ptot " << ptot.pT() << endl;
-	
+
         _hmet->Fill(event->met());
 
-	int numElectrons=signalElectrons.size();
-	int numMuons=signalMuons.size();
-	int numJets=signalJets.size();
+        int numElectrons=signalElectrons.size();
+        int numMuons=signalMuons.size();
+        int numJets=signalJets.size();
 
-	for(Particle * electron : signalElectrons){
-	  if(electron->pT()>10. && fabs(electron->eta())<2.5){
-	    numElectrons++;
-	    _hElectronPt->Fill(electron->pT(),1.);
-	    _hElectronEta->Fill(electron->eta(),1.);
-	    _hElectronPhi->Fill(electron->phi(),1.);
-	    _hElectronE->Fill(electron->E(),1.);
-	  }
-	}
+        for(Particle * electron : signalElectrons){
+          if(electron->pT()>10. && fabs(electron->eta())<2.5){
+            numElectrons++;
+            _hElectronPt->Fill(electron->pT(),1.);
+            _hElectronEta->Fill(electron->eta(),1.);
+            _hElectronPhi->Fill(electron->phi(),1.);
+            _hElectronE->Fill(electron->E(),1.);
+          }
+        }
 
-	for(Particle * muon : signalMuons){
-	  if(muon->pT()>10. && fabs(muon->eta())<2.5){
-	    numMuons++;
-	    _hMuonPt->Fill(muon->pT(),1.);
-	    _hMuonEta->Fill(muon->eta(),1.);
-	    _hMuonPhi->Fill(muon->phi(),1.);
-	    _hMuonE->Fill(muon->E(),1.);
-	  }
-	}
+        for(Particle * muon : signalMuons){
+          if(muon->pT()>10. && fabs(muon->eta())<2.5){
+            numMuons++;
+            _hMuonPt->Fill(muon->pT(),1.);
+            _hMuonEta->Fill(muon->eta(),1.);
+            _hMuonPhi->Fill(muon->phi(),1.);
+            _hMuonE->Fill(muon->E(),1.);
+          }
+        }
 
-	for(Jet * jet : signalJets){
-	  if(jet->pT()>10. && fabs(jet->eta())<2.5){
-	    numJets++;
-	    _hJetPt->Fill(jet->pT(),1.);
-	    _hJetEta->Fill(jet->eta(),1.);
-	    _hJetPhi->Fill(jet->phi(),1.);
-	    _hJetE->Fill(jet->E(),1.);
-	  }
-	}
+        for(Jet * jet : signalJets){
+          if(jet->pT()>10. && fabs(jet->eta())<2.5){
+            numJets++;
+            _hJetPt->Fill(jet->pT(),1.);
+            _hJetEta->Fill(jet->eta(),1.);
+            _hJetPhi->Fill(jet->phi(),1.);
+            _hJetE->Fill(jet->E(),1.);
+          }
+        }
 
-	_hNelec->Fill(numElectrons,1.);
-	_hNmuon->Fill(numMuons,1.);
-	_hNjet->Fill(numJets,1.);
+        _hNelec->Fill(numElectrons,1.);
+        _hNmuon->Fill(numMuons,1.);
+        _hNjet->Fill(numJets,1.);
 
-	if (signalElectrons.size() > 0) {
-	  _hElectron1Pt->Fill(signalElectrons[0]->pT());
+        if (signalElectrons.size() > 0) {
+          _hElectron1Pt->Fill(signalElectrons[0]->pT());
           _hElectron1eta->Fill(signalElectrons[0]->eta());
           _hElectron1phi->Fill(signalElectrons[0]->phi());
-	}
-	
+        }
+
         if (signalElectrons.size() > 1) {
           temp = signalElectrons[0]->mom()+signalElectrons[1]->mom();
           _hinv->Fill(temp.m());
@@ -241,11 +241,11 @@ namespace Gambit {
           _hElectron2phi->Fill(signalElectrons[1]->phi());
         }
 
-	if (signalMuons.size() > 0) {
+        if (signalMuons.size() > 0) {
           _hMuon1Pt->Fill(signalMuons[0]->pT());
-	}
-	
-	if (signalMuons.size() > 1) {
+        }
+
+        if (signalMuons.size() > 1) {
           _hMuon2Pt->Fill(signalMuons[1]->pT());
         }
 
@@ -254,39 +254,39 @@ namespace Gambit {
 
       void finalize() {
 
-	std::cout << "Writing histograms " << _hElectron1Pt->GetTitle() << std::endl;
+        std::cout << "Writing histograms " << _hElectron1Pt->GetTitle() << std::endl;
 
-	/*_ROOToutFile->cd();
-	_hElectron1Pt->Write();
-        _hElectron1eta->Write();
-        _hElectron1phi->Write();
-	
-        _hElectron2Pt->Write();
-        _hElectron2eta->Write();
-        _hElectron2phi->Write();
-	
-        _hNelec->Write();
-        _hNjet->Write();
-        _hmet->Write();
+        /*_ROOToutFile->cd();
+          _hElectron1Pt->Write();
+          _hElectron1eta->Write();
+          _hElectron1phi->Write();
 
-	_hElectronPt->Write();
-	_hElectronEta->Write();
-        _hElectronPhi->Write();
-	_hElectronE->Write();
-	_hMuonPt->Write();
-	_hMuonEta->Write();
-        _hMuonPhi->Write();
-	_hMuonE->Write();
+          _hElectron2Pt->Write();
+          _hElectron2eta->Write();
+          _hElectron2phi->Write();
 
-	_hJetPt->Write();
-	_hJetEta->Write();
-        _hJetPhi->Write();
-	_hJetE->Write();
+          _hNelec->Write();
+          _hNjet->Write();
+          _hmet->Write();
 
-	_hNmuon->Write();*/
+          _hElectronPt->Write();
+          _hElectronEta->Write();
+          _hElectronPhi->Write();
+          _hElectronE->Write();
+          _hMuonPt->Write();
+          _hMuonEta->Write();
+          _hMuonPhi->Write();
+          _hMuonE->Write();
+
+          _hJetPt->Write();
+          _hJetEta->Write();
+          _hJetPhi->Write();
+          _hJetE->Write();
+
+          _hNmuon->Write();*/
 
         _ROOToutFile->Write();
-	//_ROOToutFile->Close();
+        //_ROOToutFile->Close();
       }
 
 
@@ -298,17 +298,17 @@ namespace Gambit {
       void collect_results() {
         // DO NOTHING
 
-	finalize();
+        finalize();
 
-	SignalRegionData dummy;
+        SignalRegionData dummy;
         dummy.set_observation(10.);
         dummy.set_background(10.);
         dummy.set_backgroundsys(1.);
         dummy.set_signalsys(0.);
         dummy.set_signal(1.);
 
-	add_result(dummy);
-	
+        add_result(dummy);
+
       }
     };
 
