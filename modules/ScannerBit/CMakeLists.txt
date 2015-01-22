@@ -52,7 +52,7 @@ set(scanner_plugin_headers
 )
 
 set(scanner_objective_sources
-                 src/test_functions/examples.cpp
+                 src/objectives/examples.cpp
 )
 
 set(scanner_scanlibs_sources 
@@ -61,7 +61,7 @@ set(scanner_scanlibs_sources
 
 add_gambit_library(ScannerBit OPTION OBJECT SOURCES ${scannerbit_sources} HEADERS ${scannerbit_headers})
 add_gambit_library(sample OPTION SHARED SOURCES ${scanner_plugin_sources} HEADERS ${scanner_plugin_headers})
-add_gambit_library(scantest OPTION SHARED SOURCES ${scanner_test_sources})
+add_gambit_library(scantest OPTION SHARED SOURCES ${scanner_objective_sources})
 add_gambit_executable(scanlibs SOURCES ${scanner_scanlibs_sources})
 set_target_properties( sample scantest scanlibs
                        PROPERTIES

@@ -44,10 +44,19 @@ namespace Gambit
         }
 }
 
+///\name Objective Plugin Macros
+///Macros used by the objective plugins.
+///@{
+///Initialize "exp" to the parameter names.
 #define init_keys(exp)                  INIT_KEYS(exp)
+///Gets the parameter names.
 #define get_keys()                      GET_KEYS()
+///Used only if the plugin is doing to be used as a prior.
+///Sets the sub-hypercube size that is need by the prior.
 #define set_size(size)                  SET_SIZE(size)
+///Objective plugin declaration.  Is of the form:  objective_plugin(name, version)
 #define objective_plugin(...)           OBJECTIVE_PLUGIN( __VA_ARGS__ )
+///@}
 
 #define INIT_KEYS(exp)                  INITIALIZE(exp, GET_KEYS())
 

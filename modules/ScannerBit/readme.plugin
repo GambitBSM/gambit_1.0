@@ -184,7 +184,7 @@ linking external libraries:
 
 -- If you want to link external libraries to your plugin,
    include it in config/scanner_locations.yaml or
-   config/test_function_locations.yaml with the line:
+   config/objective_locations.yaml with the line:
    
    my_plugin_name:
      version: path_to_my_external_library

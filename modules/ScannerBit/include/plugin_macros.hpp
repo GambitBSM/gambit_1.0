@@ -25,18 +25,35 @@
 #ifndef SCANNER_PLUGIN_MACROS_HPP
 #define SCANNER_PLUGIN_MACROS_HPP
 
+/// \name gambit plugin macros 
+/// The main macros to be used by the user.
+/// @{
+/// Makes an abstract type of type "name" available to the plugin interface.
 #define export_abstract(name, ...)      EXPORT_ABSTRACT(name, __VA_ARGS__)
+/// Makes the object "name" available to the plugin interface.
 #define export_object(name, ...)        EXPORT_OBJECT(name, __VA_ARGS__)
+/// Initializes the varable "name" to __VA_ARGS__ when the plugin is loaded.
 #define initialize(name, ...)           INITIALIZE(name, __VA_ARGS__)
+/// Runs function "name" when the plugin is loaded.
 #define run_function(name, ...)         RUN_FUNCTION(name, __VA_ARGS__)
+/// Declaration of the main function which will be ran by the interface
 #define plugin_main(...)                PLUGIN_MAIN( __VA_ARGS__ )
+/// Generic plugin declaration of the from gambit_plugin(name, type, version)
 #define gambit_plugin(...)              GAMBIT_PLUGIN( __VA_ARGS__ )
+/// Runs when the plugin is loaded.
 #define plugin_constructor              PLUGIN_CONSTRUCTOR
+/// Runs when the plugin is destroyed.
 #define plugin_deconstructor            PLUGIN_DECONSTRUCTOR
+/// Sets the version number
 #define version(...)                    VERSION( __VA_ARGS__ )
+/// Set version number to 0.0.0.
 #define no_version                      VERSION()
+/// Flag used to specify that a external library is required.
+/// If library is not present, plugin will not run.
 #define external_library_required(...)  EXTERNAL_LIBRARY_REQUIRED ( __VA_ARGS__ )
+/// Initialized an inifile value when the plugin is loaded.
 #define init_inifile_value(exp, ...)    INIT_INIFILE_VALUE(exp, __VA_ARGS__)
+/// @}
 
 #define ARG_N_INTERNAL(_1_, _2_, _3_, _4_, ret, ...) ret
 #define ARG_N(...) ARG_N_INTERNAL(__VA_ARGS__ , 4, 3, 2, 1, 0)
