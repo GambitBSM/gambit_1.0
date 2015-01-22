@@ -36,6 +36,7 @@ namespace Gambit
                                 else
                                 {
                                         scan_err << "Plugin prior:  need to specify plugin with \"plugin\" tag." << scan_end;
+                                        return "";
                                 }
                         }
                         

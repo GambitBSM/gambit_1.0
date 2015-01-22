@@ -432,8 +432,8 @@ namespace Gambit {
 
     /// Gambit facing interface function
     void convertPythia8Event(HEPUtils::Event &result) {
-      //convertPythia8PartonEvent(result);
-      convertPythia8ParticleEvent(result);
+      convertPythia8PartonEvent(result);
+    //convertPythia8ParticleEvent(result);
     }
 
 
