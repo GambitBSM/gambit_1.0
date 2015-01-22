@@ -304,11 +304,11 @@ namespace Gambit {
       }
 
       /// Jet finding
-      /// Currently hard-coded to use anti-kT R=0.4 jets above 20 GeV
+      /// Currently hard-coded to use anti-kT R=0.4 jets above 30 GeV
       /// @todo choose jet algorithm via _settings?
       const fastjet::JetDefinition jet_def(fastjet::antikt_algorithm, 0.4);
       fastjet::ClusterSequence cseq(jetparticles, jet_def);
-      std::vector<fastjet::PseudoJet> pjets = sorted_by_pt(cseq.inclusive_jets(20));
+      std::vector<fastjet::PseudoJet> pjets = sorted_by_pt(cseq.inclusive_jets(30));
 
       /// Do jet b-tagging, etc. and add to the Event
       /// @todo Use ghost tagging
