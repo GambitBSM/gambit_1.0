@@ -75,7 +75,7 @@ namespace Gambit
                                                 else
                                                 {
                                                         scan_err << "Extern libraries are required for plugin "
-                                                                << full_string << " but is not in header file." << scan_end;
+                                                                << " but is not in header file." << scan_end;
                                                 }
                                         }
                                         else
