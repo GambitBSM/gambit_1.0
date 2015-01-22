@@ -72,7 +72,8 @@ namespace Gambit
                                                 {
                                                         std::string::size_type pos = str.find("__gambit_plugin_pluginInit_");
                                                         
-                                                        if (pos != std::string::npos)
+                                                        if (pos != std::string::npos && 
+                                                                (str.rfind(" T ", pos) != std::string::npos || str.rfind(" t ", pos) != std::string::npos))
                                                         {
                                                                 Plugin_Details temp(str.substr(pos + 27, str.rfind("__") - pos - 27));
                                                                 
@@ -127,7 +128,7 @@ namespace Gambit
                                                 {
                                                         scan_err << "There are two plugins that met the input"
                                                                 << " criteria in the inifile:\n" << it->print()
-                                                                << "\n and ... \n" << it2->print() << scan_end;
+                                                                << "\n and ... \n\n" << it2->print() << scan_end;
                                                 }
                                                 else
                                                 {
