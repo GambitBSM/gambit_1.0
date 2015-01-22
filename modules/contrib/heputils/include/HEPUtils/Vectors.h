@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // This file is part of HEPUtils -- https://bitbucket.org/andybuckley/heputils
-// Copyright (C) 2013-2014 Andy Buckley <andy.buckley@cern.ch>
+// Copyright (C) 2013-2015 Andy Buckley <andy.buckley@cern.ch>
 //
 // Embedding of HEPUtils code in other projects is permitted provided this
 // notice is retained and the HEPUtils namespace and include path are changed.
@@ -346,8 +346,12 @@ namespace HEPUtils {
     double theta() const { if (p2() == 0) return 0; else if (pz() == 0) return M_PI; else return atan2(rho(),pz()); }
     /// Get the spatial vector pseudorapidity
     double eta() const { return -log(tan( 0.5 * theta() )); } //< Optimise with a trig reln on tan(x/2) to avoid tan(atan(..)/2)?
+    /// Get the spatial vector absolute pseudorapidity
+    double abseta() const { return fabs(eta()); }
     /// Get the 4-momentum rapidity
     double rap() const { return 0.5 * (E() + pz()) / (E() - pz()); }
+    /// Get the 4-momentum absolute rapidity
+    double absrap() const { return fabs(rap()); }
 
     //@}
 
