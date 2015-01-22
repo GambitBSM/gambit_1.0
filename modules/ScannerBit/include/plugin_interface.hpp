@@ -26,7 +26,6 @@
 #include <string>
 #include <sstream>
 #include <dlfcn.h>
-#include <link.h>
 #include <typeinfo>
 
 #include "plugin_utilities.hpp"
@@ -83,7 +82,7 @@ namespace Gambit
                                                 else if(diff)
                                                 {
                                                         scan_err << "Plugin interface requires the plugin_main function in plugin \"" << name << "\" to be of the form \"" 
-                                                                << typeid(ret).name() << " (" << stringify_variadic_inputs(typeid(args).name()...) << ")\"" << scan_end;
+                                                                << demangle(typeid(ret).name()) << " (" << stringify_variadic_inputs(demangle(typeid(args).name())...) << ")\"" << scan_end;
                                                 }
                                                 
                                                 char *errmesg = dlerror();

@@ -1,0 +1,289 @@
+How to make a scanner plugin.  
+
+Introduction to Gambit plugins: 
+
+-- Plugin are self-contained pieces of code that are compiled 
+   in seperate libraries external to Gambit itself.  At runtime, 
+   ScannerBit selects and loads the appropriate plugins based
+   on inifile entries.  The plugin themselves can be used for
+   a wide variety of purposes.  "scanner_plugin"s specify
+   a plugin that will be used as a scanner whereas "objective_plugin"s
+   are general use plugins that can be used as test functions,
+   likelihoods, priors, etc.  Below is an example of a 
+   scanner_plugin declaration and well as the appropriate
+   inifile entry for this scanner.
+
+Sections:
+
+-- Plugin Declaration Section
+-- Plugin Compilation Section
+-- Plugin IniFile Section
+   
+**********************************************************************
+**************** PLUGIN DECLARATION SECTION **************************
+**********************************************************************
+   
+Example:
+
+-- Lets start with an example of a scanner plugin, after which 
+   I'll explain what each macro does.  The relevant inifile
+   entry is included at the end.
+
+Quick discription of this example:
+
+-- This example declares a scanner named "my_cool_scanner" of 
+   version "0.0.0-beta".  Inside it, it declares a "scan_ptr"
+   (named "loglike") which is a function of the form
+   "double (const vector<double> &)", int num which
+   will be set to the inifile entry "number", and an int
+   "dim" which will be set to the dimension.  The actual
+   scanner will be ran in "int plugin_main()".
+
+////////////////////// START PLUGIN DECLARATION ///////////////////////////
+
+#include "scanner_plugin.hpp"
+
+/* declare a plugin of name "my_cool_scanner" of version "0.0.0-beta" */
+scanner_plugin(my_cool_scanner, version(0, 0, 0, beta))
+{
+   /* declare a scanner function "loglike" that inputs 
+      a "std::vector<double> &" and outout a "double" */
+   scan_ptr<double (const std::vector<double> &)> loglike;
+        
+   int num, dim;
+        
+   /* this macro runs when the plugin is loaded */
+   plugin_constructor
+   {
+      /* Get a functor corresponding to the purpose "Likelihood" */
+      likelihood = get_functor("Likelihood");
+                
+      /* get the inifile entry "number" with the default value of "0" */
+      num = get_inifile_value<int>("number", 0);
+                
+      /* get the dimension of the parameter space. */
+      dim = get_dimension();
+   }
+        
+   /* main function that will run the scanner. */
+   int plugin_main(void)
+   {
+      std::vector<double> a(dim);
+      for (int j = 0; j < num; j++)
+      {
+         for (int i = 0; i < ma; i++)
+         {
+            a[i] = Gambit::Random::draw();
+         }
+         loglike(a);
+      }
+                
+      return 0;
+   }
+        
+   /* this runs when the plugin is closed */
+   plugin_deconstructor
+   {
+      std::cout << "no more plugin" << std::endl;
+   }
+}
+
+///////////////////// END PLUGIN DECLARATION ///////////////////////////
+
+******************** Plugin Commands **************************
+
+Here are the different macros and functions that can be used:
+
+scanner_plugin(plugin_name, version, external_library_required) {...}
+-- declared a plugin with the name "plugin_name" of
+   version "version".  the third parameter is optional.
+   If it is set, it will require that the required 
+   libraries defined in config/scanner_locations.yaml and 
+   config/objective_locations are loaded.
+   
+objective_plugin(plugin_name, version, external_library_required) {...}
+-- same as above, except declares an "objective" plugin.
+   Used as test functions and prior plugins.
+   
+version(majar, minor, patch, release)
+-- declares the version number to be "major.minor.patch-release"
+   major, minor, and patch must be integers.  release is optional.
+   
+ret plugin_main(args... params) {...}
+-- The function that is called when the plugin is ran.  For the
+   scanner, it must be of the form "int plugin_name(void)"
+   
+plugin_constructor {...}
+-- This function will be ran when the plugin to loaded.
+
+plugin_deconstructor {...}
+-- This function will be ran when the plugin to closed.
+
+get_inifile_value<ret_type>("tag", default);
+-- Gets the inifile value corresponding to the tag "tag".
+   If "tag" is not specified, then the results defaults
+   to "default".  The default entry is optional. If
+   the default entry and the "tag" infile entry is not
+   specified, ScannerBit will throw an error.
+   
+get_dimension()
+-- Gets the dimension of the unit hypercube being explored.
+
+get_functor("purpose")
+-- gets the functor corresponding to the purpose "purpose"
+
+scan_ptr<ret (args...)>
+-- a container functor of the form "ret scan_ptr(args ...)".
+   Used to contain the output of "get_functor".
+   
+**************** end plugin commands *******************
+
+
+***************************************************************
+************* END PLUGIN DECLARATION SECTION ******************
+***************************************************************
+
+***************************************************************
+*************** PLUGIN COMPILATION SECTION ********************
+***************************************************************
+
+compiling with gambit:
+
+-- The easiest why of compiling a plugin is to include it in 
+   the ScannerBit/src/scanners or ScannerBit/src/objectives
+   then include your new file in the 
+   
+   "set(scanner_plugin_sources ... )"
+   
+   or
+   
+   "set(scanner_objective_sources ... )"
+   
+   function in ScannerBit/CMakeLists.txt
+   
+-- or alternatively you can declare you own seperate libray
+   in ScannerBit/CMakeLists.txt.
+   
+   First, declare your source files with
+   
+   "set(your_sources ... )"
+   
+   and your headers with
+   
+   "set(your_headers ... )".
+   
+   then declare the library with
+   
+   "add_gambit_library(your_lib_name OPTION SHARED SOURCES ${your_sources} HEADERS ${your_headers})"
+   
+   then include it in 
+   
+   "set_target_properties( sample scantest scanlibs your_lib_name ... )"
+   
+linking external libraries:
+
+-- If you want to link external libraries to your plugin,
+   include it in config/scanner_locations.yaml or
+   config/objective_locations.yaml with the line:
+   
+   my_plugin_name:
+     version: path_to_my_external_library
+     
+   for example, in the example above we'd include
+   
+   my_cool_scanner:
+     0.0.0-beta: ./my_cool_library.so
+   
+   in config/scanner_locations.yaml.
+   
+-- To force the plugin to run only if your external library is linked,
+   include the "external_library_required" flag in the plugin declaration.
+   For example, in the example above, the plugin declaration would be:
+   
+   scanner_plugin(my_cool_scanner, version(0, 0, 0, beta), external_library_required)
+   
+compiling external to Gambit:
+
+-- Because of Gambit's compilation tools, it is recomended to 
+   compile with gambit.  But there may be situations where
+   compilation is too compilated or specialized to included
+   as part of gambit.  In such cases, ScannerBit provide a 
+   nifty "scanlibs" commandline tool.  To compile externally,
+   run:
+   
+   g++ `path_to_gambit/ScannerBit/bin/scanlibs --hdrs --cflags` sources.cpp -o plugins.so
+   
+   or on an intel compiler:
+   
+   icc `path_to_gambit/ScannerBit/bin/scanlibs --hdrs --cflags --intel` ...
+
+*************************************************************
+************* END PLUGIN COMPILATION SECTION ****************
+*************************************************************
+
+*************************************************************
+*************** PLUGIN INIFILE SECTION **********************
+*************************************************************
+
+Here is an example of an inifile entry for a scanner.
+   
+#################### inifile entries ####################
+
+Scanner:
+
+  use_scanner_plugin: my_plugin_tag
+  
+  plugins:
+  
+    my_plugin_tag:
+      plugin: my_cool_scanner
+      options:
+        number: 1
+
+#################### end infile entry ###################
+
+description:
+-- The plugins are declared under the "plugins" tag in the
+   scanner section.  Each plugin is specified by an unique
+   tag (in this case "my_plugin_tag").  The plugin name is
+   specified by the "plugin" tag.  The options for that
+   plugin either specified under the plugin tag or the
+   "options" tag.  The "use_scanner_plugin" tag is used to
+   specify which scanner to use.
+   
+***** Available tags that can be used under plugin tags *****
+
+plugins:
+-- declares plugin name (not optional).
+
+library:
+-- specifies which library contains the plugin (optional).
+
+library_path:
+-- same of the "library:" tag, but specifies full path (optional).
+
+options:
+-- section where the plugin options are specified (optional).
+
+purpose:
+-- for Objective plugins:  specifies the purpose associated
+   with the plugin.
+
+
+*************************************************************
+
+*** Available tags that can be used under the Scanner tag ***
+
+use_scanner_plugin:
+-- specifies the tag corresponding to the scanner plugin that
+   is going to me used.
+   
+use_objective_plugins:
+-- specifies the plugin or plugins that scannerbit is going
+   to use.
+   
+*************************************************************
+
+*************************************************************
+************* END PLUGIN INIFILE SECTION ********************
+*************************************************************

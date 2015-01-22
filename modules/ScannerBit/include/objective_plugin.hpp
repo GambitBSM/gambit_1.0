@@ -38,16 +38,25 @@ namespace Gambit
                 class PriorTransform
                 {
                 public:
-                        virtual void transform(const std::vector<double> &, std::map<std::string, double> &) const = 0;
+                        virtual void transform(const std::vector<double> &, std::unordered_map<std::string, double> &) const = 0;
                         virtual ~PriorTransform() = 0;
                 };
         }
 }
 
+///\name Objective Plugin Macros
+///Macros used by the objective plugins.
+///@{
+///Initialize "exp" to the parameter names.
 #define init_keys(exp)                  INIT_KEYS(exp)
+///Gets the parameter names.
 #define get_keys()                      GET_KEYS()
+///Used only if the plugin is doing to be used as a prior.
+///Sets the sub-hypercube size that is need by the prior.
 #define set_size(size)                  SET_SIZE(size)
+///Objective plugin declaration.  Is of the form:  objective_plugin(name, version)
 #define objective_plugin(...)           OBJECTIVE_PLUGIN( __VA_ARGS__ )
+///@}
 
 #define INIT_KEYS(exp)                  INITIALIZE(exp, GET_KEYS())
 
@@ -71,7 +80,7 @@ inline std::vector<double> &prior_transform(const std::vector<double> &in)      
 {                                                                                                                       \
         const static std::vector<std::string> key = add_gambit_prefix(get_input_value<std::vector<std::string>>(0));    \
         const static PriorTransform &prior = get_input_value<PriorTransform>(1);                                        \
-        static std::map<std::string, double> key_map;                                                                   \
+        static std::unordered_map<std::string, double> key_map;                                                         \
         static std::vector<double> ret(key.size());                                                                     \
                                                                                                                         \
         prior.transform(in, key_map);                                                                                   \

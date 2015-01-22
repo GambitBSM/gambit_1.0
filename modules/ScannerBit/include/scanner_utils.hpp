@@ -30,6 +30,11 @@
 #include <sstream>
 #include <unordered_map>
 #include <algorithm>
+#ifdef __GNUG__
+#include <cstdlib>
+#include <memory.h>
+#include <cxxabi.h>
+#endif
 
 #include "exceptions.hpp"
 #include "log.hpp"
@@ -94,6 +99,26 @@ namespace Gambit
                 error& scan_error();
                 /// Scanner warnings
                 warning& scan_warning();
+                
+                inline std::string demangle(const std::string &in)
+                {
+#ifdef __GNUG__
+                        int status = -4;
+                        char *result = abi::__cxa_demangle (in.c_str(), NULL, NULL, &status);       
+
+                        if (status)
+                        {
+                                scan_err << "Error demangling \"" << in << "\" status code:  " << status << scan_end;
+                                return in;
+                        }
+                        
+                        std::string ret(result);
+                        std::free(result);
+                        return ret;
+#else
+                        return in;
+#endif
+                }
         }
 }
 

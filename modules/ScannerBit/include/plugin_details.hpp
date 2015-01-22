@@ -56,10 +56,12 @@ namespace Gambit
                                 
                                 Plugin_Details(const std::string &str) : full_string(str)
                                 {
-                                        std::string::size_type posMid = str.rfind("__reqd_libs__");
-                                        if (posMid != std::string::npos)
+                                        std::string::size_type posLast = str.rfind("__reqd_libs__");
+                                        std::string::size_type posMid;
+                                        
+                                        if (posLast != std::string::npos)
                                         {
-                                                std::string temp = str.substr(posMid + 13);
+                                                std::string temp = str.substr(posLast + 13);
                                                 if (temp == "0")
                                                 {
                                                         status = -1;
@@ -77,13 +79,19 @@ namespace Gambit
                                                         scan_err << "Extern libraries are required for plugin "
                                                                 << " but is not in header file." << scan_end;
                                                 }
+                                                
+                                                posMid = str.rfind("__v__");
+                                                version = str.substr(posMid + 5, posLast - posMid - 5);
                                         }
                                         else
+                                        {
                                                 status= 1;
                                         
-                                        posMid = str.rfind("__v__", posMid);
-                                        version = str.substr(posMid + 5);
-                                        std::string::size_type posLast = str.rfind("__t__", posMid - 1);
+                                                posMid = str.rfind("__v__");
+                                                version = str.substr(posMid + 5);
+                                        }
+                                        
+                                        posLast = str.rfind("__t__", posMid - 1);
                                         type = str.substr(posLast + 5, posMid - posLast - 5);
                                         plugin = str.substr(0, posLast);
                                         
