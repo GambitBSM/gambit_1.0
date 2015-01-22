@@ -1,5 +1,5 @@
 #include "Detector.hpp"
-#include "buckfast.hpp"
+#include "BuckFast.hpp"
 
 namespace Gambit {
   namespace ColliderBit {
