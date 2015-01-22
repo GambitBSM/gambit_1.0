@@ -21,6 +21,8 @@
 ///  \author Pat Scott 
 ///          (p.scott@imperial.ac.uk)
 ///  \date 2014 Aug
+///  \author Csaba Balazs
+///  \date 2015 Jan
 ///
 ///  *********************************************
 
@@ -33,10 +35,17 @@
 #define MODULE DecayBit
 START_MODULE
 
-  //QUICK_FUNCTION(DecayBit, test_deleteme, NEW_CAPABILITY, deleteme, int)
+  #define CAPABILITY testSUSYBRs            // A physical observable or likelihood that this module can calculate.  There may be one or more 
+  START_CAPABILITY                          //  functions in this module that can calculate this particular thing in different ways.
+
+    #define FUNCTION decayTest              // Name of an observable function: floating-point number of events in some hypothetical process
+    START_FUNCTION(double)                  // Declare that this function calculates the nevents observable as a double precision variable
+    BACKEND_REQ(top2body, (), top2body_CB_type)
+    #undef FUNCTION
+	
+  #undef CAPABILITY
 
 #undef MODULE
-
 
 #endif /* defined(__DecayBit_rollcall_hpp__) */
 

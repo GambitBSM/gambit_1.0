@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // This file is part of HEPUtils -- https://bitbucket.org/andybuckley/heputils
-// Copyright (C) 2013-2014 Andy Buckley <andy.buckley@cern.ch>
+// Copyright (C) 2013-2015 Andy Buckley <andy.buckley@cern.ch>
 //
 // Embedding of HEPUtils code in other projects is permitted provided this
 // notice is retained and the HEPUtils namespace and include path are changed.
@@ -24,9 +24,6 @@ namespace HEPUtils {
 
     /// @name Separate particle collections
     //@{
-    /// @todo Do we really need to store invisibles, since they aren't
-    /// experimentally resolveable, and are covered by the explicitly-set
-    /// missing-mom?
     std::vector<Particle*> _photons, _electrons, _muons, _taus, _invisibles;
     //@}
 
@@ -40,12 +37,9 @@ namespace HEPUtils {
 
   public:
 
-    /// @todo Need separate types of event (subclasses?) for what gets passed to
-    /// detsim and to analysis?
+    /// @todo Need separate types of event (subclasses?) for what gets passed to detsim and to analysis?
 
-    /// @todo This class should be able to do its own MET and SET calculations,
-    /// identify photons, electrons, muons, taus, charged and neutral hadrons, B
-    /// hadrons/quarks, and construct jets (?)
+    /// @todo Should Event be able to do its own MET and SET calculations & jet construction? Defns differ...
 
 
     /// @name Constructors
@@ -280,22 +274,9 @@ namespace HEPUtils {
       _pmiss = pmiss;
     }
 
-    /// @brief Set the missing energy vector from the -ve sum of visible particles
-    void calc_missingmom() {
-      const std::vector<Particle*> visibles = visible_particles();
-      P4 pvis;
-      for (size_t i = 0; i < visibles.size(); ++i) {
-        pvis += visibles[i]->mom();
-      }
-      const std::vector<Jet*>& js = jets();
-      for (size_t i = 0; i < js.size(); ++i) {
-        pvis += js[i]->mom();
-      }
-      set_missingmom(-pvis);
-    }
-
     /// Get the missing ET in GeV
     double met() const {
+      /// @todo Any energy term needed? Most mass will be longitudinal: zero/subtract pz first?
       return missingmom().pT();
     }
 
