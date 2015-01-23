@@ -90,6 +90,14 @@ namespace Gambit {
         _hNjet100 = new TH1F("Njet100","Number of jets with p_T > 100 GeV;Number/Event", 10, -0.5, 9.5);
         _hNjet500 = new TH1F("Njet500","Number of jets with p_T > 500 GeV;Number/Event", 10, -0.5, 9.5);
 
+	_hNbjet30 = new TH1F("Nbjet30","Number of b jets with p_T > 30 GeV;Number/Event", 10, -0.5, 9.5);
+        _hNbjet100 = new TH1F("Nbjet100","Number of b jets with p_T > 100 GeV;Number/Event", 10, -0.5, 9.5);
+        _hNbjet500 = new TH1F("Nbjet500","Number of b jets with p_T > 500 GeV;Number/Event", 10, -0.5, 9.5);
+
+	_hNcentraljet30 = new TH1F("Ncentraljet30","Number of central jets with p_T > 30 GeV;Number/Event", 10, -0.5, 9.5);
+	_hNcentraljet100 = new TH1F("Ncentraljet100","Number of central jets with p_T > 100 GeV;Number/Event", 10, -0.5, 9.5);
+	_hNcentraljet500 = new TH1F("Ncentraljet500","Number of central jets with p_T > 500 GeV;Number/Event", 10, -0.5, 9.5);
+
         _hinv = new TH1F("Inv","Z invariant mass;GeV", 100, 0, 200);
         _hinv_truth = new TH1F("InvTruth", "Z invariant mass (truth);GeV", 100, 0, 200);
 
