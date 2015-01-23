@@ -119,12 +119,12 @@ namespace Gambit {
 	using namespace Pipes::getBuckFast;
 	std::string buckFastOption;
 	if(resetBuckFastFlag) {
-#pragma omp critical (BuckFast)
-        {
+      #pragma omp critical (BuckFast)
+      {
 	  GET_COLLIDER_RUNOPTION(buckFastOption, std::string)
 	    result.reset( mkBuckFast(buckFastOption) );
           resetBuckFastFlag = false;
-        }
+      }
       }
     }
 
@@ -253,10 +253,9 @@ namespace Gambit {
       /// Get the next event from Pythia8
       const auto pevt = (*Dep::HardScatteringSim)->nextEvent();
 
-      std::vector<fastjet::PseudoJet> jetparticles, bhadrons, taus;
-
-      // /// @todo This should be replaced
+      std::vector<fastjet::PseudoJet> jetparticles, bhadrons, taus; //< Pseudojets for input to FastJet
       // Pythia8::Vec4 ptot;
+      P4 pout; //< Sum of momenta outside acceptance
 
       // Make a first pass to gather unstable final B hadrons and taus
       for (int i = 0; i < pevt.size(); ++i) {
@@ -284,17 +283,18 @@ namespace Gambit {
         // Only consider final state particles within ATLAS/CMS acceptance
         /// @todo Remove this and let the det sim or analysis code do the analysis acceptance cut
         if (!p.isFinal()) continue;
-        if (abs(p.eta()) > 5.0) continue;
-
-        // if (p.id()==1000022 || p.idAbs()==12 || p.idAbs()==14 || p.idAbs()==16) continue;
-        // ptot += p.p();
+        if (abs(p.eta()) > 5.0) {
+          pout += mk_p4(p.p());
+          continue;
+        }
 
         // Promptness: for leptons and photons we're only interested if they don't come from hadron/tau decays
         const bool prompt = !fromHadron(i, pevt); //&& !fromTau(i, pevt);
+        const bool visible = MCUtils::PID::isStrongInteracting(p.id()) || MCUtils::PID::isEMInteracting(p.id());
 
-	
+        // Add prompt and invisible particles as individual particles
+        if (prompt || !visible) {
 
-        if (prompt) {
           HEPUtils::Particle* gp = new HEPUtils::Particle(mk_p4(p.p()), p.id());
           gp->set_prompt();
           result.add_particle(gp); // Will be automatically categorised
@@ -302,20 +302,21 @@ namespace Gambit {
 
 	//if(fabs(p.id())==13)std::cout << "TEST: prompt " << prompt << " isStrong " << MCUtils::PID::isStrongInteracting(p.id()) << " isEM " << MCUtils::PID::isEMInteracting(p.id()) << std::endl;
 
-        // All particles other than invisibles are jet constituents
-        if (MCUtils::PID::isStrongInteracting(p.id()) || MCUtils::PID::isEMInteracting(p.id()))
-          jetparticles.push_back(mk_pseudojet(p.p()));
+        // All particles other than invisibles and muons are jet constituents
+        if (visible && p.idAbs() != MCUtils::PID::MUON) jetparticles.push_back(mk_pseudojet(p.p()));
+
       }
 
       /// Jet finding
-      /// Currently hard-coded to use anti-kT R=0.4 jets above 20 GeV
+      /// Currently hard-coded to use anti-kT R=0.4 jets above 10 GeV (could remove pT cut entirely)
       /// @todo choose jet algorithm via _settings?
       const fastjet::JetDefinition jet_def(fastjet::antikt_algorithm, 0.4);
       fastjet::ClusterSequence cseq(jetparticles, jet_def);
-      std::vector<fastjet::PseudoJet> pjets = sorted_by_pt(cseq.inclusive_jets(20));
+      std::vector<fastjet::PseudoJet> pjets = sorted_by_pt(cseq.inclusive_jets(10));
 
       /// Do jet b-tagging, etc. and add to the Event
-      /// @todo Use ghost tagging
+      /// @todo Use ghost tagging?
+      /// @note We need to _remove_ this b-tag in the detector sim if outside the tracker acceptance!
       for (auto& pj : pjets) {
         bool isB = false;
         for (auto& pb : bhadrons) {
@@ -328,10 +329,24 @@ namespace Gambit {
         result.add_jet(new HEPUtils::Jet(HEPUtils::mk_p4(pj), isB));
       }
 
-      /// MET (note: NOT just equal to sum of prompt invisibles)
-      /// @todo Need to deal with overlap with leptons and photons
-      result.calc_missingmom();
-      // result.set_missingmom(-mk_p4(ptot));
+      /// Calculate missing momentum
+      //
+      // From balance of all visible momenta (requires isolation)
+      // const std::vector<Particle*> visibles = result.visible_particles();
+      // P4 pvis;
+      // for (size_t i = 0; i < visibles.size(); ++i) {
+      //   pvis += visibles[i]->mom();
+      // }
+      // for (size_t i = 0; i < result.jets.size(); ++i) {
+      //   pvis += result.jets[i]->mom();
+      // }
+      // set_missingmom(-pvis);
+      //
+      // From sum of invisibles, including those out of range
+      for (size_t i = 0; i < result.invisible_particles().size(); ++i) {
+        pout += result.invisible_particles()[i]->mom();
+      }
+      result.set_missingmom(pout);
     }
 
     /// Convert a partonic (no hadrons) Pythia8::Event into an unsmeared HEPUtils::Event
@@ -344,55 +359,78 @@ namespace Gambit {
       /// Get the next event from Pythia8
       const auto pevt = (*Dep::HardScatteringSim)->nextEvent();
 
-      std::vector<fastjet::PseudoJet> jetparticles;
+      std::vector<fastjet::PseudoJet> jetparticles; //< Pseudojets for input to FastJet
+      P4 pout; //< Sum of momenta outside acceptance
 
       // Make a single pass over the event to gather final leptons, partons, and photons
       for (int i = 0; i < pevt.size(); ++i) {
         const Pythia8::Particle& p = pevt[i];
 
+        // We only use "final" particles, i.e. those with no children. So Py8 must have hadronization disabled
+        if (!p.isFinal()) continue;
+
         // Only consider partons within ATLAS/CMS acceptance
         /// @todo We should leave this for the detector sim / analysis to deal with
-        if (!p.isFinal()) continue;
-        if (abs(p.eta()) > 5.0) continue;
+        if (abs(p.eta()) > 5.0) {
+          pout += mk_p4(p.p());
+          continue;
+        }
 
-        // Find electrons/muons/photons to be treated as prompt &
+        // Find electrons/muons/photons to be treated as prompt (+ invisibles)
         /// @todo Apply a hadronic tau BR fraction?
         /// @todo *Some* photons should be included in jets!!! Ignore for now since no FSR
         /// @todo Lepton dressing
-        if (isFinalPhoton(i, pevt) || (isFinalLepton(i, pevt) && abs(p.id()) != 15)) {
+        const bool prompt = isFinalPhoton(i, pevt) || (isFinalLepton(i, pevt) && abs(p.id()) != MCUtils::PID::TAU);
+        const bool visible = MCUtils::PID::isStrongInteracting(p.id()) || MCUtils::PID::isEMInteracting(p.id());
+        if (prompt || !visible) {
           HEPUtils::Particle* gp = new HEPUtils::Particle(mk_p4(p.p()), p.id());
           gp->set_prompt();
           result.add_particle(gp); // Will be automatically categorised
         }
-        // Everything other than invisibles, including taus & partons are jet constituents
-        if (isFinalParton(i, pevt) || isFinalTau(i, pevt)) {
-          if (MCUtils::PID::isStrongInteracting(p.id()) || MCUtils::PID::isEMInteracting(p.id())) {
-            fastjet::PseudoJet pj = mk_pseudojet(p.p());
-            pj.set_user_index(abs(p.id()));
-            jetparticles.push_back(pj);
-          }
+
+        // Everything other than invisibles and muons, including taus & partons are jet constituents
+        // if (visible && (isFinalParton(i, pevt) || isFinalTau(i, pevt))) {
+        if (visible && p.idAbs() != MCUtils::PID::MUON) {
+          fastjet::PseudoJet pj = mk_pseudojet(p.p());
+          pj.set_user_index(abs(p.id()));
+          jetparticles.push_back(pj);
         }
+
       }
 
       /// Jet finding
-      /// Currently hard-coded to use anti-kT R=0.4 jets above 30 GeV
+      /// Currently hard-coded to use anti-kT R=0.4 jets above 10 GeV (could remove pT cut entirely)
       /// @todo choose jet algorithm via _settings?
       const fastjet::JetDefinition jet_def(fastjet::antikt_algorithm, 0.4);
       fastjet::ClusterSequence cseq(jetparticles, jet_def);
-      std::vector<fastjet::PseudoJet> pjets = sorted_by_pt(cseq.inclusive_jets(20));
+      std::vector<fastjet::PseudoJet> pjets = sorted_by_pt(cseq.inclusive_jets(10));
       // Add to the event, with b-tagging info
-      BOOST_FOREACH (const fastjet::PseudoJet& pj, pjets) {
-        /// @todo Do jet b-tagging, etc. by looking for b quark constituents (i.e. user index = |parton ID| = 5)
-        const bool isB = HEPUtils::any(pj.constituents(), [](const fastjet::PseudoJet& c){ return c.user_index() == 5; });
+      for (const fastjet::PseudoJet& pj : pjets) {
+        // Do jet b-tagging, etc. by looking for b quark constituents (i.e. user index = |parton ID| = 5)
+        /// @note We need to _remove_ this b-tag in the detector sim if outside the tracker acceptance!
+        const bool isB = HEPUtils::any(pj.constituents(),
+                                       [](const fastjet::PseudoJet& c){ return c.user_index() == MCUtils::PID::BQUARK; });
         result.add_jet(new HEPUtils::Jet(HEPUtils::mk_p4(pj), isB));
       }
-      
-      /// MET (note: NOT just equal to sum of prompt invisibles)
-      /// @todo Need to deal with overlap with leptons and photons
-      result.calc_missingmom();
+
+      /// Calculate missing momentum
+      //
+      // From balance of all visible momenta (requires isolation)
+      // const std::vector<Particle*> visibles = result.visible_particles();
+      // P4 pvis;
+      // for (size_t i = 0; i < visibles.size(); ++i) {
+      //   pvis += visibles[i]->mom();
+      // }
+      // for (size_t i = 0; i < result.jets.size(); ++i) {
+      //   pvis += result.jets[i]->mom();
+      // }
+      // set_missingmom(-pvis);
+      //
+      // From sum of invisibles, including those out of range
+      for (const Particle* p : result.invisible_particles())
+        pout += p->mom();
+      result.set_missingmom(pout);
     }
-
-
 
      /// Gambit facing interface function
     void convertPythia8Event(HEPUtils::Event &result) {

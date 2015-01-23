@@ -51,14 +51,19 @@ set(scanner_plugin_headers
                  include/scanners/twalk.hpp
 )
 
-set(scanner_test_sources
-                 src/test_functions/examples.cpp
+set(scanner_objective_sources
+                 src/objectives/examples.cpp
+)
+
+set(scanner_scanlibs_sources 
+                src/scanlibs.cpp
 )
 
 add_gambit_library(ScannerBit OPTION OBJECT SOURCES ${scannerbit_sources} HEADERS ${scannerbit_headers})
-add_gambit_library(sample OPTION SHARED SOURCES ${scanner_plugin_sources} HEADERS ${scanner_plugin_sources})
-add_gambit_library(scantest OPTION SHARED SOURCES ${scanner_test_sources})
-set_target_properties( sample scantest 
+add_gambit_library(sample OPTION SHARED SOURCES ${scanner_plugin_sources} HEADERS ${scanner_plugin_headers})
+add_gambit_library(scantest OPTION SHARED SOURCES ${scanner_objective_sources})
+add_gambit_executable(scanlibs SOURCES ${scanner_scanlibs_sources})
+set_target_properties( sample scantest scanlibs
                        PROPERTIES
                        ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/lib"
                        LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/lib"
