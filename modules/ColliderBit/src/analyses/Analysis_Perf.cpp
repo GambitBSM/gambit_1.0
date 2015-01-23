@@ -58,45 +58,45 @@ namespace Gambit {
         _output_filename = "SimOutput.root";
         std::cout << "Opening ROOT file" << _output_filename << endl;
 
-        _ROOToutFile = new TFile(_output_filename.c_str(),"RECREATE");
+        _ROOToutFile = new TFile(_output_filename.c_str(), "RECREATE");
 
-        _hBosonPt = new TH1F("BosonPt", "Boson generated p_T;GeV;", 100, 0., 200.);
+        _hBosonPt = new TH1F("BosonPt", "Boson generated p_{T};GeV;", 100, 0., 200.);
         _hBosonEta = new TH1F("BosonEta", "Boson generated #eta;", 100, -5., 5.);
         _hBosonPhi = new TH1F( "BosonPhi", "Boson generated #phi;", 100, -6.0, 6.0);
 
-        _hElectron1Pt = new TH1F("Electron1Pt", "Leading electron p_T;GeV;", 100, 0., 200.);
+        _hElectron1Pt = new TH1F("Electron1Pt", "Leading electron p_{T};GeV;", 100, 0., 200.);
         _hElectron1eta = new TH1F("Electron1Eta", "Leading electron #eta;", 100, -5., 5.);
         _hElectron1phi = new TH1F("Electron1Phi", "Leading electron #phi;", 100, -6.0, 6.0);
-        _hElectron1Pt_truth = new TH1F("Electron1PtTruth", "Leading electron p_T (truth);GeV;", 100, 0., 200.);
+        _hElectron1Pt_truth = new TH1F("Electron1PtTruth", "Leading electron p_{T} (truth);GeV;", 100, 0., 200.);
         _hElectron1eta_truth = new TH1F("Electron1EtaTruth", "Leading electron #eta (truth);", 100, -5., 5.);
         _hElectron1phi_truth = new TH1F("Electron1PhiTruth", "Leading electron #phi (truth);", 100, -6.0, 6.0);
 
-        _hElectron2Pt_truth = new TH1F("Electron2PtTruth", "Subleading electron p_T (truth);GeV;", 100, 0., 200.);
+        _hElectron2Pt_truth = new TH1F("Electron2PtTruth", "Subleading electron p_{T} (truth);GeV;", 100, 0., 200.);
         _hElectron2eta_truth = new TH1F("Electron2EtaTruth", "Subleading electron #eta (truth);", 100, -5., 5.);
         _hElectron2phi_truth = new TH1F("Electron2PhiTruth", "Subleading electron #phi (truth);", 100, -6.0, 6.0);
-        _hElectron2Pt = new TH1F("Electron2Pt","Subleading electron p_T;GeV;", 100, 0., 200.);
+        _hElectron2Pt = new TH1F("Electron2Pt","Subleading electron p_{T};GeV;", 100, 0., 200.);
         _hElectron2eta = new TH1F("Electron2Eta","Subleading electron #eta;", 100, -5., 5.);
         _hElectron2phi = new TH1F("Electron2Phi","Subleading electron #phi;", 100, -6.0, 6.0);
 
-        _hMuon1Pt = new TH1F("Muon1Pt","Leading muon p_T;GeV;", 100, 0., 200.);
-        _hMuon2Pt = new TH1F("Muon2Pt","Leading muon p_T;GeV;", 100, 0., 200.);
+        _hMuon1Pt = new TH1F("Muon1Pt","Leading muon p_{T};GeV;", 100, 0., 200.);
+        _hMuon2Pt = new TH1F("Muon2Pt","Leading muon p_{T};GeV;", 100, 0., 200.);
 
         _hNelec = new TH1F("Nelec","Number of isolated electrons;Number/Event", 5, -0.5, 4.5);
         _hNelec_truth = new TH1F("NelecTruth","Number of electrons (truth);Number/Event", 5, -0.5, 4.5);
 
         _hNmuon = new TH1F("Nmuon","Number of muons;Number/Event", 5, -0.5, 4.5);
 
-        _hNjet30 = new TH1F("Njet30","Number of jets with p_T > 30 GeV;Number/Event", 10, -0.5, 9.5);
-        _hNjet100 = new TH1F("Njet100","Number of jets with p_T > 100 GeV;Number/Event", 10, -0.5, 9.5);
-        _hNjet500 = new TH1F("Njet500","Number of jets with p_T > 500 GeV;Number/Event", 10, -0.5, 9.5);
+        _hNjet30 = new TH1F("Njet30","Number of jets with p_{T} > 30 GeV;Number/Event", 10, -0.5, 9.5);
+        _hNjet100 = new TH1F("Njet100","Number of jets with p_{T} > 100 GeV;Number/Event", 10, -0.5, 9.5);
+        _hNjet500 = new TH1F("Njet500","Number of jets with p_{T} > 500 GeV;Number/Event", 10, -0.5, 9.5);
 
-	_hNbjet30 = new TH1F("Nbjet30","Number of b jets with p_T > 30 GeV;Number/Event", 10, -0.5, 9.5);
-        _hNbjet100 = new TH1F("Nbjet100","Number of b jets with p_T > 100 GeV;Number/Event", 10, -0.5, 9.5);
-        _hNbjet500 = new TH1F("Nbjet500","Number of b jets with p_T > 500 GeV;Number/Event", 10, -0.5, 9.5);
+        _hNbjet30 = new TH1F("Nbjet30","Number of b jets with p_{T} > 30 GeV;Number/Event", 10, -0.5, 9.5);
+        _hNbjet100 = new TH1F("Nbjet100","Number of b jets with p_{T} > 100 GeV;Number/Event", 10, -0.5, 9.5);
+        _hNbjet500 = new TH1F("Nbjet500","Number of b jets with p_{T} > 500 GeV;Number/Event", 10, -0.5, 9.5);
 
-	_hNcentraljet30 = new TH1F("Ncentraljet30","Number of central jets with p_T > 30 GeV;Number/Event", 10, -0.5, 9.5);
-	_hNcentraljet100 = new TH1F("Ncentraljet100","Number of central jets with p_T > 100 GeV;Number/Event", 10, -0.5, 9.5);
-	_hNcentraljet500 = new TH1F("Ncentraljet500","Number of central jets with p_T > 500 GeV;Number/Event", 10, -0.5, 9.5);
+        _hNcentraljet30 = new TH1F("Ncentraljet30","Number of central jets with p_{T} > 30 GeV;Number/Event", 10, -0.5, 9.5);
+        _hNcentraljet100 = new TH1F("Ncentraljet100","Number of central jets with p_{T} > 100 GeV;Number/Event", 10, -0.5, 9.5);
+        _hNcentraljet500 = new TH1F("Ncentraljet500","Number of central jets with p_{T} > 500 GeV;Number/Event", 10, -0.5, 9.5);
 
         _hinv = new TH1F("Inv","Z invariant mass;GeV", 100, 0, 200);
         _hinv_truth = new TH1F("InvTruth", "Z invariant mass (truth);GeV", 100, 0, 200);
@@ -104,28 +104,28 @@ namespace Gambit {
         _hmet = new TH1F( "MET","MET;GeV", 50, 0, 1000);
         _hmet_truth = new TH1F("METTruth", "MET (truth);GeV", 100, 0, 200);
 
-        _hElectronPt = new TH1F("ElectronPt", "Electron p_T;GeV;", 50, 0., 500.);
+        _hElectronPt = new TH1F("ElectronPt", "Electron p_{T};GeV;", 50, 0., 500.);
         _hElectronEta = new TH1F("ElectronEta", "Electron #eta;", 50, -5., 5.);
         _hElectronPhi = new TH1F("ElectronPhi", "Electron #phi;", 50, -6.0, 6.0);
         _hElectronE = new TH1F("ElectronE", "Electron E;GeV;", 50, 0., 500.);
 
-        _hMuonPt = new TH1F("MuonPt","Muon p_T;GeV;", 50, 0., 500.);
+        _hMuonPt = new TH1F("MuonPt","Muon p_{T};GeV;", 50, 0., 500.);
         _hMuonEta = new TH1F("MuonEta","Muon #eta;", 50, -5., 5.);
         _hMuonPhi = new TH1F("MuonPhi","Muon #phi;", 50, -6.0, 6.0);
         _hMuonE = new TH1F("MuonE","Muon E;GeV;", 50, 0., 500.);
 
         /// @todo Use log/exp binning for E and pT; increase range past 1 TeV?
-        _hJetPt = new TH1F("JetPt","Jet p_T;GeV;", 50, 0., 500.);
+        _hJetPt = new TH1F("JetPt","Jet p_{T};GeV;", 50, 0., 500.);
         _hJetE = new TH1F("JetE","Jet E;GeV;", 50, 0., 500.);
         _hJetEta = new TH1F("JetEta","Jet #eta;", 50, -5., 5.);
         _hJetPhi = new TH1F("JetPhi","Jet #phi;", 50, -6.0, 6.0);
         //
-        _hBJetPt = new TH1F("BJetPt","b-jet p_T;GeV;", 50, 0., 500.);
+        _hBJetPt = new TH1F("BJetPt","b-jet p_{T};GeV;", 50, 0., 500.);
         _hBJetE = new TH1F("BJetE","b-jet E;GeV;", 50, 0., 500.);
         _hBJetEta = new TH1F("BJetEta","b-jet #eta;", 50, -5., 5.);
         _hBJetPhi = new TH1F("BJetPhi","b-jet #phi;", 50, -6.0, 6.0);
         //
-        _hCentralJetPt = new TH1F("CentralJetPt","Jet p_T for |#eta| < 2.5;GeV;", 50, 0., 500.);
+        _hCentralJetPt = new TH1F("CentralJetPt","Jet p_{T} for |#eta| < 2.5;GeV;", 50, 0., 500.);
         _hCentralJetE = new TH1F("CentralJetE","Jet E for |#eta| < 2.5;GeV;", 50, 0., 500.);
 
       }

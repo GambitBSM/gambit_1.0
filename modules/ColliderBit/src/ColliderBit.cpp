@@ -243,6 +243,7 @@ namespace Gambit {
     }
 
 
+
     /// Convert a hadron-level Pythia8::Event into an unsmeared HEPUtils::Event
     /// @todo Overlap between jets and prompt containers: need some isolation in MET calculation
     void convertPythia8ParticleEvent(HEPUtils::Event &result) {
@@ -300,7 +301,7 @@ namespace Gambit {
           result.add_particle(gp); // Will be automatically categorised
         }
 
-	//if(fabs(p.id())==13)std::cout << "TEST: prompt " << prompt << " isStrong " << MCUtils::PID::isStrongInteracting(p.id()) << " isEM " << MCUtils::PID::isEMInteracting(p.id()) << std::endl;
+        //if(fabs(p.id())==13)std::cout << "TEST: prompt " << prompt << " isStrong " << MCUtils::PID::isStrongInteracting(p.id()) << " isEM " << MCUtils::PID::isEMInteracting(p.id()) << std::endl;
 
         // All particles other than invisibles and muons are jet constituents
         if (visible && p.idAbs() != MCUtils::PID::MUON) jetparticles.push_back(mk_pseudojet(p.p()));
@@ -349,6 +350,8 @@ namespace Gambit {
       }
       result.set_missingmom(pout);
     }
+
+
 
     /// Convert a partonic (no hadrons) Pythia8::Event into an unsmeared HEPUtils::Event
     /// @todo Overlap between jets and prompt containers: need some isolation in MET calculation
@@ -433,7 +436,9 @@ namespace Gambit {
       result.set_missingmom(pout);
     }
 
-     /// Gambit facing interface function
+
+
+    /// Gambit-facing interface function
     void convertPythia8Event(HEPUtils::Event &result) {
       convertPythia8PartonEvent(result);
       //convertPythia8ParticleEvent(result);
