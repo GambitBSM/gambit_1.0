@@ -29,7 +29,7 @@ namespace Gambit {
     /// Detector simulation
     class BuckFastSmear : public BuckFastBase {
     public:
-      //@{
+
       virtual void processEvent(const HEPUtils::Event& eventIn, HEPUtils::Event& eventOut) {
         convertInput(eventIn);
 
@@ -56,7 +56,7 @@ namespace Gambit {
 
         convertOutput(eventOut);
       }
-      //@}
+
     };
 
 
@@ -65,7 +65,7 @@ namespace Gambit {
           return create_ ## A()
       IF_X_RTN_CREATEX(BuckFastIdentity);
       IF_X_RTN_CREATEX(BuckFastSmear);
-      throw std::runtime_error(name + " isn't a known Delphes configuration, you empty-headed animal food trough wiper!");
+      throw std::runtime_error(name + " isn't a known BuckFast configuration, you empty-headed animal food trough wiper!");
       return nullptr;
       #undef IF_X_RTN_CREATEX
     }
