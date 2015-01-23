@@ -291,11 +291,16 @@ namespace Gambit {
 
         // Promptness: for leptons and photons we're only interested if they don't come from hadron/tau decays
         const bool prompt = !fromHadron(i, pevt); //&& !fromTau(i, pevt);
+
+	
+
         if (prompt) {
           HEPUtils::Particle* gp = new HEPUtils::Particle(mk_p4(p.p()), p.id());
           gp->set_prompt();
           result.add_particle(gp); // Will be automatically categorised
         }
+
+	//if(fabs(p.id())==13)std::cout << "TEST: prompt " << prompt << " isStrong " << MCUtils::PID::isStrongInteracting(p.id()) << " isEM " << MCUtils::PID::isEMInteracting(p.id()) << std::endl;
 
         // All particles other than invisibles are jet constituents
         if (MCUtils::PID::isStrongInteracting(p.id()) || MCUtils::PID::isEMInteracting(p.id()))
@@ -328,8 +333,6 @@ namespace Gambit {
       result.calc_missingmom();
       // result.set_missingmom(-mk_p4(ptot));
     }
-
-
 
     /// Convert a partonic (no hadrons) Pythia8::Event into an unsmeared HEPUtils::Event
     /// @todo Overlap between jets and prompt containers: need some isolation in MET calculation
@@ -376,14 +379,14 @@ namespace Gambit {
       /// @todo choose jet algorithm via _settings?
       const fastjet::JetDefinition jet_def(fastjet::antikt_algorithm, 0.4);
       fastjet::ClusterSequence cseq(jetparticles, jet_def);
-      std::vector<fastjet::PseudoJet> pjets = sorted_by_pt(cseq.inclusive_jets(30));
+      std::vector<fastjet::PseudoJet> pjets = sorted_by_pt(cseq.inclusive_jets(20));
       // Add to the event, with b-tagging info
       BOOST_FOREACH (const fastjet::PseudoJet& pj, pjets) {
         /// @todo Do jet b-tagging, etc. by looking for b quark constituents (i.e. user index = |parton ID| = 5)
         const bool isB = HEPUtils::any(pj.constituents(), [](const fastjet::PseudoJet& c){ return c.user_index() == 5; });
         result.add_jet(new HEPUtils::Jet(HEPUtils::mk_p4(pj), isB));
       }
-
+      
       /// MET (note: NOT just equal to sum of prompt invisibles)
       /// @todo Need to deal with overlap with leptons and photons
       result.calc_missingmom();
@@ -391,10 +394,10 @@ namespace Gambit {
 
 
 
-    /// Gambit facing interface function
+     /// Gambit facing interface function
     void convertPythia8Event(HEPUtils::Event &result) {
       convertPythia8PartonEvent(result);
-    //convertPythia8ParticleEvent(result);
+      //convertPythia8ParticleEvent(result);
     }
 
 

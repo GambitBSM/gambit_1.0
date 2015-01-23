@@ -58,40 +58,40 @@ namespace Gambit {
 
         _ROOToutFile = new TFile(_output_filename.c_str(),"RECREATE");
 
-        _hBosonPt = new TH1F("BosonPt"," Boson Generated Pt;GeV;",100, 0., 200.);
-        _hBosoneta = new TH1F("Bosoneta"," Boson Generated eta;",100, -5., 5.);
-        _hBosonphi = new TH1F( "BosonPhi","Boson Generated Phi;",100, -6.0, 6.0);
+        _hBosonPt = new TH1F("BosonPt"," Boson Generated Pt;GeV;",50, 0., 200.);
+        _hBosoneta = new TH1F("Bosoneta"," Boson Generated eta;",50, -5., 5.);
+        _hBosonphi = new TH1F( "BosonPhi","Boson Generated Phi;",50, -6.0, 6.0);
 
-        _hElectron1Pt_truth = new TH1F("Electron1PtTruth","Leading Electron Pt (Truth);GeV;",100, 0., 200.);
-        _hElectron1eta_truth = new TH1F("Electron1etaTruth","Leading Electron eta (Truth);",100, -5., 5.);
-        _hElectron1phi_truth = new TH1F( "Electron1PhiTruth","Leading Electron Phi (Truth);",100, -6.0, 6.0);
+        _hElectron1Pt_truth = new TH1F("Electron1PtTruth","Leading Electron Pt (Truth);GeV;",50, 0., 200.);
+        _hElectron1eta_truth = new TH1F("Electron1etaTruth","Leading Electron eta (Truth);",50, -5., 5.);
+        _hElectron1phi_truth = new TH1F( "Electron1PhiTruth","Leading Electron Phi (Truth);",50, -6.0, 6.0);
 
-        _hElectron2Pt_truth = new TH1F("Electron2PtTruth","SubLeading Electron Pt (Truth);GeV;",100, 0., 200.);
+        _hElectron2Pt_truth = new TH1F("Electron2PtTruth","SubLeading Electron Pt (Truth);GeV;",50, 0., 200.);
         _hElectron2eta_truth = new TH1F("Electron2etaTruth","SubLeading  Electron pseudorapidity (Truth);eta",100, -5., 5.);
-        _hElectron2phi_truth = new TH1F( "Electron2PhiTruth","SubLeading Electron Phi (Truth);",100, -6.0, 6.0);
+        _hElectron2phi_truth = new TH1F( "Electron2PhiTruth","SubLeading Electron Phi (Truth);",50, -6.0, 6.0);
 
-        _hElectron1Pt = new TH1F("Electron1Pt","Leading Electron Pt;GeV;",100, 0., 200.);
-        _hElectron1eta = new TH1F("Electron1eta","Leading Electron eta;",100, -5., 5.);
-        _hElectron1phi = new TH1F( "Electron1Phi","Leading Electron Phi;",100, -6.0, 6.0);
+        _hElectron1Pt = new TH1F("Electron1Pt","Leading Electron Pt;GeV;",50, 0., 200.);
+        _hElectron1eta = new TH1F("Electron1eta","Leading Electron eta;",50, -5., 5.);
+        _hElectron1phi = new TH1F( "Electron1Phi","Leading Electron Phi;",50, -6.0, 6.0);
 
 
-	_hElectron2Pt = new TH1F("Electron2Pt","SubLeading Electron Pt;GeV;",100, 0., 200.);
-        _hElectron2eta = new TH1F("Electron2eta","SubLeading  Electron eta;",100, -5., 5.);
-        _hElectron2phi = new TH1F( "Electron2Phi","SubLeading Electron Phi;",100, -6.0, 6.0);
+	_hElectron2Pt = new TH1F("Electron2Pt","SubLeading Electron Pt;GeV;",50, 0., 200.);
+        _hElectron2eta = new TH1F("Electron2eta","SubLeading  Electron eta;",50, -5., 5.);
+        _hElectron2phi = new TH1F( "Electron2Phi","SubLeading Electron Phi;",50, -6.0, 6.0);
 
-	_hMuon1Pt = new TH1F("Muon1Pt","Leading Muon Pt;GeV;",100, 0., 200.);
-	_hMuon2Pt = new TH1F("Muon2Pt","Leading Muon Pt;GeV;",100, 0., 200.);
+	_hMuon1Pt = new TH1F("Muon1Pt","Leading Muon Pt;GeV;",50, 0., 200.);
+	_hMuon2Pt = new TH1F("Muon2Pt","Leading Muon Pt;GeV;",50, 0., 200.);
 
         _hNelec = new TH1F("Nelec","Number of Isolated Electrons;Number/Event",5,-0.5,4.5);
         _hNelec_truth = new TH1F("NelecTruth","Number of Electrons (Truth);Number/Event",5,-0.5,4.5);
 
         _hNjet = new TH1F("Njet","Number of Jets;Number/Event",10,-0.5,9.5);
 
-        _hinv = new TH1F( "Inv","Z Invariant Mass;GeV",100, 0, 200);
+        _hinv = new TH1F( "Inv","Z Invariant Mass;GeV",50, 0, 200);
         _hmet = new TH1F( "MET","MET;GeV",50, 0, 1000);
 
-        _hinv_truth = new TH1F( "InvTruth","Z Invariant Mass (Truth);GeV",100, 0, 200);
-        _hmet_truth = new TH1F( "METTruth","MET (Truth);GeV",100, 0, 200);
+        _hinv_truth = new TH1F( "InvTruth","Z Invariant Mass (Truth);GeV",50, 0, 200);
+        _hmet_truth = new TH1F( "METTruth","MET (Truth);GeV",50, 0, 200);
 
 	//MJW plots
 	_hElectronPt = new TH1F("ElectronPt","Electron Pt;GeV;",50, 0., 500.);
@@ -176,9 +176,9 @@ namespace Gambit {
         // Calculate common variables and cuts first
         applyMediumIDElectronSelection(signalElectrons);
 
-        int nElectrons = signalElectrons.size();
-        int nMuons = signalMuons.size();
-        int nJets = signalJets.size();
+        float nElectrons = signalElectrons.size();
+        float nMuons = signalMuons.size();
+        float nJets = signalJets.size();
 
         P4 temp;
         //P4 ptot = event->missingmom();
@@ -188,9 +188,9 @@ namespace Gambit {
 	
         _hmet->Fill(event->met());
 
-	int numElectrons=signalElectrons.size();
-	int numMuons=signalMuons.size();
-	int numJets=signalJets.size();
+	float numElectrons=0;
+	float numMuons=0;
+	float numJets=0;
 
 	for(Particle * electron : signalElectrons){
 	  if(electron->pT()>10. && fabs(electron->eta())<2.5){
