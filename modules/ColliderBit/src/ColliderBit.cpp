@@ -314,9 +314,10 @@ namespace Gambit {
       /// @todo Use ghost tagging?
       /// @note We need to _remove_ this b-tag in the detector sim if outside the tracker acceptance!
       for (auto& pj : pjets) {
+        /// @todo Replace with HEPUtils::any(bhadrons, [&](const auto& pb){ pj.delta_R(pb) < 0.4 })
         bool isB = false;
         for (auto& pb : bhadrons) {
-          if (pj.delta_R(pb) < 0.3) {
+          if (pj.delta_R(pb) < 0.4) {
             isB = true;
             break;
           }
