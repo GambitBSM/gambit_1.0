@@ -33,19 +33,26 @@ namespace Gambit {
       virtual void processEvent(const HEPUtils::Event& eventIn, HEPUtils::Event& eventOut) {
         convertInput(eventIn);
 
+        // Electron smearing and efficiency
         applyDelphesElectronTrackingEff(_processedEvent->electrons());
         smearElectronEnergy(_processedEvent->electrons());
         applyDelphesElectronEff(_processedEvent->electrons());
 
+        // Muon smearing and efficiency
         applyDelphesMuonTrackEff(_processedEvent->muons());
         smearMuonMomentum(_processedEvent->muons());
         applyDelphesMuonEff(_processedEvent->muons());
 
+        // Apply hadronic tau BR * reco efficiency
         applyTauEfficiency(_processedEvent->taus());
 
+        // Smear jet momenta
         smearJets(_processedEvent->jets());
 
-        /// @todo Unset b-tags outside tracker range
+        // Unset b-tags outside tracker range
+        for (HEPUtils::Jet* j : _processedEvent->jets()) {
+          if (j->abseta() > 2.5) j->set_btag(false);
+        }
 
         convertOutput(eventOut);
       }
