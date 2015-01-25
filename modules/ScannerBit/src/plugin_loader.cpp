@@ -72,17 +72,14 @@ namespace Gambit
                                                 {
                                                         std::string::size_type pos = str.find("__gambit_plugin_pluginInit_");
                                                         
-                                                        if (pos != std::string::npos)
+                                                        if (pos != std::string::npos && 
+                                                                (str.rfind(" T ", pos) != std::string::npos || str.rfind(" t ", pos) != std::string::npos))
                                                         {
                                                                 Plugin_Details temp(str.substr(pos + 27, str.rfind("__") - pos - 27));
                                                                 
                                                                 if (plug == "" || temp.plugin == plug)
                                                                 {
-                                                                        if (p_str.rfind("/") != std::string::npos)
-                                                                                temp.library = p_str.substr(p_str.rfind("/") + 1);
-                                                                        else
-                                                                                temp.library = p_str;
-                                                                        temp.library_path = p_str;
+                                                                        temp.path = p_str;
                                                                         plugins.push_back(temp);
                                                                         plugin_map[temp.type][temp.plugin].push_back(temp);
                                                                 }
@@ -113,7 +110,7 @@ namespace Gambit
                                 
                                 for (auto it = plugin_map.at(type).at(plugin).begin(), end = plugin_map.at(type).at(plugin).end(); it != end; it++)
                                 {
-                                        if (VersionCompare(version)(*it) && (lib == "" || lib == it->library_path))
+                                        if (VersionCompare(version)(*it) && (lib == "" || lib == it->path))
                                                 plugins.push_back(*it);
                                 }
                                 
@@ -127,7 +124,7 @@ namespace Gambit
                                                 {
                                                         scan_err << "There are two plugins that met the input"
                                                                 << " criteria in the inifile:\n" << it->print()
-                                                                << "\n and ... \n" << it2->print() << scan_end;
+                                                                << "\n and ... \n\n" << it2->print() << scan_end;
                                                 }
                                                 else
                                                 {
@@ -167,10 +164,8 @@ namespace Gambit
                                                 }
                                                 if (options.hasKey(*it, "version"))
                                                         temp.version = options.getValue<std::string>(*it, "version");
-                                                if (options.hasKey(*it, "library"))
-                                                        temp.library = "ScannerBit/lib/" + options.getValue<std::string>(*it, "library");
-                                                if (options.hasKey(*it, "library_path"))
-                                                        temp.library = options.getValue<std::string>(*it, "library_path");
+                                                if (options.hasKey(*it, "plugin_path"))
+                                                        temp.path = options.getValue<std::string>(*it, "plugin_path");
                                                         
                                                 selectedPlugins[*it] = temp;
                                         }
@@ -186,7 +181,7 @@ namespace Gambit
                                 auto it2 = selectedPlugins.find(pluginName);
                                 if (it2 != selectedPlugins.end())
                                 {
-                                        return Plugin_Interface_Details(plugins.find(type, it2->second.plugin, it2->second.version, it2->second.library), options.getOptions(pluginName).getNode());
+                                        return Plugin_Interface_Details(plugins.find(type, it2->second.plugin, it2->second.version, it2->second.path), options.getOptions(pluginName).getNode());
                                 }
                                 else
                                 {

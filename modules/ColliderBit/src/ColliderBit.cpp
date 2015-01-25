@@ -243,6 +243,7 @@ namespace Gambit {
     }
 
 
+
     /// Convert a hadron-level Pythia8::Event into an unsmeared HEPUtils::Event
     /// @todo Overlap between jets and prompt containers: need some isolation in MET calculation
     void convertPythia8ParticleEvent(HEPUtils::Event &result) {
@@ -294,28 +295,34 @@ namespace Gambit {
 
         // Add prompt and invisible particles as individual particles
         if (prompt || !visible) {
+
           HEPUtils::Particle* gp = new HEPUtils::Particle(mk_p4(p.p()), p.id());
           gp->set_prompt();
           result.add_particle(gp); // Will be automatically categorised
         }
 
+        //if(fabs(p.id())==13)std::cout << "TEST: prompt " << prompt << " isStrong " << MCUtils::PID::isStrongInteracting(p.id()) << " isEM " << MCUtils::PID::isEMInteracting(p.id()) << std::endl;
+
         // All particles other than invisibles and muons are jet constituents
         if (visible && p.idAbs() != MCUtils::PID::MUON) jetparticles.push_back(mk_pseudojet(p.p()));
+
       }
 
       /// Jet finding
-      /// Currently hard-coded to use anti-kT R=0.4 jets above 20 GeV
+      /// Currently hard-coded to use anti-kT R=0.4 jets above 10 GeV (could remove pT cut entirely)
       /// @todo choose jet algorithm via _settings?
       const fastjet::JetDefinition jet_def(fastjet::antikt_algorithm, 0.4);
       fastjet::ClusterSequence cseq(jetparticles, jet_def);
-      std::vector<fastjet::PseudoJet> pjets = sorted_by_pt(cseq.inclusive_jets(20));
+      std::vector<fastjet::PseudoJet> pjets = sorted_by_pt(cseq.inclusive_jets(10));
 
       /// Do jet b-tagging, etc. and add to the Event
-      /// @todo Use ghost tagging
+      /// @todo Use ghost tagging?
+      /// @note We need to _remove_ this b-tag in the detector sim if outside the tracker acceptance!
       for (auto& pj : pjets) {
+        /// @todo Replace with HEPUtils::any(bhadrons, [&](const auto& pb){ pj.delta_R(pb) < 0.4 })
         bool isB = false;
         for (auto& pb : bhadrons) {
-          if (pj.delta_R(pb) < 0.3) {
+          if (pj.delta_R(pb) < 0.4) {
             isB = true;
             break;
           }
@@ -377,7 +384,7 @@ namespace Gambit {
         /// @todo Apply a hadronic tau BR fraction?
         /// @todo *Some* photons should be included in jets!!! Ignore for now since no FSR
         /// @todo Lepton dressing
-        const bool prompt = isFinalPhoton(i, pevt) || (isFinalLepton(i, pevt) && abs(p.id()) != 15);
+        const bool prompt = isFinalPhoton(i, pevt) || (isFinalLepton(i, pevt) && abs(p.id()) != MCUtils::PID::TAU);
         const bool visible = MCUtils::PID::isStrongInteracting(p.id()) || MCUtils::PID::isEMInteracting(p.id());
         if (prompt || !visible) {
           HEPUtils::Particle* gp = new HEPUtils::Particle(mk_p4(p.p()), p.id());
@@ -396,15 +403,17 @@ namespace Gambit {
       }
 
       /// Jet finding
-      /// Currently hard-coded to use anti-kT R=0.4 jets above 30 GeV
+      /// Currently hard-coded to use anti-kT R=0.4 jets above 10 GeV (could remove pT cut entirely)
       /// @todo choose jet algorithm via _settings?
       const fastjet::JetDefinition jet_def(fastjet::antikt_algorithm, 0.4);
       fastjet::ClusterSequence cseq(jetparticles, jet_def);
-      std::vector<fastjet::PseudoJet> pjets = sorted_by_pt(cseq.inclusive_jets(30));
+      std::vector<fastjet::PseudoJet> pjets = sorted_by_pt(cseq.inclusive_jets(10));
       // Add to the event, with b-tagging info
-      BOOST_FOREACH (const fastjet::PseudoJet& pj, pjets) {
-        /// @todo Do jet b-tagging, etc. by looking for b quark constituents (i.e. user index = |parton ID| = 5)
-        const bool isB = HEPUtils::any(pj.constituents(), [](const fastjet::PseudoJet& c){ return c.user_index() == 5; });
+      for (const fastjet::PseudoJet& pj : pjets) {
+        // Do jet b-tagging, etc. by looking for b quark constituents (i.e. user index = |parton ID| = 5)
+        /// @note We need to _remove_ this b-tag in the detector sim if outside the tracker acceptance!
+        const bool isB = HEPUtils::any(pj.constituents(),
+                                       [](const fastjet::PseudoJet& c){ return c.user_index() == MCUtils::PID::BQUARK; });
         result.add_jet(new HEPUtils::Jet(HEPUtils::mk_p4(pj), isB));
       }
 
@@ -422,18 +431,17 @@ namespace Gambit {
       // set_missingmom(-pvis);
       //
       // From sum of invisibles, including those out of range
-      for (size_t i = 0; i < result.invisible_particles().size(); ++i) {
-        pout += result.invisible_particles()[i]->mom();
-      }
+      for (const Particle* p : result.invisible_particles())
+        pout += p->mom();
       result.set_missingmom(pout);
     }
 
 
 
-    /// Gambit facing interface function
+    /// Gambit-facing interface function
     void convertPythia8Event(HEPUtils::Event &result) {
       convertPythia8PartonEvent(result);
-    //convertPythia8ParticleEvent(result);
+      //convertPythia8ParticleEvent(result);
     }
 
 

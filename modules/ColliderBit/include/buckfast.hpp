@@ -21,7 +21,7 @@ namespace Gambit{
 						       0.,0.5,0.83,0.90,
 						       0.,0.,0.,0.}});
       
-      std::cout << "About to loop" << std::endl;
+      
       //Now loop over the electrons and only keep those that pass the random efficiency cut
       std::vector<Particle*> Survivors;
       
@@ -31,7 +31,7 @@ namespace Gambit{
 	
 	bool hasTag = false;
 	
-	std::cout << "Getting random bool " << fabs(e_eta) << " " << e_pt << std::endl;
+	//std::cout << "Getting random bool " << fabs(e_eta) << " " << e_pt << std::endl;
 	hasTag = random_bool(_elTrackEff2d, fabs(e_eta),e_pt);
 	
 	if(hasTag)Survivors.push_back(electron);
@@ -77,7 +77,7 @@ namespace Gambit{
 	double mu_pt=muon->pT();
 	double mu_eta=muon->eta();
 
-	std::cout << "MUON PT " << mu_pt << " ETA " << mu_eta << " trackeff " << _muTrackEff2d.get_at(fabs(mu_eta), fabs(mu_pt)) << std::endl;
+	//std::cout << "MUON PT " << mu_pt << " ETA " << mu_eta << " trackeff " << _muTrackEff2d.get_at(fabs(mu_eta), fabs(mu_pt)) << std::endl;
 	
 	bool hasTag = false;
 	
@@ -102,7 +102,7 @@ namespace Gambit{
 	
 	bool hasTag = false;
 
-	std::cout << "MUON PT " << mu_pt << " ETA " << mu_eta << " eff " << _muEff2d.get_at(fabs(mu_eta), fabs(mu_pt)) << std::endl;
+	//std::cout << "MUON PT " << mu_pt << " ETA " << mu_eta << " eff " << _muEff2d.get_at(fabs(mu_eta), fabs(mu_pt)) << std::endl;
 	
 	hasTag = random_bool(_muEff2d, fabs(mu_eta),mu_pt);
 	
@@ -184,9 +184,9 @@ namespace Gambit{
 	float smeared_E=d(gen);
 	if(smeared_E<0)smeared_E=0;
 	float smeared_pt=smeared_E/cosh(el_eta);
-	std::cout << "BEFORE eta " << electron->eta() << std::endl;
+	//std::cout << "BEFORE eta " << electron->eta() << std::endl;
 	electron->set_mom(P4::mkEtaPhiME(el_eta,el_phi,el_m,smeared_E));
-	std::cout << "AFTER eta " << electron->eta() << std::endl;
+	//std::cout << "AFTER eta " << electron->eta() << std::endl;
 
 	SmearedElectrons.push_back(electron);
 	
@@ -232,7 +232,7 @@ namespace Gambit{
 	if(smeared_pt<0)smeared_pt=0;
 	float smeared_E=smeared_pt*cosh(mu_eta);
 	
-	std::cout << "Muon pt " << mu_pt << " smeared " << smeared_pt << endl;
+	//std::cout << "Muon pt " << mu_pt << " smeared " << smeared_pt << endl;
 	
 	muon->set_mom(P4::mkEtaPhiMPt(mu_eta,mu_phi,mu_m,smeared_pt));
 	

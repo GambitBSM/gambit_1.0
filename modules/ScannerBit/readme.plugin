@@ -136,6 +136,11 @@ scan_ptr<ret (args...)>
 -- a container functor of the form "ret scan_ptr(args ...)".
    Used to contain the output of "get_functor".
    
+set_dimension(...)
+-- For objective plugins that will be used as priors.
+   Set the hypercube dimension that will be operator
+   over by the prior.
+   
 **************** end plugin commands *******************
 
 
@@ -256,11 +261,9 @@ description:
 plugins:
 -- declares plugin name (not optional).
 
-library:
--- specifies which library contains the plugin (optional).
-
-library_path:
--- same of the "library:" tag, but specifies full path (optional).
+plugin_path:
+-- specifies full path to the object containing the plugin 
+   (optional).
 
 options:
 -- section where the plugin options are specified (optional).

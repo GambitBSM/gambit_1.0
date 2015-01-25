@@ -86,7 +86,7 @@ template <> struct _number_<_struct_ ## libs_present_ ## plugin>{static const in
 template <> struct _number_<_struct_0>{static const int num = 0;};                              \
 template <> struct _number_<_struct_1>{static const int num = 1;};                              \
 template <> struct _number_<_struct_2>{static const int num = 2;};                              \
-int plugin_status(){return _number_<ADD_STRUCT(libs_present_ ## plugin) >::num;}                \
+inline int plugin_status(){return _number_<ADD_STRUCT(libs_present_ ## plugin) >::num;}         \
 
 #define INIT_INIFILE_VALUE(exp, ...)    INITIALIZE(exp, get_inifile_value<decltype(exp)>( __VA_ARGS__ ))
 

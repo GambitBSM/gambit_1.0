@@ -27,7 +27,7 @@
 #include "scanner_plugin.hpp"
 #include "threadsafe_rng.hpp"
 
-scanner_plugin(toy_mcmc, version(1, 0, 0), external_library_required)
+scanner_plugin(toy_mcmc, version(1, 0, 0))
 {      
         void hiFunc(){std::cout << "This is the GAMBIT toy MCMC.  Don't run serious scans with this." << std::endl;}
         plugin_constructor
@@ -40,10 +40,8 @@ scanner_plugin(toy_mcmc, version(1, 0, 0), external_library_required)
         {
                 std::string output_file            = get_inifile_value<std::string>("output_file", "default_output");
                 int N                              = get_inifile_value<int>("point_number", 10)-1;
-                scan_ptr<double (const std::vector<double>&)> LogLike = get_functor("Likelihood");
+                scan_ptr<double (const std::vector<double> &)> LogLike = get_functor("Likelihood");
                 int ma                             = get_dimension();
-                //int na = get_inifile_value<int>("not_there");
-                //std::ofstream out(output_file.c_str());
                 double ans, chisq, chisqnext;
                 int mult = 1, count = 0, total = 0;
                 std::vector<double> a(ma);
@@ -72,12 +70,7 @@ scanner_plugin(toy_mcmc, version(1, 0, 0), external_library_required)
                         if ((ans <= 0.0)||(-std::log(Gambit::Random::draw()) >= ans))
                         //if (true)
                         {
-                                //out << mult << "   ";
-                                for (int k = 0; k < ma; k++)
-                                {
-                                        //out << a[k] << "   ";
-                                        a[k] = aNext[k];
-                                }
+                                a = aNext;
                                 //out << "   " << 2.0*chisq << std::endl;
                                 
                                 chisq = chisqnext;
