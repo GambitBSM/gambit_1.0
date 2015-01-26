@@ -52,7 +52,7 @@ namespace Gambit
                                         pclose(p_f);  
                                 }
                         }
-                                
+                        
                         std::vector<Plugin_Details> Plugin_Loader::getPluginsVec() const {return plugins;}
 
                         std::map<std::string, std::map<std::string, std::vector<Plugin_Details>>> Plugin_Loader::getPluginsMap() const {return plugin_map;}
@@ -152,6 +152,7 @@ namespace Gambit
                                         for (auto it = selectedPluginNames.begin(), end = selectedPluginNames.end(); it != end; it++)
                                         {
                                                 Proto_Plugin_Details temp;
+                                                
                                                 if (options.hasKey(*it, "plugin"))
                                                 {
                                                         temp.plugin = options.getValue<std::string>(*it, "plugin");
@@ -162,10 +163,15 @@ namespace Gambit
                                                                 << "using the tag \"" << *it << "\" as the plugin name." << scan_end;
                                                         temp.plugin = *it;
                                                 }
+                                                
                                                 if (options.hasKey(*it, "version"))
                                                         temp.version = options.getValue<std::string>(*it, "version");
+                                                
                                                 if (options.hasKey(*it, "plugin_path"))
+                                                {
                                                         temp.path = options.getValue<std::string>(*it, "plugin_path");
+                                                        plugins.loadLibrary(temp.path, temp.plugin);
+                                                }
                                                         
                                                 selectedPlugins[*it] = temp;
                                         }

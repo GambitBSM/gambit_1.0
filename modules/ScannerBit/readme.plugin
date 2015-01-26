@@ -3,7 +3,7 @@ How to make a scanner plugin.
 Introduction to Gambit plugins: 
 
 -- Plugin are self-contained pieces of code that are compiled 
-   in seperate libraries external to Gambit itself.  At runtime, 
+   in separate objects external to Gambit itself.  At runtime, 
    ScannerBit selects and loads the appropriate plugins based
    on inifile entries.  The plugin themselves can be used for
    a wide variety of purposes.  "scanner_plugin"s specify
@@ -166,8 +166,10 @@ compiling with gambit:
    
    function in ScannerBit/CMakeLists.txt
    
--- or alternatively you can declare you own seperate libray
-   in ScannerBit/CMakeLists.txt.
+-- or alternatively, if your plugins has a substantial 
+   memory footprint or requires complex initialization 
+   it may be beneficial to compile the plugin in a separate 
+   object file.  To do so:
    
    First, declare your source files with
    
@@ -177,7 +179,7 @@ compiling with gambit:
    
    "set(your_headers ... )".
    
-   then declare the library with
+   then declare the object which will contain your plugin with
    
    "add_gambit_library(your_lib_name OPTION SHARED SOURCES ${your_sources} HEADERS ${your_headers})"
    
@@ -209,7 +211,7 @@ linking external libraries:
    
 compiling external to Gambit:
 
--- Because of Gambit's compilation tools, it is recomended to 
+-- Because of Gambit's compilation tools, it is highly recomended to 
    compile with gambit.  But there may be situations where
    compilation is too compilated or specialized to included
    as part of gambit.  In such cases, ScannerBit provide a 
@@ -261,10 +263,6 @@ description:
 plugins:
 -- declares plugin name (not optional).
 
-plugin_path:
--- specifies full path to the object containing the plugin 
-   (optional).
-
 options:
 -- section where the plugin options are specified (optional).
 
@@ -272,6 +270,13 @@ purpose:
 -- for Objective plugins:  specifies the purpose associated
    with the plugin.
 
+plugin_path:
+-- specifies full path to the object containing the plugin 
+   (optional).  Because of Gambit's compilation tools, it is highly
+   recomended to compile with gambit. gambit.  But in situations 
+   where compilation is too complicated or specialized to be 
+   included as part of gambit, you may specify an external 
+   library with plugin_path:
 
 *************************************************************
 

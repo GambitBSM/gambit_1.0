@@ -81,7 +81,7 @@ namespace Gambit
                         {
                         private:
                                 std::map<std::string, Proto_Plugin_Details> selectedPlugins;
-                                const Plugins::Plugin_Loader plugins;
+                                mutable Plugins::Plugin_Loader plugins;
                                 Options options;
                                 
                         public:
