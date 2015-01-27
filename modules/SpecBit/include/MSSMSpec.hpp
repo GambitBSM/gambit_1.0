@@ -18,8 +18,8 @@ namespace Gambit {
    //this contains scale and scheme dependent stuff
    template <class MI>
    class MSSM_DRbarPars : public RunparDer<typename MI::Model> {
-      
-      REDO_TYPEDEFS(MI::Model)
+      typedef typename MI::Model Model; // Was having problems writing typename in all the right places...
+      REDO_TYPEDEFS(Model)
    private:
       //reference to spectrum class for accessing model object
       MSSMSpec<MI> &my_parent;
@@ -92,25 +92,30 @@ namespace Gambit {
       virtual double GetScale() const;
       virtual void SetScale(double scale);
         
-      typename MI::Model& get_bound_spec() const; 
+      Model& get_bound_spec() const; 
    };
    
    //physical class for accessing physical spectrum
    template <class MI>
    class MSSM_Phys : public PhysDer<typename MI::Model> {
-      REDO_TYPEDEFS(MI::Model)
+      typedef typename MI::Model Model;
+      REDO_TYPEDEFS(Model)
    private:
       //reference to spectrim class for accessing model object
       //Spec<Model,Model_physical> & my_parent;
       MSSMSpec<MI> &my_parent;
       virtual Spectrum& get_parent() const {return my_parent;}
 
-      static fmap  PoleMass_map;
-      static fmap1 PoleMass_map1;
-      static fmap  fill_PoleMass_map();
-      static fmap1 fill_PoleMass_map1();
-      fmap&  get_PoleMass_map() const;
-      fmap1& get_PoleMass_map1() const;
+      static fmap       PoleMass_map;
+      static fmap_plain PoleMass_map_extra;
+      static fmap1      PoleMass_map1;
+      static fmap       fill_PoleMass_map();
+      static fmap_plain fill_PoleMass_map_extra();
+      static fmap1      fill_PoleMass_map1();
+
+      fmap&       get_PoleMass_map() const;
+      fmap_plain& get_PoleMass_map_extra() const;
+      fmap1&      get_PoleMass_map1() const;
 
       static fmap  PoleMixing_map;
       static fmap1 PoleMixing_map1;
@@ -125,12 +130,13 @@ namespace Gambit {
    public:
       MSSM_Phys(MSSMSpec<MI> &x) : my_parent(x) {}
       
-      typename MI::Model& get_bound_spec() const; 
+      Model& get_bound_spec() const; 
    };
     
    template <class MI>
    class MSSMSpec : public Spec<typename MI::Model> 
    {
+      typedef typename MI::Model Model;
       friend class MSSM_DRbarPars<MI>;
       friend class MSSM_Phys<MI>;
       private:
@@ -149,7 +155,7 @@ namespace Gambit {
           
          // These are public for now so that SpecBit_tests.cpp can access them
          MI model_interface; // Must be declared before 'model', since model just points inside of model_interface
-         typename MI::Model& model;
+         Model& model;
 
          //Destructor
          virtual ~MSSMSpec();
@@ -161,19 +167,8 @@ namespace Gambit {
          //may use something like this to pass error to Gambit
          virtual std::string AccessError(std::string state) const;
 
-         //Need a method to return model since it is private
-         ///TODO: Ben: What are these for? They seem to just return copies
-         // of the internal objects, which doesn't seem very useful. I have
-         // made the model object public for now so that I can manipulate it
-         // inside gambit, but perhaps these functions should return pointers
-         // or references to the internal object instead? Though in that case
-         // the model object might as well be public I think.
-         // UPDATE: Although do we need the model object ever? It doesn't
-         // seem to be needed when running the spectrum generator, because
-         // we run it seperately and then copy the information into the Spectrum
-         // object.
-         typename MI::Model get_modelobject();
-         typename MI::Model& get_bound_spec() const; 
+         Model get_modelobject();
+         Model& get_bound_spec() const; 
          //Model_physical get_bound_phys() const; 
 
          // Write spectrum information in slha format (not including input parameters etc.)
@@ -225,8 +220,8 @@ namespace Gambit {
          }
 
          // Overload of this function to just easily copy the othermodel object
-         // if it is of type MI::Model
-         void get_external_spectrum(typename MI::Model &othermodel)
+         // if it is of type Model
+         void get_external_spectrum(Model& othermodel)
          {
            model = othermodel;
            return;
@@ -252,7 +247,7 @@ namespace Gambit {
       model(model_interface.model),
       mssm_ph(*this),
       mssm_drbar_pars(*this),
-      Spec<typename MI::Model>(mssm_drbar_pars, mssm_ph),
+      Spec<Model>(mssm_drbar_pars, mssm_ph),
       index_offset(-1)
    {
       if (switch_index_convention) index_offset = 0;
@@ -487,10 +482,11 @@ namespace Gambit {
    template <class MI>
    typename MSSM_DRbarPars<MI>::fmap MSSM_DRbarPars<MI>::fill_mass2_map() 
    {
+      typedef typename MI::Model Model;
       fmap tmp_map;
-      tmp_map["BMu"] = &MI::Model::get_BMu;
-      tmp_map["mHd2"] = &MI::Model::get_mHd2;
-      tmp_map["mHu2"] = &MI::Model::get_mHu2;
+      tmp_map["BMu"] = &Model::get_BMu;
+      tmp_map["mHd2"] = &Model::get_mHd2;
+      tmp_map["mHu2"] = &Model::get_mHu2;
    
       return tmp_map;
    }
@@ -512,17 +508,18 @@ namespace Gambit {
    template <class MI>
    typename MSSM_DRbarPars<MI>::fmap2 MSSM_DRbarPars<MI>::fill_mass2_map2() 
    {
+      typedef typename MI::Model Model;
       fmap2 tmp_map;
 
       // Can't use c++11 initialise lists, se have to initialise the index sets like this.
       static const int i012v[] = {0,1,2};
       static const std::set<int> i012(i012v, Utils::endA(i012v));
 
-      tmp_map["mq2"] = FInfo2( &MI::Model::get_mq2, i012, i012);
-      tmp_map["ml2"] = FInfo2( &MI::Model::get_ml2, i012, i012);
-      tmp_map["md2"] = FInfo2( &MI::Model::get_md2, i012, i012);
-      tmp_map["mu2"] = FInfo2( &MI::Model::get_mu2, i012, i012);
-      tmp_map["me2"] = FInfo2( &MI::Model::get_me2, i012, i012);
+      tmp_map["mq2"] = FInfo2( &Model::get_mq2, i012, i012);
+      tmp_map["ml2"] = FInfo2( &Model::get_ml2, i012, i012);
+      tmp_map["md2"] = FInfo2( &Model::get_md2, i012, i012);
+      tmp_map["mu2"] = FInfo2( &Model::get_mu2, i012, i012);
+      tmp_map["me2"] = FInfo2( &Model::get_me2, i012, i012);
      
       return tmp_map;
    }
@@ -533,13 +530,14 @@ namespace Gambit {
    template <class MI>
    typename MSSM_DRbarPars<MI>::fmap MSSM_DRbarPars<MI>::fill_mass_map() 
    {
+      typedef typename MI::Model Model;
       fmap tmp_map;
-      tmp_map["M1"]= &MI::Model::get_MassB;
-      tmp_map["M2"]= &MI::Model::get_MassWB;
-      tmp_map["M3"]= &MI::Model::get_MassG;
-      tmp_map["Mu"]= &MI::Model::get_Mu;
-      tmp_map["vu"]= &MI::Model::get_vu;
-      tmp_map["vd"]= &MI::Model::get_vd;
+      tmp_map["M1"]= &Model::get_MassB;
+      tmp_map["M2"]= &Model::get_MassWB;
+      tmp_map["M3"]= &Model::get_MassG;
+      tmp_map["Mu"]= &Model::get_Mu;
+      tmp_map["vu"]= &Model::get_vu;
+      tmp_map["vd"]= &Model::get_vd;
       //  can't do SM vev or tan beta this way
       // can create MSSM_DRbarPars getter which first calls 
       // inherited one then adds vev and tan beta
@@ -564,17 +562,18 @@ namespace Gambit {
    template <class MI>
    typename MSSM_DRbarPars<MI>::fmap2 MSSM_DRbarPars<MI>::fill_mass_map2() 
    {
+      typedef typename MI::Model Model;
       fmap2 tmp_map;
 
       static const int i012v[] = {0,1,2};
       static const std::set<int> i012(i012v, Utils::endA(i012v));
 
-      tmp_map["TYd"]= FInfo2( &MI::Model::get_TYd, i012, i012);
-      tmp_map["TYe"]= FInfo2( &MI::Model::get_TYe, i012, i012);
-      tmp_map["TYu"]= FInfo2( &MI::Model::get_TYu, i012, i012);
-      tmp_map["ad"] = FInfo2( &MI::Model::get_TYd, i012, i012);
-      tmp_map["ae"] = FInfo2( &MI::Model::get_TYe, i012, i012);
-      tmp_map["au"] = FInfo2( &MI::Model::get_TYu, i012, i012);
+      tmp_map["TYd"]= FInfo2( &Model::get_TYd, i012, i012);
+      tmp_map["TYe"]= FInfo2( &Model::get_TYe, i012, i012);
+      tmp_map["TYu"]= FInfo2( &Model::get_TYu, i012, i012);
+      tmp_map["ad"] = FInfo2( &Model::get_TYd, i012, i012);
+      tmp_map["ae"] = FInfo2( &Model::get_TYe, i012, i012);
+      tmp_map["au"] = FInfo2( &Model::get_TYu, i012, i012);
    
       return tmp_map;
    }
@@ -583,10 +582,11 @@ namespace Gambit {
    template <class MI>
    typename MSSM_DRbarPars<MI>::fmap MSSM_DRbarPars<MI>::fill_mass0_map() 
    {
+      typedef typename MI::Model Model;
       fmap tmp_map;
-      tmp_map["g1"]= &MI::Model::get_g1;
-      tmp_map["g2"]= &MI::Model::get_g2;
-      tmp_map["g3"]= &MI::Model::get_g3;
+      tmp_map["g1"]= &Model::get_g1;
+      tmp_map["g2"]= &Model::get_g2;
+      tmp_map["g3"]= &Model::get_g3;
       
       //  can't do SM vev or tan beta this way
       // can create MSSM_DRbarPars getter which first calls 
@@ -612,14 +612,15 @@ namespace Gambit {
    template <class MI>
    typename MSSM_DRbarPars<MI>::fmap2 MSSM_DRbarPars<MI>::fill_mass0_map2() 
    {
+      typedef typename MI::Model Model;
       fmap2 tmp_map;
      
       static const int i012v[] = {0,1,2};
       static const std::set<int> i012(i012v, Utils::endA(i012v));
 
-      tmp_map["Yd"]= FInfo2( &MI::Model::get_Yd, i012, i012);
-      tmp_map["Ye"]= FInfo2( &MI::Model::get_Ye, i012, i012);
-      tmp_map["Yu"]= FInfo2( &MI::Model::get_Yu, i012, i012);
+      tmp_map["Yd"]= FInfo2( &Model::get_Yd, i012, i012);
+      tmp_map["Ye"]= FInfo2( &Model::get_Ye, i012, i012);
+      tmp_map["Yu"]= FInfo2( &Model::get_Yu, i012, i012);
      
       return tmp_map;
    }
@@ -627,85 +628,89 @@ namespace Gambit {
    template <class MI>
    typename MSSM_DRbarPars<MI>::fmap MSSM_DRbarPars<MI>::fill_TreeMass_map()
    {
-    fmap tmp_map;
-    tmp_map["MZ"]      = &MI::Model::get_MVZ;
-    tmp_map["MW"]      = &MI::Model::get_MVWm;
-    tmp_map["MGluino"] = &MI::Model::get_MGlu; 
-    tmp_map["MGluon"]  = &MI::Model::get_MVG; 
-    tmp_map["MPhoton"] = &MI::Model::get_MVP;
-    
-    // these are not present in the model object currently
-    // But maybe we should add them
-    // tmp_map["MGoldstone0"] = &Model::get_DRbar_neut_goldstone;
-    // tmp_map["MA0"] = &Model::get_DRbar_neut_CPodd_higgs;
-    // tmp_map["MGoldstonePM"] = &Model::get_DRbar_ch_goldstone; 
-    // tmp_map["MHpm"] = &Model::get_DRbar_ch_higgs; 
-    
-    // tmp_map["Mtop"] = &Model::get_DRbar_mtop;
-    // tmp_map["Mcharm"] = &Model::get_DRbar_mcharm;
-    // tmp_map["Mup"] = &Model::get_DRbar_mup;
-    // tmp_map["Mbottom"] = &Model::get_DRbar_mbottom;
-    // tmp_map["Mstrange"] = &Model::get_DRbar_mstrange;
-    // tmp_map["Mdown"] = &Model::get_DRbar_mdown;
-    // tmp_map["Mtau"] = &Model::get_DRbar_mtau; 
-    // tmp_map["Mmuon"] = &Model::get_DRbar_mmuon; 
-    // tmp_map["Melectron"] = &Model::get_DRbar_melectron; 
-    return tmp_map;
+      typedef typename MI::Model Model;
+      fmap tmp_map;
+
+      tmp_map["MZ"]      = &Model::get_MVZ;
+      tmp_map["MW"]      = &Model::get_MVWm;
+      tmp_map["MGluino"] = &Model::get_MGlu; 
+      tmp_map["MGluon"]  = &Model::get_MVG; 
+      tmp_map["MPhoton"] = &Model::get_MVP;
+      
+      // these are not present in the model object currently
+      // But maybe we should add them
+      // tmp_map["MGoldstone0"] = &Model::get_DRbar_neut_goldstone;
+      // tmp_map["MA0"] = &Model::get_DRbar_neut_CPodd_higgs;
+      // tmp_map["MGoldstonePM"] = &Model::get_DRbar_ch_goldstone; 
+      // tmp_map["MHpm"] = &Model::get_DRbar_ch_higgs; 
+      
+      // tmp_map["Mtop"] = &Model::get_DRbar_mtop;
+      // tmp_map["Mcharm"] = &Model::get_DRbar_mcharm;
+      // tmp_map["Mup"] = &Model::get_DRbar_mup;
+      // tmp_map["Mbottom"] = &Model::get_DRbar_mbottom;
+      // tmp_map["Mstrange"] = &Model::get_DRbar_mstrange;
+      // tmp_map["Mdown"] = &Model::get_DRbar_mdown;
+      // tmp_map["Mtau"] = &Model::get_DRbar_mtau; 
+      // tmp_map["Mmuon"] = &Model::get_DRbar_mmuon; 
+      // tmp_map["Melectron"] = &Model::get_DRbar_melectron; 
+      return tmp_map;
    }
    //map for string access with an index supplied
    template <class MI>
    typename MSSM_DRbarPars<MI>::fmap1 MSSM_DRbarPars<MI>::fill_TreeMass_map1()
    {
-    fmap1 tmp_map;
+      typedef typename MI::Model Model;
+      fmap1 tmp_map;
 
-    static const int i01v[] = {0,1};
-    static const std::set<int> i01(i01v, Utils::endA(i01v));
+      static const int i01v[] = {0,1};
+      static const std::set<int> i01(i01v, Utils::endA(i01v));
 
-    static const int i012v[] = {0,1,2};
-    static const std::set<int> i012(i012v, Utils::endA(i012v));
+      static const int i012v[] = {0,1,2};
+      static const std::set<int> i012(i012v, Utils::endA(i012v));
 
-    static const int i0123v[] = {0,1,2,3};
-    static const std::set<int> i0123(i0123v, Utils::endA(i0123v));
+      static const int i0123v[] = {0,1,2,3};
+      static const std::set<int> i0123(i0123v, Utils::endA(i0123v));
 
-    static const int i012345v[] = {0,1,2,3,4,5};
-    static const std::set<int> i012345(i012345v, Utils::endA(i012345v));
+      static const int i012345v[] = {0,1,2,3,4,5};
+      static const std::set<int> i012345(i012345v, Utils::endA(i012345v));
 
-    tmp_map["MSd"] = FInfo1( &MI::Model::get_MSd, i012345 );
-    tmp_map["MSv"] = FInfo1( &MI::Model::get_MSv, i012 );
-    tmp_map["MSu"] = FInfo1( &MI::Model::get_MSu, i012345 );
-    tmp_map["MSe"] = FInfo1( &MI::Model::get_MSe, i012345 );
-    tmp_map["Mh0"] = FInfo1( &MI::Model::get_Mhh, i01 );
-    //Here we may access the goldstone boson
-    // and higgs. maybe too dangerous to keep?
-    tmp_map["MA0"] = FInfo1( &MI::Model::get_MAh, i01 );      
-    //Here we may access the goldstone boson
-    //and higgs. maybe too dangerous to keep?
-    tmp_map["MHpm"] = FInfo1( &MI::Model::get_MHpm, i01 );   
-    tmp_map["MCha"] = FInfo1( &MI::Model::get_MCha, i01 );
-    tmp_map["MChi"] = FInfo1( &MI::Model::get_MChi, i0123 );
-    
-    tmp_map["MFd"] = FInfo1( &MI::Model::get_MFd, i012 );
-    tmp_map["MFu"] = FInfo1( &MI::Model::get_MFu, i012 );
-    tmp_map["MFe"] = FInfo1( &MI::Model::get_MFe, i012 );
-    return tmp_map;
+      tmp_map["MSd"] = FInfo1( &Model::get_MSd, i012345 );
+      tmp_map["MSv"] = FInfo1( &Model::get_MSv, i012 );
+      tmp_map["MSu"] = FInfo1( &Model::get_MSu, i012345 );
+      tmp_map["MSe"] = FInfo1( &Model::get_MSe, i012345 );
+      tmp_map["Mh0"] = FInfo1( &Model::get_Mhh, i01 );
+      //Here we may access the goldstone boson
+      // and higgs. maybe too dangerous to keep?
+      tmp_map["MA0"] = FInfo1( &Model::get_MAh, i01 );      
+      //Here we may access the goldstone boson
+      //and higgs. maybe too dangerous to keep?
+      tmp_map["MHpm"] = FInfo1( &Model::get_MHpm, i01 );   
+      tmp_map["MCha"] = FInfo1( &Model::get_MCha, i01 );
+      tmp_map["MChi"] = FInfo1( &Model::get_MChi, i0123 );
+      
+      tmp_map["MFd"] = FInfo1( &Model::get_MFd, i012 );
+      tmp_map["MFu"] = FInfo1( &Model::get_MFu, i012 );
+      tmp_map["MFe"] = FInfo1( &Model::get_MFe, i012 );
+      return tmp_map;
    }
-   
   
+ 
    template <class MI>
-   typename MSSM_Phys<MI>::fmap MSSM_Phys<MI>::fill_PoleMass_map(){
+   typename MSSM_Phys<MI>::fmap MSSM_Phys<MI>::fill_PoleMass_map()
+   {
+      typedef typename MI::Model Model;
       fmap tmp_map;
      
       // tmp_map["MZ"] = &Model::get_Pole_MZ;
       // tmp_map["MW"] = &Model::get_Pole_MW;
 
-      tmp_map["MZ"] = &MI::Model::get_MVZ_pole_slha;
-      tmp_map["MW"] = &MI::Model::get_MVWm_pole_slha;
-
-      tmp_map["MGluino"] = &MI::Model::get_MGlu_pole_slha; 
-      //tmp_map["MGluon"] = &Model::get_MGluon_pole_slha;
-      tmp_map["MGluon"] = &MI::Model::get_MVG_pole_slha;
-         //tmp_map["MPhoton"] = &Model::get_pole_MPhoton;
-      tmp_map["MPhoton"] = &MI::Model::get_MVP_pole_slha;
+      tmp_map["Z0"] = &Model::get_MVZ_pole_slha;
+      tmp_map["W+"] = &Model::get_MVWm_pole_slha;
+      tmp_map["~g"] = &Model::get_MGlu_pole_slha; 
+      //tmp_map["g"] = &Model::get_MGluon_pole_slha;
+      tmp_map["g"] = &Model::get_MVG_pole_slha;
+         //tmp_map["gamma"] = &Model::get_pole_MPhoton;
+      tmp_map["gamma"] = &Model::get_MVP_pole_slha;
 
       // tmp_map["MGoldstone0"] = &Model::get_Pole_neut_goldstone;
       // tmp_map["MA0"] = &Model::get_Pole_neut_CPodd_higgs;
@@ -724,8 +729,36 @@ namespace Gambit {
       return tmp_map;
    }
    
+   // Need wrapper functios for A0 and H+ getters, to retrieve only the 
+   // non-Goldstone entries. 
+   // Need to pass in the model object, since we won't have the 'this' pointer
+   template <class Model> double get_MAh1_pole(Model& model) { return model.get_MAh_pole_slha(1); }
+   template <class Model> double get_MHpm1_pole(Model& model) { return model.get_MHpm_pole_slha(1); }
+
+   // Note! Map fillers appended with "_extra" will be treated by the Spectrum object as
+   // alternative routines to call for that getter type.
+   // e.g.
+   // get_Pole_Mass(name)
+   // draws upon two maps, filled by the two filling functions
+   // fill_PoleMass_map()
+   // fill_PoleMass_map_extra()
    template <class MI>
-   typename MSSM_Phys<MI>::fmap1 MSSM_Phys<MI>::fill_PoleMass_map1(){
+   typename MSSM_Phys<MI>::fmap_plain MSSM_Phys<MI>::fill_PoleMass_map_extra()
+   {
+      typedef typename MI::Model Model;
+      fmap_plain tmp_map;
+     
+       // Using wrapper functions defined above
+      tmp_map["A0"] = &get_MAh1_pole<Model>;   
+      tmp_map["H+"] = &get_MHpm1_pole<Model>;   
+    
+      return tmp_map;
+   }
+
+   template <class MI>
+   typename MSSM_Phys<MI>::fmap1 MSSM_Phys<MI>::fill_PoleMass_map1()
+   {
+      typedef typename MI::Model Model;
       fmap1 tmp_map;
 
       static const int i01v[] = {0,1};
@@ -740,23 +773,43 @@ namespace Gambit {
       static const int i012345v[] = {0,1,2,3,4,5};
       static const std::set<int> i012345(i012345v, Utils::endA(i012345v));
 
-      tmp_map["MSd"] = FInfo1( &MI::Model::get_MSd_pole_slha, i012345 );
-      tmp_map["MSv"] = FInfo1( &MI::Model::get_MSv_pole_slha, i012 );
-      tmp_map["MSu"] = FInfo1( &MI::Model::get_MSu_pole_slha, i012345 );
-      tmp_map["MSe"] = FInfo1( &MI::Model::get_MSe_pole_slha, i012345 );
-      tmp_map["Mh0"] = FInfo1( &MI::Model::get_Mhh_pole_slha, i01 );
-      //Here we may access the goldstone boson
-    // and higgs. maybe too dangerous to keep?
-      tmp_map["MA0"] = FInfo1( &MI::Model::get_MAh_pole_slha, i01 );      
+      //  tmp_map["MSd"] = FInfo1( &Model::get_MSd_pole_slha, i012345 );
+      //  tmp_map["MSv"] = FInfo1( &Model::get_MSv_pole_slha, i012 );
+      //  tmp_map["MSu"] = FInfo1( &Model::get_MSu_pole_slha, i012345 );
+      //  tmp_map["MSe"] = FInfo1( &Model::get_MSe_pole_slha, i012345 );
+      //  tmp_map["Mh0"] = FInfo1( &Model::get_Mhh_pole_slha, i01 );
+      //  //Here we may access the goldstone boson
+      //  //and higgs. maybe too dangerous to keep?
+      //  tmp_map["MA0"] = FInfo1( &Model::get_MAh_pole_slha, i01 );      
+      //  //Here we may access the goldstone boson
+      //  //and higgs. maybe too dangerous to keep?
+      //  tmp_map["MHpm"] = FInfo1( &Model::get_MHpm_pole_slha, i01 );   
+      //  tmp_map["MCha"] = FInfo1( &Model::get_MCha_pole_slha, i01 );
+      //  tmp_map["MChi"] = FInfo1( &Model::get_MChi_pole_slha, i0123 );
+    
+      //  tmp_map["MFd"] = FInfo1( &Model::get_MFd_pole_slha, i012 );
+      //  tmp_map["MFu"] = FInfo1( &Model::get_MFu_pole_slha, i012 );
+      //  tmp_map["MFe"] = FInfo1( &Model::get_MFe_pole_slha, i012 );
+
+      tmp_map["~d"] = FInfo1( &Model::get_MSd_pole_slha, i012345 );
+      tmp_map["~nu"]= FInfo1( &Model::get_MSv_pole_slha, i012 );
+      tmp_map["~u"] = FInfo1( &Model::get_MSu_pole_slha, i012345 );
+      tmp_map["~e"] = FInfo1( &Model::get_MSe_pole_slha, i012345 );
+      tmp_map["h0"] = FInfo1( &Model::get_Mhh_pole_slha, i01 );
+      // NOTE: I have added the following two to the "no index" map as well, 
+      // where only the "safe" entries are retrieved
       //Here we may access the goldstone boson
       //and higgs. maybe too dangerous to keep?
-      tmp_map["MHpm"] = FInfo1( &MI::Model::get_MHpm_pole_slha, i01 );   
-      tmp_map["MCha"] = FInfo1( &MI::Model::get_MCha_pole_slha, i01 );
-      tmp_map["MChi"] = FInfo1( &MI::Model::get_MChi_pole_slha, i0123 );
+      tmp_map["A0"] = FInfo1( &Model::get_MAh_pole_slha, i01 );      
+      //Here we may access the goldstone boson
+      //and higgs. maybe too dangerous to keep?
+      tmp_map["H+"] = FInfo1( &Model::get_MHpm_pole_slha, i01 );   
+      tmp_map["~chi+"] = FInfo1( &Model::get_MCha_pole_slha, i01 );
+      tmp_map["~chi0"] = FInfo1( &Model::get_MChi_pole_slha, i0123 );
     
-      tmp_map["MFd"] = FInfo1( &MI::Model::get_MFd_pole_slha, i012 );
-      tmp_map["MFu"] = FInfo1( &MI::Model::get_MFu_pole_slha, i012 );
-      tmp_map["MFe"] = FInfo1( &MI::Model::get_MFe_pole_slha, i012 );
+      tmp_map["d"] = FInfo1( &Model::get_MFd_pole_slha, i012 );
+      tmp_map["u"] = FInfo1( &Model::get_MFu_pole_slha, i012 );
+      tmp_map["e"] = FInfo1( &Model::get_MFe_pole_slha, i012 );
 
       return tmp_map;
    }
@@ -778,7 +831,9 @@ namespace Gambit {
    }
     
    template <class MI>
-   typename MSSM_Phys<MI>::fmap2 MSSM_Phys<MI>::fill_PoleMixing_map2(){
+   typename MSSM_Phys<MI>::fmap2 MSSM_Phys<MI>::fill_PoleMixing_map2()
+   {
+      typedef typename MI::Model Model;
       fmap2 tmp_map;
 
       static const int i01v[] = {0,1};
@@ -794,16 +849,16 @@ namespace Gambit {
       static const std::set<int> i012345(i012345v, Utils::endA(i012345v));
 
       //Need to add these to generated code before I can use them here.
-      tmp_map["ZD"] = FInfo2( &MI::Model::get_ZD_pole_slha, i012345, i012345);
-      tmp_map["ZV"] = FInfo2( &MI::Model::get_ZV_pole_slha, i012, i012);
-      tmp_map["ZU"] = FInfo2( &MI::Model::get_ZU_pole_slha, i012345, i012345);
-      tmp_map["ZE"] = FInfo2( &MI::Model::get_ZE_pole_slha, i012345, i012345);
-      tmp_map["ZH"] = FInfo2( &MI::Model::get_ZH_pole_slha, i01, i01);
-      tmp_map["ZA"] = FInfo2( &MI::Model::get_ZA_pole_slha, i01, i01);
-      tmp_map["ZHPM"] = FInfo2( &MI::Model::get_ZP_pole_slha, i01, i01);
-      tmp_map["ZN"] = FInfo2( &MI::Model::get_ZN_pole_slha, i0123, i0123); 
-      tmp_map["UM"] = FInfo2( &MI::Model::get_UM_pole_slha, i01, i01);
-      tmp_map["UP"] = FInfo2( &MI::Model::get_UP_pole_slha, i01, i01);
+      tmp_map["ZD"] = FInfo2( &Model::get_ZD_pole_slha, i012345, i012345);
+      tmp_map["ZV"] = FInfo2( &Model::get_ZV_pole_slha, i012, i012);
+      tmp_map["ZU"] = FInfo2( &Model::get_ZU_pole_slha, i012345, i012345);
+      tmp_map["ZE"] = FInfo2( &Model::get_ZE_pole_slha, i012345, i012345);
+      tmp_map["ZH"] = FInfo2( &Model::get_ZH_pole_slha, i01, i01);
+      tmp_map["ZA"] = FInfo2( &Model::get_ZA_pole_slha, i01, i01);
+      tmp_map["ZHPM"] = FInfo2( &Model::get_ZP_pole_slha, i01, i01);
+      tmp_map["ZN"] = FInfo2( &Model::get_ZN_pole_slha, i0123, i0123); 
+      tmp_map["UM"] = FInfo2( &Model::get_UM_pole_slha, i01, i01);
+      tmp_map["UP"] = FInfo2( &Model::get_UP_pole_slha, i01, i01);
    
       /* Could add SM fermion mixing but these are only filled
          when we actually calculate the SM pole masses
