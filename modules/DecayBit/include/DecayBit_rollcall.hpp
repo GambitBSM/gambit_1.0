@@ -41,7 +41,7 @@ START_MODULE
 
     #define FUNCTION decayTest              // Name of an observable function: floating-point number of events in some hypothetical process
     START_FUNCTION(double)                  // Declare that this function calculates the nevents observable as a double precision variable
-    BACKEND_REQ(top2body, (), top2body_CB_type)
+    BACKEND_REQ(top2body, (), sd_top2body_type)
     #undef FUNCTION
 	
   #undef CAPABILITY

@@ -33,7 +33,7 @@ namespace Gambit
     void decayTest (double &result) 
     {
       using namespace Pipes::decayTest;
-      /// CsB result = BEreq::top2body->brtopbw; 
+      /// CsB result = BEreq::sd_top2body->brtopbw; 
       result = *BEreq::top2body->brtopbw; 
       cout << "top 2 body Br's: " << BEreq::top2body->brtopbw << endl;
     }
