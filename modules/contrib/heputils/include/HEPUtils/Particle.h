@@ -134,6 +134,8 @@ namespace HEPUtils {
 
     /// Get PDG ID code
     int pid() const { return _pdgId; }
+    /// Get abs PDG ID code
+    int abspid() const { return abs(_pdgId); }
     /// Set PDG ID code
     void set_pid(int pid) { _pdgId = pid; }
 
