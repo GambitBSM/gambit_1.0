@@ -16,6 +16,7 @@ namespace HEPUtils {
 
   /// Simple particle class, encapsulating a momentum 4-vector and adding some extra ID info
   /// @todo Derive from a PhysObj base class to centralise the momentum handling
+  /// @todo Provide cast operators to P4 and P4*
   class Particle {
   private:
 
