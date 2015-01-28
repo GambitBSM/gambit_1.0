@@ -35,6 +35,7 @@
 #define MODULE DecayBit
 START_MODULE
 
+
   #define CAPABILITY testSUSYBRs            // A physical observable or likelihood that this module can calculate.  There may be one or more 
   START_CAPABILITY                          //  functions in this module that can calculate this particular thing in different ways.
 
@@ -44,6 +45,58 @@ START_MODULE
     #undef FUNCTION
 	
   #undef CAPABILITY
+
+
+  #define CAPABILITY Higgs_decay_rates
+  START_CAPABILITY
+
+    #define FUNCTION SMHiggs_decays
+    START_FUNCTION(DecayTable::Entry)
+    DEPENDENCY(SM_spectrum, Spectrum*) 
+    #undef FUNCTION
+
+    #define FUNCTION MSSMHiggs_decays
+    START_FUNCTION(DecayTable::Entry)
+    DEPENDENCY(MSSM_spectrum, Spectrum*) 
+    ALLOW_MODELS(MSSM78atQ)
+    #undef FUNCTION
+
+  #undef CAPABILITY
+
+
+  #define CAPABILITY mu_decay_rates
+  START_CAPABILITY
+
+    #define FUNCTION mu_decays
+    START_FUNCTION(DecayTable::Entry)
+    DEPENDENCY(SM_spectrum, Spectrum*) 
+    #undef FUNCTION
+
+  #undef CAPABILITY
+
+
+  #define CAPABILITY BF_Htobbbar
+  START_CAPABILITY
+
+    #define FUNCTION BF_H_to_bbbar
+    START_FUNCTION(double)
+    DEPENDENCY(Higgs_decay_rates, DecayTable::Entry) 
+    #undef FUNCTION
+
+  #undef CAPABILITY
+
+
+  #define CAPABILITY decay_rates
+  START_CAPABILITY
+
+    #define FUNCTION all_decays
+    START_FUNCTION(DecayTable)
+    DEPENDENCY(Higgs_decay_rates, DecayTable::Entry) 
+    DEPENDENCY(mu_decay_rates, DecayTable::Entry) 
+    #undef FUNCTION
+
+  #undef CAPABILITY
+
 
 #undef MODULE
 

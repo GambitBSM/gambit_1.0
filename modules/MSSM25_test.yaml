@@ -159,6 +159,14 @@ ObsLikes:
     type:         bool
     function:     exampleRead
 
+  - purpose:      Test
+    capability:   decay_rates
+    type:         DecayTable
+
+  - purpose:      Observable
+    capability:   BF_Htobbbar
+    type:         double
+
 Auxiliaries:
   - capability: SpecBit_examples
     dependencies:
@@ -182,7 +190,7 @@ Auxiliaries:
       use_higgs_2loop_at_at: true
       use_higgs_2loop_atau_atau: true
       invalid_point_fatal: false
-                        
+
 Logger:
 
   prefix : "runs/MSSM25_test/logs/"
@@ -195,13 +203,13 @@ Logger:
 KeyValues:
 
   dependency_resolution:
-    prefer_model_specific_functions: false
+    prefer_model_specific_functions: true
     use_old_routines: true
 
   likelihood:
     model_invalid_for_lnlike_below: -1e6
  
   exceptions:
-    # To trigger stop in 'exampleRead' function
-    SpecBit_warning: fatal
+    # To trigger stop in 'exampleRead' function, set this to fatal
+    SpecBit_warning: non-fatal
 

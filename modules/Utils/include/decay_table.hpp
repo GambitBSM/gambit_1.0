@@ -113,7 +113,7 @@ namespace Gambit
           /// Supports arbitrarily many final state particles.
           /// @{
           template <typename... Args>
-          void set_BF(std::pair<int,int> p1, Args... args, double BF)
+          void set_BF(double BF, std::pair<int,int> p1, Args... args)
           {
             std::pair<int,int> particles[] = {p1, args...};
             std::set< std::pair<int,int> > key(particles, particles+sizeof...(Args));
@@ -131,7 +131,7 @@ namespace Gambit
             channels[key] = BF;
           }
           template <typename... Args>
-          void set_BF(str p1, Args... args, double BF)
+          void set_BF(double BF, str p1, Args... args)
           {
             std::set< std::pair<int,int> > key;
             construct_key(key, p1, args...);
@@ -144,7 +144,7 @@ namespace Gambit
           /// Supports arbitrarily many final state particles.
           /// @{
           template <typename... Args>
-          void BF(std::pair<int,int> p1, Args... args, double BF) const
+          double BF(std::pair<int,int> p1, Args... args) const
           {
             std::pair<int,int> particles[] = {p1, args...};
             std::set< std::pair<int,int> > key(particles, particles+sizeof...(Args));
@@ -155,7 +155,7 @@ namespace Gambit
             return channels.at(key);
           }
           template <typename... Args>
-          void BF(str p1, Args... args, double BF) const
+          double BF(str p1, Args... args) const
           {
             std::set< std::pair<int,int> > key;
             construct_key(key, p1, args...);

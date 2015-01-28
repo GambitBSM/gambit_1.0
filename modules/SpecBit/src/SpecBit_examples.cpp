@@ -192,13 +192,13 @@ namespace Gambit
          cout<<endl;
          cout<<"Charged fermions pole masses:"<<endl;
          cout<<endl;
-         ECHO(  spec->phys.get_Pole_Mass("e",1)      )  // i.e. electron
+         ECHO(  spec->phys.get_Pole_Mass("e-",1)     )  // i.e. electron
          ECHO(  slhaea.at("SMINPUTS").at(11).at(1)   )
          cout<<endl;
-         ECHO(  spec->phys.get_Pole_Mass("e",2)      )  // i.e. muon
+         ECHO(  spec->phys.get_Pole_Mass("e-",2)     )  // i.e. muon
          ECHO(  slhaea.at("SMINPUTS").at(13).at(1)   )
          cout<<endl;
-         ECHO(  spec->phys.get_Pole_Mass("e",3)      )  // i.e. tau
+         ECHO(  spec->phys.get_Pole_Mass("e-",3)     )  // i.e. tau
          ECHO(  slhaea.at("SMINPUTS").at(7).at(1)    )
          cout<<endl;
          cout<<"Neutrinos pole masses:"<<endl;
@@ -272,7 +272,7 @@ namespace Gambit
          GET_POLEMASSES("~d",(1,2,3,4,5,6)) 
          GET_POLEMASSES("~u",(1,2,3,4,5,6)) 
          cout<<endl<<"Slepton pole masses:"<<endl<<endl;
-         GET_POLEMASSES("~e",(1,2,3,4,5,6)) 
+         GET_POLEMASSES("~e-",(1,2,3,4,5,6)) 
          GET_POLEMASSES("~nu",(1,2,3)) 
 
          cout << endl << "Mixing matrices:" << endl << endl;
