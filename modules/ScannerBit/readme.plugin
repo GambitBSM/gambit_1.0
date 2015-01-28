@@ -18,6 +18,7 @@ Sections:
 -- Plugin Declaration Section
 -- Plugin Compilation Section
 -- Plugin IniFile Section
+-- External Compilation
    
 **********************************************************************
 **************** PLUGIN DECLARATION SECTION **************************
@@ -154,38 +155,20 @@ set_dimension(...)
 
 compiling with gambit:
 
--- The easiest why of compiling a plugin is to include it in 
-   the ScannerBit/src/scanners or ScannerBit/src/objectives
-   then include your new file in the 
+-- The suggested method of compiling is to use the internal 
+   Gambit compilation tools.  To do so, make a source
+   directory in the ScannerBit/src/scanners or ScannerBit/src/objectives
+   folders and, if need be, make the corresponding include directory
+   of the same name in ScannerBit/include/scanners or 
+   ScannerBit/include/objectives.  Then, move your source and 
+   include files into these directories.
    
-   "set(scanner_plugin_sources ... )"
+   In the example above, the commands would be
    
-   or
-   
-   "set(scanner_objective_sources ... )"
-   
-   function in ScannerBit/CMakeLists.txt
-   
--- or alternatively, if your plugins has a substantial 
-   memory footprint or requires complex initialization 
-   it may be beneficial to compile the plugin in a separate 
-   object file.  To do so:
-   
-   First, declare your source files with
-   
-   "set(your_sources ... )"
-   
-   and your headers with
-   
-   "set(your_headers ... )".
-   
-   then declare the object which will contain your plugin with
-   
-   "add_gambit_library(your_lib_name OPTION SHARED SOURCES ${your_sources} HEADERS ${your_headers})"
-   
-   then include it in 
-   
-   "set_target_properties( sample scantest scanlibs your_lib_name ... )"
+   mkdir ./ScannerBit/src/scanners/my_cool_scanner
+   mkdir ./ScannerBit/include/scanners/my_cool_scanner
+   mv my_cool_source.cpp ./ScannerBit/src/scanners/my_cool_scanner/
+   mv my_cool_header.h ./ScannerBit/include/scanners/my_cool_scanner/
    
 linking external libraries:
 
@@ -208,21 +191,6 @@ linking external libraries:
    For example, in the example above, the plugin declaration would be:
    
    scanner_plugin(my_cool_scanner, version(0, 0, 0, beta), external_library_required)
-   
-compiling external to Gambit:
-
--- Because of Gambit's compilation tools, it is highly recomended to 
-   compile with gambit.  But there may be situations where
-   compilation is too compilated or specialized to included
-   as part of gambit.  In such cases, ScannerBit provide a 
-   nifty "scanlibs" commandline tool.  To compile externally,
-   run:
-   
-   g++ `path_to_gambit/ScannerBit/bin/scanlibs --hdrs --cflags` sources.cpp -o plugins.so
-   
-   or on an intel compiler:
-   
-   icc `path_to_gambit/ScannerBit/bin/scanlibs --hdrs --cflags --intel` ...
 
 *************************************************************
 ************* END PLUGIN COMPILATION SECTION ****************
@@ -270,14 +238,6 @@ purpose:
 -- for Objective plugins:  specifies the purpose associated
    with the plugin.
 
-plugin_path:
--- specifies full path to the object containing the plugin 
-   (optional).  Because of Gambit's compilation tools, it is highly
-   recomended to compile with gambit. gambit.  But in situations 
-   where compilation is too complicated or specialized to be 
-   included as part of gambit, you may specify an external 
-   library with plugin_path:
-
 *************************************************************
 
 *** Available tags that can be used under the Scanner tag ***
@@ -294,4 +254,36 @@ use_objective_plugins:
 
 *************************************************************
 ************* END PLUGIN INIFILE SECTION ********************
+*************************************************************
+
+*************************************************************
+************ EXTERNAL COMPILATION SECTION *******************
+*************************************************************
+
+-- Because of Gambit's compilation tools, it is highly recomended
+   to compile with gambit.  But there may be situations where
+   compilation is too compilated or specialized to included
+   as part of gambit.  Although, this method is not supported
+   by the Gambit collaboration.  But, in such cases, ScannerBit 
+   provides a nifty "scanlibs" commandline tool.  To compile 
+   externally, run:
+   
+   g++ `path_to_gambit/ScannerBit/bin/scanlibs --hdrs --cflags` sources.cpp -o plugins.so
+   
+   or on an intel compiler:
+   
+   icc `path_to_gambit/ScannerBit/bin/scanlibs --hdrs --cflags --intel` ...
+   
+-- And for covenance, if your plugin object is not placed in
+   in the ScannerBit/lib directory, you make specify the path
+   to a plugin external to Gambit under the plugin tag 
+   for your specific scanner in the infile.  This is done
+   with the sub-tag "plugin_path:":
+   
+plugin_path:
+-- specifies full path to the object containing the plugin 
+   (optional).
+
+*************************************************************
+********** END EXTERNAL COMPILATION SECTION *****************
 *************************************************************
