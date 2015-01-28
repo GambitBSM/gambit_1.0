@@ -8,13 +8,16 @@ set(source_files src/equivalency_singleton.cpp
                  src/type_equivalency.cpp
                  src/util_functions.cpp
                  src/ASCIItableReader.cpp
+                 src/decay_table.cpp
                  src/mkpath.c
 )
 
 set(header_files include/SLHA_readers.hpp
+                 include/Spectrum.hpp
                  include/base_functions.hpp
                  include/boost_fallbacks.hpp
                  include/cats.hpp
+                 include/decay_table.hpp
                  include/equivalency_singleton.hpp
                  include/exceptions.hpp
                  include/functors.hpp
