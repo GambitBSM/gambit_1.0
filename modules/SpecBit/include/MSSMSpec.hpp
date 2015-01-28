@@ -588,7 +588,7 @@ namespace Gambit {
       tmp_map["g2"]= &Model::get_g2;
       tmp_map["g3"]= &Model::get_g3;
       
-      //  can't do SM vev or tan beta this way
+      // can't do SM vev or tan beta this way
       // can create MSSM_DRbarPars getter which first calls 
       // inherited one then adds vev and tan beta
      
@@ -619,9 +619,9 @@ namespace Gambit {
       static const std::set<int> i012(i012v, Utils::endA(i012v));
 
       tmp_map["Yd"]= FInfo2( &Model::get_Yd, i012, i012);
-      tmp_map["Ye"]= FInfo2( &Model::get_Ye, i012, i012);
       tmp_map["Yu"]= FInfo2( &Model::get_Yu, i012, i012);
-     
+      tmp_map["Ye"]= FInfo2( &Model::get_Ye, i012, i012);
+ 
       return tmp_map;
    }
    
@@ -675,22 +675,22 @@ namespace Gambit {
       static const std::set<int> i012345(i012345v, Utils::endA(i012345v));
 
       tmp_map["MSd"] = FInfo1( &Model::get_MSd, i012345 );
-      tmp_map["MSv"] = FInfo1( &Model::get_MSv, i012 );
       tmp_map["MSu"] = FInfo1( &Model::get_MSu, i012345 );
       tmp_map["MSe"] = FInfo1( &Model::get_MSe, i012345 );
+      tmp_map["MSnu"]= FInfo1( &Model::get_MSv, i012 );
       tmp_map["Mh0"] = FInfo1( &Model::get_Mhh, i01 );
       //Here we may access the goldstone boson
       // and higgs. maybe too dangerous to keep?
       tmp_map["MA0"] = FInfo1( &Model::get_MAh, i01 );      
       //Here we may access the goldstone boson
       //and higgs. maybe too dangerous to keep?
-      tmp_map["MHpm"] = FInfo1( &Model::get_MHpm, i01 );   
-      tmp_map["MCha"] = FInfo1( &Model::get_MCha, i01 );
-      tmp_map["MChi"] = FInfo1( &Model::get_MChi, i0123 );
+      tmp_map["MH+"] = FInfo1( &Model::get_MHpm, i01 );   
+      tmp_map["Mchi+"] = FInfo1( &Model::get_MCha, i01 );
+      tmp_map["Mchi0"] = FInfo1( &Model::get_MChi, i0123 );
       
-      tmp_map["MFd"] = FInfo1( &Model::get_MFd, i012 );
-      tmp_map["MFu"] = FInfo1( &Model::get_MFu, i012 );
-      tmp_map["MFe"] = FInfo1( &Model::get_MFe, i012 );
+      tmp_map["Md"] = FInfo1( &Model::get_MFd, i012 );
+      tmp_map["Mu"] = FInfo1( &Model::get_MFu, i012 );
+      tmp_map["Me"] = FInfo1( &Model::get_MFe, i012 );
       return tmp_map;
    }
   
@@ -772,24 +772,6 @@ namespace Gambit {
 
       static const int i012345v[] = {0,1,2,3,4,5};
       static const std::set<int> i012345(i012345v, Utils::endA(i012345v));
-
-      //  tmp_map["MSd"] = FInfo1( &Model::get_MSd_pole_slha, i012345 );
-      //  tmp_map["MSv"] = FInfo1( &Model::get_MSv_pole_slha, i012 );
-      //  tmp_map["MSu"] = FInfo1( &Model::get_MSu_pole_slha, i012345 );
-      //  tmp_map["MSe"] = FInfo1( &Model::get_MSe_pole_slha, i012345 );
-      //  tmp_map["Mh0"] = FInfo1( &Model::get_Mhh_pole_slha, i01 );
-      //  //Here we may access the goldstone boson
-      //  //and higgs. maybe too dangerous to keep?
-      //  tmp_map["MA0"] = FInfo1( &Model::get_MAh_pole_slha, i01 );      
-      //  //Here we may access the goldstone boson
-      //  //and higgs. maybe too dangerous to keep?
-      //  tmp_map["MHpm"] = FInfo1( &Model::get_MHpm_pole_slha, i01 );   
-      //  tmp_map["MCha"] = FInfo1( &Model::get_MCha_pole_slha, i01 );
-      //  tmp_map["MChi"] = FInfo1( &Model::get_MChi_pole_slha, i0123 );
-    
-      //  tmp_map["MFd"] = FInfo1( &Model::get_MFd_pole_slha, i012 );
-      //  tmp_map["MFu"] = FInfo1( &Model::get_MFu_pole_slha, i012 );
-      //  tmp_map["MFe"] = FInfo1( &Model::get_MFe_pole_slha, i012 );
 
       tmp_map["~d"] = FInfo1( &Model::get_MSd_pole_slha, i012345 );
       tmp_map["~nu"]= FInfo1( &Model::get_MSv_pole_slha, i012 );

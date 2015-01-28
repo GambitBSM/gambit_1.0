@@ -33,7 +33,7 @@
 #include "error_handlers.hpp"
 
 // Switch for debugging output (manual at the moment)
-#define DEBUG_MODE
+//#define DEBUG_MODE
 
 #ifdef DEBUG_MODE 
   #define DBUG(x) x

@@ -83,8 +83,8 @@ class Spectrum {
             /// Overloads of these functions to allow access using PDG codes
             /// as defined in Models/src/particle_database.cpp
             /// These don't have to be virtual; they just call the virtual functions in the end.
-            double get_Pole_Mass(const int, const int=0) const;   // Input PDG code plus context integer (assumes context=0 by default)
-            double get_Pole_Mass(const std::pair<int,int>) const; // Input PDG code plus context integer (which must be zero anyhow)
+            double get_Pole_Mass(const int, const int) const;     // Input PDG code plus context integer
+            double get_Pole_Mass(const std::pair<int,int>) const; // Input PDG code plus context integer
             double get_Pole_Mass(const std::pair<str,int>) const; // Input short name plus index
 
       };
@@ -134,12 +134,6 @@ inline double Spectrum::Phys::get_Pole_Mass(const int pdg_code, const int contex
 
 inline double Spectrum::Phys::get_Pole_Mass(const std::pair<int,int> pdgpr) const
 {
-   // Make sure context integer is zero before going further
-   if( pdgpr.second != 0 )
-   {
-      std::cout << "Spectrum object: PDB context integer 0 not used! For retrieving Pole masses you must use 0 (this is the mass eigenstate context integer). Attempted pdg pair was (" << pdgpr.first << ", " << pdgpr.second << ")" << std::endl; 
-      return -1;
-   }
    // If there is a short name, then retrieve that plus the index
    if( PDB.has_short_name(pdgpr) )
    {
@@ -449,7 +443,6 @@ double  RunparDer<SpecType>::get_mass2_parameter(const std::string& mass) const
    else
    {
        ///  Get function out of map and call it on the bound flexiSUSY object
-       std::cout << "Accessing function pointer for string \"" << mass <<"\"" <<std::endl;;// Testing:
        FSptr f = it->second;
        return (spec.*f)();
    }
