@@ -13,6 +13,7 @@
 ///          (patscott@physics.mcgill.ca)
 ///  \date 2013 Apr, Oct
 ///  \date 2014 Mar, Sep, Nov
+///  \date 2015 Jan
 ///
 ///  \author Abram Krislock
 ///          (abram.krislock@fysik.su.se)
@@ -35,6 +36,7 @@
 #include "slhaea.h"                    // SLHAea reader/writer class
 #include "model_parameters.hpp"        // Definitions required to understand model parameter objects
 #include "Spectrum.hpp"                // Spectrum object (carries particle spectrum info)
+#include "decay_table.hpp"             // Decay table class (carries particle decay info)
 
 
 // Other types that don't belong in any of the existing includes.  As the number of such types grows, they
