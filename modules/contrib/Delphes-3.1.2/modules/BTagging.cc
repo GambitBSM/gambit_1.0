@@ -131,6 +131,7 @@ void BTagging::Init()
   
   fJetInputArray = ImportArray(GetString("JetInputArray", "FastJetFinder/jets"));
   fItJetInputArray = fJetInputArray->MakeIterator();
+
 }
 
 //------------------------------------------------------------------------------
@@ -155,12 +156,16 @@ void BTagging::Finish()
 
 void BTagging::Process()
 {
+
+
   Candidate *jet, *parton;
   Double_t pt, eta, phi;
   TObjArray *partonArray;
   map< Int_t, DelphesFormula * >::iterator itEfficiencyMap;
   DelphesFormula *formula;
   Int_t pdgCode, pdgCodeMax;
+
+  
 
   // select quark and gluons
   fFilter->Reset();
@@ -169,6 +174,13 @@ void BTagging::Process()
   if(partonArray == 0) return;
 
   TIter itPartonArray(partonArray);
+  
+  //MJW debugging partons
+  itPartonArray.Reset();
+  while((parton = static_cast<Candidate*>(itPartonArray.Next())))
+    {
+      pdgCode = TMath::Abs(parton->PID);
+    }
   
   // loop over all input jets
   fItJetInputArray->Reset();
@@ -183,8 +195,9 @@ void BTagging::Process()
     // loop over all input partons
     itPartonArray.Reset();
     while((parton = static_cast<Candidate*>(itPartonArray.Next())))
-    {
+    {      
       pdgCode = TMath::Abs(parton->PID);
+   
       if(pdgCode == 21) pdgCode = 0;
       if(jetMomentum.DeltaR(parton->Momentum) <= fDeltaR)
       {

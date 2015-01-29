@@ -163,8 +163,8 @@ namespace Gambit {
         }
 
         while (pythiaNumber < pythiaConfigurations) {
-          ++pythiaNumber;
-          Loop::executeIteration(INIT);
+	  ++pythiaNumber;
+	  Loop::executeIteration(INIT);
           #pragma omp parallel shared(SHARED_OVER_OMP)
           {
             #pragma omp for
@@ -320,7 +320,7 @@ namespace Gambit {
       for (auto& pj : pjets) {
         bool isB = false;
         for (auto& pb : bhadrons) {
-          if (pj.delta_R(pb) < 0.3) {
+          if (pj.delta_R(pb) < 0.4) {
             isB = true;
             break;
           }
@@ -349,14 +349,16 @@ namespace Gambit {
       result.set_missingmom(pout);
     }
 
+    
+
     /// Convert a partonic (no hadrons) Pythia8::Event into an unsmeared HEPUtils::Event
     /// @todo Overlap between jets and prompt containers: need some isolation in MET calculation
     void convertPythia8PartonEvent(HEPUtils::Event &result) {
-      using namespace Pipes::convertPythia8Event;
-      if (*Loop::iteration <= INIT) return;
-      result.clear();
-
-      /// Get the next event from Pythia8
+    using namespace Pipes::convertPythia8Event;
+    if (*Loop::iteration <= INIT) return;
+    result.clear();
+    
+    /// Get the next event from Pythia8
       const auto pevt = (*Dep::HardScatteringSim)->nextEvent();
 
       std::vector<fastjet::PseudoJet> jetparticles; //< Pseudojets for input to FastJet
@@ -404,11 +406,13 @@ namespace Gambit {
       const fastjet::JetDefinition jet_def(fastjet::antikt_algorithm, 0.4);
       fastjet::ClusterSequence cseq(jetparticles, jet_def);
       std::vector<fastjet::PseudoJet> pjets = sorted_by_pt(cseq.inclusive_jets(10));
-      // Add to the event, with b-tagging info
+      // Add to the event, with b-tagging info"
       for (const fastjet::PseudoJet& pj : pjets) {
-        // Do jet b-tagging, etc. by looking for b quark constituents (i.e. user index = |parton ID| = 5)
+    // Do jet b-tagging, etc. by looking for b quark constituents (i.e. user index = |parton ID| = 5)
         /// @note We need to _remove_ this b-tag in the detector sim if outside the tracker acceptance!
-        const bool isB = HEPUtils::any(pj.constituents(),
+	  for(int c=0;c<pj.constituents().size();c++){
+	}
+	  const bool isB = HEPUtils::any(pj.constituents(),
                                        [](const fastjet::PseudoJet& c){ return c.user_index() == MCUtils::PID::BQUARK; });
         result.add_jet(new HEPUtils::Jet(HEPUtils::mk_p4(pj), isB));
       }
@@ -434,8 +438,8 @@ namespace Gambit {
 
      /// Gambit facing interface function
     void convertPythia8Event(HEPUtils::Event &result) {
-      convertPythia8PartonEvent(result);
-      //convertPythia8ParticleEvent(result);
+      //convertPythia8PartonEvent(result);
+      convertPythia8ParticleEvent(result);
     }
 
 
