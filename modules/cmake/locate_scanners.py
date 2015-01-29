@@ -243,7 +243,8 @@ set( PLUGIN_INCLUDE_DIRECTORIES                  \n\
                 ${yaml_INCLUDE_DIRS}             \n\
                 ${Boost_INCLUDE_DIR}             \n\
                 ${GSL_INCLUDE_DIRS}              \n\
-)                                                \n\n"
+)                                                \n\n\
+MESSAGE( STATUS \"PLUGIN_INCLUDE_DIRECTORIES:         \" ${PLUGIN_INCLUDE_DIRECTORIES} )\n\n"
 
     towrite += cmakelist_txt_out
 
@@ -303,7 +304,7 @@ set_target_properties( scanlibs                 \n\
 #************************************************\n\
                                                  \n\
 if (${CMAKE_SYSTEM_NAME} MATCHES \"Darwin\")     \n"
-                                                
+                                               
     if static_links != "":
         towrite += " "*4 + "foreach(program ${uses_scannerbit})\n"
         towrite += " "*8 + "target_link_libraries( ${program} -Wl,-force_load " + static_links + ")\n"
