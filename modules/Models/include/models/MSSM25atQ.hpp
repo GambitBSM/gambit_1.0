@@ -15,14 +15,14 @@
 //
 //  *********************************************
 
-#ifndef __MSSM25_hpp__
-#define __MSSM25_hpp__
+#ifndef __MSSM25atQ_hpp__
+#define __MSSM25atQ_hpp__
 
-#include "MSSM78.hpp" // Parent model must be declared first! Include it here to ensure that this happens.
+#include "models/MSSM78atQ.hpp" // Parent model must be declared first! Include it here to ensure that this happens.
 
 /// FlexibleSUSY compatible general (78 parameters plus sign) MSSM parameterisation
-#define MODEL MSSM25
-#define PARENT MSSM78
+#define MODEL MSSM25atQ
+#define PARENT MSSM78atQ
   START_MODEL
 
   DEFINEPARS(Qin,TanBeta,SignMu,
@@ -45,7 +45,7 @@
   DEFINEPARS(Au_3)
 
   //INTERPRET_AS_PARENT__FUNCTION(MSSM25_to_MSSM78)
-  INTERPRET_AS_X__FUNCTION(MSSM78, MSSM25_to_MSSM78)
+  INTERPRET_AS_X__FUNCTION(MSSM78atQ, MSSM25atQ_to_MSSM78atQ)
 
 #undef PARENT
 #undef MODEL

@@ -30,6 +30,7 @@ namespace Gambit {
       TH1F *_hElectron1Pt_truth, *_hElectron1eta_truth, *_hElectron1phi_truth;
       TH1F *_hElectron2Pt_truth, *_hElectron2eta_truth, *_hElectron2phi_truth;
       TH1F *_hNelec, *_hNelec_truth, *_hNelec30, *_hNelec100, *_hNelec500;
+      TH1F *_hNtau, *_hNtau30, *_hNtau100, *_hNtau500;
       TH1F *_hNmuon, *_hNmuon30, *_hNmuon100, *_hNmuon500;
       TH1F *_hNjet30, *_hNjet100, *_hNjet500;
       TH1F *_hNcentraljet30, *_hNcentraljet100, *_hNcentraljet500;
@@ -37,6 +38,7 @@ namespace Gambit {
       TH1F *_hinv, *_hmet;
       TH1F *_hinv_truth, *_hmet_truth;
       TH1F *_hElectronPt, *_hElectronEta, *_hElectronPhi, *_hElectronE;
+      TH1F *_hTauPt, *_hTauEta, *_hTauPhi, *_hTauE;
       TH1F *_hMuonPt, *_hMuonEta, *_hMuonPhi, *_hMuonE;
       TH1F *_hJetPt, *_hJetEta, *_hJetPhi, *_hJetE;
       TH1F *_hCentralJetPt, *_hCentralJetE;
@@ -86,9 +88,12 @@ namespace Gambit {
 
         _hNmuon = new TH1F("Nmuon","Number of muons;Number/Event", 5, -0.5, 4.5);
 
-        _hNjet30 = new TH1F("Njet30","Number of jets with p_{T} > 30 GeV;Number/Event", 10, -0.5, 9.5);
-        _hNjet100 = new TH1F("Njet100","Number of jets with p_{T} > 100 GeV;Number/Event", 10, -0.5, 9.5);
-        _hNjet500 = new TH1F("Njet500","Number of jets with p_{T} > 500 GeV;Number/Event", 10, -0.5, 9.5);
+	_hNtau = new TH1F("Ntau","Number of taus;Number/Event", 5, -0.5, 4.5);
+
+        _hNjet30 = new TH1F("Njet30","Number of jets with p_T > 30 GeV;Number/Event", 10, -0.5, 9.5);
+        _hNjet100 = new TH1F("Njet100","Number of jets with p_T > 100 GeV;Number/Event", 10, -0.5, 9.5);
+        _hNjet500 = new TH1F("Njet500","Number of jets with p_T > 500 GeV;Number/Event", 10, -0.5, 9.5);
+
 
         _hNbjet30 = new TH1F("Nbjet30","Number of b jets with p_{T} > 30 GeV;Number/Event", 10, -0.5, 9.5);
         _hNbjet100 = new TH1F("Nbjet100","Number of b jets with p_{T} > 100 GeV;Number/Event", 10, -0.5, 9.5);
@@ -109,7 +114,13 @@ namespace Gambit {
         _hElectronPhi = new TH1F("ElectronPhi", "Electron #phi;", 50, -6.0, 6.0);
         _hElectronE = new TH1F("ElectronE", "Electron E;GeV;", 50, 0., 500.);
 
-        _hMuonPt = new TH1F("MuonPt","Muon p_{T};GeV;", 50, 0., 500.);
+
+	_hTauPt = new TH1F("TauPt", "Tau p_T;GeV;", 50, 0., 500.);
+        _hTauEta = new TH1F("TauEta", "Tau #eta;", 50, -5., 5.);
+        _hTauPhi = new TH1F("TauPhi", "Tau #phi;", 50, -6.0, 6.0);
+        _hTauE = new TH1F("TauE", "Tau E;GeV;", 50, 0., 500.);
+
+        _hMuonPt = new TH1F("MuonPt","Muon p_T;GeV;", 50, 0., 500.);
         _hMuonEta = new TH1F("MuonEta","Muon #eta;", 50, -5., 5.);
         _hMuonPhi = new TH1F("MuonPhi","Muon #phi;", 50, -6.0, 6.0);
         _hMuonE = new TH1F("MuonE","Muon E;GeV;", 50, 0., 500.);
@@ -153,6 +164,14 @@ namespace Gambit {
         vector<Particle*> signalMuons;
         vector<Jet*> signalJets;
 
+	// Taus
+
+	vector<Particle*> signalTaus;
+		
+        for (Particle* tau : event->taus()) {
+          if (tau->pT() > 20. && fabs(tau->eta()) < 2.47) signalTaus.push_back(tau);
+        }
+
         // Remove any jet within dR=0.2 of an electron
         for (Jet* j : baselineJets) {
           bool overlap = false;
@@ -166,7 +185,6 @@ namespace Gambit {
           }
           if (!overlap) signalJets.push_back(j);
         }
-
 
         // Remove electrons with dR=0.4 to surviving jets
         for (Particle* e : baselineElectrons) {
@@ -220,7 +238,15 @@ namespace Gambit {
           _hMuonE->Fill(muon->E(),1.);
         }
 
-        /// @todo Taus
+        // Taus
+
+	_hNtau->Fill(signalTaus.size());
+	for (Particle* tau : signalTaus) {
+	  _hTauPt->Fill(tau->pT(),1.);
+          _hTauEta->Fill(tau->eta(),1.);
+          _hTauPhi->Fill(tau->phi(),1.);
+          _hTauE->Fill(tau->E(),1.);
+	}
 
         // Jets
         int numJets30(0), numJets100(0), numJets500(0);
@@ -254,6 +280,7 @@ namespace Gambit {
             _hBJetPhi->Fill(jet->phi());
           }
         }
+
         // Jet multiplicities
         _hNjet30->Fill(numJets30);
         _hNjet100->Fill(numJets100);

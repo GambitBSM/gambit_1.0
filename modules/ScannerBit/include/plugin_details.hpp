@@ -77,7 +77,7 @@ namespace Gambit
                                                 {
                                                         status = -3;
                                                         scan_warn << "Extern libraries are required for plugin "
-                                                                << full_string << " but is not in header file." << scan_end;
+                                                                << " but is not in header file." << scan_end;
                                                 }
                                                 
                                                 posMid = str.rfind("__v__");

@@ -22,7 +22,7 @@
 #include <vector>
 
 #include "scanner_plugin.hpp"
-#include "scanners/random.h"
+#include "random.h"
 
 class Group2
 {

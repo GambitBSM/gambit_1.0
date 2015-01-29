@@ -120,10 +120,10 @@ namespace HEPUtils {
     void add_particle(Particle* p) {
       if (p->is_prompt()) {
         if (p->pid() == 22) _photons.push_back(p);
-        if (abs(p->pid()) == 11) _electrons.push_back(p);
-        if (abs(p->pid()) == 13) _muons.push_back(p);
-        if (abs(p->pid()) == 15) _taus.push_back(p);
-        if (abs(p->pid()) == 12 || abs(p->pid()) == 14 || abs(p->pid()) == 16 || abs(p->pid()) == 1000022) _invisibles.push_back(p);
+        if (p->abspid() == 11) _electrons.push_back(p);
+        if (p->abspid() == 13) _muons.push_back(p);
+        if (p->abspid() == 15) _taus.push_back(p);
+        if (p->abspid() == 12 || p->abspid() == 14 || p->abspid() == 16 || p->pid() == 1000022) _invisibles.push_back(p);
       }
     }
 
@@ -137,6 +137,7 @@ namespace HEPUtils {
 
     /// Get all final state particles
     /// @todo Note the return by value: it's not efficient yet!
+    /// @note Overlap of taus and e/mu
     std::vector<Particle*> particles() const {
       // Add together all the vectors of the different particle types
       std::vector<Particle*> rtn;
@@ -158,6 +159,7 @@ namespace HEPUtils {
 
     /// Get visible state particles
     /// @todo Note the return by value: it's not efficient yet!
+    /// @note Overlap of taus and e/mu
     std::vector<Particle*> visible_particles() const {
       // Add together all the vectors of the different particle types
       std::vector<Particle*> rtn;

@@ -111,6 +111,8 @@ Auxiliaries:
   - capability: SpecBit_examples
     dependencies:
     - {capability: MSSM_spectrum, function: get_MSSMatMGUT_spectrum} 
+    options:
+      output_slha_filename: "SpecBit/example_write.slha"
 
   #- capability: specbit_tests2 
   #  dependencies:

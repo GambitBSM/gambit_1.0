@@ -44,6 +44,7 @@ set(scanner_plugin_sources
                  src/scanners/toy_mcmc.cpp
                  src/scanners/random_sampler.cpp
                  src/scanners/twalk.cpp
+                 src/scanners/multinest.cpp
 )
 
 set(scanner_plugin_headers

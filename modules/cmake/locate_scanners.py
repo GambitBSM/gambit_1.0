@@ -235,7 +235,13 @@ def main(argv):
 #  \\author The GAMBIT Collaboration             \n\
 #  \\date "+datetime.datetime.now().strftime("%I:%M%p on %B %d, %Y")+"\n\
 #                                                \n\
-#************************************************\n\n"
+#************************************************\n\
+                                                 \n\
+set(PLUGIN_INCLUDE_DIRECTORIES                   \n\
+                ${PROJECT_SOURCE_DIR}            \n\
+                ${GAMBIT_INCDIRS}                \n\
+                ${yaml_INCLUDE_DIRS}             \n\
+)                                                \n\n"
 
     towrite += cmakelist_txt_out
 
@@ -244,9 +250,8 @@ set(scanner_scanlibs_sources                    \n\
                 src/scanlibs/scanlibs.cpp       \n\
 )                                               \n\
                                                 \n\
-add_gambit_library(ScannerBit OPTION OBJECT SOURCES ${scannerbit_sources} HEADERS ${scannerbit_headers})\n\
+add_gambit_library(ScannerBit OPTION OBJECT SOURCES ${scannerbit_sources} HEADERS ${scannerbit_headers})\n\n\
 add_gambit_executable(scanlibs SOURCES ${scanner_scanlibs_sources})\n\
-                                                \n\
 set_target_properties( scanlibs                 \n\
                        PROPERTIES               \n\
                        RUNTIME_OUTPUT_DIRECTORY \"${CMAKE_CURRENT_SOURCE_DIR}/bin\")\n\n"
@@ -266,7 +271,8 @@ set_target_properties( scanlibs                 \n\
                     if unique_libdirs:
                         for libdir in unique_libdirs: 
                             towrite += " "*23 + "INSTALL_RPATH " + libdir +"\n"
-      
+            towrite += " "*23 + "INCLUDE_DIRECTORIES \"${PLUGIN_INCLUDE_DIRECTORIES};"
+            towrite += "${CMAKE_CURRENT_SOURCE_DIR}/include/" + plug_type[i] + "s/" + directory + "\"\n"
             towrite += " "*23 + "ARCHIVE_OUTPUT_DIRECTORY \"${CMAKE_CURRENT_SOURCE_DIR}/lib\"\n"
             towrite += " "*23 + "LIBRARY_OUTPUT_DIRECTORY \"${CMAKE_CURRENT_SOURCE_DIR}/lib\")\n\n"
 
