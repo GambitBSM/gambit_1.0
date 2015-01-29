@@ -269,8 +269,7 @@ set_target_properties( scanlibs                 \n\
                     towrite += " "*23 + "LINK_FLAGS \"" + scanbit_links[plug_type[i]][directory] + "\"\n"
                     unique_libdirs = set(p for p in scanbit_libs[plug_type[i]][directory])
                     if unique_libdirs:
-                        for libdir in unique_libdirs: 
-                            towrite += " "*23 + "INSTALL_RPATH " + libdir +"\n"
+                        towrite += " "*23 + "INSTALL_RPATH \"" + ";".join([libdir for libdir in unique_libdirs]) +"\"\n"
             towrite += " "*23 + "INCLUDE_DIRECTORIES \"${PLUGIN_INCLUDE_DIRECTORIES};"
             towrite += "${CMAKE_CURRENT_SOURCE_DIR}/include/" + plug_type[i] + "s/" + directory + "\"\n"
             towrite += " "*23 + "ARCHIVE_OUTPUT_DIRECTORY \"${CMAKE_CURRENT_SOURCE_DIR}/lib\"\n"
