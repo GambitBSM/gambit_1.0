@@ -22,17 +22,17 @@
 #include "model_macros.hpp"
 #include "model_helpers.hpp"
 
-#include "models/MSSM25.hpp"
+#include "models/MSSM25atQ.hpp"
 
 // Activate debug output
 //#define MSSM25_DBUG
 
 using namespace Gambit::Utils;
 
-#define MODEL MSSM25 
-  void MODEL_NAMESPACE::MSSM25_to_MSSM78 (const ModelParameters &myP, ModelParameters &targetP)
+#define MODEL MSSM25atQ
+  void MODEL_NAMESPACE::MSSM25atQ_to_MSSM78atQ (const ModelParameters &myP, ModelParameters &targetP)
   {
-     logger()<<"Running interpret_as_parent calculations for MSSM25 --> MSSM78..."<<LogTags::info<<EOM;
+     logger()<<"Running interpret_as_parent calculations for MSSM25atQ --> MSSM78atQ..."<<LogTags::info<<EOM;
     
      targetP.setValue("Qin",     myP["Qin"] );
      targetP.setValue("TanBeta", myP["TanBeta"] );
@@ -164,8 +164,8 @@ using namespace Gambit::Utils;
 
      // Whew, done!
      #ifdef MSSM25_DBUG
-       std::cout << "MSSM25 parameters:" << myP << std::endl;
-       std::cout << "MSSM78 parameters:" << targetP << std::endl;
+       std::cout << "MSSM25atQ parameters:" << myP << std::endl;
+       std::cout << "MSSM78atQ parameters:" << targetP << std::endl;
      #endif
   }
 

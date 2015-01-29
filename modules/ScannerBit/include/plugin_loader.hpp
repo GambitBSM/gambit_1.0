@@ -42,21 +42,21 @@ namespace Gambit
                         {
                                 std::string plugin;
                                 std::string version;
-                                std::string library;
+                                std::string path;
                                 
-                                Proto_Plugin_Details() : plugin(""), version(""), library("") {}
+                                Proto_Plugin_Details() : plugin(""), version(""), path("") {}
                         };
                         
                         ///Plugin info to be given to the interface class
                         struct Plugin_Interface_Details
                         {
                                 std::string full_string;
-                                std::string library_path;
+                                std::string path;
                                 YAML::Node node;
                                 
                                 Plugin_Interface_Details(){}
                                 Plugin_Interface_Details(const Plugin_Details &details, const YAML::Node &node) 
-                                        : full_string(details.full_string), library_path(details.library_path), node(node) {}
+                                        : full_string(details.full_string), path(details.path), node(node) {}
                         };
                 
                         ///container class for the actual plugins detected my ScannerBit
@@ -81,7 +81,7 @@ namespace Gambit
                         {
                         private:
                                 std::map<std::string, Proto_Plugin_Details> selectedPlugins;
-                                const Plugins::Plugin_Loader plugins;
+                                mutable Plugins::Plugin_Loader plugins;
                                 Options options;
                                 
                         public:
@@ -94,7 +94,6 @@ namespace Gambit
                         extern pluginInfo plugin_info;
                 }
          }
-
 }
 
 #endif

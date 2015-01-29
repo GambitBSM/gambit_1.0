@@ -46,8 +46,7 @@ namespace Gambit
                                 int patch_version;
                                 int status;
                                 std::string release_version;
-                                std::string library_path;
-                                std::string library;
+                                std::string path;
                                 std::string plugin;
                                 std::string type;
                                 std::string full_string;
@@ -77,7 +76,7 @@ namespace Gambit
                                                 else
                                                 {
                                                         scan_err << "Extern libraries are required for plugin "
-                                                                << full_string << " but is not in header file." << scan_end;
+                                                                << " but is not in header file." << scan_end;
                                                 }
                                                 
                                                 posMid = str.rfind("__v__");
@@ -125,9 +124,7 @@ namespace Gambit
                                         out << "\tmajor version:  " << major_version << std::endl;
                                         out << "\tminor version:  " << minor_version << std::endl;
                                         out << "\tpatch version:  " << patch_version << std::endl;
-                                        out << "\trelease version:  " << release_version << std::endl;
-                                        out << "\tlibrary_path:  " << library_path << std::endl;
-                                        out << "\tlibrary:  " << library << std::endl;
+                                        out << "\tplugin path:  " << path << std::endl;
                                         out << "\ttype:  " << type << std::endl;
                                         
                                         return out.str();

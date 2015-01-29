@@ -26,6 +26,8 @@
 #include <boost/preprocessor/control/if.hpp>
 #include <boost/preprocessor/comparison/equal.hpp>
 #include <boost/preprocessor/arithmetic/sub.hpp>
+#include <boost/preprocessor/punctuation/comma.hpp>
+#include <boost/preprocessor/punctuation/paren.hpp>
 #include <boost/current_function.hpp> 
 
 /// \name Local information macro.

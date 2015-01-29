@@ -13,7 +13,7 @@
 ///
 ///  \author Ben Farmer
 ///          (ben.farmer@gmail.com)
-///    \date 2014 Sep
+///    \date 2014 Sep - Dec, 2015 Jan
 ///  
 ///  *********************************************
 
@@ -43,49 +43,25 @@ START_MODULE
     ALLOW_MODELS(CMSSM)
     #undef FUNCTION
 
-    // FlexibleSUSY compatible maximal MSSM parameterisation (boundary conditions set at custom scale Q) 
-    #define FUNCTION get_MSSMatQ_spectrum
-    START_FUNCTION(Spectrum*)                  
-    ALLOW_MODELS(MSSM78)
-    #undef FUNCTION
-
     // FlexibleSUSY compatible maximal CMSSM generalisation (MSSM with GUT boundary conditions) 
     #define FUNCTION get_MSSMatMGUT_spectrum
     START_FUNCTION(Spectrum*)                  
     ALLOW_MODELS(MSSM78atMGUT)
     #undef FUNCTION
 
-    // (Example only) SoftSUSY compatible maximal CMSSM generalisation (GUT boundary conditions) 
-    #define FUNCTION get_GUTMSSMB_spectrum            
+    // ============================== 
+    // MSSM parameterised with input at (user-defined) scale Q 
+    #define FUNCTION get_MSSMatQ_spectrum
     START_FUNCTION(Spectrum*)                  
-    ALLOW_MODELS(GUTMSSMB)
+    ALLOW_MODELS(MSSM78atQ)
     #undef FUNCTION
 
-    //
-    // END GUT MSSM parameterisations
-    // ==============================
- 
+    // ============================== 
+
     #define FUNCTION get_MSSM_spectrum_as_SLHAea  // Get MSSM spectrum as an SLHAea object
     START_FUNCTION(eaSLHA)                  
     DEPENDENCY(MSSM_spectrum, Spectrum*)           // Takes a (pointer to a) Spectrum object and returns an eaSLHA object
-    ALLOW_MODELS(MSSM24, CMSSM)
     #undef FUNCTION
-
-    // #define FUNCTION get_lowE_MSSM_spectrum            // Get (pointer to) MSSM spectrum as a Spectrum object
-    // START_FUNCTION(SpectrumPtr)                  
-    // ALLOW_MODELS(MSSM24, CMSSM)
-    // #undef FUNCTION
-
-    // #define FUNCTION get_lowE_MSSM_spectrum_as_SLHAea  // Get MSSM spectrum as an SLHAea object
-    // START_FUNCTION(eaSLHA)                  
-    // DEPENDENCY(particle_spectrum, SpectrumPtr)           // Takes a (pointer to a) Spectrum object and returns an eaSLHA object
-    // ALLOW_MODELS(MSSM24, CMSSM)
-    // #undef FUNCTION
-
-    // #define FUNCTION get_lowE_NMSSM_spectrum           // Get (pointer to a) NMSSM spectrum as a Spectrum object
-    // START_FUNCTION(SpectrumPtr)                  
-    // ALLOW_MODELS(NMSSM24, CNMSSM)
-    // #undef FUNCTION
 
   #undef CAPABILITY
 
@@ -144,7 +120,6 @@ START_MODULE
 
      #define FUNCTION specbit_test_func2
      START_FUNCTION(double)
-     //DEPENDENCY(MSSM_spectrum, eaSLHA)
      #undef FUNCTION
  
   #undef CAPABILITY

@@ -23,6 +23,7 @@
 #include "gambit_module_headers.hpp"
 #include "SpecBit_rollcall.hpp"
 #include "stream_overloads.hpp" // Just for more convenient output to logger
+#include "util_macros.hpp"
 
 // Flexible SUSY stuff (should not be needed by the rest of gambit)
 #include "ew_input.hpp"
@@ -73,27 +74,91 @@ namespace Gambit
       // input any Standard Model values which we want to vary with the scan. Also need
       // to implement a strategy for carrying SM parameters around gambit consistently.
       QedQcd oneset; 
+      #ifdef SpecBit_DBUG
+         // Get QedQcd values to match LesHouches.in.MSSM_1 
+         oneset.setPoleMt(1.73300000e2);
+         //oneset.setPoleMb(...);
+         oneset.setPoleMtau(1.77700000);
+         oneset.setMbMb(4.20000000);
+         /// sets a running quark mass
+         oneset.setMass(mDown,    4.76052706e-3);
+         oneset.setMass(mUp,      2.40534062e-3);
+         oneset.setMass(mStrange, 1.04230487E-01);
+         oneset.setMass(mCharm, 1.27183378);
+         /// sets QED or QCD structure constant
+         oneset.setAlpha(ALPHA, 1./1.27934000e2 );
+         oneset.setAlpha(ALPHAS, 1.17600000e-1 );
+         // Not sure how to set other stuff.
+      #endif 
       oneset.toMz();
-   
+ 
       // Create spectrum generator object
       typename MI::SpectrumGenerator spectrum_generator;
 
       // Spectrum generator settings
-      // Leave most with whatever the defaults are for now, but change one thing to 
-      // demonstrate options retrieval
-      // if (*Pipe::runOptions->hasKey("ewsb_loop_order")) Manual error checking atm?
+      // Default options copied from flexiblesusy/src/spectrum_generator_settings.hpp
+      //
+      // | enum                             | possible values              | default value   |
+      // |----------------------------------|------------------------------|-----------------|
+      // | precision                        | any positive double          | 1.0e-4          |
+      // | max_iterations                   | any positive double          | 0 (= automatic) |
+      // | algorithm                        | 0 (two-scale) or 1 (lattice) | 0 (= two-scale) |
+      // | calculate_sm_masses              | 0 (no) or 1 (yes)            | 0 (= no)        |
+      // | pole_mass_loop_order             | 0, 1, 2                      | 2 (= 2-loop)    |
+      // | ewsb_loop_order                  | 0, 1, 2                      | 2 (= 2-loop)    |
+      // | beta_loop_order                  | 0, 1, 2                      | 2 (= 2-loop)    |
+      // | threshold_corrections_loop_order | 0, 1                         | 1 (= 1-loop)    |
+      // | higgs_2loop_correction_at_as     | 0, 1                         | 1 (= enabled)   |
+      // | higgs_2loop_correction_ab_as     | 0, 1                         | 1 (= enabled)   |
+      // | higgs_2loop_correction_at_at     | 0, 1                         | 1 (= enabled)   |
+      // | higgs_2loop_correction_atau_atau | 0, 1                         | 1 (= enabled)   |
 
-      // spectrum_generator.set_precision_goal( X );
-      // spectrum_generator.set_max_iterations( X );
-      // spectrum_generator.set_calculate_sm_masses( X );
-      // spectrum_generator.set_input_scale( X );
-      // spectrum_generator.set_parameter_output_scale( X );
-      // spectrum_generator.set_pole_mass_loop_order( X );
-      spectrum_generator.set_ewsb_loop_order(
-           runOptions.getValue<int>("ewsb_loop_order") );
-      // spectrum_generator.set_beta_loop_order( X );
-      // spectrum_generator.set_threshold_corrections( X );
      
+      #define SPECGEN_SET(NAME,TYPE,DEFAULTVAL) \
+         CAT_2(spectrum_generator.set_, NAME) BOOST_PP_LPAREN() runOptions.getValueOrDef< TYPE > \
+               BOOST_PP_LPAREN() DEFAULTVAL BOOST_PP_COMMA() STRINGIFY(NAME) \
+               BOOST_PP_RPAREN() BOOST_PP_RPAREN()
+      // Ugly I know. It expands to:
+      // spectrum_generator.set_NAME(runOptions.getValueOrDef<TYPE>(DEFAULTVAL,"NAME"))
+
+      // For debugging only; check expansions
+      #ifdef SpecBit_DBUG
+         #define ECHO(COMMAND) std::cout << SAFE_STRINGIFY(COMMAND) << std::endl
+         ECHO(  SPECGEN_SET(precision_goal,                 double, 1.0e-4)  );
+         ECHO(  SPECGEN_SET(max_iterations,                 double, 0 )      );
+         ECHO(  SPECGEN_SET(calculate_sm_masses,              bool, false )  );
+         ECHO(  SPECGEN_SET(pole_mass_loop_order,              int, 2 )      );
+         ECHO(  SPECGEN_SET(ewsb_loop_order,                   int, 2 )      );
+         ECHO(  SPECGEN_SET(beta_loop_order,                   int, 2 )      );
+         ECHO(  SPECGEN_SET(threshold_corrections_loop_order,  int, 1 )      );
+         #undef ECHO
+      #endif
+
+      SPECGEN_SET(precision_goal,                 double, 1.0e-4);
+      SPECGEN_SET(max_iterations,                 double, 0 );
+      SPECGEN_SET(calculate_sm_masses,              bool, false );
+      SPECGEN_SET(pole_mass_loop_order,              int, 2 );
+      SPECGEN_SET(ewsb_loop_order,                   int, 2 );
+      SPECGEN_SET(beta_loop_order,                   int, 2 );
+      SPECGEN_SET(threshold_corrections_loop_order,  int, 1 );
+
+      #undef SPECGEN_SET
+
+      // Higgs loop corrections are a little different... sort them out now     
+      Higgs_2loop_corrections higgs_2loop_settings;
+
+      // alpha_t alpha_s
+      higgs_2loop_settings.at_as = runOptions.getValueOrDef<bool>(true,"use_higgs_2loop_at_as");
+      // alpha_b alpha_s
+      higgs_2loop_settings.ab_as = runOptions.getValueOrDef<bool>(true,"use_higgs_2loop_ab_as");
+      // alpha_t^2 + alpha_t alpha_b + alpha_b^2
+      higgs_2loop_settings.at_at = runOptions.getValueOrDef<bool>(true,"use_higgs_2loop_at_at");
+      // alpha_tau^2
+      higgs_2loop_settings.atau_atau = runOptions.getValueOrDef<bool>(true,"use_higgs_2loop_atau_atau");
+
+      spectrum_generator.set_higgs_2loop_corrections(higgs_2loop_settings);
+
+ 
       // Generate spectrum
       spectrum_generator.run(oneset, input);
    
