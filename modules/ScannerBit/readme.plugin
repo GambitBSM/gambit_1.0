@@ -265,8 +265,11 @@ use_objective_plugins:
    compilation is too compilated or specialized to included
    as part of gambit.  Although, this method is not supported
    by the Gambit collaboration.  But, in such cases, ScannerBit 
-   provides a nifty "scanlibs" commandline tool.  To compile 
-   externally, run:
+   provides a nifty "scanlibs" commandline tool and well as
+   a plugin inifile convenance tag, "plugin_path:" for specifying
+   external plugins that are stored external to gambit.
+   
+   For example, to compile externally, run:
    
    g++ `path_to_gambit/ScannerBit/bin/scanlibs --hdrs --cflags` sources.cpp -o plugins.so
    
@@ -274,15 +277,37 @@ use_objective_plugins:
    
    icc `path_to_gambit/ScannerBit/bin/scanlibs --hdrs --cflags --intel` ...
    
--- And for covenance, if your plugin object is not placed in
+-- Example:  statically linking directly to a plugin.
+   By default, Gambit links static executables to the main
+   executable.  But if the library is compiled with position
+   independent code (with -fPIC), it is possible to statically 
+   link directly to the plugin.  To do this, first compile your
+   plugin code with:
+   
+   g++ `./ScannerBit/bin/scanlibs --hdrs --boost` -c --std=c++11 plugin_src.cpp
+
+   and then link with:
+
+   g++ -shared -Wl,--whole-archive libconflict.a -Wl,--no-whole-archive plugin_src.o -o libmyplugin.so
+   
+-- For covenance, if your plugin object is not placed in
    in the ScannerBit/lib directory, you make specify the path
    to a plugin external to Gambit under the plugin tag 
    for your specific scanner in the infile.  This is done
    with the sub-tag "plugin_path:":
    
-plugin_path:
--- specifies full path to the object containing the plugin 
-   (optional).
+   
+# example infile entry:
+
+Scanner:
+
+  plugins:
+  
+    my_plugin_tag:
+      plugin: my_external_plugin
+      plugin_path: path_to_my_external_plugin/libplugin.so
+    
+# end example infile entry
 
 *************************************************************
 ********** END EXTERNAL COMPILATION SECTION *****************
