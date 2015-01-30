@@ -244,7 +244,13 @@ set( PLUGIN_INCLUDE_DIRECTORIES                  \n\
                 ${Boost_INCLUDE_DIR}             \n\
                 ${GSL_INCLUDE_DIRS}              \n\
 )                                                \n\n\
-MESSAGE( STATUS \"PLUGIN_INCLUDE_DIRECTORIES:         \" ${PLUGIN_INCLUDE_DIRECTORIES} )\n\n"
+if(PLUG_VERBOSE)                                 \n\
+    message(\"*** begin PLUG_INCLUDE_DIRECTORIES ***\")\n\
+    foreach(dir ${PLUGIN_INCLUDE_DIRECTORIES})   \n\
+        message(STATUS \"dir='${dir}'\")         \n\
+    endforeach()                                 \n\
+    message(\"*** end PLUG_INCLUDE_DIRECTORIES ***\")\n\
+endif()                                          \n\n"
 
     towrite += cmakelist_txt_out
 
@@ -273,10 +279,11 @@ set_target_properties( scanlibs                 \n\
                     unique_libdirs = set(p for p in scanbit_libs[plug_type[i]][directory])
                     if unique_libdirs:
                         towrite += " "*23 + "INSTALL_RPATH \"" + ";".join([libdir for libdir in unique_libdirs]) +"\"\n"
-            towrite += " "*23 + "INCLUDE_DIRECTORIES \"${PLUGIN_INCLUDE_DIRECTORIES};"
-            towrite += "${CMAKE_CURRENT_SOURCE_DIR}/include/" + plug_type[i] + "s/" + directory + "\"\n"
+            #towrite += " "*23 + "INCLUDE_DIRECTORIES \"${PLUGIN_INCLUDE_DIRECTORIES};"
+            #towrite += "${CMAKE_CURRENT_SOURCE_DIR}/include/" + plug_type[i] + "s/" + directory + "\"\n"
             towrite += " "*23 + "ARCHIVE_OUTPUT_DIRECTORY \"${CMAKE_CURRENT_SOURCE_DIR}/lib\"\n"
-            towrite += " "*23 + "LIBRARY_OUTPUT_DIRECTORY \"${CMAKE_CURRENT_SOURCE_DIR}/lib\")\n\n"
+            towrite += " "*23 + "LIBRARY_OUTPUT_DIRECTORY \"${CMAKE_CURRENT_SOURCE_DIR}/lib\")\n"
+            towrite += "target_include_directories( " + plug_type[i] + "_" + directory + " PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include/" + plug_type[i] + "s/" + directory + ")\n\n"
 
     cmake = "./ScannerBit/CMakeLists.txt"
     with open(cmake+".candidate","w") as f: f.write(towrite)
