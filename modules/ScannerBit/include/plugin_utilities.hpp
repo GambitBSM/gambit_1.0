@@ -36,34 +36,6 @@ namespace Gambit
 
                 namespace Plugins
                 {
-
-                        const unsigned char FORCE = 0x01;
-                        const std::string sblank = std::string("       \033[7D");
-                        const std::string blank = std::string("               \033[15D");
-                        const std::string bblank = std::string("                              \033[30D");          
-                        
-                        inline bool vector_elem_check(std::vector<std::string> &vec, std::string elem)
-                        {
-                                for (auto it = vec.begin(); it != vec.end(); it++)
-                                {
-                                        if ((*it) == elem)
-                                        {
-                                                return true;
-                                        }
-                                }
-                                
-                                return false;
-                        }
-                        
-                        inline void clearInputBuffer()
-                        {
-                                char c;
-                                do 
-                                {
-                                        c = getchar();
-                                } 
-                                while (c != '\n' && c != EOF);
-                        }
                         
                         inline std::string stringify_variadic_inputs()
                         {

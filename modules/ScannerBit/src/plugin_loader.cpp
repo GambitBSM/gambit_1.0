@@ -182,7 +182,7 @@ namespace Gambit
                                 }
                         }
                         
-                        const Plugins::Plugin_Interface_Details& pluginInfo::operator()(const std::string &type, const std::string &pluginName)
+                        Plugins::Plugin_Interface_Details pluginInfo::operator()(const std::string &type, const std::string &pluginName)
                         {
                                 auto it2 = selectedPlugins.find(pluginName);
                                 if (it2 != selectedPlugins.end())

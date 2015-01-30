@@ -306,8 +306,6 @@ namespace __gambit_plugin_ ## plug_name ##  _namespace__                        
 {                                                                                                                       \
         namespace __gambit_plugin_namespace__                                                                           \
         {                                                                                                               \
-                command(arg)                                                                                            \
-                                                                                                                        \
                 using Gambit::Scanner::Plugins::pluginData;                                                             \
                                                                                                                         \
                 namespace LoadTags                                                                                      \
@@ -317,6 +315,8 @@ namespace __gambit_plugin_ ## plug_name ##  _namespace__                        
                                                                                                                         \
                 namespace                                                                                               \
                 {                                                                                                       \
+                        command(arg)                                                                                    \
+                                                                                                                        \
                         pluginData myData( #plug_name );                                                                \
                                                                                                                         \
                         template <class T>                                                                              \

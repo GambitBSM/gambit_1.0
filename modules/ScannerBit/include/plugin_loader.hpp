@@ -87,7 +87,7 @@ namespace Gambit
                         public:
                                 void iniFile(const Options &);
                                 const Plugin_Loader &operator()(){return plugins;}
-                                const Plugin_Interface_Details &operator()(const std::string &, const std::string &);
+                                Plugin_Interface_Details operator()(const std::string &, const std::string &);
                         };
                         
                         ///Access Functor for plugin info

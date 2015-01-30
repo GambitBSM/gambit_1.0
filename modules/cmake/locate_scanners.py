@@ -206,7 +206,8 @@ def main(argv):
 #define __cmake_variables_hpp__                   \n\
                                                   \n\
 /// Gambit source directory                       \n\
-#define GAMBIT_DIR \"@PROJECT_SOURCE_DIR@\"       \n"  
+#define GAMBIT_DIR \"@PROJECT_SOURCE_DIR@\"       \n\
+#define GAMBIT_BUILD_DIR \"@PROJECT_BINARY_DIR@\" \n"
 
     for plugin in plugins:
         towrite += "#define " + plugin[4] + " " + flag[plugin[3]] + "\n"
@@ -245,7 +246,7 @@ set( PLUGIN_INCLUDE_DIRECTORIES                  \n\
                 ${Boost_INCLUDE_DIR}             \n\
                 ${GSL_INCLUDE_DIRS}              \n\
 )                                                \n\n\
-if(PLUG_VERBOSE)                                 \n\
+if( ${PLUG_VERBOSE} )                            \n\
     message(\"*** begin PLUG_INCLUDE_DIRECTORIES ***\")\n\
     foreach(dir ${PLUGIN_INCLUDE_DIRECTORIES})   \n\
         message(STATUS \"dir='${dir}'\")         \n\
