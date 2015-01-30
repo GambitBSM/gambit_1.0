@@ -271,15 +271,28 @@ namespace Gambit
         {
             double b = beta_xyz.length();
             double bm2 = b==0 ? 0 : 1.0/(b*b);
-            double bx = beta_xyz[0];
-            double by = beta_xyz[1];
-            double bz = beta_xyz[2];                 
+            const double &bx = beta_xyz[0];
+            const double &by = beta_xyz[1];
+            const double &bz = beta_xyz[2];                 
             double g = 1.0/sqrt(1-b*b);
             mat =  mat4(    g,      -g*bx,              -g*by,              -g*bz,
                             -g*bx,  1+(g-1)*bx*bx*bm2,  (g-1)*bx*by*bm2,    (g-1)*bx*bz*bm2,
                             -g*by,  (g-1)*by*bx*bm2,    1+(g-1)*by*by*bm2,  (g-1)*by*bz*bm2,
                             -g*bz,  (g-1)*bz*bx*bm2,    (g-1)*bz*by*bm2,    1+(g-1)*bz*bz*bm2);  
         }
+        void lorentzMatrix(const vec3 &beta_xyz, mat4 &mat, double gamma)
+        {
+            double b = beta_xyz.length();
+            double bm2 = b==0 ? 0 : 1.0/(b*b);
+            const double &bx = beta_xyz[0];
+            const double &by = beta_xyz[1];
+            const double &bz = beta_xyz[2];                 
+            double &g = gamma;
+            mat =  mat4(    g,      -g*bx,              -g*by,              -g*bz,
+                            -g*bx,  1+(g-1)*bx*bx*bm2,  (g-1)*bx*by*bm2,    (g-1)*bx*bz*bm2,
+                            -g*by,  (g-1)*by*bx*bm2,    1+(g-1)*by*by*bm2,  (g-1)*by*bz*bm2,
+                            -g*bz,  (g-1)*bz*bx*bm2,    (g-1)*bz*by*bm2,    1+(g-1)*bz*bz*bm2);  
+        }        
         vec4 lorentzBoost(const vec4 &inVec, const vec3 &beta_xyz)
         {
             mat4 lorentz;
@@ -291,10 +304,11 @@ namespace Gambit
             vec3 beta_xyz = -p_parent.xyz()/p_parent[0];
             return lorentzBoost(inVec, beta_xyz);
         }
-        void boostMatrixParentFrame(mat4 &mat, vec4 &p_parent)
+        void boostMatrixParentFrame(mat4 &mat, vec4 &p_parent, double m)
         {
-            vec3 beta_xyz = -p_parent.xyz()/p_parent[0];     
-            lorentzMatrix(beta_xyz, mat);
+            vec3 beta_xyz = -p_parent.xyz()/p_parent[0];   
+            double gamma = p_parent[0]/m;
+            lorentzMatrix(beta_xyz, mat,gamma);
         }
         double invariantMass(const vec4 &a, const vec4 &b)
         {
@@ -549,6 +563,7 @@ namespace Gambit
             for(unordered_map<string,DecayTableEntry>::const_iterator it = table.begin(); it != table.end(); ++it)
             {
                 cout << "Particle: " <<(it->first) << endl;
+                cout << "Mass: " <<(it->second).m << endl;
                 cout << "Total width: " << (it->second.getTotalWidth())<< endl;
                 cout << "Enabled branching ratio: " << (it->second.getEnabledBranching()) << endl;
                 cout << "Enabled decays:" << endl;
@@ -589,7 +604,7 @@ namespace Gambit
             chainGeneration(0), abortedDecay(false), isEndpoint(false), nChildren(0), parent(NULL)
             {
                 p_parent=Ep4vec(ipLab,m);
-                boostMatrixParentFrame(boostToParentFrame,p_parent);
+                boostMatrixParentFrame(boostToParentFrame,p_parent,m);
                 boostToLabFrame = boostToParentFrame;
             }  
         void ChainParticle::generateDecayChainMC(int maxSteps, double Emin)
@@ -814,14 +829,14 @@ namespace Gambit
         void ChainParticle::update(vec4 &ip_parent)
         {
             p_parent = ip_parent;
-            boostMatrixParentFrame(boostToParentFrame,p_parent);
+            boostMatrixParentFrame(boostToParentFrame,p_parent,m);
             boostToLabFrame = parent->boostToLabFrame*boostToParentFrame;                 
         }
         ChainParticle::ChainParticle(const vec4 &pp, double m, double weight, const DecayTable *dc, ChainParticle *parent, int chainGeneration, string pID) : 
             m(m), weight(weight), decayTable(dc), p_parent(pp), pID(pID), 
             chainGeneration(chainGeneration), abortedDecay(false), isEndpoint(false), nChildren(0), parent(parent)
             {
-                boostMatrixParentFrame(boostToParentFrame,p_parent);
+                boostMatrixParentFrame(boostToParentFrame,p_parent,m);
                 boostToLabFrame = parent->boostToLabFrame*boostToParentFrame;            
             }
               

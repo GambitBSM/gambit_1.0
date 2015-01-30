@@ -10,59 +10,115 @@ Parameters:
 #            range: [0.001, 1]
 #        mass:
 #            range: [10, 100]
-    MSSM25:
-      Ab:
+#    MSSM25:
+#      Ab:
+#        fixed_value: 1
+#      At:
+#        fixed_value: 1
+#      Atau:
+#        fixed_value: 1
+#      M1:
+#        fixed_value: 1
+#      M2:
+#        fixed_value: 1
+#      M3:
+#        fixed_value: 1
+#      M_input:
+#        fixed_value: 1
+#      mH12:
+#        fixed_value: 1
+#      mH22:
+#        fixed_value: 1
+#      mbR:
+#        fixed_value: 1
+#      mcR:
+#        fixed_value: 1
+#      mdR:
+#        fixed_value: 1
+#      meL:
+#        fixed_value: 1
+#      meR:
+#        fixed_value: 1
+#      mmuL:
+#        fixed_value: 1
+#      mmuR:
+#        fixed_value: 1
+#      mq1L:
+#        fixed_value: 1
+#      mq2L:
+#        fixed_value: 1
+#      mq3L:
+#        fixed_value: 1
+#      msR:
+#        fixed_value: 1
+#      mtR:
+#        fixed_value: 1
+#      mtauL:
+#        fixed_value: 1
+#      mtauR:
+#        fixed_value: 1
+#      mu:
+#        fixed_value: 1
+#      muR:
+#        fixed_value: 1
+#      tanb:
+#        fixed_value: 1
+#
+    MSSM25atQ:
+      Qin:
+        fixed_value: 1.9422e+16
+      SignMu:
         fixed_value: 1
-      At:
-        fixed_value: 1
-      Atau:
-        fixed_value: 1
+      TanBeta:
+        fixed_value: 10
+      mHu2:
+        fixed_value: 15625
+      mHd2:
+        fixed_value: 15625
       M1:
-        fixed_value: 1
+        fixed_value: 500
       M2:
-        fixed_value: 1
+        fixed_value: 500
       M3:
-        fixed_value: 1
-      M_input:
-        fixed_value: 1
-      mH12:
-        fixed_value: 1
-      mH22:
-        fixed_value: 1
-      mbR:
-        fixed_value: 1
-      mcR:
-        fixed_value: 1
-      mdR:
-        fixed_value: 1
-      meL:
-        fixed_value: 1
-      meR:
-        fixed_value: 1
-      mmuL:
-        fixed_value: 1
-      mmuR:
-        fixed_value: 1
-      mq1L:
-        fixed_value: 1
-      mq2L:
-        fixed_value: 1
-      mq3L:
-        fixed_value: 1
-      msR:
-        fixed_value: 1
-      mtR:
-        fixed_value: 1
-      mtauL:
-        fixed_value: 1
-      mtauR:
-        fixed_value: 1
-      mu:
-        fixed_value: 1
-      muR:
-        fixed_value: 1
-      tanb:
-        fixed_value: 1
+        fixed_value: 500
+      mq2_1:
+        fixed_value: 15625.0
+      mq2_2:
+        fixed_value: 15625.0
+      mq2_3:
+        fixed_value: 15625.0
+      ml2_1:
+        fixed_value: 15625.0
+      ml2_2:
+        fixed_value: 15625.0
+      ml2_3:
+        fixed_value: 15625.0
+      md2_1:
+        fixed_value: 15625.0
+      md2_2:
+        fixed_value: 15625.0
+      md2_3:
+        fixed_value: 15625.0
+      mu2_1:
+        fixed_value: 15625.0
+      mu2_2:
+        fixed_value: 15625.0
+      mu2_3:
+        fixed_value: 15625.0
+      me2_1:
+        fixed_value: 15625.0
+      me2_2:
+        fixed_value: 15625.0
+      me2_3:
+        fixed_value: 15625.0
+      Ae_12:
+        fixed_value: 0
+      Ae_3:
+        fixed_value: 0
+      Ad_3:
+        fixed_value: 0
+      Au_3:
+        fixed_value: 0
 
 ##############################
 # Prior setup
@@ -130,6 +186,10 @@ ObsLikes:
 # Uncomment to run old cascade decay test code (still useful for debugging)  
 #    - capability: chain_test_cap
 #      purpose:    Observable
+
+# Uncomment to run decay chain unit test 
+#    - capability: cascadeMC_UnitTest
+#      purpose:  Observable
 
 # Fermi LAT dwarf limits
     - capability: lnL_FermiLATdwarfs
