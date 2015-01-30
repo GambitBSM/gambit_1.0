@@ -92,7 +92,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION getMSSMspectrum
       START_FUNCTION(eaSLHA)
-      ALLOW_MODELS(MSSM25)
+      ALLOW_MODELS(MSSM25atQ)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -176,14 +176,14 @@ START_MODULE
     // Routine for cross checking RD density results
     #define FUNCTION RD_oh2_DarkSUSY
       START_FUNCTION(double)
-      ALLOW_MODELS(MSSM25)  // TODO: (CW) Check for which models this works
+      ALLOW_MODELS(MSSM25atQ)  // TODO: (CW) Check for which models this works
       BACKEND_REQ(dsrdomega, (), double, (int&,int&,double&,int&,int&,int&))
     #undef FUNCTION
 
     // Routine for cross checking RD density results
     #define FUNCTION RD_oh2_micromegas
       START_FUNCTION(double)
-      ALLOW_MODELS(MSSM25)  // TODO: (CW) Check for which models this works
+      ALLOW_MODELS(MSSM25atQ)  // TODO: (CW) Check for which models this works
       BACKEND_REQ(oh2, (), double, (double*,int,double))
     #undef FUNCTION
   #undef CAPABILITY
@@ -192,20 +192,20 @@ START_MODULE
 
   // Function returning an empty, mutable list of final states to search for.
   // This list will be populated (modified) by other capabilities, and returned by cascadeMC_FinalStates once filled.
-  #define CAPABILITY cascadeMC_FinalStates_Constructor
+  #define CAPABILITY cascadeMC_FinalStates_Prototype
   START_CAPABILITY
-    #define FUNCTION cascadeMC_FinalStates_Constructor
+    #define FUNCTION cascadeMC_FinalStates_Prototype
       START_FUNCTION(Gambit::DarkBit::mutableFinalStateContainer)  
     #undef FUNCTION                                                       
   #undef CAPABILITY   
 
-  // Functions adding various particles to final state list. Modifies cascadeMC_FinalStates_Constructor.
+  // Functions adding various particles to final state list. Modifies cascadeMC_FinalStates_Prototype.
   // NEEDS_MANAGER_WITH_CAPABILITY(cascadeMC_FinalStates) must be present to ensure that it is run early enough.
   #define CAPABILITY cascadeMC_FinalStates_Enable_gamma
   START_CAPABILITY
     #define FUNCTION cascadeMC_FinalStates_Enable_gamma
       START_FUNCTION(bool)
-      DEPENDENCY(cascadeMC_FinalStates_Constructor, Gambit::DarkBit::mutableFinalStateContainer)       
+      DEPENDENCY(cascadeMC_FinalStates_Prototype, Gambit::DarkBit::mutableFinalStateContainer)       
       NEEDS_MANAGER_WITH_CAPABILITY(cascadeMC_FinalStates) 
     #undef FUNCTION                                                       
   #undef CAPABILITY    
@@ -214,7 +214,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION cascadeMC_FinalStates_Enable_test6
       START_FUNCTION(bool)
-      DEPENDENCY(cascadeMC_FinalStates_Constructor, Gambit::DarkBit::mutableFinalStateContainer)       
+      DEPENDENCY(cascadeMC_FinalStates_Prototype, Gambit::DarkBit::mutableFinalStateContainer)       
       NEEDS_MANAGER_WITH_CAPABILITY(cascadeMC_FinalStates) 
     #undef FUNCTION                                                       
   #undef CAPABILITY 
@@ -223,7 +223,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION cascadeMC_FinalStates_SetThroughYaml
       START_FUNCTION(bool)
-      DEPENDENCY(cascadeMC_FinalStates_Constructor, Gambit::DarkBit::mutableFinalStateContainer)       
+      DEPENDENCY(cascadeMC_FinalStates_Prototype, Gambit::DarkBit::mutableFinalStateContainer)       
       NEEDS_MANAGER_WITH_CAPABILITY(cascadeMC_FinalStates) 
     #undef FUNCTION                                                       
   #undef CAPABILITY 
@@ -235,7 +235,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION cascadeMC_FinalStates
       START_FUNCTION(std::vector<std::string>, CAN_MANAGE_LOOPS)  
-      DEPENDENCY(cascadeMC_FinalStates_Constructor, Gambit::DarkBit::mutableFinalStateContainer)      
+      DEPENDENCY(cascadeMC_FinalStates_Prototype, Gambit::DarkBit::mutableFinalStateContainer)      
     #undef FUNCTION                                                       
   #undef CAPABILITY 
 
@@ -336,6 +336,7 @@ START_MODULE
       DEPENDENCY(cascadeMC_ChainList,std::vector<std::string>)      
       DEPENDENCY(cascadeMC_FinalStates,std::vector<std::string>)       
       DEPENDENCY(cascadeMC_Histograms, Gambit::DarkBit::simpleHistContainter)       
+      DEPENDENCY(cascadeMC_EventCount, Gambit::DarkBit::stringIntMap)      
     #undef FUNCTION                                                       
   #undef CAPABILITY 
 
@@ -351,13 +352,30 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
-
   // Very simple routine for testing decay chain code
   #define CAPABILITY chain_test_cap
   START_CAPABILITY
     #define FUNCTION chain_test
       START_FUNCTION(double)
       DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)
+      DEPENDENCY(SimYieldTable, Gambit::DarkBit::SimYieldTable)           
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  // Process catalog for testing purposes
+  #define CAPABILITY cascadeMC_test_TH_ProcessCatalog
+  START_CAPABILITY
+    #define FUNCTION cascadeMC_test_TH_ProcessCatalog
+      START_FUNCTION(Gambit::DarkBit::TH_ProcessCatalog)        
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  // Unit test for decay chains
+  #define CAPABILITY cascadeMC_UnitTest
+  START_CAPABILITY
+    #define FUNCTION cascadeMC_UnitTest
+      START_FUNCTION(bool)
+      DEPENDENCY(cascadeMC_test_TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)
       DEPENDENCY(SimYieldTable, Gambit::DarkBit::SimYieldTable)           
     #undef FUNCTION
   #undef CAPABILITY
@@ -382,7 +400,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION TH_ProcessCatalog_CMSSM
       START_FUNCTION(Gambit::DarkBit::TH_ProcessCatalog)
-      ALLOW_MODELS(CMSSM_demo, MSSM25)
+      ALLOW_MODELS(CMSSM_demo, MSSM25atQ)
       DEPENDENCY(MSSMspectrum, eaSLHA) 
       BACKEND_REQ(mspctm, (), DS_MSPCTM)
       BACKEND_REQ(dssigmav, (), double, (int&))

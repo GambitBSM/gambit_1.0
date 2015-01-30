@@ -149,7 +149,7 @@ BE_VARIABLE(GENERAL_VAR(DS_IBINTVARS,IBintvars),"ibintvars_", "IBintvars") // IB
 BE_VARIABLE(FORTRAN_COMMONBLOCK(DS_DDCOM, ddcom),"ddcom_",    "ddcom")
 
 //BE_INI_DEPENDENCY(MSSMspectrum, eaSLHA)
-BE_INI_CONDITIONAL_DEPENDENCY(MSSMspectrum, eaSLHA, CMSSM_demo, CMSSM, MSSM25)
+BE_INI_CONDITIONAL_DEPENDENCY(MSSMspectrum, eaSLHA, CMSSM_demo, CMSSM, MSSM25atQ)
 
 BE_INI_FUNCTION
 {
@@ -166,7 +166,7 @@ BE_INI_FUNCTION
     }
 
     // Check if model requires SLHA initialization
-    if (ModelInUse("CMSSM_demo") or ModelInUse("MSSM25"))
+    if (ModelInUse("CMSSM_demo") or ModelInUse("MSSM25atQ"))
     {
         // Save eaSLHA file to disk
         eaSLHA mySLHA = *Dep::MSSMspectrum;
