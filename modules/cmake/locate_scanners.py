@@ -245,6 +245,7 @@ set( PLUGIN_INCLUDE_DIRECTORIES                  \n\
                 ${yaml_INCLUDE_DIRS}             \n\
                 ${Boost_INCLUDE_DIR}             \n\
                 ${GSL_INCLUDE_DIRS}              \n\
+                ${ROOT_INCLUDE_DIR}              \n\
 )                                                \n\n\
 if( ${PLUG_VERBOSE} )                            \n\
     message(\"*** begin PLUG_INCLUDE_DIRECTORIES ***\")\n\
@@ -271,7 +272,7 @@ set_target_properties( scanlibs                 \n\
     for i in xrange(len(plug_type)):
         directories = [ name for name in os.listdir(src_paths[i]) if os.path.isdir(src_paths[i] + "/" + name) ]
         for directory in sorted(directories):
-            towrite += "add_gambit_library ( " + plug_type[i] + "_" + directory + " OPTION SHARED SOURCES ${" 
+            towrite += "add_gambit_library( " + plug_type[i] + "_" + directory + " OPTION SHARED SOURCES ${" 
             towrite += plug_type[i] + "_plugin_sources_" + directory + "} HEADERS ${"
             towrite += plug_type[i] + "_plugin_headers_" + directory + "} )\n"
             towrite += "set_target_properties( " + plug_type[i] + "_" + directory + "\n" + " "*23 + "PROPERTIES\n"
