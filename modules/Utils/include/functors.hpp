@@ -12,6 +12,7 @@
 ///          (patscott@physics.mcgill.ca)
 ///  \date 2013 Apr-July, Dec
 ///  \date 2014 Jan, Mar-May, Sep
+///  \date 2015 Jan
 ///
 ///  \author Anders Kvellestad
 ///          (anders.kvellestad@fys.uio.no) 
@@ -84,7 +85,6 @@ namespace Gambit
       
       /// Virtual calculate(); needs to be redefined in daughters.
       virtual void calculate();      
-      virtual void force_calculate();
       
 
       // It may be safer to have some of the following things accessible 
@@ -279,9 +279,6 @@ namespace Gambit
       /// Map from model group names to group contents
       std::map<str, std::set<str> > modelGroups;
 
-      /// Needs recalculating or not?
-      bool needs_recalculating;
-
       /// Attempt to retrieve a dependency or model parameter that has not been resolved
       static void failBigTime(str method);
 
@@ -342,7 +339,7 @@ namespace Gambit
       virtual void iterate(int iteration);
 
       // Initialise the array holding the current iteration(s) of this functor.
-      virtual void init_myCurrentIteration();
+      virtual void init_myCurrentIteration_if_NULL();
       /// Setter for setting the iteration number in the loop in which this functor runs
       virtual void setIteration (int iteration);
       /// Return a safe pointer to the iteration number in the loop in which this functor runs.
@@ -466,16 +463,16 @@ namespace Gambit
       virtual void acknowledgeInvalidation(invalid_point_exception&);
 
       /// Do pre-calculate timing things
-      virtual void startTiming(double & nsec, double & sec);
+      virtual void startTiming(int);
 
       /// Do post-calculate timing things
-      virtual void finishTiming(double nsec, double sec);
+      virtual void finishTiming(int);
 
-      /// Current runtime
-      std::chrono::duration<double> runtime;
+      // Initialise the memory of this functor.
+      virtual void init_memory();
 
       /// Beginning and end timing points
-      std::chrono::time_point<std::chrono::system_clock> start, end;
+      std::chrono::time_point<std::chrono::system_clock> *start, *end;
 
       /// Averaged runtime in ns
       double runtime_average;
@@ -485,6 +482,9 @@ namespace Gambit
 
       /// Probability that functors invalidates point in model parameter space
       double pInvalidation;
+
+      /// Needs recalculating or not?
+      bool* needs_recalculating;
 
       /// Flag indicating whether this function can manage a loop over other functions
       bool iCanManageLoops;
@@ -595,7 +595,6 @@ namespace Gambit
 
       /// Calculate method
       void calculate();
-      void force_calculate();
 
       /// Operation (return value)
       TYPE operator()(int index);
@@ -622,7 +621,7 @@ namespace Gambit
       bool myPrintFlag;
 
       // Initialise the memory of this functor.
-      virtual void init_myValue();
+      virtual void init_memory();
 
   };
 
@@ -639,7 +638,6 @@ namespace Gambit
 
       /// Calculate method
       void calculate();
-      void force_calculate();
 
       /// Blank print method
       virtual void print(Printers::BasePrinter*, const int, int);

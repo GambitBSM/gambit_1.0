@@ -85,8 +85,7 @@ namespace Gambit
      myLabel         (func_capability+" -- "+origin_name+"::"+func_name),
      myStatus        (0),
      myVertexID      (-1),       // (Note: myVertexID = -1 is intended to mean that no vertexID has been assigned)
-     verbose         (false),    // For debugging.
-     needs_recalculating (true)
+     verbose         (false)     // For debugging.
     {
        std::stringstream ss;
        ss<<"#"<<capability()<<" @"<<origin()<<"::"<<name();
@@ -95,7 +94,6 @@ namespace Gambit
 
     /// Virtual calculate(); needs to be redefined in daughters.
     void functor::calculate() {}
-    void functor::force_calculate() {}
 
     /// Interfaces for runtime optimization
     /// Need to be implemented by daughters
@@ -310,6 +308,24 @@ namespace Gambit
       utils_error().raise(LOCAL_INFO,"The notifyOfBackends method has not been defined in this class.");
     }
 
+    /// Print function
+    void functor::print(Printers::BasePrinter*, const int, int)
+    {
+      str warn_msg = "This is the functor base class print function! This should not\n";
+      warn_msg += "be used; the print function should be redefined in daughter\n"
+                  "functor classes. If this is running there is a problem somewhere.\n"
+                  "Currently only functors derived from module_functor_common<!=void>\n"
+                  "are allowed to try to print themselves; i.e. backend and void\n"
+                  "functors may not do this (they inherit this default message).";
+      utils_warning().raise(LOCAL_INFO,warn_msg);
+    }
+
+    /// Printer function (no-thread-index short-circuit)
+    void functor::print(Printers::BasePrinter* printer, const int pointID)
+    {
+      print(printer,pointID,0);
+    }
+
     /// Notify the functor about an instance of the options class that contains
     /// information from its corresponding ini-file entry in the auxiliaries or
     /// observables section.
@@ -415,25 +431,6 @@ namespace Gambit
       std::vector<str> v = Utils::delimiterSplit(groups, ",");
       std::set<str> group_combo(v.begin(), v.end());
       allowedGroupCombos.insert(group_combo);
-    }
-
-
-    // Ben: I think we can delete these: only module_functors need to know about print functions
-    /// Print function
-    void functor::print(Printers::BasePrinter*, const int pointID, int index)
-    {
-      str warn_msg = "This is the functor base class print function! This should not\n";
-      warn_msg += "be used; the print function should be redefined in daughter\n"
-                  "functor classes. If this is running there is a problem somewhere.\n"
-                  "Currently only functors derived from module_functor_common<!=void>\n"
-                  "are allowed to try to print themselves; i.e. backend and void\n"
-                  "functors may not do this (they inherit this default message).";
-      utils_warning().raise(LOCAL_INFO,warn_msg);
-    }
-
-    void functor::print(Printers::BasePrinter* printer, const int pointID)
-    {
-      print(printer,pointID,0);
     }
 
     /// Attempt to retrieve a dependency or model parameter that has not been resolved
@@ -548,6 +545,9 @@ namespace Gambit
       iCanManageLoops          (false),
       iRunNested               (false),
       myLoopManagerCapability  ("none"),
+      start                    (NULL),
+      end                      (NULL),
+      needs_recalculating      (NULL), 
       myLoopManager            (NULL),
       myCurrentIteration       (NULL),
       globlMaxThreads          (omp_get_max_threads()),
@@ -576,6 +576,9 @@ namespace Gambit
     /// Destructor
     module_functor_common::~module_functor_common()
     {
+      if (start != NULL)               delete [] start;
+      if (end != NULL)                 delete [] end;
+      if (needs_recalculating != NULL) delete [] needs_recalculating;      
       if (myCurrentIteration != NULL)  delete [] myCurrentIteration;
     }
 
@@ -588,8 +591,13 @@ namespace Gambit
     /// Reset functor
     void module_functor_common::reset()
     {
-      needs_recalculating = true;
-      if (iCanManageLoops) resetLoop();
+      int thread_num = omp_get_thread_num();
+      init_memory();
+      needs_recalculating[thread_num] = true;
+      bool do_loop_reset;
+      #pragma omp atomic read
+      do_loop_reset = iCanManageLoops;
+      if (do_loop_reset) resetLoop();
     }
 
     /// Tell the functor that it invalidated the current point in model space, pass a message explaining why, and throw an exception.
@@ -602,6 +610,7 @@ namespace Gambit
     /// Acknowledge that this functor invalidated the current point in model space.
     void module_functor_common::acknowledgeInvalidation(invalid_point_exception& e)
     {
+      #pragma omp atomic update
       pInvalidation += fadeRate*(1-FUNCTORS_BASE_INVALIDATION_RATE);
       e.set_thrower(this);
     }
@@ -653,19 +662,17 @@ namespace Gambit
          it != myNestedFunctorList.end(); ++it)
         {
           (*it)->setIteration(iteration);   // Tell the nested functor what iteration this is.
-          //(*it)->reset_and_calculate();     // Reset the nested functor so that it recalculates, then set it off          
-          // Temporary, incomplete fix for theadsafety issues
-          (*it)->force_calculate();     // Reset the nested functor so that it recalculates, then set it off          
+          (*it)->reset_and_calculate();     // Reset the nested functor so that it recalculates, then set it off        
         }
       }
     }
 
     // Initialise the array holding the current iteration(s) of this functor.
-    void module_functor_common::init_myCurrentIteration()
+    void module_functor_common::init_myCurrentIteration_if_NULL()
     {
-      #pragma omp critical(module_functor_init_myCurrentIteration)
+      if(myCurrentIteration==NULL)
       {
-        if(myCurrentIteration==NULL)
+        #pragma omp critical(module_functor_init_myCurrentIteration_if_NULL)
         {
           int nslots = (iRunNested ? globlMaxThreads : 1); // Set the number of slots to the max number of threads allowed iff this functor can run in parallel
           myCurrentIteration = new int[nslots];            // Reserve enough space to hold as many iteration numbers as there are slots (threads) allowed
@@ -691,7 +698,11 @@ namespace Gambit
     }
 
     /// Tell the functor that the loop it manages should break now.
-    void module_functor_common::breakLoop() { myLoopIsDone = true; }
+    void module_functor_common::breakLoop()
+    {
+      #pragma omp atomic write
+      myLoopIsDone = true;
+    }
 
     /// Return a safe pointer to the flag indicating that a loop managed by this functor should break now.
     safe_ptr<bool> module_functor_common::loopIsDone()
@@ -703,13 +714,14 @@ namespace Gambit
     /// Provide a way to reset the flag indicating that a loop managed by this functor should break.
     void module_functor_common::resetLoop()
     {
+      #pragma omp atomic write
       myLoopIsDone = false;
     }
 
     /// Setter for setting the iteration number in the loop in which this functor runs
     void module_functor_common::setIteration (int iteration)
     {
-      if (myCurrentIteration == NULL) init_myCurrentIteration(); // Init memory if this is the first run through.
+      init_myCurrentIteration_if_NULL(); // Init memory if this is the first run through.
       myCurrentIteration[omp_get_thread_num()] = iteration;
     }
 
@@ -717,7 +729,7 @@ namespace Gambit
     omp_safe_ptr<int> module_functor_common::iterationPtr()
     {
       if (this == NULL) functor::failBigTime("iterationPtr");
-      if (myCurrentIteration == NULL) init_myCurrentIteration(); // Init memory if this is the first run through.
+      init_myCurrentIteration_if_NULL();  // Init memory if this is the first run through.
       return omp_safe_ptr<int>(myCurrentIteration);
     }
 
@@ -1325,23 +1337,52 @@ namespace Gambit
       }
     }
 
-    /// Do pre-calculate timing things
-    void module_functor_common::startTiming(double & nsec, double & sec)
+    // Initialise the memory of this functor.
+    void module_functor_common::init_memory()
     {
-      (void)nsec; (void)sec;
-      start = std::chrono::system_clock::now();
+      int n = (iRunNested ? globlMaxThreads : 1);
+      // Reserve enough space to hold as many timing points and recalculation flags as there are slots (threads) allowed
+      if(start==NULL)
+      {
+        #pragma omp critical(module_functor_common_init_memory)
+        {
+          start = new std::chrono::time_point<std::chrono::system_clock>[n];
+        }
+      }
+      if(end==NULL)
+      {
+        #pragma omp critical(module_functor_common_init_memory)
+        {
+          end = new std::chrono::time_point<std::chrono::system_clock>[n];
+        }
+      }
+      if(needs_recalculating==NULL)
+      {
+        #pragma omp critical(module_functor_common_init_memory)
+        {
+          needs_recalculating = new bool[n];
+          std::fill(needs_recalculating, needs_recalculating, true);
+        }
+      }
+    }
+
+    /// Do pre-calculate timing things
+    void module_functor_common::startTiming(int thread_num)
+    {
+      start[thread_num] = std::chrono::system_clock::now();
     }
 
     /// Do post-calculate timing things
-    void module_functor_common::finishTiming(double nsec, double sec)
+    void module_functor_common::finishTiming(int thread_num)
     {
-      (void)nsec; (void) sec;
-      end = std::chrono::system_clock::now();
-      runtime = end-start;
-      runtime_average = runtime_average*(1-fadeRate) + fadeRate*runtime.count();
-      pInvalidation = pInvalidation*(1-fadeRate) + fadeRate*FUNCTORS_BASE_INVALIDATION_RATE;
-      //if (not omp_in_parallel()) cout << "Runtime " << myName << ": " << runtime.count() << " s (" << runtime_average << " s)" << endl;
-      needs_recalculating = false;
+      end[thread_num] = std::chrono::system_clock::now();
+      std::chrono::duration<double> runtime = end[thread_num] - start[thread_num];
+      #pragma omp critical(module_functor_common_finishTiming)
+      {
+        runtime_average = runtime_average*(1-fadeRate) + fadeRate*runtime.count();
+        pInvalidation = pInvalidation*(1-fadeRate) + fadeRate*FUNCTORS_BASE_INVALIDATION_RATE;
+      }
+      needs_recalculating[thread_num] = false;
     }
 
 
@@ -1379,60 +1420,47 @@ namespace Gambit
     template <typename TYPE>
     void module_functor<TYPE>::calculate()
     {
-      if (myValue == NULL) init_myValue(); // Init memory if this is the first run through.
-      if (needs_recalculating)             // Do the actual calculation if required.
-
-      {
-        logger().entering_module(myLogTag);
-        double nsec = 0, sec = 0;
-        this->startTiming(nsec,sec);                       //Begin timing function evaluation
-        try
-        {
-          this->myFunction(myValue[omp_get_thread_num()]); //Run and place result in the appropriate slot in myValue
-        }
-        catch (invalid_point_exception& e)
-        {
-          acknowledgeInvalidation(e);
-          throw(e);
-        }
-        this->finishTiming(nsec,sec);                      //Stop timing function evaluation
-        logger().leaving_module();
-      }
-
-    }
-    
-    /// Calculate method
-    template <typename TYPE>
-    void module_functor<TYPE>::force_calculate()
-    {
-      if (myValue == NULL) init_myValue(); // Init memory if this is the first run through.
-      //if (needs_recalculating)             // Do the actual calculation if required.
+      cout << "calculate in non-void: " << origin() << "::" << name() << endl;
+      int thread_num = omp_get_thread_num();
+      cout << "Thread num: " << thread_num << endl;
+      init_memory();                               // Init memory if this is the first run through.
+      cout << "OK 1" << endl;
+      //if (needs_recalculating[thread_num])       // Do the actual calculation if required.
       //{
+        cout << "OK 2" << endl;
         //logger().entering_module(myLogTag);
-        //double nsec = 0, sec = 0;
-        //this->startTiming(nsec,sec);                       //Begin timing function evaluation
+        //this->startTiming(thread_num);           //Begin timing function evaluation
         try
         {
-          this->myFunction(myValue[omp_get_thread_num()]); //Run and place result in the appropriate slot in myValue
+          cout << "OK 3" << endl;
+          this->myFunction(myValue[thread_num]); //Run and place result in the appropriate slot in myValue
         }
         catch (invalid_point_exception& e)
         {
+          cout << "OK 4" << endl;
           acknowledgeInvalidation(e);
           throw(e);
         }
-        //this->finishTiming(nsec,sec);                      //Stop timing function evaluation
+          cout << "OK 5" << endl;
+        //this->finishTiming(thread_num);          //Stop timing function evaluation
         //logger().leaving_module();
       //}
-    }    
+          cout << "OK 6" << endl;
+
+    }
 
     // Initialise the memory of this functor.
     template <typename TYPE>
-    void module_functor<TYPE>::init_myValue()
+    void module_functor<TYPE>::init_memory()
     {
-      #pragma omp critical(module_functor_init_myValue)
+      this->module_functor_common::init_memory();
+      if(myValue==NULL) 
       {
-        // Reserve enough space to hold as many results as there are slots (threads) allowed
-        if(myValue==NULL) myValue = new TYPE[(iRunNested ? globlMaxThreads : 1)];
+        #pragma omp critical(module_functor_init_memory)
+        {
+          // Reserve enough space to hold as many results as there are slots (threads) allowed
+          myValue = new TYPE[(iRunNested ? globlMaxThreads : 1)];
+        }
       }
     }
 
@@ -1441,7 +1469,7 @@ namespace Gambit
     TYPE module_functor<TYPE>::operator()(int index)
     {
       if (this == NULL) functor::failBigTime("operator()");
-      if (myValue == NULL) init_myValue(); // Init memory if this is the first run through.
+      init_memory(); // Init memory if this is the first run through.
       return (iRunNested ? myValue[index] : myValue[0]);
     }
 
@@ -1450,7 +1478,7 @@ namespace Gambit
     safe_ptr<TYPE> module_functor<TYPE>::valuePtr()
     {
       if (this == NULL) functor::failBigTime("valuePtr");
-      if (myValue == NULL) init_myValue(); // Init memory if this is the first run through.
+      init_memory(); // Init memory if this is the first run through.
       return safe_ptr<TYPE>(myValue);
     }
 
@@ -1460,7 +1488,7 @@ namespace Gambit
     {
       if(myPrintFlag)
       {
-        if (myValue == NULL) init_myValue(); // Init memory if this is the first run through.
+        init_memory();                 // Init memory if this is the first run through.
         if (not iRunNested) index = 0; // Force printing of index=0 if this functor cannot run nested.
         int rank = printer->getRank(); // This is "first pass" printing, so use the actual rank of this process.
                                        // In the auxilliary printing system we may tell the printer to overwrite
@@ -1489,32 +1517,13 @@ namespace Gambit
     /// Calculate method
     void module_functor<void>::calculate()
     {
-      if (needs_recalculating)
-      {
-        logger().entering_module(myLogTag);
-        double nsec = 0, sec = 0;
-        this->startTiming(nsec,sec);
-        try
-        {
-          this->myFunction();
-        }
-        catch (invalid_point_exception& e)
-        {
-          acknowledgeInvalidation(e);
-          throw(e);
-        }
-        this->finishTiming(nsec,sec);
-        logger().leaving_module();
-      }
-    }
-
-    void module_functor<void>::force_calculate()
-    {
-      //if (needs_recalculating)
+      cout << "calculate in void" << endl;
+      int thread_num = omp_get_thread_num();
+      init_memory();                             // Init memory if this is the first run through.
+      //if (needs_recalculating[thread_num])
       //{
         //logger().entering_module(myLogTag);
-        //double nsec = 0, sec = 0;
-        //this->startTiming(nsec,sec);
+        //this->startTiming(thread_num);
         try
         {
           this->myFunction();
@@ -1524,7 +1533,7 @@ namespace Gambit
           acknowledgeInvalidation(e);
           throw(e);
         }
-        //this->finishTiming(nsec,sec);
+        //this->finishTiming(thread_num);
         //logger().leaving_module();
       //}
     }
@@ -1544,7 +1553,7 @@ namespace Gambit
                                  Models::ModelFunctorClaw &claw)
     : module_functor<ModelParameters>(inputFunction, func_name, func_capability, result_type, origin_name, claw)
     {
-      init_myValue();
+      init_memory();
     }
 
     /// Function for adding a new parameter to the map inside the ModelParameters object
