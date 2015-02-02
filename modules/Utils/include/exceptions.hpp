@@ -2,7 +2,7 @@
 //   *********************************************
 ///  \file
 ///
-///  Exception class declarations.
+///  Threadsafe exception class declarations.
 ///
 ///  *********************************************
 ///
