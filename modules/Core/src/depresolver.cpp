@@ -762,6 +762,35 @@ namespace Gambit
         return candidates;
     }
 
+    /// Collect ini options
+    Options DependencyResolver::collectIniOptions(const DRes::VertexID & vertex)
+    {
+      YAML::Node nodes;
+
+      cout << "Searching options for " << masterGraph[vertex]->capability() << endl;
+
+      IniParser::ObservablesType entries = boundIniFile->getAuxiliaries();
+      //entries = boundIniFile->getObservables();
+      for (IniParser::ObservablesType::const_iterator it =
+          entries.begin(); it != entries.end(); ++it)
+      {
+        if ( funcMatchesIniEntry(masterGraph[vertex], *it, *boundTEs) )
+        {
+          cout << "Getting option from: " << it->capability << " " << it->type << endl;
+          Options someOptions = it->options;
+          for (auto jt = it->options.begin(); jt != it->options.end(); jt++)
+          {
+            if ( not nodes[jt->first.as<std::string>()] )
+              nodes[jt->first.as<std::string>()] = jt->second;
+            else
+              cout << "WARNING! Ignoring multiple option entries for key: " << jt->first.as<std::string>() << endl;
+          }
+        }
+      }
+      Options myOptions(nodes);
+      return myOptions;
+    }
+
     /// Resolve dependency
     DRes::VertexID DependencyResolver::resolveDependencyFromRules(const DRes::VertexID & toVertex, const sspair & quantity)
     {
@@ -796,7 +825,7 @@ namespace Gambit
         dependency_resolver_error().raise(LOCAL_INFO,errmsg);
       }
 
-      cout << "Vertex candidates: " << vertexCandidates << endl;
+      cout << "Vertex candidate IDs: " << vertexCandidates << endl;
 
       // Make list of all relevant 1st and 2nd level dependency rules.
       IniParser::ObservablesType entries = boundIniFile->getAuxiliaries();
@@ -833,7 +862,7 @@ namespace Gambit
         }
       }
 
-      cout << "1st and 2nd class rules: " << rules_1st_level.size() << ", " << rules_2nd_level.size() << endl;
+      cout << "Number of identified 1st and 2nd class rules: " << rules_1st_level.size() << ", " << rules_2nd_level.size() << endl;
 
       // Make filtered lists
       for (std::vector<DRes::VertexID>::const_iterator it = vertexCandidates.begin(); 
@@ -890,7 +919,7 @@ namespace Gambit
         cout << "Vertex candidates with tailor made functions (1st, 2nd): " << filteredVertexCandidates_1st << ", " << filteredVertexCandidates_2nd << endl;
       }
 
-      // 4) Did vertices survive?
+      // Did vertices survive?
       if ( filteredVertexCandidates_1st.size() == 1 )
         return filteredVertexCandidates_1st[0];  // Done!
       if ( filteredVertexCandidates_2nd.size() == 1 )
@@ -1096,10 +1125,6 @@ namespace Gambit
         }
         else
         {
-          // TODO: Ini-file options still retrieved in the old way:
-          iniEntry = NULL;
-          boost::tie(iniEntry, fromVertex) = resolveDependency(toVertex, quantity);
-          // But fromVertex in the new
           fromVertex = resolveDependencyFromRules(toVertex, quantity);
         }
 
@@ -1150,6 +1175,9 @@ namespace Gambit
         }
         else // if output vertex
         {
+          //iniEntry = NULL;
+          //boost::tie(iniEntry, fromVertex) = resolveDependency(toVertex, quantity);
+          iniEntry = findIniEntry(quantity, boundIniFile->getObservables(), "ObsLike");
           outInfo.vertex = fromVertex;
           outInfo.iniEntry = iniEntry;
           outputVertexInfos.push_back(outInfo);
@@ -1161,12 +1189,20 @@ namespace Gambit
           logger() << LogTags::dependency_resolver << "Activate new module function" << endl;
           masterGraph[fromVertex]->setStatus(2); // activate node
           resolveVertexBackend(fromVertex);
-          // Generate options object from ini-file entry that corresponds to
-          // fromVertex (overwrite iniEntry) and pass it to the fromVertex for later use
-          iniEntry = findIniEntry(fromVertex, boundIniFile->getAuxiliaries(), "auxiliary");
-          if ( iniEntry != NULL )
+          if ( boundIniFile->getValueOrDef<bool>( false, "dependency_resolution", "use_old_routines") )
           {
-            Options myOptions(iniEntry->options);
+            // Generate options object from ini-file entry that corresponds to
+            // fromVertex (overwrite iniEntry) and pass it to the fromVertex for later use
+            iniEntry = findIniEntry(fromVertex, boundIniFile->getAuxiliaries(), "auxiliary");
+            if ( iniEntry != NULL )
+            {
+              Options myOptions(iniEntry->options);
+              masterGraph[fromVertex]->notifyOfIniOptions(myOptions);
+            }
+          }
+          else
+          {
+            Options myOptions = collectIniOptions(fromVertex);
             masterGraph[fromVertex]->notifyOfIniOptions(myOptions);
           }
           // Fill parameter queue with dependencies of fromVertex
