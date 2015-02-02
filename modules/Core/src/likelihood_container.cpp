@@ -57,7 +57,7 @@ namespace Gambit
     target_vertices.resize(size);
   }
 			
-  inline void Likelihood_Container_Base::calcObsLike(DRes::VertexID &it)
+  inline void Likelihood_Container_Base::calcObsLike(DRes::VertexID&)
   {
     // TODO: dependencyResolver.calcObsLike now requires (int) pointID argument
     // See Likelihood_Container version
@@ -140,7 +140,7 @@ namespace Gambit
         logger() << LogTags::core << "done with likelihood vertex " << *it << EOM;
       }
       // Catch points that are invalid, either due to low like or pathology.  Skip the rest of the vertices if a point is invalid.
-      catch(Gambit::invalid_point_exception& e)
+      catch(invalid_point_exception& e)
       {
         lnlike = min_valid_lnlike;
         logger() << LogTags::core << "Point invalidated by " << e.thrower()->origin() << "::" << e.thrower()->name() << "." << EOM;
@@ -162,7 +162,8 @@ namespace Gambit
         }
         catch(Gambit::invalid_point_exception& e)
         {
-          logger() << LogTags::core << "The calculation was declared invalid by " << e.thrower()->origin() << "::" << e.thrower()->name() << ".  *Shrug*." << EOM;
+          logger() << LogTags::core << "The calculation was declared invalid by " << e.thrower()->origin()
+                   << "::" << e.thrower()->name() << ".  *Shrug*." << EOM;
           // FIXME Pat: not sure what else to do here exactly when a calculation of an auxiliary quantity fails but the likelihood is ok.
         }
       }

@@ -103,10 +103,11 @@ namespace Gambit
     void functor::setFadeRate() {}
     void functor::notifyOfInvalidation(const str&) {}
     void functor::reset() {}
+    void functor::reset(int) {}
     /// @}
 
     /// Reset-then-recalculate method
-    void functor::reset_and_calculate() { this->reset(); this->calculate(); }
+    void functor::reset_and_calculate() { this->reset(omp_get_thread_num()); this->calculate(); }
 
     /// Setter for purpose (relevant only for next-to-output functors)
     void functor::setPurpose(str purpose) { if (this == NULL) failBigTime("setPurpose"); myPurpose = purpose; }
@@ -539,15 +540,15 @@ namespace Gambit
                                                  str origin_name,
                                                  Models::ModelFunctorClaw &claw)
     : functor                  (func_name, func_capability, result_type, origin_name, claw),
+      start                    (NULL),
+      end                      (NULL),
       runtime_average          (FUNCTORS_RUNTIME_INIT),           // default 1 micro second
       fadeRate                 (FUNCTORS_FADE_RATE),              // can be set individually for each functor
       pInvalidation            (FUNCTORS_BASE_INVALIDATION_RATE),
+      needs_recalculating      (NULL), 
       iCanManageLoops          (false),
       iRunNested               (false),
       myLoopManagerCapability  ("none"),
-      start                    (NULL),
-      end                      (NULL),
-      needs_recalculating      (NULL), 
       myLoopManager            (NULL),
       myCurrentIteration       (NULL),
       globlMaxThreads          (omp_get_max_threads()),
@@ -588,16 +589,21 @@ namespace Gambit
       return runtime_average;
     }
 
-    /// Reset functor
+    /// Reset functor for all threads
     void module_functor_common::reset()
     {
-      int thread_num = omp_get_thread_num();
+      init_memory();
+      int n = (iRunNested ? globlMaxThreads : 1);
+      std::fill(needs_recalculating, needs_recalculating+n, true);
+      if (iCanManageLoops) resetLoop();
+    }
+
+    /// Reset functor for one thread only
+    void module_functor_common::reset(int thread_num)
+    {
       init_memory();
       needs_recalculating[thread_num] = true;
-      bool do_loop_reset;
-      #pragma omp atomic read
-      do_loop_reset = iCanManageLoops;
-      if (do_loop_reset) resetLoop();
+      if (iCanManageLoops) resetLoop();
     }
 
     /// Tell the functor that it invalidated the current point in model space, pass a message explaining why, and throw an exception.
@@ -674,9 +680,15 @@ namespace Gambit
       {
         #pragma omp critical(module_functor_init_myCurrentIteration_if_NULL)
         {
-          int nslots = (iRunNested ? globlMaxThreads : 1); // Set the number of slots to the max number of threads allowed iff this functor can run in parallel
-          myCurrentIteration = new int[nslots];            // Reserve enough space to hold as many iteration numbers as there are slots (threads) allowed
-          std::fill(myCurrentIteration, myCurrentIteration+nslots, 0); // Zero them to start off
+          if(myCurrentIteration==NULL)  // Check again in case two threads managed to get this far in sequence.
+          {
+            // Set the number of slots to the max number of threads allowed iff this functor can run in parallel
+            int nslots = (iRunNested ? globlMaxThreads : 1); 
+            // Reserve enough space to hold as many iteration numbers as there are slots (threads) allowed
+            myCurrentIteration = new int[nslots];            
+            // Zero them to start off
+            std::fill(myCurrentIteration, myCurrentIteration+nslots, 0);
+          }
         }
       }
     }
@@ -689,7 +701,7 @@ namespace Gambit
         str errmsg = "Problem whilst attempting to break out of loop:";
         errmsg +=  "\n Loop Manager not properly defined."
                    "\n This is " + this->name() + " in " + this->origin() + ".";
-        utils_error().raise(LOCAL_INFO,errmsg); //FIXME this seems to cause a crash if it is ever triggered -- why??
+        utils_error().raise(LOCAL_INFO,errmsg);
       }
       else
       {
@@ -1344,24 +1356,27 @@ namespace Gambit
       // Reserve enough space to hold as many timing points and recalculation flags as there are slots (threads) allowed
       if(start==NULL)
       {
-        #pragma omp critical(module_functor_common_init_memory)
+        #pragma omp critical(module_functor_common_init_memory_start)
         {
-          start = new std::chrono::time_point<std::chrono::system_clock>[n];
+          if(start==NULL) start = new std::chrono::time_point<std::chrono::system_clock>[n];
         }
       }
       if(end==NULL)
       {
-        #pragma omp critical(module_functor_common_init_memory)
+        #pragma omp critical(module_functor_common_init_memory_end)
         {
-          end = new std::chrono::time_point<std::chrono::system_clock>[n];
+          if(end==NULL) end = new std::chrono::time_point<std::chrono::system_clock>[n];
         }
       }
       if(needs_recalculating==NULL)
       {
-        #pragma omp critical(module_functor_common_init_memory)
+        #pragma omp critical(module_functor_common_init_memory_needs_recalculating)
         {
-          needs_recalculating = new bool[n];
-          std::fill(needs_recalculating, needs_recalculating, true);
+          if(needs_recalculating==NULL)
+          {
+            needs_recalculating = new bool[n];
+            std::fill(needs_recalculating, needs_recalculating+n, true);
+          }
         }
       }
     }
@@ -1420,33 +1435,24 @@ namespace Gambit
     template <typename TYPE>
     void module_functor<TYPE>::calculate()
     {
-      cout << "calculate in non-void: " << origin() << "::" << name() << endl;
       int thread_num = omp_get_thread_num();
-      cout << "Thread num: " << thread_num << endl;
       init_memory();                               // Init memory if this is the first run through.
-      cout << "OK 1" << endl;
-      //if (needs_recalculating[thread_num])       // Do the actual calculation if required.
-      //{
-        cout << "OK 2" << endl;
-        //logger().entering_module(myLogTag);
-        //this->startTiming(thread_num);           //Begin timing function evaluation
+      if (needs_recalculating[thread_num])         // Do the actual calculation if required.
+      {
+        logger().entering_module(myLogTag);
+        this->startTiming(thread_num);             //Begin timing function evaluation
         try
         {
-          cout << "OK 3" << endl;
-          this->myFunction(myValue[thread_num]); //Run and place result in the appropriate slot in myValue
+          this->myFunction(myValue[thread_num]);   //Run and place result in the appropriate slot in myValue
         }
         catch (invalid_point_exception& e)
         {
-          cout << "OK 4" << endl;
           acknowledgeInvalidation(e);
           throw(e);
         }
-          cout << "OK 5" << endl;
-        //this->finishTiming(thread_num);          //Stop timing function evaluation
-        //logger().leaving_module();
-      //}
-          cout << "OK 6" << endl;
-
+        this->finishTiming(thread_num);            //Stop timing function evaluation
+        logger().leaving_module();
+      }
     }
 
     // Initialise the memory of this functor.
@@ -1459,7 +1465,7 @@ namespace Gambit
         #pragma omp critical(module_functor_init_memory)
         {
           // Reserve enough space to hold as many results as there are slots (threads) allowed
-          myValue = new TYPE[(iRunNested ? globlMaxThreads : 1)];
+          if(myValue==NULL) myValue = new TYPE[(iRunNested ? globlMaxThreads : 1)];
         }
       }
     }
@@ -1517,13 +1523,12 @@ namespace Gambit
     /// Calculate method
     void module_functor<void>::calculate()
     {
-      cout << "calculate in void" << endl;
       int thread_num = omp_get_thread_num();
       init_memory();                             // Init memory if this is the first run through.
-      //if (needs_recalculating[thread_num])
-      //{
-        //logger().entering_module(myLogTag);
-        //this->startTiming(thread_num);
+      if (needs_recalculating[thread_num])
+      {
+        logger().entering_module(myLogTag);
+        this->startTiming(thread_num);
         try
         {
           this->myFunction();
@@ -1533,9 +1538,9 @@ namespace Gambit
           acknowledgeInvalidation(e);
           throw(e);
         }
-        //this->finishTiming(thread_num);
-        //logger().leaving_module();
-      //}
+        this->finishTiming(thread_num);
+        logger().leaving_module();
+      }
     }
 
     /// Blank print methods

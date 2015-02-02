@@ -166,16 +166,20 @@ namespace Gambit
     /// Setter for the fatal flag.
     void exception::set_fatal(bool fatal)
     {
-      #pragma omp atomic write
-      isFatal = fatal;
+      #pragma omp critical (GABMIT_exception)
+      {
+        isFatal = fatal;
+      }
     }
 
     /// Retrieve the identity of the exception.
     const char* exception::what() const throw()
     {
       const char* temp;
-      #pragma omp critical
-      temp = myWhat.c_str();
+      #pragma omp critical (GABMIT_exception)
+      {
+        temp = myWhat.c_str();
+      }
       return temp;
     }
 
@@ -184,25 +188,31 @@ namespace Gambit
     /// This is the regular way to trigger a GAMBIT error or warning. 
     void exception::raise(const std::string& origin, const std::string& specific_message)
     {
-      #pragma omp critical (exception_raise)
+      #pragma omp critical (GABMIT_exception)
       {
         log_exception(origin, specific_message);
+        if (isFatal) throw(*this);  //FIXME cannot legally throw from inside an openmp block!!
       }
-      if (isFatal) throw(*this);
     }
 
     /// Log the exception and throw it regardless of whether is is fatal or not.
     void exception::forced_throw(const std::string& origin, const std::string& specific_message)
     {
-      #pragma omp critical (exception_raise)
+      #pragma omp critical (GABMIT_exception)
       {
         log_exception(origin, specific_message);
+        throw(*this); //FIXME cannot legally throw from inside an openmp block!!
       }
-      throw(*this);
     }
 
     /// As per forced_throw but without logging.
-    void exception::silent_forced_throw() { throw(*this); }
+    void exception::silent_forced_throw()
+    {
+      #pragma omp critical (GABMIT_exception)
+      {
+        throw(*this);  //FIXME cannot legally throw from inside an openmp block!!
+      }
+    }
 
   // Private members of GAMBIT exception base class.
 
@@ -310,16 +320,20 @@ namespace Gambit
     std::string special_exception::message()
     {
       std::string temp;
-      #pragma omp critical
-      temp = myMessage;
+      #pragma omp critical (GABMIT_exception)
+      {
+        temp = myMessage;
+      }
       return temp;
     }
 
     /// Raise the exception, i.e. throw it with a message.
     void special_exception::raise(const std::string& msg)
     {
-      #pragma omp critical
-      myMessage = msg;
+      #pragma omp critical (GAMBIT_exception)
+      {
+        myMessage = msg;
+      }
       throw(*this);
     }
     
@@ -349,8 +363,10 @@ namespace Gambit
     /// Raise the exception, i.e. throw it with a message.
     void invalid_point_exception::raise(const std::string& msg)
     {
-      #pragma omp critical
-      myMessage = msg;
+      #pragma omp critical (GAMBIT_exception)
+      {
+        myMessage = msg;
+      }
       throw(*this);
     }
 

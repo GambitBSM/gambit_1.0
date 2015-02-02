@@ -592,13 +592,13 @@ namespace Gambit
       return NULL;
     }
 
-    // Resets all functors and delets exisiting results
+    // Resets all active functors and deletes existing results
     void DependencyResolver::resetAll()
     {
       graph_traits<DRes::MasterGraphType>::vertex_iterator vi, vi_end;
       for (boost::tie(vi, vi_end) = vertices(masterGraph); vi != vi_end; ++vi) 
       {
-        masterGraph[*vi]->reset();
+        if (masterGraph[*vi]->status() == 2) masterGraph[*vi]->reset();
       }
     }
 

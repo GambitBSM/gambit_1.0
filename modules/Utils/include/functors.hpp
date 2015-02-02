@@ -297,6 +297,8 @@ namespace Gambit
       /// Try to find a parent or friend model in some user-supplied map from models to sspair vectors
       str find_friend_or_parent_model_in_map(str model, std::map< str, std::set<sspair> > karta);
 
+      /// Reset functor for one thread only
+      virtual void reset(int);
   };
 
 
@@ -458,6 +460,9 @@ namespace Gambit
 
 
     protected:
+
+      /// Reset functor for one thread only
+      void reset(int);
 
       /// Acknowledge that this functor invalidated the current point in model space.
       virtual void acknowledgeInvalidation(invalid_point_exception&);
