@@ -404,11 +404,12 @@ namespace Gambit {
       std::vector<fastjet::PseudoJet> pjets = sorted_by_pt(cseq.inclusive_jets(10));
       // Add to the event, with b-tagging info"
       for (const fastjet::PseudoJet& pj : pjets) {
-    // Do jet b-tagging, etc. by looking for b quark constituents (i.e. user index = |parton ID| = 5)
-        /// @note We need to _remove_ this b-tag in the detector sim if outside the tracker acceptance!
-	  for(int c=0;c<pj.constituents().size();c++){
-	}
-	  const bool isB = HEPUtils::any(pj.constituents(),
+        // Do jet b-tagging, etc. by looking for b quark constituents (i.e. user index = |parton ID| = 5)
+        /// @note This b-tag is removed in the detector sim if outside the tracker acceptance!
+        for (int c=0;c<pj.constituents().size();c++){
+          // HUH?
+        }
+        const bool isB = HEPUtils::any(pj.constituents(),
                                        [](const fastjet::PseudoJet& c){ return c.user_index() == MCUtils::PID::BQUARK; });
         result.add_jet(new HEPUtils::Jet(HEPUtils::mk_p4(pj), isB));
       }
