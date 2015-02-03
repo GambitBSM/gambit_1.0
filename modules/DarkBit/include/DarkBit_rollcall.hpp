@@ -503,26 +503,26 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
-  #define CAPABILITY lnL_DARWIN_Ar_2014
+  #define CAPABILITY lnL_DARWIN_Ar_2015
   START_CAPABILITY
-    #define FUNCTION lnL_DARWIN_Ar_2014
+    #define FUNCTION lnL_DARWIN_Ar_2015
       START_FUNCTION(double)
       DEPENDENCY(DD_couplings, Gambit::DarkBit::DD_couplings)
       BACKEND_REQ(DDCalc0_SetWIMP_mG, (Same_BE), void, (double*,double*,double*,double*,double*))
-      BACKEND_REQ(DDCalc0_DARWIN_Ar_2014_CalcRates, (Same_BE), void, ())
-      BACKEND_REQ(DDCalc0_DARWIN_Ar_2014_LogLikelihood, (Same_BE), double, ())
+      BACKEND_REQ(DDCalc0_DARWIN_Ar_2015_CalcRates, (Same_BE), void, ())
+      BACKEND_REQ(DDCalc0_DARWIN_Ar_2015_LogLikelihood, (Same_BE), double, ())
       FORCE_SAME_BACKEND(Same_BE)
     #undef FUNCTION
   #undef CAPABILITY
 
-  #define CAPABILITY lnL_DARWIN_Xe_2014
+  #define CAPABILITY lnL_DARWIN_Xe_2015
   START_CAPABILITY
-    #define FUNCTION lnL_DARWIN_Xe_2014
+    #define FUNCTION lnL_DARWIN_Xe_2015
       START_FUNCTION(double)
       DEPENDENCY(DD_couplings, Gambit::DarkBit::DD_couplings)
       BACKEND_REQ(DDCalc0_SetWIMP_mG, (Same_BE), void, (double*,double*,double*,double*,double*))
-      BACKEND_REQ(DDCalc0_DARWIN_Xe_2014_CalcRates, (Same_BE), void, ())
-      BACKEND_REQ(DDCalc0_DARWIN_Xe_2014_LogLikelihood, (Same_BE), double, ())
+      BACKEND_REQ(DDCalc0_DARWIN_Xe_2015_CalcRates, (Same_BE), void, ())
+      BACKEND_REQ(DDCalc0_DARWIN_Xe_2015_LogLikelihood, (Same_BE), double, ())
       FORCE_SAME_BACKEND(Same_BE)
     #undef FUNCTION
   #undef CAPABILITY

@@ -1925,10 +1925,10 @@ namespace Gambit {
     }
 
     // Estimated argon-based DARWIN sensitivity:
-    //   Conrad et al., arxiv:14MM.XXXX
-    void lnL_DARWIN_Ar_2014(double &result)
+    //   Conrad et al., arxiv:15MM.XXXX
+    void lnL_DARWIN_Ar_2015(double &result)
     {
-        using namespace Pipes::lnL_DARWIN_Ar_2014;
+        using namespace Pipes::lnL_DARWIN_Ar_2015;
         // TODO: The WIMP parameters need to be set only once per
         // model, across all experiments.  Need to figure out
         // how to do this....
@@ -1941,16 +1941,16 @@ namespace Gambit {
         // TODO: This calculation needs to be done only once per
         // model and could also potentially be set up as a
         // dependency.
-        BEreq::DDCalc0_DARWIN_Ar_2014_CalcRates();
-        result = BEreq::DDCalc0_DARWIN_Ar_2014_LogLikelihood();
-        std::cout << "DARWIN argon (2014 estimate) likelihood: " << result << std::endl;
+        BEreq::DDCalc0_DARWIN_Ar_2015_CalcRates();
+        result = BEreq::DDCalc0_DARWIN_Ar_2015_LogLikelihood();
+        std::cout << "DARWIN argon (2015 estimate) likelihood: " << result << std::endl;
     }
 
     // Estimated xenon-based DARWIN sensitivity:
-    //   Conrad et al., arxiv:14MM.XXXX
-    void lnL_DARWIN_Xe_2014(double &result)
+    //   Conrad et al., arxiv:15MM.XXXX
+    void lnL_DARWIN_Xe_2015(double &result)
     {
-        using namespace Pipes::lnL_DARWIN_Xe_2014;
+        using namespace Pipes::lnL_DARWIN_Xe_2015;
         // TODO: The WIMP parameters need to be set only once per
         // model, across all experiments.  Need to figure out
         // how to do this....
@@ -1963,9 +1963,9 @@ namespace Gambit {
         // TODO: This calculation needs to be done only once per
         // model and could also potentially be set up as a
         // dependency.
-        BEreq::DDCalc0_DARWIN_Xe_2014_CalcRates();
-        result = BEreq::DDCalc0_DARWIN_Xe_2014_LogLikelihood();
-        std::cout << "DARWIN xenon (2014 estimate) likelihood: " << result << std::endl;
+        BEreq::DDCalc0_DARWIN_Xe_2015_CalcRates();
+        result = BEreq::DDCalc0_DARWIN_Xe_2015_LogLikelihood();
+        std::cout << "DARWIN xenon (2015 estimate) likelihood: " << result << std::endl;
     }
 
     // Simple test likelihood (in case DDCalc0 does not work)
