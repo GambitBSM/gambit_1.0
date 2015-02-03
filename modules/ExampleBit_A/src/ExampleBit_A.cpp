@@ -253,6 +253,7 @@ namespace Gambit
       {
         cout<<"  Running exampleEventGen in iteration "<<*Loop::iteration<<endl;
       }
+      if (result > 2.0) invalid_point().raise("This point is annoying.");
     }
 
     /// Rounds an event count to the nearest integer

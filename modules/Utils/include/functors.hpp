@@ -209,6 +209,9 @@ namespace Gambit
       /// Printer function (no-thread-index short-circuit)
       virtual void print(Printers::BasePrinter* printer, const int pointID);
 
+      /// Retrieve the previously saved exception generated when this functor invalidated the current point in model space.
+      virtual invalid_point_exception* retrieve_invalid_point_exception();
+
       /// Notify the functor about an instance of the options class that contains
       /// information from its corresponding ini-file entry in the auxiliaries or
       /// observables section.
@@ -299,6 +302,7 @@ namespace Gambit
 
       /// Reset functor for one thread only
       virtual void reset(int);
+
   };
 
 
@@ -458,6 +462,9 @@ namespace Gambit
       /// Notify the functor that a certain model is being scanned, so that it can activate its dependencies and backend reqs accordingly.
       virtual void notifyOfModel(str model);
 
+      /// Retrieve the previously saved exception generated when this functor invalidated the current point in model space.
+      virtual invalid_point_exception* retrieve_invalid_point_exception();
+
 
     protected:
 
@@ -465,7 +472,7 @@ namespace Gambit
       void reset(int);
 
       /// Acknowledge that this functor invalidated the current point in model space.
-      virtual void acknowledgeInvalidation(invalid_point_exception&);
+      virtual void acknowledgeInvalidation(invalid_point_exception&, functor* f = NULL);
 
       /// Do pre-calculate timing things
       virtual void startTiming(int);
@@ -478,6 +485,9 @@ namespace Gambit
 
       /// Beginning and end timing points
       std::chrono::time_point<std::chrono::system_clock> *start, *end;
+
+      /// An exception raised because this functor has invalidated the current point
+      invalid_point_exception* raised_point_exception;
 
       /// Averaged runtime in ns
       double runtime_average;
