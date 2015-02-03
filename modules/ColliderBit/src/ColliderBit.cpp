@@ -115,16 +115,16 @@ namespace Gambit {
     }
 
 
-	void getBuckFast(shared_ptr<Gambit::ColliderBit::BuckFastBase> &result) {
-	using namespace Pipes::getBuckFast;
-	std::string buckFastOption;
-	if (resetBuckFastFlag) {
-      #pragma omp critical (BuckFast)
-      {
-        GET_COLLIDER_RUNOPTION(buckFastOption, std::string);
-        result.reset( mkBuckFast(buckFastOption) );
-        resetBuckFastFlag = false;
-      }
+    void getBuckFast(shared_ptr<Gambit::ColliderBit::BuckFastBase> &result) {
+      using namespace Pipes::getBuckFast;
+      std::string buckFastOption;
+      if (resetBuckFastFlag) {
+        #pragma omp critical (BuckFast)
+        {
+          GET_COLLIDER_RUNOPTION(buckFastOption, std::string);
+          result.reset( mkBuckFast(buckFastOption) );
+          resetBuckFastFlag = false;
+        }
       }
     }
 
@@ -163,8 +163,8 @@ namespace Gambit {
         }
 
         while (pythiaNumber < pythiaConfigurations) {
-	  ++pythiaNumber;
-	  Loop::executeIteration(INIT);
+          ++pythiaNumber;
+          Loop::executeIteration(INIT);
           #pragma omp parallel shared(SHARED_OVER_OMP)
           {
             #pragma omp for
@@ -254,8 +254,7 @@ namespace Gambit {
       /// Get the next event from Pythia8
       const auto pevt = (*Dep::HardScatteringSim)->nextEvent();
 
-      std::vector<fastjet::PseudoJet> jetparticles, bhadrons, taus; //< Pseudojets for input to FastJet
-      // Pythia8::Vec4 ptot;
+      std::vector<fastjet::PseudoJet> bhadrons; //< for input to FastJet b-tagging
       P4 pout; //< Sum of momenta outside acceptance
 
       // Make a first pass of non-final particles to gather b-hadrons and taus
@@ -267,13 +266,31 @@ namespace Gambit {
 
         // Find last tau in prompt tau replica chains as a proxy for tau-tagging
         if (isFinalTau(i, pevt) && !fromHadron(i, pevt)) {
-          taus.push_back(mk_pseudojet(p.p()));
-          HEPUtils::Particle* gp = new HEPUtils::Particle(mk_p4(p.p()), p.id());
+          // Veto leptonic taus
+          bool isLeptonicTau = false;
+          vector<int> tauDaughterList = p.daughterList();
+          P4 tmpMomentum;
+          for (size_t daughter = 0; daughter < tauDaughterList.size(); daughter++) {
+            const Pythia8::Particle& pDaughter = pevt[tauDaughterList[daughter]];
+            int daughterID = pDaughter.idAbs();
+            //std::cout << "DAUGHTER ID " << daughterID << std::endl;
+            if (daughterID == MCUtils::PID::ELECTRON || daughterID == MCUtils::PID::MUON || daughterID == MCUtils::PID::WPLUSBOSON) {
+              isLeptonicTau = true;
+              break;
+            }
+            if (daughterID == MCUtils::PID::NU_TAU) continue; // do not add tau neutrinos to momentum
+            tmpMomentum += mk_p4(pDaughter.p());
+          }
+          //HEPUtils::Particle* gp = new HEPUtils::Particle(mk_p4(p.p()), p.id());
+          //std::cout << "PARTICLE PT " << p.pT() << " VIS " << tmpMomentum.pT() << std::endl;
+          HEPUtils::Particle* gp = new HEPUtils::Particle(tmpMomentum, p.id());
           gp->set_prompt();
-          result.add_particle(gp); // Will be automatically categorised
+          if (!isLeptonicTau) result.add_particle(gp); // Will be automatically categorised
         }
       }
 
+      // Loop over final state particles for jet inputs and MET
+      std::vector<fastjet::PseudoJet> jetparticles;
       for (int i = 0; i < pevt.size(); ++i) {
         const Pythia8::Particle& p = pevt[i];
 
@@ -300,7 +317,6 @@ namespace Gambit {
 
         // All particles other than invisibles and muons are jet constituents
         if (visible && p.idAbs() != MCUtils::PID::MUON) jetparticles.push_back(mk_pseudojet(p.p()));
-
       }
 
       /// Jet finding
@@ -357,6 +373,38 @@ namespace Gambit {
 
       const auto pevt = (*Dep::HardScatteringSim)->nextEvent();
 
+      // Make a first pass of non-final particles to gather taus
+      for (int i = 0; i < pevt.size(); ++i) {
+        const Pythia8::Particle& p = pevt[i];
+
+        // Find last tau in prompt tau replica chains as a proxy for tau-tagging
+        if (isFinalTau(i, pevt) && !fromHadron(i, pevt)) {
+
+          // std::cout << "TAU FROM HADRON " << fromHadron(i,pevt) << std::endl;
+
+          // Veto leptonic taus
+          bool isLeptonicTau = false;
+          vector<int> tauDaughterList = p.daughterList();
+          P4 tmpMomentum;
+          for (size_t daughter = 0; daughter < tauDaughterList.size(); daughter++) {
+            const Pythia8::Particle& pDaughter = pevt[tauDaughterList[daughter]];
+            int daughterID = pDaughter.idAbs();
+            //std::cout << "DAUGHTER ID " << daughterID << std::endl;
+            if (daughterID == MCUtils::PID::ELECTRON || daughterID == MCUtils::PID::MUON || daughterID == MCUtils::PID::WPLUSBOSON) {
+              isLeptonicTau = true;
+              break;
+            }
+            if (daughterID == MCUtils::PID::NU_TAU) continue;//do not add tau neutrinos to momentum
+            tmpMomentum += mk_p4(pDaughter.p());
+          }
+          //std::cout << "PARTICLE PT " << p.pT() << " VIS " << tmpMomentum.pT() << std::endl;
+          HEPUtils::Particle* gp = new HEPUtils::Particle(tmpMomentum, p.id());
+          gp->set_prompt();
+          if (!isLeptonicTau) result.add_particle(gp); // Will be automatically categorised
+        }
+      }
+
+
       std::vector<fastjet::PseudoJet> jetparticles; //< Pseudojets for input to FastJet
       P4 pout; //< Sum of momenta outside acceptance
 
@@ -404,11 +452,9 @@ namespace Gambit {
       std::vector<fastjet::PseudoJet> pjets = sorted_by_pt(cseq.inclusive_jets(10));
       // Add to the event, with b-tagging info"
       for (const fastjet::PseudoJet& pj : pjets) {
-    // Do jet b-tagging, etc. by looking for b quark constituents (i.e. user index = |parton ID| = 5)
-        /// @note We need to _remove_ this b-tag in the detector sim if outside the tracker acceptance!
-	  for(int c=0;c<pj.constituents().size();c++){
-	}
-	  const bool isB = HEPUtils::any(pj.constituents(),
+        // Do jet b-tagging, etc. by looking for b quark constituents (i.e. user index = |parton ID| = 5)
+        /// @note This b-tag is removed in the detector sim if outside the tracker acceptance!
+        const bool isB = HEPUtils::any(pj.constituents(),
                                        [](const fastjet::PseudoJet& c){ return c.user_index() == MCUtils::PID::BQUARK; });
         result.add_jet(new HEPUtils::Jet(HEPUtils::mk_p4(pj), isB));
       }
@@ -433,10 +479,10 @@ namespace Gambit {
     }
 
 
-     /// Gambit facing interface function
+    /// Gambit facing interface function
     void convertPythia8Event(HEPUtils::Event &result) {
-      //convertPythia8PartonEvent(result);
-      convertPythia8ParticleEvent(result);
+      convertPythia8PartonEvent(result);
+      //convertPythia8ParticleEvent(result);
     }
 
 
@@ -475,25 +521,25 @@ namespace Gambit {
       if (*Loop::iteration == INIT or *Loop::iteration == END_SUBPROCESS) return;
 
       if (*Loop::iteration == FINALIZE)
-      {
-        // The final iteration: get log likelihoods for the analyses
-        result.clear();
-        for (auto anaPtr = Dep::ListOfAnalyses->begin(); anaPtr != Dep::ListOfAnalyses->end(); ++anaPtr)
         {
-          cout << "SR number test " << (*anaPtr)->get_results()[0].n_signal << endl;
-          result.push_back((*anaPtr)->get_results());
-        }
-        resetAnalysisFlag = true;
-      }
-      else
-      {
-        #pragma omp critical (accumulatorUpdate)
-        {
-          // Loop over analyses and run them
+          // The final iteration: get log likelihoods for the analyses
+          result.clear();
           for (auto anaPtr = Dep::ListOfAnalyses->begin(); anaPtr != Dep::ListOfAnalyses->end(); ++anaPtr)
-            (*anaPtr)->analyze(*Dep::ReconstructedEvent);
+            {
+              cout << "SR number test " << (*anaPtr)->get_results()[0].n_signal << endl;
+              result.push_back((*anaPtr)->get_results());
+            }
+          resetAnalysisFlag = true;
         }
-      }
+      else
+        {
+          #pragma omp critical (accumulatorUpdate)
+          {
+            // Loop over analyses and run them
+            for (auto anaPtr = Dep::ListOfAnalyses->begin(); anaPtr != Dep::ListOfAnalyses->end(); ++anaPtr)
+              (*anaPtr)->analyze(*Dep::ReconstructedEvent);
+          }
+        }
     }
 
 
@@ -519,8 +565,8 @@ namespace Gambit {
           // A contribution to the predicted number of events that is not known exactly
           double n_predicted_uncertain = srData.n_signal + srData.n_background;
 
-            /// A fractional uncertainty on n_predicted_uncertain
-            /// (e.g. 0.2 from 20% uncertainty on efficencty wrt signal events)
+          /// A fractional uncertainty on n_predicted_uncertain
+          /// (e.g. 0.2 from 20% uncertainty on efficencty wrt signal events)
           double bkg_ratio = srData.background_sys/srData.n_background;
           double sig_ratio = (srData.n_signal != 0) ? srData.signal_sys/srData.n_signal : 0;
           double uncertainty = sqrt(bkg_ratio*bkg_ratio + sig_ratio*sig_ratio);
@@ -531,6 +577,7 @@ namespace Gambit {
           }
           else if (*BEgroup::lnlike_marg_poisson == "lnlike_marg_poisson_gaussian_error") {
             /// Use a Gaussian distribution for the nuisance parameter (marginally faster)
+            std::cout << "OBS " << n_obs << " PRED " << n_predicted_exact << " UNCERTAIN " << n_predicted_uncertain << " UNCERTAINTY " << uncertainty << std::endl;
             result = BEreq::lnlike_marg_poisson_gaussian_error(n_obs,n_predicted_exact,n_predicted_uncertain,uncertainty);
           }
           cout << "COLLIDER_RESULT " << analysis << " " << SR << " " << result << endl;

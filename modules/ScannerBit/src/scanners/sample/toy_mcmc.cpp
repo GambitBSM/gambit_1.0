@@ -13,7 +13,6 @@
 ///  \date 2013 August
 ///
 ///  *********************************************
-
 #include <vector>
 #include <string>
 #include <cmath>

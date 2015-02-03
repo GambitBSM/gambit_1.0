@@ -554,6 +554,7 @@ namespace Gambit
     /// Handle LogTag input 
     LogMaster& LogMaster::operator<< (const LogTag& tag)
     {
+       #pragma omp critical
        streamtags.insert(tag);
        return *this;
     }
@@ -561,48 +562,76 @@ namespace Gambit
     /// Handle end of message character
     LogMaster& LogMaster::operator<< (const endofmessage&)
     {
-       // Collect the stream and tags, then send the message
-       send(stream.str(), streamtags);
-       // Clear stream and tags for next message;
-       stream.str(std::string()); //TODO: check that this works properly on all compilers...
-       streamtags.clear();
+       #pragma omp critical (LogMaster_steram_EOM)
+       {
+         // Collect the stream and tags, then send the message
+         send(stream.str(), streamtags);
+         // Clear stream and tags for next message;
+         stream.str(std::string()); //TODO: check that this works properly on all compilers...
+         streamtags.clear();
+       }
        return *this;
     }
 
     /// Handle various stream manipulators
     LogMaster& LogMaster::operator<< (const manip1 fp)
     {
+       #pragma omp critical
        stream << fp;
        return *this;
     }
 
     LogMaster& LogMaster::operator<< (const manip2 fp)
     {
+       #pragma omp critical
        stream << fp;
        return *this;
     }
 
     LogMaster& LogMaster::operator<< (const manip3 fp)
     {
+       #pragma omp critical
        stream << fp;
        return *this;
     }
 
-    void LogMaster::entering_module(int i) { current_module = i; }
-    void LogMaster::leaving_module() { current_module = -1; leaving_backend(); }
+    void LogMaster::entering_module(int i)
+    {
+       #pragma omp atomic write
+       current_module = i;
+    }
+
+    void LogMaster::leaving_module()
+    {
+       #pragma omp atomic write
+       current_module = -1;
+       leaving_backend();
+    }
+
     void LogMaster::entering_backend(int i) 
     {
+       #pragma omp atomic write
        current_backend = i; 
-       *this<<"setting current_backend="<<current_backend;
-       *this<<logs<<debug<<EOM;
+       #pragma omp critical(LogMaster_entering_backend)
+       {
+          *this<<"setting current_backend="<<current_backend;
+          *this<<logs<<debug<<EOM;
+       }
        // TODO: Activate std::out and std::err redirection, if requested in inifile
     }
     void LogMaster::leaving_backend()
     { 
-       if (current_backend == -1) return;       
+       int cb_test;
+       #pragma omp atomic read
+       cb_test = current_backend;
+       if (cb_test == -1) return;       
+       #pragma omp atomic write
        current_backend = -1;
-       *this<<"restoring current_backend="<<current_backend;
-       *this<<logs<<debug<<EOM;
+       #pragma omp critical(LogMaster_leaving_backend)
+       {
+          *this<<"restoring current_backend="<<current_backend;
+          *this<<logs<<debug<<EOM;
+       }
        // TODO: Restore std::out and std::err to normal
     }
  

@@ -798,6 +798,36 @@ namespace Gambit
     };
 
     //------------------------------------------------------
+    // Structures containing the hadronic matrix elements
+    // (fn=<n|qq|n>) and nucleon spin content (delta q)
+    struct fp
+    {
+      double u;
+      double d;
+      double c;
+      double s;
+      double t;
+      double b;
+    };
+
+    struct fn
+    {
+      double u;
+      double d;
+      double c;
+      double s;
+      double t;
+      double b;
+    };
+
+    struct deltaq
+    {
+      double u;
+      double d;
+      double s;
+    };
+
+    //------------------------------------------------------
     // Structure to contain the Sun & Earth's motion relative
     // to the Galactic rest frame in Galactic coordinates.
     struct DDEarthMotionS
