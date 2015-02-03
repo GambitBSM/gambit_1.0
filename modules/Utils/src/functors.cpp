@@ -1480,7 +1480,7 @@ namespace Gambit
         {
           if (omp_get_level()==0) // If not in an OpenMP parallel block, inform of invalidation and throw onwards
           {
-            if (raised_point_exception != NULL) acknowledgeInvalidation(e);
+            if (raised_point_exception == NULL) acknowledgeInvalidation(e);
             throw(e);
           } 
         }
@@ -1571,7 +1571,7 @@ namespace Gambit
         {
           if (omp_get_level()==0) // If not in an OpenMP parallel block, inform of invalidation and throw onwards
           {
-            if (raised_point_exception != NULL) acknowledgeInvalidation(e);
+            if (raised_point_exception == NULL) acknowledgeInvalidation(e);
             throw(e);
           } 
         }
