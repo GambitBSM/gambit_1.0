@@ -5,11 +5,11 @@
 ###################################
 
 Parameters: 
-#    SingletDM:
-#        lambda:
-#            range: [0.001, 1]
-#        mass:
-#            range: [10, 100]
+    SingletDM:
+        lambda:
+            range: [0.001, 1]
+        mass:
+            range: [10, 100]
 #    MSSM25:
 #      Ab:
 #        fixed_value: 1
@@ -64,61 +64,61 @@ Parameters:
 #      tanb:
 #        fixed_value: 1
 #
-    MSSM25atQ:
-      Qin:
-        fixed_value: 1.9422e+16
-      SignMu:
-        fixed_value: 1
-      TanBeta:
-        fixed_value: 10
-      mHu2:
-        fixed_value: 15625
-      mHd2:
-        fixed_value: 15625
-      M1:
-        fixed_value: 500
-      M2:
-        fixed_value: 500
-      M3:
-        fixed_value: 500
-      mq2_1:
-        fixed_value: 15625.0
-      mq2_2:
-        fixed_value: 15625.0
-      mq2_3:
-        fixed_value: 15625.0
-      ml2_1:
-        fixed_value: 15625.0
-      ml2_2:
-        fixed_value: 15625.0
-      ml2_3:
-        fixed_value: 15625.0
-      md2_1:
-        fixed_value: 15625.0
-      md2_2:
-        fixed_value: 15625.0
-      md2_3:
-        fixed_value: 15625.0
-      mu2_1:
-        fixed_value: 15625.0
-      mu2_2:
-        fixed_value: 15625.0
-      mu2_3:
-        fixed_value: 15625.0
-      me2_1:
-        fixed_value: 15625.0
-      me2_2:
-        fixed_value: 15625.0
-      me2_3:
-        fixed_value: 15625.0
-      Ae_12:
-        fixed_value: 0
-      Ae_3:
-        fixed_value: 0
-      Ad_3:
-        fixed_value: 0
-      Au_3:
-        fixed_value: 0
+#    MSSM25atQ:
+#      Qin:
+#        fixed_value: 1.9422e+16
+#      SignMu:
+#        fixed_value: 1
+#      TanBeta:
+#        fixed_value: 10
+#      mHu2:
+#        fixed_value: 15625
+#      mHd2:
+#        fixed_value: 15625
+#      M1:
+#        fixed_value: 500
+#      M2:
+#        fixed_value: 500
+#      M3:
+#        fixed_value: 500
+#      mq2_1:
+#        fixed_value: 15625.0
+#      mq2_2:
+#        fixed_value: 15625.0
+#      mq2_3:
+#        fixed_value: 15625.0
+#      ml2_1:
+#        fixed_value: 15625.0
+#      ml2_2:
+#        fixed_value: 15625.0
+#      ml2_3:
+#        fixed_value: 15625.0
+#      md2_1:
+#        fixed_value: 15625.0
+#      md2_2:
+#        fixed_value: 15625.0
+#      md2_3:
+#        fixed_value: 15625.0
+#      mu2_1:
+#        fixed_value: 15625.0
+#      mu2_2:
+#        fixed_value: 15625.0
+#      mu2_3:
+#        fixed_value: 15625.0
+#      me2_1:
+#        fixed_value: 15625.0
+#      me2_2:
+#        fixed_value: 15625.0
+#      me2_3:
+#        fixed_value: 15625.0
+#      Ae_12:
+#        fixed_value: 0
+#      Ae_3:
+#        fixed_value: 0
+#      Ad_3:
+#        fixed_value: 0
+#      Au_3:
+#        fixed_value: 0
 
 ##############################
 # Prior setup
@@ -155,20 +155,24 @@ Printer:
 ##############################
 
 Scanner:
-  use_scanner_plugin: toy_mcmc
+  use_scanner_plugin: mcmc
   
+# Scanners
+#
   plugins:
-    toy_mcmc:
-      point_number: 1
-      output_file:  output
-      like:  Likelihood
+    mcmc:
+      plugin: toy_mcmc
+      options:
+        point_number: 1
+        output_file:  output
+        like:  Likelihood
 
-    random_sampler:
-      point_number: 20
-      output_file:  output
-      like:  Likelihood
-      files:
-      output_file: "weights ..."
+    square_grid:
+      plugin: square_grid
+      verion: ">=1.0"
+      options:
+        purpose: Likelihood
+        grid_pts: 3 #NxN grid
 
 ###############################
 # Observables of interest
@@ -199,12 +203,12 @@ ObsLikes:
     #- purpose:    Likelihood
     #  capability: lnL_oh2
 # LUX direct detection likelihood
-    - capability: lnL_LUX_2013
-      purpose:  Likelihood
+#    - capability: lnL_LUX_2013
+#      purpose:  Likelihood
       
 # This function dumps gamma-ray spectra into a ASCII table file.  The filename
 # is specified as option in the Auxiliaries section.
-    - capability: dump_GammaSpectrum
+#    - capability: dump_GammaSpectrum
 
 
 Auxiliaries:
@@ -215,7 +219,7 @@ Auxiliaries:
   - capability: GA_AnnYield
     function: GA_AnnYield_DarkSUSY
     options:
-        Emin: "test"
+        Emin: 1.
   - capability: dump_GammaSpectrum  # For unit tests: dump gamma-ray spectrum
     dependencies: 
         - capability: GA_AnnYield
@@ -297,6 +301,7 @@ KeyValues:
 
   dependency_resolution:
     prefer_model_specific_functions: true
+    use_old_routines: false
 
   likelihood:
     model_invalid_for_lnlike_below: -1e6
