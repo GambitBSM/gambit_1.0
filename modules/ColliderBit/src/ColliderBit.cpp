@@ -266,12 +266,31 @@ namespace Gambit {
         if (isFinalB(i, pevt)) bhadrons.push_back(mk_pseudojet(p.p()));
 
         // Find last tau in prompt tau replica chains as a proxy for tau-tagging
-        if (isFinalTau(i, pevt) && !fromHadron(i, pevt)) {
-          taus.push_back(mk_pseudojet(p.p()));
-          HEPUtils::Particle* gp = new HEPUtils::Particle(mk_p4(p.p()), p.id());
+        if (isFinalTau(i, pevt)) { //&& !fromHadron(i, pevt)) {
+	  //taus.push_back(mk_pseudojet(p.p()));  //MJW: what is this used for?!
+          //Veto leptonic taus
+	  
+          bool isLeptonicTau=false;
+	  vector<int> tauDaughterList=p.daughterList();
+          P4 tmpMomentum;
+	  for(int daughter=0;daughter<tauDaughterList.size();daughter++){
+	    const Pythia8::Particle& pDaughter = pevt[tauDaughterList[daughter]];
+	    int daughterID=abs(pDaughter.id());
+	    //std::cout << "DAUGHTER ID " << daughterID << std::endl;
+              if(daughterID== 11 || daughterID == 13 || daughterID == 15 || daughterID == 24){
+                isLeptonicTau=true;
+                break;
+              }
+              if(daughterID==16)continue;//do not add tau neutrinos to momentum
+              tmpMomentum+=mk_p4(pDaughter.p());
+          }
+  	  
+    //HEPUtils::Particle* gp = new HEPUtils::Particle(mk_p4(p.p()), p.id());
+	  //std::cout << "PARTICLE PT " << p.pT() << " VIS " << tmpMomentum.pT() << std::endl;
+          HEPUtils::Particle* gp = new HEPUtils::Particle(tmpMomentum, p.id());
           gp->set_prompt();
-          result.add_particle(gp); // Will be automatically categorised
-        }
+          if(!isLeptonicTau)result.add_particle(gp); // Will be automatically categorised
+         } //end of tau if
       }
 
       for (int i = 0; i < pevt.size(); ++i) {
@@ -357,6 +376,38 @@ namespace Gambit {
 
       const auto pevt = (*Dep::HardScatteringSim)->nextEvent();
 
+       // Make a first pass of non-final particles to gather taus
+      for (int i = 0; i < pevt.size(); ++i) {
+        const Pythia8::Particle& p = pevt[i];
+
+        // Find last tau in prompt tau replica chains as a proxy for tau-tagging
+        if (isFinalTau(i, pevt)) { //&& !fromHadron(i, pevt)) {
+
+    // std::cout << "TAU FROM HADRON " << fromHadron(i,pevt) << std::endl;
+
+          //Veto leptonic taus
+          bool isLeptonicTau=false;
+	  vector<int> tauDaughterList=p.daughterList();
+          P4 tmpMomentum;
+	  for(int daughter=0;daughter<tauDaughterList.size();daughter++){
+	    const Pythia8::Particle& pDaughter = pevt[tauDaughterList[daughter]];
+	    int daughterID=abs(pDaughter.id());
+	    //std::cout << "DAUGHTER ID " << daughterID << std::endl;
+              if(daughterID== 11 || daughterID == 13 || daughterID == 15 || daughterID == 24){
+                isLeptonicTau=true;
+                break;
+              }
+              if(daughterID==16)continue;//do not add tau neutrinos to momentum
+              tmpMomentum+=mk_p4(pDaughter.p());
+          }
+  	  //std::cout << "PARTICLE PT " << p.pT() << " VIS " << tmpMomentum.pT() << std::endl;
+          HEPUtils::Particle* gp = new HEPUtils::Particle(tmpMomentum, p.id());
+          gp->set_prompt();
+          if(!isLeptonicTau)result.add_particle(gp); // Will be automatically categorised
+         } //end of tau if
+      }
+
+
       std::vector<fastjet::PseudoJet> jetparticles; //< Pseudojets for input to FastJet
       P4 pout; //< Sum of momenta outside acceptance
 
@@ -431,13 +482,14 @@ namespace Gambit {
       for (const Particle* p : result.invisible_particles())
         pout += p->mom();
       result.set_missingmom(pout);
+ 
     }
 
 
      /// Gambit facing interface function
     void convertPythia8Event(HEPUtils::Event &result) {
-      //convertPythia8PartonEvent(result);
-      convertPythia8ParticleEvent(result);
+      convertPythia8PartonEvent(result);
+    //convertPythia8ParticleEvent(result);
     }
 
 
@@ -532,6 +584,7 @@ namespace Gambit {
           }
           else if (*BEgroup::lnlike_marg_poisson == "lnlike_marg_poisson_gaussian_error") {
             /// Use a Gaussian distribution for the nuisance parameter (marginally faster)
+	    std::cout << "OBS " << n_obs << " PRED " << n_predicted_exact << " UNCERTAIN " << n_predicted_uncertain << " UNCERTAINTY " << uncertainty << std::endl;
             result = BEreq::lnlike_marg_poisson_gaussian_error(n_obs,n_predicted_exact,n_predicted_uncertain,uncertainty);
           }
           cout << "COLLIDER_RESULT " << analysis << " " << SR << " " << result << endl;

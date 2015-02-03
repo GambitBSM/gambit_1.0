@@ -557,27 +557,27 @@ namespace Gambit {
 
              //SRtN3
 
-             (j==11 && cut_1SignalElectron && cut_4jets && cut_Btag && cut_METGt275) ||
+             (j==11 && cut_1SignalElectron && cut_4jets && cut_sigGt5 && cut_dPhiJet2 && cut_dPhiJet1 && cut_Btag && cut_METGt275 ) ||
 
-             (j==12 && cut_1SignalElectron && cut_4jets && cut_Btag && cut_METGt275 && cut_sigGt11) ||
+             (j==12 && cut_1SignalElectron && cut_4jets && cut_sigGt5 && cut_dPhiJet2 && cut_dPhiJet1 && cut_Btag && cut_METGt275 && cut_sigGt11) ||
 
-             (j==13 && cut_1SignalElectron && cut_4jets && cut_Btag && cut_METGt275 && cut_sigGt11 && cut_mTGt200) ||
+             (j==13 && cut_1SignalElectron && cut_4jets && cut_sigGt5 && cut_dPhiJet2 && cut_dPhiJet1 && cut_Btag && cut_METGt275 && cut_sigGt11 && cut_mTGt200) ||
 
              //SRbC1 - SRbC3
 
-             (j==14 && cut_1SignalElectron && cut_4jets && cut_Btag && cut_METGt150) ||
+             (j==14 && cut_1SignalElectron && cut_4jets && cut_sigGt5 && cut_dPhiJet2 && cut_dPhiJet1 && cut_Btag && cut_METGt150) ||
 
-             (j==15 && cut_1SignalElectron && cut_4jets && cut_Btag && cut_METGt150 && cut_sigGt7) ||
+             (j==15 && cut_1SignalElectron && cut_4jets && cut_sigGt5 && cut_dPhiJet2 && cut_dPhiJet1 && cut_Btag && cut_METGt150 && cut_sigGt7) ||
 
-             (j==16 && cut_1SignalElectron && cut_4jets && cut_Btag && cut_METGt150 && cut_sigGt7 && cut_mTGt120) ||
+             (j==16 && cut_1SignalElectron && cut_4jets && cut_sigGt5 && cut_dPhiJet2 && cut_dPhiJet1 && cut_Btag && cut_METGt150 && cut_sigGt7 && cut_mTGt120) ||
 
-             (j==17 && cut_1SignalElectron && cut_4jets && cut_Btag && cut_METGt150 && cut_sigGt7 && cut_mTGt120 && cut_METGt160) ||
+             (j==17 && cut_1SignalElectron && cut_4jets && cut_sigGt5 && cut_dPhiJet2 && cut_dPhiJet1 && cut_Btag && cut_METGt150 && cut_sigGt7 && cut_mTGt120 && cut_METGt160) ||
 
-             (j==18 && cut_1SignalElectron && cut_4jets && cut_Btag && cut_METGt150 && cut_sigGt7 && cut_mTGt120 && cut_METGt160 && cut_sigGt8) ||
+             (j==18 && cut_1SignalElectron && cut_4jets && cut_sigGt5 && cut_dPhiJet2 && cut_dPhiJet1 && cut_Btag && cut_METGt150 && cut_sigGt7 && cut_mTGt120 && cut_METGt160 && cut_sigGt8) ||
 
-             (j==19 && cut_1SignalElectron && cut_4jets && cut_Btag && cut_METGt150 && cut_sigGt7 && cut_mTGt120 && cut_METGt160 && cut_sigGt8 && cut_meffGt550) ||
+             (j==19 && cut_1SignalElectron && cut_4jets && cut_sigGt5 && cut_dPhiJet2 && cut_dPhiJet1 && cut_Btag && cut_METGt150 && cut_sigGt7 && cut_mTGt120 && cut_METGt160 && cut_sigGt8 && cut_meffGt550) ||
 
-             (j==20 && cut_1SignalElectron && cut_4jets && cut_Btag && cut_METGt150 && cut_sigGt7 && cut_mTGt120 && cut_METGt160 && cut_sigGt8 && cut_meffGt700) ||
+             (j==20 && cut_1SignalElectron && cut_4jets && cut_sigGt5 && cut_dPhiJet2 && cut_dPhiJet1 && cut_Btag && cut_METGt150 && cut_sigGt7 && cut_mTGt120 && cut_METGt160 && cut_sigGt8 && cut_meffGt700) ||
 
              //Muon cutflow
 
@@ -605,27 +605,27 @@ namespace Gambit {
 
              //SRtN3
 
-             (j==31 && cut_1SignalMuon && cut_4jets && cut_Btag && cut_METGt275) ||
+             (j==31 && cut_1SignalMuon && cut_4jets && cut_sigGt5 && cut_dPhiJet2 && cut_dPhiJet1 && cut_Btag && cut_METGt275) ||
 
-             (j==32 && cut_1SignalMuon && cut_4jets && cut_Btag && cut_METGt275 && cut_sigGt11) ||
+             (j==32 && cut_1SignalMuon && cut_4jets && cut_sigGt5 && cut_dPhiJet2 && cut_dPhiJet1 && cut_Btag && cut_METGt275 && cut_sigGt11) ||
 
-             (j==33 && cut_1SignalMuon && cut_4jets && cut_Btag && cut_METGt275 && cut_sigGt11 && cut_mTGt200) ||
+             (j==33 && cut_1SignalMuon && cut_4jets && cut_sigGt5 && cut_dPhiJet2 && cut_dPhiJet1 && cut_Btag && cut_METGt275 && cut_sigGt11 && cut_mTGt200) ||
 
              //SRbC1 - SRbC3
 
-             (j==34 && cut_1SignalMuon && cut_4jets && cut_Btag && cut_METGt150) ||
+             (j==34 && cut_1SignalMuon && cut_4jets && cut_sigGt5 && cut_dPhiJet2 && cut_dPhiJet1 && cut_Btag && cut_METGt150) ||
 
-             (j==35 && cut_1SignalMuon && cut_4jets && cut_Btag && cut_METGt150 && cut_sigGt7) ||
+             (j==35 && cut_1SignalMuon && cut_4jets && cut_sigGt5 && cut_dPhiJet2 && cut_dPhiJet1 && cut_Btag && cut_METGt150 && cut_sigGt7) ||
 
-             (j==36 && cut_1SignalMuon && cut_4jets && cut_Btag && cut_METGt150 && cut_sigGt7 && cut_mTGt120) ||
+             (j==36 && cut_1SignalMuon && cut_4jets && cut_sigGt5 && cut_dPhiJet2 && cut_dPhiJet1 && cut_Btag && cut_METGt150 && cut_sigGt7 && cut_mTGt120) ||
 
-             (j==37 && cut_1SignalMuon && cut_4jets && cut_Btag && cut_METGt150 && cut_sigGt7 && cut_mTGt120 && cut_METGt160) ||
+             (j==37 && cut_1SignalMuon && cut_4jets && cut_sigGt5 && cut_dPhiJet2 && cut_dPhiJet1 && cut_Btag && cut_METGt150 && cut_sigGt7 && cut_mTGt120 && cut_METGt160) ||
 
-             (j==38 && cut_1SignalMuon && cut_4jets && cut_Btag && cut_METGt150 && cut_sigGt7 && cut_mTGt120 && cut_METGt160 && cut_sigGt8) ||
+             (j==38 && cut_1SignalMuon && cut_4jets && cut_sigGt5 && cut_dPhiJet2 && cut_dPhiJet1 && cut_Btag && cut_METGt150 && cut_sigGt7 && cut_mTGt120 && cut_METGt160 && cut_sigGt8) ||
 
-             (j==39 && cut_1SignalMuon && cut_4jets && cut_Btag && cut_METGt150 && cut_sigGt7 && cut_mTGt120 && cut_METGt160 && cut_sigGt8 && cut_meffGt550) ||
+             (j==39 && cut_1SignalMuon && cut_4jets && cut_sigGt5 && cut_dPhiJet2 && cut_dPhiJet1 && cut_Btag && cut_METGt150 && cut_sigGt7 && cut_mTGt120 && cut_METGt160 && cut_sigGt8 && cut_meffGt550) ||
 
-             (j==40 && cut_1SignalMuon && cut_4jets && cut_Btag && cut_METGt150 && cut_sigGt7 && cut_mTGt120 && cut_METGt160 && cut_sigGt8 && cut_meffGt700) )
+             (j==40 && cut_1SignalMuon && cut_4jets && cut_sigGt5 && cut_dPhiJet2 && cut_dPhiJet1 && cut_Btag && cut_METGt150 && cut_sigGt7 && cut_mTGt120 && cut_METGt160 && cut_sigGt8 && cut_meffGt700) )
 
 
             cutFlowVector[j]++;

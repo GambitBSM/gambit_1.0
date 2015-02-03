@@ -39,7 +39,7 @@ namespace Gambit {
       // Function that mimics the DELPHES electron efficiency
       // Should be applied after the electron energy smearing
 
-      HEPUtils::BinnedFn2D<double> _elEff2d({{0,1.5,2.5,10.}}, {{0,10.,1000.}},
+      HEPUtils::BinnedFn2D<double> _elEff2d({{0,1.5,2.5,10.}}, {{0,10.,10000.}},
                                             {{0., 0.95, 0., 0.85, 0.,0.}});
 
       // Now loop over the electrons and only keep those that pass the random efficiency cut
@@ -193,6 +193,29 @@ namespace Gambit {
         std::normal_distribution<> d(1.,resolution);
         double smear_factor = d(gen);
         jet->set_mom(P4::mkXYZM(jet->mom().px()*smear_factor, jet->mom().py()*smear_factor, jet->mom().pz()*smear_factor, jet->mass()));
+      }
+    }
+
+    void smearTaus(std::vector<HEPUtils::Particle*>& taus) {
+      // Function that applies jet energy scale to hadronic taus
+      // We need to smear pT, then recalculate E, then reset 4 vector
+      // Basically the same function as above, except it takes a vector of particles
+
+      std::random_device rd;
+      std::mt19937 gen(rd());
+
+      HEPUtils::BinnedFn2D<float> _jetRes({{0,10.}}, {{0,10000.}},
+                                          {{0.03}});
+
+      // Now loop over the taus and smear the 4-vectors
+      for (HEPUtils::Particle* tau : taus) {
+        // Look up resolution
+        double resolution = _jetRes.get_at(tau->abseta(), tau->pT());
+
+        // Smear by a Gaussian centered on 1 with width given by the (fractional) resolution
+        std::normal_distribution<> d(1.,resolution);
+        double smear_factor = d(gen);
+        tau->set_mom(P4::mkXYZM(tau->mom().px()*smear_factor, tau->mom().py()*smear_factor, tau->mom().pz()*smear_factor, tau->mass()));
       }
     }
 
