@@ -172,21 +172,26 @@ compiling with gambit:
    
 linking external libraries:
 
--- If you want to link external libraries to your plugin,
-   include it in config/scanner_locations.yaml or
+-- If you want to link external libraries to your plugin
+   or use an external include path, you may specify
+   these in config/scanner_locations.yaml or
    config/objective_locations.yaml with the line:
    
    my_plugin_name:
-     version: path_to_my_external_library
+     version: 
+       - lib: path_to_my_external_library
+       - inc: my_include_path
      
    for example, in the example above we'd include
    
    my_cool_scanner:
-     0.0.0-beta: ./my_cool_library.so
+     0.0.0-beta: 
+       - lib: ./my_cool_library.so
+       - inc: ./my_cool_path
    
    in config/scanner_locations.yaml.
    
--- To force the plugin to run only if your external library is linked,
+-- Note that if you link to an external library, you must
    include the "external_library_required" flag in the plugin declaration.
    For example, in the example above, the plugin declaration would be:
    

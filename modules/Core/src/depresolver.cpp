@@ -139,6 +139,17 @@ namespace Gambit
       else return false;
     }
 
+    // Get entry level relevant for options
+    int getEntryLevelForOptions(const IniParser::ObservableType &e)
+    {
+      int z = 0;
+      if ( e.module != "" ) z = 1;
+      if ( e.capability != "" ) z = 2;
+      if ( e.type != "" ) z = 3;
+      if ( e.function != "" ) z = 4;
+      return z;
+    }
+
     // Check whether functor matches rules
     bool matchesRules( functor *f, const Rule & rule)
     {
@@ -768,6 +779,7 @@ namespace Gambit
     Options DependencyResolver::collectIniOptions(const DRes::VertexID & vertex)
     {
       YAML::Node nodes;
+      YAML::Node zlevels;
 
       cout << "Searching options for " << masterGraph[vertex]->capability() << endl;
 
@@ -779,13 +791,28 @@ namespace Gambit
         if ( funcMatchesIniEntry(masterGraph[vertex], *it, *boundTEs) )
         {
           cout << "Getting option from: " << it->capability << " " << it->type << endl;
-          Options someOptions = it->options;
           for (auto jt = it->options.begin(); jt != it->options.end(); jt++)
           {
             if ( not nodes[jt->first.as<std::string>()] )
+            {
+              cout << jt->first.as<std::string>() << ": " << jt->second << endl;
               nodes[jt->first.as<std::string>()] = jt->second;
+              zlevels[jt->first.as<std::string>()] = getEntryLevelForOptions(*it);
+            }
             else
-              cout << "WARNING! Ignoring multiple option entries for key: " << jt->first.as<std::string>() << endl;
+            {
+              if ( zlevels[jt->first.as<std::string>()].as<int>() < getEntryLevelForOptions(*it) )
+              {
+                cout << "Replaced : " << jt->first.as<std::string>() << ": " << jt->second << endl;
+                zlevels[jt->first.as<std::string>()] = getEntryLevelForOptions(*it);
+                nodes[jt->first.as<std::string>()] = jt->second;
+              }
+              else if ( zlevels[jt->first.as<std::string>()].as<int>() == getEntryLevelForOptions(*it) )
+              {
+                cout << "ERROR! Multiple option entries with same level for key: " << jt->first.as<std::string>() << endl;
+                exit(-1);
+              }
+            }
           }
         }
       }
@@ -836,7 +863,7 @@ namespace Gambit
       {
         if ( toVertex != OBSLIKE_VERTEXID )
         {
-          if ( funcMatchesIniEntry(masterGraph[toVertex], *it, *boundTEs) )
+          if ( funcMatchesIniEntry(masterGraph[toVertex], *it, *boundTEs) and it->capability != "" )
           {
             for (IniParser::ObservablesType::const_iterator it2 =
             (*it).dependencies.begin(); it2 != (*it).dependencies.end(); ++it2)
@@ -848,7 +875,7 @@ namespace Gambit
             }
           }
         }
-        if ( quantityMatchesIniEntry(quantity, *it) )
+        if ( quantityMatchesIniEntry(quantity, *it) and it->capability != "" )
         {
           rules_2nd_level.push_back(Rule(*it));
         }
@@ -1261,7 +1288,7 @@ namespace Gambit
       for (IniParser::ObservablesType::const_iterator it =
           entries.begin(); it != entries.end(); ++it)
       {
-        if ( funcMatchesIniEntry(masterGraph[toVertex], *it, *boundTEs) )
+        if ( funcMatchesIniEntry(masterGraph[toVertex], *it, *boundTEs) and it->capability != "" )
         {
           auxEntryCandidates.push_back(&(*it));
         }
