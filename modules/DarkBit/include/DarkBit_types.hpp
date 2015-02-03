@@ -241,6 +241,7 @@ namespace Gambit
             {
                 centers.push_back(binCenter(i));
             }
+            return centers;
         }
         const std::vector<double>& getBinValues() const
         {
