@@ -628,7 +628,7 @@ namespace Gambit
       e.set_thrower(f);
       #pragma omp atomic write
       raised_point_exception = &e;
-      if (omp_get_level()!=0) breakLoopFromManagedFunctor();
+      if (omp_get_level()!=0) breakLoop();
     }
 
     /// Retrieve the previously saved exception generated when this functor invalidated the current point in model space.
