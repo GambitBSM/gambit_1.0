@@ -205,6 +205,10 @@ namespace Gambit
         }
         return YAML::LoadFile(node.as<std::string>().c_str());
       }
+
+      /// Return begin and end of options
+      YAML::const_iterator begin() const { return options.begin(); }
+      YAML::const_iterator end() const { return options.end(); }
       
     private:
 
