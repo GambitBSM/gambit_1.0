@@ -38,7 +38,7 @@ def module_census(verbose,install_dir,excludes):
 def same(f1,f2):
     file1 = open(f1,"r")
     file2 = open(f2,"r")
-    for l1,l2 in itertools.izip(file1,file2): 
+    for l1,l2 in itertools.izip_longest(file1,file2,fillvalue=''): 
         if l1 != l2 and not l1.startswith("#  \\date "): return False
     return True
 

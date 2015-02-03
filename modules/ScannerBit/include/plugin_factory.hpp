@@ -46,7 +46,7 @@ namespace Gambit
                         typedef void* func_type(const std::vector<std::string> &, const Priors::BasePrior &, const std::string &);
                         typedef void* multi_func_type(const std::map<std::string, std::vector<std::string>> &, const Priors::BasePrior &, const std::vector<std::string> &);
                         std::unordered_map<type_index, func_type *, Gambit::type_hasher, Gambit::type_equal_to> __functions__;
-                        std::unordered_map<type_index, multi_func_type *, Gambit::type_hasher, Gambit::type_equal_to> __multi_functions__;
+                        std::unordered_map<type_index, multi_func_type *> __multi_functions__;
                 }
                 
                 template <typename T>

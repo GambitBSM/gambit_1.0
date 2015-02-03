@@ -13,5 +13,6 @@
 
 
 Eggbox: 
-  1.0.0:             ./ScannerBit/lib/blahdy.so
+  1.0.0:             
+    -lib: ./ScannerBit/lib/blahdy.so
 
