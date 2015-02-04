@@ -261,7 +261,7 @@ namespace Gambit {
       // Make a first pass of non-final particles to gather b-hadrons and taus
       for (int i = 0; i < pevt.size(); ++i) {
         const Pythia8::Particle& p = pevt[i];
-
+	
         // Find last b-hadrons in b decay chains as the best proxy for b-tagging
         if (isFinalB(i, pevt)) bhadrons.push_back(mk_pseudojet(p.p()));
 
@@ -487,8 +487,8 @@ namespace Gambit {
 
      /// Gambit facing interface function
     void convertPythia8Event(HEPUtils::Event &result) {
-      convertPythia8PartonEvent(result);
-    //convertPythia8ParticleEvent(result);
+    //convertPythia8PartonEvent(result);
+    convertPythia8ParticleEvent(result);
     }
 
 

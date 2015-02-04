@@ -35,7 +35,7 @@ namespace Gambit {
       TH1F *_hNjet30, *_hNjet100, *_hNjet500;
       TH1F *_hNcentraljet30, *_hNcentraljet100, *_hNcentraljet500;
       TH1F *_hNbjet30, *_hNbjet100, *_hNbjet500;
-      TH1F *_hinv, *_hmet;
+      TH1F *_hinv, *_hmet, *_hmet_1_muon, *_hmet_1_electron;
       TH1F *_hinv_truth, *_hmet_truth;
       TH1F *_hElectronPt, *_hElectronEta, *_hElectronPhi, *_hElectronE;
       TH1F *_hTauPt, *_hTauEta, *_hTauPhi, *_hTauE;
@@ -107,6 +107,10 @@ namespace Gambit {
         _hinv_truth = new TH1F("InvTruth", "Z invariant mass (truth);GeV", 100, 0, 200);
 
         _hmet = new TH1F( "MET","MET;GeV", 50, 0, 1000);
+	_hmet_1_muon = new TH1F( "MET_1muon","MET;GeV", 50, 0, 1000);
+	_hmet_1_electron = new TH1F( "MET_1electron","MET;GeV", 50, 0, 1000);
+
+
         _hmet_truth = new TH1F("METTruth", "MET (truth);GeV", 100, 0, 200);
 
         _hElectronPt = new TH1F("ElectronPt", "Electron p_{T};GeV;", 50, 0., 500.);
@@ -218,6 +222,10 @@ namespace Gambit {
 
         // MET
         _hmet->Fill(event->met());
+	
+	if(signalElectrons.size()==1 && signalMuons.size()==0)_hmet_1_electron->Fill(event->met());
+	if(signalMuons.size()==1 && signalElectrons.size()==0)_hmet_1_muon->Fill(event->met());
+
 
         // Electrons
         _hNelec->Fill(signalElectrons.size());
