@@ -53,7 +53,7 @@ namespace Gambit
 #define get_keys()                      GET_KEYS()
 ///Used only if the plugin is doing to be used as a prior.
 ///Sets the sub-hypercube size that is need by the prior.
-#define set_size(size)                  SET_SIZE(size)
+#define set_dimension(...)              SET_DIMENSION(__VA_ARGS__)
 ///Objective plugin declaration.  Is of the form:  objective_plugin(name, version)
 #define objective_plugin(...)           OBJECTIVE_PLUGIN( __VA_ARGS__ )
 ///@}
@@ -61,7 +61,7 @@ namespace Gambit
 #define INIT_KEYS(exp)                  INITIALIZE(exp, GET_KEYS())
 
 #define GET_KEYS()                      get_input_value<std::vector<std::string>>(0)
-#define SET_SIZE(size)                  get_input_value<unsigned int>(1) = size
+#define SET_DIMENSION(...)                  get_input_value<unsigned int>(1) = __VA_ARGS__
 
 #define OBJECTIVE_SETUP                                                                                                 \
 using namespace Gambit::Scanner;                                                                                        \

@@ -9,6 +9,7 @@ int main(int argc, char *argv[])
         bool hdrs = false;
         bool cflags = false;
         bool gnu = true;
+        bool use_boost = false;
         bool compiler_flagged = false;
         
         for (int i = 1; i < argc; i++)
@@ -21,6 +22,10 @@ int main(int argc, char *argv[])
                 else if (arg == "--cflags")
                 {
                         cflags = true;
+                }
+                else if (arg == "--boost")
+                {
+                        use_boost = true;
                 }
                 else if (arg == "--g++" || arg == "--gnu")
                 {
@@ -48,6 +53,7 @@ int main(int argc, char *argv[])
                         << "options:\n"
                         << "    --hdrs, --headers    prints header flags\n"
                         << "    --cflags             prints compiler flags\n"
+                        << "    --boost              use the boost hdrs\n"
                         << "    --g++, --gnu         specifies the g++ compiler (default)\n"
                         << "    --icc, --intel       specifies the icc compiler\n"
                         << "    --help, -h           help\n" << std::endl;
@@ -60,6 +66,7 @@ int main(int argc, char *argv[])
                         << "options:\n"
                         << "    --hdrs, --headers    prints header flags\n"
                         << "    --cflags             prints compiler flags\n"
+                        << "    --boost              use the boost hdrs\n"
                         << "    --g++, --gnu         specifies the g++ compiler (default)\n"
                         << "    --icc, --intel       specifies the icc compiler\n"
                         << "    --help, -h           help\n" << std::endl;
@@ -69,9 +76,16 @@ int main(int argc, char *argv[])
         }
         
         std::string str = " ";
+        
+        if (!use_boost)
+        {
+                str += "-D__NO_PLUGIN_BOOST__ ";
+        }
+        
         if (hdrs)
         {
                 str += "-I" GAMBIT_DIR " "; 
+                str += "-I" GAMBIT_BUILD_DIR " ";
                 str += "-I" GAMBIT_DIR "/Utils/include ";
                 str += "-I" GAMBIT_DIR "/ScannerBit/include ";
                 str += "-I" GAMBIT_DIR "/Logs/include ";

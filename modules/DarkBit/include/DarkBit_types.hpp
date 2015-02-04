@@ -111,6 +111,14 @@ namespace Gambit
                 binLower.push_back(Emin+nBins*dE);
             }
         }
+        // Constructor taking lower bins edges as input.
+        // Last element will be used as upper bin edge for upper bin (Vector with N elements will give N-1 bins).
+        SimpleHist(std::vector<double> binLower) : binLower(binLower)
+        {
+            nBins=int(binLower.size());
+            binVals=std::vector<double>(nBins,0.0);
+            wtSq   =std::vector<double>(nBins,0.0);
+        }
         // Add an entry to histogram
         void addEvent(double E, double weight=1.0)
         {
@@ -124,11 +132,8 @@ namespace Gambit
         // Add an entry to a specified bin
         void addToBin(int bin, double weight=1.0)
         {
-            if(bin<nBins)
-            {
-                binVals[bin]+=weight;
-                wtSq[bin]+=weight*weight;
-            }
+            binVals[bin]+=weight;
+            wtSq[bin]+=weight*weight;
         }
         // Add a box spectrum to the histogram
         void addBox(double Emin, double Emax, double weight=1.0)
@@ -165,6 +170,22 @@ namespace Gambit
                 {
                     addToBin(i,binSize(i)*norm);
                 }
+            }
+        }
+        // Add content of input histogram as weights.
+        // Important: Input histogram MUST have identical binning for this to give correct results.
+        void addHistAsWeights_sameBin(SimpleHist &in)
+        {
+            // Check that the number of bins is equal to avoid segfaults. 
+            // It is up to the user to make sure the actual binning is identical.
+            if(in.nBins != nBins)
+            {
+                std::cout << "Error: SimpleHist::addHistAsWeights_sameBin requires identically binned histograms." << endl;
+                exit(1);     
+            }
+            for(int i=0; i<nBins;i++)
+            {
+                addToBin(i,in.binVals[i]);
             }
         }
         // Get error for a specified bin
@@ -220,6 +241,7 @@ namespace Gambit
             {
                 centers.push_back(binCenter(i));
             }
+            return centers;
         }
         const std::vector<double>& getBinValues() const
         {
@@ -773,6 +795,36 @@ namespace Gambit
       double gns;
       double gpa;
       double gna;
+    };
+
+    //------------------------------------------------------
+    // Structures containing the hadronic matrix elements
+    // (fn=<n|qq|n>) and nucleon spin content (delta q)
+    struct fp
+    {
+      double u;
+      double d;
+      double c;
+      double s;
+      double t;
+      double b;
+    };
+
+    struct fn
+    {
+      double u;
+      double d;
+      double c;
+      double s;
+      double t;
+      double b;
+    };
+
+    struct deltaq
+    {
+      double u;
+      double d;
+      double s;
     };
 
     //------------------------------------------------------

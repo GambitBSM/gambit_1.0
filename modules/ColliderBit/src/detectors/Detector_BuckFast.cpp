@@ -29,27 +29,42 @@ namespace Gambit {
     /// Detector simulation
     class BuckFastSmear : public BuckFastBase {
     public:
-      //@{
+
       virtual void processEvent(const HEPUtils::Event& eventIn, HEPUtils::Event& eventOut) {
         convertInput(eventIn);
+
+        // Electron smearing and efficiency
 
         applyDelphesElectronTrackingEff(_processedEvent->electrons());
         smearElectronEnergy(_processedEvent->electrons());
         applyDelphesElectronEff(_processedEvent->electrons());
 
+        // Muon smearing and efficiency
         applyDelphesMuonTrackEff(_processedEvent->muons());
         smearMuonMomentum(_processedEvent->muons());
         applyDelphesMuonEff(_processedEvent->muons());
 
+        // Apply hadronic tau BR * reco efficiency
+	//MJW remove for now
         applyTauEfficiency(_processedEvent->taus());
+	//Smear taus
+	smearTaus(_processedEvent->taus());
 
+        // Smear jet momenta
         smearJets(_processedEvent->jets());
 
-        /// @todo Unset b-tags outside tracker range
+        // Unset b-tags outside tracker range
+        for (HEPUtils::Jet* j : _processedEvent->jets()) {
+          if (j->abseta() > 2.5) j->set_btag(false);
+        }
 
+	
         convertOutput(eventOut);
+	
       }
-      //@}
+    
+      
+
     };
 
 
@@ -58,7 +73,7 @@ namespace Gambit {
           return create_ ## A()
       IF_X_RTN_CREATEX(BuckFastIdentity);
       IF_X_RTN_CREATEX(BuckFastSmear);
-      throw std::runtime_error(name + " isn't a known Delphes configuration, you empty-headed animal food trough wiper!");
+      throw std::runtime_error(name + " isn't a known BuckFast configuration, you empty-headed animal food trough wiper!");
       return nullptr;
       #undef IF_X_RTN_CREATEX
     }

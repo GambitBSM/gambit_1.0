@@ -28,6 +28,8 @@
   
 scanner_plugin(grid, version(1, 0, 0))
 {
+        reqd_inifile_entries("grid_pts");
+        
         int plugin_main()
         {
                 int ma = get_dimension();

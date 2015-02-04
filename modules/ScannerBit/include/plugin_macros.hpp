@@ -53,7 +53,11 @@
 #define external_library_required(...)  EXTERNAL_LIBRARY_REQUIRED ( __VA_ARGS__ )
 /// Initialized an inifile value when the plugin is loaded.
 #define init_inifile_value(exp, ...)    INIT_INIFILE_VALUE(exp, __VA_ARGS__)
+/// Tells ScannerBit that these tags are required_classloading_backends
+#define reqd_inifile_entries(...) void reqd_inifile_entries()
 /// @}
+
+#define REQD_INIFILE_ENTRIES(...)
 
 #define ARG_N_INTERNAL(_1_, _2_, _3_, _4_, ret, ...) ret
 #define ARG_N(...) ARG_N_INTERNAL(__VA_ARGS__ , 4, 3, 2, 1, 0)
@@ -86,7 +90,7 @@ template <> struct _number_<_struct_ ## libs_present_ ## plugin>{static const in
 template <> struct _number_<_struct_0>{static const int num = 0;};                              \
 template <> struct _number_<_struct_1>{static const int num = 1;};                              \
 template <> struct _number_<_struct_2>{static const int num = 2;};                              \
-int plugin_status(){return _number_<ADD_STRUCT(libs_present_ ## plugin) >::num;}                \
+inline int plugin_status(){return _number_<ADD_STRUCT(libs_present_ ## plugin) >::num;}         \
 
 #define INIT_INIFILE_VALUE(exp, ...)    INITIALIZE(exp, get_inifile_value<decltype(exp)>( __VA_ARGS__ ))
 
@@ -306,8 +310,6 @@ namespace __gambit_plugin_ ## plug_name ##  _namespace__                        
 {                                                                                                                       \
         namespace __gambit_plugin_namespace__                                                                           \
         {                                                                                                               \
-                command(arg)                                                                                            \
-                                                                                                                        \
                 using Gambit::Scanner::Plugins::pluginData;                                                             \
                                                                                                                         \
                 namespace LoadTags                                                                                      \
@@ -317,6 +319,8 @@ namespace __gambit_plugin_ ## plug_name ##  _namespace__                        
                                                                                                                         \
                 namespace                                                                                               \
                 {                                                                                                       \
+                        command(arg)                                                                                    \
+                                                                                                                        \
                         pluginData myData( #plug_name );                                                                \
                                                                                                                         \
                         template <class T>                                                                              \
@@ -379,6 +383,20 @@ namespace __gambit_plugin_ ## plug_name ##  _namespace__                        
                 }                                                                                                       \
                                                                                                                         \
                 return __gambit_plugin_namespace__::myData.node[in].as<T>();                                            \
+        }                                                                                                               \
+                                                                                                                        \
+        YAML::Node get_inifile_node(std::string in)                                                                     \
+        {                                                                                                               \
+                if (!__gambit_plugin_namespace__::myData.node[in])                                                      \
+                {                                                                                                       \
+                        scan_err << "Missing iniFile node \""<< in << "\" needed by a gambit plugin:  \n"               \
+                                << Gambit::Scanner::Plugins::Plugin_Details(#plug_name).printMin()                      \
+                                << scan_end;                                                                            \
+                        YAML::Node node;                                                                                \
+                        return node;                                                                                    \
+                }                                                                                                       \
+                                                                                                                        \
+                return __gambit_plugin_namespace__::myData.node[in];                                                    \
         }                                                                                                               \
                                                                                                                         \
         template <typename T>                                                                                           \

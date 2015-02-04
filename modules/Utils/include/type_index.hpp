@@ -21,12 +21,19 @@
 #include <functional>
 #include <string>
 
+namespace std
+{
+        template<typename _Tp> struct hash;
+        template<typename _Tp> struct equal_to;
+}
+
 namespace Gambit
 {
         struct type_index
         {
         public:
                 friend struct type_equal_to;
+                friend struct std::equal_to<Gambit::type_index>;
                 
                 type_index(const std::type_info& __rhs)
                 : _M_target(&__rhs) { }
@@ -84,9 +91,6 @@ namespace Gambit
 
 namespace std
 {
-        template<typename _Tp> struct hash;
-        template<typename _Tp> struct equal_to;
-        
         template<>
         struct hash<Gambit::type_index>
         {
@@ -98,7 +102,7 @@ namespace std
         struct equal_to<Gambit::type_index>
         {
                 size_t operator()(const Gambit::type_index& lhs, const Gambit::type_index& rhs) const
-                { return lhs == rhs; }
+                { return *lhs._M_target == *rhs._M_target; }
         };
 }
 
