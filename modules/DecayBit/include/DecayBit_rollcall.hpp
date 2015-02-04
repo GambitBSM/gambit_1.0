@@ -35,7 +35,7 @@
 #define MODULE DecayBit
 START_MODULE
 
-
+/*
   #define CAPABILITY testSUSYBRs            // A physical observable or likelihood that this module can calculate.  There may be one or more 
   START_CAPABILITY                          //  functions in this module that can calculate this particular thing in different ways.
 
@@ -45,7 +45,7 @@ START_MODULE
     #undef FUNCTION
 	
   #undef CAPABILITY
-
+*/
 
   #define CAPABILITY Higgs_decay_rates
   START_CAPABILITY

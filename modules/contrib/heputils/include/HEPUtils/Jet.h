@@ -16,7 +16,6 @@ namespace HEPUtils {
 
   /// Simple jet class, encapsulating a momentum 4-vector and with some extra b-tag info
   /// @todo Derive from a PhysObj base class to centralise the momentum handling
-  /// @todo Provide cast operators to P4 and P4*
   class Jet {
 
     /// @name Storage
@@ -40,6 +39,16 @@ namespace HEPUtils {
     /// "Cartesian" constructor
     Jet(double px, double py, double pz, double E, bool isB=false)
       : _p4(px, py, pz, E), _isB(isB) {  }
+
+    //@}
+
+
+    /// @name Implicit casts
+    //@{
+
+    operator const P4& () const { return mom(); }
+
+    operator const P4* () const { return &mom(); }
 
     //@}
 

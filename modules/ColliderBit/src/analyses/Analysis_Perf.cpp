@@ -43,7 +43,6 @@ namespace Gambit {
       TH1F *_hJetPt, *_hJetEta, *_hJetPhi, *_hJetE;
       TH1F *_hCentralJetPt, *_hCentralJetE;
       TH1F *_hBJetPt, *_hBJetEta, *_hBJetPhi, *_hBJetE;
-      /// @todo Taus
 
       std::string _output_filename;
       TFile *_ROOToutFile;
@@ -169,9 +168,7 @@ namespace Gambit {
         vector<Jet*> signalJets;
 
 	// Taus
-
 	vector<Particle*> signalTaus;
-		
         for (Particle* tau : event->taus()) {
           if (tau->pT() > 20. && fabs(tau->eta()) < 2.47) signalTaus.push_back(tau);
         }

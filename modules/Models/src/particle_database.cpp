@@ -72,7 +72,7 @@ namespace Gambit
       add_particle_set("e-", (( 11, 0), ( 13, 0), ( 15, 0)) )
       add_particle_set("e+", ((-11, 0), (-13, 0), (-15, 0)) )
       add_particle_set("nu", (( 12, 0), ( 14, 0), ( 16, 0)) )
-
+      add_particle_set("nubar", (( -12, 0), ( -14, 0), ( -16, 0)) )
 
       // ---- Standard Model flavour eigenstates (context = 1) ----
 
@@ -100,6 +100,9 @@ namespace Gambit
       add_particle("nu_e"  , (12, 1) )
       add_particle("nu_mu" , (14, 1) )
       add_particle("nu_tau", (16, 1) )
+      add_particle("nubar_e"  , (-12, 1) )
+      add_particle("nubar_mu" , (-14, 1) )
+      add_particle("nubar_tau", (-16, 1) )
 
 
       // ---- MSSM sparticle mass eigenstates ---- (TODO to be extended to NMSSM)
@@ -127,6 +130,7 @@ namespace Gambit
       add_particle_set("~e+", ((-1000011, 0), (-1000013, 0), (-1000015, 0),
                                (-2000011, 0), (-2000013, 0), (-2000015, 0)) )
       add_particle_set("~nu", (( 1000012, 0), ( 1000014, 0), ( 1000016, 0)) )
+      add_particle_set("~nubar", ((-1000012, 0), (-1000014, 0), (-1000016, 0)) )
       // Mass-ordered charginos and neutralinos
       add_particle_set("~chi0", (( 1000022, 0), ( 1000023, 0), (1000025, 0), (1000035, 0)) )
       add_particle_set("~chi+", (( 1000024, 0), ( 1000037, 0)) )

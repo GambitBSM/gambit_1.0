@@ -110,43 +110,36 @@ BE_FUNCTION(dsIByieldone, double, (double&, int&, int&, int&), "dsibyieldone_", 
 
 /* Syntax for BE_VARIABLE:
  * BE_VARIABLE([type macro], "[exact symbol name]", "[choose capability name]")  
- * Valid type macros are:
- * GENERAL_VAR([type],[choose variable name])
- * for ordinary variables (int, double, classes).
- * FORTRAN_ARRAY([type], [choose array name], ([lower index, dimension 1],[upper index, dimension 1]), [upper/lower index pairs for higher array dimensions] )
- * for arrays in Fortran backends. 
- * FORT_COMMONB([commonblock struct type], [choose commonblock name])
- * for Fortran commonblocks.
  * */
  
 // TODO: Replace darksusy types with appropriate commonblock representations and use FORT_COMMONB macros here
 
-BE_VARIABLE(GENERAL_VAR(DS_MSSMPAR, mssmpar),   "mssmpar_",   "mssmpar")   // Required to set up e.g. MSSM7
+BE_VARIABLE(DS_MSSMPAR, mssmpar,   "mssmpar_",   "mssmpar")   // Required to set up e.g. MSSM7
 
 // Only read from
-BE_VARIABLE(GENERAL_VAR(DS_MSPCTM, mspctm),     "mspctm_",    "mspctm")    // Mass spectrum
-BE_VARIABLE(GENERAL_VAR(DS_INTDOF, intdof),     "intdof_",    "intdof")    // Particle degrees of freedom
-BE_VARIABLE(GENERAL_VAR(DS_PACODES, pacodes),   "pacodes_",   "pacodes")   // Particles codes (mapped onto mssmpar etc)
+BE_VARIABLE(DS_MSPCTM, mspctm,     "mspctm_",    "mspctm")    // Mass spectrum
+BE_VARIABLE(DS_INTDOF, intdof,     "intdof_",    "intdof")    // Particle degrees of freedom
+BE_VARIABLE(DS_PACODES, pacodes,   "pacodes_",   "pacodes")   // Particles codes (mapped onto mssmpar etc)
 
 // Used in RD_eff_annrate_SUSY_DSprep_func, RD_oh2_general and RD_thresholds_resonances_SingletDM
-BE_VARIABLE(GENERAL_VAR(DS_RDMGEV, rdmgev),     "rdmgev_",    "rdmgev")    // more RD Contains information about coannihilation
+BE_VARIABLE(DS_RDMGEV, rdmgev,     "rdmgev_",    "rdmgev")    // more RD Contains information about coannihilation
 
 // Used in RD_oh2_general and RD_spectrum_SUSY
 // This is only written to for some narrow-width approximation to the SM higgs
-BE_VARIABLE(GENERAL_VAR(DS_WIDTHS, widths),     "widths_",    "widths")    // Particle widths
+BE_VARIABLE(DS_WIDTHS, widths,     "widths_",    "widths")    // Particle widths
 
 // Appears only in RD_oh2_general
-BE_VARIABLE(GENERAL_VAR(DS_RDPTH, rdpth),       "rdpth_",     "rdpth")     // gRD thresholds
-BE_VARIABLE(GENERAL_VAR(DS_RDDOF, rddof),       "rddof_",     "rddof")     // gRD dofs
-BE_VARIABLE(GENERAL_VAR(DS_RDERRORS, rderrors), "rderrors_", "rderrors")   // gRD errors
-BE_VARIABLE(GENERAL_VAR(DS_RDPARS, rdpars),     "rdpars_",    "rdpars")    // gRD Parameters 
-BE_VARIABLE(GENERAL_VAR(DS_RDSWITCH, rdswitch), "rdswitch_",  "rdswitch")  // gRD Switches
-BE_VARIABLE(GENERAL_VAR(DS_RDLUN, rdlun),       "rdlun_",     "rdlun")     // gRD ???
-BE_VARIABLE(GENERAL_VAR(DS_RDPADD, rdpadd),     "rdpadd_",    "rdpadd")    // gRD ???
+BE_VARIABLE(DS_RDPTH, rdpth,       "rdpth_",     "rdpth")     // gRD thresholds
+BE_VARIABLE(DS_RDDOF, rddof,       "rddof_",     "rddof")     // gRD dofs
+BE_VARIABLE(DS_RDERRORS, rderrors, "rderrors_", "rderrors")   // gRD errors
+BE_VARIABLE(DS_RDPARS, rdpars,     "rdpars_",    "rdpars")    // gRD Parameters 
+BE_VARIABLE(DS_RDSWITCH, rdswitch, "rdswitch_",  "rdswitch")  // gRD Switches
+BE_VARIABLE(DS_RDLUN, rdlun,       "rdlun_",     "rdlun")     // gRD ???
+BE_VARIABLE(DS_RDPADD, rdpadd,     "rdpadd_",    "rdpadd")    // gRD ???
 
-BE_VARIABLE(GENERAL_VAR(DS_IBINTVARS,IBintvars),"ibintvars_", "IBintvars") // IB stuff
+BE_VARIABLE(DS_IBINTVARS,IBintvars,"ibintvars_", "IBintvars") // IB stuff
 
-BE_VARIABLE(FORTRAN_COMMONBLOCK(DS_DDCOM, ddcom),"ddcom_",    "ddcom")
+BE_VARIABLE(DS_DDCOM, ddcom, "ddcom_",    "ddcom")
 
 //BE_INI_DEPENDENCY(MSSMspectrum, eaSLHA)
 BE_INI_CONDITIONAL_DEPENDENCY(MSSMspectrum, eaSLHA, CMSSM_demo, CMSSM, MSSM25atQ)
@@ -198,9 +191,9 @@ BE_INI_FUNCTION
     }
 
     // Setting nuclear spin/quark content to micromegas values:
-    *ddcom->deld = -0.427;
-    *ddcom->delu = 0.842;
-    *ddcom->dels = -0.085;
+    ddcom->deld = -0.427;
+    ddcom->delu = 0.842;
+    ddcom->dels = -0.085;
 
     ddcom->ftp(7) = 0.0153;
     ddcom->ftp(8) = 0.0191;
