@@ -194,7 +194,7 @@ namespace Gambit
   template<int limL, int limU, int... lims>
   struct Farray_nElem
   {
-    enum{val= (limU-limL+1)*Farray_nElem<lims...>::val};
+    enum{val= (limU-limL+1)*Farray_nElem<lims... >::val};
     static_assert(limU>limL, "Farray error: Upper array index limit is lower than lower limit.");
   };
   template<int limL, int limU>
@@ -213,7 +213,7 @@ namespace Gambit
   {
     public:
       static_assert(sizeof...(lims)%2==0,    "Farray error: Odd number of index limits.");      
-      typedef Farray_nElem<lims...> nElem;
+      typedef Farray_nElem<lims... > nElem;
       T array[nElem::val]; 
       template <typename ... Args>
       T& operator () (Args ... a)
@@ -223,7 +223,7 @@ namespace Gambit
         int limits[] = {lims...};
         int idx = 0;
         // Calculate index for array access
-        for (int i = 0; i < (sizeof...(lims)/2); ++i) 
+        for (int i = 0; i < int(sizeof...(lims)/2); ++i) 
         {
           int idx_i = indices[i];
           if(idx_i<limits[2*i] || idx_i>limits[2*i+1])
@@ -259,7 +259,7 @@ namespace Gambit
         }             
         return array[idx];   
       }
-      Farray<T,lims...>& operator= (const Farray<T,lims...> &orig)
+      Farray<T,lims... >& operator= (const Farray<T,lims... > &orig)
       {
         if (this == &orig) return *this;
         for (int i=0; i<nElem::val; ++i) 
@@ -339,7 +339,7 @@ namespace Gambit
   /// Syntax: FstringArray<[string length], [lower index, dim 1], [upper index, dim 1], [alternating lower/upper indices for subsequent dimensions]>
   /// DO NOT UNDER ANY CIRCUMSTANCE add new member variables to this class!   
   template <int len, int... lims>
-  class FstringArray : public Farray<char,1,len, lims...>
+  class FstringArray : public Farray<char,1,len, lims... >
   {
     public:
       template <typename ... Args>
@@ -350,7 +350,7 @@ namespace Gambit
         int limits[] = {1,len,lims...};
         int idx = 0;
         // Calculate index for array access
-        for (int i = 0; i < ((sizeof...(lims)+2)/2); ++i) 
+        for (int i = 0; i < int((sizeof...(lims)+2)/2); ++i) 
         {
           int idx_i = indices[i];
           if(idx_i<limits[2*i] || idx_i>limits[2*i+1])
@@ -362,7 +362,7 @@ namespace Gambit
           for (int j=0; j<i; j++) idx_i *= (limits[2*j+1]-limits[2*j]+1);
           idx += idx_i;
         }   
-        return *reinterpret_cast<Fstring<len>*>(&Farray<char,1,len, lims...>::array[idx]);  
+        return *reinterpret_cast<Fstring<len>*>(&Farray<char,1,len, lims... >::array[idx]);  
       }     
   };
   
