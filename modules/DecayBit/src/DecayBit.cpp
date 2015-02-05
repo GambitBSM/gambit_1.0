@@ -30,6 +30,7 @@ namespace Gambit
     /// \name DecayBit module functions
     /// @{
 
+    /*
     void decayTest (double &result) 
     {
       using namespace Pipes::decayTest;
@@ -37,6 +38,7 @@ namespace Gambit
       result = *BEreq::top2body->brtopbw; 
       cout << "top 2 body Br's: " << BEreq::top2body->brtopbw << endl;
     }
+    */
 
     /// Calculate decay rates for Higgs in the SM
     void SMHiggs_decays (DecayTable::Entry& result) 

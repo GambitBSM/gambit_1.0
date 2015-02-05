@@ -54,18 +54,11 @@ BE_FUNCTION(byRefExample2, void, (double&, double), "_Z13byRefExample2Rdd", "ref
 
 
 /* Syntax for BE_VARIABLE:
- * BE_VARIABLE([type macro], "[exact symbol name]", "[choose capability name]")  
- * Valid type macros are:
- * GENERAL_VAR([type],[choose variable name])
- * for ordinary variables (int, double, classes).
- * FORTRAN_ARRAY([type], [choose array name], ([lower index, dimension 1],[upper index, dimension 1]), [upper/lower index pairs for higher array dimensions] )
- * for arrays in Fortran backends. 
- * FORT_COMMONB([commonblock struct type], [choose commonblock name])
- * for Fortran commonblocks.
+ * BE_VARIABLE([type], "[exact symbol name]", "[choose capability name]")  
  * */
 
-BE_VARIABLE(GENERAL_VAR(int,SomeInt), "someInt", "SomeInt")
-BE_VARIABLE(GENERAL_VAR(double,SomeDouble), "someDouble", "SomeDouble")
+BE_VARIABLE(int, SomeInt, "someInt", "SomeInt")
+BE_VARIABLE(double,SomeDouble, "someDouble", "SomeDouble")
 
 /* We have now created the following:
  *

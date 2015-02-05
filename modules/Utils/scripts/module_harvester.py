@@ -67,7 +67,7 @@ def main(argv):
     # List of headers NOT to search (things we know are not module rollcall headers or module type headers, 
     # but are included in module_rollcall.hpp or types_rollcall.hpp)
     exclude_header.update(["shared_types.hpp", "backend_macros.hpp", "backend_undefs.hpp", "identification.hpp",
-                           "backend_type_macros.hpp", "yaml.h"])
+                           "yaml.h"])
 
     # List of types not to bother looking for the definitions of.
     intrinsic_types=set(["char", "bool", "short", "int", "long", "float", "double", "std::string"])

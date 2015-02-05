@@ -314,63 +314,65 @@ namespace Gambit
 
     }
 
-    double testFunc(Farray<double,1>&)
-    {
-        return 0.0;
-    }
-
     void do_Farray_stuff (double &result)
     {
       using namespace Pipes::do_Farray_stuff;
       using std::cout;
       using std::endl;
-
-      typedef double(*fptrType1)(Farray<double,1>&);
-      typedef void (*fptrType2)(Gambit::Farray <double,1>& ,int& ,fptrType1);
+      libFarrayTest_CB_type  *commonBlock  = &(*BEreq::libFarrayTestCommonBlock);
+      libFarrayTest_CB2_type *commonBlock2 = &(*BEreq::libFarrayTestCommonBlock2);
 
       cout << "do_Farray_stuff has been summoned!" << endl;
-      cout << "Ph'nglui mglw'nafh Cthulhu R'lyeh wgah'nagl fhtagn" << endl << endl;
+      cout << "Ph'nglui mglw'nafh Cthulhu R'lyeh wgah'nagl fhtagn" << endl;
+      cout << "Calling fillArrays to reset array contents" << endl;
+      BEreq::libFarrayTest_fillArrays();
       cout << "Calling printStuff..." << endl;
       BEreq::libFarrayTest_printStuff();
-      cout << "Calling set_d() to fill values in 3-dimensional array d..." << endl;
-      BEreq::libFarrayTest_set_d();
-      cout << "Calling printStuff again..." << endl;
-      BEreq::libFarrayTest_printStuff();
       cout << "Setting d(2,0,-1) = 99 and d(1,1,0) = 77 " << endl;
-      libFarrayTest_CB_type commonBlock = *BEreq::libFarrayTestCommonBlock;
-      commonBlock.d(2,0,-1) = 99;
-      commonBlock.d(1,1,0) = 77;
+      commonBlock->d(2,0,-1) = 99;
+      commonBlock->d(1,1,0) = 77;
       cout << "Calling printStuff again..." << endl;
       BEreq::libFarrayTest_printStuff();
 
-      cout << endl << "Calling doubleFunc with argument 100.10..." << endl;
-      double tmp = 100.10;
-      double tmp2 = BEreq::libFarrayTest_doubleFunc(tmp);
-      cout << "Returned value: " << tmp2 << endl;
-
-      cout << endl << "Retrieving pointer to doubleFuncArray1..." << endl;
-      double(*function_pointer)(Farray<double,1>&) = BEreq::libFarrayTest_doubleFuncArray1.pointer();
-      cout << "Calling doubleFuncArray1 with commonblock element a as argument..." << endl;
-      tmp = function_pointer(commonBlock.a);
+      cout << endl << "Retrieving pointer to doubleFuncArray..." << endl;
+      double(*function_pointer)(double*) = BEreq::libFarrayTest_doubleFuncArray.pointer();
+      cout << "Calling doubleFuncArray with commonblock element a as argument..." << endl;
+      double tmp = function_pointer(commonBlock->a.array);
       cout << "Returned value: " << tmp << endl;
+      
+      // Note: byVal is necessary to convert lvalue to rvalue
+      cout << endl << "Calling fptrRoutine with commonblock elements a and c and function doubleFuncArray as arguments..." << endl;
+      BEreq::libFarrayTest_fptrRoutine(commonBlock->a.array,commonBlock->c,byVal(function_pointer));
+      // If we instead pass BEreq::libFarrayTest_doubleFuncArray2.pointer() directly, byVal is not necessary
+      //cout << endl << "Calling fptrRoutine with commonblock elements a and c and function doubleFuncArray as arguments..." << endl;
+      //BEreq::libFarrayTest_fptrRoutine(commonBlock->a.array,commonBlock->c,BEreq::libFarrayTest_doubleFuncArray2.pointer());
 
-      cout << endl << "Retrieving pointer to fptrRoutine..." << endl;
-      fptrType2 function_pointer2 = BEreq::libFarrayTest_fptrRoutine.pointer();
+      cout << "Playing around with commmonBlock2:" << endl;
+      
+      cout << "Reading charb(3) with and without trailing spaces. Result:" << endl;
+      std::string trail   = commonBlock2->charb(3).str();    
+      std::string noTrail = commonBlock2->charb(3).trimmed_str();
+      cout << trail   << "<-- string ends here" << endl;        
+      cout << noTrail << "<-- string ends here" << endl << endl; 
 
-      cout << endl << "Calling fptrRoutine with commonblock elements a and c and function doubleFuncArray1 as arguments..." << endl;
-      function_pointer2(commonBlock.a,*commonBlock.c,function_pointer);
+      cout << "Reading the elements of charc from c++:" << endl;   
+      cout << "(1,-1):" << commonBlock2->charc(1,-1).trimmed_str() << "  (1,0):" << commonBlock2->charc(1,0).trimmed_str() << endl;  
+      cout << "(2,-1):" << commonBlock2->charc(2,-1).trimmed_str() << "  (2,0):" << commonBlock2->charc(2,0).trimmed_str() << endl << endl;
+       
+      cout << "Setting charc(2,0) = chara." << endl;
+      commonBlock2->charc(2,0)=commonBlock2->chara;
+      cout << "Setting charc(1,-1) = \"WIN!567\", which will be truncated." << endl;
+      commonBlock2->charc(1,-1) = "WIN!567";      
+      cout << "Setting charb(1) = \"ha!\"." << endl;      
+      commonBlock2->charb(1) = "ha!";
+      cout << "Setting charb(2) = chara." << endl;      
+      commonBlock2->charb(2) = commonBlock2->chara;
+            
+      cout << "Calling printStuff..." << endl;
+      BEreq::libFarrayTest_printStuff();      
 
-      cout << endl << "Calling fptrRoutine with commonblock elements a and c and function doubleFuncArray2 as arguments..." << endl;
-      BEreq::libFarrayTest_fptrRoutine(commonBlock.a,*commonBlock.c,BEreq::libFarrayTest_doubleFuncArray2.pointer());
-
-      // Uncomment to pass an illegal function pointer (a function pointer with no fortran equivalent registered in frontBackFuncMap)
-      //double (*function_pointer3)(Farray<double,1>&) = testFunc;
-      //cout << endl << "Calling fptrRoutine commonblock elements a and c and an illegal function as arguments..." << endl;
-      //function_pointer2(commonBlock.a,*commonBlock.c,function_pointer3);
-
-      // Will not compile without the byVal convertor.
-      cout << endl << "Calling fptrRoutine with commonblock elements a and c and function doubleFuncArray1 as arguments in a way that fails without byVal..." << endl;
-      BEreq::libFarrayTest_fptrRoutine(commonBlock.a,*commonBlock.c,byVal(function_pointer));
+      cout << "Getting value of e:" << endl;      
+      cout << commonBlock2->e << endl;
 
       result = 1.0;
 
