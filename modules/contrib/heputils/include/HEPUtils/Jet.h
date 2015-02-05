@@ -43,6 +43,16 @@ namespace HEPUtils {
     //@}
 
 
+    /// @name Implicit casts
+    //@{
+
+    operator const P4& () const { return mom(); }
+
+    operator const P4* () const { return &mom(); }
+
+    //@}
+
+
     /// @name Momentum
     //@{
 

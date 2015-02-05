@@ -139,7 +139,7 @@ objective_plugin(flat_prior, version(1, 0, 0))
         plugin_constructor
         {
                 keys = get_keys();
-                set_size(keys.size());
+                set_dimension(keys.size());
                 range = get_inifile_value<decltype(range)>("range", decltype(range)(0.0, 1.0));
         }
         

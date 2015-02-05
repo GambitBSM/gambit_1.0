@@ -173,6 +173,7 @@ namespace Gambit {
           }
         }
 
+
         // Overlap removal
         vector<Particle*> signalElectrons;
         vector<Particle*> signalMuons;
@@ -203,19 +204,10 @@ namespace Gambit {
           }
         }
 
-
         //Put signal jets in pT order
         std::sort(signalJets.begin(), signalJets.end(), sortByPT);
         std::sort(signalBJets.begin(), signalBJets.end(), sortByPT);
         std::sort(signalNonBJets.begin(), signalNonBJets.end(), sortByPT);
-
-        std::cout << "JET PT ";
-        //Test jet ordering
-        for(Jet * jet : signalJets){
-          std::cout << jet->pT() << " ";
-        }
-        std::cout << std::endl;
-
 
         for (Particle* electron : baselineElectrons) {
           signalElectrons.push_back(electron);
@@ -236,6 +228,8 @@ namespace Gambit {
         bool cut_LeptonVeto=true;
         if((nElectrons + nMuons)>0.)cut_LeptonVeto=false;
 
+	std::cout << "Analysing e" << std::endl;
+
         //Calculate dphi(jet,met) for the three leading jets
         bool cut_dPhiJets=false;
         bool cut_dPhiJet3=false;
@@ -252,6 +246,8 @@ namespace Gambit {
         if(dphi_jetmet2>3.14/fabs(5.0))cut_dPhiJet2=true;
         if(dphi_jetmet1>3.14/fabs(5.0))cut_dPhiJet1=true;
         if(cut_dPhiJet1 && cut_dPhiJet2 && cut_dPhiJet3)cut_dPhiJets=true;
+
+	std::cout << "Analysing f" << std::endl;
 
         //Number of b jets
         bool passBJetCut=false;
@@ -273,6 +269,8 @@ namespace Gambit {
           }
         }
 
+	std::cout << "Analysing g" << std::endl;
+
         float mT_bjetmet_min = 0;
         if(passBJetCut) mT_bjetmet_min = sqrt(2*signalBJets.at(whichb)->pT()*met*(1-std::cos(dphi_bjetmet_min)));
 
@@ -291,7 +289,8 @@ namespace Gambit {
             whichb_max=j;
           }
         }
-
+	
+	std::cout << "Analysing h" << std::endl;
 
         float mT_bjetmet_max = 0;
         if(passBJetCut) mT_bjetmet_max = sqrt(2*signalBJets.at(whichb_max)->pT()*met*(1-std::cos(dphi_bjetmet_max)));
@@ -647,6 +646,7 @@ namespace Gambit {
         if(isSRC1)_numSRC1++;
         if(isSRC2)_numSRC2++;
         if(isSRC3)_numSRC3++;
+
 
         return;
 

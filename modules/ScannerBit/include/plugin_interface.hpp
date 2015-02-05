@@ -62,7 +62,7 @@ namespace Gambit
                                 Plugin_Interface(const std::string &type, const std::string &name, const plug_args&... inputs) : tag(name)
                                 {
                                         Plugin_Interface_Details details = plugin_info(type, name);
-                                        plugin = dlopen (details.library_path.c_str(), RTLD_LAZY);
+                                        plugin = dlopen (details.path.c_str(), RTLD_LAZY);
                                         
                                         input_variadic_vector(input, inputs...);
                                         
@@ -91,7 +91,7 @@ namespace Gambit
                                         }
                                         else
                                         {
-                                                scan_err << "Cannot load " << details.library_path << ":  " << dlerror() << scan_end;
+                                                scan_err << "Cannot load " << details.path << ":  " << dlerror() << scan_end;
                                                 plugin = 0;
                                         }
                                 }

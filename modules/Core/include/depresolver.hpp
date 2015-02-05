@@ -154,6 +154,9 @@ namespace Gambit
         /// Resolution of individual module function dependencies
         DRes::VertexID resolveDependencyFromRules(const DRes::VertexID & toVertex, const sspair & quantity);
 
+        /// Derive options from ini-entries
+        Options collectIniOptions(const DRes::VertexID & vertex);
+
         /// Generate full dependency tree
         void generateTree(std::queue<QueueEntry> parQueue);
 

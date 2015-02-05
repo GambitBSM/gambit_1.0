@@ -15,14 +15,25 @@
 ///
 ///  *********************************************
 
-#include "backend_type_macros.hpp"
+#include "util_types.hpp"
 
 #ifndef __SUSYHIT_types_hpp__
 #define __SUSYHIT_types_hpp__
 
-// IMPORTANT: No commas between the FORTRAN_ARRAY and GENERAL_VAR macros
-DECLARE_FORTRAN_COMMONBLOCK(top2body_CB_type, GENERAL_VAR(double,brtopbw)                      \
-                                              GENERAL_VAR(double,brtopbh)                      \
-                                              FORTRAN_ARRAY(double,brtopneutrstop,(1,4),(1,2)) )   
+namespace Gambit
+{
+    // CsB hand made >
+    struct top2body_CB_type
+    {
+        double brtopbw;
+        double brtopbh;
+        Farray<double, 1,4, 1,2> brtopneutrstop;
+    };
+    // CsB hand made <
+
+    // CsB from Anders' Python script >
+
+    // CsB from Anders' Python script <
+}
 
 #endif // defined __SUSYHIT_types_hpp__

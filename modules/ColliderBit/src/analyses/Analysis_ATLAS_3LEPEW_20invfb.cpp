@@ -267,7 +267,7 @@ namespace Gambit {
               P4 elVec1=signalElectrons.at(iEl1)->mom();
               P4 elVec2=signalElectrons.at(iEl2)->mom();
               double invMass=(elVec1+elVec2).m();
-              std::cout << "Electron INVMASS " << invMass << std::endl;
+
               if(invMass>12.){
                 massesOfSFOSPairs.push_back(invMass);
               }
@@ -285,7 +285,7 @@ namespace Gambit {
               P4 muVec1=signalMuons.at(iMu1)->mom();
               P4 muVec2=signalMuons.at(iMu2)->mom();
               double invMass=(muVec1+muVec2).m();
-              std::cout << "Muon INVMASS " << invMass << std::endl;
+
               if(invMass>12.){
                 massesOfSFOSPairs.push_back(invMass);
               }
@@ -321,7 +321,6 @@ namespace Gambit {
                 double dR=elVec1.deltaR_eta(elVec2);
                 if(fabs(dR)<=0.3){
                   separationCut=false;
-                  std::cout << "Failed ele-ele separation cut: " << iEl1 << " " << iEl2 << std::endl;
                 }
               }
             }
@@ -335,7 +334,6 @@ namespace Gambit {
               double dR=elVec1.deltaR_eta(muVec1);
               if(fabs(dR)<=0.3){
                 separationCut=false;
-                std::cout << "Failed ele-muo separation cut: " << iEl1 << " " << iMu1 << std::endl;
               }
             }
           }
@@ -349,13 +347,11 @@ namespace Gambit {
                 double dR=muVec1.deltaR_eta(muVec2);
                 if(fabs(dR)<=0.3){
                   separationCut=false;
-                  std::cout << "Failed muo-muo separation cut: " << iMu1 << " " << iMu2 << std::endl;
                 }
               }
             }
           }
         }
-
 
 
         //Lepton pT trigger cuts
@@ -462,6 +458,7 @@ namespace Gambit {
 
         }
 
+
         //Now calculate trilepton invariant mass
         float m3l=0;
         if(signalLeptons.size()==3)m3l=(signalLeptons.at(0)->mom()+signalLeptons.at(1)->mom()+signalLeptons.at(2)->mom()).m();
@@ -534,6 +531,7 @@ namespace Gambit {
           }
         }
 
+
         bool leptonPTCut_SR0taub=true;
         for(unsigned int iLep=0;iLep<signalLeptons.size();iLep++){
           if(signalLeptons[iLep]->pT()<20.)leptonPTCut_SR0taub=false;
@@ -549,7 +547,7 @@ namespace Gambit {
         //We need one tau and two light leptons with opposite sign to the tau
         bool leptonTypeCut_SR1tau=false;
         float mltau=9999;
-        std::cout << "NUMTAUS " << numTaus << std::endl;
+
         if(numTaus==1 && (numElectrons+numMuons)==2 && (signalLeptons[0]->pid() * signalLeptons[1]->pid())>0){
           leptonTypeCut_SR1tau=true;
 
@@ -618,7 +616,6 @@ namespace Gambit {
 
         if(numTaus==2 && (numElectrons + numMuons)==1 && trigger && mSFOS12Cut && atLeastOneEorMu && separationCut && bJets.size()==0 && met > 50. && mT2max > 100.)_num_SR2tau_a++;
 
-
         //Finally do SR2taub
         float mtautau=0;
         if(numTaus==2)mtautau=(signalTaus[0]->mom()+signalTaus[1]->mom()).m();
@@ -679,7 +676,7 @@ namespace Gambit {
         cutFlowVector_str[49] = "SR2taub: mtautau ";
         cutFlowVector_str[50] = "SR2taub: Sum of tau pT ";
 
-        if(signalLeptons.size()==3 && trigger && atLeastOneEorMu)std::cout << "LEPTONID " << signalLeptons[0]->pid() << " " << signalLeptons[1]->pid() << " " << signalLeptons[2]->pid() << " mSFOS12Cut " << mSFOS12Cut << " LEPTONTYPE " << leptonTypeCut_SR0taub << std::endl;
+        //if(signalLeptons.size()==3 && trigger && atLeastOneEorMu)std::cout << "LEPTONID " << signalLeptons[0]->pid() << " " << signalLeptons[1]->pid() << " " << signalLeptons[2]->pid() << " mSFOS12Cut " << mSFOS12Cut << " LEPTONTYPE " << leptonTypeCut_SR0taub << std::endl;
 
         for(int j=0;j<NCUTS;j++){
           if( (j==0) ||
@@ -795,6 +792,7 @@ namespace Gambit {
               )cutFlowVector[j]++;
 
         }
+
 
         return;
       }

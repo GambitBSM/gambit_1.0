@@ -24,7 +24,7 @@ BE_FUNCTION(sortOddParticles, int, (char*), "sortOddParticles","mass_spectrum")
 BE_FUNCTION(nucleonAmplitudes, int, (double(*)(double,double,double,double), double*, double*, double*, double*), "nucleonAmplitudes", "nucleonAmplitudes" )
 BE_FUNCTION(FeScLoop, double, (double, double, double, double), "FeScLoop", "FeScLoop")
 
-BE_VARIABLE(GENERAL_VAR(micrOMEGAs::MOcommonSTR, mocommon_), "mocommon_", "MOcommon")
+BE_VARIABLE(micrOMEGAs::MOcommonSTR, mocommon_, "mocommon_", "MOcommon")
 
 BE_INI_DEPENDENCY(MSSMspectrum, eaSLHA)
 

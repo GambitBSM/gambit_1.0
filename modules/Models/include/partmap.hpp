@@ -56,11 +56,17 @@ namespace Gambit
         /// Retrieve the long name, from the PDG code and context integer 
         str long_name(std::pair<int, int>);
 
+        /// Retrieve the long name, from the PDG code and context integer
+        str long_name(int,int=0); // Is default value a bad idea?
+
         /// Retrieve the short name and index, from the long name 
         std::pair<str, int> short_name_pair(str);
 
         /// Retrieve the short name and index, from the PDG code and context integer 
         std::pair<str, int> short_name_pair(std::pair<int, int>);
+
+        /// Retrieve the short name and index, from the PDG code and context integer
+        std::pair<str, int> short_name_pair(int,int=0); // Is default value a bad idea?
 
         /// Check if a particle is in the database, using the long name 
         bool has_particle(str);
@@ -76,6 +82,9 @@ namespace Gambit
 
         /// Check if a particle has a short name, using the PDG code and context integer 
         bool has_short_name(std::pair<int, int>);
+
+        /// For debugging: use to check the contents of the particle database
+        void check_contents();
 
       private:
           

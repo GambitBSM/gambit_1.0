@@ -44,6 +44,7 @@ set(scanner_plugin_sources
                  src/scanners/toy_mcmc.cpp
                  src/scanners/random_sampler.cpp
                  src/scanners/twalk.cpp
+                 src/scanners/multinest.cpp
 )
 
 set(scanner_plugin_headers
@@ -63,8 +64,13 @@ add_gambit_library(ScannerBit OPTION OBJECT SOURCES ${scannerbit_sources} HEADER
 add_gambit_library(sample OPTION SHARED SOURCES ${scanner_plugin_sources} HEADERS ${scanner_plugin_headers})
 add_gambit_library(scantest OPTION SHARED SOURCES ${scanner_objective_sources})
 add_gambit_executable(scanlibs SOURCES ${scanner_scanlibs_sources})
+
 set_target_properties( sample scantest scanlibs
                        PROPERTIES
+                       INSTALL_RPATH "/home/gmartine"
+                       LINK_FLAGS "-L/home/gmartine -ltest"
                        ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/lib"
                        LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/lib"
                        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin")
+                       
+#target_link_libraries( sample -L/home/gmartine -ltest)

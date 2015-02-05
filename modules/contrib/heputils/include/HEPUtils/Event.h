@@ -113,23 +113,25 @@ namespace HEPUtils {
     }
 
 
-    /// Add a final state particle to the event
-    /// @todo Clarify ownership/lifetimes -- owned by outside code, or *to be cleaned up by the event on deletion*? THE LATTER
-    /// @todo What about taus and Bs?
+    /// Add a particle to the event
+    ///
+    /// Supplied particle should be new'd, and Event will take ownership.
+    ///
     /// @todo "Lock" at some point so that jet finding etc. only get done once
     void add_particle(Particle* p) {
       if (p->is_prompt()) {
         if (p->pid() == 22) _photons.push_back(p);
-        if (abs(p->pid()) == 11) _electrons.push_back(p);
-        if (abs(p->pid()) == 13) _muons.push_back(p);
-        if (abs(p->pid()) == 15) _taus.push_back(p);
-        if (abs(p->pid()) == 12 || abs(p->pid()) == 14 || abs(p->pid()) == 16 || abs(p->pid()) == 1000022) _invisibles.push_back(p);
+        if (p->abspid() == 11) _electrons.push_back(p);
+        if (p->abspid() == 13) _muons.push_back(p);
+        if (p->abspid() == 15) _taus.push_back(p);
+        if (p->abspid() == 12 || p->abspid() == 14 || p->abspid() == 16 || p->pid() == 1000022) _invisibles.push_back(p);
       }
     }
 
 
     /// Add a collection of final state particles to the event
-    /// @todo Should be vector<const Particle*>?
+    ///
+    /// Supplied particles should be new'd, and Event will take ownership.
     void add_particles(const std::vector<Particle*>& ps) {
       for (size_t i = 0; i < ps.size(); ++i) add_particle(ps[i]);
     }
@@ -137,6 +139,7 @@ namespace HEPUtils {
 
     /// Get all final state particles
     /// @todo Note the return by value: it's not efficient yet!
+    /// @note Overlap of taus and e/mu
     std::vector<Particle*> particles() const {
       // Add together all the vectors of the different particle types
       std::vector<Particle*> rtn;
@@ -158,6 +161,7 @@ namespace HEPUtils {
 
     /// Get visible state particles
     /// @todo Note the return by value: it's not efficient yet!
+    /// @note Overlap of taus and e/mu
     std::vector<Particle*> visible_particles() const {
       // Add together all the vectors of the different particle types
       std::vector<Particle*> rtn;

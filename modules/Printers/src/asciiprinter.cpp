@@ -412,3 +412,6 @@ is a unique record for every rank/pointID pair.";
      
   } // end namespace printers
 } // end namespace Gambit
+
+#undef DBUG
+#undef DEBUG_MODE

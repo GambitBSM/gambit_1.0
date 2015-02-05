@@ -2,7 +2,7 @@
 //   *********************************************
 ///  \file
 ///
-///  Exception class definitions.
+///  Threadsafe exception class definitions.
 ///
 ///  *********************************************
 ///
@@ -164,29 +164,47 @@ namespace Gambit
     }
 
     /// Setter for the fatal flag.
-    void exception::set_fatal(bool fatal) { isFatal = fatal; }
+    void exception::set_fatal(bool fatal)
+    {
+      #pragma omp critical (GABMIT_exception)
+      {
+        isFatal = fatal;
+      }
+    }
 
     /// Retrieve the identity of the exception.
-    const char* exception::what() const throw() { return myWhat.c_str(); }
+    const char* exception::what() const throw()
+    {
+      return myWhat.c_str();
+    }
 
     /// Raise the exception.
     /// Log the exception and, if it is considered fatal, actually throw it. 
     /// This is the regular way to trigger a GAMBIT error or warning. 
     void exception::raise(const std::string& origin, const std::string& specific_message)
     {
-      log_exception(origin, specific_message);
-      if (isFatal) throw(*this);
+      #pragma omp critical (GABMIT_exception)
+      {
+        log_exception(origin, specific_message);
+      }
+      if (isFatal) throw_iff_outside_parallel();
     }
 
     /// Log the exception and throw it regardless of whether is is fatal or not.
     void exception::forced_throw(const std::string& origin, const std::string& specific_message)
     {
-      log_exception(origin, specific_message);
-      throw(*this);
+      #pragma omp critical (GABMIT_exception)
+      {
+        log_exception(origin, specific_message);
+      }
+      throw_iff_outside_parallel();
     }
 
     /// As per forced_throw but without logging.
-    void exception::silent_forced_throw() { throw(*this); }
+    void exception::silent_forced_throw()
+    {
+      throw_iff_outside_parallel();
+    }
 
   // Private members of GAMBIT exception base class.
 
@@ -211,6 +229,31 @@ namespace Gambit
       for (std::set<LogTag>::iterator it = myLogTags.begin(); it != myLogTags.end(); ++it) { logger() << *it; }	
       logger() << msg1.str() << msg1.str() << EOM;
     }
+
+    /// Throw the exception onward if running serially, abort if not.
+    void exception::throw_iff_outside_parallel()
+    {
+      if (omp_get_level()==0) // If not in an OpenMP parallel block, throw onwards
+      {
+        throw(*this);
+      }
+      else
+      {
+        abort_here_and_now(); // If in an OpenMP parallel block, just abort immediately.
+      }
+    }
+
+    /// Cause the code to print the exception and abort.
+    void exception::abort_here_and_now()
+    {
+      #pragma omp critical (GABMIT_exception)
+      {
+        cout << endl << " \033[00;31;1mFATAL ERROR\033[00m" << endl << endl;
+        cout << "GAMBIT has exited with fatal exception: " << what() << endl;
+        abort();
+      }
+    }
+
 
   /// GAMBIT error class constructors
 
@@ -282,15 +325,32 @@ namespace Gambit
     special_exception::special_exception(const char* what) : myWhat(what), myMessage("") {}
 
     /// Retrieve the identity of the exception.
-    const char* special_exception::what() const throw() { return myWhat; }
+    const char* special_exception::what() const throw()
+    {
+      const char* temp;
+      #pragma omp atomic read
+      temp = myWhat;
+      return temp;
+    }
 
     /// Retrieve the message that this exception was raised with.
-    std::string special_exception::message() { return myMessage; }
+    std::string special_exception::message()
+    {
+      std::string temp;
+      #pragma omp critical (GABMIT_exception)
+      {
+        temp = myMessage;
+      }
+      return temp;
+    }
 
     /// Raise the exception, i.e. throw it with a message.
     void special_exception::raise(const std::string& msg)
     {
-      myMessage = msg;
+      #pragma omp critical (GAMBIT_exception)
+      {
+        myMessage = msg;
+      }
       throw(*this);
     }
     
@@ -301,19 +361,29 @@ namespace Gambit
     invalid_point_exception::invalid_point_exception() : special_exception("GAMBIT invalid point."), myThrower(NULL) {}    
 
     /// Set the pointer to the functor that threw the invalid point exception.
-    void invalid_point_exception::set_thrower(functor* thrown_from) { myThrower = thrown_from; }
+    void invalid_point_exception::set_thrower(functor* thrown_from)
+    {
+      #pragma omp atomic write
+      myThrower = thrown_from;
+    }
 
     /// Retrieve pointer to the functor that threw the invalid point exception.
     functor* invalid_point_exception::thrower()
     {
-      if (myThrower == NULL) utils_error().raise(LOCAL_INFO, "No throwing functor in invalid_point_exception.");
-      return myThrower;
+      functor* temp;
+      #pragma omp atomic read
+      temp = myThrower;
+      if (temp == NULL) utils_error().raise(LOCAL_INFO, "No throwing functor in invalid_point_exception.");
+      return temp;
     }
 
     /// Raise the exception, i.e. throw it with a message.
     void invalid_point_exception::raise(const std::string& msg)
     {
-      myMessage = msg;
+      #pragma omp critical (GAMBIT_exception)
+      {
+        myMessage = msg;
+      }
       throw(*this);
     }
 

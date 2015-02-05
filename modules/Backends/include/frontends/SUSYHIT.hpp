@@ -24,7 +24,13 @@
 
 LOAD_LIBRARY
 
-BE_VARIABLE(FORTRAN_COMMONBLOCK(top2body_CB_type, top2body), "sd_top2body_", "top2body")
+// CsB hand made >
+//BE_VARIABLE(FORTRAN_COMMONBLOCK(top2body_CB_type, top2body), "sd_top2body_", "top2body")
+// CsB hand made <
+
+// CsB from Anders' Python script >
+
+// CsB from Anders' Python script <
 
 /* Syntax for BE_FUNCTION:
  * BE_FUNCTION([choose function name], [type], [arguement types], "[exact symbol name]", "[choose capability name]")

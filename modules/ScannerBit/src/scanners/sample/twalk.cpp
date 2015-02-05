@@ -14,7 +14,7 @@
 ///
 ///  *********************************************
 
-#include "scanners/twalk.hpp"
+#include "twalk.hpp"
 
 scanner_plugin(twalk, version(0, 0, 1, beta))
 {
