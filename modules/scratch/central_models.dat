@@ -1,0 +1,469 @@
+# Auto-generated model description library. Edits will be erased.
+# Edit "/Users/crogan/Dropbox/GAMBIT/modules/config/models.dat" instead.
+
+- name: MSSM78
+  nparams: 80
+  parameters:
+    - Ad_11
+    - Ad_12
+    - Ad_13
+    - Ad_21
+    - Ad_22
+    - Ad_23
+    - Ad_31
+    - Ad_32
+    - Ad_33
+    - Ae_11
+    - Ae_12
+    - Ae_13
+    - Ae_21
+    - Ae_22
+    - Ae_23
+    - Ae_31
+    - Ae_32
+    - Ae_33
+    - Au_11
+    - Au_12
+    - Au_13
+    - Au_21
+    - Au_22
+    - Au_23
+    - Au_31
+    - Au_32
+    - Au_33
+    - M1
+    - M2
+    - M3
+    - Qin
+    - SignMu
+    - TanBeta
+    - mHd2
+    - mHu2
+    - md2_11
+    - md2_12
+    - md2_13
+    - md2_21
+    - md2_22
+    - md2_23
+    - md2_31
+    - md2_32
+    - md2_33
+    - me2_11
+    - me2_12
+    - me2_13
+    - me2_21
+    - me2_22
+    - me2_23
+    - me2_31
+    - me2_32
+    - me2_33
+    - ml2_11
+    - ml2_12
+    - ml2_13
+    - ml2_21
+    - ml2_22
+    - ml2_23
+    - ml2_31
+    - ml2_32
+    - ml2_33
+    - mq2_11
+    - mq2_12
+    - mq2_13
+    - mq2_21
+    - mq2_22
+    - mq2_23
+    - mq2_31
+    - mq2_32
+    - mq2_33
+    - mu2_11
+    - mu2_12
+    - mu2_13
+    - mu2_21
+    - mu2_22
+    - mu2_23
+    - mu2_31
+    - mu2_32
+    - mu2_33
+  parent: none
+  lineage:
+    - MSSM78
+  descendants:
+    - MSSM78
+    - MSSM25
+  description: |
+    Missing!
+
+- name: MSSM78atMGUT
+  nparams: 79
+  parameters:
+    - Ad_11
+    - Ad_12
+    - Ad_13
+    - Ad_21
+    - Ad_22
+    - Ad_23
+    - Ad_31
+    - Ad_32
+    - Ad_33
+    - Ae_11
+    - Ae_12
+    - Ae_13
+    - Ae_21
+    - Ae_22
+    - Ae_23
+    - Ae_31
+    - Ae_32
+    - Ae_33
+    - Au_11
+    - Au_12
+    - Au_13
+    - Au_21
+    - Au_22
+    - Au_23
+    - Au_31
+    - Au_32
+    - Au_33
+    - M1
+    - M2
+    - M3
+    - SignMu
+    - TanBeta
+    - mHd2
+    - mHu2
+    - md2_11
+    - md2_12
+    - md2_13
+    - md2_21
+    - md2_22
+    - md2_23
+    - md2_31
+    - md2_32
+    - md2_33
+    - me2_11
+    - me2_12
+    - me2_13
+    - me2_21
+    - me2_22
+    - me2_23
+    - me2_31
+    - me2_32
+    - me2_33
+    - ml2_11
+    - ml2_12
+    - ml2_13
+    - ml2_21
+    - ml2_22
+    - ml2_23
+    - ml2_31
+    - ml2_32
+    - ml2_33
+    - mq2_11
+    - mq2_12
+    - mq2_13
+    - mq2_21
+    - mq2_22
+    - mq2_23
+    - mq2_31
+    - mq2_32
+    - mq2_33
+    - mu2_11
+    - mu2_12
+    - mu2_13
+    - mu2_21
+    - mu2_22
+    - mu2_23
+    - mu2_31
+    - mu2_32
+    - mu2_33
+  parent: none
+  lineage:
+    - MSSM78atMGUT
+  descendants:
+    - MSSM78atMGUT
+  description: |
+    Missing!
+
+- name: CMSSM
+  nparams: 5
+  parameters:
+    - A0
+    - M0
+    - M12
+    - signmu
+    - tanb
+  parent: none
+  lineage:
+    - CMSSM
+  descendants:
+    - CMSSM
+    - extraCMSSM
+  description: |
+    Missing!
+
+- name: extraCMSSM
+  nparams: 4
+  parameters:
+    - M0
+    - M12
+    - signmu
+    - tanb
+  parent: CMSSM
+  lineage:
+    - CMSSM
+    - extraCMSSM
+  descendants:
+    - extraCMSSM
+  description: |
+    Missing!
+
+- name: test_parent_I
+  nparams: 3
+  parameters:
+    - p1
+    - p2
+    - p3
+  parent: none
+  lineage:
+    - test_parent_I
+  descendants:
+    - test_parent_I
+    - MSSM_demo
+    - CMSSM_demo
+    - CMSSM_II_demo
+  description: |
+    Missing!
+
+- name: NormalDist
+  nparams: 2
+  parameters:
+    - mu
+    - sigma
+  parent: none
+  lineage:
+    - NormalDist
+  descendants:
+    - NormalDist
+  description: |
+    Missing!
+
+- name: MSSM_demo
+  nparams: 6
+  parameters:
+    - AU1
+    - AU2
+    - AU3
+    - M1
+    - M2
+    - M3
+  parent: test_parent_I
+  lineage:
+    - test_parent_I
+    - MSSM_demo
+  descendants:
+    - MSSM_demo
+    - CMSSM_demo
+    - CMSSM_II_demo
+  description: |
+    Missing!
+
+- name: CMSSM_demo
+  nparams: 6
+  parameters:
+    - A0
+    - M0
+    - M12
+    - Mstop
+    - sgnmu
+    - tanb
+  parent: MSSM_demo
+  lineage:
+    - test_parent_I
+    - MSSM_demo
+    - CMSSM_demo
+  descendants:
+    - CMSSM_demo
+  description: |
+    Missing!
+
+- name: CMSSM_II_demo
+  nparams: 5
+  parameters:
+    - A0
+    - B
+    - M0
+    - M12
+    - mu
+  parent: MSSM_demo
+  lineage:
+    - test_parent_I
+    - MSSM_demo
+    - CMSSM_II_demo
+  descendants:
+    - CMSSM_II_demo
+  description: |
+    Missing!
+
+- name: DMHalo_base_demo
+  nparams: 1
+  parameters:
+    - null
+  parent: none
+  lineage:
+    - DMHalo_base_demo
+  descendants:
+    - DMHalo_base_demo
+    - Gaussian_Halo_demo
+    - SomeOther_Halo_demo
+  description: |
+    Missing!
+
+- name: Gaussian_Halo_demo
+  nparams: 10
+  parameters:
+    - par10
+    - par2
+    - par3
+    - par4
+    - par5
+    - par6
+    - par7
+    - par8
+    - par9
+    - v_earth
+  parent: DMHalo_base_demo
+  lineage:
+    - DMHalo_base_demo
+    - Gaussian_Halo_demo
+  descendants:
+    - Gaussian_Halo_demo
+  description: |
+    Missing!
+
+- name: SomeOther_Halo_demo
+  nparams: 2
+  parameters:
+    - blah0
+    - v_earth
+  parent: DMHalo_base_demo
+  lineage:
+    - DMHalo_base_demo
+    - SomeOther_Halo_demo
+  descendants:
+    - SomeOther_Halo_demo
+  description: |
+    Missing!
+
+- name: TWOHDM_demo_parent
+  nparams: 3
+  parameters:
+    - X
+    - Y
+    - Z
+  parent: none
+  lineage:
+    - TWOHDM_demo_parent
+  descendants:
+    - TWOHDM_demo_parent
+    - TWOHDM_demo
+    - TWOHDM_sub_demo
+  description: |
+    Missing!
+
+- name: TWOHDM_demo
+  nparams: 3
+  parameters:
+    - X
+    - Y
+    - Z
+  parent: TWOHDM_demo_parent
+  lineage:
+    - TWOHDM_demo_parent
+    - TWOHDM_demo
+  descendants:
+    - TWOHDM_demo
+    - TWOHDM_sub_demo
+  description: |
+    Missing!
+
+- name: TWOHDM_sub_demo
+  nparams: 2
+  parameters:
+    - Y
+    - Z
+  parent: TWOHDM_demo
+  lineage:
+    - TWOHDM_demo_parent
+    - TWOHDM_demo
+    - TWOHDM_sub_demo
+  descendants:
+    - TWOHDM_sub_demo
+  description: |
+    Missing!
+
+- name: SingletDM
+  nparams: 2
+  parameters:
+    - lambda
+    - mass
+  parent: none
+  lineage:
+    - SingletDM
+  descendants:
+    - SingletDM
+  description: |
+    Missing!
+
+- name: MSSM25
+  nparams: 27
+  parameters:
+    - Ad_3
+    - Ae_12
+    - Ae_3
+    - Au_3
+    - M1
+    - M2
+    - M3
+    - Qin
+    - SignMu
+    - TanBeta
+    - mHd2
+    - mHu2
+    - md2_1
+    - md2_2
+    - md2_3
+    - me2_1
+    - me2_2
+    - me2_3
+    - ml2_1
+    - ml2_2
+    - ml2_3
+    - mq2_1
+    - mq2_2
+    - mq2_3
+    - mu2_1
+    - mu2_2
+    - mu2_3
+  parent: MSSM78
+  lineage:
+    - MSSM78
+    - MSSM25
+  descendants:
+    - MSSM25
+  description: |
+    25 parameter phenomenological MSSM (plus input scale, for 26 parameters)
+    Following the conventions for the MSSM soft breaking terms in Baer and Tata (2006): the off- diagonal terms in the squark and slepton matrices as well as the trilinear coupling matrices a_ij are set to zero. As well, the first and second generation terms in these matrices are set to zero, leaving only the third generation trilinear couplings a_t, a_b, a_tau. In explicit models of SUSY breaking it often occurs that these trilinear couplings are proportional to the corresponding Yukawa couplings, so the parameterisation a_i = y_i*A_i is often used; this is also the SLHA convention (Skands et al., 2004), so below the A_i are our parameters. The c_ij trilinear couplings are all set to zero, and the CP-violating gaugino masses M1′, M2′, M3′ are set to zero. These drastic simplifications leave one with the following parameters:
+    
+    M_input        - Input scale (i.e. SUSY breaking scale)
+    M1,M2,M3       - Soft gaugino masses
+    At,Ab,Atau     - Trilinear couplings 
+    mHu2,mHd2      - Up and down type soft Higgs masses squared
+    mu             - Superpotential mu (Higgs bilinear) parameter
+    tanb           - Ratio of Higgs VEVs, tan_\beta
+    meL,mmuL,mtauL,   
+    meR,mmuR,mtauR - Soft slepton masses
+    mq1L,mq2L,mq3L,
+    muR,mcR,mtR,
+    mdR,msR,mbR,   - Soft squark masses
+    
+    (Just for demo; I forget exactly what the SLHA conventions are)  
+    

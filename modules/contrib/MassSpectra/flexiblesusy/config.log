@@ -1,0 +1,152 @@
+Package:    FlexibleSUSY
+Version:    1.0.3
+Date:       Fri Jan 23 02:06:31 EST 2015
+
+# Platform information
+
+hostname = Christophers-MacBook-Pro.local
+uname -m = x86_64
+uname -r = 14.0.0
+uname -s = Darwin
+uname -v = Darwin Kernel Version 14.0.0: Fri Sep 19 00:26:44 PDT 2014; root:xnu-2782.1.97~2/RELEASE_X86_64
+Machine word size: 64
+
+PATH: /usr/local/Cellar/root/5.34.24/bin
+PATH: /usr/local/bin
+PATH: /usr/bin
+PATH: /bin
+PATH: /usr/sbin
+PATH: /sbin
+PATH: /opt/X11/bin
+PATH: /usr/texbin
+
+Checking for RGE solver algorithms ... 
+   Result: ok (two_scale)
+   Algorithms: two_scale
+Checking for C++ compiler /usr/local/bin/g++-4.9 ... 
+   Result: found /usr/local/bin/g++-4.9
+Checking for type of C++ compiler /usr/local/bin/g++-4.9 ... 
+   Result: GNU
+C++ compiler type: gnu
+Checking for /usr/local/bin/g++-4.9 compiler version >= 4.4.7 ... 
+   Result: ok (version 4.9.2)
+   Required /usr/local/bin/g++-4.9 version: 4.4.7
+   /usr/local/bin/g++-4.9 version found: 4.9.2
+Checking for C++ file dependency generator /usr/local/bin/g++-4.9 ... 
+   Result: found /usr/local/bin/g++-4.9
+Checking for type of C++ file dependency generator /usr/local/bin/g++-4.9 ... 
+   Result: GNU
+C++ dependency generator type: gnu
+Checking for /usr/local/bin/g++-4.9 dependency generator version ... 
+   Result: 4.9.2
+   /usr/local/bin/g++-4.9 dependency generator version found: 4.9.2
+Checking for Fortran compiler /usr/local/bin/gfortran-4.9 ... 
+   Result: found /usr/local/bin/gfortran-4.9
+Checking for Fortran file dependency generator /usr/local/bin/gfortran-4.9 ... 
+   Result: found /usr/local/bin/gfortran-4.9
+Checking for boost/version.hpp ... 
+   Result: found in /usr/local/include
+Checking for boost version >= 1.41.0 ... 
+===================================
+Trying to compile test program
+   Status: compilation successful.
+Running executable: ./conftest.x
+The executable returned exit code: 0
+The executable produced output:
+1.55.0
+===================================
+
+   Result: ok (version 1.55.0)
+   Required boost version: 1.41.0
+   Boost version found: 1.55.0
+Checking for boost/test/unit_test.hpp ... 
+   Result: found in /usr/local/include
+Checking for libboost_unit_test_framework libboost_unit_test_framework-mt ... 
+   Result: found in /usr/local/lib
+Checking for Eigen/Core ... 
+   Result: found in /Users/crogan/Dropbox/GAMBIT/modules/../extras/eigen3
+Checking for eigen version ... 
+===================================
+Trying to compile test program
+   Status: compilation successful.
+Running executable: ./conftest.x
+The executable returned exit code: 0
+The executable produced output:
+3.2.2
+===================================
+
+   Result: ok (version 3.2.2)
+   Eigen version found: 3.2.2
+Checking for GSL configuration gsl-config ... 
+   Result: found /usr/local/bin/gsl-config
+pkg-config does not manage blas
+Checking for libblas ... 
+   Result: found in /usr/lib
+ Checking in /usr/lib
+  /usr/lib/libblas.dylib readable
+Checking for ztpsv_ in /usr/lib/libblas.dylib ... symbol found
+   Result: ok
+pkg-config does not manage lapack
+Checking for liblapack ... 
+   Result: found in /usr/lib
+ Checking in /usr/lib
+  /usr/lib/liblapack.dylib readable
+Checking for dgbsv_ in /usr/lib/liblapack.dylib ... symbol found
+   Result: ok
+Checking for build library command ar cru ... 
+   Result: found /usr/bin/ar
+Checking for random number generator ... 
+===================================
+Trying to compile test program with
+   Header: #include <random>
+   Statement: std::minstd_rand generator; std::uniform_real_distribution<double> distribution(0., 1.);
+
+Trying to compile test program
+   Status: compilation successful.
+Running executable: ./conftest.x
+The executable returned exit code: 0
+The executable produced no output.
+===================================
+
+   Result: ok
+Enabling random number generator: #define ENABLE_RANDOM 1
+Checking for std::thread ... 
+===================================
+Trying to compile test program with
+   Header: #include <thread>
+#include <mutex>
+   Statement: std::mutex mtx; std::thread thr;
+
+Trying to compile test program
+   Status: compilation successful.
+Running executable: ./conftest.x
+The executable returned exit code: 0
+The executable produced no output.
+===================================
+
+   Result: ok
+Checking for libpthread ... 
+   Result: found in /usr/lib
+Checking for models ... 
+Note: No start script not found in models/MSSMatMGUT
+
+Note: No FlexibleSUSY model file found in models/MSSMatMGUT
+
+   Result: ok (MSSMatMGUT)
+   Models:  models/MSSMatMGUT
+Disabling colored output
+   #undef ENABLE_COLOR
+Disabling debug mode
+   #undef ENABLE_DEBUG
+Disabling eigenvalue error check
+   #undef CHECK_EIGENVALUE_ERROR
+Disabling usage of fflite
+   #undef ENABLE_FFLITE
+Disabling usage of LoopTools
+   #undef ENABLE_LOOPTOOLS
+Disabling silent mode
+   #undef ENABLE_SILENT
+Enabling multi-threading
+   #define ENABLE_THREADS 1
+Executing clean-up actions:
+rm -f "./conftest.x" "./conftest.cpp" "./conftest.log"

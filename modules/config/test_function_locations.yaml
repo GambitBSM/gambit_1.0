@@ -1,0 +1,17 @@
+# GAMBIT central scanner location database
+#
+# Cmake will parse this file and use it to locate
+# libraries needed for different test functions
+# offered by ScannerBit before writing makefiles
+# that link to them.
+#
+# Paths can be given as full absolute paths, or 
+# relative to the main GAMBIT directory.  Paths 
+# starting with a backslash will be interpreted as 
+# absolute, those beginning with a period will
+# be interpreted as relative to the GAMBIT dir.
+
+
+Eggbox: 
+  1.0.0:             ./ScannerBit/lib/blahdy.so
+

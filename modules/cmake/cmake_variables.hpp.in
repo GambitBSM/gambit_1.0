@@ -1,0 +1,23 @@
+// GAMBIT: Global and Modular BSM Inference Tool  
+//************************************************
+/// \file                                        
+///                                               
+///  Configured options and settings for GAMBIT   
+///                                               
+///***********************************************
+///                                               
+///  Authors:                                     
+///                                               
+///  \author The GAMBIT Collaboration            
+///  \date 06:25PM on February 04, 2015
+///                                               
+///***********************************************
+                                                  
+#ifndef __cmake_variables_hpp__                   
+#define __cmake_variables_hpp__                   
+                                                  
+/// Gambit source directory                       
+#define GAMBIT_DIR "@PROJECT_SOURCE_DIR@"       
+#define libs_present_MultiNest__t__scan__v__0_0_0_bens_version 0
+
+#endif // #defined__cmake_variables_hpp__
