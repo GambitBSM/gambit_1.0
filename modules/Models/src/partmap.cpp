@@ -20,12 +20,20 @@
 
 #include "partmap.hpp"
 #include "standalone_error_handlers.hpp"
+#include "stream_overloads.hpp"
 
 namespace Gambit
 {
 
   namespace Models
   {
+
+    /// Database accessor function
+    partmap& ParticleDB()
+    {
+      static partmap local;
+      return local;
+    }
 
     /// Declare redirected constructor
     extern void define_particles(partmap*);
@@ -47,6 +55,7 @@ namespace Gambit
     /// Add a new particle to the database with a short name and an index
     void partmap::add_with_short_pair(str long_name, std::pair<int, int> pdgpr, std::pair<str, int> shortpr)
     {
+      // debug:
       add(long_name, pdgpr);
       short_name_pair_to_pdg_pair[shortpr] = pdgpr;
       short_name_pair_to_long_name[shortpr] = long_name;
@@ -59,7 +68,7 @@ namespace Gambit
     {
       if (not has_particle(long_name))
       {
-        model_error().raise(LOCAL_INFO,"Particle "+long_name+" is not in the particle database.");
+        model_error().raise(LOCAL_INFO,"Particle long name "+long_name+" is not in the particle database.");
       }
       return long_name_to_pdg_pair.at(long_name);
     }
@@ -102,6 +111,12 @@ namespace Gambit
       return pdg_pair_to_long_name.at(pdgpr);
     }
 
+    /// Retrieve the long name, from the PDG code and context integer
+    str partmap::long_name(int pdg_code, int context)
+    {
+       return long_name(std::make_pair(pdg_code,context));
+    }
+
     /// Retrieve the short name and index, from the long name 
     std::pair<str, int> partmap::short_name_pair(str long_name)
     {
@@ -134,6 +149,12 @@ namespace Gambit
       return pdg_pair_to_short_name_pair.at(pdgpr);
     }
 
+    /// Retrieve the short name and index, from the PDG code and context integer
+    std::pair<str, int> partmap::short_name_pair(int pdg_code, int context)
+    {
+      return short_name_pair(std::make_pair(pdg_code,context));
+    }
+
     /// Check if a particle is in the database, using the long name 
     bool partmap::has_particle(str long_name)
     { 
@@ -164,12 +185,45 @@ namespace Gambit
       return (pdg_pair_to_short_name_pair.find(pdgpr) != pdg_pair_to_short_name_pair.end());
     }
 
-    /// Database accessor function
-    partmap& ParticleDB()
+    /// For debugging: use to check the contents of the particle database
+    void partmap::check_contents()
     {
-      static partmap local;
-      return local;
+       // Check that long and short names retrieve same information (when short name exists)
+       typedef std::map<str, std::pair<int, int> >::iterator                 it_long_name_to_pdg_pair;
+       typedef std::map<std::pair<int, int>, str>::iterator                  it_pdg_pair_to_long_name;
+       typedef std::map<std::pair<str, int>, std::pair<int, int> >::iterator it_short_name_pair_to_pdg_pair;
+       typedef std::map<std::pair<int, int>, std::pair<str, int> >::iterator it_pdg_pair_to_short_name_pair;
+       typedef std::map<str, std::pair<str, int> >::iterator                 it_long_name_to_short_name_pair;
+       typedef std::map<std::pair<str, int>, str>::iterator                  it_short_name_pair_to_long_name;
+
+       cout << "PDB: long name as key" << endl;
+       #define IT_OBJ long_name_to_pdg_pair
+       for(it_long_name_to_pdg_pair it = IT_OBJ.begin(); it != IT_OBJ.end(); it++) {
+           cout   << "  long_name_to_pdg_pair       [" << it->first << "] => " << it->second << endl;
+           if(has_short_name(it->first))
+           { cout << "  long_name_to_short_name_pair[" << it->first << "] => " << long_name_to_short_name_pair[it->first] << endl; }
+           else
+           { cout << "  long_name_to_short_name_pair[" << it->first << "] => " << "Has no short name!" << endl; }
+       }
+       #undef IT_OBJ
+       #define IT_OBJ pdg_pair_to_long_name
+       cout << endl << "PDB: pdg_pair as key" << endl;
+       for(it_pdg_pair_to_long_name it = IT_OBJ.begin(); it != IT_OBJ.end(); it++) {
+           cout   << "  pdg_pair_to_long_name [" << it->first << "] => " << it->second << endl;
+           if(has_short_name(it->second))
+           { cout << "  pdg_pair_to_short_name[" << it->first << "] => " << pdg_pair_to_short_name_pair[it->first] << endl; }
+           else
+           { cout << "  pdg_pair_to_short_name[" << it->first << "] => " << "Has no short name!" << endl; }
+       }
+       #undef IT_OBJ
+       #define IT_OBJ short_name_pair_to_long_name
+       cout << endl << "PDB: short name pair as key" << endl;
+       for(it_short_name_pair_to_long_name it = IT_OBJ.begin(); it != IT_OBJ.end(); it++) {
+           cout << "  short_name_pair_to_long_name[" << it->first << "] => " << it->second << endl;
+           cout << "  short_name_pair_to_pdg_pair [" << it->first << "] => " << short_name_pair_to_pdg_pair[it->first] << endl;
+       }
     }
+
 
   }
 

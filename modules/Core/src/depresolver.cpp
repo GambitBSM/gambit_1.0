@@ -139,6 +139,17 @@ namespace Gambit
       else return false;
     }
 
+    // Get entry level relevant for options
+    int getEntryLevelForOptions(const IniParser::ObservableType &e)
+    {
+      int z = 0;
+      if ( e.module != "" ) z = 1;
+      if ( e.capability != "" ) z = 2;
+      if ( e.type != "" ) z = 3;
+      if ( e.function != "" ) z = 4;
+      return z;
+    }
+
     // Check whether functor matches rules
     bool matchesRules( functor *f, const Rule & rule)
     {
@@ -550,6 +561,8 @@ namespace Gambit
         ss << "Calling " << masterGraph[*it]->name() << " from " << masterGraph[*it]->origin() << "...";
         logger() << LogTags::dependency_resolver << LogTags::info << ss.str() << EOM;
         masterGraph[*it]->calculate();
+        invalid_point_exception* e = masterGraph[*it]->retrieve_invalid_point_exception();
+        if (e != NULL) throw(*e);
         // TODO: Need to deal with different options for output
         // Print output (currently only to std::cout)
         // Ben: may want to do this call elsewhere; I added it here for testing.
@@ -592,13 +605,13 @@ namespace Gambit
       return NULL;
     }
 
-    // Resets all functors and delets exisiting results
+    // Resets all active functors and deletes existing results
     void DependencyResolver::resetAll()
     {
       graph_traits<DRes::MasterGraphType>::vertex_iterator vi, vi_end;
       for (boost::tie(vi, vi_end) = vertices(masterGraph); vi != vi_end; ++vi) 
       {
-        masterGraph[*vi]->reset();
+        if (masterGraph[*vi]->status() == 2) masterGraph[*vi]->reset();
       }
     }
 
@@ -762,6 +775,51 @@ namespace Gambit
         return candidates;
     }
 
+    /// Collect ini options
+    Options DependencyResolver::collectIniOptions(const DRes::VertexID & vertex)
+    {
+      YAML::Node nodes;
+      YAML::Node zlevels;
+
+      cout << "Searching options for " << masterGraph[vertex]->capability() << endl;
+
+      IniParser::ObservablesType entries = boundIniFile->getAuxiliaries();
+      //entries = boundIniFile->getObservables();
+      for (IniParser::ObservablesType::const_iterator it =
+          entries.begin(); it != entries.end(); ++it)
+      {
+        if ( funcMatchesIniEntry(masterGraph[vertex], *it, *boundTEs) )
+        {
+          cout << "Getting option from: " << it->capability << " " << it->type << endl;
+          for (auto jt = it->options.begin(); jt != it->options.end(); jt++)
+          {
+            if ( not nodes[jt->first.as<std::string>()] )
+            {
+              cout << jt->first.as<std::string>() << ": " << jt->second << endl;
+              nodes[jt->first.as<std::string>()] = jt->second;
+              zlevels[jt->first.as<std::string>()] = getEntryLevelForOptions(*it);
+            }
+            else
+            {
+              if ( zlevels[jt->first.as<std::string>()].as<int>() < getEntryLevelForOptions(*it) )
+              {
+                cout << "Replaced : " << jt->first.as<std::string>() << ": " << jt->second << endl;
+                zlevels[jt->first.as<std::string>()] = getEntryLevelForOptions(*it);
+                nodes[jt->first.as<std::string>()] = jt->second;
+              }
+              else if ( zlevels[jt->first.as<std::string>()].as<int>() == getEntryLevelForOptions(*it) )
+              {
+                cout << "ERROR! Multiple option entries with same level for key: " << jt->first.as<std::string>() << endl;
+                exit(-1);
+              }
+            }
+          }
+        }
+      }
+      Options myOptions(nodes);
+      return myOptions;
+    }
+
     /// Resolve dependency
     DRes::VertexID DependencyResolver::resolveDependencyFromRules(const DRes::VertexID & toVertex, const sspair & quantity)
     {
@@ -796,7 +854,7 @@ namespace Gambit
         dependency_resolver_error().raise(LOCAL_INFO,errmsg);
       }
 
-      cout << "Vertex candidates: " << vertexCandidates << endl;
+      cout << "Vertex candidate IDs: " << vertexCandidates << endl;
 
       // Make list of all relevant 1st and 2nd level dependency rules.
       IniParser::ObservablesType entries = boundIniFile->getAuxiliaries();
@@ -805,7 +863,7 @@ namespace Gambit
       {
         if ( toVertex != OBSLIKE_VERTEXID )
         {
-          if ( funcMatchesIniEntry(masterGraph[toVertex], *it, *boundTEs) )
+          if ( funcMatchesIniEntry(masterGraph[toVertex], *it, *boundTEs) and it->capability != "" )
           {
             for (IniParser::ObservablesType::const_iterator it2 =
             (*it).dependencies.begin(); it2 != (*it).dependencies.end(); ++it2)
@@ -817,7 +875,7 @@ namespace Gambit
             }
           }
         }
-        if ( quantityMatchesIniEntry(quantity, *it) )
+        if ( quantityMatchesIniEntry(quantity, *it) and it->capability != "" )
         {
           rules_2nd_level.push_back(Rule(*it));
         }
@@ -833,7 +891,7 @@ namespace Gambit
         }
       }
 
-      cout << "1st and 2nd class rules: " << rules_1st_level.size() << ", " << rules_2nd_level.size() << endl;
+      cout << "Number of identified 1st and 2nd class rules: " << rules_1st_level.size() << ", " << rules_2nd_level.size() << endl;
 
       // Make filtered lists
       for (std::vector<DRes::VertexID>::const_iterator it = vertexCandidates.begin(); 
@@ -890,7 +948,7 @@ namespace Gambit
         cout << "Vertex candidates with tailor made functions (1st, 2nd): " << filteredVertexCandidates_1st << ", " << filteredVertexCandidates_2nd << endl;
       }
 
-      // 4) Did vertices survive?
+      // Did vertices survive?
       if ( filteredVertexCandidates_1st.size() == 1 )
         return filteredVertexCandidates_1st[0];  // Done!
       if ( filteredVertexCandidates_2nd.size() == 1 )
@@ -1096,10 +1154,6 @@ namespace Gambit
         }
         else
         {
-          // TODO: Ini-file options still retrieved in the old way:
-          iniEntry = NULL;
-          boost::tie(iniEntry, fromVertex) = resolveDependency(toVertex, quantity);
-          // But fromVertex in the new
           fromVertex = resolveDependencyFromRules(toVertex, quantity);
         }
 
@@ -1150,6 +1204,9 @@ namespace Gambit
         }
         else // if output vertex
         {
+          //iniEntry = NULL;
+          //boost::tie(iniEntry, fromVertex) = resolveDependency(toVertex, quantity);
+          iniEntry = findIniEntry(quantity, boundIniFile->getObservables(), "ObsLike");
           outInfo.vertex = fromVertex;
           outInfo.iniEntry = iniEntry;
           outputVertexInfos.push_back(outInfo);
@@ -1161,12 +1218,20 @@ namespace Gambit
           logger() << LogTags::dependency_resolver << "Activate new module function" << endl;
           masterGraph[fromVertex]->setStatus(2); // activate node
           resolveVertexBackend(fromVertex);
-          // Generate options object from ini-file entry that corresponds to
-          // fromVertex (overwrite iniEntry) and pass it to the fromVertex for later use
-          iniEntry = findIniEntry(fromVertex, boundIniFile->getAuxiliaries(), "auxiliary");
-          if ( iniEntry != NULL )
+          if ( boundIniFile->getValueOrDef<bool>( false, "dependency_resolution", "use_old_routines") )
           {
-            Options myOptions(iniEntry->options);
+            // Generate options object from ini-file entry that corresponds to
+            // fromVertex (overwrite iniEntry) and pass it to the fromVertex for later use
+            iniEntry = findIniEntry(fromVertex, boundIniFile->getAuxiliaries(), "auxiliary");
+            if ( iniEntry != NULL )
+            {
+              Options myOptions(iniEntry->options);
+              masterGraph[fromVertex]->notifyOfIniOptions(myOptions);
+            }
+          }
+          else
+          {
+            Options myOptions = collectIniOptions(fromVertex);
             masterGraph[fromVertex]->notifyOfIniOptions(myOptions);
           }
           // Fill parameter queue with dependencies of fromVertex
@@ -1223,7 +1288,7 @@ namespace Gambit
       for (IniParser::ObservablesType::const_iterator it =
           entries.begin(); it != entries.end(); ++it)
       {
-        if ( funcMatchesIniEntry(masterGraph[toVertex], *it, *boundTEs) )
+        if ( funcMatchesIniEntry(masterGraph[toVertex], *it, *boundTEs) and it->capability != "" )
         {
           auxEntryCandidates.push_back(&(*it));
         }

@@ -76,23 +76,66 @@ Printer:
   # printer. 
   options:
     # name of output file
-    output_file: "runs/spartan_multinest/samples/gambit_output.txt"
+    output_file: "runs/spartan/samples/gambit_output.txt"
     # name of info file (explains content of output file)
-    info_file: "runs/spartan_multinest/samples/gambit_output.info"
+    info_file: "runs/spartan/samples/gambit_output.info"
 
 ##############################
 # Scanner setup
 ##############################
 
 Scanner:
-  plugin:  multinest
-  file_path:  ScannerBit/lib/libmultinest_interface.so 
-   
-  multinest:
-    nlive: 500
-    tol: 0.1
-    output_file:  output
-         
+
+  #use_objective_plugins: uniform
+  use_scanner_plugin: multinest
+
+# Scanners
+
+  plugins:
+  
+    random:
+      plugin: random_sampler
+      options:
+        point_number: 20
+        output_file:  output
+        like:  Likelihood
+        files:
+          output_file: "weights ..."
+        
+    square_grid:
+      plugin: square_grid
+      version: ">=1.0"
+      options:
+        purpose: Likelihood
+        grid_pts: 3 #NxN grid
+            
+    grid:
+      plugin: grid
+      version: ">=1.0"
+      options:
+        purpose: Likelihood
+        grid_pts: [2, 2]
+
+    multinest:
+      plugin: MultiNest
+      options:
+        like:  Likelihood
+        nlive: 500
+        tol: 0.1
+
+# Test functions
+
+    uniform:
+      plugin: uniform
+      version: ">=1.0 & <2.0"
+      options:
+        some_param: 10
+      parameters:
+        param...2:
+          range: [-10, 10]          
+
+
+            
 ###############################
 # Observables of interest
 ###############################
@@ -192,6 +235,8 @@ KeyValues:
     subkey3:
       subsubkey1: value2
 
+  rng: ranlux48
+
   dependency_resolution:
     prefer_model_specific_functions: true
 
@@ -203,7 +248,7 @@ KeyValues:
     dependency_resolver_error: fatal
     dependency_resolver_warning: non-fatal
     core_warning: fatal
-    scan_error: non-fatal #make this fatal to see an example error
+    #scan_error: non-fatal #make this fatal to see an example error
     ExampleBit_A_error: non-fatal
 
   enable_testing: false

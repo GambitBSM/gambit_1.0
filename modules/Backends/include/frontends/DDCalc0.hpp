@@ -53,22 +53,29 @@ LOAD_LIBRARY
   where the module and routine names are in lower case.  To avoid
   compiler-dependendent symbol names, BIND() statements are used in
   the Fortran source code to explicitly specify the symbol names.
-  We chose as our naming convention the gfortran naming convention.
   [n.b.: For non-module routines, '<routinename>_' (again in lower
-  case) is the convention for both compilers.]
+  case) is the convention for both compilers.]  We take as our naming
+  convention for the externally-accessible DDCalc0 routines:
+     C_DDCALC0_<routinename>
+  The 'C' is to signify routines intended for calling from C/C++
+  (argument and return types are expressly declared to be type-
+  compatible with the C bool, int, and double types), while 'DDCALC0'
+  is for the module name.  The symbol names of the form
+  'C_DDCALC0_ddcalc0_<...>' below are not redundant as the second
+  'ddcalc0' is part of the routine name.
  */
 
 // Initialization (global)
-BE_FUNCTION(DDCalc0_Init, void, (), "__ddcalc0_MOD_ddcalc0_init", "DDCalc0_Initialize")
+BE_FUNCTION(DDCalc0_Init, void, (), "C_DDCALC0_ddcalc0_init", "DDCalc0_Initialize")
 
 // Initialization (specific experiments).
 // Single boolean argument indicates if extra calculations
 // should be performed for some no-background-subtraction
 // limits (not necessary for likelihoods).
-BE_FUNCTION(DDCalc0_XENON100_2012_Init,  void, (bool*), "__ddcalc0_MOD_xenon100_2012_init",  "XENON100_2012_Initialize")
-BE_FUNCTION(DDCalc0_LUX_2013_Init,       void, (bool*), "__ddcalc0_MOD_lux_2013_init",       "LUX_2013_Initialize")
-BE_FUNCTION(DDCalc0_DARWIN_Ar_2014_Init, void, (bool*), "__ddcalc0_MOD_darwin_ar_2014_init", "DARWIN_Ar_2014_Initialize")
-BE_FUNCTION(DDCalc0_DARWIN_Xe_2014_Init, void, (bool*), "__ddcalc0_MOD_darwin_xe_2014_init", "DARWIN_Xe_2014_Initialize")
+BE_FUNCTION(DDCalc0_XENON100_2012_Init,  void, (bool*), "C_DDCALC0_xenon100_2012_init",  "XENON100_2012_Initialize")
+BE_FUNCTION(DDCalc0_LUX_2013_Init,       void, (bool*), "C_DDCALC0_lux_2013_init",       "LUX_2013_Initialize")
+BE_FUNCTION(DDCalc0_DARWIN_Ar_2015_Init, void, (bool*), "C_DDCALC0_darwin_ar_2015_init", "DARWIN_Ar_2015_Initialize")
+BE_FUNCTION(DDCalc0_DARWIN_Xe_2015_Init, void, (bool*), "C_DDCALC0_darwin_xe_2015_init", "DARWIN_Xe_2015_Initialize")
 
 // Specify the minimum recoil energy to be included in the rate
 // calculations [keV].  Note the efficiency curves already account for
@@ -76,10 +83,10 @@ BE_FUNCTION(DDCalc0_DARWIN_Xe_2014_Init, void, (bool*), "__ddcalc0_MOD_darwin_xe
 // setting this to 0 keV (the default behavior when initialization is
 // performed) does not imply that very low energy recoils actually
 // contribute to the signal.
-BE_FUNCTION(DDCalc0_XENON100_2012_SetEmin,  void, (bool*), "__ddcalc0_MOD_xenon100_2012_setemin",  "XENON100_2012_SetEmin")
-BE_FUNCTION(DDCalc0_LUX_2013_SetEmin,       void, (bool*), "__ddcalc0_MOD_lux_2013_setemin",       "LUX_2013_SetEmin")
-BE_FUNCTION(DDCalc0_DARWIN_Ar_2014_SetEmin, void, (bool*), "__ddcalc0_MOD_darwin_ar_2014_setemin", "DARWIN_Ar_2014_SetEmin")
-BE_FUNCTION(DDCalc0_DARWIN_Xe_2014_SetEmin, void, (bool*), "__ddcalc0_MOD_darwin_xe_2014_setemin", "DARWIN_Xe_2014_SetEmin")
+BE_FUNCTION(DDCalc0_XENON100_2012_SetEmin,  void, (bool*), "C_DDCALC0_xenon100_2012_setemin",  "XENON100_2012_SetEmin")
+BE_FUNCTION(DDCalc0_LUX_2013_SetEmin,       void, (bool*), "C_DDCALC0_lux_2013_setemin",       "LUX_2013_SetEmin")
+BE_FUNCTION(DDCalc0_DARWIN_Ar_2015_SetEmin, void, (bool*), "C_DDCALC0_darwin_ar_2015_setemin", "DARWIN_Ar_2015_SetEmin")
+BE_FUNCTION(DDCalc0_DARWIN_Xe_2015_SetEmin, void, (bool*), "C_DDCALC0_darwin_xe_2015_setemin", "DARWIN_Xe_2015_SetEmin")
 
 // Set halo parameters (Standard Halo Model):
 //   rho [GeV/cm^3], vrot [km/s], v0 [km/s], vesc [km/s]
@@ -88,7 +95,7 @@ BE_FUNCTION(DDCalc0_DARWIN_Xe_2014_SetEmin, void, (bool*), "__ddcalc0_MOD_darwin
 // values are already set via global initialization routine,
 // so it need not be called at all if the default values are
 // to be used.
-BE_FUNCTION(DDCalc0_SetSHM, void, (double*,double*,double*,double*), "__ddcalc0_MOD_ddcalc0_setshm", "DDCalc0_SetSHM")
+BE_FUNCTION(DDCalc0_SetSHM, void, (double*,double*,double*,double*), "C_DDCALC0_ddcalc0_setshm", "DDCalc0_SetSHM")
 
 // Set the WIMP mass and couplings/cross-sections.
 // There are three versions, depending on how the couplings are
@@ -104,17 +111,17 @@ BE_FUNCTION(DDCalc0_SetSHM, void, (double*,double*,double*,double*), "__ddcalc0_
 // used to indicated the corresponding coupling should be taken
 // to be negative.
 //  Units: mass [GeV]; f, G [GeV^-2]; a [unitless]; sigma [pb]
-BE_FUNCTION(DDCalc0_SetWIMP_mfa, void, (double*,double*,double*,double*,double*),    "__ddcalc0_MOD_ddcalc0_setwimp_mfa",    "DDCalc0_SetWIMP_mfa")
-BE_FUNCTION(DDCalc0_SetWIMP_mG, void, (double*,double*,double*,double*,double*),     "__ddcalc0_MOD_ddcalc0_setwimp_mg",     "DDCalc0_SetWIMP_mG")
-BE_FUNCTION(DDCalc0_SetWIMP_msigma, void, (double*,double*,double*,double*,double*), "__ddcalc0_MOD_ddcalc0_setwimp_msigma", "DDCalc0_SetWIMP_msigma")
+BE_FUNCTION(DDCalc0_SetWIMP_mfa, void, (double*,double*,double*,double*,double*),    "C_DDCALC0_ddcalc0_setwimp_mfa",    "DDCalc0_SetWIMP_mfa")
+BE_FUNCTION(DDCalc0_SetWIMP_mG, void, (double*,double*,double*,double*,double*),     "C_DDCALC0_ddcalc0_setwimp_mg",     "DDCalc0_SetWIMP_mG")
+BE_FUNCTION(DDCalc0_SetWIMP_msigma, void, (double*,double*,double*,double*,double*), "C_DDCALC0_ddcalc0_setwimp_msigma", "DDCalc0_SetWIMP_msigma")
 
 // Experiment-specific calculation routines.
 // Should be run once for each model prior to using event and
 // likelihood routines below.
-BE_FUNCTION(DDCalc0_XENON100_2012_CalcRates,  void, (), "__ddcalc0_MOD_xenon100_2012_calcrates",  "DDCalc0_XENON100_2012_CalcRates")
-BE_FUNCTION(DDCalc0_LUX_2013_CalcRates,       void, (), "__ddcalc0_MOD_lux_2013_calcrates",       "DDCalc0_LUX_2013_CalcRates")
-BE_FUNCTION(DDCalc0_DARWIN_Ar_2014_CalcRates, void, (), "__ddcalc0_MOD_darwin_ar_2014_calcrates", "DDCalc0_DARWIN_Ar_2014_CalcRates")
-BE_FUNCTION(DDCalc0_DARWIN_Xe_2014_CalcRates, void, (), "__ddcalc0_MOD_darwin_xe_2014_calcrates", "DDCalc0_DARWIN_Xe_2014_CalcRates")
+BE_FUNCTION(DDCalc0_XENON100_2012_CalcRates,  void, (), "C_DDCALC0_xenon100_2012_calcrates",  "DDCalc0_XENON100_2012_CalcRates")
+BE_FUNCTION(DDCalc0_LUX_2013_CalcRates,       void, (), "C_DDCALC0_lux_2013_calcrates",       "DDCalc0_LUX_2013_CalcRates")
+BE_FUNCTION(DDCalc0_DARWIN_Ar_2015_CalcRates, void, (), "C_DDCALC0_darwin_ar_2015_calcrates", "DDCalc0_DARWIN_Ar_2015_CalcRates")
+BE_FUNCTION(DDCalc0_DARWIN_Xe_2015_CalcRates, void, (), "C_DDCALC0_darwin_xe_2015_calcrates", "DDCalc0_DARWIN_Xe_2015_CalcRates")
 
 // Observed and expected events (experiment-specific).
 //   Events:     observed events
@@ -123,35 +130,35 @@ BE_FUNCTION(DDCalc0_DARWIN_Xe_2014_CalcRates, void, (), "__ddcalc0_MOD_darwin_xe
 //   SignalSI:   average signal expectation (spin-independent only)
 //   SignalSD:   average signal expectation (spin-dependent only)
 // XENON100 2012
-BE_FUNCTION(DDCalc0_XENON100_2012_Events,     int,    (), "__ddcalc0_MOD_xenon100_2012_events",     "XENON100_2012_Events")
-BE_FUNCTION(DDCalc0_XENON100_2012_Background, double, (), "__ddcalc0_MOD_xenon100_2012_background", "XENON100_2012_Background")
-BE_FUNCTION(DDCalc0_XENON100_2012_Signal,     double, (), "__ddcalc0_MOD_xenon100_2012_signal",     "XENON100_2012_Signal")
-BE_FUNCTION(DDCalc0_XENON100_2012_SignalSI,   double, (), "__ddcalc0_MOD_xenon100_2012_signalsi",   "XENON100_2012_SignalSI")
-BE_FUNCTION(DDCalc0_XENON100_2012_SignalSD,   double, (), "__ddcalc0_MOD_xenon100_2012_signalsd",   "XENON100_2012_SignalSD")
+BE_FUNCTION(DDCalc0_XENON100_2012_Events,     int,    (), "C_DDCALC0_xenon100_2012_events",     "XENON100_2012_Events")
+BE_FUNCTION(DDCalc0_XENON100_2012_Background, double, (), "C_DDCALC0_xenon100_2012_background", "XENON100_2012_Background")
+BE_FUNCTION(DDCalc0_XENON100_2012_Signal,     double, (), "C_DDCALC0_xenon100_2012_signal",     "XENON100_2012_Signal")
+BE_FUNCTION(DDCalc0_XENON100_2012_SignalSI,   double, (), "C_DDCALC0_xenon100_2012_signalsi",   "XENON100_2012_SignalSI")
+BE_FUNCTION(DDCalc0_XENON100_2012_SignalSD,   double, (), "C_DDCALC0_xenon100_2012_signalsd",   "XENON100_2012_SignalSD")
 // LUX 2013
-BE_FUNCTION(DDCalc0_LUX_2013_Events,     int,    (), "__ddcalc0_MOD_lux_2013_events",     "LUX_2013_Events")
-BE_FUNCTION(DDCalc0_LUX_2013_Background, double, (), "__ddcalc0_MOD_lux_2013_background", "LUX_2013_Background")
-BE_FUNCTION(DDCalc0_LUX_2013_Signal,     double, (), "__ddcalc0_MOD_lux_2013_signal",     "LUX_2013_Signal")
-BE_FUNCTION(DDCalc0_LUX_2013_SignalSI,   double, (), "__ddcalc0_MOD_lux_2013_signalsi",   "LUX_2013_SignalSI")
-BE_FUNCTION(DDCalc0_LUX_2013_SignalSD,   double, (), "__ddcalc0_MOD_lux_2013_signalsd",   "LUX_2013_SignalSD")
-// DARWIN 2014 proposal (argon-based)
-BE_FUNCTION(DDCalc0_DARWIN_Ar_2014_Events,     int,    (), "__ddcalc0_MOD_darwin_ar_2014_events",     "DARWIN_Ar_2014_Events")
-BE_FUNCTION(DDCalc0_DARWIN_Ar_2014_Background, double, (), "__ddcalc0_MOD_darwin_ar_2014_background", "DARWIN_Ar_2014_Background")
-BE_FUNCTION(DDCalc0_DARWIN_Ar_2014_Signal,     double, (), "__ddcalc0_MOD_darwin_ar_2014_signal",     "DARWIN_Ar_2014_Signal")
-BE_FUNCTION(DDCalc0_DARWIN_Ar_2014_SignalSI,   double, (), "__ddcalc0_MOD_darwin_ar_2014_signalsi",   "DARWIN_Ar_2014_SignalSI")
-BE_FUNCTION(DDCalc0_DARWIN_Ar_2014_SignalSD,   double, (), "__ddcalc0_MOD_darwin_ar_2014_signalsd",   "DARWIN_Ar_2014_SignalSD")
-// DARWIN 2014 proposal (xenon-based)
-BE_FUNCTION(DDCalc0_DARWIN_Xe_2014_Events,     int,    (), "__ddcalc0_MOD_darwin_xe_2014_events",     "DARWIN_Xe_2014_Events")
-BE_FUNCTION(DDCalc0_DARWIN_Xe_2014_Background, double, (), "__ddcalc0_MOD_darwin_xe_2014_background", "DARWIN_Xe_2014_Background")
-BE_FUNCTION(DDCalc0_DARWIN_Xe_2014_Signal,     double, (), "__ddcalc0_MOD_darwin_xe_2014_signal",     "DARWIN_Xe_2014_Signal")
-BE_FUNCTION(DDCalc0_DARWIN_Xe_2014_SignalSI,   double, (), "__ddcalc0_MOD_darwin_xe_2014_signalsi",   "DARWIN_Xe_2014_SignalSI")
-BE_FUNCTION(DDCalc0_DARWIN_Xe_2014_SignalSD,   double, (), "__ddcalc0_MOD_darwin_xe_2014_signalsd",   "DARWIN_Xe_2014_SignalSD")
+BE_FUNCTION(DDCalc0_LUX_2013_Events,     int,    (), "C_DDCALC0_lux_2013_events",     "LUX_2013_Events")
+BE_FUNCTION(DDCalc0_LUX_2013_Background, double, (), "C_DDCALC0_lux_2013_background", "LUX_2013_Background")
+BE_FUNCTION(DDCalc0_LUX_2013_Signal,     double, (), "C_DDCALC0_lux_2013_signal",     "LUX_2013_Signal")
+BE_FUNCTION(DDCalc0_LUX_2013_SignalSI,   double, (), "C_DDCALC0_lux_2013_signalsi",   "LUX_2013_SignalSI")
+BE_FUNCTION(DDCalc0_LUX_2013_SignalSD,   double, (), "C_DDCALC0_lux_2013_signalsd",   "LUX_2013_SignalSD")
+// DARWIN 2015 proposal (argon-based)
+BE_FUNCTION(DDCalc0_DARWIN_Ar_2015_Events,     int,    (), "C_DDCALC0_darwin_ar_2015_events",     "DARWIN_Ar_2015_Events")
+BE_FUNCTION(DDCalc0_DARWIN_Ar_2015_Background, double, (), "C_DDCALC0_darwin_ar_2015_background", "DARWIN_Ar_2015_Background")
+BE_FUNCTION(DDCalc0_DARWIN_Ar_2015_Signal,     double, (), "C_DDCALC0_darwin_ar_2015_signal",     "DARWIN_Ar_2015_Signal")
+BE_FUNCTION(DDCalc0_DARWIN_Ar_2015_SignalSI,   double, (), "C_DDCALC0_darwin_ar_2015_signalsi",   "DARWIN_Ar_2015_SignalSI")
+BE_FUNCTION(DDCalc0_DARWIN_Ar_2015_SignalSD,   double, (), "C_DDCALC0_darwin_ar_2015_signalsd",   "DARWIN_Ar_2015_SignalSD")
+// DARWIN 2015 proposal (xenon-based)
+BE_FUNCTION(DDCalc0_DARWIN_Xe_2015_Events,     int,    (), "C_DDCALC0_darwin_xe_2015_events",     "DARWIN_Xe_2015_Events")
+BE_FUNCTION(DDCalc0_DARWIN_Xe_2015_Background, double, (), "C_DDCALC0_darwin_xe_2015_background", "DARWIN_Xe_2015_Background")
+BE_FUNCTION(DDCalc0_DARWIN_Xe_2015_Signal,     double, (), "C_DDCALC0_darwin_xe_2015_signal",     "DARWIN_Xe_2015_Signal")
+BE_FUNCTION(DDCalc0_DARWIN_Xe_2015_SignalSI,   double, (), "C_DDCALC0_darwin_xe_2015_signalsi",   "DARWIN_Xe_2015_SignalSI")
+BE_FUNCTION(DDCalc0_DARWIN_Xe_2015_SignalSD,   double, (), "C_DDCALC0_darwin_xe_2015_signalsd",   "DARWIN_Xe_2015_SignalSD")
 
 // Likelihoods
-BE_FUNCTION(DDCalc0_XENON100_2012_LogLikelihood,  double, (), "__ddcalc0_MOD_xenon100_2012_loglikelihood",  "DDCalc0_XENON100_2012_LogLikelihood")
-BE_FUNCTION(DDCalc0_LUX_2013_LogLikelihood,       double, (), "__ddcalc0_MOD_lux_2013_loglikelihood",       "DDCalc0_LUX_2013_LogLikelihood")
-BE_FUNCTION(DDCalc0_DARWIN_Ar_2014_LogLikelihood, double, (), "__ddcalc0_MOD_darwin_ar_2014_loglikelihood", "DDCalc0_DARWIN_Ar_2014_LogLikelihood")
-BE_FUNCTION(DDCalc0_DARWIN_Xe_2014_LogLikelihood, double, (), "__ddcalc0_MOD_darwin_xe_2014_loglikelihood", "DDCalc0_DARWIN_Xe_2014_LogLikelihood")
+BE_FUNCTION(DDCalc0_XENON100_2012_LogLikelihood,  double, (), "C_DDCALC0_xenon100_2012_loglikelihood",  "DDCalc0_XENON100_2012_LogLikelihood")
+BE_FUNCTION(DDCalc0_LUX_2013_LogLikelihood,       double, (), "C_DDCALC0_lux_2013_loglikelihood",       "DDCalc0_LUX_2013_LogLikelihood")
+BE_FUNCTION(DDCalc0_DARWIN_Ar_2015_LogLikelihood, double, (), "C_DDCALC0_darwin_ar_2015_loglikelihood", "DDCalc0_DARWIN_Ar_2015_LogLikelihood")
+BE_FUNCTION(DDCalc0_DARWIN_Xe_2015_LogLikelihood, double, (), "C_DDCALC0_darwin_xe_2015_loglikelihood", "DDCalc0_DARWIN_Xe_2015_LogLikelihood")
 
 BE_INI_FUNCTION
 {
@@ -164,8 +171,8 @@ BE_INI_FUNCTION
     bool flag = false;  // must pass by reference...
     DDCalc0_XENON100_2012_Init(&flag);
     DDCalc0_LUX_2013_Init(&flag);
-    DDCalc0_DARWIN_Ar_2014_Init(&flag);
-    DDCalc0_DARWIN_Xe_2014_Init(&flag);
+    DDCalc0_DARWIN_Ar_2015_Init(&flag);
+    DDCalc0_DARWIN_Xe_2015_Init(&flag);
     // Set Standard Halo Model.
     // The halo is already set to the default values shown
     // here by the DDCalc0_Init() routine.

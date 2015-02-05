@@ -53,21 +53,17 @@ if (NOT ${EXCLUDE_FLEXIBLESUSY})
   if(($ENV{SKIP_FS}) OR (${EXCLUDE_FLEXIBLESUSY}))
      message("-- SKIP_FS flag detected or SpecBit excluded: skipping build of flexiblesusy libraries")
      set(flexiblesusy_projects false)
-     foreach(_MODEL ${BUILT_FS_MODELS})
-       set(flexiblesusy_LDFLAGS "${flexiblesusy_LDFLAGS} -L${FLEXIBLESUSY_DIR}/models/${_MODEL} -l${_MODEL}")
-     endforeach()
   else()
-     message("-- NOTE! FlexibleSUSY takes kind of a while to build, so you probably")
-     message("   don't want to build it every time you compile gambit. It is built")
+     message("-- NOTE! FlexibleSUSY takes kind of a while to build, so you may not")
+     message("   want to build it every time you compile gambit. It is built")
      message("   in its own source so you should only have to do it once. For")
      message("   subsequent builds of gambit you can run cmake with SKIP_FS=1 to")
      message("   skip the flexiblesusy build. I.e. when you run cmake, do it like")
      message("   this: \"SKIP_FS=1 cmake ..\"")
-  
-     # Temporary variable to help chain the external flexible susy build dependencies, so that
-     # they are forced to build one at a time in parallel builds.
-     set(previous_FSlib false) 
-  
+ 
+     # Join the model names into a comma separated string list
+     string (REPLACE ";" "," MODEL_STRING "${BUILT_FS_MODELS}")
+ 
      # FlexibleSUSY configure options
      set(FS_OPTIONS ${FS_OPTIONS} 
           --with-cxx=${CMAKE_CXX_COMPILER}
@@ -77,28 +73,26 @@ if (NOT ${EXCLUDE_FLEXIBLESUSY})
           --with-eigen-incdir=${EIGEN3_DIR}
           --with-boost-libdir=${Boost_LIBRARY_DIR}
           --with-boost-incdir=${Boost_INCLUDE_DIR}
+          --with-models=${MODEL_STRING}
         )
      #--enable-verbose flag causes verbose output at runtime as well. Set it dynamically somehow.
 
-     # Explain how to build each of the flexiblesusy spectrum generators we need
      # Note; using $(MAKE) rather than "make" so that -jN flags get passed on (for parallel build)
-     foreach(_MODEL ${BUILT_FS_MODELS})
-         ExternalProject_Add(flexiblesusy_project${_MODEL}
-           SOURCE_DIR ${FLEXIBLESUSY_DIR}
-           BUILD_IN_SOURCE 1
-           CONFIGURE_COMMAND ./configure --with-models=${_MODEL} ${FS_OPTIONS}
-           BUILD_COMMAND $(MAKE) alllib LAPACKLIBS=${LAPACK_LIBS}
-           INSTALL_COMMAND ""
-         )
-         set(previous_FSlib flexiblesusy_project${_MODEL}) 
-         list(APPEND flexiblesusy_projects flexiblesusy_project${_MODEL})
-         set(flexiblesusy_LDFLAGS "${flexiblesusy_LDFLAGS} -L${FLEXIBLESUSY_DIR}/models/${_MODEL} -l${_MODEL}")
-     endforeach()
-  
+     ExternalProject_Add(flexiblesusy
+       SOURCE_DIR ${FLEXIBLESUSY_DIR}
+       BUILD_IN_SOURCE 1
+       CONFIGURE_COMMAND ./configure --with-models=${_MODEL} ${FS_OPTIONS}
+       BUILD_COMMAND $(MAKE) alllib LAPACKLIBS=${LAPACK_LIBS}
+       INSTALL_COMMAND ""
+     )
+     list(APPEND flexiblesusy_projects flexiblesusy)
   endif()
 
   if( NOT ${EXCLUDE_FLEXIBLESUSY} )
     # Link order matters! The core flexiblesusy libraries need to come after the model libraries
+    foreach(_MODEL ${BUILT_FS_MODELS})
+       set(flexiblesusy_LDFLAGS "${flexiblesusy_LDFLAGS} -L${FLEXIBLESUSY_DIR}/models/${_MODEL} -l${_MODEL}")
+    endforeach()
     set(flexiblesusy_LDFLAGS "${flexiblesusy_LDFLAGS} -L${FLEXIBLESUSY_DIR}/src -lflexisusy -L${FLEXIBLESUSY_DIR}/legacy -llegacy")
   endif()
 
@@ -133,35 +127,6 @@ if (NOT ${EXCLUDE_FLEXIBLESUSY})
   message("-- Determined flexiblesusy compiler library dependencies: ${flexiblesusy_extralibs}")
   set(flexiblesusy_LDFLAGS "${flexiblesusy_LDFLAGS} ${flexiblesusy_extralibs}")
   
-  ## # This feels a little hacky but I'm not sure what a better way is right now...
-  ## # Run a python script to suck necessary fortran linker flags from one of the 
-  ## # flexiblesusy configure files (stuff like -lgfortran, in GNU case)
-  ## set(errorcode true)
-  ## execute_process(COMMAND python ${PROJECT_SOURCE_DIR}/contrib/MassSpectra/get_flexiblesusy_link_flags.py 
-  ##                 OUTPUT_VARIABLE flexiblesusy_extralibs 
-  ##                 ERROR_VARIABLE blackhole
-  ##                 RESULT_VARIABLE errorcode)
-  ## if(errorcode)
-  ##   message(" -- Error retrieving flexiblesusy FLIB contents from config.h")
-  ##   message("    Don't panic yet, this probably just means the flexiblesusy libraries")
-  ##   message("    haven't been built yet. Your build of gambit may fail to link to the")
-  ##   message("    library dependencies of flexiblesusy, so abort the build after the")
-  ##   message("    flexiblesusy stuff finishes configuring to save yourself some time.")
-  ##   message("    That is, once you see the message:")
-  ##   message("      \"Performing build step for 'flexiblesusy_projectXXXX'\"")
-  ##   message("    (which should appear very early in the make)")
-  ##   message("    you should cancel the build and run cmake again, and it should then detect")
-  ##   message("    config.h and build everything.")
-  ##   message("    Once flexiblesusy has been built, you can configure subsequent gambit builds") 
-  ##   message("    using:")
-  ##   message("      SKIP_FS=1 cmake ..")
-  ##   message("    to skip over the flexiblesusy build. I'd like to make these steps automatic")
-  ##   message("    but I can't figure out how.")
-  ## else()
-  ##   message(" -- Retrieved flexiblesusy FLIB contents from config.h : ${flexiblesusy_extralibs}")
-  ## endif()
-  ## #separate_arguments(flexiblesusy_extralibs)
-  ## set(flexiblesusy_LDFLAGS "${flexiblesusy_LDFLAGS} ${flexiblesusy_extralibs}")  # consolidate variables...
   # Apparently leading and trailing whitespace is getting in there, so strip it
   string(STRIP "${flexiblesusy_LDFLAGS}" flexiblesusy_LDFLAGS)
 

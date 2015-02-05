@@ -33,6 +33,7 @@
 #include <iostream>
 #include <algorithm>
 #include <cmath>
+#include <fstream>
 
 #include "gambit_module_headers.hpp"
 #include "DarkBit_types.hpp"
@@ -523,25 +524,25 @@ namespace Gambit {
     
     // Function returning an empty, mutable list of final states to search for.
     // This list will be populated (modified) by other capabilities, and returned by cascadeMC_FinalStates once filled.
-    void cascadeMC_FinalStates_Constructor(Gambit::DarkBit::mutableFinalStateContainer &list)
+    void cascadeMC_FinalStates_Prototype(Gambit::DarkBit::mutableFinalStateContainer &list)
     {
         list.enable.clear();   
         list.disable.clear();
     }
    
-    // Functions adding various particles to final state list. Modifies cascadeMC_FinalStates_Constructor.
+    // Functions adding various particles to final state list. Modifies cascadeMC_FinalStates_Prototype.
     void cascadeMC_FinalStates_Enable_gamma(bool &dummy)
     {
         dummy=true;
         using namespace Pipes::cascadeMC_FinalStates_Enable_gamma;  
-        Dep::cascadeMC_FinalStates_Constructor->enable.push_back("gamma");   
+        Dep::cascadeMC_FinalStates_Prototype->enable.push_back("gamma");   
     }
     // Function allowing adding or removing final states from the list through yaml input.
     void cascadeMC_FinalStates_Enable_test6(bool &dummy)
     {
         dummy=true;
         using namespace Pipes::cascadeMC_FinalStates_Enable_test6;  
-        Dep::cascadeMC_FinalStates_Constructor->enable.push_back("test6");   
+        Dep::cascadeMC_FinalStates_Prototype->enable.push_back("test6");   
     }     
     
     void cascadeMC_FinalStates_SetThroughYaml(bool &dummy)
@@ -554,11 +555,11 @@ namespace Gambit {
         d = runOptions->getValueOrDef<std::vector<std::string> >(d,"cMC_finalStates_disable"); 
         for(std::vector<std::string>::const_iterator it = e.begin(); it != e.end(); ++it)
         {               
-            Dep::cascadeMC_FinalStates_Constructor->enable.push_back(*it);
+            Dep::cascadeMC_FinalStates_Prototype->enable.push_back(*it);
         }   
         for(std::vector<std::string>::const_iterator it = d.begin(); it != d.end(); ++it)
         {               
-            Dep::cascadeMC_FinalStates_Constructor->disable.push_back(*it);
+            Dep::cascadeMC_FinalStates_Prototype->disable.push_back(*it);
         }           
     }     
    
@@ -571,8 +572,8 @@ namespace Gambit {
         using namespace Pipes::cascadeMC_FinalStates;     
         Loop::executeIteration(0);
         list.clear();
-        std::vector<std::string> &elist = Dep::cascadeMC_FinalStates_Constructor->enable;
-        std::vector<std::string> &dlist = Dep::cascadeMC_FinalStates_Constructor->disable;        
+        std::vector<std::string> &elist = Dep::cascadeMC_FinalStates_Prototype->enable;
+        std::vector<std::string> &dlist = Dep::cascadeMC_FinalStates_Prototype->disable;        
         for(std::vector<std::string>::const_iterator it = elist.begin(); it != elist.end(); ++it)
         {
             bool add=true;       
@@ -771,16 +772,20 @@ namespace Gambit {
             specSum += E_CoM[Nsampl]*dlogE*dN_dE[Nsampl];
             Nsampl++;
         }
+        SimpleHist spectrum(histList[initialState][finalState].binLower);
         for(int i=0; i<Nsampl; i++)    
         {   
-            double weight = E_CoM[i]*dlogE*dN_dE[i]/Nsampl;
+            double weight = E_CoM[i]*dlogE*dN_dE[i];
             // Calculate box limits
             double tmp1 = gamma*E_CoM[i];
             double tmp2 = beta*gamma*sqrt(E_CoM[i]*E_CoM[i]-m*m);
             // Add box spectrum to histogram
-            #pragma omp critical (cascadeMC_histList)
-                histList[initialState][finalState].addBox(tmp1-tmp2,tmp1+tmp2,weight);
+            spectrum.addBox(tmp1-tmp2,tmp1+tmp2,weight);
         }
+        spectrum.multiply(1.0/Nsampl);
+        // Add bin contents of spectrum histogram to main histogram as weighted events
+        #pragma omp critical (cascadeMC_histList)
+            histList[initialState][finalState].addHistAsWeights_sameBin(spectrum);
         delete [] E_CoM;
         delete [] dN_dE;
     }        
@@ -927,7 +932,8 @@ namespace Gambit {
     // Function retrieving specific spectra (like cascadeMC_gammaSpectra) should call this function.
     void cascadeMC_fetchSpectra(std::map<std::string, Funk::Funk> &spectra, std::string finalState, 
                                 const std::vector<std::string> &ini, const std::vector<std::string> &fin, 
-                                const std::map<std::string, std::map<std::string,SimpleHist> > &h)
+                                const std::map<std::string, std::map<std::string,SimpleHist> > &h,
+                                const std::map<std::string,int> &eventCounts)
     {
         spectra.clear();
         // Check if final state has been calculated
@@ -938,6 +944,11 @@ namespace Gambit {
             {
                 std::vector<double> E = h.at(*it).at(finalState).getBinCenters();
                 std::vector<double> dN_dE = h.at(*it).at(finalState).getBinValues();
+                // Normalize to per-event spectrum
+                for (std::vector<double>::iterator it2=dN_dE.begin();it2!=dN_dE.end();++it2)
+                {
+                    *it2 /= eventCounts.at(*it);
+                }
                 spectra[*it] = Funk::Funk(new Funk::FunkInterp("E", E, dN_dE, "log"));
             }
             else
@@ -951,7 +962,7 @@ namespace Gambit {
     void cascadeMC_gammaSpectra(std::map<std::string, Funk::Funk> &spectra)
     {
         using namespace Pipes::cascadeMC_gammaSpectra;
-        cascadeMC_fetchSpectra(spectra, "gamma", *Dep::cascadeMC_ChainList, *Dep::cascadeMC_FinalStates, *Dep::cascadeMC_Histograms);
+        cascadeMC_fetchSpectra(spectra, "gamma", *Dep::cascadeMC_ChainList, *Dep::cascadeMC_FinalStates, *Dep::cascadeMC_Histograms, *Dep::cascadeMC_EventCount);
     }    
         
         
@@ -985,7 +996,7 @@ namespace Gambit {
         std::cout << "************************" << std::endl;
     }
     
-
+    // Very simple routine for testing decay chain code
     void chain_test(double &result)
     {
         using namespace DecayChain;
@@ -1005,6 +1016,132 @@ namespace Gambit {
         testChain.generateDecayChainMC(-1,-1);
         testChain.printChain();
         result = 0;
+    }
+
+    // Unit test for decay chains
+    void cascadeMC_UnitTest(bool &dummy)
+    {
+        dummy=true;
+        using namespace Pipes::cascadeMC_UnitTest;            
+        using namespace DecayChain;    
+        std::cout << std::endl << "Running cascadeMC_UnitTest" << std::endl << std::endl;
+        DecayTable dt(*Dep::cascadeMC_test_TH_ProcessCatalog, *Dep::SimYieldTable);
+        dt.printTable();
+        ChainParticle testChain(vec3(0), &dt, "test8");
+        testChain.generateDecayChainMC(-1,-1);       
+        testChain.printChain();
+        std::ofstream out;
+        out.open("./cascadMC_testOutput.dat", ios::out);
+        for(int i=0; i< 100000; i++)
+        {
+            double m0_11 = sqrt(2*dot((*testChain[0]).p_Lab(), (*(*testChain[1])[1]).p_Lab()));               
+            double m00_110 = sqrt(2*dot((*(*testChain[0])[0]).p_Lab(), (*(*(*testChain[1])[1])[0]).p_Lab()));   
+            out << m0_11 << "   " << m00_110 << std::endl;
+            testChain.reDrawAngles();
+        }
+        std::cout << std::endl << "Output data written to ./cascadMC_testOutput.dat" << std::endl << std::endl;
+        out.close();
+    }
+
+    // Process catalog for testing purposes
+    void cascadeMC_test_TH_ProcessCatalog(Gambit::DarkBit::TH_ProcessCatalog &result)
+    {
+        using namespace Pipes::cascadeMC_test_TH_ProcessCatalog;
+        
+        // Instantiate new ProcessCatalog
+        TH_ProcessCatalog catalog;      
+
+        // Dummy particles for testing the cascade decay code
+        TH_ParticleProperty test1Property(10, 0);
+        TH_ParticleProperty test2Property(5, 0);
+        TH_ParticleProperty test3Property(4, 0);
+        TH_ParticleProperty test4Property(1, 0);
+        TH_ParticleProperty test5Property(1, 0);
+        TH_ParticleProperty test6Property(0, 0);   
+        TH_ParticleProperty test7Property(1e-7, 0);           
+        TH_ParticleProperty test8Property(10, 0);                 
+        TH_ParticleProperty test9Property(7, 0);     
+             
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("test1", test1Property));
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("test2", test2Property));
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("test3", test3Property));
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("test4", test4Property));
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("test5", test5Property));
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("test6", test6Property)); 
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("test7", test7Property));         
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("test8", test8Property));    
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("test9", test9Property));              
+        
+        // test1 decays       
+        Funk::Funk test1_23width = Funk::one();
+        Funk::Funk test1_24width = 2*Funk::one();
+        Funk::Funk test1_456width = 3*Funk::one();
+        std::vector<std::string> finalStates_1_23;
+        std::vector<std::string> finalStates_1_24;
+        std::vector<std::string> finalStates_1_456;
+        TH_Process test1_decay("test1");             
+        finalStates_1_23.push_back("test2");              
+        finalStates_1_23.push_back("test3");             
+        test1_decay.genRateTotal = (test1_23width->eval() + test1_24width->eval() + test1_456width->eval())*2*Funk::one();
+        TH_Channel channel_1_23(finalStates_1_23, test1_23width);   
+        test1_decay.channelList.push_back(channel_1_23);
+        finalStates_1_24.push_back("test2");              
+        finalStates_1_24.push_back("test4");                                            
+        TH_Channel channel_1_24(finalStates_1_24, test1_24width);     
+        test1_decay.channelList.push_back(channel_1_24);
+        finalStates_1_456.push_back("test4");              
+        finalStates_1_456.push_back("test5");      
+        finalStates_1_456.push_back("test6");            
+        TH_Channel channel_1_456(finalStates_1_456, test1_456width); 
+        test1_decay.channelList.push_back(channel_1_456);
+        catalog.processList.push_back(test1_decay);
+
+        // test2 decays 
+        Funk::Funk test2_56width = 0.5*Funk::one();
+        std::vector<std::string> finalStates_2_56; 
+        TH_Process test2_decay("test2");     
+        finalStates_2_56.push_back("test5");              
+        finalStates_2_56.push_back("test6");                                                               
+        test2_decay.genRateTotal = test2_56width->eval()*Funk::one();
+        TH_Channel channel_2_56(finalStates_2_56, test2_56width);
+        test2_decay.channelList.push_back(channel_2_56);
+        catalog.processList.push_back(test2_decay);        
+        
+        // test7 decays 
+        Funk::Funk test7_66width = Funk::one();   
+        std::vector<std::string> finalStates_7_66;
+        TH_Process test7_decay("test7");     
+        finalStates_7_66.push_back("test6");              
+        finalStates_7_66.push_back("test6");                                                               
+        test7_decay.genRateTotal = test7_66width->eval()*Funk::one();
+        TH_Channel channel_7_66(finalStates_7_66, test7_66width);
+        test7_decay.channelList.push_back(channel_7_66);
+        catalog.processList.push_back(test7_decay);        
+        
+        // test8 decays 
+        Funk::Funk test8_79width = Funk::one();   
+        std::vector<std::string> finalStates_8_79;
+        TH_Process test8_decay("test8");     
+        finalStates_8_79.push_back("test7");              
+        finalStates_8_79.push_back("test9");                                                               
+        test8_decay.genRateTotal = test8_79width->eval()*Funk::one();
+        TH_Channel channel_8_79(finalStates_8_79, test8_79width);
+        test8_decay.channelList.push_back(channel_8_79);
+        catalog.processList.push_back(test8_decay);        
+        
+        // test9 decays      
+        Funk::Funk test9_47width = Funk::one();
+        std::vector<std::string> finalStates_9_47;           
+        TH_Process test9_decay("test9");     
+        finalStates_9_47.push_back("test4");              
+        finalStates_9_47.push_back("test7");                                                               
+        test9_decay.genRateTotal = test9_47width->eval()*Funk::one();
+        TH_Channel channel_9_47(finalStates_9_47, test9_47width);
+        test9_decay.channelList.push_back(channel_9_47);
+        catalog.processList.push_back(test9_decay);
+   
+        // Return the finished process catalog
+        result = catalog;
     }
 
 
@@ -1405,45 +1542,89 @@ namespace Gambit {
         TH_ParticleProperty test3Property(4, 0);
         TH_ParticleProperty test4Property(1, 0);
         TH_ParticleProperty test5Property(1, 0);
-        TH_ParticleProperty test6Property(3, 0);        
+        TH_ParticleProperty test6Property(0, 0);   
+        TH_ParticleProperty test7Property(1e-7, 0);           
+        TH_ParticleProperty test8Property(10, 0);                 
+        TH_ParticleProperty test9Property(7, 0);     
+             
         catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("test1", test1Property));
         catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("test2", test2Property));
         catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("test3", test3Property));
         catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("test4", test4Property));
         catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("test5", test5Property));
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("test6", test6Property));        
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("test6", test6Property)); 
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("test7", test7Property));         
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("test8", test8Property));    
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("test9", test9Property));              
+        
+        // test1 decays       
         Funk::Funk test1_23width = Funk::one();
         Funk::Funk test1_24width = 2*Funk::one();
         Funk::Funk test1_456width = 3*Funk::one();
-        Funk::Funk test2_56width = 0.5*Funk::one();
         std::vector<std::string> finalStates_1_23;
         std::vector<std::string> finalStates_1_24;
         std::vector<std::string> finalStates_1_456;
-        std::vector<std::string> finalStates_2_56;                                  
-        TH_Process test1_decay("test1");     
+        TH_Process test1_decay("test1");             
         finalStates_1_23.push_back("test2");              
         finalStates_1_23.push_back("test3");             
         test1_decay.genRateTotal = (test1_23width->eval() + test1_24width->eval() + test1_456width->eval())*2*Funk::one();
-        TH_Channel channel_1_23(finalStates_1_23, test1_23width);
+        TH_Channel channel_1_23(finalStates_1_23, test1_23width);   
         test1_decay.channelList.push_back(channel_1_23);
         finalStates_1_24.push_back("test2");              
         finalStates_1_24.push_back("test4");                                            
-        TH_Channel channel_1_24(finalStates_1_24, test1_24width);
+        TH_Channel channel_1_24(finalStates_1_24, test1_24width);     
         test1_decay.channelList.push_back(channel_1_24);
         finalStates_1_456.push_back("test4");              
         finalStates_1_456.push_back("test5");      
         finalStates_1_456.push_back("test6");            
-        TH_Channel channel_1_456(finalStates_1_456, test1_456width);
+        TH_Channel channel_1_456(finalStates_1_456, test1_456width); 
         test1_decay.channelList.push_back(channel_1_456);
         catalog.processList.push_back(test1_decay);
+
+        // test2 decays 
+        Funk::Funk test2_56width = 0.5*Funk::one();
+        std::vector<std::string> finalStates_2_56; 
         TH_Process test2_decay("test2");     
         finalStates_2_56.push_back("test5");              
         finalStates_2_56.push_back("test6");                                                               
         test2_decay.genRateTotal = test2_56width->eval()*Funk::one();
         TH_Channel channel_2_56(finalStates_2_56, test2_56width);
         test2_decay.channelList.push_back(channel_2_56);
-        catalog.processList.push_back(test2_decay);
+        catalog.processList.push_back(test2_decay);        
         
+        // test7 decays 
+        Funk::Funk test7_66width = Funk::one();   
+        std::vector<std::string> finalStates_7_66;
+        TH_Process test7_decay("test7");     
+        finalStates_7_66.push_back("test6");              
+        finalStates_7_66.push_back("test6");                                                               
+        test7_decay.genRateTotal = test7_66width->eval()*Funk::one();
+        TH_Channel channel_7_66(finalStates_7_66, test7_66width);
+        test7_decay.channelList.push_back(channel_7_66);
+        catalog.processList.push_back(test7_decay);        
+        
+        // test8 decays 
+        Funk::Funk test8_79width = Funk::one();   
+        std::vector<std::string> finalStates_8_79;
+        TH_Process test8_decay("test8");     
+        finalStates_8_79.push_back("test7");              
+        finalStates_8_79.push_back("test9");                                                               
+        test8_decay.genRateTotal = test8_79width->eval()*Funk::one();
+        TH_Channel channel_8_79(finalStates_8_79, test8_79width);
+        test8_decay.channelList.push_back(channel_8_79);
+        catalog.processList.push_back(test8_decay);        
+        
+        // test9 decays      
+        Funk::Funk test9_47width = Funk::one();
+        std::vector<std::string> finalStates_9_47;           
+        TH_Process test9_decay("test9");     
+        finalStates_9_47.push_back("test4");              
+        finalStates_9_47.push_back("test7");                                                               
+        test9_decay.genRateTotal = test9_47width->eval()*Funk::one();
+        TH_Channel channel_9_47(finalStates_9_47, test9_47width);
+        test9_decay.channelList.push_back(channel_9_47);
+        catalog.processList.push_back(test2_decay);
+   
         // Return the finished process catalog
         result = catalog;
     }
@@ -1744,10 +1925,10 @@ namespace Gambit {
     }
 
     // Estimated argon-based DARWIN sensitivity:
-    //   Conrad et al., arxiv:14MM.XXXX
-    void lnL_DARWIN_Ar_2014(double &result)
+    //   Conrad et al., arxiv:15MM.XXXX
+    void lnL_DARWIN_Ar_2015(double &result)
     {
-        using namespace Pipes::lnL_DARWIN_Ar_2014;
+        using namespace Pipes::lnL_DARWIN_Ar_2015;
         // TODO: The WIMP parameters need to be set only once per
         // model, across all experiments.  Need to figure out
         // how to do this....
@@ -1760,16 +1941,16 @@ namespace Gambit {
         // TODO: This calculation needs to be done only once per
         // model and could also potentially be set up as a
         // dependency.
-        BEreq::DDCalc0_DARWIN_Ar_2014_CalcRates();
-        result = BEreq::DDCalc0_DARWIN_Ar_2014_LogLikelihood();
-        std::cout << "DARWIN argon (2014 estimate) likelihood: " << result << std::endl;
+        BEreq::DDCalc0_DARWIN_Ar_2015_CalcRates();
+        result = BEreq::DDCalc0_DARWIN_Ar_2015_LogLikelihood();
+        std::cout << "DARWIN argon (2015 estimate) likelihood: " << result << std::endl;
     }
 
     // Estimated xenon-based DARWIN sensitivity:
-    //   Conrad et al., arxiv:14MM.XXXX
-    void lnL_DARWIN_Xe_2014(double &result)
+    //   Conrad et al., arxiv:15MM.XXXX
+    void lnL_DARWIN_Xe_2015(double &result)
     {
-        using namespace Pipes::lnL_DARWIN_Xe_2014;
+        using namespace Pipes::lnL_DARWIN_Xe_2015;
         // TODO: The WIMP parameters need to be set only once per
         // model, across all experiments.  Need to figure out
         // how to do this....
@@ -1782,9 +1963,9 @@ namespace Gambit {
         // TODO: This calculation needs to be done only once per
         // model and could also potentially be set up as a
         // dependency.
-        BEreq::DDCalc0_DARWIN_Xe_2014_CalcRates();
-        result = BEreq::DDCalc0_DARWIN_Xe_2014_LogLikelihood();
-        std::cout << "DARWIN xenon (2014 estimate) likelihood: " << result << std::endl;
+        BEreq::DDCalc0_DARWIN_Xe_2015_CalcRates();
+        result = BEreq::DDCalc0_DARWIN_Xe_2015_LogLikelihood();
+        std::cout << "DARWIN xenon (2015 estimate) likelihood: " << result << std::endl;
     }
 
     // Simple test likelihood (in case DDCalc0 does not work)

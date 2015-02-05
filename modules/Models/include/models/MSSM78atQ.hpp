@@ -22,11 +22,11 @@
 //
 //  *********************************************
 
-#ifndef __MSSM78_hpp__
-#define __MSSM78_hpp__
+#ifndef __MSSM78atQ_hpp__
+#define __MSSM78atQ_hpp__
 
-/// FlexibleSUSY compatible general (78 parameters plus sign) MSSM parameterisation
-#define MODEL MSSM78
+/// FlexibleSUSY compatible general (78 parameters plus sign, plus input scale) MSSM parameterisation
+#define MODEL MSSM78atQ
   START_MODEL
   DEFINEPARS(Qin,TanBeta,SignMu,
              mHu2,mHd2,M1,M2,M3)

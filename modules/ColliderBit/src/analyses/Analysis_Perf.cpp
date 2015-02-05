@@ -22,24 +22,27 @@ namespace Gambit {
 
     class Analysis_Perf : public Analysis {
 
-      TH1F *_hBosonPt, *_hBosoneta, *_hBosonphi;
+      TH1F *_hBosonPt, *_hBosonEta, *_hBosonPhi;
       TH1F *_hElectron1Pt, *_hElectron1eta, *_hElectron1phi;
       TH1F *_hElectron2Pt, *_hElectron2eta, *_hElectron2phi;
       TH1F *_hMuon1Pt;
       TH1F *_hMuon2Pt;
       TH1F *_hElectron1Pt_truth, *_hElectron1eta_truth, *_hElectron1phi_truth;
       TH1F *_hElectron2Pt_truth, *_hElectron2eta_truth, *_hElectron2phi_truth;
-      TH1F *_hNelec,*_hNelec_truth, *_hNjet;
+      TH1F *_hNelec, *_hNelec_truth, *_hNelec30, *_hNelec100, *_hNelec500;
+      TH1F *_hNtau, *_hNtau30, *_hNtau100, *_hNtau500;
+      TH1F *_hNmuon, *_hNmuon30, *_hNmuon100, *_hNmuon500;
+      TH1F *_hNjet30, *_hNjet100, *_hNjet500;
+      TH1F *_hNcentraljet30, *_hNcentraljet100, *_hNcentraljet500;
+      TH1F *_hNbjet30, *_hNbjet100, *_hNbjet500;
       TH1F *_hinv, *_hmet;
       TH1F *_hinv_truth, *_hmet_truth;
-
-      //Plots added by MJW
       TH1F *_hElectronPt, *_hElectronEta, *_hElectronPhi, *_hElectronE;
+      TH1F *_hTauPt, *_hTauEta, *_hTauPhi, *_hTauE;
       TH1F *_hMuonPt, *_hMuonEta, *_hMuonPhi, *_hMuonE;
       TH1F *_hJetPt, *_hJetEta, *_hJetPhi, *_hJetE;
-
-      TH1F *_hNmuon;
-
+      TH1F *_hCentralJetPt, *_hCentralJetE;
+      TH1F *_hBJetPt, *_hBJetEta, *_hBJetPhi, *_hBJetE;
 
       std::string _output_filename;
       TFile *_ROOToutFile;
@@ -53,178 +56,241 @@ namespace Gambit {
 
 
       Analysis_Perf() {
-        std::cout << "Opening ROOT file" << endl;
         _output_filename = "SimOutput.root";
+        std::cout << "Opening ROOT file" << _output_filename << endl;
 
-        _ROOToutFile = new TFile(_output_filename.c_str(),"RECREATE");
+        _ROOToutFile = new TFile(_output_filename.c_str(), "RECREATE");
 
-        _hBosonPt = new TH1F("BosonPt"," Boson Generated Pt;GeV;",100, 0., 200.);
-        _hBosoneta = new TH1F("Bosoneta"," Boson Generated eta;",100, -5., 5.);
-        _hBosonphi = new TH1F( "BosonPhi","Boson Generated Phi;",100, -6.0, 6.0);
+        _hBosonPt = new TH1F("BosonPt", "Boson generated p_{T};GeV;", 100, 0., 200.);
+        _hBosonEta = new TH1F("BosonEta", "Boson generated #eta;", 100, -5., 5.);
+        _hBosonPhi = new TH1F( "BosonPhi", "Boson generated #phi;", 100, -6.0, 6.0);
 
-        _hElectron1Pt_truth = new TH1F("Electron1PtTruth","Leading Electron Pt (Truth);GeV;",100, 0., 200.);
-        _hElectron1eta_truth = new TH1F("Electron1etaTruth","Leading Electron eta (Truth);",100, -5., 5.);
-        _hElectron1phi_truth = new TH1F( "Electron1PhiTruth","Leading Electron Phi (Truth);",100, -6.0, 6.0);
+        _hElectron1Pt = new TH1F("Electron1Pt", "Leading electron p_{T};GeV;", 100, 0., 200.);
+        _hElectron1eta = new TH1F("Electron1Eta", "Leading electron #eta;", 100, -5., 5.);
+        _hElectron1phi = new TH1F("Electron1Phi", "Leading electron #phi;", 100, -6.0, 6.0);
+        _hElectron1Pt_truth = new TH1F("Electron1PtTruth", "Leading electron p_{T} (truth);GeV;", 100, 0., 200.);
+        _hElectron1eta_truth = new TH1F("Electron1EtaTruth", "Leading electron #eta (truth);", 100, -5., 5.);
+        _hElectron1phi_truth = new TH1F("Electron1PhiTruth", "Leading electron #phi (truth);", 100, -6.0, 6.0);
 
-        _hElectron2Pt_truth = new TH1F("Electron2PtTruth","SubLeading Electron Pt (Truth);GeV;",100, 0., 200.);
-        _hElectron2eta_truth = new TH1F("Electron2etaTruth","SubLeading  Electron pseudorapidity (Truth);eta",100, -5., 5.);
-        _hElectron2phi_truth = new TH1F( "Electron2PhiTruth","SubLeading Electron Phi (Truth);",100, -6.0, 6.0);
+        _hElectron2Pt_truth = new TH1F("Electron2PtTruth", "Subleading electron p_{T} (truth);GeV;", 100, 0., 200.);
+        _hElectron2eta_truth = new TH1F("Electron2EtaTruth", "Subleading electron #eta (truth);", 100, -5., 5.);
+        _hElectron2phi_truth = new TH1F("Electron2PhiTruth", "Subleading electron #phi (truth);", 100, -6.0, 6.0);
+        _hElectron2Pt = new TH1F("Electron2Pt","Subleading electron p_{T};GeV;", 100, 0., 200.);
+        _hElectron2eta = new TH1F("Electron2Eta","Subleading electron #eta;", 100, -5., 5.);
+        _hElectron2phi = new TH1F("Electron2Phi","Subleading electron #phi;", 100, -6.0, 6.0);
 
-        _hElectron1Pt = new TH1F("Electron1Pt","Leading Electron Pt;GeV;",100, 0., 200.);
-        _hElectron1eta = new TH1F("Electron1eta","Leading Electron eta;",100, -5., 5.);
-        _hElectron1phi = new TH1F( "Electron1Phi","Leading Electron Phi;",100, -6.0, 6.0);
+        _hMuon1Pt = new TH1F("Muon1Pt","Leading muon p_{T};GeV;", 100, 0., 200.);
+        _hMuon2Pt = new TH1F("Muon2Pt","Leading muon p_{T};GeV;", 100, 0., 200.);
+
+        _hNelec = new TH1F("Nelec","Number of isolated electrons;Number/Event", 5, -0.5, 4.5);
+        _hNelec_truth = new TH1F("NelecTruth","Number of electrons (truth);Number/Event", 5, -0.5, 4.5);
+
+        _hNmuon = new TH1F("Nmuon","Number of muons;Number/Event", 5, -0.5, 4.5);
+
+	_hNtau = new TH1F("Ntau","Number of taus;Number/Event", 5, -0.5, 4.5);
+
+        _hNjet30 = new TH1F("Njet30","Number of jets with p_T > 30 GeV;Number/Event", 10, -0.5, 9.5);
+        _hNjet100 = new TH1F("Njet100","Number of jets with p_T > 100 GeV;Number/Event", 10, -0.5, 9.5);
+        _hNjet500 = new TH1F("Njet500","Number of jets with p_T > 500 GeV;Number/Event", 10, -0.5, 9.5);
 
 
-        _hElectron2Pt = new TH1F("Electron2Pt","SubLeading Electron Pt;GeV;",100, 0., 200.);
-        _hElectron2eta = new TH1F("Electron2eta","SubLeading  Electron eta;",100, -5., 5.);
-        _hElectron2phi = new TH1F( "Electron2Phi","SubLeading Electron Phi;",100, -6.0, 6.0);
+        _hNbjet30 = new TH1F("Nbjet30","Number of b jets with p_{T} > 30 GeV;Number/Event", 10, -0.5, 9.5);
+        _hNbjet100 = new TH1F("Nbjet100","Number of b jets with p_{T} > 100 GeV;Number/Event", 10, -0.5, 9.5);
+        _hNbjet500 = new TH1F("Nbjet500","Number of b jets with p_{T} > 500 GeV;Number/Event", 10, -0.5, 9.5);
 
-        _hMuon1Pt = new TH1F("Muon1Pt","Leading Muon Pt;GeV;",100, 0., 200.);
-        _hMuon2Pt = new TH1F("Muon2Pt","Leading Muon Pt;GeV;",100, 0., 200.);
+        _hNcentraljet30 = new TH1F("Ncentraljet30","Number of central jets with p_{T} > 30 GeV;Number/Event", 10, -0.5, 9.5);
+        _hNcentraljet100 = new TH1F("Ncentraljet100","Number of central jets with p_{T} > 100 GeV;Number/Event", 10, -0.5, 9.5);
+        _hNcentraljet500 = new TH1F("Ncentraljet500","Number of central jets with p_{T} > 500 GeV;Number/Event", 10, -0.5, 9.5);
 
-        _hNelec = new TH1F("Nelec","Number of Isolated Electrons;Number/Event",5,-0.5,4.5);
-        _hNelec_truth = new TH1F("NelecTruth","Number of Electrons (Truth);Number/Event",5,-0.5,4.5);
+        _hinv = new TH1F("Inv","Z invariant mass;GeV", 100, 0, 200);
+        _hinv_truth = new TH1F("InvTruth", "Z invariant mass (truth);GeV", 100, 0, 200);
 
-        _hNjet = new TH1F("Njet","Number of Jets;Number/Event",10,-0.5,9.5);
+        _hmet = new TH1F( "MET","MET;GeV", 50, 0, 1000);
+        _hmet_truth = new TH1F("METTruth", "MET (truth);GeV", 100, 0, 200);
 
-        _hinv = new TH1F( "Inv","Z Invariant Mass;GeV",100, 0, 200);
-        _hmet = new TH1F( "MET","MET;GeV",50, 0, 1000);
+        _hElectronPt = new TH1F("ElectronPt", "Electron p_{T};GeV;", 50, 0., 500.);
+        _hElectronEta = new TH1F("ElectronEta", "Electron #eta;", 50, -5., 5.);
+        _hElectronPhi = new TH1F("ElectronPhi", "Electron #phi;", 50, -6.0, 6.0);
+        _hElectronE = new TH1F("ElectronE", "Electron E;GeV;", 50, 0., 500.);
 
-        _hinv_truth = new TH1F( "InvTruth","Z Invariant Mass (Truth);GeV",100, 0, 200);
-        _hmet_truth = new TH1F( "METTruth","MET (Truth);GeV",100, 0, 200);
 
-        //MJW plots
-        _hElectronPt = new TH1F("ElectronPt","Electron Pt;GeV;",50, 0., 500.);
-        _hElectronEta = new TH1F("Electroneta","Electron eta;",50, -5., 5.);
-        _hElectronPhi = new TH1F( "ElectronPhi","Electron Phi;",50, -6.0, 6.0);
-        _hElectronE = new TH1F("ElectronE","Electron E;GeV;",50, 0., 500.);
-        _hMuonPt = new TH1F("MuonPt","Muon Pt;GeV;",50, 0., 500.);
-        _hMuonEta = new TH1F("Muoneta","Muon eta;",50, -5., 5.);
-        _hMuonPhi = new TH1F( "MuonPhi","Muon Phi;",50, -6.0, 6.0);
-        _hMuonE = new TH1F("MuonE","Muon E;GeV;",50, 0., 500.);
+	_hTauPt = new TH1F("TauPt", "Tau p_T;GeV;", 50, 0., 500.);
+        _hTauEta = new TH1F("TauEta", "Tau #eta;", 50, -5., 5.);
+        _hTauPhi = new TH1F("TauPhi", "Tau #phi;", 50, -6.0, 6.0);
+        _hTauE = new TH1F("TauE", "Tau E;GeV;", 50, 0., 500.);
 
-        _hJetPt = new TH1F("JetPt","Jet Pt;GeV;",50, 0., 500.);
-        _hJetEta = new TH1F("Jeteta","Jet eta;",50, -5., 5.);
-        _hJetPhi = new TH1F( "JetPhi","Jet Phi;",50, -6.0, 6.0);
-        _hJetE = new TH1F("JetE","Jet E;GeV;",50, 0., 500.);
+        _hMuonPt = new TH1F("MuonPt","Muon p_T;GeV;", 50, 0., 500.);
+        _hMuonEta = new TH1F("MuonEta","Muon #eta;", 50, -5., 5.);
+        _hMuonPhi = new TH1F("MuonPhi","Muon #phi;", 50, -6.0, 6.0);
+        _hMuonE = new TH1F("MuonE","Muon E;GeV;", 50, 0., 500.);
 
-        _hNmuon = new TH1F("Nmuon","Number of Muons;Number/Event",5,-0.5,4.5);
+        /// @todo Use log/exp binning for E and pT; increase range past 1 TeV?
+        _hJetPt = new TH1F("JetPt","Jet p_{T};GeV;", 50, 0., 500.);
+        _hJetE = new TH1F("JetE","Jet E;GeV;", 50, 0., 500.);
+        _hJetEta = new TH1F("JetEta","Jet #eta;", 50, -5., 5.);
+        _hJetPhi = new TH1F("JetPhi","Jet #phi;", 50, -6.0, 6.0);
+        //
+        _hBJetPt = new TH1F("BJetPt","b-jet p_{T};GeV;", 50, 0., 500.);
+        _hBJetE = new TH1F("BJetE","b-jet E;GeV;", 50, 0., 500.);
+        _hBJetEta = new TH1F("BJetEta","b-jet #eta;", 50, -5., 5.);
+        _hBJetPhi = new TH1F("BJetPhi","b-jet #phi;", 50, -6.0, 6.0);
+        //
+        _hCentralJetPt = new TH1F("CentralJetPt","Jet p_{T} for |#eta| < 2.5;GeV;", 50, 0., 500.);
+        _hCentralJetE = new TH1F("CentralJetE","Jet E for |#eta| < 2.5;GeV;", 50, 0., 500.);
 
       }
 
 
-
       void analyze(const Event* event) {
 
-        //Do overlap removal
         // Now define vectors of baseline objects
         vector<Particle*> baselineElectrons;
         for (Particle* electron : event->electrons()) {
-          if (electron->pT() > 10. && fabs(electron->eta()) < 2.47) baselineElectrons.push_back(electron);
+          if (electron->pT() > 10 && electron->abseta() < 2.47) baselineElectrons.push_back(electron);
         }
         vector<Particle*> baselineMuons;
         for (Particle* muon : event->muons()) {
-          if (muon->pT() > 10. && fabs(muon->eta()) < 2.4) baselineMuons.push_back(muon);
+          if (muon->pT() > 10 && muon->abseta() < 2.4) baselineMuons.push_back(muon);
         }
         vector<Jet*> baselineJets;
         for (Jet* jet : event->jets()) {
-          if (jet->pT() > 20. && fabs(jet->eta()) < 4.5) baselineJets.push_back(jet);
+          if (jet->pT() > 20 && jet->abseta() < 4.5) baselineJets.push_back(jet);
         }
 
-        // Overlap removal: only applied to jets with |eta|<2.8
+
+        // Do overlap removal for jets with |eta| < 2.8
         vector<Particle*> signalElectrons;
         vector<Particle*> signalMuons;
         vector<Jet*> signalJets;
 
-        // Remove any jet within dR=0.2 of an electrons
-        for (size_t iJet=0;iJet<baselineJets.size();iJet++) {
-          bool overlap=false;
-          P4 jetVec=baselineJets.at(iJet)->mom();
-          if(fabs(jetVec.eta())<2.8){
-            for (size_t iEl=0;iEl<baselineElectrons.size();iEl++) {
-              P4 elVec=baselineElectrons.at(iEl)->mom();
-              if (fabs(elVec.deltaR_eta(jetVec))<0.2)overlap=true;
+	// Taus
+	vector<Particle*> signalTaus;
+        for (Particle* tau : event->taus()) {
+          if (tau->pT() > 20. && fabs(tau->eta()) < 2.47) signalTaus.push_back(tau);
+        }
+
+        // Remove any jet within dR=0.2 of an electron
+        for (Jet* j : baselineJets) {
+          bool overlap = false;
+          if (j->abseta() < 2.8) {
+            for (const Particle* e : baselineElectrons) {
+              if (j->mom().deltaR_eta(e->mom()) < 0.2) {
+                overlap = true;
+                break;
+              }
             }
           }
-          if (!overlap)signalJets.push_back(baselineJets.at(iJet));
+          if (!overlap) signalJets.push_back(j);
         }
 
-        // Remove electrons with dR=0.4 or surviving jets
-        for (size_t iEl=0;iEl<baselineElectrons.size();iEl++) {
-          bool overlap=false;
-          P4 elVec=baselineElectrons.at(iEl)->mom();
-          for (size_t iJet=0;iJet<signalJets.size();iJet++) {
-            P4 jetVec=signalJets.at(iJet)->mom();
-            if (fabs(elVec.deltaR_eta(jetVec))<0.4 && fabs(jetVec.eta())<2.8)overlap=true;
+        // Remove electrons with dR=0.4 to surviving jets
+        for (Particle* e : baselineElectrons) {
+          bool overlap = false;
+          for (const Jet* j : signalJets) {
+            if (j->abseta() < 2.8 && e->mom().deltaR_eta(j->mom()) < 0.4) {
+              overlap = true;
+              break;
+            }
           }
-          if (!overlap)signalElectrons.push_back(baselineElectrons.at(iEl));
+          if (!overlap) signalElectrons.push_back(e);
         }
-
-        // Remove muons with dR=0.4 or surviving jets
-        for (size_t iMu=0;iMu<baselineMuons.size();iMu++) {
-          bool overlap=false;
-          P4 muVec=baselineMuons.at(iMu)->mom();
-          for (size_t iJet=0;iJet<signalJets.size();iJet++) {
-            P4 jetVec=signalJets.at(iJet)->mom();
-            if (fabs(muVec.deltaR_eta(jetVec))<0.4 && fabs(jetVec.eta())<2.8)overlap=true;
-          }
-          if (!overlap)signalMuons.push_back(baselineMuons.at(iMu));
-        }
-
-        // We now have the signal electrons, muons and jets
-
-        // Calculate common variables and cuts first
+        // Do further electron selection
         applyMediumIDElectronSelection(signalElectrons);
 
-        int nElectrons = signalElectrons.size();
-        int nMuons = signalMuons.size();
-        int nJets = signalJets.size();
 
-        P4 temp;
-        //P4 ptot = event->missingmom();
-        //double met= event->met();
+        // Remove muons with dR=0.4 to surviving jets
+        for (Particle* m : baselineMuons) {
+          bool overlap = false;
+          for (const Jet* j : signalJets) {
+            if (j->abseta() < 2.8 && m->mom().deltaR_eta(j->mom()) < 0.4) {
+              overlap = true;
+              break;
+            }
+          }
+          if (!overlap) signalMuons.push_back(m);
+        }
 
-        //    cout << " met is "<< met << " ptot " << ptot.pT() << endl;
 
+        // We now have the signal electrons, muons and jets; fill the histograms
+
+        // MET
         _hmet->Fill(event->met());
 
-        int numElectrons=signalElectrons.size();
-        int numMuons=signalMuons.size();
-        int numJets=signalJets.size();
+        // Electrons
+        _hNelec->Fill(signalElectrons.size());
 
-        for(Particle * electron : signalElectrons){
-          if(electron->pT()>10. && fabs(electron->eta())<2.5){
-            numElectrons++;
-            _hElectronPt->Fill(electron->pT(),1.);
-            _hElectronEta->Fill(electron->eta(),1.);
-            _hElectronPhi->Fill(electron->phi(),1.);
-            _hElectronE->Fill(electron->E(),1.);
+        for (Particle* electron : signalElectrons) {
+          _hElectronPt->Fill(electron->pT());
+          _hElectronEta->Fill(electron->eta());
+          _hElectronPhi->Fill(electron->phi());
+          _hElectronE->Fill(electron->E());
+        }
+
+        // Muons
+        _hNmuon->Fill(signalMuons.size());
+        for (Particle* muon : signalMuons) {
+          _hMuonPt->Fill(muon->pT(),1.);
+          _hMuonEta->Fill(muon->eta(),1.);
+          _hMuonPhi->Fill(muon->phi(),1.);
+          _hMuonE->Fill(muon->E(),1.);
+        }
+
+        // Taus
+
+	_hNtau->Fill(signalTaus.size());
+	for (Particle* tau : signalTaus) {
+	  _hTauPt->Fill(tau->pT(),1.);
+          _hTauEta->Fill(tau->eta(),1.);
+          _hTauPhi->Fill(tau->phi(),1.);
+          _hTauE->Fill(tau->E(),1.);
+	}
+
+        // Jets
+        int numJets30(0), numJets100(0), numJets500(0);
+        int numCentralJets30(0), numCentralJets100(0), numCentralJets500(0);
+        int numBJets30(0), numBJets100(0), numBJets500(0);
+        for (Jet* jet : signalJets) {
+          // All jets
+          if (jet->pT() > 30) numJets30 += 1;
+          if (jet->pT() > 100) numJets100 += 1;
+          if (jet->pT() > 500) numJets500 += 1;
+          _hJetPt->Fill(jet->pT());
+          _hJetE->Fill(jet->E());
+          _hJetEta->Fill(jet->eta());
+          _hJetPhi->Fill(jet->phi());
+          // Central jets
+          if (jet->abseta() < 2.5) {
+            if (jet->pT() > 30) numCentralJets30 += 1;
+            if (jet->pT() > 100) numCentralJets100 += 1;
+            if (jet->pT() > 500) numCentralJets500 += 1;
+            _hCentralJetPt->Fill(jet->pT());
+            _hCentralJetE->Fill(jet->E());
+          }
+          // b-jets
+          if (jet->btag()) {
+            if (jet->pT() > 30) numBJets30 += 1;
+            if (jet->pT() > 100) numBJets100 += 1;
+            if (jet->pT() > 500) numBJets500 += 1;
+            _hBJetPt->Fill(jet->pT());
+            _hBJetE->Fill(jet->E());
+            _hBJetEta->Fill(jet->eta());
+            _hBJetPhi->Fill(jet->phi());
           }
         }
 
-        for(Particle * muon : signalMuons){
-          if(muon->pT()>10. && fabs(muon->eta())<2.5){
-            numMuons++;
-            _hMuonPt->Fill(muon->pT(),1.);
-            _hMuonEta->Fill(muon->eta(),1.);
-            _hMuonPhi->Fill(muon->phi(),1.);
-            _hMuonE->Fill(muon->E(),1.);
-          }
-        }
+        // Jet multiplicities
+        _hNjet30->Fill(numJets30);
+        _hNjet100->Fill(numJets100);
+        _hNjet500->Fill(numJets500);
+        _hNcentraljet30->Fill(numCentralJets30);
+        _hNcentraljet100->Fill(numCentralJets100);
+        _hNcentraljet500->Fill(numCentralJets500);
+        _hNbjet30->Fill(numBJets30);
+        _hNbjet100->Fill(numBJets100);
+        _hNbjet500->Fill(numBJets500);
 
-        for(Jet * jet : signalJets){
-          if(jet->pT()>10. && fabs(jet->eta())<2.5){
-            numJets++;
-            _hJetPt->Fill(jet->pT(),1.);
-            _hJetEta->Fill(jet->eta(),1.);
-            _hJetPhi->Fill(jet->phi(),1.);
-            _hJetE->Fill(jet->E(),1.);
-          }
-        }
 
-        _hNelec->Fill(numElectrons,1.);
-        _hNmuon->Fill(numMuons,1.);
-        _hNjet->Fill(numJets,1.);
+        // Aldo observables:
 
         if (signalElectrons.size() > 0) {
           _hElectron1Pt->Fill(signalElectrons[0]->pT());
@@ -233,29 +299,23 @@ namespace Gambit {
         }
 
         if (signalElectrons.size() > 1) {
-          temp = signalElectrons[0]->mom()+signalElectrons[1]->mom();
+          P4 temp = signalElectrons[0]->mom() + signalElectrons[1]->mom();
           _hinv->Fill(temp.m());
-
           _hElectron2Pt->Fill(signalElectrons[1]->pT());
           _hElectron2eta->Fill(signalElectrons[1]->eta());
           _hElectron2phi->Fill(signalElectrons[1]->phi());
         }
 
-        if (signalMuons.size() > 0) {
-          _hMuon1Pt->Fill(signalMuons[0]->pT());
-        }
-
-        if (signalMuons.size() > 1) {
-          _hMuon2Pt->Fill(signalMuons[1]->pT());
-        }
-
+        if (signalMuons.size() > 0) _hMuon1Pt->Fill(signalMuons[0]->pT());
+        if (signalMuons.size() > 1) _hMuon2Pt->Fill(signalMuons[1]->pT());
       }
 
 
       void finalize() {
 
-        std::cout << "Writing histograms " << _hElectron1Pt->GetTitle() << std::endl;
+        // std::cout << "Writing histograms " << _hElectron1Pt->GetTitle() << std::endl;
 
+        /// @todo Can delete this? Aren't they automatically all written from the current file?
         /*_ROOToutFile->cd();
           _hElectron1Pt->Write();
           _hElectron1eta->Write();
@@ -287,6 +347,8 @@ namespace Gambit {
 
         _ROOToutFile->Write();
         //_ROOToutFile->Close();
+
+        /// @todo We should close the file. Shouldn't we also delete the histo pointers?... or are they owned by the file?
       }
 
 
@@ -310,6 +372,8 @@ namespace Gambit {
         add_result(dummy);
 
       }
+
+
     };
 
 

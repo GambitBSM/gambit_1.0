@@ -25,7 +25,7 @@ set(uses_scannerbit gambit)
 # Add the main GAMBIT executable
 if(EXISTS "${PROJECT_SOURCE_DIR}/Core/")
   add_gambit_executable(gambit SOURCES ${PROJECT_SOURCE_DIR}/Core/src/gambit.cpp ${GAMBIT_COMMON_OBJECTS} ${GAMBIT_OBJECTS} ${GAMBIT_BIT_OBJECTS})
-  add_dependencies(gambit yaml sample scantest)
+  add_dependencies(gambit yaml)
   if (NOT EXCLUDE_FLEXIBLESUSY)
     add_dependencies(gambit ${flexiblesusy_projects})
     target_link_libraries(gambit ${flexiblesusy_LDFLAGS})

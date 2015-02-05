@@ -3,8 +3,8 @@ To build GAMBIT:
   cd modules/build/
   cmake ..
   make backends    # If backends not already installed
-  make DarkSUSY    # If intending to use DarkBit
-  make micromegas  # If intending to use micromegas
+  make darksusy    # If intending to use DarkBit (part of 'backends' target)
+  make micromegas  # If intending to use micromegas (not part of 'backends')
   make             # Ordering of make commands is unimportant.
                  
 To choose compilers, change the cmake step to, e.g.

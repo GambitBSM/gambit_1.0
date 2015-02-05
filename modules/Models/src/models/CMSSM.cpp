@@ -1,13 +1,7 @@
 //  GAMBIT: Global and Modular BSM Inference Tool
 //  *********************************************
 //
-//  MSSM translation function definitions
-//
-//  I have moved these into a source file to keep
-//  MSSM.hpp cleaner, and to avoid recompiling
-//  all of Gambit when they are modified. They
-//  can be defined with the rest of the model if
-//  desired though.
+//  CMSSM translation function definitions
 //
 //  *********************************************
 //
@@ -17,7 +11,7 @@
 //  (add name and date if you modify)
 //
 //  Ben Farmer
-//  2014 Dec
+//  2014 Dec, 2015 Jan
 //
 //  *********************************************
 
@@ -28,7 +22,7 @@
 #include "model_macros.hpp"
 #include "model_helpers.hpp"
 
-#include "models/MSSM.hpp"
+#include "models/CMSSM.hpp"
 
 using namespace Gambit::Utils;
 
@@ -91,24 +85,6 @@ using namespace Gambit::Utils;
      set_many_to_one(targetP, A0vec, myP["A0"]);
   }
 
-  //void MODEL_NAMESPACE::CMSSM_to_GUTMSSMB (const ModelParameters &myP, ModelParameters &targetP)
-  //{
-  //   logger()<<"Running interpret_as_X calculations for CMSSM --> GUTMSSMB..."<<LogTags::info<<EOM;
-
-  //   /// Filler....     
-  //}
 #undef MODEL
 
-#define MODEL extraCMSSM
-  // If you need to access the *DEP pointers via the Pipes then you have to know the right namespace in which to find them. You can use the USING_PIPE macro to make this accessible automatically, so long as PARENT and MODEL are correctly defined. See demo.hpp for examples.
-  void MODEL_NAMESPACE::extraCMSSM_to_CMSSM (const ModelParameters &myP, ModelParameters &parentP)
-  {
-     logger()<<"Running interpret_as_parent calculations for extraCMSSM -> CMSSM ..."<<LogTags::info<<EOM;
-      
-     parentP.setValue("M0",     myP["M0"] );
-     parentP.setValue("A0",     myP["M0"] );
-     parentP.setValue("M12",    myP["M12"] );
-     parentP.setValue("tanb",   myP["tanb"] );
-     parentP.setValue("signmu", myP["signmu"] );
-  } 
-#undef MODEL
+

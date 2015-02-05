@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // This file is part of HEPUtils -- https://bitbucket.org/andybuckley/heputils
-// Copyright (C) 2013-2014 Andy Buckley <andy.buckley@cern.ch>
+// Copyright (C) 2013-2015 Andy Buckley <andy.buckley@cern.ch>
 //
 // Embedding of HEPUtils code in other projects is permitted provided this
 // notice is retained and the HEPUtils namespace and include path are changed.
@@ -15,6 +15,8 @@ namespace HEPUtils {
 
 
   /// Simple particle class, encapsulating a momentum 4-vector and adding some extra ID info
+  /// @todo Derive from a PhysObj base class to centralise the momentum handling
+  /// @todo Provide cast operators to P4 and P4*
   class Particle {
   private:
 
@@ -93,8 +95,14 @@ namespace HEPUtils {
     /// Get the pseudorapidity
     double eta() const { return mom().eta(); }
 
+    /// Get the abs pseudorapidity
+    double abseta() const { return mom().abseta(); }
+
     /// Get the rapidity
     double rap() const { return mom().rap(); }
+
+    /// Get the abs rapidity
+    double absrap() const { return mom().absrap(); }
 
     /// Get the azimuthal angle
     double phi() const { return mom().phi(); }
@@ -127,6 +135,8 @@ namespace HEPUtils {
 
     /// Get PDG ID code
     int pid() const { return _pdgId; }
+    /// Get abs PDG ID code
+    int abspid() const { return abs(_pdgId); }
     /// Set PDG ID code
     void set_pid(int pid) { _pdgId = pid; }
 
