@@ -253,7 +253,7 @@ namespace Gambit {
             if (fabs(elVec.deltaR_eta(jetVec))<0.4)overlap=true;
           }
           if (!overlap && elVec.pT()>25.)signalElectrons.push_back(baselineElectrons.at(iEl));
-          if(!overlap)electronsForVeto.push_back(baselineElectrons.at(iEl));
+          if (!overlap)electronsForVeto.push_back(baselineElectrons.at(iEl));
         }
 
         // Remove muons within dR=0.4 of surviving jets
@@ -267,7 +267,7 @@ namespace Gambit {
             if (fabs(muVec.deltaR_eta(jetVec))<0.4)overlap=true;
           }
           if (!overlap && muVec.pT()>25.)signalMuons.push_back(baselineMuons.at(iMu));
-          if(!overlap)muonsForVeto.push_back(baselineMuons.at(iMu));
+          if (!overlap) muonsForVeto.push_back(baselineMuons.at(iMu));
         }
 
         // We now have the signal electrons, muons, jets and b jets- move on to the analysis
