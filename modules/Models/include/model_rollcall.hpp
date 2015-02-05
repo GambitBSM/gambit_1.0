@@ -18,7 +18,7 @@
 ///  Authors (add name and date if you modify):   
 ///                                               
 ///  \author The GAMBIT Collaboration            
-///  \date 02:02AM on January 23, 2015
+///  \date 07:42AM on February 05, 2015
 ///                                               
 ///  *********************************************
                                                   
@@ -29,10 +29,12 @@
 #include "model_macros.hpp"                     
                                                   
 // Automatically-generated list of models.        
-#include "models/MSSM78.hpp"
-#include "models/MSSM.hpp"
+#include "models/extraCMSSM.hpp"
 #include "models/demo.hpp"
+#include "models/CMSSM.hpp"
 #include "models/SingletDM.hpp"
-#include "models/MSSM25.hpp"
+#include "models/MSSM78atMGUT.hpp"
+#include "models/MSSM78atQ.hpp"
+#include "models/MSSM25atQ.hpp"
 
 #endif // defined __model_rollcall_hpp__

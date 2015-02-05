@@ -26,7 +26,7 @@ ENABLE_SILENT         := no
 ENABLE_VERBOSE        := no
 
 # Makefile modules
-MODELS             :=  models/MSSMatMGUT
+MODELS             :=  models/CMSSM
 MODULES            := config src fflite legacy slhaea doc
 MODULES            += $(MODELS)
 

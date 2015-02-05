@@ -20,7 +20,7 @@
 ///  Authors:                                     
 ///                                               
 ///  \author The GAMBIT Collaboration            
-///  \date 12:48AM on February 05, 2015
+///  \date 07:42AM on February 05, 2015
 ///                                               
 ///  *********************************************
                                                   
@@ -28,6 +28,7 @@
 #define __module_types_rollcall_hpp__             
                                                   
 // Automatically-generated list of module types.  
+#include "ColliderBit_types.hpp"
 #include "ExampleBit_A_types.hpp"
 #include "DarkBit_types.hpp"
 #include "DecayBit_types.hpp"

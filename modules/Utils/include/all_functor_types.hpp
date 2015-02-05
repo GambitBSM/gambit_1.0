@@ -17,7 +17,7 @@
 ///  Authors:                                     
 ///                                               
 ///  \author The GAMBIT Collaboration            
-///  \date 12:48AM on February 05, 2015
+///  \date 07:42AM on February 05, 2015
 ///                                               
 ///  *********************************************
                                                   
@@ -27,6 +27,6 @@
 #include "types_rollcall.hpp"                   
                                                   
 // Automatically generated preprocessor sequence of types 
-#define PRINTABLE_TYPES (Gambit::DarkBit::simpleHistContainter)(Gambit::DarkBit::stringFunkMap)(Gambit::DarkBit::DD_couplings)(int)(DarkBit::nuyield_functype)(std::vector<std::string>)(ExampleBit_A::singleprec)(DarkBit::fptr_dd)(Gambit::DarkBit::DecayChain::ChainContainer)(Gambit::DarkBit::stringIntMap)(parameters)(Gambit::DarkBit::SimYieldTable)(eaSLHA)(bool)(std::vector<double>)(Gambit::DarkBit::RD_spectrum_type)(Funk::Funk)(fptr)(HEPUtils::Event)(std::string)(Spectrum*)(Gambit::DarkBit::TH_resonances_thresholds)(X)(Gambit::DarkBit::DecayChain::DecayTable)(Gambit::DarkBit::TH_ProcessCatalog)(double)(DarkBit::nudata)(ModelParameters)(Gambit::DarkBit::mutableFinalStateContainer)
+#define PRINTABLE_TYPES (Gambit::DarkBit::simpleHistContainter)(Gambit::DarkBit::stringFunkMap)(Gambit::DarkBit::DD_couplings)(int)(shared_ptr<Gambit::ColliderBit::DelphesBase>)(DarkBit::nuyield_functype)(std::vector<std::string>)(ExampleBit_A::singleprec)(DarkBit::fptr_dd)(Gambit::DarkBit::DecayChain::ChainContainer)(Gambit::DarkBit::stringIntMap)(parameters)(Gambit::DarkBit::SimYieldTable)(eaSLHA)(bool)(Pythia8::Event)(Gambit::DarkBit::RD_spectrum_type)(shared_ptr<Gambit::ColliderBit::BuckFastBase>)(fptr)(HEPUtils::Event)(shared_ptr<Gambit::ColliderBit::PythiaBase>)(std::string)(std::vector<double>)(Spectrum*)(Gambit::DarkBit::TH_resonances_thresholds)(X)(Gambit::DarkBit::DecayChain::DecayTable)(Gambit::DarkBit::TH_ProcessCatalog)(DecayTable)(double)(DarkBit::nudata)(DecayTable::Entry)(ModelParameters)(Funk::Funk)(Gambit::DarkBit::mutableFinalStateContainer)(ColliderBit::ColliderLogLikes)(ColliderBit::AnalysisPointerVector)
 
 #endif // defined __all_functor_types_hpp__

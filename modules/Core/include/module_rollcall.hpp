@@ -22,7 +22,7 @@
 ///  Authors:                                     
 ///                                               
 ///  \author The GAMBIT Collaboration            
-///  \date 12:48AM on February 05, 2015
+///  \date 07:42AM on February 05, 2015
 ///                                               
 ///  *********************************************
                                                   
@@ -31,6 +31,7 @@
                                                   
 #include "module_macros_incore.hpp"           
 
+#include "ColliderBit_rollcall.hpp"
 #include "DarkBit_rollcall.hpp"
 #include "DecayBit_rollcall.hpp"
 #include "EWPOBit_rollcall.hpp"

@@ -2,7 +2,7 @@
 
 # Author: Alexander Voigt
 
-models=" models/MSSMatMGUT"
+models=" models/CMSSM"
 version="1.0.3"
 cppflags=""
 cxxflags="-std=c++11 -O2"

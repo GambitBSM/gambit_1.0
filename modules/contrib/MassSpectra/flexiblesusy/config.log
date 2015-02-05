@@ -1,6 +1,6 @@
 Package:    FlexibleSUSY
 Version:    1.0.3
-Date:       Fri Jan 23 02:06:31 EST 2015
+Date:       Thu Feb  5 07:42:38 EST 2015
 
 # Platform information
 
@@ -128,12 +128,12 @@ The executable produced no output.
 Checking for libpthread ... 
    Result: found in /usr/lib
 Checking for models ... 
-Note: No start script not found in models/MSSMatMGUT
+Note: No start script not found in models/CMSSM
 
-Note: No FlexibleSUSY model file found in models/MSSMatMGUT
+Note: No FlexibleSUSY model file found in models/CMSSM
 
-   Result: ok (MSSMatMGUT)
-   Models:  models/MSSMatMGUT
+   Result: ok (CMSSM)
+   Models:  models/CMSSM
 Disabling colored output
    #undef ENABLE_COLOR
 Disabling debug mode

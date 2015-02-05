@@ -17,7 +17,7 @@
 #  Authors:                                     
 #                                               
 #  \author The GAMBIT Collaboration            
-#  \date 06:25PM on February 04, 2015
+#  \date 07:42AM on February 05, 2015
 #                                               
 #***********************************************
                                                 
@@ -27,6 +27,7 @@ src/EWPOBit.cpp
 
 set(header_files
 include/EWPOBit_rollcall.hpp
+include/EWPOBit_types.hpp
 )
 
 add_gambit_library(EWPOBit OPTION OBJECT SOURCES ${source_files} HEADERS ${header_files})
