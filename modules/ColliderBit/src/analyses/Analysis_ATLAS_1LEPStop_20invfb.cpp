@@ -207,11 +207,13 @@ namespace Gambit {
         // Now define vectors of baseline objects
         vector<Particle*> baselineElectrons;
         for (Particle* electron : event->electrons()) {
-          if (electron->pT() > 10. && electron->abseta() < 2.47) baselineElectrons.push_back(electron);
+          if (electron->pT() > 10. && electron->abseta() < 2.47 &&
+              !object_in_cone(*event, *electron, 10, 0.2)) baselineElectrons.push_back(electron);
         }
         vector<Particle*> baselineMuons;
         for (Particle* muon : event->muons()) {
-          if (muon->pT() > 10. && muon->abseta() < 2.4) baselineMuons.push_back(muon);
+          if (muon->pT() > 10. && muon->abseta() < 2.4 &&
+              !object_in_cone(*event, *muon, 10, 0.2)) baselineMuons.push_back(muon);
         }
 
         // Get b jets with efficiency and mistag (fake) rates
@@ -223,51 +225,39 @@ namespace Gambit {
           }
         }
 
+        // Lepton isolation
+        // We don't have access to all particles, so our isolation will be relative to jets etc.
+
+
         // Overlap removal
         vector<Particle*> signalElectrons, signalMuons;
         vector<Particle*> electronsForVeto, muonsForVeto;
         vector<Jet*> goodJets, signalJets;
 
-        //Note that ATLAS use |eta|<10 for removing jets close to electrons
-        //Then 2.8 is used for the rest of the overlap process
-        //Then the signal cut is applied for signal jets
+        // Note that ATLAS use |eta|<10 for removing jets close to electrons
+        // Then 2.8 is used for the rest of the overlap process
+        // Then the signal cut is applied for signal jets
 
         // Remove any jet within dR=0.2 of an electron
-        for (size_t iJet=0;iJet<baselineJets.size();iJet++) {
-          bool overlap=false;
-          P4 jetVec=baselineJets.at(iJet)->mom();
-          for (size_t iEl=0;iEl<baselineElectrons.size();iEl++) {
-            P4 elVec=baselineElectrons.at(iEl)->mom();
-            if (fabs(elVec.deltaR_eta(jetVec))<0.2)overlap=true;
+        for (Jet* j : baselineJets) {
+          if (!any(baselineElectrons, [&](Particle* e){ return deltaR_eta(*e, *j) < 0.2; })) {
+            if (j->abseta() < 2.8) goodJets.push_back(j);
+            if (j->abseta() < 2.5 && j->pT() > 25) signalJets.push_back(j);
           }
-          if (!overlap&&fabs(baselineJets.at(iJet)->eta())<2.8)goodJets.push_back(baselineJets.at(iJet));
-          if (!overlap&&fabs(baselineJets.at(iJet)->eta())<2.5 && baselineJets.at(iJet)->pT()>25.)signalJets.push_back(baselineJets.at(iJet));
         }
 
-        // Remove electrons within dR=0.4 of surviving jets
-        for (size_t iEl=0;iEl<baselineElectrons.size();iEl++) {
-          bool overlap=false;
-          P4 elVec=baselineElectrons.at(iEl)->mom();
-          for (size_t iJet=0;iJet<goodJets.size();iJet++) {
-            P4 jetVec=goodJets.at(iJet)->mom();
-            if (fabs(elVec.deltaR_eta(jetVec))<0.4)overlap=true;
+        // Remove electrons and muons within dR=0.4 of surviving jets
+        for (Particle* e : baselineElectrons) {
+          if (!any(goodJets, [&](const Jet* j){ return deltaR_eta(*e, *j) < 0.4; })) {
+            electronsForVeto.push_back(e);
+            if (e->pT() > 25) signalElectrons.push_back(e);
           }
-          if (!overlap && elVec.pT()>25.)signalElectrons.push_back(baselineElectrons.at(iEl));
-          if (!overlap)electronsForVeto.push_back(baselineElectrons.at(iEl));
         }
-
-        // Remove muons within dR=0.4 of surviving jets
-        for (size_t iMu=0;iMu<baselineMuons.size();iMu++) {
-          bool overlap=false;
-
-          P4 muVec=baselineMuons.at(iMu)->mom();
-
-          for (size_t iJet=0;iJet<goodJets.size();iJet++) {
-            P4 jetVec=goodJets.at(iJet)->mom();
-            if (fabs(muVec.deltaR_eta(jetVec))<0.4)overlap=true;
+        for (Particle* m : baselineMuons) {
+          if (!any(goodJets, [&](const Jet* j){ return deltaR_eta(*m, *j) < 0.4; })) {
+            muonsForVeto.push_back(m);
+            if (m->pT() > 25) signalMuons.push_back(m);
           }
-          if (!overlap && muVec.pT()>25.)signalMuons.push_back(baselineMuons.at(iMu));
-          if (!overlap) muonsForVeto.push_back(baselineMuons.at(iMu));
         }
 
         // We now have the signal electrons, muons, jets and b jets- move on to the analysis
