@@ -29,11 +29,20 @@
 
 #include <yaml-cpp/yaml.h>
 
+///\name Scanner Plugin Macros 
+///Macros used by the scanner plugin
+///@{
+///Initializes the parameter "exp" to the hypercube dimension when the plugin loads.
 #define init_dimension(exp)             INIT_DIMENSION(exp)
+///Initializes the parameter "exp" to the functor corresponding to the purpose "__VA_ARGS__" when the plugin loads.
 #define init_functor(exp, ...)          INIT_FUNCTOR(exp, __VA_ARGS__)
+///Get's the hyperspace dimension.
 #define get_dimension()                 GET_DIMENSION()
+///Gets the functor corresponding to the purpose "__VA_ARGS__".
 #define get_functor(...)                GET_FUNCTOR( __VA_ARGS__ )
+///Defines a scanner plugin.  Has the form:  scanner_plugin(name, version).
 #define scanner_plugin(...)             SCANNER_PLUGIN(__VA_ARGS__)
+///@}
 
 #define INIT_DIMENSION(exp)             INITIALIZE(exp, GET_DIMENSION())
 #define INIT_FUNCTOR(exp, ...)          INITIALIZE(exp, GET_FUNCTOR(__VA_ARGS__))
