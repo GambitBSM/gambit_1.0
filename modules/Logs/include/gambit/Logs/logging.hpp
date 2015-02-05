@@ -28,8 +28,8 @@
 #include <chrono> 
 
 // Gambit
-#include "log_tags.hpp"
-#include "util_functions.hpp"
+#include "gambit/Logs/log_tags.hpp"
+#include "gambit/Utils/util_functions.hpp"
 
 
 namespace Gambit

@@ -33,9 +33,9 @@
 #include <vector>
 #include <string>
 
-#include "util_types.hpp"
-#include "functors.hpp"
-#include "standalone_error_handlers.hpp"
+#include "gambit/Utils/util_types.hpp"
+#include "gambit/Utils/functors.hpp"
+#include "gambit/Utils/standalone_error_handlers.hpp"
 
 namespace Gambit
 {

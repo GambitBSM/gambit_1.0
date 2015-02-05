@@ -1,7 +1,7 @@
 #ifndef __ABSTRACT_X_BOSSMinimalExample_1_1_HPP__
 #define __ABSTRACT_X_BOSSMinimalExample_1_1_HPP__
 
-#include "abstractbase.hpp"
+#include "gambit/Backends/abstractbase.hpp"
 #include "forward_decls_abstract_classes.hpp"
 #include "forward_decls_wrapper_classes.hpp"
 
@@ -59,7 +59,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
 }
 
 
-#include "backend_undefs.hpp"
+#include "gambit/Backends/backend_undefs.hpp"
 
 
 #endif /* __ABSTRACT_X_BOSSMinimalExample_1_1_HPP__ */

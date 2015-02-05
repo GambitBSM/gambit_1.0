@@ -33,9 +33,9 @@
 #include <sstream>
 #include <utility>
 
-#include "util_types.hpp"
-#include "standalone_error_handlers.hpp"
-#include "variadic_functions.hpp"
+#include "gambit/Utils/util_types.hpp"
+#include "gambit/Utils/standalone_error_handlers.hpp"
+#include "gambit/Utils/variadic_functions.hpp"
 
 namespace Gambit
 {

@@ -27,7 +27,7 @@
 #include <type_traits>
 #include <cassert>
 
-#include <yaml-cpp/yaml.h>
+#include "yaml-cpp/yaml.h"
 
 namespace Gambit
 {       

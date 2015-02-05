@@ -73,5 +73,5 @@ BE_INI_FUNCTION{}
 DONE
 
 // Undefine macros to avoid conflict with other backends
-#include "backend_undefs.hpp"
+#include "gambit/Backends/backend_undefs.hpp"
 

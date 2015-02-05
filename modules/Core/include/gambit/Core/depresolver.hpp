@@ -28,11 +28,11 @@
 #include <map>
 #include <queue>
 
-#include "gambit_core.hpp"
-#include "baseprinter.hpp"
-#include "functors.hpp"
-#include "error_handlers.hpp"
-#include "yaml_parser.hpp"
+#include "gambit/Core/gambit_core.hpp"
+#include "gambit/Core/error_handlers.hpp"
+#include "gambit/Core/yaml_parser.hpp"
+#include "gambit/Printers/baseprinter.hpp"
+#include "gambit/Utils/functors.hpp"
 
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/topological_sort.hpp>

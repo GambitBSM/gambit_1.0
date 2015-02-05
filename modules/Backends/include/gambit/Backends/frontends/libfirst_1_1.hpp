@@ -109,5 +109,5 @@ BE_NAMESPACE
 DONE
 
 // End
-#include "backend_undefs.hpp"
+#include "gambit/Backends/backend_undefs.hpp"
 

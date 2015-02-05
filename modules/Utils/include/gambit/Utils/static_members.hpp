@@ -18,8 +18,8 @@
 #ifndef __static_members_hpp__
 #define __static_members_hpp__
 
-#include "exceptions.hpp"
-#include "threadsafe_rng.hpp"
+#include "gambit/Utils/exceptions.hpp"
+#include "gambit/Utils/threadsafe_rng.hpp"
 
 namespace Gambit
 {

@@ -27,7 +27,7 @@
 ///
 ///  *********************************************
 
-#include "util_types.hpp"    
+#include "gambit/Utils/util_types.hpp"    
 
 #ifndef __DarkSUSY_types_hpp__
 #define __DarkSUSY_types_hpp__

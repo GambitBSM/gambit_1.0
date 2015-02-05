@@ -50,18 +50,18 @@
 
 #include <map>
 
-#include "static_members.hpp"
-#include "functors.hpp"
-#include "exceptions.hpp"
-#include "types_rollcall.hpp"
-#include "module_macros_common.hpp"
-#include "safety_bucket.hpp"
-#include "log.hpp"
-#include "backend_singleton.hpp"
-#include "claw_singleton.hpp"
-#include "safe_param_map.hpp"
+#include "gambit/Utils/static_members.hpp"
+#include "gambit/Utils/functors.hpp"
+#include "gambit/Utils/exceptions.hpp"
+#include "gambit/Utils/types_rollcall.hpp"
+#include "gambit/Utils/module_macros_common.hpp"
+#include "gambit/Utils/safety_bucket.hpp"
+#include "gambit/Logs/log.hpp"
+#include "gambit/Backends/backend_singleton.hpp"
+#include "gambit/Models/claw_singleton.hpp"
+#include "gambit/Models/safe_param_map.hpp"
 #ifndef STANDALONE
-  #include "core_singleton.hpp"
+  #include "gambit/Core/core_singleton.hpp"
 #endif
 
 #include <boost/preprocessor/logical/bitand.hpp>

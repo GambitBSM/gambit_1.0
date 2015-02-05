@@ -30,9 +30,9 @@
 
 // Gambit
 #include "cmake_variables.hpp"
-#include "logging.hpp"
-#include "util_functions.hpp"
-#include "standalone_error_handlers.hpp"
+#include "gambit/Logs/logging.hpp"
+#include "gambit/Utils/util_functions.hpp"
+#include "gambit/Utils/standalone_error_handlers.hpp"
 
 // Code!
 namespace Gambit

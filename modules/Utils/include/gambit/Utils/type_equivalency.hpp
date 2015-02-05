@@ -21,7 +21,7 @@
 
 #include <set>
 #include <vector>
-#include "util_types.hpp"
+#include "gambit/Utils/util_types.hpp"
 
 namespace Gambit
 {

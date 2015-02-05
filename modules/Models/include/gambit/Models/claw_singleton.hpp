@@ -16,7 +16,7 @@
 #ifndef __claw_singleton_hpp__
 #define __claw_singleton_hpp__
 
-#include "models.hpp"
+#include "gambit/Models/models.hpp"
 
 
 namespace Gambit

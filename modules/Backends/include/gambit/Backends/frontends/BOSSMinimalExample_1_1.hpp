@@ -14,7 +14,7 @@
 ///
 ///  *********************************************
 
-#include "backend_types/BOSSMinimalExample_1_1/identification.hpp"
+#include "gambit/Backends/backend_types/BOSSMinimalExample_1_1/identification.hpp"
 
 // Begin
 LOAD_LIBRARY
@@ -35,5 +35,5 @@ BE_INI_FUNCTION{} DONE
 // Convenience functions (definitions)
 
 // End
-#include "backend_undefs.hpp"
+#include "gambit/Backends/backend_undefs.hpp"
 

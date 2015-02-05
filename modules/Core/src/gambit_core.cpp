@@ -25,13 +25,13 @@
 
 // Gambit headers
 #include "cmake_variables.hpp"
-#include "gambit_core.hpp"
-#include "error_handlers.hpp"
-#include "version.hpp"
-#include "modelgraph.hpp"
-#include "stream_overloads.hpp"
-#include "yaml_description_database.hpp"
-#include "plugin_loader.hpp"
+#include "gambit/Core/gambit_core.hpp"
+#include "gambit/Core/error_handlers.hpp"
+#include "gambit/Core/version.hpp"
+#include "gambit/Core/modelgraph.hpp"
+#include "gambit/Utils/stream_overloads.hpp"
+#include "gambit/Utils/yaml_description_database.hpp"
+#include "gambit/ScannerBit/plugin_loader.hpp"
 
 // Boost
 #include <boost/algorithm/string/replace.hpp>

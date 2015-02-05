@@ -18,9 +18,9 @@
 #ifndef __backend_info_hpp__
 #define __backend_info_hpp__
 
-#include <yaml-cpp/yaml.h>
 #include <map>
-#include "util_types.hpp"
+#include "gambit/Utils/util_types.hpp"
+#include "yaml-cpp/yaml.h"
 
 namespace Gambit
 {

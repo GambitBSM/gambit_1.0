@@ -22,12 +22,12 @@
 #ifndef SCANNER_PLUGIN_HPP
 #define SCANNER_PLUGIN_HPP
 
-#include "scanner_utils.hpp"
-#include "plugin_defs.hpp"
-#include "plugin_macros.hpp"
-#include "factory_defs.hpp"
+#include "gambit/ScannerBit/scanner_utils.hpp"
+#include "gambit/ScannerBit/plugin_defs.hpp"
+#include "gambit/ScannerBit/plugin_macros.hpp"
+#include "gambit/ScannerBit/factory_defs.hpp"
 
-#include <yaml-cpp/yaml.h>
+#include "yaml-cpp/yaml.h"
 
 ///\name Scanner Plugin Macros 
 ///Macros used by the scanner plugin

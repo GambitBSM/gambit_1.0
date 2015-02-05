@@ -24,7 +24,7 @@
 // ostream printer is currently obsolete. Do not use.
 //#include "printers/ostreamprinter.hpp"
 
-#include "printers/asciiprinter.hpp"
+#include "gambit/Printers/printers/asciiprinter.hpp"
 
 #endif
 

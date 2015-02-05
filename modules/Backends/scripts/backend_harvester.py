@@ -52,10 +52,10 @@ def main(argv):
         exclude_backends.update(neatsplit(",",arg))
 
     # Get list of frontend header files to include in backend_rollcall.hpp
-    frontend_headers.update(retrieve_generic_headers(verbose,"./Backends/include/frontends","frontend",exclude_backends))   
+    frontend_headers.update(retrieve_generic_headers(verbose,"./Backends/include/gambit/Backends/frontends","frontend",exclude_backends))   
     # Get list of backend type header files
-    backend_type_headers.update(retrieve_generic_headers(verbose,"./Backends/include/backend_types","backend type",exclude_backends))
-    bossed_backend_type_headers.update(retrieve_bossed_type_headers(verbose,"./Backends/include/backend_types",exclude_backends))
+    backend_type_headers.update(retrieve_generic_headers(verbose,"./Backends/include/gambit/Backends/backend_types","backend type",exclude_backends))
+    bossed_backend_type_headers.update(retrieve_bossed_type_headers(verbose,"./Backends/include/gambit/Backends/backend_types",exclude_backends))
 
     print "Frontend headers identified:"
     for h in frontend_headers:
@@ -81,9 +81,9 @@ def main(argv):
 ///                                               \n\
 ///  Do not add to this if you want to add a new  \n\
 ///  backend -- just add your frontend header to  \n\
-///  Backends/include/frontends and rest assured  \n\
-///  that backend_harvester.py will make sure it  \n\
-///  ends up here.                                \n\
+///  Backends/include/gambit/Backends/frontends   \n\
+///  and rest assured that backend_harvester.py   \n\
+///  will make sure it ends up here.              \n\
 ///                                               \n\
 ///  *********************************************\n\
 ///                                               \n\
@@ -98,15 +98,15 @@ def main(argv):
 #define __backend_rollcall_hpp__                  \n\
                                                   \n\
 // Include the backend macro definitions          \n\
-#include \"backend_macros.hpp\"                   \n\
+#include \"gambit/Backends/backend_macros.hpp\"   \n\
                                                   \n\
 // Automatically-generated list of frontends.     \n"
 
     for h in frontend_headers:
-        towrite+='#include \"frontends/{0}\"\n'.format(h)
+        towrite+='#include \"gambit/Backends/frontends/{0}\"\n'.format(h)
     towrite+="\n#endif // defined __backend_rollcall_hpp__\n"
     
-    with open("./Backends/include/backend_rollcall.hpp","w") as f:
+    with open("./Backends/include/gambit/Backends/backend_rollcall.hpp","w") as f:
         f.write(towrite)
 
     # Generate a c++ header containing all the frontend headers we have just harvested.
@@ -129,12 +129,12 @@ def main(argv):
 ///                                               \n\
 ///  Where is \'the right place\'?                \n\
 ///  -Regular backend types: in a new header file \n\
-///    Backends/include/backend_types/X_types.hpp \n\
+///    Backends/include/gambit/Backends/backend_types/X_types.hpp \n\
 ///   where X is the name of the backend.         \n\
 ///  -When the types you want to add are a result \n\
 ///   of running BOSS: add the directory created  \n\
 ///   by BOSS as                                  \n\
-///    Backends/include/backend_types/X/          \n\
+///    Backends/include/gambit/Backends/backend_types/X/ \n\
 ///   where X is the name of the backend.  BOSS   \n\
 ///   will actually do this itself automatically  \n\
 ///   in some circumstances.                      \n\
@@ -152,11 +152,11 @@ def main(argv):
 #define __backend_types_rollcall_hpp__            \n\
                                                   \n\
 // Macro definitions                              \n\
-#include \"type_macros.hpp\"                      \n\
+#include \"gambit/Utils/type_macros.hpp\"         \n\
                                                   \n\
 // Regular backend type definitions.              \n"
     for h in backend_type_headers:
-        towrite+='#include \"backend_types/{0}\"\n'.format(h)
+        towrite+='#include \"gambit/Backends/backend_types/{0}\"\n'.format(h)
 
     towrite += "\n// BOSSed backend type definitions.\n"
     for h in bossed_backend_type_headers:
@@ -164,7 +164,7 @@ def main(argv):
 
     towrite+="\n#endif // defined __backend_types_rollcall_hpp__\n"
     
-    with open("./Backends/include/backend_types_rollcall.hpp","w") as f:
+    with open("./Backends/include/gambit/Backends/backend_types_rollcall.hpp","w") as f:
         f.write(towrite)
 
     if verbose:

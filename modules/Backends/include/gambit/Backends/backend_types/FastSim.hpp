@@ -19,7 +19,6 @@
 #ifndef __FastSim_types_hpp__
 #define __FastSim_types_hpp__
 
-#include "FastSim.hpp"
 #include "HEPUtils/Event.h"
 
 /*

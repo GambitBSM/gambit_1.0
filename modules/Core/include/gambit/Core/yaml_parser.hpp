@@ -26,13 +26,13 @@
 #include <fstream>
 #include <string>
 
-#include "util_types.hpp"
-#include "util_functions.hpp"
-#include "error_handlers.hpp"
-#include "variadic_functions.hpp"
-#include "yaml_options.hpp"
+#include "gambit/Core/error_handlers.hpp"
+#include "gambit/Utils/util_types.hpp"
+#include "gambit/Utils/util_functions.hpp"
+#include "gambit/Utils/variadic_functions.hpp"
+#include "gambit/Utils/yaml_options.hpp"
 
-#include <yaml-cpp/yaml.h>
+#include "yaml-cpp/yaml.h"
 
 #ifndef __yaml_parser_hpp__
 #define __yaml_parser_hpp__

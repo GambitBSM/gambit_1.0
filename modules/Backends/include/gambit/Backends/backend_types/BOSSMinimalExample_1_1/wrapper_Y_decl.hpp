@@ -3,7 +3,7 @@
 
 #include <cstddef>
 #include "forward_decls_wrapper_classes.hpp"
-#include "wrapperbase.hpp"
+#include "gambit/Backends/wrapperbase.hpp"
 #include "abstract_Y.hpp"
 #include "wrapper_X_decl.hpp"
 
@@ -49,6 +49,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
 }
 
 
-#include "backend_undefs.hpp"
+#include "gambit/Backends/backend_undefs.hpp"
 
 #endif /* __WRAPPER_Y_DECL_BOSSMinimalExample_1_1_HPP__ */

@@ -19,8 +19,8 @@
 #ifndef __printermanager_hpp__
 #define __printermanager_hpp__
 
-#include "baseprinter.hpp"
-#include "yaml_options.hpp"
+#include "gambit/Printers/baseprinter.hpp"
+#include "gambit/Utils/yaml_options.hpp"
 
 namespace Gambit
 {

@@ -29,7 +29,7 @@
 
 #include <string>
 
-#include "util_macros.hpp"
+#include "gambit/Utils/util_macros.hpp"
 
 #include <boost/preprocessor/comparison/greater.hpp>
 #include <boost/preprocessor/control/iif.hpp>

@@ -1,6 +1,6 @@
 // Identify backend and set macro flags
 
-#include "cats.hpp"
+#include "gambit/Utils/cats.hpp"
 
 #ifdef BACKENDRENAME
   #define BACKENDNAME BACKENDRENAME

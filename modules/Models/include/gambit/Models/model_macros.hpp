@@ -22,12 +22,12 @@
 #ifndef __model_macros_hpp__
 #define __model_macros_hpp__
 
-#include "util_macros.hpp"
-#include "util_types.hpp"
-#include "orphan.hpp"
-#include "types_rollcall.hpp"
-#include "claw_singleton.hpp"
-#include "boost_fallbacks.hpp"
+#include "gambit/Models/orphan.hpp"
+#include "gambit/Models/claw_singleton.hpp"
+#include "gambit/Utils/util_macros.hpp"
+#include "gambit/Utils/util_types.hpp"
+#include "gambit/Utils/types_rollcall.hpp"
+#include "gambit/Utils/boost_fallbacks.hpp"
 
 #include <boost/preprocessor/seq/for_each.hpp>
 

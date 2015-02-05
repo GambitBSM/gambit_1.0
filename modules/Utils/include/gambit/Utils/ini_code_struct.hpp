@@ -23,7 +23,7 @@
 #define __ini_code_struct_hpp__
 
 #include <exception>
-#include "terminator.hpp"
+#include "gambit/Utils/terminator.hpp"
 
 namespace Gambit
 {

@@ -21,7 +21,7 @@
 #define __demo_hpp__
 
 #include <string>
-#include "logging.hpp"
+#include "gambit/Logs/logging.hpp"
 
 #define MODEL test_parent_I
   START_MODEL

@@ -20,7 +20,7 @@
 #ifndef __extraCMSSM_hpp__
 #define __extraCMSSM_hpp__
 
-#include "models/CMSSM.hpp"
+#include "gambit/Models/models/CMSSM.hpp"
 
 // Extra-constrained CMSSM, to demo interpret_as_parent
 // If we can translate to a model which already has translation functions to 

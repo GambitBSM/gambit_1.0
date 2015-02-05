@@ -23,11 +23,11 @@
 #ifndef OBJECTIVE_PLUGIN_HPP
 #define OBJECTIVE_PLUGIN_HPP
 
-#include "scanner_utils.hpp"
-#include "plugin_defs.hpp"
-#include "plugin_macros.hpp"
+#include "gambit/ScannerBit/scanner_utils.hpp"
+#include "gambit/ScannerBit/plugin_defs.hpp"
+#include "gambit/ScannerBit/plugin_macros.hpp"
 
-#include <yaml-cpp/yaml.h>
+#include "yaml-cpp/yaml.h"
 
 namespace Gambit
 {

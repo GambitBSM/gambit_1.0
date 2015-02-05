@@ -92,8 +92,8 @@
 #ifndef __types_rollcall_hpp__
 #define __types_rollcall_hpp__
 
-#include "shared_types.hpp"          // All the shared types
-#include "model_types_rollcall.hpp"  // Model-specific types
-#include "module_types_rollcall.hpp" // Module-specific types
+#include "gambit/Utils/shared_types.hpp"          // All the shared types
+#include "gambit/Utils/module_types_rollcall.hpp" // Module-specific types
+#include "gambit/Models/model_types_rollcall.hpp" // Model-specific types
 
 #endif /* defined __types_rollcall_hpp__ */

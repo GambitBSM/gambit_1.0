@@ -15,7 +15,7 @@
 ///
 ///  *********************************************
 
-#include "backend_info.hpp"
+#include "gambit/Backends/backend_info.hpp"
 #include "cmake_variables.hpp"
 
 namespace Gambit

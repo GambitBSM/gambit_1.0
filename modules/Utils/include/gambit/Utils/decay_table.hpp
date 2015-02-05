@@ -22,11 +22,11 @@
 #include <string>
 #include <sstream>
 
-#include "util_types.hpp"
-#include "partmap.hpp"
-#include "standalone_error_handlers.hpp"
+#include "gambit/Utils/util_types.hpp"
+#include "gambit/Utils/standalone_error_handlers.hpp"
+#include "gambit/Models/partmap.hpp"
 
-#include "slhaea.h"
+#include "SLHAea/slhaea.h"
 
 namespace Gambit
 {

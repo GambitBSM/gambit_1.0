@@ -15,7 +15,7 @@
 ///
 ///  *********************************************
 
-#include "util_types.hpp"
+#include "gambit/Utils/util_types.hpp"
 
 #ifndef __SUSYHIT_types_hpp__
 #define __SUSYHIT_types_hpp__

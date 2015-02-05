@@ -20,12 +20,12 @@
 
 #define STANDALONE
 
-#include "static_members.hpp"
-#include "log.hpp"
-#include "module_macros_incore.hpp"
-#include "backend_rollcall.hpp"
-#include "model_rollcall.hpp"
-#include "stream_overloads.hpp"
+#include "gambit/Logs/log.hpp"
+#include "gambit/Backends/backend_rollcall.hpp"
+#include "gambit/Models/model_rollcall.hpp"
+#include "gambit/Utils/static_members.hpp"
+#include "gambit/Utils/module_macros_incore.hpp"
+#include "gambit/Utils/stream_overloads.hpp"
 
 using namespace Gambit;
 using std::cout;

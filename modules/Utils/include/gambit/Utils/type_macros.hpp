@@ -19,9 +19,9 @@
 #ifndef __type_macros_hpp__
 #define __type_macros_hpp__
 
-#include "util_macros.hpp"
-#include "equivalency_singleton.hpp"
-#include "backend_singleton.hpp"
+#include "gambit/Utils/util_macros.hpp"
+#include "gambit/Utils/equivalency_singleton.hpp"
+#include "gambit/Backends/backend_singleton.hpp"
 
 #include <boost/preprocessor/seq/for_each.hpp>
 #include <boost/preprocessor/seq/elem.hpp>

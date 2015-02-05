@@ -3,7 +3,7 @@
 
 #include <cstddef>
 #include "forward_decls_wrapper_classes.h"
-#include "wrapperbase.hpp"
+#include "gambit/Backends/wrapperbase.hpp"
 #include "abstract_Hist.h"
 #include <string>
 #include <vector>
@@ -117,6 +117,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
 }
 
 
-#include "backend_undefs.hpp"
+#include "gambit/Backends/backend_undefs.hpp"
 
 #endif /* __wrapper_Hist_decl_Pythia_8_186_h__ */

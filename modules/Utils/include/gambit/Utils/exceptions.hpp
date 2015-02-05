@@ -25,8 +25,8 @@
 #include <string>
 #include <exception>
 
-#include "log_tags.hpp"
-#include "util_macros.hpp"
+#include "gambit/Utils/util_macros.hpp"
+#include "gambit/Logs/log_tags.hpp"
 
 namespace Gambit
 {

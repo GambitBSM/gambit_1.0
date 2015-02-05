@@ -27,7 +27,7 @@
 
 
 // Gambit
-#include "baseprinter.hpp"
+#include "gambit/Printers/baseprinter.hpp"
 
 // Code!
 namespace Gambit

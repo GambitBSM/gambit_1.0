@@ -33,10 +33,10 @@
   FAIL("You cannot include gambit_module_headers.hpp from a rollcall header, only from module source files.")
 #endif
 
-#include "module_macros_inmodule.hpp"
-#include "shared_types.hpp"
-#include "util_types.hpp"
-#include "util_functions.hpp"
-#include "threadsafe_rng.hpp"
+#include "gambit/Utils/module_macros_inmodule.hpp"
+#include "gambit/Utils/shared_types.hpp"
+#include "gambit/Utils/util_types.hpp"
+#include "gambit/Utils/util_functions.hpp"
+#include "gambit/Utils/threadsafe_rng.hpp"
 
 #endif /* defined(__gambit_module_headers_hpp__) */

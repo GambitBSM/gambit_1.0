@@ -26,8 +26,8 @@
 #ifndef __modelgraph_hpp__
 #define __modelgraph_hpp__
 
-#include "depresolver.hpp"
-#include "models.hpp"
+#include "gambit/Core/depresolver.hpp"
+#include "gambit/Models/models.hpp"
 
 namespace Gambit
 {

@@ -34,11 +34,11 @@
 
 #include <chrono>
 
-#include "functors.hpp"
-#include "models.hpp"
-#include "all_functor_types.hpp"
-#include "standalone_error_handlers.hpp"
-#include "log.hpp"
+#include "gambit/Utils/functors.hpp"
+#include "gambit/Utils/all_functor_types.hpp"
+#include "gambit/Utils/standalone_error_handlers.hpp"
+#include "gambit/Models/models.hpp"
+#include "gambit/Logs/log.hpp"
 
 #include <boost/preprocessor/seq/for_each.hpp>
 

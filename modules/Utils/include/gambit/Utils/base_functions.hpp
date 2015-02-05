@@ -37,14 +37,11 @@
 #include <iostream>
 #include <fstream>
 #include <map>
-//#include <memory>
 
-#include "boost/shared_ptr.hpp"
-#include "boost/enable_shared_from_this.hpp"
-#include "variadic_functions.hpp"
+#include "gambit/Utils/variadic_functions.hpp"
 
-//#include "boost/lambda/lambda.hpp"
-//#include "boost/function/function.hpp"
+#include <boost/shared_ptr.hpp>
+#include <boost/enable_shared_from_this.hpp>
 #include <gsl/gsl_integration.h>
 
 namespace Gambit 

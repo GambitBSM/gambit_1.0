@@ -6,7 +6,9 @@
 #include <map>
 #include <set>
 
-#include "partmap.hpp"
+#include "gambit/Models/partmap.hpp"
+
+#include "SLHAea/slhaea.h"
 
 // Particle database access
 #define PDB Models::ParticleDB()        

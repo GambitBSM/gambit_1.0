@@ -26,11 +26,11 @@
 #include <vector>
 
 // Gambit
-#include "all_functor_types.hpp"
-#include "functors.hpp"
-#include "standalone_error_handlers.hpp"
-#include "factory_registry.hpp"
-#include "yaml_options.hpp"
+#include "gambit/Utils/all_functor_types.hpp"
+#include "gambit/Utils/functors.hpp"
+#include "gambit/Utils/standalone_error_handlers.hpp"
+#include "gambit/Utils/yaml_options.hpp"
+#include "gambit/ScannerBit/factory_registry.hpp"
 
 // Boost
 #include <boost/preprocessor/seq/for_each.hpp>

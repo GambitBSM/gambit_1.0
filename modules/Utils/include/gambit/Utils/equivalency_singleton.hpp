@@ -16,7 +16,7 @@
 #ifndef __equivalency_singleton_hpp__
 #define __equivalency_singleton_hpp__
 
-#include "type_equivalency.hpp"
+#include "gambit/Utils/type_equivalency.hpp"
 
 
 namespace Gambit

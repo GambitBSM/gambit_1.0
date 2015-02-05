@@ -290,6 +290,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
 }
 
 
-#include "backend_undefs.hpp"
+#include "gambit/Backends/backend_undefs.hpp"
 
 #endif /* __wrapper_Vec4_def_Pythia_8_186_h__ */

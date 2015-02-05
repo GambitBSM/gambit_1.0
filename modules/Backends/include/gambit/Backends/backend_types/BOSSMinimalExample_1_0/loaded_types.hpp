@@ -16,6 +16,6 @@
 #endif
 
 // Undefine macros to avoid conflict with other backends.
-#include "backend_undefs.hpp"
+#include "gambit/Backends/backend_undefs.hpp"
 
 #endif /* __loaded_types_BOSSMinimalExample_1_0_hpp__ */

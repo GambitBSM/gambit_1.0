@@ -47,9 +47,9 @@ def main(argv):
         exclude_models.update(neatsplit(",",arg))
 
     # Get list of models to include in models_rollcall.hpp
-    model_headers.update(retrieve_generic_headers(verbose,"./Models/include/models","model",exclude_models))   
+    model_headers.update(retrieve_generic_headers(verbose,"./Models/include/gambit/Models/models","model",exclude_models))   
     # Get lists of model type header files
-    model_type_headers.update(retrieve_generic_headers(verbose,"./Models/include/model_types","model type",exclude_models))
+    model_type_headers.update(retrieve_generic_headers(verbose,"./Models/include/gambit/Models/model_types","model type",exclude_models))
 
     print "Model headers identified:"
     for h in model_headers:
@@ -71,9 +71,9 @@ def main(argv):
 ///                                               \n\
 ///  Do not add to this if you want to add a new  \n\
 ///  model -- just add your model header to       \n\
-///  Models/include/models and rest assured that  \n\
-///  model_harvester.py will make sure it ends    \n\
-///  up here.                                     \n\
+///  Models/include/gambit/Models/models and rest \n\
+///  assured that model_harvester.py will make    \n\
+///  sure it ends up here.                        \n\
 ///                                               \n\
 ///  *********************************************\n\
 ///                                               \n\
@@ -88,7 +88,7 @@ def main(argv):
 #define __model_rollcall_hpp__                    \n\
                                                   \n\
 // Include the model macro definitions            \n\
-#include \"model_macros.hpp\"                     \n\
+#include \"gambit/Models/model_macros.hpp\"       \n\
                                                   \n\
 // Automatically-generated list of models.        \n"
 
@@ -96,7 +96,7 @@ def main(argv):
         towrite+='#include \"models/{0}\"\n'.format(h)
     towrite+="\n#endif // defined __model_rollcall_hpp__\n"
     
-    with open("./Models/include/model_rollcall.hpp","w") as f:
+    with open("./Models/include/gambit/Models/model_rollcall.hpp","w") as f:
         f.write(towrite)
 
     # Generate a c++ header containing all the model type headers we have just harvested.
@@ -114,9 +114,9 @@ def main(argv):
 ///  Do not add to this if you want to add new    \n\
 ///  types associated with a new (or old) model.  \n\
 ///  Just add your model type header to           \n\
-///  Models/include/model_types and rest assured  \n\
-///  that model_harvester.py will make sure it    \n\
-///  ends up here.                                \n\
+///  Models/include/gambit/Models/model_types and \n\
+///  rest assured that model_harvester.py will    \n\
+///  make sure it ends up here.                   \n\
 ///                                               \n\
 ///  *********************************************\n\
 ///                                               \n\
@@ -136,7 +136,7 @@ def main(argv):
         towrite+='#include \"model_types/{0}\"\n'.format(h)
     towrite+="\n#endif // defined __model_types_rollcall_hpp__\n"
     
-    with open("./Models/include/model_types_rollcall.hpp","w") as f:
+    with open("./Models/include/gambit/Models/model_types_rollcall.hpp","w") as f:
         f.write(towrite)
 
     if verbose:

@@ -16,7 +16,7 @@
 #ifndef __backend_singleton_hpp__
 #define __backend_singleton_hpp__
 
-#include "backend_info.hpp"
+#include "gambit/Backends/backend_info.hpp"
 
 
 namespace Gambit

@@ -21,7 +21,7 @@
 #ifndef __log_hpp__
 #define __log_hpp__
 
-#include "logging.hpp"
+#include "gambit/Logs/logging.hpp"
 
 namespace Gambit
 {

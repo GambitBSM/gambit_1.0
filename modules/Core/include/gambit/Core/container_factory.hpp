@@ -33,12 +33,12 @@
 #include <set>
 #include <string>
 
-#include "functors.hpp"
-#include "util_types.hpp"
-#include "depresolver.hpp"
-#include "priors_rollcall.hpp"
-#include "scanner_utils.hpp"
-#include "scan.hpp"
+#include "gambit/Core/depresolver.hpp"
+#include "gambit/Utils/functors.hpp"
+#include "gambit/Utils/util_types.hpp"
+#include "gambit/ScannerBit/priors_rollcall.hpp"
+#include "gambit/ScannerBit/scanner_utils.hpp"
+#include "gambit/ScannerBit/scan.hpp"
 
 #define LOAD_SCANNER_FUNCTION(tag, ...) REGISTER(__scanner_factories__, tag, __VA_ARGS__)
 

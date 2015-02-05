@@ -22,7 +22,7 @@
 include(ExternalProject)
 
 #contrib/slhaea
-include_directories("${PROJECT_SOURCE_DIR}/contrib/slhaea")
+include_directories("${PROJECT_SOURCE_DIR}/contrib/slhaea/include")
 
 #contrib/mcutils
 include_directories("${PROJECT_SOURCE_DIR}/contrib/mcutils/include")

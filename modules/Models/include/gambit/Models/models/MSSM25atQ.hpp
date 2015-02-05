@@ -18,7 +18,7 @@
 #ifndef __MSSM25atQ_hpp__
 #define __MSSM25atQ_hpp__
 
-#include "models/MSSM78atQ.hpp" // Parent model must be declared first! Include it here to ensure that this happens.
+#include "gambit/Models/models/MSSM78atQ.hpp" // Parent model must be declared first! Include it here to ensure that this happens.
 
 /// FlexibleSUSY compatible general (78 parameters plus sign) MSSM parameterisation
 #define MODEL MSSM25atQ

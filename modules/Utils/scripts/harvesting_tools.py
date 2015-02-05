@@ -194,7 +194,7 @@ def retrieve_rollcall_headers(verbose,install_dir,excludes):
     rollcall_headers=[]
     core_exists = False
     for root,dirs,files in os.walk(install_dir):
-        if (not core_exists and root == install_dir+"/Core/include"): core_exists = True 
+        if (not core_exists and root == install_dir+"/Core/include/gambit/Core"): core_exists = True 
         for name in files:
             if ( (name.lower().endswith("_rollcall.hpp") or
                   name.lower().endswith("_rollcall.h")   or
@@ -273,7 +273,7 @@ def make_module_rollcall(rollcall_headers,verbose):
 ///  sure it turns up here.                       \n\
 ///                                               \n\
 ///  By 'rollcall header', we mean a file         \n\
-///  myBit/include/myBit_rollcall.hpp,            \n\
+///  myBit/include/gambit/myBit/myBit_rollcall.hpp,\n\
 ///  where myBit is the name of your module.      \n\
 ///                                               \n\
 ///  *********************************************\n\
@@ -288,13 +288,13 @@ def make_module_rollcall(rollcall_headers,verbose):
 #ifndef __module_rollcall_hpp__                   \n\
 #define __module_rollcall_hpp__                   \n\
                                                   \n\
-#include \"module_macros_incore.hpp\"           \n\n"
+#include \"gambit/Utils/module_macros_incore.hpp\"\n\n"
 
     for h in rollcall_headers:
         towrite+='#include \"{0}\"\n'.format(h)
     towrite+="\n#endif // defined __module_rollcall_hpp__\n"
     
-    with open("./Core/include/module_rollcall.hpp","w") as f:
+    with open("./Core/include/gambit/Core/module_rollcall.hpp","w") as f:
         f.write(towrite)
 
     if verbose: print "Found GAMBIT Core.  Generated module_rollcall.hpp.\n" 

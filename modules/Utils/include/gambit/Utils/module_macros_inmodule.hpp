@@ -32,12 +32,12 @@
 #ifndef __module_macros_inmodule_hpp__
 #define __module_macros_inmodule_hpp__
 
-#include "functors.hpp"
-#include "exceptions.hpp"
-#include "util_macros.hpp"
-#include "safety_bucket.hpp"
-#include "safe_param_map.hpp"
-#include "module_macros_common.hpp"
+#include "gambit/Utils/functors.hpp"
+#include "gambit/Utils/exceptions.hpp"
+#include "gambit/Utils/util_macros.hpp"
+#include "gambit/Utils/safety_bucket.hpp"
+#include "gambit/Utils/module_macros_common.hpp"
+#include "gambit/Models/safe_param_map.hpp"
 
 /// \name Rollcall macros
 /// These are called from within rollcall headers in each module to 

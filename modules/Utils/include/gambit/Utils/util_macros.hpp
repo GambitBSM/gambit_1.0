@@ -19,8 +19,8 @@
 #ifndef __util_macros_hpp__
 #define __util_macros_hpp__
 
-#include "boost_fallbacks.hpp"
-#include "cats.hpp"
+#include "gambit/Utils/boost_fallbacks.hpp"
+#include "gambit/Utils/cats.hpp"
 
 #include <boost/preprocessor/seq/size.hpp>
 #include <boost/preprocessor/control/if.hpp>

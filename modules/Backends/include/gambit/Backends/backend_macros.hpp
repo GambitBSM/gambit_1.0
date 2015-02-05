@@ -39,19 +39,19 @@
 #include <map>
 #include <sstream>
 
-#include "static_members.hpp"
-#include "util_macros.hpp"
-#include "util_types.hpp"
-#include "util_functions.hpp"
-#include "types_rollcall.hpp"
-#include "functors.hpp"
-#include "log.hpp"
-#include "standalone_error_handlers.hpp"
-#include "module_macros_incore.hpp"
-#include "backend_singleton.hpp"
-#include "claw_singleton.hpp"
+#include "gambit/Utils/static_members.hpp"
+#include "gambit/Utils/util_macros.hpp"
+#include "gambit/Utils/util_types.hpp"
+#include "gambit/Utils/util_functions.hpp"
+#include "gambit/Utils/types_rollcall.hpp"
+#include "gambit/Utils/functors.hpp"
+#include "gambit/Utils/standalone_error_handlers.hpp"
+#include "gambit/Utils/module_macros_incore.hpp"
+#include "gambit/Backends/backend_singleton.hpp"
+#include "gambit/Models/claw_singleton.hpp"
+#include "gambit/Logs/log.hpp"
 #ifndef STANDALONE
-  #include "core_singleton.hpp"
+  #include "gambit/Core/core_singleton.hpp"
 #endif
 
 #include <boost/preprocessor/control/iif.hpp>

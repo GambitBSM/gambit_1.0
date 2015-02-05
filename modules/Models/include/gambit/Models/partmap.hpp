@@ -21,7 +21,7 @@
 
 #include <map>
 
-#include "util_types.hpp"
+#include "gambit/Utils/util_types.hpp"
 
 
 namespace Gambit
@@ -57,7 +57,7 @@ namespace Gambit
         str long_name(std::pair<int, int>);
 
         /// Retrieve the long name, from the PDG code and context integer
-        str long_name(int,int=0); // Is default value a bad idea?
+        str long_name(int,int);
 
         /// Retrieve the short name and index, from the long name 
         std::pair<str, int> short_name_pair(str);
@@ -66,7 +66,7 @@ namespace Gambit
         std::pair<str, int> short_name_pair(std::pair<int, int>);
 
         /// Retrieve the short name and index, from the PDG code and context integer
-        std::pair<str, int> short_name_pair(int,int=0); // Is default value a bad idea?
+        std::pair<str, int> short_name_pair(int,int);
 
         /// Check if a particle is in the database, using the long name 
         bool has_particle(str);

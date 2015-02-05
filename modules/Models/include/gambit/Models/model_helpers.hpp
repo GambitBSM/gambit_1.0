@@ -20,7 +20,7 @@
 #define __model_helpers_hpp__
 
 #include <vector>
-#include "model_parameters.hpp" 
+#include "gambit/Models/model_parameters.hpp" 
 
 namespace Gambit {
   namespace Models {

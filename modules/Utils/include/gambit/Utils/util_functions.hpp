@@ -25,7 +25,7 @@
 
 #include <vector>
 
-#include "util_types.hpp"
+#include "gambit/Utils/util_types.hpp"
 
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/classification.hpp>

@@ -20,13 +20,13 @@
 #include <map>
 #include <vector>
 
-#include <yaml-cpp/yaml.h>
+#include "gambit/Core/yaml_description_database.hpp"
+#include "gambit/Models/models.hpp"
+#include "gambit/Backends/backend_info.hpp"
+#include "gambit/Utils/util_types.hpp"
+#include "gambit/Utils/functors.hpp"
 
-#include "util_types.hpp"
-#include "models.hpp"
-#include "functors.hpp"
-#include "backend_info.hpp"
-#include "yaml_description_database.hpp"
+#include "yaml-cpp/yaml.h"
 
 namespace Gambit
 {

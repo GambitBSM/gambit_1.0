@@ -31,8 +31,8 @@
 #include <iomanip>
 
 // Gambit
-#include "baseprinter.hpp"
-#include "yaml_options.hpp"
+#include "gambit/Printers/baseprinter.hpp"
+#include "gambit/Utils/yaml_options.hpp"
 
 // Code!
 namespace Gambit

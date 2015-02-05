@@ -18,7 +18,7 @@
 #ifndef __CMSSM_hpp__
 #define __CMSSM_hpp__
 
-#include "models/MSSM78atMGUT.hpp" // Must include models which are targets of translation functions
+#include "gambit/Models/models/MSSM78atMGUT.hpp" // Must include models which are targets of translation functions
 
 #define MODEL CMSSM
   START_MODEL
