@@ -24,8 +24,8 @@
 #
 #************************************************
 
-# Require a minimum cmake version of 2.8.11
-cmake_minimum_required(VERSION 2.8.11 FATAL_ERROR)
+# Require a minimum cmake version of 2.6.0
+cmake_minimum_required(VERSION 2.6.0 FATAL_ERROR)
 
 if(NOT CMAKE_BUILD_TYPE)
   SET(CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING
