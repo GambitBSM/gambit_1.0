@@ -100,13 +100,18 @@
              virtual functions for that */                                             \
                                                                                        \
           /* Constructor */                                                            \
-          CAT_3(MODELNAME,_,interface) (const Model& modelIN, const QedQcd& onesetIN, const InputParameters& inputIN) \
-          : model(modelIN)                                                             \
+          CAT_3(MODELNAME,_,interface) (const SpectrumGenerator& spectrum_generator, const QedQcd& onesetIN, const InputParameters& inputIN) \
+          : model(spectrum_generator.get_model())                                      \
           , oneset(onesetIN)                                                           \
           , input(inputIN)                                                             \
           , slha_io()                                                                  \
+          , scales()                                                                   \
           , problems(CAT_3(MODELNAME,_,info)::particle_names)                          \
-          {}                                                                           \
+          {                                                                            \
+            scales.HighScale = spectrum_generator.get_high_scale();                    \
+            scales.SUSYScale = spectrum_generator.get_susy_scale();                    \
+            scales.LowScale  = spectrum_generator.get_low_scale();                     \
+          }                                                                            \
                                                                                        \
           /* Constructor 2 (mostly for testing; leave input with default values) */    \
           CAT_3(MODELNAME,_,interface) (const Model& modelIN)                          \
@@ -114,6 +119,7 @@
           , oneset()                                                                   \
           , input()                                                                    \
           , slha_io()                                                                  \
+          , scales()                                                                   \
           , problems(CAT_3(MODELNAME,_,info)::particle_names)                          \
           {}                                                                           \
                                                                                        \
