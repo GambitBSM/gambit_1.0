@@ -215,6 +215,8 @@ namespace Gambit
       static_assert(sizeof...(lims)%2==0,    "Farray error: Odd number of index limits.");      
       typedef Farray_nElem<lims... > nElem;
       T array[nElem::val]; 
+      Farray(){}
+      Farray(Farray<T,lims... > &in){*this = in;}
       template <typename ... Args>
       T& operator () (Args ... a)
       {   
@@ -279,6 +281,12 @@ namespace Gambit
   class Fstring : public Farray<char,1,len>
   {
     public:
+      Fstring(){}
+      Fstring(const std::string &in)  {*this = in;}
+      Fstring(const char* in)         {*this = in;}   
+      Fstring(char in)                {*this = in;}         
+      template<int ilen>        
+      Fstring(const Fstring<ilen> &in){*this = in;}       
       Fstring& operator= (const std::string &in)
       {
         for(int i=0; i<len; i++)
@@ -307,6 +315,7 @@ namespace Gambit
       template<int ilen>
       Fstring& operator= (const Fstring<ilen> &in)
       {
+        if (reinterpret_cast<const void*>(this) == reinterpret_cast<const void*>(&in)) return *this;
         for(int i=0; i<len; i++)
         {
           Farray<char,1,len>::array[i] = (i<ilen) ? in.array[i] : ' ';
@@ -365,6 +374,46 @@ namespace Gambit
         return *reinterpret_cast<Fstring<len>*>(&Farray<char,1,len, lims... >::array[idx]);  
       }     
   };
+  
+  /// Fortran complex type. Use typdef versions instead of the 
+  /// DO NOT UNDER ANY CIRCUMSTANCE add new member variables to this class!     
+  template <typename T>
+  class FcomplexT
+  {
+    public:
+      T re;
+      T im;
+      template<typename T2>
+      FcomplexT& operator= (const FcomplexT<T2> &in)
+      {
+        re = in.re;
+        im = in.im;
+        return *this;
+      }
+      // Todo: Implement convenient operators here...
+  };
+
+  /// Fortran type typedefs
+  /// Todo: Implement compiler dependent macros ensuring that these are always correct
+  typedef FcomplexT<float>  Fcomplex;
+  typedef FcomplexT<float>  Fcomplex8;
+  typedef FcomplexT<double> Fcomplex16;
+  typedef FcomplexT<double> Fdouble_complex;  
+  typedef char              Fcharacter;  
+  typedef double            Fdouble;
+  typedef double            Fdouble_precision;
+  typedef double            Fdoubleprecision;    
+  typedef int               Finteger;
+  typedef short             Finteger2;  
+  typedef long int          Finteger4;  
+  typedef long long         Finteger8;  
+  typedef bool              Flogical;
+  typedef bool              Flogical1;  
+  typedef float             Freal;
+  typedef float             Freal4;
+  typedef double            Freal8;
+  typedef long double       Freal16;
+  
   
 }
 #endif //defined __util_types_hpp__

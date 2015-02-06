@@ -17,6 +17,12 @@ module testmodule
   integer :: e = 6
   common /commonBlock2/ chara, charb, charc, e
 
+! complex and double complex types  
+  complex :: cpa = (1,2)
+  complex*16  :: cpb = (3,4)
+  integer :: f = 91
+  common /commonBlock3/ cpa, cpb, f
+
 end module testmodule
 
   subroutine printStuff()
@@ -104,5 +110,23 @@ end module testmodule
     return
   end function
 
+  double precision function doubleFuncArray2(i)
+    implicit none
+    double precision, dimension(3), intent(in) :: i
+    write(*,*) " This is doubleFuncArray2 called with arguments:",i
+    write(*,*) " Returning element 2 of the supplied array."   
+    doubleFuncArray2 = i(2)
+    return
+  end function
+  
+  double precision function doubleFuncArray3(i)
+    implicit none
+    double precision, dimension(1:2,2:3), intent(in) :: i
+    write(*,*) " This is doubleFuncArray3 called with argument:"
+    write(*,*) " i(1,2) = ", i(1,2), " i(1,3) = ", i(1,3) 
+    write(*,*) " i(2,2) = ", i(2,2), " i(2,3) = ", i(2,3)     
+    doubleFuncArray3 = i(1,3)
+    return
+  end function
 
 

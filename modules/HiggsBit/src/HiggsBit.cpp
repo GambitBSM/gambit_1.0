@@ -149,7 +149,7 @@ namespace Gambit
 
       result = csqtot;
       std::cout << "Calculating LHC chisq: " << csqmu << " (signal strength only), " << csqmh << " (mass only), ";
-      std::cout << csqtot << " (both)" << endl;
+      std::cout << csqtot << " (both), Nobs: " << nobs << ", Pvalue: " << Pvalue << endl;
 
       BEreq::finish_HiggsSignals();
     }
