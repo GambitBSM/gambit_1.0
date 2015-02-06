@@ -85,6 +85,13 @@ if (NOT ${EXCLUDE_FLEXIBLESUSY})
        BUILD_COMMAND $(MAKE) alllib LAPACKLIBS=${LAPACK_LIBS}
        INSTALL_COMMAND ""
      )
+     # To let flexiblesusy "make clean" itself, we create a custom target and add it as a 
+     # dependency of the target "really-clean". You can also just run this make target by itself.
+     add_custom_target(clean-flexiblesusy
+        COMMAND cd ${FLEXIBLESUSY_DIR} && make clean
+     )
+     add_dependencies(really-clean clean-flexiblesusy)
+
      list(APPEND flexiblesusy_projects flexiblesusy)
   endif()
 

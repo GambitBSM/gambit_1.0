@@ -228,6 +228,13 @@ add_custom_target(backend_harvest DEPENDS ${PROJECT_SOURCE_DIR}/Backends/include
 add_custom_target(functor_harvest DEPENDS ${PROJECT_SOURCE_DIR}/Utils/include/all_functor_types.hpp ${MODULE_HARVESTER_FILES} backend_harvest)
 add_custom_target(module_harvest  DEPENDS ${PROJECT_SOURCE_DIR}/Core/include/module_rollcall.hpp functor_harvest)
 
+# Add a second clean target to allow us to trigger cleaning of external projects (or run any other custom commands)
+# Needed because "clean" isn't a target itself, so cannot be made to depend on other targets.
+# See custom target "clean-flexiblesusy" in contrib.make for example use case.
+add_custom_target(really-clean
+  COMMAND ${CMAKE_MAKE_PROGRAM} clean
+)
+
 # Arrange for removal of all_functor_types.hpp and other generated headers upon "make clean".
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Backends/include/backend_rollcall.hpp")
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Models/include/model_rollcall.hpp")
