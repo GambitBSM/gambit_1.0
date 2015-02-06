@@ -200,6 +200,72 @@ namespace Gambit {
           counter = 0;   // Reset counter.
     }
 
+
+//////////////////////////////////////////////////////////////////////////
+//
+//                    Backend point initialization
+//
+//////////////////////////////////////////////////////////////////////////
+
+    // Initialize DarkSUSY to the current model point.  Only selected
+    // MSSM parameter spaces are implemented.  Returns bool indicating
+    // if point initialization was successful, which is essentially
+    // always true for models that satisfy the dependency resolver.
+    void DarkSUSY_PointInit(bool &result)
+    {
+      using namespace Pipes::DarkSUSY_PointInit;
+      result = false;
+      
+      // CMSSM
+      if (ModelInUse("CMSSM"))
+      {
+        // Setup mSUGRA model from CMSSM parameters
+        double am0    = *Param["M0"];     // m0
+        double amhf   = *Param["M12"];    // m_1/2
+        double aa0    = *Param["A0"];     // A0
+        double asgnmu = *Param["sgnmu"];  // sign(mu)
+        double atanbe = *Param["tanb"];   // tan(beta)
+        std::cout << "Initializing DarkSUSY via dsgive_model_isasugra:" << std::endl;
+        std::cout << "  m0        =" << am0    << std::endl;
+        std::cout << "  m_1/2     =" << amhf   << std::endl;
+        std::cout << "  A0        =" << aa0    << std::endl;
+        std::cout << "  sign(mu)  =" << asgnmu << std::endl;
+        std::cout << "  tan(beta) =" << atanbe << std::endl;
+        BEreq::dsgive_model_isasugra(am0, amhf, aa0, asgnmu, atanbe);
+        int unphys, hwarning;
+        BEreq::dssusy_isasugra(unphys, hwarning);
+        //result = (unphys == 0) && (hwarning == 0);
+        result = true;
+      }
+      
+      // use SLHA for initialization initialization
+      else if (ModelInUse("CMSSM_demo") or ModelInUse("MSSM25atQ"))
+      {
+        // Save eaSLHA file to disk
+        eaSLHA mySLHA = *Dep::MSSMspectrum;
+        std::ofstream ofs("DarkBit_temp.slha");
+        ofs << mySLHA;
+        ofs.close();
+
+        // Initialize SUSY spectrum from SLHA
+        int len = 17;
+        int flag = 15;
+        char * filename = "DarkBit_temp.slha";
+        std::cout << "Initializing DarkSUSY via SLHA." << std::endl;
+        BEreq::dsSLHAread(byVal(filename),flag,byVal(len));
+        BEreq::dsprep();
+        result = true;
+      }
+
+      // Better way to log this?
+      if (!result) {
+        std::cout << "DarkSUSY point initialization failed." << std::endl;
+      }
+      
+    }
+
+
+
 //////////////////////////////////////////////////////////////////////////
 //
 //                    DarkSUSY Relic density routines
@@ -1835,21 +1901,32 @@ namespace Gambit {
     void DD_couplings_DarkSUSY(Gambit::DarkBit::DD_couplings &result)
     {
         using namespace Pipes::DD_couplings_DarkSUSY;
-        // Calling DarkSUSY subroutine dsddgpgn(gps,gns,gpa,gna)
-        // to set all four couplings.
-        BEreq::dsddgpgn(result.gps, result.gns, result.gpa, result.gna);
-        double factor = runOptions->getValueOrDef<double>(1., "rescale_couplings");
-        result.gps *= factor;
-        result.gns *= factor;
-        result.gpa *= factor;
-        result.gna *= factor;
-        result.M_DM = (*BEreq::mspctm).mass[42];        
-        std::cout << "dsddgpgn gives: \n";
-        std::cout << " gps: " << result.gps << "\n";
-        std::cout << " gns: " << result.gns << "\n";
-        std::cout << " gpa: " << result.gpa << "\n";
-        std::cout << " gna: " << result.gna << std::endl;
-        cout << " M_DM = " << result.M_DM << endl;
+        if (*Dep::DarkSUSY_PointInit) {
+          result.M_DM = (*BEreq::mspctm).mass[42];        
+          // Calling DarkSUSY subroutine dsddgpgn(gps,gns,gpa,gna)
+          // to set all four couplings.
+          BEreq::dsddgpgn(result.gps, result.gns, result.gpa, result.gna);
+          double factor = runOptions->getValueOrDef<double>(1., "rescale_couplings");
+          result.gps *= factor;
+          result.gns *= factor;
+          result.gpa *= factor;
+          result.gna *= factor;
+          std::cout << "M_DM = " << result.M_DM << std::endl;
+          std::cout << "DarkSUSY dsddgpgn gives:" << std::endl;
+          std::cout << " gps = " << result.gps << std::endl;
+          std::cout << " gns = " << result.gns << std::endl;
+          std::cout << " gpa = " << result.gpa << std::endl;
+          std::cout << " gna = " << result.gna << std::endl;
+        } else {
+          result.M_DM = (*BEreq::mspctm).mass[42];        
+          // Set couplings to zero if DarkSUSY point initialization
+          // was not successful
+          result.gps = 0.0; result.gns = 0.0;
+          result.gpa = 0.0; result.gna = 0.0;
+          std::cout << "M_DM = " << result.M_DM << std::endl;
+          std::cout << "DarkSUSY point initialization failed:" << std::endl;
+          std::cout << " couplings set to zero." << std::endl;
+        }
     }
 
     void DD_couplings_micrOMEGAs(Gambit::DarkBit::DD_couplings &result)

@@ -97,6 +97,33 @@ START_MODULE
   #undef CAPABILITY
 
 
+  // Backend point initialization --------------------------
+
+  // Function to initialize DarkSUSY to a specific model point.
+  // The generic DarkSUSY initialization is done in the backend
+  // initialization; this is only necessary for other capabilities
+  // that make use of model-specific DarkSUSY routines. 
+  #define CAPABILITY DarkSUSY_PointInit
+  START_CAPABILITY
+    // Function returns if point initialization is successful
+    // (probably always true)
+    #define FUNCTION DarkSUSY_PointInit
+      START_FUNCTION(bool)
+      DEPENDENCY(MSSMspectrum, eaSLHA) 
+      ALLOW_MODELS(CMSSM_demo,CMSSM,MSSM25atQ)
+      // CMSSM
+      BACKEND_REQ(dsgive_model_isasugra, (), void, (double&,double&,double&,double&,double&))
+      BACKEND_REQ(dssusy_isasugra, (), void, (int&,int&))
+      // MSSM7
+      BACKEND_REQ(mssmpar, (), DS_MSSMPAR)
+      BACKEND_REQ(dssusy, (), void, (int&,int&))
+      // Initialize DarkSUSY with SLHA file
+      BACKEND_REQ(dsSLHAread, (), void, (char*, int&, int))
+      BACKEND_REQ(dsprep, (), void, ())
+    #undef FUNCTION
+  #undef CAPABILITY
+
+
   // Relic density -----------------------------------------
 
   #define CAPABILITY RD_spectrum
