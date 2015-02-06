@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Thu 4 Dec 2014 21:44:13
+// File generated at Fri 16 Jan 2015 14:37:45
 
 #ifndef NUHMSSM_TWO_SCALE_HIGH_SCALE_CONSTRAINT_H
 #define NUHMSSM_TWO_SCALE_HIGH_SCALE_CONSTRAINT_H
@@ -51,7 +51,6 @@ public:
 private:
    double scale;
    double initial_scale_guess;
-   double fixed_scale; ///< fixed unification scale (0 = unfixed)
    NUHMSSM<Two_scale>* model;
    NUHMSSM_input_parameters inputPars;
 

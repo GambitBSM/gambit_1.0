@@ -46,6 +46,7 @@ public:
       higgs_2loop_correction_ab_as,     ///< [9]  Higgs 2-loop correction O(alpha_b alpha_s)
       higgs_2loop_correction_at_at,     ///< [10] Higgs 2-loop correction O(alpha_t alpha_t + alpha_t alpha_b + alpha_b alpha_b)
       higgs_2loop_correction_atau_atau, ///< [11] Higgs 2-loop correction O(alpha_tau alpha_tau)
+      force_output,          ///< [12] force output
       NUMBER_OF_OPTIONS      ///< number of possible options
    };
 

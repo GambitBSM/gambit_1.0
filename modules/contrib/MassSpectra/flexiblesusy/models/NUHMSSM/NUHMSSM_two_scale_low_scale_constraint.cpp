@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Thu 4 Dec 2014 21:44:15
+// File generated at Fri 16 Jan 2015 14:37:48
 
 #include "NUHMSSM_two_scale_low_scale_constraint.hpp"
 #include "NUHMSSM_two_scale_model.hpp"
@@ -188,12 +188,12 @@ void NUHMSSM_low_scale_constraint<Two_scale>::calculate_DRbar_gauge_couplings()
    const double e_drbar        = Sqrt(4.0 * Pi * alpha_em_drbar);
 
    // interface variables
-   MZDRbar = Electroweak_constants::MZ;
-   double MWDRbar = Electroweak_constants::MW;
+   MZDRbar = oneset.displayPoleMZ();
+   double MWDRbar = oneset.displayPoleMW();
 
    if (model->get_thresholds()) {
-      MZDRbar = model->calculate_MVZ_DRbar(Electroweak_constants::MZ);
-      MWDRbar = model->calculate_MVWm_DRbar(Electroweak_constants::MW);
+      MZDRbar = model->calculate_MVZ_DRbar(oneset.displayPoleMZ());
+      MWDRbar = model->calculate_MVWm_DRbar(oneset.displayPoleMW());
    }
 
    const double AlphaS = alpha_s_drbar;

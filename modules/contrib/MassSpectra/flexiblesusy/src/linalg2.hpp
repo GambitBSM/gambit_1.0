@@ -27,6 +27,7 @@
 #include <Eigen/Core>
 #include <Eigen/SVD>
 #include <Eigen/Eigenvalues>
+#include "compare.hpp"
 
 namespace flexiblesusy {
 
@@ -993,13 +994,6 @@ void reorder_diagonalize_symmetric_errbd
 }
 
 template<class Real, int N>
-struct Compare {
-    Compare(const Eigen::Array<Real, N, 1>& s_) : s(s_) {}
-    bool operator() (int i, int j) { return s[i] < s[j]; }
-    const Eigen::Array<Real, N, 1>& s;
-};
-
-template<class Real, int N>
 void reorder_diagonalize_symmetric_errbd
 (const Eigen::Matrix<Real, N, N>& m,
  Eigen::Array<Real, N, 1>& s,
@@ -1460,13 +1454,6 @@ void fs_diagonalize_symmetric
 {
     fs_diagonalize_symmetric_errbd(m, s, 0, &s_errbd);
 }
-
-template<class Real, int N>
-struct CompareAbs {
-    CompareAbs(const Eigen::Array<Real, N, 1>& w_) : w(w_) {}
-    bool operator() (int i, int j) { return std::abs(w[i]) < std::abs(w[j]); }
-    const Eigen::Array<Real, N, 1>& w;
-};
 
 template<class Real, class Scalar, int N>
 void fs_diagonalize_hermitian_errbd

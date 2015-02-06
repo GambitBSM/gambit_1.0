@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Thu 4 Dec 2014 21:44:10
+// File generated at Fri 16 Jan 2015 14:37:43
 
 #include "NUHMSSM_slha_io.hpp"
 #include "NUHMSSM_input_parameters.hpp"
@@ -241,14 +241,6 @@ void NUHMSSM_slha_io::write_to_file(const std::string& file_name)
 }
 
 /**
- * Read (DR-bar) model parameter input scale from EXTPAR entry 0
- */
-double NUHMSSM_slha_io::get_input_scale() const
-{
-   return slha_io.get_extpar().input_scale;
-}
-
-/**
  * Read (DR-bar) model parameter output scale from MODSEL entry 12
  */
 double NUHMSSM_slha_io::get_parameter_output_scale() const
@@ -265,7 +257,6 @@ void NUHMSSM_slha_io::read_from_file(const std::string& file_name)
 {
    slha_io.read_from_file(file_name);
    slha_io.read_modsel();
-   slha_io.read_extpar();
 }
 
 /**

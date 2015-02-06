@@ -16,7 +16,11 @@
 #  \author Pat Scott
 #          (p.scott@imperial.ac.uk)              
 #  \date 2014 Nov, Dec
-#                                               
+#
+#  \author Ben Farmer
+#          (benjamin.farmer@fysik.su.se)
+#  \date 2015 Feb       
+#                                        
 #************************************************
 
 # Ensure that clean removes automatically-generated CMakeLists.txt files in modules

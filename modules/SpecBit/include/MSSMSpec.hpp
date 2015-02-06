@@ -795,10 +795,10 @@ namespace Gambit {
       tmp_map["~chi+"] = FInfo1( &Model::get_MCha_pole_slha, i01 );
       tmp_map["~chi0"] = FInfo1( &Model::get_MChi_pole_slha, i0123 );
     
-      tmp_map["d"] = finfo1( &model::get_mfd_pole_slha, i012 );
-      tmp_map["u"] = finfo1( &model::get_mfu_pole_slha, i012 );
-      tmp_map["e+"] = finfo1( &model::get_mfe_pole_slha, i012 );
-      tmp_map["e"] = finfo1( &model::get_mfe_pole_slha, i012 );  // Another extra name; not in PDB
+      tmp_map["d"] = FInfo1( &Model::get_MFd_pole_slha, i012 );
+      tmp_map["u"] = FInfo1( &Model::get_MFu_pole_slha, i012 );
+      tmp_map["e+"] = FInfo1( &Model::get_MFe_pole_slha, i012 );
+      tmp_map["e"] = FInfo1( &Model::get_MFe_pole_slha, i012 );  // Another extra name; not in PDB
 
       // Antiparticles (same getters, just different string name)
       tmp_map["~dbar"] = FInfo1( &Model::get_MSd_pole_slha, i012345 );
@@ -808,9 +808,9 @@ namespace Gambit {
       tmp_map["H-"] = FInfo1( &Model::get_MHpm_pole_slha, i01 );   
       tmp_map["~chi-"] = FInfo1( &Model::get_MCha_pole_slha, i01 );
 
-      tmp_map["dbar"] = finfo1( &model::get_mfd_pole_slha, i012 );
-      tmp_map["ubar"] = finfo1( &model::get_mfu_pole_slha, i012 );
-      tmp_map["e+"] = finfo1( &model::get_mfe_pole_slha, i012 );
+      tmp_map["dbar"] = FInfo1( &Model::get_MFd_pole_slha, i012 );
+      tmp_map["ubar"] = FInfo1( &Model::get_MFu_pole_slha, i012 );
+      tmp_map["e+"] = FInfo1( &Model::get_MFe_pole_slha, i012 );
 
       return tmp_map;
    }

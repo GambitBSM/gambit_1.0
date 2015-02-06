@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Wed 3 Dec 2014 11:46:01
+// File generated at Fri 16 Jan 2015 12:36:20
 
 #ifndef MSSMNoFVatMGUT_SLHA_IO_H
 #define MSSMNoFVatMGUT_SLHA_IO_H
@@ -40,11 +40,17 @@
 #define DEFINE_POLE_MASS(p)                                            \
    typename std::remove_const<typename std::remove_reference<decltype(PHYSICAL(p))>::type>::type p;
 #define SM(p) Electroweak_constants::p
+#define SCALES(p) scales.p
 
 namespace flexiblesusy {
 
 struct MSSMNoFVatMGUT_input_parameters;
 class Spectrum_generator_settings;
+
+struct MSSMNoFVatMGUT_scales {
+   MSSMNoFVatMGUT_scales() : HighScale(0.), SUSYScale(0.), LowScale(0.) {}
+   double HighScale, SUSYScale, LowScale;
+};
 
 class MSSMNoFVatMGUT_slha_io {
 public:
@@ -57,12 +63,11 @@ public:
    void fill(MSSMNoFVatMGUT_input_parameters&) const;
    template <class T> void fill(MSSMNoFVatMGUT_slha<T>&) const;
    void fill(Spectrum_generator_settings&) const;
-   double get_input_scale() const;
    double get_parameter_output_scale() const;
    const SLHA_io& get_slha_io() const { return slha_io; }
    void read_from_file(const std::string&);
    void set_extpar(const MSSMNoFVatMGUT_input_parameters&);
-   template <class T> void set_extra(const MSSMNoFVatMGUT_slha<T>&);
+   template <class T> void set_extra(const MSSMNoFVatMGUT_slha<T>&, const MSSMNoFVatMGUT_scales&);
    void set_minpar(const MSSMNoFVatMGUT_input_parameters&);
    void set_sminputs(const softsusy::QedQcd&);
    template <class T> void set_spectrum(const MSSMNoFVatMGUT_slha<T>&);
@@ -78,10 +83,13 @@ public:
    static void convert_to_slha_convention(MSSMNoFVatMGUT_physical&);
 
    template <class T>
-   static void fill_slhaea(SLHAea::Coll&, const MSSMNoFVatMGUT_slha<T>&, const QedQcd& qedqcd);
+   static void fill_slhaea(SLHAea::Coll&, const MSSMNoFVatMGUT_slha<T>&, const QedQcd&, const MSSMNoFVatMGUT_scales&);
 
    template <class T>
-   static SLHAea::Coll fill_slhaea(const MSSMNoFVatMGUT_slha<T>&, const QedQcd& qedqcd);
+   static SLHAea::Coll fill_slhaea(const MSSMNoFVatMGUT_slha<T>&, const QedQcd&);
+
+   template <class T>
+   static SLHAea::Coll fill_slhaea(const MSSMNoFVatMGUT_slha<T>&, const QedQcd&, const MSSMNoFVatMGUT_scales&);
 
 private:
    SLHA_io slha_io; ///< SLHA io class
@@ -319,7 +327,9 @@ void MSSMNoFVatMGUT_slha_io::fill_physical(MSSMNoFVatMGUT_slha<T>& model) const
 }
 
 template <class T>
-void MSSMNoFVatMGUT_slha_io::fill_slhaea(SLHAea::Coll& slhaea, const MSSMNoFVatMGUT_slha<T>& model, const QedQcd& qedqcd)
+void MSSMNoFVatMGUT_slha_io::fill_slhaea(
+   SLHAea::Coll& slhaea, const MSSMNoFVatMGUT_slha<T>& model,
+   const QedQcd& qedqcd, const MSSMNoFVatMGUT_scales& scales)
 {
    MSSMNoFVatMGUT_slha_io slha_io;
    const MSSMNoFVatMGUT_input_parameters& input = model.get_input();
@@ -333,17 +343,28 @@ void MSSMNoFVatMGUT_slha_io::fill_slhaea(SLHAea::Coll& slhaea, const MSSMNoFVatM
    slha_io.set_extpar(input);
    if (!error) {
       slha_io.set_spectrum(model);
-      slha_io.set_extra(model);
+      slha_io.set_extra(model, scales);
    }
 
    slhaea = slha_io.get_slha_io().get_data();
 }
 
 template <class T>
-SLHAea::Coll MSSMNoFVatMGUT_slha_io::fill_slhaea(const MSSMNoFVatMGUT_slha<T>& model, const QedQcd& qedqcd)
+SLHAea::Coll MSSMNoFVatMGUT_slha_io::fill_slhaea(
+   const MSSMNoFVatMGUT_slha<T>& model, const QedQcd& qedqcd)
+{
+   MSSMNoFVatMGUT_scales scales;
+
+   return fill_slhaea(model, qedqcd, scales);
+}
+
+template <class T>
+SLHAea::Coll MSSMNoFVatMGUT_slha_io::fill_slhaea(
+   const MSSMNoFVatMGUT_slha<T>& model, const QedQcd& qedqcd,
+   const MSSMNoFVatMGUT_scales& scales)
 {
    SLHAea::Coll slhaea;
-   MSSMNoFVatMGUT_slha_io::fill_slhaea(slhaea, model, qedqcd);
+   MSSMNoFVatMGUT_slha_io::fill_slhaea(slhaea, model, qedqcd, scales);
 
    return slhaea;
 }
@@ -406,10 +427,20 @@ void MSSMNoFVatMGUT_slha_io::set_model_parameters(const MSSMNoFVatMGUT_slha<T>& 
  * @param model model class
  */
 template <class T>
-void MSSMNoFVatMGUT_slha_io::set_extra(const MSSMNoFVatMGUT_slha<T>& model)
+void MSSMNoFVatMGUT_slha_io::set_extra(
+   const MSSMNoFVatMGUT_slha<T>& model, const MSSMNoFVatMGUT_scales& scales)
 {
    const MSSMNoFVatMGUT_physical physical(model.get_physical_slha());
 
+   {
+      std::ostringstream block;
+      block << "Block FlexibleSUSYOutput Q= " << FORMAT_SCALE(model.get_scale()) << '\n'
+            << FORMAT_ELEMENT(0, (SCALES(HighScale)), "HighScale")
+            << FORMAT_ELEMENT(1, (SCALES(SUSYScale)), "SUSYScale")
+            << FORMAT_ELEMENT(2, (SCALES(LowScale)), "LowScale")
+      ;
+      slha_io.set_block(block);
+   }
    {
       std::ostringstream block;
       block << "Block ALPHA Q= " << FORMAT_SCALE(model.get_scale()) << '\n'

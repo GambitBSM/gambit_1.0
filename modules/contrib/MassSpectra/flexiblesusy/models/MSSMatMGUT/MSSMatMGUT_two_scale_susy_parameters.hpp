@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Wed 3 Dec 2014 11:33:36
+// File generated at Fri 16 Jan 2015 13:02:04
 
 #ifndef MSSMatMGUT_TWO_SCALE_susy_parameters_H
 #define MSSMatMGUT_TWO_SCALE_susy_parameters_H

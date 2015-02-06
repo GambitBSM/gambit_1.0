@@ -83,6 +83,7 @@ void RGFlow<Two_scale>::solve()
    bool accuracy_reached = false;
    while (iteration < max_iterations && !accuracy_reached) {
       update_running_precision();
+      clear_problems();
       run_up();
       run_down();
       accuracy_reached = accuracy_goal_reached();
@@ -130,6 +131,17 @@ void RGFlow<Two_scale>::check_setup() const
    if (!convergence_tester) {
       throw SetupError("RGFlow<Two_scale>::Error: convergence tester must "
                        "not be NULL");
+   }
+}
+
+void RGFlow<Two_scale>::clear_problems()
+{
+   VERBOSE_MSG("> clearing problems ...");
+
+   const size_t number_of_models = models.size();
+   for (size_t m = 0; m < number_of_models; ++m) {
+      TModel* model = models[m];
+      model->model->clear_problems();
    }
 }
 
