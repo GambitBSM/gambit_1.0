@@ -208,12 +208,12 @@ namespace Gambit {
         vector<Particle*> baselineElectrons;
         for (Particle* electron : event->electrons()) {
           if (electron->pT() > 10. && electron->abseta() < 2.47 &&
-              !object_in_cone(*event, *electron, 10, 0.2)) baselineElectrons.push_back(electron);
+              !object_in_cone(*event, *electron, 0.1*electron->pT(), 0.2)) baselineElectrons.push_back(electron);
         }
         vector<Particle*> baselineMuons;
         for (Particle* muon : event->muons()) {
           if (muon->pT() > 10. && muon->abseta() < 2.4 &&
-              !object_in_cone(*event, *muon, 10, 0.2)) baselineMuons.push_back(muon);
+              !object_in_cone(*event, *muon, 1.8, 0.2)) baselineMuons.push_back(muon);
         }
 
         // Get b jets with efficiency and mistag (fake) rates

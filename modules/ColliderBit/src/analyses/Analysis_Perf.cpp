@@ -147,25 +147,59 @@ namespace Gambit {
 
       void analyze(const Event* event) {
 
-        // Now define vectors of baseline objects
+       
+	// Now define vectors of baseline objects
         vector<Particle*> baselineElectrons;
         for (Particle* electron : event->electrons()) {
-          if (electron->pT() > 10 && electron->abseta() < 2.47) baselineElectrons.push_back(electron);
+          if (electron->pT() > 10. && electron->abseta() < 2.47 &&
+              !object_in_cone(*event, *electron, 0.1*electron->pT(), 0.2)) baselineElectrons.push_back(electron);
         }
         vector<Particle*> baselineMuons;
         for (Particle* muon : event->muons()) {
-          if (muon->pT() > 10 && muon->abseta() < 2.4) baselineMuons.push_back(muon);
+          if (muon->pT() > 10. && muon->abseta() < 2.4 &&
+              !object_in_cone(*event, *muon, 1.8, 0.2)) baselineMuons.push_back(muon);
         }
-        vector<Jet*> baselineJets;
+
+	// Get b jets with efficiency and mistag (fake) rates
+        vector<Jet*> baselineJets, bJets; // trueBJets; //for debugging
         for (Jet* jet : event->jets()) {
-          if (jet->pT() > 20 && jet->abseta() < 4.5) baselineJets.push_back(jet);
+          if (jet->pT() > 20. && jet->abseta() < 10.0) baselineJets.push_back(jet);
+          if (jet->abseta() < 2.5 && jet->pT() > 25.) {
+            if ((jet->btag() && rand01() < 0.75) || (!jet->btag() && rand01() < 0.02)) bJets.push_back(jet);
+          }
+
+	}
+
+	// Overlap removal
+        vector<Particle*> signalElectrons, signalMuons;
+        vector<Particle*> electronsForVeto, muonsForVeto;
+        vector<Jet*> goodJets, signalJets;
+
+        // Note that ATLAS use |eta|<10 for removing jets close to electrons
+        // Then 2.8 is used for the rest of the overlap process
+        // Then the signal cut is applied for signal jets
+
+        // Remove any jet within dR=0.2 of an electron
+        for (Jet* j : baselineJets) {
+          if (!any(baselineElectrons, [&](Particle* e){ return deltaR_eta(*e, *j) < 0.2; })) {
+            if (j->abseta() < 2.8) goodJets.push_back(j);
+            if (j->abseta() < 2.5 && j->pT() > 25) signalJets.push_back(j);
+          }
         }
 
-
-        // Do overlap removal for jets with |eta| < 2.8
-        vector<Particle*> signalElectrons;
-        vector<Particle*> signalMuons;
-        vector<Jet*> signalJets;
+        // Remove electrons and muons within dR=0.4 of surviving jets
+        for (Particle* e : baselineElectrons) {
+          if (!any(goodJets, [&](const Jet* j){ return deltaR_eta(*e, *j) < 0.4; })) {
+            electronsForVeto.push_back(e);
+            if (e->pT() > 10) signalElectrons.push_back(e);
+          }
+        }
+        for (Particle* m : baselineMuons) {
+          if (!any(goodJets, [&](const Jet* j){ return deltaR_eta(*m, *j) < 0.4; })) {
+            muonsForVeto.push_back(m);
+            if (m->pT() > 10) signalMuons.push_back(m);
+          }
+        }	
 
 	// Taus
 	vector<Particle*> signalTaus;
@@ -173,49 +207,11 @@ namespace Gambit {
           if (tau->pT() > 20. && fabs(tau->eta()) < 2.47) signalTaus.push_back(tau);
         }
 
-        // Remove any jet within dR=0.2 of an electron
-        for (Jet* j : baselineJets) {
-          bool overlap = false;
-          if (j->abseta() < 2.8) {
-            for (const Particle* e : baselineElectrons) {
-              if (j->mom().deltaR_eta(e->mom()) < 0.2) {
-                overlap = true;
-                break;
-              }
-            }
-          }
-          if (!overlap) signalJets.push_back(j);
-        }
-
-        // Remove electrons with dR=0.4 to surviving jets
-        for (Particle* e : baselineElectrons) {
-          bool overlap = false;
-          for (const Jet* j : signalJets) {
-            if (j->abseta() < 2.8 && e->mom().deltaR_eta(j->mom()) < 0.4) {
-              overlap = true;
-              break;
-            }
-          }
-          if (!overlap) signalElectrons.push_back(e);
-        }
+      
         // Do further electron selection
         applyMediumIDElectronSelection(signalElectrons);
 
-
-        // Remove muons with dR=0.4 to surviving jets
-        for (Particle* m : baselineMuons) {
-          bool overlap = false;
-          for (const Jet* j : signalJets) {
-            if (j->abseta() < 2.8 && m->mom().deltaR_eta(j->mom()) < 0.4) {
-              overlap = true;
-              break;
-            }
-          }
-          if (!overlap) signalMuons.push_back(m);
-        }
-
-
-        // We now have the signal electrons, muons and jets; fill the histograms
+	// We now have the signal electrons, muons and jets; fill the histograms
 
         // MET
         _hmet->Fill(event->met());
