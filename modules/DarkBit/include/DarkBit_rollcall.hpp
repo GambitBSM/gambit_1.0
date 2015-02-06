@@ -203,7 +203,8 @@ START_MODULE
     // Routine for cross checking RD density results
     #define FUNCTION RD_oh2_DarkSUSY
       START_FUNCTION(double)
-      ALLOW_MODELS(MSSM25atQ)  // TODO: (CW) Check for which models this works
+      //ALLOW_MODELS(MSSM25atQ)  // TODO: (CW) Check for which models this works
+      DEPENDENCY(DarkSUSY_PointInit, bool)
       BACKEND_REQ(dsrdomega, (), double, (int&,int&,double&,int&,int&,int&))
     #undef FUNCTION
 
@@ -427,7 +428,8 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION TH_ProcessCatalog_CMSSM
       START_FUNCTION(Gambit::DarkBit::TH_ProcessCatalog)
-      ALLOW_MODELS(CMSSM_demo, MSSM25atQ)
+      //ALLOW_MODELS(CMSSM_demo, MSSM25atQ)
+      DEPENDENCY(DarkSUSY_PointInit, bool)
       DEPENDENCY(MSSMspectrum, eaSLHA) 
       BACKEND_REQ(mspctm, (), DS_MSPCTM)
       BACKEND_REQ(dssigmav, (), double, (int&))
@@ -491,8 +493,9 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION DD_couplings_DarkSUSY
       START_FUNCTION(Gambit::DarkBit::DD_couplings)
+      DEPENDENCY(DarkSUSY_PointInit, bool)
       BACKEND_REQ(dsddgpgn, (), void, (double&, double&, double&, double&))
-      BACKEND_REQ(mspctm, (), DS_MSPCTM)      
+      BACKEND_REQ(mspctm, (), DS_MSPCTM)
     #undef FUNCTION
     #define FUNCTION DD_couplings_micrOMEGAs
       START_FUNCTION(Gambit::DarkBit::DD_couplings)
@@ -805,6 +808,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION SimYieldTable_DarkSusy
     START_FUNCTION(Gambit::DarkBit::SimYieldTable)
+    DEPENDENCY(DarkSUSY_PointInit, bool)
     BACKEND_REQ(dshayield, (), double, (double&,double&,int&,int&,int&))
     #undef FUNCTION 
   #undef CAPABILITY
