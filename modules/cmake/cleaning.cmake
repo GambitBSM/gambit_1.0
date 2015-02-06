@@ -49,8 +49,6 @@ set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/cmake/cmake_variables.hpp.
 # Ensure that clean removes automatically-generated linkedout.cmake file
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/cmake/linkedout.cmake")
 
-message("clean_files=${clean_files}")
-
 # Add all the clean files
 set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${clean_files}")
 
