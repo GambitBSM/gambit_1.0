@@ -191,12 +191,16 @@ namespace Gambit
   };
 
   /// Helper structs for the Farray class
+  template<int... lims>
+  struct Farray_nElem{};
+
   template<int limL, int limU, int... lims>
-  struct Farray_nElem
+  struct Farray_nElem<limL,limU,lims...>
   {
     enum{val= (limU-limL+1)*Farray_nElem<lims... >::val};
     static_assert(limU>limL, "Farray error: Upper array index limit is lower than lower limit.");
   };
+
   template<int limL, int limU>
   struct Farray_nElem<limL,limU>
   {
@@ -213,6 +217,7 @@ namespace Gambit
   {
     public:
       static_assert(sizeof...(lims)%2==0,    "Farray error: Odd number of index limits.");      
+      static_assert(sizeof...(lims)!=0,      "Farray error: No array index limits given.");    
       typedef Farray_nElem<lims... > nElem;
       T array[nElem::val]; 
       Farray(){}
