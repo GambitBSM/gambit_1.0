@@ -1,12 +1,13 @@
-/// contains examples of haw to use Spectrum objects.  
+/// contains examples of how to use Spectrum objects.  
 /// This is not really part of gambit and exists
 /// only for illustration.
+
+#include "gambit/Specbit/MSSMSpec.hpp"
 
 // FlexibleSUSY headers
 #include "CMSSM_two_scale_model.hpp"
 #include "CMSSM_two_scale_model_slha.hpp"
 #include "ew_input.hpp"
-#include "MSSMSpec.hpp"
 #include "numerics.hpp"
 #include "wrappers.hpp"
 

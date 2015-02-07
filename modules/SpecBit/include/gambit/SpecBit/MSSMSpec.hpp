@@ -2,9 +2,12 @@
 #define MSSMSPEC_H
 
 #include <memory>
-#include "Spectrum.hpp"
+
+#include "gambit/SpecBit/Spectrum.hpp"
+#include "gambit/Utils/util_functions.hpp"
+
+// Flexible SUSY stuff (should not be needed by the rest of gambit)
 #include "config.h"
-#include "util_functions.hpp"
  
 namespace Gambit {
 

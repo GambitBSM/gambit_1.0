@@ -18,20 +18,19 @@
 #include <string>
 #include <sstream>
 #include <cmath>
+
+#include "gambit/Utils/gambit_module_headers.hpp"
+#include "gambit/SpecBit/SpecBit_rollcall.hpp"
+#include "gambit/SpecBit/Spectrum.hpp"
+
+#include "SLHAea/slhaea.h"
 #include <boost/preprocessor/tuple/to_seq.hpp>
 #include <boost/preprocessor/seq/for_each.hpp>
 #include <boost/preprocessor/seq/elem.hpp>
 #include <boost/preprocessor/seq/for_each_product.hpp>
-#include "gambit_module_headers.hpp"
-#include "SpecBit_rollcall.hpp"
 
-// includes that are already done by the above headers, 
-// just for clarity
-#include "Spectrum.hpp"
-#include <slhaea.h> 
-
-// For the demo output
-#include "stream_overloads.hpp"
+// For the demo output only
+#include "gambit/Utils/stream_overloads.hpp"
 
 namespace Gambit
 {

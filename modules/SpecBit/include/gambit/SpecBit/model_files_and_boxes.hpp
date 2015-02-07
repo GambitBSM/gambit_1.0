@@ -24,7 +24,7 @@
 #ifndef MODELFILES_HPP
 #define MODELFILES_HPP
 
-#include "slhaea.h"
+#include "SLHAea/slhaea.h"
 #include "lowe.h" // From softsusy; used by flexiblesusy
 
 // Abstraction of algorithm name
@@ -146,17 +146,17 @@
 /// All the includes and Model_interface definitions
 
 #define MODELNAME CMSSM
-#include "flexiblesusy_include_automater.hpp" // Automatically includes necessary CMSSM model headers
+#include "gambit/SpecBit/flexiblesusy_include_automater.hpp" // Automatically includes necessary CMSSM model headers
 MAKE_INTERFACE  // Creates CMSSM_interface class
 #undef MODELNAME
 
 #define MODELNAME MSSMatMGUT
-#include "flexiblesusy_include_automater.hpp" // Automatically includes necessary MSSMatMGUT model headers etc.
+#include "gambit/SpecBit/flexiblesusy_include_automater.hpp" // Automatically includes necessary MSSMatMGUT model headers etc.
 MAKE_INTERFACE
 #undef MODELNAME
 
 #define MODELNAME MSSM
-#include "flexiblesusy_include_automater.hpp" // Automatically includes necessary MSSMatMGUT model headers etc.
+#include "gambit/SpecBit/flexiblesusy_include_automater.hpp" // Automatically includes necessary MSSMatMGUT model headers etc.
 MAKE_INTERFACE
 #undef MODELNAME
 

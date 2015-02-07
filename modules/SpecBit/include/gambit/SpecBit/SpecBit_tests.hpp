@@ -21,8 +21,10 @@
 ///  
 ///  *********************************************
 
+#include "gambit/SpecBit/MSSMSpec.hpp"
+
+// Flexible SUSY stuff (should not be needed by the rest of gambit)
 #include "ew_input.hpp"
-#include "MSSMSpec.hpp"
 #include "model_files_and_boxes.hpp"
 #include "numerics.hpp"
 #include "wrappers.hpp"

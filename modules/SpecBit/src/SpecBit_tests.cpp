@@ -17,25 +17,19 @@
 ///  
 ///  *********************************************
 
-#include "gambit_module_headers.hpp"
-#include "SpecBit_rollcall.hpp"
+#include "gambit/Utils/gambit_module_headers.hpp"
+#include "gambit/SpecBit/SpecBit_rollcall.hpp"
+#include "gambit/SpecBit/external_examples.hpp"
+#include "gambit/SpecBit/MSSMSpec.hpp"
+// Switch the test output to logger() rather than std::cout when run through SpecBit.
+#define IN_SPECBIT
+#include "gambit/SpecBit/SpecBit_tests.hpp"
 
 // Flexible SUSY stuff (should not be needed by the rest of gambit)
 #include "CMSSM_two_scale_model.hpp"
 #include "CMSSM_two_scale_model_slha.hpp"
-//#include "CMSSM_physical.hpp"
-
 #include "ew_input.hpp"
-//#include "logger.hpp"
-//#include "wrappers.hpp"
-#include "MSSMSpec.hpp"
 #include "numerics.hpp"
-
-// Used in SpecBit_tests.hpp to switch the test output to logger() rather than std::cout when run through SpecBit.
-#define IN_SPECBIT
-// Spectrum object test functions
-#include "SpecBit_tests.hpp"
-#include "external_examples.hpp"
 
 namespace Gambit
 {
