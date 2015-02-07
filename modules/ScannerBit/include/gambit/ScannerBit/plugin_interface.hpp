@@ -28,8 +28,8 @@
 #include <dlfcn.h>
 #include <typeinfo>
 
-#include "plugin_utilities.hpp"
-#include "plugin_loader.hpp"
+#include "gambit/ScannerBit/plugin_utilities.hpp"
+#include "gambit/ScannerBit/plugin_loader.hpp"
 
 namespace Gambit
 {

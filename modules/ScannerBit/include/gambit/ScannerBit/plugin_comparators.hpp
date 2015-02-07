@@ -24,7 +24,7 @@
 
 #include <string>
 
-#include "plugin_details.hpp"
+#include "gambit/ScannerBit/plugin_details.hpp"
 
 namespace Gambit
 {

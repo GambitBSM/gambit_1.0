@@ -26,7 +26,7 @@
 #include <string>
 #include <sstream>
 
-#include "scanner_utils.hpp"
+#include "gambit/ScannerBit/scanner_utils.hpp"
 
 namespace Gambit
 {

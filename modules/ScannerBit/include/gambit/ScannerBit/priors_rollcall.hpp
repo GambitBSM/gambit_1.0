@@ -17,12 +17,12 @@
 #ifndef PRIOR_LIST_HPP
 #define PRIOR_LIST_HPP
 
-#include "priors/flat_log.hpp"
-#include "priors/gaussian.hpp"
-#include "priors/dummy.hpp"
-#include "priors/fixed_same_as.hpp"
-#include "priors/cauchy.hpp"
-#include "priors/composite.hpp"
-#include "priors/plugin.hpp"
+#include "gambit/ScannerBit/priors/flat_log.hpp"
+#include "gambit/ScannerBit/priors/gaussian.hpp"
+#include "gambit/ScannerBit/priors/dummy.hpp"
+#include "gambit/ScannerBit/priors/fixed_same_as.hpp"
+#include "gambit/ScannerBit/priors/cauchy.hpp"
+#include "gambit/ScannerBit/priors/composite.hpp"
+#include "gambit/ScannerBit/priors/plugin.hpp"
 
 #endif

@@ -20,7 +20,7 @@
 ///  *********************************************
 
 #include "cmake_variables.hpp"
-#include "plugin_details.hpp"
+#include "gambit/ScannerBit/plugin_details.hpp"
 
 #ifndef SCANNER_PLUGIN_MACROS_HPP
 #define SCANNER_PLUGIN_MACROS_HPP

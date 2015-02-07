@@ -344,12 +344,12 @@ set_target_properties( scanlibs                 \n\
                     unique_libdirs = set(p for p in scanbit_libs[plug_type[i]][directory])
                     if unique_libdirs:
                         towrite += " "*23 + "INSTALL_RPATH \"" + ";".join([libdir for libdir in unique_libdirs]) +"\"\n"
-            inc_dirs = "${CMAKE_CURRENT_SOURCE_DIR}/include/" + plug_type[i] + "s/" + directory
+            inc_dirs = "${PLUGIN_INCLUDE_DIRECTORIES}"
             if scanbit_incs.has_key(plug_type[i]):
                 if scanbit_incs[plug_type[i]].has_key(directory):
                     if (len(scanbit_incs[plug_type[i]][directory]) != 0):
                         inc_dirs = ";".join([inc_dirs] + scanbit_incs[plug_type[i]][directory])
-            towrite += " "*23 + "INCLUDE_DIRECTORIES \"${PLUGIN_INCLUDE_DIRECTORIES};" + inc_dirs + "\"\n"
+            towrite += " "*23 + "INCLUDE_DIRECTORIES \"" + inc_dirs + "\"\n"
             towrite += " "*23 + "ARCHIVE_OUTPUT_DIRECTORY \"${CMAKE_CURRENT_SOURCE_DIR}/lib\"\n"
             towrite += " "*23 + "LIBRARY_OUTPUT_DIRECTORY \"${CMAKE_CURRENT_SOURCE_DIR}/lib\")\n"
             #towrite += "target_include_directories( " + inc_dirs ")\n\n"
