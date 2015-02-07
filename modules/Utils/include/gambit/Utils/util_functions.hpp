@@ -31,7 +31,8 @@
 #include <boost/algorithm/string/classification.hpp>
 #include <chrono> 
 
-extern "C" {
+extern "C"
+{
   #include "mkpath.h"  
 }
 

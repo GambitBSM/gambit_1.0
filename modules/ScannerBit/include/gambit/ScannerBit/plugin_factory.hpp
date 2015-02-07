@@ -25,12 +25,12 @@
 #include <unordered_map>
 #include <typeinfo>
 
-#include "scanner_utils.hpp"
-#include "scan.hpp"
-#include "yaml_options.hpp"
-#include "type_index.hpp"
-#include "plugin_interface.hpp"
-#include "priors/composite.hpp"
+#include "gambit/ScannerBit/scanner_utils.hpp"
+#include "gambit/ScannerBit/scan.hpp"
+#include "gambit/ScannerBit/plugin_interface.hpp"
+#include "gambit/ScannerBit/priors/composite.hpp"
+#include "gambit/Utils/yaml_options.hpp"
+#include "gambit/Utils/type_index.hpp"
 
 #define LOAD_FUNC_TEMPLATE(name, ...) REGISTER_ELEM(__functions__, typeid(__VA_ARGS__), name<__VA_ARGS__>) 
 #define LOAD_MULTI_FUNC_TEMPLATE(name, ...) REGISTER_ELEM(__multi_functions__, typeid(__VA_ARGS__), name<__VA_ARGS__>) 

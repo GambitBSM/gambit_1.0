@@ -26,10 +26,10 @@
 #include <algorithm>
 #include <cmath>
 
-#include "cholesky.hpp"
-#include "yaml_parser.hpp"
-#include "scanner_utils.hpp"
-#include "priors.hpp"
+#include "gambit/ScannerBit/cholesky.hpp"
+#include "gambit/ScannerBit/scanner_utils.hpp"
+#include "gambit/ScannerBit/priors.hpp"
+#include "gambit/Utils/yaml_options.hpp"
 
 #include <boost/math/special_functions/erf.hpp>
    

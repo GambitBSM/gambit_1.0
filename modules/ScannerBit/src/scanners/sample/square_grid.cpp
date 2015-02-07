@@ -24,7 +24,7 @@
 #include <typeinfo>
 #include <cxxabi.h>
 
-#include "scanner_plugin.hpp"
+#include "gambit/ScannerBit/scanner_plugin.hpp"
   
 scanner_plugin(square_grid, version(1, 0, 0))
 {

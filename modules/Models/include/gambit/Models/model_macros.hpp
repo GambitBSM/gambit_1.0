@@ -48,7 +48,7 @@
 #define STRING(x) STRING2(x)
 
 #ifdef __model_rollcall_hpp__
-  #include "module_macros_incore.hpp"
+  #include "gambit/Utils/module_macros_incore.hpp"
   #define START_MODEL             CORE_START_MODEL
   #define DEFINEPARS(...)         CORE_DEFINEPARS(__VA_ARGS__)
   #define MAP_TO_CAPABILITY(PARAMETER,CAPABILITY)  \

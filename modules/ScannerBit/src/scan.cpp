@@ -24,9 +24,9 @@
 ///
 ///  *********************************************
 
-#include "scan.hpp"
-#include "plugin_interface.hpp"
-#include "plugin_factory.hpp"
+#include "gambit/ScannerBit/scan.hpp"
+#include "gambit/ScannerBit/plugin_interface.hpp"
+#include "gambit/ScannerBit/plugin_factory.hpp"
 
 namespace Gambit
 {

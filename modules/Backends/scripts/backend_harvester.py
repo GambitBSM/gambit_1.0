@@ -55,16 +55,16 @@ def main(argv):
     frontend_headers.update(retrieve_generic_headers(verbose,"./Backends/include/gambit/Backends/frontends","frontend",exclude_backends))   
     # Get list of backend type header files
     backend_type_headers.update(retrieve_generic_headers(verbose,"./Backends/include/gambit/Backends/backend_types","backend type",exclude_backends))
-    bossed_backend_type_headers.update(retrieve_bossed_type_headers(verbose,"./Backends/include/gambit/Backends/backend_types",exclude_backends))
+    bossed_backend_type_headers.update(retrieve_generic_headers(verbose,"./Backends/include/gambit/Backends/backend_types","BOSSed type",exclude_backends))
 
     print "Frontend headers identified:"
     for h in frontend_headers:
-        print '  frontends/'+h
+        print '  gambit/Backends/frontends/'+h
     print "Backend type headers identified:"
     for h in backend_type_headers:
-        print '  backend_types/'+h
+        print '  gambit/Backends/backend_types/'+h
     for h in bossed_backend_type_headers:
-        print '  '+h
+        print '  gambit/Backends/backend_types/'+h
     if verbose: print
 
     # Generate a c++ header containing all the frontend headers we have just harvested.
@@ -160,7 +160,7 @@ def main(argv):
 
     towrite += "\n// BOSSed backend type definitions.\n"
     for h in bossed_backend_type_headers:
-        towrite+='#include \"{0}\"\n'.format(h)
+        towrite+='#include \"gambit/Backends/backend_types/{0}\"\n'.format(h)
 
     towrite+="\n#endif // defined __backend_types_rollcall_hpp__\n"
     

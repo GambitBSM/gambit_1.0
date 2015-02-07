@@ -31,14 +31,14 @@
 #include <unordered_map>
 #include <algorithm>
 #ifdef __GNUG__
-#include <cstdlib>
-#include <memory.h>
-#include <cxxabi.h>
+  #include <cstdlib>
+  #include <memory.h>
+  #include <cxxabi.h>
 #endif
 
-#include "exceptions.hpp"
-#include "log.hpp"
-#include "factory_registry.hpp"
+#include "gambit/Utils/exceptions.hpp"
+#include "gambit/Logs/log.hpp"
+#include "gambit/ScannerBit/factory_registry.hpp"
 
 #define scan_err        SCAN_ERR
 #define scan_warn       SCAN_WARN

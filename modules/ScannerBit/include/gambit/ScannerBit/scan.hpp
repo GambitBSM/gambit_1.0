@@ -25,13 +25,13 @@
 #ifndef __scan_hpp__
 #define __scan_hpp__
 
-#include "yaml_parser.hpp"
-#include "priors.hpp"
-#include "printer_interface.hpp"
-#include "plugin_interface.hpp"
-#include "plugin_loader.hpp"
-#include "priors/composite.hpp"
-#include "factory_defs.hpp"
+#include "gambit/ScannerBit/priors.hpp"
+#include "gambit/ScannerBit/printer_interface.hpp"
+#include "gambit/ScannerBit/plugin_interface.hpp"
+#include "gambit/ScannerBit/plugin_loader.hpp"
+#include "gambit/ScannerBit/factory_defs.hpp"
+#include "gambit/ScannerBit/priors/composite.hpp"
+#include "gambit/Utils/yaml_options.hpp"
 
 namespace Gambit
 {

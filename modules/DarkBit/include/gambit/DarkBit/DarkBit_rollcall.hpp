@@ -41,7 +41,7 @@
 #ifndef __DarkBit_rollcall_hpp__
 #define __DarkBit_rollcall_hpp__
 
-#include "DarkBit_types.hpp"
+#include "gambit/DarkBit/DarkBit_types.hpp"
 
 #define MODULE DarkBit
 START_MODULE

@@ -21,8 +21,8 @@
 #include <sstream>
 #include <vector>
 
-#include "scanner_plugin.hpp"
-#include "random.h"
+#include "gambit/ScannerBit/scanner_plugin.hpp"
+#include "gambit/ScannerBit/scanners/sample/random_tools.hpp"
 
 class Group2
 {

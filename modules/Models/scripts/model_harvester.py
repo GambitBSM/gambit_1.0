@@ -53,10 +53,10 @@ def main(argv):
 
     print "Model headers identified:"
     for h in model_headers:
-        print '  models/'+h
+        print '  gambit/Models/models/'+h
     print "Model type headers identified:"
     for h in model_type_headers:
-        print '  model_types/'+h
+        print '  gambit/Models/model_types/'+h
 
     # Generate a c++ header containing all the model headers we have just harvested.
     towrite = "\
@@ -93,7 +93,7 @@ def main(argv):
 // Automatically-generated list of models.        \n"
 
     for h in model_headers:
-        towrite+='#include \"models/{0}\"\n'.format(h)
+        towrite+='#include \"gambit/Models/models/{0}\"\n'.format(h)
     towrite+="\n#endif // defined __model_rollcall_hpp__\n"
     
     with open("./Models/include/gambit/Models/model_rollcall.hpp","w") as f:
@@ -133,7 +133,7 @@ def main(argv):
 // Automatically-generated list of model types.   \n"
 
     for h in model_type_headers:
-        towrite+='#include \"model_types/{0}\"\n'.format(h)
+        towrite+='#include \"gambit/Models/model_types/{0}\"\n'.format(h)
     towrite+="\n#endif // defined __model_types_rollcall_hpp__\n"
     
     with open("./Models/include/gambit/Models/model_types_rollcall.hpp","w") as f:

@@ -5,8 +5,9 @@
 # \file
 #
 #  Module and functor type harvesting script
-#  Generates all_functor_types.hpp and 
-#  module_rollcall.hpp.
+#  Generates all_functor_types.hpp,  
+#  module_rollcall.hpp and 
+#  module_types_rollcall.hpp.
 #  
 #  This script identifies then reads through 
 #  all the module rollcall and frontend headers, 
@@ -58,13 +59,14 @@ def main(argv):
       elif opt in ('-x','--exclude-modules'):
         exclude_modules.update(neatsplit(",",arg))
     exclude_header = exclude_modules
+    module_rollcall_headers=set([])
     module_type_headers=set([])
     full_rollcall_headers=[]
     full_type_headers=[]
 
     # List of headers to search
-    rollcall_headers = set(["backend_rollcall.hpp"])
-    type_headers     = set(["types_rollcall.hpp"])
+    rollcall_headers = set(["gambit/Backends/backend_rollcall.hpp"])
+    type_headers     = set(["gambit/Utils/types_rollcall.hpp"])
 
     # List of headers NOT to search (things we know are not module rollcall headers or module type headers, 
     # but are included in module_rollcall.hpp or types_rollcall.hpp)
@@ -78,19 +80,20 @@ def main(argv):
     exclude_types=set(["void"])
 
     # Get list of rollcall header files to search
-    rollcall_headers.update(retrieve_rollcall_headers(verbose,".",exclude_header))
+    module_rollcall_headers.update(retrieve_rollcall_headers(verbose,".",exclude_header))
+    rollcall_headers.update(module_rollcall_headers)
     # Get list of module type header files to search
     module_type_headers.update(retrieve_module_type_headers(verbose,".",exclude_header))
 
     print "Module rollcall headers identified:"
-    for h in rollcall_headers:
+    for h in module_rollcall_headers:
         print ' ',h
     print "Module type headers identified:"
     for h in module_type_headers:
         print ' ',h
     if verbose: print
 
-    # Generate a c++ header containing all the model type headers we have just harvested.
+    # Generate a c++ header containing all the module type headers we have just harvested.
     towrite = "\
 //   GAMBIT: Global and Modular BSM Inference Tool\n\
 //   *********************************************\n\

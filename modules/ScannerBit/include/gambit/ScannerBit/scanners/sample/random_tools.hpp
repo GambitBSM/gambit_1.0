@@ -1,9 +1,9 @@
-#ifndef RANDOM_H
-#define RANDOM_H
+#ifndef RANDOM_TOOLS_HPP
+#define RANDOM_TOOLS_HPP
 #include <iostream>
 #include <cstdio>
 
-#include "threadsafe_rng.hpp"
+#include "gambit/Utils/threadsafe_rng.hpp"
 
 using namespace std;
 

@@ -17,8 +17,8 @@
 #ifndef PLUGIN_PRIOR_HPP
 #define PLUGIN_PRIOR_HPP
 
-#include "priors.hpp"
-#include "plugin_interface.hpp"
+#include "gambit/ScannerBit/priors.hpp"
+#include "gambit/ScannerBit/plugin_interface.hpp"
 
 namespace Gambit
 {

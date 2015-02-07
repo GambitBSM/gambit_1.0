@@ -25,8 +25,8 @@
 #include <map>
 #include <algorithm>
 
-#include "yaml_options.hpp"
-#include "priors_rollcall.hpp"
+#include "gambit/Utils/yaml_options.hpp"
+#include "gambit/ScannerBit/priors_rollcall.hpp"
 
 namespace Gambit 
 {

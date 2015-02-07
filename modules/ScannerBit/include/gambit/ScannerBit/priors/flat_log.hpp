@@ -22,7 +22,7 @@
 #ifndef PRIOR_DEFS_HPP
 #define PRIOR_DEFS_HPP
 
-#include "priors.hpp"
+#include "gambit/ScannerBit/priors.hpp"
 
    /// Registry of priors
    /// Here we specify mappings from strings to prior objects.

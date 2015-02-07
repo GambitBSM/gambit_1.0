@@ -30,8 +30,8 @@
 #include <unordered_set>
 #include <unordered_map>
 
-#include "yaml_options.hpp"
-#include "scanner_utils.hpp"
+#include "gambit/Utils/yaml_options.hpp"
+#include "gambit/ScannerBit/scanner_utils.hpp"
 
 // This macro registers each prior.
 #define LOAD_PRIOR(tag, ...) REGISTER(prior_creators, tag, __VA_ARGS__)

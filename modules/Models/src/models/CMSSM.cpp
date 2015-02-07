@@ -17,12 +17,13 @@
 
 #include <string>
 #include <vector>
-#include "log.hpp"
-#include "util_functions.hpp"
-#include "model_macros.hpp"
-#include "model_helpers.hpp"
 
-#include "models/CMSSM.hpp"
+#include "gambit/Models/model_macros.hpp"
+#include "gambit/Models/model_helpers.hpp"
+#include "gambit/Logs/log.hpp"
+#include "gambit/Utils/util_functions.hpp"
+
+#include "gambit/Models/models/CMSSM.hpp"
 
 using namespace Gambit::Utils;
 

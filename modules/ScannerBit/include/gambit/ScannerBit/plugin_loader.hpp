@@ -26,8 +26,8 @@
 #include <unordered_map>
 #include <string>
 
-#include "plugin_details.hpp"
-#include "yaml_options.hpp"
+#include "gambit/ScannerBit/plugin_details.hpp"
+#include "gambit/Utils/yaml_options.hpp"
 
 namespace Gambit
 {

@@ -30,8 +30,8 @@
 #include <algorithm>
 #include <iostream>
 
-#include "yaml_options.hpp"
-#include "priors.hpp"
+#include "gambit/Utils/yaml_options.hpp"
+#include "gambit/ScannerBit/priors.hpp"
 
 
 namespace Gambit 

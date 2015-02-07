@@ -30,12 +30,12 @@
 #include "gambit/Utils/functors.hpp"
 #include "gambit/Utils/standalone_error_handlers.hpp"
 #include "gambit/Utils/yaml_options.hpp"
+#include "gambit/Utils/boost_fallbacks.hpp"
 #include "gambit/ScannerBit/factory_registry.hpp"
 
 // Boost
 #include <boost/preprocessor/seq/for_each.hpp>
 #include <boost/preprocessor/punctuation/comma_if.hpp>
-#include "boost_fallbacks.hpp"
 
 // Macros
 

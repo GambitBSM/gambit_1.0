@@ -29,8 +29,8 @@
 #include "gambit/Core/error_handlers.hpp"
 #include "gambit/Core/version.hpp"
 #include "gambit/Core/modelgraph.hpp"
+#include "gambit/Core/yaml_description_database.hpp"
 #include "gambit/Utils/stream_overloads.hpp"
-#include "gambit/Utils/yaml_description_database.hpp"
 #include "gambit/ScannerBit/plugin_loader.hpp"
 
 // Boost

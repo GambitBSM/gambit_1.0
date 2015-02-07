@@ -11,7 +11,8 @@
 ///  b) any new headers that you have created 
 ///     yourself for your module.  
 ///  These should typically reside in 
-///  <your_module's_name>/include.
+///    <your_module's_name>/include/
+///    gambit/<your_module's_name>.
 ///
 ///  *********************************************
 ///

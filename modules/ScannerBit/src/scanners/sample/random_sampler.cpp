@@ -24,8 +24,8 @@
 #include <typeinfo>
 #include <cxxabi.h>
 
-#include "scanner_plugin.hpp"
-#include "threadsafe_rng.hpp"
+#include "gambit/ScannerBit/scanner_plugin.hpp"
+#include "gambit/Utils/threadsafe_rng.hpp"
   
 //int no_func(double);
 scanner_plugin(random_sampler, version(1, 0, 0))

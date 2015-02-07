@@ -2,10 +2,10 @@
 #define __FACTORY_DEFS_HPP__
 
 #ifdef __NO_PLUGIN_BOOST__
-#include <memory>
+  #include <memory>
 #else
-#include "boost/shared_ptr.hpp"
-#include "boost/enable_shared_from_this.hpp"
+  #include <boost/shared_ptr.hpp>
+  #include <boost/enable_shared_from_this.hpp>
 #endif
 
 #include <typeinfo>

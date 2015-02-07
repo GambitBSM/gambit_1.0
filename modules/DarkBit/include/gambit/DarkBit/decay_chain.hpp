@@ -26,8 +26,10 @@
 #include <fstream>
 #include <string>
 #include <set>
-#include "boost/shared_ptr.hpp"
-#include "threadsafe_rng.hpp"
+
+#include "gambit/Utils/threadsafe_rng.hpp"
+
+#include <boost/shared_ptr.hpp>
 
 namespace Gambit
 {

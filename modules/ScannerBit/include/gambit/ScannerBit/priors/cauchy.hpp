@@ -27,10 +27,10 @@
 #include <cmath>
 #include <algorithm>
 
-#include "yaml_parser.hpp"
-#include "cholesky.hpp"
-#include "scanner_utils.hpp"
-#include "priors.hpp"
+#include "gambit/Utils/yaml_options.hpp"
+#include "gambit/ScannerBit/cholesky.hpp"
+#include "gambit/ScannerBit/scanner_utils.hpp"
+#include "gambit/ScannerBit/priors.hpp"
 
 namespace Gambit
 {

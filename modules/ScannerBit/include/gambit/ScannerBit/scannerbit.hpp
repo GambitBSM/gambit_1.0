@@ -19,9 +19,9 @@
 #ifndef __ScannerBit_hpp__
 #define __ScannerBit_hpp__
 
-#include "static_members.hpp"
-#include "scanner_utils.hpp"
-#include "scan.hpp"
+#include "gambit/ScannerBit/scanner_utils.hpp"
+#include "gambit/ScannerBit/scan.hpp"
+#include "gambit/Utils/static_members.hpp"
 
 namespace Gambit
 {

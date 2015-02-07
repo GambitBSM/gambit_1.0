@@ -75,18 +75,23 @@ namespace Gambit
           std::ostringstream os;
           os << "No options entry for [" << stringifyVariadic(keys...) << "]\n Node contents:  " << options;
           utils_error().raise(LOCAL_INFO,os.str());
+          result = TYPE();
         }
         else
         {
-          try {
+          try
+          {
             result = node.as<TYPE>();
-          } catch(YAML::Exception& e) {
+          }
+          catch(YAML::Exception& e)
+          {
             std::ostringstream os;
             os << "Error retrieving options entry for [" << stringifyVariadic(keys...) 
                << "] as type " << typeid(TYPE).name() << " (template parameter: see below)" << std::endl 
                << "YAML message follows: " << std::endl
                << e.what();
             utils_error().raise(LOCAL_INFO,os.str());
+            result = TYPE();
           }
         }
         return result;
@@ -103,15 +108,19 @@ namespace Gambit
         }
         else
         {
-          try {
+          try
+          {
             result = node.as<TYPE>();
-          } catch(YAML::Exception& e) {
+          }
+          catch(YAML::Exception& e)
+          {
             std::ostringstream os;
             os << "Error retrieving options entry for [" << stringifyVariadic(keys...) 
                << "] as type " << typeid(TYPE).name() << " (template parameter: see below)" << std::endl 
                << "YAML message follows: " << std::endl
                << e.what();
             utils_error().raise(LOCAL_INFO,os.str());
+            result = def;
           }
         }
         return result;

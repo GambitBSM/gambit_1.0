@@ -205,7 +205,8 @@ def retrieve_rollcall_headers(verbose,install_dir,excludes):
                     if bare_name.startswith(x): exclude = True
                 if (not exclude): 
                     if verbose: print "  Located module rollcall header '{0}' at path '{1}'".format(name,os.path.join(root,name))
-                    rollcall_headers+=[name]
+                    rel_name = re.sub(".*?/include/", "", os.path.relpath(os.path.join(root,name),install_dir))
+                    rollcall_headers+=[rel_name]
     if core_exists: make_module_rollcall(rollcall_headers,verbose)
     return rollcall_headers
 
@@ -223,22 +224,9 @@ def retrieve_module_type_headers(verbose,install_dir,excludes):
                     if bare_name.startswith(x): exclude = True
                 if (not exclude): 
                     if verbose: print "  Located module type header '{0}' at path '{1}'".format(name,os.path.join(root,name))
-                    type_headers+=[name]
+                    rel_name = re.sub(".*?/include/", "", os.path.relpath(os.path.join(root,name),install_dir))
+                    type_headers+=[rel_name]
     return type_headers
-
-#Search a directory for BOSSed headers that are not excluded.
-def retrieve_bossed_type_headers(verbose,starting_dir,excludes):
-    headers=[]
-    for root,dirs,files in os.walk(starting_dir):
-        for name in files:
-            exclude = False
-            be = re.sub(".*\\/","",root)
-            for x in excludes:
-                if be.startswith(x): exclude = True
-            if not exclude and (name=="loaded_types.hpp" or name=="loaded_types.h" or name=="loaded_types.hh"): 
-                if verbose: print "  Located BOSSed type header at path '{1}'".format(name,os.path.join(root,name))
-                headers+=["backend_types/"+be+"/"+name]
-    return headers
 
 #Search a directory for headers that are not excluded.
 def retrieve_generic_headers(verbose,starting_dir,kind,excludes):
@@ -248,10 +236,12 @@ def retrieve_generic_headers(verbose,starting_dir,kind,excludes):
             exclude = False
             for x in excludes:
                 if name.startswith(x): exclude = True
+            if kind == "BOSSed type" and not name.startswith("loaded_types"): exclude = True
             if not exclude and (name.endswith(".hpp") or name.endswith(".h") or name.endswith(".hh")): 
                 if verbose: print "  Located "+kind+" header '{0}' at path '{1}'".format(name,os.path.join(root,name))
-                headers+=[name]
-        break
+                rel_name = re.sub(".*?/include/", "", os.path.relpath(os.path.join(root,name),starting_dir))
+                headers+=[rel_name] 
+        if kind != "BOSSed type": break
     return headers
 
 #Create the module_rollcall header in the Core directory

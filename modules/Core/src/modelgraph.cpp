@@ -27,7 +27,7 @@
 ///
 ///  *********************************************
 
-#include "gambit/Models/modelgraph.hpp"
+#include "gambit/Core/modelgraph.hpp"
 #include "gambit/Models/models.hpp"
 #include "gambit/Utils/stream_overloads.hpp"
 #include "gambit/Utils/util_types.hpp"

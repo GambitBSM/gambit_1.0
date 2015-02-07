@@ -52,12 +52,13 @@
 #include <array>
 #include <cmath>
 
+#include "gambit/DarkBit/decay_chain.hpp"
+#include "gambit/Utils/base_functions.hpp"
+#include "gambit/Utils/funktions.hpp"
+
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/shared_ptr.hpp>
 #include <gsl/gsl_integration.h>
-#include "base_functions.hpp"
-#include "funktions.hpp"
-#include "decay_chain.hpp"
 
 namespace Gambit
 {

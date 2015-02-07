@@ -19,7 +19,7 @@
 
 #include <algorithm>
 
-#include "priors.hpp"
+#include "gambit/ScannerBit/priors.hpp"
 
 
 namespace Gambit

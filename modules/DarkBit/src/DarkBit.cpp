@@ -35,12 +35,11 @@
 #include <cmath>
 #include <fstream>
 
-#include "gambit_module_headers.hpp"
-#include "DarkBit_types.hpp"
-#include "DarkBit_rollcall.hpp"
-
-#include "util_macros.hpp"
-#include "base_functions.hpp"
+#include "gambit/Utils/gambit_module_headers.hpp"
+#include "gambit/Utils/util_macros.hpp"
+#include "gambit/Utils/base_functions.hpp"
+#include "gambit/DarkBit/DarkBit_types.hpp"
+#include "gambit/DarkBit/DarkBit_rollcall.hpp"
 
 using namespace Gambit::BF;
 
