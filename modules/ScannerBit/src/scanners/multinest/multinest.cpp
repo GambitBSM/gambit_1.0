@@ -25,8 +25,8 @@
 #include <map>
 #include <sstream>
 
-#include "gambit/ScannerBit/scanners/multinest/multinest.hpp"
 #include "gambit/ScannerBit/scanner_plugin.hpp"
+#include "gambit/ScannerBit/scanners/multinest/multinest.hpp"
 #include "gambit/Utils/yaml_options.hpp"
 
 namespace Gambit {   

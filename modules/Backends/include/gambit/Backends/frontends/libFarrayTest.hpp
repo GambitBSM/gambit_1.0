@@ -4,7 +4,7 @@
  * \author Lars A. Dal
  */
 
-#include "util_types.hpp"
+#include "gambit/Utils/util_types.hpp"
 
 #ifdef BACKENDRENAME
   #define BACKENDNAME BACKENDRENAME
