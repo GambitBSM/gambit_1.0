@@ -1,6 +1,6 @@
 #pragma once
+#include "gambit/ColliderBit/Utils.hpp"
 #include "HEPUtils/Event.h"
-#include "Utils.hpp"
 
 namespace Gambit {
   namespace ColliderBit {

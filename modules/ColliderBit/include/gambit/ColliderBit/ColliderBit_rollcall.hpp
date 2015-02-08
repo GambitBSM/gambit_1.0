@@ -19,9 +19,10 @@
 #define __ColliderBit_rollcall_hpp__
 
 #include <string>
-#include "shared_types.hpp"
-#include "ColliderBit_types.hpp"
-#include "ColliderBit_macros.hpp"
+
+#include "gambit/Utils/shared_types.hpp"
+#include "gambit/ColliderBit/ColliderBit_types.hpp"
+#include "gambit/ColliderBit/ColliderBit_macros.hpp"
 
 #define MODULE ColliderBit
 START_MODULE

@@ -1,11 +1,13 @@
-#include "Analysis.hpp"
-#include "ATLASEfficiencies.hpp"
 #include <vector>
 #include <cmath>
 #include <memory>
 #include <iomanip>
-#include "mt2_bisect.h"
-#include "TLorentzVector.h"
+
+#include "gambit/ColliderBit/Analysis.hpp"
+#include "gambit/ColliderBit/ATLASEfficiencies.hpp"
+#include "gambit/ColliderBit/mt2_bisect.h"
+
+#include <TLorentzVector.h>
 
 /* The ATLAS 2 lepton EW analysis (20fb^-1)
 

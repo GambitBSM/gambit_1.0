@@ -7,7 +7,7 @@
 #include "gambit/Utils/util_functions.hpp"
 
 // Flexible SUSY stuff (should not be needed by the rest of gambit)
-#include "config.h"
+#include "flexiblesusy/config/config.h"
  
 namespace Gambit {
 

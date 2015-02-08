@@ -1,13 +1,17 @@
-#include "Analysis.hpp"
 #include <vector>
 #include <cmath>
 #include <memory>
+
+#include "gambit/ColliderBit/Analysis.hpp"
+
+/// @todo ditch ROOT classes
+#ifdef MKHISTOS
+  #include <TFile.h>
+  #include <TH1F.h>
+#endif
+
 using namespace std;
 
-#ifdef MKHISTOS
-#include "TFile.h"
-#include "TH1F.h"
-#endif
 
 // Based on ATLAS-CONF-2013-047
 

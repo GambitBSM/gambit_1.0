@@ -29,10 +29,12 @@
 
 #include <vector>
 #include <memory>
+
+#include "gambit/ColliderBit/Collider.hpp"
+#include "gambit/ColliderBit/Detector.hpp"
+#include "gambit/ColliderBit/Analysis.hpp"
+
 #include "HEPUtils/Event.h"
-#include "Collider.hpp"
-#include "Detector.hpp"
-#include "Analysis.hpp"
 
 using std::vector;
 using std::shared_ptr;

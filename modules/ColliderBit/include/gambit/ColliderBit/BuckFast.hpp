@@ -3,10 +3,12 @@
 // Written by Martin White, January 2015, martin.white@adelaide.edu.au
 
 #include <random>
+
+#include "gambit/ColliderBit/Utils.hpp"
+
 #include "HEPUtils/MathUtils.h"
 #include "HEPUtils/BinnedFn.h"
 #include "HEPUtils/Event.h"
-#include "Utils.hpp"
 
 namespace Gambit {
   namespace ColliderBit {

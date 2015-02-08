@@ -7,9 +7,10 @@
 /// @note To configure a new detector, follow these steps:
 /// @note (To configure a new subprocess group, only do STEPS >= 5)
 /// @note STEP1)  BOSS your favorite collider simulator. Then:
-#include "shared_types.hpp"
+#include "gambit/Utils/shared_types.hpp"
+#include "gambit/ColliderBit/Py8Utils.hpp"
+#include "gambit/ColliderBit/ColliderBit_macros.hpp"
 
-/// Some other includes
 #include "TROOT.h"
 #include "TTask.h"
 #include "TApplication.h"
@@ -21,15 +22,10 @@
 #include "classes/DelphesClasses.h"
 #include "classes/DelphesFactory.h"
 #include "ExRootAnalysis/ExRootConfReader.h"
-
 #include "HEPUtils/Event.h"
 #include "HEPUtils/Particle.h"
 #include "HEPUtils/Jet.h"
 #include "MCUtils/PIDCodes.h"
-
-#include "Py8Utils.hpp"
-#include "ColliderBit_macros.hpp"
-
 
 namespace Gambit {
   namespace ColliderBit {

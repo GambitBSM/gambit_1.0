@@ -21,15 +21,14 @@
 #include "gambit/SpecBit/SpecBit_rollcall.hpp"
 #include "gambit/SpecBit/external_examples.hpp"
 #include "gambit/SpecBit/MSSMSpec.hpp"
-// Switch the test output to logger() rather than std::cout when run through SpecBit.
-#define IN_SPECBIT
+#define IN_SPECBIT // Output tests to logger() rather than std::cout when run through SpecBit.
 #include "gambit/SpecBit/SpecBit_tests.hpp"
 
 // Flexible SUSY stuff (should not be needed by the rest of gambit)
-#include "CMSSM_two_scale_model.hpp"
-#include "CMSSM_two_scale_model_slha.hpp"
-#include "ew_input.hpp"
-#include "numerics.hpp"
+#include "flexiblesusy/src/ew_input.hpp"
+#include "flexiblesusy/src/numerics.hpp"
+#include "flexiblesusy/models/CMSSM/CMSSM_two_scale_model.hpp"
+#include "flexiblesusy/models/CMSSM/CMSSM_two_scale_model_slha.hpp"
 
 namespace Gambit
 {

@@ -22,12 +22,12 @@
 ///  *********************************************
 
 #include "gambit/SpecBit/MSSMSpec.hpp"
+#include "gambit/SpecBit/model_files_and_boxes.hpp"
 
 // Flexible SUSY stuff (should not be needed by the rest of gambit)
-#include "ew_input.hpp"
-#include "model_files_and_boxes.hpp"
-#include "numerics.hpp"
-#include "wrappers.hpp"
+#include "flexiblesusy/src/ew_input.hpp"
+#include "flexiblesusy/src/numerics.hpp"
+#include "flexiblesusy/src/wrappers.hpp"
 
 // Switch test output depending on where this is being compiled
 #ifdef IN_SPECBIT

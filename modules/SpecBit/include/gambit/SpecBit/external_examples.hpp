@@ -5,11 +5,11 @@
 #include "gambit/SpecBit/MSSMSpec.hpp"
 
 // FlexibleSUSY headers
-#include "CMSSM_two_scale_model.hpp"
-#include "CMSSM_two_scale_model_slha.hpp"
-#include "ew_input.hpp"
-#include "numerics.hpp"
-#include "wrappers.hpp"
+#include "flexiblesusy/src/ew_input.hpp"
+#include "flexiblesusy/src/numerics.hpp"
+#include "flexiblesusy/src/wrappers.hpp"
+#include "flexiblesusy/models/CMSSM/CMSSM_two_scale_model.hpp"
+#include "flexiblesusy/models/CMSSM/CMSSM_two_scale_model_slha.hpp"
 
 #define PRINTOUT std::cout
 

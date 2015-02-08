@@ -29,9 +29,9 @@
 #include "gambit/SpecBit/model_files_and_boxes.hpp" // #includes lots of flexiblesusy headers and defines interface classes
 
 // Flexible SUSY stuff (should not be needed by the rest of gambit)
-#include "ew_input.hpp"
-#include "lowe.h" // From softsusy; used by flexiblesusy
-#include "numerics.hpp"
+#include "flexiblesusy/src/ew_input.hpp"
+#include "flexiblesusy/src/lowe.h" // From softsusy; used by flexiblesusy
+#include "flexiblesusy/src/numerics.hpp"
 
 // Switch for debug mode
 #define SpecBit_DBUG 

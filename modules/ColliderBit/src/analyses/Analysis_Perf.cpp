@@ -1,16 +1,18 @@
 // Written by A Saavedra 19-06-2013 to test the FastSim module
 // Edited by MJW on 07-01-2015 to test generic sims
-#include "Analysis.hpp"
-#include "ATLASEfficiencies.hpp"
-
-// ROOT
-#include "TH1.h"
-#include "TVirtualPad.h"
-#include "TApplication.h"
-#include "TFile.h"
 
 #include <vector>
 #include <algorithm>
+
+#include "gambit/ColliderBit/Analysis.hpp"
+#include "gambit/ColliderBit/ATLASEfficiencies.hpp"
+
+// ROOT
+#include <TH1.h>
+#include <TVirtualPad.h>
+#include <TApplication.h>
+#include <TFile.h>
+
 using namespace std;
 
 namespace Gambit {

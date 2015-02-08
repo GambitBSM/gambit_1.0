@@ -1,10 +1,12 @@
-#include "Analysis.hpp"
 #include <vector>
 #include <cmath>
 #include <memory>
-#include "TLorentzVector.h"
-#include "TVector2.h"
 #include <iomanip>
+
+#include "gambit/ColliderBit/Analysis.hpp"
+
+#include <TLorentzVector.h>
+#include <TVector2.h>
 
 /* The ATLAS 3 lepton EW analysis (20fb^-1)
 

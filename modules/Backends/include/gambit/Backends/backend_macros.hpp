@@ -769,7 +769,7 @@ namespace Gambit                                                                
         return NAME;                                                                            \
       }                                                                                         \
       /* Declare a pointer NAME of type NAME_type */                                            \
-      const NAME##_type NAME = CAT(constructFuncPointer_,NAME)();                               \     
+      const NAME##_type NAME = CAT(constructFuncPointer_,NAME)();                               \
       
    
 /// Supplemenentary backend function macro

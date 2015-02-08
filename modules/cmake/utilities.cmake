@@ -80,7 +80,6 @@ function(add_gambit_library libraryname)
 
 endfunction()
 
-
 # Function to add GAMBIT executable
 function(add_gambit_executable executablename)
   cmake_parse_arguments(ARG "" "" "SOURCES;HEADERS;" "" ${ARGN})

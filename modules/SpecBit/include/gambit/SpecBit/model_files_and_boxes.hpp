@@ -25,7 +25,7 @@
 #define MODELFILES_HPP
 
 #include "SLHAea/slhaea.h"
-#include "lowe.h" // From softsusy; used by flexiblesusy
+#include "flexiblesusy/src/lowe.h" // From softsusy; used by flexiblesusy
 
 // Abstraction of algorithm name
 #define ALGORITHM1 Two_scale

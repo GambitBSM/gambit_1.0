@@ -88,10 +88,6 @@ set(update_cmakelists ${PROJECT_SOURCE_DIR}/cmake/update_cmakelists.py -x __not_
 execute_process(COMMAND python ${update_cmakelists} WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
 message("-- Updating GAMBIT module cmake files - done.")
 
-# Haha
-message("-- Downloading latest ATLAS proprietary data files...")
-message("-- That was fast!")
-
 # Do OSX checks
 include(cmake/MacOSX.cmake)
 
@@ -148,13 +144,15 @@ enable_testing()
 # Check for C++11 support -- if we use special c++11 features we should check for them too at a later stage...
 include(CheckCXXCompilerFlag)
 CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
-CHECK_CXX_COMPILER_FLAG("-std=c++0x" COMPILER_SUPPORTS_CXX0X)
 if(COMPILER_SUPPORTS_CXX11)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-elseif(COMPILER_SUPPORTS_CXX0X)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
 else()
+  CHECK_CXX_COMPILER_FLAG("-std=c++0x" COMPILER_SUPPORTS_CXX0X)
+  if(COMPILER_SUPPORTS_CXX0X)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
+  else()
    message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
+  endif()
 endif()
 
 # Check for Boost
@@ -228,29 +226,8 @@ add_custom_target(model_harvest   DEPENDS ${PROJECT_SOURCE_DIR}/Models/include/g
 add_custom_target(backend_harvest DEPENDS ${PROJECT_SOURCE_DIR}/Backends/include/gambit/Backends/backend_rollcall.hpp ${BACKEND_HARVESTER_FILES})
 add_custom_target(module_harvest DEPENDS ${PROJECT_SOURCE_DIR}/Utils/include/gambit/Utils/all_functor_types.hpp ${PROJECT_SOURCE_DIR}/Core/include/gambit/Core/module_rollcall.hpp ${PROJECT_SOURCE_DIR}/Utils/include/gambit/Utils/module_types_rollcall.hpp ${MODULE_HARVESTER_FILES} backend_harvest)
 
-# Arrange for removal of all_functor_types.hpp and other generated headers upon "make clean".
-set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Backends/include/gambit/Backends/backend_rollcall.hpp")
-set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Models/include/gambit/Models/model_rollcall.hpp")
-set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Utils/include/gambit/Utils/all_functor_types.hpp")
-set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Core/include/gambit/Core/module_rollcall.hpp")
-
 # Work out which modules to include in the compile
 retrieve_bits(GAMBIT_BITS ${PROJECT_SOURCE_DIR} "${itch}" "Loud")
-
-# Include Delphes only if ColliderBit is in use
-if(";${GAMBIT_BITS};" MATCHES ";ColliderBit;")
-  include_directories("${PROJECT_SOURCE_DIR}/ColliderBit/include/gambit/ColliderBit/delphes")
-  set (EXCLUDE_DELPHES FALSE)
-else()
-  set (EXCLUDE_DELPHES TRUE)
-endif()
-
-# Include FlexibleSUSY only if SpecBit is in use
-if(";${GAMBIT_BITS};" MATCHES ";SpecBit;")
-  set (EXCLUDE_FLEXIBLESUSY FALSE)
-else()
-  set (EXCLUDE_FLEXIBLESUSY TRUE)
-endif()
 
 # Include other cmake scripts
 include(cmake/contrib.cmake)
@@ -280,33 +257,6 @@ set(GAMBIT_OBJECTS $<TARGET_OBJECTS:Core> $<TARGET_OBJECTS:Printers>)
 foreach(bit ${GAMBIT_BITS})
   add_subdirectory(${bit})
   set(GAMBIT_BIT_OBJECTS ${GAMBIT_BIT_OBJECTS} "$<TARGET_OBJECTS:${bit}>")
-  if (SpecBit STREQUAL ${bit})
-    # Ben: My attempt to add "SpecBit only" include targets. Seems to work.
-    if(${CMAKE_VERSION} VERSION_GREATER 2.8.10)
-      target_include_directories(SpecBit PRIVATE
-                               ${FLEXIBLESUSY_DIR}/config
-                               ${FLEXIBLESUSY_DIR}/legacy
-                               ${FLEXIBLESUSY_DIR}/src)
-    else()
-      include_directories(${FLEXIBLESUSY_DIR}/config
-                          ${FLEXIBLESUSY_DIR}/legacy
-                          ${FLEXIBLESUSY_DIR}/src)
-    endif()
-    message("-- Adding FlexibleSUSY model headers to SpecBit include list")
-    # Dig through flexiblesusy "models" directory and add all subdirectories to the include list
-    # (these contain the headers for the generated spectrum generators)
-    #file(GLOB _ALL_FILES ${FLEXIBLESUSY_DIR}/models ${FLEXIBLESUSY_DIR}/models/*)
-    foreach(_MODEL ${BUILT_FS_MODELS})
-      #if(IS_DIRECTORY ${_FILE})
-        message("      ${_MODEL}")
-        if(${CMAKE_VERSION} VERSION_GREATER 2.8.10)
-          target_include_directories(SpecBit PRIVATE ${FLEXIBLESUSY_DIR}/models/${_MODEL})
-        else()
-          include_directories(${FLEXIBLESUSY_DIR}/models/${_MODEL})
-        endif()
-      #endif()
-    endforeach()
-  endif()
 endforeach()
 
 # Add the executables

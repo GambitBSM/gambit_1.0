@@ -24,8 +24,8 @@
 #include <numeric>
 #include <vector>
 
-#include "gambit_module_headers.hpp"
-#include "ColliderBit_rollcall.hpp"
+#include "gambit/Utils/gambit_module_headers.hpp"
+#include "gambit/ColliderBit/ColliderBit_rollcall.hpp"
 
 // Now pulling in some of the code from extras/HEColliderMain.cpp
 // I will leave the KFactorHooks alone for now, since the work on

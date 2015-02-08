@@ -1,6 +1,6 @@
 #pragma once
 
-#include "shared_types.hpp"
+#include "gambit/Utils/shared_types.hpp"
 #include "HEPUtils/Event.h"
 #include "HEPUtils/Vectors.h"
 #include "HEPUtils/FastJet.h"

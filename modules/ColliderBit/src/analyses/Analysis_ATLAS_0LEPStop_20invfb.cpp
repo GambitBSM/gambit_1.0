@@ -1,16 +1,17 @@
-#include "Analysis.hpp"
-#include "mt2_bisect.h"
-
-/// @todo Eliminate the ROOT vectors!
-#include "TLorentzVector.h"
-#include "TVector2.h"
-
 #include <vector>
 #include <cmath>
 #include <memory>
 #include <iomanip>
-using namespace std;
 
+#include "gambit/ColliderBit/Analysis.hpp"
+#include "gambit/ColliderBit/mt2_bisect.h"
+
+/// @todo Eliminate the ROOT vectors!
+#include <TLorentzVector.h>
+#include <TVector2.h>
+
+
+using namespace std;
 
 /* The ATLAS 0 lepton direct stop analysis (20fb^-1) - `heavy stop'.
 
