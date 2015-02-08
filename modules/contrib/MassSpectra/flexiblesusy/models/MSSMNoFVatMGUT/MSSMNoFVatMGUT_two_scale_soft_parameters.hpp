@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Wed 3 Dec 2014 11:45:22
+// File generated at Fri 16 Jan 2015 12:35:38
 
 #ifndef MSSMNoFVatMGUT_TWO_SCALE_soft_parameters_H
 #define MSSMNoFVatMGUT_TWO_SCALE_soft_parameters_H

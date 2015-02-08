@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Wed 3 Dec 2014 11:09:36
+// File generated at Fri 16 Jan 2015 13:14:26
 
 #include "MSSM_input_parameters.hpp"
 #include "MSSM_slha_io.hpp"
@@ -75,8 +75,8 @@ int main(int argc, const char* argv[])
       spectrum_generator_settings.get(Spectrum_generator_settings::max_iterations));
    spectrum_generator.set_calculate_sm_masses(
       spectrum_generator_settings.get(Spectrum_generator_settings::calculate_sm_masses) >= 1.0);
-   spectrum_generator.set_input_scale(
-      slha_io.get_input_scale());
+   spectrum_generator.set_force_output(
+      spectrum_generator_settings.get(Spectrum_generator_settings::force_output) >= 1.0);
    spectrum_generator.set_parameter_output_scale(
       slha_io.get_parameter_output_scale());
    spectrum_generator.set_pole_mass_loop_order(
@@ -96,14 +96,20 @@ int main(int argc, const char* argv[])
    const Problems<MSSM_info::NUMBER_OF_PARTICLES>& problems
       = spectrum_generator.get_problems();
 
+   MSSM_scales scales;
+   scales.HighScale = spectrum_generator.get_high_scale();
+   scales.SUSYScale = spectrum_generator.get_susy_scale();
+   scales.LowScale  = spectrum_generator.get_low_scale();
+
    // output
    slha_io.set_spinfo(problems);
    slha_io.set_sminputs(oneset);
    slha_io.set_minpar(input);
    slha_io.set_extpar(input);
-   if (!problems.have_problem()) {
+   if (!problems.have_problem() ||
+       spectrum_generator_settings.get(Spectrum_generator_settings::force_output)) {
       slha_io.set_spectrum(model);
-      slha_io.set_extra(model);
+      slha_io.set_extra(model, scales);
    }
 
    if (slha_output_file.empty()) {

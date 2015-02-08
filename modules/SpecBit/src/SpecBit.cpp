@@ -168,7 +168,7 @@ namespace Gambit
       // Note: Output of spectrum_generator.get_model() returns type, e.g. CMSSM.
       // Need to convert it to type CMSSM_slha (which alters some conventions of
       // parameters into SLHA format)
-      MI model_interface(typename MI::Model(spectrum_generator.get_model()),oneset,input);
+      MI model_interface(spectrum_generator,oneset,input);
 
       // Create Spectrum object to wrap flexiblesusy data
       // THIS IS STATIC so that it lives on once we leave this module function. We 
@@ -298,17 +298,17 @@ Message from flexibleSUSY below:" << std::endl;
         ostr << "SignMu = " << INPUT(SignMu) << ", " << oend;
         ostr << "mHd2IN = " << INPUT(mHd2IN) << ", " << oend;
         ostr << "mHu2IN = " << INPUT(mHu2IN) << ", " << oend;
-        ostr << "mq2Input = " << INPUT(mq2Input) << ", " << oend;
-        ostr << "ml2Input = " << INPUT(ml2Input) << ", " << oend;
-        ostr << "md2Input = " << INPUT(md2Input) << ", " << oend;
-        ostr << "mu2Input = " << INPUT(mu2Input) << ", " << oend;
-        ostr << "me2Input = " << INPUT(me2Input) << ", " << oend;
+        ostr << "mq2Input = " << oend << INPUT(mq2Input) << ", " << oend;
+        ostr << "ml2Input = " << oend << INPUT(ml2Input) << ", " << oend;
+        ostr << "md2Input = " << oend << INPUT(md2Input) << ", " << oend;
+        ostr << "mu2Input = " << oend << INPUT(mu2Input) << ", " << oend;
+        ostr << "me2Input = " << oend << INPUT(me2Input) << ", " << oend;
         ostr << "MassBInput = " << INPUT(MassBInput) << ", " << oend;
         ostr << "MassWBInput = " << INPUT(MassWBInput) << ", " << oend;
         ostr << "MassGInput = " << INPUT(MassGInput) << ", " << oend;
-        ostr << "Aeij = " << INPUT(Aeij) << ", " << oend;
-        ostr << "Adij = " << INPUT(Adij) << ", " << oend;
-        ostr << "Auij = " << INPUT(Auij) << ", " << oend;
+        ostr << "Aeij = " << oend << INPUT(Aeij) << ", " << oend;
+        ostr << "Adij = " << oend << INPUT(Adij) << ", " << oend;
+        ostr << "Auij = " << oend << INPUT(Auij) << ", " << oend;
         #undef INPUT
         #undef ostr
         #undef oend

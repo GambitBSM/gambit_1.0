@@ -18,7 +18,7 @@ NUHMSSM_TWO_SCALE_MK := \
 		$(NUHMSSM_TWO_SCALE_SOFT_MK)
 
 NUHMSSM_SLHA_INPUT := \
-
+		$(DIR)/LesHouches.in.NUHMSSM
 
 NUHMSSM_GNUPLOT := \
 		$(DIR)/NUHMSSM_plot_rgflow.gnuplot \
@@ -142,6 +142,7 @@ SARAH_MODEL_FILES_NUHMSSM := \
 endif
 
 .PHONY:         all-$(MODNAME) clean-$(MODNAME) clean-$(MODNAME)-src \
+		clean-$(MODNAME)-dep clean-$(MODNAME)-obj \
 		distclean-$(MODNAME) run-metacode-$(MODNAME) \
 		pack-$(MODNAME)-src
 

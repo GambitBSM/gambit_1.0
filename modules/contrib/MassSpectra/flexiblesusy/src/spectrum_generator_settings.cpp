@@ -62,6 +62,7 @@ void Spectrum_generator_settings::set(Settings o, double value)
  * | higgs_2loop_correction_ab_as     | 0, 1                         | 1 (= enabled)   |
  * | higgs_2loop_correction_at_at     | 0, 1                         | 1 (= enabled)   |
  * | higgs_2loop_correction_atau_atau | 0, 1                         | 1 (= enabled)   |
+ * | force_output                     | 0 (no) or 1 (yes)            | 0 (= no)        |
  */
 void Spectrum_generator_settings::reset()
 {
@@ -77,6 +78,7 @@ void Spectrum_generator_settings::reset()
    values[higgs_2loop_correction_ab_as]     = 1.;
    values[higgs_2loop_correction_at_at]     = 1.;
    values[higgs_2loop_correction_atau_atau] = 1.;
+   values[calculate_sm_masses]   = 0.; // 0 = false
 }
 
 Higgs_2loop_corrections Spectrum_generator_settings::get_higgs_2loop_corrections() const

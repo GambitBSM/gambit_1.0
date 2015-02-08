@@ -53,9 +53,9 @@ namespace Gambit {
         // Smear jet momenta
         smearJets(_processedEvent->jets());
 
-        // Unset b-tags outside tracker range
+        // Unset b-tags outside |eta|=5 (same as DELPHES)
         for (HEPUtils::Jet* j : _processedEvent->jets()) {
-          if (j->abseta() > 2.5) j->set_btag(false);
+          if (j->abseta() > 5.0) j->set_btag(false);
         }
 
 

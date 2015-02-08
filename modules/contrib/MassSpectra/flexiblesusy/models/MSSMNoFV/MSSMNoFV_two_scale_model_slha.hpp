@@ -21,7 +21,7 @@
  * @brief contains wrapper class for model class in SLHA convention
  */
 
-// File generated at Wed 3 Dec 2014 10:52:16
+// File generated at Fri 16 Jan 2015 12:55:37
 
 #ifndef MSSMNoFV_TWO_SCALE_SLHA_H
 #define MSSMNoFV_TWO_SCALE_SLHA_H
@@ -48,6 +48,7 @@ public:
    virtual ~MSSMNoFV_slha();
 
    virtual void clear();
+   void convert_to_slha(); ///< converts pole masses to SLHA convention
    const MSSMNoFV_physical& get_physical_slha() const; ///< returns pole masses to SLHA convention
    MSSMNoFV_physical& get_physical_slha(); ///< returns pole masses to SLHA convention
 
@@ -138,8 +139,6 @@ public:
 
 private:
    MSSMNoFV_physical physical_slha; ///< contains the pole masses and mixings in slha convention
-
-   void convert_to_slha(); ///< converts pole masses to SLHA convention
 };
 
 } // namespace flexiblesusy

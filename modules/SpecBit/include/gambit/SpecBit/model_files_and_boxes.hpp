@@ -59,6 +59,7 @@
           typedef CAT_3(MODELNAME,_,slha<algorithm_type>)               Model;             \
           typedef CAT_3(MODELNAME,_,physical)                           Physical;          \
           typedef CAT_3(MODELNAME,_,slha_io)                            SlhaIo;            \
+          typedef CAT_3(MODELNAME,_,scales)                             Scales;            \
           static const unsigned number_of_particles = CAT_3(MODELNAME,_,info)::NUMBER_OF_PARTICLES; \
           typedef flexiblesusy::Problems<number_of_particles>           Problems;      \
                                                                                        \
@@ -72,7 +73,7 @@
           SlhaIo slha_io;   /* FlexibleSUSY SLHA input/output manager */               \
           InputParameters input;    /* Parameters needed to compute points of Model */ \
           Problems problems; /* FlexibleSUSY problems report manager */                \
-                                                                                       \
+          Scales scales;   /*scales at shich coundary conditions are applied*/         \
           /* Function to create SLHAea object from 'model' */                          \
           /* THIS IS REQUIRED BY MSSMSpec */                                           \
           SLHAea::Coll getSLHAea()                                                     \
@@ -99,13 +100,18 @@
              virtual functions for that */                                             \
                                                                                        \
           /* Constructor */                                                            \
-          CAT_3(MODELNAME,_,interface) (const Model& modelIN, const QedQcd& onesetIN, const InputParameters& inputIN) \
-          : model(modelIN)                                                             \
+          CAT_3(MODELNAME,_,interface) (const SpectrumGenerator& spectrum_generator, const QedQcd& onesetIN, const InputParameters& inputIN) \
+          : model(spectrum_generator.get_model())                                      \
           , oneset(onesetIN)                                                           \
           , input(inputIN)                                                             \
           , slha_io()                                                                  \
+          , scales()                                                                   \
           , problems(CAT_3(MODELNAME,_,info)::particle_names)                          \
-          {}                                                                           \
+          {                                                                            \
+            scales.HighScale = spectrum_generator.get_high_scale();                    \
+            scales.SUSYScale = spectrum_generator.get_susy_scale();                    \
+            scales.LowScale  = spectrum_generator.get_low_scale();                     \
+          }                                                                            \
                                                                                        \
           /* Constructor 2 (mostly for testing; leave input with default values) */    \
           CAT_3(MODELNAME,_,interface) (const Model& modelIN)                          \
@@ -113,6 +119,7 @@
           , oneset()                                                                   \
           , input()                                                                    \
           , slha_io()                                                                  \
+          , scales()                                                                   \
           , problems(CAT_3(MODELNAME,_,info)::particle_names)                          \
           {}                                                                           \
                                                                                        \
@@ -126,7 +133,7 @@
              slha_io.set_extpar(input);                                                \
              if (!problems.have_problem()) {                                           \
                 slha_io.set_spectrum(model);                                           \
-                slha_io.set_extra(model);                                              \
+                slha_io.set_extra(model,scales);                                       \ 
              }                                                                         \
           }                                                                            \
                                                                                        \

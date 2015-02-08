@@ -97,6 +97,33 @@ START_MODULE
   #undef CAPABILITY
 
 
+  // Backend point initialization --------------------------
+
+  // Function to initialize DarkSUSY to a specific model point.
+  // The generic DarkSUSY initialization is done in the backend
+  // initialization; this is only necessary for other capabilities
+  // that make use of model-specific DarkSUSY routines. 
+  #define CAPABILITY DarkSUSY_PointInit
+  START_CAPABILITY
+    // Function returns if point initialization is successful
+    // (probably always true)
+    #define FUNCTION DarkSUSY_PointInit
+      START_FUNCTION(bool)
+      DEPENDENCY(MSSMspectrum, eaSLHA) 
+      ALLOW_MODELS(CMSSM_demo,CMSSM,MSSM25atQ)
+      // CMSSM
+      BACKEND_REQ(dsgive_model_isasugra, (), void, (double&,double&,double&,double&,double&))
+      BACKEND_REQ(dssusy_isasugra, (), void, (int&,int&))
+      // MSSM7
+      BACKEND_REQ(mssmpar, (), DS_MSSMPAR)
+      BACKEND_REQ(dssusy, (), void, (int&,int&))
+      // Initialize DarkSUSY with SLHA file
+      BACKEND_REQ(dsSLHAread, (), void, (char*, int&, int))
+      BACKEND_REQ(dsprep, (), void, ())
+    #undef FUNCTION
+  #undef CAPABILITY
+
+
   // Relic density -----------------------------------------
 
   #define CAPABILITY RD_spectrum
@@ -176,7 +203,8 @@ START_MODULE
     // Routine for cross checking RD density results
     #define FUNCTION RD_oh2_DarkSUSY
       START_FUNCTION(double)
-      ALLOW_MODELS(MSSM25atQ)  // TODO: (CW) Check for which models this works
+      //ALLOW_MODELS(MSSM25atQ)  // TODO: (CW) Check for which models this works
+      DEPENDENCY(DarkSUSY_PointInit, bool)
       BACKEND_REQ(dsrdomega, (), double, (int&,int&,double&,int&,int&,int&))
     #undef FUNCTION
 
@@ -400,7 +428,8 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION TH_ProcessCatalog_CMSSM
       START_FUNCTION(Gambit::DarkBit::TH_ProcessCatalog)
-      ALLOW_MODELS(CMSSM_demo, MSSM25atQ)
+      //ALLOW_MODELS(CMSSM_demo, MSSM25atQ)
+      DEPENDENCY(DarkSUSY_PointInit, bool)
       DEPENDENCY(MSSMspectrum, eaSLHA) 
       BACKEND_REQ(mspctm, (), DS_MSPCTM)
       BACKEND_REQ(dssigmav, (), double, (int&))
@@ -464,8 +493,9 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION DD_couplings_DarkSUSY
       START_FUNCTION(Gambit::DarkBit::DD_couplings)
+      DEPENDENCY(DarkSUSY_PointInit, bool)
       BACKEND_REQ(dsddgpgn, (), void, (double&, double&, double&, double&))
-      BACKEND_REQ(mspctm, (), DS_MSPCTM)      
+      BACKEND_REQ(mspctm, (), DS_MSPCTM)
     #undef FUNCTION
     #define FUNCTION DD_couplings_micrOMEGAs
       START_FUNCTION(Gambit::DarkBit::DD_couplings)
@@ -778,6 +808,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION SimYieldTable_DarkSusy
     START_FUNCTION(Gambit::DarkBit::SimYieldTable)
+    DEPENDENCY(DarkSUSY_PointInit, bool)
     BACKEND_REQ(dshayield, (), double, (double&,double&,int&,int&,int&))
     #undef FUNCTION 
   #undef CAPABILITY

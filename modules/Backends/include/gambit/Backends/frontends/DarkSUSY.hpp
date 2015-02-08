@@ -141,8 +141,13 @@ BE_VARIABLE(DS_IBINTVARS,IBintvars,"ibintvars_", "IBintvars") // IB stuff
 
 BE_VARIABLE(DS_DDCOM, ddcom, "ddcom_",    "ddcom")
 
+// Point initialization off-loaded to DarkSUSY_PointInit capability.
+// That capability has model dependencies, not the basic initialization
+// done here.  Any capabilities that use DarkSUSY routines requiring
+// DarkSUSY point initialization should have a dependency on
+// DarkSUSY_PointInit.
 //BE_INI_DEPENDENCY(MSSMspectrum, eaSLHA)
-BE_INI_CONDITIONAL_DEPENDENCY(MSSMspectrum, eaSLHA, CMSSM_demo, CMSSM, MSSM25atQ)
+//BE_INI_CONDITIONAL_DEPENDENCY(MSSMspectrum, eaSLHA, CMSSM_demo, CMSSM, MSSM25atQ)
 
 BE_INI_FUNCTION
 {
@@ -156,8 +161,29 @@ BE_INI_FUNCTION
         dsinit();
         dsrdinit();
         scan_level = false;
+
+        // Setting nuclear spin/quark content to micromegas values:
+        ddcom->deld = -0.427;
+        ddcom->delu = 0.842;
+        ddcom->dels = -0.085;
+
+        ddcom->ftp(7) = 0.0153;
+        ddcom->ftp(8) = 0.0191;
+        ddcom->ftp(9) = 0.0682;
+        ddcom->ftp(10) = 0.0447;
+        ddcom->ftp(11) = 0.0682;
+        ddcom->ftp(12) = 0.0682;
+
+        ddcom->ftn(7) = 0.011;
+        ddcom->ftn(8) = 0.0273;
+        ddcom->ftn(9) = 0.0679;
+        ddcom->ftn(10) = 0.0447;
+        ddcom->ftn(11) = 0.0679;
+        ddcom->ftn(12) = 0.0679;
     }
 
+  // POINT INITIALIZATION MOVE TO DARKSUSY_POINTINIT CAPABILITY/FUNCTION
+  /*
     // Check if model requires SLHA initialization
     if (ModelInUse("CMSSM_demo") or ModelInUse("MSSM25atQ"))
     {
@@ -189,25 +215,7 @@ BE_INI_FUNCTION
         dsgive_model_isasugra(am0, amhf, aa0, asgnmu, atanbe);
         dssusy_isasugra(unphys, hwarning);
     }
-
-    // Setting nuclear spin/quark content to micromegas values:
-    ddcom->deld = -0.427;
-    ddcom->delu = 0.842;
-    ddcom->dels = -0.085;
-
-    ddcom->ftp(7) = 0.0153;
-    ddcom->ftp(8) = 0.0191;
-    ddcom->ftp(9) = 0.0682;
-    ddcom->ftp(10) = 0.0447;
-    ddcom->ftp(11) = 0.0682;
-    ddcom->ftp(12) = 0.0682;
-
-    ddcom->ftn(7) = 0.011;
-    ddcom->ftn(8) = 0.0273;
-    ddcom->ftn(9) = 0.0679;
-    ddcom->ftn(10) = 0.0447;
-    ddcom->ftn(11) = 0.0679;
-    ddcom->ftn(12) = 0.0679;
+  */
 
     // MSSM-7 ???
     /*

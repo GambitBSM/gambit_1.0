@@ -173,6 +173,10 @@ if(";${GAMBIT_BITS};" MATCHES ";SpecBit;")
   # Strip out leading and trailing whitespace
   string(STRIP "${flexiblesusy_LDFLAGS}" flexiblesusy_LDFLAGS)
 
+  # Add clean info
+  add_custom_target(clean-flexiblesusy COMMAND cd ${FLEXIBLESUSY_DIR} && make clean && make distclean )
+  add_dependencies(distclean clean-flexiblesusy)
+
 else()
 
   set (EXCLUDE_FLEXIBLESUSY TRUE)
