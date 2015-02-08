@@ -57,8 +57,3 @@ set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/cmake/linkedout.cmake")
 
 # Add all the clean files
 set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${clean_files}")
-
-# Add a second clean target to allow us to trigger cleaning of external projects (or run any other custom commands)
-# Needed because "clean" isn't a target itself, so cannot be made to depend on other targets.
-# See custom target "clean-flexiblesusy" in contrib.make for example use case.
-add_custom_target(distclean COMMAND ${CMAKE_MAKE_PROGRAM} clean)

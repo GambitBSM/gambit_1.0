@@ -229,6 +229,9 @@ add_custom_target(module_harvest DEPENDS ${PROJECT_SOURCE_DIR}/Utils/include/gam
 # Work out which modules to include in the compile
 retrieve_bits(GAMBIT_BITS ${PROJECT_SOURCE_DIR} "${itch}" "Loud")
 
+# Add a true clean target that can have dependencies, to allow us to trigger cleaning of external projects (or run any other custom commands)
+add_custom_target(distclean COMMAND ${CMAKE_MAKE_PROGRAM} clean)
+
 # Include other cmake scripts
 include(cmake/contrib.cmake)
 include(cmake/warnings.cmake)
