@@ -3,7 +3,7 @@
 
 #include <memory>
 
-#include "gambit/SpecBit/Spectrum.hpp"
+#include "gambit/Utils/Spectrum.hpp"
 #include "gambit/Utils/util_functions.hpp"
 
 // Flexible SUSY stuff (should not be needed by the rest of gambit)

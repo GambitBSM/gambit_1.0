@@ -20,8 +20,8 @@
 #include <cmath>
 
 #include "gambit/Utils/gambit_module_headers.hpp"
+#include "gambit/Utils/Spectrum.hpp"
 #include "gambit/SpecBit/SpecBit_rollcall.hpp"
-#include "gambit/SpecBit/Spectrum.hpp"
 
 #include "SLHAea/slhaea.h"
 #include <boost/preprocessor/tuple/to_seq.hpp>

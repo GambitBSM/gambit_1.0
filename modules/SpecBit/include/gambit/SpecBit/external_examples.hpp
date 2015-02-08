@@ -2,7 +2,7 @@
 /// This is not really part of gambit and exists
 /// only for illustration.
 
-#include "gambit/Specbit/MSSMSpec.hpp"
+#include "gambit/SpecBit/MSSMSpec.hpp"
 
 // FlexibleSUSY headers
 #include "CMSSM_two_scale_model.hpp"
