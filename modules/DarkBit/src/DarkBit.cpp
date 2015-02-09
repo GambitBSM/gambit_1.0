@@ -235,7 +235,18 @@ namespace Gambit {
         int unphys, hwarning;
         BEreq::dssusy_isasugra(unphys, hwarning);
         //result = (unphys == 0) && (hwarning == 0);
-        result = true;
+        if (unphys < 0) {
+          cout << "ERROR: model point is theoretically inconsistent (DarkSUSY).";
+          result = false;
+        } else if (unphys > 0) {
+          cout << "ERROR: neutralino is not the LSP (DarkSUSY).";
+          result = false;
+        } else if (hwarning != 0) {
+          cout << "WARNING: radiative corrections in Higgs sector outside range of validity (DarkSUSY).";
+          result = true;
+        } else {
+          result = true;
+        }
       }
       
       // use SLHA for initialization initialization
