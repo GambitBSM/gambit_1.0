@@ -77,6 +77,15 @@ if(";${GAMBIT_BITS};" MATCHES ";ColliderBit;")
   set(CMAKE_INSTALL_RPATH "${PROJECT_SOURCE_DIR}/contrib/Delphes-3.1.2")
   set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/contrib/Delphes-3.1.2/libDelphes*" "${PROJECT_SOURCE_DIR}/contrib/Delphes-3.1.2/Makefile*")
   set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/contrib/Delphes-3.1.2/tmp" "${PROJECT_SOURCE_DIR}/contrib/Delphes-3.1.2/core")
+  message("-- Generating Delphes ROOT dictionaries")
+  execute_process(COMMAND ./make_dicts.sh
+                  WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/ColliderBit/src/delphes
+                  RESULT_VARIABLE result
+                 )
+  if (NOT "${result}" STREQUAL "0")
+    message(FATAL_ERROR "Could not automatically generate Delphes ROOT dictionaries.  Blame ROOT.")
+  endif()
+  message("-- Generating Delphes ROOT dictionaries - done.")
 else()
   set (EXCLUDE_DELPHES TRUE)
 endif()
