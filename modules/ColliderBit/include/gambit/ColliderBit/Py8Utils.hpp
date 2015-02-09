@@ -6,12 +6,12 @@
 #include "HEPUtils/FastJet.h"
 #include "MCUtils/PIDUtils.h"
 
-using namespace HEPUtils;
-using namespace MCUtils;
 
 namespace Gambit {
   namespace ColliderBit {
 
+    using namespace HEPUtils;
+    using namespace MCUtils;
 
     /// @name Converters to/from Pythia8's native 4-vector
     //@{

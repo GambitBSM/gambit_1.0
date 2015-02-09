@@ -2,12 +2,12 @@
 #include "gambit/ColliderBit/ColliderBit_macros.hpp"
 #include "gambit/ColliderBit/Utils.hpp"
 #include "HEPUtils/Event.h"
-using namespace HEPUtils;
 
 
 namespace Gambit {
   namespace ColliderBit {
 
+    using namespace HEPUtils;
 
     struct SignalRegionData {
 
