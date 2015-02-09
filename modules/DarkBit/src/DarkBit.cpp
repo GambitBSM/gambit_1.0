@@ -1953,104 +1953,259 @@ namespace Gambit {
 
 //////////////////////////////////////////////////////////////////////////
 //
-//                Direct detection likelihoods
+//            Direct detection DDCalc0 intermediate routines
 //
 //////////////////////////////////////////////////////////////////////////
 
-    // Uses XENON100 2012 result:
-    //   Aprile et al., PRL 109, 181301 (2013) [arxiv:1207.5988]
-    void lnL_XENON100_2012(double &result)
-    {
-        using namespace Pipes::lnL_XENON100_2012;
-        // TODO: The WIMP parameters need to be set only once per
-        // model, across all experiments.  Need to figure out
-        // how to do this....
-        double M_DM = (*Dep::DD_couplings).M_DM;
-        double Gps = (*Dep::DD_couplings).gps;
-        double Gpa = (*Dep::DD_couplings).gpa;
-        double Gns = (*Dep::DD_couplings).gns;
-        double Gna = (*Dep::DD_couplings).gna;                        
-        BEreq::DDCalc0_SetWIMP_mG(&M_DM,&Gps,&Gns,&Gpa,&Gna);
-        // TODO: This calculation needs to be done only once per
-        // model and could also potentially be set up as a
-        // dependency.
-        BEreq::DDCalc0_XENON100_2012_CalcRates();
-        result = BEreq::DDCalc0_XENON100_2012_LogLikelihood();
-        std::cout << "XENON100 2012 likelihood: " << result << std::endl;
-    }
+  // Set the WIMP mass and couplings (dummy result).
+  // TODO: Move halo settings from backend to here?
+  void SetWIMP_DDCalc0(bool &result) {
+    using namespace Pipes::SetWIMP_DDCalc0;
+    double M    = (*Dep::DD_couplings).M_DM;
+    double GpSI = (*Dep::DD_couplings).gps;
+    double GnSI = (*Dep::DD_couplings).gns;
+    double GpSD = (*Dep::DD_couplings).gpa;
+    double GnSD = (*Dep::DD_couplings).gna;                        
+    BEreq::DDCalc0_SetWIMP_mG(&M,&GpSI,&GnSI,&GpSD,&GnSD);
+    result = true;
+    // Print out WIMP-nucleon cross-sections.
+    // This part is optional as WIMP is already set.
+    double sigmapSI,sigmanSI,sigmapSD,sigmanSD;
+    BEreq::DDCalc0_GetWIMP_msigma(&M,&sigmapSI,&sigmanSI,&sigmapSD,&sigmanSD);
+    std::cout << "DDCalc0 WIMP-nucleon cross-sections [pb]:" << std::endl;
+    std::cout << "  sigmapSI = " << sigmapSI << std::endl;
+    std::cout << "  sigmanSI = " << sigmanSI << std::endl;
+    std::cout << "  sigmapSD = " << sigmapSD << std::endl;
+    std::cout << "  sigmanSD = " << sigmanSD << std::endl;
+  }
 
-    // Uses LUX 2013 result:
-    //   Akerib et al., PRL 112, 091303 (2014) [arxiv:1310.8214]
-    void lnL_LUX_2013(double &result)
-    {
-        using namespace Pipes::lnL_LUX_2013;
-        // TODO: The WIMP parameters need to be set only once per
-        // model, across all experiments.  Need to figure out
-        // how to do this....
-        double M_DM = (*Dep::DD_couplings).M_DM;
-        double Gps = (*Dep::DD_couplings).gps;
-        double Gpa = (*Dep::DD_couplings).gpa;
-        double Gns = (*Dep::DD_couplings).gns;
-        double Gna = (*Dep::DD_couplings).gna;                        
-        BEreq::DDCalc0_SetWIMP_mG(&M_DM,&Gps,&Gns,&Gpa,&Gna);
-        // TODO: This calculation needs to be done only once per
-        // model and could also potentially be set up as a
-        // dependency.
-        BEreq::DDCalc0_LUX_2013_CalcRates();
-        result = BEreq::DDCalc0_LUX_2013_LogLikelihood();
-        std::cout << "LUX 2013 likelihood: " << result << std::endl;
-    }
+  // Performs DDCalc0 internal rate calculations for the XENON100 2012
+  // result at the current model point (dummy result).
+  void CalcRates_XENON100_2012_DDCalc0(bool &result) {
+    using namespace Pipes::CalcRates_XENON100_2012_DDCalc0;
+    BEreq::DDCalc0_XENON100_2012_CalcRates();
+    result = true;
+  }
 
-    // Estimated argon-based DARWIN sensitivity:
-    //   Conrad et al., arxiv:15MM.XXXX
-    void lnL_DARWIN_Ar_2015(double &result)
-    {
-        using namespace Pipes::lnL_DARWIN_Ar_2015;
-        // TODO: The WIMP parameters need to be set only once per
-        // model, across all experiments.  Need to figure out
-        // how to do this....
-        double M_DM = (*Dep::DD_couplings).M_DM;
-        double Gps = (*Dep::DD_couplings).gps;
-        double Gpa = (*Dep::DD_couplings).gpa;
-        double Gns = (*Dep::DD_couplings).gns;
-        double Gna = (*Dep::DD_couplings).gna;                        
-        BEreq::DDCalc0_SetWIMP_mG(&M_DM,&Gps,&Gns,&Gpa,&Gna);
-        // TODO: This calculation needs to be done only once per
-        // model and could also potentially be set up as a
-        // dependency.
-        BEreq::DDCalc0_DARWIN_Ar_2015_CalcRates();
-        result = BEreq::DDCalc0_DARWIN_Ar_2015_LogLikelihood();
-        std::cout << "DARWIN argon (2015 estimate) likelihood: " << result << std::endl;
-    }
+  // Performs DDCalc0 internal rate calculations for the LUX 2013
+  // result at the current model point (dummy result).
+  void CalcRates_LUX_2013_DDCalc0(bool &result) {
+    using namespace Pipes::CalcRates_LUX_2013_DDCalc0;
+    BEreq::DDCalc0_LUX_2013_CalcRates();
+    result = true;
+  }
 
-    // Estimated xenon-based DARWIN sensitivity:
-    //   Conrad et al., arxiv:15MM.XXXX
-    void lnL_DARWIN_Xe_2015(double &result)
-    {
-        using namespace Pipes::lnL_DARWIN_Xe_2015;
-        // TODO: The WIMP parameters need to be set only once per
-        // model, across all experiments.  Need to figure out
-        // how to do this....
-        double M_DM = (*Dep::DD_couplings).M_DM;
-        double Gps = (*Dep::DD_couplings).gps;
-        double Gpa = (*Dep::DD_couplings).gpa;
-        double Gns = (*Dep::DD_couplings).gns;
-        double Gna = (*Dep::DD_couplings).gna;                        
-        BEreq::DDCalc0_SetWIMP_mG(&M_DM,&Gps,&Gns,&Gpa,&Gna);
-        // TODO: This calculation needs to be done only once per
-        // model and could also potentially be set up as a
-        // dependency.
-        BEreq::DDCalc0_DARWIN_Xe_2015_CalcRates();
-        result = BEreq::DDCalc0_DARWIN_Xe_2015_LogLikelihood();
-        std::cout << "DARWIN xenon (2015 estimate) likelihood: " << result << std::endl;
-    }
+  // Performs DDCalc0 internal rate calculations for the future
+  // argon-based DARWIN experiment (estimated sensitivity, as of
+  // 2015) at the current model point (dummy result).
+  void CalcRates_DARWIN_Ar_2015_DDCalc0(bool &result) {
+    using namespace Pipes::CalcRates_DARWIN_Ar_2015_DDCalc0;
+    BEreq::DDCalc0_DARWIN_Ar_2015_CalcRates();
+    result = true;
+  }
 
-    // Simple test likelihood (in case DDCalc0 does not work)
-    void lnL_DD_test(double &result)
-    {
-        using namespace Pipes::lnL_DD_test;
-        result = 0;
-    }
+  // Performs DDCalc0 internal rate calculations for the future
+  // xenon-based DARWIN experiment (estimated sensitivity, as of
+  // 2015) at the current model point (dummy result).
+  void CalcRates_DARWIN_Xe_2015_DDCalc0(bool &result) {
+    using namespace Pipes::CalcRates_DARWIN_Xe_2015_DDCalc0;
+    BEreq::DDCalc0_DARWIN_Xe_2015_CalcRates();
+    result = true;
+  }
+
+
+
+//////////////////////////////////////////////////////////////////////////
+//
+//                Direct detection likelihoods/observables
+//
+//////////////////////////////////////////////////////////////////////////
+
+  // XENON100 2012 -----------------------------------------------------
+  // Aprile et al., PRL 109, 181301 (2013) [arxiv:1207.5988]
+  
+  // Log-likelihood
+  void XENON100_2012_LogLikelihood_DDCalc0(double &result) {
+    using namespace Pipes::XENON100_2012_LogLikelihood_DDCalc0;
+    result = BEreq::DDCalc0_XENON100_2012_LogLikelihood();
+    std::cout << "XENON100 2012 log-likelihood: " << result << std::endl;
+  }
+  
+  // Observed events (integer)
+  void XENON100_2012_Events_DDCalc0(int &result) {
+    using namespace Pipes::XENON100_2012_Events_DDCalc0;
+    result = BEreq::DDCalc0_XENON100_2012_Events();
+    std::cout << "XENON100 2012 events: " << result << std::endl;
+  }
+  
+  // Background expectation
+  void XENON100_2012_Background_DDCalc0(double &result) {
+    using namespace Pipes::XENON100_2012_Background_DDCalc0;
+    result = BEreq::DDCalc0_XENON100_2012_Background();
+    std::cout << "XENON100 2012 background: " << result << std::endl;
+  }
+  
+  // Signal expectation
+  void XENON100_2012_Signal_DDCalc0(double &result) {
+    using namespace Pipes::XENON100_2012_Signal_DDCalc0;
+    result = BEreq::DDCalc0_XENON100_2012_Signal();
+    std::cout << "XENON100 2012 signal: " << result << std::endl;
+  }
+  
+  // Signal expectation (spin-independent)
+  void XENON100_2012_SignalSI_DDCalc0(double &result) {
+    using namespace Pipes::XENON100_2012_SignalSI_DDCalc0;
+    result = BEreq::DDCalc0_XENON100_2012_SignalSI();
+    std::cout << "XENON100 2012 signal (SI): " << result << std::endl;
+  }
+  
+  // Signal expectation (spin-dependent)
+  void XENON100_2012_SignalSD_DDCalc0(double &result) {
+    using namespace Pipes::XENON100_2012_SignalSD_DDCalc0;
+    result = BEreq::DDCalc0_XENON100_2012_SignalSD();
+    std::cout << "XENON100 2012 signal (SD): " << result << std::endl;
+  }
+  
+  
+  // LUX 2013 ----------------------------------------------------------
+  // Akerib et al., PRL 112, 091303 (2014) [arxiv:1310.8214]
+  
+  // Log-likelihood
+  void LUX_2013_LogLikelihood_DDCalc0(double &result) {
+    using namespace Pipes::LUX_2013_LogLikelihood_DDCalc0;
+    result = BEreq::DDCalc0_LUX_2013_LogLikelihood();
+    std::cout << "LUX 2013 log-likelihood: " << result << std::endl;
+  }
+  
+  // Observed events (integer)
+  void LUX_2013_Events_DDCalc0(int &result) {
+    using namespace Pipes::LUX_2013_Events_DDCalc0;
+    result = BEreq::DDCalc0_LUX_2013_Events();
+    std::cout << "LUX 2013 events: " << result << std::endl;
+  }
+  
+  // Background expectation
+  void LUX_2013_Background_DDCalc0(double &result) {
+    using namespace Pipes::LUX_2013_Background_DDCalc0;
+    result = BEreq::DDCalc0_LUX_2013_Background();
+    std::cout << "LUX 2013 background: " << result << std::endl;
+  }
+  
+  // Signal expectation
+  void LUX_2013_Signal_DDCalc0(double &result) {
+    using namespace Pipes::LUX_2013_Signal_DDCalc0;
+    result = BEreq::DDCalc0_LUX_2013_Signal();
+    std::cout << "LUX 2013 signal: " << result << std::endl;
+  }
+  
+  // Signal expectation (spin-independent)
+  void LUX_2013_SignalSI_DDCalc0(double &result) {
+    using namespace Pipes::LUX_2013_SignalSI_DDCalc0;
+    result = BEreq::DDCalc0_LUX_2013_SignalSI();
+    std::cout << "LUX 2013 signal (SI): " << result << std::endl;
+  }
+  
+  // Signal expectation (spin-dependent)
+  void LUX_2013_SignalSD_DDCalc0(double &result) {
+    using namespace Pipes::LUX_2013_SignalSD_DDCalc0;
+    result = BEreq::DDCalc0_LUX_2013_SignalSD();
+    std::cout << "LUX 2013 signal (SD): " << result << std::endl;
+  }
+  
+  
+  // DARWIN argon-based ------------------------------------------------
+  // Estimated argon-based DARWIN sensitivity (as of 2015):
+  //   Conrad et al., arxiv:15MM.NNNNN
+  
+  // Log-likelihood
+  void DARWIN_Ar_2015_LogLikelihood_DDCalc0(double &result) {
+    using namespace Pipes::DARWIN_Ar_2015_LogLikelihood_DDCalc0;
+    result = BEreq::DDCalc0_DARWIN_Ar_2015_LogLikelihood();
+    std::cout << "DARWIN argon-based (2015 estimate) log-likelihood: " << result << std::endl;
+  }
+  
+  // Observed events (integer)
+  void DARWIN_Ar_2015_Events_DDCalc0(int &result) {
+    using namespace Pipes::DARWIN_Ar_2015_Events_DDCalc0;
+    result = BEreq::DDCalc0_DARWIN_Ar_2015_Events();
+    std::cout << "DARWIN argon-based (2015 estimate) events: " << result << std::endl;
+  }
+  
+  // Background expectation
+  void DARWIN_Ar_2015_Background_DDCalc0(double &result) {
+    using namespace Pipes::DARWIN_Ar_2015_Background_DDCalc0;
+    result = BEreq::DDCalc0_DARWIN_Ar_2015_Background();
+    std::cout << "DARWIN argon-based (2015 estimate) background: " << result << std::endl;
+  }
+  
+  // Signal expectation
+  void DARWIN_Ar_2015_Signal_DDCalc0(double &result) {
+    using namespace Pipes::DARWIN_Ar_2015_Signal_DDCalc0;
+    result = BEreq::DDCalc0_DARWIN_Ar_2015_Signal();
+    std::cout << "DARWIN argon-based (2015 estimate) signal: " << result << std::endl;
+  }
+  
+  // Signal expectation (spin-independent)
+  void DARWIN_Ar_2015_SignalSI_DDCalc0(double &result) {
+    using namespace Pipes::DARWIN_Ar_2015_SignalSI_DDCalc0;
+    result = BEreq::DDCalc0_DARWIN_Ar_2015_SignalSI();
+    std::cout << "DARWIN argon-based (2015 estimate) signal (SI): " << result << std::endl;
+  }
+  
+  // Signal expectation (spin-dependent)
+  void DARWIN_Ar_2015_SignalSD_DDCalc0(double &result) {
+    using namespace Pipes::DARWIN_Ar_2015_SignalSD_DDCalc0;
+    result = BEreq::DDCalc0_DARWIN_Ar_2015_SignalSD();
+    std::cout << "DARWIN argon-based (2015 estimate) signal (SD): " << result << std::endl;
+  }
+  
+  
+  // DARWIN xenon-based ------------------------------------------------
+  // Estimated xenon-based DARWIN sensitivity (as of 2015):
+  //   Conrad et al., arxiv:15MM.NNNNN
+  
+  // Log-likelihood
+  void DARWIN_Xe_2015_LogLikelihood_DDCalc0(double &result) {
+    using namespace Pipes::DARWIN_Xe_2015_LogLikelihood_DDCalc0;
+    result = BEreq::DDCalc0_DARWIN_Xe_2015_LogLikelihood();
+    std::cout << "DARWIN xenon-based (2015 estimate) log-likelihood: " << result << std::endl;
+  }
+  
+  // Observed events (integer)
+  void DARWIN_Xe_2015_Events_DDCalc0(int &result) {
+    using namespace Pipes::DARWIN_Xe_2015_Events_DDCalc0;
+    result = BEreq::DDCalc0_DARWIN_Xe_2015_Events();
+    std::cout << "DARWIN xenon-based (2015 estimate) events: " << result << std::endl;
+  }
+  
+  // Background expectation
+  void DARWIN_Xe_2015_Background_DDCalc0(double &result) {
+    using namespace Pipes::DARWIN_Xe_2015_Background_DDCalc0;
+    result = BEreq::DDCalc0_DARWIN_Xe_2015_Background();
+    std::cout << "DARWIN xenon-based (2015 estimate) background: " << result << std::endl;
+  }
+  
+  // Signal expectation
+  void DARWIN_Xe_2015_Signal_DDCalc0(double &result) {
+    using namespace Pipes::DARWIN_Xe_2015_Signal_DDCalc0;
+    result = BEreq::DDCalc0_DARWIN_Xe_2015_Signal();
+    std::cout << "DARWIN xenon-based (2015 estimate) signal: " << result << std::endl;
+  }
+  
+  // Signal expectation (spin-independent)
+  void DARWIN_Xe_2015_SignalSI_DDCalc0(double &result) {
+    using namespace Pipes::DARWIN_Xe_2015_SignalSI_DDCalc0;
+    result = BEreq::DDCalc0_DARWIN_Xe_2015_SignalSI();
+    std::cout << "DARWIN xenon-based (2015 estimate) signal (SI): " << result << std::endl;
+  }
+  
+  // Signal expectation (spin-dependent)
+  void DARWIN_Xe_2015_SignalSD_DDCalc0(double &result) {
+    using namespace Pipes::DARWIN_Xe_2015_SignalSD_DDCalc0;
+    result = BEreq::DDCalc0_DARWIN_Xe_2015_SignalSD();
+    std::cout << "DARWIN xenon-based (2015 estimate) signal (SD): " << result << std::endl;
+  }
+
 
 
 //////////////////////////////////////////////////////////////////////////
