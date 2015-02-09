@@ -25,6 +25,7 @@
 ///  \author Christopher Savage
 ///          (chris@savage.name)
 ///  \date 2014 Oct
+///  \date 2015 Jan, Feb
 ///  
 ///  *********************************************
 
@@ -73,7 +74,7 @@ namespace Gambit {
       bool static first_time = true;
       if (first_time) 
       {
-          std::cout << "DarkSUSY initialization" << std::endl;
+          logger() << "DarkSUSY initialization" << std::endl;
           BEreq::dsinit();
           BEreq::dsrdinit();
           first_time = false;
@@ -123,7 +124,7 @@ namespace Gambit {
       bool static first_time = true;
       if (first_time) 
       {
-          std::cout << "DarkSUSY initialization" << std::endl;
+          logger() << "DarkSUSY initialization" << std::endl;
           BEreq::dsinit();
           BEreq::dsrdinit();
           first_time = false;
@@ -154,7 +155,7 @@ namespace Gambit {
       bool static first_time = true;
       if (first_time) 
       {
-          std::cout << "DarkSUSY initialization" << std::endl;
+          logger() << "DarkSUSY initialization" << std::endl;
           BEreq::dsinit();
           BEreq::dsrdinit();
           first_time = false;
@@ -167,8 +168,8 @@ namespace Gambit {
       double asgnmu = *Param["sgnmu"];  // sign(mu)
       double atanbe = *Param["tanb"];  // tan(beta)
       int unphys, hwarning;
-      std::cout << "Initialize dsgive_model_isasugra with" << std::endl;
-      std::cout << am0 << " " << amhf << " " << aa0 << " " << asgnmu << " " << atanbe << std::endl;
+      logger() << "Initialize dsgive_model_isasugra with" << std::endl;
+      logger() << am0 << " " << amhf << " " << aa0 << " " << asgnmu << " " << atanbe << std::endl;
       BEreq::dsgive_model_isasugra(am0, amhf, aa0, asgnmu, atanbe);
       BEreq::dssusy_isasugra(unphys, hwarning);
     }
@@ -185,11 +186,11 @@ namespace Gambit {
 
       std::string filename = filenames[counter];
 
-      std::cout << "Read slha file " << filename << std::endl;
+      logger() << "Read slha file " << filename << std::endl;
       std::ifstream ifs(filename.c_str());  // This might require char [] instead
       if(!ifs.good())
       {
-          std::cout << "ERROR: File not found." << std::endl;
+          logger() << "ERROR: File not found." << std::endl;
           exit(1);
       }
       ifs >> spectrum;
@@ -225,24 +226,34 @@ namespace Gambit {
         double aa0    = *Param["A0"];     // A0
         double asgnmu = *Param["sgnmu"];  // sign(mu)
         double atanbe = *Param["tanb"];   // tan(beta)
-        std::cout << "Initializing DarkSUSY via dsgive_model_isasugra:" << std::endl;
-        std::cout << "  m0        =" << am0    << std::endl;
-        std::cout << "  m_1/2     =" << amhf   << std::endl;
-        std::cout << "  A0        =" << aa0    << std::endl;
-        std::cout << "  sign(mu)  =" << asgnmu << std::endl;
-        std::cout << "  tan(beta) =" << atanbe << std::endl;
+        logger() << "Initializing DarkSUSY via dsgive_model_isasugra:" << std::endl;
+        logger() << "  m0        =" << am0    << std::endl;
+        logger() << "  m_1/2     =" << amhf   << std::endl;
+        logger() << "  A0        =" << aa0    << std::endl;
+        logger() << "  sign(mu)  =" << asgnmu << std::endl;
+        logger() << "  tan(beta) =" << atanbe << std::endl;
         BEreq::dsgive_model_isasugra(am0, amhf, aa0, asgnmu, atanbe);
         int unphys, hwarning;
         BEreq::dssusy_isasugra(unphys, hwarning);
         //result = (unphys == 0) && (hwarning == 0);
         if (unphys < 0) {
-          cout << "ERROR: model point is theoretically inconsistent (DarkSUSY).";
+          //logger() << "ERROR: model point is theoretically inconsistent (DarkSUSY)."
+          //         << std::endl;
+          DarkBit_warning().raise(LOCAL_INFO,
+              "Model point is theoretically inconsistent (DarkSUSY).");
+          invalid_point().raise("Model point is theoretically inconsistent (DarkSUSY).");
           result = false;
         } else if (unphys > 0) {
-          cout << "ERROR: neutralino is not the LSP (DarkSUSY).";
+          //logger() << "ERROR: neutralino is not the LSP (DarkSUSY)." << std::endl;
+          DarkBit_warning().raise(LOCAL_INFO,
+              "Neutralino is not the LSP (DarkSUSY).");
+          invalid_point().raise("Neutralino is not the LSP (DarkSUSY).");
           result = false;
         } else if (hwarning != 0) {
-          cout << "WARNING: radiative corrections in Higgs sector outside range of validity (DarkSUSY).";
+          //logger() << "WARNING: radiative corrections in Higgs sector outside "
+          //            "range of validity (DarkSUSY)." << std::endl;
+          DarkBit_warning().raise(LOCAL_INFO,
+            "Radiative corrections in Higgs sector outside range of validity (DarkSUSY).");
           result = true;
         } else {
           result = true;
@@ -262,7 +273,7 @@ namespace Gambit {
         int len = 17;
         int flag = 15;
         char * filename = "DarkBit_temp.slha";
-        std::cout << "Initializing DarkSUSY via SLHA." << std::endl;
+        logger() << "Initializing DarkSUSY via SLHA." << std::endl;
         BEreq::dsSLHAread(byVal(filename),flag,byVal(len));
         BEreq::dsprep();
         result = true;
@@ -270,7 +281,9 @@ namespace Gambit {
 
       // Better way to log this?
       if (!result) {
-        std::cout << "DarkSUSY point initialization failed." << std::endl;
+        DarkBit_warning().raise(LOCAL_INFO,
+            "DarkSUSY point initialization failed.");
+        invalid_point().raise("DarkSUSY point initialization failed.");
       }
       
     }
@@ -461,7 +474,7 @@ namespace Gambit {
       *BEreq::rdmgev = myrdmgev;
 
 //        for (int i=0; i<myrdmgev.nco; i++) {
-//          std::cout << "co: "<< myrdmgev.kcoann[i]<<" " << myrdmgev.mdof[i]<<" " <<  myrdmgev.mco[i] << std::endl;
+//          logger() << "co: "<< myrdmgev.kcoann[i]<<" " << myrdmgev.mdof[i]<<" " <<  myrdmgev.mco[i] << std::endl;
 //        }
 
       result=1; // everthing OK
@@ -577,7 +590,7 @@ namespace Gambit {
 
       } // USING BE=DS
 
-      std::cout << "oh2 =" << result << std::endl;
+      logger() << "oh2 =" << result << std::endl;
 
     } // function RD_oh2_general
 
@@ -685,10 +698,10 @@ namespace Gambit {
         dummy=true;
         using namespace Pipes::cascadeMC_printFinalStates;     
         const std::vector<std::string> &list = *Dep::cascadeMC_FinalStates;
-        std::cout << "Final state list contains: " << std::endl;
+        logger() << "Final state list contains: " << std::endl;
         for(size_t i=0; i<list.size(); i++)
         {
-            std::cout << i << ": " << list[i] << std::endl;
+            logger() << i << ": " << list[i] << std::endl;
         }
     }   
 
@@ -758,7 +771,7 @@ namespace Gambit {
         }
         if(int(chainList.size()) <= iteration)
         {
-            std::cout << "Error: Desync between cascadeMC_LoopManager and cascadeMC_InitialState" << std::endl;
+            logger() << "Error: Desync between cascadeMC_LoopManager and cascadeMC_InitialState" << std::endl;
             exit(1);
         }
         else
@@ -1047,30 +1060,30 @@ namespace Gambit {
     {
         dummy=true;
         using namespace Pipes::cascadeMC_PrintResult; 
-        std::cout << "************************" << std::endl;     
-        std::cout << "Cascade decay results:" << std::endl;  
-        std::cout << "------------------------" << std::endl;     
+        logger() << "************************" << std::endl;     
+        logger() << "Cascade decay results:" << std::endl;  
+        logger() << "------------------------" << std::endl;     
         std::map<std::string, std::map<std::string,SimpleHist> > cascadeMC_HistList = *Dep::cascadeMC_Histograms;
                     
         for(std::map<std::string, std::map<std::string,SimpleHist> >::iterator it = cascadeMC_HistList.begin(); it != cascadeMC_HistList.end(); ++it )
         {
-            std::cout << "Initial state: " << (it->first) << ":" << std::endl;
+            logger() << "Initial state: " << (it->first) << ":" << std::endl;
             int nEvents = (*Dep::cascadeMC_EventCount).at(it->first);
-            std::cout << "Number of events: " << nEvents << std::endl;
+            logger() << "Number of events: " << nEvents << std::endl;
             for(std::map<std::string,SimpleHist>::iterator it2 = (it->second).begin(); it2 != (it->second).end(); ++it2 )
             {
-                std::cout << (it2->first) << ": ";
+                logger() << (it2->first) << ": ";
                 //(it2->second).divideByBinSize();
                 (it2->second).multiply(1.0/nEvents);
                 for(int i=0;i<10;i++)
                 {
-                    std:: cout << (it2->second).binVals[i] << "  ";
+                    logger() << (it2->second).binVals[i] << "  ";
                 }
-                std::cout << std::endl;
+                logger() << std::endl;
             }
-            std::cout << "------------------------" << std::endl;    
+            logger() << "------------------------" << std::endl;    
         }
-        std::cout << "************************" << std::endl;
+        logger() << "************************" << std::endl;
     }
     
     // Very simple routine for testing decay chain code
@@ -1078,7 +1091,7 @@ namespace Gambit {
     {
         using namespace DecayChain;
         using namespace Pipes::chain_test;        
-        std::cout << std::endl << "Running decay chain test!" << std::endl << std::endl;
+        logger() << std::endl << "Running decay chain test!" << std::endl << std::endl;
         DecayTable dt(*Dep::TH_ProcessCatalog, *Dep::SimYieldTable);
         dt.printTable();
         ChainParticle testChain(vec3(0), &dt, "test1");
@@ -1101,7 +1114,7 @@ namespace Gambit {
         dummy=true;
         using namespace Pipes::cascadeMC_UnitTest;            
         using namespace DecayChain;    
-        std::cout << std::endl << "Running cascadeMC_UnitTest" << std::endl << std::endl;
+        logger() << std::endl << "Running cascadeMC_UnitTest" << std::endl << std::endl;
         DecayTable dt(*Dep::cascadeMC_test_TH_ProcessCatalog, *Dep::SimYieldTable);
         dt.printTable();
         ChainParticle testChain(vec3(0), &dt, "test8");
@@ -1116,7 +1129,7 @@ namespace Gambit {
             out << m0_11 << "   " << m00_110 << std::endl;
             testChain.reDrawAngles();
         }
-        std::cout << std::endl << "Output data written to ./cascadMC_testOutput.dat" << std::endl << std::endl;
+        logger() << std::endl << "Output data written to ./cascadMC_testOutput.dat" << std::endl << std::endl;
         out.close();
     }
 
@@ -1338,7 +1351,7 @@ namespace Gambit {
                 else if ( it->isChannel("g"     , "g"      )) ch = 26;
                 else
                 {
-                    std::cout << "ERROR: Unsupported two-body final state." << std::endl;
+                    logger() << "ERROR: Unsupported two-body final state." << std::endl;
                     exit(1);
                 }
 
@@ -1387,7 +1400,7 @@ namespace Gambit {
                 else if ( it->isChannel("gamma", "b"     , "bbar"   )){m1 = (*Dep::TH_ProcessCatalog).getParticleProperty("b"   ).mass; m2 = (*Dep::TH_ProcessCatalog).getParticleProperty("bbar").mass;  }   
                 else
                 {
-                    std::cout << "ERROR: Unsupported three-body final state." << std::endl;
+                    logger() << "ERROR: Unsupported three-body final state." << std::endl;
                     exit(1);
                 }
                 // Generate photon spectrum in v=0 limit from primary photon.
@@ -1400,22 +1413,22 @@ namespace Gambit {
                 DiffYield3Body = DiffYield3Body + dsigmavde;
 
                 /*
-                std::cout << "Test output three-body annihilation:" << std::endl;
+                logger() << "Test output three-body annihilation:" << std::endl;
                 it->printChannel();
-                std::cout << "  m1  = " << m1 << std::endl;
-                std::cout << "  m2  = " << m2 << std::endl;
-                std::cout << "  mDM = " << mass << std::endl;
-                std::cout << "Boundaries (E=10 GeV):" << std::endl;
-                std::cout << "  E1 = " << E1_low->eval("E", 10) << std::endl;
-                std::cout << "  E2 = " << E1_high->eval("E", 10) << std::endl;
-                std::cout << "dsigmavde (E=10 GeV) = " << it->genRate->set("E1", E1_low*1.02)->eval("E", 10) << std::endl;
-                std::cout << "dsigmavde (E=10 GeV) = " << it->genRate->set("E1", E1_high/1.02)->eval("E", 10) << std::endl;
-                std::cout << "dsigmavde (E=10 GeV) = " << it->genRate->set("E1", sqrt(E1_low*E1_high))->eval("E", 10) << std::endl;
-                std::cout << "dsigmavde (E=10 GeV) = " << it->genRate->gsl_integration("E1", E1_low, E1_high)->eval("E", 10) << std::endl;
+                logger() << "  m1  = " << m1 << std::endl;
+                logger() << "  m2  = " << m2 << std::endl;
+                logger() << "  mDM = " << mass << std::endl;
+                logger() << "Boundaries (E=10 GeV):" << std::endl;
+                logger() << "  E1 = " << E1_low->eval("E", 10) << std::endl;
+                logger() << "  E2 = " << E1_high->eval("E", 10) << std::endl;
+                logger() << "dsigmavde (E=10 GeV) = " << it->genRate->set("E1", E1_low*1.02)->eval("E", 10) << std::endl;
+                logger() << "dsigmavde (E=10 GeV) = " << it->genRate->set("E1", E1_high/1.02)->eval("E", 10) << std::endl;
+                logger() << "dsigmavde (E=10 GeV) = " << it->genRate->set("E1", sqrt(E1_low*E1_high))->eval("E", 10) << std::endl;
+                logger() << "dsigmavde (E=10 GeV) = " << it->genRate->gsl_integration("E1", E1_low, E1_high)->eval("E", 10) << std::endl;
                 */
             }
         }
-        cout << "Yield calculated!" << endl;
+        logger() << "Yield calculated!" << endl;
         // Resample function
         //DiffYield3Body = DiffYield3Body->tabulate(xgrid);
 
@@ -1451,10 +1464,10 @@ namespace Gambit {
             // (note that the expressions above and below only apply to the v->0 limit)
         double result = IBfunc(IBch,x,y);          
         /*
-        std::cout << "  x, y = " << x << ", " << y << std::endl;
-        std::cout << "  E, E1, E2 = " << Eg << ", " << E1 << ", " << E2 << std::endl;
-        std::cout << "  mDM, m1, m2 = " << M_DM << ", " << m_1 << ", " << m_2 << std::endl;
-        std::cout << "  IBfunc = " << result << std::endl;
+        logger() << "  x, y = " << x << ", " << y << std::endl;
+        logger() << "  E, E1, E2 = " << Eg << ", " << E1 << ", " << E2 << std::endl;
+        logger() << "  mDM, m1, m2 = " << M_DM << ", " << m_1 << ", " << m_2 << std::endl;
+        logger() << "  IBfunc = " << result << std::endl;
         */
         return std::max(0., result) / (M_DM*M_DM); // M_DM^-2 is from the Jacobi determinant
     }
@@ -1732,7 +1745,7 @@ namespace Gambit {
         int nfc;  // number of function calls to effective annihilation cross section
         double oh2 = BEreq::dsrdomega(omtype,fast,xf,ierr,iwar,nfc);
         result = oh2;
-        std::cout << "oh2 is " << oh2 << std::endl;
+        logger() << "oh2 is " << oh2 << std::endl;
     }
 
     void RD_oh2_micromegas(double &oh2)
@@ -1745,12 +1758,12 @@ namespace Gambit {
         // Set options via ini-file
         fast = runOptions->getValueOrDef<int>(0, "fast");
         Beps = runOptions->getValueOrDef<double>(1e-5, "Beps");
-        cout << "Using fast: " << fast << " and Beps: " << Beps << endl;
+        logger() << "Using fast: " << fast << " and Beps: " << Beps << endl;
 
         // Output
         double Xf;
         oh2 = BEreq::oh2(&Xf, byVal(fast), byVal(Beps));
-        cout << "X_f = " << Xf << " Omega h^2 = " << oh2 << endl;
+        logger() << "X_f = " << Xf << " Omega h^2 = " << oh2 << endl;
     }
 
 
@@ -1828,15 +1841,15 @@ namespace Gambit {
         //os.close();
         // TODO: Make this take ->set_epsrel(1e-3)
         double AnnYieldint = (*Dep::GA_AnnYield)->set("v", 0.)->gsl_integration("E", 1, 100)->eval();
-        std::cout << "AnnYieldInt (1-100 GeV): " << AnnYieldint << std::endl;
+        logger() << "AnnYieldInt (1-100 GeV): " << AnnYieldint << std::endl;
 
         // Calculate phi-value
         double phi = AnnYieldint / 8. / M_PI * 1e26;
 
         // And return final likelihood
         result = 0.5*dwarf_likelihood->eval("phi", phi);
-        std::cout << "dwarf_likelihood: " << result << std::endl;
-        std::cout << "phi: " << phi << std::endl;
+        logger() << "dwarf_likelihood: " << result << std::endl;
+        logger() << "phi: " << phi << std::endl;
     }
 
     void lnL_FermiLATdwarfs_gamLike(double &result)
@@ -1853,7 +1866,7 @@ namespace Gambit {
         if ( runOptions->getValueOrDef<bool>(false, "use_GC") )
           result += BEreq::lnL_GC(x, y);
 
-        std::cout << "GamLike likelihood is lnL = " << result << std::endl;
+        logger() << "GamLike likelihood is lnL = " << result << std::endl;
     }
 
     void lnL_FermiGC_gamLike(double &result)
@@ -1867,7 +1880,7 @@ namespace Gambit {
 
         result = BEreq::lnL_GC(x, y);
 
-        std::cout << "GamLike likelihood is lnL = " << result << std::endl;
+        logger() << "GamLike likelihood is lnL = " << result << std::endl;
     }
 
     void lnL_oh2_Simple(double &result)
@@ -1878,7 +1891,7 @@ namespace Gambit {
       oh2_mean = runOptions->getValueOrDef<double>(0.11, "oh2_mean");
       oh2_err  = runOptions->getValueOrDef<double>(0.01, "oh2_err");
       result = -0.5*pow(oh2 - oh2_mean, 2)/pow(oh2_err, 2);  // lnL = -0.5 * chisq
-      std::cout << "lnL_oh2_Simple yields " << result << std::endl;
+      logger() << "lnL_oh2_Simple yields " << result << std::endl;
     }
 
     void dump_GammaSpectrum(double &result)
@@ -1887,7 +1900,7 @@ namespace Gambit {
         // Construct interpolated function, using GAMBIT base functions.
         Funk::Funk spectrum = (*Dep::GA_AnnYield)->set("v", 0.);
         std::string filename = runOptions->getValueOrDef<std::string>("dNdE.dat", "filename");
-        std::cout << "FILENAME for gamma dump: " << filename << std::endl;
+        logger() << "FILENAME for gamma dump: " << filename << std::endl;
         std::ofstream myfile (filename);
         if (myfile.is_open())
         {
@@ -1922,21 +1935,21 @@ namespace Gambit {
           result.gns *= factor;
           result.gpa *= factor;
           result.gna *= factor;
-          std::cout << "M_DM = " << result.M_DM << std::endl;
-          std::cout << "DarkSUSY dsddgpgn gives:" << std::endl;
-          std::cout << " gps = " << result.gps << std::endl;
-          std::cout << " gns = " << result.gns << std::endl;
-          std::cout << " gpa = " << result.gpa << std::endl;
-          std::cout << " gna = " << result.gna << std::endl;
+          logger() << "M_DM = " << result.M_DM << std::endl;
+          logger() << "DarkSUSY dsddgpgn gives:" << std::endl;
+          logger() << " gps = " << result.gps << std::endl;
+          logger() << " gns = " << result.gns << std::endl;
+          logger() << " gpa = " << result.gpa << std::endl;
+          logger() << " gna = " << result.gna << std::endl;
         } else {
           result.M_DM = (*BEreq::mspctm).mass[42];        
           // Set couplings to zero if DarkSUSY point initialization
           // was not successful
           result.gps = 0.0; result.gns = 0.0;
           result.gpa = 0.0; result.gna = 0.0;
-          std::cout << "M_DM = " << result.M_DM << std::endl;
-          std::cout << "DarkSUSY point initialization failed:" << std::endl;
-          std::cout << " couplings set to zero." << std::endl;
+          logger() << "M_DM = " << result.M_DM << std::endl;
+          logger() << "DarkSUSY point initialization failed:" << std::endl;
+          logger() << " couplings set to zero." << std::endl;
         }
     }
 
@@ -1953,12 +1966,12 @@ namespace Gambit {
         result.gna = p4[0]*2;
         result.M_DM = (*BEreq::MOcommon).par[1];
         //TODO: Move the following to logging/printer system.
-        cout << "micrOMEGAs nucleonAmplitudes gives:" << endl;
-        cout << " gps: " << result.gps << endl;
-        cout << " gns: " << result.gns << endl;
-        cout << " gpa: " << result.gpa << endl;
-        cout << " gna: " << result.gna << endl;
-        cout << " M_DM = " << result.M_DM << endl;
+        logger() << "micrOMEGAs nucleonAmplitudes gives:" << endl;
+        logger() << " gps: " << result.gps << endl;
+        logger() << " gns: " << result.gns << endl;
+        logger() << " gpa: " << result.gpa << endl;
+        logger() << " gna: " << result.gna << endl;
+        logger() << " M_DM = " << result.M_DM << endl;
     }
 
 
@@ -1983,11 +1996,11 @@ namespace Gambit {
     // This part is optional as WIMP is already set.
     double sigmapSI,sigmanSI,sigmapSD,sigmanSD;
     BEreq::DDCalc0_GetWIMP_msigma(&M,&sigmapSI,&sigmanSI,&sigmapSD,&sigmanSD);
-    std::cout << "DDCalc0 WIMP-nucleon cross-sections [pb]:" << std::endl;
-    std::cout << "  sigmapSI = " << sigmapSI << std::endl;
-    std::cout << "  sigmanSI = " << sigmanSI << std::endl;
-    std::cout << "  sigmapSD = " << sigmapSD << std::endl;
-    std::cout << "  sigmanSD = " << sigmanSD << std::endl;
+    logger() << "DDCalc0 WIMP-nucleon cross-sections [pb]:" << std::endl;
+    logger() << "  sigmapSI = " << sigmapSI << std::endl;
+    logger() << "  sigmanSI = " << sigmanSI << std::endl;
+    logger() << "  sigmapSD = " << sigmapSD << std::endl;
+    logger() << "  sigmanSD = " << sigmanSD << std::endl;
   }
 
   // Performs DDCalc0 internal rate calculations for the XENON100 2012
@@ -2039,42 +2052,42 @@ namespace Gambit {
   void XENON100_2012_LogLikelihood_DDCalc0(double &result) {
     using namespace Pipes::XENON100_2012_LogLikelihood_DDCalc0;
     result = BEreq::DDCalc0_XENON100_2012_LogLikelihood();
-    std::cout << "XENON100 2012 log-likelihood: " << result << std::endl;
+    logger() << "XENON100 2012 log-likelihood: " << result << std::endl;
   }
   
   // Observed events (integer)
   void XENON100_2012_Events_DDCalc0(int &result) {
     using namespace Pipes::XENON100_2012_Events_DDCalc0;
     result = BEreq::DDCalc0_XENON100_2012_Events();
-    std::cout << "XENON100 2012 events: " << result << std::endl;
+    logger() << "XENON100 2012 events: " << result << std::endl;
   }
   
   // Background expectation
   void XENON100_2012_Background_DDCalc0(double &result) {
     using namespace Pipes::XENON100_2012_Background_DDCalc0;
     result = BEreq::DDCalc0_XENON100_2012_Background();
-    std::cout << "XENON100 2012 background: " << result << std::endl;
+    logger() << "XENON100 2012 background: " << result << std::endl;
   }
   
   // Signal expectation
   void XENON100_2012_Signal_DDCalc0(double &result) {
     using namespace Pipes::XENON100_2012_Signal_DDCalc0;
     result = BEreq::DDCalc0_XENON100_2012_Signal();
-    std::cout << "XENON100 2012 signal: " << result << std::endl;
+    logger() << "XENON100 2012 signal: " << result << std::endl;
   }
   
   // Signal expectation (spin-independent)
   void XENON100_2012_SignalSI_DDCalc0(double &result) {
     using namespace Pipes::XENON100_2012_SignalSI_DDCalc0;
     result = BEreq::DDCalc0_XENON100_2012_SignalSI();
-    std::cout << "XENON100 2012 signal (SI): " << result << std::endl;
+    logger() << "XENON100 2012 signal (SI): " << result << std::endl;
   }
   
   // Signal expectation (spin-dependent)
   void XENON100_2012_SignalSD_DDCalc0(double &result) {
     using namespace Pipes::XENON100_2012_SignalSD_DDCalc0;
     result = BEreq::DDCalc0_XENON100_2012_SignalSD();
-    std::cout << "XENON100 2012 signal (SD): " << result << std::endl;
+    logger() << "XENON100 2012 signal (SD): " << result << std::endl;
   }
   
   
@@ -2085,42 +2098,42 @@ namespace Gambit {
   void LUX_2013_LogLikelihood_DDCalc0(double &result) {
     using namespace Pipes::LUX_2013_LogLikelihood_DDCalc0;
     result = BEreq::DDCalc0_LUX_2013_LogLikelihood();
-    std::cout << "LUX 2013 log-likelihood: " << result << std::endl;
+    logger() << "LUX 2013 log-likelihood: " << result << std::endl;
   }
   
   // Observed events (integer)
   void LUX_2013_Events_DDCalc0(int &result) {
     using namespace Pipes::LUX_2013_Events_DDCalc0;
     result = BEreq::DDCalc0_LUX_2013_Events();
-    std::cout << "LUX 2013 events: " << result << std::endl;
+    logger() << "LUX 2013 events: " << result << std::endl;
   }
   
   // Background expectation
   void LUX_2013_Background_DDCalc0(double &result) {
     using namespace Pipes::LUX_2013_Background_DDCalc0;
     result = BEreq::DDCalc0_LUX_2013_Background();
-    std::cout << "LUX 2013 background: " << result << std::endl;
+    logger() << "LUX 2013 background: " << result << std::endl;
   }
   
   // Signal expectation
   void LUX_2013_Signal_DDCalc0(double &result) {
     using namespace Pipes::LUX_2013_Signal_DDCalc0;
     result = BEreq::DDCalc0_LUX_2013_Signal();
-    std::cout << "LUX 2013 signal: " << result << std::endl;
+    logger() << "LUX 2013 signal: " << result << std::endl;
   }
   
   // Signal expectation (spin-independent)
   void LUX_2013_SignalSI_DDCalc0(double &result) {
     using namespace Pipes::LUX_2013_SignalSI_DDCalc0;
     result = BEreq::DDCalc0_LUX_2013_SignalSI();
-    std::cout << "LUX 2013 signal (SI): " << result << std::endl;
+    logger() << "LUX 2013 signal (SI): " << result << std::endl;
   }
   
   // Signal expectation (spin-dependent)
   void LUX_2013_SignalSD_DDCalc0(double &result) {
     using namespace Pipes::LUX_2013_SignalSD_DDCalc0;
     result = BEreq::DDCalc0_LUX_2013_SignalSD();
-    std::cout << "LUX 2013 signal (SD): " << result << std::endl;
+    logger() << "LUX 2013 signal (SD): " << result << std::endl;
   }
   
   
@@ -2132,42 +2145,42 @@ namespace Gambit {
   void DARWIN_Ar_2015_LogLikelihood_DDCalc0(double &result) {
     using namespace Pipes::DARWIN_Ar_2015_LogLikelihood_DDCalc0;
     result = BEreq::DDCalc0_DARWIN_Ar_2015_LogLikelihood();
-    std::cout << "DARWIN argon-based (2015 estimate) log-likelihood: " << result << std::endl;
+    logger() << "DARWIN argon-based (2015 estimate) log-likelihood: " << result << std::endl;
   }
   
   // Observed events (integer)
   void DARWIN_Ar_2015_Events_DDCalc0(int &result) {
     using namespace Pipes::DARWIN_Ar_2015_Events_DDCalc0;
     result = BEreq::DDCalc0_DARWIN_Ar_2015_Events();
-    std::cout << "DARWIN argon-based (2015 estimate) events: " << result << std::endl;
+    logger() << "DARWIN argon-based (2015 estimate) events: " << result << std::endl;
   }
   
   // Background expectation
   void DARWIN_Ar_2015_Background_DDCalc0(double &result) {
     using namespace Pipes::DARWIN_Ar_2015_Background_DDCalc0;
     result = BEreq::DDCalc0_DARWIN_Ar_2015_Background();
-    std::cout << "DARWIN argon-based (2015 estimate) background: " << result << std::endl;
+    logger() << "DARWIN argon-based (2015 estimate) background: " << result << std::endl;
   }
   
   // Signal expectation
   void DARWIN_Ar_2015_Signal_DDCalc0(double &result) {
     using namespace Pipes::DARWIN_Ar_2015_Signal_DDCalc0;
     result = BEreq::DDCalc0_DARWIN_Ar_2015_Signal();
-    std::cout << "DARWIN argon-based (2015 estimate) signal: " << result << std::endl;
+    logger() << "DARWIN argon-based (2015 estimate) signal: " << result << std::endl;
   }
   
   // Signal expectation (spin-independent)
   void DARWIN_Ar_2015_SignalSI_DDCalc0(double &result) {
     using namespace Pipes::DARWIN_Ar_2015_SignalSI_DDCalc0;
     result = BEreq::DDCalc0_DARWIN_Ar_2015_SignalSI();
-    std::cout << "DARWIN argon-based (2015 estimate) signal (SI): " << result << std::endl;
+    logger() << "DARWIN argon-based (2015 estimate) signal (SI): " << result << std::endl;
   }
   
   // Signal expectation (spin-dependent)
   void DARWIN_Ar_2015_SignalSD_DDCalc0(double &result) {
     using namespace Pipes::DARWIN_Ar_2015_SignalSD_DDCalc0;
     result = BEreq::DDCalc0_DARWIN_Ar_2015_SignalSD();
-    std::cout << "DARWIN argon-based (2015 estimate) signal (SD): " << result << std::endl;
+    logger() << "DARWIN argon-based (2015 estimate) signal (SD): " << result << std::endl;
   }
   
   
@@ -2179,42 +2192,42 @@ namespace Gambit {
   void DARWIN_Xe_2015_LogLikelihood_DDCalc0(double &result) {
     using namespace Pipes::DARWIN_Xe_2015_LogLikelihood_DDCalc0;
     result = BEreq::DDCalc0_DARWIN_Xe_2015_LogLikelihood();
-    std::cout << "DARWIN xenon-based (2015 estimate) log-likelihood: " << result << std::endl;
+    logger() << "DARWIN xenon-based (2015 estimate) log-likelihood: " << result << std::endl;
   }
   
   // Observed events (integer)
   void DARWIN_Xe_2015_Events_DDCalc0(int &result) {
     using namespace Pipes::DARWIN_Xe_2015_Events_DDCalc0;
     result = BEreq::DDCalc0_DARWIN_Xe_2015_Events();
-    std::cout << "DARWIN xenon-based (2015 estimate) events: " << result << std::endl;
+    logger() << "DARWIN xenon-based (2015 estimate) events: " << result << std::endl;
   }
   
   // Background expectation
   void DARWIN_Xe_2015_Background_DDCalc0(double &result) {
     using namespace Pipes::DARWIN_Xe_2015_Background_DDCalc0;
     result = BEreq::DDCalc0_DARWIN_Xe_2015_Background();
-    std::cout << "DARWIN xenon-based (2015 estimate) background: " << result << std::endl;
+    logger() << "DARWIN xenon-based (2015 estimate) background: " << result << std::endl;
   }
   
   // Signal expectation
   void DARWIN_Xe_2015_Signal_DDCalc0(double &result) {
     using namespace Pipes::DARWIN_Xe_2015_Signal_DDCalc0;
     result = BEreq::DDCalc0_DARWIN_Xe_2015_Signal();
-    std::cout << "DARWIN xenon-based (2015 estimate) signal: " << result << std::endl;
+    logger() << "DARWIN xenon-based (2015 estimate) signal: " << result << std::endl;
   }
   
   // Signal expectation (spin-independent)
   void DARWIN_Xe_2015_SignalSI_DDCalc0(double &result) {
     using namespace Pipes::DARWIN_Xe_2015_SignalSI_DDCalc0;
     result = BEreq::DDCalc0_DARWIN_Xe_2015_SignalSI();
-    std::cout << "DARWIN xenon-based (2015 estimate) signal (SI): " << result << std::endl;
+    logger() << "DARWIN xenon-based (2015 estimate) signal (SI): " << result << std::endl;
   }
   
   // Signal expectation (spin-dependent)
   void DARWIN_Xe_2015_SignalSD_DDCalc0(double &result) {
     using namespace Pipes::DARWIN_Xe_2015_SignalSD_DDCalc0;
     result = BEreq::DDCalc0_DARWIN_Xe_2015_SignalSD();
-    std::cout << "DARWIN xenon-based (2015 estimate) signal (SD): " << result << std::endl;
+    logger() << "DARWIN xenon-based (2015 estimate) signal (SD): " << result << std::endl;
   }
 
 
@@ -2236,7 +2249,7 @@ namespace Gambit {
     //They should be deleted when real functions are added to provide the WIMP mass, solar
     //annihilation rate and neutrino yield.
     typedef void (*context_func)();
-    void DarkBit_context  ()                                {}// cout << "test" << endl; }
+    void DarkBit_context  ()                                {}// logger() << "test" << endl; }
     double DarkBit_toyield(const double&, const int&, void*& context)
     {
       context_func* context_function_ptr = static_cast<context_func*>(context);
@@ -2457,7 +2470,7 @@ namespace Gambit {
         }
         else
         {
-          std::cout << "Warning: outputfile not open for writing." << std::endl;
+          logger() << "Warning: outputfile not open for writing." << std::endl;
         }
         os.close();
         result = 0;
@@ -2492,7 +2505,7 @@ namespace Gambit {
         double mass = 100;
         Funk::Funk dNdE_bb = (*Dep::SimYieldTable)("b", "bbar", "gamma", mass);
 
-        std::cout << dNdE_bb->eval("E", 10) << std::endl;
+        logger() << dNdE_bb->eval("E", 10) << std::endl;
 
         result = dNdE_bb;  // Fix units
     }
