@@ -33,11 +33,11 @@ namespace Gambit {
 
 
     /// Make a vector of central bin values from a vector of bin edge values using linear interpolation
-    inline std::vector<double> makeBinValues(std::vector<double> binEdgeValues) {
+    inline std::vector<double> makeBinValues(const std::vector<double>& binEdgeValues) {
       std::vector<double> results;
-      for (size_t bin = 0; bin < binEdgeValues.size()-1; bin++) {
-        results.push_back(binEdgeValues[bin]+(0.5*(binEdgeValues[bin+1]-binEdgeValues[bin])));
-      }
+      results.reserve(binEdgeValues.size()-1);
+      for (size_t i = 0; i < binEdgeValues.size()-1; ++i)
+        results.push_back( (binEdgeValues[i] + binEdgeValues[i+1])/2.0 );
       return results;
     }
 
