@@ -55,9 +55,12 @@
 #define init_inifile_value(exp, ...)    INIT_INIFILE_VALUE(exp, __VA_ARGS__)
 /// Tells ScannerBit that these tags are required_classloading_backends
 #define reqd_inifile_entries(...) void reqd_inifile_entries()
+/// Tells ScannerBit that these libraries are required_classloading_backends
+#define reqd_libraries(...) void reqd_libraries()
 /// @}
 
-#define REQD_INIFILE_ENTRIES(...)
+#define REQD_INIFILE_ENTRIES(...) void REQD_INIFILE_ENTRIES();
+#define REQD_LIRBARIES(...) void REQD_LIBRARIES();
 
 #define ARG_N_INTERNAL(_1_, _2_, _3_, _4_, ret, ...) ret
 #define ARG_N(...) ARG_N_INTERNAL(__VA_ARGS__ , 4, 3, 2, 1, 0)

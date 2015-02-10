@@ -18,11 +18,7 @@
 #include <string>
 #include <cmath>
 #include <iostream>
-#include <fstream>
-#include <map>
 #include <sstream>
-#include <typeinfo>
-#include <cxxabi.h>
 
 #include "scanner_plugin.hpp"
   
