@@ -95,7 +95,7 @@ def main(argv):
         
     for header in sorted(prior_hdrs):
         cmakelist_txt_out += " "*16 + header.split('/ScannerBit/')[1] + "\n"
-        prior_txt_out += "#include \"" + header.split('/ScannerBit/')[1] + "\"\n"
+        prior_txt_out += "#include \"" + header.split('/ScannerBit/include/')[1] + "\"\n"
         
     cmakelist_txt_out += ")\n\n"
     prior_txt_out += "\n#endif\n"
