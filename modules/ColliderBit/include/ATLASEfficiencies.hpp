@@ -211,7 +211,7 @@ namespace Gambit {
         const double e_eta = electron->eta();
         bool hasTag = false;
         if (fabs(e_eta) < 2.5 && e_pt >= 10) {
-          else if (HEPUtils::in_range(e_pt, 10, 15)) hasTag = random_bool(_eff_E10_15, fabs(e_eta));
+          if (HEPUtils::in_range(e_pt, 10, 15)) hasTag = random_bool(_eff_E10_15, fabs(e_eta));
           else if (HEPUtils::in_range(e_pt, 15, 20)) hasTag = random_bool(_eff_E15_20, fabs(e_eta));
           else if (HEPUtils::in_range(e_pt, 20, 25)) hasTag = random_bool(_eff_E20_25, e_eta);
           else if (HEPUtils::in_range(e_pt, 25, 30)) hasTag = random_bool(_eff_E25_30, e_eta);
