@@ -1,7 +1,7 @@
 #pragma once
 #include "HEPUtils/MathUtils.h"
 #include "HEPUtils/BinnedFn.h"
-//using namespace HEPUtils;
+#include "HEPUtils/Event.h"
 
 namespace Gambit {
   namespace ColliderBit {
@@ -32,13 +32,23 @@ namespace Gambit {
     }
 
 
-    inline std::vector<double> makeBinValues(std::vector<double> binEdgeValues){
-      //Make a vector of central bin values from a vector of bin edge values using linear interpolation
+    /// Make a vector of central bin values from a vector of bin edge values using linear interpolation
+    inline std::vector<double> makeBinValues(std::vector<double> binEdgeValues) {
       std::vector<double> results;
-      for(unsigned int bin=0;bin<binEdgeValues.size()-1;bin++){
+      for (size_t bin = 0; bin < binEdgeValues.size()-1; bin++) {
         results.push_back(binEdgeValues[bin]+(0.5*(binEdgeValues[bin+1]-binEdgeValues[bin])));
       }
       return results;
+    }
+
+
+    /// Check if there's a physics object above ptmin in an annulus rmin..rmax around the given four-momentum p4
+    inline bool object_in_cone(const HEPUtils::Event& e, const HEPUtils::P4& p4, double ptmin, double rmax, double rmin=0.05) {
+      for (const HEPUtils::Particle* p : e.visible_particles())
+        if (p->pT() > ptmin && HEPUtils::in_range(HEPUtils::deltaR_eta(p4, *p), rmin, rmax)) return true;
+      for (const HEPUtils::Jet* j : e.jets())
+        if (j->pT() > ptmin && HEPUtils::in_range(HEPUtils::deltaR_eta(p4, *j), rmin, rmax)) return true;
+      return false;
     }
 
 

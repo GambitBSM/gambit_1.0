@@ -113,9 +113,10 @@ namespace HEPUtils {
     }
 
 
-    /// Add a final state particle to the event
-    /// @todo Clarify ownership/lifetimes -- owned by outside code, or *to be cleaned up by the event on deletion*? THE LATTER
-    /// @todo What about taus and Bs?
+    /// Add a particle to the event
+    ///
+    /// Supplied particle should be new'd, and Event will take ownership.
+    ///
     /// @todo "Lock" at some point so that jet finding etc. only get done once
     void add_particle(Particle* p) {
       if (p->is_prompt()) {
@@ -129,7 +130,8 @@ namespace HEPUtils {
 
 
     /// Add a collection of final state particles to the event
-    /// @todo Should be vector<const Particle*>?
+    ///
+    /// Supplied particles should be new'd, and Event will take ownership.
     void add_particles(const std::vector<Particle*>& ps) {
       for (size_t i = 0; i < ps.size(); ++i) add_particle(ps[i]);
     }

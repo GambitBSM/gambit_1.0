@@ -4,6 +4,8 @@
  * \author Lars A. Dal
  */
 
+#include "util_types.hpp"
+
 #ifdef BACKENDRENAME
   #define BACKENDNAME BACKENDRENAME
 #else
@@ -14,22 +16,25 @@
 
 LOAD_LIBRARY
 
-BE_VARIABLE(FORTRAN_COMMONBLOCK(libFarrayTest_CB_type,commonBlock), "commonblock_", "libFarrayTestCommonBlock")
+BE_VARIABLE(libFarrayTest_CB_type, commonBlock, "commonblock_", "libFarrayTestCommonBlock")
+BE_VARIABLE(libFarrayTest_CB2_type, commonBlock2, "commonblock2_", "libFarrayTestCommonBlock2")
+BE_VARIABLE(libFarrayTest_CB3_type, commonBlock3, "commonblock3_", "libFarrayTestCommonBlock3")
 
 BE_FUNCTION(printStuff, void, (), "printstuff_", "libFarrayTest_printStuff")
 
-BE_FUNCTION(set_d, void, (), "set_d_", "libFarrayTest_set_d")
+BE_FUNCTION(fillArrays, void, (), "fillarrays_", "libFarrayTest_fillArrays")
 
-BE_FUNCTION(fptrRoutine, void, (   ARG_FARRAY(double,1), int&,                     \
-                                        ARG_FARRAY_FPTR(double,(ARG_FARRAY(double,1)))  \
-                                    ), "fptrroutine_", "libFarrayTest_fptrRoutine")
+BE_FUNCTION(fptrRoutine, void, (Farray< Fdouble,1,3>&, Finteger&, Fdouble(*)(Farray< Fdouble,1,3>&) ), "fptrroutine_", "libFarrayTest_fptrRoutine")
 
-BE_FUNCTION(doubleFuncArray1, double, (ARG_FARRAY(double,1)), "doublefuncarray1_", "libFarrayTest_doubleFuncArray1", (), 1)
+BE_FUNCTION(doubleFuncArray, Fdouble, (Farray< Fdouble,1,3>&), "doublefuncarray_", "libFarrayTest_doubleFuncArray")
 
-BE_FUNCTION(doubleFuncArray2, double, (ARG_FARRAY(double,1)), "doublefuncarray2_", "libFarrayTest_doubleFuncArray2", (), 1)
+// The doubleFuncArray2 function is identical to doubleFuncArray.
+// This is an alternative way to declare and use the function (see ExampleBit A). 
+// This version should only be used in very special cases, where you need to pass arrays with different index ranges than those specified in the function.
+// (But you should know what you are doing!)
+BE_FUNCTION(doubleFuncArray2, Fdouble, (Fdouble*), "doublefuncarray2_", "libFarrayTest_doubleFuncArray2")
 
-BE_FUNCTION(doubleFunc, double, (double&), "doublefunc_", "libFarrayTest_doubleFunc")
-
+BE_FUNCTION(doubleFuncArray3, Fdouble, (Farray<Fdouble, 1,2, 2,3>&), "doublefuncarray3_", "libFarrayTest_doubleFuncArray3")
 
 namespace Gambit
 {

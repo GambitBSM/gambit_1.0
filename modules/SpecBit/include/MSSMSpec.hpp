@@ -706,11 +706,13 @@ namespace Gambit {
 
       tmp_map["Z0"] = &Model::get_MVZ_pole_slha;
       tmp_map["W+"] = &Model::get_MVWm_pole_slha;
-      tmp_map["~g"] = &Model::get_MGlu_pole_slha; 
+      tmp_map["W-"] = &Model::get_MVWm_pole_slha;
       //tmp_map["g"] = &Model::get_MGluon_pole_slha;
       tmp_map["g"] = &Model::get_MVG_pole_slha;
          //tmp_map["gamma"] = &Model::get_pole_MPhoton;
       tmp_map["gamma"] = &Model::get_MVP_pole_slha;
+
+      tmp_map["~g"] = &Model::get_MGlu_pole_slha; 
 
       // tmp_map["MGoldstone0"] = &Model::get_Pole_neut_goldstone;
       // tmp_map["MA0"] = &Model::get_Pole_neut_CPodd_higgs;
@@ -748,10 +750,13 @@ namespace Gambit {
       typedef typename MI::Model Model;
       fmap_plain tmp_map;
      
-       // Using wrapper functions defined above
+      // Using wrapper functions defined above
       tmp_map["A0"] = &get_MAh1_pole<Model>;   
       tmp_map["H+"] = &get_MHpm1_pole<Model>;   
-    
+   
+      // Antiparticle label 
+      tmp_map["H-"] = &get_MHpm1_pole<Model>;   
+
       return tmp_map;
    }
 
@@ -774,9 +779,10 @@ namespace Gambit {
       static const std::set<int> i012345(i012345v, Utils::endA(i012345v));
 
       tmp_map["~d"] = FInfo1( &Model::get_MSd_pole_slha, i012345 );
-      tmp_map["~nu"]= FInfo1( &Model::get_MSv_pole_slha, i012 );
       tmp_map["~u"] = FInfo1( &Model::get_MSu_pole_slha, i012345 );
-      tmp_map["~e"] = FInfo1( &Model::get_MSe_pole_slha, i012345 );
+      tmp_map["~e-"] = FInfo1( &Model::get_MSe_pole_slha, i012345 );
+      tmp_map["~e"] = FInfo1( &Model::get_MSe_pole_slha, i012345 );  // Just an extra name for charged sleptons; not in PDB
+      tmp_map["~nu"]= FInfo1( &Model::get_MSv_pole_slha, i012 );
       tmp_map["h0"] = FInfo1( &Model::get_Mhh_pole_slha, i01 );
       // NOTE: I have added the following two to the "no index" map as well, 
       // where only the "safe" entries are retrieved
@@ -791,7 +797,20 @@ namespace Gambit {
     
       tmp_map["d"] = FInfo1( &Model::get_MFd_pole_slha, i012 );
       tmp_map["u"] = FInfo1( &Model::get_MFu_pole_slha, i012 );
-      tmp_map["e"] = FInfo1( &Model::get_MFe_pole_slha, i012 );
+      tmp_map["e+"] = FInfo1( &Model::get_MFe_pole_slha, i012 );
+      tmp_map["e"] = FInfo1( &Model::get_MFe_pole_slha, i012 );  // Another extra name; not in PDB
+
+      // Antiparticles (same getters, just different string name)
+      tmp_map["~dbar"] = FInfo1( &Model::get_MSd_pole_slha, i012345 );
+      tmp_map["~ubar"] = FInfo1( &Model::get_MSu_pole_slha, i012345 );
+      tmp_map["~ebar"] = FInfo1( &Model::get_MSe_pole_slha, i012345 );
+      tmp_map["~nubar"]= FInfo1( &Model::get_MSv_pole_slha, i012 );
+      tmp_map["H-"] = FInfo1( &Model::get_MHpm_pole_slha, i01 );   
+      tmp_map["~chi-"] = FInfo1( &Model::get_MCha_pole_slha, i01 );
+
+      tmp_map["dbar"] = FInfo1( &Model::get_MFd_pole_slha, i012 );
+      tmp_map["ubar"] = FInfo1( &Model::get_MFu_pole_slha, i012 );
+      tmp_map["e+"] = FInfo1( &Model::get_MFe_pole_slha, i012 );
 
       return tmp_map;
    }

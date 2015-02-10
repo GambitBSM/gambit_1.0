@@ -561,6 +561,8 @@ namespace Gambit
         ss << "Calling " << masterGraph[*it]->name() << " from " << masterGraph[*it]->origin() << "...";
         logger() << LogTags::dependency_resolver << LogTags::info << ss.str() << EOM;
         masterGraph[*it]->calculate();
+        invalid_point_exception* e = masterGraph[*it]->retrieve_invalid_point_exception();
+        if (e != NULL) throw(*e);
         // TODO: Need to deal with different options for output
         // Print output (currently only to std::cout)
         // Ben: may want to do this call elsewhere; I added it here for testing.

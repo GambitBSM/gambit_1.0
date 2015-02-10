@@ -143,7 +143,7 @@ namespace Gambit
       catch(invalid_point_exception& e)
       {
         lnlike = min_valid_lnlike;
-        logger() << LogTags::core << "Point invalidated by " << e.thrower()->origin() << "::" << e.thrower()->name() << "." << EOM;
+        logger() << LogTags::core << "Point invalidated by " << e.thrower()->origin() << "::" << e.thrower()->name() << ": " << e.message() << EOM;
         compute_aux = false;
         break;
       }

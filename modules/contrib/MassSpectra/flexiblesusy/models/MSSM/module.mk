@@ -18,7 +18,7 @@ MSSM_TWO_SCALE_MK := \
 		$(MSSM_TWO_SCALE_SOFT_MK)
 
 MSSM_SLHA_INPUT := \
-
+		$(DIR)/LesHouches.in.MSSM
 
 MSSM_GNUPLOT := \
 		$(DIR)/MSSM_plot_rgflow.gnuplot \
@@ -142,6 +142,7 @@ SARAH_MODEL_FILES_MSSM := \
 endif
 
 .PHONY:         all-$(MODNAME) clean-$(MODNAME) clean-$(MODNAME)-src \
+		clean-$(MODNAME)-dep clean-$(MODNAME)-obj \
 		distclean-$(MODNAME) run-metacode-$(MODNAME) \
 		pack-$(MODNAME)-src
 

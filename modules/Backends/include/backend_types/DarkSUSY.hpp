@@ -27,7 +27,7 @@
 ///
 ///  *********************************************
 
-#include "backend_type_macros.hpp"
+#include "util_types.hpp"    
 
 #ifndef __DarkSUSY_types_hpp__
 #define __DarkSUSY_types_hpp__
@@ -116,16 +116,19 @@ namespace Gambit
       double hstep,hmin,compeps,xinit,xfinal,umax,cfr,pmax;
   };
 
-  DECLARE_FORTRAN_COMMONBLOCK(DS_DDCOM, FORTRAN_ARRAY(double, ftp, (7,12))
-                                        FORTRAN_ARRAY(double, ftn, (7,12))
-                                        GENERAL_VAR(double, delu)
-                                        GENERAL_VAR(double, deld)
-                                        GENERAL_VAR(double, dels)
-                                        GENERAL_VAR(int, ddpole)
-                                        GENERAL_VAR(int, dddn)
-//TODO: Fix the below. It will cause problems since the length of the character string is undefined.
-                                        GENERAL_VAR(char*, ddfsi)
-                                        GENERAL_VAR(char*, ddfsd) )
+  struct DS_DDCOM
+  {
+      Farray<double, 7, 12> ftp;
+      Farray<double, 7, 12> ftn;      
+      double delu;
+      double deld;
+      double dels;
+      int ddpole;
+      int dddn;
+      Fstring<10> ddfsi;
+      Fstring<10> ddfsd;
+  };
+
 }
 
 #endif /* defined __DarkSUSY_types_hpp__ */

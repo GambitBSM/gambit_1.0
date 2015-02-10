@@ -175,12 +175,7 @@ namespace Gambit
     /// Retrieve the identity of the exception.
     const char* exception::what() const throw()
     {
-      const char* temp;
-      #pragma omp critical (GABMIT_exception)
-      {
-        temp = myWhat.c_str();
-      }
-      return temp;
+      return myWhat.c_str();
     }
 
     /// Raise the exception.
@@ -191,8 +186,8 @@ namespace Gambit
       #pragma omp critical (GABMIT_exception)
       {
         log_exception(origin, specific_message);
-        if (isFatal) throw(*this);  //FIXME cannot legally throw from inside an openmp block!!
       }
+      if (isFatal) throw_iff_outside_parallel();
     }
 
     /// Log the exception and throw it regardless of whether is is fatal or not.
@@ -201,17 +196,14 @@ namespace Gambit
       #pragma omp critical (GABMIT_exception)
       {
         log_exception(origin, specific_message);
-        throw(*this); //FIXME cannot legally throw from inside an openmp block!!
       }
+      throw_iff_outside_parallel();
     }
 
     /// As per forced_throw but without logging.
     void exception::silent_forced_throw()
     {
-      #pragma omp critical (GABMIT_exception)
-      {
-        throw(*this);  //FIXME cannot legally throw from inside an openmp block!!
-      }
+      throw_iff_outside_parallel();
     }
 
   // Private members of GAMBIT exception base class.
@@ -237,6 +229,31 @@ namespace Gambit
       for (std::set<LogTag>::iterator it = myLogTags.begin(); it != myLogTags.end(); ++it) { logger() << *it; }	
       logger() << msg1.str() << msg1.str() << EOM;
     }
+
+    /// Throw the exception onward if running serially, abort if not.
+    void exception::throw_iff_outside_parallel()
+    {
+      if (omp_get_level()==0) // If not in an OpenMP parallel block, throw onwards
+      {
+        throw(*this);
+      }
+      else
+      {
+        abort_here_and_now(); // If in an OpenMP parallel block, just abort immediately.
+      }
+    }
+
+    /// Cause the code to print the exception and abort.
+    void exception::abort_here_and_now()
+    {
+      #pragma omp critical (GABMIT_exception)
+      {
+        cout << endl << " \033[00;31;1mFATAL ERROR\033[00m" << endl << endl;
+        cout << "GAMBIT has exited with fatal exception: " << what() << endl;
+        abort();
+      }
+    }
+
 
   /// GAMBIT error class constructors
 
@@ -311,7 +328,6 @@ namespace Gambit
     const char* special_exception::what() const throw()
     {
       const char* temp;
-      #pragma omp atomic read
       temp = myWhat;
       return temp;
     }
@@ -346,16 +362,20 @@ namespace Gambit
     /// Set the pointer to the functor that threw the invalid point exception.
     void invalid_point_exception::set_thrower(functor* thrown_from)
     {
-      #pragma omp atomic write
-      myThrower = thrown_from;
+      #pragma omp critical (myThrower)
+      {
+        myThrower = thrown_from;
+      }
     }
 
     /// Retrieve pointer to the functor that threw the invalid point exception.
     functor* invalid_point_exception::thrower()
     {
       functor* temp;
-      #pragma omp atomic read
-      temp = myThrower;
+      #pragma omp critical (myThrower)
+      {
+        temp = myThrower;
+      }
       if (temp == NULL) utils_error().raise(LOCAL_INFO, "No throwing functor in invalid_point_exception.");
       return temp;
     }

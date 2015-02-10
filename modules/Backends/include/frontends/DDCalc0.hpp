@@ -18,6 +18,7 @@
 ///  \author Christopher Savage
 ///          (chris@savage.name)
 ///  \date 2014 Sept
+///  \date 2015 Jan,Feb
 ///
 ///  *********************************************
 
@@ -32,6 +33,9 @@
 
 // Load it
 LOAD_LIBRARY
+
+
+// BACKEND FUNCTIONS =======================================
 
 // Import functions.
 // Not all DDCalc0 routines are made accessible here, just
@@ -115,6 +119,14 @@ BE_FUNCTION(DDCalc0_SetWIMP_mfa, void, (double*,double*,double*,double*,double*)
 BE_FUNCTION(DDCalc0_SetWIMP_mG, void, (double*,double*,double*,double*,double*),     "C_DDCALC0_ddcalc0_setwimp_mg",     "DDCalc0_SetWIMP_mG")
 BE_FUNCTION(DDCalc0_SetWIMP_msigma, void, (double*,double*,double*,double*,double*), "C_DDCALC0_ddcalc0_setwimp_msigma", "DDCalc0_SetWIMP_msigma")
 
+// Get the WIMP mass and couplings/cross-sections.
+// Same signature and units as above.  The only difference is
+// that the WIMP-nucleon cross-sections are always positive
+// (physical) values.
+BE_FUNCTION(DDCalc0_GetWIMP_mfa, void, (double*,double*,double*,double*,double*),    "C_DDCALC0_ddcalc0_getwimp_mfa",    "DDCalc0_GetWIMP_mfa")
+BE_FUNCTION(DDCalc0_GetWIMP_mG, void, (double*,double*,double*,double*,double*),     "C_DDCALC0_ddcalc0_getwimp_mg",     "DDCalc0_GetWIMP_mG")
+BE_FUNCTION(DDCalc0_GetWIMP_msigma, void, (double*,double*,double*,double*,double*), "C_DDCALC0_ddcalc0_getwimp_msigma", "DDCalc0_GetWIMP_msigma")
+
 // Experiment-specific calculation routines.
 // Should be run once for each model prior to using event and
 // likelihood routines below.
@@ -160,31 +172,80 @@ BE_FUNCTION(DDCalc0_LUX_2013_LogLikelihood,       double, (), "C_DDCALC0_lux_201
 BE_FUNCTION(DDCalc0_DARWIN_Ar_2015_LogLikelihood, double, (), "C_DDCALC0_darwin_ar_2015_loglikelihood", "DDCalc0_DARWIN_Ar_2015_LogLikelihood")
 BE_FUNCTION(DDCalc0_DARWIN_Xe_2015_LogLikelihood, double, (), "C_DDCALC0_darwin_xe_2015_loglikelihood", "DDCalc0_DARWIN_Xe_2015_LogLikelihood")
 
+
+// BACKEND INITIALIZATION ==================================
+
 BE_INI_FUNCTION
 {
-  // Scan-level initialisation
+  // Halo model parameters
+  static double rho0,vrot,v0,vesc;
+
+  // Scan-level initialization -----------------------------
   static bool scan_level = true;
   if (scan_level)
   {
-    // Initialize module and experiments
+    // Initialize module
+    std::cout << "Initializing DDCalc0:" << std::endl;
     DDCalc0_Init();
+    
+    // Initialize experiments (if to be used)
     bool flag = false;  // must pass by reference...
-    DDCalc0_XENON100_2012_Init(&flag);
-    DDCalc0_LUX_2013_Init(&flag);
-    DDCalc0_DARWIN_Ar_2015_Init(&flag);
-    DDCalc0_DARWIN_Xe_2015_Init(&flag);
-    // Set Standard Halo Model.
-    // The halo is already set to the default values shown
-    // here by the DDCalc0_Init() routine.
-    /*
-    double rho  = 0.4;   // Local dark matter density [GeV/cm^3]
-    double vrot = 235.;  // Local disk rotation speed [km/s]
-    double v0   = 235.;  // Maxwellian most-probably speed [km/s]
-    double vesc = 550.;  // Local galactic escape speed [km/s]
-    DDCalc0_SetSHM(&rho,&vrot,&v0,&vesc);
-    */
+    if (*InUse::DDCalc0_XENON100_2012_CalcRates) {
+      std::cout << "  * XENON100 2012 result" << std::endl;
+      DDCalc0_XENON100_2012_Init(&flag);
+    }
+    if (*InUse::DDCalc0_LUX_2013_CalcRates) {
+      std::cout << "  * LUX 2013 result" << std::endl;
+      DDCalc0_LUX_2013_Init(&flag);
+    }
+    if (*InUse::DDCalc0_DARWIN_Ar_2015_CalcRates) {
+      std::cout << "  * Argon-based DARWIN proposal (2015 estimate)" << std::endl;
+      DDCalc0_DARWIN_Ar_2015_Init(&flag);
+    }
+    if (*InUse::DDCalc0_DARWIN_Xe_2015_CalcRates) {
+      std::cout << "  * Xenon-based DARWIN proposal (2015 estimate)" << std::endl;
+      DDCalc0_DARWIN_Xe_2015_Init(&flag);
+    }
+    
+    // Set halo model.  Currently allows only for Standard Halo
+    // Model with the following parameters:
+    // Local dark matter density [GeV/cm^3]
+    rho0 = runOptions->getValueOrDef<double>(0.4, "LocalHalo","rho0");
+    // Local disk rotation speed [km/s]
+    vrot = runOptions->getValueOrDef<double>(235.,"LocalHalo","vrot");
+    // Maxwellian most-probably speed [km/s]
+    v0   = runOptions->getValueOrDef<double>(vrot,"LocalHalo","v0");
+    // Local galactic escape speed [km/s]
+    vesc = runOptions->getValueOrDef<double>(550.,"LocalHalo","vesc");
+    std::cout << "  * Halo parameters:" << std::endl;
+    std::cout << "    rho0 [GeV/cm^3] = " << rho0 << std::endl;
+    std::cout << "    vrot [km/s]     = " << vrot << std::endl;
+    std::cout << "    v0   [km/s]     = " << v0   << std::endl;
+    std::cout << "    vesc [km/s]     = " << vesc << std::endl;
+    DDCalc0_SetSHM(&rho0,&vrot,&v0,&vesc);
   }
   scan_level = false;
+
+  // Point-level initialization ----------------------------
+  // Change halo parameters, if they are scanning parameters.
+  // The "LocalHalo" model space is not yet defined, but
+  // ModelInUse is optional here since existence of parameters
+  // is explicitly checked for.
+  //if (ModelInUse("LocalHalo")) {
+    bool halo_changed = false;
+    if (Param.count("rho0") != 0) {rho0 = *Param["rho0"]; halo_changed = true;}
+    if (Param.count("vrot") != 0) {vrot = *Param["vrot"]; halo_changed = true;}
+    if (Param.count("v0")   != 0) {v0   = *Param["v0"];   halo_changed = true;}
+    if (Param.count("vesc") != 0) {vesc = *Param["vesc"]; halo_changed = true;}
+    if (halo_changed) {
+      std::cout << "Updating DDCalc0 halo parameters:" << std::endl;
+      std::cout << "    rho0 [GeV/cm^3] = " << rho0 << std::endl;
+      std::cout << "    vrot [km/s]     = " << vrot << std::endl;
+      std::cout << "    v0   [km/s]     = " << v0   << std::endl;
+      std::cout << "    vesc [km/s]     = " << vesc << std::endl;
+      DDCalc0_SetSHM(&rho0,&vrot,&v0,&vesc);
+    }
+  //}
 }
 DONE                                                
 

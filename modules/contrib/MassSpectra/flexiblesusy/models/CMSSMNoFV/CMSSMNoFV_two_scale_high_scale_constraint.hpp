@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Wed 3 Dec 2014 13:12:19
+// File generated at Fri 16 Jan 2015 12:44:59
 
 #ifndef CMSSMNoFV_TWO_SCALE_HIGH_SCALE_CONSTRAINT_H
 #define CMSSMNoFV_TWO_SCALE_HIGH_SCALE_CONSTRAINT_H
@@ -51,7 +51,6 @@ public:
 private:
    double scale;
    double initial_scale_guess;
-   double fixed_scale; ///< fixed unification scale (0 = unfixed)
    CMSSMNoFV<Two_scale>* model;
    CMSSMNoFV_input_parameters inputPars;
 

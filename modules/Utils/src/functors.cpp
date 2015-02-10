@@ -531,6 +531,10 @@ namespace Gambit
       return "";
     }
 
+    /// Retrieve the previously saved exception generated when this functor invalidated the current point in model space.
+    invalid_point_exception* functor::retrieve_invalid_point_exception() { return NULL; }
+
+
     // Module_functor_common class methods
 
     /// Constructor
@@ -542,6 +546,7 @@ namespace Gambit
     : functor                  (func_name, func_capability, result_type, origin_name, claw),
       start                    (NULL),
       end                      (NULL),
+      raised_point_exception   (NULL),
       runtime_average          (FUNCTORS_RUNTIME_INIT),           // default 1 micro second
       fadeRate                 (FUNCTORS_FADE_RATE),              // can be set individually for each functor
       pInvalidation            (FUNCTORS_BASE_INVALIDATION_RATE),
@@ -596,6 +601,7 @@ namespace Gambit
       int n = (iRunNested ? globlMaxThreads : 1);
       std::fill(needs_recalculating, needs_recalculating+n, true);
       if (iCanManageLoops) resetLoop();
+      raised_point_exception = NULL;
     }
 
     /// Reset functor for one thread only
@@ -614,12 +620,31 @@ namespace Gambit
     }
 
     /// Acknowledge that this functor invalidated the current point in model space.
-    void module_functor_common::acknowledgeInvalidation(invalid_point_exception& e)
+    void module_functor_common::acknowledgeInvalidation(invalid_point_exception& e, functor* f)
     {
-      #pragma omp atomic update
+      #pragma omp atomic
       pInvalidation += fadeRate*(1-FUNCTORS_BASE_INVALIDATION_RATE);
-      e.set_thrower(this);
+      if (f==NULL) f = this; 
+      e.set_thrower(f);
+      #pragma omp critical (raised_point_exception)
+      {
+        raised_point_exception = &e;
+      }
+      if (omp_get_level()!=0) breakLoop();
     }
+
+    /// Retrieve the previously saved exception generated when this functor invalidated the current point in model space.
+    invalid_point_exception* module_functor_common::retrieve_invalid_point_exception()
+    {
+      if (raised_point_exception != NULL) return raised_point_exception;
+      for (auto f = myNestedFunctorList.begin(); f != myNestedFunctorList.end(); ++f)
+      {
+        invalid_point_exception* e = (*f)->retrieve_invalid_point_exception();
+        if (e != NULL) return e;
+      }
+      return NULL;
+    }
+
 
     /// Getter for invalidation rate
     double module_functor_common::getInvalidationRate()
@@ -667,8 +692,16 @@ namespace Gambit
         for (std::vector<functor*>::iterator it = myNestedFunctorList.begin();
          it != myNestedFunctorList.end(); ++it)
         {
-          (*it)->setIteration(iteration);   // Tell the nested functor what iteration this is.
-          (*it)->reset_and_calculate();     // Reset the nested functor so that it recalculates, then set it off        
+          (*it)->setIteration(iteration);     // Tell the nested functor what iteration this is.
+          try
+          {
+            (*it)->reset_and_calculate();     // Reset the nested functor so that it recalculates, then set it off       
+          }
+          catch (invalid_point_exception& e)
+          {
+            acknowledgeInvalidation(e,*it);
+            if (omp_get_level()==0) throw(e); // If not in an OpenMP parallel block, inform of invalidation and throw onwards
+          }  
         }
       }
     }
@@ -712,8 +745,10 @@ namespace Gambit
     /// Tell the functor that the loop it manages should break now.
     void module_functor_common::breakLoop()
     {
-      #pragma omp atomic write
-      myLoopIsDone = true;
+      #pragma omp critical (myLoopIsDone)
+      {
+        myLoopIsDone = true;
+      }
     }
 
     /// Return a safe pointer to the flag indicating that a loop managed by this functor should break now.
@@ -726,8 +761,10 @@ namespace Gambit
     /// Provide a way to reset the flag indicating that a loop managed by this functor should break.
     void module_functor_common::resetLoop()
     {
-      #pragma omp atomic write
-      myLoopIsDone = false;
+      #pragma omp critical (myLoopIsDone)
+      {
+        myLoopIsDone = false;
+      }
     }
 
     /// Setter for setting the iteration number in the loop in which this functor runs
@@ -1447,8 +1484,11 @@ namespace Gambit
         }
         catch (invalid_point_exception& e)
         {
-          acknowledgeInvalidation(e);
-          throw(e);
+          if (omp_get_level()==0) // If not in an OpenMP parallel block, inform of invalidation and throw onwards
+          {
+            if (raised_point_exception == NULL) acknowledgeInvalidation(e);
+            throw(e);
+          } 
         }
         this->finishTiming(thread_num);            //Stop timing function evaluation
         logger().leaving_module();
@@ -1524,7 +1564,7 @@ namespace Gambit
     void module_functor<void>::calculate()
     {
       int thread_num = omp_get_thread_num();
-      init_memory();                             // Init memory if this is the first run through.
+      init_memory();                               // Init memory if this is the first run through.
       if (needs_recalculating[thread_num])
       {
         logger().entering_module(myLogTag);
@@ -1535,8 +1575,11 @@ namespace Gambit
         }
         catch (invalid_point_exception& e)
         {
-          acknowledgeInvalidation(e);
-          throw(e);
+          if (omp_get_level()==0) // If not in an OpenMP parallel block, inform of invalidation and throw onwards
+          {
+            if (raised_point_exception == NULL) acknowledgeInvalidation(e);
+            throw(e);
+          } 
         }
         this->finishTiming(thread_num);
         logger().leaving_module();

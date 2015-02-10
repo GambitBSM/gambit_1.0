@@ -197,6 +197,10 @@ ObsLikes:
   - purpose:      Observable
     capability:   ptrmeth_arr_tester
 
+  # Uncomment to test Farrays.
+  - purpose:      Observable
+    capability:   doFarrayStuff
+
   # Uncomment 'purpose' and one of the 'capability' entries to test BOSS
   - purpose:      Observable
     capability:   Pythia_tester

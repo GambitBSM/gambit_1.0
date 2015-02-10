@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Wed 3 Dec 2014 13:12:19
+// File generated at Fri 16 Jan 2015 12:44:59
 
 #include "CMSSMNoFV_two_scale_high_scale_constraint.hpp"
 #include "CMSSMNoFV_two_scale_model.hpp"
@@ -49,7 +49,6 @@ CMSSMNoFV_high_scale_constraint<Two_scale>::CMSSMNoFV_high_scale_constraint()
    : Constraint<Two_scale>()
    , scale(0.)
    , initial_scale_guess(0.)
-   , fixed_scale(0.)
    , model(0)
    , inputPars()
 {
@@ -59,7 +58,6 @@ CMSSMNoFV_high_scale_constraint<Two_scale>::CMSSMNoFV_high_scale_constraint(
    CMSSMNoFV<Two_scale>* model_,
    const CMSSMNoFV_input_parameters& inputPars_)
    : Constraint<Two_scale>()
-   , fixed_scale(0.)
    , model(model_)
    , inputPars(inputPars_)
 {
@@ -120,6 +118,40 @@ void CMSSMNoFV_high_scale_constraint<Two_scale>::apply()
    MODEL->set_MassWB(m12);
    MODEL->set_MassG(m12);
 
+   {
+      const auto g1 = MODELPARAMETER(g1);
+      const auto g2 = MODELPARAMETER(g2);
+      const auto g3 = MODELPARAMETER(g3);
+      const auto Yd = MODELPARAMETER(Yd);
+      const auto Ye = MODELPARAMETER(Ye);
+      const auto Yu = MODELPARAMETER(Yu);
+
+      if (MaxAbsValue(g1) > 3.5449077018110318)
+         model->get_problems().flag_non_perturbative_parameter_warning("g1", MaxAbsValue(g1), model->get_scale(), 3.5449077018110318);
+      else
+         model->get_problems().unflag_non_perturbative_parameter_warning("g1");
+      if (MaxAbsValue(g2) > 3.5449077018110318)
+         model->get_problems().flag_non_perturbative_parameter_warning("g2", MaxAbsValue(g2), model->get_scale(), 3.5449077018110318);
+      else
+         model->get_problems().unflag_non_perturbative_parameter_warning("g2");
+      if (MaxAbsValue(g3) > 3.5449077018110318)
+         model->get_problems().flag_non_perturbative_parameter_warning("g3", MaxAbsValue(g3), model->get_scale(), 3.5449077018110318);
+      else
+         model->get_problems().unflag_non_perturbative_parameter_warning("g3");
+      if (MaxAbsValue(Yd) > 3.5449077018110318)
+         model->get_problems().flag_non_perturbative_parameter_warning("Yd", MaxAbsValue(Yd), model->get_scale(), 3.5449077018110318);
+      else
+         model->get_problems().unflag_non_perturbative_parameter_warning("Yd");
+      if (MaxAbsValue(Ye) > 3.5449077018110318)
+         model->get_problems().flag_non_perturbative_parameter_warning("Ye", MaxAbsValue(Ye), model->get_scale(), 3.5449077018110318);
+      else
+         model->get_problems().unflag_non_perturbative_parameter_warning("Ye");
+      if (MaxAbsValue(Yu) > 3.5449077018110318)
+         model->get_problems().flag_non_perturbative_parameter_warning("Yu", MaxAbsValue(Yu), model->get_scale(), 3.5449077018110318);
+      else
+         model->get_problems().unflag_non_perturbative_parameter_warning("Yu");
+
+   }
 }
 
 double CMSSMNoFV_high_scale_constraint<Two_scale>::get_scale() const
@@ -144,14 +176,13 @@ void CMSSMNoFV_high_scale_constraint<Two_scale>::set_input_parameters(const CMSS
 
 void CMSSMNoFV_high_scale_constraint<Two_scale>::set_scale(double s)
 {
-   fixed_scale = s;
+   scale = s;
 }
 
 void CMSSMNoFV_high_scale_constraint<Two_scale>::clear()
 {
    scale = 0.;
    initial_scale_guess = 0.;
-   fixed_scale = 0.;
    model = NULL;
 }
 
@@ -169,11 +200,6 @@ void CMSSMNoFV_high_scale_constraint<Two_scale>::update_scale()
 {
    assert(model && "CMSSMNoFV_high_scale_constraint<Two_scale>::"
           "update_scale(): model pointer is zero.");
-
-   if (!is_zero(fixed_scale)) {
-      scale = fixed_scale;
-      return;
-   }
 
    const double currentScale = model->get_scale();
    const CMSSMNoFV_soft_parameters beta_functions(model->calc_beta());

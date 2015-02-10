@@ -15,15 +15,41 @@
 ///
 ///  *********************************************
 
-#include "backend_type_macros.hpp"
+#include "util_types.hpp"
 
 #ifndef __libFarrayTest_types_hpp__
 #define __libFarrayTest_types_hpp__
 
-// IMPORTANT: No commas between the FORTRAN_ARRAY and GENERAL_VAR macros
-DECLARE_FORTRAN_COMMONBLOCK(libFarrayTest_CB_type,  FORTRAN_ARRAY(double,a,(-2,0))              \
-                                                    FORTRAN_ARRAY(double,b,(1,3))               \
-                                                    GENERAL_VAR(int, c)                         \
-                                                    FORTRAN_ARRAY(int,d,(1,3),(0,1),(-1,0)) )   
+// Farray syntax:
+// Farray<[type], [lower index, dim 1], [upper index, dim 1], [alternating lower/upper indices for subsequent dimensions]>
+// Fstring syntax:
+// Fstring<[string length]>
+// FstringArray syntax:
+// FstringArray<[string length], [lower index, dim 1], [upper index, dim 1], [alternating lower/upper indices for subsequent dimensions]>
+
+// See util_types.hpp for the typedefs (such as Finteger) used in the code below 
+namespace Gambit
+{
+    struct libFarrayTest_CB_type
+    {
+        Farray< Fdouble,-2,0> a;
+        Farray< Fdouble,1,3>  b;
+        Finteger c;
+        Farray<Finteger, 1,3, 0,1, -1,0> d; 
+    };
+    struct libFarrayTest_CB2_type
+    {
+        Fstring<5> chara;
+        FstringArray<5, 1,3>  charb;
+        FstringArray<6, 1,2, -1,0> charc;
+        Finteger e; 
+    };    
+    struct libFarrayTest_CB3_type
+    {
+        Fcomplex cpa;
+        Fcomplex16 cpb;
+        Finteger f; 
+    };        
+}
 
 #endif // defined __libFarrayTest_types_hpp__

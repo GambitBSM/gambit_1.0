@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Thu 4 Dec 2014 21:44:10
+// File generated at Fri 16 Jan 2015 14:37:43
 
 #ifndef NUHMSSM_SLHA_IO_H
 #define NUHMSSM_SLHA_IO_H
@@ -40,11 +40,17 @@
 #define DEFINE_POLE_MASS(p)                                            \
    typename std::remove_const<typename std::remove_reference<decltype(PHYSICAL(p))>::type>::type p;
 #define SM(p) Electroweak_constants::p
+#define SCALES(p) scales.p
 
 namespace flexiblesusy {
 
 struct NUHMSSM_input_parameters;
 class Spectrum_generator_settings;
+
+struct NUHMSSM_scales {
+   NUHMSSM_scales() : HighScale(0.), SUSYScale(0.), LowScale(0.) {}
+   double HighScale, SUSYScale, LowScale;
+};
 
 class NUHMSSM_slha_io {
 public:
@@ -57,12 +63,11 @@ public:
    void fill(NUHMSSM_input_parameters&) const;
    template <class T> void fill(NUHMSSM_slha<T>&) const;
    void fill(Spectrum_generator_settings&) const;
-   double get_input_scale() const;
    double get_parameter_output_scale() const;
    const SLHA_io& get_slha_io() const { return slha_io; }
    void read_from_file(const std::string&);
    void set_extpar(const NUHMSSM_input_parameters&);
-   template <class T> void set_extra(const NUHMSSM_slha<T>&);
+   template <class T> void set_extra(const NUHMSSM_slha<T>&, const NUHMSSM_scales&);
    void set_minpar(const NUHMSSM_input_parameters&);
    void set_sminputs(const softsusy::QedQcd&);
    template <class T> void set_spectrum(const NUHMSSM_slha<T>&);
@@ -78,10 +83,13 @@ public:
    static void convert_to_slha_convention(NUHMSSM_physical&);
 
    template <class T>
-   static void fill_slhaea(SLHAea::Coll&, const NUHMSSM_slha<T>&, const QedQcd& qedqcd);
+   static void fill_slhaea(SLHAea::Coll&, const NUHMSSM_slha<T>&, const QedQcd&, const NUHMSSM_scales&);
 
    template <class T>
-   static SLHAea::Coll fill_slhaea(const NUHMSSM_slha<T>&, const QedQcd& qedqcd);
+   static SLHAea::Coll fill_slhaea(const NUHMSSM_slha<T>&, const QedQcd&);
+
+   template <class T>
+   static SLHAea::Coll fill_slhaea(const NUHMSSM_slha<T>&, const QedQcd&, const NUHMSSM_scales&);
 
 private:
    SLHA_io slha_io; ///< SLHA io class
@@ -324,7 +332,9 @@ void NUHMSSM_slha_io::fill_physical(NUHMSSM_slha<T>& model) const
 }
 
 template <class T>
-void NUHMSSM_slha_io::fill_slhaea(SLHAea::Coll& slhaea, const NUHMSSM_slha<T>& model, const QedQcd& qedqcd)
+void NUHMSSM_slha_io::fill_slhaea(
+   SLHAea::Coll& slhaea, const NUHMSSM_slha<T>& model,
+   const QedQcd& qedqcd, const NUHMSSM_scales& scales)
 {
    NUHMSSM_slha_io slha_io;
    const NUHMSSM_input_parameters& input = model.get_input();
@@ -338,17 +348,28 @@ void NUHMSSM_slha_io::fill_slhaea(SLHAea::Coll& slhaea, const NUHMSSM_slha<T>& m
    slha_io.set_extpar(input);
    if (!error) {
       slha_io.set_spectrum(model);
-      slha_io.set_extra(model);
+      slha_io.set_extra(model, scales);
    }
 
    slhaea = slha_io.get_slha_io().get_data();
 }
 
 template <class T>
-SLHAea::Coll NUHMSSM_slha_io::fill_slhaea(const NUHMSSM_slha<T>& model, const QedQcd& qedqcd)
+SLHAea::Coll NUHMSSM_slha_io::fill_slhaea(
+   const NUHMSSM_slha<T>& model, const QedQcd& qedqcd)
+{
+   NUHMSSM_scales scales;
+
+   return fill_slhaea(model, qedqcd, scales);
+}
+
+template <class T>
+SLHAea::Coll NUHMSSM_slha_io::fill_slhaea(
+   const NUHMSSM_slha<T>& model, const QedQcd& qedqcd,
+   const NUHMSSM_scales& scales)
 {
    SLHAea::Coll slhaea;
-   NUHMSSM_slha_io::fill_slhaea(slhaea, model, qedqcd);
+   NUHMSSM_slha_io::fill_slhaea(slhaea, model, qedqcd, scales);
 
    return slhaea;
 }
@@ -411,7 +432,8 @@ void NUHMSSM_slha_io::set_model_parameters(const NUHMSSM_slha<T>& model)
  * @param model model class
  */
 template <class T>
-void NUHMSSM_slha_io::set_extra(const NUHMSSM_slha<T>& model)
+void NUHMSSM_slha_io::set_extra(
+   const NUHMSSM_slha<T>& model, const NUHMSSM_scales& scales)
 {
    const NUHMSSM_physical physical(model.get_physical_slha());
 

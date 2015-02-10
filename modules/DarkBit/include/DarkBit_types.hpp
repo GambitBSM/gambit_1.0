@@ -241,6 +241,7 @@ namespace Gambit
             {
                 centers.push_back(binCenter(i));
             }
+            return centers;
         }
         const std::vector<double>& getBinValues() const
         {
@@ -794,6 +795,36 @@ namespace Gambit
       double gns;
       double gpa;
       double gna;
+    };
+
+    //------------------------------------------------------
+    // Structures containing the hadronic matrix elements
+    // (fn=<n|qq|n>) and nucleon spin content (delta q)
+    struct fp
+    {
+      double u;
+      double d;
+      double c;
+      double s;
+      double t;
+      double b;
+    };
+
+    struct fn
+    {
+      double u;
+      double d;
+      double c;
+      double s;
+      double t;
+      double b;
+    };
+
+    struct deltaq
+    {
+      double u;
+      double d;
+      double s;
     };
 
     //------------------------------------------------------

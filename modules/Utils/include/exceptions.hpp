@@ -97,6 +97,12 @@ namespace Gambit
       /// Log the details of the exception
       void log_exception(const std::string&, const std::string&);
 
+      /// Throw the exception onward if running serially, abort if not.
+      void throw_iff_outside_parallel();
+
+      /// Cause the code to print the exception and abort.
+      void abort_here_and_now();
+
       /// The kind of exception (error, warning, etc; for logging).
       const char* myKind;
 

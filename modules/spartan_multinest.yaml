@@ -87,7 +87,7 @@ Printer:
 Scanner:
 
   #use_objective_plugins: uniform
-  use_scanner_plugin:
+  use_scanner_plugin: multinest
 
 # Scanners
 
@@ -133,6 +133,7 @@ Scanner:
       parameters:
         param...2:
           range: [-10, 10]          
+
 
             
 ###############################

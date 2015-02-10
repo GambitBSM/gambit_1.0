@@ -183,12 +183,14 @@ START_MODULE
     #define FUNCTION do_Farray_stuff
     START_FUNCTION(double)
     BACKEND_REQ(libFarrayTestCommonBlock, (match), libFarrayTest_CB_type)
+    BACKEND_REQ(libFarrayTestCommonBlock2, (match), libFarrayTest_CB2_type)    
+    BACKEND_REQ(libFarrayTestCommonBlock3, (match), libFarrayTest_CB3_type)    
     BACKEND_REQ(libFarrayTest_printStuff, (match), void, ())
-    BACKEND_REQ(libFarrayTest_set_d, (match), void, ())
-    BACKEND_REQ(libFarrayTest_fptrRoutine, (match), void, (Farray<double,1>&, int&, double(*)(Farray<double,1>&)) )
-    BACKEND_REQ(libFarrayTest_doubleFuncArray1, (match), double, (Gambit::Farray<double,1>&))
-    BACKEND_REQ(libFarrayTest_doubleFuncArray2, (match), double, (Gambit::Farray<double,1>&))
-    BACKEND_REQ(libFarrayTest_doubleFunc, (match), double, (double&))
+    BACKEND_REQ(libFarrayTest_fillArrays, (match), void, ())
+    BACKEND_REQ(libFarrayTest_fptrRoutine, (match), void, (Farray< Fdouble,1,3>&, Finteger&, Fdouble(*)(Farray< Fdouble,1,3>&)))
+    BACKEND_REQ(libFarrayTest_doubleFuncArray, (match), Fdouble, (Farray< Fdouble,1,3>&))
+    BACKEND_REQ(libFarrayTest_doubleFuncArray2, (match), Fdouble, (Fdouble*))  
+    BACKEND_REQ(libFarrayTest_doubleFuncArray3, (match), Fdouble, (Farray<Fdouble, 1,2, 2,3>&))        
     BACKEND_OPTION((LibFarrayTest), (match))
     #undef FUNCTION
   #undef CAPABILITY
