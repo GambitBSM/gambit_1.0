@@ -23,12 +23,12 @@
 namespace Gambit
 {
     // CsB hand made >
-    struct top2body_CB_type
-    {
-        double brtopbw;
-        double brtopbh;
-        Farray<double, 1,4, 1,2> brtopneutrstop;
-    };
+    // struct top2body_CB_type
+    // {
+    //     double brtopbw;
+    //     double brtopbh;
+    //     Farray<double, 1,4, 1,2> brtopneutrstop;
+    // };
     // CsB hand made <
 
     // CsB from Anders' CBGB script >
