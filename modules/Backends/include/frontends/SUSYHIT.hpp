@@ -24,6 +24,10 @@
 
 LOAD_LIBRARY
 
+/* Syntax for BE_VARIABLE:
+ * BE_VARIABLE([type], "[exact symbol name]", "[choose capability name]")  
+ * */
+
 // CsB hand made with old BE_VAIABLE syntax >
 // BE_VARIABLE(FORTRAN_COMMONBLOCK(top2body_CB_type, top2body), "sd_top2body_", "top2body")
 // CsB <
