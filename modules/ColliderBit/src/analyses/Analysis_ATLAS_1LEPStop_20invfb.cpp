@@ -119,7 +119,7 @@ namespace Gambit {
         jet2B.SetPtEtaPhiE(trueBjet2->pT(),trueBjet2->eta(),trueBjet2->phi(),trueBjet2->E());
 
         P4 leptontmp;
-        float leptonmass = 0;
+        double leptonmass = 0;
         if(passel){
           leptonmass = 0.510998910; //MeV
           leptontmp = electrons[0]->mom();
@@ -293,15 +293,15 @@ namespace Gambit {
         //cout << "leptonsForVeto size" << leptonsForVeto.size() << endl;
 
         //Calculate dphi(jet,met) for the two leading jets
-        float dphi_jetmet1=9999;
+        double dphi_jetmet1=9999;
         if(nJets>0)dphi_jetmet1=std::acos(std::cos(signalJets.at(0)->phi()-ptot.phi()));
-        float dphi_jetmet2=9999;
+        double dphi_jetmet2=9999;
         if(nJets>1)dphi_jetmet2=std::acos(std::cos(signalJets.at(1)->phi()-ptot.phi()));
 
         //Calculate met/sqrt(HT) (use four leading jets only)
-        float HT=0;
+        double HT=0;
         if(nJets>=4)HT=signalJets[0]->pT()+signalJets[1]->pT()+signalJets[2]->pT()+signalJets[3]->pT();
-        float metOverSqrtHT=met/sqrt(HT);
+        double metOverSqrtHT=met/sqrt(HT);
 
         //Calculate mT
         P4 lepVec;
@@ -309,13 +309,13 @@ namespace Gambit {
         if(nMuons==1)lepVec=signalMuons[0]->mom();
         //cout << "DPHI" << ptot.deltaPhi(lepVec) << endl;
         //Note: phi here should be in the range -pi to pi
-        //float mT = sqrt(2.*lepVec.pT()*met*(1.-cos(ptot.deltaPhi(lepVec))));
+        //double mT = sqrt(2.*lepVec.pT()*met*(1.-cos(ptot.deltaPhi(lepVec))));
         //This is the ATLAS definition of dphi for this analysis
         //Note that it gives different answers to our dphi function (given above)
-        float mT=sqrt(2.*lepVec.pT()*met*(1. - cos(TVector2::Phi_mpi_pi(lepVec.phi()-ptot.phi()))));
+        double mT=sqrt(2.*lepVec.pT()*met*(1. - cos(TVector2::Phi_mpi_pi(lepVec.phi()-ptot.phi()))));
 
         //Calculate meff (all jets with pT>30 GeV, lepton pT and met)
-        float meff = met + lepVec.pT();
+        double meff = met + lepVec.pT();
         for (Jet* jet : signalJets) {
           if(jet->pT()>30.)meff += jet->pT();
         }
@@ -371,15 +371,15 @@ namespace Gambit {
         //Apply the basic preselection to save costly MT2 calculation
         //if(!((cut_1SignalElectron || cut_1SignalMuon) && cut_4jets && cut_Btag && cut_METGt100 && cut_sigGt5 && cut_dPhiJet2))return;
         //Do hadronic top reconstruction
-        float mindR1=9999.;
-        float mindR2=9999.;
-        float index1=9999.;
-        float index2=9999.;
-        float index3=9999.;
+        double mindR1=9999.;
+        double mindR2=9999.;
+        double index1=9999.;
+        double index2=9999.;
+        double index3=9999.;
 
         bool whad=false;
         bool Thad=false;
-        float mHadTop=0;
+        double mHadTop=0;
 
         for(int iJet=0;iJet<nJets;iJet++){
           for(int jJet=0;jJet<nJets;jJet++){

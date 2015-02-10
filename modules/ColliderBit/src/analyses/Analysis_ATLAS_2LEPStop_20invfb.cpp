@@ -65,7 +65,7 @@ namespace Gambit {
 
         // Missing energy
         P4 ptot = event->missingmom();
-        double met = event->met();
+        //double met = event->met();
 
         // Now define vectors of baseline objects
         vector<Particle*> baselineElectrons;
@@ -153,8 +153,8 @@ namespace Gambit {
         // Calculate common variables and cuts first
         applyTightIDElectronSelection(signalElectrons);
 
-        int nElectrons = signalElectrons.size();
-        int nMuons = signalMuons.size();
+        //int nElectrons = signalElectrons.size();
+        //int nMuons = signalMuons.size();
         int nJets = signalJets.size();
         int nLeptons = signalLeptons.size();
 
@@ -188,7 +188,7 @@ namespace Gambit {
 
           double dphi_jetmetclose = 9999.;
           for(int j=0; j<nJets; j++) {
-            //float temp = std::acos(std::cos(signalJets.at(j)->phi()-ptot.phi()));
+            //double temp = std::acos(std::cos(signalJets.at(j)->phi()-ptot.phi()));
             double temp = Phi_mpi_pi(signalJets.at(j)->phi()-ptot.phi());
             if(fabs(temp)<dphi_jetmetclose) {
               dphi_jetmetclose = temp;
@@ -199,13 +199,13 @@ namespace Gambit {
           P4 ptllmet;
           ptllmet = signalLeptons[0]->mom() + signalLeptons[1]->mom() + ptot;
 
-          //float temp = ptllmet.deltaPhi(ptot);
-          float temp=ptllmet.phi()-ptot.phi();
+          //double temp = ptllmet.deltaPhi(ptot);
+          double temp=ptllmet.phi()-ptot.phi();
           double dphib=Phi_mpi_pi((double)temp);
 
           //TLorentzVector ptllmet_root;
           //ptllmet_root = lep1 + lep2 + metvec;
-          //float temp_root = ptllmet_root.DeltaPhi(metvec);
+          //double temp_root = ptllmet_root.DeltaPhi(metvec);
 
           //std::cout << "DPHIB " << dphib << " DPHIBROOT " << temp_root << " ele " << signalElectrons.size() << " muo " << signalMuons.size() << std::endl;
 
