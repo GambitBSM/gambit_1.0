@@ -21,6 +21,7 @@
 
 #include "gambit/Utils/util_macros.hpp"
 #include "gambit/Utils/equivalency_singleton.hpp"
+#include "gambit/Utils/ini_code_struct.hpp"
 #include "gambit/Backends/backend_singleton.hpp"
 
 #include <boost/preprocessor/seq/for_each.hpp>
@@ -70,7 +71,7 @@ BOOST_PP_SEQ_FOR_EACH(PRE_TYPEDEFAULT, (CAT_3(BE,_,VER))(CAT_3(BE,_,DEFAULT)),  
         }                                                                             \
         namespace ini                                                                 \
         {                                                                             \
-          ini_code ini_pass_default(&pass_default_to_backendinfo);                    \
+          ini_code ini_pass_default(LOCAL_INFO,&pass_default_to_backendinfo);         \
         }                                                                             \
       }                                                                               \
     }                                                                                 \
@@ -106,7 +107,7 @@ BOOST_PP_SEQ_FOR_EACH(PRE_TYPEDEFAULT, (CAT_3(BE,_,VER))(CAT_3(BE,_,DEFAULT)),  
           {                                                                           \
               ini_code CAT(reg_equiv,                                                 \
                BOOST_PP_SEQ_ELEM(BOOST_PP_SUB(BOOST_PP_SEQ_SIZE(elem),1),elem))       \
-               (&CAT(equivrelation_,                                                  \
+               (LOCAL_INFO, &CAT(equivrelation_,                                      \
                BOOST_PP_SEQ_ELEM(BOOST_PP_SUB(BOOST_PP_SEQ_SIZE(elem),1),elem)));     \
           }                                                                           \
                                                                                       \

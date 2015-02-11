@@ -23,6 +23,7 @@
 #define __ini_code_struct_hpp__
 
 #include <exception>
+#include <string>
 #include "gambit/Utils/terminator.hpp"
 
 namespace Gambit
@@ -33,7 +34,7 @@ namespace Gambit
   struct ini_code
   {
 
-    ini_code(void (*unroll)())
+    ini_code(std::string location, void (*unroll)())
     {
       std::set_terminate(terminator);
       try
@@ -43,6 +44,7 @@ namespace Gambit
       catch (std::exception& e)
       {
         std::cout << "GAMBIT has failed to initialise due to fatal exception: " << e.what() << std::endl;
+        std::cout << "raised from ini_code_struct declared at: " << location << std::endl;
         throw(e);
       }
     }

@@ -18,7 +18,6 @@
 #ifndef __standalone_error_handlers_hpp__
 #define __standalone_error_handlers_hpp__
 
-#include "gambit/Utils/ini_code_struct.hpp"
 #include "gambit/Utils/exceptions.hpp"
 
 namespace Gambit

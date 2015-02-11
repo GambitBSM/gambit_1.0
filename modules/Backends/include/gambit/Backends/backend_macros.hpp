@@ -167,7 +167,7 @@ BE_NAMESPACE                                                                \
   namespace ini                                                             \
   {                                                                         \
     ini_code CAT_3(ini_allowed_model,_,MODEL)                               \
-             (&CAT_3(register_allowed_model,_,MODEL));                      \
+             (LOCAL_INFO, &CAT_3(register_allowed_model,_,MODEL));          \
   }                                                                         \
                                                                             \
 }                                                                           \
@@ -203,7 +203,8 @@ DONE                                                                        \
          the 'ini_code' struct. */                                          \
       namespace ini                                                         \
       {                                                                     \
-        ini_code CAT_3(NAME,_,models)(&CAT(setAllowedModels_,NAME));        \
+        ini_code CAT_3(NAME,_,models)                                       \
+          (LOCAL_INFO, &CAT(setAllowedModels_,NAME));                       \
       }                                                                     \
 
 /// Make the inUse pipe for a given backend functor.                        
@@ -233,7 +234,7 @@ DONE                                                                        \
     namespace ini                                                           \
     {                                                                       \
       ini_code CAT_7(BACKENDNAME,_,SAFE_VERSION,_,NAME,_,iniInUsePtr)       \
-       (&CAT_7(BACKENDNAME,_,SAFE_VERSION,_,NAME,_,setInUsePtr));           \
+       (LOCAL_INFO,&CAT_7(BACKENDNAME,_,SAFE_VERSION,_,NAME,_,setInUsePtr));\
     }                                                                       \
   }                                                                         \
 
@@ -298,8 +299,9 @@ namespace Gambit                                                            \
         when we create instances of the 'ini_code' struct. */               \
       namespace ini                                                         \
       {                                                                     \
-        ini_code CAT_3(BACKENDNAME,_,SAFE_VERSION)(&loadLibrary);           \
-        ini_code cl_info(&BOOST_PP_IF(DO_CLASSLOADING,ibinBOSSd,noBOSS));   \
+        ini_code CAT_3(BACKENDNAME,_,SAFE_VERSION)(LOCAL_INFO,&loadLibrary);\
+        ini_code cl_info                                                    \
+         (LOCAL_INFO,&BOOST_PP_IF(DO_CLASSLOADING,ibinBOSSd,noBOSS));       \
       }                                                                     \
                                                                             \
       /* Register this backend with the Core if not running in standalone */\
@@ -339,7 +341,7 @@ void CAT_4(register_backend_,BE,_,SAFEVER) ()                                   
                                                                                                 \
 namespace ini                                                                                   \
 {                                                                                               \
-  ini_code run_backend_rego(&CAT_4(register_backend_,BE,_,SAFEVER));                            \
+  ini_code run_backend_rego(LOCAL_INFO, &CAT_4(register_backend_,BE,_,SAFEVER));                \
 }                                                                                               \
 
 /// Macro for adding a tag to the logging system for each backend
@@ -353,7 +355,7 @@ void rt_register_backend_with_log ()                                            
                                                                                                 \
 namespace ini                                                                                   \
 {                                                                                               \
-  ini_code register_backend_with_log (&rt_register_backend_with_log);                           \
+  ini_code register_backend_with_log (LOCAL_INFO, &rt_register_backend_with_log);               \
 }                                                                                               \
 
 /// Load factory functions for classes provided by this backend
@@ -406,7 +408,7 @@ namespace Gambit                                                                
       {                                                                                         \
         ini_code CAT(run_type_rego, BOOST_PP_SEQ_CAT(BOOST_PP_SEQ_TRANSFORM(APPEND_TOKEN,       \
          NS_SEP, BOOST_PP_TUPLE_ELEM(2,0,elem))) )                                              \
-         (&CAT(register_type_,BOOST_PP_SEQ_CAT(BOOST_PP_SEQ_TRANSFORM(APPEND_TOKEN,             \
+         (LOCAL_INFO, &CAT(register_type_,BOOST_PP_SEQ_CAT(BOOST_PP_SEQ_TRANSFORM(APPEND_TOKEN, \
          NS_SEP, BOOST_PP_TUPLE_ELEM(2,0,elem))) ));                                            \
       }                                                                                         \
                                                                                                 \
@@ -523,7 +525,8 @@ namespace Gambit                                                                
       /* Set up the ini code object to execute the wrapper factory-setting routine. */          \
       namespace ini                                                                             \
       {                                                                                         \
-        ini_code CAT(ini_for_handoverFactoryPointer_,NAME)(&CAT(handoverFactoryPointer_,NAME)); \
+        ini_code CAT(ini_for_handoverFactoryPointer_,NAME)                                      \
+         (LOCAL_INFO, &CAT(handoverFactoryPointer_,NAME));                                      \
       }                                                                                         \
                                                                                                 \
     } /* end namespace BACKENDNAME_SAFE_VERSION */                                              \
@@ -620,7 +623,7 @@ namespace Gambit                                                              \
          the 'ini_code' struct. */                                            \
       namespace ini                                                           \
       {                                                                       \
-        ini_code NAME(&CAT(setVarFunctorStatus_,NAME));                       \
+        ini_code NAME(LOCAL_INFO, &CAT(setVarFunctorStatus_,NAME));           \
       }                                                                       \
                                                                               \
     } /* end namespace BACKENDNAME_SAFE_VERSION */                            \
@@ -651,7 +654,8 @@ namespace Gambit                                                            \
          the 'ini_code' struct. */                                          \
       namespace ini                                                         \
       {                                                                     \
-        ini_code CAT(NAME,_supp)(&CAT(constructVarPointer_supp_,NAME));     \
+        ini_code CAT(NAME,_supp)                                            \
+         (LOCAL_INFO, &CAT(constructVarPointer_supp_,NAME));                \
       }                                                                     \
                                                                             \
     } /* end namespace BACKENDNAME_SAFE_VERSION */                          \
@@ -739,7 +743,7 @@ namespace Gambit                                                                
       /* Set up the ini code object to execute the functor status-setting routine. */           \
       namespace ini                                                                             \
       {                                                                                         \
-        ini_code CAT(ini_for_setFunctorStatus_,NAME)(&CAT(setFunctorStatus_,NAME));             \
+        ini_code CAT(ini_for_setFunctorStatus_,NAME)(LOCAL_INFO, &CAT(setFunctorStatus_,NAME)); \
       }                                                                                         \
                                                                                                 \
       /* Set the allowed model properties of the functor. */                                    \
@@ -792,7 +796,7 @@ namespace Gambit                                                                
          the 'ini_code' struct. */                                                              \
       namespace ini                                                                             \
       {                                                                                         \
-        ini_code CAT(NAME,_supp)(&CAT(constructFuncPointer_supp_,NAME));                        \
+        ini_code CAT(NAME,_supp)(LOCAL_INFO, &CAT(constructFuncPointer_supp_,NAME));            \
       }                                                                                         \
                                                                                                 \
     } /* end namespace BACKENDNAME_SAFE_VERSION */                                              \
@@ -861,7 +865,7 @@ namespace Gambit                                                                
                                                                                                 \
       namespace ini                                                                             \
       {                                                                                         \
-        ini_code CAT(NAME,_supp)(&CAT(constructFuncPointer_,NAME));                             \
+        ini_code CAT(NAME,_supp)(LOCAL_INFO, &CAT(constructFuncPointer_,NAME));                 \
       }                                                                                         \
                                                                                                 \
     }                                                                                           \

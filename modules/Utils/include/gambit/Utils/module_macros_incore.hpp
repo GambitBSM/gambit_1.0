@@ -56,6 +56,7 @@
 #include "gambit/Utils/types_rollcall.hpp"
 #include "gambit/Utils/module_macros_common.hpp"
 #include "gambit/Utils/safety_bucket.hpp"
+#include "gambit/Utils/ini_code_struct.hpp"
 #include "gambit/Logs/log.hpp"
 #include "gambit/Backends/backend_singleton.hpp"
 #include "gambit/Models/claw_singleton.hpp"
@@ -260,7 +261,8 @@
           error e = CAT(MODULE,_error)();                                      \
           warning w = CAT(MODULE,_warning)();                                  \
         }                                                                      \
-        ini_code CAT(MODULE,_handlers)(&CAT_3(register_,MODULE,_handlers));    \
+        ini_code CAT(MODULE,_handlers)                                         \
+         (LOCAL_INFO, &CAT_3(register_,MODULE,_handlers));                     \
       }                                                                        \
                                                                                \
       CORE_START_MODULE_COMMON(MODULE)                                         \
@@ -277,7 +279,8 @@
                                                                                \
       namespace Ini                                                            \
       {                                                                        \
-        ini_code register_module_with_log (&rt_register_module_with_log);      \
+        ini_code register_module_with_log                                      \
+         (LOCAL_INFO, &rt_register_module_with_log);                           \
       }                                                                        \
                                                                                \
     }                                                                          \
@@ -495,7 +498,8 @@
   /* Create the supplementary module initialisation object */                  \
   namespace Ini                                                                \
   {                                                                            \
-    ini_code CAT(MODULE,_supp) (&CAT(rt_register_module_supp_,MODULE));        \
+    ini_code CAT(MODULE,_supp)                                                 \
+     (LOCAL_INFO, &CAT(rt_register_module_supp_,MODULE));                      \
   }                                                                            \
 
 
@@ -667,7 +671,7 @@
   /* Create the function initialisation object */                              \
   namespace Ini                                                                \
   {                                                                            \
-    ini_code FUNCTION (&rt_register_function<Tags::FUNCTION>);                 \
+    ini_code FUNCTION (LOCAL_INFO, &rt_register_function<Tags::FUNCTION>);     \
   }                                                                            \
 
 
@@ -685,7 +689,8 @@
   /* Create the supplementary function initialisation object */                \
   namespace Ini                                                                \
   {                                                                            \
-    ini_code CAT(FUNCTION,_supp) (&rt_register_function_supp<Tags::FUNCTION>); \
+    ini_code CAT(FUNCTION,_supp)                                               \
+     (LOCAL_INFO, &rt_register_function_supp<Tags::FUNCTION>);                 \
   }                                                                            \
 
 
@@ -746,7 +751,7 @@
       namespace Ini                                                            \
       {                                                                        \
         ini_code CAT(FUNCTION,_nesting)                                        \
-         (&rt_register_function_nesting<Tags::FUNCTION>);                      \
+         (LOCAL_INFO, &rt_register_function_nesting<Tags::FUNCTION>);          \
       }                                                                        \
     }                                                                          \
   }                                                                            \
@@ -774,7 +779,7 @@
       namespace Ini                                                            \
       {                                                                        \
         ini_code CAT(FUNCTION,_nesting_supp)                                   \
-         (&rt_register_function_nesting_supp<Tags::FUNCTION>);                 \
+         (LOCAL_INFO, &rt_register_function_nesting_supp<Tags::FUNCTION>);     \
       }                                                                        \
                                                                                \
     }                                                                          \
@@ -835,7 +840,7 @@
   namespace Ini                                                                \
   {                                                                            \
     ini_code CAT_3(DEP,_for_,FUNCTION)                                         \
-     (&rt_register_dependency<Gambit::Tags::DEP, Tags::FUNCTION>);             \
+     (LOCAL_INFO, &rt_register_dependency<Gambit::Tags::DEP, Tags::FUNCTION>); \
   }                                                                            \
                                                                             
 
@@ -1017,7 +1022,7 @@
       namespace Ini                                                            \
       {                                                                        \
         ini_code CAT_3(MODEL,_params_for_,FUNCTION)                            \
-         (&rt_register_dependency<ModelTags::MODEL, Tags::FUNCTION>);          \
+        (LOCAL_INFO,&rt_register_dependency<ModelTags::MODEL, Tags::FUNCTION>);\
       }                                                                        \
                                                                                \
     }                                                                          \
@@ -1052,7 +1057,7 @@
       namespace Ini                                                            \
       {                                                                        \
         ini_code CAT_3(MODEL,_allowed_for_,FUNCTION)                           \
-         (&CAT_4(rt_register_model_singly_,FUNCTION,_,MODEL));                 \
+         (LOCAL_INFO, &CAT_4(rt_register_model_singly_,FUNCTION,_,MODEL));     \
       }                                                                        \
                                                                                \
     }                                                                          \
@@ -1085,7 +1090,7 @@
       {                                                                        \
         ini_code CAT_3(FUNCTION,_,                                             \
          BOOST_PP_SEQ_CAT(BOOST_PP_TUPLE_TO_SEQ((STRIP_PARENS(COMBO)))))       \
-         (&CAT_4(rt_register_model_combination_,FUNCTION,_,                    \
+         (LOCAL_INFO, &CAT_4(rt_register_model_combination_,FUNCTION,_,        \
          BOOST_PP_SEQ_CAT(BOOST_PP_TUPLE_TO_SEQ((STRIP_PARENS(COMBO))))));     \
       }                                                                        \
                                                                                \
@@ -1118,7 +1123,7 @@
       namespace Ini                                                            \
       {                                                                        \
         ini_code CAT_3(GROUPNAME,_model_group_in_,FUNCTION)                    \
-         (&CAT_4(rt_register_model_group_,FUNCTION,_,GROUPNAME));              \
+         (LOCAL_INFO, &CAT_4(rt_register_model_group_,FUNCTION,_,GROUPNAME));  \
       }                                                                        \
                                                                                \
     }                                                                          \
@@ -1159,7 +1164,7 @@
             /* Create the group initialisation object */                       \
             namespace Ini                                                      \
             {                                                                  \
-              ini_code GROUP (&rt_register_group);                             \
+              ini_code GROUP (LOCAL_INFO, &rt_register_group);                 \
             }                                                                  \
           }                                                                    \
         }                                                                      \
@@ -1285,7 +1290,7 @@
       namespace Ini                                                            \
       {                                                                        \
         ini_code CAT_3(REQUIREMENT,_backend_for_,FUNCTION)                     \
-         (&rt_register_req<BETags::REQUIREMENT,Tags::FUNCTION>);               \
+         (LOCAL_INFO, &rt_register_req<BETags::REQUIREMENT,Tags::FUNCTION>);   \
       }                                                                        \
                                                                                \
     }                                                                          \
@@ -1326,7 +1331,7 @@
         ini_code CAT_5(FUNCTION,_,                                             \
          BOOST_PP_TUPLE_ELEM(0,(STRIP_PARENS(BE_AND_VER))),_,                  \
          BOOST_PP_SEQ_CAT(BOOST_PP_TUPLE_TO_SEQ((STRIP_PARENS(TAGS)))) )       \
-         (&CAT_6(apply_rule_,FUNCTION,_,                                       \
+         (LOCAL_INFO, &CAT_6(apply_rule_,FUNCTION,_,                           \
          BOOST_PP_TUPLE_ELEM(0,(STRIP_PARENS(BE_AND_VER))),_,                  \
          BOOST_PP_SEQ_CAT(BOOST_PP_TUPLE_TO_SEQ((STRIP_PARENS(TAGS)))) ) );    \
       }                                                                        \
@@ -1366,7 +1371,7 @@
       {                                                                        \
         ini_code CAT_3(FUNCTION,_,                                             \
          BOOST_PP_SEQ_CAT(BOOST_PP_TUPLE_TO_SEQ((STRIP_PARENS(__VA_ARGS__))))) \
-         (&CAT_4(apply_rule_,FUNCTION,_,BOOST_PP_SEQ_CAT(                      \
+         (LOCAL_INFO, &CAT_4(apply_rule_,FUNCTION,_,BOOST_PP_SEQ_CAT(          \
          BOOST_PP_TUPLE_TO_SEQ((STRIP_PARENS(__VA_ARGS__))))));                \
       }                                                                        \
                                                                                \
@@ -1490,7 +1495,7 @@
       {                                                                        \
         ini_code CAT_7(CONDITIONAL_DEPENDENCY,_for_,FUNCTION,_with_,           \
          BACKEND_REQ,_provided_by_,BACKEND)                                    \
-         (&rt_register_conditional_dependency                                  \
+         (LOCAL_INFO, &rt_register_conditional_dependency                      \
          <Gambit::Tags::CONDITIONAL_DEPENDENCY, Tags::FUNCTION,                \
          BETags::BACKEND_REQ, BETags::BACKEND>);                               \
       }                                                                        \
@@ -1532,7 +1537,7 @@
         ini_code CAT_5(FUNCTION,_,                                             \
          BOOST_PP_SEQ_CAT(BOOST_PP_TUPLE_TO_SEQ((STRIP_PARENS(MODELS)))),_,    \
          BOOST_PP_SEQ_CAT(BOOST_PP_TUPLE_TO_SEQ((STRIP_PARENS(TAGS)))) )       \
-         (&CAT_6(apply_rule_,FUNCTION,_,                                       \
+         (LOCAL_INFO, &CAT_6(apply_rule_,FUNCTION,_,                           \
          BOOST_PP_SEQ_CAT(BOOST_PP_TUPLE_TO_SEQ((STRIP_PARENS(MODELS)))),_,    \
          BOOST_PP_SEQ_CAT(BOOST_PP_TUPLE_TO_SEQ((STRIP_PARENS(TAGS)))) ) );    \
       }                                                                        \
@@ -1604,7 +1609,7 @@
       namespace Ini                                                            \
       {                                                                        \
         ini_code CAT_4(CONDITIONAL_DEPENDENCY,_for_,FUNCTION,_with_models)     \
-         (&rt_register_conditional_dependency                                  \
+         (LOCAL_INFO, &rt_register_conditional_dependency                      \
          <Gambit::Tags::CONDITIONAL_DEPENDENCY, Tags::FUNCTION>);              \
       }                                                                        \
                                                                                \
@@ -1647,7 +1652,8 @@
       namespace ini                                                            \
       {                                                                        \
         ini_code CAT_4(ini_classload_req_rego_for_,FUNCTION,_from_,BACKEND)    \
-         (&CAT_4(classload_requirements_for_,FUNCTION,_from_,BACKEND));        \
+         (LOCAL_INFO,                                                          \
+          &CAT_4(classload_requirements_for_,FUNCTION,_from_,BACKEND));        \
       }                                                                        \
                                                                                \
     }                                                                          \

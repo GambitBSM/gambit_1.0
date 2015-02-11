@@ -45,8 +45,7 @@ namespace Gambit
                                 "Generally this happens because you have requested a parameter of a model that\n"
                                 "is not being scanned (check that you are using the ModelInUse() function), or\n"
                                 "because you have failed to declare the dependency on the model's parameters  \n"
-                                "in your rollcall header using ALLOW_MODEL(S) or ALLOW_MODEL_DEPENDENCE.");
-            
+                                "in your rollcall header using ALLOW_MODEL(S) or ALLOW_MODEL_DEPENDENCE.");           
           }
           return this->at(key);  // Will only get here if someone has turned model errors into warnings.  If so, they get what they deserve.
         }

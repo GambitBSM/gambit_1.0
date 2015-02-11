@@ -38,7 +38,6 @@
 #include <omp.h>
 #include <cstring>
 
-#include "gambit/Utils/ini_code_struct.hpp"
 #include "gambit/Utils/standalone_error_handlers.hpp"
 #include "gambit/Utils/variadic_functions.hpp"
 

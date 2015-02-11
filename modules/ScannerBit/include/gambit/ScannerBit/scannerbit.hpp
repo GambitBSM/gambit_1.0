@@ -22,6 +22,7 @@
 #include "gambit/ScannerBit/scanner_utils.hpp"
 #include "gambit/ScannerBit/scan.hpp"
 #include "gambit/Utils/static_members.hpp"
+#include "gambit/Utils/ini_code_struct.hpp"
 
 namespace Gambit
 {
@@ -38,7 +39,7 @@ namespace Gambit
         warning w = scan_warning();
       }
 
-      ini_code ScannerBit_handlers(&register_ScannerBit_handlers);
+      ini_code ScannerBit_handlers(LOCAL_INFO, &register_ScannerBit_handlers);
 
     }
 
