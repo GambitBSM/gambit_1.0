@@ -84,7 +84,7 @@ def main(argv):
         cmakelist_txt_out += " "*16 + "src/" + source + "\n"
         
     for source in sorted(prior_srcs):
-        cmakelist_txt_out += " "*16 + source.split('/ScannerBit/')[1] + "\n"
+        cmakelist_txt_out += " "*16 + source.split('./ScannerBit/')[1] + "\n"
         
     cmakelist_txt_out += ")\n\n"
     
@@ -94,7 +94,7 @@ def main(argv):
         cmakelist_txt_out += " "*16 + "include/gambit/ScannerBit/" + header + "\n"
         
     for header in sorted(prior_hdrs):
-        cmakelist_txt_out += " "*16 + header.split('/ScannerBit/')[1] + "\n"
+        cmakelist_txt_out += " "*16 + header.split('./ScannerBit/')[1] + "\n"
         prior_txt_out += "#include \"" + header.split('/ScannerBit/include/gambit/ScannerBit/')[1] + "\"\n"
         
     cmakelist_txt_out += ")\n\n"
@@ -176,14 +176,14 @@ def main(argv):
                                 #scanbit_auto_libs[plug_type[i]][last_plugin][last_version] = find[2][15:-1]
                         
             ## begin adding plugin files to CMakeLists.txt ##
-                cmakelist_txt_out += " "*16 + source.split('/ScannerBit/')[1] + "\n"
+                cmakelist_txt_out += " "*16 + source.split('./ScannerBit/')[1] + "\n"
                 
             cmakelist_txt_out += ")\n\n"
             
             cmakelist_txt_out += "set( " + plug_type[i] + "_plugin_headers_" + directory + "\n"
             
             for header in sorted(headers):
-                cmakelist_txt_out += " "*16 + header.split('/ScannerBit/')[1] + "\n"
+                cmakelist_txt_out += " "*16 + header.split('./ScannerBit/')[1] + "\n"
                 
             cmakelist_txt_out += ")\n\n"
             ## end adding plugin files to CMakeLists.txt ## 
