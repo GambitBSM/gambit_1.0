@@ -113,17 +113,17 @@ namespace Gambit {
       std::random_device rd;
       std::mt19937 gen(rd());
 
-      HEPUtils::BinnedFn2D<float> coeffE2({{0,2.5,3.,5.}}, {{0,0.1,25.,10000.}},
+      HEPUtils::BinnedFn2D<double> coeffE2({{0,2.5,3.,5.}}, {{0,0.1,25.,10000.}},
                                            {{0.,0.015*0.015,0.005*0.005,
                                              0.005*0.005,0.005*0.005,0.005*0.005,
                                              0.107*0.107,0.107*0.107,0.107*0.107}});
 
-      HEPUtils::BinnedFn2D<float> coeffE({{0,2.5,3.,5.}}, {{0,0.1,25.,10000.}},
+      HEPUtils::BinnedFn2D<double> coeffE({{0,2.5,3.,5.}}, {{0,0.1,25.,10000.}},
                                           {{0.,0.,0.05*0.05,
                                             0.05*0.05,0.05*0.05,0.05*0.05,
                                             2.08*2.08,2.08*2.08,2.08*2.08}});
 
-      HEPUtils::BinnedFn2D<float> coeffC({{0,2.5,3.,5.}}, {{0,0.1,25.,10000.}},
+      HEPUtils::BinnedFn2D<double> coeffC({{0,2.5,3.,5.}}, {{0,0.1,25.,10000.}},
                                           {{0.,0.,0.25*0.25,
                                             0.25*0.25,0.25*0.25,0.25*0.25,
                                             0.,0.,0.}});
@@ -132,16 +132,16 @@ namespace Gambit {
       for (Particle* e : electrons) {
 
         // Look up / calculate resolution
-        const float c1 = coeffE2.get_at(e->abseta(), e->pT());
-        const float c2 = coeffE.get_at(e->abseta(), e->pT());
-        const float c3 = coeffC.get_at(e->abseta(), e->pT());
+        const double c1 = coeffE2.get_at(e->abseta(), e->pT());
+        const double c2 = coeffE.get_at(e->abseta(), e->pT());
+        const double c3 = coeffC.get_at(e->abseta(), e->pT());
         const double resolution = sqrt(c1*sqr(e->E()) + c2*e->E() + c3);
 
         // Smear by a Gaussian centered on the current energy, with width given by the resolution
         std::normal_distribution<> d(e->E(), resolution);
-        float smeared_E = d(gen);
+        double smeared_E = d(gen);
         if (smeared_E < 0) smeared_E = 0;
-        // float smeared_pt = smeared_E/cosh(e->eta()); ///< @todo Should be cosh(|eta|)?
+        // double smeared_pt = smeared_E/cosh(e->eta()); ///< @todo Should be cosh(|eta|)?
         // std::cout << "BEFORE eta " << electron->eta() << std::endl;
         e->set_mom(P4::mkEtaPhiME(e->eta(), e->phi(), e->mass(), smeared_E));
         // std::cout << "AFTER eta " << electron->eta() << std::endl;
@@ -156,7 +156,7 @@ namespace Gambit {
       std::random_device rd;
       std::mt19937 gen(rd());
 
-      HEPUtils::BinnedFn2D<float> _muEff({{0,1.5,2.5}}, {{0,0.1,1.,10.,200.,10000.}},
+      HEPUtils::BinnedFn2D<double> _muEff({{0,1.5,2.5}}, {{0,0.1,1.,10.,200.,10000.}},
                                          {{0.,0.03,0.02,0.03,0.05,
                                                0.,0.04,0.03,0.04,0.05}});
 
@@ -183,7 +183,7 @@ namespace Gambit {
       std::random_device rd;
       std::mt19937 gen(rd());
 
-      HEPUtils::BinnedFn2D<float> _jetRes({{0,10.}}, {{0,10000.}},
+      HEPUtils::BinnedFn2D<double> _jetRes({{0,10.}}, {{0,10000.}},
                                           {{0.03}});
 
       // Now loop over the jets and smear the 4-vectors
@@ -206,7 +206,7 @@ namespace Gambit {
       std::random_device rd;
       std::mt19937 gen(rd());
 
-      HEPUtils::BinnedFn2D<float> _jetRes({{0,10.}}, {{0,10000.}},
+      HEPUtils::BinnedFn2D<double> _jetRes({{0,10.}}, {{0,10000.}},
                                           {{0.03}});
 
       // Now loop over the taus and smear the 4-vectors

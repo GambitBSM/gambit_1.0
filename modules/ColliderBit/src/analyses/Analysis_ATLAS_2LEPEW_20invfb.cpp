@@ -37,24 +37,24 @@ namespace Gambit {
     class Analysis_ATLAS_2LEPEW_20invfb : public Analysis {
     private:
 
-      // Numbers passing cuts (floats because we will use the trigger eff)
-      float _num_MT2_90_SF;
-      float _num_MT2_90_DF;
-      float _num_MT2_120_SF;
-      float _num_MT2_120_DF;
-      float _num_MT2_150_SF;
-      float _num_MT2_150_DF;
-      float _num_WWa_SF;
-      float _num_WWa_DF;
-      float _num_WWb_SF;
-      float _num_WWb_DF;
-      float _num_WWc_SF;
-      float _num_WWc_DF;
-      float _num_Zjets;
+      // Numbers passing cuts (doubles because we will use the trigger eff)
+      double _num_MT2_90_SF;
+      double _num_MT2_90_DF;
+      double _num_MT2_120_SF;
+      double _num_MT2_120_DF;
+      double _num_MT2_150_SF;
+      double _num_MT2_150_DF;
+      double _num_WWa_SF;
+      double _num_WWa_DF;
+      double _num_WWb_SF;
+      double _num_WWb_DF;
+      double _num_WWc_SF;
+      double _num_WWc_DF;
+      double _num_Zjets;
 
       vector<int> cutFlowVector_alt;
-      vector<float> cutFlowVector;
-      vector<float> cutFlowIncrements;
+      vector<double> cutFlowVector;
+      vector<double> cutFlowIncrements;
       vector<string> cutFlowVector_str;
       const static int NCUTS=90;
 
@@ -97,7 +97,7 @@ namespace Gambit {
           for(unsigned int it2 = 0; it2 < vec2.size(); it2++) {
             if(it1==it2)continue;
             P4 lep2mom=vec2.at(it2)->mom();
-            float dR;
+            double dR;
 
             dR=lep1mom.deltaR_eta(lep2mom);
 
@@ -122,7 +122,7 @@ namespace Gambit {
           for(unsigned int it2 = 0; it2 < vec2.size(); it2++) {
             if(it1==it2)continue;
             P4 lep2mom=vec2.at(it2)->mom();
-            float dR;
+            double dR;
 
             dR=lep1mom.deltaR_eta(lep2mom);
 
@@ -147,7 +147,7 @@ namespace Gambit {
           P4 jetmom=jetvec.at(itjet)->mom();
           for(unsigned int itlep = 0; itlep < lepvec.size(); itlep++) {
             P4 lepmom=lepvec.at(itlep)->mom();
-            float dR=jetmom.deltaR_eta(lepmom);
+            double dR=jetmom.deltaR_eta(lepmom);
 
             if(fabs(dR) <= DeltaRMax) overlap=true;
           }
@@ -170,7 +170,7 @@ namespace Gambit {
           P4 lepmom=lepvec.at(itlep)->mom();
           for(unsigned int itjet= 0; itjet < jetvec.size(); itjet++) {
             P4 jetmom=jetvec.at(itjet)->mom();
-            float dR;
+            double dR;
 
             dR=jetmom.deltaR_eta(lepmom);
 
@@ -274,8 +274,8 @@ namespace Gambit {
         vector<Jet*> centralNonBJets;
         vector<Jet*> forwardJets;
 
-        const std::vector<float>  a = {0,10.};
-        const std::vector<float>  b = {0,10000.};
+        const std::vector<double>  a = {0,10.};
+        const std::vector<double>  b = {0,10000.};
         const std::vector<double> c = {0.8};
         BinnedFn2D<double> _eff2d(a,b,c);
 
@@ -317,7 +317,7 @@ namespace Gambit {
         if(signalLeptons.size()==2 && (signalLeptons[0]->pid()*signalLeptons[1]->pid()<0))isOS=true;
 
         bool passZVeto=true;
-        float mLepLep=0.;
+        double mLepLep=0.;
         if(signalLeptons.size()==2)mLepLep=(signalLeptons[0]->mom()+signalLeptons[1]->mom()).m();
         if(mLepLep>81.2 && mLepLep<101.2)passZVeto=false;
 
@@ -385,19 +385,19 @@ namespace Gambit {
         if(leptonPTCut && mllCut && isOS && tauVeto && numCentralNonBJets==0 && numCentralBJets==0 && numForwardJets==0){
 
           //Calculate ETmiss_rel
-          float dPhiMin=9999;
+          double dPhiMin=9999;
           for(Jet * jet : centralBJets){
-            float dphi=fabs(jet->mom().deltaPhi(ptot));
+            double dphi=fabs(jet->mom().deltaPhi(ptot));
             if(fabs(dphi)<dPhiMin)dPhiMin=dphi;
           }
 
           for(Jet * jet : centralNonBJets){
-            float dphi=fabs(jet->mom().deltaPhi(ptot));
+            double dphi=fabs(jet->mom().deltaPhi(ptot));
             if(fabs(dphi)<dPhiMin)dPhiMin=dphi;
           }
 
           for(Particle * lep : signalLeptons){
-            float dphi=fabs(lep->mom().deltaPhi(ptot));
+            double dphi=fabs(lep->mom().deltaPhi(ptot));
             if(fabs(dphi)<dPhiMin)dPhiMin=dphi;
           }
 
@@ -486,19 +486,19 @@ namespace Gambit {
           double mll=(signalLeptons[0]->mom() + signalLeptons[1]->mom()).m();
 
           //Calculate ETmiss_rel
-          float dPhiMin=9999;
+          double dPhiMin=9999;
           for(Jet * jet : centralBJets){
-            float dphi=jet->mom().deltaPhi(ptot);
+            double dphi=jet->mom().deltaPhi(ptot);
             if(dphi<dPhiMin)dPhiMin=dphi;
           }
 
           for(Jet * jet : centralNonBJets){
-            float dphi=jet->mom().deltaPhi(ptot);
+            double dphi=jet->mom().deltaPhi(ptot);
             if(dphi<dPhiMin)dPhiMin=dphi;
           }
 
           for(Particle * lep : signalLeptons){
-            float dphi=lep->mom().deltaPhi(ptot);
+            double dphi=lep->mom().deltaPhi(ptot);
             if(dphi<dPhiMin)dPhiMin=dphi;
           }
 
@@ -511,9 +511,9 @@ namespace Gambit {
           }
 
 
-          float dRll = signalLeptons[0]->mom().deltaR_eta(signalLeptons[1]->mom());
+          double dRll = signalLeptons[0]->mom().deltaR_eta(signalLeptons[1]->mom());
 
-          float mjj = (centralNonBJets[0]->mom()+centralNonBJets[1]->mom()).m();
+          double mjj = (centralNonBJets[0]->mom()+centralNonBJets[1]->mom()).m();
 
 
           //Cuts for cutflow debugging

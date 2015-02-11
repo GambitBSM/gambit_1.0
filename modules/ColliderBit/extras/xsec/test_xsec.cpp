@@ -16,7 +16,7 @@ int main(int argc, char* argv[]){
     Evaluator ev;
 
     t = clock() - t0;
-    cout << "Instantiating class took me " << ((float)t)/CLOCKS_PER_SEC << " s" << endl;
+    cout << "Instantiating class took me " << ((double)t)/CLOCKS_PER_SEC << " s" << endl;
 
     double MSSMpar[24] = // SPS1a-like test
       { 10., 99., 193., 581., -510., -773., -254., 352., 400., 197., 197., 196.,
@@ -25,7 +25,7 @@ int main(int argc, char* argv[]){
     // Evaluate cross section
     cout << "nn_n1n1 SPS1a xsec = " << ev.xsec("nn_n1n1",MSSMpar) << " pb" << endl;
     t = clock() - t0;
-    cout << "Evaluating one xsec took me " << ((float)t)/CLOCKS_PER_SEC << " s" << endl;
+    cout << "Evaluating one xsec took me " << ((double)t)/CLOCKS_PER_SEC << " s" << endl;
 
     cout << endl;
     cout << "nn_n1n2 SPS1a xsec = " << ev.xsec("nn_n1n2",MSSMpar) << " pb" << endl;
@@ -52,7 +52,7 @@ int main(int argc, char* argv[]){
     cout << "Total {{1000022,1000024}},{{1000022,1000024}} xsec = " << xstot << " pb" << endl;
 
     t = clock() - t0;
-    cout << "Finishing took me " << ((float)t)/CLOCKS_PER_SEC << " s" << endl;
+    cout << "Finishing took me " << ((double)t)/CLOCKS_PER_SEC << " s" << endl;
 
     return 0;
 }

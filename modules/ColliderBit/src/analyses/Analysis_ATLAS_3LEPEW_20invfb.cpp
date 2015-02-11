@@ -111,7 +111,7 @@ namespace Gambit {
           for(unsigned int it2 = 0; it2 < vec2.size(); it2++) {
             if(it1==it2)continue;
             P4 lep2mom=vec2.at(it2)->mom();
-            float dR;
+            double dR;
 
             dR=lep1mom.deltaR_eta(lep2mom);
 
@@ -136,7 +136,7 @@ namespace Gambit {
           for(unsigned int it2 = 0; it2 < vec2.size(); it2++) {
             if(it1==it2)continue;
             P4 lep2mom=vec2.at(it2)->mom();
-            float dR;
+            double dR;
 
             dR=lep1mom.deltaR_eta(lep2mom);
 
@@ -161,7 +161,7 @@ namespace Gambit {
           P4 jetmom=jetvec.at(itjet)->mom();
           for(unsigned int itlep = 0; itlep < lepvec.size(); itlep++) {
             P4 lepmom=lepvec.at(itlep)->mom();
-            float dR;
+            double dR;
 
             dR=jetmom.deltaR_eta(lepmom);
 
@@ -186,7 +186,7 @@ namespace Gambit {
           P4 lepmom=lepvec.at(itlep)->mom();
           for(unsigned int itjet= 0; itjet < jetvec.size(); itjet++) {
             P4 jetmom=jetvec.at(itjet)->mom();
-            float dR;
+            double dR;
 
             dR=jetmom.deltaR_eta(lepmom);
 
@@ -298,8 +298,8 @@ namespace Gambit {
         }
 
         //Make b jet container
-        const std::vector<float>  a = {0,10.};
-        const std::vector<float>  b = {0,10000.};
+        const std::vector<double>  a = {0,10.};
+        const std::vector<double>  b = {0,10000.};
         const std::vector<double> c = {0.8};
         BinnedFn2D<double> _eff2d(a,b,c);
 
@@ -452,7 +452,7 @@ namespace Gambit {
 
 
         //if(leptonCut)cout << "extralepID " << extralepID << endl;
-        float mT=0;
+        double mT=0;
         if(signalLeptons.size()==3 && extralepID!=-1){
           P4 extralepVec=signalLeptons.at(extralepID)->mom();
           mT=sqrt(2.*extralepVec.pT()*met*(1. - cos(extralepVec.deltaPhi(ptot))));
@@ -461,7 +461,7 @@ namespace Gambit {
 
 
         //Now calculate trilepton invariant mass
-        float m3l=0;
+        double m3l=0;
         if(signalLeptons.size()==3)m3l=(signalLeptons.at(0)->mom()+signalLeptons.at(1)->mom()+signalLeptons.at(2)->mom()).m();
         bool threelZVeto=false;
         if(fabs(m3l-91.2)<10.)threelZVeto=true;
@@ -501,13 +501,13 @@ namespace Gambit {
         //The remaining lepton must have different flavour and the opposite sign
         //NEEDS CHECKING
         bool leptonTypeCut_SR0taub=false;
-        float dPhiLLMin=9999;
+        double dPhiLLMin=9999;
         if(numElectrons==2 && numMuons==1){
           if((signalElectrons[0]->pid()==signalElectrons[1]->pid()) &&
              (signalElectrons[0]->pid()*signalMuons[0]->pid())<0)leptonTypeCut_SR0taub=true;
 
-          float dPhiLL1=signalElectrons[0]->mom().deltaPhi(signalMuons[0]->mom());
-          float dPhiLL2=signalElectrons[1]->mom().deltaPhi(signalMuons[0]->mom());
+          double dPhiLL1=signalElectrons[0]->mom().deltaPhi(signalMuons[0]->mom());
+          double dPhiLL2=signalElectrons[1]->mom().deltaPhi(signalMuons[0]->mom());
 
           if(dPhiLL1<dPhiLL2){
             dPhiLLMin=dPhiLL1;
@@ -521,8 +521,8 @@ namespace Gambit {
           if((signalMuons[0]->pid()==signalMuons[1]->pid()) &&
              (signalElectrons[0]->pid()*signalMuons[0]->pid())<0)leptonTypeCut_SR0taub=true;
 
-          float dPhiLL1=signalMuons[0]->mom().deltaPhi(signalElectrons[0]->mom());
-          float dPhiLL2=signalMuons[1]->mom().deltaPhi(signalElectrons[0]->mom());
+          double dPhiLL1=signalMuons[0]->mom().deltaPhi(signalElectrons[0]->mom());
+          double dPhiLL2=signalMuons[1]->mom().deltaPhi(signalElectrons[0]->mom());
 
           if(dPhiLL1<dPhiLL2){
             dPhiLLMin=dPhiLL1;
@@ -547,14 +547,14 @@ namespace Gambit {
         //Now do SR1tau
         //We need one tau and two light leptons with opposite sign to the tau
         bool leptonTypeCut_SR1tau=false;
-        float mltau=9999;
+        double mltau=9999;
 
         if(numTaus==1 && (numElectrons+numMuons)==2 && (signalLeptons[0]->pid() * signalLeptons[1]->pid())>0){
           leptonTypeCut_SR1tau=true;
 
           //Find the lepton and tau combination that has mltau closest to the Higgs mass
-          float mltau1=(signalLeptons[0]->mom()+signalTaus[0]->mom()).m();
-          float mltau2=(signalLeptons[1]->mom()+signalTaus[0]->mom()).m();
+          double mltau1=(signalLeptons[0]->mom()+signalTaus[0]->mom()).m();
+          double mltau2=(signalLeptons[1]->mom()+signalTaus[0]->mom()).m();
           if(fabs(mltau1-125)<fabs(mltau2-125)){
             mltau=mltau1;
           }
@@ -565,7 +565,7 @@ namespace Gambit {
         //Electron pair veto
         bool eePairVeto=false;
         if(leptonTypeCut_SR1tau && numElectrons==2){
-          float mEE=(signalElectrons[0]->mom()+signalElectrons[1]->mom()).m();
+          double mEE=(signalElectrons[0]->mom()+signalElectrons[1]->mom()).m();
           if(mEE>81.2 && mEE<101.2)eePairVeto=true;
         }
 
@@ -578,7 +578,7 @@ namespace Gambit {
         }
 
         //Now do SR2taua
-        float mT2max=0;
+        double mT2max=0;
 
         if(numTaus==2 && (numElectrons + numMuons)==1){
 
@@ -618,7 +618,7 @@ namespace Gambit {
         if(numTaus==2 && (numElectrons + numMuons)==1 && trigger && mSFOS12Cut && atLeastOneEorMu && separationCut && bJets.size()==0 && met > 50. && mT2max > 100.)_num_SR2tau_a++;
 
         //Finally do SR2taub
-        float mtautau=0;
+        double mtautau=0;
         if(numTaus==2)mtautau=(signalTaus[0]->mom()+signalTaus[1]->mom()).m();
 
         if(numTaus==2 && (numElectrons + numMuons)==1 && trigger && mSFOS12Cut && atLeastOneEorMu && separationCut && (signalTaus[0]->pid() == -1*signalTaus[1]->pid()) && bJets.size()==0 && met > 60 && (signalTaus[0]->mom().pT() + signalTaus[1]->mom().pT())>110. && mtautau>70. && mtautau < 120.)_num_SR2tau_b++;
