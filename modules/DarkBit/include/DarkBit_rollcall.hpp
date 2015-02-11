@@ -811,6 +811,10 @@ START_MODULE
     DEPENDENCY(DarkSUSY_PointInit, bool)
     BACKEND_REQ(dshayield, (), double, (double&,double&,int&,int&,int&))
     #undef FUNCTION 
+    #define FUNCTION SimYieldTable_MicrOmegas
+    START_FUNCTION(Gambit::DarkBit::SimYieldTable)
+    BACKEND_REQ(dNdE, (), double, (double,double,int,int))
+    #undef FUNCTION
   #undef CAPABILITY
 
 #undef MODULE

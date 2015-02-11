@@ -752,7 +752,7 @@ namespace Gambit {
         }
         else
             pID = chainList[iteration];
-    }    
+    }
     
     // Event counter for cascade decays
     void cascadeMC_EventCount(std::map<std::string, int> &counts)
@@ -2314,6 +2314,27 @@ namespace Gambit {
                 result.addChannel(dNdE, P1, P2, FINAL, EcmMin, EcmMax);  // specifies also center of mass energy range
             ADD_CHANNEL(25, "b", "bbar", "gamma", 10., 10000.)
             ADD_CHANNEL(12, "Z0", "Z0", "gamma", 10., 10000.)
+            #undef ADD_CHANNEL
+            initialized = true;
+        }
+    }
+
+    void SimYieldTable_MicrOmegas(SimYieldTable& result)
+    {
+        using namespace Pipes::SimYieldTable_MicrOmegas;
+
+        static bool initialized = false;
+        int outN = 0;  // gamma
+
+        if ( not initialized )
+        {
+            Funk::Funk dNdE;
+
+            #define ADD_CHANNEL(inP, P1, P2, FINAL, EcmMin, EcmMax)                                                   \
+                dNdE = Funk::func(BEreq::dNdE.pointer(), Funk::var("Ecm"), Funk::var("E"), inP, outN);                \
+                result.addChannel(dNdE, P1, P2, FINAL, EcmMin, EcmMax);  // specifies also center of mass energy range
+            ADD_CHANNEL(5, "b", "bbar", "gamma", 4., 10000.)
+            ADD_CHANNEL(10, "Z0", "Z0", "gamma", 4., 10000.)
             #undef ADD_CHANNEL
             initialized = true;
         }

@@ -24,7 +24,33 @@ BE_FUNCTION(sortOddParticles, int, (char*), "sortOddParticles","mass_spectrum")
 BE_FUNCTION(nucleonAmplitudes, int, (double(*)(double,double,double,double), double*, double*, double*, double*), "nucleonAmplitudes", "nucleonAmplitudes" )
 BE_FUNCTION(FeScLoop, double, (double, double, double, double), "FeScLoop", "FeScLoop")
 
+BE_FUNCTION(mInterp, int, (double,int,int,double*) , "mInterp", "mInterp")
+BE_FUNCTION(zInterp, double, (double,double*) , "zInterp", "zInterp")
+
 BE_VARIABLE(micrOMEGAs::MOcommonSTR, mocommon_, "mocommon_", "MOcommon")
+
+namespace Gambit
+{
+  namespace Backends
+  {
+    namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
+    {
+      double dNdE(double Ecm, double E, int inP, int outN)
+      {
+        // outN 0-5: gamma, e+, p-, nu_e, nu_mu, nu_tau
+        // inP:  0 - 6: glu, d, u, s, c, b, t
+        //       7 - 9: e, m, l
+        //       10 - 15: Z, ZT, ZL, W, WT, WL
+        double tab[250];  // NZ = 250
+        mInterp(Ecm/2, inP, outN, tab);
+        return zInterp(log(E/Ecm*2), tab);
+      }
+
+    } /* end namespace BACKENDNAME_SAFE_VERSION */
+  } /* end namespace Backends */
+} /* end namespace Gambit */
+
+BE_CONV_FUNCTION(dNdE, double, (double,double,int,int), "dNdE")
 
 BE_INI_DEPENDENCY(MSSMspectrum, eaSLHA)
 
