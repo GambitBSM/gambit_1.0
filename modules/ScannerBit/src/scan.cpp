@@ -122,7 +122,10 @@ namespace Gambit
                                 {
                                         if (options->hasKey("plugins", *it, "purpose"))
                                         {
-                                                names[options->getValue<std::string>("plugins", *it, "purpose")].push_back(*it);
+                                                std::vector <std::string> purposes = get_infile_values(options->getNode("plugins", *it, "purpose"));
+                                                
+                                                for (auto it2 = purposes.begin(), end = purposes.end(); it2 != end; it2++)
+                                                        names[*it2].push_back(*it);
                                         }
                                         else
                                         {
