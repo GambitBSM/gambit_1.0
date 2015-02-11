@@ -19,7 +19,7 @@
 ///
 ///  *********************************************
 
-#include <priors/gaussian.hpp>
+#include "gambit/ScannerBit/priors/gaussian.hpp"
 
 namespace Gambit
 {

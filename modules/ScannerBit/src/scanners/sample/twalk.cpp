@@ -14,7 +14,7 @@
 ///
 ///  *********************************************
 
-#include "twalk.hpp"
+#include "gambit/ScannerBit/scanners/sample/twalk.hpp"
 
 scanner_plugin(twalk, version(0, 0, 1, beta))
 {

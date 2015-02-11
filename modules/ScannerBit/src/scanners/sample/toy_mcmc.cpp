@@ -20,8 +20,8 @@
 #include <map>
 #include <sstream>
 
-#include "scanner_plugin.hpp"
-#include "threadsafe_rng.hpp"
+#include "gambit/ScannerBit/scanner_plugin.hpp"
+#include "gambit/Utils/threadsafe_rng.hpp"
 
 scanner_plugin(toy_mcmc, version(1, 0, 0))
 {      

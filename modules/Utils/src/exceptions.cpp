@@ -17,10 +17,10 @@
 ///
 ///  *********************************************
 
-#include "util_macros.hpp"
-#include "exceptions.hpp"
-#include "standalone_error_handlers.hpp"
-#include "log.hpp"
+#include "gambit/Utils/util_macros.hpp"
+#include "gambit/Utils/exceptions.hpp"
+#include "gambit/Utils/standalone_error_handlers.hpp"
+#include "gambit/Logs/log.hpp"
 
 namespace Gambit
 {

@@ -13,7 +13,7 @@
 ///
 ///  *********************************************
 
-#include "terminator.hpp"
+#include "gambit/Utils/terminator.hpp"
 
 void Gambit::terminator()
 {
