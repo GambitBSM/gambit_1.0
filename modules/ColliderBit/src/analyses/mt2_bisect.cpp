@@ -32,7 +32,8 @@
               
 #include <iostream>
 #include <math.h>
-#include "mt2_bisect.h"
+
+#include "gambit/ColliderBit/mt2_bisect.h"
 
 using namespace std;
 

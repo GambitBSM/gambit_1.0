@@ -14,8 +14,8 @@
 ///
 ///  *********************************************
 
-#include "error_handlers.hpp"
-#include "log_tags.hpp"
+#include "gambit/Core/error_handlers.hpp"
+#include "gambit/Logs/log_tags.hpp"
 
 namespace Gambit
 {

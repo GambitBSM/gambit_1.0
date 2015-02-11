@@ -27,8 +27,9 @@ ENABLE_VERBOSE        := @ENABLE_VERBOSE@
 
 # Makefile modules
 MODELS             := @MODELS@
+ADDONS             := @ADDONS@
 MODULES            := config src fflite legacy slhaea doc
-MODULES            += $(MODELS)
+MODULES            += $(MODELS) $(ADDONS)
 
 # Variables for Mathematica meta code
 MATH               := @MATH@
@@ -198,6 +199,7 @@ showbuild:
 	@echo ""
 	@echo "MATH               = $(MATH)"
 	@echo "MODELS             = $(MODELS)"
+	@echo "ADDONS             = $(ADDONS)"
 	@echo "ALGORITHMS         = $(ALGORITHMS)"
 	@echo ""
 	@echo "CXX                = $(CXX)"

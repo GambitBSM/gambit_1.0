@@ -22,8 +22,8 @@
 ///  \date 2013 Nov
 ///  *********************************************
 
-#include "gambit_module_headers.hpp"
-#include "FlavBit_rollcall.hpp"
+#include "gambit/Utils/gambit_module_headers.hpp"
+#include "gambit/FlavBit/FlavBit_rollcall.hpp"
 #define Nobs_BKsll 24
 
 namespace Gambit

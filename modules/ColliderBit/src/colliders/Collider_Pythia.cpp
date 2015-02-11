@@ -1,7 +1,8 @@
+#include <stdexcept>
+#include "gambit/ColliderBit/Collider.hpp"
+
 /// @note STEP1-3)  How to configure a new collider: Start in Collider.hpp
 /// @note (To configure a new subprocess group, only do STEPS >= 4) 
-#include "Collider.hpp"
-#include <stdexcept>
 
 namespace Gambit {
   namespace ColliderBit {

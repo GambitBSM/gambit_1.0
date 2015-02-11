@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Wed 3 Dec 2014 11:57:59
+// File generated at Fri 16 Jan 2015 13:07:57
 
 #ifndef CMSSM_CONVERGENCE_TESTER_H
 #define CMSSM_CONVERGENCE_TESTER_H

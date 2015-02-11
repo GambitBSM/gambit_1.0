@@ -1,16 +1,17 @@
-#include "Analysis.hpp"
-#include "mt2_bisect.h"
-
-/// @todo Eliminate the ROOT vectors!
-#include "TLorentzVector.h"
-#include "TVector2.h"
-
 #include <vector>
 #include <cmath>
 #include <memory>
 #include <iomanip>
-using namespace std;
 
+#include "gambit/ColliderBit/Analysis.hpp"
+#include "gambit/ColliderBit/mt2_bisect.h"
+
+/// @todo Eliminate the ROOT vectors!
+#include <TLorentzVector.h>
+#include <TVector2.h>
+
+
+using namespace std;
 
 /* The ATLAS 0 lepton direct stop analysis (20fb^-1) - `heavy stop'.
 
@@ -57,7 +58,7 @@ namespace Gambit {
           P4 jetmom=jetvec.at(itjet)->mom();
           for(unsigned int itlep = 0; itlep < lepvec.size(); itlep++) {
             P4 lepmom=lepvec.at(itlep)->mom();
-            float dR;
+            double dR;
 
             dR=jetmom.deltaR_eta(lepmom);
 
@@ -82,7 +83,7 @@ namespace Gambit {
           P4 lepmom=lepvec.at(itlep)->mom();
           for(unsigned int itjet= 0; itjet < jetvec.size(); itjet++) {
             P4 jetmom=jetvec.at(itjet)->mom();
-            float dR;
+            double dR;
 
             dR=jetmom.deltaR_eta(lepmom);
 
@@ -153,8 +154,8 @@ namespace Gambit {
         //Note that we assume that b jets have previously been 100% tagged
         //Now we use the new Buckley tagger
 
-        const std::vector<float>  a = {0,10.};
-        const std::vector<float>  b = {0,10000.};
+        const std::vector<double>  a = {0,10.};
+        const std::vector<double>  b = {0,10000.};
         const std::vector<double> c = {0.7};
         BinnedFn2D<double> _eff2d(a,b,c);
 
@@ -233,11 +234,11 @@ namespace Gambit {
         bool cut_dPhiJet3=false;
         bool cut_dPhiJet2=false;
         bool cut_dPhiJet1=false;
-        float dphi_jetmet1=9999;
+        double dphi_jetmet1=9999;
         if(nJets>0)dphi_jetmet1=std::acos(std::cos(signalJets.at(0)->phi()-ptot.phi()));
-        float dphi_jetmet2=9999;
+        double dphi_jetmet2=9999;
         if(nJets>1)dphi_jetmet2=std::acos(std::cos(signalJets.at(1)->phi()-ptot.phi()));
-        float dphi_jetmet3=9999;
+        double dphi_jetmet3=9999;
         if(nJets>2)dphi_jetmet3=std::acos(std::cos(signalJets.at(2)->phi()-ptot.phi()));
 
         if(dphi_jetmet3>3.14/fabs(5.0))cut_dPhiJet3=true;
@@ -253,8 +254,8 @@ namespace Gambit {
         if(met>150.)cut_METGt150=true;
 
         //Calculate dphi(b,met) for the closest b-jet in phi to MET
-        float dphi_bjetmet_min=9999.;
-        float minphi =9999.;
+        double dphi_bjetmet_min=9999.;
+        double minphi =9999.;
         int whichb=0;
         for(size_t j=0; j<signalBJets.size(); j++) {
           if(fabs(std::acos(std::cos(signalBJets.at(j)->phi()-ptot.phi())))<minphi) {
@@ -266,15 +267,15 @@ namespace Gambit {
         }
 
 
-        float mT_bjetmet_min = 0;
+        double mT_bjetmet_min = 0;
         if(passBJetCut) mT_bjetmet_min = sqrt(2*signalBJets.at(whichb)->pT()*met*(1-std::cos(dphi_bjetmet_min)));
 
         bool cut_mTbjetmetGt175=false;
         if(mT_bjetmet_min>175.)cut_mTbjetmetGt175=true;
 
         //Calculate dphi(b,met) for the furthest b-jet in phi to MET
-        float dphi_bjetmet_max=0.;
-        float maxphi =0.;
+        double dphi_bjetmet_max=0.;
+        double maxphi =0.;
         int whichb_max=0;
         for(size_t j=0; j<signalBJets.size(); j++) {
 
@@ -284,8 +285,9 @@ namespace Gambit {
             whichb_max=j;
           }
         }
-	
-        float mT_bjetmet_max = 0;
+
+        double mT_bjetmet_max = 0;
+
         if(passBJetCut) mT_bjetmet_max = sqrt(2*signalBJets.at(whichb_max)->pT()*met*(1-std::cos(dphi_bjetmet_max)));
 
         //Common preselection for all signal regions in the fully resolved case
@@ -340,7 +342,7 @@ namespace Gambit {
         }
 
         if(nJets>=6 and bjetcount==2) {
-          unsigned int j1 = 0 ; unsigned int j2 = 0; unsigned int j4 = 0; unsigned int j5 = 0; //int j6 = 0;
+          unsigned int j1 = 0 ; unsigned int j2 = 0; //unsigned int j4 = 0; unsigned int j5 = 0; //int j6 = 0;
           unsigned int b1 = 0;
           for(unsigned int k=0; k<selectNonBJets.size(); k++) {
             for(unsigned int l=k+1; l<selectNonBJets.size(); l++) {
@@ -370,8 +372,8 @@ namespace Gambit {
                 jet4.SetPtEtaPhiE(selectNonBJets[k]->pT(),selectNonBJets[k]->eta(),selectNonBJets[k]->phi(),selectNonBJets[k]->E());
                 jet5.SetPtEtaPhiE(selectNonBJets[l]->pT(),selectNonBJets[l]->eta(),selectNonBJets[l]->phi(),selectNonBJets[l]->E());
                 if(jet4.DeltaR(jet5)<mindphi_45) {
-                  j4 = k;
-                  j5 = l;
+                  //j4 = k;
+                  //j5 = l;
                   mindphi_45 = jet4.DeltaR(jet5);
                   W2 = jet4+jet5;
                 }
@@ -403,14 +405,14 @@ namespace Gambit {
         }*/
 
         //Cutflow flags
-        bool cut_mjjj0=false;
-        bool cut_mjjj1=false;
+        //bool cut_mjjj0=false;
+        //bool cut_mjjj1=false;
 
         bool cut_6jets=false;
         bool cut_Btag=false;
 
         bool cut_METGt130=false;
-        bool cut_METGt200=false;
+        //bool cut_METGt200=false;
         bool cut_METGt250=false;
         bool cut_METGt300=false;
         bool cut_METGt350=false;
@@ -453,8 +455,8 @@ namespace Gambit {
 
         //Find highest pT b jet
         //Should no longe be necessary due to sorting of b jet collection
-        /*float leadBJetPt=0;
-          float leadBJetID=0;
+        /*double leadBJetPt=0;
+          double leadBJetID=0;
 
           if(passBJetCut){
           for(int j=0; j<nJets; j++) {
@@ -466,8 +468,8 @@ namespace Gambit {
           }
 
           //Find sub-leading pT b jet
-          float subBJetPt=0;
-          float subBJetID=0;
+          double subBJetPt=0;
+          double subBJetID=0;
 
           if(passBJetCut){
           for(int j=0; j<nJets; j++) {
@@ -479,9 +481,9 @@ namespace Gambit {
           }*/
 
         //Work out dPhi between B jets
-        float dPhiBB=0;
-        float leadBJetID=0;
-        float subBJetID=1;
+        double dPhiBB=0;
+        double leadBJetID=0;
+        double subBJetID=1;
         if(passBJetCut){
           dPhiBB=std::acos(std::cos(signalBJets.at(leadBJetID)->phi()-signalBJets.at(subBJetID)->phi()));
         }

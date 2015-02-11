@@ -21,8 +21,8 @@
 #include <utility>
 #include <algorithm>
 
-#include "objective_plugin.hpp"
-#include "cholesky.hpp"
+#include "gambit/ScannerBit/objective_plugin.hpp"
+#include "gambit/ScannerBit/cholesky.hpp"
 
 objective_plugin(uniform, version(1,0,0))
 {

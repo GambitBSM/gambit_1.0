@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Wed 3 Dec 2014 13:12:18
+// File generated at Fri 16 Jan 2015 12:44:57
 
 #include "CMSSMNoFV_slha_io.hpp"
 #include "CMSSMNoFV_input_parameters.hpp"
@@ -234,14 +234,6 @@ void CMSSMNoFV_slha_io::write_to_file(const std::string& file_name)
 }
 
 /**
- * Read (DR-bar) model parameter input scale from EXTPAR entry 0
- */
-double CMSSMNoFV_slha_io::get_input_scale() const
-{
-   return slha_io.get_extpar().input_scale;
-}
-
-/**
  * Read (DR-bar) model parameter output scale from MODSEL entry 12
  */
 double CMSSMNoFV_slha_io::get_parameter_output_scale() const
@@ -258,7 +250,6 @@ void CMSSMNoFV_slha_io::read_from_file(const std::string& file_name)
 {
    slha_io.read_from_file(file_name);
    slha_io.read_modsel();
-   slha_io.read_extpar();
 }
 
 /**

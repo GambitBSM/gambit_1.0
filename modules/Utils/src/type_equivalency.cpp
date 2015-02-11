@@ -17,10 +17,10 @@
 ///
 ///  *********************************************
 
-#include "type_equivalency.hpp"
-#include "util_types.hpp"
-#include "util_functions.hpp"
 #include "cmake_variables.hpp"
+#include "gambit/Utils/type_equivalency.hpp"
+#include "gambit/Utils/util_types.hpp"
+#include "gambit/Utils/util_functions.hpp"
 
 /// Constructor
 Gambit::Utils::type_equivalency::type_equivalency() :

@@ -19,10 +19,10 @@
 ///
 ///  *********************************************
 
-#include "plugin_utilities.hpp"
-#include "plugin_comparators.hpp"
+#include "gambit/ScannerBit/plugin_utilities.hpp"
+#include "gambit/ScannerBit/plugin_comparators.hpp"
+#include "gambit/ScannerBit/plugin_loader.hpp"
 #include "cmake_variables.hpp"
-#include "plugin_loader.hpp"
 
 namespace Gambit
 {

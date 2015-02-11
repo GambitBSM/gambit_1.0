@@ -1,11 +1,25 @@
-#include "ASCIItableReader.hpp"
-//#include "base_functions.hpp"
-#include "funktions.hpp"
+//   GAMBIT: Global and Modular BSM Inference Tool
+//   *********************************************
+///  \file
+///
+///  Implementation of scalar singlet DM routines.
+///
+///  *********************************************
+///
+///  Authors (add name and date if you modify):
+///   
+///  \author Christoph Weniger  
+///  \date no idea
+///
+///  *********************************************
+
 #include <string>
 
-#include "gambit_module_headers.hpp"
-#include "DarkBit_types.hpp"
-#include "DarkBit_rollcall.hpp"
+#include "gambit/Utils/ASCIItableReader.hpp"
+#include "gambit/Utils/funktions.hpp"
+#include "gambit/Utils/gambit_module_headers.hpp"
+#include "gambit/DarkBit/DarkBit_types.hpp"
+#include "gambit/DarkBit/DarkBit_rollcall.hpp"
 
 namespace Gambit
 {

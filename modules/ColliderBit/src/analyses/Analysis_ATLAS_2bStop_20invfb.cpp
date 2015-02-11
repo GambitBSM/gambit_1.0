@@ -1,10 +1,11 @@
-#include "Analysis.hpp"
-#include "mt2_bisect.h"
-
 #include <vector>
 #include <cmath>
 #include <memory>
 #include <iomanip>
+
+#include "gambit/ColliderBit/Analysis.hpp"
+#include "gambit/ColliderBit/mt2_bisect.h"
+
 using namespace std;
 
 
@@ -69,8 +70,8 @@ namespace Gambit {
           if (muon->pT() > 6. && fabs(muon->eta()) < 2.4) baselineMuons.push_back(muon);
         }
 
-        const std::vector<float>  a = {0,10.};
-        const std::vector<float>  b = {0,10000.};
+        const std::vector<double>  a = {0,10.};
+        const std::vector<double>  b = {0,10000.};
         const std::vector<double> c = {0.60};
         BinnedFn2D<double> _eff2d(a,b,c);
 
@@ -144,8 +145,8 @@ namespace Gambit {
         bool passSRAbJetCut=false;
         bool passSRBbJetCut=false;
 
-        float mbb=0;
-        float mCT=0;
+        double mbb=0;
+        double mCT=0;
 
         if(nJets>=2){
           if(signalJets[0]->pT() > 130.
@@ -160,8 +161,8 @@ namespace Gambit {
                 //bjet2.SetPtEtaPhiE(bJets[1]->pT(),bJets[1]->eta(),bJets[1]->phi(),bJets[1]->E());
                 mbb = (bJets[0]->mom()+bJets[1]->mom()).m();
 
-                float bjet1_ET = sqrt(bJets[0]->mom().pT()*bJets[0]->mom().pT()+bJets[0]->mom().m()*bJets[0]->mom().m());
-                float bjet2_ET = sqrt(bJets[1]->mom().pT()*bJets[1]->mom().pT()+bJets[1]->mom().m()*bJets[1]->mom().m());
+                double bjet1_ET = sqrt(bJets[0]->mom().pT()*bJets[0]->mom().pT()+bJets[0]->mom().m()*bJets[0]->mom().m());
+                double bjet2_ET = sqrt(bJets[1]->mom().pT()*bJets[1]->mom().pT()+bJets[1]->mom().m()*bJets[1]->mom().m());
                 //TVector2 bjet1_pT;
                 //TVector2 bjet2_pT;
                 //bjet1_pT.Set(bjet1.Px(),bjet1.Py());
@@ -185,8 +186,8 @@ namespace Gambit {
                   //bjet1.SetPtEtaPhiE(signalJets[0]->pT(),signalJets[0]->eta(),signalJets[0]->phi(),signalJets[0]->E());
                   //bjet2.SetPtEtaPhiE(signalJets[1]->pT(),signalJets[1]->eta(),signalJets[1]->phi(),signalJets[1]->E());
                   mbb = (bJets[0]->mom()+bJets[1]->mom()).m();
-                  float bjet1_ET = sqrt(bJets[0]->mom().pT()*bJets[0]->mom().pT()+bJets[0]->mom().m()*bJets[0]->mom().m());
-                  float bjet2_ET = sqrt(bJets[1]->mom().pT()*bJets[1]->mom().pT()+bJets[1]->mom().m()*bJets[1]->mom().m());
+                  double bjet1_ET = sqrt(bJets[0]->mom().pT()*bJets[0]->mom().pT()+bJets[0]->mom().m()*bJets[0]->mom().m());
+                  double bjet2_ET = sqrt(bJets[1]->mom().pT()*bJets[1]->mom().pT()+bJets[1]->mom().m()*bJets[1]->mom().m());
                   //TVector2 bjet1_pT;
                   //TVector2 bjet2_pT;
                   //bjet1_pT.Set(bjet1.Px(),bjet1.Py());
@@ -198,8 +199,8 @@ namespace Gambit {
                   double mct_squared = pow(bjet1_ET+bjet2_ET,2)-modPTdiff_squared;
                   mCT = sqrt(mct_squared);
 
-                  //float bjet1_ET = sqrt(bjet1.Pt()*bjet1.Pt()+bjet1.M()*bjet1.M());
-                  //float bjet2_ET = sqrt(bjet2.Pt()*bjet2.Pt()+bjet2.M()*bjet2.M());
+                  //double bjet1_ET = sqrt(bjet1.Pt()*bjet1.Pt()+bjet1.M()*bjet1.M());
+                  //double bjet2_ET = sqrt(bjet2.Pt()*bjet2.Pt()+bjet2.M()*bjet2.M());
                   //TVector2 bjet1_pT;
                   //TVector2 bjet2_pT;
                   //bjet1_pT.Set(bjet1.Px(),bjet1.Py());
@@ -226,8 +227,8 @@ namespace Gambit {
               //bjet2.SetPtEtaPhiE(signalJets[2]->pT(),signalJets[2]->eta(),signalJets[2]->phi(),signalJets[2]->E());
 
               mbb = (bJets[0]->mom()+bJets[1]->mom()).m();
-              float bjet1_ET = sqrt(bJets[0]->mom().pT()*bJets[0]->mom().pT()+bJets[0]->mom().m()*bJets[0]->mom().m());
-              float bjet2_ET = sqrt(bJets[1]->mom().pT()*bJets[1]->mom().pT()+bJets[1]->mom().m()*bJets[1]->mom().m());
+              double bjet1_ET = sqrt(bJets[0]->mom().pT()*bJets[0]->mom().pT()+bJets[0]->mom().m()*bJets[0]->mom().m());
+              double bjet2_ET = sqrt(bJets[1]->mom().pT()*bJets[1]->mom().pT()+bJets[1]->mom().m()*bJets[1]->mom().m());
               //TVector2 bjet1_pT;
               //TVector2 bjet2_pT;
               //bjet1_pT.Set(bjet1.Px(),bjet1.Py());
@@ -241,8 +242,8 @@ namespace Gambit {
 
 
               //mbb = (bjet1+bjet2).M();
-              //float bjet1_ET = sqrt(bjet1.Pt()*bjet1.Pt()+bjet1.M()*bjet1.M());
-              //float bjet2_ET = sqrt(bjet2.Pt()*bjet2.Pt()+bjet2.M()*bjet2.M());
+              //double bjet1_ET = sqrt(bjet1.Pt()*bjet1.Pt()+bjet1.M()*bjet1.M());
+              //double bjet2_ET = sqrt(bjet2.Pt()*bjet2.Pt()+bjet2.M()*bjet2.M());
               //TVector2 bjet1_pT;
               //TVector2 bjet2_pT;
               //bjet1_pT.Set(bjet1.Px(),bjet1.Py());
@@ -256,22 +257,22 @@ namespace Gambit {
         }
 
         //Calculate dphi(jet,met) for the three leading jets
-        float dphi_jetmet1=9999;
+        double dphi_jetmet1=9999;
         if(nJets>0)dphi_jetmet1=std::acos(std::cos(signalJets.at(0)->phi()-ptot.phi()));
-        float dphi_jetmet2=9999;
+        double dphi_jetmet2=9999;
         if(nJets>1)dphi_jetmet2=std::acos(std::cos(signalJets.at(1)->phi()-ptot.phi()));
-        float dphi_jetmet3=9999;
+        double dphi_jetmet3=9999;
         if(nJets>2)dphi_jetmet3=std::acos(std::cos(signalJets.at(2)->phi()-ptot.phi()));
 
-        float dphi_min = min(dphi_jetmet1,dphi_jetmet2);
+        double dphi_min = min(dphi_jetmet1,dphi_jetmet2);
         dphi_min = min(dphi_min,dphi_jetmet3);
 
         //Calculate meff (all jets with pT>20 GeV, and met)
-        float meff = met;
+        double meff = met;
         for (Jet* jet : signalJets) {
           if(jet->pT()>20.)meff += jet->pT();
         }
-        float meff2 = met; float meff3 = met; int nummeff=0;
+        double meff2 = met; double meff3 = met; int nummeff=0;
         for (Jet* jet : signalJets) {
           nummeff++;
           if(nummeff<=2 && jet->pT()>20.)meff2 += jet->pT();
@@ -280,7 +281,7 @@ namespace Gambit {
 
 
         //Calculate HT,3 (all jets except 3 highest pT)
-        float ht3 = 0; int num=0;
+        double ht3 = 0; int num=0;
         for (Jet* jet : signalJets) {
           num++;
           if(num>3 && jet->pT()>20.)ht3 += jet->pT();

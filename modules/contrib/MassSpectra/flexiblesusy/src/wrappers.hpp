@@ -26,6 +26,7 @@
 #include <string>
 #include <Eigen/Core>
 #include <boost/lexical_cast.hpp>
+#include "compare.hpp"
 
 namespace flexiblesusy {
 
@@ -198,6 +199,17 @@ double MaxRelDiff(const Eigen::ArrayBase<Derived>& a,
    return MaxRelDiff(a.matrix(), b.matrix());
 }
 
+inline double MaxAbsValue(double x)
+{
+   return Abs(x);
+}
+
+template <class Derived>
+double MaxAbsValue(const Eigen::MatrixBase<Derived>& x)
+{
+   return x.cwiseAbs().maxCoeff();
+}
+
 inline int Sign(double x)
 {
    return (x >= 0.0 ? 1 : -1);
@@ -254,6 +266,41 @@ inline double Re(double x)
 inline double Re(const std::complex<double>& x)
 {
    return std::real(x);
+}
+
+/**
+ * @brief reorders vector v according to ordering in vector v2
+ * @param v vector with elementes to be reordered
+ * @param v2 vector with reference ordering
+ */
+template<class Real, int N>
+void reorder_vector(
+   Eigen::Array<Real,N,1>& v,
+   const Eigen::Array<Real,N,1>& v2)
+{
+   Eigen::PermutationMatrix<N> p;
+   p.setIdentity();
+   std::sort(p.indices().data(), p.indices().data() + p.indices().size(),
+             CompareAbs<Real, N>(v2));
+
+#if EIGEN_VERSION_AT_LEAST(3,1,4)
+   v.matrix().transpose() *= p.inverse();
+#else
+   Eigen::Map<Eigen::Matrix<Real,N,1> >(v.data()).transpose() *= p.inverse();
+#endif
+}
+
+/**
+ * @brief reorders vector v according to ordering of diagonal elements in mass_matrix
+ * @param v vector with elementes to be reordered
+ * @param matrix matrix with diagonal elements with reference ordering
+ */
+template<class Derived>
+void reorder_vector(
+   Eigen::Array<double,Eigen::MatrixBase<Derived>::RowsAtCompileTime,1>& v,
+   const Eigen::MatrixBase<Derived>& matrix)
+{
+   reorder_vector(v, matrix.diagonal().array().eval());
 }
 
 inline double Im(double x)

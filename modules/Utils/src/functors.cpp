@@ -34,11 +34,11 @@
 
 #include <chrono>
 
-#include "functors.hpp"
-#include "models.hpp"
-#include "all_functor_types.hpp"
-#include "standalone_error_handlers.hpp"
-#include "log.hpp"
+#include "gambit/Utils/functors.hpp"
+#include "gambit/Utils/all_functor_types.hpp"
+#include "gambit/Utils/standalone_error_handlers.hpp"
+#include "gambit/Models/models.hpp"
+#include "gambit/Logs/log.hpp"
 
 #include <boost/preprocessor/seq/for_each.hpp>
 
@@ -622,12 +622,14 @@ namespace Gambit
     /// Acknowledge that this functor invalidated the current point in model space.
     void module_functor_common::acknowledgeInvalidation(invalid_point_exception& e, functor* f)
     {
-      #pragma omp atomic update
+      #pragma omp atomic
       pInvalidation += fadeRate*(1-FUNCTORS_BASE_INVALIDATION_RATE);
       if (f==NULL) f = this; 
       e.set_thrower(f);
-      #pragma omp atomic write
-      raised_point_exception = &e;
+      #pragma omp critical (raised_point_exception)
+      {
+        raised_point_exception = &e;
+      }
       if (omp_get_level()!=0) breakLoop();
     }
 
@@ -743,8 +745,10 @@ namespace Gambit
     /// Tell the functor that the loop it manages should break now.
     void module_functor_common::breakLoop()
     {
-      #pragma omp atomic write
-      myLoopIsDone = true;
+      #pragma omp critical (myLoopIsDone)
+      {
+        myLoopIsDone = true;
+      }
     }
 
     /// Return a safe pointer to the flag indicating that a loop managed by this functor should break now.
@@ -757,8 +761,10 @@ namespace Gambit
     /// Provide a way to reset the flag indicating that a loop managed by this functor should break.
     void module_functor_common::resetLoop()
     {
-      #pragma omp atomic write
-      myLoopIsDone = false;
+      #pragma omp critical (myLoopIsDone)
+      {
+        myLoopIsDone = false;
+      }
     }
 
     /// Setter for setting the iteration number in the loop in which this functor runs

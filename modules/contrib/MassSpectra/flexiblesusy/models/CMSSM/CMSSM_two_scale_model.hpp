@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Wed 3 Dec 2014 11:59:47
+// File generated at Fri 16 Jan 2015 13:09:46
 
 /**
  * @file CMSSM_two_scale_model.hpp
@@ -24,8 +24,8 @@
  *        value problem using the two_scale solver by solvingt EWSB
  *        and determine the pole masses and mixings
  *
- * This file was generated at Wed 3 Dec 2014 11:59:47 with FlexibleSUSY
- * 1.0.3 and SARAH 4.2.1 .
+ * This file was generated at Fri 16 Jan 2015 13:09:46 with FlexibleSUSY
+ * 1.0.4 and SARAH 4.2.1 .
  */
 
 #ifndef CMSSM_TWO_SCALE_H
@@ -48,11 +48,11 @@
 #endif
 
 #include <gsl/gsl_vector.h>
-#include <gsl/gsl_multiroots.h>
 #include <Eigen/Core>
 
 namespace flexiblesusy {
 
+class EWSB_solver;
 class Two_scale;
 /**
  * @class CMSSM<Two_scale>
@@ -71,6 +71,8 @@ public:
    void clear_DRbar_parameters();
    void do_calculate_sm_pole_masses(bool);
    bool do_calculate_sm_pole_masses() const;
+   void do_force_output(bool);
+   bool do_force_output() const;
    void reorder_DRbar_masses();
    void reorder_pole_masses();
    void set_ewsb_iteration_precision(double);
@@ -92,6 +94,7 @@ public:
 
    // interface functions
    virtual void calculate_spectrum();
+   virtual void clear_problems();
    virtual std::string name() const;
    virtual void run_to(double scale, double eps = -1.0);
    virtual void print(std::ostream&) const;
@@ -669,7 +672,7 @@ public:
 
 
 private:
-   struct Ewsb_parameters {
+   struct EWSB_args {
       CMSSM<Two_scale>* model;
       unsigned ewsb_loop_order;
    };
@@ -697,6 +700,7 @@ private:
    unsigned ewsb_loop_order;
    unsigned pole_mass_loop_order;
    bool calculate_sm_pole_masses; ///< switch to calculate the pole masses of the Standard Model particles
+   bool force_output;             ///< switch to force output of pole masses
    double precision;              ///< RG running precision
    double ewsb_iteration_precision;
    static const std::size_t number_of_ewsb_equations = 2;
@@ -710,9 +714,12 @@ private:
 
    int solve_ewsb_iteratively();
    int solve_ewsb_iteratively(unsigned);
-   int solve_ewsb_iteratively_with(const gsl_multiroot_fsolver_type*, const double[number_of_ewsb_equations]);
+   int solve_ewsb_iteratively_with(EWSB_solver*, const double[number_of_ewsb_equations]);
    int solve_ewsb_tree_level_via_soft_higgs_masses();
    void ewsb_initial_guess(double[number_of_ewsb_equations]);
+   int ewsb_step(double[number_of_ewsb_equations]) const;
+   static int ewsb_step(const gsl_vector*, void*, gsl_vector*);
+   void tadpole_equations(double[number_of_ewsb_equations]) const;
    static int tadpole_equations(const gsl_vector*, void*, gsl_vector*);
    void copy_DRbar_masses_to_pole_masses();
 

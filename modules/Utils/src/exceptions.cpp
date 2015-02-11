@@ -17,10 +17,10 @@
 ///
 ///  *********************************************
 
-#include "util_macros.hpp"
-#include "exceptions.hpp"
-#include "standalone_error_handlers.hpp"
-#include "log.hpp"
+#include "gambit/Utils/util_macros.hpp"
+#include "gambit/Utils/exceptions.hpp"
+#include "gambit/Utils/standalone_error_handlers.hpp"
+#include "gambit/Logs/log.hpp"
 
 namespace Gambit
 {
@@ -328,7 +328,6 @@ namespace Gambit
     const char* special_exception::what() const throw()
     {
       const char* temp;
-      #pragma omp atomic read
       temp = myWhat;
       return temp;
     }
@@ -363,16 +362,20 @@ namespace Gambit
     /// Set the pointer to the functor that threw the invalid point exception.
     void invalid_point_exception::set_thrower(functor* thrown_from)
     {
-      #pragma omp atomic write
-      myThrower = thrown_from;
+      #pragma omp critical (myThrower)
+      {
+        myThrower = thrown_from;
+      }
     }
 
     /// Retrieve pointer to the functor that threw the invalid point exception.
     functor* invalid_point_exception::thrower()
     {
       functor* temp;
-      #pragma omp atomic read
-      temp = myThrower;
+      #pragma omp critical (myThrower)
+      {
+        temp = myThrower;
+      }
       if (temp == NULL) utils_error().raise(LOCAL_INFO, "No throwing functor in invalid_point_exception.");
       return temp;
     }

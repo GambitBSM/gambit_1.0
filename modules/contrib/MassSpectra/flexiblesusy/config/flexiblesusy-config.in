@@ -3,6 +3,7 @@
 # Author: Alexander Voigt
 
 models="@MODELS@"
+addons="@ADDONS@"
 version="@FLEXIBLESUSY_VERSION@"
 cppflags="@CPPFLAGS@"
 cxxflags="@CXXFLAGS@"
@@ -16,9 +17,9 @@ packagename="@PKGNAME@"
 threadlibs="@THREADLIBS@"
 
 usage="\
-Usage: `basename $0` [--all-models] [--cxx] [--cxxflags] [--cppflags]\
- [--fc] [--fflags] [--flibs] [--make-lib-cmd] [--math-cmd] [--threadlibs]\
- [--with-<model>] [--help] [--version]"
+Usage: `basename $0` [--all-addons] [--all-models] [--cxx] [--cxxflags]\
+ [--cppflags] [--fc] [--fflags] [--flibs] [--make-lib-cmd] [--math-cmd]\
+ [--threadlibs] [--with-<model>] [--help] [--version]"
 
 if test $# -eq 0; then
     echo "${usage}" 1>&2
@@ -29,6 +30,7 @@ help() {
 cat <<EOF
 Usage: `basename $0` [options]
 Options:
+  --all-addons          Print all addons that are build
   --all-models          Print all models that are build
   --cxx                 Print C++ compiler
   --cxxflags            Print CXXFLAGS
@@ -39,6 +41,7 @@ Options:
   --make-lib-cmd        Print make library command
   --math-cmd            Print Mathematica kernel command
   --threadlibs          Print thread library
+  --with-<addon>        Test if <addon> is compiled in
   --with-<model>        Test if <model> is compiled in
   --version             Print the $packagename version
   --help                Print this message
@@ -54,6 +57,7 @@ while test $# -gt 0; do
     esac
 
     case $1 in
+        --all-addons)    out="$out $addons"   ;;
         --all-models)    out="$out $models"   ;;
         --cxx)           out="$out $cxx"      ;;
         --cxxflags)      out="$out $cxxflags" ;;
@@ -67,7 +71,7 @@ while test $# -gt 0; do
         --with-*)
       ### Check for model
             f=`echo $1 | sed 's/--with-//'`
-            for c in $models ; do
+            for c in $models $addons ; do
                 if test "x`basename $c`" = "x$f" ; then
                     out="$out yes"
                     break

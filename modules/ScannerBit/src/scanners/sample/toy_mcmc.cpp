@@ -17,14 +17,11 @@
 #include <string>
 #include <cmath>
 #include <iostream>
-#include <fstream>
 #include <map>
 #include <sstream>
-#include <typeinfo>
-#include <cxxabi.h>
 
-#include "scanner_plugin.hpp"
-#include "threadsafe_rng.hpp"
+#include "gambit/ScannerBit/scanner_plugin.hpp"
+#include "gambit/Utils/threadsafe_rng.hpp"
 
 scanner_plugin(toy_mcmc, version(1, 0, 0))
 {      

@@ -21,9 +21,10 @@
 //
 //  *********************************************
 
-#include "log.hpp"
-#include "model_macros.hpp"
-#include "models/extraCMSSM.hpp"
+#include "gambit/Logs/log.hpp"
+#include "gambit/Models/model_macros.hpp"
+
+#include "gambit/Models/models/extraCMSSM.hpp"
 
 #define MODEL extraCMSSM
   // If you need to access the *DEP pointers via the Pipes then you have to know the right namespace in which to find them. You can use the USING_PIPE macro to make this accessible automatically, so long as PARENT and MODEL are correctly defined. See demo.hpp for examples.

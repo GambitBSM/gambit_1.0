@@ -20,6 +20,7 @@
 #define PROBLEMS_H
 
 #include <iostream>
+#include <map>
 #include <cassert>
 
 namespace flexiblesusy {
@@ -36,23 +37,30 @@ public:
 
    void flag_bad_mass(unsigned, bool flag = true);
    void flag_tachyon(unsigned, bool flag = true);
-   void flag_thrown()          { thrown = true; }
+   void flag_thrown(const std::string& msg = "") {
+      thrown = true;
+      exception_msg = msg;
+   }
    void flag_no_ewsb()         { failed_ewsb = true; }
    void flag_no_convergence()  { failed_convergence = true; }
    void flag_no_perturbative() { non_perturbative = true; }
+   void flag_non_perturbative_parameter_warning(const std::string&, double, double, double);
 
    void unflag_bad_mass(unsigned);
    void unflag_tachyon(unsigned);
-   void unflag_thrown()          { thrown = false; }
+   void unflag_all_tachyons();
+   void unflag_thrown()          { thrown = false; exception_msg = ""; }
    void unflag_no_ewsb()         { failed_ewsb = false; }
    void unflag_no_convergence()  { failed_convergence = false; }
    void unflag_no_perturbative() { non_perturbative = false; }
+   void unflag_non_perturbative_parameter_warning(const std::string&);
 
    bool is_bad_mass(unsigned) const;
    bool is_tachyon(unsigned) const;
    bool have_bad_mass() const;
    bool have_tachyon() const;
    bool have_thrown() const     { return thrown; }
+   bool have_non_perturbative_parameter_warning() const;
    bool no_ewsb() const         { return failed_ewsb; }
    bool no_convergence() const  { return failed_convergence; }
    bool no_perturbative() const { return non_perturbative; }
@@ -64,6 +72,14 @@ public:
    void print_warnings(std::ostream& = std::cout) const;
 
 private:
+   struct NonPerturbativeValue {
+      NonPerturbativeValue()
+         : value(0.), scale(0.), threshold(0.) {}
+      NonPerturbativeValue(double value_, double scale_, double threshold_)
+         : value(value_), scale(scale_), threshold(threshold_) {}
+      double value, scale, threshold;
+   };
+
    bool bad_masses[Number_of_particles]; ///< imprecise mass eigenvalues
    bool tachyons[Number_of_particles]; ///< tachyonic particles
    const char** particle_names;        ///< particle names
@@ -71,6 +87,8 @@ private:
    bool failed_ewsb;                   ///< no EWSB
    bool failed_convergence;            ///< no convergence
    bool non_perturbative;              ///< non-perturbative running
+   std::string exception_msg;          ///< exception message
+   std::map<std::string, NonPerturbativeValue> non_pert_pars; ///< non-perturbative parmeters
 };
 
 template <unsigned Number_of_particles>
@@ -82,6 +100,8 @@ Problems<Number_of_particles>::Problems(const char** particle_names_)
    , failed_ewsb(false)
    , failed_convergence(false)
    , non_perturbative(false)
+   , exception_msg("")
+   , non_pert_pars()
 {
 }
 
@@ -115,6 +135,13 @@ void Problems<Number_of_particles>::unflag_tachyon(unsigned particle)
    assert(particle < Number_of_particles
           && "Error: particle index out of bounds");
    tachyons[particle] = false;
+}
+
+template <unsigned Number_of_particles>
+void Problems<Number_of_particles>::unflag_all_tachyons()
+{
+   for (unsigned i = 0; i < Number_of_particles; ++i)
+      tachyons[i] = false;
 }
 
 template <unsigned Number_of_particles>
@@ -154,6 +181,12 @@ bool Problems<Number_of_particles>::have_tachyon() const
 }
 
 template <unsigned Number_of_particles>
+bool Problems<Number_of_particles>::have_non_perturbative_parameter_warning() const
+{
+   return !non_pert_pars.empty();
+}
+
+template <unsigned Number_of_particles>
 void Problems<Number_of_particles>::clear()
 {
    for (unsigned i = 0; i < Number_of_particles; ++i)
@@ -164,6 +197,8 @@ void Problems<Number_of_particles>::clear()
    failed_convergence = false;
    non_perturbative = false;
    thrown = false;
+   exception_msg = "";
+   non_pert_pars.clear();
 }
 
 template <unsigned Number_of_particles>
@@ -176,7 +211,21 @@ bool Problems<Number_of_particles>::have_problem() const
 template <unsigned Number_of_particles>
 bool Problems<Number_of_particles>::have_warning() const
 {
-   return have_bad_mass();
+   return have_bad_mass() || have_non_perturbative_parameter_warning();
+}
+
+template <unsigned Number_of_particles>
+void Problems<Number_of_particles>::flag_non_perturbative_parameter_warning(
+   const std::string& name, double value, double scale, double threshold)
+{
+   non_pert_pars[name] = NonPerturbativeValue(value, scale, threshold);
+}
+
+template <unsigned Number_of_particles>
+void Problems<Number_of_particles>::unflag_non_perturbative_parameter_warning(
+   const std::string& name)
+{
+   non_pert_pars.erase(name);
 }
 
 template <unsigned Number_of_particles>
@@ -197,7 +246,7 @@ void Problems<Number_of_particles>::print_problems(std::ostream& ostr) const
    if (non_perturbative)
       ostr << "non-perturbative, ";
    if (thrown)
-      ostr << "exception thrown";
+      ostr << "exception thrown(" << exception_msg << ")";
 }
 
 template <unsigned Number_of_particles>
@@ -210,6 +259,14 @@ void Problems<Number_of_particles>::print_warnings(std::ostream& ostr) const
    for (unsigned i = 0; i < Number_of_particles; ++i) {
       if (bad_masses[i])
          ostr << "imprecise M" << particle_names[i] << ", ";
+   }
+
+   for (typename std::map<std::string, NonPerturbativeValue>::const_iterator
+           it = non_pert_pars.begin(), end = non_pert_pars.end();
+        it != end; ++it) {
+      ostr << "non-perturbative " << it->first
+           << " [|" << it->first << "|(" << it->second.scale << ") = "
+           << it->second.value << " > " << it->second.threshold << "], ";
    }
 }
 

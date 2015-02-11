@@ -18,8 +18,8 @@
 ///
 ///  *********************************************
 
-#include "gambit_module_headers.hpp"
-#include "HiggsBit_rollcall.hpp"
+#include "gambit/Utils/gambit_module_headers.hpp"
+#include "gambit/HiggsBit/HiggsBit_rollcall.hpp"
 
 namespace Gambit
 {

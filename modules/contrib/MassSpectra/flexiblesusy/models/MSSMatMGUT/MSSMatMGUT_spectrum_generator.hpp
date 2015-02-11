@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Wed 3 Dec 2014 11:36:32
+// File generated at Fri 16 Jan 2015 13:05:08
 
 #ifndef MSSMatMGUT_SPECTRUM_GENERATOR_H
 #define MSSMatMGUT_SPECTRUM_GENERATOR_H
@@ -49,13 +49,14 @@ public:
       , high_scale(0.)
       , susy_scale(0.)
       , low_scale(0.)
-      , input_scale(0.)
       , parameter_output_scale(0.)
       , precision_goal(1.0e-4)
       , max_iterations(0)
       , beta_loop_order(2)
       , threshold_corrections_loop_order(1)
-      , calculate_sm_masses(false) {}
+      , calculate_sm_masses(false)
+      , force_output(false)
+   {}
    ~MSSMatMGUT_spectrum_generator() {}
 
    double get_high_scale() const { return high_scale; }
@@ -66,7 +67,6 @@ public:
       return model.get_problems();
    }
    int get_exit_code() const { return get_problems().have_problem(); }
-   void set_input_scale(double m) { input_scale = m; }
    void set_parameter_output_scale(double s) { parameter_output_scale = s; }
    void set_precision_goal(double precision_goal_) { precision_goal = precision_goal_; }
    void set_pole_mass_loop_order(unsigned l) { model.set_pole_mass_loop_order(l); }
@@ -74,6 +74,7 @@ public:
    void set_beta_loop_order(unsigned l) { beta_loop_order = l; }
    void set_max_iterations(unsigned n) { max_iterations = n; }
    void set_calculate_sm_masses(bool flag) { calculate_sm_masses = flag; }
+   void set_force_output(bool flag) { force_output = flag; }
    void set_threshold_corrections_loop_order(unsigned t) { threshold_corrections_loop_order = t; }
    void set_higgs_2loop_corrections(const Higgs_2loop_corrections& c) { model.set_higgs_2loop_corrections(c); }
 
@@ -88,13 +89,13 @@ private:
    MSSMatMGUT_susy_scale_constraint<T> susy_scale_constraint;
    MSSMatMGUT_low_scale_constraint<T>  low_scale_constraint;
    double high_scale, susy_scale, low_scale;
-   double input_scale; ///< high-scale parameter input scale
    double parameter_output_scale; ///< output scale for running parameters
    double precision_goal; ///< precision goal
    unsigned max_iterations; ///< maximum number of iterations
    unsigned beta_loop_order; ///< beta-function loop order
    unsigned threshold_corrections_loop_order; ///< threshold corrections loop order
    bool calculate_sm_masses; ///< calculate SM pole masses
+   bool force_output; ///< force output
 };
 
 /**
@@ -130,23 +131,19 @@ void MSSMatMGUT_spectrum_generator<T>::run(const QedQcd& oneset,
    susy_scale_constraint.initialize();
    low_scale_constraint .initialize();
 
-   if (!is_zero(input_scale))
-      high_scale_constraint.set_scale(input_scale);
+   std::vector<Constraint<T>*> upward_constraints(2, NULL);
+   upward_constraints[0] = &low_scale_constraint;
+   upward_constraints[1] = &high_scale_constraint;
 
-   std::vector<Constraint<T>*> upward_constraints {
-      &low_scale_constraint,
-      &high_scale_constraint
-   };
-
-   std::vector<Constraint<T>*> downward_constraints {
-      &high_scale_constraint,
-      &susy_scale_constraint,
-      &low_scale_constraint
-   };
+   std::vector<Constraint<T>*> downward_constraints(3, NULL);
+   downward_constraints[0] = &high_scale_constraint;
+   downward_constraints[1] = &susy_scale_constraint;
+   downward_constraints[2] = &low_scale_constraint;
 
    model.clear();
    model.set_input_parameters(input);
    model.do_calculate_sm_pole_masses(calculate_sm_masses);
+   model.do_force_output(force_output);
    model.set_loops(beta_loop_order);
    model.set_thresholds(threshold_corrections_loop_order);
 
@@ -188,13 +185,13 @@ void MSSMatMGUT_spectrum_generator<T>::run(const QedQcd& oneset,
    } catch (const NonPerturbativeRunningError&) {
       model.get_problems().flag_no_perturbative();
    } catch (const Error& error) {
-      model.get_problems().flag_thrown();
+      model.get_problems().flag_thrown(error.what());
    } catch (const std::string& str) {
-      model.get_problems().flag_thrown();
+      model.get_problems().flag_thrown(str);
    } catch (const char* str) {
-      model.get_problems().flag_thrown();
+      model.get_problems().flag_thrown(str);
    } catch (const std::exception& error) {
-      model.get_problems().flag_thrown();
+      model.get_problems().flag_thrown(error.what());
    }
 }
 

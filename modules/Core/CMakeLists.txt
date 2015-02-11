@@ -9,17 +9,17 @@ set(source_files src/container_factory.cpp
                  src/yaml_parser.cpp
 )
 
-set(header_files include/container_factory.hpp
-                 include/core_singleton.hpp
-                 include/depresolver.hpp
-                 include/error_handlers.hpp
-                 include/gambit_core.hpp
-                 include/gambit_main.hpp
-                 include/likelihood_container.hpp
-                 include/modelgraph.hpp
-                 include/version.hpp
-                 include/yaml_description_database.hpp
-                 include/yaml_parser.hpp
+set(header_files include/gambit/Core/container_factory.hpp
+                 include/gambit/Core/core_singleton.hpp
+                 include/gambit/Core/depresolver.hpp
+                 include/gambit/Core/error_handlers.hpp
+                 include/gambit/Core/gambit_core.hpp
+                 include/gambit/Core/gambit_main.hpp
+                 include/gambit/Core/likelihood_container.hpp
+                 include/gambit/Core/modelgraph.hpp
+                 include/gambit/Core/version.hpp
+                 include/gambit/Core/yaml_description_database.hpp
+                 include/gambit/Core/yaml_parser.hpp
 )
 
 add_gambit_library(Core OPTION OBJECT SOURCES ${source_files} HEADERS ${header_files})
