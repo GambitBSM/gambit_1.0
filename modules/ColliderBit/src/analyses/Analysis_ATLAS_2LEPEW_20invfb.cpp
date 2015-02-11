@@ -279,7 +279,6 @@ namespace Gambit {
 
         for (Jet* jet : signalJets) {
           bool hasTag=has_tag(_eff2d, jet->eta(), jet->pT());
-          std::cout << "signalJets btag " << jet->btag() << " fabs(eta) " << fabs(jet->eta()) << std::endl;
           if(fabs(jet->eta()) < 2.4){
             if(jet->btag() && hasTag){
               centralBJets.push_back(jet);
@@ -329,8 +328,6 @@ namespace Gambit {
         int numCentralNonBJets=centralNonBJets.size();
         int numCentralBJets=centralBJets.size();
         int numForwardJets=forwardJets.size();
-
-        std::cout << "numCentralNonBJets " << numCentralNonBJets << std::endl;
 
         //Now do the MT2 signal regions
 
