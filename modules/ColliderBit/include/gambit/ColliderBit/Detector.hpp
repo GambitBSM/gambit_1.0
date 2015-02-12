@@ -96,6 +96,9 @@ namespace Gambit {
     /// @note Abstract base class Delphes_ToHEPUtilsBase
     class DelphesBase : public Detector<Pythia8::Event, HEPUtils::Event> {
     public:
+
+      /// @todo Move lots of this into the .cpp files -- it shouldn't be in the interface/base-class definitions.
+
       /// @name Initialization functions
       //@{
       virtual void defaults() {}
