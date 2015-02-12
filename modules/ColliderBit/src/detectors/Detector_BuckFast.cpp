@@ -17,9 +17,7 @@ namespace Gambit {
       //@{
       virtual void processEvent(const HEPUtils::Event& eventIn, HEPUtils::Event& eventOut) {
         convertInput(eventIn);
-        ///
-        /// Do stuff with _processedEvent...
-        ///
+        // Do nothing
         convertOutput(eventOut);
       }
       //@}
