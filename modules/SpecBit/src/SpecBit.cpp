@@ -20,20 +20,18 @@
 
 #include <string>
 #include <sstream>
-#include "gambit_module_headers.hpp"
-#include "SpecBit_rollcall.hpp"
-#include "stream_overloads.hpp" // Just for more convenient output to logger
-#include "util_macros.hpp"
+
+#include "gambit/Utils/gambit_module_headers.hpp"
+#include "gambit/Utils/stream_overloads.hpp" // Just for more convenient output to logger
+#include "gambit/Utils/util_macros.hpp"
+#include "gambit/SpecBit/SpecBit_rollcall.hpp"
+#include "gambit/SpecBit/MSSMSpec.hpp"
+#include "gambit/SpecBit/model_files_and_boxes.hpp" // #includes lots of flexiblesusy headers and defines interface classes
 
 // Flexible SUSY stuff (should not be needed by the rest of gambit)
-#include "ew_input.hpp"
-#include "lowe.h" // From softsusy; used by flexiblesusy
-#include "model_files_and_boxes.hpp" // #includes lots of other flexiblesusy headers and defines interface classes
-
-//#include "logger.hpp"
-//#include "wrappers.hpp"
-#include "MSSMSpec.hpp"
-#include "numerics.hpp"
+#include "flexiblesusy/src/ew_input.hpp"
+#include "flexiblesusy/src/lowe.h" // From softsusy; used by flexiblesusy
+#include "flexiblesusy/src/numerics.hpp"
 
 // Switch for debug mode
 #define SpecBit_DBUG 

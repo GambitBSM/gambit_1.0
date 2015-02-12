@@ -56,7 +56,7 @@ def main(argv):
 
     # info for the different plugin types
     src_paths = sorted(["./ScannerBit/src/scanners", "./ScannerBit/src/objectives"])
-    inc_paths = sorted(["./ScannerBit/include/scanners", "./ScannerBit/include/objectives"])
+    inc_paths = sorted(["./ScannerBit/include/gambit/ScannerBit/scanners", "./ScannerBit/include/gambit/ScannerBit/objectives"])
     plug_type = sorted(["scanner", "objective"])
     
     # these map the linking flags and library paths to the appropriate plugin library
@@ -69,13 +69,13 @@ def main(argv):
     
     ## begin adding scannerbit files to CMakeLists.txt ##
     scanbit_srcs = [ name for name in os.listdir("./ScannerBit/src") if os.path.isfile('./ScannerBit/src/' + name) if name.endswith(".cpp") or name.endswith(".c") or name.endswith(".cc") or name.endswith(".cxx") ]
-    scanbit_hdrs = [ name for name in os.listdir("./ScannerBit/include") if os.path.isfile('./ScannerBit/include/' + name) if name.endswith(".hpp") or name.endswith(".h") ]
+    scanbit_hdrs = [ name for name in os.listdir("./ScannerBit/include/gambit/ScannerBit") if os.path.isfile('./ScannerBit/include/gambit/ScannerBit/' + name) if name.endswith(".hpp") or name.endswith(".h") ]
     prior_srcs = []
     prior_hdrs = []
     if os.path.exists("./ScannerBit/src/priors"):
                  prior_srcs = [ root + "/" + f for root,dirs,files in os.walk("./ScannerBit/src/priors") for f in files if f.endswith(".cpp") or f.endswith(".c") or f.endswith(".cc") or f.endswith(".cxx") ]
-    if os.path.exists("./ScannerBit/include/priors"):
-                 prior_hdrs = [ root + "/" + f for root,dirs,files in os.walk("./ScannerBit/include/priors") for f in files if f.endswith(".hpp") or f.endswith(".h") ]
+    if os.path.exists("./ScannerBit/include/gambit/ScannerBit/priors"):
+                 prior_hdrs = [ root + "/" + f for root,dirs,files in os.walk("./ScannerBit/include/gambit/ScannerBit/priors") for f in files if f.endswith(".hpp") or f.endswith(".h") ]
     
     cmakelist_txt_out = "set( scannerbit_sources\n"
     prior_txt_out = "#ifndef PRIOR_LIST_HPP\n#define PRIOR_LIST_HPP\n\n"
@@ -84,18 +84,18 @@ def main(argv):
         cmakelist_txt_out += " "*16 + "src/" + source + "\n"
         
     for source in sorted(prior_srcs):
-        cmakelist_txt_out += " "*16 + source.split('/ScannerBit/')[1] + "\n"
+        cmakelist_txt_out += " "*16 + source.split('./ScannerBit/')[1] + "\n"
         
     cmakelist_txt_out += ")\n\n"
     
     cmakelist_txt_out += "set( scannerbit_headers\n"
             
     for header in sorted(scanbit_hdrs):
-        cmakelist_txt_out += " "*16 + "include/" + header + "\n"
+        cmakelist_txt_out += " "*16 + "include/gambit/ScannerBit/" + header + "\n"
         
     for header in sorted(prior_hdrs):
-        cmakelist_txt_out += " "*16 + header.split('/ScannerBit/')[1] + "\n"
-        prior_txt_out += "#include \"" + header.split('/ScannerBit/include/')[1] + "\"\n"
+        cmakelist_txt_out += " "*16 + header.split('./ScannerBit/')[1] + "\n"
+        prior_txt_out += "#include \"" + header.split('/ScannerBit/include/gambit/ScannerBit/')[1] + "\"\n"
         
     cmakelist_txt_out += ")\n\n"
     prior_txt_out += "\n#endif\n"
@@ -176,14 +176,14 @@ def main(argv):
                                 #scanbit_auto_libs[plug_type[i]][last_plugin][last_version] = find[2][15:-1]
                         
             ## begin adding plugin files to CMakeLists.txt ##
-                cmakelist_txt_out += " "*16 + source.split('/ScannerBit/')[1] + "\n"
+                cmakelist_txt_out += " "*16 + source.split('./ScannerBit/')[1] + "\n"
                 
             cmakelist_txt_out += ")\n\n"
             
             cmakelist_txt_out += "set( " + plug_type[i] + "_plugin_headers_" + directory + "\n"
             
             for header in sorted(headers):
-                cmakelist_txt_out += " "*16 + header.split('/ScannerBit/')[1] + "\n"
+                cmakelist_txt_out += " "*16 + header.split('./ScannerBit/')[1] + "\n"
                 
             cmakelist_txt_out += ")\n\n"
             ## end adding plugin files to CMakeLists.txt ## 
@@ -305,11 +305,11 @@ def main(argv):
 
     towrite += prior_txt_out
 
-    header = "./ScannerBit/include/priors_rollcall.hpp"
+    header = "./ScannerBit/include/gambit/ScannerBit/priors_rollcall.hpp"
     with open(header+".candidate","w") as f: f.write(towrite)
     update_cmakelists.update_only_if_different(header, header+".candidate")
 
-    if verbose: print "Finished writing ScannerBit/include/priors_rollcall.hpp"
+    if verbose: print "Finished writing ScannerBit/include/gambit/ScannerBit/priors_rollcall.hpp"
       
     # Make a candidate cmake_variables.hpp.in file
     towrite = "\
@@ -390,6 +390,7 @@ set( scanner_scanlibs_sources                   \n\
                                                 \n\
 add_gambit_library( ScannerBit OPTION OBJECT SOURCES ${scannerbit_sources} HEADERS ${scannerbit_headers} )\n\n\
 add_gambit_executable( scanlibs SOURCES ${scanner_scanlibs_sources} )\n\
+add_dependencies(scanlibs yaml)                 \n\
 set_target_properties( scanlibs                 \n\
                        PROPERTIES               \n\
                        RUNTIME_OUTPUT_DIRECTORY \"${CMAKE_CURRENT_SOURCE_DIR}/bin\")\n\n"
@@ -429,14 +430,14 @@ set_target_properties( scanlibs                 \n\
             towrite += plug_type[i] + "_plugin_sources_" + directory + "} HEADERS ${"
             towrite += plug_type[i] + "_plugin_headers_" + directory + "} )\n"
             towrite += "set_target_properties( " + plug_type[i] + "_" + directory + "\n" + " "*23 + "PROPERTIES\n"
-            towrite += " "*23 + "LINK_FLAGS \"${" + plug_type[i] + "_plugin_libraries_" + directory + "}\"\n"
+            towrite += " "*23 + "LINK_FLAGS \"-rdynamic ${" + plug_type[i] + "_plugin_libraries_" + directory + "}\"\n"
             towrite += " "*23 + "INSTALL_RPATH \"${" + plug_type[i] + "_plugin_rpath_" + directory + "}\"\n";
-            cflags = ""
+            cflags = "-rdynamic"
             #if scanbit_static_links.has_key(plug_type[i]):
             #    if scanbit_static_links[plug_type[i]].has_key(directory):
             #        if (len(scanbit_static_links[plug_type[i]][directory]) != 0):
             #            cflags = "-static " + scanbit_static_links[plug_type[i]][directory]
-            inc_dirs = "${CMAKE_CURRENT_SOURCE_DIR}/include/" + plug_type[i] + "s/" + directory
+            inc_dirs = "${CMAKE_CURRENT_SOURCE_DIR}/include/gambit/ScannerBit/" + plug_type[i] + "s/" + directory
             if scanbit_incs.has_key(plug_type[i]):
                 if scanbit_incs[plug_type[i]].has_key(directory):
                     inc_dirs += ";" + ";".join(scanbit_incs[plug_type[i]][directory])

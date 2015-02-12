@@ -194,7 +194,7 @@ def retrieve_rollcall_headers(verbose,install_dir,excludes):
     rollcall_headers=[]
     core_exists = False
     for root,dirs,files in os.walk(install_dir):
-        if (not core_exists and root == install_dir+"/Core/include"): core_exists = True 
+        if (not core_exists and root == install_dir+"/Core/include/gambit/Core"): core_exists = True 
         for name in files:
             if ( (name.lower().endswith("_rollcall.hpp") or
                   name.lower().endswith("_rollcall.h")   or
@@ -205,7 +205,8 @@ def retrieve_rollcall_headers(verbose,install_dir,excludes):
                     if bare_name.startswith(x): exclude = True
                 if (not exclude): 
                     if verbose: print "  Located module rollcall header '{0}' at path '{1}'".format(name,os.path.join(root,name))
-                    rollcall_headers+=[name]
+                    rel_name = re.sub(".*?/include/", "", os.path.relpath(os.path.join(root,name),install_dir))
+                    rollcall_headers+=[rel_name]
     if core_exists: make_module_rollcall(rollcall_headers,verbose)
     return rollcall_headers
 
@@ -223,22 +224,9 @@ def retrieve_module_type_headers(verbose,install_dir,excludes):
                     if bare_name.startswith(x): exclude = True
                 if (not exclude): 
                     if verbose: print "  Located module type header '{0}' at path '{1}'".format(name,os.path.join(root,name))
-                    type_headers+=[name]
+                    rel_name = re.sub(".*?/include/", "", os.path.relpath(os.path.join(root,name),install_dir))
+                    type_headers+=[rel_name]
     return type_headers
-
-#Search a directory for BOSSed headers that are not excluded.
-def retrieve_bossed_type_headers(verbose,starting_dir,excludes):
-    headers=[]
-    for root,dirs,files in os.walk(starting_dir):
-        for name in files:
-            exclude = False
-            be = re.sub(".*\\/","",root)
-            for x in excludes:
-                if be.startswith(x): exclude = True
-            if not exclude and (name=="loaded_types.hpp" or name=="loaded_types.h" or name=="loaded_types.hh"): 
-                if verbose: print "  Located BOSSed type header at path '{1}'".format(name,os.path.join(root,name))
-                headers+=["backend_types/"+be+"/"+name]
-    return headers
 
 #Search a directory for headers that are not excluded.
 def retrieve_generic_headers(verbose,starting_dir,kind,excludes):
@@ -248,10 +236,12 @@ def retrieve_generic_headers(verbose,starting_dir,kind,excludes):
             exclude = False
             for x in excludes:
                 if name.startswith(x): exclude = True
+            if kind == "BOSSed type" and not name.startswith("loaded_types"): exclude = True
             if not exclude and (name.endswith(".hpp") or name.endswith(".h") or name.endswith(".hh")): 
                 if verbose: print "  Located "+kind+" header '{0}' at path '{1}'".format(name,os.path.join(root,name))
-                headers+=[name]
-        break
+                rel_name = re.sub(".*?/include/", "", os.path.relpath(os.path.join(root,name),starting_dir))
+                headers+=[rel_name] 
+        if kind != "BOSSed type": break
     return headers
 
 #Create the module_rollcall header in the Core directory
@@ -273,7 +263,7 @@ def make_module_rollcall(rollcall_headers,verbose):
 ///  sure it turns up here.                       \n\
 ///                                               \n\
 ///  By 'rollcall header', we mean a file         \n\
-///  myBit/include/myBit_rollcall.hpp,            \n\
+///  myBit/include/gambit/myBit/myBit_rollcall.hpp,\n\
 ///  where myBit is the name of your module.      \n\
 ///                                               \n\
 ///  *********************************************\n\
@@ -288,13 +278,13 @@ def make_module_rollcall(rollcall_headers,verbose):
 #ifndef __module_rollcall_hpp__                   \n\
 #define __module_rollcall_hpp__                   \n\
                                                   \n\
-#include \"module_macros_incore.hpp\"           \n\n"
+#include \"gambit/Utils/module_macros_incore.hpp\"\n\n"
 
     for h in rollcall_headers:
         towrite+='#include \"{0}\"\n'.format(h)
     towrite+="\n#endif // defined __module_rollcall_hpp__\n"
     
-    with open("./Core/include/module_rollcall.hpp","w") as f:
+    with open("./Core/include/gambit/Core/module_rollcall.hpp","w") as f:
         f.write(towrite)
 
     if verbose: print "Found GAMBIT Core.  Generated module_rollcall.hpp.\n" 

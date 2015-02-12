@@ -19,12 +19,14 @@
 ///
 ///  *********************************************
   
-#include "util_functions.hpp"
 #include <cstring>
 #include <chrono>  // chrono::system_clock
 #include <ctime>   // localtime
 #include <sstream> // stringstream
 #include <string>  // string
+
+#include "gambit/Utils/util_functions.hpp"
+
 
 namespace Gambit
 {

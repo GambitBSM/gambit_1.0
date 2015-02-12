@@ -13,8 +13,8 @@
 
 MultiNest: 
   0.0.0-bens_version: 
-    -lib: ./ScannerBit/lib/libmultinest.so
+    - lib: ./ScannerBit/lib/libmultinest.so
 
 square_grid:
   1.0.0:              
-    -lib: ./ScannerBit/lib/doesntexist.so, /home/you/dunnaexisteither.so
+    - lib: ./ScannerBit/lib/doesntexist.so, /home/you/dunnaexisteither.so

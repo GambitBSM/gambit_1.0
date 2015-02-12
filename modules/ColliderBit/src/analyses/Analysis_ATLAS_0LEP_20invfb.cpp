@@ -1,11 +1,12 @@
-#include "Analysis.hpp"
-#include "ATLASEfficiencies.hpp"
 #include <vector>
 #include <cmath>
 #include <memory>
-using namespace std;
-
 #include <iomanip>
+
+#include "gambit/ColliderBit/Analysis.hpp"
+#include "gambit/ColliderBit/ATLASEfficiencies.hpp"
+
+using namespace std;
 
 // Based on arXiv:1405.7875
 

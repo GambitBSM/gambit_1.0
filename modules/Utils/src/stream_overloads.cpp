@@ -20,7 +20,7 @@
 ///
 ///  *********************************************
 
-#include "stream_overloads.hpp"
+#include "gambit/Utils/stream_overloads.hpp"
 
 namespace Gambit
 {

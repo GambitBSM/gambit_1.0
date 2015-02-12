@@ -14,7 +14,7 @@
 ///
 ///  *********************************************
 
-#include <priors/cauchy.hpp>
+#include "gambit/ScannerBit/priors/cauchy.hpp"
 
 namespace Gambit
 {

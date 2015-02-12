@@ -21,7 +21,7 @@
 #include <map>
 #include <sstream>
 
-#include "scanner_plugin.hpp"
+#include "gambit/ScannerBit/scanner_plugin.hpp"
   
 scanner_plugin(square_grid, version(1, 0, 0))
 {

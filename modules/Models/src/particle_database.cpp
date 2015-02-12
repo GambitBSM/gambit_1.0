@@ -31,8 +31,8 @@
 ///  *********************************************
 
 
-#include "partmap.hpp"
-#include "particle_macros.hpp"
+#include "gambit/Models/partmap.hpp"
+#include "gambit/Models/particle_macros.hpp"
 
 namespace Gambit
 {

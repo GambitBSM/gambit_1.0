@@ -24,7 +24,7 @@
 ///
 ///  *********************************************
 
-#include "likelihood_container.hpp"
+#include "gambit/Core/likelihood_container.hpp"
 
 
 namespace Gambit

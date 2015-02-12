@@ -1,10 +1,11 @@
-#include "Analysis.hpp"
-#include "mt2_bisect.h"
-
 #include <vector>
 #include <cmath>
 #include <memory>
 #include <iomanip>
+
+#include "gambit/ColliderBit/Analysis.hpp"
+#include "gambit/ColliderBit/mt2_bisect.h"
+
 using namespace std;
 
 

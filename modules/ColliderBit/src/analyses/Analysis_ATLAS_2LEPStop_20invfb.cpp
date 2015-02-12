@@ -1,13 +1,14 @@
-#include "Analysis.hpp"
-#include "ATLASEfficiencies.hpp"
-#include "mt2_bisect.h"
-
-/// @todo Remove the ROOT classes...
-
 #include <vector>
 #include <cmath>
 #include <memory>
 #include <iomanip>
+
+#include "gambit/ColliderBit/Analysis.hpp"
+#include "gambit/ColliderBit/ATLASEfficiencies.hpp"
+#include "gambit/ColliderBit/mt2_bisect.h"
+
+/// @todo Remove the ROOT classes...
+
 using namespace std;
 
 // The ATLAS 2 lepton direct stop analysis (20fb^-1) - `heavy stop'.

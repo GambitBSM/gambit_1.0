@@ -19,7 +19,7 @@ PROPERTIES
 set(source_files src/backend_singleton.cpp
                  src/backend_info.cpp)
 
-set(header_files include/backend_singleton.hpp
-                 include/backend_info.hpp)
+set(header_files include/gambit/Backends/backend_singleton.hpp
+                 include/gambit/Backends/backend_info.hpp)
 
 add_gambit_library(Backends OPTION OBJECT SOURCES ${source_files} HEADERS ${header_files})

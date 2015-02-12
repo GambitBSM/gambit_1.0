@@ -25,9 +25,9 @@
 #include <map>
 #include <sstream>
 
-#include "scanner_plugin.hpp"
-#include "yaml_options.hpp"
-#include "multinest.hpp" // In "ScannerBit/include/scanners/multinest". Not to be confused with multinest.h (in multinest source)
+#include "gambit/ScannerBit/scanner_plugin.hpp"
+#include "gambit/ScannerBit/scanners/multinest/multinest.hpp"
+#include "gambit/Utils/yaml_options.hpp"
 
 namespace Gambit {   
    namespace MultiNest {

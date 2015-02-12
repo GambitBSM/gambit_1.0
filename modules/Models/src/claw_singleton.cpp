@@ -13,7 +13,7 @@
 ///
 ///  *********************************************
 
-#include "claw_singleton.hpp"
+#include "gambit/Models/claw_singleton.hpp"
 
 
 namespace Gambit

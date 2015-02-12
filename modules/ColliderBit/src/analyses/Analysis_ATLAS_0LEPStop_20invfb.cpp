@@ -1,16 +1,17 @@
-#include "Analysis.hpp"
-#include "mt2_bisect.h"
-
-/// @todo Eliminate the ROOT vectors!
-#include "TLorentzVector.h"
-#include "TVector2.h"
-
 #include <vector>
 #include <cmath>
 #include <memory>
 #include <iomanip>
-using namespace std;
 
+#include "gambit/ColliderBit/Analysis.hpp"
+#include "gambit/ColliderBit/mt2_bisect.h"
+
+/// @todo Eliminate the ROOT vectors!
+#include <TLorentzVector.h>
+#include <TVector2.h>
+
+
+using namespace std;
 
 /* The ATLAS 0 lepton direct stop analysis (20fb^-1) - `heavy stop'.
 
@@ -228,8 +229,6 @@ namespace Gambit {
         bool cut_LeptonVeto=true;
         if((nElectrons + nMuons)>0.)cut_LeptonVeto=false;
 
-	std::cout << "Analysing e" << std::endl;
-
         //Calculate dphi(jet,met) for the three leading jets
         bool cut_dPhiJets=false;
         bool cut_dPhiJet3=false;
@@ -246,8 +245,6 @@ namespace Gambit {
         if(dphi_jetmet2>3.14/fabs(5.0))cut_dPhiJet2=true;
         if(dphi_jetmet1>3.14/fabs(5.0))cut_dPhiJet1=true;
         if(cut_dPhiJet1 && cut_dPhiJet2 && cut_dPhiJet3)cut_dPhiJets=true;
-
-	std::cout << "Analysing f" << std::endl;
 
         //Number of b jets
         bool passBJetCut=false;
@@ -269,7 +266,6 @@ namespace Gambit {
           }
         }
 
-	std::cout << "Analysing g" << std::endl;
 
         double mT_bjetmet_min = 0;
         if(passBJetCut) mT_bjetmet_min = sqrt(2*signalBJets.at(whichb)->pT()*met*(1-std::cos(dphi_bjetmet_min)));
@@ -290,9 +286,8 @@ namespace Gambit {
           }
         }
 
-	std::cout << "Analysing h" << std::endl;
-
         double mT_bjetmet_max = 0;
+
         if(passBJetCut) mT_bjetmet_max = sqrt(2*signalBJets.at(whichb_max)->pT()*met*(1-std::cos(dphi_bjetmet_max)));
 
         //Common preselection for all signal regions in the fully resolved case
