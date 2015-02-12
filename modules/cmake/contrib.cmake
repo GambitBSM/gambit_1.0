@@ -30,6 +30,12 @@ include_directories("${PROJECT_SOURCE_DIR}/contrib/mcutils/include")
 #contrib/heputils
 include_directories("${PROJECT_SOURCE_DIR}/contrib/heputils/include")
 
+#contrib/mkpath
+include_directories("${PROJECT_SOURCE_DIR}/contrib/mkpath/include")
+add_gambit_library(mkpath OPTION OBJECT 
+                          SOURCES ${PROJECT_SOURCE_DIR}/contrib/mkpath/src/mkpath.c 
+                          HEADERS ${PROJECT_SOURCE_DIR}/contrib/mkpath/include/mkpath/mkpath.h)
+
 #contrib/yaml-cpp-0.5.1
 set(yaml_CXXFLAGS "${CMAKE_CXX_FLAGS}")
 if (NOT Boost_INCLUDE_DIR STREQUAL "") 
