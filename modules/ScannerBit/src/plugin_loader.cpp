@@ -22,7 +22,7 @@
 #include "gambit/ScannerBit/plugin_utilities.hpp"
 #include "gambit/ScannerBit/plugin_comparators.hpp"
 #include "gambit/ScannerBit/plugin_loader.hpp"
-#include "cmake_variables.hpp"
+#include "gambit/cmake/cmake_variables.hpp"
 
 namespace Gambit
 {
