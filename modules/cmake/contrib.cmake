@@ -31,7 +31,8 @@ include_directories("${PROJECT_SOURCE_DIR}/contrib/mcutils/include")
 include_directories("${PROJECT_SOURCE_DIR}/contrib/heputils/include")
 
 #contrib/mkpath
-include_directories("${PROJECT_SOURCE_DIR}/contrib/mkpath/include")
+set(mkpath_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/contrib/mkpath/include")
+include_directories("${mkpath_INCLUDE_DIR}")
 add_gambit_library(mkpath OPTION OBJECT 
                           SOURCES ${PROJECT_SOURCE_DIR}/contrib/mkpath/src/mkpath.c 
                           HEADERS ${PROJECT_SOURCE_DIR}/contrib/mkpath/include/mkpath/mkpath.h)
@@ -54,10 +55,10 @@ ExternalProject_Add(yaml-cpp
   CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/install
 )
 add_custom_target(yaml COMMAND $(MAKE) yaml-cpp)
-set(yaml_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}/contrib/yaml-cpp-0.5.1/include")
+set(yaml_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/contrib/yaml-cpp-0.5.1/include")
 set(yaml_LIBRARIES "yaml-cpp")
 set(yaml_LDFLAGS "-L${PROJECT_SOURCE_DIR}/contrib/yaml-cpp-0.5.1 -l${yaml_LIBRARIES}")
-include_directories("${yaml_INCLUDE_DIRS}")
+include_directories("${yaml_INCLUDE_DIR}")
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/contrib/yaml-cpp-0.5.1/libyaml-cpp.a")
 file(GLOB yaml_o ${PROJECT_SOURCE_DIR}/contrib/yaml-cpp-0.5.1/build/*.o)
 file(GLOB yaml_contrib_o ${PROJECT_SOURCE_DIR}/contrib/yaml-cpp-0.5.1/build/contrib/*.o)

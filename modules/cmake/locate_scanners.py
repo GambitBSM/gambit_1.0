@@ -365,10 +365,10 @@ def main(argv):
 #************************************************\n\
                                                  \n\
 set( PLUGIN_INCLUDE_DIRECTORIES                  \n\
-                ${PROJECT_SOURCE_DIR}            \n\
                 ${PROJECT_BINARY_DIR}            \n\
                 ${GAMBIT_INCDIRS}                \n\
-                ${yaml_INCLUDE_DIRS}             \n\
+                ${mkpath_INCLUDE_DIR}            \n\
+                ${yaml_INCLUDE_DIR}              \n\
                 ${Boost_INCLUDE_DIR}             \n\
                 ${GSL_INCLUDE_DIRS}              \n\
                 ${ROOT_INCLUDE_DIR}              \n\
