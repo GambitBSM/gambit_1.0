@@ -188,7 +188,7 @@ namespace Funk
     {
         public:
             FunkBase() {}
-            ~FunkBase() {}
+            virtual ~FunkBase() {}
 
             // Standard handles
             template <typename... Args> Funk set(Args... args);
