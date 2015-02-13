@@ -245,7 +245,8 @@ add_subdirectory(Utils)
 add_subdirectory(Models)
 
 # List of GAMBIT common library object files to link
-set(GAMBIT_COMMON_OBJECTS $<TARGET_OBJECTS:Backends>
+set(GAMBIT_COMMON_OBJECTS "${GAMBIT_COMMON_OBJECTS}"
+                          $<TARGET_OBJECTS:Backends>
                           $<TARGET_OBJECTS:Logs>
                           $<TARGET_OBJECTS:Utils>
                           $<TARGET_OBJECTS:Models>

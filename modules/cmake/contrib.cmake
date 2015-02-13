@@ -36,6 +36,7 @@ include_directories("${mkpath_INCLUDE_DIR}")
 add_gambit_library(mkpath OPTION OBJECT 
                           SOURCES ${PROJECT_SOURCE_DIR}/contrib/mkpath/src/mkpath.c 
                           HEADERS ${PROJECT_SOURCE_DIR}/contrib/mkpath/include/mkpath/mkpath.h)
+set(GAMBIT_COMMON_OBJECTS "${GAMBIT_COMMON_OBJECTS}" $<TARGET_OBJECTS:mkpath>)
 
 #contrib/yaml-cpp-0.5.1
 set(yaml_CXXFLAGS "${CMAKE_CXX_FLAGS}")
