@@ -166,11 +166,11 @@ if(";${GAMBIT_BITS};" MATCHES ";SpecBit;")
     INSTALL_COMMAND ""
   )
   
-  # Set linking commands.  Link order matters! The core flexiblesusy libraries need to come after the model libraries
+  # Set linking commands.  Link order matters! The core flexiblesusy libraries need to come after the model libraries but before the other link flags.
+  set(flexiblesusy_LDFLAGS "-L${MASS_SPECTRA_DIR}/flexiblesusy/src -lflexisusy -L${MASS_SPECTRA_DIR}/flexiblesusy/legacy -llegacy ${flexiblesusy_LDFLAGS}")
   foreach(_MODEL ${BUILT_FS_MODELS})
     set(flexiblesusy_LDFLAGS "-L${MASS_SPECTRA_DIR}/flexiblesusy/models/${_MODEL} -l${_MODEL} ${flexiblesusy_LDFLAGS}")
   endforeach()
-  set(flexiblesusy_LDFLAGS "-L${MASS_SPECTRA_DIR}/flexiblesusy/src -lflexisusy -L${MASS_SPECTRA_DIR}/flexiblesusy/legacy -llegacy ${flexiblesusy_LDFLAGS}")
   
   # Set up include paths
   include_directories("${MASS_SPECTRA_DIR}")
