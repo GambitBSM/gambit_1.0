@@ -141,6 +141,48 @@ def addiffunctormacro(line,module,typeset,typeheaders,intrinsic_types,exclude_ty
                             candidate_type = check_for_declaration(newline,module,local_namespace,candidate_type)
             typeset.add(candidate_type)                 
 
+# Harvest type from a BE_VARIABLE, BE_FUNCTION or BE_CONV_FUNCTION macro call
+def addifbefunctormacro(line,be_typeset,type_pack_set,typeheaders,verbose=False):
+
+    command_index = {"BE_VARIABLE":1,
+                     "BE_FUNCTION":2, 
+                     "BE_CONV_FUNCTION":2}
+    splitline = neatsplit('\(|\)|,|\s',line)
+
+    if len(splitline)>1 and splitline[0] in command_index.keys():
+        #This line defines a backend functor and one or more of the arguments defines a candidate type
+        functor_template_types = list([splitline[command_index[splitline[0]]]])
+        if splitline[0].endswith("FUNCTION"):
+            #Get the argument types out of a BE_FUNCTION or BE_CONV_FUNCTION command
+            args = re.sub("BE_(CONV_)?FUNCTION\(.*?,.*?,\s*?\(", "", line)
+            args = re.sub("\([^\(]*?\)\s*\)\s*$", "\)", args)
+            args = re.sub("\)\s*,[^\)]*?,[^\)]*?\)\s*$", "", args)
+            for arg in re.findall("[^,]*?\(.*?\)[^,]*?\(.*?\).*?,|[^,]*?<.*?>.*?,|[^,]*?\(.*?\).*?,|[^>\)]*?,", args+","):
+              arg = arg[:-1].strip()
+              if arg == "etc": arg = "..."
+              functor_template_types.append(arg)
+        else:
+            #Convert the type to a pointer if this is a backend variable functor rather than a backend function functor
+			functor_template_types[0] += "*"
+        candidate_types = set(functor_template_types)
+
+        #Iterate over all the candidate types and check if they are defined.
+        for candidate_type in candidate_types:
+            initial_candidate = candidate_type
+            #Skip to the end if the type is already found.
+            if ("Gambit::"+candidate_type in be_typeset):
+				candidate_type = "Gambit::"+candidate_type
+            elif (candidate_type not in be_typeset):
+                be_typeset.add(candidate_type)
+            # Replace the argument types in the functor_template_types with the fully-qualified versions if required.
+            functor_template_types = [candidate_type if entry == initial_candidate else entry for entry in functor_template_types]
+
+        arg_list = ",".join(functor_template_types[1:])
+        type_pack = functor_template_types[0] + "(*)(" + arg_list + "), " + functor_template_types[0]
+        if arg_list != "": type_pack += ", " + arg_list
+        type_pack_set.add(type_pack) 
+				                 
+
 # Harvest the list of rollcall headers to be searched, and the list of type headers to be searched.
 def get_headers(path,header_set,exclude_set,verbose=False):
     """Parse the file at 'path' and add any headers that are "include"ed therin to the set 'header_set'"""

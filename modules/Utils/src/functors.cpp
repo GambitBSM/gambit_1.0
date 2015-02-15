@@ -1643,12 +1643,195 @@ namespace Gambit
       return myValue;
     }
 
+
+  // Backend_functor_common class method definitions
+
+    /// Constructor 
+    template <typename PTR_TYPE, typename TYPE, typename... ARGS>
+    backend_functor_common<PTR_TYPE, TYPE, ARGS...>::backend_functor_common (funcPtrType inputFunction, 
+                                                                             str func_name,
+                                                                             str func_capability, 
+                                                                             str result_type,
+                                                                             str origin_name,
+                                                                             str origin_version,
+                                                                             str origin_safe_version,
+                                                                             Models::ModelFunctorClaw &claw) 
+    : functor (func_name, func_capability, result_type, origin_name, claw),
+      myFunction (inputFunction),
+      myLogTag(-1),
+      inUse(false)
+    {
+      myVersion = origin_version; 
+      mySafeVersion = origin_safe_version;
+      // Determine LogTag number
+      myLogTag = Logging::str2tag(myOrigin);
+      // Or in the case where we prefer to include the version number in the LogTag too
+      //myLogTag = Logging::str2tag(myOrigin+"v"+myVersion);
+      // Check for failure
+      if(myLogTag==-1)
+      {
+        std::ostringstream ss;
+        ss << "Error retrieving LogTag number (in functors.hpp, constructor for "
+              "backend_functor_common)! No match for backend name in tag2str map! "
+              "This is supposed to be a backend functor, so this is a fatal error. "
+              "(myOrigin=" << myOrigin << ", myName=" << myName << ")";
+        utils_error().raise(LOCAL_INFO,ss.str());
+      }
+    }
+
+    /// Update the internal function pointer wrapped by the functor
+    template <typename PTR_TYPE, typename TYPE, typename... ARGS>
+    void backend_functor_common<PTR_TYPE, TYPE, ARGS...>::updatePointer(funcPtrType inputFunction)
+    {
+      myFunction = inputFunction;
+    }
+
+    /// Hand out the internal function pointer wrapped by the functor
+    template <typename PTR_TYPE, typename TYPE, typename... ARGS>
+    typename backend_functor_common<PTR_TYPE, TYPE, ARGS...>::funcPtrType backend_functor_common<PTR_TYPE, TYPE, ARGS...>::handoutFunctionPointer() 
+    {
+      return myFunction;
+    }
+
+    /// Getter for the 'safe' incarnation of the wrapped function's origin's version (module or backend)
+    template <typename PTR_TYPE, typename TYPE, typename... ARGS>
+    str backend_functor_common<PTR_TYPE, TYPE, ARGS...>::safe_version() const { if (this == NULL) failBigTime("safe_version"); return mySafeVersion; }
+
+    /// Set the inUse flag.
+    template <typename PTR_TYPE, typename TYPE, typename... ARGS>
+    void backend_functor_common<PTR_TYPE, TYPE, ARGS...>::setInUse(bool flag) { inUse = flag; } 
+
+    /// Hand out a safe pointer to this backend functor's inUse flag.
+    template <typename PTR_TYPE, typename TYPE, typename... ARGS>
+    safe_ptr<bool> backend_functor_common<PTR_TYPE, TYPE, ARGS...>::inUsePtr()
+    { 
+      if (this == NULL) functor::failBigTime("inUsePtr");
+      return safe_ptr<bool>(&inUse);
+    }       
+
+
+    // Actual non-variadic backend functor class method definitions for TYPE != void
+
+    /// Constructor 
+    template <typename TYPE, typename... ARGS>
+    backend_functor<TYPE(*)(ARGS...), TYPE, ARGS...>::backend_functor (TYPE (*inputFunction)(ARGS...), 
+                                                                       str func_name,
+                                                                       str func_capability, 
+                                                                       str result_type,
+                                                                       str origin_name,
+                                                                       str origin_version,
+                                                                       str safe_version,
+                                                                       Models::ModelFunctorClaw &claw)
+    : backend_functor_common<TYPE(*)(ARGS...), TYPE, ARGS...>(inputFunction, func_name,
+      func_capability, result_type, origin_name, origin_version, safe_version, claw) {}
+
+    /// Operation (execute function and return value) 
+    template <typename TYPE, typename... ARGS>
+    TYPE backend_functor<TYPE(*)(ARGS...), TYPE, ARGS...>::operator()(ARGS&&... args) 
+    {
+      if (this == NULL) functor::failBigTime("operator()");
+      logger().entering_backend(this->myLogTag);
+      TYPE tmp = this->myFunction(std::forward<ARGS>(args)...);
+      logger().leaving_backend();
+      return tmp;
+    }
+
+    /// Alternative to operation, in case the functor return value is 
+    /// in fact a pointer to a backend variable. 
+    template <typename TYPE, typename... ARGS>
+    safe_variable_ptr<TYPE> backend_functor<TYPE(*)(ARGS...), TYPE, ARGS...>::variablePtr()
+    {
+      if (this == NULL) functor::functor::failBigTime("variablePtr");
+      return safe_variable_ptr<TYPE>(this->myFunction); 
+    }
+
+
+    // Actual non-variadic backend functor class method definitions for TYPE=void
+
+    /// Constructor 
+    template <typename... ARGS>
+    backend_functor<void(*)(ARGS...), void, ARGS...>::backend_functor (void (*inputFunction)(ARGS...), 
+                                                                       str func_name,
+                                                                       str func_capability, 
+                                                                       str result_type,
+                                                                       str origin_name,
+                                                                       str origin_version,
+                                                                       str safe_version, 
+                                                                       Models::ModelFunctorClaw &claw)
+    : backend_functor_common<void(*)(ARGS...), void, ARGS...>(inputFunction, func_name,
+      func_capability, result_type, origin_name, origin_version, safe_version, claw) {}
+    
+    /// Operation (execute function and return value) 
+    template <typename... ARGS>
+    void backend_functor<void(*)(ARGS...), void, ARGS...>::operator()(ARGS&&... args) 
+    {
+      if (this == NULL) functor::functor::failBigTime("operator()");
+      logger().entering_backend(this->myLogTag);
+      this->myFunction(std::forward<ARGS>(args)...);
+      logger().leaving_backend();
+    }
+
+
+    // Actual variadic backend functor class method definitions for TYPE != void
+
+    /// Constructor 
+    template <typename TYPE, typename... ARGS>
+    backend_functor<typename variadic_ptr<TYPE,ARGS...>::type, TYPE, ARGS...>::backend_functor
+     (typename variadic_ptr<TYPE,ARGS...>::type inputFunction, str func_name, str func_capability, str result_type,
+     str origin_name, str origin_version, str safe_version, Models::ModelFunctorClaw &claw)
+    : backend_functor_common<typename variadic_ptr<TYPE,ARGS...>::type, TYPE, ARGS...>(inputFunction, func_name,
+      func_capability, result_type, origin_name, origin_version, safe_version, claw) {}
+
+    /// Operation (execute function and return value) 
+    template <typename TYPE, typename... ARGS> template <typename... VARARGS>
+    TYPE backend_functor<typename variadic_ptr<TYPE,ARGS...>::type, TYPE, ARGS...>::operator()(VARARGS&&... varargs) 
+    {
+      if (this == NULL) functor::failBigTime("operator()");
+      logger().entering_backend(this->myLogTag);
+      TYPE tmp = this->myFunction(std::forward<VARARGS>(varargs)...);
+      logger().leaving_backend();
+      return tmp;
+    }
+
+    /// Alternative to operation, in case the functor return value is 
+    /// in fact a pointer to a backend variable. 
+    template <typename TYPE, typename... ARGS>
+    safe_variable_ptr<TYPE> backend_functor<typename variadic_ptr<TYPE,ARGS...>::type, TYPE, ARGS...>::variablePtr()
+    {
+      if (this == NULL) functor::functor::failBigTime("variablePtr");
+      return safe_variable_ptr<TYPE>(this->myFunction); 
+    }
+
+
+    // Actual variadic backend functor class method definitions for TYPE=void
+
+    /// Constructor 
+    template <typename... ARGS>
+    backend_functor<typename variadic_ptr<void,ARGS...>::type, void, ARGS...>::backend_functor
+     (typename variadic_ptr<void,ARGS...>::type inputFunction, str func_name, str func_capability, str result_type,
+     str origin_name, str origin_version, str safe_version, Models::ModelFunctorClaw &claw)
+    : backend_functor_common<typename variadic_ptr<void,ARGS...>::type, void, ARGS...>(inputFunction, func_name,
+      func_capability, result_type, origin_name, origin_version, safe_version, claw) {}
+    
+    /// Operation (execute function) 
+    template <typename... ARGS> template <typename... VARARGS>
+    void backend_functor<typename variadic_ptr<void,ARGS...>::type, void, ARGS...>::operator()(VARARGS&&... varargs) 
+    {
+      if (this == NULL) functor::functor::failBigTime("operator()");
+      logger().entering_backend(this->myLogTag);
+      this->myFunction(std::forward<VARARGS>(varargs)...);
+      logger().leaving_backend();
+    }
+
+// Instantiate the module functor templates for all required types
 #define INSTANTIATE_MODULE_FUNCTOR_TEMPLATE(r,x,TYPE)  template class module_functor<TYPE>;
 INSTANTIATE_MODULE_FUNCTOR_TEMPLATE(,,void)
 BOOST_PP_SEQ_FOR_EACH(INSTANTIATE_MODULE_FUNCTOR_TEMPLATE,,PRINTABLE_TYPES)
 
-//Maybe one day...
-//#define INSTANTIATE_BACKEND_FUNCTOR_TEMPLATE(...)      template class backend_functor<__VA_ARGS__>;
-//BOOST_PP_SEQ_FOR_EACH(INSTANTIATE_BACKEND_FUNCTOR_TEMPLATE,,BACKEND_TYPES)
+// Issues: trailing comma, ellipses, backend reqs of module functions.
+
+// Instantiate the backend functor templates for all required types
+#define INSTANTIATE_BACKEND_FUNCTOR_TEMPLATE(r,x,TYPE_PACK)  FAIL(STRINGIFY((template class backend_functor<STRIP_PARENS(TYPE_PACK)>))) template class backend_functor<STRIP_PARENS(TYPE_PACK)>;
+BOOST_PP_SEQ_FOR_EACH(INSTANTIATE_BACKEND_FUNCTOR_TEMPLATE,,BACKEND_FUNCTOR_TYPES)
 
 }

@@ -33,6 +33,7 @@
 #          (patscott@physics.mcgill.ca)
 #    \date 2013 Oct, Nov
 #    \date 2014 Jan, Nov
+#    \date 2015 Feb
 #
 #*********************************************
 from harvesting_tools import *
@@ -141,23 +142,38 @@ def main(argv):
     find_and_harvest_headers(rollcall_headers,full_rollcall_headers,exclude_header,verbose=verbose)
     if verbose: print "  Searching type headers..."
     find_and_harvest_headers(type_headers,full_type_headers,exclude_header,verbose=verbose)
+    type_headers_relevant_for_backends = set(full_type_headers) - module_type_headers
      
     # Search through rollcall headers and look for macro calls that create module_functors or safe pointers to them 
     types=set(["ModelParameters"]) #Manually add this one to avoid scanning through Models directory
     for header in full_rollcall_headers:
         with open(header) as f:
-            if verbose: print "  Scanning header {0} for types used to instantiate functor class templates".format(header)
+            if verbose: print "  Scanning header {0} for types used to instantiate module functor class templates".format(header)
             module = ""
             for line in readlines_nocomments(f):
                 # If this line defines the module name, update it.
                 module = update_module(line,module)
-                # Check for calls to functor creation macros, and harvest the types used.
+                # Check for calls to module functor creation macros, and harvest the types used.
                 addiffunctormacro(line,module,types,full_type_headers,intrinsic_types,exclude_types,verbose=verbose)
         
-    print "Found:"
+    print "Found types for module funtions:"
     for t in types:
         print ' ',t
     
+    # Search through rollcall and frontend headers and look for macro calls that create module_functors, backend_functors or safe pointers to them 
+    be_types=set(["ModelParameters"])
+    type_packs=set() 
+    for header in full_rollcall_headers:
+        with open(header) as f:
+            if verbose: print "  Scanning header {0} for types used to instantiate backend functor class templates".format(header)
+            for line in readlines_nocomments(f):
+                # Check for calls to backend functor creation macros, and harvest the types used.
+                addifbefunctormacro(line,be_types,type_packs,type_headers_relevant_for_backends,verbose=verbose)
+        
+    print "Found types for backend functions and variables:"
+    for t in be_types:
+        if t != "": print ' ',t
+
     # Generate a c++ header containing the preprocessor sequence needed by Utils/include/gambit/Printers/printers.hpp, containing all the types we have harvested.
     towrite = "\
 //   GAMBIT: Global and Modular BSM Inference Tool\n\
@@ -188,10 +204,17 @@ def main(argv):
                                                   \n\
 #include \"gambit/Utils/types_rollcall.hpp\"      \n\
                                                   \n\
-// Automatically generated preprocessor sequence of types \n\
-#define PRINTABLE_TYPES "
+// Automatically generated preprocessor sequence of module functor types \n\
+#define PRINTABLE_TYPES \\\n"
     for t in types:
-        towrite+='({0})'.format(t)
+        towrite+='({0})'.format(t)+"\\\n"
+
+    towrite+="\n\
+// Automatically generated preprocessor sequence of backend functor types \n\
+#define BACKEND_FUNCTOR_TYPES \\\n"
+    for tp in type_packs:
+        towrite+='(({0}))'.format(tp)+"\\\n"
+
     towrite+="\n\n#endif // defined __all_functor_types_hpp__\n"
     
     with open("./Utils/include/gambit/Utils/all_functor_types.hpp","w") as f:
