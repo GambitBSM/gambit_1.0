@@ -17,7 +17,7 @@
 #  \date 2014 Dec
 #  \date 2015 Jan
 #  \date 2015 February -- J. Cornell
-#   (removed -rdynamic flag from OSX compiles)
+#    (removed -rdynamic from OSX linker flags)
 #
 #
 #*********************************************
