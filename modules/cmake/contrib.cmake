@@ -168,9 +168,9 @@ if(";${GAMBIT_BITS};" MATCHES ";SpecBit;")
   
   # Set linking commands.  Link order matters! The core flexiblesusy libraries need to come after the model libraries
   foreach(_MODEL ${BUILT_FS_MODELS})
-    set(flexiblesusy_LDFLAGS "${flexiblesusy_LDFLAGS} -L${MASS_SPECTRA_DIR}/flexiblesusy/models/${_MODEL} -l${_MODEL}")
+    set(flexiblesusy_LDFLAGS "-L${MASS_SPECTRA_DIR}/flexiblesusy/models/${_MODEL} -l${_MODEL} ${flexiblesusy_LDFLAGS}")
   endforeach()
-  set(flexiblesusy_LDFLAGS "${flexiblesusy_LDFLAGS} -L${MASS_SPECTRA_DIR}/flexiblesusy/src -lflexisusy -L${MASS_SPECTRA_DIR}/flexiblesusy/legacy -llegacy")
+  set(flexiblesusy_LDFLAGS "-L${MASS_SPECTRA_DIR}/flexiblesusy/src -lflexisusy -L${MASS_SPECTRA_DIR}/flexiblesusy/legacy -llegacy ${flexiblesusy_LDFLAGS}")
   
   # Set up include paths
   include_directories("${MASS_SPECTRA_DIR}")
