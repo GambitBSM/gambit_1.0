@@ -16,6 +16,9 @@
 #          (p.scott@imperial.ac.uk)
 #  \date 2014 Dec
 #  \date 2015 Jan
+#  \date 2015 February -- J. Cornell
+#   (removed -rdynamic flag from OSX compiles)
+#
 #
 #*********************************************
 import re
@@ -430,9 +433,15 @@ set_target_properties( scanlibs                 \n\
             towrite += plug_type[i] + "_plugin_sources_" + directory + "} HEADERS ${"
             towrite += plug_type[i] + "_plugin_headers_" + directory + "} )\n"
             towrite += "set_target_properties( " + plug_type[i] + "_" + directory + "\n" + " "*23 + "PROPERTIES\n"
-            towrite += " "*23 + "LINK_FLAGS \"-rdynamic ${" + plug_type[i] + "_plugin_libraries_" + directory + "}\"\n"
+            if sys.platform == "darwin":
+                towrite += " "*23 + "LINK_FLAGS \"${" + plug_type[i] + "_plugin_libraries_" + directory + "}\"\n"
+            else:
+                towrite += " "*23 + "LINK_FLAGS \"-rdynamic ${" + plug_type[i] + "_plugin_libraries_" + directory + "}\"\n"
             towrite += " "*23 + "INSTALL_RPATH \"${" + plug_type[i] + "_plugin_rpath_" + directory + "}\"\n";
-            cflags = "-rdynamic"
+            if sys.platform == "darwin":
+                cflags = ""
+            else:
+                cflags = "-rdynamic"
             #if scanbit_static_links.has_key(plug_type[i]):
             #    if scanbit_static_links[plug_type[i]].has_key(directory):
             #        if (len(scanbit_static_links[plug_type[i]][directory]) != 0):
