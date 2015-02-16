@@ -51,11 +51,11 @@
 #include "gambit/Logs/log.hpp"
 #include "gambit/Models/model_parameters.hpp"
 
-// Decay rate of average runtime estimate [(number of functor evaluations)^-1]
+/// Decay rate of average runtime estimate [(number of functor evaluations)^-1]
 #define FUNCTORS_FADE_RATE 0.01
-// Minimum invaldiation rate (should be 0<...<<1)
+/// Minimum invaldiation rate (should be 0<...<<1)
 #define FUNCTORS_BASE_INVALIDATION_RATE 0.01
-// Initial runtime estimate (s)
+/// Initial runtime estimate (s)
 #define FUNCTORS_RUNTIME_INIT 0.000001
 
 namespace Gambit
@@ -344,7 +344,7 @@ namespace Gambit
       /// Execute a single iteration in the loop managed by this functor.
       virtual void iterate(int iteration);
 
-      // Initialise the array holding the current iteration(s) of this functor.
+      /// Initialise the array holding the current iteration(s) of this functor.
       virtual void init_myCurrentIteration_if_NULL();
       /// Setter for setting the iteration number in the loop in which this functor runs
       virtual void setIteration (int iteration);
@@ -480,7 +480,7 @@ namespace Gambit
       /// Do post-calculate timing things
       virtual void finishTiming(int);
 
-      // Initialise the memory of this functor.
+      /// Initialise the memory of this functor.
       virtual void init_memory();
 
       /// Beginning and end timing points
@@ -635,7 +635,7 @@ namespace Gambit
       /// Flag to select whether or not the results of this functor should be sent to the printer object.
       bool myPrintFlag;
 
-      // Initialise the memory of this functor.
+      /// Initialise the memory of this functor.
       virtual void init_memory();
 
   };
@@ -701,7 +701,7 @@ namespace Gambit
       backend_functor_common (funcPtrType, str, str, str, str, str, str, Models::ModelFunctorClaw&);
 
       /// Update the internal function pointer wrapped by the functor
-      void updatePointer(funcPtrType inputFunction);
+      void updatePointer(funcPtrType);
 
       /// Hand out the internal function pointer wrapped by the functor
       funcPtrType handoutFunctionPointer();
@@ -730,10 +730,6 @@ namespace Gambit
 
       /// Operation (execute function and return value) 
       TYPE operator()(ARGS&&... args);
-
-      /// Alternative to operation, in case the functor return value is 
-      /// in fact a pointer to a backend variable. 
-      safe_variable_ptr<TYPE> variablePtr();
 
   };
 
@@ -766,11 +762,14 @@ namespace Gambit
 
       /// Operation (execute function and return value) 
       template <typename... VARARGS>
-      TYPE operator()(VARARGS&&... args);
-
-      /// Alternative to operation, in case the functor return value is 
-      /// in fact a pointer to a backend variable. 
-      safe_variable_ptr<TYPE> variablePtr();
+      TYPE operator()(VARARGS&&... varargs)
+      {
+        if (this == NULL) functor::failBigTime("operator()");
+        logger().entering_backend(this->myLogTag);
+        TYPE tmp = this->myFunction(std::forward<VARARGS>(varargs)...);
+        logger().leaving_backend();
+        return tmp;
+      }
 
   };
 
@@ -787,7 +786,13 @@ namespace Gambit
     
       /// Operation (execute function) 
       template <typename... VARARGS>
-      void operator()(VARARGS&&... varargs);
+      void operator()(VARARGS&&... varargs)
+      {
+        if (this == NULL) functor::functor::failBigTime("operator()");
+        logger().entering_backend(this->myLogTag);
+        this->myFunction(std::forward<VARARGS>(varargs)...);
+        logger().leaving_backend();
+      }
 
   };
 

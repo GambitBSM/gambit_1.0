@@ -142,7 +142,7 @@ def addiffunctormacro(line,module,typeset,typeheaders,intrinsic_types,exclude_ty
             typeset.add(candidate_type)                 
 
 # Harvest type from a BE_VARIABLE, BE_FUNCTION or BE_CONV_FUNCTION macro call
-def addifbefunctormacro(line,be_typeset,type_pack_set,typeheaders,verbose=False):
+def addifbefunctormacro(line,be_typeset,type_pack_set,verbose=False):
 
     command_index = {"BE_VARIABLE":1,
                      "BE_FUNCTION":2, 
@@ -156,11 +156,14 @@ def addifbefunctormacro(line,be_typeset,type_pack_set,typeheaders,verbose=False)
             #Get the argument types out of a BE_FUNCTION or BE_CONV_FUNCTION command
             args = re.sub("BE_(CONV_)?FUNCTION\(.*?,.*?,\s*?\(", "", line)
             args = re.sub("\([^\(]*?\)\s*\)\s*$", "\)", args)
-            args = re.sub("\)\s*,[^\)]*?,[^\)]*?\)\s*$", "", args)
+            if splitline[0] == "BE_FUNCTION":
+                args = re.sub("\)\s*,[^\)]*?,[^\)]*?\)\s*$", "", args)
+            else:
+                args = re.sub("\)\s*,[^\)]*?\)\s*$", "", args)            
             for arg in re.findall("[^,]*?\(.*?\)[^,]*?\(.*?\).*?,|[^,]*?<.*?>.*?,|[^,]*?\(.*?\).*?,|[^>\)]*?,", args+","):
-              arg = arg[:-1].strip()
-              if arg == "etc": arg = "..."
-              functor_template_types.append(arg)
+                arg = arg[:-1].strip()
+                if arg == "etc": arg = "..."
+                functor_template_types.append(arg)
         else:
             #Convert the type to a pointer if this is a backend variable functor rather than a backend function functor
 			functor_template_types[0] += "*"
@@ -177,9 +180,10 @@ def addifbefunctormacro(line,be_typeset,type_pack_set,typeheaders,verbose=False)
             # Replace the argument types in the functor_template_types with the fully-qualified versions if required.
             functor_template_types = [candidate_type if entry == initial_candidate else entry for entry in functor_template_types]
 
-        arg_list = ",".join(functor_template_types[1:])
-        type_pack = functor_template_types[0] + "(*)(" + arg_list + "), " + functor_template_types[0]
-        if arg_list != "": type_pack += ", " + arg_list
+        ptr_args = ",".join(functor_template_types[1:])
+        arg_list = ",".join([x for x in functor_template_types[1:] if x != "..."])
+        type_pack = functor_template_types[0] + "(*)(" + ptr_args + ")," + functor_template_types[0]
+        if arg_list != "": type_pack += "," + arg_list
         type_pack_set.add(type_pack) 
 				                 
 

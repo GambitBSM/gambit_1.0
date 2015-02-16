@@ -1736,15 +1736,6 @@ namespace Gambit
       return tmp;
     }
 
-    /// Alternative to operation, in case the functor return value is 
-    /// in fact a pointer to a backend variable. 
-    template <typename TYPE, typename... ARGS>
-    safe_variable_ptr<TYPE> backend_functor<TYPE(*)(ARGS...), TYPE, ARGS...>::variablePtr()
-    {
-      if (this == NULL) functor::functor::failBigTime("variablePtr");
-      return safe_variable_ptr<TYPE>(this->myFunction); 
-    }
-
 
     // Actual non-variadic backend functor class method definitions for TYPE=void
 
@@ -1771,7 +1762,6 @@ namespace Gambit
       logger().leaving_backend();
     }
 
-
     // Actual variadic backend functor class method definitions for TYPE != void
 
     /// Constructor 
@@ -1782,27 +1772,6 @@ namespace Gambit
     : backend_functor_common<typename variadic_ptr<TYPE,ARGS...>::type, TYPE, ARGS...>(inputFunction, func_name,
       func_capability, result_type, origin_name, origin_version, safe_version, claw) {}
 
-    /// Operation (execute function and return value) 
-    template <typename TYPE, typename... ARGS> template <typename... VARARGS>
-    TYPE backend_functor<typename variadic_ptr<TYPE,ARGS...>::type, TYPE, ARGS...>::operator()(VARARGS&&... varargs) 
-    {
-      if (this == NULL) functor::failBigTime("operator()");
-      logger().entering_backend(this->myLogTag);
-      TYPE tmp = this->myFunction(std::forward<VARARGS>(varargs)...);
-      logger().leaving_backend();
-      return tmp;
-    }
-
-    /// Alternative to operation, in case the functor return value is 
-    /// in fact a pointer to a backend variable. 
-    template <typename TYPE, typename... ARGS>
-    safe_variable_ptr<TYPE> backend_functor<typename variadic_ptr<TYPE,ARGS...>::type, TYPE, ARGS...>::variablePtr()
-    {
-      if (this == NULL) functor::functor::failBigTime("variablePtr");
-      return safe_variable_ptr<TYPE>(this->myFunction); 
-    }
-
-
     // Actual variadic backend functor class method definitions for TYPE=void
 
     /// Constructor 
@@ -1812,26 +1781,19 @@ namespace Gambit
      str origin_name, str origin_version, str safe_version, Models::ModelFunctorClaw &claw)
     : backend_functor_common<typename variadic_ptr<void,ARGS...>::type, void, ARGS...>(inputFunction, func_name,
       func_capability, result_type, origin_name, origin_version, safe_version, claw) {}
+
     
-    /// Operation (execute function) 
-    template <typename... ARGS> template <typename... VARARGS>
-    void backend_functor<typename variadic_ptr<void,ARGS...>::type, void, ARGS...>::operator()(VARARGS&&... varargs) 
-    {
-      if (this == NULL) functor::functor::failBigTime("operator()");
-      logger().entering_backend(this->myLogTag);
-      this->myFunction(std::forward<VARARGS>(varargs)...);
-      logger().leaving_backend();
-    }
-
-// Instantiate the module functor templates for all required types
+/// Instantiate the module functor templates for all required types
 #define INSTANTIATE_MODULE_FUNCTOR_TEMPLATE(r,x,TYPE)  template class module_functor<TYPE>;
-INSTANTIATE_MODULE_FUNCTOR_TEMPLATE(,,void)
 BOOST_PP_SEQ_FOR_EACH(INSTANTIATE_MODULE_FUNCTOR_TEMPLATE,,PRINTABLE_TYPES)
+INSTANTIATE_MODULE_FUNCTOR_TEMPLATE(,,void)
 
-// Issues: trailing comma, ellipses, backend reqs of module functions.
+// Issues: backend reqs of module functions.
 
-// Instantiate the backend functor templates for all required types
-#define INSTANTIATE_BACKEND_FUNCTOR_TEMPLATE(r,x,TYPE_PACK)  FAIL(STRINGIFY((template class backend_functor<STRIP_PARENS(TYPE_PACK)>))) template class backend_functor<STRIP_PARENS(TYPE_PACK)>;
+// Instantiate the backend functor templates for all required types 
+#define INSTANTIATE_BACKEND_FUNCTOR_TEMPLATE(r,x,TYPE_PACK)      \
+ template class backend_functor_common<STRIP_PARENS(TYPE_PACK)>; \
+ template class backend_functor<STRIP_PARENS(TYPE_PACK)>; 
 BOOST_PP_SEQ_FOR_EACH(INSTANTIATE_BACKEND_FUNCTOR_TEMPLATE,,BACKEND_FUNCTOR_TYPES)
 
 }

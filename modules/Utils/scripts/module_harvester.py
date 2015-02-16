@@ -142,7 +142,6 @@ def main(argv):
     find_and_harvest_headers(rollcall_headers,full_rollcall_headers,exclude_header,verbose=verbose)
     if verbose: print "  Searching type headers..."
     find_and_harvest_headers(type_headers,full_type_headers,exclude_header,verbose=verbose)
-    type_headers_relevant_for_backends = set(full_type_headers) - module_type_headers
      
     # Search through rollcall headers and look for macro calls that create module_functors or safe pointers to them 
     types=set(["ModelParameters"]) #Manually add this one to avoid scanning through Models directory
@@ -150,25 +149,33 @@ def main(argv):
         with open(header) as f:
             if verbose: print "  Scanning header {0} for types used to instantiate module functor class templates".format(header)
             module = ""
+            continued_line = ""
             for line in readlines_nocomments(f):
+                continued_line += line
+                if line.strip().endswith(","): continue
                 # If this line defines the module name, update it.
-                module = update_module(line,module)
+                module = update_module(continued_line,module)
                 # Check for calls to module functor creation macros, and harvest the types used.
-                addiffunctormacro(line,module,types,full_type_headers,intrinsic_types,exclude_types,verbose=verbose)
+                addiffunctormacro(continued_line,module,types,full_type_headers,intrinsic_types,exclude_types,verbose=verbose)
+                continued_line = ""
         
     print "Found types for module funtions:"
     for t in types:
         print ' ',t
     
     # Search through rollcall and frontend headers and look for macro calls that create module_functors, backend_functors or safe pointers to them 
-    be_types=set(["ModelParameters"])
+    be_types=set()
     type_packs=set() 
     for header in full_rollcall_headers:
         with open(header) as f:
             if verbose: print "  Scanning header {0} for types used to instantiate backend functor class templates".format(header)
+            continued_line = ""
             for line in readlines_nocomments(f):
+                continued_line += line
+                if line.strip().endswith(","): continue
                 # Check for calls to backend functor creation macros, and harvest the types used.
-                addifbefunctormacro(line,be_types,type_packs,type_headers_relevant_for_backends,verbose=verbose)
+                addifbefunctormacro(continued_line,be_types,type_packs,verbose=verbose)
+                continued_line = ""
         
     print "Found types for backend functions and variables:"
     for t in be_types:
