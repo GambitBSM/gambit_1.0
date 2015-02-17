@@ -80,6 +80,9 @@ def main(argv):
     # List of types NOT to return (things we know are not printable, but can appear in START_FUNCTION calls)
     exclude_types=set(["void"])
 
+    # Load up the sets of equivalent types
+    equiv_classes = get_type_equivalencies()
+
     # Get list of rollcall header files to search
     module_rollcall_headers.update(retrieve_rollcall_headers(verbose,".",exclude_header))
     rollcall_headers.update(module_rollcall_headers)
@@ -156,7 +159,7 @@ def main(argv):
                 # If this line defines the module name, update it.
                 module = update_module(continued_line,module)
                 # Check for calls to module functor creation macros, and harvest the types used.
-                addiffunctormacro(continued_line,module,types,full_type_headers,intrinsic_types,exclude_types,verbose=verbose)
+                addiffunctormacro(continued_line,module,types,full_type_headers,intrinsic_types,exclude_types,equiv_classes,verbose=verbose)
                 continued_line = ""
         
     print "Found types for module funtions:"
@@ -174,7 +177,7 @@ def main(argv):
                 continued_line += line
                 if line.strip().endswith(","): continue
                 # Check for calls to backend functor creation macros, and harvest the types used.
-                addifbefunctormacro(continued_line,be_types,type_packs,verbose=verbose)
+                addifbefunctormacro(continued_line,be_types,type_packs,equiv_classes,verbose=verbose)
                 continued_line = ""
         
     print "Found types for backend functions and variables:"

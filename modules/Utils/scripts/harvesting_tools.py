@@ -18,6 +18,7 @@
 #          (patscott@physics.mcgill.ca)
 #    \date 2013 Oct, Nov
 #    \date 2014 Jan, Nov
+#    \date 2015 Feb
 #
 #*********************************************
 import os
@@ -26,6 +27,25 @@ import datetime
 import sys
 import getopt
 
+equiv_config = "./config/resolution_type_equivalency_classes.yaml"
+
+# Load type equivalencies yaml file and return a dictionary containing all the equivalency classes.
+# Just use regex rather than pyYAML, as the latter chokes on :: in scalar entries >:-/
+def get_type_equivalencies():
+    from collections import defaultdict
+    result = defaultdict(set)
+    # Load the equivalencies yaml file
+    with open(equiv_config) as f:
+        for newline in readlines_nocomments(f):
+            newline = newline.strip()
+            if newline == "" or newline.startswith("#"): continue
+            newline = re.sub("^\[\s*|\s*\]", "", newline)
+            equivalency_class = set()
+            for member in re.findall("[^,]*?\(.*?\)[^,]*?\(.*?\).*?,|[^,]*?<.*?>.*?,|[^,]*?\(.*?\).*?,|[^>\)]*?,", newline+","):
+                equivalency_class.add(member[:-1].strip())
+            for member in equivalency_class: result[member] = list(equivalency_class)
+    return result
+                    
 # Remove C/C++ comments from 'text' (From http://stackoverflow.com/questions/241327/python-snippet-to-remove-c-and-c-comments)
 def comment_remover(text):
     def replacer(match):
@@ -96,7 +116,7 @@ def update_module(line,module):
     return module
 
 # Harvest type from a START_FUNCTION or QUICK_FUNCTION macro call
-def addiffunctormacro(line,module,typeset,typeheaders,intrinsic_types,exclude_types,verbose=False):
+def addiffunctormacro(line,module,typeset,typeheaders,intrinsic_types,exclude_types,equiv_classes,verbose=False):
 
     command_index = {"START_FUNCTION":1,
                      "QUICK_FUNCTION":5, 
@@ -120,6 +140,7 @@ def addiffunctormacro(line,module,typeset,typeheaders,intrinsic_types,exclude_ty
 
         #Iterate over all the candidate types and check if they are defined.
         for candidate_type in candidate_types:
+            if candidate_type in equiv_classes: candidate_type = equiv_classes[candidate_type][0]
             #Skip out now if the type is already found.
             if (candidate_type in typeset or
                 module+"::"+candidate_type in typeset or
@@ -143,7 +164,7 @@ def addiffunctormacro(line,module,typeset,typeheaders,intrinsic_types,exclude_ty
 
 
 # Harvest type from a BE_VARIABLE, BE_FUNCTION or BE_CONV_FUNCTION macro call
-def addifbefunctormacro(line,be_typeset,type_pack_set,verbose=False):
+def addifbefunctormacro(line,be_typeset,type_pack_set,equiv_classes,verbose=False):
 
     command_index = {"BE_VARIABLE":1,
                      "BE_FUNCTION":2, 
@@ -197,6 +218,7 @@ def addifbefunctormacro(line,be_typeset,type_pack_set,verbose=False):
         #Iterate over all the candidate types and check if they are defined.
         candidate_types = set(functor_template_types)
         for candidate_type in candidate_types:
+            if candidate_type in equiv_classes: candidate_type = equiv_classes[candidate_type][0]
             initial_candidate = candidate_type
             #Skip to the end if the type is already found.
             if ("Gambit::"+candidate_type in be_typeset):
