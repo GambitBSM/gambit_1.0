@@ -336,6 +336,7 @@ def main(argv):
 #define GAMBIT_DIR \"@PROJECT_SOURCE_DIR@\"       \n\
 #define GAMBIT_BUILD_DIR \"@PROJECT_BINARY_DIR@\" \n"
 
+    towrite += "\n#endif // #defined__cmake_variables_hpp__"
     header = "./cmake/cmake_variables.hpp.in"
     with open(header+".candidate","w") as f: f.write(towrite)
     update_cmakelists.update_only_if_different(header, header+".candidate")
