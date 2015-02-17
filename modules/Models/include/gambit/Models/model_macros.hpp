@@ -175,7 +175,7 @@
                                                                                \
         namespace Ini                                                          \
         {                                                                      \
-          ini_code AddModel(LOCAL_INFO, &rt_add_model);                        \
+          ini_code AddModel(&rt_add_model);                        \
         }                                                                      \
                                                                                \
         namespace Accessors                                                    \
@@ -307,7 +307,7 @@
            using this ini_code trick. Don't call this function ever again!*/   \
         namespace Ini                                                          \
         {                                                                      \
-          ini_code CAT(iniadd,PARAMETER) (LOCAL_INFO, &CAT(add,PARAMETER));    \
+          ini_code CAT(iniadd,PARAMETER) (&CAT(add,PARAMETER));    \
         }                                                                      \
                                                                                \
       }                                                                        \
@@ -383,7 +383,7 @@
         namespace Ini                                                          \
         {                                                                      \
           ini_code CAT(ini_pars_for_,MODEL_X)                                  \
-           (LOCAL_INFO, &CAT(pars_for_,MODEL_X));                              \
+           (&CAT(pars_for_,MODEL_X));                              \
         }                                                                      \
                                                                                \
       }                                                                        \
@@ -489,7 +489,7 @@
   /* Create the function initialisation object */                              \
   namespace Ini                                                                \
   {                                                                            \
-    ini_code FUNCTION (LOCAL_INFO, &rt_register_function<Tags::FUNCTION>);     \
+    ini_code FUNCTION (&rt_register_function<Tags::FUNCTION>);     \
   }                                                                            \
 
 /// Supplementary version of MAKE_FUNCTOR modded for primary_parameters functors.
@@ -506,7 +506,7 @@
   namespace Ini                                                                \
   {                                                                            \
     ini_code CAT(FUNCTION,_supp)                                               \
-     (LOCAL_INFO, &rt_register_function_supp<Tags::FUNCTION>);                 \
+     (&rt_register_function_supp<Tags::FUNCTION>);                 \
   }                                                                            \
 
 /// @}

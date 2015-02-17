@@ -39,7 +39,7 @@ namespace Gambit
         warning w = scan_warning();
       }
 
-      ini_code ScannerBit_handlers(LOCAL_INFO, &register_ScannerBit_handlers);
+      ini_code ScannerBit_handlers(&register_ScannerBit_handlers);
 
     }
 

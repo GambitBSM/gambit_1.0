@@ -71,7 +71,7 @@ BOOST_PP_SEQ_FOR_EACH(PRE_TYPEDEFAULT, (CAT_3(BE,_,VER))(CAT_3(BE,_,DEFAULT)),  
         }                                                                             \
         namespace ini                                                                 \
         {                                                                             \
-          ini_code ini_pass_default(LOCAL_INFO,&pass_default_to_backendinfo);         \
+          ini_code ini_pass_default(&pass_default_to_backendinfo);         \
         }                                                                             \
       }                                                                               \
     }                                                                                 \
