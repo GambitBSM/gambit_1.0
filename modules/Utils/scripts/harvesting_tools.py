@@ -141,35 +141,61 @@ def addiffunctormacro(line,module,typeset,typeheaders,intrinsic_types,exclude_ty
                             candidate_type = check_for_declaration(newline,module,local_namespace,candidate_type)
             typeset.add(candidate_type)                 
 
+
 # Harvest type from a BE_VARIABLE, BE_FUNCTION or BE_CONV_FUNCTION macro call
 def addifbefunctormacro(line,be_typeset,type_pack_set,verbose=False):
 
     command_index = {"BE_VARIABLE":1,
                      "BE_FUNCTION":2, 
-                     "BE_CONV_FUNCTION":2}
+                     "BE_CONV_FUNCTION":2,
+                     "BACKEND_REQ":0}
+                         
     splitline = neatsplit('\(|\)|,|\s',line)
 
     if len(splitline)>1 and splitline[0] in command_index.keys():
         #This line defines a backend functor and one or more of the arguments defines a candidate type
-        functor_template_types = list([splitline[command_index[splitline[0]]]])
-        if splitline[0].endswith("FUNCTION"):
-            #Get the argument types out of a BE_FUNCTION or BE_CONV_FUNCTION command
-            args = re.sub("BE_(CONV_)?FUNCTION\(.*?,.*?,\s*?\(", "", line)
-            args = re.sub("\([^\(]*?\)\s*\)\s*$", "\)", args)
-            if splitline[0] == "BE_FUNCTION":
-                args = re.sub("\)\s*,[^\)]*?,[^\)]*?\)\s*$", "", args)
+
+        if splitline[0] == "BACKEND_REQ":
+            args = re.sub("\s*BACKEND_REQ\s*\(.*?,\s*\(.*?\)\s*,\s*", "", re.sub("\s*\)\s*$", "", line) )
+            if re.search("\)\s*\)\s*$", line): 
+                #This is a backend function requirement
+                leading_type = re.sub("\s*,\s*\(.*?\)\s*$", "", args)
+                functor_template_types = list([leading_type])
+                args = re.sub(".*?,\s*\(\s*", "", re.sub("\s*\)\s*$", "", args) )
+                for arg in re.findall("[^,]*?\(.*?\)[^,]*?\(.*?\).*?,|[^,]*?<.*?>.*?,|[^,]*?\(.*?\).*?,|[^>\)]*?,", args+","):
+                    arg = arg[:-1].strip()
+                    if arg != "":
+                        if arg == "etc": arg = "..."
+                        arg_list = neatsplit('\s',arg)
+                        if (arg_list[0] in {"class", "struct", "typename"}): arg = arg_list[1]
+                        functor_template_types.append(arg)
             else:
-                args = re.sub("\)\s*,[^\)]*?\)\s*$", "", args)            
-            for arg in re.findall("[^,]*?\(.*?\)[^,]*?\(.*?\).*?,|[^,]*?<.*?>.*?,|[^,]*?\(.*?\).*?,|[^>\)]*?,", args+","):
-                arg = arg[:-1].strip()
-                if arg == "etc": arg = "..."
-                functor_template_types.append(arg)
+                #This is a backend variable requirement
+                functor_template_types = list([args.strip()+"*"])
+
         else:
-            #Convert the type to a pointer if this is a backend variable functor rather than a backend function functor
-			functor_template_types[0] += "*"
-        candidate_types = set(functor_template_types)
+            functor_template_types = list([splitline[command_index[splitline[0]]]])
+            if splitline[0].endswith("FUNCTION"):
+                #Get the argument types out of a BE_FUNCTION or BE_CONV_FUNCTION command
+                args = re.sub("\s*BE_(CONV_)?FUNCTION\s*\(.*?,.*?,\s*?\(", "", line)
+                args = re.sub("\([^\(]*?\)\s*\)\s*$", "\)", args)
+                if splitline[0] == "BE_FUNCTION":
+                    args = re.sub("\)\s*,[^\)]*?,[^\)]*?\)\s*$", "", args)
+                else:
+                    args = re.sub("\)\s*,[^\)]*?\)\s*$", "", args)            
+                for arg in re.findall("[^,]*?\(.*?\)[^,]*?\(.*?\).*?,|[^,]*?<.*?>.*?,|[^,]*?\(.*?\).*?,|[^>\)]*?,", args+","):
+                    arg = arg[:-1].strip()
+                    if arg != "":
+                        if arg == "etc": arg = "..."
+                        arg_list = neatsplit('\s',arg)
+                        if (arg_list[0] in {"class", "struct", "typename"}): arg = arg_list[1]
+                        functor_template_types.append(arg)
+            else:
+                #Convert the type to a pointer if this is a backend variable functor rather than a backend function functor
+                functor_template_types[0] += "*"
 
         #Iterate over all the candidate types and check if they are defined.
+        candidate_types = set(functor_template_types)
         for candidate_type in candidate_types:
             initial_candidate = candidate_type
             #Skip to the end if the type is already found.
