@@ -30,6 +30,14 @@ include_directories("${PROJECT_SOURCE_DIR}/contrib/mcutils/include")
 #contrib/heputils
 include_directories("${PROJECT_SOURCE_DIR}/contrib/heputils/include")
 
+#contrib/mkpath
+set(mkpath_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/contrib/mkpath/include")
+include_directories("${mkpath_INCLUDE_DIR}")
+add_gambit_library(mkpath OPTION OBJECT 
+                          SOURCES ${PROJECT_SOURCE_DIR}/contrib/mkpath/src/mkpath.c 
+                          HEADERS ${PROJECT_SOURCE_DIR}/contrib/mkpath/include/mkpath/mkpath.h)
+set(GAMBIT_COMMON_OBJECTS "${GAMBIT_COMMON_OBJECTS}" $<TARGET_OBJECTS:mkpath>)
+
 #contrib/yaml-cpp-0.5.1
 set(yaml_CXXFLAGS "${CMAKE_CXX_FLAGS}")
 if (NOT Boost_INCLUDE_DIR STREQUAL "") 
@@ -48,10 +56,10 @@ ExternalProject_Add(yaml-cpp
   CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/install
 )
 add_custom_target(yaml COMMAND $(MAKE) yaml-cpp)
-set(yaml_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}/contrib/yaml-cpp-0.5.1/include")
+set(yaml_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/contrib/yaml-cpp-0.5.1/include")
 set(yaml_LIBRARIES "yaml-cpp")
 set(yaml_LDFLAGS "-L${PROJECT_SOURCE_DIR}/contrib/yaml-cpp-0.5.1 -l${yaml_LIBRARIES}")
-include_directories("${yaml_INCLUDE_DIRS}")
+include_directories("${yaml_INCLUDE_DIR}")
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/contrib/yaml-cpp-0.5.1/libyaml-cpp.a")
 file(GLOB yaml_o ${PROJECT_SOURCE_DIR}/contrib/yaml-cpp-0.5.1/build/*.o)
 file(GLOB yaml_contrib_o ${PROJECT_SOURCE_DIR}/contrib/yaml-cpp-0.5.1/build/contrib/*.o)
@@ -158,11 +166,11 @@ if(";${GAMBIT_BITS};" MATCHES ";SpecBit;")
     INSTALL_COMMAND ""
   )
   
-  # Set linking commands.  Link order matters! The core flexiblesusy libraries need to come after the model libraries
+  # Set linking commands.  Link order matters! The core flexiblesusy libraries need to come after the model libraries but before the other link flags.
+  set(flexiblesusy_LDFLAGS "-L${MASS_SPECTRA_DIR}/flexiblesusy/src -lflexisusy -L${MASS_SPECTRA_DIR}/flexiblesusy/legacy -llegacy ${flexiblesusy_LDFLAGS}")
   foreach(_MODEL ${BUILT_FS_MODELS})
-    set(flexiblesusy_LDFLAGS "${flexiblesusy_LDFLAGS} -L${MASS_SPECTRA_DIR}/flexiblesusy/models/${_MODEL} -l${_MODEL}")
+    set(flexiblesusy_LDFLAGS "-L${MASS_SPECTRA_DIR}/flexiblesusy/models/${_MODEL} -l${_MODEL} ${flexiblesusy_LDFLAGS}")
   endforeach()
-  set(flexiblesusy_LDFLAGS "${flexiblesusy_LDFLAGS} -L${MASS_SPECTRA_DIR}/flexiblesusy/src -lflexisusy -L${MASS_SPECTRA_DIR}/flexiblesusy/legacy -llegacy")
   
   # Set up include paths
   include_directories("${MASS_SPECTRA_DIR}")

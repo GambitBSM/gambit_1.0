@@ -9,7 +9,6 @@ set(source_files src/equivalency_singleton.cpp
                  src/util_functions.cpp
                  src/ASCIItableReader.cpp
                  src/decay_table.cpp
-                 src/mkpath.c
 )
 
 set(header_files include/gambit/Utils/base_functions.hpp
@@ -43,7 +42,6 @@ set(header_files include/gambit/Utils/base_functions.hpp
                  include/gambit/Utils/variadic_functions.hpp
                  include/gambit/Utils/ASCIItableReader.hpp
                  include/gambit/Utils/yaml_options.hpp
-                 include/gambit/Utils/mkpath.h
 )
 
 add_gambit_library(Utils OPTION OBJECT SOURCES ${source_files} HEADERS ${header_files})

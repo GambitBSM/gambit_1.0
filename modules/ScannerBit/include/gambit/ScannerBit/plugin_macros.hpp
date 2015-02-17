@@ -19,9 +19,9 @@
 ///
 ///  *********************************************
 
-#include "cmake_variables.hpp"
 #include "gambit/ScannerBit/plugin_details.hpp"
 #include "gambit/ScannerBit/printer_interface.hpp"
+#include "gambit/cmake/cmake_variables.hpp"
 
 #ifndef SCANNER_PLUGIN_MACROS_HPP
 #define SCANNER_PLUGIN_MACROS_HPP

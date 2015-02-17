@@ -24,16 +24,16 @@
 #define __util_functions_hpp__
 
 #include <vector>
+#include <chrono> 
 
 #include "gambit/Utils/util_types.hpp"
 
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/classification.hpp>
-#include <chrono> 
 
 extern "C"
 {
-  #include "mkpath.h"  
+  #include "mkpath/mkpath.h"  
 }
 
 # if GAMBIT_CONFIG_FLAG_use_std_regex

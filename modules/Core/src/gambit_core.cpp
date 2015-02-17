@@ -24,7 +24,6 @@
 #include <getopt.h>
 
 // Gambit headers
-#include "cmake_variables.hpp"
 #include "gambit/Core/gambit_core.hpp"
 #include "gambit/Core/error_handlers.hpp"
 #include "gambit/Core/version.hpp"
@@ -32,6 +31,7 @@
 #include "gambit/Core/yaml_description_database.hpp"
 #include "gambit/Utils/stream_overloads.hpp"
 #include "gambit/ScannerBit/plugin_loader.hpp"
+#include "gambit/cmake/cmake_variables.hpp"
 
 // Boost
 #include <boost/algorithm/string/replace.hpp>
