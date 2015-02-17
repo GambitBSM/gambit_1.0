@@ -21,7 +21,7 @@ namespace Gambit
 {
         namespace Scanner
         {
-                class printer_interface
+                class printer_interface_temp
                 {
                 public:
                         virtual void inputValue() = 0;
@@ -29,6 +29,8 @@ namespace Gambit
                         virtual void inputValue(int thread, int tag, const std::string &, const std::vector<double> &);
                         template<typename T> void inputValue(int, int, const std::string &, T) {/*do nothing*/}
                 };
+                
+                typedef printer_interface_temp printer_interface;
         }
 }
 

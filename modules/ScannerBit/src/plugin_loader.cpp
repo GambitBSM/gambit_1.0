@@ -142,9 +142,10 @@ namespace Gambit
                                 return plugins[0];
                         }
 
-                        void pluginInfo::iniFile(const Options &options_in)
+                        void pluginInfo::iniFile(const Options &options_in, printer_interface &printerIn)
                         {
                                 options = options_in;
+                                printer = &printerIn;
                                 if (options.getNode().IsMap())
                                 {
                                         std::vector<std::string> selectedPluginNames = options.getNames();
@@ -187,7 +188,7 @@ namespace Gambit
                                 auto it2 = selectedPlugins.find(pluginName);
                                 if (it2 != selectedPlugins.end())
                                 {
-                                        return Plugin_Interface_Details(plugins.find(type, it2->second.plugin, it2->second.version, it2->second.path), options.getOptions(pluginName).getNode());
+                                        return Plugin_Interface_Details(plugins.find(type, it2->second.plugin, it2->second.version, it2->second.path), printer, options.getOptions(pluginName).getNode());
                                 }
                                 else
                                 {

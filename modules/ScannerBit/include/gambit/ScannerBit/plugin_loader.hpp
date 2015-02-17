@@ -28,6 +28,7 @@
 
 #include "gambit/ScannerBit/plugin_details.hpp"
 #include "gambit/Utils/yaml_options.hpp"
+#include "gambit/ScannerBit/printer_interface.hpp"
 
 namespace Gambit
 {
@@ -52,11 +53,12 @@ namespace Gambit
                         {
                                 std::string full_string;
                                 std::string path;
+                                const printer_interface *printer;
                                 YAML::Node node;
                                 
                                 Plugin_Interface_Details(){}
-                                Plugin_Interface_Details(const Plugin_Details &details, const YAML::Node &node) 
-                                        : full_string(details.full_string), path(details.path), node(node) {}
+                                Plugin_Interface_Details(const Plugin_Details &details, printer_interface *printer, const YAML::Node &node) 
+                                        : full_string(details.full_string), path(details.path), printer(printer), node(node) {}
                         };
                 
                         ///container class for the actual plugins detected my ScannerBit
@@ -82,10 +84,11 @@ namespace Gambit
                         private:
                                 std::map<std::string, Proto_Plugin_Details> selectedPlugins;
                                 mutable Plugins::Plugin_Loader plugins;
+                                printer_interface *printer;
                                 Options options;
                                 
                         public:
-                                void iniFile(const Options &);
+                                void iniFile(const Options &, printer_interface &);
                                 const Plugin_Loader &operator()(){return plugins;}
                                 Plugin_Interface_Details operator()(const std::string &, const std::string &);
                         };

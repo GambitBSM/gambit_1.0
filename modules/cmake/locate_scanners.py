@@ -129,6 +129,7 @@ def main(argv):
                 with open(source) as f:
                     last_plugin = ""
                     last_version= ""
+                    last_plugin_file=[]
                     if verbose: print "  Scanning source file {0} for ScannerBit plugin declarations.".format(source)
                     text = comment_remover(f.read())
                     it = re.finditer(r'\breqd_inifile_entries\s*?\(.*?\)|\bREQD_INIFILE_ENTRIES\s*?\(.*?\)', text, re.DOTALL)
@@ -146,14 +147,10 @@ def main(argv):
                             if len(splitline) != 0: 
                                 plugin_name = splitline[1]
                                 mod_version = ["0","0","0",""]
-                                
-                                if splitline[-1] == "external_library_required":
-                                    if splitline[2] == "version": mod_version[0:len(splitline[3:-1])] = splitline[3:-1]
-                                    plugin_type = "scan" if splitline[0] == "scanner_plugin" else "like"
-                                    token = "libs_present_"+plugin_name+"__t__"+plugin_type+"__v__"+"_".join([x for x in mod_version])
-                                    plugins+=[[plugin_name, plugin_type, mod_version, "missing", token, [], directory, plug_type[i]]]
-                                else:
-                                    if splitline[2] == "version": mod_version[0:len(splitline[3:])] = splitline[3:]
+                                plugin_type = "scan" if splitline[0] == "scanner_plugin" else "like"
+                                if splitline[2] == "version": mod_version[0:len(splitline[3:])] = splitline[3:]
+                                token = "libs_present_"+plugin_name+"__t__"+plugin_type+"__v__"+"_".join([x for x in mod_version])
+                                last_plugin_file=[plugin_name, plugin_type, mod_version, "not_linked", token, [], directory, plug_type[i]]
                                 
                                 last_plugin = plugin_name
                                 last_version = mod_version[0] + "." + mod_version[1] + "." + mod_version[2]
@@ -167,13 +164,12 @@ def main(argv):
                                 scanbit_reqs[plug_type[i]][last_plugin][last_version] += "," + find[2][21:-1]
                             else:
                                 scanbit_reqs[plug_type[i]][last_plugin][last_version] = find[2][21:-1]
-                        #elif find[1] == -2:
-                            #if not scanbit_auto_libs[plug_type[i]].has_key(last_plugin):
-                                #scanbit_auto_libs[plug_type[i]][last_plugin] = dict()
-                            #if scanbit_auto_libs[plug_type[i]][last_plugin].has_key(last_version):
-                                #scanbit_auto_libs[plug_type[i]][last_plugin][last_version] += "," + find[2][15:-1]
-                            #else:
-                                #scanbit_auto_libs[plug_type[i]][last_plugin][last_version] = find[2][15:-1]
+                        elif find[1] == -2:
+                            if not scanbit_auto_libs[plug_type[i]].has_key(directory):
+                                scanbit_auto_libs[plug_type[i]][directory] = neatsplit(',|\"', find[2][15:-1])
+                            else:
+                                scanbit_auto_libs[plug_type[i]][directory] += neatsplit(',|\"', find[2][15:-1])
+                            plugins += [last_plugin_file]
                         
             ## begin adding plugin files to CMakeLists.txt ##
                 cmakelist_txt_out += " "*16 + source.split('./ScannerBit/')[1] + "\n"
@@ -216,7 +212,7 @@ def main(argv):
                                 if key == "lib" or key == "libs" or key == "library" or key == "libraries":
                                     libs = neatsplit(',|\s|;', f[key])
                                     for lib in libs:
-                                        if os.path.isfile(lib):                            
+                                        if os.path.isfile(lib):
                                             go_ahead = True
                                             for x in exclude_plugins: 
                                                 if (plugin_name+"_"+"_".join([y for y in version_bits])).startswith(x): go_ahead = False                    
@@ -238,6 +234,8 @@ def main(argv):
                                                 plugin[3] = "excluded"
                                         elif lib == "ROOT" or lib == "GSL":
                                             auto_libs += [lib]
+                                        else:
+                                            plugin[3] = "missing"
                                             
                                 elif key == "inc" or key == "incs" or key == "include" or key == "includes" or key == "include_path" or key == "include_paths":
                                     incs = neatsplit(',|\s|;', f[key])
@@ -335,9 +333,6 @@ def main(argv):
 #define GAMBIT_DIR \"@PROJECT_SOURCE_DIR@\"       \n\
 #define GAMBIT_BUILD_DIR \"@PROJECT_BINARY_DIR@\" \n"
 
-    for plugin in plugins:
-        towrite += "#define " + plugin[4] + " " + flag[plugin[3]] + "\n"
-    towrite += "\n#endif // #defined__cmake_variables_hpp__"
     header = "./cmake/cmake_variables.hpp.in"
     with open(header+".candidate","w") as f: f.write(towrite)
     update_cmakelists.update_only_if_different(header, header+".candidate")

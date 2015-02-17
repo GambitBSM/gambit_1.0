@@ -110,7 +110,7 @@ namespace Gambit
                                 return;
                         }
                         
-                        Plugins::plugin_info.iniFile(options->getOptions("plugins"));
+                        Plugins::plugin_info.iniFile(options->getOptions("plugins"), *printerInterface);
                         
                         if (options->hasKey("use_objective_plugins"))
                         {

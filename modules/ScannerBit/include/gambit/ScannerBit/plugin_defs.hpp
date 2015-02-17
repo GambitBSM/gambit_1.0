@@ -28,6 +28,8 @@
 #include <algorithm>
 #include <typeinfo>
 
+#include "gambit/ScannerBit/printer_interface.hpp"
+
 namespace Gambit
 {
 
@@ -83,6 +85,7 @@ namespace Gambit
                                 std::string name;
                                 std::string tag;
                                 YAML::Node node;
+                                printer_interface *printer;
                                 std::vector <void *> inputData;
                                 std::vector <void (*)(pluginData &)> inits;
                                 std::map<std::string, factoryBase *> outputFuncs;
