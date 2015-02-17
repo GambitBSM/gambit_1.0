@@ -1,6 +1,8 @@
-set(source_files src/equivalency_singleton.cpp
+set(source_files src/decay_table.cpp
+                 src/equivalency_singleton.cpp
                  src/exceptions.cpp
                  src/functors.cpp
+                 src/ini_functions.cpp
                  src/standalone_error_handlers.cpp
                  src/stream_overloads.cpp
                  src/terminator.cpp
@@ -8,7 +10,6 @@ set(source_files src/equivalency_singleton.cpp
                  src/type_equivalency.cpp
                  src/util_functions.cpp
                  src/ASCIItableReader.cpp
-                 src/decay_table.cpp
 )
 
 set(header_files include/gambit/Utils/base_functions.hpp
@@ -21,6 +22,7 @@ set(header_files include/gambit/Utils/base_functions.hpp
                  include/gambit/Utils/functors.hpp
                  include/gambit/Utils/gambit_module_headers.hpp
                  include/gambit/Utils/ini_code_struct.hpp
+                 include/gambit/Utils/ini_functions.hpp
                  include/gambit/Utils/module_macros_common.hpp
                  include/gambit/Utils/module_macros_incore.hpp
                  include/gambit/Utils/module_macros_inmodule.hpp
