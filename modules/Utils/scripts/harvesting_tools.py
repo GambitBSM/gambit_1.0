@@ -188,7 +188,7 @@ def addifbefunctormacro(line,be_typeset,type_pack_set,equiv_classes,verbose=Fals
                     if arg != "":
                         if arg == "etc": arg = "..."
                         arg_list = neatsplit('\s',arg)
-                        if (arg_list[0] in {"class", "struct", "typename"}): arg = arg_list[1]
+                        if arg_list[0] in ("class", "struct", "typename"): arg = arg_list[1]
                         functor_template_types.append(arg)
             else:
                 #This is a backend variable requirement
@@ -209,7 +209,7 @@ def addifbefunctormacro(line,be_typeset,type_pack_set,equiv_classes,verbose=Fals
                     if arg != "":
                         if arg == "etc": arg = "..."
                         arg_list = neatsplit('\s',arg)
-                        if (arg_list[0] in {"class", "struct", "typename"}): arg = arg_list[1]
+                        if arg_list[0] in ("class", "struct", "typename"): arg = arg_list[1]
                         functor_template_types.append(arg)
             else:
                 #Convert the type to a pointer if this is a backend variable functor rather than a backend function functor
