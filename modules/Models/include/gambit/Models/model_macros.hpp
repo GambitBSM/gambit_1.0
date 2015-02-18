@@ -26,6 +26,7 @@
 #include "gambit/Models/claw_singleton.hpp"
 #include "gambit/Utils/util_macros.hpp"
 #include "gambit/Utils/util_types.hpp"
+#include "gambit/Utils/ini_functions.hpp"
 #include "gambit/Utils/types_rollcall.hpp"
 #include "gambit/Utils/boost_fallbacks.hpp"
 
@@ -167,16 +168,8 @@
            (macro from module_macros_incore.hpp) */                            \
         CORE_START_MODULE_COMMON_MAIN(MODEL)                                   \
                                                                                \
-        /* Runtime addition of model to GAMBIT model database */               \
-        void rt_add_model()                                                    \
-        {                                                                      \
-          ModelDB().declare_model(STRINGIFY(MODEL), STRINGIFY(PARENT));        \
-        }                                                                      \
-                                                                               \
-        namespace Ini                                                          \
-        {                                                                      \
-          ini_code AddModel(LOCAL_INFO, &rt_add_model);                        \
-        }                                                                      \
+        /* Add the model to GAMBIT model database */                           \
+        int model_rego = add_model(STRINGIFY(MODEL), STRINGIFY(PARENT));       \
                                                                                \
         namespace Accessors                                                    \
         {                                                                      \
@@ -286,34 +279,18 @@
 /// Macro to define parameter.  Does not create a corresponding CAPABILITY;
 /// use MAP_TO_CAPABILITY to do this after calling DEFINEPAR(S).
 #define DEFINEPAR(PARAMETER)                                                   \
-                                                                               \
   namespace Gambit                                                             \
   {                                                                            \
-                                                                               \
     namespace Models                                                           \
     {                                                                          \
-                                                                               \
       namespace MODEL                                                          \
       {                                                                        \
-                                                                               \
-        /* A function that tells the functor holding the ModelParameters object\
-           to add the new parameter to its [parameter name, value] map. */     \
-        void CAT(add,PARAMETER)()                                              \
-        {                                                                      \
-          Functown::primary_parameters.addParameter(STRINGIFY(PARAMETER));     \
-        }                                                                      \
-                                                                               \
-        /* Compiler cann't call push_back, so do it at  initialisation time    \
-           using this ini_code trick. Don't call this function ever again!*/   \
-        namespace Ini                                                          \
-        {                                                                      \
-          ini_code CAT(iniadd,PARAMETER) (LOCAL_INFO, &CAT(add,PARAMETER));    \
-        }                                                                      \
-                                                                               \
+        /* Tell the functor holding the ModelParameters object to add the new  \
+           parameter to its [parameter name, value] map. */                    \
+        int CAT(added_,PARAMETER) =                                            \
+         add_parameter(Functown::primary_parameters,STRINGIFY(PARAMETER));     \
       }                                                                        \
-                                                                               \
     }                                                                          \
-                                                                               \
   }                                                                            \
 
 /// Define multiple model parameters
@@ -368,23 +345,14 @@
         MAKE_FUNCTOR(CAT(MODEL_X,_parameters),ModelParameters,                 \
          CAT(MODEL_X,_parameters),MODEL,0)                                     \
                                                                                \
-        /* Make a function that tells the functor to take its parameter        \
+        /* Call a function that tells the functor to take its parameter        \
            definition from MODEL_X's primary_parameters functor, and           \
            adds MODEL_X as a friend of MODEL if it is not a parent. */         \
-        void CAT(pars_for_,MODEL_X)()                                          \
-        {                                                                      \
-          MODEL_X::Functown::primary_parameters.donateParameters               \
-           (Functown::CAT(MODEL_X,_parameters));                               \
-          BOOST_PP_IIF(ADD_FRIEND,                                             \
-           ModelDB().add_friend(STRINGIFY(MODEL), STRINGIFY(MODEL_X));,)       \
-        }                                                                      \
-                                                                               \
-        /* Call it at initialisation time using an ini_code object. */         \
-        namespace Ini                                                          \
-        {                                                                      \
-          ini_code CAT(ini_pars_for_,MODEL_X)                                  \
-           (LOCAL_INFO, &CAT(pars_for_,MODEL_X));                              \
-        }                                                                      \
+        int CAT(pars_for_,MODEL_X) =                                           \
+         copy_parameters(MODEL_X::Functown::primary_parameters,                \
+          Functown::CAT(MODEL_X,_parameters),                                  \
+          BOOST_PP_IIF(ADD_FRIEND,true,false),                                 \
+          STRINGIFY(MODEL), STRINGIFY(MODEL_X));                               \
                                                                                \
       }                                                                        \
                                                                                \
@@ -477,20 +445,9 @@
      "ModelParameters", STRINGIFY(ORIGIN), ModelDB());                         \
   }                                                                            \
                                                                                \
-  /* Set up the commands to be called at runtime to register the function. */  \
-  template <>                                                                  \
-  void rt_register_function<Tags::FUNCTION> ()                                 \
-  {                                                                            \
-    Accessors::map_bools[STRINGIFY(CAPABILITY)] =                              \
-     &Accessors::provides<Gambit::Tags::CAPABILITY>;                           \
-    Accessors::iCanDo[STRINGIFY(FUNCTION)] = "ModelParameters";                \
-  }                                                                            \
-                                                                               \
-  /* Create the function initialisation object */                              \
-  namespace Ini                                                                \
-  {                                                                            \
-    ini_code FUNCTION (LOCAL_INFO, &rt_register_function<Tags::FUNCTION>);     \
-  }                                                                            \
+  int CAT(registered_,FUNCTION) = register_model_functor(Accessors::map_bools, \
+   Accessors::iCanDo, Accessors::provides<Gambit::Tags::CAPABILITY>,           \
+   STRINGIFY(CAPABILITY), STRINGIFY(FUNCTION));                                \
 
 /// Supplementary version of MAKE_FUNCTOR modded for primary_parameters functors.
 #define MAKE_PRIMARY_MODEL_FUNCTOR_SUPP(FUNCTION)                              \

@@ -28,7 +28,7 @@
 cmake_minimum_required(VERSION 2.6.0 FATAL_ERROR)
 
 if(NOT CMAKE_BUILD_TYPE)
-  SET(CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING
+  SET(CMAKE_BUILD_TYPE Debug CACHE STRING
       "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel." FORCE)
 endif()
 
@@ -100,7 +100,7 @@ set(GAMBIT_VERSION_MINOR 0)
 
 # Finish configuring the header file to pass some of the CMake settings to the source code
 configure_file("${PROJECT_SOURCE_DIR}/cmake/cmake_variables.hpp.in"
-               "${PROJECT_BINARY_DIR}/cmake_variables.hpp")
+               "${PROJECT_BINARY_DIR}/gambit/cmake/cmake_variables.hpp")
 
 # Add the binary tree to the search path for include files so that we will find cmake_variables.hpp
 include_directories("${PROJECT_BINARY_DIR}")
@@ -245,7 +245,8 @@ add_subdirectory(Utils)
 add_subdirectory(Models)
 
 # List of GAMBIT common library object files to link
-set(GAMBIT_COMMON_OBJECTS $<TARGET_OBJECTS:Backends>
+set(GAMBIT_COMMON_OBJECTS "${GAMBIT_COMMON_OBJECTS}"
+                          $<TARGET_OBJECTS:Backends>
                           $<TARGET_OBJECTS:Logs>
                           $<TARGET_OBJECTS:Utils>
                           $<TARGET_OBJECTS:Models>

@@ -33,6 +33,7 @@
 #          (patscott@physics.mcgill.ca)
 #    \date 2013 Oct, Nov
 #    \date 2014 Jan, Nov
+#    \date 2015 Feb
 #
 #*********************************************
 from harvesting_tools import *
@@ -78,6 +79,9 @@ def main(argv):
 
     # List of types NOT to return (things we know are not printable, but can appear in START_FUNCTION calls)
     exclude_types=set(["void"])
+
+    # Load up the sets of equivalent types
+    equiv_classes = get_type_equivalencies()
 
     # Get list of rollcall header files to search
     module_rollcall_headers.update(retrieve_rollcall_headers(verbose,".",exclude_header))
@@ -146,18 +150,40 @@ def main(argv):
     types=set(["ModelParameters"]) #Manually add this one to avoid scanning through Models directory
     for header in full_rollcall_headers:
         with open(header) as f:
-            if verbose: print "  Scanning header {0} for types used to instantiate functor class templates".format(header)
+            if verbose: print "  Scanning header {0} for types used to instantiate module functor class templates".format(header)
             module = ""
+            continued_line = ""
             for line in readlines_nocomments(f):
+                continued_line += line
+                if line.strip().endswith(","): continue
                 # If this line defines the module name, update it.
-                module = update_module(line,module)
-                # Check for calls to functor creation macros, and harvest the types used.
-                addiffunctormacro(line,module,types,full_type_headers,intrinsic_types,exclude_types,verbose=verbose)
+                module = update_module(continued_line,module)
+                # Check for calls to module functor creation macros, and harvest the types used.
+                addiffunctormacro(continued_line,module,types,full_type_headers,intrinsic_types,exclude_types,equiv_classes,verbose=verbose)
+                continued_line = ""
         
-    print "Found:"
+    print "Found types for module funtions:"
     for t in types:
         print ' ',t
     
+    # Search through rollcall and frontend headers and look for macro calls that create module_functors, backend_functors or safe pointers to them 
+    be_types=set()
+    type_packs=set() 
+    for header in full_rollcall_headers:
+        with open(header) as f:
+            if verbose: print "  Scanning header {0} for types used to instantiate backend functor class templates".format(header)
+            continued_line = ""
+            for line in readlines_nocomments(f):
+                continued_line += line
+                if line.strip().endswith(","): continue
+                # Check for calls to backend functor creation macros, and harvest the types used.
+                addifbefunctormacro(continued_line,be_types,type_packs,equiv_classes,verbose=verbose)
+                continued_line = ""
+        
+    print "Found types for backend functions and variables:"
+    for t in be_types:
+        if t != "": print ' ',t
+
     # Generate a c++ header containing the preprocessor sequence needed by Utils/include/gambit/Printers/printers.hpp, containing all the types we have harvested.
     towrite = "\
 //   GAMBIT: Global and Modular BSM Inference Tool\n\
@@ -188,10 +214,17 @@ def main(argv):
                                                   \n\
 #include \"gambit/Utils/types_rollcall.hpp\"      \n\
                                                   \n\
-// Automatically generated preprocessor sequence of types \n\
-#define PRINTABLE_TYPES "
+// Automatically generated preprocessor sequence of module functor types \n\
+#define PRINTABLE_TYPES \\\n"
     for t in types:
-        towrite+='({0})'.format(t)
+        towrite+='({0})'.format(t)+"\\\n"
+
+    towrite+="\n\
+// Automatically generated preprocessor sequence of backend functor types \n\
+#define BACKEND_FUNCTOR_TYPES \\\n"
+    for tp in type_packs:
+        towrite+='(({0}))'.format(tp)+"\\\n"
+
     towrite+="\n\n#endif // defined __all_functor_types_hpp__\n"
     
     with open("./Utils/include/gambit/Utils/all_functor_types.hpp","w") as f:

@@ -29,10 +29,10 @@
 #include <chrono> 
 
 // Gambit
-#include "cmake_variables.hpp"
 #include "gambit/Logs/logging.hpp"
 #include "gambit/Utils/util_functions.hpp"
 #include "gambit/Utils/standalone_error_handlers.hpp"
+#include "gambit/cmake/cmake_variables.hpp"
 
 // Code!
 namespace Gambit

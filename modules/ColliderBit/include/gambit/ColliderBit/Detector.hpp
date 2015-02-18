@@ -30,10 +30,12 @@
 namespace Gambit {
   namespace ColliderBit {
 
+
     /// @note Abstract base class Detector
     template <typename EventIn, typename EventOut>
     class Detector {
     public:
+
       typedef EventIn EventInType;
       typedef EventOut EventOutType;
       Detector() { }
@@ -41,7 +43,6 @@ namespace Gambit {
 
       /// @name Initialization functions
       //@{
-
       /// @brief Default settings for each sub-class.
       virtual void defaults() = 0;
       /// @brief Settings parsing and initialization for each sub-class.
@@ -59,6 +60,7 @@ namespace Gambit {
     /// @note Abstract base class BuckFastBase
     class BuckFastBase : public Detector<HEPUtils::Event, HEPUtils::Event> {
     public:
+
       /// @name Initialization functions
       //@{
       virtual void defaults() {}
@@ -70,7 +72,10 @@ namespace Gambit {
       //@{
       virtual void processEvent(const HEPUtils::Event&, HEPUtils::Event&) = 0; //< @note Pure virtual.
       //@}
+
+
     protected:
+
       /// @name Event conversion functions.
       //@{
       virtual void convertInput(const HEPUtils::Event& event) {
@@ -79,7 +84,8 @@ namespace Gambit {
       }
 
       virtual void convertOutput(HEPUtils::Event& event) {
-        event = *(_processedEvent->clone());
+        /// @note *Shallow* copy into passed Event (reference is not reset)
+        event = *_processedEvent; //->clone(); //< This looked like a memory leak
       }
       //@}
 
@@ -90,6 +96,9 @@ namespace Gambit {
     /// @note Abstract base class Delphes_ToHEPUtilsBase
     class DelphesBase : public Detector<Pythia8::Event, HEPUtils::Event> {
     public:
+
+      /// @todo Move lots of this into the .cpp files -- it shouldn't be in the interface/base-class definitions.
+
       /// @name Initialization functions
       //@{
       virtual void defaults() {}
@@ -123,6 +132,7 @@ namespace Gambit {
       }
       //@}
 
+
       /// @name Event detection simulation.
       //@{
       virtual void processEvent(const Pythia8::Event& eventIn, HEPUtils::Event& eventOut)  {
@@ -139,6 +149,7 @@ namespace Gambit {
       //@}
 
     protected:
+
       /// @name Event conversion functions.
       //@{
       virtual void convertInput(const Pythia8::Event& event) {
@@ -158,8 +169,8 @@ namespace Gambit {
 
           candidate->Momentum.SetPxPyPzE(p.px(), p.py(), p.pz(), p.e());
           candidate->Position.SetXYZT(p.xProd(), p.yProd(), p.zProd(), p.tProd());
-	  candidate->D1 = p.daughter1();
-	  candidate->D2 = p.daughter2();
+          candidate->D1 = p.daughter1();
+          candidate->D2 = p.daughter2();
           /// @TODO Why do the non-final particles (other than B's and taus) need to be passed? Speedup?
           allParticleOutputArray->Add(candidate);
           if (!pdgParticle) continue;
@@ -168,6 +179,7 @@ namespace Gambit {
           if (pdgCode <= 5 || pdgCode == 21 || pdgCode == 15) partonOutputArray->Add(candidate);
         }
       }
+
 
       virtual void convertOutput(HEPUtils::Event &event) {
         event.clear();
@@ -267,5 +279,7 @@ namespace Gambit {
     ///       Or just continue to use Delphes configuration file?
     DelphesBase* mkDelphes(const std::string&, const std::vector<std::string>&);
     BuckFastBase* mkBuckFast(const std::string&);
+
+
   }
 }

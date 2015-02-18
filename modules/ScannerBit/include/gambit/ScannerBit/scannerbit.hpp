@@ -19,10 +19,10 @@
 #ifndef __ScannerBit_hpp__
 #define __ScannerBit_hpp__
 
-#include "gambit/ScannerBit/scanner_utils.hpp"
 #include "gambit/ScannerBit/scan.hpp"
+#include "gambit/ScannerBit/scanner_utils.hpp"
+#include "gambit/Utils/ini_functions.hpp"
 #include "gambit/Utils/static_members.hpp"
-#include "gambit/Utils/ini_code_struct.hpp"
 
 namespace Gambit
 {
@@ -30,18 +30,18 @@ namespace Gambit
   namespace Scanner
   {
 
-    namespace Ini
+    int register_ScannerBit_handlers()
     {
-
-      void register_ScannerBit_handlers()
+      try
       {
         error e = scan_error();
         warning w = scan_warning();
       }
-
-      ini_code ScannerBit_handlers(LOCAL_INFO, &register_ScannerBit_handlers);
-
+      catch (std::exception& e) { ini_catch(e); }       
+      return 0;
     }
+
+    int ScannerBit_handlers = register_ScannerBit_handlers();
 
   }
 

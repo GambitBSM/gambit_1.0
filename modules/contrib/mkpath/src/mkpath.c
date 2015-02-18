@@ -1,7 +1,7 @@
 // From: http://nion.modprobe.de/blog/archives/357-Recursive-directory-creation.html
 // Author: Nico Golde (2005)
 
-#include "gambit/Utils/mkpath.h"
+#include "mkpath/mkpath.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <fcntl.h>

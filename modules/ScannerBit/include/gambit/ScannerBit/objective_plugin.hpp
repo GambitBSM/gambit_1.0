@@ -94,23 +94,17 @@ inline std::vector<double> &prior_transform(const std::vector<double> &in)      
         return ret;                                                                                                     \
 }                                                                                                                       \
 
-#define ENTER_FUNC_FUNC(func, num, ...) COMBINE(func, num)( __VA_ARGS__ )
+#define OBJECTIVE_PLUGIN(...) ENTER_FUNC(OBJECTIVE_PLUGIN_, ARG_N(__VA_ARGS__), __VA_ARGS__ )
 
-#define OBJECTIVE_PLUGIN(...) ENTER_FUNC_FUNC(OBJECTIVE_PLUGIN_, ARG_N(__VA_ARGS__), __VA_ARGS__ )
+#define OBJECTIVE_PLUGIN_1(plug_name) OBJECTIVE_PLUGIN_INTERNAL(plug_name, no_version)
 
-#define OBJECTIVE_PLUGIN_2(mod_name, mod_version)                                                                       \
-GAMBIT_PLUGIN(mod_name, like, mod_version)                                                                              \
+#define OBJECTIVE_PLUGIN_2(plug_name, plug_version) OBJECTIVE_PLUGIN_INTERNAL(plug_name, plug_version)
+
+#define OBJECTIVE_PLUGIN_INTERNAL(mod_name, mod_version)                                                                \
+GAMBIT_PLUGIN_INTERNAL_INT(mod_name, like, mod_version)                                                                 \
 {                                                                                                                       \
         OBJECTIVE_SETUP                                                                                                 \
 }                                                                                                                       \
 namespace __gambit_plugin_ ## mod_name ## __t__like__v__ ## mod_version ##  _namespace__                                \
-
-#define OBJECTIVE_PLUGIN_3(mod_name, mod_version, option)                                                               \
-GAMBIT_PLUGIN(mod_name, like, mod_version, option)                                                                      \
-{                                                                                                                       \
-        OBJECTIVE_SETUP                                                                                                 \
-}                                                                                                                       \
-namespace COMBINE_3(mod_name ## __t__like__v__ ## mod_version ## __reqd_libs__,                                         \
-        libs_present_ ## mod_name ## __t__like__v__ ## mod_version)                                                     \
 
 #endif

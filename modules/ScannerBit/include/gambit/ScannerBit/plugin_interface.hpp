@@ -30,6 +30,7 @@
 
 #include "gambit/ScannerBit/plugin_utilities.hpp"
 #include "gambit/ScannerBit/plugin_loader.hpp"
+#include "gambit/ScannerBit/printer_interface.hpp"
 
 namespace Gambit
 {
@@ -49,7 +50,7 @@ namespace Gambit
                                 void *plugin;
                                 std::vector<void *> input;
                                 std::string tag;
-                                typedef const std::type_info &(*initFuncType)(const std::string &, const YAML::Node &, std::vector<void *> &);                              
+                                typedef const std::type_info &(*initFuncType)(const std::string &, const YAML::Node &, const printer_interface &, std::vector<void *> &);                              
                                 typedef void * (*getFuncType)(std::string);
                                 typedef ret (*mainFuncType)(args...);
                                 initFuncType initFunc;
@@ -70,7 +71,7 @@ namespace Gambit
                                         {
                                                 initFunc = (initFuncType)dlsym(plugin, (std::string("__gambit_plugin_pluginInit_") + details.full_string + std::string("__")).c_str());
                                                 getFunc = (getFuncType)dlsym(plugin, (std::string("__gambit_plugin_getMember_") + details.full_string + std::string("__")).c_str());
-                                                bool diff = typeid(ret (args...)) != initFunc(tag, details.node, input);
+                                                bool diff = typeid(ret (args...)) != initFunc(tag, details.node, *details.printer, input);
                                                 
                                                 main = (mainFuncType)getFunc(details.full_string);
                                                 

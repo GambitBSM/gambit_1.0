@@ -19,8 +19,9 @@
 ///
 ///  *********************************************
 
-#include "cmake_variables.hpp"
 #include "gambit/ScannerBit/plugin_details.hpp"
+#include "gambit/ScannerBit/printer_interface.hpp"
+#include "gambit/cmake/cmake_variables.hpp"
 
 #ifndef SCANNER_PLUGIN_MACROS_HPP
 #define SCANNER_PLUGIN_MACROS_HPP
@@ -77,23 +78,6 @@
 #define VERSION_1(major) VERSION_4(major,,,)
 #define VERSION_0() VERSION(,,,)
 #define VERSION(...) ENTER_FUNC(VERSION_, ARG_N(__VA_ARGS__), __VA_ARGS__ )
-
-#define NO_EXTERNAL_LIBRARY_REQUIRED(plugin) inline int plugin_status(){return 1;}
-
-#define ADD_STRUCT(a) ADD_STRUCT_INTERNAL(a)
-#define ADD_STRUCT_INTERNAL(a) _struct_ ## a
-
-#define EXTERNAL_LIBRARY_REQUIRED(plugin)                                                       \
-struct _struct_ ## libs_present_ ## plugin {};                                                  \
-struct _struct_0 {};                                                                            \
-struct _struct_1 {};                                                                            \
-struct _struct_2 {};                                                                            \
-template <typename T> struct _number_{static const int num = 0;};                               \
-template <> struct _number_<_struct_ ## libs_present_ ## plugin>{static const int num = 3;};    \
-template <> struct _number_<_struct_0>{static const int num = 0;};                              \
-template <> struct _number_<_struct_1>{static const int num = 1;};                              \
-template <> struct _number_<_struct_2>{static const int num = 2;};                              \
-inline int plugin_status(){return _number_<ADD_STRUCT(libs_present_ ## plugin) >::num;}         \
 
 #define INIT_INIFILE_VALUE(exp, ...)    INITIALIZE(exp, get_inifile_value<decltype(exp)>( __VA_ARGS__ ))
 
@@ -308,7 +292,7 @@ namespace __gambit_plugin_namespace__                                           
 decltype(__gambit_plugin_ret_val__()) __gambit_plugin_main__ (__VA_ARGS__)                                              \
 
 /*Defines a Gambit plugin*/
-#define GAMBIT_PLUGIN_INTERNAL(plug_name, command, arg)                                                                 \
+#define GAMBIT_PLUGIN_INTERNAL(plug_name)                                                                               \
 namespace __gambit_plugin_ ## plug_name ##  _namespace__                                                                \
 {                                                                                                                       \
         namespace __gambit_plugin_namespace__                                                                           \
@@ -322,8 +306,6 @@ namespace __gambit_plugin_ ## plug_name ##  _namespace__                        
                                                                                                                         \
                 namespace                                                                                               \
                 {                                                                                                       \
-                        command(arg)                                                                                    \
-                                                                                                                        \
                         pluginData myData( #plug_name );                                                                \
                                                                                                                         \
                         template <class T>                                                                              \
@@ -336,13 +318,13 @@ namespace __gambit_plugin_ ## plug_name ##  _namespace__                        
                         };                                                                                              \
                 }                                                                                                       \
                                                                                                                         \
-                extern "C" const std::type_info &__gambit_plugin_pluginInit_ ## plug_name                               \
-                 ## __(const std::string *tag, const YAML::Node *node, std::vector<void *> *input)                      \
+                extern "C" const std::type_info &__gambit_plugin_pluginInit_ ## plug_name ## __ (const std::string *tag,\
+                 const YAML::Node *node, Gambit::Scanner::printer_interface & printer, std::vector<void *> *input)      \
                 {                                                                                                       \
-                        if (plugin_status() == 1 && !myData.loaded)                                                     \
+                        if (!myData.loaded)                                                                             \
                         {                                                                                               \
                                 myData.tag = *tag;                                                                      \
-                                                                                                                        \
+                                myData.printer = &printer;                                                              \
                                 myData.loaded = true;                                                                   \
                                                                                                                         \
                                 if (input != 0)                                                                         \
@@ -374,8 +356,10 @@ namespace __gambit_plugin_ ## plug_name ##  _namespace__                        
                 }                                                                                                       \
         }                                                                                                               \
                                                                                                                         \
+        inline Gambit::Scanner::printer_interface &get_printer() {return *__gambit_plugin_namespace__::myData.printer;} \
+                                                                                                                        \
         template <typename T>                                                                                           \
-        T get_inifile_value(std::string in)                                                                             \
+        inline T get_inifile_value(std::string in)                                                                      \
         {                                                                                                               \
                 if (!__gambit_plugin_namespace__::myData.node[in])                                                      \
                 {                                                                                                       \
@@ -388,7 +372,7 @@ namespace __gambit_plugin_ ## plug_name ##  _namespace__                        
                 return __gambit_plugin_namespace__::myData.node[in].as<T>();                                            \
         }                                                                                                               \
                                                                                                                         \
-        YAML::Node get_inifile_node(std::string in)                                                                     \
+        inline YAML::Node get_inifile_node(std::string in)                                                              \
         {                                                                                                               \
                 if (!__gambit_plugin_namespace__::myData.node[in])                                                      \
                 {                                                                                                       \
@@ -403,7 +387,7 @@ namespace __gambit_plugin_ ## plug_name ##  _namespace__                        
         }                                                                                                               \
                                                                                                                         \
         template <typename T>                                                                                           \
-        T get_inifile_value(std::string in, T defaults)                                                                 \
+        inline T get_inifile_value(std::string in, T defaults)                                                          \
         {                                                                                                               \
                 if (!__gambit_plugin_namespace__::myData.node[in])                                                      \
                 {                                                                                                       \
@@ -414,22 +398,24 @@ namespace __gambit_plugin_ ## plug_name ##  _namespace__                        
         }                                                                                                               \
                                                                                                                         \
         template <typename T>                                                                                           \
-        T &get_input_value(int i)                                                                                       \
+        inline T &get_input_value(int i)                                                                                \
         {                                                                                                               \
                 return *static_cast<T*>(__gambit_plugin_namespace__::myData.inputData[i]);                              \
         }                                                                                                               \
 }                                                                                                                       \
 namespace __gambit_plugin_ ## plug_name ## _namespace__                                                                 \
 
-#define GAMBIT_PLUGIN_INTERNAL_INT(...) GAMBIT_PLUGIN_INTERNAL(__VA_ARGS__)
+#define GAMBIT_PLUGIN_INTERNAL_INT(plug_name, plug_type, plug_version)                                                  \
+        GAMBIT_PLUGIN_INTERNAL(plug_name ## __t__ ## plug_type ## __v__ ## plug_version)                                \
+
+#define GAMBIT_PLUGIN_1(plugin_name)                                                                                    \
+        GAMBIT_PLUGIN_INTERNAL_INT(plug_name,, no_version)                                                              \
+        
+#define GAMBIT_PLUGIN_2(plugin_name, plug_type)                                                                         \
+        GAMBIT_PLUGIN_INTERNAL_INT(plug_name, plug_type, no_version)                                                    \
 
 #define GAMBIT_PLUGIN_3(plug_name, plug_type, plug_version)                                                             \
-        GAMBIT_PLUGIN_INTERNAL_INT( plug_name ## __t__ ## plug_type ## __v__ ## plug_version, NO_EXTERNAL_LIBRARY_REQUIRED, 0)   \
-
-#define GAMBIT_PLUGIN_4(plug_name, plug_type, plug_version, option)                                                     \
-        GAMBIT_PLUGIN_INTERNAL_INT( COMBINE(plug_name ## __t__ ## plug_type ## __v__ ## plug_version ## __reqd_libs__,  \
-        libs_present_ ## plug_name ## __t__ ## plug_type ## __v__ ## plug_version),                                     \
-        option, plug_name ## __t__ ## plug_type ## __v__ ## plug_version)                                               \
+        GAMBIT_PLUGIN_INTERNAL_INT(plug_name, plug_type, plug_version)                                                  \
 
 #define GAMBIT_PLUGIN(...) ENTER_FUNC(GAMBIT_PLUGIN_, ARG_N(__VA_ARGS__), __VA_ARGS__ )
         

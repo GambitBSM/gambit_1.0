@@ -1,8 +1,9 @@
 
 #include <cstdlib>
-#include "cmake_variables.hpp"
 #include <string>
 #include <iostream>
+
+#include "gambit/cmake/cmake_variables.hpp"
 
 int main(int argc, char *argv[])
 {
