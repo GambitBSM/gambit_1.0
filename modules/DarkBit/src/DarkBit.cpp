@@ -1400,6 +1400,11 @@ namespace Gambit {
     //   dNdE: Spectrum
     Funk::Funk boost_dNdE(Funk::Funk dNdE, double gamma)
     {
+        if ( gamma < 1 ) 
+        {
+            std::cout << "Requested Lorentz boost with gamma < 1" << std::endl;
+            exit(1);
+        }
         Funk::Funk Ep = Funk::var("Ep");
         Funk::Funk E = Funk::var("E");
         Funk::Funk integrand = dNdE->set("E", Ep)/(2*(gamma*gamma-1)*Ep);
@@ -1470,9 +1475,20 @@ namespace Gambit {
                 double m1 = (*Dep::TH_ProcessCatalog).getParticleProperty(it->finalStateIDs[1]).mass;
                 double gamma0 = (Ecm*Ecm+m0*m0-m1*m1)/(2*Ecm*m0);
                 double gamma1 = (Ecm*Ecm-m0*m0+m1*m1)/(2*Ecm*m1);
+                Yield = Yield + boost_dNdE(spec0, gamma0) + boost_dNdE(spec1, gamma1);
+
+                // FIXME: Remove debug information
+                std::cout << Ecm << " " << m0 << " " << m1 << std::endl;
+                std::cout << "gammas: " << gamma0 << ", " << gamma1 << std::endl;
+                std::cout << it->finalStateIDs[0] << "-spectrum at .1 GeV: " << spec0->eval("E", .1) << std::endl;
+                std::cout << it->finalStateIDs[1] << "-spectrum at .1 GeV: " << spec1->eval("E", .1) << std::endl;
                 std::cout << it->finalStateIDs[0] << "-spectrum at 1 GeV: " << spec0->eval("E", 1) << std::endl;
                 std::cout << it->finalStateIDs[1] << "-spectrum at 1 GeV: " << spec1->eval("E", 1) << std::endl;
-                Yield = Yield + boost_dNdE(spec0, gamma0) + boost_dNdE(spec1, gamma1);
+                std::cout << it->finalStateIDs[0] << "-spectrum at 10 GeV: " << spec0->eval("E", 10) << std::endl;
+                std::cout << it->finalStateIDs[1] << "-spectrum at 10 GeV: " << spec1->eval("E", 10) << std::endl;
+                std::cout << "gamma result at .1 GeV:" << Yield->eval("v", 0, "E", .1) << std::endl;
+                std::cout << "gamma result at  1 GeV:" << Yield->eval("v", 0, "E", 1) << std::endl;
+                std::cout << "gamma result at 10 GeV:" << Yield->eval("v", 0, "E", 10) << std::endl;
             }
             else if ( it->nFinalStates == 3
                     and Dep::SimYieldTable->hasChannel(it->finalStateIDs[0], "gamma")
