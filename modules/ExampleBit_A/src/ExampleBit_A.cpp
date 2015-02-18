@@ -29,11 +29,8 @@
 #include <cmath>
 #include <functional>
 
-#include "gambit_module_headers.hpp"
-#include "ExampleBit_A_rollcall.hpp"
-
-#include "partmap.hpp"
-
+#include "gambit/Utils/gambit_module_headers.hpp"
+#include "gambit/ExampleBit_A/ExampleBit_A_rollcall.hpp"
 
 namespace Gambit
 {

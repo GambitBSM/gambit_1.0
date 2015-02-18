@@ -19,8 +19,8 @@
 ///  *********************************************
 
 #include <iostream>
-#include "DarkBit_types.hpp"
-#include "funktions.hpp"
+#include "gambit/DarkBit/DarkBit_types.hpp"
+#include "gambit/Utils/funktions.hpp"
 
 namespace Gambit 
 {

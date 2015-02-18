@@ -21,8 +21,8 @@
 
 #include <sstream>
 
-#include "plugin_comparators.hpp"
-#include "plugin_utilities.hpp"
+#include "gambit/ScannerBit/plugin_comparators.hpp"
+#include "gambit/ScannerBit/plugin_utilities.hpp"
 
 namespace Gambit
 {

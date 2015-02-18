@@ -1,10 +1,12 @@
-#include "Analysis.hpp"
 #include <vector>
 #include <cmath>
 #include <memory>
-#include "TLorentzVector.h"
-#include "TVector2.h"
 #include <iomanip>
+
+#include "gambit/ColliderBit/Analysis.hpp"
+
+#include <TLorentzVector.h>
+#include <TVector2.h>
 
 /* The ATLAS 3 lepton EW analysis (20fb^-1)
 
@@ -59,7 +61,7 @@ namespace Gambit {
           for(size_t it2 = 0; it2 < vec2.size(); it2++) {
             if(it1==it2)continue;
             P4 lep2mom=vec2.at(it2)->mom();
-            float dR;
+            double dR;
 
             dR=lep1mom.deltaR_eta(lep2mom);
 
@@ -84,7 +86,7 @@ namespace Gambit {
           P4 jetmom=jetvec.at(itjet)->mom();
           for(size_t itlep = 0; itlep < lepvec.size(); itlep++) {
             P4 lepmom=lepvec.at(itlep)->mom();
-            float dR;
+            double dR;
 
             dR=jetmom.deltaR_eta(lepmom);
 
@@ -109,7 +111,7 @@ namespace Gambit {
           P4 lepmom=lepvec.at(itlep)->mom();
           for(size_t itjet= 0; itjet < jetvec.size(); itjet++) {
             P4 jetmom=jetvec.at(itjet)->mom();
-            float dR;
+            double dR;
 
             dR=jetmom.deltaR_eta(lepmom);
 
@@ -224,7 +226,7 @@ namespace Gambit {
         }
 
         bool leptonCut=((numElectrons+numMuons)==3 && massesOfSFOSPairs.size()>0);
-        bool bJetCut=(bJets.size()==0);
+        //bool bJetCut=(bJets.size()==0);
 
         bool isZ=false;
 
@@ -257,7 +259,7 @@ namespace Gambit {
 
         //cout << "Made signal leptons" << endl;
 
-        bool lepCut10=true; //All signal leptons have pT > 10 GeV
+        //bool lepCut10=true; //All signal leptons have pT > 10 GeV
         bool lepCut30=true;
         for(Particle * lepton : signalLeptons){
           if(lepton->pT()<30.)lepCut30=false;
@@ -287,7 +289,7 @@ namespace Gambit {
 
 
         //if(leptonCut)cout << "extralepID " << extralepID << endl;
-        float mT=0;
+        double mT=0;
         if(signalLeptons.size()==3 && extralepID!=-1){
           P4 extralepVec=signalLeptons.at(extralepID)->mom();
           mT=sqrt(2.*extralepVec.pT()*met*(1. - cos(TVector2::Phi_mpi_pi(extralepVec.phi()-ptot.phi()))));
@@ -419,7 +421,8 @@ namespace Gambit {
 
       void collect_results() {
 
-        _numSRnoZa, _numSRnoZb, _numSRnoZc, _numSRZa, _numSRZb, _numSRZc;
+        /// @todo WTF? Commented to stop compiler warnings
+        //_numSRnoZa, _numSRnoZb, _numSRnoZc, _numSRZa, _numSRZb, _numSRZc;
 
         SignalRegionData results_SRnoZa;
         results_SRnoZa.set_observation(101.);

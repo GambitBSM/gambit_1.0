@@ -14,7 +14,7 @@
 ///
 ///  *********************************************
 
-#include "ASCIItableReader.hpp"
+#include "gambit/Utils/ASCIItableReader.hpp"
 
 namespace Gambit
 {

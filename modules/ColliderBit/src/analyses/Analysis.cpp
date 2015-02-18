@@ -1,7 +1,8 @@
-#include "Analysis.hpp"
-#include "HEPUtils/MathUtils.h"
 #include <string>
 #include <stdexcept>
+#include "gambit/ColliderBit/Analysis.hpp"
+#include "HEPUtils/MathUtils.h"
+
 using namespace std;
 
 namespace Gambit {

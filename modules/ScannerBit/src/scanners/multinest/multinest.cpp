@@ -25,9 +25,9 @@
 #include <map>
 #include <sstream>
 
-#include "scanner_plugin.hpp"
-#include "yaml_options.hpp"
-#include "multinest.hpp" // In "ScannerBit/include/scanners/multinest". Not to be confused with multinest.h (in multinest source)
+#include "gambit/ScannerBit/scanner_plugin.hpp"
+#include "gambit/ScannerBit/scanners/multinest/multinest.hpp"
+#include "gambit/Utils/yaml_options.hpp"
 
 namespace Gambit {   
    namespace MultiNest {
@@ -43,8 +43,9 @@ typedef Gambit::Scanner::scan_ptr<double (const std::vector<double>&)> scanPtr;
 /// Interface to ScannerBit
 /// =================================================
 
-scanner_plugin(MultiNest, version(0, 0, 0, bens_version), external_library_required)
+scanner_plugin(MultiNest, version(0, 0, 0, bens_version))
 {
+   reqd_libraries();
    plugin_constructor
    {
       std::cout << "Firing up MultiNest scanner plugin..." << std::endl;
@@ -56,7 +57,7 @@ scanner_plugin(MultiNest, version(0, 0, 0, bens_version), external_library_requi
       //std::string output_file = get_inifile_value<std::string>("output_file", "default_output");
 
       // Have to discuss with Greg the best thing to do here.
-      scanPtr LogLike = get_functor(get_inifile_value<std::string>("like"));
+      scanPtr LogLike = get_purpose(get_inifile_value<std::string>("like"));
 
       int ma = get_dimension();
 

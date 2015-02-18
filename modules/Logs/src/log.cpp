@@ -25,7 +25,7 @@
 ///
 ///  *********************************************
 
-#include "log.hpp"
+#include "gambit/Logs/log.hpp"
 
 namespace Gambit
 {

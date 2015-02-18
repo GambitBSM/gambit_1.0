@@ -13,7 +13,7 @@
 ///
 ///  *********************************************
 
-#include "gambit_main.hpp"
+#include "gambit/Core/gambit_main.hpp"
 
 using namespace Gambit;
 using namespace LogTags;

@@ -29,11 +29,11 @@
 #include <sstream>
 #include <fstream>
 
-#include "depresolver.hpp"
-#include "cmake_variables.hpp"
-#include "models.hpp"
-#include "log.hpp"
-#include "stream_overloads.hpp"
+#include "gambit/Core/depresolver.hpp"
+#include "gambit/Models/models.hpp"
+#include "gambit/Logs/log.hpp"
+#include "gambit/Utils/stream_overloads.hpp"
+#include "gambit/cmake/cmake_variables.hpp"
 
 #include <boost/format.hpp>
 #include <boost/graph/graphviz.hpp>

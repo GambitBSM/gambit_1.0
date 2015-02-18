@@ -18,13 +18,9 @@
 #include <string>
 #include <cmath>
 #include <iostream>
-#include <fstream>
-#include <map>
 #include <sstream>
-#include <typeinfo>
-#include <cxxabi.h>
 
-#include "scanner_plugin.hpp"
+#include "gambit/ScannerBit/scanner_plugin.hpp"
   
 scanner_plugin(grid, version(1, 0, 0))
 {
@@ -51,7 +47,7 @@ scanner_plugin(grid, version(1, 0, 0))
                         << ") does not match the dimension of the inputed grid_pts (" << N.size() << ")" << scan_end;
                 
                 scan_ptr<double (const std::vector<double>&)> LogLike;
-                LogLike = get_functor(get_inifile_value<std::string>("purpose", "Likelihood"));
+                LogLike = get_purpose(get_inifile_value<std::string>("purpose", "Likelihood"));
                 std::vector<double> vec(ma, 0.0);
                 
                 for (int i = 0, end = NTot; i < end; i++)

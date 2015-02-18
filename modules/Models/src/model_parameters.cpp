@@ -40,7 +40,7 @@
 #include <iostream>
 #include <sstream>
 
-#include "model_parameters.hpp"
+#include "gambit/Models/model_parameters.hpp"
 
 namespace Gambit 
 {

@@ -1,13 +1,17 @@
-#include "Analysis.hpp"
 #include <vector>
 #include <cmath>
 #include <memory>
+
+#include "gambit/ColliderBit/Analysis.hpp"
+
+/// @todo ditch ROOT classes
+#ifdef MKHISTOS
+  #include <TFile.h>
+  #include <TH1F.h>
+#endif
+
 using namespace std;
 
-#ifdef MKHISTOS
-#include "TFile.h"
-#include "TH1F.h"
-#endif
 
 // Based on ATLAS-CONF-2013-047
 
@@ -124,8 +128,8 @@ namespace Gambit {
 
         bool leptonCut = (nElectrons == 0 && nMuons == 0);
         bool metCut = (met > 160.);
-        float meff_incl = met;
-        float HT=0;
+        double meff_incl = met;
+        double HT=0;
         for (const Jet* j : signalJets)
           if (j->pT() > 40) {
             meff_incl += j->pT();
@@ -152,8 +156,8 @@ namespace Gambit {
         #endif
 
         // Do 2 jet regions
-        float meff2j = 0;
-        float dPhiMin2j = 0;
+        double meff2j = 0;
+        double dPhiMin2j = 0;
         if (nJets > 1) {
           if (signalJets[0]->pT()>130. && signalJets[1]->pT()>60.) {
             dPhiMin2j = SmallestdPhi(signalJets,ptot.phi());
@@ -180,8 +184,8 @@ namespace Gambit {
         // Do the 3 jet regions
         if (nJets > 2) {
           if (signalJets.at(0)->pT()>130. && signalJets.at(1)->pT()>60. && signalJets.at(2)->pT()>60.) {
-            float dPhiMin3j = SmallestdPhi(signalJets,ptot.phi());
-            float meff3j = met + signalJets.at(0)->pT() + signalJets.at(1)->pT() + signalJets.at(2)->pT();
+            double dPhiMin3j = SmallestdPhi(signalJets,ptot.phi());
+            double meff3j = met + signalJets.at(0)->pT() + signalJets.at(1)->pT() + signalJets.at(2)->pT();
             if (leptonCut && metCut && dPhiMin3j > 0.4) {
               if (met/meff3j>0.4 && meff_incl>2200.) _numBT += 1;
               if (met/meff3j>0.3 && meff_incl>1800.) _numBM += 1;
@@ -192,9 +196,9 @@ namespace Gambit {
         // Do the 4 jet regions
         if (nJets > 3) {
           if (signalJets.at(0)->pT()>130. && signalJets.at(1)->pT()>60. && signalJets.at(2)->pT()>60. && signalJets.at(3)->pT()>60.) {
-            float dPhiMin4 = SmallestdPhi(signalJets,ptot.phi());
-            float dPhiMin2 = SmallestRemainingdPhi(signalJets,ptot.phi());
-            float meff4j = met + signalJets.at(0)->pT() + signalJets.at(1)->pT() + signalJets.at(2)->pT() + signalJets.at(3)->pT();
+            double dPhiMin4 = SmallestdPhi(signalJets,ptot.phi());
+            double dPhiMin2 = SmallestRemainingdPhi(signalJets,ptot.phi());
+            double meff4j = met + signalJets.at(0)->pT() + signalJets.at(1)->pT() + signalJets.at(2)->pT() + signalJets.at(3)->pT();
             if (leptonCut && metCut && dPhiMin4 > 0.4 && dPhiMin2 > 0.2) {
               if (met/meff4j>0.25 && meff_incl>2200.) _numCT += 1;
               if (met/meff4j>0.25 && meff_incl>1200.) _numCM += 1;
@@ -205,9 +209,9 @@ namespace Gambit {
         // Do 5 jet region
         if (nJets > 4) {
           if (signalJets.at(0)->pT()>130. && signalJets.at(1)->pT()>60. && signalJets.at(2)->pT()>60. && signalJets.at(3)->pT()>60. && signalJets.at(4)->pT()>60.) {
-            float dPhiMin4 = SmallestdPhi(signalJets,ptot.phi());
-            float dPhiMin2 = SmallestRemainingdPhi(signalJets,ptot.phi());
-            float meff5j = met + signalJets.at(0)->pT() + signalJets.at(1)->pT() + signalJets.at(2)->pT() + signalJets.at(3)->pT() + signalJets.at(4)->pT();
+            double dPhiMin4 = SmallestdPhi(signalJets,ptot.phi());
+            double dPhiMin2 = SmallestRemainingdPhi(signalJets,ptot.phi());
+            double meff5j = met + signalJets.at(0)->pT() + signalJets.at(1)->pT() + signalJets.at(2)->pT() + signalJets.at(3)->pT() + signalJets.at(4)->pT();
             if (leptonCut && metCut && dPhiMin4>0.4 && dPhiMin2>0.2) {
               if (met/meff5j>0.2 && meff_incl>1600.) _numD += 1;
             }
@@ -217,9 +221,9 @@ namespace Gambit {
         // Do the 6 jet regions
         if (nJets > 5) {
           if (signalJets.at(0)->pT()>130. && signalJets.at(1)->pT()>60. && signalJets.at(2)->pT()>60. && signalJets.at(3)->pT()>60. && signalJets.at(4)->pT()>60. && signalJets.at(5)->pT()>60.) {
-            float dPhiMin4 = SmallestdPhi(signalJets,ptot.phi());
-            float dPhiMin2 = SmallestRemainingdPhi(signalJets,ptot.phi());
-            float meff6j = met + signalJets.at(0)->pT() + signalJets.at(1)->pT() + signalJets.at(2)->pT() + signalJets.at(3)->pT() + signalJets.at(4)->pT() + signalJets.at(5)->pT();
+            double dPhiMin4 = SmallestdPhi(signalJets,ptot.phi());
+            double dPhiMin2 = SmallestRemainingdPhi(signalJets,ptot.phi());
+            double meff6j = met + signalJets.at(0)->pT() + signalJets.at(1)->pT() + signalJets.at(2)->pT() + signalJets.at(3)->pT() + signalJets.at(4)->pT() + signalJets.at(5)->pT();
             if (leptonCut && metCut && dPhiMin4>0.4 && dPhiMin2>0.2) {
               if (met/meff6j>0.25 && meff_incl>1500.) _numET += 1;
               if (met/meff6j>0.2 && meff_incl>1200.) _numEM += 1;

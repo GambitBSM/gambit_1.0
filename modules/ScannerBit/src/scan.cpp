@@ -24,9 +24,9 @@
 ///
 ///  *********************************************
 
-#include "scan.hpp"
-#include "plugin_interface.hpp"
-#include "plugin_factory.hpp"
+#include "gambit/ScannerBit/scan.hpp"
+#include "gambit/ScannerBit/plugin_interface.hpp"
+#include "gambit/ScannerBit/plugin_factory.hpp"
 
 namespace Gambit
 {
@@ -68,6 +68,37 @@ namespace Gambit
                         
                         return YAML::Load(ss.str());
                 }
+                
+                inline std::vector<std::string> get_infile_values(const YAML::Node &node)
+                {
+                        if (node.IsSequence())
+                        {
+                                return node.as< std::vector<std::string> >(); 
+                        }
+                        else if (node.IsScalar())
+                        {
+                                std::string plug = node.as<std::string>();
+                                
+                                std::string::size_type pos = 0;
+                                while ((pos = plug.find(",", pos)) != std::string::npos)
+                                {
+                                        plug.replace(pos, 1, " ");
+                                }
+                                
+                                pos = 0;
+                                while ((pos = plug.find(";", pos)) != std::string::npos)
+                                {
+                                        plug.replace(pos, 1, " ");
+                                }
+                                
+                                return std::vector<std::string> (1, plug);
+                        }
+                        else
+                        {
+                                scan_err << "\"" << node << "\" input value not usable in the inifile." << scan_end;
+                                return std::vector <std::string> ();
+                        }
+                }
         
                 Scan_Manager::Scan_Manager (const Factory_Base &factoryIn, const Options &options_in, const Priors::CompositePrior &priorIn, 
                  printer_interface *printerInterface) 
@@ -79,69 +110,38 @@ namespace Gambit
                                 return;
                         }
                         
-                        Plugins::plugin_info.iniFile(options->getOptions("plugins"));
-                        
-                        
+                        Plugins::plugin_info.iniFile(options->getOptions("plugins"), *printerInterface);
                         
                         if (options->hasKey("use_objective_plugins"))
                         {
                                 std::map< std::string, std::vector<std::string> > names;
                                 std::map< std::string, YAML::Node > nodes;
-                                
-                                if (options->getNode("use_objective_plugins").IsSequence())
-                                {
-                                        auto plugs = options->getValue< std::vector<std::string> >("use_objective_plugins");
+                                std::vector <std::string> plugs = get_infile_values(options->getNode("use_objective_plugins"));
                                         
-                                        for (auto it = plugs.begin(), end = plugs.end(); it != end; it++)
+                                for (auto it = plugs.begin(), end = plugs.end(); it != end; it++)
+                                {
+                                        if (options->hasKey("plugins", *it, "purpose"))
                                         {
-                                                if (options->hasKey("plugins", *it, "purpose"))
-                                                {
-                                                        names[options->getValue<std::string>("plugins", *it, "purpose")].push_back(*it);
-                                                }
-                                                else
-                                                {
-                                                        scan_err << "Must specify purpose under the plugin tag \"" << *it << "\"." << scan_end;
-                                                }
+                                                std::vector <std::string> purposes = get_infile_values(options->getNode("plugins", *it, "purpose"));
                                                 
-                                                if (options->hasKey("plugins", *it, "parameters"))
-                                                {
-                                                        if (options->hasKey("parameters") && options->hasKey("parameters", *it))
-                                                        {
-                                                                scan_err << "Plugin \"" << *it << "\"'s parameters are defined in "
-                                                                        << "both the \"parameters\" section and the \"plugins\" "
-                                                                        << "section in the inifile." << scan_end;
-                                                        }
-                                                        nodes[*it] = options->getNode("plugins", *it, "parameters");
-                                                }
-                                        }
-                                }
-                                else if (options->getNode("use_objective_plugins").IsScalar())
-                                {
-                                        std::string plug = options->getValue<std::string>("use_objective_plugins");
-                                        
-                                        if (options->hasKey("plugins", plug, "purpose"))
-                                        {
-                                                names[options->getValue<std::string>("plugins", plug, "purpose")].push_back(plug);
+                                                for (auto it2 = purposes.begin(), end = purposes.end(); it2 != end; it2++)
+                                                        names[*it2].push_back(*it);
                                         }
                                         else
                                         {
-                                                scan_err << "Must specify purpose under the plugin tag \"" << plug << "\"." << scan_end;
+                                                scan_err << "Must specify purpose under the plugin tag \"" << *it << "\"." << scan_end;
                                         }
                                         
-                                        if (options->hasKey("plugins", plug, "parameters"))
+                                        if (options->hasKey("plugins", *it, "parameters"))
                                         {
-                                                if (options->hasKey("parameters") && options->hasKey("parameters", plug))
+                                                if (options->hasKey("parameters") && options->hasKey("parameters", *it))
                                                 {
-                                                        scan_err << "Plugin tagged by \"" << plug << "\" has parameters that are defined in "
+                                                        scan_err << "Plugin \"" << *it << "\"'s parameters are defined in "
                                                                 << "both the \"parameters\" section and the \"plugins\" "
                                                                 << "section in the inifile." << scan_end;
                                                 }
-                                                nodes[plug] = options->getNode("plugins", plug, "parameters");
+                                                nodes[*it] = options->getNode("plugins", *it, "parameters");
                                         }
-                                }
-                                else
-                                {
-                                        scan_err << "\"use_likelihood_plugins:\" input value not usable in the inifile." << scan_end;
                                 }
                                 
                                 if (names.size() > 0)

@@ -1,4 +1,4 @@
-#include "Detector.hpp"
+#include "gambit/ColliderBit/Detector.hpp"
 
 
 namespace Gambit {

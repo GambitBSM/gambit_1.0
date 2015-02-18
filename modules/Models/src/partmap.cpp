@@ -18,9 +18,9 @@
 
 #include <sstream>
 
-#include "partmap.hpp"
-#include "standalone_error_handlers.hpp"
-#include "stream_overloads.hpp"
+#include "gambit/Models/partmap.hpp"
+#include "gambit/Utils/standalone_error_handlers.hpp"
+#include "gambit/Utils/stream_overloads.hpp"
 
 namespace Gambit
 {

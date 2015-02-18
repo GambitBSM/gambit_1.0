@@ -27,10 +27,10 @@
 ///
 ///  *********************************************
 
-#include "modelgraph.hpp"
-#include "models.hpp"
-#include "stream_overloads.hpp"
-#include "util_types.hpp"
+#include "gambit/Core/modelgraph.hpp"
+#include "gambit/Models/models.hpp"
+#include "gambit/Utils/stream_overloads.hpp"
+#include "gambit/Utils/util_types.hpp"
 
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/topological_sort.hpp>

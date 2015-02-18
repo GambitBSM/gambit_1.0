@@ -17,9 +17,12 @@
 ///
 ///  *********************************************
 
-#include "standalone_module.hpp"
-#include "ExampleBit_A_rollcall.hpp"
-#include "util_functions.hpp"
+// Always required in any standalone module main file
+#include "gambit/Utils/standalone_module.hpp"
+#include "gambit/ExampleBit_A/ExampleBit_A_rollcall.hpp"
+
+// Only needed here
+#include "gambit/Utils/util_functions.hpp"
 
 using namespace ExampleBit_A::Accessors;    // Helper functions that provide some info about the module
 using namespace ExampleBit_A::Functown;     // Functors wrapping the module's actual module functions

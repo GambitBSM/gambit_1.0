@@ -1,5 +1,5 @@
-#include "Detector.hpp"
-#include "BuckFast.hpp"
+#include "gambit/ColliderBit/Detector.hpp"
+#include "gambit/ColliderBit/BuckFast.hpp"
 
 namespace Gambit {
   namespace ColliderBit {
@@ -17,9 +17,7 @@ namespace Gambit {
       //@{
       virtual void processEvent(const HEPUtils::Event& eventIn, HEPUtils::Event& eventOut) {
         convertInput(eventIn);
-        ///
-        /// Do stuff with _processedEvent...
-        ///
+        // Do nothing
         convertOutput(eventOut);
       }
       //@}
