@@ -137,8 +137,8 @@ namespace Gambit
         auto m_th = Funk::vec(mb, mW, 0., 0., mZ);
         // WW*, hh, tt, ZZ*
         auto channel = Funk::vec<std::string>("bb", "WW", "cc", "tautau", "ZZ");
-        auto p1 = Funk::vec<std::string>("b", "W+", "c", "tau+", "Z");
-        auto p2 = Funk::vec<std::string>("bbar", "W-", "cbar", "tau-", "Z");
+        auto p1 = Funk::vec<std::string>("b", "W+", "c", "tau+", "Z0");
+        auto p2 = Funk::vec<std::string>("bbar", "W-", "cbar", "tau-", "Z0");
         for ( int i = 0; i < 5; i++ )
         {
             if ( mass > m_th[i] )
@@ -150,11 +150,27 @@ namespace Gambit
                 process_ann.channelList.push_back(channel_bb);
             }
         }
+        catalog.processList.push_back(process_ann);
 
         // Finally, store properties of "chi" in particleProperty list
-        catalog.processList.push_back(process_ann);
         TH_ParticleProperty chiProperty(mass, 1);  // Set mass and 2*spin
         catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("chi_10", chiProperty));
+
+        /*
+        // Add also properties of phi particle
+        TH_Process process_dec((std::string)"phi");
+        Funk::Funk f = Funk::one()*0.3;
+        std::cout << "Has args? " << f->hasArgs() << std::endl;
+        TH_Channel channel2(Funk::vec<std::string>("b", "bbar"), f);
+        process_dec.channelList.push_back(channel2);
+        process_dec.genRateTotal = f;
+        catalog.processList.push_back(process_dec);
+
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("phi", TH_ParticleProperty(20.,0)));
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("gamma", TH_ParticleProperty(0.,2)));
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("b", TH_ParticleProperty(mb,1)));
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("bbar", TH_ParticleProperty(mb,1)));
+        */
 
         result = catalog;
     }

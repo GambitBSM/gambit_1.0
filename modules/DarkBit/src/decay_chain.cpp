@@ -470,6 +470,7 @@ namespace Gambit
 
         DecayTable::DecayTable(const TH_ProcessCatalog &cat, const SimYieldTable &tab)
         {
+            std::cout << "DecayTable initialization" << std::endl;
             set<string> finalStates;
             // Register all decaying particles and their decays
             for(vector<TH_Process>::const_iterator it = cat.processList.begin(); it != cat.processList.end(); ++it)
@@ -479,6 +480,8 @@ namespace Gambit
                 if(it->genRateTotal->hasArgs()) continue;
 
                 string pID = it->particle1ID;
+                std::cout << "Address of genRateTotal: " << it->genRateTotal << std::endl;
+                std::cout << "Final state of interest: " << pID << std::endl;
                 double m = cat.getParticleProperty(pID).mass;
                 bool stable = ((it->channelList).size()<1);
                 // If tabulated spectra exist for decays of this particle, consider it stable for the purpose of decay chain generation
@@ -504,6 +507,8 @@ namespace Gambit
                 // Use specified total width (instead of summing widths of registered channels)
                 entry.forceTotalWidth(true,it->genRateTotal->eval());
                 addEntry(pID,entry);
+                std::cout << "Add entry for: " << table.begin()->first << std::endl;
+                std::cout << table.at("phi").m << std::endl;
             }
             // Flag channels where all final final states are stable as endpoints.
             // Loop over all particles
@@ -532,6 +537,8 @@ namespace Gambit
             {
                 if(!hasEntry(*it))
                 {
+                    // FIXME: Get correct particle masses from somewhere else
+                    std::cout << "register: " << *it << std::endl;
                     double m = cat.getParticleProperty(*it).mass;
                     addEntry(*it,m,true);
                 }
@@ -657,6 +664,7 @@ namespace Gambit
                 if(m1+m2>m)
                 {
                     cout << "Error: Kinematically impossible decay in decay chain. Please check your process catalog." << endl;
+                    cout << "Relevant particle masses: " << m1 << " " << m2 << " " << m << endl;
                     exit(1);
                 }           
                 const double &Etot = m;
