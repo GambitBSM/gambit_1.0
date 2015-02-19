@@ -5,11 +5,11 @@
 ###################################
 
 Parameters: 
-    SingletDM:
-        lambda:
-            range: [0.001, 1]
-        mass:
-            range: [10, 100]
+#   SingletDM:
+#       lambda:
+#           range: [0.001, 1]
+#       mass:
+#           range: [10, 100]
 
 #    MSSM25:
 #      Ab:
@@ -65,61 +65,61 @@ Parameters:
 #      tanb:
 #        fixed_value: 1
 
-#    MSSM25atQ:
-#      Qin:
-#        fixed_value: 1.9422e+16
-#      SignMu:
-#        fixed_value: 1
-#      TanBeta:
-#        fixed_value: 10
-#      mHu2:
-#        fixed_value: 15625
-#      mHd2:
-#        fixed_value: 15625
-#      M1:
-#        fixed_value: 500
-#      M2:
-#        fixed_value: 500
-#      M3:
-#        fixed_value: 500
-#      mq2_1:
-#        fixed_value: 15625.0
-#      mq2_2:
-#        fixed_value: 15625.0
-#      mq2_3:
-#        fixed_value: 15625.0
-#      ml2_1:
-#        fixed_value: 15625.0
-#      ml2_2:
-#        fixed_value: 15625.0
-#      ml2_3:
-#        fixed_value: 15625.0
-#      md2_1:
-#        fixed_value: 15625.0
-#      md2_2:
-#        fixed_value: 15625.0
-#      md2_3:
-#        fixed_value: 15625.0
-#      mu2_1:
-#        fixed_value: 15625.0
-#      mu2_2:
-#        fixed_value: 15625.0
-#      mu2_3:
-#        fixed_value: 15625.0
-#      me2_1:
-#        fixed_value: 15625.0
-#      me2_2:
-#        fixed_value: 15625.0
-#      me2_3:
-#        fixed_value: 15625.0
-#      Ae_12:
-#        fixed_value: 0
-#      Ae_3:
-#        fixed_value: 0
-#      Ad_3:
-#        fixed_value: 0
-#      Au_3:
-#        fixed_value: 0
+    MSSM25atQ:
+      Qin:
+        fixed_value: 1.9422e+16
+      SignMu:
+        fixed_value: 1
+      TanBeta:
+        fixed_value: 10
+      mHu2:
+        fixed_value: 15625
+      mHd2:
+        fixed_value: 15625
+      M1:
+        fixed_value: 500
+      M2:
+        fixed_value: 500
+      M3:
+        fixed_value: 500
+      mq2_1:
+        fixed_value: 15625.0
+      mq2_2:
+        fixed_value: 15625.0
+      mq2_3:
+        fixed_value: 15625.0
+      ml2_1:
+        fixed_value: 15625.0
+      ml2_2:
+        fixed_value: 15625.0
+      ml2_3:
+        fixed_value: 15625.0
+      md2_1:
+        fixed_value: 15625.0
+      md2_2:
+        fixed_value: 15625.0
+      md2_3:
+        fixed_value: 15625.0
+      mu2_1:
+        fixed_value: 15625.0
+      mu2_2:
+        fixed_value: 15625.0
+      mu2_3:
+        fixed_value: 15625.0
+      me2_1:
+        fixed_value: 15625.0
+      me2_2:
+        fixed_value: 15625.0
+      me2_3:
+        fixed_value: 15625.0
+      Ae_12:
+        fixed_value: 0
+      Ae_3:
+        fixed_value: 0
+      Ad_3:
+        fixed_value: 0
+      Au_3:
+        fixed_value: 0
 
 ##############################
 # Prior setup
@@ -212,12 +212,12 @@ ObsLikes:
       purpose:  Likelihood
 # DARWIN argon-based proposal (2015 estimate) direct detection likelihood
 # NOTE: treated as observable!
-    - capability: lnL_DARWIN_Ar_2015
-      purpose:  Observable
+#    - capability: lnL_DARWIN_Ar_2015
+#      purpose:  Observable
 # DARWIN xenon-based proposal (2015 estimate) direct detection likelihood
 # NOTE: treated as observable!
-    - capability: lnL_DARWIN_Xe_2015
-      purpose:  Observable
+#    - capability: lnL_DARWIN_Xe_2015
+#      purpose:  Observable
       
 # This function dumps gamma-ray spectra into a ASCII table file.  The filename
 # is specified as option in the Auxiliaries section.
@@ -225,6 +225,12 @@ ObsLikes:
 
 
 Auxiliaries:
+  # DarkSUSY ---------------------------
+  - capability: DarkSUSY_5_1_1_init # Initialization of DarkSUSY backend
+    options:
+        # Direct Detection Settings
+        ddpole: 1 # Include squark pole in scattering amplitude
+        dddn: 1 # Treat heavy quarks and gluons as in Drees & Nojiri 1993 (implies ddpole=1)
   # Gamma-rays -------------------------
   - capability: gamLike_1_0_0_init  # Initialization of gamLike backend
     options:
@@ -266,11 +272,11 @@ Auxiliaries:
   # model, but the dependency resolver will choose it by default as it
   # is the only one available for that model.
   - capability: DD_couplings
-    #function: DD_couplings_DarkSUSY    # couplings from darksusy backend
+    function: DD_couplings_DarkSUSY # couplings from darksusy backend
     #function: DD_couplings_micrOMEGAs  # couplings from micromegas backend
     #function: DD_couplings_SingletDM   # couplings for singlet DM model
     options:
-        rescale_couplings: 1  # For unit tests: rescale couplings
+        rescale_couplings: 1  # For unit tests: rescale couplings	
   # Miscellaneous ----------------------
   - capability: MSSMspectrum
     function: getMSSMspectrum  # For unit test: reads in spectrum from SLHA file
