@@ -17,7 +17,9 @@
 /* The following macro loads the library using dlopen 
  * when this header file is included somewhere. */
 
-/* LOAD_LIBRARY # Fake library so don't need this. However we still have to register a backend LogTag, which would have been done automatically by this macro, so below we run this 'secret' macro. Most backends should not use this macro, however. */
+/* LOAD_LIBRARY # Fake library so don't need this. However we still have to 
+ * register a backend LogTag, which would have been done automatically by 
+ * this macro, so below we do this by hand. */
 
 namespace Gambit
 {
@@ -26,8 +28,8 @@ namespace Gambit
     namespace FakeSoftSUSY_1_0
     {
 
-      REGISTER_BACKEND_LOGTAG 
-
+      int reg_log = register_backend_with_log(STRINGIFY(BACKENDNAME));
+      
       /* Convenience functions go here */
       
       /* In reality we need some sort of initialisation to occur, but I don't
