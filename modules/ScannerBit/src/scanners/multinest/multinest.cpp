@@ -80,12 +80,12 @@ scanner_plugin(MultiNest, version(0, 0, 0, bens_version))
 
       // Need to do more work if we want to enable the periodic boundary conditions.
       //int pWrap[ndims]; //cannot declare VLA				// which parameters to have periodic boundary conditions?
-         int* pWrap = new int[ndims]; //remember to delete!
+      int* pWrap = new int[ndims]; //remember to delete!
       for(int i = 0; i < ndims; i++) pWrap[i] = 0;
          
       std::string root_str ( get_inifile_value<std::string>("root", "chains/") ); // root for output files
-         char root[100];
-         root_str.copy(root,100,0);  // copy std::string into char array for transport to fortran/
+      char root[100];
+      root_str.copy(root,100,0);  // copy std::string into char array for transport to fortran/
 
       int seed (	get_inifile_value<int>("seed", -1) );		// random no. generator seed, if < 0 then take the seed from system clock
       int fb (		get_inifile_value<int>("fb", 1) );		// need feedback on standard output?

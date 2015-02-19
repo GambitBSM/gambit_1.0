@@ -340,11 +340,6 @@ Message from flexibleSUSY below:" << std::endl;
       result = run_FS_spectrum_generator<MSSMatMGUT_interface<ALGORITHM1>>(input,*Pipe::runOptions);
     }
 
-    void get_GUTMSSMB_spectrum (Spectrum* &result)
-    {
-      // Placeholder
-    }
-
 
     // Dump whatever is in the spectrum object to SLHA
     // This is mostly for testing purposes.

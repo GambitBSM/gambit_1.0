@@ -2484,7 +2484,7 @@ namespace Gambit {
         {
             int flag = 0;      // some flag
             int yieldk = 152;  // gamma ray yield
-            int ch = 0;        // channel information
+            //int ch = 0;        // channel information  //bjf> unused variable
             Funk::Funk dNdE;
 
             #define ADD_CHANNEL(ch, P1, P2, FINAL, EcmMin, EcmMax)                                                    \

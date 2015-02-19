@@ -155,7 +155,7 @@ namespace Gambit
                 double binSize_high = 1;
                 double dE = Emax-Emin;
                 double norm = weight/dE;            
-                double tmp;
+                //double tmp; //bjf> unused variable warning
                 // Calculate part of lower bin covered by box
                 if(imin>=0)
                     binSize_low = binLower[imin+1]-Emin;

@@ -181,9 +181,9 @@ namespace Gambit
 
       double loglTotal = 0.;
 
-      logger() << "Is CMSSM_demo being scanned? " << ModelInUse("CMSSM_demo") << endl;
+      //logger() << "Is CMSSM_demo being scanned? " << ModelInUse("CMSSM_demo") << endl;
       logger() << "Is NormalDist being scanned? " << ModelInUse("NormalDist") << endl;;
-      logger() << "Is SingletDM being scanned? "  << ModelInUse("SingletDM");;
+      //logger() << "Is SingletDM being scanned? "  << ModelInUse("SingletDM");;
       logger() << info << EOM;
 
       // The loglikelihood value for the hypothesised parameters is then:
@@ -204,7 +204,7 @@ namespace Gambit
     void eventLoopManager()
     {
       using namespace Pipes::eventLoopManager;
-      unsigned int nEvents = 20;         // Number of times to run the loop
+      //unsigned int nEvents = 20;         // Number of times to run the loop  //bjf> unused variable warning
 
       //There is basically just one thing available from the Loops namespace in loop managers like this one:
       //  Loop::executeIteration(int iteration_number) -- executes a single iteration of the ordered

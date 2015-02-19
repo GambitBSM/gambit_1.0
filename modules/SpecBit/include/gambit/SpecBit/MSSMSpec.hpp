@@ -155,7 +155,7 @@ namespace Gambit {
          MSSMSpec(MI, bool switch_index_convention=false);
 
          //Could more constructors to interface with other generators   
-          
+
          // These are public for now so that SpecBit_tests.cpp can access them
          MI model_interface; // Must be declared before 'model', since model just points inside of model_interface
          Model& model;
@@ -246,12 +246,12 @@ namespace Gambit {
    // (i.e. it should be declared first)
    template <class MI>
    MSSMSpec<MI>::MSSMSpec(MI mi, bool switch_index_convention):
+      index_offset(-1),
+      mssm_ph(*this),
+      mssm_drbar_pars(*this),          
       model_interface(mi),
       model(model_interface.model),
-      mssm_ph(*this),
-      mssm_drbar_pars(*this),
-      Spec<Model>(mssm_drbar_pars, mssm_ph),
-      index_offset(-1)
+      Spec<Model>(mssm_drbar_pars, mssm_ph)
    {
       if (switch_index_convention) index_offset = 0;
    }
@@ -259,10 +259,10 @@ namespace Gambit {
    // Default constructor
    template <class MI>
    MSSMSpec<MI>::MSSMSpec(bool switch_index_convention) :
+      index_offset(-1),
       mssm_ph(*this),
       mssm_drbar_pars(*this),
-      Spec<typename MI::Model>(mssm_drbar_pars, mssm_ph),
-      index_offset(-1)
+      Spec<typename MI::Model>(mssm_drbar_pars, mssm_ph)
    {
       if (switch_index_convention) index_offset = 0;
    }

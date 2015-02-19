@@ -849,9 +849,23 @@ namespace Gambit
       }
       if (vertexCandidates.size() == 0)
       {
-        // TODO: Clarify
-        str errmsg = "No candidates found.";
-        dependency_resolver_error().raise(LOCAL_INFO,errmsg);
+        /// TODO: Clarify -- Ben: I added a bit extra, not sure if you had anything else in mind.
+        std::ostringstream errmsg;
+        errmsg << "No candidates found to resolve dependency on "<< quantity.first << " (" << quantity.second << ")" << endl;
+        if ( toVertex != OBSLIKE_VERTEXID )
+        {
+          errmsg << ", required by ";
+          errmsg << (*masterGraph[toVertex]).capability() << " (";
+          errmsg << (*masterGraph[toVertex]).type() << ") [";
+          errmsg << (*masterGraph[toVertex]).name() << ", ";
+          errmsg << (*masterGraph[toVertex]).origin() << "]" << endl;;
+        }
+        else
+        {
+          errmsg << ", required by Core" << endl;
+        }
+        errmsg << "Please check inifile for typos, and make sure that the models you are scanning are compatible with at least one function which provides this capability (they may all have been deactivated due to having ALLOW_MODELS declarations which are incompatible with the models selected for scanning)" << endl;  
+        dependency_resolver_error().raise(LOCAL_INFO,errmsg.str());
       }
 
       cout << "Vertex candidate IDs: " << vertexCandidates << endl;
