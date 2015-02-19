@@ -75,9 +75,9 @@ namespace Gambit
         int status = get_ctor_status(be, ver, name, barename, args, symbol_name, present);
         switch(status)
         {
-          case  0: result = factory;
-          case -1: result = missing_backend;
-          case -2: result = missing_factory;
+          case  0: result = factory;         break;
+          case -1: result = missing_backend; break;
+          case -2: result = missing_factory; break;
         }
       }
       catch (std::exception& e) { ini_catch(e); }

@@ -22,6 +22,7 @@
 ///          (patscott@physics.mcgill.ca)
 ///  \date 2013 July
 ///  \date 2014 Jan, Mar, May
+///  \date 2015 Feb
 ///
 ///  \author Lars A. Dal  
 ///          (l.a.dal@fys.uio.no)
