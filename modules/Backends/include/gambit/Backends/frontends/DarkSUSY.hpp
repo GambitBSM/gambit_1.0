@@ -37,8 +37,8 @@
 #else
   #define BACKENDNAME DarkSUSY
 #endif
-#define VERSION 0.1
-#define SAFE_VERSION 0_1
+#define VERSION 5.1.1
+#define SAFE_VERSION 5_1_1
 
 
 /* The following macro loads the library using dlmopen 
