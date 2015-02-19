@@ -403,6 +403,7 @@ namespace Gambit
   typedef FcomplexT<float>  Fcomplex8;
   typedef FcomplexT<double> Fcomplex16;
   typedef FcomplexT<double> Fdouble_complex;  
+  typedef FcomplexT<long double> Flongdouble_complex;  
   typedef char              Fcharacter;  
   typedef double            Fdouble;
   typedef double            Fdouble_precision;

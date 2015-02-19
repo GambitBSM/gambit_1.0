@@ -37,6 +37,7 @@ LOAD_LIBRARY
 
 
 BE_FUNCTION(FHSetFlags, void, (int&,int&,int&,int&,int&,int&,int&,int&,int&,int&), "fhsetflags_", "FHSetFlags")
+BE_FUNCTION(FHSetDebug, void, (int&), "fhsetdebug_", "FHSetDebug")
 BE_FUNCTION(FHSetSMPara, void, (int&,fh_creal&,fh_creal&,fh_creal&,fh_creal&,fh_creal&,
 				fh_creal&,fh_creal&,fh_creal&,fh_creal&,fh_creal&,fh_creal&,
 				fh_creal&,fh_creal&,fh_creal&,fh_creal&,fh_creal&,fh_creal&), "fhsetsmpara_", "FHSetSMPara")
@@ -56,14 +57,23 @@ BE_FUNCTION(FHSetNMFV, void, (int&,fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,fh_cco
 BE_FUNCTION(FHSetLFV, void, (int&,fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,
 			     fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,
 			     fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,fh_ccomplex&), "fhsetlfv_", "FHSetLFV")
-BE_FUNCTION(FHGetPara, void, (int&,int&,fh_real*,fh_complex*,fh_real*,fh_complex*,
-			      fh_real*,fh_complex*,fh_complex*,fh_real*,fh_complex*,
-			      fh_complex&,fh_real&,fh_real*,fh_real&), "fhgetpara_", "FHGetPara")
-BE_FUNCTION(FHConstraints, void, (int&,fh_creal&,fh_creal&,fh_creal&,fh_creal&,
-				  fh_creal&,fh_creal&,fh_creal&,fh_creal&,fh_creal&), "fhconstraints_", "FHConstraints")
-BE_FUNCTION(FHFlavour, void , (int&,fh_real&,fh_real&,fh_real&,fh_real&,fh_real&,fh_real&), "fhflavour_", "FHFlavour")
-BE_FUNCTION(FHHiggsCorr, void, (int&,fh_real*,fh_complex&,fh_complex*,fh_complex*), "fhhiggscorr_", "FHHiggsCorr")
-BE_FUNCTION(FHUncertainties, void, (int&,fh_real*,fh_complex&,fh_complex*,fh_complex*), "fhuncertainties_", "FHUncertainties")
+BE_FUNCTION(FHConstraints, void, (int&,fh_real&,fh_real&,fh_real&,fh_real&,
+				  fh_real&,fh_real&,fh_real&,fh_real&,fh_real&,int&), "fhconstraints_", "FHConstraints")
+BE_FUNCTION(FHFlavour, void, (int&,fh_real&,fh_real&,fh_real&,fh_real&,fh_real&,fh_real&), "fhflavour_", "FHFlavour")
+
+BE_FUNCTION(FHGetPara, void, (int&,int&,
+			      Farray<fh_real, 1,2, 1,5, 1,3>&, Farray<fh_complex, 1,2, 1,2, 1,5, 1,3>&,
+			      Farray<fh_real, 1,6, 1,5>&, Farray<fh_complex, 1,36, 1,5>&,
+			      Farray< fh_real,1,2>&, Farray< fh_complex,1,4>&,
+			      Farray< fh_complex,1,4>&, Farray< fh_real,1,4>&,
+			      Farray< fh_complex, 1,16>&, fh_complex&, fh_real&,
+			      Farray< fh_real,1,4>&, fh_real&), "fhgetpara_", "FHGetPara")
+
+BE_FUNCTION(FHHiggsCorr, void, (int&, Farray< fh_real,1,4>&, fh_complex&, Farray<fh_complex, 1,3, 1,3>&, 
+				Farray<fh_complex, 1,3, 1,3>&), "fhhiggscorr_", "FHHiggsCorr")
+BE_FUNCTION(FHUncertainties, void, (int&, Farray< fh_real,1,4>&, fh_complex&, Farray<fh_complex, 1,3, 1,3>&, 
+				    Farray<fh_complex, 1,3, 1,3>&), "fhuncertainties_", "FHUncertainties")
+
 
 
 BE_INI_FUNCTION{
@@ -79,8 +89,8 @@ BE_INI_FUNCTION{
   int mssmpart = 4;  // scope of calculation (4 -> full MSSM, recommended)
   int fieldren = 0;  // one-loop field-renormalization constants (0 -> DRbar, strongly recommended))
   int tanbren = 0;   // one-loop one-loop tanBeta counter-term (0 -> DRbar, strongly recommended))
-  int higgsmix = 2;  // mixing in Higgs sector (3 -> full 3 x 3 in neutral sector)
-  int p2approx = 0;  // 1-loop approximation (4 -> none, UHiggs eval. at p^2=0, recommended)
+  int higgsmix = 3;  // mixing in Higgs sector (3 -> full 3 x 3 in neutral sector)
+  int p2approx = 4;  // 1-loop approximation (4 -> none, UHiggs eval. at p^2=0, recommended)
   int looplevel = 2; // higher-order corrections? (2 -> various 2-loop contrib., recommended)
   int runningMT = 1; // top mass for 1/2-loop corr. (1 -> m_t^{run}, recommended)
   int botResum = 1;  // O(tan^n Beta) corr. ressummed? (1 -> yes, recommended)
@@ -134,16 +144,21 @@ BE_INI_FUNCTION{
   fh_real M3SD = MSusy, M2SD = M3SD, M1SD = M2SD; // down-type squark singlet
 
   // soft-SUSY breaking parameters
-  fh_complex Af = 2000;
+  fh_complex Af; 
+  Af.re = 2000; 
+  Af.im = 0.;
   fh_complex At = Af, Ac = At, Au = Ac;
   fh_complex Ab = Af, As = Ab, Ad = As;
   fh_complex Atau = Af, Amu = Atau, Ae = Amu;
 
-  fh_complex MUE = 200;   // Higgs mixing parameter mu
+  fh_complex MUE;  // Higgs mixing parameter mu
+  MUE.re = 200; 
+  MUE.im = 0;
   // gaugino mass parameters. M_1 == 0 => GUT relation is used
-  fh_complex M_1 = 0;
-  fh_complex M_2 = 500;
-  fh_complex M_3 = 800;
+  fh_complex M_1, M_2, M_3; 
+  M_1.re = 0;   M_1.im = 0;
+  M_2.re = 500; M_2.im = 0;
+  M_3.re = 800; M_3.im = 0;
 
   // the scales at which the sfermion input parameters M3S are given
   // 0 indicates on-shell parameters
@@ -160,8 +175,8 @@ BE_INI_FUNCTION{
 	    M1SL, M1SE, M1SQ, M1SU, M1SD,
 	    MUE,
 	    Atau, At, Ab,
-	    Amu, Ac, As,
-	    Ae, Au, Ad,
+	    Amu,  Ac, As,
+	    Ae,   Au, Ad,
 	    M_1, M_2, M_3,
 	    Qtau, Qt, Qb);
 
