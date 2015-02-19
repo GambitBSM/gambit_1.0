@@ -14,7 +14,7 @@
 ///  \date 2015 Feb
 ///
 ///  *********************************************
-
+#include "gambit/Utils/util_types.hpp"
 
 #ifndef __FeynHiggs_types_hpp__
 #define __FeynHiggs_types_hpp__
@@ -22,8 +22,8 @@
 namespace Gambit
 {
   
-  typedef double fh_real;
-  typedef std::complex<double> fh_complex;
+  typedef Fdouble fh_real;
+  typedef Fdouble_complex fh_complex;
   typedef const fh_real fh_creal;
   typedef const fh_complex fh_ccomplex;
   

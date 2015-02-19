@@ -107,7 +107,7 @@ START_MODULE
   START_CAPABILITY
     // Function returns if point initialization is successful
     // (probably always true)
-    #define FUNCTION DarkSUSY_PointInit
+    #define FUNCTION DarkSUSY_PointInit_MSSM
       START_FUNCTION(bool)
       DEPENDENCY(MSSMspectrum, eaSLHA) 
       ALLOW_MODELS(CMSSM_demo,CMSSM,MSSM25atQ)
@@ -120,6 +120,10 @@ START_MODULE
       // Initialize DarkSUSY with SLHA file
       BACKEND_REQ(dsSLHAread, (), void, (char*, int&, int))
       BACKEND_REQ(dsprep, (), void, ())
+    #undef FUNCTION
+    #define FUNCTION DarkSUSY_PointInit_NoMSSM
+      START_FUNCTION(bool)
+      ALLOW_MODELS(SingletDM)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -281,6 +285,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION cascadeMC_TestList
       START_FUNCTION(std::vector<std::string>)  
+      DEPENDENCY(GA_missingFinalStates, std::vector<std::string>)
     #undef FUNCTION                                                       
   #undef CAPABILITY    
 
@@ -409,9 +414,24 @@ START_MODULE
   #undef CAPABILITY
 
   // Gamma rays --------------------------------------------
+  //
+  #define CAPABILITY GA_missingFinalStates
+  START_CAPABILITY
+    #define FUNCTION GA_missingFinalStates
+      START_FUNCTION(std::vector<std::string>)
+      DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)
+      DEPENDENCY(SimYieldTable, Gambit::DarkBit::SimYieldTable)
+    #undef FUNCTION
+  #undef CAPABILITY
 
   #define CAPABILITY GA_AnnYield
   START_CAPABILITY
+    #define FUNCTION GA_AnnYield_General
+      START_FUNCTION(Funk::Funk)
+      DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)
+      DEPENDENCY(SimYieldTable, Gambit::DarkBit::SimYieldTable)
+      DEPENDENCY(cascadeMC_gammaSpectra, Gambit::DarkBit::stringFunkMap)
+    #undef FUNCTION
     #define FUNCTION GA_AnnYield_DarkSUSY
       START_FUNCTION(Funk::Funk)
       DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)
@@ -1084,6 +1104,10 @@ START_MODULE
     DEPENDENCY(DarkSUSY_PointInit, bool)
     BACKEND_REQ(dshayield, (), double, (double&,double&,int&,int&,int&))
     #undef FUNCTION 
+    #define FUNCTION SimYieldTable_MicrOmegas
+    START_FUNCTION(Gambit::DarkBit::SimYieldTable)
+    BACKEND_REQ(dNdE, (), double, (double,double,int,int))
+    #undef FUNCTION
   #undef CAPABILITY
 
 #undef MODULE
