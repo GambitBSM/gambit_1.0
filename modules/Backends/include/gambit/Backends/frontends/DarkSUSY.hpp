@@ -90,6 +90,7 @@ BE_FUNCTION(dsddgpgn, void, (double&, double&, double&, double&), "dsddgpgn_", "
 BE_FUNCTION(dsSLHAread, void, (char*, int&, int), "dsslharead_", "dsSLHAread")
 BE_FUNCTION(dsprep, void, (), "dsprep_", "dsprep")
 BE_FUNCTION(dsIByieldone, double, (double&, int&, int&, int&), "dsibyieldone_", "dsibyieldone")
+//BE_FUNCTION(dsddset, void, (Fstring<2>*, Fstring<10>*), "dsddset_", "dsddset")
 
 //BE_FUNCTION(initialize, void, (int), "_Z10initializei", "LibFirst_initialize_capability")
 //BE_FUNCTION(someFunction, void, (), "_Z12someFunctionv", "LibFirst_someFunction_capability")
@@ -157,7 +158,7 @@ BE_INI_FUNCTION
     bool static scan_level = true;
     if (scan_level)
     {
-        std::cout << "DarkSUSY initialization" << std::endl;
+    	std::cout << "DarkSUSY initialization" << std::endl;
         dsinit();
         dsrdinit();
         scan_level = false;
@@ -180,6 +181,31 @@ BE_INI_FUNCTION
         ddcom->ftn(10) = 0.0447;
         ddcom->ftn(11) = 0.0679;
         ddcom->ftn(12) = 0.0679;
+
+        cout << "dddn: " << runOptions->getValue<int>("dddn") << endl;
+        cout << "ddpole: " << runOptions->getValue<int>("ddpole") << endl;
+
+        if (runOptions->hasKey("dddn"))
+        {
+        	if (runOptions->getValue<int>("dddn")==1) ddcom->dddn = 1;
+        	else if (runOptions->getValue<int>("dddn")==0) ddcom->dddn = 0;
+        	else BackendIniBit_error().raise(LOCAL_INFO, "Invalid value of dddn "
+        				"(only 0 or 1 permitted).");
+        }
+
+        if (runOptions->hasKey("ddpole"))
+        {
+        	if (runOptions->getValue<int>("ddpole")==1) ddcom->ddpole = 1;
+        	else if (runOptions->getValue<int>("ddpole")==0)
+        	{
+        		ddcom->ddpole = 0;
+        		if (runOptions->hasKey("dddn") && runOptions->getValue<int>("dddn")==1)
+        			BackendIniBit_warning().raise(LOCAL_INFO, "ddpole = 0 ignored "
+        					"by DarkSUSY because dddn = 1.");
+        	}
+        	else BackendIniBit_error().raise(LOCAL_INFO, "Invalid value of ddpole "
+        				"(only 0 or 1 permitted).");
+        }
     }
 
   // POINT INITIALIZATION MOVE TO DARKSUSY_POINTINIT CAPABILITY/FUNCTION
