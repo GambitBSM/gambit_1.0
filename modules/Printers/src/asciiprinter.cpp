@@ -31,6 +31,7 @@
 #include "gambit/Printers/printers/asciiprinter.hpp"
 #include "gambit/Core/error_handlers.hpp"
 #include "gambit/Utils/stream_overloads.hpp"
+#include "gambit/Utils/util_functions.hpp"
 
 // Switch for debugging output (manual at the moment)
 //#define DEBUG_MODE

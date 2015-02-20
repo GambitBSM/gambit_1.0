@@ -154,9 +154,9 @@ namespace Gambit
         bool info_file_written; // Flag to let us know that the info file has been written
     };
 
-  // Register printer so it can be constructed via inifile instructions
-  // First argument is string label for inifile access, second is class from which to construct printer
-  LOAD_PRINTER(ascii, asciiPrinter)
+    // Register printer so it can be constructed via inifile instructions
+    // First argument is string label for inifile access, second is class from which to construct printer
+    LOAD_PRINTER(ascii, asciiPrinter)
      
   } // end namespace Printers
 } // end namespace Gambit

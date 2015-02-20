@@ -189,7 +189,7 @@ namespace Gambit
 
       // The loglikelihood value for the hypothesised parameters is then:
       if (ModelInUse("NormalDist")) {
-        for (int i=0; i <= N; ++i)
+        for (int i=0; i<N; ++i)
         {
           loglTotal += logf(samples[i], *Param["mu"], *Param["sigma"]);
         }

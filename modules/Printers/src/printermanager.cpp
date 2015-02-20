@@ -20,7 +20,9 @@
 ///
 ///  *********************************************
 
+#include "gambit/Printers/baseprinter.hpp"
 #include "gambit/Printers/printermanager.hpp"
+#include "gambit/Printers/printer_rollcall.hpp" // Also registers all the available printers
 #include "gambit/Utils/yaml_options.hpp"
 
 // Switch for debugging output (manual at the moment)

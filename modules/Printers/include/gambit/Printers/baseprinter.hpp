@@ -27,7 +27,6 @@
 
 // Gambit
 #include "gambit/Utils/all_functor_types.hpp"
-#include "gambit/Utils/functors.hpp"
 #include "gambit/Utils/standalone_error_handlers.hpp"
 #include "gambit/Utils/yaml_options.hpp"
 #include "gambit/Utils/boost_fallbacks.hpp"
@@ -82,9 +81,6 @@ namespace Gambit
     class BasePrinter  
     {
       public:
-        // We need to have a virtual print method for EVERY type we ever want to print (i.e. for every type that can be held in the 'myValue' data member of a module functor). Generate these using a macro.
-        // Run the macro; add all the print functions
-        ADD_ALL_PRINT_FUNCTIONS
 
         /// Destructor
         // Need this to be virtual so that the PrinterManager can destroy any printer object via a pointer to base
@@ -127,6 +123,10 @@ namespace Gambit
            return -1;
         }
 
+        // We need to have a virtual print method for EVERY type we ever want to print (i.e. for every type that can be held in the 'myValue' data member of a module functor). Generate these using a macro.
+        // Run the macro; add all the print functions
+        ADD_ALL_PRINT_FUNCTIONS
+
     };
 
     // Need to implement the destructor, even though it is pure virtual. Seems like it will be called even if using derived classes, or something.
@@ -146,7 +146,5 @@ namespace Gambit
   } //end namespace Printers
 } // end namespace Gambit
 
-// Load up all the available printers
-#include "printer_rollcall.hpp"
 
 #endif //ifndef __base_printer_hpp__

@@ -19,13 +19,15 @@
 #ifndef __printermanager_hpp__
 #define __printermanager_hpp__
 
-#include "gambit/Printers/baseprinter.hpp"
 #include "gambit/Utils/yaml_options.hpp"
 
 namespace Gambit
 {
   namespace Printers 
   {
+
+    /// Forward declaration of BasePrinter class (Declared fully in baseprinter.hpp)
+    class BasePrinter; 
 
     /// Manager class for creating printer objects  
     class PrinterManager 

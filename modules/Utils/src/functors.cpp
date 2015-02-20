@@ -59,12 +59,12 @@ namespace Gambit
         // Must declare all virtual functions here IN THE SAME ORDER as they are declared in the actual class,
         // so that they end up in the vtable in the same order. Otherwise the vtable lookup will match the wrong
         // function calls to the wrong vtable entries!!!!
-        BOOST_PP_SEQ_FOR_EACH(FWDPRINT, _, PRINTABLE_TYPES)
         virtual ~BasePrinter();
         virtual void initialise(const std::vector<int>&);
         virtual void flush();
         virtual void reset();
         virtual int getRank();
+        BOOST_PP_SEQ_FOR_EACH(FWDPRINT, _, PRINTABLE_TYPES)
     };
   }
 
