@@ -27,8 +27,6 @@
 #include "gambit/ScannerBit/plugin_defs.hpp"
 #include "gambit/ScannerBit/plugin_macros.hpp"
 
-#include "yaml-cpp/yaml.h"
-
 namespace Gambit
 {
         /*ScannerBit specific stuff.*/

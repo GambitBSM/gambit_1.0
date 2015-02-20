@@ -10,6 +10,23 @@ To build GAMBIT:
 To choose compilers, change the cmake step to, e.g.
   FC=gfortran CC=gcc CXX=g++ cmake ..
 
+
+Required packages:
+
+  Ubuntu 14.04:
+    GAMBIT:
+      g++
+      gfortran
+      libgsl0-dev
+      libboost-dev
+      cmake
+      python-yaml
+    FlexibleSUSY / SpecBit only:
+      dpkg-dev (requires apt-get update and apt-get install -f to work from cold start)
+      liblabpack-dev
+      libblas-dev
+
+
 Issues:
 
  * The above process may fail to work correctly if files from the
