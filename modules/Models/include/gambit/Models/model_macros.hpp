@@ -16,6 +16,7 @@
 ///          (patscott@physics.mcgill.ca)
 ///  \date 2013 July, Aug
 ///  \date 2014 Jan, Nov
+///  \date 2015 Feb
 ///
 ///  *********************************************
 
@@ -32,6 +33,31 @@
 
 #include <boost/preprocessor/seq/for_each.hpp>
 
+#ifndef STANDALONE
+  #include "gambit/Core/ini_functions.hpp"
+  #define MAKE_PRIMARY_MODEL_FUNCTOR(FUNCTION,CAPABILITY,ORIGIN)  MAKE_PRIMARY_MODEL_FUNCTOR_MAIN(FUNCTION,CAPABILITY,ORIGIN) \
+                                                                  MAKE_PRIMARY_MODEL_FUNCTOR_SUPP(FUNCTION)                  
+#else
+  #define MAKE_PRIMARY_MODEL_FUNCTOR(FUNCTION,CAPABILITY,ORIGIN)  MAKE_PRIMARY_MODEL_FUNCTOR_MAIN(FUNCTION,CAPABILITY,ORIGIN)
+#endif
+
+#ifdef __model_rollcall_hpp__
+  #include "gambit/Utils/module_macros_incore.hpp"
+  #define START_MODEL                                             CORE_START_MODEL
+  #define DEFINEPARS(...)                                         CORE_DEFINEPARS(__VA_ARGS__)
+  #define MAP_TO_CAPABILITY(PARAMETER,CAPABILITY)                 CORE_MAP_TO_CAPABILITY(PARAMETER,CAPABILITY)
+  #define INTERPRET_AS_X__FUNCTION(MODEL_X,FUNC)                  CORE_INTERPRET_AS_X__FUNCTION(MODEL_X,FUNC)
+  #define INTERPRET_AS_PARENT__FUNCTION(FUNC)                     CORE_INTERPRET_AS_PARENT__FUNCTION(FUNC)
+  #define INTERPRET_AS_X__DEPENDENCY(MODEL_X, DEP, TYPE)          CORE_INTERPRET_AS_X__DEPENDENCY(MODEL_X, DEP, TYPE)
+#else
+  #define START_MODEL                                             MODULE_START_MODEL
+  #define DEFINEPARS(...)                                         /* Do nothing */
+  #define MAP_TO_CAPABILITY(PARAMETER,CAPABILITY)                 /* Do nothing */
+  #define INTERPRET_AS_X__FUNCTION(MODEL_X,FUNC)                  MODULE_INTERPRET_AS_X__FUNCTION(MODEL_X,FUNC)
+  #define INTERPRET_AS_PARENT__FUNCTION(FUNC)                     MODULE_INTERPRET_AS_X__FUNCTION(PARENT,FUNC)
+  #define INTERPRET_AS_X__DEPENDENCY(MODEL_X, DEP, TYPE)          MODULE_INTERPRET_AS_X__DEPENDENCY(MODEL_X, DEP, TYPE)
+#endif
+
 
 // MACRO DEFINITIONS. 
 
@@ -39,40 +65,7 @@
 /// "Rollcall" macros. These are lifted straight from module_macros_incore.hpp
 /// but are modified here and there to suit the role of models.
 
-// New addition: Now with core vs module macro redirections similar to those
-// in the module macros, to permit translation ("interpret as") functions to
-// be defined in source files and be compiled separately from the gambit core.
-// (Note: this is not yet throughly tested. Might be missing some currently
-// unused  macros)
-
-#define STRING2(x) #x
-#define STRING(x) STRING2(x)
-
-#ifdef __model_rollcall_hpp__
-  #include "gambit/Utils/module_macros_incore.hpp"
-  #define START_MODEL             CORE_START_MODEL
-  #define DEFINEPARS(...)         CORE_DEFINEPARS(__VA_ARGS__)
-  #define MAP_TO_CAPABILITY(PARAMETER,CAPABILITY)  \
-                                  CORE_MAP_TO_CAPABILITY(PARAMETER,CAPABILITY)
-  #define INTERPRET_AS_X__FUNCTION(MODEL_X,FUNC)  \
-                                  CORE_INTERPRET_AS_X__FUNCTION(MODEL_X,FUNC)
-  #define INTERPRET_AS_PARENT__FUNCTION(FUNC)  \
-                                  CORE_INTERPRET_AS_PARENT__FUNCTION(FUNC)
-  #define INTERPRET_AS_X__DEPENDENCY(MODEL_X, DEP, TYPE)  \
-                                  CORE_INTERPRET_AS_X__DEPENDENCY(MODEL_X, DEP, TYPE)
-#else
-  #define START_MODEL             MODULE_START_MODEL
-  #define DEFINEPARS(...)         /* Do nothing */
-  #define MAP_TO_CAPABILITY(PARAMETER,CAPABILITY) /* Do nothing */
-  #define INTERPRET_AS_X__FUNCTION(MODEL_X,FUNC) \
-                                  MODULE_INTERPRET_AS_X__FUNCTION(MODEL_X,FUNC)
-  #define INTERPRET_AS_PARENT__FUNCTION(FUNC) \
-                                  MODULE_INTERPRET_AS_X__FUNCTION(PARENT,FUNC)
-  #define INTERPRET_AS_X__DEPENDENCY(MODEL_X, DEP, TYPE)  \
-                                  MODULE_INTERPRET_AS_X__DEPENDENCY(MODEL_X, DEP, TYPE)
-#endif
-
-/// "in module" version of the START_MODEL macro
+/// "In module" version of the START_MODEL macro
 #define MODULE_START_MODEL                                                     \
   IF_TOKEN_UNDEFINED(MODEL,FAIL("You must define MODEL before calling "        \
    "START_MODEL."))                                                            \
@@ -92,7 +85,7 @@
    }                                                                           \
   }                                                                            \
 
-/// "in module" version of the INTERPRET_AS_X__FUNCTION macro
+/// "In module" version of the INTERPRET_AS_X__FUNCTION macro
 #define MODULE_INTERPRET_AS_X__FUNCTION(MODEL_X,FUNC)                          \
   namespace Gambit                                                             \
   {                                                                            \
@@ -123,7 +116,7 @@
     }                                                                          \
   }                                                                            \
 
-/// "in module" version of the INTERPRET_AS_X__DEPENDENCY macro
+/// "In module" version of the INTERPRET_AS_X__DEPENDENCY macro
 #define MODULE_INTERPRET_AS_X__DEPENDENCY(MODEL_X, DEP, TYPE)                  \
   namespace Gambit                                                             \
   {                                                                            \
@@ -417,26 +410,15 @@
 #define USE_MODEL_PIPE(MODEL_X)                                                 \
   using namespace MODEL_NAMESPACE::Pipes::CAT(MODEL_X,_parameters);             \
 
+
 /// Macros to create and register primary model functors. 
 ///
 /// We need this extra wrapper in order to define these special functors and add
 /// them to the Core's primary model functor list (no other functors allowed here).         
 /// @{
-
-// Determine whether to make registration calls to the Core in the 
-// MAKE_PRIMARY_MODEL_FUNCTOR macro, depending on STANDALONE flag 
-#ifdef STANDALONE
-  #define MAKE_PRIMARY_MODEL_FUNCTOR(FUNCTION,CAPABILITY,ORIGIN)               \
-          MAKE_PRIMARY_MODEL_FUNCTOR_MAIN(FUNCTION,CAPABILITY,ORIGIN)
-#else
-  #define MAKE_PRIMARY_MODEL_FUNCTOR(FUNCTION,CAPABILITY,ORIGIN)               \
-          MAKE_PRIMARY_MODEL_FUNCTOR_MAIN(FUNCTION,CAPABILITY,ORIGIN)          \
-          MAKE_PRIMARY_MODEL_FUNCTOR_SUPP(FUNCTION)                  
-#endif
   
 /// Main version of MAKE_FUNCTOR modified to build primary_parameters functors.
 #define MAKE_PRIMARY_MODEL_FUNCTOR_MAIN(FUNCTION,CAPABILITY,ORIGIN)            \
-                                                                               \
   /* Create the function wrapper object (functor) */                           \
   namespace Functown                                                           \
   {                                                                            \
@@ -444,27 +426,15 @@
      (&ORIGIN::FUNCTION, STRINGIFY(FUNCTION), STRINGIFY(CAPABILITY),           \
      "ModelParameters", STRINGIFY(ORIGIN), ModelDB());                         \
   }                                                                            \
-                                                                               \
+  /* Register the functor with the rollcall system. */                         \
   int CAT(registered_,FUNCTION) = register_model_functor(Accessors::map_bools, \
    Accessors::iCanDo, Accessors::provides<Gambit::Tags::CAPABILITY>,           \
    STRINGIFY(CAPABILITY), STRINGIFY(FUNCTION));                                \
 
 /// Supplementary version of MAKE_FUNCTOR modded for primary_parameters functors.
 #define MAKE_PRIMARY_MODEL_FUNCTOR_SUPP(FUNCTION)                              \
-                                                                               \
   /* Register the functor with the Core. */                                    \
-  template <>                                                                  \
-  void rt_register_function_supp<Tags::FUNCTION> ()                            \
-  {                                                                            \
-    Core().registerPrimaryModelFunctor(Functown::FUNCTION);                    \
-  }                                                                            \
-                                                                               \
-  /* Create the function initialisation object */                              \
-  namespace Ini                                                                \
-  {                                                                            \
-    ini_code CAT(FUNCTION,_supp)                                               \
-     (LOCAL_INFO, &rt_register_function_supp<Tags::FUNCTION>);                 \
-  }                                                                            \
+  int CAT(coreg_,FUNCTION) = register_model_functor_core(Functown::FUNCTION);  \
 
 /// @}
 

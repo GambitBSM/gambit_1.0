@@ -20,8 +20,13 @@
 #ifndef __ini_functions_hpp__
 #define __ini_functions_hpp__
 
+#include <vector>
+
 #include "gambit/Utils/util_types.hpp"
 #include "gambit/Utils/functors.hpp"
+
+/// Define the separator to use instead of "::" when macros get gnarly.
+#define NS_SEP ___ns_separator_that_will_never_appear_naturally___
 
 namespace Gambit
 {
@@ -29,6 +34,9 @@ namespace Gambit
   /// Catch initialisation exceptions
   void ini_catch(std::exception&);
     
+  /// Get back the "::" from things that use NS_SEP instead
+  str fixns(str);
+
   /// Helper function for passing default backend information at initialisation
   int pass_default_to_backendinfo(str, str);
 
@@ -46,6 +54,27 @@ namespace Gambit
 
   /// Register a model functor.
   int register_model_functor(std::map<str, bool(*)()>, std::map<str, str>, bool(*)(), str, str);
+
+  /// Call push back on a vector of strings 
+  int vectorstr_push_back(std::vector<str>&, str);
+
+  /// Notify a backend functor of which models it can be used with
+  int set_allowed_models(functor&, std::vector<str>&, str);
+
+  /// Load a backend library
+  int loadLibrary(str, str, str, void*&, bool&, bool);
+  
+  /// Register a backend with the logging system
+  int register_backend_with_log(str);
+
+  /// Register a bossed type with the rollcall system
+  int register_type(str bever, str classname);
+  
+  /// Disable a backend functor if its library is missing or the symbol cannot be found. 
+  int set_backend_functor_status(bool, functor&, str);
+
+  /// Get the status of a factory pointer to a BOSSed type's wrapper constructor.        
+  int get_ctor_status(str, str, str, str, str, str, bool);
 
 }
 

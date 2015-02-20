@@ -58,6 +58,7 @@ namespace Gambit
           }
         }
       #endif
+      if (s == "") return vec;
       // Split up the list of versions by the delimiters
       boost::split(vec, s, boost::is_any_of(delim), boost::token_compress_on);
       return vec;

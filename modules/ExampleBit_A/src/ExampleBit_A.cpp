@@ -75,8 +75,9 @@ namespace Gambit
     void nevents_int(int &result)
     {
       result = (int) (*Pipes::nevents_int::Dep::nevents);
-      // Randomly raise some ficticious alarms about this point in 10% of cases.
-      if (Random::draw() < 0.1)
+      // Randomly raise some ficticious alarms about this point, with probability x.
+      double x = 0.0;
+      if (Random::draw() < x)
       {
         //Example of how to raise an error from a module function.
         ExampleBit_A_error().raise(LOCAL_INFO,"Damn, this integer event count is bad.");
@@ -255,7 +256,7 @@ namespace Gambit
       {
         cout<<"  Running exampleEventGen in iteration "<<*Loop::iteration<<endl;
       }
-      if (result > 2.0) invalid_point().raise("This point is annoying.");
+      //if (result > 2.0) invalid_point().raise("This point is annoying.");
     }
 
     /// Rounds an event count to the nearest integer

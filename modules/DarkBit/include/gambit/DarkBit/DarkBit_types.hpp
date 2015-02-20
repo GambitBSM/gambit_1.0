@@ -116,7 +116,7 @@ namespace Gambit
         // Last element will be used as upper bin edge for upper bin (Vector with N elements will give N-1 bins).
         SimpleHist(std::vector<double> binLower) : binLower(binLower)
         {
-            nBins=int(binLower.size());
+            nBins=int(binLower.size())-1;  // FIXME: Lars, I added "-1", is this correct?
             binVals=std::vector<double>(nBins,0.0);
             wtSq   =std::vector<double>(nBins,0.0);
         }
@@ -250,8 +250,9 @@ namespace Gambit
         }
         void getEdges(double& lower, double& upper) const
         {
-            lower=binVals[0];
-            upper=binVals[nBins];
+            // FIXME: Lars, I replaced binVales --> binLower, correct?
+            lower=binLower[0];
+            upper=binLower[nBins];
         }
         std::vector<double> binLower;
         std::vector<double> binVals;
