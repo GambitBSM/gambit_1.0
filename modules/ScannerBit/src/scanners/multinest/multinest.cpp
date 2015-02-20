@@ -56,7 +56,7 @@ scanner_plugin(MultiNest, version(0, 0, 0, bens_version))
    {
       //std::string output_file = get_inifile_value<std::string>("output_file", "default_output");
 
-      // Have to discuss with Greg the best thing to do here.
+      // Retrieve the external likelihood calculator
       scanPtr LogLike = get_purpose(get_inifile_value<std::string>("like"));
 
       int ma = get_dimension();
@@ -106,9 +106,9 @@ scanner_plugin(MultiNest, version(0, 0, 0, bens_version))
       stats_options.setValue("global",1); // Option to set this stream to "global" mode, i.e. it does not operated on a point-by-point basis. Therefore no thread or point number is needed when printing.
 
       // Initialise auxiliary print streams
-      ////// LogLike->printer.new_stream("txt",txt_options);
-      ////// LogLike->printer.new_stream("stats",stats_options);            
-      ////// LogLike->printer.new_stream("live",live_options);
+      get_printer().new_stream("txt",txt_options);
+      get_printer().new_stream("stats",stats_options);            
+      get_printer().new_stream("live",live_options);
 
       // Create the object which interfaces to the MultiNest LogLike callback function
       // Need to give it the loglikelihood function to evaluate, and the function to perform the prior transformation

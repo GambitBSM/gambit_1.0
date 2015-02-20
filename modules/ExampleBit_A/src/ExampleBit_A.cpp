@@ -170,8 +170,8 @@ namespace Gambit
       // Say we have a sample of 20 drawn from a normal distribution with
       // parameters muTrue and sigmaTrue. Let the sample mean and standard
       // deviation be as follows (this is our data):
-      double N = 20;
-      double samples [] = {
+      static const int N = 20;
+      static const double samples [] = {
         21.32034213,  20.39713359,  19.27957134,  19.81839231,
         20.89474358,  20.11058756,  22.38214557,  21.41479798,
         23.49896999,  17.55991187,  24.9921142 ,  23.90166585,
@@ -182,16 +182,21 @@ namespace Gambit
       double loglTotal = 0.;
 
       //logger() << "Is CMSSM_demo being scanned? " << ModelInUse("CMSSM_demo") << endl;
-      logger() << "Is NormalDist being scanned? " << ModelInUse("NormalDist") << endl;;
+      //logger() << "Is NormalDist being scanned? " << ModelInUse("NormalDist") << endl;;
       //logger() << "Is SingletDM being scanned? "  << ModelInUse("SingletDM");;
-      logger() << info << EOM;
+      //logger() << info << EOM;
 
       // The loglikelihood value for the hypothesised parameters is then:
-      for (int i=0; i <= N; ++i)
-      {
-        if (ModelInUse("NormalDist")) loglTotal += logf(samples[i], *Param["mu"], *Param["sigma"]);
+      if (ModelInUse("NormalDist")) {
+        for (int i=0; i <= N; ++i)
+        {
+          loglTotal += logf(samples[i], *Param["mu"], *Param["sigma"]);
+        }
       }
-
+      else
+      {
+         ExampleBit_A_error().raise(LOCAL_INFO,"Whoops, you are not scanning the model NormalDist! There is probably a bug ExampleBit_A_rollcall.hpp; this module function should have ALLOW_MODELS(NormalDist) defined.");
+      }
       result = loglTotal;
     }
 
