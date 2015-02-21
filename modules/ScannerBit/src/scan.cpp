@@ -34,7 +34,7 @@ namespace Gambit
         namespace Scanner
         {
 
-                inline YAML::Node combineNodes(const std::map<std::string, YAML::Node> &nodesMap, const YAML::Node &node)
+                YAML::Node combineNodes(const std::map<std::string, YAML::Node> &nodesMap, const YAML::Node &node)
                 {
                         std::stringstream ss;
                         
@@ -69,7 +69,7 @@ namespace Gambit
                         return YAML::Load(ss.str());
                 }
                 
-                inline std::vector<std::string> get_infile_values(const YAML::Node &node)
+                std::vector<std::string> get_infile_values(const YAML::Node &node)
                 {
                         if (node.IsSequence())
                         {
@@ -100,29 +100,29 @@ namespace Gambit
                         }
                 }
         
-                Scan_Manager::Scan_Manager (const Factory_Base &factoryIn, const Options &options_in, const Priors::CompositePrior &priorIn, 
+                Scan_Manager::Scan_Manager (const Factory_Base &factoryIn, const Options options_in, const Priors::CompositePrior &priorIn, 
                  printer_interface *printerInterface) 
-                : options(&options_in), printerInterface(printerInterface)
+                : options(options_in), printerInterface(printerInterface)
                 {
-                        if (!options->hasKey("plugins"))
+                        if (!options.hasKey("plugins"))
                         {
                                 scan_err << "There is no \"plugins\" subsection in the scanner inifile section." << scan_end;
                                 return;
                         }
                         
-                        Plugins::plugin_info.iniFile(options->getOptions("plugins"), *printerInterface);
+                        Plugins::plugin_info.iniFile(options.getOptions("plugins"), *printerInterface);
                         
-                        if (options->hasKey("use_objective_plugins"))
+                        if (options.hasKey("use_objective_plugins"))
                         {
                                 std::map< std::string, std::vector<std::string> > names;
                                 std::map< std::string, YAML::Node > nodes;
-                                std::vector <std::string> plugs = get_infile_values(options->getNode("use_objective_plugins"));
+                                std::vector <std::string> plugs = get_infile_values(options.getNode("use_objective_plugins"));
                                         
                                 for (auto it = plugs.begin(), end = plugs.end(); it != end; it++)
                                 {
-                                        if (options->hasKey("plugins", *it, "purpose"))
+                                        if (options.hasKey("plugins", *it, "purpose"))
                                         {
-                                                std::vector <std::string> purposes = get_infile_values(options->getNode("plugins", *it, "purpose"));
+                                                std::vector <std::string> purposes = get_infile_values(options.getNode("plugins", *it, "purpose"));
                                                 
                                                 for (auto it2 = purposes.begin(), end = purposes.end(); it2 != end; it2++)
                                                         names[*it2].push_back(*it);
@@ -132,15 +132,15 @@ namespace Gambit
                                                 scan_err << "Must specify purpose under the plugin tag \"" << *it << "\"." << scan_end;
                                         }
                                         
-                                        if (options->hasKey("plugins", *it, "parameters"))
+                                        if (options.hasKey("plugins", *it, "parameters"))
                                         {
-                                                if (options->hasKey("parameters") && options->hasKey("parameters", *it))
+                                                if (options.hasKey("parameters") && options.hasKey("parameters", *it))
                                                 {
                                                         scan_err << "Plugin \"" << *it << "\"'s parameters are defined in "
                                                                 << "both the \"parameters\" section and the \"plugins\" "
                                                                 << "section in the inifile." << scan_end;
                                                 }
-                                                nodes[*it] = options->getNode("plugins", *it, "parameters");
+                                                nodes[*it] = options.getNode("plugins", *it, "parameters");
                                         }
                                 }
                                 
@@ -149,15 +149,15 @@ namespace Gambit
                                         YAML::Node paramNode;
                                         YAML::Node priorNode;
                                         
-                                        if (options->hasKey("parameters"))
+                                        if (options.hasKey("parameters"))
                                         {
                                                 if (nodes.size() > 0)
                                                 {
-                                                        paramNode = combineNodes(nodes, options->getNode("parameters"));
+                                                        paramNode = combineNodes(nodes, options.getNode("parameters"));
                                                 }
                                                 else
                                                 {
-                                                        paramNode = options->getNode("parameters");
+                                                        paramNode = options.getNode("parameters");
                                                 }
                                         }
                                         else
@@ -168,9 +168,9 @@ namespace Gambit
                                                 }
                                         }
                                         
-                                        if (options->hasKey("priors"))
+                                        if (options.hasKey("priors"))
                                         {
-                                                priorNode = options->getNode("priors");
+                                                priorNode = options.getNode("priors");
                                         }
                                         
                                         prior = new Gambit::Priors::CompositePrior(paramNode, priorNode);
@@ -187,17 +187,17 @@ namespace Gambit
                                 factory = &factoryIn;
                                 prior = &priorIn;
                         }
+
                 }
                 
                 int Scan_Manager::Run()
                 {
                         Plugins::Plugin_Details plugin;
                         std::string pluginName;
-                        cout << "FIXME YAML bug is generated here:" << endl;
-                        if (options->hasKey("use_scanner_plugin"))
+                        if (options.hasKey("use_scanner_plugin"))
                         {
                                 cout << "...or not." << endl;
-                                pluginName = options->getValue<std::string>("use_scanner_plugin");
+                                pluginName = options.getValue<std::string>("use_scanner_plugin");
                         }
                         else
                         {
