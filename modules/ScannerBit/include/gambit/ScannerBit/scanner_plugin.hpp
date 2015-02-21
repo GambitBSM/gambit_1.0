@@ -27,8 +27,6 @@
 #include "gambit/ScannerBit/plugin_macros.hpp"
 #include "gambit/ScannerBit/factory_defs.hpp"
 
-#include "yaml-cpp/yaml.h"
-
 ///\name Scanner Plugin Macros 
 ///Macros used by the scanner plugin
 ///@{
