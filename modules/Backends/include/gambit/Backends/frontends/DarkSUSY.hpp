@@ -163,24 +163,40 @@ BE_INI_FUNCTION
         dsrdinit();
         scan_level = false;
 
-        // Setting nuclear spin/quark content to micromegas values:
-        ddcom->deld = -0.427;
-        ddcom->delu = 0.842;
-        ddcom->dels = -0.085;
+        // Setting nuclear spin/quark content based on what is in file:
 
-        ddcom->ftp(7) = 0.0153;
-        ddcom->ftp(8) = 0.0191;
-        ddcom->ftp(9) = 0.0682;
-        ddcom->ftp(10) = 0.0447;
-        ddcom->ftp(11) = 0.0682;
-        ddcom->ftp(12) = 0.0682;
+        double fTdp = 0.0191;
+        double fTup = 0.0153;
+        double fTsp = 0.0447;
 
-        ddcom->ftn(7) = 0.011;
-        ddcom->ftn(8) = 0.0273;
-        ddcom->ftn(9) = 0.0679;
-        ddcom->ftn(10) = 0.0447;
-        ddcom->ftn(11) = 0.0679;
-        ddcom->ftn(12) = 0.0679;
+        double fTdn = 0.0273;
+        double fTun = 0.011;
+        double fTsn = 0.0447;
+
+        double fTGp = 1.-fTdp-fTup-fTsp;
+        double fTGn = 1.-fTdn-fTun-fTsn;
+
+        double deld = -0.427;
+        double delu = 0.842;
+        double dels = -0.085;
+
+        ddcom->ftp(7)  = fTup;
+        ddcom->ftp(8)  = fTdp;
+        ddcom->ftp(9)  = fTGp;
+        ddcom->ftp(10) = fTsp;
+        ddcom->ftp(11) = fTGp;
+        ddcom->ftp(12) = fTGp;
+
+        ddcom->ftn(7)  = fTun;
+        ddcom->ftn(8)  = fTdn;
+        ddcom->ftn(9)  = fTGn;
+        ddcom->ftn(10) = fTsn;
+        ddcom->ftn(11) = fTGn;
+        ddcom->ftn(12) = fTGn;
+
+        ddcom->deld = deld;
+        ddcom->delu = delu;
+        ddcom->dels = dels;
 
         cout << "dddn: " << runOptions->getValue<int>("dddn") << endl;
         cout << "ddpole: " << runOptions->getValue<int>("ddpole") << endl;
@@ -329,7 +345,6 @@ DONE
 //     } /* end namespace BACKENDNAME_SAFE_VERSION */                                          
 //   } /* end namespace Backends */                                                
 // } /* end namespace Gambit */                                                   
-
 
 /* Now register any convenience functions and wrap them in functors. 
  *
