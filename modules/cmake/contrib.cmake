@@ -2,7 +2,7 @@
 #************************************************
 # \file                                          
 #                                                
-#  Cmake configuration script for contributed
+#  CMake configuration script for contributed
 #  packages in GAMBIT.
 #    
 #************************************************
@@ -39,31 +39,9 @@ add_gambit_library(mkpath OPTION OBJECT
 set(GAMBIT_COMMON_OBJECTS "${GAMBIT_COMMON_OBJECTS}" $<TARGET_OBJECTS:mkpath>)
 
 #contrib/yaml-cpp-0.5.1
-set(yaml_CXXFLAGS "${CMAKE_CXX_FLAGS}")
-if (NOT Boost_INCLUDE_DIR STREQUAL "") 
-  set(yaml_CXXFLAGS "${yaml_CXXFLAGS} -I${Boost_INCLUDE_DIR}")
-endif()
-if (NOT GSL_INCLUDE_DIRS STREQUAL "")
-  set(yaml_CXXFLAGS "${yaml_CXXFLAGS} -I${GSL_INCLUDE_DIRS}")
-endif()
-ExternalProject_Add(yaml-cpp
-  SOURCE_DIR ${PROJECT_SOURCE_DIR}/contrib/yaml-cpp-0.5.1
-  BUILD_IN_SOURCE 1
-  CONFIGURE_COMMAND ""
-  BUILD_COMMAND $(MAKE) YAML_CC=${CMAKE_CXX_COMPILER} CFLAGS=${yaml_CXXFLAGS}
-  INSTALL_COMMAND ""
-  INSTALL_DIR ${CMAKE_BINARY_DIR}/install
-  CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/install
-)
-add_custom_target(yaml COMMAND $(MAKE) yaml-cpp)
-set(yaml_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/contrib/yaml-cpp-0.5.1/include")
-set(yaml_LIBRARIES "yaml-cpp")
-set(yaml_LDFLAGS "-L${PROJECT_SOURCE_DIR}/contrib/yaml-cpp-0.5.1 -l${yaml_LIBRARIES}")
+set(yaml_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/contrib/yaml-cpp-0.5.1/src ${PROJECT_SOURCE_DIR}/contrib/yaml-cpp-0.5.1/include)
 include_directories("${yaml_INCLUDE_DIR}")
-set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/contrib/yaml-cpp-0.5.1/libyaml-cpp.a")
-file(GLOB yaml_o ${PROJECT_SOURCE_DIR}/contrib/yaml-cpp-0.5.1/build/*.o)
-file(GLOB yaml_contrib_o ${PROJECT_SOURCE_DIR}/contrib/yaml-cpp-0.5.1/build/contrib/*.o)
-set(clean_files ${clean_files} "${yaml_o}" "${yaml_contrib_o}")
+add_subdirectory(${PROJECT_SOURCE_DIR}/contrib/yaml-cpp-0.5.1 EXCLUDE_FROM_ALL)
 
 #contrib/Delphes-3.1.2; include only if ColliderBit is in use
 if(";${GAMBIT_BITS};" MATCHES ";ColliderBit;")

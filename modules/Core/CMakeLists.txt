@@ -26,4 +26,3 @@ set(header_files include/gambit/Core/container_factory.hpp
 
 add_gambit_library(Core OPTION OBJECT SOURCES ${source_files} HEADERS ${header_files})
 add_dependencies(Core module_harvest)
-

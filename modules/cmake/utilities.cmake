@@ -12,6 +12,7 @@
 #  \author Antje Putze
 #          (antje.putze@lapth.cnrs.fr)              
 #  \date 2014 Sep, Oct, Nov
+#        2015 Feb
 #
 #  \author Pat Scott
 #          (p.scott@imperial.ac.uk)              
@@ -115,9 +116,12 @@ function(add_gambit_executable executablename)
       endforeach()
     endif()
   endif()
-  set(LIBRARIES ${LIBRARIES} ${yaml_LDFLAGS})
+
   #For checking if all the needed libs are present.  Don't add them manually with -lsomelib!!
-  #message(STATUS ${LIBRARIES})
+  if(VERBOSE)
+    message(STATUS ${LIBRARIES})
+  endif()
+
   target_link_libraries(${executablename} ${LIBRARIES})
 endfunction()
 

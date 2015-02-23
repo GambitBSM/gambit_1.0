@@ -2,7 +2,7 @@
 #************************************************
 # \file
 #
-#  Master cmake configuration script for GAMBIT.
+#  Master CMake configuration script for GAMBIT.
 #
 #  CMakeLists files in this project can refer to
 #  the root source directory of the project as
@@ -13,10 +13,10 @@
 #
 #  Authors (add name and date if you modify):
 #
-#  \author Antje Putzerator
+#  \author Antje Putze
 #          (antje.putze@lapth.cnrs.fr)
 #  \date 2014 Sep, Oct, Nov
-#        2015 Jan
+#        2015 Jan, Feb
 #
 #  \author Pat Scott
 #          (p.scott@imperial.ac.uk)
