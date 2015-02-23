@@ -28,7 +28,6 @@
 #define __ColliderBit_types_hpp__
 
 #include <vector>
-#include <memory>
 
 #include "gambit/ColliderBit/Collider.hpp"
 #include "gambit/ColliderBit/Detector.hpp"
@@ -36,38 +35,12 @@
 
 #include "HEPUtils/Event.h"
 
-using std::vector;
-using std::shared_ptr;
-
 namespace Gambit {
   
   namespace ColliderBit {
 
-    /// @brief What is this ColliderLogLikes struct mentioned in the rollcall??
-    typedef vector<vector<SignalRegionData>> ColliderLogLikes;
-
-    /// @brief Threadsafe container for shared pointers
-    template <typename T>
-    class SharedPointerVector : public vector<shared_ptr<T>> {
-      /// @note Not as thread-safe as it looks, since it uses shared_ptr.
-      ///     Each thread must have a SharedPointerVector pointing to unique Ts.
-    public:
-      void push_back(shared_ptr<T> entry) {
-        #pragma omp critical (vectorUpdate)
-        { vector<shared_ptr<T>>::push_back(entry); }
-      }
-      void inline push_back(T& entry) { push_back(shared_ptr<T>(&entry)); }
-      void inline push_back(T* entry) { push_back(shared_ptr<T>(entry)); }
-
-      void pop_back() {
-        #pragma omp critical (vectorUpdate)
-        { vector<shared_ptr<T>>::pop_back(); }
-      }
-      void inline clear() { while(vector<shared_ptr<T>>::size()) pop_back(); }
-    };
-
-    /// @brief A list of analyses to be run on some events
-    typedef SharedPointerVector<Analysis> AnalysisPointerVector;
+    /// @brief Container for log likelihoods from multiple Analyses and SRs
+    typedef std::vector<std::vector<SignalRegionData>> ColliderLogLikes;
   }
 }
 

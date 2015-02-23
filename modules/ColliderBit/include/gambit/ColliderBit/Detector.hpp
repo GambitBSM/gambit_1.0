@@ -79,17 +79,19 @@ namespace Gambit {
       /// @name Event conversion functions.
       //@{
       virtual void convertInput(const HEPUtils::Event& event) {
+        /// Memory clean-up of any previous event.
+        delete _processedEvent;
         /// Make a local deep copy of the input event to be modified by processEvent.
-        _processedEvent.reset(event.clone());
+        _processedEvent = event.clone();
       }
 
       virtual void convertOutput(HEPUtils::Event& event) {
         /// @note *Shallow* copy into passed Event (reference is not reset)
-        event = *_processedEvent; //->clone(); //< This looked like a memory leak
+        event = *_processedEvent;
       }
       //@}
 
-      std::shared_ptr<HEPUtils::Event> _processedEvent;
+      HEPUtils::Event* _processedEvent;
     };
 
 
