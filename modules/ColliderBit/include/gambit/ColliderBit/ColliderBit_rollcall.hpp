@@ -27,42 +27,12 @@
 #define MODULE ColliderBit
 START_MODULE
 
-  /// Capability that holds list of analyses to run
-  /// Eventually needs to be configurable from yaml file
-  #define CAPABILITY ListOfAnalyses
-  START_CAPABILITY
-    #define FUNCTION specifyAnalysisPointerVector
-    START_FUNCTION(AnalysisPointerVector)
-    #undef FUNCTION
-  #undef CAPABILITY
-
-
-  /// Detector sim capabilities
-  #define CAPABILITY DetectorSim
-  START_CAPABILITY
-    #define FUNCTION getDelphes
-    START_FUNCTION(shared_ptr<Gambit::ColliderBit::DelphesBase>)
-    NEEDS_CLASSES_FROM(Pythia, default)
-    #undef FUNCTION
-  #undef CAPABILITY
-
-  #define CAPABILITY SimpleSmearingSim
-  START_CAPABILITY
-    #define FUNCTION getBuckFast
-    START_FUNCTION(shared_ptr<Gambit::ColliderBit::BuckFastBase>)
-    #undef FUNCTION
-  #undef CAPABILITY
-
-
   /// Controls looping of Collider simulations
   #define CAPABILITY ColliderOperator
   START_CAPABILITY
     #define FUNCTION operatePythia
     START_FUNCTION(void, CAN_MANAGE_LOOPS)
     NEEDS_CLASSES_FROM(Pythia, default)
-    DEPENDENCY(DetectorSim, shared_ptr<Gambit::ColliderBit::DelphesBase>)
-    DEPENDENCY(SimpleSmearingSim, shared_ptr<Gambit::ColliderBit::BuckFastBase>)
-    DEPENDENCY(ListOfAnalyses, AnalysisPointerVector)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -71,9 +41,39 @@ START_MODULE
   #define CAPABILITY HardScatteringSim
   START_CAPABILITY
     #define FUNCTION getPythia
-    START_FUNCTION(shared_ptr<Gambit::ColliderBit::PythiaBase>)
+    START_FUNCTION(Gambit::ColliderBit::PythiaBase*)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
     NEEDS_CLASSES_FROM(Pythia, default)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+
+  /// Detector sim capabilities
+  #define CAPABILITY DetectorSim
+  START_CAPABILITY
+    #define FUNCTION getDelphes
+    START_FUNCTION(Gambit::ColliderBit::DelphesBase*)
+    NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
+    NEEDS_CLASSES_FROM(Pythia, default)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY SimpleSmearingSim
+  START_CAPABILITY
+    #define FUNCTION getBuckFast
+    START_FUNCTION(Gambit::ColliderBit::BuckFastBase*)
+    NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
+    #undef FUNCTION
+  #undef CAPABILITY
+
+
+  /// Capability that holds list of analyses to run
+  /// Eventually needs to be configurable from yaml file
+  #define CAPABILITY ListOfAnalyses
+  START_CAPABILITY
+    #define FUNCTION specifyAnalysisPointerVector
+    START_FUNCTION(std::vector<Gambit::ColliderBit::Analysis*>)
+    NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -85,7 +85,7 @@ START_MODULE
     START_FUNCTION(Pythia8::Event)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
     NEEDS_CLASSES_FROM(Pythia, default)
-    DEPENDENCY(HardScatteringSim, shared_ptr<Gambit::ColliderBit::PythiaBase>)
+    DEPENDENCY(HardScatteringSim, Gambit::ColliderBit::PythiaBase*)
     #undef FUNCTION
 
     /// Event converters to the standard Gambit collider event format
@@ -93,7 +93,7 @@ START_MODULE
     START_FUNCTION(HEPUtils::Event)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
     NEEDS_CLASSES_FROM(Pythia, default)
-    DEPENDENCY(HardScatteringSim, shared_ptr<Gambit::ColliderBit::PythiaBase>)
+    DEPENDENCY(HardScatteringSim, Gambit::ColliderBit::PythiaBase*)
     #undef FUNCTION
 
   /// For now, let's stick to what we already have running.
@@ -135,14 +135,14 @@ START_MODULE
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
     NEEDS_CLASSES_FROM(Pythia, default)
     DEPENDENCY(HardScatteringEvent, Pythia8::Event)
-    DEPENDENCY(DetectorSim, shared_ptr<Gambit::ColliderBit::DelphesBase>)
+    DEPENDENCY(DetectorSim, Gambit::ColliderBit::DelphesBase*)
     #undef FUNCTION
 
     #define FUNCTION reconstructBuckFastEvent
     START_FUNCTION(HEPUtils::Event)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
     DEPENDENCY(HardScatteringEvent, HEPUtils::Event)
-    DEPENDENCY(SimpleSmearingSim, shared_ptr<Gambit::ColliderBit::BuckFastBase>)
+    DEPENDENCY(SimpleSmearingSim, Gambit::ColliderBit::BuckFastBase*)
     #undef FUNCTION
   /// For now, let's stick to what we already have running.
   /// \todo Replace BLAH_* with the proper types.  Put those types in the proper place for typedefs.
@@ -181,7 +181,7 @@ START_MODULE
     ALLOW_MODELS(NormalDist)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
     DEPENDENCY(ReconstructedEvent, HEPUtils::Event)
-    DEPENDENCY(ListOfAnalyses, AnalysisPointerVector)
+    DEPENDENCY(ListOfAnalyses, std::vector<Gambit::ColliderBit::Analysis*>)
     //BACKEND_REQ_FROM_GROUP(lnlike_marg_poisson, lnlike_marg_poisson_lognormal_error, (), double, (int&, double&, double&, double&) )
     //BACKEND_REQ_FROM_GROUP(lnlike_marg_poisson, lnlike_marg_poisson_gaussian_error, (), double, (int&, double&, double&, double&) )
     //BACKEND_GROUP(lnlike_marg_poisson)
