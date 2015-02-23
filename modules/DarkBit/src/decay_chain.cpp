@@ -18,9 +18,15 @@
 ///
 ///  *********************************************
 
-#include <iostream>
+#include "gambit/Utils/gambit_module_headers.hpp"
+#include "gambit/DarkBit/DarkBit_rollcall.hpp"
 #include "gambit/DarkBit/DarkBit_types.hpp"
 #include "gambit/Utils/funktions.hpp"
+#include <algorithm>
+#include <iostream> 
+#include <math.h>
+#include <set>
+#include <sstream>
 
 namespace Gambit 
 {
@@ -29,6 +35,11 @@ namespace Gambit
     namespace DecayChain
     {
         using namespace Gambit::BF;
+        using std::ostringstream;
+        using std::set;        
+        using std::cout;
+        using std::endl;
+        using std::pair;
         
         //  *********************************************
         //  3-vector related
@@ -325,7 +336,7 @@ namespace Gambit
         {
             if(!randInit) 
             {
-                cout << "Warning: Generating rand table at runtime. This should have happened during initialization, and might not be threadsafe here." << endl;
+                DarkBit_warning().raise(LOCAL_INFO, "Generating rand table at runtime. This should have happened during initialization, and might not be threadsafe here.");
                 generateRandTable();
             }            
             vector<double>::const_iterator pos = upper_bound(randLims.begin(),randLims.end(),pick);   
@@ -391,7 +402,7 @@ namespace Gambit
         {   
             if(in->nFinalStates > 2) 
             {
-                cout << "Warning: Trying to add decay with >2 final states to DecayTableEntry. Channel added as disabled." << endl;
+                DarkBit_warning().raise(LOCAL_INFO, "Trying to add decay with >2 final states to DecayTableEntry. Channel added as disabled.");
                 addDisabled(in);
                 return;
             }
@@ -409,7 +420,7 @@ namespace Gambit
             // N>2 body decays currently not possible.
             if(in->nFinalStates > 2) 
             {
-                cout << "Warning: Trying to enable decay with >2 final states in decay chain. Request ignored." << endl;
+                DarkBit_warning().raise(LOCAL_INFO, "Trying to enable decay with >2 final states in decay chain. Request ignored.");
                 return false;
             }
             bool found = false;
@@ -508,7 +519,6 @@ namespace Gambit
                 entry.forceTotalWidth(true,it->genRateTotal->eval());
                 addEntry(pID,entry);
                 std::cout << "Add entry for: " << table.begin()->first << std::endl;
-                std::cout << table.at("phi").m << std::endl;
             }
             // Flag channels where all final final states are stable as endpoints.
             // Loop over all particles
@@ -558,8 +568,30 @@ namespace Gambit
         }
         bool DecayTable::randomDecay(string pID, const TH_Channel* &decay) const
         {
-            return (table.at(pID)).randomDecay(decay);
+            bool ans=false;
+            try
+            {
+                ans=(table.at(pID)).randomDecay(decay);
+            }
+            catch (std::out_of_range& e)
+            {
+                DarkBit_error().raise(LOCAL_INFO, "No partcile "+pID+" in decay table.");
+            }
+            return ans;
         }  
+        const DecayTableEntry& DecayTable::operator[](string i) const
+        {
+            const DecayTableEntry *ent = NULL;
+            try
+            {
+                ent= &table.at(i);
+            }
+            catch (std::out_of_range& e)
+            {
+                DarkBit_error().raise(LOCAL_INFO, "No partcile "+i+" in decay table.");
+            }
+            return *ent;
+        }
         double DecayTable::getWidth(const TH_Channel *ch)
         {
             return ch->genRate->eval();
@@ -618,7 +650,7 @@ namespace Gambit
         {
             if(nChildren!=0)
             {
-                cout << "Warning: Overwriting existing decay in decay chain." << endl;
+                DarkBit_warning().raise(LOCAL_INFO, "Overwriting existing decay in decay chain.");
                 cutChain();
             }
             // Stable particles flagged as endpoints
@@ -634,7 +666,7 @@ namespace Gambit
                 bool canDecay = decayTable->randomDecay(pID, chn); 
                 if(!canDecay)
                 {
-                    cout << "Warning: Unable to pick allowed decay. Keeping particle stable." << endl;
+                    DarkBit_warning().raise(LOCAL_INFO, "Unable to pick allowed decay. Keeping particle stable.");
                     abortedDecay = true;
                     return;
                 }
@@ -644,15 +676,17 @@ namespace Gambit
                 {
                     if(failed ==0)
                     {
-                        cout << "Warning: Invalid decay channel in decay chain. " <<
-                                "N!=2 body decays are currently not supported." << endl
-                             << "Trying to pick new decay channel." << endl;
+                        string wrn;
+                        wrn = "Invalid decay channel in decay chain.\n";
+                        wrn+= "N!=2 body decays are currently not supported.\n";
+                        wrn+= "Trying to pick new decay channel.";
+                        DarkBit_warning().raise(LOCAL_INFO, wrn);
                     }
                     canDecay = decayTable->randomDecay(pID, chn);
                     failed++;
                     if(failed >= 100 or !canDecay)
                     {
-                        cout << "Warning: Unable to pick allowed decay. Keeping particle stable." << endl;
+                        DarkBit_warning().raise(LOCAL_INFO, "Unable to pick allowed decay. Keeping particle stable.");
                         abortedDecay = true;
                         return;
                     }
@@ -663,9 +697,10 @@ namespace Gambit
                 double m2 = (*decayTable)[(chn->finalStateIDs)[1]].m; 
                 if(m1+m2>m)
                 {
-                    cout << "Error: Kinematically impossible decay in decay chain. Please check your process catalog." << endl;
-                    cout << "Relevant particle masses: " << m1 << " " << m2 << " " << m << endl;
-                    exit(1);
+                    ostringstream err;
+                    err <<  "Kinematically impossible decay in decay chain. Please check your process catalog." << endl;
+                    err << "Relevant particle masses: " << m1 << " " << m2 << " " << m;
+                    DarkBit_error().raise(LOCAL_INFO, err.str());
                 }           
                 const double &Etot = m;
                 double E1 = 0.5*(Etot*Etot+m1*m1-m2*m2)/Etot;
@@ -767,8 +802,7 @@ namespace Gambit
                 return children[i];
             else
             {
-                cout << "Error: Trying to access non-existing decay chain entry." << endl;
-                exit(1);
+                DarkBit_error().raise(LOCAL_INFO, "Trying to access non-existing decay chain entry.");
                 return this;
             }            
         }        
