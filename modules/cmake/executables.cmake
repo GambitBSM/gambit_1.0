@@ -2,7 +2,7 @@
 #************************************************
 # \file                                          
 #                                                
-#  Cmake configuration script for final executables
+#  CMake configuration script for final executables
 #  of GAMBIT.
 #    
 #************************************************

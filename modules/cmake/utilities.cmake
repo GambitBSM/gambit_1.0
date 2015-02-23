@@ -2,7 +2,7 @@
 #************************************************
 # \file                                          
 #                                                
-#  Helpful cmake utility macros and functions for
+#  Helpful CMake utility macros and functions for
 #  GAMBIT.  
 #    
 #************************************************

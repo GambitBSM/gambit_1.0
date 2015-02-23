@@ -12,7 +12,7 @@
 #
 #  Authors (add name and date if you modify):
 #
-#  \author Antje Putzer
+#  \author Antje Putze
 #          (antje.putze@lapth.cnrs.fr)
 #  \date 2015 Feb
 #
@@ -36,9 +36,9 @@ add_library(yaml-cpp STATIC
 )
 
 if(${CMAKE_VERSION} VERSION_GREATER 2.8.10)
-target_include_directories(yaml-cpp PUBLIC ${PROJECT_SOURCE_DIR}/contrib/yaml-cpp-0.5.1/src ${PROJECT_SOURCE_DIR}/contrib/yaml-cpp-0.5.1/include)
+  target_include_directories(yaml-cpp PUBLIC ${PROJECT_SOURCE_DIR}/contrib/yaml-cpp-0.5.1/src ${PROJECT_SOURCE_DIR}/contrib/yaml-cpp-0.5.1/include)
 else()
-include_directories(${PROJECT_SOURCE_DIR}/contrib/yaml-cpp-0.5.1/src ${PROJECT_SOURCE_DIR}/contrib/yaml-cpp-0.5.1/include)
+  include_directories(${PROJECT_SOURCE_DIR}/contrib/yaml-cpp-0.5.1/src ${PROJECT_SOURCE_DIR}/contrib/yaml-cpp-0.5.1/include)
 endif()
 
 
