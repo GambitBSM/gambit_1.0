@@ -63,7 +63,7 @@ if(";${GAMBIT_BITS};" MATCHES ";ColliderBit;")
   set(CMAKE_INSTALL_RPATH "${PROJECT_SOURCE_DIR}/contrib/Delphes-3.1.2")
   set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/contrib/Delphes-3.1.2/libDelphes*" "${PROJECT_SOURCE_DIR}/contrib/Delphes-3.1.2/Makefile*")
   set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/contrib/Delphes-3.1.2/tmp" "${PROJECT_SOURCE_DIR}/contrib/Delphes-3.1.2/core")
-  message("-- Generating Delphes ROOT dictionaries")
+  message("${Magenta}-- Generating Delphes ROOT dictionaries...${ColourReset}")
   execute_process(COMMAND ./make_dicts.sh
                   WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/ColliderBit/src/delphes
                   RESULT_VARIABLE result
@@ -71,7 +71,7 @@ if(";${GAMBIT_BITS};" MATCHES ";ColliderBit;")
   if (NOT "${result}" STREQUAL "0")
     message(FATAL_ERROR "Could not automatically generate Delphes ROOT dictionaries.  Blame ROOT.")
   endif()
-  message("-- Generating Delphes ROOT dictionaries - done.")
+  message("${Magenta}-- Generating Delphes ROOT dictionaries - done.${ColourReset}")
 else()
   set (EXCLUDE_DELPHES TRUE)
 endif()
@@ -90,7 +90,7 @@ if(";${GAMBIT_BITS};" MATCHES ";SpecBit;")
   elseif(CMAKE_Fortran_COMPILER MATCHES "ifort")
     set(flexiblesusy_extralibs "${flexiblesusy_extralibs} -lifcore -limf -ldl -lintlc -lsvml")
   endif()
-  message("-- Determined FlexibleSUSY compiler library dependencies: ${flexiblesusy_extralibs}")
+  message("${BoldYellow}-- Determined FlexibleSUSY compiler library dependencies: ${flexiblesusy_extralibs}${ColourReset}")
   set(flexiblesusy_LDFLAGS "${flexiblesusy_LDFLAGS} ${flexiblesusy_extralibs}")
 
   # We need to include some stuff from the eigen3 library. FIXME this needs to be installed in future, not taken from extras.
@@ -102,7 +102,7 @@ if(";${GAMBIT_BITS};" MATCHES ";SpecBit;")
   foreach(_LIB ${LAPACK_LIBRARIES})
     set(LAPACK_LIBS "${LAPACK_LIBS} -L${_LIB}")
   endforeach(_LIB)
-  message("-- Adding LAPACK paths to FlexibleSUSY build: ${LAPACK_LIBS}")
+  message("${BoldYellow}-- Adding LAPACK paths to FlexibleSUSY build: ${LAPACK_LIBS}${ColourReset}")
 
   # FlexibleSUSY configure options
   set(FS_OPTIONS ${FS_OPTIONS} --with-cxx=${CMAKE_CXX_COMPILER}
@@ -123,17 +123,17 @@ if(";${GAMBIT_BITS};" MATCHES ";SpecBit;")
   # Explain how to build each of the flexiblesusy spectrum generators we need.  Configure now, serially, to prevent parallel build issues.
   string (REPLACE ";" "," BUILT_FS_MODELS_COMMAS "${BUILT_FS_MODELS}")
   set(config_command ./configure ${FS_OPTIONS} --with-models=${BUILT_FS_MODELS_COMMAS})
-  message("-- Configuring FlexibleSUSY for models: ${BUILT_FS_MODELS_COMMAS}")
+  message("${Magenta}-- Configuring FlexibleSUSY for models: ${BoldYellow}${BUILT_FS_MODELS_COMMAS}${ColourReset}")
   execute_process(COMMAND ${config_command}
                   WORKING_DIRECTORY ${MASS_SPECTRA_DIR}/flexiblesusy
                   RESULT_VARIABLE result
                   OUTPUT_VARIABLE output
                  )
   if (NOT "${result}" STREQUAL "0")
-    message("-- Configuring FlexibleSUSY failed.  Here's what I tried to do:\n${config_command}\n${output}" )
+    message("${BoldRed}-- Configuring FlexibleSUSY failed.  Here's what I tried to do:\n${config_command}\n${output}${ColourReset}" )
     message(FATAL_ERROR "Configuring FlexibleSUSY failed." ) 
   endif()
-  message("-- Configuring FlexibleSUSY - done.")
+  message("${Magenta}-- Configuring FlexibleSUSY - done.${ColourReset}")
 
   # Add FlexibleSUSY as an external project
   ExternalProject_Add(flexiblesusy

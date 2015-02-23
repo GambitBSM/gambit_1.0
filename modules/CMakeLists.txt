@@ -77,16 +77,16 @@ endforeach()
 string (REPLACE ";" "," itch_with_commas "${itch}")
 
 # Generate the cmake_variables.hpp.in file
-message("-- Updating GAMBIT with config data")
+message("${Magenta}-- Updating GAMBIT with config data...${ColourReset}")
 set(locate_scanners ${PROJECT_SOURCE_DIR}/cmake/locate_scanners.py -x __not_a_real_name__,${itch_with_commas})
 execute_process(COMMAND python ${locate_scanners} WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
-message("-- Updating GAMBIT with config data - done.")
+message("${Magenta}-- Updating GAMBIT with config data - done.${ColourReset}")
 
 # Generate the CMakeLists.txt files for GAMBIT modules
-message("-- Updating GAMBIT module cmake files")
+message("${Magenta}-- Updating GAMBIT module CMake files...${ColourReset}")
 set(update_cmakelists ${PROJECT_SOURCE_DIR}/cmake/update_cmakelists.py -x __not_a_real_name__,${itch_with_commas})
 execute_process(COMMAND python ${update_cmakelists} WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
-message("-- Updating GAMBIT module cmake files - done.")
+message("${Magenta}-- Updating GAMBIT module cmake files - done.${ColourReset}")
 
 # Do OSX checks
 include(cmake/MacOSX.cmake)

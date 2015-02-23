@@ -41,7 +41,6 @@ else()
   include_directories(${PROJECT_SOURCE_DIR}/contrib/yaml-cpp-0.5.1/src ${PROJECT_SOURCE_DIR}/contrib/yaml-cpp-0.5.1/include)
 endif()
 
-
 set_target_properties(yaml-cpp PROPERTIES
   ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
 )
