@@ -27,9 +27,7 @@
 #include "gambit/Utils/gambit_module_headers.hpp"
 #include "gambit/ColliderBit/ColliderBit_rollcall.hpp"
 
-// Now pulling in some of the code from extras/HEColliderMain.cpp
-// I will leave the KFactorHooks alone for now, since the work on
-// xsec calculation is ongoing.
+// Trivial change... For some reason my push is not showing up...
 
 namespace Gambit {
   namespace ColliderBit {
