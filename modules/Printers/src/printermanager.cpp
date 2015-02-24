@@ -21,6 +21,7 @@
 ///  *********************************************
 
 #include "gambit/Printers/baseprinter.hpp"
+#include "gambit/Printers/basebaseprinter.hpp"
 #include "gambit/Printers/printermanager.hpp"
 #include "gambit/Printers/printer_rollcall.hpp" // Also registers all the available printers
 #include "gambit/Utils/yaml_options.hpp"
@@ -40,10 +41,10 @@ namespace Gambit
   {
 
     /// Manager class for creating printer objects  
-    PrinterManager::PrinterManager(const Options& printerNode):
-      printerptr(NULL),
-      tag(printerNode.getValue<std::string>("printer")),
-      options(printerNode.getNode("options"))
+    PrinterManager::PrinterManager(const Options& printerNode)
+      : tag(printerNode.getValue<std::string>("printer"))
+      , options(printerNode.getNode("options"))
+      , printerptr(NULL)
     {
       // Change printer pointer to actually point to the printer object
       if( printer_creators.find(tag)!=printer_creators.end() )
@@ -85,7 +86,7 @@ namespace Gambit
     }
 
     // Retrieve pointer to named printer object
-    BasePrinter* PrinterManager::get_stream(const std::string& streamname)
+    BaseBasePrinter* PrinterManager::get_stream(const std::string& streamname)
     {
       DBUG( std::cout << "PrinterManager: Retrieving printer stream \"" << streamname << "\"" << std::endl; )
       if(streamname=="")
@@ -95,6 +96,8 @@ namespace Gambit
       else
       {
         ///TODO: add check to make sure that the requested stream exists
+        // Note that this automatically converts the BasePrinter pointer into a BaseBasePrinter pointer
+        // (for a more minimal interface for use in ScannerBit)
         return auxprinters.at(streamname);
       }
     }

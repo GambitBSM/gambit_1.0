@@ -19,6 +19,9 @@
 #ifndef __printermanager_hpp__
 #define __printermanager_hpp__
 
+#include <string>
+#include <map>
+#include "gambit/Printers/baseprintermanager.hpp"
 #include "gambit/Utils/yaml_options.hpp"
 
 namespace Gambit
@@ -26,11 +29,12 @@ namespace Gambit
   namespace Printers 
   {
 
-    /// Forward declaration of BasePrinter class (Declared fully in baseprinter.hpp)
+    /// Forward declaration of base printer classes (Declared fully in baseprinter.hpp and basebaseprinter.hpp)
+    class BaseBasePrinter; 
     class BasePrinter; 
 
     /// Manager class for creating printer objects  
-    class PrinterManager 
+    class PrinterManager: public BasePrinterManager
     {
       private:
         /// Map containing pointers to auxiliary printer objects
@@ -56,7 +60,7 @@ namespace Gambit
         void new_stream(const std::string&, const Options&);
 
         /// Getter for auxiliary printer objects
-        BasePrinter* get_stream(const std::string&);
+        BaseBasePrinter* get_stream(const std::string&);
     };
 
 

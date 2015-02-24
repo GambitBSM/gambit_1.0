@@ -14,7 +14,7 @@
 ///
 ///  *********************************************
 
-#include "gambit/Printers/printermanager.hpp"
+#include "gambit/Printers/baseprintermanager.hpp"
 
 #ifndef PRINTER_INTERFACE_HPP
 #define PRINTER_INTERFACE_HPP
@@ -33,7 +33,7 @@ namespace Gambit
                 //};
                 
                 //typedef printer_interface_temp printer_interface;
-                typedef Printers::PrinterManager printer_interface;
+                typedef Printers::BasePrinterManager printer_interface;
         }
 }
 

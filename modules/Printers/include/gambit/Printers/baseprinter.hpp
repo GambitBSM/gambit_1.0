@@ -26,6 +26,7 @@
 #include <vector>
 
 // Gambit
+#include "gambit/Printers/basebaseprinter.hpp"
 #include "gambit/Utils/all_functor_types.hpp"
 #include "gambit/Utils/standalone_error_handlers.hpp"
 #include "gambit/Utils/yaml_options.hpp"
@@ -78,7 +79,7 @@ namespace Gambit
     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
      
     /// BASE PRINTER CLASS
-    class BasePrinter  
+    class BasePrinter: public BaseBasePrinter
     {
       public:
 

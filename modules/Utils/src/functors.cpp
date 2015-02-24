@@ -39,6 +39,7 @@
 #include "gambit/Utils/standalone_error_handlers.hpp"
 #include "gambit/Models/models.hpp"
 #include "gambit/Logs/log.hpp"
+#include "gambit/Printers/baseprinter.hpp"
 
 #include <boost/preprocessor/seq/for_each.hpp>
 
@@ -51,22 +52,22 @@ namespace Gambit
   /// Poorly declaration of Printers::BasePrinter for use in print functions; leave implementation to printer source files.
   /// If the compiled printer sources are not linked against the compiled program, any calls to the print functions will generate
   /// link errors.  This is how printers are removed from standalone module compilation, and calls to the print functions outlawed.
-  namespace Printers
-  {
-    class BasePrinter
-    {
-      public:
-        // Must declare all virtual functions here IN THE SAME ORDER as they are declared in the actual class,
-        // so that they end up in the vtable in the same order. Otherwise the vtable lookup will match the wrong
-        // function calls to the wrong vtable entries!!!!
-        virtual ~BasePrinter();
-        virtual void initialise(const std::vector<int>&);
-        virtual void flush();
-        virtual void reset();
-        virtual int getRank();
-        BOOST_PP_SEQ_FOR_EACH(FWDPRINT, _, PRINTABLE_TYPES)
-    };
-  }
+  //namespace Printers
+  //{
+  //  class BasePrinter
+  //  {
+  //    public:
+  //      // Must declare all virtual functions here IN THE SAME ORDER as they are declared in the actual class,
+  //      // so that they end up in the vtable in the same order. Otherwise the vtable lookup will match the wrong
+  //      // function calls to the wrong vtable entries!!!!
+  //      virtual ~BasePrinter();
+  //      virtual void initialise(const std::vector<int>&);
+  //      virtual void flush();
+  //      virtual void reset();
+  //      virtual int getRank();
+  //      BOOST_PP_SEQ_FOR_EACH(FWDPRINT, _, PRINTABLE_TYPES)
+  //  };
+  //}
 
 
   // Functor class methods
