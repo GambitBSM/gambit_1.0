@@ -22,6 +22,7 @@
 #define __base_base_printer_hpp__
 
 // Standard libraries
+#include <string>
 #include <vector>
 
 namespace Gambit
@@ -42,8 +43,10 @@ namespace Gambit
         /// Retrieve MPI rank
         virtual int getRank() = 0;
 
-        /// Manual definitions of minimal print functions needed by ScannerBit
-
+        /// Manual declarations of minimal print functions needed by ScannerBit
+        virtual void print(int                 const&, const std::string&, const int, const int, const int) = 0;
+        virtual void print(double              const&, const std::string&, const int, const int, const int) = 0;
+        virtual void print(std::vector<double> const&, const std::string&, const int, const int, const int) = 0;
 
     };
  

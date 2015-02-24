@@ -19,6 +19,8 @@
 #ifndef __multinest_hpp__
 #define __multinest_hpp__
 
+#include "gambit/ScannerBit/scanner_plugin.hpp"
+
 // Auxilliary classes and functions needed by multinest
 // (cloned largely from eggbox.cc, and modified to use cwrapper.f90 interface 
 //  instead of multinest.h)
@@ -42,6 +44,10 @@ namespace Gambit {
       /// Typedef for the ScannerBit pointer to the external loglikelihood function
       typedef Gambit::Scanner::scan_ptr<double (const std::vector<double>&)> scanPtr;
 
+      /// Bring printer_interface and printer names into this scope
+      using Gambit::Scanner::printer_interface;
+      using Gambit::Scanner::printer;
+
       /// Class to connect multinest log-likelihood function and ScannerBit likelihood function
       class LogLikeWrapper
       {
@@ -49,12 +55,15 @@ namespace Gambit {
             /// Scanner pointer (points to the ScannerBit provided log-likelihood function)
             scanPtr boundLogLike;
 
+            /// Reference to a printer_interface object
+            printer_interface& boundPrinter;
+
             /// Number of free parameters
             int my_ndim;
 
          public:
             /// Constructor
-            LogLikeWrapper(scanPtr, int);
+            LogLikeWrapper(scanPtr, printer_interface&, int);
    
             /// Main interface function from MultiNest to ScannerBit-supplied loglikelihood function 
             double LogLike(double*, int, int);

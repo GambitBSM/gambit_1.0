@@ -52,6 +52,7 @@ namespace Gambit
   /// Poorly declaration of Printers::BasePrinter for use in print functions; leave implementation to printer source files.
   /// If the compiled printer sources are not linked against the compiled program, any calls to the print functions will generate
   /// link errors.  This is how printers are removed from standalone module compilation, and calls to the print functions outlawed.
+  // Ben: I removed this stuff because I was having trouble with the vtable again (due to the new extra base class layer, BaseBasePrinter, I think (probably because that class doesn't have the virtual destructor; probably need to reorder the declarations in the derived class BasePrinter, i.e. put the destructor last perhaps). Anyway everything seems to work just fine by including "baseprinter.hpp" (above), but if this actually breaks something let me know and I will figure out the vtable problems.
   //namespace Printers
   //{
   //  class BasePrinter

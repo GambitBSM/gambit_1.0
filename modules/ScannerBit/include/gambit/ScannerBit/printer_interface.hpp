@@ -15,6 +15,7 @@
 ///  *********************************************
 
 #include "gambit/Printers/baseprintermanager.hpp"
+#include "gambit/Printers/basebaseprinter.hpp"
 
 #ifndef PRINTER_INTERFACE_HPP
 #define PRINTER_INTERFACE_HPP
@@ -32,8 +33,12 @@ namespace Gambit
                 //        template<typename T> void inputValue(int, int, const std::string &, T) {/*do nothing*/}
                 //};
                 
-                //typedef printer_interface_temp printer_interface;
+                /// typedef printer_interface_temp printer_interface;
                 typedef Printers::BasePrinterManager printer_interface;
+                
+                /// Type of the printer objects
+                typedef Printers::BaseBasePrinter printer;
+
         }
 }
 

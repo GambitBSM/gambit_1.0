@@ -56,40 +56,59 @@ namespace Gambit
     {
        data.clear();
        readyToPrint = false;
+        
     }
  
     // Printer to ascii file (i.e. table of doubles)
 
-    // Constructor
-    asciiPrinter::asciiPrinter(const Options& options)
-      : my_fstream( Utils::ensure_path_exists(options.getValue<std::string>("output_file")), 
-                  std::ofstream::out)
-      , info_fstream( Utils::ensure_path_exists(options.getValue<std::string>("info_file")), 
-                    std::ofstream::out)
-      , bufferlength(10)
-      , myRank(0)
-      , info_file_written(false)
+    // Common constructor tasks
+    common_constructor()
     {
-      DBUG( std::cout << "Constructing Primary asciiPrinter object..." << std::endl; )
-      my_fstream.precision(6); // Precision of output; could easily supply this to the constructor instead.
       // (Needs modifying when full MPI implentation is done)
       // Initialise "lastPointID" map to -1 (i.e. no last point)
       lastPointID[0] = -1; // Only rank 0 process for now; parallel mode not implemented
+
+      // Erase contents of output_file and info_file if they already exist
+      std::ofstream output;
+      output.open(output_file, std::ofstream::out | std::ofstream::trunc);
+      output.close();
+      
+      std::ofstream info;
+      info.open(info_file, std::ofstream::out | std::ofstream::trunc);
+      info.close();
     }
- 
-    /// Auxiliary mode constructor 
-    asciiPrinter::asciiPrinter(const Options& options, std::string& name, bool global)
-      : my_fstream( Utils::ensure_path_exists(name+"-"+options.getValue<std::string>("output_file")), 
+
+    // Constructor
+    asciiPrinter::asciiPrinter(const Options& options)
+      : output_file( Utils::ensure_path_exists(options.getValue<std::string>("output_file")), 
                   std::ofstream::out)
-      , info_fstream( Utils::ensure_path_exists(name+"-"+options.getValue<std::string>("info_file")), 
+      , info_file( Utils::ensure_path_exists(options.getValue<std::string>("info_file")), 
                     std::ofstream::out)
       , bufferlength(10)
       , myRank(0)
+      , precision(6)
       , info_file_written(false)
+      , global(false)
+    {
+      DBUG( std::cout << "Constructing Primary asciiPrinter object..." << std::endl; )
+      common_constructor();
+    }
+ 
+    /// Auxiliary mode constructor 
+    asciiPrinter::asciiPrinter(const Options& options, std::string& name, bool globalIN)
+      : output_file( Utils::ensure_path_exists(name+"-"+options.getValue<std::string>("output_file")), 
+                  std::ofstream::out)
+      , info_file( Utils::ensure_path_exists(name+"-"+options.getValue<std::string>("info_file")), 
+                    std::ofstream::out)
+      , bufferlength(10)
+      , myRank(0)
+      , precision(6)
+      , info_file_written(false)
+      , global(globalIN)
     {
       // Could set these things via options also if we like.
       DBUG( std::cout << "Constructing Auxilliary asciiPrinter object..." << std::endl; )
-      my_fstream.precision(6); // Precision of output; could easily supply this to the constructor instead.
+      common_constructor();
     }
  
     /// Destructor
@@ -230,6 +249,16 @@ is a unique record for every rank/pointID pair.";
       DBUG( std::cout << "dumping asciiprinter buffer" << std::endl; )
       DBUG( std::cout << "lfpvfc 1" << std::endl; )
 
+      // Open file in append mode, unless global=true, then overwrite old contents!
+      std::ofstream my_fstream;
+      if(global)
+      {
+         my_fstream.open (output_file, std::ofstream::out | std::ofstream::trunc);
+      } else {
+         my_fstream.open (output_file, std::ofstream::out | std::ofstream::app);
+      }
+      my_fstream.precision(precision);
+
       std::map<int,int> newlineindexrecord;
       // Work out how to organise the output file            
       // To do this we need to go through the buffer and find the maximum length of vector associated with each VertexID.
@@ -267,6 +296,10 @@ is a unique record for every rank/pointID pair.";
       if (info_file_written==false)
       {
         DBUG( std::cout << "asciiPrinter: Writing info file..." << std::endl; )
+         
+        std::ofstream info_fstream;
+        info_fstream.open(info_file, std::ofstream::out | std::ofstream::trunc); // trunc mode overwrites old contents
+
         int column_index = 1;
         for (std::map<int,int>::iterator
           it = lineindexrecord.begin(); it != lineindexrecord.end(); it++)
@@ -281,7 +314,8 @@ is a unique record for every rank/pointID pair.";
           }
         }
         DBUG( std::cout << "lfpvfc 3.1" << std::endl; )
-        info_fstream.flush();
+        //info_fstream.flush();
+        info_fstream.close();
         info_file_written=true;
       }
 
@@ -361,7 +395,8 @@ is a unique record for every rank/pointID pair.";
       DBUG( std::cout << "lfpvfc 5" << std::endl; )
 
       // buffer dump complete! Flush the fstream to ensure write to file happens.
-      my_fstream.flush();
+      //my_fstream.flush();
+      my_fstream.close();
 
       DBUG( std::cout << "lfpvfc 6" << std::endl; )
     }
