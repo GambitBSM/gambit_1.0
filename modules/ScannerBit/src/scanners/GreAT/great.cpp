@@ -14,7 +14,7 @@
 ///
 ///  *********************************************
 
-#include "scanner_plugin.hpp"
+#include "gambit/ScannerBit/scanner_plugin.hpp"
 #include "TGreatMCMCAlgorithmCovariance.h"
 #include "TGreatMCMCAlgorithmBSP.h"
 
