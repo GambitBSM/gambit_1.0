@@ -51,6 +51,20 @@ set_property(TARGET darksusy PROPERTY _EP_DOWNLOAD_ALWAYS 0)
 
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../extras/DarkSUSY/libdarksusy.so" "${PROJECT_SOURCE_DIR}/Backends/lib/libdarksusy.so")
 
+ExternalProject_Add(superiso
+  URL http://superiso.in2p3.fr/download/superiso_v3.4.tgz
+  DOWNLOAD_DIR ${PROJECT_SOURCE_DIR}/../extras/SuperIso
+  SOURCE_DIR ${PROJECT_SOURCE_DIR}/../extras/SuperIso/SuperIso
+  BUILD_IN_SOURCE 1
+  CONFIGURE_COMMAND ""
+  BUILD_COMMAND sed -i "s#CC = gcc#CC = ${CMAKE_C_COMPILER}#g" <SOURCE_DIR>/Makefile COMMAND sed -i "s/CFLAGS= -O3 -pipe -fomit-frame-pointer/CFLAGS= -lm -fPIC ${CMAKE_C_FLAGS}/g" <SOURCE_DIR>/Makefile COMMAND make COMMAND ar x <SOURCE_DIR>/src/libisospin.a COMMAND echo "${CMAKE_C_COMPILER} -shared -o libsuperiso.so *.o -lm" > make_so.sh COMMAND chmod u+x make_so.sh COMMAND ./make_so.sh
+  INSTALL_COMMAND cp <SOURCE_DIR>/libsuperiso.so ${PROJECT_SOURCE_DIR}/Backends/lib/.
+)
+
+set_property(TARGET superiso PROPERTY _EP_DOWNLOAD_ALWAYS 0)
+
+set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../extras/SuperIso/SuperIso/libsuperiso.so" "${PROJECT_SOURCE_DIR}/Backends/lib/libsuperiso.so")
+
 ExternalProject_Add(ddcalc
   SOURCE_DIR ${PROJECT_SOURCE_DIR}/../extras/DDCalc0
   BUILD_IN_SOURCE 1
@@ -144,7 +158,7 @@ ExternalProject_Add(nulike
 
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../extras/nulike/lib/libnulike.so" "${PROJECT_SOURCE_DIR}/Backends/lib/libnulike.so")
 
-set_target_properties(ddcalc gamlike darksusy micromegas nulike pythia fastsim BOSSMinimalExample PROPERTIES EXCLUDE_FROM_ALL 1)
+set_target_properties(ddcalc gamlike darksusy micromegas superiso nulike pythia fastsim BOSSMinimalExample PROPERTIES EXCLUDE_FROM_ALL 1)
 
-add_custom_target(backends COMMAND make gamlike nulike ddcalc pythia BOSSMinimalExample darksusy) #fastsim micromegas
+add_custom_target(backends COMMAND make gamlike nulike ddcalc pythia BOSSMinimalExample darksusy superiso) #fastsim micromegas
 
