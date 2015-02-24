@@ -106,8 +106,9 @@ namespace HEPUtils {
 
       /// @todo Prefer this form when we can use C++11's range-for
       // if (!_jets.empty()) for (Jet* j : jets()) delete j;
+      //if(!_jets.empty())std::cout << "Survived" << std::endl;
       if (!_jets.empty()) for (size_t i = 0; i < _jets.size(); ++i) delete _jets[i];
-      _jets.clear();
+         _jets.clear();
 
       _pmiss.clear();
     }
