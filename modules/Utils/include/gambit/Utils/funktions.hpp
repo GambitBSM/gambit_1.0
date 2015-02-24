@@ -188,7 +188,7 @@ namespace Funk
     {
         public:
             FunkBase() {}
-            ~FunkBase() {}
+            virtual ~FunkBase() {}
 
             // Standard handles
             template <typename... Args> Funk set(Args... args);
@@ -232,18 +232,15 @@ namespace Funk
         private:
             // Internal structure required for bind
             std::vector<int> bind_map;
-            std::vector<double> Xout;
             unsigned int nout;
 
-            std::map<const char*, double> tmp_argmap;
-            std::map<const char*, Funk> tmp_funmap;
             std::vector<double> empty;
 
-            // Add arguments from set(...) handler to tmp_argmap and
-            // tmp_funmap.
-            template <typename... Args> void digest_arguments(const char* arg, double y, Args... args);
-            template <typename... Args> void digest_arguments(const char* arg, Funk y, Args... args);
-            void digest_arguments() {};
+            // Functions for putting input arguments into maps
+            typedef std::pair<std::map<const char*, double>,std::map<const char*, Funk> > argmap;            
+            template <typename... Args> void digest_arguments(argmap &map, const char* arg, double y, Args... args);
+            template <typename... Args> void digest_arguments(argmap &map, const char* arg, Funk y, Args... args);
+            void digest_arguments(argmap &map) { (void) map; };
     };
 
 
@@ -330,20 +327,17 @@ namespace Funk
             FunkDerived(Funk f, const char* arg, double x) : f(f), x(x), mode(0)
             {
                 args = f->getArgs();
-                XoutF.resize(args.size());
+                nF = args.size();                
                 i = eraseArg(args, arg);
                 mapF = getMap(f->getArgs(), args);
-                nF = XoutF.size();
             };
             // Map parameter to other function
             FunkDerived(Funk f, const char* arg, Funk g) : f(f), g(g), mode(1)
             {
                 ArgsType argsF = f->getArgs();
                 ArgsType argsG = g->getArgs();
-                XoutF.resize(argsF.size());
-                XoutG.resize(argsG.size());
-                nF = XoutF.size();
-                nG = XoutG.size();
+                nF = argsF.size();
+                nG = argsG.size();
                 i = eraseArg(argsF, arg);
                 args = joinArgs(argsG, argsF);
                 mapF = getMap(args, f->getArgs());
@@ -352,6 +346,7 @@ namespace Funk
 
             double value(const std::vector<double> & Xin)
             {
+                std::vector<double> XoutF(nF);               
                 if ( mode == 0 )
                 {
                     applyInvMap(XoutF, mapF, Xin, nF-1);
@@ -360,6 +355,7 @@ namespace Funk
                 }
                 else
                 {
+                    std::vector<double> XoutG(nG);
                     applyMap(XoutG, mapG, Xin, nG);
                     applyMap(XoutF, mapF, Xin, nF);
                     XoutF[i] = g->value(XoutG);
@@ -368,7 +364,6 @@ namespace Funk
             }
 
         private:
-            std::vector<double> XoutF, XoutG;
             std::vector<int> mapF, mapG;
             Funk f, g;
             double x;
@@ -385,7 +380,7 @@ namespace Funk
     {
         public:
             template <typename... Args>
-            FunkFunc(double (*f)(funcargs...), Args... argss)
+            FunkFunc(bool threadsafe, double (*f)(funcargs...), Args... argss) : threadsafe(threadsafe)
             {
                 ptr = f;
                 digest_input(argss...);
@@ -403,13 +398,22 @@ namespace Funk
             template <size_t... Args>
             double ppp(index_list<Args...>)
             {
-                return (*ptr)(std::get<Args>(input)...);
+                double result;
+                if(threadsafe)
+                    result = (*ptr)(std::get<Args>(input)...);
+                else
+                {
+                    #pragma omp critical(Funk_NonThreadsafe)
+                        result = (*ptr)(std::get<Args>(input)...);
+                }
+                return result;
             }
 
         private:
             std::tuple<typename std::remove_reference<funcargs>::type...> input;
             std::vector<double*> map;
             double (*ptr)(funcargs...);
+            const bool threadsafe;
 
             // Digest input parameters 
             // (forwarding everything except Funk::Funk types, which is mapped onto
@@ -437,7 +441,12 @@ namespace Funk
 
     template <typename... funcargs, typename... Args>
     Funk func(double (*f)(funcargs...), Args... args) {
-        return Funk(new FunkFunc<funcargs...>(f, args...));
+        return Funk(new FunkFunc<funcargs...>(false, f, args...));
+    }
+
+    template <typename... funcargs, typename... Args>
+    Funk func_threadsafe(double (*f)(funcargs...), Args... args) {
+        return Funk(new FunkFunc<funcargs...>(true, f, args...));
     }
 
 
@@ -446,7 +455,7 @@ namespace Funk
     {
         public:
             template <typename... Args>
-            FunkFuncM(O* obj, double (O::* f)(funcargs...), Args... argss) : obj(obj)
+            FunkFuncM(bool threadsafe, O* obj, double (O::* f)(funcargs...), Args... argss) : obj(obj), threadsafe(threadsafe)
             {
                 ptr = f;
                 digest_input(argss...);
@@ -464,13 +473,22 @@ namespace Funk
             template <size_t... Args>
             double ppp(index_list<Args...>)
             {
-                return (*obj.*ptr)(std::get<Args>(input)...);
+                double result;
+                if(threadsafe)
+                    result = (*obj.*ptr)(std::get<Args>(input)...);
+                else
+                {
+                    #pragma omp critical(Funk_NonThreadsafe)
+                        result = (*obj.*ptr)(std::get<Args>(input)...);
+                }
+                return result;
             }
 
         private:
             std::tuple<typename std::remove_reference<funcargs>::type...> input;
             std::vector<double*> map;
             double (O::* ptr)(funcargs...);
+            const bool threadsafe;
             O* obj;
 
             // Digest input parameters 
@@ -499,8 +517,13 @@ namespace Funk
 
     template <typename O, typename... funcargs, typename... Args>
     Funk funcM(O* obj, double (O::* f)(funcargs...), Args... args) {
-        return Funk(new FunkFuncM<O, funcargs...>(obj, f, args...));
+        return Funk(new FunkFuncM<O, funcargs...>(false, obj, f, args...));
     }
+    
+    template <typename O, typename... funcargs, typename... Args>
+    Funk funcM_threadsafe(O* obj, double (O::* f)(funcargs...), Args... args) {
+        return Funk(new FunkFuncM<O, funcargs...>(true, obj, f, args...));
+    }    
 
     //
     // Derived class that implements constant
@@ -563,13 +586,14 @@ namespace Funk
         return Y;
     }
 
-    template <typename... Args> inline Funk FunkBase::set (Args... args)
+    template <typename... Args> 
+    inline Funk FunkBase::set (Args... args)
     {
-        tmp_argmap.clear();
-        tmp_funmap.clear();
-        digest_arguments(args...);
+        argmap map;
+        digest_arguments(map, args...);
         Funk f = shared_from_this();
-        for ( auto it = tmp_argmap.begin(); it != tmp_argmap.end(); it++)
+        // Loop over double type arguments
+        for ( auto it = map.first.begin(); it != map.first.end(); it++)
         {
             auto args = f->getArgs();
             if ( std::find(args.begin(), args.end(), it->first) != args.end() )
@@ -579,7 +603,8 @@ namespace Funk
                 std::cout << "Funk: Ignoring \"" << it->first << "\" = " << it->second << std::endl;
             }
         }
-        for ( auto it = tmp_funmap.begin(); it != tmp_funmap.end(); it++)
+        // Loop over Funk type arguments
+        for ( auto it = map.second.begin(); it != map.second.end(); it++)
         {
             auto args = f->getArgs();
             if ( std::find(args.begin(), args.end(), it->first) != args.end() )
@@ -594,17 +619,18 @@ namespace Funk
         return f;
     }
 
-    template <typename... Args> inline Funk FunkBase::bind(Args... argss)
+    template <typename... Args> 
+    inline Funk FunkBase::bind(Args... argss)
     {
         ArgsType bind_args = vec<const char*>(argss...);
         assert (std::set<const char*>(args.begin(), args.end()) == std::set<const char*>(bind_args.begin(), bind_args.end()));
         bind_map = getMap(args, bind_args);
-        Xout.resize(bind_args.size());
-        nout = Xout.size();
+        nout = bind_args.size();
         return shared_from_this();
     }
 
-    template <typename... Args> inline double FunkBase::eval (Args... args)
+    template <typename... Args> 
+    inline double FunkBase::eval (Args... args)
     {
         if ( sizeof...(args) != 0 )
         {
@@ -632,22 +658,25 @@ namespace Funk
         }
     }
 
-    template <typename... Args> inline double FunkBase::get(Args... argss)
+    template <typename... Args> 
+    inline double FunkBase::get(Args... argss)
     {
         assert (bind_map.size() == nout);
+        std::vector<double> Xout(nout);
         applyMap(Xout, bind_map, vec<double>(argss...), nout);
         return this->value(Xout);
     }
 
-  inline bool FunkBase::hasArgs()
-  {
-    if(this->args.size() == 0)
-      return false;
-    else
-      return true;
-  }
+    inline bool FunkBase::hasArgs()
+    {
+        if(this->args.size() == 0)
+            return false;
+        else
+            return true;
+    }
 
-    template <typename... Args> inline Funk FunkBase::gsl_integration(Args... args)
+    template <typename... Args> 
+    inline Funk FunkBase::gsl_integration(Args... args)
     {
         return getIntegrate_gsl1d(shared_from_this(), args...);
     }
@@ -663,16 +692,18 @@ namespace Funk
         return shared_from_this();
     }
 
-    template <typename... Args> inline void FunkBase::digest_arguments(const char* arg, double y, Args... args)
+    template <typename... Args> 
+    inline void FunkBase::digest_arguments(argmap &map, const char* arg, double y, Args... args)
     {
-        tmp_argmap[arg] = y;
-        digest_arguments(args...);
+        map.first[arg] = y;
+        digest_arguments(map, args...);
     }
 
-    template <typename... Args> inline void FunkBase::digest_arguments(const char* arg, Funk y, Args... args)
+    template <typename... Args> 
+    inline void FunkBase::digest_arguments(argmap &map, const char* arg, Funk y, Args... args)
     {
-        tmp_funmap[arg] = y;
-        digest_arguments(args...);
+        map.second[arg] = y;
+        digest_arguments(map, args...);
     }
 
     inline PlainPtrs1 FunkBase::plain(const char* arg1)
@@ -784,23 +815,21 @@ namespace Funk
     class FunkMath_##OPERATION: public FunkBase                                                           \
     {                                                                                                     \
         public:                                                                                           \
-            FunkMath_##OPERATION(Funk f1, Funk f2) : f1(f1), f2(f2), mode(0)                        \
+            FunkMath_##OPERATION(Funk f1, Funk f2) : f1(f1), f2(f2), mode(0)                              \
             {                                                                                             \
                 ArgsType args1 = f1->getArgs();                                                           \
                 ArgsType args2 = f2->getArgs();                                                           \
                 args = joinArgs(args1, args2);                                                            \
                 map1 = getMap(args, args1);                                                               \
                 map2 = getMap(args, args2);                                                               \
-                Xout1.resize(args1.size());                                                               \
-                Xout2.resize(args2.size());                                                               \
-                n1 = Xout1.size();                                                                        \
-                n2 = Xout2.size();                                                                        \
+                n1 = args1.size();                                                                        \
+                n2 = args2.size();                                                                        \
             }                                                                                             \
-            FunkMath_##OPERATION(double x1, Funk f2) : x1(x1), f2(f2), mode(1)                         \
+            FunkMath_##OPERATION(double x1, Funk f2) : x1(x1), f2(f2), mode(1)                            \
             {                                                                                             \
                 args = f2->getArgs();                                                                     \
             }                                                                                             \
-            FunkMath_##OPERATION(Funk f1, double x2) : x2(x2), f1(f1), mode(2)                         \
+            FunkMath_##OPERATION(Funk f1, double x2) : x2(x2), f1(f1), mode(2)                            \
             {                                                                                             \
                 args = f1->getArgs();                                                                     \
             }                                                                                             \
@@ -808,6 +837,8 @@ namespace Funk
             {                                                                                             \
                 if ( mode == 0 )                                                                          \
                 {                                                                                         \
+                    std::vector<double> Xout1(n1);                                                        \
+                    std::vector<double> Xout2(n2);                                                        \
                     applyMap(Xout1, map1, Xin, n1);                                                       \
                     applyMap(Xout2, map2, Xin, n2);                                                       \
                     return f1->value(Xout1) SYMBOL f2->value(Xout2);                                      \
@@ -825,12 +856,11 @@ namespace Funk
             double x1, x2;                                                                                \
             int n1, n2;                                                                                   \
             std::vector<int> map1, map2;                                                                  \
-            std::vector<double> Xout1, Xout2;                                                             \
-            Funk f1, f2;                                                                               \
+            Funk f1, f2;                                                                                  \
             int mode;                                                                                     \
     };                                                                                                    \
-    inline Funk operator SYMBOL (Funk f1, Funk f2) { return Funk(new FunkMath_##OPERATION(f1, f2)); }\
-    inline Funk operator SYMBOL (double x, Funk f) { return Funk(new FunkMath_##OPERATION(x, f)); }     \
+    inline Funk operator SYMBOL (Funk f1, Funk f2) { return Funk(new FunkMath_##OPERATION(f1, f2)); }     \
+    inline Funk operator SYMBOL (double x, Funk f) { return Funk(new FunkMath_##OPERATION(x, f)); }       \
     inline Funk operator SYMBOL (Funk f, double x) { return Funk(new FunkMath_##OPERATION(f, x)); }
     MATH_OPERATION(Sum,+)
     MATH_OPERATION(Mul,*)
@@ -843,23 +873,21 @@ namespace Funk
     class FunkMath_##OPERATION: public FunkBase                                                           \
     {                                                                                                     \
         public:                                                                                           \
-            FunkMath_##OPERATION(Funk f1, Funk f2) : f1(f1), f2(f2), mode(0)                        \
+            FunkMath_##OPERATION(Funk f1, Funk f2) : f1(f1), f2(f2), mode(0)                              \
             {                                                                                             \
                 ArgsType args1 = f1->getArgs();                                                           \
                 ArgsType args2 = f2->getArgs();                                                           \
                 args = joinArgs(args1, args2);                                                            \
                 map1 = getMap(args, args1);                                                               \
                 map2 = getMap(args, args2);                                                               \
-                Xout1.resize(args1.size());                                                               \
-                Xout2.resize(args2.size());                                                               \
-                n1 = Xout1.size();                                                                        \
-                n2 = Xout2.size();                                                                        \
+                n1 = args1.size();                                                                        \
+                n2 = args2.size();                                                                        \
             }                                                                                             \
-            FunkMath_##OPERATION(double x1, Funk f2) : x1(x1), f2(f2), mode(1)                         \
+            FunkMath_##OPERATION(double x1, Funk f2) : x1(x1), f2(f2), mode(1)                            \
             {                                                                                             \
                 args = f2->getArgs();                                                                     \
             }                                                                                             \
-            FunkMath_##OPERATION(Funk f1, double x2) : x2(x2), f1(f1), mode(2)                         \
+            FunkMath_##OPERATION(Funk f1, double x2) : x2(x2), f1(f1), mode(2)                            \
             {                                                                                             \
                 args = f1->getArgs();                                                                     \
             }                                                                                             \
@@ -867,6 +895,8 @@ namespace Funk
             {                                                                                             \
                 if ( mode == 0 )                                                                          \
                 {                                                                                         \
+                    std::vector<double> Xout1(n1);                                                        \
+                    std::vector<double> Xout2(n2);                                                        \
                     applyMap(Xout1, map1, Xin, n1);                                                       \
                     applyMap(Xout2, map2, Xin, n2);                                                       \
                     return OPERATION(f1->value(Xout1), f2->value(Xout2));                                 \
@@ -884,12 +914,11 @@ namespace Funk
             double x1, x2;                                                                                \
             int n1, n2;                                                                                   \
             std::vector<int> map1, map2;                                                                  \
-            std::vector<double> Xout1, Xout2;                                                             \
-            Funk f1, f2;                                                                               \
+            Funk f1, f2;                                                                                  \
             int mode;                                                                                     \
     };                                                                                                    \
-    inline Funk OPERATION (Funk f1, Funk f2) { return Funk(new FunkMath_##OPERATION(f1, f2)); }      \
-    inline Funk OPERATION (double x, Funk f) { return Funk(new FunkMath_##OPERATION(x, f)); }           \
+    inline Funk OPERATION (Funk f1, Funk f2) { return Funk(new FunkMath_##OPERATION(f1, f2)); }           \
+    inline Funk OPERATION (double x, Funk f) { return Funk(new FunkMath_##OPERATION(x, f)); }             \
     inline Funk OPERATION (Funk f, double x) { return Funk(new FunkMath_##OPERATION(f, x)); }
     MATH_OPERATION(pow)
     MATH_OPERATION(fmin)
@@ -1017,18 +1046,21 @@ namespace Funk
             double value(const std::vector<double> & X)
             {
                 double result, error;
-                Xin = X;
+                // FIXME: Make this threadsafe without critical block if possible
+                #pragma omp critical(Funk_Integrate)
+                {
+                    Xin = X;
 
-                // Setup gsl_function
-                if ( i != -1 )
-                    function=&FunkIntegrate_gsl1d::invoke;
-                else
-                    function=&FunkIntegrate_gsl1d::invoke2;
-                params=this;
+                    // Setup gsl_function
+                    if ( i != -1 )
+                        function=&FunkIntegrate_gsl1d::invoke;
+                    else
+                        function=&FunkIntegrate_gsl1d::invoke2;
+                    params=this;
 
-                gsl_integration_qags(this, X[mapL[0]], X[mapL[1]], epsabs, epsrel, limit, gsl_workspace, &result, &error);
-                //TODO: Add error checks to integration output!!
-
+                    gsl_integration_qags(this, X[mapL[0]], X[mapL[1]], epsabs, epsrel, limit, gsl_workspace, &result, &error);
+                    //TODO: Add error checks to integration output!!
+                }
                 return result;
             }            
             
