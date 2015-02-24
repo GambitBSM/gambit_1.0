@@ -183,8 +183,8 @@ Scanner:
 ObsLikes:
 
 # Uncomment to run DarkBit unit test
-#    - capability: UnitTest_DarkBit
-#      purpose:  Observable
+    - capability: UnitTest_DarkBit
+      purpose:  Observable
 
 # Uncomment to test cascade decay code 
 #    - capability: cascadeMC_PrintResult
@@ -226,25 +226,39 @@ ObsLikes:
 
 
 Auxiliaries:
+  # General options, accessible to multiple capabilities
+  - options: 
+        # Cascade decay settings
+        cMC_maxChainLength:     -1    # Maximum length of decay chains. -1 => disabled
+        cMC_Emin:               -1.   # Ignore all particles with energies below this value. value < 0 => disabled
+        cMC_minEvents:          100   # Minimum number of decay chains to generate
+        cMC_maxEvents:          1000  # Maximum number of decay chains to generate
+        cMC_endCheckFrequency:  25    # Check end condition every this many events
+        cMC_gammaRelError:      0.01  # Gamma ray end condition for event generation, relative error.      
+        cMC_gammaBGPower:       -2.5  # Gamma spectrum power used in gamma ray end condition
+        cMC_minSpecSamples:     5     # Minimum number of samples to use when sampling tabulated spectra from decay chain endpoints like q qbar
+        cMC_maxSpecSamples:     25    # As above, maximum number.
+        cMC_finalStates:              # List of final states to search for in cascade decays
+            - gamma
+
   # Gamma-rays -------------------------
   - capability: gamLike_1_0_0_init  # Initialization of gamLike backend
     options:
         # Supply (optional) path to likelihood data.  Otherwise relative path
         # is used.
         # datapath: /home/weniger/Work/Projects/GAMBIT/gambit/extras/gamLike/data/
+        
   - capability: lnL_FermiLATdwarfs
     #dependencies: 
     #    - capability: GA_AnnYield
     #      function: GA_AnnYield_DarkSUSY
+    
   - capability: GA_AnnYield
     #function: GA_AnnYield_DarkSUSY
     function: GA_AnnYield_General
     options:
         Emin: 1.
-  - capability: cascadeMC_FinalStates
-    options:
-        cMC_finalStates: 
-            - gamma
+
   - capability: SimYieldTable     
     function: SimYieldTable_DarkSusy
     #function: SimYieldTable_MicrOmegas
