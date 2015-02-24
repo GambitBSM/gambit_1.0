@@ -63,7 +63,7 @@ if(";${GAMBIT_BITS};" MATCHES ";ColliderBit;")
   set(CMAKE_INSTALL_RPATH "${PROJECT_SOURCE_DIR}/contrib/Delphes-3.1.2")
   set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/contrib/Delphes-3.1.2/libDelphes*" "${PROJECT_SOURCE_DIR}/contrib/Delphes-3.1.2/Makefile*")
   set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/contrib/Delphes-3.1.2/tmp" "${PROJECT_SOURCE_DIR}/contrib/Delphes-3.1.2/core")
-  message("${Magenta}-- Generating Delphes ROOT dictionaries...${ColourReset}")
+  message("${Yellow}-- Generating Delphes ROOT dictionaries...${ColourReset}")
   execute_process(COMMAND ./make_dicts.sh
                   WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/ColliderBit/src/delphes
                   RESULT_VARIABLE result
@@ -71,7 +71,7 @@ if(";${GAMBIT_BITS};" MATCHES ";ColliderBit;")
   if (NOT "${result}" STREQUAL "0")
     message(FATAL_ERROR "Could not automatically generate Delphes ROOT dictionaries.  Blame ROOT.")
   endif()
-  message("${Magenta}-- Generating Delphes ROOT dictionaries - done.${ColourReset}")
+  message("${Yellow}-- Generating Delphes ROOT dictionaries - done.${ColourReset}")
 else()
   set (EXCLUDE_DELPHES TRUE)
 endif()
@@ -123,7 +123,7 @@ if(";${GAMBIT_BITS};" MATCHES ";SpecBit;")
   # Explain how to build each of the flexiblesusy spectrum generators we need.  Configure now, serially, to prevent parallel build issues.
   string (REPLACE ";" "," BUILT_FS_MODELS_COMMAS "${BUILT_FS_MODELS}")
   set(config_command ./configure ${FS_OPTIONS} --with-models=${BUILT_FS_MODELS_COMMAS})
-  message("${Magenta}-- Configuring FlexibleSUSY for models: ${BoldYellow}${BUILT_FS_MODELS_COMMAS}${ColourReset}")
+  message("${Yellow}-- Configuring FlexibleSUSY for models: ${BoldYellow}${BUILT_FS_MODELS_COMMAS}${ColourReset}")
   execute_process(COMMAND ${config_command}
                   WORKING_DIRECTORY ${MASS_SPECTRA_DIR}/flexiblesusy
                   RESULT_VARIABLE result
@@ -133,7 +133,7 @@ if(";${GAMBIT_BITS};" MATCHES ";SpecBit;")
     message("${BoldRed}-- Configuring FlexibleSUSY failed.  Here's what I tried to do:\n${config_command}\n${output}${ColourReset}" )
     message(FATAL_ERROR "Configuring FlexibleSUSY failed." ) 
   endif()
-  message("${Magenta}-- Configuring FlexibleSUSY - done.${ColourReset}")
+  message("${Yellow}-- Configuring FlexibleSUSY - done.${ColourReset}")
 
   # Add FlexibleSUSY as an external project
   ExternalProject_Add(flexiblesusy
