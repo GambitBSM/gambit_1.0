@@ -3,6 +3,7 @@
 #include "gambit/ColliderBit/Utils.hpp"
 #include "HEPUtils/Event.h"
 
+using std::vector;
 
 namespace Gambit {
   namespace ColliderBit {

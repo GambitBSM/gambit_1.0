@@ -49,12 +49,12 @@ namespace Gambit {
     bool resetBuckFastFlag = true;
     /// Pythia stuff
     bool resetPythiaFlag = true;
-    /// Analysis stuff
-    bool resetAnalysisFlag = true;
     std::vector<std::string> pythiaNames;
-    std::vector<std::string>::const_iterator iter;
     int pythiaConfigurations, pythiaNumber;
     std::string slhaFilename;
+    /// Analysis stuff
+    bool resetAnalysisFlag = true;
+    std::vector<std::string>::const_iterator iter;
     /// General collider sim info stuff
     double* xsecArray;
     double* xsecerrArray;
@@ -64,70 +64,6 @@ namespace Gambit {
     /// *************************************************
     /// Rollcalled functions properly hooked up to Gambit
     /// *************************************************
-
-
-    /// *** Initialization for analyses ***
-
-    void specifyAnalysisPointerVector (AnalysisPointerVector &result) {
-      using namespace Pipes::specifyAnalysisPointerVector;
-      if(resetAnalysisFlag) {
-        result.clear();
-
-        logger() << "\n==================\n";
-        logger() << "ColliderBit says,\n";
-        logger() << "\t\"specifyAnalysisPointerVector() was called.\"\n";
-        logger() << LogTags::info << endl << EOM;
-
-        std::vector<std::string> analysisNames;
-#pragma omp critical (runOptions)
-        {
-          GET_COLLIDER_RUNOPTION(analysisNames, std::vector<std::string>);
-        }
-
-        logger() << "\n==================\n";
-        logger() << "ColliderBit says,\n";
-        logger() << "\t\"Setting up analyses...\"\n";
-        for(auto name : analysisNames) {
-          logger() << "\t  Analysis name " << name << endl;
-          result.push_back( mkAnalysis(name) );
-        }
-        logger() << "ColliderBit says,\n";
-        logger() << "\t\"specifyAnalysisPointerVector() has finished.\"\n";
-        logger() << LogTags::info << endl << EOM;
-      }
-    }
-
-
-
-    /// *** Detector Simulators ***
-
-    void getDelphes(shared_ptr<Gambit::ColliderBit::DelphesBase> &result) {
-      using namespace Pipes::getDelphes;
-      std::vector<std::string> delphesOptions;
-      if (resetDelphesFlag) {
-#pragma omp critical (Delphes)
-        {
-          GET_COLLIDER_RUNOPTION(delphesOptions, std::vector<std::string>);
-          result.reset( mkDelphes("DelphesVanilla", delphesOptions) );
-          resetDelphesFlag = false;
-        }
-      }
-    }
-
-
-    void getBuckFast(shared_ptr<Gambit::ColliderBit::BuckFastBase> &result) {
-      using namespace Pipes::getBuckFast;
-      std::string buckFastOption;
-      if (resetBuckFastFlag) {
-#pragma omp critical (BuckFast)
-        {
-          GET_COLLIDER_RUNOPTION(buckFastOption, std::string);
-          result.reset( mkBuckFast(buckFastOption) );
-          resetBuckFastFlag = false;
-        }
-      }
-    }
-
 
 
     /// *** Loop Managers ***
@@ -185,8 +121,6 @@ namespace Gambit {
       }
       Loop::executeIteration(FINALIZE);
 
-      resetDelphesFlag = true;
-      resetBuckFastFlag = true;
       logger() << "==================" << endl;
       logger() << "ColliderBit says,";
       logger() << "\"operatePythia() completed.\"" << endl;
@@ -197,13 +131,16 @@ namespace Gambit {
 
     /// *** Hard Scattering Collider Simulators ***
 
-    void getPythia(shared_ptr<Gambit::ColliderBit::PythiaBase> &result) {
+    void getPythia(Gambit::ColliderBit::PythiaBase* &result) {
       using namespace Pipes::getPythia;
 
       if (resetPythiaFlag and *Loop::iteration > INIT) {
-        /// Should be within omp parallel block now.
+        /// Each thread gets its own Pythia instance.
+        /// Thus, the Pythia instantiation is *after* INIT.
         std::vector<std::string> pythiaOptions;
         std::string pythiaConfigName;
+
+        /// Setup new Pythia
         pythiaConfigName = "pythiaOptions";
         if (pythiaConfigurations) {
           pythiaConfigName += "_";
@@ -218,14 +155,100 @@ namespace Gambit {
         pythiaOptions.push_back("SLHA:file = " + slhaFilename);
         pythiaOptions.push_back("Random:seed = " + std::to_string(omp_get_thread_num()));
 
-        result.reset( mkPythia(*iter, pythiaOptions) );
+        result = mkPythia(*iter, pythiaOptions);
         pythiaOptions.clear();
         resetPythiaFlag = false;
       } else if (*Loop::iteration == END_SUBPROCESS) {
         xsecArray[omp_get_thread_num()] = result->pythia()->info.sigmaGen();
         xsecerrArray[omp_get_thread_num()] = result->pythia()->info.sigmaErr();
-        result.reset();
+
+        /// Each thread gets its own Pythia instance.
+        /// Thus, the Pythia memory clean-up is *before* FINALIZE.
+        /// memory clean-up
+        delete result;
+        result = 0;
         resetPythiaFlag = true;
+      }
+    }
+
+
+
+    /// *** Detector Simulators ***
+
+    void getDelphes(Gambit::ColliderBit::DelphesBase* &result) {
+      using namespace Pipes::getDelphes;
+      std::vector<std::string> delphesOptions;
+      if (resetDelphesFlag and *Loop::iteration == INIT) {
+#pragma omp critical (Delphes)
+        {
+          /// Setup new Delphes
+          GET_COLLIDER_RUNOPTION(delphesOptions, std::vector<std::string>);
+          result = mkDelphes("DelphesVanilla", delphesOptions);
+          resetDelphesFlag = false;
+        }
+      } else if (*Loop::iteration == FINALIZE) {
+        /// Memory clean-up: Delphes
+        delete result;
+        result = 0; 
+        resetDelphesFlag = true;
+      }
+    }
+
+
+    void getBuckFast(Gambit::ColliderBit::BuckFastBase* &result) {
+      using namespace Pipes::getBuckFast;
+      std::string buckFastOption;
+      if (resetBuckFastFlag and *Loop::iteration == INIT) {
+#pragma omp critical (BuckFast)
+        {
+          /// Setup new BuckFast
+          GET_COLLIDER_RUNOPTION(buckFastOption, std::string);
+          result = mkBuckFast(buckFastOption);
+          resetBuckFastFlag = false;
+        }
+      } else if (*Loop::iteration == FINALIZE) {
+        /// Memory clean-up: BuckFast
+        delete result;
+        result = 0; 
+        resetBuckFastFlag = true;
+      }
+    }
+
+
+
+   /// *** Initialization for analyses ***
+
+    void specifyAnalysisPointerVector(std::vector<Gambit::ColliderBit::Analysis*> &result) {
+      using namespace Pipes::specifyAnalysisPointerVector;
+      if (resetAnalysisFlag and *Loop::iteration == INIT) {
+        logger() << "\n==================\n";
+        logger() << "ColliderBit says,\n";
+        logger() << "\t\"specifyAnalysisPointerVector() was called.\"\n";
+        logger() << LogTags::info << endl << EOM;
+
+        std::vector<std::string> analysisNames;
+#pragma omp critical (runOptions)
+        {
+          GET_COLLIDER_RUNOPTION(analysisNames, std::vector<std::string>);
+        }
+
+        logger() << "\n==================\n";
+        logger() << "ColliderBit says,\n";
+        logger() << "\t\"Setting up analyses...\"\n";
+        for(auto name : analysisNames) {
+          logger() << "\t  Analysis name " << name << endl;
+          result.push_back( mkAnalysis(name) );
+        }
+        logger() << "ColliderBit says,\n";
+        logger() << "\t\"specifyAnalysisPointerVector() has finished.\"\n";
+        logger() << LogTags::info << endl << EOM;
+        resetAnalysisFlag = false;
+      } else if (*Loop::iteration == FINALIZE) {
+        /// Memory clean-up: Analyses
+        while (result.size() > 0)
+          delete result.at(0);
+        result.clear();
+        resetAnalysisFlag = true;
       }
     }
 
@@ -267,7 +290,7 @@ namespace Gambit {
         //if (isFinalB(i, pevt)) bhadrons.push_back(mk_pseudojet(p.p()));
 	
 	if(p.idAbs()==5) {
-	  vector<int> bDaughterList = p.daughterList();
+	  std::vector<int> bDaughterList = p.daughterList();
 	  bool isGoodB=true;
 	  for (size_t daughter = 0; daughter < bDaughterList.size(); daughter++) {
 	    const Pythia8::Particle& pDaughter = pevt[bDaughterList[daughter]];
@@ -286,7 +309,7 @@ namespace Gambit {
 	  
           // Veto leptonic taus
           //bool isLeptonicTau = false;
-          vector<int> tauDaughterList = p.daughterList();
+          std::vector<int> tauDaughterList = p.daughterList();
           P4 tmpMomentum;
           bool isGoodTau=true;
 	  
@@ -423,7 +446,7 @@ namespace Gambit {
 	  
 	  if(p.idAbs()==15) {
 
-	    vector<int> tauDaughterList = p.daughterList();
+	    std::vector<int> tauDaughterList = p.daughterList();
 	    P4 tmpMomentum;
 	    bool isGoodTau=true;
 	    
@@ -544,7 +567,6 @@ namespace Gambit {
 
       void reconstructDelphesEvent(HEPUtils::Event& result) {
 	using namespace Pipes::reconstructDelphesEvent;
-	if (*Loop::iteration == FINALIZE) resetDelphesFlag = true;
 	if (*Loop::iteration <= INIT) return;
 	result.clear();
 
@@ -556,7 +578,6 @@ namespace Gambit {
 
       void reconstructBuckFastEvent(HEPUtils::Event& result) {
 	using namespace Pipes::reconstructBuckFastEvent;
-	if (*Loop::iteration == FINALIZE) resetBuckFastFlag = true;
 	if (*Loop::iteration <= INIT) return;
 	result.clear();
 
@@ -581,7 +602,6 @@ namespace Gambit {
 		cout << "SR number test " << (*anaPtr)->get_results()[0].n_signal << endl;
 		result.push_back((*anaPtr)->get_results());
 	      }
-	    resetAnalysisFlag = true;
 	  }
 	else
 	  {
