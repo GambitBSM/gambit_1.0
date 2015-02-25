@@ -33,6 +33,13 @@ Issues:
    older build system are still around.  Try clearing out untracked
    project files if you are having problems (see 'git clean').
 
+ * Pythia (or other locally installed programs) may attempt to link
+   during compile, or may conflict during runtime with the BOSSed
+   version. To fix check your environment variables for 'ythia':
+      env | grep ythia
+   Then, remove all mentions of anything Pythia from your environment
+   variables. Try to build Gambit again afterwards.
+   
  * Delphes may fail to build unless the following is performed:
       cd modules/ColliderBit/src/delphes/
       ./make_dicts.sh
