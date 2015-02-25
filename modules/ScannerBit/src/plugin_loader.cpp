@@ -67,7 +67,7 @@ namespace Gambit
                                 for (auto it = plugins.begin(), end = plugins.end(); it != end; it++)
                                 {
                                         it->get_status(libNode, plugNode);
-                                        std::cout << it->printFull() << std::endl;
+                                        //std::cout << it->printFull() << std::endl;
                                 }
                         }
                         

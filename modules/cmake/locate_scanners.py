@@ -487,8 +487,8 @@ set_target_properties( scanlibs                 \n\
     #        inc_name = re.sub(r';|/|\.', '_', inc)
     #        towrite += "find_path( " + inc_name + "_INCLUDE_PATH \"" + inc + "\" )\n"
             
-    if len(incs) > 0:
-        towrite += "\n"
+    #if len(incs) > 0:
+    #    towrite += "\n"
     
     # now link the shared library to their respective plugin libraries
     for i in xrange(len(plug_type)):
