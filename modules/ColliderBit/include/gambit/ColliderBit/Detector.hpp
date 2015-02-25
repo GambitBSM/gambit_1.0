@@ -38,8 +38,8 @@ namespace Gambit {
 
       typedef EventIn EventInType;
       typedef EventOut EventOutType;
-      Detector() { }
-      virtual ~Detector() { }
+      Detector() {}
+      virtual ~Detector() {}
 
       /// @name Initialization functions
       //@{
@@ -61,6 +61,7 @@ namespace Gambit {
     class BuckFastBase : public Detector<HEPUtils::Event, HEPUtils::Event> {
     public:
 
+      BuckFastBase() : _processedEvent(0) {}
       /// @name Initialization functions
       //@{
       virtual void defaults() {}
@@ -80,7 +81,8 @@ namespace Gambit {
       //@{
       virtual void convertInput(const HEPUtils::Event& event) {
         /// Memory clean-up of any previous event.
-        delete _processedEvent;
+        if (_processedEvent)
+          delete _processedEvent;
         /// Make a local deep copy of the input event to be modified by processEvent.
         _processedEvent = event.clone();
       }
