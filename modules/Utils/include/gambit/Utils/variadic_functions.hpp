@@ -26,6 +26,13 @@
 #include <string>
 #include <type_traits>
 #include <cassert>
+#include <map>
+#include <unordered_map>
+#include <set>
+#include <unordered_set>
+#include <vector>
+#include <list>
+#include <forward_list>
 
 #include "yaml-cpp/yaml.h"
 
@@ -85,42 +92,145 @@ namespace Gambit
         };
         
         /////////////////////
+        //remove_all
+        /////////////////////
+        
+        template <typename T>
+        struct remove_all
+        {
+                typedef typename std::remove_cv
+                <
+                        typename std::remove_volatile
+                        <
+                                typename std::remove_const
+                                <
+                                        typename std::remove_reference
+                                        <
+                                                T
+                                        >::type
+                                >::type
+                        >::type
+                >::type type;
+        };
+        
+        /////////////////////
+        //is_container
+        /////////////////////
+
+        template <typename T>
+        struct __is_container__
+        {
+                static const bool value = false;
+                typedef T type;
+        };
+
+        template <typename T>
+        struct __is_container__<std::vector<T>>
+        {
+                static const bool value = true;
+                typedef T type;
+        };
+
+        template <typename T>
+        struct __is_container__<std::set<T>>
+        {
+                static const bool value = true;
+                typedef T type;
+        };
+
+        template <typename T1, typename T2>
+        struct __is_container__<std::map<T1, T2>>
+        {
+                static const bool value = true;
+                typedef std::pair<T1, T2> type;
+        };
+
+        template <typename T1, typename T2>
+        struct __is_container__<std::unordered_map<T1, T2>>
+        {
+                static const bool value = true;
+                typedef std::pair<T1, T2> type;
+        };
+
+        template <typename T>
+        struct __is_container__<std::unordered_set<T>>
+        {
+                static const bool value = true;
+                typedef T type;
+        };
+
+        template <typename T>
+        struct __is_container__<std::list<T>>
+        {
+                static const bool value = true;
+                typedef T type;
+        };
+
+        template <typename T>
+        struct __is_container__<std::forward_list<T>>
+        {
+                static const bool value = true;
+                typedef T type;
+        };
+
+        template <typename T>
+        struct is_container
+        {
+                const static bool value = __is_container__<typename remove_all<T>::type>::value;
+                typedef typename __is_container__<typename remove_all<T>::type>::type type;
+        };
+        
+        /////////////////////
         //is_vector
         /////////////////////
         
         template <typename T>
-        struct is_vector
+        struct __is_vector__
         {
                 static const bool value = false;
                 typedef T type;
         };
         
         template <typename T>
-        struct is_vector<std::vector<T>>
+        struct __is_vector__<std::vector<T>>
         {
                 static const bool value = true;
                 typedef T type;
         };
         
         template <typename T>
-        struct is_vector<const std::vector<T>>
+        struct is_vector
         {
-                static const bool value = true;
-                typedef T type;
+                const static bool value = __is_vector__<typename remove_all<T>::type>::value;
+                typedef typename __is_vector__<typename remove_all<T>::type>::type type;
         };
         
-        template <typename T>
-        struct is_vector<std::vector<T> &>
-        {
-                static const bool value = true;
-                typedef T type;
-        };
+        /////////////////////
+        //is_pair
+        /////////////////////
         
         template <typename T>
-        struct is_vector<const std::vector<T> &>
+        struct __is_pair__
         {
-                static const bool value = true;
-                typedef T type;
+                const static bool value = false;
+                typedef T first_type;
+                typedef T second_type;
+        };
+
+        template <typename T1, typename T2>
+        struct __is_pair__ <std::pair<T1, T2>>
+        {
+                const static bool value = true;
+                typedef T1 first_type;
+                typedef T2 second_type;
+        };
+                        
+        template <typename T>
+        struct is_pair
+        {
+                const static bool value = __is_pair__<typename remove_all<T>::type>::value;
+                typedef typename __is_pair__<typename remove_all<T>::type>::first_type first_type;
+                typedef typename __is_pair__<typename remove_all<T>::type>::second_type second_type;
         };
         
         //////////////////////////////////////
@@ -149,27 +259,6 @@ namespace Gambit
         
         template<typename... args>
         inline const std::string stringifyVariadic(const std::string &str, const args&... strs) {return str + ", " + stringifyVariadic(strs...);}
-        
-//         template <typename T>
-//         struct getVariadicNumber_internal;
-// 
-//         template <>
-//         struct getVariadicNumber_internal<void()>
-//         {
-//                 enum{N = 0};
-//         };
-// 
-//         template <typename T, typename... args>
-//         struct getVariadicNumber_internal<void (T, args...)>
-//         {
-//                 enum{N = 1 + getVariadicNumber_internal<void (args...)>::N};
-//         };
-// 
-//         template <typename... args>
-//         struct getVariadicNumber
-//         {
-//                 enum{N = getVariadicNumber_internal<void (args...)>::N};
-//         };
         
         /////////////////////////////////////////////////
         //Square Variadic

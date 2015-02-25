@@ -70,11 +70,12 @@ namespace Gambit
                                 std::map<std::string, std::map<std::string, std::vector<Plugin_Details>>> plugin_map;
                                 
                         public:
-                                Plugin_Loader();                       
+                                Plugin_Loader();
+                                void process(const std::string &, const std::string &);
                                 std::vector<Plugin_Details> getPluginsVec() const;
                                 std::map<std::string, std::map<std::string, std::vector<Plugin_Details>>> getPluginsMap() const;
                                 void loadLibrary (const std::string&, const std::string& = "");                        
-                                void print ();
+                                void print () const;
                                 Plugin_Details find (const std::string&, const std::string&, const std::string&, const std::string&) const;
                         };
                         

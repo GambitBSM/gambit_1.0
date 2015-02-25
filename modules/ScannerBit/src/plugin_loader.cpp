@@ -49,7 +49,9 @@ namespace Gambit
                                                 }
                                         }
                                         
-                                        pclose(p_f);  
+                                        pclose(p_f);
+                                        
+                                        process(GAMBIT_DIR "/ScannerBit/req_libs.yaml", GAMBIT_DIR "/ScannerBit/reqd_entries.yaml");
                                 }
                         }
                         
@@ -57,6 +59,18 @@ namespace Gambit
 
                         std::map<std::string, std::map<std::string, std::vector<Plugin_Details>>> Plugin_Loader::getPluginsMap() const {return plugin_map;}
 
+                        void Plugin_Loader::process(const std::string &libFile, const std::string &plugFile)
+                        {
+                                YAML::Node libNode = YAML::LoadFile(libFile);
+                                YAML::Node plugNode = YAML::LoadFile(plugFile);
+                                
+                                for (auto it = plugins.begin(), end = plugins.end(); it != end; it++)
+                                {
+                                        it->get_status(libNode, plugNode);
+                                        std::cout << it->printFull() << std::endl;
+                                }
+                        }
+                        
                         void Plugin_Loader::loadLibrary (const std::string &p_str, const std::string &plug)
                         {
                                 std::string str;
@@ -91,7 +105,7 @@ namespace Gambit
                                 }
                         }
                                         
-                        void Plugin_Loader::print ()
+                        void Plugin_Loader::print () const
                         {
                                 for (auto it = plugins.begin(), end = plugins.end(); it != end; it++)
                                 {

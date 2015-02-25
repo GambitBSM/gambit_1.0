@@ -34,6 +34,8 @@ scanner_plugin(toy_mcmc, version(1, 0, 0))
         /*Define main module function.  Can input and return any types or type (exp. cannot return void).*/
         int plugin_main (void)
         {
+                //reqd_libraries("freetype");
+                //reqd_include_paths("freetype.h", "not_there.h");
                 std::string output_file            = get_inifile_value<std::string>("output_file", "default_output");
                 int N                              = get_inifile_value<int>("point_number", 10)-1;
                 scan_ptr<double (const std::vector<double> &)> LogLike = get_purpose("Likelihood");

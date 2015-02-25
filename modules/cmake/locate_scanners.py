@@ -68,6 +68,8 @@ def main(argv):
     scanbit_links = dict()
     scanbit_reqs = dict()
     scanbit_auto_libs = dict()
+    scanbit_auto_incs = dict()
+    scanbit_link_libs = dict()
     #scanbit_static_links = dict()
     
     ## begin adding scannerbit files to CMakeLists.txt ##
@@ -111,6 +113,8 @@ def main(argv):
         scanbit_links[plug_type[i]] = dict()
         scanbit_reqs[plug_type[i]] = dict()
         scanbit_auto_libs[plug_type[i]] = dict()
+        scanbit_auto_incs[plug_type[i]] = dict()
+        scanbit_link_libs[plug_type[i]] = dict()
         #scanbit_static_links[plug_type[i]] = dict()
     
     # loop through the different plugin types
@@ -133,6 +137,7 @@ def main(argv):
                     last_plugin = ""
                     last_version= ""
                     last_plugin_file=[]
+                    processed = False
                     if verbose: print "  Scanning source file {0} for ScannerBit plugin declarations.".format(source)
                     text = comment_remover(f.read())
                     it = re.finditer(r'\breqd_inifile_entries\s*?\(.*?\)|\bREQD_INIFILE_ENTRIES\s*?\(.*?\)', text, re.DOTALL)
@@ -141,48 +146,94 @@ def main(argv):
                     obj_finds = [[m.span()[0], 0, m.group()] for m in it]
                     it = re.finditer(r'\bscanner_plugin\s*?\(.*?\)\s*?\{', text, re.DOTALL)
                     scan_finds = [[m.span()[0], 1, m.group()] for m in it]
-                    it = re.finditer(r'\breqd_libraries\s*?\(.*?\)|\bREQD_LIBARIES\s*?\(.*?\)', text, re.DOTALL)
+                    it = re.finditer(r'\breqd_libraries\s*?\(.*?\)|\bREQD_LIBRARIES\s*?\(.*?\)', text, re.DOTALL)
                     lib_finds = [[m.span()[0], -2, re.sub(r'\s', '', m.group())] for m in it]
-                    all_finds  = sorted(scan_finds + obj_finds + ini_finds + lib_finds)
+                    it = re.finditer(r'\breqd_include_paths\s*?\(.*?\)|\bREQD_INCLUDE_PATHS\s*?\(.*?\)', text, re.DOTALL)
+                    inc_finds = [[m.span()[0], -3, re.sub(r'\s', '', m.group())] for m in it]
+                    all_finds  = sorted(scan_finds + obj_finds + ini_finds + lib_finds + inc_finds)
                     for find in all_finds:
                         if find[1] == 0 or find[1] == 1:
-                            splitline = neatsplit('\(|\)|,|\s|\{',find[2])
+                            processed = False
+                            splitline = neatsplit(r'\(|\)|,|\s|\{',find[2])
                             if len(splitline) != 0: 
                                 plugin_name = splitline[1]
                                 mod_version = ["0","0","0",""]
                                 plugin_type = "scan" if splitline[0] == "scanner_plugin" else "like"
                                 if splitline[2] == "version": mod_version[0:len(splitline[3:])] = splitline[3:]
                                 token = "libs_present_"+plugin_name+"__t__"+plugin_type+"__v__"+"_".join([x for x in mod_version])
-                                last_plugin_file=[plugin_name, plugin_type, mod_version, "not_linked", token, [], directory, plug_type[i]]
+                                status = "ok"
+                                for x in exclude_plugins: 
+                                    if (plugin_name+"_"+"_".join([y for y in mod_version])).startswith(x):
+                                        status = "excluded"
+                                last_plugin_file=[plugin_name, plugin_type, mod_version, status, token, [], directory, plug_type[i]]
                                 
                                 last_plugin = plugin_name
                                 last_version = mod_version[0] + "." + mod_version[1] + "." + mod_version[2]
                                 
                                 if mod_version[3] != "":
                                     last_version += "-" + mod_version[3]
+                        
                         elif find[1] == -1:
                             if not scanbit_reqs[plug_type[i]].has_key(last_plugin):
                                 scanbit_reqs[plug_type[i]][last_plugin] = dict()
                             if scanbit_reqs[plug_type[i]][last_plugin].has_key(last_version):
-                                scanbit_reqs[plug_type[i]][last_plugin][last_version] += "," + find[2][21:-1]
+                                if scanbit_reqs[plug_type[i]][last_plugin][last_version][0] == "":
+                                    scanbit_reqs[plug_type[i]][last_plugin][last_version][0] = find[2][21:-1]
+                                else:
+                                    scanbit_reqs[plug_type[i]][last_plugin][last_version][0] += "," + find[2][21:-1]
                             else:
-                                scanbit_reqs[plug_type[i]][last_plugin][last_version] = find[2][21:-1]
+                                scanbit_reqs[plug_type[i]][last_plugin][last_version] = [find[2][21:-1], "", "", [], [], [], []]
+                        
                         elif find[1] == -2:
                             if not scanbit_auto_libs[plug_type[i]].has_key(directory):
                                 scanbit_auto_libs[plug_type[i]][directory] = neatsplit(',|\"', find[2][15:-1])
                             else:
                                 scanbit_auto_libs[plug_type[i]][directory] += neatsplit(',|\"', find[2][15:-1])
-                            plugins += [last_plugin_file]
+                                
+                            if not scanbit_reqs[plug_type[i]].has_key(last_plugin):
+                                scanbit_reqs[plug_type[i]][last_plugin] = dict()
+                            if scanbit_reqs[plug_type[i]][last_plugin].has_key(last_version):
+                                if scanbit_reqs[plug_type[i]][last_plugin][last_version][1] == "":
+                                    scanbit_reqs[plug_type[i]][last_plugin][last_version][1] = find[2][15:-1]
+                                else:
+                                    scanbit_reqs[plug_type[i]][last_plugin][last_version][1] += "," + find[2][15:-1]
+                            else:
+                                scanbit_reqs[plug_type[i]][last_plugin][last_version] = ["", find[2][15:-1], "", [], [], [], []]
+                            
+                            if (not processed) and (last_plugin_file[3] != "excluded"):
+                                last_plugin_file[3] = "link_needed"
+                                processed = True
+                                plugins += [last_plugin_file]
+                                
+                        elif find[1] == -3:    
+                            if not scanbit_auto_incs[plug_type[i]].has_key(directory):
+                                scanbit_auto_incs[plug_type[i]][directory] = neatsplit(',|\"', find[2][19:-1])
+                            else:
+                                scanbit_auto_incs[plug_type[i]][directory] += neatsplit(',|\"', find[2][19:-1])
+                                
+                            if not scanbit_reqs[plug_type[i]].has_key(last_plugin):
+                                scanbit_reqs[plug_type[i]][last_plugin] = dict()
+                            if scanbit_reqs[plug_type[i]][last_plugin].has_key(last_version):
+                                if scanbit_reqs[plug_type[i]][last_plugin][last_version][2] == "":
+                                    scanbit_reqs[plug_type[i]][last_plugin][last_version][2] = find[2][19:-1]
+                                else:
+                                    scanbit_reqs[plug_type[i]][last_plugin][last_version][2] += "," + find[2][19:-1]
+                            else:
+                                scanbit_reqs[plug_type[i]][last_plugin][last_version] = ["", "", find[2][19:-1], [], [], [], []]
+                                
+                            if (not processed) and (last_plugin_file[3] != "excluded"):
+                                processed = True
+                                plugins += [last_plugin_file]
                         
             ## begin adding plugin files to CMakeLists.txt ##
-                cmakelist_txt_out += " "*16 + source.split('./ScannerBit/')[1] + "\n"
+                cmakelist_txt_out += " "*16 + source.split('/ScannerBit/')[1] + "\n"
                 
             cmakelist_txt_out += ")\n\n"
             
             cmakelist_txt_out += "set( " + plug_type[i] + "_plugin_headers_" + directory + "\n"
             
             for header in sorted(headers):
-                cmakelist_txt_out += " "*16 + header.split('./ScannerBit/')[1] + "\n"
+                cmakelist_txt_out += " "*16 + header.split('/ScannerBit/')[1] + "\n"
                 
             cmakelist_txt_out += ")\n\n"
             ## end adding plugin files to CMakeLists.txt ## 
@@ -196,7 +247,9 @@ def main(argv):
             plugin_name = plugin[0]
             inc_commands = []
             auto_libs = []
+            auto_incs = []
             linkcommands = ""
+            linklibs = []
             #staticlinkcommands = ""
             linkdirs = []
             if yaml_file: 
@@ -216,44 +269,51 @@ def main(argv):
                                     libs = neatsplit(',|\s|;', f[key])
                                     for lib in libs:
                                         if os.path.isfile(lib):
-                                            go_ahead = True
-                                            for x in exclude_plugins: 
-                                                if (plugin_name+"_"+"_".join([y for y in version_bits])).startswith(x): go_ahead = False                    
-                                            if go_ahead:
-                                                if plugin[3] != "excluded": plugin[3] = "found"
-                                                lib = os.path.abspath(lib)
-                                                print "   Found library {0} needed for ScannerBit plugin {1} v{2}".format(lib,plugin_name,version)
-                                                if lib.endswith(".a"):
-                                                    static_links += lib + " "
-                                                    #[libdir, lib] = os.path.split(lib)
-                                                    #lib = re.sub("^lib|\..*$","",lib)
-                                                    #staticlinkcommands += "-L" + libdir + " -l" + lib + " "
-                                                else:
-                                                    [libdir, lib] = os.path.split(lib)
-                                                    lib = re.sub("^lib|\..*$","",lib)
-                                                    linkcommands += "-L" + libdir + " -l" + lib + " "
-                                                    linkdirs += [libdir]
+                                            lib_full = os.path.abspath(lib)
+                                            print "   Found library {0} needed for ScannerBit plugin {1} v{2}".format(lib,plugin_name,version)
+                                            if lib_full.endswith(".a"):
+                                                static_links += lib_full + " "
+                                                [libdir, lib] = os.path.split(lib_full)
+                                                lib = re.sub(r"^lib|\..*$","",lib)
+                                                #staticlinkcommands += "-L" + libdir + " -l" + lib + " "
                                             else:
-                                                plugin[3] = "excluded"
+                                                [libdir, lib] = os.path.split(lib_full)
+                                                lib = re.sub(r"^lib|\..*$","",lib)
+                                                linkcommands += "-L" + libdir + " -l" + lib + " "
+                                                linkdirs += [libdir]
+                                                
+                                            linklibs += [[lib, lib_full]]
+                                            scanbit_reqs[plugin[7]][plugin_name][version][3] += [lib]
                                         elif lib == "ROOT" or lib == "GSL":
                                             auto_libs += [lib]
+                                            #scanbit_reqs[plugin[7]][plugin_name][version][3] += [lib]
+                                            if scanbit_reqs[plugin[7]][plugin_name][version][1] == "":
+                                                scanbit_reqs[plugin[7]][plugin_name][version][1] = "\"" + lib + "\""
+                                            else:
+                                                scanbit_reqs[plugin[7]][plugin_name][version][1] += ",\"" + lib + "\""
                                         else:
-                                            plugin[3] = "missing"
+                                            [libdir, lib] = os.path.split(lib)
+                                            lib = re.sub("^lib|\..*$","",lib)
+                                            scanbit_reqs[plugin[7]][plugin_name][version][4] += [lib]
                                             
                                 elif key == "inc" or key == "incs" or key == "include" or key == "includes" or key == "include_path" or key == "include_paths":
                                     incs = neatsplit(',|\s|;', f[key])
                                     for inc in incs:
-                                        if os.path.isdir(inc):                            
-                                            go_ahead = True
-                                            for x in exclude_plugins: 
-                                                if (plugin_name+"_"+"_".join([y for y in version_bits])).startswith(x): go_ahead = False                    
-                                            if go_ahead:
-                                                if plugin[3] != "excluded": plugin[3] = "found"
-                                                inc = os.path.abspath(inc)
-                                                print "   Found include path {0} needed for ScannerBit plugin {1} v{2}".format(inc,plugin_name,version)
-                                                inc_commands += [inc]
+                                        if os.path.isdir(inc):
+                                            inc = os.path.abspath(inc)
+                                            print "   Found include path {0} needed for ScannerBit plugin {1} v{2}".format(inc,plugin_name,version)
+                                            inc_commands += [inc]
+                                            scanbit_reqs[plugin[7]][plugin_name][version][5] += [inc]
+                                        elif inc == "ROOT" or inc == "GSL":
+                                            auto_incs += [inc]
+                                            #scanbit_reqs[plugin[7]][plugin_name][version][5] += [inc]
+                                            if scanbit_reqs[plugin[7]][plugin_name][version][2] == "":
+                                                scanbit_reqs[plugin[7]][plugin_name][version][2] = "\"" + inc + "\""
                                             else:
-                                                plugin[3] = "excluded"
+                                                scanbit_reqs[plugin[7]][plugin_name][version][2] += ",\"" + inc + "\""
+                                        else:
+                                            plugin[3] = "missing"
+                                            scanbit_reqs[plugin[7]][plugin_name][version][6] += [inc]
                                 else:
                                     print "   Unknown infile option {0} needed for ScannerBit plugin {1} v{2}".format(key,plugin_name,version)
                         
@@ -283,6 +343,16 @@ def main(argv):
                                 scanbit_auto_libs[plugin[7]][plugin[6]] += auto_libs
                             else:
                                 scanbit_auto_libs[plugin[7]][plugin[6]] = auto_libs
+                        if auto_incs != []:
+                            if scanbit_auto_incs[plugin[7]].has_key(plugin[6]):
+                                scanbit_auto_incs[plugin[7]][plugin[6]] += auto_incs
+                            else:
+                                scanbit_auto_incs[plugin[7]][plugin[6]] = auto_incs
+                        if linklibs != []:
+                            if scanbit_link_libs[plugin[7]].has_key(plugin[6]):
+                                scanbit_link_libs[plugin[7]][plugin[6]] += linklibs
+                            else:
+                                scanbit_link_libs[plugin[7]][plugin[6]] = linklibs
       
     # Make a candidate cmake_variables.hpp.in file
     towrite = "\
@@ -336,7 +406,7 @@ def main(argv):
 #define GAMBIT_DIR \"@PROJECT_SOURCE_DIR@\"       \n\
 #define GAMBIT_BUILD_DIR \"@PROJECT_BINARY_DIR@\" \n"
 
-    towrite += "\n#endif // #defined__cmake_variables_hpp__"
+    towrite += "\n#endif //// #defined__cmake_variables_hpp__"
     header = "./cmake/cmake_variables.hpp.in"
     with open(header+".candidate","w") as f: f.write(towrite)
     update_cmakelists.update_only_if_different(header, header+".candidate")
@@ -394,15 +464,47 @@ set_target_properties( scanlibs                 \n\
                        PROPERTIES               \n\
                        RUNTIME_OUTPUT_DIRECTORY \"${CMAKE_CURRENT_SOURCE_DIR}/bin\")\n\n"
     
+    towrite += "set( reqd_lib_output )\n"
+    
+    for i in xrange(len(plug_type)):
+        directories = [ name for name in os.listdir(src_paths[i]) if os.path.isdir(src_paths[i] + "/" + name) ]
+        for directory in sorted(directories):
+            if scanbit_auto_libs.has_key(plug_type[i]) and scanbit_link_libs.has_key(plug_type[i]):
+                if scanbit_auto_libs[plug_type[i]].has_key(directory) and scanbit_link_libs[plug_type[i]].has_key(directory):
+                    temp = [p[0] for p in scanbit_link_libs[plug_type[i]][directory]]
+                    scanbit_auto_libs[plug_type[i]][directory] = set(lib for lib in scanbit_auto_libs[plug_type[i]][directory] if not lib in temp);
+    libs = set(lib for plug_key in scanbit_auto_libs for dir_key in scanbit_auto_libs[plug_key] for lib in scanbit_auto_libs[plug_key][dir_key]);
+    for lib in libs:
+        if lib != "ROOT":
+            towrite += "find_library( " + lib + "_LIBRARY " + lib + " )\n"
+            
+    if len(libs) > 0:
+        towrite += "\n"
+        
+    #incs = set(inc for plug_key in scanbit_auto_incs for dir_key in scanbit_auto_incs[plug_key] for inc in scanbit_auto_incs[plug_key][dir_key]);
+    #for inc in incs:
+    #    if inc != "ROOT":
+    #        inc_name = re.sub(r';|/|\.', '_', inc)
+    #        towrite += "find_path( " + inc_name + "_INCLUDE_PATH \"" + inc + "\" )\n"
+            
+    if len(incs) > 0:
+        towrite += "\n"
+    
     # now link the shared library to their respective plugin libraries
     for i in xrange(len(plug_type)):
         directories = [ name for name in os.listdir(src_paths[i]) if os.path.isdir(src_paths[i] + "/" + name) ]
         for directory in sorted(directories):
+                
+            towrite += "########## lib" + plug_type[i] + "_" + directory + ".so ##########\n\n"
+                
+            towrite += "set (" + plug_type[i] + "_compile_flag_" + directory + " \"\")\n\n"
+                
             towrite += "set (" + plug_type[i] + "_plugin_libraries_" + directory + "\n"
             if scanbit_libs.has_key(plug_type[i]):
                 if scanbit_libs[plug_type[i]].has_key(directory):
                     towrite += " "*16 + "\"" + scanbit_links[plug_type[i]][directory] + "\"\n"
             towrite += ")\n\n"
+            
             towrite += "set (" + plug_type[i] + "_plugin_rpath_" + directory + "\n"
             if scanbit_libs.has_key(plug_type[i]):
                 if scanbit_libs[plug_type[i]].has_key(directory):
@@ -410,48 +512,131 @@ set_target_properties( scanlibs                 \n\
                     if unique_libdirs:
                         towrite += " "*16 + "\"" + ";".join([libdir for libdir in unique_libdirs]) +"\"\n"
             towrite += ")\n\n"
+            
+            towrite += "set (" + plug_type[i] + "_plugin_includes_" + directory + "\n"
+            towrite += " "*16 + "${PLUGIN_INCLUDE_DIRECTORIES}\n"
+            towrite += " "*16 + "${CMAKE_CURRENT_SOURCE_DIR}/include/gambit/ScannerBit/" + plug_type[i] + "s/" + directory + "\n"
+            if scanbit_incs.has_key(plug_type[i]):
+                if scanbit_incs[plug_type[i]].has_key(directory):
+                    towrite += " "*16 + "\"" + ";".join(scanbit_incs[plug_type[i]][directory]) + "\"\n"
+            towrite += ")\n\n"
+            
+            towrite += "set (" + plug_type[i] + "_plugin_linked_libs_" + directory + " \"\")\n"
+            if scanbit_link_libs.has_key(plug_type[i]):
+                if scanbit_link_libs[plug_type[i]].has_key(directory):
+                    for lib in scanbit_link_libs[plug_type[i]][directory]:
+                        towrite += "set (" + plug_type[i] + "_plugin_linked_libs_" + directory + " \"${" + plug_type[i] + "_plugin_linked_libs_" + directory + "}" 
+                        towrite += "    " + lib[0] + ": " + lib[1] + "\\n\")\n"
+            
+            towrite += "set (" + plug_type[i] + "_plugin_found_incs_" + directory + " \"\")\n"
+            if scanbit_incs.has_key(plug_type[i]):
+                if scanbit_incs[plug_type[i]].has_key(directory):
+                    for inc in scanbit_incs[plug_type[i]][directory]:
+                        towrite += "set (" + plug_type[i] + "_plugin_found_incs_" + directory + " \"${" + plug_type[i] + "_plugin_found_incs_" + directory + "}" 
+                        towrite += "    \\\"" + plug_type[i] + "_locations.yaml\\\": " + inc + "\\n\")\n"
+            towrite += "\n"
+            
             if scanbit_auto_libs.has_key(plug_type[i]):
                 if scanbit_auto_libs[plug_type[i]].has_key(directory):
-                    for lib in scanbit_auto_libs[plug_type[i]][directory]:
-                        towrite += "if (" + lib + "_FOUND)\n"
-                        towrite += " "*4 + "foreach (" + lib + "_LIB ${" + lib + "_LIBRARIES})\n"
-                        towrite += " "*8 + "get_filename_component(lib_path ${" + lib + "_LIB} DIRECTORY)\n"
-                        towrite += " "*8 + "get_filename_component(lib_name ${" + lib + "_LIB} NAME_WE)\n"
-                        towrite += " "*8 + "string (REGEX REPLACE \"^lib\" \"\" lib_name ${lib_name})\n"
-                        towrite += " "*8 + "set (" + plug_type[i] + "_plugin_libraries_" + directory
-                        towrite += " \"${" + plug_type[i] + "_plugin_libraries_" + directory + "}"
-                        towrite += " -L${lib_path} -l${lib_name}\")\n"
-                        towrite += " "*4 + "endforeach()\n"
-                        towrite += " "*4 + "set (" + plug_type[i] + "_plugin_rpath_" + directory
-                        towrite += " \"${" + plug_type[i] + "_plugin_rpath_" + directory + "};${ROOT_LIBRARY_DIR}\")\n"
-                        towrite += "endif()\n\n"
-            towrite += "add_gambit_library( " + plug_type[i] + "_" + directory + " OPTION SHARED SOURCES ${" 
+                    temp = set(lib for lib in scanbit_auto_libs[plug_type[i]][directory])
+                    for lib in temp:
+                        if lib == "ROOT":
+                            towrite += "if (" + lib + "_FOUND)\n"
+                            towrite += " "*4 + "foreach (" + lib + "_LIB ${" + lib + "_LIBRARIES})\n"
+                            towrite += " "*8 + "get_filename_component(lib_path ${" + lib + "_LIB} DIRECTORY)\n"
+                            towrite += " "*8 + "get_filename_component(lib_name ${" + lib + "_LIB} NAME_WE)\n"
+                            towrite += " "*8 + "string (REGEX REPLACE \"^lib\" \"\" lib_name ${lib_name})\n"
+                            towrite += " "*8 + "set (" + plug_type[i] + "_plugin_libraries_" + directory
+                            towrite += " \"${" + plug_type[i] + "_plugin_libraries_" + directory + "}"
+                            towrite += " -L${lib_path} -l${lib_name}\")\n"
+                            towrite += " "*8 + "set (" + plug_type[i] + "_plugin_linked_libs_" + directory 
+                            towrite += " \"${" + plug_type[i] + "_plugin_linked_libs_" + directory +"}    " + lib + ": ${" + lib + "_LIB}\\n\")\n"
+                            towrite += " "*4 + "endforeach()\n"
+                            towrite += " "*4 + "set (" + plug_type[i] + "_plugin_rpath_" + directory
+                            towrite += " \"${" + plug_type[i] + "_plugin_rpath_" + directory + "};${ROOT_LIBRARY_DIR}\")\n"
+                            towrite += "endif()\n\n"
+                        else:
+                            towrite += "if( NOT " + lib + "_LIBRARY STREQUAL \"" + lib + "_LIBRARY-NOTFOUND\" )\n" 
+                            towrite += " "*4 + "get_filename_component(lib_path ${" + lib + "_LIBRARY} DIRECTORY)\n"
+                            towrite += " "*4 + "get_filename_component(lib_name ${" + lib + "_LIBRARY} NAME_WE)\n"
+                            towrite += " "*4 + "string (REGEX REPLACE \"^lib\" \"\" lib_name ${lib_name})\n"
+                            towrite += " "*4 + "set (" + plug_type[i] + "_plugin_libraries_" + directory
+                            towrite += " \"${" + plug_type[i] + "_plugin_libraries_" + directory + "}"
+                            towrite += " -L${lib_path} -l${lib_name}\")\n"
+                            towrite += " "*4 + "set (" + plug_type[i] + "_plugin_rpath_" + directory
+                            towrite += " \"${" + plug_type[i] + "_plugin_rpath_" + directory + "};${lib_path}\")\n"
+                            towrite += " "*4 + "set (" + plug_type[i] + "_plugin_linked_libs_" + directory 
+                            towrite += " \"${" + plug_type[i] + "_plugin_linked_libs_" + directory +"}    " + lib + ": ${" + lib + "_LIBRARY}\\n\")\n"
+                            towrite += "endif()\n\n"
+            
+            if scanbit_auto_incs.has_key(plug_type[i]):
+                if scanbit_auto_incs[plug_type[i]].has_key(directory):
+                    for inc in scanbit_auto_incs[plug_type[i]][directory]:
+                        if inc == "ROOT":
+                            towrite += "if (" + inc + "_FOUND)\n"
+                            towrite += " "*4 + "set (" + plug_type[i] + "_plugin_includes_" + directory + "\n"
+                            towrite += " "*8 + "${" + plug_type[i] + "_plugin_includes_" + directory + "}\n"
+                            towrite += " "*8 + "${ROOT_INCLUDE_DIR}\n"
+                            towrite += " "*4 + ")\n"
+                            towrite += " "*4 + "set (" + plug_type[i] + "_plugin_found_incs_" + directory
+                            towrite += " \"${" +  plug_type[i] + "_plugin_found_incs_" + directory + "}"
+                            towrite += "    \\\"" + inc + "\\\": ${ROOT_INCLUDE_DIR}\\n\")\n"
+                            towrite += "endif()\n\n"
+                        else:
+                            inc_name = plug_type[i] + "_" + directory + "_" + re.sub(r";|/|\.", "_", inc) + "_INCLUDE_PATH"
+                            towrite += "find_path( " + inc_name + " \"" + inc + "\" HINTS ${" + plug_type[i] + "_plugin_includes_" + directory + "})\n"
+                            towrite += "if( NOT " + inc_name + " STREQUAL \"" + inc_name + "-NOTFOUND\" )\n"
+                            towrite += " "*4 + "set (" + plug_type[i] + "_plugin_includes_" + directory + "\n"
+                            towrite += " "*8 + "${" + plug_type[i] + "_plugin_includes_" + directory + "}\n"
+                            towrite += " "*8 + "${" + inc_name + "}\n"
+                            towrite += " "*4 + ")\n"
+                            towrite += " "*4 + "set (" + plug_type[i] + "_plugin_found_incs_" + directory
+                            towrite += " \"${" +  plug_type[i] + "_plugin_found_incs_" + directory + "}"
+                            towrite += "    \\\"" + inc + "\\\": ${" + inc_name + "}\\n\")\n"
+                            towrite += "else()\n"
+                            towrite += " "*4 + "set (" + plug_type[i] + "_compile_flag_" + directory + " \"no_compile\")\n"
+                            towrite += "endif()\n\n"
+            towrite += "if( NOT ${" + plug_type[i] + "_plugin_linked_libs_" + directory + "} STREQUAL \"\" OR NOT ${" + plug_type[i] + "_plugin_found_incs_" + directory + "} STREQUAL \"\")\n"
+            towrite += " "*4 + "set ( reqd_lib_output \"${reqd_lib_output}lib" + plug_type[i] + "_" + directory + ".so:\\n\" )\n"
+            towrite += " "*4 + "if( NOT ${" + plug_type[i] + "_plugin_linked_libs_" + directory + "} STREQUAL \"\" )\n"
+            towrite += " "*8 + "set ( reqd_lib_output \"${reqd_lib_output}  linked_libs: \\n${" + plug_type[i] + "_plugin_linked_libs_" + directory + "}\")\n"            
+            towrite += " "*4 + "endif()\n"
+            towrite += " "*4 + "if( NOT ${" + plug_type[i] + "_plugin_found_incs_" + directory + "} STREQUAL \"\" )\n"
+            towrite += " "*8 + "set ( reqd_lib_output \"${reqd_lib_output}  found_incs: \\n${" + plug_type[i] + "_plugin_found_incs_" + directory + "}\")\n"
+            towrite += " "*4 + "endif()\n"
+            towrite += "endif()\n\n"
+            
+            towrite += "if ( " + plug_type[i] + "_compile_flag_" + directory + " STREQUAL \"\" )\n"
+            towrite += " "*4 + "add_gambit_library( " + plug_type[i] + "_" + directory + " OPTION SHARED SOURCES ${" 
             towrite += plug_type[i] + "_plugin_sources_" + directory + "} HEADERS ${"
             towrite += plug_type[i] + "_plugin_headers_" + directory + "} )\n"
-            towrite += "set_target_properties( " + plug_type[i] + "_" + directory + "\n" + " "*23 + "PROPERTIES\n"
+            towrite += " "*4 + "set_target_properties( " + plug_type[i] + "_" + directory + "\n" + " "*23 + "PROPERTIES\n"
             if sys.platform == "darwin":
-                towrite += " "*23 + "LINK_FLAGS \"${" + plug_type[i] + "_plugin_libraries_" + directory + "}\"\n"
+                towrite += " "*23 + "LINK_FLAGS \"-dynamiclib ${" + plug_type[i] + "_plugin_libraries_" + directory + "}\"\n"
             else:
                 towrite += " "*23 + "LINK_FLAGS \"-rdynamic ${" + plug_type[i] + "_plugin_libraries_" + directory + "}\"\n"
             towrite += " "*23 + "INSTALL_RPATH \"${" + plug_type[i] + "_plugin_rpath_" + directory + "}\"\n";
             if sys.platform == "darwin":
-                cflags = ""
+                cflags = "-dynamiclib"
             else:
                 cflags = "-rdynamic"
             #if scanbit_static_links.has_key(plug_type[i]):
             #    if scanbit_static_links[plug_type[i]].has_key(directory):
             #        if (len(scanbit_static_links[plug_type[i]][directory]) != 0):
             #            cflags = "-static " + scanbit_static_links[plug_type[i]][directory]
-            inc_dirs = "${CMAKE_CURRENT_SOURCE_DIR}/include/gambit/ScannerBit/" + plug_type[i] + "s/" + directory
-            if scanbit_incs.has_key(plug_type[i]):
-                if scanbit_incs[plug_type[i]].has_key(directory):
-                    inc_dirs += ";" + ";".join(scanbit_incs[plug_type[i]][directory])
+
             if cflags != "":
                 towrite += " "*23 + "COMPILE_FLAGS \"" + cflags + "\"\n"
-            towrite += " "*23 + "INCLUDE_DIRECTORIES \"${PLUGIN_INCLUDE_DIRECTORIES};" + inc_dirs + "\"\n"
+            towrite += " "*23 + "INCLUDE_DIRECTORIES \"${" + plug_type[i] + "_plugin_includes_" + directory + "}\"\n"
             towrite += " "*23 + "ARCHIVE_OUTPUT_DIRECTORY \"${CMAKE_CURRENT_SOURCE_DIR}/lib\"\n"
-            towrite += " "*23 + "LIBRARY_OUTPUT_DIRECTORY \"${CMAKE_CURRENT_SOURCE_DIR}/lib\")\n\n"
+            towrite += " "*23 + "LIBRARY_OUTPUT_DIRECTORY \"${CMAKE_CURRENT_SOURCE_DIR}/lib\")\n"
             #towrite += "target_include_directories( " + inc_dirs ")\n\n"
+            towrite += "else()\n"
+            towrite += " "*4 + "set ( reqd_lib_output \"${reqd_lib_output}lib" + plug_type[i] + "_" + directory + ".so:\\n"
+            towrite += "  excluded: ${" + plug_type[i] + "_compile_flag_" + directory + "}\\n\" )\n"
+            towrite += "endif()\n\n"
+            
+    towrite += "file( WRITE req_libs.yaml \"${reqd_lib_output}\" )\n\n"
 
     cmake = "./ScannerBit/CMakeLists.txt"
     with open(cmake+".candidate","w") as f: f.write(towrite)
@@ -483,7 +668,16 @@ set_target_properties( scanlibs                 \n\
         for plug_key in scanbit_reqs[type_key]:
             towrite += " "*2 + plug_key + ":\n"
             for version_key in scanbit_reqs[type_key][plug_key]:
-                towrite += " "*4 + version_key + ": [" + scanbit_reqs[type_key][plug_key][version_key] + "]\n"
+                towrite += " "*4 + version_key + ":\n"
+                #if scanbit_reqs[type_key][plug_key][version_key][0] != "":
+                towrite += " "*6 + "reqd_inifile_entries: [" + scanbit_reqs[type_key][plug_key][version_key][0] + "]\n"
+                #if scanbit_reqs[type_key][plug_key][version_key][1] != "":
+                towrite += " "*6 + "reqd_libraries: [" + scanbit_reqs[type_key][plug_key][version_key][1] + "]\n"
+                towrite += " "*6 + "reqd_include_paths: [" + scanbit_reqs[type_key][plug_key][version_key][2] + "]\n"
+                towrite += " "*6 + "linked_libraries: [" + ",".join(scanbit_reqs[type_key][plug_key][version_key][3]) + "]\n"
+                towrite += " "*6 + "not_linked_libraries: [" + ",".join(scanbit_reqs[type_key][plug_key][version_key][4]) + "]\n"
+                towrite += " "*6 + "found_include_paths: [" + ",".join(scanbit_reqs[type_key][plug_key][version_key][5]) + "]\n"
+                towrite += " "*6 + "not_found_include_paths: [" + ",".join(scanbit_reqs[type_key][plug_key][version_key][6]) + "]\n"
         towrite += "\n"
 
     cmake = "./ScannerBit/reqd_entries.yaml"

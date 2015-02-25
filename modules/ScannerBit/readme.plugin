@@ -9,9 +9,8 @@ Introduction to Gambit plugins:
    a wide variety of purposes.  "scanner_plugin"s specify
    a plugin that will be used as a scanner whereas "objective_plugin"s
    are general use plugins that can be used as test functions,
-   likelihoods, priors, etc.  Below is an example of a 
-   scanner_plugin declaration and well as the appropriate
-   inifile entry for this scanner.
+   likelihoods, priors, etc.  Below is an discription and instructions 
+   for these plugins.
 
 Sections:
 
@@ -47,6 +46,16 @@ Quick discription of this example:
 /* declare a plugin of name "my_cool_scanner" of version "0.0.0-beta" */
 scanner_plugin(my_cool_scanner, version(0, 0, 0, beta))
 {
+   /* specify that the entry "number" is required by gambit. */
+   reqd_inifile_entries("number");
+   
+   /* tell gambit to look for the library "my_cool_library" */
+   reqd_libraries("my_cool_library");
+   
+   /* tell gambit that the file "my_cool_header.h" is needed
+      to compile this plugin.*/
+   reqd_include_paths("my_cool_header.h");
+   
    /* declare a scanner function "loglike" that inputs 
       a "std::vector<double> &" and outout a "double" */
    scan_ptr<double (const std::vector<double> &)> loglike;
@@ -130,7 +139,7 @@ get_inifile_value<ret_type>("tag", default);
 get_dimension()
 -- Gets the dimension of the unit hypercube being explored.
 
-get_functor("purpose")
+get_purpose("purpose")
 -- gets the functor corresponding to the purpose "purpose"
 
 scan_ptr<ret (args...)>
@@ -186,16 +195,42 @@ linking external libraries:
    
    my_cool_scanner:
      0.0.0-beta: 
-       - lib: ./my_cool_library.so
+       - lib: ./libmy_cool_library.so
        - inc: ./my_cool_path
    
    in config/scanner_locations.yaml.
    
 -- Note that if you link to an external library, you must
-   include the "external_library_required" flag in the plugin declaration.
+   include the "reqd_libraries" function in the plugin declaration.
    For example, in the example above, the plugin declaration would be:
    
-   scanner_plugin(my_cool_scanner, version(0, 0, 0, beta), external_library_required)
+   scanner_plugin(my_cool_scanner, version(0, 0, 0, beta))
+   {
+     req_libraries();
+   }
+   
+   Optionally, You can specify library names in the "reqd_libraries".
+   If you do you, gambit will try to find these libraries for
+   you.  In the above example, this would be:
+   
+   scanner_plugin(my_cool_scanner, version(0, 0, 0, beta))
+   {
+     req_libraries("my_cool_library");
+   }
+   
+requiring existance of files to compile:
+   
+-- You can also specify that a certain file must be found in
+   order to compile.  This is done with the "reqd_include_paths"
+   function:
+   
+   scanner_plugin(my_cool_scanner, version(0, 0, 0, beta))
+   {
+     reqd_include_paths("my_cool_header.h");
+   }
+   
+   In the above example, "my_cool_scanner" will not to compiled
+   unless "my_cool_header.h" is found.
 
 *************************************************************
 ************* END PLUGIN COMPILATION SECTION ****************
@@ -256,6 +291,18 @@ use_objective_plugins:
    to use.
    
 *************************************************************
+
+*********** specifying required inifile entries *************
+
+-- You can specify required inifile entries with the function
+   "reqd_inifile_entries(...)".  If you do, ScannerBit will
+   not load the plugin if these inifile entries are not specified.
+   In the above example, this is:
+   
+   scanner_plugin(my_cool_scanner, version(0, 0, 0, beta))
+   {
+     req_inifile_entries("example");
+   }
 
 *************************************************************
 ************* END PLUGIN INIFILE SECTION ********************
