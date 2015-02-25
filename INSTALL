@@ -40,11 +40,6 @@ Issues:
    Then, remove all mentions of anything Pythia from your environment
    variables. Try to build Gambit again afterwards.
    
- * Delphes may fail to build unless the following is performed:
-      cd modules/ColliderBit/src/delphes/
-      ./make_dicts.sh
-   (TODO: do this automatically through cmake)
-
  * If you have problems compiling FlexibleSUSY/SpecBit and do not
    have need of them, disable them in the cmake command:
        cmake -Ditch="Spec" ..
@@ -55,7 +50,7 @@ Issues:
    backend, scanner, model or test function, will be excluded from
    the compile.
 
- * In the case the gambit stops complaining about IO errors when opening a
+ * In the case the gambit stops, complaining about IO errors when opening a
    file in some non-existing path, create the path by hand.
 
  * If you run the gambit CMake setting gcc as the C++ complier,
