@@ -45,6 +45,7 @@ namespace Gambit
 
         /// Manual declarations of minimal print functions needed by ScannerBit
         virtual void print(int                 const&, const std::string&, const int, const int, const int) = 0;
+        virtual void print(unsigned int        const&, const std::string&, const int, const int, const int) = 0;
         virtual void print(double              const&, const std::string&, const int, const int, const int) = 0;
         virtual void print(std::vector<double> const&, const std::string&, const int, const int, const int) = 0;
 

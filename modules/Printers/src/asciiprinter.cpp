@@ -23,6 +23,7 @@
 #include <map>
 #include <vector>
 #include <algorithm>
+#include <ios>
 #include <sstream>
 #include <fstream>
 #include <iomanip>
@@ -50,19 +51,34 @@ namespace Gambit
   namespace Printers 
   {
 
+    /// Open file stream with error checking
+    //TODO: It would be good to add something like this to the Gambit Utils to use as a standard I think.
+
+    void open_output_file(std::ofstream& output, std::string filename, std::ios_base::openmode mode)
+    {
+      // Pass in reference to externally created ofstream "output"
+      output.open(filename, std::ofstream::out | mode);
+
+      if( output.fail() | output.bad() )
+      {
+         std::ostringstream ss;
+         ss << "IO error while opening file for writing! Tried to open ofstream to file \""<<filename<<"\", but encountered error bit in the created ostream.";
+         throw std::runtime_error( ss.str() ); 
+      }
+    }
+
     Record::Record() : readyToPrint(false) {};
 
     void Record::reset()
     {
        data.clear();
        readyToPrint = false;
-        
     }
  
     // Printer to ascii file (i.e. table of doubles)
 
     // Common constructor tasks
-    common_constructor()
+    void asciiPrinter::common_constructor()
     {
       // (Needs modifying when full MPI implentation is done)
       // Initialise "lastPointID" map to -1 (i.e. no last point)
@@ -70,25 +86,24 @@ namespace Gambit
 
       // Erase contents of output_file and info_file if they already exist
       std::ofstream output;
-      output.open(output_file, std::ofstream::out | std::ofstream::trunc);
+      open_output_file(output, output_file, std::ofstream::trunc);
       output.close();
       
       std::ofstream info;
-      info.open(info_file, std::ofstream::out | std::ofstream::trunc);
+      open_output_file(info, info_file, std::ofstream::trunc);
       info.close();
     }
 
     // Constructor
     asciiPrinter::asciiPrinter(const Options& options)
-      : output_file( Utils::ensure_path_exists(options.getValue<std::string>("output_file")), 
-                  std::ofstream::out)
-      , info_file( Utils::ensure_path_exists(options.getValue<std::string>("info_file")), 
-                    std::ofstream::out)
-      , bufferlength(10)
+      : output_file( Utils::ensure_path_exists(options.getValue<std::string>("output_file")) )
+      , info_file( Utils::ensure_path_exists(options.getValue<std::string>("info_file")) )
+      , bufferlength(1000)
       , myRank(0)
-      , precision(6)
+      , precision(10)
       , info_file_written(false)
       , global(false)
+      , printer_name("Primary")
     {
       DBUG( std::cout << "Constructing Primary asciiPrinter object..." << std::endl; )
       common_constructor();
@@ -96,18 +111,17 @@ namespace Gambit
  
     /// Auxiliary mode constructor 
     asciiPrinter::asciiPrinter(const Options& options, std::string& name, bool globalIN)
-      : output_file( Utils::ensure_path_exists(name+"-"+options.getValue<std::string>("output_file")), 
-                  std::ofstream::out)
-      , info_file( Utils::ensure_path_exists(name+"-"+options.getValue<std::string>("info_file")), 
-                    std::ofstream::out)
-      , bufferlength(10)
+      : output_file( Utils::ensure_path_exists(options.getValue<std::string>("output_file")) )
+      , info_file( Utils::ensure_path_exists(options.getValue<std::string>("info_file")) )
+      , bufferlength(1000)
       , myRank(0)
-      , precision(6)
+      , precision(10)
       , info_file_written(false)
       , global(globalIN)
+      , printer_name(name)
     {
       // Could set these things via options also if we like.
-      DBUG( std::cout << "Constructing Auxilliary asciiPrinter object..." << std::endl; )
+      DBUG( std::cout << "Constructing Auxilliary asciiPrinter object (with name=\""<<printer_name<<"\")..." << std::endl; )
       common_constructor();
     }
  
@@ -116,9 +130,9 @@ namespace Gambit
     asciiPrinter::~asciiPrinter()
     {
       // Make sure buffer is completely written to disk
-      DBUG( std::cout << "Destructing asciiPrinter object..." << std::endl; )
+      DBUG( std::cout << "Destructing asciiPrinter object (with name=\""<<printer_name<<"\")..." << std::endl; )
       dump_buffer(true);
-      DBUG( std::cout << "Buffer successfully dumped..." << std::endl; )
+      DBUG( std::cout << "Buffer (of asciiPrinter with name=\""<<printer_name<<"\") successfully dumped..." << std::endl; )
     }
  
     /// Initialisation function
@@ -139,9 +153,18 @@ namespace Gambit
       // } 
     }
 
-    void asciiPrinter::flush() {};
+    void asciiPrinter::flush() {}
 
-    void asciiPrinter::reset() {};
+    /// Delete contents of output file (to be replaced/updated) and erase everything in the buffer
+    void asciiPrinter::reset() 
+    {
+      std::ofstream my_fstream;
+      open_output_file(my_fstream, output_file, std::ofstream::trunc);
+      my_fstream.close();
+      erase_buffer();
+      lastPointID.clear();
+      lastPointID[0] = -1; // Only rank 0 process for now; parallel mode not implemented (same as in constructor)
+    }
 
     /// Retrieve MPI rank
     int asciiPrinter::getRank() {return myRank;}
@@ -149,6 +172,10 @@ namespace Gambit
     /// Clear buffer
     void asciiPrinter::erase_buffer()
     {
+      // Used to just erase the records, but preserve vertex IDs. Not sure this is necessary, so for now just 
+      // emptying the map.
+      buffer.clear();
+
       // Obsolete; redo this
       // for (int i=0; i<bufferlength; i++)
       // {
@@ -249,14 +276,9 @@ is a unique record for every rank/pointID pair.";
       DBUG( std::cout << "dumping asciiprinter buffer" << std::endl; )
       DBUG( std::cout << "lfpvfc 1" << std::endl; )
 
-      // Open file in append mode, unless global=true, then overwrite old contents!
+      // Open output file in append mode
       std::ofstream my_fstream;
-      if(global)
-      {
-         my_fstream.open (output_file, std::ofstream::out | std::ofstream::trunc);
-      } else {
-         my_fstream.open (output_file, std::ofstream::out | std::ofstream::app);
-      }
+      open_output_file(my_fstream, output_file, std::ofstream::app);
       my_fstream.precision(precision);
 
       std::map<int,int> newlineindexrecord;
@@ -298,7 +320,7 @@ is a unique record for every rank/pointID pair.";
         DBUG( std::cout << "asciiPrinter: Writing info file..." << std::endl; )
          
         std::ofstream info_fstream;
-        info_fstream.open(info_file, std::ofstream::out | std::ofstream::trunc); // trunc mode overwrites old contents
+        open_output_file(info_fstream, info_file, std::ofstream::trunc); // trunc mode overwrites old content
 
         int column_index = 1;
         for (std::map<int,int>::iterator
@@ -308,7 +330,7 @@ is a unique record for every rank/pointID pair.";
           int length     = it->second;     // slots reserved in output file for these results
           for (int i=0; i<length; i++)
           {
-            std::cout<<"Column "<<column_index<<": "<<label_record.at(vID)[i]<<std::endl;
+            DBUG( std::cout<<"Column "<<column_index<<": "<<label_record.at(vID)[i]<<std::endl; )
             info_fstream<<"Column "<<column_index<<": "<<label_record.at(vID)[i]<<std::endl;
             column_index++;
           }
@@ -364,17 +386,18 @@ is a unique record for every rank/pointID pair.";
             int length     = it->second;     // slots reserved in output file for these results          
  
             // Print to the fstream!
+            int colwidth = precision + 8;  // Just kind of guessing here; tweak as needed
             for (int j=0;j<length;j++)
             {
               if(j>=reslength)
               {
                 // Allocated space exceeded; fill remaining slots with 'none'
-                my_fstream<<std::setw(14)<<"none";
+                my_fstream<<std::setw(colwidth)<<"none";
               }
               else
               {
                 // print an entry from the results vector
-                my_fstream<<std::setw(14)<<std::scientific<<(*results)[j]; //<<"\t";
+                my_fstream<<std::setw(colwidth)<<std::scientific<<(*results)[j]; //<<"\t";
               }
             }
             // Result printed
@@ -407,18 +430,29 @@ is a unique record for every rank/pointID pair.";
     // Need to define one of these for every type we want to print!
     // Could use macros again to generate identical print functions 
     // for all types that have a << operator already defined.
-    void asciiPrinter::print(double const& value, const std::string& label, const int IDcode, const int thread, const int pointID)
+   
+    // Template for print functions of "easy" types
+    template<class T>
+    void asciiPrinter::template_print(T const& value, const std::string& label, const int IDcode, const int thread, const int pointID)
     {
-      std::vector<double> vdvalue(1,value);
+      std::vector<double> vdvalue(1,value); // For now everything has to end up as a vector of doubles
       std::vector<std::string> labels(1,label);
       addtobuffer(vdvalue,labels,IDcode,thread,pointID);       
     }
- 
+
+    void asciiPrinter::print(int const& value, const std::string& label, const int IDcode, const int thread, const int pointID)
+    { template_print(value,label,IDcode,thread,pointID); }
+    void asciiPrinter::print(unsigned int const& value, const std::string& label, const int IDcode, const int thread, const int pointID)
+    { template_print(value,label,IDcode,thread,pointID); }
+    void asciiPrinter::print(double const& value, const std::string& label, const int IDcode, const int thread, const int pointID)
+    { template_print(value,label,IDcode,thread,pointID); }
+    // etc. as needed... 
+
     void asciiPrinter::print(std::vector<double> const& value, const std::string& label, const int IDcode, const int thread, const int pointID)
     {
       std::vector<std::string> labels;
       labels.reserve(value.size());
-      for(int i=0;i<value.size();i++)
+      for(unsigned int i=0;i<value.size();i++)
       {
         // Might want to find some way to avoid doing this every single loop, seems kind of wasteful.
         std::stringstream ss;

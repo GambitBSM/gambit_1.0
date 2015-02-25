@@ -27,7 +27,7 @@
 #include "gambit/Utils/yaml_options.hpp"
 
 // Switch for debugging output (manual at the moment)
-#define DEBUG_MODE
+//#define DEBUG_MODE
 
 #ifdef DEBUG_MODE 
   #define DBUG(x) x
@@ -71,8 +71,12 @@ namespace Gambit
     PrinterManager::~PrinterManager()
     {
       // Delete all the printer objects
-      DBUG( std::cout << "PrinterManager: Destructing printer..." << std::endl; )
+      DBUG( std::cout << "PrinterManager: Destructing printers..." << std::endl; )
       delete printerptr;
+      typedef std::map<std::string, BasePrinter*>::iterator it_type;
+      for(it_type it = auxprinters.begin(); it != auxprinters.end(); it++) {
+         delete it->second; // Delete the printer to which this pointer points.
+      } 
     }
 
     // Create new printer object (of the same type as the primary printer)

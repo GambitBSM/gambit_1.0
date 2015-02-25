@@ -84,7 +84,7 @@ namespace Gambit
         asciiPrinter(const Options&, std::string&, bool global=0);
 
         /// Tasks common to the various constructors
-        common_constructor();
+        void common_constructor();
 
         /// Destructor
         // Overload the base class virtual destructor
@@ -122,10 +122,18 @@ namespace Gambit
         // Need to define one of these for every type we want to print!
         // Could use macros again to generate identical print functions 
         // for all types that have a << operator already defined.
+        void print(int const&,                 const std::string& label, const int IDcode, const int rank, const int pointID);
+        void print(unsigned int const&,        const std::string& label, const int IDcode, const int rank, const int pointID);
         void print(double const&,              const std::string& label, const int IDcode, const int rank, const int pointID);
         void print(std::vector<double> const&, const std::string& label, const int IDcode, const int rank, const int pointID);
         void print(ModelParameters const&,     const std::string& label, const int IDcode, const int rank, const int pointID);
       
+        /// Helper print functions
+        // Used to reduce repetition in definitions of virtual function overloads 
+        // (useful since there is no automatic type conversion possible)
+        template<class T>
+        void template_print(T const&, const std::string&, const int, const int, const int);
+
       private:
         /// Output file
         std::string output_file;
@@ -139,7 +147,7 @@ namespace Gambit
         std::ofstream info_fstream;
 
         /// Number of lines to store in buffer before printing
-        int bufferlength;
+        unsigned int bufferlength;
 
         /// MPI rank (currently not hooked up to MPI, just hardcoded to 0)
         int myRank;
@@ -171,6 +179,8 @@ namespace Gambit
         // via auxilliary printers in ScannerBit)
         bool global;
 
+        /// Label for printer, mostly for more helpful error messages
+        std::string printer_name;
     };
 
     // Register printer so it can be constructed via inifile instructions

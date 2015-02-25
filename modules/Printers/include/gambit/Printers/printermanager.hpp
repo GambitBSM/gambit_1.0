@@ -60,7 +60,7 @@ namespace Gambit
         void new_stream(const std::string&, const Options&);
 
         /// Getter for auxiliary printer objects
-        BaseBasePrinter* get_stream(const std::string&);
+        BaseBasePrinter* get_stream(const std::string& = "");
     };
 
 

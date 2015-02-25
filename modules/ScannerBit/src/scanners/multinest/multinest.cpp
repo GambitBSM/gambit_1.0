@@ -101,7 +101,10 @@ scanner_plugin(MultiNest, version(0, 0, 0, bens_version))
       int maxiter (	get_inifile_value<int>("maxiter", 0) );		// max no. of iterations, a non-positive value means infinity. MultiNest will terminate if either it 
       									// has done max no. of iterations or convergence criterion (defined through tol) has been satisfied
       void *context = 0;	// not required by MultiNest, any additional information user wants to pass
-         
+      
+      std::cout << "ndims:" << ndims << std::endl;
+      std::cout << "nPar: " << nPar  << std::endl;
+   
       // Get inifile options for each print stream
       Gambit::Options txt_options   = get_inifile_node("aux_printer_txt_options");
       Gambit::Options stats_options = get_inifile_node("aux_printer_stats_options");
@@ -230,8 +233,16 @@ namespace Gambit {
          //   Cube[i] = physicalpars[i];
          //}
 
-         Cube[ndim+0] = 0;   // thread ID number ///TODO: need to implement parallel running for printers to do this.
-         Cube[ndim+1] = boundLogLike->getPtID(); // point ID number
+         int thread  = 0;  // thread ID number ///TODO: need to implement parallel running for printers to do this.
+         int pointID = boundLogLike->getPtID(); // point ID number
+
+         Cube[ndim+0] = thread;
+         Cube[ndim+1] = pointID;
+
+         // Output these to the printer
+         printer* primary_stream( boundPrinter.get_stream() );
+         primary_stream->print( thread,  "thread",  -7, thread, pointID);
+         primary_stream->print( pointID, "pointID", -8, thread, pointID);
 
          // If we want the printer to record anything extra, can send 
          // the data to the usual print function by calling, e.g.:
@@ -292,9 +303,9 @@ namespace Gambit {
           printer* txt_stream(   boundPrinter.get_stream("txt")   );
           printer* live_stream(  boundPrinter.get_stream("live")  );
 
-          stats_stream->reset(); // WARNING! (potentially) Deletes the old data
-          txt_stream->reset();   // WARNING! (potentially) Deletes the old data
-          live_stream->reset();  // WARNING! (potentially) Deletes the old data
+          stats_stream->reset(); // WARNING! (potentially) Deletes the old data (here we overwrite it on purpose)
+          txt_stream->reset();   //   "    "
+          live_stream->reset();  //   "    "
 
           // Ensure the "quantity" IDcode is UNIQUE across all printers! This way fancy printers
           // have the option of ignoring duplicate writes and doing things like combine all the
@@ -335,12 +346,14 @@ namespace Gambit {
           {
              thread  = posterior[(nPar-2)*nSamples + i]; //thread number stored in second last entry of cube
              pointID = posterior[(nPar-1)*nSamples + i]; //pointID stored in last entry of cube
-              
+           
+             txt_stream->print( thread,  "thread",  -7, thread, pointID);
+             txt_stream->print( pointID, "pointID", -8, thread, pointID);
              txt_stream->print( posterior[(nPar+0)*nSamples + i], "LogLike",   -4, thread, pointID);
              txt_stream->print( posterior[(nPar+1)*nSamples + i], "Posterior", -5, thread, pointID);
              // Put rest of parameters into a vector for printing all together
              std::vector<double> parameters;
-             for( int j = 0; j < nPar-1; j++ )
+             for( int j = 0; j < nPar-2; j++ )
              {
                  parameters.push_back( posterior[j*nSamples + i] );
              }
@@ -355,10 +368,12 @@ namespace Gambit {
           {
              thread  = physLive[(nPar-2)*nlive + i]; //thread number stored in second last entry of cube
              pointID = physLive[(nPar-1)*nlive + i]; //pointID stored in last entry of cube
+             live_stream->print( thread,  "thread",  -7, thread, pointID);
+             live_stream->print( pointID, "pointID", -8, thread, pointID);
              live_stream->print( physLive[(nPar+0)*nlive + i], "LogLike", -4, thread, pointID);
              // Put rest of parameters into a vector for printing all together
              std::vector<double> parameters;
-             for( int j = 0; j < nPar-1; j++ )
+             for( int j = 0; j < nPar-2; j++ )
              {
                  parameters.push_back( physLive[j*nlive + i] );
              }
