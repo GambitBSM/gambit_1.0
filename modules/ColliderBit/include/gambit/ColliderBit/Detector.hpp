@@ -81,10 +81,16 @@ namespace Gambit {
       //@{
       virtual void convertInput(const HEPUtils::Event& event) {
         /// Memory clean-up of any previous event.
-        if (_processedEvent)
+	std::cout << "In convertInput " <<  std::endl;
+        if (_processedEvent){
+	  std::cout << "Deleting event " << _processedEvent <<  std::endl;
           delete _processedEvent;
-        /// Make a local deep copy of the input event to be modified by processEvent.
+	  std::cout << "Deleted event " <<  std::endl;
+	  /// Make a local deep copy of the input event to be modified by processEvent.
+	}
+	std::cout << "Attempting to clone " <<  std::endl;
         _processedEvent = event.clone();
+	std::cout << "Finished clone " <<  std::endl;
       }
 
       virtual void convertOutput(HEPUtils::Event& event) {
