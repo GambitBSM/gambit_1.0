@@ -30,8 +30,7 @@ namespace Gambit {
       std::vector<Particle*> survivors;
       for (Particle* e : electrons) {
         // std::cout << e->abseta() << " " << e->pT() << std::endl;
-        if (random_bool(_elTrackEff2d, e->abseta(), e->pT()))
-          survivors.push_back(e);
+        if (random_bool(_elTrackEff2d, e->abseta(), e->pT())) survivors.push_back(e); else delete e;
       }
       electrons = survivors;
     }
@@ -48,8 +47,7 @@ namespace Gambit {
       /// @todo Replace by filter_if + lambda
       std::vector<Particle*> survivors;
       for (Particle* e : electrons) {
-        if (random_bool(_elEff2d, e->abseta(), e->pT()))
-          survivors.push_back(e);
+        if (random_bool(_elEff2d, e->abseta(), e->pT())) survivors.push_back(e); else delete e;
       }
       electrons = survivors;
     }
@@ -67,8 +65,7 @@ namespace Gambit {
       std::vector<Particle*> survivors;
       for (Particle* mu : muons) {
         // std::cout << "MUON PT " << mu_pt << " ETA " << mu_eta << " trackeff " << _muTrackEff2d.get_at(fabs(mu_eta), fabs(mu_pt)) << std::endl;
-        if (random_bool(_muTrackEff2d, mu->abseta(), mu->pT()))
-          survivors.push_back(mu);
+        if (random_bool(_muTrackEff2d, mu->abseta(), mu->pT())) survivors.push_back(mu); else delete mu;
       }
       muons = survivors;
     }
@@ -84,8 +81,7 @@ namespace Gambit {
       std::vector<Particle*> survivors;
       for (Particle* mu : muons) {
         //std::cout << "MUON PT " << mu_pt << " ETA " << mu_eta << " eff " << _muEff2d.get_at(fabs(mu_eta), fabs(mu_pt)) << std::endl;
-        if (random_bool(_muEff2d, mu->abseta(), mu->pT()))
-          survivors.push_back(mu);
+        if (random_bool(_muEff2d, mu->abseta(), mu->pT())) survivors.push_back(mu); else delete mu;
       }
       muons = survivors;
     }
@@ -99,8 +95,7 @@ namespace Gambit {
       /// @todo Replace by filter_if + lambda
       std::vector<Particle*> survivors;
       for (Particle* tau : taus) {
-        if (random_bool(_tauEff2d, tau->abseta(), tau->pT()))
-          survivors.push_back(tau);
+        if (random_bool(_tauEff2d, tau->abseta(), tau->pT())) survivors.push_back(tau); else delete tau;
       }
       taus = survivors;
     }
@@ -157,8 +152,8 @@ namespace Gambit {
       std::mt19937 gen(rd());
 
       HEPUtils::BinnedFn2D<double> _muEff({{0,1.5,2.5}}, {{0,0.1,1.,10.,200.,10000.}},
-                                         {{0.,0.03,0.02,0.03,0.05,
-                                               0.,0.04,0.03,0.04,0.05}});
+                                          {{0.,0.03,0.02,0.03,0.05,
+                                            0.,0.04,0.03,0.04,0.05}});
 
       // Now loop over the muons and smear the 4-vectors
       for (Particle* mu : muons) {
@@ -184,7 +179,7 @@ namespace Gambit {
       std::mt19937 gen(rd());
 
       HEPUtils::BinnedFn2D<double> _jetRes({{0,10.}}, {{0,10000.}},
-                                          {{0.03}});
+                                           {{0.03}});
 
       // Now loop over the jets and smear the 4-vectors
       for (HEPUtils::Jet* jet : jets) {
@@ -207,7 +202,7 @@ namespace Gambit {
       std::mt19937 gen(rd());
 
       HEPUtils::BinnedFn2D<double> _jetRes({{0,10.}}, {{0,10000.}},
-                                          {{0.03}});
+                                           {{0.03}});
 
       // Now loop over the taus and smear the 4-vectors
       for (HEPUtils::Particle* tau : taus) {
