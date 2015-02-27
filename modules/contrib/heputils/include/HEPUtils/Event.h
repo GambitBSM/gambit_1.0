@@ -77,19 +77,19 @@ namespace HEPUtils {
       std::cout << "In clone " <<  std::endl;
       Event* rtn = new Event();
       std::cout << "Made new event " <<  std::endl;
-      std::vector<Particle*> ps = particles();
+      const std::vector<Particle*> ps = particles();
       std::cout << "Got particles " <<  std::endl;
       for (size_t i = 0; i < ps.size(); ++i) {
         rtn->add_particle(new Particle(*ps[i]));
       }
-      std::vector<Jet*> js = jets();
+      const std::vector<Jet*> js = jets();
       std::cout << "js size " << js.size() << std::endl;
       for (size_t i = 0; i < js.size(); ++i) {
-	std::cout << "Jets " << js[i] << std::endl;
+        std::cout << "Jets " << js[i] << std::endl;
         rtn->add_jet(new Jet(*js[i]));
-	std::cout << "Added jet" << std::endl;
+        std::cout << "Added jet" << std::endl;
       }
-      
+
       rtn->_pmiss = _pmiss;
       return rtn;
     }
@@ -118,7 +118,7 @@ namespace HEPUtils {
       //if(!_jets.empty())std::cout << "Survived" << std::endl;
       if (!_jets.empty()) for (size_t i = 0; i < _jets.size(); ++i)std::cout << "JET POINTER " << _jets[i] << " PT " << _jets[i]->pT() << std::endl;
       if (!_jets.empty()) for (size_t i = 0; i < _jets.size(); ++i) delete _jets[i];
-         _jets.clear();
+      _jets.clear();
 
       _pmiss.clear();
     }
