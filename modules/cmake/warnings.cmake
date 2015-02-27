@@ -35,7 +35,7 @@ if(${WERROR})
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror")
   endif()
 else()
-  message(STATUS "Werror is disabled")
+  message(STATUS "${Red}Werror is disabled${ColourReset}")
 endif()
 
 CHECK_CXX_COMPILER_FLAG("-Wno-unused-local-typedefs" CXX_SUPPORTS_WUNUSED_LOCAL_TYPEDEFS)
