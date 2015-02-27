@@ -151,6 +151,17 @@ set_dimension(...)
    Set the hypercube dimension that will be operator
    over by the prior.
    
+reqd_inifile_entries(...)
+-- Tells ScannerBit that there entries must be in the inifile
+   in order to load the plugin
+   
+reqd_libraries(...)
+-- Tells ScannerBit to search for and link these libraries
+
+reqd_headers(...)
+-- Tells ScannerBit that these headers are required to exist
+   in order for the plugin to compile.
+   
 **************** end plugin commands *******************
 
 
@@ -221,12 +232,12 @@ linking external libraries:
 requiring existance of files to compile:
    
 -- You can also specify that a certain file must be found in
-   order to compile.  This is done with the "reqd_include_paths"
+   order to compile.  This is done with the "reqd_headers"
    function:
    
    scanner_plugin(my_cool_scanner, version(0, 0, 0, beta))
    {
-     reqd_include_paths("my_cool_header.h");
+     reqd_headers("my_cool_header.h");
    }
    
    In the above example, "my_cool_scanner" will not to compiled

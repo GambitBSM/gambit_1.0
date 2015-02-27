@@ -185,7 +185,7 @@ namespace Gambit
                                 out << "\tpatch version:  " << patch_version << std::endl;
                                 out << "\tplugin path:  " << path << std::endl;
                                 out << "\ttype:  " << type << std::endl;
-                                out << "\tlink status:  " << std::endl;
+                                out << "\tlink status:  " << status << std::endl;
                                 out << "\trequired inifile entries:  " << reqd_inifile_entries << std::endl;
                                 out << "\trequested libraries not linked:  " << reqd_not_linked_libs << std::endl;
                                 out << "\tinifile libraries not found:  " << ini_libs_not_found << std::endl;

@@ -51,13 +51,15 @@ namespace Gambit
                                         
                                         pclose(p_f);
                                         
+                                        loadExcluded(GAMBIT_DIR "/ScannerBit/exclude_libs.yaml");
+                                        
                                         process(GAMBIT_DIR "/ScannerBit/req_libs.yaml", GAMBIT_DIR "/ScannerBit/reqd_entries.yaml");
                                 }
                         }
                         
-                        std::vector<Plugin_Details> Plugin_Loader::getPluginsVec() const {return plugins;}
+                        std::vector<Plugin_Details> Plugin_Loader::getPluginsVec() const {return total_plugins;}
 
-                        std::map<std::string, std::map<std::string, std::vector<Plugin_Details>>> Plugin_Loader::getPluginsMap() const {return plugin_map;}
+                        std::map<std::string, std::map<std::string, std::vector<Plugin_Details>>> Plugin_Loader::getPluginsMap() const {return total_plugin_map;}
 
                         void Plugin_Loader::process(const std::string &libFile, const std::string &plugFile)
                         {
@@ -67,7 +69,49 @@ namespace Gambit
                                 for (auto it = plugins.begin(), end = plugins.end(); it != end; it++)
                                 {
                                         it->get_status(libNode, plugNode);
-                                        //std::cout << it->printFull() << std::endl;
+                                        plugin_map[it->type][it->plugin].push_back(*it);
+                                        total_plugin_map[it->type][it->plugin].push_back(*it);
+                                        std::cout << it->printFull() << std::endl;
+                                }
+                                
+                                for (auto it = excluded_plugins.begin(), end = excluded_plugins.end(); it != end; it++)
+                                {
+                                        it->get_status(libNode, plugNode);
+                                        excluded_plugin_map[it->type][it->plugin].push_back(*it);
+                                        total_plugin_map[it->type][it->plugin].push_back(*it);
+                                        std::cout << it->printFull() << std::endl;
+                                }
+                        }
+                        
+                        void Plugin_Loader::loadExcluded (const std::string& file)
+                        {
+                                YAML::Node node = YAML::LoadFile(file);
+                                
+                                if (node.IsMap())
+                                {
+                                        for (auto it = node.begin(), end = node.end(); it != end; it++)
+                                        {
+                                                std::string lib = it->first.as<std::string>();
+                                                if (it->second.IsMap())
+                                                {
+                                                        if (it->second["plugins"])
+                                                        {
+                                                                for (auto it2 = it->second["plugins"].begin(), end2 = it->second["plugins"].end(); it2 != end2; it2++)
+                                                                {
+                                                                        Plugin_Details temp(it2->as<std::string>());
+                            
+                                                                        temp.path = path + lib;
+                                                                        temp.status = -1;
+                                                                        total_plugins.push_back(temp);
+                                                                        excluded_plugins.push_back(temp);
+                                                                }
+                                                        }
+                                                        
+                                                        if (it->second["reason"])
+                                                        {
+                                                        }
+                                                }
+                                        }
                                 }
                         }
                         
@@ -95,7 +139,7 @@ namespace Gambit
                                                                 {
                                                                         temp.path = p_str;
                                                                         plugins.push_back(temp);
-                                                                        plugin_map[temp.type][temp.plugin].push_back(temp);
+                                                                        total_plugins.push_back(temp);
                                                                 }
                                                         }
                                                 }

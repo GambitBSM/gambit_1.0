@@ -141,7 +141,7 @@ namespace Gambit
                 inline typename std::enable_if <is_pair<T>::value, std::ostream &>::type
                 operator << (std::ostream &out, const T &in)
                 {
-                        return out << "[" << in.first << ", " << in.second << "]";
+                        return out << "{" << in.first << " : " << in.second << "}";
                 }
         }
 }

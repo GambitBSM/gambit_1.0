@@ -196,12 +196,10 @@ namespace Gambit
                         std::string pluginName;
                         if (options.hasKey("use_scanner_plugin"))
                         {
-                                cout << "...or not." << endl;
                                 pluginName = options.getValue<std::string>("use_scanner_plugin");
                         }
                         else
                         {
-                                cout << "...or not." << endl;
                                 scan_err << "\"use_scanner_plugin:\" input value not usable in the inifile." << scan_end;
                         }
 

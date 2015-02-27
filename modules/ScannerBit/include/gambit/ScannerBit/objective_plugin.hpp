@@ -45,8 +45,6 @@ namespace Gambit
 ///\name Objective Plugin Macros
 ///Macros used by the objective plugins.
 ///@{
-///Initialize "exp" to the parameter names.
-#define init_keys(exp)                  INIT_KEYS(exp)
 ///Gets the parameter names.
 #define get_keys()                      GET_KEYS()
 ///Used only if the plugin is doing to be used as a prior.
@@ -56,10 +54,8 @@ namespace Gambit
 #define objective_plugin(...)           OBJECTIVE_PLUGIN( __VA_ARGS__ )
 ///@}
 
-#define INIT_KEYS(exp)                  INITIALIZE(exp, GET_KEYS())
-
 #define GET_KEYS()                      get_input_value<std::vector<std::string>>(0)
-#define SET_DIMENSION(...)                  get_input_value<unsigned int>(1) = __VA_ARGS__
+#define SET_DIMENSION(...)              get_input_value<unsigned int>(1) = __VA_ARGS__
 
 #define OBJECTIVE_SETUP                                                                                                 \
 using namespace Gambit::Scanner;                                                                                        \
@@ -92,17 +88,6 @@ inline std::vector<double> &prior_transform(const std::vector<double> &in)      
         return ret;                                                                                                     \
 }                                                                                                                       \
 
-#define OBJECTIVE_PLUGIN(...) ENTER_FUNC(OBJECTIVE_PLUGIN_, ARG_N(__VA_ARGS__), __VA_ARGS__ )
-
-#define OBJECTIVE_PLUGIN_1(plug_name) OBJECTIVE_PLUGIN_INTERNAL(plug_name, no_version)
-
-#define OBJECTIVE_PLUGIN_2(plug_name, plug_version) OBJECTIVE_PLUGIN_INTERNAL(plug_name, plug_version)
-
-#define OBJECTIVE_PLUGIN_INTERNAL(mod_name, mod_version)                                                                \
-GAMBIT_PLUGIN_INTERNAL_INT(mod_name, like, mod_version)                                                                 \
-{                                                                                                                       \
-        OBJECTIVE_SETUP                                                                                                 \
-}                                                                                                                       \
-namespace __gambit_plugin_ ## mod_name ## __t__like__v__ ## mod_version ##  _namespace__                                \
+#define OBJECTIVE_PLUGIN(plug_name, ...) GAMBIT_PLUGIN_INITIALIZE(OBJECTIVE_SETUP, plug_name, like, __VA_ARGS__)
 
 #endif
