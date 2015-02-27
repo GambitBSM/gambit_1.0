@@ -32,7 +32,6 @@ namespace Gambit {
         convertInput(eventIn);
 
         // Electron smearing and efficiency
-
         applyDelphesElectronTrackingEff(_processedEvent->electrons());
         smearElectronEnergy(_processedEvent->electrons());
         applyDelphesElectronEff(_processedEvent->electrons());
@@ -56,9 +55,7 @@ namespace Gambit {
           if (j->abseta() > 5.0) j->set_btag(false);
         }
 
-
         convertOutput(eventOut);
-
       }
 
 
