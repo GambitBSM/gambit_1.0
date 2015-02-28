@@ -19,6 +19,7 @@
 ///  \date 2013 Oct
 ///  \date 2014 Jun
 ///  \date 2014 Sep
+///  \date 2015 Feb
 ///
 ///  *********************************************
 ///
@@ -84,9 +85,10 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION SI_bsgamma                // Name of specific function providing the observable
     START_FUNCTION(double)                  // Function calculates a double precision variable
-		BACKEND_REQ(bsgamma, (libsuperiso), double, (double*, double*, double*, double, double, struct parameters*))
+		BACKEND_REQ(bsgamma, (libsuperiso), double, (double*, double*, double*, double*, double, double, struct parameters*))
 		BACKEND_REQ(CW_calculator, (libsuperiso), void, (double*, double*, double*, double, struct parameters*))
 		BACKEND_REQ(C_calculator_base1, (libsuperiso), void, (double*, double*, double*, double, double*, double*, double*, double, struct parameters*))
+		BACKEND_REQ(Cprime_calculator, (libsuperiso), void, (double*, std::complex<double>*, double, double, struct parameters*))
 		BACKEND_OPTION( (SuperIso, 3.4), (libsuperiso) )
     #undef FUNCTION
   #undef CAPABILITY
@@ -214,9 +216,10 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION SI_delta0                 // Name of specific function providing the observable
     START_FUNCTION(double)                  // Function calculates a double precision variable
-		BACKEND_REQ(delta0, (libsuperiso), double, (double*, double*, double*, double*, struct parameters*, double, double, double))
+		BACKEND_REQ(delta0, (libsuperiso), double, (double*, double*, double*, double*, double*, struct parameters*, double, double, double))
 		BACKEND_REQ(CW_calculator, (libsuperiso), void, (double*, double*, double*, double, struct parameters*))
 		BACKEND_REQ(C_calculator_base2, (libsuperiso), void, (double*, double*, double, double*, double*, double, struct parameters*))
+		BACKEND_REQ(Cprime_calculator, (libsuperiso), void, (double*, std::complex<double>*, double, double, struct parameters*))
 		BACKEND_OPTION( (SuperIso, 3.4), (libsuperiso) )
     #undef FUNCTION
   #undef CAPABILITY
@@ -225,10 +228,11 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION SI_BRBXsmumu_lowq2                 // Name of specific function providing the observable
     START_FUNCTION(double)                  // Function calculates a double precision variable
-		BACKEND_REQ(BRBXsmumu_lowq2, (libsuperiso), double, (double*, double*, double*, std::complex<double>*, std::complex<double>*, struct parameters*, double))
+		BACKEND_REQ(BRBXsmumu_lowq2, (libsuperiso), double, (double*, double*, double*, std::complex<double>*, std::complex<double>*, double*, std::complex<double>*, struct parameters*, double))
 		BACKEND_REQ(CW_calculator, (libsuperiso), void, (double*, double*, double*, double, struct parameters*))
 		BACKEND_REQ(C_calculator_base1, (libsuperiso), void, (double*, double*, double*, double, double*, double*, double*, double, struct parameters*))
 		BACKEND_REQ(CQ_calculator, (libsuperiso), void, (std::complex<double>*, std::complex<double>*, double, double, struct parameters*))
+		BACKEND_REQ(Cprime_calculator, (libsuperiso), void, (double*, std::complex<double>*, double, double, struct parameters*))
 		BACKEND_OPTION( (SuperIso, 3.4), (libsuperiso) )
     #undef FUNCTION
   #undef CAPABILITY
@@ -237,10 +241,11 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION SI_BRBXsmumu_highq2                 // Name of specific function providing the observable
     START_FUNCTION(double)                  // Function calculates a double precision variable
-		BACKEND_REQ(BRBXsmumu_highq2, (libsuperiso), double, (double*, double*, double*, std::complex<double>*, std::complex<double>*, struct parameters*, double))
+		BACKEND_REQ(BRBXsmumu_highq2, (libsuperiso), double, (double*, double*, double*, std::complex<double>*, std::complex<double>*, double*, std::complex<double>*, struct parameters*, double))
 		BACKEND_REQ(CW_calculator, (libsuperiso), void, (double*, double*, double*, double, struct parameters*))
 		BACKEND_REQ(C_calculator_base1, (libsuperiso), void, (double*, double*, double*, double, double*, double*, double*, double, struct parameters*))
 		BACKEND_REQ(CQ_calculator, (libsuperiso), void, (std::complex<double>*, std::complex<double>*, double, double, struct parameters*))
+		BACKEND_REQ(Cprime_calculator, (libsuperiso), void, (double*, std::complex<double>*, double, double, struct parameters*))
 		BACKEND_OPTION( (SuperIso, 3.4), (libsuperiso) )
     #undef FUNCTION
   #undef CAPABILITY
@@ -249,10 +254,11 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION SI_A_BXsmumu_lowq2                 // Name of specific function providing the observable
     START_FUNCTION(double)                  // Function calculates a double precision variable
-		BACKEND_REQ(A_BXsmumu_lowq2, (libsuperiso), double, (double*, double*, double*, std::complex<double>*, std::complex<double>*, struct parameters*, double))
+		BACKEND_REQ(A_BXsmumu_lowq2, (libsuperiso), double, (double*, double*, double*, std::complex<double>*, std::complex<double>*, double*, std::complex<double>*, struct parameters*, double))
 		BACKEND_REQ(CW_calculator, (libsuperiso), void, (double*, double*, double*, double, struct parameters*))
 		BACKEND_REQ(C_calculator_base1, (libsuperiso), void, (double*, double*, double*, double, double*, double*, double*, double, struct parameters*))
 		BACKEND_REQ(CQ_calculator, (libsuperiso), void, (std::complex<double>*, std::complex<double>*, double, double, struct parameters*))
+		BACKEND_REQ(Cprime_calculator, (libsuperiso), void, (double*, std::complex<double>*, double, double, struct parameters*))
 		BACKEND_OPTION( (SuperIso, 3.4), (libsuperiso) )
     #undef FUNCTION
   #undef CAPABILITY
@@ -261,10 +267,11 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION SI_A_BXsmumu_highq2                 // Name of specific function providing the observable
     START_FUNCTION(double)                  // Function calculates a double precision variable
-		BACKEND_REQ(A_BXsmumu_highq2, (libsuperiso), double, (double*, double*, double*, std::complex<double>*, std::complex<double>*, struct parameters*, double))
+		BACKEND_REQ(A_BXsmumu_highq2, (libsuperiso), double, (double*, double*, double*, std::complex<double>*, std::complex<double>*, double*, std::complex<double>*, struct parameters*, double))
 		BACKEND_REQ(CW_calculator, (libsuperiso), void, (double*, double*, double*, double, struct parameters*))
 		BACKEND_REQ(C_calculator_base1, (libsuperiso), void, (double*, double*, double*, double, double*, double*, double*, double, struct parameters*))
 		BACKEND_REQ(CQ_calculator, (libsuperiso), void, (std::complex<double>*, std::complex<double>*, double, double, struct parameters*))
+		BACKEND_REQ(Cprime_calculator, (libsuperiso), void, (double*, std::complex<double>*, double, double, struct parameters*))
 		BACKEND_OPTION( (SuperIso, 3.4), (libsuperiso) )
     #undef FUNCTION
   #undef CAPABILITY
@@ -273,10 +280,11 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION SI_A_BXsmumu_zero                 // Name of specific function providing the observable
     START_FUNCTION(double)                  // Function calculates a double precision variable
-		BACKEND_REQ(A_BXsmumu_zero, (libsuperiso), double, (double*, double*, double*, std::complex<double>*, std::complex<double>*, struct parameters*, double))
+		BACKEND_REQ(A_BXsmumu_zero, (libsuperiso), double, (double*, double*, double*, std::complex<double>*, std::complex<double>*, double*, std::complex<double>*, struct parameters*, double))
 		BACKEND_REQ(CW_calculator, (libsuperiso), void, (double*, double*, double*, double, struct parameters*))
 		BACKEND_REQ(C_calculator_base1, (libsuperiso), void, (double*, double*, double*, double, double*, double*, double*, double, struct parameters*))
 		BACKEND_REQ(CQ_calculator, (libsuperiso), void, (std::complex<double>*, std::complex<double>*, double, double, struct parameters*))
+		BACKEND_REQ(Cprime_calculator, (libsuperiso), void, (double*, std::complex<double>*, double, double, struct parameters*))
 		BACKEND_OPTION( (SuperIso, 3.4), (libsuperiso) )
     #undef FUNCTION
   #undef CAPABILITY
@@ -285,10 +293,11 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION SI_BRBXstautau_highq2                 // Name of specific function providing the observable
     START_FUNCTION(double)                  // Function calculates a double precision variable
-		BACKEND_REQ(BRBXstautau_highq2, (libsuperiso), double, (double*, double*, double*, std::complex<double>*, std::complex<double>*, struct parameters*, double))
+		BACKEND_REQ(BRBXstautau_highq2, (libsuperiso), double, (double*, double*, double*, std::complex<double>*, std::complex<double>*, double*, std::complex<double>*, struct parameters*, double))
 		BACKEND_REQ(CW_calculator, (libsuperiso), void, (double*, double*, double*, double, struct parameters*))
 		BACKEND_REQ(C_calculator_base1, (libsuperiso), void, (double*, double*, double*, double, double*, double*, double*, double, struct parameters*))
 		BACKEND_REQ(CQ_calculator, (libsuperiso), void, (std::complex<double>*, std::complex<double>*, double, double, struct parameters*))
+		BACKEND_REQ(Cprime_calculator, (libsuperiso), void, (double*, std::complex<double>*, double, double, struct parameters*))
 		BACKEND_OPTION( (SuperIso, 3.4), (libsuperiso) )
     #undef FUNCTION
   #undef CAPABILITY
@@ -297,10 +306,11 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION SI_A_BXstautau_highq2                 // Name of specific function providing the observable
     START_FUNCTION(double)                  // Function calculates a double precision variable
-		BACKEND_REQ(A_BXstautau_highq2, (libsuperiso), double, (double*, double*, double*, std::complex<double>*, std::complex<double>*, struct parameters*, double))
+		BACKEND_REQ(A_BXstautau_highq2, (libsuperiso), double, (double*, double*, double*, std::complex<double>*, std::complex<double>*, double*, std::complex<double>*, struct parameters*, double))
 		BACKEND_REQ(CW_calculator, (libsuperiso), void, (double*, double*, double*, double, struct parameters*))
 		BACKEND_REQ(C_calculator_base1, (libsuperiso), void, (double*, double*, double*, double, double*, double*, double*, double, struct parameters*))
 		BACKEND_REQ(CQ_calculator, (libsuperiso), void, (std::complex<double>*, std::complex<double>*, double, double, struct parameters*))
+		BACKEND_REQ(Cprime_calculator, (libsuperiso), void, (double*, std::complex<double>*, double, double, struct parameters*))
 		BACKEND_OPTION( (SuperIso, 3.4), (libsuperiso) )
     #undef FUNCTION
   #undef CAPABILITY

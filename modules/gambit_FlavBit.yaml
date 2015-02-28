@@ -1,73 +1,48 @@
-# GAMBIT Initialization file (in YAML)
-#
-# Christoph Weniger <c.weniger@uva.nl>
-# June, July 2013
-#
+Parameters:
+  CMSSM_demo:
+    A0:
+      range: [-1000, 1000]
+    M0:
+      prior_type: log
+      range: [0.001,1000]
+    M12:
+      same_as: CMSSM_demo::M0
+    Mstop:
+      same_as: CMSSM_demo::M0
+    sgnmu:
+      range: [-1, 1]
+      fixed_value: 1
+    tanb:
+      fixed_value: 1
 
-########################
---- # Input parameters
-########################
+Priors:
 
-CMSSM_I:
-  A0:
-    range: [1,1]
-    fixed: true
-  M0:
-    range: [1,1]
-    fixed: true
-  M12:
-    range: [1,1]
-    fixed: true
-    same_as: CMSSM_I::M0
-  Mstop:
-    range: [1,1]
-    fixed: true
-    same_as: CMSSM_I::M12
-  sgnmu:
-    range: [1,1]
-    fixed: true
-  tanb:
-    range: [1,1]
-    fixed: true
-  param_not_in_gambit:
+Printer:
+  printer: ascii
+  options:
+    output_file: "runs/FlavBit_test/samples/gambit_output.txt"
+    info_file: "runs/FlavBit_test/samples/gambit_output.info"
 
-# The "adhoc" model bypasses ModelBit and produces some model parameter nodes
-# on the fly. This can be used for testing purposes.
-adhoc:
-  m0:
-    range: [2, 4.5]
-    fixed: true
-  m1:
-    range: [2, 4.5]
-    fixed: true
-  m2:
-    range: [2, 4.5]
-    fixed: true
-  m3:
-    range: [2, 4.5]
-    fixed: true
+Scanner:
+  use_scanner_plugin: random
+  
+  plugins:
+    random:
+      plugin: random_sampler
+      options:
+        point_number: 1
+        like:  Likelihood
 
-###############################
---- # Observables of interest
-###############################
+ObsLikes:
 
-# Uncomment to test DarkBit
-# - purpose:      Likelihood
-#   capability:   RD_oh2
+  # Test CMSSM_I, ExampleBit_A and ExampleBit_B
+  - purpose:      Likelihood
+    capability:   lnL_ExampleBitB
+    type:         double
+    function:     ""
+    module:       ""
+    printme:      false
 
-# Uncomment to test CMSSM_I, ExampleBit_A and ExampleBit_B
-- purpose:      Likelihood
-  capability:   lnL_ExampleBitB
-  type:         double
-  function:     ""
-  module:       ""
-
-# Test loop manager
-#- purpose:      Likelihood
-#  capability:   nevents_like
-#  type:         double
-
-# Uncomment to test FlavBit
   - purpose:      NotLikelihood
     capability:   SI_fill
     printme:      false
@@ -119,53 +94,46 @@ adhoc:
     capability:   SI_AI_BKstarmumu
   - purpose:      Likelihood
     capability:   SI_AI_BKstarmumu_zero
-  
+
+
 #########################
---- # Auxiliary entries
+# Auxiliary entries
 #########################
 
-#- capability:   "omega_DM"
-#  type:         ""
-#  function:     ""
-#  module:       ""
-#  dependencies:
-#  - {capability: "Weff", type: "", function: "Weff", module: ""}
-#  backends:
-#  - {capability: "", function: "", backend: "", version: ""}
+Auxiliaries:
 
-#- capability:   "awesomeness"
-#  type:         ""
-#  function:     ""
-#  backend:      "libFirst"
+  - capability:   "LibFirst_1_1_init"
+    dependencies:
+    - {capability: "nevents", module: "ExampleBit_B"}  
 
-##########################
---- # Name/Value Section
-##########################
+  - capability:    "nevents_postcuts"
+    dependencies:
+    - {capability: "id", module: "ExampleBit_B"}
 
-# Some exemplary keys and subkeys
-my_key: 123
-another_key:
-  subkey3:
-    subsubkey1: value2
+  - capability:    "MSSM_demo_parameters"
+    dependencies:
+    - {capability: "id", module: "ExampleBit_B"}
 
-scanner:
-  module:  multinest
-  file_path:  ScannerBit/lib/libmultinest_interface.so
-    
-enable_redirect: true
+  - capability:    "function_pointer"
+    backends:
+    - {function: "externalFunction2"}
 
-redirect_output:
-   CMSSM_I:  xterm
-    
-toy_mcmc:
-  point_number: 1
-  output_file:  output
-  like:  Likelihood
 
-random_sampler:
-  point_number: 1
-  output_file:  output
-  like:  Likelihood
-  
-multinest:
-  output_file:  output
+Logger:
+
+  prefix : "runs/FlavBit_test/logs/"
+  redirection:
+    [Debug] : "debug.log"
+    [Default] : "default.log"
+    [FlavBit] : "FlavBit.log"
+    [Dependency Resolver] : "dep_resolver.log"
+
+KeyValues:
+
+  dependency_resolution:
+    prefer_model_specific_functions: false
+    use_old_routines: true
+
+  likelihood:
+    model_invalid_for_lnlike_below: -1e6
+ 
