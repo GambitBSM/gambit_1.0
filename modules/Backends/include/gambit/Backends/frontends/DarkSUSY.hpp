@@ -222,6 +222,31 @@ BE_INI_FUNCTION
         	else BackendIniBit_error().raise(LOCAL_INFO, "Invalid value of ddpole "
         				"(only 0 or 1 permitted).");
         }
+
+        if (runOptions->hasKey("nuclear_parameters"))
+        {
+    		std::string filename = runOptions->getValue<std::string>("nuclear_parameters");
+        	//TODO: Change below to use printer system.
+    		std::cout << "Load nuclear parameters from " + filename << "." << std::endl;
+            std::ifstream in(filename.c_str(), std::ios::binary);
+            if (in.fail()) BackendIniBit_error().raise(LOCAL_INFO, "ERROR: failed loading "
+            			"nuclear parameters from " + filename + ".");
+
+            std::string line;
+            double value;
+            std::string parameter;
+
+            while(getline(in, line))
+            {
+            	if (line[0] == '#') continue;
+            	std::stringstream ss(line);
+
+            	ss >> parameter;
+            	ss >> value;
+
+            	cout << parameter << " takes value " << value << endl;
+            }
+        }
     }
 
   // POINT INITIALIZATION MOVE TO DARKSUSY_POINTINIT CAPABILITY/FUNCTION
@@ -326,15 +351,39 @@ DONE
  * registred/wrapped via the macro BE_CONV_FUNCTION (see below). */
 
 
-// namespace Gambit
-// {
-//   namespace Backends
-//   {
-//     namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
-//     {
-// 
+//namespace Gambit
+//{
+//  namespace Backends
+//  {
+//    namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
+//    {
+
 //       /* Convenience functions go here */
-// 
+
+//    	int loadNuclearParameters(std::string filename)
+//    	{
+//    		//TODO: Change below to use printer system.
+//    		std::cout << "Load nuclear parameters from " + filename << "." << std::endl;
+//            std::ifstream in(filename.c_str(), std::ios::binary);
+//            if (in.fail()) BackendIniBit_error().raise(LOCAL_INFO, "ERROR: failed loading "
+//            			"nuclear variables from" + filename + ".");
+//
+//            std::string line;
+//            double value;
+//            std::string parameter;
+//
+//            while(getline(in, line))
+//            {
+//            	if (line[0] == '#') continue;
+//            	std::stringstream ss(line);
+//
+//            	ss >> parameter;
+//            	ss >> value;
+//
+//            	cout << parameter << " takes value " << value << endl;
+//
+//            }
+//    	}
 //       double awesomenessByAnders(int a)
 //       {
 //         initialize(a);
@@ -342,9 +391,9 @@ DONE
 //         return returnResult();
 //       }
 // 
-//     } /* end namespace BACKENDNAME_SAFE_VERSION */                                          
-//   } /* end namespace Backends */                                                
-// } /* end namespace Gambit */                                                   
+//    } /* end namespace BACKENDNAME_SAFE_VERSION */
+//  } /* end namespace Backends */
+//} /* end namespace Gambit */
 
 /* Now register any convenience functions and wrap them in functors. 
  *

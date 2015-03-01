@@ -1,0 +1,17 @@
+# Nuclear matrix elements / spin content
+# Values from micrOMEGAs 3.5.5
+
+# Proton matrix elements
+fdp     0.0191
+fup     0.0153
+fsp     0.0447
+
+# Neutron matrix elements
+fdn      0.0273
+fun      0.011
+fsn      0.0447
+
+# Proton spin content
+deld     -0.427
+delu     0.842
+dels     -0.085
