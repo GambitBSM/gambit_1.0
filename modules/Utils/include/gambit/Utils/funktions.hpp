@@ -206,6 +206,7 @@ namespace Funk
             // Convenience functions
             const std::vector<const char*> & getArgs() { return this->args; };
             Funk help();
+            bool hasArg(const char*);
             bool hasArgs();
             std::size_t getNArgs() {return this->args.size();};
 
@@ -639,13 +640,15 @@ namespace Funk
         return this->value(Xout);
     }
 
-  inline bool FunkBase::hasArgs()
-  {
-    if(this->args.size() == 0)
-      return false;
-    else
-      return true;
-  }
+    inline bool FunkBase::hasArg(const char* arg)
+    {
+        return ( std::find(args.begin(), args.end(), arg) != args.end() );
+    }
+
+    inline bool FunkBase::hasArgs()
+    {
+        return ( this->args.size() != 0 );
+    }
 
     template <typename... Args> inline Funk FunkBase::gsl_integration(Args... args)
     {
