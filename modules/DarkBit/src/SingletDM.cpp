@@ -180,16 +180,27 @@ namespace Gambit
         // FIXME: test code: Add properties of phi particle
         TH_Process process_dec((std::string)"phi");
         Funk::Funk f = Funk::one()*0.3;
-        TH_Channel channel2(Funk::vec<std::string>("b", "bbar"), f);
+        std::vector<std::string> test_phi_finalStates = Funk::vec<std::string>("b", "bbar");
+        test_phi_finalStates = runOptions->getValueOrDef<std::vector<std::string> >(test_phi_finalStates,"test_phi_finalStates");   
+        TH_Channel channel2(Funk::vec<std::string>(test_phi_finalStates[0], test_phi_finalStates[1]), f);
         process_dec.channelList.push_back(channel2);
         process_dec.genRateTotal = f;
         catalog.processList.push_back(process_dec);
         catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("phi", TH_ParticleProperty(50.,0)));
 
+        // FIXME: test code: Also add decay of phip->phi phi
+        TH_Process process_phip_dec((std::string)"phip");
+        TH_Channel channel3(Funk::vec<std::string>("phi", "phi"), f);
+        process_phip_dec.channelList.push_back(channel3);
+        process_phip_dec.genRateTotal = f;
+        catalog.processList.push_back(process_phip_dec);
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("phip", TH_ParticleProperty(2*mass,0)));
+
         // FIXME: test code: Add mass information required by cascade code
         catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("gamma", TH_ParticleProperty(0.,2)));
         catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("b", TH_ParticleProperty(mb,1)));
         catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("bbar", TH_ParticleProperty(mb,1)));
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("Z0", TH_ParticleProperty(mZ,2)));
 
         result = catalog;
     }

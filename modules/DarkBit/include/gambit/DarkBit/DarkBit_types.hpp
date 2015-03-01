@@ -79,180 +79,38 @@ namespace Gambit
     struct SimpleHist
     {
         SimpleHist(){}
-        SimpleHist(int nBins, double Emin, double Emax, bool logscale): nBins(nBins)
-        {
-            if(logscale)
-            {
-                if(Emin<=0)
-                {
-                    std::cout << "Error: Lower histogram bin limit must be greater than 0 when using logarithmic binning." << endl;
-                    exit(1);
-                }
-                double factor = pow(Emax/Emin,(1.0/nBins));
-                double binL=Emin;
-                for(int i=0; i<nBins; i++)
-                {
-                    binLower.push_back(binL);
-                    binVals.push_back(0.0);
-                    wtSq.push_back(0.0);
-                    binL*=factor;
-                }
-                binLower.push_back(binL);
-            }
-            else
-            {
-                double dE = (Emax-Emin)/nBins;
-                for(int i=0; i<nBins; i++)
-                {
-                    double binL = Emin+i*dE; 
-                    binLower.push_back(binL);
-                    binVals.push_back(0.0);
-                    wtSq.push_back(0.0);                
-                }
-                binLower.push_back(Emin+nBins*dE);
-            }
-        }
+        SimpleHist(int nBins, double Emin, double Emax, bool logscale);
         // Constructor taking lower bins edges as input.
         // Last element will be used as upper bin edge for upper bin (Vector with N elements will give N-1 bins).
-        SimpleHist(std::vector<double> binLower) : binLower(binLower)
-        {
-            nBins=int(binLower.size())-1;  // FIXME: Lars, I added "-1", is this correct?
-            binVals=std::vector<double>(nBins,0.0);
-            wtSq   =std::vector<double>(nBins,0.0);
-        }
+        SimpleHist(std::vector<double> binLower);
         // Add an entry to histogram
-        void addEvent(double E, double weight=1.0)
-        {
-            int bin = findIndex(E);
-            if(bin>=0 and bin<nBins )
-            {
-                binVals[bin]+=weight;
-                wtSq[bin]+=weight*weight;
-            }
-        }
+        void addEvent(double E, double weight=1.0);
         // Add an entry to a specified bin
-        void addToBin(int bin, double weight=1.0)
-        {
-            binVals[bin]+=weight;
-            wtSq[bin]+=weight*weight;
-        }
+        void addToBin(int bin, double weight=1.0);
         // Add a box spectrum to the histogram
-        void addBox(double Emin, double Emax, double weight=1.0)
-        {
-            int imin = findIndex(Emin);
-            int imax = findIndex(Emax);
-            if(imax<0 or imin>nBins) 
-            {
-                // Do nothing
-            }
-            else if(imin==imax)
-            {
-                addToBin(imin,weight);
-            }            
-            else
-            {
-                double binSize_low = 1;
-                double binSize_high = 1;
-                double dE = Emax-Emin;
-                double norm = weight/dE;            
-                // Calculate part of lower bin covered by box
-                if(imin>=0)
-                    binSize_low = binLower[imin+1]-Emin;
-                // Calculate part of upper bin covered by box
-                if(imax<nBins) 
-                    binSize_high = Emax-binLower[imax];
-                // Add contribution to lower bin
-                addToBin(imin,binSize_low*norm);
-                // Add contribution to upper bin
-                addToBin(imax,binSize_high*norm);                    
-                // Add contributions to remaining bins
-                for(int i=imin+1;i<imax;i++)
-                {
-                    addToBin(i,binSize(i)*norm);
-                }
-            }
-        }
+        void addBox(double Emin, double Emax, double weight=1.0);
         // Add content of input histogram as weights.
         // Important: Input histogram MUST have identical binning for this to give correct results.
-        void addHistAsWeights_sameBin(SimpleHist &in)
-        {
-            // Check that the number of bins is equal to avoid segfaults. 
-            // It is up to the user to make sure the actual binning is identical.
-            if(in.nBins != nBins)
-            {
-                std::cout << "Error: SimpleHist::addHistAsWeights_sameBin requires identically binned histograms." << endl;
-                exit(1);     
-            }
-            for(int i=0; i<nBins;i++)
-            {
-                addToBin(i,in.binVals[i]);
-            }
-        }
+        void addHistAsWeights_sameBin(SimpleHist &in);
         // Get error for a specified bin
-        double getError(int bin) const
-        {
-            return sqrt(wtSq[bin]);
-        }
+        double getError(int bin) const;
         // Get relative error for a specified bin
-        double getRelError(int bin) const
-        {
-            return ((binVals[bin]!=0) ? sqrt(wtSq[bin])/binVals[bin] : 0);
-        }
+        double getRelError(int bin) const;
         // Divide all histogram bins by the respective bin size
-        void divideByBinSize()
-        {
-            for(int i=0;i<nBins;i++)
-            {
-                binVals[i]/=binSize(i);
-                wtSq[i]   /=(binSize(i)*binSize(i));
-            }
-        }
+        void divideByBinSize();
         // Multiply all bin contents by x
-        void multiply(double x)
-        {
-            for(int i=0;i<nBins;i++)
-            {
-                binVals[i]*=x;
-                wtSq[i]   *=x*x;
-            } 
-        }       
+        void multiply(double x);     
         // Find bin index for given value
-        int findIndex(double val) const
-        {
-            if(val < binLower[0]) return -1;
-            std::vector<double>::const_iterator pos = upper_bound(binLower.begin(),binLower.end(),val);   
-            return pos - binLower.begin() -1;       
-        }
+        int findIndex(double val) const;
         // Retrieve size of given bins
-        double binSize(int bin) const
-        {
-            return binLower[bin+1]-binLower[bin];
-        }  
+        double binSize(int bin) const;
         // Get central value of bin
-        double binCenter(int bin) const
-        {
-            return 0.5*(binLower[bin+1]+binLower[bin]);
-        }
+        double binCenter(int bin) const;
         // Double get central values of all bins
-        std::vector<double> getBinCenters() const
-        {
-            std::vector<double> centers;
-            for(int i=0;i<nBins;i++)
-            {
-                centers.push_back(binCenter(i));
-            }
-            return centers;
-        }
-        const std::vector<double>& getBinValues() const
-        {
-            return binVals;
-        }
-        void getEdges(double& lower, double& upper) const
-        {
-            // FIXME: Lars, I replaced binVales --> binLower, correct?
-            lower=binLower[0];
-            upper=binLower[nBins];
-        }
+        std::vector<double> getBinCenters() const;
+        const std::vector<double>& getBinValues() const;
+        void getEdges(double& lower, double& upper) const;
+        // Member variables
         std::vector<double> binLower;
         std::vector<double> binVals;
         std::vector<double> wtSq; // Sum of the squares of all weights

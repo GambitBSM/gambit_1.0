@@ -758,8 +758,8 @@ namespace Gambit {
     // Function for sampling SimYieldTables (tabulated spectra). 
     // This is a convenience function used in cascadeMC_Histograms, and does not have an associated capability.
     void cascadeMC_sampleSimYield( const SimYieldTable &table, const Gambit::DarkBit::DecayChain::ChainParticle* endpoint, std::string finalState, 
-            const TH_ProcessCatalog &catalog, int cMC_minSpecSamples, int cMC_maxSpecSamples, double cMC_Emin, 
-            std::map<std::string, std::map<std::string, SimpleHist> > &histList, std::string initialState, double weight)
+            const TH_ProcessCatalog &catalog, int cMC_minSpecSamples, int cMC_maxSpecSamples, 
+            std::map<std::string, std::map<std::string, SimpleHist> > &histList, std::string initialState, double weight, double cMC_specValidThreshold)
     {
         std::cout << "cascadeMC_sampleSimYield" << std::endl; 
         std::string p1,p2;
@@ -788,6 +788,7 @@ namespace Gambit {
         std::cout << "Initial state: " << initialState << std::endl;
         std::cout << "Channel: " << p1 << " " << p2 << std::endl;
         std::cout << "Final particles: " << finalState << std::endl;
+        std::cout << "Event weight: "    << weight << std::endl;
         // Mass of final state
         // FIXME: Get mass from somewhere else
         double m = catalog.particleProperties.at(finalState).mass;
@@ -796,7 +797,6 @@ namespace Gambit {
         histList[initialState][finalState].getEdges(histEmin, histEmax);
         std::cout << "histEmin/histEmax: " << histEmin << " " << histEmax << std::endl;
         std::cout << "chn.Ecm_min/max: " << chn.Ecm_min << " " << chn.Ecm_max << std::endl;
-        histEmin=std::max(cMC_Emin,histEmin);
         // Calculate energies to sample between. 
         // A particle decaying isotropically in its rest frame will give a box spectrum. 
         // This is assumed and used here to add box contributions rather than points to the histograms.
@@ -819,17 +819,23 @@ namespace Gambit {
         double* dN_dE = new double[maxSamples];
         double specSum=0;
         int Nsampl=0;
+        int samplCounter = 0;
         // Dynamic sampling of tabulated spectrum.
         // specSum/Nsampl gives an estimate for how many particles our sampling so far corresponds to.
         // To reduce noise, keep sampling until Nsampl>=specSum/Nsampl or maxSamples is reached
-        while((Nsampl<cMC_minSpecSamples) or ((Nsampl<maxSamples) and (Nsampl*Nsampl<specSum)))
+        while(((Nsampl<cMC_minSpecSamples) or (Nsampl*Nsampl<specSum)) and (samplCounter<maxSamples))
         {
+            samplCounter++;
             // Draw an energy in the CoM frame of the endpoint. Logarithmic sampling.
             E_CoM[Nsampl]= exp(logmin+(logmax-logmin)*Random::draw());
             // TODO: Make ABSOLUTELY SURE the below is threadsafe!
             dN_dE[Nsampl]= chn.dNdE->eval("E", E_CoM[Nsampl], "Ecm", endpoint->m);
-            specSum += E_CoM[Nsampl]*dlogE*dN_dE[Nsampl];
-            Nsampl++;
+            // Only accept point if dN_dE is above threshold value
+            if(dN_dE[Nsampl] > cMC_specValidThreshold)
+            {
+                specSum += E_CoM[Nsampl]*dlogE*dN_dE[Nsampl];
+                Nsampl++;
+            }
         }
         SimpleHist spectrum(histList[initialState][finalState].binLower);
         for(int i=0; i<Nsampl; i++)    
@@ -859,10 +865,10 @@ namespace Gambit {
         // Get YAML options
         int    cMC_minSpecSamples     = runOptions->getValueOrDef<int>   (5,    "cMC_minSpecSamples");    
         int    cMC_maxSpecSamples     = runOptions->getValueOrDef<int>   (25,   "cMC_maxSpecSamples");    
-        double cMC_Emin               = runOptions->getValueOrDef<double>(-1,   "cMC_Emin");
         int    cMC_endCheckFrequency  = runOptions->getValueOrDef<int>   (25,   "cMC_endCheckFrequency");    
         double cMC_gammaBGPower       = runOptions->getValueOrDef<double>(-2.5, "cMC_gammaBGPower");
         double cMC_gammaRelError      = runOptions->getValueOrDef<double>(0.01, "cMC_gammaRelError");        
+        double cMC_specValidThreshold = runOptions->getValueOrDef<double>(0.0,  "cMC_specValidThreshold");        
         
         // Histogram list shared between all threads
         static std::map<std::string, std::map<std::string, SimpleHist> > histList;
@@ -881,7 +887,7 @@ namespace Gambit {
                     std::cout << "for: " << *Dep::cascadeMC_InitialState << " " << *it << std::endl;
                     // FIXME: This defines 50 bins from 1e-3 to 1e3 GeV.
                     // Should not be hardcoded.
-                    histList[*Dep::cascadeMC_InitialState][*it]=SimpleHist(50,0.001,1000.0,true);
+                    histList[*Dep::cascadeMC_InitialState][*it]=SimpleHist(100,0.001,1000.0,true);
                 }
                 return;
             case MC_FINALIZE:
@@ -917,7 +923,7 @@ namespace Gambit {
                     else if((*Dep::SimYieldTable).hasChannel( (*it)->getpID(), *pit ))
                     {
                         cascadeMC_sampleSimYield(*Dep::SimYieldTable, *it, *pit, *Dep::TH_ProcessCatalog, cMC_minSpecSamples, 
-                                                  cMC_maxSpecSamples, cMC_Emin, histList, *Dep::cascadeMC_InitialState, weight);
+                                                  cMC_maxSpecSamples, histList, *Dep::cascadeMC_InitialState, weight, cMC_specValidThreshold);
                     }
                 }
                 // Analyze multiparticle endpoints (the endpoint particle is here the parent of final state particles)  
@@ -934,7 +940,7 @@ namespace Gambit {
                             std::cout << "  ...it actually is!" << std::endl;
                             hasTabulated = true;                          
                             cascadeMC_sampleSimYield(*Dep::SimYieldTable, *it, *pit, *Dep::TH_ProcessCatalog, cMC_minSpecSamples,
-                                                      cMC_maxSpecSamples, cMC_Emin, histList, *Dep::cascadeMC_InitialState, weight);
+                                                      cMC_maxSpecSamples, histList, *Dep::cascadeMC_InitialState, weight, cMC_specValidThreshold);
                         }
                     }
                     if(!hasTabulated)
@@ -1013,17 +1019,19 @@ namespace Gambit {
             if(calculated)
             {
                 std::cout << finalState << "...was calculated!" << std::endl;
-                std::vector<double> E = h.at(*it).at(finalState).getBinCenters();
-                std::vector<double> dN_dE = h.at(*it).at(finalState).getBinValues();
+                SimpleHist hist = h.at(*it).at(finalState);
+                hist.divideByBinSize();
+                std::vector<double> E = hist.getBinCenters();
+                std::vector<double> dN_dE = hist.getBinValues();
                 // Normalize to per-event spectrum
                 int i = 0;
                 for (std::vector<double>::iterator it2=dN_dE.begin();it2!=dN_dE.end();++it2)
                 {
-                    // FIXME: Show spectrum only for debug purposes
-                    std::cout << E[i] << " " << *it2 << std::endl;
-                    i++;
                     *it2 /= eventCounts.at(*it);
                     *it2 += 1e-30;  // Quasi zero
+                    // FIXME: Show spectrum only for debug purposes                 
+                    std::cout << E[i] << " " << *it2 << std::endl;    
+                    i++;                                       
                 }
                 spectra[*it] = Funk::Funk(new Funk::FunkInterp("E", E, dN_dE, "log"));
             }
@@ -1279,7 +1287,10 @@ namespace Gambit {
                     missingFinalStates.insert(it->finalStateIDs[2]);
             }
         }
-
+        
+        // FIXME: For testing, add phip as missing final state
+        missingFinalStates.insert("phip");
+        
         std::cout << "Number of missing final states: " << missingFinalStates.size() << std::endl;
         for (auto it = missingFinalStates.begin(); it != missingFinalStates.end(); it++)
         {
@@ -1311,9 +1322,9 @@ namespace Gambit {
         double betaGamma = sqrt(gamma*gamma-1);
         Funk::Funk Ep = Funk::var("Ep");
         Funk::Funk E = Funk::var("E");
-        Funk::Funk integrand = dNdE->set("E", Ep);
         Funk::Funk halfBox = betaGamma*sqrt(E*E-mass*mass);
-        return dNdE->gsl_integration("Ep", E*gamma-halfBox, E*gamma+halfBox) / (2*halfBox);
+        Funk::Funk integrand = (dNdE/(2*halfBox))->set("E", Ep);
+        return integrand->gsl_integration("Ep", E*gamma-halfBox, E*gamma+halfBox);
     }
 
     void GA_AnnYield_General(Funk::Funk &result)
@@ -1384,16 +1395,68 @@ namespace Gambit {
                 std::cout << "gammas: " << gamma0 << ", " << gamma1 << std::endl;                
                 Yield = Yield + boost_dNdE(spec0, gamma0, 0.0) + boost_dNdE(spec1, gamma1, 0.0);
 
-                // FIXME: Remove debug information
-                std::cout << it->finalStateIDs[0] << "-spectrum at .1 GeV: " << spec0->eval("E", .1) << std::endl;
-                std::cout << it->finalStateIDs[1] << "-spectrum at .1 GeV: " << spec1->eval("E", .1) << std::endl;
-                std::cout << it->finalStateIDs[0] << "-spectrum at 1 GeV: " << spec0->eval("E", 1) << std::endl;
-                std::cout << it->finalStateIDs[1] << "-spectrum at 1 GeV: " << spec1->eval("E", 1) << std::endl;
-                std::cout << it->finalStateIDs[0] << "-spectrum at 10 GeV: " << spec0->eval("E", 10) << std::endl;
-                std::cout << it->finalStateIDs[1] << "-spectrum at 10 GeV: " << spec1->eval("E", 10) << std::endl;
-                std::cout << "gamma result at .1 GeV:" << Yield->eval("v", 0, "E", .1) << std::endl;
-                std::cout << "gamma result at  1 GeV:" << Yield->eval("v", 0, "E", 1) << std::endl;
-                std::cout << "gamma result at 10 GeV:" << Yield->eval("v", 0, "E", 10) << std::endl;
+                // FIXME: This is debug information. Remove it when no longer necessary.
+                std::cout << "Spectrum debug info:" << std:: endl;
+                double E=5.0;
+                double factor=1.125;
+                std::vector<double> Evals;
+                std::cout.precision(5);
+                std::cout.setf( std::ios::fixed, std:: ios::floatfield );
+                int Nen = 20;
+                std::cout << "Energies:" << std:: endl;
+                for(int i=0; i<Nen;i++)
+                {
+                    E*=factor;
+                    Evals.push_back(E);
+                    std::cout << E << "  ";
+                }
+                std::cout << std::endl; 
+                std::cout << it->finalStateIDs[0] << "-spectrum:" << std:: endl;
+                for(int i=0; i<Nen;i++)
+                {
+                    std::cout << spec0->eval("E", Evals[i]) << "  ";
+                }
+                std::cout << std::endl; 
+                std::cout << it->finalStateIDs[1] << "-spectrum:" << std:: endl;
+                for(int i=0; i<Nen;i++)
+                {
+                    std::cout << spec1->eval("E", Evals[i])<< "  ";
+                }
+                std::cout << std::endl;
+                std::cout << "gamma result:" << std:: endl;
+                for(int i=0; i<Nen;i++)
+                {
+                    std::cout << Yield->eval("v", 0, "E", Evals[i])<< "  ";
+                }
+                std::cout << std::endl;  
+                
+                if(runOptions->getValueOrDef<bool> (false,"test_printMore"))
+                {
+                    Funk::Funk phipSpec  = Dep::cascadeMC_gammaSpectra->at("phip");                
+                    std::cout << "phip-spectrum:" << std:: endl;
+                    for(int i=0; i<Nen;i++)
+                    {
+                        std::cout << phipSpec->eval("E", Evals[i])<< "  ";
+                    }
+                    std::cout << std::endl;
+                    Funk::Funk specDirect = (*Dep::SimYieldTable)("b", "bbar", "gamma", (*Dep::TH_ProcessCatalog).getParticleProperty("phi").mass);
+                    std::cout << "phi-spectrum direct:" << std:: endl;
+                    for(int i=0; i<Nen;i++)
+                    {
+                        std::cout << specDirect->eval("E", Evals[i])<< "  ";
+                    }
+                    std::cout << std::endl;
+                    
+                    Funk::Funk specDirectB = 2.0*boost_dNdE(specDirect,gamma1,0.0);
+                    std::cout << "2 * phi-spectrum direct, boosted:" << std:: endl;
+                    for(int i=0; i<Nen;i++)
+                    {
+                        std::cout << specDirectB->eval("E", Evals[i])<< "  ";
+                    }
+                    std::cout << std::endl;
+                }
+                
+                // Debug information ends here
             }
             else if ( it->nFinalStates == 3
                     and Dep::SimYieldTable->hasChannel(it->finalStateIDs[0], "gamma")
@@ -1409,6 +1472,7 @@ namespace Gambit {
             }
         }
         result = Yield/(mass*mass);
+        
     }
 
     void GA_AnnYield_DarkSUSY(Funk::Funk &result)
@@ -2542,21 +2606,21 @@ namespace Gambit {
             #define ADD_CHANNEL(ch, P1, P2, FINAL, EcmMin, EcmMax)                                                    \
                 dNdE = Funk::func(BEreq::dshayield.pointer(), Funk::var("mwimp"), Funk::var("E"), ch, yieldk, flag)->set("mwimp", Funk::var("Ecm")/2);  \
                 result.addChannel(dNdE, P1, P2, FINAL, EcmMin, EcmMax);  // specifies also center of mass energy range
-            ADD_CHANNEL(12, "Z0", "Z0", "gamma", 10., 10000.)
-            ADD_CHANNEL(13, "W+", "W-", "gamma", 10., 10000.)
-            ADD_CHANNEL(14, "nu_e", "~nu_e", "gamma", 10., 10000.)
-            ADD_CHANNEL(15, "e+", "e-", "gamma", 10., 10000.)
-            ADD_CHANNEL(16, "nu_mu", "~nu_mu", "gamma", 10., 10000.)
-            ADD_CHANNEL(17, "mu+", "mu-", "gamma", 10., 10000.)
-            ADD_CHANNEL(18, "nu_tau", "~nu_tau", "gamma", 10., 10000.)
-            ADD_CHANNEL(19, "tau+", "tau-", "gamma", 10., 10000.)
-            ADD_CHANNEL(20, "u", "ubar", "gamma", 10., 10000.)
-            ADD_CHANNEL(21, "d", "dbar", "gamma", 10., 10000.)
-            ADD_CHANNEL(22, "c", "cbar", "gamma", 10., 10000.)
-            ADD_CHANNEL(23, "s", "sbar", "gamma", 10., 10000.)
-            ADD_CHANNEL(24, "t", "tbar", "gamma", 10., 10000.)
-            ADD_CHANNEL(25, "b", "bbar", "gamma", 10., 10000.)
-            ADD_CHANNEL(26, "g", "g", "gamma", 10., 10000.)
+            ADD_CHANNEL(12, "Z0", "Z0", "gamma", 0., 10000.)
+            ADD_CHANNEL(13, "W+", "W-", "gamma", 0., 10000.)
+            ADD_CHANNEL(14, "nu_e", "~nu_e", "gamma", 0., 10000.)
+            ADD_CHANNEL(15, "e+", "e-", "gamma", 0., 10000.)
+            ADD_CHANNEL(16, "nu_mu", "~nu_mu", "gamma", 0., 10000.)
+            ADD_CHANNEL(17, "mu+", "mu-", "gamma", 0., 10000.)
+            ADD_CHANNEL(18, "nu_tau", "~nu_tau", "gamma", 0., 10000.)
+            ADD_CHANNEL(19, "tau+", "tau-", "gamma", 0., 10000.)
+            ADD_CHANNEL(20, "u", "ubar", "gamma", 0., 10000.)
+            ADD_CHANNEL(21, "d", "dbar", "gamma", 0., 10000.)
+            ADD_CHANNEL(22, "c", "cbar", "gamma", 0., 10000.)
+            ADD_CHANNEL(23, "s", "sbar", "gamma", 0., 10000.)
+            ADD_CHANNEL(24, "t", "tbar", "gamma", 0., 10000.)
+            ADD_CHANNEL(25, "b", "bbar", "gamma", 0., 10000.)
+            ADD_CHANNEL(26, "g", "g", "gamma", 0., 10000.)
             #undef ADD_CHANNEL
 
             // Add spectrum of single Z0 decay at rest
