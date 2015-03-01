@@ -241,8 +241,8 @@ BE_INI_FUNCTION
             	if (line[0] == '#') continue;
             	std::stringstream ss(line);
 
-            	ss >> parameter;
-            	ss >> value;
+            	if (!(ss >> parameter)) continue;
+            	if (!(ss >> value)) continue;
 
             	cout << parameter << " takes value " << value << endl;
             }
@@ -357,33 +357,7 @@ DONE
 //  {
 //    namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
 //    {
-
 //       /* Convenience functions go here */
-
-//    	int loadNuclearParameters(std::string filename)
-//    	{
-//    		//TODO: Change below to use printer system.
-//    		std::cout << "Load nuclear parameters from " + filename << "." << std::endl;
-//            std::ifstream in(filename.c_str(), std::ios::binary);
-//            if (in.fail()) BackendIniBit_error().raise(LOCAL_INFO, "ERROR: failed loading "
-//            			"nuclear variables from" + filename + ".");
-//
-//            std::string line;
-//            double value;
-//            std::string parameter;
-//
-//            while(getline(in, line))
-//            {
-//            	if (line[0] == '#') continue;
-//            	std::stringstream ss(line);
-//
-//            	ss >> parameter;
-//            	ss >> value;
-//
-//            	cout << parameter << " takes value " << value << endl;
-//
-//            }
-//    	}
 //       double awesomenessByAnders(int a)
 //       {
 //         initialize(a);
