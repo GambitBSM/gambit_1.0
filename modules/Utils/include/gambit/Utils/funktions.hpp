@@ -112,7 +112,7 @@ namespace Funk
         std::vector<int> map(argOut.size());
         for ( unsigned int i = 0; i < argOut.size(); i++ )
         {
-            map[i] = std::find(argIn.begin(), argIn.end(), argOut[i]) - argIn.begin();
+            map[i] = std::find(argIn.begin(), argIn.end(), (std::string)argOut[i]) - argIn.begin();
         }
         return map;
     }
@@ -135,15 +135,15 @@ namespace Funk
 
     inline int eraseArg(ArgsType & args, const char* arg)
     {
-        auto it = std::find(args.begin(), args.end(), arg);
+        auto it = std::find(args.begin(), args.end(), (std::string)arg);
         assert (it!=args.end());
         args.erase(it);
         return it - args.begin();
     }
 
-    inline bool hasArg(ArgsType & args, const char* arg)
+    inline bool inArg(ArgsType & args, const char* arg)
     {
-        auto it = std::find(args.begin(), args.end(), arg);
+        auto it = std::find(args.begin(), args.end(), (std::string)arg);
         return it!=args.end();
     }
 
@@ -573,7 +573,7 @@ namespace Funk
         for ( auto it = tmp_argmap.begin(); it != tmp_argmap.end(); it++)
         {
             auto args = f->getArgs();
-            if ( std::find(args.begin(), args.end(), it->first) != args.end() )
+            if ( std::find(args.begin(), args.end(), (std::string)it->first) != args.end() )
                 f = Funk(new FunkDerived(f, it->first, it->second));
             else
             {
@@ -583,7 +583,7 @@ namespace Funk
         for ( auto it = tmp_funmap.begin(); it != tmp_funmap.end(); it++)
         {
             auto args = f->getArgs();
-            if ( std::find(args.begin(), args.end(), it->first) != args.end() )
+            if ( std::find(args.begin(), args.end(), (std::string)it->first) != args.end() )
             {
                 f = Funk(new FunkDerived(f, it->first, it->second));
             }
@@ -642,7 +642,7 @@ namespace Funk
 
     inline bool FunkBase::hasArg(const char* arg)
     {
-        return ( std::find(args.begin(), args.end(), arg) != args.end() );
+        return ( std::find(args.begin(), args.end(), (std::string)arg) != args.end() );
     }
 
     inline bool FunkBase::hasArgs()
@@ -984,7 +984,7 @@ namespace Funk
                 {
                     std::cout << "Warning: Boundaries identical." << std::endl;
                 }
-                if ( not hasArg(f_args, arg) )
+                if ( not inArg(f_args, arg) )
                 {
                     std::cout << "Warning: Integrand independent of integration variable." << std::endl;
                     i = -1;
