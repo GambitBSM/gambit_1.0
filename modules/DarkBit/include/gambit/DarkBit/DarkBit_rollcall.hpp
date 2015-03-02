@@ -302,7 +302,9 @@ START_MODULE
       DEPENDENCY(cascadeMC_ChainEvent, Gambit::DarkBit::DecayChain::ChainContainer)
       DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)      
       DEPENDENCY(SimYieldTable, Gambit::DarkBit::SimYieldTable)      
-      DEPENDENCY(cascadeMC_FinalStates,std::vector<std::string>)       
+      DEPENDENCY(cascadeMC_FinalStates,std::vector<std::string>)  
+      // FIXME: Temporary, for testing   
+      BACKEND_REQ(dshayield, (), double, (double&,double&,int&,int&,int&)) 
       NEEDS_MANAGER_WITH_CAPABILITY(cascadeMC_LoopManagement) 
     #undef FUNCTION          
   #undef CAPABILITY

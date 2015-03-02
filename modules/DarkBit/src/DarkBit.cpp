@@ -690,12 +690,9 @@ namespace Gambit {
     // Function selecting initial state for decay chain
     void cascadeMC_InitialState(std::string &pID)
     {
-        std::cout << "cascadeMC_InitialState" << std::endl;
         using namespace DecayChain;
         using namespace Pipes::cascadeMC_InitialState;  
-        std::cout << "Iteration: " << *Loop::iteration << std::endl;
         std::vector<std::string> chainList = *Dep::GA_missingFinalStates;
-        std::cout << "Number of states to simulate: " << chainList.size() << std::endl;
         static int iteration;
         switch(*Loop::iteration)
         {
@@ -714,13 +711,18 @@ namespace Gambit {
         }
         else
             pID = chainList[iteration];
+        /*
+        std::cout << "cascadeMC_InitialState" << std::endl;            
+        std::cout << "Iteration: " << *Loop::iteration << std::endl;
+        std::cout << "Number of states to simulate: " << chainList.size() << std::endl;
+        */
     }
     
     // Event counter for cascade decays
     void cascadeMC_EventCount(std::map<std::string, int> &counts)
     {
-        std::cout << "cascadeMC_EventCount" << std::endl;
-        using namespace Pipes::cascadeMC_EventCount;
+        // std::cout << "cascadeMC_EventCount" << std::endl;           
+        using namespace Pipes::cascadeMC_EventCount;     
         static std::map<std::string, int> counters;
         switch(*Loop::iteration)
         {
@@ -743,14 +745,22 @@ namespace Gambit {
     // Function for generating decay chains
     void cascadeMC_GenerateChain(Gambit::DarkBit::DecayChain::ChainContainer &chain)
     {
-        std::cout << "cascadeMC_GenerateChain" << std::endl;
+        //std::cout << "cascadeMC_GenerateChain" << std::endl;        
         using namespace DecayChain;
-        using namespace Pipes::cascadeMC_GenerateChain;     
-        if(*Loop::iteration == MC_INIT or *Loop::iteration == MC_NEXT_STATE or *Loop::iteration == MC_FINALIZE) return;
-        ChainParticle* chn = new ChainParticle(vec3(0), &(*Dep::cascadeMC_DecayTable), *Dep::cascadeMC_InitialState);
-        // Get YAML options
-        int cMC_maxChainLength  = runOptions->getValueOrDef<int>    (-1, "cMC_maxChainLength");
-        double cMC_Emin         = runOptions->getValueOrDef<double> (-1, "cMC_Emin");        
+        using namespace Pipes::cascadeMC_GenerateChain;    
+        static int    cMC_maxChainLength; 
+        static double cMC_Emin;
+        switch(*Loop::iteration)
+        {
+            case MC_INIT:
+                cMC_maxChainLength = runOptions->getValueOrDef<int>    (-1, "cMC_maxChainLength");
+                cMC_Emin           = runOptions->getValueOrDef<double> (-1, "cMC_Emin"); 
+                return;
+            case MC_NEXT_STATE:
+            case MC_FINALIZE:
+                return;
+        }
+        ChainParticle* chn = new ChainParticle(vec3(0), &(*Dep::cascadeMC_DecayTable), *Dep::cascadeMC_InitialState); 
         chn->generateDecayChainMC(cMC_maxChainLength,cMC_Emin); 
         chain=ChainContainer(chn);
     }
@@ -758,10 +768,10 @@ namespace Gambit {
     // Function for sampling SimYieldTables (tabulated spectra). 
     // This is a convenience function used in cascadeMC_Histograms, and does not have an associated capability.
     void cascadeMC_sampleSimYield( const SimYieldTable &table, const Gambit::DarkBit::DecayChain::ChainParticle* endpoint, std::string finalState, 
-            const TH_ProcessCatalog &catalog, int cMC_minSpecSamples, int cMC_maxSpecSamples, 
-            std::map<std::string, std::map<std::string, SimpleHist> > &histList, std::string initialState, double weight, double cMC_specValidThreshold)
+            const TH_ProcessCatalog &catalog, std::map<std::string, std::map<std::string, SimpleHist> > &histList, std::string initialState, 
+            double weight, double (*dshayield)(double&,double&,int&,int&,int&), int cMC_minSpecSamples, int cMC_maxSpecSamples, double cMC_specValidThreshold)
     {
-        std::cout << "cascadeMC_sampleSimYield" << std::endl; 
+        //std::cout << "cascadeMC_sampleSimYield" << std::endl;          
         std::string p1,p2;
         switch(endpoint->getnChildren())
         {
@@ -781,95 +791,107 @@ namespace Gambit {
         double gamma,beta;
         endpoint->getBoost(gamma,beta);    
         const double gammaBeta = gamma*beta;              
-        // Some debug information
-        std::cout << endpoint->E_Lab() << std::endl;
-        std::cout << endpoint->p_Lab() << std::endl;
-        std::cout << "Lorentz factors gamma, beta: " << gamma << ", " << beta << std::endl;
-        std::cout << "Initial state: " << initialState << std::endl;
-        std::cout << "Channel: " << p1 << " " << p2 << std::endl;
-        std::cout << "Final particles: " << finalState << std::endl;
-        std::cout << "Event weight: "    << weight << std::endl;
-        // Mass of final state
+        // Mass of final state squared
         // FIXME: Get mass from somewhere else
-        double m = catalog.particleProperties.at(finalState).mass;
+        const double m = catalog.particleProperties.at(finalState).mass;
+        const double msq = m*m;
         // Get histogram edges
         double histEmin, histEmax;
         histList[initialState][finalState].getEdges(histEmin, histEmax);
-        std::cout << "histEmin/histEmax: " << histEmin << " " << histEmax << std::endl;
-        std::cout << "chn.Ecm_min/max: " << chn.Ecm_min << " " << chn.Ecm_max << std::endl;
+
         // Calculate energies to sample between. 
         // A particle decaying isotropically in its rest frame will give a box spectrum. 
         // This is assumed and used here to add box contributions rather than points to the histograms.
         // Limits are chosen such that we only sample energies that can contribute to histogram bins.
-        double Ecmin = std::max( gamma*histEmin - gammaBeta*sqrt(histEmin*histEmin-m*m) , chn.Ecm_min );
-        double Ecmax = std::min(std::min( 
-                       gamma*histEmax + gammaBeta*sqrt(histEmax*histEmax-m*m) ,     // Highest energy that can contribute to the histogram
-                       chn.Ecm_max ),                                               // Highest energy in SimYieldChannel
-                       0.5*(endpoint->m*endpoint->m + m*m)/endpoint->m );           // Estimate for highest kinematically allowed CoM energy
+        const double Ecmin = std::max( gamma*histEmin - gammaBeta*sqrt(histEmin*histEmin-msq) , chn.Ecm_min );
+        const double Ecmax = std::min(std::min( 
+                               gamma*histEmax + gammaBeta*sqrt(histEmax*histEmax-msq) ,     // Highest energy that can contribute to the histogram
+                               chn.Ecm_max ),                                               // Highest energy in SimYieldChannel
+                               0.5*(endpoint->m*endpoint->m + msq)/endpoint->m );           // Estimate for highest kinematically allowed CoM energy
         if(Ecmin>=Ecmax) return;    
-        double logmin = log(Ecmin);
-        double logmax = log(Ecmax);                  
-        double dlogE=logmax-logmin;       
+        const double logmin = log(Ecmin);
+        const double logmax = log(Ecmax);                  
+        const double dlogE=logmax-logmin;       
         
-        std::cout << "Ecmin/max: " << Ecmin << " " << Ecmax << std::endl;
-        std::cout << "Final state mass: " << m << std::endl;
+        // Some debug information
+        if(false)
+        {
+            std::cout << endpoint->E_Lab() << std::endl;
+            std::cout << endpoint->p_Lab() << std::endl;
+            std::cout << "Lorentz factors gamma, beta: " << gamma << ", " << beta << std::endl;
+            std::cout << "Initial state: " << initialState << std::endl;
+            std::cout << "Channel: " << p1 << " " << p2 << std::endl;
+            std::cout << "Final particles: " << finalState << std::endl;
+            std::cout << "Event weight: "    << weight << std::endl;
+            std::cout << "cMC_specValidThreshold: "    << cMC_specValidThreshold << std::endl;
+            std::cout << "histEmin/histEmax: " << histEmin << " " << histEmax << std::endl;
+            std::cout << "chn.Ecm_min/max: " << chn.Ecm_min << " " << chn.Ecm_max << std::endl;
+            std::cout << "Ecmin/max: " << Ecmin << " " << Ecmax << std::endl;
+            std::cout << "Final state mass^2: " << msq << std::endl;
+        }
         
-        int maxSamples = std::max(cMC_maxSpecSamples,cMC_minSpecSamples);
-        double* E_CoM = new double[maxSamples];
-        double* dN_dE = new double[maxSamples];
         double specSum=0;
         int Nsampl=0;
         int samplCounter = 0;
+        SimpleHist spectrum(histList[initialState][finalState].binLower);        
         // Dynamic sampling of tabulated spectrum.
         // specSum/Nsampl gives an estimate for how many particles our sampling so far corresponds to.
         // To reduce noise, keep sampling until Nsampl>=specSum/Nsampl or maxSamples is reached
-        while(((Nsampl<cMC_minSpecSamples) or (Nsampl*Nsampl<specSum)) and (samplCounter<maxSamples))
+        while(((Nsampl<cMC_minSpecSamples) or (Nsampl*Nsampl<specSum)) and (samplCounter<cMC_maxSpecSamples))
         {
             samplCounter++;
             // Draw an energy in the CoM frame of the endpoint. Logarithmic sampling.
-            E_CoM[Nsampl]= exp(logmin+(logmax-logmin)*Random::draw());
+            double E_CoM= exp(logmin+(logmax-logmin)*Random::draw());
+            double dN_dE;
             // TODO: Make ABSOLUTELY SURE the below is threadsafe!
-            dN_dE[Nsampl]= chn.dNdE->eval("E", E_CoM[Nsampl], "Ecm", endpoint->m);
-            // Only accept point if dN_dE is above threshold value
-            if(dN_dE[Nsampl] > cMC_specValidThreshold)
+            if(false)   // Comparison, calling DS directly VS using Funktion objects
             {
-                specSum += E_CoM[Nsampl]*dlogE*dN_dE[Nsampl];
+                int flag = 0;     
+                int yieldk = 152; 
+                int ch = 25;       
+                double Esmpl =  0.5*endpoint->m;
+                dN_dE = dshayield(Esmpl, E_CoM, ch, yieldk, flag);
+            }
+            else
+            {
+                dN_dE= chn.dNdE->eval("E", E_CoM, "Ecm", endpoint->m);
+            }
+            // Only accept point if dN_dE is above threshold value
+            if(dN_dE > cMC_specValidThreshold)
+            {
+                double weight2 = E_CoM*dlogE*dN_dE;
+                specSum += weight2;
+                weight2 *= weight;
+                double tmp1 = gamma*E_CoM;
+                double tmp2 = gammaBeta*sqrt(E_CoM*E_CoM-msq);
+                // Add box spectrum to histogram
+                spectrum.addBox(tmp1-tmp2,tmp1+tmp2,weight2);
                 Nsampl++;
             }
-        }
-        SimpleHist spectrum(histList[initialState][finalState].binLower);
-        for(int i=0; i<Nsampl; i++)    
-        {
-            double weight2 = weight*E_CoM[i]*dlogE*dN_dE[i];
-            // Calculate box limits
-            double tmp1 = gamma*E_CoM[i];
-            double tmp2 = gammaBeta*sqrt(E_CoM[i]*E_CoM[i]-m*m);
-            // Add box spectrum to histogram
-            spectrum.addBox(tmp1-tmp2,tmp1+tmp2,weight2);
         }
         spectrum.multiply(1.0/Nsampl);
         // Add bin contents of spectrum histogram to main histogram as weighted events
         #pragma omp critical (cascadeMC_histList)
             histList[initialState][finalState].addHistAsWeights_sameBin(spectrum);
-        delete [] E_CoM;
-        delete [] dN_dE;
     }
     
     // Function responsible for histogramming, and evaluating end conditions for event loop
     void cascadeMC_Histograms(std::map<std::string, std::map<std::string, SimpleHist> > &result)
     {
-        std::cout << "cascadeMC_Histograms" << std::endl;
+        //std::cout << "cascadeMC_Histograms" << std::endl; 
         using namespace DecayChain;
         using namespace Pipes::cascadeMC_Histograms; 
-      
-        // Get YAML options
-        int    cMC_minSpecSamples     = runOptions->getValueOrDef<int>   (5,    "cMC_minSpecSamples");    
-        int    cMC_maxSpecSamples     = runOptions->getValueOrDef<int>   (25,   "cMC_maxSpecSamples");    
-        int    cMC_endCheckFrequency  = runOptions->getValueOrDef<int>   (25,   "cMC_endCheckFrequency");    
-        double cMC_gammaBGPower       = runOptions->getValueOrDef<double>(-2.5, "cMC_gammaBGPower");
-        double cMC_gammaRelError      = runOptions->getValueOrDef<double>(0.01, "cMC_gammaRelError");        
-        double cMC_specValidThreshold = runOptions->getValueOrDef<double>(0.0,  "cMC_specValidThreshold");        
+            
+        // FIXME: Temporary
+        double (*dshayield)(double&,double&,int&,int&,int&) = BEreq::dshayield.pointer();
         
+        // YAML options
+        static int    cMC_minSpecSamples;
+        static int    cMC_maxSpecSamples;
+        static double cMC_specValidThreshold;
+        static int    cMC_endCheckFrequency; 
+        static double cMC_gammaBGPower;
+        static double cMC_gammaRelError;      
         // Histogram list shared between all threads
         static std::map<std::string, std::map<std::string, SimpleHist> > histList;
 
@@ -877,14 +899,23 @@ namespace Gambit {
         {
             case MC_INIT:
                 // Initialization
+                cMC_minSpecSamples     = runOptions->getValueOrDef<int>   (5,    "cMC_minSpecSamples");    
+                cMC_maxSpecSamples     = runOptions->getValueOrDef<int>   (25,   "cMC_maxSpecSamples"); 
+                cMC_specValidThreshold = runOptions->getValueOrDef<double>(0.0,  "cMC_specValidThreshold");    
+                cMC_endCheckFrequency  = runOptions->getValueOrDef<int>   (25,   "cMC_endCheckFrequency");    
+                cMC_gammaBGPower       = runOptions->getValueOrDef<double>(-2.5, "cMC_gammaBGPower");
+                cMC_gammaRelError      = runOptions->getValueOrDef<double>(0.01, "cMC_gammaRelError");     
                 histList.clear();
                 return;
             case MC_NEXT_STATE:
                 // Initialize histograms
                 for(std::vector<std::string>::const_iterator it = Dep::cascadeMC_FinalStates->begin(); it!=Dep::cascadeMC_FinalStates->end(); ++it)
                 {
-                    std::cout << "Defining new histList entry!!!" << std::endl;
-                    std::cout << "for: " << *Dep::cascadeMC_InitialState << " " << *it << std::endl;
+                    if(false)
+                    {
+                        std::cout << "Defining new histList entry!!!" << std::endl;
+                        std::cout << "for: " << *Dep::cascadeMC_InitialState << " " << *it << std::endl;
+                    }
                     // FIXME: This defines 50 bins from 1e-3 to 1e3 GeV.
                     // Should not be hardcoded.
                     histList[*Dep::cascadeMC_InitialState][*it]=SimpleHist(100,0.001,1000.0,true);
@@ -901,12 +932,12 @@ namespace Gambit {
         // Iterate over final states of interest
         for(std::vector<std::string>::const_iterator pit = Dep::cascadeMC_FinalStates->begin(); pit!=Dep::cascadeMC_FinalStates->end(); ++pit)
         {
-            std::cout << "Deriving histograms for final state " << *pit << std::endl;
+            // std::cout << "Deriving histograms for final state " << *pit << std::endl;
             // Iterate over all endpoint states of the decay chain. These can either be final state particles themselves or parents of final state particles.
             // The reason for not using only final state particles is that certain endpoints (e.g. quark-antiquark pairs) cannot be handled as separate particles.
             for(vector<const ChainParticle*>::const_iterator it =endpoints.begin(); it != endpoints.end(); it++)
             {
-                std::cout << "  working on endpoint (only first particle shown) " << (*it)[0].getpID() << std::endl;
+                // std::cout << "  working on endpoint (only first particle shown) " << (*it)[0].getpID() << std::endl;
                 // Get weighting factor (correction for mismatch between decay width of available decay channels and total decay width)
                 double weight = (*it)->getWeight();                
                 // Analyze single particle endpoints            
@@ -922,8 +953,8 @@ namespace Gambit {
                     // Check if tabulated spectra exist for this final state
                     else if((*Dep::SimYieldTable).hasChannel( (*it)->getpID(), *pit ))
                     {
-                        cascadeMC_sampleSimYield(*Dep::SimYieldTable, *it, *pit, *Dep::TH_ProcessCatalog, cMC_minSpecSamples, 
-                                                  cMC_maxSpecSamples, histList, *Dep::cascadeMC_InitialState, weight, cMC_specValidThreshold);
+                        cascadeMC_sampleSimYield(*Dep::SimYieldTable, *it, *pit, *Dep::TH_ProcessCatalog, histList, *Dep::cascadeMC_InitialState, weight, dshayield,
+                                                 cMC_minSpecSamples, cMC_maxSpecSamples, cMC_specValidThreshold);
                     }
                 }
                 // Analyze multiparticle endpoints (the endpoint particle is here the parent of final state particles)  
@@ -932,30 +963,33 @@ namespace Gambit {
                     bool hasTabulated = false;
                     if((*it)->getnChildren() == 2)
                     {
-                        std::cout << "  check whether two-body final state is tabulated: " << 
-                            (*(*it))[0]->getpID() << " " << (*(*it))[1]->getpID() << std::endl;
+                        // std::cout << "  check whether two-body final state is tabulated: " << (*(*it))[0]->getpID() << " " << (*(*it))[1]->getpID() << std::endl;
                         // Check if tabulated spectra exist for this final state
                         if((*Dep::SimYieldTable).hasChannel( (*(*it))[0]->getpID() , (*(*it))[1]->getpID(), *pit ))
                         {
-                            std::cout << "  ...it actually is!" << std::endl;
+                            // std::cout << "  ...it actually is!" << std::endl;
                             hasTabulated = true;                          
-                            cascadeMC_sampleSimYield(*Dep::SimYieldTable, *it, *pit, *Dep::TH_ProcessCatalog, cMC_minSpecSamples,
-                                                      cMC_maxSpecSamples, histList, *Dep::cascadeMC_InitialState, weight, cMC_specValidThreshold);
+                            cascadeMC_sampleSimYield(*Dep::SimYieldTable, *it, *pit, *Dep::TH_ProcessCatalog, histList, *Dep::cascadeMC_InitialState, weight, dshayield,
+                                                     cMC_minSpecSamples, cMC_maxSpecSamples, cMC_specValidThreshold);
                         }
                     }
                     if(!hasTabulated)
                     {
-                        // Search for *pit type particles among the final states
                         for(int i=0; i<((*it)->getnChildren()); i++)
                         {
                             const ChainParticle* child = (*(*it))[i];
+                            // Check if the child particle is the particle we are looking for
                             if(child->getpID()==*pit)
                             {
                                 double E = child->E_Lab();
-                                // Get weighting factor (correction for mismatch between decay width of available decay channels and total decay width)
-                                double weight = (*it)->getWeight();
                                 #pragma omp critical (cascadeMC_histList)
                                     histList[*Dep::cascadeMC_InitialState][*pit].addEvent(E,weight);
+                            }
+                            // Check if tabulated spectra exist for this final state
+                            else if((*Dep::SimYieldTable).hasChannel( child->getpID(), *pit ))
+                            {
+                                cascadeMC_sampleSimYield(*Dep::SimYieldTable, child, *pit, *Dep::TH_ProcessCatalog, histList, *Dep::cascadeMC_InitialState, weight, dshayield,
+                                                         cMC_minSpecSamples, cMC_maxSpecSamples, cMC_specValidThreshold);
                             }
                         }
                     }
@@ -1015,10 +1049,10 @@ namespace Gambit {
         bool calculated = (std::find(fin.begin(), fin.end(), finalState) != fin.end());
         for(std::vector<std::string>::const_iterator it = ini.begin(); it != ini.end(); ++it )
         {
-            std::cout << "Trying to get cascade spectra for initial state: " << *it << std::endl;
+            // std::cout << "Trying to get cascade spectra for initial state: " << *it << std::endl;
             if(calculated)
             {
-                std::cout << finalState << "...was calculated!" << std::endl;
+                // std::cout << finalState << "...was calculated!" << std::endl;
                 SimpleHist hist = h.at(*it).at(finalState);
                 hist.divideByBinSize();
                 std::vector<double> E = hist.getBinCenters();
@@ -1037,7 +1071,7 @@ namespace Gambit {
             }
             else
             {
-                std::cout << finalState << "...was not calculated!" << std::endl;
+                // std::cout << finalState << "...was not calculated!" << std::endl;
                 spectra[*it] = Funk::zero("E");
             }
         }
@@ -1046,7 +1080,7 @@ namespace Gambit {
     // Function requesting and returning gamma ray spectra from cascade decays        
     void cascadeMC_gammaSpectra(std::map<std::string, Funk::Funk> &spectra)
     {
-        std::cout << "cascadeMC_gammaSpectra" << std::endl;
+        // std::cout << "cascadeMC_gammaSpectra" << std::endl;        
         using namespace Pipes::cascadeMC_gammaSpectra;
         cascadeMC_fetchSpectra(spectra, "gamma", *Dep::GA_missingFinalStates, *Dep::cascadeMC_FinalStates, *Dep::cascadeMC_Histograms, *Dep::cascadeMC_EventCount);
     }    

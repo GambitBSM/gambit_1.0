@@ -231,14 +231,14 @@ Auxiliaries:
         # Cascade decay settings
         cMC_maxChainLength:     -1    # Maximum length of decay chains. -1 => disabled
         cMC_Emin:               -1.   # Ignore all particles with energies below this value. value < 0 => disabled
-        cMC_minEvents:          100   # Minimum number of decay chains to generate
-        cMC_maxEvents:          1000  # Maximum number of decay chains to generate
+        cMC_minEvents:          10000 # Minimum number of decay chains to generate
+        cMC_maxEvents:          10000 # Maximum number of decay chains to generate
         cMC_endCheckFrequency:  25    # Check end condition every this many events
         cMC_gammaRelError:      0.01  # Gamma ray end condition for event generation, relative error.      
         cMC_gammaBGPower:       -2.5  # Gamma spectrum power used in gamma ray end condition
-        cMC_minSpecSamples:     100   # Minimum number of samples to use when sampling tabulated spectra from decay chain endpoints like q qbar
-        cMC_maxSpecSamples:     250   # As above, maximum number.
-        cMC_specValidThreshold: 1e-30 # Only accept a sampled spectrum value if it's above this threshold. Use carefully, as high values will give a biased sample.
+        cMC_minSpecSamples:     50    # Minimum number of samples to use when sampling tabulated spectra from decay chain endpoints like q qbar
+        cMC_maxSpecSamples:     50    # As above, maximum number.
+        cMC_specValidThreshold: 1e-20 # Only accept a sampled spectrum value if it's above this threshold. Use carefully, as high values will give a biased sample.
         cMC_finalStates:              # List of final states to search for in cascade decays
             - gamma
   # Temporary: For testing:
