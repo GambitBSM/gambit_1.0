@@ -18,37 +18,25 @@
 #ifndef __decay_chain_hpp__
 #define __decay_chain_hpp__
 
-#include <iostream> 
-#include <algorithm>
 #include <vector>
-#include <math.h>
 #include <unordered_map>
-#include <fstream>
 #include <string>
-#include <set>
-
-#include "gambit/Utils/threadsafe_rng.hpp"
-
 #include <boost/shared_ptr.hpp>
+#include "gambit/Utils/threadsafe_rng.hpp"
 
 namespace Gambit
 {
     namespace DarkBit
     {
-        class TH_Channel;
+        struct TH_Channel;
         class TH_ProcessCatalog;
         class SimYieldTable;
         namespace DecayChain
         {
             using std::vector;
-            using std::cout;
-            using std::endl;
             using std::ofstream;
-            using std::ios;
-            using std::pair;
             using std::ostream;
             using std::string;
-            using std::set;
             using boost::shared_ptr;
             using std::unordered_map;
             
@@ -234,7 +222,7 @@ namespace Gambit
                     void addEntry(string pID, double m, bool stable);
                     void addEntry(string pID, DecayTableEntry entry);
                     bool randomDecay(string pID, const TH_Channel* &decay) const; 
-                    const DecayTableEntry& operator[](string i) const{return table.at(i);} 
+                    const DecayTableEntry& operator[](string i) const; 
                     // Retrieve width of decay channel
                     static double getWidth(const TH_Channel *ch);
                     // Print the decay table (to cout)

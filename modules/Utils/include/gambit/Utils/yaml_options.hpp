@@ -41,7 +41,7 @@ namespace Gambit
 {
 
   ///  A small wrapper object for 'options' nodes.
-  ///  These can be extracted from the prior, likelihood and auxiliaries section of the 
+  ///  These can be extracted from the prior, observable/likelihood and rules sections of the
   ///  inifile, or set by hand in module standalone mode.
   class Options
   {

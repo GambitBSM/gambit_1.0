@@ -18,6 +18,8 @@
 
 namespace Gambit
 {
+
+
   int ASCIItableReader::read(std::string filename)
   {
     std::ifstream in(filename.c_str(), std::ios::binary);
@@ -28,12 +30,12 @@ namespace Gambit
       exit(-1);
     }
     std::string line;
-    while(std::getline(in, line)) 
+    while(std::getline(in, line))
     {
       if (line[0] == '#') continue;  // Ignore comments lines, starting with "#"
       std::stringstream ss(line);
 
-      int i = 0;
+      size_t i = 0;
       double tmp;
       while(ss >> tmp)
       {
@@ -41,16 +43,17 @@ namespace Gambit
         data[i].push_back(tmp);
         i++;
       }
-    } 
+    }
     in.close();
     return 0;
   }
 
+
   void ASCIItableReader::setcolnames(std::vector<std::string> names)
-  { 
-    if ( names.size() == ncol ) 
+  {
+    if ( (int) names.size() == ncol )
     {
-      int i = 0;
+      size_t i = 0;
       for (auto it = names.begin(); it != names.end(); it++)
       {
         colnames[*it] = i;
@@ -62,4 +65,6 @@ namespace Gambit
       std::cout << "Warning in ASCIItableReader: Column number incompatible." << std::endl;
     }
   }
+
+
 }

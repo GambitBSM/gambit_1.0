@@ -783,7 +783,7 @@ namespace Gambit
 
       cout << "Searching options for " << masterGraph[vertex]->capability() << endl;
 
-      IniParser::ObservablesType entries = boundIniFile->getAuxiliaries();
+      const IniParser::ObservablesType & entries = boundIniFile->getAuxiliaries();
       //entries = boundIniFile->getObservables();
       for (IniParser::ObservablesType::const_iterator it =
           entries.begin(); it != entries.end(); ++it)
@@ -791,7 +791,7 @@ namespace Gambit
         if ( funcMatchesIniEntry(masterGraph[vertex], *it, *boundTEs) )
         {
           cout << "Getting option from: " << it->capability << " " << it->type << endl;
-          for (auto jt = it->options.begin(); jt != it->options.end(); jt++)
+          for (auto jt = it->options.begin(); jt != it->options.end(); ++jt)
           {
             if ( not nodes[jt->first.as<std::string>()] )
             {
@@ -871,7 +871,7 @@ namespace Gambit
       cout << "Vertex candidate IDs: " << vertexCandidates << endl;
 
       // Make list of all relevant 1st and 2nd level dependency rules.
-      IniParser::ObservablesType entries = boundIniFile->getAuxiliaries();
+      const IniParser::ObservablesType & entries = boundIniFile->getAuxiliaries();
       for (IniParser::ObservablesType::const_iterator it =
           entries.begin(); it != entries.end(); ++it)
       {
@@ -895,9 +895,9 @@ namespace Gambit
         }
       }
       // Add also entries in ObsLike section as 2nd order
-      entries = boundIniFile->getObservables();
+      const IniParser::ObservablesType & entries2 = boundIniFile->getObservables();
       for (IniParser::ObservablesType::const_iterator it =
-          entries.begin(); it != entries.end(); ++it)
+          entries2.begin(); it != entries2.end(); ++it)
       {
         if ( quantityMatchesIniEntry(quantity, *it) )
         {

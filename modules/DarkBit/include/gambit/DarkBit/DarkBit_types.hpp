@@ -260,12 +260,6 @@ namespace Gambit
         int nBins;
     };
 
-    struct mutableFinalStateContainer
-    {
-        mutable std::vector<std::string> enable;
-        mutable std::vector<std::string> disable;
-    };
-
     typedef std::map<std::string, std::map<std::string, Gambit::DarkBit::SimpleHist> > simpleHistContainter;
     typedef std::map<std::string, int> stringIntMap;
     typedef std::map<std::string, Funk::Funk> stringFunkMap;

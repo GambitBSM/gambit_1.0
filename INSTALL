@@ -10,17 +10,36 @@ To build GAMBIT:
 To choose compilers, change the cmake step to, e.g.
   FC=gfortran CC=gcc CXX=g++ cmake ..
 
+
+Required packages:
+
+  Ubuntu 14.04:
+    GAMBIT:
+      g++
+      gfortran
+      libgsl0-dev
+      libboost-dev
+      cmake
+      python-yaml
+    FlexibleSUSY / SpecBit only:
+      dpkg-dev (requires apt-get update and apt-get install -f to work from cold start)
+      liblabpack-dev
+      libblas-dev
+
+
 Issues:
 
  * The above process may fail to work correctly if files from the
    older build system are still around.  Try clearing out untracked
    project files if you are having problems (see 'git clean').
 
- * Delphes may fail to build unless the following is performed:
-      cd modules/ColliderBit/src/delphes/
-      ./make_dicts.sh
-   (TODO: do this automatically through cmake)
-
+ * Pythia (or other locally installed programs) may attempt to link
+   during compile, or may conflict during runtime with the BOSSed
+   version. To fix check your environment variables for 'ythia':
+      env | grep ythia
+   Then, remove all mentions of anything Pythia from your environment
+   variables. Try to build Gambit again afterwards.
+   
  * If you have problems compiling FlexibleSUSY/SpecBit and do not
    have need of them, disable them in the cmake command:
        cmake -Ditch="Spec" ..
@@ -31,7 +50,7 @@ Issues:
    backend, scanner, model or test function, will be excluded from
    the compile.
 
- * In the case the gambit stops complaining about IO errors when opening a
+ * In the case the gambit stops, complaining about IO errors when opening a
    file in some non-existing path, create the path by hand.
 
  * If you run the gambit CMake setting gcc as the C++ complier,

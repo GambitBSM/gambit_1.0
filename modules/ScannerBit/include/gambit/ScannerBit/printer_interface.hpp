@@ -20,6 +20,9 @@
 #ifndef PRINTER_INTERFACE_HPP
 #define PRINTER_INTERFACE_HPP
 
+#include <string>
+#include <vector>
+
 namespace Gambit
 {
         namespace Scanner
