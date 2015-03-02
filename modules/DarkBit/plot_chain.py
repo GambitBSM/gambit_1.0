@@ -5,6 +5,8 @@ from numpy import *
 import pylab as plt
 from matplotlib.mlab import griddata
 
+PATH = '../runs/DarkBit_SingletDM/samples/'
+
 class ColumnList(object):
     def __init__(self, filename):
         self.columnList = []
@@ -27,8 +29,8 @@ class ColumnList(object):
             print "Key not found"
             return None
 
-columnList = ColumnList('gambit_output.info')
-data = genfromtxt("gambit_output.txt").T
+columnList = ColumnList(PATH+'gambit_output.info')
+data = genfromtxt(PATH+"gambit_output.txt").T
 x = data[columnList['mass']]
 y = data[columnList['lambda']]
 

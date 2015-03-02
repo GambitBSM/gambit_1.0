@@ -120,6 +120,8 @@ START_MODULE
       // Initialize DarkSUSY with SLHA file
       BACKEND_REQ(dsSLHAread, (), void, (char*, int&, int))
       BACKEND_REQ(dsprep, (), void, ())
+      // Print higgs widths
+      BACKEND_REQ(dswwidth, (), void, (int&))
     #undef FUNCTION
     #define FUNCTION DarkSUSY_PointInit_NoMSSM
       START_FUNCTION(bool)
