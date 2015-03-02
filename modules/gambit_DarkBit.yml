@@ -224,6 +224,9 @@ ObsLikes:
 # is specified as option in the Auxiliaries section.
 #    - capability: dump_GammaSpectrum
 
+# Temporary observable to test read_nuclear_params function:
+    - capability: nuclear_params
+      purpose: Observable
 
 Auxiliaries:
   # DarkSUSY ---------------------------
@@ -232,6 +235,9 @@ Auxiliaries:
         # Direct Detection Settings
         ddpole: 1 # Include squark pole in scattering amplitude
         dddn: 1 # Treat heavy quarks and gluons as in Drees & Nojiri 1993 (implies ddpole=1)
+	# File with hadronic matrix elements and nuclear spin content.
+	# If not set, DarkSUSY defaults are used.
+        nuclear_parameters: DarkBit/NuclearParameters.txt 
   # Gamma-rays -------------------------
   - capability: gamLike_1_0_0_init  # Initialization of gamLike backend
     options:
@@ -274,13 +280,17 @@ Auxiliaries:
        oh2_mean: 0.11
        oh2_err: 0.01
   # Direct detection -------------------
+  - capability: nuclear_params
+    options:
+        # File with hadronic matrix elements and nuclear spin content.
+        nuclear_parameters: DarkBit/NuclearParameters.txt 
   # For MSSM-based models, which of the DarkSUSY or micrOMEGAs routines
   # to use must be explicitly specified here (uncomment the desired one).
   # The SingletDM function can be explicitly specified for the SingletDM
   # model, but the dependency resolver will choose it by default as it
   # is the only one available for that model.
   - capability: DD_couplings
-    #function: DD_couplings_DarkSUSY    # couplings from darksusy backend
+    function: DD_couplings_DarkSUSY    # couplings from darksusy backend
     #function: DD_couplings_micrOMEGAs  # couplings from micromegas backend
     #function: DD_couplings_SingletDM   # couplings for singlet DM model
     options:
