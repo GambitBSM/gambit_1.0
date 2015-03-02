@@ -87,6 +87,20 @@ namespace HEPUtils {
       return rtn;
     }
 
+    /// Clone a copy into a pre-existing reference
+    void cloneTo(Event& e) const {
+      e.clear();
+      std::vector<Particle*> ps = particles();
+      for (size_t i = 0; i < ps.size(); ++i) {
+        e.add_particle(new Particle(*ps[i]));
+      }
+      std::vector<Jet*> js = jets();
+      for (size_t i = 0; i < js.size(); ++i) {
+        e.add_jet(new Jet(*js[i]));
+      }
+      e._pmiss = _pmiss;
+    }
+
     //@}
 
 

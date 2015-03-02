@@ -16,9 +16,9 @@ namespace Gambit {
       /// @name Event detection simulation.
       //@{
       virtual void processEvent(const HEPUtils::Event& eventIn, HEPUtils::Event& eventOut) {
-        convertInput(eventIn);
-        // Do nothing
-        convertOutput(eventOut);
+        /// Clone the input event.
+        eventIn.cloneTo(eventOut);
+        // Do nothing to it.
       }
       //@}
     };
@@ -29,36 +29,32 @@ namespace Gambit {
     public:
 
       virtual void processEvent(const HEPUtils::Event& eventIn, HEPUtils::Event& eventOut) {
-        convertInput(eventIn);
+        /// Clone the input event.
+        eventIn.cloneTo(eventOut);
 
         // Electron smearing and efficiency
-
-        applyDelphesElectronTrackingEff(_processedEvent->electrons());
-        smearElectronEnergy(_processedEvent->electrons());
-        applyDelphesElectronEff(_processedEvent->electrons());
+        applyDelphesElectronTrackingEff(eventOut.electrons());
+        smearElectronEnergy(eventOut.electrons());
+        applyDelphesElectronEff(eventOut.electrons());
 
         // Muon smearing and efficiency
-        applyDelphesMuonTrackEff(_processedEvent->muons());
-        smearMuonMomentum(_processedEvent->muons());
-        applyDelphesMuonEff(_processedEvent->muons());
+        applyDelphesMuonTrackEff(eventOut.muons());
+        smearMuonMomentum(eventOut.muons());
+        applyDelphesMuonEff(eventOut.muons());
 
         // Apply hadronic tau BR * reco efficiency
         //MJW remove for now
-        applyTauEfficiency(_processedEvent->taus());
+        applyTauEfficiency(eventOut.taus());
         //Smear taus
-        smearTaus(_processedEvent->taus());
+        smearTaus(eventOut.taus());
 
         // Smear jet momenta
-        smearJets(_processedEvent->jets());
+        smearJets(eventOut.jets());
 
         // Unset b-tags outside |eta|=5 (same as DELPHES)
-        for (HEPUtils::Jet* j : _processedEvent->jets()) {
+        for (HEPUtils::Jet* j : eventOut.jets()) {
           if (j->abseta() > 5.0) j->set_btag(false);
         }
-
-
-        convertOutput(eventOut);
-
       }
 
 

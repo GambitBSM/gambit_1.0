@@ -72,27 +72,6 @@ namespace Gambit {
       //@{
       virtual void processEvent(const HEPUtils::Event&, HEPUtils::Event&) = 0; //< @note Pure virtual.
       //@}
-
-
-    protected:
-
-      /// @name Event conversion functions.
-      //@{
-      virtual void convertInput(const HEPUtils::Event& event) {
-        /// Memory clean-up of any previous event.
-        // removed by Aldo because of crash
-        //delete _processedEvent;
-        /// Make a local deep copy of the input event to be modified by processEvent.
-        _processedEvent = event.clone();
-      }
-
-      virtual void convertOutput(HEPUtils::Event& event) {
-        /// @note *Shallow* copy into passed Event (reference is not reset)
-        event = *_processedEvent;
-      }
-      //@}
-
-      HEPUtils::Event* _processedEvent;
     };
 
 
