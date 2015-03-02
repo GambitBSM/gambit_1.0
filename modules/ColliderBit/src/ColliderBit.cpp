@@ -168,6 +168,10 @@ namespace Gambit {
         delete result;
         result = 0;
         resetPythiaFlag = true;
+      } else if (*Loop::iteration == FINALIZE) {
+        // Added this case to clear the memory - Aldo
+        delete xsecArray;
+        delete xsecerrArray;
       }
     }
 
@@ -245,8 +249,9 @@ namespace Gambit {
         resetAnalysisFlag = false;
       } else if (*Loop::iteration == FINALIZE) {
         /// Memory clean-up: Analyses
-        while (result.size() > 0)
-          delete result.at(0);
+        //Removed these two lines Aldo
+        //while (result.size() > 0)
+        //  delete result.at(0);
         result.clear();
         resetAnalysisFlag = true;
       }

@@ -80,7 +80,8 @@ namespace Gambit {
       //@{
       virtual void convertInput(const HEPUtils::Event& event) {
         /// Memory clean-up of any previous event.
-        delete _processedEvent;
+        // removed by Aldo because of crash
+        //delete _processedEvent;
         /// Make a local deep copy of the input event to be modified by processEvent.
         _processedEvent = event.clone();
       }
