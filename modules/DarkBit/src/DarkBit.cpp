@@ -1978,104 +1978,99 @@ namespace Gambit {
 
     void read_nuclear_params(Gambit::DarkBit::nuclear_params &result)
     {
-        bool static read = false;
-        if (!read)
+        using namespace Pipes::read_nuclear_params;
+    	std::string filename = runOptions->getValue<std::string>("nuclear_parameters");
+        logger() << "Load nuclear parameters from " + filename << "." << std::endl;
+        std::ifstream in(filename.c_str(), std::ios::binary);
+        if (in.fail()) DarkBit_error().raise(LOCAL_INFO, "ERROR: failed loading "
+                       "nuclear parameters from " + filename + ".");
+
+        result.fpu=result.fpd=result.fpc=std::make_pair(0.,false);
+        result.fps=result.fpt=result.fpb=std::make_pair(0.,false);
+        result.fnu=result.fnd=result.fnc=std::make_pair(0.,false);
+        result.fns=result.fnt=result.fnb=std::make_pair(0.,false);
+        result.deltau=result.deltad=result.deltas=std::make_pair(0.,false);
+
+        std::string line;
+        double value;
+        std::string parameter;
+        double fG;
+
+        //Read info from file into nuclear_params struct.
+
+        while(getline(in, line))
         {
-            using namespace Pipes::read_nuclear_params;
-            std::string filename = runOptions->getValue<std::string>("nuclear_parameters");
-            logger() << "Load nuclear parameters from " + filename << "." << std::endl;
-            std::ifstream in(filename.c_str(), std::ios::binary);
-            if (in.fail()) DarkBit_error().raise(LOCAL_INFO, "ERROR: failed loading "
-                    "nuclear parameters from " + filename + ".");
+            if (line[0] == '#') continue;
+            std::stringstream ss(line);
 
-            result.fpu=result.fpd=result.fpc=std::make_pair(0.,false);
-            result.fps=result.fpt=result.fpb=std::make_pair(0.,false);
-            result.fnu=result.fnd=result.fnc=std::make_pair(0.,false);
-            result.fns=result.fnt=result.fnb=std::make_pair(0.,false);
-            result.deltau=result.deltad=result.deltas=std::make_pair(0.,false);
+            if (!(ss >> parameter)) continue;
+            if (!(ss >> value)) continue;
 
-            std::string line;
-            double value;
-            std::string parameter;
-            double fG;
+            cout << parameter << " takes value " << value << endl;
 
-            //Read info from file into nuclear_params struct.
-
-            while(getline(in, line))
+            if (parameter[0] == 'f')
             {
-                if (line[0] == '#') continue;
-                std::stringstream ss(line);
-
-                if (!(ss >> parameter)) continue;
-                if (!(ss >> value)) continue;
-
-                cout << parameter << " takes value " << value << endl;
-
-                if (parameter[0] == 'f')
+                cout << "This is a hadronic matrix element" << endl;
+                if (parameter[1] == 'p')
                 {
-                    cout << "This is a hadronic matrix element" << endl;
-                    if (parameter[1] == 'p')
-                    {
-                        if(parameter[2] == 'u') result.fpu = std::make_pair(value,true);
-                        if(parameter[2] == 'd') result.fpd = std::make_pair(value,true);
-                        if(parameter[2] == 's') result.fps = std::make_pair(value,true);
-                        if(parameter[2] == 'c') result.fpc = std::make_pair(value,true);
-                        if(parameter[2] == 't') result.fpt = std::make_pair(value,true);
-                        if(parameter[2] == 'b') result.fpb = std::make_pair(value,true);
-                    }
-                    if (parameter[1] == 'n')
-                    {
-                        if(parameter[2] == 'u') result.fnu = std::make_pair(value,true);
-                        if(parameter[2] == 'd') result.fnd = std::make_pair(value,true);
-                        if(parameter[2] == 's') result.fns = std::make_pair(value,true);
-                        if(parameter[2] == 'c') result.fnc = std::make_pair(value,true);
-                        if(parameter[2] == 't') result.fnt = std::make_pair(value,true);
-                        if(parameter[2] == 'b') result.fnb = std::make_pair(value,true);
-                    }
+                    if(parameter[2] == 'u') result.fpu = std::make_pair(value,true);
+                    if(parameter[2] == 'd') result.fpd = std::make_pair(value,true);
+                    if(parameter[2] == 's') result.fps = std::make_pair(value,true);
+                    if(parameter[2] == 'c') result.fpc = std::make_pair(value,true);
+                    if(parameter[2] == 't') result.fpt = std::make_pair(value,true);
+                    if(parameter[2] == 'b') result.fpb = std::make_pair(value,true);
                 }
-                if (parameter.substr(0,3)=="del")
+                if (parameter[1] == 'n')
                 {
-                    cout << "This is the spin content of the nucleus." << endl;
-                    if(parameter[4] == 'u') result.deltau = std::make_pair(value,true);
-                    if(parameter[4] == 'd') result.deltad = std::make_pair(value,true);
-                    if(parameter[4] == 's') result.deltas = std::make_pair(value,true);
+                    if(parameter[2] == 'u') result.fnu = std::make_pair(value,true);
+                    if(parameter[2] == 'd') result.fnd = std::make_pair(value,true);
+                    if(parameter[2] == 's') result.fns = std::make_pair(value,true);
+                    if(parameter[2] == 'c') result.fnc = std::make_pair(value,true);
+                    if(parameter[2] == 't') result.fnt = std::make_pair(value,true);
+                    if(parameter[2] == 'b') result.fnb = std::make_pair(value,true);
                 }
             }
-
-            //Check for missing parameters and calculate hadronic matrix elements for
-            //heavy quarks if they are missing.
-
-            if (result.fpu.second || result.fpd.second || result.fps.second)
+            if (parameter.substr(0,3)=="del")
             {
-                if (!(result.fpu.second) || !(result.fpd.second) || !(result.fps.second))
-                    DarkBit_error().raise(LOCAL_INFO, "Error: Proton hadronic matrix elements "
-                            "missing for one or more of u, d, and s quarks.");
-                if (!(result.fpc.second) || !(result.fpt.second) || !(result.fpb.second))
-                {
-                    fG = 1. - result.fpu.first - result.fpd.first - result.fps.first;
-                    result.fpc=result.fpt=result.fpb=std::make_pair(fG, true);
-                }
+                cout << "This is the spin content of the nucleus." << endl;
+                if(parameter[4] == 'u') result.deltau = std::make_pair(value,true);
+                if(parameter[4] == 'd') result.deltad = std::make_pair(value,true);
+                if(parameter[4] == 's') result.deltas = std::make_pair(value,true);
             }
-
-            if (result.fnu.second || result.fnd.second || result.fns.second)
-            {
-                if (!(result.fnu.second) || !(result.fnd.second) || !(result.fns.second))
-                    DarkBit_error().raise(LOCAL_INFO, "Error: Proton hadronic matrix elements "
-                            "missing for one or more of u, d, and s quarks.");
-                if (!(result.fnc.second) || !(result.fnt.second) || !(result.fnb.second))
-                {
-                    fG = 1. - result.fnu.first - result.fnd.first - result.fns.first;
-                    result.fnc=result.fnt=result.fnb=std::make_pair(fG, true);
-                }
-            }
-
-            if (result.deltau.second || result.deltad.second || result.deltas.second)
-                if (!(result.deltau.second) || !(result.deltad.second) || !(result.deltas.second))
-                    DarkBit_error().raise(LOCAL_INFO, "Error: delta q missing for one or more of "
-                            "u, d, and s quarks.");
-
-        read = true;
         }
+
+        //Check for missing parameters and calculate hadronic matrix elements for
+        //heavy quarks if they are missing.
+
+        if (result.fpu.second || result.fpd.second || result.fps.second)
+        {
+            if (!(result.fpu.second) || !(result.fpd.second) || !(result.fps.second))
+                DarkBit_error().raise(LOCAL_INFO, "Error: Proton hadronic matrix elements "
+                        "missing for one or more of u, d, and s quarks.");
+            if (!(result.fpc.second) || !(result.fpt.second) || !(result.fpb.second))
+            {
+                fG = 1. - result.fpu.first - result.fpd.first - result.fps.first;
+                result.fpc=result.fpt=result.fpb=std::make_pair(fG, true);
+            }
+        }
+
+        if (result.fnu.second || result.fnd.second || result.fns.second)
+        {
+            if (!(result.fnu.second) || !(result.fnd.second) || !(result.fns.second))
+                DarkBit_error().raise(LOCAL_INFO, "Error: Proton hadronic matrix elements "
+                        "missing for one or more of u, d, and s quarks.");
+            if (!(result.fnc.second) || !(result.fnt.second) || !(result.fnb.second))
+            {
+                fG = 1. - result.fnu.first - result.fnd.first - result.fns.first;
+                result.fnc=result.fnt=result.fnb=std::make_pair(fG, true);
+            }
+        }
+
+        if (result.deltau.second || result.deltad.second || result.deltas.second)
+            if (!(result.deltau.second) || !(result.deltad.second) || !(result.deltas.second))
+                DarkBit_error().raise(LOCAL_INFO, "Error: delta q missing for one or more of "
+                        "u, d, and s quarks.");
+
     }
 
 //////////////////////////////////////////////////////////////////////////
