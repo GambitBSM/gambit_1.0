@@ -10,7 +10,7 @@ Parameters:
             range: [0.001, 1]
         mass:
             #range: [10, 100]
-            fixed_value: 50.001
+            fixed_value: 150.001
 #    MSSM25:
 #      Ab:
 #        fixed_value: 1
@@ -246,6 +246,7 @@ Auxiliaries:
             - b
             - bbar
         test_printMore:         false
+
 
   # Gamma-rays -------------------------
   - capability: gamLike_1_0_0_init  # Initialization of gamLike backend

@@ -1474,7 +1474,7 @@ namespace Gambit {
                     }
                     std::cout << std::endl;
                     Funk::Funk specDirect = (*Dep::SimYieldTable)("b", "bbar", "gamma", (*Dep::TH_ProcessCatalog).getParticleProperty("phi").mass);
-                    std::cout << "phi-spectrum direct:" << std:: endl;
+                    std::cout << "phi-spectrum (b bbar) direct:" << std:: endl;
                     for(int i=0; i<Nen;i++)
                     {
                         std::cout << specDirect->eval("E", Evals[i])<< "  ";
@@ -1482,7 +1482,7 @@ namespace Gambit {
                     std::cout << std::endl;
                     
                     Funk::Funk specDirectB = 2.0*boost_dNdE(specDirect,gamma1,0.0);
-                    std::cout << "2 * phi-spectrum direct, boosted:" << std:: endl;
+                    std::cout << "2 * phi-spectrum (b bbar) direct, boosted:" << std:: endl;
                     for(int i=0; i<Nen;i++)
                     {
                         std::cout << specDirectB->eval("E", Evals[i])<< "  ";
