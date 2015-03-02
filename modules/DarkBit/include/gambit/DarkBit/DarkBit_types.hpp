@@ -795,7 +795,7 @@ namespace Gambit
 
     //------------------------------------------------------
     // Structure containing the hadronic matrix elements
-    // (fn=<n|qq|n>) and nucleon spin content (delta q).
+    // (fn=<n|qq|n>/m_n) and proton spin content (delta q).
     // The second element of the pair tells whether that
     // value has been set.
 
