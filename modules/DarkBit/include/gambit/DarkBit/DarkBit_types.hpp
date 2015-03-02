@@ -795,13 +795,15 @@ namespace Gambit
 
     //------------------------------------------------------
     // Structure containing the hadronic matrix elements
-    // (fn=<n|qq|n>) and nucleon spin content (delta q)
+    // (fn=<n|qq|n>) and nucleon spin content (delta q).
+    // The second element of the pair tells whether that
+    // value has been set.
 
     struct nuclear_params
     {
-      double fpu, fpd, fpc, fps, fpt, fpb;
-      double fnu, fnd, fnc, fns, fnt, fnb;
-      double deltau, deltad, deltas;
+      std::pair<double,bool> fpu, fpd, fpc, fps, fpt, fpb;
+      std::pair<double,bool> fnu, fnd, fnc, fns, fnt, fnb;
+      std::pair<double,bool> deltau, deltad, deltas;
     };
 
     //------------------------------------------------------
