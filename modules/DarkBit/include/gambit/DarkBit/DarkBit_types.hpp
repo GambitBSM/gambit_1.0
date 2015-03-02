@@ -794,33 +794,14 @@ namespace Gambit
     };
 
     //------------------------------------------------------
-    // Structures containing the hadronic matrix elements
+    // Structure containing the hadronic matrix elements
     // (fn=<n|qq|n>) and nucleon spin content (delta q)
-    struct fp
-    {
-      double u;
-      double d;
-      double c;
-      double s;
-      double t;
-      double b;
-    };
 
-    struct fn
+    struct nuclear_params
     {
-      double u;
-      double d;
-      double c;
-      double s;
-      double t;
-      double b;
-    };
-
-    struct deltaq
-    {
-      double u;
-      double d;
-      double s;
+      double fpu, fpd, fpc, fps, fpt, fpb;
+      double fnu, fnd, fnc, fns, fnt, fnb;
+      double deltau, deltad, deltas;
     };
 
     //------------------------------------------------------
