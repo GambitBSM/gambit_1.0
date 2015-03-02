@@ -444,8 +444,15 @@ START_MODULE
 
   // DIRECT DETECTION ==================================================
 
-  // WIMP properties ---------------------------------------
+  // Nuclear Properties ------------------------------------
+  #define CAPABILITY nuclear_params
+  START_CAPABILITY
+    #define FUNCTION read_nuclear_params
+      START_FUNCTION(Gambit::DarkBit::nuclear_params)
+    #undef FUNCTION
+  #undef CAPABILITY
 
+  // WIMP properties ---------------------------------------
   // Determine the WIMP mass and couplings
   #define CAPABILITY DD_couplings
   START_CAPABILITY

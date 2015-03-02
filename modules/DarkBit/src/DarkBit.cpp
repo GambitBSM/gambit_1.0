@@ -1970,6 +1970,37 @@ namespace Gambit {
         result = 0.;
     }
 
+//////////////////////////////////////////////////////////////////////////
+//
+//                 Direct detection nuclear parameters
+//
+//////////////////////////////////////////////////////////////////////////
+
+    void read_nuclear_params(Gambit::DarkBit::nuclear_params &result)
+    {
+        using namespace Pipes::read_nuclear_params;
+    	std::string filename = runOptions->getValue<std::string>("nuclear_parameters");
+        //TODO: Change below to use printer system.
+        std::cout << "Load nuclear parameters from " + filename << "." << std::endl;
+        std::ifstream in(filename.c_str(), std::ios::binary);
+        if (in.fail()) DarkBit_error().raise(LOCAL_INFO, "ERROR: failed loading "
+                       "nuclear parameters from " + filename + ".");
+
+        std::string line;
+        double value;
+        std::string parameter;
+
+        while(getline(in, line))
+        {
+            if (line[0] == '#') continue;
+            std::stringstream ss(line);
+
+            if (!(ss >> parameter)) continue;
+            if (!(ss >> value)) continue;
+
+            cout << parameter << " takes value " << value << endl;
+        }
+    }
 
 //////////////////////////////////////////////////////////////////////////
 //
