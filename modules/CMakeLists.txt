@@ -78,9 +78,15 @@ string (REPLACE ";" "," itch_with_commas "${itch}")
 
 # Generate the cmake_variables.hpp.in file
 message("-- Updating GAMBIT with config data")
+set(update_config ${PROJECT_SOURCE_DIR}/cmake/cmake_variables.py)
+execute_process(COMMAND python ${update_config} WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
+message("-- Updating GAMBIT with config data - done.")
+
+# Generate the cmake_variables.hpp.in file
+message("-- Updating GAMBIT scanner cmake files")
 set(locate_scanners ${PROJECT_SOURCE_DIR}/cmake/locate_scanners.py -x __not_a_real_name__,${itch_with_commas})
 execute_process(COMMAND python ${locate_scanners} WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
-message("-- Updating GAMBIT with config data - done.")
+message("-- Updating GAMBIT scanner cmake files - done.")
 
 # Generate the CMakeLists.txt files for GAMBIT modules
 message("-- Updating GAMBIT module cmake files")
@@ -100,10 +106,11 @@ set(GAMBIT_VERSION_MINOR 0)
 
 # Finish configuring the header file to pass some of the CMake settings to the source code
 configure_file("${PROJECT_SOURCE_DIR}/cmake/cmake_variables.hpp.in"
-               "${PROJECT_BINARY_DIR}/cmake/cmake_variables.hpp")
+               "${PROJECT_BINARY_DIR}/cmake/gambit/cmake/cmake_variables.hpp")
 
 # Add the binary tree to the search path for include files so that we will find cmake_variables.hpp
 include_directories("${PROJECT_BINARY_DIR}")
+include_directories("${PROJECT_BINARY_DIR}/cmake")
 
 # Generate the backend_locations.yaml file if there isn't one
 if(NOT EXISTS "${PROJECT_SOURCE_DIR}/config/backend_locations.yaml")
