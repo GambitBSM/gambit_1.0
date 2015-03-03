@@ -163,44 +163,6 @@ BE_INI_FUNCTION
         dsrdinit();
         scan_level = false;
 
-        // Setting nuclear spin/quark content based on what is in file:
-
-        double fTdp = 0.0191;
-        double fTup = 0.0153;
-        double fTsp = 0.0447;
-
-        double fTdn = 0.0273;
-        double fTun = 0.011;
-        double fTsn = 0.0447;
-
-        double fTGp = 1.-fTdp-fTup-fTsp;
-        double fTGn = 1.-fTdn-fTun-fTsn;
-
-        double deld = -0.427;
-        double delu = 0.842;
-        double dels = -0.085;
-
-        ddcom->ftp(7)  = fTup;
-        ddcom->ftp(8)  = fTdp;
-        ddcom->ftp(9)  = fTGp;
-        ddcom->ftp(10) = fTsp;
-        ddcom->ftp(11) = fTGp;
-        ddcom->ftp(12) = fTGp;
-
-        ddcom->ftn(7)  = fTun;
-        ddcom->ftn(8)  = fTdn;
-        ddcom->ftn(9)  = fTGn;
-        ddcom->ftn(10) = fTsn;
-        ddcom->ftn(11) = fTGn;
-        ddcom->ftn(12) = fTGn;
-
-        ddcom->deld = deld;
-        ddcom->delu = delu;
-        ddcom->dels = dels;
-
-        cout << "dddn: " << runOptions->getValue<int>("dddn") << endl;
-        cout << "ddpole: " << runOptions->getValue<int>("ddpole") << endl;
-
         if (runOptions->hasKey("dddn"))
         {
         	if (runOptions->getValue<int>("dddn")==1) ddcom->dddn = 1;
@@ -223,30 +185,6 @@ BE_INI_FUNCTION
         				"(only 0 or 1 permitted).");
         }
 
-        if (runOptions->hasKey("nuclear_parameters"))
-        {
-    		std::string filename = runOptions->getValue<std::string>("nuclear_parameters");
-        	//TODO: Change below to use printer system.
-    		std::cout << "Load nuclear parameters from " + filename << "." << std::endl;
-            std::ifstream in(filename.c_str(), std::ios::binary);
-            if (in.fail()) BackendIniBit_error().raise(LOCAL_INFO, "ERROR: failed loading "
-            			"nuclear parameters from " + filename + ".");
-
-            std::string line;
-            double value;
-            std::string parameter;
-
-            while(getline(in, line))
-            {
-            	if (line[0] == '#') continue;
-            	std::stringstream ss(line);
-
-            	if (!(ss >> parameter)) continue;
-            	if (!(ss >> value)) continue;
-
-            	cout << parameter << " takes value " << value << endl;
-            }
-        }
     }
 
   // POINT INITIALIZATION MOVE TO DARKSUSY_POINTINIT CAPABILITY/FUNCTION
