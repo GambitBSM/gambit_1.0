@@ -15,3 +15,7 @@ fns      0.0447
 deld     -0.427
 delu     0.842
 dels     -0.085
+
+# Below parameters from Ellis, Olive, Savage arXiv:0801.3656 (in MeV)
+sigma0     36.
+SigmaPiN  64.
