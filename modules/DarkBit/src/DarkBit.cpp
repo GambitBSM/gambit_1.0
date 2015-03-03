@@ -2160,7 +2160,6 @@ namespace Gambit {
                             "elements missing.");
                 else
                 {
-                    cout << "fpd = " << (*BEreq::MOcommon).par[2] << " fpu = " << (*BEreq::MOcommon).par[3] << endl;
                     (*BEreq::MOcommon).par[2] = (*Dep::nuclear_params).fpd.first;
                     (*BEreq::MOcommon).par[3] = (*Dep::nuclear_params).fpu.first;
                     (*BEreq::MOcommon).par[4] = (*Dep::nuclear_params).fps.first;
