@@ -1982,72 +1982,75 @@ namespace Gambit {
         if (!read)
         {
             using namespace Pipes::read_nuclear_params;
-            std::string filename = runOptions->getValue<std::string>("nuclear_parameters");
-            logger() << "Load nuclear parameters from " + filename << "." << std::endl;
-            std::ifstream in(filename.c_str(), std::ios::binary);
-            if (in.fail()) DarkBit_error().raise(LOCAL_INFO, "ERROR: failed loading "
-                    "nuclear parameters from " + filename + ".");
 
             result.fpu=result.fpd=result.fps=std::make_pair(0.,false);
             result.fnu=result.fnd=result.fns=std::make_pair(0.,false);
             result.deltau=result.deltad=result.deltas=std::make_pair(0.,false);
 
-            std::string line;
-            double value;
-            std::string parameter;
-            double fG;
-
-            //Read info from file into nuclear_params struct.
-
-            while(getline(in, line))
+            if (runOptions->hasKey("nuclear_parameters"))
             {
-                if (line[0] == '#') continue;
-                std::stringstream ss(line);
+                std::string filename = runOptions->getValue<std::string>("nuclear_parameters");
+                logger() << "Load nuclear parameters from " + filename << "." << std::endl;
+                std::ifstream in(filename.c_str(), std::ios::binary);
+                if (in.fail()) DarkBit_error().raise(LOCAL_INFO, "ERROR: failed loading "
+                        "nuclear parameters from " + filename + ".");
 
-                if (!(ss >> parameter)) continue;
-                if (!(ss >> value)) continue;
+                std::string line;
+                double value;
+                std::string parameter;
 
-                if (parameter[0] == 'f')
+                //Read info from file into nuclear_params struct.
+
+                while(getline(in, line))
                 {
-                    if (parameter[1] == 'p')
-                    {
-                        if(parameter[2] == 'u') result.fpu = std::make_pair(value,true);
-                        if(parameter[2] == 'd') result.fpd = std::make_pair(value,true);
-                        if(parameter[2] == 's') result.fps = std::make_pair(value,true);
+                    if (line[0] == '#') continue;
+                    std::stringstream ss(line);
 
+                    if (!(ss >> parameter)) continue;
+                    if (!(ss >> value)) continue;
+
+                    if (parameter[0] == 'f')
+                    {
+                        if (parameter[1] == 'p')
+                        {
+                            if(parameter[2] == 'u') result.fpu = std::make_pair(value,true);
+                            if(parameter[2] == 'd') result.fpd = std::make_pair(value,true);
+                            if(parameter[2] == 's') result.fps = std::make_pair(value,true);
+
+                        }
+                        if (parameter[1] == 'n')
+                        {
+                            if(parameter[2] == 'u') result.fnu = std::make_pair(value,true);
+                            if(parameter[2] == 'd') result.fnd = std::make_pair(value,true);
+                            if(parameter[2] == 's') result.fns = std::make_pair(value,true);
+
+                        }
                     }
-                    if (parameter[1] == 'n')
+                    if (parameter.substr(0,3)=="del")
                     {
-                        if(parameter[2] == 'u') result.fnu = std::make_pair(value,true);
-                        if(parameter[2] == 'd') result.fnd = std::make_pair(value,true);
-                        if(parameter[2] == 's') result.fns = std::make_pair(value,true);
-
+                        if(parameter[3] == 'u') result.deltau = std::make_pair(value,true);
+                        if(parameter[3] == 'd') result.deltad = std::make_pair(value,true);
+                        if(parameter[3] == 's') result.deltas = std::make_pair(value,true);
                     }
                 }
-                if (parameter.substr(0,3)=="del")
-                {
-                    if(parameter[3] == 'u') result.deltau = std::make_pair(value,true);
-                    if(parameter[3] == 'd') result.deltad = std::make_pair(value,true);
-                    if(parameter[3] == 's') result.deltas = std::make_pair(value,true);
-                }
+
+                //Check for missing parameters.
+
+                if (result.fpu.second || result.fpd.second || result.fps.second)
+                    if (!(result.fpu.second) || !(result.fpd.second) || !(result.fps.second))
+                        DarkBit_error().raise(LOCAL_INFO, "Error: Proton hadronic matrix elements "
+                                "missing for one or more of u, d, and s quarks.");
+
+                if (result.fnu.second || result.fnd.second || result.fns.second)
+                    if (!(result.fnu.second) || !(result.fnd.second) || !(result.fns.second))
+                        DarkBit_error().raise(LOCAL_INFO, "Error: Proton hadronic matrix elements "
+                                "missing for one or more of u, d, and s quarks.");
+
+                if (result.deltau.second || result.deltad.second || result.deltas.second)
+                    if (!(result.deltau.second) || !(result.deltad.second) || !(result.deltas.second))
+                        DarkBit_error().raise(LOCAL_INFO, "Error: delta q missing for one or more of "
+                                "u, d, and s quarks.");
             }
-
-            //Check for missing parameters.
-
-            if (result.fpu.second || result.fpd.second || result.fps.second)
-                if (!(result.fpu.second) || !(result.fpd.second) || !(result.fps.second))
-                    DarkBit_error().raise(LOCAL_INFO, "Error: Proton hadronic matrix elements "
-                            "missing for one or more of u, d, and s quarks.");
-
-            if (result.fnu.second || result.fnd.second || result.fns.second)
-                if (!(result.fnu.second) || !(result.fnd.second) || !(result.fns.second))
-                    DarkBit_error().raise(LOCAL_INFO, "Error: Proton hadronic matrix elements "
-                            "missing for one or more of u, d, and s quarks.");
-
-            if (result.deltau.second || result.deltad.second || result.deltas.second)
-                if (!(result.deltau.second) || !(result.deltad.second) || !(result.deltas.second))
-                    DarkBit_error().raise(LOCAL_INFO, "Error: delta q missing for one or more of "
-                            "u, d, and s quarks.");
 
         read = true;
         return;
@@ -2226,6 +2229,7 @@ namespace Gambit {
         result = true;
         return;
     }
+
 //////////////////////////////////////////////////////////////////////////
 //
 //                 Direct detection couplings
