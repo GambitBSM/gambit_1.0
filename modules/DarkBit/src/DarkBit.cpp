@@ -2032,9 +2032,20 @@ namespace Gambit {
                         if(parameter[3] == 'd') result.deltad = std::make_pair(value,true);
                         if(parameter[3] == 's') result.deltas = std::make_pair(value,true);
                     }
+
+                    if (parameter == "sigma0")
+                        result.sigma0 = std::make_pair(value,true);
+                    if (parameter == "SigmaPiN")
+                        result.SigmaPiN == std::make_pair(value,true);
                 }
 
-                //Check for missing parameters.
+                //Check for missing parameters and conflicting parameters.
+
+                if ((result.fpu.second || result.fpd.second || result.fps.second ||
+                        result.fnu.second || result.fnd.second || result.fns.second) &&
+                        (result.sigma0.second || result.SigmaPiN.second))
+                    DarkBit_error().raise(LOCAL_INFO, "Error: Both hadronic matrix elements and "
+                            "sigma0 and/or sigmaPiN defined.");
 
                 if (result.fpu.second || result.fpd.second || result.fps.second)
                     if (!(result.fpu.second) || !(result.fpd.second) || !(result.fps.second))
@@ -2050,8 +2061,57 @@ namespace Gambit {
                     if (!(result.deltau.second) || !(result.deltad.second) || !(result.deltas.second))
                         DarkBit_error().raise(LOCAL_INFO, "Error: delta q missing for one or more of "
                                 "u, d, and s quarks.");
-            }
 
+                if (result.sigma0.second || result.SigmaPiN.second)
+                    if (!result.sigma0.second || !result.SigmaPiN.second)
+                        DarkBit_error().raise(LOCAL_INFO, "Error: sigma0 or sigmaPiN missing.");
+
+                // Calculate hadronic matrix elements, if they are missing:
+                // This follows prescription from Ellis, Olive, and Savage (0801.3656)
+                if (result.SigmaPiN.second && result.sigma0.second)
+                {
+                    const double z = 1.49;
+                    // TODO: Should the below be hardcoded?
+                    const double mp = 938.272046; // MeV from PDG 2014
+                    const double mn = 939.565379; // MeV from PDG 2014
+                    // TODO: Should the below be updated (e.g. with lattice results?)
+                    const double mud = 0.553; // mu / md from Leutwyler (hep-ph/9602366)
+                    const double mdu = 1/mud; // md / mu
+                    const double msd = 18.9; // ms / md from Leutwyler (hep-ph/9602366)
+
+                    double y = 1. - result.sigma0.first/result.SigmaPiN.first;
+                    double Bdu = (2. + ((z-1.)*y))/(2.*z - ((z-1.)*y));
+                    double Bud = (2.*z - ((z-1.)*y))/(2. + ((z-1.)*y));
+
+                    if (!(result.fpu.second) && !(result.fpd.second) && !(result.fps.second))
+                    {
+                        double fpu = (2.*result.SigmaPiN.first)/(mp*(1+mdu)*(1+Bdu));
+                        double fpd = (2.*result.SigmaPiN.first)/(mp*(1+mud)*(1+Bud));
+                        double fps = (msd*result.SigmaPiN.first*y)/(mp*(1+mud));
+
+                        result.fpu = std::make_pair(fpu,true);
+                        result.fpd = std::make_pair(fpd,true);
+                        result.fps = std::make_pair(fps,true);
+
+                        logger() << "Proton hadronic matrix elements calculated:" << endl;
+                        logger() << "fpu = " << fpu <<"\tfpd = " << fpd << "\tfps = " << fps << endl;
+                    }
+
+                    if (!(result.fnu.second) && !(result.fnd.second) && !(result.fns.second))
+                    {
+                        double fnu = (2.*result.SigmaPiN.first)/(mn*(1+mdu)*(1+Bud));
+                        double fnd = (2.*result.SigmaPiN.first)/(mn*(1+mud)*(1+Bdu));
+                        double fns = (msd*result.SigmaPiN.first*y)/(mn*(1+mud));
+
+                        result.fnu = std::make_pair(fnu,true);
+                        result.fnd = std::make_pair(fnd,true);
+                        result.fns = std::make_pair(fns,true);
+
+                        logger() << "Neutron hadronic matrix elements calculated:" << endl;
+                        logger() << "fnu = " << fnu <<"\tfnd = " << fnd << "\tfns = " << fns << endl;
+                    }
+                }
+            }
         read = true;
         return;
         }

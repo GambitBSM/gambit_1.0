@@ -801,6 +801,7 @@ namespace Gambit
 
     struct nuclear_params
     {
+      std::pair<double,bool> sigma0, SigmaPiN;
       std::pair<double,bool> fpu, fpd, fps;
       std::pair<double,bool> fnu, fnd, fns;
       std::pair<double,bool> deltau, deltad, deltas;
