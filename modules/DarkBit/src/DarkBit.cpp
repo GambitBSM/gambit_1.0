@@ -1988,10 +1988,8 @@ namespace Gambit {
             if (in.fail()) DarkBit_error().raise(LOCAL_INFO, "ERROR: failed loading "
                     "nuclear parameters from " + filename + ".");
 
-            result.fpu=result.fpd=result.fpc=std::make_pair(0.,false);
-            result.fps=result.fpt=result.fpb=std::make_pair(0.,false);
-            result.fnu=result.fnd=result.fnc=std::make_pair(0.,false);
-            result.fns=result.fnt=result.fnb=std::make_pair(0.,false);
+            result.fpu=result.fpd=result.fps=std::make_pair(0.,false);
+            result.fnu=result.fnd=result.fns=std::make_pair(0.,false);
             result.deltau=result.deltad=result.deltas=std::make_pair(0.,false);
 
             std::string line;
@@ -2019,55 +2017,36 @@ namespace Gambit {
                         if(parameter[2] == 'u') result.fpu = std::make_pair(value,true);
                         if(parameter[2] == 'd') result.fpd = std::make_pair(value,true);
                         if(parameter[2] == 's') result.fps = std::make_pair(value,true);
-                        if(parameter[2] == 'c') result.fpc = std::make_pair(value,true);
-                        if(parameter[2] == 't') result.fpt = std::make_pair(value,true);
-                        if(parameter[2] == 'b') result.fpb = std::make_pair(value,true);
+
                     }
                     if (parameter[1] == 'n')
                     {
                         if(parameter[2] == 'u') result.fnu = std::make_pair(value,true);
                         if(parameter[2] == 'd') result.fnd = std::make_pair(value,true);
                         if(parameter[2] == 's') result.fns = std::make_pair(value,true);
-                        if(parameter[2] == 'c') result.fnc = std::make_pair(value,true);
-                        if(parameter[2] == 't') result.fnt = std::make_pair(value,true);
-                        if(parameter[2] == 'b') result.fnb = std::make_pair(value,true);
+
                     }
                 }
                 if (parameter.substr(0,3)=="del")
                 {
                     cout << "This is the spin content of the nucleus." << endl;
-                    if(parameter[4] == 'u') result.deltau = std::make_pair(value,true);
-                    if(parameter[4] == 'd') result.deltad = std::make_pair(value,true);
-                    if(parameter[4] == 's') result.deltas = std::make_pair(value,true);
+                    if(parameter[3] == 'u') result.deltau = std::make_pair(value,true);
+                    if(parameter[3] == 'd') result.deltad = std::make_pair(value,true);
+                    if(parameter[3] == 's') result.deltas = std::make_pair(value,true);
                 }
             }
 
-            //Check for missing parameters and calculate hadronic matrix elements for
-            //heavy quarks if they are missing.
+            //Check for missing parameters.
 
             if (result.fpu.second || result.fpd.second || result.fps.second)
-            {
                 if (!(result.fpu.second) || !(result.fpd.second) || !(result.fps.second))
                     DarkBit_error().raise(LOCAL_INFO, "Error: Proton hadronic matrix elements "
                             "missing for one or more of u, d, and s quarks.");
-                if (!(result.fpc.second) || !(result.fpt.second) || !(result.fpb.second))
-                {
-                    fG = 1. - result.fpu.first - result.fpd.first - result.fps.first;
-                    result.fpc=result.fpt=result.fpb=std::make_pair(fG, true);
-                }
-            }
 
             if (result.fnu.second || result.fnd.second || result.fns.second)
-            {
                 if (!(result.fnu.second) || !(result.fnd.second) || !(result.fns.second))
                     DarkBit_error().raise(LOCAL_INFO, "Error: Proton hadronic matrix elements "
                             "missing for one or more of u, d, and s quarks.");
-                if (!(result.fnc.second) || !(result.fnt.second) || !(result.fnb.second))
-                {
-                    fG = 1. - result.fnu.first - result.fnd.first - result.fns.first;
-                    result.fnc=result.fnt=result.fnb=std::make_pair(fG, true);
-                }
-            }
 
             if (result.deltau.second || result.deltad.second || result.deltas.second)
                 if (!(result.deltau.second) || !(result.deltad.second) || !(result.deltas.second))
@@ -2082,69 +2061,69 @@ namespace Gambit {
     void set_nuclear_params_DarkSUSY(bool &result)
     {
         using namespace Pipes::set_nuclear_params_DarkSUSY;
+        double fG;
         bool static set = false; // Only set nuclear parameters once.
         if (!set)
         {
-            cout << "fpu=" << (*Dep::nuclear_params).fpu.first << "  " << (*Dep::nuclear_params).fpu.second << endl;
             // Set proton hadronic matrix elements.
             if ((*Dep::nuclear_params).fpu.second || (*Dep::nuclear_params).fpd.second ||
-                    (*Dep::nuclear_params).fps.second || (*Dep::nuclear_params).fpc.second ||
-                    (*Dep::nuclear_params).fpt.second || (*Dep::nuclear_params).fpb.second)
+                    (*Dep::nuclear_params).fps.second)
             {
                 if (!(*Dep::nuclear_params).fpu.second || !(*Dep::nuclear_params).fpd.second ||
-                        !(*Dep::nuclear_params).fps.second || !(*Dep::nuclear_params).fpc.second ||
-                        !(*Dep::nuclear_params).fpt.second || !(*Dep::nuclear_params).fpb.second)
+                        !(*Dep::nuclear_params).fps.second)
                     DarkBit_error().raise(LOCAL_INFO, "Error: One or more proton hadronic matrix "
                             "elements missing.");
                 else
                 {
                     (*BEreq::ddcom).ftp(7)  = (*Dep::nuclear_params).fpu.first;
                     (*BEreq::ddcom).ftp(8)  = (*Dep::nuclear_params).fpd.first;
-                    (*BEreq::ddcom).ftp(9)  = (*Dep::nuclear_params).fpc.first;
                     (*BEreq::ddcom).ftp(10) = (*Dep::nuclear_params).fps.first;
-                    (*BEreq::ddcom).ftp(11) = (*Dep::nuclear_params).fpt.first;
-                    (*BEreq::ddcom).ftp(12) = (*Dep::nuclear_params).fpb.first;
+
+                    fG = 2./27.*(1. - (*Dep::nuclear_params).fpu.first - (*Dep::nuclear_params).fpd.first -
+                            (*Dep::nuclear_params).fps.first);
+                    (*BEreq::ddcom).ftp(9) = fG;
+                    (*BEreq::ddcom).ftp(11) = fG;
+                    (*BEreq::ddcom).ftp(12) = fG;
+
                     logger() << "DarkSUSY proton hadronic matrix elements set to:" << endl;
                     logger() << "ftp(7) = fpu = " << (*BEreq::ddcom).ftp(7);
                     logger() << "\tftp(8) = fpd = " << (*BEreq::ddcom).ftp(8);
-                    logger() << "\tftp(9) = fpc = " << (*BEreq::ddcom).ftp(9) << endl;
-                    logger() << "ftp(10) = fps = " << (*BEreq::ddcom).ftp(10);
-                    logger() << "\tftp(11) = fpt = " << (*BEreq::ddcom).ftp(11);
-                    logger() << "\tftp(12) = fpb = " << (*BEreq::ddcom).ftp(12) << endl;
+                    logger() << "\tftp(10) = fps = " << (*BEreq::ddcom).ftp(10) << endl;
+                    logger() << "ftp(9) = ftp(11) = ftp(12) = 2/27 fG = " << (*BEreq::ddcom).ftp(9) << endl;
                 }
             }
             else logger() << "Using default DarkSUSY proton hadronic matrix elements." << endl;
 
             // Set neutron hadronic matrix elements.
             if ((*Dep::nuclear_params).fnu.second || (*Dep::nuclear_params).fnd.second ||
-                    (*Dep::nuclear_params).fns.second || (*Dep::nuclear_params).fnc.second ||
-                    (*Dep::nuclear_params).fnt.second || (*Dep::nuclear_params).fnb.second)
+                    (*Dep::nuclear_params).fns.second)
             {
                 if (!(*Dep::nuclear_params).fnu.second || !(*Dep::nuclear_params).fnd.second ||
-                        !(*Dep::nuclear_params).fns.second || !(*Dep::nuclear_params).fnc.second ||
-                        !(*Dep::nuclear_params).fnt.second || !(*Dep::nuclear_params).fnb.second)
+                        !(*Dep::nuclear_params).fns.second)
                     DarkBit_error().raise(LOCAL_INFO, "Error: One or more neutron hadronic matrix "
                             "elements missing.");
                 else
                 {
                     (*BEreq::ddcom).ftn(7)  = (*Dep::nuclear_params).fnu.first;
                     (*BEreq::ddcom).ftn(8)  = (*Dep::nuclear_params).fnd.first;
-                    (*BEreq::ddcom).ftn(9)  = (*Dep::nuclear_params).fnc.first;
                     (*BEreq::ddcom).ftn(10) = (*Dep::nuclear_params).fns.first;
-                    (*BEreq::ddcom).ftn(11) = (*Dep::nuclear_params).fnt.first;
-                    (*BEreq::ddcom).ftn(12) = (*Dep::nuclear_params).fnb.first;
+
+                    fG = 2./27.*(1. - (*Dep::nuclear_params).fnu.first - (*Dep::nuclear_params).fnd.first -
+                            (*Dep::nuclear_params).fns.first);
+                    (*BEreq::ddcom).ftn(9) = fG;
+                    (*BEreq::ddcom).ftn(11) = fG;
+                    (*BEreq::ddcom).ftn(12) = fG;
+
                     logger() << "DarkSUSY neutron hadronic matrix elements set to:" << endl;
                     logger() << "ftn(7) = fnu = " << (*BEreq::ddcom).ftn(7);
                     logger() << "\tftn(8) = fnd = " << (*BEreq::ddcom).ftn(8);
-                    logger() << "\tftn(9) = fnc = " << (*BEreq::ddcom).ftn(9) << endl;
-                    logger() << "ftn(10) = fns = " << (*BEreq::ddcom).ftn(10);
-                    logger() << "\tftn(11) = fnt = " << (*BEreq::ddcom).ftn(11);
-                    logger() << "\tftn(12) = fnb = " << (*BEreq::ddcom).ftn(12) << endl;
+                    logger() << "\tftn(10) = fns = " << (*BEreq::ddcom).ftn(10) << endl;
+                    logger() << "ftn(9) = ftn(11) = ftn(12) = 2/27 fG = " << (*BEreq::ddcom).ftn(9) << endl;
                 }
             }
             else logger() << "Using default DarkSUSY neutron hadronic matrix elements." << endl;
 
-            // Set delta q.
+            //Set delta q.
             if ((*Dep::nuclear_params).deltau.second || (*Dep::nuclear_params).deltad.second ||
                     (*Dep::nuclear_params).deltas.second)
             {
