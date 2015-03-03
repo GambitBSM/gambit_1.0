@@ -452,6 +452,15 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
+  #define CAPABILITY set_nuclear_params
+  START_CAPABILITY
+    #define FUNCTION set_nuclear_params_DarkSUSY
+      START_FUNCTION(bool)
+      DEPENDENCY(nuclear_params, Gambit::DarkBit::nuclear_params)
+      BACKEND_REQ(ddcom, (DarkSUSY), DS_DDCOM)
+    #undef FUNCTION
+  #undef CAPABILITY
+
   // WIMP properties ---------------------------------------
   // Determine the WIMP mass and couplings
   #define CAPABILITY DD_couplings

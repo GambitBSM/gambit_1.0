@@ -2075,7 +2075,98 @@ namespace Gambit {
                             "u, d, and s quarks.");
 
         read = true;
+        return;
         }
+    }
+
+    void set_nuclear_params_DarkSUSY(bool &result)
+    {
+        using namespace Pipes::set_nuclear_params_DarkSUSY;
+        bool static set = false; // Only set nuclear parameters once.
+        if (!set)
+        {
+            cout << "fpu=" << (*Dep::nuclear_params).fpu.first << "  " << (*Dep::nuclear_params).fpu.second << endl;
+            // Set proton hadronic matrix elements.
+            if ((*Dep::nuclear_params).fpu.second || (*Dep::nuclear_params).fpd.second ||
+                    (*Dep::nuclear_params).fps.second || (*Dep::nuclear_params).fpc.second ||
+                    (*Dep::nuclear_params).fpt.second || (*Dep::nuclear_params).fpb.second)
+            {
+                if (!(*Dep::nuclear_params).fpu.second || !(*Dep::nuclear_params).fpd.second ||
+                        !(*Dep::nuclear_params).fps.second || !(*Dep::nuclear_params).fpc.second ||
+                        !(*Dep::nuclear_params).fpt.second || !(*Dep::nuclear_params).fpb.second)
+                    DarkBit_error().raise(LOCAL_INFO, "Error: One or more proton hadronic matrix "
+                            "elements missing.");
+                else
+                {
+                    (*BEreq::ddcom).ftp(7)  = (*Dep::nuclear_params).fpu.first;
+                    (*BEreq::ddcom).ftp(8)  = (*Dep::nuclear_params).fpd.first;
+                    (*BEreq::ddcom).ftp(9)  = (*Dep::nuclear_params).fpc.first;
+                    (*BEreq::ddcom).ftp(10) = (*Dep::nuclear_params).fps.first;
+                    (*BEreq::ddcom).ftp(11) = (*Dep::nuclear_params).fpt.first;
+                    (*BEreq::ddcom).ftp(12) = (*Dep::nuclear_params).fpb.first;
+                    logger() << "DarkSUSY proton hadronic matrix elements set to:" << endl;
+                    logger() << "ftp(7) = fpu = " << (*BEreq::ddcom).ftp(7);
+                    logger() << "\tftp(8) = fpd = " << (*BEreq::ddcom).ftp(8);
+                    logger() << "\tftp(9) = fpc = " << (*BEreq::ddcom).ftp(9) << endl;
+                    logger() << "ftp(10) = fps = " << (*BEreq::ddcom).ftp(10);
+                    logger() << "\tftp(11) = fpt = " << (*BEreq::ddcom).ftp(11);
+                    logger() << "\tftp(12) = fpb = " << (*BEreq::ddcom).ftp(12) << endl;
+                }
+            }
+            else logger() << "Using default DarkSUSY proton hadronic matrix elements." << endl;
+
+            // Set neutron hadronic matrix elements.
+            if ((*Dep::nuclear_params).fnu.second || (*Dep::nuclear_params).fnd.second ||
+                    (*Dep::nuclear_params).fns.second || (*Dep::nuclear_params).fnc.second ||
+                    (*Dep::nuclear_params).fnt.second || (*Dep::nuclear_params).fnb.second)
+            {
+                if (!(*Dep::nuclear_params).fnu.second || !(*Dep::nuclear_params).fnd.second ||
+                        !(*Dep::nuclear_params).fns.second || !(*Dep::nuclear_params).fnc.second ||
+                        !(*Dep::nuclear_params).fnt.second || !(*Dep::nuclear_params).fnb.second)
+                    DarkBit_error().raise(LOCAL_INFO, "Error: One or more neutron hadronic matrix "
+                            "elements missing.");
+                else
+                {
+                    (*BEreq::ddcom).ftn(7)  = (*Dep::nuclear_params).fnu.first;
+                    (*BEreq::ddcom).ftn(8)  = (*Dep::nuclear_params).fnd.first;
+                    (*BEreq::ddcom).ftn(9)  = (*Dep::nuclear_params).fnc.first;
+                    (*BEreq::ddcom).ftn(10) = (*Dep::nuclear_params).fns.first;
+                    (*BEreq::ddcom).ftn(11) = (*Dep::nuclear_params).fnt.first;
+                    (*BEreq::ddcom).ftn(12) = (*Dep::nuclear_params).fnb.first;
+                    logger() << "DarkSUSY neutron hadronic matrix elements set to:" << endl;
+                    logger() << "ftn(7) = fnu = " << (*BEreq::ddcom).ftn(7);
+                    logger() << "\tftn(8) = fnd = " << (*BEreq::ddcom).ftn(8);
+                    logger() << "\tftn(9) = fnc = " << (*BEreq::ddcom).ftn(9) << endl;
+                    logger() << "ftn(10) = fns = " << (*BEreq::ddcom).ftn(10);
+                    logger() << "\tftn(11) = fnt = " << (*BEreq::ddcom).ftn(11);
+                    logger() << "\tftn(12) = fnb = " << (*BEreq::ddcom).ftn(12) << endl;
+                }
+            }
+            else logger() << "Using default DarkSUSY neutron hadronic matrix elements." << endl;
+
+            // Set delta q.
+            if ((*Dep::nuclear_params).deltau.second || (*Dep::nuclear_params).deltad.second ||
+                    (*Dep::nuclear_params).deltas.second)
+            {
+                if (!(*Dep::nuclear_params).deltau.second || !(*Dep::nuclear_params).deltad.second ||
+                        !(*Dep::nuclear_params).deltas.second)
+                    DarkBit_error().raise(LOCAL_INFO, "Error: One or more values of delta q missing.");
+                else
+                {
+                    (*BEreq::ddcom).delu = (*Dep::nuclear_params).deltau.first;
+                    (*BEreq::ddcom).deld = (*Dep::nuclear_params).deltad.first;
+                    (*BEreq::ddcom).dels = (*Dep::nuclear_params).deltas.first;
+                    logger() << "DarkSUSY delta q set to:" << endl;
+                    logger() << "delu = delta u = " << (*BEreq::ddcom).delu;
+                    logger() << "\tdeld = delta d = " << (*BEreq::ddcom).deld;
+                    logger() << "\tdels = delta s = " << (*BEreq::ddcom).dels << endl;
+                }
+            }
+            else logger() << "Using default DarkSUSY delta q." << endl;
+        }
+        set = true;
+        result = true;
+        return;
     }
 
 //////////////////////////////////////////////////////////////////////////
