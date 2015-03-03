@@ -1983,6 +1983,7 @@ namespace Gambit {
         {
             using namespace Pipes::read_nuclear_params;
 
+            result.sigma0=result.SigmaPiN=std::make_pair(0.,false);
             result.fpu=result.fpd=result.fps=std::make_pair(0.,false);
             result.fnu=result.fnd=result.fns=std::make_pair(0.,false);
             result.deltau=result.deltad=result.deltas=std::make_pair(0.,false);
@@ -2033,10 +2034,10 @@ namespace Gambit {
                         if(parameter[3] == 's') result.deltas = std::make_pair(value,true);
                     }
 
-                    if (parameter == "sigma0")
+                    if (parameter=="sigma0")
                         result.sigma0 = std::make_pair(value,true);
-                    if (parameter == "SigmaPiN")
-                        result.SigmaPiN == std::make_pair(value,true);
+                    if (parameter=="SigmaPiN")
+                        result.SigmaPiN = std::make_pair(value,true);
                 }
 
                 //Check for missing parameters and conflicting parameters.
@@ -2054,7 +2055,7 @@ namespace Gambit {
 
                 if (result.fnu.second || result.fnd.second || result.fns.second)
                     if (!(result.fnu.second) || !(result.fnd.second) || !(result.fns.second))
-                        DarkBit_error().raise(LOCAL_INFO, "Error: Proton hadronic matrix elements "
+                        DarkBit_error().raise(LOCAL_INFO, "Error: Neutron hadronic matrix elements "
                                 "missing for one or more of u, d, and s quarks.");
 
                 if (result.deltau.second || result.deltad.second || result.deltas.second)
@@ -2063,8 +2064,8 @@ namespace Gambit {
                                 "u, d, and s quarks.");
 
                 if (result.sigma0.second || result.SigmaPiN.second)
-                    if (!result.sigma0.second || !result.SigmaPiN.second)
-                        DarkBit_error().raise(LOCAL_INFO, "Error: sigma0 or sigmaPiN missing.");
+                    if (!(result.sigma0.second) || !(result.SigmaPiN.second))
+                        DarkBit_error().raise(LOCAL_INFO, "Error: sigma0 or SigmaPiN missing.");
 
                 // Calculate hadronic matrix elements, if they are missing:
                 // This follows prescription from Ellis, Olive, and Savage (0801.3656)
