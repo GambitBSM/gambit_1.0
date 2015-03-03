@@ -2007,11 +2007,8 @@ namespace Gambit {
                 if (!(ss >> parameter)) continue;
                 if (!(ss >> value)) continue;
 
-                cout << parameter << " takes value " << value << endl;
-
                 if (parameter[0] == 'f')
                 {
-                    cout << "This is a hadronic matrix element" << endl;
                     if (parameter[1] == 'p')
                     {
                         if(parameter[2] == 'u') result.fpu = std::make_pair(value,true);
@@ -2029,7 +2026,6 @@ namespace Gambit {
                 }
                 if (parameter.substr(0,3)=="del")
                 {
-                    cout << "This is the spin content of the nucleus." << endl;
                     if(parameter[3] == 'u') result.deltau = std::make_pair(value,true);
                     if(parameter[3] == 'd') result.deltad = std::make_pair(value,true);
                     if(parameter[3] == 's') result.deltas = std::make_pair(value,true);
