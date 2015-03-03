@@ -2144,6 +2144,89 @@ namespace Gambit {
         return;
     }
 
+    void set_nuclear_params_micrOMEGAs(bool &result)
+    {
+        using namespace Pipes::set_nuclear_params_micrOMEGAs;
+        bool static set = false; // Only set nuclear parameters once.
+        if (!set)
+        {
+            // Set proton hadronic matrix elements.
+            if ((*Dep::nuclear_params).fpu.second || (*Dep::nuclear_params).fpd.second ||
+                    (*Dep::nuclear_params).fps.second)
+            {
+                if (!(*Dep::nuclear_params).fpu.second || !(*Dep::nuclear_params).fpd.second ||
+                        !(*Dep::nuclear_params).fps.second)
+                    DarkBit_error().raise(LOCAL_INFO, "Error: One or more proton hadronic matrix "
+                            "elements missing.");
+                else
+                {
+                    cout << "fpd = " << (*BEreq::MOcommon).par[2] << " fpu = " << (*BEreq::MOcommon).par[3] << endl;
+                    (*BEreq::MOcommon).par[2] = (*Dep::nuclear_params).fpd.first;
+                    (*BEreq::MOcommon).par[3] = (*Dep::nuclear_params).fpu.first;
+                    (*BEreq::MOcommon).par[4] = (*Dep::nuclear_params).fps.first;
+
+                    logger() << "micrOMEGAs proton hadronic matrix elements set to:" << endl;
+                    logger() << "ScalarFFPd = fpd = " << (*BEreq::MOcommon).par[2];
+                    logger() << "\tScalarFFPu = fpu = " << (*BEreq::MOcommon).par[3];
+                    logger() << "\tScalarFFPs = fps = " << (*BEreq::MOcommon).par[4] << endl;
+                }
+            }
+            else logger() << "Using default micrOMEGAs proton hadronic matrix elements." << endl;
+
+            // Set neutron hadronic matrix elements.
+            if ((*Dep::nuclear_params).fnu.second || (*Dep::nuclear_params).fnd.second ||
+                    (*Dep::nuclear_params).fns.second)
+            {
+                if (!(*Dep::nuclear_params).fnu.second || !(*Dep::nuclear_params).fnd.second ||
+                        !(*Dep::nuclear_params).fns.second)
+                    DarkBit_error().raise(LOCAL_INFO, "Error: One or more neutron hadronic matrix "
+                            "elements missing.");
+                else
+                {
+                    (*BEreq::MOcommon).par[11] = (*Dep::nuclear_params).fnd.first;
+                    (*BEreq::MOcommon).par[12] = (*Dep::nuclear_params).fnu.first;
+                    (*BEreq::MOcommon).par[13] = (*Dep::nuclear_params).fns.first;
+
+                    logger() << "micrOMEGAs neutron hadronic matrix elements set to:" << endl;
+                    logger() << "ScalarFFNd = fnd = " << (*BEreq::MOcommon).par[11];
+                    logger() << "\tScalarFFNu = fnu = " << (*BEreq::MOcommon).par[12];
+                    logger() << "\tScalarFFNs = fns = " << (*BEreq::MOcommon).par[14] << endl;
+                }
+            }
+            else logger() << "Using default micrOMEGAs neutron hadronic matrix elements." << endl;
+
+            //Set delta q.
+            if ((*Dep::nuclear_params).deltau.second || (*Dep::nuclear_params).deltad.second ||
+                    (*Dep::nuclear_params).deltas.second)
+            {
+                if (!(*Dep::nuclear_params).deltau.second || !(*Dep::nuclear_params).deltad.second ||
+                        !(*Dep::nuclear_params).deltas.second)
+                    DarkBit_error().raise(LOCAL_INFO, "Error: One or more values of delta q missing.");
+                else
+                {
+                    (*BEreq::MOcommon).par[5] = (*Dep::nuclear_params).deltad.first;
+                    (*BEreq::MOcommon).par[6] = (*Dep::nuclear_params).deltau.first;
+                    (*BEreq::MOcommon).par[7] = (*Dep::nuclear_params).deltas.first;
+
+                    (*BEreq::MOcommon).par[14] = (*Dep::nuclear_params).deltau.first;
+                    (*BEreq::MOcommon).par[15] = (*Dep::nuclear_params).deltad.first;
+                    (*BEreq::MOcommon).par[16] = (*Dep::nuclear_params).deltas.first;
+
+                    logger() << "micrOMEGAs delta q set to:" << endl;
+                    logger() << "pVectorFFPd = pVectorFFNu = delta d = "
+                            << (*BEreq::MOcommon).par[5] << endl;
+                    logger() << "pVectorFFPu = pVectorFFPd = delta u = "
+                            << (*BEreq::MOcommon).par[6] << endl;
+                    logger() << "pVectorFFPs = pVectorFFNs = delta s = "
+                            << (*BEreq::MOcommon).par[7] << endl;
+                }
+            }
+            else logger() << "Using default micrOMEGAs delta q." << endl;
+        }
+        set = true;
+        result = true;
+        return;
+    }
 //////////////////////////////////////////////////////////////////////////
 //
 //                 Direct detection couplings

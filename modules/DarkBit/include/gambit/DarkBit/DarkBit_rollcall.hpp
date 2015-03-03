@@ -459,6 +459,11 @@ START_MODULE
       DEPENDENCY(nuclear_params, Gambit::DarkBit::nuclear_params)
       BACKEND_REQ(ddcom, (DarkSUSY), DS_DDCOM)
     #undef FUNCTION
+    #define FUNCTION set_nuclear_params_micrOMEGAs
+      START_FUNCTION(bool)
+      DEPENDENCY(nuclear_params, Gambit::DarkBit::nuclear_params)
+      BACKEND_REQ(MOcommon, (micromegas), micrOMEGAs::MOcommonSTR)
+    #undef FUNCTION
   #undef CAPABILITY
 
   // WIMP properties ---------------------------------------
