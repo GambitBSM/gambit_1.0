@@ -27,7 +27,7 @@
 #include "gambit/Utils/gambit_module_headers.hpp"
 #include "gambit/ColliderBit/ColliderBit_rollcall.hpp"
 
-// Trivial change... For some reason my push is not showing up...
+// Again with my push not showing up... What gits?
 
 namespace Gambit {
   namespace ColliderBit {
