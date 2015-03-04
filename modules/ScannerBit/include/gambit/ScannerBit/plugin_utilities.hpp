@@ -78,7 +78,6 @@ namespace Gambit
                                 ss << in;
                                 return ss.str();
                         }
-                                                  
                 }
 
         }

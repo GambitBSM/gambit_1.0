@@ -119,6 +119,30 @@ namespace Gambit
                         return in;
 #endif
                 }
+                
+                template <typename T>
+                inline typename std::enable_if <is_container<T>::value, std::ostream &>::type
+                operator << (std::ostream &out, const T &in)
+                {
+                        if (in.size() == 0)
+                                return out << "[]";
+                        
+                        out << "[";
+                        auto it = in.begin(), end = in.end()-1;
+                        for (; it != end; it++)
+                        {
+                                out << *it << ", ";
+                        }
+                        
+                        return out << *it << "]";
+                }
+                
+                template <typename T>
+                inline typename std::enable_if <is_pair<T>::value, std::ostream &>::type
+                operator << (std::ostream &out, const T &in)
+                {
+                        return out << "{" << in.first << " : " << in.second << "}";
+                }
         }
 }
 

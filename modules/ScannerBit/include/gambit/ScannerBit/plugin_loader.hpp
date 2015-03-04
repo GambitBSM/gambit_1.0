@@ -68,14 +68,20 @@ namespace Gambit
                                 std::string path;
                                 std::vector<Plugin_Details> plugins;
                                 std::map<std::string, std::map<std::string, std::vector<Plugin_Details>>> plugin_map;
+                                std::vector<Plugin_Details> excluded_plugins;
+                                std::map<std::string, std::map<std::string, std::vector<Plugin_Details>>> excluded_plugin_map;
+                                std::vector<Plugin_Details> total_plugins;
+                                std::map<std::string, std::map<std::string, std::vector<Plugin_Details>>> total_plugin_map;
                                 
                         public:
-                                Plugin_Loader();                       
+                                Plugin_Loader();
+                                void process(const std::string &, const std::string &);
                                 std::vector<Plugin_Details> getPluginsVec() const;
                                 std::map<std::string, std::map<std::string, std::vector<Plugin_Details>>> getPluginsMap() const;
-                                void loadLibrary (const std::string&, const std::string& = "");                        
-                                void print ();
-                                Plugin_Details find (const std::string&, const std::string&, const std::string&, const std::string&) const;
+                                void loadExcluded(const std::string &);
+                                void loadLibrary (const std::string &, const std::string & = "");                        
+                                void print () const;
+                                Plugin_Details find (const std::string &, const std::string &, const std::string &, const std::string &) const;
                         };
                         
                         ///Container for all the plugin info from the inifile and Scannerbit

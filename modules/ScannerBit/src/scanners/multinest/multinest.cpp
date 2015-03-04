@@ -49,12 +49,18 @@ typedef Gambit::Scanner::scan_ptr<double (const std::vector<double>&)> scanPtr;
 
 scanner_plugin(MultiNest, version(0, 0, 0, bens_version))
 {
-   reqd_libraries();
+   // Error thrown if the following entries are not present in the inifile
+   reqd_inifile_entries(); // None are absolutely required at the moment
+
+   // Tell cmake system to search known paths for these libraries. If they aren't found,
+   // they will have to be specified in config/scanner_locations.yaml before this plugin
+   // can be activated. 
+   reqd_libraries("multinest_mpi");
+
    plugin_constructor
    {
       std::cout << "Firing up MultiNest scanner plugin..." << std::endl;
    }
-
 
    int plugin_main (void)
    {

@@ -21,7 +21,6 @@
 
 #include "gambit/ScannerBit/plugin_details.hpp"
 #include "gambit/ScannerBit/printer_interface.hpp"
-#include "gambit/cmake/cmake_variables.hpp"
 
 #ifndef SCANNER_PLUGIN_MACROS_HPP
 #define SCANNER_PLUGIN_MACROS_HPP
@@ -49,27 +48,23 @@
 #define version(...)                    VERSION( __VA_ARGS__ )
 /// Set version number to 0.0.0.
 #define no_version                      VERSION()
-/// Flag used to specify that a external library is required.
-/// If library is not present, plugin will not run.
-#define external_library_required(...)  EXTERNAL_LIBRARY_REQUIRED ( __VA_ARGS__ )
-/// Initialized an inifile value when the plugin is loaded.
-#define init_inifile_value(exp, ...)    INIT_INIFILE_VALUE(exp, __VA_ARGS__)
-/// Tells ScannerBit that these tags are required_classloading_backends
+/// Tells ScannerBit that these tags are required
 #define reqd_inifile_entries(...) void reqd_inifile_entries()
-/// Tells ScannerBit that these libraries are required_classloading_backends
+/// Tells ScannerBit that these libraries are requested
 #define reqd_libraries(...) void reqd_libraries()
+/// Tells ScannerBit that these include files must exist
+#define reqd_headers(...) void reqd_headers()
 /// @}
 
-#define REQD_INIFILE_ENTRIES(...) void REQD_INIFILE_ENTRIES();
-#define REQD_LIRBARIES(...) void REQD_LIBRARIES();
+#define REQD_INIFILE_ENTRIES(...)
+#define REQD_LIRBARIES(...)
+#define REQD_HEADERS(...)
 
 #define ARG_N_INTERNAL(_1_, _2_, _3_, _4_, ret, ...) ret
 #define ARG_N(...) ARG_N_INTERNAL(__VA_ARGS__ , 4, 3, 2, 1, 0)
 #define COMBINE(a, b) COMBINE_INTERNAL(a, b)
 #define COMBINE_INTERNAL(a, b) a ## b
 #define EXPAND(a) a
-#define COMBINE_3(a, b) COMBINE_3_INTERNAL(a, b)
-#define COMBINE_3_INTERNAL(a, b) __gambit_plugin_ ## a ## b ## _namespace__
 #define ENTER_FUNC(func, num, ...) COMBINE(func, num)( __VA_ARGS__ )
 
 #define VERSION_4(major, minor, patch, release) major ## _ ## minor ## _ ## patch ## _ ## release
@@ -78,8 +73,6 @@
 #define VERSION_1(major) VERSION_4(major,,,)
 #define VERSION_0() VERSION(,,,)
 #define VERSION(...) ENTER_FUNC(VERSION_, ARG_N(__VA_ARGS__), __VA_ARGS__ )
-
-#define INIT_INIFILE_VALUE(exp, ...)    INITIALIZE(exp, get_inifile_value<decltype(exp)>( __VA_ARGS__ ))
 
 /*Allows Gambit to declare an object of type "..."*/
 #define EXPORT_ABSTRACT(name, ...)                                                                                      \
@@ -418,5 +411,23 @@ namespace __gambit_plugin_ ## plug_name ## _namespace__                         
         GAMBIT_PLUGIN_INTERNAL_INT(plug_name, plug_type, plug_version)                                                  \
 
 #define GAMBIT_PLUGIN(...) ENTER_FUNC(GAMBIT_PLUGIN_, ARG_N(__VA_ARGS__), __VA_ARGS__ )
+
+#define GAMBIT_PLUGIN_NAMESPACE_INTERNAL_1(plug_name)                                                                   \
+        GAMBIT_PLUGIN_NAMESPACE_INTERNAL_3(plug_name,, no_version)                                                      \
+
+#define GAMBIT_PLUGIN_NAMESPACE_INTERNAL_2(plug_name, plug_type)                                                        \
+        GAMBIT_PLUGIN_NAMESPACE_INTERNAL_3(plug_name, plug_type, no_version)                                            \
+
+#define GAMBIT_PLUGIN_NAMESPACE_INTERNAL_3(plug_name, plug_type, plug_version)                                          \
+namespace __gambit_plugin_ ## plug_name ## __t__ ## plug_type ## __v__ ## plug_version ## _namespace__                  \
+
+#define GAMBIT_PLUGIN_NAMESPACE(...) ENTER_FUNC(GAMBIT_PLUGIN_NAMESPACE_INTERNAL_, ARG_N(__VA_ARGS__), __VA_ARGS__)
+
+#define GAMBIT_PLUGIN_INITIALIZE(setup, ...)                                                                            \
+GAMBIT_PLUGIN(__VA_ARGS__)                                                                                              \
+{                                                                                                                       \
+        setup                                                                                                           \
+}                                                                                                                       \
+GAMBIT_PLUGIN_NAMESPACE(__VA_ARGS__)                                                                                    \
         
 #endif
