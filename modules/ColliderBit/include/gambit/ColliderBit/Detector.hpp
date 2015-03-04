@@ -61,7 +61,6 @@ namespace Gambit {
     class BuckFastBase : public Detector<HEPUtils::Event, HEPUtils::Event> {
     public:
 
-      BuckFastBase() : _processedEvent(0) {}
       /// @name Initialization functions
       //@{
       virtual void defaults() {}
@@ -73,33 +72,6 @@ namespace Gambit {
       //@{
       virtual void processEvent(const HEPUtils::Event&, HEPUtils::Event&) = 0; //< @note Pure virtual.
       //@}
-
-
-    protected:
-
-      /// @name Event conversion functions.
-      //@{
-      virtual void convertInput(const HEPUtils::Event& event) {
-        /// Memory clean-up of any previous event.
-        std::cout << "In convertInput " <<  std::endl;
-        if (_processedEvent) {
-          std::cout << "Deleting event " << _processedEvent <<  std::endl;
-          delete _processedEvent;
-          std::cout << "Deleted event " <<  std::endl;
-          /// Make a local deep copy of the input event to be modified by processEvent.
-        }
-        std::cout << "Attempting to clone " <<  std::endl;
-        _processedEvent = event.clone();
-        std::cout << "Finished clone " <<  std::endl;
-      }
-
-      virtual void convertOutput(HEPUtils::Event& event) {
-        /// @note *Shallow* copy into passed Event (reference is not reset)
-        event = *_processedEvent;
-      }
-      //@}
-
-      HEPUtils::Event* _processedEvent;
     };
 
 
