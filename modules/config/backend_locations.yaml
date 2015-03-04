@@ -52,7 +52,7 @@ gamLike:
   1.0.0:       ./Backends/lib/libgamLike.so
 
 micromegas:
-  0.1:         ./Backends/lib/libmicromegas.so
+  3.5.5:         ./Backends/lib/libmicromegas.so
 
 nulike:
   1.0.0:       ./Backends/lib/libnulike.so
