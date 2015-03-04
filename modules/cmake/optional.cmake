@@ -23,8 +23,7 @@
 find_package(ROOT)
 if (NOT ROOT_FOUND)
   #phew, no ROOT.  Gotta kill ColliderBit, but them's the breaks.
-  message("   Woot! Woot! No ROOT!")
-  message("   Good for you, kid.  Sadly, that means no ColliderBit either for now.  Too bad, so sad.")
+  message("${BoldRed}No ROOT installation found. Excluding ColliderBit from GAMBIT configuration.${ColourReset}")
   set (itch "${itch}" "ColliderBit")
 else()
   include_directories(${ROOT_INCLUDE_DIR})

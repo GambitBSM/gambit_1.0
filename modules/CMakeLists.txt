@@ -2,7 +2,7 @@
 #************************************************
 # \file
 #
-#  Master cmake configuration script for GAMBIT.
+#  Master CMake configuration script for GAMBIT.
 #
 #  CMakeLists files in this project can refer to
 #  the root source directory of the project as
@@ -13,10 +13,10 @@
 #
 #  Authors (add name and date if you modify):
 #
-#  \author Antje Putzerator
+#  \author Antje Putze
 #          (antje.putze@lapth.cnrs.fr)
 #  \date 2014 Sep, Oct, Nov
-#        2015 Jan
+#        2015 Jan, Feb
 #
 #  \author Pat Scott
 #          (p.scott@imperial.ac.uk)
@@ -54,6 +54,12 @@ set(CMAKE_LINK_DEPENDS_NO_SHARED 1)
 # Include ./cmake in search path for projects
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake)
 
+# Add common system library search variables to cmake library search variable, used by find_library
+
+set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} $ENV{LIBRARY_PATH})
+string(REPLACE ":" ";" CMAKE_LIBRARY_PATH "${CMAKE_LIBRARY_PATH}")
+message("CMAKE_LIBRARY_PATH=${CMAKE_LIBRARY_PATH}")
+
 # When building, use the install RPATH already
 set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
 
@@ -77,22 +83,24 @@ endforeach()
 string (REPLACE ";" "," itch_with_commas "${itch}")
 
 # Generate the cmake_variables.hpp.in file
-message("-- Updating GAMBIT with config data")
-set(update_config ${PROJECT_SOURCE_DIR}/cmake/cmake_variables.py)
-execute_process(COMMAND python ${update_config} WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
-message("-- Updating GAMBIT with config data - done.")
+# Ben: cmake_variables.py seems to have vanished! I think this section of code 
+# remained due to some automatic merging, but it is now redundant? I think
+# "locate_scanners.py" is now generating the cmake_variables.hpp.in file.
+#message("${Yellow}-- Updating GAMBIT with config data${ColourReset}")
+#set(update_config ${PROJECT_SOURCE_DIR}/cmake/cmake_variables.py)
+#execute_process(COMMAND python ${update_config} WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
+#message("${Yellow}-- Updating GAMBIT with config data - done.${ColourReset}")
 
-# Generate the cmake_variables.hpp.in file
-message("-- Updating GAMBIT scanner cmake files")
+message("${Yellow}-- Updating GAMBIT scanner cmake files${ColourReset}")
 set(locate_scanners ${PROJECT_SOURCE_DIR}/cmake/locate_scanners.py -x __not_a_real_name__,${itch_with_commas})
 execute_process(COMMAND python ${locate_scanners} WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
-message("-- Updating GAMBIT scanner cmake files - done.")
+message("${Yellow}-- Updating GAMBIT scanner cmake files - done.${ColourReset}")
 
 # Generate the CMakeLists.txt files for GAMBIT modules
-message("-- Updating GAMBIT module cmake files")
+message("${Yellow}-- Updating GAMBIT module CMake files...${ColourReset}")
 set(update_cmakelists ${PROJECT_SOURCE_DIR}/cmake/update_cmakelists.py -x __not_a_real_name__,${itch_with_commas})
 execute_process(COMMAND python ${update_cmakelists} WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
-message("-- Updating GAMBIT module cmake files - done.")
+message("${Yellow}-- Updating GAMBIT module cmake files - done.${ColourReset}")
 
 # Do OSX checks
 include(cmake/MacOSX.cmake)

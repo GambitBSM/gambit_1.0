@@ -2,7 +2,7 @@
 #************************************************
 # \file                                          
 #                                                
-#  Helpful cmake utility macros and functions for
+#  Helpful CMake utility macros and functions for
 #  GAMBIT.  
 #    
 #************************************************
@@ -12,6 +12,7 @@
 #  \author Antje Putze
 #          (antje.putze@lapth.cnrs.fr)              
 #  \date 2014 Sep, Oct, Nov
+#        2015 Feb
 #
 #  \author Pat Scott
 #          (p.scott@imperial.ac.uk)              
@@ -20,6 +21,25 @@
 #************************************************
 
 include(CMakeParseArguments)
+
+# defining some colors
+string(ASCII 27 Esc)
+set(ColourReset "${Esc}[m")
+set(ColourBold  "${Esc}[1m")
+set(Red         "${Esc}[31m")
+set(Green       "${Esc}[32m")
+set(Yellow      "${Esc}[33m")
+set(Blue        "${Esc}[34m")
+set(Magenta     "${Esc}[35m")
+set(Cyan        "${Esc}[36m")
+set(White       "${Esc}[37m")
+set(BoldRed     "${Esc}[1;31m")
+set(BoldGreen   "${Esc}[1;32m")
+set(BoldYellow  "${Esc}[1;33m")
+set(BoldBlue    "${Esc}[1;34m")
+set(BoldMagenta "${Esc}[1;35m")
+set(BoldCyan    "${Esc}[1;36m")
+set(BoldWhite   "${Esc}[1;37m")
 
 #Macro to retrieve GAMBIT modules
 macro(retrieve_bits bits root excludes quiet)
@@ -44,7 +64,7 @@ macro(retrieve_bits bits root excludes quiet)
       # Exclude or add this bit.
       if(${excluded})
         if(NOT ${quiet} STREQUAL "Quiet") 
-          message("   Excluding ${child} from GAMBIT configuration.")
+message("${BoldCyan} X Excluding ${child} from GAMBIT configuration.${ColourReset}")
         endif()
       else()
         list(APPEND ${bits} ${child})
@@ -115,9 +135,12 @@ function(add_gambit_executable executablename)
       endforeach()
     endif()
   endif()
-  set(LIBRARIES ${LIBRARIES} ${yaml_LDFLAGS})
+
   #For checking if all the needed libs are present.  Don't add them manually with -lsomelib!!
-  #message(STATUS ${LIBRARIES})
+  if(VERBOSE)
+    message(STATUS ${LIBRARIES})
+  endif()
+
   target_link_libraries(${executablename} ${LIBRARIES})
 endfunction()
 
@@ -125,12 +148,12 @@ endfunction()
 function(find_python_module module)
   execute_process(COMMAND python -c "import ${module}" RESULT_VARIABLE return_value ERROR_QUIET)
   if (NOT return_value)
-    message("-- Found Python module ${module}.")
+    message(STATUS "Found Python module ${module}.")
   else()
     if(ARGC GREATER 1 AND ARGV1 STREQUAL "REQUIRED")
       message(FATAL_ERROR "-- FAILED to find Python module ${module}.")
     else()      	
-      message("-- FAILED to find Python module ${module}.")
+      message(STATUS "FAILED to find Python module ${module}.")
     endif()	
   endif()
 endfunction()

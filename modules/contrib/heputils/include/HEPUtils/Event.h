@@ -74,15 +74,22 @@ namespace HEPUtils {
 
     /// Clone a copy on the heap
     Event* clone() const {
+      std::cout << "In clone " <<  std::endl;
       Event* rtn = new Event();
-      std::vector<Particle*> ps = particles();
+      std::cout << "Made new event " <<  std::endl;
+      const std::vector<Particle*> ps = particles();
+      std::cout << "Got particles " <<  std::endl;
       for (size_t i = 0; i < ps.size(); ++i) {
         rtn->add_particle(new Particle(*ps[i]));
       }
-      std::vector<Jet*> js = jets();
+      const std::vector<Jet*> js = jets();
+      std::cout << "js size " << js.size() << std::endl;
       for (size_t i = 0; i < js.size(); ++i) {
+        std::cout << "Jets " << js[i] << std::endl;
         rtn->add_jet(new Jet(*js[i]));
+        std::cout << "Added jet" << std::endl;
       }
+
       rtn->_pmiss = _pmiss;
       return rtn;
     }
@@ -95,7 +102,9 @@ namespace HEPUtils {
       /// @todo Prefer this form when we can use C++11's range-for
       // for (Particle* p : particles()) delete p;
       std::vector<Particle*> ps = particles();
-      for (size_t i = 0; i < ps.size(); ++i) { delete ps[i]; }
+      std::cout << "Particle size " << ps.size() << std::endl;
+      for (size_t i = 0; i < ps.size(); ++i){std::cout << "PARTICLE POINTER " << ps[i] << " ID " << ps[i]->pid() << " PT " << ps[i]->pT() << std::endl;}
+      for (size_t i = 0; i < ps.size(); ++i) { std::cout << "DELETING POINTER " << ps[i] << std::endl;delete ps[i]; std::cout << "DELETED" << std::endl; }
       ps.clear();
       _photons.clear();
       _electrons.clear();
@@ -106,6 +115,8 @@ namespace HEPUtils {
 
       /// @todo Prefer this form when we can use C++11's range-for
       // if (!_jets.empty()) for (Jet* j : jets()) delete j;
+      //if(!_jets.empty())std::cout << "Survived" << std::endl;
+      if (!_jets.empty()) for (size_t i = 0; i < _jets.size(); ++i)std::cout << "JET POINTER " << _jets[i] << " PT " << _jets[i]->pT() << std::endl;
       if (!_jets.empty()) for (size_t i = 0; i < _jets.size(); ++i) delete _jets[i];
       _jets.clear();
 

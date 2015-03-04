@@ -810,6 +810,13 @@ namespace Gambit {
                        chn.Ecm_max ),                                               // Highest energy in SimYieldChannel
                        0.5*(endpoint->m*endpoint->m + m*m)/endpoint->m );           // Estimate for highest kinematically allowed CoM energy
         if(Ecmin>=Ecmax) return;    
+        // TODO: Lars --> Your code produces a "too large" Ecmin.  Note that
+        // this quantity ends up as cutoff in the photon spectrum as well
+        // (dNdE).  A 10 GeV cutoff is not what we want there.  Please have a
+        // look where and how Ecmin is used, and *check the output* after
+        // making changes.
+        Ecmin = 0.1;
+        Ecmax = 100;
         double logmin = log(Ecmin);
         double logmax = log(Ecmax);                  
         double dlogE=logmax-logmin;       
@@ -883,9 +890,10 @@ namespace Gambit {
                 {
                     std::cout << "Defining new histList entry!!!" << std::endl;
                     std::cout << "for: " << *Dep::cascadeMC_InitialState << " " << *it << std::endl;
-                    // FIXME: This defines 50 bins from 1e-3 to 1e3 GeV.
-                    // Should not be hardcoded.
-                    histList[*Dep::cascadeMC_InitialState][*it]=SimpleHist(50,0.001,1000.0,true);
+                    // FIXME: Lars --> This defines 50 bins from 1e-3 to 1e3
+                    // GeV.  Should not be hardcoded.  Please retrieve this
+                    // from the ini-file instead.
+                    histList[*Dep::cascadeMC_InitialState][*it]=SimpleHist(200,0.001,1000.0,true);
                 }
                 return;
             case MC_FINALIZE:
@@ -1315,9 +1323,14 @@ namespace Gambit {
         double betaGamma = sqrt(gamma*gamma-1);
         Funk::Funk Ep = Funk::var("Ep");
         Funk::Funk E = Funk::var("E");
-        Funk::Funk integrand = dNdE->set("E", Ep);
-        Funk::Funk halfBox = betaGamma*sqrt(E*E-mass*mass);
-        return dNdE->gsl_integration("Ep", E*gamma-halfBox, E*gamma+halfBox) / (2*halfBox);
+        // TODO: --> Lars, please check what is going on
+        // Your new code (does not work properly):
+        //Funk::Funk integrand = dNdE->set("E", Ep);
+        //Funk::Funk halfBox = betaGamma*sqrt(E*E-mass*mass);
+        //return dNdE->gsl_integration("Ep", E*gamma-halfBox, E*gamma+halfBox) / (2*halfBox);
+        // My previous code (works at least visually correct):
+        Funk::Funk integrand = dNdE->set("E", Ep)/(2*(gamma*gamma-1)*Ep);
+        return integrand->gsl_integration("Ep", E/(gamma+sqrt(gamma*gamma-1)), E/(gamma-sqrt(gamma*gamma-1)));
     }
 
     void GA_AnnYield_General(Funk::Funk &result)
@@ -2489,8 +2502,8 @@ namespace Gambit {
 
           // Output gamma-ray spectrum (grid be set in YAML file).
           double x_min = runOptions->getValueOrDef<double>(0.1, "GA_AnnYield", "Emin");
-          double x_max = runOptions->getValueOrDef<double>(100, "GA_AnnYield", "Emax");
-          int n = runOptions->getValueOrDef<double>(10, "GA_AnnYield", "nbins");
+          double x_max = runOptions->getValueOrDef<double>(1000, "GA_AnnYield", "Emax");
+          int n = runOptions->getValueOrDef<double>(21, "GA_AnnYield", "nbins");
           std::vector<double> x = logspace(log10(x_min), log10(x_max), n);  // from 0.1 to 500 GeV
           std::vector<double> y = spectrum->vector("E", x);
           os << "# Annihilation spectrum dNdE [1/GeV]\n";
@@ -2540,7 +2553,7 @@ namespace Gambit {
         {
             int flag = 0;      // some flag
             int yieldk = 152;  // gamma ray yield
-            int ch = 0;        // channel information
+            //int ch = 0;        // channel information  //bjf> unused variable
             Funk::Funk dNdE;
 
             #define ADD_CHANNEL(ch, P1, P2, FINAL, EcmMin, EcmMax)                                                    \

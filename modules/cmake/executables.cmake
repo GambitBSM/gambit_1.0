@@ -2,7 +2,7 @@
 #************************************************
 # \file                                          
 #                                                
-#  Cmake configuration script for final executables
+#  CMake configuration script for final executables
 #  of GAMBIT.
 #    
 #************************************************
@@ -12,6 +12,7 @@
 #  \author Antje Putze
 #          (antje.putze@lapth.cnrs.fr)              
 #  \date 2014 Sep, Oct, Nov
+#        2015 Feb
 #
 #  \author Pat Scott
 #          (p.scott@imperial.ac.uk)              
@@ -25,7 +26,8 @@ set(uses_scannerbit gambit)
 # Add the main GAMBIT executable
 if(EXISTS "${PROJECT_SOURCE_DIR}/Core/")
   add_gambit_executable(gambit SOURCES ${PROJECT_SOURCE_DIR}/Core/src/gambit.cpp ${GAMBIT_COMMON_OBJECTS} ${GAMBIT_OBJECTS} ${GAMBIT_BIT_OBJECTS})
-  add_dependencies(gambit yaml mkpath)
+  add_dependencies(gambit mkpath)
+  target_link_libraries(gambit yaml-cpp)
   if (NOT EXCLUDE_FLEXIBLESUSY)
     add_dependencies(gambit flexiblesusy)
     target_link_libraries(gambit ${flexiblesusy_LDFLAGS})
@@ -39,7 +41,8 @@ endif()
 # Add the ExampleBit_A_standalone executable
 if(EXISTS "${PROJECT_SOURCE_DIR}/ExampleBit_A/" AND ";${GAMBIT_BITS};" MATCHES ";ExampleBit_A;")
   add_gambit_executable(ExampleBit_A_standalone SOURCES ${PROJECT_SOURCE_DIR}/ExampleBit_A/examples/ExampleBit_A_standalone_example.cpp $<TARGET_OBJECTS:ExampleBit_A> ${GAMBIT_COMMON_OBJECTS})
-  add_dependencies(ExampleBit_A_standalone yaml mkpath)
+  add_dependencies(ExampleBit_A_standalone mkpath)
+  target_link_libraries(ExampleBit_A_standalone yaml-cpp)
   if (NOT EXCLUDE_FLEXIBLESUSY)
     add_dependencies(ExampleBit_A_standalone flexiblesusy)
     target_link_libraries(ExampleBit_A_standalone ${flexiblesusy_LDFLAGS})

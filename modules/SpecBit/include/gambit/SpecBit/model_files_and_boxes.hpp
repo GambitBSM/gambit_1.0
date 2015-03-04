@@ -70,10 +70,10 @@
           /* Internal data members for keeping track of objects needed/created by FlexibleSUSY */ \
           Model model;     /* FlexibleSUSY model */                                    \
           QedQcd oneset;   /* SoftSUSY format Standard Model parameters */             \
-          SlhaIo slha_io;   /* FlexibleSUSY SLHA input/output manager */               \
           InputParameters input;    /* Parameters needed to compute points of Model */ \
-          Problems problems; /* FlexibleSUSY problems report manager */                \
+          SlhaIo slha_io;   /* FlexibleSUSY SLHA input/output manager */               \
           Scales scales;   /*scales at shich coundary conditions are applied*/         \
+          Problems problems; /* FlexibleSUSY problems report manager */                \
           /* Function to create SLHAea object from 'model' */                          \
           /* THIS IS REQUIRED BY MSSMSpec */                                           \
           SLHAea::Coll getSLHAea()                                                     \

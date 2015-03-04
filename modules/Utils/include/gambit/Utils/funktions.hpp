@@ -51,7 +51,7 @@ namespace Funk
 
     class FunkBase;
     typedef shared_ptr<FunkBase> Funk;
-    typedef std::vector<const char *> ArgsType;
+    typedef std::vector<std::string> ArgsType;
 
     //template <typename... Args>
     //using PlainPtr = double(*)(Args&...);
@@ -102,7 +102,7 @@ namespace Funk
     inline ArgsType joinArgs(ArgsType args1, ArgsType args2)
     {
         args1.insert(args1.end(), args2.begin(), args2.end());
-        std::set<const char*> argsset(args1.begin(), args1.end());
+        std::set<std::string> argsset(args1.begin(), args1.end());
         args1.assign(argsset.begin(), argsset.end());
         return args1;
     }
@@ -133,7 +133,7 @@ namespace Funk
         }
     }
 
-    inline int eraseArg(ArgsType & args, const char* arg)
+    inline int eraseArg(ArgsType & args, std::string arg)
     {
         auto it = std::find(args.begin(), args.end(), arg);
         assert (it!=args.end());
@@ -141,7 +141,7 @@ namespace Funk
         return it - args.begin();
     }
 
-    inline bool hasArg(ArgsType & args, const char* arg)
+    inline bool inArg(ArgsType & args, std::string arg)
     {
         auto it = std::find(args.begin(), args.end(), arg);
         return it!=args.end();
@@ -188,7 +188,7 @@ namespace Funk
     {
         public:
             FunkBase() {}
-            ~FunkBase() {}
+            virtual ~FunkBase() {}
 
             // Standard handles
             template <typename... Args> Funk set(Args... args);
@@ -196,7 +196,7 @@ namespace Funk
             template <typename... Args> double eval(Args... args);
             template <typename... Args> double get(Args... argss);
             template <typename... Args> double operator() (Args... argss) { return this->eval(argss...); }
-            std::vector<double> vector(const char*, const std::vector<double>&);
+            std::vector<double> vector(std::string, const std::vector<double>&);
 
             // Extension handles
             // TODO: Implement
@@ -204,24 +204,25 @@ namespace Funk
             template <typename... Args> Funk gsl_integration(Args... args);
 
             // Convenience functions
-            const std::vector<const char*> & getArgs() { return this->args; };
+            const std::vector<std::string> & getArgs() { return this->args; };
             Funk help();
+            bool hasArg(std::string);
             bool hasArgs();
             std::size_t getNArgs() {return this->args.size();};
 
             // Plain function generators (up to four arguments)
-            PlainPtrs1 plain(const char*);
-            PlainPtrs2 plain(const char*, const char*);
-            PlainPtrs3 plain(const char*, const char*, const char*);
-            PlainPtrs4 plain(const char*, const char*, const char*, const char*);
+            PlainPtrs1 plain(std::string);
+            PlainPtrs2 plain(std::string, std::string);
+            PlainPtrs3 plain(std::string, std::string, std::string);
+            PlainPtrs4 plain(std::string, std::string, std::string, std::string);
             template <typename T>
-            PlainPtr1 plain(const char*);
+            PlainPtr1 plain(std::string);
             template <typename T>
-            PlainPtr2 plain(const char*, const char*);
+            PlainPtr2 plain(std::string, std::string);
             template <typename T>
-            PlainPtr3 plain(const char*, const char*, const char*);
+            PlainPtr3 plain(std::string, std::string, std::string);
             template <typename T>
-            PlainPtr4 plain(const char*, const char*, const char*, const char*);
+            PlainPtr4 plain(std::string, std::string, std::string, std::string);
 
             // Return value
             virtual double value(const std::vector<double> &) = 0;
@@ -235,14 +236,14 @@ namespace Funk
             std::vector<double> Xout;
             unsigned int nout;
 
-            std::map<const char*, double> tmp_argmap;
-            std::map<const char*, Funk> tmp_funmap;
+            std::map<std::string, double> tmp_argmap;
+            std::map<std::string, Funk> tmp_funmap;
             std::vector<double> empty;
 
             // Add arguments from set(...) handler to tmp_argmap and
             // tmp_funmap.
-            template <typename... Args> void digest_arguments(const char* arg, double y, Args... args);
-            template <typename... Args> void digest_arguments(const char* arg, Funk y, Args... args);
+            template <typename... Args> void digest_arguments(std::string arg, double y, Args... args);
+            template <typename... Args> void digest_arguments(std::string arg, Funk y, Args... args);
             void digest_arguments() {};
     };
 
@@ -255,10 +256,10 @@ namespace Funk
     class FunkPlain: public FunkBase
     {
         public:
-            FunkPlain(Funk fin, const char* arg1) : f(fin->bind(arg1)) {}
-            FunkPlain(Funk fin, const char* arg1, const char* arg2) : f(fin->bind(arg1, arg2)) {}
-            FunkPlain(Funk fin, const char* arg1, const char* arg2, const char* arg3) : f(fin->bind(arg1, arg2, arg3)) {}
-            FunkPlain(Funk fin, const char* arg1, const char* arg2, const char* arg3, const char* arg4) : f(fin->bind(arg1, arg2, arg3, arg4)) {}
+            FunkPlain(Funk fin, std::string arg1) : f(fin->bind(arg1)) {}
+            FunkPlain(Funk fin, std::string arg1, std::string arg2) : f(fin->bind(arg1, arg2)) {}
+            FunkPlain(Funk fin, std::string arg1, std::string arg2, std::string arg3) : f(fin->bind(arg1, arg2, arg3)) {}
+            FunkPlain(Funk fin, std::string arg1, std::string arg2, std::string arg3, std::string arg4) : f(fin->bind(arg1, arg2, arg3, arg4)) {}
 
             static double plain1p(double x1, void* ptr)
             {
@@ -315,7 +316,7 @@ namespace Funk
 
         private:
             Funk f;
-            const char *arg1, *arg2, *arg3, *arg4;
+            std::string arg1, arg2, arg3, arg4;
     };
 
 
@@ -327,7 +328,7 @@ namespace Funk
     {
         public:
             // Set parameter to fixed value
-            FunkDerived(Funk f, const char* arg, double x) : f(f), x(x), mode(0)
+            FunkDerived(Funk f, std::string arg, double x) : f(f), x(x), mode(0)
             {
                 args = f->getArgs();
                 XoutF.resize(args.size());
@@ -336,7 +337,7 @@ namespace Funk
                 nF = XoutF.size();
             };
             // Map parameter to other function
-            FunkDerived(Funk f, const char* arg, Funk g) : f(f), g(g), mode(1)
+            FunkDerived(Funk f, std::string arg, Funk g) : f(f), g(g), mode(1)
             {
                 ArgsType argsF = f->getArgs();
                 ArgsType argsG = g->getArgs();
@@ -510,7 +511,7 @@ namespace Funk
     {
         public:
             template <typename... Args>
-            FunkConst(double c, Args ...argss) : c(c) { args = vec(argss...); }
+            FunkConst(double c, Args ...argss) : c(c) { args = vec<std::string>(argss...); }
             FunkConst(double c) : c(c) { args.resize(0); }
 
             double value(const std::vector<double> & X)
@@ -535,7 +536,7 @@ namespace Funk
     class FunkVar: public FunkBase
     {
         public:
-            FunkVar(const char* arg)
+            FunkVar(std::string arg)
             {
                 args = vec(arg);
             }
@@ -545,14 +546,14 @@ namespace Funk
                 return X[0];
             }
     };
-    inline Funk var(const char* arg) { return Funk(new FunkVar(arg)); }
+    inline Funk var(std::string arg) { return Funk(new FunkVar(arg)); }
 
 
     //
     // Definition of FunkBase member functions
     //
 
-    inline std::vector<double> FunkBase::vector(const char* arg, const std::vector<double> & X)
+    inline std::vector<double> FunkBase::vector(std::string arg, const std::vector<double> & X)
     {
         unsigned n = X.size();
         std::vector<double> Y(n);
@@ -596,8 +597,8 @@ namespace Funk
 
     template <typename... Args> inline Funk FunkBase::bind(Args... argss)
     {
-        ArgsType bind_args = vec<const char*>(argss...);
-        assert (std::set<const char*>(args.begin(), args.end()) == std::set<const char*>(bind_args.begin(), bind_args.end()));
+        ArgsType bind_args = vec<std::string>(argss...);
+        assert (std::set<std::string>(args.begin(), args.end()) == std::set<std::string>(bind_args.begin(), bind_args.end()));
         bind_map = getMap(args, bind_args);
         Xout.resize(bind_args.size());
         nout = Xout.size();
@@ -639,13 +640,15 @@ namespace Funk
         return this->value(Xout);
     }
 
-  inline bool FunkBase::hasArgs()
-  {
-    if(this->args.size() == 0)
-      return false;
-    else
-      return true;
-  }
+    inline bool FunkBase::hasArg(std::string arg)
+    {
+        return ( std::find(args.begin(), args.end(), arg) != args.end() );
+    }
+
+    inline bool FunkBase::hasArgs()
+    {
+        return ( this->args.size() != 0 );
+    }
 
     template <typename... Args> inline Funk FunkBase::gsl_integration(Args... args)
     {
@@ -663,59 +666,59 @@ namespace Funk
         return shared_from_this();
     }
 
-    template <typename... Args> inline void FunkBase::digest_arguments(const char* arg, double y, Args... args)
+    template <typename... Args> inline void FunkBase::digest_arguments(std::string arg, double y, Args... args)
     {
         tmp_argmap[arg] = y;
         digest_arguments(args...);
     }
 
-    template <typename... Args> inline void FunkBase::digest_arguments(const char* arg, Funk y, Args... args)
+    template <typename... Args> inline void FunkBase::digest_arguments(std::string arg, Funk y, Args... args)
     {
         tmp_funmap[arg] = y;
         digest_arguments(args...);
     }
 
-    inline PlainPtrs1 FunkBase::plain(const char* arg1)
+    inline PlainPtrs1 FunkBase::plain(std::string arg1)
     {
         void* ptr = new FunkPlain(shared_from_this(), arg1);
         return PlainPtrs1(&FunkPlain::plain1p, ptr);
     }
-    inline PlainPtrs2 FunkBase::plain(const char* arg1, const char* arg2)
+    inline PlainPtrs2 FunkBase::plain(std::string arg1, std::string arg2)
     {
         void* ptr = new FunkPlain(shared_from_this(), arg1, arg2);
         return PlainPtrs2(&FunkPlain::plain2p, ptr);
     }
-    inline PlainPtrs3 FunkBase::plain(const char* arg1, const char* arg2, const char* arg3)
+    inline PlainPtrs3 FunkBase::plain(std::string arg1, std::string arg2, std::string arg3)
     {
         void* ptr = new FunkPlain(shared_from_this(), arg1, arg2, arg3);
         return PlainPtrs3(&FunkPlain::plain3p, ptr);
     }
-    inline PlainPtrs4 FunkBase::plain(const char* arg1, const char* arg2, const char* arg3, const char* arg4)
+    inline PlainPtrs4 FunkBase::plain(std::string arg1, std::string arg2, std::string arg3, std::string arg4)
     {
         void* ptr = new FunkPlain(shared_from_this(), arg1, arg2, arg3, arg4);
         return PlainPtrs4(&FunkPlain::plain4p, ptr);
     }
 
     template <typename T>
-    inline PlainPtr1 FunkBase::plain(const char* arg1)
+    inline PlainPtr1 FunkBase::plain(std::string arg1)
     {
         T::ptr = new FunkPlain(shared_from_this(), arg1);
         return &FunkPlain::plain1<T>;
     }
     template <typename T>
-    inline PlainPtr2 FunkBase::plain(const char* arg1, const char* arg2)
+    inline PlainPtr2 FunkBase::plain(std::string arg1, std::string arg2)
     {
         T::ptr = new FunkPlain(shared_from_this(), arg1, arg2);
         return &FunkPlain::plain2<T>;
     }
     template <typename T>
-    inline PlainPtr3 FunkBase::plain(const char* arg1, const char* arg2, const char* arg3)
+    inline PlainPtr3 FunkBase::plain(std::string arg1, std::string arg2, std::string arg3)
     {
         T::ptr = new FunkPlain(shared_from_this(), arg1, arg2, arg3);
         return &FunkPlain::plain3<T>;
     }
     template <typename T>
-    inline PlainPtr4 FunkBase::plain(const char* arg1, const char* arg2, const char* arg3, const char* arg4)
+    inline PlainPtr4 FunkBase::plain(std::string arg1, std::string arg2, std::string arg3, std::string arg4)
     {
         T::ptr = new FunkPlain(shared_from_this(), arg1, arg2, arg3, arg4);
         return &FunkPlain::plain4<T>;
@@ -914,7 +917,7 @@ namespace Funk
     class FunkInterp : public FunkBase
     {
         public:
-            FunkInterp(const char * arg, std::vector<double> & Xgrid, std::vector<double> & Ygrid, std::string mode = "lin")
+            FunkInterp(std::string arg, std::vector<double> & Xgrid, std::vector<double> & Ygrid, std::string mode = "lin")
             {
                 args.push_back(arg);
                 this->Xgrid = Xgrid;
@@ -958,7 +961,7 @@ namespace Funk
             std::vector<double> Ygrid;
             std::string mode;
     };
-    inline Funk interp(const char * arg, std::vector<double> x, std::vector<double> y) { return Funk(new FunkInterp(arg, x, y)); }
+    inline Funk interp(std::string arg, std::vector<double> x, std::vector<double> y) { return Funk(new FunkInterp(arg, x, y)); }
 
 
     //
@@ -968,7 +971,7 @@ namespace Funk
     class FunkIntegrate_gsl1d: public FunkBase, public gsl_function
     {
         public:
-            FunkIntegrate_gsl1d(Funk fptr, const char * arg, const char * lim0, const char * lim1) : 
+            FunkIntegrate_gsl1d(Funk fptr, std::string arg, std::string lim0, std::string lim1) : 
                 fptr(fptr), lim0(lim0), lim1(lim1), limit(100), epsrel(1e-2), epsabs(1e-2)
             {
                 auto f_args = fptr->getArgs();
@@ -981,7 +984,7 @@ namespace Funk
                 {
                     std::cout << "Warning: Boundaries identical." << std::endl;
                 }
-                if ( not hasArg(f_args, arg) )
+                if ( not inArg(f_args, arg) )
                 {
                     std::cout << "Warning: Integrand independent of integration variable." << std::endl;
                     i = -1;
@@ -1055,7 +1058,7 @@ namespace Funk
 
             // Integration range and function pointer
             Funk fptr;
-            const char *lim0, *lim1;
+            std::string lim0, lim1;
 
             // GSL workspace and parameters
             gsl_integration_workspace * gsl_workspace;
@@ -1065,16 +1068,16 @@ namespace Funk
     };
 
     // Standard behaviour
-    inline Funk getIntegrate_gsl1d(Funk fptr, const char *arg, const char *lim0, const char *lim1) { return Funk(new FunkIntegrate_gsl1d(fptr, arg, lim0, lim1)); }
+    inline Funk getIntegrate_gsl1d(Funk fptr, std::string arg, std::string lim0, std::string lim1) { return Funk(new FunkIntegrate_gsl1d(fptr, arg, lim0, lim1)); }
     // Convenient overloads
-    inline Funk getIntegrate_gsl1d(Funk fptr, const char *arg, const char *lim0, double x) { return Funk(new FunkIntegrate_gsl1d(fptr, arg, lim0, TMPID1))->set(TMPID1, x); }
-    inline Funk getIntegrate_gsl1d(Funk fptr, const char *arg, double x, const char *lim1) { return Funk(new FunkIntegrate_gsl1d(fptr, arg, TMPID1, lim1))->set(TMPID1, x); }
-    inline Funk getIntegrate_gsl1d(Funk fptr, const char *arg, double x, double y) { return Funk(new FunkIntegrate_gsl1d(fptr, arg, TMPID1, TMPID2))->set(TMPID1, x, TMPID2, y); }
-    inline Funk getIntegrate_gsl1d(Funk fptr, const char *arg, const char *lim0, Funk g) { return Funk(new FunkIntegrate_gsl1d(fptr, arg, lim0, TMPID1))->set(TMPID1, g); }
-    inline Funk getIntegrate_gsl1d(Funk fptr, const char *arg, Funk g, const char *lim1) { return Funk(new FunkIntegrate_gsl1d(fptr, arg, TMPID1, lim1))->set(TMPID1, g); }
-    inline Funk getIntegrate_gsl1d(Funk fptr, const char *arg, Funk g1, Funk g2) { return Funk(new FunkIntegrate_gsl1d(fptr, arg, TMPID1, TMPID2))->set(TMPID1, g1)->set(TMPID2, g2); }
-    inline Funk getIntegrate_gsl1d(Funk fptr, const char *arg, double x, Funk g) { return Funk(new FunkIntegrate_gsl1d(fptr, arg, TMPID1, TMPID2))->set(TMPID1, x, TMPID2, g); }
-    inline Funk getIntegrate_gsl1d(Funk fptr, const char *arg, Funk g, double x) { return Funk(new FunkIntegrate_gsl1d(fptr, arg, TMPID1, TMPID2))->set(TMPID1, g, TMPID2, x); }
+    inline Funk getIntegrate_gsl1d(Funk fptr, std::string arg, std::string lim0, double x) { return Funk(new FunkIntegrate_gsl1d(fptr, arg, lim0, TMPID1))->set(TMPID1, x); }
+    inline Funk getIntegrate_gsl1d(Funk fptr, std::string arg, double x, std::string lim1) { return Funk(new FunkIntegrate_gsl1d(fptr, arg, TMPID1, lim1))->set(TMPID1, x); }
+    inline Funk getIntegrate_gsl1d(Funk fptr, std::string arg, double x, double y) { return Funk(new FunkIntegrate_gsl1d(fptr, arg, TMPID1, TMPID2))->set(TMPID1, x, TMPID2, y); }
+    inline Funk getIntegrate_gsl1d(Funk fptr, std::string arg, std::string lim0, Funk g) { return Funk(new FunkIntegrate_gsl1d(fptr, arg, lim0, TMPID1))->set(TMPID1, g); }
+    inline Funk getIntegrate_gsl1d(Funk fptr, std::string arg, Funk g, std::string lim1) { return Funk(new FunkIntegrate_gsl1d(fptr, arg, TMPID1, lim1))->set(TMPID1, g); }
+    inline Funk getIntegrate_gsl1d(Funk fptr, std::string arg, Funk g1, Funk g2) { return Funk(new FunkIntegrate_gsl1d(fptr, arg, TMPID1, TMPID2))->set(TMPID1, g1)->set(TMPID2, g2); }
+    inline Funk getIntegrate_gsl1d(Funk fptr, std::string arg, double x, Funk g) { return Funk(new FunkIntegrate_gsl1d(fptr, arg, TMPID1, TMPID2))->set(TMPID1, x, TMPID2, g); }
+    inline Funk getIntegrate_gsl1d(Funk fptr, std::string arg, Funk g, double x) { return Funk(new FunkIntegrate_gsl1d(fptr, arg, TMPID1, TMPID2))->set(TMPID1, g, TMPID2, x); }
 }
 
 #undef TMPID1

@@ -489,7 +489,7 @@ set( scanner_scanlibs_sources                   \n\
                                                 \n\
 add_gambit_library( ScannerBit OPTION OBJECT SOURCES ${scannerbit_sources} HEADERS ${scannerbit_headers} )\n\n\
 add_gambit_executable( scanlibs SOURCES ${scanner_scanlibs_sources} )\n\
-add_dependencies(scanlibs yaml)                 \n\
+add_dependencies(scanlibs yaml-cpp)             \n\
 set_target_properties( scanlibs                 \n\
                        PROPERTIES               \n\
                        RUNTIME_OUTPUT_DIRECTORY \"${CMAKE_CURRENT_SOURCE_DIR}/bin\")\n\n"
@@ -576,7 +576,7 @@ set_target_properties( scanlibs                 \n\
                         if lib == "ROOT":
                             towrite += "if (" + lib + "_FOUND)\n"
                             towrite += " "*4 + "foreach (" + lib + "_LIB ${" + lib + "_LIBRARIES})\n"
-                            towrite += " "*8 + "get_filename_component(lib_path ${" + lib + "_LIB} DIRECTORY)\n"
+                            towrite += " "*8 + "get_filename_component(lib_path ${" + lib + "_LIB} PATH)\n"
                             towrite += " "*8 + "get_filename_component(lib_name ${" + lib + "_LIB} NAME_WE)\n"
                             towrite += " "*8 + "string (REGEX REPLACE \"^lib\" \"\" lib_name ${lib_name})\n"
                             towrite += " "*8 + "set (" + plug_type[i] + "_plugin_libraries_" + directory
@@ -591,8 +591,9 @@ set_target_properties( scanlibs                 \n\
                         else:
                             lib_name = plug_type[i] + "_" + directory + "_" + lib + "_LIBRARY"
                             towrite += "find_library( " + lib_name + " " + lib + " HINTS ${" + plug_type[i] + "_plugin_lib_paths_" + directory + "} )\n"
+                            towrite += "message(\"Found library? : ${" + lib_name + "}\")\n" #bjf> tmp 
                             towrite += "if( NOT " + lib_name + " STREQUAL \"" + lib_name + "-NOTFOUND\" )\n" 
-                            towrite += " "*4 + "get_filename_component(lib_path ${" + lib_name + "} DIRECTORY)\n"
+                            towrite += " "*4 + "get_filename_component(lib_path ${" + lib_name + "} PATH)\n"
                             towrite += " "*4 + "get_filename_component(lib_name ${" + lib_name + "} NAME_WE)\n"
                             towrite += " "*4 + "string (REGEX REPLACE \"^lib\" \"\" lib_name ${lib_name})\n"
                             towrite += " "*4 + "set (" + plug_type[i] + "_plugin_libraries_" + directory

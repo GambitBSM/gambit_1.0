@@ -1,3 +1,25 @@
+# GAMBIT: Global and Modular BSM Inference Tool
+#************************************************
+# \file
+#
+#  CMake CMakeLists.txt file for Backends
+#
+#************************************************
+#
+#  Authors (add name and date if you modify):
+#
+#  \author Antje Putze
+#          (antje.putze@lapth.cnrs.fr)
+#  \date 2014 Aug, Oct
+#  \date 2015 Feb
+#
+#  \author Pat Scott
+#          (p.scott@imperial.ac.uk)
+#  \date 2014 Dec
+#  \date 2015 Feb
+#
+#************************************************
+
 # create libraries
 add_library(first SHARED lib/libfirst.cpp)
 add_library(fortran SHARED lib/libfortran.f90)

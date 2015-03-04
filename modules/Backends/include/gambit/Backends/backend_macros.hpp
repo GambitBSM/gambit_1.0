@@ -93,11 +93,12 @@ namespace Gambit                                                            \
 {                                                                           \
   namespace BackendIniBit                                                   \
   {                                                                         \
-    void CAT_5(BACKENDNAME,_,SAFE_VERSION,_,init)()                         \
+    void CAT_4(BACKENDNAME,_,SAFE_VERSION,_init)()                          \
     {                                                                       \
-      using namespace Pipes::CAT_5(BACKENDNAME,_,SAFE_VERSION,_,init);      \
-      using namespace Backends::CAT_3(BACKENDNAME,_,SAFE_VERSION);          \
-      logger().entering_backend(Logging::str2tag(STRINGIFY(BACKENDNAME)));  \
+      using namespace Pipes :: CAT_4(BACKENDNAME,_,SAFE_VERSION,_init) ;     \
+      using namespace Backends :: CAT_3(BACKENDNAME,_,SAFE_VERSION) ;        \
+
+//      logger().entering_backend(Logging::str2tag(STRINGIFY(BACKENDNAME)));  \
   
 /// Boilerplate code for convenience function definitions
 #define BE_NAMESPACE                                                        \

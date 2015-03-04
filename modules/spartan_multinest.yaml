@@ -1,255 +1,76 @@
-# Ultra-minimal GAMBIT Initialization file (in YAML)
-# Only needs example modules ExampleBit_A and ExampleBit_B,
-# plus example backends libfirst and libFortran.
+## MultiNest version of ultra-minimal GAMBIT Initialization file (in YAML)
+# Only needs example modules ExampleBit_A, plus MultiNest
+# Currently you have to tell GAMBIT where the MultiNest shared library you
+# want to use is located (write this in config/scanner_locations.yaml)
 #
-# To use this you'll need to 
-# make
-# make libfirst
-# make libfortran
-#
-# Don't commit modified versions of this file!
-# If you want to change it in order to test 
-# your own modifications to the code, copy 
-# it to spartan_personal.yaml, which will be 
-# ignored by git.
-#
-# Pat Scott <p.scott@imperial.ac.uk>
-# Oct 2014
+# Ben Farmer <benjamin.farmer@fysik.su.se>
+# Feb 2015
 #
  
-###################################
-# Input parameter declarations
-###################################
-
+#======== Input parameter declarations =======
 Parameters: 
+  # In this test file we will simply be fitting the mean and standard deviation of a normal distribution.
+  NormalDist:
+    mu: 
+      range: [-100, 100]      
+    sigma:
+      range: [0, 100]
 
-  CMSSM_demo:
-    A0:
-      range: [-1000, 1000]
-    M0:
-      prior_type: log
-      range: [0.001,1000]
-    M12:
-    #  same_as: CMSSM_demo::M0
-    Mstop:
-      same_as: CMSSM_demo::M0
-    sgnmu:
-      range: [-1, 1]
-      fixed_value: 1
-    tanb:
-      fixed_value: 1
-
-
-
-##############################
-# Prior setup
-##############################
-
+#======== Prior setup ========
 Priors:
+  # None needed: flat priors automatically generated for mu and sigma
 
-  # Here specify the priors, the parameters they work with, and any options as needed for that prior
-  # A prior object is built for every entry here (along with any coming from 'ranges' keywords above), 
-  # and then they are combined into a "composite" prior 
-
-  m12_prior: 
-    parameters: [CMSSM_demo::M12]
-    prior_type: composite
-    options: 
-      new_prior: 
-        parameters: [CMSSM_demo::M12]
-        prior_type: log
-        range: [100,2000]
-
-##############################
-# Printer setup
-##############################
-
+#======== Output setup ========
 Printer:
-
-  # Select printer to use via string tag
-  # (currently only ascii printer available)
   printer: ascii
-
-  # This options node is passed on wholesale to
-  # the printer object; required options may
-  # therefore vary according to the selected
-  # printer. 
   options:
-    # name of output file
-    output_file: "runs/spartan/samples/gambit_output.txt"
-    # name of info file (explains content of output file)
-    info_file: "runs/spartan/samples/gambit_output.info"
+    output_file: "runs/spartan_multinest/samples/gambit_output.data"
+    info_file: "runs/spartan_multinest/samples/gambit_output.data_info"
 
-##############################
-# Scanner setup
-##############################
-
+#======== Scanner setup ========
 Scanner:
-
-  #use_objective_plugins: uniform
   use_scanner_plugin: multinest
 
-# Scanners
-
   plugins:
-  
-    random:
-      plugin: random_sampler
-      options:
-        point_number: 20
-        output_file:  output
-        like:  Likelihood
-        files:
-          output_file: "weights ..."
-        
-    square_grid:
-      plugin: square_grid
-      version: ">=1.0"
-      options:
-        purpose: Likelihood
-        grid_pts: 3 #NxN grid
-            
-    grid:
-      plugin: grid
-      version: ">=1.0"
-      options:
-        purpose: Likelihood
-        grid_pts: [2, 2]
-
     multinest:
       plugin: MultiNest
       options:
         like:  Likelihood
         nlive: 500
         tol: 0.1
-
-# Test functions
-
-    uniform:
-      plugin: uniform
-      version: ">=1.0 & <2.0"
-      options:
-        some_param: 10
-      parameters:
-        param...2:
-          range: [-10, 10]          
-
-
+        aux_printer_txt_options:
+          output_file: "runs/spartan_multinest/samples/gambit_output.txt"
+          info_file: "runs/spartan_multinest/samples/gambit_output.txt_info"
+        aux_printer_stats_options:
+          output_file: "runs/spartan_multinest/samples/gambit_output.stats"
+          info_file: "runs/spartan_multinest/samples/gambit_output.stats_info"
+        aux_printer_live_options:
+          output_file: "runs/spartan_multinest/samples/gambit_output.live"
+          info_file: "runs/spartan_multinest/samples/gambit_output.live_info"
             
-###############################
-# Observables of interest
-###############################
-
+#======== Observables of interest ========
 ObsLikes:
-
-
-  # Test CMSSM_I, ExampleBit_A and ExampleBit_B
   - purpose:      Likelihood
-    capability:   lnL_ExampleBitB
-    type:         double
-    function:     ""
-    module:       ""
-
-  # Test array and -> operators in safety buckets.
-  - purpose:      Observable
-    capability:   ptrmeth_arr_tester
-
-  # Test loop manager
-  - purpose:      Likelihood
-    capability:   nevents_like
+    capability:   normaldist_loglike
+    module:       ExampleBit_A
     type:         double
 
-  # Test vector output of printer
-  - purpose:      Observable
-    capability:   test_vector
-    type:         std::vector<double>
-
-
-#########################
-# Auxiliary entries
-#########################
-
+#======== Auxiliary entries ========
 Auxiliaries:
+  # None required
 
-  - capability:   "LibFirst_1_1_init"
-    dependencies:
-    - {capability: "nevents", module: "ExampleBit_A"}  
-
-  - capability:    "nevents_postcuts"
-    dependencies:
-    - {capability: "id", module: "ExampleBit_B"}
-
-  - capability:    "MSSM_demo_parameters"
-    dependencies:
-    - {capability: "id", module: "ExampleBit_B"}
-
-  - capability:    "xsection"
-    options:
-      scale: 15.5
-
-  - capability:    "function_pointer"
-    backends:
-    - {function: "externalFunction2"}
-
-
-#########################
-# Logging setup
-#########################
-
+#======== Logging setup ========
 Logger:
-
-  # Redirection of specific messages according to tags
-  # Can redirect to stdout or stderr by specifying these as the "filenames". 
-  # Obviously this also means it is impossible to redirect output to actual
-  # files with these names.
-
-  prefix : "runs/spartan/logs/"
+  prefix : "runs/spartan_multinest/logs/"
   redirection:
-    [Debug] : "debug.log"
-    [Default] : "default.log"
-    [Error] : "errors.log"
-    [Warning] : "warnings.log"
-    [Core,Error] : "core_errors.log"
-    [Core,Error,Fatal] : "fatal_core_errors.log"
-    [Dependency Resolver] : "dependency_resolver.log"
+    [Default]      : "default.log"
     [ExampleBit_A] : "ExampleBit_A.log"
-    [ExampleBit_B] : "ExampleBit_B.log"
+    [Scanner]      : "Scanner.log"
 
-###############################
-## Printer (output) setup
-###############################
-
-# Ben: Here we will choose which printer(s?) we want to use. For now
-# it is hardcoded: I'll come back to this.
-
-
-##########################
-# Name/Value Section
-##########################
-
+#======== Generic Name/Value Section ========
 KeyValues:
-
-  # Some example keys and subkeys
-  my_key: 123
-  another_key:
-    subkey3:
-      subsubkey1: value2
 
   rng: ranlux48
 
-  dependency_resolution:
-    prefer_model_specific_functions: true
-
   likelihood:
     model_invalid_for_lnlike_below: -1e6
-
-  #By default, errors are fatal and warnings non-fatal
-  exceptions:
-    dependency_resolver_error: fatal
-    dependency_resolver_warning: non-fatal
-    core_warning: fatal
-    #scan_error: non-fatal #make this fatal to see an example error
-    ExampleBit_A_error: non-fatal
-
-  enable_testing: false
-

@@ -1,3 +1,25 @@
+# GAMBIT: Global and Modular BSM Inference Tool
+#************************************************
+# \file
+#
+#  CMake CMakeLists.txt file for Core
+#
+#************************************************
+#
+#  Authors (add name and date if you modify):
+#
+#  \author Antje Putze
+#          (antje.putze@lapth.cnrs.fr)
+#  \date 2014 Aug, Oct
+#  \date 2015 Feb
+#
+#  \author Pat Scott
+#          (p.scott@imperial.ac.uk)
+#  \date 2014 Nov, Dec
+#  \date 2015 Feb
+#
+#************************************************
+
 set(source_files src/container_factory.cpp
                  src/core_singleton.cpp
                  src/depresolver.cpp
@@ -26,4 +48,3 @@ set(header_files include/gambit/Core/container_factory.hpp
 
 add_gambit_library(Core OPTION OBJECT SOURCES ${source_files} HEADERS ${header_files})
 add_dependencies(Core module_harvest)
-

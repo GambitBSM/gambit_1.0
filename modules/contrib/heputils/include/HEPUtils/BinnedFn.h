@@ -95,7 +95,7 @@ namespace HEPUtils {
   public:
 
     /// Constructor taking lists of bin edges
-    Binning2D(const std::vector<TX>& xbinedges, const std::vector<TX>& ybinedges)
+    Binning2D(const std::vector<TX>& xbinedges, const std::vector<TY>& ybinedges)
       : binningX(xbinedges), binningY(ybinedges)
     {
       reset();
@@ -159,7 +159,8 @@ namespace HEPUtils {
     }
 
     /// The lists of bin edges
-    Binning1D<TX> binningX, binningY;
+    Binning1D<TX> binningX;
+    Binning1D<TY> binningY;
 
   };
 
