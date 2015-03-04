@@ -2070,8 +2070,8 @@ namespace Gambit {
                 if (result.sigma0.second || result.SigmaPiN.second)
                     if (!(result.sigma0.second) || !(result.SigmaPiN.second) ||
                             !(result.mud.second) || !(result.msd.second))
-                        DarkBit_error().raise(LOCAL_INFO, "Error: sigma0, SigmaPiN missing, or quark"
-                                " mass ratios missing.");
+                        DarkBit_error().raise(LOCAL_INFO, "Error: sigma0, SigmaPiN, or quark"
+                                " mass ratio missing.");
 
                 // Calculate hadronic matrix elements, if they are missing:
                 // This follows prescription from Ellis, Olive, and Savage (0801.3656)
@@ -2221,50 +2221,80 @@ namespace Gambit {
         bool static set = false; // Only set nuclear parameters once.
         if (!set)
         {
-            // Set proton hadronic matrix elements.
-            if ((*Dep::nuclear_params).fpu.second || (*Dep::nuclear_params).fpd.second ||
-                    (*Dep::nuclear_params).fps.second)
+            // Check to see if internal micrOMEGAs routines should be used to calculate
+            // hadronic matrix elements.
+            if ((runOptions->getValueOrDef<bool>(false, "use_micrOMEGAs_calc")))
             {
-                if (!(*Dep::nuclear_params).fpu.second || !(*Dep::nuclear_params).fpd.second ||
-                        !(*Dep::nuclear_params).fps.second)
-                    DarkBit_error().raise(LOCAL_INFO, "Error: One or more proton hadronic matrix "
-                            "elements missing.");
+                if (!((*Dep::nuclear_params).sigma0.second) || !((*Dep::nuclear_params).SigmaPiN.second) ||
+                        !((*Dep::nuclear_params).mud.second) || !((*Dep::nuclear_params).msd.second))
+                    DarkBit_error().raise(LOCAL_INFO, "Error: Cannot calculate hadronic matrix elements "
+                            "using micrOMEGAs internal routines because sigma0, SigmaPiN,\n"
+                            "or a quark mass ratio is missing.");
                 else
                 {
-                    (*BEreq::MOcommon).par[2] = (*Dep::nuclear_params).fpd.first;
-                    (*BEreq::MOcommon).par[3] = (*Dep::nuclear_params).fpu.first;
-                    (*BEreq::MOcommon).par[4] = (*Dep::nuclear_params).fps.first;
+                    double sigmas = ((*Dep::nuclear_params).SigmaPiN.first - (*Dep::nuclear_params).sigma0.first) /
+                            (1. + (*Dep::nuclear_params).mud.first) * (*Dep::nuclear_params).msd.first;
+                    double mud = (*Dep::nuclear_params).mud.first;
+                    double msd = (*Dep::nuclear_params).msd.first;
+                    double SigmaPiN = (*Dep::nuclear_params).SigmaPiN.first;
+                    BEreq::calcScalarQuarkFF(byVal(mud), byVal(msd), byVal(SigmaPiN), byVal(sigmas));
 
-                    logger() << "micrOMEGAs proton hadronic matrix elements set to:" << endl;
+                    logger() << "Hadronic matrix elements calculated using micrOMEGAs internal routines:" << endl;
                     logger() << "ScalarFFPd = fpd = " << (*BEreq::MOcommon).par[2];
                     logger() << "\tScalarFFPu = fpu = " << (*BEreq::MOcommon).par[3];
                     logger() << "\tScalarFFPs = fps = " << (*BEreq::MOcommon).par[4] << endl;
-                }
-            }
-            else logger() << "Using default micrOMEGAs proton hadronic matrix elements." << endl;
-
-            // Set neutron hadronic matrix elements.
-            if ((*Dep::nuclear_params).fnu.second || (*Dep::nuclear_params).fnd.second ||
-                    (*Dep::nuclear_params).fns.second)
-            {
-                if (!(*Dep::nuclear_params).fnu.second || !(*Dep::nuclear_params).fnd.second ||
-                        !(*Dep::nuclear_params).fns.second)
-                    DarkBit_error().raise(LOCAL_INFO, "Error: One or more neutron hadronic matrix "
-                            "elements missing.");
-                else
-                {
-                    (*BEreq::MOcommon).par[11] = (*Dep::nuclear_params).fnd.first;
-                    (*BEreq::MOcommon).par[12] = (*Dep::nuclear_params).fnu.first;
-                    (*BEreq::MOcommon).par[13] = (*Dep::nuclear_params).fns.first;
-
-                    logger() << "micrOMEGAs neutron hadronic matrix elements set to:" << endl;
                     logger() << "ScalarFFNd = fnd = " << (*BEreq::MOcommon).par[11];
                     logger() << "\tScalarFFNu = fnu = " << (*BEreq::MOcommon).par[12];
                     logger() << "\tScalarFFNs = fns = " << (*BEreq::MOcommon).par[13] << endl;
                 }
             }
-            else logger() << "Using default micrOMEGAs neutron hadronic matrix elements." << endl;
 
+            else
+            {
+                // Set proton hadronic matrix elements.
+                if ((*Dep::nuclear_params).fpu.second || (*Dep::nuclear_params).fpd.second ||
+                        (*Dep::nuclear_params).fps.second)
+                {
+                    if (!(*Dep::nuclear_params).fpu.second || !(*Dep::nuclear_params).fpd.second ||
+                            !(*Dep::nuclear_params).fps.second)
+                        DarkBit_error().raise(LOCAL_INFO, "Error: One or more proton hadronic matrix "
+                                "elements missing.");
+                    else
+                    {
+                        (*BEreq::MOcommon).par[2] = (*Dep::nuclear_params).fpd.first;
+                        (*BEreq::MOcommon).par[3] = (*Dep::nuclear_params).fpu.first;
+                        (*BEreq::MOcommon).par[4] = (*Dep::nuclear_params).fps.first;
+
+                        logger() << "micrOMEGAs proton hadronic matrix elements set to:" << endl;
+                        logger() << "ScalarFFPd = fpd = " << (*BEreq::MOcommon).par[2];
+                        logger() << "\tScalarFFPu = fpu = " << (*BEreq::MOcommon).par[3];
+                        logger() << "\tScalarFFPs = fps = " << (*BEreq::MOcommon).par[4] << endl;
+                    }
+                }
+                else logger() << "Using default micrOMEGAs proton hadronic matrix elements." << endl;
+
+                // Set neutron hadronic matrix elements.
+                if ((*Dep::nuclear_params).fnu.second || (*Dep::nuclear_params).fnd.second ||
+                        (*Dep::nuclear_params).fns.second)
+                {
+                    if (!(*Dep::nuclear_params).fnu.second || !(*Dep::nuclear_params).fnd.second ||
+                            !(*Dep::nuclear_params).fns.second)
+                        DarkBit_error().raise(LOCAL_INFO, "Error: One or more neutron hadronic matrix "
+                                "elements missing.");
+                    else
+                    {
+                        (*BEreq::MOcommon).par[11] = (*Dep::nuclear_params).fnd.first;
+                        (*BEreq::MOcommon).par[12] = (*Dep::nuclear_params).fnu.first;
+                        (*BEreq::MOcommon).par[13] = (*Dep::nuclear_params).fns.first;
+
+                        logger() << "micrOMEGAs neutron hadronic matrix elements set to:" << endl;
+                        logger() << "ScalarFFNd = fnd = " << (*BEreq::MOcommon).par[11];
+                        logger() << "\tScalarFFNu = fnu = " << (*BEreq::MOcommon).par[12];
+                        logger() << "\tScalarFFNs = fns = " << (*BEreq::MOcommon).par[13] << endl;
+                    }
+                }
+                else logger() << "Using default micrOMEGAs neutron hadronic matrix elements." << endl;
+            }
             //Set delta q.
             if ((*Dep::nuclear_params).deltau.second || (*Dep::nuclear_params).deltad.second ||
                     (*Dep::nuclear_params).deltas.second)
