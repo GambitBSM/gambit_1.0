@@ -2,20 +2,22 @@
 # Values from micrOMEGAs 3.5.5
 
 # Proton matrix elements
-fpd     0.0191
-fpu     0.0153
-fps     0.0447
+#fpd     0.0191
+#fpu     0.0153
+#fps     0.0447
 
 # Neutron matrix elements
-fnd      0.0273
-fnu      0.011
-fns      0.0447
+#fnd      0.0273
+#fnu      0.011
+#fns      0.0447
 
 # Proton spin content
-deld     -0.427
-delu     0.842
-dels     -0.085
+#deld     -0.427
+#delu     0.842
+#dels     -0.085
 
-# Below parameters from Ellis, Olive, Savage arXiv:0801.3656 (in MeV)
-sigma0     36.
-SigmaPiN  64.
+# Values  used to calculate hadronic matrix elements. All in MeV.
+mud          0.56
+msd          20.2
+sigma0     30.76
+SigmaPiN  34.

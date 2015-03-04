@@ -2260,7 +2260,7 @@ namespace Gambit {
                     logger() << "micrOMEGAs neutron hadronic matrix elements set to:" << endl;
                     logger() << "ScalarFFNd = fnd = " << (*BEreq::MOcommon).par[11];
                     logger() << "\tScalarFFNu = fnu = " << (*BEreq::MOcommon).par[12];
-                    logger() << "\tScalarFFNs = fns = " << (*BEreq::MOcommon).par[14] << endl;
+                    logger() << "\tScalarFFNs = fns = " << (*BEreq::MOcommon).par[13] << endl;
                 }
             }
             else logger() << "Using default micrOMEGAs neutron hadronic matrix elements." << endl;
