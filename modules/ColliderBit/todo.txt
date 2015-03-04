@@ -1,0 +1,10 @@
+get rid of 'iter'
+'getOptions' from within 'getPythia' should be enough
+Anything else which 'getPythia' needs should be a dependency
+Allow Gambit to hook up and run the various Pythias in whatever order
+
+See if I can get rid of flags... or pass as dependencies.
+
+Try to statically declare and "reset" subclasses of things...
+  - ex. getPythia can simply return a PythiaBase... no need for a pointer
+  - no need for things to be new'd
