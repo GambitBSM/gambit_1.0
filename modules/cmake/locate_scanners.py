@@ -272,7 +272,7 @@ def main(argv):
         # Create the locations yaml files from the example if needed
         if not os.path.isfile(config_file): shutil.copyfile(config_file+".example",config_file)
         # Load the locations yaml file, and work out which libs are present
-        yaml_file = yaml.load(open(config_file))
+        yaml_file = yaml.load(open(config_file), yaml.cyaml.CLoader)
         for plugin in plugins:
             plugin_name = plugin[0]
             inc_commands = []
@@ -295,10 +295,17 @@ def main(argv):
                     elif "any_version" in yaml_file[plugin_name]:
                         ini_version = "any_version"
                     if ini_version != "":
-                        for f in yaml_file[plugin_name][ini_version]:
-                            for key in f:
-                                if key == "lib" or key == "libs" or key == "library" or key == "libraries":
-                                    libs = neatsplit(',|\s|;', f[key])
+                        options_list = []
+                        if type(yaml_file[plugin_name][ini_version]) is list:
+                            options_list = yaml_file[plugin_name][ini_version]
+                        elif type(yaml_file[plugin_name][ini_version]) is dict:
+                            options_list = [yaml_file[plugin_name][ini_version]]
+                        else:
+                            options_list = yaml_file[plugin_name][ini_version]
+                        for f in options_list:
+                            for key, value in f.iteritems():
+                                if key in ("lib", "libs", "library", "libraries", "library_path", "library_paths", "-lib", "-libs", "-library", "-libraries", "-library_path", "-library_paths"):
+                                    libs = neatsplit(',|\s|;', value)
                                     for lib in libs:
                                         if os.path.isfile(lib):
                                             lib_full = os.path.abspath(lib)
@@ -332,8 +339,8 @@ def main(argv):
                                             lib = re.sub("^lib|\..*$","",lib)
                                             scanbit_reqs[plugin[7]][plugin_name][version][4] += [lib]
                                             
-                                elif key == "inc" or key == "incs" or key == "include" or key == "includes" or key == "include_path" or key == "include_paths":
-                                    incs = neatsplit(',|\s|;', f[key])
+                                elif key in ("inc", "incs", "include", "includes", "include_path", "include_paths", "-inc", "-incs", "-include", "-includes", "-include_path", "-include_paths", "hdr", "hdrs", "header", "headers", "-hdr", "-hdrs", "-header", "-headers"):
+                                    incs = neatsplit(',|\s|;', value)
                                     for inc in incs:
                                         if os.path.isdir(inc):
                                             inc = os.path.abspath(inc)
@@ -358,7 +365,7 @@ def main(argv):
                                             plugin[3] = "missing"
                                             scanbit_reqs[plugin[7]][plugin_name][version][6] += [inc]
                                 else:
-                                    print "   Unknown infile option {0} needed for ScannerBit plugin {1} v{2}".format(key,plugin_name,version)
+                                    print "   Unknown infile option \"{0}\" needed for ScannerBit plugin {1} v{2}".format(key,plugin_name,version)
                         
                         # add links commands to map (keys: {plug_type, directory}) to be linked to later
                         #if staticlinkcommands != "":

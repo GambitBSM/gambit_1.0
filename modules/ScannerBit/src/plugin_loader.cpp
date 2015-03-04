@@ -51,7 +51,7 @@ namespace Gambit
                                         
                                         pclose(p_f);
                                         
-                                        loadExcluded(GAMBIT_DIR "/ScannerBit/scanbit_excluded_libs.yaml");
+                                        loadExcluded(GAMBIT_DIR "/scratch/scanbit_excluded_libs.yaml");
                                         
                                         process(GAMBIT_DIR "/scratch/scanbit_linked_libs.yaml", GAMBIT_DIR "/scratch/scanbit_reqd_entries.yaml");
                                 }
