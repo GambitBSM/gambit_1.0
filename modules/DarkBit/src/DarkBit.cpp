@@ -2079,13 +2079,8 @@ namespace Gambit {
                         result.mud.second && result.msd.second)
                 {
                     const double z = 1.49;
-                    // TODO: Should the below be hardcoded?
                     const double mp = 938.272046; // MeV from PDG 2014
                     const double mn = 939.565379; // MeV from PDG 2014
-                    // TODO: Should the below be updated (e.g. with lattice results?)
-                    //const double mud = 0.553; // mu / md from Leutwyler (hep-ph/9602366)
-                    //const double mdu = 1/mud; // md / mu
-                    //const double msd = 18.9; // ms / md from Leutwyler (hep-ph/9602366)
 
                     double y = 1. - result.sigma0.first/result.SigmaPiN.first;
                     double Bdu = (2. + ((z-1.)*y))/(2.*z - ((z-1.)*y));
@@ -2337,6 +2332,8 @@ namespace Gambit {
     void DD_couplings_DarkSUSY(Gambit::DarkBit::DD_couplings &result)
     {
         using namespace Pipes::DD_couplings_DarkSUSY;
+        if (!(*Dep::set_nuclear_params))
+            DarkBit_error().raise(LOCAL_INFO,"Error: Nuclear parameters not set.");
         if (*Dep::DarkSUSY_PointInit) {
           result.M_DM = (*BEreq::mspctm).mass[42];        
           // Calling DarkSUSY subroutine dsddgpgn(gps,gns,gpa,gna)
@@ -2368,6 +2365,8 @@ namespace Gambit {
     void DD_couplings_micrOMEGAs(Gambit::DarkBit::DD_couplings &result)
     {
         using namespace Pipes::DD_couplings_micrOMEGAs;
+        if (!(*Dep::set_nuclear_params))
+            DarkBit_error().raise(LOCAL_INFO,"Error: Nuclear parameters not set.");
         //TODO: Add error catching to below function
         double p1[2], p2[2], p3[2], p4[2];
         BEreq::nucleonAmplitudes(byVal(BEreq::FeScLoop.pointer()), byVal(p1), byVal(p2), byVal(p3), byVal(p4));
