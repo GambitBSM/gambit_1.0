@@ -2038,6 +2038,10 @@ namespace Gambit {
                         result.sigma0 = std::make_pair(value,true);
                     if (parameter=="SigmaPiN")
                         result.SigmaPiN = std::make_pair(value,true);
+                    if (parameter=="mud")
+                        result.mud = std::make_pair(value,true);
+                    if (parameter=="msd")
+                        result.msd = std::make_pair(value,true);
                 }
 
                 //Check for missing parameters and conflicting parameters.
@@ -2064,21 +2068,24 @@ namespace Gambit {
                                 "u, d, and s quarks.");
 
                 if (result.sigma0.second || result.SigmaPiN.second)
-                    if (!(result.sigma0.second) || !(result.SigmaPiN.second))
-                        DarkBit_error().raise(LOCAL_INFO, "Error: sigma0 or SigmaPiN missing.");
+                    if (!(result.sigma0.second) || !(result.SigmaPiN.second) ||
+                            !(result.mud.second) || !(result.msd.second))
+                        DarkBit_error().raise(LOCAL_INFO, "Error: sigma0, SigmaPiN missing, or quark"
+                                " mass ratios missing.");
 
                 // Calculate hadronic matrix elements, if they are missing:
                 // This follows prescription from Ellis, Olive, and Savage (0801.3656)
-                if (result.SigmaPiN.second && result.sigma0.second)
+                if (result.SigmaPiN.second && result.sigma0.second &&
+                        result.mud.second && result.msd.second)
                 {
                     const double z = 1.49;
                     // TODO: Should the below be hardcoded?
                     const double mp = 938.272046; // MeV from PDG 2014
                     const double mn = 939.565379; // MeV from PDG 2014
                     // TODO: Should the below be updated (e.g. with lattice results?)
-                    const double mud = 0.553; // mu / md from Leutwyler (hep-ph/9602366)
-                    const double mdu = 1/mud; // md / mu
-                    const double msd = 18.9; // ms / md from Leutwyler (hep-ph/9602366)
+                    //const double mud = 0.553; // mu / md from Leutwyler (hep-ph/9602366)
+                    //const double mdu = 1/mud; // md / mu
+                    //const double msd = 18.9; // ms / md from Leutwyler (hep-ph/9602366)
 
                     double y = 1. - result.sigma0.first/result.SigmaPiN.first;
                     double Bdu = (2. + ((z-1.)*y))/(2.*z - ((z-1.)*y));
@@ -2086,9 +2093,9 @@ namespace Gambit {
 
                     if (!(result.fpu.second) && !(result.fpd.second) && !(result.fps.second))
                     {
-                        double fpu = (2.*result.SigmaPiN.first)/(mp*(1+mdu)*(1+Bdu));
-                        double fpd = (2.*result.SigmaPiN.first)/(mp*(1+mud)*(1+Bud));
-                        double fps = (msd*result.SigmaPiN.first*y)/(mp*(1+mud));
+                        double fpu = (2.*result.SigmaPiN.first)/(mp*(1+(1./result.mud.first))*(1+Bdu));
+                        double fpd = (2.*result.SigmaPiN.first)/(mp*(1+result.mud.first)*(1+Bud));
+                        double fps = (result.msd.first*result.SigmaPiN.first*y)/(mp*(1+result.mud.first));
 
                         result.fpu = std::make_pair(fpu,true);
                         result.fpd = std::make_pair(fpd,true);
@@ -2100,9 +2107,9 @@ namespace Gambit {
 
                     if (!(result.fnu.second) && !(result.fnd.second) && !(result.fns.second))
                     {
-                        double fnu = (2.*result.SigmaPiN.first)/(mn*(1+mdu)*(1+Bud));
-                        double fnd = (2.*result.SigmaPiN.first)/(mn*(1+mud)*(1+Bdu));
-                        double fns = (msd*result.SigmaPiN.first*y)/(mn*(1+mud));
+                        double fnu = (2.*result.SigmaPiN.first)/(mn*(1+(1./result.mud.first))*(1+Bud));
+                        double fnd = (2.*result.SigmaPiN.first)/(mn*(1+result.mud.first)*(1+Bdu));
+                        double fns = (result.msd.first*result.SigmaPiN.first*y)/(mn*(1+result.mud.first));
 
                         result.fnu = std::make_pair(fnu,true);
                         result.fnd = std::make_pair(fnd,true);
