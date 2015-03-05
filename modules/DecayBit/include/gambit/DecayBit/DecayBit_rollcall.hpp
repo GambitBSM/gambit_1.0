@@ -41,7 +41,8 @@ START_CAPABILITY                          //  functions in this module that can 
 
   #define FUNCTION decayTest              // Name of an observable function: floating-point number of events in some hypothetical process
   START_FUNCTION(double)                  // Declare that this function calculates the nevents observable as a double precision variable
-  BACKEND_REQ(cb_sd_top2body, (), sd_top2body_type)
+  BACKEND_REQ(sd_top2body, (), sd_top2body_type)
+  // CsB I don't assume this should be BACKEND_REQ(cb_sd_top2body, (), sd_top2body_type)
   #undef FUNCTION
 	
 #undef CAPABILITY
