@@ -44,12 +44,8 @@ namespace Gambit
     using namespace LogTags;
     using namespace flexiblesusy;
 
-    /// Quick macro to simplify the check of Pipe::Models
-    //#define QUERYMODELS(MODEL) (std::find(Pipe::Models->begin(), \
-                                          Pipe::Models->end(), \
-                                          MODEL) != Pipe::Models->end())
-    //OBSOLETE! Use the following instead:
-    //bool Pipes::<fname>::ModelInUse(str model_name)
+    // To check if a model is currently being scanned:
+    // bool Pipes::<fname>::ModelInUse(str model_name)
 
     /// Module convenience functions
     // These are not known to Gambit.

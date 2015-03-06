@@ -8,261 +8,46 @@
 
 // Flexible SUSY stuff (should not be needed by the rest of gambit)
 #include "flexiblesusy/config/config.h"
- 
+
+// "Header" declarations for MSSMSpec class
+// (the current file contains the member function definitions, which usually
+//  would go in a .cpp file, but cannot since this is a template class. But
+//  it is still nice to split up the declarations and definitions, so that
+//  is all that we are doing here.)
+#include "MSSMSpec_head.hpp"
+
 namespace Gambit {
 
-   template <class MI>  // "MI" for "Model_interface"
-   class MSSMSpec;
-
-   // For example of what kind of class MI needs to be, see
-   // SpecBit/include/model_files_and_boxes.hpp, 
-   // MODELNAME_interface class
-
-   //this contains scale and scheme dependent stuff
-   template <class MI>
-   class MSSM_DRbarPars : public RunparDer<typename MI::Model> {
-      typedef typename MI::Model Model; // Was having problems writing typename in all the right places...
-      REDO_TYPEDEFS(Model)
-   private:
-      //reference to spectrum class for accessing model object
-      MSSMSpec<MI> &my_parent;
-      virtual Spectrum& get_parent() const {return my_parent;}
-
-      static fmap TreeMass_map;
-      static fmap1 TreeMass_map1;
-      static fmap fill_TreeMass_map();
-      static fmap1 fill_TreeMass_map1();
-      
-      static fmap mass4_map;
-      static fmap1 mass4_map1;
-      static fmap2 mass4_map2;
-      static fmap fill_mass4_map(); 
-      static fmap1 fill_mass4_map1();
-      static fmap2 fill_mass4_map2(); 
-      
-      static fmap mass3_map;
-      static fmap1 mass3_map1;
-      static fmap2 mass3_map2;
-      static fmap fill_mass3_map(); 
-      static fmap1 fill_mass3_map1();
-      static fmap2 fill_mass3_map2(); 
-      
-      static fmap mass2_map;
-      static fmap1 mass2_map1;
-      static fmap2 mass2_map2;
-      static fmap fill_mass2_map(); 
-      static fmap1 fill_mass2_map1();
-      static fmap2 fill_mass2_map2(); 
-      
-      static fmap mass_map;
-      static fmap1 mass_map1;
-      static fmap2 mass_map2;
-      static fmap fill_mass_map(); 
-      static fmap1 fill_mass_map1();
-      static fmap2 fill_mass_map2(); 
-      
-      static fmap mass0_map;
-      static fmap1 mass0_map1;
-      static fmap2 mass0_map2;
-      static fmap fill_mass0_map(); 
-      static fmap1 fill_mass0_map1();
-      static fmap2 fill_mass0_map2(); 
-      
-      fmap& get_mass4_map() const; 
-      fmap1& get_mass4_map1() const;
-      fmap2& get_mass4_map2() const;
-      
-      fmap& get_mass3_map() const; 
-      fmap1& get_mass3_map1() const;
-      fmap2& get_mass3_map2() const;
-         
-      fmap& get_mass2_map() const; 
-      fmap1& get_mass2_map1() const;
-      fmap2& get_mass2_map2() const;
-      
-      fmap& get_mass_map() const; 
-      fmap1& get_mass_map1() const;
-      fmap2& get_mass_map2() const;
-      
-      fmap& get_mass0_map() const; 
-      fmap1& get_mass0_map1() const;
-      fmap2& get_mass0_map2() const;
-
-   public:
-      MSSM_DRbarPars(MSSMSpec<MI> &x) : my_parent(x) {}
-      
-      virtual void RunToScale(double scale);
-      virtual double GetScale() const;
-      virtual void SetScale(double scale);
-        
-      Model& get_bound_spec() const; 
-   };
-   
-   //physical class for accessing physical spectrum
-   template <class MI>
-   class MSSM_Phys : public PhysDer<typename MI::Model> {
-      typedef typename MI::Model Model;
-      REDO_TYPEDEFS(Model)
-   private:
-      //reference to spectrim class for accessing model object
-      //Spec<Model,Model_physical> & my_parent;
-      MSSMSpec<MI> &my_parent;
-      virtual Spectrum& get_parent() const {return my_parent;}
-
-      static fmap       PoleMass_map;
-      static fmap_plain PoleMass_map_extra;
-      static fmap1      PoleMass_map1;
-      static fmap       fill_PoleMass_map();
-      static fmap_plain fill_PoleMass_map_extra();
-      static fmap1      fill_PoleMass_map1();
-
-      fmap&       get_PoleMass_map() const;
-      fmap_plain& get_PoleMass_map_extra() const;
-      fmap1&      get_PoleMass_map1() const;
-
-      static fmap  PoleMixing_map;
-      static fmap1 PoleMixing_map1;
-      static fmap2 PoleMixing_map2;
-      static fmap  fill_PoleMixing_map();
-      static fmap1 fill_PoleMixing_map1();    
-      static fmap2 fill_PoleMixing_map2();
-      fmap&  get_PoleMixing_map() const; 
-      fmap1& get_PoleMixing_map1() const;
-      fmap2& get_PoleMixing_map2() const;
-
-   public:
-      MSSM_Phys(MSSMSpec<MI> &x) : my_parent(x) {}
-      
-      Model& get_bound_spec() const; 
-   };
-    
-   template <class MI>
-   class MSSMSpec : public Spec<typename MI::Model> 
-   {
-      typedef typename MI::Model Model;
-      friend class MSSM_DRbarPars<MI>;
-      friend class MSSM_Phys<MI>;
-      private:
-         int index_offset;
-         virtual int get_index_offset() const {return index_offset;}
-
-      public:
-         /// Internal instances of the derived inner classes
-         MSSM_Phys<MI> mssm_ph;
-         MSSM_DRbarPars<MI> mssm_drbar_pars;
-         //constructors
-         MSSMSpec(bool switch_index_convention=false);
-         MSSMSpec(MI, bool switch_index_convention=false);
-
-         //Could more constructors to interface with other generators   
-          
-         // These are public for now so that SpecBit_tests.cpp can access them
-         MI model_interface; // Must be declared before 'model', since model just points inside of model_interface
-         Model& model;
-
-         //Destructor
-         virtual ~MSSMSpec();
-         
-         //some model independent stuff
-         virtual double get_lsp_mass(int & particle_type, 
-                                     int & row, int & col) const;
-         virtual int get_numbers_stable_particles() const; 
-         //may use something like this to pass error to Gambit
-         virtual std::string AccessError(std::string state) const;
-
-         Model get_modelobject();
-         Model& get_bound_spec() const; 
-         //Model_physical get_bound_phys() const; 
-
-         // Write spectrum information in slha format (not including input parameters etc.)
-         virtual void dump2slha(const std::string&);
-
-         // Return an SLHAea object containing spectrum information
-         virtual SLHAea::Coll getSLHAea();
-
-         /// Copy low energy spectrum information from another model object
-         // Should work from any flexiblesusy model object with the same particle content as the MSSM
-         template<class MSSMlike>
-         void get_lowe_data_from(MSSMlike &othermodel)
-         {
-           // Maybe we can copy the pole masses etc directly, but since I am not sure how to do that, for now I am just copying the soft parameters and recomputing the pole masses. Will have to chat to Peter about this.
-           // Update: Yeah Peter says we definitely should copy the pole and drbar masses directly :).
-
-           // Actually, we may want to instead write out the data from one object into SLHAea, and then read it into the other. That will let us copy data out of (say) softsusy objects into flexiblesusy ones, and vice-versa, more easily. Of course that will be restricted to the SLHA compatible models... Perhaps we can overload this function to deal with various inputs.
-           //model = othermodel;
-
-           model.set_scale( othermodel.get_scale() );
-           model.set_Yu( othermodel.get_Yu() );
-           model.set_Yd( othermodel.get_Yd() );
-           model.set_Ye( othermodel.get_Ye() );
-           model.set_Mu( othermodel.get_Mu() );
-           model.set_g1( othermodel.get_g1() );
-           model.set_g2( othermodel.get_g2() );
-           model.set_g3( othermodel.get_g3() );
-           model.set_vd( othermodel.get_vd() );
-           model.set_vu( othermodel.get_vu() );
-           model.set_TYu( othermodel.get_TYu() );
-           model.set_TYd( othermodel.get_TYd() );
-           model.set_TYe( othermodel.get_TYe() );
-           model.set_BMu( othermodel.get_BMu() );
-           model.set_mq2( othermodel.get_mq2() );
-           model.set_ml2( othermodel.get_ml2() );
-           model.set_mHd2( othermodel.get_mHd2() );
-           model.set_mHu2( othermodel.get_mHu2() );
-           model.set_md2( othermodel.get_md2() );
-           model.set_mu2( othermodel.get_mu2() );
-           model.set_me2( othermodel.get_me2() );
-           model.set_MassB( othermodel.get_MassB() );
-           model.set_MassWB( othermodel.get_MassWB() );
-           model.set_MassG( othermodel.get_MassG() );
-
-           model.calculate_DRbar_parameters(); 
-           model.calculate_pole_masses();
-
-           return;
-         }
-
-         // Overload of this function to just easily copy the othermodel object
-         // if it is of type Model
-         void get_external_spectrum(Model& othermodel)
-         {
-           model = othermodel;
-           return;
-         }
-
-   };
-
    //
-   // IMPLEMENTATION OF MEMBER FUNCTIONS FOLLOWS
+   // IMPLEMENTATION OF MSSMSpec MEMBER FUNCTIONS FOLLOWS
    // 
-   // Now that this is a template class, we need these definition in the header
+   // MSSMSpec this is a template class, we need these definition in the header
    // file. It is nice to keep them seperate from the class declaration though.
    //
-
  
    // NOTE!! mi is COPIED into the object, so when we get the reference to the 
    // actual Model object to store in 'model', we need to use the copy inside
    // the object. So also need to make sure 'model_interface' is initialised first
    // (i.e. it should be declared first)
    template <class MI>
-   MSSMSpec<MI>::MSSMSpec(MI mi, bool switch_index_convention):
-      model_interface(mi),
-      model(model_interface.model),
-      mssm_ph(*this),
-      mssm_drbar_pars(*this),
-      Spec<Model>(mssm_drbar_pars, mssm_ph),
-      index_offset(-1)
+   MSSMSpec<MI>::MSSMSpec(MI mi, bool switch_index_convention)
+      : index_offset(-1)
+      , mssm_ph(*this)
+      , mssm_drbar_pars(*this)
+      , model_interface(mi)
+      , model(model_interface.model)
+      , Spectrum(mssm_drbar_pars, mssm_ph)
    {
       if (switch_index_convention) index_offset = 0;
    }
    
    // Default constructor
    template <class MI>
-   MSSMSpec<MI>::MSSMSpec(bool switch_index_convention) :
-      mssm_ph(*this),
-      mssm_drbar_pars(*this),
-      Spec<typename MI::Model>(mssm_drbar_pars, mssm_ph),
-      index_offset(-1)
+   MSSMSpec<MI>::MSSMSpec(bool switch_index_convention)
+      : index_offset(-1)
+      , mssm_ph(*this)
+      , mssm_drbar_pars(*this)
+      , Spectrum(mssm_drbar_pars, mssm_ph)
    {
       if (switch_index_convention) index_offset = 0;
    }
@@ -408,77 +193,80 @@ namespace Gambit {
       return errormsg;
    }
      
-   // Function to initialise mass2_ma
+   // Function to initialise mass4_map
    template <class MI>
    typename MSSM_DRbarPars<MI>::fmap MSSM_DRbarPars<MI>::fill_mass4_map() 
    {
       fmap tmp_map;
-    
       //there are no mappings for this case.
-   
+      return tmp_map;
+   }
+  
+   // Function to initialise mass4_map_extra 
+   template <class MI>
+   typename MSSM_DRbarPars<MI>::fmap_plain MSSM_DRbarPars<MI>::fill_mass4_map_extra() 
+   {
+      fmap_plain tmp_map;
+      //there are no mappings for this case.
       return tmp_map;
    }
    
-   
-   // Function to initialise mass2_map
+   // Function to initialise mass4_map1
    template <class MI>
    typename MSSM_DRbarPars<MI>::fmap1 MSSM_DRbarPars<MI>::fill_mass4_map1() 
    {
       fmap1 tmp_map;
-   
       //there are no mappings for this case.
-   
       return tmp_map;
    }
    
    
-   // Function to initialise mass2_map
+   // Function to initialise mass4_map2
    template <class MI>
    typename MSSM_DRbarPars<MI>::fmap2 MSSM_DRbarPars<MI>::fill_mass4_map2() 
    {
       fmap2 tmp_map;
-      
       //there are no mappings for this case.
-     
       return tmp_map;
    }
   
    
-   // Function to initialise mass2_map
+   // Function to initialise mass3_map
    template <class MI>
    typename MSSM_DRbarPars<MI>::fmap MSSM_DRbarPars<MI>::fill_mass3_map() 
    {
       fmap tmp_map;
-    
       //there are no mappings for this case.
-   
       return tmp_map;
    }
    
+   // Function to initialise mass3_map_extra
+   template <class MI>
+   typename MSSM_DRbarPars<MI>::fmap_plain MSSM_DRbarPars<MI>::fill_mass3_map_extra() 
+   {
+      fmap_plain tmp_map;
+      //there are no mappings for this case.
+      return tmp_map;
+   }
    
-   // Function to initialise mass2_map
+   // Function to initialise mass3_map1
    template <class MI>
    typename MSSM_DRbarPars<MI>::fmap1 MSSM_DRbarPars<MI>::fill_mass3_map1() 
    {
       fmap1 tmp_map;
-   
       //there are no mappings for this case.
-   
       return tmp_map;
    }
    
    
-   // Function to initialise mass2_map
+   // Function to initialise mass3_map2
    template <class MI>
    typename MSSM_DRbarPars<MI>::fmap2 MSSM_DRbarPars<MI>::fill_mass3_map2() 
    {
       fmap2 tmp_map;
-      
       //there are no mappings for this case.
-     
       return tmp_map;
    }
-   
    
    
    // Function to initialise mass2_map
@@ -493,21 +281,27 @@ namespace Gambit {
    
       return tmp_map;
    }
-   
-   
-   // Function to initialise mass2_map
+      
+   // Function to initialise mass2_map_extra
+   template <class MI>
+   typename MSSM_DRbarPars<MI>::fmap_plain MSSM_DRbarPars<MI>::fill_mass2_map_extra() 
+   {
+      fmap_plain tmp_map;
+      //there are no mappings for this case.
+      return tmp_map;
+   }
+
+   // Function to initialise mass2_map1
    template <class MI>
    typename MSSM_DRbarPars<MI>::fmap1 MSSM_DRbarPars<MI>::fill_mass2_map1() 
    {
       fmap1 tmp_map;
-   
       //there are no mappings for this case in the MSSM.
-   
       return tmp_map;
    }
    
    
-   // Function to initialise mass2_map
+   // Function to initialise mass2_map2
    template <class MI>
    typename MSSM_DRbarPars<MI>::fmap2 MSSM_DRbarPars<MI>::fill_mass2_map2() 
    {
@@ -541,27 +335,30 @@ namespace Gambit {
       tmp_map["Mu"]= &Model::get_Mu;
       tmp_map["vu"]= &Model::get_vu;
       tmp_map["vd"]= &Model::get_vd;
-      //  can't do SM vev or tan beta this way
-      // can create MSSM_DRbarPars getter which first calls 
-      // inherited one then adds vev and tan beta
-     
+      return tmp_map;
+   }
+
+ 
+   // Function to initialise mass_map_extra
+   template <class MI>
+   typename MSSM_DRbarPars<MI>::fmap_plain MSSM_DRbarPars<MI>::fill_mass_map_extra() 
+   {
+      fmap_plain tmp_map;
+      //there are no mappings for this case.
       return tmp_map;
    }
    
-   
-   // Function to initialise mass2_map
+   // Function to initialise mass_map1
    template <class MI>
    typename MSSM_DRbarPars<MI>::fmap1 MSSM_DRbarPars<MI>::fill_mass_map1() 
    {
       fmap1 tmp_map;
-   
       //there are no mappings for this case.
-   
       return tmp_map;
    }
    
    
-   // Function to initialise mass2_map
+   // Function to initialise mass_map2
    template <class MI>
    typename MSSM_DRbarPars<MI>::fmap2 MSSM_DRbarPars<MI>::fill_mass_map2() 
    {
@@ -581,7 +378,7 @@ namespace Gambit {
       return tmp_map;
    }
    
-   // Function to initialise mass_map
+   // Function to initialise mass0_map
    template <class MI>
    typename MSSM_DRbarPars<MI>::fmap MSSM_DRbarPars<MI>::fill_mass0_map() 
    {
@@ -590,28 +387,39 @@ namespace Gambit {
       tmp_map["g1"]= &Model::get_g1;
       tmp_map["g2"]= &Model::get_g2;
       tmp_map["g3"]= &Model::get_g3;
-      
-      // can't do SM vev or tan beta this way
-      // can create MSSM_DRbarPars getter which first calls 
-      // inherited one then adds vev and tan beta
      
       return tmp_map;
    }
    
-   
-   // Function to initialise mass2_map
+   // "extra" function to compute TanBeta 
+   template <class Model> double get_tanbeta(Model& model) 
+   { 
+      return model.get_vu() / model.get_vd(); 
+   }
+ 
+   // Function to initialise mass0_map_extra
+   template <class MI>
+   typename MSSM_DRbarPars<MI>::fmap_plain MSSM_DRbarPars<MI>::fill_mass0_map_extra() 
+   {
+      typedef typename MI::Model Model;
+      fmap tmp_map;
+      tmp_map["tanbeta"]= &get_tanbeta<Model>;
+      
+      return tmp_map;
+   }
+ 
+ 
+   // Function to initialise mass0_map1
    template <class MI>
    typename MSSM_DRbarPars<MI>::fmap1 MSSM_DRbarPars<MI>::fill_mass0_map1() 
    {
       fmap1 tmp_map;
-   
       //there are no mappings for this case.
-   
       return tmp_map;
    }
    
    
-   // Function to initialise mass2_map
+   // Function to initialise mass0_map2
    template <class MI>
    typename MSSM_DRbarPars<MI>::fmap2 MSSM_DRbarPars<MI>::fill_mass0_map2() 
    {
@@ -878,7 +686,7 @@ namespace Gambit {
    }
    
    
-   // Use our time-saving macro to define common member functions
+   // Use our time-saving macro to define common (i.e. required) member functions
    MODEL_SPEC_TEMPLATE_MEMBER_FUNCTIONS(MSSMSpec,MI::Model,MI)
 // ClassName=MSSMSpec, SpecType=MI::Model, M=MI
 // e.g.:  template <class M> typename SpecType ClassName<M>::get_bound_spec() const {return model;}
