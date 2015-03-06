@@ -23,22 +23,23 @@ namespace Gambit {
       /// @name Initialization functions
       //@{
 
-      /// @brief Default settings for each sub-class.
-      virtual void defaults() = 0;
       /// @brief Settings parsing and initialization for each sub-class.
       virtual void init(const std::vector<std::string>& settings) = 0;
       //@}
 
       /// @name Event generation function. Pure virtual; must override.
       //@{
-      virtual EventT& nextEvent() = 0;
+        //@note Gambit requires a const function, so here it is pure virtual.
+      virtual void nextEvent(EventT& event) const = 0;
+        //@note The non-const version might not even be used.
+      virtual void nextEvent(EventT& event) = 0;
       //@}
 
     };
 
 
-/// @note STEP2)  Sub-class Collider as a general Base class for your simulator.
-    class PythiaBase : public Collider<Pythia8::Event> {
+/// @note STEP2)  Sub-class Collider. Give the type of event as the Collider template parameter.
+    class TemplatePythia : public Collider<Pythia8::Event> {
       protected:
         Pythia8::Pythia* _pythiaInstance;
         std::vector<std::string> _settings;
@@ -51,54 +52,48 @@ namespace Gambit {
         };
 
       public:
-        virtual ~PythiaBase() { delete _pythiaInstance; }
+        TemplatePythia() { _pythiaInstance=nullptr; }
+        ~TemplatePythia() { delete _pythiaInstance; }
 
-        /// @name Initialization functions
+        /// @name Member variable access
         //@{
-        virtual void defaults() = 0;
-
-        virtual void init(const std::vector<std::string>& settings) {
-          /// @note As long as the settings are pythia commands, no parsing!
-          for(const auto command : settings) {
-            if(command.find(":") == (size_t) -1)
-              _pythiaInstance = new Pythia8::Pythia(command, false);
-            else
-              _settings.push_back(command);
-          }
-          for(const auto command : _settings)
-            set(command);
-
-          _pythiaInstance->init();
-        }
-
-        void set(const std::string& command) {
-          _pythiaInstance->readString(command);
-        }
-        //@}
-
-        /// @name Access the internals
-        //@{
-        /// I might use this to make a copy constructor. still thinking --Abram
         const std::vector<std::string> getSettings() const { return _settings; }
         Pythia8::Pythia* pythia() { return _pythiaInstance; }
         //@}
 
+        /// @name (Re-)Initialization functions
+        //@{
+        void reset() { _settings.clear(); delete _pythiaInstance; }
+        void set(const std::string& command) { _pythiaInstance->readString(command); }
+          /// @note Definitions of the following functions in Collider_Pythia.cpp
+        /// @brief General init, via external input "settings"
+        virtual void init(const std::vector<std::string>& settings);
+        /// @brief Special, hard-coded init. Template specializations go in cpp file.
+        template <typename T> void specialize() {}
+        //@}
+
+/// @note STEP3) Here in the header, code things which ALL Colliders of this subclass to do.
         /// @name Event generation functions
         //@{
-        /// @note I already 'forgot' the event type, so let's use the typedef.
-        virtual EventType& nextEvent() {
+          /// @note I already 'forgot' the event type, so let's use EventType.
+        void nextEvent(EventType& event) const {
           // Try to make and populate an event
           if (!_pythiaInstance->next()) throw EventFailureError();
-          return _pythiaInstance->event;
+          event = _pythiaInstance->event;
+        }
+
+        void nextEvent(EventType& event) {
+          // Try to make and populate an event
+          if (!_pythiaInstance->next()) throw EventFailureError();
+          event = _pythiaInstance->event;
         }
 
     };
 
-    /// @brief Create a new Pythia Collider based on a name string
-    ///
-    /// The caller is responsible for deleting the returned PythiaBase.
-    PythiaBase* mkPythia(const std::string&, const std::vector<std::string>&);
+    /// @brief Recycle to a new Pythia initialization via name (Template parameter).
+    bool recycleTemplatePythia(TemplatePythia&, const std::string&,
+                               const std::vector<std::string>&);
 
-/// @note STEP3)  Continue to colliders/Collide_Pythia.cpp
+/// @note STEP4)  Continue to colliders/Collide_Pythia.cpp
   }
 }

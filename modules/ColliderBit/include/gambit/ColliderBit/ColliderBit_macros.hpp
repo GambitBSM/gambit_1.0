@@ -18,34 +18,22 @@
 
 /// Macros for factory fns
 /// @todo Semicolon handling
-#define DECLARE_ANALYSIS_FACTORY(ANAME) \
-  Analysis* create_Analysis_ ## ANAME()
+#define DECLARE_ANALYSIS_FACTORY(ANAME)                                          \
+  Analysis* create_Analysis_ ## ANAME();
 /// @todo Semicolon handling
-#define DEFINE_ANALYSIS_FACTORY(ANAME) \
+#define DEFINE_ANALYSIS_FACTORY(ANAME)                                           \
   Analysis* create_Analysis_ ## ANAME() { return new Analysis_ ## ANAME(); }
 
 /// @todo Semicolon handling
-#define DECLARE_COLLIDER_FACTORY(CNAME, CCLASS)                          \
-  CCLASS* create_ ## CNAME(const std::vector<std::string>&);
-/// @todo Semicolon handling
-#define DEFINE_COLLIDER_FACTORY(CNAME, CCLASS)                           \
-  CCLASS* create_ ## CNAME(const std::vector<std::string>& settings) {   \
-    CCLASS* result = new CNAME();                                        \
-    result->defaults();                                                  \
-    result->init(settings);                                              \
-    return result;                                                       \
-  }
-
-/// @todo Semicolon handling
-#define DECLARE_DETECTOR_FACTORY_NO_SETTINGS(DNAME, DCLASS)              \
+#define DECLARE_DETECTOR_FACTORY_NO_SETTINGS(DNAME, DCLASS)                      \
   DCLASS* create_ ## DNAME();
 /// @todo Semicolon handling
-#define DEFINE_DETECTOR_FACTORY_NO_SETTINGS(DNAME, DCLASS)               \
-  DCLASS* create_ ## DNAME() {                                           \
-    DCLASS* result = new DNAME();                                        \
-    result->defaults();                                                  \
-    result->init();                                                      \
-    return result;                                                       \
+#define DEFINE_DETECTOR_FACTORY_NO_SETTINGS(DNAME, DCLASS)                       \
+  DCLASS* create_ ## DNAME() {                                                   \
+    DCLASS* result = new DNAME();                                                \
+    result->defaults();                                                          \
+    result->init();                                                              \
+    return result;                                                               \
   }
 
 // TODO: may need to be different than collider factory at some point

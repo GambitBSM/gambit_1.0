@@ -41,7 +41,7 @@ START_MODULE
   #define CAPABILITY HardScatteringSim
   START_CAPABILITY
     #define FUNCTION getPythia
-    START_FUNCTION(Gambit::ColliderBit::PythiaBase*)
+    START_FUNCTION(Gambit::ColliderBit::TemplatePythia)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
     NEEDS_CLASSES_FROM(Pythia, default)
     #undef FUNCTION
@@ -85,17 +85,8 @@ START_MODULE
     START_FUNCTION(Pythia8::Event)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
     NEEDS_CLASSES_FROM(Pythia, default)
-    DEPENDENCY(HardScatteringSim, Gambit::ColliderBit::PythiaBase*)
+    DEPENDENCY(HardScatteringSim, Gambit::ColliderBit::TemplatePythia)
     #undef FUNCTION
-
-    /// Event converters to the standard Gambit collider event format
-    #define FUNCTION convertPythia8Event
-    START_FUNCTION(HEPUtils::Event)
-    NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
-    NEEDS_CLASSES_FROM(Pythia, default)
-    DEPENDENCY(HardScatteringSim, Gambit::ColliderBit::PythiaBase*)
-    #undef FUNCTION
-
   /// For now, let's stick to what we already have running.
   /// \todo Replace BLAH_* with the proper types.  Put those types in the proper place for types / typedefs.
   /// \todo ... these later:
@@ -110,6 +101,24 @@ START_MODULE
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
     #undef FUNCTION
   */
+  #undef CAPABILITY
+
+  #define CAPABILITY ConvertedScatteringEvent
+  START_CAPABILITY
+    /// Event converters to the standard Gambit collider event format
+    #define FUNCTION convertPythia8PartonEvent
+    START_FUNCTION(HEPUtils::Event)
+    NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
+    NEEDS_CLASSES_FROM(Pythia, default)
+    DEPENDENCY(HardScatteringEvent, Pythia8::Event)
+    #undef FUNCTION
+
+    #define FUNCTION convertPythia8ParticleEvent
+    START_FUNCTION(HEPUtils::Event)
+    NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
+    NEEDS_CLASSES_FROM(Pythia, default)
+    DEPENDENCY(HardScatteringEvent, Pythia8::Event)
+    #undef FUNCTION
   #undef CAPABILITY
 
 /// I still need to see how Aldo's FastSim works... So for now, I'll
@@ -141,7 +150,7 @@ START_MODULE
     #define FUNCTION reconstructBuckFastEvent
     START_FUNCTION(HEPUtils::Event)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
-    DEPENDENCY(HardScatteringEvent, HEPUtils::Event)
+    DEPENDENCY(ConvertedScatteringEvent, HEPUtils::Event)
     DEPENDENCY(SimpleSmearingSim, Gambit::ColliderBit::BuckFastBase*)
     #undef FUNCTION
   /// For now, let's stick to what we already have running.

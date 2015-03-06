@@ -96,6 +96,12 @@ Auxiliaries:
     options:
       buckFastOption: "BuckFastIdentity"
  
+  - capability: ReconstructedEvent
+    function: reconstructBuckFastEvent
+    dependencies:
+    - {capability: "ConvertedScatteringEvent", type: "HEPUtils::Event", function: "convertPythia8ParticleEvent"}
+    #- {capability: "ConvertedScatteringEvent", type: "HEPUtils::Event", function: "convertPythia8PartonEvent"}
+
   - capability:  ColliderOperator
     function: operatePythia
     options:

@@ -131,7 +131,7 @@ namespace Gambit {
 
     /// *** Hard Scattering Collider Simulators ***
 
-    void getPythia(Gambit::ColliderBit::PythiaBase* &result) {
+    void getPythia(Gambit::ColliderBit::TemplatePythia &result) {
       /// @TODO: capabilify xsecArrays
       using namespace Pipes::getPythia;
 
@@ -147,7 +147,7 @@ namespace Gambit {
           pythiaConfigName += "_";
           pythiaConfigName += std::to_string(pythiaNumber);
         }
-        /// If the PythiaBase subclass is hard-coded (for some reason), okay with no options.
+        /// If the TemplatePythia specialization is hard-coded, okay with no options.
 #pragma omp critical (runOptions)
         {
           if (runOptions->hasKey(*iter, pythiaConfigName))
@@ -156,19 +156,16 @@ namespace Gambit {
         pythiaOptions.push_back("SLHA:file = " + slhaFilename);
         pythiaOptions.push_back("Random:seed = " + std::to_string(omp_get_thread_num()));
 
-        /// Memory allocation: Pythia
-        result = mkPythia(*iter, pythiaOptions);
+        /// "Recycle" (clean memory and re-init) TemplatePythia
+        if (!recycleTemplatePythia(result, *iter, pythiaOptions))
+          std::cout << "\n\n\n\n WARNING:"<<*iter<<" is not a TemplatePythia specialization.\n";
         pythiaOptions.clear();
         resetPythiaFlag = false;
       } else if (*Loop::iteration == END_SUBPROCESS) {
-        xsecArray[omp_get_thread_num()] = result->pythia()->info.sigmaGen();
-        xsecerrArray[omp_get_thread_num()] = result->pythia()->info.sigmaErr();
+        xsecArray[omp_get_thread_num()] = result.pythia()->info.sigmaGen();
+        xsecerrArray[omp_get_thread_num()] = result.pythia()->info.sigmaErr();
 
-        /// Each thread gets its own Pythia instance.
-        /// Thus, the Pythia memory clean-up is *before* FINALIZE.
-        /// Memory clean-up: Pythia
-        delete result;
-        result = 0;
+        /// TODO: Each thread gets its own Pythia instance. DEFINITELY NOT THREADSAFE:
         resetPythiaFlag = true;
       } else if (*Loop::iteration == FINALIZE) {
         /// Memory clean-up: xsecArrays
@@ -274,7 +271,7 @@ namespace Gambit {
       result.clear();
 
       /// Get the next event from Pythia8
-      result = (*Dep::HardScatteringSim)->nextEvent();
+      (*Dep::HardScatteringSim).nextEvent(result);
     }
 
 
@@ -282,12 +279,12 @@ namespace Gambit {
     /// Convert a hadron-level Pythia8::Event into an unsmeared HEPUtils::Event
     /// @todo Overlap between jets and prompt containers: need some isolation in MET calculation
     void convertPythia8ParticleEvent(HEPUtils::Event& result) {
-      using namespace Pipes::convertPythia8Event;
+      using namespace Pipes::convertPythia8ParticleEvent;
       if (*Loop::iteration <= INIT) return;
       result.clear();
 
       /// Get the next event from Pythia8
-      const auto& pevt = (*Dep::HardScatteringSim)->nextEvent();
+      const auto& pevt = *Dep::HardScatteringEvent;
 
       std::vector<fastjet::PseudoJet> bhadrons; //< for input to FastJet b-tagging
       std::vector<Particle*> bpartons;
@@ -442,13 +439,13 @@ namespace Gambit {
 
       /// Convert a partonic (no hadrons) Pythia8::Event into an unsmeared HEPUtils::Event
       void convertPythia8PartonEvent(HEPUtils::Event& result) {
-	using namespace Pipes::convertPythia8Event;
+	using namespace Pipes::convertPythia8PartonEvent;
 	if (*Loop::iteration <= INIT) return;
 	result.clear();
 
 	/// Get the next event from Pythia8
 	std::vector<Particle*> tauCandidates;
-	const auto& pevt = (*Dep::HardScatteringSim)->nextEvent();
+        const auto& pevt = *Dep::HardScatteringEvent;
 
 	// Make a first pass of non-final particles to gather taus
 	for (int i = 0; i < pevt.size(); ++i) {
@@ -593,7 +590,7 @@ namespace Gambit {
 	if (*Loop::iteration <= INIT) return;
 	result.clear();
 
-	(*Dep::SimpleSmearingSim)->processEvent(*Dep::HardScatteringEvent, result);
+	(*Dep::SimpleSmearingSim)->processEvent(*Dep::ConvertedScatteringEvent, result);
       }
 
 
