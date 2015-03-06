@@ -1,28 +1,30 @@
 #include <stdexcept>
 #include "gambit/ColliderBit/Collider.hpp"
 
-/// @note STEP1-3)  How to configure a new collider: Start in Collider.hpp
-/// @note (To configure a new subprocess group, only do STEPS >= 4) 
+/// @note To configure a new collider, follow these steps:
+/// @note STEP1) BOSS / Backend your favorite collider simulator.
+/// @note STEP2) Perform "STEP2" in Collider.hpp
 
 namespace Gambit {
   namespace ColliderBit {
 
-/// @note STEP5) Use "init" for general init, which you want for all Colliders of this class.
-    void TemplatePythia::init(const std::vector<std::string>& settings) {
-        /// @note As long as the settings are pythia commands, no parsing!
-      for(const auto command : settings) {
+/// @note STEP3) Use "init" to configure this class with externalSettings.
+    void TemplatePythia::init(const std::vector<std::string>& externalSettings) {
+    /// @note As long as the settings are pythia commands, no parsing!
+      for(const auto command : externalSettings) {
+        _settings.push_back(command);
+      }
+      for(const auto command : _settings)
         if(command.find(":") == (size_t) -1)
           _pythiaInstance = new Pythia8::Pythia(command, false);
         else
-          _settings.push_back(command);
-      }
-      for(const auto command : _settings)
-        set(command);
+          set(command);
 
+      if(!_pythiaInstance) throw InitializationError();
       _pythiaInstance->init();
     }
 
-/// @note STEP6)  Set up the specializations themselves, with more specific settings.
+/// @note STEP4)  Set up the specializations themselves, with more specific settings.
     /// @brief Most general 8TeV SUSY LHC simulator
     struct Pythia_SUSY_LHC_8TeV {};
     template <> void TemplatePythia::specialize<Pythia_SUSY_LHC_8TeV>() {
@@ -43,13 +45,21 @@ namespace Gambit {
     struct Pythia_glusq_LHC_8TeV {};
     template <> void TemplatePythia::specialize<Pythia_glusq_LHC_8TeV>() {
       /// @note "Inherit" another specialization by calling it also.
-      this->specialize<Pythia_SUSY_LHC_8TeV>();
+      specialize<Pythia_SUSY_LHC_8TeV>();
 
       _settings.push_back("SUSY:idA = 1000021");
       _settings.push_back("SUSY:idVecB = 1000001, 1000002, 1000003, 1000004, 2000001, 2000002, 2000003, 2000004");
     };
 
-/// @note STEP7) Define the recycler with your specializations via the IF_X_SPECIALIZEX macro.
+/// @note STEP5) Don't forget to overload that pure virtual function:
+    void TemplatePythia::nextEvent(TemplatePythia::EventType& event) const {
+      // Try to make and populate an event
+      if (!_pythiaInstance->next()) throw EventFailureError();
+      event = _pythiaInstance->event;
+    }
+
+
+/// @note STEP6) Define the recycler with your specializations via the IF_X_SPECIALIZEX macro.
     bool recycleTemplatePythia(TemplatePythia& tPythia, const std::string& name,
                                const std::vector<std::string>& settings) {
       bool result = false;
