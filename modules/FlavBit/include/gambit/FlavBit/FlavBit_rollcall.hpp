@@ -79,6 +79,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION bsgamma                // Name of specific function providing the observable
     START_FUNCTION(double)                  // Function calculates a double precision variable
+		DEPENDENCY(FlavBit_fill, parameters)
 		BACKEND_REQ(bsgamma, (libsuperiso), double, (double*, double*, double*, double*, double, double, struct parameters*))
 		BACKEND_REQ(CW_calculator, (libsuperiso), void, (double*, double*, double*, double, struct parameters*))
 		BACKEND_REQ(C_calculator_base1, (libsuperiso), void, (double*, double*, double*, double, double*, double*, double*, double, struct parameters*))
@@ -91,6 +92,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION Bsmumu                 // Name of specific function providing the observable
     START_FUNCTION(double)                  // Function calculates a double precision variable
+		DEPENDENCY(FlavBit_fill, parameters)
 		BACKEND_REQ(Bsmumu, (libsuperiso), double, (double*, double*, double*, std::complex<double>*, std::complex<double>*, double*, std::complex<double>*, struct parameters*, double))
 		BACKEND_REQ(CW_calculator, (libsuperiso), void, (double*, double*, double*, double, struct parameters*))
 		BACKEND_REQ(C_calculator_base1, (libsuperiso), void, (double*, double*, double*, double, double*, double*, double*, double, struct parameters*))
@@ -104,6 +106,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION Bsmumu_untag                 // Name of specific function providing the observable
     START_FUNCTION(double)                  // Function calculates a double precision variable
+		DEPENDENCY(FlavBit_fill, parameters)
 		BACKEND_REQ(Bsmumu_untag, (libsuperiso), double, (double*, double*, double*, std::complex<double>*, std::complex<double>*, double*, std::complex<double>*, struct parameters*, double))
 		BACKEND_REQ(CW_calculator, (libsuperiso), void, (double*, double*, double*, double, struct parameters*))
 		BACKEND_REQ(C_calculator_base1, (libsuperiso), void, (double*, double*, double*, double, double*, double*, double*, double, struct parameters*))
@@ -117,6 +120,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION Bdmumu                // Name of specific function providing the observable
     START_FUNCTION(double)                  // Function calculates a double precision variable
+		DEPENDENCY(FlavBit_fill, parameters)
 		BACKEND_REQ(Bdmumu, (libsuperiso), double, (double*, double*, double*, std::complex<double>*, std::complex<double>*, struct parameters*, double))
 		BACKEND_REQ(CW_calculator, (libsuperiso), void, (double*, double*, double*, double, struct parameters*))
 		BACKEND_REQ(C_calculator_base1, (libsuperiso), void, (double*, double*, double*, double, double*, double*, double*, double, struct parameters*))
@@ -129,6 +133,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION Btaunu                // Name of specific function providing the observable
     START_FUNCTION(double)                  // Function calculates a double precision variable
+		DEPENDENCY(FlavBit_fill, parameters)
 		BACKEND_REQ(Btaunu, (libsuperiso), double, (struct parameters*))
 		BACKEND_OPTION( (SuperIso, 3.4), (libsuperiso) )
    #undef FUNCTION
@@ -138,6 +143,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION BDtaunu                // Name of specific function providing the observable
     START_FUNCTION(double)                  // Function calculates a double precision variable
+		DEPENDENCY(FlavBit_fill, parameters)
 		BACKEND_REQ(BDtaunu, (libsuperiso), double, (struct parameters*))
 		BACKEND_OPTION( (SuperIso, 3.4), (libsuperiso) )
    #undef FUNCTION
@@ -147,6 +153,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION BDtaunu_BDenu                // Name of specific function providing the observable
     START_FUNCTION(double)                  // Function calculates a double precision variable
+		DEPENDENCY(FlavBit_fill, parameters)
 		BACKEND_REQ(BDtaunu_BDenu, (libsuperiso), double, (struct parameters*))
 		BACKEND_OPTION( (SuperIso, 3.4), (libsuperiso) )
    #undef FUNCTION
@@ -156,6 +163,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION Kmunu_pimunu               // Name of specific function providing the observable
     START_FUNCTION(double)                  // Function calculates a double precision variable
+		DEPENDENCY(FlavBit_fill, parameters)
 		BACKEND_REQ(Kmunu_pimunu, (libsuperiso), double, (struct parameters*))
 		BACKEND_OPTION( (SuperIso, 3.4), (libsuperiso) )
    #undef FUNCTION
@@ -165,6 +173,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION Rmu23               // Name of specific function providing the observable
     START_FUNCTION(double)                  // Function calculates a double precision variable
+		DEPENDENCY(FlavBit_fill, parameters)
 		BACKEND_REQ(Rmu23, (libsuperiso), double, (struct parameters*))
 		BACKEND_OPTION( (SuperIso, 3.4), (libsuperiso) )
    #undef FUNCTION
@@ -174,6 +183,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION Dstaunu               // Name of specific function providing the observable
     START_FUNCTION(double)                  // Function calculates a double precision variable
+		DEPENDENCY(FlavBit_fill, parameters)
 		BACKEND_REQ(Dstaunu, (libsuperiso), double, (struct parameters*))
 		BACKEND_OPTION( (SuperIso, 3.4), (libsuperiso) )
    #undef FUNCTION
@@ -183,6 +193,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION Dsmunu               // Name of specific function providing the observable
     START_FUNCTION(double)                  // Function calculates a double precision variable
+		DEPENDENCY(FlavBit_fill, parameters)
 		BACKEND_REQ(Dsmunu, (libsuperiso), double, (struct parameters*))
 		BACKEND_OPTION( (SuperIso, 3.4), (libsuperiso) )
    #undef FUNCTION
@@ -192,6 +203,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION Dmunu               // Name of specific function providing the observable
     START_FUNCTION(double)                  // Function calculates a double precision variable
+		DEPENDENCY(FlavBit_fill, parameters)
 		BACKEND_REQ(Dmunu, (libsuperiso), double, (struct parameters*))
 		BACKEND_OPTION( (SuperIso, 3.4), (libsuperiso) )
    #undef FUNCTION
@@ -201,6 +213,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION muon_gm2               // Name of specific function providing the observable
     START_FUNCTION(double)                  // Function calculates a double precision variable
+		DEPENDENCY(FlavBit_fill, parameters)
 		BACKEND_REQ(muon_gm2, (libsuperiso), double, (struct parameters*))
 		BACKEND_OPTION( (SuperIso, 3.4), (libsuperiso) )
    #undef FUNCTION
@@ -210,6 +223,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION delta0                 // Name of specific function providing the observable
     START_FUNCTION(double)                  // Function calculates a double precision variable
+		DEPENDENCY(FlavBit_fill, parameters)
 		BACKEND_REQ(delta0, (libsuperiso), double, (double*, double*, double*, double*, double*, struct parameters*, double, double, double))
 		BACKEND_REQ(CW_calculator, (libsuperiso), void, (double*, double*, double*, double, struct parameters*))
 		BACKEND_REQ(C_calculator_base2, (libsuperiso), void, (double*, double*, double, double*, double*, double, struct parameters*))
@@ -222,6 +236,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION BRBXsmumu_lowq2                 // Name of specific function providing the observable
     START_FUNCTION(double)                  // Function calculates a double precision variable
+		DEPENDENCY(FlavBit_fill, parameters)
 		BACKEND_REQ(BRBXsmumu_lowq2, (libsuperiso), double, (double*, double*, double*, std::complex<double>*, std::complex<double>*, double*, std::complex<double>*, struct parameters*, double))
 		BACKEND_REQ(CW_calculator, (libsuperiso), void, (double*, double*, double*, double, struct parameters*))
 		BACKEND_REQ(C_calculator_base1, (libsuperiso), void, (double*, double*, double*, double, double*, double*, double*, double, struct parameters*))
@@ -235,6 +250,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION BRBXsmumu_highq2                 // Name of specific function providing the observable
     START_FUNCTION(double)                  // Function calculates a double precision variable
+		DEPENDENCY(FlavBit_fill, parameters)
 		BACKEND_REQ(BRBXsmumu_highq2, (libsuperiso), double, (double*, double*, double*, std::complex<double>*, std::complex<double>*, double*, std::complex<double>*, struct parameters*, double))
 		BACKEND_REQ(CW_calculator, (libsuperiso), void, (double*, double*, double*, double, struct parameters*))
 		BACKEND_REQ(C_calculator_base1, (libsuperiso), void, (double*, double*, double*, double, double*, double*, double*, double, struct parameters*))
@@ -248,6 +264,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION A_BXsmumu_lowq2                 // Name of specific function providing the observable
     START_FUNCTION(double)                  // Function calculates a double precision variable
+		DEPENDENCY(FlavBit_fill, parameters)
 		BACKEND_REQ(A_BXsmumu_lowq2, (libsuperiso), double, (double*, double*, double*, std::complex<double>*, std::complex<double>*, double*, std::complex<double>*, struct parameters*, double))
 		BACKEND_REQ(CW_calculator, (libsuperiso), void, (double*, double*, double*, double, struct parameters*))
 		BACKEND_REQ(C_calculator_base1, (libsuperiso), void, (double*, double*, double*, double, double*, double*, double*, double, struct parameters*))
@@ -261,6 +278,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION A_BXsmumu_highq2                 // Name of specific function providing the observable
     START_FUNCTION(double)                  // Function calculates a double precision variable
+		DEPENDENCY(FlavBit_fill, parameters)
 		BACKEND_REQ(A_BXsmumu_highq2, (libsuperiso), double, (double*, double*, double*, std::complex<double>*, std::complex<double>*, double*, std::complex<double>*, struct parameters*, double))
 		BACKEND_REQ(CW_calculator, (libsuperiso), void, (double*, double*, double*, double, struct parameters*))
 		BACKEND_REQ(C_calculator_base1, (libsuperiso), void, (double*, double*, double*, double, double*, double*, double*, double, struct parameters*))
@@ -274,6 +292,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION A_BXsmumu_zero                 // Name of specific function providing the observable
     START_FUNCTION(double)                  // Function calculates a double precision variable
+		DEPENDENCY(FlavBit_fill, parameters)
 		BACKEND_REQ(A_BXsmumu_zero, (libsuperiso), double, (double*, double*, double*, std::complex<double>*, std::complex<double>*, double*, std::complex<double>*, struct parameters*, double))
 		BACKEND_REQ(CW_calculator, (libsuperiso), void, (double*, double*, double*, double, struct parameters*))
 		BACKEND_REQ(C_calculator_base1, (libsuperiso), void, (double*, double*, double*, double, double*, double*, double*, double, struct parameters*))
@@ -287,6 +306,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION BRBXstautau_highq2                 // Name of specific function providing the observable
     START_FUNCTION(double)                  // Function calculates a double precision variable
+		DEPENDENCY(FlavBit_fill, parameters)
 		BACKEND_REQ(BRBXstautau_highq2, (libsuperiso), double, (double*, double*, double*, std::complex<double>*, std::complex<double>*, double*, std::complex<double>*, struct parameters*, double))
 		BACKEND_REQ(CW_calculator, (libsuperiso), void, (double*, double*, double*, double, struct parameters*))
 		BACKEND_REQ(C_calculator_base1, (libsuperiso), void, (double*, double*, double*, double, double*, double*, double*, double, struct parameters*))
@@ -300,6 +320,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION A_BXstautau_highq2                 // Name of specific function providing the observable
     START_FUNCTION(double)                  // Function calculates a double precision variable
+		DEPENDENCY(FlavBit_fill, parameters)
 		BACKEND_REQ(A_BXstautau_highq2, (libsuperiso), double, (double*, double*, double*, std::complex<double>*, std::complex<double>*, double*, std::complex<double>*, struct parameters*, double))
 		BACKEND_REQ(CW_calculator, (libsuperiso), void, (double*, double*, double*, double, struct parameters*))
 		BACKEND_REQ(C_calculator_base1, (libsuperiso), void, (double*, double*, double*, double, double*, double*, double*, double, struct parameters*))
@@ -313,6 +334,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION BRBKstarmumu                 // Name of specific function providing the observable
     START_FUNCTION(double)                  // Function calculates a double precision variable
+		DEPENDENCY(FlavBit_fill, parameters)
 		BACKEND_REQ(BRBKstarmumu, (libsuperiso), double, (double, double, double*, double*, double*, double*, std::complex<double>*, std::complex<double>*, double*, std::complex<double>*, struct parameters*, double))
 		BACKEND_REQ(CW_calculator, (libsuperiso), void, (double*, double*, double*, double, struct parameters*))
 		BACKEND_REQ(C_calculator_base1, (libsuperiso), void, (double*, double*, double*, double, double*, double*, double*, double, struct parameters*))
@@ -326,6 +348,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION AI_BKstarmumu                 // Name of specific function providing the observable
     START_FUNCTION(double)                  // Function calculates a double precision variable
+		DEPENDENCY(FlavBit_fill, parameters)
 		BACKEND_REQ(AI_BKstarmumu, (libsuperiso), double, (double, double, double*, double*, double*, struct parameters*, double))
 		BACKEND_REQ(CW_calculator, (libsuperiso), void, (double*, double*, double*, double, struct parameters*))
 		BACKEND_REQ(C_calculator_base1, (libsuperiso), void, (double*, double*, double*, double, double*, double*, double*, double, struct parameters*))
@@ -337,6 +360,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION AI_BKstarmumu_zero                // Name of specific function providing the observable
     START_FUNCTION(double)                  // Function calculates a double precision variable
+		DEPENDENCY(FlavBit_fill, parameters)
 		BACKEND_REQ(AI_BKstarmumu_zero, (libsuperiso), double, (double*, double*, double*, struct parameters*, double))
 		BACKEND_REQ(CW_calculator, (libsuperiso), void, (double*, double*, double*, double, struct parameters*))
 		BACKEND_REQ(C_calculator_base1, (libsuperiso), void, (double*, double*, double*, double, double*, double*, double*, double, struct parameters*))

@@ -43,9 +43,6 @@ ObsLikes:
     module:       ""
     printme:      false
 
-  - purpose:      NotLikelihood
-    capability:   FlavBit_fill
-    printme:      false
   - purpose:      Observable
     capability:   bsgamma
   - purpose:      Observable

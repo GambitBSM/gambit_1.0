@@ -40,7 +40,7 @@ namespace Gambit
     {
       using namespace Pipes::FlavBit_fill;
       using namespace std;
-	  
+	  	  
       char name[]="FlavBit/example.lha";
 
       eaSLHA spectrum;
@@ -390,10 +390,8 @@ namespace Gambit
     {
       using namespace Pipes::bsgamma;
 
-      struct parameters param;
+      struct parameters param = *Dep::FlavBit_fill;
 
-      FlavBit_fill(param);
- 
       if(param.model<0) result=0.;
       else
       {
@@ -417,9 +415,7 @@ namespace Gambit
     {
       using namespace Pipes::Bsmumu;
 
-      struct parameters param;
-
-      FlavBit_fill(param);
+      struct parameters param = *Dep::FlavBit_fill;
 
       if(param.model<0) result=0.;
       else
@@ -446,9 +442,7 @@ namespace Gambit
     {
       using namespace Pipes::Bsmumu_untag;
 
-      struct parameters param;
-
-      FlavBit_fill(param);
+      struct parameters param = *Dep::FlavBit_fill;
 
       if(param.model<0) result=0.;
       else
@@ -475,9 +469,7 @@ namespace Gambit
     {
       using namespace Pipes::Bdmumu;
 
-      struct parameters param;
-
-      FlavBit_fill(param);
+      struct parameters param = *Dep::FlavBit_fill;
 
       if(param.model<0) result=0.;
       else
@@ -503,9 +495,7 @@ namespace Gambit
     {
       using namespace Pipes::Btaunu;
 
-       struct parameters param;
-
-      FlavBit_fill(param);
+       struct parameters param = *Dep::FlavBit_fill;
 
       if(param.model<0) result=0.;
       else result = BEreq::Btaunu(&param);
@@ -519,9 +509,7 @@ namespace Gambit
     {
       using namespace Pipes::BDtaunu;
 
-       struct parameters param;
-
-      FlavBit_fill(param);
+       struct parameters param = *Dep::FlavBit_fill;
 
       if(param.model<0) result=0.;
       else result = BEreq::BDtaunu(&param);
@@ -535,9 +523,7 @@ namespace Gambit
     {
       using namespace Pipes::BDtaunu_BDenu;
 
-       struct parameters param;
-
-      FlavBit_fill(param);
+       struct parameters param = *Dep::FlavBit_fill;
 
       if(param.model<0) result=0.;
       else result = BEreq::BDtaunu_BDenu(&param);
@@ -551,9 +537,7 @@ namespace Gambit
     {
       using namespace Pipes::Kmunu_pimunu;
 
-       struct parameters param;
-
-      FlavBit_fill(param);
+       struct parameters param = *Dep::FlavBit_fill;
 
       if(param.model<0) result=0.;
       else result = BEreq::Kmunu_pimunu(&param);
@@ -567,9 +551,7 @@ namespace Gambit
     {
       using namespace Pipes::Rmu23;
 
-       struct parameters param;
-
-      FlavBit_fill(param);
+       struct parameters param = *Dep::FlavBit_fill;
 
       if(param.model<0) result=0.;
       else result = BEreq::Rmu23(&param);
@@ -583,9 +565,7 @@ namespace Gambit
     {
       using namespace Pipes::Dstaunu;
 
-       struct parameters param;
-
-      FlavBit_fill(param);
+       struct parameters param = *Dep::FlavBit_fill;
 
       if(param.model<0) result=0.;
       else result = BEreq::Dstaunu(&param);
@@ -599,9 +579,7 @@ namespace Gambit
     {
       using namespace Pipes::Dsmunu;
 
-       struct parameters param;
-
-      FlavBit_fill(param);
+       struct parameters param = *Dep::FlavBit_fill;
 
       if(param.model<0) result=0.;
       else result = BEreq::Dsmunu(&param);
@@ -615,9 +593,7 @@ namespace Gambit
     {
       using namespace Pipes::Dmunu;
 
-       struct parameters param;
-
-      FlavBit_fill(param);
+       struct parameters param = *Dep::FlavBit_fill;
 
       if(param.model<0) result=0.;
       else result = BEreq::Dmunu(&param);
@@ -631,9 +607,7 @@ namespace Gambit
     {
       using namespace Pipes::muon_gm2;
 
-       struct parameters param;
-
-      FlavBit_fill(param);
+       struct parameters param = *Dep::FlavBit_fill;
 
       if(param.model<0) result=0.;
       else result = BEreq::muon_gm2(&param);
@@ -647,9 +621,7 @@ namespace Gambit
     {
       using namespace Pipes::delta0;
 
-      struct parameters param;
-
-      FlavBit_fill(param);
+      struct parameters param = *Dep::FlavBit_fill;
 
       if(param.model<0) result=0.;
       else
@@ -680,9 +652,7 @@ namespace Gambit
     {
       using namespace Pipes::BRBXsmumu_lowq2;
 
-      struct parameters param;
-
-      FlavBit_fill(param);
+      struct parameters param = *Dep::FlavBit_fill;
 
       if(param.model<0) result=0.;
       else
@@ -709,9 +679,7 @@ namespace Gambit
     {
       using namespace Pipes::BRBXsmumu_highq2;
 
-      struct parameters param;
-
-      FlavBit_fill(param);
+      struct parameters param = *Dep::FlavBit_fill;
 
       if(param.model<0) result=0.;
       else
@@ -738,9 +706,7 @@ namespace Gambit
     {
       using namespace Pipes::A_BXsmumu_lowq2;
 
-      struct parameters param;
-
-      FlavBit_fill(param);
+      struct parameters param = *Dep::FlavBit_fill;
 
       if(param.model<0) result=0.;
       else
@@ -767,9 +733,7 @@ namespace Gambit
     {
       using namespace Pipes::A_BXsmumu_highq2;
 
-      struct parameters param;
-
-      FlavBit_fill(param);
+      struct parameters param = *Dep::FlavBit_fill;
 
       if(param.model<0) result=0.;
       else
@@ -796,9 +760,7 @@ namespace Gambit
     {
       using namespace Pipes::A_BXsmumu_zero;
 
-      struct parameters param;
-
-      FlavBit_fill(param);
+      struct parameters param = *Dep::FlavBit_fill;
 
       if(param.model<0) result=0.;
       else
@@ -825,9 +787,7 @@ namespace Gambit
     {
       using namespace Pipes::BRBXstautau_highq2;
 
-      struct parameters param;
-
-      FlavBit_fill(param);
+      struct parameters param = *Dep::FlavBit_fill;
 
       if(param.model<0) result=0.;
       else
@@ -854,9 +814,7 @@ namespace Gambit
     {
       using namespace Pipes::A_BXstautau_highq2;
 
-      struct parameters param;
-
-      FlavBit_fill(param);
+      struct parameters param = *Dep::FlavBit_fill;
 
       if(param.model<0) result=0.;
       else
@@ -883,9 +841,7 @@ namespace Gambit
     {
       using namespace Pipes::BRBKstarmumu;
 
-      struct parameters param;
-
-      FlavBit_fill(param);
+      struct parameters param = *Dep::FlavBit_fill;
 
       if(param.model<0) result=0.;
       else
@@ -932,9 +888,7 @@ namespace Gambit
     {
       using namespace Pipes::AI_BKstarmumu;
 
-      struct parameters param;
-
-      FlavBit_fill(param);
+      struct parameters param = *Dep::FlavBit_fill;
 
       if(param.model<0) result=0.;
       else
@@ -958,9 +912,7 @@ namespace Gambit
     {
       using namespace Pipes::AI_BKstarmumu_zero;
 
-      struct parameters param;
-
-      FlavBit_fill(param);
+      struct parameters param = *Dep::FlavBit_fill;
 
       if(param.model<0) result=0.;
       else
