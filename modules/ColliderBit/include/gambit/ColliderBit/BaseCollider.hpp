@@ -32,7 +32,7 @@ namespace Gambit {
       //@{
         /// @brief Settings parsing and initialization for each sub-class
         virtual void init(const std::vector<std::string>& settings) = 0;
-        /// @brief Special, hard-coded init. Template specializations go in cpp file.
+        /// @brief Specialized init. Template specializations go in cpp file.
         template <typename Tag>
         void specialize() { throw UnknownTagError(); }
       //@}

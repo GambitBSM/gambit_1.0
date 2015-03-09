@@ -2,13 +2,16 @@
 #include "gambit/ColliderBit/Collider.hpp"
 
 /// @note To configure a new collider, follow these steps:
-/// @note STEP1) BOSS / Backend your favorite collider simulator.
-/// @note STEP2) Perform "STEP2" in Collider.hpp
+/// @note STEP1)  BOSS / Backend your favorite collider simulator.
+/// @note STEP2)  [Start in Collider.hpp]
+/// @note STEP3)  [Start in Collider.hpp]
+/// @note STEP4)  Define all the BASECOLLIDER_SUBCLASS_HELPER declared methods below:
+/// @note STEP5)  Define the recycler at the very bottom.
 
 namespace Gambit {
   namespace ColliderBit {
 
-/// @note STEP3) Use "init" to configure this class with externalSettings.
+/// @note STEP4a) Define "init" to configure this class with "externalSettings".
     void TemplatePythia::init(const std::vector<std::string>& externalSettings) {
     /// @note As long as the settings are pythia commands, no parsing!
       for(const auto command : externalSettings) {
@@ -24,7 +27,7 @@ namespace Gambit {
       _pythiaInstance->init();
     }
 
-/// @note STEP4)  Set up the specializations themselves, with more specific settings.
+/// @note STEP4b) Define "specialize" specializations, with more specific settings.
     /// @brief Most general 8TeV SUSY LHC simulator
     struct Pythia_SUSY_LHC_8TeV {};
     template <> void TemplatePythia::specialize<Pythia_SUSY_LHC_8TeV>() {
@@ -51,7 +54,7 @@ namespace Gambit {
       _settings.push_back("SUSY:idVecB = 1000001, 1000002, 1000003, 1000004, 2000001, 2000002, 2000003, 2000004");
     };
 
-/// @note STEP5) Don't forget to overload that pure virtual function:
+/// @note STEP4c) TODO: Replace default "nextEvent" with tag-dispatching version. Document.
     void TemplatePythia::nextEvent(TemplatePythia::EventType& event) const {
       // TODO: hard code for now until fixed. Use tag dispatcher later.
       // Try to make and populate an event
@@ -60,7 +63,7 @@ namespace Gambit {
     }
 
 
-/// @note STEP6) Define the recycler with your specializations via the IF_X_SPECIALIZEX macro.
+/// @note STEP5)  Define the recycler with your specializations via the IF_X_SPECIALIZEX macro.
     bool recycleTemplatePythia(TemplatePythia& tPythia, const std::string& name,
                                const std::vector<std::string>& settings) {
       bool result = false;
