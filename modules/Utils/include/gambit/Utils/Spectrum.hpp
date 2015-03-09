@@ -212,7 +212,7 @@ struct FcnInfo2
    typedef std::map<std::string, FSptr> fmap; /* Typedef for map of strings to function pointers */ \
    typedef std::map<std::string, FInfo1> fmap1;/*with an index*/ \
    typedef std::map<std::string, FInfo2> fmap2; /*with 2 indices */ \
-   typedef std::map<std::string, plainfptr> fmap_plain; /* map of plain function pointers */ \
+   typedef std::map<std::string, plainfptr> fmap_plain; /* map of plain function pointers */
 
 /// As well as the above, it is handy to have these types accessible via a helper template struct:
 /// Get them like: MapTypes<Model>::fmap
@@ -635,23 +635,23 @@ double PhysDer<Model>::get_Pole_Mixing(const std::string& mixing, int i, int j) 
    MODEL_RUNNING_TEMPLATE_MEMBER_FUNCTIONS_SINGLE(ClassName,mass0)
 
 #define MODEL_PHYS_TEMPLATE_MEMBER_FUNCTIONS(ClassName) \
-  template <class M> typename ClassName<M>::fmap       ClassName<M>::PoleMass_map(ClassName<M>::fill_PoleMass_map()); \
+  template <class M> typename ClassName<M>::fmap       ClassName<M>::PoleMass_map(      ClassName<M>::fill_PoleMass_map()      ); \
   template <class M> typename ClassName<M>::fmap_plain ClassName<M>::PoleMass_map_extra(ClassName<M>::fill_PoleMass_map_extra()); \
-  template <class M> typename ClassName<M>::fmap1      ClassName<M>::PoleMass_map1(ClassName<M>::fill_PoleMass_map1()); \
+  template <class M> typename ClassName<M>::fmap1      ClassName<M>::PoleMass_map1(     ClassName<M>::fill_PoleMass_map1()     ); \
   \
-  template <class M> typename ClassName<M>::fmap&       ClassName<M>::get_PoleMass_map() const {return PoleMass_map;} \
+  template <class M> typename ClassName<M>::fmap&       ClassName<M>::get_PoleMass_map()       const {return PoleMass_map;      } \
   template <class M> typename ClassName<M>::fmap_plain& ClassName<M>::get_PoleMass_map_extra() const {return PoleMass_map_extra;} \
-  template <class M> typename ClassName<M>::fmap1&      ClassName<M>::get_PoleMass_map1() const {return PoleMass_map1;} \
+  template <class M> typename ClassName<M>::fmap1&      ClassName<M>::get_PoleMass_map1()      const {return PoleMass_map1;     } \
   \
-  template <class M> typename ClassName<M>::fmap        ClassName<M>::PoleMixing_map(ClassName<M>::fill_PoleMixing_map()); \
+  template <class M> typename ClassName<M>::fmap        ClassName<M>::PoleMixing_map(      ClassName<M>::fill_PoleMixing_map()      ); \
   template <class M> typename ClassName<M>::fmap_plain  ClassName<M>::PoleMixing_map_extra(ClassName<M>::fill_PoleMixing_map_extra()); \
-  template <class M> typename ClassName<M>::fmap1       ClassName<M>::PoleMixing_map1(ClassName<M>::fill_PoleMixing_map1()); \
-  template <class M> typename ClassName<M>::fmap2       ClassName<M>::PoleMixing_map2(ClassName<M>::fill_PoleMixing_map2()); \
+  template <class M> typename ClassName<M>::fmap1       ClassName<M>::PoleMixing_map1(     ClassName<M>::fill_PoleMixing_map1()     ); \
+  template <class M> typename ClassName<M>::fmap2       ClassName<M>::PoleMixing_map2(     ClassName<M>::fill_PoleMixing_map2()     ); \
   \
-  template <class M> typename ClassName<M>::fmap&       ClassName<M>::get_PoleMixing_map() const {return PoleMixing_map;} \
-  template <class M> typename ClassName<M>::fmap_plain& ClassName<M>::get_PoleMixing_map_extra() const {return PoleMixing_map_extra();} \
-  template <class M> typename ClassName<M>::fmap1&      ClassName<M>::get_PoleMixing_map1() const {return PoleMixing_map1;} \
-  template <class M> typename ClassName<M>::fmap2&      ClassName<M>::get_PoleMixing_map2() const {return PoleMixing_map2;} \
+  template <class M> typename ClassName<M>::fmap&       ClassName<M>::get_PoleMixing_map()       const {return PoleMixing_map;      } \
+  template <class M> typename ClassName<M>::fmap_plain& ClassName<M>::get_PoleMixing_map_extra() const {return PoleMixing_map_extra;} \
+  template <class M> typename ClassName<M>::fmap1&      ClassName<M>::get_PoleMixing_map1()      const {return PoleMixing_map1;     } \
+  template <class M> typename ClassName<M>::fmap2&      ClassName<M>::get_PoleMixing_map2()      const {return PoleMixing_map2;     } \
 
 } // end namespace Gambit
 

@@ -392,7 +392,8 @@ namespace Gambit {
    }
    
    // "extra" function to compute TanBeta 
-   template <class Model> double get_tanbeta(Model& model) 
+   template <class Model>
+   double get_tanbeta(Model& model) 
    { 
       return model.get_vu() / model.get_vd(); 
    }
@@ -402,7 +403,7 @@ namespace Gambit {
    typename MSSM_DRbarPars<MI>::fmap_plain MSSM_DRbarPars<MI>::fill_mass0_map_extra() 
    {
       typedef typename MI::Model Model;
-      fmap tmp_map;
+      fmap_plain tmp_map;
       tmp_map["tanbeta"]= &get_tanbeta<Model>;
       
       return tmp_map;
@@ -631,6 +632,14 @@ namespace Gambit {
    typename MSSM_Phys<MI>::fmap MSSM_Phys<MI>::fill_PoleMixing_map(){
       fmap tmp_map;
       // this is currently empty in MSSM, could add Higgs mixing, alpha 
+      return tmp_map;
+   }
+
+   //returns empty mass sicne none of these exist in this model
+   template <class MI>
+   typename MSSM_Phys<MI>::fmap_plain MSSM_Phys<MI>::fill_PoleMixing_map_extra(){
+      fmap_plain tmp_map;
+    // this is currently empty in MSSM,
       return tmp_map;
    }
    
