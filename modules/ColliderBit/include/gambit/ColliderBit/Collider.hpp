@@ -1,42 +1,14 @@
 #pragma once
-#include <string>
-#include <vector>
-#include <exception>
-
-/// @note To configure a new collider, follow these steps:
-/// @note STEP1) BOSS / Backend your favorite collider simulator.
-#include "gambit/Utils/shared_types.hpp"
-#include "gambit/ColliderBit/ColliderBit_macros.hpp"
+#include "gambit/ColliderBit/BaseCollider.hpp"
 
 namespace Gambit {
   namespace ColliderBit {
 
-    /// @brief Abstract base class Collider
-    template <typename EventT>
-    class Collider {
-      public:
-        typedef EventT EventType;
-        Collider() { }
-        virtual ~Collider() { }
+/// @note To configure a new collider, follow these steps:
+/// @note STEP1)  BOSS / Backend your favorite collider simulator.
+/// @note STEP2)  Sub-class BaseCollider. The type of event is the template parameter.
 
-      /// @name (Re-)Initialization functions
-      //@{
-        /// @brief Settings parsing and initialization for each sub-class
-        virtual void init(const std::vector<std::string>& settings) = 0;
-      //@}
-
-      /// @name Event generation functions
-      //@{
-        /// @brief Fill in the next collider event by reference - Gambit requires the "const"
-        virtual void nextEvent(EventT& event) const = 0;
-        /// @brief Special, hard-coded init. Template specializations go in cpp file.
-        template <typename Tag> void specialize() {}
-      //@}
-    };
-
-
-/// @note STEP2)  Sub-class Collider. Give the type of event as the Collider template parameter.
-    class TemplatePythia : public Collider<Pythia8::Event> {
+    class TemplatePythia : public BaseCollider<Pythia8::Event> {
       protected:
       /// @name Member variables and custom exceptions
       //@{
@@ -68,6 +40,12 @@ namespace Gambit {
 
       /// @name (Re-)Initialization functions
       //@{
+        /// @brief Settings parsing and initialization for each sub-class
+        virtual void init(const std::vector<std::string>& settings);
+        /// @brief Special, hard-coded init. Template specializations go in cpp file.
+        template <typename Tag>
+        void specialize() { throw UnknownTagError(); }
+
         /// @brief Prepare for a new Pythia configuration
         void reset() {
           _settings.clear(); _settings.push_back("../extras/boss/bossed_pythia_source/xmldoc/");
@@ -75,17 +53,17 @@ namespace Gambit {
         }
         /// @brief Send a command to the Pythia instance
         void set(const std::string& command) { _pythiaInstance->readString(command); }
-        /// @brief Settings parsing and initialization for TemplatePythia
-        virtual void init(const std::vector<std::string>& settings);
-        /// @brief Special, hard-coded init. Template specializations go in cpp file.
-        template <typename Tag> void specialize() {}
       //@}
 
-      /// @name Event generation functions
+      /// @name Event generation functions - Required to be const by Gambit
       //@{
-        /// @brief Fill in the next collider event by reference - Gambit requires the "const"
+        /// @brief Fill in the next collider event by reference according to a tag.
+        template <typename Tag>
+        void nextEventByTag(EventType& event) const { throw UnknownTagError(); }
+        /// @brief Fill in the next collider event by reference without a tag.
         virtual void nextEvent(EventType& event) const;
       //@}
+
     };
 
     /// @brief Recycle to a new Pythia initialization via name (Template parameter).

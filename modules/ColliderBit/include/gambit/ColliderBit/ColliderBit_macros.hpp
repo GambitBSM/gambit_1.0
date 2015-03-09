@@ -16,6 +16,12 @@
 #ifndef __ColliderBit_macros_hpp__
 #define __ColliderBit_macros_hpp__
 
+/// Macros to help build subclasses of ColliderBit Base[Classes]
+#define BASE_COLLIDER_HELPER(NAME, EVENT_TYPE)                                   \
+  private:                                                                       \
+    typedef BaseCollider<EVENT_TYPE> super;                                      \
+    typedef void (NAME::*_nextEventFncPtr)(EVENT_TYPE&) const;                   \
+
 /// Macros for factory fns
 /// @todo Semicolon handling
 #define DECLARE_ANALYSIS_FACTORY(ANAME)                                          \

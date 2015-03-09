@@ -53,6 +53,7 @@ namespace Gambit {
 
 /// @note STEP5) Don't forget to overload that pure virtual function:
     void TemplatePythia::nextEvent(TemplatePythia::EventType& event) const {
+      // TODO: hard code for now until fixed. Use tag dispatcher later.
       // Try to make and populate an event
       if (!_pythiaInstance->next()) throw EventFailureError();
       event = _pythiaInstance->event;
