@@ -1,3 +1,29 @@
+//   GAMBIT: Global and Modular BSM Inference Tool
+//   *********************************************
+///  \file
+///
+///  MSSM derivation of Spectrum class. Designed
+///  for easy interface to FlexibleSUSY, but also
+///  works with SoftSUSY as the backend with an
+///  appropriately designed intermediate later.
+///
+///  *********************************************
+///
+///  Authors: 
+///  <!-- add name and date if you modify -->
+///   
+///  \author Peter Athron  
+///          (peter.athron@coepp.org.au)
+///  \date 2014, 2015 Jan, Feb, Mar 
+///
+///  \author Ben Farmer
+///          (benjamin.farmer@fysik.su.se)
+///  \date 2014, 2015 Jan, Feb, Mar 
+///
+///  *********************************************
+
+
+
 #ifndef MSSMSPEC_H
 #define MSSMSPEC_H
 
@@ -717,7 +743,7 @@ namespace Gambit {
 // e.g.:  template <class M> typename ClassName<M>::fmap   ClassName<M>::PoleMass_map(ClassName<M>::fill_PoleMass_map());
 // goes to
 // template <class M> 
-// typename MSSM_Phys<M>::fmap   MSSMPhys<M>::PoleMass_map(ClassName<M>::fill_PoleMass_map());
+// typename MSSM_Phys<M>::fmap   MSSM_Phys<M>::PoleMass_map(MSSM_Phys<M>::fill_PoleMass_map());
 
  
 }
