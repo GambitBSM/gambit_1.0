@@ -16,21 +16,6 @@
 #ifndef __ColliderBit_macros_hpp__
 #define __ColliderBit_macros_hpp__
 
-/// Macros to help declare ColliderBit subclasses
-#define BASECOLLIDER_SUBCLASS_HELPER(NAME, EVENT_TYPE)                           \
-  private:                                                                       \
-    typedef BaseCollider<EVENT_TYPE> super;                                      \
-    typedef void (NAME::*_nextEventFncPtr)(EVENT_TYPE&) const;                   \
-  public:                                                                        \
-    virtual void init(const std::vector<std::string>& settings);                 \
-    template <typename Tag>                                                      \
-    void specialize() { throw UnknownTagError(); }                               \
-                                                                                 \
-    template <typename Tag>                                                      \
-    void nextEventByTag(EventType& event) const { throw UnknownTagError(); }     \
-    virtual void nextEvent(EventType& event) const;
-
-
 /// Macros for factory fns
 /// @todo Semicolon handling
 #define DECLARE_ANALYSIS_FACTORY(ANAME)                                          \
