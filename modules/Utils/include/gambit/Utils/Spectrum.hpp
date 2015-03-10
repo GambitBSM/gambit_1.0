@@ -70,7 +70,8 @@ class Spectrum {
       virtual void dump2slha(const std::string&) { vfcn_error(); }
    
       /// Get spectrum information in SLHAea format (if possible)
-      virtual SLHAea::Coll getSLHAea() { vfcn_error(); }
+      SLHAea::Coll empty_SLHAea;  // never used; just to avoid "no return statement in function returning non-void" warnings
+      virtual SLHAea::Coll getSLHAea() { vfcn_error(); return empty_SLHAea; }
    
    protected:
       /// Get integer offset convention used by internal model class (needed by getters which take indices) 
@@ -106,12 +107,12 @@ class Spectrum {
       /// particle_type = 0 (neutralino), 1(Sneutrino), 2(up squark), 
       /// 3(down squarks), 4(charged slepton), 5(Chargino), 6(gluino)
       ///  Add more for 
-      virtual double get_lsp_mass(int & particle_type, int & row, int & col) const { vfcn_error(); }
+      virtual double get_lsp_mass(int& /*particle_type*/, int& /*row*/, int& /*col*/) const { vfcn_error(); return -1; }
       /// There may be more than one *new* stable particle
       ///  this method will tell you how many.
       /// If more than zero you probbaly *need* to know what model
       ///  you are working on, so we don't give all stable particles
-      virtual int get_numbers_stable_particles() const { vfcn_error(); }  
+      virtual int get_numbers_stable_particles() const { vfcn_error(); return -1; }  
       
 };
 
@@ -123,29 +124,29 @@ class RunningPars {
       virtual Spectrum& get_parent() const = 0;
    public:
       /// run object to a particular scale
-      virtual void RunToScale(double scale) { get_parent().vfcn_error(); }
+      virtual void RunToScale(double) { get_parent().vfcn_error(); }
       /// returns the renormalisation scale of parameters
-      virtual double GetScale() const { get_parent().vfcn_error(); }
+      virtual double GetScale() const { get_parent().vfcn_error(); return -1; }
       /// Sets the renormalisation scale of parameters 
       /// somewhat dangerous to allow this but may be needed
-      virtual void SetScale(double scale) { get_parent().vfcn_error(); }
+      virtual void SetScale(double) { get_parent().vfcn_error(); }
       
       /// getters using map
-      virtual double get_mass4_parameter(const std::string&) const { get_parent().vfcn_error(); }
-      virtual double get_mass4_parameter(const std::string&, int) const { get_parent().vfcn_error(); }
-      virtual double get_mass4_parameter(const std::string&, int, int) const { get_parent().vfcn_error(); }
-      virtual double get_mass3_parameter(const std::string&) const { get_parent().vfcn_error(); }
-      virtual double get_mass3_parameter(const std::string&, int) const { get_parent().vfcn_error(); }
-      virtual double get_mass3_parameter(const std::string&, int, int) const { get_parent().vfcn_error(); }
-      virtual double get_mass2_parameter(const std::string&) const { get_parent().vfcn_error(); }
-      virtual double get_mass2_parameter(const std::string&, int i) const { get_parent().vfcn_error(); }
-      virtual double get_mass2_parameter(const std::string&, int i, int j) const { get_parent().vfcn_error(); }
-      virtual double get_mass_parameter(const std::string&) const { get_parent().vfcn_error(); } 
-      virtual double get_mass_parameter(const std::string&, int) const { get_parent().vfcn_error(); }
-      virtual double get_mass_parameter(const std::string&, int, int) const { get_parent().vfcn_error(); }
-      virtual double get_dimensionless_parameter(const std::string&) const { get_parent().vfcn_error(); }
-      virtual double get_dimensionless_parameter(const std::string&, int) const { get_parent().vfcn_error(); }
-      virtual double get_dimensionless_parameter(const std::string&, int, int) const { get_parent().vfcn_error(); }
+      virtual double get_mass4_parameter(const std::string&) const { get_parent().vfcn_error(); return -1; }
+      virtual double get_mass4_parameter(const std::string&, int) const { get_parent().vfcn_error(); return -1; }
+      virtual double get_mass4_parameter(const std::string&, int, int) const { get_parent().vfcn_error(); return -1; }
+      virtual double get_mass3_parameter(const std::string&) const { get_parent().vfcn_error(); return -1; }
+      virtual double get_mass3_parameter(const std::string&, int) const { get_parent().vfcn_error(); return -1; }
+      virtual double get_mass3_parameter(const std::string&, int, int) const { get_parent().vfcn_error(); return -1; }
+      virtual double get_mass2_parameter(const std::string&) const { get_parent().vfcn_error(); return -1; }
+      virtual double get_mass2_parameter(const std::string&, int) const { get_parent().vfcn_error(); return -1; }
+      virtual double get_mass2_parameter(const std::string&, int, int) const { get_parent().vfcn_error(); return -1; }
+      virtual double get_mass_parameter(const std::string&) const { get_parent().vfcn_error(); return -1; } 
+      virtual double get_mass_parameter(const std::string&, int) const { get_parent().vfcn_error(); return -1; }
+      virtual double get_mass_parameter(const std::string&, int, int) const { get_parent().vfcn_error(); return -1; }
+      virtual double get_dimensionless_parameter(const std::string&) const { get_parent().vfcn_error(); return -1; }
+      virtual double get_dimensionless_parameter(const std::string&, int) const { get_parent().vfcn_error(); return -1; }
+      virtual double get_dimensionless_parameter(const std::string&, int, int) const { get_parent().vfcn_error(); return -1; }
 };
 
 class Phys {
@@ -155,11 +156,11 @@ class Phys {
       virtual Spectrum& get_parent() const = 0;
    public: 
       /// map based getters
-      virtual double get_Pole_Mass(const std::string&) const { get_parent().vfcn_error(); };
-      virtual double get_Pole_Mass(const std::string&, int) const { get_parent().vfcn_error(); };
-      virtual double get_Pole_Mixing(const std::string&) const { get_parent().vfcn_error(); };
-      virtual double get_Pole_Mixing(const std::string&, int) const { get_parent().vfcn_error(); };
-      virtual double get_Pole_Mixing(const std::string&, int, int) const { get_parent().vfcn_error(); };
+      virtual double get_Pole_Mass(const std::string&) const { get_parent().vfcn_error(); return -1; };
+      virtual double get_Pole_Mass(const std::string&, int) const { get_parent().vfcn_error(); return -1; };
+      virtual double get_Pole_Mixing(const std::string&) const { get_parent().vfcn_error(); return -1; };
+      virtual double get_Pole_Mixing(const std::string&, int) const { get_parent().vfcn_error(); return -1; };
+      virtual double get_Pole_Mixing(const std::string&, int, int) const { get_parent().vfcn_error(); return -1; };
 
       /// Overloads of these functions to allow access using PDG codes
       /// as defined in Models/src/particle_database.cpp
@@ -661,10 +662,10 @@ double PhysDer<Model>::get_Pole_Mixing(const std::string& mixing, int i, int j) 
   template <class M> typename ClassName<M>::fmap1      ClassName<M>::CAT(NAME,_map1)     (ClassName<M>::CAT_3(fill_,NAME,_map1)()); \
   template <class M> typename ClassName<M>::fmap2      ClassName<M>::CAT(NAME,_map2)     (ClassName<M>::CAT_3(fill_,NAME,_map2)()); \
 \
-  template <class M> typename const ClassName<M>::fmap&       ClassName<M>::CAT_3(get_,NAME,_map)() const {return CAT(NAME,_map);} \
-  template <class M> typename const ClassName<M>::fmap_plain& ClassName<M>::CAT_3(get_,NAME,_map_extra)() const {return CAT(NAME,_map_extra);} \
-  template <class M> typename const ClassName<M>::fmap1&      ClassName<M>::CAT_3(get_,NAME,_map1)() const {return CAT(NAME,_map1);} \
-  template <class M> typename const ClassName<M>::fmap2&      ClassName<M>::CAT_3(get_,NAME,_map2)() const {return CAT(NAME,_map2);} \
+  template <class M> const typename ClassName<M>::fmap&       ClassName<M>::CAT_3(get_,NAME,_map)() const {return CAT(NAME,_map);} \
+  template <class M> const typename ClassName<M>::fmap_plain& ClassName<M>::CAT_3(get_,NAME,_map_extra)() const {return CAT(NAME,_map_extra);} \
+  template <class M> const typename ClassName<M>::fmap1&      ClassName<M>::CAT_3(get_,NAME,_map1)() const {return CAT(NAME,_map1);} \
+  template <class M> const typename ClassName<M>::fmap2&      ClassName<M>::CAT_3(get_,NAME,_map2)() const {return CAT(NAME,_map2);} \
 /* The above expands to, e.g. (NAME=mass4)
   template <class M> typename ClassName<M>::fmap        ClassName<M>::mass4_map      (ClassName<M>::fill_mass4_map()); \
   template <class M> typename ClassName<M>::fmap_plain  ClassName<M>::mass4_map_extra(ClassName<M>::fill_mass4_map_extra()); \
@@ -689,19 +690,19 @@ double PhysDer<Model>::get_Pole_Mixing(const std::string& mixing, int i, int j) 
   template <class M> typename ClassName<M>::fmap_plain ClassName<M>::PoleMass_map_extra(ClassName<M>::fill_PoleMass_map_extra()); \
   template <class M> typename ClassName<M>::fmap1      ClassName<M>::PoleMass_map1(     ClassName<M>::fill_PoleMass_map1()     ); \
   \
-  template <class M> typename const ClassName<M>::fmap&       ClassName<M>::get_PoleMass_map()       const {return PoleMass_map;      } \
-  template <class M> typename const ClassName<M>::fmap_plain& ClassName<M>::get_PoleMass_map_extra() const {return PoleMass_map_extra;} \
-  template <class M> typename const ClassName<M>::fmap1&      ClassName<M>::get_PoleMass_map1()      const {return PoleMass_map1;     } \
+  template <class M> const typename ClassName<M>::fmap&       ClassName<M>::get_PoleMass_map()       const {return PoleMass_map;      } \
+  template <class M> const typename ClassName<M>::fmap_plain& ClassName<M>::get_PoleMass_map_extra() const {return PoleMass_map_extra;} \
+  template <class M> const typename ClassName<M>::fmap1&      ClassName<M>::get_PoleMass_map1()      const {return PoleMass_map1;     } \
   \
   template <class M> typename ClassName<M>::fmap        ClassName<M>::PoleMixing_map(      ClassName<M>::fill_PoleMixing_map()      ); \
   template <class M> typename ClassName<M>::fmap_plain  ClassName<M>::PoleMixing_map_extra(ClassName<M>::fill_PoleMixing_map_extra()); \
   template <class M> typename ClassName<M>::fmap1       ClassName<M>::PoleMixing_map1(     ClassName<M>::fill_PoleMixing_map1()     ); \
   template <class M> typename ClassName<M>::fmap2       ClassName<M>::PoleMixing_map2(     ClassName<M>::fill_PoleMixing_map2()     ); \
   \
-  template <class M> typename const ClassName<M>::fmap&       ClassName<M>::get_PoleMixing_map()       const {return PoleMixing_map;      } \
-  template <class M> typename const ClassName<M>::fmap_plain& ClassName<M>::get_PoleMixing_map_extra() const {return PoleMixing_map_extra;} \
-  template <class M> typename const ClassName<M>::fmap1&      ClassName<M>::get_PoleMixing_map1()      const {return PoleMixing_map1;     } \
-  template <class M> typename const ClassName<M>::fmap2&      ClassName<M>::get_PoleMixing_map2()      const {return PoleMixing_map2;     } \
+  template <class M> const typename ClassName<M>::fmap&       ClassName<M>::get_PoleMixing_map()       const {return PoleMixing_map;      } \
+  template <class M> const typename ClassName<M>::fmap_plain& ClassName<M>::get_PoleMixing_map_extra() const {return PoleMixing_map_extra;} \
+  template <class M> const typename ClassName<M>::fmap1&      ClassName<M>::get_PoleMixing_map1()      const {return PoleMixing_map1;     } \
+  template <class M> const typename ClassName<M>::fmap2&      ClassName<M>::get_PoleMixing_map2()      const {return PoleMixing_map2;     } \
 
 } // end namespace Gambit
 
