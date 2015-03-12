@@ -28,7 +28,7 @@
 #include <dlfcn.h>
 #include <typeinfo>
 
-#include "gambit/ScannerBit/plugin_utilities.hpp"
+#include "gambit/ScannerBit/scanner_utils.hpp"
 #include "gambit/ScannerBit/plugin_loader.hpp"
 #include "gambit/ScannerBit/printer_interface.hpp"
 
@@ -83,7 +83,7 @@ namespace Gambit
                                                 else if(diff)
                                                 {
                                                         scan_err << "Plugin interface requires the plugin_main function in plugin \"" << name << "\" to be of the form \"" 
-                                                                << demangle(typeid(ret).name()) << " (" << stringify_variadic_inputs(demangle(typeid(args).name())...) << ")\"" << scan_end;
+                                                                << demangle(typeid(ret).name()) << " (" << stringifyVariadic(demangle(typeid(args).name())...) << ")\"" << scan_end;
                                                 }
                                                 
                                                 char *errmesg = dlerror();

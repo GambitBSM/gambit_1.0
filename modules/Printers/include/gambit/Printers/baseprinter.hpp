@@ -31,7 +31,7 @@
 #include "gambit/Utils/standalone_error_handlers.hpp"
 #include "gambit/Utils/yaml_options.hpp"
 #include "gambit/Utils/boost_fallbacks.hpp"
-#include "gambit/ScannerBit/factory_registry.hpp"
+#include "gambit/Utils/factory_registry.hpp"
 
 // Boost
 #include <boost/preprocessor/seq/for_each.hpp>

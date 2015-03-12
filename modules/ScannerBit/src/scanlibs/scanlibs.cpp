@@ -1,3 +1,18 @@
+//  GAMBIT: Global and Modular BSM Inference Tool
+//  *********************************************
+///  \file
+///
+///  declaration for scanner module
+///
+///  *********************************************
+///
+///  Authors (add name and date if you modify):
+///
+///  \author Gregory Martinez
+///          (gregory.david.martinez@gmail.com)
+///  \date 2015 Feb, Mar
+///
+///  *********************************************
 
 #include <cstdlib>
 #include <string>

@@ -748,7 +748,7 @@ endif()                                         \n\n"
             towrite += "  plugins:\\n"
             for plug in scanbit_plugins[plug_type[i]][directory]:
                 towrite += "    - " + plug[4] + "\\n"
-            towrite += "  reason:\\n${" + plug_type[i] + "_compile_flag_" + directory + "}\\n\" )\n"
+            towrite += "  reason: \\n${" + plug_type[i] + "_compile_flag_" + directory + "}\\n\" )\n"
             towrite += "endif()\n\n"
             
     towrite += "file( WRITE ${PROJECT_SOURCE_DIR}/scratch/scanbit_excluded_libs.yaml \"${exclude_lib_output}\" )\n"

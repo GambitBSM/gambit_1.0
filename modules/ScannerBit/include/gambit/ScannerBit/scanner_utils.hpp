@@ -38,7 +38,8 @@
 
 #include "gambit/Utils/exceptions.hpp"
 #include "gambit/Logs/log.hpp"
-#include "gambit/ScannerBit/factory_registry.hpp"
+#include "gambit/Utils/factory_registry.hpp"
+#include "gambit/Utils/variadic_functions.hpp"
 
 #define scan_err        SCAN_ERR
 #define scan_warn       SCAN_WARN
@@ -118,6 +119,32 @@ namespace Gambit
 #else
                         return in;
 #endif
+                }
+                
+                inline void input_variadic_vector(std::vector<void *> &){}
+                
+                template <typename T, typename... args>
+                inline void input_variadic_vector(std::vector<void *> &input, const T& value, const args&... params)
+                {
+                        input.push_back((void *)&value);
+                        input_variadic_vector(input, params...);
+                }
+                
+                inline int StringToInt(const std::string &str)
+                {
+                        int ret;
+                        std::stringstream ss(str);
+                        if (ss >> ret)
+                                return ret;
+                        else
+                                return 0;
+                }
+                
+                inline std::string IntToString(const int &in)
+                {
+                        std::stringstream ss;
+                        ss << in;
+                        return ss.str();
                 }
                 
                 template <typename T>

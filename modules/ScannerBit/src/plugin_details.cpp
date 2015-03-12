@@ -24,7 +24,7 @@
 #include <ostream>
 #include <sstream>
 
-#include "gambit/ScannerBit/plugin_utilities.hpp"
+#include "gambit/ScannerBit/scanner_utils.hpp"
 #include "gambit/ScannerBit/plugin_details.hpp"
 
 namespace Gambit
