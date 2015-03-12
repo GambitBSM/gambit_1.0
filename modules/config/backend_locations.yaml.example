@@ -61,3 +61,7 @@ micromegas:
 nulike:
   1.0.0:       ./Backends/lib/libnulike.so
 
+SUSYHIT:
+  0.1:         ./Backends/lib/libsusyhit.so
+  1.4:         ./Backends/lib/libsusyhit.so
+
