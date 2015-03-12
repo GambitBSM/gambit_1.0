@@ -78,6 +78,10 @@ BE_VARIABLE(sd_top2body_type, sd_top2body, "sd_top2body_", "cb_sd_top2body")
 BE_VARIABLE(sd_topwidth_type, sd_topwidth, "sd_topwidth_", "cb_sd_topwidth")
 // CsB from Anders' CBGB script <
 
+// CsB SUSYHIT main subroutine declaration >
+BE_FUNCTION(sdecay, void, (), "sdecay_", "sdecay") 
+// CsB SUSYHIT main subroutine declaration <
+
 /* Syntax for BE_FUNCTION:
  * BE_FUNCTION([choose function name], [type], [arguement types], "[exact symbol name]", "[choose capability name]")
  */
