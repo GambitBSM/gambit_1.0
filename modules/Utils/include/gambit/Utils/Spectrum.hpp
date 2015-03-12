@@ -1,4 +1,23 @@
-//Abstract class for accessing general spectrum information.
+//   GAMBIT: Global and Modular BSM Inference Tool
+//   *********************************************
+///  \file
+///
+///  Abstract class for accessing general spectrum information.
+///
+///  *********************************************
+///
+///  Authors: 
+///  <!-- add name and date if you modify -->
+///   
+///  \author Peter Athron  
+///          (peter.athron@coepp.org.au)
+///  \date 2014, 2015 Jan, Feb, Mar 
+///
+///  \author Ben Farmer
+///          (benjamin.farmer@fysik.su.se)
+///  \date 2014, 2015 Jan, Feb, Mar 
+///
+///  *********************************************
 
 #ifndef SPECTRUM_H
 #define SPECTRUM_H
@@ -25,6 +44,11 @@ inline bool within_bounds(const int i, const std::set<int> allowed)
   return ( allowed.find(i) != allowed.end() );
 }
 
+/// Helper macro for throwing errors in base class versions of virtual functions
+///TODO: probably want a Gambit error here
+#define vfcn_error() \
+  std::cout << "This virtual function (of Spectrum object) has not been overridden in the derived class!" <<std::endl \
+
 
 ///Note: (Ben) I have extracted these classes from the Spectrum class, so they are no longer nested.
 ///            I did this because there are no special access rights to nested classes in C++03, and
@@ -34,33 +58,39 @@ inline bool within_bounds(const int i, const std::set<int> allowed)
 class RunningPars;
 class Phys;
 
+/// Standard Model container class
+// This class is used to obtain information defined in the Standard Model (or
+// potentially just QED X QCD) as a low-energy effective theory (as opposed
+// to correspending information defined in a UV model). Parameters defined
+// this way are often used as input to a physics calculator.
+//class SMLowEnergyEffective;
+
 class Spectrum {
-   template<class Model> friend class RunparDer; // To allow access to 'get_index_offset'
-   template<class Model> friend class PhysDer;
    public:
       /// Dump out spectrum information to slha (if possible, and not including input parameters etc. just at the moment...)
-      virtual void dump2slha(const std::string&) = 0;
+      virtual void dump2slha(const std::string&) { vfcn_error(); }
    
       /// Get spectrum information in SLHAea format (if possible)
-      virtual SLHAea::Coll getSLHAea() = 0;
-   
-   protected:
+      SLHAea::Coll empty_SLHAea;  // never used; just to avoid "no return statement in function returning non-void" warnings
+      virtual SLHAea::Coll getSLHAea() { vfcn_error(); return empty_SLHAea; }
+
       /// Get integer offset convention used by internal model class (needed by getters which take indices) 
       virtual int get_index_offset() const = 0;
    
-   private:
-   protected:
-      /// Constructor
+      /// Constructors/destructors
       Spectrum(RunningPars& rp, Phys& p) : phys(p), runningpars(rp) {}
-      // new member variable.  Uncomment when using new constructor.
+      virtual ~Spectrum() {} 
+
       //Models::partmap& particle_database;
       /// new constructor.  Pass Models::ParticleDB() in as the third argument in all cases.  You will need to include partmap.hpp in order to be able to do this.
       //Spectrum(RunningPars& rp, Phys& p, Models::partmap& pdb) : phys(p), runningpars(rp), particle_database(pdb) {}
    
-   public:
       /// Member objects containing physical and running parameters
       Phys& phys;
       RunningPars& runningpars;
+
+      /// Member object containing low-energy effective Standard Model parameters
+      //SMLowEnergyEffective& SMeff;
 
       ///  returns the lightest stable particle (lsp) mass 
       ///   gives 3 integers to specify the state 
@@ -70,58 +100,62 @@ class Spectrum {
       /// particle_type = 0 (neutralino), 1(Sneutrino), 2(up squark), 
       /// 3(down squarks), 4(charged slepton), 5(Chargino), 6(gluino)
       ///  Add more for 
-      virtual double get_lsp_mass(int & particle_type, int & row, int & col) const = 0;
+      virtual double get_lsp_mass(int& /*particle_type*/, int& /*row*/, int& /*col*/) const { vfcn_error(); return -1; }
       /// There may be more than one *new* stable particle
       ///  this method will tell you how many.
       /// If more than zero you probbaly *need* to know what model
       ///  you are working on, so we don't give all stable particles
-      virtual int get_numbers_stable_particles() const = 0;  
+      virtual int get_numbers_stable_particles() const { vfcn_error(); return -1; }  
       
 };
 
 
-class RunningPars {
-   protected:
-      /// Needed for access to parent object member functions
-      virtual Spectrum& get_parent() const = 0;
+class RunningPars 
+{
    public:
+      /// Constructors/destructors
+      RunningPars() {}
+      virtual ~RunningPars() {}      
+
       /// run object to a particular scale
-      virtual void RunToScale(double scale) = 0;
+      virtual void RunToScale(double) { vfcn_error(); }
       /// returns the renormalisation scale of parameters
-      virtual double GetScale() const = 0;
+      virtual double GetScale() const { vfcn_error(); return -1; }
       /// Sets the renormalisation scale of parameters 
       /// somewhat dangerous to allow this but may be needed
-      virtual void SetScale(double scale) = 0;
+      virtual void SetScale(double) { vfcn_error(); }
       
       /// getters using map
-      virtual double get_mass4_parameter(const std::string&) const = 0;
-      virtual double get_mass4_parameter(const std::string&, int) const = 0;
-      virtual double get_mass4_parameter(const std::string&, int, int) const = 0;
-      virtual double get_mass3_parameter(const std::string&) const = 0;
-      virtual double get_mass3_parameter(const std::string&, int) const = 0;
-      virtual double get_mass3_parameter(const std::string&, int, int) const = 0;
-      virtual double get_mass2_parameter(const std::string&) const = 0;
-      virtual double get_mass2_parameter(const std::string&, int i) const = 0;
-      virtual double get_mass2_parameter(const std::string&, int i, int j) const = 0;
-      virtual double get_mass_parameter(const std::string&) const = 0;
-      virtual double get_mass_parameter(const std::string&, int) const = 0;
-      virtual double get_mass_parameter(const std::string&, int, int) const = 0;
-      virtual double get_dimensionless_parameter(const std::string&) const = 0;
-      virtual double get_dimensionless_parameter(const std::string&, int) const = 0;
-      virtual double get_dimensionless_parameter(const std::string&, int, int) const = 0;
+      virtual double get_mass4_parameter(const std::string&) const { vfcn_error(); return -1; }
+      virtual double get_mass4_parameter(const std::string&, int) const { vfcn_error(); return -1; }
+      virtual double get_mass4_parameter(const std::string&, int, int) const { vfcn_error(); return -1; }
+      virtual double get_mass3_parameter(const std::string&) const { vfcn_error(); return -1; }
+      virtual double get_mass3_parameter(const std::string&, int) const { vfcn_error(); return -1; }
+      virtual double get_mass3_parameter(const std::string&, int, int) const { vfcn_error(); return -1; }
+      virtual double get_mass2_parameter(const std::string&) const { vfcn_error(); return -1; }
+      virtual double get_mass2_parameter(const std::string&, int) const { vfcn_error(); return -1; }
+      virtual double get_mass2_parameter(const std::string&, int, int) const { vfcn_error(); return -1; }
+      virtual double get_mass_parameter(const std::string&) const { vfcn_error(); return -1; } 
+      virtual double get_mass_parameter(const std::string&, int) const { vfcn_error(); return -1; }
+      virtual double get_mass_parameter(const std::string&, int, int) const { vfcn_error(); return -1; }
+      virtual double get_dimensionless_parameter(const std::string&) const { vfcn_error(); return -1; }
+      virtual double get_dimensionless_parameter(const std::string&, int) const { vfcn_error(); return -1; }
+      virtual double get_dimensionless_parameter(const std::string&, int, int) const { vfcn_error(); return -1; }
 };
 
-class Phys {
-   protected:
-      /// Needed for access to parent object member functions
-      virtual Spectrum& get_parent() const = 0;
+class Phys 
+{
    public: 
+      /// Constructors/destructors
+      Phys() {}
+      virtual ~Phys() {}      
+
       /// map based getters
-      virtual double get_Pole_Mass(const std::string&) const = 0;
-      virtual double get_Pole_Mass(const std::string&, int) const = 0;
-      virtual double get_Pole_Mixing(const std::string&) const = 0;
-      virtual double get_Pole_Mixing(const std::string&, int) const = 0;
-      virtual double get_Pole_Mixing(const std::string&, int, int) const = 0;
+      virtual double get_Pole_Mass(const std::string&) const { vfcn_error(); return -1; };
+      virtual double get_Pole_Mass(const std::string&, int) const { vfcn_error(); return -1; };
+      virtual double get_Pole_Mixing(const std::string&) const { vfcn_error(); return -1; };
+      virtual double get_Pole_Mixing(const std::string&, int) const { vfcn_error(); return -1; };
+      virtual double get_Pole_Mixing(const std::string&, int, int) const { vfcn_error(); return -1; };
 
       /// Overloads of these functions to allow access using PDG codes
       /// as defined in Models/src/particle_database.cpp
@@ -204,7 +238,7 @@ struct FcnInfo2
    typedef double(Model::*FSptr)(void) const; /* Function pointer signature for Model object member functions with no arguments */ \
    typedef double(Model::*FSptr1)(int) const; /* Function pointer signature for Model object member functions with one argument */ \
    typedef double(Model::*FSptr2)(int,int) const; /* Function pointer signature for Model object member functions with two arguments */ \
-   typedef double(*plainfptr)(Model&); /* Function pointer for plain functions; used for custom functions */ \
+   typedef double(*plainfptr)(const Model&); /* Function pointer for plain functions; used for custom functions */ \
    \
    typedef FcnInfo1<FSptr1> FInfo1; \
    typedef FcnInfo2<FSptr2> FInfo2; \
@@ -227,18 +261,32 @@ struct MapTypes
 
 template <class Model>
 class PhysDer : public Phys {
+   friend class Spectrum;
    using Phys::get_Pole_Mass; // Need to expose the base class function overloads with this name
    REDO_TYPEDEFS(Model)
    private:      
-      virtual Model& get_bound_spec() const = 0;
-      virtual fmap&       get_PoleMass_map()         const = 0;  
-      virtual fmap_plain& get_PoleMass_map_extra()   const = 0;
-      virtual fmap1&      get_PoleMass_map1()        const = 0;
-      virtual fmap&       get_PoleMixing_map()       const = 0;  
-      virtual fmap_plain& get_PoleMixing_map_extra() const = 0;
-      virtual fmap1&      get_PoleMixing_map1()      const = 0;
-      virtual fmap2&      get_PoleMixing_map2()      const = 0;
+      /// Needed for access to "parent" object member functions
+      Spectrum& base_parent;
+      Model& model;
+      // Empty maps, for default return only
+      fmap       fmap_empty;
+      fmap_plain fmap_plain_empty;
+      fmap1      fmap1_empty;
+      fmap2      fmap2_empty;
+      // Default getters, to be overridden in derived class for non-empty maps.
+      virtual const fmap&       get_PoleMass_map()         const { return fmap_empty; }  
+      virtual const fmap_plain& get_PoleMass_map_extra()   const { return fmap_plain_empty; }
+      virtual const fmap1&      get_PoleMass_map1()        const { return fmap1_empty; }
+      virtual const fmap&       get_PoleMixing_map()       const { return fmap_empty; }  
+      virtual const fmap_plain& get_PoleMixing_map_extra() const { return fmap_plain_empty; }
+      virtual const fmap1&      get_PoleMixing_map1()      const { return fmap1_empty; }
+      virtual const fmap2&      get_PoleMixing_map2()      const { return fmap2_empty; }
    public: 
+      // During construction, link the object to its "parent", and to the Model object 
+      // (which, most sensibly, should be a data member of the some derived class)
+      PhysDer(Spectrum& s, Model& m) : base_parent(s), model(m) {}
+      virtual ~PhysDer() {}    
+
       virtual double get_Pole_Mass(const std::string&) const;
       virtual double get_Pole_Mass(const std::string&, int) const;
       virtual double get_Pole_Mixing(const std::string&) const;
@@ -248,30 +296,44 @@ class PhysDer : public Phys {
 
 template <class Model>
 class RunparDer : public RunningPars {
+   friend class Spectrum;
    REDO_TYPEDEFS(Model)
    private:
-      virtual Model& get_bound_spec() const = 0;
-      virtual fmap&       get_mass4_map()          const = 0;  
-      virtual fmap_plain& get_mass4_map_extra()    const = 0;
-      virtual fmap1&      get_mass4_map1()         const = 0;
-      virtual fmap2&      get_mass4_map2()         const = 0;  
-      virtual fmap&       get_mass3_map()          const = 0;  
-      virtual fmap_plain& get_mass3_map_extra()    const = 0;
-      virtual fmap1&      get_mass3_map1()         const = 0;
-      virtual fmap2&      get_mass3_map2()         const = 0;  
-      virtual fmap&       get_mass2_map()          const = 0;  
-      virtual fmap_plain& get_mass2_map_extra()    const = 0;
-      virtual fmap1&      get_mass2_map1()         const = 0;
-      virtual fmap2&      get_mass2_map2()         const = 0;  
-      virtual fmap&       get_mass_map()           const = 0;  
-      virtual fmap_plain& get_mass_map_extra()     const = 0;
-      virtual fmap1&      get_mass_map1()          const = 0;
-      virtual fmap2&      get_mass_map2()          const = 0;  
-      virtual fmap&       get_mass0_map()          const = 0;  
-      virtual fmap_plain& get_mass0_map_extra()    const = 0;
-      virtual fmap1&      get_mass0_map1()         const = 0;
-      virtual fmap2&      get_mass0_map2()         const = 0;        
+      /// Needed for access to "parent" object member functions
+      Spectrum& base_parent;
+      Model& model;
+      // Empty maps, for default return only
+      fmap       fmap_empty;
+      fmap_plain fmap_plain_empty;
+      fmap1      fmap1_empty;
+      fmap2      fmap2_empty;
+      // Default getters, to be overridden in derived class for non-empty maps.
+      virtual const fmap&       get_mass4_map()          const { return fmap_empty; }  
+      virtual const fmap_plain& get_mass4_map_extra()    const { return fmap_plain_empty; }
+      virtual const fmap1&      get_mass4_map1()         const { return fmap1_empty; }
+      virtual const fmap2&      get_mass4_map2()         const { return fmap2_empty; }  
+      virtual const fmap&       get_mass3_map()          const { return fmap_empty; }  
+      virtual const fmap_plain& get_mass3_map_extra()    const { return fmap_plain_empty; }
+      virtual const fmap1&      get_mass3_map1()         const { return fmap1_empty; }
+      virtual const fmap2&      get_mass3_map2()         const { return fmap2_empty; }  
+      virtual const fmap&       get_mass2_map()          const { return fmap_empty; }  
+      virtual const fmap_plain& get_mass2_map_extra()    const { return fmap_plain_empty; }
+      virtual const fmap1&      get_mass2_map1()         const { return fmap1_empty; }
+      virtual const fmap2&      get_mass2_map2()         const { return fmap2_empty; }  
+      virtual const fmap&       get_mass_map()           const { return fmap_empty; }  
+      virtual const fmap_plain& get_mass_map_extra()     const { return fmap_plain_empty; }
+      virtual const fmap1&      get_mass_map1()          const { return fmap1_empty; }
+      virtual const fmap2&      get_mass_map2()          const { return fmap2_empty; }  
+      virtual const fmap&       get_mass0_map()          const { return fmap_empty; }  
+      virtual const fmap_plain& get_mass0_map_extra()    const { return fmap_plain_empty; }
+      virtual const fmap1&      get_mass0_map1()         const { return fmap1_empty; }
+      virtual const fmap2&      get_mass0_map2()         const { return fmap2_empty; }        
    public:
+      // During construction, link the object to its "parent", and to the Model object 
+      // (which, most sensibly, should be a data member of the some derived class)
+      RunparDer(Spectrum& s, Model& m) : base_parent(s), model(m) {}
+      virtual ~RunparDer() {}
+
       virtual double get_mass4_parameter(const std::string&) const;
       virtual double get_mass4_parameter(const std::string&, int i) const;
       virtual double get_mass4_parameter(const std::string&, int i, int j) const;
@@ -297,7 +359,7 @@ class RunparDer : public RunningPars {
 // (note: currently only the no-index getters are set up to allow an "extra" map of function pointers to be defined. Can be extended
 //  if needed.)
 template<class Model>
-double getter_0indices(const typename MapTypes<Model>::fmap& map, const typename MapTypes<Model>::fmap_plain& map_extra, const std::string& name, const std::string& maplabel, Model& model)
+double getter_0indices(const typename MapTypes<Model>::fmap& map, const typename MapTypes<Model>::fmap_plain& map_extra, const std::string& name, const std::string& maplabel, const Model& model)
 {
    typename MapTypes<Model>::fmap::const_iterator it = map.find(name); ///  Find desired Model object function
    typename MapTypes<Model>::fmap_plain::const_iterator it2 = map_extra.find(name); ///  Check if it exists in the extra map
@@ -325,7 +387,7 @@ double getter_0indices(const typename MapTypes<Model>::fmap& map, const typename
 
 /// Getter/runner for functions taking one index
 template<class Model>
-double getter_1index(const typename MapTypes<Model>::fmap1& map, const std::string& name, const int i, const std::string& maplabel, Model& model, const int offset)
+double getter_1index(const typename MapTypes<Model>::fmap1& map, const std::string& name, const int i, const std::string& maplabel, const Model& model, const int offset)
 {
    typename MapTypes<Model>::fmap1::const_iterator it = map.find(name); ///  Find desired Model object function
    if( it==map.end() )
@@ -352,7 +414,7 @@ double getter_1index(const typename MapTypes<Model>::fmap1& map, const std::stri
 
 /// Getter/runner for functions taking two indices
 template<class Model>
-double getter_2indices(const typename MapTypes<Model>::fmap2& map, const std::string& name, const int i, const int j, const std::string& maplabel, Model& model, const int offset)
+double getter_2indices(const typename MapTypes<Model>::fmap2& map, const std::string& name, const int i, const int j, const std::string& maplabel, const Model& model, const int offset)
 {
    typename MapTypes<Model>::fmap2::const_iterator it = map.find(name); ///  Find desired FlexiSUSY function
    if( it==map.end() )
@@ -388,95 +450,95 @@ double getter_2indices(const typename MapTypes<Model>::fmap2& map, const std::st
 template<class Model>
 double RunparDer<Model>::get_mass4_parameter(const std::string& mass) const
 {
-   return getter_0indices(get_mass4_map(), get_mass4_map_extra(), mass, "mass4", get_bound_spec());
+   return getter_0indices(get_mass4_map(), get_mass4_map_extra(), mass, "mass4", model);
 }
 
 template <class Model>
 double RunparDer<Model>::get_mass4_parameter(const std::string& mass, int i) const
 {
-   return getter_1index(get_mass4_map1(), mass, i, "mass4", get_bound_spec(), get_parent().get_index_offset());
+   return getter_1index(get_mass4_map1(), mass, i, "mass4", model, base_parent.get_index_offset());
 }
 
 template <class Model>
 double  RunparDer<Model>::get_mass4_parameter(const std::string& mass, int i, int j) const
 {
-   return getter_2indices(get_mass4_map2(), mass, i, j, "mass4", get_bound_spec(), get_parent().get_index_offset());
+   return getter_2indices(get_mass4_map2(), mass, i, j, "mass4", model, base_parent.get_index_offset());
 }
 
 /// mass^3
 template <class Model>
 double RunparDer<Model>::get_mass3_parameter(const std::string& mass) const
 {
-   return getter_0indices(get_mass3_map(), get_mass3_map_extra(), mass, "mass3", get_bound_spec());
+   return getter_0indices(get_mass3_map(), get_mass3_map_extra(), mass, "mass3", model);
 }
 
 template <class Model>
 double RunparDer<Model>::get_mass3_parameter(const std::string& mass, int i) const
 {
-   return getter_1index(get_mass3_map1(), mass, i, "mass3", get_bound_spec(), get_parent().get_index_offset());
+   return getter_1index(get_mass3_map1(), mass, i, "mass3", model, base_parent.get_index_offset());
 }
 
 template <class Model>
 double  RunparDer<Model>::get_mass3_parameter(const std::string& mass, int i, int j) const
 {
-   return getter_2indices(get_mass3_map2(), mass, i, j, "mass3", get_bound_spec(), get_parent().get_index_offset());
+   return getter_2indices(get_mass3_map2(), mass, i, j, "mass3", model, base_parent.get_index_offset());
 }
 
 /// mass^2
 template <class Model>
 double  RunparDer<Model>::get_mass2_parameter(const std::string& mass) const
 {
-   return getter_0indices(get_mass2_map(), get_mass2_map_extra(), mass, "mass2", get_bound_spec());
+   return getter_0indices(get_mass2_map(), get_mass2_map_extra(), mass, "mass2", model);
 }
 
 template <class Model>
 double  RunparDer<Model>::get_mass2_parameter(const std::string& mass, int i) const
 {
-   return getter_1index(get_mass2_map1(), mass, i, "mass2", get_bound_spec(), get_parent().get_index_offset());
+   return getter_1index(get_mass2_map1(), mass, i, "mass2", model, base_parent.get_index_offset());
 }
 
 template <class Model>
 double  RunparDer<Model>::get_mass2_parameter(const std::string& mass, int i, int j) const
 {
-   return getter_2indices(get_mass2_map2(), mass, i, j, "mass2", get_bound_spec(), get_parent().get_index_offset());
+   return getter_2indices(get_mass2_map2(), mass, i, j, "mass2", model, base_parent.get_index_offset());
 }
 
 /// mass^1
 template <class Model>
 double  RunparDer<Model>::get_mass_parameter(const std::string& mass) const
 {
-   return getter_0indices(get_mass_map(), get_mass_map_extra(), mass, "mass", get_bound_spec());
+   return getter_0indices(get_mass_map(), get_mass_map_extra(), mass, "mass", model);
 }
 
 template <class Model>
 double  RunparDer<Model>::get_mass_parameter(const std::string& mass, int i) const
 {
-   return getter_1index(get_mass_map1(), mass, i, "mass", get_bound_spec(), get_parent().get_index_offset());
+   return getter_1index(get_mass_map1(), mass, i, "mass", model, base_parent.get_index_offset());
 }
 
 template <class Model>
 double  RunparDer<Model>::get_mass_parameter(const std::string& mass, int i, int j) const
 {
-   return getter_2indices(get_mass_map2(), mass, i, j, "mass", get_bound_spec(), get_parent().get_index_offset());
+   return getter_2indices(get_mass_map2(), mass, i, j, "mass", model, base_parent.get_index_offset());
 }
 
 /// mass^0
 template <class Model>
 double  RunparDer<Model>::get_dimensionless_parameter(const std::string& par) const
 {
-   return getter_0indices(get_mass0_map(), get_mass0_map_extra(), par, "dimensionless parameter", get_bound_spec());
+   return getter_0indices(get_mass0_map(), get_mass0_map_extra(), par, "dimensionless parameter", model);
 }
 
 template <class Model>
 double  RunparDer<Model>::get_dimensionless_parameter(const std::string& par, int i) const
 {
-   return getter_1index(get_mass0_map1(), par, i, "dimensionless parameter", get_bound_spec(), get_parent().get_index_offset());
+   return getter_1index(get_mass0_map1(), par, i, "dimensionless parameter", model, base_parent.get_index_offset());
 }
 
 template <class Model>
 double  RunparDer<Model>::get_dimensionless_parameter(const std::string& par, int i, int j) const
 {
-   return getter_2indices(get_mass0_map2(), par, i, j, "dimensionless parameter", get_bound_spec(), get_parent().get_index_offset());
+   return getter_2indices(get_mass0_map2(), par, i, j, "dimensionless parameter", model, base_parent.get_index_offset());
 }
 
 /// Pole masses
@@ -490,13 +552,13 @@ double PhysDer<Model>::get_Pole_Mass(const std::string& mass) const
       return get_Pole_Mass( PDB.short_name_pair(mass) );  
    }
 
-   return getter_0indices(get_PoleMass_map(), get_PoleMass_map_extra(), mass, "pole mass", get_bound_spec());
+   return getter_0indices(get_PoleMass_map(), get_PoleMass_map_extra(), mass, "pole mass", model);
 }
 
 template <class Model>
 double PhysDer<Model>::get_Pole_Mass(const std::string& mass, int i) const
 {
-   return getter_1index(get_PoleMass_map1(), mass, i, "pole mass", get_bound_spec(), get_parent().get_index_offset());
+   return getter_1index(get_PoleMass_map1(), mass, i, "pole mass", model, base_parent.get_index_offset());
 }
 
 
@@ -504,19 +566,19 @@ double PhysDer<Model>::get_Pole_Mass(const std::string& mass, int i) const
 template <class Model>
 double PhysDer<Model>::get_Pole_Mixing(const std::string& mixing) const
 {
-   return getter_0indices(get_PoleMixing_map(), get_PoleMixing_map_extra(), mixing, "pole mixing", get_bound_spec());
+   return getter_0indices(get_PoleMixing_map(), get_PoleMixing_map_extra(), mixing, "pole mixing", model);
 }
 
 template <class Model>
 double PhysDer<Model>::get_Pole_Mixing(const std::string& mixing, int i) const
 {
-   return getter_1index(get_PoleMixing_map1(), mixing, i, "pole mixing", get_bound_spec(), get_parent().get_index_offset());
+   return getter_1index(get_PoleMixing_map1(), mixing, i, "pole mixing", model, base_parent.get_index_offset());
 }
 
 template <class Model>
 double PhysDer<Model>::get_Pole_Mixing(const std::string& mixing, int i, int j) const
 {
-   return getter_2indices(get_PoleMixing_map2(), mixing, i, j, "pole mixing", get_bound_spec(), get_parent().get_index_offset());
+   return getter_2indices(get_PoleMixing_map2(), mixing, i, j, "pole mixing", model, base_parent.get_index_offset());
 }
 
 
@@ -538,7 +600,7 @@ double PhysDer<Model>::get_Pole_Mixing(const std::string& mixing, int i, int j) 
 //      myphys(pp),
 //      Spectrum(rp,pp)
 //   {}
-//   virtual S& get_bound_spec() const = 0; 
+//   virtual S& model const = 0; 
 //   //virtual P get_bound_phys() const = 0; 
 //};
 
@@ -546,9 +608,6 @@ double PhysDer<Model>::get_Pole_Mixing(const std::string& mixing, int i, int j) 
 ///  Have to re-write these two functions for each derived class, so that reference to the correct member variables is retrieved.
 ///  Need these functions though so that the original definition of get_mass2_par can be re-used.
 ///  Maybe do this with another macro...
-#define MODEL_SPEC_MEMBER_FUNCTIONS(ClassName,Model) \
-  Model&      ClassName::get_bound_spec() const {return model;} \
-  /*PhysType ClassName::get_bound_phys() const {return model.get_physical();} */\
 
 #define MODEL_RUNNING_MEMBER_FUNCTIONS_SINGLE(ClassName,NAME) \
   ClassName::fmap       ClassName::CAT(NAME,_map)      (ClassName::CAT_3(fill_,NAME,_map)()); \
@@ -601,30 +660,26 @@ double PhysDer<Model>::get_Pole_Mixing(const std::string& mixing, int i, int j) 
 
 
 // Versions of the above for template classes
-#define MODEL_SPEC_TEMPLATE_MEMBER_FUNCTIONS(ClassName,Model,M) \
-  template <class M> typename Model& ClassName<M>::get_bound_spec() const {return model;} \
-  /*template <class M,class MP> MP ClassName<M,MP>::get_bound_phys() const {return model.get_physical();} */\
-
 #define MODEL_RUNNING_TEMPLATE_MEMBER_FUNCTIONS_SINGLE(ClassName,NAME) \
   template <class M> typename ClassName<M>::fmap       ClassName<M>::CAT(NAME,_map)      (ClassName<M>::CAT_3(fill_,NAME,_map)()); \
   template <class M> typename ClassName<M>::fmap_plain ClassName<M>::CAT(NAME,_map_extra)(ClassName<M>::CAT_3(fill_,NAME,_map_extra)()); \
   template <class M> typename ClassName<M>::fmap1      ClassName<M>::CAT(NAME,_map1)     (ClassName<M>::CAT_3(fill_,NAME,_map1)()); \
   template <class M> typename ClassName<M>::fmap2      ClassName<M>::CAT(NAME,_map2)     (ClassName<M>::CAT_3(fill_,NAME,_map2)()); \
 \
-  template <class M> typename ClassName<M>::fmap&       ClassName<M>::CAT_3(get_,NAME,_map)() const {return CAT(NAME,_map);} \
-  template <class M> typename ClassName<M>::fmap_plain& ClassName<M>::CAT_3(get_,NAME,_map_extra)() const {return CAT(NAME,_map_extra);} \
-  template <class M> typename ClassName<M>::fmap1&      ClassName<M>::CAT_3(get_,NAME,_map1)() const {return CAT(NAME,_map1);} \
-  template <class M> typename ClassName<M>::fmap2&      ClassName<M>::CAT_3(get_,NAME,_map2)() const {return CAT(NAME,_map2);} \
+  template <class M> const typename ClassName<M>::fmap&       ClassName<M>::CAT_3(get_,NAME,_map)() const {return CAT(NAME,_map);} \
+  template <class M> const typename ClassName<M>::fmap_plain& ClassName<M>::CAT_3(get_,NAME,_map_extra)() const {return CAT(NAME,_map_extra);} \
+  template <class M> const typename ClassName<M>::fmap1&      ClassName<M>::CAT_3(get_,NAME,_map1)() const {return CAT(NAME,_map1);} \
+  template <class M> const typename ClassName<M>::fmap2&      ClassName<M>::CAT_3(get_,NAME,_map2)() const {return CAT(NAME,_map2);} \
 /* The above expands to, e.g. (NAME=mass4)
   template <class M> typename ClassName<M>::fmap        ClassName<M>::mass4_map      (ClassName<M>::fill_mass4_map()); \
   template <class M> typename ClassName<M>::fmap_plain  ClassName<M>::mass4_map_extra(ClassName<M>::fill_mass4_map_extra()); \
   template <class M> typename ClassName<M>::fmap1       ClassName<M>::mass4_map1     (ClassName<M>::fill_mass4_map1()); \
   template <class M> typename ClassName<M>::fmap2       ClassName<M>::mass4_map2     (ClassName<M>::fill_mass4_map2()); \
 \
-  template <class M> typename ClassName<M>::fmap&       ClassName<M>::get_mass4_map()       const {return mass4_map;} \
-  template <class M> typename ClassName<M>::fmap_plain& ClassName<M>::get_mass4_map_extra() const {return mass4_map_extra;} \
-  template <class M> typename ClassName<M>::fmap1&      ClassName<M>::get_mass4_map1()      const {return mass4_map1;} \
-  template <class M> typename ClassName<M>::fmap2&      ClassName<M>::get_mass4_map2()      const {return mass4_map2;} \
+  template <class M> typename const ClassName<M>::fmap&       ClassName<M>::get_mass4_map()       const {return mass4_map;} \
+  template <class M> typename const ClassName<M>::fmap_plain& ClassName<M>::get_mass4_map_extra() const {return mass4_map_extra;} \
+  template <class M> typename const ClassName<M>::fmap1&      ClassName<M>::get_mass4_map1()      const {return mass4_map1;} \
+  template <class M> typename const ClassName<M>::fmap2&      ClassName<M>::get_mass4_map2()      const {return mass4_map2;} \
 */
 
 #define MODEL_RUNNING_TEMPLATE_MEMBER_FUNCTIONS(ClassName) \
@@ -639,19 +694,19 @@ double PhysDer<Model>::get_Pole_Mixing(const std::string& mixing, int i, int j) 
   template <class M> typename ClassName<M>::fmap_plain ClassName<M>::PoleMass_map_extra(ClassName<M>::fill_PoleMass_map_extra()); \
   template <class M> typename ClassName<M>::fmap1      ClassName<M>::PoleMass_map1(     ClassName<M>::fill_PoleMass_map1()     ); \
   \
-  template <class M> typename ClassName<M>::fmap&       ClassName<M>::get_PoleMass_map()       const {return PoleMass_map;      } \
-  template <class M> typename ClassName<M>::fmap_plain& ClassName<M>::get_PoleMass_map_extra() const {return PoleMass_map_extra;} \
-  template <class M> typename ClassName<M>::fmap1&      ClassName<M>::get_PoleMass_map1()      const {return PoleMass_map1;     } \
+  template <class M> const typename ClassName<M>::fmap&       ClassName<M>::get_PoleMass_map()       const {return PoleMass_map;      } \
+  template <class M> const typename ClassName<M>::fmap_plain& ClassName<M>::get_PoleMass_map_extra() const {return PoleMass_map_extra;} \
+  template <class M> const typename ClassName<M>::fmap1&      ClassName<M>::get_PoleMass_map1()      const {return PoleMass_map1;     } \
   \
   template <class M> typename ClassName<M>::fmap        ClassName<M>::PoleMixing_map(      ClassName<M>::fill_PoleMixing_map()      ); \
   template <class M> typename ClassName<M>::fmap_plain  ClassName<M>::PoleMixing_map_extra(ClassName<M>::fill_PoleMixing_map_extra()); \
   template <class M> typename ClassName<M>::fmap1       ClassName<M>::PoleMixing_map1(     ClassName<M>::fill_PoleMixing_map1()     ); \
   template <class M> typename ClassName<M>::fmap2       ClassName<M>::PoleMixing_map2(     ClassName<M>::fill_PoleMixing_map2()     ); \
   \
-  template <class M> typename ClassName<M>::fmap&       ClassName<M>::get_PoleMixing_map()       const {return PoleMixing_map;      } \
-  template <class M> typename ClassName<M>::fmap_plain& ClassName<M>::get_PoleMixing_map_extra() const {return PoleMixing_map_extra;} \
-  template <class M> typename ClassName<M>::fmap1&      ClassName<M>::get_PoleMixing_map1()      const {return PoleMixing_map1;     } \
-  template <class M> typename ClassName<M>::fmap2&      ClassName<M>::get_PoleMixing_map2()      const {return PoleMixing_map2;     } \
+  template <class M> const typename ClassName<M>::fmap&       ClassName<M>::get_PoleMixing_map()       const {return PoleMixing_map;      } \
+  template <class M> const typename ClassName<M>::fmap_plain& ClassName<M>::get_PoleMixing_map_extra() const {return PoleMixing_map_extra;} \
+  template <class M> const typename ClassName<M>::fmap1&      ClassName<M>::get_PoleMixing_map1()      const {return PoleMixing_map1;     } \
+  template <class M> const typename ClassName<M>::fmap2&      ClassName<M>::get_PoleMixing_map2()      const {return PoleMixing_map2;     } \
 
 } // end namespace Gambit
 

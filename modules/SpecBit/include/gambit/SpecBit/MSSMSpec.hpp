@@ -1,3 +1,29 @@
+//   GAMBIT: Global and Modular BSM Inference Tool
+//   *********************************************
+///  \file
+///
+///  MSSM derivation of Spectrum class. Designed
+///  for easy interface to FlexibleSUSY, but also
+///  works with SoftSUSY as the backend with an
+///  appropriately designed intermediate later.
+///
+///  *********************************************
+///
+///  Authors: 
+///  <!-- add name and date if you modify -->
+///   
+///  \author Peter Athron  
+///          (peter.athron@coepp.org.au)
+///  \date 2014, 2015 Jan, Feb, Mar 
+///
+///  \author Ben Farmer
+///          (benjamin.farmer@fysik.su.se)
+///  \date 2014, 2015 Jan, Feb, Mar 
+///
+///  *********************************************
+
+
+
 #ifndef MSSMSPEC_H
 #define MSSMSPEC_H
 
@@ -31,12 +57,11 @@ namespace Gambit {
    // (i.e. it should be declared first)
    template <class MI>
    MSSMSpec<MI>::MSSMSpec(MI mi, bool switch_index_convention)
-      : index_offset(-1)
-      , mssm_ph(*this)
-      , mssm_drbar_pars(*this)
+      : Spectrum(mssm_drbar_pars, mssm_ph)
+      , index_offset(-1)
+      , mssm_ph(*this,model_interface.model)
+      , mssm_drbar_pars(*this,model_interface.model)
       , model_interface(mi)
-      , model(model_interface.model)
-      , Spectrum(mssm_drbar_pars, mssm_ph)
    {
       if (switch_index_convention) index_offset = 0;
    }
@@ -44,10 +69,10 @@ namespace Gambit {
    // Default constructor
    template <class MI>
    MSSMSpec<MI>::MSSMSpec(bool switch_index_convention)
-      : index_offset(-1)
-      , mssm_ph(*this)
-      , mssm_drbar_pars(*this)
-      , Spectrum(mssm_drbar_pars, mssm_ph)
+      : Spectrum(mssm_drbar_pars, mssm_ph)
+      , index_offset(-1)
+      , mssm_ph(*this,model_interface.model)
+      , mssm_drbar_pars(*this,model_interface.model)
    {
       if (switch_index_convention) index_offset = 0;
    }
@@ -69,18 +94,6 @@ namespace Gambit {
    {
      return model_interface.getSLHAea();
    }
-
-   template <class MI>
-   typename MI::Model& MSSM_DRbarPars<MI>::get_bound_spec() const
-   {
-      return my_parent.get_bound_spec();   
-   } 
-  
-   template <class MI>
-   typename MI::Model& MSSM_Phys<MI>::get_bound_spec() const
-   {
-      return my_parent.get_bound_spec();
-   } 
    
    //inspired by softsusy's lsp method.  
    //This MSSM version assumes all states mass ordered. 
@@ -393,7 +406,7 @@ namespace Gambit {
    
    // "extra" function to compute TanBeta 
    template <class Model>
-   double get_tanbeta(Model& model) 
+   double get_tanbeta(const Model& model) 
    { 
       return model.get_vu() / model.get_vd(); 
    }
@@ -546,8 +559,8 @@ namespace Gambit {
    // Need wrapper functios for A0 and H+ getters, to retrieve only the 
    // non-Goldstone entries. 
    // Need to pass in the model object, since we won't have the 'this' pointer
-   template <class Model> double get_MAh1_pole(Model& model) { return model.get_MAh_pole_slha(1); }
-   template <class Model> double get_MHpm1_pole(Model& model) { return model.get_MHpm_pole_slha(1); }
+   template <class Model> double get_MAh1_pole(const Model& model) { return model.get_MAh_pole_slha(1); }
+   template <class Model> double get_MHpm1_pole(const Model& model) { return model.get_MHpm_pole_slha(1); }
 
    // Note! Map fillers appended with "_extra" will be treated by the Spectrum object as
    // alternative routines to call for that getter type.
@@ -688,22 +701,6 @@ namespace Gambit {
       return tmp_map;
    }
     
-   
-   template <class MI>
-   typename MI::Model MSSMSpec<MI>::get_modelobject() {
-      return model;
-   }
-   
-   
-   // Use our time-saving macro to define common (i.e. required) member functions
-   MODEL_SPEC_TEMPLATE_MEMBER_FUNCTIONS(MSSMSpec,MI::Model,MI)
-// ClassName=MSSMSpec, SpecType=MI::Model, M=MI
-// e.g.:  template <class M> typename SpecType ClassName<M>::get_bound_spec() const {return model;}
-// goes to
-// template <class MI> 
-// typename MI::Model MSSMSpec<MI>::get_bound_spec() const {
-//    return model;
-// }
 
    MODEL_RUNNING_TEMPLATE_MEMBER_FUNCTIONS(MSSM_DRbarPars)
 // e.g.:  template <class M> typename ClassName<M>::fmap&  ClassName<M>::get_mass4_map() const {return mass4_map;}
@@ -717,7 +714,7 @@ namespace Gambit {
 // e.g.:  template <class M> typename ClassName<M>::fmap   ClassName<M>::PoleMass_map(ClassName<M>::fill_PoleMass_map());
 // goes to
 // template <class M> 
-// typename MSSM_Phys<M>::fmap   MSSMPhys<M>::PoleMass_map(ClassName<M>::fill_PoleMass_map());
+// typename MSSM_Phys<M>::fmap   MSSM_Phys<M>::PoleMass_map(MSSM_Phys<M>::fill_PoleMass_map());
 
  
 }

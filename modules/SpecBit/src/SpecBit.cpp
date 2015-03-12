@@ -196,7 +196,7 @@ Message from flexibleSUSY below:" << std::endl;
       slha_io.set_sminputs(oneset);
       slha_io.set_minpar(input);
       slha_io.set_extpar(input);
-      slha_io.set_spectrum(mssmspec.get_bound_spec()); //get_bound_spec retrieves the Model
+      slha_io.set_spectrum(mssmspec.model_interface.model);
       slha_io.write_to_file("SpecBit/initial_CMSSM_spectrum.slha");
 
       // Return a pointer to the Spectrum object
