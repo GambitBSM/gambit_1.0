@@ -9,50 +9,97 @@
 namespace Gambit {
   namespace ColliderBit {
 
-    /// @brief The base class for collider simulators within ColliderBit.
+    /// @brief An abstract base class for collider simulators within ColliderBit.
     template <typename EventT>
     class BaseCollider {
-      /// @name Member variables and customization classes.
+      /// @name Member variables
       //@{
       public:
-        /// @brief Convenient typedef for short memories.
         typedef EventT EventType;
-      protected:
-        /// @brief Collider Specialization Functor - base class.
-        class BaseColliderSpec {
-          public:
-            virtual void nextEventBySpec(EventT& event) const { nextEventDefault(event); }
-            virtual void initBySpec() { }
-        };
-
-        /// @brief One specialization is marked as "active"
-        BaseColliderSpec *_activeColliderSpec;
       //@}
 
+      /// @name Construction and Destruction
+      //@{
       public:
-        BaseCollider() : _activeColliderSpec(nullptr) { }
-        virtual ~BaseCollider() { delete _activeColliderSpec; }
+        BaseCollider() { }
+        virtual ~BaseCollider() { }
+      //@}
+
+      /// @name Event generation functions
+      //@{
+      public:
+        /// @brief Fill in the next collider event by reference without a specialization.
+        virtual void nextEventDefault(EventT& event) = 0;
+      //@}
 
       /// @name (Re-)Initialization functions
       //@{
-        /// @brief Specialization setter
-        void setActiveSpecialization(const std::string& name) {};
+      protected:
+        /// @brief General init for any collider of this type.
+        virtual void init(const std::vector<std::string>& externalSettings) = 0;
+      //@}
+    };
+
+
+    /// @brief A base class used to specialize collider simulators within ColliderBit.
+    template <typename EventT>
+    class BaseColliderSpec {
+      protected:
+        BaseCollider<EventT> *_colliderToSpec;
+      public:
+        BaseColliderSpec(BaseCollider<EventT> *colliderToSpec) :
+            _colliderToSpec(colliderToSpec) { };
+        virtual void nextEventBySpec(EventT& event) { _colliderToSpec->nextEventDefault(event); }
+        virtual void initBySpec() { }
+    };
+
+
+    /// @brief An abstract base class for specializing BaseColliders.
+    template <typename EventT>
+    class SpecializationContainer {
+      /// @name Custom exceptions
+      //@{
+        class NoColliderSpecError : public std::exception {
+          virtual const char* what() const throw() {
+            return "_activeColliderSpec within SpecializationContainer use before assignment.";
+          }
+        };
+      //@}
+
+      /// @name Collider Specialization Functors
+      //@{
+      protected:
+        /// @brief One specialization is marked as "active"
+        BaseColliderSpec<EventT> *_activeColliderSpec;
+        void checkSpec() const { if (!_activeColliderSpec) throw NoColliderSpecError(); }
+      //@}
+
+      /// @name Construction and Destruction
+      //@{
+      public:
+        SpecializationContainer() : _activeColliderSpec(nullptr) { }
+        virtual ~SpecializationContainer() { delete _activeColliderSpec; }
+        virtual void recycle(const std::string&, const std::vector<std::string>&) = 0;
+      //@}
+
+      /// @name (Re-)Initialization functions
+      //@{
+      protected:
         /// @brief Specialized init via ColliderSpec object
-        void specialize() { if (activeColliderSpec) activeColliderSpec->initBySpec(); }
-        /// @brief Settings parsing and initialization for each sub-class
-        virtual void init(const std::vector<std::string>& settings) {};
+        void specialize() { checkSpec(); _activeColliderSpec->initBySpec(); }
+        /// @brief Specialization setter
+        virtual void setActiveSpecialization(const std::string&) = 0;
       //@}
 
       /// @name Event generation functions - Required to be const by Gambit
       //@{
+      public:
         /// @brief Fill in the next collider event by reference using a BaseColliderSpec.
         void nextEvent(EventT& event) const {
-          if (activeColliderSpec) activeColliderSpec->nextEventBySpec(event);
-          else nextEventDefault(event);
+          checkSpec(); _activeColliderSpec->nextEventBySpec(event);
         }
-        /// @brief Fill in the next collider event by reference without a specialization.
-        virtual void nextEventDefault(EventT& event) const {}
       //@}
     };
+
   }
 }

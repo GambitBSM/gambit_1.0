@@ -131,7 +131,7 @@ namespace Gambit {
 
     /// *** Hard Scattering Collider Simulators ***
 
-    void getPythia(Gambit::ColliderBit::TemplatePythia &result) {
+    void getPythia(Gambit::ColliderBit::SpecializablePythia &result) {
       /// @TODO: capabilify xsecArrays
       using namespace Pipes::getPythia;
 
@@ -147,7 +147,7 @@ namespace Gambit {
           pythiaConfigName += "_";
           pythiaConfigName += std::to_string(pythiaNumber);
         }
-        /// If the TemplatePythia specialization is hard-coded, okay with no options.
+        /// If the SpecializablePythia specialization is hard-coded, okay with no options.
 #pragma omp critical (runOptions)
         {
           if (runOptions->hasKey(*iter, pythiaConfigName))
@@ -156,9 +156,9 @@ namespace Gambit {
         pythiaOptions.push_back("SLHA:file = " + slhaFilename);
         pythiaOptions.push_back("Random:seed = " + std::to_string(omp_get_thread_num()));
 
-        /// "Recycle" (clean memory and re-init) TemplatePythia
-        if (!recycleTemplatePythia(result, *iter, pythiaOptions))
-          std::cout << "\n\n\n\n WARNING:"<<*iter<<" is not a TemplatePythia specialization.\n";
+        /// "Recycle" (clean memory and re-init) SpecializablePythia
+        result.recycle(*iter, pythiaOptions);
+
         pythiaOptions.clear();
         resetPythiaFlag = false;
       } else if (*Loop::iteration == END_SUBPROCESS) {

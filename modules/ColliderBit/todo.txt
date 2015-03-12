@@ -8,3 +8,77 @@ See if I can get rid of flags... or pass as dependencies.
 Try to statically declare and "reset" subclasses of things...
   - ex. getPythia can simply return a PythiaBase... no need for a pointer
   - no need for things to be new'd
+
+
+
+
+
+Two protons walked into a bar and said, "Ouch."
+They MET, but then they had two jet(s).
+The headline said that the LHC has still not found SUSY.
+
+
+===========================================
+valgrind says this stuff about ColliderBit:
+===========================================
+
+==24277== Mismatched free() / delete / delete []
+==24277==    at 0x4C2C2BC: operator delete(void*) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==24277==    by 0x1889976: Gambit::ColliderBit::getPythia(Gambit::ColliderBit::SpecializablePythia&) (ColliderBit.cpp:173)
+==24277==    by 0x1616D09: Gambit::module_functor<Gambit::ColliderBit::SpecializablePythia>::calculate() (functors.cpp:1483)
+==24277==    by 0x159C89B: Gambit::functor::reset_and_calculate() (functors.cpp:110)
+==24277==    by 0x15A310D: Gambit::module_functor_common::iterate(int) (functors.cpp:698)
+==24277==    by 0x1413CB8: Gambit::ColliderBit::Functown::operatePythia_iterate(int) (ColliderBit_rollcall.hpp:34)
+==24277==    by 0x1888FA4: Gambit::ColliderBit::operatePythia() (ColliderBit.cpp:122)
+==24277==    by 0x15AB449: Gambit::module_functor<void>::calculate() (functors.cpp:1574)
+==24277==    by 0x167AD93: Gambit::DRes::DependencyResolver::calcObsLike(unsigned long, int) (depresolver.cpp:563)
+==24277==    by 0x16C89E9: Gambit::Likelihood_Container::calcObsLike(unsigned long&) (likelihood_container.cpp:118)
+==24277==    by 0x16C7C56: Gambit::Likelihood_Container::main(std::vector<double, std::allocator<double> > const&) (likelihood_container.cpp:137)
+==24277==    by 0x101FE731: Gambit::Scanner::Function_Base<double (std::vector<double, std::allocator<double> > const&)>::operator()(std::vector<double, std::allocator<double> > const&) (factory_defs.hpp:60)
+==24277==  Address 0xeba5350 is 0 bytes inside a block of size 8 alloc'd
+==24277==    at 0x4C2B800: operator new[](unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==24277==    by 0x1888CA7: Gambit::ColliderBit::operatePythia() (ColliderBit.cpp:90)
+==24277==    by 0x15AB449: Gambit::module_functor<void>::calculate() (functors.cpp:1574)
+==24277==    by 0x167AD93: Gambit::DRes::DependencyResolver::calcObsLike(unsigned long, int) (depresolver.cpp:563)
+==24277==    by 0x16C89E9: Gambit::Likelihood_Container::calcObsLike(unsigned long&) (likelihood_container.cpp:118)
+==24277==    by 0x16C7C56: Gambit::Likelihood_Container::main(std::vector<double, std::allocator<double> > const&) (likelihood_container.cpp:137)
+==24277==    by 0x101FE731: Gambit::Scanner::Function_Base<double (std::vector<double, std::allocator<double> > const&)>::operator()(std::vector<double, std::allocator<double> > const&) (factory_defs.hpp:60)
+==24277==    by 0x101FD1A0: Gambit::Scanner::scan_ptr<double (std::vector<double, std::allocator<double> > const&)>::operator()(std::vector<double, std::allocator<double> > const&) (factory_defs.hpp:147)
+==24277==    by 0x102043AF: __gambit_plugin_random_sampler__t__scan__v__1_0_0__namespace__::__gambit_plugin_main__() (random_sampler.cpp:56)
+==24277==    by 0x1708A05: Gambit::Scanner::Plugins::Plugin_Interface<int ()>::operator()() (plugin_interface.hpp:102)
+==24277==    by 0x170267D: Gambit::Scanner::Scan_Manager::Run() (scan.cpp:211)
+==24277==    by 0x143481E: main (gambit.cpp:105)
+==24277== 
+
+
+==24277== Mismatched free() / delete / delete []
+==24277==    at 0x4C2C2BC: operator delete(void*) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==24277==    by 0x1889988: Gambit::ColliderBit::getPythia(Gambit::ColliderBit::SpecializablePythia&) (ColliderBit.cpp:174)
+==24277==    by 0x1616D09: Gambit::module_functor<Gambit::ColliderBit::SpecializablePythia>::calculate() (functors.cpp:1483)
+==24277==    by 0x159C89B: Gambit::functor::reset_and_calculate() (functors.cpp:110)
+==24277==    by 0x15A310D: Gambit::module_functor_common::iterate(int) (functors.cpp:698)
+==24277==    by 0x1413CB8: Gambit::ColliderBit::Functown::operatePythia_iterate(int) (ColliderBit_rollcall.hpp:34)
+==24277==    by 0x1888FA4: Gambit::ColliderBit::operatePythia() (ColliderBit.cpp:122)
+==24277==    by 0x15AB449: Gambit::module_functor<void>::calculate() (functors.cpp:1574)
+==24277==    by 0x167AD93: Gambit::DRes::DependencyResolver::calcObsLike(unsigned long, int) (depresolver.cpp:563)
+==24277==    by 0x16C89E9: Gambit::Likelihood_Container::calcObsLike(unsigned long&) (likelihood_container.cpp:118)
+==24277==    by 0x16C7C56: Gambit::Likelihood_Container::main(std::vector<double, std::allocator<double> > const&) (likelihood_container.cpp:137)
+==24277==    by 0x101FE731: Gambit::Scanner::Function_Base<double (std::vector<double, std::allocator<double> > const&)>::operator()(std::vector<double, std::allocator<double> > const&) (factory_defs.hpp:60)
+==24277==  Address 0xebadbd0 is 0 bytes inside a block of size 8 alloc'd
+==24277==    at 0x4C2B800: operator new[](unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==24277==    by 0x1888CDF: Gambit::ColliderBit::operatePythia() (ColliderBit.cpp:91)
+==24277==    by 0x15AB449: Gambit::module_functor<void>::calculate() (functors.cpp:1574)
+==24277==    by 0x167AD93: Gambit::DRes::DependencyResolver::calcObsLike(unsigned long, int) (depresolver.cpp:563)
+==24277==    by 0x16C89E9: Gambit::Likelihood_Container::calcObsLike(unsigned long&) (likelihood_container.cpp:118)
+==24277==    by 0x16C7C56: Gambit::Likelihood_Container::main(std::vector<double, std::allocator<double> > const&) (likelihood_container.cpp:137)
+==24277==    by 0x101FE731: Gambit::Scanner::Function_Base<double (std::vector<double, std::allocator<double> > const&)>::operator()(std::vector<double, std::allocator<double> > const&) (factory_defs.hpp:60)
+==24277==    by 0x101FD1A0: Gambit::Scanner::scan_ptr<double (std::vector<double, std::allocator<double> > const&)>::operator()(std::vector<double, std::allocator<double> > const&) (factory_defs.hpp:147)
+==24277==    by 0x102043AF: __gambit_plugin_random_sampler__t__scan__v__1_0_0__namespace__::__gambit_plugin_main__() (random_sampler.cpp:56)
+==24277==    by 0x1708A05: Gambit::Scanner::Plugins::Plugin_Interface<int ()>::operator()() (plugin_interface.hpp:102)
+==24277==    by 0x170267D: Gambit::Scanner::Scan_Manager::Run() (scan.cpp:211)
+==24277==    by 0x143481E: main (gambit.cpp:105)
+==24277== 
+
+
+
+

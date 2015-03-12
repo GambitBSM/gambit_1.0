@@ -41,7 +41,7 @@ START_MODULE
   #define CAPABILITY HardScatteringSim
   START_CAPABILITY
     #define FUNCTION getPythia
-    START_FUNCTION(Gambit::ColliderBit::TemplatePythia)
+    START_FUNCTION(Gambit::ColliderBit::SpecializablePythia)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
     NEEDS_CLASSES_FROM(Pythia, default)
     #undef FUNCTION
@@ -85,7 +85,7 @@ START_MODULE
     START_FUNCTION(Pythia8::Event)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
     NEEDS_CLASSES_FROM(Pythia, default)
-    DEPENDENCY(HardScatteringSim, Gambit::ColliderBit::TemplatePythia)
+    DEPENDENCY(HardScatteringSim, Gambit::ColliderBit::SpecializablePythia)
     #undef FUNCTION
   /// For now, let's stick to what we already have running.
   /// \todo Replace BLAH_* with the proper types.  Put those types in the proper place for types / typedefs.

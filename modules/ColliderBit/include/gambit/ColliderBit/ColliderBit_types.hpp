@@ -29,7 +29,7 @@
 
 #include <vector>
 
-#include "gambit/ColliderBit/Collider.hpp"
+#include "gambit/ColliderBit/colliders/SpecializablePythia.hpp"
 #include "gambit/ColliderBit/Detector.hpp"
 #include "gambit/ColliderBit/Analysis.hpp"
 
