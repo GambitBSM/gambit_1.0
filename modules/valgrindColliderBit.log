@@ -1,0 +1,1751 @@
+==31050== Memcheck, a memory error detector
+==31050== Copyright (C) 2002-2013, and GNU GPL'd, by Julian Seward et al.
+==31050== Using Valgrind-3.10.0.SVN and LibVEX; rerun with -h for copyright info
+==31050== Command: ./gambit -f gambit_Collider.yaml
+==31050== 
+==31050== Warning: set address range perms: large range [0x3a00e000, 0x90250000) (defined)
+==31050== Warning: set address range perms: large range [0x3a263000, 0x90250000) (defined)
+Warning! Descriptions missing for some capabilities! See /home/krill/gambit/modules/config/report.txt for details.
+Warning! Descriptions missing for some models! See /home/krill/gambit/modules/config/report.txt for details.
+
+Starting GAMBIT
+----------
+YAML file: gambit_Collider.yaml
+PrinterManager: Creating Primary printer "ascii"
+...or not.
+entering loop sampler.  
+	Outputing to:  output
+	number of points to calculate:  1
+ *-----------------------  SusyLesHouches SUSY/BSM Interface  ------------------------*
+ | Last Change 03 Mar 2014 - P. Skands
+ | Parsing: ColliderBit/data/sps1aWithDecays.spc
+ *------------------------------------------------------------------------------------*
+ | 
+ |   Spectrum Calculator was:   SOFTSUSY   version: 3.1.6
+ |   Read SLHA spectrum from: ColliderBit/data/sps1aWithDecays.spc
+ | 
+ |  ~g                  m
+ |     1000021    656.700
+ | 
+ |  ~d                  m     ~dL     ~sL     ~bL     ~dR     ~sR     ~bR
+ |     1000001   1121.529   1.000   0.000   0.000   0.000   0.000   0.000  
+ |     1000003   1121.529   0.000   1.000   0.000   0.000   0.000   0.000  
+ |     1000005    936.401   0.000   0.000   1.000   0.000   0.000   0.029  
+ |     2000001   1113.942   0.000   0.000   0.000   1.000   0.000   0.000  
+ |     2000003   1113.942   0.000   0.000   0.000   0.000   1.000   0.000  
+ |     2000005   1105.309   0.000   0.000  -0.029   0.000   0.000   1.000  
+ | 
+ |  ~u                  m     ~uL     ~cL     ~tL     ~uR     ~cR     ~tR
+ |     1000002   1118.870   1.000   0.000   0.000   0.000   0.000   0.000  
+ |     1000004   1118.870   0.000   1.000   0.000   0.000   0.000   0.000  
+ |     1000006    714.333   0.000   0.000   0.206   0.000   0.000   0.978  
+ |     2000002   1113.582   0.000   0.000   0.000   1.000   0.000   0.000  
+ |     2000004   1113.582   0.000   0.000   0.000   0.000   1.000   0.000  
+ |     2000006    954.615   0.000   0.000  -0.978   0.000   0.000   0.206  
+ | 
+ |  ~e                  m     ~eL    ~muL   ~tauL     ~eR    ~muR   ~tauR
+ |     1000011   1010.735   1.000   0.000   0.000   0.000   0.000   0.000  
+ |     1000013   1010.735   0.000   1.000   0.000   0.000   0.000   0.000  
+ |     1000015    994.438   0.000   0.000   0.256   0.000   0.000   0.967  
+ |     2000011   1003.990   0.000   0.000   0.000   1.000   0.000   0.000  
+ |     2000013   1003.990   0.000   0.000   0.000   0.000   1.000   0.000  
+ |     2000015   1007.257   0.000   0.000  -0.967   0.000   0.000   0.256  
+ | 
+ |  ~nu                 m   ~nu_e  ~nu_mu ~nu_tau
+ |     1000012   1007.323   1.000   0.000   0.000  
+ |     1000014   1007.323   0.000   1.000   0.000  
+ |     1000016   1003.001   0.000   0.000   1.000  
+ | 
+ |  ~chi0               m      ~B    ~W_3    ~H_1    ~H_2
+ |     1000022     99.648   0.985  -0.055   0.152  -0.057  
+ |     1000023    186.217   0.106   0.937  -0.285   0.169  
+ |     1000025   -360.001  -0.061   0.090   0.695   0.711  
+ |     1000035    379.860  -0.120   0.332   0.642  -0.681  
+ | 
+ |  ~chi+               m   U:   ~W      ~H  |  V:   ~W      ~H
+ |     1000024    185.998     0.911  -0.412  |    0.969  -0.248  
+ |     1000037    379.342     0.412   0.911  |    0.248   0.969  
+ | 
+ |  Higgs               m
+ |          25    112.045
+ |          35   1054.284
+ |          36   1054.153
+ |          37   1057.467
+ |
+ |     alpha       -0.105
+ |
+ |  Hmix 
+ |     mu         350.491 (DRbar running value at Q = 8.125 GeV)
+ |     tan(beta)    9.676 (DRbar running value at Q = 8.125 GeV)
+ |     v          243.783 (DRbar running value at Q = 8.125 GeV)
+ |     mA       1.123e+06 (DRbar running value at Q = 8.125 GeV)
+ | 
+ |  Gauge      
+ |     g'           0.362 (DRbar running value at Q = 8.125 GeV)
+ |     g            0.644 (DRbar running value at Q = 8.125 GeV)
+ |     g3           1.078 (DRbar running value at Q = 8.125 GeV)
+ | 
+ *------------------------------------------------------------------------------------*
+ PYTHIA Info from SLHAinterface::initSLHA: importing SLHA decay table(s) 
+ PYTHIA Warning in SLHAinterface::initSLHA: switched off DECAY mode : 1000023 -> 1000024 -2 1 (too far off shell)
+ PYTHIA Warning in SLHAinterface::initSLHA: switched off DECAY mode : 1000023 -> -1000024 -1 2 (too far off shell)
+ PYTHIA Warning in SLHAinterface::initSLHA: switched off DECAY mode : 1000023 -> 1000024 -4 3 (too far off shell)
+ PYTHIA Warning in SLHAinterface::initSLHA: switched off DECAY mode : 1000023 -> -1000024 -3 4 (too far off shell)
+ PYTHIA Warning in SLHAinterface::initSLHA: adding off shell DECAY mode 25 -> 24 -24
+ PYTHIA Warning in SLHAinterface::initSLHA: adding off shell DECAY mode 25 -> 23 23
+ PYTHIA Warning in SLHAinterface::initSLHA: adding off shell DECAY mode 35 -> 23 36
+ PYTHIA Warning in SLHAinterface::initSLHA: adding off shell DECAY mode 37 -> 24 36
+
+ *-------  PYTHIA Process Initialization  --------------------------*
+ |                                                                  |
+ | We collide p+ with p+ at a CM energy of 8.000e+03 GeV            |
+ |                                                                  |
+ |------------------------------------------------------------------|
+ |                                                    |             |
+ | Subprocess                                    Code |   Estimated |
+ |                                                    |    max (mb) |
+ |                                                    |             |
+ |------------------------------------------------------------------|
+ |                                                    |             |
+ | g g -> gluino gluino                          1201 |   1.966e-09 |
+ | q qbar -> gluino gluino                       1202 |   2.469e-10 |
+ |                                                                  |
+ *-------  End PYTHIA Process Initialization -----------------------*
+#--------------------------------------------------------------------------
+#                         FastJet release 3.0.6
+#                 M. Cacciari, G.P. Salam and G. Soyez                  
+#     A software package for jet finding and analysis at colliders      
+#                           http://fastjet.fr                           
+#	                                                                      
+# Please cite EPJC72(2012)1896 [arXiv:1111.6097] if you use this package
+# for scientific work and optionally PLB641(2006)57 [hep-ph/0512210].   
+#                                                                       
+# FastJet is provided without warranty under the terms of the GNU GPLv2.
+# It uses T. Chan's closest pair algorithm, S. Fortune's Voronoi code
+# and 3rd party plugin jet algorithms. See COPYING file for details.
+#--------------------------------------------------------------------------
+
+
+
+
+ Operation of Pythia named pythia_SUSY_LHC_8TeV number 1 has finished.
+  Thread 0: xsec = 1.60005012089e-10 +- 2.13509013888e-11 *-----------------------  SusyLesHouches SUSY/BSM Interface  ------------------------*
+ | Last Change 03 Mar 2014 - P. Skands
+ | Parsing: ColliderBit/data/sps1aWithDecays.spc
+ *------------------------------------------------------------------------------------*
+ | 
+ |   Spectrum Calculator was:   SOFTSUSY   version: 3.1.6
+ |   Read SLHA spectrum from: ColliderBit/data/sps1aWithDecays.spc
+ | 
+ |  ~g                  m
+ |     1000021    656.700
+ | 
+ |  ~d                  m     ~dL     ~sL     ~bL     ~dR     ~sR     ~bR
+ |     1000001   1121.529   1.000   0.000   0.000   0.000   0.000   0.000  
+ |     1000003   1121.529   0.000   1.000   0.000   0.000   0.000   0.000  
+ |     1000005    936.401   0.000   0.000   1.000   0.000   0.000   0.029  
+ |     2000001   1113.942   0.000   0.000   0.000   1.000   0.000   0.000  
+ |     2000003   1113.942   0.000   0.000   0.000   0.000   1.000   0.000  
+ |     2000005   1105.309   0.000   0.000  -0.029   0.000   0.000   1.000  
+ | 
+ |  ~u                  m     ~uL     ~cL     ~tL     ~uR     ~cR     ~tR
+ |     1000002   1118.870   1.000   0.000   0.000   0.000   0.000   0.000  
+ |     1000004   1118.870   0.000   1.000   0.000   0.000   0.000   0.000  
+ |     1000006    714.333   0.000   0.000   0.206   0.000   0.000   0.978  
+ |     2000002   1113.582   0.000   0.000   0.000   1.000   0.000   0.000  
+ |     2000004   1113.582   0.000   0.000   0.000   0.000   1.000   0.000  
+ |     2000006    954.615   0.000   0.000  -0.978   0.000   0.000   0.206  
+ | 
+ |  ~e                  m     ~eL    ~muL   ~tauL     ~eR    ~muR   ~tauR
+ |     1000011   1010.735   1.000   0.000   0.000   0.000   0.000   0.000  
+ |     1000013   1010.735   0.000   1.000   0.000   0.000   0.000   0.000  
+ |     1000015    994.438   0.000   0.000   0.256   0.000   0.000   0.967  
+ |     2000011   1003.990   0.000   0.000   0.000   1.000   0.000   0.000  
+ |     2000013   1003.990   0.000   0.000   0.000   0.000   1.000   0.000  
+ |     2000015   1007.257   0.000   0.000  -0.967   0.000   0.000   0.256  
+ | 
+ |  ~nu                 m   ~nu_e  ~nu_mu ~nu_tau
+ |     1000012   1007.323   1.000   0.000   0.000  
+ |     1000014   1007.323   0.000   1.000   0.000  
+ |     1000016   1003.001   0.000   0.000   1.000  
+ | 
+ |  ~chi0               m      ~B    ~W_3    ~H_1    ~H_2
+ |     1000022     99.648   0.985  -0.055   0.152  -0.057  
+ |     1000023    186.217   0.106   0.937  -0.285   0.169  
+ |     1000025   -360.001  -0.061   0.090   0.695   0.711  
+ |     1000035    379.860  -0.120   0.332   0.642  -0.681  
+ | 
+ |  ~chi+               m   U:   ~W      ~H  |  V:   ~W      ~H
+ |     1000024    185.998     0.911  -0.412  |    0.969  -0.248  
+ |     1000037    379.342     0.412   0.911  |    0.248   0.969  
+ | 
+ |  Higgs               m
+ |          25    112.045
+ |          35   1054.284
+ |          36   1054.153
+ |          37   1057.467
+ |
+ |     alpha       -0.105
+ |
+ |  Hmix 
+ |     mu         350.491 (DRbar running value at Q = 8.125 GeV)
+ |     tan(beta)    9.676 (DRbar running value at Q = 8.125 GeV)
+ |     v          243.783 (DRbar running value at Q = 8.125 GeV)
+ |     mA       1.123e+06 (DRbar running value at Q = 8.125 GeV)
+ | 
+ |  Gauge      
+ |     g'           0.362 (DRbar running value at Q = 8.125 GeV)
+ |     g            0.644 (DRbar running value at Q = 8.125 GeV)
+ |     g3           1.078 (DRbar running value at Q = 8.125 GeV)
+ | 
+ *------------------------------------------------------------------------------------*
+ PYTHIA Info from SLHAinterface::initSLHA: importing SLHA decay table(s) 
+ PYTHIA Warning in SLHAinterface::initSLHA: switched off DECAY mode : 1000023 -> 1000024 -2 1 (too far off shell)
+ PYTHIA Warning in SLHAinterface::initSLHA: switched off DECAY mode : 1000023 -> -1000024 -1 2 (too far off shell)
+ PYTHIA Warning in SLHAinterface::initSLHA: switched off DECAY mode : 1000023 -> 1000024 -4 3 (too far off shell)
+ PYTHIA Warning in SLHAinterface::initSLHA: switched off DECAY mode : 1000023 -> -1000024 -3 4 (too far off shell)
+ PYTHIA Warning in SLHAinterface::initSLHA: adding off shell DECAY mode 25 -> 24 -24
+ PYTHIA Warning in SLHAinterface::initSLHA: adding off shell DECAY mode 25 -> 23 23
+ PYTHIA Warning in SLHAinterface::initSLHA: adding off shell DECAY mode 35 -> 23 36
+ PYTHIA Warning in SLHAinterface::initSLHA: adding off shell DECAY mode 37 -> 24 36
+
+ *-------  PYTHIA Process Initialization  --------------------------*
+ |                                                                  |
+ | We collide p+ with p+ at a CM energy of 8.000e+03 GeV            |
+ |                                                                  |
+ |------------------------------------------------------------------|
+ |                                                    |             |
+ | Subprocess                                    Code |   Estimated |
+ |                                                    |    max (mb) |
+ |                                                    |             |
+ |------------------------------------------------------------------|
+ |                                                    |             |
+ | g g -> ~d_L ~d_Lbar                           1215 |   1.099e-12 |
+ | g g -> ~u_L ~u_Lbar                           1216 |   1.126e-12 |
+ | g g -> ~s_L ~s_Lbar                           1217 |   1.096e-12 |
+ | g g -> ~c_L ~c_Lbar                           1218 |   1.126e-12 |
+ | g g -> ~d_R ~d_Rbar                           1221 |   1.188e-12 |
+ | g g -> ~u_R ~u_Rbar                           1222 |   1.191e-12 |
+ | g g -> ~s_R ~s_Rbar                           1223 |   1.188e-12 |
+ | g g -> ~c_R ~c_Rbar                           1224 |   1.191e-12 |
+ | q qbar' -> ~d_L ~d_Lbar                       1231 |   2.713e-12 |
+ | q qbar' -> ~d_L ~s_Lbar                       1232 |   8.406e-13 |
+ | q qbar' -> ~s_L ~d_Lbar                       1233 |   5.605e-14 |
+ | q qbar' -> ~d_L ~d_Rbar                       1236 |   3.061e-12 |
+ | q qbar' -> ~d_R ~d_Lbar                       1237 |   3.061e-12 |
+ | q qbar' -> ~d_L ~s_Rbar                       1238 |   1.462e-12 |
+ | q qbar' -> ~s_R ~d_Lbar                       1239 |   1.221e-13 |
+ | q qbar' -> ~u_L ~u_Lbar                       1242 |   5.888e-12 |
+ | q qbar' -> ~u_L ~c_Lbar                       1243 |   9.238e-13 |
+ | q qbar' -> ~c_L ~u_Lbar                       1244 |   1.968e-14 |
+ | q qbar' -> ~u_L ~u_Rbar                       1247 |   6.932e-12 |
+ | q qbar' -> ~u_R ~u_Lbar                       1248 |   6.932e-12 |
+ | q qbar' -> ~u_L ~c_Rbar                       1249 |   1.549e-12 |
+ | q qbar' -> ~c_R ~u_Lbar                       1250 |   4.000e-14 |
+ | q qbar' -> ~u_L ~d_Lbar + c.c.                1253 |   5.400e-12 |
+ | q qbar' -> ~u_L ~s_Lbar + c.c.                1254 |   2.460e-12 |
+ | q qbar' -> ~u_L ~d_Rbar + c.c.                1256 |   1.088e-11 |
+ | q qbar' -> ~u_L ~s_Rbar + c.c.                1257 |   4.057e-12 |
+ | q qbar' -> ~s_L ~s_Lbar                       1259 |   1.155e-12 |
+ | q qbar' -> ~s_L ~d_Rbar                       1262 |   1.221e-13 |
+ | q qbar' -> ~d_R ~s_Lbar                       1263 |   1.462e-12 |
+ | q qbar' -> ~s_L ~s_Rbar                       1264 |   5.831e-14 |
+ | q qbar' -> ~s_R ~s_Lbar                       1265 |   5.831e-14 |
+ | q qbar' -> ~c_L ~c_Lbar                       1268 |   1.182e-12 |
+ | q qbar' -> ~c_L ~u_Rbar                       1271 |   4.000e-14 |
+ | q qbar' -> ~u_R ~c_Lbar                       1272 |   1.549e-12 |
+ | q qbar' -> ~c_L ~c_Rbar                       1273 |   8.956e-15 |
+ | q qbar' -> ~c_R ~c_Lbar                       1274 |   8.956e-15 |
+ | q qbar' -> ~c_L ~d_Lbar + c.c.                1277 |   3.397e-13 |
+ | q qbar' -> ~c_L ~s_Lbar + c.c.                1278 |   8.618e-14 |
+ | q qbar' -> ~c_L ~d_Rbar + c.c.                1280 |   6.206e-13 |
+ | q qbar' -> ~c_L ~s_Rbar + c.c.                1281 |   4.599e-14 |
+ | q qbar' -> ~d_R ~d_Rbar                       1303 |   3.068e-12 |
+ | q qbar' -> ~d_R ~s_Rbar                       1304 |   9.020e-13 |
+ | q qbar' -> ~s_R ~d_Rbar                       1305 |   6.095e-14 |
+ | q qbar' -> ~u_R ~u_Rbar                       1308 |   6.360e-12 |
+ | q qbar' -> ~u_R ~c_Rbar                       1309 |   9.706e-13 |
+ | q qbar' -> ~c_R ~u_Rbar                       1310 |   2.083e-14 |
+ | q qbar' -> ~u_R ~d_Lbar + c.c.                1313 |   1.077e-11 |
+ | q qbar' -> ~u_R ~s_Lbar + c.c.                1314 |   4.016e-12 |
+ | q qbar' -> ~u_R ~d_Rbar + c.c.                1316 |   6.856e-12 |
+ | q qbar' -> ~u_R ~s_Rbar + c.c.                1317 |   2.627e-12 |
+ | q qbar' -> ~s_R ~s_Rbar                       1319 |   1.236e-12 |
+ | q qbar' -> ~c_R ~c_Rbar                       1322 |   1.219e-12 |
+ | q qbar' -> ~c_R ~d_Lbar + c.c.                1325 |   6.138e-13 |
+ | q qbar' -> ~c_R ~s_Lbar + c.c.                1326 |   4.541e-14 |
+ | q qbar' -> ~c_R ~d_Rbar + c.c.                1328 |   3.616e-13 |
+ | q qbar' -> ~c_R ~s_Rbar + c.c.                1329 |   2.277e-14 |
+ | q q' -> ~d_L ~d_L + c.c.                      1351 |   1.227e-11 |
+ | q q' -> ~d_L ~s_L + c.c.                      1352 |   1.374e-12 |
+ | q q' -> ~d_L ~d_R + c.c.                      1354 |   1.994e-11 |
+ | q q' -> ~d_L ~s_R + c.c.                      1355 |   7.191e-13 |
+ | q q' -> ~u_L ~u_L + c.c.                      1357 |   9.208e-11 |
+ | q q' -> ~u_L ~c_L + c.c.                      1358 |   1.715e-12 |
+ | q q' -> ~u_L ~u_R + c.c.                      1360 |   1.754e-10 |
+ | q q' -> ~u_L ~c_R + c.c.                      1361 |   9.417e-13 |
+ | q q' -> ~u_L ~d_L + c.c.                      1363 |   1.214e-10 |
+ | q q' -> ~u_L ~s_L + c.c.                      1364 |   4.048e-12 |
+ | q q' -> ~u_L ~d_R + c.c.                      1366 |   8.292e-11 |
+ | q q' -> ~u_L ~s_R + c.c.                      1367 |   2.568e-12 |
+ | q q' -> ~s_L ~s_L + c.c.                      1369 |   4.250e-14 |
+ | q q' -> ~s_L ~d_R + c.c.                      1371 |   7.191e-13 |
+ | q q' -> ~s_L ~s_R + c.c.                      1372 |   4.498e-14 |
+ | q q' -> ~c_L ~c_L + c.c.                      1374 |   6.695e-15 |
+ | q q' -> ~c_L ~u_R + c.c.                      1376 |   9.417e-13 |
+ | q q' -> ~c_L ~c_R + c.c.                      1377 |   6.879e-15 |
+ | q q' -> ~c_L ~d_L + c.c.                      1379 |   7.974e-13 |
+ | q q' -> ~c_L ~s_L + c.c.                      1380 |   7.412e-14 |
+ | q q' -> ~c_L ~d_R + c.c.                      1382 |   3.531e-13 |
+ | q q' -> ~c_L ~s_R + c.c.                      1383 |   2.214e-14 |
+ | q q' -> ~d_R ~d_R + c.c.                      1399 |   1.147e-11 |
+ | q q' -> ~d_R ~s_R + c.c.                      1400 |   1.476e-12 |
+ | q q' -> ~u_R ~u_R + c.c.                      1402 |   8.734e-11 |
+ | q q' -> ~u_R ~c_R + c.c.                      1403 |   1.801e-12 |
+ | q q' -> ~u_R ~d_L + c.c.                      1405 |   8.219e-11 |
+ | q q' -> ~u_R ~s_L + c.c.                      1406 |   2.542e-12 |
+ | q q' -> ~u_R ~d_R + c.c.                      1408 |   1.044e-10 |
+ | q q' -> ~u_R ~s_R + c.c.                      1409 |   4.163e-12 |
+ | q q' -> ~s_R ~s_R + c.c.                      1411 |   3.873e-14 |
+ | q q' -> ~c_R ~c_R + c.c.                      1413 |   6.209e-15 |
+ | q q' -> ~c_R ~d_L + c.c.                      1415 |   3.492e-13 |
+ | q q' -> ~c_R ~s_L + c.c.                      1416 |   2.186e-14 |
+ | q q' -> ~c_R ~d_R + c.c.                      1418 |   6.384e-13 |
+ | q q' -> ~c_R ~s_R + c.c.                      1419 |   4.748e-14 |
+ | q q' -> ~d_L* + c.c                           2011 |   0.000e+00 |
+ | q q' -> ~u_L* + c.c                           2012 |   0.000e+00 |
+ | q q' -> ~s_L* + c.c                           2013 |   0.000e+00 |
+ | q q' -> ~c_L* + c.c                           2014 |   0.000e+00 |
+ | q q' -> ~d_R* + c.c                           2021 |   0.000e+00 |
+ | q q' -> ~u_R* + c.c                           2022 |   0.000e+00 |
+ | q q' -> ~s_R* + c.c                           2023 |   0.000e+00 |
+ | q q' -> ~c_R* + c.c                           2024 |   0.000e+00 |
+ |                                                                  |
+ *-------  End PYTHIA Process Initialization -----------------------*
+
+
+
+
+ Operation of Pythia named pythia_SUSY_LHC_8TeV number 2 has finished.
+  Thread 0: xsec = 2.97072969902e-11 +- 4.78172133625e-12 *-----------------------  SusyLesHouches SUSY/BSM Interface  ------------------------*
+ | Last Change 03 Mar 2014 - P. Skands
+ | Parsing: ColliderBit/data/sps1aWithDecays.spc
+ *------------------------------------------------------------------------------------*
+ | 
+ |   Spectrum Calculator was:   SOFTSUSY   version: 3.1.6
+ |   Read SLHA spectrum from: ColliderBit/data/sps1aWithDecays.spc
+ | 
+ |  ~g                  m
+ |     1000021    656.700
+ | 
+ |  ~d                  m     ~dL     ~sL     ~bL     ~dR     ~sR     ~bR
+ |     1000001   1121.529   1.000   0.000   0.000   0.000   0.000   0.000  
+ |     1000003   1121.529   0.000   1.000   0.000   0.000   0.000   0.000  
+ |     1000005    936.401   0.000   0.000   1.000   0.000   0.000   0.029  
+ |     2000001   1113.942   0.000   0.000   0.000   1.000   0.000   0.000  
+ |     2000003   1113.942   0.000   0.000   0.000   0.000   1.000   0.000  
+ |     2000005   1105.309   0.000   0.000  -0.029   0.000   0.000   1.000  
+ | 
+ |  ~u                  m     ~uL     ~cL     ~tL     ~uR     ~cR     ~tR
+ |     1000002   1118.870   1.000   0.000   0.000   0.000   0.000   0.000  
+ |     1000004   1118.870   0.000   1.000   0.000   0.000   0.000   0.000  
+ |     1000006    714.333   0.000   0.000   0.206   0.000   0.000   0.978  
+ |     2000002   1113.582   0.000   0.000   0.000   1.000   0.000   0.000  
+ |     2000004   1113.582   0.000   0.000   0.000   0.000   1.000   0.000  
+ |     2000006    954.615   0.000   0.000  -0.978   0.000   0.000   0.206  
+ | 
+ |  ~e                  m     ~eL    ~muL   ~tauL     ~eR    ~muR   ~tauR
+ |     1000011   1010.735   1.000   0.000   0.000   0.000   0.000   0.000  
+ |     1000013   1010.735   0.000   1.000   0.000   0.000   0.000   0.000  
+ |     1000015    994.438   0.000   0.000   0.256   0.000   0.000   0.967  
+ |     2000011   1003.990   0.000   0.000   0.000   1.000   0.000   0.000  
+ |     2000013   1003.990   0.000   0.000   0.000   0.000   1.000   0.000  
+ |     2000015   1007.257   0.000   0.000  -0.967   0.000   0.000   0.256  
+ | 
+ |  ~nu                 m   ~nu_e  ~nu_mu ~nu_tau
+ |     1000012   1007.323   1.000   0.000   0.000  
+ |     1000014   1007.323   0.000   1.000   0.000  
+ |     1000016   1003.001   0.000   0.000   1.000  
+ | 
+ |  ~chi0               m      ~B    ~W_3    ~H_1    ~H_2
+ |     1000022     99.648   0.985  -0.055   0.152  -0.057  
+ |     1000023    186.217   0.106   0.937  -0.285   0.169  
+ |     1000025   -360.001  -0.061   0.090   0.695   0.711  
+ |     1000035    379.860  -0.120   0.332   0.642  -0.681  
+ | 
+ |  ~chi+               m   U:   ~W      ~H  |  V:   ~W      ~H
+ |     1000024    185.998     0.911  -0.412  |    0.969  -0.248  
+ |     1000037    379.342     0.412   0.911  |    0.248   0.969  
+ | 
+ |  Higgs               m
+ |          25    112.045
+ |          35   1054.284
+ |          36   1054.153
+ |          37   1057.467
+ |
+ |     alpha       -0.105
+ |
+ |  Hmix 
+ |     mu         350.491 (DRbar running value at Q = 8.125 GeV)
+ |     tan(beta)    9.676 (DRbar running value at Q = 8.125 GeV)
+ |     v          243.783 (DRbar running value at Q = 8.125 GeV)
+ |     mA       1.123e+06 (DRbar running value at Q = 8.125 GeV)
+ | 
+ |  Gauge      
+ |     g'           0.362 (DRbar running value at Q = 8.125 GeV)
+ |     g            0.644 (DRbar running value at Q = 8.125 GeV)
+ |     g3           1.078 (DRbar running value at Q = 8.125 GeV)
+ | 
+ *------------------------------------------------------------------------------------*
+ PYTHIA Info from SLHAinterface::initSLHA: importing SLHA decay table(s) 
+ PYTHIA Warning in SLHAinterface::initSLHA: switched off DECAY mode : 1000023 -> 1000024 -2 1 (too far off shell)
+ PYTHIA Warning in SLHAinterface::initSLHA: switched off DECAY mode : 1000023 -> -1000024 -1 2 (too far off shell)
+ PYTHIA Warning in SLHAinterface::initSLHA: switched off DECAY mode : 1000023 -> 1000024 -4 3 (too far off shell)
+ PYTHIA Warning in SLHAinterface::initSLHA: switched off DECAY mode : 1000023 -> -1000024 -3 4 (too far off shell)
+ PYTHIA Warning in SLHAinterface::initSLHA: adding off shell DECAY mode 25 -> 24 -24
+ PYTHIA Warning in SLHAinterface::initSLHA: adding off shell DECAY mode 25 -> 23 23
+ PYTHIA Warning in SLHAinterface::initSLHA: adding off shell DECAY mode 35 -> 23 36
+ PYTHIA Warning in SLHAinterface::initSLHA: adding off shell DECAY mode 37 -> 24 36
+ PYTHIA Warning in PhaseSpace2to2tauyz::trialKin: negative cross section set 0 for q g -> ~d_L gluino + c.c.
+
+ *-------  PYTHIA Process Initialization  --------------------------*
+ |                                                                  |
+ | We collide p+ with p+ at a CM energy of 8.000e+03 GeV            |
+ |                                                                  |
+ |------------------------------------------------------------------|
+ |                                                    |             |
+ | Subprocess                                    Code |   Estimated |
+ |                                                    |    max (mb) |
+ |                                                    |             |
+ |------------------------------------------------------------------|
+ |                                                    |             |
+ | q g -> ~d_L gluino + c.c.                     1203 |   3.599e-10 |
+ | q q' -> ~d_L* + c.c                           2011 |   0.000e+00 |
+ |                                                                  |
+ *-------  End PYTHIA Process Initialization -----------------------*
+==31050== Mismatched free() / delete / delete []
+==31050==    at 0x4C2C2BC: operator delete(void*) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x1889976: Gambit::ColliderBit::getPythia(Gambit::ColliderBit::SpecializablePythia&) (ColliderBit.cpp:173)
+==31050==    by 0x1616D09: Gambit::module_functor<Gambit::ColliderBit::SpecializablePythia>::calculate() (functors.cpp:1483)
+==31050==    by 0x159C89B: Gambit::functor::reset_and_calculate() (functors.cpp:110)
+==31050==    by 0x15A310D: Gambit::module_functor_common::iterate(int) (functors.cpp:698)
+==31050==    by 0x1413CB8: Gambit::ColliderBit::Functown::operatePythia_iterate(int) (ColliderBit_rollcall.hpp:34)
+==31050==    by 0x1888FA4: Gambit::ColliderBit::operatePythia() (ColliderBit.cpp:122)
+==31050==    by 0x15AB449: Gambit::module_functor<void>::calculate() (functors.cpp:1574)
+==31050==    by 0x167AD93: Gambit::DRes::DependencyResolver::calcObsLike(unsigned long, int) (depresolver.cpp:563)
+==31050==    by 0x16C89E9: Gambit::Likelihood_Container::calcObsLike(unsigned long&) (likelihood_container.cpp:118)
+==31050==    by 0x16C7C56: Gambit::Likelihood_Container::main(std::vector<double, std::allocator<double> > const&) (likelihood_container.cpp:137)
+==31050==    by 0x101FE731: Gambit::Scanner::Function_Base<double (std::vector<double, std::allocator<double> > const&)>::operator()(std::vector<double, std::allocator<double> > const&) (factory_defs.hpp:60)
+==31050==  Address 0xc9531a0 is 0 bytes inside a block of size 8 alloc'd
+==31050==    at 0x4C2B800: operator new[](unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x1888CA7: Gambit::ColliderBit::operatePythia() (ColliderBit.cpp:90)
+==31050==    by 0x15AB449: Gambit::module_functor<void>::calculate() (functors.cpp:1574)
+==31050==    by 0x167AD93: Gambit::DRes::DependencyResolver::calcObsLike(unsigned long, int) (depresolver.cpp:563)
+==31050==    by 0x16C89E9: Gambit::Likelihood_Container::calcObsLike(unsigned long&) (likelihood_container.cpp:118)
+==31050==    by 0x16C7C56: Gambit::Likelihood_Container::main(std::vector<double, std::allocator<double> > const&) (likelihood_container.cpp:137)
+==31050==    by 0x101FE731: Gambit::Scanner::Function_Base<double (std::vector<double, std::allocator<double> > const&)>::operator()(std::vector<double, std::allocator<double> > const&) (factory_defs.hpp:60)
+==31050==    by 0x101FD1A0: Gambit::Scanner::scan_ptr<double (std::vector<double, std::allocator<double> > const&)>::operator()(std::vector<double, std::allocator<double> > const&) (factory_defs.hpp:147)
+==31050==    by 0x102043AF: __gambit_plugin_random_sampler__t__scan__v__1_0_0__namespace__::__gambit_plugin_main__() (random_sampler.cpp:56)
+==31050==    by 0x1708A05: Gambit::Scanner::Plugins::Plugin_Interface<int ()>::operator()() (plugin_interface.hpp:102)
+==31050==    by 0x170267D: Gambit::Scanner::Scan_Manager::Run() (scan.cpp:211)
+==31050==    by 0x143481E: main (gambit.cpp:105)
+==31050== 
+==31050== Mismatched free() / delete / delete []
+==31050==    at 0x4C2C2BC: operator delete(void*) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x1889988: Gambit::ColliderBit::getPythia(Gambit::ColliderBit::SpecializablePythia&) (ColliderBit.cpp:174)
+==31050==    by 0x1616D09: Gambit::module_functor<Gambit::ColliderBit::SpecializablePythia>::calculate() (functors.cpp:1483)
+==31050==    by 0x159C89B: Gambit::functor::reset_and_calculate() (functors.cpp:110)
+==31050==    by 0x15A310D: Gambit::module_functor_common::iterate(int) (functors.cpp:698)
+==31050==    by 0x1413CB8: Gambit::ColliderBit::Functown::operatePythia_iterate(int) (ColliderBit_rollcall.hpp:34)
+==31050==    by 0x1888FA4: Gambit::ColliderBit::operatePythia() (ColliderBit.cpp:122)
+==31050==    by 0x15AB449: Gambit::module_functor<void>::calculate() (functors.cpp:1574)
+==31050==    by 0x167AD93: Gambit::DRes::DependencyResolver::calcObsLike(unsigned long, int) (depresolver.cpp:563)
+==31050==    by 0x16C89E9: Gambit::Likelihood_Container::calcObsLike(unsigned long&) (likelihood_container.cpp:118)
+==31050==    by 0x16C7C56: Gambit::Likelihood_Container::main(std::vector<double, std::allocator<double> > const&) (likelihood_container.cpp:137)
+==31050==    by 0x101FE731: Gambit::Scanner::Function_Base<double (std::vector<double, std::allocator<double> > const&)>::operator()(std::vector<double, std::allocator<double> > const&) (factory_defs.hpp:60)
+==31050==  Address 0xc958df0 is 0 bytes inside a block of size 8 alloc'd
+==31050==    at 0x4C2B800: operator new[](unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x1888CDF: Gambit::ColliderBit::operatePythia() (ColliderBit.cpp:91)
+==31050==    by 0x15AB449: Gambit::module_functor<void>::calculate() (functors.cpp:1574)
+==31050==    by 0x167AD93: Gambit::DRes::DependencyResolver::calcObsLike(unsigned long, int) (depresolver.cpp:563)
+==31050==    by 0x16C89E9: Gambit::Likelihood_Container::calcObsLike(unsigned long&) (likelihood_container.cpp:118)
+==31050==    by 0x16C7C56: Gambit::Likelihood_Container::main(std::vector<double, std::allocator<double> > const&) (likelihood_container.cpp:137)
+==31050==    by 0x101FE731: Gambit::Scanner::Function_Base<double (std::vector<double, std::allocator<double> > const&)>::operator()(std::vector<double, std::allocator<double> > const&) (factory_defs.hpp:60)
+==31050==    by 0x101FD1A0: Gambit::Scanner::scan_ptr<double (std::vector<double, std::allocator<double> > const&)>::operator()(std::vector<double, std::allocator<double> > const&) (factory_defs.hpp:147)
+==31050==    by 0x102043AF: __gambit_plugin_random_sampler__t__scan__v__1_0_0__namespace__::__gambit_plugin_main__() (random_sampler.cpp:56)
+==31050==    by 0x1708A05: Gambit::Scanner::Plugins::Plugin_Interface<int ()>::operator()() (plugin_interface.hpp:102)
+==31050==    by 0x170267D: Gambit::Scanner::Scan_Manager::Run() (scan.cpp:211)
+==31050==    by 0x143481E: main (gambit.cpp:105)
+==31050== 
+
+
+
+
+ Operation of Pythia named pythia_glusq_LHC_8TeV number 1 has finished.
+  Thread 0: xsec = 2.30884224491e-11 +- 2.39231891085e-12In calcLogLike
+==31050== Conditional jump or move depends on uninitialised value(s)
+==31050==    at 0x16C7C9A: Gambit::Likelihood_Container::main(std::vector<double, std::allocator<double> > const&) (likelihood_container.cpp:139)
+==31050==    by 0x101FE731: Gambit::Scanner::Function_Base<double (std::vector<double, std::allocator<double> > const&)>::operator()(std::vector<double, std::allocator<double> > const&) (factory_defs.hpp:60)
+==31050==    by 0x101FD1A0: Gambit::Scanner::scan_ptr<double (std::vector<double, std::allocator<double> > const&)>::operator()(std::vector<double, std::allocator<double> > const&) (factory_defs.hpp:147)
+==31050==    by 0x102043AF: __gambit_plugin_random_sampler__t__scan__v__1_0_0__namespace__::__gambit_plugin_main__() (random_sampler.cpp:56)
+==31050==    by 0x1708A05: Gambit::Scanner::Plugins::Plugin_Interface<int ()>::operator()() (plugin_interface.hpp:102)
+==31050==    by 0x170267D: Gambit::Scanner::Scan_Manager::Run() (scan.cpp:211)
+==31050==    by 0x143481E: main (gambit.cpp:105)
+==31050== 
+GAMBIT has finished successfully!
+PrinterManager: Destructing printer...
+Column 1: #NormalDist_parameters @NormalDist::primary_parameters::mu
+Column 2: #NormalDist_parameters @NormalDist::primary_parameters::sigma
+Column 3: #LogLikelihood @ColliderBit::calcLogLike
+==31050== Conditional jump or move depends on uninitialised value(s)
+==31050==    at 0x9500565: __mpn_addmul_1 (addmul_1.S:94)
+==31050==    by 0xFFEFFDBDF: ???
+==31050==    by 0xFFEFFDCDF: ???
+==31050==    by 0x9500DC6: __mpn_mul (mul.c:107)
+==31050==    by 0x1: ???
+==31050==    by 0x63: ???
+==31050==    by 0x1F: ???
+==31050==    by 0x964DD55: ??? (in /lib/x86_64-linux-gnu/libc-2.19.so)
+==31050==    by 0x964DD56: ??? (in /lib/x86_64-linux-gnu/libc-2.19.so)
+==31050==    by 0xFFFFFFFFFFFFFFFE: ???
+==31050==    by 0x3: ???
+==31050== 
+==31050== Use of uninitialised value of size 8
+==31050==    at 0x9500529: __mpn_addmul_1 (addmul_1.S:78)
+==31050==    by 0xFFEFFDBDF: ???
+==31050==    by 0xFFEFFDCDF: ???
+==31050==    by 0x9500DC6: __mpn_mul (mul.c:107)
+==31050==    by 0x1: ???
+==31050==    by 0x63: ???
+==31050==    by 0x1F: ???
+==31050==    by 0x964DD55: ??? (in /lib/x86_64-linux-gnu/libc-2.19.so)
+==31050==    by 0x964DD56: ??? (in /lib/x86_64-linux-gnu/libc-2.19.so)
+==31050==    by 0xFFFFFFFFFFFFFFFE: ???
+==31050==    by 0x3: ???
+==31050== 
+==31050== Use of uninitialised value of size 8
+==31050==    at 0x9500530: __mpn_addmul_1 (addmul_1.S:80)
+==31050==    by 0xFFEFFDBDF: ???
+==31050==    by 0xFFEFFDCDF: ???
+==31050==    by 0x9500DC6: __mpn_mul (mul.c:107)
+==31050==    by 0x1: ???
+==31050==    by 0x63: ???
+==31050==    by 0x1F: ???
+==31050==    by 0x964DD55: ??? (in /lib/x86_64-linux-gnu/libc-2.19.so)
+==31050==    by 0x964DD56: ??? (in /lib/x86_64-linux-gnu/libc-2.19.so)
+==31050==    by 0xFFFFFFFFFFFFFFFE: ???
+==31050==    by 0x3: ???
+==31050== 
+==31050== Use of uninitialised value of size 8
+==31050==    at 0x9500570: __mpn_addmul_1 (addmul_1.S:99)
+==31050==    by 0xFFEFFDBDF: ???
+==31050==    by 0xFFEFFDCDF: ???
+==31050==    by 0x9500DC6: __mpn_mul (mul.c:107)
+==31050==    by 0x1: ???
+==31050==    by 0x63: ???
+==31050==    by 0x1F: ???
+==31050==    by 0x964DD55: ??? (in /lib/x86_64-linux-gnu/libc-2.19.so)
+==31050==    by 0x964DD56: ??? (in /lib/x86_64-linux-gnu/libc-2.19.so)
+==31050==    by 0xFFFFFFFFFFFFFFFE: ???
+==31050==    by 0x3: ???
+==31050== 
+==31050== Syscall param write(buf) points to uninitialised byte(s)
+==31050==    at 0x92B9340: __write_nocancel (syscall-template.S:81)
+==31050==    by 0x8BFCA75: ??? (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C34C07: std::basic_filebuf<char, std::char_traits<char> >::_M_convert_to_external(char*, long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C35662: std::basic_filebuf<char, std::char_traits<char> >::overflow(int) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3319E: std::basic_filebuf<char, std::char_traits<char> >::sync() (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C1519D: std::ostream::flush() (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x16D9F65: Gambit::Printers::asciiPrinter::dump_buffer(bool) (asciiprinter.cpp:358)
+==31050==    by 0x16D90B0: Gambit::Printers::asciiPrinter::~asciiPrinter() (asciiprinter.cpp:100)
+==31050==    by 0x16D9155: Gambit::Printers::asciiPrinter::~asciiPrinter() (asciiprinter.cpp:102)
+==31050==    by 0x16EB0AB: Gambit::Printers::PrinterManager::~PrinterManager() (printermanager.cpp:72)
+==31050==    by 0x1434891: main (gambit.cpp:72)
+==31050==  Address 0xe6bb55d is 29 bytes inside a block of size 8,192 alloc'd
+==31050==    at 0x4C2B800: operator new[](unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x8C34A3B: std::basic_filebuf<char, std::char_traits<char> >::_M_allocate_internal_buffer() (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C35051: std::basic_filebuf<char, std::char_traits<char> >::open(char const*, std::_Ios_Openmode) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C36AF8: std::basic_ofstream<char, std::char_traits<char> >::basic_ofstream(std::string const&, std::_Ios_Openmode) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x16D8ACB: Gambit::Printers::asciiPrinter::asciiPrinter(Gambit::Options const&) (asciiprinter.cpp:70)
+==31050==    by 0x16EB25E: Gambit::Printers::BasePrinter* Gambit::Printers::__gambit_registry__::(anonymous namespace)::__create_class__<Gambit::Printers::asciiPrinter>::init<Gambit::Printers::BasePrinter, Gambit::Options const&>(Gambit::Options const&) (asciiprinter.hpp:159)
+==31050==    by 0x16EACA6: Gambit::Printers::PrinterManager::PrinterManager(Gambit::Options const&) (printermanager.cpp:51)
+==31050==    by 0x1434580: main (gambit.cpp:72)
+==31050== 
+==31050== Invalid free() / delete / delete[] / realloc()
+==31050==    at 0x4C2C2BC: operator delete(void*) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x1606D2B: Gambit::ColliderBit::SpecializationContainer<Pythia_8_186::Pythia8::Event>::~SpecializationContainer() (in /home/krill/gambit/modules/gambit)
+==31050==    by 0x18E66E1: Gambit::ColliderBit::SpecializablePythia::~SpecializablePythia() (SpecializablePythia.hpp:143)
+==31050==    by 0x1616AEB: Gambit::module_functor<Gambit::ColliderBit::SpecializablePythia>::~module_functor() (functors.cpp:1460)
+==31050==    by 0x9504258: __run_exit_handlers (exit.c:82)
+==31050==    by 0x95042A4: exit (exit.c:104)
+==31050==    by 0x94E9ECB: (below main) (libc-start.c:321)
+==31050==  Address 0xe2ea6c0 is 0 bytes inside a block of size 24 free'd
+==31050==    at 0x4C2C2BC: operator delete(void*) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x18E67BF: Gambit::ColliderBit::Pythia_glusq_LHC_8TeV::~Pythia_glusq_LHC_8TeV() (SpecializablePythia.hpp:110)
+==31050==    by 0x18E66A9: Gambit::ColliderBit::SpecializablePythia::~SpecializablePythia() (SpecializablePythia.hpp:146)
+==31050==    by 0x1616AEB: Gambit::module_functor<Gambit::ColliderBit::SpecializablePythia>::~module_functor() (functors.cpp:1460)
+==31050==    by 0x9504258: __run_exit_handlers (exit.c:82)
+==31050==    by 0x95042A4: exit (exit.c:104)
+==31050==    by 0x94E9ECB: (below main) (libc-start.c:321)
+==31050== 
+
+ I like, you like...
+ **********************************************************
+ *                    nulike 1.0.0                        *
+ *               Pat Scott, Chris Savage                  *
+ *         JCAP (2012) 11:057, arXiv:1207.0810)           *
+ *         JCAP (2015) xx:xxx, arXiv:150y.yyyy)           *
+ **********************************************************
+ Initialisation of nulike analysis 'IC-22                                                                                                                                                                                                                                                                                                       ' complete.
+ Initialisation of nulike analysis 'IC-79 WH                                                                                                                                                                                                                                                                                                    ' complete.
+ Initialisation of nulike analysis 'IC-79 WL                                                                                                                                                                                                                                                                                                    ' complete.
+ Initialisation of nulike analysis 'IC-79 SL                                                                                                                                                                                                                                                                                                    ' complete.
+==31050== 
+==31050== HEAP SUMMARY:
+==31050==     in use at exit: 2,284,650 bytes in 27,509 blocks
+==31050==   total heap usage: 9,510,403 allocs, 9,482,895 frees, 547,946,285 bytes allocated
+==31050== 
+==31050== 29 bytes in 1 blocks are indirectly lost in loss record 11,521 of 24,565
+==31050==    at 0x4C2B0E0: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x8C3B3B8: std::string::_Rep::_S_create(unsigned long, unsigned long, std::allocator<char> const&) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3B545: std::string::_M_mutate(unsigned long, unsigned long, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3BAED: std::string::_M_replace_safe(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x18BCE7D: Gambit::ColliderBit::Analysis_ATLAS_0LEPStop_20invfb::analyze(HEPUtils::Event const*) (Analysis_ATLAS_0LEPStop_20invfb.cpp:539)
+==31050==    by 0x188F27F: Gambit::ColliderBit::Analysis::analyze(HEPUtils::Event const&) (Analysis.hpp:57)
+==31050==    by 0x188C1EB: Gambit::ColliderBit::runAnalyses(std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > >&) (ColliderBit.cpp:621)
+==31050==    by 0x161CAEF: Gambit::module_functor<std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > > >::calculate() (functors.cpp:1483)
+==31050==    by 0x159C89B: Gambit::functor::reset_and_calculate() (functors.cpp:110)
+==31050==    by 0x15A310D: Gambit::module_functor_common::iterate(int) (functors.cpp:698)
+==31050==    by 0x1413CB8: Gambit::ColliderBit::Functown::operatePythia_iterate(int) (ColliderBit_rollcall.hpp:34)
+==31050==    by 0x188CA1A: Gambit::ColliderBit::operatePythia() [clone ._omp_fn.0] (ColliderBit.cpp:108)
+==31050== 
+==31050== 29 bytes in 1 blocks are indirectly lost in loss record 11,522 of 24,565
+==31050==    at 0x4C2B0E0: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x8C3B3B8: std::string::_Rep::_S_create(unsigned long, unsigned long, std::allocator<char> const&) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3B545: std::string::_M_mutate(unsigned long, unsigned long, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3BAED: std::string::_M_replace_safe(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x18BCEA6: Gambit::ColliderBit::Analysis_ATLAS_0LEPStop_20invfb::analyze(HEPUtils::Event const*) (Analysis_ATLAS_0LEPStop_20invfb.cpp:540)
+==31050==    by 0x188F27F: Gambit::ColliderBit::Analysis::analyze(HEPUtils::Event const&) (Analysis.hpp:57)
+==31050==    by 0x188C1EB: Gambit::ColliderBit::runAnalyses(std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > >&) (ColliderBit.cpp:621)
+==31050==    by 0x161CAEF: Gambit::module_functor<std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > > >::calculate() (functors.cpp:1483)
+==31050==    by 0x159C89B: Gambit::functor::reset_and_calculate() (functors.cpp:110)
+==31050==    by 0x15A310D: Gambit::module_functor_common::iterate(int) (functors.cpp:698)
+==31050==    by 0x1413CB8: Gambit::ColliderBit::Functown::operatePythia_iterate(int) (ColliderBit_rollcall.hpp:34)
+==31050==    by 0x188CA1A: Gambit::ColliderBit::operatePythia() [clone ._omp_fn.0] (ColliderBit.cpp:108)
+==31050== 
+==31050== 29 bytes in 1 blocks are indirectly lost in loss record 11,523 of 24,565
+==31050==    at 0x4C2B0E0: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x8C3B3B8: std::string::_Rep::_S_create(unsigned long, unsigned long, std::allocator<char> const&) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3B545: std::string::_M_mutate(unsigned long, unsigned long, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3BAED: std::string::_M_replace_safe(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x18BCECF: Gambit::ColliderBit::Analysis_ATLAS_0LEPStop_20invfb::analyze(HEPUtils::Event const*) (Analysis_ATLAS_0LEPStop_20invfb.cpp:541)
+==31050==    by 0x188F27F: Gambit::ColliderBit::Analysis::analyze(HEPUtils::Event const&) (Analysis.hpp:57)
+==31050==    by 0x188C1EB: Gambit::ColliderBit::runAnalyses(std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > >&) (ColliderBit.cpp:621)
+==31050==    by 0x161CAEF: Gambit::module_functor<std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > > >::calculate() (functors.cpp:1483)
+==31050==    by 0x159C89B: Gambit::functor::reset_and_calculate() (functors.cpp:110)
+==31050==    by 0x15A310D: Gambit::module_functor_common::iterate(int) (functors.cpp:698)
+==31050==    by 0x1413CB8: Gambit::ColliderBit::Functown::operatePythia_iterate(int) (ColliderBit_rollcall.hpp:34)
+==31050==    by 0x188CA1A: Gambit::ColliderBit::operatePythia() [clone ._omp_fn.0] (ColliderBit.cpp:108)
+==31050== 
+==31050== 30 bytes in 1 blocks are indirectly lost in loss record 11,538 of 24,565
+==31050==    at 0x4C2B0E0: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x8C3B3B8: std::string::_Rep::_S_create(unsigned long, unsigned long, std::allocator<char> const&) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3B545: std::string::_M_mutate(unsigned long, unsigned long, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3BAED: std::string::_M_replace_safe(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x18BCD0C: Gambit::ColliderBit::Analysis_ATLAS_0LEPStop_20invfb::analyze(HEPUtils::Event const*) (Analysis_ATLAS_0LEPStop_20invfb.cpp:530)
+==31050==    by 0x188F27F: Gambit::ColliderBit::Analysis::analyze(HEPUtils::Event const&) (Analysis.hpp:57)
+==31050==    by 0x188C1EB: Gambit::ColliderBit::runAnalyses(std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > >&) (ColliderBit.cpp:621)
+==31050==    by 0x161CAEF: Gambit::module_functor<std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > > >::calculate() (functors.cpp:1483)
+==31050==    by 0x159C89B: Gambit::functor::reset_and_calculate() (functors.cpp:110)
+==31050==    by 0x15A310D: Gambit::module_functor_common::iterate(int) (functors.cpp:698)
+==31050==    by 0x1413CB8: Gambit::ColliderBit::Functown::operatePythia_iterate(int) (ColliderBit_rollcall.hpp:34)
+==31050==    by 0x188CA1A: Gambit::ColliderBit::operatePythia() [clone ._omp_fn.0] (ColliderBit.cpp:108)
+==31050== 
+==31050== 30 bytes in 1 blocks are indirectly lost in loss record 11,539 of 24,565
+==31050==    at 0x4C2B0E0: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x8C3B3B8: std::string::_Rep::_S_create(unsigned long, unsigned long, std::allocator<char> const&) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3B545: std::string::_M_mutate(unsigned long, unsigned long, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3BAED: std::string::_M_replace_safe(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x18BCD35: Gambit::ColliderBit::Analysis_ATLAS_0LEPStop_20invfb::analyze(HEPUtils::Event const*) (Analysis_ATLAS_0LEPStop_20invfb.cpp:531)
+==31050==    by 0x188F27F: Gambit::ColliderBit::Analysis::analyze(HEPUtils::Event const&) (Analysis.hpp:57)
+==31050==    by 0x188C1EB: Gambit::ColliderBit::runAnalyses(std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > >&) (ColliderBit.cpp:621)
+==31050==    by 0x161CAEF: Gambit::module_functor<std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > > >::calculate() (functors.cpp:1483)
+==31050==    by 0x159C89B: Gambit::functor::reset_and_calculate() (functors.cpp:110)
+==31050==    by 0x15A310D: Gambit::module_functor_common::iterate(int) (functors.cpp:698)
+==31050==    by 0x1413CB8: Gambit::ColliderBit::Functown::operatePythia_iterate(int) (ColliderBit_rollcall.hpp:34)
+==31050==    by 0x188CA1A: Gambit::ColliderBit::operatePythia() [clone ._omp_fn.0] (ColliderBit.cpp:108)
+==31050== 
+==31050== 30 bytes in 1 blocks are indirectly lost in loss record 11,540 of 24,565
+==31050==    at 0x4C2B0E0: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x8C3B3B8: std::string::_Rep::_S_create(unsigned long, unsigned long, std::allocator<char> const&) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3B545: std::string::_M_mutate(unsigned long, unsigned long, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3BAED: std::string::_M_replace_safe(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x18BCD5E: Gambit::ColliderBit::Analysis_ATLAS_0LEPStop_20invfb::analyze(HEPUtils::Event const*) (Analysis_ATLAS_0LEPStop_20invfb.cpp:532)
+==31050==    by 0x188F27F: Gambit::ColliderBit::Analysis::analyze(HEPUtils::Event const&) (Analysis.hpp:57)
+==31050==    by 0x188C1EB: Gambit::ColliderBit::runAnalyses(std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > >&) (ColliderBit.cpp:621)
+==31050==    by 0x161CAEF: Gambit::module_functor<std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > > >::calculate() (functors.cpp:1483)
+==31050==    by 0x159C89B: Gambit::functor::reset_and_calculate() (functors.cpp:110)
+==31050==    by 0x15A310D: Gambit::module_functor_common::iterate(int) (functors.cpp:698)
+==31050==    by 0x1413CB8: Gambit::ColliderBit::Functown::operatePythia_iterate(int) (ColliderBit_rollcall.hpp:34)
+==31050==    by 0x188CA1A: Gambit::ColliderBit::operatePythia() [clone ._omp_fn.0] (ColliderBit.cpp:108)
+==31050== 
+==31050== 30 bytes in 1 blocks are indirectly lost in loss record 11,541 of 24,565
+==31050==    at 0x4C2B0E0: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x8C3B3B8: std::string::_Rep::_S_create(unsigned long, unsigned long, std::allocator<char> const&) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3B545: std::string::_M_mutate(unsigned long, unsigned long, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3BAED: std::string::_M_replace_safe(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x18BCD87: Gambit::ColliderBit::Analysis_ATLAS_0LEPStop_20invfb::analyze(HEPUtils::Event const*) (Analysis_ATLAS_0LEPStop_20invfb.cpp:533)
+==31050==    by 0x188F27F: Gambit::ColliderBit::Analysis::analyze(HEPUtils::Event const&) (Analysis.hpp:57)
+==31050==    by 0x188C1EB: Gambit::ColliderBit::runAnalyses(std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > >&) (ColliderBit.cpp:621)
+==31050==    by 0x161CAEF: Gambit::module_functor<std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > > >::calculate() (functors.cpp:1483)
+==31050==    by 0x159C89B: Gambit::functor::reset_and_calculate() (functors.cpp:110)
+==31050==    by 0x15A310D: Gambit::module_functor_common::iterate(int) (functors.cpp:698)
+==31050==    by 0x1413CB8: Gambit::ColliderBit::Functown::operatePythia_iterate(int) (ColliderBit_rollcall.hpp:34)
+==31050==    by 0x188CA1A: Gambit::ColliderBit::operatePythia() [clone ._omp_fn.0] (ColliderBit.cpp:108)
+==31050== 
+==31050== 33 bytes in 1 blocks are indirectly lost in loss record 13,671 of 24,565
+==31050==    at 0x4C2B0E0: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x8C3B3B8: std::string::_Rep::_S_create(unsigned long, unsigned long, std::allocator<char> const&) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3B545: std::string::_M_mutate(unsigned long, unsigned long, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3BAED: std::string::_M_replace_safe(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x18BCB9B: Gambit::ColliderBit::Analysis_ATLAS_0LEPStop_20invfb::analyze(HEPUtils::Event const*) (Analysis_ATLAS_0LEPStop_20invfb.cpp:521)
+==31050==    by 0x188F27F: Gambit::ColliderBit::Analysis::analyze(HEPUtils::Event const&) (Analysis.hpp:57)
+==31050==    by 0x188C1EB: Gambit::ColliderBit::runAnalyses(std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > >&) (ColliderBit.cpp:621)
+==31050==    by 0x161CAEF: Gambit::module_functor<std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > > >::calculate() (functors.cpp:1483)
+==31050==    by 0x159C89B: Gambit::functor::reset_and_calculate() (functors.cpp:110)
+==31050==    by 0x15A310D: Gambit::module_functor_common::iterate(int) (functors.cpp:698)
+==31050==    by 0x1413CB8: Gambit::ColliderBit::Functown::operatePythia_iterate(int) (ColliderBit_rollcall.hpp:34)
+==31050==    by 0x188CA1A: Gambit::ColliderBit::operatePythia() [clone ._omp_fn.0] (ColliderBit.cpp:108)
+==31050== 
+==31050== 33 bytes in 1 blocks are indirectly lost in loss record 13,672 of 24,565
+==31050==    at 0x4C2B0E0: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x8C3B3B8: std::string::_Rep::_S_create(unsigned long, unsigned long, std::allocator<char> const&) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3B545: std::string::_M_mutate(unsigned long, unsigned long, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3BAED: std::string::_M_replace_safe(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x18A06C4: Gambit::ColliderBit::Analysis_ATLAS_1LEPStop_20invfb::analyze(HEPUtils::Event const*) (Analysis_ATLAS_1LEPStop_20invfb.cpp:467)
+==31050==    by 0x188F27F: Gambit::ColliderBit::Analysis::analyze(HEPUtils::Event const&) (Analysis.hpp:57)
+==31050==    by 0x188C1EB: Gambit::ColliderBit::runAnalyses(std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > >&) (ColliderBit.cpp:621)
+==31050==    by 0x161CAEF: Gambit::module_functor<std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > > >::calculate() (functors.cpp:1483)
+==31050==    by 0x159C89B: Gambit::functor::reset_and_calculate() (functors.cpp:110)
+==31050==    by 0x15A310D: Gambit::module_functor_common::iterate(int) (functors.cpp:698)
+==31050==    by 0x1413CB8: Gambit::ColliderBit::Functown::operatePythia_iterate(int) (ColliderBit_rollcall.hpp:34)
+==31050==    by 0x188CA1A: Gambit::ColliderBit::operatePythia() [clone ._omp_fn.0] (ColliderBit.cpp:108)
+==31050== 
+==31050== 34 bytes in 1 blocks are indirectly lost in loss record 13,684 of 24,565
+==31050==    at 0x4C2B0E0: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x8C3B3B8: std::string::_Rep::_S_create(unsigned long, unsigned long, std::allocator<char> const&) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3B545: std::string::_M_mutate(unsigned long, unsigned long, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3BAED: std::string::_M_replace_safe(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x18BCCBA: Gambit::ColliderBit::Analysis_ATLAS_0LEPStop_20invfb::analyze(HEPUtils::Event const*) (Analysis_ATLAS_0LEPStop_20invfb.cpp:528)
+==31050==    by 0x188F27F: Gambit::ColliderBit::Analysis::analyze(HEPUtils::Event const&) (Analysis.hpp:57)
+==31050==    by 0x188C1EB: Gambit::ColliderBit::runAnalyses(std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > >&) (ColliderBit.cpp:621)
+==31050==    by 0x161CAEF: Gambit::module_functor<std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > > >::calculate() (functors.cpp:1483)
+==31050==    by 0x159C89B: Gambit::functor::reset_and_calculate() (functors.cpp:110)
+==31050==    by 0x15A310D: Gambit::module_functor_common::iterate(int) (functors.cpp:698)
+==31050==    by 0x1413CB8: Gambit::ColliderBit::Functown::operatePythia_iterate(int) (ColliderBit_rollcall.hpp:34)
+==31050==    by 0x188CA1A: Gambit::ColliderBit::operatePythia() [clone ._omp_fn.0] (ColliderBit.cpp:108)
+==31050== 
+==31050== 36 bytes in 1 blocks are indirectly lost in loss record 13,696 of 24,565
+==31050==    at 0x4C2B0E0: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x8C3B3B8: std::string::_Rep::_S_create(unsigned long, unsigned long, std::allocator<char> const&) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3B545: std::string::_M_mutate(unsigned long, unsigned long, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3BAED: std::string::_M_replace_safe(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x18BCC91: Gambit::ColliderBit::Analysis_ATLAS_0LEPStop_20invfb::analyze(HEPUtils::Event const*) (Analysis_ATLAS_0LEPStop_20invfb.cpp:527)
+==31050==    by 0x188F27F: Gambit::ColliderBit::Analysis::analyze(HEPUtils::Event const&) (Analysis.hpp:57)
+==31050==    by 0x188C1EB: Gambit::ColliderBit::runAnalyses(std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > >&) (ColliderBit.cpp:621)
+==31050==    by 0x161CAEF: Gambit::module_functor<std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > > >::calculate() (functors.cpp:1483)
+==31050==    by 0x159C89B: Gambit::functor::reset_and_calculate() (functors.cpp:110)
+==31050==    by 0x15A310D: Gambit::module_functor_common::iterate(int) (functors.cpp:698)
+==31050==    by 0x1413CB8: Gambit::ColliderBit::Functown::operatePythia_iterate(int) (ColliderBit_rollcall.hpp:34)
+==31050==    by 0x188CA1A: Gambit::ColliderBit::operatePythia() [clone ._omp_fn.0] (ColliderBit.cpp:108)
+==31050== 
+==31050== 36 bytes in 1 blocks are indirectly lost in loss record 13,697 of 24,565
+==31050==    at 0x4C2B0E0: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x8C3B3B8: std::string::_Rep::_S_create(unsigned long, unsigned long, std::allocator<char> const&) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3B545: std::string::_M_mutate(unsigned long, unsigned long, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3BAED: std::string::_M_replace_safe(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x18A073F: Gambit::ColliderBit::Analysis_ATLAS_1LEPStop_20invfb::analyze(HEPUtils::Event const*) (Analysis_ATLAS_1LEPStop_20invfb.cpp:470)
+==31050==    by 0x188F27F: Gambit::ColliderBit::Analysis::analyze(HEPUtils::Event const&) (Analysis.hpp:57)
+==31050==    by 0x188C1EB: Gambit::ColliderBit::runAnalyses(std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > >&) (ColliderBit.cpp:621)
+==31050==    by 0x161CAEF: Gambit::module_functor<std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > > >::calculate() (functors.cpp:1483)
+==31050==    by 0x159C89B: Gambit::functor::reset_and_calculate() (functors.cpp:110)
+==31050==    by 0x15A310D: Gambit::module_functor_common::iterate(int) (functors.cpp:698)
+==31050==    by 0x1413CB8: Gambit::ColliderBit::Functown::operatePythia_iterate(int) (ColliderBit_rollcall.hpp:34)
+==31050==    by 0x188CA1A: Gambit::ColliderBit::operatePythia() [clone ._omp_fn.0] (ColliderBit.cpp:108)
+==31050== 
+==31050== 36 bytes in 1 blocks are indirectly lost in loss record 13,698 of 24,565
+==31050==    at 0x4C2B0E0: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x8C3B3B8: std::string::_Rep::_S_create(unsigned long, unsigned long, std::allocator<char> const&) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3B545: std::string::_M_mutate(unsigned long, unsigned long, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3BAED: std::string::_M_replace_safe(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x18A0A73: Gambit::ColliderBit::Analysis_ATLAS_1LEPStop_20invfb::analyze(HEPUtils::Event const*) (Analysis_ATLAS_1LEPStop_20invfb.cpp:491)
+==31050==    by 0x188F27F: Gambit::ColliderBit::Analysis::analyze(HEPUtils::Event const&) (Analysis.hpp:57)
+==31050==    by 0x188C1EB: Gambit::ColliderBit::runAnalyses(std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > >&) (ColliderBit.cpp:621)
+==31050==    by 0x161CAEF: Gambit::module_functor<std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > > >::calculate() (functors.cpp:1483)
+==31050==    by 0x159C89B: Gambit::functor::reset_and_calculate() (functors.cpp:110)
+==31050==    by 0x15A310D: Gambit::module_functor_common::iterate(int) (functors.cpp:698)
+==31050==    by 0x1413CB8: Gambit::ColliderBit::Functown::operatePythia_iterate(int) (ColliderBit_rollcall.hpp:34)
+==31050==    by 0x188CA1A: Gambit::ColliderBit::operatePythia() [clone ._omp_fn.0] (ColliderBit.cpp:108)
+==31050== 
+==31050== 37 bytes in 1 blocks are indirectly lost in loss record 13,709 of 24,565
+==31050==    at 0x4C2B0E0: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x8C3B3B8: std::string::_Rep::_S_create(unsigned long, unsigned long, std::allocator<char> const&) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3B545: std::string::_M_mutate(unsigned long, unsigned long, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3BAED: std::string::_M_replace_safe(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x18BCBED: Gambit::ColliderBit::Analysis_ATLAS_0LEPStop_20invfb::analyze(HEPUtils::Event const*) (Analysis_ATLAS_0LEPStop_20invfb.cpp:523)
+==31050==    by 0x188F27F: Gambit::ColliderBit::Analysis::analyze(HEPUtils::Event const&) (Analysis.hpp:57)
+==31050==    by 0x188C1EB: Gambit::ColliderBit::runAnalyses(std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > >&) (ColliderBit.cpp:621)
+==31050==    by 0x161CAEF: Gambit::module_functor<std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > > >::calculate() (functors.cpp:1483)
+==31050==    by 0x159C89B: Gambit::functor::reset_and_calculate() (functors.cpp:110)
+==31050==    by 0x15A310D: Gambit::module_functor_common::iterate(int) (functors.cpp:698)
+==31050==    by 0x1413CB8: Gambit::ColliderBit::Functown::operatePythia_iterate(int) (ColliderBit_rollcall.hpp:34)
+==31050==    by 0x188CA1A: Gambit::ColliderBit::operatePythia() [clone ._omp_fn.0] (ColliderBit.cpp:108)
+==31050== 
+==31050== 39 bytes in 1 blocks are indirectly lost in loss record 13,723 of 24,565
+==31050==    at 0x4C2B0E0: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x8C3B3B8: std::string::_Rep::_S_create(unsigned long, unsigned long, std::allocator<char> const&) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3B545: std::string::_M_mutate(unsigned long, unsigned long, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3BAED: std::string::_M_replace_safe(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x18BCBC4: Gambit::ColliderBit::Analysis_ATLAS_0LEPStop_20invfb::analyze(HEPUtils::Event const*) (Analysis_ATLAS_0LEPStop_20invfb.cpp:522)
+==31050==    by 0x188F27F: Gambit::ColliderBit::Analysis::analyze(HEPUtils::Event const&) (Analysis.hpp:57)
+==31050==    by 0x188C1EB: Gambit::ColliderBit::runAnalyses(std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > >&) (ColliderBit.cpp:621)
+==31050==    by 0x161CAEF: Gambit::module_functor<std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > > >::calculate() (functors.cpp:1483)
+==31050==    by 0x159C89B: Gambit::functor::reset_and_calculate() (functors.cpp:110)
+==31050==    by 0x15A310D: Gambit::module_functor_common::iterate(int) (functors.cpp:698)
+==31050==    by 0x1413CB8: Gambit::ColliderBit::Functown::operatePythia_iterate(int) (ColliderBit_rollcall.hpp:34)
+==31050==    by 0x188CA1A: Gambit::ColliderBit::operatePythia() [clone ._omp_fn.0] (ColliderBit.cpp:108)
+==31050== 
+==31050== 39 bytes in 1 blocks are indirectly lost in loss record 13,724 of 24,565
+==31050==    at 0x4C2B0E0: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x8C3B3B8: std::string::_Rep::_S_create(unsigned long, unsigned long, std::allocator<char> const&) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3B545: std::string::_M_mutate(unsigned long, unsigned long, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3BAED: std::string::_M_replace_safe(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x18BCC16: Gambit::ColliderBit::Analysis_ATLAS_0LEPStop_20invfb::analyze(HEPUtils::Event const*) (Analysis_ATLAS_0LEPStop_20invfb.cpp:524)
+==31050==    by 0x188F27F: Gambit::ColliderBit::Analysis::analyze(HEPUtils::Event const&) (Analysis.hpp:57)
+==31050==    by 0x188C1EB: Gambit::ColliderBit::runAnalyses(std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > >&) (ColliderBit.cpp:621)
+==31050==    by 0x161CAEF: Gambit::module_functor<std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > > >::calculate() (functors.cpp:1483)
+==31050==    by 0x159C89B: Gambit::functor::reset_and_calculate() (functors.cpp:110)
+==31050==    by 0x15A310D: Gambit::module_functor_common::iterate(int) (functors.cpp:698)
+==31050==    by 0x1413CB8: Gambit::ColliderBit::Functown::operatePythia_iterate(int) (ColliderBit_rollcall.hpp:34)
+==31050==    by 0x188CA1A: Gambit::ColliderBit::operatePythia() [clone ._omp_fn.0] (ColliderBit.cpp:108)
+==31050== 
+==31050== 39 bytes in 1 blocks are indirectly lost in loss record 13,725 of 24,565
+==31050==    at 0x4C2B0E0: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x8C3B3B8: std::string::_Rep::_S_create(unsigned long, unsigned long, std::allocator<char> const&) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3B545: std::string::_M_mutate(unsigned long, unsigned long, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3BAED: std::string::_M_replace_safe(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x18BCE2B: Gambit::ColliderBit::Analysis_ATLAS_0LEPStop_20invfb::analyze(HEPUtils::Event const*) (Analysis_ATLAS_0LEPStop_20invfb.cpp:537)
+==31050==    by 0x188F27F: Gambit::ColliderBit::Analysis::analyze(HEPUtils::Event const&) (Analysis.hpp:57)
+==31050==    by 0x188C1EB: Gambit::ColliderBit::runAnalyses(std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > >&) (ColliderBit.cpp:621)
+==31050==    by 0x161CAEF: Gambit::module_functor<std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > > >::calculate() (functors.cpp:1483)
+==31050==    by 0x159C89B: Gambit::functor::reset_and_calculate() (functors.cpp:110)
+==31050==    by 0x15A310D: Gambit::module_functor_common::iterate(int) (functors.cpp:698)
+==31050==    by 0x1413CB8: Gambit::ColliderBit::Functown::operatePythia_iterate(int) (ColliderBit_rollcall.hpp:34)
+==31050==    by 0x188CA1A: Gambit::ColliderBit::operatePythia() [clone ._omp_fn.0] (ColliderBit.cpp:108)
+==31050== 
+==31050== 40 bytes in 1 blocks are indirectly lost in loss record 15,957 of 24,565
+==31050==    at 0x4C2B0E0: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x8C3B3B8: std::string::_Rep::_S_create(unsigned long, unsigned long, std::allocator<char> const&) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3B545: std::string::_M_mutate(unsigned long, unsigned long, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3BAED: std::string::_M_replace_safe(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x18BCE54: Gambit::ColliderBit::Analysis_ATLAS_0LEPStop_20invfb::analyze(HEPUtils::Event const*) (Analysis_ATLAS_0LEPStop_20invfb.cpp:538)
+==31050==    by 0x188F27F: Gambit::ColliderBit::Analysis::analyze(HEPUtils::Event const&) (Analysis.hpp:57)
+==31050==    by 0x188C1EB: Gambit::ColliderBit::runAnalyses(std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > >&) (ColliderBit.cpp:621)
+==31050==    by 0x161CAEF: Gambit::module_functor<std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > > >::calculate() (functors.cpp:1483)
+==31050==    by 0x159C89B: Gambit::functor::reset_and_calculate() (functors.cpp:110)
+==31050==    by 0x15A310D: Gambit::module_functor_common::iterate(int) (functors.cpp:698)
+==31050==    by 0x1413CB8: Gambit::ColliderBit::Functown::operatePythia_iterate(int) (ColliderBit_rollcall.hpp:34)
+==31050==    by 0x188CA1A: Gambit::ColliderBit::operatePythia() [clone ._omp_fn.0] (ColliderBit.cpp:108)
+==31050== 
+==31050== 41 bytes in 1 blocks are indirectly lost in loss record 15,961 of 24,565
+==31050==    at 0x4C2B0E0: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x8C3B3B8: std::string::_Rep::_S_create(unsigned long, unsigned long, std::allocator<char> const&) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3B545: std::string::_M_mutate(unsigned long, unsigned long, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3BAED: std::string::_M_replace_safe(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x18BCCE3: Gambit::ColliderBit::Analysis_ATLAS_0LEPStop_20invfb::analyze(HEPUtils::Event const*) (Analysis_ATLAS_0LEPStop_20invfb.cpp:529)
+==31050==    by 0x188F27F: Gambit::ColliderBit::Analysis::analyze(HEPUtils::Event const&) (Analysis.hpp:57)
+==31050==    by 0x188C1EB: Gambit::ColliderBit::runAnalyses(std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > >&) (ColliderBit.cpp:621)
+==31050==    by 0x161CAEF: Gambit::module_functor<std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > > >::calculate() (functors.cpp:1483)
+==31050==    by 0x159C89B: Gambit::functor::reset_and_calculate() (functors.cpp:110)
+==31050==    by 0x15A310D: Gambit::module_functor_common::iterate(int) (functors.cpp:698)
+==31050==    by 0x1413CB8: Gambit::ColliderBit::Functown::operatePythia_iterate(int) (ColliderBit_rollcall.hpp:34)
+==31050==    by 0x188CA1A: Gambit::ColliderBit::operatePythia() [clone ._omp_fn.0] (ColliderBit.cpp:108)
+==31050== 
+==31050== 41 bytes in 1 blocks are indirectly lost in loss record 15,962 of 24,565
+==31050==    at 0x4C2B0E0: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x8C3B3B8: std::string::_Rep::_S_create(unsigned long, unsigned long, std::allocator<char> const&) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3B545: std::string::_M_mutate(unsigned long, unsigned long, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3BAED: std::string::_M_replace_safe(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x18BCE02: Gambit::ColliderBit::Analysis_ATLAS_0LEPStop_20invfb::analyze(HEPUtils::Event const*) (Analysis_ATLAS_0LEPStop_20invfb.cpp:536)
+==31050==    by 0x188F27F: Gambit::ColliderBit::Analysis::analyze(HEPUtils::Event const&) (Analysis.hpp:57)
+==31050==    by 0x188C1EB: Gambit::ColliderBit::runAnalyses(std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > >&) (ColliderBit.cpp:621)
+==31050==    by 0x161CAEF: Gambit::module_functor<std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > > >::calculate() (functors.cpp:1483)
+==31050==    by 0x159C89B: Gambit::functor::reset_and_calculate() (functors.cpp:110)
+==31050==    by 0x15A310D: Gambit::module_functor_common::iterate(int) (functors.cpp:698)
+==31050==    by 0x1413CB8: Gambit::ColliderBit::Functown::operatePythia_iterate(int) (ColliderBit_rollcall.hpp:34)
+==31050==    by 0x188CA1A: Gambit::ColliderBit::operatePythia() [clone ._omp_fn.0] (ColliderBit.cpp:108)
+==31050== 
+==31050== 42 bytes in 1 blocks are indirectly lost in loss record 15,967 of 24,565
+==31050==    at 0x4C2B0E0: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x8C3B3B8: std::string::_Rep::_S_create(unsigned long, unsigned long, std::allocator<char> const&) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3B545: std::string::_M_mutate(unsigned long, unsigned long, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3BAED: std::string::_M_replace_safe(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x18A0A21: Gambit::ColliderBit::Analysis_ATLAS_1LEPStop_20invfb::analyze(HEPUtils::Event const*) (Analysis_ATLAS_1LEPStop_20invfb.cpp:489)
+==31050==    by 0x188F27F: Gambit::ColliderBit::Analysis::analyze(HEPUtils::Event const&) (Analysis.hpp:57)
+==31050==    by 0x188C1EB: Gambit::ColliderBit::runAnalyses(std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > >&) (ColliderBit.cpp:621)
+==31050==    by 0x161CAEF: Gambit::module_functor<std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > > >::calculate() (functors.cpp:1483)
+==31050==    by 0x159C89B: Gambit::functor::reset_and_calculate() (functors.cpp:110)
+==31050==    by 0x15A310D: Gambit::module_functor_common::iterate(int) (functors.cpp:698)
+==31050==    by 0x1413CB8: Gambit::ColliderBit::Functown::operatePythia_iterate(int) (ColliderBit_rollcall.hpp:34)
+==31050==    by 0x188CA1A: Gambit::ColliderBit::operatePythia() [clone ._omp_fn.0] (ColliderBit.cpp:108)
+==31050== 
+==31050== 44 bytes in 1 blocks are indirectly lost in loss record 15,982 of 24,565
+==31050==    at 0x4C2B0E0: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x8C3B3B8: std::string::_Rep::_S_create(unsigned long, unsigned long, std::allocator<char> const&) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3B545: std::string::_M_mutate(unsigned long, unsigned long, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3BAED: std::string::_M_replace_safe(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x18BCDD9: Gambit::ColliderBit::Analysis_ATLAS_0LEPStop_20invfb::analyze(HEPUtils::Event const*) (Analysis_ATLAS_0LEPStop_20invfb.cpp:535)
+==31050==    by 0x188F27F: Gambit::ColliderBit::Analysis::analyze(HEPUtils::Event const&) (Analysis.hpp:57)
+==31050==    by 0x188C1EB: Gambit::ColliderBit::runAnalyses(std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > >&) (ColliderBit.cpp:621)
+==31050==    by 0x161CAEF: Gambit::module_functor<std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > > >::calculate() (functors.cpp:1483)
+==31050==    by 0x159C89B: Gambit::functor::reset_and_calculate() (functors.cpp:110)
+==31050==    by 0x15A310D: Gambit::module_functor_common::iterate(int) (functors.cpp:698)
+==31050==    by 0x1413CB8: Gambit::ColliderBit::Functown::operatePythia_iterate(int) (ColliderBit_rollcall.hpp:34)
+==31050==    by 0x188CA1A: Gambit::ColliderBit::operatePythia() [clone ._omp_fn.0] (ColliderBit.cpp:108)
+==31050== 
+==31050== 45 bytes in 1 blocks are indirectly lost in loss record 15,985 of 24,565
+==31050==    at 0x4C2B0E0: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x8C3B3B8: std::string::_Rep::_S_create(unsigned long, unsigned long, std::allocator<char> const&) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3B545: std::string::_M_mutate(unsigned long, unsigned long, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3BAED: std::string::_M_replace_safe(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x18BCDB0: Gambit::ColliderBit::Analysis_ATLAS_0LEPStop_20invfb::analyze(HEPUtils::Event const*) (Analysis_ATLAS_0LEPStop_20invfb.cpp:534)
+==31050==    by 0x188F27F: Gambit::ColliderBit::Analysis::analyze(HEPUtils::Event const&) (Analysis.hpp:57)
+==31050==    by 0x188C1EB: Gambit::ColliderBit::runAnalyses(std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > >&) (ColliderBit.cpp:621)
+==31050==    by 0x161CAEF: Gambit::module_functor<std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > > >::calculate() (functors.cpp:1483)
+==31050==    by 0x159C89B: Gambit::functor::reset_and_calculate() (functors.cpp:110)
+==31050==    by 0x15A310D: Gambit::module_functor_common::iterate(int) (functors.cpp:698)
+==31050==    by 0x1413CB8: Gambit::ColliderBit::Functown::operatePythia_iterate(int) (ColliderBit_rollcall.hpp:34)
+==31050==    by 0x188CA1A: Gambit::ColliderBit::operatePythia() [clone ._omp_fn.0] (ColliderBit.cpp:108)
+==31050== 
+==31050== 46 bytes in 1 blocks are indirectly lost in loss record 15,988 of 24,565
+==31050==    at 0x4C2B0E0: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x8C3B3B8: std::string::_Rep::_S_create(unsigned long, unsigned long, std::allocator<char> const&) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3B545: std::string::_M_mutate(unsigned long, unsigned long, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3BAED: std::string::_M_replace_safe(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x18BCC68: Gambit::ColliderBit::Analysis_ATLAS_0LEPStop_20invfb::analyze(HEPUtils::Event const*) (Analysis_ATLAS_0LEPStop_20invfb.cpp:526)
+==31050==    by 0x188F27F: Gambit::ColliderBit::Analysis::analyze(HEPUtils::Event const&) (Analysis.hpp:57)
+==31050==    by 0x188C1EB: Gambit::ColliderBit::runAnalyses(std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > >&) (ColliderBit.cpp:621)
+==31050==    by 0x161CAEF: Gambit::module_functor<std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > > >::calculate() (functors.cpp:1483)
+==31050==    by 0x159C89B: Gambit::functor::reset_and_calculate() (functors.cpp:110)
+==31050==    by 0x15A310D: Gambit::module_functor_common::iterate(int) (functors.cpp:698)
+==31050==    by 0x1413CB8: Gambit::ColliderBit::Functown::operatePythia_iterate(int) (ColliderBit_rollcall.hpp:34)
+==31050==    by 0x188CA1A: Gambit::ColliderBit::operatePythia() [clone ._omp_fn.0] (ColliderBit.cpp:108)
+==31050== 
+==31050== 46 bytes in 1 blocks are indirectly lost in loss record 15,989 of 24,565
+==31050==    at 0x4C2B0E0: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x8C3B3B8: std::string::_Rep::_S_create(unsigned long, unsigned long, std::allocator<char> const&) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3B545: std::string::_M_mutate(unsigned long, unsigned long, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3BAED: std::string::_M_replace_safe(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x18A06ED: Gambit::ColliderBit::Analysis_ATLAS_1LEPStop_20invfb::analyze(HEPUtils::Event const*) (Analysis_ATLAS_1LEPStop_20invfb.cpp:468)
+==31050==    by 0x188F27F: Gambit::ColliderBit::Analysis::analyze(HEPUtils::Event const&) (Analysis.hpp:57)
+==31050==    by 0x188C1EB: Gambit::ColliderBit::runAnalyses(std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > >&) (ColliderBit.cpp:621)
+==31050==    by 0x161CAEF: Gambit::module_functor<std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > > >::calculate() (functors.cpp:1483)
+==31050==    by 0x159C89B: Gambit::functor::reset_and_calculate() (functors.cpp:110)
+==31050==    by 0x15A310D: Gambit::module_functor_common::iterate(int) (functors.cpp:698)
+==31050==    by 0x1413CB8: Gambit::ColliderBit::Functown::operatePythia_iterate(int) (ColliderBit_rollcall.hpp:34)
+==31050==    by 0x188CA1A: Gambit::ColliderBit::operatePythia() [clone ._omp_fn.0] (ColliderBit.cpp:108)
+==31050== 
+==31050== 46 bytes in 1 blocks are indirectly lost in loss record 15,990 of 24,565
+==31050==    at 0x4C2B0E0: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x8C3B3B8: std::string::_Rep::_S_create(unsigned long, unsigned long, std::allocator<char> const&) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3B545: std::string::_M_mutate(unsigned long, unsigned long, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3BAED: std::string::_M_replace_safe(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x18A085E: Gambit::ColliderBit::Analysis_ATLAS_1LEPStop_20invfb::analyze(HEPUtils::Event const*) (Analysis_ATLAS_1LEPStop_20invfb.cpp:477)
+==31050==    by 0x188F27F: Gambit::ColliderBit::Analysis::analyze(HEPUtils::Event const&) (Analysis.hpp:57)
+==31050==    by 0x188C1EB: Gambit::ColliderBit::runAnalyses(std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > >&) (ColliderBit.cpp:621)
+==31050==    by 0x161CAEF: Gambit::module_functor<std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > > >::calculate() (functors.cpp:1483)
+==31050==    by 0x159C89B: Gambit::functor::reset_and_calculate() (functors.cpp:110)
+==31050==    by 0x15A310D: Gambit::module_functor_common::iterate(int) (functors.cpp:698)
+==31050==    by 0x1413CB8: Gambit::ColliderBit::Functown::operatePythia_iterate(int) (ColliderBit_rollcall.hpp:34)
+==31050==    by 0x188CA1A: Gambit::ColliderBit::operatePythia() [clone ._omp_fn.0] (ColliderBit.cpp:108)
+==31050== 
+==31050== 46 bytes in 1 blocks are indirectly lost in loss record 15,991 of 24,565
+==31050==    at 0x4C2B0E0: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x8C3B3B8: std::string::_Rep::_S_create(unsigned long, unsigned long, std::allocator<char> const&) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3B545: std::string::_M_mutate(unsigned long, unsigned long, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3BAED: std::string::_M_replace_safe(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x18A08D9: Gambit::ColliderBit::Analysis_ATLAS_1LEPStop_20invfb::analyze(HEPUtils::Event const*) (Analysis_ATLAS_1LEPStop_20invfb.cpp:480)
+==31050==    by 0x188F27F: Gambit::ColliderBit::Analysis::analyze(HEPUtils::Event const&) (Analysis.hpp:57)
+==31050==    by 0x188C1EB: Gambit::ColliderBit::runAnalyses(std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > >&) (ColliderBit.cpp:621)
+==31050==    by 0x161CAEF: Gambit::module_functor<std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > > >::calculate() (functors.cpp:1483)
+==31050==    by 0x159C89B: Gambit::functor::reset_and_calculate() (functors.cpp:110)
+==31050==    by 0x15A310D: Gambit::module_functor_common::iterate(int) (functors.cpp:698)
+==31050==    by 0x1413CB8: Gambit::ColliderBit::Functown::operatePythia_iterate(int) (ColliderBit_rollcall.hpp:34)
+==31050==    by 0x188CA1A: Gambit::ColliderBit::operatePythia() [clone ._omp_fn.0] (ColliderBit.cpp:108)
+==31050== 
+==31050== 46 bytes in 1 blocks are indirectly lost in loss record 15,992 of 24,565
+==31050==    at 0x4C2B0E0: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x8C3B3B8: std::string::_Rep::_S_create(unsigned long, unsigned long, std::allocator<char> const&) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3B545: std::string::_M_mutate(unsigned long, unsigned long, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3BAED: std::string::_M_replace_safe(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x18A0B92: Gambit::ColliderBit::Analysis_ATLAS_1LEPStop_20invfb::analyze(HEPUtils::Event const*) (Analysis_ATLAS_1LEPStop_20invfb.cpp:498)
+==31050==    by 0x188F27F: Gambit::ColliderBit::Analysis::analyze(HEPUtils::Event const&) (Analysis.hpp:57)
+==31050==    by 0x188C1EB: Gambit::ColliderBit::runAnalyses(std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > >&) (ColliderBit.cpp:621)
+==31050==    by 0x161CAEF: Gambit::module_functor<std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > > >::calculate() (functors.cpp:1483)
+==31050==    by 0x159C89B: Gambit::functor::reset_and_calculate() (functors.cpp:110)
+==31050==    by 0x15A310D: Gambit::module_functor_common::iterate(int) (functors.cpp:698)
+==31050==    by 0x1413CB8: Gambit::ColliderBit::Functown::operatePythia_iterate(int) (ColliderBit_rollcall.hpp:34)
+==31050==    by 0x188CA1A: Gambit::ColliderBit::operatePythia() [clone ._omp_fn.0] (ColliderBit.cpp:108)
+==31050== 
+==31050== 46 bytes in 1 blocks are indirectly lost in loss record 15,993 of 24,565
+==31050==    at 0x4C2B0E0: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x8C3B3B8: std::string::_Rep::_S_create(unsigned long, unsigned long, std::allocator<char> const&) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3B545: std::string::_M_mutate(unsigned long, unsigned long, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3BAED: std::string::_M_replace_safe(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x18A0C0D: Gambit::ColliderBit::Analysis_ATLAS_1LEPStop_20invfb::analyze(HEPUtils::Event const*) (Analysis_ATLAS_1LEPStop_20invfb.cpp:501)
+==31050==    by 0x188F27F: Gambit::ColliderBit::Analysis::analyze(HEPUtils::Event const&) (Analysis.hpp:57)
+==31050==    by 0x188C1EB: Gambit::ColliderBit::runAnalyses(std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > >&) (ColliderBit.cpp:621)
+==31050==    by 0x161CAEF: Gambit::module_functor<std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > > >::calculate() (functors.cpp:1483)
+==31050==    by 0x159C89B: Gambit::functor::reset_and_calculate() (functors.cpp:110)
+==31050==    by 0x15A310D: Gambit::module_functor_common::iterate(int) (functors.cpp:698)
+==31050==    by 0x1413CB8: Gambit::ColliderBit::Functown::operatePythia_iterate(int) (ColliderBit_rollcall.hpp:34)
+==31050==    by 0x188CA1A: Gambit::ColliderBit::operatePythia() [clone ._omp_fn.0] (ColliderBit.cpp:108)
+==31050== 
+==31050== 48 bytes in 1 blocks are indirectly lost in loss record 16,011 of 24,565
+==31050==    at 0x4C2B0E0: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x8C3B3B8: std::string::_Rep::_S_create(unsigned long, unsigned long, std::allocator<char> const&) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3B545: std::string::_M_mutate(unsigned long, unsigned long, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3BAED: std::string::_M_replace_safe(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x18A09CF: Gambit::ColliderBit::Analysis_ATLAS_1LEPStop_20invfb::analyze(HEPUtils::Event const*) (Analysis_ATLAS_1LEPStop_20invfb.cpp:486)
+==31050==    by 0x188F27F: Gambit::ColliderBit::Analysis::analyze(HEPUtils::Event const&) (Analysis.hpp:57)
+==31050==    by 0x188C1EB: Gambit::ColliderBit::runAnalyses(std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > >&) (ColliderBit.cpp:621)
+==31050==    by 0x161CAEF: Gambit::module_functor<std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > > >::calculate() (functors.cpp:1483)
+==31050==    by 0x159C89B: Gambit::functor::reset_and_calculate() (functors.cpp:110)
+==31050==    by 0x15A310D: Gambit::module_functor_common::iterate(int) (functors.cpp:698)
+==31050==    by 0x1413CB8: Gambit::ColliderBit::Functown::operatePythia_iterate(int) (ColliderBit_rollcall.hpp:34)
+==31050==    by 0x188CA1A: Gambit::ColliderBit::operatePythia() [clone ._omp_fn.0] (ColliderBit.cpp:108)
+==31050== 
+==31050== 48 bytes in 1 blocks are indirectly lost in loss record 16,012 of 24,565
+==31050==    at 0x4C2B0E0: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x8C3B3B8: std::string::_Rep::_S_create(unsigned long, unsigned long, std::allocator<char> const&) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3B545: std::string::_M_mutate(unsigned long, unsigned long, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3BAED: std::string::_M_replace_safe(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x18A09F8: Gambit::ColliderBit::Analysis_ATLAS_1LEPStop_20invfb::analyze(HEPUtils::Event const*) (Analysis_ATLAS_1LEPStop_20invfb.cpp:487)
+==31050==    by 0x188F27F: Gambit::ColliderBit::Analysis::analyze(HEPUtils::Event const&) (Analysis.hpp:57)
+==31050==    by 0x188C1EB: Gambit::ColliderBit::runAnalyses(std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > >&) (ColliderBit.cpp:621)
+==31050==    by 0x161CAEF: Gambit::module_functor<std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > > >::calculate() (functors.cpp:1483)
+==31050==    by 0x159C89B: Gambit::functor::reset_and_calculate() (functors.cpp:110)
+==31050==    by 0x15A310D: Gambit::module_functor_common::iterate(int) (functors.cpp:698)
+==31050==    by 0x1413CB8: Gambit::ColliderBit::Functown::operatePythia_iterate(int) (ColliderBit_rollcall.hpp:34)
+==31050==    by 0x188CA1A: Gambit::ColliderBit::operatePythia() [clone ._omp_fn.0] (ColliderBit.cpp:108)
+==31050== 
+==31050== 48 bytes in 1 blocks are indirectly lost in loss record 16,013 of 24,565
+==31050==    at 0x4C2B0E0: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x8C3B3B8: std::string::_Rep::_S_create(unsigned long, unsigned long, std::allocator<char> const&) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3B545: std::string::_M_mutate(unsigned long, unsigned long, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3BAED: std::string::_M_replace_safe(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x18A0D03: Gambit::ColliderBit::Analysis_ATLAS_1LEPStop_20invfb::analyze(HEPUtils::Event const*) (Analysis_ATLAS_1LEPStop_20invfb.cpp:507)
+==31050==    by 0x188F27F: Gambit::ColliderBit::Analysis::analyze(HEPUtils::Event const&) (Analysis.hpp:57)
+==31050==    by 0x188C1EB: Gambit::ColliderBit::runAnalyses(std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > >&) (ColliderBit.cpp:621)
+==31050==    by 0x161CAEF: Gambit::module_functor<std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > > >::calculate() (functors.cpp:1483)
+==31050==    by 0x159C89B: Gambit::functor::reset_and_calculate() (functors.cpp:110)
+==31050==    by 0x15A310D: Gambit::module_functor_common::iterate(int) (functors.cpp:698)
+==31050==    by 0x1413CB8: Gambit::ColliderBit::Functown::operatePythia_iterate(int) (ColliderBit_rollcall.hpp:34)
+==31050==    by 0x188CA1A: Gambit::ColliderBit::operatePythia() [clone ._omp_fn.0] (ColliderBit.cpp:108)
+==31050== 
+==31050== 48 bytes in 1 blocks are indirectly lost in loss record 16,014 of 24,565
+==31050==    at 0x4C2B0E0: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x8C3B3B8: std::string::_Rep::_S_create(unsigned long, unsigned long, std::allocator<char> const&) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3B545: std::string::_M_mutate(unsigned long, unsigned long, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3BAED: std::string::_M_replace_safe(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x18A0D2C: Gambit::ColliderBit::Analysis_ATLAS_1LEPStop_20invfb::analyze(HEPUtils::Event const*) (Analysis_ATLAS_1LEPStop_20invfb.cpp:508)
+==31050==    by 0x188F27F: Gambit::ColliderBit::Analysis::analyze(HEPUtils::Event const&) (Analysis.hpp:57)
+==31050==    by 0x188C1EB: Gambit::ColliderBit::runAnalyses(std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > >&) (ColliderBit.cpp:621)
+==31050==    by 0x161CAEF: Gambit::module_functor<std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > > >::calculate() (functors.cpp:1483)
+==31050==    by 0x159C89B: Gambit::functor::reset_and_calculate() (functors.cpp:110)
+==31050==    by 0x15A310D: Gambit::module_functor_common::iterate(int) (functors.cpp:698)
+==31050==    by 0x1413CB8: Gambit::ColliderBit::Functown::operatePythia_iterate(int) (ColliderBit_rollcall.hpp:34)
+==31050==    by 0x188CA1A: Gambit::ColliderBit::operatePythia() [clone ._omp_fn.0] (ColliderBit.cpp:108)
+==31050== 
+==31050== 49 bytes in 1 blocks are indirectly lost in loss record 16,020 of 24,565
+==31050==    at 0x4C2B0E0: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x8C3B3B8: std::string::_Rep::_S_create(unsigned long, unsigned long, std::allocator<char> const&) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3B545: std::string::_M_mutate(unsigned long, unsigned long, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3BAED: std::string::_M_replace_safe(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x18BCC3F: Gambit::ColliderBit::Analysis_ATLAS_0LEPStop_20invfb::analyze(HEPUtils::Event const*) (Analysis_ATLAS_0LEPStop_20invfb.cpp:525)
+==31050==    by 0x188F27F: Gambit::ColliderBit::Analysis::analyze(HEPUtils::Event const&) (Analysis.hpp:57)
+==31050==    by 0x188C1EB: Gambit::ColliderBit::runAnalyses(std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > >&) (ColliderBit.cpp:621)
+==31050==    by 0x161CAEF: Gambit::module_functor<std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > > >::calculate() (functors.cpp:1483)
+==31050==    by 0x159C89B: Gambit::functor::reset_and_calculate() (functors.cpp:110)
+==31050==    by 0x15A310D: Gambit::module_functor_common::iterate(int) (functors.cpp:698)
+==31050==    by 0x1413CB8: Gambit::ColliderBit::Functown::operatePythia_iterate(int) (ColliderBit_rollcall.hpp:34)
+==31050==    by 0x188CA1A: Gambit::ColliderBit::operatePythia() [clone ._omp_fn.0] (ColliderBit.cpp:108)
+==31050== 
+==31050== 49 bytes in 1 blocks are indirectly lost in loss record 16,021 of 24,565
+==31050==    at 0x4C2B0E0: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x8C3B3B8: std::string::_Rep::_S_create(unsigned long, unsigned long, std::allocator<char> const&) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3B545: std::string::_M_mutate(unsigned long, unsigned long, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3BAED: std::string::_M_replace_safe(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x18A0716: Gambit::ColliderBit::Analysis_ATLAS_1LEPStop_20invfb::analyze(HEPUtils::Event const*) (Analysis_ATLAS_1LEPStop_20invfb.cpp:469)
+==31050==    by 0x188F27F: Gambit::ColliderBit::Analysis::analyze(HEPUtils::Event const&) (Analysis.hpp:57)
+==31050==    by 0x188C1EB: Gambit::ColliderBit::runAnalyses(std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > >&) (ColliderBit.cpp:621)
+==31050==    by 0x161CAEF: Gambit::module_functor<std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > > >::calculate() (functors.cpp:1483)
+==31050==    by 0x159C89B: Gambit::functor::reset_and_calculate() (functors.cpp:110)
+==31050==    by 0x15A310D: Gambit::module_functor_common::iterate(int) (functors.cpp:698)
+==31050==    by 0x1413CB8: Gambit::ColliderBit::Functown::operatePythia_iterate(int) (ColliderBit_rollcall.hpp:34)
+==31050==    by 0x188CA1A: Gambit::ColliderBit::operatePythia() [clone ._omp_fn.0] (ColliderBit.cpp:108)
+==31050== 
+==31050== 49 bytes in 1 blocks are indirectly lost in loss record 16,022 of 24,565
+==31050==    at 0x4C2B0E0: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x8C3B3B8: std::string::_Rep::_S_create(unsigned long, unsigned long, std::allocator<char> const&) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3B545: std::string::_M_mutate(unsigned long, unsigned long, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3BAED: std::string::_M_replace_safe(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x18A0A4A: Gambit::ColliderBit::Analysis_ATLAS_1LEPStop_20invfb::analyze(HEPUtils::Event const*) (Analysis_ATLAS_1LEPStop_20invfb.cpp:490)
+==31050==    by 0x188F27F: Gambit::ColliderBit::Analysis::analyze(HEPUtils::Event const&) (Analysis.hpp:57)
+==31050==    by 0x188C1EB: Gambit::ColliderBit::runAnalyses(std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > >&) (ColliderBit.cpp:621)
+==31050==    by 0x161CAEF: Gambit::module_functor<std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > > >::calculate() (functors.cpp:1483)
+==31050==    by 0x159C89B: Gambit::functor::reset_and_calculate() (functors.cpp:110)
+==31050==    by 0x15A310D: Gambit::module_functor_common::iterate(int) (functors.cpp:698)
+==31050==    by 0x1413CB8: Gambit::ColliderBit::Functown::operatePythia_iterate(int) (ColliderBit_rollcall.hpp:34)
+==31050==    by 0x188CA1A: Gambit::ColliderBit::operatePythia() [clone ._omp_fn.0] (ColliderBit.cpp:108)
+==31050== 
+==31050== 50 bytes in 1 blocks are indirectly lost in loss record 16,026 of 24,565
+==31050==    at 0x4C2B0E0: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x8C3B3B8: std::string::_Rep::_S_create(unsigned long, unsigned long, std::allocator<char> const&) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3B545: std::string::_M_mutate(unsigned long, unsigned long, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3BAED: std::string::_M_replace_safe(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x18A080C: Gambit::ColliderBit::Analysis_ATLAS_1LEPStop_20invfb::analyze(HEPUtils::Event const*) (Analysis_ATLAS_1LEPStop_20invfb.cpp:475)
+==31050==    by 0x188F27F: Gambit::ColliderBit::Analysis::analyze(HEPUtils::Event const&) (Analysis.hpp:57)
+==31050==    by 0x188C1EB: Gambit::ColliderBit::runAnalyses(std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > >&) (ColliderBit.cpp:621)
+==31050==    by 0x161CAEF: Gambit::module_functor<std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > > >::calculate() (functors.cpp:1483)
+==31050==    by 0x159C89B: Gambit::functor::reset_and_calculate() (functors.cpp:110)
+==31050==    by 0x15A310D: Gambit::module_functor_common::iterate(int) (functors.cpp:698)
+==31050==    by 0x1413CB8: Gambit::ColliderBit::Functown::operatePythia_iterate(int) (ColliderBit_rollcall.hpp:34)
+==31050==    by 0x188CA1A: Gambit::ColliderBit::operatePythia() [clone ._omp_fn.0] (ColliderBit.cpp:108)
+==31050== 
+==31050== 50 bytes in 1 blocks are indirectly lost in loss record 16,027 of 24,565
+==31050==    at 0x4C2B0E0: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x8C3B3B8: std::string::_Rep::_S_create(unsigned long, unsigned long, std::allocator<char> const&) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3B545: std::string::_M_mutate(unsigned long, unsigned long, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3BAED: std::string::_M_replace_safe(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x18A0887: Gambit::ColliderBit::Analysis_ATLAS_1LEPStop_20invfb::analyze(HEPUtils::Event const*) (Analysis_ATLAS_1LEPStop_20invfb.cpp:478)
+==31050==    by 0x188F27F: Gambit::ColliderBit::Analysis::analyze(HEPUtils::Event const&) (Analysis.hpp:57)
+==31050==    by 0x188C1EB: Gambit::ColliderBit::runAnalyses(std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > >&) (ColliderBit.cpp:621)
+==31050==    by 0x161CAEF: Gambit::module_functor<std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > > >::calculate() (functors.cpp:1483)
+==31050==    by 0x159C89B: Gambit::functor::reset_and_calculate() (functors.cpp:110)
+==31050==    by 0x15A310D: Gambit::module_functor_common::iterate(int) (functors.cpp:698)
+==31050==    by 0x1413CB8: Gambit::ColliderBit::Functown::operatePythia_iterate(int) (ColliderBit_rollcall.hpp:34)
+==31050==    by 0x188CA1A: Gambit::ColliderBit::operatePythia() [clone ._omp_fn.0] (ColliderBit.cpp:108)
+==31050== 
+==31050== 50 bytes in 1 blocks are indirectly lost in loss record 16,028 of 24,565
+==31050==    at 0x4C2B0E0: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x8C3B3B8: std::string::_Rep::_S_create(unsigned long, unsigned long, std::allocator<char> const&) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3B545: std::string::_M_mutate(unsigned long, unsigned long, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3BAED: std::string::_M_replace_safe(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x18A0B40: Gambit::ColliderBit::Analysis_ATLAS_1LEPStop_20invfb::analyze(HEPUtils::Event const*) (Analysis_ATLAS_1LEPStop_20invfb.cpp:496)
+==31050==    by 0x188F27F: Gambit::ColliderBit::Analysis::analyze(HEPUtils::Event const&) (Analysis.hpp:57)
+==31050==    by 0x188C1EB: Gambit::ColliderBit::runAnalyses(std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > >&) (ColliderBit.cpp:621)
+==31050==    by 0x161CAEF: Gambit::module_functor<std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > > >::calculate() (functors.cpp:1483)
+==31050==    by 0x159C89B: Gambit::functor::reset_and_calculate() (functors.cpp:110)
+==31050==    by 0x15A310D: Gambit::module_functor_common::iterate(int) (functors.cpp:698)
+==31050==    by 0x1413CB8: Gambit::ColliderBit::Functown::operatePythia_iterate(int) (ColliderBit_rollcall.hpp:34)
+==31050==    by 0x188CA1A: Gambit::ColliderBit::operatePythia() [clone ._omp_fn.0] (ColliderBit.cpp:108)
+==31050== 
+==31050== 50 bytes in 1 blocks are indirectly lost in loss record 16,029 of 24,565
+==31050==    at 0x4C2B0E0: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x8C3B3B8: std::string::_Rep::_S_create(unsigned long, unsigned long, std::allocator<char> const&) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3B545: std::string::_M_mutate(unsigned long, unsigned long, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3BAED: std::string::_M_replace_safe(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x18A0BBB: Gambit::ColliderBit::Analysis_ATLAS_1LEPStop_20invfb::analyze(HEPUtils::Event const*) (Analysis_ATLAS_1LEPStop_20invfb.cpp:499)
+==31050==    by 0x188F27F: Gambit::ColliderBit::Analysis::analyze(HEPUtils::Event const&) (Analysis.hpp:57)
+==31050==    by 0x188C1EB: Gambit::ColliderBit::runAnalyses(std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > >&) (ColliderBit.cpp:621)
+==31050==    by 0x161CAEF: Gambit::module_functor<std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > > >::calculate() (functors.cpp:1483)
+==31050==    by 0x159C89B: Gambit::functor::reset_and_calculate() (functors.cpp:110)
+==31050==    by 0x15A310D: Gambit::module_functor_common::iterate(int) (functors.cpp:698)
+==31050==    by 0x1413CB8: Gambit::ColliderBit::Functown::operatePythia_iterate(int) (ColliderBit_rollcall.hpp:34)
+==31050==    by 0x188CA1A: Gambit::ColliderBit::operatePythia() [clone ._omp_fn.0] (ColliderBit.cpp:108)
+==31050== 
+==31050== 52 bytes in 1 blocks are still reachable in loss record 16,036 of 24,565
+==31050==    at 0x4C2AB80: malloc (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x4007E06: expand_dynamic_string_token (dl-load.c:162)
+==31050==    by 0x4008D71: _dl_map_object (dl-load.c:2538)
+==31050==    by 0x4014A53: dl_open_worker (dl-open.c:235)
+==31050==    by 0x400FFF3: _dl_catch_error (dl-error.c:187)
+==31050==    by 0x40143BA: _dl_open (dl-open.c:661)
+==31050==    by 0x4E3802A: dlopen_doit (dlopen.c:66)
+==31050==    by 0x400FFF3: _dl_catch_error (dl-error.c:187)
+==31050==    by 0x4E3862C: _dlerror_run (dlerror.c:163)
+==31050==    by 0x4E380C0: dlopen@@GLIBC_2.2.5 (dlopen.c:87)
+==31050==    by 0x163C448: Gambit::loadLibrary(std::string, std::string, std::string, void*&, bool&, bool) (ini_functions.cpp:148)
+==31050==    by 0x14449C3: __static_initialization_and_destruction_0(int, int) (libfirst_1_0.hpp:24)
+==31050== 
+==31050== 52 bytes in 1 blocks are indirectly lost in loss record 16,037 of 24,565
+==31050==    at 0x4C2B0E0: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x8C3B3B8: std::string::_Rep::_S_create(unsigned long, unsigned long, std::allocator<char> const&) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3B545: std::string::_M_mutate(unsigned long, unsigned long, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3BAED: std::string::_M_replace_safe(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x18A0768: Gambit::ColliderBit::Analysis_ATLAS_1LEPStop_20invfb::analyze(HEPUtils::Event const*) (Analysis_ATLAS_1LEPStop_20invfb.cpp:471)
+==31050==    by 0x188F27F: Gambit::ColliderBit::Analysis::analyze(HEPUtils::Event const&) (Analysis.hpp:57)
+==31050==    by 0x188C1EB: Gambit::ColliderBit::runAnalyses(std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > >&) (ColliderBit.cpp:621)
+==31050==    by 0x161CAEF: Gambit::module_functor<std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > > >::calculate() (functors.cpp:1483)
+==31050==    by 0x159C89B: Gambit::functor::reset_and_calculate() (functors.cpp:110)
+==31050==    by 0x15A310D: Gambit::module_functor_common::iterate(int) (functors.cpp:698)
+==31050==    by 0x1413CB8: Gambit::ColliderBit::Functown::operatePythia_iterate(int) (ColliderBit_rollcall.hpp:34)
+==31050==    by 0x188CA1A: Gambit::ColliderBit::operatePythia() [clone ._omp_fn.0] (ColliderBit.cpp:108)
+==31050== 
+==31050== 52 bytes in 1 blocks are indirectly lost in loss record 16,038 of 24,565
+==31050==    at 0x4C2B0E0: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x8C3B3B8: std::string::_Rep::_S_create(unsigned long, unsigned long, std::allocator<char> const&) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3B545: std::string::_M_mutate(unsigned long, unsigned long, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3BAED: std::string::_M_replace_safe(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x18A0954: Gambit::ColliderBit::Analysis_ATLAS_1LEPStop_20invfb::analyze(HEPUtils::Event const*) (Analysis_ATLAS_1LEPStop_20invfb.cpp:483)
+==31050==    by 0x188F27F: Gambit::ColliderBit::Analysis::analyze(HEPUtils::Event const&) (Analysis.hpp:57)
+==31050==    by 0x188C1EB: Gambit::ColliderBit::runAnalyses(std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > >&) (ColliderBit.cpp:621)
+==31050==    by 0x161CAEF: Gambit::module_functor<std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > > >::calculate() (functors.cpp:1483)
+==31050==    by 0x159C89B: Gambit::functor::reset_and_calculate() (functors.cpp:110)
+==31050==    by 0x15A310D: Gambit::module_functor_common::iterate(int) (functors.cpp:698)
+==31050==    by 0x1413CB8: Gambit::ColliderBit::Functown::operatePythia_iterate(int) (ColliderBit_rollcall.hpp:34)
+==31050==    by 0x188CA1A: Gambit::ColliderBit::operatePythia() [clone ._omp_fn.0] (ColliderBit.cpp:108)
+==31050== 
+==31050== 52 bytes in 1 blocks are indirectly lost in loss record 16,039 of 24,565
+==31050==    at 0x4C2B0E0: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x8C3B3B8: std::string::_Rep::_S_create(unsigned long, unsigned long, std::allocator<char> const&) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3B545: std::string::_M_mutate(unsigned long, unsigned long, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3BAED: std::string::_M_replace_safe(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x18A0A9C: Gambit::ColliderBit::Analysis_ATLAS_1LEPStop_20invfb::analyze(HEPUtils::Event const*) (Analysis_ATLAS_1LEPStop_20invfb.cpp:492)
+==31050==    by 0x188F27F: Gambit::ColliderBit::Analysis::analyze(HEPUtils::Event const&) (Analysis.hpp:57)
+==31050==    by 0x188C1EB: Gambit::ColliderBit::runAnalyses(std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > >&) (ColliderBit.cpp:621)
+==31050==    by 0x161CAEF: Gambit::module_functor<std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > > >::calculate() (functors.cpp:1483)
+==31050==    by 0x159C89B: Gambit::functor::reset_and_calculate() (functors.cpp:110)
+==31050==    by 0x15A310D: Gambit::module_functor_common::iterate(int) (functors.cpp:698)
+==31050==    by 0x1413CB8: Gambit::ColliderBit::Functown::operatePythia_iterate(int) (ColliderBit_rollcall.hpp:34)
+==31050==    by 0x188CA1A: Gambit::ColliderBit::operatePythia() [clone ._omp_fn.0] (ColliderBit.cpp:108)
+==31050== 
+==31050== 52 bytes in 1 blocks are indirectly lost in loss record 16,040 of 24,565
+==31050==    at 0x4C2B0E0: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x8C3B3B8: std::string::_Rep::_S_create(unsigned long, unsigned long, std::allocator<char> const&) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3B545: std::string::_M_mutate(unsigned long, unsigned long, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3BAED: std::string::_M_replace_safe(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x18A0C88: Gambit::ColliderBit::Analysis_ATLAS_1LEPStop_20invfb::analyze(HEPUtils::Event const*) (Analysis_ATLAS_1LEPStop_20invfb.cpp:504)
+==31050==    by 0x188F27F: Gambit::ColliderBit::Analysis::analyze(HEPUtils::Event const&) (Analysis.hpp:57)
+==31050==    by 0x188C1EB: Gambit::ColliderBit::runAnalyses(std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > >&) (ColliderBit.cpp:621)
+==31050==    by 0x161CAEF: Gambit::module_functor<std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > > >::calculate() (functors.cpp:1483)
+==31050==    by 0x159C89B: Gambit::functor::reset_and_calculate() (functors.cpp:110)
+==31050==    by 0x15A310D: Gambit::module_functor_common::iterate(int) (functors.cpp:698)
+==31050==    by 0x1413CB8: Gambit::ColliderBit::Functown::operatePythia_iterate(int) (ColliderBit_rollcall.hpp:34)
+==31050==    by 0x188CA1A: Gambit::ColliderBit::operatePythia() [clone ._omp_fn.0] (ColliderBit.cpp:108)
+==31050== 
+==31050== 53 bytes in 1 blocks are still reachable in loss record 16,044 of 24,565
+==31050==    at 0x4C2AB80: malloc (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x4007E06: expand_dynamic_string_token (dl-load.c:162)
+==31050==    by 0x4008D71: _dl_map_object (dl-load.c:2538)
+==31050==    by 0x4014A53: dl_open_worker (dl-open.c:235)
+==31050==    by 0x400FFF3: _dl_catch_error (dl-error.c:187)
+==31050==    by 0x40143BA: _dl_open (dl-open.c:661)
+==31050==    by 0x4E3802A: dlopen_doit (dlopen.c:66)
+==31050==    by 0x400FFF3: _dl_catch_error (dl-error.c:187)
+==31050==    by 0x4E3862C: _dlerror_run (dlerror.c:163)
+==31050==    by 0x4E380C0: dlopen@@GLIBC_2.2.5 (dlopen.c:87)
+==31050==    by 0x163C448: Gambit::loadLibrary(std::string, std::string, std::string, void*&, bool&, bool) (ini_functions.cpp:148)
+==31050==    by 0x1455635: __static_initialization_and_destruction_0(int, int) (nulike.hpp:29)
+==31050== 
+==31050== 54 bytes in 1 blocks are still reachable in loss record 16,047 of 24,565
+==31050==    at 0x4C2AB80: malloc (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x4007E06: expand_dynamic_string_token (dl-load.c:162)
+==31050==    by 0x4008D71: _dl_map_object (dl-load.c:2538)
+==31050==    by 0x4014A53: dl_open_worker (dl-open.c:235)
+==31050==    by 0x400FFF3: _dl_catch_error (dl-error.c:187)
+==31050==    by 0x40143BA: _dl_open (dl-open.c:661)
+==31050==    by 0x4E3802A: dlopen_doit (dlopen.c:66)
+==31050==    by 0x400FFF3: _dl_catch_error (dl-error.c:187)
+==31050==    by 0x4E3862C: _dlerror_run (dlerror.c:163)
+==31050==    by 0x4E380C0: dlopen@@GLIBC_2.2.5 (dlopen.c:87)
+==31050==    by 0x163C448: Gambit::loadLibrary(std::string, std::string, std::string, void*&, bool&, bool) (ini_functions.cpp:148)
+==31050==    by 0x143BEB8: __static_initialization_and_destruction_0(int, int) (in /home/krill/gambit/modules/gambit)
+==31050== 
+==31050== 54 bytes in 1 blocks are still reachable in loss record 16,048 of 24,565
+==31050==    at 0x4C2AB80: malloc (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x4007E06: expand_dynamic_string_token (dl-load.c:162)
+==31050==    by 0x4008D71: _dl_map_object (dl-load.c:2538)
+==31050==    by 0x4014A53: dl_open_worker (dl-open.c:235)
+==31050==    by 0x400FFF3: _dl_catch_error (dl-error.c:187)
+==31050==    by 0x40143BA: _dl_open (dl-open.c:661)
+==31050==    by 0x4E3802A: dlopen_doit (dlopen.c:66)
+==31050==    by 0x400FFF3: _dl_catch_error (dl-error.c:187)
+==31050==    by 0x4E3862C: _dlerror_run (dlerror.c:163)
+==31050==    by 0x4E380C0: dlopen@@GLIBC_2.2.5 (dlopen.c:87)
+==31050==    by 0x163C448: Gambit::loadLibrary(std::string, std::string, std::string, void*&, bool&, bool) (ini_functions.cpp:148)
+==31050==    by 0x1446B74: __static_initialization_and_destruction_0(int, int) (libfortran.hpp:15)
+==31050== 
+==31050== 56 bytes in 1 blocks are indirectly lost in loss record 17,145 of 24,565
+==31050==    at 0x4C2B0E0: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x8C3B3B8: std::string::_Rep::_S_create(unsigned long, unsigned long, std::allocator<char> const&) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3B545: std::string::_M_mutate(unsigned long, unsigned long, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3BAED: std::string::_M_replace_safe(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x18A07BA: Gambit::ColliderBit::Analysis_ATLAS_1LEPStop_20invfb::analyze(HEPUtils::Event const*) (Analysis_ATLAS_1LEPStop_20invfb.cpp:473)
+==31050==    by 0x188F27F: Gambit::ColliderBit::Analysis::analyze(HEPUtils::Event const&) (Analysis.hpp:57)
+==31050==    by 0x188C1EB: Gambit::ColliderBit::runAnalyses(std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > >&) (ColliderBit.cpp:621)
+==31050==    by 0x161CAEF: Gambit::module_functor<std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > > >::calculate() (functors.cpp:1483)
+==31050==    by 0x159C89B: Gambit::functor::reset_and_calculate() (functors.cpp:110)
+==31050==    by 0x15A310D: Gambit::module_functor_common::iterate(int) (functors.cpp:698)
+==31050==    by 0x1413CB8: Gambit::ColliderBit::Functown::operatePythia_iterate(int) (ColliderBit_rollcall.hpp:34)
+==31050==    by 0x188CA1A: Gambit::ColliderBit::operatePythia() [clone ._omp_fn.0] (ColliderBit.cpp:108)
+==31050== 
+==31050== 56 bytes in 1 blocks are indirectly lost in loss record 17,146 of 24,565
+==31050==    at 0x4C2B0E0: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x8C3B3B8: std::string::_Rep::_S_create(unsigned long, unsigned long, std::allocator<char> const&) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3B545: std::string::_M_mutate(unsigned long, unsigned long, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3BAED: std::string::_M_replace_safe(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x18A0835: Gambit::ColliderBit::Analysis_ATLAS_1LEPStop_20invfb::analyze(HEPUtils::Event const*) (Analysis_ATLAS_1LEPStop_20invfb.cpp:476)
+==31050==    by 0x188F27F: Gambit::ColliderBit::Analysis::analyze(HEPUtils::Event const&) (Analysis.hpp:57)
+==31050==    by 0x188C1EB: Gambit::ColliderBit::runAnalyses(std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > >&) (ColliderBit.cpp:621)
+==31050==    by 0x161CAEF: Gambit::module_functor<std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > > >::calculate() (functors.cpp:1483)
+==31050==    by 0x159C89B: Gambit::functor::reset_and_calculate() (functors.cpp:110)
+==31050==    by 0x15A310D: Gambit::module_functor_common::iterate(int) (functors.cpp:698)
+==31050==    by 0x1413CB8: Gambit::ColliderBit::Functown::operatePythia_iterate(int) (ColliderBit_rollcall.hpp:34)
+==31050==    by 0x188CA1A: Gambit::ColliderBit::operatePythia() [clone ._omp_fn.0] (ColliderBit.cpp:108)
+==31050== 
+==31050== 56 bytes in 1 blocks are indirectly lost in loss record 17,147 of 24,565
+==31050==    at 0x4C2B0E0: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x8C3B3B8: std::string::_Rep::_S_create(unsigned long, unsigned long, std::allocator<char> const&) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3B545: std::string::_M_mutate(unsigned long, unsigned long, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3BAED: std::string::_M_replace_safe(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x18A08B0: Gambit::ColliderBit::Analysis_ATLAS_1LEPStop_20invfb::analyze(HEPUtils::Event const*) (Analysis_ATLAS_1LEPStop_20invfb.cpp:479)
+==31050==    by 0x188F27F: Gambit::ColliderBit::Analysis::analyze(HEPUtils::Event const&) (Analysis.hpp:57)
+==31050==    by 0x188C1EB: Gambit::ColliderBit::runAnalyses(std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > >&) (ColliderBit.cpp:621)
+==31050==    by 0x161CAEF: Gambit::module_functor<std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > > >::calculate() (functors.cpp:1483)
+==31050==    by 0x159C89B: Gambit::functor::reset_and_calculate() (functors.cpp:110)
+==31050==    by 0x15A310D: Gambit::module_functor_common::iterate(int) (functors.cpp:698)
+==31050==    by 0x1413CB8: Gambit::ColliderBit::Functown::operatePythia_iterate(int) (ColliderBit_rollcall.hpp:34)
+==31050==    by 0x188CA1A: Gambit::ColliderBit::operatePythia() [clone ._omp_fn.0] (ColliderBit.cpp:108)
+==31050== 
+==31050== 56 bytes in 1 blocks are indirectly lost in loss record 17,148 of 24,565
+==31050==    at 0x4C2B0E0: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x8C3B3B8: std::string::_Rep::_S_create(unsigned long, unsigned long, std::allocator<char> const&) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3B545: std::string::_M_mutate(unsigned long, unsigned long, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3BAED: std::string::_M_replace_safe(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x18A0902: Gambit::ColliderBit::Analysis_ATLAS_1LEPStop_20invfb::analyze(HEPUtils::Event const*) (Analysis_ATLAS_1LEPStop_20invfb.cpp:481)
+==31050==    by 0x188F27F: Gambit::ColliderBit::Analysis::analyze(HEPUtils::Event const&) (Analysis.hpp:57)
+==31050==    by 0x188C1EB: Gambit::ColliderBit::runAnalyses(std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > >&) (ColliderBit.cpp:621)
+==31050==    by 0x161CAEF: Gambit::module_functor<std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > > >::calculate() (functors.cpp:1483)
+==31050==    by 0x159C89B: Gambit::functor::reset_and_calculate() (functors.cpp:110)
+==31050==    by 0x15A310D: Gambit::module_functor_common::iterate(int) (functors.cpp:698)
+==31050==    by 0x1413CB8: Gambit::ColliderBit::Functown::operatePythia_iterate(int) (ColliderBit_rollcall.hpp:34)
+==31050==    by 0x188CA1A: Gambit::ColliderBit::operatePythia() [clone ._omp_fn.0] (ColliderBit.cpp:108)
+==31050== 
+==31050== 56 bytes in 1 blocks are indirectly lost in loss record 17,149 of 24,565
+==31050==    at 0x4C2B0E0: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x8C3B3B8: std::string::_Rep::_S_create(unsigned long, unsigned long, std::allocator<char> const&) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3B545: std::string::_M_mutate(unsigned long, unsigned long, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3BAED: std::string::_M_replace_safe(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x18A097D: Gambit::ColliderBit::Analysis_ATLAS_1LEPStop_20invfb::analyze(HEPUtils::Event const*) (Analysis_ATLAS_1LEPStop_20invfb.cpp:484)
+==31050==    by 0x188F27F: Gambit::ColliderBit::Analysis::analyze(HEPUtils::Event const&) (Analysis.hpp:57)
+==31050==    by 0x188C1EB: Gambit::ColliderBit::runAnalyses(std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > >&) (ColliderBit.cpp:621)
+==31050==    by 0x161CAEF: Gambit::module_functor<std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > > >::calculate() (functors.cpp:1483)
+==31050==    by 0x159C89B: Gambit::functor::reset_and_calculate() (functors.cpp:110)
+==31050==    by 0x15A310D: Gambit::module_functor_common::iterate(int) (functors.cpp:698)
+==31050==    by 0x1413CB8: Gambit::ColliderBit::Functown::operatePythia_iterate(int) (ColliderBit_rollcall.hpp:34)
+==31050==    by 0x188CA1A: Gambit::ColliderBit::operatePythia() [clone ._omp_fn.0] (ColliderBit.cpp:108)
+==31050== 
+==31050== 56 bytes in 1 blocks are indirectly lost in loss record 17,150 of 24,565
+==31050==    at 0x4C2B0E0: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x8C3B3B8: std::string::_Rep::_S_create(unsigned long, unsigned long, std::allocator<char> const&) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3B545: std::string::_M_mutate(unsigned long, unsigned long, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3BAED: std::string::_M_replace_safe(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x18A0AEE: Gambit::ColliderBit::Analysis_ATLAS_1LEPStop_20invfb::analyze(HEPUtils::Event const*) (Analysis_ATLAS_1LEPStop_20invfb.cpp:494)
+==31050==    by 0x188F27F: Gambit::ColliderBit::Analysis::analyze(HEPUtils::Event const&) (Analysis.hpp:57)
+==31050==    by 0x188C1EB: Gambit::ColliderBit::runAnalyses(std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > >&) (ColliderBit.cpp:621)
+==31050==    by 0x161CAEF: Gambit::module_functor<std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > > >::calculate() (functors.cpp:1483)
+==31050==    by 0x159C89B: Gambit::functor::reset_and_calculate() (functors.cpp:110)
+==31050==    by 0x15A310D: Gambit::module_functor_common::iterate(int) (functors.cpp:698)
+==31050==    by 0x1413CB8: Gambit::ColliderBit::Functown::operatePythia_iterate(int) (ColliderBit_rollcall.hpp:34)
+==31050==    by 0x188CA1A: Gambit::ColliderBit::operatePythia() [clone ._omp_fn.0] (ColliderBit.cpp:108)
+==31050== 
+==31050== 56 bytes in 1 blocks are indirectly lost in loss record 17,151 of 24,565
+==31050==    at 0x4C2B0E0: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x8C3B3B8: std::string::_Rep::_S_create(unsigned long, unsigned long, std::allocator<char> const&) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3B545: std::string::_M_mutate(unsigned long, unsigned long, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3BAED: std::string::_M_replace_safe(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x18A0B69: Gambit::ColliderBit::Analysis_ATLAS_1LEPStop_20invfb::analyze(HEPUtils::Event const*) (Analysis_ATLAS_1LEPStop_20invfb.cpp:497)
+==31050==    by 0x188F27F: Gambit::ColliderBit::Analysis::analyze(HEPUtils::Event const&) (Analysis.hpp:57)
+==31050==    by 0x188C1EB: Gambit::ColliderBit::runAnalyses(std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > >&) (ColliderBit.cpp:621)
+==31050==    by 0x161CAEF: Gambit::module_functor<std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > > >::calculate() (functors.cpp:1483)
+==31050==    by 0x159C89B: Gambit::functor::reset_and_calculate() (functors.cpp:110)
+==31050==    by 0x15A310D: Gambit::module_functor_common::iterate(int) (functors.cpp:698)
+==31050==    by 0x1413CB8: Gambit::ColliderBit::Functown::operatePythia_iterate(int) (ColliderBit_rollcall.hpp:34)
+==31050==    by 0x188CA1A: Gambit::ColliderBit::operatePythia() [clone ._omp_fn.0] (ColliderBit.cpp:108)
+==31050== 
+==31050== 56 bytes in 1 blocks are indirectly lost in loss record 17,152 of 24,565
+==31050==    at 0x4C2B0E0: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x8C3B3B8: std::string::_Rep::_S_create(unsigned long, unsigned long, std::allocator<char> const&) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3B545: std::string::_M_mutate(unsigned long, unsigned long, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3BAED: std::string::_M_replace_safe(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x18A0BE4: Gambit::ColliderBit::Analysis_ATLAS_1LEPStop_20invfb::analyze(HEPUtils::Event const*) (Analysis_ATLAS_1LEPStop_20invfb.cpp:500)
+==31050==    by 0x188F27F: Gambit::ColliderBit::Analysis::analyze(HEPUtils::Event const&) (Analysis.hpp:57)
+==31050==    by 0x188C1EB: Gambit::ColliderBit::runAnalyses(std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > >&) (ColliderBit.cpp:621)
+==31050==    by 0x161CAEF: Gambit::module_functor<std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > > >::calculate() (functors.cpp:1483)
+==31050==    by 0x159C89B: Gambit::functor::reset_and_calculate() (functors.cpp:110)
+==31050==    by 0x15A310D: Gambit::module_functor_common::iterate(int) (functors.cpp:698)
+==31050==    by 0x1413CB8: Gambit::ColliderBit::Functown::operatePythia_iterate(int) (ColliderBit_rollcall.hpp:34)
+==31050==    by 0x188CA1A: Gambit::ColliderBit::operatePythia() [clone ._omp_fn.0] (ColliderBit.cpp:108)
+==31050== 
+==31050== 56 bytes in 1 blocks are indirectly lost in loss record 17,153 of 24,565
+==31050==    at 0x4C2B0E0: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x8C3B3B8: std::string::_Rep::_S_create(unsigned long, unsigned long, std::allocator<char> const&) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3B545: std::string::_M_mutate(unsigned long, unsigned long, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3BAED: std::string::_M_replace_safe(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x18A0C36: Gambit::ColliderBit::Analysis_ATLAS_1LEPStop_20invfb::analyze(HEPUtils::Event const*) (Analysis_ATLAS_1LEPStop_20invfb.cpp:502)
+==31050==    by 0x188F27F: Gambit::ColliderBit::Analysis::analyze(HEPUtils::Event const&) (Analysis.hpp:57)
+==31050==    by 0x188C1EB: Gambit::ColliderBit::runAnalyses(std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > >&) (ColliderBit.cpp:621)
+==31050==    by 0x161CAEF: Gambit::module_functor<std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > > >::calculate() (functors.cpp:1483)
+==31050==    by 0x159C89B: Gambit::functor::reset_and_calculate() (functors.cpp:110)
+==31050==    by 0x15A310D: Gambit::module_functor_common::iterate(int) (functors.cpp:698)
+==31050==    by 0x1413CB8: Gambit::ColliderBit::Functown::operatePythia_iterate(int) (ColliderBit_rollcall.hpp:34)
+==31050==    by 0x188CA1A: Gambit::ColliderBit::operatePythia() [clone ._omp_fn.0] (ColliderBit.cpp:108)
+==31050== 
+==31050== 56 bytes in 1 blocks are indirectly lost in loss record 17,154 of 24,565
+==31050==    at 0x4C2B0E0: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x8C3B3B8: std::string::_Rep::_S_create(unsigned long, unsigned long, std::allocator<char> const&) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3B545: std::string::_M_mutate(unsigned long, unsigned long, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3BAED: std::string::_M_replace_safe(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x18A0CB1: Gambit::ColliderBit::Analysis_ATLAS_1LEPStop_20invfb::analyze(HEPUtils::Event const*) (Analysis_ATLAS_1LEPStop_20invfb.cpp:505)
+==31050==    by 0x188F27F: Gambit::ColliderBit::Analysis::analyze(HEPUtils::Event const&) (Analysis.hpp:57)
+==31050==    by 0x188C1EB: Gambit::ColliderBit::runAnalyses(std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > >&) (ColliderBit.cpp:621)
+==31050==    by 0x161CAEF: Gambit::module_functor<std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > > >::calculate() (functors.cpp:1483)
+==31050==    by 0x159C89B: Gambit::functor::reset_and_calculate() (functors.cpp:110)
+==31050==    by 0x15A310D: Gambit::module_functor_common::iterate(int) (functors.cpp:698)
+==31050==    by 0x1413CB8: Gambit::ColliderBit::Functown::operatePythia_iterate(int) (ColliderBit_rollcall.hpp:34)
+==31050==    by 0x188CA1A: Gambit::ColliderBit::operatePythia() [clone ._omp_fn.0] (ColliderBit.cpp:108)
+==31050== 
+==31050== 57 bytes in 1 blocks are still reachable in loss record 17,158 of 24,565
+==31050==    at 0x4C2AB80: malloc (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x4007E06: expand_dynamic_string_token (dl-load.c:162)
+==31050==    by 0x4008D71: _dl_map_object (dl-load.c:2538)
+==31050==    by 0x4014A53: dl_open_worker (dl-open.c:235)
+==31050==    by 0x400FFF3: _dl_catch_error (dl-error.c:187)
+==31050==    by 0x40143BA: _dl_open (dl-open.c:661)
+==31050==    by 0x4E3802A: dlopen_doit (dlopen.c:66)
+==31050==    by 0x400FFF3: _dl_catch_error (dl-error.c:187)
+==31050==    by 0x4E3862C: _dlerror_run (dlerror.c:163)
+==31050==    by 0x4E380C0: dlopen@@GLIBC_2.2.5 (dlopen.c:87)
+==31050==    by 0x163C448: Gambit::loadLibrary(std::string, std::string, std::string, void*&, bool&, bool) (ini_functions.cpp:148)
+==31050==    by 0x14423C5: __static_initialization_and_destruction_0(int, int) (libFarrayTest.hpp:17)
+==31050== 
+==31050== 57 bytes in 1 blocks are indirectly lost in loss record 17,160 of 24,565
+==31050==    at 0x4C2B0E0: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x8C3B3B8: std::string::_Rep::_S_create(unsigned long, unsigned long, std::allocator<char> const&) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3B545: std::string::_M_mutate(unsigned long, unsigned long, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3BAED: std::string::_M_replace_safe(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x18A0791: Gambit::ColliderBit::Analysis_ATLAS_1LEPStop_20invfb::analyze(HEPUtils::Event const*) (Analysis_ATLAS_1LEPStop_20invfb.cpp:472)
+==31050==    by 0x188F27F: Gambit::ColliderBit::Analysis::analyze(HEPUtils::Event const&) (Analysis.hpp:57)
+==31050==    by 0x188C1EB: Gambit::ColliderBit::runAnalyses(std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > >&) (ColliderBit.cpp:621)
+==31050==    by 0x161CAEF: Gambit::module_functor<std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > > >::calculate() (functors.cpp:1483)
+==31050==    by 0x159C89B: Gambit::functor::reset_and_calculate() (functors.cpp:110)
+==31050==    by 0x15A310D: Gambit::module_functor_common::iterate(int) (functors.cpp:698)
+==31050==    by 0x1413CB8: Gambit::ColliderBit::Functown::operatePythia_iterate(int) (ColliderBit_rollcall.hpp:34)
+==31050==    by 0x188CA1A: Gambit::ColliderBit::operatePythia() [clone ._omp_fn.0] (ColliderBit.cpp:108)
+==31050== 
+==31050== 57 bytes in 1 blocks are indirectly lost in loss record 17,161 of 24,565
+==31050==    at 0x4C2B0E0: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x8C3B3B8: std::string::_Rep::_S_create(unsigned long, unsigned long, std::allocator<char> const&) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3B545: std::string::_M_mutate(unsigned long, unsigned long, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3BAED: std::string::_M_replace_safe(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x18A0AC5: Gambit::ColliderBit::Analysis_ATLAS_1LEPStop_20invfb::analyze(HEPUtils::Event const*) (Analysis_ATLAS_1LEPStop_20invfb.cpp:493)
+==31050==    by 0x188F27F: Gambit::ColliderBit::Analysis::analyze(HEPUtils::Event const&) (Analysis.hpp:57)
+==31050==    by 0x188C1EB: Gambit::ColliderBit::runAnalyses(std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > >&) (ColliderBit.cpp:621)
+==31050==    by 0x161CAEF: Gambit::module_functor<std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > > >::calculate() (functors.cpp:1483)
+==31050==    by 0x159C89B: Gambit::functor::reset_and_calculate() (functors.cpp:110)
+==31050==    by 0x15A310D: Gambit::module_functor_common::iterate(int) (functors.cpp:698)
+==31050==    by 0x1413CB8: Gambit::ColliderBit::Functown::operatePythia_iterate(int) (ColliderBit_rollcall.hpp:34)
+==31050==    by 0x188CA1A: Gambit::ColliderBit::operatePythia() [clone ._omp_fn.0] (ColliderBit.cpp:108)
+==31050== 
+==31050== 58 bytes in 1 blocks are indirectly lost in loss record 17,168 of 24,565
+==31050==    at 0x4C2B0E0: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x8C3B3B8: std::string::_Rep::_S_create(unsigned long, unsigned long, std::allocator<char> const&) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3B545: std::string::_M_mutate(unsigned long, unsigned long, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3BAED: std::string::_M_replace_safe(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x18A07E3: Gambit::ColliderBit::Analysis_ATLAS_1LEPStop_20invfb::analyze(HEPUtils::Event const*) (Analysis_ATLAS_1LEPStop_20invfb.cpp:474)
+==31050==    by 0x188F27F: Gambit::ColliderBit::Analysis::analyze(HEPUtils::Event const&) (Analysis.hpp:57)
+==31050==    by 0x188C1EB: Gambit::ColliderBit::runAnalyses(std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > >&) (ColliderBit.cpp:621)
+==31050==    by 0x161CAEF: Gambit::module_functor<std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > > >::calculate() (functors.cpp:1483)
+==31050==    by 0x159C89B: Gambit::functor::reset_and_calculate() (functors.cpp:110)
+==31050==    by 0x15A310D: Gambit::module_functor_common::iterate(int) (functors.cpp:698)
+==31050==    by 0x1413CB8: Gambit::ColliderBit::Functown::operatePythia_iterate(int) (ColliderBit_rollcall.hpp:34)
+==31050==    by 0x188CA1A: Gambit::ColliderBit::operatePythia() [clone ._omp_fn.0] (ColliderBit.cpp:108)
+==31050== 
+==31050== 58 bytes in 1 blocks are indirectly lost in loss record 17,169 of 24,565
+==31050==    at 0x4C2B0E0: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x8C3B3B8: std::string::_Rep::_S_create(unsigned long, unsigned long, std::allocator<char> const&) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3B545: std::string::_M_mutate(unsigned long, unsigned long, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3BAED: std::string::_M_replace_safe(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x18A0B17: Gambit::ColliderBit::Analysis_ATLAS_1LEPStop_20invfb::analyze(HEPUtils::Event const*) (Analysis_ATLAS_1LEPStop_20invfb.cpp:495)
+==31050==    by 0x188F27F: Gambit::ColliderBit::Analysis::analyze(HEPUtils::Event const&) (Analysis.hpp:57)
+==31050==    by 0x188C1EB: Gambit::ColliderBit::runAnalyses(std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > >&) (ColliderBit.cpp:621)
+==31050==    by 0x161CAEF: Gambit::module_functor<std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > > >::calculate() (functors.cpp:1483)
+==31050==    by 0x159C89B: Gambit::functor::reset_and_calculate() (functors.cpp:110)
+==31050==    by 0x15A310D: Gambit::module_functor_common::iterate(int) (functors.cpp:698)
+==31050==    by 0x1413CB8: Gambit::ColliderBit::Functown::operatePythia_iterate(int) (ColliderBit_rollcall.hpp:34)
+==31050==    by 0x188CA1A: Gambit::ColliderBit::operatePythia() [clone ._omp_fn.0] (ColliderBit.cpp:108)
+==31050== 
+==31050== 61 bytes in 1 blocks are indirectly lost in loss record 17,176 of 24,565
+==31050==    at 0x4C2B0E0: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x8C3B3B8: std::string::_Rep::_S_create(unsigned long, unsigned long, std::allocator<char> const&) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3B545: std::string::_M_mutate(unsigned long, unsigned long, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3BAED: std::string::_M_replace_safe(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x18A092B: Gambit::ColliderBit::Analysis_ATLAS_1LEPStop_20invfb::analyze(HEPUtils::Event const*) (Analysis_ATLAS_1LEPStop_20invfb.cpp:482)
+==31050==    by 0x188F27F: Gambit::ColliderBit::Analysis::analyze(HEPUtils::Event const&) (Analysis.hpp:57)
+==31050==    by 0x188C1EB: Gambit::ColliderBit::runAnalyses(std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > >&) (ColliderBit.cpp:621)
+==31050==    by 0x161CAEF: Gambit::module_functor<std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > > >::calculate() (functors.cpp:1483)
+==31050==    by 0x159C89B: Gambit::functor::reset_and_calculate() (functors.cpp:110)
+==31050==    by 0x15A310D: Gambit::module_functor_common::iterate(int) (functors.cpp:698)
+==31050==    by 0x1413CB8: Gambit::ColliderBit::Functown::operatePythia_iterate(int) (ColliderBit_rollcall.hpp:34)
+==31050==    by 0x188CA1A: Gambit::ColliderBit::operatePythia() [clone ._omp_fn.0] (ColliderBit.cpp:108)
+==31050== 
+==31050== 61 bytes in 1 blocks are indirectly lost in loss record 17,177 of 24,565
+==31050==    at 0x4C2B0E0: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x8C3B3B8: std::string::_Rep::_S_create(unsigned long, unsigned long, std::allocator<char> const&) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3B545: std::string::_M_mutate(unsigned long, unsigned long, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3BAED: std::string::_M_replace_safe(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x18A09A6: Gambit::ColliderBit::Analysis_ATLAS_1LEPStop_20invfb::analyze(HEPUtils::Event const*) (Analysis_ATLAS_1LEPStop_20invfb.cpp:485)
+==31050==    by 0x188F27F: Gambit::ColliderBit::Analysis::analyze(HEPUtils::Event const&) (Analysis.hpp:57)
+==31050==    by 0x188C1EB: Gambit::ColliderBit::runAnalyses(std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > >&) (ColliderBit.cpp:621)
+==31050==    by 0x161CAEF: Gambit::module_functor<std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > > >::calculate() (functors.cpp:1483)
+==31050==    by 0x159C89B: Gambit::functor::reset_and_calculate() (functors.cpp:110)
+==31050==    by 0x15A310D: Gambit::module_functor_common::iterate(int) (functors.cpp:698)
+==31050==    by 0x1413CB8: Gambit::ColliderBit::Functown::operatePythia_iterate(int) (ColliderBit_rollcall.hpp:34)
+==31050==    by 0x188CA1A: Gambit::ColliderBit::operatePythia() [clone ._omp_fn.0] (ColliderBit.cpp:108)
+==31050== 
+==31050== 61 bytes in 1 blocks are indirectly lost in loss record 17,178 of 24,565
+==31050==    at 0x4C2B0E0: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x8C3B3B8: std::string::_Rep::_S_create(unsigned long, unsigned long, std::allocator<char> const&) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3B545: std::string::_M_mutate(unsigned long, unsigned long, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3BAED: std::string::_M_replace_safe(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x18A0C5F: Gambit::ColliderBit::Analysis_ATLAS_1LEPStop_20invfb::analyze(HEPUtils::Event const*) (Analysis_ATLAS_1LEPStop_20invfb.cpp:503)
+==31050==    by 0x188F27F: Gambit::ColliderBit::Analysis::analyze(HEPUtils::Event const&) (Analysis.hpp:57)
+==31050==    by 0x188C1EB: Gambit::ColliderBit::runAnalyses(std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > >&) (ColliderBit.cpp:621)
+==31050==    by 0x161CAEF: Gambit::module_functor<std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > > >::calculate() (functors.cpp:1483)
+==31050==    by 0x159C89B: Gambit::functor::reset_and_calculate() (functors.cpp:110)
+==31050==    by 0x15A310D: Gambit::module_functor_common::iterate(int) (functors.cpp:698)
+==31050==    by 0x1413CB8: Gambit::ColliderBit::Functown::operatePythia_iterate(int) (ColliderBit_rollcall.hpp:34)
+==31050==    by 0x188CA1A: Gambit::ColliderBit::operatePythia() [clone ._omp_fn.0] (ColliderBit.cpp:108)
+==31050== 
+==31050== 61 bytes in 1 blocks are indirectly lost in loss record 17,179 of 24,565
+==31050==    at 0x4C2B0E0: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x8C3B3B8: std::string::_Rep::_S_create(unsigned long, unsigned long, std::allocator<char> const&) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3B545: std::string::_M_mutate(unsigned long, unsigned long, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x8C3BAED: std::string::_M_replace_safe(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19)
+==31050==    by 0x18A0CDA: Gambit::ColliderBit::Analysis_ATLAS_1LEPStop_20invfb::analyze(HEPUtils::Event const*) (Analysis_ATLAS_1LEPStop_20invfb.cpp:506)
+==31050==    by 0x188F27F: Gambit::ColliderBit::Analysis::analyze(HEPUtils::Event const&) (Analysis.hpp:57)
+==31050==    by 0x188C1EB: Gambit::ColliderBit::runAnalyses(std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > >&) (ColliderBit.cpp:621)
+==31050==    by 0x161CAEF: Gambit::module_functor<std::vector<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> >, std::allocator<std::vector<Gambit::ColliderBit::SignalRegionData, std::allocator<Gambit::ColliderBit::SignalRegionData> > > > >::calculate() (functors.cpp:1483)
+==31050==    by 0x159C89B: Gambit::functor::reset_and_calculate() (functors.cpp:110)
+==31050==    by 0x15A310D: Gambit::module_functor_common::iterate(int) (functors.cpp:698)
+==31050==    by 0x1413CB8: Gambit::ColliderBit::Functown::operatePythia_iterate(int) (ColliderBit_rollcall.hpp:34)
+==31050==    by 0x188CA1A: Gambit::ColliderBit::operatePythia() [clone ._omp_fn.0] (ColliderBit.cpp:108)
+==31050== 
+==31050== 128 bytes in 1 blocks are indirectly lost in loss record 19,114 of 24,565
+==31050==    at 0x4C2B0E0: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x16938AB: __gnu_cxx::new_allocator<int>::allocate(unsigned long, void const*) (new_allocator.h:104)
+==31050==    by 0x168EBA6: std::_Vector_base<int, std::allocator<int> >::_M_allocate(unsigned long) (in /home/krill/gambit/modules/gambit)
+==31050==    by 0x1691233: void std::vector<int, std::allocator<int> >::_M_emplace_back_aux<int>(int&&) (vector.tcc:404)
+==31050==    by 0x168CB94: void std::vector<int, std::allocator<int> >::emplace_back<int>(int&&) (vector.tcc:101)
+==31050==    by 0x1688EBF: std::vector<int, std::allocator<int> >::push_back(int&&) (stl_vector.h:920)
+==31050==    by 0x18B9D23: Gambit::ColliderBit::Analysis_ATLAS_0LEPStop_20invfb::Analysis_ATLAS_0LEPStop_20invfb() (Analysis_ATLAS_0LEPStop_20invfb.cpp:110)
+==31050==    by 0x18B977E: Gambit::ColliderBit::create_Analysis_ATLAS_0LEPStop_20invfb() (Analysis_ATLAS_0LEPStop_20invfb.cpp:747)
+==31050==    by 0x18C713A: Gambit::ColliderBit::mkAnalysis(std::string const&) (Analysis.cpp:26)
+==31050==    by 0x188A322: Gambit::ColliderBit::specifyAnalysisPointerVector(std::vector<Gambit::ColliderBit::Analysis*, std::allocator<Gambit::ColliderBit::Analysis*> >&) (ColliderBit.cpp:247)
+==31050==    by 0x160AE01: Gambit::module_functor<std::vector<Gambit::ColliderBit::Analysis*, std::allocator<Gambit::ColliderBit::Analysis*> > >::calculate() (functors.cpp:1483)
+==31050==    by 0x159C89B: Gambit::functor::reset_and_calculate() (functors.cpp:110)
+==31050== 
+==31050== 128 bytes in 1 blocks are indirectly lost in loss record 19,115 of 24,565
+==31050==    at 0x4C2B0E0: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x16938AB: __gnu_cxx::new_allocator<int>::allocate(unsigned long, void const*) (new_allocator.h:104)
+==31050==    by 0x168EBA6: std::_Vector_base<int, std::allocator<int> >::_M_allocate(unsigned long) (in /home/krill/gambit/modules/gambit)
+==31050==    by 0x1691233: void std::vector<int, std::allocator<int> >::_M_emplace_back_aux<int>(int&&) (vector.tcc:404)
+==31050==    by 0x168CB94: void std::vector<int, std::allocator<int> >::emplace_back<int>(int&&) (vector.tcc:101)
+==31050==    by 0x1688EBF: std::vector<int, std::allocator<int> >::push_back(int&&) (stl_vector.h:920)
+==31050==    by 0x18B9D96: Gambit::ColliderBit::Analysis_ATLAS_0LEPStop_20invfb::Analysis_ATLAS_0LEPStop_20invfb() (Analysis_ATLAS_0LEPStop_20invfb.cpp:112)
+==31050==    by 0x18B977E: Gambit::ColliderBit::create_Analysis_ATLAS_0LEPStop_20invfb() (Analysis_ATLAS_0LEPStop_20invfb.cpp:747)
+==31050==    by 0x18C713A: Gambit::ColliderBit::mkAnalysis(std::string const&) (Analysis.cpp:26)
+==31050==    by 0x188A322: Gambit::ColliderBit::specifyAnalysisPointerVector(std::vector<Gambit::ColliderBit::Analysis*, std::allocator<Gambit::ColliderBit::Analysis*> >&) (ColliderBit.cpp:247)
+==31050==    by 0x160AE01: Gambit::module_functor<std::vector<Gambit::ColliderBit::Analysis*, std::allocator<Gambit::ColliderBit::Analysis*> > >::calculate() (functors.cpp:1483)
+==31050==    by 0x159C89B: Gambit::functor::reset_and_calculate() (functors.cpp:110)
+==31050== 
+==31050== 192 bytes in 1 blocks are still reachable in loss record 19,198 of 24,565
+==31050==    at 0x4C2AB80: malloc (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x8E897A8: ??? (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+==31050==    by 0x8E8DB8E: ??? (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+==31050==    by 0x1888DC4: Gambit::ColliderBit::operatePythia() (ColliderBit.cpp:104)
+==31050==    by 0x15AB449: Gambit::module_functor<void>::calculate() (functors.cpp:1574)
+==31050==    by 0x167AD93: Gambit::DRes::DependencyResolver::calcObsLike(unsigned long, int) (depresolver.cpp:563)
+==31050==    by 0x16C89E9: Gambit::Likelihood_Container::calcObsLike(unsigned long&) (likelihood_container.cpp:118)
+==31050==    by 0x16C7C56: Gambit::Likelihood_Container::main(std::vector<double, std::allocator<double> > const&) (likelihood_container.cpp:137)
+==31050==    by 0x101FE731: ???
+==31050==    by 0x101FD1A0: ???
+==31050==    by 0x102043AF: ???
+==31050==    by 0x1708A05: Gambit::Scanner::Plugins::Plugin_Interface<int ()>::operator()() (plugin_interface.hpp:102)
+==31050== 
+==31050== 256 bytes in 1 blocks are indirectly lost in loss record 22,435 of 24,565
+==31050==    at 0x4C2B0E0: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x155F4E9: __gnu_cxx::new_allocator<std::string>::allocate(unsigned long, void const*) (new_allocator.h:104)
+==31050==    by 0x1556EA0: std::_Vector_base<std::string, std::allocator<std::string> >::_M_allocate(unsigned long) (in /home/krill/gambit/modules/gambit)
+==31050==    by 0x1623C4D: void std::vector<std::string, std::allocator<std::string> >::_M_emplace_back_aux<std::string>(std::string&&) (vector.tcc:404)
+==31050==    by 0x161DCFE: void std::vector<std::string, std::allocator<std::string> >::emplace_back<std::string>(std::string&&) (vector.tcc:101)
+==31050==    by 0x1605A29: std::vector<std::string, std::allocator<std::string> >::push_back(std::string&&) (stl_vector.h:920)
+==31050==    by 0x18B9D60: Gambit::ColliderBit::Analysis_ATLAS_0LEPStop_20invfb::Analysis_ATLAS_0LEPStop_20invfb() (Analysis_ATLAS_0LEPStop_20invfb.cpp:111)
+==31050==    by 0x18B977E: Gambit::ColliderBit::create_Analysis_ATLAS_0LEPStop_20invfb() (Analysis_ATLAS_0LEPStop_20invfb.cpp:747)
+==31050==    by 0x18C713A: Gambit::ColliderBit::mkAnalysis(std::string const&) (Analysis.cpp:26)
+==31050==    by 0x188A322: Gambit::ColliderBit::specifyAnalysisPointerVector(std::vector<Gambit::ColliderBit::Analysis*, std::allocator<Gambit::ColliderBit::Analysis*> >&) (ColliderBit.cpp:247)
+==31050==    by 0x160AE01: Gambit::module_functor<std::vector<Gambit::ColliderBit::Analysis*, std::allocator<Gambit::ColliderBit::Analysis*> > >::calculate() (functors.cpp:1483)
+==31050==    by 0x159C89B: Gambit::functor::reset_and_calculate() (functors.cpp:110)
+==31050== 
+==31050== 256 bytes in 1 blocks are indirectly lost in loss record 22,436 of 24,565
+==31050==    at 0x4C2B0E0: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x16938AB: __gnu_cxx::new_allocator<int>::allocate(unsigned long, void const*) (new_allocator.h:104)
+==31050==    by 0x168EBA6: std::_Vector_base<int, std::allocator<int> >::_M_allocate(unsigned long) (in /home/krill/gambit/modules/gambit)
+==31050==    by 0x1691233: void std::vector<int, std::allocator<int> >::_M_emplace_back_aux<int>(int&&) (vector.tcc:404)
+==31050==    by 0x168CB94: void std::vector<int, std::allocator<int> >::emplace_back<int>(int&&) (vector.tcc:101)
+==31050==    by 0x1688EBF: std::vector<int, std::allocator<int> >::push_back(int&&) (stl_vector.h:920)
+==31050==    by 0x189CDA0: Gambit::ColliderBit::Analysis_ATLAS_1LEPStop_20invfb::Analysis_ATLAS_1LEPStop_20invfb() (Analysis_ATLAS_1LEPStop_20invfb.cpp:67)
+==31050==    by 0x1899AB6: Gambit::ColliderBit::create_Analysis_ATLAS_1LEPStop_20invfb() (Analysis_ATLAS_1LEPStop_20invfb.cpp:811)
+==31050==    by 0x18C715B: Gambit::ColliderBit::mkAnalysis(std::string const&) (Analysis.cpp:27)
+==31050==    by 0x188A322: Gambit::ColliderBit::specifyAnalysisPointerVector(std::vector<Gambit::ColliderBit::Analysis*, std::allocator<Gambit::ColliderBit::Analysis*> >&) (ColliderBit.cpp:247)
+==31050==    by 0x160AE01: Gambit::module_functor<std::vector<Gambit::ColliderBit::Analysis*, std::allocator<Gambit::ColliderBit::Analysis*> > >::calculate() (functors.cpp:1483)
+==31050==    by 0x159C89B: Gambit::functor::reset_and_calculate() (functors.cpp:110)
+==31050== 
+==31050== 256 bytes in 1 blocks are indirectly lost in loss record 22,437 of 24,565
+==31050==    at 0x4C2B0E0: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x16938AB: __gnu_cxx::new_allocator<int>::allocate(unsigned long, void const*) (new_allocator.h:104)
+==31050==    by 0x168EBA6: std::_Vector_base<int, std::allocator<int> >::_M_allocate(unsigned long) (in /home/krill/gambit/modules/gambit)
+==31050==    by 0x1691233: void std::vector<int, std::allocator<int> >::_M_emplace_back_aux<int>(int&&) (vector.tcc:404)
+==31050==    by 0x168CB94: void std::vector<int, std::allocator<int> >::emplace_back<int>(int&&) (vector.tcc:101)
+==31050==    by 0x1688EBF: std::vector<int, std::allocator<int> >::push_back(int&&) (stl_vector.h:920)
+==31050==    by 0x189CE13: Gambit::ColliderBit::Analysis_ATLAS_1LEPStop_20invfb::Analysis_ATLAS_1LEPStop_20invfb() (Analysis_ATLAS_1LEPStop_20invfb.cpp:69)
+==31050==    by 0x1899AB6: Gambit::ColliderBit::create_Analysis_ATLAS_1LEPStop_20invfb() (Analysis_ATLAS_1LEPStop_20invfb.cpp:811)
+==31050==    by 0x18C715B: Gambit::ColliderBit::mkAnalysis(std::string const&) (Analysis.cpp:27)
+==31050==    by 0x188A322: Gambit::ColliderBit::specifyAnalysisPointerVector(std::vector<Gambit::ColliderBit::Analysis*, std::allocator<Gambit::ColliderBit::Analysis*> >&) (ColliderBit.cpp:247)
+==31050==    by 0x160AE01: Gambit::module_functor<std::vector<Gambit::ColliderBit::Analysis*, std::allocator<Gambit::ColliderBit::Analysis*> > >::calculate() (functors.cpp:1483)
+==31050==    by 0x159C89B: Gambit::functor::reset_and_calculate() (functors.cpp:110)
+==31050== 
+==31050== 270 bytes in 5 blocks are still reachable in loss record 22,440 of 24,565
+==31050==    at 0x4C2AB80: malloc (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x400BDC3: _dl_new_object (dl-object.c:165)
+==31050==    by 0x4006783: _dl_map_object_from_fd (dl-load.c:1059)
+==31050==    by 0x4008DFF: _dl_map_object (dl-load.c:2605)
+==31050==    by 0x4014A53: dl_open_worker (dl-open.c:235)
+==31050==    by 0x400FFF3: _dl_catch_error (dl-error.c:187)
+==31050==    by 0x40143BA: _dl_open (dl-open.c:661)
+==31050==    by 0x4E3802A: dlopen_doit (dlopen.c:66)
+==31050==    by 0x400FFF3: _dl_catch_error (dl-error.c:187)
+==31050==    by 0x4E3862C: _dlerror_run (dlerror.c:163)
+==31050==    by 0x4E380C0: dlopen@@GLIBC_2.2.5 (dlopen.c:87)
+==31050==    by 0x163C448: Gambit::loadLibrary(std::string, std::string, std::string, void*&, bool&, bool) (ini_functions.cpp:148)
+==31050== 
+==31050== 440 bytes in 11 blocks are definitely lost in loss record 24,506 of 24,565
+==31050==    at 0x4C2B0E0: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x188AA38: Gambit::ColliderBit::convertPythia8ParticleEvent(HEPUtils::Event&) (ColliderBit.cpp:336)
+==31050==    by 0x1615AF6: Gambit::module_functor<HEPUtils::Event>::calculate() (functors.cpp:1483)
+==31050==    by 0x159C89B: Gambit::functor::reset_and_calculate() (functors.cpp:110)
+==31050==    by 0x15A310D: Gambit::module_functor_common::iterate(int) (functors.cpp:698)
+==31050==    by 0x1413CB8: Gambit::ColliderBit::Functown::operatePythia_iterate(int) (ColliderBit_rollcall.hpp:34)
+==31050==    by 0x188CA1A: Gambit::ColliderBit::operatePythia() [clone ._omp_fn.0] (ColliderBit.cpp:108)
+==31050==    by 0x1888DD0: Gambit::ColliderBit::operatePythia() (ColliderBit.cpp:104)
+==31050==    by 0x15AB449: Gambit::module_functor<void>::calculate() (functors.cpp:1574)
+==31050==    by 0x167AD93: Gambit::DRes::DependencyResolver::calcObsLike(unsigned long, int) (depresolver.cpp:563)
+==31050==    by 0x16C89E9: Gambit::Likelihood_Container::calcObsLike(unsigned long&) (likelihood_container.cpp:118)
+==31050==    by 0x16C7C56: Gambit::Likelihood_Container::main(std::vector<double, std::allocator<double> > const&) (likelihood_container.cpp:137)
+==31050== 
+==31050== 512 bytes in 1 blocks are indirectly lost in loss record 24,515 of 24,565
+==31050==    at 0x4C2B0E0: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x155F4E9: __gnu_cxx::new_allocator<std::string>::allocate(unsigned long, void const*) (new_allocator.h:104)
+==31050==    by 0x1556EA0: std::_Vector_base<std::string, std::allocator<std::string> >::_M_allocate(unsigned long) (in /home/krill/gambit/modules/gambit)
+==31050==    by 0x1623C4D: void std::vector<std::string, std::allocator<std::string> >::_M_emplace_back_aux<std::string>(std::string&&) (vector.tcc:404)
+==31050==    by 0x161DCFE: void std::vector<std::string, std::allocator<std::string> >::emplace_back<std::string>(std::string&&) (vector.tcc:101)
+==31050==    by 0x1605A29: std::vector<std::string, std::allocator<std::string> >::push_back(std::string&&) (stl_vector.h:920)
+==31050==    by 0x189CDDD: Gambit::ColliderBit::Analysis_ATLAS_1LEPStop_20invfb::Analysis_ATLAS_1LEPStop_20invfb() (Analysis_ATLAS_1LEPStop_20invfb.cpp:68)
+==31050==    by 0x1899AB6: Gambit::ColliderBit::create_Analysis_ATLAS_1LEPStop_20invfb() (Analysis_ATLAS_1LEPStop_20invfb.cpp:811)
+==31050==    by 0x18C715B: Gambit::ColliderBit::mkAnalysis(std::string const&) (Analysis.cpp:27)
+==31050==    by 0x188A322: Gambit::ColliderBit::specifyAnalysisPointerVector(std::vector<Gambit::ColliderBit::Analysis*, std::allocator<Gambit::ColliderBit::Analysis*> >&) (ColliderBit.cpp:247)
+==31050==    by 0x160AE01: Gambit::module_functor<std::vector<Gambit::ColliderBit::Analysis*, std::allocator<Gambit::ColliderBit::Analysis*> > >::calculate() (functors.cpp:1483)
+==31050==    by 0x159C89B: Gambit::functor::reset_and_calculate() (functors.cpp:110)
+==31050== 
+==31050== 1,450 (168 direct, 1,282 indirect) bytes in 1 blocks are definitely lost in loss record 24,542 of 24,565
+==31050==    at 0x4C2B0E0: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x18B9773: Gambit::ColliderBit::create_Analysis_ATLAS_0LEPStop_20invfb() (Analysis_ATLAS_0LEPStop_20invfb.cpp:747)
+==31050==    by 0x18C713A: Gambit::ColliderBit::mkAnalysis(std::string const&) (Analysis.cpp:26)
+==31050==    by 0x188A322: Gambit::ColliderBit::specifyAnalysisPointerVector(std::vector<Gambit::ColliderBit::Analysis*, std::allocator<Gambit::ColliderBit::Analysis*> >&) (ColliderBit.cpp:247)
+==31050==    by 0x160AE01: Gambit::module_functor<std::vector<Gambit::ColliderBit::Analysis*, std::allocator<Gambit::ColliderBit::Analysis*> > >::calculate() (functors.cpp:1483)
+==31050==    by 0x159C89B: Gambit::functor::reset_and_calculate() (functors.cpp:110)
+==31050==    by 0x15A310D: Gambit::module_functor_common::iterate(int) (functors.cpp:698)
+==31050==    by 0x1413CB8: Gambit::ColliderBit::Functown::operatePythia_iterate(int) (ColliderBit_rollcall.hpp:34)
+==31050==    by 0x1888DA3: Gambit::ColliderBit::operatePythia() (ColliderBit.cpp:103)
+==31050==    by 0x15AB449: Gambit::module_functor<void>::calculate() (functors.cpp:1574)
+==31050==    by 0x167AD93: Gambit::DRes::DependencyResolver::calcObsLike(unsigned long, int) (depresolver.cpp:563)
+==31050==    by 0x16C89E9: Gambit::Likelihood_Container::calcObsLike(unsigned long&) (likelihood_container.cpp:118)
+==31050== 
+==31050== 3,301 (168 direct, 3,133 indirect) bytes in 1 blocks are definitely lost in loss record 24,551 of 24,565
+==31050==    at 0x4C2B0E0: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x1899AAB: Gambit::ColliderBit::create_Analysis_ATLAS_1LEPStop_20invfb() (Analysis_ATLAS_1LEPStop_20invfb.cpp:811)
+==31050==    by 0x18C715B: Gambit::ColliderBit::mkAnalysis(std::string const&) (Analysis.cpp:27)
+==31050==    by 0x188A322: Gambit::ColliderBit::specifyAnalysisPointerVector(std::vector<Gambit::ColliderBit::Analysis*, std::allocator<Gambit::ColliderBit::Analysis*> >&) (ColliderBit.cpp:247)
+==31050==    by 0x160AE01: Gambit::module_functor<std::vector<Gambit::ColliderBit::Analysis*, std::allocator<Gambit::ColliderBit::Analysis*> > >::calculate() (functors.cpp:1483)
+==31050==    by 0x159C89B: Gambit::functor::reset_and_calculate() (functors.cpp:110)
+==31050==    by 0x15A310D: Gambit::module_functor_common::iterate(int) (functors.cpp:698)
+==31050==    by 0x1413CB8: Gambit::ColliderBit::Functown::operatePythia_iterate(int) (ColliderBit_rollcall.hpp:34)
+==31050==    by 0x1888DA3: Gambit::ColliderBit::operatePythia() (ColliderBit.cpp:103)
+==31050==    by 0x15AB449: Gambit::module_functor<void>::calculate() (functors.cpp:1574)
+==31050==    by 0x167AD93: Gambit::DRes::DependencyResolver::calcObsLike(unsigned long, int) (depresolver.cpp:563)
+==31050==    by 0x16C89E9: Gambit::Likelihood_Container::calcObsLike(unsigned long&) (likelihood_container.cpp:118)
+==31050== 
+==31050== 4,040 bytes in 101 blocks are definitely lost in loss record 24,554 of 24,565
+==31050==    at 0x4C2B0E0: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x188A892: Gambit::ColliderBit::convertPythia8ParticleEvent(HEPUtils::Event&) (ColliderBit.cpp:311)
+==31050==    by 0x1615AF6: Gambit::module_functor<HEPUtils::Event>::calculate() (functors.cpp:1483)
+==31050==    by 0x159C89B: Gambit::functor::reset_and_calculate() (functors.cpp:110)
+==31050==    by 0x15A310D: Gambit::module_functor_common::iterate(int) (functors.cpp:698)
+==31050==    by 0x1413CB8: Gambit::ColliderBit::Functown::operatePythia_iterate(int) (ColliderBit_rollcall.hpp:34)
+==31050==    by 0x188CA1A: Gambit::ColliderBit::operatePythia() [clone ._omp_fn.0] (ColliderBit.cpp:108)
+==31050==    by 0x1888DD0: Gambit::ColliderBit::operatePythia() (ColliderBit.cpp:104)
+==31050==    by 0x15AB449: Gambit::module_functor<void>::calculate() (functors.cpp:1574)
+==31050==    by 0x167AD93: Gambit::DRes::DependencyResolver::calcObsLike(unsigned long, int) (depresolver.cpp:563)
+==31050==    by 0x16C89E9: Gambit::Likelihood_Container::calcObsLike(unsigned long&) (likelihood_container.cpp:118)
+==31050==    by 0x16C7C56: Gambit::Likelihood_Container::main(std::vector<double, std::allocator<double> > const&) (likelihood_container.cpp:137)
+==31050== 
+==31050== 6,110 bytes in 5 blocks are still reachable in loss record 24,558 of 24,565
+==31050==    at 0x4C2CC70: calloc (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x400BB23: _dl_new_object (dl-object.c:75)
+==31050==    by 0x4006783: _dl_map_object_from_fd (dl-load.c:1059)
+==31050==    by 0x4008DFF: _dl_map_object (dl-load.c:2605)
+==31050==    by 0x4014A53: dl_open_worker (dl-open.c:235)
+==31050==    by 0x400FFF3: _dl_catch_error (dl-error.c:187)
+==31050==    by 0x40143BA: _dl_open (dl-open.c:661)
+==31050==    by 0x4E3802A: dlopen_doit (dlopen.c:66)
+==31050==    by 0x400FFF3: _dl_catch_error (dl-error.c:187)
+==31050==    by 0x4E3862C: _dlerror_run (dlerror.c:163)
+==31050==    by 0x4E380C0: dlopen@@GLIBC_2.2.5 (dlopen.c:87)
+==31050==    by 0x163C448: Gambit::loadLibrary(std::string, std::string, std::string, void*&, bool&, bool) (ini_functions.cpp:148)
+==31050== 
+==31050== 31,200 bytes in 780 blocks are definitely lost in loss record 24,564 of 24,565
+==31050==    at 0x4C2B0E0: operator new(unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31050==    by 0x188AC65: Gambit::ColliderBit::convertPythia8ParticleEvent(HEPUtils::Event&) (ColliderBit.cpp:363)
+==31050==    by 0x1615AF6: Gambit::module_functor<HEPUtils::Event>::calculate() (functors.cpp:1483)
+==31050==    by 0x159C89B: Gambit::functor::reset_and_calculate() (functors.cpp:110)
+==31050==    by 0x15A310D: Gambit::module_functor_common::iterate(int) (functors.cpp:698)
+==31050==    by 0x1413CB8: Gambit::ColliderBit::Functown::operatePythia_iterate(int) (ColliderBit_rollcall.hpp:34)
+==31050==    by 0x188CA1A: Gambit::ColliderBit::operatePythia() [clone ._omp_fn.0] (ColliderBit.cpp:108)
+==31050==    by 0x1888DD0: Gambit::ColliderBit::operatePythia() (ColliderBit.cpp:104)
+==31050==    by 0x15AB449: Gambit::module_functor<void>::calculate() (functors.cpp:1574)
+==31050==    by 0x167AD93: Gambit::DRes::DependencyResolver::calcObsLike(unsigned long, int) (depresolver.cpp:563)
+==31050==    by 0x16C89E9: Gambit::Likelihood_Container::calcObsLike(unsigned long&) (likelihood_container.cpp:118)
+==31050==    by 0x16C7C56: Gambit::Likelihood_Container::main(std::vector<double, std::allocator<double> > const&) (likelihood_container.cpp:137)
+==31050== 
+==31050== LEAK SUMMARY:
+==31050==    definitely lost: 36,016 bytes in 894 blocks
+==31050==    indirectly lost: 4,415 bytes in 68 blocks
+==31050==      possibly lost: 0 bytes in 0 blocks
+==31050==    still reachable: 6,842 bytes in 16 blocks
+==31050==         suppressed: 2,237,377 bytes in 26,531 blocks
+==31050== 
+==31050== For counts of detected and suppressed errors, rerun with: -v
+==31050== Use --track-origins=yes to see where uninitialised values come from
+==31050== ERROR SUMMARY: 52 errors from 14 contexts (suppressed: 7930 from 248)
