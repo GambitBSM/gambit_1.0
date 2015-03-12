@@ -86,10 +86,10 @@ string (REPLACE ";" "," itch_with_commas "${itch}")
 # Ben: cmake_variables.py seems to have vanished! I think this section of code 
 # remained due to some automatic merging, but it is now redundant? I think
 # "locate_scanners.py" is now generating the cmake_variables.hpp.in file.
-#message("${Yellow}-- Updating GAMBIT with config data${ColourReset}")
-#set(update_config ${PROJECT_SOURCE_DIR}/cmake/cmake_variables.py)
-#execute_process(COMMAND python ${update_config} WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
-#message("${Yellow}-- Updating GAMBIT with config data - done.${ColourReset}")
+message("${Yellow}-- Updating GAMBIT with config data${ColourReset}")
+set(update_config ${PROJECT_SOURCE_DIR}/cmake/cmake_variables.py)
+execute_process(COMMAND python ${update_config} WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
+message("${Yellow}-- Updating GAMBIT with config data - done.${ColourReset}")
 
 message("${Yellow}-- Updating GAMBIT scanner cmake files${ColourReset}")
 set(locate_scanners ${PROJECT_SOURCE_DIR}/cmake/locate_scanners.py -x __not_a_real_name__,${itch_with_commas})

@@ -21,7 +21,6 @@
 
 #include "gambit/ScannerBit/scan.hpp"
 #include "gambit/ScannerBit/scanner_utils.hpp"
-#include "gambit/Utils/ini_functions.hpp"
 #include "gambit/Utils/static_members.hpp"
 
 namespace Gambit
@@ -37,7 +36,12 @@ namespace Gambit
         error e = scan_error();
         warning w = scan_warning();
       }
-      catch (std::exception& e) { ini_catch(e); }       
+      catch (std::exception& e) 
+      {
+        std::cout << "ScannerBit has failed to initialise due to a fatal exception: " << e.what() << std::endl;
+        //std::cout << "raised from ini_code_struct declared at: " << location << std::endl;
+        throw(e);      
+      }       
       return 0;
     }
 

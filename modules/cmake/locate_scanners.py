@@ -112,7 +112,7 @@ def main(argv):
         cmakelist_txt_out += " "*16 + "src/" + source + "\n"
         
     for source in sorted(prior_srcs):
-        cmakelist_txt_out += " "*16 + source.split('./ScannerBit/')[1] + "\n"
+        cmakelist_txt_out += " "*16 + "src/" + source.split('/ScannerBit/src/')[1] + "\n"
         
     cmakelist_txt_out += ")\n\n"
     
@@ -122,12 +122,57 @@ def main(argv):
         cmakelist_txt_out += " "*16 + "include/gambit/ScannerBit/" + header + "\n"
         
     for header in sorted(prior_hdrs):
-        cmakelist_txt_out += " "*16 + header.split('./ScannerBit/')[1] + "\n"
-        prior_txt_out += "#include \"" + header.split('/ScannerBit/include/gambit/ScannerBit/')[1] + "\"\n"
+        cmakelist_txt_out += " "*16 + "include/gambit/ScannerBit/" + header.split('/ScannerBit/include/gambit/ScannerBit/')[1] + "\n"
+        prior_txt_out += "#include \"" + "gambit/ScannerBit/" + header.split('/ScannerBit/include/gambit/ScannerBit/')[1] + "\"\n"
         
     cmakelist_txt_out += ")\n\n"
     prior_txt_out += "\n#endif\n"
     ## end adding scannerbit files to CMakeLists.txt ##
+    
+    ## begin adding scannbit executable files to CMakeLists.txt ##
+    
+    scan_helper_srcs = []
+    scan_helper_hdrs = []
+    if os.path.exists("./ScannerBit/src/scanlibs"):
+                 scan_helper_srcs = [ root + "/" + f for root,dirs,files in os.walk("./ScannerBit/src/scanlibs") for f in files if f.endswith(".cpp") or f.endswith(".c") or f.endswith(".cc") or f.endswith(".cxx") ]
+    if os.path.exists("./ScannerBit/include/gambit/ScannerBit/scanlibs"):
+                 scan_helper_hdrs = [ root + "/" + f for root,dirs,files in os.walk("./ScannerBit/include/gambit/ScannerBit/scanlibs") for f in files if f.endswith(".hpp") or f.endswith(".h") ]
+    scan_standalone_srcs = []
+    scan_standalone_hdrs = []
+    if os.path.exists("./ScannerBit/src/scanbit"):
+                 scan_standalone_srcs = [ root + "/" + f for root,dirs,files in os.walk("./ScannerBit/src/scanbit") for f in files if f.endswith(".cpp") or f.endswith(".c") or f.endswith(".cc") or f.endswith(".cxx") ]
+    if os.path.exists("./ScannerBit/include/gambit/ScannerBit/scanbit"):
+                 scan_standalone_hdrs = [ root + "/" + f for root,dirs,files in os.walk("./ScannerBit/include/gambit/ScannerBit/scanbit") for f in files if f.endswith(".hpp") or f.endswith(".h") ]
+    
+    cmakelist_txt_out += "set( scanner_scanlibs_sources\n"
+            
+    for source in sorted(scan_helper_srcs):
+        cmakelist_txt_out += " "*16 + "src/" + source.split('/ScannerBit/src/')[1] + "\n"
+        
+    cmakelist_txt_out += ")\n\n"
+    
+    cmakelist_txt_out += "set( scanner_scanlibs_headers\n"
+    
+    for header in sorted(scan_helper_hdrs):
+        cmakelist_txt_out += " "*16 + "include/gambit/ScannerBit/" + header.split('/ScannerBit/include/gambit/ScannerBit/')[1] + "\n"
+       
+    cmakelist_txt_out += ")\n\n"
+    
+    cmakelist_txt_out += "set( scanbit_standalone_sources\n"
+            
+    for source in sorted(scan_standalone_srcs):
+        cmakelist_txt_out += " "*16 + "src/" + source.split('/ScannerBit/src/')[1] + "\n"
+        
+    cmakelist_txt_out += ")\n\n"
+    
+    cmakelist_txt_out += "set( scanbit_standalone_headers\n"
+    
+    for header in sorted(scan_standalone_hdrs):
+        cmakelist_txt_out += " "*16 + "include/gambit/ScannerBit/" + header.split('/ScannerBit/include/gambit/ScannerBit/')[1] + "\n"
+       
+    cmakelist_txt_out += ")\n\n"
+    
+    ## end adding scannbit executable files to CMakeLists.txt ##
     
     # loop through the different plugin types
     for i in xrange(len(plug_type)):
@@ -256,14 +301,14 @@ def main(argv):
                                 plugins += [last_plugin_file]
                         
             ## begin adding plugin files to CMakeLists.txt ##
-                cmakelist_txt_out += " "*16 + source.split('/ScannerBit/')[1] + "\n"
+                cmakelist_txt_out += " "*16 + "src/" + source.split('/ScannerBit/src/')[1] + "\n"
                 
             cmakelist_txt_out += ")\n\n"
             
             cmakelist_txt_out += "set( " + plug_type[i] + "_plugin_headers_" + directory + "\n"
             
             for header in sorted(headers):
-                cmakelist_txt_out += " "*16 + header.split('/ScannerBit/')[1] + "\n"
+                cmakelist_txt_out += " "*16 + "include/gambit/ScannerBit/" + header.split('/ScannerBit/include/gambit/ScannerBit/')[1] + "\n"
                 
             cmakelist_txt_out += ")\n\n"
             ## end adding plugin files to CMakeLists.txt ## 
@@ -482,18 +527,43 @@ endif()                                          \n\n"
 
     towrite += cmakelist_txt_out
 
-    towrite +="\
-set( scanner_scanlibs_sources                   \n\
-                src/scanlibs/scanlibs.cpp       \n\
-)                                               \n\
-                                                \n\
+    towrite +="\n\
 add_gambit_library( ScannerBit OPTION OBJECT SOURCES ${scannerbit_sources} HEADERS ${scannerbit_headers} )\n\n\
-add_gambit_executable( scanlibs SOURCES ${scanner_scanlibs_sources} )\n\
+add_gambit_executable( scanlibs SOURCES ${scanner_scanlibs_sources} HEADERS ${scanner_scanlibs_headers})\n\
 add_dependencies(scanlibs yaml-cpp)             \n\
 set_target_properties( scanlibs                 \n\
                        PROPERTIES               \n\
-                       RUNTIME_OUTPUT_DIRECTORY \"${CMAKE_CURRENT_SOURCE_DIR}/bin\")\n\n"
-    
+                       RUNTIME_OUTPUT_DIRECTORY \"${CMAKE_CURRENT_SOURCE_DIR}/bin\")\n\n\
+include(utils.cmake)                            \n\n\
+set( scanbit_standalone_src                     \n\
+        ${scanbit_standalone_sources}           \n\
+        $<TARGET_OBJECTS:Logs>                  \n\
+        $<TARGET_OBJECTS:Printers>              \n\
+        $<TARGET_OBJECTS:ScannerBit>            \n\
+        $<TARGET_OBJECTS:mkpath>                \n\
+        ${utils_source_files}                   \n\
+)                                               \n\n\
+set( scanbit_standalone_hdr                     \n\
+        ${scanbit_standalone_headers}           \n\
+        ${utils_header_files}                   \n\
+)                                               \n\n\
+add_gambit_executable( scannerbit SOURCES ${scanbit_standalone_src} HEADERS ${scanbit_standalone_hdr})\n\
+set_target_properties( scannerbit               \n\
+                       PROPERTIES               \n\
+                       RUNTIME_OUTPUT_DIRECTORY \"${CMAKE_CURRENT_SOURCE_DIR}/bin\")\n\
+add_dependencies(scannerbit ScannerBit)         \n\
+add_dependencies(scannerbit mkpath)             \n\
+add_dependencies(scannerbit yaml-cpp)           \n\
+target_link_libraries(scannerbit yaml-cpp)      \n\
+if (NOT EXCLUDE_FLEXIBLESUSY)                   \n\
+  add_dependencies(scannerbit flexiblesusy)     \n\
+  target_link_libraries(scannerbit ${flexiblesusy_LDFLAGS})\n\
+endif()                                         \n\
+if (NOT EXCLUDE_DELPHES)                        \n\
+  add_dependencies(scannerbit delphes)          \n\
+  target_link_libraries(scannerbit ${delphes_LDFLAGS} ${ROOT_LIBRARIES} ${ROOT_LIBRARY_DIR}/libEG.so)\n\
+endif()                                         \n\n"
+        
     towrite += "set( reqd_lib_output )\n"
     towrite += "set( exclude_lib_output )\n\n"
     

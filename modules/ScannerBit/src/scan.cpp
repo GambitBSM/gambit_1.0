@@ -34,42 +34,19 @@ namespace Gambit
         namespace Scanner
         {
 
-                YAML::Node combineNodes(const std::map<std::string, YAML::Node> &nodesMap, const YAML::Node &node)
-                {
-                        std::stringstream ss;
-                        
-                        if (!node.IsNull())
-                                ss << node << std::endl;
+                inline YAML::Node combineNodes(const std::map<std::string, YAML::Node> &nodesMap, const YAML::Node &node)
+                {       
+                        YAML::Node outNode = node;
                         
                         for (auto it = nodesMap.begin(), end = nodesMap.end(); it != end; it++)
                         {
-                                ss << it->first << ": ";
-                                if (it->second.IsScalar())
-                                {
-                                        ss << it->second.Scalar() << std::endl;
-                                }
-                                else if (it->second.IsMap())
-                                {
-                                        std::stringstream ssNode;
-                                        ssNode << it->second << std::endl;
-                                        std::string temp;
-                                        ss << std::endl;
-                                        std::string::size_type pos;
-                                        while (std::getline(ssNode, temp))
-                                        {
-                                                ss << "  " << temp << std::endl;
-                                        }
-                                }
-                                else
-                                {
-                                        ss << std::endl;
-                                }
+                                outNode[it->first] = it->second;
                         }
                         
-                        return YAML::Load(ss.str());
+                        return outNode;
                 }
                 
-                std::vector<std::string> get_infile_values(const YAML::Node &node)
+                inline std::vector<std::string> get_infile_values(const YAML::Node &node)
                 {
                         if (node.IsSequence())
                         {
@@ -79,19 +56,20 @@ namespace Gambit
                         {
                                 std::string plug = node.as<std::string>();
                                 
-                                std::string::size_type pos = 0;
-                                while ((pos = plug.find(",", pos)) != std::string::npos)
+                                std::string::size_type pos = plug.find_first_of(",;:.");
+                                while (pos != std::string::npos)
                                 {
-                                        plug.replace(pos, 1, " ");
+                                        plug[pos] = ' ';
+                                        pos = plug.find_first_of(",;:.", pos + 1);
                                 }
                                 
-                                pos = 0;
-                                while ((pos = plug.find(";", pos)) != std::string::npos)
-                                {
-                                        plug.replace(pos, 1, " ");
-                                }
+                                std::stringstream ss;
+                                ss << plug;
+                                std::vector<std::string> ret;
+                                std::string temp;
+                                while (ss >> temp) ret.push_back(temp);
                                 
-                                return std::vector<std::string> (1, plug);
+                                return ret;
                         }
                         else
                         {
@@ -100,7 +78,7 @@ namespace Gambit
                         }
                 }
         
-                Scan_Manager::Scan_Manager (const Factory_Base &factoryIn, const Options options_in, const Priors::CompositePrior &priorIn, 
+                Scan_Manager::Scan_Manager (const Factory_Base *factoryIn, const Options options_in, const Priors::CompositePrior *priorIn, 
                  printer_interface *printerInterface) 
                 : options(options_in), printerInterface(printerInterface)
                 {
@@ -178,14 +156,14 @@ namespace Gambit
                                 }
                                 else
                                 {
-                                        factory = &factoryIn;
-                                        prior = &priorIn;
+                                        factory = factoryIn;
+                                        prior = priorIn;
                                 }
                         }
                         else
                         {
-                                factory = &factoryIn;
-                                prior = &priorIn;
+                                factory = factoryIn;
+                                prior = priorIn;
                         }
 
                 }

@@ -56,10 +56,6 @@ namespace Gambit
                                         process(GAMBIT_DIR "/scratch/scanbit_linked_libs.yaml", GAMBIT_DIR "/scratch/scanbit_reqd_entries.yaml");
                                 }
                         }
-                        
-                        std::vector<Plugin_Details> Plugin_Loader::getPluginsVec() const {return total_plugins;}
-
-                        std::map<std::string, std::map<std::string, std::vector<Plugin_Details>>> Plugin_Loader::getPluginsMap() const {return total_plugin_map;}
 
                         void Plugin_Loader::process(const std::string &libFile, const std::string &plugFile)
                         {
@@ -71,7 +67,7 @@ namespace Gambit
                                         it->get_status(libNode, plugNode);
                                         plugin_map[it->type][it->plugin].push_back(*it);
                                         total_plugin_map[it->type][it->plugin].push_back(*it);
-                                        std::cout << it->printFull() << std::endl;
+                                        //std::cout << it->printFull() << std::endl;
                                 }
                                 
                                 for (auto it = excluded_plugins.begin(), end = excluded_plugins.end(); it != end; it++)
@@ -79,7 +75,7 @@ namespace Gambit
                                         it->get_status(libNode, plugNode);
                                         excluded_plugin_map[it->type][it->plugin].push_back(*it);
                                         total_plugin_map[it->type][it->plugin].push_back(*it);
-                                        std::cout << it->printFull() << std::endl;
+                                        //std::cout << it->printFull() << std::endl;
                                 }
                         }
                         
