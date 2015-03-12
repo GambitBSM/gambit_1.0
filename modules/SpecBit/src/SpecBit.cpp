@@ -60,30 +60,55 @@ namespace Gambit
     // of the code required to run them is the same; this is what is contained in
     // the below template function.
     template <class MI>  // MI for Model_interface
-    Spectrum* run_FS_spectrum_generator(const typename MI::InputParameters &input, const Options &runOptions)
+    SMplusUV run_FS_spectrum_generator(const typename MI::InputParameters &input, const Options &runOptions)
     {
       // SoftSUSY object used to set quark and lepton masses and gauge
       // couplings in QEDxQCD effective theory
       // Will be initialised by default using values in lowe.h. Should add code here to
       // input any Standard Model values which we want to vary with the scan. Also need
       // to implement a strategy for carrying SM parameters around gambit consistently.
-      QedQcd oneset; 
+
+      // Put the information to be used to initialise the spectrum generator into a special struct
+      // Contains everything in the SLHA SMINPUTS block.
+      SMInputs sminputs;
+
       #ifdef SpecBit_DBUG
-         // Get QedQcd values to match LesHouches.in.MSSM_1 
-         oneset.setPoleMt(1.73300000e2);
-         //oneset.setPoleMb(...);
-         oneset.setPoleMtau(1.77700000);
-         oneset.setMbMb(4.20000000);
-         /// sets a running quark mass
-         oneset.setMass(mDown,    4.76052706e-3);
-         oneset.setMass(mUp,      2.40534062e-3);
-         oneset.setMass(mStrange, 1.04230487E-01);
-         oneset.setMass(mCharm, 1.27183378);
-         /// sets QED or QCD structure constant
-         oneset.setAlpha(ALPHA, 1./1.27934000e2 );
-         oneset.setAlpha(ALPHAS, 1.17600000e-1 );
-         // Not sure how to set other stuff.
+         // Set values to match LesHouches.in.MSSM_1 
+         sminputs.alphainv = 1.279340000e+02      // alpha^(-1) SM MSbar(MZ)
+         sminputs.GF       = 1.166370000e-05      // G_Fermi
+         sminputs.alphaS   = 1.176000000e-01      // alpha_s(MZ) SM MSbar
+         sminputs.mZ       = 9.118760000e+01      // MZ(pole)
+         sminputs.mBmB     = 4.200000000e+00      // mb(mb) SM MSbar
+         sminputs.mT       = 1.733000000e+02      // mtop(pole)
+         sminputs.mTau     = 1.777000000e+00      // mtau(pole)
+         sminputs.mNu3     = 0.000000000e+00      // mnu3(pole)
+         sminputs.mE       = 5.109989020e-04      // melectron(pole)
+         sminputs.mNu1     = 0.000000000e+00      // mnu1(pole)
+         sminputs.mMu      = 1.056583570e-01      // mmuon(pole)
+         sminputs.mNu2     = 0.000000000e+00      // mnu2(pole)
+         sminputs.mD       = 4.750000000e-03      // md(2 GeV) MS-bar
+         sminputs.mU       = 2.400000000e-03      // mu(2 GeV) MS-bar
+         sminputs.mS       = 1.040000000e-01      // ms(2 GeV) MS-bar
+         sminputs.mC       = 1.270000000e+00      // mc(mc) MS-bar
       #endif 
+                        
+      // Fill QedQcd object with SMInputs values
+      QedQcd oneset; 
+      oneset.setPoleMt(sminputs.mT);
+      //oneset.setPoleMb(...);
+      oneset.setPoleMtau(sminputs.mTau);
+      oneset.setMbMb(sminputs.mBmB);
+      /// set running quark masses
+      oneset.setMass(mDown,    sminputs.mD);
+      oneset.setMass(mUp,      sminputs.mU);
+      oneset.setMass(mStrange, sminputs.mS);
+      oneset.setMass(mCharm, sminputs.mC);
+      /// set QED and QCD structure constants
+      oneset.setAlpha(ALPHA, 1./sminputs.alphainv);
+      oneset.setAlpha(ALPHAS, sminputs.alphaS);
+      // Not sure how to set other stuff.
+
+      // Run everything to Mz
       oneset.toMz();
  
       // Create spectrum generator object
@@ -178,6 +203,9 @@ namespace Gambit
       // one-stop-shop for all spectrum information, including the model interface object.
       static MSSMSpec<MI> mssmspec(model_interface);
 
+      // Create a second Spectrum object to wrap the qedqcd object used to initialise the spectrum generator
+      static QedQcdWrapper qedqcdspec(oneset);
+
       if( runOptions.getValue<bool>("invalid_point_fatal") and problems.have_problem() )
       {
          ///TODO: Need to tell gambit that the spectrum is not viable somehow. For now
@@ -189,19 +217,24 @@ Message from flexibleSUSY below:" << std::endl;
          problems.print_warnings(errmsg); 
          SpecBit_error().raise(LOCAL_INFO,errmsg.str());  
       }  
- 
-      // Write SLHA file (for debugging purposes...)
-      typename MI::SlhaIo slha_io;
-      slha_io.set_spinfo(problems);
-      slha_io.set_sminputs(oneset);
-      slha_io.set_minpar(input);
-      slha_io.set_extpar(input);
-      slha_io.set_spectrum(mssmspec.model_interface.model);
-      slha_io.write_to_file("SpecBit/initial_CMSSM_spectrum.slha");
 
-      // Return a pointer to the Spectrum object
-      return &mssmspec;
+      // Write SLHA file (for debugging purposes...)
+      #ifdef SpecBit_DBUG
+         typename MI::SlhaIo slha_io;
+         slha_io.set_spinfo(problems);
+         slha_io.set_sminputs(oneset);
+         slha_io.set_minpar(input);
+         slha_io.set_extpar(input);
+         slha_io.set_spectrum(mssmspec.model_interface.model);
+         slha_io.write_to_file("SpecBit/initial_CMSSM_spectrum.slha");
+      #endif
+
+      // Package pointer to QedQcd Spectrum object along with pointer to MSSM Spectrum object, 
+      // and SMInputs struct.
+      SMplusUV joined_spectra(&qedqcdspec,&mssmspec,sminputs);
+      return joined_spectra;
     }
+
     //
     //
     //   // We want to store things in a "generic" flexiblesusy MSSM object. But in 

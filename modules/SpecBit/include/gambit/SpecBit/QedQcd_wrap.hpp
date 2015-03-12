@@ -40,7 +40,17 @@ namespace Gambit {
 
          /* MAPS */
 
-      public:
+         //mass
+         static fmap_plain mass_map_extra;
+         static fmap_plain fill_mass_map_extra();
+         virtual const fmap_plain& get_mass_map_extra() const;  // MUST have this name for overload 
+ 
+         //mass0
+         static fmap_plain mass0_map_extra;
+         static fmap_plain fill_mass0_map_extra();
+         virtual const fmap_plain& get_mass0_map_extra() const;  // MUST have this name for overload 
+
+   public:
          QedQcd_MSbarPars(QedQcdWrapper&, QedQcdModel&); 
          virtual ~QedQcd_MSbarPars();
         
