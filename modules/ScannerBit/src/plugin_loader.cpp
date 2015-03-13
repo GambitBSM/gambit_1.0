@@ -202,33 +202,41 @@ namespace Gambit
                                 printer = &printerIn;
                                 if (options.getNode().IsMap())
                                 {
-                                        std::vector<std::string> selectedPluginNames = options.getNames();
-                                        
-                                        for (auto it = selectedPluginNames.begin(), end = selectedPluginNames.end(); it != end; it++)
+                                        for (auto it = options.getNode().begin(), end = options.getNode().end(); it != end; it++)
                                         {
-                                                Proto_Plugin_Details temp;
+                                                std::string plug_type = it->first.as<std::string>();
                                                 
-                                                if (options.hasKey(*it, "plugin"))
+                                                if (it->second.IsMap() && plug_type[plug_type.length()-1] == 's' && plug_type != "priors" && plug_type != "parameters")
                                                 {
-                                                        temp.plugin = options.getValue<std::string>(*it, "plugin");
+                                                        for (auto it_p = it->second.begin(), end = it->second.end(); it_p != end; it_p++)
+                                                        {
+                                                                std::string plug_tag = it_p->first.as<std::string>();
+                                                                
+                                                                Proto_Plugin_Details temp;
+                                                                
+                                                                if (it_p->second["plugin"])
+                                                                {
+                                                                        temp.plugin = it_p->second["plugin"].as<std::string>();
+                                                                }
+                                                                else
+                                                                {
+                                                                        scan_err << "Plugin name is not defined under the \"" << *it << "\" tag.  "
+                                                                                << "using the tag \"" << it_p->first.as<std::string>() << "\" as the plugin name." << scan_end;
+                                                                        temp.plugin = it_p->first.as<std::string>();
+                                                                }
+                                                                
+                                                                if (it_p->second["version"])
+                                                                        temp.version = it_p->second["version"].as<std::string>();
+                                                                
+                                                                if (it_p->second["plugin_path"])
+                                                                {
+                                                                        temp.path = it_p->second["plugin_path"].as<std::string>();
+                                                                        plugins.loadLibrary(temp.path, temp.plugin);
+                                                                }
+                                                                        
+                                                                selectedPlugins[plug_type.substr(0, plug_type.length()-1)][plug_tag] = temp;
+                                                        }
                                                 }
-                                                else
-                                                {
-                                                        scan_err << "Plugin name is not defined under the \"" << *it << "\" tag.  "
-                                                                << "using the tag \"" << *it << "\" as the plugin name." << scan_end;
-                                                        temp.plugin = *it;
-                                                }
-                                                
-                                                if (options.hasKey(*it, "version"))
-                                                        temp.version = options.getValue<std::string>(*it, "version");
-                                                
-                                                if (options.hasKey(*it, "plugin_path"))
-                                                {
-                                                        temp.path = options.getValue<std::string>(*it, "plugin_path");
-                                                        plugins.loadLibrary(temp.path, temp.plugin);
-                                                }
-                                                        
-                                                selectedPlugins[*it] = temp;
                                         }
                                 }
                                 else
@@ -239,14 +247,14 @@ namespace Gambit
                         
                         Plugins::Plugin_Interface_Details pluginInfo::operator()(const std::string &type, const std::string &pluginName)
                         {
-                                auto it2 = selectedPlugins.find(pluginName);
-                                if (it2 != selectedPlugins.end())
+                                if (selectedPlugins.find(type) != selectedPlugins.end() && selectedPlugins[type].find(pluginName) != selectedPlugins[type].end())
                                 {
-                                        return Plugin_Interface_Details(plugins.find(type, it2->second.plugin, it2->second.version, it2->second.path), printer, options.getOptions(pluginName).getNode());
+                                        Proto_Plugin_Details &detail = selectedPlugins[type][pluginName];
+                                        return Plugin_Interface_Details(plugins.find(type, detail.plugin, detail.version, detail.path), printer, options.getOptions(type + "s", pluginName).getNode());
                                 }
                                 else
                                 {
-                                        scan_err << "Plugin \"" << pluginName << "\" is not defined under the \"plugins\""
+                                        scan_err << "Plugin \"" << pluginName << "\" of type \"" << type << "\" is not defined under the \"Scanner\""
                                                 << " subsection in the inifile" << scan_end;
                                                 
                                         return Plugin_Interface_Details();

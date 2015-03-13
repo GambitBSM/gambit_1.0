@@ -88,6 +88,6 @@ inline std::vector<double> &prior_transform(const std::vector<double> &in)      
         return ret;                                                                                                     \
 }                                                                                                                       \
 
-#define OBJECTIVE_PLUGIN(plug_name, ...) GAMBIT_PLUGIN_INITIALIZE(OBJECTIVE_SETUP, plug_name, like, __VA_ARGS__)
+#define OBJECTIVE_PLUGIN(plug_name, ...) GAMBIT_PLUGIN_INITIALIZE(OBJECTIVE_SETUP, plug_name, objective, __VA_ARGS__)
 
 #endif

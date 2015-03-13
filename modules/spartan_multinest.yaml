@@ -29,9 +29,9 @@ Printer:
 
 #======== Scanner setup ========
 Scanner:
-  use_scanner_plugin: multinest
+  use_scanner: multinest
 
-  plugins:
+  scanners:
     multinest:
       plugin: MultiNest
       options:

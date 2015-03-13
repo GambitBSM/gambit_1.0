@@ -88,7 +88,7 @@ namespace Gambit
                         class pluginInfo
                         {
                         private:
-                                std::map<std::string, Proto_Plugin_Details> selectedPlugins;
+                                std::map<std::string, std::map<std::string, Proto_Plugin_Details> > selectedPlugins;
                                 mutable Plugins::Plugin_Loader plugins;
                                 printer_interface *printer;
                                 Options options;

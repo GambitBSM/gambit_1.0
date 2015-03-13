@@ -100,15 +100,14 @@ inline void print_plugins(std::map< std::string, std::map<std::string, std::vect
         }
 }
 
-void print_plugins(const std::string &plug_type_in = "")
+void print_plugins(const std::string &plug_type = "")
 {
         // Display capability information
         cout << "\nThis is ScannerBit." << endl << endl;
         
         // Import scanner plugin info from ScannerBit 
-        if (plug_type_in != "")
+        if (plug_type != "")
         {
-                std::string plug_type = (plug_type_in == "scanner")? "scan": "like";
                 auto plugins = Scanner::Plugins::plugin_info().getPluginsMap().find(plug_type);
                 if (plugins == Scanner::Plugins::plugin_info().getPluginsMap().end())
                 {

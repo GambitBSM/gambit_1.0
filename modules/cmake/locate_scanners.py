@@ -139,10 +139,10 @@ def main(argv):
                  scan_helper_hdrs = [ root + "/" + f for root,dirs,files in os.walk("./ScannerBit/include/gambit/ScannerBit/scanlibs") for f in files if f.endswith(".hpp") or f.endswith(".h") ]
     scan_standalone_srcs = []
     scan_standalone_hdrs = []
-    if os.path.exists("./ScannerBit/src/scanbit"):
-                 scan_standalone_srcs = [ root + "/" + f for root,dirs,files in os.walk("./ScannerBit/src/scanbit") for f in files if f.endswith(".cpp") or f.endswith(".c") or f.endswith(".cc") or f.endswith(".cxx") ]
-    if os.path.exists("./ScannerBit/include/gambit/ScannerBit/scanbit"):
-                 scan_standalone_hdrs = [ root + "/" + f for root,dirs,files in os.walk("./ScannerBit/include/gambit/ScannerBit/scanbit") for f in files if f.endswith(".hpp") or f.endswith(".h") ]
+    if os.path.exists("./ScannerBit/examples"):
+                 scan_standalone_srcs = [ root + "/" + f for root,dirs,files in os.walk("./ScannerBit/examples") for f in files if f.endswith(".cpp") or f.endswith(".c") or f.endswith(".cc") or f.endswith(".cxx") ]
+    if os.path.exists("./ScannerBit/examples"):
+                 scan_standalone_hdrs = [ root + "/" + f for root,dirs,files in os.walk("./ScannerBit/examples") for f in files if f.endswith(".hpp") or f.endswith(".h") ]
     
     cmakelist_txt_out += "set( scanner_scanlibs_sources\n"
             
@@ -161,14 +161,14 @@ def main(argv):
     cmakelist_txt_out += "set( scanbit_standalone_sources\n"
             
     for source in sorted(scan_standalone_srcs):
-        cmakelist_txt_out += " "*16 + "src/" + source.split('/ScannerBit/src/')[1] + "\n"
+        cmakelist_txt_out += " "*16 + "examples/" + source.split('/ScannerBit/examples/')[1] + "\n"
         
     cmakelist_txt_out += ")\n\n"
     
     cmakelist_txt_out += "set( scanbit_standalone_headers\n"
     
     for header in sorted(scan_standalone_hdrs):
-        cmakelist_txt_out += " "*16 + "include/gambit/ScannerBit/" + header.split('/ScannerBit/include/gambit/ScannerBit/')[1] + "\n"
+        cmakelist_txt_out += " "*16 + "examples/" + header.split('/ScannerBit/examples/')[1] + "\n"
        
     cmakelist_txt_out += ")\n\n"
     
@@ -225,13 +225,13 @@ def main(argv):
                     inc_finds = [[m.span()[0], -3, re.sub(r'\s', '', m.group())] for m in it]
                     all_finds  = sorted(scan_finds + obj_finds + ini_finds + lib_finds + inc_finds)
                     for find in all_finds:
-                        if find[1] == 0 or find[1] == 1:
+                        if find[1] >= 0:
                             processed = False
                             splitline = neatsplit(r'\(|\)|,|\s|\{',find[2])
                             if len(splitline) != 0: 
                                 plugin_name = splitline[1]
                                 mod_version = ["0","0","0",""]
-                                plugin_type = "scan" if splitline[0] == "scanner_plugin" else "like"
+                                plugin_type = plug_type[find[1]];
                                 if splitline[2] == "version": mod_version[0:len(splitline[3:])] = splitline[3:]
                                 token = plugin_name+"__t__"+plugin_type+"__v__"+"_".join([x for x in mod_version])
                                 status = "ok"
@@ -547,21 +547,21 @@ set( scanbit_standalone_hdr                     \n\
         ${scanbit_standalone_headers}           \n\
         ${utils_header_files}                   \n\
 )                                               \n\n\
-add_gambit_executable( scannerbit SOURCES ${scanbit_standalone_src} HEADERS ${scanbit_standalone_hdr})\n\
-set_target_properties( scannerbit               \n\
+add_gambit_executable( scannerbit_standalone SOURCES ${scanbit_standalone_src} HEADERS ${scanbit_standalone_hdr})\n\
+set_target_properties( scannerbit_standalone    \n\
                        PROPERTIES               \n\
                        RUNTIME_OUTPUT_DIRECTORY \"${CMAKE_CURRENT_SOURCE_DIR}/bin\")\n\
-add_dependencies(scannerbit ScannerBit)         \n\
-add_dependencies(scannerbit mkpath)             \n\
-add_dependencies(scannerbit yaml-cpp)           \n\
-target_link_libraries(scannerbit yaml-cpp)      \n\
+add_dependencies(scannerbit_standalone ScannerBit)\n\
+add_dependencies(scannerbit_standalone mkpath)  \n\
+add_dependencies(scannerbit_standalone yaml-cpp)\n\
+target_link_libraries(scannerbit_standalone yaml-cpp)\n\
 if (NOT EXCLUDE_FLEXIBLESUSY)                   \n\
-  add_dependencies(scannerbit flexiblesusy)     \n\
-  target_link_libraries(scannerbit ${flexiblesusy_LDFLAGS})\n\
+  add_dependencies(scannerbit_standalone flexiblesusy)\n\
+  target_link_libraries(scannerbit_standalone ${flexiblesusy_LDFLAGS})\n\
 endif()                                         \n\
 if (NOT EXCLUDE_DELPHES)                        \n\
-  add_dependencies(scannerbit delphes)          \n\
-  target_link_libraries(scannerbit ${delphes_LDFLAGS} ${ROOT_LIBRARIES} ${ROOT_LIBRARY_DIR}/libEG.so)\n\
+  add_dependencies(scannerbit_standalone delphes)\n\
+  target_link_libraries(scannerbit_standalone ${delphes_LDFLAGS} ${ROOT_LIBRARIES} ${ROOT_LIBRARY_DIR}/libEG.so)\n\
 endif()                                         \n\n"
         
     towrite += "set( reqd_lib_output )\n"

@@ -47,6 +47,6 @@ using namespace Gambit::Scanner;                                                
 /*#define SET_SCAN_IOS(file) 
 scan_ios.setOutput((get_input_value<IniFileInterface>(3)).getNode(#file)); */
 
-#define SCANNER_PLUGIN(plug_name, ...) GAMBIT_PLUGIN_INITIALIZE(SCANNER_SETUP, plug_name, scan, __VA_ARGS__)
+#define SCANNER_PLUGIN(plug_name, ...) GAMBIT_PLUGIN_INITIALIZE(SCANNER_SETUP, plug_name, scanner, __VA_ARGS__)
         
 #endif

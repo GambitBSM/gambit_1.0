@@ -82,43 +82,45 @@ namespace Gambit
                  printer_interface *printerInterface) 
                 : options(options_in), printerInterface(printerInterface)
                 {
-                        if (!options.hasKey("plugins"))
-                        {
-                                scan_err << "There is no \"plugins\" subsection in the scanner inifile section." << scan_end;
-                                return;
-                        }
+                        Plugins::plugin_info.iniFile(options, *printerInterface);
                         
-                        Plugins::plugin_info.iniFile(options.getOptions("plugins"), *printerInterface);
-                        
-                        if (options.hasKey("use_objective_plugins"))
+                        if (options.hasKey("use_objectives"))
                         {
                                 std::map< std::string, std::vector<std::string> > names;
                                 std::map< std::string, YAML::Node > nodes;
-                                std::vector <std::string> plugs = get_infile_values(options.getNode("use_objective_plugins"));
+                                std::vector <std::string> plugs = get_infile_values(options.getNode("use_objectives"));
                                         
                                 for (auto it = plugs.begin(), end = plugs.end(); it != end; it++)
                                 {
-                                        if (options.hasKey("plugins", *it, "purpose"))
+                                        if (options.hasKey("objectives") && options.hasKey("objectives", *it))
                                         {
-                                                std::vector <std::string> purposes = get_infile_values(options.getNode("plugins", *it, "purpose"));
+                                                if (options.hasKey("objectives", *it, "purpose"))
+                                                {
+                                                        std::vector <std::string> purposes = get_infile_values(options.getNode("objectives", *it, "purpose"));
+                                                        
+                                                        for (auto it2 = purposes.begin(), end = purposes.end(); it2 != end; it2++)
+                                                                names[*it2].push_back(*it);
+                                                }
+                                                else
+                                                {
+                                                        scan_err << "Must specify purpose under the plugin tag \"" << *it << "\"." << scan_end;
+                                                }
                                                 
-                                                for (auto it2 = purposes.begin(), end = purposes.end(); it2 != end; it2++)
-                                                        names[*it2].push_back(*it);
+                                                if (options.hasKey("objectives", *it, "parameters"))
+                                                {
+                                                        if (options.hasKey("parameters") && options.hasKey("parameters", *it))
+                                                        {
+                                                                scan_err << "Plugin \"" << *it << "\"'s parameters are defined in "
+                                                                        << "both the \"parameters\" section and the \"plugins\" "
+                                                                        << "section in the inifile." << scan_end;
+                                                        }
+                                                        nodes[*it] = options.getNode("objectives", *it, "parameters");
+                                                }
                                         }
                                         else
                                         {
-                                                scan_err << "Must specify purpose under the plugin tag \"" << *it << "\"." << scan_end;
-                                        }
-                                        
-                                        if (options.hasKey("plugins", *it, "parameters"))
-                                        {
-                                                if (options.hasKey("parameters") && options.hasKey("parameters", *it))
-                                                {
-                                                        scan_err << "Plugin \"" << *it << "\"'s parameters are defined in "
-                                                                << "both the \"parameters\" section and the \"plugins\" "
-                                                                << "section in the inifile." << scan_end;
-                                                }
-                                                nodes[*it] = options.getNode("plugins", *it, "parameters");
+                                                scan_err << "Plugin \"" << *it << "\" of type \"" << "objective" << "\" is not defined under the \"Scanner\""
+                                                << " subsection in the inifile" << scan_end;
                                         }
                                 }
                                 
@@ -172,18 +174,18 @@ namespace Gambit
                 {
                         Plugins::Plugin_Details plugin;
                         std::string pluginName;
-                        if (options.hasKey("use_scanner_plugin"))
+                        if (options.hasKey("use_scanner") && options.getNode("use_scanner").IsScalar())
                         {
-                                pluginName = options.getValue<std::string>("use_scanner_plugin");
+                                pluginName = options.getValue<std::string>("use_scanner");
                         }
                         else
                         {
-                                scan_err << "\"use_scanner_plugin:\" input value not usable in the inifile." << scan_end;
+                                scan_err << "\"use_scanner:\" input value not usable in the inifile." << scan_end;
                         }
 
                         unsigned int dim = prior->size();
                         
-                        Plugins::Plugin_Interface<int ()> plugin_interface("scan", pluginName, dim, *factory);
+                        Plugins::Plugin_Interface<int ()> plugin_interface("scanner", pluginName, dim, *factory);
                         plugin_interface();
                         
                         return 0;

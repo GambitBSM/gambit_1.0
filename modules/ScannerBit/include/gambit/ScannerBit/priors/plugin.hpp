@@ -44,7 +44,7 @@ namespace Gambit
                         
                 public: 
                         Plugin(const std::vector<std::string>& params, const Options& options) : 
-                                Scanner::Plugins::Plugin_Interface<void (const std::vector<double> &, std::unordered_map<std::string,double> &)>("like", inputName(options), params, sizeRef())
+                                Scanner::Plugins::Plugin_Interface<void (const std::vector<double> &, std::unordered_map<std::string,double> &)>("objective", inputName(options), params, sizeRef())
                         {
                         }
                         

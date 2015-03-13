@@ -45,9 +45,9 @@ Printer:
 
 Scanner:
     
-  use_scanner_plugin: random
+  use_scanner: random
 
-  plugins:
+  scanners:
   
     random:
       plugin: random_sampler
