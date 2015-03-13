@@ -96,7 +96,8 @@ namespace Gambit {
          QedQcdWrapper(bool switch_index_convention=false);
          QedQcdWrapper(QedQcdModel&, bool switch_index_convention=false);
          virtual ~QedQcdWrapper();
-         
+      
+         virtual int get_index_offset() const;   
          virtual int get_numbers_stable_particles() const; 
    };
  

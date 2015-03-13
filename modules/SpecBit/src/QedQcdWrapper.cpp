@@ -25,7 +25,7 @@
 
 #include "lowe.h" ///TODO: wrap using BOSS at some point, i.e. get this from FlexibleSUSY or SoftSUSY
 #include "gambit/Utils/Spectrum.hpp"
-#include "gambit/SpecBit/QedQcd_wrap.hpp"
+#include "gambit/SpecBit/QedQcdWrapper.hpp"
 
 /// Macro to help assign the same function pointers to multiple string keys
 // Relies on "tmp_map" being used as the variable name for the temporary maps
@@ -62,6 +62,8 @@ namespace Gambit {
    /// Destructor
    QedQcdWrapper::~QedQcdWrapper() {}
 
+   /// Currently unused virtual functions
+   int QedQcdWrapper::get_index_offset() const {return 0;}   
    int QedQcdWrapper::get_numbers_stable_particles() const {return -1;} 
 
    /// @}

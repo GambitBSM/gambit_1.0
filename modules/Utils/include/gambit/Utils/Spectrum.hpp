@@ -26,6 +26,7 @@
 #include <set>
 
 #include "gambit/Utils/cats.hpp"
+#include "gambit/Utils/standalone_error_handlers.hpp"
 #include "gambit/Models/partmap.hpp"
 
 #include "SLHAea/slhaea.h"
@@ -46,61 +47,17 @@ inline bool within_bounds(const int i, const std::set<int> allowed)
 
 /// Helper macro for throwing errors in base class versions of virtual functions
 ///TODO: probably want a Gambit error here
-#define vfcn_error() \
-  std::cout << "This virtual function (of Spectrum object) has not been overridden in the derived class!" <<std::endl \
-
+#define vfcn_error(local_info) \
+  utils_error().raise(local_info,"This virtual function (of Spectrum object) has not been overridden in the derived class!")
 
 ///Note: (Ben) I have extracted these classes from the Spectrum class, so they are no longer nested.
 ///            I did this because there are no special access rights to nested classes in C++03, and
 ///            while there *are* in C++11, I don't know what compilers support this, and we were
 ///            already declaring the relevant classes as friends anyway. So to make this header less
 ///            confusing (I hope) I have just defined these classes in the host namespace separately.
+class Spectrum;
 class RunningPars;
 class Phys;
-
-class Spectrum {
-   public:
-      /// Dump out spectrum information to slha (if possible, and not including input parameters etc. just at the moment...)
-      virtual void dump2slha(const std::string&) { vfcn_error(); }
-   
-      /// Get spectrum information in SLHAea format (if possible)
-      SLHAea::Coll empty_SLHAea;  // never used; just to avoid "no return statement in function returning non-void" warnings
-      virtual SLHAea::Coll getSLHAea() { vfcn_error(); return empty_SLHAea; }
-
-      /// Get integer offset convention used by internal model class (needed by getters which take indices) 
-      virtual int get_index_offset() const = 0;
-   
-      /// Constructors/destructors
-      Spectrum(RunningPars& rp, Phys& p) : phys(p), runningpars(rp) {}
-      virtual ~Spectrum() {} 
-
-      //Models::partmap& particle_database;
-      /// new constructor.  Pass Models::ParticleDB() in as the third argument in all cases.  You will need to include partmap.hpp in order to be able to do this.
-      //Spectrum(RunningPars& rp, Phys& p, Models::partmap& pdb) : phys(p), runningpars(rp), particle_database(pdb) {}
-   
-      /// Member objects containing physical and running parameters
-      Phys& phys;
-      RunningPars& runningpars;
-
-      /// Member object containing low-energy effective Standard Model parameters
-      //SMLowEnergyEffective& SMeff;
-
-      ///  returns the lightest stable particle (lsp) mass 
-      ///   gives 3 integers to specify the state 
-      ///  for most general case of a particle type with mass matrix 
-      ///  row and col set to -1 when not needed 
-      /// (row opmnly is used for vector)
-      /// particle_type = 0 (neutralino), 1(Sneutrino), 2(up squark), 
-      /// 3(down squarks), 4(charged slepton), 5(Chargino), 6(gluino)
-      ///  Add more for 
-      virtual double get_lsp_mass(int& /*particle_type*/, int& /*row*/, int& /*col*/) const { vfcn_error(); return -1; }
-      /// There may be more than one *new* stable particle
-      ///  this method will tell you how many.
-      /// If more than zero you probbaly *need* to know what model
-      ///  you are working on, so we don't give all stable particles
-      virtual int get_numbers_stable_particles() const { vfcn_error(); return -1; }  
-      
-};
 
 // Container class for SMINPUTS information (defined as in SLHA2)
 struct SMInputs
@@ -130,27 +87,88 @@ struct SMInputs
    double mC;        // 21: c quark running mass in the MSbar scheme at mC      
 
    // CKM? PMNS? 
-}
+};
 
 
 /// Standard Model plus UV Model container class
-// This class is used to deliver both information defined in the Standard Model (or
-// potentially just QED X QCD) as a low-energy effective theory (as opposed
-// to correspending information defined in a UV model) as well as a corresponding UV theory. 
-// Parameters defined in the low-energy model are often used as input to a physics calculators.
-
-struct SMplusUV;
+// This class is used to deliver both information defined in the Standard Model
+// (or potentially just QED X QCD) as a low-energy effective theory (as opposed
+// to correspending information defined in a UV model) as well as a
+// corresponding UV theory. Parameters defined in the low-energy model are
+// often used as input to a physics calculators. In addition, parameters used
+// to define the Standard Model, in SLHA2 format, are provided in the SMINPUTS
+// data member.
+class SMplusUV
 {
-   Spectrum* const SM;
-   Spectrum* const UV;
-   const SMInputs SMINPUTS;
+   private:
+      Spectrum* SM;
+      Spectrum* UV;
+      SMInputs SMINPUTS;
+      bool initialised;
+   
+      void check_init() const {
+        if(not initialised) utils_error().raise(LOCAL_INFO,"Access to empty SMplusUV object attempted!");
+      }
 
-   SMplusUV(Spectrum* const sm, Spectrum* const uv, SMInputs smi)
-     : SM(sm)
-     , UV(uv)
-     , SMINPUTS(smi)
-   {}
-}
+   public:
+      SMplusUV() : SM(), UV(), SMINPUTS(), initialised(false) {}
+      SMplusUV(Spectrum* const sm, Spectrum* const uv, SMInputs const smi)
+        : SM(sm)
+        , UV(uv)
+        , SMINPUTS(smi)
+        , initialised(true) 
+      {}
+
+      Spectrum* get_SM() const {check_init(); return SM;}
+      Spectrum* get_UV() const {check_init(); return UV;}
+      SMInputs  get_SMINPUTS() const {check_init(); return SMINPUTS;}
+};
+
+/// Virtual base class for interacting with spectrum generator output
+// Includes facilities for running RGEs
+class Spectrum {
+   public:
+      /// Dump out spectrum information to slha (if possible, and not including input parameters etc. just at the moment...)
+      virtual void dump2slha(const std::string&) { vfcn_error(LOCAL_INFO); }
+   
+      /// Get spectrum information in SLHAea format (if possible)
+      SLHAea::Coll empty_SLHAea;  // never used; just to avoid "no return statement in function returning non-void" warnings
+      virtual SLHAea::Coll getSLHAea() { vfcn_error(LOCAL_INFO); return empty_SLHAea; }
+
+      /// Get integer offset convention used by internal model class (needed by getters which take indices) 
+      virtual int get_index_offset() const = 0;
+   
+      /// Constructors/destructors
+      Spectrum(RunningPars& rp, Phys& p) : phys(p), runningpars(rp) {}
+      virtual ~Spectrum() {} 
+
+      //Models::partmap& particle_database;
+      /// new constructor.  Pass Models::ParticleDB() in as the third argument in all cases.  You will need to include partmap.hpp in order to be able to do this.
+      //Spectrum(RunningPars& rp, Phys& p, Models::partmap& pdb) : phys(p), runningpars(rp), particle_database(pdb) {}
+   
+      /// Member objects containing physical and running parameters
+      Phys& phys;
+      RunningPars& runningpars;
+
+      /// Member object containing low-energy effective Standard Model parameters
+      //SMLowEnergyEffective& SMeff;
+
+      ///  returns the lightest stable particle (lsp) mass 
+      ///   gives 3 integers to specify the state 
+      ///  for most general case of a particle type with mass matrix 
+      ///  row and col set to -1 when not needed 
+      /// (row opmnly is used for vector)
+      /// particle_type = 0 (neutralino), 1(Sneutrino), 2(up squark), 
+      /// 3(down squarks), 4(charged slepton), 5(Chargino), 6(gluino)
+      ///  Add more for 
+      virtual double get_lsp_mass(int& /*particle_type*/, int& /*row*/, int& /*col*/) const { vfcn_error(LOCAL_INFO); return -1; }
+      /// There may be more than one *new* stable particle
+      ///  this method will tell you how many.
+      /// If more than zero you probbaly *need* to know what model
+      ///  you are working on, so we don't give all stable particles
+      virtual int get_numbers_stable_particles() const { vfcn_error(LOCAL_INFO); return -1; }  
+      
+};
 
 class RunningPars 
 {
@@ -160,29 +178,29 @@ class RunningPars
       virtual ~RunningPars() {}      
 
       /// run object to a particular scale
-      virtual void RunToScale(double) { vfcn_error(); }
+      virtual void RunToScale(double) { vfcn_error(LOCAL_INFO); }
       /// returns the renormalisation scale of parameters
-      virtual double GetScale() const { vfcn_error(); return -1; }
+      virtual double GetScale() const { vfcn_error(LOCAL_INFO); return -1; }
       /// Sets the renormalisation scale of parameters 
       /// somewhat dangerous to allow this but may be needed
-      virtual void SetScale(double) { vfcn_error(); }
+      virtual void SetScale(double) { vfcn_error(LOCAL_INFO); }
       
       /// getters using map
-      virtual double get_mass4_parameter(const std::string&) const { vfcn_error(); return -1; }
-      virtual double get_mass4_parameter(const std::string&, int) const { vfcn_error(); return -1; }
-      virtual double get_mass4_parameter(const std::string&, int, int) const { vfcn_error(); return -1; }
-      virtual double get_mass3_parameter(const std::string&) const { vfcn_error(); return -1; }
-      virtual double get_mass3_parameter(const std::string&, int) const { vfcn_error(); return -1; }
-      virtual double get_mass3_parameter(const std::string&, int, int) const { vfcn_error(); return -1; }
-      virtual double get_mass2_parameter(const std::string&) const { vfcn_error(); return -1; }
-      virtual double get_mass2_parameter(const std::string&, int) const { vfcn_error(); return -1; }
-      virtual double get_mass2_parameter(const std::string&, int, int) const { vfcn_error(); return -1; }
-      virtual double get_mass_parameter(const std::string&) const { vfcn_error(); return -1; } 
-      virtual double get_mass_parameter(const std::string&, int) const { vfcn_error(); return -1; }
-      virtual double get_mass_parameter(const std::string&, int, int) const { vfcn_error(); return -1; }
-      virtual double get_dimensionless_parameter(const std::string&) const { vfcn_error(); return -1; }
-      virtual double get_dimensionless_parameter(const std::string&, int) const { vfcn_error(); return -1; }
-      virtual double get_dimensionless_parameter(const std::string&, int, int) const { vfcn_error(); return -1; }
+      virtual double get_mass4_parameter(const std::string&) const { vfcn_error(LOCAL_INFO); return -1; }
+      virtual double get_mass4_parameter(const std::string&, int) const { vfcn_error(LOCAL_INFO); return -1; }
+      virtual double get_mass4_parameter(const std::string&, int, int) const { vfcn_error(LOCAL_INFO); return -1; }
+      virtual double get_mass3_parameter(const std::string&) const { vfcn_error(LOCAL_INFO); return -1; }
+      virtual double get_mass3_parameter(const std::string&, int) const { vfcn_error(LOCAL_INFO); return -1; }
+      virtual double get_mass3_parameter(const std::string&, int, int) const { vfcn_error(LOCAL_INFO); return -1; }
+      virtual double get_mass2_parameter(const std::string&) const { vfcn_error(LOCAL_INFO); return -1; }
+      virtual double get_mass2_parameter(const std::string&, int) const { vfcn_error(LOCAL_INFO); return -1; }
+      virtual double get_mass2_parameter(const std::string&, int, int) const { vfcn_error(LOCAL_INFO); return -1; }
+      virtual double get_mass_parameter(const std::string&) const { vfcn_error(LOCAL_INFO); return -1; } 
+      virtual double get_mass_parameter(const std::string&, int) const { vfcn_error(LOCAL_INFO); return -1; }
+      virtual double get_mass_parameter(const std::string&, int, int) const { vfcn_error(LOCAL_INFO); return -1; }
+      virtual double get_dimensionless_parameter(const std::string&) const { vfcn_error(LOCAL_INFO); return -1; }
+      virtual double get_dimensionless_parameter(const std::string&, int) const { vfcn_error(LOCAL_INFO); return -1; }
+      virtual double get_dimensionless_parameter(const std::string&, int, int) const { vfcn_error(LOCAL_INFO); return -1; }
 };
 
 class Phys 
@@ -193,11 +211,11 @@ class Phys
       virtual ~Phys() {}      
 
       /// map based getters
-      virtual double get_Pole_Mass(const std::string&) const { vfcn_error(); return -1; };
-      virtual double get_Pole_Mass(const std::string&, int) const { vfcn_error(); return -1; };
-      virtual double get_Pole_Mixing(const std::string&) const { vfcn_error(); return -1; };
-      virtual double get_Pole_Mixing(const std::string&, int) const { vfcn_error(); return -1; };
-      virtual double get_Pole_Mixing(const std::string&, int, int) const { vfcn_error(); return -1; };
+      virtual double get_Pole_Mass(const std::string&) const { vfcn_error(LOCAL_INFO); return -1; };
+      virtual double get_Pole_Mass(const std::string&, int) const { vfcn_error(LOCAL_INFO); return -1; };
+      virtual double get_Pole_Mixing(const std::string&) const { vfcn_error(LOCAL_INFO); return -1; };
+      virtual double get_Pole_Mixing(const std::string&, int) const { vfcn_error(LOCAL_INFO); return -1; };
+      virtual double get_Pole_Mixing(const std::string&, int, int) const { vfcn_error(LOCAL_INFO); return -1; };
 
       /// Overloads of these functions to allow access using PDG codes
       /// as defined in Models/src/particle_database.cpp

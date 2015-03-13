@@ -169,12 +169,11 @@ ObsLikes:
 
 Auxiliaries:
   - capability: SpecBit_examples
-    dependencies:
-    - {capability: MSSM_spectrum, function: get_MSSMatQ_spectrum} 
     options:
       output_slha_filename: "SpecBit/MSSM_benchmark_points/gambit.LesHouches.out.MSSM_1"
 
   - capability: MSSM_spectrum 
+    function: get_MSSMatQ_spectrum  # Use this function to compute this capability
     options:
       # Set to match benchmark point specified in
       # SpecBit/MSSM_benchmark_points/LesHouches.in.MSSM_1
