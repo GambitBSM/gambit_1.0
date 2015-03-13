@@ -32,6 +32,8 @@ LOAD_LIBRARY
 // BE_VARIABLE(FORTRAN_COMMONBLOCK(top2body_CB_type, top2body), "sd_top2body_", "top2body")
 // CsB <
 
+BE_FUNCTION(sdecay, void, (), "sdecay_", "sdecay")  // CsB SUSYHIT main subroutine declaration
+
 // CsB from Anders' CBGB script >
 BE_VARIABLE(widtha_hdec_type, widtha_hdec, "widtha_hdec_", "cb_widtha_hdec")
 BE_VARIABLE(widthhl_hdec_type, widthhl_hdec, "widthhl_hdec_", "cb_widthhl_hdec")
@@ -77,10 +79,6 @@ BE_VARIABLE(sd_sntauwidth_type, sd_sntauwidth, "sd_sntauwidth_", "cb_sd_sntauwid
 BE_VARIABLE(sd_top2body_type, sd_top2body, "sd_top2body_", "cb_sd_top2body")
 BE_VARIABLE(sd_topwidth_type, sd_topwidth, "sd_topwidth_", "cb_sd_topwidth")
 // CsB from Anders' CBGB script <
-
-// CsB SUSYHIT main subroutine declaration >
-BE_FUNCTION(sdecay, void, (), "sdecay_", "sdecay") 
-// CsB SUSYHIT main subroutine declaration <
 
 /* Syntax for BE_FUNCTION:
  * BE_FUNCTION([choose function name], [type], [arguement types], "[exact symbol name]", "[choose capability name]")
