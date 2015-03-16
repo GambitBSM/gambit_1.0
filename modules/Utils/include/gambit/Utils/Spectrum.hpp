@@ -84,7 +84,7 @@ struct SMInputs
    double mD;        // 21: d quark running mass in the MSbar scheme at 2 GeV        
    double mU;        // 21: u quark running mass in the MSbar scheme at 2 GeV        
    double mS;        // 21: s quark running mass in the MSbar scheme at 2 GeV        
-   double mC;        // 21: c quark running mass in the MSbar scheme at mC      
+   double mCmC;      // 21: c quark running mass in the MSbar scheme at mC      
 
    // CKM? PMNS? 
 };

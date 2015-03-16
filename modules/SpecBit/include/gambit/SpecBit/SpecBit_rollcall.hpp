@@ -125,32 +125,35 @@ START_MODULE
 
   #define CAPABILITY specbit_tests1
   START_CAPABILITY
-
      #define FUNCTION specbit_test_func1
      START_FUNCTION(double)
      DEPENDENCY(MSSM_spectrum, Spectrum*)
      #undef FUNCTION
-
   #undef CAPABILITY
 
   #define CAPABILITY specbit_tests2
   START_CAPABILITY
-
      #define FUNCTION specbit_test_func2
      START_FUNCTION(double)
      #undef FUNCTION
- 
   #undef CAPABILITY
 
   #define CAPABILITY specbit_tests3
   START_CAPABILITY
-
      #define FUNCTION specbit_test_func3
      START_FUNCTION(double)
      DEPENDENCY(SM_spectrum, Spectrum*)
      #undef FUNCTION
+  #undef CAPABILITY
 
- #undef CAPABILITY
+  #define CAPABILITY specbit_test_SMplusUV
+  START_CAPABILITY
+     #define FUNCTION specbit_test_SMplusUV
+     START_FUNCTION(double)
+     DEPENDENCY(MSSM_spectrum, SMplusUV)
+     #undef FUNCTION
+  #undef CAPABILITY
+
 
  #define CAPABILITY dump_spectrum_slha
  START_CAPABILITY

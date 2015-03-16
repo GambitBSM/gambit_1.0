@@ -84,10 +84,10 @@ namespace Gambit {
    /// Run masses and couplings to end_scale
    void QedQcd_MSbarPars::RunToScale(double end_scale) 
    {
+     ///TODO: Need to add warnings for running beyond certain scales, for different sorts of quantities
      const double tol = 1.0e-5; // Value used internally in QedQcd methods
      double begin_scale = GetScale();
-     my_parent.qedqcd.runGauge(begin_scale, end_scale);  // Run gauge couplings
-     my_parent.qedqcd.run(begin_scale, end_scale, tol);  // Run masses
+     my_parent.qedqcd.run(begin_scale, end_scale, tol);  // Run masses and couplings
    }
 
    /// Retrieve the current renormalisation scale at which running parameters are defined

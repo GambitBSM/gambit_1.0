@@ -50,10 +50,10 @@ ObsLikes:
   #  type:         double
   #  function:     specbit_test_func2
 
-  - purpose:      Likelihood
-    capability:   specbit_tests1
-    type:         double
-    function:     specbit_test_func1
+  #- purpose:      Likelihood
+  #  capability:   specbit_tests1
+  #  type:         double
+  #  function:     specbit_test_func1
 
   #- purpose:      Likelihood
   #  capability:   specbit_tests3
@@ -61,102 +61,39 @@ ObsLikes:
   #  function:     specbit_test_func3
 
   - purpose:      Likelihood
-    capability:   dump_spectrum_slha
+    capability:   specbit_test_SMplusUV
     type:         double
-    function:     dump_spectrum
+    function:     specbit_test_SMplusUV
 
-  - purpose:      Test
-    capability:   SpecBit_examples
-    type:         bool
-    function:     exampleRead
+  #- purpose:      Likelihood
+  #  capability:   dump_spectrum_slha
+  #  type:         double
+  #  function:     dump_spectrum
+
+  #- purpose:      Test
+  #  capability:   SpecBit_examples
+  #  type:         bool
+  #  function:     exampleRead
 
 Auxiliaries:
-  # - capability: particle_spectrum
-  #   dependencies:
-  #   #- {capability: particle_spectrum, function: make_test_spectrum}  
-  #   - {capability: particle_spectrum, function: get_MSSM_spectrum}  
-  #   options:
-  #     ewsb_loop_order: 2
-
-  # - capability: specbit_tests
-  #   dependencies:
-  #   #- {capability: particle_spectrum, function: make_test_spectrum}  
-  #   - {capability: particle_spectrum, function: MSSMSpec_to_Spectrum}  
-
-  ## ### Test CMSSM spectrum -----------
-  ## Needs 'prefer_model_specific' turned on
-  ## - capability: particle_spectrum 
-  ##   options:
-  ##     ewsb_loop_order: 2
-  ##   dependencies:
-  ##   - {capability: MSSM_parameters, module: CMSSM}
-  ##   - {capability: CMSSM_parameters, module: CMSSM} 
-
-  ## - capability: MSSM_parameters
-  ##   dependencies:
-  ##   - {capability: CMSSM_parameters, module: CMSSM}  
-
-  ## - capability: dump_spectrum_slha
-  ##   options:
-  ##     filename: "SpecBit/test_generic_dump.slha"
-  ## ### --------------------------------
- 
-  ### Test GUTMSSMA spectrum ------
-
-  ##{ currently need to do these individually; inifile rules should simply this
-  - capability: specbit_tests1
-    dependencies:
-    - {capability: MSSM_spectrum, function: get_MSSMatMGUT_spectrum} #get_CMSSM_spectrum} 
-
-  - capability: SpecBit_examples
-    dependencies:
-    - {capability: MSSM_spectrum, function: get_MSSMatMGUT_spectrum} 
-    options:
-      output_slha_filename: "SpecBit/example_write.slha"
-
-  #- capability: specbit_tests2 
-  #  dependencies:
-  #  - {capability: MSSM_spectrum, function: get_CMSSM_spectrum} #get_GUTMSSMA_spectrum} 
-
-  #- capability: specbit_tests3
-  #  dependencies:
-  #  - {capability: MSSM_spectrum, function: get_MSSMatMGUT_spectrum} #get_CMSSM_spectrum} 
-
-  ##}
-
-  - capability: dump_spectrum_slha
-    options:
-      filename: "SpecBit/test_generic_dump_GUTMSSMA.slha"
-    #dependencies:
-    #- {capability: MSSM_spectrum, function: MSSMSpec_to_Spectrum} 
-
-  - capability: SM_spectrum
-    dependencies:
-    - {capability: MSSM_spectrum, function: get_MSSMatMGUT_spectrum} #get_CMSSM_spectrum} 
-
   - capability: MSSM_spectrum 
+    function: get_MSSMatMGUT_spectrum  # Use this function to compute this capability
     options:
-      ewsb_loop_order: 2
+      # Set to match benchmark point specified in
+      # SpecBit/MSSM_benchmark_points/LesHouches.in.MSSM_1
+      precision_goal:        1.0e-4
+      max_iterations:        0
+      calculate_sm_masses:   false
+      pole_mass_loop_order:  2
+      ewsb_loop_order:       2
+      beta_loop_order:       2
+      threshold_corrections_loop_order: 1
+      use_higgs_2loop_at_as: true
+      use_higgs_2loop_ab_as: true
+      use_higgs_2loop_at_at: true
+      use_higgs_2loop_atau_atau: true
       invalid_point_fatal: false
 
-  #  dependencies:
-  #  - {capability: GUTMSSMA_parameters, module: GUTMSSMA} 
-
-  # - capability: MSSM_parameters
-  #   dependencies:
-  #   - {capability: GUTMSSMA_parameters, module: GUTMSSMA}  
-
-  ### --------------------------------
- 
-  # - capability: GUTMSSMA_parameters
-  #   dependencies:
-  #   - {capability: CMSSM_parameters, module: CMSSM} 
-
-  #- capability: dump_spectrum_slha
-  #  options:
-  #    filename: "SpecBit/test_generic_dump.slha"
-  #   dependencies:
-  #   - {capability: particle_spectrum, function: MSSMSpec_to_Spectrum}  
 
 Logger:
 
@@ -171,7 +108,6 @@ KeyValues:
 
   dependency_resolution:
     prefer_model_specific_functions: false
-    use_old_routines: true
 
   likelihood:
     model_invalid_for_lnlike_below: -1e6

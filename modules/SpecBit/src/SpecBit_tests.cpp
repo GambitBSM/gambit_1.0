@@ -158,6 +158,15 @@ namespace Gambit
       logger() << EOM;
     }
 
+    /// Test out consistency of SMplusUV object
+    void specbit_test_SMplusUV (double &result)
+    {
+      using namespace Pipes::specbit_test_SMplusUV;
+      SMplusUV joined_spectra = *Dep::MSSM_spectrum;
+
+      SMplusUV_test(joined_spectra); // Run consistency tests on Spectrum contents vs SMInputs 
+      logger() << EOM;
+    }
 
   } // end namespace SpecBit
 } // end namespace Gambit

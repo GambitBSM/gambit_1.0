@@ -1048,8 +1048,102 @@ namespace Gambit
          return pass;
       }
 
+      // Helper function for tests in SMplusUV_test
+      bool test_within_tol(double a, double b, double tol, std::string label)
+      {
+         // Tol is considered as a fraction of a
+         bool pass = std::abs(a - b) <= std::abs(a*tol);  // pass == true
+         OUTPUT << "TESTING: " << label << std::endl;
+         if(!pass) 
+         {
+            OUTPUT << "  ******FAIL******" << std::endl
+                   << "  Inputs do not match within requested relative tolerance (" << tol << ")"
+                   << std::endl
+                   << "  a = " << a << std::endl
+                   << "  b = " << b << std::endl
+                   << "  |(a - b)/a| = " << std::abs((a-b)/a) << " (greater than tol = " << tol << ")"
+                   << std::endl;
+         }
+         else
+         {
+            OUTPUT << "  Pass: (a="<<a<<", b="<<b<<")" << std::endl
+                   << "  |(a - b)/a| = " << std::abs((a-b)/a) << " (less than tol = " << tol << ")"
+                   << std::endl;
+         }
+         return pass;              
+      }
 
-   
+      // Test that output of Standard Model wrapper (e.g. QedQcdWrapper) matches
+      // SMINPUTS sufficiently accurately
+      void SMplusUV_test(SMplusUV& joined_spectra)
+      {
+         // Extract pieces of SMplusUV to make it clear what they are supposed to be
+         SMInputs sminputs = joined_spectra.get_SMINPUTS();
+         Spectrum* SM = joined_spectra.get_SM();
+
+         double tol     = 1e-9; // Demanding matching to 1 part in a billion (pole masses, things that don't change)
+         double tolg    = 1e-4; // Seem to get about this level of precision recovering running couplings from QedQcd object.
+         double tolm    = 1e-3; //      "         "              "             "                masses     "        "
+
+         // // SLHA1
+         // double alphainv;  // 1: Inverse electromagnetic coupling at the Z pole in the MSbar scheme (with 5 active flavours)
+         // double GF;        // 2: Fermi constant (in units of GeV^-2)
+         // double alphaS;    // 3: Strong coupling at the Z pole in the MSbar scheme (with 5 active flavours). 
+         // double mZ;        // 4: Z pole mass
+         // double mBmB;      // 5: b quark running mass in the MSbar scheme (at mB)
+         // double mT;        // 6: Top quark pole mass
+         // double mTau;      // 7: Tau pole mass
       
+         // // SLHA2
+         // double mNu3;      // 8: Heaviest neutrino pole mass
+        
+         // double mE;        // 11: Electron pole mass
+         // double mNu1;      // 12: Lightest neutrino pole mass
+         // double mMu;       // 13: Muon pole mass
+         // double mNu2;      // 14: Second lightest neutrino pole mass
+        
+         // double mD;        // 21: d quark running mass in the MSbar scheme at 2 GeV        
+         // double mU;        // 21: u quark running mass in the MSbar scheme at 2 GeV        
+         // double mS;        // 21: s quark running mass in the MSbar scheme at 2 GeV        
+         // double mC;        // 21: c quark running mass in the MSbar scheme at mC      
+        
+         // First check pole masses          
+         test_within_tol( sminputs.mZ,   SM->phys.get_Pole_Mass("Z"), tol, "Z pole" );
+         test_within_tol( sminputs.mT,   SM->phys.get_Pole_Mass("t"), tol, "top pole" );
+         test_within_tol( sminputs.mTau, SM->phys.get_Pole_Mass("tau"), tol, "tau pole" );
+         //test_within_tol( sminputs.mMu, SM->phys.get_Pole_Mass(""), tol );
+         //test_within_tol( sminputs.mE, SM->phys.get_Pole_Mass(""), tol );
+         //test_within_tol( sminputs.mNu3, SM->phys.get_Pole_Mass(""), tol );
+         //test_within_tol( sminputs.mNu2, SM->phys.get_Pole_Mass(""), tol );
+         //test_within_tol( sminputs.mNu1, SM->phys.get_Pole_Mass(""), tol );
+
+         // Next check running quantities evaluated at Z pole
+         // Note, numerical errors might creep in depending on how we do the running
+         // back and forth. Might need to consider some method to "reset" object back
+         // to original condition (keep a copy of itself inside?)
+         SM->runningpars.RunToScale(sminputs.mZ);
+         OUTPUT << "Current scale: " << SM->runningpars.GetScale() << std::endl;
+         OUTPUT << "Z pole mass  : " << SM->phys.get_Pole_Mass("Z") << std::endl;
+         test_within_tol( sminputs.alphainv, 1./ SM->runningpars.get_dimensionless_parameter("alpha"), tol, "1/alpha(mZ)" );
+         test_within_tol( sminputs.alphaS,       SM->runningpars.get_dimensionless_parameter("alphaS"), tol, "alphaS(mZ)" );
+
+         // Check running quantities evaluated at 2 GeV
+         SM->runningpars.RunToScale(2);
+         OUTPUT << "Current scale: " << SM->runningpars.GetScale() << std::endl;
+         test_within_tol( sminputs.mU, SM->runningpars.get_mass_parameter("u"), tolm, "mu(2)" );
+         test_within_tol( sminputs.mD, SM->runningpars.get_mass_parameter("d"), tolm, "md(2)" );
+         test_within_tol( sminputs.mS, SM->runningpars.get_mass_parameter("s"), tolm, "ms(2)" );
+
+         // Check mC(mC) and mB(mB)
+         SM->runningpars.RunToScale(sminputs.mCmC);
+         OUTPUT << "Current scale: " << SM->runningpars.GetScale() << std::endl;
+         OUTPUT << "mC (MSbar)   : " << SM->runningpars.get_mass_parameter("c") << std::endl;
+         test_within_tol( sminputs.mCmC, SM->runningpars.get_mass_parameter("c"), tolm, "mc(mc)" );
+         SM->runningpars.RunToScale(sminputs.mBmB);
+         OUTPUT << "Current scale: " << SM->runningpars.GetScale() << std::endl;
+         OUTPUT << "mB (MSbar)   : " << SM->runningpars.get_mass_parameter("b") << std::endl;
+         test_within_tol( sminputs.mBmB, SM->runningpars.get_mass_parameter("b"), tolm, "mb(mb)" );
+      }
+  
    }
 }

@@ -97,7 +97,7 @@ namespace Gambit
          sminputs.mD       = 4.750000000e-03;      // md(2 GeV) MS-bar
          sminputs.mU       = 2.400000000e-03;      // mu(2 GeV) MS-bar
          sminputs.mS       = 1.040000000e-01;      // ms(2 GeV) MS-bar
-         sminputs.mC       = 1.270000000e+00;      // mc(mc) MS-bar
+         sminputs.mCmC     = 1.270000000e+00;      // mc(mc) MS-bar
       #endif 
                         
       // Fill QedQcd object with SMInputs values
@@ -110,14 +110,27 @@ namespace Gambit
       oneset.setMass(mDown,    sminputs.mD);
       oneset.setMass(mUp,      sminputs.mU);
       oneset.setMass(mStrange, sminputs.mS);
-      oneset.setMass(mCharm, sminputs.mC);
+      oneset.setMass(mCharm, sminputs.mCmC);
       /// set QED and QCD structure constants
       oneset.setAlpha(ALPHA, 1./sminputs.alphainv);
       oneset.setAlpha(ALPHAS, sminputs.alphaS);
       // Not sure how to set other stuff.
+      #ifdef SpecBit_DBUG
+      logger() << oneset << EOM; 
+      #endif
 
       // Run everything to Mz
       oneset.toMz();
+      #ifdef SpecBit_DBUG
+      logger() << oneset << EOM; 
+      // Extra check; see what values at 2 GeV are
+      QedQcd oneset2 = oneset; //copy
+      oneset2.run(oneset2.displayMu(), 2, 1.0e-5);  // Run masses
+      logger() << oneset2 << EOM;
+      // Now go to 1 GeV; it seems that QedQcd actually assumes input at 1 GeV for toMz function
+      oneset2.run(oneset2.displayMu(), 1, 1.0e-5);  // Run masses
+      logger() << oneset2 << EOM;
+      #endif
  
       // Create spectrum generator object
       typename MI::SpectrumGenerator spectrum_generator;
@@ -142,7 +155,7 @@ namespace Gambit
 
      
       #define SPECGEN_SET(NAME,TYPE,DEFAULTVAL) \
-         CAT_2(spectrum_generator.set_, NAME) BOOST_PP_LPAREN() runOptions.getValueOrDef< TYPE > \
+         CAT_2(spectrum_generator.set_, NAME) BOOST_PP_LPAREN() runOptions.getValueOrDef<TYPE> \
                BOOST_PP_LPAREN() DEFAULTVAL BOOST_PP_COMMA() STRINGIFY(NAME) \
                BOOST_PP_RPAREN() BOOST_PP_RPAREN()
       // Ugly I know. It expands to:
