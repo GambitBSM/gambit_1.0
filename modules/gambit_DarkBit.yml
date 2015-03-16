@@ -121,6 +121,12 @@ Parameters:
       Au_3:
         fixed_value: 0
 
+//    nuclear_params:
+//      sigma0:
+//        fixed_value: 30.76
+//      SigmaPiN:
+//        fixed_value: 34.0
+
 ##############################
 # Prior setup
 ##############################
