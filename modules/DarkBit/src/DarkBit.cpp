@@ -1337,7 +1337,7 @@ namespace Gambit {
         }
         
         // FIXME: For testing, add phip as missing final state
-        missingFinalStates.insert("phip");
+        //missingFinalStates.insert("phip");
         
         std::cout << "Number of missing final states: " << missingFinalStates.size() << std::endl;
         for (auto it = missingFinalStates.begin(); it != missingFinalStates.end(); it++)
@@ -1445,6 +1445,7 @@ namespace Gambit {
                 // TODO: Correct?
                 Yield = Yield + (boost_dNdE(spec0, gamma0, 0.0) + boost_dNdE(spec1, gamma1, 0.0)) * it->genRate;
 
+                /*
                 // FIXME: This is debug information. Remove it when no longer necessary.
                 std::cout << "Spectrum debug info:" << std:: endl;
                 double E=5.0;
@@ -1507,6 +1508,7 @@ namespace Gambit {
                 }
                 
                 // Debug information ends here
+                */
             }
         }
 

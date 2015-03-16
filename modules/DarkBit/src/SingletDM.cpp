@@ -153,7 +153,7 @@ namespace Gambit
         auto channel = Funk::vec<std::string>("bb", "WW", "cc", "tautau", "ZZ");
         auto p1 = Funk::vec<std::string>("b", "W+", "c", "tau+", "Z0");
         auto p2 = Funk::vec<std::string>("bbar", "W-", "cbar", "tau-", "Z0");
-        if ( not runOptions->getValueOrDef<bool>(false, "phi") )
+        //if ( not runOptions->getValueOrDef<bool>(false, "phi") )
         {
             for ( int i = 0; i < 5; i++ )
             {
@@ -168,17 +168,20 @@ namespace Gambit
             }
         }
 
+        /*
         if ( runOptions->getValueOrDef<bool>(false, "phi") )
         {
             Funk::Funk g = Funk::one() * 0.3;
             process_ann.channelList.push_back(TH_Channel(Funk::vec<std::string>("phi", "phi"), g));
         }
+        */
 
         // Finally, store properties of "chi" in particleProperty list
         TH_ParticleProperty chiProperty(mass, 1);  // Set mass and 2*spin
         catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("chi_10", chiProperty));
         catalog.processList.push_back(process_ann);
 
+        /*
         // FIXME: test code: Add properties of phi particle
         TH_Process process_dec((std::string)"phi");
         Funk::Funk f = Funk::one()*0.3;
@@ -203,6 +206,7 @@ namespace Gambit
         catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("b", TH_ParticleProperty(mb,1)));
         catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("bbar", TH_ParticleProperty(mb,1)));
         catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("Z0", TH_ParticleProperty(mZ,2)));
+        */
 
         /*
         if ( runOptions->getValueOrDef<bool>(false, "phi") )
