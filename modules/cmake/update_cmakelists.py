@@ -48,7 +48,7 @@ def update_only_if_different(existing, candidate):
         os.remove(candidate)
     else:
         os.rename(candidate,existing)
-    print "   Updated "+re.sub("\\.\\/","",existing)
+    print "\033[1;33m   Updated "+re.sub("\\.\\/","",existing)+"\033[0m"
 
 
 # Actual updater program

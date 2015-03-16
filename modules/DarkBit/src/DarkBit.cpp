@@ -284,7 +284,12 @@ namespace Gambit {
             "DarkSUSY point initialization failed.");
         invalid_point().raise("DarkSUSY point initialization failed.");
       }
-      
+
+      if ( runOptions->getValueOrDef( false, "show_higgs_widths" ) )
+      {
+        int unit = 6;
+        BEreq::dswwidth(unit);
+      }
     }
 
     void DarkSUSY_PointInit_NoMSSM(bool &result)
@@ -809,6 +814,7 @@ namespace Gambit {
                                chn.Ecm_max ),                                               // Highest energy in SimYieldChannel
                                0.5*(endpoint->m*endpoint->m + msq)/endpoint->m );           // Estimate for highest kinematically allowed CoM energy
         if(Ecmin>=Ecmax) return;    
+        // TODO: Correct now?
         const double logmin = log(Ecmin);
         const double logmax = log(Ecmax);                  
         const double dlogE=logmax-logmin;       
@@ -1298,6 +1304,8 @@ namespace Gambit {
         using namespace Pipes::GA_missingFinalStates;
         std::set<std::string> missingFinalStates;
 
+        if ( runOptions->getValueOrDef(false, "ignore_all") ) return;
+
         TH_Process process = (*Dep::TH_ProcessCatalog).getProcess((std::string)"chi_10", (std::string)"chi_10");
 
         // Add only gamma-ray spectra for two and three body final states
@@ -1305,20 +1313,26 @@ namespace Gambit {
         {
             if ( it->nFinalStates == 2 )
             {
-                if ( not Dep::SimYieldTable->hasChannel(it->finalStateIDs[0], it->finalStateIDs[1], "gamma") )
+                if ( not runOptions->getValueOrDef(false, "ignore_two_body") )
                 {
-                    missingFinalStates.insert(it->finalStateIDs[0]);
-                    missingFinalStates.insert(it->finalStateIDs[1]);
+                    if ( not Dep::SimYieldTable->hasChannel(it->finalStateIDs[0], it->finalStateIDs[1], "gamma") )
+                    {
+                        missingFinalStates.insert(it->finalStateIDs[0]);
+                        missingFinalStates.insert(it->finalStateIDs[1]);
+                    }
                 }
             }
             else if ( it->nFinalStates == 3 )
             {
-                if ( not Dep::SimYieldTable->hasChannel(it->finalStateIDs[0], "gamma") )
-                    missingFinalStates.insert(it->finalStateIDs[0]);
-                if ( not Dep::SimYieldTable->hasChannel(it->finalStateIDs[1], "gamma") )
-                    missingFinalStates.insert(it->finalStateIDs[1]);
-                if ( not Dep::SimYieldTable->hasChannel(it->finalStateIDs[2], "gamma") )
-                    missingFinalStates.insert(it->finalStateIDs[2]);
+                if ( not runOptions->getValueOrDef(false, "ignore_three_body") )
+                {
+                    if ( not Dep::SimYieldTable->hasChannel(it->finalStateIDs[0], "gamma") )
+                        missingFinalStates.insert(it->finalStateIDs[0]);
+                    if ( not Dep::SimYieldTable->hasChannel(it->finalStateIDs[1], "gamma") )
+                        missingFinalStates.insert(it->finalStateIDs[1]);
+                    if ( not Dep::SimYieldTable->hasChannel(it->finalStateIDs[2], "gamma") )
+                        missingFinalStates.insert(it->finalStateIDs[2]);
+                }
             }
         }
         
@@ -1331,9 +1345,11 @@ namespace Gambit {
             std::cout << *it << std::endl;
         }
 
+        missingFinalStates.erase("gamma");  // gamma final states do not need simulation
         result.assign(missingFinalStates.begin(), missingFinalStates.end());
     }
 
+    /*
     // This function will finally return spectra convolved with the three-body
     // decay kinematics.
     Funk::Funk convspec(Funk::Funk s0, Funk::Funk s1, Funk::Funk s2, Funk::Funk dNdE1dE2)
@@ -1341,6 +1357,7 @@ namespace Gambit {
         Funk::Funk spec = Funk::zero("E", "v");
         return spec;
     }
+    */
 
     // This function boosts an energy spectrum of isotropic
     // particles into another frame (and isotropizes again).
@@ -1356,6 +1373,7 @@ namespace Gambit {
         double betaGamma = sqrt(gamma*gamma-1);
         Funk::Funk Ep = Funk::var("Ep");
         Funk::Funk E = Funk::var("E");
+        // TODO: Correct now?
         Funk::Funk halfBox = betaGamma*sqrt(E*E-mass*mass);
         Funk::Funk integrand = (dNdE/(2*halfBox))->set("E", Ep);
         return integrand->gsl_integration("Ep", E*gamma-halfBox, E*gamma+halfBox);
@@ -1366,9 +1384,10 @@ namespace Gambit {
         using namespace Pipes::GA_AnnYield_General;
 
         // Grid and energy range used in interpolating functions.
-        double Emin, Emax, sigmav;
+        double Emin, Emax, line_width;
         Emin = runOptions->getValueOrDef<double>(1e-1, "Emin");
         Emax = runOptions->getValueOrDef<double>(1e4,  "Emax");
+        line_width = runOptions->getValueOrDef<double>(0.03,  "line_width");
 
         // Get annihilation process from process catalog
         TH_Process annProc = (*Dep::TH_ProcessCatalog).getProcess((std::string)"chi_10", (std::string)"chi_10");
@@ -1378,7 +1397,7 @@ namespace Gambit {
         double Ecm = 2*mass;
 
         // Loop over all channels for that process
-        Funk::Funk Yield = Funk::zero("E", "v");
+        Funk::Funk Yield = Funk::zero("v", "E");
 
         // Adding known two-body channels
         for (std::vector<TH_Channel>::iterator it = annProc.channelList.begin();
@@ -1386,39 +1405,35 @@ namespace Gambit {
         {
             if ( it->nFinalStates == 2 and Dep::SimYieldTable->hasChannel(it->finalStateIDs[0], it->finalStateIDs[1], "gamma") )
             {
-                sigmav = it->genRate->eval("v",0.);  // (sv)(v=0)
-                std::cout << "Adding new channel with sigmav = " << sigmav << std::endl;
                 Yield = Yield +
-                    sigmav*(*Dep::SimYieldTable)(it->finalStateIDs[0], it->finalStateIDs[1], "gamma", mass*2);
-                std::cout << Yield->eval("E", mass, "v", 0) << std::endl;
-                std::cout << Yield->eval("E", 2*mass, "v", 0) << std::endl;
+                    it->genRate*(*Dep::SimYieldTable)(it->finalStateIDs[0], it->finalStateIDs[1], "gamma", mass*2);
+            }
+            // FIXME: Implement missing Z gamma final state
+            else if ( it->nFinalStates == 2 and it->finalStateIDs[0] == "gamma" and it->finalStateIDs[1] == "gamma" )
+            {
+                Funk::Funk E = Funk::var("E");
+                Yield = Yield + 2*it->genRate*exp(-pow((E-mass)/line_width/E,2)/2)/E/sqrt(2*M_PI)/line_width/E;
             }
             else if ( it->nFinalStates == 2 )
             {
-                std::cout << "Unknown final states: " << it->finalStateIDs[0] << " " << it->finalStateIDs[1] << std::endl;
-                sigmav = it->genRate->eval("v",0.);  // (sv)(v=0)
                 Funk::Funk spec0 = Funk::zero("E");
                 Funk::Funk spec1 = Funk::zero("E");
                 // FIXME: Check default behaviour of adding one-particle final
                 // states.
                 if ( Dep::SimYieldTable->hasChannel(it->finalStateIDs[0], "gamma") )
                 {
-                    std::cout << it->finalStateIDs[0] << " is known to SimYieldTable" << std::endl;
                     spec0 = (*Dep::SimYieldTable)(it->finalStateIDs[0], "gamma");
                 }
                 else if ( Dep::cascadeMC_gammaSpectra->count(it->finalStateIDs[0]) )
                 {
-                    std::cout << it->finalStateIDs[0] << " is known to cascade code" << std::endl;
                     spec0 = Dep::cascadeMC_gammaSpectra->at(it->finalStateIDs[0]);
                 }
                 if ( Dep::SimYieldTable->hasChannel(it->finalStateIDs[1], "gamma") )
                 {
-                    std::cout << it->finalStateIDs[1] << " is known to SimYieldTable" << std::endl;
                     spec1 = (*Dep::SimYieldTable)(it->finalStateIDs[1], "gamma");
                 }
                 else if ( Dep::cascadeMC_gammaSpectra->count(it->finalStateIDs[1]) )
                 {
-                    std::cout << it->finalStateIDs[1] << " is known to cascade code" << std::endl;
                     spec1 = Dep::cascadeMC_gammaSpectra->at(it->finalStateIDs[1]);
                 }
                 double m0 = (*Dep::TH_ProcessCatalog).getParticleProperty(it->finalStateIDs[0]).mass;
@@ -1427,7 +1442,8 @@ namespace Gambit {
                 double gamma1 = (Ecm*Ecm-m0*m0+m1*m1)/(2*Ecm*m1);
                 std::cout << Ecm << " " << m0 << " " << m1 << std::endl;
                 std::cout << "gammas: " << gamma0 << ", " << gamma1 << std::endl;                
-                Yield = Yield + boost_dNdE(spec0, gamma0, 0.0) + boost_dNdE(spec1, gamma1, 0.0);
+                // TODO: Correct?
+                Yield = Yield + (boost_dNdE(spec0, gamma0, 0.0) + boost_dNdE(spec1, gamma1, 0.0)) * it->genRate;
 
                 // FIXME: This is debug information. Remove it when no longer necessary.
                 std::cout << "Spectrum debug info:" << std:: endl;
@@ -1492,7 +1508,14 @@ namespace Gambit {
                 
                 // Debug information ends here
             }
-            else if ( it->nFinalStates == 3
+        }
+
+        // Adding three-body final states
+        for (std::vector<TH_Channel>::iterator it = annProc.channelList.begin();
+              it != annProc.channelList.end(); ++it)
+        {
+            /*
+            if ( it->nFinalStates == 3
                     and Dep::SimYieldTable->hasChannel(it->finalStateIDs[0], "gamma")
                     and Dep::SimYieldTable->hasChannel(it->finalStateIDs[1], "gamma")
                     and Dep::SimYieldTable->hasChannel(it->finalStateIDs[2], "gamma")
@@ -1504,7 +1527,18 @@ namespace Gambit {
                 Funk::Funk spec2 = (*Dep::SimYieldTable)(it->finalStateIDs[2], "gamma");
                 Yield = Yield + convspec(spec0, spec1, spec2, dNdE1dE2);
             }
+            */
+            if ( it->nFinalStates == 3 and it->finalStateIDs[0] == "gamma" )
+            {
+                double m1 = (*Dep::TH_ProcessCatalog).getParticleProperty(it->finalStateIDs[1]).mass;
+                double m2 = (*Dep::TH_ProcessCatalog).getParticleProperty(it->finalStateIDs[2]).mass;
+                Funk::Funk E1_low =  Funk::func(gamma3bdy_limits<0>, Funk::var("E"), mass, m1, m2);
+                Funk::Funk E1_high =  Funk::func(gamma3bdy_limits<1>, Funk::var("E"), mass, m1, m2);
+                Funk::Funk dsigmavde = it->genRate->gsl_integration("E1", E1_low, E1_high);
+                Yield = Yield + dsigmavde;
+            }
         }
+
         result = Yield/(mass*mass);
         
     }
@@ -1781,7 +1815,7 @@ namespace Gambit {
                 double CAT(sigma_,NAME) = BEreq::dssigmav(index);                                   \
                 /* Create associated kinematical functions (just dependent on vrel)                 \
                 *  here: s-wave, vrel independent 1-dim constant function */                        \
-                Funk::Funk CAT(kinematicFunction_,NAME) = Funk::cnst(CAT(sigma_,NAME)*PREFACTOR);   \
+                Funk::Funk CAT(kinematicFunction_,NAME) = Funk::cnst(CAT(sigma_,NAME)*PREFACTOR, "v");\
                 /* Create channel identifier string */                                              \
                 std::vector<std::string> CAT(finalStates_,NAME);                                    \
                 CAT(finalStates_,NAME).push_back(STRINGIFY(P1));                                    \
@@ -1791,18 +1825,18 @@ namespace Gambit {
                 process.channelList.push_back(CAT(channel_,NAME));                                  \
             }
              
-//        SETUP_DS_PROCESS(H1H1,      1 , H1,     H1,     1   )
-//        SETUP_DS_PROCESS(H1H2,      2 , H1,     H2,     1   )
-//        SETUP_DS_PROCESS(H2H2,      3 , H2,     H2,     1   )
-//        SETUP_DS_PROCESS(H3H3,      4 , H3,     H3,     1   )
-//        SETUP_DS_PROCESS(H1H3,      5 , H1,     H3,     1   )
-//        SETUP_DS_PROCESS(H2H3,      6 , H2,     H3,     1   )
-//        SETUP_DS_PROCESS(HpHm,      7 , H+,     H-,     1   )
-//        SETUP_DS_PROCESS(H1Z0,      8 , H1,     Z0,     1   )
-//        SETUP_DS_PROCESS(H2Z0,      9 , H2,     Z0,     1   )
-//        SETUP_DS_PROCESS(H3Z0,      10, H3,     Z0,     1   )
-//        SETUP_DS_PROCESS(WpHm,      11, W+,     H-,     0.5 )  // Prefactor 0.5 since W+H- and W-H+ are summed in DS
-//        SETUP_DS_PROCESS(WmHp,      11, W-,     H+,     0.5 )  // Prefactor 0.5 since W+H- and W-H+ are summed in DS
+        SETUP_DS_PROCESS(H1H1,      1 , H1,     H1,     1   )
+        SETUP_DS_PROCESS(H1H2,      2 , H1,     H2,     1   )
+        SETUP_DS_PROCESS(H2H2,      3 , H2,     H2,     1   )
+        SETUP_DS_PROCESS(H3H3,      4 , H3,     H3,     1   )
+        SETUP_DS_PROCESS(H1H3,      5 , H1,     H3,     1   )
+        SETUP_DS_PROCESS(H2H3,      6 , H2,     H3,     1   )
+        SETUP_DS_PROCESS(HpHm,      7 , H+,     H-,     1   )
+        SETUP_DS_PROCESS(H1Z0,      8 , H1,     Z0,     1   )
+        SETUP_DS_PROCESS(H2Z0,      9 , H2,     Z0,     1   )
+        SETUP_DS_PROCESS(H3Z0,      10, H3,     Z0,     1   )
+        SETUP_DS_PROCESS(WpHm,      11, W+,     H-,     0.5 )  // Prefactor 0.5 since W+H- and W-H+ are summed in DS
+        SETUP_DS_PROCESS(WmHp,      11, W-,     H+,     0.5 )  // Prefactor 0.5 since W+H- and W-H+ are summed in DS
         SETUP_DS_PROCESS(Z0Z0,      12, Z0,     Z0,     1   )
         SETUP_DS_PROCESS(WW,        13, W+,     W-,     1   )
         SETUP_DS_PROCESS(nuenue,    14, nu_e,   ~nu_e,  1   )
@@ -1818,7 +1852,7 @@ namespace Gambit {
         SETUP_DS_PROCESS(ttbar,     24, t,      tbar,   1   )
         SETUP_DS_PROCESS(bbbar,     25, b,      bbar,   1   )
         SETUP_DS_PROCESS(gluglu,    26, g,      g,      1   )
-//        SETUP_DS_PROCESS(gammagamma,28, gamma,  gamma,  1   )
+        SETUP_DS_PROCESS(gammagamma,28, gamma,  gamma,  1   )
 //        SETUP_DS_PROCESS(Z0gamma,   29, Z0,     gamma,  1   )
         // Undef the macro so it doesn't propagate through GAMBIT
         #undef SETUP_DS_PROCESS
@@ -1845,19 +1879,22 @@ namespace Gambit {
                 process.channelList.push_back(CAT(channel_,NAME));                                                          \
             }                                        
         
-        SETUP_DS_PROCESS_GAMMA3BODY(gammaWW,        1, W+,      W-,     (BEreq::dsIBwwdxdy.pointer()),  13, 1   )     
-        SETUP_DS_PROCESS_GAMMA3BODY(gammaWpHm,      2, W+,      H-,     (BEreq::dsIBwhdxdy.pointer()),  11, 0.5 )   // Prefactor 0.5 since W+H- and W-H+ are summed in DS        
-        SETUP_DS_PROCESS_GAMMA3BODY(gammaWmHp,      2, W-,      H+,     (BEreq::dsIBwhdxdy.pointer()),  11, 0.5 )   // Prefactor 0.5 since W+H- and W-H+ are summed in DS
-        SETUP_DS_PROCESS_GAMMA3BODY(gammaHpHm,      3, H+,      H-,     (BEreq::dsIBhhdxdy.pointer()),  0,  1   )                    
-        SETUP_DS_PROCESS_GAMMA3BODY(gammaee,        4, e+,      e-,     (BEreq::dsIBffdxdy.pointer()) , 15, 1   )
-        SETUP_DS_PROCESS_GAMMA3BODY(gammamumu,      5, mu+,     mu-,    (BEreq::dsIBffdxdy.pointer()) , 17, 1   )
-        SETUP_DS_PROCESS_GAMMA3BODY(gammatautau,    6, tau+,    tau-,   (BEreq::dsIBffdxdy.pointer()) , 19, 1   )
-        SETUP_DS_PROCESS_GAMMA3BODY(gammauubar,     7, u,       ubar,   (BEreq::dsIBffdxdy.pointer()) , 20, 1   )
-        SETUP_DS_PROCESS_GAMMA3BODY(gammaddbar,     8, d,       dbar,   (BEreq::dsIBffdxdy.pointer()) , 21, 1   )            
-        SETUP_DS_PROCESS_GAMMA3BODY(gammaccbar,     9, c,       cbar,   (BEreq::dsIBffdxdy.pointer()) , 22, 1   )
-        SETUP_DS_PROCESS_GAMMA3BODY(gammassbar,     10,s,       sbar,   (BEreq::dsIBffdxdy.pointer()) , 23, 1   )
-        SETUP_DS_PROCESS_GAMMA3BODY(gammattbar,     11,t,       tbar,   (BEreq::dsIBffdxdy.pointer()) , 24, 1   )
-        SETUP_DS_PROCESS_GAMMA3BODY(gammabbbar,     12,b,       bbar,   (BEreq::dsIBffdxdy.pointer()) , 25, 1   )
+        if ( not runOptions->getValueOrDef<bool>(false, "ignore_three_body") )
+        {
+            SETUP_DS_PROCESS_GAMMA3BODY(gammaWW,        1, W+,      W-,     (BEreq::dsIBwwdxdy.pointer()),  13, 1   )     
+            SETUP_DS_PROCESS_GAMMA3BODY(gammaWpHm,      2, W+,      H-,     (BEreq::dsIBwhdxdy.pointer()),  11, 0.5 )   // Prefactor 0.5 since W+H- and W-H+ are summed in DS        
+            SETUP_DS_PROCESS_GAMMA3BODY(gammaWmHp,      2, W-,      H+,     (BEreq::dsIBwhdxdy.pointer()),  11, 0.5 )   // Prefactor 0.5 since W+H- and W-H+ are summed in DS
+            SETUP_DS_PROCESS_GAMMA3BODY(gammaHpHm,      3, H+,      H-,     (BEreq::dsIBhhdxdy.pointer()),  0,  1   )                    
+            SETUP_DS_PROCESS_GAMMA3BODY(gammaee,        4, e+,      e-,     (BEreq::dsIBffdxdy.pointer()) , 15, 1   )
+            SETUP_DS_PROCESS_GAMMA3BODY(gammamumu,      5, mu+,     mu-,    (BEreq::dsIBffdxdy.pointer()) , 17, 1   )
+            SETUP_DS_PROCESS_GAMMA3BODY(gammatautau,    6, tau+,    tau-,   (BEreq::dsIBffdxdy.pointer()) , 19, 1   )
+            SETUP_DS_PROCESS_GAMMA3BODY(gammauubar,     7, u,       ubar,   (BEreq::dsIBffdxdy.pointer()) , 20, 1   )
+            SETUP_DS_PROCESS_GAMMA3BODY(gammaddbar,     8, d,       dbar,   (BEreq::dsIBffdxdy.pointer()) , 21, 1   )            
+            SETUP_DS_PROCESS_GAMMA3BODY(gammaccbar,     9, c,       cbar,   (BEreq::dsIBffdxdy.pointer()) , 22, 1   )
+            SETUP_DS_PROCESS_GAMMA3BODY(gammassbar,     10,s,       sbar,   (BEreq::dsIBffdxdy.pointer()) , 23, 1   )
+            SETUP_DS_PROCESS_GAMMA3BODY(gammattbar,     11,t,       tbar,   (BEreq::dsIBffdxdy.pointer()) , 24, 1   )
+            SETUP_DS_PROCESS_GAMMA3BODY(gammabbbar,     12,b,       bbar,   (BEreq::dsIBffdxdy.pointer()) , 25, 1   )
+        }
         // Undef the macro so it doesn't propagate through GAMBIT
         #undef SETUP_DS_PROCESS_GAMMA3BODY
         
@@ -2583,8 +2620,8 @@ namespace Gambit {
 
           // Output gamma-ray spectrum (grid be set in YAML file).
           double x_min = runOptions->getValueOrDef<double>(0.1, "GA_AnnYield", "Emin");
-          double x_max = runOptions->getValueOrDef<double>(100, "GA_AnnYield", "Emax");
-          int n = runOptions->getValueOrDef<double>(10, "GA_AnnYield", "nbins");
+          double x_max = runOptions->getValueOrDef<double>(10000, "GA_AnnYield", "Emax");
+          int n = runOptions->getValueOrDef<double>(26, "GA_AnnYield", "nbins");
           std::vector<double> x = logspace(log10(x_min), log10(x_max), n);  // from 0.1 to 500 GeV
           std::vector<double> y = spectrum->vector("E", x);
           os << "# Annihilation spectrum dNdE [1/GeV]\n";
@@ -2611,8 +2648,8 @@ namespace Gambit {
             }
             if (it->finalStateIDs.size() == 2)
             os << ": " << it->genRate->eval("v", 0);
-            //if (it->finalStateIDs.size() == 3)
-              //os << ": " << (*it->genRate)(0., 0.);
+            if (it->finalStateIDs.size() == 3)
+            os << ": " << it->genRate->eval("v", 0., "E", 0., "E1", 0.);
             os << "\n";
           }
           os << std::endl;
@@ -2663,6 +2700,19 @@ namespace Gambit {
             dNdE = Funk::func(BEreq::dshayield.pointer(), 92*2, Funk::var("E"), 12, yieldk, flag);
             result.addChannel(dNdE/2, "Z0", "gamma", 10., 10000.);
 
+            result.addChannel(Funk::zero("Ecm", "E"), "H1", "H1", "gamma", 4., 10000.);
+            result.addChannel(Funk::zero("Ecm", "E"), "H1", "H2", "gamma", 4., 10000.);
+            result.addChannel(Funk::zero("Ecm", "E"), "H2", "H2", "gamma", 4., 10000.);
+            result.addChannel(Funk::zero("Ecm", "E"), "H3", "H3", "gamma", 4., 10000.);
+            result.addChannel(Funk::zero("Ecm", "E"), "H1", "H3", "gamma", 4., 10000.);
+            result.addChannel(Funk::zero("Ecm", "E"), "H2", "H3", "gamma", 4., 10000.);
+            result.addChannel(Funk::zero("Ecm", "E"), "H+", "H-", "gamma", 4., 10000.);
+            result.addChannel(Funk::zero("Ecm", "E"), "H1", "Z0", "gamma", 4., 10000.);
+            result.addChannel(Funk::zero("Ecm", "E"), "H2", "Z0", "gamma", 4., 10000.);
+            result.addChannel(Funk::zero("Ecm", "E"), "H3", "Z0", "gamma", 4., 10000.);
+            result.addChannel(Funk::zero("Ecm", "E"), "W+", "H-", "gamma", 4., 10000.);
+            result.addChannel(Funk::zero("Ecm", "E"), "W-", "H+", "gamma", 4., 10000.);
+
             initialized = true;
         }
     }
@@ -2679,12 +2729,25 @@ namespace Gambit {
             Funk::Funk dNdE;
 
             #define ADD_CHANNEL(inP, P1, P2, FINAL, EcmMin, EcmMax)                                                   \
-                dNdE = Funk::func(BEreq::dNdE.pointer(), Funk::var("Ecm"), Funk::var("E"), inP, outN);                \
+                dNdE = Funk::func(BEreq::dNdE.pointer(), Funk::var("Ecm"), Funk::var("E"), inP, outN)/Funk::var("E"); \
                 result.addChannel(dNdE, P1, P2, FINAL, EcmMin, EcmMax);  // specifies also center of mass energy range
+            ADD_CHANNEL(0, "g", "g", "gamma", 4., 10000.)
+            ADD_CHANNEL(1, "d", "dbar", "gamma", 4., 10000.)
+            ADD_CHANNEL(2, "u", "ubar", "gamma", 4., 10000.)
+            ADD_CHANNEL(3, "s", "sbar", "gamma", 4., 10000.)
+            ADD_CHANNEL(4, "c", "cbar", "gamma", 4., 10000.)
             ADD_CHANNEL(5, "b", "bbar", "gamma", 4., 10000.)
+            ADD_CHANNEL(6, "t", "tbar", "gamma", 4., 10000.)
+            ADD_CHANNEL(7, "e+", "e-", "gamma", 4., 10000.)
+            ADD_CHANNEL(8, "mu+", "mu-", "gamma", 4., 10000.)
+            ADD_CHANNEL(9, "tau+", "tau-", "gamma", 4., 10000.)
             ADD_CHANNEL(10, "Z0", "Z0", "gamma", 4., 10000.)
+            ADD_CHANNEL(13, "W+", "W-", "gamma", 4., 10000.)
             #undef ADD_CHANNEL
             initialized = true;
+            result.addChannel(Funk::zero("Ecm", "E"), "nu_e", "~nu_e", "gamma", 4., 10000.);
+            result.addChannel(Funk::zero("Ecm", "E"), "nu_mu", "~nu_mu", "gamma", 4., 10000.);
+            result.addChannel(Funk::zero("Ecm", "E"), "nu_tau", "~nu_tau", "gamma", 4., 10000.);
         }
     }
 

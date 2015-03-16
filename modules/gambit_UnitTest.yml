@@ -5,7 +5,7 @@
 ###################################
 
 Parameters: 
-    MSSM25:
+    MSSM25atQ:
 # No number need to be specified?
       muR:
         fixed_value: 1
@@ -48,10 +48,16 @@ Scanner:
   
   plugins:
     toy_mcmc:
-      point_number: 3
+      point_number: 10
       output_file:  output
       like:  Likelihood
 
+    nested:
+      plugin: MultiNest
+      nlive: 500
+      tol: 0.1
+      output_file:  output
+    
 
 ###############################
 # Observables of interest
@@ -61,6 +67,21 @@ ObsLikes:
     - capability: UnitTest_DarkBit
       
 Auxiliaries:
+  - capability: DarkSUSY_PointInit
+    options:
+      show_higgs_widths: true
+  - capability: GA_missingFinalStates
+    options:
+      ignore_three_body: True
+      ignore_two_body: True
+  - capability: TH_ProcessCatalog
+    options:
+      ignore_three_body: False
+  - capability: GA_AnnYield
+    function: GA_AnnYield_General
+  - capability: SimYieldTable
+    function: SimYieldTable_DarkSusy
+    #function: SimYieldTable_MicrOmegas
   - capability: UnitTest_DarkBit
     dependencies:
         - capability: DD_couplings
@@ -72,6 +93,8 @@ Auxiliaries:
     options:
         fileroot: UnitTest_MSSMbenchmarks_DarkSUSY
         #fileroot: UnitTest_MSSMbenchmarks_micromegas
+        GA_AnnYield:
+          nbins: 100
   - capability: MSSMspectrum
     function: getMSSMspectrum  # For unit test: reads in spectrum from SLHA file
     module: DarkBit
@@ -81,16 +104,17 @@ Auxiliaries:
             - DarkBit/slha-benchmarks/01-01-2013_torsten/test_100.slha
             - DarkBit/slha-benchmarks/01-01-2013_torsten/test_200.slha
             - DarkBit/slha-benchmarks/01-01-2013_torsten/test_300.slha
-            #- DarkBit/slha-benchmarks/14-12-2014_joakim/FMCp03000765.slha
-            #- DarkBit/slha-benchmarks/14-12-2014_joakim/JE56C_003717.slha
-            #- DarkBit/slha-benchmarks/14-12-2014_joakim/JE58D_007879.slha
-            #- DarkBit/slha-benchmarks/14-12-2014_joakim/JE67B_006998.slha
-            #- DarkBit/slha-benchmarks/14-12-2014_joakim/JE67D_001840.slha
-            #- DarkBit/slha-benchmarks/14-12-2014_joakim/JE87O_006600.slha
+            - DarkBit/slha-benchmarks/14-12-2014_joakim/FMCp03000765.slha1
+            - DarkBit/slha-benchmarks/14-12-2014_joakim/JE56C_003717.slha1
+            - DarkBit/slha-benchmarks/14-12-2014_joakim/JE58D_007879.slha1
+            - DarkBit/slha-benchmarks/14-12-2014_joakim/JE67B_006998.slha1
+            - DarkBit/slha-benchmarks/14-12-2014_joakim/JE67D_001840.slha1
+            - DarkBit/slha-benchmarks/14-12-2014_joakim/JE87O_006600.slha1
   - capability: RD_oh2
     options:
       fast: 1  # Accuracy options (used by micromegas)
       Beps: 1e-2
+      omtype: 0
 
 
 #########################
@@ -129,7 +153,7 @@ KeyValues:
 
   dependency_resolution:
     prefer_model_specific_functions: true
-    use_old_routines: true
+    use_old_routines: false
 
   likelihood:
     model_invalid_for_lnlike_below: -1e6

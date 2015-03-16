@@ -389,7 +389,7 @@ set( scanner_scanlibs_sources                   \n\
                                                 \n\
 add_gambit_library( ScannerBit OPTION OBJECT SOURCES ${scannerbit_sources} HEADERS ${scannerbit_headers} )\n\n\
 add_gambit_executable( scanlibs SOURCES ${scanner_scanlibs_sources} )\n\
-add_dependencies(scanlibs yaml)                 \n\
+add_dependencies(scanlibs yaml-cpp)             \n\
 set_target_properties( scanlibs                 \n\
                        PROPERTIES               \n\
                        RUNTIME_OUTPUT_DIRECTORY \"${CMAKE_CURRENT_SOURCE_DIR}/bin\")\n\n"
