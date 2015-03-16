@@ -21,6 +21,7 @@
 #define MODEL nuclear_params
   START_MODEL
   DEFINEPARS(sigma0, SigmaPiN)
+  DEFINEPARS(deltau, deltad, deltas)
 #undef MODEL
 
 #endif /* __nuclear_params_hpp__ */
