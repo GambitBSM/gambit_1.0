@@ -103,10 +103,10 @@
           CAT_3(MODELNAME,_,interface) (const SpectrumGenerator& spectrum_generator, const QedQcd& onesetIN, const InputParameters& inputIN) \
           : model(spectrum_generator.get_model())                                      \
           , oneset(onesetIN)                                                           \
-          , input(inputIN)                                                             \
           , slha_io()                                                                  \
-          , scales()                                                                   \
+          , input(inputIN)                                                             \
           , problems(CAT_3(MODELNAME,_,info)::particle_names)                          \
+          , scales()                                                                   \
           {                                                                            \
             scales.HighScale = spectrum_generator.get_high_scale();                    \
             scales.SUSYScale = spectrum_generator.get_susy_scale();                    \
@@ -117,10 +117,10 @@
           CAT_3(MODELNAME,_,interface) (const Model& modelIN)                          \
           : model(modelIN)                                                             \
           , oneset()                                                                   \
-          , input()                                                                    \
           , slha_io()                                                                  \
-          , scales()                                                                   \
+          , input()                                                                    \
           , problems(CAT_3(MODELNAME,_,info)::particle_names)                          \
+          , scales()                                                                   \
           {}                                                                           \
                                                                                        \
           /* Make sure the slhaio object is up to date in preparation for writing 
@@ -133,7 +133,7 @@
              slha_io.set_extpar(input);                                                \
              if (!problems.have_problem()) {                                           \
                 slha_io.set_spectrum(model);                                           \
-                slha_io.set_extra(model,scales);                                       \ 
+                slha_io.set_extra(model,scales);                                       \
              }                                                                         \
           }                                                                            \
                                                                                        \

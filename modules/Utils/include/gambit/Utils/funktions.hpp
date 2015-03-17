@@ -188,7 +188,8 @@ namespace Funk
     {
         public:
             FunkBase() {}
-            ~FunkBase() {}
+            FunkBase(std::string funkType) : funkType(funkType) {}
+            virtual ~FunkBase() {}
 
             // Standard handles
             template <typename... Args> Funk set(Args... args);
@@ -209,6 +210,9 @@ namespace Funk
             bool hasArg(std::string);
             bool hasArgs();
             std::size_t getNArgs() {return this->args.size();};
+
+            // Function identity
+            std::string getType() {return this->funkType;};
 
             // Plain function generators (up to four arguments)
             PlainPtrs1 plain(std::string);
@@ -239,6 +243,7 @@ namespace Funk
             std::map<std::string, double> tmp_argmap;
             std::map<std::string, Funk> tmp_funmap;
             std::vector<double> empty;
+            std::string funkType;
 
             // Add arguments from set(...) handler to tmp_argmap and
             // tmp_funmap.
@@ -428,7 +433,8 @@ namespace Funk
                 const int i = sizeof...(funcargs) - sizeof...(argss) - 1;
                 map.push_back(&std::get<i>(input));
                 assert(x->getArgs().size() == 1);
-                // TODO: Check that variable is indeed linear variable
+                assert(x->getType() == "var");
+                // TODO: Generalize to arbitrary funktions
                 args.push_back(x->getArgs()[0]);
                 digest_input(argss...);
             }
@@ -490,7 +496,8 @@ namespace Funk
                 const int i = sizeof...(funcargs) - sizeof...(argss) - 1;
                 map.push_back(&std::get<i>(input));
                 assert(x->getArgs().size() == 1);
-                // TODO: Check that variable is indeed linear variable
+                assert(x->getType() == "var");
+                // TODO: Generalize to arbitrary funktions
                 args.push_back(x->getArgs()[0]);
                 digest_input(argss...);
             }
@@ -536,7 +543,7 @@ namespace Funk
     class FunkVar: public FunkBase
     {
         public:
-            FunkVar(std::string arg)
+            FunkVar(std::string arg) : FunkBase("var")
             {
                 args = vec(arg);
             }
