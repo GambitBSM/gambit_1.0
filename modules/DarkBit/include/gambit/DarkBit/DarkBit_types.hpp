@@ -429,33 +429,19 @@ namespace Gambit
     // General Dark Matter Halos and Halo Catalog
     //////////////////////////////////////////////
 
-    /*
-    struct DMhalo
+    struct MWhalo
     {
-        public:
-            // Dummy constructor doing nothing
-            DMhalo() {}
-
-            DMhalo(std::string name, double r0, BF::BFptr rho, BF::BFptr drho2dv)
-            {
-                this->name = name;
-                this->r0 = r0;
-                this->rho = rho;
-                this->drho2dv= drho2dv;
-                // TODO: Add smoothing scale
-            }
-
-            std::string getName() {return name;}
-            BF::BFptr getDensity() {return rho;}
-            BF::BFptr getDensitySquared() {return drho2dv;}
-
-        private:
-            std::string name;  // Name of this halo (Milky Way, M31, ...)
-            double r0;  // Position in comoving Galactic coordinates (l [-180...180 deg], b [deg], R [kpc])
-            BF::BFptr rho;
-            BF::BFptr drho2dv;
+        MWhalo(Funk::Funk rho, Funk::Funk drho2dv) : rho(rho), drho2dv(drho2dv) {};
+        MWhalo(Funk::Funk rho) : rho(rho)
+        {
+            rho->assert_args(Funk::vec<std::string>("r"), Funk::vec<std::string>("x", "y"));
+            drho2dv = rho*rho;
+        };
+        Funk::Funk rho;
+        Funk::Funk drho2dv;
     };
 
+    /*
     // This catalog is supposed to contain all DM halos that are relevant for a
     // given analysis (Milky way halo, satellites, galaxy clusters, their
     // memeber galaxies, etc).  However, unobserved subhalos are *not* included

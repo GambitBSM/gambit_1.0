@@ -214,6 +214,7 @@ namespace Funk
             bool hasArg(std::string);
             bool hasArgs();
             Funk help();
+            template <typename... Args> bool assert_args(Args... args);
 
             // Return value & standard resolve 
             virtual double value(std::vector<double> &, intptr_t bindID) = 0;
@@ -679,6 +680,20 @@ namespace Funk
             indices.erase(indices.find(bindID));
         for (auto it = functions.begin(); it != functions.end(); ++it)
             (*it)->release(bindID);
+    }
+
+    template <typename... Args> inline bool FunkBase::assert_args(Args... args)
+    {
+        std::vector<std::vector<std::string>> list = vec<std::vector<std::string>>(args...);
+        std::set<std::string> myargs(arguments.begin(), arguments.end());
+        for ( auto it = list.begin(); it != list.end(); ++it )
+        {
+            std::set<std::string> theirargs(it->begin(), it->end());
+            if ( myargs == theirargs )
+                return true;
+        }
+        return false;
+
     }
 
     template <typename... Args> inline Funk FunkBase::set(std::string arg, Funk g, Args... args)
