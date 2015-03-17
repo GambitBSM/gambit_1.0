@@ -29,11 +29,8 @@
 #include <cmath>
 #include <functional>
 
-#include "gambit_module_headers.hpp"
-#include "ExampleBit_A_rollcall.hpp"
-
-#include "partmap.hpp"
-
+#include "gambit/Utils/gambit_module_headers.hpp"
+#include "gambit/ExampleBit_A/ExampleBit_A_rollcall.hpp"
 
 namespace Gambit
 {
@@ -78,8 +75,9 @@ namespace Gambit
     void nevents_int(int &result)
     {
       result = (int) (*Pipes::nevents_int::Dep::nevents);
-      // Randomly raise some ficticious alarms about this point in 10% of cases.
-      if (Random::draw() < 0.1)
+      // Randomly raise some ficticious alarms about this point, with probability x.
+      double x = 0.0;
+      if (Random::draw() < x)
       {
         //Example of how to raise an error from a module function.
         ExampleBit_A_error().raise(LOCAL_INFO,"Damn, this integer event count is bad.");
@@ -253,7 +251,7 @@ namespace Gambit
       {
         cout<<"  Running exampleEventGen in iteration "<<*Loop::iteration<<endl;
       }
-      if (result > 2.0) invalid_point().raise("This point is annoying.");
+      //if (result > 2.0) invalid_point().raise("This point is annoying.");
     }
 
     /// Rounds an event count to the nearest integer
@@ -321,6 +319,7 @@ namespace Gambit
       using std::endl;
       libFarrayTest_CB_type  *commonBlock  = &(*BEreq::libFarrayTestCommonBlock);
       libFarrayTest_CB2_type *commonBlock2 = &(*BEreq::libFarrayTestCommonBlock2);
+      libFarrayTest_CB3_type *commonBlock3 = &(*BEreq::libFarrayTestCommonBlock3);
 
       cout << "do_Farray_stuff has been summoned!" << endl;
       cout << "Ph'nglui mglw'nafh Cthulhu R'lyeh wgah'nagl fhtagn" << endl;
@@ -334,18 +333,35 @@ namespace Gambit
       cout << "Calling printStuff again..." << endl;
       BEreq::libFarrayTest_printStuff();
 
+      // Using pointers here is not necessary
       cout << endl << "Retrieving pointer to doubleFuncArray..." << endl;
-      double(*function_pointer)(double*) = BEreq::libFarrayTest_doubleFuncArray.pointer();
-      cout << "Calling doubleFuncArray with commonblock element a as argument..." << endl;
-      double tmp = function_pointer(commonBlock->a.array);
+      Fdouble(*function_pointer)(Farray< Fdouble,1,3>&) = BEreq::libFarrayTest_doubleFuncArray.pointer();
+      cout << "Calling doubleFuncArray with commonblock element b as argument..." << endl;
+      // Passing farray to Fortran function
+      double tmp = function_pointer(commonBlock->b);
       cout << "Returned value: " << tmp << endl;
       
-      // Note: byVal is necessary to convert lvalue to rvalue
-      cout << endl << "Calling fptrRoutine with commonblock elements a and c and function doubleFuncArray as arguments..." << endl;
-      BEreq::libFarrayTest_fptrRoutine(commonBlock->a.array,commonBlock->c,byVal(function_pointer));
+      // Example on how to pass an farray to a Fortran function that is declared to take Fdouble* instead of Farray< Fdouble,1,3>&
+      // This should only be necessary in very special cases, where you need to pass arrays with different index ranges than those specified in the function.
+      cout << "Calling doubleFuncArray2 with commonblock element b as argument..." << endl;
+      tmp = BEreq::libFarrayTest_doubleFuncArray2(commonBlock->b.array);
+      cout << "Returned value: " << tmp << endl;
+      
+      cout << endl << "Calling fptrRoutine with commonblock elements b and c and function doubleFuncArray as arguments..." << endl;
+      BEreq::libFarrayTest_fptrRoutine(commonBlock->b,commonBlock->c,byVal(function_pointer));
+      // Note: byVal is necessary to convert lvalue to rvalue      
       // If we instead pass BEreq::libFarrayTest_doubleFuncArray2.pointer() directly, byVal is not necessary
-      //cout << endl << "Calling fptrRoutine with commonblock elements a and c and function doubleFuncArray as arguments..." << endl;
-      //BEreq::libFarrayTest_fptrRoutine(commonBlock->a.array,commonBlock->c,BEreq::libFarrayTest_doubleFuncArray2.pointer());
+      //cout << endl << "Calling fptrRoutine with commonblock elements b and c and function doubleFuncArray as arguments..." << endl;
+      //BEreq::libFarrayTest_fptrRoutine(commonBlock->b.array,commonBlock->c,BEreq::libFarrayTest_doubleFuncArray2.pointer());
+
+      cout << "Creating a 2-dimensional array in c++ and passing it to Fortran:" << endl;
+      Farray<double, 1,2, 2,3> arr;
+      arr(1,2) = 12;
+      arr(1,3) = 13;
+      arr(2,2) = 22;
+      arr(2,3) = 23;       
+      tmp = BEreq::libFarrayTest_doubleFuncArray3(arr);
+      cout << "Return value: " << tmp << endl << endl;
 
       cout << "Playing around with commmonBlock2:" << endl;
       
@@ -372,7 +388,11 @@ namespace Gambit
       BEreq::libFarrayTest_printStuff();      
 
       cout << "Getting value of e:" << endl;      
-      cout << commonBlock2->e << endl;
+      cout << commonBlock2->e << endl << endl;
+
+      cout << "Reading complex numbers from Fortran: " << commonBlock3->cpa.re << " + " << commonBlock3->cpa.im << "i" << endl;
+      cout << "Reading complex numbers from Fortran: " << commonBlock3->cpb.re << " + " << commonBlock3->cpb.im << "i" << endl;
+      cout << "f from commonblock3 = " << commonBlock3->f << endl;
 
       result = 1.0;
 

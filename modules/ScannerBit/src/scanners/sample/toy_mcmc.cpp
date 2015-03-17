@@ -17,14 +17,11 @@
 #include <string>
 #include <cmath>
 #include <iostream>
-#include <fstream>
 #include <map>
 #include <sstream>
-#include <typeinfo>
-#include <cxxabi.h>
 
-#include "scanner_plugin.hpp"
-#include "threadsafe_rng.hpp"
+#include "gambit/ScannerBit/scanner_plugin.hpp"
+#include "gambit/Utils/threadsafe_rng.hpp"
 
 scanner_plugin(toy_mcmc, version(1, 0, 0))
 {      
@@ -39,7 +36,7 @@ scanner_plugin(toy_mcmc, version(1, 0, 0))
         {
                 std::string output_file            = get_inifile_value<std::string>("output_file", "default_output");
                 int N                              = get_inifile_value<int>("point_number", 10)-1;
-                scan_ptr<double (const std::vector<double> &)> LogLike = get_functor("Likelihood");
+                scan_ptr<double (const std::vector<double> &)> LogLike = get_purpose("Likelihood");
                 int ma                             = get_dimension();
                 double ans, chisq, chisqnext;
                 int mult = 1, count = 0, total = 0;

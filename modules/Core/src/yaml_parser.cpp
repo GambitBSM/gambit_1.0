@@ -22,11 +22,11 @@
 #include <fstream>
 #include <string>
 
-#include "util_types.hpp"
-#include "util_functions.hpp"
-#include "yaml_parser.hpp"
-#include "log.hpp"
-#include "safety_bucket.hpp"
+#include "gambit/Core/yaml_parser.hpp"
+#include "gambit/Logs/log.hpp"
+#include "gambit/Utils/util_types.hpp"
+#include "gambit/Utils/util_functions.hpp"
+#include "gambit/Utils/safety_bucket.hpp"
 
 #include "yaml-cpp/yaml.h"
 
@@ -126,17 +126,6 @@ namespace Gambit
       YAML::Node auxNode = root["Auxiliaries"];
       YAML::Node logNode = root["Logger"];
       keyValuePairNode = root["KeyValues"];
-
-      /*
-      parametersNode = root[0];
-      priorsNode = root[1];
-      printerNode = root[2];
-      scannerNode = root[3];
-      YAML::Node outputNode = root[4];
-      YAML::Node auxNode = root[5];
-      YAML::Node logNode = root[6];
-      keyValuePairNode = root[7];
-      */
 
       // Set fatality of exceptions
       if (hasKey("exceptions"))

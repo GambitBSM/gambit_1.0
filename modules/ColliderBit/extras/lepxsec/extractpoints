@@ -1,0 +1,29 @@
+#! /usr/bin/env python
+
+import optparse
+op = optparse.OptionParser()
+opts, args = op.parse_args()
+
+def write(block, points):
+    if block and points:
+        ofname = block + ".dat"
+        print "Writing %d points to '%s'" % (len(points), ofname)
+        with open(ofname, "w") as of:
+            for pt in points:
+                of.write(" ".join(pt) + "\n")
+
+with open(args[0]) as f:
+    block = None
+    points = []
+    for line in f:
+        items = [i for i in line.strip().split(",") if i]
+        if not items:
+            write(block, points)
+            block = None
+            points = []
+        elif block is None:
+            block = items[1]
+        else:
+            # points.append( tuple(float(x) for x in items) )
+            points.append(items)
+    write(block, points)

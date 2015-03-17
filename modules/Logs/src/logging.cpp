@@ -29,10 +29,10 @@
 #include <chrono> 
 
 // Gambit
-#include "cmake_variables.hpp"
-#include "logging.hpp"
-#include "util_functions.hpp"
-#include "standalone_error_handlers.hpp"
+#include "gambit/Logs/logging.hpp"
+#include "gambit/Utils/util_functions.hpp"
+#include "gambit/Utils/standalone_error_handlers.hpp"
+#include "gambit/cmake/cmake_variables.hpp"
 
 // Code!
 namespace Gambit
@@ -597,24 +597,30 @@ namespace Gambit
 
     void LogMaster::entering_module(int i)
     {
-       #pragma omp atomic write
-       current_module = i;
+       #pragma omp critical (current_module)
+       {
+         current_module = i;
+       }
     }
 
     void LogMaster::leaving_module()
     {
-       #pragma omp atomic write
-       current_module = -1;
+       #pragma omp critical (current_module)
+       {
+         current_module = -1;
+       }
        leaving_backend();
     }
 
     void LogMaster::entering_backend(int i) 
     {
-       #pragma omp atomic write
-       current_backend = i; 
+       #pragma omp critical (current_backend)
+       {
+         current_backend = i; 
+       }
        #pragma omp critical(LogMaster_entering_backend)
        {
-          *this<<"setting current_backend="<<current_backend;
+          *this<<"setting current_backend="<<i;
           *this<<logs<<debug<<EOM;
        }
        // TODO: Activate std::out and std::err redirection, if requested in inifile
@@ -622,14 +628,18 @@ namespace Gambit
     void LogMaster::leaving_backend()
     { 
        int cb_test;
-       #pragma omp atomic read
-       cb_test = current_backend;
+       #pragma omp critical (current_backend)
+       {
+         cb_test = current_backend;
+       }
        if (cb_test == -1) return;       
-       #pragma omp atomic write
-       current_backend = -1;
+       #pragma omp critical (current_backend)
+       {
+         current_backend = -1;
+       }
        #pragma omp critical(LogMaster_leaving_backend)
        {
-          *this<<"restoring current_backend="<<current_backend;
+          *this<<"restoring current_backend="<<-1;
           *this<<logs<<debug<<EOM;
        }
        // TODO: Restore std::out and std::err to normal

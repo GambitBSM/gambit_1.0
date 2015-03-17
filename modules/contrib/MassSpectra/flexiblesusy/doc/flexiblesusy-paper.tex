@@ -504,7 +504,7 @@ necessary:
 \item FORTRAN compiler (gfortran, ifort etc.)
 \item Eigen library, version 3.1 or higher
   \url{http://eigen.tuxfamily.org}
-\item Boost library, version 1.36.0 or higher
+\item Boost library, version 1.37.0 or higher
   \url{http://www.boost.org}
 \item GNU scientific library \url{http://www.gnu.org/software/gsl}
 \item an implementation of LAPACK \url{http://www.netlib.org/lapack}
@@ -2187,7 +2187,7 @@ CMSSM parameter point can be found in
 \tabref{tab:pole-mass-precision-comparison}.  One finds that
 %
 (i) the calculated lightest $CP$-even Higgs pole mass, $m_h$, differs
-about $2\unit{GeV}$ between \code{MediumPrecision} and
+about $1.2\unit{GeV}$ between \code{MediumPrecision} and
 \code{HighPrecision}, due to large loop corrections.  Since the
 experimental Higgs mass uncertainty is currently around
 $0.4\unit{GeV}$ \cite{Beringer:1900zz}, we strongly recommend the use
@@ -2203,7 +2203,7 @@ be used, see \secref{sec:PoleMasses}.
 row.  Since the gluino does not mix with other particles, there is no
 difference between \code{LowPrecision} and \code{MediumPrecision}.
 Not neglecting the two-loop terms by using \code{HighPrecision}
-increases the gluino mass about $1\unit{\%}$ for this parameter point.
+increases the gluino mass about $0.5\unit{\%}$ for this parameter point.
 %
 (iii) The pole masses of the lightest and heaviest neutralinos,
 $m_{\tilde{\chi}_1^0}$ and $m_{\tilde{\chi}_4^0}$, are given in the rows
@@ -2221,7 +2221,7 @@ run-time for the calculation of their pole masses is dramatically
 increased by around a factor $20$ between \code{LowPrecision} and
 \code{HighPrecision}.  However, since the change in the lightest
 sfermion masses between the three different methods is less than
-$\unit{0.4\%}$, one can consider calculating them with
+$\unit{0.3\%}$, one can consider calculating them with
 \code{MediumPrecision} only.
 %
 \begin{table}[tbh]
@@ -2234,37 +2234,37 @@ $\unit{0.4\%}$, one can consider calculating them with
     \midrule
     $m_h$
     & --
-    & $128.3\unit{GeV}$ ($2.45\unit{ms}$)
-    & $126.3\unit{GeV}$ ($9.53\unit{ms}$) \\
+    & $125.3\unit{GeV}$ ($2.40\unit{ms}$)
+    & $124.1\unit{GeV}$ ($9.57\unit{ms}$) \\
     $m_{\tilde{g}}$
-    & $10167\unit{GeV}$ ($0.10\unit{ms}$)
-    & $10167\unit{GeV}$ ($0.10\unit{ms}$)
-    & $10251\unit{GeV}$ ($0.38\unit{ms}$) \\
+    & $2218\unit{GeV}$ ($0.12\unit{ms}$)
+    & $2218\unit{GeV}$ ($0.12\unit{ms}$)
+    & $2231\unit{GeV}$ ($0.40\unit{ms}$) \\
     $m_{\tilde{\chi}_1^0}$
-    & $2295\unit{GeV}$ ($4.17\unit{ms}$)
-    & $2295\unit{GeV}$ ($16.1\unit{ms}$)
-    & $2295\unit{GeV}$ ($64.2\unit{ms}$) \\
+    & $429\unit{GeV}$ ($4.02\unit{ms}$)
+    & $429\unit{GeV}$ ($16.4\unit{ms}$)
+    & $429\unit{GeV}$ ($48.3\unit{ms}$) \\
     $m_{\tilde{\chi}_4^0}$
-    & $4181\unit{GeV}$ ($4.17\unit{ms}$)
-    & $4174\unit{GeV}$ ($16.1\unit{ms}$)
-    & $4174\unit{GeV}$ ($64.2\unit{ms}$) \\
+    & $1943\unit{GeV}$ ($4.02\unit{ms}$)
+    & $1944\unit{GeV}$ ($16.4\unit{ms}$)
+    & $1944\unit{GeV}$ ($48.3\unit{ms}$) \\
     $m_{\tilde{u}_1}$
-    & $8703\unit{GeV}$ ($2.45\unit{ms}$)
-    & $8714\unit{GeV}$ ($14.9\unit{ms}$)
-    & $8734\unit{GeV}$ ($58.5\unit{ms}$) \\
+    & $1055\unit{GeV}$ ($2.50\unit{ms}$)
+    & $1081\unit{GeV}$ ($15.1\unit{ms}$)
+    & $1085\unit{GeV}$ ($59.1\unit{ms}$) \\
     $m_{\tilde{d}_1}$
-    & $10442\unit{GeV}$ ($2.48\unit{ms}$)
-    & $10391\unit{GeV}$ ($15.0\unit{ms}$)
-    & $10418\unit{GeV}$ ($59.9\unit{ms}$) \\
+    & $1801\unit{GeV}$ ($2.54\unit{ms}$)
+    & $1778\unit{GeV}$ ($15.3\unit{ms}$)
+    & $1783\unit{GeV}$ ($59.7\unit{ms}$) \\
     $m_{\tilde{e}_1}$
-    & $7913\unit{GeV}$ ($1.94\unit{ms}$)
-    & $7909\unit{GeV}$ ($11.2\unit{ms}$)
-    & $7909\unit{GeV}$ ($34.1\unit{ms}$) \\
+    & $1019\unit{GeV}$ ($1.90\unit{ms}$)
+    & $1018\unit{GeV}$ ($11.3\unit{ms}$)
+    & $1018\unit{GeV}$ ($22.6\unit{ms}$) \\
     \bottomrule
   \end{tabular}
   \caption{Comparison of pole masses with different calculation
-    methods for the CMSSM with $m_0=8\unit{TeV}$, $M_{1/2}=A_0=5\unit{TeV}$,
-    $\tan\beta=20$, $\sign\mu=+1$.  In brackets the time used to calculate
+    methods for the CMSSM with $m_0=M_{1/2}=1\unit{TeV}$, $A_0=-3.3\unit{TeV}$,
+    $\tan\beta=10$, $\sign\mu=+1$.  In brackets the time used to calculate
     the pole masses of the whole multiplet is given.}
   \label{tab:pole-mass-precision-comparison}
 \end{table}

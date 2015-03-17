@@ -75,6 +75,16 @@ namespace HEPUtils {
     //@}
 
 
+    /// @name Implicit casts
+    //@{
+
+    operator const P4& () const { return mom(); }
+
+    operator const P4* () const { return &mom(); }
+
+    //@}
+
+
     /// @name Momentum
     ///
     /// Access to the P4 object, plus convenience mapping of a few popular properties

@@ -14,13 +14,13 @@
 ///
 ///  *********************************************
 
-#include "twalk.hpp"
+#include "gambit/ScannerBit/scanners/sample/twalk.hpp"
 
 scanner_plugin(twalk, version(0, 0, 1, beta))
 {
         int plugin_main ()
         {
-                scan_ptr<double (const std::vector<double>&)> LogLike = get_functor("Likelihood");
+                scan_ptr<double (const std::vector<double>&)> LogLike = get_purpose("Likelihood");
                 int dim = get_dimension();
                 TWalk(LogLike, dim,
                                 get_inifile_value<double>("kwalk_ratio", 0.9836),

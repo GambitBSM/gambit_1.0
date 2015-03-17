@@ -20,8 +20,8 @@
 ///
 ///  *********************************************
 
-#include "printermanager.hpp"
-#include "yaml_options.hpp"
+#include "gambit/Printers/printermanager.hpp"
+#include "gambit/Utils/yaml_options.hpp"
 
 // Switch for debugging output (manual at the moment)
 #define DEBUG_MODE

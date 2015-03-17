@@ -16,7 +16,11 @@
 #  \author Pat Scott
 #          (p.scott@imperial.ac.uk)              
 #  \date 2014 Nov, Dec
-#                                               
+#
+#  \author Ben Farmer
+#          (benjamin.farmer@fysik.su.se)
+#  \date 2015 Feb       
+#                                        
 #************************************************
 
 # Ensure that clean removes automatically-generated CMakeLists.txt files in modules
@@ -26,6 +30,12 @@ foreach(bit ${GAMBIT_BITS})
                                    "${PROJECT_SOURCE_DIR}/${bit}/CMakeLists.txt.candidate")
   endif()
 endforeach()
+
+# Arrange for removal of all_functor_types.hpp and other generated headers upon "make clean".
+set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Backends/include/gambit/Backends/backend_rollcall.hpp")
+set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Models/include/gambit/Models/model_rollcall.hpp")
+set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Utils/include/gambit/Utils/all_functor_types.hpp")
+set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Core/include/gambit/Core/module_rollcall.hpp")
 
 # Ensure that clean removes .pyc files
 file(GLOB more_clean_files "${PROJECT_SOURCE_DIR}/*/*.pyc" "${PROJECT_SOURCE_DIR}/*/*/*.pyc")
@@ -47,4 +57,3 @@ set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/cmake/linkedout.cmake")
 
 # Add all the clean files
 set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${clean_files}")
-

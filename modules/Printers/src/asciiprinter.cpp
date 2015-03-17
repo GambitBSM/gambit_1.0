@@ -28,9 +28,9 @@
 #include <iomanip>
 
 // Gambit
-#include "printers/asciiprinter.hpp"
-#include "stream_overloads.hpp"
-#include "error_handlers.hpp"
+#include "gambit/Printers/printers/asciiprinter.hpp"
+#include "gambit/Core/error_handlers.hpp"
+#include "gambit/Utils/stream_overloads.hpp"
 
 // Switch for debugging output (manual at the moment)
 //#define DEBUG_MODE

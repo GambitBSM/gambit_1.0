@@ -18,7 +18,7 @@ MSSMatMGUT_TWO_SCALE_MK := \
 		$(MSSMatMGUT_TWO_SCALE_SOFT_MK)
 
 MSSMatMGUT_SLHA_INPUT := \
-
+		$(DIR)/LesHouches.in.MSSMatMGUT
 
 MSSMatMGUT_GNUPLOT := \
 		$(DIR)/MSSMatMGUT_plot_rgflow.gnuplot \
@@ -142,6 +142,7 @@ SARAH_MODEL_FILES_MSSMatMGUT := \
 endif
 
 .PHONY:         all-$(MODNAME) clean-$(MODNAME) clean-$(MODNAME)-src \
+		clean-$(MODNAME)-dep clean-$(MODNAME)-obj \
 		distclean-$(MODNAME) run-metacode-$(MODNAME) \
 		pack-$(MODNAME)-src
 

@@ -13,7 +13,7 @@
 ///
 ///  *********************************************
 
-#include "backend_singleton.hpp"
+#include "gambit/Backends/backend_singleton.hpp"
 
 
 namespace Gambit

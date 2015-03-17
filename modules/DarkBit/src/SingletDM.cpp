@@ -1,11 +1,25 @@
-#include "ASCIItableReader.hpp"
-//#include "base_functions.hpp"
-#include "funktions.hpp"
+//   GAMBIT: Global and Modular BSM Inference Tool
+//   *********************************************
+///  \file
+///
+///  Implementation of scalar singlet DM routines.
+///
+///  *********************************************
+///
+///  Authors (add name and date if you modify):
+///   
+///  \author Christoph Weniger  
+///  \date no idea
+///
+///  *********************************************
+
 #include <string>
 
-#include "gambit_module_headers.hpp"
-#include "DarkBit_types.hpp"
-#include "DarkBit_rollcall.hpp"
+#include "gambit/Utils/ASCIItableReader.hpp"
+#include "gambit/Utils/funktions.hpp"
+#include "gambit/Utils/gambit_module_headers.hpp"
+#include "gambit/DarkBit/DarkBit_types.hpp"
+#include "gambit/DarkBit/DarkBit_rollcall.hpp"
 
 namespace Gambit
 {
@@ -137,24 +151,75 @@ namespace Gambit
         auto m_th = Funk::vec(mb, mW, 0., 0., mZ);
         // WW*, hh, tt, ZZ*
         auto channel = Funk::vec<std::string>("bb", "WW", "cc", "tautau", "ZZ");
-        auto p1 = Funk::vec<std::string>("b", "W+", "c", "tau+", "Z");
-        auto p2 = Funk::vec<std::string>("bbar", "W-", "cbar", "tau-", "Z");
-        for ( int i = 0; i < 5; i++ )
+        auto p1 = Funk::vec<std::string>("b", "W+", "c", "tau+", "Z0");
+        auto p2 = Funk::vec<std::string>("bbar", "W-", "cbar", "tau-", "Z0");
+        if ( not runOptions->getValueOrDef<bool>(false, "phi") )
         {
-            if ( mass > m_th[i] )
+            for ( int i = 0; i < 5; i++ )
             {
-                Funk::Funk kinematicFunction_bb = 
-                    Funk::funcM(&singletDM, &SingletDM::sv, channel[i], lambda, mass, Funk::var("v"));
-                finalStates = Funk::vec<std::string>(p1[i], p2[i]);
-                TH_Channel channel_bb(finalStates, kinematicFunction_bb);
-                process_ann.channelList.push_back(channel_bb);
+                if ( mass > m_th[i] )
+                {
+                    Funk::Funk kinematicFunction_bb = 
+                        Funk::funcM(&singletDM, &SingletDM::sv, channel[i], lambda, mass, Funk::var("v"));
+                    finalStates = Funk::vec<std::string>(p1[i], p2[i]);
+                    TH_Channel channel_bb(finalStates, kinematicFunction_bb);
+                    process_ann.channelList.push_back(channel_bb);
+                }
             }
         }
 
+        if ( runOptions->getValueOrDef<bool>(false, "phi") )
+        {
+            Funk::Funk g = Funk::one() * 0.3;
+            process_ann.channelList.push_back(TH_Channel(Funk::vec<std::string>("phi", "phi"), g));
+        }
+
         // Finally, store properties of "chi" in particleProperty list
-        catalog.processList.push_back(process_ann);
         TH_ParticleProperty chiProperty(mass, 1);  // Set mass and 2*spin
         catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("chi_10", chiProperty));
+        catalog.processList.push_back(process_ann);
+
+        // FIXME: test code: Add properties of phi particle
+        TH_Process process_dec((std::string)"phi");
+        Funk::Funk f = Funk::one()*0.3;
+        std::vector<std::string> test_phi_finalStates = Funk::vec<std::string>("b", "bbar");
+        test_phi_finalStates = runOptions->getValueOrDef<std::vector<std::string> >(test_phi_finalStates,"test_phi_finalStates");   
+        TH_Channel channel2(Funk::vec<std::string>(test_phi_finalStates[0], test_phi_finalStates[1]), f);
+        process_dec.channelList.push_back(channel2);
+        process_dec.genRateTotal = f;
+        catalog.processList.push_back(process_dec);
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("phi", TH_ParticleProperty(50.,0)));
+
+        // FIXME: test code: Also add decay of phip->phi phi
+        TH_Process process_phip_dec((std::string)"phip");
+        TH_Channel channel3(Funk::vec<std::string>("phi", "phi"), f);
+        process_phip_dec.channelList.push_back(channel3);
+        process_phip_dec.genRateTotal = f;
+        catalog.processList.push_back(process_phip_dec);
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("phip", TH_ParticleProperty(2*mass,0)));
+
+        // FIXME: test code: Add mass information required by cascade code
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("gamma", TH_ParticleProperty(0.,2)));
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("b", TH_ParticleProperty(mb,1)));
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("bbar", TH_ParticleProperty(mb,1)));
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("Z0", TH_ParticleProperty(mZ,2)));
+
+        /*
+        if ( runOptions->getValueOrDef<bool>(false, "phi") )
+        {
+            TH_Process process_dec((std::string)"phi");
+            Funk::Funk f = Funk::one()*0.3;
+            TH_Channel channel2(Funk::vec<std::string>("b", "bbar"), f);
+            process_dec.channelList.push_back(channel2);
+            process_dec.genRateTotal = f;
+            catalog.processList.push_back(process_dec);
+            catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("phi", TH_ParticleProperty(50.,0)));
+
+            catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("gamma", TH_ParticleProperty(0.,2)));
+            catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("b", TH_ParticleProperty(mb,1)));
+            catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("bbar", TH_ParticleProperty(mb,1)));
+        }
+        */
 
         result = catalog;
     }

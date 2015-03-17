@@ -9,7 +9,9 @@
 # dependency resolution.  You can place as many 
 # entries as you want in each class, just make
 # sure to put them in the same square-bracket-
-# enclosed list.
+# enclosed list.  Don't add comments except on 
+# their own lines, like these (Python's YAML
+# parser is buggy).
 #
 # Note that namespace issues with BOSSed types 
 # and the Gambit namespace itself both automatically

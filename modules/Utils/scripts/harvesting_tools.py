@@ -18,6 +18,7 @@
 #          (patscott@physics.mcgill.ca)
 #    \date 2013 Oct, Nov
 #    \date 2014 Jan, Nov
+#    \date 2015 Feb
 #
 #*********************************************
 import os
@@ -26,6 +27,25 @@ import datetime
 import sys
 import getopt
 
+equiv_config = "./config/resolution_type_equivalency_classes.yaml"
+
+# Load type equivalencies yaml file and return a dictionary containing all the equivalency classes.
+# Just use regex rather than pyYAML, as the latter chokes on :: in scalar entries >:-/
+def get_type_equivalencies():
+    from collections import defaultdict
+    result = defaultdict(set)
+    # Load the equivalencies yaml file
+    with open(equiv_config) as f:
+        for newline in readlines_nocomments(f):
+            newline = newline.strip()
+            if newline == "" or newline.startswith("#"): continue
+            newline = re.sub("^\[\s*|\s*\]", "", newline)
+            equivalency_class = set()
+            for member in re.findall("[^,]*?\(.*?\)[^,]*?\(.*?\).*?,|[^,]*?<.*?>.*?,|[^,]*?\(.*?\).*?,|[^>\)]*?,", newline+","):
+                equivalency_class.add(member[:-1].strip())
+            for member in equivalency_class: result[member] = list(equivalency_class)
+    return result
+                    
 # Remove C/C++ comments from 'text' (From http://stackoverflow.com/questions/241327/python-snippet-to-remove-c-and-c-comments)
 def comment_remover(text):
     def replacer(match):
@@ -96,7 +116,7 @@ def update_module(line,module):
     return module
 
 # Harvest type from a START_FUNCTION or QUICK_FUNCTION macro call
-def addiffunctormacro(line,module,typeset,typeheaders,intrinsic_types,exclude_types,verbose=False):
+def addiffunctormacro(line,module,typeset,typeheaders,intrinsic_types,exclude_types,equiv_classes,verbose=False):
 
     command_index = {"START_FUNCTION":1,
                      "QUICK_FUNCTION":5, 
@@ -120,6 +140,7 @@ def addiffunctormacro(line,module,typeset,typeheaders,intrinsic_types,exclude_ty
 
         #Iterate over all the candidate types and check if they are defined.
         for candidate_type in candidate_types:
+            if candidate_type in equiv_classes: candidate_type = equiv_classes[candidate_type][0]
             #Skip out now if the type is already found.
             if (candidate_type in typeset or
                 module+"::"+candidate_type in typeset or
@@ -140,6 +161,79 @@ def addiffunctormacro(line,module,typeset,typeheaders,intrinsic_types,exclude_ty
                             # Ben: The loop above misses some of the typedefs, so need to re-parse the whole line for these
                             candidate_type = check_for_declaration(newline,module,local_namespace,candidate_type)
             typeset.add(candidate_type)                 
+
+
+# Harvest type from a BE_VARIABLE, BE_FUNCTION or BE_CONV_FUNCTION macro call
+def addifbefunctormacro(line,be_typeset,type_pack_set,equiv_classes,verbose=False):
+
+    command_index = {"BE_VARIABLE":1,
+                     "BE_FUNCTION":2, 
+                     "BE_CONV_FUNCTION":2,
+                     "BACKEND_REQ":0}
+                         
+    splitline = neatsplit('\(|\)|,|\s',line)
+
+    if len(splitline)>1 and splitline[0] in command_index.keys():
+        #This line defines a backend functor and one or more of the arguments defines a candidate type
+
+        if splitline[0] == "BACKEND_REQ":
+            args = re.sub("\s*BACKEND_REQ\s*\(.*?,\s*\(.*?\)\s*,\s*", "", re.sub("\s*\)\s*$", "", line) )
+            if re.search("\)\s*\)\s*$", line): 
+                #This is a backend function requirement
+                leading_type = re.sub("\s*,\s*\(.*?\)\s*$", "", args)
+                functor_template_types = list([leading_type])
+                args = re.sub(".*?,\s*\(\s*", "", re.sub("\s*\)\s*$", "", args) )
+                for arg in re.findall("[^,]*?\(.*?\)[^,]*?\(.*?\).*?,|[^,]*?<.*?>.*?,|[^,]*?\(.*?\).*?,|[^>\)]*?,", args+","):
+                    arg = arg[:-1].strip()
+                    if arg != "":
+                        if arg == "etc": arg = "..."
+                        arg_list = neatsplit('\s',arg)
+                        if arg_list[0] in ("class", "struct", "typename"): arg = arg_list[1]
+                        functor_template_types.append(arg)
+            else:
+                #This is a backend variable requirement
+                functor_template_types = list([args.strip()+"*"])
+
+        else:
+            functor_template_types = list([splitline[command_index[splitline[0]]]])
+            if splitline[0].endswith("FUNCTION"):
+                #Get the argument types out of a BE_FUNCTION or BE_CONV_FUNCTION command
+                args = re.sub("\s*BE_(CONV_)?FUNCTION\s*\(.*?,.*?,\s*?\(", "", line)
+                args = re.sub("\([^\(]*?\)\s*\)\s*$", "\)", args)
+                if splitline[0] == "BE_FUNCTION":
+                    args = re.sub("\)\s*,[^\)]*?,[^\)]*?\)\s*$", "", args)
+                else:
+                    args = re.sub("\)\s*,[^\)]*?\)\s*$", "", args)            
+                for arg in re.findall("[^,]*?\(.*?\)[^,]*?\(.*?\).*?,|[^,]*?<.*?>.*?,|[^,]*?\(.*?\).*?,|[^>\)]*?,", args+","):
+                    arg = arg[:-1].strip()
+                    if arg != "":
+                        if arg == "etc": arg = "..."
+                        arg_list = neatsplit('\s',arg)
+                        if arg_list[0] in ("class", "struct", "typename"): arg = arg_list[1]
+                        functor_template_types.append(arg)
+            else:
+                #Convert the type to a pointer if this is a backend variable functor rather than a backend function functor
+                functor_template_types[0] += "*"
+
+        #Iterate over all the candidate types and check if they are defined.
+        candidate_types = set(functor_template_types)
+        for candidate_type in candidate_types:
+            if candidate_type in equiv_classes: candidate_type = equiv_classes[candidate_type][0]
+            initial_candidate = candidate_type
+            #Skip to the end if the type is already found.
+            if ("Gambit::"+candidate_type in be_typeset):
+				candidate_type = "Gambit::"+candidate_type
+            elif (candidate_type not in be_typeset):
+                be_typeset.add(candidate_type)
+            # Replace the argument types in the functor_template_types with the fully-qualified versions if required.
+            functor_template_types = [candidate_type if entry == initial_candidate else entry for entry in functor_template_types]
+
+        ptr_args = ",".join(functor_template_types[1:])
+        arg_list = ",".join([x for x in functor_template_types[1:] if x != "..."])
+        type_pack = functor_template_types[0] + "(*)(" + ptr_args + ")," + functor_template_types[0]
+        if arg_list != "": type_pack += "," + arg_list
+        type_pack_set.add(type_pack) 
+				                 
 
 # Harvest the list of rollcall headers to be searched, and the list of type headers to be searched.
 def get_headers(path,header_set,exclude_set,verbose=False):
@@ -194,7 +288,7 @@ def retrieve_rollcall_headers(verbose,install_dir,excludes):
     rollcall_headers=[]
     core_exists = False
     for root,dirs,files in os.walk(install_dir):
-        if (not core_exists and root == install_dir+"/Core/include"): core_exists = True 
+        if (not core_exists and root == install_dir+"/Core/include/gambit/Core"): core_exists = True 
         for name in files:
             if ( (name.lower().endswith("_rollcall.hpp") or
                   name.lower().endswith("_rollcall.h")   or
@@ -205,7 +299,8 @@ def retrieve_rollcall_headers(verbose,install_dir,excludes):
                     if bare_name.startswith(x): exclude = True
                 if (not exclude): 
                     if verbose: print "  Located module rollcall header '{0}' at path '{1}'".format(name,os.path.join(root,name))
-                    rollcall_headers+=[name]
+                    rel_name = re.sub(".*?/include/", "", os.path.relpath(os.path.join(root,name),install_dir))
+                    rollcall_headers+=[rel_name]
     if core_exists: make_module_rollcall(rollcall_headers,verbose)
     return rollcall_headers
 
@@ -223,22 +318,9 @@ def retrieve_module_type_headers(verbose,install_dir,excludes):
                     if bare_name.startswith(x): exclude = True
                 if (not exclude): 
                     if verbose: print "  Located module type header '{0}' at path '{1}'".format(name,os.path.join(root,name))
-                    type_headers+=[name]
+                    rel_name = re.sub(".*?/include/", "", os.path.relpath(os.path.join(root,name),install_dir))
+                    type_headers+=[rel_name]
     return type_headers
-
-#Search a directory for BOSSed headers that are not excluded.
-def retrieve_bossed_type_headers(verbose,starting_dir,excludes):
-    headers=[]
-    for root,dirs,files in os.walk(starting_dir):
-        for name in files:
-            exclude = False
-            be = re.sub(".*\\/","",root)
-            for x in excludes:
-                if be.startswith(x): exclude = True
-            if not exclude and (name=="loaded_types.hpp" or name=="loaded_types.h" or name=="loaded_types.hh"): 
-                if verbose: print "  Located BOSSed type header at path '{1}'".format(name,os.path.join(root,name))
-                headers+=["backend_types/"+be+"/"+name]
-    return headers
 
 #Search a directory for headers that are not excluded.
 def retrieve_generic_headers(verbose,starting_dir,kind,excludes):
@@ -248,10 +330,12 @@ def retrieve_generic_headers(verbose,starting_dir,kind,excludes):
             exclude = False
             for x in excludes:
                 if name.startswith(x): exclude = True
+            if kind == "BOSSed type" and not name.startswith("loaded_types"): exclude = True
             if not exclude and (name.endswith(".hpp") or name.endswith(".h") or name.endswith(".hh")): 
                 if verbose: print "  Located "+kind+" header '{0}' at path '{1}'".format(name,os.path.join(root,name))
-                headers+=[name]
-        break
+                rel_name = re.sub(".*?/include/", "", os.path.relpath(os.path.join(root,name),starting_dir))
+                headers+=[rel_name] 
+        if kind != "BOSSed type": break
     return headers
 
 #Create the module_rollcall header in the Core directory
@@ -273,7 +357,7 @@ def make_module_rollcall(rollcall_headers,verbose):
 ///  sure it turns up here.                       \n\
 ///                                               \n\
 ///  By 'rollcall header', we mean a file         \n\
-///  myBit/include/myBit_rollcall.hpp,            \n\
+///  myBit/include/gambit/myBit/myBit_rollcall.hpp,\n\
 ///  where myBit is the name of your module.      \n\
 ///                                               \n\
 ///  *********************************************\n\
@@ -288,13 +372,13 @@ def make_module_rollcall(rollcall_headers,verbose):
 #ifndef __module_rollcall_hpp__                   \n\
 #define __module_rollcall_hpp__                   \n\
                                                   \n\
-#include \"module_macros_incore.hpp\"           \n\n"
+#include \"gambit/Utils/module_macros_incore.hpp\"\n\n"
 
     for h in rollcall_headers:
         towrite+='#include \"{0}\"\n'.format(h)
     towrite+="\n#endif // defined __module_rollcall_hpp__\n"
     
-    with open("./Core/include/module_rollcall.hpp","w") as f:
+    with open("./Core/include/gambit/Core/module_rollcall.hpp","w") as f:
         f.write(towrite)
 
     if verbose: print "Found GAMBIT Core.  Generated module_rollcall.hpp.\n" 

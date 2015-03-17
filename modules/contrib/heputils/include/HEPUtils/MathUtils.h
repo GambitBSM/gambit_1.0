@@ -24,31 +24,31 @@ namespace HEPUtils {
   //@{
 
   /// Convenience function for getting the sign of a number
-  ///
-  /// @todo Template and SFINAE on numerical types?
-  inline int sign(double val) {
+  template <typename N1>
+  inline typename std::enable_if<std::is_arithmetic<N1>::value, int>::type
+  sign(const N1& val) {
     if (val == 0) return 0;
     return (val < 0) ? -1 : 1;
   }
 
-  /// Convenience function for squaring (better than repeating long expressions)
-  ///
-  /// @todo Template and SFINAE on numerical types?
-  inline double sqr(double val) {
+  /// Convenience function for squaring (better than repeating long expressions/calcs or using intermediates)
+  template <typename N1>
+  inline typename std::enable_if<std::is_arithmetic<N1>::value, N1>::type
+  sqr(const N1& val) {
     return val * val;
   }
 
   /// Convenience function for adding two numbers in quadrature
-  ///
-  /// @todo Template and SFINAE on numerical types?
-  inline double add_quad(double a, double b) {
+  template <typename N1, typename N2>
+  inline typename std::enable_if<std::is_arithmetic<N1>::value && std::is_arithmetic<N2>::value, typename std::common_type<N1,N2>::type>::type
+  add_quad(const N1& a, const N2& b) {
     return sqrt(a*a + b*b);
   }
 
   /// Convenience function for adding three numbers in quadrature
-  ///
-  /// @todo Template and SFINAE on numerical types?
-  inline double add_quad(double a, double b, double c) {
+  template <typename N1, typename N2, typename N3>
+  inline typename std::enable_if<std::is_arithmetic<N1>::value && std::is_arithmetic<N2>::value && std::is_arithmetic<N3>::value, typename std::common_type<N1,N2,N3>::type>::type
+  add_quad(const N1& a, const N2& b, const N3& c) {
     return sqrt(a*a + b*b + c*c);
   }
 
@@ -58,58 +58,30 @@ namespace HEPUtils {
   /// @name Range helpers
   //@{
 
-  /// @brief Boolean function to determine if @a value is within the given floating point range
+  /// @brief Boolean function to determine if @a value is within the given range
   ///
   /// @note The interval is closed (inclusive) at the low end, and open (exclusive) at the high end.
-  ///
-  /// @todo SFINAE and template for FP types
-  inline bool in_range(double val, double low, double high) {
+  template <typename N1, typename N2, typename N3>
+  inline typename std::enable_if<std::is_arithmetic<N1>::value && std::is_arithmetic<N2>::value && std::is_arithmetic<N3>::value, bool>::type
+  in_range(const N1& val, const N2& low, const N3& high) {
     return val >= low && val < high;
   }
 
-  /// @brief Boolean function to determine if @a value is within the given floating point range
+  /// @brief Boolean function to determine if @a value is within the given range
   ///
   /// @note The interval is closed at both ends.
-  ///
-  /// @todo SFINAE and template for FP types
-  inline bool in_closed_range(double val, double low, double high) {
+  template <typename N1, typename N2, typename N3>
+  inline typename std::enable_if<std::is_arithmetic<N1>::value && std::is_arithmetic<N2>::value && std::is_arithmetic<N3>::value, bool>::type
+  in_closed_range(const N1& val, const N2& low, const N3& high) {
     return val >= low && val <= high;
   }
 
-  /// @brief Boolean function to determine if @a value is within the given floating point range
+  /// @brief Boolean function to determine if @a value is within the given range
   ///
   /// @note The interval is open at both ends.
-  ///
-  /// @todo SFINAE and template for FP types
-  inline bool in_open_range(double val, double low, double high) {
-    return val > low && val < high;
-  }
-
-
-  /// @brief Boolean function to determine if @a value is within the given integer range
-  ///
-  /// NB. The interval is closed (inclusive) at the low end, and open (exclusive) at the high end.
-  ///
-  /// @todo SFINAE and template for integer types
-  inline bool in_range(int val, int low, int high) {
-    return val >= low && val < high;
-  }
-
-  /// @brief Boolean function to determine if @a value is within the given integer range
-  ///
-  /// @note The interval is closed at both ends.
-  ///
-  /// @todo SFINAE and template for FP types
-  inline bool in_closed_range(int val, int low, int high) {
-    return val >= low && val <= high;
-  }
-
-  /// @brief Boolean function to determine if @a value is within the given integer range
-  ///
-  /// @note The interval is open at both ends.
-  ///
-  /// @todo SFINAE and template for FP types
-  inline bool in_open_range(int val, int low, int high) {
+  template <typename N1, typename N2, typename N3>
+  inline typename std::enable_if<std::is_arithmetic<N1>::value && std::is_arithmetic<N2>::value && std::is_arithmetic<N3>::value, bool>::type
+  in_open_range(const N1& val, const N2& low, const N3& high) {
     return val > low && val < high;
   }
 

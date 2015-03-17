@@ -20,20 +20,18 @@
 
 #include <string>
 #include <sstream>
-#include "gambit_module_headers.hpp"
-#include "SpecBit_rollcall.hpp"
-#include "stream_overloads.hpp" // Just for more convenient output to logger
-#include "util_macros.hpp"
+
+#include "gambit/Utils/gambit_module_headers.hpp"
+#include "gambit/Utils/stream_overloads.hpp" // Just for more convenient output to logger
+#include "gambit/Utils/util_macros.hpp"
+#include "gambit/SpecBit/SpecBit_rollcall.hpp"
+#include "gambit/SpecBit/MSSMSpec.hpp"
+#include "gambit/SpecBit/model_files_and_boxes.hpp" // #includes lots of flexiblesusy headers and defines interface classes
 
 // Flexible SUSY stuff (should not be needed by the rest of gambit)
-#include "ew_input.hpp"
-#include "lowe.h" // From softsusy; used by flexiblesusy
-#include "model_files_and_boxes.hpp" // #includes lots of other flexiblesusy headers and defines interface classes
-
-//#include "logger.hpp"
-//#include "wrappers.hpp"
-#include "MSSMSpec.hpp"
-#include "numerics.hpp"
+#include "flexiblesusy/src/ew_input.hpp"
+#include "flexiblesusy/src/lowe.h" // From softsusy; used by flexiblesusy
+#include "flexiblesusy/src/numerics.hpp"
 
 // Switch for debug mode
 #define SpecBit_DBUG 
@@ -46,12 +44,8 @@ namespace Gambit
     using namespace LogTags;
     using namespace flexiblesusy;
 
-    /// Quick macro to simplify the check of Pipe::Models
-    //#define QUERYMODELS(MODEL) (std::find(Pipe::Models->begin(), \
-                                          Pipe::Models->end(), \
-                                          MODEL) != Pipe::Models->end())
-    //OBSOLETE! Use the following instead:
-    //bool Pipes::<fname>::ModelInUse(str model_name)
+    // To check if a model is currently being scanned:
+    // bool Pipes::<fname>::ModelInUse(str model_name)
 
     /// Module convenience functions
     // These are not known to Gambit.
@@ -170,7 +164,7 @@ namespace Gambit
       // Note: Output of spectrum_generator.get_model() returns type, e.g. CMSSM.
       // Need to convert it to type CMSSM_slha (which alters some conventions of
       // parameters into SLHA format)
-      MI model_interface(typename MI::Model(spectrum_generator.get_model()),oneset,input);
+      MI model_interface(spectrum_generator,oneset,input);
 
       // Create Spectrum object to wrap flexiblesusy data
       // THIS IS STATIC so that it lives on once we leave this module function. We 
@@ -202,7 +196,7 @@ Message from flexibleSUSY below:" << std::endl;
       slha_io.set_sminputs(oneset);
       slha_io.set_minpar(input);
       slha_io.set_extpar(input);
-      slha_io.set_spectrum(mssmspec.get_bound_spec()); //get_bound_spec retrieves the Model
+      slha_io.set_spectrum(mssmspec.model_interface.model);
       slha_io.write_to_file("SpecBit/initial_CMSSM_spectrum.slha");
 
       // Return a pointer to the Spectrum object
@@ -300,17 +294,17 @@ Message from flexibleSUSY below:" << std::endl;
         ostr << "SignMu = " << INPUT(SignMu) << ", " << oend;
         ostr << "mHd2IN = " << INPUT(mHd2IN) << ", " << oend;
         ostr << "mHu2IN = " << INPUT(mHu2IN) << ", " << oend;
-        ostr << "mq2Input = " << INPUT(mq2Input) << ", " << oend;
-        ostr << "ml2Input = " << INPUT(ml2Input) << ", " << oend;
-        ostr << "md2Input = " << INPUT(md2Input) << ", " << oend;
-        ostr << "mu2Input = " << INPUT(mu2Input) << ", " << oend;
-        ostr << "me2Input = " << INPUT(me2Input) << ", " << oend;
+        ostr << "mq2Input = " << oend << INPUT(mq2Input) << ", " << oend;
+        ostr << "ml2Input = " << oend << INPUT(ml2Input) << ", " << oend;
+        ostr << "md2Input = " << oend << INPUT(md2Input) << ", " << oend;
+        ostr << "mu2Input = " << oend << INPUT(mu2Input) << ", " << oend;
+        ostr << "me2Input = " << oend << INPUT(me2Input) << ", " << oend;
         ostr << "MassBInput = " << INPUT(MassBInput) << ", " << oend;
         ostr << "MassWBInput = " << INPUT(MassWBInput) << ", " << oend;
         ostr << "MassGInput = " << INPUT(MassGInput) << ", " << oend;
-        ostr << "Aeij = " << INPUT(Aeij) << ", " << oend;
-        ostr << "Adij = " << INPUT(Adij) << ", " << oend;
-        ostr << "Auij = " << INPUT(Auij) << ", " << oend;
+        ostr << "Aeij = " << oend << INPUT(Aeij) << ", " << oend;
+        ostr << "Adij = " << oend << INPUT(Adij) << ", " << oend;
+        ostr << "Auij = " << oend << INPUT(Auij) << ", " << oend;
         #undef INPUT
         #undef ostr
         #undef oend

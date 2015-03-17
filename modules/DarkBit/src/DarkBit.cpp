@@ -25,6 +25,7 @@
 ///  \author Christopher Savage
 ///          (chris@savage.name)
 ///  \date 2014 Oct
+///  \date 2015 Jan, Feb
 ///  
 ///  *********************************************
 
@@ -35,12 +36,11 @@
 #include <cmath>
 #include <fstream>
 
-#include "gambit_module_headers.hpp"
-#include "DarkBit_types.hpp"
-#include "DarkBit_rollcall.hpp"
-
-#include "util_macros.hpp"
-#include "base_functions.hpp"
+#include "gambit/Utils/gambit_module_headers.hpp"
+#include "gambit/Utils/util_macros.hpp"
+#include "gambit/Utils/base_functions.hpp"
+#include "gambit/DarkBit/DarkBit_types.hpp"
+#include "gambit/DarkBit/DarkBit_rollcall.hpp"
 
 using namespace Gambit::BF;
 
@@ -73,7 +73,7 @@ namespace Gambit {
       bool static first_time = true;
       if (first_time) 
       {
-          std::cout << "DarkSUSY initialization" << std::endl;
+          logger() << "DarkSUSY initialization" << std::endl;
           BEreq::dsinit();
           BEreq::dsrdinit();
           first_time = false;
@@ -123,7 +123,7 @@ namespace Gambit {
       bool static first_time = true;
       if (first_time) 
       {
-          std::cout << "DarkSUSY initialization" << std::endl;
+          logger() << "DarkSUSY initialization" << std::endl;
           BEreq::dsinit();
           BEreq::dsrdinit();
           first_time = false;
@@ -154,7 +154,7 @@ namespace Gambit {
       bool static first_time = true;
       if (first_time) 
       {
-          std::cout << "DarkSUSY initialization" << std::endl;
+          logger() << "DarkSUSY initialization" << std::endl;
           BEreq::dsinit();
           BEreq::dsrdinit();
           first_time = false;
@@ -167,8 +167,8 @@ namespace Gambit {
       double asgnmu = *Param["sgnmu"];  // sign(mu)
       double atanbe = *Param["tanb"];  // tan(beta)
       int unphys, hwarning;
-      std::cout << "Initialize dsgive_model_isasugra with" << std::endl;
-      std::cout << am0 << " " << amhf << " " << aa0 << " " << asgnmu << " " << atanbe << std::endl;
+      logger() << "Initialize dsgive_model_isasugra with" << std::endl;
+      logger() << am0 << " " << amhf << " " << aa0 << " " << asgnmu << " " << atanbe << std::endl;
       BEreq::dsgive_model_isasugra(am0, amhf, aa0, asgnmu, atanbe);
       BEreq::dssusy_isasugra(unphys, hwarning);
     }
@@ -185,11 +185,11 @@ namespace Gambit {
 
       std::string filename = filenames[counter];
 
-      std::cout << "Read slha file " << filename << std::endl;
+      logger() << "Read slha file " << filename << std::endl;
       std::ifstream ifs(filename.c_str());  // This might require char [] instead
       if(!ifs.good())
       {
-          std::cout << "ERROR: File not found." << std::endl;
+          logger() << "ERROR: File not found." << std::endl;
           exit(1);
       }
       ifs >> spectrum;
@@ -199,6 +199,105 @@ namespace Gambit {
       if ( counter >= filenames.size() )
           counter = 0;   // Reset counter.
     }
+
+
+//////////////////////////////////////////////////////////////////////////
+//
+//                    Backend point initialization
+//
+//////////////////////////////////////////////////////////////////////////
+
+    // Initialize DarkSUSY to the current model point.  Only selected
+    // MSSM parameter spaces are implemented.  Returns bool indicating
+    // if point initialization was successful, which is essentially
+    // always true for models that satisfy the dependency resolver.
+    void DarkSUSY_PointInit_MSSM(bool &result)
+    {
+      using namespace Pipes::DarkSUSY_PointInit_MSSM;
+      result = false;
+      
+      // CMSSM
+      if (ModelInUse("CMSSM"))
+      {
+        // Setup mSUGRA model from CMSSM parameters
+        double am0    = *Param["M0"];     // m0
+        double amhf   = *Param["M12"];    // m_1/2
+        double aa0    = *Param["A0"];     // A0
+        double asgnmu = *Param["sgnmu"];  // sign(mu)
+        double atanbe = *Param["tanb"];   // tan(beta)
+        logger() << "Initializing DarkSUSY via dsgive_model_isasugra:" << std::endl;
+        logger() << "  m0        =" << am0    << std::endl;
+        logger() << "  m_1/2     =" << amhf   << std::endl;
+        logger() << "  A0        =" << aa0    << std::endl;
+        logger() << "  sign(mu)  =" << asgnmu << std::endl;
+        logger() << "  tan(beta) =" << atanbe << std::endl;
+        BEreq::dsgive_model_isasugra(am0, amhf, aa0, asgnmu, atanbe);
+        int unphys, hwarning;
+        BEreq::dssusy_isasugra(unphys, hwarning);
+        //result = (unphys == 0) && (hwarning == 0);
+        if (unphys < 0) {
+          //logger() << "ERROR: model point is theoretically inconsistent (DarkSUSY)."
+          //         << std::endl;
+          DarkBit_warning().raise(LOCAL_INFO,
+              "Model point is theoretically inconsistent (DarkSUSY).");
+          invalid_point().raise("Model point is theoretically inconsistent (DarkSUSY).");
+          result = false;
+        } else if (unphys > 0) {
+          //logger() << "ERROR: neutralino is not the LSP (DarkSUSY)." << std::endl;
+          DarkBit_warning().raise(LOCAL_INFO,
+              "Neutralino is not the LSP (DarkSUSY).");
+          invalid_point().raise("Neutralino is not the LSP (DarkSUSY).");
+          result = false;
+        } else if (hwarning != 0) {
+          //logger() << "WARNING: radiative corrections in Higgs sector outside "
+          //            "range of validity (DarkSUSY)." << std::endl;
+          DarkBit_warning().raise(LOCAL_INFO,
+            "Radiative corrections in Higgs sector outside range of validity (DarkSUSY).");
+          result = true;
+        } else {
+          result = true;
+        }
+      }
+      
+      // use SLHA for initialization initialization
+      else if (ModelInUse("CMSSM_demo") or ModelInUse("MSSM25atQ"))
+      {
+        // Save eaSLHA file to disk
+        eaSLHA mySLHA = *Dep::MSSMspectrum;
+        std::ofstream ofs("DarkBit_temp.slha");
+        ofs << mySLHA;
+        ofs.close();
+
+        // Initialize SUSY spectrum from SLHA
+        int len = 17;
+        int flag = 15;
+        char * filename = "DarkBit_temp.slha";
+        logger() << "Initializing DarkSUSY via SLHA." << std::endl;
+        BEreq::dsSLHAread(byVal(filename),flag,byVal(len));
+        BEreq::dsprep();
+        result = true;
+      }
+
+      // Better way to log this?
+      if (!result) {
+        DarkBit_warning().raise(LOCAL_INFO,
+            "DarkSUSY point initialization failed.");
+        invalid_point().raise("DarkSUSY point initialization failed.");
+      }
+
+      if ( runOptions->getValueOrDef( false, "show_higgs_widths" ) )
+      {
+        int unit = 6;
+        BEreq::dswwidth(unit);
+      }
+    }
+
+    void DarkSUSY_PointInit_NoMSSM(bool &result)
+    {
+        using namespace Pipes::DarkSUSY_PointInit_NoMSSM;
+        result = true;
+    }
+
 
 //////////////////////////////////////////////////////////////////////////
 //
@@ -384,7 +483,7 @@ namespace Gambit {
       *BEreq::rdmgev = myrdmgev;
 
 //        for (int i=0; i<myrdmgev.nco; i++) {
-//          std::cout << "co: "<< myrdmgev.kcoann[i]<<" " << myrdmgev.mdof[i]<<" " <<  myrdmgev.mco[i] << std::endl;
+//          logger() << "co: "<< myrdmgev.kcoann[i]<<" " << myrdmgev.mdof[i]<<" " <<  myrdmgev.mco[i] << std::endl;
 //        }
 
       result=1; // everthing OK
@@ -500,7 +599,7 @@ namespace Gambit {
 
       } // USING BE=DS
 
-      std::cout << "oh2 =" << result << std::endl;
+      logger() << "oh2 =" << result << std::endl;
 
     } // function RD_oh2_general
 
@@ -514,112 +613,34 @@ namespace Gambit {
 
     // Special events for event loop
     enum cascadeMC_SpecialEvents {MC_INIT=-1, MC_NEXT_STATE=-2, MC_FINALIZE=-3};
-
-    // Function specifying initial states for the cascade decays
-    void cascadeMC_TestList(std::vector<std::string> &list)
-    {
-        list.clear();
-        list.push_back("test1");      
-    }
     
-    // Function returning an empty, mutable list of final states to search for.
-    // This list will be populated (modified) by other capabilities, and returned by cascadeMC_FinalStates once filled.
-    void cascadeMC_FinalStates_Prototype(Gambit::DarkBit::mutableFinalStateContainer &list)
-    {
-        list.enable.clear();   
-        list.disable.clear();
-    }
-   
-    // Functions adding various particles to final state list. Modifies cascadeMC_FinalStates_Prototype.
-    void cascadeMC_FinalStates_Enable_gamma(bool &dummy)
-    {
-        dummy=true;
-        using namespace Pipes::cascadeMC_FinalStates_Enable_gamma;  
-        Dep::cascadeMC_FinalStates_Prototype->enable.push_back("gamma");   
-    }
-    // Function allowing adding or removing final states from the list through yaml input.
-    void cascadeMC_FinalStates_Enable_test6(bool &dummy)
-    {
-        dummy=true;
-        using namespace Pipes::cascadeMC_FinalStates_Enable_test6;  
-        Dep::cascadeMC_FinalStates_Prototype->enable.push_back("test6");   
-    }     
-    
-    void cascadeMC_FinalStates_SetThroughYaml(bool &dummy)
-    {
-        dummy=true;
-        using namespace Pipes::cascadeMC_FinalStates_SetThroughYaml;  
-        std::vector<std::string> e;
-        std::vector<std::string> d;
-        e = runOptions->getValueOrDef<std::vector<std::string> >(e,"cMC_finalStates_enable");        
-        d = runOptions->getValueOrDef<std::vector<std::string> >(d,"cMC_finalStates_disable"); 
-        for(std::vector<std::string>::const_iterator it = e.begin(); it != e.end(); ++it)
-        {               
-            Dep::cascadeMC_FinalStates_Prototype->enable.push_back(*it);
-        }   
-        for(std::vector<std::string>::const_iterator it = d.begin(); it != d.end(); ++it)
-        {               
-            Dep::cascadeMC_FinalStates_Prototype->disable.push_back(*it);
-        }           
-    }     
-   
-    // Capability ensuring that all final states have been added to cascadeMC_FinalStates_Mutable
-    // This is a single-iteration loop manager. 
-    // All capabilities adding states to cascadeMC_FinalStates_Mutable should be run inside this "loop" through NEEDS_MANAGER_WITH_CAPABILITY(cascadeMC_FinalStates_EnsureFilled) .
-    // This ensures that they are run before any function depending on both cascadeMC_FinalStates_Mutable and cascadeMC_FinalStates_EnsureFilled.
+    // Function for retrieving list of final states for cascade decays
     void cascadeMC_FinalStates(std::vector<std::string> &list)
     {
-        using namespace Pipes::cascadeMC_FinalStates;     
-        Loop::executeIteration(0);
         list.clear();
-        std::vector<std::string> &elist = Dep::cascadeMC_FinalStates_Prototype->enable;
-        std::vector<std::string> &dlist = Dep::cascadeMC_FinalStates_Prototype->disable;        
-        for(std::vector<std::string>::const_iterator it = elist.begin(); it != elist.end(); ++it)
-        {
-            bool add=true;       
-            // Disable takes precedence. Disable final state if specified by anyone   
-            for(std::vector<std::string>::const_iterator it2 = dlist.begin(); it2 != dlist.end(); ++it2)
-            {
-                if(*it==*it2)
-                {
-                    add=false;
-                    break;
-                }
-            }
-            if(add)
-            {
-                // Ignore duplicates
-                for(std::vector<std::string>::const_iterator it3 = list.begin(); it3 != list.end(); ++it3)
-                {
-                    if(*it==*it3)
-                    {
-                        add=false;
-                        break;
-                    }
-                }
-            }
-            if(add) list.push_back(*it);
-        }
-    }
-       
+        using namespace Pipes::cascadeMC_FinalStates;  
+        list = runOptions->getValueOrDef<std::vector<std::string> >(list,"cMC_finalStates");       
+    }     
+    
     // Print list of final states for debug purposes
     void cascadeMC_printFinalStates(bool &dummy)
     {
         dummy=true;
         using namespace Pipes::cascadeMC_printFinalStates;     
         const std::vector<std::string> &list = *Dep::cascadeMC_FinalStates;
-        std::cout << "Final state list contains: " << std::endl;
+        logger() << "Cascade decay final state list contains: " << std::endl;
         for(size_t i=0; i<list.size(); i++)
         {
-            std::cout << i << ": " << list[i] << std::endl;
+            logger() << i << ": " << list[i] << std::endl;
         }
     }   
 
     // Function setting up the decay table used in decay chains
     void cascadeMC_DecayTable(Gambit::DarkBit::DecayChain::DecayTable &table)
-    {           
+    {
         using namespace DecayChain;
         using namespace Pipes::cascadeMC_DecayTable;     
+        std::cout << "cascadeMC_DecayTable" << std::endl;
         table = DecayTable(*Dep::TH_ProcessCatalog, *Dep::SimYieldTable);
     }
         
@@ -627,14 +648,21 @@ namespace Gambit {
     void cascadeMC_LoopManager()
     {
         using namespace Pipes::cascadeMC_LoopManager;     
-        std::vector<std::string> chainList = *Dep::cascadeMC_ChainList;
-        
-        // TODO: Fix yaml. Hardcode for now
-        int cMC_minEvents = 100;   //runOptions->getValueOrDef<int>(100, "cMC_minEvents");        
-        int cMC_maxEvents = 10000; //runOptions->getValueOrDef<int>(10000, "cMC_maxEvents"); 
+        std::vector<std::string> chainList = *Dep::GA_missingFinalStates;
+        // Get YAML options
+        int cMC_minEvents = runOptions->getValueOrDef<int>(100, "cMC_minEvents");        
+        int cMC_maxEvents = runOptions->getValueOrDef<int>(10000, "cMC_maxEvents"); 
         
         // Initialization run
         Loop::executeIteration(MC_INIT);
+
+        // Check whether there is anything to do
+        if ( chainList.size() == 0 ) 
+        {
+            std::cout << "Nothing to do." << std::endl;
+            return;
+        }
+
         // Iterate over initial state particles
         for(std::vector<std::string>::const_iterator cit =chainList.begin(); cit != chainList.end(); cit++)
         {
@@ -644,7 +672,8 @@ namespace Gambit {
             // Set next initial state
             Loop::executeIteration(MC_NEXT_STATE);
             // Event generation loop
-            #pragma omp parallel private(it) shared(counter, finished)
+            // FIXME: Uncomment when done testing
+//            #pragma omp parallel private(it) shared(counter, finished)
             {
                 while (!finished)
                 {
@@ -668,7 +697,7 @@ namespace Gambit {
     {
         using namespace DecayChain;
         using namespace Pipes::cascadeMC_InitialState;  
-        std::vector<std::string> chainList = *Dep::cascadeMC_ChainList;
+        std::vector<std::string> chainList = *Dep::GA_missingFinalStates;
         static int iteration;
         switch(*Loop::iteration)
         {
@@ -678,20 +707,27 @@ namespace Gambit {
             case MC_NEXT_STATE:
                 iteration++;
                 break;
+            case MC_FINALIZE:
+                return;
         }
         if(int(chainList.size()) <= iteration)
         {
-            std::cout << "Error: Desync between cascadeMC_LoopManager and cascadeMC_InitialState" << std::endl;
-            exit(1);
+            DarkBit_error().raise(LOCAL_INFO, "Desync between cascadeMC_LoopManager and cascadeMC_InitialState");
         }
         else
             pID = chainList[iteration];
-    }    
+        /*
+        std::cout << "cascadeMC_InitialState" << std::endl;            
+        std::cout << "Iteration: " << *Loop::iteration << std::endl;
+        std::cout << "Number of states to simulate: " << chainList.size() << std::endl;
+        */
+    }
     
     // Event counter for cascade decays
     void cascadeMC_EventCount(std::map<std::string, int> &counts)
     {
-        using namespace Pipes::cascadeMC_EventCount;
+        // std::cout << "cascadeMC_EventCount" << std::endl;           
+        using namespace Pipes::cascadeMC_EventCount;     
         static std::map<std::string, int> counters;
         switch(*Loop::iteration)
         {
@@ -714,17 +750,22 @@ namespace Gambit {
     // Function for generating decay chains
     void cascadeMC_GenerateChain(Gambit::DarkBit::DecayChain::ChainContainer &chain)
     {
+        //std::cout << "cascadeMC_GenerateChain" << std::endl;        
         using namespace DecayChain;
-        using namespace Pipes::cascadeMC_GenerateChain;     
-        if(*Loop::iteration == MC_INIT or *Loop::iteration == MC_FINALIZE) return;
-        // Keep the below commented out until static function variable initialization in decay chain is fixed
-        //if(*Loop::iteration == MC_NEXT) return;
-        ChainParticle* chn = new ChainParticle(vec3(0), &(*Dep::cascadeMC_DecayTable), *Dep::cascadeMC_InitialState);
-
-        // TODO: Fix yaml. Hardcode for now        
-        int cMC_maxChainLength = -1; //runOptions->getValueOrDef<int>(-1, "cMC_maxChainLength");
-        double cMC_Emin  = -1;       //runOptions->getValueOrDef<double>(-1, "cMC_Emin");
-        
+        using namespace Pipes::cascadeMC_GenerateChain;    
+        static int    cMC_maxChainLength; 
+        static double cMC_Emin;
+        switch(*Loop::iteration)
+        {
+            case MC_INIT:
+                cMC_maxChainLength = runOptions->getValueOrDef<int>    (-1, "cMC_maxChainLength");
+                cMC_Emin           = runOptions->getValueOrDef<double> (-1, "cMC_Emin"); 
+                return;
+            case MC_NEXT_STATE:
+            case MC_FINALIZE:
+                return;
+        }
+        ChainParticle* chn = new ChainParticle(vec3(0), &(*Dep::cascadeMC_DecayTable), *Dep::cascadeMC_InitialState); 
         chn->generateDecayChainMC(cMC_maxChainLength,cMC_Emin); 
         chain=ChainContainer(chn);
     }
@@ -732,78 +773,131 @@ namespace Gambit {
     // Function for sampling SimYieldTables (tabulated spectra). 
     // This is a convenience function used in cascadeMC_Histograms, and does not have an associated capability.
     void cascadeMC_sampleSimYield( const SimYieldTable &table, const Gambit::DarkBit::DecayChain::ChainParticle* endpoint, std::string finalState, 
-            const TH_ProcessCatalog &catalog, int cMC_minSpecSamples, int cMC_maxSpecSamples, double cMC_Emin, 
-            std::map<std::string, std::map<std::string, SimpleHist> > &histList, std::string initialState)
+            const TH_ProcessCatalog &catalog, std::map<std::string, std::map<std::string, SimpleHist> > &histList, std::string initialState, 
+            double weight, double (*dshayield)(double&,double&,int&,int&,int&), int cMC_minSpecSamples, int cMC_maxSpecSamples, double cMC_specValidThreshold)
     {
-        SimYieldChannel chn = table.getChannel((*endpoint)[0]->getpID() , (*endpoint)[1]->getpID(), finalState);                      
+        //std::cout << "cascadeMC_sampleSimYield" << std::endl;          
+        std::string p1,p2;
+        switch(endpoint->getnChildren())
+        {
+            case 0:
+                p1 = endpoint->getpID();
+                p2 = "";  
+                break;
+            case 2:
+                p1=(*endpoint)[0]->getpID();
+                p2=(*endpoint)[1]->getpID();   
+                break;
+            default:
+                DarkBit_error().raise(LOCAL_INFO, "cascadeMC_sampleSimYield called with invalid endpoint state.");
+        }
+        const SimYieldChannel &chn = table.getChannel(p1 , p2, finalState);          
         // Get Lorentz boost information
         double gamma,beta;
-        endpoint->getBoost(gamma,beta);                  
-        // Mass of final state
-        double m = catalog.particleProperties.at(finalState).mass;
+        endpoint->getBoost(gamma,beta);    
+        const double gammaBeta = gamma*beta;              
+        // Mass of final state squared
+        // FIXME: Get mass from somewhere else
+        const double m = catalog.particleProperties.at(finalState).mass;
+        const double msq = m*m;
         // Get histogram edges
         double histEmin, histEmax;
         histList[initialState][finalState].getEdges(histEmin, histEmax);
-        histEmin=std::min(std::max(cMC_Emin,0.0),histEmin);
+
         // Calculate energies to sample between. 
         // A particle decaying isotropically in its rest frame will give a box spectrum. 
         // This is assumed and used here to add box contributions rather than points to the histograms.
-        // Limits are chosen to include all contributing box specta, taking care not to sample outside tabulated energies.
-        double Ecmin = std::max( histEmin - beta*sqrt(histEmin*histEmin-m*m) , chn.Ecm_min );
-        double Ecmax = std::min( histEmax + beta*sqrt(histEmax*histEmax-m*m) , chn.Ecm_max );           
+        // Limits are chosen such that we only sample energies that can contribute to histogram bins.
+        const double Ecmin = std::max( gamma*histEmin - gammaBeta*sqrt(histEmin*histEmin-msq) , chn.Ecm_min );
+        const double Ecmax = std::min(std::min( 
+                               gamma*histEmax + gammaBeta*sqrt(histEmax*histEmax-msq) ,     // Highest energy that can contribute to the histogram
+                               chn.Ecm_max ),                                               // Highest energy in SimYieldChannel
+                               0.5*(endpoint->m*endpoint->m + msq)/endpoint->m );           // Estimate for highest kinematically allowed CoM energy
         if(Ecmin>=Ecmax) return;    
-        double logmin = log(Ecmin);
-        double logmax = log(Ecmax);                  
-        double dlogE=logmax-logmin;              
+        // TODO: Correct now?
+        const double logmin = log(Ecmin);
+        const double logmax = log(Ecmax);                  
+        const double dlogE=logmax-logmin;       
         
-        int maxSamples = std::max(cMC_maxSpecSamples,cMC_minSpecSamples);
-        double* E_CoM = new double[maxSamples];
-        double* dN_dE = new double[maxSamples];
+        // Some debug information
+        if(false)
+        {
+            std::cout << endpoint->E_Lab() << std::endl;
+            std::cout << endpoint->p_Lab() << std::endl;
+            std::cout << "Lorentz factors gamma, beta: " << gamma << ", " << beta << std::endl;
+            std::cout << "Initial state: " << initialState << std::endl;
+            std::cout << "Channel: " << p1 << " " << p2 << std::endl;
+            std::cout << "Final particles: " << finalState << std::endl;
+            std::cout << "Event weight: "    << weight << std::endl;
+            std::cout << "cMC_specValidThreshold: "    << cMC_specValidThreshold << std::endl;
+            std::cout << "histEmin/histEmax: " << histEmin << " " << histEmax << std::endl;
+            std::cout << "chn.Ecm_min/max: " << chn.Ecm_min << " " << chn.Ecm_max << std::endl;
+            std::cout << "Ecmin/max: " << Ecmin << " " << Ecmax << std::endl;
+            std::cout << "Final state mass^2: " << msq << std::endl;
+        }
+        
         double specSum=0;
-        int Nsampl=0;           
+        int Nsampl=0;
+        int samplCounter = 0;
+        SimpleHist spectrum(histList[initialState][finalState].binLower);        
         // Dynamic sampling of tabulated spectrum.
         // specSum/Nsampl gives an estimate for how many particles our sampling so far corresponds to.
         // To reduce noise, keep sampling until Nsampl>=specSum/Nsampl or maxSamples is reached
-        while((Nsampl<cMC_minSpecSamples) or ((Nsampl<maxSamples) and (Nsampl*Nsampl<specSum)))
+        while(((Nsampl<cMC_minSpecSamples) or (Nsampl*Nsampl<specSum)) and (samplCounter<cMC_maxSpecSamples))
         {
+            samplCounter++;
             // Draw an energy in the CoM frame of the endpoint. Logarithmic sampling.
-            E_CoM[Nsampl]= exp(logmin+(logmax-logmin)*Random::draw());
-            dN_dE[Nsampl]= chn.dNdE->eval("E", E_CoM[Nsampl]);
-            specSum += E_CoM[Nsampl]*dlogE*dN_dE[Nsampl];
-            Nsampl++;
-        }
-        SimpleHist spectrum(histList[initialState][finalState].binLower);
-        for(int i=0; i<Nsampl; i++)    
-        {   
-            double weight = E_CoM[i]*dlogE*dN_dE[i];
-            // Calculate box limits
-            double tmp1 = gamma*E_CoM[i];
-            double tmp2 = beta*gamma*sqrt(E_CoM[i]*E_CoM[i]-m*m);
-            // Add box spectrum to histogram
-            spectrum.addBox(tmp1-tmp2,tmp1+tmp2,weight);
+            double E_CoM= exp(logmin+(logmax-logmin)*Random::draw());
+            double dN_dE;
+            // TODO: Make ABSOLUTELY SURE the below is threadsafe!
+            if(false)   // Comparison, calling DS directly VS using Funktion objects
+            {
+                int flag = 0;     
+                int yieldk = 152; 
+                int ch = 25;       
+                double Esmpl =  0.5*endpoint->m;
+                dN_dE = dshayield(Esmpl, E_CoM, ch, yieldk, flag);
+            }
+            else
+            {
+                dN_dE= chn.dNdE->eval("E", E_CoM, "Ecm", endpoint->m);
+            }
+            // Only accept point if dN_dE is above threshold value
+            if(dN_dE > cMC_specValidThreshold)
+            {
+                double weight2 = E_CoM*dlogE*dN_dE;
+                specSum += weight2;
+                weight2 *= weight;
+                double tmp1 = gamma*E_CoM;
+                double tmp2 = gammaBeta*sqrt(E_CoM*E_CoM-msq);
+                // Add box spectrum to histogram
+                spectrum.addBox(tmp1-tmp2,tmp1+tmp2,weight2);
+                Nsampl++;
+            }
         }
         spectrum.multiply(1.0/Nsampl);
         // Add bin contents of spectrum histogram to main histogram as weighted events
         #pragma omp critical (cascadeMC_histList)
             histList[initialState][finalState].addHistAsWeights_sameBin(spectrum);
-        delete [] E_CoM;
-        delete [] dN_dE;
-    }        
+    }
     
     // Function responsible for histogramming, and evaluating end conditions for event loop
     void cascadeMC_Histograms(std::map<std::string, std::map<std::string, SimpleHist> > &result)
-    { 
+    {
+        //std::cout << "cascadeMC_Histograms" << std::endl; 
         using namespace DecayChain;
         using namespace Pipes::cascadeMC_Histograms; 
-
-        // TODO: Fix yaml. Hardcode variables for now        
-        int cMC_minSpecSamples = 5;
-        int cMC_maxSpecSamples = 25;
-        int cMC_Emin = -1;
-        int cMC_endCheckFrequency  = 25; //runOptions->getValueOrDef<int>(25, "cMC_endCheckFrequency");    
-        double cMC_gammaBGPower = -2.5;       //runOptions->getValueOrDef<double>(-2.5, "cMC_gammaBGPower");
-        double cMC_gammaRelError=0.01;        //runOptions->getValueOrDef<double>(0.01, "cMC_gammaRelError");        
+            
+        // FIXME: Temporary
+        double (*dshayield)(double&,double&,int&,int&,int&) = BEreq::dshayield.pointer();
         
+        // YAML options
+        static int    cMC_minSpecSamples;
+        static int    cMC_maxSpecSamples;
+        static double cMC_specValidThreshold;
+        static int    cMC_endCheckFrequency; 
+        static double cMC_gammaBGPower;
+        static double cMC_gammaRelError;      
         // Histogram list shared between all threads
         static std::map<std::string, std::map<std::string, SimpleHist> > histList;
 
@@ -811,13 +905,26 @@ namespace Gambit {
         {
             case MC_INIT:
                 // Initialization
+                cMC_minSpecSamples     = runOptions->getValueOrDef<int>   (5,    "cMC_minSpecSamples");    
+                cMC_maxSpecSamples     = runOptions->getValueOrDef<int>   (25,   "cMC_maxSpecSamples"); 
+                cMC_specValidThreshold = runOptions->getValueOrDef<double>(0.0,  "cMC_specValidThreshold");    
+                cMC_endCheckFrequency  = runOptions->getValueOrDef<int>   (25,   "cMC_endCheckFrequency");    
+                cMC_gammaBGPower       = runOptions->getValueOrDef<double>(-2.5, "cMC_gammaBGPower");
+                cMC_gammaRelError      = runOptions->getValueOrDef<double>(0.01, "cMC_gammaRelError");     
                 histList.clear();
                 return;
             case MC_NEXT_STATE:
                 // Initialize histograms
                 for(std::vector<std::string>::const_iterator it = Dep::cascadeMC_FinalStates->begin(); it!=Dep::cascadeMC_FinalStates->end(); ++it)
                 {
-                    histList[*Dep::cascadeMC_InitialState][*it]=SimpleHist(10,0.001,10.0,true);
+                    if(false)
+                    {
+                        std::cout << "Defining new histList entry!!!" << std::endl;
+                        std::cout << "for: " << *Dep::cascadeMC_InitialState << " " << *it << std::endl;
+                    }
+                    // FIXME: This defines 50 bins from 1e-3 to 1e3 GeV.
+                    // Should not be hardcoded.
+                    histList[*Dep::cascadeMC_InitialState][*it]=SimpleHist(100,0.001,1000.0,true);
                 }
                 return;
             case MC_FINALIZE:
@@ -831,10 +938,14 @@ namespace Gambit {
         // Iterate over final states of interest
         for(std::vector<std::string>::const_iterator pit = Dep::cascadeMC_FinalStates->begin(); pit!=Dep::cascadeMC_FinalStates->end(); ++pit)
         {
+            // std::cout << "Deriving histograms for final state " << *pit << std::endl;
             // Iterate over all endpoint states of the decay chain. These can either be final state particles themselves or parents of final state particles.
             // The reason for not using only final state particles is that certain endpoints (e.g. quark-antiquark pairs) cannot be handled as separate particles.
             for(vector<const ChainParticle*>::const_iterator it =endpoints.begin(); it != endpoints.end(); it++)
             {
+                // std::cout << "  working on endpoint (only first particle shown) " << (*it)[0].getpID() << std::endl;
+                // Get weighting factor (correction for mismatch between decay width of available decay channels and total decay width)
+                double weight = (*it)->getWeight();                
                 // Analyze single particle endpoints            
                 if((*it)->getnChildren() ==0)
                 {
@@ -842,16 +953,14 @@ namespace Gambit {
                     if((*it)->getpID()==*pit)
                     {
                         double E = (*it)->E_Lab();
-                        // Get weighting factor (correction for mismatch between decay width of available decay channels and total decay width)
-                        double weight = (*it)->getWeight();
                         #pragma omp critical (cascadeMC_histList)
                             histList[*Dep::cascadeMC_InitialState][*pit].addEvent(E,weight);
                     }
                     // Check if tabulated spectra exist for this final state
                     else if((*Dep::SimYieldTable).hasChannel( (*it)->getpID(), *pit ))
                     {
-                        cascadeMC_sampleSimYield(*Dep::SimYieldTable, *it, *pit, *Dep::TH_ProcessCatalog, cMC_minSpecSamples, 
-                                                  cMC_maxSpecSamples, cMC_Emin, histList, *Dep::cascadeMC_InitialState);
+                        cascadeMC_sampleSimYield(*Dep::SimYieldTable, *it, *pit, *Dep::TH_ProcessCatalog, histList, *Dep::cascadeMC_InitialState, weight, dshayield,
+                                                 cMC_minSpecSamples, cMC_maxSpecSamples, cMC_specValidThreshold);
                     }
                 }
                 // Analyze multiparticle endpoints (the endpoint particle is here the parent of final state particles)  
@@ -860,27 +969,33 @@ namespace Gambit {
                     bool hasTabulated = false;
                     if((*it)->getnChildren() == 2)
                     {
+                        // std::cout << "  check whether two-body final state is tabulated: " << (*(*it))[0]->getpID() << " " << (*(*it))[1]->getpID() << std::endl;
                         // Check if tabulated spectra exist for this final state
                         if((*Dep::SimYieldTable).hasChannel( (*(*it))[0]->getpID() , (*(*it))[1]->getpID(), *pit ))
                         {
+                            // std::cout << "  ...it actually is!" << std::endl;
                             hasTabulated = true;                          
-                            cascadeMC_sampleSimYield(*Dep::SimYieldTable, *it, *pit, *Dep::TH_ProcessCatalog, cMC_minSpecSamples,
-                                                      cMC_maxSpecSamples, cMC_Emin, histList, *Dep::cascadeMC_InitialState);
+                            cascadeMC_sampleSimYield(*Dep::SimYieldTable, *it, *pit, *Dep::TH_ProcessCatalog, histList, *Dep::cascadeMC_InitialState, weight, dshayield,
+                                                     cMC_minSpecSamples, cMC_maxSpecSamples, cMC_specValidThreshold);
                         }
                     }
                     if(!hasTabulated)
                     {
-                        // Search for *pit type particles among the final states
                         for(int i=0; i<((*it)->getnChildren()); i++)
                         {
                             const ChainParticle* child = (*(*it))[i];
+                            // Check if the child particle is the particle we are looking for
                             if(child->getpID()==*pit)
                             {
                                 double E = child->E_Lab();
-                                // Get weighting factor (correction for mismatch between decay width of available decay channels and total decay width)
-                                double weight = (*it)->getWeight();
                                 #pragma omp critical (cascadeMC_histList)
                                     histList[*Dep::cascadeMC_InitialState][*pit].addEvent(E,weight);
+                            }
+                            // Check if tabulated spectra exist for this final state
+                            else if((*Dep::SimYieldTable).hasChannel( child->getpID(), *pit ))
+                            {
+                                cascadeMC_sampleSimYield(*Dep::SimYieldTable, child, *pit, *Dep::TH_ProcessCatalog, histList, *Dep::cascadeMC_InitialState, weight, dshayield,
+                                                         cMC_minSpecSamples, cMC_maxSpecSamples, cMC_specValidThreshold);
                             }
                         }
                     }
@@ -937,22 +1052,32 @@ namespace Gambit {
     {
         spectra.clear();
         // Check if final state has been calculated
-        bool calculated = (std::find(fin.begin(), fin.end(), finalState) == fin.end());
+        bool calculated = (std::find(fin.begin(), fin.end(), finalState) != fin.end());
         for(std::vector<std::string>::const_iterator it = ini.begin(); it != ini.end(); ++it )
         {
+            // std::cout << "Trying to get cascade spectra for initial state: " << *it << std::endl;
             if(calculated)
             {
-                std::vector<double> E = h.at(*it).at(finalState).getBinCenters();
-                std::vector<double> dN_dE = h.at(*it).at(finalState).getBinValues();
+                // std::cout << finalState << "...was calculated!" << std::endl;
+                SimpleHist hist = h.at(*it).at(finalState);
+                hist.divideByBinSize();
+                std::vector<double> E = hist.getBinCenters();
+                std::vector<double> dN_dE = hist.getBinValues();
                 // Normalize to per-event spectrum
+                int i = 0;
                 for (std::vector<double>::iterator it2=dN_dE.begin();it2!=dN_dE.end();++it2)
                 {
                     *it2 /= eventCounts.at(*it);
+                    *it2 += 1e-30;  // Quasi zero
+                    // FIXME: Show spectrum only for debug purposes                 
+                    std::cout << E[i] << " " << *it2 << std::endl;    
+                    i++;                                       
                 }
                 spectra[*it] = Funk::Funk(new Funk::FunkInterp("E", E, dN_dE, "log"));
             }
             else
             {
+                // std::cout << finalState << "...was not calculated!" << std::endl;
                 spectra[*it] = Funk::zero("E");
             }
         }
@@ -961,8 +1086,9 @@ namespace Gambit {
     // Function requesting and returning gamma ray spectra from cascade decays        
     void cascadeMC_gammaSpectra(std::map<std::string, Funk::Funk> &spectra)
     {
+        // std::cout << "cascadeMC_gammaSpectra" << std::endl;        
         using namespace Pipes::cascadeMC_gammaSpectra;
-        cascadeMC_fetchSpectra(spectra, "gamma", *Dep::cascadeMC_ChainList, *Dep::cascadeMC_FinalStates, *Dep::cascadeMC_Histograms, *Dep::cascadeMC_EventCount);
+        cascadeMC_fetchSpectra(spectra, "gamma", *Dep::GA_missingFinalStates, *Dep::cascadeMC_FinalStates, *Dep::cascadeMC_Histograms, *Dep::cascadeMC_EventCount);
     }    
         
         
@@ -970,52 +1096,30 @@ namespace Gambit {
     {
         dummy=true;
         using namespace Pipes::cascadeMC_PrintResult; 
-        std::cout << "************************" << std::endl;     
-        std::cout << "Cascade decay results:" << std::endl;  
-        std::cout << "------------------------" << std::endl;     
+        logger() << "************************" << std::endl;     
+        logger() << "Cascade decay results:" << std::endl;  
+        logger() << "------------------------" << std::endl;     
         std::map<std::string, std::map<std::string,SimpleHist> > cascadeMC_HistList = *Dep::cascadeMC_Histograms;
                     
         for(std::map<std::string, std::map<std::string,SimpleHist> >::iterator it = cascadeMC_HistList.begin(); it != cascadeMC_HistList.end(); ++it )
         {
-            std::cout << "Initial state: " << (it->first) << ":" << std::endl;
+            logger() << "Initial state: " << (it->first) << ":" << std::endl;
             int nEvents = (*Dep::cascadeMC_EventCount).at(it->first);
-            std::cout << "Number of events: " << nEvents << std::endl;
+            logger() << "Number of events: " << nEvents << std::endl;
             for(std::map<std::string,SimpleHist>::iterator it2 = (it->second).begin(); it2 != (it->second).end(); ++it2 )
             {
-                std::cout << (it2->first) << ": ";
+                logger() << (it2->first) << ": ";
                 //(it2->second).divideByBinSize();
                 (it2->second).multiply(1.0/nEvents);
-                for(int i=0;i<10;i++)
+                for(int i=0;i<50;i++)
                 {
-                    std:: cout << (it2->second).binVals[i] << "  ";
+                    logger() << (it2->second).binVals[i] << "  ";
                 }
-                std::cout << std::endl;
+                logger() << std::endl;
             }
-            std::cout << "------------------------" << std::endl;    
+            logger() << "------------------------" << std::endl;    
         }
-        std::cout << "************************" << std::endl;
-    }
-    
-    // Very simple routine for testing decay chain code
-    void chain_test(double &result)
-    {
-        using namespace DecayChain;
-        using namespace Pipes::chain_test;        
-        std::cout << std::endl << "Running decay chain test!" << std::endl << std::endl;
-        DecayTable dt(*Dep::TH_ProcessCatalog, *Dep::SimYieldTable);
-        dt.printTable();
-        ChainParticle testChain(vec3(0), &dt, "test1");
-        testChain.generateDecayChainMC(-1,-1);
-        testChain.printChain();
-        testChain.generateDecayChainMC(-1,-1);
-        testChain.printChain();
-        testChain.generateDecayChainMC(-1,-1);
-        testChain.printChain();
-        testChain.generateDecayChainMC(-1,-1);
-        testChain.printChain();
-        testChain.generateDecayChainMC(-1,-1);
-        testChain.printChain();
-        result = 0;
+        logger() << "************************" << std::endl;
     }
 
     // Unit test for decay chains
@@ -1024,7 +1128,8 @@ namespace Gambit {
         dummy=true;
         using namespace Pipes::cascadeMC_UnitTest;            
         using namespace DecayChain;    
-        std::cout << std::endl << "Running cascadeMC_UnitTest" << std::endl << std::endl;
+        using std::ios;
+        logger() << std::endl << "Running cascadeMC_UnitTest" << std::endl << std::endl;
         DecayTable dt(*Dep::cascadeMC_test_TH_ProcessCatalog, *Dep::SimYieldTable);
         dt.printTable();
         ChainParticle testChain(vec3(0), &dt, "test8");
@@ -1039,7 +1144,7 @@ namespace Gambit {
             out << m0_11 << "   " << m00_110 << std::endl;
             testChain.reDrawAngles();
         }
-        std::cout << std::endl << "Output data written to ./cascadMC_testOutput.dat" << std::endl << std::endl;
+        logger() << std::endl << "Output data written to ./cascadMC_testOutput.dat" << std::endl << std::endl;
         out.close();
     }
 
@@ -1180,6 +1285,263 @@ namespace Gambit {
         else return x1;
     }
 
+    /* Structure
+     * ---------
+     *
+     * 1) Go through process catalogue and find all final states that require
+     * to be calculated in the cascade code.  To this end, check whether
+     * two-body channels are tabulated for two-body final states, and whether
+     * one-particle spectra exist for one-particle final states.
+     *
+     * 2) Calculate via the cascade code the missing energy spectra.
+     *
+     * 3) Put together the full spectrum.
+     *
+     */
+
+    void GA_missingFinalStates(std::vector<std::string> &result)
+    {
+        using namespace Pipes::GA_missingFinalStates;
+        std::set<std::string> missingFinalStates;
+
+        if ( runOptions->getValueOrDef(false, "ignore_all") ) return;
+
+        TH_Process process = (*Dep::TH_ProcessCatalog).getProcess((std::string)"chi_10", (std::string)"chi_10");
+
+        // Add only gamma-ray spectra for two and three body final states
+        for (std::vector<TH_Channel>::iterator it = process.channelList.begin(); it != process.channelList.end(); ++it)
+        {
+            if ( it->nFinalStates == 2 )
+            {
+                if ( not runOptions->getValueOrDef(false, "ignore_two_body") )
+                {
+                    if ( not Dep::SimYieldTable->hasChannel(it->finalStateIDs[0], it->finalStateIDs[1], "gamma") )
+                    {
+                        missingFinalStates.insert(it->finalStateIDs[0]);
+                        missingFinalStates.insert(it->finalStateIDs[1]);
+                    }
+                }
+            }
+            else if ( it->nFinalStates == 3 )
+            {
+                if ( not runOptions->getValueOrDef(false, "ignore_three_body") )
+                {
+                    if ( not Dep::SimYieldTable->hasChannel(it->finalStateIDs[0], "gamma") )
+                        missingFinalStates.insert(it->finalStateIDs[0]);
+                    if ( not Dep::SimYieldTable->hasChannel(it->finalStateIDs[1], "gamma") )
+                        missingFinalStates.insert(it->finalStateIDs[1]);
+                    if ( not Dep::SimYieldTable->hasChannel(it->finalStateIDs[2], "gamma") )
+                        missingFinalStates.insert(it->finalStateIDs[2]);
+                }
+            }
+        }
+        
+        // FIXME: For testing, add phip as missing final state
+        missingFinalStates.insert("phip");
+        
+        std::cout << "Number of missing final states: " << missingFinalStates.size() << std::endl;
+        for (auto it = missingFinalStates.begin(); it != missingFinalStates.end(); it++)
+        {
+            std::cout << *it << std::endl;
+        }
+
+        missingFinalStates.erase("gamma");  // gamma final states do not need simulation
+        result.assign(missingFinalStates.begin(), missingFinalStates.end());
+    }
+
+    /*
+    // This function will finally return spectra convolved with the three-body
+    // decay kinematics.
+    Funk::Funk convspec(Funk::Funk s0, Funk::Funk s1, Funk::Funk s2, Funk::Funk dNdE1dE2)
+    {
+        Funk::Funk spec = Funk::zero("E", "v");
+        return spec;
+    }
+    */
+
+    // This function boosts an energy spectrum of isotropic
+    // particles into another frame (and isotropizes again).
+    //   gamma: Lorentz boost factor
+    //   dNdE: Spectrum
+    //   mass: mass of particle
+    Funk::Funk boost_dNdE(Funk::Funk dNdE, double gamma, double mass)
+    {
+        if ( gamma < 1 ) 
+        {
+            DarkBit_error().raise(LOCAL_INFO, "boost_dNdE: Requested Lorentz boost with gamma < 1");
+        }
+        double betaGamma = sqrt(gamma*gamma-1);
+        Funk::Funk Ep = Funk::var("Ep");
+        Funk::Funk E = Funk::var("E");
+        // TODO: Correct now?
+        Funk::Funk halfBox = betaGamma*sqrt(E*E-mass*mass);
+        Funk::Funk integrand = (dNdE/(2*halfBox))->set("E", Ep);
+        return integrand->gsl_integration("Ep", E*gamma-halfBox, E*gamma+halfBox);
+    }
+
+    void GA_AnnYield_General(Funk::Funk &result)
+    {
+        using namespace Pipes::GA_AnnYield_General;
+
+        // Grid and energy range used in interpolating functions.
+        double Emin, Emax, line_width;
+        Emin = runOptions->getValueOrDef<double>(1e-1, "Emin");
+        Emax = runOptions->getValueOrDef<double>(1e4,  "Emax");
+        line_width = runOptions->getValueOrDef<double>(0.03,  "line_width");
+
+        // Get annihilation process from process catalog
+        TH_Process annProc = (*Dep::TH_ProcessCatalog).getProcess((std::string)"chi_10", (std::string)"chi_10");
+
+        // Get particle mass from process catalog
+        double mass = (*Dep::TH_ProcessCatalog).getParticleProperty("chi_10").mass;
+        double Ecm = 2*mass;
+
+        // Loop over all channels for that process
+        Funk::Funk Yield = Funk::zero("v", "E");
+
+        // Adding known two-body channels
+        for (std::vector<TH_Channel>::iterator it = annProc.channelList.begin();
+              it != annProc.channelList.end(); ++it)
+        {
+            if ( it->nFinalStates == 2 and Dep::SimYieldTable->hasChannel(it->finalStateIDs[0], it->finalStateIDs[1], "gamma") )
+            {
+                Yield = Yield +
+                    it->genRate*(*Dep::SimYieldTable)(it->finalStateIDs[0], it->finalStateIDs[1], "gamma", mass*2);
+            }
+            // FIXME: Implement missing Z gamma final state
+            else if ( it->nFinalStates == 2 and it->finalStateIDs[0] == "gamma" and it->finalStateIDs[1] == "gamma" )
+            {
+                Funk::Funk E = Funk::var("E");
+                Yield = Yield + 2*it->genRate*exp(-pow((E-mass)/line_width/E,2)/2)/E/sqrt(2*M_PI)/line_width/E;
+            }
+            else if ( it->nFinalStates == 2 )
+            {
+                Funk::Funk spec0 = Funk::zero("E");
+                Funk::Funk spec1 = Funk::zero("E");
+                // FIXME: Check default behaviour of adding one-particle final
+                // states.
+                if ( Dep::SimYieldTable->hasChannel(it->finalStateIDs[0], "gamma") )
+                {
+                    spec0 = (*Dep::SimYieldTable)(it->finalStateIDs[0], "gamma");
+                }
+                else if ( Dep::cascadeMC_gammaSpectra->count(it->finalStateIDs[0]) )
+                {
+                    spec0 = Dep::cascadeMC_gammaSpectra->at(it->finalStateIDs[0]);
+                }
+                if ( Dep::SimYieldTable->hasChannel(it->finalStateIDs[1], "gamma") )
+                {
+                    spec1 = (*Dep::SimYieldTable)(it->finalStateIDs[1], "gamma");
+                }
+                else if ( Dep::cascadeMC_gammaSpectra->count(it->finalStateIDs[1]) )
+                {
+                    spec1 = Dep::cascadeMC_gammaSpectra->at(it->finalStateIDs[1]);
+                }
+                double m0 = (*Dep::TH_ProcessCatalog).getParticleProperty(it->finalStateIDs[0]).mass;
+                double m1 = (*Dep::TH_ProcessCatalog).getParticleProperty(it->finalStateIDs[1]).mass;
+                double gamma0 = (Ecm*Ecm+m0*m0-m1*m1)/(2*Ecm*m0);
+                double gamma1 = (Ecm*Ecm-m0*m0+m1*m1)/(2*Ecm*m1);
+                std::cout << Ecm << " " << m0 << " " << m1 << std::endl;
+                std::cout << "gammas: " << gamma0 << ", " << gamma1 << std::endl;                
+                // TODO: Correct?
+                Yield = Yield + (boost_dNdE(spec0, gamma0, 0.0) + boost_dNdE(spec1, gamma1, 0.0)) * it->genRate;
+
+                // FIXME: This is debug information. Remove it when no longer necessary.
+                std::cout << "Spectrum debug info:" << std:: endl;
+                double E=5.0;
+                double factor=1.125;
+                std::vector<double> Evals;
+                std::cout.precision(5);
+                std::cout.setf( std::ios::fixed, std:: ios::floatfield );
+                int Nen = 20;
+                std::cout << "Energies:" << std:: endl;
+                for(int i=0; i<Nen;i++)
+                {
+                    E*=factor;
+                    Evals.push_back(E);
+                    std::cout << E << "  ";
+                }
+                std::cout << std::endl; 
+                std::cout << it->finalStateIDs[0] << "-spectrum:" << std:: endl;
+                for(int i=0; i<Nen;i++)
+                {
+                    std::cout << spec0->eval("E", Evals[i]) << "  ";
+                }
+                std::cout << std::endl; 
+                std::cout << it->finalStateIDs[1] << "-spectrum:" << std:: endl;
+                for(int i=0; i<Nen;i++)
+                {
+                    std::cout << spec1->eval("E", Evals[i])<< "  ";
+                }
+                std::cout << std::endl;
+                std::cout << "gamma result:" << std:: endl;
+                for(int i=0; i<Nen;i++)
+                {
+                    std::cout << Yield->eval("v", 0, "E", Evals[i])<< "  ";
+                }
+                std::cout << std::endl;  
+                
+                if(runOptions->getValueOrDef<bool> (false,"test_printMore"))
+                {
+                    Funk::Funk phipSpec  = Dep::cascadeMC_gammaSpectra->at("phip");                
+                    std::cout << "phip-spectrum:" << std:: endl;
+                    for(int i=0; i<Nen;i++)
+                    {
+                        std::cout << phipSpec->eval("E", Evals[i])<< "  ";
+                    }
+                    std::cout << std::endl;
+                    Funk::Funk specDirect = (*Dep::SimYieldTable)("b", "bbar", "gamma", (*Dep::TH_ProcessCatalog).getParticleProperty("phi").mass);
+                    std::cout << "phi-spectrum (b bbar) direct:" << std:: endl;
+                    for(int i=0; i<Nen;i++)
+                    {
+                        std::cout << specDirect->eval("E", Evals[i])<< "  ";
+                    }
+                    std::cout << std::endl;
+                    
+                    Funk::Funk specDirectB = 2.0*boost_dNdE(specDirect,gamma1,0.0);
+                    std::cout << "2 * phi-spectrum (b bbar) direct, boosted:" << std:: endl;
+                    for(int i=0; i<Nen;i++)
+                    {
+                        std::cout << specDirectB->eval("E", Evals[i])<< "  ";
+                    }
+                    std::cout << std::endl;
+                }
+                
+                // Debug information ends here
+            }
+        }
+
+        // Adding three-body final states
+        for (std::vector<TH_Channel>::iterator it = annProc.channelList.begin();
+              it != annProc.channelList.end(); ++it)
+        {
+            /*
+            if ( it->nFinalStates == 3
+                    and Dep::SimYieldTable->hasChannel(it->finalStateIDs[0], "gamma")
+                    and Dep::SimYieldTable->hasChannel(it->finalStateIDs[1], "gamma")
+                    and Dep::SimYieldTable->hasChannel(it->finalStateIDs[2], "gamma")
+                    )
+            {
+                Funk::Funk dNdE1dE2 = it->genRate->set("v",0.);
+                Funk::Funk spec0 = (*Dep::SimYieldTable)(it->finalStateIDs[0], "gamma");
+                Funk::Funk spec1 = (*Dep::SimYieldTable)(it->finalStateIDs[1], "gamma");
+                Funk::Funk spec2 = (*Dep::SimYieldTable)(it->finalStateIDs[2], "gamma");
+                Yield = Yield + convspec(spec0, spec1, spec2, dNdE1dE2);
+            }
+            */
+            if ( it->nFinalStates == 3 and it->finalStateIDs[0] == "gamma" )
+            {
+                double m1 = (*Dep::TH_ProcessCatalog).getParticleProperty(it->finalStateIDs[1]).mass;
+                double m2 = (*Dep::TH_ProcessCatalog).getParticleProperty(it->finalStateIDs[2]).mass;
+                Funk::Funk E1_low =  Funk::func(gamma3bdy_limits<0>, Funk::var("E"), mass, m1, m2);
+                Funk::Funk E1_high =  Funk::func(gamma3bdy_limits<1>, Funk::var("E"), mass, m1, m2);
+                Funk::Funk dsigmavde = it->genRate->gsl_integration("E1", E1_low, E1_high);
+                Yield = Yield + dsigmavde;
+            }
+        }
+
+        result = Yield/(mass*mass);
+        
+    }
 
     void GA_AnnYield_DarkSUSY(Funk::Funk &result)
     {
@@ -1261,7 +1623,7 @@ namespace Gambit {
                 else if ( it->isChannel("g"     , "g"      )) ch = 26;
                 else
                 {
-                    std::cout << "ERROR: Unsupported two-body final state." << std::endl;
+                    logger() << "ERROR: Unsupported two-body final state." << std::endl;
                     exit(1);
                 }
 
@@ -1310,7 +1672,7 @@ namespace Gambit {
                 else if ( it->isChannel("gamma", "b"     , "bbar"   )){m1 = (*Dep::TH_ProcessCatalog).getParticleProperty("b"   ).mass; m2 = (*Dep::TH_ProcessCatalog).getParticleProperty("bbar").mass;  }   
                 else
                 {
-                    std::cout << "ERROR: Unsupported three-body final state." << std::endl;
+                    logger() << "ERROR: Unsupported three-body final state." << std::endl;
                     exit(1);
                 }
                 // Generate photon spectrum in v=0 limit from primary photon.
@@ -1323,22 +1685,22 @@ namespace Gambit {
                 DiffYield3Body = DiffYield3Body + dsigmavde;
 
                 /*
-                std::cout << "Test output three-body annihilation:" << std::endl;
+                logger() << "Test output three-body annihilation:" << std::endl;
                 it->printChannel();
-                std::cout << "  m1  = " << m1 << std::endl;
-                std::cout << "  m2  = " << m2 << std::endl;
-                std::cout << "  mDM = " << mass << std::endl;
-                std::cout << "Boundaries (E=10 GeV):" << std::endl;
-                std::cout << "  E1 = " << E1_low->eval("E", 10) << std::endl;
-                std::cout << "  E2 = " << E1_high->eval("E", 10) << std::endl;
-                std::cout << "dsigmavde (E=10 GeV) = " << it->genRate->set("E1", E1_low*1.02)->eval("E", 10) << std::endl;
-                std::cout << "dsigmavde (E=10 GeV) = " << it->genRate->set("E1", E1_high/1.02)->eval("E", 10) << std::endl;
-                std::cout << "dsigmavde (E=10 GeV) = " << it->genRate->set("E1", sqrt(E1_low*E1_high))->eval("E", 10) << std::endl;
-                std::cout << "dsigmavde (E=10 GeV) = " << it->genRate->gsl_integration("E1", E1_low, E1_high)->eval("E", 10) << std::endl;
+                logger() << "  m1  = " << m1 << std::endl;
+                logger() << "  m2  = " << m2 << std::endl;
+                logger() << "  mDM = " << mass << std::endl;
+                logger() << "Boundaries (E=10 GeV):" << std::endl;
+                logger() << "  E1 = " << E1_low->eval("E", 10) << std::endl;
+                logger() << "  E2 = " << E1_high->eval("E", 10) << std::endl;
+                logger() << "dsigmavde (E=10 GeV) = " << it->genRate->set("E1", E1_low*1.02)->eval("E", 10) << std::endl;
+                logger() << "dsigmavde (E=10 GeV) = " << it->genRate->set("E1", E1_high/1.02)->eval("E", 10) << std::endl;
+                logger() << "dsigmavde (E=10 GeV) = " << it->genRate->set("E1", sqrt(E1_low*E1_high))->eval("E", 10) << std::endl;
+                logger() << "dsigmavde (E=10 GeV) = " << it->genRate->gsl_integration("E1", E1_low, E1_high)->eval("E", 10) << std::endl;
                 */
             }
         }
-        cout << "Yield calculated!" << endl;
+        logger() << "Yield calculated!" << endl;
         // Resample function
         //DiffYield3Body = DiffYield3Body->tabulate(xgrid);
 
@@ -1374,10 +1736,10 @@ namespace Gambit {
             // (note that the expressions above and below only apply to the v->0 limit)
         double result = IBfunc(IBch,x,y);          
         /*
-        std::cout << "  x, y = " << x << ", " << y << std::endl;
-        std::cout << "  E, E1, E2 = " << Eg << ", " << E1 << ", " << E2 << std::endl;
-        std::cout << "  mDM, m1, m2 = " << M_DM << ", " << m_1 << ", " << m_2 << std::endl;
-        std::cout << "  IBfunc = " << result << std::endl;
+        logger() << "  x, y = " << x << ", " << y << std::endl;
+        logger() << "  E, E1, E2 = " << Eg << ", " << E1 << ", " << E2 << std::endl;
+        logger() << "  mDM, m1, m2 = " << M_DM << ", " << m_1 << ", " << m_2 << std::endl;
+        logger() << "  IBfunc = " << result << std::endl;
         */
         return std::max(0., result) / (M_DM*M_DM); // M_DM^-2 is from the Jacobi determinant
     }
@@ -1453,7 +1815,7 @@ namespace Gambit {
                 double CAT(sigma_,NAME) = BEreq::dssigmav(index);                                   \
                 /* Create associated kinematical functions (just dependent on vrel)                 \
                 *  here: s-wave, vrel independent 1-dim constant function */                        \
-                Funk::Funk CAT(kinematicFunction_,NAME) = Funk::cnst(CAT(sigma_,NAME)*PREFACTOR);   \
+                Funk::Funk CAT(kinematicFunction_,NAME) = Funk::cnst(CAT(sigma_,NAME)*PREFACTOR, "v");\
                 /* Create channel identifier string */                                              \
                 std::vector<std::string> CAT(finalStates_,NAME);                                    \
                 CAT(finalStates_,NAME).push_back(STRINGIFY(P1));                                    \
@@ -1463,18 +1825,18 @@ namespace Gambit {
                 process.channelList.push_back(CAT(channel_,NAME));                                  \
             }
              
-//        SETUP_DS_PROCESS(H1H1,      1 , H1,     H1,     1   )
-//        SETUP_DS_PROCESS(H1H2,      2 , H1,     H2,     1   )
-//        SETUP_DS_PROCESS(H2H2,      3 , H2,     H2,     1   )
-//        SETUP_DS_PROCESS(H3H3,      4 , H3,     H3,     1   )
-//        SETUP_DS_PROCESS(H1H3,      5 , H1,     H3,     1   )
-//        SETUP_DS_PROCESS(H2H3,      6 , H2,     H3,     1   )
-//        SETUP_DS_PROCESS(HpHm,      7 , H+,     H-,     1   )
-//        SETUP_DS_PROCESS(H1Z0,      8 , H1,     Z0,     1   )
-//        SETUP_DS_PROCESS(H2Z0,      9 , H2,     Z0,     1   )
-//        SETUP_DS_PROCESS(H3Z0,      10, H3,     Z0,     1   )
-//        SETUP_DS_PROCESS(WpHm,      11, W+,     H-,     0.5 )  // Prefactor 0.5 since W+H- and W-H+ are summed in DS
-//        SETUP_DS_PROCESS(WmHp,      11, W-,     H+,     0.5 )  // Prefactor 0.5 since W+H- and W-H+ are summed in DS
+        SETUP_DS_PROCESS(H1H1,      1 , H1,     H1,     1   )
+        SETUP_DS_PROCESS(H1H2,      2 , H1,     H2,     1   )
+        SETUP_DS_PROCESS(H2H2,      3 , H2,     H2,     1   )
+        SETUP_DS_PROCESS(H3H3,      4 , H3,     H3,     1   )
+        SETUP_DS_PROCESS(H1H3,      5 , H1,     H3,     1   )
+        SETUP_DS_PROCESS(H2H3,      6 , H2,     H3,     1   )
+        SETUP_DS_PROCESS(HpHm,      7 , H+,     H-,     1   )
+        SETUP_DS_PROCESS(H1Z0,      8 , H1,     Z0,     1   )
+        SETUP_DS_PROCESS(H2Z0,      9 , H2,     Z0,     1   )
+        SETUP_DS_PROCESS(H3Z0,      10, H3,     Z0,     1   )
+        SETUP_DS_PROCESS(WpHm,      11, W+,     H-,     0.5 )  // Prefactor 0.5 since W+H- and W-H+ are summed in DS
+        SETUP_DS_PROCESS(WmHp,      11, W-,     H+,     0.5 )  // Prefactor 0.5 since W+H- and W-H+ are summed in DS
         SETUP_DS_PROCESS(Z0Z0,      12, Z0,     Z0,     1   )
         SETUP_DS_PROCESS(WW,        13, W+,     W-,     1   )
         SETUP_DS_PROCESS(nuenue,    14, nu_e,   ~nu_e,  1   )
@@ -1490,7 +1852,7 @@ namespace Gambit {
         SETUP_DS_PROCESS(ttbar,     24, t,      tbar,   1   )
         SETUP_DS_PROCESS(bbbar,     25, b,      bbar,   1   )
         SETUP_DS_PROCESS(gluglu,    26, g,      g,      1   )
-//        SETUP_DS_PROCESS(gammagamma,28, gamma,  gamma,  1   )
+        SETUP_DS_PROCESS(gammagamma,28, gamma,  gamma,  1   )
 //        SETUP_DS_PROCESS(Z0gamma,   29, Z0,     gamma,  1   )
         // Undef the macro so it doesn't propagate through GAMBIT
         #undef SETUP_DS_PROCESS
@@ -1517,113 +1879,27 @@ namespace Gambit {
                 process.channelList.push_back(CAT(channel_,NAME));                                                          \
             }                                        
         
-        SETUP_DS_PROCESS_GAMMA3BODY(gammaWW,        1, W+,      W-,     (BEreq::dsIBwwdxdy.pointer()),  13, 1   )     
-        SETUP_DS_PROCESS_GAMMA3BODY(gammaWpHm,      2, W+,      H-,     (BEreq::dsIBwhdxdy.pointer()),  11, 0.5 )   // Prefactor 0.5 since W+H- and W-H+ are summed in DS        
-        SETUP_DS_PROCESS_GAMMA3BODY(gammaWmHp,      2, W-,      H+,     (BEreq::dsIBwhdxdy.pointer()),  11, 0.5 )   // Prefactor 0.5 since W+H- and W-H+ are summed in DS
-        SETUP_DS_PROCESS_GAMMA3BODY(gammaHpHm,      3, H+,      H-,     (BEreq::dsIBhhdxdy.pointer()),  0,  1   )                    
-        SETUP_DS_PROCESS_GAMMA3BODY(gammaee,        4, e+,      e-,     (BEreq::dsIBffdxdy.pointer()) , 15, 1   )
-        SETUP_DS_PROCESS_GAMMA3BODY(gammamumu,      5, mu+,     mu-,    (BEreq::dsIBffdxdy.pointer()) , 17, 1   )
-        SETUP_DS_PROCESS_GAMMA3BODY(gammatautau,    6, tau+,    tau-,   (BEreq::dsIBffdxdy.pointer()) , 19, 1   )
-        SETUP_DS_PROCESS_GAMMA3BODY(gammauubar,     7, u,       ubar,   (BEreq::dsIBffdxdy.pointer()) , 20, 1   )
-        SETUP_DS_PROCESS_GAMMA3BODY(gammaddbar,     8, d,       dbar,   (BEreq::dsIBffdxdy.pointer()) , 21, 1   )            
-        SETUP_DS_PROCESS_GAMMA3BODY(gammaccbar,     9, c,       cbar,   (BEreq::dsIBffdxdy.pointer()) , 22, 1   )
-        SETUP_DS_PROCESS_GAMMA3BODY(gammassbar,     10,s,       sbar,   (BEreq::dsIBffdxdy.pointer()) , 23, 1   )
-        SETUP_DS_PROCESS_GAMMA3BODY(gammattbar,     11,t,       tbar,   (BEreq::dsIBffdxdy.pointer()) , 24, 1   )
-        SETUP_DS_PROCESS_GAMMA3BODY(gammabbbar,     12,b,       bbar,   (BEreq::dsIBffdxdy.pointer()) , 25, 1   )
+        if ( not runOptions->getValueOrDef<bool>(false, "ignore_three_body") )
+        {
+            SETUP_DS_PROCESS_GAMMA3BODY(gammaWW,        1, W+,      W-,     (BEreq::dsIBwwdxdy.pointer()),  13, 1   )     
+            SETUP_DS_PROCESS_GAMMA3BODY(gammaWpHm,      2, W+,      H-,     (BEreq::dsIBwhdxdy.pointer()),  11, 0.5 )   // Prefactor 0.5 since W+H- and W-H+ are summed in DS        
+            SETUP_DS_PROCESS_GAMMA3BODY(gammaWmHp,      2, W-,      H+,     (BEreq::dsIBwhdxdy.pointer()),  11, 0.5 )   // Prefactor 0.5 since W+H- and W-H+ are summed in DS
+            SETUP_DS_PROCESS_GAMMA3BODY(gammaHpHm,      3, H+,      H-,     (BEreq::dsIBhhdxdy.pointer()),  0,  1   )                    
+            SETUP_DS_PROCESS_GAMMA3BODY(gammaee,        4, e+,      e-,     (BEreq::dsIBffdxdy.pointer()) , 15, 1   )
+            SETUP_DS_PROCESS_GAMMA3BODY(gammamumu,      5, mu+,     mu-,    (BEreq::dsIBffdxdy.pointer()) , 17, 1   )
+            SETUP_DS_PROCESS_GAMMA3BODY(gammatautau,    6, tau+,    tau-,   (BEreq::dsIBffdxdy.pointer()) , 19, 1   )
+            SETUP_DS_PROCESS_GAMMA3BODY(gammauubar,     7, u,       ubar,   (BEreq::dsIBffdxdy.pointer()) , 20, 1   )
+            SETUP_DS_PROCESS_GAMMA3BODY(gammaddbar,     8, d,       dbar,   (BEreq::dsIBffdxdy.pointer()) , 21, 1   )            
+            SETUP_DS_PROCESS_GAMMA3BODY(gammaccbar,     9, c,       cbar,   (BEreq::dsIBffdxdy.pointer()) , 22, 1   )
+            SETUP_DS_PROCESS_GAMMA3BODY(gammassbar,     10,s,       sbar,   (BEreq::dsIBffdxdy.pointer()) , 23, 1   )
+            SETUP_DS_PROCESS_GAMMA3BODY(gammattbar,     11,t,       tbar,   (BEreq::dsIBffdxdy.pointer()) , 24, 1   )
+            SETUP_DS_PROCESS_GAMMA3BODY(gammabbbar,     12,b,       bbar,   (BEreq::dsIBffdxdy.pointer()) , 25, 1   )
+        }
         // Undef the macro so it doesn't propagate through GAMBIT
         #undef SETUP_DS_PROCESS_GAMMA3BODY
         
         // Add process to provess list
         catalog.processList.push_back(process);                
-
-        // Temporary dummy particles for testing the decay chain code
-        TH_ParticleProperty test1Property(10, 0);
-        TH_ParticleProperty test2Property(5, 0);
-        TH_ParticleProperty test3Property(4, 0);
-        TH_ParticleProperty test4Property(1, 0);
-        TH_ParticleProperty test5Property(1, 0);
-        TH_ParticleProperty test6Property(0, 0);   
-        TH_ParticleProperty test7Property(1e-7, 0);           
-        TH_ParticleProperty test8Property(10, 0);                 
-        TH_ParticleProperty test9Property(7, 0);     
-             
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("test1", test1Property));
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("test2", test2Property));
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("test3", test3Property));
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("test4", test4Property));
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("test5", test5Property));
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("test6", test6Property)); 
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("test7", test7Property));         
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("test8", test8Property));    
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("test9", test9Property));              
-        
-        // test1 decays       
-        Funk::Funk test1_23width = Funk::one();
-        Funk::Funk test1_24width = 2*Funk::one();
-        Funk::Funk test1_456width = 3*Funk::one();
-        std::vector<std::string> finalStates_1_23;
-        std::vector<std::string> finalStates_1_24;
-        std::vector<std::string> finalStates_1_456;
-        TH_Process test1_decay("test1");             
-        finalStates_1_23.push_back("test2");              
-        finalStates_1_23.push_back("test3");             
-        test1_decay.genRateTotal = (test1_23width->eval() + test1_24width->eval() + test1_456width->eval())*2*Funk::one();
-        TH_Channel channel_1_23(finalStates_1_23, test1_23width);   
-        test1_decay.channelList.push_back(channel_1_23);
-        finalStates_1_24.push_back("test2");              
-        finalStates_1_24.push_back("test4");                                            
-        TH_Channel channel_1_24(finalStates_1_24, test1_24width);     
-        test1_decay.channelList.push_back(channel_1_24);
-        finalStates_1_456.push_back("test4");              
-        finalStates_1_456.push_back("test5");      
-        finalStates_1_456.push_back("test6");            
-        TH_Channel channel_1_456(finalStates_1_456, test1_456width); 
-        test1_decay.channelList.push_back(channel_1_456);
-        catalog.processList.push_back(test1_decay);
-
-        // test2 decays 
-        Funk::Funk test2_56width = 0.5*Funk::one();
-        std::vector<std::string> finalStates_2_56; 
-        TH_Process test2_decay("test2");     
-        finalStates_2_56.push_back("test5");              
-        finalStates_2_56.push_back("test6");                                                               
-        test2_decay.genRateTotal = test2_56width->eval()*Funk::one();
-        TH_Channel channel_2_56(finalStates_2_56, test2_56width);
-        test2_decay.channelList.push_back(channel_2_56);
-        catalog.processList.push_back(test2_decay);        
-        
-        // test7 decays 
-        Funk::Funk test7_66width = Funk::one();   
-        std::vector<std::string> finalStates_7_66;
-        TH_Process test7_decay("test7");     
-        finalStates_7_66.push_back("test6");              
-        finalStates_7_66.push_back("test6");                                                               
-        test7_decay.genRateTotal = test7_66width->eval()*Funk::one();
-        TH_Channel channel_7_66(finalStates_7_66, test7_66width);
-        test7_decay.channelList.push_back(channel_7_66);
-        catalog.processList.push_back(test7_decay);        
-        
-        // test8 decays 
-        Funk::Funk test8_79width = Funk::one();   
-        std::vector<std::string> finalStates_8_79;
-        TH_Process test8_decay("test8");     
-        finalStates_8_79.push_back("test7");              
-        finalStates_8_79.push_back("test9");                                                               
-        test8_decay.genRateTotal = test8_79width->eval()*Funk::one();
-        TH_Channel channel_8_79(finalStates_8_79, test8_79width);
-        test8_decay.channelList.push_back(channel_8_79);
-        catalog.processList.push_back(test8_decay);        
-        
-        // test9 decays      
-        Funk::Funk test9_47width = Funk::one();
-        std::vector<std::string> finalStates_9_47;           
-        TH_Process test9_decay("test9");     
-        finalStates_9_47.push_back("test4");              
-        finalStates_9_47.push_back("test7");                                                               
-        test9_decay.genRateTotal = test9_47width->eval()*Funk::one();
-        TH_Channel channel_9_47(finalStates_9_47, test9_47width);
-        test9_decay.channelList.push_back(channel_9_47);
-        catalog.processList.push_back(test2_decay);
    
         // Return the finished process catalog
         result = catalog;
@@ -1655,7 +1931,7 @@ namespace Gambit {
         int nfc;  // number of function calls to effective annihilation cross section
         double oh2 = BEreq::dsrdomega(omtype,fast,xf,ierr,iwar,nfc);
         result = oh2;
-        std::cout << "oh2 is " << oh2 << std::endl;
+        logger() << "oh2 is " << oh2 << std::endl;
     }
 
     void RD_oh2_micromegas(double &oh2)
@@ -1668,12 +1944,12 @@ namespace Gambit {
         // Set options via ini-file
         fast = runOptions->getValueOrDef<int>(0, "fast");
         Beps = runOptions->getValueOrDef<double>(1e-5, "Beps");
-        cout << "Using fast: " << fast << " and Beps: " << Beps << endl;
+        logger() << "Using fast: " << fast << " and Beps: " << Beps << endl;
 
         // Output
         double Xf;
         oh2 = BEreq::oh2(&Xf, byVal(fast), byVal(Beps));
-        cout << "X_f = " << Xf << " Omega h^2 = " << oh2 << endl;
+        logger() << "X_f = " << Xf << " Omega h^2 = " << oh2 << endl;
     }
 
 
@@ -1751,15 +2027,15 @@ namespace Gambit {
         //os.close();
         // TODO: Make this take ->set_epsrel(1e-3)
         double AnnYieldint = (*Dep::GA_AnnYield)->set("v", 0.)->gsl_integration("E", 1, 100)->eval();
-        std::cout << "AnnYieldInt (1-100 GeV): " << AnnYieldint << std::endl;
+        logger() << "AnnYieldInt (1-100 GeV): " << AnnYieldint << std::endl;
 
         // Calculate phi-value
         double phi = AnnYieldint / 8. / M_PI * 1e26;
 
         // And return final likelihood
         result = 0.5*dwarf_likelihood->eval("phi", phi);
-        std::cout << "dwarf_likelihood: " << result << std::endl;
-        std::cout << "phi: " << phi << std::endl;
+        logger() << "dwarf_likelihood: " << result << std::endl;
+        logger() << "phi: " << phi << std::endl;
     }
 
     void lnL_FermiLATdwarfs_gamLike(double &result)
@@ -1776,7 +2052,7 @@ namespace Gambit {
         if ( runOptions->getValueOrDef<bool>(false, "use_GC") )
           result += BEreq::lnL_GC(x, y);
 
-        std::cout << "GamLike likelihood is lnL = " << result << std::endl;
+        logger() << "GamLike likelihood is lnL = " << result << std::endl;
     }
 
     void lnL_FermiGC_gamLike(double &result)
@@ -1790,7 +2066,7 @@ namespace Gambit {
 
         result = BEreq::lnL_GC(x, y);
 
-        std::cout << "GamLike likelihood is lnL = " << result << std::endl;
+        logger() << "GamLike likelihood is lnL = " << result << std::endl;
     }
 
     void lnL_oh2_Simple(double &result)
@@ -1801,7 +2077,7 @@ namespace Gambit {
       oh2_mean = runOptions->getValueOrDef<double>(0.11, "oh2_mean");
       oh2_err  = runOptions->getValueOrDef<double>(0.01, "oh2_err");
       result = -0.5*pow(oh2 - oh2_mean, 2)/pow(oh2_err, 2);  // lnL = -0.5 * chisq
-      std::cout << "lnL_oh2_Simple yields " << result << std::endl;
+      logger() << "lnL_oh2_Simple yields " << result << std::endl;
     }
 
     void dump_GammaSpectrum(double &result)
@@ -1810,7 +2086,7 @@ namespace Gambit {
         // Construct interpolated function, using GAMBIT base functions.
         Funk::Funk spectrum = (*Dep::GA_AnnYield)->set("v", 0.);
         std::string filename = runOptions->getValueOrDef<std::string>("dNdE.dat", "filename");
-        std::cout << "FILENAME for gamma dump: " << filename << std::endl;
+        logger() << "FILENAME for gamma dump: " << filename << std::endl;
         std::ofstream myfile (filename);
         if (myfile.is_open())
         {
@@ -1835,21 +2111,32 @@ namespace Gambit {
     void DD_couplings_DarkSUSY(Gambit::DarkBit::DD_couplings &result)
     {
         using namespace Pipes::DD_couplings_DarkSUSY;
-        // Calling DarkSUSY subroutine dsddgpgn(gps,gns,gpa,gna)
-        // to set all four couplings.
-        BEreq::dsddgpgn(result.gps, result.gns, result.gpa, result.gna);
-        double factor = runOptions->getValueOrDef<double>(1., "rescale_couplings");
-        result.gps *= factor;
-        result.gns *= factor;
-        result.gpa *= factor;
-        result.gna *= factor;
-        result.M_DM = (*BEreq::mspctm).mass[42];        
-        std::cout << "dsddgpgn gives: \n";
-        std::cout << " gps: " << result.gps << "\n";
-        std::cout << " gns: " << result.gns << "\n";
-        std::cout << " gpa: " << result.gpa << "\n";
-        std::cout << " gna: " << result.gna << std::endl;
-        cout << " M_DM = " << result.M_DM << endl;
+        if (*Dep::DarkSUSY_PointInit) {
+          result.M_DM = (*BEreq::mspctm).mass[42];        
+          // Calling DarkSUSY subroutine dsddgpgn(gps,gns,gpa,gna)
+          // to set all four couplings.
+          BEreq::dsddgpgn(result.gps, result.gns, result.gpa, result.gna);
+          double factor = runOptions->getValueOrDef<double>(1., "rescale_couplings");
+          result.gps *= factor;
+          result.gns *= factor;
+          result.gpa *= factor;
+          result.gna *= factor;
+          logger() << "M_DM = " << result.M_DM << std::endl;
+          logger() << "DarkSUSY dsddgpgn gives:" << std::endl;
+          logger() << " gps = " << result.gps << std::endl;
+          logger() << " gns = " << result.gns << std::endl;
+          logger() << " gpa = " << result.gpa << std::endl;
+          logger() << " gna = " << result.gna << std::endl;
+        } else {
+          result.M_DM = (*BEreq::mspctm).mass[42];        
+          // Set couplings to zero if DarkSUSY point initialization
+          // was not successful
+          result.gps = 0.0; result.gns = 0.0;
+          result.gpa = 0.0; result.gna = 0.0;
+          logger() << "M_DM = " << result.M_DM << std::endl;
+          logger() << "DarkSUSY point initialization failed:" << std::endl;
+          logger() << " couplings set to zero." << std::endl;
+        }
     }
 
     void DD_couplings_micrOMEGAs(Gambit::DarkBit::DD_couplings &result)
@@ -1865,115 +2152,270 @@ namespace Gambit {
         result.gna = p4[0]*2;
         result.M_DM = (*BEreq::MOcommon).par[1];
         //TODO: Move the following to logging/printer system.
-        cout << "micrOMEGAs nucleonAmplitudes gives:" << endl;
-        cout << " gps: " << result.gps << endl;
-        cout << " gns: " << result.gns << endl;
-        cout << " gpa: " << result.gpa << endl;
-        cout << " gna: " << result.gna << endl;
-        cout << " M_DM = " << result.M_DM << endl;
+        logger() << "micrOMEGAs nucleonAmplitudes gives:" << endl;
+        logger() << " gps: " << result.gps << endl;
+        logger() << " gns: " << result.gns << endl;
+        logger() << " gpa: " << result.gpa << endl;
+        logger() << " gna: " << result.gna << endl;
+        logger() << " M_DM = " << result.M_DM << endl;
     }
 
 
 //////////////////////////////////////////////////////////////////////////
 //
-//                Direct detection likelihoods
+//            Direct detection DDCalc0 intermediate routines
 //
 //////////////////////////////////////////////////////////////////////////
 
-    // Uses XENON100 2012 result:
-    //   Aprile et al., PRL 109, 181301 (2013) [arxiv:1207.5988]
-    void lnL_XENON100_2012(double &result)
-    {
-        using namespace Pipes::lnL_XENON100_2012;
-        // TODO: The WIMP parameters need to be set only once per
-        // model, across all experiments.  Need to figure out
-        // how to do this....
-        double M_DM = (*Dep::DD_couplings).M_DM;
-        double Gps = (*Dep::DD_couplings).gps;
-        double Gpa = (*Dep::DD_couplings).gpa;
-        double Gns = (*Dep::DD_couplings).gns;
-        double Gna = (*Dep::DD_couplings).gna;                        
-        BEreq::DDCalc0_SetWIMP_mG(&M_DM,&Gps,&Gns,&Gpa,&Gna);
-        // TODO: This calculation needs to be done only once per
-        // model and could also potentially be set up as a
-        // dependency.
-        BEreq::DDCalc0_XENON100_2012_CalcRates();
-        result = BEreq::DDCalc0_XENON100_2012_LogLikelihood();
-        std::cout << "XENON100 2012 likelihood: " << result << std::endl;
-    }
+  // Set the WIMP mass and couplings (dummy result).
+  // TODO: Move halo settings from backend to here?
+  void SetWIMP_DDCalc0(bool &result) {
+    using namespace Pipes::SetWIMP_DDCalc0;
+    double M    = (*Dep::DD_couplings).M_DM;
+    double GpSI = (*Dep::DD_couplings).gps;
+    double GnSI = (*Dep::DD_couplings).gns;
+    double GpSD = (*Dep::DD_couplings).gpa;
+    double GnSD = (*Dep::DD_couplings).gna;                        
+    BEreq::DDCalc0_SetWIMP_mG(&M,&GpSI,&GnSI,&GpSD,&GnSD);
+    result = true;
+    // Print out WIMP-nucleon cross-sections.
+    // This part is optional as WIMP is already set.
+    double sigmapSI,sigmanSI,sigmapSD,sigmanSD;
+    BEreq::DDCalc0_GetWIMP_msigma(&M,&sigmapSI,&sigmanSI,&sigmapSD,&sigmanSD);
+    logger() << "DDCalc0 WIMP-nucleon cross-sections [pb]:" << std::endl;
+    logger() << "  sigmapSI = " << sigmapSI << std::endl;
+    logger() << "  sigmanSI = " << sigmanSI << std::endl;
+    logger() << "  sigmapSD = " << sigmapSD << std::endl;
+    logger() << "  sigmanSD = " << sigmanSD << std::endl;
+  }
 
-    // Uses LUX 2013 result:
-    //   Akerib et al., PRL 112, 091303 (2014) [arxiv:1310.8214]
-    void lnL_LUX_2013(double &result)
-    {
-        using namespace Pipes::lnL_LUX_2013;
-        // TODO: The WIMP parameters need to be set only once per
-        // model, across all experiments.  Need to figure out
-        // how to do this....
-        double M_DM = (*Dep::DD_couplings).M_DM;
-        double Gps = (*Dep::DD_couplings).gps;
-        double Gpa = (*Dep::DD_couplings).gpa;
-        double Gns = (*Dep::DD_couplings).gns;
-        double Gna = (*Dep::DD_couplings).gna;                        
-        BEreq::DDCalc0_SetWIMP_mG(&M_DM,&Gps,&Gns,&Gpa,&Gna);
-        // TODO: This calculation needs to be done only once per
-        // model and could also potentially be set up as a
-        // dependency.
-        BEreq::DDCalc0_LUX_2013_CalcRates();
-        result = BEreq::DDCalc0_LUX_2013_LogLikelihood();
-        std::cout << "LUX 2013 likelihood: " << result << std::endl;
-    }
+  // Performs DDCalc0 internal rate calculations for the XENON100 2012
+  // result at the current model point (dummy result).
+  void CalcRates_XENON100_2012_DDCalc0(bool &result) {
+    using namespace Pipes::CalcRates_XENON100_2012_DDCalc0;
+    BEreq::DDCalc0_XENON100_2012_CalcRates();
+    result = true;
+  }
 
-    // Estimated argon-based DARWIN sensitivity:
-    //   Conrad et al., arxiv:15MM.XXXX
-    void lnL_DARWIN_Ar_2015(double &result)
-    {
-        using namespace Pipes::lnL_DARWIN_Ar_2015;
-        // TODO: The WIMP parameters need to be set only once per
-        // model, across all experiments.  Need to figure out
-        // how to do this....
-        double M_DM = (*Dep::DD_couplings).M_DM;
-        double Gps = (*Dep::DD_couplings).gps;
-        double Gpa = (*Dep::DD_couplings).gpa;
-        double Gns = (*Dep::DD_couplings).gns;
-        double Gna = (*Dep::DD_couplings).gna;                        
-        BEreq::DDCalc0_SetWIMP_mG(&M_DM,&Gps,&Gns,&Gpa,&Gna);
-        // TODO: This calculation needs to be done only once per
-        // model and could also potentially be set up as a
-        // dependency.
-        BEreq::DDCalc0_DARWIN_Ar_2015_CalcRates();
-        result = BEreq::DDCalc0_DARWIN_Ar_2015_LogLikelihood();
-        std::cout << "DARWIN argon (2015 estimate) likelihood: " << result << std::endl;
-    }
+  // Performs DDCalc0 internal rate calculations for the LUX 2013
+  // result at the current model point (dummy result).
+  void CalcRates_LUX_2013_DDCalc0(bool &result) {
+    using namespace Pipes::CalcRates_LUX_2013_DDCalc0;
+    BEreq::DDCalc0_LUX_2013_CalcRates();
+    result = true;
+  }
 
-    // Estimated xenon-based DARWIN sensitivity:
-    //   Conrad et al., arxiv:15MM.XXXX
-    void lnL_DARWIN_Xe_2015(double &result)
-    {
-        using namespace Pipes::lnL_DARWIN_Xe_2015;
-        // TODO: The WIMP parameters need to be set only once per
-        // model, across all experiments.  Need to figure out
-        // how to do this....
-        double M_DM = (*Dep::DD_couplings).M_DM;
-        double Gps = (*Dep::DD_couplings).gps;
-        double Gpa = (*Dep::DD_couplings).gpa;
-        double Gns = (*Dep::DD_couplings).gns;
-        double Gna = (*Dep::DD_couplings).gna;                        
-        BEreq::DDCalc0_SetWIMP_mG(&M_DM,&Gps,&Gns,&Gpa,&Gna);
-        // TODO: This calculation needs to be done only once per
-        // model and could also potentially be set up as a
-        // dependency.
-        BEreq::DDCalc0_DARWIN_Xe_2015_CalcRates();
-        result = BEreq::DDCalc0_DARWIN_Xe_2015_LogLikelihood();
-        std::cout << "DARWIN xenon (2015 estimate) likelihood: " << result << std::endl;
-    }
+  // Performs DDCalc0 internal rate calculations for the future
+  // argon-based DARWIN experiment (estimated sensitivity, as of
+  // 2015) at the current model point (dummy result).
+  void CalcRates_DARWIN_Ar_2015_DDCalc0(bool &result) {
+    using namespace Pipes::CalcRates_DARWIN_Ar_2015_DDCalc0;
+    BEreq::DDCalc0_DARWIN_Ar_2015_CalcRates();
+    result = true;
+  }
 
-    // Simple test likelihood (in case DDCalc0 does not work)
-    void lnL_DD_test(double &result)
-    {
-        using namespace Pipes::lnL_DD_test;
-        result = 0;
-    }
+  // Performs DDCalc0 internal rate calculations for the future
+  // xenon-based DARWIN experiment (estimated sensitivity, as of
+  // 2015) at the current model point (dummy result).
+  void CalcRates_DARWIN_Xe_2015_DDCalc0(bool &result) {
+    using namespace Pipes::CalcRates_DARWIN_Xe_2015_DDCalc0;
+    BEreq::DDCalc0_DARWIN_Xe_2015_CalcRates();
+    result = true;
+  }
+
+
+
+//////////////////////////////////////////////////////////////////////////
+//
+//                Direct detection likelihoods/observables
+//
+//////////////////////////////////////////////////////////////////////////
+
+  // XENON100 2012 -----------------------------------------------------
+  // Aprile et al., PRL 109, 181301 (2013) [arxiv:1207.5988]
+  
+  // Log-likelihood
+  void XENON100_2012_LogLikelihood_DDCalc0(double &result) {
+    using namespace Pipes::XENON100_2012_LogLikelihood_DDCalc0;
+    result = BEreq::DDCalc0_XENON100_2012_LogLikelihood();
+    logger() << "XENON100 2012 log-likelihood: " << result << std::endl;
+  }
+  
+  // Observed events (integer)
+  void XENON100_2012_Events_DDCalc0(int &result) {
+    using namespace Pipes::XENON100_2012_Events_DDCalc0;
+    result = BEreq::DDCalc0_XENON100_2012_Events();
+    logger() << "XENON100 2012 events: " << result << std::endl;
+  }
+  
+  // Background expectation
+  void XENON100_2012_Background_DDCalc0(double &result) {
+    using namespace Pipes::XENON100_2012_Background_DDCalc0;
+    result = BEreq::DDCalc0_XENON100_2012_Background();
+    logger() << "XENON100 2012 background: " << result << std::endl;
+  }
+  
+  // Signal expectation
+  void XENON100_2012_Signal_DDCalc0(double &result) {
+    using namespace Pipes::XENON100_2012_Signal_DDCalc0;
+    result = BEreq::DDCalc0_XENON100_2012_Signal();
+    logger() << "XENON100 2012 signal: " << result << std::endl;
+  }
+  
+  // Signal expectation (spin-independent)
+  void XENON100_2012_SignalSI_DDCalc0(double &result) {
+    using namespace Pipes::XENON100_2012_SignalSI_DDCalc0;
+    result = BEreq::DDCalc0_XENON100_2012_SignalSI();
+    logger() << "XENON100 2012 signal (SI): " << result << std::endl;
+  }
+  
+  // Signal expectation (spin-dependent)
+  void XENON100_2012_SignalSD_DDCalc0(double &result) {
+    using namespace Pipes::XENON100_2012_SignalSD_DDCalc0;
+    result = BEreq::DDCalc0_XENON100_2012_SignalSD();
+    logger() << "XENON100 2012 signal (SD): " << result << std::endl;
+  }
+  
+  
+  // LUX 2013 ----------------------------------------------------------
+  // Akerib et al., PRL 112, 091303 (2014) [arxiv:1310.8214]
+  
+  // Log-likelihood
+  void LUX_2013_LogLikelihood_DDCalc0(double &result) {
+    using namespace Pipes::LUX_2013_LogLikelihood_DDCalc0;
+    result = BEreq::DDCalc0_LUX_2013_LogLikelihood();
+    logger() << "LUX 2013 log-likelihood: " << result << std::endl;
+  }
+  
+  // Observed events (integer)
+  void LUX_2013_Events_DDCalc0(int &result) {
+    using namespace Pipes::LUX_2013_Events_DDCalc0;
+    result = BEreq::DDCalc0_LUX_2013_Events();
+    logger() << "LUX 2013 events: " << result << std::endl;
+  }
+  
+  // Background expectation
+  void LUX_2013_Background_DDCalc0(double &result) {
+    using namespace Pipes::LUX_2013_Background_DDCalc0;
+    result = BEreq::DDCalc0_LUX_2013_Background();
+    logger() << "LUX 2013 background: " << result << std::endl;
+  }
+  
+  // Signal expectation
+  void LUX_2013_Signal_DDCalc0(double &result) {
+    using namespace Pipes::LUX_2013_Signal_DDCalc0;
+    result = BEreq::DDCalc0_LUX_2013_Signal();
+    logger() << "LUX 2013 signal: " << result << std::endl;
+  }
+  
+  // Signal expectation (spin-independent)
+  void LUX_2013_SignalSI_DDCalc0(double &result) {
+    using namespace Pipes::LUX_2013_SignalSI_DDCalc0;
+    result = BEreq::DDCalc0_LUX_2013_SignalSI();
+    logger() << "LUX 2013 signal (SI): " << result << std::endl;
+  }
+  
+  // Signal expectation (spin-dependent)
+  void LUX_2013_SignalSD_DDCalc0(double &result) {
+    using namespace Pipes::LUX_2013_SignalSD_DDCalc0;
+    result = BEreq::DDCalc0_LUX_2013_SignalSD();
+    logger() << "LUX 2013 signal (SD): " << result << std::endl;
+  }
+  
+  
+  // DARWIN argon-based ------------------------------------------------
+  // Estimated argon-based DARWIN sensitivity (as of 2015):
+  //   Conrad et al., arxiv:15MM.NNNNN
+  
+  // Log-likelihood
+  void DARWIN_Ar_2015_LogLikelihood_DDCalc0(double &result) {
+    using namespace Pipes::DARWIN_Ar_2015_LogLikelihood_DDCalc0;
+    result = BEreq::DDCalc0_DARWIN_Ar_2015_LogLikelihood();
+    logger() << "DARWIN argon-based (2015 estimate) log-likelihood: " << result << std::endl;
+  }
+  
+  // Observed events (integer)
+  void DARWIN_Ar_2015_Events_DDCalc0(int &result) {
+    using namespace Pipes::DARWIN_Ar_2015_Events_DDCalc0;
+    result = BEreq::DDCalc0_DARWIN_Ar_2015_Events();
+    logger() << "DARWIN argon-based (2015 estimate) events: " << result << std::endl;
+  }
+  
+  // Background expectation
+  void DARWIN_Ar_2015_Background_DDCalc0(double &result) {
+    using namespace Pipes::DARWIN_Ar_2015_Background_DDCalc0;
+    result = BEreq::DDCalc0_DARWIN_Ar_2015_Background();
+    logger() << "DARWIN argon-based (2015 estimate) background: " << result << std::endl;
+  }
+  
+  // Signal expectation
+  void DARWIN_Ar_2015_Signal_DDCalc0(double &result) {
+    using namespace Pipes::DARWIN_Ar_2015_Signal_DDCalc0;
+    result = BEreq::DDCalc0_DARWIN_Ar_2015_Signal();
+    logger() << "DARWIN argon-based (2015 estimate) signal: " << result << std::endl;
+  }
+  
+  // Signal expectation (spin-independent)
+  void DARWIN_Ar_2015_SignalSI_DDCalc0(double &result) {
+    using namespace Pipes::DARWIN_Ar_2015_SignalSI_DDCalc0;
+    result = BEreq::DDCalc0_DARWIN_Ar_2015_SignalSI();
+    logger() << "DARWIN argon-based (2015 estimate) signal (SI): " << result << std::endl;
+  }
+  
+  // Signal expectation (spin-dependent)
+  void DARWIN_Ar_2015_SignalSD_DDCalc0(double &result) {
+    using namespace Pipes::DARWIN_Ar_2015_SignalSD_DDCalc0;
+    result = BEreq::DDCalc0_DARWIN_Ar_2015_SignalSD();
+    logger() << "DARWIN argon-based (2015 estimate) signal (SD): " << result << std::endl;
+  }
+  
+  
+  // DARWIN xenon-based ------------------------------------------------
+  // Estimated xenon-based DARWIN sensitivity (as of 2015):
+  //   Conrad et al., arxiv:15MM.NNNNN
+  
+  // Log-likelihood
+  void DARWIN_Xe_2015_LogLikelihood_DDCalc0(double &result) {
+    using namespace Pipes::DARWIN_Xe_2015_LogLikelihood_DDCalc0;
+    result = BEreq::DDCalc0_DARWIN_Xe_2015_LogLikelihood();
+    logger() << "DARWIN xenon-based (2015 estimate) log-likelihood: " << result << std::endl;
+  }
+  
+  // Observed events (integer)
+  void DARWIN_Xe_2015_Events_DDCalc0(int &result) {
+    using namespace Pipes::DARWIN_Xe_2015_Events_DDCalc0;
+    result = BEreq::DDCalc0_DARWIN_Xe_2015_Events();
+    logger() << "DARWIN xenon-based (2015 estimate) events: " << result << std::endl;
+  }
+  
+  // Background expectation
+  void DARWIN_Xe_2015_Background_DDCalc0(double &result) {
+    using namespace Pipes::DARWIN_Xe_2015_Background_DDCalc0;
+    result = BEreq::DDCalc0_DARWIN_Xe_2015_Background();
+    logger() << "DARWIN xenon-based (2015 estimate) background: " << result << std::endl;
+  }
+  
+  // Signal expectation
+  void DARWIN_Xe_2015_Signal_DDCalc0(double &result) {
+    using namespace Pipes::DARWIN_Xe_2015_Signal_DDCalc0;
+    result = BEreq::DDCalc0_DARWIN_Xe_2015_Signal();
+    logger() << "DARWIN xenon-based (2015 estimate) signal: " << result << std::endl;
+  }
+  
+  // Signal expectation (spin-independent)
+  void DARWIN_Xe_2015_SignalSI_DDCalc0(double &result) {
+    using namespace Pipes::DARWIN_Xe_2015_SignalSI_DDCalc0;
+    result = BEreq::DDCalc0_DARWIN_Xe_2015_SignalSI();
+    logger() << "DARWIN xenon-based (2015 estimate) signal (SI): " << result << std::endl;
+  }
+  
+  // Signal expectation (spin-dependent)
+  void DARWIN_Xe_2015_SignalSD_DDCalc0(double &result) {
+    using namespace Pipes::DARWIN_Xe_2015_SignalSD_DDCalc0;
+    result = BEreq::DDCalc0_DARWIN_Xe_2015_SignalSD();
+    logger() << "DARWIN xenon-based (2015 estimate) signal (SD): " << result << std::endl;
+  }
+
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -1993,7 +2435,7 @@ namespace Gambit {
     //They should be deleted when real functions are added to provide the WIMP mass, solar
     //annihilation rate and neutrino yield.
     typedef void (*context_func)();
-    void DarkBit_context  ()                                {}// cout << "test" << endl; }
+    void DarkBit_context  ()                                {}// logger() << "test" << endl; }
     double DarkBit_toyield(const double&, const int&, void*& context)
     {
       context_func* context_function_ptr = static_cast<context_func*>(context);
@@ -2178,8 +2620,8 @@ namespace Gambit {
 
           // Output gamma-ray spectrum (grid be set in YAML file).
           double x_min = runOptions->getValueOrDef<double>(0.1, "GA_AnnYield", "Emin");
-          double x_max = runOptions->getValueOrDef<double>(100, "GA_AnnYield", "Emax");
-          int n = runOptions->getValueOrDef<double>(10, "GA_AnnYield", "nbins");
+          double x_max = runOptions->getValueOrDef<double>(10000, "GA_AnnYield", "Emax");
+          int n = runOptions->getValueOrDef<double>(26, "GA_AnnYield", "nbins");
           std::vector<double> x = logspace(log10(x_min), log10(x_max), n);  // from 0.1 to 500 GeV
           std::vector<double> y = spectrum->vector("E", x);
           os << "# Annihilation spectrum dNdE [1/GeV]\n";
@@ -2206,15 +2648,15 @@ namespace Gambit {
             }
             if (it->finalStateIDs.size() == 2)
             os << ": " << it->genRate->eval("v", 0);
-            //if (it->finalStateIDs.size() == 3)
-              //os << ": " << (*it->genRate)(0., 0.);
+            if (it->finalStateIDs.size() == 3)
+            os << ": " << it->genRate->eval("v", 0., "E", 0., "E1", 0.);
             os << "\n";
           }
           os << std::endl;
         }
         else
         {
-          std::cout << "Warning: outputfile not open for writing." << std::endl;
+          logger() << "Warning: outputfile not open for writing." << std::endl;
         }
         os.close();
         result = 0;
@@ -2233,12 +2675,79 @@ namespace Gambit {
             Funk::Funk dNdE;
 
             #define ADD_CHANNEL(ch, P1, P2, FINAL, EcmMin, EcmMax)                                                    \
-                dNdE = Funk::func(BEreq::dshayield.pointer(), Funk::var("Ecm")/2, Funk::var("E"), ch, yieldk, flag);  \
+                dNdE = Funk::func(BEreq::dshayield.pointer(), Funk::var("mwimp"), Funk::var("E"), ch, yieldk, flag)->set("mwimp", Funk::var("Ecm")/2);  \
                 result.addChannel(dNdE, P1, P2, FINAL, EcmMin, EcmMax);  // specifies also center of mass energy range
-            ADD_CHANNEL(25, "b", "bbar", "gamma", 10., 10000.)
-            ADD_CHANNEL(12, "Z0", "Z0", "gamma", 10., 10000.)
+            ADD_CHANNEL(12, "Z0", "Z0", "gamma", 0., 10000.)
+            ADD_CHANNEL(13, "W+", "W-", "gamma", 0., 10000.)
+            ADD_CHANNEL(14, "nu_e", "~nu_e", "gamma", 0., 10000.)
+            ADD_CHANNEL(15, "e+", "e-", "gamma", 0., 10000.)
+            ADD_CHANNEL(16, "nu_mu", "~nu_mu", "gamma", 0., 10000.)
+            ADD_CHANNEL(17, "mu+", "mu-", "gamma", 0., 10000.)
+            ADD_CHANNEL(18, "nu_tau", "~nu_tau", "gamma", 0., 10000.)
+            ADD_CHANNEL(19, "tau+", "tau-", "gamma", 0., 10000.)
+            ADD_CHANNEL(20, "u", "ubar", "gamma", 0., 10000.)
+            ADD_CHANNEL(21, "d", "dbar", "gamma", 0., 10000.)
+            ADD_CHANNEL(22, "c", "cbar", "gamma", 0., 10000.)
+            ADD_CHANNEL(23, "s", "sbar", "gamma", 0., 10000.)
+            ADD_CHANNEL(24, "t", "tbar", "gamma", 0., 10000.)
+            ADD_CHANNEL(25, "b", "bbar", "gamma", 0., 10000.)
+            ADD_CHANNEL(26, "g", "g", "gamma", 0., 10000.)
+            #undef ADD_CHANNEL
+
+            // Add spectrum of single Z0 decay at rest
+            // FIXME: This is only for testing purposes and should be removed
+            // again later.
+            dNdE = Funk::func(BEreq::dshayield.pointer(), 92*2, Funk::var("E"), 12, yieldk, flag);
+            result.addChannel(dNdE/2, "Z0", "gamma", 10., 10000.);
+
+            result.addChannel(Funk::zero("Ecm", "E"), "H1", "H1", "gamma", 4., 10000.);
+            result.addChannel(Funk::zero("Ecm", "E"), "H1", "H2", "gamma", 4., 10000.);
+            result.addChannel(Funk::zero("Ecm", "E"), "H2", "H2", "gamma", 4., 10000.);
+            result.addChannel(Funk::zero("Ecm", "E"), "H3", "H3", "gamma", 4., 10000.);
+            result.addChannel(Funk::zero("Ecm", "E"), "H1", "H3", "gamma", 4., 10000.);
+            result.addChannel(Funk::zero("Ecm", "E"), "H2", "H3", "gamma", 4., 10000.);
+            result.addChannel(Funk::zero("Ecm", "E"), "H+", "H-", "gamma", 4., 10000.);
+            result.addChannel(Funk::zero("Ecm", "E"), "H1", "Z0", "gamma", 4., 10000.);
+            result.addChannel(Funk::zero("Ecm", "E"), "H2", "Z0", "gamma", 4., 10000.);
+            result.addChannel(Funk::zero("Ecm", "E"), "H3", "Z0", "gamma", 4., 10000.);
+            result.addChannel(Funk::zero("Ecm", "E"), "W+", "H-", "gamma", 4., 10000.);
+            result.addChannel(Funk::zero("Ecm", "E"), "W-", "H+", "gamma", 4., 10000.);
+
+            initialized = true;
+        }
+    }
+
+    void SimYieldTable_MicrOmegas(SimYieldTable& result)
+    {
+        using namespace Pipes::SimYieldTable_MicrOmegas;
+
+        static bool initialized = false;
+        int outN = 0;  // gamma
+
+        if ( not initialized )
+        {
+            Funk::Funk dNdE;
+
+            #define ADD_CHANNEL(inP, P1, P2, FINAL, EcmMin, EcmMax)                                                   \
+                dNdE = Funk::func(BEreq::dNdE.pointer(), Funk::var("Ecm"), Funk::var("E"), inP, outN)/Funk::var("E"); \
+                result.addChannel(dNdE, P1, P2, FINAL, EcmMin, EcmMax);  // specifies also center of mass energy range
+            ADD_CHANNEL(0, "g", "g", "gamma", 4., 10000.)
+            ADD_CHANNEL(1, "d", "dbar", "gamma", 4., 10000.)
+            ADD_CHANNEL(2, "u", "ubar", "gamma", 4., 10000.)
+            ADD_CHANNEL(3, "s", "sbar", "gamma", 4., 10000.)
+            ADD_CHANNEL(4, "c", "cbar", "gamma", 4., 10000.)
+            ADD_CHANNEL(5, "b", "bbar", "gamma", 4., 10000.)
+            ADD_CHANNEL(6, "t", "tbar", "gamma", 4., 10000.)
+            ADD_CHANNEL(7, "e+", "e-", "gamma", 4., 10000.)
+            ADD_CHANNEL(8, "mu+", "mu-", "gamma", 4., 10000.)
+            ADD_CHANNEL(9, "tau+", "tau-", "gamma", 4., 10000.)
+            ADD_CHANNEL(10, "Z0", "Z0", "gamma", 4., 10000.)
+            ADD_CHANNEL(13, "W+", "W-", "gamma", 4., 10000.)
             #undef ADD_CHANNEL
             initialized = true;
+            result.addChannel(Funk::zero("Ecm", "E"), "nu_e", "~nu_e", "gamma", 4., 10000.);
+            result.addChannel(Funk::zero("Ecm", "E"), "nu_mu", "~nu_mu", "gamma", 4., 10000.);
+            result.addChannel(Funk::zero("Ecm", "E"), "nu_tau", "~nu_tau", "gamma", 4., 10000.);
         }
     }
 
@@ -2249,7 +2758,7 @@ namespace Gambit {
         double mass = 100;
         Funk::Funk dNdE_bb = (*Dep::SimYieldTable)("b", "bbar", "gamma", mass);
 
-        std::cout << dNdE_bb->eval("E", 10) << std::endl;
+        logger() << dNdE_bb->eval("E", 10) << std::endl;
 
         result = dNdE_bb;  // Fix units
     }

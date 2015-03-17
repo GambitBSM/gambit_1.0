@@ -1,3 +1,25 @@
+# GAMBIT: Global and Modular BSM Inference Tool
+#************************************************
+# \file
+#
+#  CMake CMakeLists.txt file for Models
+#
+#************************************************
+#
+#  Authors (add name and date if you modify):
+#
+#  \author Antje Putze
+#          (antje.putze@lapth.cnrs.fr)
+#  \date 2014 Aug, Oct
+#  \date 2015 Feb
+#
+#  \author Pat Scott
+#          (p.scott@imperial.ac.uk)
+#  \date 2014 Nov, Dec
+#  \date 2015 Jan, Feb
+#
+#************************************************
+
 set(source_files src/claw_singleton.cpp
                  src/partmap.cpp
                  src/model_parameters.cpp
@@ -8,20 +30,20 @@ set(source_files src/claw_singleton.cpp
                  src/particle_database.cpp
 )
 
-set(header_files include/claw_singleton.hpp
-                 include/model_macros.hpp
-                 include/model_parameters.hpp
-                 include/model_helpers.hpp
-                 include/models.hpp
-                 include/orphan.hpp
-                 include/models/MSSM78atQ.hpp
-                 include/models/MSSM25atQ.hpp
-                 include/models/MSSM78atMGUT.hpp
-                 include/models/CMSSM.hpp
-                 include/models/extraCMSSM.hpp
-                 include/partmap.hpp
-                 include/models/SingletDM.hpp
-                 include/models/demo.hpp
+set(header_files include/gambit/Models/claw_singleton.hpp
+                 include/gambit/Models/model_macros.hpp
+                 include/gambit/Models/model_parameters.hpp
+                 include/gambit/Models/model_helpers.hpp
+                 include/gambit/Models/models.hpp
+                 include/gambit/Models/orphan.hpp
+                 include/gambit/Models/models/MSSM78atQ.hpp
+                 include/gambit/Models/models/MSSM25atQ.hpp
+                 include/gambit/Models/models/MSSM78atMGUT.hpp
+                 include/gambit/Models/models/CMSSM.hpp
+                 include/gambit/Models/models/extraCMSSM.hpp
+                 include/gambit/Models/partmap.hpp
+                 include/gambit/Models/models/SingletDM.hpp
+                 include/gambit/Models/models/demo.hpp
 )
 
 add_gambit_library(Models OPTION OBJECT SOURCES ${source_files} HEADERS ${header_files})

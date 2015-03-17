@@ -182,17 +182,17 @@ void ATLAS0Lep(const char *inputFile)
      int nMuons=signalMuons.size();
      int nJets=signalJets.size();
 
-     float meff2j=1;
-     float dPhiMin=9999;
+     double meff2j=1;
+     double dPhiMin=9999;
 
      bool leptonCut=false;
      if (nElectrons==0 && nMuons==0)leptonCut=true;
      
      bool metCut=false;
      //cout << "MET " << met << endl;
-     if ((float)met->MET>160.)metCut=true;
+     if ((double)met->MET>160.)metCut=true;
      //if(metCut)cout << "Passes met cut" << endl;
-     float meff_incl=0;
+     double meff_incl=0;
      for (int iJet=0;iJet<signalJets.size();iJet++) {
        if (signalJets.at(iJet)->PT>40.)meff_incl+=signalJets.at(iJet)->PT;
      }

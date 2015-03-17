@@ -25,10 +25,13 @@ DDCalc0:
   0.0:         ./Backends/lib/libDDCalc0.so
 
 HiggsBounds:
-  4.1:         ./Backends/lib/libHB.so
+  4.1:         ./Backends/lib/libhiggsbounds.so
 
 HiggsSignals:
   1.2:         ./Backends/lib/libhiggssignals.so
+
+FeynHiggs:
+  2.10:         ./Backends/lib/libfeynhiggs.so
 
 LibFarrayTest:
   1.0:         ./Backends/lib/libFarrayTest.so
@@ -57,4 +60,8 @@ micromegas:
 
 nulike:
   1.0.0:       ./Backends/lib/libnulike.so
+
+SUSYHIT:
+  0.1:         ./Backends/lib/libsusyhit.so
+  1.4:         ./Backends/lib/libsusyhit.so
 

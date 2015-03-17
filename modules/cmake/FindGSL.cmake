@@ -17,6 +17,9 @@
 #  GSL_EXE_LINKER_FLAGS = rpath on Unix
 
 INCLUDE(FindPkgConfig)
+IF(NOT PKG_CONFIG_FOUND) 
+  message(FATAL_ERROR "Package pkgconfig is required.")
+ENDIF()
 PKG_CHECK_MODULES(GSL "gsl >= 1.10")
 IF(NOT GSL_FOUND)
 
@@ -91,9 +94,9 @@ else( WIN32 AND NOT CYGWIN AND NOT MSYS )
         string( REGEX REPLACE "-I[^;]+;" ""
           GSL_CFLAGS "${GSL_CFLAGS}")
 
-        message("GSL_DEFINITIONS=${GSL_DEFINITIONS}")
-        message("GSL_INCLUDE_DIRS=${GSL_INCLUDE_DIRS}")
-        message("GSL_CFLAGS=${GSL_CFLAGS}")
+        message("   GSL_DEFINITIONS=${GSL_DEFINITIONS}")
+        message("   GSL_INCLUDE_DIRS=${GSL_INCLUDE_DIRS}")
+        message("   GSL_CFLAGS=${GSL_CFLAGS}")
       else( RET EQUAL 0 )
         set( GSL_FOUND FALSE )
       endif( RET EQUAL 0 )
@@ -121,16 +124,16 @@ else( WIN32 AND NOT CYGWIN AND NOT MSYS )
 			MARK_AS_ADVANCED(
 				GSL_CFLAGS
 			)
-			message( STATUS "Using GSL from ${GSL_PREFIX}" )
+			message( STATUS "   Using GSL from ${GSL_PREFIX}" )
 		else( GSL_CONFIG_EXECUTABLE )
-			message( STATUS "FindGSL: gsl-config not found.")
+			message( STATUS "   FindGSL: gsl-config not found.")
 		endif( GSL_CONFIG_EXECUTABLE )
 	endif( UNIX OR MSYS )
 endif( WIN32 AND NOT CYGWIN AND NOT MSYS )
 
 if( GSL_FOUND )
   if( NOT GSL_FIND_QUIETLY )
-    message( STATUS "FindGSL: Found both GSL headers and library" )
+    message( STATUS "   FindGSL: Found both GSL headers and library" )
   endif( NOT GSL_FIND_QUIETLY )
 else( GSL_FOUND )
   if( GSL_FIND_REQUIRED )

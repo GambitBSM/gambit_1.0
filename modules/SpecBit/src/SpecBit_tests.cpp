@@ -17,25 +17,18 @@
 ///  
 ///  *********************************************
 
-#include "gambit_module_headers.hpp"
-#include "SpecBit_rollcall.hpp"
+#include "gambit/Utils/gambit_module_headers.hpp"
+#include "gambit/SpecBit/SpecBit_rollcall.hpp"
+#include "gambit/SpecBit/external_examples.hpp"
+#include "gambit/SpecBit/MSSMSpec.hpp"
+#define IN_SPECBIT // Output tests to logger() rather than std::cout when run through SpecBit.
+#include "gambit/SpecBit/SpecBit_tests.hpp"
 
 // Flexible SUSY stuff (should not be needed by the rest of gambit)
-#include "CMSSM_two_scale_model.hpp"
-#include "CMSSM_two_scale_model_slha.hpp"
-//#include "CMSSM_physical.hpp"
-
-#include "ew_input.hpp"
-//#include "logger.hpp"
-//#include "wrappers.hpp"
-#include "MSSMSpec.hpp"
-#include "numerics.hpp"
-
-// Used in SpecBit_tests.hpp to switch the test output to logger() rather than std::cout when run through SpecBit.
-#define IN_SPECBIT
-// Spectrum object test functions
-#include "SpecBit_tests.hpp"
-#include "external_examples.hpp"
+#include "flexiblesusy/src/ew_input.hpp"
+#include "flexiblesusy/src/numerics.hpp"
+#include "flexiblesusy/models/CMSSM/CMSSM_two_scale_model.hpp"
+#include "flexiblesusy/models/CMSSM/CMSSM_two_scale_model_slha.hpp"
 
 namespace Gambit
 {
@@ -65,17 +58,17 @@ namespace Gambit
       // I think these objects should only get created once since they are static...      
       // ...and they should be destructed automatically when the program ends.
 
-      setup(mssm.model); //fill with some parameters
-      mssm.model.calculate_DRbar_parameters(); //calculated DRbar masses 
-      mssm.model.calculate_pole_masses();//now calculate pole masses
+      setup(mssm.model_interface.model); //fill with some parameters
+      mssm.model_interface.model.calculate_DRbar_parameters(); //calculated DRbar masses 
+      mssm.model_interface.model.calculate_pole_masses();//now calculate pole masses
 
       // Check contents
       logger() << "This is specbit_tests. Checking Spectrum object contents..." << std::endl;
-      if(TestMssmParGets(mssm, mssm.model)==false){
+      if(TestMssmParGets(mssm, mssm.model_interface.model)==false){
           logger() << "TestMssmParGets fail." << std::endl;
           return;
        }
-       if(TestMssmPoleGets(mssm, mssm.model)==false){
+       if(TestMssmPoleGets(mssm, mssm.model_interface.model)==false){
           logger() << "TestMssmPoleGets fail." << std::endl;
           return;
        }
@@ -144,7 +137,7 @@ namespace Gambit
 
       // Fill the model and do it again
       std::cout << "Spectrum via Spectrum* (filled)" << std::endl;
-      setup(mssm.model);
+      setup(mssm.model_interface.model);
       std::cout << "spec->runningpars.GetScale() =" 
           << spec->runningpars.GetScale() << std::endl;
       std::cout << "mHd2 = "  

@@ -18,14 +18,11 @@
 #include <string>
 #include <cmath>
 #include <iostream>
-#include <fstream>
 #include <map>
 #include <sstream>
-#include <typeinfo>
-#include <cxxabi.h>
 
-#include "scanner_plugin.hpp"
-#include "threadsafe_rng.hpp"
+#include "gambit/ScannerBit/scanner_plugin.hpp"
+#include "gambit/Utils/threadsafe_rng.hpp"
   
 //int no_func(double);
 scanner_plugin(random_sampler, version(1, 0, 0))
@@ -40,7 +37,7 @@ scanner_plugin(random_sampler, version(1, 0, 0))
                 //SET_SCAN_IOS(files);
                 std::string output_file            = get_inifile_value<std::string>("output_file", "default_output");
                 int N                              = get_inifile_value<int>("point_number", 10);
-                scan_ptr<double (const std::vector<double>&)> LogLike = get_functor(get_inifile_value<std::string>("like"));
+                scan_ptr<double (const std::vector<double>&)> LogLike = get_purpose(get_inifile_value<std::string>("like"));
                 typedef void (*func)(double a);
                 std::ofstream out(output_file.c_str());
                 int ma = get_dimension();

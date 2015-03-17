@@ -1230,8 +1230,14 @@ ComplexMatrix ComplexMatrix::hermitianConjugate() const {
   return temp;
 }
 
+namespace {
+   Complex conjugator(const Complex& z) {
+      return Complex(std::conj(static_cast<std::complex<double> >(z)));
+   }
+}
+
 ComplexMatrix ComplexMatrix::complexConjugate() const { 
-  return ComplexMatrix(x.apply(conj),rows,cols); 
+  return ComplexMatrix(x.apply(conjugator),rows,cols);
 }
 
 DoubleMatrix ComplexMatrix::real() const

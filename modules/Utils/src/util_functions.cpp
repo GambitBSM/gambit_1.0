@@ -19,12 +19,14 @@
 ///
 ///  *********************************************
   
-#include "util_functions.hpp"
 #include <cstring>
 #include <chrono>  // chrono::system_clock
 #include <ctime>   // localtime
 #include <sstream> // stringstream
 #include <string>  // string
+
+#include "gambit/Utils/util_functions.hpp"
+
 
 namespace Gambit
 {
@@ -56,6 +58,7 @@ namespace Gambit
           }
         }
       #endif
+      if (s == "") return vec;
       // Split up the list of versions by the delimiters
       boost::split(vec, s, boost::is_any_of(delim), boost::token_compress_on);
       return vec;

@@ -13,9 +13,9 @@
 ///
 ///  *********************************************
 
-#include "core_singleton.hpp"
-#include "claw_singleton.hpp"
-#include "backend_singleton.hpp"
+#include "gambit/Core/core_singleton.hpp"
+#include "gambit/Models/claw_singleton.hpp"
+#include "gambit/Backends/backend_singleton.hpp"
 
 namespace Gambit
 {

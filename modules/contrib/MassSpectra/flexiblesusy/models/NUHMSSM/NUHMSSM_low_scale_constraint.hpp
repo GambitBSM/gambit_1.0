@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Thu 4 Dec 2014 21:44:15
+// File generated at Fri 16 Jan 2015 14:37:48
 
 #ifndef NUHMSSM_LOW_SCALE_CONSTRAINT_H
 #define NUHMSSM_LOW_SCALE_CONSTRAINT_H
