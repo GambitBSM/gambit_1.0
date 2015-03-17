@@ -6,7 +6,8 @@
  *  | | | |_| | | | |   <| |_| | (_) | | | \__ \ |_|   |_|  
  *  \_|  \__,_|_| |_|_|\_\\__|_|\___/|_| |_|___/            
  *                                    
- *  v0.1
+ *  v0.1 Dec 2014
+ *  v0.2 Mar 2015 - Completely rewritten internal structure
  *
  *  Christoph Weniger, Dec 2014
  *  <c.weniger@uva.nl>
@@ -34,24 +35,27 @@
 
 #define DEF_FUNKTRAIT(C) class C { public: static void* ptr; }; void* C::ptr = 0;
 
-// Argument names for internal usage
-#define TMPID1 "FUNKTAG_TMP1_52428"
-#define TMPID2 "FUNKTAG_TMP2_52428"
-
 // Extensions
 #include <gsl/gsl_integration.h>
 
 namespace Funk
 {
     //
-    // Type declarations
+    // Type declarations etc.
     //
+
     using boost::shared_ptr;
     using boost::enable_shared_from_this;
+    using boost::dynamic_pointer_cast;
+    using boost::static_pointer_cast;
 
     class FunkBase;
+    class FunkBound;
+    class FunkIntegrate_gsl1d;
+
     typedef shared_ptr<FunkBase> Funk;
     typedef std::vector<std::string> ArgsType;
+    typedef std::map<std::string, std::vector<std::pair<Funk, Funk>>> Singularities;
 
     //template <typename... Args>
     //using PlainPtr = double(*)(Args&...);
@@ -70,6 +74,7 @@ namespace Funk
 
     //
     // Vector initialization from argument list
+    //
     // Usage: std::vector<T> v = vec<T>(v1, v2, v3, ...);
     //
 
@@ -78,20 +83,39 @@ namespace Funk
     {
         return vector;
     }
-    template <typename T, typename U, typename... Args>
-    inline std::vector<T> vec(std::vector<T> vector, U value, Args... args)
+    template <typename T, typename... Args>
+    inline std::vector<T> vec(std::vector<T> vector, T value, Args... args)
     {
-        T value_converted = value;  // Implicit conversion, if possible.
-        vector.push_back(value_converted);
-        return vec(vector, args...);
+        vector.push_back(value);
+        return vec<T>(vector, args...);
     }
     template <typename T, typename... Args>
     inline std::vector<T> vec(T value, Args... args)
     {
         std::vector<T> vector;
         vector.push_back(value);
-        vector = vec(vector, args...);
+        vector = vec<T>(vector, args...);
         return vector;
+    }
+    template <typename T>
+    inline std::vector<T> vec()
+    {
+        std::vector<T> vector;
+        return vector;
+    }
+
+
+    // Don't overwrite entries inconsistently
+    template <typename T1, typename T2>
+    void safeset(std::map<T1, T2> & mymap, T1 key, T2 value)
+    {
+        if ( mymap.find(key) != mymap.end() )
+            if ( mymap[key] != value )
+            {
+                std::cout << "ERROR: Bind tries to resolve dependencies of single object inconsistently." << std::endl;
+                exit(1);
+            }
+        mymap[key] = value;
     }
 
 
@@ -107,44 +131,29 @@ namespace Funk
         return args1;
     }
 
-    inline std::vector<int> getMap(ArgsType argIn, ArgsType argOut)
-    {
-        std::vector<int> map(argOut.size());
-        for ( unsigned int i = 0; i < argOut.size(); i++ )
-        {
-            map[i] = std::find(argIn.begin(), argIn.end(), argOut[i]) - argIn.begin();
-        }
-        return map;
-    }
-
-    inline void applyMap(std::vector<double> & Xout, const std::vector<int> & map, const std::vector<double> & Xin, int n)
-    {
-        for ( int i = 0; i < n; i++ )
-        {
-            Xout[i] = Xin[map[i]];
-        }
-    }
-
-    inline void applyInvMap(std::vector<double> & Xout, const std::vector<int> & map, const std::vector<double> & Xin, int n)
-    {
-        for ( int i = 0; i < n; i++ )
-        {
-            Xout[map[i]] = Xin[i];
-        }
-    }
-
-    inline int eraseArg(ArgsType & args, std::string arg)
+    inline ArgsType eraseArg(ArgsType args, std::string arg)
     {
         auto it = std::find(args.begin(), args.end(), arg);
-        assert (it!=args.end());
-        args.erase(it);
-        return it - args.begin();
+        if (it!=args.end()) args.erase(it);
+        return args;
     }
 
-    inline bool inArg(ArgsType & args, std::string arg)
+    inline Singularities joinSingl(Singularities s1, Singularities s2)
     {
-        auto it = std::find(args.begin(), args.end(), arg);
-        return it!=args.end();
+        for ( auto it = s2.begin(); it != s2.end(); ++it )
+        {
+            if ( s1.find(it->first) == s1.end() )
+                s1[it->first] = it->second;
+            else
+            {
+                for ( auto it2 = it->second.begin(); it2 != it->second.end(); ++it2 )
+                {
+                    if ( std::find(s1[it->first].begin(), s1[it->first].end(), *it2) == s1[it->first].end() )
+                        s1[it->first].push_back(*it2);
+                }
+            }
+        }
+        return s1;
     }
 
 
@@ -181,40 +190,50 @@ namespace Funk
 
 
     //
-    // Central virtual base class
+    // **** The central virtual base class ****
     //
 
     class FunkBase: public enable_shared_from_this<FunkBase>
     {
         public:
-            FunkBase() {}
-            FunkBase(std::string funkType) : funkType(funkType) {}
-            virtual ~FunkBase() {}
+            FunkBase() {};
+            virtual ~FunkBase() {};
 
-            // Standard handles
-            template <typename... Args> Funk set(Args... args);
-            template <typename... Args> Funk bind(Args... argss);
-            template <typename... Args> double eval(Args... args);
-            template <typename... Args> double get(Args... argss);
-            template <typename... Args> double operator() (Args... argss) { return this->eval(argss...); }
-            std::vector<double> vector(std::string, const std::vector<double>&);
+            // Standard setting handles
+            template <typename... Args> Funk set(std::string arg, Funk g, Args... args);
+            template <typename... Args> Funk set(std::string arg, double x, Args... args);
+            template <typename... Args> Funk set(std::string arg, std::string arg1, Args... args);
+            template <typename... Args> Funk set();
 
-            // Extension handles
-            // TODO: Implement
-            // - tabularize
-            template <typename... Args> Funk gsl_integration(Args... args);
+            // Standard binding handles
+            template <typename... Args> shared_ptr<FunkBound> bind(Args... args);
 
             // Convenience functions
-            const std::vector<std::string> & getArgs() { return this->args; };
-            Funk help();
+            const std::vector<std::string> & getArgs() { return this->arguments; };
+            std::size_t getNArgs() {return this->arguments.size();};
             bool hasArg(std::string);
             bool hasArgs();
-            std::size_t getNArgs() {return this->args.size();};
+            Funk help();
 
-            // Function identity
-            std::string getType() {return this->funkType;};
+            // Return value & standard resolve 
+            virtual double value(std::vector<double> &, intptr_t bindID) = 0;
+            virtual void resolve(std::map<std::string, size_t> datamap, size_t & datalen, intptr_t bindID);
+            void release(intptr_t bindID);
+            Singularities getSingl() { return singularities; }
+            Funk set_singularity(std::string arg, Funk pos, Funk width);
+            Funk set_singularity(std::string arg, double pos, Funk width);
+            Funk set_singularity(std::string arg, Funk pos, double width);
+            Funk set_singularity(std::string arg, double pos, double width);
 
-            // Plain function generators (up to four arguments)
+
+            //
+            // "External" functions
+            //
+
+            // Integration
+            template <typename... Args> shared_ptr<FunkIntegrate_gsl1d> gsl_integration(Args... args);
+
+            // Plain function generators
             PlainPtrs1 plain(std::string);
             PlainPtrs2 plain(std::string, std::string);
             PlainPtrs3 plain(std::string, std::string, std::string);
@@ -228,28 +247,88 @@ namespace Funk
             template <typename T>
             PlainPtr4 plain(std::string, std::string, std::string, std::string);
 
-            // Return value
-            virtual double value(const std::vector<double> &) = 0;
-
         protected:
-            ArgsType args;  // Argument names
+            std::vector<Funk> functions;  // Dependent functions
+            ArgsType arguments;  // Argument names
+            std::map<int, std::vector<size_t>> indices;  // Indices for data object
+            size_t datalen;
+            Singularities singularities;
+    };
+
+
+    class FunkBound
+    {
+        public:
+            FunkBound(Funk f, size_t datalen, intptr_t bindID) : f(f), datalen(datalen), bindID(bindID) {};
+            ~FunkBound() {f->release(bindID);};
+            double value(std::vector<double> & map, intptr_t bindID) {return 0;};
+            template <typename... Args> void bind(Args... args);
+
+            template <typename... Args> inline double eval(Args... argss)
+            {
+                auto data = vec<double>(argss...);
+                data.resize(datalen);
+                return f->value(data, bindID);
+            }
+
+            template <typename... Args> inline std::vector<double> vect(Args... argss)
+            {
+                std::vector<std::vector<double>> coll;
+                return this->vect2(coll, argss...);
+            }
 
         private:
-            // Internal structure required for bind
-            std::vector<int> bind_map;
-            std::vector<double> Xout;
-            unsigned int nout;
+            template <typename... Args> inline std::vector<double> vect2(std::vector<std::vector<double>> & coll)
+            {
+                size_t size = 1;
+                std::vector<bool> vec_flag;
+                for ( auto it = coll.begin(); it != coll.end(); ++it )
+                {
+                    if ( it->size() == 1 )
+                    {
+                        vec_flag.push_back(false);
+                        continue;
+                    }
+                    vec_flag.push_back(true);
+                    if ( size == 1 ) size = it->size();
+                    if ( size != it->size() )
+                    {
+                        std::cout << "Warning: Inconsistent vector lengths." << std::endl;
+                        return vec<double>();
+                    }
+                }
+                auto r = vec<double>();
+                auto data = vec<double>();
+                data.resize(datalen);
+                for ( size_t i = 0; i != size; ++i )
+                {
+                    for ( size_t j = 0; j != coll.size(); ++j )
+                    {
+                        if ( vec_flag[j] )
+                            data[j] = coll[j][i];
+                        else
+                            data[j] = coll[j][0];
+                    }
+                    r.push_back(f->value(data, bindID));
+                }
+                return r;
+            }
 
-            std::map<std::string, double> tmp_argmap;
-            std::map<std::string, Funk> tmp_funmap;
-            std::vector<double> empty;
-            std::string funkType;
+            template <typename... Args> inline std::vector<double> vect2(std::vector<std::vector<double>> & coll, double x, Args... argss)
+            {
+                coll.push_back(vec<double>(x));
+                return this->vect2(coll, argss...);
+            }
 
-            // Add arguments from set(...) handler to tmp_argmap and
-            // tmp_funmap.
-            template <typename... Args> void digest_arguments(std::string arg, double y, Args... args);
-            template <typename... Args> void digest_arguments(std::string arg, Funk y, Args... args);
-            void digest_arguments() {};
+            template <typename... Args> inline std::vector<double> vect2(std::vector<std::vector<double>> & coll, std::vector<double> v, Args... argss)
+            {
+                coll.push_back(v);
+                return this->vect2(coll, argss...);
+            }
+
+            Funk f;  // bound function
+            size_t datalen;
+            intptr_t bindID;
     };
 
 
@@ -269,50 +348,50 @@ namespace Funk
             static double plain1p(double x1, void* ptr)
             {
                 FunkPlain * funkPtrPtr = static_cast<FunkPlain*>(ptr);
-                return funkPtrPtr->f->get(x1);
+                return funkPtrPtr->f->eval(x1);
             }
             static double plain2p(double x1, double x2, void* ptr)
             {
                 FunkPlain * funkPtrPtr = static_cast<FunkPlain*>(ptr);
-                return funkPtrPtr->f->get(x1, x2);
+                return funkPtrPtr->f->eval(x1, x2);
             }
             static double plain3p(double x1, double x2, double x3, void* ptr)
             {
                 FunkPlain * funkPtrPtr = static_cast<FunkPlain*>(ptr);
-                return funkPtrPtr->f->get(x1, x2, x3);
+                return funkPtrPtr->f->eval(x1, x2, x3);
             }
             static double plain4p(double x1, double x2, double x3, double x4, void* ptr)
             {
                 FunkPlain * funkPtrPtr = static_cast<FunkPlain*>(ptr);
-                return funkPtrPtr->f->get(x1, x2, x3, x4);
+                return funkPtrPtr->f->eval(x1, x2, x3, x4);
             }
 
             template <typename T>
             static double plain1(double& x1)
             {
                 FunkPlain * funkPtrPtr = static_cast<FunkPlain*>(T::ptr);
-                return funkPtrPtr->f->get(x1);
+                return funkPtrPtr->f->eval(x1);
             }
             template <typename T>
             static double plain2(double& x1, double& x2)
             {
                 FunkPlain * funkPtrPtr = static_cast<FunkPlain*>(T::ptr);
-                return funkPtrPtr->f->get(x1, x2);
+                return funkPtrPtr->f->eval(x1, x2);
             }
             template <typename T>
             static double plain3(double& x1, double& x2, double& x3)
             {
                 FunkPlain * funkPtrPtr = static_cast<FunkPlain*>(T::ptr);
-                return funkPtrPtr->f->get(x1, x2, x3);
+                return funkPtrPtr->f->eval(x1, x2, x3);
             }
             template <typename T>
             static double plain4(double& x1, double& x2, double& x3, double& x4)
             {
                 FunkPlain * funkPtrPtr = static_cast<FunkPlain*>(T::ptr);
-                return funkPtrPtr->f->get(x1, x2, x3, x4);
+                return funkPtrPtr->f->eval(x1, x2, x3, x4);
             }
 
-            double value(const std::vector<double> & args) 
+            double value(std::vector<double> & args, intptr_t bindID)
             { 
                 (void)args;
                 assert ( 0 == 1 );  // This function should never be called
@@ -320,9 +399,36 @@ namespace Funk
             }
 
         private:
-            Funk f;
+            shared_ptr<FunkBound> f;  // bound function
             std::string arg1, arg2, arg3, arg4;
     };
+
+    //
+    // Derived class that implements constant
+    //
+
+    class FunkConst: public FunkBase
+    {
+        public:
+            template <typename... Args>
+            FunkConst(double c, Args ...argss) : c(c) { arguments = vec<std::string>(argss...); }
+            FunkConst(double c) : c(c) { arguments.resize(0); }
+
+            double value(std::vector<double> & data, intptr_t bindID)
+            {
+                (void)data;
+                return c;
+            }
+
+        private:
+            double c;
+    };
+    template <typename... Args>
+    inline Funk one(Args... argss) { return Funk(new FunkConst(1., argss...)); }
+    template <typename... Args>
+    inline Funk zero(Args... argss) { return Funk(new FunkConst(0., argss...)); }
+    template <typename... Args>
+    inline Funk cnst(double x, Args... argss) { return Funk(new FunkConst(x, argss...)); }
 
 
     //
@@ -332,53 +438,37 @@ namespace Funk
     class FunkDerived: public FunkBase
     {
         public:
-            // Set parameter to fixed value
-            FunkDerived(Funk f, std::string arg, double x) : f(f), x(x), mode(0)
+            FunkDerived(Funk f, std::string arg, Funk g) : my_arg(arg)
             {
-                args = f->getArgs();
-                XoutF.resize(args.size());
-                i = eraseArg(args, arg);
-                mapF = getMap(f->getArgs(), args);
-                nF = XoutF.size();
-            };
-            // Map parameter to other function
-            FunkDerived(Funk f, std::string arg, Funk g) : f(f), g(g), mode(1)
-            {
-                ArgsType argsF = f->getArgs();
-                ArgsType argsG = g->getArgs();
-                XoutF.resize(argsF.size());
-                XoutG.resize(argsG.size());
-                nF = XoutF.size();
-                nG = XoutG.size();
-                i = eraseArg(argsF, arg);
-                args = joinArgs(argsG, argsF);
-                mapF = getMap(args, f->getArgs());
-                mapG = getMap(args, argsG);
+                functions = vec(f, g);
+                Singularities tmp_singl = f->getSingl();
+                if ( tmp_singl.erase(arg) > 0 )
+                    std::cout << "WARNING: Loosing singularity information while setting " << arg << std::endl;
+                singularities = joinSingl(g->getSingl(), tmp_singl);
+                arguments = joinArgs(eraseArg(f->getArgs(), arg), g->getArgs());
             };
 
-            double value(const std::vector<double> & Xin)
+            FunkDerived(Funk f, std::string arg, double x) : FunkDerived(f, arg, cnst(x)) {};
+
+            // We need to sneak in an additional parameter
+            void resolve(std::map<std::string, size_t> datamap, size_t & datalen, intptr_t bindID)
             {
-                if ( mode == 0 )
-                {
-                    applyInvMap(XoutF, mapF, Xin, nF-1);
-                    XoutF[i] = x;
-                    return f->value(XoutF);
-                }
-                else
-                {
-                    applyMap(XoutG, mapG, Xin, nG);
-                    applyMap(XoutF, mapF, Xin, nF);
-                    XoutF[i] = g->value(XoutG);
-                    return f->value(XoutF);
-                }
+                functions[1]->resolve(datamap, datalen, bindID);  // resolve g
+                safeset(my_index, bindID, datalen);  // add new slot for result from of g
+                datamap[my_arg] = my_index[bindID];  // add or overwrite entry in datamap
+                ++datalen;
+                functions[0]->resolve(datamap, datalen, bindID);  // resolve f
+            }
+
+            double value(std::vector<double> & data, intptr_t bindID)
+            {
+                data[my_index[bindID]] = functions[1]->value(data, bindID);
+                return functions[0]->value(data, bindID);
             }
 
         private:
-            std::vector<double> XoutF, XoutG;
-            std::vector<int> mapF, mapG;
-            Funk f, g;
-            double x;
-            int i, mode, nF, nG;
+            std::string my_arg;
+            std::map<int, size_t> my_index;
     };
 
 
@@ -397,19 +487,30 @@ namespace Funk
                 digest_input(argss...);
             }
 
-            double value(const std::vector<double> & X)
+            double value(std::vector<double> & data, intptr_t bindID)
             {
-                for ( unsigned int i = 0; i < X.size() ; i++ )
+                std::tuple<typename std::remove_reference<funcargs>::type...> my_input;
+                size_t i = 0;
+                double result;
+                #pragma omp critical (FunkFunc_setInput)
                 {
-                    *map[i] = X[i];
+                    for ( auto f = functions.begin(); f != functions.end(); ++f, ++i)
+                    {
+                        *map[i] = (*f)->value(data, bindID);
+                    }
+                    my_input = input;
                 }
-                return ppp(typename detail::range_builder<0, sizeof...(funcargs)>::type());
+                #pragma omp critical (FunkFunc_externalFunctionCall)
+                {
+                    result = ppp(typename detail::range_builder<0, sizeof...(funcargs)>::type(), my_input);
+                }
+                return result;
             }
 
             template <size_t... Args>
-            double ppp(index_list<Args...>)
+            double ppp(index_list<Args...>, std::tuple<typename std::remove_reference<funcargs>::type...> & my_input)
             {
-                return (*ptr)(std::get<Args>(input)...);
+                return (*ptr)(std::get<Args>(my_input)...);
             }
 
         private:
@@ -428,19 +529,17 @@ namespace Funk
                 digest_input(argss...);
             }
             template<typename... Args>
-            void digest_input(Funk x, Args... argss)
+            void digest_input(Funk f, Args... argss)
             {
                 const int i = sizeof...(funcargs) - sizeof...(argss) - 1;
                 map.push_back(&std::get<i>(input));
-                assert(x->getArgs().size() == 1);
-                assert(x->getType() == "var");
-                // TODO: Generalize to arbitrary funktions
-                args.push_back(x->getArgs()[0]);
+                arguments = joinArgs(arguments, f->getArgs());
+                functions.push_back(f);
+                singularities = joinSingl(singularities, f->getSingl());
                 digest_input(argss...);
             }
             void digest_input() {};
     };
-
 
     template <typename... funcargs, typename... Args>
     Funk func(double (*f)(funcargs...), Args... args) {
@@ -459,13 +558,19 @@ namespace Funk
                 digest_input(argss...);
             }
 
-            double value(const std::vector<double> & X)
+            double value(std::vector<double> & data, intptr_t bindID)
             {
-                for ( unsigned int i = 0; i < X.size() ; i++ )
+                double result;
+                #pragma omp critical(FunkFuncM_value)
                 {
-                    *map[i] = X[i];
+                    size_t i = 0;
+                    for ( auto f = functions.begin(); f != functions.end(); ++f, ++i)
+                    {
+                        *map[i] = (*f)->value(data, bindID);
+                    }
+                    result = ppp(typename detail::range_builder<0, sizeof...(funcargs)>::type());
                 }
-                return ppp(typename detail::range_builder<0, sizeof...(funcargs)>::type());
+                return result;
             }
 
             template <size_t... Args>
@@ -491,14 +596,13 @@ namespace Funk
                 digest_input(argss...);
             }
             template<typename... Args>
-            void digest_input(Funk x, Args... argss)
+            void digest_input(Funk f, Args... argss)
             {
                 const int i = sizeof...(funcargs) - sizeof...(argss) - 1;
                 map.push_back(&std::get<i>(input));
-                assert(x->getArgs().size() == 1);
-                assert(x->getType() == "var");
-                // TODO: Generalize to arbitrary funktions
-                args.push_back(x->getArgs()[0]);
+                arguments = joinArgs(arguments, f->getArgs());
+                functions.push_back(f);
+                singularities = joinSingl(singularities, f->getSingl());
                 digest_input(argss...);
             }
             void digest_input() {};
@@ -511,46 +615,20 @@ namespace Funk
     }
 
     //
-    // Derived class that implements constant
-    //
-
-    class FunkConst: public FunkBase
-    {
-        public:
-            template <typename... Args>
-            FunkConst(double c, Args ...argss) : c(c) { args = vec<std::string>(argss...); }
-            FunkConst(double c) : c(c) { args.resize(0); }
-
-            double value(const std::vector<double> & X)
-            {
-                (void)X;
-                return c;
-            }
-        private:
-            double c;
-    };
-    template <typename... Args>
-    inline Funk one(Args... argss) { return Funk(new FunkConst(1., argss...)); }
-    template <typename... Args>
-    inline Funk zero(Args... argss) { return Funk(new FunkConst(0., argss...)); }
-    template <typename... Args>
-    inline Funk cnst(double x, Args... argss) { return Funk(new FunkConst(x, argss...)); }
-
-    //
     // Derived class that implements simple linear variable
     //
 
     class FunkVar: public FunkBase
     {
         public:
-            FunkVar(std::string arg) : FunkBase("var")
+            FunkVar(std::string arg)
             {
-                args = vec(arg);
+                arguments = vec(arg);
             }
-
-            double value(const std::vector<double> & X)
+            
+            double value(std::vector<double> & data, intptr_t bindID)
             {
-                return X[0];
+                return data[indices[bindID][0]];
             }
     };
     inline Funk var(std::string arg) { return Funk(new FunkVar(arg)); }
@@ -559,105 +637,100 @@ namespace Funk
     //
     // Definition of FunkBase member functions
     //
-
-    inline std::vector<double> FunkBase::vector(std::string arg, const std::vector<double> & X)
-    {
-        unsigned n = X.size();
-        std::vector<double> Y(n);
-        for ( unsigned i = 0; i < n; i++ )
-        {
-            Y[i] = eval(arg, X[i]);
-        }
-        return Y;
-    }
-
-    template <typename... Args> inline Funk FunkBase::set (Args... args)
-    {
-        tmp_argmap.clear();
-        tmp_funmap.clear();
-        digest_arguments(args...);
-        Funk f = shared_from_this();
-        for ( auto it = tmp_argmap.begin(); it != tmp_argmap.end(); it++)
-        {
-            auto args = f->getArgs();
-            if ( std::find(args.begin(), args.end(), it->first) != args.end() )
-                f = Funk(new FunkDerived(f, it->first, it->second));
-            else
-            {
-                std::cout << "Funk: Ignoring \"" << it->first << "\" = " << it->second << std::endl;
-            }
-        }
-        for ( auto it = tmp_funmap.begin(); it != tmp_funmap.end(); it++)
-        {
-            auto args = f->getArgs();
-            if ( std::find(args.begin(), args.end(), it->first) != args.end() )
-            {
-                f = Funk(new FunkDerived(f, it->first, it->second));
-            }
-            else
-            {
-                std::cout << "Funk: Ignoring \"" << it->first << "\" = function" << std::endl;
-            }
-        }
-        return f;
-    }
-
-    template <typename... Args> inline Funk FunkBase::bind(Args... argss)
-    {
-        ArgsType bind_args = vec<std::string>(argss...);
-        assert (std::set<std::string>(args.begin(), args.end()) == std::set<std::string>(bind_args.begin(), bind_args.end()));
-        bind_map = getMap(args, bind_args);
-        Xout.resize(bind_args.size());
-        nout = Xout.size();
+ 
+    inline Funk FunkBase::set_singularity(std::string arg, Funk pos, Funk width)
+    { 
+        singularities[arg].push_back(std::pair<Funk, Funk>(pos, width)); 
         return shared_from_this();
+    };
+    inline Funk FunkBase::set_singularity(std::string arg, double pos, Funk width)
+    { return shared_from_this()->set_singularity(arg, cnst(pos), width); }
+    inline Funk FunkBase::set_singularity(std::string arg, double pos, double width)
+    { return shared_from_this()->set_singularity(arg, cnst(pos), cnst(width)); }
+    inline Funk FunkBase::set_singularity(std::string arg, Funk pos, double width)
+    { return shared_from_this()->set_singularity(arg, pos, cnst(width)); }
+
+    inline void FunkBase::resolve(std::map<std::string, size_t> datamap, size_t & datalen, intptr_t bindID)
+    {
+        // Resolve my dependencies
+        auto it1 = arguments.begin();
+        std::vector<size_t> tmp_indices;
+        tmp_indices.resize(arguments.size());
+        auto it2 = tmp_indices.begin();
+        for (; it1 != arguments.end() && it2 != tmp_indices.end(); ++it1, ++it2 )
+        {
+            *it2 = datamap.at(*it1);
+        }
+
+        // Set indices safely
+        safeset(indices, bindID, tmp_indices);
+
+        // Resolve other dependencies
+        for (auto it = functions.begin(); it != functions.end(); ++it)
+        {
+            (*it)->resolve(datamap, datalen, bindID);
+        }
+
     }
 
-    template <typename... Args> inline double FunkBase::eval (Args... args)
+    inline void FunkBase::release(intptr_t bindID)
     {
-        if ( sizeof...(args) != 0 )
+        if ( indices.find(bindID) != indices.end() )
+            indices.erase(indices.find(bindID));
+        for (auto it = functions.begin(); it != functions.end(); ++it)
+            (*it)->release(bindID);
+    }
+
+    template <typename... Args> inline Funk FunkBase::set(std::string arg, Funk g, Args... args)
+    {
+        Funk f = shared_from_this();
+        if ( std::find(arguments.begin(), arguments.end(), arg) != arguments.end() )
         {
-            Funk f = set(args...);
-            if ( f->args.size() == 0 )
-            {
-                return f->value(this->empty);
-            }
-            {
-                std::cout << "Missing parameters." << std::endl;
-                exit(-1);
-            }
+            f = Funk(new FunkDerived(f, arg, g));
         }
         else
         {
-            if ( this->args.size() == 0 )
-            {
-                return this->value(this->empty);
-            }
-            else
-            {
-                std::cout << "Missing parameters." << std::endl;
-                exit(-1);
-            }
+            std::cout << "Funk: Ignoring \"" << arg << "\" = function" << std::endl;
         }
+        return f->set(args...);
     }
 
-    template <typename... Args> inline double FunkBase::get(Args... argss)
+    template <typename... Args> inline Funk FunkBase::set(std::string arg, std::string arg1, Args... args) 
+        { return shared_from_this()->set(arg, var(arg1))->set(args...); }
+
+    template <typename... Args> inline Funk FunkBase::set(std::string arg, double x, Args... args) 
+        { return shared_from_this()->set(arg, cnst(x))->set(args...); }
+
+    template <> inline Funk FunkBase::set() 
+        { return shared_from_this(); }
+
+    template <typename... Args> inline shared_ptr<FunkBound> FunkBase::bind(Args... argss)
     {
-        assert (bind_map.size() == nout);
-        applyMap(Xout, bind_map, vec<double>(argss...), nout);
-        return this->value(Xout);
+        intptr_t bindID = (intptr_t)(void*)this;
+        std::map<std::string, size_t> datamap;
+        size_t i;
+        auto bound_arguments = vec<std::string>(argss...);
+        datalen = bound_arguments.size();
+        i = 0;
+        for ( auto it = bound_arguments.begin(); it != bound_arguments.end(); ++it, ++i )
+        {
+            datamap[*it] = i;
+        }
+        this->resolve(datamap, datalen, bindID);
+        return shared_ptr<FunkBound>(new FunkBound(shared_from_this(), datalen, bindID));
     }
 
     inline bool FunkBase::hasArg(std::string arg)
     {
-        return ( std::find(args.begin(), args.end(), arg) != args.end() );
+        return ( std::find(arguments.begin(), arguments.end(), arg) != arguments.end() );
     }
 
     inline bool FunkBase::hasArgs()
     {
-        return ( this->args.size() != 0 );
+        return ( this->arguments.size() != 0 );
     }
 
-    template <typename... Args> inline Funk FunkBase::gsl_integration(Args... args)
+    template <typename... Args> inline shared_ptr<FunkIntegrate_gsl1d> FunkBase::gsl_integration(Args... args)
     {
         return getIntegrate_gsl1d(shared_from_this(), args...);
     }
@@ -665,24 +738,18 @@ namespace Funk
     inline Funk FunkBase::help()
     {
         std::cout << "Arguments:";
-        for ( auto it = args.begin(); it != args.end(); it++ )
+        for ( auto it = arguments.begin(); it != arguments.end(); it++ )
         {
             std::cout << " \"" << *it << "\"";
         }
+        if ( arguments.size() == 0 )
+            std::cout << " none";
         std::cout << std::endl;
+        for ( auto it = singularities.begin() ; it != singularities.end(); ++it )
+        {
+            std::cout << "Singularities in " << it->first << ": " << it->second.size() << std::endl;
+        }
         return shared_from_this();
-    }
-
-    template <typename... Args> inline void FunkBase::digest_arguments(std::string arg, double y, Args... args)
-    {
-        tmp_argmap[arg] = y;
-        digest_arguments(args...);
-    }
-
-    template <typename... Args> inline void FunkBase::digest_arguments(std::string arg, Funk y, Args... args)
-    {
-        tmp_funmap[arg] = y;
-        digest_arguments(args...);
     }
 
     inline PlainPtrs1 FunkBase::plain(std::string arg1)
@@ -740,16 +807,16 @@ namespace Funk
     class FunkMath_umin: public FunkBase                                                           
     {                                                                                                     
         public:                                                                                           
-            FunkMath_umin(Funk f) : f(f)                                                        
+            FunkMath_umin(Funk f)
+            {
+                functions = vec(f);
+                singularities = f->getSingl();
+                arguments = f->getArgs();
+            }
+            double value(std::vector<double> & data, intptr_t bindID)
             {                                                                                             
-                args = f->getArgs();                                                                      
-            }                                                                                             
-            double value(const std::vector<double> & X)                                                   
-            {                                                                                             
-                return -(f->value(X));                                                            
+                return -(functions[0]->value(data, bindID));                                                            
             }                                                                                            
-        private:                                                                                         
-            Funk f;                                                                                    
     };                                                                                                    
     inline Funk operator - (Funk f) { return Funk(new FunkMath_umin(f)); }
 
@@ -758,16 +825,16 @@ namespace Funk
     class FunkMath_##OPERATION: public FunkBase                                                           \
     {                                                                                                     \
         public:                                                                                           \
-            FunkMath_##OPERATION(Funk f) : f(f)                                                        \
+            FunkMath_##OPERATION(Funk f)                                                                  \
             {                                                                                             \
-                args = f->getArgs();                                                                      \
+                functions = vec(f);                                                                       \
+                arguments = f->getArgs();                                                                 \
+                singularities = f->getSingl();                                                            \
             }                                                                                             \
-            double value(const std::vector<double> & X)                                                   \
+            double value(std::vector<double> & data, intptr_t bindID)                                     \
             {                                                                                             \
-                return OPERATION(f->value(X));                                                            \
+                return OPERATION(functions[0]->value(data, bindID));                                      \
             }                                                                                             \
-        private:                                                                                          \
-            Funk f;                                                                                    \
     };                                                                                                    \
     inline Funk OPERATION (Funk f) { return Funk(new FunkMath_##OPERATION(f)); }
     MATH_OPERATION(cos)
@@ -794,53 +861,21 @@ namespace Funk
     class FunkMath_##OPERATION: public FunkBase                                                           \
     {                                                                                                     \
         public:                                                                                           \
-            FunkMath_##OPERATION(Funk f1, Funk f2) : f1(f1), f2(f2), mode(0)                        \
+            FunkMath_##OPERATION(Funk f1, Funk f2)                                                        \
             {                                                                                             \
-                ArgsType args1 = f1->getArgs();                                                           \
-                ArgsType args2 = f2->getArgs();                                                           \
-                args = joinArgs(args1, args2);                                                            \
-                map1 = getMap(args, args1);                                                               \
-                map2 = getMap(args, args2);                                                               \
-                Xout1.resize(args1.size());                                                               \
-                Xout2.resize(args2.size());                                                               \
-                n1 = Xout1.size();                                                                        \
-                n2 = Xout2.size();                                                                        \
+                functions = vec(f1, f2); \
+                arguments = joinArgs(f1->getArgs(), f2->getArgs()); \
+                singularities = joinSingl(f1->getSingl(), f2->getSingl());\
             }                                                                                             \
-            FunkMath_##OPERATION(double x1, Funk f2) : x1(x1), f2(f2), mode(1)                         \
+            FunkMath_##OPERATION(double x, Funk f) : FunkMath_##OPERATION(cnst(x), f) {};                 \
+            FunkMath_##OPERATION(Funk f, double x) : FunkMath_##OPERATION(f, cnst(x)) {};                 \
+            double value(std::vector<double> & data, int bindID)                                                      \
             {                                                                                             \
-                args = f2->getArgs();                                                                     \
+                return functions[0]->value(data, bindID) SYMBOL functions[1]->value(data, bindID);                        \
             }                                                                                             \
-            FunkMath_##OPERATION(Funk f1, double x2) : x2(x2), f1(f1), mode(2)                         \
-            {                                                                                             \
-                args = f1->getArgs();                                                                     \
-            }                                                                                             \
-            double value(const std::vector<double> & Xin)                                                 \
-            {                                                                                             \
-                if ( mode == 0 )                                                                          \
-                {                                                                                         \
-                    applyMap(Xout1, map1, Xin, n1);                                                       \
-                    applyMap(Xout2, map2, Xin, n2);                                                       \
-                    return f1->value(Xout1) SYMBOL f2->value(Xout2);                                      \
-                }                                                                                         \
-                if ( mode == 1 )                                                                          \
-                {                                                                                         \
-                    return x1 SYMBOL f2->value(Xin);                                                      \
-                }                                                                                         \
-                else                                                                                      \
-                {                                                                                         \
-                    return f1->value(Xin) SYMBOL x2;                                                      \
-                }                                                                                         \
-            }                                                                                             \
-        private:                                                                                          \
-            double x1, x2;                                                                                \
-            int n1, n2;                                                                                   \
-            std::vector<int> map1, map2;                                                                  \
-            std::vector<double> Xout1, Xout2;                                                             \
-            Funk f1, f2;                                                                               \
-            int mode;                                                                                     \
     };                                                                                                    \
-    inline Funk operator SYMBOL (Funk f1, Funk f2) { return Funk(new FunkMath_##OPERATION(f1, f2)); }\
-    inline Funk operator SYMBOL (double x, Funk f) { return Funk(new FunkMath_##OPERATION(x, f)); }     \
+    inline Funk operator SYMBOL (Funk f1, Funk f2) { return Funk(new FunkMath_##OPERATION(f1, f2)); }     \
+    inline Funk operator SYMBOL (double x, Funk f) { return Funk(new FunkMath_##OPERATION(x, f)); }       \
     inline Funk operator SYMBOL (Funk f, double x) { return Funk(new FunkMath_##OPERATION(f, x)); }
     MATH_OPERATION(Sum,+)
     MATH_OPERATION(Mul,*)
@@ -853,50 +888,18 @@ namespace Funk
     class FunkMath_##OPERATION: public FunkBase                                                           \
     {                                                                                                     \
         public:                                                                                           \
-            FunkMath_##OPERATION(Funk f1, Funk f2) : f1(f1), f2(f2), mode(0)                        \
+            FunkMath_##OPERATION(Funk f1, Funk f2)                        \
             {                                                                                             \
-                ArgsType args1 = f1->getArgs();                                                           \
-                ArgsType args2 = f2->getArgs();                                                           \
-                args = joinArgs(args1, args2);                                                            \
-                map1 = getMap(args, args1);                                                               \
-                map2 = getMap(args, args2);                                                               \
-                Xout1.resize(args1.size());                                                               \
-                Xout2.resize(args2.size());                                                               \
-                n1 = Xout1.size();                                                                        \
-                n2 = Xout2.size();                                                                        \
+                functions = vec(f1, f2);   \
+                arguments = joinArgs(f1->getArgs(), f2->getArgs()); \
+                singularities = joinSingl(f1->getSingl(), f2->getSingl());\
             }                                                                                             \
-            FunkMath_##OPERATION(double x1, Funk f2) : x1(x1), f2(f2), mode(1)                         \
+            FunkMath_##OPERATION(double x1, Funk f2) : FunkMath_##OPERATION(cnst(x1), f2) {};                        \
+            FunkMath_##OPERATION(Funk f1, double x2) : FunkMath_##OPERATION(f1, cnst(x2)) {};                        \
+            double value(std::vector<double> & data, intptr_t bindID)                                                 \
             {                                                                                             \
-                args = f2->getArgs();                                                                     \
+                return OPERATION(functions[0]->value(data, bindID), functions[1]->value(data, bindID));                                 \
             }                                                                                             \
-            FunkMath_##OPERATION(Funk f1, double x2) : x2(x2), f1(f1), mode(2)                         \
-            {                                                                                             \
-                args = f1->getArgs();                                                                     \
-            }                                                                                             \
-            double value(const std::vector<double> & Xin)                                                 \
-            {                                                                                             \
-                if ( mode == 0 )                                                                          \
-                {                                                                                         \
-                    applyMap(Xout1, map1, Xin, n1);                                                       \
-                    applyMap(Xout2, map2, Xin, n2);                                                       \
-                    return OPERATION(f1->value(Xout1), f2->value(Xout2));                                 \
-                }                                                                                         \
-                if ( mode == 1 )                                                                          \
-                {                                                                                         \
-                    return OPERATION(x1, f2->value(Xin));                                                 \
-                }                                                                                         \
-                else                                                                                      \
-                {                                                                                         \
-                    return OPERATION(f1->value(Xin), x2);                                                 \
-                }                                                                                         \
-            }                                                                                             \
-        private:                                                                                          \
-            double x1, x2;                                                                                \
-            int n1, n2;                                                                                   \
-            std::vector<int> map1, map2;                                                                  \
-            std::vector<double> Xout1, Xout2;                                                             \
-            Funk f1, f2;                                                                               \
-            int mode;                                                                                     \
     };                                                                                                    \
     inline Funk OPERATION (Funk f1, Funk f2) { return Funk(new FunkMath_##OPERATION(f1, f2)); }      \
     inline Funk OPERATION (double x, Funk f) { return Funk(new FunkMath_##OPERATION(x, f)); }           \
@@ -924,18 +927,25 @@ namespace Funk
     class FunkInterp : public FunkBase
     {
         public:
-            FunkInterp(std::string arg, std::vector<double> & Xgrid, std::vector<double> & Ygrid, std::string mode = "lin")
+            FunkInterp(Funk f, std::vector<double> & Xgrid, std::vector<double> & Ygrid, std::string mode = "lin")
             {
-                args.push_back(arg);
+                functions = vec(f);
+                singularities = f->getSingl();
+                arguments = f->getArgs();
                 this->Xgrid = Xgrid;
                 this->Ygrid = Ygrid;
                 if ( mode == "lin" ) this->ptr = &FunkInterp::linearInterp;
                 else if ( mode == "log" ) this->ptr = &FunkInterp::logInterp;
             };
+            FunkInterp(std::string arg, std::vector<double> & Xgrid, std::vector<double> & Ygrid, std::string mode = "lin") :
+                FunkInterp(var(arg), Xgrid, Ygrid, mode) {};
+            FunkInterp(double x, std::vector<double> & Xgrid, std::vector<double> & Ygrid, std::string mode = "lin") :
+                FunkInterp(cnst(x), Xgrid, Ygrid, mode) {};
 
-            double value(const std::vector<double> & X)
+            double value(std::vector<double> & data, intptr_t bindID)
             {
-                return (this->*ptr)(X[0]);
+                functions[0]->value(data, bindID);
+                return (this->*ptr)(data[indices[bindID][0]]);
             }
 
         private:
@@ -968,7 +978,7 @@ namespace Funk
             std::vector<double> Ygrid;
             std::string mode;
     };
-    inline Funk interp(std::string arg, std::vector<double> x, std::vector<double> y) { return Funk(new FunkInterp(arg, x, y)); }
+    template <typename T> inline shared_ptr<FunkInterp> interp(T f, std::vector<double> x, std::vector<double> y) { return shared_ptr<FunkInterp>(new FunkInterp(f, x, y)); }
 
 
     //
@@ -978,116 +988,131 @@ namespace Funk
     class FunkIntegrate_gsl1d: public FunkBase, public gsl_function
     {
         public:
-            FunkIntegrate_gsl1d(Funk fptr, std::string arg, std::string lim0, std::string lim1) : 
-                fptr(fptr), lim0(lim0), lim1(lim1), limit(100), epsrel(1e-2), epsabs(1e-2)
+            FunkIntegrate_gsl1d(Funk f0, std::string arg, Funk f1, Funk f2) : arg(arg), limit(100), epsrel(1e-2), epsabs(1e-2)
             {
-                auto f_args = fptr->getArgs();
-                if ( arg == lim0 or arg == lim1 ) 
-                {
-                    std::cout << "ERROR: boundary equal integration variable." << std::endl;
-                    exit(-1);
-                }
-                if ( lim0 == lim1 )
-                {
-                    std::cout << "Warning: Boundaries identical." << std::endl;
-                }
-                if ( not inArg(f_args, arg) )
-                {
-                    std::cout << "Warning: Integrand independent of integration variable." << std::endl;
-                    i = -1;
-                    args = joinArgs(f_args, vec(lim0, lim1));
-                    mapF = getMap(args, fptr->getArgs());
-                    mapL = getMap(args, vec(lim0, lim1));
-                    Xout.resize(fptr->getArgs().size());
-                    nout = Xout.size();
-                }
-                else
-                {
-                    i = eraseArg(f_args, arg);
-                    args = joinArgs(f_args, vec(lim0, lim1));
-                    mapF = getMap(args, fptr->getArgs());
-                    mapL = getMap(args, vec(lim0, lim1));
+                this->functions = vec(f0, f1, f2);
 
-                    Xout.resize(fptr->getArgs().size());
-                    nout = Xout.size();
-                }
+                singularities = joinSingl(f1->getSingl(), f2->getSingl());
+                if ( f0->getSingl().find(arg) != f0->getSingl().end() )
+                    my_singularities = f0->getSingl()[arg];
+                Singularities tmp_singl = f0->getSingl();
+                tmp_singl.erase(arg);
+                singularities = joinSingl(singularities, tmp_singl);
 
+                arguments = joinArgs(eraseArg(f0->getArgs(), arg), joinArgs(f1->getArgs(), f2->getArgs()));
                 gsl_workspace = gsl_integration_workspace_alloc (100000);
             }
-            
+            FunkIntegrate_gsl1d(Funk f0, std::string arg, double x, Funk f) : FunkIntegrate_gsl1d(f0, arg, cnst(x), f) {};
+            FunkIntegrate_gsl1d(Funk f0, std::string arg, double x, double y) : FunkIntegrate_gsl1d(f0, arg, cnst(x), cnst(y)) {};
+            FunkIntegrate_gsl1d(Funk f0, std::string arg, Funk f, double x) : FunkIntegrate_gsl1d(f0, arg, f, cnst(x)) {};
+            FunkIntegrate_gsl1d(Funk f0, std::string arg, std::string x, Funk f) : FunkIntegrate_gsl1d(f0, arg, var(x), f) {};
+            FunkIntegrate_gsl1d(Funk f0, std::string arg, std::string x, std::string y) : FunkIntegrate_gsl1d(f0, arg, var(x), var(y)) {};
+            FunkIntegrate_gsl1d(Funk f0, std::string arg, Funk f, std::string x) : FunkIntegrate_gsl1d(f0, arg, f, var(x)) {};
+            FunkIntegrate_gsl1d(Funk f0, std::string arg, std::string x, double y) : FunkIntegrate_gsl1d(f0, arg, var(x), cnst(y)) {};
+            FunkIntegrate_gsl1d(Funk f0, std::string arg, double y, std::string x) : FunkIntegrate_gsl1d(f0, arg, cnst(y), var(x)) {};
+
+            void resolve(std::map<std::string, size_t> datamap, size_t & datalen, intptr_t bindID)
+            {
+                functions[1]->resolve(datamap, datalen, bindID);  // Resolve boundary 0
+                functions[2]->resolve(datamap, datalen, bindID);  // Resolve boundary 1
+                safeset(index, bindID, datalen);
+                datamap[arg] = index[bindID];
+                ++datalen;
+                functions[0]->resolve(datamap, datalen, bindID);
+                for ( auto it = my_singularities.begin(); it != my_singularities.end(); ++it )
+                {
+                    it->first->resolve(datamap, datalen, bindID);
+                    it->second->resolve(datamap, datalen, bindID);
+                }
+            }
+
             ~FunkIntegrate_gsl1d()
             {
                 gsl_integration_workspace_free(gsl_workspace);
             }
 
-            Funk set_epsrel(double epsrel) { this->epsrel = epsrel; return this->shared_from_this(); }
-            Funk set_epsabs(double epsabs) { this->epsabs = epsabs; return this->shared_from_this(); }
-            Funk set_limit(size_t limit) { this->limit = limit; return this->shared_from_this(); }
+            shared_ptr<FunkIntegrate_gsl1d> set_epsrel(double epsrel) 
+            { this->epsrel = epsrel; return static_pointer_cast<FunkIntegrate_gsl1d>(this->FunkIntegrate_gsl1d::shared_from_this()); }
+            shared_ptr<FunkIntegrate_gsl1d> set_epsabs(double epsabs) 
+            { this->epsabs = epsabs; return static_pointer_cast<FunkIntegrate_gsl1d>(this->shared_from_this()); }
+            shared_ptr<FunkIntegrate_gsl1d> set_limit(size_t limit) 
+            { this->limit = limit; return static_pointer_cast<FunkIntegrate_gsl1d>(this->shared_from_this()); }
+            shared_ptr<FunkIntegrate_gsl1d> set_singularity_factor(double f) 
+            { this->singl_factor = f; return static_pointer_cast<FunkIntegrate_gsl1d>(this->shared_from_this()); }
 
-            double value(const std::vector<double> & X)
+            double value(std::vector<double> & data, intptr_t bindID)
             {
-                double result, error;
-                Xin = X;
-
-                // Setup gsl_function
-                if ( i != -1 )
+                double result;
+                #pragma omp critical(FunkIntegrate_gsl1d_integration)
+                {
+                    local_data = data;
+                    local_bindID = bindID;
+                    double error;
                     function=&FunkIntegrate_gsl1d::invoke;
-                else
-                    function=&FunkIntegrate_gsl1d::invoke2;
-                params=this;
-
-                gsl_integration_qags(this, X[mapL[0]], X[mapL[1]], epsabs, epsrel, limit, gsl_workspace, &result, &error);
-                //TODO: Add error checks to integration output!!
-
+                    params=this;
+                    double x0 = functions[1]->value(data, bindID);
+                    double x1 = functions[2]->value(data, bindID);
+                    if ( my_singularities.size() == 0 )
+                        gsl_integration_qags(this, x0, x1, epsabs, epsrel, limit, gsl_workspace, &result, &error);
+                    else
+                    {
+                        double s = 0;
+                        std::vector<double> ranges;
+                        ranges.push_back(x0);
+                        ranges.push_back(x1);
+                        for ( auto it = my_singularities.begin(); it != my_singularities.end(); ++it )
+                        {
+                            double mean = it->first->value(data, bindID);
+                            double sigma = it->second->value(data, bindID);
+                            double z0 = mean - singl_factor*sigma;
+                            double z1 = mean + singl_factor*sigma;
+                            if ( z0 == z1 )
+                                std::cout << "WARNING: Singularity width is beyond machine precision." << std::endl;
+                            if ( z0 > x0 and z0 < x1 ) ranges.push_back(z0);
+                            if ( z1 > x0 and z1 < x1 ) ranges.push_back(z1);
+                        }
+                        std::sort(ranges.begin(), ranges.end());
+                        for ( auto it = ranges.begin(); it != ranges.end()-1; ++it )
+                        {
+                            gsl_integration_qags(this, *it, *(it+1), epsabs, epsrel, limit, gsl_workspace, &result, &error);
+                            s += result;
+                            //std::cout << *it << " " << *(it+1) << " " << result << std::endl;
+                        }
+                        result = s;
+                    }
+                }
                 return result;
-            }            
+            }
             
         private:
             // Static member function that invokes integrand
             static double invoke(double x, void *params) {
                 FunkIntegrate_gsl1d * ptr = static_cast<FunkIntegrate_gsl1d*>(params);
-                applyMap(ptr->Xout, ptr->mapF, ptr->Xin, ptr->nout);
-                ptr->Xout[ptr->i] = x;
-                return ptr->fptr->value(ptr->Xout);
-            }
-            static double invoke2(double x, void *params) {
-                (void)x;
-                FunkIntegrate_gsl1d * ptr = static_cast<FunkIntegrate_gsl1d*>(params);
-                applyMap(ptr->Xout, ptr->mapF, ptr->Xin, ptr->nout);
-                return ptr->fptr->value(ptr->Xout);
+                ptr->local_data[ptr->index[ptr->local_bindID]] = x;
+                return ptr->functions[0]->value(ptr->local_data, ptr->local_bindID);
             }
 
             // Required for rewiring input parameters
-            std::vector<int> mapF, mapL;  // Maps output indices on input indices
-            std::vector<double> Xin, Xout;
-            unsigned int nout;
-            int i;
+            std::vector<double> local_data;
+            intptr_t local_bindID;
+            std::vector<std::pair<Funk, Funk>> my_singularities;
 
             // Integration range and function pointer
-            Funk fptr;
-            std::string lim0, lim1;
+            std::string arg;
 
             // GSL workspace and parameters
             gsl_integration_workspace * gsl_workspace;
             size_t limit;
+            std::map<int, size_t> index;
             double epsrel;
             double epsabs;
+
+            double singl_factor = 4;
     };
 
     // Standard behaviour
-    inline Funk getIntegrate_gsl1d(Funk fptr, std::string arg, std::string lim0, std::string lim1) { return Funk(new FunkIntegrate_gsl1d(fptr, arg, lim0, lim1)); }
-    // Convenient overloads
-    inline Funk getIntegrate_gsl1d(Funk fptr, std::string arg, std::string lim0, double x) { return Funk(new FunkIntegrate_gsl1d(fptr, arg, lim0, TMPID1))->set(TMPID1, x); }
-    inline Funk getIntegrate_gsl1d(Funk fptr, std::string arg, double x, std::string lim1) { return Funk(new FunkIntegrate_gsl1d(fptr, arg, TMPID1, lim1))->set(TMPID1, x); }
-    inline Funk getIntegrate_gsl1d(Funk fptr, std::string arg, double x, double y) { return Funk(new FunkIntegrate_gsl1d(fptr, arg, TMPID1, TMPID2))->set(TMPID1, x, TMPID2, y); }
-    inline Funk getIntegrate_gsl1d(Funk fptr, std::string arg, std::string lim0, Funk g) { return Funk(new FunkIntegrate_gsl1d(fptr, arg, lim0, TMPID1))->set(TMPID1, g); }
-    inline Funk getIntegrate_gsl1d(Funk fptr, std::string arg, Funk g, std::string lim1) { return Funk(new FunkIntegrate_gsl1d(fptr, arg, TMPID1, lim1))->set(TMPID1, g); }
-    inline Funk getIntegrate_gsl1d(Funk fptr, std::string arg, Funk g1, Funk g2) { return Funk(new FunkIntegrate_gsl1d(fptr, arg, TMPID1, TMPID2))->set(TMPID1, g1)->set(TMPID2, g2); }
-    inline Funk getIntegrate_gsl1d(Funk fptr, std::string arg, double x, Funk g) { return Funk(new FunkIntegrate_gsl1d(fptr, arg, TMPID1, TMPID2))->set(TMPID1, x, TMPID2, g); }
-    inline Funk getIntegrate_gsl1d(Funk fptr, std::string arg, Funk g, double x) { return Funk(new FunkIntegrate_gsl1d(fptr, arg, TMPID1, TMPID2))->set(TMPID1, g, TMPID2, x); }
+    template <typename T1, typename T2>
+    inline shared_ptr<FunkIntegrate_gsl1d> getIntegrate_gsl1d(Funk fptr, std::string arg, T1 x1, T2 x2) { return shared_ptr<FunkIntegrate_gsl1d>(new FunkIntegrate_gsl1d(fptr, arg, x1, x2)); }
 }
-
-#undef TMPID1
-#undef TMPID2
 
 #endif  // __FUNK_HPP__

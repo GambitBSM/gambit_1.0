@@ -58,9 +58,9 @@ namespace Gambit
             // bb, tautau, mumu, ss, cc, tt, gg, gammagamma, Zgamma, WW, ZZ
             
             double s = 4*mass*mass/(1-v*v/4);
-            double br = f_vs_mass[channel]->eval("mass", std::min(sqrt(s), 150.));
-            double Gamma_s = f_vs_mass["Gamma"]->eval("mass", std::min(sqrt(s), 150.));
-            double Gamma_mh = f_vs_mass["Gamma"]->eval("mass", mh);
+            double br = f_vs_mass[channel]->bind("mass")->eval(std::min(sqrt(s), 150.));
+            double Gamma_s = f_vs_mass["Gamma"]->bind("mass")->eval(std::min(sqrt(s), 150.));
+            double Gamma_mh = f_vs_mass["Gamma"]->bind("mass")->eval(mh);
             const double GeV2tocm3s1 = 1.17e-17;
             double myDh2 = Dh2(s, Gamma_mh);
 
@@ -74,7 +74,7 @@ namespace Gambit
             double vh = sqrt(1-4*mh*mh/s);
             double tp = pow(mass,2)+pow(mh,2)-0.5*s*(1-v*vh);
             double tm = pow(mass,2)+pow(mh,2)-0.5*s*(1+v*vh);
-            double Gamma_mh = f_vs_mass["Gamma"]->eval("mass", mh);
+            double Gamma_mh = f_vs_mass["Gamma"]->bind("mass")->eval(mh);
 
             double aR = 1+3*mass*mass*(s-mh*mh)*Dh2(s, Gamma_mh);
             double aI = 3*mh*mh*sqrt(s)*Gamma_mh*Dh2(s, Gamma_mh);
