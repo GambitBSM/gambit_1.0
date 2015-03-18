@@ -56,10 +56,9 @@ namespace Gambit
 
       add_particle("g",     ( 21, 0) )
       add_particle("gamma", ( 22, 0) )
-      add_particle("Z0",    ( 23, 0) )
+      add_particle("Z",     ( 23, 0) )
       add_particle("W+",    ( 24, 0) )
       add_particle("W-",    (-24, 0) )
-
 
       // ---- Standard Model mass eigenstates (context = 0) ----
 
@@ -103,6 +102,17 @@ namespace Gambit
       add_particle("nubar_e"  , (-12, 1) )
       add_particle("nubar_mu" , (-14, 1) )
       add_particle("nubar_tau", (-16, 1) )
+
+      // ---- Standard Model significant mesons (context = 0) ----
+
+      add_particle("pi0",   ( 111, 0) ) 
+      add_particle("pi+",   ( 211, 0) ) 
+      add_particle("pi-",   (-211, 0) ) 
+      add_particle("eta",   ( 221, 0) ) 
+      add_particle("rho0",  ( 113, 0) ) 
+      add_particle("rho+",  ( 213, 0) ) 
+      add_particle("rho-",  (-213, 0) ) 
+      add_particle("omega", ( 223, 0) ) 
 
 
       // ---- MSSM sparticle mass eigenstates ---- (TODO to be extended to NMSSM)

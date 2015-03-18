@@ -104,7 +104,7 @@ namespace Gambit
         public:
 
           /// Default constructor
-          Entry() :  width_in_GeV(0.0), calculator(""), calculator_version(""), warnings(""), errors("") {}
+          Entry() :  width_in_GeV(0.0), positive_error(0.0), negative_error(0.0), calculator(""), calculator_version(""), warnings(""), errors("") {}
           /// Constructor taking total width
           Entry(double width) :  width_in_GeV(width), calculator(""), calculator_version(""), warnings(""), errors("") {}
 
@@ -172,6 +172,12 @@ namespace Gambit
 
           /// Total particle width (in GeV)
           double width_in_GeV;
+          
+          /// Positive error on width
+          double positive_error
+
+          /// Negative error on width
+          double negative_error
 
           /// Name of the code (backend or otherwise) used for calculating this entry
           str calculator;

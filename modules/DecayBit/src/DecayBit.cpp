@@ -90,35 +90,197 @@ namespace Gambit
       cout << "Higgs BF sum in DecayBit::MSSMHiggs_decays: " << result.sum_BF() << endl;
     }
 
-    /// Calculate decay rates for mu
-    void mu_decays (DecayTable::Entry& result) 
+    /// SM decays: W+
+    void W_plus_decays (DecayTable::Entry& result) 
     {
-      // Remember that result does not arrive pristine, but contains the result of the last point.  Make sure to overwrite it fully!
-      //using namespace Pipes::mu_decays;
-      //Spectrum* spec = *Dep::SM_spectrum;
-      //double m_mu = spec->phys.get_Pole_Mass("mu+"); // Maybe you depend on the SM masses, maybe not
-      result.width_in_GeV = 15.0;                    // (number needs checking against PDG)
-      result.set_BF(1.0, "e+", "nu_e");              // Set the BF (probably not really 100%)
+      result.width_in_GeV = 2.08;                    
+      result.positive_error = 4.0e-02;
+      result.negative_error = 4.0e-02;
+      //result.set_BF(1.0, "e+", "nu_e");              
     }
 
-    /// Get branching fraction for H -> b bbar
-    void BF_H_to_bbbar (double &result) 
+    /// SM decays: W-
+    void W_minus_decays (DecayTable::Entry& result) 
     {
-      using namespace Pipes::BF_H_to_bbbar;
-      result = Dep::Higgs_decay_rates->BF("b", "bbar");  // Retrieve the branching fraction from the DecayTable::Entry 
+      result.width_in_GeV = 2.08;                    
+      result.positive_error = 4.0e-02;
+      result.negative_error = 4.0e-02;
+      //result.set_BF(1.0, "e+", "nu_e");              
+    }
+
+    /// SM decays: Z
+    void Z_decays (DecayTable::Entry& result) 
+    {
+      result.width_in_GeV = 2.4952;                    
+      result.positive_error = 2.3e-03;
+      result.negative_error = 2.3es-03;
+      //result.set_BF(1.0, "e+", "nu_e");              
+    }
+
+    /// SM decays: t
+    void t_decays (DecayTable::Entry& result) 
+    {
+      result.width_in_GeV = 2.0;                    
+      result.positive_error = 5.0e-01;
+      result.negative_error = 5.0e-01;
+      //result.set_BF(1.0, "e+", "nu_e");              
+    }
+
+    /// SM decays: tbar
+    void tbar_decays (DecayTable::Entry& result) 
+    {
+      result.width_in_GeV = 2.0;                    
+      result.positive_error = 5.0e-01;
+      result.negative_error = 5.0e-01;
+      //result.set_BF(1.0, "e+", "nu_e");              
+    }
+
+    /// SM decays: mu-
+    void mu_minus_decays (DecayTable::Entry& result) 
+    {
+      result.width_in_GeV = 2.9959847e-19;                    
+      result.positive_error = 3.0e-25;
+      result.negative_error = 3.0e-25;
+      //result.set_BF(1.0, "e+", "nu_e");              
+    }
+
+    /// SM decays: mu+
+    void mu_plus_decays (DecayTable::Entry& result) 
+    {
+      result.width_in_GeV = 2.9959847e-19;                    
+      result.positive_error = 3.0e-25;
+      result.negative_error = 3.0e-25;
+      //result.set_BF(1.0, "e+", "nu_e");              
+    }
+
+    /// SM decays: tau-
+    void tau_minus_decays (DecayTable::Entry& result) 
+    {
+      result.width_in_GeV = 2.267E-12;                    
+      result.positive_error = 4.0e-15;
+      result.negative_error = 4.0e-15;
+      //result.set_BF(1.0, "e+", "nu_e");              
+    }
+
+    /// SM decays: tau+
+    void tau_plus_decays (DecayTable::Entry& result) 
+    {
+      result.width_in_GeV = 2.267E-12;                    
+      result.positive_error = 4.0e-15;
+      result.negative_error = 4.0e-15;
+      //result.set_BF(1.0, "e+", "nu_e");              
+    }
+
+    /// SM decays: pi0
+    void pi_0_decays (DecayTable::Entry& result) 
+    {
+      result.width_in_GeV = 7.73e-09;                    
+      result.positive_error = 1.7e-10;
+      result.negative_error = 1.7e-10;
+      //result.set_BF(1.0, "e+", "nu_e");              
+    }
+
+    /// SM decays: pi+
+    void pi_plus_decays (DecayTable::Entry& result) 
+    {
+      result.width_in_GeV = 2.5284e-17;                    
+      result.positive_error = 5.0e-21;
+      result.negative_error = 5.0e-21;
+      //result.set_BF(1.0, "e+", "nu_e");              
+    }
+
+    /// SM decays: pi-
+    void pi_minus_decays (DecayTable::Entry& result) 
+    {
+      result.width_in_GeV = 2.5284e-17;                    
+      result.positive_error = 5.0e-21;
+      result.negative_error = 5.0e-21;
+      //result.set_BF(1.0, "e+", "nu_e");              
+    }
+
+    /// SM decays: eta
+    void eta_decays (DecayTable::Entry& result) 
+    {
+      result.width_in_GeV = 1.31e-06;                    
+      result.positive_error = 5.0e-08;
+      result.negative_error = 5.0e-08;
+      //result.set_BF(1.0, "e+", "nu_e");              
+    }
+
+    /// SM decays: rho0
+    void rho_0_decays (DecayTable::Entry& result) 
+    {
+      result.width_in_GeV = 1.491e-01;                    
+      result.positive_error = 8.0e-04;
+      result.negative_error = 8.0e-04;
+      //result.set_BF(1.0, "e+", "nu_e");              
+    }
+
+    /// SM decays: rho+
+    void rho_plus_decays (DecayTable::Entry& result) 
+    {
+      result.width_in_GeV = 1.491e-01;                    
+      result.positive_error = 8.0e-04;
+      result.negative_error = 8.0e-04;
+      //result.set_BF(1.0, "e+", "nu_e");              
+    }
+
+    /// SM decays: rho-
+    void rho_minus_decays (DecayTable::Entry& result) 
+    {
+      result.width_in_GeV = 1.491e-01;                    
+      result.positive_error = 8.0e-04;
+      result.negative_error = 8.0e-04;
+      //result.set_BF(1.0, "e+", "nu_e");              
+    }
+
+    /// SM decays: omega
+    void omega_decays (DecayTable::Entry& result) 
+    {
+      result.width_in_GeV = 8.49e-03;                    
+      result.positive_error = 8.0e-05;
+      result.negative_error = 8.0e-05;
+      //result.set_BF(1.0, "e+", "nu_e");              
     }
 
     /// Collect all the DecayTable entries into an actual DecayTable 
     void all_decays (DecayTable &result) 
     {
-      // Remember that result does not arrive pristine, but contains the result of the last point.  Make sure to overwrite it fully!
       using namespace Pipes::all_decays;
-      DecayTable decays = DecayTable();        // Start with a blank DecayTable.
-      decays("h0_1") = *Dep::Higgs_decay_rates;// Add the Higgs decays.
-      decays("mu+") = *Dep::mu_decay_rates;    // Add the muon decays for mu+.
-      decays("mu-") = DecayTable::Entry(decays("mu+").width_in_GeV); // Do the same for mu-, assuming no CP asymmetry.
-      decays("mu-").set_BF(decays("mu+").BF("e+", "nu_e"), "e-", "nu_e");
-      cout << "BF for mu- -> nu e-: " << decays("mu-").BF("e-", "nu_e") << endl;
+      DecayTable decays = DecayTable();             // Start with a blank DecayTable.
+
+      decays("h0_1") = *Dep::Higgs_decay_rates;     // Add the Higgs decays.
+      decays("Z") = *Dep::W_minus_decay_rates;      // Add the Z decays
+      decays("W+") = *Dep::W_plus_decay_rates;      // Add the W decays for W+.
+      decays("W-") = *Dep::W_minus_decay_rates;     // Add the W decays for W-
+
+      decays("t") = *Dep::mu_plus_decay_rates;      // Add the top decays for t.
+      decays("tbar") = *Dep::mu_minus_decay_rates;  // Add the top decays for tbar
+      decays("u_3") = decays("t")                   // Duplicate for mass-ordered quarks
+      decays("ubar_3") = decays("tbar")             // Duplicate for mass-ordered quarks
+
+      decays("mu+") = *Dep::mu_plus_decay_rates;    // Add the muon decays for mu+.
+      decays("mu-") = *Dep::mu_minus_decay_rates;   // Add the muon decays for mu-
+      decays("e+_2") = decays("mu+")                // Duplicate for mass-ordered leptons
+      decays("e-_2") = decays("mu-")                // Duplicate for mass-ordered leptons
+
+      decays("tau+") = *Dep::tau_plus_decay_rates;  // Add the tauon decays for tau+.
+      decays("tau-") = *Dep::tau_minus_decay_rates; // Do the same for tau-, assuming no CP asymmetry.
+      decays("e+_3") = decays("tau+")               // Duplicate for mass-ordered leptons
+      decays("e-_3") = decays("tau-")               // Duplicate for mass-ordered leptons
+
+      decays("pi0") = *Dep::pi_0_decay_rates;       // Add the neutral pion decays.
+      decays("pi+") = *Dep::pi_plus_decay_rates;    // Add the pi+ decays.
+      decays("pi-") = *Dep::pi_minus_decay_rates;   // Add the pi- decays.
+      decays("eta") = *Dep::eta_decay_rates;        // Add the eta meson decays.
+      decays("rho0") = *Dep::rho_0_rates;           // Add the neutral rho meson decays.
+      decays("rho+") = *Dep::rho_plus_rates;        // Add the rho+ decays.
+      decays("rho-") = *Dep::rho_minus_rates;       // Add the rho- decays.
+      decays("omega") = *Dep::omega_decay_rates;    // Add the omega meson decays.
+      
+      //decays("mu-") = DecayTable::Entry(decays("mu+").width_in_GeV); // Do the same for mu-, assuming no CP asymmetry.
+      //decays("mu-").set_BF(decays("mu+").BF("e+", "nu_e"), "e-", "nu_e");
+      //cout << "BF for mu- -> nu e-: " << decays("mu-").BF("e-", "nu_e") << endl;
       result = decays;
     }
 
