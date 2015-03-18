@@ -884,7 +884,7 @@ namespace Funk
             }                                                                                             \
             FunkMath_##OPERATION(double x, Funk f) : FunkMath_##OPERATION(cnst(x), f) {};                 \
             FunkMath_##OPERATION(Funk f, double x) : FunkMath_##OPERATION(f, cnst(x)) {};                 \
-            double value(std::vector<double> & data, int bindID)                                                      \
+            double value(std::vector<double> & data, intptr_t bindID)                                                      \
             {                                                                                             \
                 return functions[0]->value(data, bindID) SYMBOL functions[1]->value(data, bindID);                        \
             }                                                                                             \
