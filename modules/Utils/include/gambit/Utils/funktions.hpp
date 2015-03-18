@@ -469,7 +469,7 @@ namespace Funk
 
         private:
             std::string my_arg;
-            std::map<int, size_t> my_index;
+            std::map<intptr_t, size_t> my_index;
     };
 
 
@@ -1118,7 +1118,7 @@ namespace Funk
             // GSL workspace and parameters
             gsl_integration_workspace * gsl_workspace;
             size_t limit;
-            std::map<int, size_t> index;
+            std::map<intptr_t, size_t> index;
             double epsrel;
             double epsabs;
 
