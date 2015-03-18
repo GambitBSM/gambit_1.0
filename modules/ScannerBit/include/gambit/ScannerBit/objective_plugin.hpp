@@ -37,6 +37,7 @@ namespace Gambit
                 {
                 public:
                         virtual void transform(const std::vector<double> &, std::unordered_map<std::string, double> &) const = 0;
+                        virtual double operator()(const std::vector<double>&) const = 0;
                         virtual ~PriorTransform() = 0;
                 };
         }

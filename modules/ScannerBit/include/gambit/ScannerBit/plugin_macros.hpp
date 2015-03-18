@@ -21,6 +21,9 @@
 
 #include "gambit/ScannerBit/plugin_details.hpp"
 #include "gambit/ScannerBit/printer_interface.hpp"
+#include "gambit/Utils/type_index.hpp"
+
+using Gambit::type_index;
 
 #ifndef SCANNER_PLUGIN_MACROS_HPP
 #define SCANNER_PLUGIN_MACROS_HPP
@@ -141,44 +144,62 @@ namespace __gambit_plugin_namespace__                                           
 
 //constructor
 #define PLUGIN_CONSTRUCTOR                                                                                              \
-void __gambit_plugin_constructor__();                                                                                   \
-RUN_FUNCTION(__gambit_plugin_constructor__)                                                                             \
-void __gambit_plugin_constructor__()                                                                                    \
-
-#define PLUGIN_DECONSTRUCTOR                                                                                            \
-void __gambit_plugin_deconstructor__();                                                                                 \
+void PLUGIN_CONSTRUCTOR();                                                                                              \
 namespace __gambit_plugin_namespace__                                                                                   \
 {                                                                                                                       \
-        namespace ConstructTags                                                                                         \
-        {                                                                                                               \
-                struct deconstructor{};                                                                                 \
-        }                                                                                                               \
-                                                                                                                        \
         namespace                                                                                                       \
         {                                                                                                               \
                 template<>                                                                                              \
-                class interface <ConstructTags::deconstructor>                                                          \
+                class interface <void (int)>                                                                            \
                 {                                                                                                       \
                 public:                                                                                                 \
                                                                                                                         \
                         interface(pluginData &myData)                                                                   \
                         {                                                                                               \
-                                myData.inits.push_back(interface <ConstructTags::deconstructor>::init);                 \
+                                myData.inits.push_back(interface <void (int)>::init);                                   \
                         }                                                                                               \
                                                                                                                         \
-                        static void init(pluginData &myData)                                                            \
+                        static void init(pluginData&)                                                                   \
                         {                                                                                               \
-                                myData.deconstructor = __gambit_plugin_deconstructor__;                                 \
+                                PLUGIN_CONSTRUCTOR();                                                                   \
                         }                                                                                               \
                 };                                                                                                      \
                                                                                                                         \
                 template <>                                                                                             \
-                interface <ConstructTags::deconstructor> reg_init <ConstructTags::deconstructor>::reg(myData);          \
+                interface <void (int)> reg_init <void (int)>::reg(myData);                                              \
+        }                                                                                                               \
+}                                                                                                                       \
+void PLUGIN_CONSTRUCTOR()                                                                                               \
+
+#define PLUGIN_DECONSTRUCTOR                                                                                            \
+void PLUGIN_DECONSTRUCTOR();                                                                                            \
+namespace __gambit_plugin_namespace__                                                                                   \
+{                                                                                                                       \
+        namespace                                                                                                       \
+        {                                                                                                               \
+                template<>                                                                                              \
+                class interface <void (void)>                                                                           \
+                {                                                                                                       \
+                public:                                                                                                 \
+                                                                                                                        \
+                        interface(pluginData &myData)                                                                   \
+                        {                                                                                               \
+                                myData.inits.push_back(interface <void (void)>::init);                                  \
+                        }                                                                                               \
+                                                                                                                        \
+                        static void init(pluginData &myData)                                                            \
+                        {                                                                                               \
+                                myData.deconstructor = PLUGIN_DECONSTRUCTOR;                                            \
+                        }                                                                                               \
+                };                                                                                                      \
+                                                                                                                        \
+                template <>                                                                                             \
+                interface <void (void)> reg_init <void (void)>::reg(myData);                                            \
         }                                                                                                               \
 }                                                                                                                       \
 void __gambit_plugin_deconstructor__()                                                                                  \
 
-//initalizes global variable
+//runs function when plugin is loaded.
 #define RUN_FUNCTION(name, ...)                                                                                         \
 namespace __gambit_plugin_namespace__                                                                                   \
 {                                                                                                                       \
@@ -242,47 +263,40 @@ namespace __gambit_plugin_namespace__                                           
         }                                                                                                               \
 }                                                                                                                       \
 
-/*Declared the "main" for the module.  This is function that will be ran by module interface*/
+#define __PLUGIN_MAIN_RET_VAL__(...)                                                                                    \
+decltype(__plugin_main_ret_val__(typename Gambit::Scanner::func_ptr_type<void (__VA_ARGS__)>::type()))                  \
+
+/*Declared the "main" for the module.  This is function that will be ran by the module interface*/
 #define PLUGIN_MAIN(...)                                                                                                \
- __gambit_plugin_ret_val__();                                                                                           \
-decltype(__gambit_plugin_ret_val__()) __gambit_plugin_main__ (__VA_ARGS__);                                             \
+ __plugin_main_ret_val__(void (*)(__VA_ARGS__));                                                                        \
+__PLUGIN_MAIN_RET_VAL__(__VA_ARGS__) PLUGIN_MAIN (__VA_ARGS__);                                                         \
 namespace __gambit_plugin_namespace__                                                                                   \
 {                                                                                                                       \
-        namespace MainTags                                                                                              \
-        {                                                                                                               \
-                struct main{};                                                                                          \
-        }                                                                                                               \
-                                                                                                                        \
         namespace                                                                                                       \
         {                                                                                                               \
                 template<>                                                                                              \
-                class interface <MainTags::main>                                                                        \
+                class interface <int (__VA_ARGS__)>                                                                     \
                 {                                                                                                       \
                 public:                                                                                                 \
                                                                                                                         \
                         interface(pluginData &myData)                                                                   \
                         {                                                                                               \
-                                myData.inits.push_back(interface <MainTags::main>::init);                               \
+                                myData.inits.push_back(interface <int (__VA_ARGS__)>::init);                            \
                         }                                                                                               \
                                                                                                                         \
                         static void init(pluginData &myData)                                                            \
                         {                                                                                               \
-                                myData.main_type = interface <MainTags::main>::main_type;                               \
-                                myData.outputFuncs[myData.name] = new Gambit::Scanner::Plugins::funcFactory             \
-                                        <decltype(__gambit_plugin_ret_val__()) (__VA_ARGS__)>(__gambit_plugin_main__);  \
-                        }                                                                                               \
-                                                                                                                        \
-                        static std::type_info const & main_type(void)                                                   \
-                        {                                                                                               \
-                                return typeid(decltype(__gambit_plugin_ret_val__())(__VA_ARGS__));                      \
+                                myData.plugin_mains[typeid(__PLUGIN_MAIN_RET_VAL__(__VA_ARGS__) (__VA_ARGS__))] =       \
+                                        Gambit::Scanner::Plugins::funcFactory                                           \
+                                                <__PLUGIN_MAIN_RET_VAL__(__VA_ARGS__) (__VA_ARGS__)>(PLUGIN_MAIN)();    \
                         }                                                                                               \
                 };                                                                                                      \
                                                                                                                         \
                 template <>                                                                                             \
-                interface <MainTags::main> reg_init <MainTags::main>::reg(myData);                                      \
+                interface <int (__VA_ARGS__)> reg_init <int (__VA_ARGS__)>::reg(myData);                                \
         }                                                                                                               \
 }                                                                                                                       \
-decltype(__gambit_plugin_ret_val__()) __gambit_plugin_main__ (__VA_ARGS__)                                              \
+__PLUGIN_MAIN_RET_VAL__(__VA_ARGS__) PLUGIN_MAIN (__VA_ARGS__)                                                          \
 
 /*Defines a Gambit plugin*/
 #define GAMBIT_PLUGIN_INTERNAL(plug_name)                                                                               \
@@ -311,8 +325,10 @@ namespace __gambit_plugin_ ## plug_name ##  _namespace__                        
                         };                                                                                              \
                 }                                                                                                       \
                                                                                                                         \
-                extern "C" const std::type_info &__gambit_plugin_pluginInit_ ## plug_name ## __ (const std::string *tag,\
-                 const YAML::Node *node, Gambit::Scanner::printer_interface & printer, std::vector<void *> *input)      \
+                extern "C" const std::map<type_index, void *> &__gambit_plugin_pluginInit_ ## plug_name ## __ (         \
+                                                                        const std::string *tag, const YAML::Node *node, \
+                                                                        Gambit::Scanner::printer_interface & printer,   \
+                                                                        std::vector<void *> *input )                    \
                 {                                                                                                       \
                         if (!myData.loaded)                                                                             \
                         {                                                                                               \
@@ -331,11 +347,9 @@ namespace __gambit_plugin_ ## plug_name ##  _namespace__                        
                                 }                                                                                       \
                                                                                                                         \
                                 myData.inits.clear();                                                                   \
-                                                                                                                        \
-                                return myData.main_type();                                                              \
                         }                                                                                               \
-                        else                                                                                            \
-                                return typeid(void(void));                                                              \
+                                                                                                                        \
+                        return myData.plugin_mains;                                                                     \
                 }                                                                                                       \
                                                                                                                         \
                 extern "C" void * __gambit_plugin_getMember_ ## plug_name ## __(std::string in)                         \

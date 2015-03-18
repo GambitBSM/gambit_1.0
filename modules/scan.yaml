@@ -108,8 +108,12 @@ Scanner:
         
     uniform_prior:
       plugin: flat_prior
-      purpose: Prior
-      range: [2, 1]
+      purpose: Likelihood
+      options:
+        range: [2, 1]
+      parameters:
+        param...2:
+          range: [1, 2]
       
     test:
       plugin: test_plug
