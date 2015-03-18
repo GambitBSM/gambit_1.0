@@ -130,39 +130,39 @@ void setpars(Model& mssm)
 }
     
       
-void spec_print(Gambit::Spectrum * spec){
+void spec_print(Gambit::Spectrum& spec){
 
-   PRINTOUT << "spec->runningpars.GetScale() =" 
-          << spec->runningpars.GetScale() << std::endl;
+   PRINTOUT << "spec.runningpars.GetScale() =" 
+          << spec.runningpars.GetScale() << std::endl;
    PRINTOUT << "mHd2 = "  
-          << spec->runningpars.get_mass2_parameter("mHd2") 
+          << spec.runningpars.get_mass2_parameter("mHd2") 
           <<std::endl;
-   PRINTOUT << " mHu2 = "  << spec->runningpars.get_mass2_parameter("mHu2") 
+   PRINTOUT << " mHu2 = "  << spec.runningpars.get_mass2_parameter("mHu2") 
           <<std::endl;
-   PRINTOUT << "BMu ="  << spec->runningpars.get_mass2_parameter("BMu") 
+   PRINTOUT << "BMu ="  << spec.runningpars.get_mass2_parameter("BMu") 
                 <<std::endl; 
    
    PRINTOUT << "mq2(1,1) = " 
-          << spec->runningpars.get_mass2_parameter("mq2",1,1) << std::endl;
+          << spec.runningpars.get_mass2_parameter("mq2",1,1) << std::endl;
 
    PRINTOUT << "mu2(1,2) = " 
-          << spec->runningpars.get_mass2_parameter("mq2",1,2) << std::endl;
+          << spec.runningpars.get_mass2_parameter("mq2",1,2) << std::endl;
    
    PRINTOUT << "me2(3,3) = " 
-          << spec->runningpars.get_mass2_parameter("mq2",3,3) << std::endl;
+          << spec.runningpars.get_mass2_parameter("mq2",3,3) << std::endl;
 
    PRINTOUT << "Mu = " 
-          << spec->runningpars.get_mass_parameter("Mu",3,3) << std::endl;
+          << spec.runningpars.get_mass_parameter("Mu",3,3) << std::endl;
 
    //what mot to do here
    PRINTOUT << "mistake mq2(1) =  " 
-          <<  spec->runningpars.get_mass2_parameter("mq2",1) << std::endl;
+          <<  spec.runningpars.get_mass2_parameter("mq2",1) << std::endl;
    PRINTOUT << "mistake 2 mq2(1) =  " 
-          <<  spec->runningpars.get_mass2_parameter("mqL2",1,1) << std::endl;
+          <<  spec.runningpars.get_mass2_parameter("mqL2",1,1) << std::endl;
     PRINTOUT << "mistake 3 mq2(1) =  " 
-          <<  spec->runningpars.get_mass_parameter("mq2",1) << std::endl;
+          <<  spec.runningpars.get_mass_parameter("mq2",1) << std::endl;
 
-   double mgluino = spec->phys.get_Pole_Mass("MGluino");
+   double mgluino = spec.phys.get_Pole_Mass("MGluino");
    PRINTOUT << "mgluino = " << mgluino<< std::endl;
 }
 
@@ -206,21 +206,21 @@ void mssm_print(Gambit::MSSMSpec<M> & mssm)
 }
 
 
-void spec_manipulate(Gambit::Spectrum * spec) 
+void spec_manipulate(Gambit::Spectrum& spec) 
 {
    PRINTOUT << "inside spectrum_manipulate" <<std::endl;
-   double lowscale = spec->runningpars.GetScale();
+   double lowscale = spec.runningpars.GetScale();
    double highscale = 1e+15;
    PRINTOUT << "lowscale  = " << lowscale << std::endl;
    PRINTOUT << "highscale = " << highscale << std::endl;
    spec_print(spec);
    PRINTOUT << "Testing stability after running..." << std::endl;
-   spec->runningpars.RunToScale(highscale);
+   spec.runningpars.RunToScale(highscale);
    PRINTOUT << "after run scale to high scale" << std::endl;
    spec_print(spec);
-   spec->runningpars.RunToScale(lowscale);
+   spec.runningpars.RunToScale(lowscale);
    PRINTOUT << "After run scale back to low scale" 
-          << spec->runningpars.GetScale() << std::endl;
+          << spec.runningpars.GetScale() << std::endl;
    spec_print(spec);
    
 }
@@ -244,30 +244,30 @@ void mssm_manipulate(Gambit::MSSMSpec<M> & mssm)
    
 }
 
-void SM_checks(Gambit::Spectrum* spec) {
+void SM_checks(Gambit::Spectrum& spec) {
    PRINTOUT << "In specbit_test_func3: " 
           << " testing retrieval from Spectrum*"
           << " with capability SM_spectrum..." << endl;
-   PRINTOUT << "  Scale: " << spec->runningpars.GetScale() << endl;
+   PRINTOUT << "  Scale: " << spec.runningpars.GetScale() << endl;
    PRINTOUT << "  Gauge couplings:" << endl;
    PRINTOUT << "  g1: " 
-          << spec->runningpars.get_dimensionless_parameter("g1") << endl;
+          << spec.runningpars.get_dimensionless_parameter("g1") << endl;
    PRINTOUT << "  g2: " 
-          << spec->runningpars.get_dimensionless_parameter("g2") << endl;
+          << spec.runningpars.get_dimensionless_parameter("g2") << endl;
    PRINTOUT << "  g3: " 
-          << spec->runningpars.get_dimensionless_parameter("g3") << endl;
+          << spec.runningpars.get_dimensionless_parameter("g3") << endl;
    PRINTOUT << "  Yukawa couplings:" << endl;
    
    for (int i=1; i<=3; i++) { for (int j=1; j<=3; j++) {
-         PRINTOUT << "  Yu("<<i<<","<<j<<"): " << spec->runningpars.get_dimensionless_parameter("Yu", i, j) << endl;
+         PRINTOUT << "  Yu("<<i<<","<<j<<"): " << spec.runningpars.get_dimensionless_parameter("Yu", i, j) << endl;
       }
    }
    for (int i=1; i<=3; i++) { for (int j=1; j<=3; j++) {
-         PRINTOUT << "  Yd("<<i<<","<<j<<"): " << spec->runningpars.get_dimensionless_parameter("Yd", i, j) << endl;
+         PRINTOUT << "  Yd("<<i<<","<<j<<"): " << spec.runningpars.get_dimensionless_parameter("Yd", i, j) << endl;
       }
    }
    for (int i=1; i<=3; i++) { for (int j=1; j<=3; j++) {
-         PRINTOUT << "  Ye("<<i<<","<<j<<"): " << spec->runningpars.get_dimensionless_parameter("Ye", i, j) << endl;
+         PRINTOUT << "  Ye("<<i<<","<<j<<"): " << spec.runningpars.get_dimensionless_parameter("Ye", i, j) << endl;
       }
    }
 }

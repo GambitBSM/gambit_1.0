@@ -88,13 +88,17 @@ namespace Gambit {
          QedQcdModel qedqcd; // We will make an internal copy of this object
 
       public:
+         /// Override of clone function
+         DEFINE_CLONE(QedQcdWrapper)
+
          /// Internal instances of the derived "inner" classes
          QedQcd_Phys qedqcd_ph;
          QedQcd_MSbarPars qedqcd_msbar_pars;
 
          // Constructors/destructors
          QedQcdWrapper(bool switch_index_convention=false);
-         QedQcdWrapper(QedQcdModel&, bool switch_index_convention=false);
+         QedQcdWrapper(const QedQcdModel&, bool switch_index_convention=false);
+         QedQcdWrapper(const QedQcdWrapper&);
          virtual ~QedQcdWrapper();
       
          virtual int get_index_offset() const;   

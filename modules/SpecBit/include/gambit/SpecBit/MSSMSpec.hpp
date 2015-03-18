@@ -76,6 +76,16 @@ namespace Gambit {
    {
       if (switch_index_convention) index_offset = 0;
    }
+  
+   /// We also need a copy constructor so that the clone() function will do a deep copy properly
+   template <class MI>
+   MSSMSpec<MI>::MSSMSpec(const MSSMSpec<MI>& other)
+      : Spectrum(mssm_drbar_pars, mssm_ph)
+      , index_offset(other.index_offset)
+      , mssm_ph(*this,model_interface.model)
+      , mssm_drbar_pars(*this,model_interface.model)
+      , model_interface(other.model_interface)
+   {}
    
    template <class MI>
    MSSMSpec<MI>::~MSSMSpec()
@@ -83,14 +93,14 @@ namespace Gambit {
    }
    
    template <class MI>
-   void MSSMSpec<MI>::dump2slha(const std::string& filename)
+   void MSSMSpec<MI>::dump2slha(const std::string& filename) const
    {
      model_interface.dump2slha(filename);
    }
    
    // Return an SLHAea object containing spectrum information
    template <class MI>
-   SLHAea::Coll MSSMSpec<MI>::getSLHAea()
+   SLHAea::Coll MSSMSpec<MI>::getSLHAea() const
    {
      return model_interface.getSLHAea();
    }

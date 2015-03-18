@@ -1075,11 +1075,12 @@ namespace Gambit
 
       // Test that output of Standard Model wrapper (e.g. QedQcdWrapper) matches
       // SMINPUTS sufficiently accurately
-      void SMplusUV_test(SMplusUV& joined_spectra)
+      void SMplusUV_test(SMplusUV& matched_spectra)
       {
          // Extract pieces of SMplusUV to make it clear what they are supposed to be
-         SMInputs sminputs = joined_spectra.get_SMINPUTS();
-         Spectrum* SM = joined_spectra.get_SM();
+         SMInputs sminputs = matched_spectra.get_SMINPUTS();
+         std::unique_ptr<Spectrum> SM = matched_spectra.clone_SM(); // COPIES Spectrum object
+         // const Spectrum* SM = matched_spectra.get_SM(); // Cannot do running on original object.
 
          double tol     = 1e-9; // Demanding matching to 1 part in a billion (pole masses, things that don't change)
          double tolg    = 1e-4; // Seem to get about this level of precision recovering running couplings from QedQcd object.
@@ -1121,7 +1122,7 @@ namespace Gambit
          // Note, numerical errors might creep in depending on how we do the running
          // back and forth. Might need to consider some method to "reset" object back
          // to original condition (keep a copy of itself inside?)
-         SM->runningpars.RunToScale(sminputs.mZ);
+         //SM->runningpars.RunToScale(sminputs.mZ);
          OUTPUT << "Current scale: " << SM->runningpars.GetScale() << std::endl;
          OUTPUT << "Z pole mass  : " << SM->phys.get_Pole_Mass("Z") << std::endl;
          test_within_tol( sminputs.alphainv, 1./ SM->runningpars.get_dimensionless_parameter("alpha"), tol, "1/alpha(mZ)" );

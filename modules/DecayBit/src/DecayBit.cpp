@@ -44,7 +44,7 @@ namespace Gambit
     {
       // Remember that result does not arrive pristine, but contains the result of the last point.  Make sure to overwrite it fully!
       using namespace Pipes::SMHiggs_decays;
-      Spectrum* spec = *Dep::SM_spectrum;
+      const Spectrum* spec = *Dep::SM_spectrum;
       double m_H = spec->phys.get_Pole_Mass("h0_1"); // Retrieve the masses from the spectrum object.
       double m_b = spec->phys.get_Pole_Mass("b");
       double m_t = spec->phys.get_Pole_Mass("t");
@@ -68,7 +68,7 @@ namespace Gambit
     {
       // Remember that result does not arrive pristine, but contains the result of the last point.  Make sure to overwrite it fully!
       using namespace Pipes::MSSMHiggs_decays;
-      Spectrum* spec = *Dep::MSSM_spectrum;
+      const Spectrum* spec = *Dep::MSSM_spectrum;
       double m_H = spec->phys.get_Pole_Mass("h0_1"); // Retrieve the masses from the spectrum object.
       double m_b = spec->phys.get_Pole_Mass("b");
       double m_t = spec->phys.get_Pole_Mass("t");
@@ -94,7 +94,7 @@ namespace Gambit
     {
       // Remember that result does not arrive pristine, but contains the result of the last point.  Make sure to overwrite it fully!
       //using namespace Pipes::mu_decays;
-      //Spectrum* spec = *Dep::SM_spectrum;
+      //const Spectrum* spec = *Dep::SM_spectrum;
       //double m_mu = spec->phys.get_Pole_Mass("mu+"); // Maybe you depend on the SM masses, maybe not
       result.width_in_GeV = 15.0;                    // (number needs checking against PDG)
       result.set_BF(1.0, "e+", "nu_e");              // Set the BF (probably not really 100%)

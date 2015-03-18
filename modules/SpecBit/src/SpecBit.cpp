@@ -252,8 +252,8 @@ namespace Gambit
 
       // Package pointer to QedQcd Spectrum object along with pointer to MSSM Spectrum object, 
       // and SMInputs struct.
-      SMplusUV joined_spectra(&qedqcdspec,&mssmspec,sminputs);
-      return joined_spectra;
+      SMplusUV matched_spectra(&qedqcdspec,&mssmspec,sminputs);
+      return matched_spectra;
     }
 
     //
@@ -343,7 +343,7 @@ namespace Gambit
 
     // Functions to changes the capability associated with a Spectrum object to 
     // "SM_spectrum"
-    void convert_MSSM_to_SM   (Spectrum* &result) {result = *Pipes::convert_MSSM_to_SM::Dep::MSSM_spectrum;}
+    void convert_MSSM_to_SM   (const Spectrum* &result) {result = *Pipes::convert_MSSM_to_SM::Dep::MSSM_spectrum;}
     //void convert_NMSSM_to_SM  (Spectrum* &result) {result = *Pipes::convert_NMSSM_to_SM::Dep::NMSSM_spectrum;}
     //void convert_E6MSSM_to_SM (Spectrum* &result) {result = *Pipes::convert_E6MSSM_to_SM::Dep::E6MSSM_spectrum;}
 
@@ -402,7 +402,7 @@ namespace Gambit
 
     /// Retrieve Spectrum* to MSSM UV model from SMplusUV object
     /// DEPENDENCY(MSSM_spectrum, SMplusUV)
-    void get_MSSM_spectrum_as_SpectrumPtr (Spectrum* &result)
+    void get_MSSM_spectrum_as_SpectrumPtr (const Spectrum* &result)
     {
       namespace Pipe = Pipes::get_MSSM_spectrum_as_SpectrumPtr;
       const SMplusUV& joined_spectra(*Pipe::Dep::MSSM_spectrum);
@@ -417,7 +417,7 @@ namespace Gambit
     void dump_spectrum(double &result)
     {
       namespace Pipe = Pipes::dump_spectrum;
-      Spectrum* spec(*Pipe::Dep::SM_spectrum);
+      const Spectrum* spec(*Pipe::Dep::SM_spectrum);
       std::string filename(Pipe::runOptions->getValue<std::string>("filename"));
       spec->dump2slha(filename);
       result = 1;
@@ -429,7 +429,7 @@ namespace Gambit
     void get_MSSM_spectrum_as_SLHAea (SLHAea::Coll &result)
     {
       namespace Pipe = Pipes::get_MSSM_spectrum_as_SLHAea;
-      Spectrum* spec(*Pipe::Dep::MSSM_spectrum);
+      const Spectrum* spec(*Pipe::Dep::MSSM_spectrum);
       result = spec->getSLHAea();
     }
      

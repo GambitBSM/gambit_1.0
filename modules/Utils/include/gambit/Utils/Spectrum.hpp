@@ -59,6 +59,9 @@ class Spectrum;
 class RunningPars;
 class Phys;
 
+/// Typedef for rollcall headers; I think the space would kill the type harvester.
+typedef const Spectrum CSpectrum; 
+
 // Container class for SMINPUTS information (defined as in SLHA2)
 struct SMInputs
 {
@@ -89,51 +92,19 @@ struct SMInputs
    // CKM? PMNS? 
 };
 
-
-/// Standard Model plus UV Model container class
-// This class is used to deliver both information defined in the Standard Model
-// (or potentially just QED X QCD) as a low-energy effective theory (as opposed
-// to correspending information defined in a UV model) as well as a
-// corresponding UV theory. Parameters defined in the low-energy model are
-// often used as input to a physics calculators. In addition, parameters used
-// to define the Standard Model, in SLHA2 format, are provided in the SMINPUTS
-// data member.
-class SMplusUV
-{
-   private:
-      Spectrum* SM;
-      Spectrum* UV;
-      SMInputs SMINPUTS;
-      bool initialised;
-   
-      void check_init() const {
-        if(not initialised) utils_error().raise(LOCAL_INFO,"Access to empty SMplusUV object attempted!");
-      }
-
-   public:
-      SMplusUV() : SM(), UV(), SMINPUTS(), initialised(false) {}
-      SMplusUV(Spectrum* const sm, Spectrum* const uv, SMInputs const smi)
-        : SM(sm)
-        , UV(uv)
-        , SMINPUTS(smi)
-        , initialised(true) 
-      {}
-
-      Spectrum* get_SM() const {check_init(); return SM;}
-      Spectrum* get_UV() const {check_init(); return UV;}
-      SMInputs  get_SMINPUTS() const {check_init(); return SMINPUTS;}
-};
-
 /// Virtual base class for interacting with spectrum generator output
 // Includes facilities for running RGEs
 class Spectrum {
    public:
       /// Dump out spectrum information to slha (if possible, and not including input parameters etc. just at the moment...)
-      virtual void dump2slha(const std::string&) { vfcn_error(LOCAL_INFO); }
+      virtual void dump2slha(const std::string&) const { vfcn_error(LOCAL_INFO); }
+
+      /// Clone the Spectrum object
+      virtual std::unique_ptr<Spectrum> clone() const = 0;
    
       /// Get spectrum information in SLHAea format (if possible)
       SLHAea::Coll empty_SLHAea;  // never used; just to avoid "no return statement in function returning non-void" warnings
-      virtual SLHAea::Coll getSLHAea() { vfcn_error(LOCAL_INFO); return empty_SLHAea; }
+      virtual SLHAea::Coll getSLHAea() const { vfcn_error(LOCAL_INFO); return empty_SLHAea; }
 
       /// Get integer offset convention used by internal model class (needed by getters which take indices) 
       virtual int get_index_offset() const = 0;
@@ -169,6 +140,54 @@ class Spectrum {
       virtual int get_numbers_stable_particles() const { vfcn_error(LOCAL_INFO); return -1; }  
       
 };
+
+// Macro for creating clone function overrides in derived classes
+// Relies on copy constructor working properly...
+#define DEFINE_CLONE(DERIVED_CLASS)                               \
+  std::unique_ptr<Spectrum> clone() const                         \
+  {                                                               \
+     return std::unique_ptr<Spectrum>(new DERIVED_CLASS(*this));  \
+  }                                                               \
+
+/// Standard Model plus UV Model container class
+// This class is used to deliver both information defined in the Standard Model
+// (or potentially just QED X QCD) as a low-energy effective theory (as opposed
+// to correspending information defined in a UV model) as well as a
+// corresponding UV theory. Parameters defined in the low-energy model are
+// often used as input to a physics calculators. In addition, parameters used
+// to define the Standard Model, in SLHA2 format, are provided in the SMINPUTS
+// data member.
+class SMplusUV
+{
+   private:
+      CSpectrum* SM;
+      CSpectrum* UV;
+      SMInputs SMINPUTS;
+      bool initialised;
+   
+      void check_init() const {
+        if(not initialised) utils_error().raise(LOCAL_INFO,"Access to empty SMplusUV object attempted!");
+      }
+
+   public:
+      SMplusUV() : SM(), UV(), SMINPUTS(), initialised(false) {}
+      SMplusUV(CSpectrum* const sm, CSpectrum* const uv, const SMInputs& smi)
+        : SM(sm)
+        , UV(uv)
+        , SMINPUTS(smi)
+        , initialised(true) 
+      {}
+
+      // Standard getters
+      CSpectrum* get_SM() const {check_init(); return SM;}
+      CSpectrum* get_UV() const {check_init(); return UV;}
+      const SMInputs& get_SMINPUTS() const {check_init(); return SMINPUTS;}
+
+      // Clone getters
+      std::unique_ptr<Spectrum> clone_SM() const {check_init(); return SM->clone();} 
+      std::unique_ptr<Spectrum> clone_UV() const {check_init(); return UV->clone();} 
+};
+
 
 class RunningPars 
 {

@@ -62,7 +62,7 @@ START_MODULE
 
     // Extract appropriate Spectrum* from SMplusUV struct, while preserving the Capability
     #define FUNCTION get_MSSM_spectrum_as_SpectrumPtr
-    START_FUNCTION(Spectrum*)
+    START_FUNCTION(CSpectrum*)  // Note; CSpectrum* = const Spectrum*
     DEPENDENCY(MSSM_spectrum, SMplusUV)
     #undef FUNCTION
 
@@ -70,7 +70,7 @@ START_MODULE
     // Get MSSM spectrum as an SLHAea object
     #define FUNCTION get_MSSM_spectrum_as_SLHAea
     START_FUNCTION(eaSLHA)                  
-    DEPENDENCY(MSSM_spectrum, Spectrum*)           // Takes a (pointer to a) Spectrum object and returns an eaSLHA object
+    DEPENDENCY(MSSM_spectrum, CSpectrum*)           // Takes a (pointer to a) Spectrum object and returns an eaSLHA object
     #undef FUNCTION
 
   #undef CAPABILITY
@@ -97,8 +97,8 @@ START_MODULE
   #define CAPABILITY SM_spectrum
   START_CAPABILITY                          
     #define FUNCTION convert_MSSM_to_SM
-    START_FUNCTION(Spectrum*)
-    DEPENDENCY(MSSM_spectrum, Spectrum*)
+    START_FUNCTION(CSpectrum*)
+    DEPENDENCY(MSSM_spectrum, CSpectrum*)
     #undef FUNCTION 
 
     // etc. for other functions
@@ -127,7 +127,7 @@ START_MODULE
   START_CAPABILITY
      #define FUNCTION specbit_test_func1
      START_FUNCTION(double)
-     DEPENDENCY(MSSM_spectrum, Spectrum*)
+     DEPENDENCY(MSSM_spectrum, CSpectrum*)
      #undef FUNCTION
   #undef CAPABILITY
 
@@ -142,7 +142,7 @@ START_MODULE
   START_CAPABILITY
      #define FUNCTION specbit_test_func3
      START_FUNCTION(double)
-     DEPENDENCY(SM_spectrum, Spectrum*)
+     DEPENDENCY(SM_spectrum, CSpectrum*)
      #undef FUNCTION
   #undef CAPABILITY
 
@@ -160,7 +160,7 @@ START_MODULE
  
      #define FUNCTION dump_spectrum
      START_FUNCTION(double)
-     DEPENDENCY(SM_spectrum, Spectrum*)
+     DEPENDENCY(SM_spectrum, CSpectrum*)
      #undef FUNCTION
 
  #undef CAPABILITY
@@ -171,7 +171,7 @@ START_MODULE
 
      #define FUNCTION exampleRead
      START_FUNCTION(bool)
-     DEPENDENCY(MSSM_spectrum, Spectrum*)
+     DEPENDENCY(MSSM_spectrum, CSpectrum*)
      #undef FUNCTION
 
  #undef CAPABILITY

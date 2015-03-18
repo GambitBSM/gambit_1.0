@@ -125,12 +125,16 @@ namespace Gambit {
          virtual int get_index_offset() const {return index_offset;}
 
       public:
+         /// Override of clone function
+         DEFINE_CLONE(MSSMSpec)
+
          /// Internal instances of the derived inner classes
          MSSM_Phys<MI> mssm_ph;
          MSSM_DRbarPars<MI> mssm_drbar_pars;
          //constructors
          MSSMSpec(bool switch_index_convention=false);
          MSSMSpec(MI, bool switch_index_convention=false);
+         MSSMSpec(const MSSMSpec&);
 
          //Could more constructors to interface with other generators   
           
@@ -148,10 +152,10 @@ namespace Gambit {
          virtual std::string AccessError(std::string state) const;
 
          // Write spectrum information in slha format (not including input parameters etc.)
-         virtual void dump2slha(const std::string&);
+         virtual void dump2slha(const std::string&) const;
 
          // Return an SLHAea object containing spectrum information
-         virtual SLHAea::Coll getSLHAea();
+         virtual SLHAea::Coll getSLHAea() const;
 
          /// Copy low energy spectrum information from another model object
          // Should work from any flexiblesusy model object with the same particle content as the MSSM

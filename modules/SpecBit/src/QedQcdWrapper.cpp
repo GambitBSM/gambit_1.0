@@ -51,12 +51,21 @@ namespace Gambit {
       , qedqcd_msbar_pars(*this,qedqcd)
    {}
 
-   QedQcdWrapper::QedQcdWrapper(QedQcdModel& model, bool switch_index_convention)
+   QedQcdWrapper::QedQcdWrapper(const QedQcdModel& model, bool switch_index_convention)
       : Spectrum(qedqcd_msbar_pars,qedqcd_ph)
       , qedqcd(model)
       , qedqcd_ph(*this,qedqcd)
       , qedqcd_msbar_pars(*this,qedqcd)
    {}
+
+   /// We also need a copy constructor so that the clone() function will do a deep copy properly
+   QedQcdWrapper::QedQcdWrapper(const QedQcdWrapper& other)
+      : Spectrum(qedqcd_msbar_pars,qedqcd_ph)
+      , qedqcd(other.qedqcd)
+      , qedqcd_ph(*this,qedqcd)
+      , qedqcd_msbar_pars(*this,qedqcd)
+   {}
+
    ///   @}
 
    /// Destructor
