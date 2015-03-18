@@ -26,6 +26,7 @@ BE_FUNCTION(FeScLoop, double, (double, double, double, double), "FeScLoop", "FeS
 
 BE_FUNCTION(mInterp, int, (double,int,int,double*) , "mInterp", "mInterp")
 BE_FUNCTION(zInterp, double, (double,double*) , "zInterp", "zInterp")
+BE_FUNCTION(readSpectra, int, (), "readSpectra", "readSpectra")
 
 BE_VARIABLE(micrOMEGAs::MOcommonSTR, mocommon_, "mocommon_", "MOcommon")
 
@@ -42,6 +43,7 @@ namespace Gambit
         //       7 - 9: e, m, l
         //       10 - 15: Z, ZT, ZL, W, WT, WL
         double tab[250];  // NZ = 250
+        readSpectra();
         mInterp(Ecm/2, inP, outN, tab);
         return zInterp(log(E/Ecm*2), tab);
       }

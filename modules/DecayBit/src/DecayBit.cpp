@@ -12,7 +12,7 @@
 ///          (p.scott@imperial.ac.uk)
 ///  \date 2014 Aug
 ///  \author Csaba Balazs
-///  \date 2015 Jan,Feb
+///  \date 2015 Jan-Mar
 ///
 ///  *********************************************
 
@@ -30,14 +30,15 @@ namespace Gambit
     /// \name DecayBit module functions
     /// @{
 
-
-    void decayTest (double &result) 
+    void decayTest (double &result)                                               // CsB >
     {
       using namespace Pipes::decayTest;
-      /// CsB result = BEreq::sd_top2body->brtopbw; 
-      result = BEreq::sd_top2body->brtopbw; 
-      cout << "top 2 body Br's: " << BEreq::sd_top2body->brtopbw << endl;
-    }
+      BEreq::sdecay();
+      result = BEreq::cb_sd_top2body->brtopbw; 
+      result = BEreq::cb_sd_topwidth->toptot2; 
+      cout << "top 2 body Br's: " << BEreq::cb_sd_top2body->brtopbw << endl;
+      cout << "top total width: " << BEreq::cb_sd_topwidth->toptot2 << endl;
+    }                                                                             // CsB <
 
 
     /// Calculate decay rates for Higgs in the SM

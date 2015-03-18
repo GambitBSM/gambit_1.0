@@ -12,10 +12,12 @@
 namespace Gambit {
   namespace ColliderBit {
 
+
     /// @note Abstract base class Collider
     template <typename EventT>
     class Collider {
     public:
+
       typedef EventT EventType;
       Collider() { }
       virtual ~Collider() { }
@@ -37,9 +39,10 @@ namespace Gambit {
     };
 
 
-/// @note STEP2)  Sub-class Collider as a general Base class for your simulator.
+    /// @note STEP2)  Sub-class Collider as a general Base class for your simulator.
     class PythiaBase : public Collider<Pythia8::Event> {
       protected:
+
         Pythia8::Pythia* _pythiaInstance;
         std::vector<std::string> _settings;
 
@@ -49,6 +52,7 @@ namespace Gambit {
             return "For whatever reason, Pythia could not make the next event.";
           }
         };
+
 
       public:
         virtual ~PythiaBase() { delete _pythiaInstance; }
@@ -94,11 +98,13 @@ namespace Gambit {
 
     };
 
+
     /// @brief Create a new Pythia Collider based on a name string
     ///
     /// The caller is responsible for deleting the returned PythiaBase.
     PythiaBase* mkPythia(const std::string&, const std::vector<std::string>&);
 
-/// @note STEP3)  Continue to colliders/Collide_Pythia.cpp
+    /// @note STEP3)  Continue to colliders/Collide_Pythia.cpp
+
   }
 }

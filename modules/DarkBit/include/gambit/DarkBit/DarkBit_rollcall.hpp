@@ -120,6 +120,8 @@ START_MODULE
       // Initialize DarkSUSY with SLHA file
       BACKEND_REQ(dsSLHAread, (), void, (char*, int&, int))
       BACKEND_REQ(dsprep, (), void, ())
+      // Print higgs widths
+      BACKEND_REQ(dswwidth, (), void, (int&))
     #undef FUNCTION
     #define FUNCTION DarkSUSY_PointInit_NoMSSM
       START_FUNCTION(bool)
@@ -302,7 +304,9 @@ START_MODULE
       DEPENDENCY(cascadeMC_ChainEvent, Gambit::DarkBit::DecayChain::ChainContainer)
       DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)      
       DEPENDENCY(SimYieldTable, Gambit::DarkBit::SimYieldTable)      
-      DEPENDENCY(cascadeMC_FinalStates,std::vector<std::string>)       
+      DEPENDENCY(cascadeMC_FinalStates,std::vector<std::string>)  
+      // FIXME: Temporary, for testing   
+      BACKEND_REQ(dshayield, (), double, (double&,double&,int&,int&,int&)) 
       NEEDS_MANAGER_WITH_CAPABILITY(cascadeMC_LoopManagement) 
     #undef FUNCTION          
   #undef CAPABILITY

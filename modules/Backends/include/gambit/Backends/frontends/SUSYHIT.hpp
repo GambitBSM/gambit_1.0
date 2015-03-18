@@ -32,6 +32,8 @@ LOAD_LIBRARY
 // BE_VARIABLE(FORTRAN_COMMONBLOCK(top2body_CB_type, top2body), "sd_top2body_", "top2body")
 // CsB <
 
+BE_FUNCTION(sdecay, void, (), "sdecay_", "sdecay")  // CsB SUSYHIT main subroutine declaration
+
 // CsB from Anders' CBGB script >
 BE_VARIABLE(widtha_hdec_type, widtha_hdec, "widtha_hdec_", "cb_widtha_hdec")
 BE_VARIABLE(widthhl_hdec_type, widthhl_hdec, "widthhl_hdec_", "cb_widthhl_hdec")

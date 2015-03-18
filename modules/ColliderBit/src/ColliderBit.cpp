@@ -16,7 +16,7 @@
 ///  *********************************************
 
 // #define HESITATE shallIGoOn
-
+//
 #include <string>
 #include <iostream>
 #include <fstream>
@@ -27,9 +27,7 @@
 #include "gambit/Utils/gambit_module_headers.hpp"
 #include "gambit/ColliderBit/ColliderBit_rollcall.hpp"
 
-// Now pulling in some of the code from extras/HEColliderMain.cpp
-// I will leave the KFactorHooks alone for now, since the work on
-// xsec calculation is ongoing.
+// Again with my push not showing up... What gits?
 
 namespace Gambit {
   namespace ColliderBit {
@@ -132,6 +130,7 @@ namespace Gambit {
     /// *** Hard Scattering Collider Simulators ***
 
     void getPythia(Gambit::ColliderBit::PythiaBase* &result) {
+      /// @TODO: capabilify xsecArrays
       using namespace Pipes::getPythia;
 
       if (resetPythiaFlag and *Loop::iteration > INIT) {
@@ -155,6 +154,7 @@ namespace Gambit {
         pythiaOptions.push_back("SLHA:file = " + slhaFilename);
         pythiaOptions.push_back("Random:seed = " + std::to_string(omp_get_thread_num()));
 
+        /// Memory allocation: Pythia
         result = mkPythia(*iter, pythiaOptions);
         pythiaOptions.clear();
         resetPythiaFlag = false;
@@ -164,10 +164,15 @@ namespace Gambit {
 
         /// Each thread gets its own Pythia instance.
         /// Thus, the Pythia memory clean-up is *before* FINALIZE.
-        /// memory clean-up
+        /// Memory clean-up: Pythia
         delete result;
         result = 0;
         resetPythiaFlag = true;
+      } else if (*Loop::iteration == FINALIZE) {
+        /// Memory clean-up: xsecArrays
+        /// @TODO: where is the matching allocation? Careful with these deletes
+        delete xsecArray;
+        delete xsecerrArray;
       }
     }
 
@@ -183,6 +188,7 @@ namespace Gambit {
         {
           /// Setup new Delphes
           GET_COLLIDER_RUNOPTION(delphesOptions, std::vector<std::string>);
+          /// Memory allocation: Delphes
           result = mkDelphes("DelphesVanilla", delphesOptions);
           resetDelphesFlag = false;
         }
@@ -203,6 +209,7 @@ namespace Gambit {
         {
           /// Setup new BuckFast
           GET_COLLIDER_RUNOPTION(buckFastOption, std::string);
+          /// Memory allocation: BuckFast
           result = mkBuckFast(buckFastOption);
           resetBuckFastFlag = false;
         }
@@ -237,6 +244,7 @@ namespace Gambit {
         logger() << "\t\"Setting up analyses...\"\n";
         for(auto name : analysisNames) {
           logger() << "\t  Analysis name " << name << endl;
+          /// Memory allocation: Analyses
           result.push_back( mkAnalysis(name) );
         }
         logger() << "ColliderBit says,\n";
@@ -245,8 +253,10 @@ namespace Gambit {
         resetAnalysisFlag = false;
       } else if (*Loop::iteration == FINALIZE) {
         /// Memory clean-up: Analyses
-        while (result.size() > 0)
-          delete result.at(0);
+        /* while (result.size() > 0) {
+          delete result.front();
+          result.erase(result.begin());
+        } */
         result.clear();
         resetAnalysisFlag = true;
       }
@@ -278,7 +288,7 @@ namespace Gambit {
       const auto& pevt = (*Dep::HardScatteringSim)->nextEvent();
 
       std::vector<fastjet::PseudoJet> bhadrons; //< for input to FastJet b-tagging
-      std::vector<Particle *> bpartons;
+      std::vector<Particle*> bpartons;
       std::vector<Particle*> tauCandidates;
       P4 pout; //< Sum of momenta outside acceptance
 
@@ -436,7 +446,7 @@ namespace Gambit {
 
 	/// Get the next event from Pythia8
 	std::vector<Particle*> tauCandidates;
-	const auto pevt = (*Dep::HardScatteringSim)->nextEvent();
+	const auto& pevt = (*Dep::HardScatteringSim)->nextEvent();
 
 	// Make a first pass of non-final particles to gather taus
 	for (int i = 0; i < pevt.size(); ++i) {

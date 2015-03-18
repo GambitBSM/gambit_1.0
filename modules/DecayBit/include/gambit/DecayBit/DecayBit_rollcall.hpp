@@ -22,7 +22,7 @@
 ///          (p.scott@imperial.ac.uk)
 ///  \date 2014 Aug
 ///  \author Csaba Balazs
-///  \date 2015 Jan,Feb
+///  \date 2015 Jan-Mar
 ///
 ///  *********************************************
 
@@ -39,10 +39,11 @@ START_MODULE
 #define CAPABILITY testSUSYBRs            // A physical observable or likelihood that this module can calculate.  There may be one or more 
 START_CAPABILITY                          //  functions in this module that can calculate this particular thing in different ways.
 
-  #define FUNCTION decayTest              // Name of an observable function: floating-point number of events in some hypothetical process
-  START_FUNCTION(double)                  // Declare that this function calculates the nevents observable as a double precision variable
-  BACKEND_REQ(sd_top2body, (), sd_top2body_type)
-  // CsB I don't assume this should be BACKEND_REQ(cb_sd_top2body, (), sd_top2body_type)
+  #define FUNCTION decayTest              // Name of an observable function
+  START_FUNCTION(double)                  // Declare that this function calculates the observable as a double precision variable
+  BACKEND_REQ(sdecay, (), void, ())       // Register the backend function "sdecay"
+  BACKEND_REQ(cb_sd_top2body, (), sd_top2body_type)
+  BACKEND_REQ(cb_sd_topwidth, (), sd_topwidth_type)
   #undef FUNCTION
 	
 #undef CAPABILITY
