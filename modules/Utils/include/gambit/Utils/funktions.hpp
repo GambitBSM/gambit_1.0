@@ -251,7 +251,7 @@ namespace Funk
         protected:
             std::vector<Funk> functions;  // Dependent functions
             ArgsType arguments;  // Argument names
-            std::map<int, std::vector<size_t>> indices;  // Indices for data object
+            std::map<intptr_t, std::vector<size_t>> indices;  // Indices for data object
             size_t datalen;
             Singularities singularities;
     };
