@@ -163,10 +163,6 @@ ObsLikes:
     capability:   decay_rates
     type:         DecayTable
 
-  - purpose:      Observable
-    capability:   BF_Htobbbar
-    type:         double
-
 Auxiliaries:
   - capability: SpecBit_examples
     dependencies:

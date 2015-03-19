@@ -56,7 +56,7 @@ namespace Gambit
 
       add_particle("g",     ( 21, 0) )
       add_particle("gamma", ( 22, 0) )
-      add_particle("Z",     ( 23, 0) )
+      add_particle("Z0",    ( 23, 0) )
       add_particle("W+",    ( 24, 0) )
       add_particle("W-",    (-24, 0) )
 
