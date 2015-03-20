@@ -220,6 +220,9 @@ class RunningPars
       virtual double get_dimensionless_parameter(const std::string&) const { vfcn_error(LOCAL_INFO); return -1; }
       virtual double get_dimensionless_parameter(const std::string&, int) const { vfcn_error(LOCAL_INFO); return -1; }
       virtual double get_dimensionless_parameter(const std::string&, int, int) const { vfcn_error(LOCAL_INFO); return -1; }
+      virtual double get_mass_eigenstate(const std::string&) const { vfcn_error(LOCAL_INFO); return -1; }
+      virtual double get_mass_eigenstate(const std::string&, int) const { vfcn_error(LOCAL_INFO); return -1; }
+      virtual double get_mass_eigenstate(const std::string&, int, int) const { vfcn_error(LOCAL_INFO); return -1; }
 };
 
 class Phys 
@@ -234,7 +237,8 @@ class Phys
       virtual double get_Pole_Mass(const std::string&, int) const { vfcn_error(LOCAL_INFO); return -1; };
       virtual double get_Pole_Mixing(const std::string&) const { vfcn_error(LOCAL_INFO); return -1; };
       virtual double get_Pole_Mixing(const std::string&, int) const { vfcn_error(LOCAL_INFO); return -1; };
-      virtual double get_Pole_Mixing(const std::string&, int, int) const { vfcn_error(LOCAL_INFO); return -1; };
+      virtual double get_Pole_Mixing(const std::string&, int, int) const { vfcn_error(LOCAL_INFO); return -1; 
+};
 
       /// Overloads of these functions to allow access using PDG codes
       /// as defined in Models/src/particle_database.cpp
@@ -406,7 +410,12 @@ class RunparDer : public RunningPars {
       virtual const fmap&       get_mass0_map()          const { return fmap_empty; }  
       virtual const fmap_plain& get_mass0_map_extra()    const { return fmap_plain_empty; }
       virtual const fmap1&      get_mass0_map1()         const { return fmap1_empty; }
-      virtual const fmap2&      get_mass0_map2()         const { return fmap2_empty; }        
+      virtual const fmap2&      get_mass0_map2()         const { return fmap2_empty; } 
+      virtual const fmap&       get_mass_eigenstate_map()           const { return fmap_empty; }  
+      virtual const fmap_plain& get_mass_eigenstate_map_extra()     const { return fmap_plain_empty; }
+      virtual const fmap1&      get_mass_eigenstate_map1() const { return fmap1_empty; }
+      virtual const fmap2&      get_mass_eigenstate_map2()          const { return fmap2_empty; }  
+
    public:
       // During construction, link the object to its "parent", and to the Model object 
       // (which, most sensibly, should be a data member of the some derived class)
@@ -428,6 +437,9 @@ class RunparDer : public RunningPars {
       virtual double get_dimensionless_parameter(const std::string&) const;
       virtual double get_dimensionless_parameter(const std::string&, int i) const;
       virtual double get_dimensionless_parameter(const std::string&, int i, int j) const;
+      virtual double get_mass_eigenstate(const std::string&) const;
+      virtual double get_mass_eigenstate(const std::string&, int i) const;
+      virtual double get_mass_eigenstate(const std::string&, int i, int j) const;
 };
 
 
@@ -620,6 +632,26 @@ double  RunparDer<Model>::get_dimensionless_parameter(const std::string& par, in
    return getter_2indices(get_mass0_map2(), par, i, j, "dimensionless parameter", model, base_parent.get_index_offset());
 }
 
+/// mass_eigenstate
+template <class Model>
+double  RunparDer<Model>::get_mass_eigenstate(const std::string& mass) const
+{
+   return getter_0indices(get_mass_eigenstate_map(), get_mass_eigenstate_map_extra(), mass, "mass_eigenstate", model);
+}
+
+template <class Model>
+double  RunparDer<Model>::get_mass_eigenstate(const std::string& mass, int i) const
+{
+   return getter_1index(get_mass_eigenstate_map1(), mass, i, "mass eigenstate", model, base_parent.get_index_offset());
+}
+
+template <class Model>
+double  RunparDer<Model>::get_mass_eigenstate(const std::string& mass, int i, int j) const
+{
+   return getter_2indices(get_mass_eigenstate_map2(), mass, i, j, "mass_eigenstate", model, base_parent.get_index_offset());
+}
+
+
 /// Pole masses
 template <class Model>
 double PhysDer<Model>::get_Pole_Mass(const std::string& mass) const
@@ -715,7 +747,8 @@ double PhysDer<Model>::get_Pole_Mixing(const std::string& mixing, int i, int j) 
    MODEL_RUNNING_MEMBER_FUNCTIONS_SINGLE(ClassName,mass3) \
    MODEL_RUNNING_MEMBER_FUNCTIONS_SINGLE(ClassName,mass2) \
    MODEL_RUNNING_MEMBER_FUNCTIONS_SINGLE(ClassName,mass) \
-   MODEL_RUNNING_MEMBER_FUNCTIONS_SINGLE(ClassName,mass0)
+   MODEL_RUNNING_MEMBER_FUNCTIONS_SINGLE(ClassName,mass0) \
+   MODEL_RUNNING_MEMBER_FUNCTIONS_SINGLE(ClassName,mass_eigenstate)
 
 // Only two here so I didn't bother with another macro 
 #define MODEL_PHYS_MEMBER_FUNCTIONS(ClassName) \
@@ -766,7 +799,8 @@ double PhysDer<Model>::get_Pole_Mixing(const std::string& mixing, int i, int j) 
    MODEL_RUNNING_TEMPLATE_MEMBER_FUNCTIONS_SINGLE(ClassName,mass3) \
    MODEL_RUNNING_TEMPLATE_MEMBER_FUNCTIONS_SINGLE(ClassName,mass2) \
    MODEL_RUNNING_TEMPLATE_MEMBER_FUNCTIONS_SINGLE(ClassName,mass) \
-   MODEL_RUNNING_TEMPLATE_MEMBER_FUNCTIONS_SINGLE(ClassName,mass0)
+   MODEL_RUNNING_TEMPLATE_MEMBER_FUNCTIONS_SINGLE(ClassName,mass0) \
+   MODEL_RUNNING_TEMPLATE_MEMBER_FUNCTIONS_SINGLE(ClassName,mass_eigenstate)
 
 #define MODEL_PHYS_TEMPLATE_MEMBER_FUNCTIONS(ClassName) \
   template <class M> typename ClassName<M>::fmap       ClassName<M>::PoleMass_map(      ClassName<M>::fill_PoleMass_map()      ); \

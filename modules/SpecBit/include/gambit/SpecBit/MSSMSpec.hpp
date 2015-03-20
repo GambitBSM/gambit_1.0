@@ -461,7 +461,7 @@ namespace Gambit {
    }
    
    template <class MI>
-   typename MSSM_DRbarPars<MI>::fmap MSSM_DRbarPars<MI>::fill_TreeMass_map()
+   typename MSSM_DRbarPars<MI>::fmap MSSM_DRbarPars<MI>::fill_mass_eigenstate_map()
    {
       typedef typename MI::Model Model;
       fmap tmp_map;
@@ -490,9 +490,19 @@ namespace Gambit {
       // tmp_map["Melectron"] = &Model::get_DRbar_melectron; 
       return tmp_map;
    }
+
+   // Function to initialise mass_map_extra
+   template <class MI>
+   typename MSSM_DRbarPars<MI>::fmap_plain MSSM_DRbarPars<MI>::fill_mass_eigenstate_map_extra() 
+   {
+      fmap_plain tmp_map;
+      //there are no mappings for this case.
+      return tmp_map;
+   }
+
    //map for string access with an index supplied
    template <class MI>
-   typename MSSM_DRbarPars<MI>::fmap1 MSSM_DRbarPars<MI>::fill_TreeMass_map1()
+   typename MSSM_DRbarPars<MI>::fmap1 MSSM_DRbarPars<MI>::fill_mass_eigenstate_map1()
    {
       typedef typename MI::Model Model;
       fmap1 tmp_map;
@@ -509,27 +519,44 @@ namespace Gambit {
       static const int i012345v[] = {0,1,2,3,4,5};
       static const std::set<int> i012345(i012345v, Utils::endA(i012345v));
 
-      tmp_map["MSd"] = FInfo1( &Model::get_MSd, i012345 );
-      tmp_map["MSu"] = FInfo1( &Model::get_MSu, i012345 );
-      tmp_map["MSe"] = FInfo1( &Model::get_MSe, i012345 );
-      tmp_map["MSnu"]= FInfo1( &Model::get_MSv, i012 );
-      tmp_map["Mh0"] = FInfo1( &Model::get_Mhh, i01 );
+      tmp_map["Sd"] = FInfo1( &Model::get_MSd, i012345 );
+      tmp_map["Su"] = FInfo1( &Model::get_MSu, i012345 );
+      tmp_map["Se"] = FInfo1( &Model::get_MSe, i012345 );
+      tmp_map["Snu"]= FInfo1( &Model::get_MSv, i012 );
+      tmp_map["h0"] = FInfo1( &Model::get_Mhh, i01 );
       //Here we may access the goldstone boson
       // and higgs. maybe too dangerous to keep?
-      tmp_map["MA0"] = FInfo1( &Model::get_MAh, i01 );      
+      tmp_map["A0"] = FInfo1( &Model::get_MAh, i01 );      
       //Here we may access the goldstone boson
       //and higgs. maybe too dangerous to keep?
-      tmp_map["MH+"] = FInfo1( &Model::get_MHpm, i01 );   
-      tmp_map["Mchi+"] = FInfo1( &Model::get_MCha, i01 );
-      tmp_map["Mchi0"] = FInfo1( &Model::get_MChi, i0123 );
+      tmp_map["H+"] = FInfo1( &Model::get_MHpm, i01 );   
+      tmp_map["chi+"] = FInfo1( &Model::get_MCha, i01 );
+      tmp_map["chi0"] = FInfo1( &Model::get_MChi, i0123 );
       
-      tmp_map["Md"] = FInfo1( &Model::get_MFd, i012 );
-      tmp_map["Mu"] = FInfo1( &Model::get_MFu, i012 );
-      tmp_map["Me"] = FInfo1( &Model::get_MFe, i012 );
+      tmp_map["d"] = FInfo1( &Model::get_MFd, i012 );
+      tmp_map["u"] = FInfo1( &Model::get_MFu, i012 );
+      tmp_map["e-"] = FInfo1( &Model::get_MFe, i012 );
+      tmp_map["e"] = FInfo1( &Model::get_MFe, i012 );
+      tmp_map["dbar"] = FInfo1( &Model::get_MFd, i012 );
+      tmp_map["ubar"] = FInfo1( &Model::get_MFu, i012 );
+      tmp_map["e+"] = FInfo1( &Model::get_MFe, i012 );
+
       return tmp_map;
    }
   
  
+   // Function to initialise mass_map2
+   template <class MI>
+   typename MSSM_DRbarPars<MI>::fmap2 MSSM_DRbarPars<MI>::fill_mass_eigenstate_map2() 
+   {
+      typedef typename MI::Model Model;
+      fmap2 tmp_map;
+      /// empty
+      
+   
+      return tmp_map;
+   }
+
    template <class MI>
    typename MSSM_Phys<MI>::fmap MSSM_Phys<MI>::fill_PoleMass_map()
    {

@@ -69,17 +69,18 @@ namespace Gambit {
       private:
          MSSMSpec<MI>& my_parent;
 
-         static fmap TreeMass_map;
-         static fmap1 TreeMass_map1;
-         static fmap fill_TreeMass_map();
-         static fmap1 fill_TreeMass_map1();
+         // static fmap TreeMass_map;
+         // static fmap1 TreeMass_map1;
+         // static fmap fill_TreeMass_map();
+         // static fmap1 fill_TreeMass_map1();
 
          MAPS(mass4)
          MAPS(mass3)
          MAPS(mass2)
          MAPS(mass)
          MAPS(mass0)
-        
+         MAPS(mass_eigenstate)
+
       public:
          // Make sure to construct the base class with references to the parent
          // (derived) Spectrum object and the hosted Model object  
