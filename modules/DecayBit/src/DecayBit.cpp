@@ -45,6 +45,8 @@ namespace Gambit
     void SMHiggs_decays (DecayTable::Entry& result) 
     {
       // Remember that result does not arrive pristine, but contains the result of the last point.  Make sure to overwrite it fully!
+      // This is just an example function that returns junk numbers at the moment.  It should be finished off
+      // in order to use SUSYHIT properly.  When it works, a dependency on it added to the all_decays function.
       using namespace Pipes::SMHiggs_decays;
       Spectrum* spec = *Dep::SM_spectrum;
       double m_H = spec->phys.get_Pole_Mass("h0_1"); // Retrieve the masses from the spectrum object.
@@ -70,6 +72,8 @@ namespace Gambit
     void MSSMHiggs_decays (DecayTable::Entry& result) 
     {
       // Remember that result does not arrive pristine, but contains the result of the last point.  Make sure to overwrite it fully!
+      // This is just an example function that returns junk numbers at the moment.  It should be finished off
+      // in order to use SUSYHIT properly. When it works, a dependency on it added to the all_decays function.
       using namespace Pipes::MSSMHiggs_decays;
       Spectrum* spec = *Dep::MSSM_spectrum;
       double m_H = spec->phys.get_Pole_Mass("h0_1"); // Retrieve the masses from the spectrum object.
@@ -279,7 +283,7 @@ namespace Gambit
       using namespace Pipes::all_decays;
       DecayTable decays = DecayTable();             // Start with a blank DecayTable.
 
-      decays("h0_1") = *Dep::Higgs_decay_rates;     // Add the Higgs decays.
+      //decays("h0_1") = *Dep::Higgs_decay_rates;     // Add the Higgs decays.
       decays("Z0") = *Dep::W_minus_decay_rates;     // Add the Z decays
       decays("W+") = *Dep::W_plus_decay_rates;      // Add the W decays for W+.
       decays("W-") = *Dep::W_minus_decay_rates;     // Add the W decays for W-

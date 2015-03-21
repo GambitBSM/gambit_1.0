@@ -70,7 +70,7 @@ START_CAPABILITY                          //  functions in this module that can 
 
     #define FUNCTION all_decays
     START_FUNCTION(DecayTable)
-    DEPENDENCY(Higgs_decay_rates, DecayTable::Entry) 
+    //DEPENDENCY(Higgs_decay_rates, DecayTable::Entry) 
     DEPENDENCY(W_minus_decay_rates, DecayTable::Entry)
     DEPENDENCY(W_plus_decay_rates, DecayTable::Entry)
     DEPENDENCY(Z_decay_rates, DecayTable::Entry)
