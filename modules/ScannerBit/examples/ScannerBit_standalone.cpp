@@ -2,7 +2,7 @@
 //  *********************************************
 ///  \file
 ///
-///  declaration for scanner module
+///  ScannerBit standalone example.
 ///
 ///  *********************************************
 ///
@@ -21,7 +21,7 @@
 #include "gambit/Logs/log.hpp"
 #include "gambit/Printers/printermanager.hpp"
 #include "gambit/ScannerBit/scannerbit.hpp"
-#include "gambit/Utils/ini_file_parser_base.hpp"
+#include "gambit/Utils/yaml_parser_base.hpp"
 #include "gambit/ScannerBit/plugin_details.hpp"
 #include "gambit/ScannerBit/scanner_utils.hpp"
 #include "gambit/ScannerBit/plugin_loader.hpp"
@@ -48,19 +48,19 @@ void bail()
 cout << "\nusage: scannerbit [options] [<command>]                                    "
         "\n                                                                           "
         "\nRun scan:                                                                  "
-        "\n   scannerbit -f <inifile>   Start a scan using instructions from inifile  "
-        "\n                           e.g.: scannerbit -f scannerbit.yaml             "        
+        "\n   ScannerBit_standalone -f <inifile>   Start a scan using instructions from inifile  "
+        "\n                           e.g.: ScannerBit_standalone -f scannerbit.yaml  "        
         "\n                                                                           "
         "\nAvailable commands:                                                        "
         "\n   scanners              List registered scanners plugins                  "
         "\n   objectives            List registered objective plugins                 "
-        "\n   plugins                List all registered plugins                       "
+        "\n   plugins               List all registered plugins                       "
         "\n   <name>                Give info on a plugin or scanner                  "
         "\n                           e.g.:                                           "
-        "\n                                 gambit MultiNest                          "     
+        "\n                                 ScannerBit_standalone MultiNest           "     
         "\n                                                                           "
         "\nBasic options:                                                             "
-        "\n   --version             Display GAMBIT version information                "
+        "\n   --version             Display GAMBIT/ScannerBit version information     "
         "\n   -h/--help             Display this usage information                    "
         "\n   -f <inifile>          Start scan using <inifile>                        "
         "\n   -v/--verbose          Turn on verbose mode                              "
@@ -164,7 +164,7 @@ int main(int argc, char **argv)
                 }
                 else if (std::string(argv[1]) == "-f" && argc > 2)
                 {
-                        ini_file_parser_base iniFile;
+                        IniParser::Parser iniFile;
                         iniFile.readFile(argv[2]);
         
                         // Initialise the random number generator, letting the RNG class choose its own default.

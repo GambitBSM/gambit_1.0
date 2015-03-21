@@ -547,21 +547,21 @@ set( scanbit_standalone_hdr                     \n\
         ${scanbit_standalone_headers}           \n\
         ${utils_header_files}                   \n\
 )                                               \n\n\
-add_gambit_executable( scannerbit_standalone SOURCES ${scanbit_standalone_src} HEADERS ${scanbit_standalone_hdr})\n\
-set_target_properties( scannerbit_standalone    \n\
+add_gambit_executable( ScannerBit_standalone SOURCES ${scanbit_standalone_src} HEADERS ${scanbit_standalone_hdr})\n\
+set_target_properties( ScannerBit_standalone    \n\
                        PROPERTIES               \n\
                        RUNTIME_OUTPUT_DIRECTORY \"${CMAKE_CURRENT_SOURCE_DIR}/bin\")\n\
-add_dependencies(scannerbit_standalone ScannerBit)\n\
-add_dependencies(scannerbit_standalone mkpath)  \n\
-add_dependencies(scannerbit_standalone yaml-cpp)\n\
-target_link_libraries(scannerbit_standalone yaml-cpp)\n\
+add_dependencies(ScannerBit_standalone ScannerBit)\n\
+add_dependencies(ScannerBit_standalone mkpath)  \n\
+add_dependencies(ScannerBit_standalone yaml-cpp)\n\
+target_link_libraries(ScannerBit_standalone yaml-cpp)\n\
 if (NOT EXCLUDE_FLEXIBLESUSY)                   \n\
-  add_dependencies(scannerbit_standalone flexiblesusy)\n\
-  target_link_libraries(scannerbit_standalone ${flexiblesusy_LDFLAGS})\n\
+  add_dependencies(ScannerBit_standalone flexiblesusy)\n\
+  target_link_libraries(ScannerBit_standalone ${flexiblesusy_LDFLAGS})\n\
 endif()                                         \n\
 if (NOT EXCLUDE_DELPHES)                        \n\
-  add_dependencies(scannerbit_standalone delphes)\n\
-  target_link_libraries(scannerbit_standalone ${delphes_LDFLAGS} ${ROOT_LIBRARIES} ${ROOT_LIBRARY_DIR}/libEG.so)\n\
+  add_dependencies(ScannerBit_standalone delphes)\n\
+  target_link_libraries(ScannerBit_standalone ${delphes_LDFLAGS} ${ROOT_LIBRARIES} ${ROOT_LIBRARY_DIR}/libEG.so)\n\
 endif()                                         \n\n"
         
     towrite += "set( reqd_lib_output )\n"
@@ -661,8 +661,9 @@ endif()                                         \n\n"
                         else:
                             lib_name = plug_type[i] + "_" + directory + "_" + lib + "_LIBRARY"
                             towrite += "find_library( " + lib_name + " " + lib + " HINTS ${" + plug_type[i] + "_plugin_lib_paths_" + directory + "} )\n"
-                            towrite += "message(\"Found library? : ${" + lib_name + "}\")\n" #bjf> tmp 
-                            towrite += "if( NOT " + lib_name + " STREQUAL \"" + lib_name + "-NOTFOUND\" )\n" 
+                            towrite += "if( " + lib_name + " STREQUAL \"" + lib_name + "-NOTFOUND\" )\n" 
+                            towrite += "  message(\"-- Did not find "+ plug_type[i] + " library " + lib + ". Disabling scanners that depend on this.\")\n"
+                            towrite += "else()\n"
                             towrite += " "*4 + "get_filename_component(lib_path ${" + lib_name + "} PATH)\n"
                             towrite += " "*4 + "get_filename_component(lib_name ${" + lib_name + "} NAME_WE)\n"
                             towrite += " "*4 + "string (REGEX REPLACE \"^lib\" \"\" lib_name ${lib_name})\n"
@@ -673,6 +674,7 @@ endif()                                         \n\n"
                             towrite += " \"${" + plug_type[i] + "_plugin_rpath_" + directory + "};${lib_path}\")\n"
                             towrite += " "*4 + "set (" + plug_type[i] + "_plugin_linked_libs_" + directory 
                             towrite += " \"${" + plug_type[i] + "_plugin_linked_libs_" + directory +"}    " + lib + ": ${" + lib_name + "}\\n\")\n"
+                            towrite += "  message(\"-- Found "+ plug_type[i] + " library: ${lib_path}/${lib_name}.\")\n"
                             towrite += "endif()\n\n"
             
             if scanbit_auto_incs.has_key(plug_type[i]):
