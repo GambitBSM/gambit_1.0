@@ -96,7 +96,7 @@ def main(argv):
         headers = []
         for root,dirs,files in os.walk("./"+mod+"/include"):
             for name in files:
-                if name.endswith(".h") or name.endswith(".hh") or name.endswith(".hpp"):
+                if name.endswith(".h") or name.endswith(".hh") or name.endswith(".hpp") and not hidden(name):
                     short_root = re.sub("\\./"+mod+"/include/?","",root)
                     if short_root != "" : short_root += "/" 
                     if verbose: print "    Located {0} header file '{1}'".format(mod,short_root+name)
