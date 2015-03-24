@@ -76,6 +76,10 @@ namespace Gambit
 {
         namespace Scanner
         {       
+                /**********************************/
+                /****** error and warnings ********/
+                /**********************************/
+                
                 namespace Errors
                 {
                         inline std::stringstream &_err_()
@@ -100,6 +104,10 @@ namespace Gambit
                 error& scan_error();
                 /// Scanner warnings
                 warning& scan_warning();
+                
+                /*********************************/
+                /****** demangle function ********/
+                /*********************************/
                 
                 inline std::string demangle(const std::string &in)
                 {
@@ -226,31 +234,78 @@ namespace Gambit
                         typedef ret type(typename remove_all<args>::type...);
                 };
                 
-                /**********************************/
-                /****** find_variadic_type ********/
-                /**********************************/
+                /***************************/
+                /****** return type ********/
+                /***************************/ 
+                
+                template <typename...>
+                struct return_type;
+                
+                template <typename ret, typename... args>
+                struct return_type <ret (args...)>
+                {
+                        typedef ret type;
+                };
+                
+                /***********************************/
+                /****** is_args_convertible ********/
+                /***********************************/  
+                
+                template <typename... T>
+                struct is_args_convertible
+                {
+                        static const bool value = false;
+                };
+                
+                template <bool, typename T1, typename T2>
+                struct __is_args_convertible__
+                {
+                        static const bool value = is_args_convertible<T1, T2>::value;
+                };
+                
+                template <typename T1, typename T2>
+                struct __is_args_convertible__<false, T1, T2>
+                {
+                        static const bool value = false;
+                };
+                
+                template <typename ret1, typename ret2, typename arg1, typename arg2, typename... args1, typename... args2>
+                struct is_args_convertible <ret1 (arg1, args1...), ret2 (arg2, args2...)>
+                {
+                        static const bool value = __is_args_convertible__<std::is_convertible<arg1, arg2>::value, ret1 (args1...), ret2 (args2...)>::value;
+                };
+                
+                template <typename ret1, typename ret2>
+                struct is_args_convertible <ret1(), ret2()>
+                {
+                        static const bool value = true;
+                };
+                
+                /********************************************/
+                /****** find_variadic_type_not_exact ********/
+                /********************************************/
 
                 template <typename... T>
-                struct __find_variadic_type__;
+                struct __find_variadic_type_not_exact__;
                 
                 template <typename T1, typename T2, typename... T>
-                struct _find_variadic_type_
+                struct _find_variadic_type_not_exact_
                 {
-                        typedef typename __find_variadic_type__ <typename remove_all_func<T1>::type, typename remove_all_func<T2>::type, T2, T...>::ret_type ret_type;
-                        typedef typename __find_variadic_type__ <typename remove_all_func<T1>::type, typename remove_all_func<T2>::type, T2, T...>::func_type func_type;
-                        static const bool value = __find_variadic_type__ <typename remove_all_func<T1>::type, typename remove_all_func<T2>::type, T2, T...>::value;
+                        typedef typename __find_variadic_type_not_exact__ <typename remove_all_func<T1>::type, typename remove_all_func<T2>::type, T2, T...>::ret_type ret_type;
+                        typedef typename __find_variadic_type_not_exact__ <typename remove_all_func<T1>::type, typename remove_all_func<T2>::type, T2, T...>::func_type func_type;
+                        static const bool value = __find_variadic_type_not_exact__ <typename remove_all_func<T1>::type, typename remove_all_func<T2>::type, T2, T...>::value;
                 };
                 
                 template <typename... T>
-                struct find_variadic_type
+                struct find_variadic_type_not_exact
                 {
-                        typedef typename _find_variadic_type_ <T...>::ret_type ret_type;
-                        typedef typename _find_variadic_type_ <T...>::func_type func_type;
-                        static const bool value = _find_variadic_type_ <T...>::value;
+                        typedef typename _find_variadic_type_not_exact_ <T...>::ret_type ret_type;
+                        typedef typename _find_variadic_type_not_exact_ <T...>::func_type func_type;
+                        static const bool value = _find_variadic_type_not_exact_ <T...>::value;
                 };
                 
                 template <typename... args>
-                struct find_variadic_type <void (args...)>
+                struct find_variadic_type_not_exact <void (args...)>
                 {
                         typedef int ret_type;
                         typedef void func_type;
@@ -258,7 +313,7 @@ namespace Gambit
                 };
                 
                 template <typename ret, typename... args, typename T1, typename... T>
-                struct __find_variadic_type__ <void (args...), ret (args...), T1, T...>
+                struct __find_variadic_type_not_exact__ <void (args...), ret (args...), T1, T...>
                 {
                         typedef ret ret_type;
                         typedef T1 func_type;
@@ -266,11 +321,11 @@ namespace Gambit
                 };
                 
                 template <typename ret, typename... args, typename... args2, typename T1, typename... T>
-                struct __find_variadic_type__ <void (args...), ret (args2...), T1, T...>
+                struct __find_variadic_type_not_exact__ <void (args...), ret (args2...), T1, T...>
                 {
-                        typedef typename find_variadic_type <void (args...), T...>::ret_type ret_type;
-                        typedef typename find_variadic_type <void (args...), T...>::func_type func_type;
-                        static const bool value = find_variadic_type <void (args...), T...>::value;
+                        typedef typename find_variadic_type_not_exact <void (args...), T...>::ret_type ret_type;
+                        typedef typename find_variadic_type_not_exact <void (args...), T...>::func_type func_type;
+                        static const bool value = find_variadic_type_not_exact <void (args...), T...>::value;
                 };
                 
                 
@@ -303,6 +358,97 @@ namespace Gambit
                         typedef int ret_type;
                         typedef void func_type;
                         static const bool value = false;
+                };
+                
+                /******************************************/
+                /****** find_variadic_type_convert ********/
+                /******************************************/  
+                
+                template<bool, typename... T>
+                struct __find_variadic_type_convert__;
+                
+                template<typename Tc, typename T1, typename... T>
+                struct _find_variadic_type_convert_
+                {
+                        typedef typename __find_variadic_type_convert__<is_args_convertible<Tc, T1>::value, T1, T...>::ret_type ret_type;
+                        typedef typename __find_variadic_type_convert__<is_args_convertible<Tc, T1>::value, T1, T...>::func_type func_type;
+                        static const bool value = __find_variadic_type_convert__<is_args_convertible<Tc, T1>::value, T1, T...>::value;
+                };
+                
+                template <typename... T>
+                struct find_variadic_type_convert
+                {
+                        typedef typename _find_variadic_type_convert_<T...>::ret_type ret_type;
+                        typedef typename _find_variadic_type_convert_<T...>::func_type func_type;
+                        static const bool value = _find_variadic_type_convert_<T...>::value;
+                };
+                
+                template <typename ret, typename... args>
+                struct find_variadic_type_convert<ret (args...)>
+                {
+                        typedef int ret_type;
+                        typedef void func_type;
+                        static const bool value = false;
+                };
+                
+                template <bool b, typename Tc, typename T1, typename... T>
+                struct __find_variadic_type_convert__<b, Tc, T1, T...>
+                {
+                        typedef typename find_variadic_type_convert<Tc, T...>::ret_type ret_type;
+                        typedef typename find_variadic_type_convert<Tc, T...>::func_type func_type;
+                        static const bool value = find_variadic_type_convert<Tc, T...>::value;
+                };
+                
+                template <typename Tc, typename T1, typename... T>
+                struct __find_variadic_type_convert__<true, Tc, T1, T...>
+                {
+                        typedef typename return_type<T1>::type ret_type;
+                        typedef T1 func_type;
+                        static const bool value = true;
+                };
+                
+                /**********************************/
+                /****** find_variadic_type ********/
+                /**********************************/
+                
+                template <bool, bool, bool, typename...>
+                struct __find_variadic_type__
+                {
+                        typedef int ret_type;
+                        typedef void func_type;
+                        static const bool value = false;
+                };
+                
+                template <typename... T>
+                struct find_variadic_type
+                {
+                        typedef typename __find_variadic_type__<find_variadic_type_exact<T...>::value,find_variadic_type_not_exact<T...>::value,find_variadic_type_convert<T...>::value, T...>::ret_type ret_type;
+                        typedef typename __find_variadic_type__<find_variadic_type_exact<T...>::value,find_variadic_type_not_exact<T...>::value,find_variadic_type_convert<T...>::value, T...>::func_type func_type;
+                        static const bool value = __find_variadic_type__<find_variadic_type_exact<T...>::value,find_variadic_type_not_exact<T...>::value,find_variadic_type_convert<T...>::value, T...>::value;
+                };
+                
+                template <bool b1, bool b2, typename... T>
+                struct __find_variadic_type__<true, b1, b2, T...>
+                {
+                        typedef typename find_variadic_type_exact<T...>::ret_type ret_type;
+                        typedef typename find_variadic_type_exact<T...>::func_type func_type;
+                        static const bool value = true;
+                };
+                
+                template <bool b2, typename... T>
+                struct __find_variadic_type__<false, true, b2, T...>
+                {
+                        typedef typename find_variadic_type_not_exact<T...>::ret_type ret_type;
+                        typedef typename find_variadic_type_not_exact<T...>::func_type func_type;
+                        static const bool value = true;
+                };
+                
+                template <typename... T>
+                struct __find_variadic_type__<false, false, true, T...>
+                {
+                        typedef typename find_variadic_type_convert<T...>::ret_type ret_type;
+                        typedef typename find_variadic_type_convert<T...>::func_type func_type;
+                        static const bool value = true;
                 };
                 
                 /********************************/

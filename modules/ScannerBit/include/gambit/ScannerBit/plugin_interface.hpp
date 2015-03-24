@@ -43,20 +43,11 @@ namespace Gambit
                 {
                         using Gambit::type_index;
                         
-//                         template <typename T, typename... args>
-//                         void variadicTypeInput(std::map<type_index, void*> index_map)
-//                         {
-//                                 for (auto it = index_map.begin(), end = index_map.end(); it != end; it++)
-//                                 {
-//                                 }
-//                         }
-                        
                         inline const std::map<type_index, void *>& error_map_return()
                         {
                                 static const std::map<type_index, void *> temp_map;
                                 return temp_map;
                         }
-                        
                         
                         /*******************************************************/
                         /************ Plugin Main Interface Base ***************/
@@ -173,17 +164,9 @@ namespace Gambit
                                         auto index_map = initPlugin(type, name, inputs...);
                                         dummy(Plugin_Main_Interface_Base<T>::enterMain(name, index_map)...);
                                 }
-                                
+
                                 template <typename... args>
-                                typename std::enable_if<find_variadic_type_exact <void (args...), T...>::value, typename find_variadic_type_exact <void (args...), T...>::ret_type>::type
-                                operator()(args... params)
-                                {
-                                        return Plugin_Main_Interface_Base<typename find_variadic_type_exact <void (args...), T...>::func_type>::operator()(params...);
-                                }
-                                
-                                template <typename... args>
-                                typename std::enable_if<!find_variadic_type_exact <void (args...), T...>::value, typename find_variadic_type <void (args...), T...>::ret_type>::type
-                                operator()(args... params)
+                                auto operator()(args... params) -> typename find_variadic_type <void (args...), T...>::ret_type
                                 {
                                         static_assert(find_variadic_type <void (args...), T...>::value, "\n\033[00;31;1mPlugin Interface:  Entered argument types do not match any of the plugin mains' argument types.\033[00m\n");
                                         return Plugin_Main_Interface_Base<typename find_variadic_type <void (args...), T...>::func_type>::operator()(params...);

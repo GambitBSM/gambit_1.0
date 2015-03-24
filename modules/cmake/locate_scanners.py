@@ -662,7 +662,7 @@ endif()                                         \n\n"
                             lib_name = plug_type[i] + "_" + directory + "_" + lib + "_LIBRARY"
                             towrite += "find_library( " + lib_name + " " + lib + " HINTS ${" + plug_type[i] + "_plugin_lib_paths_" + directory + "} )\n"
                             towrite += "if( " + lib_name + " STREQUAL \"" + lib_name + "-NOTFOUND\" )\n" 
-                            towrite += "  message(\"-- Did not find "+ plug_type[i] + " library " + lib + ". Disabling scanners that depend on this.\")\n"
+                            towrite += "    message(\"-- Did not find "+ plug_type[i] + " library " + lib + ". Disabling scanners that depend on this.\")\n"
                             towrite += "else()\n"
                             towrite += " "*4 + "get_filename_component(lib_path ${" + lib_name + "} PATH)\n"
                             towrite += " "*4 + "get_filename_component(lib_name ${" + lib_name + "} NAME_WE)\n"
@@ -674,7 +674,7 @@ endif()                                         \n\n"
                             towrite += " \"${" + plug_type[i] + "_plugin_rpath_" + directory + "};${lib_path}\")\n"
                             towrite += " "*4 + "set (" + plug_type[i] + "_plugin_linked_libs_" + directory 
                             towrite += " \"${" + plug_type[i] + "_plugin_linked_libs_" + directory +"}    " + lib + ": ${" + lib_name + "}\\n\")\n"
-                            towrite += "  message(\"-- Found "+ plug_type[i] + " library: ${lib_path}/${lib_name}.\")\n"
+                            towrite += "    message(\"-- Found "+ plug_type[i] + " library: ${lib_path}/${lib_name}.\")\n"
                             towrite += "endif()\n\n"
             
             if scanbit_auto_incs.has_key(plug_type[i]):
