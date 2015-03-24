@@ -43,7 +43,7 @@ namespace Gambit
                         printer_interface *printerInterface;
 
                 public:
-                        Scan_Manager (const Factory_Base&, const Options, const Priors::CompositePrior&, printer_interface* = 0);
+                        Scan_Manager (const Factory_Base*, const Options, const Priors::CompositePrior*, printer_interface* = 0);
                         ~Scan_Manager();
                         int Run();                       
                 };             

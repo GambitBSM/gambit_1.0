@@ -19,23 +19,17 @@
 ///  \author Pat Scott
 ///          (patscott@physics.mcgill.ca)
 ///  \date 2014 Mar
+///  \date 2015 Mar
 ///
 ///  *********************************************
 
-#include <iostream>
-#include <fstream>
-#include <string>
-
-#include "gambit/Core/error_handlers.hpp"
-#include "gambit/Utils/util_types.hpp"
-#include "gambit/Utils/util_functions.hpp"
-#include "gambit/Utils/variadic_functions.hpp"
-#include "gambit/Utils/yaml_options.hpp"
-
-#include "yaml-cpp/yaml.h"
-
 #ifndef __yaml_parser_hpp__
 #define __yaml_parser_hpp__
+
+#include "gambit/Utils/yaml_parser_base.hpp"
+#include "gambit/Utils/util_functions.hpp"
+
+#include "yaml-cpp/yaml.h"
 
 
 namespace Gambit
@@ -49,6 +43,7 @@ namespace Gambit
       // Dependency and Observable have the same type (and purpose entry is
       // irrelevant for dependencies)
       struct Observable
+
       {
         std::string purpose;
         std::string capability;
@@ -78,18 +73,44 @@ namespace Gambit
         {}
       };
 
-      // struct Parameter
-      // {
-      //   std::string name;
-      //   std::pair<double, double> range;
-      // }
     }
+
+    typedef Types::Observable ObservableType;
+    typedef std::vector<ObservableType> ObservablesType;
+
+    /// Main inifile class
+    class IniFile : public Parser
+    {
+
+      public:
+
+        /// Read in the YAML file
+        virtual void readFile(str filename);
+
+        /// Getters for private observable and auxiliary entries
+        /// @{
+        const ObservablesType & getObservables() const;
+        const ObservablesType & getAuxiliaries() const;
+        /// @}
+
+      private:
+        ObservablesType observables;
+        ObservablesType auxiliaries;
+
+    };
+
+
   }
+
 }
 
+
 // Rules for inifile --> Structs mapping
-namespace YAML {
+namespace YAML
+{
+ 
   using namespace Gambit::IniParser::Types;
+  
   template<> struct convert<Observable>
   {
     static bool decode(const Node& node, Observable& rhs)
@@ -128,103 +149,8 @@ namespace YAML {
       return true;
     }
   };
-  // template<> struct convert<Parameter>
-  // {
-  //   static bool decode(const Node& node, Parameter& rhs)
-  //   {
-  //     rhs.name =  node["parameter"].as<std::string>();
-  //     rhs.range = node["range"].as<std::pair<double,double> >();
-  //     return true;
-  //   }
-  // }
-}
-
-
-namespace Gambit
-{
-  namespace IniParser
-  {
-    typedef std::vector<Types::Observable> ObservablesType;
-    typedef Types::Observable ObservableType;
-
-    /// Main inifile class
-    class IniFile
-    {
-
-      public:
-
-        // Read the file
-        void readFile(std::string filename);
-
-        /// Getters for private observable and auxiliary entries
-        /// @{
-        const ObservablesType & getObservables() const;
-        const ObservablesType & getAuxiliaries() const;
-        /// @}
-
-        /// Getters for key/value section
-        /// @{
-        YAML::Node getParametersNode() const;
-        YAML::Node getPriorsNode() const;
-        YAML::Node getPrinterNode() const;
-        YAML::Node getScannerNode() const;
-        YAML::Node getKeyValuePairNode() const;
-        
-        template <typename... args>
-        bool hasKey(args... keys) const
-        {
-          return getVariadicNode(keyValuePairNode, keys...);
-        }
-
-        template<typename TYPE, typename... args> TYPE getValue(args... keys) const
-        {
-          const YAML::Node node = getVariadicNode(keyValuePairNode, keys...);
-          if (not node) inifile_error().raise(LOCAL_INFO,"No inifile entry for [" + stringifyVariadic(keys...) + "]");
-          return node.as<TYPE>();
-        }
-
-        template<typename TYPE, typename... args> TYPE getValueOrDef(TYPE def, const args&... keys) const
-        {
-          const YAML::Node node = getVariadicNode(keyValuePairNode, keys...);
-          if (not node)
-          {
-              return def;
-          }
-          return node.as<TYPE>();
-        }
-        /// @}
-
-        /// Getters for model/parameter section
-        /// @{
-        template<typename TYPE> TYPE getModelParameterEntry(std::string model,
-            std::string param, std::string key) const
-        {
-          if (not parametersNode[model][param][key]) inifile_error().raise(LOCAL_INFO,model + "." + param + "." + key + "not found in inifile.");
-          return parametersNode[model][param][key].as<TYPE>();
-        }
-        bool hasModelParameterEntry(std::string model, std::string param, std::string key) const;
-        /// Return list of model names (without "adhoc" model!)
-        const std::set<std::string> getModelNames() const;
-        const std::vector<std::string> getModelParameters(std::string model) const;
-        /// @}
-
-        /// Getter for options
-        const Options getOptions(std::string key) const;
-
-      private:
-        YAML::Node keyValuePairNode;
-        YAML::Node parametersNode;
-        YAML::Node priorsNode;
-        YAML::Node printerNode;
-        YAML::Node scannerNode;
-        ObservablesType observables;
-        ObservablesType auxiliaries;
-
-    };
-
-
-  }
 
 }
+
 
 #endif /* defined(__yaml_parser_hpp__) */

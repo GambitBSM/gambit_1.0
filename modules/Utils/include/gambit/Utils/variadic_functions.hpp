@@ -33,6 +33,8 @@
 #include <vector>
 #include <list>
 #include <forward_list>
+#include <deque>
+#include <array>
 
 #include "yaml-cpp/yaml.h"
 
@@ -137,6 +139,13 @@ namespace Gambit
                 static const bool value = true;
                 typedef T type;
         };
+        
+        template <typename T>
+        struct __is_container__<std::multiset<T>>
+        {
+                static const bool value = true;
+                typedef T type;
+        };
 
         template <typename T1, typename T2>
         struct __is_container__<std::map<T1, T2>>
@@ -146,7 +155,21 @@ namespace Gambit
         };
 
         template <typename T1, typename T2>
+        struct __is_container__<std::multimap<T1, T2>>
+        {
+                static const bool value = true;
+                typedef std::pair<T1, T2> type;
+        };
+        
+        template <typename T1, typename T2>
         struct __is_container__<std::unordered_map<T1, T2>>
+        {
+                static const bool value = true;
+                typedef std::pair<T1, T2> type;
+        };
+        
+        template <typename T1, typename T2>
+        struct __is_container__<std::unordered_multimap<T1, T2>>
         {
                 static const bool value = true;
                 typedef std::pair<T1, T2> type;
@@ -158,7 +181,28 @@ namespace Gambit
                 static const bool value = true;
                 typedef T type;
         };
+        
+        template <typename T>
+        struct __is_container__<std::unordered_multiset<T>>
+        {
+                static const bool value = true;
+                typedef T type;
+        };
 
+        template <typename T>
+        struct __is_container__<std::deque<T>>
+        {
+                static const bool value = true;
+                typedef T type;
+        };
+        
+        template <typename T, size_t N>
+        struct __is_container__<std::array<T, N>>
+        {
+                static const bool value = true;
+                typedef T type;
+        };
+        
         template <typename T>
         struct __is_container__<std::list<T>>
         {

@@ -116,7 +116,7 @@ namespace Gambit
     }
 
     /// Ensure that a path exists (and then return the path, for chaining purposes)
-    std::string ensure_path_exists(const std::string&);
+    const std::string& ensure_path_exists(const std::string&);
 
     typedef std::chrono::time_point<std::chrono::system_clock> time_point;
 

@@ -53,7 +53,7 @@ namespace Gambit
                                 std::string path;
                                 ///plugin name
                                 std::string plugin;
-                                ///plugin type:  "scan" or "like"
+                                ///plugin type
                                 std::string type;
                                 ///full string that ScannerBit sees
                                 std::string full_string;

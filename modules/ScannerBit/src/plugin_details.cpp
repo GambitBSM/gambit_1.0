@@ -24,7 +24,7 @@
 #include <ostream>
 #include <sstream>
 
-#include "gambit/ScannerBit/plugin_utilities.hpp"
+#include "gambit/ScannerBit/scanner_utils.hpp"
 #include "gambit/ScannerBit/plugin_details.hpp"
 
 namespace Gambit
@@ -64,28 +64,26 @@ namespace Gambit
                         void Plugin_Details::get_status(const YAML::Node &libNode, const YAML::Node &plugNode)
                         {
                                 std::vector<std::string> linked_libs_plug, found_incs_plug;
-                                std::string type2;
-                                if (type == "scan") type2 = "scanner";
-                                else if (type == "like") type2 = "objective";
+                                
                                 if (plugNode.IsMap())
                                 {
-                                        if (plugNode[type2] && plugNode[type2][plugin] && plugNode[type2][plugin][version] && plugNode[type2][plugin][version].IsMap())
+                                        if (plugNode[type] && plugNode[type][plugin] && plugNode[type][plugin][version] && plugNode[type][plugin][version].IsMap())
                                         {
-                                                if (plugNode[type2][plugin][version]["reqd_inifile_entries"].IsSequence())
-                                                        reqd_inifile_entries = plugNode[type2][plugin][version]["reqd_inifile_entries"].as<std::vector<std::string>>();
-                                                if (plugNode[type2][plugin][version]["reqd_libraries"].IsSequence())
-                                                        reqd_not_linked_libs = plugNode[type2][plugin][version]["reqd_libraries"].as<std::vector<std::string>>();
-                                                if (plugNode[type2][plugin][version]["not_linked_libraries"].IsSequence())
-                                                        ini_libs_not_found = plugNode[type2][plugin][version]["not_linked_libraries"].as<std::vector<std::string>>();
-                                                if (plugNode[type2][plugin][version]["reqd_include_paths"].IsSequence())
-                                                        reqd_incs_not_found = plugNode[type2][plugin][version]["reqd_include_paths"].as<std::vector<std::string>>();
-                                                if (plugNode[type2][plugin][version]["not_found_include_paths"].IsSequence())
-                                                        ini_incs_not_found = plugNode[type2][plugin][version]["not_found_include_paths"].as<std::vector<std::string>>();
+                                                if (plugNode[type][plugin][version]["reqd_inifile_entries"].IsSequence())
+                                                        reqd_inifile_entries = plugNode[type][plugin][version]["reqd_inifile_entries"].as<std::vector<std::string>>();
+                                                if (plugNode[type][plugin][version]["reqd_libraries"].IsSequence())
+                                                        reqd_not_linked_libs = plugNode[type][plugin][version]["reqd_libraries"].as<std::vector<std::string>>();
+                                                if (plugNode[type][plugin][version]["not_linked_libraries"].IsSequence())
+                                                        ini_libs_not_found = plugNode[type][plugin][version]["not_linked_libraries"].as<std::vector<std::string>>();
+                                                if (plugNode[type][plugin][version]["reqd_include_paths"].IsSequence())
+                                                        reqd_incs_not_found = plugNode[type][plugin][version]["reqd_include_paths"].as<std::vector<std::string>>();
+                                                if (plugNode[type][plugin][version]["not_found_include_paths"].IsSequence())
+                                                        ini_incs_not_found = plugNode[type][plugin][version]["not_found_include_paths"].as<std::vector<std::string>>();
                                                 
-                                                if (plugNode[type2][plugin][version]["linked_libraries"].IsSequence())
-                                                        linked_libs_plug = plugNode[type2][plugin][version]["linked_libraries"].as<std::vector<std::string>>();
-                                                if (plugNode[type2][plugin][version]["found_include_paths"].IsSequence())
-                                                        found_incs_plug = plugNode[type2][plugin][version]["found_include_paths"].as<std::vector<std::string>>();
+                                                if (plugNode[type][plugin][version]["linked_libraries"].IsSequence())
+                                                        linked_libs_plug = plugNode[type][plugin][version]["linked_libraries"].as<std::vector<std::string>>();
+                                                if (plugNode[type][plugin][version]["found_include_paths"].IsSequence())
+                                                        found_incs_plug = plugNode[type][plugin][version]["found_include_paths"].as<std::vector<std::string>>();
                                         }
                                 }
                                 
@@ -129,7 +127,7 @@ namespace Gambit
                                                         
                                                 for (auto it = found_incs_plug.begin(), end = found_incs_plug.end(); it != end; it++)
                                                 {
-                                                        found_incs.insert(std::pair<std::string, std::string>(type2 + "_locations.yaml", *it));
+                                                        found_incs.insert(std::pair<std::string, std::string>(type + "_locations.yaml", *it));
                                                 }
                                                 
                                                 std::vector<std::string> found_temp;
@@ -185,7 +183,7 @@ namespace Gambit
                                 out << "\tpatch version:  " << patch_version << std::endl;
                                 out << "\tplugin path:  " << path << std::endl;
                                 out << "\ttype:  " << type << std::endl;
-                                out << "\tlink status:  " << std::endl;
+                                out << "\tlink status:  " << status << std::endl;
                                 out << "\trequired inifile entries:  " << reqd_inifile_entries << std::endl;
                                 out << "\trequested libraries not linked:  " << reqd_not_linked_libs << std::endl;
                                 out << "\tinifile libraries not found:  " << ini_libs_not_found << std::endl;

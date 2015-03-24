@@ -77,11 +77,14 @@ namespace Gambit
         // Old Constructor
         //asciiPrinter(std::ofstream&, std::ofstream&);
   
-        // Constructor (for construction via inifile options)
+        /// Constructor (for construction via inifile options)
         asciiPrinter(const Options&);
 
-        // Auxilliary mode constructor (for construction in scanner plugins)
+        /// Auxilliary mode constructor (for construction in scanner plugins)
         asciiPrinter(const Options&, std::string&, bool global=0);
+
+        /// Tasks common to the various constructors
+        void common_constructor();
 
         /// Destructor
         // Overload the base class virtual destructor
@@ -119,21 +122,38 @@ namespace Gambit
         // Need to define one of these for every type we want to print!
         // Could use macros again to generate identical print functions 
         // for all types that have a << operator already defined.
+        void print(int const&,                 const std::string& label, const int IDcode, const int rank, const int pointID);
+        void print(unsigned int const&,        const std::string& label, const int IDcode, const int rank, const int pointID);
         void print(double const&,              const std::string& label, const int IDcode, const int rank, const int pointID);
         void print(std::vector<double> const&, const std::string& label, const int IDcode, const int rank, const int pointID);
         void print(ModelParameters const&,     const std::string& label, const int IDcode, const int rank, const int pointID);
       
+        /// Helper print functions
+        // Used to reduce repetition in definitions of virtual function overloads 
+        // (useful since there is no automatic type conversion possible)
+        template<class T>
+        void template_print(T const&, const std::string&, const int, const int, const int);
+
       private:
+        /// Output file
+        std::string output_file;
+
+        /// Info file (describes contents of output file, i.e. contents of columns)
+        std::string info_file;
+
         /// Main output file stream
         std::ofstream my_fstream;
         /// "Info file" output stream
         std::ofstream info_fstream;
 
-        //number of lines to store in buffer before printing
-        int bufferlength;
+        /// Number of lines to store in buffer before printing
+        unsigned int bufferlength;
 
-        // MPI rank (currently not hooked up to MPI, just hardcoded to 0)
+        /// MPI rank (currently not hooked up to MPI, just hardcoded to 0)
         int myRank;
+
+        /// Number of digits of precision to use in output columns
+        int precision;
  
         /// Full buffer of output to be printed
         // Key is <int rank, int pointID>; value is a Record (for a single model point)
@@ -149,14 +169,23 @@ namespace Gambit
         // If this changes after the first buffer dump an error will occur. Functors which return mutable output are not currently supported by this printer type, and may never be since it is pretty hard to deal with in an ascii table. Actually strictly speaking a functor can use fewer slots than it uses in the first buffer dump (the max of its first 'bufferlength' uses), but not more.
         std::map<int,int> lineindexrecord;
 
-        // Record a set of labels for each printer item: used to write "info" file explain what is in each column
+        /// Record a set of labels for each printer item: used to write "info" file explain what is in each column
         std::map<int,std::vector<std::string>> label_record; //the 'int' here is the vertex ID. Could make a typedef to make this safer.
         bool info_file_written; // Flag to let us know that the info file has been written
+
+        /// Flag to trigger "global" print mode. 
+        // In this mode, the output file will be *overwritten* when reset() is 
+        // called. Use this for printing information global to the scan (i.e. 
+        // via auxilliary printers in ScannerBit)
+        bool global;
+
+        /// Label for printer, mostly for more helpful error messages
+        std::string printer_name;
     };
 
-  // Register printer so it can be constructed via inifile instructions
-  // First argument is string label for inifile access, second is class from which to construct printer
-  LOAD_PRINTER(ascii, asciiPrinter)
+    // Register printer so it can be constructed via inifile instructions
+    // First argument is string label for inifile access, second is class from which to construct printer
+    LOAD_PRINTER(ascii, asciiPrinter)
      
   } // end namespace Printers
 } // end namespace Gambit
