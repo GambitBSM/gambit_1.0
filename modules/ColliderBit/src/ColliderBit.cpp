@@ -16,7 +16,7 @@
 ///  *********************************************
 
 // #define HESITATE shallIGoOn
-
+//
 #include <string>
 #include <iostream>
 #include <fstream>
@@ -27,9 +27,7 @@
 #include "gambit/Utils/gambit_module_headers.hpp"
 #include "gambit/ColliderBit/ColliderBit_rollcall.hpp"
 
-// Now pulling in some of the code from extras/HEColliderMain.cpp
-// I will leave the KFactorHooks alone for now, since the work on
-// xsec calculation is ongoing.
+// Again with my push not showing up... What gits?
 
 namespace Gambit {
   namespace ColliderBit {

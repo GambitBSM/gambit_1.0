@@ -90,6 +90,7 @@ BE_FUNCTION(dsddgpgn, void, (double&, double&, double&, double&), "dsddgpgn_", "
 BE_FUNCTION(dsSLHAread, void, (char*, int&, int), "dsslharead_", "dsSLHAread")
 BE_FUNCTION(dsprep, void, (), "dsprep_", "dsprep")
 BE_FUNCTION(dsIByieldone, double, (double&, int&, int&, int&), "dsibyieldone_", "dsibyieldone")
+BE_FUNCTION(dswwidth, void, (int&), "dswwidth_", "dswwidth")
 
 //BE_FUNCTION(initialize, void, (int), "_Z10initializei", "LibFirst_initialize_capability")
 //BE_FUNCTION(someFunction, void, (), "_Z12someFunctionv", "LibFirst_someFunction_capability")

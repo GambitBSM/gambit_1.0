@@ -1,5 +1,5 @@
 #include "gambit/ColliderBit/Detector.hpp"
-#include "gambit/ColliderBit/BuckFast.hpp"
+#include "gambit/ColliderBit/ATLASEfficiencies.hpp"
 
 namespace Gambit {
   namespace ColliderBit {

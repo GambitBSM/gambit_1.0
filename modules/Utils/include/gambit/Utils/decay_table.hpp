@@ -104,7 +104,7 @@ namespace Gambit
         public:
 
           /// Default constructor
-          Entry() :  width_in_GeV(0.0), calculator(""), calculator_version(""), warnings(""), errors("") {}
+          Entry() :  width_in_GeV(0.0), positive_error(0.0), negative_error(0.0), calculator(""), calculator_version(""), warnings(""), errors("") {}
           /// Constructor taking total width
           Entry(double width) :  width_in_GeV(width), calculator(""), calculator_version(""), warnings(""), errors("") {}
 
@@ -113,7 +113,7 @@ namespace Gambit
           /// Supports arbitrarily many final state particles.
           /// @{
           template <typename... Args>
-          void set_BF(double BF, std::pair<int,int> p1, Args... args)
+          void set_BF(double BF, double error, std::pair<int,int> p1, Args... args)
           {
             std::pair<int,int> particles[] = {p1, args...};
             std::set< std::pair<int,int> > key(particles, particles+sizeof...(Args));
@@ -128,14 +128,14 @@ namespace Gambit
                 model_error().raise(LOCAL_INFO,err);
               }
             }
-            channels[key] = BF;
+            channels[key] = std::pair<double, double>(BF, error);
           }
           template <typename... Args>
-          void set_BF(double BF, str p1, Args... args)
+          void set_BF(double BF, double error, str p1, Args... args)
           {
             std::set< std::pair<int,int> > key;
             construct_key(key, p1, args...);
-            channels[key] = BF;
+            channels[key] = std::pair<double, double>(BF, error);
           }
           /// @}
 
@@ -163,6 +163,62 @@ namespace Gambit
             {
               model_error().raise(LOCAL_INFO,"No branching fraction exists for the requested final states.");
             }
+            return channels.at(key).first;
+          }
+          /// @}
+
+          /// Retrieve branching fraction error for decay to a given final state.
+          /// Three ways to specify final states: PDG-context integer pairs, full particle names, short particle names + index integers.
+          /// Supports arbitrarily many final state particles.
+          /// @{
+          template <typename... Args>
+          double BF_error(std::pair<int,int> p1, Args... args) const
+          {
+            std::pair<int,int> particles[] = {p1, args...};
+            std::set< std::pair<int,int> > key(particles, particles+sizeof...(Args));
+            if (channels.find(key) == channels.end())
+            {
+              model_error().raise(LOCAL_INFO,"No branching fraction exists for the requested final states.");
+            }
+            return channels.at(key).second;
+          }
+          template <typename... Args>
+          double BF_error(str p1, Args... args) const
+          {
+            std::set< std::pair<int,int> > key;
+            construct_key(key, p1, args...);
+            if (channels.find(key) == channels.end())
+            {
+              model_error().raise(LOCAL_INFO,"No branching fraction exists for the requested final states.");
+            }
+            return channels.at(key).second;
+          }
+          /// @}
+
+          /// Retrieve branching fraction and error for decay to a given final state.
+          /// Three ways to specify final states: PDG-context integer pairs, full particle names, short particle names + index integers.
+          /// Supports arbitrarily many final state particles.
+          /// @{
+          template <typename... Args>
+          double BF_with_error(std::pair<int,int> p1, Args... args) const
+          {
+            std::pair<int,int> particles[] = {p1, args...};
+            std::set< std::pair<int,int> > key(particles, particles+sizeof...(Args));
+            if (channels.find(key) == channels.end())
+            {
+              model_error().raise(LOCAL_INFO,"No branching fraction exists for the requested final states.");
+            }
+            return channels.at(key);
+          }
+          template <typename... Args>
+          double BF_with_error(str p1, Args... args) const
+          {
+            std::set< std::pair<int,int> > key;
+            construct_key(key, p1, args...);
+            if (channels.find(key) == channels.end())
+            {
+              model_error().raise(LOCAL_INFO,"No branching fraction exists for the requested final states.");
+            }
             return channels.at(key);
           }
           /// @}
@@ -172,6 +228,12 @@ namespace Gambit
 
           /// Total particle width (in GeV)
           double width_in_GeV;
+          
+          /// Positive error on width
+          double positive_error;
+
+          /// Negative error on width
+          double negative_error;
 
           /// Name of the code (backend or otherwise) used for calculating this entry
           str calculator;
@@ -184,7 +246,7 @@ namespace Gambit
 
           /// The actual underlying map of channels to their BFs.
           /// Just iterate over this directly if you need to iterate over all decays of this particle.
-          std::map< std::set< std::pair<int,int> >, double > channels;
+          std::map< std::set< std::pair<int,int> >, std::pair<double, double> > channels;
 
       };
 

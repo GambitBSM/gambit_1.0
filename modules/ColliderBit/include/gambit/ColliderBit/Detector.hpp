@@ -35,8 +35,8 @@ namespace Gambit {
 
       typedef EventIn EventInType;
       typedef EventOut EventOutType;
-      Detector() { }
-      virtual ~Detector() { }
+      Detector() {}
+      virtual ~Detector() {}
 
       /// @name Initialization functions
       //@{
