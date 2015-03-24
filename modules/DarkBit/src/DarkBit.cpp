@@ -2445,9 +2445,68 @@ namespace Gambit {
     }
     void nuyield_toy      (nuyield_functype &result)        { result = &DarkBit_toyield; }
     void mwimp_toy        (double &result)                  { result = 250.0;            }
-    void annrate_toy      (double &result)                  { result = 1.e20;            }
 
-    // 22-string IceCube sample: predicted signal and background counts, observed counts and likelihoods.
+    /// Simple calculator of the spin-independent WIMP-proton cross-section 
+    void sigma_SI_p_simple(double &result)
+    {
+      using namespace Pipes::sigma_SI_p_simple;
+      double gps = Dep::DD_couplings->gps;
+      double reduced_mass = *Dep::mwimp * m_proton / (*Dep::mwimp + m_proton);
+      result = gev2cm2/pi*pow(reduced_mass*gps,2.0);
+    }
+
+    /// Simple calculator of the spin-independent WIMP-neutron cross-section 
+    void sigma_SI_n_simple(double &result)
+    {
+      using namespace Pipes::sigma_SI_n_simple;
+      double gns = Dep::DD_couplings->gns;
+      double reduced_mass = *Dep::mwimp * m_neutron / (*Dep::mwimp + m_neutron);
+      result = gev2cm2/pi*pow(reduced_mass*gns,2.0);
+    }
+
+    /// Simple calculator of the spin-dependent WIMP-proton cross-section 
+    void sigma_SD_p_simple(double &result)
+    {
+      using namespace Pipes::sigma_SD_p_simple;
+      double gpa = Dep::DD_couplings->gpa;
+      double reduced_mass = *Dep::mwimp * m_proton / (*Dep::mwimp + m_proton);
+      result = 3.0*gev2cm2/pi*pow(reduced_mass*gpa,2.0);
+    }
+
+    /// Simple calculator of the spin-dependent WIMP-neutron cross-section 
+    void sigma_SD_n_simple(double &result)
+    {
+      using namespace Pipes::sigma_SD_n_simple;
+      double gna = Dep::DD_couplings->gna;
+      double reduced_mass = *Dep::mwimp * m_neutron / (*Dep::mwimp + m_neutron);
+      result = 3.0*gev2cm2/pi*pow(reduced_mass*gna,2.0);
+    }
+
+    /// Capture rate of regular dark matter in the Sun (no v-dependent or q-dependent cross-sections) (s^-1).
+    void capture_rate_Sun_constant_xsec(double &result)
+    {
+      using namespace Pipes::capture_rate_Sun_constant_xsec;
+      // Here we assume that the proton and neutron scattering cross-sections are the same.
+      result = BEreq::capture_rate_Sun(Dep::mwimp, Dep::sigma_SI_p, Dep::sigma_SD_p);
+    }
+    
+    /// Equilibration time for capture and annihilation of dark matter in the Sun (s)
+    void equilibration_time_Sun(double &result)
+    {
+      using namespace Pipes::equilibration_time_Sun;
+      double ca = *Dep::sigmav/6.6e28 * pow(*Dep::mwimp/20.0, 1.5); 
+      result = pow(*Dep::capture_rate_Sun * ca, -0.5);                
+    }
+    
+    /// Annihilation rate of dark matter in the Sun (s^-1)
+    void annihilation_rate_Sun(double &result)
+    {
+      using namespace Pipes::annihilation_rate_Sun;
+      double tt_sun = 1.5e17 / *Dep::equilibration_time_Sun;                          
+      result = *Dep::capture_rate_Sun * 0.5 * pow(tanh(tt_sun),2.0);
+    }
+
+    /// 22-string IceCube sample: predicted signal and background counts, observed counts and likelihoods.
     void IC22_full(nudata &result)
     {
       using namespace Pipes::IC22_full;
@@ -2456,7 +2515,7 @@ namespace Gambit {
       char experiment[300] = "IC-22";
       context_func cf = DarkBit_context;
       void* context = &cf;
-      BEreq::nubounds(experiment[0], *Dep::mwimp, *Dep::annrate, byVal(*Dep::nuyield), sigpred, bgpred, 
+      BEreq::nubounds(experiment[0], *Dep::mwimp, *Dep::annihilation_rate_Sun, byVal(*Dep::nuyield), sigpred, bgpred, 
        totobs, lnLike, pval, 4, false, 0.0, 0.0, context);
       result.signal = sigpred;
       result.bg = bgpred;
@@ -2464,14 +2523,16 @@ namespace Gambit {
       result.loglike = lnLike;
       result.pvalue = pval;
     }
-    // 22-string extractor module functions
+    /// 22-string extractor module functions
+    /// @{
     void IC22_signal (double &result) { result = Pipes::IC22_signal ::Dep::IC22_data->signal;  }
     void IC22_bg     (double &result) { result = Pipes::IC22_bg     ::Dep::IC22_data->bg;      }
     void IC22_nobs   (int    &result) { result = Pipes::IC22_nobs   ::Dep::IC22_data->nobs;    }
     void IC22_loglike(double &result) { result = Pipes::IC22_loglike::Dep::IC22_data->loglike; }
     void IC22_pvalue (double &result) { result = Pipes::IC22_pvalue ::Dep::IC22_data->pvalue;  }
+    /// @}
 
-    // 79-string IceCube WH sample: predicted signal and background counts, observed counts and likelihoods.
+    /// 79-string IceCube WH sample: predicted signal and background counts, observed counts and likelihoods.
     void IC79WH_full(nudata &result)
     {
       using namespace Pipes::IC79WH_full;
@@ -2480,7 +2541,7 @@ namespace Gambit {
       char experiment[300] = "IC-79 WH";
       context_func cf = DarkBit_context;
       void* context = &cf;
-      BEreq::nubounds(experiment[0], *Dep::mwimp, *Dep::annrate, byVal(*Dep::nuyield), sigpred, bgpred, 
+      BEreq::nubounds(experiment[0], *Dep::mwimp, *Dep::annihilation_rate_Sun, byVal(*Dep::nuyield), sigpred, bgpred, 
        totobs, lnLike, pval, 4, false, 0.0, 0.0, context);
       result.signal = sigpred;
       result.bg = bgpred;
@@ -2488,14 +2549,16 @@ namespace Gambit {
       result.loglike = lnLike;
       result.pvalue = pval;
     }
-    // 79-string WH extractor module functions
+    /// 79-string WH extractor module functions
+    /// @{
     void IC79WH_signal (double &result) { result = Pipes::IC79WH_signal ::Dep::IC79WH_data->signal;  }
     void IC79WH_bg     (double &result) { result = Pipes::IC79WH_bg     ::Dep::IC79WH_data->bg;      }
     void IC79WH_nobs   (int    &result) { result = Pipes::IC79WH_nobs   ::Dep::IC79WH_data->nobs;    }
     void IC79WH_loglike(double &result) { result = Pipes::IC79WH_loglike::Dep::IC79WH_data->loglike; }
     void IC79WH_pvalue (double &result) { result = Pipes::IC79WH_pvalue ::Dep::IC79WH_data->pvalue;  }
+    /// @}
 
-    // 79-string IceCube WL sample: predicted signal and background counts, observed counts and likelihoods.
+    /// 79-string IceCube WL sample: predicted signal and background counts, observed counts and likelihoods.
     void IC79WL_full(nudata &result)
     {
       using namespace Pipes::IC79WL_full;
@@ -2504,7 +2567,7 @@ namespace Gambit {
       char experiment[300] = "IC-79 WL";
       context_func cf = DarkBit_context;
       void* context = &cf;
-      BEreq::nubounds(experiment[0], *Dep::mwimp, *Dep::annrate, byVal(*Dep::nuyield), sigpred, bgpred, 
+      BEreq::nubounds(experiment[0], *Dep::mwimp, *Dep::annihilation_rate_Sun, byVal(*Dep::nuyield), sigpred, bgpred, 
        totobs, lnLike, pval, 4, false, 0.0, 0.0, context);
       result.signal = sigpred;
       result.bg = bgpred;
@@ -2512,14 +2575,15 @@ namespace Gambit {
       result.loglike = lnLike;
       result.pvalue = pval;
     }
-    // 79-string WL extractor module functions
+    /// 79-string WL extractor module functions
     void IC79WL_signal (double &result) { result = Pipes::IC79WL_signal ::Dep::IC79WL_data->signal;  }
     void IC79WL_bg     (double &result) { result = Pipes::IC79WL_bg     ::Dep::IC79WL_data->bg;      }
     void IC79WL_nobs   (int    &result) { result = Pipes::IC79WL_nobs   ::Dep::IC79WL_data->nobs;    }
     void IC79WL_loglike(double &result) { result = Pipes::IC79WL_loglike::Dep::IC79WL_data->loglike; }
     void IC79WL_pvalue (double &result) { result = Pipes::IC79WL_pvalue ::Dep::IC79WL_data->pvalue;  }
+    /// @}
 
-    // 79-string IceCube SL sample: predicted signal and background counts, observed counts and likelihoods.
+    /// 79-string IceCube SL sample: predicted signal and background counts, observed counts and likelihoods.
     void IC79SL_full(nudata &result)
     {
       using namespace Pipes::IC79SL_full;
@@ -2528,7 +2592,7 @@ namespace Gambit {
       char experiment[300] = "IC-79 SL";
       context_func cf = DarkBit_context;
       void* context = &cf;
-      BEreq::nubounds(experiment[0], *Dep::mwimp, *Dep::annrate, byVal(*Dep::nuyield), sigpred, bgpred, 
+      BEreq::nubounds(experiment[0], *Dep::mwimp, *Dep::annihilation_rate_Sun, byVal(*Dep::nuyield), sigpred, bgpred, 
        totobs, lnLike, pval, 4, false, 0.0, 0.0, context);
       result.signal = sigpred;
       result.bg = bgpred;
@@ -2536,14 +2600,23 @@ namespace Gambit {
       result.loglike = lnLike;
       result.pvalue = pval;
     }
-    // 79-string SL extractor module functions
+    /// 79-string SL extractor module functions
+    /// @{
     void IC79SL_signal (double &result) { result = Pipes::IC79SL_signal ::Dep::IC79SL_data->signal;  }
     void IC79SL_bg     (double &result) { result = Pipes::IC79SL_bg     ::Dep::IC79SL_data->bg;      }
     void IC79SL_nobs   (int    &result) { result = Pipes::IC79SL_nobs   ::Dep::IC79SL_data->nobs;    }
     void IC79SL_loglike(double &result) { result = Pipes::IC79SL_loglike::Dep::IC79SL_data->loglike; }
     void IC79SL_pvalue (double &result) { result = Pipes::IC79SL_pvalue ::Dep::IC79SL_data->pvalue;  }
+    /// @}
 
-    // Composite IceCube likelihood function.
+    /// Composite IceCube 79-string likelihood function.
+    void IC79_loglike(double &result)
+    {
+      using namespace Pipes::IC79_loglike;
+      result = *Dep::IC79WH_loglike + *Dep::IC79WL_loglike + *Dep::IC79SL_loglike; 
+    }
+
+    /// Complete composite IceCube likelihood function.
     void IC_loglike(double &result)
     {
       using namespace Pipes::IC_loglike;

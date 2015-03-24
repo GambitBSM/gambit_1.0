@@ -471,6 +471,11 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
+  // Simple calculators of the spin-(in)dependent WIMP-proton and WIMP-neutron cross-sections 
+  QUICK_FUNCTION(DarkBit, sigma_SI_p, NEW_CAPABILITY, sigma_SI_p_simple, double, (), (DD_couplings, DarkBit::DD_couplings), (mwimp, double))
+  QUICK_FUNCTION(DarkBit, sigma_SI_n, NEW_CAPABILITY, sigma_SI_n_simple, double, (), (DD_couplings, DarkBit::DD_couplings), (mwimp, double))
+  QUICK_FUNCTION(DarkBit, sigma_SD_p, NEW_CAPABILITY, sigma_SD_p_simple, double, (), (DD_couplings, DarkBit::DD_couplings), (mwimp, double))
+  QUICK_FUNCTION(DarkBit, sigma_SD_n, NEW_CAPABILITY, sigma_SD_n_simple, double, (), (DD_couplings, DarkBit::DD_couplings), (mwimp, double))
 
   // DDCalc0 dependencies ----------------------------------
   // Intermediate routines that must be called when intending
@@ -797,6 +802,41 @@ START_MODULE
 
   // INDIRECT DETECTION: NEUTRINOS =====================================
  
+  // Solar capture ------------------------
+
+  // Capture rate of regular dark matter in the Sun (no v-dependent or q-dependent cross-sections) (s^-1).
+  #define CAPABILITY capture_rate_Sun
+  START_CAPABILITY
+    #define FUNCTION capture_rate_Sun_constant_xsec
+      START_FUNCTION(double)
+      BACKEND_REQ(Capture_rate_Sun, (DarkSUSY), double, (const double&, const double&, const double&))
+      DEPENDENCY(mwimp, double)
+      DEPENDENCY(sigma_SI_p, double)
+      DEPENDENCY(sigma_SD_p, double)
+    #undef FUNCTION
+  #undef CAPABILITY
+  
+  // Equilibration time for capture and annihilation of dark matter in the Sun (s)
+  #define CAPABILITY equilibration_time_Sun
+  START_CAPABILITY
+    #define FUNCTION equilibration_time_Sun
+      START_FUNCTION(double)
+      DEPENDENCY(sigmav, double)
+      DEPENDENCY(mwimp, double)
+      DEPENDENCY(capture_rate_Sun, double)                
+    #undef FUNCTION
+  #undef CAPABILITY
+  
+  // Annihilation rate of dark matter in the Sun (s^-1)
+  #define CAPABILITY annihilation_rate_Sun
+  START_CAPABILITY
+    #define FUNCTION annihilation_rate_Sun
+      START_FUNCTION(double)
+      DEPENDENCY(equilibration_time_Sun, double)
+      DEPENDENCY(capture_rate_Sun, double)
+    #undef FUNCTION
+  #undef CAPABILITY
+    
   // Neutrino telescope likelihoods ------------------------
 
   #define CAPABILITY IC22_data
@@ -804,7 +844,7 @@ START_MODULE
     #define FUNCTION IC22_full
       START_FUNCTION(nudata)
       DEPENDENCY(mwimp, double)
-      DEPENDENCY(annrate, double)
+      DEPENDENCY(annihilation_rate_Sun, double)
       DEPENDENCY(nuyield, nuyield_functype)  
       BACKEND_REQ(nubounds, (), void, (const char&, const double&, const double&, double(*)(const double&, const int&, void*&), double&, double&,
                                        int&, double&, double&, const int&, const bool&, const double&, const double&, void*&))
@@ -856,7 +896,7 @@ START_MODULE
     #define FUNCTION IC79WH_full
       START_FUNCTION(nudata)
       DEPENDENCY(mwimp, double)
-      DEPENDENCY(annrate, double)
+      DEPENDENCY(annihilation_rate_Sun, double)
       DEPENDENCY(nuyield, nuyield_functype)  
       BACKEND_REQ(nubounds, (), void, (const char&, const double&, const double&, double(*)(const double&, const int&, void*&), double&, double&,
                                        int&, double&, double&, const int&, const bool&, const double&, const double&, void*&))
@@ -908,7 +948,7 @@ START_MODULE
     #define FUNCTION IC79WL_full
       START_FUNCTION(nudata)
       DEPENDENCY(mwimp, double)
-      DEPENDENCY(annrate, double)
+      DEPENDENCY(annihilation_rate_Sun, double)
       DEPENDENCY(nuyield, nuyield_functype)  
       BACKEND_REQ(nubounds, (), void, (const char&, const double&, const double&, double(*)(const double&, const int&, void*&), double&, double&,
                                        int&, double&, double&, const int&, const bool&, const double&, const double&, void*&))
@@ -960,7 +1000,7 @@ START_MODULE
     #define FUNCTION IC79SL_full
       START_FUNCTION(nudata)
       DEPENDENCY(mwimp, double)
-      DEPENDENCY(annrate, double)
+      DEPENDENCY(annihilation_rate_Sun, double)
       DEPENDENCY(nuyield, nuyield_functype)  
       BACKEND_REQ(nubounds, (), void, (const char&, const double&, const double&, double(*)(const double&, const int&, void*&), double&, double&,
                                        int&, double&, double&, const int&, const bool&, const double&, const double&, void*&))
@@ -1009,6 +1049,14 @@ START_MODULE
 
   #define CAPABILITY IceCube_likelihood
   START_CAPABILITY
+
+    #define FUNCTION IC79_loglike
+    START_FUNCTION(double)
+    DEPENDENCY(IC79WH_loglike, double)
+    DEPENDENCY(IC79WL_loglike, double)
+    DEPENDENCY(IC79SL_loglike, double)
+    #undef FUNCTION
+
     #define FUNCTION IC_loglike
     START_FUNCTION(double)
     DEPENDENCY(IC22_loglike, double)
@@ -1016,6 +1064,7 @@ START_MODULE
     DEPENDENCY(IC79WL_loglike, double)
     DEPENDENCY(IC79SL_loglike, double)
     #undef FUNCTION
+
   #undef CAPABILITY
 
   //The following are just toy functions to allow the neutrino likelihoods to be tested.  
@@ -1023,8 +1072,7 @@ START_MODULE
   //annihilation rate and neutrino yield.
   QUICK_FUNCTION(DarkBit, nuyield, NEW_CAPABILITY, nuyield_toy, nuyield_functype)
   QUICK_FUNCTION(DarkBit, mwimp,   NEW_CAPABILITY, mwimp_toy,   double          )
-  QUICK_FUNCTION(DarkBit, annrate, NEW_CAPABILITY, annrate_toy, double          )
-
+ 
   #define CAPABILITY UnitTest_DarkBit
   START_CAPABILITY
     #define FUNCTION UnitTest_DarkBit
@@ -1051,7 +1099,7 @@ START_MODULE
 
 #undef MODULE
 
-    
+   
 
 // Tests for Torsten.
 /*
