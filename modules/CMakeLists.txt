@@ -2,7 +2,7 @@
 #************************************************
 # \file
 #
-#  Master cmake configuration script for GAMBIT.
+#  Master CMake configuration script for GAMBIT.
 #
 #  CMakeLists files in this project can refer to
 #  the root source directory of the project as
@@ -13,10 +13,10 @@
 #
 #  Authors (add name and date if you modify):
 #
-#  \author Antje Putzerator
+#  \author Antje Putze
 #          (antje.putze@lapth.cnrs.fr)
 #  \date 2014 Sep, Oct, Nov
-#        2015 Jan
+#        2015 Jan, Feb
 #
 #  \author Pat Scott
 #          (p.scott@imperial.ac.uk)
@@ -72,21 +72,6 @@ find_package(PythonInterp REQUIRED)
 foreach(module yaml os re datetime sys getopt shutil itertools)
   find_python_module(${module} REQUIRED)
 endforeach()
-
-# Reprocess the ditch set into a comma-separated list
-string (REPLACE ";" "," itch_with_commas "${itch}")
-
-# Generate the cmake_variables.hpp.in file
-message("-- Updating GAMBIT with config data")
-set(locate_scanners ${PROJECT_SOURCE_DIR}/cmake/locate_scanners.py -x __not_a_real_name__,${itch_with_commas})
-execute_process(COMMAND python ${locate_scanners} WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
-message("-- Updating GAMBIT with config data - done.")
-
-# Generate the CMakeLists.txt files for GAMBIT modules
-message("-- Updating GAMBIT module cmake files")
-set(update_cmakelists ${PROJECT_SOURCE_DIR}/cmake/update_cmakelists.py -x __not_a_real_name__,${itch_with_commas})
-execute_process(COMMAND python ${update_cmakelists} WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
-message("-- Updating GAMBIT module cmake files - done.")
 
 # Do OSX checks
 include(cmake/MacOSX.cmake)
@@ -197,6 +182,46 @@ endif()
 # Check for DL libraries
 include(cmake/FindLibDL.cmake)
 
+# Set the version number
+set(GAMBIT_VERSION_MAJOR 1)
+set(GAMBIT_VERSION_MINOR 0)
+
+# Reprocess the ditch set into a comma-separated list
+string (REPLACE ";" "," itch_with_commas "${itch}")
+
+# Generate the cmake_variables.hpp.in file
+message("${Yellow}-- Updating GAMBIT with config data...${ColourReset}")
+set(locate_scanners ${PROJECT_SOURCE_DIR}/cmake/locate_scanners.py -x __not_a_real_name__,${itch_with_commas})
+execute_process(COMMAND python ${locate_scanners} WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
+message("${Yellow}-- Updating GAMBIT with config data - done.${ColourReset}")
+
+# Finish configuring the header file to pass some of the CMake settings to the source code
+configure_file("${PROJECT_SOURCE_DIR}/cmake/cmake_variables.hpp.in"
+               "${PROJECT_BINARY_DIR}/gambit/cmake/cmake_variables.hpp")
+
+# Add the binary tree to the search path for include files so that we will find cmake_variables.hpp
+include_directories("${PROJECT_BINARY_DIR}")
+
+# Add a true clean target that can have dependencies, to allow us to trigger cleaning of external projects (or run any other custom commands)
+add_custom_target(distclean COMMAND ${CMAKE_MAKE_PROGRAM} clean)
+
+# Work out which modules to include in the compile
+retrieve_bits(GAMBIT_BITS ${PROJECT_SOURCE_DIR} "${itch}" "Loud")
+
+# Include contributed packages
+include(cmake/contrib.cmake)
+
+# Generate the CMakeLists.txt files for GAMBIT modules
+message("${Yellow}-- Updating GAMBIT module CMake files...${ColourReset}")
+set(update_cmakelists ${PROJECT_SOURCE_DIR}/cmake/update_cmakelists.py -x __not_a_real_name__,${itch_with_commas})
+execute_process(COMMAND python ${update_cmakelists} WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
+message("${Yellow}-- Updating GAMBIT module cmake files - done.${ColourReset}")
+
+# Generate the backend_locations.yaml file if there isn't one
+if(NOT EXISTS "${PROJECT_SOURCE_DIR}/config/backend_locations.yaml")
+  configure_file("${PROJECT_SOURCE_DIR}/config/backend_locations.yaml.example" "${PROJECT_SOURCE_DIR}/config/backend_locations.yaml" COPYONLY)
+endif()
+
 # Identify the different harvester scripts
 set(MODEL_HARVESTER ${PROJECT_SOURCE_DIR}/Models/scripts/model_harvester.py)
 set(BACKEND_HARVESTER ${PROJECT_SOURCE_DIR}/Backends/scripts/backend_harvester.py)
@@ -226,14 +251,7 @@ add_custom_target(model_harvest   DEPENDS ${PROJECT_SOURCE_DIR}/Models/include/g
 add_custom_target(backend_harvest DEPENDS ${PROJECT_SOURCE_DIR}/Backends/include/gambit/Backends/backend_rollcall.hpp ${BACKEND_HARVESTER_FILES})
 add_custom_target(module_harvest DEPENDS ${PROJECT_SOURCE_DIR}/Utils/include/gambit/Utils/all_functor_types.hpp ${PROJECT_SOURCE_DIR}/Core/include/gambit/Core/module_rollcall.hpp ${PROJECT_SOURCE_DIR}/Utils/include/gambit/Utils/module_types_rollcall.hpp ${MODULE_HARVESTER_FILES} backend_harvest)
 
-# Work out which modules to include in the compile
-retrieve_bits(GAMBIT_BITS ${PROJECT_SOURCE_DIR} "${itch}" "Loud")
-
-# Add a true clean target that can have dependencies, to allow us to trigger cleaning of external projects (or run any other custom commands)
-add_custom_target(distclean COMMAND ${CMAKE_MAKE_PROGRAM} clean)
-
 # Include other cmake scripts
-include(cmake/contrib.cmake)
 include(cmake/warnings.cmake)
 include(cmake/gambit.cmake)
 include(cmake/extras.cmake)

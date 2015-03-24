@@ -61,7 +61,6 @@ namespace Gambit {
     class BuckFastBase : public Detector<HEPUtils::Event, HEPUtils::Event> {
     public:
 
-      BuckFastBase() : _processedEvent(0) {}
       /// @name Initialization functions
       //@{
       virtual void defaults() {}
@@ -73,27 +72,6 @@ namespace Gambit {
       //@{
       virtual void processEvent(const HEPUtils::Event&, HEPUtils::Event&) = 0; //< @note Pure virtual.
       //@}
-
-
-    protected:
-
-      /// @name Event conversion functions.
-      //@{
-      virtual void convertInput(const HEPUtils::Event& event) {
-        /// Memory clean-up of any previous event.
-        if (_processedEvent)
-          delete _processedEvent;
-        /// Make a local deep copy of the input event to be modified by processEvent.
-        _processedEvent = event.clone();
-      }
-
-      virtual void convertOutput(HEPUtils::Event& event) {
-        /// @note *Shallow* copy into passed Event (reference is not reset)
-        event = *_processedEvent;
-      }
-      //@}
-
-      HEPUtils::Event* _processedEvent;
     };
 
 
@@ -218,7 +196,7 @@ namespace Gambit {
         while ((candidate = static_cast<Candidate*>(iteratorElectrons.Next()))) {
           const TLorentzVector &momentum = candidate->Momentum;
           recoParticle = new HEPUtils::Particle(P4::mkXYZM(momentum.Px(), momentum.Py(), momentum.Pz(), 0.000510998902),
-                                      -sign(candidate->Charge) * PID::ELECTRON);
+                                                -sign(candidate->Charge) * PID::ELECTRON);
           recoParticle->set_prompt(true);
           event.add_particle(recoParticle);
         }
@@ -231,7 +209,7 @@ namespace Gambit {
         while ((candidate = static_cast<Candidate*>(iteratorMuons.Next()))) {
           const TLorentzVector &momentum = candidate->Momentum;
           recoParticle = new HEPUtils::Particle(P4::mkXYZM(momentum.Px(), momentum.Py(), momentum.Pz(), 0.105658389),
-                                      -sign(candidate->Charge) * PID::MUON);
+                                                -sign(candidate->Charge) * PID::MUON);
           recoParticle->set_prompt(true);
           event.add_particle(recoParticle);
         }
@@ -245,7 +223,7 @@ namespace Gambit {
           const TLorentzVector &momentum = candidate->Momentum;
           if (candidate->TauTag) {
             recoParticle = new HEPUtils::Particle(P4::mkXYZM(momentum.Px(), momentum.Py(), momentum.Pz(), 1e-6),
-                                        -sign(candidate->Charge) * PID::TAU);
+                                                  -sign(candidate->Charge) * PID::TAU);
             recoParticle->set_prompt(true);
             event.add_particle(recoParticle);
             //continue;

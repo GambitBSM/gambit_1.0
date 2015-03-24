@@ -1,3 +1,25 @@
+# GAMBIT: Global and Modular BSM Inference Tool
+#************************************************
+# \file
+#
+#  CMake CMakeLists.txt file for Models
+#
+#************************************************
+#
+#  Authors (add name and date if you modify):
+#
+#  \author Antje Putze
+#          (antje.putze@lapth.cnrs.fr)
+#  \date 2014 Aug, Oct
+#  \date 2015 Feb
+#
+#  \author Pat Scott
+#          (p.scott@imperial.ac.uk)
+#  \date 2014 Nov, Dec
+#  \date 2015 Jan, Feb
+#
+#************************************************
+
 set(source_files src/claw_singleton.cpp
                  src/partmap.cpp
                  src/model_parameters.cpp
