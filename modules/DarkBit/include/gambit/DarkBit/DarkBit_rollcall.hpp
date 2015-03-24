@@ -809,7 +809,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION capture_rate_Sun_constant_xsec
       START_FUNCTION(double)
-      BACKEND_REQ(Capture_rate_Sun, (DarkSUSY), double, (const double&, const double&, const double&))
+      BACKEND_REQ(capture_rate_Sun, (DarkSUSY), double, (const double&, const double&, const double&))
       DEPENDENCY(mwimp, double)
       DEPENDENCY(sigma_SI_p, double)
       DEPENDENCY(sigma_SD_p, double)

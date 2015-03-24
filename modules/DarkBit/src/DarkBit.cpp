@@ -2487,7 +2487,7 @@ namespace Gambit {
     {
       using namespace Pipes::capture_rate_Sun_constant_xsec;
       // Here we assume that the proton and neutron scattering cross-sections are the same.
-      result = BEreq::capture_rate_Sun(Dep::mwimp, Dep::sigma_SI_p, Dep::sigma_SD_p);
+      result = BEreq::capture_rate_Sun(*Dep::mwimp, *Dep::sigma_SI_p, *Dep::sigma_SD_p);
     }
     
     /// Equilibration time for capture and annihilation of dark matter in the Sun (s)
