@@ -121,17 +121,17 @@ Parameters:
 #      Au_3:
 #        fixed_value: 0
 
-//    nuclear_params_sigma0_sigmaPiN:
-//      sigma0:
-//        fixed_value: 30.76
-//      SigmaPiN:
-//        fixed_value: 34.0
-//      deltad:
-//        fixed_value: -0.427
-//      deltau:
-//        fixed_value: 0.842
-//      deltas:
-//        fixed_value: -0.085
+#    nuclear_params_sigma0_SigmaPiN:
+#      sigma0:
+#        fixed_value: 30.76
+#      SigmaPiN:
+#        fixed_value: 34.0
+#      deltad:
+#        fixed_value: -0.427
+#      deltau:
+#        fixed_value: 0.842
+#      deltas:
+#        fixed_value: -0.085
 
 ##############################
 # Prior setup
@@ -314,7 +314,7 @@ Auxiliaries:
         nuclear_parameters: DarkBit/NuclearParameters.txt
   - capability: set_nuclear_params
     #function: set_nuclear_params_DarkSUSY
-    function: set_nuclear_params_micrOMEGAs
+    #function: set_nuclear_params_micrOMEGAs
     options:
         # If below is set true, internal micrOMEGAs routines are used to
         # calculate hadronic matrix elements.

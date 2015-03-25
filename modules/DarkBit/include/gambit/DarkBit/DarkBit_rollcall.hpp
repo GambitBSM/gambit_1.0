@@ -460,8 +460,8 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION set_nuclear_params_DarkSUSY
       START_FUNCTION(bool)
-      DEPENDENCY(nuclear_params, Gambit::DarkBit::nuclear_params)
       BACKEND_REQ(ddcom, (DarkSUSY), DS_DDCOM)
+      ALLOW_MODELS(nuclear_params_fnq)
     #undef FUNCTION
     #define FUNCTION set_nuclear_params_micrOMEGAs
       START_FUNCTION(bool)
