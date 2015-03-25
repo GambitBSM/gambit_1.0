@@ -315,10 +315,6 @@ Auxiliaries:
   - capability: set_nuclear_params
     #function: set_nuclear_params_DarkSUSY
     #function: set_nuclear_params_micrOMEGAs
-    options:
-        # If below is set true, internal micrOMEGAs routines are used to
-        # calculate hadronic matrix elements.
-        # use_micrOMEGAs_calc: true
   # For MSSM-based models, which of the DarkSUSY or micrOMEGAs routines
   # to use must be explicitly specified here (uncomment the desired one).
   # The SingletDM function can be explicitly specified for the SingletDM

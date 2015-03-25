@@ -465,9 +465,8 @@ START_MODULE
     #undef FUNCTION
     #define FUNCTION set_nuclear_params_micrOMEGAs
       START_FUNCTION(bool)
-      DEPENDENCY(nuclear_params, Gambit::DarkBit::nuclear_params)
       BACKEND_REQ(MOcommon, (micromegas), micrOMEGAs::MOcommonSTR)
-      BACKEND_REQ(calcScalarQuarkFF, (micromegas), void, (double, double, double, double))
+      ALLOW_MODELS(nuclear_params_fnq)
     #undef FUNCTION
   #undef CAPABILITY
 
