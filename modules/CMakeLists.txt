@@ -227,7 +227,7 @@ message("${Yellow}-- Updating GAMBIT with config data - done.${ColourReset}")
 
 # Finish configuring the header file to pass some of the CMake settings to the source code
 configure_file("${PROJECT_SOURCE_DIR}/cmake/cmake_variables.hpp.in"
-               "${PROJECT_BINARY_DIR}/gambit/cmake/cmake_variables.hpp")
+               "${PROJECT_BINARY_DIR}/cmake/gambit/cmake/cmake_variables.hpp")
 
 # Add the binary tree to the search path for include files so that we will find cmake_variables.hpp
 include_directories("${PROJECT_BINARY_DIR}")
