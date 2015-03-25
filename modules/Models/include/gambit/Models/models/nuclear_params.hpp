@@ -37,7 +37,7 @@
 
 // sigmas and SigmaPiN used to calculate hadronic matrix elements
 #define MODEL nuclear_params_sigmas_SigmaPiN
-#define PARENT nuclear_params_fnq
+#define PARENT nuclear_params_sigma0_SigmaPiN
   START_MODEL
   DEFINEPARS(sigmas, SigmaPiN)
   DEFINEPARS(deltad, deltau, deltas)
