@@ -24,6 +24,8 @@
 
 #include <map>
 #include <set>
+#include <cfloat>
+#include <sstream>
 
 #include "gambit/Utils/cats.hpp"
 #include "gambit/Utils/standalone_error_handlers.hpp"
@@ -121,13 +123,74 @@ class Spectrum {
 
 class RunningPars 
 {
+   private:
+      /// Default limits to RGE running; warning/error raised if running beyond these is attempted.
+      // If these aren't overridden in the derived class then effectively no limit on running will exist.
+      virtual double hard_upper() const {return DBL_MAX;}
+      virtual double soft_upper() const {return DBL_MAX;}
+      virtual double soft_lower() const {return 0.;}
+      virtual double hard_lower() const {return 0.;}
+
+      /// Run object to a particular scale
+      // Override this function in derived class to perform running
+      virtual void RunToScaleOverride(double) { vfcn_error(LOCAL_INFO); }
    public:
       /// Constructors/destructors
       RunningPars() {}
       virtual ~RunningPars() {}      
 
-      /// run object to a particular scale
-      virtual void RunToScale(double) { vfcn_error(LOCAL_INFO); }
+      /// Wrapper for RunToScaleOverload which automatically checks limits and
+      /// raises warnings.
+      // Behaviour modified by "behave" integer:
+      // behave = 0  -- If running beyond soft limit requested, halt at soft limit
+      //                (assumes hard limits outside of soft limits; but this is not enforced)
+      // behave = 1  -- If running beyond soft limit requested, throw warning
+      //                  "           "   hard limit     "    , throw error
+      // behave = anything else -- Ignore limits and attempt running to requested scale 
+      void RunToScale(double scale, int behave=0)
+      {
+         if(behave==0 or behave==1) 
+         {
+            if(scale < hard_lower() or scale > hard_upper()) {
+               if(behave==1) {
+                  std::ostringstream msg;
+                  msg << "RGE running requested outside hard limits! This is forbidden with behave=1. Set behave=0 (default) to automatically stop running at soft limits, or behave=2 to force running to requested scale (may trigger errors from underlying RGE code!)." << std::endl;
+                  msg << "  Requested : "<< scale << std::endl;
+                  msg << "  hard_upper: "<< hard_upper() << std::endl;
+                  msg << "  hard_lower: "<< hard_lower() << std::endl;
+                  utils_error().raise(LOCAL_INFO, msg.str());
+               } else { // behave==0
+                  if     (scale < soft_lower()) { scale=soft_lower(); } 
+                  else if(scale > soft_upper()) { scale=soft_upper(); }
+                  else {
+                    // Hard limits must be outside soft limits; this is a bug in the derived Spectum object
+                    std::ostringstream msg;
+                    msg << "RGE running requested outside hard limits, but within soft limits! The soft limits should always be within the hard limits, so this is a bug in the derived Spectrum object being accessed. I cannot tell you which class this is though; check the dependency graph to see which ones are being created, and if necessary consult your debugger." << std::endl;
+                    msg << "  Requested : "<< scale << std::endl;
+                    msg << "  hard_upper: "<< hard_upper() << std::endl;
+                    msg << "  soft_upper: "<< soft_upper() << std::endl;
+                    msg << "  soft_lower: "<< soft_lower() << std::endl;
+                    msg << "  hard_lower: "<< hard_lower() << std::endl;
+                    utils_error().raise(LOCAL_INFO, msg.str());
+                  } 
+               }
+            } else if(scale < soft_lower() or scale > soft_upper()) {
+               if(behave==1) {
+                  std::ostringstream msg;
+                  msg << "RGE running requested outside soft limits! Accuracy may be low. Note: Set behave=2 to suppress this warning, or behave=0 (default) to automatically stop running when soft limit is hit." << std::endl;
+                  msg << "  Requested : "<< scale << std::endl;
+                  msg << "  soft_upper: "<< soft_upper() << std::endl;
+                  msg << "  soft_lower: "<< soft_lower() << std::endl;
+                  utils_warning().raise(LOCAL_INFO, msg.str());
+               } else { // behave==0
+                  if(scale < soft_lower()) scale=soft_lower();
+                  if(scale > soft_upper()) scale=soft_upper();
+               }
+            }
+         }
+         RunToScaleOverride(scale);
+      }
+
       /// returns the renormalisation scale of parameters
       virtual double GetScale() const { vfcn_error(LOCAL_INFO); return -1; }
       /// Sets the renormalisation scale of parameters 

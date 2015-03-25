@@ -86,12 +86,14 @@ namespace Gambit {
    QedQcd_MSbarPars::QedQcd_MSbarPars(QedQcdWrapper& x, QedQcdModel& m) 
      : RunparDer<QedQcdModel>(x,m)
      , my_parent(x) 
+     , softup(my_parent.phys.get_Pole_Mass("t")) // Set top quark pole mass as soft upper limit of running.
+     , hardup(my_parent.phys.get_Pole_Mass("t")) // QedQcd object will throw its own error if we try to run above this, so set this as the hard limit as well.
    {}
    
    QedQcd_MSbarPars::~QedQcd_MSbarPars() {}
  
    /// Run masses and couplings to end_scale
-   void QedQcd_MSbarPars::RunToScale(double end_scale) 
+   void QedQcd_MSbarPars::RunToScaleOverride(double end_scale) 
    {
      ///TODO: Need to add warnings for running beyond certain scales, for different sorts of quantities
      const double tol = 1.0e-5; // Value used internally in QedQcd methods

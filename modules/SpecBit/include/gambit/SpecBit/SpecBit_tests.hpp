@@ -1147,6 +1147,7 @@ namespace Gambit
          OUTPUT << "Current scale: " << SM->runningpars.GetScale() << std::endl;
          OUTPUT << "mB (MSbar)   : " << SM->runningpars.get_mass_parameter("b") << std::endl;
          test_within_tol( sminputs.mBmB, SM->runningpars.get_mass_parameter("b"), tolm, "mb(mb)" );
+         OUTPUT << EOM;
 
          // Check light quark mass ratios 
          OUTPUT << "Checking light quark mass ratios:" << std::endl;
@@ -1174,9 +1175,11 @@ namespace Gambit
             OUTPUT << "mu/md = " << mu/md << std::endl;
             OUTPUT << "ms/md = " << ms/md << std::endl;
          }
+         OUTPUT << EOM;
 
          /// Testing copyability of SMplusUV;
-         // Copy to a non-const object to clone the hosted Spectrum objects.
+         // Copy to object to clone the hosted Spectrum objects.
+         // i.e. all copies are deep copies.
          SMplusUV nonconst_spectra(*matched_spectra);
 
          // Try to access non-const member functions
@@ -1195,6 +1198,43 @@ namespace Gambit
          OUTPUT << "Old SM Spectrum* mu :" << matched_spectra->get_SM()->runningpars.get_mass_parameter("u") << std::endl;
          OUTPUT << "Old SM Spectrum* md :" << matched_spectra->get_SM()->runningpars.get_mass_parameter("d") << std::endl;
          OUTPUT << "Old SM Spectrum* ms :" << matched_spectra->get_SM()->runningpars.get_mass_parameter("s") << std::endl;
+         OUTPUT << EOM;
+
+         // Check running beyond soft and hard limits (assumes QedQcdWrapper for SM)
+         // behave = 0  -- If running beyond soft limit requested, halt at soft limit
+         //                (assumes hard limits outside of soft limits; but this is not enforced)
+         // behave = 1  -- If running beyond soft limit requested, throw warning
+         //                  "           "   hard limit     "    , throw error
+         // behave = anything else -- Ignore limits and attempt running to requested scale 
+
+         OUTPUT << "Testing QedQcdWrapper running limits:" << std::endl;
+         // behave=0 (default)
+         // Running halted at soft limit
+         OUTPUT << "behave=0" << std::endl;
+         SM->runningpars.RunToScale(sminputs.mT);   // Soft limit (and hard limit)
+         OUTPUT << "Current scale: " << SM->runningpars.GetScale() << std::endl;
+         SM->runningpars.RunToScale(1.5*sminputs.mT);
+         OUTPUT << "Current scale: " << SM->runningpars.GetScale() << std::endl;
+         OUTPUT << EOM;
+
+         // behave=2
+         // Should be no errors, just potentially inaccurate running
+         // EDIT: Whoops, so QedQcd object itself will throw an error if you try
+         // to run above mT. Remove comments to observe this behaviour.
+         OUTPUT << "behave=2" << std::endl;
+         SM->runningpars.RunToScale(sminputs.mT,2);   // Soft limit (and hard limit)
+         OUTPUT << "Current scale: " << SM->runningpars.GetScale() << std::endl;
+         //SM->runningpars.RunToScale(1.5*sminputs.mT,2);
+         //OUTPUT << "Current scale: " << SM->runningpars.GetScale() << std::endl;
+         OUTPUT << EOM;
+
+         // behave=1
+         OUTPUT << "behave=1" << std::endl;
+         SM->runningpars.RunToScale(sminputs.mT,1);   // Soft limit (and hard limit)
+         OUTPUT << "Current scale: " << SM->runningpars.GetScale() << std::endl;
+         SM->runningpars.RunToScale(1.5*sminputs.mT,1); // Beyond hard limit (error)
+         OUTPUT << "Current scale: " << SM->runningpars.GetScale() << std::endl;
+         OUTPUT << EOM;
       }
 
    }  // end namespace SpecBit

@@ -69,6 +69,8 @@ namespace Gambit {
       private:
          MSSMSpec<MI>& my_parent;
 
+         virtual void RunToScaleOverride(double scale);
+
          static fmap TreeMass_map;
          static fmap1 TreeMass_map1;
          static fmap fill_TreeMass_map();
@@ -88,7 +90,6 @@ namespace Gambit {
            , my_parent(x) 
          {}
          
-         virtual void RunToScale(double scale);
          virtual double GetScale() const;
          virtual void SetScale(double scale);           
    };

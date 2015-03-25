@@ -38,6 +38,15 @@ namespace Gambit {
       private:
          QedQcdWrapper& my_parent;
 
+         // Limits for running
+         double softup;
+         double hardup; // Be careful of order in constructor!
+         virtual double hard_upper() const {return hardup;}
+         virtual double soft_upper() const {return softup;}
+         virtual double soft_lower() const {return 0.;}
+         virtual double hard_lower() const {return 0.;}
+         virtual void RunToScaleOverride(double);
+
          /* MAPS */
 
          //mass
@@ -53,8 +62,6 @@ namespace Gambit {
    public:
          QedQcd_MSbarPars(QedQcdWrapper&, QedQcdModel&); 
          virtual ~QedQcd_MSbarPars();
-        
-         virtual void RunToScale(double scale);
          virtual double GetScale() const;
          virtual void SetScale(double scale);
            

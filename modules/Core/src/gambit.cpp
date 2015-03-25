@@ -110,13 +110,20 @@ int main(int argc, char* argv[])
   
   }
 
-  catch (std::exception& e)
+  catch(const std::string& e) 
   {
-    if (not logger().disabled())
-    {
+      cout << endl << " \033[00;31;1mFATAL ERROR\033[00m" << endl << endl;
+      //cout << "(wtf? why do I have to catch strings specifically?)" << endl;
+      cout << "GAMBIT has exited with fatal exception: " << e << endl;
+  }
+  catch (const std::exception& e)
+  {
+    // TODO: Ben: why is this "if" here? Don't we want to see the message regardless of whether the logger is disabled?
+    //if (not logger().disabled())
+    //{
       cout << endl << " \033[00;31;1mFATAL ERROR\033[00m" << endl << endl;
       cout << "GAMBIT has exited with fatal exception: " << e.what() << endl;
-    }
+    //}
       
   }
 

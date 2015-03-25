@@ -197,7 +197,7 @@ namespace Gambit {
    //approaches. Could do all of this via the interface. Depends
    //what will be simplest in general.
    template <class MI>
-   void MSSM_DRbarPars<MI>::RunToScale(double scale){
+   void MSSM_DRbarPars<MI>::RunToScaleOverride(double scale){
       my_parent.model_interface.model.run_to(scale);
    }
    template <class MI>
