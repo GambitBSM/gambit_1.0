@@ -36,25 +36,25 @@ START_MODULE
     // (CMSSM and its various non-universal generalisations)    
  
     /// Get MSSM spectrum from CMSSM boundary conditions
-    //  The type, SMplusUV, is a struct containing two Spectrum* members and an SMInputs
+    //  The type, (const) SMplusUV, is a struct containing two Spectrum* members and an SMInputs
     //  member. The Spectrum* members point to a "UV" Spectrum object (the MSSM) and an
     //  "SM" Spectrum object (an effective Standard Model description), while SMInputs
     //  contains the information in the SMINPUTS block defined by SLHA2.
     #define FUNCTION get_CMSSM_spectrum            
-    START_FUNCTION(SMplusUV)                  
+    START_FUNCTION(CSMplusUV*)                  
     ALLOW_MODELS(CMSSM)
     #undef FUNCTION
 
     // FlexibleSUSY compatible maximal CMSSM generalisation (MSSM with GUT boundary conditions) 
     #define FUNCTION get_MSSMatMGUT_spectrum
-    START_FUNCTION(SMplusUV)                  
+    START_FUNCTION(CSMplusUV*)                  
     ALLOW_MODELS(MSSM78atMGUT)
     #undef FUNCTION
 
     // ============================== 
     // MSSM parameterised with input at (user-defined) scale Q 
     #define FUNCTION get_MSSMatQ_spectrum
-    START_FUNCTION(SMplusUV)                  
+    START_FUNCTION(CSMplusUV*)                  
     ALLOW_MODELS(MSSM78atQ)
     #undef FUNCTION
 
@@ -63,7 +63,7 @@ START_MODULE
     // Extract appropriate Spectrum* from SMplusUV struct, while preserving the Capability
     #define FUNCTION get_MSSM_spectrum_as_SpectrumPtr
     START_FUNCTION(CSpectrum*)  // Note; CSpectrum* = const Spectrum*
-    DEPENDENCY(MSSM_spectrum, SMplusUV)
+    DEPENDENCY(MSSM_spectrum, CSMplusUV*)
     #undef FUNCTION
 
 
@@ -150,7 +150,7 @@ START_MODULE
   START_CAPABILITY
      #define FUNCTION specbit_test_SMplusUV
      START_FUNCTION(double)
-     DEPENDENCY(MSSM_spectrum, SMplusUV)
+     DEPENDENCY(MSSM_spectrum, CSMplusUV*)
      #undef FUNCTION
   #undef CAPABILITY
 

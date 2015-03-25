@@ -25,10 +25,9 @@
 #include "gambit/SpecBit/SpecBit_tests.hpp"
 
 // Flexible SUSY stuff (should not be needed by the rest of gambit)
+#include "gambit/SpecBit/model_files_and_boxes.hpp"
 #include "flexiblesusy/src/ew_input.hpp"
 #include "flexiblesusy/src/numerics.hpp"
-#include "flexiblesusy/models/CMSSM/CMSSM_two_scale_model.hpp"
-#include "flexiblesusy/models/CMSSM/CMSSM_two_scale_model_slha.hpp"
 
 namespace Gambit
 {
@@ -168,7 +167,7 @@ namespace Gambit
     void specbit_test_SMplusUV (double &result)
     {
       using namespace Pipes::specbit_test_SMplusUV;
-      SMplusUV matched_spectra = *Dep::MSSM_spectrum;
+      const SMplusUV* matched_spectra = *Dep::MSSM_spectrum;
 
       SMplusUV_test(matched_spectra); // Run consistency tests on Spectrum contents vs SMInputs 
       logger() << EOM;

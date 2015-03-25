@@ -21,6 +21,9 @@
 ///  
 ///  *********************************************
 
+#ifndef __SpecBit_tests_hpp__
+#define __SpecBit_tests_hpp__
+
 #include "gambit/SpecBit/MSSMSpec.hpp"
 #include "gambit/SpecBit/model_files_and_boxes.hpp"
 
@@ -1075,12 +1078,12 @@ namespace Gambit
 
       // Test that output of Standard Model wrapper (e.g. QedQcdWrapper) matches
       // SMINPUTS sufficiently accurately
-      void SMplusUV_test(SMplusUV& matched_spectra)
+      void SMplusUV_test(const SMplusUV* matched_spectra)
       {
          // Extract pieces of SMplusUV to make it clear what they are supposed to be
-         SMInputs sminputs = matched_spectra.get_SMINPUTS();
-         std::unique_ptr<Spectrum> SM = matched_spectra.clone_SM(); // COPIES Spectrum object
-         // const Spectrum* SM = matched_spectra.get_SM(); // Cannot do running on original object.
+         SMInputs sminputs = matched_spectra->get_SMINPUTS();
+         std::unique_ptr<Spectrum> SM = matched_spectra->clone_SM(); // COPIES Spectrum object
+         // const Spectrum* SM = matched_spectra->get_SM(); // Cannot do running on original object.
 
          double tol     = 1e-9; // Demanding matching to 1 part in a billion (pole masses, things that don't change)
          double tolg    = 1e-4; // Seem to get about this level of precision recovering running couplings from QedQcd object.
@@ -1144,7 +1147,57 @@ namespace Gambit
          OUTPUT << "Current scale: " << SM->runningpars.GetScale() << std::endl;
          OUTPUT << "mB (MSbar)   : " << SM->runningpars.get_mass_parameter("b") << std::endl;
          test_within_tol( sminputs.mBmB, SM->runningpars.get_mass_parameter("b"), tolm, "mb(mb)" );
+
+         // Check light quark mass ratios 
+         OUTPUT << "Checking light quark mass ratios:" << std::endl;
+      
+         std::vector<double> scales;
+         scales.push_back(10);
+         scales.push_back(2);
+         scales.push_back(1);
+         scales.push_back(0.5);
+         scales.push_back(0.1);
+
+         for(std::vector<double>::iterator it = scales.begin(); it != scales.end(); ++it) 
+         {
+            SM->runningpars.RunToScale(*it);
+            double Q = SM->runningpars.GetScale();
+            double mu = SM->runningpars.get_mass_parameter("u");
+            double md = SM->runningpars.get_mass_parameter("d");
+            double ms = SM->runningpars.get_mass_parameter("s");
+
+            OUTPUT << "---------------------------------" << std::endl;
+            OUTPUT << "Current scale: " << Q << std::endl;
+            OUTPUT << "mu("<<Q<<") = " << mu << std::endl;
+            OUTPUT << "md("<<Q<<") = " << md << std::endl;
+            OUTPUT << "ms("<<Q<<") = " << ms << std::endl;
+            OUTPUT << "mu/md = " << mu/md << std::endl;
+            OUTPUT << "ms/md = " << ms/md << std::endl;
+         }
+
+         /// Testing copyability of SMplusUV;
+         // Copy to a non-const object to clone the hosted Spectrum objects.
+         SMplusUV nonconst_spectra(*matched_spectra);
+
+         // Try to access non-const member functions
+         OUTPUT << std::endl;
+         OUTPUT << "Testing non-const access to SMplusUV object:" << std::endl;
+         nonconst_spectra.RunBothToScale(sminputs.mT); // This is the only non-const function atm.
+         OUTPUT << "Current SM Spectrum* scale: " << nonconst_spectra.get_SM()->runningpars.GetScale() << std::endl;
+         OUTPUT << "Current UV Spectrum* scale: " << nonconst_spectra.get_UV()->runningpars.GetScale() << std::endl;
+         // Make sure nothing happened to the original objects
+         OUTPUT << "Old SM Spectrum* scale: " << matched_spectra->get_SM()->runningpars.GetScale() << std::endl;
+         OUTPUT << "Old UV Spectrum* scale: " << matched_spectra->get_UV()->runningpars.GetScale() << std::endl;
+         // Check some other numbers
+         OUTPUT << "Current SM Spectrum* mu :" << nonconst_spectra.get_SM()->runningpars.get_mass_parameter("u") << std::endl;
+         OUTPUT << "Current SM Spectrum* md :" << nonconst_spectra.get_SM()->runningpars.get_mass_parameter("d") << std::endl;
+         OUTPUT << "Current SM Spectrum* ms :" << nonconst_spectra.get_SM()->runningpars.get_mass_parameter("s") << std::endl;
+         OUTPUT << "Old SM Spectrum* mu :" << matched_spectra->get_SM()->runningpars.get_mass_parameter("u") << std::endl;
+         OUTPUT << "Old SM Spectrum* md :" << matched_spectra->get_SM()->runningpars.get_mass_parameter("d") << std::endl;
+         OUTPUT << "Old SM Spectrum* ms :" << matched_spectra->get_SM()->runningpars.get_mass_parameter("s") << std::endl;
       }
-  
-   }
-}
+
+   }  // end namespace SpecBit
+}  // end namespace Gambit
+
+#endif
