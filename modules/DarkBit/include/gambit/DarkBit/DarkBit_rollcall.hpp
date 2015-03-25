@@ -448,21 +448,6 @@ START_MODULE
 
   // DIRECT DETECTION ==================================================
 
-  // Nuclear Properties ------------------------------------
-  #define CAPABILITY set_nuclear_params
-  START_CAPABILITY
-    #define FUNCTION set_nuclear_params_DarkSUSY
-      START_FUNCTION(bool)
-      BACKEND_REQ(ddcom, (DarkSUSY), DS_DDCOM)
-      ALLOW_MODELS(nuclear_params_fnq)
-    #undef FUNCTION
-    #define FUNCTION set_nuclear_params_micrOMEGAs
-      START_FUNCTION(bool)
-      BACKEND_REQ(MOcommon, (micromegas), micrOMEGAs::MOcommonSTR)
-      ALLOW_MODELS(nuclear_params_fnq)
-    #undef FUNCTION
-  #undef CAPABILITY
-
   // WIMP properties ---------------------------------------
   // Determine the WIMP mass and couplings
   #define CAPABILITY DD_couplings
@@ -470,16 +455,17 @@ START_MODULE
     #define FUNCTION DD_couplings_DarkSUSY
       START_FUNCTION(Gambit::DarkBit::DD_couplings)
       DEPENDENCY(DarkSUSY_PointInit, bool)
-      DEPENDENCY(set_nuclear_params, bool)
       BACKEND_REQ(dsddgpgn, (), void, (double&, double&, double&, double&))
       BACKEND_REQ(mspctm, (), DS_MSPCTM)
+      BACKEND_REQ(ddcom, (DarkSUSY), DS_DDCOM)
+      ALLOW_MODELS(nuclear_params_fnq)
     #undef FUNCTION
     #define FUNCTION DD_couplings_micrOMEGAs
       START_FUNCTION(Gambit::DarkBit::DD_couplings)
-      DEPENDENCY(set_nuclear_params, bool)
       BACKEND_REQ(nucleonAmplitudes, (micromegas), int, (double(*)(double,double,double,double), double*, double*, double*, double*))
       BACKEND_REQ(FeScLoop, (micromegas), double, (double, double, double, double))
       BACKEND_REQ(MOcommon, (micromegas), micrOMEGAs::MOcommonSTR)
+      ALLOW_MODELS(nuclear_params_fnq)
     #undef FUNCTION
     #define FUNCTION DD_couplings_SingletDM
       START_FUNCTION(Gambit::DarkBit::DD_couplings)

@@ -2105,13 +2105,14 @@ namespace Gambit {
 
 //////////////////////////////////////////////////////////////////////////
 //
-//                 Direct detection nuclear parameters
+//                 Direct detection couplings
 //
 //////////////////////////////////////////////////////////////////////////
 
-    void set_nuclear_params_DarkSUSY(bool &result)
+    void DD_couplings_DarkSUSY(Gambit::DarkBit::DD_couplings &result)
     {
-        using namespace Pipes::set_nuclear_params_DarkSUSY;
+        using namespace Pipes::DD_couplings_DarkSUSY;
+
         double fG;
 
         // Set proton hadronic matrix elements
@@ -2155,13 +2156,37 @@ namespace Gambit {
         logger() << "\tdeld = delta d = " << (*BEreq::ddcom).deld;
         logger() << "\tdels = delta s = " << (*BEreq::ddcom).dels << endl;
 
-        result = true;
-        return;
+        if (*Dep::DarkSUSY_PointInit) {
+          result.M_DM = (*BEreq::mspctm).mass[42];        
+          // Calling DarkSUSY subroutine dsddgpgn(gps,gns,gpa,gna)
+          // to set all four couplings.
+          BEreq::dsddgpgn(result.gps, result.gns, result.gpa, result.gna);
+          double factor = runOptions->getValueOrDef<double>(1., "rescale_couplings");
+          result.gps *= factor;
+          result.gns *= factor;
+          result.gpa *= factor;
+          result.gna *= factor;
+          logger() << "M_DM = " << result.M_DM << std::endl;
+          logger() << "DarkSUSY dsddgpgn gives:" << std::endl;
+          logger() << " gps = " << result.gps << std::endl;
+          logger() << " gns = " << result.gns << std::endl;
+          logger() << " gpa = " << result.gpa << std::endl;
+          logger() << " gna = " << result.gna << std::endl;
+        } else {
+          result.M_DM = (*BEreq::mspctm).mass[42];        
+          // Set couplings to zero if DarkSUSY point initialization
+          // was not successful
+          result.gps = 0.0; result.gns = 0.0;
+          result.gpa = 0.0; result.gna = 0.0;
+          logger() << "M_DM = " << result.M_DM << std::endl;
+          logger() << "DarkSUSY point initialization failed:" << std::endl;
+          logger() << " couplings set to zero." << std::endl;
+        }
     }
 
-    void set_nuclear_params_micrOMEGAs(bool &result)
+    void DD_couplings_micrOMEGAs(Gambit::DarkBit::DD_couplings &result)
     {
-        using namespace Pipes::set_nuclear_params_micrOMEGAs;
+        using namespace Pipes::DD_couplings_micrOMEGAs;
 
         // Set proton hadronic matrix elements.
         (*BEreq::MOcommon).par[2] = *Param["fpd"];
@@ -2200,64 +2225,19 @@ namespace Gambit {
         logger() << "pVectorFFPs = pVectorFFNs = delta s = "
                 << (*BEreq::MOcommon).par[7] << endl;
 
-        result = true;
-        return;
-    }
-
-//////////////////////////////////////////////////////////////////////////
-//
-//                 Direct detection couplings
-//
-//////////////////////////////////////////////////////////////////////////
-
-    void DD_couplings_DarkSUSY(Gambit::DarkBit::DD_couplings &result)
-    {
-        using namespace Pipes::DD_couplings_DarkSUSY;
-        if (!(*Dep::set_nuclear_params))
-            DarkBit_error().raise(LOCAL_INFO,"Error: Nuclear parameters not set.");
-        if (*Dep::DarkSUSY_PointInit) {
-          result.M_DM = (*BEreq::mspctm).mass[42];        
-          // Calling DarkSUSY subroutine dsddgpgn(gps,gns,gpa,gna)
-          // to set all four couplings.
-          BEreq::dsddgpgn(result.gps, result.gns, result.gpa, result.gna);
-          double factor = runOptions->getValueOrDef<double>(1., "rescale_couplings");
-          result.gps *= factor;
-          result.gns *= factor;
-          result.gpa *= factor;
-          result.gna *= factor;
-          logger() << "M_DM = " << result.M_DM << std::endl;
-          logger() << "DarkSUSY dsddgpgn gives:" << std::endl;
-          logger() << " gps = " << result.gps << std::endl;
-          logger() << " gns = " << result.gns << std::endl;
-          logger() << " gpa = " << result.gpa << std::endl;
-          logger() << " gna = " << result.gna << std::endl;
-        } else {
-          result.M_DM = (*BEreq::mspctm).mass[42];        
-          // Set couplings to zero if DarkSUSY point initialization
-          // was not successful
-          result.gps = 0.0; result.gns = 0.0;
-          result.gpa = 0.0; result.gna = 0.0;
-          logger() << "M_DM = " << result.M_DM << std::endl;
-          logger() << "DarkSUSY point initialization failed:" << std::endl;
-          logger() << " couplings set to zero." << std::endl;
-        }
-    }
-
-    void DD_couplings_micrOMEGAs(Gambit::DarkBit::DD_couplings &result)
-    {
-        using namespace Pipes::DD_couplings_micrOMEGAs;
-        if (!(*Dep::set_nuclear_params))
-            DarkBit_error().raise(LOCAL_INFO,"Error: Nuclear parameters not set.");
-        //TODO: Add error catching to below function
         double p1[2], p2[2], p3[2], p4[2];
-        BEreq::nucleonAmplitudes(byVal(BEreq::FeScLoop.pointer()), byVal(p1), byVal(p2), byVal(p3), byVal(p4));
+        int error = BEreq::nucleonAmplitudes(byVal(BEreq::FeScLoop.pointer()), byVal(p1), byVal(p2), byVal(p3), byVal(p4));
+        if(error!=0)
+            DarkBit_error().raise(LOCAL_INFO, "micrOMEGAs nucleonAmplitudes function failed with "
+                    "error code " + std::to_string(error) + ".");
+
         // Rescaling to agree with DarkSUSY convention:
         result.gps = p1[0]*2;
         result.gpa = p2[0]*2;
         result.gns = p3[0]*2;
         result.gna = p4[0]*2;
         result.M_DM = (*BEreq::MOcommon).par[1];
-        //TODO: Move the following to logging/printer system.
+
         logger() << "micrOMEGAs nucleonAmplitudes gives:" << endl;
         logger() << " gps: " << result.gps << endl;
         logger() << " gns: " << result.gns << endl;
