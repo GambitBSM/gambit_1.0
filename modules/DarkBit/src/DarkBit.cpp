@@ -2103,6 +2103,358 @@ namespace Gambit {
         result = 0.;
     }
 
+//////////////////////////////////////////////////////////////////////////
+//
+//                 Direct detection nuclear parameters
+//
+//////////////////////////////////////////////////////////////////////////
+
+    void read_nuclear_params(Gambit::DarkBit::nuclear_params &result)
+    {
+        bool static read = false; // Only read files and set nuclear parameters once.
+        if (!read)
+        {
+            using namespace Pipes::read_nuclear_params;
+
+            result.sigma0=result.SigmaPiN=std::make_pair(0.,false);
+            result.fpu=result.fpd=result.fps=std::make_pair(0.,false);
+            result.fnu=result.fnd=result.fns=std::make_pair(0.,false);
+            result.deltau=result.deltad=result.deltas=std::make_pair(0.,false);
+
+            if (runOptions->hasKey("nuclear_parameters"))
+            {
+                std::string filename = runOptions->getValue<std::string>("nuclear_parameters");
+                logger() << "Load nuclear parameters from " + filename << "." << std::endl;
+                std::ifstream in(filename.c_str(), std::ios::binary);
+                if (in.fail()) DarkBit_error().raise(LOCAL_INFO, "ERROR: failed loading "
+                        "nuclear parameters from " + filename + ".");
+
+                std::string line;
+                double value;
+                std::string parameter;
+
+                //Read info from file into nuclear_params struct.
+
+                while(getline(in, line))
+                {
+                    if (line[0] == '#') continue;
+                    std::stringstream ss(line);
+
+                    if (!(ss >> parameter)) continue;
+                    if (!(ss >> value)) continue;
+
+                    if (parameter[0] == 'f')
+                    {
+                        if (parameter[1] == 'p')
+                        {
+                            if(parameter[2] == 'u') result.fpu = std::make_pair(value,true);
+                            if(parameter[2] == 'd') result.fpd = std::make_pair(value,true);
+                            if(parameter[2] == 's') result.fps = std::make_pair(value,true);
+
+                        }
+                        if (parameter[1] == 'n')
+                        {
+                            if(parameter[2] == 'u') result.fnu = std::make_pair(value,true);
+                            if(parameter[2] == 'd') result.fnd = std::make_pair(value,true);
+                            if(parameter[2] == 's') result.fns = std::make_pair(value,true);
+
+                        }
+                    }
+                    if (parameter.substr(0,3)=="del")
+                    {
+                        if(parameter[3] == 'u') result.deltau = std::make_pair(value,true);
+                        if(parameter[3] == 'd') result.deltad = std::make_pair(value,true);
+                        if(parameter[3] == 's') result.deltas = std::make_pair(value,true);
+                    }
+
+                    if (parameter=="sigma0")
+                        result.sigma0 = std::make_pair(value,true);
+                    if (parameter=="SigmaPiN")
+                        result.SigmaPiN = std::make_pair(value,true);
+                    if (parameter=="mud")
+                        result.mud = std::make_pair(value,true);
+                    if (parameter=="msd")
+                        result.msd = std::make_pair(value,true);
+                }
+
+                //Check for missing parameters and conflicting parameters.
+
+                if ((result.fpu.second || result.fpd.second || result.fps.second ||
+                        result.fnu.second || result.fnd.second || result.fns.second) &&
+                        (result.sigma0.second || result.SigmaPiN.second))
+                    DarkBit_error().raise(LOCAL_INFO, "Error: Both hadronic matrix elements and "
+                            "sigma0 and/or sigmaPiN defined.");
+
+                if (result.fpu.second || result.fpd.second || result.fps.second)
+                    if (!(result.fpu.second) || !(result.fpd.second) || !(result.fps.second))
+                        DarkBit_error().raise(LOCAL_INFO, "Error: Proton hadronic matrix elements "
+                                "missing for one or more of u, d, and s quarks.");
+
+                if (result.fnu.second || result.fnd.second || result.fns.second)
+                    if (!(result.fnu.second) || !(result.fnd.second) || !(result.fns.second))
+                        DarkBit_error().raise(LOCAL_INFO, "Error: Neutron hadronic matrix elements "
+                                "missing for one or more of u, d, and s quarks.");
+
+                if (result.deltau.second || result.deltad.second || result.deltas.second)
+                    if (!(result.deltau.second) || !(result.deltad.second) || !(result.deltas.second))
+                        DarkBit_error().raise(LOCAL_INFO, "Error: delta q missing for one or more of "
+                                "u, d, and s quarks.");
+
+                if (result.sigma0.second || result.SigmaPiN.second)
+                    if (!(result.sigma0.second) || !(result.SigmaPiN.second) ||
+                            !(result.mud.second) || !(result.msd.second))
+                        DarkBit_error().raise(LOCAL_INFO, "Error: sigma0, SigmaPiN, or quark"
+                                " mass ratio missing.");
+
+                // Calculate hadronic matrix elements, if they are missing:
+                // This follows prescription from Ellis, Olive, and Savage (0801.3656)
+                if (result.SigmaPiN.second && result.sigma0.second &&
+                        result.mud.second && result.msd.second)
+                {
+                    const double z = 1.49;
+                    const double mp = 938.272046; // MeV from PDG 2014
+                    const double mn = 939.565379; // MeV from PDG 2014
+
+                    double y = 1. - result.sigma0.first/result.SigmaPiN.first;
+                    double Bdu = (2. + ((z-1.)*y))/(2.*z - ((z-1.)*y));
+                    double Bud = (2.*z - ((z-1.)*y))/(2. + ((z-1.)*y));
+
+                    if (!(result.fpu.second) && !(result.fpd.second) && !(result.fps.second))
+                    {
+                        double fpu = (2.*result.SigmaPiN.first)/(mp*(1+(1./result.mud.first))*(1+Bdu));
+                        double fpd = (2.*result.SigmaPiN.first)/(mp*(1+result.mud.first)*(1+Bud));
+                        double fps = (result.msd.first*result.SigmaPiN.first*y)/(mp*(1+result.mud.first));
+
+                        result.fpu = std::make_pair(fpu,true);
+                        result.fpd = std::make_pair(fpd,true);
+                        result.fps = std::make_pair(fps,true);
+
+                        logger() << "Proton hadronic matrix elements calculated:" << endl;
+                        logger() << "fpu = " << fpu <<"\tfpd = " << fpd << "\tfps = " << fps << endl;
+                    }
+
+                    if (!(result.fnu.second) && !(result.fnd.second) && !(result.fns.second))
+                    {
+                        double fnu = (2.*result.SigmaPiN.first)/(mn*(1+(1./result.mud.first))*(1+Bud));
+                        double fnd = (2.*result.SigmaPiN.first)/(mn*(1+result.mud.first)*(1+Bdu));
+                        double fns = (result.msd.first*result.SigmaPiN.first*y)/(mn*(1+result.mud.first));
+
+                        result.fnu = std::make_pair(fnu,true);
+                        result.fnd = std::make_pair(fnd,true);
+                        result.fns = std::make_pair(fns,true);
+
+                        logger() << "Neutron hadronic matrix elements calculated:" << endl;
+                        logger() << "fnu = " << fnu <<"\tfnd = " << fnd << "\tfns = " << fns << endl;
+                    }
+                }
+            }
+        read = true;
+        return;
+        }
+    }
+
+    void set_nuclear_params_DarkSUSY(bool &result)
+    {
+        using namespace Pipes::set_nuclear_params_DarkSUSY;
+        double fG;
+        bool static set = false; // Only set nuclear parameters once.
+        if (!set)
+        {
+            // Set proton hadronic matrix elements.
+            if ((*Dep::nuclear_params).fpu.second || (*Dep::nuclear_params).fpd.second ||
+                    (*Dep::nuclear_params).fps.second)
+            {
+                if (!(*Dep::nuclear_params).fpu.second || !(*Dep::nuclear_params).fpd.second ||
+                        !(*Dep::nuclear_params).fps.second)
+                    DarkBit_error().raise(LOCAL_INFO, "Error: One or more proton hadronic matrix "
+                            "elements missing.");
+                else
+                {
+                    (*BEreq::ddcom).ftp(7)  = (*Dep::nuclear_params).fpu.first;
+                    (*BEreq::ddcom).ftp(8)  = (*Dep::nuclear_params).fpd.first;
+                    (*BEreq::ddcom).ftp(10) = (*Dep::nuclear_params).fps.first;
+
+                    fG = 2./27.*(1. - (*Dep::nuclear_params).fpu.first - (*Dep::nuclear_params).fpd.first -
+                            (*Dep::nuclear_params).fps.first);
+                    (*BEreq::ddcom).ftp(9) = fG;
+                    (*BEreq::ddcom).ftp(11) = fG;
+                    (*BEreq::ddcom).ftp(12) = fG;
+
+                    logger() << "DarkSUSY proton hadronic matrix elements set to:" << endl;
+                    logger() << "ftp(7) = fpu = " << (*BEreq::ddcom).ftp(7);
+                    logger() << "\tftp(8) = fpd = " << (*BEreq::ddcom).ftp(8);
+                    logger() << "\tftp(10) = fps = " << (*BEreq::ddcom).ftp(10) << endl;
+                    logger() << "ftp(9) = ftp(11) = ftp(12) = 2/27 fG = " << (*BEreq::ddcom).ftp(9) << endl;
+                }
+            }
+            else logger() << "Using default DarkSUSY proton hadronic matrix elements." << endl;
+
+            // Set neutron hadronic matrix elements.
+            if ((*Dep::nuclear_params).fnu.second || (*Dep::nuclear_params).fnd.second ||
+                    (*Dep::nuclear_params).fns.second)
+            {
+                if (!(*Dep::nuclear_params).fnu.second || !(*Dep::nuclear_params).fnd.second ||
+                        !(*Dep::nuclear_params).fns.second)
+                    DarkBit_error().raise(LOCAL_INFO, "Error: One or more neutron hadronic matrix "
+                            "elements missing.");
+                else
+                {
+                    (*BEreq::ddcom).ftn(7)  = (*Dep::nuclear_params).fnu.first;
+                    (*BEreq::ddcom).ftn(8)  = (*Dep::nuclear_params).fnd.first;
+                    (*BEreq::ddcom).ftn(10) = (*Dep::nuclear_params).fns.first;
+
+                    fG = 2./27.*(1. - (*Dep::nuclear_params).fnu.first - (*Dep::nuclear_params).fnd.first -
+                            (*Dep::nuclear_params).fns.first);
+                    (*BEreq::ddcom).ftn(9) = fG;
+                    (*BEreq::ddcom).ftn(11) = fG;
+                    (*BEreq::ddcom).ftn(12) = fG;
+
+                    logger() << "DarkSUSY neutron hadronic matrix elements set to:" << endl;
+                    logger() << "ftn(7) = fnu = " << (*BEreq::ddcom).ftn(7);
+                    logger() << "\tftn(8) = fnd = " << (*BEreq::ddcom).ftn(8);
+                    logger() << "\tftn(10) = fns = " << (*BEreq::ddcom).ftn(10) << endl;
+                    logger() << "ftn(9) = ftn(11) = ftn(12) = 2/27 fG = " << (*BEreq::ddcom).ftn(9) << endl;
+                }
+            }
+            else logger() << "Using default DarkSUSY neutron hadronic matrix elements." << endl;
+
+            //Set delta q.
+            if ((*Dep::nuclear_params).deltau.second || (*Dep::nuclear_params).deltad.second ||
+                    (*Dep::nuclear_params).deltas.second)
+            {
+                if (!(*Dep::nuclear_params).deltau.second || !(*Dep::nuclear_params).deltad.second ||
+                        !(*Dep::nuclear_params).deltas.second)
+                    DarkBit_error().raise(LOCAL_INFO, "Error: One or more values of delta q missing.");
+                else
+                {
+                    (*BEreq::ddcom).delu = (*Dep::nuclear_params).deltau.first;
+                    (*BEreq::ddcom).deld = (*Dep::nuclear_params).deltad.first;
+                    (*BEreq::ddcom).dels = (*Dep::nuclear_params).deltas.first;
+                    logger() << "DarkSUSY delta q set to:" << endl;
+                    logger() << "delu = delta u = " << (*BEreq::ddcom).delu;
+                    logger() << "\tdeld = delta d = " << (*BEreq::ddcom).deld;
+                    logger() << "\tdels = delta s = " << (*BEreq::ddcom).dels << endl;
+                }
+            }
+            else logger() << "Using default DarkSUSY delta q." << endl;
+        }
+        set = true;
+        result = true;
+        return;
+    }
+
+    void set_nuclear_params_micrOMEGAs(bool &result)
+    {
+        using namespace Pipes::set_nuclear_params_micrOMEGAs;
+        bool static set = false; // Only set nuclear parameters once.
+        if (!set)
+        {
+            // Check to see if internal micrOMEGAs routines should be used to calculate
+            // hadronic matrix elements.
+            if ((runOptions->getValueOrDef<bool>(false, "use_micrOMEGAs_calc")))
+            {
+                if (!((*Dep::nuclear_params).sigma0.second) || !((*Dep::nuclear_params).SigmaPiN.second) ||
+                        !((*Dep::nuclear_params).mud.second) || !((*Dep::nuclear_params).msd.second))
+                    DarkBit_error().raise(LOCAL_INFO, "Error: Cannot calculate hadronic matrix elements "
+                            "using micrOMEGAs internal routines because sigma0, SigmaPiN,\n"
+                            "or a quark mass ratio is missing.");
+                else
+                {
+                    double sigmas = ((*Dep::nuclear_params).SigmaPiN.first - (*Dep::nuclear_params).sigma0.first) /
+                            (1. + (*Dep::nuclear_params).mud.first) * (*Dep::nuclear_params).msd.first;
+                    double mud = (*Dep::nuclear_params).mud.first;
+                    double msd = (*Dep::nuclear_params).msd.first;
+                    double SigmaPiN = (*Dep::nuclear_params).SigmaPiN.first;
+                    BEreq::calcScalarQuarkFF(byVal(mud), byVal(msd), byVal(SigmaPiN), byVal(sigmas));
+
+                    logger() << "Hadronic matrix elements calculated using micrOMEGAs internal routines:" << endl;
+                    logger() << "ScalarFFPd = fpd = " << (*BEreq::MOcommon).par[2];
+                    logger() << "\tScalarFFPu = fpu = " << (*BEreq::MOcommon).par[3];
+                    logger() << "\tScalarFFPs = fps = " << (*BEreq::MOcommon).par[4] << endl;
+                    logger() << "ScalarFFNd = fnd = " << (*BEreq::MOcommon).par[11];
+                    logger() << "\tScalarFFNu = fnu = " << (*BEreq::MOcommon).par[12];
+                    logger() << "\tScalarFFNs = fns = " << (*BEreq::MOcommon).par[13] << endl;
+                }
+            }
+
+            else
+            {
+                // Set proton hadronic matrix elements.
+                if ((*Dep::nuclear_params).fpu.second || (*Dep::nuclear_params).fpd.second ||
+                        (*Dep::nuclear_params).fps.second)
+                {
+                    if (!(*Dep::nuclear_params).fpu.second || !(*Dep::nuclear_params).fpd.second ||
+                            !(*Dep::nuclear_params).fps.second)
+                        DarkBit_error().raise(LOCAL_INFO, "Error: One or more proton hadronic matrix "
+                                "elements missing.");
+                    else
+                    {
+                        (*BEreq::MOcommon).par[2] = (*Dep::nuclear_params).fpd.first;
+                        (*BEreq::MOcommon).par[3] = (*Dep::nuclear_params).fpu.first;
+                        (*BEreq::MOcommon).par[4] = (*Dep::nuclear_params).fps.first;
+
+                        logger() << "micrOMEGAs proton hadronic matrix elements set to:" << endl;
+                        logger() << "ScalarFFPd = fpd = " << (*BEreq::MOcommon).par[2];
+                        logger() << "\tScalarFFPu = fpu = " << (*BEreq::MOcommon).par[3];
+                        logger() << "\tScalarFFPs = fps = " << (*BEreq::MOcommon).par[4] << endl;
+                    }
+                }
+                else logger() << "Using default micrOMEGAs proton hadronic matrix elements." << endl;
+
+                // Set neutron hadronic matrix elements.
+                if ((*Dep::nuclear_params).fnu.second || (*Dep::nuclear_params).fnd.second ||
+                        (*Dep::nuclear_params).fns.second)
+                {
+                    if (!(*Dep::nuclear_params).fnu.second || !(*Dep::nuclear_params).fnd.second ||
+                            !(*Dep::nuclear_params).fns.second)
+                        DarkBit_error().raise(LOCAL_INFO, "Error: One or more neutron hadronic matrix "
+                                "elements missing.");
+                    else
+                    {
+                        (*BEreq::MOcommon).par[11] = (*Dep::nuclear_params).fnd.first;
+                        (*BEreq::MOcommon).par[12] = (*Dep::nuclear_params).fnu.first;
+                        (*BEreq::MOcommon).par[13] = (*Dep::nuclear_params).fns.first;
+
+                        logger() << "micrOMEGAs neutron hadronic matrix elements set to:" << endl;
+                        logger() << "ScalarFFNd = fnd = " << (*BEreq::MOcommon).par[11];
+                        logger() << "\tScalarFFNu = fnu = " << (*BEreq::MOcommon).par[12];
+                        logger() << "\tScalarFFNs = fns = " << (*BEreq::MOcommon).par[13] << endl;
+                    }
+                }
+                else logger() << "Using default micrOMEGAs neutron hadronic matrix elements." << endl;
+            }
+            //Set delta q.
+            if ((*Dep::nuclear_params).deltau.second || (*Dep::nuclear_params).deltad.second ||
+                    (*Dep::nuclear_params).deltas.second)
+            {
+                if (!(*Dep::nuclear_params).deltau.second || !(*Dep::nuclear_params).deltad.second ||
+                        !(*Dep::nuclear_params).deltas.second)
+                    DarkBit_error().raise(LOCAL_INFO, "Error: One or more values of delta q missing.");
+                else
+                {
+                    (*BEreq::MOcommon).par[5] = (*Dep::nuclear_params).deltad.first;
+                    (*BEreq::MOcommon).par[6] = (*Dep::nuclear_params).deltau.first;
+                    (*BEreq::MOcommon).par[7] = (*Dep::nuclear_params).deltas.first;
+
+                    (*BEreq::MOcommon).par[14] = (*Dep::nuclear_params).deltau.first;
+                    (*BEreq::MOcommon).par[15] = (*Dep::nuclear_params).deltad.first;
+                    (*BEreq::MOcommon).par[16] = (*Dep::nuclear_params).deltas.first;
+
+                    logger() << "micrOMEGAs delta q set to:" << endl;
+                    logger() << "pVectorFFPd = pVectorFFNu = delta d = "
+                            << (*BEreq::MOcommon).par[5] << endl;
+                    logger() << "pVectorFFPu = pVectorFFPd = delta u = "
+                            << (*BEreq::MOcommon).par[6] << endl;
+                    logger() << "pVectorFFPs = pVectorFFNs = delta s = "
+                            << (*BEreq::MOcommon).par[7] << endl;
+                }
+            }
+            else logger() << "Using default micrOMEGAs delta q." << endl;
+        }
+        set = true;
+        result = true;
+        return;
+    }
 
 //////////////////////////////////////////////////////////////////////////
 //
@@ -2113,6 +2465,8 @@ namespace Gambit {
     void DD_couplings_DarkSUSY(Gambit::DarkBit::DD_couplings &result)
     {
         using namespace Pipes::DD_couplings_DarkSUSY;
+        if (!(*Dep::set_nuclear_params))
+            DarkBit_error().raise(LOCAL_INFO,"Error: Nuclear parameters not set.");
         if (*Dep::DarkSUSY_PointInit) {
           result.M_DM = (*BEreq::mspctm).mass[42];        
           // Calling DarkSUSY subroutine dsddgpgn(gps,gns,gpa,gna)
@@ -2144,6 +2498,8 @@ namespace Gambit {
     void DD_couplings_micrOMEGAs(Gambit::DarkBit::DD_couplings &result)
     {
         using namespace Pipes::DD_couplings_micrOMEGAs;
+        if (!(*Dep::set_nuclear_params))
+            DarkBit_error().raise(LOCAL_INFO,"Error: Nuclear parameters not set.");
         //TODO: Add error catching to below function
         double p1[2], p2[2], p3[2], p4[2];
         BEreq::nucleonAmplitudes(byVal(BEreq::FeScLoop.pointer()), byVal(p1), byVal(p2), byVal(p3), byVal(p4));
