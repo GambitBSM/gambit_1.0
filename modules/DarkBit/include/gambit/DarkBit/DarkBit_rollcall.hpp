@@ -449,13 +449,6 @@ START_MODULE
   // DIRECT DETECTION ==================================================
 
   // Nuclear Properties ------------------------------------
-  #define CAPABILITY nuclear_params
-  START_CAPABILITY
-    #define FUNCTION read_nuclear_params
-      START_FUNCTION(Gambit::DarkBit::nuclear_params)
-    #undef FUNCTION
-  #undef CAPABILITY
-
   #define CAPABILITY set_nuclear_params
   START_CAPABILITY
     #define FUNCTION set_nuclear_params_DarkSUSY

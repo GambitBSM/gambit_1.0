@@ -642,22 +642,6 @@ namespace Gambit
     };
 
     //------------------------------------------------------
-    // Structure containing the hadronic matrix elements
-    // (fn=<n|qq|n>/m_n) and proton spin content (delta q).
-    // It also contains sigma0, SigmaPiN, mud (mu/md) and
-    // msd (ms/md), from which the hadronic matrix elements can
-    // be calculated. The second element of the pair tells
-    // whether that value has been set.
-
-    struct nuclear_params
-    {
-      std::pair<double,bool> sigma0, SigmaPiN, mud, msd;
-      std::pair<double,bool> fpu, fpd, fps;
-      std::pair<double,bool> fnu, fnd, fns;
-      std::pair<double,bool> deltau, deltad, deltas;
-    };
-
-    //------------------------------------------------------
     // Structure to contain the Sun & Earth's motion relative
     // to the Galactic rest frame in Galactic coordinates.
     struct DDEarthMotionS
