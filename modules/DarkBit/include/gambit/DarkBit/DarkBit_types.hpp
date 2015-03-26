@@ -603,9 +603,6 @@ namespace Gambit
     // Neutrino telescope data structures
     //////////////////////////////////////////////
 
-    // Neutrino yield function signature
-    typedef double(*nuyield_functype)(const double&, const int&, void*&);
-    
     // Neutrino telescope data container
     struct nudata
     {

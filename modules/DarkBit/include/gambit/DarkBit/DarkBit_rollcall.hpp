@@ -446,9 +446,19 @@ START_MODULE
   #undef CAPABILITY
 
 
+  // Simple WIMP property extractors =======================================
+
+  // Retrieve the DM mass in GeV for generic models
+  QUICK_FUNCTION(DarkBit, mwimp, NEW_CAPABILITY, mwimp_generic, double, (), (TH_ProcessCatalog, DarkBit::TH_ProcessCatalog))
+  // Retrieve the DM mass in GeV for the scalar singlet model
+  QUICK_FUNCTION(DarkBit, mwimp, OLD_CAPABILITY, mwimp_SingletDM, double, (SingletDM))
+  // Retrieve the total thermally-averaged annihilation cross-section for indirect detection (cm^3 / s)
+  QUICK_FUNCTION(DarkBit, sigmav, NEW_CAPABILITY, sigmav_late_universe, double, (), (TH_ProcessCatalog, DarkBit::TH_ProcessCatalog))
+
+
   // DIRECT DETECTION ==================================================
 
-  // WIMP properties ---------------------------------------
+  // WIMP-nucleon couplings ---------------------------------------
 
   // Determine the WIMP mass and couplings
   #define CAPABILITY DD_couplings
@@ -845,7 +855,7 @@ START_MODULE
       START_FUNCTION(nudata)
       DEPENDENCY(mwimp, double)
       DEPENDENCY(annihilation_rate_Sun, double)
-      DEPENDENCY(nuyield, nuyield_functype)  
+      BACKEND_REQ(nuyield, (), double, (const double&, const int&, void*&))  
       BACKEND_REQ(nubounds, (), void, (const char&, const double&, const double&, double(*)(const double&, const int&, void*&), double&, double&,
                                        int&, double&, double&, const int&, const bool&, const double&, const double&, void*&))
     #undef FUNCTION
@@ -897,7 +907,7 @@ START_MODULE
       START_FUNCTION(nudata)
       DEPENDENCY(mwimp, double)
       DEPENDENCY(annihilation_rate_Sun, double)
-      DEPENDENCY(nuyield, nuyield_functype)  
+      BACKEND_REQ(nuyield, (), double, (const double&, const int&, void*&))  
       BACKEND_REQ(nubounds, (), void, (const char&, const double&, const double&, double(*)(const double&, const int&, void*&), double&, double&,
                                        int&, double&, double&, const int&, const bool&, const double&, const double&, void*&))
     #undef FUNCTION
@@ -949,7 +959,7 @@ START_MODULE
       START_FUNCTION(nudata)
       DEPENDENCY(mwimp, double)
       DEPENDENCY(annihilation_rate_Sun, double)
-      DEPENDENCY(nuyield, nuyield_functype)  
+      BACKEND_REQ(nuyield, (), double, (const double&, const int&, void*&))  
       BACKEND_REQ(nubounds, (), void, (const char&, const double&, const double&, double(*)(const double&, const int&, void*&), double&, double&,
                                        int&, double&, double&, const int&, const bool&, const double&, const double&, void*&))
     #undef FUNCTION
@@ -1001,7 +1011,7 @@ START_MODULE
       START_FUNCTION(nudata)
       DEPENDENCY(mwimp, double)
       DEPENDENCY(annihilation_rate_Sun, double)
-      DEPENDENCY(nuyield, nuyield_functype)  
+      BACKEND_REQ(nuyield, (), double, (const double&, const int&, void*&))  
       BACKEND_REQ(nubounds, (), void, (const char&, const double&, const double&, double(*)(const double&, const int&, void*&), double&, double&,
                                        int&, double&, double&, const int&, const bool&, const double&, const double&, void*&))
     #undef FUNCTION
@@ -1067,12 +1077,6 @@ START_MODULE
 
   #undef CAPABILITY
 
-  //The following are just toy functions to allow the neutrino likelihoods to be tested.  
-  //They should be deleted when real functions are added to provide the WIMP mass, solar
-  //annihilation rate and neutrino yield.
-  QUICK_FUNCTION(DarkBit, nuyield, NEW_CAPABILITY, nuyield_toy, nuyield_functype)
-  QUICK_FUNCTION(DarkBit, mwimp,   NEW_CAPABILITY, mwimp_toy,   double          )
- 
   #define CAPABILITY UnitTest_DarkBit
   START_CAPABILITY
     #define FUNCTION UnitTest_DarkBit

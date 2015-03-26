@@ -2101,6 +2101,40 @@ namespace Gambit {
         result = 0.;
     }
 
+//////////////////////////////////////////////////////////////////////////
+//
+//                 Simple DM property extractors
+//
+//////////////////////////////////////////////////////////////////////////
+
+
+    /// Retrieve the DM mass in GeV for generic models (GeV)
+    // FIXME this needs to be updated once DM is not always referred to as "chi_10"
+    void mwimp_generic(double &result) { result = Pipes::mwimp_generic::Dep::TH_ProcessCatalog->getParticleProperty("chi_10").mass; }
+
+    /// Retrieve the DM mass in GeV for the scalar singlet model (GeV)
+    void mwimp_SingletDM(double &result) { result = *Pipes::mwimp_SingletDM::Param["mass"]; }
+
+    /// Retrieve the total thermally-averaged annihilation cross-section for indirect detection (cm^3 / s)
+    // FIXME this needs to be updated once annProc.genTotalRate->eval("v",0.) works.
+    // FIXME this needs to be updated once DM is not always referred to as "chi_10"
+    void sigmav_late_universe(double &result)
+    {
+      using namespace Pipes::sigmav_late_universe;
+      TH_Process annProc = Dep::TH_ProcessCatalog->getProcess("chi_10", "chi_10");
+      result = 0.0;
+      for (std::vector<TH_Channel>::iterator it = annProc.channelList.begin();
+           it != annProc.channelList.end(); ++it)
+      {
+        if ( it->nFinalStates == 2 )
+        {
+           result += it->genRate->eval("v",0.);  // (sv)(v=0) for two-body final state
+        }
+      }
+    }
+        
+        
+
 
 //////////////////////////////////////////////////////////////////////////
 //
@@ -2158,6 +2192,42 @@ namespace Gambit {
         logger() << " gpa: " << result.gpa << endl;
         logger() << " gna: " << result.gna << endl;
         logger() << " M_DM = " << result.M_DM << endl;
+    }
+
+    /// Simple calculator of the spin-independent WIMP-proton cross-section 
+    void sigma_SI_p_simple(double &result)
+    {
+      using namespace Pipes::sigma_SI_p_simple;
+      double gps = Dep::DD_couplings->gps;
+      double reduced_mass = *Dep::mwimp * m_proton / (*Dep::mwimp + m_proton);
+      result = gev2cm2/pi*pow(reduced_mass*gps,2.0);
+    }
+
+    /// Simple calculator of the spin-independent WIMP-neutron cross-section 
+    void sigma_SI_n_simple(double &result)
+    {
+      using namespace Pipes::sigma_SI_n_simple;
+      double gns = Dep::DD_couplings->gns;
+      double reduced_mass = *Dep::mwimp * m_neutron / (*Dep::mwimp + m_neutron);
+      result = gev2cm2/pi*pow(reduced_mass*gns,2.0);
+    }
+
+    /// Simple calculator of the spin-dependent WIMP-proton cross-section 
+    void sigma_SD_p_simple(double &result)
+    {
+      using namespace Pipes::sigma_SD_p_simple;
+      double gpa = Dep::DD_couplings->gpa;
+      double reduced_mass = *Dep::mwimp * m_proton / (*Dep::mwimp + m_proton);
+      result = 3.0*gev2cm2/pi*pow(reduced_mass*gpa,2.0);
+    }
+
+    /// Simple calculator of the spin-dependent WIMP-neutron cross-section 
+    void sigma_SD_n_simple(double &result)
+    {
+      using namespace Pipes::sigma_SD_n_simple;
+      double gna = Dep::DD_couplings->gna;
+      double reduced_mass = *Dep::mwimp * m_neutron / (*Dep::mwimp + m_neutron);
+      result = 3.0*gev2cm2/pi*pow(reduced_mass*gna,2.0);
     }
 
 
@@ -2424,64 +2494,6 @@ namespace Gambit {
 //
 //////////////////////////////////////////////////////////////////////////
 
-    // The following information applies for all *_full IceCube functions. 
-    // Units:   mwimp          GeV
-    //          annrate        s^-1
-    //          nuyield(Enu,p) m^-2 GeV^-1 annihilation^-1
-    //            --> Enu       neutrino energy (GeV)
-    //            --> p         p=1 for neutrino yield, p=2 for nubar yield 
-
-    //The following are just toy functions to allow the neutrino likelihoods to be tested.  
-    //They should be deleted when real functions are added to provide the WIMP mass, solar
-    //annihilation rate and neutrino yield.
-    typedef void (*context_func)();
-    void DarkBit_context  ()                                {}// logger() << "test" << endl; }
-    double DarkBit_toyield(const double&, const int&, void*& context)
-    {
-      context_func* context_function_ptr = static_cast<context_func*>(context);
-      context_func context_function = *context_function_ptr;
-      context_function();
-      return 1.e-26;
-    }
-    void nuyield_toy      (nuyield_functype &result)        { result = &DarkBit_toyield; }
-    void mwimp_toy        (double &result)                  { result = 250.0;            }
-
-    /// Simple calculator of the spin-independent WIMP-proton cross-section 
-    void sigma_SI_p_simple(double &result)
-    {
-      using namespace Pipes::sigma_SI_p_simple;
-      double gps = Dep::DD_couplings->gps;
-      double reduced_mass = *Dep::mwimp * m_proton / (*Dep::mwimp + m_proton);
-      result = gev2cm2/pi*pow(reduced_mass*gps,2.0);
-    }
-
-    /// Simple calculator of the spin-independent WIMP-neutron cross-section 
-    void sigma_SI_n_simple(double &result)
-    {
-      using namespace Pipes::sigma_SI_n_simple;
-      double gns = Dep::DD_couplings->gns;
-      double reduced_mass = *Dep::mwimp * m_neutron / (*Dep::mwimp + m_neutron);
-      result = gev2cm2/pi*pow(reduced_mass*gns,2.0);
-    }
-
-    /// Simple calculator of the spin-dependent WIMP-proton cross-section 
-    void sigma_SD_p_simple(double &result)
-    {
-      using namespace Pipes::sigma_SD_p_simple;
-      double gpa = Dep::DD_couplings->gpa;
-      double reduced_mass = *Dep::mwimp * m_proton / (*Dep::mwimp + m_proton);
-      result = 3.0*gev2cm2/pi*pow(reduced_mass*gpa,2.0);
-    }
-
-    /// Simple calculator of the spin-dependent WIMP-neutron cross-section 
-    void sigma_SD_n_simple(double &result)
-    {
-      using namespace Pipes::sigma_SD_n_simple;
-      double gna = Dep::DD_couplings->gna;
-      double reduced_mass = *Dep::mwimp * m_neutron / (*Dep::mwimp + m_neutron);
-      result = 3.0*gev2cm2/pi*pow(reduced_mass*gna,2.0);
-    }
-
     /// Capture rate of regular dark matter in the Sun (no v-dependent or q-dependent cross-sections) (s^-1).
     void capture_rate_Sun_constant_xsec(double &result)
     {
@@ -2513,9 +2525,8 @@ namespace Gambit {
       double sigpred, bgpred, lnLike, pval;
       int totobs;
       char experiment[300] = "IC-22";
-      context_func cf = DarkBit_context;
-      void* context = &cf;
-      BEreq::nubounds(experiment[0], *Dep::mwimp, *Dep::annihilation_rate_Sun, byVal(*Dep::nuyield), sigpred, bgpred, 
+      void* context = NULL;
+      BEreq::nubounds(experiment[0], *Dep::mwimp, *Dep::annihilation_rate_Sun, BEreq::nuyield.pointer(), sigpred, bgpred, 
        totobs, lnLike, pval, 4, false, 0.0, 0.0, context);
       result.signal = sigpred;
       result.bg = bgpred;
@@ -2539,9 +2550,8 @@ namespace Gambit {
       double sigpred, bgpred, lnLike, pval;
       int totobs;
       char experiment[300] = "IC-79 WH";
-      context_func cf = DarkBit_context;
-      void* context = &cf;
-      BEreq::nubounds(experiment[0], *Dep::mwimp, *Dep::annihilation_rate_Sun, byVal(*Dep::nuyield), sigpred, bgpred, 
+      void* context = NULL;
+      BEreq::nubounds(experiment[0], *Dep::mwimp, *Dep::annihilation_rate_Sun, BEreq::nuyield.pointer(), sigpred, bgpred, 
        totobs, lnLike, pval, 4, false, 0.0, 0.0, context);
       result.signal = sigpred;
       result.bg = bgpred;
@@ -2565,9 +2575,8 @@ namespace Gambit {
       double sigpred, bgpred, lnLike, pval;
       int totobs;
       char experiment[300] = "IC-79 WL";
-      context_func cf = DarkBit_context;
-      void* context = &cf;
-      BEreq::nubounds(experiment[0], *Dep::mwimp, *Dep::annihilation_rate_Sun, byVal(*Dep::nuyield), sigpred, bgpred, 
+      void* context = NULL;
+      BEreq::nubounds(experiment[0], *Dep::mwimp, *Dep::annihilation_rate_Sun, BEreq::nuyield.pointer(), sigpred, bgpred, 
        totobs, lnLike, pval, 4, false, 0.0, 0.0, context);
       result.signal = sigpred;
       result.bg = bgpred;
@@ -2590,9 +2599,8 @@ namespace Gambit {
       double sigpred, bgpred, lnLike, pval;
       int totobs;
       char experiment[300] = "IC-79 SL";
-      context_func cf = DarkBit_context;
-      void* context = &cf;
-      BEreq::nubounds(experiment[0], *Dep::mwimp, *Dep::annihilation_rate_Sun, byVal(*Dep::nuyield), sigpred, bgpred, 
+      void* context = NULL;
+      BEreq::nubounds(experiment[0], *Dep::mwimp, *Dep::annihilation_rate_Sun, BEreq::nuyield.pointer(), sigpred, bgpred, 
        totobs, lnLike, pval, 4, false, 0.0, 0.0, context);
       result.signal = sigpred;
       result.bg = bgpred;

@@ -219,6 +219,27 @@ ObsLikes:
 # NOTE: treated as observable!
     - capability: lnL_DARWIN_Xe_2015
       purpose:  Observable
+
+# Total annihilation cross-section
+    - capability: sigmav
+      purpose: Observable
+# DD cross-sections
+    - capability: sigma_SI_p
+      purpose: Observable
+    - capability: sigma_SI_n
+      purpose: Observable
+    - capability: sigma_SD_p
+      purpose: Observable
+    - capability: sigma_SD_n
+      purpose: Observable
+      
+# Capture rate, equilibrium time and annihilation rate in the Sun
+    - capability: capture_rate_Sun
+      purpose: Observable
+    - capability: equilibration_time_Sun
+      purpose: Observable
+    - capability: annihilation_rate_Sun
+      purpose: Observable    
       
 # This function dumps gamma-ray spectra into a ASCII table file.  The filename
 # is specified as option in the Auxiliaries section.
@@ -327,17 +348,7 @@ Logger:
 
   prefix : "runs/DarkBit_minimalTest/logs/"
   redirection:
-    [Debug] : "debug.log"
-    [Default] : "default.log"
-    [Error] : "errors.log"
-    [Warning] : "warnings.log"
-    [Core,Error] : "core_errors.log"
-    [Core,Error,Fatal] : "fatal_core_errors.log"
-    [Dependency Resolver] : "stdout"
-    [ExampleBit_A] : "ExampleBit_A.log"
-    [ExampleBit_B] : "ExampleBit_B.log"
-    [BackendIniBit]: "BackendIniBit.log"
-    [LibFirst] : "libfirst.log"
+    [Default] : stdout
   #  [Logger, Debug] : "stdout"
   #  [Core] : "stdout"
   #  [Dependency Resolver] : "stdout"
