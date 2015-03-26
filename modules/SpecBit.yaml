@@ -50,10 +50,10 @@ ObsLikes:
   #  type:         double
   #  function:     specbit_test_func2
 
-  #- purpose:      Likelihood
-  #  capability:   specbit_tests1
-  #  type:         double
-  #  function:     specbit_test_func1
+  - purpose:      Likelihood
+    capability:   specbit_tests1
+    type:         double
+    function:     specbit_test_func1
 
   #- purpose:      Likelihood
   #  capability:   specbit_tests3
