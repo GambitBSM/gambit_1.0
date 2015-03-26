@@ -19,11 +19,13 @@
 ///
 ///  *********************************************
 
-#ifndef SPECTRUM_H
-#define SPECTRUM_H
+#ifndef __Spectrum_hpp__
+#define __Spectrum_hpp__
 
 #include <map>
 #include <set>
+#include <cfloat>
+#include <sstream>
 
 #include "gambit/Utils/cats.hpp"
 #include "gambit/Utils/standalone_error_handlers.hpp"
@@ -61,36 +63,6 @@ class Phys;
 
 /// Typedef for rollcall headers; I think the space would kill the type harvester.
 typedef const Spectrum CSpectrum; 
-
-// Container class for SMINPUTS information (defined as in SLHA2)
-struct SMInputs
-{
-   // Set some defaults?
-
-   // SLHA1
-   double alphainv;  // 1: Inverse electromagnetic coupling at the Z pole in the MSbar scheme (with 5 active flavours)
-   double GF;        // 2: Fermi constant (in units of GeV^-2)
-   double alphaS;    // 3: Strong coupling at the Z pole in the MSbar scheme (with 5 active flavours). 
-   double mZ;        // 4: Z pole mass
-   double mBmB;      // 5: b quark running mass in the MSbar scheme (at mB)
-   double mT;        // 6: Top quark pole mass
-   double mTau;      // 7: Tau pole mass
-
-   // SLHA2
-   double mNu3;      // 8: Heaviest neutrino pole mass
-  
-   double mE;        // 11: Electron pole mass
-   double mNu1;      // 12: Lightest neutrino pole mass
-   double mMu;       // 13: Muon pole mass
-   double mNu2;      // 14: Second lightest neutrino pole mass
-  
-   double mD;        // 21: d quark running mass in the MSbar scheme at 2 GeV        
-   double mU;        // 21: u quark running mass in the MSbar scheme at 2 GeV        
-   double mS;        // 21: s quark running mass in the MSbar scheme at 2 GeV        
-   double mCmC;      // 21: c quark running mass in the MSbar scheme at mC      
-
-   // CKM? PMNS? 
-};
 
 /// Virtual base class for interacting with spectrum generator output
 // Includes facilities for running RGEs
@@ -149,55 +121,76 @@ class Spectrum {
      return std::unique_ptr<Spectrum>(new DERIVED_CLASS(*this));  \
   }                                                               \
 
-/// Standard Model plus UV Model container class
-// This class is used to deliver both information defined in the Standard Model
-// (or potentially just QED X QCD) as a low-energy effective theory (as opposed
-// to correspending information defined in a UV model) as well as a
-// corresponding UV theory. Parameters defined in the low-energy model are
-// often used as input to a physics calculators. In addition, parameters used
-// to define the Standard Model, in SLHA2 format, are provided in the SMINPUTS
-// data member.
-class SMplusUV
-{
-   private:
-      CSpectrum* SM;
-      CSpectrum* UV;
-      SMInputs SMINPUTS;
-      bool initialised;
-   
-      void check_init() const {
-        if(not initialised) utils_error().raise(LOCAL_INFO,"Access to empty SMplusUV object attempted!");
-      }
-
-   public:
-      SMplusUV() : SM(), UV(), SMINPUTS(), initialised(false) {}
-      SMplusUV(CSpectrum* const sm, CSpectrum* const uv, const SMInputs& smi)
-        : SM(sm)
-        , UV(uv)
-        , SMINPUTS(smi)
-        , initialised(true) 
-      {}
-
-      // Standard getters
-      CSpectrum* get_SM() const {check_init(); return SM;}
-      CSpectrum* get_UV() const {check_init(); return UV;}
-      const SMInputs& get_SMINPUTS() const {check_init(); return SMINPUTS;}
-
-      // Clone getters
-      std::unique_ptr<Spectrum> clone_SM() const {check_init(); return SM->clone();} 
-      std::unique_ptr<Spectrum> clone_UV() const {check_init(); return UV->clone();} 
-};
-
-
 class RunningPars 
 {
+   private:
+      /// Default limits to RGE running; warning/error raised if running beyond these is attempted.
+      // If these aren't overridden in the derived class then effectively no limit on running will exist.
+      virtual double hard_upper() const {return DBL_MAX;}
+      virtual double soft_upper() const {return DBL_MAX;}
+      virtual double soft_lower() const {return 0.;}
+      virtual double hard_lower() const {return 0.;}
+
+      /// Run object to a particular scale
+      // Override this function in derived class to perform running
+      virtual void RunToScaleOverride(double) { vfcn_error(LOCAL_INFO); }
    public:
       /// Constructors/destructors
       RunningPars() {}
       virtual ~RunningPars() {}      
 
-      /// run object to a particular scale
-      virtual void RunToScale(double) { vfcn_error(LOCAL_INFO); }
+      /// Wrapper for RunToScaleOverload which automatically checks limits and
+      /// raises warnings.
+      // Behaviour modified by "behave" integer:
+      // behave = 0  -- If running beyond soft limit requested, halt at soft limit
+      //                (assumes hard limits outside of soft limits; but this is not enforced)
+      // behave = 1  -- If running beyond soft limit requested, throw warning
+      //                  "           "   hard limit     "    , throw error
+      // behave = anything else -- Ignore limits and attempt running to requested scale 
+      void RunToScale(double scale, int behave=0)
+      {
+         if(behave==0 or behave==1) 
+         {
+            if(scale < hard_lower() or scale > hard_upper()) {
+               if(behave==1) {
+                  std::ostringstream msg;
+                  msg << "RGE running requested outside hard limits! This is forbidden with behave=1. Set behave=0 (default) to automatically stop running at soft limits, or behave=2 to force running to requested scale (may trigger errors from underlying RGE code!)." << std::endl;
+                  msg << "  Requested : "<< scale << std::endl;
+                  msg << "  hard_upper: "<< hard_upper() << std::endl;
+                  msg << "  hard_lower: "<< hard_lower() << std::endl;
+                  utils_error().raise(LOCAL_INFO, msg.str());
+               } else { // behave==0
+                  if     (scale < soft_lower()) { scale=soft_lower(); } 
+                  else if(scale > soft_upper()) { scale=soft_upper(); }
+                  else {
+                    // Hard limits must be outside soft limits; this is a bug in the derived Spectum object
+                    std::ostringstream msg;
+                    msg << "RGE running requested outside hard limits, but within soft limits! The soft limits should always be within the hard limits, so this is a bug in the derived Spectrum object being accessed. I cannot tell you which class this is though; check the dependency graph to see which ones are being created, and if necessary consult your debugger." << std::endl;
+                    msg << "  Requested : "<< scale << std::endl;
+                    msg << "  hard_upper: "<< hard_upper() << std::endl;
+                    msg << "  soft_upper: "<< soft_upper() << std::endl;
+                    msg << "  soft_lower: "<< soft_lower() << std::endl;
+                    msg << "  hard_lower: "<< hard_lower() << std::endl;
+                    utils_error().raise(LOCAL_INFO, msg.str());
+                  } 
+               }
+            } else if(scale < soft_lower() or scale > soft_upper()) {
+               if(behave==1) {
+                  std::ostringstream msg;
+                  msg << "RGE running requested outside soft limits! Accuracy may be low. Note: Set behave=2 to suppress this warning, or behave=0 (default) to automatically stop running when soft limit is hit." << std::endl;
+                  msg << "  Requested : "<< scale << std::endl;
+                  msg << "  soft_upper: "<< soft_upper() << std::endl;
+                  msg << "  soft_lower: "<< soft_lower() << std::endl;
+                  utils_warning().raise(LOCAL_INFO, msg.str());
+               } else { // behave==0
+                  if(scale < soft_lower()) scale=soft_lower();
+                  if(scale > soft_upper()) scale=soft_upper();
+               }
+            }
+         }
+         RunToScaleOverride(scale);
+      }
+
       /// returns the renormalisation scale of parameters
       virtual double GetScale() const { vfcn_error(LOCAL_INFO); return -1; }
       /// Sets the renormalisation scale of parameters 

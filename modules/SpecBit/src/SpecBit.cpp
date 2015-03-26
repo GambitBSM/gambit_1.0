@@ -68,7 +68,7 @@ namespace Gambit
     // of the code required to run them is the same; this is what is contained in
     // the below template function.
     template <class MI>  // MI for Model Interface, as defined in model_files_and_boxes.hpp 
-    SMplusUV run_FS_spectrum_generator(const typename MI::InputParameters &input, const Options &runOptions)
+    const SMplusUV* run_FS_spectrum_generator(const typename MI::InputParameters &input, const Options &runOptions)
     {
       // SoftSUSY object used to set quark and lepton masses and gauge
       // couplings in QEDxQCD effective theory
@@ -252,8 +252,9 @@ namespace Gambit
 
       // Package pointer to QedQcd Spectrum object along with pointer to MSSM Spectrum object, 
       // and SMInputs struct.
-      SMplusUV matched_spectra(&qedqcdspec,&mssmspec,sminputs);
-      return matched_spectra;
+      // Return pointer to this package.
+      static SMplusUV matched_spectra(&qedqcdspec,&mssmspec,sminputs);
+      return &matched_spectra;
     }
 
     //
@@ -347,7 +348,7 @@ namespace Gambit
     //void convert_NMSSM_to_SM  (Spectrum* &result) {result = *Pipes::convert_NMSSM_to_SM::Dep::NMSSM_spectrum;}
     //void convert_E6MSSM_to_SM (Spectrum* &result) {result = *Pipes::convert_E6MSSM_to_SM::Dep::E6MSSM_spectrum;}
 
-    void get_CMSSM_spectrum (SMplusUV &result)
+    void get_CMSSM_spectrum (const SMplusUV* &result)
     {
 
       // Access the pipes for this function to get model and parameter information
@@ -366,11 +367,11 @@ namespace Gambit
       result = run_FS_spectrum_generator<CMSSM_interface<ALGORITHM1>>(input,*Pipe::runOptions);
       
       // Dump spectrum information to slha file (for testing...)
-      result.get_UV()->dump2slha("SpecBit/CMSSM_fromSpectrumObject.slha");
+      result->get_UV()->dump2slha("SpecBit/CMSSM_fromSpectrumObject.slha");
     }
 
     // Runs MSSM spectrum generator with EWSB scale input
-    void get_MSSMatQ_spectrum (SMplusUV &result)
+    void get_MSSMatQ_spectrum (const SMplusUV* &result)
     {
       using namespace softsusy;
       namespace Pipe = Pipes::get_MSSMatQ_spectrum;
@@ -384,7 +385,7 @@ namespace Gambit
     }
 
     // Runs MSSM spectrum generator with GUT scale input
-    void get_MSSMatMGUT_spectrum (SMplusUV &result)
+    void get_MSSMatMGUT_spectrum (const SMplusUV* &result)
     {
       using namespace softsusy;
       namespace Pipe = Pipes::get_MSSMatMGUT_spectrum;
@@ -393,7 +394,7 @@ namespace Gambit
       result = run_FS_spectrum_generator<MSSMatMGUT_interface<ALGORITHM1>>(input,*Pipe::runOptions);
     }
 
-    void get_GUTMSSMB_spectrum (SMplusUV &result)
+    void get_GUTMSSMB_spectrum (const SMplusUV* &result)
     {
       // Placeholder
     }
@@ -405,8 +406,8 @@ namespace Gambit
     void get_MSSM_spectrum_as_SpectrumPtr (const Spectrum* &result)
     {
       namespace Pipe = Pipes::get_MSSM_spectrum_as_SpectrumPtr;
-      const SMplusUV& joined_spectra(*Pipe::Dep::MSSM_spectrum);
-      result = joined_spectra.get_UV();
+      const SMplusUV* matched_spectra(*Pipe::Dep::MSSM_spectrum);
+      result = matched_spectra->get_UV();
     }
 
     /// @} 
