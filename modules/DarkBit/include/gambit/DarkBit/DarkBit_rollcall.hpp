@@ -136,6 +136,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION RD_spectrum_SUSY
       START_FUNCTION(Gambit::DarkBit::RD_spectrum_type)
+      DEPENDENCY(DarkSUSY_PointInit, bool)
       BACKEND_REQ(mspctm, (), DS_MSPCTM)
       BACKEND_REQ(widths, (), DS_WIDTHS)
       BACKEND_REQ(intdof, (), DS_INTDOF)

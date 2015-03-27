@@ -333,6 +333,10 @@ namespace Gambit {
       DS_INTDOF myintdof= *BEreq::intdof;
       DS_WIDTHS mywidths= *BEreq::widths;
 
+      result.coannihilatingParticles.clear();
+      result.resonances.clear();
+      result.threshold_energy.clear();
+
       // first add neutralino=WIMP=least massive 'coannihilating particle'
       result.coannihilatingParticles.push_back(RD_coannihilating_particle(DSpart.kn[0], myintdof.kdof[DSpart.kn[0]],mymspctm.mass[DSpart.kn[0]]));
 
@@ -365,6 +369,7 @@ namespace Gambit {
 
       colist.clear();
 
+
       // determine resonances for LSP annihilation
       int reslist[] = {kz,kh1,kh2,kh3,kw,khc};
       int resmax=sizeof(reslist) / sizeof(reslist[0]);
@@ -396,7 +401,7 @@ namespace Gambit {
         for (int i=0; i<(int)result.coannihilatingParticles.size(); i++)
           for (int j=std::max(1,i); j<(int)result.coannihilatingParticles.size(); j++)
             result.threshold_energy.push_back(result.coannihilatingParticles[i].mass+result.coannihilatingParticles[j].mass);
-
+             
     } // function RD_spectrum_SUSY
 
     void RD_thresholds_resonances_from_ProcessCatalog(TH_resonances_thresholds &result)
@@ -432,16 +437,18 @@ namespace Gambit {
         }
       }
 
-      TH_Resonance tmp2;
-      for (std::size_t i=0; i<result.resonances.size()-1; i++)
-      {
-        for (std::size_t j=i+1; j<result.resonances.size(); j++)
+      if (!result.resonances.empty()){
+        TH_Resonance tmp2;
+        for (std::size_t i=0; i<result.resonances.size()-1; i++)
         {
-          if (result.resonances[j].energy < result.resonances[i].energy)
+          for (std::size_t j=i+1; j<result.resonances.size(); j++)
           {
-            tmp2=result.resonances[i];
-            result.resonances[i]=result.resonances[j];
-            result.resonances[j]=tmp2;
+            if (result.resonances[j].energy < result.resonances[i].energy)
+            {
+              tmp2=result.resonances[i];
+              result.resonances[i]=result.resonances[j];
+              result.resonances[j]=tmp2;
+            }
           }
         }
       }
@@ -482,10 +489,6 @@ namespace Gambit {
       }
       *BEreq::rdmgev = myrdmgev;
 
-//        for (int i=0; i<myrdmgev.nco; i++) {
-//          logger() << "co: "<< myrdmgev.kcoann[i]<<" " << myrdmgev.mdof[i]<<" " <<  myrdmgev.mco[i] << std::endl;
-//        }
-
       result=1; // everthing OK
 
     } // function RD_eff_annrate_SUSY_DSprep_func
@@ -505,7 +508,7 @@ namespace Gambit {
     void RD_oh2_general(double &result)
     {
       using namespace Pipes::RD_oh2_general;
-
+      
       //retrieve ordered list of resonances and thresholds from RD_thresholds_resonances
       TH_resonances_thresholds myres = *Dep::RD_thresholds_resonances;
       double mwimp=myres.threshold_energy[0]/2;
@@ -590,16 +593,21 @@ namespace Gambit {
         // using the untabulated rate gives the same result but is usually slower: 
         // BEreq::dsrdeqn(byVal(*Dep::RD_eff_annrate),xstart,xend,yend,xf,nfcn);
         
-
         // change SM Higgs width back to standard value
         mywidths.width[kh1]=widthkh1;
         *BEreq::widths=mywidths;
 
+        //capture NAN result and map it to zero RD
+        if (yend!=yend){
+          logger() << "WARNING: DS returned NAN for relic density. Setting to zero..." << std::endl;
+          yend=0;
+        }  
+        
         result = 0.70365e8*myrddof.fh[myrddof.nf-1]*mwimp*yend;
 
       } // USING BE=DS
 
-      logger() << "oh2 =" << result << std::endl;
+        logger() << "oh2 =" << result << std::endl;
 
     } // function RD_oh2_general
 
