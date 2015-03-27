@@ -12,8 +12,7 @@
 
 
 DarkSUSY: 
-  0.1:         ./Backends/lib/libdarksusy.so
-  5.0.5:       ./Backends/lib/libdarksusy.so
+  5.1.1:       ./Backends/lib/libdarksusy.so
   6.0.0:        /sometime/soon/maybe
 
 BOSSMinimalExample:
@@ -56,7 +55,7 @@ gamLike:
   1.0.0:       ./Backends/lib/libgamLike.so
 
 micromegas:
-  0.1:         ./Backends/lib/libmicromegas.so
+  3.5.5:         ./Backends/lib/libmicromegas.so
 
 nulike:
   1.0.0:       ./Backends/lib/libnulike.so

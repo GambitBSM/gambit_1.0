@@ -431,11 +431,16 @@ namespace Gambit
 
     struct MWhalo
     {
-        MWhalo(Funk::Funk rho, Funk::Funk drho2dv) : rho(rho), drho2dv(drho2dv) {};
+        MWhalo(Funk::Funk rho, Funk::Funk drho2dv) : rho(rho), drho2dv(drho2dv)
+        {
+            rho->assert_args(Funk::vec<std::string>("r"), Funk::vec<std::string>("x", "y", "z"));
+            drho2dv->assert_args(Funk::vec<std::string>("r", "v"), Funk::vec<std::string>("x", "y", "z", "v"));
+        };
         MWhalo(Funk::Funk rho) : rho(rho)
         {
-            rho->assert_args(Funk::vec<std::string>("r"), Funk::vec<std::string>("x", "y"));
-            drho2dv = rho*rho;
+            rho->assert_args(Funk::vec<std::string>("r"), Funk::vec<std::string>("x", "y", "z"));
+            auto delta_v = Funk::delta("v", 1e-3, 1e-5);  // Add some fake velocity dependence
+            drho2dv = rho*rho * delta_v;
         };
         Funk::Funk rho;
         Funk::Funk drho2dv;
@@ -634,36 +639,6 @@ namespace Gambit
       double gns;
       double gpa;
       double gna;
-    };
-
-    //------------------------------------------------------
-    // Structures containing the hadronic matrix elements
-    // (fn=<n|qq|n>) and nucleon spin content (delta q)
-    struct fp
-    {
-      double u;
-      double d;
-      double c;
-      double s;
-      double t;
-      double b;
-    };
-
-    struct fn
-    {
-      double u;
-      double d;
-      double c;
-      double s;
-      double t;
-      double b;
-    };
-
-    struct deltaq
-    {
-      double u;
-      double d;
-      double s;
     };
 
     //------------------------------------------------------

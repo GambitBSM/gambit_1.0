@@ -37,8 +37,8 @@
 #else
   #define BACKENDNAME DarkSUSY
 #endif
-#define VERSION 0.1
-#define SAFE_VERSION 0_1
+#define VERSION 5.1.1
+#define SAFE_VERSION 5_1_1
 
 
 /* The following macro loads the library using dlmopen 
@@ -91,6 +91,7 @@ BE_FUNCTION(dsSLHAread, void, (char*, int&, int), "dsslharead_", "dsSLHAread")
 BE_FUNCTION(dsprep, void, (), "dsprep_", "dsprep")
 BE_FUNCTION(dsIByieldone, double, (double&, int&, int&, int&), "dsibyieldone_", "dsibyieldone")
 BE_FUNCTION(dswwidth, void, (int&), "dswwidth_", "dswwidth")
+//BE_FUNCTION(dsddset, void, (Fstring<2>*, Fstring<10>*), "dsddset_", "dsddset")
 
 //BE_FUNCTION(initialize, void, (int), "_Z10initializei", "LibFirst_initialize_capability")
 //BE_FUNCTION(someFunction, void, (), "_Z12someFunctionv", "LibFirst_someFunction_capability")
@@ -163,24 +164,28 @@ BE_INI_FUNCTION
         dsrdinit();
         scan_level = false;
 
-        // Setting nuclear spin/quark content to micromegas values:
-        ddcom->deld = -0.427;
-        ddcom->delu = 0.842;
-        ddcom->dels = -0.085;
+        if (runOptions->hasKey("dddn"))
+        {
+        	if (runOptions->getValue<int>("dddn")==1) ddcom->dddn = 1;
+        	else if (runOptions->getValue<int>("dddn")==0) ddcom->dddn = 0;
+        	else BackendIniBit_error().raise(LOCAL_INFO, "Invalid value of dddn "
+        				"(only 0 or 1 permitted).");
+        }
 
-        ddcom->ftp(7) = 0.0153;
-        ddcom->ftp(8) = 0.0191;
-        ddcom->ftp(9) = 0.0682;
-        ddcom->ftp(10) = 0.0447;
-        ddcom->ftp(11) = 0.0682;
-        ddcom->ftp(12) = 0.0682;
+        if (runOptions->hasKey("ddpole"))
+        {
+        	if (runOptions->getValue<int>("ddpole")==1) ddcom->ddpole = 1;
+        	else if (runOptions->getValue<int>("ddpole")==0)
+        	{
+        		ddcom->ddpole = 0;
+        		if (runOptions->hasKey("dddn") && runOptions->getValue<int>("dddn")==1)
+        			BackendIniBit_warning().raise(LOCAL_INFO, "ddpole = 0 ignored "
+        					"by DarkSUSY because dddn = 1.");
+        	}
+        	else BackendIniBit_error().raise(LOCAL_INFO, "Invalid value of ddpole "
+        				"(only 0 or 1 permitted).");
+        }
 
-        ddcom->ftn(7) = 0.011;
-        ddcom->ftn(8) = 0.0273;
-        ddcom->ftn(9) = 0.0679;
-        ddcom->ftn(10) = 0.0447;
-        ddcom->ftn(11) = 0.0679;
-        ddcom->ftn(12) = 0.0679;
     }
 
   // POINT INITIALIZATION MOVE TO DARKSUSY_POINTINIT CAPABILITY/FUNCTION

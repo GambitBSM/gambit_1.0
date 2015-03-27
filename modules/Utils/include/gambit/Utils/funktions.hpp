@@ -616,6 +616,30 @@ namespace Funk
     }
 
     //
+    // Derived class that implements delta function
+    //
+
+    class FunkDelta: public FunkBase
+    {
+        public:
+            FunkDelta(std::string arg, double pos, double width) : pos(pos), width(width)
+            {
+                arguments = vec(arg);
+                this->set_singularity("v", pos, width);
+            }
+            
+            double value(std::vector<double> & data, intptr_t bindID)
+            {
+                double x = data[indices[bindID][0]];
+                return exp(-pow(x-pos,2)/pow(width,2)/2)/sqrt(2*M_PI)/width;
+            }
+
+        private:
+            double pos, width;
+    };
+    inline Funk delta(std::string arg, double pos, double width) { return Funk(new FunkDelta(arg, pos, width)); }
+
+    //
     // Derived class that implements simple linear variable
     //
 
