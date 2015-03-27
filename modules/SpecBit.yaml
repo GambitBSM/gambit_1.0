@@ -1,20 +1,9 @@
+# Inifile for testing SpecBit features
+
 Parameters:
- # CMSSM:
- #   A0:
- #     range: [-1000, 1000]
- #   M0:
- #     prior_type: log
- #     range: [0.001,1000]
- #   M12:
- #     same_as: CMSSM::M0
- #   signmu:
- #     range: [-1, 1]
- #     fixed_value: 1
- #   tanb:
- #     fixed_value: 1
+  StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
+
   extraCMSSM:
-    #A0:
-    #  fixed_value: 100
     M0:
       fixed_value: 100
     M12:
@@ -50,10 +39,10 @@ ObsLikes:
   #  type:         double
   #  function:     specbit_test_func2
 
-  #- purpose:      Likelihood
-  #  capability:   specbit_tests1
-  #  type:         double
-  #  function:     specbit_test_func1
+  - purpose:      Likelihood
+    capability:   specbit_tests1
+    type:         double
+    function:     specbit_test_func1
 
   #- purpose:      Likelihood
   #  capability:   specbit_tests3

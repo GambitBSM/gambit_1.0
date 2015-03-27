@@ -12,8 +12,8 @@
 ///  Authors (add name and date if you modify):
 ///
 ///  \author Ben Farmer
-///          (ben.farmer@gmail.com)
-///    \date 2014 Sep
+///          (benjamin.farmer@fysik.su.se)
+///    \date 2014 Sep - Dec, 2015 Jan - Mar
 ///  
 ///  *********************************************
 

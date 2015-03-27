@@ -161,8 +161,6 @@ class SMplusUV
       std::unique_ptr<Spectrum> clone_UV() const {check_init(); return UV->clone();} 
 };
 
-/// Typedef for rollcall headers; I think the space would kill the type harvester.
-typedef const SMplusUV CSMplusUV; 
 
 } // end namespace Gambit
 

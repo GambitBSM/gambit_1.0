@@ -13,8 +13,8 @@
 ///  Authors (add name and date if you modify):
 ///
 ///  \author Ben Farmer
-///          (ben.farmer@gmail.com)
-///    \date 2014 Sep
+///          (benjamin.farmer@fysik.su.se)
+///    \date 2014 Sep - Dec, 2015 Jan - Mar
 ///  
 ///  *********************************************
 
@@ -57,6 +57,23 @@ namespace Gambit
     //  The Gambit module functions merely wrap the functions here and hook 
     //  them up to their dependencies, and input parameters.
 
+    /// Initialise QedQcd object from SMInputs data
+    void setup_QedQcd(QedQcd& oneset, const SMInputs& sminputs)
+    {
+      oneset.setPoleMt(sminputs.mT);
+      //oneset.setPoleMb(...);
+      oneset.setPoleMtau(sminputs.mTau);
+      oneset.setMbMb(sminputs.mBmB);
+      /// set running quark masses
+      oneset.setMass(mDown,    sminputs.mD);
+      oneset.setMass(mUp,      sminputs.mU);
+      oneset.setMass(mStrange, sminputs.mS);
+      oneset.setMass(mCharm,   sminputs.mCmC);
+      /// set QED and QCD structure constants
+      oneset.setAlpha(ALPHA, 1./sminputs.alphainv);
+      oneset.setAlpha(ALPHAS, sminputs.alphaS);
+      ///TODO: Not sure how to set other stuff.
+    }
 
     /// Compute an MSSM spectrum using flexiblesusy
     // In GAMBIT there are THREE flexiblesusy MSSM spectrum generators currently in
@@ -67,70 +84,25 @@ namespace Gambit
     // These each require slightly different setup, but once that is done the rest
     // of the code required to run them is the same; this is what is contained in
     // the below template function.
-    template <class MI>  // MI for Model Interface, as defined in model_files_and_boxes.hpp 
-    const SMplusUV* run_FS_spectrum_generator(const typename MI::InputParameters &input, const Options &runOptions)
+    // MI for Model Interface, as defined in model_files_and_boxes.hpp 
+    template <class MI> 
+    const SMplusUV* run_FS_spectrum_generator
+        ( const typename MI::InputParameters& input
+        , const SMInputs& sminputs
+        , const Options& runOptions 
+        )
     {
       // SoftSUSY object used to set quark and lepton masses and gauge
       // couplings in QEDxQCD effective theory
-      // Will be initialised by default using values in lowe.h. Should add code here to
-      // input any Standard Model values which we want to vary with the scan. Also need
-      // to implement a strategy for carrying SM parameters around gambit consistently.
+      // Will be initialised by default using values in lowe.h, which we will
+      // override next. 
+      QedQcd oneset;
 
-      // Put the information to be used to initialise the spectrum generator into a special struct
-      // Contains everything in the SLHA SMINPUTS block.
-      SMInputs sminputs;
-
-      #ifdef SpecBit_DBUG
-         // Set values to match LesHouches.in.MSSM_1 
-         sminputs.alphainv = 1.279340000e+02;      // alpha^(-1) SM MSbar(MZ)
-         sminputs.GF       = 1.166370000e-05;      // G_Fermi
-         sminputs.alphaS   = 1.176000000e-01;      // alpha_s(MZ) SM MSbar
-         sminputs.mZ       = 9.118760000e+01;      // MZ(pole)
-         sminputs.mBmB     = 4.200000000e+00;      // mb(mb) SM MSbar
-         sminputs.mT       = 1.733000000e+02;      // mtop(pole)
-         sminputs.mTau     = 1.777000000e+00;      // mtau(pole)
-         sminputs.mNu3     = 0.000000000e+00;      // mnu3(pole)
-         sminputs.mE       = 5.109989020e-04;      // melectron(pole)
-         sminputs.mNu1     = 0.000000000e+00;      // mnu1(pole)
-         sminputs.mMu      = 1.056583570e-01;      // mmuon(pole)
-         sminputs.mNu2     = 0.000000000e+00;      // mnu2(pole)
-         sminputs.mD       = 4.750000000e-03;      // md(2 GeV) MS-bar
-         sminputs.mU       = 2.400000000e-03;      // mu(2 GeV) MS-bar
-         sminputs.mS       = 1.040000000e-01;      // ms(2 GeV) MS-bar
-         sminputs.mCmC     = 1.270000000e+00;      // mc(mc) MS-bar
-      #endif 
-                        
       // Fill QedQcd object with SMInputs values
-      QedQcd oneset; 
-      oneset.setPoleMt(sminputs.mT);
-      //oneset.setPoleMb(...);
-      oneset.setPoleMtau(sminputs.mTau);
-      oneset.setMbMb(sminputs.mBmB);
-      /// set running quark masses
-      oneset.setMass(mDown,    sminputs.mD);
-      oneset.setMass(mUp,      sminputs.mU);
-      oneset.setMass(mStrange, sminputs.mS);
-      oneset.setMass(mCharm, sminputs.mCmC);
-      /// set QED and QCD structure constants
-      oneset.setAlpha(ALPHA, 1./sminputs.alphainv);
-      oneset.setAlpha(ALPHAS, sminputs.alphaS);
-      // Not sure how to set other stuff.
-      #ifdef SpecBit_DBUG
-      logger() << oneset << EOM; 
-      #endif
+      setup_QedQcd(oneset,sminputs);
 
       // Run everything to Mz
       oneset.toMz();
-      #ifdef SpecBit_DBUG
-      logger() << oneset << EOM; 
-      // Extra check; see what values at 2 GeV are
-      QedQcd oneset2 = oneset; //copy
-      oneset2.run(oneset2.displayMu(), 2, 1.0e-5);  // Run masses
-      logger() << oneset2 << EOM;
-      // Now go to 1 GeV; it seems that QedQcd actually assumes input at 1 GeV for toMz function
-      oneset2.run(oneset2.displayMu(), 1, 1.0e-5);  // Run masses
-      logger() << oneset2 << EOM;
-      #endif
  
       // Create spectrum generator object
       typename MI::SpectrumGenerator spectrum_generator;
@@ -162,17 +134,11 @@ namespace Gambit
       // spectrum_generator.set_NAME(runOptions.getValueOrDef<TYPE>(DEFAULTVAL,"NAME"))
 
       // For debugging only; check expansions
-      #ifdef SpecBit_DBUG
-         #define ECHO(COMMAND) std::cout << SAFE_STRINGIFY(COMMAND) << std::endl
-         ECHO(  SPECGEN_SET(precision_goal,                 double, 1.0e-4)  );
-         ECHO(  SPECGEN_SET(max_iterations,                 double, 0 )      );
-         ECHO(  SPECGEN_SET(calculate_sm_masses,              bool, false )  );
-         ECHO(  SPECGEN_SET(pole_mass_loop_order,              int, 2 )      );
-         ECHO(  SPECGEN_SET(ewsb_loop_order,                   int, 2 )      );
-         ECHO(  SPECGEN_SET(beta_loop_order,                   int, 2 )      );
-         ECHO(  SPECGEN_SET(threshold_corrections_loop_order,  int, 1 )      );
-         #undef ECHO
-      #endif
+      // #ifdef SpecBit_DBUG
+      //    #define ECHO(COMMAND) std::cout << SAFE_STRINGIFY(COMMAND) << std::endl
+      //    ECHO(  SPECGEN_SET(precision_goal,                 double, 1.0e-4)  );
+      //    #undef ECHO
+      // #endif
 
       SPECGEN_SET(precision_goal,                 double, 1.0e-4);
       SPECGEN_SET(max_iterations,                 double, 0 );
@@ -188,17 +154,16 @@ namespace Gambit
       Higgs_2loop_corrections higgs_2loop_settings;
 
       // alpha_t alpha_s
-      higgs_2loop_settings.at_as = runOptions.getValueOrDef<bool>(true,"use_higgs_2loop_at_as");
       // alpha_b alpha_s
-      higgs_2loop_settings.ab_as = runOptions.getValueOrDef<bool>(true,"use_higgs_2loop_ab_as");
       // alpha_t^2 + alpha_t alpha_b + alpha_b^2
-      higgs_2loop_settings.at_at = runOptions.getValueOrDef<bool>(true,"use_higgs_2loop_at_at");
       // alpha_tau^2
+      higgs_2loop_settings.at_as     = runOptions.getValueOrDef<bool>(true,"use_higgs_2loop_at_as");
+      higgs_2loop_settings.ab_as     = runOptions.getValueOrDef<bool>(true,"use_higgs_2loop_ab_as");
+      higgs_2loop_settings.at_at     = runOptions.getValueOrDef<bool>(true,"use_higgs_2loop_at_at");
       higgs_2loop_settings.atau_atau = runOptions.getValueOrDef<bool>(true,"use_higgs_2loop_atau_atau");
 
       spectrum_generator.set_higgs_2loop_corrections(higgs_2loop_settings);
 
- 
       // Generate spectrum
       spectrum_generator.run(oneset, input);
    
@@ -257,18 +222,6 @@ namespace Gambit
       return &matched_spectra;
     }
 
-    //
-    //
-    //   // We want to store things in a "generic" flexiblesusy MSSM object. But in 
-    //   // flexiblesusy, there are different classes for each different MSSM-variant,
-    //   // even for simple changes like altering boundary conditions. So we need to take
-    //   // the low-scale spectrum data that results from the spectrum computation, and 
-    //   // copy it into the generic container. Need to write some routines to do this 
-    //   // (below is a placeholder). 
-    //   generic_mssm.get_lowe_data_from(model);
-    //
-    //   return &generic_mssm;
-    // 
 
     /// Helper function for setting 3x3 matrix-valued parameters
     //  Names must conform to convention "<parname>_ij"
@@ -342,6 +295,53 @@ namespace Gambit
     //  These are wrapped up in Gambit functor objects according to the
     //  instructions in the rollcall header
 
+    /// Set SMINPUTS (SLHA2) struct to match StandardModel_SLHA2 parameters.
+    //  Effectively just changes these model parameters into a more convenient form.
+    //  But also opens up the possibility of rebuilding this struct from some other
+    //  parameterisation.
+    void get_SMINPUTS(SMInputs &result)
+    {
+      namespace myPipe = Pipes::get_SMINPUTS;
+      SMInputs sminputs; 
+      
+      // Get values from Params pipe
+      // (as defined in SLHA2)
+      if(myPipe::ModelInUse("StandardModel_SLHA2"))
+      {
+         sminputs.alphainv = *myPipe::Param["alphainv"];
+         sminputs.GF       = *myPipe::Param["GF"      ];
+         sminputs.alphaS   = *myPipe::Param["alphaS"  ];
+
+         sminputs.mZ       = *myPipe::Param["mZ"      ]; 
+
+         sminputs.mE       = *myPipe::Param["mE"      ];
+         sminputs.mMu      = *myPipe::Param["mMu"     ];
+         sminputs.mTau     = *myPipe::Param["mTau"    ];
+
+         sminputs.mNu1     = *myPipe::Param["mNu1"    ];
+         sminputs.mNu2     = *myPipe::Param["mNu2"    ];
+         sminputs.mNu3     = *myPipe::Param["mNu3"    ];
+
+         sminputs.mD       = *myPipe::Param["mD"      ];
+         sminputs.mU       = *myPipe::Param["mU"      ];
+         sminputs.mS       = *myPipe::Param["mS"      ];
+         sminputs.mCmC     = *myPipe::Param["mCmC"    ];
+         sminputs.mBmB     = *myPipe::Param["mBmB"    ]; 
+         sminputs.mT       = *myPipe::Param["mT"      ];
+      }
+      else
+      {
+         std::ostringstream errmsg;
+         errmsg << "Error mapping Standard Model parameters to SMINPUTS capabilities!";
+         errmsg << "Perhaps you have added a new model to the ALLOWED_MODELS of this ";
+         errmsg << "module function but have not added a corresponding case in the ";
+         errmsg << "function source (here)." << std::endl;
+         SpecBit_error().raise(LOCAL_INFO,errmsg.str());  
+      }
+      // Return filled struct
+      result = sminputs;
+    }
+
     // Functions to changes the capability associated with a Spectrum object to 
     // "SM_spectrum"
     void convert_MSSM_to_SM   (const Spectrum* &result) {result = *Pipes::convert_MSSM_to_SM::Dep::MSSM_spectrum;}
@@ -352,19 +352,22 @@ namespace Gambit
     {
 
       // Access the pipes for this function to get model and parameter information
-      namespace Pipe = Pipes::get_CMSSM_spectrum;
+      namespace myPipe = Pipes::get_CMSSM_spectrum;
+
+      // Get SLHA2 SMINPUTS values
+      const SMInputs& sminputs = *myPipe::Dep::SMINPUTS;
 
       // Get input parameters
       CMSSM_input_parameters input;
    
-      input.m0      = *Pipe::Param["M0"];
-      input.m12     = *Pipe::Param["M12"];
-      input.TanBeta = *Pipe::Param["tanb"];
-      input.SignMu  = *Pipe::Param["signmu"];
-      input.Azero   = *Pipe::Param["A0"];
+      input.m0      = *myPipe::Param["M0"];
+      input.m12     = *myPipe::Param["M12"];
+      input.TanBeta = *myPipe::Param["tanb"];
+      input.SignMu  = *myPipe::Param["signmu"];
+      input.Azero   = *myPipe::Param["A0"];
   
       // Run spectrum generator
-      result = run_FS_spectrum_generator<CMSSM_interface<ALGORITHM1>>(input,*Pipe::runOptions);
+      result = run_FS_spectrum_generator<CMSSM_interface<ALGORITHM1>>(input,sminputs,*myPipe::runOptions);
       
       // Dump spectrum information to slha file (for testing...)
       result->get_UV()->dump2slha("SpecBit/CMSSM_fromSpectrumObject.slha");
@@ -374,24 +377,23 @@ namespace Gambit
     void get_MSSMatQ_spectrum (const SMplusUV* &result)
     {
       using namespace softsusy;
-      namespace Pipe = Pipes::get_MSSMatQ_spectrum;
+      namespace myPipe = Pipes::get_MSSMatQ_spectrum;
+      const SMInputs& sminputs = *myPipe::Dep::SMINPUTS;
       MSSM_input_parameters input;
-      input.Qin = *Pipe::Param.at("Qin"); // MSSMatQ also requires input scale to be supplied
-      #ifdef SpecBit_DBUG
-        std::cout << "Qin = " << input.Qin << ", ";
-      #endif
-      fill_MSSM78_input(input,Pipe::Param);
-      result = run_FS_spectrum_generator<MSSM_interface<ALGORITHM1>>(input,*Pipe::runOptions);
+      input.Qin = *myPipe::Param.at("Qin"); // MSSMatQ also requires input scale to be supplied
+      fill_MSSM78_input(input,myPipe::Param);
+      result = run_FS_spectrum_generator<MSSM_interface<ALGORITHM1>>(input,sminputs,*myPipe::runOptions);
     }
 
     // Runs MSSM spectrum generator with GUT scale input
     void get_MSSMatMGUT_spectrum (const SMplusUV* &result)
     {
       using namespace softsusy;
-      namespace Pipe = Pipes::get_MSSMatMGUT_spectrum;
+      namespace myPipe = Pipes::get_MSSMatMGUT_spectrum;
+      const SMInputs& sminputs = *myPipe::Dep::SMINPUTS;
       MSSMatMGUT_input_parameters input;
-      fill_MSSM78_input(input,Pipe::Param);
-      result = run_FS_spectrum_generator<MSSMatMGUT_interface<ALGORITHM1>>(input,*Pipe::runOptions);
+      fill_MSSM78_input(input,myPipe::Param);
+      result = run_FS_spectrum_generator<MSSMatMGUT_interface<ALGORITHM1>>(input,sminputs,*myPipe::runOptions);
     }
 
     void get_GUTMSSMB_spectrum (const SMplusUV* &result)
@@ -405,8 +407,8 @@ namespace Gambit
     /// DEPENDENCY(MSSM_spectrum, SMplusUV)
     void get_MSSM_spectrum_as_SpectrumPtr (const Spectrum* &result)
     {
-      namespace Pipe = Pipes::get_MSSM_spectrum_as_SpectrumPtr;
-      const SMplusUV* matched_spectra(*Pipe::Dep::MSSM_spectrum);
+      namespace myPipe = Pipes::get_MSSM_spectrum_as_SpectrumPtr;
+      const SMplusUV* matched_spectra(*myPipe::Dep::MSSM_spectrum);
       result = matched_spectra->get_UV();
     }
 
@@ -417,9 +419,9 @@ namespace Gambit
     // This is mostly for testing purposes.
     void dump_spectrum(double &result)
     {
-      namespace Pipe = Pipes::dump_spectrum;
-      const Spectrum* spec(*Pipe::Dep::SM_spectrum);
-      std::string filename(Pipe::runOptions->getValue<std::string>("filename"));
+      namespace myPipe = Pipes::dump_spectrum;
+      const Spectrum* spec(*myPipe::Dep::SM_spectrum);
+      std::string filename(myPipe::runOptions->getValue<std::string>("filename"));
       spec->dump2slha(filename);
       result = 1;
     }
@@ -429,8 +431,8 @@ namespace Gambit
     //  DEPENDENCY(MSSM_spectrum, Spectrum*)  
     void get_MSSM_spectrum_as_SLHAea (SLHAea::Coll &result)
     {
-      namespace Pipe = Pipes::get_MSSM_spectrum_as_SLHAea;
-      const Spectrum* spec(*Pipe::Dep::MSSM_spectrum);
+      namespace myPipe = Pipes::get_MSSM_spectrum_as_SLHAea;
+      const Spectrum* spec(*myPipe::Dep::MSSM_spectrum);
       result = spec->getSLHAea();
     }
      

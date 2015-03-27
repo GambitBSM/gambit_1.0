@@ -61,9 +61,6 @@ class Spectrum;
 class RunningPars;
 class Phys;
 
-/// Typedef for rollcall headers; I think the space would kill the type harvester.
-typedef const Spectrum CSpectrum; 
-
 /// Virtual base class for interacting with spectrum generator output
 // Includes facilities for running RGEs
 class Spectrum {
