@@ -96,10 +96,15 @@ BE_VARIABLE(DS_RDPADD, rdpadd,     "rdpadd_",    "rdpadd")    // gRD ???
 BE_VARIABLE(DS_IBINTVARS,IBintvars,"ibintvars_", "IBintvars")
 // Direct detection common block
 BE_VARIABLE(DS_DDCOM, ddcom, "ddcom_",    "ddcom")
+// Neutrino detection common block
+BE_VARIABLE(DS_NUCOM, wabranch, "wabranch_", "nu_common_block")
+
 
 // Convenience functions (registration)
 BE_CONV_FUNCTION(neutrino_yield, double, (const double&, const int&, void*&), "nuyield")
-BE_CONV_FUNCTION(dsgenericwimp_nusetup, double, (const double&, const int&, void*&), "nuyield")
+BE_CONV_FUNCTION(dsgenericwimp_nusetup, void, (const double(&)[29], const double(&)[29][3], const double(&)[15], 
+                                               const double(&)[3], const double&, const double&, const double&,
+                                               const double&, const double&), "nuyield_setup")
 
 // Initialisation function (definition)
 BE_INI_FUNCTION
@@ -145,44 +150,48 @@ BE_NAMESPACE
   /// Function dsgenericwimp_nusetup sets DarkSUSY's internal common
   /// blocks with all the prpoerties required to compute neutrino
   /// yields for a generic WIMP.
-  void dsgenericwimp_nusetup(
+  void dsgenericwimp_nusetup(const double (&annihilation_bf)[29], const double (&Higgs_partial_widths_neutral)[29][3],
+   const double (&Higgs_partial_widths_charged)[15], const double (&Higgs_masses_neutral)[3], const double &Higgs_mass_charged,
+   const double &mwimp, const double &sigmav, const double &sigma_sip, const double &sigma_sdp)
   {
-    //include 'dswacom.h'
-    //include 'dshrcom.h'
-    //include 'dsprep.h'
-        
-    // Transfer WIMP mass and sigmav to common blocks
-    wamwimp=
-    wasv = 
+       
+    // Transfer WIMP mass and sigmav to common blocks.
+    wabranch->wamwimp = mwimp;
+    wabranch->wasv = sigmav;
     
-    // Transfer branching fractions to WIMP annihilation common blocks
+    // Transfer branching fractions to WIMP annihilation common blocks.
     // For channel indices, see dswayieldone.f
-    do i=1,29
-     wabr(i)=
-    enddo
+    for (int i=1; i<=29; i++)
+    {
+      wabranch->wabr(i) = annihilation_bf[i-1];
+    }
         
-    // Transfer Higgs widths to Higgs width common blocks
-    do i=1,3
-      do j=1,29
-        was0br(j,i)=             // Neutral Higgses
-      enddo
-    enddo
-    do j=1,15
-      wascbr(j)=                 // Charged Higgses
-    enddo
+    // Transfer Higgs widths to Higgs width common blocks.
+    for (int i=1; i<=29; i++)
+    {
+      for (int j=1; i<=3; j++)
+      {
+        wabranch->was0br(i,j) = Higgs_partial_widths_neutral[i-1][j-1]; // Neutral Higgses
+      }
+    }
+    for (int i=1; i<=15; i++)
+    {
+      wabranch->wascbr(i) = Higgs_partial_widths_charged[i-1];          // Charged Higgses
+    }
 
-    // Transfer Higgs masses to common blocks
-    do i=1,3
-     was0m(i)=                   // Neutral Higgses
-    enddo
-    wascm=                       // Charged Higgses
+    // Transfer Higgs masses to common blocks.
+    for (int i=1; i<=3; i++)
+    {
+      wabranch->was0m(i) = Higgs_masses_neutral[i-1];                   // Neutral Higgses
+    }
+    wabranch->wascm = Higgs_mass_charged;                               // Charged Higgses
     
-    // Transfer proton scattering cross-sections to common blocks
-    wasigsip=                    // cm^2 SI scattering cross section
-    wasigsdp=                    // cm^2 SD scattering cross section
+    // Transfer proton scattering cross-sections to common blocks.
+    wabranch->wasigsip = sigma_sip;                   // cm^2 SI scattering cross section
+    wabranch->wasigsdp = sigma_sdp;                   // cm^2 SD scattering cross section
 
     // Tell DarkSUSY we've taken care of business.
-    dswasetupcalled = true
+    wabranch->dswasetupcalled = true;
 
   }
  

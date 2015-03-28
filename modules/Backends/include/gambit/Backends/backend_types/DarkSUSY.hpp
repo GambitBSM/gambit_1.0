@@ -129,6 +129,20 @@ namespace Gambit
       Fstring<10> ddfsd;
   };
 
+  struct DS_NUCOM
+  {
+      Farray<double, 1, 29> wabr;
+      Farray<double, 1, 29, 1, 3> was0br;      
+      Farray<double, 1, 15> wascbr;
+      Farray<double, 1, 3> was0m;
+      double wascm;
+      double wamwimp;
+      double wasv;
+      double wasigsip;
+      double wasigsdp;
+      bool dswasetupcalled;      
+  };
+
 }
 
 #endif /* defined __DarkSUSY_types_hpp__ */
