@@ -123,6 +123,8 @@ Parameters:
 
 #    The nuclear parameters below are set to the values from micrOMEGAs 3.5.5
 #    The three different sets of parameters are equivalent.
+#    This model is only used if micrOMEGAs or DarkSUSY is being
+#    used to calculate direct detection couplings.
 
 #    nuclear_params_fnq:
 #      # proton hadronic matrix elements
