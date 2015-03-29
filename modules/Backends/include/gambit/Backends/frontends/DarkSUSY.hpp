@@ -150,8 +150,8 @@ BE_NAMESPACE
   /// Function dsgenericwimp_nusetup sets DarkSUSY's internal common
   /// blocks with all the prpoerties required to compute neutrino
   /// yields for a generic WIMP.
-  void dsgenericwimp_nusetup(const double (&annihilation_bf)[29], const double (&Higgs_partial_widths_neutral)[29][3],
-   const double (&Higgs_partial_widths_charged)[15], const double (&Higgs_masses_neutral)[3], const double &Higgs_mass_charged,
+  void dsgenericwimp_nusetup(const double (&annihilation_bf)[29], const double (&Higgs_decay_BFs_neutral)[29][3],
+   const double (&Higgs_decay_BFs_charged)[15], const double (&Higgs_masses_neutral)[3], const double &Higgs_mass_charged,
    const double &mwimp, const double &sigmav, const double &sigma_sip, const double &sigma_sdp)
   {
        
@@ -166,21 +166,23 @@ BE_NAMESPACE
       wabranch->wabr(i) = annihilation_bf[i-1];
     }
         
-    // Transfer Higgs widths to Higgs width common blocks.
-    for (int i=1; i<=29; i++)
+    // Transfer Higgs decay branching fractions (not widths) to Higgs decay common blocks.
+    // The total width is not relevant, as all Higgs decay in flight eventually, so 
+    // only the BFs are needed to calculate the yields into neutrinos from decays in flight.
+    for (int i=1; i<=3; i++)    // Loop over the neutral Higgses
     {
-      for (int j=1; i<=3; j++)
+      for (int j=1; j<=29; j++) // Loop over the known decay channels
       {
-        wabranch->was0br(i,j) = Higgs_partial_widths_neutral[i-1][j-1]; // Neutral Higgses
+        wabranch->was0br(j,i) = Higgs_decay_BFs_neutral[j-1][i-1];
       }
     }
-    for (int i=1; i<=15; i++)
+    for (int i=1; i<=15; i++)   // Loop over the known charged Higgs decay channels
     {
-      wabranch->wascbr(i) = Higgs_partial_widths_charged[i-1];          // Charged Higgses
+      wabranch->wascbr(i) = Higgs_decay_BFs_charged[i-1];
     }
 
     // Transfer Higgs masses to common blocks.
-    for (int i=1; i<=3; i++)
+    for (int i=1; i<=3; i++)    // Loop over the neutral Higgses
     {
       wabranch->was0m(i) = Higgs_masses_neutral[i-1];                   // Neutral Higgses
     }

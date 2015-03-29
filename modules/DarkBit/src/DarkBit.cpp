@@ -2529,50 +2529,50 @@ namespace Gambit {
 
       using namespace Pipes::nuyield_from_DS;
       double annihilation_bf[29];
-      double Higgs_partial_widths_neutral[29][3];
-      double Higgs_partial_widths_charged[15]; 
+      double Higgs_decay_BFs_neutral[29][3];
+      double Higgs_decay_BFs_charged[15]; 
       double Higgs_masses_neutral[3];
       double Higgs_mass_charged;
       
       // Set annihilation branching fractions
       // FIXME needs to be fixed once DM is not chi_10 always, and once BFs are available directly from TH_Process
       TH_Process annProc = Dep::TH_ProcessCatalog->getProcess("chi_10", "chi_10");
-      std::vector<str> channels[29];
-      Utils::push_many(channels[0],  "h0_1", "h0_1");
-      Utils::push_many(channels[1],  "h0_1", "h0_2");
-      Utils::push_many(channels[2],  "h0_2", "h0_2");
-      Utils::push_many(channels[3],  "h0_3", "h0_3");
-      Utils::push_many(channels[4],  "h0_1", "h0_3");
-      Utils::push_many(channels[5],  "h0_2", "h0_1");
-      Utils::push_many(channels[6],  "H+", "H-");
-      Utils::push_many(channels[7],  "Z0", "h0_1");
-      Utils::push_many(channels[8],  "Z0", "h0_2");
-      Utils::push_many(channels[9],  "Z0", "h0_3");
-      Utils::push_many(channels[10], "W+", "H-");            //actually W+H- and W-H+
-      Utils::push_many(channels[11], "Z0", "Z0");
-      Utils::push_many(channels[12], "W+", "W-");
-      Utils::push_many(channels[13], "nu_e", "nubar_e");
-      Utils::push_many(channels[14], "e+", "e-");
-      Utils::push_many(channels[15], "nu_mu", "nubar_mu");
-      Utils::push_many(channels[16], "mu+", "mu-");
-      Utils::push_many(channels[17], "nu_tau", "nubar_tau");
-      Utils::push_many(channels[18], "tau+", "tau-");
-      Utils::push_many(channels[19], "u", "ubar");
-      Utils::push_many(channels[20], "d", "dbar");
-      Utils::push_many(channels[21], "c", "cbar");
-      Utils::push_many(channels[22], "s", "sbar");
-      Utils::push_many(channels[23], "t", "tbar");
-      Utils::push_many(channels[24], "b", "bbar");
-      Utils::push_many(channels[25], "g", "g");
-      Utils::push_many(channels[26], "b", "bbar", "g");      //actually qqg (not implemented in DS though)
-      Utils::push_many(channels[27], "gamma", "gamma");
-      Utils::push_many(channels[28], "Z0", "gamma");
+      std::vector<str> neutral_channels[29];
+      Utils::push_many(neutral_channels[0],  "h0_1", "h0_1");
+      Utils::push_many(neutral_channels[1],  "h0_1", "h0_2");
+      Utils::push_many(neutral_channels[2],  "h0_2", "h0_2");
+      Utils::push_many(neutral_channels[3],  "h0_3", "h0_3");
+      Utils::push_many(neutral_channels[4],  "h0_1", "h0_3");
+      Utils::push_many(neutral_channels[5],  "h0_2", "h0_1");
+      Utils::push_many(neutral_channels[6],  "H+", "H-");
+      Utils::push_many(neutral_channels[7],  "Z0", "h0_1");
+      Utils::push_many(neutral_channels[8],  "Z0", "h0_2");
+      Utils::push_many(neutral_channels[9],  "Z0", "h0_3");
+      Utils::push_many(neutral_channels[10], "W+", "H-");            //actually W+H- and W-H+
+      Utils::push_many(neutral_channels[11], "Z0", "Z0");
+      Utils::push_many(neutral_channels[12], "W+", "W-");
+      Utils::push_many(neutral_channels[13], "nu_e", "nubar_e");
+      Utils::push_many(neutral_channels[14], "e+", "e-");
+      Utils::push_many(neutral_channels[15], "nu_mu", "nubar_mu");
+      Utils::push_many(neutral_channels[16], "mu+", "mu-");
+      Utils::push_many(neutral_channels[17], "nu_tau", "nubar_tau");
+      Utils::push_many(neutral_channels[18], "tau+", "tau-");
+      Utils::push_many(neutral_channels[19], "u", "ubar");
+      Utils::push_many(neutral_channels[20], "d", "dbar");
+      Utils::push_many(neutral_channels[21], "c", "cbar");
+      Utils::push_many(neutral_channels[22], "s", "sbar");
+      Utils::push_many(neutral_channels[23], "t", "tbar");
+      Utils::push_many(neutral_channels[24], "b", "bbar");
+      Utils::push_many(neutral_channels[25], "g", "g");
+      Utils::push_many(neutral_channels[26], "b", "bbar", "g");      //actually qqg (not implemented in DS though)
+      Utils::push_many(neutral_channels[27], "gamma", "gamma");
+      Utils::push_many(neutral_channels[28], "Z0", "gamma");
       const str vals[] = { "W-", "H+"};                      //the missing channel
       const std::vector<str> adhoc_chan(std::begin(vals), std::end(vals));
 
       for (int i=0; i<29; i++)
       {
-        TH_Channel* channel = annProc.find(channels[i]);
+        const TH_Channel* channel = annProc.find(neutral_channels[i]);
         if (channel != NULL)
         {
           annihilation_bf[i] = channel->genRate->eval("v",0.);
@@ -2580,7 +2580,7 @@ namespace Gambit {
           {
             channel = annProc.find(adhoc_chan);
             if (channel == NULL) DarkBit_error().raise(LOCAL_INFO, "W+H- exists in process catalogue but not W-H+."
-                                                                  " That's some suspiciously severe CP violation."); 
+                                                                  " That's some suspiciously severe CP violation yo."); 
             annihilation_bf[i] += channel->genRate->eval("v",0.);
           }
           if (i == 26) annihilation_bf[i] = 0.;  // This channel has not been implemented in DarkSUSY. 
@@ -2593,27 +2593,169 @@ namespace Gambit {
       }
    
       // Set Higgs masses
-      Higgs_masses_neutral[0] = 0.;
-      Higgs_masses_neutral[1] = 0.;
-      Higgs_masses_neutral[2] = 0.;
-      Higgs_mass_charged = 0.;
-      
-      // Set Higgs decay branching fractions 
-      for (int i=0; i<3; i++)
+      std::map<str, TH_ParticleProperty>::const_iterator its[4];
+      its[0] = Dep::TH_ProcessCatalog->particleProperties.find("h0_1");
+      its[1] = Dep::TH_ProcessCatalog->particleProperties.find("h0_2");
+      its[2] = Dep::TH_ProcessCatalog->particleProperties.find("h0_3");
+      its[3] = Dep::TH_ProcessCatalog->particleProperties.find("H+");
+      Higgs_masses_neutral[0] = (its[0] != Dep::TH_ProcessCatalog->particleProperties.end()) ? its[0]->second.mass : 0.;
+      Higgs_masses_neutral[1] = (its[1] != Dep::TH_ProcessCatalog->particleProperties.end()) ? its[1]->second.mass : 0.;
+      Higgs_masses_neutral[2] = (its[2] != Dep::TH_ProcessCatalog->particleProperties.end()) ? its[2]->second.mass : 0.;
+      Higgs_mass_charged      = (its[3] != Dep::TH_ProcessCatalog->particleProperties.end()) ? its[3]->second.mass : 0.;
+
+      // Find out which Higgs exist and have decay data in the process catalogue.
+      const TH_Process* h0_decays[3];
+      h0_decays[0] = Dep::TH_ProcessCatalog->find("h0_1");
+      h0_decays[1] = Dep::TH_ProcessCatalog->find("h0_2");
+      h0_decays[2] = Dep::TH_ProcessCatalog->find("h0_3");
+      const TH_Process* Hplus_decays = Dep::TH_ProcessCatalog->find("H+");
+      const TH_Process* Hminus_decays = Dep::TH_ProcessCatalog->find("H-");
+      if (Hplus_decays != NULL and Hminus_decays == NULL) DarkBit_error().raise(LOCAL_INFO, "H+ decays exists in process catalogue but not H-.");
+      if (Hplus_decays == NULL and Hminus_decays != NULL) DarkBit_error().raise(LOCAL_INFO, "H- decays exists in process catalogue but not H+.");
+
+      // Set the neutral Higgs decay branching fractions
+      // FIXME needs to be fixed once BFs are available directly from TH_Process
+      for (int i=0; i<3; i++)       // Loop over the three neutral Higgs
+      {
+
+        if (h0_decays[i] != NULL)   // If this Higgs exists, set its decay properties.
+        {
+
+          // Get the total decay width, for normalising partial widths to BFs.  FIXME Replace when BFs become directly available.
+          double totalwidth = 0.0;
+          for (std::vector<TH_Channel>::const_iterator it = h0_decays[i]->channelList.begin();
+           it != h0_decays[i]->channelList.end(); ++it)
+          {
+            if ( it->nFinalStates == 2 ) totalwidth += it->genRate->eval();  // decay width in GeV for two-body final state
+          }
+          
+          // Loop over the decay channels for neutral scalars
+          for (int j=0; j<29; j++)
+          {
+            const TH_Channel* channel = h0_decays[i]->find(neutral_channels[j]);
+            if (channel != NULL)    // If this Higgs can decay into this channel, set the BF.
+            {
+              Higgs_decay_BFs_neutral[j][i] = channel->genRate->eval();
+              if (i == 10)          // Add W- H+ for this channel
+              {
+                channel = h0_decays[i]->find(adhoc_chan);
+                if (channel == NULL) DarkBit_error().raise(LOCAL_INFO, "W+H- exists in process catalogue but not W-H+."
+                                                                      " That's some suspiciously severe CP violation yo."); 
+                Higgs_decay_BFs_neutral[j][i] += channel->genRate->eval();
+              }
+              if (i == 26) Higgs_decay_BFs_neutral[j][i] = 0.;  // This channel has not been implemented in DarkSUSY. 
+              Higgs_decay_BFs_neutral[j][i] /= totalwidth;
+            }
+            else 
+            {
+              Higgs_decay_BFs_neutral[j][i] = 0.;
+            }
+          }
+
+        }
+                 
+        else 
+        {
+          // Loop over the decay channels for neutral scalars, setting all BFs for this Higgs to zero.
+          for (int j=0; j<29; j++) Higgs_decay_BFs_neutral[j][i] = 0.;
+        }
+
+      }
+
+      // If they exist, set the charged Higgs decay branching fractions (DarkSUSY assumes that H+/H- decays are CP-invariant)    
+      if (Hplus_decays != NULL)       
+      {
+
+        // Define the charged Higgs decay channels 
+        std::vector<str> charged_channels[15];
+        Utils::push_many(charged_channels[0],  "u", "dbar");
+        Utils::push_many(charged_channels[1],  "u", "sbar");
+        Utils::push_many(charged_channels[2],  "u", "bbar");
+        Utils::push_many(charged_channels[3],  "c", "dbar");
+        Utils::push_many(charged_channels[4],  "c", "sbar");
+        Utils::push_many(charged_channels[5],  "c", "bbar");
+        Utils::push_many(charged_channels[6],  "t", "dbar");
+        Utils::push_many(charged_channels[7],  "t", "sbar");
+        Utils::push_many(charged_channels[8],  "t", "bbar");
+        Utils::push_many(charged_channels[9],  "e", "nu_e");
+        Utils::push_many(charged_channels[10], "mu", "nu_mu");
+        Utils::push_many(charged_channels[11], "tau", "nu_tau");
+        Utils::push_many(charged_channels[12], "W+", "h0_1");
+        Utils::push_many(charged_channels[13], "W+", "h0_2");
+        Utils::push_many(charged_channels[14], "W+", "h0_3");
+ 
+        // Get the total decay width, for normalising partial widths to BFs.  FIXME Replace when BFs become directly available.
+        double totalwidth = 0.0;
+        for (std::vector<TH_Channel>::const_iterator it = Hplus_decays->channelList.begin();
+         it != Hplus_decays->channelList.end(); ++it)
+        {
+          if ( it->nFinalStates == 2 ) totalwidth += it->genRate->eval();  // decay width in GeV for two-body final state
+        }
+        
+        // Loop over the decay channels for charged scalars
+        for (int j=0; j<15; j++)
+        {
+          const TH_Channel* channel = Hplus_decays->find(charged_channels[j]);
+          if (channel != NULL)    // If this Higgs can decay into this channel, set the BF.
+          {
+            Higgs_decay_BFs_charged[j] = channel->genRate->eval();
+            Higgs_decay_BFs_charged[j] /= totalwidth;
+          }
+          else 
+          {
+            Higgs_decay_BFs_charged[j] = 0.;
+          }
+        }
+  
+      }
+               
+      else 
+      {
+        // Loop over the decay channels for charged scalars, setting all BFs for this Higgs to zero.
+        for (int j=0; j<15; j++) Higgs_decay_BFs_charged[j] = 0.;
+      }
+   
+      // Debug FIXME needs testing once Higgs decay bfs and masses are entered into the processcatalog
+      if (false)
       {
         for (int j=0; j<29; j++)
         {
-          Higgs_partial_widths_neutral[j][i] = 0.;
+          cout<< "annihilation bfs: " << j << " " << annihilation_bf[j] << endl;
         }
+        cout<< endl;
+        for (int i=0; i<3; i++)
+        {
+          for (int j=0; j<29; j++)
+          {
+            cout<< "higgs neutral bfs: " << i << " " << j << " " << Higgs_decay_BFs_neutral[j][i] << endl;
+          }
+        }
+        cout<< endl;
+        for (int j=0; j<15; j++)
+        {
+          cout<< "higgs charged bfs: " << j << " " << Higgs_decay_BFs_charged[j] << endl;
+        }
+        cout<< endl;
+        for (int j=0; j<3; j++)
+        {
+          cout<< "higgs masses neutral: " << j << " " << Higgs_masses_neutral[j] << endl;
+        }
+        cout<< endl;
+        cout<< "higg charged mass: " << Higgs_mass_charged << endl;
+        cout<< endl;
+        cout<< "*Dep::mwimp: " << *Dep::mwimp << endl;
+        cout<< endl;
+        cout<< "*Dep::sigmav: " << *Dep::sigmav << endl;
+        cout<< endl;
+        cout<< "*Dep::si: " << *Dep::sigma_SI_p << endl;
+        cout<< endl;
+        cout<< "*Dep::sd: " << *Dep::sigma_SD_p << endl;
+        cout<< endl;
       }
-      for (int i=0; i<15; i++)
-      {
-        Higgs_partial_widths_charged[i] = 0.; 
-      }
-   
+
       // Set up DarkSUSY to do neutrino yields for this particular WIMP
-      BEreq::nuyield_setup(annihilation_bf, Higgs_partial_widths_neutral,
-                           Higgs_partial_widths_charged, Higgs_masses_neutral,
+      BEreq::nuyield_setup(annihilation_bf, Higgs_decay_BFs_neutral,
+                           Higgs_decay_BFs_charged, Higgs_masses_neutral,
                            Higgs_mass_charged, *Dep::mwimp, *Dep::sigmav, 
                            *Dep::sigma_SI_p, *Dep::sigma_SD_p);
 

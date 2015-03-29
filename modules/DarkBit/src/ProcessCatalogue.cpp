@@ -67,7 +67,7 @@ namespace Gambit
         }
 
         /// Indicate whether or not this channel is the one defined by some specific final states.  Particle name version.
-        bool TH_Channel::isChannel(str p0, str p1, str p2, str p3)
+        bool TH_Channel::isChannel(str p0, str p1, str p2, str p3) const
         {
             str vals[] = {p0, p1};
             std::vector<str> inIDs(std::begin(vals), std::end(vals));
@@ -77,7 +77,7 @@ namespace Gambit
         }
         
         /// Indicate whether or not this channel is the one defined by some specific final states.  Particle vector version.
-        bool TH_Channel::isChannel(std::vector<str> particles)
+        bool TH_Channel::isChannel(std::vector<str> particles) const
         {
             return std::is_permutation(finalStateIDs.begin(), finalStateIDs.end(), particles.begin());
         }
@@ -113,7 +113,7 @@ namespace Gambit
         }
 
         /// Check for given channel.  Return a pointer to it if found, NULL if not.
-        TH_Channel* TH_Process::find(std::vector<str> final_states)
+        const TH_Channel* TH_Process::find(std::vector<str> final_states) const
         {
             for (auto it = channelList.begin(); it != channelList.end(); ++it)
             {
@@ -128,12 +128,22 @@ namespace Gambit
         /// Retrieve a specific process from the catalogue
         TH_Process TH_ProcessCatalog::getProcess(str id1, str id2) const
         {
+            const TH_Process* temp = find(id1, id2);
+            if (temp == NULL)
+            {
+              DarkBit_error().raise(LOCAL_INFO, "Process with initial states " + id1 + " " + id2 + " missing.");
+            }
+            return *temp;
+        }
+
+        /// Check for a specific process in the catalogue
+        const TH_Process* TH_ProcessCatalog::find(str id1, str id2) const
+        {
             for (std::vector<TH_Process>::const_iterator it = processList.begin(); it != processList.end(); ++it)
             {
-                if ( it -> isProcess(id1, id2) ) return *it;
+                if ( it -> isProcess(id1, id2) ) return &(*it);
             }
-            DarkBit_error().raise(LOCAL_INFO, "Process with initial states " + id1 + " " + id2 + " missing.");
-            return TH_Process(id1, id2);
+            return NULL;
         }
 
         /// Retrieve properties of a given particle involved in one or more processes in this catalogue

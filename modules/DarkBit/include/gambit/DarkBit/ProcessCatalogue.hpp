@@ -62,7 +62,7 @@ namespace Gambit
         /// Constructor
         TH_ParticleProperty(double, unsigned int);
 
-        /// Particle mass
+        /// Particle mass (GeV)
         double mass;
         
         /// Twice the spin of the particle
@@ -87,9 +87,9 @@ namespace Gambit
         bool channelContains(str p) const;
 
         /// Indicate whether or not this channel is the one defined by some specific final states.  Particle name version.
-        bool isChannel(str, str, str = "", str = "");
+        bool isChannel(str, str, str = "", str = "") const;
         /// Indicate whether or not this channel is the one defined by some specific final states.  Particle vector version.
-        bool isChannel(std::vector<str>);
+        bool isChannel(std::vector<str>) const;
 
 
         // Variables
@@ -129,7 +129,7 @@ namespace Gambit
         bool isProcess(str, str = "") const;
  
         /// Check for given channel.  Return a pointer to it if found, NULL if not.
-        TH_Channel* find(std::vector<str>);
+        const TH_Channel* find(std::vector<str>) const;
 
 
         // Variables
@@ -149,7 +149,7 @@ namespace Gambit
         /// List of channels
         std::vector<TH_Channel> channelList;
 
-        /// List of resonances and thresholds => rename TH_resonances_thresholds
+        /// List of resonances and thresholds \TODO rename thresholdResonances to TH_resonances_thresholds
         TH_resonances_thresholds thresholdResonances;
 
         /// Total decay rate or sigmav. \TODO implement TH_Process::genRateTotal
@@ -165,6 +165,9 @@ namespace Gambit
   
         /// Retrieve a specific process from the catalogue
         TH_Process getProcess(str, str = "") const;
+
+        /// Check for a specific process in the catalogue
+        const TH_Process* find(str, str = "") const;
 
         /// Retrieve properties of a given particle involved in one or more processes in this catalogue
         TH_ParticleProperty getParticleProperty(str) const;
