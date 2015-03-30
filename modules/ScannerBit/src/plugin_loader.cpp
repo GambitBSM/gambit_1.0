@@ -220,8 +220,9 @@ namespace Gambit
                                                                 }
                                                                 else
                                                                 {
-                                                                        scan_err << "Plugin name is not defined under the \"" << *it << "\" tag.  "
-                                                                                << "using the tag \"" << it_p->first.as<std::string>() << "\" as the plugin name." << scan_end;
+                                                                        scan_warn << "Plugin name is not defined under the \"" << it->first << "\" tag.  "
+                                                                                  << "using the tag \"" << it_p->first.as<std::string>()
+                                                                                  << "\" as the plugin name." << scan_end;
                                                                         temp.plugin = it_p->first.as<std::string>();
                                                                 }
                                                                 
