@@ -6,11 +6,60 @@
 
 Parameters: 
     MSSM25atQ:
-# No number need to be specified?
-      muR:
+      Qin:
+        fixed_value: 1.9422e+16
+      SignMu:
         fixed_value: 1
-      tanb:
-        fixed_value: 1
+      TanBeta:
+        fixed_value: 10
+      mHu2:
+        fixed_value: 15625
+      mHd2:
+        fixed_value: 15625
+      M1:
+        fixed_value: 500
+      M2:
+        fixed_value: 500
+      M3:
+        fixed_value: 500
+      mq2_1:
+        fixed_value: 15625.0
+      mq2_2:
+        fixed_value: 15625.0
+      mq2_3:
+        fixed_value: 15625.0
+      ml2_1:
+        fixed_value: 15625.0
+      ml2_2:
+        fixed_value: 15625.0
+      ml2_3:
+        fixed_value: 15625.0
+      md2_1:
+        fixed_value: 15625.0
+      md2_2:
+        fixed_value: 15625.0
+      md2_3:
+        fixed_value: 15625.0
+      mu2_1:
+        fixed_value: 15625.0
+      mu2_2:
+        fixed_value: 15625.0
+      mu2_3:
+        fixed_value: 15625.0
+      me2_1:
+        fixed_value: 15625.0
+      me2_2:
+        fixed_value: 15625.0
+      me2_3:
+        fixed_value: 15625.0
+      Ae_12:
+        fixed_value: 0
+      Ae_3:
+        fixed_value: 0
+      Ad_3:
+        fixed_value: 0
+      Au_3:
+        fixed_value: 0
 
 
     nuclear_params_fnq:

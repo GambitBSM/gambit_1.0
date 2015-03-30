@@ -2131,7 +2131,7 @@ namespace Gambit {
     void mwimp_SingletDM(double &result) { result = *Pipes::mwimp_SingletDM::Param["mass"]; }
 
     /// Retrieve the total thermally-averaged annihilation cross-section for indirect detection (cm^3 / s)
-    // FIXME this needs to be updated once annProc.genTotalRate->eval("v",0.) works.
+    // FIXME this needs to be updated once annProc.genTotalRate->bind("v")->eval(0.) works.
     // FIXME this needs to be updated once DM is not always referred to as "chi_10"
     void sigmav_late_universe(double &result)
     {
@@ -2143,7 +2143,7 @@ namespace Gambit {
       {
         if ( it->nFinalStates == 2 )
         {
-           result += it->genRate->eval("v",0.);  // (sv)(v=0) for two-body final state
+           result += it->genRate->bind("v")->eval(0.);  // (sv)(v=0) for two-body final state
         }
       }
     }
@@ -2669,13 +2669,13 @@ namespace Gambit {
         const TH_Channel* channel = annProc.find(neutral_channels[i]);
         if (channel != NULL)
         {
-          annihilation_bf[i] = channel->genRate->eval("v",0.);
+          annihilation_bf[i] = channel->genRate->bind("v")->eval(0.);
           if (i == 10) // Add W- H+ for this channel
           {
             channel = annProc.find(adhoc_chan);
             if (channel == NULL) DarkBit_error().raise(LOCAL_INFO, "W+H- exists in process catalogue but not W-H+."
                                                                   " That's some suspiciously severe CP violation yo."); 
-            annihilation_bf[i] += channel->genRate->eval("v",0.);
+            annihilation_bf[i] += channel->genRate->bind("v")->eval(0.);
           }
           if (i == 26) annihilation_bf[i] = 0.;  // This channel has not been implemented in DarkSUSY. 
           annihilation_bf[i] /= *Dep::sigmav;
@@ -2720,7 +2720,7 @@ namespace Gambit {
           for (std::vector<TH_Channel>::const_iterator it = h0_decays[i]->channelList.begin();
            it != h0_decays[i]->channelList.end(); ++it)
           {
-            if ( it->nFinalStates == 2 ) totalwidth += it->genRate->eval();  // decay width in GeV for two-body final state
+            if ( it->nFinalStates == 2 ) totalwidth += it->genRate->bind()->eval();  // decay width in GeV for two-body final state
           }
           
           // Loop over the decay channels for neutral scalars
@@ -2729,13 +2729,13 @@ namespace Gambit {
             const TH_Channel* channel = h0_decays[i]->find(neutral_channels[j]);
             if (channel != NULL)    // If this Higgs can decay into this channel, set the BF.
             {
-              Higgs_decay_BFs_neutral[j][i] = channel->genRate->eval();
+              Higgs_decay_BFs_neutral[j][i] = channel->genRate->bind()->eval();
               if (i == 10)          // Add W- H+ for this channel
               {
                 channel = h0_decays[i]->find(adhoc_chan);
                 if (channel == NULL) DarkBit_error().raise(LOCAL_INFO, "W+H- exists in process catalogue but not W-H+."
                                                                       " That's some suspiciously severe CP violation yo."); 
-                Higgs_decay_BFs_neutral[j][i] += channel->genRate->eval();
+                Higgs_decay_BFs_neutral[j][i] += channel->genRate->bind()->eval();
               }
               if (i == 26) Higgs_decay_BFs_neutral[j][i] = 0.;  // This channel has not been implemented in DarkSUSY. 
               Higgs_decay_BFs_neutral[j][i] /= totalwidth;
@@ -2783,7 +2783,7 @@ namespace Gambit {
         for (std::vector<TH_Channel>::const_iterator it = Hplus_decays->channelList.begin();
          it != Hplus_decays->channelList.end(); ++it)
         {
-          if ( it->nFinalStates == 2 ) totalwidth += it->genRate->eval();  // decay width in GeV for two-body final state
+          if ( it->nFinalStates == 2 ) totalwidth += it->genRate->bind()->eval();  // decay width in GeV for two-body final state
         }
         
         // Loop over the decay channels for charged scalars
@@ -2792,7 +2792,7 @@ namespace Gambit {
           const TH_Channel* channel = Hplus_decays->find(charged_channels[j]);
           if (channel != NULL)    // If this Higgs can decay into this channel, set the BF.
           {
-            Higgs_decay_BFs_charged[j] = channel->genRate->eval();
+            Higgs_decay_BFs_charged[j] = channel->genRate->bind()->eval();
             Higgs_decay_BFs_charged[j] /= totalwidth;
           }
           else 
