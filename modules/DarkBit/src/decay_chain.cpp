@@ -516,7 +516,7 @@ namespace Gambit
                     }
                 }
                 // Use specified total width (instead of summing widths of registered channels)
-                entry.forceTotalWidth(true,it->genRateTotal->eval());
+                entry.forceTotalWidth(true,it->genRateTotal->bind()->eval());
                 addEntry(pID,entry);
                 std::cout << "Add entry for: " << table.begin()->first << std::endl;
             }
@@ -594,7 +594,7 @@ namespace Gambit
         }
         double DecayTable::getWidth(const TH_Channel *ch)
         {
-            return ch->genRate->eval();
+            return ch->genRate->bind()->eval();
         }
         void DecayTable::printTable() const
         {

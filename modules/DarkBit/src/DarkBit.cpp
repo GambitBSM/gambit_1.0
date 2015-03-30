@@ -338,6 +338,10 @@ namespace Gambit {
       DS_INTDOF myintdof= *BEreq::intdof;
       DS_WIDTHS mywidths= *BEreq::widths;
 
+      result.coannihilatingParticles.clear();
+      result.resonances.clear();
+      result.threshold_energy.clear();
+
       // first add neutralino=WIMP=least massive 'coannihilating particle'
       result.coannihilatingParticles.push_back(RD_coannihilating_particle(DSpart.kn[0], myintdof.kdof[DSpart.kn[0]],mymspctm.mass[DSpart.kn[0]]));
 
@@ -370,6 +374,7 @@ namespace Gambit {
 
       colist.clear();
 
+
       // determine resonances for LSP annihilation
       int reslist[] = {kz,kh1,kh2,kh3,kw,khc};
       int resmax=sizeof(reslist) / sizeof(reslist[0]);
@@ -401,7 +406,7 @@ namespace Gambit {
         for (int i=0; i<(int)result.coannihilatingParticles.size(); i++)
           for (int j=std::max(1,i); j<(int)result.coannihilatingParticles.size(); j++)
             result.threshold_energy.push_back(result.coannihilatingParticles[i].mass+result.coannihilatingParticles[j].mass);
-
+             
     } // function RD_spectrum_SUSY
 
     void RD_thresholds_resonances_from_ProcessCatalog(TH_resonances_thresholds &result)
@@ -437,16 +442,18 @@ namespace Gambit {
         }
       }
 
-      TH_Resonance tmp2;
-      for (std::size_t i=0; i<result.resonances.size()-1; i++)
-      {
-        for (std::size_t j=i+1; j<result.resonances.size(); j++)
+      if (!result.resonances.empty()){
+        TH_Resonance tmp2;
+        for (std::size_t i=0; i<result.resonances.size()-1; i++)
         {
-          if (result.resonances[j].energy < result.resonances[i].energy)
+          for (std::size_t j=i+1; j<result.resonances.size(); j++)
           {
-            tmp2=result.resonances[i];
-            result.resonances[i]=result.resonances[j];
-            result.resonances[j]=tmp2;
+            if (result.resonances[j].energy < result.resonances[i].energy)
+            {
+              tmp2=result.resonances[i];
+              result.resonances[i]=result.resonances[j];
+              result.resonances[j]=tmp2;
+            }
           }
         }
       }
@@ -487,10 +494,6 @@ namespace Gambit {
       }
       *BEreq::rdmgev = myrdmgev;
 
-//        for (int i=0; i<myrdmgev.nco; i++) {
-//          logger() << "co: "<< myrdmgev.kcoann[i]<<" " << myrdmgev.mdof[i]<<" " <<  myrdmgev.mco[i] << std::endl;
-//        }
-
       result=1; // everthing OK
 
     } // function RD_eff_annrate_SUSY_DSprep_func
@@ -510,7 +513,7 @@ namespace Gambit {
     void RD_oh2_general(double &result)
     {
       using namespace Pipes::RD_oh2_general;
-
+      
       //retrieve ordered list of resonances and thresholds from RD_thresholds_resonances
       TH_resonances_thresholds myres = *Dep::RD_thresholds_resonances;
       double mwimp=myres.threshold_energy[0]/2;
@@ -595,16 +598,21 @@ namespace Gambit {
         // using the untabulated rate gives the same result but is usually slower: 
         // BEreq::dsrdeqn(byVal(*Dep::RD_eff_annrate),xstart,xend,yend,xf,nfcn);
         
-
         // change SM Higgs width back to standard value
         mywidths.width[kh1]=widthkh1;
         *BEreq::widths=mywidths;
 
+        //capture NAN result and map it to zero RD
+        if (yend!=yend){
+          logger() << "WARNING: DS returned NAN for relic density. Setting to zero..." << std::endl;
+          yend=0;
+        }  
+        
         result = 0.70365e8*myrddof.fh[myrddof.nf-1]*mwimp*yend;
 
       } // USING BE=DS
 
-      logger() << "oh2 =" << result << std::endl;
+        logger() << "oh2 =" << result << std::endl;
 
     } // function RD_oh2_general
 
@@ -865,7 +873,7 @@ namespace Gambit {
             }
             else
             {
-                dN_dE= chn.dNdE->eval("E", E_CoM, "Ecm", endpoint->m);
+                dN_dE= chn.dNdE->bind("E", "Ecm")->eval(E_CoM, endpoint->m);
             }
             // Only accept point if dN_dE is above threshold value
             if(dN_dE > cMC_specValidThreshold)
@@ -1192,7 +1200,7 @@ namespace Gambit {
         TH_Process test1_decay("test1");             
         finalStates_1_23.push_back("test2");              
         finalStates_1_23.push_back("test3");             
-        test1_decay.genRateTotal = (test1_23width->eval() + test1_24width->eval() + test1_456width->eval())*2*Funk::one();
+        test1_decay.genRateTotal = (test1_23width->bind()->eval() + test1_24width->bind()->eval() + test1_456width->bind()->eval())*2*Funk::one();
         TH_Channel channel_1_23(finalStates_1_23, test1_23width);   
         test1_decay.channelList.push_back(channel_1_23);
         finalStates_1_24.push_back("test2");              
@@ -1212,7 +1220,7 @@ namespace Gambit {
         TH_Process test2_decay("test2");     
         finalStates_2_56.push_back("test5");              
         finalStates_2_56.push_back("test6");                                                               
-        test2_decay.genRateTotal = test2_56width->eval()*Funk::one();
+        test2_decay.genRateTotal = test2_56width->bind()->eval()*Funk::one();
         TH_Channel channel_2_56(finalStates_2_56, test2_56width);
         test2_decay.channelList.push_back(channel_2_56);
         catalog.processList.push_back(test2_decay);        
@@ -1223,7 +1231,7 @@ namespace Gambit {
         TH_Process test7_decay("test7");     
         finalStates_7_66.push_back("test6");              
         finalStates_7_66.push_back("test6");                                                               
-        test7_decay.genRateTotal = test7_66width->eval()*Funk::one();
+        test7_decay.genRateTotal = test7_66width->bind()->eval()*Funk::one();
         TH_Channel channel_7_66(finalStates_7_66, test7_66width);
         test7_decay.channelList.push_back(channel_7_66);
         catalog.processList.push_back(test7_decay);        
@@ -1234,7 +1242,7 @@ namespace Gambit {
         TH_Process test8_decay("test8");     
         finalStates_8_79.push_back("test7");              
         finalStates_8_79.push_back("test9");                                                               
-        test8_decay.genRateTotal = test8_79width->eval()*Funk::one();
+        test8_decay.genRateTotal = test8_79width->bind()->eval()*Funk::one();
         TH_Channel channel_8_79(finalStates_8_79, test8_79width);
         test8_decay.channelList.push_back(channel_8_79);
         catalog.processList.push_back(test8_decay);        
@@ -1245,7 +1253,7 @@ namespace Gambit {
         TH_Process test9_decay("test9");     
         finalStates_9_47.push_back("test4");              
         finalStates_9_47.push_back("test7");                                                               
-        test9_decay.genRateTotal = test9_47width->eval()*Funk::one();
+        test9_decay.genRateTotal = test9_47width->bind()->eval()*Funk::one();
         TH_Channel channel_9_47(finalStates_9_47, test9_47width);
         test9_decay.channelList.push_back(channel_9_47);
         catalog.processList.push_back(test9_decay);
@@ -1342,7 +1350,7 @@ namespace Gambit {
         }
         
         // FIXME: For testing, add phip as missing final state
-        missingFinalStates.insert("phip");
+        //missingFinalStates.insert("phip");
         
         std::cout << "Number of missing final states: " << missingFinalStates.size() << std::endl;
         for (auto it = missingFinalStates.begin(); it != missingFinalStates.end(); it++)
@@ -1450,6 +1458,7 @@ namespace Gambit {
                 // TODO: Correct?
                 Yield = Yield + (boost_dNdE(spec0, gamma0, 0.0) + boost_dNdE(spec1, gamma1, 0.0)) * it->genRate;
 
+                /*
                 // FIXME: This is debug information. Remove it when no longer necessary.
                 std::cout << "Spectrum debug info:" << std:: endl;
                 double E=5.0;
@@ -1469,7 +1478,7 @@ namespace Gambit {
                 std::cout << it->finalStateIDs[0] << "-spectrum:" << std:: endl;
                 for(int i=0; i<Nen;i++)
                 {
-                    std::cout << spec0->eval("E", Evals[i]) << "  ";
+                    std::cout << spec0->bind("E")->eval(Evals[i]) << "  ";
                 }
                 std::cout << std::endl; 
                 std::cout << it->finalStateIDs[1] << "-spectrum:" << std:: endl;
@@ -1512,6 +1521,7 @@ namespace Gambit {
                 }
                 
                 // Debug information ends here
+                */
             }
         }
 
@@ -1632,7 +1642,7 @@ namespace Gambit {
                     exit(1);
                 }
 
-                sigmav = it->genRate->eval("v",0.);  // (sv)(v=0) for two-body final state
+                sigmav = it->genRate->bind("v")->eval(0.);  // (sv)(v=0) for two-body final state
                 DiffYield2Body = DiffYield2Body + 
                     Funk::func(BEreq::dshayield.pointer(), mass, Funk::var("E"), ch, yieldk, flag) * sigmav;
             }
@@ -2031,14 +2041,14 @@ namespace Gambit {
         //(*Dep::GA_AnnYield)->writeToFile(logspace(-1., 5., 10000), os);
         //os.close();
         // TODO: Make this take ->set_epsrel(1e-3)
-        double AnnYieldint = (*Dep::GA_AnnYield)->set("v", 0.)->gsl_integration("E", 1, 100)->eval();
+        double AnnYieldint = (*Dep::GA_AnnYield)->set("v", 0.)->gsl_integration("E", 1, 100)->bind()->eval();
         logger() << "AnnYieldInt (1-100 GeV): " << AnnYieldint << std::endl;
 
         // Calculate phi-value
         double phi = AnnYieldint / 8. / M_PI * 1e26;
 
         // And return final likelihood
-        result = 0.5*dwarf_likelihood->eval("phi", phi);
+        result = 0.5*dwarf_likelihood->bind("phi")->eval(phi);
         logger() << "dwarf_likelihood: " << result << std::endl;
         logger() << "phi: " << phi << std::endl;
     }
@@ -2050,7 +2060,7 @@ namespace Gambit {
         result = 0;
 
         std::vector<double> x = logspace(-1, 2.698, 100);  // from 0.1 to 500 GeV
-        std::vector<double> y = ((*Dep::GA_AnnYield)/8./M_PI)->set("v", 0)->vector("E", x);
+        std::vector<double> y = ((*Dep::GA_AnnYield)/8./M_PI)->set("v", 0)->bind("E")->vect(x);
 
         if ( runOptions->getValueOrDef<bool>(true, "use_dwarfs") )
           result += BEreq::lnL_dwarfs(x, y);
@@ -2067,7 +2077,7 @@ namespace Gambit {
         double mass = (*Dep::TH_ProcessCatalog).getParticleProperty("chi_10").mass;
 
         std::vector<double> x = logspace(-1, 2.698, 100);  // from 0.1 to 500 GeV
-        std::vector<double> y = (*Dep::GA_AnnYield/(mass*mass*8*M_PI))->set("v",0.)->vector("E", x);
+        std::vector<double> y = (*Dep::GA_AnnYield/(mass*mass*8*M_PI))->set("v",0.)->bind("E")->vect(x);
 
         result = BEreq::lnL_GC(x, y);
 
@@ -2099,7 +2109,7 @@ namespace Gambit {
             {
                 double energy = pow(10., i/10. - 2.);
 
-                myfile << energy << " " << spectrum->eval("E", energy) << "\n";
+                myfile << energy << " " << spectrum->bind("E")->eval(energy) << "\n";
             }
             myfile.close();
         }
@@ -2138,8 +2148,6 @@ namespace Gambit {
       }
     }
         
-        
-
 
 //////////////////////////////////////////////////////////////////////////
 //
@@ -2150,6 +2158,50 @@ namespace Gambit {
     void DD_couplings_DarkSUSY(Gambit::DarkBit::DD_couplings &result)
     {
         using namespace Pipes::DD_couplings_DarkSUSY;
+
+        double fG;
+
+        // Set proton hadronic matrix elements
+        (*BEreq::ddcom).ftp(7)  = *Param["fpu"];
+        (*BEreq::ddcom).ftp(8)  = *Param["fpd"];
+        (*BEreq::ddcom).ftp(10) = *Param["fps"];
+
+        fG = 2./27.*(1. - *Param["fpu"] - *Param["fpd"] - *Param["fps"]);
+        (*BEreq::ddcom).ftp(9) = fG;
+        (*BEreq::ddcom).ftp(11) = fG;
+        (*BEreq::ddcom).ftp(12) = fG;
+
+        logger() << "DarkSUSY proton hadronic matrix elements set to:" << endl;
+        logger() << "ftp(7) = fpu = " << (*BEreq::ddcom).ftp(7);
+        logger() << "\tftp(8) = fpd = " << (*BEreq::ddcom).ftp(8);
+        logger() << "\tftp(10) = fps = " << (*BEreq::ddcom).ftp(10) << endl;
+        logger() << "ftp(9) = ftp(11) = ftp(12) = 2/27 fG = " << (*BEreq::ddcom).ftp(9) << endl;
+
+        // Set neutron hadronic matrix elements
+        (*BEreq::ddcom).ftn(7)  = *Param["fnu"];
+        (*BEreq::ddcom).ftn(8)  = *Param["fnd"];
+        (*BEreq::ddcom).ftn(10) = *Param["fns"];
+
+        fG = 2./27.*(1. - *Param["fnu"] - *Param["fnd"] - *Param["fns"]);
+        (*BEreq::ddcom).ftn(9) = fG;
+        (*BEreq::ddcom).ftn(11) = fG;
+        (*BEreq::ddcom).ftn(12) = fG;
+
+        logger() << "DarkSUSY neutron hadronic matrix elements set to:" << endl;
+        logger() << "ftn(7) = fnu = " << (*BEreq::ddcom).ftn(7);
+        logger() << "\tftn(8) = fnd = " << (*BEreq::ddcom).ftn(8);
+        logger() << "\tftn(10) = fns = " << (*BEreq::ddcom).ftn(10) << endl;
+        logger() << "ftn(9) = ftn(11) = ftn(12) = 2/27 fG = " << (*BEreq::ddcom).ftn(9) << endl;
+
+        // Set deltaq
+        (*BEreq::ddcom).delu = *Param["deltau"];
+        (*BEreq::ddcom).deld = *Param["deltad"];
+        (*BEreq::ddcom).dels = *Param["deltas"];
+        logger() << "DarkSUSY delta q set to:" << endl;
+        logger() << "delu = delta u = " << (*BEreq::ddcom).delu;
+        logger() << "\tdeld = delta d = " << (*BEreq::ddcom).deld;
+        logger() << "\tdels = delta s = " << (*BEreq::ddcom).dels << endl;
+
         if (*Dep::DarkSUSY_PointInit) {
           result.M_DM = (*BEreq::mspctm).mass[42];        
           // Calling DarkSUSY subroutine dsddgpgn(gps,gns,gpa,gna)
@@ -2181,16 +2233,58 @@ namespace Gambit {
     void DD_couplings_micrOMEGAs(Gambit::DarkBit::DD_couplings &result)
     {
         using namespace Pipes::DD_couplings_micrOMEGAs;
-        //TODO: Add error catching to below function
+
+        // Set proton hadronic matrix elements.
+        (*BEreq::MOcommon).par[2] = *Param["fpd"];
+        (*BEreq::MOcommon).par[3] = *Param["fpu"];
+        (*BEreq::MOcommon).par[4] = *Param["fps"];
+
+        logger() << "micrOMEGAs proton hadronic matrix elements set to:" << endl;
+        logger() << "ScalarFFPd = fpd = " << (*BEreq::MOcommon).par[2];
+        logger() << "\tScalarFFPu = fpu = " << (*BEreq::MOcommon).par[3];
+        logger() << "\tScalarFFPs = fps = " << (*BEreq::MOcommon).par[4] << endl;
+
+        // Set neutron hadronic matrix elements.
+        (*BEreq::MOcommon).par[11] = *Param["fnd"];
+        (*BEreq::MOcommon).par[12] = *Param["fnu"];
+        (*BEreq::MOcommon).par[13] = *Param["fns"];
+
+        logger() << "micrOMEGAs neutron hadronic matrix elements set to:" << endl;
+        logger() << "ScalarFFNd = fnd = " << (*BEreq::MOcommon).par[11];
+        logger() << "\tScalarFFNu = fnu = " << (*BEreq::MOcommon).par[12];
+        logger() << "\tScalarFFNs = fns = " << (*BEreq::MOcommon).par[13] << endl;
+
+        //Set delta q.
+        (*BEreq::MOcommon).par[5] = *Param["deltad"];
+        (*BEreq::MOcommon).par[6] = *Param["deltau"];
+        (*BEreq::MOcommon).par[7] = *Param["deltas"];
+
+        (*BEreq::MOcommon).par[14] = *Param["deltau"];
+        (*BEreq::MOcommon).par[15] = *Param["deltad"];
+        (*BEreq::MOcommon).par[16] = *Param["deltas"];
+
+        logger() << "micrOMEGAs delta q set to:" << endl;
+        logger() << "pVectorFFPd = pVectorFFNu = delta d = "
+                << (*BEreq::MOcommon).par[5] << endl;
+        logger() << "pVectorFFPu = pVectorFFPd = delta u = "
+                << (*BEreq::MOcommon).par[6] << endl;
+        logger() << "pVectorFFPs = pVectorFFNs = delta s = "
+                << (*BEreq::MOcommon).par[7] << endl;
+
         double p1[2], p2[2], p3[2], p4[2];
-        BEreq::nucleonAmplitudes(byVal(BEreq::FeScLoop.pointer()), byVal(p1), byVal(p2), byVal(p3), byVal(p4));
+        //TODO: Should this be an error or just an invalid point if the calculation fails?
+        int error = BEreq::nucleonAmplitudes(byVal(BEreq::FeScLoop.pointer()), byVal(p1), byVal(p2), byVal(p3), byVal(p4));
+        if(error!=0)
+            DarkBit_error().raise(LOCAL_INFO, "micrOMEGAs nucleonAmplitudes function failed with "
+                    "error code " + std::to_string(error) + ".");
+
         // Rescaling to agree with DarkSUSY convention:
         result.gps = p1[0]*2;
         result.gpa = p2[0]*2;
         result.gns = p3[0]*2;
         result.gna = p4[0]*2;
         result.M_DM = (*BEreq::MOcommon).par[1];
-        //TODO: Move the following to logging/printer system.
+
         logger() << "micrOMEGAs nucleonAmplitudes gives:" << endl;
         logger() << " gps: " << result.gps << endl;
         logger() << " gns: " << result.gns << endl;
@@ -2950,7 +3044,7 @@ namespace Gambit {
           double x_max = runOptions->getValueOrDef<double>(10000, "GA_AnnYield", "Emax");
           int n = runOptions->getValueOrDef<double>(26, "GA_AnnYield", "nbins");
           std::vector<double> x = logspace(log10(x_min), log10(x_max), n);  // from 0.1 to 500 GeV
-          std::vector<double> y = spectrum->vector("E", x);
+          std::vector<double> y = spectrum->bind("E")->vect(x);
           os << "# Annihilation spectrum dNdE [1/GeV]\n";
           os << "GammaRaySpectrum:\n";
           os << "  E: [";
@@ -2974,9 +3068,9 @@ namespace Gambit {
               os << *jt << "";
             }
             if (it->finalStateIDs.size() == 2)
-            os << ": " << it->genRate->eval("v", 0);
+            os << ": " << it->genRate->bind("v")->eval(0);
             if (it->finalStateIDs.size() == 3)
-            os << ": " << it->genRate->eval("v", 0., "E", 0., "E1", 0.);
+            os << ": " << it->genRate->bind("v", "E", "E1")->eval(0., 0., 0.);
             os << "\n";
           }
           os << std::endl;
@@ -3085,7 +3179,7 @@ namespace Gambit {
         double mass = 100;
         Funk::Funk dNdE_bb = (*Dep::SimYieldTable)("b", "bbar", "gamma", mass);
 
-        logger() << dNdE_bb->eval("E", 10) << std::endl;
+        logger() << dNdE_bb->bind("E")->eval(10) << std::endl;
 
         result = dNdE_bb;  // Fix units
     }

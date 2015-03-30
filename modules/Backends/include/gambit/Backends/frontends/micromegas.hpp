@@ -10,8 +10,8 @@
 #else
   #define BACKENDNAME micromegas
 #endif
-#define VERSION 0.1
-#define SAFE_VERSION 0_1
+#define VERSION 3.5.5
+#define SAFE_VERSION 3_5_5
 
 LOAD_LIBRARY
 
@@ -23,6 +23,7 @@ BE_FUNCTION(lesHinput, int, (char*), "lesHinput", "lesHinput")
 BE_FUNCTION(sortOddParticles, int, (char*), "sortOddParticles","mass_spectrum")
 BE_FUNCTION(nucleonAmplitudes, int, (double(*)(double,double,double,double), double*, double*, double*, double*), "nucleonAmplitudes", "nucleonAmplitudes" )
 BE_FUNCTION(FeScLoop, double, (double, double, double, double), "FeScLoop", "FeScLoop")
+BE_FUNCTION(calcScalarQuarkFF, void, (double, double, double, double), "calcScalarQuarkFF", "calcScalarQuarkFF")
 
 BE_FUNCTION(mInterp, int, (double,int,int,double*) , "mInterp", "mInterp")
 BE_FUNCTION(zInterp, double, (double,double*) , "zInterp", "zInterp")

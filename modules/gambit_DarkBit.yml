@@ -121,6 +121,60 @@ Parameters:
 #      Au_3:
 #        fixed_value: 0
 
+#    The nuclear parameters below are set to the values from micrOMEGAs 3.5.5
+#    The three different sets of parameters are equivalent.
+#    This model is only used if micrOMEGAs or DarkSUSY is being
+#    used to calculate direct detection couplings.
+
+#    nuclear_params_fnq:
+#      # proton hadronic matrix elements
+#      fpd:
+#        fixed_value: 0.0191
+#      fpu:
+#        fixed_value: 0.0153
+#      fps:
+#        fixed_value: 0.0447
+#      # neutron hadronic matrix elements
+#      fnd:
+#        fixed_value: 0.0273
+#      fnu:
+#        fixed_value: 0.011
+#      fns:
+#        fixed_value: 0.0447
+#      # proton spin content
+#      deltad:
+#        fixed_value: -0.427
+#      deltau:
+#        fixed_value: 0.842
+#      deltas:
+#        fixed_value: -0.085
+	
+#    nuclear_params_sigma0_SigmaPiN:
+#      sigma0:
+#        fixed_value: 30.76
+#      SigmaPiN:
+#        fixed_value: 34.0
+#      # proton spin content
+#      deltad:
+#        fixed_value: -0.427
+#      deltau:
+#        fixed_value: 0.842
+#      deltas:
+#        fixed_value: -0.085
+
+#    nuclear_params_sigmas_SigmaPiN:
+#      sigmas:
+#        fixed_value: 42.0
+#      SigmaPiN:
+#        fixed_value: 34.0
+#      # proton spin content
+#      deltad:
+#        fixed_value: -0.427
+#      deltau:
+#        fixed_value: 0.842
+#      deltas:
+#        fixed_value: -0.085
+
 ##############################
 # Prior setup
 ##############################
@@ -274,6 +328,12 @@ Auxiliaries:
         test_printMore:         false
 
 
+  # DarkSUSY ---------------------------
+  - capability: DarkSUSY_5_1_1_init # Initialization of DarkSUSY backend
+    options:
+        # Direct Detection Settings
+        ddpole: 1 # Include squark pole in scattering amplitude
+        dddn: 1 # Treat heavy quarks and gluons as in Drees & Nojiri 1993 (implies ddpole=1)
   # Gamma-rays -------------------------
   - capability: gamLike_1_0_0_init  # Initialization of gamLike backend
     options:
