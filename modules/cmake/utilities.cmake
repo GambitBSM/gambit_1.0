@@ -64,7 +64,7 @@ macro(retrieve_bits bits root excludes quiet)
       # Exclude or add this bit.
       if(${excluded})
         if(NOT ${quiet} STREQUAL "Quiet") 
-message("${BoldCyan} X Excluding ${child} from GAMBIT configuration.${ColourReset}")
+          message("${BoldCyan} X Excluding ${child} from GAMBIT configuration.${ColourReset}")
         endif()
       else()
         list(APPEND ${bits} ${child})

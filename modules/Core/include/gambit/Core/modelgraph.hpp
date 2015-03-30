@@ -69,7 +69,7 @@ namespace Gambit
       {
         private:
           const ModelGraphType * myGraph;
-          const boost::property_map<ModelGraphType, edge_color_t>::const_type &color; 
+          const boost::property_map<ModelGraphType, edge_color_t>::const_type color; 
         public:
           /// Constructor
           colorWriter(const ModelGraphType* g)
@@ -84,15 +84,15 @@ namespace Gambit
             if( boost::get(color,e) == "red" ) out << "[color=red]";
           }
       };
-
-      /// Turn on verbose operation
-      bool verbose;
-
-      /// Output filename
-      str filename;
    
       /// The model claw that provides all the model info
       const Models::ModelFunctorClaw* boundClaw;
+
+      /// Output filename
+      str filename;
+
+      /// Turn on verbose operation
+      bool verbose;
 
       /// The central boost graph object for the model hierarchy
       ModelGraphType modelGraph;

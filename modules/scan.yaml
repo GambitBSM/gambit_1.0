@@ -1,0 +1,254 @@
+# Ultra-minimal GAMBIT Initialization file (in YAML)
+# Only needs example modules ExampleBit_A and ExampleBit_B,
+# plus example backends libfirst and libFortran.
+#
+# To use this you'll need to 
+# make
+# make libfirst
+# make libfortran
+#
+# Don't commit modified versions of this file!
+# If you want to change it in order to test 
+# your own modifications to the code, copy 
+# it to spartan_personal.yaml, which will be 
+# ignored by git.
+#
+# Pat Scott <p.scott@imperial.ac.uk>
+# Oct 2014
+#
+ 
+###################################
+# Input parameter declarations
+###################################
+
+Parameters: 
+
+
+
+##############################
+# Prior setup
+##############################
+
+Priors:
+
+  # Here specify the priors, the parameters they work with, and any options as needed for that prior
+  # A prior object is built for every entry here (along with any coming from 'ranges' keywords above), 
+  # and then they are combined into a "composite" prior 
+
+##############################
+# Printer setup
+##############################
+
+Printer:
+
+  # Select printer to use via string tag
+  # (currently only ascii printer available)
+  printer: ascii
+
+  # This options node is passed on wholesale to
+  # the printer object; required options may
+  # therefore vary according to the selected
+  # printer. 
+  options:
+    # name of output file
+    output_file: "runs/spartan/samples/gambit_output.txt"
+    # name of info file (explains content of output file)
+    info_file: "runs/spartan/samples/gambit_output.info"
+
+##############################
+# Scanner setup
+##############################
+
+Scanner:
+
+  use_objectives: uniform
+  use_scanner: toy
+
+  scanners:
+  
+    ransample:
+      plugin: random_sampler
+      options:
+        point_number: 20
+        output_file:  output
+        like:  Likelihood
+        files:
+          output_file: "weights ..."
+          
+    toy:
+      purpose: Likelihood
+      plugin: toy_mcmc
+      #plugin_path: /home/gmartine/libsample.so
+          
+    square_grid:
+      plugin: square_grid
+      version: ">=1.0"
+      options:
+        purpose: Likelihood
+        grid_pts: 3 #NxN grid
+        
+    grid:
+      plugin: grid
+      version: ">=1.0"
+      options:
+        purpose: Likelihood
+        grid_pts: [4, 2]
+    
+  objectives:
+  
+    uniform:
+      purpose: Likelihood
+      plugin: uniform
+      version: ">=1.0 & <2.0"
+      options:
+        some_param: 10
+      parameters:
+        param...2:
+          range: [1, 2]
+        
+    uniform_prior:
+      plugin: flat_prior
+      purpose: Likelihood
+      options:
+        range: [2, 1]
+      parameters:
+        param...2:
+          range: [1, 2]
+      
+    test:
+      plugin: test_plug
+      #plugin_path: /home/gmartine/test.so
+        
+  #parameters:
+    #uniform:
+      #param...2:
+        #range: [1, 2]
+        
+  #priors:
+    #flat_prior:
+      #parameters: [uniform::param...2]
+      #prior_type: plugin
+      #options:
+        #plugin: uniform_prior
+    #m12_prior: 
+      #parameters: [uniform::param...2]
+      #prior_type: composite
+      #options: 
+        #new_prior: 
+          #parameters: [uniform::param_0]
+          #prior_type: flat
+          #range: [10,20]
+        #newnewprior:
+          #parameters: [uniform::param_1]
+          #prior_type: flat
+          #range: [10,20]
+            
+###############################
+# Observables of interest
+###############################
+
+ObsLikes:
+
+
+  # Test CMSSM_I, ExampleBit_A and ExampleBit_B
+  - purpose:      Likelihood
+    capability:   lnL_ExampleBitB
+    type:         double
+    function:     ""
+    module:       ""
+
+  # Test array and -> operators in safety buckets.
+  - purpose:      Observable
+    capability:   ptrmeth_arr_tester
+
+  # Test loop manager
+  - purpose:      Likelihood
+    capability:   nevents_like
+    type:         double
+
+  # Test vector output of printer
+  - purpose:      Observable
+    capability:   test_vector
+    type:         std::vector<double>
+
+
+#########################
+# Auxiliary entries
+#########################
+
+Auxiliaries:
+
+  - capability:   "LibFirst_1_1_init"
+    dependencies:
+    - {capability: "nevents", module: "ExampleBit_A"}  
+
+  - capability:    "nevents_postcuts"
+    dependencies:
+    - {capability: "id", module: "ExampleBit_B"}
+
+  - capability:    "MSSM_demo_parameters"
+    dependencies:
+    - {capability: "id", module: "ExampleBit_B"}
+
+  - capability:    "xsection"
+    options:
+      scale: 15.5
+
+  - capability:    "function_pointer"
+    backends:
+    - {function: "externalFunction2"}
+
+
+#########################
+# Logging setup
+#########################
+
+Logger:
+
+  # Redirection of specific messages according to tags
+  # Can redirect to stdout or stderr by specifying these as the "filenames". 
+  # Obviously this also means it is impossible to redirect output to actual
+  # files with these names.
+
+  prefix : "runs/spartan/logs/"
+  redirection:
+    [Debug] : "debug.log"
+    [Default] : "default.log"
+    [Error] : "errors.log"
+    [Warning] : "warnings.log"
+
+###############################
+## Printer (output) setup
+###############################
+
+# Ben: Here we will choose which printer(s?) we want to use. For now
+# it is hardcoded: I'll come back to this.
+
+
+##########################
+# Name/Value Section
+##########################
+
+KeyValues:
+
+  # Some example keys and subkeys
+  my_key: 123
+  another_key:
+    subkey3:
+      subsubkey1: value2
+
+  dependency_resolution:
+    prefer_model_specific_functions: true
+
+  likelihood:
+    model_invalid_for_lnlike_below: -1e6
+
+  #By default, errors are fatal and warnings non-fatal
+  exceptions:
+    dependency_resolver_error: fatal
+    dependency_resolver_warning: non-fatal
+    core_warning: fatal
+    ExampleBit_A_error: non-fatal
+
+  enable_testing: false
+

@@ -2,7 +2,8 @@
 //   *********************************************
 ///  \file
 ///
-///  Implementation file for DarkBit types
+///  Implementation file for DarkBit SimpleHist 
+///  types.
 ///
 ///  *********************************************
 ///
@@ -16,19 +17,14 @@
 
 #include "gambit/Utils/gambit_module_headers.hpp"
 #include "gambit/DarkBit/DarkBit_rollcall.hpp"
-#include "gambit/DarkBit/DarkBit_types.hpp"
+#include "gambit/DarkBit/SimpleHist.hpp"
+
 
 namespace Gambit
 {
 
-  namespace DarkBit
-  {
-
-        //////////////////////////////////////////////////////////////////////////
-        //
-        //                    SimpleHist functions
-        //
-        //////////////////////////////////////////////////////////////////////////
+    namespace DarkBit
+    {
 
         SimpleHist::SimpleHist(int nBins, double Emin, double Emax, bool logscale): nBins(nBins)
         {
@@ -62,12 +58,14 @@ namespace Gambit
                 binLower.push_back(Emin+nBins*dE);
             }
         }
+
         SimpleHist::SimpleHist(std::vector<double> binLower) : binLower(binLower)
         {
             nBins=int(binLower.size())-1;
             binVals=std::vector<double>(nBins,0.0);
             wtSq   =std::vector<double>(nBins,0.0);
         }
+
         void SimpleHist::addEvent(double E, double weight)
         {
             int bin = findIndex(E);
@@ -77,11 +75,13 @@ namespace Gambit
                 wtSq[bin]+=weight*weight;
             }
         }
+
         void SimpleHist::addToBin(int bin, double weight)
         {
             binVals[bin]+=weight;
             wtSq[bin]+=weight*weight;
         }
+
         void SimpleHist::addBox(double Emin, double Emax, double weight)
         {
             int imin = findIndex(Emin);
@@ -134,6 +134,7 @@ namespace Gambit
                 }
             }
         }
+
         void SimpleHist::addHistAsWeights_sameBin(SimpleHist &in)
         {
             // Check that the number of bins is equal to avoid segfaults. 
@@ -147,14 +148,17 @@ namespace Gambit
                 addToBin(i,in.binVals[i]);
             }
         }
+
         double SimpleHist::getError(int bin) const
         {
             return sqrt(wtSq[bin]);
         }
+
         double SimpleHist::getRelError(int bin) const
         {
             return ((binVals[bin]!=0) ? sqrt(wtSq[bin])/binVals[bin] : 0);
         }
+
         void SimpleHist::divideByBinSize()
         {
             for(int i=0;i<nBins;i++)
@@ -163,6 +167,7 @@ namespace Gambit
                 wtSq[i]   /=(binSize(i)*binSize(i));
             }
         }
+
         void SimpleHist::multiply(double x)
         {
             for(int i=0;i<nBins;i++)
@@ -171,20 +176,24 @@ namespace Gambit
                 wtSq[i]   *=x*x;
             } 
         }       
+
         int SimpleHist::findIndex(double val) const
         {
             if(val < binLower[0]) return -1;
             std::vector<double>::const_iterator pos = upper_bound(binLower.begin(),binLower.end(),val);   
             return pos - binLower.begin() -1;       
         }
+
         double SimpleHist::binSize(int bin) const
         {
             return binLower[bin+1]-binLower[bin];
         }  
+
         double SimpleHist::binCenter(int bin) const
         {
             return 0.5*(binLower[bin+1]+binLower[bin]);
         }
+
         std::vector<double> SimpleHist::getBinCenters() const
         {
             std::vector<double> centers;
@@ -194,10 +203,12 @@ namespace Gambit
             }
             return centers;
         }
+
         const std::vector<double>& SimpleHist::getBinValues() const
         {
             return binVals;
         }
+
         void SimpleHist::getEdges(double& lower, double& upper) const
         {
             lower=binLower[0];
@@ -205,4 +216,5 @@ namespace Gambit
         }
 
     } // namespace DarkBit
+
 } // namespace Gambit

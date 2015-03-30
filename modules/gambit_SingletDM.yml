@@ -45,9 +45,9 @@ Printer:
 ##############################
 
 Scanner:
-  use_scanner_plugin: square_grid
+  use_scanner: square_grid
   
-  plugins:
+  scanners:
     square_grid:
       plugin: square_grid
       verion: ">=1.0"
@@ -210,7 +210,6 @@ KeyValues:
     dependency_resolver_error: fatal
     dependency_resolver_warning: non-fatal
     core_warning: fatal
-    scan_error: non-fatal #make this fatal to see an example error
     ExampleBit_A_error: non-fatal
 
   enable_testing: false

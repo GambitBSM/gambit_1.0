@@ -33,9 +33,9 @@ Printer:
     info_file: "runs/SpecBit_test/samples/gambit_output.info"
 
 Scanner:
-  use_scanner_plugin: toy_mcmc
+  use_scanner: toy_mcmc
   
-  plugins:
+  scanners:
     toy_mcmc:
       plugin: toy_mcmc
       options:

@@ -23,7 +23,6 @@
 #define PRIOR_GAUSSIAN_HPP
 
 #include <vector>
-#include <algorithm>
 #include <cmath>
 
 #include "gambit/ScannerBit/cholesky.hpp"
@@ -43,7 +42,7 @@ namespace Gambit
                 private:
                         std::vector <std::string> param;
                         std::vector <double> mean;
-                        Cholesky col;
+                        mutable Cholesky col;
                         
                 public: 
                         // Constructor defined in gaussian.cpp
@@ -68,6 +67,12 @@ namespace Gambit
                                 {
                                         outputMap[*str_it] = *(v_it++) + *(m_it++);
                                 }
+                        }
+                        
+                        double operator()(const std::vector<double> &vec) const
+                        {
+                                static double norm = std::log(2.0*Gambit::Scanner::pi()*Gambit::Scanner::pow<2>(col.DetSqrt()))/2.0;
+                                return -col.Square(vec, mean)/2.0 - norm;
                         }
                 };
         

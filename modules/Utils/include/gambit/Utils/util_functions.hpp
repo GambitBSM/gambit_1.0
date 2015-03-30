@@ -115,8 +115,27 @@ namespace Gambit
       return true;
     }
 
+    /// Dummy function to force variadic template function pack expansion
+    template<class...A>
+    void dummy(A&&...) {}
+
+    /// Push a single item back into a vector
+    template <typename T, typename M>
+    int push_single(std::vector<T>& vec, M member)
+    {
+      vec.push_back(member);
+      return 0;
+    }
+
+    /// Push many items back into a vector
+    template <typename T, typename... M>
+    void push_many(std::vector<T>& vec, M... members)
+    {
+       dummy ( push_single(vec, members)... );
+    }
+
     /// Ensure that a path exists (and then return the path, for chaining purposes)
-    std::string ensure_path_exists(const std::string&);
+    const std::string& ensure_path_exists(const std::string&);
 
     typedef std::chrono::time_point<std::chrono::system_clock> time_point;
 

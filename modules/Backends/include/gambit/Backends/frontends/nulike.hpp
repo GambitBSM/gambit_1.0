@@ -14,6 +14,7 @@
 ///  \author Pat Scott 
 ///          (patscott@physics.mcgill.ca)
 ///  \date 2013 May
+///  \date 2014 March
 ///
 ///  *********************************************
 
@@ -69,24 +70,24 @@ BE_INI_FUNCTION
 
     // Define analysis handle and datafiles for IceCube 79-string WH analysis, then initialise it.
     const char experiment_79WH[nulike_clen] = "IC-79 WH";
-    const char eventf_79WH[nulike_clen] = "../extras/nulike/data/IceCube/likelihood2014/IC79_Events_WH_10degrees.dat";
-    const char BGf_79WH[nulike_clen]    = "../extras/nulike/data/IceCube/likelihood2014/IC79_Background_distributions_WH.dat";
+    const char eventf_79WH[nulike_clen] = "../extras/nulike/data/IceCube/likelihood2014/IC79_Events_WH_llhInput_60Deg.txt";
+    const char BGf_79WH[nulike_clen]    = "../extras/nulike/data/IceCube/likelihood2014/IC79_Background_distributions_WH.txt";
     char file3_79WH[nulike_clen]  = "../extras/nulike/data/IceCube/likelihood2014/IC79_Partial_Likelihoods_WH"; //(edispf and phi_cut ignored for IC79 analyses)
     for (int i=strlen(file3_79WH); i<=nulike_clen; ++i) { file3_79WH[i] = ' '; } // Strip terminating null character for passing string to fortran.       
     nulike_init(experiment_79WH[0], eventf_79WH[0], BGf_79WH[0], file3_79WH[0], edispf_22[0], phi_cut22, theoryError, uselogNorm, BGLikePrecompute);
 
     // Define analysis handle and datafiles for IceCube 79-string WH analysis, then initialise it.
     const char experiment_79WL[nulike_clen] = "IC-79 WL";
-    const char eventf_79WL[nulike_clen] = "../extras/nulike/data/IceCube/likelihood2014/IC79_Events_WL_10degrees.dat";
-    const char BGf_79WL[nulike_clen]    = "../extras/nulike/data/IceCube/likelihood2014/IC79_Background_distributions_WL.dat";
+    const char eventf_79WL[nulike_clen] = "../extras/nulike/data/IceCube/likelihood2014/IC79_Events_WL_llhInput_60Deg.txt";
+    const char BGf_79WL[nulike_clen]    = "../extras/nulike/data/IceCube/likelihood2014/IC79_Background_distributions_WL.txt";
     char file3_79WL[nulike_clen]  = "../extras/nulike/data/IceCube/likelihood2014/IC79_Partial_Likelihoods_WL"; //(edispf and phi_cut ignored for IC79 analyses)
     for (int i=strlen(file3_79WL); i<=nulike_clen; ++i) { file3_79WL[i] = ' '; } // Strip terminating null character for passing string to fortran.       
     nulike_init(experiment_79WL[0], eventf_79WL[0], BGf_79WL[0], file3_79WL[0], edispf_22[0], phi_cut22, theoryError, uselogNorm, BGLikePrecompute);
 
     // Define analysis handle and datafiles for IceCube 79-string SL analysis, then initialise it.
     const char experiment_79SL[nulike_clen] = "IC-79 SL";
-    const char eventf_79SL[nulike_clen] = "../extras/nulike/data/IceCube/likelihood2014/IC79_Events_SL_10degrees.dat";
-    const char BGf_79SL[nulike_clen]    = "../extras/nulike/data/IceCube/likelihood2014/IC79_Background_distributions_SL.dat";
+    const char eventf_79SL[nulike_clen] = "../extras/nulike/data/IceCube/likelihood2014/IC79_Events_SL_llhInput_60Deg.txt";
+    const char BGf_79SL[nulike_clen]    = "../extras/nulike/data/IceCube/likelihood2014/IC79_Background_distributions_SL.txt";
     char file3_79SL[nulike_clen]  = "../extras/nulike/data/IceCube/likelihood2014/IC79_Partial_Likelihoods_SL"; //(edispf and phi_cut ignored for IC79 analyses)
     for (int i=strlen(file3_79SL); i<=nulike_clen; ++i) { file3_79SL[i] = ' '; } // Strip terminating null character for passing string to fortran.       
     nulike_init(experiment_79SL[0], eventf_79SL[0], BGf_79SL[0], file3_79SL[0], edispf_22[0], phi_cut22, theoryError, uselogNorm, BGLikePrecompute);

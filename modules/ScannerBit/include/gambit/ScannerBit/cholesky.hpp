@@ -102,6 +102,15 @@ namespace Gambit
                         
                         return sum;
                 }
+                
+                double DetSqrt()
+                {
+                        double temp = 1.0;
+                        int num = el.size();
+                        for (int i = 0; i < num; i++)
+                                temp *= el[i][i];
+                        return temp;
+                }
         };
 }
 
