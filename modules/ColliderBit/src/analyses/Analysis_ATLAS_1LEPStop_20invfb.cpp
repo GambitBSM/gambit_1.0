@@ -72,8 +72,6 @@ namespace Gambit {
       }
 
 
-      // void init() {
-      // }
       MT2 MT2helper(vector<Jet *> jets, vector<Particle *>  electrons,  vector<Particle *> muons, P4 metVec){
 
         MT2 results;

@@ -43,7 +43,7 @@ namespace Gambit {
       Analysis() : _ntot(0), _xsec(-1), _xsecerr(-1) {  }
 
       /// Virtual destructor (needed for correct deletion of inherited classes)
-      virtual ~Analysis() { init(); }
+      virtual ~Analysis() { }
 
 
       /// @name Standard event loop functions
