@@ -60,7 +60,7 @@ namespace Gambit
     double sum = 0.0;
     for (auto channel = channels.begin(); channel != channels.end(); ++channel)  
     {
-      sum += channel->second;
+      sum += (channel->second).first;
     }
     return sum;
   } 

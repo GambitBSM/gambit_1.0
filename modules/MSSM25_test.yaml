@@ -143,9 +143,9 @@ Printer:
     info_file: "runs/MSSM25_test/samples/gambit_output.info"
 
 Scanner:
-  use_scanner_plugin: toy_mcmc
+  use_scanner: toy_mcmc
   
-  plugins:
+  scanners:
     toy_mcmc:
       plugin: toy_mcmc
       options:
@@ -162,10 +162,6 @@ ObsLikes:
   - purpose:      Test
     capability:   decay_rates
     type:         DecayTable
-
-  - purpose:      Observable
-    capability:   BF_Htobbbar
-    type:         double
 
 Auxiliaries:
   - capability: SpecBit_examples
