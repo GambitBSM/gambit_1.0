@@ -99,6 +99,10 @@ namespace Gambit
     void RD_thresholds_resonances_SingletDM(TH_resonances_thresholds &result)
     {
         using namespace Pipes::RD_thresholds_resonances_SingletDM;
+        
+        result.resonances.clear();
+        result.threshold_energy.clear();
+        
         result.threshold_energy.push_back(2*(*Param["mass"]));
         double mh = 125.7;  // TODO: Don't hardcode masses.
         result.resonances.push_back(TH_Resonance(mh/2., mh/2./10.));

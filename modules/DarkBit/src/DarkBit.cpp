@@ -505,15 +505,38 @@ namespace Gambit {
 
     } // function RD_eff_annrate_SUSY
 
+
+    DEF_FUNKTRAIT(RD_EFF_ANNRATE_FROM_PROCESSCATALOG_TRAIT)  // carries pointer to Weff
+    void RD_eff_annrate_from_ProcessCatalog(double(*&result)(double&))
+    {
+        using namespace Pipes::RD_eff_annrate_from_ProcessCatalog;
+
+        TH_Process annProc = (*Dep::TH_ProcessCatalog).getProcess((std::string)"chi_10", (std::string)"chi_10");
+        double mDM = *Param["mass"];
+        const double GeV2tocm3s1 = 1.17e-17;
+
+        auto Weff = Funk::zero("peff");
+        auto peff = Funk::var("peff");
+        auto s = 4*(peff*peff + mDM*mDM);
+
+        for (std::vector<TH_Channel>::iterator it = annProc.channelList.begin();
+                it != annProc.channelList.end(); ++it)
+        {
+            Weff = Weff + it->genRate->set("v", 2*peff/sqrt(mDM*mDM+peff*peff))*s/GeV2tocm3s1;
+        }
+        result = Weff->plain<RD_EFF_ANNRATE_FROM_PROCESSCATALOG_TRAIT>("peff");
+
+    } // function RD_eff_annrate_from_ProcessCatalog
+
     void RD_oh2_general(double &result)
     {
       using namespace Pipes::RD_oh2_general;
-      
+            
       //retrieve ordered list of resonances and thresholds from RD_thresholds_resonances
       TH_resonances_thresholds myres = *Dep::RD_thresholds_resonances;
       double mwimp=myres.threshold_energy[0]/2;
 
-      // HERE STARTS A GIANT IF STATEMENT (which tb does not like and) WHICH 
+      // HERE STARTS A GIANT IF STATEMENT WHICH 
       // SPECIFIES THAT THE FOLLOWING CODE USES BE=DS FOR THE RD CALCULATION
       if (1==1) {
         // what follows below is the standard accurate calculation of oh2 in DS (fast=0 in dsrdomega)
@@ -545,10 +568,15 @@ namespace Gambit {
         // [this is the model-independent part of dsrdstart]
         DS_RDMGEV myrdmgev = *BEreq::rdmgev; //NB:the other variables in that block have already been set!!!
         DS_RDPTH myrdpth;
-        myrdmgev.nres=myres.resonances.size();
-        for (std::size_t i=0; i<myres.resonances.size(); i++) {
-          myrdmgev.rgev[i]=myres.resonances[i].energy;
-          myrdmgev.rwid[i]=myres.resonances[i].width;
+        myrdmgev.nres=0;
+        
+        if (!myres.resonances.empty()){
+          myrdmgev.nres=myres.resonances.size();
+          for (std::size_t i=0; i<myres.resonances.size(); i++) {
+            myrdmgev.rgev[i]=myres.resonances[i].energy;
+            myrdmgev.rwid[i]=myres.resonances[i].width;
+//            std::cout << myrdmgev.rgev[i] << "  " << myrdmgev.rwid[i] << std::endl;
+          }
         }
         // convert to momenta
         *BEreq::rdmgev = myrdmgev;
@@ -557,6 +585,7 @@ namespace Gambit {
         for (std::size_t i=2; i<=myres.threshold_energy.size(); i++) {
           myrdpth.pth[i-1]=sqrt(pow(myres.threshold_energy[i-1],2)/4-pow(mwimp,2));
           myrdpth.incth[i-1]=1;
+//          std::cout << i-1 << "  " << myrdpth.pth[i-1] << std::endl;
         }
         *BEreq::rdpth = myrdpth;
 
@@ -584,8 +613,12 @@ namespace Gambit {
           *BEreq::widths=mywidths;
         }
 
+//        std::cout << "Starting dsrdtab... " << xstart << std::endl;
+
         BEreq::dsrdtab(byVal(*Dep::RD_eff_annrate),xstart); // tabulate invariant rate
         BEreq::dsrdthlim();                                 // determine integration limit
+
+//        std::cout << "Starting dsrdeqn... "  << std::endl;
 
         // now solve Boltzmann eqn using tabulated rate
         double xend, yend, xf; int nfcn;
@@ -607,7 +640,7 @@ namespace Gambit {
 
       } // USING BE=DS
 
-        logger() << "oh2 =" << result << std::endl;
+        logger() << "RD_oh2_general: oh2 =" << result << std::endl;
 
     } // function RD_oh2_general
 
@@ -1941,7 +1974,7 @@ namespace Gambit {
         int nfc;  // number of function calls to effective annihilation cross section
         double oh2 = BEreq::dsrdomega(omtype,fast,xf,ierr,iwar,nfc);
         result = oh2;
-        logger() << "oh2 is " << oh2 << std::endl;
+        logger() << "RD_oh2_DarkSUSY: oh2 is " << oh2 << std::endl;
     }
 
     void RD_oh2_micromegas(double &oh2)
@@ -2647,26 +2680,6 @@ namespace Gambit {
 
 ///////////////////////////////////////////////////
 
-    DEF_FUNKTRAIT(RD_EFF_ANNRATE_FROM_PROCESSCATALOG_TRAIT)  // carries pointer to Weff
-    void RD_eff_annrate_from_ProcessCatalog(double(*&result)(double&))
-    {
-        using namespace Pipes::RD_eff_annrate_from_ProcessCatalog;
-
-        TH_Process annProc = (*Dep::TH_ProcessCatalog).getProcess((std::string)"chi_10", (std::string)"chi_10");
-        double mDM = *Param["mass"];
-        const double GeV2tocm3s1 = 1.17e-17;
-
-        auto Weff = Funk::zero("peff");
-        auto peff = Funk::var("peff");
-        auto s = 4*(peff*peff + mDM*mDM);
-
-        for (std::vector<TH_Channel>::iterator it = annProc.channelList.begin();
-                it != annProc.channelList.end(); ++it)
-        {
-            Weff = Weff + it->genRate->set("v", 2*peff/sqrt(mDM*mDM+peff*peff))*s/GeV2tocm3s1;
-        }
-        result = Weff->plain<RD_EFF_ANNRATE_FROM_PROCESSCATALOG_TRAIT>("peff");
-    }
 
     void UnitTest_DarkBit(int &result)
     {
