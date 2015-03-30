@@ -19,13 +19,16 @@
 ///
 ///  *********************************************
 
-#ifndef SPECTRUM_H
-#define SPECTRUM_H
+#ifndef __Spectrum_hpp__
+#define __Spectrum_hpp__
 
 #include <map>
 #include <set>
+#include <cfloat>
+#include <sstream>
 
 #include "gambit/Utils/cats.hpp"
+#include "gambit/Utils/standalone_error_handlers.hpp"
 #include "gambit/Models/partmap.hpp"
 
 #include "SLHAea/slhaea.h"
@@ -46,33 +49,31 @@ inline bool within_bounds(const int i, const std::set<int> allowed)
 
 /// Helper macro for throwing errors in base class versions of virtual functions
 ///TODO: probably want a Gambit error here
-#define vfcn_error() \
-  std::cout << "This virtual function (of Spectrum object) has not been overridden in the derived class!" <<std::endl \
-
+#define vfcn_error(local_info) \
+  utils_error().raise(local_info,"This virtual function (of Spectrum object) has not been overridden in the derived class!")
 
 ///Note: (Ben) I have extracted these classes from the Spectrum class, so they are no longer nested.
 ///            I did this because there are no special access rights to nested classes in C++03, and
 ///            while there *are* in C++11, I don't know what compilers support this, and we were
 ///            already declaring the relevant classes as friends anyway. So to make this header less
 ///            confusing (I hope) I have just defined these classes in the host namespace separately.
+class Spectrum;
 class RunningPars;
 class Phys;
 
-/// Standard Model container class
-// This class is used to obtain information defined in the Standard Model (or
-// potentially just QED X QCD) as a low-energy effective theory (as opposed
-// to correspending information defined in a UV model). Parameters defined
-// this way are often used as input to a physics calculator.
-//class SMLowEnergyEffective;
-
+/// Virtual base class for interacting with spectrum generator output
+// Includes facilities for running RGEs
 class Spectrum {
    public:
       /// Dump out spectrum information to slha (if possible, and not including input parameters etc. just at the moment...)
-      virtual void dump2slha(const std::string&) { vfcn_error(); }
+      virtual void dump2slha(const std::string&) const { vfcn_error(LOCAL_INFO); }
+
+      /// Clone the Spectrum object
+      virtual std::unique_ptr<Spectrum> clone() const = 0;
    
       /// Get spectrum information in SLHAea format (if possible)
       SLHAea::Coll empty_SLHAea;  // never used; just to avoid "no return statement in function returning non-void" warnings
-      virtual SLHAea::Coll getSLHAea() { vfcn_error(); return empty_SLHAea; }
+      virtual SLHAea::Coll getSLHAea() const { vfcn_error(LOCAL_INFO); return empty_SLHAea; }
 
       /// Get integer offset convention used by internal model class (needed by getters which take indices) 
       virtual int get_index_offset() const = 0;
@@ -100,47 +101,118 @@ class Spectrum {
       /// particle_type = 0 (neutralino), 1(Sneutrino), 2(up squark), 
       /// 3(down squarks), 4(charged slepton), 5(Chargino), 6(gluino)
       ///  Add more for 
-      virtual double get_lsp_mass(int& /*particle_type*/, int& /*row*/, int& /*col*/) const { vfcn_error(); return -1; }
+      virtual double get_lsp_mass(int& /*particle_type*/, int& /*row*/, int& /*col*/) const { vfcn_error(LOCAL_INFO); return -1; }
       /// There may be more than one *new* stable particle
       ///  this method will tell you how many.
       /// If more than zero you probbaly *need* to know what model
       ///  you are working on, so we don't give all stable particles
-      virtual int get_numbers_stable_particles() const { vfcn_error(); return -1; }  
+      virtual int get_numbers_stable_particles() const { vfcn_error(LOCAL_INFO); return -1; }  
       
 };
 
+// Macro for creating clone function overrides in derived classes
+// Relies on copy constructor working properly...
+#define DEFINE_CLONE(DERIVED_CLASS)                               \
+  std::unique_ptr<Spectrum> clone() const                         \
+  {                                                               \
+     return std::unique_ptr<Spectrum>(new DERIVED_CLASS(*this));  \
+  }                                                               \
 
 class RunningPars 
 {
+   private:
+      /// Default limits to RGE running; warning/error raised if running beyond these is attempted.
+      // If these aren't overridden in the derived class then effectively no limit on running will exist.
+      virtual double hard_upper() const {return DBL_MAX;}
+      virtual double soft_upper() const {return DBL_MAX;}
+      virtual double soft_lower() const {return 0.;}
+      virtual double hard_lower() const {return 0.;}
+
+      /// Run object to a particular scale
+      // Override this function in derived class to perform running
+      virtual void RunToScaleOverride(double) { vfcn_error(LOCAL_INFO); }
    public:
       /// Constructors/destructors
       RunningPars() {}
       virtual ~RunningPars() {}      
 
-      /// run object to a particular scale
-      virtual void RunToScale(double) { vfcn_error(); }
+      /// Wrapper for RunToScaleOverload which automatically checks limits and
+      /// raises warnings.
+      // Behaviour modified by "behave" integer:
+      // behave = 0  -- If running beyond soft limit requested, halt at soft limit
+      //                (assumes hard limits outside of soft limits; but this is not enforced)
+      // behave = 1  -- If running beyond soft limit requested, throw warning
+      //                  "           "   hard limit     "    , throw error
+      // behave = anything else -- Ignore limits and attempt running to requested scale 
+      void RunToScale(double scale, int behave=0)
+      {
+         if(behave==0 or behave==1) 
+         {
+            if(scale < hard_lower() or scale > hard_upper()) {
+               if(behave==1) {
+                  std::ostringstream msg;
+                  msg << "RGE running requested outside hard limits! This is forbidden with behave=1. Set behave=0 (default) to automatically stop running at soft limits, or behave=2 to force running to requested scale (may trigger errors from underlying RGE code!)." << std::endl;
+                  msg << "  Requested : "<< scale << std::endl;
+                  msg << "  hard_upper: "<< hard_upper() << std::endl;
+                  msg << "  hard_lower: "<< hard_lower() << std::endl;
+                  utils_error().raise(LOCAL_INFO, msg.str());
+               } else { // behave==0
+                  if     (scale < soft_lower()) { scale=soft_lower(); } 
+                  else if(scale > soft_upper()) { scale=soft_upper(); }
+                  else {
+                    // Hard limits must be outside soft limits; this is a bug in the derived Spectum object
+                    std::ostringstream msg;
+                    msg << "RGE running requested outside hard limits, but within soft limits! The soft limits should always be within the hard limits, so this is a bug in the derived Spectrum object being accessed. I cannot tell you which class this is though; check the dependency graph to see which ones are being created, and if necessary consult your debugger." << std::endl;
+                    msg << "  Requested : "<< scale << std::endl;
+                    msg << "  hard_upper: "<< hard_upper() << std::endl;
+                    msg << "  soft_upper: "<< soft_upper() << std::endl;
+                    msg << "  soft_lower: "<< soft_lower() << std::endl;
+                    msg << "  hard_lower: "<< hard_lower() << std::endl;
+                    utils_error().raise(LOCAL_INFO, msg.str());
+                  } 
+               }
+            } else if(scale < soft_lower() or scale > soft_upper()) {
+               if(behave==1) {
+                  std::ostringstream msg;
+                  msg << "RGE running requested outside soft limits! Accuracy may be low. Note: Set behave=2 to suppress this warning, or behave=0 (default) to automatically stop running when soft limit is hit." << std::endl;
+                  msg << "  Requested : "<< scale << std::endl;
+                  msg << "  soft_upper: "<< soft_upper() << std::endl;
+                  msg << "  soft_lower: "<< soft_lower() << std::endl;
+                  utils_warning().raise(LOCAL_INFO, msg.str());
+               } else { // behave==0
+                  if(scale < soft_lower()) scale=soft_lower();
+                  if(scale > soft_upper()) scale=soft_upper();
+               }
+            }
+         }
+         RunToScaleOverride(scale);
+      }
+
       /// returns the renormalisation scale of parameters
-      virtual double GetScale() const { vfcn_error(); return -1; }
+      virtual double GetScale() const { vfcn_error(LOCAL_INFO); return -1; }
       /// Sets the renormalisation scale of parameters 
       /// somewhat dangerous to allow this but may be needed
-      virtual void SetScale(double) { vfcn_error(); }
+      virtual void SetScale(double) { vfcn_error(LOCAL_INFO); }
       
       /// getters using map
-      virtual double get_mass4_parameter(const std::string&) const { vfcn_error(); return -1; }
-      virtual double get_mass4_parameter(const std::string&, int) const { vfcn_error(); return -1; }
-      virtual double get_mass4_parameter(const std::string&, int, int) const { vfcn_error(); return -1; }
-      virtual double get_mass3_parameter(const std::string&) const { vfcn_error(); return -1; }
-      virtual double get_mass3_parameter(const std::string&, int) const { vfcn_error(); return -1; }
-      virtual double get_mass3_parameter(const std::string&, int, int) const { vfcn_error(); return -1; }
-      virtual double get_mass2_parameter(const std::string&) const { vfcn_error(); return -1; }
-      virtual double get_mass2_parameter(const std::string&, int) const { vfcn_error(); return -1; }
-      virtual double get_mass2_parameter(const std::string&, int, int) const { vfcn_error(); return -1; }
-      virtual double get_mass_parameter(const std::string&) const { vfcn_error(); return -1; } 
-      virtual double get_mass_parameter(const std::string&, int) const { vfcn_error(); return -1; }
-      virtual double get_mass_parameter(const std::string&, int, int) const { vfcn_error(); return -1; }
-      virtual double get_dimensionless_parameter(const std::string&) const { vfcn_error(); return -1; }
-      virtual double get_dimensionless_parameter(const std::string&, int) const { vfcn_error(); return -1; }
-      virtual double get_dimensionless_parameter(const std::string&, int, int) const { vfcn_error(); return -1; }
+      virtual double get_mass4_parameter(const std::string&) const { vfcn_error(LOCAL_INFO); return -1; }
+      virtual double get_mass4_parameter(const std::string&, int) const { vfcn_error(LOCAL_INFO); return -1; }
+      virtual double get_mass4_parameter(const std::string&, int, int) const { vfcn_error(LOCAL_INFO); return -1; }
+      virtual double get_mass3_parameter(const std::string&) const { vfcn_error(LOCAL_INFO); return -1; }
+      virtual double get_mass3_parameter(const std::string&, int) const { vfcn_error(LOCAL_INFO); return -1; }
+      virtual double get_mass3_parameter(const std::string&, int, int) const { vfcn_error(LOCAL_INFO); return -1; }
+      virtual double get_mass2_parameter(const std::string&) const { vfcn_error(LOCAL_INFO); return -1; }
+      virtual double get_mass2_parameter(const std::string&, int) const { vfcn_error(LOCAL_INFO); return -1; }
+      virtual double get_mass2_parameter(const std::string&, int, int) const { vfcn_error(LOCAL_INFO); return -1; }
+      virtual double get_mass_parameter(const std::string&) const { vfcn_error(LOCAL_INFO); return -1; } 
+      virtual double get_mass_parameter(const std::string&, int) const { vfcn_error(LOCAL_INFO); return -1; }
+      virtual double get_mass_parameter(const std::string&, int, int) const { vfcn_error(LOCAL_INFO); return -1; }
+      virtual double get_dimensionless_parameter(const std::string&) const { vfcn_error(LOCAL_INFO); return -1; }
+      virtual double get_dimensionless_parameter(const std::string&, int) const { vfcn_error(LOCAL_INFO); return -1; }
+      virtual double get_dimensionless_parameter(const std::string&, int, int) const { vfcn_error(LOCAL_INFO); return -1; }
+      virtual double get_mass_eigenstate(const std::string&) const { vfcn_error(LOCAL_INFO); return -1; }
+      virtual double get_mass_eigenstate(const std::string&, int) const { vfcn_error(LOCAL_INFO); return -1; }
+      virtual double get_mass_eigenstate(const std::string&, int, int) const { vfcn_error(LOCAL_INFO); return -1; }
 };
 
 class Phys 
@@ -151,11 +223,12 @@ class Phys
       virtual ~Phys() {}      
 
       /// map based getters
-      virtual double get_Pole_Mass(const std::string&) const { vfcn_error(); return -1; };
-      virtual double get_Pole_Mass(const std::string&, int) const { vfcn_error(); return -1; };
-      virtual double get_Pole_Mixing(const std::string&) const { vfcn_error(); return -1; };
-      virtual double get_Pole_Mixing(const std::string&, int) const { vfcn_error(); return -1; };
-      virtual double get_Pole_Mixing(const std::string&, int, int) const { vfcn_error(); return -1; };
+      virtual double get_Pole_Mass(const std::string&) const { vfcn_error(LOCAL_INFO); return -1; };
+      virtual double get_Pole_Mass(const std::string&, int) const { vfcn_error(LOCAL_INFO); return -1; };
+      virtual double get_Pole_Mixing(const std::string&) const { vfcn_error(LOCAL_INFO); return -1; };
+      virtual double get_Pole_Mixing(const std::string&, int) const { vfcn_error(LOCAL_INFO); return -1; };
+      virtual double get_Pole_Mixing(const std::string&, int, int) const { vfcn_error(LOCAL_INFO); return -1; 
+};
 
       /// Overloads of these functions to allow access using PDG codes
       /// as defined in Models/src/particle_database.cpp
@@ -327,7 +400,12 @@ class RunparDer : public RunningPars {
       virtual const fmap&       get_mass0_map()          const { return fmap_empty; }  
       virtual const fmap_plain& get_mass0_map_extra()    const { return fmap_plain_empty; }
       virtual const fmap1&      get_mass0_map1()         const { return fmap1_empty; }
-      virtual const fmap2&      get_mass0_map2()         const { return fmap2_empty; }        
+      virtual const fmap2&      get_mass0_map2()         const { return fmap2_empty; } 
+      virtual const fmap&       get_mass_eigenstate_map()           const { return fmap_empty; }  
+      virtual const fmap_plain& get_mass_eigenstate_map_extra()     const { return fmap_plain_empty; }
+      virtual const fmap1&      get_mass_eigenstate_map1() const { return fmap1_empty; }
+      virtual const fmap2&      get_mass_eigenstate_map2()          const { return fmap2_empty; }  
+
    public:
       // During construction, link the object to its "parent", and to the Model object 
       // (which, most sensibly, should be a data member of the some derived class)
@@ -349,6 +427,9 @@ class RunparDer : public RunningPars {
       virtual double get_dimensionless_parameter(const std::string&) const;
       virtual double get_dimensionless_parameter(const std::string&, int i) const;
       virtual double get_dimensionless_parameter(const std::string&, int i, int j) const;
+      virtual double get_mass_eigenstate(const std::string&) const;
+      virtual double get_mass_eigenstate(const std::string&, int i) const;
+      virtual double get_mass_eigenstate(const std::string&, int i, int j) const;
 };
 
 
@@ -541,6 +622,26 @@ double  RunparDer<Model>::get_dimensionless_parameter(const std::string& par, in
    return getter_2indices(get_mass0_map2(), par, i, j, "dimensionless parameter", model, base_parent.get_index_offset());
 }
 
+/// mass_eigenstate
+template <class Model>
+double  RunparDer<Model>::get_mass_eigenstate(const std::string& mass) const
+{
+   return getter_0indices(get_mass_eigenstate_map(), get_mass_eigenstate_map_extra(), mass, "mass_eigenstate", model);
+}
+
+template <class Model>
+double  RunparDer<Model>::get_mass_eigenstate(const std::string& mass, int i) const
+{
+   return getter_1index(get_mass_eigenstate_map1(), mass, i, "mass eigenstate", model, base_parent.get_index_offset());
+}
+
+template <class Model>
+double  RunparDer<Model>::get_mass_eigenstate(const std::string& mass, int i, int j) const
+{
+   return getter_2indices(get_mass_eigenstate_map2(), mass, i, j, "mass_eigenstate", model, base_parent.get_index_offset());
+}
+
+
 /// Pole masses
 template <class Model>
 double PhysDer<Model>::get_Pole_Mass(const std::string& mass) const
@@ -636,7 +737,8 @@ double PhysDer<Model>::get_Pole_Mixing(const std::string& mixing, int i, int j) 
    MODEL_RUNNING_MEMBER_FUNCTIONS_SINGLE(ClassName,mass3) \
    MODEL_RUNNING_MEMBER_FUNCTIONS_SINGLE(ClassName,mass2) \
    MODEL_RUNNING_MEMBER_FUNCTIONS_SINGLE(ClassName,mass) \
-   MODEL_RUNNING_MEMBER_FUNCTIONS_SINGLE(ClassName,mass0)
+   MODEL_RUNNING_MEMBER_FUNCTIONS_SINGLE(ClassName,mass0) \
+   MODEL_RUNNING_MEMBER_FUNCTIONS_SINGLE(ClassName,mass_eigenstate)
 
 // Only two here so I didn't bother with another macro 
 #define MODEL_PHYS_MEMBER_FUNCTIONS(ClassName) \
@@ -687,7 +789,8 @@ double PhysDer<Model>::get_Pole_Mixing(const std::string& mixing, int i, int j) 
    MODEL_RUNNING_TEMPLATE_MEMBER_FUNCTIONS_SINGLE(ClassName,mass3) \
    MODEL_RUNNING_TEMPLATE_MEMBER_FUNCTIONS_SINGLE(ClassName,mass2) \
    MODEL_RUNNING_TEMPLATE_MEMBER_FUNCTIONS_SINGLE(ClassName,mass) \
-   MODEL_RUNNING_TEMPLATE_MEMBER_FUNCTIONS_SINGLE(ClassName,mass0)
+   MODEL_RUNNING_TEMPLATE_MEMBER_FUNCTIONS_SINGLE(ClassName,mass0) \
+   MODEL_RUNNING_TEMPLATE_MEMBER_FUNCTIONS_SINGLE(ClassName,mass_eigenstate)
 
 #define MODEL_PHYS_TEMPLATE_MEMBER_FUNCTIONS(ClassName) \
   template <class M> typename ClassName<M>::fmap       ClassName<M>::PoleMass_map(      ClassName<M>::fill_PoleMass_map()      ); \
