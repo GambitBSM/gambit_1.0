@@ -34,14 +34,6 @@ namespace Gambit
     /// Dependency resolver warnings
     warning& dependency_resolver_warning();
   }
-
-  namespace IniParser
-  {
-    /// IniFile errors
-    error& inifile_error();
-    /// IniFile warnings
-    warning& inifile_warning();
-  }
     
 }
 

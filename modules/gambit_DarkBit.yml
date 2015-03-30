@@ -157,11 +157,11 @@ Printer:
 ##############################
 
 Scanner:
-  use_scanner_plugin: mcmc
+  use_scanner: mcmc
   
 # Scanners
 #
-  plugins:
+  scanners:
     mcmc:
       plugin: toy_mcmc
       options:

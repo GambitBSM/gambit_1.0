@@ -188,7 +188,9 @@ namespace Funk
     {
         public:
             FunkBase() {}
+
             FunkBase(std::string funkType) : funkType(funkType) {}
+
             virtual ~FunkBase() {}
 
             // Standard handles

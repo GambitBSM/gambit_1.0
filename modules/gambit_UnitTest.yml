@@ -44,9 +44,9 @@ Printer:
 ##############################
 
 Scanner:
-  use_scanner_plugin: toy_mcmc
+  use_scanner: toy_mcmc
   
-  plugins:
+  scanners:
     toy_mcmc:
       point_number: 10
       output_file:  output

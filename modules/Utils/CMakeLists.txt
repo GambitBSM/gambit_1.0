@@ -31,6 +31,7 @@ set(source_files src/decay_table.cpp
                  src/threadsafe_rng.cpp
                  src/type_equivalency.cpp
                  src/util_functions.cpp
+                 src/yaml_parser_base.cpp   
                  src/ASCIItableReader.cpp
 )
 
@@ -64,8 +65,9 @@ set(header_files include/gambit/Utils/base_functions.hpp
                  include/gambit/Utils/util_macros.hpp
                  include/gambit/Utils/util_types.hpp
                  include/gambit/Utils/variadic_functions.hpp
-                 include/gambit/Utils/ASCIItableReader.hpp
                  include/gambit/Utils/yaml_options.hpp
+                 include/gambit/Utils/yaml_parser_base.hpp
+                 include/gambit/Utils/ASCIItableReader.hpp
 )
 
 add_gambit_library(Utils OPTION OBJECT SOURCES ${source_files} HEADERS ${header_files})

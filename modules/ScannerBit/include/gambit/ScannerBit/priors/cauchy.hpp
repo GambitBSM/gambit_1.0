@@ -25,7 +25,6 @@
 
 #include <vector>
 #include <cmath>
-#include <algorithm>
 
 #include "gambit/Utils/yaml_options.hpp"
 #include "gambit/ScannerBit/cholesky.hpp"
@@ -35,14 +34,14 @@
 namespace Gambit
 {
         namespace Priors
-        {
+        {       
                 /// 2D Gaussian prior. Takes covariance matrix as arguments
                 class Cauchy : public BasePrior
                 {
                 private:
                         std::vector <std::string> param;
                         std::vector <double> mean;
-                        Cholesky col;
+                        mutable Cholesky col;
                         
                 public: 
                         // Constructor defined in cauchy.cpp
@@ -67,6 +66,12 @@ namespace Gambit
                                 {
                                         outputMap[*str_it] = *(v_it++) + *(m_it++);
                                 }
+                        }
+                        
+                        double operator()(const std::vector<double> &vec) const
+                        {
+                                static double norm = std::log(Gambit::Scanner::pi()*col.DetSqrt());
+                                return -log(1.0 + col.Square(vec, mean)) - norm;
                         }
                 };
         

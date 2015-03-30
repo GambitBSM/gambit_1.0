@@ -211,7 +211,7 @@ namespace Gambit
                                                                 range.second = temp;
                                                         }
                                                         
-                                                        my_subpriors.push_back(new RangePrior1D<flatprior>(joined_parname,range));
+                                                        my_subpriors.push_back(new RangePrior1D<flatprior, flatop>(joined_parname,range));
                                                 }
                                                 else 
                                                 {

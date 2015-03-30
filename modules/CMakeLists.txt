@@ -54,6 +54,12 @@ set(CMAKE_LINK_DEPENDS_NO_SHARED 1)
 # Include ./cmake in search path for projects
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake)
 
+# Add common system library search variables to cmake library search variable, used by find_library
+
+set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} $ENV{LIBRARY_PATH})
+string(REPLACE ":" ";" CMAKE_LIBRARY_PATH "${CMAKE_LIBRARY_PATH}")
+message("CMAKE_LIBRARY_PATH=${CMAKE_LIBRARY_PATH}")
+
 # When building, use the install RPATH already
 set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
 
@@ -73,11 +79,51 @@ foreach(module yaml os re datetime sys getopt shutil itertools)
   find_python_module(${module} REQUIRED)
 endforeach()
 
+# Reprocess the ditch set into a comma-separated list
+string (REPLACE ";" "," itch_with_commas "${itch}")
+
+# Generate the cmake_variables.hpp.in file
+# Ben: cmake_variables.py seems to have vanished! I think this section of code 
+# remained due to some automatic merging, but it is now redundant? I think
+# "locate_scanners.py" is now generating the cmake_variables.hpp.in file.
+message("${Yellow}-- Updating GAMBIT with config data${ColourReset}")
+set(update_config ${PROJECT_SOURCE_DIR}/cmake/cmake_variables.py)
+execute_process(COMMAND python ${update_config} WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
+message("${Yellow}-- Updating GAMBIT with config data - done.${ColourReset}")
+
+message("${Yellow}-- Updating GAMBIT scanner cmake files${ColourReset}")
+set(locate_scanners ${PROJECT_SOURCE_DIR}/cmake/locate_scanners.py -x __not_a_real_name__,${itch_with_commas})
+execute_process(COMMAND python ${locate_scanners} WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
+message("${Yellow}-- Updating GAMBIT scanner cmake files - done.${ColourReset}")
+
+# Generate the CMakeLists.txt files for GAMBIT modules
+message("${Yellow}-- Updating GAMBIT module CMake files...${ColourReset}")
+set(update_cmakelists ${PROJECT_SOURCE_DIR}/cmake/update_cmakelists.py -x __not_a_real_name__,${itch_with_commas})
+execute_process(COMMAND python ${update_cmakelists} WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
+message("${Yellow}-- Updating GAMBIT module cmake files - done.${ColourReset}")
+
 # Do OSX checks
 include(cmake/MacOSX.cmake)
 
 # Enable Fortran compiler
 enable_language(Fortran)
+
+# Set the version number
+set(GAMBIT_VERSION_MAJOR 1)
+set(GAMBIT_VERSION_MINOR 0)
+
+# Finish configuring the header file to pass some of the CMake settings to the source code
+configure_file("${PROJECT_SOURCE_DIR}/cmake/cmake_variables.hpp.in"
+               "${PROJECT_BINARY_DIR}/cmake/gambit/cmake/cmake_variables.hpp")
+
+# Add the binary tree to the search path for include files so that we will find cmake_variables.hpp
+include_directories("${PROJECT_BINARY_DIR}")
+include_directories("${PROJECT_BINARY_DIR}/cmake")
+
+# Generate the backend_locations.yaml file if there isn't one
+if(NOT EXISTS "${PROJECT_SOURCE_DIR}/config/backend_locations.yaml")
+  configure_file("${PROJECT_SOURCE_DIR}/config/backend_locations.yaml.example" "${PROJECT_SOURCE_DIR}/config/backend_locations.yaml" COPYONLY)
+endif()
 
 # Add -fPIC for 64 bit systems
 if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64")
@@ -181,7 +227,7 @@ message("${Yellow}-- Updating GAMBIT with config data - done.${ColourReset}")
 
 # Finish configuring the header file to pass some of the CMake settings to the source code
 configure_file("${PROJECT_SOURCE_DIR}/cmake/cmake_variables.hpp.in"
-               "${PROJECT_BINARY_DIR}/gambit/cmake/cmake_variables.hpp")
+               "${PROJECT_BINARY_DIR}/cmake/gambit/cmake/cmake_variables.hpp")
 
 # Add the binary tree to the search path for include files so that we will find cmake_variables.hpp
 include_directories("${PROJECT_BINARY_DIR}")

@@ -138,9 +138,9 @@ objective_plugin(flat_prior, version(1, 0, 0))
         
         plugin_constructor
         {
-                keys = get_keys();
-                set_dimension(keys.size());
-                range = get_inifile_value<decltype(range)>("range", decltype(range)(0.0, 1.0));
+                //keys = get_keys();
+                //set_dimension(keys.size());
+                //range = get_inifile_value<decltype(range)>("range", decltype(range)(0.0, 1.0));
         }
         
         void plugin_main(const std::vector<double> &unitpars, std::unordered_map<std::string, double> &outputMap)
@@ -148,5 +148,11 @@ objective_plugin(flat_prior, version(1, 0, 0))
                 auto u_it = unitpars.begin();
                 for (auto it = keys.begin(), end = keys.end(); it != end; it++)
                         outputMap[*it] = range.first + (range.second - range.first)*(*u_it++);
+        }
+        
+        double plugin_main(const std::vector<double>&)
+        {
+                std::cout << "It works!" << std::endl;
+                return 0.0;
         }
 }
