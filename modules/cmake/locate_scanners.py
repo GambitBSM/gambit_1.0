@@ -317,7 +317,7 @@ def main(argv):
         # Create the locations yaml files from the example if needed
         if not os.path.isfile(config_file): shutil.copyfile(config_file+".example",config_file)
         # Load the locations yaml file, and work out which libs are present
-        yaml_file = yaml.load(open(config_file), yaml.cyaml.CLoader)
+        yaml_file = yaml.load(open(config_file))
         for plugin in plugins:
             plugin_name = plugin[0]
             inc_commands = []
