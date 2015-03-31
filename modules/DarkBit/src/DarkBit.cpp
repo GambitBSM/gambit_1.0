@@ -2843,7 +2843,7 @@ namespace Gambit {
       }
    
       // Debug FIXME needs testing once Higgs decay bfs and masses are entered into the processcatalog
-      if (true)
+      if (false)
       {
         for (int j=0; j<29; j++)
         {
@@ -2945,12 +2945,14 @@ namespace Gambit {
     void IC79WL_full(nudata &result)
     {
       using namespace Pipes::IC79WL_full;
-      double sigpred, bgpred, lnLike, pval, mass = *Dep::mwimp, annrate = *Dep::annihilation_rate_Sun;
+      double sigpred, bgpred, lnLike, pval;
       int totobs;
       char experiment[300] = "IC-79 WL";
-      void* context = NULL;
-      BEreq::nubounds(experiment[0], mass, annrate, byVal(*Dep::nuyield_ptr), sigpred, bgpred, 
+      void* context = &totobs;
+      cout << "Calling BEreq::nubounds with " << experiment << " " << *Dep::mwimp << " " << *Dep::annihilation_rate_Sun << endl;
+      BEreq::nubounds(experiment[0], *Dep::mwimp, *Dep::annihilation_rate_Sun, byVal(*Dep::nuyield_ptr), sigpred, bgpred, 
        totobs, lnLike, pval, 4, false, 0.0, 0.0, context);
+      cout << "finished." << endl;
       result.signal = sigpred;
       result.bg = bgpred;
       result.nobs = totobs;
