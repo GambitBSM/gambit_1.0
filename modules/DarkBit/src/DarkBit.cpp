@@ -2900,7 +2900,7 @@ namespace Gambit {
       char experiment[300] = "IC-22";
       void* context = NULL;
       BEreq::nubounds(experiment[0], *Dep::mwimp, *Dep::annihilation_rate_Sun, byVal(*Dep::nuyield_ptr), sigpred, bgpred, 
-       totobs, lnLike, pval, 4, false, 0.0, 0.0, context);
+       totobs, lnLike, pval, 4, true, false, 0.0, 0.0, context);
       result.signal = sigpred;
       result.bg = bgpred;
       result.nobs = totobs;
@@ -2925,7 +2925,7 @@ namespace Gambit {
       char experiment[300] = "IC-79 WH";
       void* context = NULL;
       BEreq::nubounds(experiment[0], *Dep::mwimp, *Dep::annihilation_rate_Sun, byVal(*Dep::nuyield_ptr), sigpred, bgpred, 
-       totobs, lnLike, pval, 4, false, 0.0, 0.0, context);
+       totobs, lnLike, pval, 4, true, false, 0.0, 0.0, context);
       result.signal = sigpred;
       result.bg = bgpred;
       result.nobs = totobs;
@@ -2948,11 +2948,9 @@ namespace Gambit {
       double sigpred, bgpred, lnLike, pval;
       int totobs;
       char experiment[300] = "IC-79 WL";
-      void* context = &totobs;
-      cout << "Calling BEreq::nubounds with " << experiment << " " << *Dep::mwimp << " " << *Dep::annihilation_rate_Sun << endl;
+      void* context = NULL;
       BEreq::nubounds(experiment[0], *Dep::mwimp, *Dep::annihilation_rate_Sun, byVal(*Dep::nuyield_ptr), sigpred, bgpred, 
-       totobs, lnLike, pval, 4, false, 0.0, 0.0, context);
-      cout << "finished." << endl;
+       totobs, lnLike, pval, 4, true, false, 0.0, 0.0, context);
       result.signal = sigpred;
       result.bg = bgpred;
       result.nobs = totobs;
@@ -2976,7 +2974,7 @@ namespace Gambit {
       char experiment[300] = "IC-79 SL";
       void* context = NULL;
       BEreq::nubounds(experiment[0], *Dep::mwimp, *Dep::annihilation_rate_Sun, byVal(*Dep::nuyield_ptr), sigpred, bgpred, 
-       totobs, lnLike, pval, 4, false, 0.0, 0.0, context);
+       totobs, lnLike, pval, 4, true, false, 0.0, 0.0, context);
       result.signal = sigpred;
       result.bg = bgpred;
       result.nobs = totobs;

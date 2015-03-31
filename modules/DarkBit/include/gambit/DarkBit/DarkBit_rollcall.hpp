@@ -885,7 +885,7 @@ START_MODULE
       DEPENDENCY(annihilation_rate_Sun, double)
       DEPENDENCY(nuyield_ptr, nuyield_functype)  
       BACKEND_REQ(nubounds, (), void, (const char&, const double&, const double&, double(*)(const double&, const int&, void*&), double&, double&,
-                                       int&, double&, double&, const int&, const bool&, const double&, const double&, void*&))
+                                       int&, double&, double&, const int&, const bool&, const bool&, const double&, const double&, void*&))
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -937,7 +937,7 @@ START_MODULE
       DEPENDENCY(annihilation_rate_Sun, double)
       DEPENDENCY(nuyield_ptr, nuyield_functype)  
       BACKEND_REQ(nubounds, (), void, (const char&, const double&, const double&, double(*)(const double&, const int&, void*&), double&, double&,
-                                       int&, double&, double&, const int&, const bool&, const double&, const double&, void*&))
+                                       int&, double&, double&, const int&, const bool&, const bool&, const double&, const double&, void*&))
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -989,7 +989,7 @@ START_MODULE
       DEPENDENCY(annihilation_rate_Sun, double)
       DEPENDENCY(nuyield_ptr, nuyield_functype)  
       BACKEND_REQ(nubounds, (), void, (const char&, const double&, const double&, double(*)(const double&, const int&, void*&), double&, double&,
-                                       int&, double&, double&, const int&, const bool&, const double&, const double&, void*&))
+                                       int&, double&, double&, const int&, const bool&, const bool&, const double&, const double&, void*&))
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -1041,7 +1041,7 @@ START_MODULE
       DEPENDENCY(annihilation_rate_Sun, double)
       DEPENDENCY(nuyield_ptr, nuyield_functype)  
       BACKEND_REQ(nubounds, (), void, (const char&, const double&, const double&, double(*)(const double&, const int&, void*&), double&, double&,
-                                       int&, double&, double&, const int&, const bool&, const double&, const double&, void*&))
+                                       int&, double&, double&, const int&, const bool&, const bool&, const double&, const double&, void*&))
     #undef FUNCTION
   #undef CAPABILITY
 
