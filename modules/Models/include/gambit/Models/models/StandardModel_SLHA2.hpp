@@ -60,8 +60,9 @@
   DEFINEPARS(mE, mMu, mTau)        // 9,11,7 
   DEFINEPARS(mNu1, mNu2, mNu3)     // 10,12,8
 
-  DEFINEPARS(mD, mU, mS)           // 21,22,23
-  DEFINEPARS(mCmC, mBmB, mT)       // 24,5,6
+  DEFINEPARS(mD, mU)               // 21,22
+  DEFINEPARS(mS, mCmC)             // 23,24
+  DEFINEPARS(mBmB, mT)             // 5,6
 #undef MODEL
 
 #endif 

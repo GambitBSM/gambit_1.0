@@ -162,13 +162,14 @@ namespace Gambit
       logger() << EOM;
     }
 
-    /// Test out consistency of SMplusUV object
+    /// Test out consistency of SMplusUV object (and pre-extracted SM Spectrum*)
     void specbit_test_SMplusUV (double &result)
     {
       using namespace Pipes::specbit_test_SMplusUV;
       const SMplusUV* matched_spectra = *Dep::MSSM_spectrum;
-
-      SMplusUV_test(matched_spectra); // Run consistency tests on Spectrum contents vs SMInputs 
+      const Spectrum* sm = *Dep::SM_spectrum; 
+ 
+      SMplusUV_test(matched_spectra,sm); // Run consistency tests on Spectrum contents vs SMInputs 
       logger() << EOM;
     }
 

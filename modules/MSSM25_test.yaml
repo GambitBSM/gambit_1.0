@@ -1,4 +1,5 @@
 Parameters:
+  StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
   MSSM25atQ: !import LesHouches.in.MSSM_1.yaml
 
 Priors:

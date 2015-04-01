@@ -1078,7 +1078,7 @@ namespace Gambit
 
       // Test that output of Standard Model wrapper (e.g. QedQcdWrapper) matches
       // SMINPUTS sufficiently accurately
-      void SMplusUV_test(const SMplusUV* matched_spectra)
+      void SMplusUV_test(const SMplusUV* matched_spectra, const Spectrum* smin)
       {
          // Extract pieces of SMplusUV to make it clear what they are supposed to be
          SMInputs sminputs = matched_spectra->get_SMINPUTS();
@@ -1148,6 +1148,33 @@ namespace Gambit
          OUTPUT << "mB (MSbar)   : " << SM->runningpars.get_mass_parameter("b") << std::endl;
          test_within_tol( sminputs.mBmB, SM->runningpars.get_mass_parameter("b"), tolm, "mb(mb)" );
          OUTPUT << EOM;
+
+
+         // Check that pre-extracted SM Spectrum* and the one from SMplusUV object match
+         SM->runningpars.RunToScale(sminputs.mZ);
+         smin->runningpars.RunToScale(sminputs.mZ);
+         OUTPUT << "Checking match between SM Spectrum* retrieved in different ways..." << std::endl;
+         test_within_tol(SM->phys.get_Pole_Mass("Z"),
+                         smin->phys.get_Pole_Mass("Z"),                          tol, "Z pole" );
+         test_within_tol(SM->phys.get_Pole_Mass("t"),
+                         smin->phys.get_Pole_Mass("t"),                          tol, "top pole" );
+         test_within_tol(SM->phys.get_Pole_Mass("tau"),
+                         smin->phys.get_Pole_Mass("tau"),                        tol, "tau pole" );
+         test_within_tol(SM->runningpars.get_dimensionless_parameter("alpha"),
+                         smin->runningpars.get_dimensionless_parameter("alpha"), tol, "1/alpha(mZ)" );
+         test_within_tol(SM->runningpars.get_dimensionless_parameter("alphaS"), 
+                         smin->runningpars.get_dimensionless_parameter("alphaS"),tol, "alphaS(mZ)" );
+         test_within_tol(SM->runningpars.get_mass_parameter("u"), 
+                         smin->runningpars.get_mass_parameter("u"),              tolm, "mu(2)" );
+         test_within_tol(SM->runningpars.get_mass_parameter("d"),   
+                         smin->runningpars.get_mass_parameter("d"),              tolm, "md(2)" );
+         test_within_tol(SM->runningpars.get_mass_parameter("s"),   
+                         smin->runningpars.get_mass_parameter("s"),              tolm, "ms(2)" );
+         test_within_tol(SM->runningpars.get_mass_parameter("c"),           
+                         smin->runningpars.get_mass_parameter("c"),              tolm, "mc(mc)" );
+         test_within_tol(SM->runningpars.get_mass_parameter("b"),   
+                         smin->runningpars.get_mass_parameter("b"),              tolm, "mb(mb)" );
+
 
          // Check light quark mass ratios 
          OUTPUT << "Checking light quark mass ratios:" << std::endl;

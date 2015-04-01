@@ -344,7 +344,9 @@ namespace Gambit
 
     // Functions to changes the capability associated with a Spectrum object to 
     // "SM_spectrum"
-    void convert_MSSM_to_SM   (const Spectrum* &result) {result = *Pipes::convert_MSSM_to_SM::Dep::MSSM_spectrum;}
+    //TODO: "temporarily" removed
+    //void convert_MSSM_to_SM   (const Spectrum* &result) {result = *Pipes::convert_MSSM_to_SM::Dep::MSSM_spectrum;}
+
     //void convert_NMSSM_to_SM  (Spectrum* &result) {result = *Pipes::convert_NMSSM_to_SM::Dep::NMSSM_spectrum;}
     //void convert_E6MSSM_to_SM (Spectrum* &result) {result = *Pipes::convert_E6MSSM_to_SM::Dep::E6MSSM_spectrum;}
 
@@ -402,17 +404,26 @@ namespace Gambit
     }
 
     /// @{
+    /// Functions to decompose SMplusUV object (of type MSSM_spectrum)
 
     /// Retrieve Spectrum* to MSSM UV model from SMplusUV object
     /// DEPENDENCY(MSSM_spectrum, SMplusUV)
-    void get_MSSM_spectrum_as_SpectrumPtr (const Spectrum* &result)
+    void get_MSSM_spectrum_as_SpectrumPtr_from_matchedMSSM (const Spectrum* &result)
     {
-      namespace myPipe = Pipes::get_MSSM_spectrum_as_SpectrumPtr;
+      namespace myPipe = Pipes::get_MSSM_spectrum_as_SpectrumPtr_from_matchedMSSM;
       const SMplusUV* matched_spectra(*myPipe::Dep::MSSM_spectrum);
       result = matched_spectra->get_UV();
     }
 
     /// @} 
+    /// Retrieve Spectrum* to MSSM UV model from SMplusUV object
+    /// DEPENDENCY(MSSM_spectrum, SMplusUV)
+    void get_SM_spectrum_as_SpectrumPtr_from_matchedMSSM (const Spectrum* &result)
+    {
+      namespace myPipe = Pipes::get_SM_spectrum_as_SpectrumPtr_from_matchedMSSM;
+      const SMplusUV* matched_spectra(*myPipe::Dep::MSSM_spectrum);
+      result = matched_spectra->get_SM();
+    }
 
 
     // Dump whatever is in the spectrum object to SLHA

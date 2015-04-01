@@ -77,11 +77,10 @@ START_MODULE
     // ============================== 
 
     // Extract appropriate Spectrum* from SMplusUV struct, while preserving the Capability
-    #define FUNCTION get_MSSM_spectrum_as_SpectrumPtr
+    #define FUNCTION get_MSSM_spectrum_as_SpectrumPtr_from_matchedMSSM
     START_FUNCTION(const Spectrum*)
     DEPENDENCY(MSSM_spectrum, const SMplusUV*)
     #undef FUNCTION
-
 
     // Get MSSM spectrum as an SLHAea object
     #define FUNCTION get_MSSM_spectrum_as_SLHAea
@@ -112,12 +111,20 @@ START_MODULE
   // equivalent to:
   #define CAPABILITY SM_spectrum
   START_CAPABILITY                          
-    #define FUNCTION convert_MSSM_to_SM
-    START_FUNCTION(const Spectrum*)
-    DEPENDENCY(MSSM_spectrum, const Spectrum*)
-    #undef FUNCTION 
+    // TODO: NOTE! I removed this because currently the string names don't quite match correctly and the MSSM version doesn't provide all the Standard Model pole masses.
 
-    // etc. for other functions
+    //  #define FUNCTION convert_MSSM_to_SM
+    //  START_FUNCTION(const Spectrum*)
+    //  DEPENDENCY(MSSM_spectrum, const Spectrum*)
+    //  #undef FUNCTION 
+
+    //  // etc. for other functions
+
+    // Extract appropriate Spectrum* from SMplusUV struct, starting from MSSM_spectrum
+    #define FUNCTION get_SM_spectrum_as_SpectrumPtr_from_matchedMSSM
+    START_FUNCTION(const Spectrum*)
+    DEPENDENCY(MSSM_spectrum, const SMplusUV*)
+    #undef FUNCTION
 
   #undef CAPABILITY
 
@@ -169,7 +176,8 @@ START_MODULE
      #define FUNCTION specbit_test_SMplusUV
      START_FUNCTION(double)
      DEPENDENCY(MSSM_spectrum, const SMplusUV*)
-     #undef FUNCTION
+     DEPENDENCY(SM_spectrum, const Spectrum*)
+   #undef FUNCTION
   #undef CAPABILITY
 
 

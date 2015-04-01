@@ -54,39 +54,16 @@ START_CAPABILITY                          //  functions in this module that can 
 
     #define FUNCTION SMHiggs_decays
     START_FUNCTION(DecayTable::Entry)
-    DEPENDENCY(SM_spectrum, const Spectrum*) 
+    DEPENDENCY(SM_spectrum, Spectrum*) 
     #undef FUNCTION
 
     #define FUNCTION MSSMHiggs_decays
     START_FUNCTION(DecayTable::Entry)
-    DEPENDENCY(MSSM_spectrum, const Spectrum*) 
+    DEPENDENCY(MSSM_spectrum, Spectrum*) 
     ALLOW_MODELS(MSSM78atQ)
     #undef FUNCTION
 
   #undef CAPABILITY
-
-
-  #define CAPABILITY mu_decay_rates
-  START_CAPABILITY
-
-    #define FUNCTION mu_decays
-    START_FUNCTION(DecayTable::Entry)
-    DEPENDENCY(SM_spectrum, const Spectrum*) 
-    #undef FUNCTION
-
-  #undef CAPABILITY
-
-
-  #define CAPABILITY BF_Htobbbar
-  START_CAPABILITY
-
-    #define FUNCTION BF_H_to_bbbar
-    START_FUNCTION(double)
-    DEPENDENCY(Higgs_decay_rates, DecayTable::Entry) 
-    #undef FUNCTION
-
-  #undef CAPABILITY
-
 
   #define CAPABILITY decay_rates
   START_CAPABILITY

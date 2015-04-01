@@ -100,13 +100,6 @@ namespace Gambit
     /// SM decays: W+
     void W_plus_decays (DecayTable::Entry& result) 
     {
-      // Remember that result does not arrive pristine, but contains the result of the last point.  Make sure to overwrite it fully!
-      //using namespace Pipes::mu_decays;
-      //const Spectrum* spec = *Dep::SM_spectrum;
-      //double m_mu = spec->phys.get_Pole_Mass("mu+"); // Maybe you depend on the SM masses, maybe not
-      //result.width_in_GeV = 15.0;                    // (number needs checking against PDG)
-      //result.set_BF(1.0, "e+", "nu_e");              // Set the BF (probably not really 100%)
-      // <<< from SpecBit_development (bjf)
       result.width_in_GeV = 2.08;                    
       result.positive_error = 4.0e-02;
       result.negative_error = 4.0e-02;
