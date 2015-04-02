@@ -42,6 +42,7 @@ START_CAPABILITY                          //  functions in this module that can 
   #define FUNCTION decayTest              // Name of an observable function
   START_FUNCTION(double)                  // Declare that this function calculates the observable as a double precision variable
   BACKEND_REQ(sdecay, (), void, ())       // Register the backend function "sdecay"
+  BACKEND_REQ(cb_widtha_hdec, (), widtha_hdec_type) // A decays
   BACKEND_REQ(cb_sd_top2body, (), sd_top2body_type)
   BACKEND_REQ(cb_sd_topwidth, (), sd_topwidth_type)
   #undef FUNCTION

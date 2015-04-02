@@ -12,7 +12,7 @@
 ///          (p.scott@imperial.ac.uk)
 ///  \date 2014 Aug
 ///  \author Csaba Balazs
-///  \date 2015 Jan-Mar
+///  \date 2015 Jan-Apr
 ///
 ///  *********************************************
 
@@ -36,10 +36,11 @@ namespace Gambit
       BEreq::sdecay();
       result = BEreq::cb_sd_top2body->brtopbw; 
       result = BEreq::cb_sd_topwidth->toptot2; 
+      result = BEreq::cb_widtha_hdec->awdth; 
       cout << "top 2 body Br's: " << BEreq::cb_sd_top2body->brtopbw << endl;
       cout << "top total width: " << BEreq::cb_sd_topwidth->toptot2 << endl;
+      cout << "A total width: " << BEreq::cb_widtha_hdec->awdth << endl;
     }                                                                             // CsB <
-
 
     /// Calculate decay rates for Higgs in the SM
     void SMHiggs_decays (DecayTable::Entry& result) 
@@ -275,6 +276,16 @@ namespace Gambit
       result.positive_error = 8.0e-05;
       result.negative_error = 8.0e-05;
       //See PDG meson sheet in DecayBit/data/PDG if you want BFs               
+    }
+
+    /// MSSM decays: A
+    void A_decays (DecayTable::Entry& result) 
+    {
+  /// using namespace Pipes::A_decays;
+      using namespace Pipes::decayTest;
+      BEreq::sdecay();
+      result.width_in_GeV = BEreq::cb_widtha_hdec->awdth; 
+      cout << "A total width: " << BEreq::cb_widtha_hdec->awdth << endl;
     }
 
     /// Collect all the DecayTable entries into an actual DecayTable 
