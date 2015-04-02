@@ -49,7 +49,7 @@ namespace Gambit
       // Module function asks for Spectrum* with capability MSSM_spectrum.
       // i.e. has DEPENDENCY(MSSM_spectrum, Spectrum*) 
       namespace Pipe = Pipes::exampleRead;
-      Spectrum* spec = *Pipe::Dep::MSSM_spectrum;
+      const Spectrum* spec = *Pipe::Dep::MSSM_spectrum;
 
       // Extract SLHAea object
       // This copies the data out. Could possible change it to pass out a
