@@ -34,11 +34,21 @@ namespace Gambit
     {
       using namespace Pipes::decayTest;
       BEreq::sdecay();
-      result = BEreq::cb_sd_top2body->brtopbw; 
-      result = BEreq::cb_sd_topwidth->toptot2; 
-      result = BEreq::cb_widtha_hdec->awdth; 
-      cout << "top 2 body Br's: " << BEreq::cb_sd_top2body->brtopbw << endl;
-      cout << "top total width: " << BEreq::cb_sd_topwidth->toptot2 << endl;
+      /// result = BEreq::cb_sd_top2body->brtopbw; 
+      /// result = BEreq::cb_sd_topwidth->toptot2; 
+      /// cout << "top 2 body Br's: " << BEreq::cb_sd_top2body->brtopbw << endl;
+      /// cout << "top total width: " << BEreq::cb_sd_topwidth->toptot2 << endl;
+      /// A -> SM decays:
+      cout << "BR(A -> b       bb     ): " << BEreq::cb_widtha_hdec->abrb << endl;
+      cout << "BR(A -> tau+    tau-   ): " << BEreq::cb_widtha_hdec->abrl << endl;
+      cout << "BR(A -> mu+     mu-    ): " << BEreq::cb_widtha_hdec->abrm << endl;
+      cout << "BR(A -> s       sb     ): " << BEreq::cb_widtha_hdec->abrs << endl;
+      cout << "BR(A -> c       cb     ): " << BEreq::cb_widtha_hdec->abrc << endl;
+      cout << "BR(A -> t       tb     ): " << BEreq::cb_widtha_hdec->abrt << endl;
+      cout << "BR(A -> g       g      ): " << BEreq::cb_widtha_hdec->abrg << endl;
+      cout << "BR(A -> gam     gam    ): " << BEreq::cb_widtha_hdec->abrga << endl;
+      cout << "BR(A -> Z       gam    ): " << BEreq::cb_widtha_hdec->abrzga << endl;
+      cout << "BR(A -> Z       h      ): " << BEreq::cb_widtha_hdec->abrz << endl;
       cout << "A total width: " << BEreq::cb_widtha_hdec->awdth << endl;
     }                                                                             // CsB <
 
