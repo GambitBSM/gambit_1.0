@@ -5,8 +5,8 @@
 # \file
 #
 #  Script to find scanner (and test function)
-#  libraries and write cmake_variables.hpp.in
-#  file.
+#  libraries and write various ScannerBit-
+#  related config and compilation files.
 #
 #*********************************************
 #
@@ -16,9 +16,13 @@
 #          (p.scott@imperial.ac.uk)
 #  \date 2014 Dec
 #  \date 2015 Jan
-#  \date 2015 February -- J. Cornell
-#    (removed -rdynamic from OSX linker flags)
+# 
+#  \author Jonathan Cornell
+#  \date 2015 February (removed -rdynamic from
+#                       OSX linker flags)
 #
+#  \author Greg Martinez
+#  \date 2015 
 #
 #*********************************************
 import re
