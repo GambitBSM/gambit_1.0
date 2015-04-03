@@ -35,17 +35,17 @@
 #define MODULE DecayBit
 START_MODULE
 
-#define CAPABILITY testSUSYBRs            // A physical observable or likelihood that this module can calculate.  There may be one or more 
-START_CAPABILITY                          //  functions in this module that can calculate this particular thing in different ways.
-
-  #define FUNCTION decayTest              // Name of an observable function
-  START_FUNCTION(double)                  // Declare that this function calculates the observable as a double precision variable
-  BACKEND_REQ(sdecay, (), void, ())                 // Register the backend function "sdecay"
-  BACKEND_REQ(cb_sd_top2body, (), sd_top2body_type)
-  BACKEND_REQ(cb_sd_topwidth, (), sd_topwidth_type)
-  #undef FUNCTION
+  #define CAPABILITY testSUSYBRs            // A physical observable or likelihood that this module can calculate.  There may be one or more 
+  START_CAPABILITY                          //  functions in this module that can calculate this particular thing in different ways.
+  
+    #define FUNCTION decayTest              // Name of an observable function
+    START_FUNCTION(double)                  // Declare that this function calculates the observable as a double precision variable
+    BACKEND_REQ(sdecay, (), void, ())                 // Register the backend function "sdecay"
+    BACKEND_REQ(cb_sd_top2body, (), sd_top2body_type)
+    BACKEND_REQ(cb_sd_topwidth, (), sd_topwidth_type)
+    #undef FUNCTION
 	
-#undef CAPABILITY
+  #undef CAPABILITY
 
   #define CAPABILITY Higgs_decay_rates
   START_CAPABILITY
@@ -61,9 +61,14 @@ START_CAPABILITY                          //  functions in this module that can 
     ALLOW_MODELS(MSSM78atQ)
     #undef FUNCTION
 
+  #undef CAPABILITY
+  
+  #define CAPABILITY A_decay_rates
+  START_CAPABILITY
+
     #define FUNCTION A_SM_decays
-    START_FUNCTION(double)
-    // START_FUNCTION(DecayTable::Entry)
+    START_FUNCTION(DecayTable::Entry)
+    //ALLOW_MODELS(MSSM78atQ)
     BACKEND_REQ(sdecay, (), void, ())                 // Register the backend function "sdecay"
     BACKEND_REQ(cb_widtha_hdec, (), widtha_hdec_type) // A -> SM decays
     #undef FUNCTION
@@ -93,6 +98,9 @@ START_CAPABILITY                          //  functions in this module that can 
     DEPENDENCY(rho_minus_decay_rates, DecayTable::Entry)
     DEPENDENCY(rho_plus_decay_rates, DecayTable::Entry)
     DEPENDENCY(omega_decay_rates, DecayTable::Entry)
+    // The following are only relevant for the MSSM, and should eventually be made model-conditional dependencies
+    DEPENDENCY(A_decay_rates, DecayTable::Entry) 
+
     #undef FUNCTION
 
   #undef CAPABILITY

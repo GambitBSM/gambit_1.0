@@ -289,26 +289,24 @@ namespace Gambit
     }
 
     /// MSSM decays: A -> SM
-    void A_SM_decays (double &result) 
-    // void A_SM_decays (DecayTable::Entry& result) 
+    void A_SM_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::A_SM_decays;
       BEreq::sdecay();
-      result = BEreq::cb_widtha_hdec->awdth;
-      cout << "A total width: " << result;
-      // result.width_in_GeV = BEreq::cb_widtha_hdec->awdth; // CsB: check that SUSYHIT gives the width in GeV
-      // result.positive_error = 0.0;
-      // result.negative_error = 0.0;
-      // result.set_BF(BEreq::cb_widtha_hdec->abrb, 0.0, "b", "bbar");              
-      // result.set_BF(BEreq::cb_widtha_hdec->abrl, 0.0, "tau+", "tau-");              
-      // result.set_BF(BEreq::cb_widtha_hdec->abrm, 0.0, "mu+", "mu-");              
-      // result.set_BF(BEreq::cb_widtha_hdec->abrs, 0.0, "s", "sbar");              
-      // result.set_BF(BEreq::cb_widtha_hdec->abrc, 0.0, "c", "cbar");              
-      // result.set_BF(BEreq::cb_widtha_hdec->abrt, 0.0, "t", "tbar");              
-      // result.set_BF(BEreq::cb_widtha_hdec->abrg, 0.0, "g", "g");              
-      // result.set_BF(BEreq::cb_widtha_hdec->abrga, 0.0, "gamma", "gamma");              
-      // result.set_BF(BEreq::cb_widtha_hdec->abrzga, 0.0, "Z0", "gamma");              
-      // result.set_BF(BEreq::cb_widtha_hdec->abrz, 0.0, "Z0", "h0_1"); // CsB: check if h0_1 is the lightest scalar Higgs
+      result.width_in_GeV = BEreq::cb_widtha_hdec->awdth; // CsB: check that SUSYHIT gives the width in GeV
+      result.positive_error = 0.0;
+      result.negative_error = 0.0;
+      result.set_BF(BEreq::cb_widtha_hdec->abrb, 0.0, "b", "bbar");              
+      result.set_BF(BEreq::cb_widtha_hdec->abrl, 0.0, "tau+", "tau-");              
+      result.set_BF(BEreq::cb_widtha_hdec->abrm, 0.0, "mu+", "mu-");              
+      result.set_BF(BEreq::cb_widtha_hdec->abrs, 0.0, "s", "sbar");              
+      result.set_BF(BEreq::cb_widtha_hdec->abrc, 0.0, "c", "cbar");              
+      result.set_BF(BEreq::cb_widtha_hdec->abrt, 0.0, "t", "tbar");              
+      result.set_BF(BEreq::cb_widtha_hdec->abrg, 0.0, "g", "g");              
+      result.set_BF(BEreq::cb_widtha_hdec->abrga, 0.0, "gamma", "gamma");              
+      result.set_BF(BEreq::cb_widtha_hdec->abrzga, 0.0, "Z0", "gamma");              
+      result.set_BF(BEreq::cb_widtha_hdec->abrz, 0.0, "Z0", "h0_1"); // CsB: check if h0_1 is the lightest scalar Higgs PS: it is - see Models/src/particle_database.cpp
+      cout << "A total width: " << result.width_in_GeV << endl;
     }
 
     /// Collect all the DecayTable entries into an actual DecayTable 
@@ -346,6 +344,9 @@ namespace Gambit
       decays("rho-") = *Dep::rho_minus_decay_rates; // Add the rho- decays.
       decays("omega") = *Dep::omega_decay_rates;    // Add the omega meson decays.
       
+      // MSSM-specific
+      decays("A0") = *Dep::A_decay_rates;           // Add the CP-odd MSSM Higgs decays.
+
       cout << "BF for tau+ -> pi+ nubar_tau: " << decays("tau+").BF("pi+", "nubar_tau") << endl;
       result = decays;
     }
