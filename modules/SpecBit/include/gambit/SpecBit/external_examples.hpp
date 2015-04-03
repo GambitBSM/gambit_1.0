@@ -229,16 +229,16 @@ template <class M>
 void mssm_manipulate(Gambit::MSSMSpec<M> & mssm) 
 {
    PRINTOUT << "inside mssm_manipulate" <<std::endl;
-   double lowscale = mssm.mssm_drbar_pars.GetScale();
+   double lowscale = mssm.runningpars.GetScale();
    //setting to same scale to test
-   mssm.mssm_drbar_pars.SetScale(lowscale);
+   mssm.runningpars.SetScale(lowscale);
    double highscale = 1e+15;
    PRINTOUT << "Mssm start at lowscale = " << lowscale << std::endl;
    mssm_print(mssm);
-   mssm.mssm_drbar_pars.RunToScale(highscale);
+   mssm.runningpars.RunToScale(highscale);
    PRINTOUT << "after run to highscale" << std::endl;
    mssm_print(mssm);
-   mssm.mssm_drbar_pars.RunToScale(lowscale);
+   mssm.runningpars.RunToScale(lowscale);
    PRINTOUT << "after run scale back top low scale" <<  std::endl;
    mssm_print(mssm);
    

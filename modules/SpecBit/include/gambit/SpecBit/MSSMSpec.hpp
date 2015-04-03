@@ -228,6 +228,7 @@ namespace Gambit {
    typename MapTypes<MSSMSpecTraits<MI>>::fmap2 MSSMSpec<MI>::fill_mass2_map2() 
    {
       typedef typename MI::Model Model;
+      typedef typename MT::FInfo2 FInfo2;
       typename MT::fmap2 tmp_map;
 
       // Can't use c++11 initialise lists, se have to initialise the index sets like this.
@@ -263,6 +264,7 @@ namespace Gambit {
    typename MapTypes<MSSMSpecTraits<MI>>::fmap2 MSSMSpec<MI>::fill_mass_map2() 
    {
       typedef typename MI::Model Model;
+      typedef typename MT::FInfo2 FInfo2;
       typename MT::fmap2 tmp_map;
 
       static const int i012v[] = {0,1,2};
@@ -314,6 +316,7 @@ namespace Gambit {
    typename MapTypes<MSSMSpecTraits<MI>>::fmap2 MSSMSpec<MI>::fill_mass0_map2() 
    {
       typedef typename MI::Model Model;
+      typedef typename MT::FInfo2 FInfo2;
       typename MT::fmap2 tmp_map;
      
       static const int i012v[] = {0,1,2};
@@ -362,6 +365,7 @@ namespace Gambit {
    typename MapTypes<MSSMSpecTraits<MI>>::fmap1 MSSMSpec<MI>::fill_mass_eigenstate_map1()
    {
       typedef typename MI::Model Model;
+      typedef typename MT::FInfo1 FInfo1;
       typename MT::fmap1 tmp_map;
 
       static const int i01v[] = {0,1};
@@ -390,13 +394,13 @@ namespace Gambit {
       tmp_map["chi+"] = FInfo1( &Model::get_MCha, i01 );
       tmp_map["chi0"] = FInfo1( &Model::get_MChi, i0123 );
       
-      tmp_map["d"] = FInfo1( &Model::get_MFd, i012 );
-      tmp_map["u"] = FInfo1( &Model::get_MFu, i012 );
-      tmp_map["e-"] = FInfo1( &Model::get_MFe, i012 );
-      tmp_map["e"] = FInfo1( &Model::get_MFe, i012 );
+      tmp_map["d"] =    FInfo1( &Model::get_MFd, i012 );
+      tmp_map["u"] =    FInfo1( &Model::get_MFu, i012 );
+      tmp_map["e-"] =   FInfo1( &Model::get_MFe, i012 );
+      tmp_map["e"] =    FInfo1( &Model::get_MFe, i012 );
       tmp_map["dbar"] = FInfo1( &Model::get_MFd, i012 );
       tmp_map["ubar"] = FInfo1( &Model::get_MFu, i012 );
-      tmp_map["e+"] = FInfo1( &Model::get_MFe, i012 );
+      tmp_map["e+"] =   FInfo1( &Model::get_MFe, i012 );
 
       return tmp_map;
    }
@@ -470,6 +474,7 @@ namespace Gambit {
    typename MapTypes<MSSMSpecTraits<MI>>::fmap1 MSSMSpec<MI>::fill_PoleMass_map1()
    {
       typedef typename MI::Model Model;
+      typedef typename MT::FInfo1 FInfo1;
       typename MT::fmap1 tmp_map;
 
       static const int i01v[] = {0,1};
@@ -484,12 +489,12 @@ namespace Gambit {
       static const int i012345v[] = {0,1,2,3,4,5};
       static const std::set<int> i012345(i012345v, Utils::endA(i012345v));
 
-      tmp_map["~d"] = FInfo1( &Model::get_MSd_pole_slha, i012345 );
-      tmp_map["~u"] = FInfo1( &Model::get_MSu_pole_slha, i012345 );
+      tmp_map["~d"] =  FInfo1( &Model::get_MSd_pole_slha, i012345 );
+      tmp_map["~u"] =  FInfo1( &Model::get_MSu_pole_slha, i012345 );
       tmp_map["~e-"] = FInfo1( &Model::get_MSe_pole_slha, i012345 );
-      tmp_map["~e"] = FInfo1( &Model::get_MSe_pole_slha, i012345 );  // Just an extra name for charged sleptons; not in PDB
-      tmp_map["~nu"]= FInfo1( &Model::get_MSv_pole_slha, i012 );
-      tmp_map["h0"] = FInfo1( &Model::get_Mhh_pole_slha, i01 );
+      tmp_map["~e"] =  FInfo1( &Model::get_MSe_pole_slha, i012345 );  // Just an extra name for charged sleptons; not in PDB
+      tmp_map["~nu"]=  FInfo1( &Model::get_MSv_pole_slha, i012 );
+      tmp_map["h0"] =  FInfo1( &Model::get_Mhh_pole_slha, i01 );
       // NOTE: I have added the following two to the "no index" map as well, 
       // where only the "safe" entries are retrieved
       //Here we may access the goldstone boson
@@ -501,22 +506,22 @@ namespace Gambit {
       tmp_map["~chi+"] = FInfo1( &Model::get_MCha_pole_slha, i01 );
       tmp_map["~chi0"] = FInfo1( &Model::get_MChi_pole_slha, i0123 );
     
-      tmp_map["d"] = FInfo1( &Model::get_MFd_pole_slha, i012 );
-      tmp_map["u"] = FInfo1( &Model::get_MFu_pole_slha, i012 );
+      tmp_map["d"] =  FInfo1( &Model::get_MFd_pole_slha, i012 );
+      tmp_map["u"] =  FInfo1( &Model::get_MFu_pole_slha, i012 );
       tmp_map["e+"] = FInfo1( &Model::get_MFe_pole_slha, i012 );
-      tmp_map["e"] = FInfo1( &Model::get_MFe_pole_slha, i012 );  // Another extra name; not in PDB
+      tmp_map["e"] =  FInfo1( &Model::get_MFe_pole_slha, i012 );  // Another extra name; not in PDB
 
       // Antiparticles (same getters, just different string name)
       tmp_map["~dbar"] = FInfo1( &Model::get_MSd_pole_slha, i012345 );
       tmp_map["~ubar"] = FInfo1( &Model::get_MSu_pole_slha, i012345 );
       tmp_map["~ebar"] = FInfo1( &Model::get_MSe_pole_slha, i012345 );
       tmp_map["~nubar"]= FInfo1( &Model::get_MSv_pole_slha, i012 );
-      tmp_map["H-"] = FInfo1( &Model::get_MHpm_pole_slha, i01 );   
+      tmp_map["H-"] =    FInfo1( &Model::get_MHpm_pole_slha, i01 );   
       tmp_map["~chi-"] = FInfo1( &Model::get_MCha_pole_slha, i01 );
 
       tmp_map["dbar"] = FInfo1( &Model::get_MFd_pole_slha, i012 );
       tmp_map["ubar"] = FInfo1( &Model::get_MFu_pole_slha, i012 );
-      tmp_map["e+"] = FInfo1( &Model::get_MFe_pole_slha, i012 );
+      tmp_map["e+"] =   FInfo1( &Model::get_MFe_pole_slha, i012 );
 
       return tmp_map;
    }
@@ -525,6 +530,7 @@ namespace Gambit {
    typename MapTypes<MSSMSpecTraits<MI>>::fmap2 MSSMSpec<MI>::fill_PoleMixing_map2()
    {
       typedef typename MI::Model Model;
+      typedef typename MT::FInfo2 FInfo2;
       typename MT::fmap2 tmp_map;
 
       static const int i01v[] = {0,1};
@@ -540,16 +546,16 @@ namespace Gambit {
       static const std::set<int> i012345(i012345v, Utils::endA(i012345v));
 
       //Need to add these to generated code before I can use them here.
-      tmp_map["ZD"] = FInfo2( &Model::get_ZD_pole_slha, i012345, i012345);
-      tmp_map["ZV"] = FInfo2( &Model::get_ZV_pole_slha, i012, i012);
-      tmp_map["ZU"] = FInfo2( &Model::get_ZU_pole_slha, i012345, i012345);
-      tmp_map["ZE"] = FInfo2( &Model::get_ZE_pole_slha, i012345, i012345);
-      tmp_map["ZH"] = FInfo2( &Model::get_ZH_pole_slha, i01, i01);
-      tmp_map["ZA"] = FInfo2( &Model::get_ZA_pole_slha, i01, i01);
+      tmp_map["ZD"] =   FInfo2( &Model::get_ZD_pole_slha, i012345, i012345);
+      tmp_map["ZV"] =   FInfo2( &Model::get_ZV_pole_slha, i012, i012);
+      tmp_map["ZU"] =   FInfo2( &Model::get_ZU_pole_slha, i012345, i012345);
+      tmp_map["ZE"] =   FInfo2( &Model::get_ZE_pole_slha, i012345, i012345);
+      tmp_map["ZH"] =   FInfo2( &Model::get_ZH_pole_slha, i01, i01);
+      tmp_map["ZA"] =   FInfo2( &Model::get_ZA_pole_slha, i01, i01);
       tmp_map["ZHPM"] = FInfo2( &Model::get_ZP_pole_slha, i01, i01);
-      tmp_map["ZN"] = FInfo2( &Model::get_ZN_pole_slha, i0123, i0123); 
-      tmp_map["UM"] = FInfo2( &Model::get_UM_pole_slha, i01, i01);
-      tmp_map["UP"] = FInfo2( &Model::get_UP_pole_slha, i01, i01);
+      tmp_map["ZN"] =   FInfo2( &Model::get_ZN_pole_slha, i0123, i0123); 
+      tmp_map["UM"] =   FInfo2( &Model::get_UM_pole_slha, i01, i01);
+      tmp_map["UP"] =   FInfo2( &Model::get_UP_pole_slha, i01, i01);
    
       /* Could add SM fermion mixing but these are only filled
          when we actually calculate the SM pole masses

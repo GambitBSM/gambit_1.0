@@ -49,7 +49,7 @@ namespace Gambit {
    
    ///   @{ Constructors
    QedQcdWrapper::QedQcdWrapper() 
-      , qedqcd()
+      : qedqcd()
       , sminputs()
    {}
 
@@ -199,7 +199,7 @@ namespace Gambit {
    /// seemed nicer to have a version dedicated to the host Model class.
    MT::fmap_extraI QedQcdWrapper::fill_PoleMass_map_extraI()
    {
-      fmap_extraI tmp_map;
+      MT::fmap_extraI tmp_map;
 
       addtomap(("e-",   "e+",   "e",   "e-_1", "e+_1", "e_1"), &get_Pole_mElectron);
       addtomap(("mu-",  "mu+",  "mu",  "e-_2", "e+_2", "e_2"), &get_Pole_mMuon);

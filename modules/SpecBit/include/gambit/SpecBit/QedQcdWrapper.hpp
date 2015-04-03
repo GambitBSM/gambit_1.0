@@ -34,7 +34,7 @@
 
 namespace Gambit {
 
-   // Needed for typename aliases in Spec class
+   // Needed for typename aliases in Spec and MapTypes classes
    struct QedQcdWrapperTraits
    {
       typedef softsusy::QedQcd Model;
@@ -56,9 +56,9 @@ namespace Gambit {
          virtual int get_numbers_stable_particles() const;  /***/
 
          /// RunningPars interface overrides
-         virtual double GetScale() const;         /***/
-         virtual void SetScale(double scale);     /***/
-         virtual void RunToScaleOverride(double); /***/
+         virtual double GetScale() const;      /***/
+         virtual void SetScale(double scale);  /***/
+         virtual void RunToScale(double);      /***/
 
          // Limits for running
          double softup;
