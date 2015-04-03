@@ -114,6 +114,21 @@ Scanner:
       parameters:
         param...2:
           range: [1, 2]
+          
+    object_detection:
+      plugin: objection_detection
+      purpose: Likelihood
+      options:
+        psf_file: "c0052_psf_grid.fits"
+        image_file: "c0052.fits"
+        grid_file: "grid.fits"
+      parameters:
+        pos_x:
+          range: [0, 1048]
+        pos_y:
+          range: [0, 1048]
+        intensity:
+          range: [0, 1e10]
       
     test:
       plugin: test_plug
