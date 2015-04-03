@@ -57,7 +57,6 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake)
 # Add common system library search variables to cmake library search variable, used by find_library
 set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} $ENV{LIBRARY_PATH})
 string(REPLACE ":" ";" CMAKE_LIBRARY_PATH "${CMAKE_LIBRARY_PATH}")
-message("CMAKE_LIBRARY_PATH=${CMAKE_LIBRARY_PATH}")
 
 # When building, use the install RPATH already
 set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
@@ -178,26 +177,21 @@ set(GAMBIT_VERSION_MINOR 0)
 # Reprocess the ditch set into a comma-separated list
 string (REPLACE ";" "," itch_with_commas "${itch}")
 
-# Generate the cmake_variables.hpp.in file
+# Generate the cmake_variables.hpp file
 message("${Yellow}-- Updating GAMBIT with config data${ColourReset}")
-set(update_config ${PROJECT_SOURCE_DIR}/cmake/cmake_variables.py)
+set(update_config ${PROJECT_SOURCE_DIR}/cmake/cmake_variables.py ${PROJECT_BINARY_DIR})
 execute_process(RESULT_VARIABLE result COMMAND python ${update_config} WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
-check_result(${result} ${update_config}) 
+check_result(${result} ${update_config})
+configure_file("${PROJECT_BINARY_DIR}/cmake_variables.hpp.in"
+               "${PROJECT_SOURCE_DIR}/cmake/include/gambit/cmake/cmake_variables.hpp")
 message("${Yellow}-- Updating GAMBIT with config data - done.${ColourReset}")
 
 # Generate the ScannerBit compilation files
 message("${Yellow}-- Updating GAMBIT scanner cmake and related files${ColourReset}")
-set(locate_scanners ${PROJECT_SOURCE_DIR}/cmake/locate_scanners.py -x __not_a_real_name__,${itch_with_commas})
+set(locate_scanners ${PROJECT_SOURCE_DIR}/cmake/locate_scanners.py ${PROJECT_BINARY_DIR} -x __not_a_real_name__,${itch_with_commas})
 execute_process(RESULT_VARIABLE result COMMAND python ${locate_scanners} WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
 check_result(${result} ${locate_scanners}) 
 message("${Yellow}-- Updating GAMBIT scanner cmake and related files - done.${ColourReset}")
-
-# Finish configuring the header file to pass some of the CMake settings to the source code
-configure_file("${PROJECT_SOURCE_DIR}/cmake/cmake_variables.hpp.in"
-               "${PROJECT_BINARY_DIR}/cmake/gambit/cmake/cmake_variables.hpp")
-
-# Add the binary tree to the search path for include files so that we will find cmake_variables.hpp
-include_directories("${PROJECT_BINARY_DIR}")
 
 # Add a true clean target that can have dependencies, to allow us to trigger cleaning of external projects (or run any other custom commands)
 add_custom_target(distclean COMMAND ${CMAKE_MAKE_PROGRAM} clean)
@@ -283,7 +277,7 @@ endforeach()
 include(cmake/executables.cmake)
 
 # Finish setting the link commands and rpath variables
-include(cmake/linkedout.cmake)
+include(${PROJECT_BINARY_DIR}/linkedout.cmake)
 
 # Arrange clean commands
 include(cmake/cleaning.cmake)

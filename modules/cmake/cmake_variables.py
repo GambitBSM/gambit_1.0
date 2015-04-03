@@ -28,6 +28,13 @@ execfile("./Utils/scripts/harvesting_tools.py")
 
 def main(argv):
 
+    # Handle command line options
+    try:
+        build_dir = argv[0]
+    except getopt.GetoptError:
+        print 'Usage: cmake_variables.py build_dir'
+        sys.exit(2)
+
     # Make a candidate cmake_variables.hpp.in file
     towrite = "\
 // GAMBIT: Global and Modular BSM Inference Tool  \n\
@@ -38,7 +45,7 @@ def main(argv):
 ///                                               \n\
 ///***********************************************\n\
 ///                                               \n\
-///  Authors:             and people                        \n\
+///  Authors:                                     \n\
 ///                                               \n\
 ///  \\author The GAMBIT Collaboration            \n\
 ///  \\date "+datetime.datetime.now().strftime("%I:%M%p on %B %d, %Y")+"\n\
@@ -49,15 +56,13 @@ def main(argv):
 #define __cmake_variables_hpp__                   \n\
                                                   \n\
 /// Gambit source directory                       \n\
-#define GAMBIT_DIR \"@PROJECT_SOURCE_DIR@\"       \n\
-#define GAMBIT_BUILD_DIR \"@PROJECT_BINARY_DIR@\" \n"
+#define GAMBIT_DIR \"@PROJECT_SOURCE_DIR@\"       \n"
 
     towrite += "\n#endif //// #defined__cmake_variables_hpp__"
-    header = "./cmake/cmake_variables.hpp.in"
-    with open(header+".candidate","w") as f: f.write(towrite)
-    update_cmakelists.update_only_if_different(header, header+".candidate")
+    header = build_dir+"/cmake_variables.hpp.in"
+    candidate = header+".candidate"
+    with open(candidate,"w") as f: f.write(towrite)
+    update_cmakelists.update_only_if_different(header, candidate)
 
-#    if verbose: print "Finished writing cmake_variables.hpp.in"
-    
 if __name__ == "__main__":
    main(sys.argv[1:])

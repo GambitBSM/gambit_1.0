@@ -34,27 +34,10 @@ import itertools
 import datetime
 import sys
 import getopt
+execfile("./Utils/scripts/harvesting_tools.py")
 
 scan_config = "./config/scanner_locations.yaml"
 test_config = "./config/objective_locations.yaml"
-
-# Remove C/C++ comments from 'text' (From http://stackoverflow.com/questions/241327/python-snippet-to-remove-c-and-c-comments)
-def comment_remover(text):
-    def replacer(match):
-        s = match.group(0)
-        if s.startswith('/'):
-            return ""
-        else:
-            return s
-    pattern = re.compile(
-        r'//.*?$|/\*.*?\*/|\'(?:\\.|[^\\\'])*\'|"(?:\\.|[^\\"])*"',
-        re.DOTALL | re.MULTILINE
-    )
-    return re.sub(pattern, replacer, text[:])
-
-# No empties from re.split
-def neatsplit(regex,string):
-    return [x for x in re.split(regex,string) if x != '']
 
 # Actual updater program
 def main(argv):
@@ -67,9 +50,10 @@ def main(argv):
     # Handle command line options
     verbose = False
     try:
+        build_dir = argv[0]
         opts, args = getopt.getopt(argv,"vx:",["verbose","exclude-scanners="])
     except getopt.GetoptError:
-        print 'Usage: locate_scanners.py [flags]'
+        print 'Usage: locate_scanners.py build_dir [flags]'
         print ' flags:'
         print '        -v                       : More verbose output'  
         print '        -x scanner1,scanner2,... : Exclude scanner1, scanner2, etc.' 
@@ -486,8 +470,9 @@ def main(argv):
     towrite += prior_txt_out
 
     header = "./ScannerBit/include/gambit/ScannerBit/priors_rollcall.hpp"
-    with open(header+".candidate","w") as f: f.write(towrite)
-    update_cmakelists.update_only_if_different(header, header+".candidate")
+    candidate = build_dir+"/priors_rollcall.hpp.candidate"
+    with open(candidate,"w") as f: f.write(towrite)
+    update_cmakelists.update_only_if_different(header, candidate)
 
     if verbose: print "Finished writing ScannerBit/include/gambit/ScannerBit/priors_rollcall.hpp"
 
@@ -761,8 +746,9 @@ endif()                                         \n\n"
     towrite += "file( WRITE ${PROJECT_SOURCE_DIR}/scratch/scanbit_linked_libs.yaml \"${reqd_lib_output}\" )\n\n"
 
     cmake = "./ScannerBit/CMakeLists.txt"
-    with open(cmake+".candidate","w") as f: f.write(towrite)
-    update_cmakelists.update_only_if_different(cmake, cmake+".candidate")
+    candidate = build_dir+"/ScannerBit_CMakeLists.txt.candidate"
+    with open(candidate,"w") as f: f.write(towrite)
+    update_cmakelists.update_only_if_different(cmake, candidate)
 
     if verbose: print "Finished writing ScannerBit/CMakeLists.txt"
 
@@ -803,9 +789,10 @@ endif()                                         \n\n"
                 towrite += " "*6 + "not_found_include_paths: [" + ",".join(scanbit_reqs[type_key][plug_key][version_key][6]) + "]\n"
         towrite += "\n"
 
-    cmake = "./scratch/scanbit_reqd_entries.yaml"
-    with open(cmake+".candidate","w") as f: f.write(towrite)
-    update_cmakelists.update_only_if_different(cmake, cmake+".candidate")
+    req_entries = "./scratch/scanbit_reqd_entries.yaml"
+    candidate = build_dir+"/scanbit_reqd_entries.yaml.candidate"
+    with open(candidate,"w") as f: f.write(towrite)
+    update_cmakelists.update_only_if_different(req_entries, candidate)
 
     if verbose: print "Finished writing scratch/scanbit_reqd_entries.yaml"
 
@@ -842,9 +829,10 @@ if (${CMAKE_SYSTEM_NAME} MATCHES \"Darwin\")     \n"
         towrite += " "*4 + "endforeach()\n"
     towrite += "endif()\n"
 
-    cmake = "./cmake/linkedout.cmake"
-    with open(cmake+".candidate","w") as f: f.write(towrite)
-    update_cmakelists.update_only_if_different(cmake, cmake+".candidate")
+    linked_out = build_dir+"/linkedout.cmake"
+    candidate = linked_out+".candidate"
+    with open(candidate,"w") as f: f.write(towrite)
+    update_cmakelists.update_only_if_different(linked_out, candidate)
 
     if verbose: print "Finished writing linkedout.cmake"
 
