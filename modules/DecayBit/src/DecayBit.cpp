@@ -34,22 +34,22 @@ namespace Gambit
     {
       using namespace Pipes::decayTest;
       BEreq::sdecay();
-      /// result = BEreq::cb_sd_top2body->brtopbw; 
-      /// result = BEreq::cb_sd_topwidth->toptot2; 
-      /// cout << "top 2 body Br's: " << BEreq::cb_sd_top2body->brtopbw << endl;
-      /// cout << "top total width: " << BEreq::cb_sd_topwidth->toptot2 << endl;
-      /// A -> SM decays:
-      cout << "BR(A -> b       bb     ): " << BEreq::cb_widtha_hdec->abrb << endl;
-      cout << "BR(A -> tau+    tau-   ): " << BEreq::cb_widtha_hdec->abrl << endl;
-      cout << "BR(A -> mu+     mu-    ): " << BEreq::cb_widtha_hdec->abrm << endl;
-      cout << "BR(A -> s       sb     ): " << BEreq::cb_widtha_hdec->abrs << endl;
-      cout << "BR(A -> c       cb     ): " << BEreq::cb_widtha_hdec->abrc << endl;
-      cout << "BR(A -> t       tb     ): " << BEreq::cb_widtha_hdec->abrt << endl;
-      cout << "BR(A -> g       g      ): " << BEreq::cb_widtha_hdec->abrg << endl;
-      cout << "BR(A -> gam     gam    ): " << BEreq::cb_widtha_hdec->abrga << endl;
-      cout << "BR(A -> Z       gam    ): " << BEreq::cb_widtha_hdec->abrzga << endl;
-      cout << "BR(A -> Z       h      ): " << BEreq::cb_widtha_hdec->abrz << endl;
-      cout << "A total width: " << BEreq::cb_widtha_hdec->awdth << endl;
+      //  result = BEreq::cb_sd_top2body->brtopbw; 
+      //  cout << "top 2 body Br's: " << BEreq::cb_sd_top2body->brtopbw << endl;
+      result = BEreq::cb_sd_topwidth->toptot2; 
+      cout << "top total width: " << BEreq::cb_sd_topwidth->toptot2 << endl;
+      //// A -> SM decays:
+      // cout << "BR(A -> b       bb     ): " << BEreq::cb_widtha_hdec->abrb << endl;
+      // cout << "BR(A -> tau+    tau-   ): " << BEreq::cb_widtha_hdec->abrl << endl;
+      // cout << "BR(A -> mu+     mu-    ): " << BEreq::cb_widtha_hdec->abrm << endl;
+      // cout << "BR(A -> s       sb     ): " << BEreq::cb_widtha_hdec->abrs << endl;
+      // cout << "BR(A -> c       cb     ): " << BEreq::cb_widtha_hdec->abrc << endl;
+      // cout << "BR(A -> t       tb     ): " << BEreq::cb_widtha_hdec->abrt << endl;
+      // cout << "BR(A -> g       g      ): " << BEreq::cb_widtha_hdec->abrg << endl;
+      // cout << "BR(A -> gam     gam    ): " << BEreq::cb_widtha_hdec->abrga << endl;
+      // cout << "BR(A -> Z       gam    ): " << BEreq::cb_widtha_hdec->abrzga << endl;
+      // cout << "BR(A -> Z       h      ): " << BEreq::cb_widtha_hdec->abrz << endl;
+      // cout << "A total width: " << BEreq::cb_widtha_hdec->awdth << endl;
     }                                                                             // CsB <
 
     /// Calculate decay rates for Higgs in the SM
@@ -288,14 +288,27 @@ namespace Gambit
       //See PDG meson sheet in DecayBit/data/PDG if you want BFs               
     }
 
-    /// MSSM decays: A
-    void A_decays (DecayTable::Entry& result) 
+    /// MSSM decays: A -> SM
+    void A_SM_decays (double &result) 
+    // void A_SM_decays (DecayTable::Entry& result) 
     {
-  /// using namespace Pipes::A_decays;
-      using namespace Pipes::decayTest;
+      using namespace Pipes::A_SM_decays;
       BEreq::sdecay();
-      result.width_in_GeV = BEreq::cb_widtha_hdec->awdth; 
-      cout << "A total width: " << BEreq::cb_widtha_hdec->awdth << endl;
+      result = BEreq::cb_widtha_hdec->awdth;
+      cout << "A total width: " << result;
+      // result.width_in_GeV = BEreq::cb_widtha_hdec->awdth; // CsB: check that SUSYHIT gives the width in GeV
+      // result.positive_error = 0.0;
+      // result.negative_error = 0.0;
+      // result.set_BF(BEreq::cb_widtha_hdec->abrb, 0.0, "b", "bbar");              
+      // result.set_BF(BEreq::cb_widtha_hdec->abrl, 0.0, "tau+", "tau-");              
+      // result.set_BF(BEreq::cb_widtha_hdec->abrm, 0.0, "mu+", "mu-");              
+      // result.set_BF(BEreq::cb_widtha_hdec->abrs, 0.0, "s", "sbar");              
+      // result.set_BF(BEreq::cb_widtha_hdec->abrc, 0.0, "c", "cbar");              
+      // result.set_BF(BEreq::cb_widtha_hdec->abrt, 0.0, "t", "tbar");              
+      // result.set_BF(BEreq::cb_widtha_hdec->abrg, 0.0, "g", "g");              
+      // result.set_BF(BEreq::cb_widtha_hdec->abrga, 0.0, "gamma", "gamma");              
+      // result.set_BF(BEreq::cb_widtha_hdec->abrzga, 0.0, "Z0", "gamma");              
+      // result.set_BF(BEreq::cb_widtha_hdec->abrz, 0.0, "Z0", "h0_1"); // CsB: check if h0_1 is the lightest scalar Higgs
     }
 
     /// Collect all the DecayTable entries into an actual DecayTable 
