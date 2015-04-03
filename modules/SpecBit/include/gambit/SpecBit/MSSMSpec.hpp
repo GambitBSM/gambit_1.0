@@ -57,22 +57,19 @@ namespace Gambit {
    // (i.e. it should be declared first)
    template <class MI>
    MSSMSpec<MI>::MSSMSpec(MI mi, bool switch_index_convention)
-      : Spectrum(mssm_drbar_pars, mssm_ph)
+      : Spec<MSSMSpec<MI>,MSSMSpecTraits<MI>>(model_interface.model)
       , index_offset(-1)
-      , mssm_ph(*this,model_interface.model)
-      , mssm_drbar_pars(*this,model_interface.model)
       , model_interface(mi)
    {
       if (switch_index_convention) index_offset = 0;
    }
+
    
    // Default constructor
    template <class MI>
    MSSMSpec<MI>::MSSMSpec(bool switch_index_convention)
-      : Spectrum(mssm_drbar_pars, mssm_ph)
+      : Spec<MSSMSpec<MI>,MSSMSpecTraits<MI>>()
       , index_offset(-1)
-      , mssm_ph(*this,model_interface.model)
-      , mssm_drbar_pars(*this,model_interface.model)
    {
       if (switch_index_convention) index_offset = 0;
    }
@@ -80,17 +77,14 @@ namespace Gambit {
    /// We also need a copy constructor so that the clone() function will do a deep copy properly
    template <class MI>
    MSSMSpec<MI>::MSSMSpec(const MSSMSpec<MI>& other)
-      : Spectrum(mssm_drbar_pars, mssm_ph)
+      : Spec<MSSMSpec<MI>,MSSMSpecTraits<MI>>(model_interface.model)
       , index_offset(other.index_offset)
-      , mssm_ph(*this,model_interface.model)
-      , mssm_drbar_pars(*this,model_interface.model)
       , model_interface(other.model_interface)
    {}
-   
+ 
    template <class MI>
    MSSMSpec<MI>::~MSSMSpec()
-   {
-   }
+   {}
    
    template <class MI>
    void MSSMSpec<MI>::dump2slha(const std::string& filename) const
@@ -197,16 +191,16 @@ namespace Gambit {
    //approaches. Could do all of this via the interface. Depends
    //what will be simplest in general.
    template <class MI>
-   void MSSM_DRbarPars<MI>::RunToScaleOverride(double scale){
-      my_parent.model_interface.model.run_to(scale);
+   void MSSMSpec<MI>::RunToScale(double scale){
+      model_interface.model.run_to(scale);
    }
    template <class MI>
-   double MSSM_DRbarPars<MI>::GetScale() const {
-      return my_parent.model_interface.model.get_scale();
+   double MSSMSpec<MI>::GetScale() const {
+      return model_interface.model.get_scale();
    }
    template <class MI>
-   void MSSM_DRbarPars<MI>::SetScale(double scale){
-       my_parent.model_interface.model.set_scale(scale);
+   void MSSMSpec<MI>::SetScale(double scale){
+       model_interface.model.set_scale(scale);
    }
    
    template <class MI>
@@ -216,120 +210,25 @@ namespace Gambit {
       return errormsg;
    }
      
-   // Function to initialise mass4_map
-   template <class MI>
-   typename MSSM_DRbarPars<MI>::fmap MSSM_DRbarPars<MI>::fill_mass4_map() 
-   {
-      fmap tmp_map;
-      //there are no mappings for this case.
-      return tmp_map;
-   }
-  
-   // Function to initialise mass4_map_extra 
-   template <class MI>
-   typename MSSM_DRbarPars<MI>::fmap_plain MSSM_DRbarPars<MI>::fill_mass4_map_extra() 
-   {
-      fmap_plain tmp_map;
-      //there are no mappings for this case.
-      return tmp_map;
-   }
-   
-   // Function to initialise mass4_map1
-   template <class MI>
-   typename MSSM_DRbarPars<MI>::fmap1 MSSM_DRbarPars<MI>::fill_mass4_map1() 
-   {
-      fmap1 tmp_map;
-      //there are no mappings for this case.
-      return tmp_map;
-   }
-   
-   
-   // Function to initialise mass4_map2
-   template <class MI>
-   typename MSSM_DRbarPars<MI>::fmap2 MSSM_DRbarPars<MI>::fill_mass4_map2() 
-   {
-      fmap2 tmp_map;
-      //there are no mappings for this case.
-      return tmp_map;
-   }
-  
-   
-   // Function to initialise mass3_map
-   template <class MI>
-   typename MSSM_DRbarPars<MI>::fmap MSSM_DRbarPars<MI>::fill_mass3_map() 
-   {
-      fmap tmp_map;
-      //there are no mappings for this case.
-      return tmp_map;
-   }
-   
-   // Function to initialise mass3_map_extra
-   template <class MI>
-   typename MSSM_DRbarPars<MI>::fmap_plain MSSM_DRbarPars<MI>::fill_mass3_map_extra() 
-   {
-      fmap_plain tmp_map;
-      //there are no mappings for this case.
-      return tmp_map;
-   }
-   
-   // Function to initialise mass3_map1
-   template <class MI>
-   typename MSSM_DRbarPars<MI>::fmap1 MSSM_DRbarPars<MI>::fill_mass3_map1() 
-   {
-      fmap1 tmp_map;
-      //there are no mappings for this case.
-      return tmp_map;
-   }
-   
-   
-   // Function to initialise mass3_map2
-   template <class MI>
-   typename MSSM_DRbarPars<MI>::fmap2 MSSM_DRbarPars<MI>::fill_mass3_map2() 
-   {
-      fmap2 tmp_map;
-      //there are no mappings for this case.
-      return tmp_map;
-   }
-   
-   
    // Function to initialise mass2_map
    template <class MI>
-   typename MSSM_DRbarPars<MI>::fmap MSSM_DRbarPars<MI>::fill_mass2_map() 
+   typename MapTypes<MSSMSpecTraits<MI>>::fmap MSSMSpec<MI>::fill_mass2_map() 
    {
       typedef typename MI::Model Model;
-      fmap tmp_map;
+      typename MT::fmap tmp_map;
       tmp_map["BMu"] = &Model::get_BMu;
       tmp_map["mHd2"] = &Model::get_mHd2;
       tmp_map["mHu2"] = &Model::get_mHu2;
    
       return tmp_map;
    }
-      
-   // Function to initialise mass2_map_extra
-   template <class MI>
-   typename MSSM_DRbarPars<MI>::fmap_plain MSSM_DRbarPars<MI>::fill_mass2_map_extra() 
-   {
-      fmap_plain tmp_map;
-      //there are no mappings for this case.
-      return tmp_map;
-   }
-
-   // Function to initialise mass2_map1
-   template <class MI>
-   typename MSSM_DRbarPars<MI>::fmap1 MSSM_DRbarPars<MI>::fill_mass2_map1() 
-   {
-      fmap1 tmp_map;
-      //there are no mappings for this case in the MSSM.
-      return tmp_map;
-   }
-   
    
    // Function to initialise mass2_map2
    template <class MI>
-   typename MSSM_DRbarPars<MI>::fmap2 MSSM_DRbarPars<MI>::fill_mass2_map2() 
+   typename MapTypes<MSSMSpecTraits<MI>>::fmap2 MSSMSpec<MI>::fill_mass2_map2() 
    {
       typedef typename MI::Model Model;
-      fmap2 tmp_map;
+      typename MT::fmap2 tmp_map;
 
       // Can't use c++11 initialise lists, se have to initialise the index sets like this.
       static const int i012v[] = {0,1,2};
@@ -344,14 +243,12 @@ namespace Gambit {
       return tmp_map;
    }
    
-   
-   
    // Function to initialise mass_map
    template <class MI>
-   typename MSSM_DRbarPars<MI>::fmap MSSM_DRbarPars<MI>::fill_mass_map() 
+   typename MapTypes<MSSMSpecTraits<MI>>::fmap MSSMSpec<MI>::fill_mass_map() 
    {
       typedef typename MI::Model Model;
-      fmap tmp_map;
+      typename MT::fmap tmp_map;
       tmp_map["M1"]= &Model::get_MassB;
       tmp_map["M2"]= &Model::get_MassWB;
       tmp_map["M3"]= &Model::get_MassG;
@@ -361,32 +258,12 @@ namespace Gambit {
       return tmp_map;
    }
 
- 
-   // Function to initialise mass_map_extra
-   template <class MI>
-   typename MSSM_DRbarPars<MI>::fmap_plain MSSM_DRbarPars<MI>::fill_mass_map_extra() 
-   {
-      fmap_plain tmp_map;
-      //there are no mappings for this case.
-      return tmp_map;
-   }
-   
-   // Function to initialise mass_map1
-   template <class MI>
-   typename MSSM_DRbarPars<MI>::fmap1 MSSM_DRbarPars<MI>::fill_mass_map1() 
-   {
-      fmap1 tmp_map;
-      //there are no mappings for this case.
-      return tmp_map;
-   }
-   
-   
    // Function to initialise mass_map2
    template <class MI>
-   typename MSSM_DRbarPars<MI>::fmap2 MSSM_DRbarPars<MI>::fill_mass_map2() 
+   typename MapTypes<MSSMSpecTraits<MI>>::fmap2 MSSMSpec<MI>::fill_mass_map2() 
    {
       typedef typename MI::Model Model;
-      fmap2 tmp_map;
+      typename MT::fmap2 tmp_map;
 
       static const int i012v[] = {0,1,2};
       static const std::set<int> i012(i012v, Utils::endA(i012v));
@@ -403,10 +280,10 @@ namespace Gambit {
    
    // Function to initialise mass0_map
    template <class MI>
-   typename MSSM_DRbarPars<MI>::fmap MSSM_DRbarPars<MI>::fill_mass0_map() 
+   typename MapTypes<MSSMSpecTraits<MI>>::fmap MSSMSpec<MI>::fill_mass0_map() 
    {
       typedef typename MI::Model Model;
-      fmap tmp_map;
+      typename MT::fmap tmp_map;
       tmp_map["g1"]= &Model::get_g1;
       tmp_map["g2"]= &Model::get_g2;
       tmp_map["g3"]= &Model::get_g3;
@@ -423,32 +300,21 @@ namespace Gambit {
  
    // Function to initialise mass0_map_extra
    template <class MI>
-   typename MSSM_DRbarPars<MI>::fmap_plain MSSM_DRbarPars<MI>::fill_mass0_map_extra() 
+   typename MapTypes<MSSMSpecTraits<MI>>::fmap_extra MSSMSpec<MI>::fill_mass0_map_extra() 
    {
       typedef typename MI::Model Model;
-      fmap_plain tmp_map;
+      typename MT::fmap_extra tmp_map;
       tmp_map["tanbeta"]= &get_tanbeta<Model>;
       
       return tmp_map;
    }
  
- 
-   // Function to initialise mass0_map1
-   template <class MI>
-   typename MSSM_DRbarPars<MI>::fmap1 MSSM_DRbarPars<MI>::fill_mass0_map1() 
-   {
-      fmap1 tmp_map;
-      //there are no mappings for this case.
-      return tmp_map;
-   }
-   
-   
    // Function to initialise mass0_map2
    template <class MI>
-   typename MSSM_DRbarPars<MI>::fmap2 MSSM_DRbarPars<MI>::fill_mass0_map2() 
+   typename MapTypes<MSSMSpecTraits<MI>>::fmap2 MSSMSpec<MI>::fill_mass0_map2() 
    {
       typedef typename MI::Model Model;
-      fmap2 tmp_map;
+      typename MT::fmap2 tmp_map;
      
       static const int i012v[] = {0,1,2};
       static const std::set<int> i012(i012v, Utils::endA(i012v));
@@ -461,10 +327,10 @@ namespace Gambit {
    }
    
    template <class MI>
-   typename MSSM_DRbarPars<MI>::fmap MSSM_DRbarPars<MI>::fill_mass_eigenstate_map()
+   typename MapTypes<MSSMSpecTraits<MI>>::fmap MSSMSpec<MI>::fill_mass_eigenstate_map()
    {
       typedef typename MI::Model Model;
-      fmap tmp_map;
+      typename MT::fmap tmp_map;
 
       tmp_map["MZ"]      = &Model::get_MVZ;
       tmp_map["MW"]      = &Model::get_MVWm;
@@ -491,21 +357,12 @@ namespace Gambit {
       return tmp_map;
    }
 
-   // Function to initialise mass_map_extra
-   template <class MI>
-   typename MSSM_DRbarPars<MI>::fmap_plain MSSM_DRbarPars<MI>::fill_mass_eigenstate_map_extra() 
-   {
-      fmap_plain tmp_map;
-      //there are no mappings for this case.
-      return tmp_map;
-   }
-
    //map for string access with an index supplied
    template <class MI>
-   typename MSSM_DRbarPars<MI>::fmap1 MSSM_DRbarPars<MI>::fill_mass_eigenstate_map1()
+   typename MapTypes<MSSMSpecTraits<MI>>::fmap1 MSSMSpec<MI>::fill_mass_eigenstate_map1()
    {
       typedef typename MI::Model Model;
-      fmap1 tmp_map;
+      typename MT::fmap1 tmp_map;
 
       static const int i01v[] = {0,1};
       static const std::set<int> i01(i01v, Utils::endA(i01v));
@@ -544,24 +401,11 @@ namespace Gambit {
       return tmp_map;
    }
   
- 
-   // Function to initialise mass_map2
    template <class MI>
-   typename MSSM_DRbarPars<MI>::fmap2 MSSM_DRbarPars<MI>::fill_mass_eigenstate_map2() 
+   typename MapTypes<MSSMSpecTraits<MI>>::fmap MSSMSpec<MI>::fill_PoleMass_map()
    {
       typedef typename MI::Model Model;
-      fmap2 tmp_map;
-      /// empty
-      
-   
-      return tmp_map;
-   }
-
-   template <class MI>
-   typename MSSM_Phys<MI>::fmap MSSM_Phys<MI>::fill_PoleMass_map()
-   {
-      typedef typename MI::Model Model;
-      fmap tmp_map;
+      typename MT::fmap tmp_map;
      
       // tmp_map["MZ"] = &Model::get_Pole_MZ;
       // tmp_map["MW"] = &Model::get_Pole_MW;
@@ -607,10 +451,10 @@ namespace Gambit {
    // fill_PoleMass_map()
    // fill_PoleMass_map_extra()
    template <class MI>
-   typename MSSM_Phys<MI>::fmap_plain MSSM_Phys<MI>::fill_PoleMass_map_extra()
+   typename MapTypes<MSSMSpecTraits<MI>>::fmap_extra MSSMSpec<MI>::fill_PoleMass_map_extra()
    {
       typedef typename MI::Model Model;
-      fmap_plain tmp_map;
+      typename MT::fmap_extra tmp_map;
      
       // Using wrapper functions defined above
       tmp_map["A0"] = &get_MAh1_pole<Model>;   
@@ -623,10 +467,10 @@ namespace Gambit {
    }
 
    template <class MI>
-   typename MSSM_Phys<MI>::fmap1 MSSM_Phys<MI>::fill_PoleMass_map1()
+   typename MapTypes<MSSMSpecTraits<MI>>::fmap1 MSSMSpec<MI>::fill_PoleMass_map1()
    {
       typedef typename MI::Model Model;
-      fmap1 tmp_map;
+      typename MT::fmap1 tmp_map;
 
       static const int i01v[] = {0,1};
       static const std::set<int> i01(i01v, Utils::endA(i01v));
@@ -676,36 +520,12 @@ namespace Gambit {
 
       return tmp_map;
    }
-   
-   //returns empty mass sicne none of these exist in this model
+      
    template <class MI>
-   typename MSSM_Phys<MI>::fmap MSSM_Phys<MI>::fill_PoleMixing_map(){
-      fmap tmp_map;
-      // this is currently empty in MSSM, could add Higgs mixing, alpha 
-      return tmp_map;
-   }
-
-   //returns empty mass sicne none of these exist in this model
-   template <class MI>
-   typename MSSM_Phys<MI>::fmap_plain MSSM_Phys<MI>::fill_PoleMixing_map_extra(){
-      fmap_plain tmp_map;
-    // this is currently empty in MSSM,
-      return tmp_map;
-   }
-   
-   //returns empty mass sicne none of these exist in this model
-   template <class MI>
-   typename MSSM_Phys<MI>::fmap1 MSSM_Phys<MI>::fill_PoleMixing_map1(){
-      fmap1 tmp_map;
-    // this is currently empty in MSSM,
-      return tmp_map;
-   }
-    
-   template <class MI>
-   typename MSSM_Phys<MI>::fmap2 MSSM_Phys<MI>::fill_PoleMixing_map2()
+   typename MapTypes<MSSMSpecTraits<MI>>::fmap2 MSSMSpec<MI>::fill_PoleMixing_map2()
    {
       typedef typename MI::Model Model;
-      fmap2 tmp_map;
+      typename MT::fmap2 tmp_map;
 
       static const int i01v[] = {0,1};
       static const std::set<int> i01(i01v, Utils::endA(i01v));
@@ -737,21 +557,6 @@ namespace Gambit {
      
       return tmp_map;
    }
-    
-
-   MODEL_RUNNING_TEMPLATE_MEMBER_FUNCTIONS(MSSM_DRbarPars)
-// e.g.:  template <class M> typename ClassName<M>::fmap&  ClassName<M>::get_mass4_map() const {return mass4_map;}
-// goes to
-// template <class M> 
-// typename MSSM_DRbarPars<M>::fmap&  MSSM_DRbarPars<M>::get_mass4_map() const {
-//    return mass4_map;
-// }
-
-   MODEL_PHYS_TEMPLATE_MEMBER_FUNCTIONS(MSSM_Phys)
-// e.g.:  template <class M> typename ClassName<M>::fmap   ClassName<M>::PoleMass_map(ClassName<M>::fill_PoleMass_map());
-// goes to
-// template <class M> 
-// typename MSSM_Phys<M>::fmap   MSSM_Phys<M>::PoleMass_map(MSSM_Phys<M>::fill_PoleMass_map());
 
  
 }

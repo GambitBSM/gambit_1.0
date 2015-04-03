@@ -76,7 +76,7 @@ class Spectrum {
       virtual SLHAea::Coll getSLHAea() const { vfcn_error(LOCAL_INFO); return empty_SLHAea; }
 
       /// Get integer offset convention used by internal model class (needed by getters which take indices) 
-      virtual int get_index_offset() const = 0;
+      virtual int get_index_offset() const { vfcn_error(LOCAL_INFO); return 0; }
    
       /// Constructors/destructors
       Spectrum(RunningPars& rp, Phys& p) : phys(p), runningpars(rp) {}
@@ -107,30 +107,38 @@ class Spectrum {
       /// If more than zero you probbaly *need* to know what model
       ///  you are working on, so we don't give all stable particles
       virtual int get_numbers_stable_particles() const { vfcn_error(LOCAL_INFO); return -1; }  
-      
-};
-
-// Macro for creating clone function overrides in derived classes
-// Relies on copy constructor working properly...
-#define DEFINE_CLONE(DERIVED_CLASS)                               \
-  std::unique_ptr<Spectrum> clone() const                         \
-  {                                                               \
-     return std::unique_ptr<Spectrum>(new DERIVED_CLASS(*this));  \
-  }                                                               \
-
-class RunningPars 
-{
+   
    private:
+      /// Functions to be overridden in classes derived from Spec<Derived> 
+      /// (i.e. the final wrappers)
+      /// Not actually called via Spectrum object directly; call via 
+      /// Spectrum.runningpars
+      /// These virtual functions are here just to simplify the wrapper definitions.
+
+      /// Run object to a particular scale
+      virtual void RunToScale(double) { vfcn_error(LOCAL_INFO); }
+      /// Returns the renormalisation scale of parameters
+      virtual double GetScale() const { vfcn_error(LOCAL_INFO); return -1;}
+      /// Manually set the renormalisation scale of parameters 
+      /// somewhat dangerous to allow this but may be needed
+      virtual void SetScale(double) { vfcn_error(LOCAL_INFO); }
+     
       /// Default limits to RGE running; warning/error raised if running beyond these is attempted.
       // If these aren't overridden in the derived class then effectively no limit on running will exist.
       virtual double hard_upper() const {return DBL_MAX;}
       virtual double soft_upper() const {return DBL_MAX;}
       virtual double soft_lower() const {return 0.;}
       virtual double hard_lower() const {return 0.;}
+ 
+};
 
+
+class RunningPars 
+{
+   private:
       /// Run object to a particular scale
       // Override this function in derived class to perform running
-      virtual void RunToScaleOverride(double) { vfcn_error(LOCAL_INFO); }
+      virtual void RunToScaleOverride(double) = 0;
    public:
       /// Constructors/destructors
       RunningPars() {}
@@ -189,30 +197,37 @@ class RunningPars
       }
 
       /// returns the renormalisation scale of parameters
-      virtual double GetScale() const { vfcn_error(LOCAL_INFO); return -1; }
+      virtual double GetScale() const = 0; 
       /// Sets the renormalisation scale of parameters 
       /// somewhat dangerous to allow this but may be needed
-      virtual void SetScale(double) { vfcn_error(LOCAL_INFO); }
-      
+      virtual void SetScale(double) = 0;
+     
+      /// Default limits to RGE running; warning/error raised if running beyond these is attempted.
+      // If these aren't overridden in the derived class then effectively no limit on running will exist.
+      virtual double hard_upper() const = 0; 
+      virtual double soft_upper() const = 0; 
+      virtual double soft_lower() const = 0; 
+      virtual double hard_lower() const = 0; 
+ 
       /// getters using map
-      virtual double get_mass4_parameter(const std::string&) const { vfcn_error(LOCAL_INFO); return -1; }
-      virtual double get_mass4_parameter(const std::string&, int) const { vfcn_error(LOCAL_INFO); return -1; }
-      virtual double get_mass4_parameter(const std::string&, int, int) const { vfcn_error(LOCAL_INFO); return -1; }
-      virtual double get_mass3_parameter(const std::string&) const { vfcn_error(LOCAL_INFO); return -1; }
-      virtual double get_mass3_parameter(const std::string&, int) const { vfcn_error(LOCAL_INFO); return -1; }
-      virtual double get_mass3_parameter(const std::string&, int, int) const { vfcn_error(LOCAL_INFO); return -1; }
-      virtual double get_mass2_parameter(const std::string&) const { vfcn_error(LOCAL_INFO); return -1; }
-      virtual double get_mass2_parameter(const std::string&, int) const { vfcn_error(LOCAL_INFO); return -1; }
-      virtual double get_mass2_parameter(const std::string&, int, int) const { vfcn_error(LOCAL_INFO); return -1; }
-      virtual double get_mass_parameter(const std::string&) const { vfcn_error(LOCAL_INFO); return -1; } 
-      virtual double get_mass_parameter(const std::string&, int) const { vfcn_error(LOCAL_INFO); return -1; }
-      virtual double get_mass_parameter(const std::string&, int, int) const { vfcn_error(LOCAL_INFO); return -1; }
-      virtual double get_dimensionless_parameter(const std::string&) const { vfcn_error(LOCAL_INFO); return -1; }
-      virtual double get_dimensionless_parameter(const std::string&, int) const { vfcn_error(LOCAL_INFO); return -1; }
-      virtual double get_dimensionless_parameter(const std::string&, int, int) const { vfcn_error(LOCAL_INFO); return -1; }
-      virtual double get_mass_eigenstate(const std::string&) const { vfcn_error(LOCAL_INFO); return -1; }
-      virtual double get_mass_eigenstate(const std::string&, int) const { vfcn_error(LOCAL_INFO); return -1; }
-      virtual double get_mass_eigenstate(const std::string&, int, int) const { vfcn_error(LOCAL_INFO); return -1; }
+      virtual double get_mass4_parameter(const std::string&) const = 0;
+      virtual double get_mass4_parameter(const std::string&, int) const = 0;
+      virtual double get_mass4_parameter(const std::string&, int, int) const = 0;
+      virtual double get_mass3_parameter(const std::string&) const = 0;
+      virtual double get_mass3_parameter(const std::string&, int) const = 0;
+      virtual double get_mass3_parameter(const std::string&, int, int) const = 0;
+      virtual double get_mass2_parameter(const std::string&) const = 0;
+      virtual double get_mass2_parameter(const std::string&, int) const = 0;
+      virtual double get_mass2_parameter(const std::string&, int, int) const = 0;
+      virtual double get_mass_parameter(const std::string&) const = 0;
+      virtual double get_mass_parameter(const std::string&, int) const = 0;
+      virtual double get_mass_parameter(const std::string&, int, int) const = 0;
+      virtual double get_dimensionless_parameter(const std::string&) const = 0;
+      virtual double get_dimensionless_parameter(const std::string&, int) const = 0;
+      virtual double get_dimensionless_parameter(const std::string&, int, int) const = 0;
+      virtual double get_mass_eigenstate(const std::string&) const = 0;
+      virtual double get_mass_eigenstate(const std::string&, int) const = 0;
+      virtual double get_mass_eigenstate(const std::string&, int, int) const = 0;
 };
 
 class Phys 
@@ -227,8 +242,7 @@ class Phys
       virtual double get_Pole_Mass(const std::string&, int) const { vfcn_error(LOCAL_INFO); return -1; };
       virtual double get_Pole_Mixing(const std::string&) const { vfcn_error(LOCAL_INFO); return -1; };
       virtual double get_Pole_Mixing(const std::string&, int) const { vfcn_error(LOCAL_INFO); return -1; };
-      virtual double get_Pole_Mixing(const std::string&, int, int) const { vfcn_error(LOCAL_INFO); return -1; 
-};
+      virtual double get_Pole_Mixing(const std::string&, int, int) const { vfcn_error(LOCAL_INFO); return -1; };
 
       /// Overloads of these functions to allow access using PDG codes
       /// as defined in Models/src/particle_database.cpp
@@ -305,59 +319,156 @@ struct FcnInfo2
 
 /// @}
 
-///  If we were allowed to use later C++11 compilers we could use template aliases to save some effort, but as
-///  it is we'll just have to redo these typedefs in the derived classes. Can do this with a macro.
-#define REDO_TYPEDEFS(Model) \
-   typedef double(Model::*FSptr)(void) const; /* Function pointer signature for Model object member functions with no arguments */ \
-   typedef double(Model::*FSptr1)(int) const; /* Function pointer signature for Model object member functions with one argument */ \
-   typedef double(Model::*FSptr2)(int,int) const; /* Function pointer signature for Model object member functions with two arguments */ \
-   typedef double(*plainfptr)(const Model&); /* Function pointer for plain functions; used for custom functions */ \
-   \
-   typedef FcnInfo1<FSptr1> FInfo1; \
-   typedef FcnInfo2<FSptr2> FInfo2; \
-   \
-   typedef std::map<std::string, FSptr> fmap; /* Typedef for map of strings to function pointers */ \
-   typedef std::map<std::string, FInfo1> fmap1;/*with an index*/ \
-   typedef std::map<std::string, FInfo2> fmap2; /*with 2 indices */ \
-   typedef std::map<std::string, plainfptr> fmap_plain; /* map of plain function pointers */
+/// @{ Traits structs for function pointer maps
+/// Get the types like this: MapTypes<WrapTraits>::fmap
 
-/// As well as the above, it is handy to have these types accessible via a helper template struct:
-/// Get them like: MapTypes<Model>::fmap
-template <class Model>
+/// Types needed for "normal" function pointer maps
+/// i.e. maps containing pointers to member functions of Model
+template <class DerivedSpecTraits>
 struct MapTypes
 {
-   REDO_TYPEDEFS(Model)
+   typedef typename DerivedSpecTraits::Model Model;
+   typedef typename DerivedSpecTraits::Input Input;
+   typedef double(Model::*FSptr)(void) const; /* Function pointer signature for Model object member functions with no arguments */
+   typedef double(Model::*FSptr1)(int) const; /* Function pointer signature for Model object member functions with one argument */
+   typedef double(Model::*FSptr2)(int,int) const; /* Function pointer signature for Model object member functions with two arguments */
+   typedef double(*plainfptrM)(const Model&); /* Function pointer for plain functions; used for custom functions */
+   typedef double(*plainfptrI)(const Input&); /* Function pointer for plain functions; used for custom functions */
+   typedef FcnInfo1<FSptr1> FInfo1;
+   typedef FcnInfo2<FSptr2> FInfo2;
+   typedef std::map<std::string, FSptr> fmap; /* Typedef for map of strings to function pointers */
+   typedef std::map<std::string, FInfo1> fmap1;/*with an index*/
+   typedef std::map<std::string, FInfo2> fmap2; /*with 2 indices */
+   typedef std::map<std::string, plainfptrM> fmap_extra;  /* map of plain function pointers */
+   typedef std::map<std::string, plainfptrI> fmap_extraI; /* map of plain function pointers */
 };
-  
- 
-//forward declaration
 
-template <class Model>
-class PhysDer : public Phys {
-   friend class Spectrum;
-   using Phys::get_Pole_Mass; // Need to expose the base class function overloads with this name
-   REDO_TYPEDEFS(Model)
-   private:      
+/// Need to forward declare Spec class
+template <class, class>
+class Spec;
+
+/// Macros to simplify declaration and filling of maps and map getters
+
+/// @{ Map declaration macros
+
+/// Maps empty by default. Overload the filler function for the ones you need
+/// in the derived Spectrum class (accessed here like parent.filler)
+#define DECLARE_MAP(NAME,TAG) \
+   static typename MT::CAT(f,TAG)   CAT_3(NAME,_,TAG); /* map */\
+   /* getter */ \
+   const  typename MT::CAT(f,TAG)&  CAT_4(get_,NAME,_,TAG)() const \
+   { \
+      return CAT_3(NAME,_,TAG); \
+   }; \
+   /* "real" filler (as opposed to the one this functions calls) i.e. this is
+      the function that actually fills the map. The two steps are needed so
+      that we can take advantage of the CRTP setup of the parent DerivedSpec 
+      class to achieve the static polymorphism we need, which allows default 
+      (null) fillers from the base Spec class to be used when no override is 
+      defined. */ \
+   typename MT::CAT(f,TAG) CAT_4(fill_,NAME,_,TAG)() \
+   { \
+     return parent.CAT_4(fill_,NAME,_,TAG)(); \
+   }
+
+#define DECLARE_MAP_COLLECTION(NAME) \
+   DECLARE_MAP(NAME,map) /* no indices */ \
+   /* Expands to (e.g. NAME=mass0):
+      // MAP
+      static typename MT::fmap  mass0_map;
+      // GETTER
+      const  typename MT::fmap& get_mass0_map() const { return mass0_map; }
+      {
+        return fmap;
+      }; 
+      // FILLER
+      typename MT::fmap fill_mass0_map()
+      {
+        return parent.fill_mass0_map();
+      }; 
+   */ \
+   DECLARE_MAP(NAME,map_extra);  /* no indices, custom functions (argument=Model&) */ \
+   DECLARE_MAP(NAME,map_extraI); /* no indices, custom functions (argument=Input&) */ \
+   DECLARE_MAP(NAME,map1);       /* one index */ \
+
+#define DECLARE_MAP_COLLECTION2(NAME) \
+   DECLARE_MAP_COLLECTION(NAME) \
+   DECLARE_MAP(NAME,map2);       /* two indices */
+
+/// @}
+
+/// @{ Map filling macros
+
+/// Has to be seperate, since the static maps cannot be initialised from within
+/// the class definition 
+#define FILL_MAP(CLASS,NAME,TAG) \
+   template <class D, class DT> \
+   typename MapTypes<DT>::CAT(f,TAG) CLASS<D,DT>::CAT_3(NAME,_,TAG)(CLASS::CAT_4(fill_,NAME,_,TAG)());
+
+#define FILL_MAP_COLLECTION(CLASS,NAME) \
+   FILL_MAP(CLASS,NAME,map) \
+   /* Expands to (e.g. CLASS=RunparDer, NAME=mass0)
+      template <class D> \
+      typename MapTypes<D>::fmap RunparDer<D>::PoleMass_map(RunparDer::fill_mass0_map());
+   */ \
+   FILL_MAP(CLASS,NAME,map_extra) \
+   FILL_MAP(CLASS,NAME,map_extraI) \
+   FILL_MAP(CLASS,NAME,map1) 
+
+#define FILL_MAP_COLLECTION2(CLASS,NAME) \
+   FILL_MAP_COLLECTION(CLASS,NAME) \
+   FILL_MAP(CLASS,NAME,map2) 
+
+/// @}
+
+/// @{ Fill function declaration macros for Spec<Derived> class
+///    These are the functions to actually be overridden in the derived 
+///    Spectrum class in order to fill the maps with useful things.
+
+#define DECLARE_MAP_FILLER(NAME,TAG) \
+   typename MT::CAT(f,TAG) CAT_4(NAME,_,TAG,_empty); \
+   virtual typename MT::CAT(f,TAG) CAT_4(fill_,NAME,_,TAG)() \
+   { \
+     /* Returns empty map by default */ \
+     return CAT_4(NAME,_,TAG,_empty); \
+   } \
+
+#define DECLARE_MAP_FILLER_COLLECTION(NAME) \
+   DECLARE_MAP_FILLER(NAME,map) \
+   /* Expands to (e.g. NAME=mass0):
+      const typename MT::fmap map_mass0_empty; \
+      virtual typename MT::fmap fill_mass0_map()
+      {
+        return map_mass0_empty;
+      }
+   */ \
+   DECLARE_MAP_FILLER(NAME,map_extra) \
+   DECLARE_MAP_FILLER(NAME,map_extraI) \
+   DECLARE_MAP_FILLER(NAME,map1)
+
+#define DECLARE_MAP_FILLER_COLLECTION2(NAME) \
+   DECLARE_MAP_FILLER_COLLECTION(NAME) \
+   DECLARE_MAP_FILLER(NAME,map2)
+  
+template <class DerivedSpec, class DerivedSpecTraits>
+class PhysDer : public Phys 
+{
+      friend class Spec<DerivedSpec,DerivedSpecTraits>;
+      using Phys::get_Pole_Mass; // Need to expose the base class function overloads with this name
+      typedef MapTypes<DerivedSpecTraits> MT; 
+
+   protected:
       /// Needed for access to "parent" object member functions
-      Spectrum& base_parent;
-      Model& model;
-      // Empty maps, for default return only
-      fmap       fmap_empty;
-      fmap_plain fmap_plain_empty;
-      fmap1      fmap1_empty;
-      fmap2      fmap2_empty;
-      // Default getters, to be overridden in derived class for non-empty maps.
-      virtual const fmap&       get_PoleMass_map()         const { return fmap_empty; }  
-      virtual const fmap_plain& get_PoleMass_map_extra()   const { return fmap_plain_empty; }
-      virtual const fmap1&      get_PoleMass_map1()        const { return fmap1_empty; }
-      virtual const fmap&       get_PoleMixing_map()       const { return fmap_empty; }  
-      virtual const fmap_plain& get_PoleMixing_map_extra() const { return fmap_plain_empty; }
-      virtual const fmap1&      get_PoleMixing_map1()      const { return fmap1_empty; }
-      virtual const fmap2&      get_PoleMixing_map2()      const { return fmap2_empty; }
-   public: 
-      // During construction, link the object to its "parent", and to the Model object 
-      // (which, most sensibly, should be a data member of the some derived class)
-      PhysDer(Spectrum& s, Model& m) : base_parent(s), model(m) {}
+      /// Needs to be protected so that derived classes can access it
+      Spec<DerivedSpec,DerivedSpecTraits>& parent;
+
+   private:      
+      DECLARE_MAP_COLLECTION(PoleMass)     // Pole masses
+      DECLARE_MAP_COLLECTION2(PoleMixing)  // Pole mass mixing parameters
+
+   public:
+      // During construction, link the object to its "parent"
+      PhysDer(Spec<DerivedSpec,DerivedSpecTraits>& s) : parent(s) {}
       virtual ~PhysDer() {}    
 
       virtual double get_Pole_Mass(const std::string&) const;
@@ -366,52 +477,44 @@ class PhysDer : public Phys {
       virtual double get_Pole_Mixing(const std::string&, int) const;
       virtual double get_Pole_Mixing(const std::string&, int, int) const;
 };
+/// Initialise maps (using filler overrides from DerivedSpec if defined)
+FILL_MAP_COLLECTION(PhysDer,PoleMass)
+FILL_MAP_COLLECTION2(PhysDer,PoleMixing)
 
-template <class Model>
-class RunparDer : public RunningPars {
-   friend class Spectrum;
-   REDO_TYPEDEFS(Model)
-   private:
+template <class DerivedSpec, class DerivedSpecTraits>
+class RunparDer : public RunningPars
+{
+     friend class Spec<DerivedSpec,DerivedSpecTraits>;
+     typedef MapTypes<DerivedSpecTraits> MT; 
+
+   protected:
       /// Needed for access to "parent" object member functions
-      Spectrum& base_parent;
-      Model& model;
-      // Empty maps, for default return only
-      fmap       fmap_empty;
-      fmap_plain fmap_plain_empty;
-      fmap1      fmap1_empty;
-      fmap2      fmap2_empty;
-      // Default getters, to be overridden in derived class for non-empty maps.
-      virtual const fmap&       get_mass4_map()          const { return fmap_empty; }  
-      virtual const fmap_plain& get_mass4_map_extra()    const { return fmap_plain_empty; }
-      virtual const fmap1&      get_mass4_map1()         const { return fmap1_empty; }
-      virtual const fmap2&      get_mass4_map2()         const { return fmap2_empty; }  
-      virtual const fmap&       get_mass3_map()          const { return fmap_empty; }  
-      virtual const fmap_plain& get_mass3_map_extra()    const { return fmap_plain_empty; }
-      virtual const fmap1&      get_mass3_map1()         const { return fmap1_empty; }
-      virtual const fmap2&      get_mass3_map2()         const { return fmap2_empty; }  
-      virtual const fmap&       get_mass2_map()          const { return fmap_empty; }  
-      virtual const fmap_plain& get_mass2_map_extra()    const { return fmap_plain_empty; }
-      virtual const fmap1&      get_mass2_map1()         const { return fmap1_empty; }
-      virtual const fmap2&      get_mass2_map2()         const { return fmap2_empty; }  
-      virtual const fmap&       get_mass_map()           const { return fmap_empty; }  
-      virtual const fmap_plain& get_mass_map_extra()     const { return fmap_plain_empty; }
-      virtual const fmap1&      get_mass_map1()          const { return fmap1_empty; }
-      virtual const fmap2&      get_mass_map2()          const { return fmap2_empty; }  
-      virtual const fmap&       get_mass0_map()          const { return fmap_empty; }  
-      virtual const fmap_plain& get_mass0_map_extra()    const { return fmap_plain_empty; }
-      virtual const fmap1&      get_mass0_map1()         const { return fmap1_empty; }
-      virtual const fmap2&      get_mass0_map2()         const { return fmap2_empty; } 
-      virtual const fmap&       get_mass_eigenstate_map()           const { return fmap_empty; }  
-      virtual const fmap_plain& get_mass_eigenstate_map_extra()     const { return fmap_plain_empty; }
-      virtual const fmap1&      get_mass_eigenstate_map1() const { return fmap1_empty; }
-      virtual const fmap2&      get_mass_eigenstate_map2()          const { return fmap2_empty; }  
+      /// Needs to be protected so that derived classes can access it
+      Spec<DerivedSpec,DerivedSpecTraits>& parent;
+
+   private:
+      DECLARE_MAP_COLLECTION2(mass0)           // dimensionless quantities
+      DECLARE_MAP_COLLECTION2(mass)            // mass dimension 1 quantities
+      DECLARE_MAP_COLLECTION2(mass2)           //   "     "      2     "
+      DECLARE_MAP_COLLECTION2(mass3)           //   "     "      3     "
+      DECLARE_MAP_COLLECTION2(mass4)           //   "     "      4     "
+      DECLARE_MAP_COLLECTION2(mass_eigenstate) // tree level mass parameters
 
    public:
-      // During construction, link the object to its "parent", and to the Model object 
-      // (which, most sensibly, should be a data member of the some derived class)
-      RunparDer(Spectrum& s, Model& m) : base_parent(s), model(m) {}
+      // During construction, link the object to its "parent"
+      RunparDer(Spec<DerivedSpec,DerivedSpecTraits>& s) : parent(s) {}
       virtual ~RunparDer() {}
 
+      /// Functions to connect to overrides defined in classes derived from Spectrum
+      virtual void   RunToScaleOverride(double scale) { parent.RunToScale(scale); }
+      virtual double GetScale() const       { return parent.GetScale(); }
+      virtual void   SetScale(double scale) { parent.SetScale(scale); }
+      virtual double hard_upper() const { return parent.hard_upper(); }
+      virtual double soft_upper() const { return parent.soft_upper(); }
+      virtual double soft_lower() const { return parent.soft_lower(); }
+      virtual double hard_lower() const { return parent.hard_lower(); }
+ 
+      /// Public interface functions
       virtual double get_mass4_parameter(const std::string&) const;
       virtual double get_mass4_parameter(const std::string&, int i) const;
       virtual double get_mass4_parameter(const std::string&, int i, int j) const;
@@ -431,7 +534,119 @@ class RunparDer : public RunningPars {
       virtual double get_mass_eigenstate(const std::string&, int i) const;
       virtual double get_mass_eigenstate(const std::string&, int i, int j) const;
 };
+/// Initialise maps (using filler overrides from DerivedSpec if defined)
+FILL_MAP_COLLECTION2(RunparDer,mass0)           
+FILL_MAP_COLLECTION2(RunparDer,mass)            
+FILL_MAP_COLLECTION2(RunparDer,mass2)           
+FILL_MAP_COLLECTION2(RunparDer,mass3)           
+FILL_MAP_COLLECTION2(RunparDer,mass4)           
+FILL_MAP_COLLECTION2(RunparDer,mass_eigenstate) 
 
+// CRTP used to allow access to some special data members of the derived class.
+template <class DerivedSpec, class DerivedSpecTraits>
+class Spec : public Spectrum
+{ 
+      friend class RunparDer<DerivedSpec,DerivedSpecTraits>;
+      friend class PhysDer<DerivedSpec,DerivedSpecTraits>;
+      typedef MapTypes<DerivedSpecTraits> MT; 
+
+      /// Note: DerivedSpecTraits will need to typedef Model and Input
+      /// Also make sure to initialise the members "model" and "input" in the 
+      /// derived class via this class's full constructor.
+      /// "Grab" these typedefs here to simplify notation
+      typedef typename DerivedSpecTraits::Model Model;
+      typedef typename DerivedSpecTraits::Input Input;
+
+   protected:
+      /// @{ Map filler functions
+      /// Override as needed in derived classes
+   
+      /// Fillers for RunparDer
+      DECLARE_MAP_FILLER_COLLECTION2(mass0)           // dimensionless quantities
+      DECLARE_MAP_FILLER_COLLECTION2(mass)            // mass dimension 1 quantities
+      DECLARE_MAP_FILLER_COLLECTION2(mass2)           //   "     "      2     "
+      DECLARE_MAP_FILLER_COLLECTION2(mass3)           //   "     "      3     "
+      DECLARE_MAP_FILLER_COLLECTION2(mass4)           //   "     "      4     "
+      DECLARE_MAP_FILLER_COLLECTION2(mass_eigenstate) // tree level mass parameters
+   
+      /// Fillers for PhysDer
+      DECLARE_MAP_FILLER_COLLECTION(PoleMass)         // Pole masses
+      DECLARE_MAP_FILLER_COLLECTION2(PoleMixing)      // Pole mass mixing parameters
+      /// @}
+   
+      /// Function overrides that will work with the above macros:
+      /// e.g. (with typedef MapTypes<DerivedSpec> MT)
+      /// (virtual) typename MT::fmap        fill_mass0_map();        /* no indices */
+      /// (virtual) typename MT::fmap_extra  fill_mass0_map_extra();  /* no indices, custom functions (argument=Model&) */
+      /// (virtual) typename MT::fmap_extraI fill_mass0_map_extraI(); /* no indices, custom functions (argument=Input&) */
+      /// (virtual) typename MT::fmap1       fill_mass0_map1();       /* one index */
+      /// (virtual) typename MT::fmap2       fill_mass0_map2(); **    /* two indices */
+      ///          
+      /// Note: virtual keyword optional                                                                      
+      /// ** Note: 2-index getters not available for PoleMass, since these are assumed
+      /// to be mass-ordered (i.e. a mass matrix wouldn't make sense)
+   
+   private:   
+      /// Internal instances of specialised running and physical parameter classes   
+      RunparDer<DerivedSpec,DerivedSpecTraits> rp;
+      PhysDer<DerivedSpec,DerivedSpecTraits> pp;
+   
+      /// Model object on which to call function pointers
+      Model* model;
+    
+      /// Contains extra data input on Spectrum object creation
+      Input* input;
+   
+   public: 
+      /// Minimal constructor used in default constructors of derived classes
+      /// Assumes that "Model" and "Input" classes have default constructors
+      Spec()
+        : Spectrum(rp,pp)
+        , rp(*this)
+        , pp(*this)
+        , model()
+        , input()
+      {}
+   
+      /// Constructor initialising just "model" member (Input unused (e.g. no special computations))
+      Spec(Model& m)
+        : Spectrum(rp,pp)
+        , rp(*this)
+        , pp(*this)
+        , model(&m)
+        , input()
+      {}
+   
+      /// Constructor initialising just "input" member (Model unused (e.g. no RGEs))
+      Spec(Input& i)
+        : Spectrum(rp,pp)
+        , rp(*this)
+        , pp(*this)
+        , model()
+        , input(&i)
+      {}
+   
+      /// Full constructor
+      Spec(Model& m, Input& i)
+        : Spectrum(rp,pp)
+        , rp(*this)
+        , pp(*this)
+        , model(&m)
+        , input(&i)
+      {}
+   
+      /// CRTP-style polymorphic clone function
+      /// Now derived classes will not need to re-implement the clone function.
+      virtual std::unique_ptr<Spectrum> clone() const       
+      {
+        return std::unique_ptr<Spectrum>(
+           new DerivedSpec(static_cast<DerivedSpec const &>(*this))
+           );
+      }
+    
+};
+
+/// @{ Getter function definitions
 
 /// To define all the getters, it is useful to define first the following helper functions which will
 /// be reused a lot (which just extract the named functions from the supplied maps and run them)
@@ -439,23 +654,25 @@ class RunparDer : public RunningPars {
 /// Getter/runner for functions taking no indices
 // (note: currently only the no-index getters are set up to allow an "extra" map of function pointers to be defined. Can be extended
 //  if needed.)
-template<class Model>
-double getter_0indices(const typename MapTypes<Model>::fmap& map, const typename MapTypes<Model>::fmap_plain& map_extra, const std::string& name, const std::string& maplabel, const Model& model)
+template<class Model, class Input>
+double getter_0indices(const typename MapTypes<Model>::fmap& map, const typename MapTypes<Model>::fmap_plain& map_extra, const std::string& name, const std::string& maplabel, const Model* model, const Input* input)
 {
    typename MapTypes<Model>::fmap::const_iterator it = map.find(name); ///  Find desired Model object function
    typename MapTypes<Model>::fmap_plain::const_iterator it2 = map_extra.find(name); ///  Check if it exists in the extra map
 
+   /// TODO: Currently there will be a segfault if, say fmap is filled, but "model" not initialised to point to something.
+   /// Can probably wrap the pointers in a safer structure so that this obvious error can be identified easily.
    if( it!=map.end() )
    {
       //  Get function out of map and call it on the bound model object
       typename MapTypes<Model>::FSptr f = it->second;
-      return (model.*f)();
+      return (model->*f)();
    }
    else if( it2!=map_extra.end() )
    {
       // Get function out of the extras map and call it
       typename MapTypes<Model>::plainfptr f = it2->second;
-      return (*f)(model);
+      return (*f)(*model);
    }
    else
    {
@@ -468,7 +685,7 @@ double getter_0indices(const typename MapTypes<Model>::fmap& map, const typename
 
 /// Getter/runner for functions taking one index
 template<class Model>
-double getter_1index(const typename MapTypes<Model>::fmap1& map, const std::string& name, const int i, const std::string& maplabel, const Model& model, const int offset)
+double getter_1index(const typename MapTypes<Model>::fmap1& map, const std::string& name, const int i, const std::string& maplabel, const Model* model, const int offset)
 {
    typename MapTypes<Model>::fmap1::const_iterator it = map.find(name); ///  Find desired Model object function
    if( it==map.end() )
@@ -489,13 +706,13 @@ double getter_1index(const typename MapTypes<Model>::fmap1& map, const std::stri
 
        ///  Get function out of map and call it on the bound flexiSUSY object
        typename MapTypes<Model>::FSptr1 f = it->second.fptr;
-       return (model.*f)(io);
+       return (model->*f)(io);
    }
 }
 
 /// Getter/runner for functions taking two indices
 template<class Model>
-double getter_2indices(const typename MapTypes<Model>::fmap2& map, const std::string& name, const int i, const int j, const std::string& maplabel, const Model& model, const int offset)
+double getter_2indices(const typename MapTypes<Model>::fmap2& map, const std::string& name, const int i, const int j, const std::string& maplabel, const Model* model, const int offset)
 {
    typename MapTypes<Model>::fmap2::const_iterator it = map.find(name); ///  Find desired FlexiSUSY function
    if( it==map.end() )
@@ -523,128 +740,128 @@ double getter_2indices(const typename MapTypes<Model>::fmap2& map, const std::st
 
        ///  Get function out of map and call it on the bound flexiSUSY object
        typename MapTypes<Model>::FSptr2 f = it->second.fptr;
-       return (model.*f)(io,jo);
+       return (model->*f)(io,jo);
    }
 }
 
 /// mass4
-template<class Model>
-double RunparDer<Model>::get_mass4_parameter(const std::string& mass) const
+template<class D, class DT>
+double RunparDer<D,DT>::get_mass4_parameter(const std::string& mass) const
 {
-   return getter_0indices(get_mass4_map(), get_mass4_map_extra(), mass, "mass4", model);
+   return getter_0indices(get_mass4_map(), get_mass4_map_extra(), mass, "mass4", parent.model, parent.input);
 }
 
-template <class Model>
-double RunparDer<Model>::get_mass4_parameter(const std::string& mass, int i) const
+template <class D, class DT>
+double RunparDer<D,DT>::get_mass4_parameter(const std::string& mass, int i) const
 {
-   return getter_1index(get_mass4_map1(), mass, i, "mass4", model, base_parent.get_index_offset());
+   return getter_1index(get_mass4_map1(), mass, i, "mass4", parent.model, parent.get_index_offset());
 }
 
-template <class Model>
-double  RunparDer<Model>::get_mass4_parameter(const std::string& mass, int i, int j) const
+template <class D, class DT>
+double  RunparDer<D,DT>::get_mass4_parameter(const std::string& mass, int i, int j) const
 {
-   return getter_2indices(get_mass4_map2(), mass, i, j, "mass4", model, base_parent.get_index_offset());
+   return getter_2indices(get_mass4_map2(), mass, i, j, "mass4", parent.model, parent.get_index_offset());
 }
 
 /// mass^3
-template <class Model>
-double RunparDer<Model>::get_mass3_parameter(const std::string& mass) const
+template <class D, class DT>
+double RunparDer<D,DT>::get_mass3_parameter(const std::string& mass) const
 {
-   return getter_0indices(get_mass3_map(), get_mass3_map_extra(), mass, "mass3", model);
+   return getter_0indices(get_mass3_map(), get_mass3_map_extra(), mass, "mass3", parent.model, parent.input);
 }
 
-template <class Model>
-double RunparDer<Model>::get_mass3_parameter(const std::string& mass, int i) const
+template <class D, class DT>
+double RunparDer<D,DT>::get_mass3_parameter(const std::string& mass, int i) const
 {
-   return getter_1index(get_mass3_map1(), mass, i, "mass3", model, base_parent.get_index_offset());
+   return getter_1index(get_mass3_map1(), mass, i, "mass3", parent.model, parent.get_index_offset());
 }
 
-template <class Model>
-double  RunparDer<Model>::get_mass3_parameter(const std::string& mass, int i, int j) const
+template <class D, class DT>
+double  RunparDer<D,DT>::get_mass3_parameter(const std::string& mass, int i, int j) const
 {
-   return getter_2indices(get_mass3_map2(), mass, i, j, "mass3", model, base_parent.get_index_offset());
+   return getter_2indices(get_mass3_map2(), mass, i, j, "mass3", parent.model, parent.get_index_offset());
 }
 
 /// mass^2
-template <class Model>
-double  RunparDer<Model>::get_mass2_parameter(const std::string& mass) const
+template <class D, class DT>
+double  RunparDer<D,DT>::get_mass2_parameter(const std::string& mass) const
 {
-   return getter_0indices(get_mass2_map(), get_mass2_map_extra(), mass, "mass2", model);
+   return getter_0indices(get_mass2_map(), get_mass2_map_extra(), mass, "mass2", parent.model, parent.input);
 }
 
-template <class Model>
-double  RunparDer<Model>::get_mass2_parameter(const std::string& mass, int i) const
+template <class D, class DT>
+double  RunparDer<D,DT>::get_mass2_parameter(const std::string& mass, int i) const
 {
-   return getter_1index(get_mass2_map1(), mass, i, "mass2", model, base_parent.get_index_offset());
+   return getter_1index(get_mass2_map1(), mass, i, "mass2", parent.model, parent.get_index_offset());
 }
 
-template <class Model>
-double  RunparDer<Model>::get_mass2_parameter(const std::string& mass, int i, int j) const
+template <class D, class DT>
+double  RunparDer<D,DT>::get_mass2_parameter(const std::string& mass, int i, int j) const
 {
-   return getter_2indices(get_mass2_map2(), mass, i, j, "mass2", model, base_parent.get_index_offset());
+   return getter_2indices(get_mass2_map2(), mass, i, j, "mass2", parent.model, parent.get_index_offset());
 }
 
 /// mass^1
-template <class Model>
-double  RunparDer<Model>::get_mass_parameter(const std::string& mass) const
+template <class D, class DT>
+double  RunparDer<D,DT>::get_mass_parameter(const std::string& mass) const
 {
-   return getter_0indices(get_mass_map(), get_mass_map_extra(), mass, "mass", model);
+   return getter_0indices(get_mass_map(), get_mass_map_extra(), mass, "mass", parent.model, parent.input);
 }
 
-template <class Model>
-double  RunparDer<Model>::get_mass_parameter(const std::string& mass, int i) const
+template <class D, class DT>
+double  RunparDer<D,DT>::get_mass_parameter(const std::string& mass, int i) const
 {
-   return getter_1index(get_mass_map1(), mass, i, "mass", model, base_parent.get_index_offset());
+   return getter_1index(get_mass_map1(), mass, i, "mass", parent.model, parent.get_index_offset());
 }
 
-template <class Model>
-double  RunparDer<Model>::get_mass_parameter(const std::string& mass, int i, int j) const
+template <class D, class DT>
+double  RunparDer<D,DT>::get_mass_parameter(const std::string& mass, int i, int j) const
 {
-   return getter_2indices(get_mass_map2(), mass, i, j, "mass", model, base_parent.get_index_offset());
+   return getter_2indices(get_mass_map2(), mass, i, j, "mass", parent.model, parent.get_index_offset());
 }
 
 /// mass^0
-template <class Model>
-double  RunparDer<Model>::get_dimensionless_parameter(const std::string& par) const
+template <class D, class DT>
+double  RunparDer<D,DT>::get_dimensionless_parameter(const std::string& par) const
 {
-   return getter_0indices(get_mass0_map(), get_mass0_map_extra(), par, "dimensionless parameter", model);
+   return getter_0indices(get_mass0_map(), get_mass0_map_extra(), par, "dimensionless parameter", parent.model, parent.input);
 }
 
-template <class Model>
-double  RunparDer<Model>::get_dimensionless_parameter(const std::string& par, int i) const
+template <class D, class DT>
+double  RunparDer<D,DT>::get_dimensionless_parameter(const std::string& par, int i) const
 {
-   return getter_1index(get_mass0_map1(), par, i, "dimensionless parameter", model, base_parent.get_index_offset());
+   return getter_1index(get_mass0_map1(), par, i, "dimensionless parameter", parent.model, parent.get_index_offset());
 }
 
-template <class Model>
-double  RunparDer<Model>::get_dimensionless_parameter(const std::string& par, int i, int j) const
+template <class D, class DT>
+double  RunparDer<D,DT>::get_dimensionless_parameter(const std::string& par, int i, int j) const
 {
-   return getter_2indices(get_mass0_map2(), par, i, j, "dimensionless parameter", model, base_parent.get_index_offset());
+   return getter_2indices(get_mass0_map2(), par, i, j, "dimensionless parameter", parent.model, parent.get_index_offset());
 }
 
 /// mass_eigenstate
-template <class Model>
-double  RunparDer<Model>::get_mass_eigenstate(const std::string& mass) const
+template <class D, class DT>
+double  RunparDer<D,DT>::get_mass_eigenstate(const std::string& mass) const
 {
-   return getter_0indices(get_mass_eigenstate_map(), get_mass_eigenstate_map_extra(), mass, "mass_eigenstate", model);
+   return getter_0indices(get_mass_eigenstate_map(), get_mass_eigenstate_map_extra(), mass, "mass_eigenstate", parent.model, parent.input);
 }
 
-template <class Model>
-double  RunparDer<Model>::get_mass_eigenstate(const std::string& mass, int i) const
+template <class D, class DT>
+double  RunparDer<D,DT>::get_mass_eigenstate(const std::string& mass, int i) const
 {
-   return getter_1index(get_mass_eigenstate_map1(), mass, i, "mass eigenstate", model, base_parent.get_index_offset());
+   return getter_1index(get_mass_eigenstate_map1(), mass, i, "mass eigenstate", parent.model, parent.get_index_offset());
 }
 
-template <class Model>
-double  RunparDer<Model>::get_mass_eigenstate(const std::string& mass, int i, int j) const
+template <class D, class DT>
+double  RunparDer<D,DT>::get_mass_eigenstate(const std::string& mass, int i, int j) const
 {
-   return getter_2indices(get_mass_eigenstate_map2(), mass, i, j, "mass_eigenstate", model, base_parent.get_index_offset());
+   return getter_2indices(get_mass_eigenstate_map2(), mass, i, j, "mass_eigenstate", parent.model, parent.get_index_offset());
 }
 
 
 /// Pole masses
-template <class Model>
-double PhysDer<Model>::get_Pole_Mass(const std::string& mass) const
+template <class D, class DT>
+double PhysDer<D,DT>::get_Pole_Mass(const std::string& mass) const
 {
    // Check whether string can be converted to a short name plus index by PDB
    // If so, we need to use those instead to retrieve the correct pole mass
@@ -653,163 +870,36 @@ double PhysDer<Model>::get_Pole_Mass(const std::string& mass) const
       return get_Pole_Mass( PDB.short_name_pair(mass) );  
    }
 
-   return getter_0indices(get_PoleMass_map(), get_PoleMass_map_extra(), mass, "pole mass", model);
+   return getter_0indices(get_PoleMass_map(), get_PoleMass_map_extra(), mass, "pole mass", parent.model);
 }
 
-template <class Model>
-double PhysDer<Model>::get_Pole_Mass(const std::string& mass, int i) const
+template <class D, class DT>
+double PhysDer<D,DT>::get_Pole_Mass(const std::string& mass, int i) const
 {
-   return getter_1index(get_PoleMass_map1(), mass, i, "pole mass", model, base_parent.get_index_offset());
+   return getter_1index(get_PoleMass_map1(), mass, i, "pole mass", parent.model, parent.get_index_offset());
 }
 
 
 /// Pole mixings
-template <class Model>
-double PhysDer<Model>::get_Pole_Mixing(const std::string& mixing) const
+template <class D, class DT>
+double PhysDer<D,DT>::get_Pole_Mixing(const std::string& mixing) const
 {
-   return getter_0indices(get_PoleMixing_map(), get_PoleMixing_map_extra(), mixing, "pole mixing", model);
+   return getter_0indices(get_PoleMixing_map(), get_PoleMixing_map_extra(), mixing, "pole mixing", parent.model);
 }
 
-template <class Model>
-double PhysDer<Model>::get_Pole_Mixing(const std::string& mixing, int i) const
+template <class D, class DT>
+double PhysDer<D,DT>::get_Pole_Mixing(const std::string& mixing, int i) const
 {
-   return getter_1index(get_PoleMixing_map1(), mixing, i, "pole mixing", model, base_parent.get_index_offset());
+   return getter_1index(get_PoleMixing_map1(), mixing, i, "pole mixing", parent.model, parent.get_index_offset());
 }
 
-template <class Model>
-double PhysDer<Model>::get_Pole_Mixing(const std::string& mixing, int i, int j) const
+template <class D, class DT>
+double PhysDer<D,DT>::get_Pole_Mixing(const std::string& mixing, int i, int j) const
 {
-   return getter_2indices(get_PoleMixing_map2(), mixing, i, j, "pole mixing", model, base_parent.get_index_offset());
+   return getter_2indices(get_PoleMixing_map2(), mixing, i, j, "pole mixing", parent.model, parent.get_index_offset());
 }
 
-
-///  Need the templating so that the calls to the FlexiSUSY functions 
-/// know which FlexiSUSY classes to use
-
-//Ben: I don't think we need the below layer... I am flagging it for deletion
-
-//template <class S>
-//class Spec : public Spectrum
-//{
-//private: 
-//   /// Internal instances of the derived inner classes
-//   RunparDer<S>& myrunpar;
-//   PhysDer<S>& myphys;
-//public: 
-//   Spec(RunparDer<S> &rp, PhysDer<S> &pp) : 
-//      myrunpar(rp), 
-//      myphys(pp),
-//      Spectrum(rp,pp)
-//   {}
-//   virtual S& model const = 0; 
-//   //virtual P get_bound_phys() const = 0; 
-//};
-
-
-///  Have to re-write these two functions for each derived class, so that reference to the correct member variables is retrieved.
-///  Need these functions though so that the original definition of get_mass2_par can be re-used.
-///  Maybe do this with another macro...
-
-#define MODEL_RUNNING_MEMBER_FUNCTIONS_SINGLE(ClassName,NAME) \
-  ClassName::fmap       ClassName::CAT(NAME,_map)      (ClassName::CAT_3(fill_,NAME,_map)()); \
-  ClassName::fmap_plain ClassName::CAT(NAME,_map_extra)(ClassName::CAT_3(fill_,NAME,_map_extra)()); \
-  ClassName::fmap1      ClassName::CAT(NAME,_map1)     (ClassName::CAT_3(fill_,NAME,_map1)()); \
-  ClassName::fmap2      ClassName::CAT(NAME,_map2)     (ClassName::CAT_3(fill_,NAME,_map2)()); \
-\
-  ClassName::fmap&       ClassName::CAT_3(get_,NAME,_map)()       const {return CAT(NAME,_map);} \
-  ClassName::fmap_plain& ClassName::CAT_3(get_,NAME,_map_extra)() const {return CAT(NAME,_map_extra);} \
-  ClassName::fmap1&      ClassName::CAT_3(get_,NAME,_map1)()      const {return CAT(NAME,_map1);} \
-  ClassName::fmap2&      ClassName::CAT_3(get_,NAME,_map2)()      const {return CAT(NAME,_map2);}
-/* The above expands to, e.g. (NAME=mass4)
-  ClassName::fmap       ClassName::mass4_map      (ClassName::fill_mass4_map()); \
-  ClassName::fmap_plain ClassName::mass4_map_extra(ClassName::fill_mass4_map_extra()); \
-  ClassName::fmap1      ClassName::mass4_map1     (ClassName::fill_mass4_map1()); \
-  ClassName::fmap2      ClassName::mass4_map2     (ClassName::fill_mass4_map2()); \
-\
-  ClassName::fmap&       ClassName::get_mass4_map()       const {return mass4_map;} \
-  ClassName::fmap_plain& ClassName::get_mass4_map_extra() const {return mass4_map_extra;} \
-  ClassName::fmap1&      ClassName::get_mass4_map1()      const {return mass4_map1;} \
-  ClassName::fmap2&      ClassName::get_mass4_map2()      const {return mass4_map2;}
-*/
-
-#define MODEL_RUNNING_MEMBER_FUNCTIONS(ClassName) \
-   MODEL_RUNNING_MEMBER_FUNCTIONS_SINGLE(ClassName,mass4) \
-   MODEL_RUNNING_MEMBER_FUNCTIONS_SINGLE(ClassName,mass3) \
-   MODEL_RUNNING_MEMBER_FUNCTIONS_SINGLE(ClassName,mass2) \
-   MODEL_RUNNING_MEMBER_FUNCTIONS_SINGLE(ClassName,mass) \
-   MODEL_RUNNING_MEMBER_FUNCTIONS_SINGLE(ClassName,mass0) \
-   MODEL_RUNNING_MEMBER_FUNCTIONS_SINGLE(ClassName,mass_eigenstate)
-
-// Only two here so I didn't bother with another macro 
-#define MODEL_PHYS_MEMBER_FUNCTIONS(ClassName) \
-  ClassName::fmap        ClassName::PoleMass_map      (ClassName::fill_PoleMass_map()); \
-  ClassName::fmap_plain  ClassName::PoleMass_map_extra(ClassName::fill_PoleMass_map_extra()); \
-  ClassName::fmap1       ClassName::PoleMass_map1     (ClassName::fill_PoleMass_map1()); \
-  \
-  ClassName::fmap&       ClassName::get_PoleMass_map()       const {return PoleMass_map;} \
-  ClassName::fmap_plain& ClassName::get_PoleMass_map_extra() const {return PoleMass_map_extra;} \
-  ClassName::fmap1&      ClassName::get_PoleMass_map1()      const {return PoleMass_map1;} \
-  \
-  ClassName::fmap        ClassName::PoleMixing_map      (ClassName::fill_PoleMixing_map()); \
-  ClassName::fmap_plain& ClassName::PoleMixing_map_extra(ClassName::fill_PoleMixing_map_extra()); \
-  ClassName::fmap1       ClassName::PoleMixing_map1     (ClassName::fill_PoleMixing_map1()); \
-  ClassName::fmap2       ClassName::PoleMixing_map2     (ClassName::fill_PoleMixing_map2()); \
-  \
-  ClassName::fmap&       ClassName::get_PoleMixing_map()       const {return PoleMixing_map;} \
-  ClassName::fmap_plain& ClassName::get_PoleMixing_map_extra() const {return PoleMixing_map_extra;} \
-  ClassName::fmap1&      ClassName::get_PoleMixing_map1()      const {return PoleMixing_map1;} \
-  ClassName::fmap2&      ClassName::get_PoleMixing_map2()      const {return PoleMixing_map2;} \
-
-
-// Versions of the above for template classes
-#define MODEL_RUNNING_TEMPLATE_MEMBER_FUNCTIONS_SINGLE(ClassName,NAME) \
-  template <class M> typename ClassName<M>::fmap       ClassName<M>::CAT(NAME,_map)      (ClassName<M>::CAT_3(fill_,NAME,_map)()); \
-  template <class M> typename ClassName<M>::fmap_plain ClassName<M>::CAT(NAME,_map_extra)(ClassName<M>::CAT_3(fill_,NAME,_map_extra)()); \
-  template <class M> typename ClassName<M>::fmap1      ClassName<M>::CAT(NAME,_map1)     (ClassName<M>::CAT_3(fill_,NAME,_map1)()); \
-  template <class M> typename ClassName<M>::fmap2      ClassName<M>::CAT(NAME,_map2)     (ClassName<M>::CAT_3(fill_,NAME,_map2)()); \
-\
-  template <class M> const typename ClassName<M>::fmap&       ClassName<M>::CAT_3(get_,NAME,_map)() const {return CAT(NAME,_map);} \
-  template <class M> const typename ClassName<M>::fmap_plain& ClassName<M>::CAT_3(get_,NAME,_map_extra)() const {return CAT(NAME,_map_extra);} \
-  template <class M> const typename ClassName<M>::fmap1&      ClassName<M>::CAT_3(get_,NAME,_map1)() const {return CAT(NAME,_map1);} \
-  template <class M> const typename ClassName<M>::fmap2&      ClassName<M>::CAT_3(get_,NAME,_map2)() const {return CAT(NAME,_map2);} \
-/* The above expands to, e.g. (NAME=mass4)
-  template <class M> typename ClassName<M>::fmap        ClassName<M>::mass4_map      (ClassName<M>::fill_mass4_map()); \
-  template <class M> typename ClassName<M>::fmap_plain  ClassName<M>::mass4_map_extra(ClassName<M>::fill_mass4_map_extra()); \
-  template <class M> typename ClassName<M>::fmap1       ClassName<M>::mass4_map1     (ClassName<M>::fill_mass4_map1()); \
-  template <class M> typename ClassName<M>::fmap2       ClassName<M>::mass4_map2     (ClassName<M>::fill_mass4_map2()); \
-\
-  template <class M> typename const ClassName<M>::fmap&       ClassName<M>::get_mass4_map()       const {return mass4_map;} \
-  template <class M> typename const ClassName<M>::fmap_plain& ClassName<M>::get_mass4_map_extra() const {return mass4_map_extra;} \
-  template <class M> typename const ClassName<M>::fmap1&      ClassName<M>::get_mass4_map1()      const {return mass4_map1;} \
-  template <class M> typename const ClassName<M>::fmap2&      ClassName<M>::get_mass4_map2()      const {return mass4_map2;} \
-*/
-
-#define MODEL_RUNNING_TEMPLATE_MEMBER_FUNCTIONS(ClassName) \
-   MODEL_RUNNING_TEMPLATE_MEMBER_FUNCTIONS_SINGLE(ClassName,mass4) \
-   MODEL_RUNNING_TEMPLATE_MEMBER_FUNCTIONS_SINGLE(ClassName,mass3) \
-   MODEL_RUNNING_TEMPLATE_MEMBER_FUNCTIONS_SINGLE(ClassName,mass2) \
-   MODEL_RUNNING_TEMPLATE_MEMBER_FUNCTIONS_SINGLE(ClassName,mass) \
-   MODEL_RUNNING_TEMPLATE_MEMBER_FUNCTIONS_SINGLE(ClassName,mass0) \
-   MODEL_RUNNING_TEMPLATE_MEMBER_FUNCTIONS_SINGLE(ClassName,mass_eigenstate)
-
-#define MODEL_PHYS_TEMPLATE_MEMBER_FUNCTIONS(ClassName) \
-  template <class M> typename ClassName<M>::fmap       ClassName<M>::PoleMass_map(      ClassName<M>::fill_PoleMass_map()      ); \
-  template <class M> typename ClassName<M>::fmap_plain ClassName<M>::PoleMass_map_extra(ClassName<M>::fill_PoleMass_map_extra()); \
-  template <class M> typename ClassName<M>::fmap1      ClassName<M>::PoleMass_map1(     ClassName<M>::fill_PoleMass_map1()     ); \
-  \
-  template <class M> const typename ClassName<M>::fmap&       ClassName<M>::get_PoleMass_map()       const {return PoleMass_map;      } \
-  template <class M> const typename ClassName<M>::fmap_plain& ClassName<M>::get_PoleMass_map_extra() const {return PoleMass_map_extra;} \
-  template <class M> const typename ClassName<M>::fmap1&      ClassName<M>::get_PoleMass_map1()      const {return PoleMass_map1;     } \
-  \
-  template <class M> typename ClassName<M>::fmap        ClassName<M>::PoleMixing_map(      ClassName<M>::fill_PoleMixing_map()      ); \
-  template <class M> typename ClassName<M>::fmap_plain  ClassName<M>::PoleMixing_map_extra(ClassName<M>::fill_PoleMixing_map_extra()); \
-  template <class M> typename ClassName<M>::fmap1       ClassName<M>::PoleMixing_map1(     ClassName<M>::fill_PoleMixing_map1()     ); \
-  template <class M> typename ClassName<M>::fmap2       ClassName<M>::PoleMixing_map2(     ClassName<M>::fill_PoleMixing_map2()     ); \
-  \
-  template <class M> const typename ClassName<M>::fmap&       ClassName<M>::get_PoleMixing_map()       const {return PoleMixing_map;      } \
-  template <class M> const typename ClassName<M>::fmap_plain& ClassName<M>::get_PoleMixing_map_extra() const {return PoleMixing_map_extra;} \
-  template <class M> const typename ClassName<M>::fmap1&      ClassName<M>::get_PoleMixing_map1()      const {return PoleMixing_map1;     } \
-  template <class M> const typename ClassName<M>::fmap2&      ClassName<M>::get_PoleMixing_map2()      const {return PoleMixing_map2;     } \
+/// @}
 
 } // end namespace Gambit
 

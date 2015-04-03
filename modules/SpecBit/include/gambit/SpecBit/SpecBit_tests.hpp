@@ -1113,10 +1113,11 @@ namespace Gambit
         
          // First check pole masses          
          test_within_tol( sminputs.mZ,   SM->phys.get_Pole_Mass("Z"), tol, "Z pole" );
+         //test_within_tol( sminputs.mW,   SM->phys.get_Pole_Mass("W"), tol, "W pole" ); // Whoops, no mW in sminputs.
          test_within_tol( sminputs.mT,   SM->phys.get_Pole_Mass("t"), tol, "top pole" );
          test_within_tol( sminputs.mTau, SM->phys.get_Pole_Mass("tau"), tol, "tau pole" );
-         //test_within_tol( sminputs.mMu, SM->phys.get_Pole_Mass(""), tol );
-         //test_within_tol( sminputs.mE, SM->phys.get_Pole_Mass(""), tol );
+         test_within_tol( sminputs.mMu,  SM->phys.get_Pole_Mass("mu"), tol, "mu pole" );
+         test_within_tol( sminputs.mE,   SM->phys.get_Pole_Mass("e"), tol, "e pole" );
          //test_within_tol( sminputs.mNu3, SM->phys.get_Pole_Mass(""), tol );
          //test_within_tol( sminputs.mNu2, SM->phys.get_Pole_Mass(""), tol );
          //test_within_tol( sminputs.mNu1, SM->phys.get_Pole_Mass(""), tol );
@@ -1156,10 +1157,16 @@ namespace Gambit
          OUTPUT << "Checking match between SM Spectrum* retrieved in different ways..." << std::endl;
          test_within_tol(SM->phys.get_Pole_Mass("Z"),
                          smin->phys.get_Pole_Mass("Z"),                          tol, "Z pole" );
+         test_within_tol(SM->phys.get_Pole_Mass("W"),
+                         smin->phys.get_Pole_Mass("W"),                          tol, "W pole" );
          test_within_tol(SM->phys.get_Pole_Mass("t"),
                          smin->phys.get_Pole_Mass("t"),                          tol, "top pole" );
          test_within_tol(SM->phys.get_Pole_Mass("tau"),
                          smin->phys.get_Pole_Mass("tau"),                        tol, "tau pole" );
+         test_within_tol(SM->phys.get_Pole_Mass("mu"),
+                         smin->phys.get_Pole_Mass("mu"),                         tol, "mu pole" );
+         test_within_tol(SM->phys.get_Pole_Mass("e"), 
+                         smin->phys.get_Pole_Mass("e"),                          tol, "e pole" );
          test_within_tol(SM->runningpars.get_dimensionless_parameter("alpha"),
                          smin->runningpars.get_dimensionless_parameter("alpha"), tol, "1/alpha(mZ)" );
          test_within_tol(SM->runningpars.get_dimensionless_parameter("alphaS"), 
