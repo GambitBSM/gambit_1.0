@@ -132,6 +132,44 @@ class Spectrum {
  
 };
 
+/// Getter overloads for easier interaction with particle database
+/// @{
+
+#define DECLARE_PDG_GETTERS(FUNC) \
+   /* Overloads of these functions to allow access using PDG codes */ \
+   /* as defined in Models/src/particle_database.cpp */ \
+   /* These don't have to be virtual; they just call the virtual functions in the end. */ \
+   double FUNC(const int, const int) const;     /* Input PDG code plus context integer */ \
+   double FUNC(const std::pair<int,int>) const; /* Input PDG code plus context integer */ \
+   double FUNC(const std::pair<str,int>) const; /* Input short name plus index */
+
+#define DEFINE_PDG_GETTERS(CLASS,FUNC)                                        \
+   inline double CLASS::FUNC(const std::pair<str,int> shortpr) const          \
+   {                                                                          \
+     return FUNC(shortpr.first, shortpr.second);                              \
+   }                                                                          \
+                                                                              \
+   inline double CLASS::FUNC(const int pdg_code, const int context) const     \
+   {                                                                          \
+      /* PDB context integer must be zero for pole mass retrieval             \
+         (this is the context integer for mass eigenstate) */                 \
+      return FUNC( std::make_pair(pdg_code,context) );                        \
+   }                                                                          \
+                                                                              \
+   inline double CLASS::FUNC(const std::pair<int,int> pdgpr) const            \
+   {                                                                          \
+      /* If there is a short name, then retrieve that plus the index */       \
+      if( PDB.has_short_name(pdgpr) )                                         \
+      {                                                                       \
+        return FUNC( PDB.short_name_pair(pdgpr) );                            \
+      }                                                                       \
+      else /* Use the long name with no index instead */                      \
+      {                                                                       \
+        return FUNC( PDB.long_name(pdgpr) );                                  \
+      }                                                                       \
+   }
+
+/// @}
 
 class RunningPars 
 {
@@ -210,25 +248,38 @@ class RunningPars
       virtual double hard_lower() const = 0; 
  
       /// getters using map
-      virtual double get_mass4_parameter(const std::string&) const = 0;
-      virtual double get_mass4_parameter(const std::string&, int) const = 0;
+      virtual double get_mass4_parameter(const std::string&, bool=true) const = 0;
+      virtual double get_mass4_parameter(const std::string&, int, bool=true) const = 0;
       virtual double get_mass4_parameter(const std::string&, int, int) const = 0;
-      virtual double get_mass3_parameter(const std::string&) const = 0;
-      virtual double get_mass3_parameter(const std::string&, int) const = 0;
+      virtual double get_mass3_parameter(const std::string&, bool=true) const = 0;
+      virtual double get_mass3_parameter(const std::string&, int, bool=true) const = 0;
       virtual double get_mass3_parameter(const std::string&, int, int) const = 0;
-      virtual double get_mass2_parameter(const std::string&) const = 0;
-      virtual double get_mass2_parameter(const std::string&, int) const = 0;
+      virtual double get_mass2_parameter(const std::string&, bool=true) const = 0;
+      virtual double get_mass2_parameter(const std::string&, int, bool=true) const = 0;
       virtual double get_mass2_parameter(const std::string&, int, int) const = 0;
-      virtual double get_mass_parameter(const std::string&) const = 0;
-      virtual double get_mass_parameter(const std::string&, int) const = 0;
+      virtual double get_mass_parameter(const std::string&, bool=true) const = 0;
+      virtual double get_mass_parameter(const std::string&, int, bool=true) const = 0;
       virtual double get_mass_parameter(const std::string&, int, int) const = 0;
-      virtual double get_dimensionless_parameter(const std::string&) const = 0;
-      virtual double get_dimensionless_parameter(const std::string&, int) const = 0;
+      virtual double get_dimensionless_parameter(const std::string&, bool=true) const = 0;
+      virtual double get_dimensionless_parameter(const std::string&, int, bool=true) const = 0;
       virtual double get_dimensionless_parameter(const std::string&, int, int) const = 0;
-      virtual double get_mass_eigenstate(const std::string&) const = 0;
-      virtual double get_mass_eigenstate(const std::string&, int) const = 0;
+      virtual double get_mass_eigenstate(const std::string&, bool=true) const = 0;
+      virtual double get_mass_eigenstate(const std::string&, int, bool=true) const = 0;
       virtual double get_mass_eigenstate(const std::string&, int, int) const = 0;
+
+      DECLARE_PDG_GETTERS(get_mass4_parameter)
+      DECLARE_PDG_GETTERS(get_mass3_parameter)
+      DECLARE_PDG_GETTERS(get_mass2_parameter)
+      DECLARE_PDG_GETTERS(get_mass_parameter)
+      DECLARE_PDG_GETTERS(get_dimensionless_parameter)
+      DECLARE_PDG_GETTERS(get_mass_eigenstate)
 };
+DEFINE_PDG_GETTERS(RunningPars,get_mass_parameter)
+DEFINE_PDG_GETTERS(RunningPars,get_mass2_parameter)
+DEFINE_PDG_GETTERS(RunningPars,get_mass3_parameter)
+DEFINE_PDG_GETTERS(RunningPars,get_mass4_parameter)
+DEFINE_PDG_GETTERS(RunningPars,get_dimensionless_parameter)
+DEFINE_PDG_GETTERS(RunningPars,get_mass_eigenstate)
 
 class Phys 
 {
@@ -238,54 +289,19 @@ class Phys
       virtual ~Phys() {}      
 
       /// map based getters
-      virtual double get_Pole_Mass(const std::string&) const { vfcn_error(LOCAL_INFO); return -1; };
-      virtual double get_Pole_Mass(const std::string&, int) const { vfcn_error(LOCAL_INFO); return -1; };
-      virtual double get_Pole_Mixing(const std::string&) const { vfcn_error(LOCAL_INFO); return -1; };
-      virtual double get_Pole_Mixing(const std::string&, int) const { vfcn_error(LOCAL_INFO); return -1; };
+      virtual double get_Pole_Mass(const std::string&, bool=true) const { vfcn_error(LOCAL_INFO); return -1; };
+      virtual double get_Pole_Mass(const std::string&, int, bool=true) const { vfcn_error(LOCAL_INFO); return -1; };
+      virtual double get_Pole_Mixing(const std::string&, bool=false) const { vfcn_error(LOCAL_INFO); return -1; };
+      virtual double get_Pole_Mixing(const std::string&, int, bool=false) const { vfcn_error(LOCAL_INFO); return -1; };
       virtual double get_Pole_Mixing(const std::string&, int, int) const { vfcn_error(LOCAL_INFO); return -1; };
 
-      /// Overloads of these functions to allow access using PDG codes
-      /// as defined in Models/src/particle_database.cpp
-      /// These don't have to be virtual; they just call the virtual functions in the end.
-      double get_Pole_Mass(const int, const int) const;     // Input PDG code plus context integer
-      double get_Pole_Mass(const std::pair<int,int>) const; // Input PDG code plus context integer
-      double get_Pole_Mass(const std::pair<str,int>) const; // Input short name plus index
-
+      DECLARE_PDG_GETTERS(get_Pole_Mass)
+      DECLARE_PDG_GETTERS(get_Pole_Mixing)
 };
-   
+DEFINE_PDG_GETTERS(Phys,get_Pole_Mass)
+DEFINE_PDG_GETTERS(Phys,get_Pole_Mixing)
 
 /// =====================================================
-
-
-
-/// Pole mass getter overloads for easier interaction with particle database
-/// @{
-
-inline double Phys::get_Pole_Mass(const std::pair<str,int> shortpr) const
-{
-  return get_Pole_Mass(shortpr.first, shortpr.second);
-}
-
-inline double Phys::get_Pole_Mass(const int pdg_code, const int context) const
-{
-   // PDB context integer must be zero for pole mass retrieval
-   // (this is the context integer for mass eigenstate) 
-   return get_Pole_Mass( std::make_pair(pdg_code,context) );
-}
-
-inline double Phys::get_Pole_Mass(const std::pair<int,int> pdgpr) const
-{
-   // If there is a short name, then retrieve that plus the index
-   if( PDB.has_short_name(pdgpr) )
-   {
-     return get_Pole_Mass( PDB.short_name_pair(pdgpr) );
-   }
-   else // Use the long name with no index instead
-   {
-     return get_Pole_Mass( PDB.long_name(pdgpr) );
-   }
-}
-/// @}
 
 
 /// Structs to hold function pointers and valid index sets
@@ -358,7 +374,7 @@ template <class DT> const typename MapTypes<DT>::fmap1       MapTypes<DT>::map1_
 template <class DT> const typename MapTypes<DT>::fmap2       MapTypes<DT>::map2_empty;
 template <class DT> const typename MapTypes<DT>::fmap_extraM MapTypes<DT>::map_extraM_empty;
 template <class DT> const typename MapTypes<DT>::fmap_extraI MapTypes<DT>::map_extraI_empty;
-
+/// @}
 
 /// Need to forward declare Spec class
 template <class, class>
@@ -453,31 +469,65 @@ class Spec;
 #define DECLARE_MAP_FILLER_COLLECTION2(NAME) \
    DECLARE_MAP_FILLER_COLLECTION(NAME) \
    DECLARE_MAP_FILLER(NAME,map2)
-  
+/// @}
+ 
+/// @{ Friend helper functions of PhysDer and RunparDer
+/// Helper macros and forward declarations
+#define FBODY0 const typename MapTypes<DT>::fmap&, \
+                       const typename MapTypes<DT>::fmap_extraM&, \
+                       const typename MapTypes<DT>::fmap_extraI&, \
+                       const str&, const str&, \
+                       const Self*, double(Self::*)(const str&, int, bool) const, \
+                       bool
+#define FBODY1 const typename MapTypes<DT>::fmap1&, \
+                     const std::string&, const int, const str&, \
+                     const Self*, double(Self::*)(const str&, bool) const, \
+                     bool
+#define FBODY2 const typename MapTypes<DT>::fmap2&, \
+                       const str&, const int, const int, const str&, \
+                       const Self*
+
+template<class DT, class Self> double getter_0indices(FBODY0);
+template<class DT, class Self> double getter_1index  (FBODY1);
+template<class DT, class Self> double getter_2indices(FBODY2);
+
+/// @}
+ 
 template <class DerivedSpec, class DerivedSpecTraits>
 class PhysDer : public Phys 
 {
-      friend class Spec<DerivedSpec,DerivedSpecTraits>;
+      typedef DerivedSpec D;
+      typedef DerivedSpecTraits DT;
+      typedef PhysDer<D,DT> Self;
+      typedef MapTypes<DT> MT; 
+      typedef double (PhysDer::*fp0)(const str&, bool) const;
+      typedef double (PhysDer::*fp1)(const str&, int, bool) const;
+      friend class Spec<D,DT>;
       using Phys::get_Pole_Mass; // Need to expose the base class function overloads with this name
-      typedef MapTypes<DerivedSpecTraits> MT; 
+      /// Friend helper functions
+      friend double getter_0indices<DT,Self>(FBODY0);
+      friend double getter_1index  <DT,Self>(FBODY1);
+      friend double getter_2indices<DT,Self>(FBODY2);
+
    protected:
       /// Needed for access to "parent" object member functions
       /// Needs to be protected so that derived classes can access it
-      Spec<DerivedSpec,DerivedSpecTraits>& parent;
+      Spec<D,DT>& parent;
 
    private:      
+      /// Getter maps
       DECLARE_MAP_COLLECTION(PoleMass)     // Pole masses
       DECLARE_MAP_COLLECTION2(PoleMixing)  // Pole mass mixing parameters
 
    public:
       // During construction, link the object to its "parent"
-      PhysDer(Spec<DerivedSpec,DerivedSpecTraits>& s) : parent(s) {}
+      PhysDer(Spec<D,DT>& s) : parent(s) {}
       virtual ~PhysDer() {}    
 
-      virtual double get_Pole_Mass(const std::string&) const;
-      virtual double get_Pole_Mass(const std::string&, int) const;
-      virtual double get_Pole_Mixing(const std::string&) const;
-      virtual double get_Pole_Mixing(const std::string&, int) const;
+      virtual double get_Pole_Mass(const std::string&, bool) const;
+      virtual double get_Pole_Mass(const std::string&, int, bool) const;
+      virtual double get_Pole_Mixing(const std::string&, bool) const;
+      virtual double get_Pole_Mixing(const std::string&, int, bool) const;
       virtual double get_Pole_Mixing(const std::string&, int, int) const;
 };
 /// Initialise maps (using filler overrides from DerivedSpec if defined)
@@ -487,13 +537,22 @@ FILL_MAP_COLLECTION2(PhysDer,PoleMixing)
 template <class DerivedSpec, class DerivedSpecTraits>
 class RunparDer : public RunningPars
 {
-     friend class Spec<DerivedSpec,DerivedSpecTraits>;
-     typedef MapTypes<DerivedSpecTraits> MT; 
+     typedef DerivedSpec D;
+     typedef DerivedSpecTraits DT;
+     typedef RunparDer<D,DT> Self;
+     typedef MapTypes<DT> MT; 
+     typedef double (RunparDer::*fp0)(const str&, bool) const;
+     typedef double (RunparDer::*fp1)(const str&, int, bool) const;
+     friend class Spec<D,DT>;
+     /// Friend helper functions
+     friend double getter_0indices<DT,Self>(FBODY0);
+     friend double getter_1index  <DT,Self>(FBODY1);
+     friend double getter_2indices<DT,Self>(FBODY2);
 
    protected:
       /// Needed for access to "parent" object member functions
       /// Needs to be protected so that derived classes can access it
-      Spec<DerivedSpec,DerivedSpecTraits>& parent;
+      Spec<D,DT>& parent;
 
    private:
       DECLARE_MAP_COLLECTION2(mass0)           // dimensionless quantities
@@ -505,7 +564,7 @@ class RunparDer : public RunningPars
 
    public:
       // During construction, link the object to its "parent"
-      RunparDer(Spec<DerivedSpec,DerivedSpecTraits>& s) : parent(s) {}
+      RunparDer(Spec<D,DT>& s) : parent(s) {}
       virtual ~RunparDer() {}
 
       /// Functions to connect to overrides defined in classes derived from Spectrum
@@ -518,24 +577,24 @@ class RunparDer : public RunningPars
       virtual double hard_lower() const { return parent.hard_lower(); }
  
       /// Public interface functions
-      virtual double get_mass4_parameter(const std::string&) const;
-      virtual double get_mass4_parameter(const std::string&, int i) const;
-      virtual double get_mass4_parameter(const std::string&, int i, int j) const;
-      virtual double get_mass3_parameter(const std::string&) const;
-      virtual double get_mass3_parameter(const std::string&, int i) const;
-      virtual double get_mass3_parameter(const std::string&, int i, int j) const;
-      virtual double get_mass2_parameter(const std::string&) const;
-      virtual double get_mass2_parameter(const std::string&, int i) const;
-      virtual double get_mass2_parameter(const std::string&, int i, int j) const;
-      virtual double get_mass_parameter(const std::string&) const;
-      virtual double get_mass_parameter(const std::string&, int i) const;
-      virtual double get_mass_parameter(const std::string&, int i, int j) const;
-      virtual double get_dimensionless_parameter(const std::string&) const;
-      virtual double get_dimensionless_parameter(const std::string&, int i) const;
-      virtual double get_dimensionless_parameter(const std::string&, int i, int j) const;
-      virtual double get_mass_eigenstate(const std::string&) const;
-      virtual double get_mass_eigenstate(const std::string&, int i) const;
-      virtual double get_mass_eigenstate(const std::string&, int i, int j) const;
+      virtual double get_mass4_parameter(const std::string&, bool) const;
+      virtual double get_mass4_parameter(const std::string&, int, bool) const;
+      virtual double get_mass4_parameter(const std::string&, int, int) const;
+      virtual double get_mass3_parameter(const std::string&, bool) const;
+      virtual double get_mass3_parameter(const std::string&, int, bool) const;
+      virtual double get_mass3_parameter(const std::string&, int, int) const;
+      virtual double get_mass2_parameter(const std::string&, bool) const;
+      virtual double get_mass2_parameter(const std::string&, int, bool) const;
+      virtual double get_mass2_parameter(const std::string&, int, int) const;
+      virtual double get_mass_parameter(const std::string&, bool) const;
+      virtual double get_mass_parameter(const std::string&, int, bool) const;
+      virtual double get_mass_parameter(const std::string&, int, int) const;
+      virtual double get_dimensionless_parameter(const std::string&, bool) const;
+      virtual double get_dimensionless_parameter(const std::string&, int, bool) const;
+      virtual double get_dimensionless_parameter(const std::string&, int, int) const;
+      virtual double get_mass_eigenstate(const std::string&, bool) const;
+      virtual double get_mass_eigenstate(const std::string&, int, bool) const;
+      virtual double get_mass_eigenstate(const std::string&, int, int) const;
 };
 /// Initialise maps (using filler overrides from DerivedSpec if defined)
 FILL_MAP_COLLECTION2(RunparDer,mass0)           
@@ -549,22 +608,28 @@ FILL_MAP_COLLECTION2(RunparDer,mass_eigenstate)
 template <class DerivedSpec, class DerivedSpecTraits>
 class Spec : public Spectrum
 { 
-   friend class RunparDer<DerivedSpec,DerivedSpecTraits>;
-   friend class PhysDer<DerivedSpec,DerivedSpecTraits>;
+      typedef DerivedSpec D;
+      typedef DerivedSpecTraits DT;
+      friend class RunparDer<D,DT>;
+      friend class PhysDer<D,DT>;
+      /// Helper template friend functions (need to access 'model' and 'input')
+      template<class DT, class Self> friend double getter_0indices(FBODY0);
+      template<class DT, class Self> friend double getter_1index  (FBODY1);
+      template<class DT, class Self> friend double getter_2indices(FBODY2);
  
    private:   
-      typedef MapTypes<DerivedSpecTraits> MT; 
+      typedef MapTypes<DT> MT; 
 
       /// Note: DerivedSpecTraits will need to typedef Model and Input
       /// Also make sure to initialise the members "model" and "input" in the 
       /// derived class via this class's full constructor.
       /// "Grab" these typedefs here to simplify notation
-      typedef typename DerivedSpecTraits::Model Model;
-      typedef typename DerivedSpecTraits::Input Input;
+      typedef typename DT::Model Model;
+      typedef typename DT::Input Input;
 
       /// Internal instances of specialised running and physical parameter classes   
-      RunparDer<DerivedSpec,DerivedSpecTraits> rp;
-      PhysDer<DerivedSpec,DerivedSpecTraits> pp;
+      RunparDer<D,DT> rp;
+      PhysDer<D,DT> pp;
    
       /// Model object on which to call function pointers
       Model* model; 
@@ -657,12 +722,24 @@ class Spec : public Spectrum
 /// Getter/runner for functions taking no indices
 // (note: currently only the no-index getters are set up to allow an "extra" map of function pointers to be defined. Can be extended
 //  if needed.)
-template<class DT>
-double getter_0indices(const typename MapTypes<DT>::fmap& map, const typename MapTypes<DT>::fmap_extraM& map_extraM, const typename MapTypes<DT>::fmap_extraI& map_extraI, const std::string& name, const std::string& maplabel, const typename DT::Model* model, const typename DT::Input* input)
+// template parameters:
+// DT - DerivedSpecTraits; carries typedef fro Model and Input
+// O  - The host class which uses this function, i.e. Phys or RunningPars
+template<class DT, class O>
+double getter_0indices(/* function maps */
+                       const typename MapTypes<DT>::fmap& map, 
+                       const typename MapTypes<DT>::fmap_extraM& map_extraM, 
+                       const typename MapTypes<DT>::fmap_extraI& map_extraI, 
+                       /* function call data (and error message data */
+                       const std::string& name, const std::string& maplabel, 
+                       /* host object pointer and pointer to alternate getter */
+                       const O* fakethis, double(O::*fptr)(const std::string&, int, bool) const, 
+                       bool doublecheck)
 {
    typename MapTypes<DT>::fmap::const_iterator it = map.find(name); ///  Find desired Model object function
    typename MapTypes<DT>::fmap_extraM::const_iterator itM;
    typename MapTypes<DT>::fmap_extraI::const_iterator itI; 
+   double result = -1;
    if(it==map.end()) { itM = map_extraM.find(name); } ///  Check if it exists in the extraM map
    if(it==map.end() and itM==map_extraM.end()) { itI = map_extraI.find(name); } ///  Check if it exists in the extraI map
 
@@ -672,208 +749,312 @@ double getter_0indices(const typename MapTypes<DT>::fmap& map, const typename Ma
    {
       //  Get function out of map and call it on the bound Model object
       typename MapTypes<DT>::FSptr f = it->second;
-      return (model->*f)();
+      typename DT::Model* model = fakethis->parent.model;
+      result = (model->*f)();
    }
    else if( itM!=map_extraM.end() )
    {
       // Get function out of the extraM map and call it with Model object as the argument
       typename MapTypes<DT>::plainfptrM f = itM->second;
-      return (*f)(*model);
+      typename DT::Model* model = fakethis->parent.model;
+      result = (*f)(*model);
    }
    else if( itI!=map_extraI.end() )
    {
       // Get function out of the extraI map and call it with Input object as the argument
       typename MapTypes<DT>::plainfptrI f = itI->second;
-      return (*f)(*input);
+      typename DT::Input* input = fakethis->parent.input;
+      result = (*f)(*input);
    }
    else
    {
-      std::cout << "No "<<maplabel<<" with string reference '"<<name<<"' exists!" <<std::endl;
-      return -1;
+       if( doublecheck and PDB.has_short_name(name) ){
+         // No long name exists matching "name" in the function pointer maps
+         // Check if a corresponding short name plus index pair exists in 1index getter maps
+         // (fptr should point to the appropriate 1 index, class member of O, getter)
+         std::pair<str, int> p = PDB.short_name_pair(name);
+         result = (fakethis->*fptr)(p.first, p.second, false);
+      } else {
+        std::cout << "No "<<maplabel<<" with string reference '"<<name<<"' exists!" <<std::endl;
+        result -1;
+      }
    }
-
+   return result;
 }
 
 
 /// Getter/runner for functions taking one index
-template<class DT>
-double getter_1index(const typename MapTypes<DT>::fmap1& map, const std::string& name, const int i, const std::string& maplabel, const typename DT::Model* model, const int offset)
+// template parameters:
+// DT - DerivedSpecTraits; carries typedef fro Model and Input
+// O  - The host class which uses this function, i.e. Phys or RunningPars
+template<class DT, class O>
+double getter_1index(/* function maps */
+                     const typename MapTypes<DT>::fmap1& map, 
+                     /* function call data (and error message data) */
+                     const std::string& name, const int i, const std::string& maplabel, 
+                     /* host object pointer and pointer to alternate getter */
+                     const O* fakethis, double(O::*fptr)(const std::string&, bool) const, 
+                     bool doublecheck)
 {
    typename MapTypes<DT>::fmap1::const_iterator it = map.find(name); ///  Find desired Model object function
+   double result = -1;
    if( it==map.end() )
    {
-      std::cout << "No "<<maplabel<<" with string reference '"<<name<<"' exists!" <<std::endl;
-      return -1;
+      if( doublecheck ) {
+         // No short name exists for short name plus index pair.
+         // Check if long name exists in 0index getter maps
+         // (fptr should point to the appropriate 0 index, class member of O, getter)           
+         result = (fakethis->*fptr)(PDB.long_name(name,i), false);
+      } else {
+         std::cout << "No "<<maplabel<<" with string reference '"<<name<<"' exists!" <<std::endl;
+         result = -1;
+      }
    }
    else
    {
        /// Switch index convention
+       int offset = fakethis->parent.get_index_offset();
        int io = i + offset;
        /// Check that index is in the permitted set
        if( not within_bounds(io, it->second.iset1) )
        {
           std::cout << "Index "<<i<<" out of bounds for "<<maplabel<<" with string reference '"<<name<<"'!" <<std::endl;
-          return -1;
+          result = -1;
        }
 
        ///  Get function out of map and call it on the bound flexiSUSY object
        typename MapTypes<DT>::FSptr1 f = it->second.fptr;
-       return (model->*f)(io);
+       typename DT::Model* model = fakethis->parent.model;
+       result = (model->*f)(io);
    }
+   return result;
 }
 
 /// Getter/runner for functions taking two indices
-template<class DT>
-double getter_2indices(const typename MapTypes<DT>::fmap2& map, const std::string& name, const int i, const int j, const std::string& maplabel, const typename DT::Model* model, const int offset)
+// template parameters:
+// DT - DerivedSpecTraits; carries typedef fro Model and Input
+// O  - The host class which uses this function, i.e. Phys or RunningPars
+template<class DT, class O>
+double getter_2indices(/* function maps */
+                       const typename MapTypes<DT>::fmap2& map, 
+                       /* function call data (and error message data) */
+                       const std::string& name, const int i, const int j, const std::string& maplabel, 
+                       /* host object pointer */
+                       const O* fakethis)
 {
    typename MapTypes<DT>::fmap2::const_iterator it = map.find(name); ///  Find desired FlexiSUSY function
+   double result = -1;
    if( it==map.end() )
    {
       std::cout << "No "<<maplabel<<" with string reference '"<<name<<"' exists!" <<std::endl;
-      return -1;
+      result -1;
    }
    else
    {
        /// Switch index convention
+       int offset = fakethis->parent.get_index_offset();
        int io = i + offset;
        int jo = j + offset;
        /// Check that index is in the permitted set
        if( not within_bounds(io, it->second.iset1) )
        {
           std::cout << "First index ("<<i<<") out of bounds for "<<maplabel<<" with string reference '"<<name<<"'!" <<std::endl;
-          return -1;
+          result = -1;
        }
        /// Check that index is in the permitted set
        if( not within_bounds(jo, it->second.iset2) )
        {
           std::cout << "Second index ("<<j<<") out of bounds for "<<maplabel<<" with string reference '"<<name<<"'!" <<std::endl;
-          return -1;
+          result = -1;
        }
 
        ///  Get function out of map and call it on the bound flexiSUSY object
        typename MapTypes<DT>::FSptr2 f = it->second.fptr;
-       return (model->*f)(io,jo);
+       typename DT::Model* model = fakethis->parent.model;
+       result = (model->*f)(io,jo);
    }
+   return result;
 }
+
+
 
 /// mass4
 template<class D, class DT>
-double RunparDer<D,DT>::get_mass4_parameter(const std::string& mass) const
+double RunparDer<D,DT>::get_mass4_parameter(const str& mass, bool doublecheck) const
 {
-   return getter_0indices<DT>(get_mass4_map(), get_mass4_map_extraM(), get_mass4_map_extraI(), mass, "mass4", parent.model, parent.input);
+   fp1 f1 = &RunparDer<D,DT>::get_mass4_parameter; // needed for overload resolution
+   return getter_0indices<DT>( get_mass4_map(), 
+                               get_mass4_map_extraM(), 
+                               get_mass4_map_extraI(), 
+                               mass, "mass4",
+                               this, f1, doublecheck);
 }
 
 template <class D, class DT>
-double RunparDer<D,DT>::get_mass4_parameter(const std::string& mass, int i) const
+double RunparDer<D,DT>::get_mass4_parameter(const str& mass, int i, bool doublecheck) const
 {
-   return getter_1index<DT>(get_mass4_map1(), mass, i, "mass4", parent.model, parent.get_index_offset());
+   fp0 f0 = &RunparDer<D,DT>::get_mass4_parameter;
+   return getter_1index<DT>( get_mass4_map1(), 
+                             mass, i, "mass4",
+                             this, f0, doublecheck);
 }
 
 template <class D, class DT>
-double  RunparDer<D,DT>::get_mass4_parameter(const std::string& mass, int i, int j) const
+double  RunparDer<D,DT>::get_mass4_parameter(const str& mass, int i, int j) const
 {
-   return getter_2indices<DT>(get_mass4_map2(), mass, i, j, "mass4", parent.model, parent.get_index_offset());
+   return getter_2indices<DT>(get_mass4_map2(), 
+                              mass, i, j, "mass4", 
+                              this);
 }
 
 /// mass^3
 template <class D, class DT>
-double RunparDer<D,DT>::get_mass3_parameter(const std::string& mass) const
+double RunparDer<D,DT>::get_mass3_parameter(const str& mass, bool doublecheck) const
 {
-   return getter_0indices<DT>(get_mass3_map(), get_mass3_map_extraM(), get_mass3_map_extraI(), mass, "mass3", parent.model, parent.input);
+   fp1 f1 = &RunparDer<D,DT>::get_mass3_parameter;
+   return getter_0indices<DT>(get_mass3_map(), 
+                              get_mass3_map_extraM(), 
+                              get_mass3_map_extraI(), 
+                              mass, "mass3", 
+                              this, f1, doublecheck);
 }
 
 template <class D, class DT>
-double RunparDer<D,DT>::get_mass3_parameter(const std::string& mass, int i) const
+double RunparDer<D,DT>::get_mass3_parameter(const str& mass, int i, bool doublecheck) const
 {
-   return getter_1index<DT>(get_mass3_map1(), mass, i, "mass3", parent.model, parent.get_index_offset());
+   fp0 f0 = &RunparDer<D,DT>::get_mass3_parameter;
+   return getter_1index<DT>(get_mass3_map1(), 
+                            mass, i, "mass3", 
+                            this, f0, doublecheck);
 }
 
 template <class D, class DT>
 double  RunparDer<D,DT>::get_mass3_parameter(const std::string& mass, int i, int j) const
 {
-   return getter_2indices<DT>(get_mass3_map2(), mass, i, j, "mass3", parent.model, parent.get_index_offset());
+   return getter_2indices<DT>(get_mass3_map2(), 
+                              mass, i, j, "mass3",
+                              this);
 }
 
 /// mass^2
 template <class D, class DT>
-double  RunparDer<D,DT>::get_mass2_parameter(const std::string& mass) const
+double  RunparDer<D,DT>::get_mass2_parameter(const std::string& mass, bool doublecheck) const
 {
-   return getter_0indices<DT>(get_mass2_map(), get_mass2_map_extraM(), get_mass2_map_extraI(), mass, "mass2", parent.model, parent.input);
+   fp1 f1 = &RunparDer<D,DT>::get_mass2_parameter;
+   return getter_0indices<DT>(get_mass2_map(), 
+                              get_mass2_map_extraM(), 
+                              get_mass2_map_extraI(), 
+                              mass, "mass2", 
+                              this, f1, doublecheck);
 }
 
 template <class D, class DT>
-double  RunparDer<D,DT>::get_mass2_parameter(const std::string& mass, int i) const
+double  RunparDer<D,DT>::get_mass2_parameter(const std::string& mass, int i, bool doublecheck) const
 {
-   return getter_1index<DT>(get_mass2_map1(), mass, i, "mass2", parent.model, parent.get_index_offset());
+   fp0 f0 = &RunparDer<D,DT>::get_mass2_parameter;
+   return getter_1index<DT>(get_mass2_map1(), 
+                            mass, i, "mass2", 
+                            this, f0, doublecheck);
 }
 
 template <class D, class DT>
 double  RunparDer<D,DT>::get_mass2_parameter(const std::string& mass, int i, int j) const
 {
-   return getter_2indices<DT>(get_mass2_map2(), mass, i, j, "mass2", parent.model, parent.get_index_offset());
+   return getter_2indices<DT>(get_mass2_map2(),
+                              mass, i, j, "mass2",
+                              this);
 }
 
 /// mass^1
 template <class D, class DT>
-double  RunparDer<D,DT>::get_mass_parameter(const std::string& mass) const
+double  RunparDer<D,DT>::get_mass_parameter(const std::string& mass, bool doublecheck) const
 {
-   return getter_0indices<DT>(get_mass_map(), get_mass_map_extraM(), get_mass_map_extraI(), mass, "mass", parent.model, parent.input);
+   fp1 f1 = &RunparDer<D,DT>::get_mass_parameter;
+   return getter_0indices<DT>(get_mass_map(), 
+                              get_mass_map_extraM(), 
+                              get_mass_map_extraI(), 
+                              mass, "mass", 
+                              this, f1, doublecheck);
 }
 
 template <class D, class DT>
-double  RunparDer<D,DT>::get_mass_parameter(const std::string& mass, int i) const
+double  RunparDer<D,DT>::get_mass_parameter(const std::string& mass, int i, bool doublecheck) const
 {
-   return getter_1index<DT>(get_mass_map1(), mass, i, "mass", parent.model, parent.get_index_offset());
+   fp0 f0 = &RunparDer<D,DT>::get_mass_parameter;
+   return getter_1index<DT>(get_mass_map1(), 
+                            mass, i, "mass",
+                            this, f0, doublecheck);            
 }
 
 template <class D, class DT>
 double  RunparDer<D,DT>::get_mass_parameter(const std::string& mass, int i, int j) const
 {
-   return getter_2indices<DT>(get_mass_map2(), mass, i, j, "mass", parent.model, parent.get_index_offset());
+   return getter_2indices<DT>(get_mass_map2(), 
+                              mass, i, j, "mass", 
+                              this);
 }
 
 /// mass^0
 template <class D, class DT>
-double  RunparDer<D,DT>::get_dimensionless_parameter(const std::string& par) const
+double  RunparDer<D,DT>::get_dimensionless_parameter(const std::string& par, bool doublecheck) const
 {
-   return getter_0indices<DT>(get_mass0_map(), get_mass0_map_extraM(), get_mass0_map_extraI(), par, "dimensionless parameter", parent.model, parent.input);
+   fp1 f1 = &RunparDer<D,DT>::get_dimensionless_parameter;
+   return getter_0indices<DT>(get_mass0_map(), 
+                              get_mass0_map_extraM(), 
+                              get_mass0_map_extraI(), 
+                              par, "dimensionless parameter", 
+                              this, f1, doublecheck);
 }
 
 template <class D, class DT>
-double  RunparDer<D,DT>::get_dimensionless_parameter(const std::string& par, int i) const
+double  RunparDer<D,DT>::get_dimensionless_parameter(const std::string& par, int i, bool doublecheck) const
 {
-   return getter_1index<DT>(get_mass0_map1(), par, i, "dimensionless parameter", parent.model, parent.get_index_offset());
+   fp0 f0 = &RunparDer<D,DT>::get_dimensionless_parameter;
+   return getter_1index<DT>(get_mass0_map1(), 
+                            par, i, "dimensionless parameter",
+                            this, f0, doublecheck);
 }
 
 template <class D, class DT>
 double  RunparDer<D,DT>::get_dimensionless_parameter(const std::string& par, int i, int j) const
 {
-   return getter_2indices<DT>(get_mass0_map2(), par, i, j, "dimensionless parameter", parent.model, parent.get_index_offset());
+   return getter_2indices<DT>(get_mass0_map2(), 
+                              par, i, j, "dimensionless parameter",
+                              this);
 }
 
 /// mass_eigenstate
 template <class D, class DT>
-double  RunparDer<D,DT>::get_mass_eigenstate(const std::string& mass) const
+double  RunparDer<D,DT>::get_mass_eigenstate(const std::string& mass, bool doublecheck) const
 {
-   return getter_0indices<DT>(get_mass_eigenstate_map(), get_mass_eigenstate_map_extraM(), get_mass_eigenstate_map_extraI(), mass, "mass_eigenstate", parent.model, parent.input);
+   fp1 f1 = &RunparDer<D,DT>::get_mass_eigenstate;
+   return getter_0indices<DT>(get_mass_eigenstate_map(), 
+                              get_mass_eigenstate_map_extraM(), 
+                              get_mass_eigenstate_map_extraI(), 
+                              mass, "mass_eigenstate",
+                              this, f1, doublecheck);
 }
 
 template <class D, class DT>
-double  RunparDer<D,DT>::get_mass_eigenstate(const std::string& mass, int i) const
+double  RunparDer<D,DT>::get_mass_eigenstate(const std::string& mass, int i, bool doublecheck) const
 {
-   return getter_1index<DT>(get_mass_eigenstate_map1(), mass, i, "mass eigenstate", parent.model, parent.get_index_offset());
+   fp0 f0 = &RunparDer<D,DT>::get_mass_eigenstate;
+   return getter_1index<DT>(get_mass_eigenstate_map1(), 
+                            mass, i, "mass eigenstate",
+                            this, f0, doublecheck);
 }
 
 template <class D, class DT>
 double  RunparDer<D,DT>::get_mass_eigenstate(const std::string& mass, int i, int j) const
 {
-   return getter_2indices<DT>(get_mass_eigenstate_map2(), mass, i, j, "mass_eigenstate", parent.model, parent.get_index_offset());
+   return getter_2indices<DT>(get_mass_eigenstate_map2(), 
+                              mass, i, j, "mass_eigenstate", 
+                              this);
 }
-
 
 /// Pole masses
 template <class D, class DT>
-double PhysDer<D,DT>::get_Pole_Mass(const std::string& mass) const
+double PhysDer<D,DT>::get_Pole_Mass(const std::string& mass, bool doublecheck) const
 {
    // Check whether string can be converted to a short name plus index by PDB
    // If so, we need to use those instead to retrieve the correct pole mass
@@ -881,33 +1062,50 @@ double PhysDer<D,DT>::get_Pole_Mass(const std::string& mass) const
    {
       return get_Pole_Mass( PDB.short_name_pair(mass) );  
    }
-   return getter_0indices<DT>(get_PoleMass_map(), get_PoleMass_map_extraM(), get_PoleMass_map_extraI(), mass, "pole mass", parent.model, parent.input);
+   fp1 f1 = &PhysDer<D,DT>::get_Pole_Mass;
+   return getter_0indices<DT>(get_PoleMass_map(), 
+                              get_PoleMass_map_extraM(), 
+                              get_PoleMass_map_extraI(), 
+                              mass, "pole mass",
+                              this, f1, doublecheck);
 }
 
 template <class D, class DT>
-double PhysDer<D,DT>::get_Pole_Mass(const std::string& mass, int i) const
+double PhysDer<D,DT>::get_Pole_Mass(const std::string& mass, int i, bool doublecheck) const
 {
-   return getter_1index<DT>(get_PoleMass_map1(), mass, i, "pole mass", parent.model, parent.get_index_offset());
+   fp0 f0 = &PhysDer<D,DT>::get_Pole_Mass;
+   return getter_1index<DT>(get_PoleMass_map1(), 
+                            mass, i, "pole mass",
+                            this, f0, doublecheck);
 }
-
 
 /// Pole mixings
 template <class D, class DT>
-double PhysDer<D,DT>::get_Pole_Mixing(const std::string& mixing) const
+double PhysDer<D,DT>::get_Pole_Mixing(const std::string& mixing, bool doublecheck) const
 {
-   return getter_0indices<DT>(get_PoleMixing_map(), get_PoleMixing_map_extraM(), get_PoleMixing_map_extraI(), mixing, "pole mixing", parent.model, parent.input);
+   fp1 f1 = &PhysDer<D,DT>::get_Pole_Mixing;
+   return getter_0indices<DT>(get_PoleMixing_map(), 
+                              get_PoleMixing_map_extraM(), 
+                              get_PoleMixing_map_extraI(), 
+                              mixing, "pole mixing",
+                              this, f1, doublecheck);
 }
 
 template <class D, class DT>
-double PhysDer<D,DT>::get_Pole_Mixing(const std::string& mixing, int i) const
+double PhysDer<D,DT>::get_Pole_Mixing(const std::string& mixing, int i, bool doublecheck) const
 {
-   return getter_1index<DT>(get_PoleMixing_map1(), mixing, i, "pole mixing", parent.model, parent.get_index_offset());
+   fp0 f0 = &PhysDer<D,DT>::get_Pole_Mixing;
+   return getter_1index<DT>(get_PoleMixing_map1(), 
+                            mixing, i, "pole mixing",
+                            this, f0, doublecheck);
 }
 
 template <class D, class DT>
 double PhysDer<D,DT>::get_Pole_Mixing(const std::string& mixing, int i, int j) const
 {
-   return getter_2indices<DT>(get_PoleMixing_map2(), mixing, i, j, "pole mixing", parent.model, parent.get_index_offset());
+   return getter_2indices<DT>(get_PoleMixing_map2(), 
+                              mixing, i, j, "pole mixing",
+                              this);
 }
 
 /// @}

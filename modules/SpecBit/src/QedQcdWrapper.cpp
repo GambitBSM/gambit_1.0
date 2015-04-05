@@ -55,10 +55,10 @@ namespace Gambit {
 
    QedQcdWrapper::QedQcdWrapper(const softsusy::QedQcd& model, const SMInputs& input)
       : Spec(qedqcd, sminputs) /***/
-      , softup(phys.get_Pole_Mass("t")) // Set top quark pole mass as soft upper limit of running. /***/
-      , hardup(phys.get_Pole_Mass("t")) // QedQcd object will throw its own error if we try to run above this, so set this as the      , qedqcd(model) /***/
       , qedqcd(model)
       , sminputs(input)        /***/
+      , softup(phys.get_Pole_Mass("t")) // Set top quark pole mass as soft upper limit of running. /***/
+      , hardup(phys.get_Pole_Mass("t")) // QedQcd object will throw its own error if we try to run above this, so set this as the      , qedqcd(model) /***/
    {}
 
    /// Copy constructor
@@ -67,10 +67,10 @@ namespace Gambit {
    /// class references to the "connected" qedqcd_msbar_pars and qedqcd_ph objects.
    QedQcdWrapper::QedQcdWrapper(const QedQcdWrapper& other)
       : Spec(qedqcd, sminputs)   /***/
-      , softup(other.softup)
-      , hardup(other.hardup)
       , qedqcd(other.qedqcd)
       , sminputs(other.sminputs)
+      , softup(other.softup)
+      , hardup(other.hardup)
    {}
 
    ///   @}
