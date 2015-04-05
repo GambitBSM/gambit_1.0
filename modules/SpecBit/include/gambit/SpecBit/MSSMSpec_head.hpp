@@ -38,12 +38,6 @@ namespace Gambit {
    template <class MI>  // "MI" for "Model_interface"
    class MSSMSpec;
  
-   // Helper macro for declaring data members and functions
-   #define MAPS(NAME,TAG) \
-      static typename MT::CAT(f,TAG)   CAT_3(NAME,_,TAG); /* map */\
-      static typename MT::CAT(f,TAG)   CAT_4(fill_,NAME,_,TAG)(); /* filler */\
-      const  typename MT::CAT(f,TAG)&  CAT_4(get_,NAME,_,TAG)() const; /* getter */ 
-
    // For example of what kind of class MI needs to be, see
    // SpecBit/include/model_files_and_boxes.hpp, 
    // MODELNAME_interface class
@@ -66,9 +60,11 @@ namespace Gambit {
    template <class MI>
    class MSSMSpec : public Spec<MSSMSpec<MI>,MSSMSpecTraits<MI>>
    {
-         typedef MapTypes<MSSMSpecTraits<MI>> MT; 
-
+      friend RunparDer<MSSMSpec<MI>,MSSMSpecTraits<MI>>;
+      friend PhysDer   <MSSMSpec<MI>,MSSMSpecTraits<MI>>;
+     
       private:
+         typedef MapTypes<MSSMSpecTraits<MI>> MT; 
          int index_offset;
          virtual int get_index_offset() const {return index_offset;}
 
@@ -105,25 +101,6 @@ namespace Gambit {
          // Return an SLHAea object containing spectrum information
          virtual SLHAea::Coll getSLHAea() const;
 
-         /// Map filler overrides
-
-         /// RunparDer overrides (access via spectrum.runningpar)
-         typename MT::fmap       fill_mass_map();         /*O*/
-         typename MT::fmap2      fill_mass_map2();        /*O*/
-         typename MT::fmap       fill_mass0_map();        /*O*/
-         typename MT::fmap_extra fill_mass0_map_extra();  /*O*/
-         typename MT::fmap2      fill_mass0_map2();       /*O*/
-         typename MT::fmap       fill_mass2_map();        /*O*/
-         typename MT::fmap2      fill_mass2_map2();       /*O*/
-         typename MT::fmap       fill_mass_eigenstate_map();  /*O*/
-         typename MT::fmap1      fill_mass_eigenstate_map1(); /*O*/
-
-         /// PhysDer overrides (access via spectrum.phys)
-         typename MT::fmap       fill_PoleMass_map();       /*O*/
-         typename MT::fmap_extra fill_PoleMass_map_extra(); /*O*/
-         typename MT::fmap1      fill_PoleMass_map1();      /*O*/
-         typename MT::fmap2      fill_PoleMixing_map2();    /*O*/
-
          /// TODO: Need to implement this properly...
          /// Copy low energy spectrum information from another model object
          // Should work from any flexiblesusy model object with the same particle content as the MSSM
@@ -153,6 +130,26 @@ namespace Gambit {
            model_interface.model = othermodel;
            return;
          }
+
+      protected:
+         /// Map filler overrides
+
+         /// RunparDer overrides (access via spectrum.runningpar)
+         static typename MT::fmap        fill_mass_map();         /*O*/
+         static typename MT::fmap2       fill_mass_map2();        /*O*/
+         static typename MT::fmap        fill_mass0_map();        /*O*/
+         static typename MT::fmap_extraM fill_mass0_map_extraM(); /*O*/
+         static typename MT::fmap2       fill_mass0_map2();       /*O*/
+         static typename MT::fmap        fill_mass2_map();        /*O*/
+         static typename MT::fmap2       fill_mass2_map2();       /*O*/
+         static typename MT::fmap        fill_mass_eigenstate_map();  /*O*/
+         static typename MT::fmap1       fill_mass_eigenstate_map1(); /*O*/
+
+         /// PhysDer overrides (access via spectrum.phys)
+         static typename MT::fmap        fill_PoleMass_map();        /*O*/
+         static typename MT::fmap_extraM fill_PoleMass_map_extraM(); /*O*/
+         static typename MT::fmap1       fill_PoleMass_map1();       /*O*/
+         static typename MT::fmap2       fill_PoleMixing_map2();     /*O*/
 
    };
 

@@ -9,10 +9,12 @@
 ///  Parameters defined this way are often used as input to a physics calculator.
 ///
 ///  This is one of the simplest wrappers possible, so it is useful as a guide
-///  for designing other Spectrum wrappers. To assist this, those class members
-///  which are required by all wrappers are marked with the asterisks /***/.
-///  Members which are optional (i.e. have defaults defined) are marked with
-///  /*O*/
+///  for designing other Spectrum wrappers. To assist this, code is documented
+///  with the following markings to distinguish pieces that are essential for
+///  all wrappers from those which are specific to this wrapper:
+///  /***/ - Required by all wrappers.
+///  /*O*/ - Optional (e.g. unused maps fillers can be left undeclared)
+///  /*P*/ - Required if map fillers are protected, which is sensible.
 ///
 ///  *********************************************
 ///
@@ -43,7 +45,15 @@ namespace Gambit {
     
    class QedQcdWrapper : public Spec<QedQcdWrapper,QedQcdWrapperTraits> 
    {
+      friend RunparDer<QedQcdWrapper,QedQcdWrapperTraits>; /*P*/
+      friend PhysDer  <QedQcdWrapper,QedQcdWrapperTraits>; /*P*/
+
+      private:
          typedef MapTypes<QedQcdWrapperTraits> MT; 
+
+         // Keep copies of Model and Input objects internally
+         typename QedQcdWrapperTraits::Model qedqcd;
+         typename QedQcdWrapperTraits::Input sminputs;
 
       public:
          // Constructors/destructors
@@ -70,11 +80,7 @@ namespace Gambit {
          virtual double soft_lower() const {return 0.;}     /*O*/
          virtual double hard_lower() const {return 0.;}     /*O*/
 
-      private:
-         // Keep copies of Model and Input objects internally
-         typename QedQcdWrapperTraits::Model qedqcd;
-         typename QedQcdWrapperTraits::Input sminputs;
-
+      protected:
          // These members are inherited from Spec<T> class! Make sure to
          // initialise them from qedqcd and sminputs via Spec<T> constructor,
          // so that they can be passed on through to the map functions.
@@ -88,12 +94,12 @@ namespace Gambit {
          /// (specialisations created and stored automatically by Spec<QedQcdWrapper>)
          
          /// RunparDer overrides (access via spectrum.runningpar)
-         typename MT::fmap_extra fill_mass_map_extra();   /*O*/
-         typename MT::fmap_extra fill_mass0_map_extra();  /*O*/
+         static typename MT::fmap_extraM fill_mass_map_extraM();   /*O*/
+         static typename MT::fmap_extraM fill_mass0_map_extraM();  /*O*/
 
          /// PhysDer overrides (access via spectrum.phys)
-         typename MT::fmap        fill_PoleMass_map();        /*O*/
-         typename MT::fmap_extraI fill_PoleMass_map_extraI(); /*O*/
+         static typename MT::fmap        fill_PoleMass_map();        /*O*/
+         static typename MT::fmap_extraI fill_PoleMass_map_extraI(); /*O*/
  
    };
  

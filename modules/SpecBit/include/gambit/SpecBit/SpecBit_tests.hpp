@@ -571,7 +571,7 @@ namespace Gambit
          for(iter=name_value.begin(); iter != name_value.end(); ++iter)
          {
             pass = test_getters("get_Pole_Mass", iter->first,  
-                                mssm.mssm_ph.get_Pole_Mass(iter->first,i),
+                                mssm.phys.get_Pole_Mass(iter->first,i),
                                 iter->second, i);
             if(immediate_exit == true && pass == false) return pass; 
          } 
@@ -981,7 +981,7 @@ namespace Gambit
        bool running_test(MSSMSpec<MI> & mssm, typename MI::Model & FS_model_slha, double tol)
       {
          double highscale = 1e+16;
-         double lowscale = mssm.mssm_drbar_pars.GetScale();
+         double lowscale = mssm.runningpars.GetScale();
          double lowscale2 = FS_model_slha.get_scale();
          bool pass = flexiblesusy::is_equal(lowscale,lowscale2);
          if(!pass) {
@@ -991,7 +991,7 @@ namespace Gambit
             return pass;              
          }
          
-         mssm.mssm_drbar_pars.RunToScale(highscale);
+         mssm.runningpars.RunToScale(highscale);
          FS_model_slha.run_to(highscale);
          pass = test_exact(mssm, FS_model_slha);
           if(!pass) {
@@ -1000,7 +1000,7 @@ namespace Gambit
                    << std::endl;
             return pass;              
          }
-          mssm.mssm_drbar_pars.RunToScale(lowscale);
+         mssm.runningpars.RunToScale(lowscale);
          FS_model_slha.run_to(lowscale);
          pass = test_exact(mssm, FS_model_slha);
           if(!pass) {

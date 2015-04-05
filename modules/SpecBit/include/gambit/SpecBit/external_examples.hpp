@@ -170,37 +170,37 @@ template <class M>
 void mssm_print(Gambit::MSSMSpec<M> & mssm)
 {
    
-   PRINTOUT << "mssm.mssm_drbar_pars.GetScale() =" 
-          << mssm.mssm_drbar_pars.GetScale() << std::endl;
+   PRINTOUT << "mssm.runningpars.GetScale() =" 
+          << mssm.runningpars.GetScale() << std::endl;
    PRINTOUT << "map mHd2 "  
-          << mssm.mssm_drbar_pars.get_mass2_parameter("mHd2") <<std::endl;
+          << mssm.runningpars.get_mass2_parameter("mHd2") <<std::endl;
    PRINTOUT << "map mHu2 "  
-          << mssm.mssm_drbar_pars.get_mass2_parameter("mHu2") <<std::endl;
+          << mssm.runningpars.get_mass2_parameter("mHu2") <<std::endl;
    PRINTOUT << "map BMu "  
-          << mssm.mssm_drbar_pars.get_mass2_parameter("BMu") <<std::endl; 
+          << mssm.runningpars.get_mass2_parameter("BMu") <<std::endl; 
    
    PRINTOUT << "mq2(1,1) = " 
-          << mssm.mssm_drbar_pars.get_mass2_parameter("mq2",1,1) 
+          << mssm.runningpars.get_mass2_parameter("mq2",1,1) 
           << std::endl;
      PRINTOUT << "mu2(1,2) = " 
-          <<  mssm.mssm_drbar_pars.get_mass2_parameter("mq2",1,2) << std::endl;
+          <<  mssm.runningpars.get_mass2_parameter("mq2",1,2) << std::endl;
    
    PRINTOUT << "me2(3,3) = " 
-          <<   mssm.mssm_drbar_pars.get_mass2_parameter("mq2",3,3) << std::endl;
+          <<   mssm.runningpars.get_mass2_parameter("mq2",3,3) << std::endl;
 
    PRINTOUT << "Mu = " 
-          << mssm.mssm_drbar_pars.get_mass_parameter("Mu",3,3) << std::endl;
+          << mssm.runningpars.get_mass_parameter("Mu",3,3) << std::endl;
 
    //what not to do
    PRINTOUT << "mistake  mq2(1) = " 
-          << mssm.mssm_drbar_pars.get_mass2_parameter("mq2",1) 
+          << mssm.runningpars.get_mass2_parameter("mq2",1) 
           << std::endl;
    PRINTOUT << "mistake 2 mq2(1) =  " 
-          <<  mssm.mssm_drbar_pars.get_mass2_parameter("mqL2",1,1) << std::endl;
+          <<  mssm.runningpars.get_mass2_parameter("mqL2",1,1) << std::endl;
     PRINTOUT << "mistake 3 mq2(1) =  " 
-          <<  mssm.mssm_drbar_pars.get_mass_parameter("mq2",1) << std::endl;
+          <<  mssm.runningpars.get_mass_parameter("mq2",1) << std::endl;
    
-    double mgluino = mssm.mssm_ph.get_Pole_Mass("MGluino");
+    double mgluino = mssm.phys.get_Pole_Mass("MGluino");
    PRINTOUT << "mgluino = " << mgluino<< std::endl;
    
 }

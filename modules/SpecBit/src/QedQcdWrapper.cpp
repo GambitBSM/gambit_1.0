@@ -111,9 +111,9 @@ namespace Gambit {
    double get_mTau     (const softsusy::QedQcd& model) { return model.displayMass(softsusy::mTau); }
 
    /// Filler for mass_map
-   MT::fmap_extra QedQcdWrapper::fill_mass_map_extra()
+   MT::fmap_extraM QedQcdWrapper::fill_mass_map_extraM()
    {
-      MT::fmap_extra tmp_map;
+      MT::fmap_extraM tmp_map;
 
       addtomap(("u", "ubar", "u_1", "ubar_1"), &get_mUp);
       addtomap(("c", "cbar", "u_2", "ubar_2"), &get_mCharm);
@@ -158,9 +158,9 @@ namespace Gambit {
    }
 
    /// Filler for mass_map
-   MT::fmap_extra QedQcdWrapper::fill_mass0_map_extra()
+   MT::fmap_extraM QedQcdWrapper::fill_mass0_map_extraM()
    {
-      MT::fmap_extra tmp_map;
+      MT::fmap_extraM tmp_map;
 
       tmp_map["alpha"]  = &get_alpha;
       tmp_map["alphaS"] = &get_alphaS;

@@ -300,12 +300,12 @@ namespace Gambit {
       return model.get_vu() / model.get_vd(); 
    }
  
-   // Function to initialise mass0_map_extra
+   // Function to initialise mass0_map_extraM
    template <class MI>
-   typename MapTypes<MSSMSpecTraits<MI>>::fmap_extra MSSMSpec<MI>::fill_mass0_map_extra() 
+   typename MapTypes<MSSMSpecTraits<MI>>::fmap_extraM MSSMSpec<MI>::fill_mass0_map_extraM() 
    {
       typedef typename MI::Model Model;
-      typename MT::fmap_extra tmp_map;
+      typename MT::fmap_extraM tmp_map;
       tmp_map["tanbeta"]= &get_tanbeta<Model>;
       
       return tmp_map;
@@ -447,18 +447,19 @@ namespace Gambit {
    template <class Model> double get_MAh1_pole(const Model& model) { return model.get_MAh_pole_slha(1); }
    template <class Model> double get_MHpm1_pole(const Model& model) { return model.get_MHpm_pole_slha(1); }
 
-   // Note! Map fillers appended with "_extra" will be treated by the Spectrum object as
+   // Note! Map fillers appended with "_extraM" or "_extraI" will be treated by the Spectrum object as
    // alternative routines to call for that getter type.
    // e.g.
    // get_Pole_Mass(name)
-   // draws upon two maps, filled by the two filling functions
-   // fill_PoleMass_map()
-   // fill_PoleMass_map_extra()
-   template <class MI>
-   typename MapTypes<MSSMSpecTraits<MI>>::fmap_extra MSSMSpec<MI>::fill_PoleMass_map_extra()
+   // draws upon three maps, filled by the filling functions
+   // fill_PoleMass_map()           call signature: model.func() -- i.e. 'native' member functions
+   // fill_PoleMass_map_extraM()    call signature: func(Model& model) -- extras using model info
+   // fill_PoleMass_map_extraI()    call signature: func(Input& input) -- extras using input info
+   template <class MI>  
+   typename MapTypes<MSSMSpecTraits<MI>>::fmap_extraM MSSMSpec<MI>::fill_PoleMass_map_extraM()
    {
       typedef typename MI::Model Model;
-      typename MT::fmap_extra tmp_map;
+      typename MT::fmap_extraM tmp_map;
      
       // Using wrapper functions defined above
       tmp_map["A0"] = &get_MAh1_pole<Model>;   
