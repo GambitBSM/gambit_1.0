@@ -901,6 +901,7 @@ namespace Gambit
             entries.begin(); it != entries.end(); ++it)
         {
           {
+            // Evaluate "dependencies:" section
             if ( funcMatchesIniEntry(masterGraph[toVertex], *it, *boundTEs) and it->capability != "" )
             {
               for (IniParser::ObservablesType::const_iterator it2 =
@@ -909,6 +910,19 @@ namespace Gambit
                 if ( quantityMatchesIniEntry(quantity, *it2) )
                 {
                   rules_1st_level.push_back(Rule(*it2));
+                }
+              }
+            }
+            // Evaluate "functionChain:" section
+            if ( funcMatchesIniEntry(masterGraph[toVertex], *it, *boundTEs) 
+                    and it->capability != "" and it->function == "" and (*it).functionChain.size() > 1 )
+            {
+              for (auto it2 = (*it).functionChain.begin(); it2 != (*it).functionChain.end() - 1; ++it2)
+              {
+                if ( (*it2) == masterGraph[toVertex]->name() )
+                {
+                  Rule rule(*(it2+1), masterGraph[toVertex]->origin());
+                  rules_1st_level.push_back(rule);
                 }
               }
             }
@@ -999,7 +1013,7 @@ namespace Gambit
         }
       }
 
-      // Nothing left?
+      // Nothing left according to 1st class rules?
       if ( filteredVertexCandidates_1st.size() == 0 )
       {
         str errmsg = "None of the vertex candidates for";

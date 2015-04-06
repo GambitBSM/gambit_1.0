@@ -71,6 +71,7 @@ namespace Gambit
     /// function name).
     struct Rule
     {
+      Rule(std::string function, std::string module) : function(function), module(module) {};
       Rule(IniParser::ObservableType t)
       {
         module = t.module;
