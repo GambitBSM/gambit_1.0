@@ -589,6 +589,12 @@ namespace Gambit
       return (*(dynamic_cast<module_functor<double>*>(masterGraph[vertex])))(0);
     }
 
+    // Returns value from ObsLike (only doubles)
+    std::vector<double> DependencyResolver::getObsLikeVector(VertexID vertex)
+    {
+      return (*(dynamic_cast<module_functor<std::vector<double>>*>(masterGraph[vertex])))(0);
+    }
+
     // Tell functor that it invalidated the current point in model space (due to a large contribution to lnL)
     void DependencyResolver::invalidatePointAt(VertexID vertex)
     {

@@ -129,6 +129,7 @@ namespace Gambit
         void calcObsLike(VertexID, const int);
 
         double getObsLike(VertexID);
+        std::vector<double> getObsLikeVector(VertexID);
 
         const IniParser::ObservableType * getIniEntry(VertexID);
 
