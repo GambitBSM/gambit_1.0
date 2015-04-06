@@ -63,15 +63,50 @@ START_MODULE
 
   #undef CAPABILITY
   
-  #define CAPABILITY A_decay_rates
+  #define CAPABILITY MSSM_Higgs_decay_rates
   START_CAPABILITY
 
     #define FUNCTION A_SM_decays
     START_FUNCTION(DecayTable::Entry)
-    //ALLOW_MODELS(MSSM78atQ)
-    BACKEND_REQ(sdecay, (), void, ())                 // Register the backend function "sdecay"
-    BACKEND_REQ(cb_widtha_hdec, (), widtha_hdec_type) // A -> SM decays
+    BACKEND_REQ(sdecay, (), void, ())
+    BACKEND_REQ(cb_widtha_hdec, (), widtha_hdec_type)
     #undef FUNCTION
+
+    //#define FUNCTION H01_SM_decays
+    //START_FUNCTION(DecayTable::Entry)
+    //BACKEND_REQ(sdecay, (), void, ())
+    //BACKEND_REQ(cb_widthhl_hdec, (), widthhl_hdec_type)
+    //#undef FUNCTION
+
+    //#define FUNCTION H02_SM_decays
+    //START_FUNCTION(DecayTable::Entry)
+    //BACKEND_REQ(sdecay, (), void, ())
+    //BACKEND_REQ(cb_widthhh_hdec, (), widthhh_hdec_type)
+    //#undef FUNCTION
+
+    //#define FUNCTION HC_SM_decays
+    //START_FUNCTION(DecayTable::Entry)
+    //BACKEND_REQ(sdecay, (), void, ())
+    //BACKEND_REQ(cb_widthhc_hdec, (), widthhc_hdec_type)
+    //#undef FUNCTION
+
+    //#define FUNCTION Higgs_SUSY_decays
+    //START_FUNCTION(DecayTable::Entry)
+    //BACKEND_REQ(sdecay, (), void, ())
+    //BACKEND_REQ(cb_wisusy_hdec, (), wisusy_hdec_type)
+    //#undef FUNCTION
+
+    //#define FUNCTION Higgs_sfermion_decays
+    //START_FUNCTION(DecayTable::Entry)
+    //BACKEND_REQ(sdecay, (), void, ())
+    //BACKEND_REQ(cb_wisfer_hdec, (), wisfer_hdec_type)
+    //#undef FUNCTION
+
+    //#define FUNCTION Higgs_goldstone_decays
+    //START_FUNCTION(DecayTable::Entry)
+    //BACKEND_REQ(sdecay, (), void, ())
+    //BACKEND_REQ(cb_hd_golddec, (), hd_golddec_type)
+    //#undef FUNCTION
 
   #undef CAPABILITY
 
@@ -99,7 +134,7 @@ START_MODULE
     DEPENDENCY(rho_plus_decay_rates, DecayTable::Entry)
     DEPENDENCY(omega_decay_rates, DecayTable::Entry)
     // The following are only relevant for the MSSM, and should eventually be made model-conditional dependencies
-    DEPENDENCY(A_decay_rates, DecayTable::Entry) 
+    DEPENDENCY(MSSM_Higgs_decay_rates, DecayTable::Entry) 
 
     #undef FUNCTION
 

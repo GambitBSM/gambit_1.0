@@ -288,7 +288,7 @@ namespace Gambit
       //See PDG meson sheet in DecayBit/data/PDG if you want BFs               
     }
 
-    /// MSSM decays: A -> SM
+    /// MSSM decays: 
     void A_SM_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::A_SM_decays;
@@ -308,6 +308,48 @@ namespace Gambit
       result.set_BF(BEreq::cb_widtha_hdec->abrz, 0.0, "Z0", "h0_1"); // CsB: check if h0_1 is the lightest scalar Higgs PS: it is - see Models/src/particle_database.cpp
       cout << "A total width: " << result.width_in_GeV << endl;
     }
+
+    //void H01_SM_decays (DecayTable::Entry& result) 
+    //{
+    //  using namespace Pipes::H01_SM_decays;
+    //  BEreq::sdecay();
+    //  result.width_in_GeV = 0.0;
+    //}
+
+    //void H02_SM_decays (DecayTable::Entry& result) 
+    //{
+    //  using namespace Pipes::H02_SM_decays;
+    //  BEreq::sdecay();
+    //  result.width_in_GeV = 0.0;
+    //}
+
+    //void HC_SM_decays (DecayTable::Entry& result) 
+    //{
+    //  using namespace Pipes::HC_SM_decays;
+    //  BEreq::sdecay();
+    //  result.width_in_GeV = 0.0;
+    //}
+
+    //void Higgs_SUSY_decays (DecayTable::Entry& result) 
+    //{
+    //  using namespace Pipes::Higgs_SUSY_decays;
+    //  BEreq::sdecay();
+    //  result.width_in_GeV = 0.0;
+    //}
+
+    //void Higgs_sfermion_decays (DecayTable::Entry& result) 
+    //{
+    //  using namespace Pipes::Higgs_sfermion_decays;
+    //  BEreq::sdecay();
+    //  result.width_in_GeV = 0.0;
+    //}
+
+    //void Higgs_goldstone_decays (DecayTable::Entry& result) 
+    //{
+    //  using namespace Pipes::Higgs_goldstone_decays;
+    //  BEreq::sdecay();
+    //  result.width_in_GeV = 0.0;
+    //}
 
     /// Collect all the DecayTable entries into an actual DecayTable 
     void all_decays (DecayTable &result) 
@@ -345,7 +387,7 @@ namespace Gambit
       decays("omega") = *Dep::omega_decay_rates;    // Add the omega meson decays.
       
       // MSSM-specific
-      decays("A0") = *Dep::A_decay_rates;           // Add the CP-odd MSSM Higgs decays.
+      decays("A0") = *Dep::MSSM_Higgs_decay_rates;  // Add the CP-odd MSSM Higgs decays.
 
       cout << "BF for tau+ -> pi+ nubar_tau: " << decays("tau+").BF("pi+", "nubar_tau") << endl;
       result = decays;
