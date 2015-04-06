@@ -1022,9 +1022,28 @@ namespace Gambit
       str errmsg = "Turns out that the dependency resolution for";
       errmsg += "\n" + printQuantityToBeResolved(quantity, toVertex);
       errmsg += "\nis still ambiguous.\n";
-      errmsg += "\nThe candidate vetices that survive all constraints are:\n\n";
-      errmsg += printGenericFunctorList(filteredVertexCandidates_1st) +"\n";
-      errmsg += printGenericFunctorList(filteredVertexCandidates_2nd);
+      errmsg += "\nThe candidate vertices are:\n";
+      errmsg += printGenericFunctorList(vertexCandidates) +"\n";
+      errmsg += "See logger output for details on the attempted (but failed) dependency resolution.\n";
+      errmsg += "\nAn entry in the auxiliary section of your YAML file that would e.g. select";
+      errmsg += "\nthe first of the above candidates could read ";
+      if ( toVertex != OBSLIKE_VERTEXID )
+      {
+        errmsg += "as a 1st class rule:\n";
+        errmsg += "\n    - capability: "+masterGraph[toVertex]->capability();
+        errmsg += "\n      function: "+masterGraph[toVertex]->name();
+        errmsg += "\n      dependencies:";
+        errmsg += "\n        - capability: " +masterGraph[vertexCandidates[0]]->capability();
+        errmsg += "\n          function: " +masterGraph[vertexCandidates[0]]->name() +"\n\nor ";
+      }
+      errmsg += "as a 2nd class rule:\n";
+      errmsg += "\n    - capability: "+masterGraph[vertexCandidates[0]]->capability();
+      errmsg += "\n      function: "+masterGraph[vertexCandidates[0]]->name() + "\n";
+      if ( toVertex == OBSLIKE_VERTEXID )
+      {
+        errmsg += "\n(Note that 1st class rules are not possible for vertices on which the core depends only.)\n";
+      }
+
       dependency_resolver_error().raise(LOCAL_INFO,errmsg);
 
       return 0;
