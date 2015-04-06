@@ -975,8 +975,8 @@ namespace Gambit
       {
         str errmsg = "None of the vertex candidates for";
         errmsg += "\n" + printQuantityToBeResolved(quantity, toVertex);
-        errmsg += "\nfulfill all 1st class rules in the YAML file.";
-        errmsg += "\nPlease check our YAML file for contradictory rules.";
+        errmsg += "\nfulfills all 1st class rules in the YAML file.";
+        errmsg += "\nPlease check your YAML file for contradictory rules.";
         dependency_resolver_error().raise(LOCAL_INFO,errmsg);
       }
 
@@ -984,8 +984,8 @@ namespace Gambit
       {
         str errmsg = "None of the vertex candidates for";
         errmsg += "\n" + printQuantityToBeResolved(quantity, toVertex);
-        errmsg += "\nfulfill all 2nd class rules in the YAML file.";
-        errmsg += "\nPlease check our YAML file for contradictory rules.";
+        errmsg += "\nfulfills all 2nd class rules in the YAML file.";
+        errmsg += "\nPlease check your YAML file for contradictory rules.";
         dependency_resolver_error().raise(LOCAL_INFO,errmsg);
       }
 
