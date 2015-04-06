@@ -866,7 +866,11 @@ namespace Gambit
         {
           errmsg << ", required by Core" << endl;
         }
-        errmsg << "Please check inifile for typos, and make sure that the models you are scanning are compatible with at least one function which provides this capability (they may all have been deactivated due to having ALLOW_MODELS declarations which are incompatible with the models selected for scanning)" << endl;  
+        errmsg << "\nPlease check inifile for typos, and make sure that the" << endl;
+        errmsg << "models you are scanning are compatible with at least one function" << endl;
+        errmsg << "that provides this capability (they may all have been deactivated" << endl;
+        errmsg << "due to having ALLOW_MODELS declarations which are" << endl;
+        errmsg << "incompatible with the models selected for scanning)." << endl;  
         dependency_resolver_error().raise(LOCAL_INFO,errmsg.str());
       }
 
@@ -1585,7 +1589,7 @@ namespace Gambit
                            "\n" + (*masterGraph[vertex]).name() + " of " + (*masterGraph[vertex]).origin() + "."
                            "\nOne requirement was filled from " + common_backend_and_version + ", "
                            "\nwhereas another was filled from " + filled_from + "."
-                           "\nThis is probably a bug in GAMBIT.  The apocalypse has come.";
+                           "\nThis should not happen and is probably a bug in GAMBIT.";
                 dependency_resolver_error().raise(LOCAL_INFO,errmsg);
               }
             }
@@ -1609,7 +1613,7 @@ namespace Gambit
           errmsg << "\nNote that viable candidates exist but have been disabled:\n"
                  <<     printGenericFunctorList(disabledVertexCandidates)
                  << "\nPlease check that all shared objects exist for the"
-                 << "\necessary backends, and that they contain all the"
+                 << "\nnecessary backends, and that they contain all the"
                  << "\nnecessary functions required for this scan. Also "
                  << "\ncheck your backend rules and YAML file.";
         }
