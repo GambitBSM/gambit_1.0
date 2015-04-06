@@ -893,38 +893,43 @@ namespace Gambit
       logger() << "List of candidate vertices:" << endl;
       logger() << printGenericFunctorList(vertexCandidates) << endl;
 
-      // Make list of all relevant 1st and 2nd level dependency rules.
-      const IniParser::ObservablesType & entries = boundIniFile->getAuxiliaries();
-      for (IniParser::ObservablesType::const_iterator it =
-          entries.begin(); it != entries.end(); ++it)
+      if ( toVertex != OBSLIKE_VERTEXID )
       {
-        if ( toVertex != OBSLIKE_VERTEXID )
+        // Make list of all relevant 1st and 2nd level dependency rules.
+        const IniParser::ObservablesType & entries = boundIniFile->getAuxiliaries();
+        for (IniParser::ObservablesType::const_iterator it =
+            entries.begin(); it != entries.end(); ++it)
         {
-          if ( funcMatchesIniEntry(masterGraph[toVertex], *it, *boundTEs) and it->capability != "" )
           {
-            for (IniParser::ObservablesType::const_iterator it2 =
-            (*it).dependencies.begin(); it2 != (*it).dependencies.end(); ++it2)
+            if ( funcMatchesIniEntry(masterGraph[toVertex], *it, *boundTEs) and it->capability != "" )
             {
-              if ( quantityMatchesIniEntry(quantity, *it2) )
+              for (IniParser::ObservablesType::const_iterator it2 =
+              (*it).dependencies.begin(); it2 != (*it).dependencies.end(); ++it2)
               {
-                rules_1st_level.push_back(Rule(*it2));
+                if ( quantityMatchesIniEntry(quantity, *it2) )
+                {
+                  rules_1st_level.push_back(Rule(*it2));
+                }
               }
+            }
+            if ( quantityMatchesIniEntry(quantity, *it) and it->capability != "" )
+            {
+              rules_2nd_level.push_back(Rule(*it));
             }
           }
         }
-        if ( quantityMatchesIniEntry(quantity, *it) and it->capability != "" )
-        {
-          rules_2nd_level.push_back(Rule(*it));
-        }
       }
-      // Add also entries in ObsLike section as 2nd order
-      const IniParser::ObservablesType & entries2 = boundIniFile->getObservables();
-      for (IniParser::ObservablesType::const_iterator it =
-          entries2.begin(); it != entries2.end(); ++it)
+      else
       {
-        if ( quantityMatchesIniEntry(quantity, *it) )
+        // Add entries in ObsLike section as 2nd order
+        const IniParser::ObservablesType & entries2 = boundIniFile->getObservables();
+        for (IniParser::ObservablesType::const_iterator it =
+            entries2.begin(); it != entries2.end(); ++it)
         {
-          rules_2nd_level.push_back(Rule(*it));
+          if ( quantityMatchesIniEntry(quantity, *it) )
+          {
+            rules_2nd_level.push_back(Rule(*it));
+          }
         }
       }
 
@@ -970,25 +975,6 @@ namespace Gambit
         logger() << printGenericFunctorList(filteredVertexCandidates_2nd) << endl;
       }
 
-      // Nothing left?
-      if ( filteredVertexCandidates_1st.size() == 0 )
-      {
-        str errmsg = "None of the vertex candidates for";
-        errmsg += "\n" + printQuantityToBeResolved(quantity, toVertex);
-        errmsg += "\nfulfills all 1st class rules in the YAML file.";
-        errmsg += "\nPlease check your YAML file for contradictory rules.";
-        dependency_resolver_error().raise(LOCAL_INFO,errmsg);
-      }
-
-      if ( filteredVertexCandidates_2nd.size() == 0 )
-      {
-        str errmsg = "None of the vertex candidates for";
-        errmsg += "\n" + printQuantityToBeResolved(quantity, toVertex);
-        errmsg += "\nfulfills all 2nd class rules in the YAML file.";
-        errmsg += "\nPlease check your YAML file for contradictory rules.";
-        dependency_resolver_error().raise(LOCAL_INFO,errmsg);
-      }
-
       // Apply tailor-made filter
       if ( boundIniFile->getValueOrDef<bool>(true, "dependency_resolution", "prefer_model_specific_functions") )
       {
@@ -1011,6 +997,25 @@ namespace Gambit
           logger() << "are not constraining enough:" << endl;
           logger() << printGenericFunctorList(filteredVertexCandidates) << endl;
         }
+      }
+
+      // Nothing left?
+      if ( filteredVertexCandidates_1st.size() == 0 )
+      {
+        str errmsg = "None of the vertex candidates for";
+        errmsg += "\n" + printQuantityToBeResolved(quantity, toVertex);
+        errmsg += "\nfulfills all 1st class rules in the YAML file.";
+        errmsg += "\nPlease check your YAML file for contradictory rules.";
+        dependency_resolver_error().raise(LOCAL_INFO,errmsg);
+      }
+
+      if ( filteredVertexCandidates_2nd.size() == 0  and filteredVertexCandidates_1st.size() != 1 )
+      {
+        str errmsg = "None of the vertex candidates for";
+        errmsg += "\n" + printQuantityToBeResolved(quantity, toVertex);
+        errmsg += "\nfulfills all 2nd class rules in the YAML file.";
+        errmsg += "\nPlease check your YAML file for contradictory rules.";
+        dependency_resolver_error().raise(LOCAL_INFO,errmsg);
       }
 
       // Did vertices survive?
