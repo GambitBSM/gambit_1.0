@@ -390,13 +390,13 @@ namespace Gambit
 
       str formatString  = "%-5s %-25s %-25s %-25s\n";
       // Might need to check if terminal supports unicode characters...
-      str formatString0 = "%-7s %-23s %-25s %-25s %-6s\n";  // header
-      str formatString1a= "%-9s %-21s %-25s %-25s %-6s\n";  // target functors 
-      str formatString1b= "%-4s \u2514\u2500\u2500> %-21s %-25s %-25s %-6s\n";  // target functors 
-      str formatString2a= "     \u250C\u2500 %-23s %-25s %-25s %-6s\n";  // parents
-      str formatString2b= "     \u251C\u2500 %-23s %-25s %-25s %-6s\n";
-      str formatString3a= "     \u250CX %-23s %-25s %-25s %-6s\n"; // "already done" parents
-      str formatString3b= "     \u251CX %-23s %-25s %-25s %-6s\n";
+      str formatString0 = "%-7s %-23s %-25s %-25s %-25s %-6s\n";  // header
+      str formatString1a= "%-9s %-21s %-25s %-25s %-25s %-6s\n";  // target functors 
+      str formatString1b= "%-4s \u2514\u2500\u2500> %-21s %-25s %-25s %-25s %-6s\n";  // target functors 
+      str formatString2a= "     \u250C\u2500 %-23s %-25s %-25s %-25s %-6s\n";  // parents
+      str formatString2b= "     \u251C\u2500 %-23s %-25s %-25s %-25s %-6s\n";
+      str formatString3a= "     \u250CX %-23s %-25s %-25s %-25s %-6s\n"; // "already done" parents
+      str formatString3b= "     \u251CX %-23s %-25s %-25s %-25s %-6s\n";
 
       int i = 0;
 
@@ -425,7 +425,7 @@ namespace Gambit
       // This doesn't figure out the sequence within each target functor group; I'm not 100% sure where that is determined. This does, however, show which groups get evaluated first, and which functors are already evaluated.
       ss << endl << "Full initial functor evaluation order" << endl;
       ss << "----------------------------------" << endl;
-      ss << boost::format(formatString0)% "#"% "FUNCTION"% "CAPABILITY"% "ORIGIN"% "PRINT?";
+      ss << boost::format(formatString0)% "#"% "FUNCTION"% "CAPABILITY"% "TYPE"% "ORIGIN"% "PRINT?";
  
       for (std::vector<VertexID>::const_iterator 
                   vi  = order.begin(); 
@@ -461,6 +461,7 @@ namespace Gambit
               ss << boost::format(formatstr)%
                 (*masterGraph[*vi2]).name()%
                 (*masterGraph[*vi2]).capability()%
+                (*masterGraph[*vi2]).type()%
                 (*masterGraph[*vi2]).origin()%
                 (*masterGraph[*vi2]).requiresPrinting();
             }
@@ -476,6 +477,7 @@ namespace Gambit
          i%
          (*masterGraph[*vi]).name()%
          (*masterGraph[*vi]).capability()%
+         (*masterGraph[*vi]).type()%
          (*masterGraph[*vi]).origin()%
          (*masterGraph[*vi]).requiresPrinting();
         i++;
@@ -864,7 +866,11 @@ namespace Gambit
         {
           errmsg << ", required by Core" << endl;
         }
-        errmsg << "Please check inifile for typos, and make sure that the models you are scanning are compatible with at least one function which provides this capability (they may all have been deactivated due to having ALLOW_MODELS declarations which are incompatible with the models selected for scanning)" << endl;  
+        errmsg << "\nPlease check inifile for typos, and make sure that the" << endl;
+        errmsg << "models you are scanning are compatible with at least one function" << endl;
+        errmsg << "that provides this capability (they may all have been deactivated" << endl;
+        errmsg << "due to having ALLOW_MODELS declarations which are" << endl;
+        errmsg << "incompatible with the models selected for scanning)." << endl;  
         dependency_resolver_error().raise(LOCAL_INFO,errmsg.str());
       }
 
@@ -1583,7 +1589,7 @@ namespace Gambit
                            "\n" + (*masterGraph[vertex]).name() + " of " + (*masterGraph[vertex]).origin() + "."
                            "\nOne requirement was filled from " + common_backend_and_version + ", "
                            "\nwhereas another was filled from " + filled_from + "."
-                           "\nThis is probably a bug in GAMBIT.  The apocalypse has come.";
+                           "\nThis should not happen and is probably a bug in GAMBIT.";
                 dependency_resolver_error().raise(LOCAL_INFO,errmsg);
               }
             }
@@ -1607,7 +1613,7 @@ namespace Gambit
           errmsg << "\nNote that viable candidates exist but have been disabled:\n"
                  <<     printGenericFunctorList(disabledVertexCandidates)
                  << "\nPlease check that all shared objects exist for the"
-                 << "\necessary backends, and that they contain all the"
+                 << "\nnecessary backends, and that they contain all the"
                  << "\nnecessary functions required for this scan. Also "
                  << "\ncheck your backend rules and YAML file.";
         }
