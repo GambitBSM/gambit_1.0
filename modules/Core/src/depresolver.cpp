@@ -161,6 +161,7 @@ namespace Gambit
     }
 
 
+
     //
     // Graphviz output
     //
@@ -622,6 +623,32 @@ namespace Gambit
     // Private definitions of DependencyResolver class
     ////////////////////////////////////////////////////
 
+    str DependencyResolver::printQuantityToBeResolved(const sspair & quantity, const DRes::VertexID & vertex)
+    {
+        str s = quantity.first + " (" + quantity.second + ")";
+        s += ", required by ";
+        if ( vertex != OBSLIKE_VERTEXID )
+        {
+            s += (*masterGraph[vertex]).capability() + " (";
+            s += (*masterGraph[vertex]).type() + ") [";
+            s += (*masterGraph[vertex]).name() + ", ";
+            s += (*masterGraph[vertex]).origin() + "]";
+        }
+        else
+            s += "Core";
+        return s;
+    }
+
+    str DependencyResolver::printGenericFunctorList(const std::vector<VertexID> & vertexIDs)
+    {
+        std::vector<functor*> functorList;
+        for ( auto it = vertexIDs.begin(); it != vertexIDs.end(); ++it )
+        {
+            functorList.push_back(masterGraph[*it]);
+        }
+        return printGenericFunctorList(functorList);
+    }
+
     // Generic printer of the contents of a functor list
     str DependencyResolver::printGenericFunctorList(const std::vector<functor*>& functorList)
     {
@@ -851,22 +878,10 @@ namespace Gambit
       }
       if (vertexCandidates.size() == 0)
       {
-        /// TODO: Clarify -- Ben: I added a bit extra, not sure if you had anything else in mind.
         std::ostringstream errmsg;
-        errmsg << "No candidates found to resolve dependency on "<< quantity.first << " (" << quantity.second << ")" << endl;
-        if ( toVertex != OBSLIKE_VERTEXID )
-        {
-          errmsg << ", required by ";
-          errmsg << (*masterGraph[toVertex]).capability() << " (";
-          errmsg << (*masterGraph[toVertex]).type() << ") [";
-          errmsg << (*masterGraph[toVertex]).name() << ", ";
-          errmsg << (*masterGraph[toVertex]).origin() << "]" << endl;;
-        }
-        else
-        {
-          errmsg << ", required by Core" << endl;
-        }
-        errmsg << "\nPlease check inifile for typos, and make sure that the" << endl;
+        errmsg << "No candidates found while trying to resolve:" << endl;
+        errmsg << printQuantityToBeResolved(quantity, toVertex) << endl << endl;
+        errmsg << "Please check inifile for typos, and make sure that the" << endl;
         errmsg << "models you are scanning are compatible with at least one function" << endl;
         errmsg << "that provides this capability (they may all have been deactivated" << endl;
         errmsg << "due to having ALLOW_MODELS declarations which are" << endl;
@@ -874,7 +889,9 @@ namespace Gambit
         dependency_resolver_error().raise(LOCAL_INFO,errmsg.str());
       }
 
-      cout << "Vertex candidate IDs: " << vertexCandidates << endl;
+      logger() << LogTags::dependency_resolver;
+      logger() << "List of candidate vertices:" << endl;
+      logger() << printGenericFunctorList(vertexCandidates) << endl;
 
       // Make list of all relevant 1st and 2nd level dependency rules.
       const IniParser::ObservablesType & entries = boundIniFile->getAuxiliaries();
@@ -911,7 +928,7 @@ namespace Gambit
         }
       }
 
-      cout << "Number of identified 1st and 2nd class rules: " << rules_1st_level.size() << ", " << rules_2nd_level.size() << endl;
+      logger() << "Number of identified 1st (2nd) class rules: " << rules_1st_level.size() << " (" << rules_2nd_level.size() << ")" << endl << endl;
 
       // Make filtered lists
       for (std::vector<DRes::VertexID>::const_iterator it = vertexCandidates.begin(); 
@@ -941,31 +958,59 @@ namespace Gambit
           filteredVertexCandidates_2nd.push_back(*it);
       }
 
-      cout << "Filtered vertex candidates (1st, 2nd): " << filteredVertexCandidates_1st << ", " << filteredVertexCandidates_2nd << endl;
+      //cout << "Filtered vertex candidates (1st, 2nd): " << filteredVertexCandidates_1st << ", " << filteredVertexCandidates_2nd << endl;
+      if ( rules_1st_level.size() > 0 )
+      {
+        logger() << "Candidate vertices that fulfill 1st class rules:" << endl;
+        logger() << printGenericFunctorList(filteredVertexCandidates_1st) << endl;
+      }
+      if ( rules_2nd_level.size() > 0 )
+      {
+        logger() << "Candidate vertices that fulfill 2nd class rules:" << endl;
+        logger() << printGenericFunctorList(filteredVertexCandidates_2nd) << endl;
+      }
 
       // Nothing left?
       if ( filteredVertexCandidates_1st.size() == 0 )
       {
-        // TODO: Clarify
-        str errmsg = "First-level rules rule out everything.";
+        str errmsg = "None of the vertex candidates for";
+        errmsg += "\n" + printQuantityToBeResolved(quantity, toVertex);
+        errmsg += "\nfulfill all 1st class rules in the YAML file.";
+        errmsg += "\nPlease check our YAML file for contradictory rules.";
         dependency_resolver_error().raise(LOCAL_INFO,errmsg);
       }
 
       if ( filteredVertexCandidates_2nd.size() == 0 )
       {
-        // TODO: Clarify
-        str errmsg = "Second-level rules rule out everything.";
+        str errmsg = "None of the vertex candidates for";
+        errmsg += "\n" + printQuantityToBeResolved(quantity, toVertex);
+        errmsg += "\nfulfill all 2nd class rules in the YAML file.";
+        errmsg += "\nPlease check our YAML file for contradictory rules.";
         dependency_resolver_error().raise(LOCAL_INFO,errmsg);
       }
 
       // Apply tailor-made filter
       if ( boundIniFile->getValueOrDef<bool>(true, "dependency_resolution", "prefer_model_specific_functions") )
       {
+        bool usedFilter = false;
         if ( filteredVertexCandidates_1st.size() > 1 )
+        {
           filteredVertexCandidates_1st = closestCandidateForModel(filteredVertexCandidates_1st);
+          usedFilter = true;
+        }
         if ( filteredVertexCandidates_2nd.size() > 1 )
+        {
           filteredVertexCandidates_2nd = closestCandidateForModel(filteredVertexCandidates_2nd);
-        cout << "Vertex candidates with tailor made functions (1st, 2nd): " << filteredVertexCandidates_1st << ", " << filteredVertexCandidates_2nd << endl;
+          usedFilter = true;
+        }
+        std::vector<VertexID> filteredVertexCandidates = closestCandidateForModel(vertexCandidates);
+        if ( usedFilter and filteredVertexCandidates.size() < vertexCandidates.size() )
+        {
+          logger() << "A subset of vertex candidates is tailor-made for the scanned model." << endl;
+          logger() << "This is used as additional constraint since the YAML rules alone" << endl;
+          logger() << "are not constraining enough:" << endl;
+          logger() << printGenericFunctorList(filteredVertexCandidates) << endl;
+        }
       }
 
       // Did vertices survive?
@@ -974,8 +1019,12 @@ namespace Gambit
       if ( filteredVertexCandidates_2nd.size() == 1 )
         return filteredVertexCandidates_2nd[0];  // Done1
 
-      // TODO: Clarify
-      str errmsg = "Still amiguous.";
+      str errmsg = "Turns out that the dependency resolution for";
+      errmsg += "\n" + printQuantityToBeResolved(quantity, toVertex);
+      errmsg += "\nis still ambiguous.\n";
+      errmsg += "\nThe candidate vetices that survive all constraints are:\n\n";
+      errmsg += printGenericFunctorList(filteredVertexCandidates_1st) +"\n";
+      errmsg += printGenericFunctorList(filteredVertexCandidates_2nd);
       dependency_resolver_error().raise(LOCAL_INFO,errmsg);
 
       return 0;
@@ -1152,20 +1201,8 @@ namespace Gambit
 
         // Print information about required quantity and dependent vertex
         logger() << LogTags::dependency_resolver;
-        logger() << endl << "Resolving " << quantity.first << " (" << quantity.second << ")";
-        if ( toVertex != OBSLIKE_VERTEXID )
-        {
-          logger() << ", required by ";
-          logger() << (*masterGraph[toVertex]).capability() << " (";
-          logger() << (*masterGraph[toVertex]).type() << ") [";
-          logger() << (*masterGraph[toVertex]).name() << ", ";
-          logger() << (*masterGraph[toVertex]).origin() << "]" << endl;;
-        }
-        else
-        {
-          logger() << ", required by Core" << endl;
-        }
-        //logger() << EOM;
+        logger() << endl << "Resolving ";
+        logger() << printQuantityToBeResolved(quantity, toVertex) << endl << endl;;
 
         // Figure out how to resolve dependency
         if ( boundIniFile->getValueOrDef<bool>(false, "dependency_resolution", "use_old_routines") )

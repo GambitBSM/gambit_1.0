@@ -141,6 +141,10 @@ namespace Gambit
 
         /// Pretty print backend functor information
         str printGenericFunctorList(const std::vector<functor*>&);
+        str printGenericFunctorList(const std::vector<VertexID>&);
+
+        /// Print quantity to be resolved
+        str printQuantityToBeResolved(const sspair & quantity, const DRes::VertexID & vertex);
 
         /// Initialise the printer object with a list of functors for it to expect to be printed.
         void initialisePrinter();
