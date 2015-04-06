@@ -775,8 +775,10 @@ double getter_0indices(/* function maps */
          std::pair<str, int> p = PDB.short_name_pair(name);
          result = (fakethis->*fptr)(p.first, p.second, false);
       } else {
-        std::cout << "No "<<maplabel<<" with string reference '"<<name<<"' exists!" <<std::endl;
-        result -1;
+         std::ostringstream errmsg;
+         errmsg << "Error retrieving particle spectrum data!" << std::endl;
+         errmsg << "No "<<maplabel<<" with string reference '"<<name<<"' exists!" <<std::endl;
+         utils_error().raise(LOCAL_INFO,errmsg.str());  
       }
    }
    return result;
@@ -806,8 +808,10 @@ double getter_1index(/* function maps */
          // (fptr should point to the appropriate 0 index, class member of O, getter)           
          result = (fakethis->*fptr)(PDB.long_name(name,i), false);
       } else {
-         std::cout << "No "<<maplabel<<" with string reference '"<<name<<"' exists!" <<std::endl;
-         result = -1;
+         std::ostringstream errmsg;
+         errmsg << "Error retrieving particle spectrum data!" << std::endl;
+         errmsg << "No "<<maplabel<<" with string reference '"<<name<<"' exists!" <<std::endl;
+         utils_error().raise(LOCAL_INFO,errmsg.str());  
       }
    }
    else
@@ -818,8 +822,10 @@ double getter_1index(/* function maps */
        /// Check that index is in the permitted set
        if( not within_bounds(io, it->second.iset1) )
        {
-          std::cout << "Index "<<i<<" out of bounds for "<<maplabel<<" with string reference '"<<name<<"'!" <<std::endl;
-          result = -1;
+          std::ostringstream errmsg;
+          errmsg << "Error retrieving particle spectrum data!" << std::endl;
+          errmsg << "Index "<<i<<" out of bounds for "<<maplabel<<" with string reference '"<<name<<"'!" <<std::endl;
+          utils_error().raise(LOCAL_INFO,errmsg.str());  
        }
 
        ///  Get function out of map and call it on the bound flexiSUSY object
@@ -846,8 +852,10 @@ double getter_2indices(/* function maps */
    double result = -1;
    if( it==map.end() )
    {
-      std::cout << "No "<<maplabel<<" with string reference '"<<name<<"' exists!" <<std::endl;
-      result -1;
+      std::ostringstream errmsg;
+      errmsg << "Error retrieving particle spectrum data!" << std::endl;
+      errmsg << "No "<<maplabel<<" with string reference '"<<name<<"' exists!" <<std::endl;
+      utils_error().raise(LOCAL_INFO,errmsg.str());  
    }
    else
    {
@@ -858,14 +866,18 @@ double getter_2indices(/* function maps */
        /// Check that index is in the permitted set
        if( not within_bounds(io, it->second.iset1) )
        {
-          std::cout << "First index ("<<i<<") out of bounds for "<<maplabel<<" with string reference '"<<name<<"'!" <<std::endl;
-          result = -1;
+          std::ostringstream errmsg;
+          errmsg << "Error retrieving particle spectrum data!" << std::endl;
+          errmsg << "First index ("<<i<<") out of bounds for "<<maplabel<<" with string reference '"<<name<<"'!" <<std::endl;
+          utils_error().raise(LOCAL_INFO,errmsg.str());  
        }
        /// Check that index is in the permitted set
        if( not within_bounds(jo, it->second.iset2) )
        {
-          std::cout << "Second index ("<<j<<") out of bounds for "<<maplabel<<" with string reference '"<<name<<"'!" <<std::endl;
-          result = -1;
+          std::ostringstream errmsg;
+          errmsg << "Error retrieving particle spectrum data!" << std::endl;
+          errmsg << "Second index ("<<j<<") out of bounds for "<<maplabel<<" with string reference '"<<name<<"'!" <<std::endl;
+          utils_error().raise(LOCAL_INFO,errmsg.str());  
        }
 
        ///  Get function out of map and call it on the bound flexiSUSY object

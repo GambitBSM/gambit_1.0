@@ -151,16 +151,21 @@ void spec_print(Gambit::Spectrum& spec){
    PRINTOUT << "me2(3,3) = " 
           << spec.runningpars.get_mass2_parameter("mq2",3,3) << std::endl;
 
+   /// TODO: Ben: Used to be this, but "Mu" is in a no-index map so it's an error
+   /// Peter, was this this way for a reason?
+   //PRINTOUT << "Mu = " 
+   //       << spec.runningpars.get_mass_parameter("Mu",3,3) << std::endl;
    PRINTOUT << "Mu = " 
-          << spec.runningpars.get_mass_parameter("Mu",3,3) << std::endl;
+          << spec.runningpars.get_mass_parameter("Mu") << std::endl;
 
-   //what mot to do here
-   PRINTOUT << "mistake mq2(1) =  " 
-          <<  spec.runningpars.get_mass2_parameter("mq2",1) << std::endl;
-   PRINTOUT << "mistake 2 mq2(1) =  " 
-          <<  spec.runningpars.get_mass2_parameter("mqL2",1,1) << std::endl;
-    PRINTOUT << "mistake 3 mq2(1) =  " 
-          <<  spec.runningpars.get_mass_parameter("mq2",1) << std::endl;
+   //what not to do here...
+   // Ben: these now throw errors, so cannot continue test if we do them.
+   //PRINTOUT << "mistake mq2(1) =  " 
+   //       <<  spec.runningpars.get_mass2_parameter("mq2",1) << std::endl;
+   //PRINTOUT << "mistake 2 mq2(1) =  " 
+   //       <<  spec.runningpars.get_mass2_parameter("mqL2",1,1) << std::endl;
+   //PRINTOUT << "mistake 3 mq2(1) =  " 
+   //       <<  spec.runningpars.get_mass_parameter("mq2",1) << std::endl;
 
    double mgluino = spec.phys.get_Pole_Mass("MGluino");
    PRINTOUT << "mgluino = " << mgluino<< std::endl;
