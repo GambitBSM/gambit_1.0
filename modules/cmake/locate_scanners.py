@@ -69,6 +69,9 @@ def main(argv):
     src_paths = sorted(["./ScannerBit/src/scanners", "./ScannerBit/src/objectives"])
     inc_paths = sorted(["./ScannerBit/include/gambit/ScannerBit/scanners", "./ScannerBit/include/gambit/ScannerBit/objectives"])
     plug_type = sorted(["scanner", "objective"])
+    config_files = []
+    for ptype in plug_type:
+        config_files += ["./config/" + ptype + "_locations.yaml"]
     
     # these map the linking flags and library paths to the appropriate plugin library
     scanbit_plugins = dict()
@@ -301,7 +304,7 @@ def main(argv):
             cmakelist_txt_out += ")\n\n"
             ## end adding plugin files to CMakeLists.txt ## 
                 
-    for config_file, plugin_type in itertools.izip([scan_config, test_config], ["scan", "like"]):
+    for config_file, plugin_type in itertools.izip(config_files, plug_type):
         # Create the locations yaml files from the example if needed
         if not os.path.isfile(config_file): shutil.copyfile(config_file+".example",config_file)
         # Load the locations yaml file, and work out which libs are present
@@ -663,7 +666,7 @@ endif()                                         \n\n"
                             towrite += " \"${" + plug_type[i] + "_plugin_rpath_" + directory + "};${lib_path}\")\n"
                             towrite += " "*4 + "set (" + plug_type[i] + "_plugin_linked_libs_" + directory 
                             towrite += " \"${" + plug_type[i] + "_plugin_linked_libs_" + directory +"}    " + lib + ": ${" + lib_name + "}\\n\")\n"
-                            towrite += "    message(\"-- Found "+ plug_type[i] + " library: ${lib_path}/${lib_name}.\")\n"
+                            towrite += "    message(\"-- Found "+ plug_type[i] + " library: ${lib_path}/${lib_name}\")\n"
                             towrite += "endif()\n\n"
             
             if scanbit_auto_incs.has_key(plug_type[i]):
@@ -696,8 +699,10 @@ endif()                                         \n\n"
                             towrite += " "*4 + "set (" + plug_type[i] + "_plugin_found_incs_" + directory
                             towrite += " \"${" +  plug_type[i] + "_plugin_found_incs_" + directory + "}"
                             towrite += "    \\\"" + inc + "\\\": ${" + inc_name + "}\\n\")\n"
+                            towrite += "    message(\"-- Found "+ plug_type[i] + " header: ${inc_name}/" + inc + "\")\n"
                             towrite += "else()\n"
                             towrite += " "*4 + "set (" + plug_type[i] + "_compile_flag_" + directory + " \"    file_missing: \\\"" + inc + "\\\"\")\n"
+                            towrite += "    message(\"-- Did not find "+ plug_type[i] + " header " + inc + ". Disabling scanners that depend on this.\")\n"
                             towrite += "endif()\n\n"
             towrite += "if( NOT ${" + plug_type[i] + "_plugin_linked_libs_" + directory + "} STREQUAL \"\" OR NOT ${" + plug_type[i] + "_plugin_found_incs_" + directory + "} STREQUAL \"\")\n"
             towrite += " "*4 + "set ( reqd_lib_output \"${reqd_lib_output}lib" + plug_type[i] + "_" + directory + ".so:\\n\" )\n"
