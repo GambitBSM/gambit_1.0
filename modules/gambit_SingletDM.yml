@@ -75,6 +75,7 @@ ObsLikes:
 # Simple gaussian relic density likelihood
     - capability: RD_oh2
       purpose: Observable
+      function: RD_oh2_general
     - capability: lnL_oh2
       purpose: Likelihood 
 # XENON100 2012 direct detection likelihood
@@ -175,7 +176,7 @@ Logger:
   # Obviously this also means it is impossible to redirect output to actual
   # files with these names.
 
-  prefix : "runs/DarkBit_minimalTest/logs/"
+  prefix : "runs/DarkBit_SingletDM/logs/"
   redirection:
     [Debug] : "debug.log"
     [Default] : "default.log"
