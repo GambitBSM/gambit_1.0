@@ -309,47 +309,47 @@ namespace Gambit
       cout << "A total width: " << result.width_in_GeV << endl;
     }
 
-    //void H01_SM_decays (DecayTable::Entry& result) 
-    //{
-    //  using namespace Pipes::H01_SM_decays;
-    //  BEreq::sdecay();
-    //  result.width_in_GeV = 0.0;
-    //}
+    void H01_SM_decays (DecayTable::Entry& result) 
+    {
+      using namespace Pipes::H01_SM_decays;
+      BEreq::sdecay();
+      result.width_in_GeV = 0.0;
+    }
 
-    //void H02_SM_decays (DecayTable::Entry& result) 
-    //{
-    //  using namespace Pipes::H02_SM_decays;
-    //  BEreq::sdecay();
-    //  result.width_in_GeV = 0.0;
-    //}
+    void H02_SM_decays (DecayTable::Entry& result) 
+    {
+      using namespace Pipes::H02_SM_decays;
+      BEreq::sdecay();
+      result.width_in_GeV = 0.0;
+    }
 
-    //void HC_SM_decays (DecayTable::Entry& result) 
-    //{
-    //  using namespace Pipes::HC_SM_decays;
-    //  BEreq::sdecay();
-    //  result.width_in_GeV = 0.0;
-    //}
+    void HC_SM_decays (DecayTable::Entry& result) 
+    {
+      using namespace Pipes::HC_SM_decays;
+      BEreq::sdecay();
+      result.width_in_GeV = 0.0;
+    }
 
-    //void Higgs_SUSY_decays (DecayTable::Entry& result) 
-    //{
-    //  using namespace Pipes::Higgs_SUSY_decays;
-    //  BEreq::sdecay();
-    //  result.width_in_GeV = 0.0;
-    //}
+    void Higgs_SUSY_decays (DecayTable::Entry& result) 
+    {
+      using namespace Pipes::Higgs_SUSY_decays;
+      BEreq::sdecay();
+      result.width_in_GeV = 0.0;
+    }
 
-    //void Higgs_sfermion_decays (DecayTable::Entry& result) 
-    //{
-    //  using namespace Pipes::Higgs_sfermion_decays;
-    //  BEreq::sdecay();
-    //  result.width_in_GeV = 0.0;
-    //}
+    void Higgs_sfermion_decays (DecayTable::Entry& result) 
+    {
+      using namespace Pipes::Higgs_sfermion_decays;
+      BEreq::sdecay();
+      result.width_in_GeV = 0.0;
+    }
 
-    //void Higgs_goldstone_decays (DecayTable::Entry& result) 
-    //{
-    //  using namespace Pipes::Higgs_goldstone_decays;
-    //  BEreq::sdecay();
-    //  result.width_in_GeV = 0.0;
-    //}
+    void Higgs_goldstone_decays (DecayTable::Entry& result) 
+    {
+      using namespace Pipes::Higgs_goldstone_decays;
+      BEreq::sdecay();
+      result.width_in_GeV = 0.0;
+    }
 
     /// Collect all the DecayTable entries into an actual DecayTable 
     void all_decays (DecayTable &result) 
