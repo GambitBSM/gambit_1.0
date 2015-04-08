@@ -115,29 +115,30 @@ namespace HEPUtils {
     void clear() {
       /// @todo Prefer this form when we can use C++11's range-for
       // for (Particle* p : particles()) delete p;
-      std::vector<Particle*> ps = particles();
-      std::cout << "Particle size " << ps.size() << std::endl;
+//      std::vector<Particle*> ps = particles();
+//      std::cout << "Particle size " << ps.size() << std::endl;
 //      for (size_t i = 0; i < ps.size(); ++i){std::cout << "PARTICLE POINTER " << ps[i] << " ID " << ps[i]->pid() << " PT " << ps[i]->pT() << std::endl;}
 //      for (size_t i = 0; i < ps.size(); ++i) { std::cout << "DELETING POINTER " << ps[i] << std::endl;delete ps[i]; std::cout << "DELETED" << std::endl; }
-      for (size_t i = 0; i < ps.size(); ++i) delete ps[i];
-      ps.clear();
-      for (size_t i = 0; i < _photons.size(); ++i) delete _photons[i];
+/// @todo ps is just a copy of the pointers in the lists below... Let them manage their own memory.
+//      if (!ps.empty()) for (size_t i = 0; i < ps.size(); ++i) delete ps[i];
+//      ps.clear();
+      if (!_photons.empty()) for (size_t i = 0; i < _photons.size(); ++i) delete _photons[i];
       _photons.clear();
-      for (size_t i = 0; i < _electrons.size(); ++i) delete _electrons[i];
+      if (!_electrons.empty()) for (size_t i = 0; i < _electrons.size(); ++i) delete _electrons[i];
       _electrons.clear();
-      for (size_t i = 0; i < _muons.size(); ++i) delete _muons[i];
+      if (!_muons.empty()) for (size_t i = 0; i < _muons.size(); ++i) delete _muons[i];
       _muons.clear();
-      for (size_t i = 0; i < _taus.size(); ++i) delete _taus[i];
+      if (!_taus.empty()) for (size_t i = 0; i < _taus.size(); ++i) delete _taus[i];
       _taus.clear();
       /// @todo Really need to store invisibles when we have a dedicated MET variable?
-      for (size_t i = 0; i < _invisibles.size(); ++i) delete _invisibles[i];
+      if (!_invisibles.empty()) for (size_t i = 0; i < _invisibles.size(); ++i) delete _invisibles[i];
       _invisibles.clear();
 
       /// @todo Prefer this form when we can use C++11's range-for
       // if (!_jets.empty()) for (Jet* j : jets()) delete j;
       //if(!_jets.empty())std::cout << "Survived" << std::endl;
 //      if (!_jets.empty()) for (size_t i = 0; i < _jets.size(); ++i)std::cout << "JET POINTER " << _jets[i] << " PT " << _jets[i]->pT() << std::endl;
-      for (size_t i = 0; i < _jets.size(); ++i) delete _jets[i];
+      if (!_jets.empty()) for (size_t i = 0; i < _jets.size(); ++i) delete _jets[i];
       _jets.clear();
 
       _pmiss.clear();
