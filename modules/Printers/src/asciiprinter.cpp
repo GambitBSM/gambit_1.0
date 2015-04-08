@@ -34,8 +34,12 @@
 #include "gambit/Utils/stream_overloads.hpp"
 #include "gambit/Utils/util_functions.hpp"
 
+// MPI bindings
+#include "gambit/Utils/mpiwrapper.hpp"
+
 // Switch for debugging output (manual at the moment)
-//#define DEBUG_MODE
+
+#define DEBUG_MODE
 
 #ifdef DEBUG_MODE 
   #define DBUG(x) x
@@ -80,6 +84,15 @@ namespace Gambit
     // Common constructor tasks
     void asciiPrinter::common_constructor()
     {
+      #ifdef WITH_MPI
+        // Do basic MPI check
+        //std::cout << "Hooking up to MPI..." << std::endl;
+        //std::cout << " Size: " << GMPI::COMM_WORLD.Get_size() << std::endl;
+        //std::cout << " Rank: " << GMPI::COMM_WORLD.Get_rank() << std::endl;
+ 
+        //std::exit(0);
+      #endif
+
       // (Needs modifying when full MPI implentation is done)
       // Initialise "lastPointID" map to -1 (i.e. no last point)
       lastPointID[0] = -1; // Only rank 0 process for now; parallel mode not implemented

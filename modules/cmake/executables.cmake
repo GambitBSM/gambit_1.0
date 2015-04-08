@@ -36,6 +36,9 @@ if(EXISTS "${PROJECT_SOURCE_DIR}/Core/")
     add_dependencies(gambit delphes)
     target_link_libraries(gambit ${delphes_LDFLAGS} ${ROOT_LIBRARIES} ${ROOT_LIBRARY_DIR}/libEG.so)
   endif()
+  if(MPI_FOUND)
+    target_link_libraries(gambit ${MPI_LIBRARIES})
+  endif()
 endif()
 
 # Add the ExampleBit_A_standalone executable
@@ -50,5 +53,9 @@ if(EXISTS "${PROJECT_SOURCE_DIR}/ExampleBit_A/" AND ";${GAMBIT_BITS};" MATCHES "
   if (NOT EXCLUDE_DELPHES)
     add_dependencies(ExampleBit_A_standalone delphes)
     target_link_libraries(ExampleBit_A_standalone ${delphes_LDFLAGS} ${ROOT_LIBRARIES} ${ROOT_LIBRARY_DIR}/libEG.so)
+  endif()
+  # Probably don't need this? Don't think it will hurt though.
+  if(MPI_FOUND)
+    target_link_libraries(ExampleBit_A_standalone ${MPI_LIBRARIES})
   endif()
 endif()

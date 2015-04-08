@@ -55,7 +55,6 @@ set(CMAKE_LINK_DEPENDS_NO_SHARED 1)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake)
 
 # Add common system library search variables to cmake library search variable, used by find_library
-
 set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} $ENV{LIBRARY_PATH})
 string(REPLACE ":" ";" CMAKE_LIBRARY_PATH "${CMAKE_LIBRARY_PATH}")
 message("CMAKE_LIBRARY_PATH=${CMAKE_LIBRARY_PATH}")
@@ -70,7 +69,24 @@ SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 include(cmake/optional.cmake)
 
 # Include cmake utility scripts
+# Note: colors defined in here; colored output won't work before this!
 include(cmake/utilities.cmake)
+
+# Check for MPI libraries
+option(MPI "Compile with MPI enabled" ON)
+# (Force no-MPI build with "cmake -DMPI=OFF ..")
+if(MPI)
+  find_package(MPI)
+  if(MPI_FOUND)
+    include_directories(${MPI_INCLUDE_PATH})
+    add_definitions(-DWITH_MPI)
+    message("${BoldYellow}-- MPI libraries found. Executables will be MPI-enabled.${ColourReset}")
+  else()
+    message("${Red} X MPI libraries NOT found. Executables may only be run in serial.${ColourReset}")
+  endif()
+else()
+  message("${BoldCyan} X MPI manually disabled! Executables may only be run in serial.${ColourReset}")
+endif()
 
 # Check for Python and required libs
 include(FindPythonInterp)

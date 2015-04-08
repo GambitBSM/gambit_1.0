@@ -24,6 +24,7 @@
 
 set(utils_source_files 
                  ${PROJECT_SOURCE_DIR}/Utils/src/exceptions.cpp
+                 ${PROJECT_SOURCE_DIR}/Utils/src/mpiwrapper.cpp
                  ${PROJECT_SOURCE_DIR}/Utils/src/yaml_parser_base.cpp
                  ${PROJECT_SOURCE_DIR}/Utils/src/standalone_error_handlers.cpp
                  ${PROJECT_SOURCE_DIR}/Utils/src/threadsafe_rng.cpp
@@ -44,6 +45,7 @@ set(utils_header_files
                  ${PROJECT_SOURCE_DIR}/Utils/include/gambit/Utils/cats.hpp
                  ${PROJECT_SOURCE_DIR}/Utils/include/gambit/Utils/exceptions.hpp
                  ${PROJECT_SOURCE_DIR}/Utils/include/gambit/Utils/ini_code_struct.hpp
+                 ${PROJECT_SOURCE_DIR}/Utils/include/gambit/Utils/mpiwrapper.hpp
                  ${PROJECT_SOURCE_DIR}/Utils/include/gambit/Utils/yaml_parser_base.hpp
                  ${PROJECT_SOURCE_DIR}/Utils/include/gambit/Utils/standalone_module.hpp
                  ${PROJECT_SOURCE_DIR}/Utils/include/gambit/Utils/standalone_error_handlers.hpp
