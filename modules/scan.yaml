@@ -61,8 +61,8 @@ Printer:
 
 Scanner:
 
-  use_objectives: uniform
-  use_scanner: toy
+  use_objectives: gaussian
+  use_scanner: bin_grid
 
   scanners:
   
@@ -93,6 +93,34 @@ Scanner:
       options:
         purpose: Likelihood
         grid_pts: [4, 2]
+        
+    multinest:
+      plugin: MultiNest
+      options:
+        like:  Likelihood
+        nlive: 500
+        tol: 0.1
+        aux_printer_txt_options:
+          output_file: "runs/spartan_multinest/samples/gambit_output.txt"
+          info_file: "runs/spartan_multinest/samples/gambit_output.txt_info"
+        aux_printer_stats_options:
+          output_file: "runs/spartan_multinest/samples/gambit_output.stats"
+          info_file: "runs/spartan_multinest/samples/gambit_output.stats_info"
+        aux_printer_live_options:
+          output_file: "runs/spartan_multinest/samples/gambit_output.live"
+          info_file: "runs/spartan_multinest/samples/gambit_output.live_info"
+          
+    bin_grid:
+      plugin: bin_grid
+      options:
+        input_files: ["runs/spartan_multinest/samples/gambit_output.txt"]
+        output_file: "output"
+        xrange: [0, 1]
+        yrange: [0, 1]
+        grid: [10, 10]
+        selected_pts: [2, 3]
+        mult: 4
+        flags: ["linear"]
     
   objectives:
   
@@ -111,6 +139,16 @@ Scanner:
       purpose: Likelihood
       options:
         range: [2, 1]
+      parameters:
+        param...2:
+          range: [1, 2]
+          
+    gaussian:
+      plugin: gaussian
+      purpose: Likelihood
+      options:
+        cov: [[0.01, 0.0], [0.0, 0.01]]
+        mean: [1.5, 1.5]
       parameters:
         param...2:
           range: [1, 2]

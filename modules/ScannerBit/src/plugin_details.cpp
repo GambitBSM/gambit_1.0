@@ -194,7 +194,7 @@ namespace Gambit
                                 out << "missing libraries requested by plugin: " << reqd_not_linked_libs << std::endl;
                                 out << "missing libraries specified in inifile: " << ini_libs_not_found << std::endl;
                                 out << "linked libraries:";
-                                if (found_incs.size() == 0)
+                                if (linked_libs.size() == 0)
                                 {
                                         out << " none" << std::endl;
                                 }
@@ -202,7 +202,7 @@ namespace Gambit
                                 {
                                         out << std::endl;
                                         for (auto it = linked_libs.begin(), end = linked_libs.end(); it != end; it++)
-                                                out << spacing(0, 10) << it->first << ":" << spacing(it->first.length()+1, 10) << it->second << std::endl;
+                                                out << "    " << it->first << ": " << it->second << std::endl;
                                 }
                                 
                                 out << "\ninclude header status" << std::endl;
@@ -218,7 +218,7 @@ namespace Gambit
                                 {
                                         out << std::endl;
                                         for (auto it = found_incs.begin(), end = found_incs.end(); it != end; it++)
-                                                out << spacing(0, 10) << it->first << ":" << spacing(it->first.length()+1, 10) << it->second << std::endl;
+                                                out << "    " << it->first << ": " << it->second << std::endl;
                                 }
                                 
                                 return out.str();
