@@ -89,15 +89,15 @@ namespace Gambit
         /// Read in the YAML file
         virtual void readFile(str filename);
 
-        /// Getters for private observable and auxiliary entries
+        /// Getters for private observable and rules entries
         /// @{
         const ObservablesType & getObservables() const;
-        const ObservablesType & getAuxiliaries() const;
+        const ObservablesType & getRules() const;
         /// @}
 
       private:
         ObservablesType observables;
-        ObservablesType auxiliaries;
+        ObservablesType rules;
 
     };
 

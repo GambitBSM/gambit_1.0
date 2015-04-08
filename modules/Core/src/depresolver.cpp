@@ -29,6 +29,10 @@
 #include <sstream>
 #include <fstream>
 
+#ifdef REGEX_SUPPORT
+#include <regex>
+#endif
+
 #include "gambit/Core/depresolver.hpp"
 #include "gambit/Models/models.hpp"
 #include "gambit/Logs/log.hpp"
@@ -40,7 +44,7 @@
 
 // This vertex ID is reserved for nodes that correspond to
 // likelihoods/observables/etc (observables of interest)
-#define OBSLIKE_VERTEXID 23051985 
+#define OBSLIKE_VERTEXID 58915032 
 
 // Dependency types
 #define NORMAL_DEPENDENCY 1
@@ -107,7 +111,7 @@ namespace Gambit
     // Matches capability and type
     bool quantityMatchesIniEntry(const sspair & quantity, const IniParser::ObservableType & observable)
     {
-      // Compares dependency specifications of auxiliary entries or observable
+      // Compares dependency specifications of rules entries or observable
       // entries with capability (capabilities have to be unique for these
       // lists))
       if ( stringComp( observable.capability, quantity.first ) and
@@ -120,7 +124,7 @@ namespace Gambit
     // Matches capability
     bool capabilityMatchesIniEntry(const sspair & quantity, const IniParser::ObservableType & observable)
     {
-      // Compares dependency specifications of auxiliary entries or observable
+      // Compares dependency specifications of rules entries or observable
       // entries with capability (capabilities have to be unique for these
       // lists))
       if ( stringComp( observable.capability, quantity.first ) ) return true;
@@ -223,7 +227,9 @@ namespace Gambit
       if ( s1 == s2 ) return true;
       if ( s1 == "" ) return true;
       if ( s1 == "*" ) return true;
-      // if ( std::regex_match ( s2, *(new std::regex(s1)) ) ) return true; 
+#ifdef REGEX_SUPPORT
+      if ( std::regex_match ( s2, *(new std::regex(s1)) ) ) return true; 
+#endif
       // TODO: Implement wildcard and regex comparison
       return false;
     }
@@ -818,7 +824,7 @@ namespace Gambit
 
       cout << "Searching options for " << masterGraph[vertex]->capability() << endl;
 
-      const IniParser::ObservablesType & entries = boundIniFile->getAuxiliaries();
+      const IniParser::ObservablesType & entries = boundIniFile->getRules();
       //entries = boundIniFile->getObservables();
       for (IniParser::ObservablesType::const_iterator it =
           entries.begin(); it != entries.end(); ++it)
@@ -902,7 +908,7 @@ namespace Gambit
       if ( toVertex != OBSLIKE_VERTEXID )
       {
         // Make list of all relevant 1st and 2nd level dependency rules.
-        const IniParser::ObservablesType & entries = boundIniFile->getAuxiliaries();
+        const IniParser::ObservablesType & entries = boundIniFile->getRules();
         for (IniParser::ObservablesType::const_iterator it =
             entries.begin(); it != entries.end(); ++it)
         {
@@ -915,6 +921,11 @@ namespace Gambit
               {
                 if ( quantityMatchesIniEntry(quantity, *it2) )
                 {
+                  if ( (*it2).capability == ""  or (*it2).capability == "*" )
+                  {
+                    str errmsg = "ERROR: Capabilities in dependency intries cannot be empty.";
+                    dependency_resolver_error().raise(LOCAL_INFO,errmsg);
+                  }
                   rules_1st_level.push_back(Rule(*it2));
                 }
               }
@@ -941,8 +952,17 @@ namespace Gambit
       }
       else
       {
-        // Add entries in ObsLike section as 2nd order
-        const IniParser::ObservablesType & entries2 = boundIniFile->getObservables();
+        // Add entries in ObsLike and Rules section as 2nd order
+        const IniParser::ObservablesType & entries = boundIniFile->getObservables();
+        for (IniParser::ObservablesType::const_iterator it =
+            entries.begin(); it != entries.end(); ++it)
+        {
+          if ( quantityMatchesIniEntry(quantity, *it) )
+          {
+            rules_2nd_level.push_back(Rule(*it));
+          }
+        }
+        const IniParser::ObservablesType & entries2 = boundIniFile->getRules();
         for (IniParser::ObservablesType::const_iterator it =
             entries2.begin(); it != entries2.end(); ++it)
         {
@@ -1044,24 +1064,24 @@ namespace Gambit
       if ( filteredVertexCandidates_2nd.size() == 1 )
         return filteredVertexCandidates_2nd[0];  // Done1
 
-      str errmsg = "Turns out that the dependency resolution for";
+      str errmsg = "Unfortuantely, the dependency resolution for";
       errmsg += "\n" + printQuantityToBeResolved(quantity, toVertex);
       errmsg += "\nis still ambiguous.\n";
       errmsg += "\nThe candidate vertices are:\n";
       errmsg += printGenericFunctorList(vertexCandidates) +"\n";
       errmsg += "See logger output for details on the attempted (but failed) dependency resolution.\n";
-      errmsg += "\nAn entry in the auxiliary section of your YAML file that would e.g. select";
+      errmsg += "\nAn entry in your YAML file that would e.g. select";
       errmsg += "\nthe first of the above candidates could read ";
       if ( toVertex != OBSLIKE_VERTEXID )
       {
-        errmsg += "as a 1st class rule:\n";
+        errmsg += "as a 1st class rule (in the Rules section):\n";
         errmsg += "\n    - capability: "+masterGraph[toVertex]->capability();
         errmsg += "\n      function: "+masterGraph[toVertex]->name();
         errmsg += "\n      dependencies:";
         errmsg += "\n        - capability: " +masterGraph[vertexCandidates[0]]->capability();
         errmsg += "\n          function: " +masterGraph[vertexCandidates[0]]->name() +"\n\nor ";
       }
-      errmsg += "as a 2nd class rule:\n";
+      errmsg += "as a 2nd class rule (in the Rules or ObsLike section):\n";
       errmsg += "\n    - capability: "+masterGraph[vertexCandidates[0]]->capability();
       errmsg += "\n      function: "+masterGraph[vertexCandidates[0]]->name() + "\n";
       if ( toVertex == OBSLIKE_VERTEXID )
@@ -1087,7 +1107,7 @@ namespace Gambit
       // First, we check whether the dependent vertex has a unique
       // correspondence in the inifile. Final (output) vertices have to be
       // treated different from all other vertices, since they do not appear
-      // as dependencies in the auxiliaries section of the inifile. For them,
+      // as dependencies in the rules section of the inifile. For them,
       // we just use the entry from the observable/likelihood section for the
       // resolution of ambiguities.  A pointer to the relevant inifile entry
       // is stored in depEntry.
@@ -1096,10 +1116,10 @@ namespace Gambit
         depEntry = findIniEntry(quantity, boundIniFile->getObservables(), "ObsLike");
         entryExists = true;
       }
-      // for all other vertices use the auxiliaries entries
+      // for all other vertices use the rules entries
       else 
       {
-        auxEntry = findIniEntry(toVertex, boundIniFile->getAuxiliaries(), "auxiliary");
+        auxEntry = findIniEntry(toVertex, boundIniFile->getRules(), "Rules");
         if ( auxEntry != NULL )
           depEntry = findIniEntry(quantity, (*auxEntry).dependencies, "dependency");
         if ( auxEntry != NULL and depEntry != NULL ) 
@@ -1323,7 +1343,7 @@ namespace Gambit
           {
             // Generate options object from ini-file entry that corresponds to
             // fromVertex (overwrite iniEntry) and pass it to the fromVertex for later use
-            iniEntry = findIniEntry(fromVertex, boundIniFile->getAuxiliaries(), "auxiliary");
+            iniEntry = findIniEntry(fromVertex, boundIniFile->getRules(), "Rules");
             if ( iniEntry != NULL )
             {
               Options myOptions(iniEntry->options);
@@ -1381,7 +1401,7 @@ namespace Gambit
       return topo_order;
     }
 
-    /// Find auxiliary entry that matches vertex
+    /// Find rules entry that matches vertex
     const IniParser::ObservableType * DependencyResolver::findIniEntry(
             DRes::VertexID toVertex, const IniParser::ObservablesType &entries, const str & errtag)
     {
@@ -1446,7 +1466,7 @@ namespace Gambit
       logger() << LogTags::dependency_resolver << "Backend function resolution: " << endl << EOM;
 
       // Check whether this vertex is mentioned in the inifile.
-      const IniParser::ObservableType * auxEntry = findIniEntry(vertex, boundIniFile->getAuxiliaries(), "auxiliary");
+      const IniParser::ObservableType * auxEntry = findIniEntry(vertex, boundIniFile->getRules(), "Rules");
 
       // Collect the list of groups that the backend requirements of this vertex exist in.
       std::set<str> groups = (*masterGraph[vertex]).backendgroups();
@@ -1558,7 +1578,7 @@ namespace Gambit
         const IniParser::ObservableType * depEntry = NULL;
         bool entryExists = false;
 
-        // Find relevant iniFile entry from auxiliaries section
+        // Find relevant iniFile entry from Rules section
         if ( auxEntry != NULL ) depEntry = findIniEntry((*itf)->quantity(), (*auxEntry).backends, "backend");
         if ( auxEntry != NULL and depEntry != NULL) entryExists = true;
 
