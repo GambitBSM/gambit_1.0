@@ -93,7 +93,7 @@ ObsLikes:
 #    - capability: lnL_DARWIN_Xe_2015
 #      purpose:  Observable
       
-Auxiliaries:
+Rules:
   # Gamma-rays -------------------------
   - capability: UnitTest_DarkBit
     options:
