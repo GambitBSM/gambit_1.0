@@ -247,6 +247,7 @@ add_custom_target(module_harvest DEPENDS ${PROJECT_SOURCE_DIR}/Utils/include/gam
 include(cmake/warnings.cmake)
 include(cmake/gambit.cmake)
 include(cmake/extras.cmake)
+include(cmake/preprocessor.cmake)
 
 # Add subdirectories. This does not actually cause another cmake executable to run. The same process will walk through the project's entire directory structure.
 add_subdirectory(Backends)
