@@ -17,6 +17,7 @@
 
 #include "gambit/Utils/ASCIItableReader.hpp"
 #include "gambit/Utils/funktions.hpp"
+#include "gambit/Utils/numerical_constants.hpp"
 #include "gambit/Utils/gambit_module_headers.hpp"
 #include "gambit/DarkBit/DarkBit_types.hpp"
 #include "gambit/DarkBit/DarkBit_rollcall.hpp"
@@ -31,7 +32,7 @@ namespace Gambit
         /// Initialize SingletDM object (branching ratios etc)
         SingletDM(std::string filename)
         {
-          // Branching ratios and total width Gamma [GeV], as function of mass [GeV]
+          // Higgs branching ratios and total width Gamma [GeV], as function of mass [GeV]
           ASCIItableReader table(filename);  
           colnames = initVector<std::string>("mass", "bb", "tautau", "mumu", "ss", "cc", "tt", "gg", "gammagamma", "Zgamma", "WW", "ZZ", "Gamma");
           table.setcolnames(colnames);
@@ -43,31 +44,29 @@ namespace Gambit
         };
         ~SingletDM() {}
 
-        /// Helper function (Breit Wigner)
+        /// Helper function (Breit-Wigner)
         double Dh2 (double s, double Gamma_mh)
         {
             return 1/((s-mh*mh)*(s-mh*mh)+mh*mh*Gamma_mh*Gamma_mh);
         }
 
-        /// Calculate total <sigma v>
+        /*! \brief Returns <sigma v> in cm3/s for given channel, velocity and
+         *         model parameters.
+         *
+         * channel: bb, tautau, mumu, ss, cc, tt, gg, gammagamma, Zgamma, WW, ZZ, hh
+         */
         double sv(std::string channel, double lambda, double mass, double v)
         {
-            // Returns <sigma v> in cm3/s for given channel, velocity and model
-            // parameters.
-
             if ( channel == "hh" ) { return sv_hh(lambda, mass, v); }
 
-            // Range of validity:
-            // bb, tautau, mumu, ss, cc, tt, gg, gammagamma, Zgamma, WW, ZZ
-            
             double s = 4*mass*mass/(1-v*v/4);
             double br = f_vs_mass[channel]->bind("mass")->eval(std::min(sqrt(s), 150.));
             double Gamma_s = f_vs_mass["Gamma"]->bind("mass")->eval(std::min(sqrt(s), 150.));
             double Gamma_mh = f_vs_mass["Gamma"]->bind("mass")->eval(mh);
-            const double GeV2tocm3s1 = 1.17e-17;
+            const double GeV2tocm3s1 = gev2cm2*s2cm;
             double myDh2 = Dh2(s, Gamma_mh);
 
-            double res = 2*lambda*lambda*v0*v0/sqrt(s)*myDh2*Gamma_s * GeV2tocm3s1 * br;
+            double res = 2*lambda*lambda*v0*v0/sqrt(s)*myDh2*Gamma_s*GeV2tocm3s1*br;
             return res;
         }
 
@@ -95,9 +94,8 @@ namespace Gambit
         std::map<std::string, Funk::Funk> f_vs_mass;
         std::vector<std::string> colnames;
 
-        // TODO: Should be retrieved from somewhere else
-        static constexpr double mh = 125.7;
-        static constexpr double v0 = 246.0;
+        static constexpr double mh = 125.7;  // FIXME
+        static constexpr double v0 = 246.0;  // FIXME
 
     };
 
@@ -110,11 +108,10 @@ namespace Gambit
         result.threshold_energy.clear();
         
         result.threshold_energy.push_back(2*(*Param["mass"]));
-        double mh = 125.7;  // TODO: Don't hardcode masses.
+        double mh = 125.7;  // FIXME
         result.resonances.push_back(TH_Resonance(mh/2., mh/2./10.));
 
-        // TODO: This part should set up additional parameters in DS, but does
-        // not work at all??? --> TB
+        // FIXME: Move somewhere else
         DS_RDMGEV myrdmgev;
         myrdmgev.nco = 1;
         myrdmgev.mco[0] = *Param["mass"];
@@ -129,9 +126,9 @@ namespace Gambit
         using namespace Pipes::DD_couplings_SingletDM;
         double mass = *Param["mass"];
         double lambda = *Param["lambda"];
-        double mh = 125.7;  // TODO: Don't hardcode
-        double mN = 0.94;
-        double fN = 0.35;
+        double mh = 125.7;  // FIXME
+        double mN = m_neutron;
+        double fN = 0.35;  // FIXME
         result.gps = lambda*fN*mN/pow(mh,2)/mass;
         result.gns = lambda*fN*mN/pow(mh,2)/mass;
         result.gpa = 0;
@@ -151,9 +148,9 @@ namespace Gambit
 
         mass = *Param["mass"];
         lambda = *Param["lambda"];
-        mW = 80.5;
-        mZ = 90.0;
-        mb = 5;
+        mW = m_Wboson;
+        mZ = m_Zboson;
+        mb = 5;  // FIXME
 
         // Initialize catalog
         TH_ProcessCatalog catalog;
@@ -180,68 +177,15 @@ namespace Gambit
             }
         }
 
-        /*
-        if ( runOptions->getValueOrDef<bool>(false, "phi") )
-        {
-            Funk::Funk g = Funk::one() * 0.3;
-            process_ann.channelList.push_back(TH_Channel(Funk::vec<std::string>("phi", "phi"), g));
-        }
-        */
-
         // Finally, store properties of "chi" in particleProperty list
         TH_ParticleProperty chiProperty(mass, 1);  // Set mass and 2*spin
         catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("chi_10", chiProperty));
         catalog.processList.push_back(process_ann);
 
-        /*
-        // FIXME: test code: Add properties of phi particle
-        TH_Process process_dec((std::string)"phi");
-        Funk::Funk f = Funk::one()*0.3;
-        std::vector<std::string> test_phi_finalStates = Funk::vec<std::string>("b", "bbar");
-        test_phi_finalStates = runOptions->getValueOrDef<std::vector<std::string> >(test_phi_finalStates,"test_phi_finalStates");   
-        TH_Channel channel2(Funk::vec<std::string>(test_phi_finalStates[0], test_phi_finalStates[1]), f);
-        process_dec.channelList.push_back(channel2);
-        process_dec.genRateTotal = f;
-        catalog.processList.push_back(process_dec);
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("phi", TH_ParticleProperty(50.,0)));
-
-        // FIXME: test code: Also add decay of phip->phi phi
-        TH_Process process_phip_dec((std::string)"phip");
-        TH_Channel channel3(Funk::vec<std::string>("phi", "phi"), f);
-        process_phip_dec.channelList.push_back(channel3);
-        process_phip_dec.genRateTotal = f;
-        catalog.processList.push_back(process_phip_dec);
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("phip", TH_ParticleProperty(2*mass,0)));
-
-        // FIXME: test code: Add mass information required by cascade code
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("gamma", TH_ParticleProperty(0.,2)));
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("b", TH_ParticleProperty(mb,1)));
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("bbar", TH_ParticleProperty(mb,1)));
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("Z0", TH_ParticleProperty(mZ,2)));
-        */
-
-        /*
-        if ( runOptions->getValueOrDef<bool>(false, "phi") )
-        {
-            TH_Process process_dec((std::string)"phi");
-            Funk::Funk f = Funk::one()*0.3;
-            TH_Channel channel2(Funk::vec<std::string>("b", "bbar"), f);
-            process_dec.channelList.push_back(channel2);
-            process_dec.genRateTotal = f;
-            catalog.processList.push_back(process_dec);
-            catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("phi", TH_ParticleProperty(50.,0)));
-
-            catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("gamma", TH_ParticleProperty(0.,2)));
-            catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("b", TH_ParticleProperty(mb,1)));
-            catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("bbar", TH_ParticleProperty(mb,1)));
-        }
-        */
-
         result = catalog;
     }
   }
 }
-
 
         /*
         // Annihilation into b-quarks.
