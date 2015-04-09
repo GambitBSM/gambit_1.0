@@ -2631,37 +2631,36 @@ namespace Gambit {
       // FIXME needs to be fixed once DM is not ~chi0_1 always, and once BFs are available directly from TH_Process
       TH_Process annProc = Dep::TH_ProcessCatalog->getProcess("~chi0_1", "~chi0_1");
       std::vector<str> neutral_channels[29];
-      Utils::push_many(neutral_channels[0],  "h0_1", "h0_1");
-      Utils::push_many(neutral_channels[1],  "h0_1", "h0_2");
-      Utils::push_many(neutral_channels[2],  "h0_2", "h0_2");
-      Utils::push_many(neutral_channels[3],  "h0_3", "h0_3");
-      Utils::push_many(neutral_channels[4],  "h0_1", "h0_3");
-      Utils::push_many(neutral_channels[5],  "h0_2", "h0_1");
-      Utils::push_many(neutral_channels[6],  "H+", "H-");
-      Utils::push_many(neutral_channels[7],  "Z0", "h0_1");
-      Utils::push_many(neutral_channels[8],  "Z0", "h0_2");
-      Utils::push_many(neutral_channels[9],  "Z0", "h0_3");
-      Utils::push_many(neutral_channels[10], "W+", "H-");            //actually W+H- and W-H+
-      Utils::push_many(neutral_channels[11], "Z0", "Z0");
-      Utils::push_many(neutral_channels[12], "W+", "W-");
-      Utils::push_many(neutral_channels[13], "nu_e", "nubar_e");
-      Utils::push_many(neutral_channels[14], "e+", "e-");
-      Utils::push_many(neutral_channels[15], "nu_mu", "nubar_mu");
-      Utils::push_many(neutral_channels[16], "mu+", "mu-");
-      Utils::push_many(neutral_channels[17], "nu_tau", "nubar_tau");
-      Utils::push_many(neutral_channels[18], "tau+", "tau-");
-      Utils::push_many(neutral_channels[19], "u", "ubar");
-      Utils::push_many(neutral_channels[20], "d", "dbar");
-      Utils::push_many(neutral_channels[21], "c", "cbar");
-      Utils::push_many(neutral_channels[22], "s", "sbar");
-      Utils::push_many(neutral_channels[23], "t", "tbar");
-      Utils::push_many(neutral_channels[24], "b", "bbar");
-      Utils::push_many(neutral_channels[25], "g", "g");
-      Utils::push_many(neutral_channels[26], "b", "bbar", "g");      //actually qqg (not implemented in DS though)
-      Utils::push_many(neutral_channels[27], "gamma", "gamma");
-      Utils::push_many(neutral_channels[28], "Z0", "gamma");
-      const str vals[] = { "W-", "H+"};                      //the missing channel
-      const std::vector<str> adhoc_chan(std::begin(vals), std::end(vals));
+      neutral_channels[0]  = initVector<str>("h0_1", "h0_1");
+      neutral_channels[1]  = initVector<str>("h0_1", "h0_2");
+      neutral_channels[2]  = initVector<str>("h0_2", "h0_2");
+      neutral_channels[3]  = initVector<str>("A0", "A0");
+      neutral_channels[4]  = initVector<str>("h0_1", "A0");
+      neutral_channels[5]  = initVector<str>("h0_2", "h0_1");
+      neutral_channels[6]  = initVector<str>("H+", "H-");
+      neutral_channels[7]  = initVector<str>("Z0", "h0_1");
+      neutral_channels[8]  = initVector<str>("Z0", "h0_2");
+      neutral_channels[9]  = initVector<str>("Z0", "A0");
+      neutral_channels[10] = initVector<str>("W+", "H-");            //actually W+H- and W-H+
+      neutral_channels[11] = initVector<str>("Z0", "Z0");
+      neutral_channels[12] = initVector<str>("W+", "W-");
+      neutral_channels[13] = initVector<str>("nu_e", "nubar_e");
+      neutral_channels[14] = initVector<str>("e+", "e-");
+      neutral_channels[15] = initVector<str>("nu_mu", "nubar_mu");
+      neutral_channels[16] = initVector<str>("mu+", "mu-");
+      neutral_channels[17] = initVector<str>("nu_tau", "nubar_tau");
+      neutral_channels[18] = initVector<str>("tau+", "tau-");
+      neutral_channels[19] = initVector<str>("u", "ubar");
+      neutral_channels[20] = initVector<str>("d", "dbar");
+      neutral_channels[21] = initVector<str>("c", "cbar");
+      neutral_channels[22] = initVector<str>("s", "sbar");
+      neutral_channels[23] = initVector<str>("t", "tbar");
+      neutral_channels[24] = initVector<str>("b", "bbar");
+      neutral_channels[25] = initVector<str>("g", "g");
+      neutral_channels[26] = initVector<str>("b", "bbar", "g");      //actually qqg (not implemented in DS though)
+      neutral_channels[27] = initVector<str>("gamma", "gamma");
+      neutral_channels[28] = initVector<str>("Z0", "gamma");
+      const std::vector<str> adhoc_chan = initVector<str>("W-", "H+");                      //the missing channel
 
       for (int i=0; i<29; i++)
       {
@@ -2689,7 +2688,7 @@ namespace Gambit {
       std::map<str, TH_ParticleProperty>::const_iterator its[4];
       its[0] = Dep::TH_ProcessCatalog->particleProperties.find("h0_1");
       its[1] = Dep::TH_ProcessCatalog->particleProperties.find("h0_2");
-      its[2] = Dep::TH_ProcessCatalog->particleProperties.find("h0_3");
+      its[2] = Dep::TH_ProcessCatalog->particleProperties.find("A0");
       its[3] = Dep::TH_ProcessCatalog->particleProperties.find("H+");
       Higgs_masses_neutral[0] = (its[0] != Dep::TH_ProcessCatalog->particleProperties.end()) ? its[0]->second.mass : 0.;
       Higgs_masses_neutral[1] = (its[1] != Dep::TH_ProcessCatalog->particleProperties.end()) ? its[1]->second.mass : 0.;
@@ -2700,7 +2699,7 @@ namespace Gambit {
       const TH_Process* h0_decays[3];
       h0_decays[0] = Dep::TH_ProcessCatalog->find("h0_1");
       h0_decays[1] = Dep::TH_ProcessCatalog->find("h0_2");
-      h0_decays[2] = Dep::TH_ProcessCatalog->find("h0_3");
+      h0_decays[2] = Dep::TH_ProcessCatalog->find("A0");
       const TH_Process* Hplus_decays = Dep::TH_ProcessCatalog->find("H+");
       const TH_Process* Hminus_decays = Dep::TH_ProcessCatalog->find("H-");
       if (Hplus_decays != NULL and Hminus_decays == NULL) DarkBit_error().raise(LOCAL_INFO, "H+ decays exists in process catalogue but not H-.");
@@ -2761,21 +2760,21 @@ namespace Gambit {
 
         // Define the charged Higgs decay channels 
         std::vector<str> charged_channels[15];
-        Utils::push_many(charged_channels[0],  "u", "dbar");
-        Utils::push_many(charged_channels[1],  "u", "sbar");
-        Utils::push_many(charged_channels[2],  "u", "bbar");
-        Utils::push_many(charged_channels[3],  "c", "dbar");
-        Utils::push_many(charged_channels[4],  "c", "sbar");
-        Utils::push_many(charged_channels[5],  "c", "bbar");
-        Utils::push_many(charged_channels[6],  "t", "dbar");
-        Utils::push_many(charged_channels[7],  "t", "sbar");
-        Utils::push_many(charged_channels[8],  "t", "bbar");
-        Utils::push_many(charged_channels[9],  "e", "nu_e");
-        Utils::push_many(charged_channels[10], "mu", "nu_mu");
-        Utils::push_many(charged_channels[11], "tau", "nu_tau");
-        Utils::push_many(charged_channels[12], "W+", "h0_1");
-        Utils::push_many(charged_channels[13], "W+", "h0_2");
-        Utils::push_many(charged_channels[14], "W+", "h0_3");
+        charged_channels[0]  = initVector<str>("u", "dbar");
+        charged_channels[1]  = initVector<str>("u", "sbar");
+        charged_channels[2]  = initVector<str>("u", "bbar");
+        charged_channels[3]  = initVector<str>("c", "dbar");
+        charged_channels[4]  = initVector<str>("c", "sbar");
+        charged_channels[5]  = initVector<str>("c", "bbar");
+        charged_channels[6]  = initVector<str>("t", "dbar");
+        charged_channels[7]  = initVector<str>("t", "sbar");
+        charged_channels[8]  = initVector<str>("t", "bbar");
+        charged_channels[9]  = initVector<str>("e", "nu_e");
+        charged_channels[10] = initVector<str>("mu", "nu_mu");
+        charged_channels[11] = initVector<str>("tau", "nu_tau");
+        charged_channels[12] = initVector<str>("W+", "h0_1");
+        charged_channels[13] = initVector<str>("W+", "h0_2");
+        charged_channels[14] = initVector<str>("W+", "A0");
  
         // Get the total decay width, for normalising partial widths to BFs.  FIXME Replace when BFs become directly available.
         double totalwidth = 0.0;
