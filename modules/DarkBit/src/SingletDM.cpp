@@ -28,6 +28,7 @@ namespace Gambit
     class SingletDM
     {
       public:
+        /// Initialize SingletDM object (branching ratios etc)
         SingletDM(std::string filename)
         {
           // Branching ratios and total width Gamma [GeV], as function of mass [GeV]
@@ -42,11 +43,13 @@ namespace Gambit
         };
         ~SingletDM() {}
 
+        /// Helper function (Breit Wigner)
         double Dh2 (double s, double Gamma_mh)
         {
             return 1/((s-mh*mh)*(s-mh*mh)+mh*mh*Gamma_mh*Gamma_mh);
         }
 
+        /// Calculate total <sigma v>
         double sv(std::string channel, double lambda, double mass, double v)
         {
             // Returns <sigma v> in cm3/s for given channel, velocity and model
@@ -68,6 +71,7 @@ namespace Gambit
             return res;
         }
 
+        /// Calculate <sigma v> for hh final states
         double sv_hh(double lambda, double mass, double v)
         {
             double s = 4*mass*mass/(1-v*v);
@@ -91,11 +95,13 @@ namespace Gambit
         std::map<std::string, Funk::Funk> f_vs_mass;
         std::vector<std::string> colnames;
 
+        // TODO: Should be retrieved from somewhere else
         static constexpr double mh = 125.7;
         static constexpr double v0 = 246.0;
 
     };
 
+    /// Initializes thresholds/resonances for RD calculation for SingletDM
     void RD_thresholds_resonances_SingletDM(TH_resonances_thresholds &result)
     {
         using namespace Pipes::RD_thresholds_resonances_SingletDM;
@@ -117,6 +123,7 @@ namespace Gambit
         *BEreq::rdmgev = myrdmgev;
     }
 
+    /// Direct detection couplings for Singlet DM.
     void DD_couplings_SingletDM(Gambit::DarkBit::DD_couplings &result)
     {
         using namespace Pipes::DD_couplings_SingletDM;
@@ -132,6 +139,7 @@ namespace Gambit
         result.M_DM = *Param["mass"];
     }
 
+    /// Set up process catalogue for Singlet DM.
     void TH_ProcessCatalog_SingletDM(Gambit::DarkBit::TH_ProcessCatalog &result)
     {
         using namespace Pipes::TH_ProcessCatalog_SingletDM;
