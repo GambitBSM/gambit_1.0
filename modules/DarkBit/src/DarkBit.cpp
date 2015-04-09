@@ -413,7 +413,7 @@ namespace Gambit {
     {
       using namespace Pipes::RD_thresholds_resonances_from_ProcessCatalog;
 
-      TH_Process annihilation = (*Dep::TH_ProcessCatalog).getProcess((std::string)"chi_10", (std::string)"chi_10");
+      TH_Process annihilation = (*Dep::TH_ProcessCatalog).getProcess((std::string)"~chi0_1", (std::string)"~chi0_1");
 
       result = TH_resonances_thresholds(annihilation.thresholdResonances);
     }
@@ -516,7 +516,7 @@ namespace Gambit {
     {
         using namespace Pipes::RD_eff_annrate_from_ProcessCatalog;
 
-        TH_Process annProc = (*Dep::TH_ProcessCatalog).getProcess((std::string)"chi_10", (std::string)"chi_10");
+        TH_Process annProc = (*Dep::TH_ProcessCatalog).getProcess((std::string)"~chi0_1", (std::string)"~chi0_1");
         double mDM = *Param["mass"];
         const double GeV2tocm3s1 = 1.17e-17;
 
@@ -1352,7 +1352,7 @@ namespace Gambit {
 
         if ( runOptions->getValueOrDef(false, "ignore_all") ) return;
 
-        TH_Process process = (*Dep::TH_ProcessCatalog).getProcess((std::string)"chi_10", (std::string)"chi_10");
+        TH_Process process = (*Dep::TH_ProcessCatalog).getProcess((std::string)"~chi0_1", (std::string)"~chi0_1");
 
         // Add only gamma-ray spectra for two and three body final states
         for (std::vector<TH_Channel>::iterator it = process.channelList.begin(); it != process.channelList.end(); ++it)
@@ -1436,10 +1436,10 @@ namespace Gambit {
         line_width = runOptions->getValueOrDef<double>(0.03,  "line_width");
 
         // Get annihilation process from process catalog
-        TH_Process annProc = (*Dep::TH_ProcessCatalog).getProcess((std::string)"chi_10", (std::string)"chi_10");
+        TH_Process annProc = (*Dep::TH_ProcessCatalog).getProcess((std::string)"~chi0_1", (std::string)"~chi0_1");
 
         // Get particle mass from process catalog
-        double mass = (*Dep::TH_ProcessCatalog).getParticleProperty("chi_10").mass;
+        double mass = (*Dep::TH_ProcessCatalog).getParticleProperty("~chi0_1").mass;
         double Ecm = 2*mass;
 
         // Loop over all channels for that process
@@ -1624,10 +1624,10 @@ namespace Gambit {
       std::vector<double> ygrid(n);
 
         // Get annihilation process from process catalog
-        TH_Process annProc = (*Dep::TH_ProcessCatalog).getProcess((std::string)"chi_10", (std::string)"chi_10");
+        TH_Process annProc = (*Dep::TH_ProcessCatalog).getProcess((std::string)"~chi0_1", (std::string)"~chi0_1");
 
         // Get particle mass from process catalog
-        double mass = (*Dep::TH_ProcessCatalog).getParticleProperty("chi_10").mass;
+        double mass = (*Dep::TH_ProcessCatalog).getParticleProperty("~chi0_1").mass;
 
 
         ///////////////////////////////////////////////////////////
@@ -1656,11 +1656,11 @@ namespace Gambit {
                 // Find channel
                 if      ( it->isChannel("Z0"    , "Z0"     )) ch = 12;
                 else if ( it->isChannel("W+"    , "W-"     )) ch = 13;
-                else if ( it->isChannel("nu_e"  , "~nu_e"  )) ch = 14;
+                else if ( it->isChannel("nu_e"  , "nubar_e"  )) ch = 14;
                 else if ( it->isChannel("e+"    , "e-"     )) ch = 15;
-                else if ( it->isChannel("nu_mu" , "~nu_mu" )) ch = 16;
+                else if ( it->isChannel("nu_mu" , "nubar_mu" )) ch = 16;
                 else if ( it->isChannel("mu+"   , "mu-"    )) ch = 17;
-                else if ( it->isChannel("nu_tau", "~nu_tau")) ch = 18;
+                else if ( it->isChannel("nu_tau", "nubar_tau")) ch = 18;
                 else if ( it->isChannel("tau+"  , "tau-"   )) ch = 19;
                 else if ( it->isChannel("u"     , "ubar"   )) ch = 20;
                 else if ( it->isChannel("d"     , "dbar"   )) ch = 21;
@@ -1799,7 +1799,7 @@ namespace Gambit {
         // Instantiate new ProcessCatalog
         TH_ProcessCatalog catalog;      
         // and DM annihilation process                   
-        TH_Process process((std::string)"chi_10", (std::string)"chi_10");   
+        TH_Process process((std::string)"~chi0_1", (std::string)"~chi0_1");   
         
         // Get DarkSUSY mass spectrum
         DS_MSPCTM mymspctm= *BEreq::mspctm;
@@ -1807,15 +1807,15 @@ namespace Gambit {
         // Store properties of relevant particles. Constructor for TH_ParticleProperty takes particle mass and 2*spin.
         // Make sure to add any particles used as final states in 2 or 3-body decays.
         catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("nu_e"   , TH_ParticleProperty(mymspctm.mass[1],     1)));
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("~nu_e"  , TH_ParticleProperty(mymspctm.mass[1],     1)));
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("nubar_e"  , TH_ParticleProperty(mymspctm.mass[1],     1)));
         catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("e-"     , TH_ParticleProperty(mymspctm.mass[2],     1)));
         catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("e+"     , TH_ParticleProperty(mymspctm.mass[2],     1)));
         catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("nu_mu"  , TH_ParticleProperty(mymspctm.mass[3],     1)));
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("~nu_mu" , TH_ParticleProperty(mymspctm.mass[3],     1)));
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("nubar_mu" , TH_ParticleProperty(mymspctm.mass[3],     1)));
         catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("mu-"    , TH_ParticleProperty(mymspctm.mass[4],     1)));
         catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("mu+"    , TH_ParticleProperty(mymspctm.mass[4],     1)));
         catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("nu_tau" , TH_ParticleProperty(mymspctm.mass[5],     1)));
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("~nu_tau", TH_ParticleProperty(mymspctm.mass[5],     1)));
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("nubar_tau", TH_ParticleProperty(mymspctm.mass[5],     1)));
         catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("tau-"   , TH_ParticleProperty(mymspctm.mass[6],     1)));
         catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("tau+"   , TH_ParticleProperty(mymspctm.mass[6],     1)));
         catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("u"      , TH_ParticleProperty(mymspctm.mass[7],     1)));
@@ -1835,16 +1835,16 @@ namespace Gambit {
         catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("W+"     , TH_ParticleProperty(mymspctm.mass[14],    2)));   
         catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("Z0"     , TH_ParticleProperty(mymspctm.mass[15],    2)));   
         catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("g"      , TH_ParticleProperty(mymspctm.mass[16],    2)));  
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("H1"     , TH_ParticleProperty(mymspctm.mass[17],    0)));  
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("H2"     , TH_ParticleProperty(mymspctm.mass[18],    0)));  
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("H3"     , TH_ParticleProperty(mymspctm.mass[19],    0)));  
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("h0_2"   , TH_ParticleProperty(mymspctm.mass[17],    0)));  
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("h0_1"   , TH_ParticleProperty(mymspctm.mass[18],    0)));  
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("A0"     , TH_ParticleProperty(mymspctm.mass[19],    0)));  
         catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("H-"     , TH_ParticleProperty(mymspctm.mass[20],    0)));     
         catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("H+"     , TH_ParticleProperty(mymspctm.mass[20],    0)));          
         // DM mass   
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("chi_10" , TH_ParticleProperty(mymspctm.mass[42],    1)));
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("~chi0_1" , TH_ParticleProperty(mymspctm.mass[42],    1)));
         
         // Set DarkSUSY DM mass parameter used in 3-body decays
-        BEreq::IBintvars->ibcom_mx = catalog.getParticleProperty("chi_10").mass;
+        BEreq::IBintvars->ibcom_mx = catalog.getParticleProperty("~chi0_1").mass;
                 
         // Helper variables
         int index; 
@@ -1856,7 +1856,7 @@ namespace Gambit {
             /* Check if process is kinematically allowed */                                         \
             m_1 = catalog.getParticleProperty(STRINGIFY(P1)).mass;                                  \
             m_2 = catalog.getParticleProperty(STRINGIFY(P1)).mass;                                  \
-            if(m_1 + m_2 < 2*catalog.getParticleProperty("chi_10").mass)                            \
+            if(m_1 + m_2 < 2*catalog.getParticleProperty("~chi0_1").mass)                            \
             {                                                                                       \
                 /* Set cross-section */                                                             \
                 index = PARTCH;                                                                     \
@@ -1873,25 +1873,25 @@ namespace Gambit {
                 process.channelList.push_back(CAT(channel_,NAME));                                  \
             }
              
-        SETUP_DS_PROCESS(H1H1,      1 , H1,     H1,     1   )
-        SETUP_DS_PROCESS(H1H2,      2 , H1,     H2,     1   )
-        SETUP_DS_PROCESS(H2H2,      3 , H2,     H2,     1   )
-        SETUP_DS_PROCESS(H3H3,      4 , H3,     H3,     1   )
-        SETUP_DS_PROCESS(H1H3,      5 , H1,     H3,     1   )
-        SETUP_DS_PROCESS(H2H3,      6 , H2,     H3,     1   )
+        SETUP_DS_PROCESS(H1H1,      1 , h0_2,   h0_2,   1   )
+        SETUP_DS_PROCESS(H1H2,      2 , h0_2,   h0_1,   1   )
+        SETUP_DS_PROCESS(H2H2,      3 , h0_1,   h0_1,   1   )
+        SETUP_DS_PROCESS(H3H3,      4 , A0,     A0,     1   )
+        SETUP_DS_PROCESS(H1H3,      5 , h0_2,   A0,     1   )
+        SETUP_DS_PROCESS(H2H3,      6 , h0_1,   A0,     1   )
         SETUP_DS_PROCESS(HpHm,      7 , H+,     H-,     1   )
-        SETUP_DS_PROCESS(H1Z0,      8 , H1,     Z0,     1   )
-        SETUP_DS_PROCESS(H2Z0,      9 , H2,     Z0,     1   )
-        SETUP_DS_PROCESS(H3Z0,      10, H3,     Z0,     1   )
+        SETUP_DS_PROCESS(H1Z0,      8 , h0_2,   Z0,     1   )
+        SETUP_DS_PROCESS(H2Z0,      9 , h0_1,   Z0,     1   )
+        SETUP_DS_PROCESS(H3Z0,      10, A0,     Z0,     1   )
         SETUP_DS_PROCESS(WpHm,      11, W+,     H-,     0.5 )  // Prefactor 0.5 since W+H- and W-H+ are summed in DS
         SETUP_DS_PROCESS(WmHp,      11, W-,     H+,     0.5 )  // Prefactor 0.5 since W+H- and W-H+ are summed in DS
         SETUP_DS_PROCESS(Z0Z0,      12, Z0,     Z0,     1   )
         SETUP_DS_PROCESS(WW,        13, W+,     W-,     1   )
-        SETUP_DS_PROCESS(nuenue,    14, nu_e,   ~nu_e,  1   )
+        SETUP_DS_PROCESS(nuenue,    14, nu_e,   nubar_e,  1   )
         SETUP_DS_PROCESS(ee,        15, e+,     e-,     1   )
-        SETUP_DS_PROCESS(numnum,    16, nu_mu,  ~nu_mu, 1   )
+        SETUP_DS_PROCESS(numnum,    16, nu_mu,  nubar_mu, 1   )
         SETUP_DS_PROCESS(mumu,      17, mu+,    mu-,    1   )
-        SETUP_DS_PROCESS(nutnut,    18, nu_tau, ~nu_tau,1   )
+        SETUP_DS_PROCESS(nutnut,    18, nu_tau, nubar_tau,1   )
         SETUP_DS_PROCESS(tautau,    19, tau+,   tau-,   1   )
         SETUP_DS_PROCESS(uubar,     20, u,      ubar,   1   )
         SETUP_DS_PROCESS(ddbar,     21, d,      dbar,   1   )
@@ -1905,7 +1905,7 @@ namespace Gambit {
         // Undef the macro so it doesn't propagate through GAMBIT
         #undef SETUP_DS_PROCESS
         
-        double M_DM = catalog.getParticleProperty("chi_10").mass;
+        double M_DM = catalog.getParticleProperty("~chi0_1").mass;
 
         // Macro for setting up 3-body decays with gammas
         #define SETUP_DS_PROCESS_GAMMA3BODY(NAME, IBCH, P1, P2, IBFUNC, SV_IDX, PREFACTOR)                                  \
@@ -2107,7 +2107,7 @@ namespace Gambit {
     {
         using namespace Pipes::lnL_FermiGC_gamLike;
         
-        double mass = (*Dep::TH_ProcessCatalog).getParticleProperty("chi_10").mass;
+        double mass = (*Dep::TH_ProcessCatalog).getParticleProperty("~chi0_1").mass;
 
         std::vector<double> x = logspace(-1, 2.698, 100);  // from 0.1 to 500 GeV
         std::vector<double> y = (*Dep::GA_AnnYield/(mass*mass*8*M_PI))->set("v",0.)->bind("E")->vect(x);
@@ -2157,19 +2157,19 @@ namespace Gambit {
 
 
     /// Retrieve the DM mass in GeV for generic models (GeV)
-    // FIXME this needs to be updated once DM is not always referred to as "chi_10"
-    void mwimp_generic(double &result) { result = Pipes::mwimp_generic::Dep::TH_ProcessCatalog->getParticleProperty("chi_10").mass; }
+    // FIXME this needs to be updated once DM is not always referred to as "~chi0_1"
+    void mwimp_generic(double &result) { result = Pipes::mwimp_generic::Dep::TH_ProcessCatalog->getParticleProperty("~chi0_1").mass; }
 
     /// Retrieve the DM mass in GeV for the scalar singlet model (GeV)
     void mwimp_SingletDM(double &result) { result = *Pipes::mwimp_SingletDM::Param["mass"]; }
 
     /// Retrieve the total thermally-averaged annihilation cross-section for indirect detection (cm^3 / s)
     // FIXME this needs to be updated once annProc.genTotalRate->bind("v")->eval(0.) works.
-    // FIXME this needs to be updated once DM is not always referred to as "chi_10"
+    // FIXME this needs to be updated once DM is not always referred to as "~chi0_1"
     void sigmav_late_universe(double &result)
     {
       using namespace Pipes::sigmav_late_universe;
-      TH_Process annProc = Dep::TH_ProcessCatalog->getProcess("chi_10", "chi_10");
+      TH_Process annProc = Dep::TH_ProcessCatalog->getProcess("~chi0_1", "~chi0_1");
       result = 0.0;
       for (std::vector<TH_Channel>::iterator it = annProc.channelList.begin();
            it != annProc.channelList.end(); ++it)
@@ -2662,8 +2662,8 @@ namespace Gambit {
       double Higgs_mass_charged;
       
       // Set annihilation branching fractions
-      // FIXME needs to be fixed once DM is not chi_10 always, and once BFs are available directly from TH_Process
-      TH_Process annProc = Dep::TH_ProcessCatalog->getProcess("chi_10", "chi_10");
+      // FIXME needs to be fixed once DM is not ~chi0_1 always, and once BFs are available directly from TH_Process
+      TH_Process annProc = Dep::TH_ProcessCatalog->getProcess("~chi0_1", "~chi0_1");
       std::vector<str> neutral_channels[29];
       Utils::push_many(neutral_channels[0],  "h0_1", "h0_1");
       Utils::push_many(neutral_channels[1],  "h0_1", "h0_2");
@@ -3023,7 +3023,7 @@ namespace Gambit {
         double Gns = (*Dep::DD_couplings).gns;
         double Gna = (*Dep::DD_couplings).gna;
         double oh2 = *Dep::RD_oh2;
-        TH_Process annProc = (*Dep::TH_ProcessCatalog).getProcess((std::string)"chi_10", (std::string)"chi_10");
+        TH_Process annProc = (*Dep::TH_ProcessCatalog).getProcess((std::string)"~chi0_1", (std::string)"~chi0_1");
         Funk::Funk spectrum = (*Dep::GA_AnnYield)->set("v", 0.);
 
         std::ostringstream filename;
@@ -3113,11 +3113,11 @@ namespace Gambit {
                 result.addChannel(dNdE, P1, P2, FINAL, EcmMin, EcmMax);  // specifies also center of mass energy range
             ADD_CHANNEL(12, "Z0", "Z0", "gamma", 0., 10000.)
             ADD_CHANNEL(13, "W+", "W-", "gamma", 0., 10000.)
-            ADD_CHANNEL(14, "nu_e", "~nu_e", "gamma", 0., 10000.)
+            ADD_CHANNEL(14, "nu_e", "nubar_e", "gamma", 0., 10000.)
             ADD_CHANNEL(15, "e+", "e-", "gamma", 0., 10000.)
-            ADD_CHANNEL(16, "nu_mu", "~nu_mu", "gamma", 0., 10000.)
+            ADD_CHANNEL(16, "nu_mu", "nubar_mu", "gamma", 0., 10000.)
             ADD_CHANNEL(17, "mu+", "mu-", "gamma", 0., 10000.)
-            ADD_CHANNEL(18, "nu_tau", "~nu_tau", "gamma", 0., 10000.)
+            ADD_CHANNEL(18, "nu_tau", "nubar_tau", "gamma", 0., 10000.)
             ADD_CHANNEL(19, "tau+", "tau-", "gamma", 0., 10000.)
             ADD_CHANNEL(20, "u", "ubar", "gamma", 0., 10000.)
             ADD_CHANNEL(21, "d", "dbar", "gamma", 0., 10000.)
@@ -3134,16 +3134,16 @@ namespace Gambit {
             dNdE = Funk::func(BEreq::dshayield.pointer(), 92*2, Funk::var("E"), 12, yieldk, flag);
             result.addChannel(dNdE/2, "Z0", "gamma", 10., 10000.);
 
-            result.addChannel(Funk::zero("Ecm", "E"), "H1", "H1", "gamma", 4., 10000.);
-            result.addChannel(Funk::zero("Ecm", "E"), "H1", "H2", "gamma", 4., 10000.);
-            result.addChannel(Funk::zero("Ecm", "E"), "H2", "H2", "gamma", 4., 10000.);
-            result.addChannel(Funk::zero("Ecm", "E"), "H3", "H3", "gamma", 4., 10000.);
-            result.addChannel(Funk::zero("Ecm", "E"), "H1", "H3", "gamma", 4., 10000.);
-            result.addChannel(Funk::zero("Ecm", "E"), "H2", "H3", "gamma", 4., 10000.);
+            result.addChannel(Funk::zero("Ecm", "E"), "h0_2", "h0_2", "gamma", 4., 10000.);
+            result.addChannel(Funk::zero("Ecm", "E"), "h0_2", "h0_1", "gamma", 4., 10000.);
+            result.addChannel(Funk::zero("Ecm", "E"), "h0_1", "h0_1", "gamma", 4., 10000.);
+            result.addChannel(Funk::zero("Ecm", "E"), "A0", "A0", "gamma", 4., 10000.);
+            result.addChannel(Funk::zero("Ecm", "E"), "h0_2", "A0", "gamma", 4., 10000.);
+            result.addChannel(Funk::zero("Ecm", "E"), "h0_1", "A0", "gamma", 4., 10000.);
             result.addChannel(Funk::zero("Ecm", "E"), "H+", "H-", "gamma", 4., 10000.);
-            result.addChannel(Funk::zero("Ecm", "E"), "H1", "Z0", "gamma", 4., 10000.);
-            result.addChannel(Funk::zero("Ecm", "E"), "H2", "Z0", "gamma", 4., 10000.);
-            result.addChannel(Funk::zero("Ecm", "E"), "H3", "Z0", "gamma", 4., 10000.);
+            result.addChannel(Funk::zero("Ecm", "E"), "h0_2", "Z0", "gamma", 4., 10000.);
+            result.addChannel(Funk::zero("Ecm", "E"), "h0_1", "Z0", "gamma", 4., 10000.);
+            result.addChannel(Funk::zero("Ecm", "E"), "A0", "Z0", "gamma", 4., 10000.);
             result.addChannel(Funk::zero("Ecm", "E"), "W+", "H-", "gamma", 4., 10000.);
             result.addChannel(Funk::zero("Ecm", "E"), "W-", "H+", "gamma", 4., 10000.);
 
@@ -3179,9 +3179,9 @@ namespace Gambit {
             ADD_CHANNEL(13, "W+", "W-", "gamma", 4., 10000.)
             #undef ADD_CHANNEL
             initialized = true;
-            result.addChannel(Funk::zero("Ecm", "E"), "nu_e", "~nu_e", "gamma", 4., 10000.);
-            result.addChannel(Funk::zero("Ecm", "E"), "nu_mu", "~nu_mu", "gamma", 4., 10000.);
-            result.addChannel(Funk::zero("Ecm", "E"), "nu_tau", "~nu_tau", "gamma", 4., 10000.);
+            result.addChannel(Funk::zero("Ecm", "E"), "nu_e", "nubar_e", "gamma", 4., 10000.);
+            result.addChannel(Funk::zero("Ecm", "E"), "nu_mu", "nubar_mu", "gamma", 4., 10000.);
+            result.addChannel(Funk::zero("Ecm", "E"), "nu_tau", "nubar_tau", "gamma", 4., 10000.);
         }
     }
 
