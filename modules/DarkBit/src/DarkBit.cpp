@@ -1897,7 +1897,7 @@ namespace Gambit {
 //////////////////////////////////////////////////////////////////////////
 //
 //             Simple relic density routines for cross-checks
-//                      (micromegas vs darksusy)
+//                      (MicrOmegas vs DarkSUSY)
 //
 //////////////////////////////////////////////////////////////////////////
 
@@ -1926,9 +1926,9 @@ namespace Gambit {
 
     /*! \brief Relic density directly from a call of initialized MicrOmegas.
      */
-    void RD_oh2_micromegas(double &oh2)
+    void RD_oh2_MicrOmegas(double &oh2)
     {
-    	using namespace Pipes::RD_oh2_micromegas;
+    	using namespace Pipes::RD_oh2_MicrOmegas;
         // Input
         int fast;     // fast: 1, accurate: 0
         double Beps;  // Beps=1e-5 recommended, Beps=1 switches coannihilation off
@@ -2225,9 +2225,9 @@ namespace Gambit {
 
     /*! \brief Get direct detection couplings from initialized MicrOmegas.
      */
-    void DD_couplings_micrOMEGAs(Gambit::DarkBit::DD_couplings &result)
+    void DD_couplings_MicrOmegas(Gambit::DarkBit::DD_couplings &result)
     {
-        using namespace Pipes::DD_couplings_micrOMEGAs;
+        using namespace Pipes::DD_couplings_MicrOmegas;
 
         // Set proton hadronic matrix elements.
         (*BEreq::MOcommon).par[2] = *Param["fpd"];

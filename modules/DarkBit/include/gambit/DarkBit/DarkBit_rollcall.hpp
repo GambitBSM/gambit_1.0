@@ -128,10 +128,12 @@ START_MODULE
       // Print higgs widths
       BACKEND_REQ(dswwidth, (), void, (int&))
     #undef FUNCTION
+    /* TODO: This function has no purpose (since SingletDM is not supported by DS)
     #define FUNCTION DarkSUSY_PointInit_NoMSSM
       START_FUNCTION(bool)
       ALLOW_MODELS(SingletDM)
     #undef FUNCTION
+    */
   #undef CAPABILITY
 
 
@@ -221,7 +223,7 @@ START_MODULE
     #undef FUNCTION
 
     // Routine for cross checking RD density results
-    #define FUNCTION RD_oh2_micromegas
+    #define FUNCTION RD_oh2_MicrOmegas
       START_FUNCTION(double)
       ALLOW_MODELS(MSSM25atQ)  // TODO: (CW) Check for which models this works
       BACKEND_REQ(oh2, (), double, (double*,int,double))
@@ -477,11 +479,11 @@ START_MODULE
       BACKEND_REQ(ddcom, (DarkSUSY), DS_DDCOM)
       ALLOW_MODELS(nuclear_params_fnq)
     #undef FUNCTION
-    #define FUNCTION DD_couplings_micrOMEGAs
+    #define FUNCTION DD_couplings_MicrOmegas
       START_FUNCTION(Gambit::DarkBit::DD_couplings)
-      BACKEND_REQ(nucleonAmplitudes, (micromegas), int, (double(*)(double,double,double,double), double*, double*, double*, double*))
-      BACKEND_REQ(FeScLoop, (micromegas), double, (double, double, double, double))
-      BACKEND_REQ(MOcommon, (micromegas), micrOMEGAs::MOcommonSTR)
+      BACKEND_REQ(nucleonAmplitudes, (MicrOmegas), int, (double(*)(double,double,double,double), double*, double*, double*, double*))
+      BACKEND_REQ(FeScLoop, (MicrOmegas), double, (double, double, double, double))
+      BACKEND_REQ(MOcommon, (MicrOmegas), MicrOmegas::MOcommonSTR)
       ALLOW_MODELS(nuclear_params_fnq)
     #undef FUNCTION
     #define FUNCTION DD_couplings_SingletDM
