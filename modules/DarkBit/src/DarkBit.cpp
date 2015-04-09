@@ -55,146 +55,27 @@ namespace Gambit {
 
 //////////////////////////////////////////////////////////////////////////
 //
-//                 Initialization functions for DarkBit
-//
-// Note: This goes into the backend init functions, once they are there
+//                       Convenience functions
 //
 //////////////////////////////////////////////////////////////////////////
 
-    /*
-    void DarkBit_PointInit_Default()
-    {
-      using namespace Pipes::DarkBit_PointInit_Default;
-      // Nothing
-    }
-    */
-
-    /*
-    void DarkBit_PointInit_MSSM7()
-    {
-      using namespace Pipes::DarkBit_PointInit_MSSM7;
-
-      // Initialize DarkSUSY if run for the first time
-      bool static first_time = true;
-      if (first_time) 
-      {
-          logger() << "DarkSUSY initialization" << std::endl;
-          BEreq::dsinit();
-          BEreq::dsrdinit();
-          first_time = false;
-      }
-
-      // Set up mssmpar structure
-      // Hard-coded values for now
-      int i, unphys=0, hwarning=0;
-      DS_MSSMPAR mssmpar;
-      mssmpar.m1 = 500;
-      mssmpar.m2 = 1000;
-      mssmpar.m3 = 3500;
-      mssmpar.mu=400;
-      mssmpar.ma=1000;
-      mssmpar.tanbe=10;
-      for(i=0; i<=2; i++){
-        mssmpar.mass2u[i]=mssmpar.mass2q[i]=mssmpar.mass2d[i]=2000*2000;
-        mssmpar.mass2e[i]=mssmpar.mass2l[i]=2000*2000;
-      }
-      for(i=0; i<=1; i++){
-        mssmpar.asoftu[i]=0;
-        mssmpar.asoftd[i]=0;
-      }
-      mssmpar.asofte[0] = 0;
-      mssmpar.asofte[1] = 0;
-      mssmpar.asoftu[2] = 1;
-      mssmpar.asoftd[2] = 1;
-      mssmpar.asofte[2] = 0;
-
-      // And initialize DS
-      *BEreq::mssmpar = mssmpar;
-      BEreq::dssusy(unphys, hwarning);
-    }
-    */
-
-    /*
-    eaSLHA mySLHA;
-
-    //The function below has been moved into the DarkSUSY
-    //backend initialization and should be eventually deleted.
-    void DarkBit_PointInit_MSSM()
-    {
-      using namespace Pipes::DarkBit_PointInit_MSSM;
-      using namespace SLHAea;
-
-      // Initialize DarkSUSY if run for the first time
-      bool static first_time = true;
-      if (first_time) 
-      {
-          logger() << "DarkSUSY initialization" << std::endl;
-          BEreq::dsinit();
-          BEreq::dsrdinit();
-          first_time = false;
-      }
-
-      // Save eaSLHA file to disc
-      mySLHA = *Dep::MSSMspectrum;
-      ofstream ofs("DarkBit_temp.slha");
-      ofs << mySLHA;
-      ofs.close();
-
-      // Initialize SUSY spectrum from SLHA
-      int len = 17;
-      int flag = 15;
-      char * filename = "DarkBit_temp.slha";
-      BEreq::dsSLHAread(byVal(filename),flag, byVal(len));
-      BEreq::dsprep();
-
-    }
-    */
-
-    /*
-    void DarkBit_PointInit_CMSSM()
-    {
-      using namespace Pipes::DarkBit_PointInit_CMSSM;
-
-      // Initialize DarkSUSY if run for the first time
-      bool static first_time = true;
-      if (first_time) 
-      {
-          logger() << "DarkSUSY initialization" << std::endl;
-          BEreq::dsinit();
-          BEreq::dsrdinit();
-          first_time = false;
-      }
-
-      // Setup mSUGRA model from CMSSM parameters
-      double am0 = *Param["M0"];  // m0
-      double amhf = *Param["M12"];  // m_1/2
-      double aa0 = *Param["A0"];  // A0
-      double asgnmu = *Param["sgnmu"];  // sign(mu)
-      double atanbe = *Param["tanb"];  // tan(beta)
-      int unphys, hwarning;
-      logger() << "Initialize dsgive_model_isasugra with" << std::endl;
-      logger() << am0 << " " << amhf << " " << aa0 << " " << asgnmu << " " << atanbe << std::endl;
-      BEreq::dsgive_model_isasugra(am0, amhf, aa0, asgnmu, atanbe);
-      BEreq::dssusy_isasugra(unphys, hwarning);
-    }
-    */
-
+    /// Retrieve MSSM spectra directly from a list of SLHA files
     void getMSSMspectrum(eaSLHA &result)
     {
       using namespace Pipes::getMSSMspectrum;
+      static unsigned int counter = 0;  // Static counter running in a loop over all filenames
 	  eaSLHA spectrum;
-      static unsigned int counter = 0;
 
-      // Read filename from yml ini file
+      // Read filename from yaml file
       std::vector<std::string> filenames = runOptions->getValue<std::vector<std::string> >("filenames");
 
       std::string filename = filenames[counter];
 
-      logger() << "Read slha file " << filename << std::endl;
-      std::ifstream ifs(filename.c_str());  // This might require char [] instead
+      logger() << "Reading SLHA file: " << filename << std::endl;
+      std::ifstream ifs(filename.c_str());
       if(!ifs.good())
       {
-          logger() << "ERROR: File not found." << std::endl;
+          logger() << "ERROR: SLHA file not found." << std::endl;
           exit(1);
       }
       ifs >> spectrum;
@@ -202,7 +83,7 @@ namespace Gambit {
       result = spectrum;
       counter++;
       if ( counter >= filenames.size() )
-          counter = 0;   // Reset counter.
+          counter = 0;
     }
 
 
@@ -212,10 +93,14 @@ namespace Gambit {
 //
 //////////////////////////////////////////////////////////////////////////
 
-    // Initialize DarkSUSY to the current model point.  Only selected
-    // MSSM parameter spaces are implemented.  Returns bool indicating
-    // if point initialization was successful, which is essentially
-    // always true for models that satisfy the dependency resolver.
+    /*! \brief Fully initialize DarkSUSY to the current model point.  
+     *
+     * Only selected MSSM parameter spaces are implemented.  Returns bool
+     * indicating if point initialization was successful, which is essentially
+     * always true for models that satisfy the dependency resolver.
+     *
+     * Supported models: CMSSM, CMSSM_demo, MSSM25atQ
+     */
     void DarkSUSY_PointInit_MSSM(bool &result)
     {
       using namespace Pipes::DarkSUSY_PointInit_MSSM;
@@ -283,13 +168,13 @@ namespace Gambit {
         result = true;
       }
 
-      // Better way to log this?
+      // TODO: Better way to log this?
       if (!result) {
-        DarkBit_warning().raise(LOCAL_INFO,
-            "DarkSUSY point initialization failed.");
+        DarkBit_warning().raise(LOCAL_INFO, "DarkSUSY point initialization failed.");
         invalid_point().raise("DarkSUSY point initialization failed.");
       }
 
+      // TODO: Only for testing.  Remove later.
       if ( runOptions->getValueOrDef( false, "show_higgs_widths" ) )
       {
         int unit = 6;
@@ -297,11 +182,14 @@ namespace Gambit {
       }
     }
 
+    // TODO: This function has no purpose.  Remove later.
+    /*
     void DarkSUSY_PointInit_NoMSSM(bool &result)
     {
         using namespace Pipes::DarkSUSY_PointInit_NoMSSM;
         result = true;
     }
+    */
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -310,7 +198,12 @@ namespace Gambit {
 //
 //////////////////////////////////////////////////////////////////////////
 
-    // TODO: Needs to be cleaned up!
+    /*! \brief Some helper function that gets spectrum information needed for
+     *         relic density calculations directly from DarkSUSY.
+     *
+     * Collects information about coannihilating particles, resonances and
+     * threshold energies.
+     */
     void RD_spectrum_SUSY(RD_spectrum_type &result)
     {
       using namespace Pipes::RD_spectrum_SUSY;
@@ -409,6 +302,8 @@ namespace Gambit {
              
     } // function RD_spectrum_SUSY
 
+    /*! \brief Derive thresholds & resonances from process catalogue.
+     */
     void RD_thresholds_resonances_from_ProcessCatalog(TH_resonances_thresholds &result)
     {
       using namespace Pipes::RD_thresholds_resonances_from_ProcessCatalog;
@@ -418,6 +313,8 @@ namespace Gambit {
       result = TH_resonances_thresholds(annihilation.thresholdResonances);
     }
 
+    /*! \brief Derive thresholds & resonances from RD_spectrum helper object.
+     */
     void RD_thresholds_resonances_from_spectrum(TH_resonances_thresholds &result)
     {
       using namespace Pipes::RD_thresholds_resonances_from_spectrum;
@@ -459,6 +356,9 @@ namespace Gambit {
       }
     } // function RD_thresholds_resonances_from_spectrum
 
+    /*! \brief Some helper function to prepare evaluation of Weff from
+     *         DarkSUSY.
+     */
     void RD_eff_annrate_SUSY_DSprep_func(int &result)
     {
       using namespace Pipes::RD_eff_annrate_SUSY_DSprep_func;
@@ -498,6 +398,9 @@ namespace Gambit {
 
     } // function RD_eff_annrate_SUSY_DSprep_func
 
+
+    /*! \brief Get Weff directly from initialized DarkSUSY.
+     */
     void RD_eff_annrate_SUSY(double(*&result)(double&))
     {
       using namespace Pipes::RD_eff_annrate_SUSY;
@@ -511,6 +414,8 @@ namespace Gambit {
     } // function RD_eff_annrate_SUSY
 
 
+    /*! \brief Infer Weff from process catalogue.
+     */
     DEF_FUNKTRAIT(RD_EFF_ANNRATE_FROM_PROCESSCATALOG_TRAIT)  // carries pointer to Weff
     void RD_eff_annrate_from_ProcessCatalog(double(*&result)(double&))
     {
@@ -533,6 +438,14 @@ namespace Gambit {
 
     } // function RD_eff_annrate_from_ProcessCatalog
 
+
+    /*! \brief General routine for calculation of relic density, using DarkSUSY
+     *         Boltzmann solver
+     *
+     *  Requires:
+     *  - RD_thresholds_resonances
+     *  - RD_eff_annrate (Weff)
+     */
     void RD_oh2_general(double &result)
     {
       using namespace Pipes::RD_oh2_general;
@@ -1303,6 +1216,14 @@ namespace Gambit {
 //
 //////////////////////////////////////////////////////////////////////////
 
+    /*! \brief Calculate kinematical limits for three-body final states.
+     *
+     * Notes: 
+     * - m0 = 0, E0 = Eg
+     * - M_DM is half of center of mass energy
+     * - returns E1_low or E1_high, or 0 if kinematically forbidden
+     * - Template parameter 0(1) means lower (upper) limit of range.  
+     */
     template <int i>
     double gamma3bdy_limits(double Eg, double M_DM, double m1, double m2)
     {
@@ -1331,7 +1252,9 @@ namespace Gambit {
         else return x1;
     }
 
-    /* Structure
+    /*! \brief Identification of final states that are not yet tabulated.
+     *
+     * Structure
      * ---------
      *
      * 1) Go through process catalogue and find all final states that require
@@ -1344,7 +1267,6 @@ namespace Gambit {
      * 3) Put together the full spectrum.
      *
      */
-
     void GA_missingFinalStates(std::vector<std::string> &result)
     {
         using namespace Pipes::GA_missingFinalStates;
@@ -1405,11 +1327,13 @@ namespace Gambit {
     }
     */
 
-    // This function boosts an energy spectrum of isotropic
-    // particles into another frame (and isotropizes again).
-    //   gamma: Lorentz boost factor
-    //   dNdE: Spectrum
-    //   mass: mass of particle
+    /*! \brief Boosts an energy spectrum of isotropic particles into another
+     *         frame (and isotropizes again).
+     *  Parameters:
+     *    gamma: Lorentz boost factor
+     *    dNdE: Spectrum
+     *    mass: mass of particle
+     */
     Funk::Funk boost_dNdE(Funk::Funk dNdE, double gamma, double mass)
     {
         if ( gamma < 1 ) 
@@ -1425,6 +1349,13 @@ namespace Gambit {
         return integrand->gsl_integration("Ep", E*gamma-halfBox, E*gamma+halfBox);
     }
 
+    /*! \brief General routine to derive annihilation yield.
+     *
+     * Depends on:
+     * - SimYieldTable
+     * - TH_ProcessCatalog
+     * - cascadeMC_gammaSpectra
+     */
     void GA_AnnYield_General(Funk::Funk &result)
     {
         using namespace Pipes::GA_AnnYield_General;
@@ -1591,22 +1522,27 @@ namespace Gambit {
         
     }
 
+    /*! \brief Calculates annihilation spectra for general process catalogs,
+     *        directly using DarkSUSY as a backend.
+     *
+     * This function returns 
+     *
+     *   dN/dE*(sv)/mDM**2 (E, v)  [cm^3/s/GeV^3]
+     *
+     * the energy spectrum of photons times sigma*v/m^2, as function of
+     * energy (GeV) and velocity (c).  By default, only the v=0 component
+     * is calculated.  
+     *
+     * The return type is a GAMBIT Base Function object as function which
+     * is only defined for v=0.
+     *
+     * NOTE: This function will be completely replaced by GA_AnnYield_General
+     */
+
+    // DEPRECATED!!!
+    // TODO: Delete
     void GA_AnnYield_DarkSUSY(Funk::Funk &result)
     {
-        //////////////////////////////////////////////////////////////////////////
-        // Calculates annihilation spectra for general process catalogs, using
-        // DarkSUSY as a backend.  This function returns 
-        //
-        //   dN/dE*(sv)/mDM**2 (E, v)  [cm^3/s/GeV^3]
-        //
-        // the energy spectrum of photons times sigma*v/m^2, as function of
-        // energy (GeV) and velocity (c).  By default, only the v=0 component
-        // is calculated.  
-        //
-        // The return type is a GAMBIT Base Function object as function which
-        // is only defined for v=0.
-        //////////////////////////////////////////////////////////////////////////
-        
         using namespace Pipes::GA_AnnYield_DarkSUSY;
 
         ////////////////////
@@ -1766,6 +1702,7 @@ namespace Gambit {
 //
 //////////////////////////////////////////////////////////////////////////
 
+    /// Wrapper around DarkSUSY kinematic functions
     double DSgamma3bdy(double(*IBfunc)(int&,double&,double&), int IBch, double Eg, double E1, double M_DM, double m_1, double m_2)
     {
         double E2 = 2*M_DM - Eg - E1;  
@@ -1792,6 +1729,9 @@ namespace Gambit {
         return std::max(0., result) / (M_DM*M_DM); // M_DM^-2 is from the Jacobi determinant
     }
 
+    /*! \brief Initialization of Process Catalogue based on DarkSUSY
+     *         calculations.
+     */
     void TH_ProcessCatalog_CMSSM(Gambit::DarkBit::TH_ProcessCatalog &result)
     {
         using namespace Pipes::TH_ProcessCatalog_CMSSM;
@@ -1957,10 +1897,12 @@ namespace Gambit {
 //////////////////////////////////////////////////////////////////////////
 //
 //             Simple relic density routines for cross-checks
-//                      (micromegas vs darksusy)
+//                      (MicrOmegas vs DarkSUSY)
 //
 //////////////////////////////////////////////////////////////////////////
 
+    /*! \brief Relic density directly from a call of initialized DarkSUSY.
+     */
     void RD_oh2_DarkSUSY(double &result)
     {
         using namespace Pipes::RD_oh2_DarkSUSY;
@@ -1982,9 +1924,11 @@ namespace Gambit {
         logger() << "RD_oh2_DarkSUSY: oh2 is " << oh2 << std::endl;
     }
 
-    void RD_oh2_micromegas(double &oh2)
+    /*! \brief Relic density directly from a call of initialized MicrOmegas.
+     */
+    void RD_oh2_MicrOmegas(double &oh2)
     {
-    	using namespace Pipes::RD_oh2_micromegas;
+    	using namespace Pipes::RD_oh2_MicrOmegas;
         // Input
         int fast;     // fast: 1, accurate: 0
         double Beps;  // Beps=1e-5 recommended, Beps=1 switches coannihilation off
@@ -2007,6 +1951,8 @@ namespace Gambit {
 //
 //////////////////////////////////////////////////////////////////////////
 
+    /*! \brief Fermi LAT dwarf likelihoods, based on arXiv:1108.2914.
+     */
     void lnL_FermiLATdwarfsSimple(double &result)
     {
         using namespace Pipes::lnL_FermiLATdwarfsSimple;
@@ -2086,6 +2032,8 @@ namespace Gambit {
         logger() << "phi: " << phi << std::endl;
     }
 
+    /*! \brief Fermi LAT dwarf likelihoods, using gamLike backend.
+     */
     void lnL_FermiLATdwarfs_gamLike(double &result)
     {
         using namespace Pipes::lnL_FermiLATdwarfs_gamLike;
@@ -2103,6 +2051,8 @@ namespace Gambit {
         logger() << "GamLike likelihood is lnL = " << result << std::endl;
     }
 
+    /*! \brief Fermi LAT galactic center likelihoods, using gamLike backend.
+     */
     void lnL_FermiGC_gamLike(double &result)
     {
         using namespace Pipes::lnL_FermiGC_gamLike;
@@ -2117,6 +2067,9 @@ namespace Gambit {
         logger() << "GamLike likelihood is lnL = " << result << std::endl;
     }
 
+    /*! \brief Likelihood for cosmological relic density constraints.
+     */
+    // TODO: Needs to be updated.
     void lnL_oh2_Simple(double &result)
     {
       using namespace Pipes::lnL_oh2_Simple;
@@ -2128,6 +2081,11 @@ namespace Gambit {
       logger() << "lnL_oh2_Simple yields " << result << std::endl;
     }
 
+    /*! \brief Helper function to dump gamma-ray spectra.
+     *
+     * NOTE: DEPRECATED!! (replaced by UnitTest)
+     * TODO: Delete
+     */
     void dump_GammaSpectrum(double &result)
     {
         using namespace Pipes::dump_GammaSpectrum;
@@ -2188,6 +2146,8 @@ namespace Gambit {
 //
 //////////////////////////////////////////////////////////////////////////
 
+    /*! \brief Get direct detection couplings from initialized DarkSUSY.
+     */
     void DD_couplings_DarkSUSY(Gambit::DarkBit::DD_couplings &result)
     {
         using namespace Pipes::DD_couplings_DarkSUSY;
@@ -2263,9 +2223,11 @@ namespace Gambit {
         }
     }
 
-    void DD_couplings_micrOMEGAs(Gambit::DarkBit::DD_couplings &result)
+    /*! \brief Get direct detection couplings from initialized MicrOmegas.
+     */
+    void DD_couplings_MicrOmegas(Gambit::DarkBit::DD_couplings &result)
     {
-        using namespace Pipes::DD_couplings_micrOMEGAs;
+        using namespace Pipes::DD_couplings_MicrOmegas;
 
         // Set proton hadronic matrix elements.
         (*BEreq::MOcommon).par[2] = *Param["fpd"];
@@ -2369,7 +2331,7 @@ namespace Gambit {
 //
 //////////////////////////////////////////////////////////////////////////
 
-  // Set the WIMP mass and couplings (dummy result).
+  /// Point-level initialization of DDCalc backend.
   // TODO: Move halo settings from backend to here?
   void SetWIMP_DDCalc0(bool &result) {
     using namespace Pipes::SetWIMP_DDCalc0;
@@ -2391,34 +2353,36 @@ namespace Gambit {
     logger() << "  sigmanSD = " << sigmanSD << std::endl;
   }
 
-  // Performs DDCalc0 internal rate calculations for the XENON100 2012
-  // result at the current model point (dummy result).
+  /// Triggers DDCalc0 internal rate calculations for the XENON100 2012.
   void CalcRates_XENON100_2012_DDCalc0(bool &result) {
     using namespace Pipes::CalcRates_XENON100_2012_DDCalc0;
     BEreq::DDCalc0_XENON100_2012_CalcRates();
     result = true;
   }
 
-  // Performs DDCalc0 internal rate calculations for the LUX 2013
-  // result at the current model point (dummy result).
+  /// Triggers DDCalc0 internal rate calculations for the LUX 2013.
   void CalcRates_LUX_2013_DDCalc0(bool &result) {
     using namespace Pipes::CalcRates_LUX_2013_DDCalc0;
     BEreq::DDCalc0_LUX_2013_CalcRates();
     result = true;
   }
 
-  // Performs DDCalc0 internal rate calculations for the future
-  // argon-based DARWIN experiment (estimated sensitivity, as of
-  // 2015) at the current model point (dummy result).
+  /*! \brief Triggers DDCalc0 internal rate calculations for the future
+   *         argon-based DARWIN experiment .
+   *
+   * Estimated sensitivity, as of 2015) at the current model point.
+   */
   void CalcRates_DARWIN_Ar_2015_DDCalc0(bool &result) {
     using namespace Pipes::CalcRates_DARWIN_Ar_2015_DDCalc0;
     BEreq::DDCalc0_DARWIN_Ar_2015_CalcRates();
     result = true;
   }
 
-  // Performs DDCalc0 internal rate calculations for the future
-  // xenon-based DARWIN experiment (estimated sensitivity, as of
-  // 2015) at the current model point (dummy result).
+  /*! \brief Triggers DDCalc0 internal rate calculations for the future
+   *         xenon-based DARWIN experiment.  
+   *
+   * Estimated sensitivity, as of 2015) at the current model point.
+   */
   void CalcRates_DARWIN_Xe_2015_DDCalc0(bool &result) {
     using namespace Pipes::CalcRates_DARWIN_Xe_2015_DDCalc0;
     BEreq::DDCalc0_DARWIN_Xe_2015_CalcRates();
@@ -2436,42 +2400,42 @@ namespace Gambit {
   // XENON100 2012 -----------------------------------------------------
   // Aprile et al., PRL 109, 181301 (2013) [arxiv:1207.5988]
   
-  // Log-likelihood
+  /// Log-likelihood - XENON100 2012
   void XENON100_2012_LogLikelihood_DDCalc0(double &result) {
     using namespace Pipes::XENON100_2012_LogLikelihood_DDCalc0;
     result = BEreq::DDCalc0_XENON100_2012_LogLikelihood();
     logger() << "XENON100 2012 log-likelihood: " << result << std::endl;
   }
   
-  // Observed events (integer)
+  /// Observed events (integer) - XENON100 2012
   void XENON100_2012_Events_DDCalc0(int &result) {
     using namespace Pipes::XENON100_2012_Events_DDCalc0;
     result = BEreq::DDCalc0_XENON100_2012_Events();
     logger() << "XENON100 2012 events: " << result << std::endl;
   }
   
-  // Background expectation
+  /// Background expectation - XENON100 2012
   void XENON100_2012_Background_DDCalc0(double &result) {
     using namespace Pipes::XENON100_2012_Background_DDCalc0;
     result = BEreq::DDCalc0_XENON100_2012_Background();
     logger() << "XENON100 2012 background: " << result << std::endl;
   }
   
-  // Signal expectation
+  /// Signal expectation - XENON100 2012
   void XENON100_2012_Signal_DDCalc0(double &result) {
     using namespace Pipes::XENON100_2012_Signal_DDCalc0;
     result = BEreq::DDCalc0_XENON100_2012_Signal();
     logger() << "XENON100 2012 signal: " << result << std::endl;
   }
   
-  // Signal expectation (spin-independent)
+  /// Signal expectation (spin-independent) - XENON100 2012
   void XENON100_2012_SignalSI_DDCalc0(double &result) {
     using namespace Pipes::XENON100_2012_SignalSI_DDCalc0;
     result = BEreq::DDCalc0_XENON100_2012_SignalSI();
     logger() << "XENON100 2012 signal (SI): " << result << std::endl;
   }
   
-  // Signal expectation (spin-dependent)
+  /// Signal expectation (spin-dependent) - XENON100 2012
   void XENON100_2012_SignalSD_DDCalc0(double &result) {
     using namespace Pipes::XENON100_2012_SignalSD_DDCalc0;
     result = BEreq::DDCalc0_XENON100_2012_SignalSD();
@@ -2482,42 +2446,42 @@ namespace Gambit {
   // LUX 2013 ----------------------------------------------------------
   // Akerib et al., PRL 112, 091303 (2014) [arxiv:1310.8214]
   
-  // Log-likelihood
+  /// Log-likelihood - LUX 2013
   void LUX_2013_LogLikelihood_DDCalc0(double &result) {
     using namespace Pipes::LUX_2013_LogLikelihood_DDCalc0;
     result = BEreq::DDCalc0_LUX_2013_LogLikelihood();
     logger() << "LUX 2013 log-likelihood: " << result << std::endl;
   }
   
-  // Observed events (integer)
+  /// Observed events (integer) - LUX 2013
   void LUX_2013_Events_DDCalc0(int &result) {
     using namespace Pipes::LUX_2013_Events_DDCalc0;
     result = BEreq::DDCalc0_LUX_2013_Events();
     logger() << "LUX 2013 events: " << result << std::endl;
   }
   
-  // Background expectation
+  /// Background expectation - LUX 2013
   void LUX_2013_Background_DDCalc0(double &result) {
     using namespace Pipes::LUX_2013_Background_DDCalc0;
     result = BEreq::DDCalc0_LUX_2013_Background();
     logger() << "LUX 2013 background: " << result << std::endl;
   }
   
-  // Signal expectation
+  /// Signal expectation - LUX 2013
   void LUX_2013_Signal_DDCalc0(double &result) {
     using namespace Pipes::LUX_2013_Signal_DDCalc0;
     result = BEreq::DDCalc0_LUX_2013_Signal();
     logger() << "LUX 2013 signal: " << result << std::endl;
   }
   
-  // Signal expectation (spin-independent)
+  /// Signal expectation (spin-independent) - LUX 2013
   void LUX_2013_SignalSI_DDCalc0(double &result) {
     using namespace Pipes::LUX_2013_SignalSI_DDCalc0;
     result = BEreq::DDCalc0_LUX_2013_SignalSI();
     logger() << "LUX 2013 signal (SI): " << result << std::endl;
   }
   
-  // Signal expectation (spin-dependent)
+  /// Signal expectation (spin-dependent) - LUX 2013
   void LUX_2013_SignalSD_DDCalc0(double &result) {
     using namespace Pipes::LUX_2013_SignalSD_DDCalc0;
     result = BEreq::DDCalc0_LUX_2013_SignalSD();
@@ -2529,42 +2493,42 @@ namespace Gambit {
   // Estimated argon-based DARWIN sensitivity (as of 2015):
   //   Conrad et al., arxiv:15MM.NNNNN
   
-  // Log-likelihood
+  /// Log-likelihood - DARWIN
   void DARWIN_Ar_2015_LogLikelihood_DDCalc0(double &result) {
     using namespace Pipes::DARWIN_Ar_2015_LogLikelihood_DDCalc0;
     result = BEreq::DDCalc0_DARWIN_Ar_2015_LogLikelihood();
     logger() << "DARWIN argon-based (2015 estimate) log-likelihood: " << result << std::endl;
   }
   
-  // Observed events (integer)
+  /// Observed events (integer) - DARWIN
   void DARWIN_Ar_2015_Events_DDCalc0(int &result) {
     using namespace Pipes::DARWIN_Ar_2015_Events_DDCalc0;
     result = BEreq::DDCalc0_DARWIN_Ar_2015_Events();
     logger() << "DARWIN argon-based (2015 estimate) events: " << result << std::endl;
   }
   
-  // Background expectation
+  /// Background expectation - DARWIN
   void DARWIN_Ar_2015_Background_DDCalc0(double &result) {
     using namespace Pipes::DARWIN_Ar_2015_Background_DDCalc0;
     result = BEreq::DDCalc0_DARWIN_Ar_2015_Background();
     logger() << "DARWIN argon-based (2015 estimate) background: " << result << std::endl;
   }
   
-  // Signal expectation
+  /// Signal expectation - DARWIN
   void DARWIN_Ar_2015_Signal_DDCalc0(double &result) {
     using namespace Pipes::DARWIN_Ar_2015_Signal_DDCalc0;
     result = BEreq::DDCalc0_DARWIN_Ar_2015_Signal();
     logger() << "DARWIN argon-based (2015 estimate) signal: " << result << std::endl;
   }
   
-  // Signal expectation (spin-independent)
+  /// Signal expectation (spin-independent) - DARWIN
   void DARWIN_Ar_2015_SignalSI_DDCalc0(double &result) {
     using namespace Pipes::DARWIN_Ar_2015_SignalSI_DDCalc0;
     result = BEreq::DDCalc0_DARWIN_Ar_2015_SignalSI();
     logger() << "DARWIN argon-based (2015 estimate) signal (SI): " << result << std::endl;
   }
   
-  // Signal expectation (spin-dependent)
+  /// Signal expectation (spin-dependent) - DARWIN
   void DARWIN_Ar_2015_SignalSD_DDCalc0(double &result) {
     using namespace Pipes::DARWIN_Ar_2015_SignalSD_DDCalc0;
     result = BEreq::DDCalc0_DARWIN_Ar_2015_SignalSD();
@@ -2576,42 +2540,42 @@ namespace Gambit {
   // Estimated xenon-based DARWIN sensitivity (as of 2015):
   //   Conrad et al., arxiv:15MM.NNNNN
   
-  // Log-likelihood
+  /// Log-likelihood - DARWIN xenon-based
   void DARWIN_Xe_2015_LogLikelihood_DDCalc0(double &result) {
     using namespace Pipes::DARWIN_Xe_2015_LogLikelihood_DDCalc0;
     result = BEreq::DDCalc0_DARWIN_Xe_2015_LogLikelihood();
     logger() << "DARWIN xenon-based (2015 estimate) log-likelihood: " << result << std::endl;
   }
   
-  // Observed events (integer)
+  /// Observed events (integer) - DARWIN xenon-based
   void DARWIN_Xe_2015_Events_DDCalc0(int &result) {
     using namespace Pipes::DARWIN_Xe_2015_Events_DDCalc0;
     result = BEreq::DDCalc0_DARWIN_Xe_2015_Events();
     logger() << "DARWIN xenon-based (2015 estimate) events: " << result << std::endl;
   }
   
-  // Background expectation
+  /// Background expectation - DARWIN xenon-based
   void DARWIN_Xe_2015_Background_DDCalc0(double &result) {
     using namespace Pipes::DARWIN_Xe_2015_Background_DDCalc0;
     result = BEreq::DDCalc0_DARWIN_Xe_2015_Background();
     logger() << "DARWIN xenon-based (2015 estimate) background: " << result << std::endl;
   }
   
-  // Signal expectation
+  /// Signal expectation - DARWIN xenon-based
   void DARWIN_Xe_2015_Signal_DDCalc0(double &result) {
     using namespace Pipes::DARWIN_Xe_2015_Signal_DDCalc0;
     result = BEreq::DDCalc0_DARWIN_Xe_2015_Signal();
     logger() << "DARWIN xenon-based (2015 estimate) signal: " << result << std::endl;
   }
   
-  // Signal expectation (spin-independent)
+  /// Signal expectation (spin-independent) - DARWIN xenon-based
   void DARWIN_Xe_2015_SignalSI_DDCalc0(double &result) {
     using namespace Pipes::DARWIN_Xe_2015_SignalSI_DDCalc0;
     result = BEreq::DDCalc0_DARWIN_Xe_2015_SignalSI();
     logger() << "DARWIN xenon-based (2015 estimate) signal (SI): " << result << std::endl;
   }
   
-  // Signal expectation (spin-dependent)
+  /// Signal expectation (spin-dependent) - DARWIN xenon-based
   void DARWIN_Xe_2015_SignalSD_DDCalc0(double &result) {
     using namespace Pipes::DARWIN_Xe_2015_SignalSD_DDCalc0;
     result = BEreq::DDCalc0_DARWIN_Xe_2015_SignalSD();
@@ -2626,7 +2590,9 @@ namespace Gambit {
 //
 //////////////////////////////////////////////////////////////////////////
 
-    /// Capture rate of regular dark matter in the Sun (no v-dependent or q-dependent cross-sections) (s^-1).
+    /*! \brief Capture rate of regular dark matter in the Sun (no v-dependent
+     *         or q-dependent cross-sections) (s^-1).
+     */
     void capture_rate_Sun_constant_xsec(double &result)
     {
       using namespace Pipes::capture_rate_Sun_constant_xsec;
@@ -3004,9 +2970,17 @@ namespace Gambit {
       result = *Dep::IC22_loglike + *Dep::IC79WH_loglike + *Dep::IC79WL_loglike + *Dep::IC79SL_loglike; 
     }
 
+
+///////////////////////////////////////////////////
+//
+//  Unit test
+//
 ///////////////////////////////////////////////////
 
-
+    /*! \brief Central unit test routine.
+     *
+     * Dumps various DM related results into yaml files for later inspection.
+     */
     void UnitTest_DarkBit(int &result)
     {
         using namespace Pipes::UnitTest_DarkBit;
@@ -3096,6 +3070,7 @@ namespace Gambit {
         result = 0;
     }
 
+    /// SimYieldTable based on DarkSUSY tabulated results.
     void SimYieldTable_DarkSusy(SimYieldTable& result)
     {
         using namespace Pipes::SimYieldTable_DarkSusy;
@@ -3151,6 +3126,7 @@ namespace Gambit {
         }
     }
 
+    /// SimYieldTable based on MicrOmegas tabulated results.
     void SimYieldTable_MicrOmegas(SimYieldTable& result)
     {
         using namespace Pipes::SimYieldTable_MicrOmegas;
@@ -3185,6 +3161,7 @@ namespace Gambit {
         }
     }
 
+    // FIXME: DEPRECATED!
     void ToyAnnYield(Funk::Funk& result)
     {
         using namespace Pipes::ToyAnnYield;
