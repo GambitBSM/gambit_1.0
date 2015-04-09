@@ -8,7 +8,7 @@
 #ifdef BACKENDRENAME
   #define BACKENDNAME BACKENDRENAME
 #else
-  #define BACKENDNAME micromegas
+  #define BACKENDNAME MicrOmegas
 #endif
 #define VERSION 3.5.5
 #define SAFE_VERSION 3_5_5
@@ -29,7 +29,7 @@ BE_FUNCTION(mInterp, int, (double,int,int,double*) , "mInterp", "mInterp")
 BE_FUNCTION(zInterp, double, (double,double*) , "zInterp", "zInterp")
 BE_FUNCTION(readSpectra, int, (), "readSpectra", "readSpectra")
 
-BE_VARIABLE(micrOMEGAs::MOcommonSTR, mocommon_, "mocommon_", "MOcommon")
+BE_VARIABLE(MicrOmegas::MOcommonSTR, mocommon_, "mocommon_", "MOcommon")
 
 namespace Gambit
 {

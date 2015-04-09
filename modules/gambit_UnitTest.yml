@@ -160,14 +160,14 @@ Rules:
     dependencies:
         - capability: DD_couplings
           function: DD_couplings_DarkSUSY
-          #function: DD_couplings_micrOMEGAs
+          #function: DD_couplings_MicrOmegas
         - capability: RD_oh2
           function: RD_oh2_DarkSUSY
           #function: RD_oh2_general
-          #function: RD_oh2_micromegas
+          #function: RD_oh2_Micromegas
     options:
         fileroot: UnitTest_MSSMbenchmarks_DarkSUSY
-        #fileroot: UnitTest_MSSMbenchmarks_micromegas
+        #fileroot: UnitTest_MSSMbenchmarks_MicrOmegas
         GA_AnnYield:
           nbins: 100
   - capability: MSSMspectrum
@@ -187,7 +187,7 @@ Rules:
             - DarkBit/slha-benchmarks/14-12-2014_joakim/JE87O_006600.slha1
   - capability: RD_oh2
     options:
-      fast: 1  # Accuracy options (used by micromegas)
+      fast: 1  # Accuracy options (used by MicrOmegas)
       Beps: 1e-2
       omtype: 0
 

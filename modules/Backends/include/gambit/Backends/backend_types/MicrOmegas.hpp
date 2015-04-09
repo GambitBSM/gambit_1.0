@@ -15,15 +15,15 @@
 ///
 ///  *********************************************
 
-#ifndef __micrOMEGAs_types_hpp__
-#define __micrOMEGAs_types_hpp__
+#ifndef __MicrOmegas_types_hpp__
+#define __MicrOmegas_types_hpp__
 
 namespace Gambit
 {
-    namespace micrOMEGAs
+    namespace MicrOmegas
     {
     typedef  struct { double par[36]; }  MOcommonSTR;
     }
 }
 
-#endif // defined __micrOMEGAs_types_hpp__
+#endif // defined __MicrOmegas_types_hpp__
