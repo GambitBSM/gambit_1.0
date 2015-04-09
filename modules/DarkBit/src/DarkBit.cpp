@@ -221,8 +221,6 @@ namespace Gambit {
       // NB: eventually, this function should not be BE-dependent anymore!
       // DarkSUSY conventions like the ones below are only used until we have 
       // decided on a format for the model representation
-      // CAREFUL: arrays start with 0 in c++, but with 1 in FORTRAN,
-      // BUT some arrays (e.g. "mass", "width" & "kdof") are defined to start with 0 in DS...
       int kgamma=13,kw=14,kz=15,kt=11,kh1=17,kh2=18,kh3=19,khc=20;
 
       // read out DS mass spectrum and relevant particle info
@@ -236,34 +234,34 @@ namespace Gambit {
       result.threshold_energy.clear();
 
       // first add neutralino=WIMP=least massive 'coannihilating particle'
-      result.coannihilatingParticles.push_back(RD_coannihilating_particle(DSpart.kn[0], myintdof.kdof[DSpart.kn[0]],mymspctm.mass[DSpart.kn[0]]));
+      result.coannihilatingParticles.push_back(RD_coannihilating_particle(DSpart.kn(1), myintdof.kdof(DSpart.kn(1)),mymspctm.mass(DSpart.kn(1))));
 
       //include  neutralino & chargino coannihilation
       if(wantCharginosNeutralinos)
       {
-        for (int i=1; i<4; i++)
-          colist.push_back(DSpart.kn[i]);
-        colist.push_back(DSpart.kcha[0]);
-        colist.push_back(DSpart.kcha[1]);
+        for (int i=2; i<=4; i++)
+          colist.push_back(DSpart.kn(i));
+        colist.push_back(DSpart.kcha(1));
+        colist.push_back(DSpart.kcha(2));
       }
 
       //include sfermion coannihilation
       if(wantSfermions)
       {
-        for (int i=0; i<6; i++)
-         colist.push_back(DSpart.ksl[i]);
-        for (int i=0; i<3; i++)
-         colist.push_back(DSpart.ksnu[i]);
-        for (int i=0; i<6; i++)
-         colist.push_back(DSpart.ksqu[i]);
-        for (int i=0; i<6; i++)
-         colist.push_back(DSpart.ksqd[i]);
+        for (int i=1; i<=6; i++)
+         colist.push_back(DSpart.ksl(i));
+        for (int i=1; i<=3; i++)
+         colist.push_back(DSpart.ksnu(i));
+        for (int i=1; i<=6; i++)
+         colist.push_back(DSpart.ksqu(i));
+        for (int i=1; i<=6; i++)
+         colist.push_back(DSpart.ksqd(i));
       }
 
       // only keep sparticles that are not too heavy
       for (size_t i=0; i<colist.size(); i++)
-        if (mymspctm.mass[colist[i]]/mymspctm.mass[DSpart.kn[0]] < maximalMass)
-          result.coannihilatingParticles.push_back(RD_coannihilating_particle(colist[i], myintdof.kdof[colist[i]], mymspctm.mass[colist[i]]));
+        if (mymspctm.mass(colist[i])/mymspctm.mass(DSpart.kn(1)) < maximalMass)
+          result.coannihilatingParticles.push_back(RD_coannihilating_particle(colist[i], myintdof.kdof(colist[i]), mymspctm.mass(colist[i])));
 
       colist.clear();
 
@@ -277,12 +275,12 @@ namespace Gambit {
 
       for (int i=0; i<resmax; i++)
       {
-        if (mymspctm.mass[reslist[i]]/result.coannihilatingParticles[0].mass > 2.)
+        if (mymspctm.mass(reslist[i])/result.coannihilatingParticles[0].mass > 2.)
         {
-          if (reslist[i]==kh1 && mywidths.width[kh1] < 0.1)
-            result.resonances.push_back(TH_Resonance(mymspctm.mass[reslist[i]], 0.1)); // narrow res treatment adopted in DS
+          if (reslist[i]==kh1 && mywidths.width(kh1) < 0.1)
+            result.resonances.push_back(TH_Resonance(mymspctm.mass(reslist[i]), 0.1)); // narrow res treatment adopted in DS
           else
-            result.resonances.push_back(TH_Resonance(mymspctm.mass[reslist[i]], mywidths.width[reslist[i]]));
+            result.resonances.push_back(TH_Resonance(mymspctm.mass(reslist[i]), mywidths.width(reslist[i])));
         }
       }
 
@@ -291,8 +289,8 @@ namespace Gambit {
       int thrlist[] = {kw,kz,kt};
       int thrmax=sizeof(thrlist) / sizeof(thrlist[0]);
       for (int i=0; i<thrmax; i++)
-        if (mymspctm.mass[thrlist[i]]>result.coannihilatingParticles[0].mass)
-          result.threshold_energy.push_back(2*mymspctm.mass[thrlist[i]]);
+        if (mymspctm.mass(thrlist[i])>result.coannihilatingParticles[0].mass)
+          result.threshold_energy.push_back(2*mymspctm.mass(thrlist[i]));
 
       // now add coannihilation thresholds
       if (result.coannihilatingParticles.size() > 1)
@@ -308,7 +306,7 @@ namespace Gambit {
     {
       using namespace Pipes::RD_thresholds_resonances_from_ProcessCatalog;
 
-      TH_Process annihilation = (*Dep::TH_ProcessCatalog).getProcess((std::string)"chi_10", (std::string)"chi_10");
+      TH_Process annihilation = (*Dep::TH_ProcessCatalog).getProcess((std::string)"~chi0_1", (std::string)"~chi0_1");
 
       result = TH_resonances_thresholds(annihilation.thresholdResonances);
     }
@@ -370,25 +368,25 @@ namespace Gambit {
       //[this is essentially the model-dependent part of dsrdstart]
       DS_RDMGEV myrdmgev;
       myrdmgev.nco = specres.coannihilatingParticles.size();
-      for (int i=0; i<myrdmgev.nco; i++) {
-         myrdmgev.mco[i]=fabs(specres.coannihilatingParticles[i].mass);
-         myrdmgev.mdof[i]=specres.coannihilatingParticles[i].degreesOfFreedom;
-         myrdmgev.kcoann[i]=specres.coannihilatingParticles[i].index;
+      for (int i=1; i<=myrdmgev.nco; i++) {
+         myrdmgev.mco(i)=fabs(specres.coannihilatingParticles[i-1].mass);
+         myrdmgev.mdof(i)=specres.coannihilatingParticles[i-1].degreesOfFreedom;
+         myrdmgev.kcoann(i)=specres.coannihilatingParticles[i-1].index;
       }
       // now order
       double tmp; int itmp;
-      for (int i=0; i<myrdmgev.nco-1; i++) {
-        for (int j=i+1; j<myrdmgev.nco; j++) {
-          if (myrdmgev.mco[j]<myrdmgev.mco[i]) {
-            tmp=myrdmgev.mco[i];
-            myrdmgev.mco[i]=myrdmgev.mco[j];
-            myrdmgev.mco[j]=tmp;
-            itmp=myrdmgev.mdof[i];
-            myrdmgev.mdof[i]=myrdmgev.mdof[j];
-            myrdmgev.mdof[j]=itmp;
-            itmp=myrdmgev.kcoann[i];
-            myrdmgev.kcoann[i]=myrdmgev.kcoann[j];
-            myrdmgev.kcoann[j]=itmp;
+      for (int i=1; i<=myrdmgev.nco-1; i++) {
+        for (int j=i+1; j<=myrdmgev.nco; j++) {
+          if (myrdmgev.mco(j)<myrdmgev.mco(i)) {
+            tmp=myrdmgev.mco(i);
+            myrdmgev.mco(i)=myrdmgev.mco(j);
+            myrdmgev.mco(j)=tmp;
+            itmp=myrdmgev.mdof(i);
+            myrdmgev.mdof(i)=myrdmgev.mdof(j);
+            myrdmgev.mdof(j)=itmp;
+            itmp=myrdmgev.kcoann(i);
+            myrdmgev.kcoann(i)=myrdmgev.kcoann(j);
+            myrdmgev.kcoann(j)=itmp;
           }
         }
       }
@@ -421,7 +419,7 @@ namespace Gambit {
     {
         using namespace Pipes::RD_eff_annrate_from_ProcessCatalog;
 
-        TH_Process annProc = (*Dep::TH_ProcessCatalog).getProcess((std::string)"chi_10", (std::string)"chi_10");
+        TH_Process annProc = (*Dep::TH_ProcessCatalog).getProcess((std::string)"~chi0_1", (std::string)"~chi0_1");
         double mDM = *Param["mass"];
         const double GeV2tocm3s1 = 1.17e-17;
 
@@ -485,36 +483,36 @@ namespace Gambit {
         // write information about thresholds and resonances to DS common blocks
         // [this is the model-independent part of dsrdstart]
         DS_RDMGEV myrdmgev = *BEreq::rdmgev; //NB:the other variables in that block have already been set!!!
-        DS_RDPTH myrdpth;
         myrdmgev.nres=0;
         
         if (!myres.resonances.empty()){
           myrdmgev.nres=myres.resonances.size();
-          for (std::size_t i=0; i<myres.resonances.size(); i++) {
-            myrdmgev.rgev[i]=myres.resonances[i].energy;
-            myrdmgev.rwid[i]=myres.resonances[i].width;
+          for (std::size_t i=1; i<=myres.resonances.size(); i++) {
+//          for (int i=1; i<=myres.resonances.size(); i++) {
+            myrdmgev.rgev(i)=myres.resonances[i-1].energy;
+            myrdmgev.rwid(i)=myres.resonances[i-1].width;
 //            std::cout << myrdmgev.rgev[i] << "  " << myrdmgev.rwid[i] << std::endl;
           }
         }
         // convert to momenta
         *BEreq::rdmgev = myrdmgev;
+        DS_RDPTH myrdpth;
         myrdpth.nth=myres.threshold_energy.size()-1;   // NB: DS does not count 2* WIMP rest mass as thr
-        myrdpth.pth[0]=0; myrdpth.incth[0]=1;
-        for (std::size_t i=2; i<=myres.threshold_energy.size(); i++) {
-          myrdpth.pth[i-1]=sqrt(pow(myres.threshold_energy[i-1],2)/4-pow(mwimp,2));
-          myrdpth.incth[i-1]=1;
-//          std::cout << i-1 << "  " << myrdpth.pth[i-1] << std::endl;
+        myrdpth.pth(0)=0; myrdpth.incth(0)=1;
+        for (std::size_t i=1; i<myres.threshold_energy.size(); i++) {
+          myrdpth.pth(i)=sqrt(pow(myres.threshold_energy[i],2)/4-pow(mwimp,2));
+          myrdpth.incth(i)=1;
         }
         *BEreq::rdpth = myrdpth;
 
         // determine starting point for integration of Boltzmann eq
         DS_RDDOF myrddof = *BEreq::rddof;
-        double xstart=std::max(myrdpars.xinit,1.0001*mwimp/myrddof.tgev[0]);
+        double xstart=std::max(myrdpars.xinit,1.0001*mwimp/myrddof.tgev(1));
         double tstart=mwimp/xstart;
         int k; myrddof.khi=myrddof.nf; myrddof.klo=1;
         while (myrddof.khi > myrddof.klo+1){
           k=(myrddof.khi+myrddof.klo)/2;
-          if (myrddof.tgev[k-1] < tstart){
+          if (myrddof.tgev(k) < tstart){
             myrddof.khi=k;
           }
           else {
@@ -523,20 +521,14 @@ namespace Gambit {
         }
         *BEreq::rddof=myrddof;
 
+
         // follow narrow res treatment for SM Higgs adopted in DS
-        DS_WIDTHS mywidths= *BEreq::widths;
-        int kh1=17; double widthkh1= mywidths.width[kh1];    
-        if (mywidths.width[kh1]<0.1) {
-          mywidths.width[kh1]=0.1;
-          *BEreq::widths=mywidths;
-        }
-
-//        std::cout << "Starting dsrdtab... " << xstart << std::endl;
-
+        double widthSMHiggs=(*BEreq::widths).width(17);
+        if (widthSMHiggs<0.1) 
+          (*BEreq::widths).width(17)=0.1;
+        
         BEreq::dsrdtab(byVal(*Dep::RD_eff_annrate),xstart); // tabulate invariant rate
         BEreq::dsrdthlim();                                 // determine integration limit
-
-//        std::cout << "Starting dsrdeqn... "  << std::endl;
 
         // now solve Boltzmann eqn using tabulated rate
         double xend, yend, xf; int nfcn;
@@ -544,9 +536,8 @@ namespace Gambit {
         // using the untabulated rate gives the same result but is usually slower: 
         // BEreq::dsrdeqn(byVal(*Dep::RD_eff_annrate),xstart,xend,yend,xf,nfcn);
         
-        // change SM Higgs width back to standard value
-        mywidths.width[kh1]=widthkh1;
-        *BEreq::widths=mywidths;
+        // change SM Higgs width in DS back to standard value
+        (*BEreq::widths).width(17)=widthSMHiggs;
 
         //capture NAN result and map it to zero RD
         if (yend!=yend){
@@ -554,7 +545,7 @@ namespace Gambit {
           yend=0;
         }  
         
-        result = 0.70365e8*myrddof.fh[myrddof.nf-1]*mwimp*yend;
+        result = 0.70365e8*myrddof.fh(myrddof.nf)*mwimp*yend;
 
       } // USING BE=DS
 
@@ -1274,7 +1265,7 @@ namespace Gambit {
 
         if ( runOptions->getValueOrDef(false, "ignore_all") ) return;
 
-        TH_Process process = (*Dep::TH_ProcessCatalog).getProcess((std::string)"chi_10", (std::string)"chi_10");
+        TH_Process process = (*Dep::TH_ProcessCatalog).getProcess((std::string)"~chi0_1", (std::string)"~chi0_1");
 
         // Add only gamma-ray spectra for two and three body final states
         for (std::vector<TH_Channel>::iterator it = process.channelList.begin(); it != process.channelList.end(); ++it)
@@ -1367,10 +1358,10 @@ namespace Gambit {
         line_width = runOptions->getValueOrDef<double>(0.03,  "line_width");
 
         // Get annihilation process from process catalog
-        TH_Process annProc = (*Dep::TH_ProcessCatalog).getProcess((std::string)"chi_10", (std::string)"chi_10");
+        TH_Process annProc = (*Dep::TH_ProcessCatalog).getProcess((std::string)"~chi0_1", (std::string)"~chi0_1");
 
         // Get particle mass from process catalog
-        double mass = (*Dep::TH_ProcessCatalog).getParticleProperty("chi_10").mass;
+        double mass = (*Dep::TH_ProcessCatalog).getParticleProperty("~chi0_1").mass;
         double Ecm = 2*mass;
 
         // Loop over all channels for that process
@@ -1560,10 +1551,10 @@ namespace Gambit {
       std::vector<double> ygrid(n);
 
         // Get annihilation process from process catalog
-        TH_Process annProc = (*Dep::TH_ProcessCatalog).getProcess((std::string)"chi_10", (std::string)"chi_10");
+        TH_Process annProc = (*Dep::TH_ProcessCatalog).getProcess((std::string)"~chi0_1", (std::string)"~chi0_1");
 
         // Get particle mass from process catalog
-        double mass = (*Dep::TH_ProcessCatalog).getParticleProperty("chi_10").mass;
+        double mass = (*Dep::TH_ProcessCatalog).getParticleProperty("~chi0_1").mass;
 
 
         ///////////////////////////////////////////////////////////
@@ -1592,11 +1583,11 @@ namespace Gambit {
                 // Find channel
                 if      ( it->isChannel("Z0"    , "Z0"     )) ch = 12;
                 else if ( it->isChannel("W+"    , "W-"     )) ch = 13;
-                else if ( it->isChannel("nu_e"  , "~nu_e"  )) ch = 14;
+                else if ( it->isChannel("nu_e"  , "nubar_e"  )) ch = 14;
                 else if ( it->isChannel("e+"    , "e-"     )) ch = 15;
-                else if ( it->isChannel("nu_mu" , "~nu_mu" )) ch = 16;
+                else if ( it->isChannel("nu_mu" , "nubar_mu" )) ch = 16;
                 else if ( it->isChannel("mu+"   , "mu-"    )) ch = 17;
-                else if ( it->isChannel("nu_tau", "~nu_tau")) ch = 18;
+                else if ( it->isChannel("nu_tau", "nubar_tau")) ch = 18;
                 else if ( it->isChannel("tau+"  , "tau-"   )) ch = 19;
                 else if ( it->isChannel("u"     , "ubar"   )) ch = 20;
                 else if ( it->isChannel("d"     , "dbar"   )) ch = 21;
@@ -1739,52 +1730,52 @@ namespace Gambit {
         // Instantiate new ProcessCatalog
         TH_ProcessCatalog catalog;      
         // and DM annihilation process                   
-        TH_Process process((std::string)"chi_10", (std::string)"chi_10");   
+        TH_Process process((std::string)"~chi0_1", (std::string)"~chi0_1");   
         
         // Get DarkSUSY mass spectrum
         DS_MSPCTM mymspctm= *BEreq::mspctm;
         
         // Store properties of relevant particles. Constructor for TH_ParticleProperty takes particle mass and 2*spin.
         // Make sure to add any particles used as final states in 2 or 3-body decays.
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("nu_e"   , TH_ParticleProperty(mymspctm.mass[1],     1)));
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("~nu_e"  , TH_ParticleProperty(mymspctm.mass[1],     1)));
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("e-"     , TH_ParticleProperty(mymspctm.mass[2],     1)));
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("e+"     , TH_ParticleProperty(mymspctm.mass[2],     1)));
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("nu_mu"  , TH_ParticleProperty(mymspctm.mass[3],     1)));
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("~nu_mu" , TH_ParticleProperty(mymspctm.mass[3],     1)));
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("mu-"    , TH_ParticleProperty(mymspctm.mass[4],     1)));
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("mu+"    , TH_ParticleProperty(mymspctm.mass[4],     1)));
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("nu_tau" , TH_ParticleProperty(mymspctm.mass[5],     1)));
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("~nu_tau", TH_ParticleProperty(mymspctm.mass[5],     1)));
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("tau-"   , TH_ParticleProperty(mymspctm.mass[6],     1)));
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("tau+"   , TH_ParticleProperty(mymspctm.mass[6],     1)));
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("u"      , TH_ParticleProperty(mymspctm.mass[7],     1)));
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("ubar"   , TH_ParticleProperty(mymspctm.mass[7],     1)));
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("d"      , TH_ParticleProperty(mymspctm.mass[8],     1)));
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("dbar"   , TH_ParticleProperty(mymspctm.mass[8],     1)));
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("c"      , TH_ParticleProperty(mymspctm.mass[9],     1)));
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("cbar"   , TH_ParticleProperty(mymspctm.mass[9],     1)));
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("s"      , TH_ParticleProperty(mymspctm.mass[10],    1)));
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("sbar"   , TH_ParticleProperty(mymspctm.mass[10],    1)));
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("t"      , TH_ParticleProperty(mymspctm.mass[11],    1)));
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("tbar"   , TH_ParticleProperty(mymspctm.mass[11],    1)));
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("b"      , TH_ParticleProperty(mymspctm.mass[12],    1)));
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("bbar"   , TH_ParticleProperty(mymspctm.mass[12],    1)));
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("gamma"  , TH_ParticleProperty(mymspctm.mass[13],    2)));
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("W-"     , TH_ParticleProperty(mymspctm.mass[14],    2)));
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("W+"     , TH_ParticleProperty(mymspctm.mass[14],    2)));   
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("Z0"     , TH_ParticleProperty(mymspctm.mass[15],    2)));   
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("g"      , TH_ParticleProperty(mymspctm.mass[16],    2)));  
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("H1"     , TH_ParticleProperty(mymspctm.mass[17],    0)));  
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("H2"     , TH_ParticleProperty(mymspctm.mass[18],    0)));  
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("H3"     , TH_ParticleProperty(mymspctm.mass[19],    0)));  
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("H-"     , TH_ParticleProperty(mymspctm.mass[20],    0)));     
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("H+"     , TH_ParticleProperty(mymspctm.mass[20],    0)));          
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("nu_e"   , TH_ParticleProperty(mymspctm.mass(1),     1)));
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("nubar_e"  , TH_ParticleProperty(mymspctm.mass(1),     1)));
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("e-"     , TH_ParticleProperty(mymspctm.mass(2),     1)));
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("e+"     , TH_ParticleProperty(mymspctm.mass(2),     1)));
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("nu_mu"  , TH_ParticleProperty(mymspctm.mass(3),     1)));
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("nubar_mu" , TH_ParticleProperty(mymspctm.mass(3),     1)));
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("mu-"    , TH_ParticleProperty(mymspctm.mass(4),     1)));
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("mu+"    , TH_ParticleProperty(mymspctm.mass(4),     1)));
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("nu_tau" , TH_ParticleProperty(mymspctm.mass(5),     1)));
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("nubar_tau", TH_ParticleProperty(mymspctm.mass(5),     1)));
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("tau-"   , TH_ParticleProperty(mymspctm.mass(6),     1)));
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("tau+"   , TH_ParticleProperty(mymspctm.mass(6),     1)));
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("u"      , TH_ParticleProperty(mymspctm.mass(7),     1)));
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("ubar"   , TH_ParticleProperty(mymspctm.mass(7),     1)));
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("d"      , TH_ParticleProperty(mymspctm.mass(8),     1)));
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("dbar"   , TH_ParticleProperty(mymspctm.mass(8),     1)));
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("c"      , TH_ParticleProperty(mymspctm.mass(9),     1)));
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("cbar"   , TH_ParticleProperty(mymspctm.mass(9),     1)));
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("s"      , TH_ParticleProperty(mymspctm.mass(10),    1)));
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("sbar"   , TH_ParticleProperty(mymspctm.mass(10),    1)));
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("t"      , TH_ParticleProperty(mymspctm.mass(11),    1)));
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("tbar"   , TH_ParticleProperty(mymspctm.mass(11),    1)));
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("b"      , TH_ParticleProperty(mymspctm.mass(12),    1)));
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("bbar"   , TH_ParticleProperty(mymspctm.mass(12),    1)));
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("gamma"  , TH_ParticleProperty(mymspctm.mass(13),    2)));
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("W-"     , TH_ParticleProperty(mymspctm.mass(14),    2)));
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("W+"     , TH_ParticleProperty(mymspctm.mass(14),    2)));   
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("Z0"     , TH_ParticleProperty(mymspctm.mass(15),    2)));   
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("g"      , TH_ParticleProperty(mymspctm.mass(16),    2)));  
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("h0_2"   , TH_ParticleProperty(mymspctm.mass(17),    0)));  
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("h0_1"   , TH_ParticleProperty(mymspctm.mass(18),    0)));  
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("A0"     , TH_ParticleProperty(mymspctm.mass(19),    0)));  
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("H-"     , TH_ParticleProperty(mymspctm.mass(20),    0)));     
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("H+"     , TH_ParticleProperty(mymspctm.mass(20),    0)));          
         // DM mass   
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("chi_10" , TH_ParticleProperty(mymspctm.mass[42],    1)));
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("~chi0_1" , TH_ParticleProperty(mymspctm.mass(42),    1)));
         
         // Set DarkSUSY DM mass parameter used in 3-body decays
-        BEreq::IBintvars->ibcom_mx = catalog.getParticleProperty("chi_10").mass;
+        BEreq::IBintvars->ibcom_mx = catalog.getParticleProperty("~chi0_1").mass;
                 
         // Helper variables
         int index; 
@@ -1796,7 +1787,7 @@ namespace Gambit {
             /* Check if process is kinematically allowed */                                         \
             m_1 = catalog.getParticleProperty(STRINGIFY(P1)).mass;                                  \
             m_2 = catalog.getParticleProperty(STRINGIFY(P1)).mass;                                  \
-            if(m_1 + m_2 < 2*catalog.getParticleProperty("chi_10").mass)                            \
+            if(m_1 + m_2 < 2*catalog.getParticleProperty("~chi0_1").mass)                            \
             {                                                                                       \
                 /* Set cross-section */                                                             \
                 index = PARTCH;                                                                     \
@@ -1813,25 +1804,25 @@ namespace Gambit {
                 process.channelList.push_back(CAT(channel_,NAME));                                  \
             }
              
-        SETUP_DS_PROCESS(H1H1,      1 , H1,     H1,     1   )
-        SETUP_DS_PROCESS(H1H2,      2 , H1,     H2,     1   )
-        SETUP_DS_PROCESS(H2H2,      3 , H2,     H2,     1   )
-        SETUP_DS_PROCESS(H3H3,      4 , H3,     H3,     1   )
-        SETUP_DS_PROCESS(H1H3,      5 , H1,     H3,     1   )
-        SETUP_DS_PROCESS(H2H3,      6 , H2,     H3,     1   )
+        SETUP_DS_PROCESS(H1H1,      1 , h0_2,   h0_2,   1   )
+        SETUP_DS_PROCESS(H1H2,      2 , h0_2,   h0_1,   1   )
+        SETUP_DS_PROCESS(H2H2,      3 , h0_1,   h0_1,   1   )
+        SETUP_DS_PROCESS(H3H3,      4 , A0,     A0,     1   )
+        SETUP_DS_PROCESS(H1H3,      5 , h0_2,   A0,     1   )
+        SETUP_DS_PROCESS(H2H3,      6 , h0_1,   A0,     1   )
         SETUP_DS_PROCESS(HpHm,      7 , H+,     H-,     1   )
-        SETUP_DS_PROCESS(H1Z0,      8 , H1,     Z0,     1   )
-        SETUP_DS_PROCESS(H2Z0,      9 , H2,     Z0,     1   )
-        SETUP_DS_PROCESS(H3Z0,      10, H3,     Z0,     1   )
+        SETUP_DS_PROCESS(H1Z0,      8 , h0_2,   Z0,     1   )
+        SETUP_DS_PROCESS(H2Z0,      9 , h0_1,   Z0,     1   )
+        SETUP_DS_PROCESS(H3Z0,      10, A0,     Z0,     1   )
         SETUP_DS_PROCESS(WpHm,      11, W+,     H-,     0.5 )  // Prefactor 0.5 since W+H- and W-H+ are summed in DS
         SETUP_DS_PROCESS(WmHp,      11, W-,     H+,     0.5 )  // Prefactor 0.5 since W+H- and W-H+ are summed in DS
         SETUP_DS_PROCESS(Z0Z0,      12, Z0,     Z0,     1   )
         SETUP_DS_PROCESS(WW,        13, W+,     W-,     1   )
-        SETUP_DS_PROCESS(nuenue,    14, nu_e,   ~nu_e,  1   )
+        SETUP_DS_PROCESS(nuenue,    14, nu_e,   nubar_e,  1   )
         SETUP_DS_PROCESS(ee,        15, e+,     e-,     1   )
-        SETUP_DS_PROCESS(numnum,    16, nu_mu,  ~nu_mu, 1   )
+        SETUP_DS_PROCESS(numnum,    16, nu_mu,  nubar_mu, 1   )
         SETUP_DS_PROCESS(mumu,      17, mu+,    mu-,    1   )
-        SETUP_DS_PROCESS(nutnut,    18, nu_tau, ~nu_tau,1   )
+        SETUP_DS_PROCESS(nutnut,    18, nu_tau, nubar_tau,1   )
         SETUP_DS_PROCESS(tautau,    19, tau+,   tau-,   1   )
         SETUP_DS_PROCESS(uubar,     20, u,      ubar,   1   )
         SETUP_DS_PROCESS(ddbar,     21, d,      dbar,   1   )
@@ -1845,7 +1836,7 @@ namespace Gambit {
         // Undef the macro so it doesn't propagate through GAMBIT
         #undef SETUP_DS_PROCESS
         
-        double M_DM = catalog.getParticleProperty("chi_10").mass;
+        double M_DM = catalog.getParticleProperty("~chi0_1").mass;
 
         // Macro for setting up 3-body decays with gammas
         #define SETUP_DS_PROCESS_GAMMA3BODY(NAME, IBCH, P1, P2, IBFUNC, SV_IDX, PREFACTOR)                                  \
@@ -2057,7 +2048,7 @@ namespace Gambit {
     {
         using namespace Pipes::lnL_FermiGC_gamLike;
         
-        double mass = (*Dep::TH_ProcessCatalog).getParticleProperty("chi_10").mass;
+        double mass = (*Dep::TH_ProcessCatalog).getParticleProperty("~chi0_1").mass;
 
         std::vector<double> x = logspace(-1, 2.698, 100);  // from 0.1 to 500 GeV
         std::vector<double> y = (*Dep::GA_AnnYield/(mass*mass*8*M_PI))->set("v",0.)->bind("E")->vect(x);
@@ -2115,19 +2106,19 @@ namespace Gambit {
 
 
     /// Retrieve the DM mass in GeV for generic models (GeV)
-    // FIXME this needs to be updated once DM is not always referred to as "chi_10"
-    void mwimp_generic(double &result) { result = Pipes::mwimp_generic::Dep::TH_ProcessCatalog->getParticleProperty("chi_10").mass; }
+    // FIXME this needs to be updated once DM is not always referred to as "~chi0_1"
+    void mwimp_generic(double &result) { result = Pipes::mwimp_generic::Dep::TH_ProcessCatalog->getParticleProperty("~chi0_1").mass; }
 
     /// Retrieve the DM mass in GeV for the scalar singlet model (GeV)
     void mwimp_SingletDM(double &result) { result = *Pipes::mwimp_SingletDM::Param["mass"]; }
 
     /// Retrieve the total thermally-averaged annihilation cross-section for indirect detection (cm^3 / s)
     // FIXME this needs to be updated once annProc.genTotalRate->bind("v")->eval(0.) works.
-    // FIXME this needs to be updated once DM is not always referred to as "chi_10"
+    // FIXME this needs to be updated once DM is not always referred to as "~chi0_1"
     void sigmav_late_universe(double &result)
     {
       using namespace Pipes::sigmav_late_universe;
-      TH_Process annProc = Dep::TH_ProcessCatalog->getProcess("chi_10", "chi_10");
+      TH_Process annProc = Dep::TH_ProcessCatalog->getProcess("~chi0_1", "~chi0_1");
       result = 0.0;
       for (std::vector<TH_Channel>::iterator it = annProc.channelList.begin();
            it != annProc.channelList.end(); ++it)
@@ -2196,7 +2187,7 @@ namespace Gambit {
         logger() << "\tdels = delta s = " << (*BEreq::ddcom).dels << endl;
 
         if (*Dep::DarkSUSY_PointInit) {
-          result.M_DM = (*BEreq::mspctm).mass[42];        
+          result.M_DM = (*BEreq::mspctm).mass(42);        
           // Calling DarkSUSY subroutine dsddgpgn(gps,gns,gpa,gna)
           // to set all four couplings.
           BEreq::dsddgpgn(result.gps, result.gns, result.gpa, result.gna);
@@ -2212,7 +2203,7 @@ namespace Gambit {
           logger() << " gpa = " << result.gpa << std::endl;
           logger() << " gna = " << result.gna << std::endl;
         } else {
-          result.M_DM = (*BEreq::mspctm).mass[42];        
+          result.M_DM = (*BEreq::mspctm).mass(42);        
           // Set couplings to zero if DarkSUSY point initialization
           // was not successful
           result.gps = 0.0; result.gns = 0.0;
@@ -2628,40 +2619,39 @@ namespace Gambit {
       double Higgs_mass_charged;
       
       // Set annihilation branching fractions
-      // FIXME needs to be fixed once DM is not chi_10 always, and once BFs are available directly from TH_Process
-      TH_Process annProc = Dep::TH_ProcessCatalog->getProcess("chi_10", "chi_10");
+      // FIXME needs to be fixed once DM is not ~chi0_1 always, and once BFs are available directly from TH_Process
+      TH_Process annProc = Dep::TH_ProcessCatalog->getProcess("~chi0_1", "~chi0_1");
       std::vector<str> neutral_channels[29];
-      Utils::push_many(neutral_channels[0],  "h0_1", "h0_1");
-      Utils::push_many(neutral_channels[1],  "h0_1", "h0_2");
-      Utils::push_many(neutral_channels[2],  "h0_2", "h0_2");
-      Utils::push_many(neutral_channels[3],  "h0_3", "h0_3");
-      Utils::push_many(neutral_channels[4],  "h0_1", "h0_3");
-      Utils::push_many(neutral_channels[5],  "h0_2", "h0_1");
-      Utils::push_many(neutral_channels[6],  "H+", "H-");
-      Utils::push_many(neutral_channels[7],  "Z0", "h0_1");
-      Utils::push_many(neutral_channels[8],  "Z0", "h0_2");
-      Utils::push_many(neutral_channels[9],  "Z0", "h0_3");
-      Utils::push_many(neutral_channels[10], "W+", "H-");            //actually W+H- and W-H+
-      Utils::push_many(neutral_channels[11], "Z0", "Z0");
-      Utils::push_many(neutral_channels[12], "W+", "W-");
-      Utils::push_many(neutral_channels[13], "nu_e", "nubar_e");
-      Utils::push_many(neutral_channels[14], "e+", "e-");
-      Utils::push_many(neutral_channels[15], "nu_mu", "nubar_mu");
-      Utils::push_many(neutral_channels[16], "mu+", "mu-");
-      Utils::push_many(neutral_channels[17], "nu_tau", "nubar_tau");
-      Utils::push_many(neutral_channels[18], "tau+", "tau-");
-      Utils::push_many(neutral_channels[19], "u", "ubar");
-      Utils::push_many(neutral_channels[20], "d", "dbar");
-      Utils::push_many(neutral_channels[21], "c", "cbar");
-      Utils::push_many(neutral_channels[22], "s", "sbar");
-      Utils::push_many(neutral_channels[23], "t", "tbar");
-      Utils::push_many(neutral_channels[24], "b", "bbar");
-      Utils::push_many(neutral_channels[25], "g", "g");
-      Utils::push_many(neutral_channels[26], "b", "bbar", "g");      //actually qqg (not implemented in DS though)
-      Utils::push_many(neutral_channels[27], "gamma", "gamma");
-      Utils::push_many(neutral_channels[28], "Z0", "gamma");
-      const str vals[] = { "W-", "H+"};                      //the missing channel
-      const std::vector<str> adhoc_chan(std::begin(vals), std::end(vals));
+      neutral_channels[0]  = initVector<str>("h0_1", "h0_1");
+      neutral_channels[1]  = initVector<str>("h0_1", "h0_2");
+      neutral_channels[2]  = initVector<str>("h0_2", "h0_2");
+      neutral_channels[3]  = initVector<str>("A0", "A0");
+      neutral_channels[4]  = initVector<str>("h0_1", "A0");
+      neutral_channels[5]  = initVector<str>("h0_2", "h0_1");
+      neutral_channels[6]  = initVector<str>("H+", "H-");
+      neutral_channels[7]  = initVector<str>("Z0", "h0_1");
+      neutral_channels[8]  = initVector<str>("Z0", "h0_2");
+      neutral_channels[9]  = initVector<str>("Z0", "A0");
+      neutral_channels[10] = initVector<str>("W+", "H-");            //actually W+H- and W-H+
+      neutral_channels[11] = initVector<str>("Z0", "Z0");
+      neutral_channels[12] = initVector<str>("W+", "W-");
+      neutral_channels[13] = initVector<str>("nu_e", "nubar_e");
+      neutral_channels[14] = initVector<str>("e+", "e-");
+      neutral_channels[15] = initVector<str>("nu_mu", "nubar_mu");
+      neutral_channels[16] = initVector<str>("mu+", "mu-");
+      neutral_channels[17] = initVector<str>("nu_tau", "nubar_tau");
+      neutral_channels[18] = initVector<str>("tau+", "tau-");
+      neutral_channels[19] = initVector<str>("u", "ubar");
+      neutral_channels[20] = initVector<str>("d", "dbar");
+      neutral_channels[21] = initVector<str>("c", "cbar");
+      neutral_channels[22] = initVector<str>("s", "sbar");
+      neutral_channels[23] = initVector<str>("t", "tbar");
+      neutral_channels[24] = initVector<str>("b", "bbar");
+      neutral_channels[25] = initVector<str>("g", "g");
+      neutral_channels[26] = initVector<str>("b", "bbar", "g");      //actually qqg (not implemented in DS though)
+      neutral_channels[27] = initVector<str>("gamma", "gamma");
+      neutral_channels[28] = initVector<str>("Z0", "gamma");
+      const std::vector<str> adhoc_chan = initVector<str>("W-", "H+");                      //the missing channel
 
       for (int i=0; i<29; i++)
       {
@@ -2689,7 +2679,7 @@ namespace Gambit {
       std::map<str, TH_ParticleProperty>::const_iterator its[4];
       its[0] = Dep::TH_ProcessCatalog->particleProperties.find("h0_1");
       its[1] = Dep::TH_ProcessCatalog->particleProperties.find("h0_2");
-      its[2] = Dep::TH_ProcessCatalog->particleProperties.find("h0_3");
+      its[2] = Dep::TH_ProcessCatalog->particleProperties.find("A0");
       its[3] = Dep::TH_ProcessCatalog->particleProperties.find("H+");
       Higgs_masses_neutral[0] = (its[0] != Dep::TH_ProcessCatalog->particleProperties.end()) ? its[0]->second.mass : 0.;
       Higgs_masses_neutral[1] = (its[1] != Dep::TH_ProcessCatalog->particleProperties.end()) ? its[1]->second.mass : 0.;
@@ -2700,7 +2690,7 @@ namespace Gambit {
       const TH_Process* h0_decays[3];
       h0_decays[0] = Dep::TH_ProcessCatalog->find("h0_1");
       h0_decays[1] = Dep::TH_ProcessCatalog->find("h0_2");
-      h0_decays[2] = Dep::TH_ProcessCatalog->find("h0_3");
+      h0_decays[2] = Dep::TH_ProcessCatalog->find("A0");
       const TH_Process* Hplus_decays = Dep::TH_ProcessCatalog->find("H+");
       const TH_Process* Hminus_decays = Dep::TH_ProcessCatalog->find("H-");
       if (Hplus_decays != NULL and Hminus_decays == NULL) DarkBit_error().raise(LOCAL_INFO, "H+ decays exists in process catalogue but not H-.");
@@ -2761,21 +2751,21 @@ namespace Gambit {
 
         // Define the charged Higgs decay channels 
         std::vector<str> charged_channels[15];
-        Utils::push_many(charged_channels[0],  "u", "dbar");
-        Utils::push_many(charged_channels[1],  "u", "sbar");
-        Utils::push_many(charged_channels[2],  "u", "bbar");
-        Utils::push_many(charged_channels[3],  "c", "dbar");
-        Utils::push_many(charged_channels[4],  "c", "sbar");
-        Utils::push_many(charged_channels[5],  "c", "bbar");
-        Utils::push_many(charged_channels[6],  "t", "dbar");
-        Utils::push_many(charged_channels[7],  "t", "sbar");
-        Utils::push_many(charged_channels[8],  "t", "bbar");
-        Utils::push_many(charged_channels[9],  "e", "nu_e");
-        Utils::push_many(charged_channels[10], "mu", "nu_mu");
-        Utils::push_many(charged_channels[11], "tau", "nu_tau");
-        Utils::push_many(charged_channels[12], "W+", "h0_1");
-        Utils::push_many(charged_channels[13], "W+", "h0_2");
-        Utils::push_many(charged_channels[14], "W+", "h0_3");
+        charged_channels[0]  = initVector<str>("u", "dbar");
+        charged_channels[1]  = initVector<str>("u", "sbar");
+        charged_channels[2]  = initVector<str>("u", "bbar");
+        charged_channels[3]  = initVector<str>("c", "dbar");
+        charged_channels[4]  = initVector<str>("c", "sbar");
+        charged_channels[5]  = initVector<str>("c", "bbar");
+        charged_channels[6]  = initVector<str>("t", "dbar");
+        charged_channels[7]  = initVector<str>("t", "sbar");
+        charged_channels[8]  = initVector<str>("t", "bbar");
+        charged_channels[9]  = initVector<str>("e", "nu_e");
+        charged_channels[10] = initVector<str>("mu", "nu_mu");
+        charged_channels[11] = initVector<str>("tau", "nu_tau");
+        charged_channels[12] = initVector<str>("W+", "h0_1");
+        charged_channels[13] = initVector<str>("W+", "h0_2");
+        charged_channels[14] = initVector<str>("W+", "A0");
  
         // Get the total decay width, for normalising partial widths to BFs.  FIXME Replace when BFs become directly available.
         double totalwidth = 0.0;
@@ -2997,7 +2987,7 @@ namespace Gambit {
         double Gns = (*Dep::DD_couplings).gns;
         double Gna = (*Dep::DD_couplings).gna;
         double oh2 = *Dep::RD_oh2;
-        TH_Process annProc = (*Dep::TH_ProcessCatalog).getProcess((std::string)"chi_10", (std::string)"chi_10");
+        TH_Process annProc = (*Dep::TH_ProcessCatalog).getProcess((std::string)"~chi0_1", (std::string)"~chi0_1");
         Funk::Funk spectrum = (*Dep::GA_AnnYield)->set("v", 0.);
 
         std::ostringstream filename;
@@ -3088,11 +3078,11 @@ namespace Gambit {
                 result.addChannel(dNdE, P1, P2, FINAL, EcmMin, EcmMax);  // specifies also center of mass energy range
             ADD_CHANNEL(12, "Z0", "Z0", "gamma", 0., 10000.)
             ADD_CHANNEL(13, "W+", "W-", "gamma", 0., 10000.)
-            ADD_CHANNEL(14, "nu_e", "~nu_e", "gamma", 0., 10000.)
+            ADD_CHANNEL(14, "nu_e", "nubar_e", "gamma", 0., 10000.)
             ADD_CHANNEL(15, "e+", "e-", "gamma", 0., 10000.)
-            ADD_CHANNEL(16, "nu_mu", "~nu_mu", "gamma", 0., 10000.)
+            ADD_CHANNEL(16, "nu_mu", "nubar_mu", "gamma", 0., 10000.)
             ADD_CHANNEL(17, "mu+", "mu-", "gamma", 0., 10000.)
-            ADD_CHANNEL(18, "nu_tau", "~nu_tau", "gamma", 0., 10000.)
+            ADD_CHANNEL(18, "nu_tau", "nubar_tau", "gamma", 0., 10000.)
             ADD_CHANNEL(19, "tau+", "tau-", "gamma", 0., 10000.)
             ADD_CHANNEL(20, "u", "ubar", "gamma", 0., 10000.)
             ADD_CHANNEL(21, "d", "dbar", "gamma", 0., 10000.)
@@ -3109,16 +3099,16 @@ namespace Gambit {
             dNdE = Funk::func(BEreq::dshayield.pointer(), 92*2, Funk::var("E"), 12, yieldk, flag);
             result.addChannel(dNdE/2, "Z0", "gamma", 10., 10000.);
 
-            result.addChannel(Funk::zero("Ecm", "E"), "H1", "H1", "gamma", 4., 10000.);
-            result.addChannel(Funk::zero("Ecm", "E"), "H1", "H2", "gamma", 4., 10000.);
-            result.addChannel(Funk::zero("Ecm", "E"), "H2", "H2", "gamma", 4., 10000.);
-            result.addChannel(Funk::zero("Ecm", "E"), "H3", "H3", "gamma", 4., 10000.);
-            result.addChannel(Funk::zero("Ecm", "E"), "H1", "H3", "gamma", 4., 10000.);
-            result.addChannel(Funk::zero("Ecm", "E"), "H2", "H3", "gamma", 4., 10000.);
+            result.addChannel(Funk::zero("Ecm", "E"), "h0_2", "h0_2", "gamma", 4., 10000.);
+            result.addChannel(Funk::zero("Ecm", "E"), "h0_2", "h0_1", "gamma", 4., 10000.);
+            result.addChannel(Funk::zero("Ecm", "E"), "h0_1", "h0_1", "gamma", 4., 10000.);
+            result.addChannel(Funk::zero("Ecm", "E"), "A0", "A0", "gamma", 4., 10000.);
+            result.addChannel(Funk::zero("Ecm", "E"), "h0_2", "A0", "gamma", 4., 10000.);
+            result.addChannel(Funk::zero("Ecm", "E"), "h0_1", "A0", "gamma", 4., 10000.);
             result.addChannel(Funk::zero("Ecm", "E"), "H+", "H-", "gamma", 4., 10000.);
-            result.addChannel(Funk::zero("Ecm", "E"), "H1", "Z0", "gamma", 4., 10000.);
-            result.addChannel(Funk::zero("Ecm", "E"), "H2", "Z0", "gamma", 4., 10000.);
-            result.addChannel(Funk::zero("Ecm", "E"), "H3", "Z0", "gamma", 4., 10000.);
+            result.addChannel(Funk::zero("Ecm", "E"), "h0_2", "Z0", "gamma", 4., 10000.);
+            result.addChannel(Funk::zero("Ecm", "E"), "h0_1", "Z0", "gamma", 4., 10000.);
+            result.addChannel(Funk::zero("Ecm", "E"), "A0", "Z0", "gamma", 4., 10000.);
             result.addChannel(Funk::zero("Ecm", "E"), "W+", "H-", "gamma", 4., 10000.);
             result.addChannel(Funk::zero("Ecm", "E"), "W-", "H+", "gamma", 4., 10000.);
 
@@ -3155,9 +3145,9 @@ namespace Gambit {
             ADD_CHANNEL(13, "W+", "W-", "gamma", 4., 10000.)
             #undef ADD_CHANNEL
             initialized = true;
-            result.addChannel(Funk::zero("Ecm", "E"), "nu_e", "~nu_e", "gamma", 4., 10000.);
-            result.addChannel(Funk::zero("Ecm", "E"), "nu_mu", "~nu_mu", "gamma", 4., 10000.);
-            result.addChannel(Funk::zero("Ecm", "E"), "nu_tau", "~nu_tau", "gamma", 4., 10000.);
+            result.addChannel(Funk::zero("Ecm", "E"), "nu_e", "nubar_e", "gamma", 4., 10000.);
+            result.addChannel(Funk::zero("Ecm", "E"), "nu_mu", "nubar_mu", "gamma", 4., 10000.);
+            result.addChannel(Funk::zero("Ecm", "E"), "nu_tau", "nubar_tau", "gamma", 4., 10000.);
         }
     }
 

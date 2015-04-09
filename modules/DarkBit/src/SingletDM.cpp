@@ -114,9 +114,9 @@ namespace Gambit
         // FIXME: Move somewhere else
         DS_RDMGEV myrdmgev;
         myrdmgev.nco = 1;
-        myrdmgev.mco[0] = *Param["mass"];
-        myrdmgev.mdof[0] = 1;
-        myrdmgev.kcoann[0] = 42;  // ???
+        myrdmgev.mco(1) = *Param["mass"];
+        myrdmgev.mdof(1) = 1;
+        myrdmgev.kcoann(1) = 42;  // ???
         *BEreq::rdmgev = myrdmgev;
     }
 
@@ -154,7 +154,8 @@ namespace Gambit
 
         // Initialize catalog
         TH_ProcessCatalog catalog;
-        TH_Process process_ann((std::string)"chi_10", (std::string)"chi_10");
+        // FIXME: Replace "~chi0_1" with the proper identifier once DarkBit is set up to handle any DM candidate name
+        TH_Process process_ann((std::string)"~chi0_1", (std::string)"~chi0_1");
 
         // Populate channel list
         auto m_th = Funk::vec(mb, mW, 0., 0., mZ);
@@ -179,7 +180,8 @@ namespace Gambit
 
         // Finally, store properties of "chi" in particleProperty list
         TH_ParticleProperty chiProperty(mass, 1);  // Set mass and 2*spin
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("chi_10", chiProperty));
+        // FIXME: Replace "~chi0_1" with the proper identifier once DarkBit is set up to handle any DM candidate name
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("~chi0_1", chiProperty));
         catalog.processList.push_back(process_ann);
 
         result = catalog;

@@ -139,6 +139,8 @@ ObsLikes:
     - capability: UnitTest_DarkBit
       
 Rules:
+  - capability: RD_thresholds_resonances
+    function:  RD_thresholds_resonances_from_spectrum
   - capability: DarkSUSY_PointInit
     options:
       show_higgs_widths: true
@@ -161,7 +163,8 @@ Rules:
           #function: DD_couplings_MicrOmegas
         - capability: RD_oh2
           function: RD_oh2_DarkSUSY
-          #function: RD_oh2_MicrOmegas
+          #function: RD_oh2_general
+          #function: RD_oh2_Micromegas
     options:
         fileroot: UnitTest_MSSMbenchmarks_DarkSUSY
         #fileroot: UnitTest_MSSMbenchmarks_MicrOmegas
