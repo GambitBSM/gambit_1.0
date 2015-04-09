@@ -119,7 +119,7 @@ namespace Gambit
     }
 
     /// Ensure that a path exists (and then return the path, for chaining purposes)
-    std::string ensure_path_exists(const std::string& path)
+    const std::string& ensure_path_exists(const std::string& path)
     { 
        // Boost was causing some people problems: now using J Leffler's 'mkdir'
        // boost::filesystem::path dir(path);
@@ -133,6 +133,8 @@ namespace Gambit
        std::string prefix = path.substr(0,found);
 
        recursive_mkdir( prefix.c_str() );
+
+       std::cout << "path: " << path << std::endl;
 
        return path;
     }

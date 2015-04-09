@@ -28,6 +28,9 @@
 #include "gambit/ScannerBit/scanner_plugin.hpp"
 #include "gambit/ScannerBit/scanners/multinest/multinest.hpp"
 #include "gambit/Utils/yaml_options.hpp"
+//#include "gambit/Printers/basebaseprinter.hpp"
+
+#include <iomanip>  // For debugging only
 
 namespace Gambit {   
    namespace MultiNest {
@@ -39,24 +42,31 @@ namespace Gambit {
 /// Typedef for the ScannerBit pointer to the external loglikelihood function
 typedef Gambit::Scanner::scan_ptr<double (const std::vector<double>&)> scanPtr;
 
+
 /// =================================================
 /// Interface to ScannerBit
 /// =================================================
 
 scanner_plugin(MultiNest, version(0, 0, 0, bens_version))
 {
-   reqd_libraries();
+   // Error thrown if the following entries are not present in the inifile
+   reqd_inifile_entries(); // None are absolutely required at the moment
+
+   // Tell cmake system to search known paths for these libraries. If they aren't found,
+   // they will have to be specified in config/scanner_locations.yaml before this plugin
+   // can be activated. 
+   reqd_libraries("multinest");
+
    plugin_constructor
    {
       std::cout << "Firing up MultiNest scanner plugin..." << std::endl;
    }
 
-
    int plugin_main (void)
    {
       //std::string output_file = get_inifile_value<std::string>("output_file", "default_output");
 
-      // Have to discuss with Greg the best thing to do here.
+      // Retrieve the external likelihood calculator
       scanPtr LogLike = get_purpose(get_inifile_value<std::string>("like"));
 
       int ma = get_dimension();
@@ -80,12 +90,12 @@ scanner_plugin(MultiNest, version(0, 0, 0, bens_version))
 
       // Need to do more work if we want to enable the periodic boundary conditions.
       //int pWrap[ndims]; //cannot declare VLA				// which parameters to have periodic boundary conditions?
-         int* pWrap = new int[ndims]; //remember to delete!
+      int* pWrap = new int[ndims]; //remember to delete!
       for(int i = 0; i < ndims; i++) pWrap[i] = 0;
          
       std::string root_str ( get_inifile_value<std::string>("root", "chains/") ); // root for output files
-         char root[100];
-         root_str.copy(root,100,0);  // copy std::string into char array for transport to fortran/
+      char root[100];
+      root_str.copy(root,100,0);  // copy std::string into char array for transport to fortran/
 
       int seed (	get_inifile_value<int>("seed", -1) );		// random no. generator seed, if < 0 then take the seed from system clock
       int fb (		get_inifile_value<int>("fb", 1) );		// need feedback on standard output?
@@ -97,7 +107,10 @@ scanner_plugin(MultiNest, version(0, 0, 0, bens_version))
       int maxiter (	get_inifile_value<int>("maxiter", 0) );		// max no. of iterations, a non-positive value means infinity. MultiNest will terminate if either it 
       									// has done max no. of iterations or convergence criterion (defined through tol) has been satisfied
       void *context = 0;	// not required by MultiNest, any additional information user wants to pass
-         
+      
+      std::cout << "ndims:" << ndims << std::endl;
+      std::cout << "nPar: " << nPar  << std::endl;
+   
       // Get inifile options for each print stream
       Gambit::Options txt_options   = get_inifile_node("aux_printer_txt_options");
       Gambit::Options stats_options = get_inifile_node("aux_printer_stats_options");
@@ -106,16 +119,16 @@ scanner_plugin(MultiNest, version(0, 0, 0, bens_version))
       stats_options.setValue("global",1); // Option to set this stream to "global" mode, i.e. it does not operated on a point-by-point basis. Therefore no thread or point number is needed when printing.
 
       // Initialise auxiliary print streams
-      ////// LogLike->printer.new_stream("txt",txt_options);
-      ////// LogLike->printer.new_stream("stats",stats_options);            
-      ////// LogLike->printer.new_stream("live",live_options);
+      get_printer().new_stream("txt",txt_options);
+      get_printer().new_stream("stats",stats_options);            
+      get_printer().new_stream("live",live_options);
 
       // Create the object which interfaces to the MultiNest LogLike callback function
       // Need to give it the loglikelihood function to evaluate, and the function to perform the prior transformation
       // NOTE TO SELF: Can't pull function pointer out of object like that, since it has a 'this' argument so the call signatures won't match. Just pass in wrapping oject instead.
       // NOTE 2: Prior creation now shifted into Models code! Pointer to a prior object must wind up here somehow!
       // WANT TO DO THIS:
-      ::Gambit::MultiNest::LogLikeWrapper loglwrapper(LogLike, ndims); //, keys);
+      ::Gambit::MultiNest::LogLikeWrapper loglwrapper(LogLike, get_printer(), ndims); //, keys);
       // // BUT FOR NOW CREATE A PLACEHOLDER PRIOR
       // std::vector< ::Gambit::Priors::BasePrior* > subpriors;
       // std::pair<double,double> unit_range(0,1);
@@ -180,8 +193,8 @@ namespace Gambit {
 
 
       /// LogLikeWrapper Constructor
-      LogLikeWrapper::LogLikeWrapper(scanPtr LogLike, int ndim)
-        : boundLogLike(LogLike), my_ndim(ndim)
+      LogLikeWrapper::LogLikeWrapper(scanPtr loglike, printer_interface& printer, int ndim)
+        : boundLogLike(loglike), boundPrinter(printer), my_ndim(ndim)
       { }
    
       /// Main interface function from MultiNest to ScannerBit-supplied loglikelihood function 
@@ -226,8 +239,16 @@ namespace Gambit {
          //   Cube[i] = physicalpars[i];
          //}
 
-         //////Cube[ndim+0] = boundLogLike.printer.get_threadID()   // thread ID number
-         //////Cube[ndim+1] = boundLogLike.printer.get_pointID()    // point ID number
+         int thread  = 0;  // thread ID number ///TODO: need to implement parallel running for printers to do this.
+         int pointID = boundLogLike->getPtID(); // point ID number
+
+         Cube[ndim+0] = thread;
+         Cube[ndim+1] = pointID;
+
+         // Output these to the printer
+         printer* primary_stream( boundPrinter.get_stream() );
+         primary_stream->print( thread,  "thread",  -7, thread, pointID);
+         primary_stream->print( pointID, "pointID", -8, thread, pointID);
 
          // If we want the printer to record anything extra, can send 
          // the data to the usual print function by calling, e.g.:
@@ -283,59 +304,88 @@ namespace Gambit {
           // related to any given model point.
           // Aux stream setup done at beginning of scan
 
-          //// // Get printers for each auxiliary stream
-          //// Printers::BasePrinter* stats_stream(boundLogLike->printer.get_stream("stats"));
-          //// Printers::BasePrinter* txt_stream(boundLogLike->printer.get_stream("txt"));
-          //// Printers::BasePrinter* live_stream(boundLogLike->printer.get_stream("live"));
+          // Get printers for each auxiliary stream
+          printer* stats_stream( boundPrinter.get_stream("stats") );
+          printer* txt_stream(   boundPrinter.get_stream("txt")   );
+          printer* live_stream(  boundPrinter.get_stream("live")  );
 
-          //// stats_stream->reset(); // WARNING! (potentially) Deletes the old data
-          //// txt_stream->reset();   // WARNING! (potentially) Deletes the old data
-          //// live_stream->reset();  // WARNING! (potentially) Deletes the old data
+          stats_stream->reset(); // WARNING! (potentially) Deletes the old data (here we overwrite it on purpose)
+          txt_stream->reset();   //   "    "
+          live_stream->reset();  //   "    "
 
-          //// // Ensure the "quantity" IDcode is UNIQUE across all printers! This way fancy printers
-          //// // have the option of ignoring duplicate writes and doing things like combine all the
-          //// // auxiliary streams into a single database. But must be able to assume IDcodes are
-          //// // unique for a given quanity to do this.
-          //// // Negative numbers not used by functors, so those are 'safe' to use here
+          // Ensure the "quantity" IDcode is UNIQUE across all printers! This way fancy printers
+          // have the option of ignoring duplicate writes and doing things like combine all the
+          // auxiliary streams into a single database. But must be able to assume IDcodes are
+          // unique for a given quanity to do this.
+          // Negative numbers not used by functors, so those are 'safe' to use here
 
-          //// //                  Quantity    Label         IDcode
-          //// // stats file stuff
-          //// stats_stream->print(maxLogLike, "maxLogLike", -1);
-          //// stats_stream->print(logZ,       "logZ",       -2);
-          //// stats_stream->print(logZerr,    "logZerr",    -3);
-          //// stats_stream->flush(); // Empty printer buffer
+          //                  Quantity    Label         IDcode	thread	pointID
+          // stats file stuff
+          // For now, thread set to 0 and pointID set to -1, as not needed. Might change how this works later.
+          stats_stream->print(maxLogLike, "maxLogLike", -1,	0,	-1);
+          stats_stream->print(logZ,       "logZ",       -2,	0,	-1);
+          stats_stream->print(logZerr,    "logZerr",    -3,	0,	-1);
+          stats_stream->flush(); // Empty printer buffer
 
-          //// // txt file stuff
-          //// // Send info for each point to printer one command at a time
-          //// int pointID; // ID number for each point 
-          //// int thread;  // thread number which wrote each point
+          // txt file stuff
+          // Send info for each point to printer one command at a time
+          int pointID; // ID number for each point 
+          int thread;  // thread number which wrote each point
 
-          //// // The posterior distribution
-          //// for( int i = 0; i < nSamples; i++ )
-          ////    thread  = (*posterior)[0][(nPar-1) * nSamples + i]; //thread number stored in second last entry of cube
-          ////    pointID = (*posterior)[0][(nPar-0) * nSamples + i]; //pointID stored in last entry of cube
-          ////    txt_stream->print((*posterior)[0][(nPar+1) * nSamples + i], "LogLike",   -4, thread, pointID);
-          ////    txt_stream->print((*posterior)[0][(nPar+2) * nSamples + i], "Posterior", -5, thread, pointID);
-          ////    // Put rest of parameters into a vector for printing all together
-          ////    std::vector<double> parameters;
-          ////    for( int j = 0; j < nPar-1; j++ )
-          ////        parameters->push_back( (*posterior)[0][j * nSamples + i] );
-          ////    txt_stream->print(parameters, "Parameters", -6, thread, pointID);
-          //// txt_stream->flush(); // Empty the printer buffer
+          // The posterior distribution
+          // Note that while this is a 2D fortran array, we will only see it as a 1D array here, so we have to 
+          // correctly translate the 2D indices into a single index.
+          // Translation is: array[i*n+j]  (i,j)  with n the length of the j dimension.
+          // e.g.: postdist[j][i] = (*posterior)[i * nSamples + j]
 
-          //// /// Therefore stick thread/point numbers into print function directly                  
+          //DEBUG: try to read out entire posterior array, see if it makes sense
+          //for( int i = 0; i < nSamples; i++ )
+          //{
+          //  for( int j = 0; j < nPar+2; j++ )
+          //  {
+          //    std::cout<<std::setw(14)<<std::scientific << posterior[j*nSamples + i];
+          //  }
+          //  std::cout << std::endl;
+          //}
+              
+          for( int i = 0; i < nSamples; i++ )
+          {
+             thread  = posterior[(nPar-2)*nSamples + i]; //thread number stored in second last entry of cube
+             pointID = posterior[(nPar-1)*nSamples + i]; //pointID stored in last entry of cube
+           
+             txt_stream->print( thread,  "thread",  -7, thread, pointID);
+             txt_stream->print( pointID, "pointID", -8, thread, pointID);
+             txt_stream->print( posterior[(nPar+0)*nSamples + i], "LogLike",   -4, thread, pointID);
+             txt_stream->print( posterior[(nPar+1)*nSamples + i], "Posterior", -5, thread, pointID);
+             // Put rest of parameters into a vector for printing all together
+             std::vector<double> parameters;
+             for( int j = 0; j < nPar-2; j++ )
+             {
+                 parameters.push_back( posterior[j*nSamples + i] );
+             }
+             txt_stream->print(parameters, "Parameters", -6, thread, pointID);
+          }
+          txt_stream->flush(); // Empty the printer buffer
+
+          /// Therefore stick thread/point numbers into print function directly                  
  
-          //// // The last set of live points
-          //// for( int i = 0; i < nlive; i++ )
-          ////    thread  = (*physLive)[0][(nPars-1) * nlive + i]; //thread number stored in second last entry of cube
-          ////    pointID = (*physLive)[0][(nPars-0) * nlive + i]; //pointID stored in last entry of cube
-          ////    live_stream->print((*physLive)[0][(nPar+1) * nlive + i], "LogLike", -4, thread, pointID);
-          ////    // Put rest of parameters into a vector for printing all together
-          ////    std::vector<double> parameters;
-          ////    for( int j = 0; j < nPar-1; j++ )
-          ////        parameters.push_back( (*physLive)[0][j * nlive + i] );
-          ////    live_stream->print(parameters, "Parameters", -6, thread, pointID);
-          //// live_stream->flush(); 
+          // The last set of live points
+          for( int i = 0; i < nlive; i++ )
+          {
+             thread  = physLive[(nPar-2)*nlive + i]; //thread number stored in second last entry of cube
+             pointID = physLive[(nPar-1)*nlive + i]; //pointID stored in last entry of cube
+             live_stream->print( thread,  "thread",  -7, thread, pointID);
+             live_stream->print( pointID, "pointID", -8, thread, pointID);
+             live_stream->print( physLive[(nPar+0)*nlive + i], "LogLike", -4, thread, pointID);
+             // Put rest of parameters into a vector for printing all together
+             std::vector<double> parameters;
+             for( int j = 0; j < nPar-2; j++ )
+             {
+                 parameters.push_back( physLive[j*nlive + i] );
+             }
+             live_stream->print(parameters, "Parameters", -6, thread, pointID);
+          }
+          live_stream->flush(); 
 
           // ------Old default stuff below---------
           

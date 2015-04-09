@@ -147,7 +147,7 @@ namespace Gambit
         std::vector<str> result;
         const YAML::Node node = getVariadicNode(options, keys...);
 
-        if (node)
+        if (node.IsMap())
         {
           for (auto it = node.begin(), end = node.end(); it != end; ++it)
           {

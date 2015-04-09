@@ -108,7 +108,7 @@ namespace Gambit
 
 BE_CONV_FUNCTION(awesomenessByAnders, double, (int), "awesomeness")
 
-BE_INI_FUNCTION{}
+BE_INI_FUNCTION {}
 DONE
 
 // Undefine macros to avoid conflict with other backends

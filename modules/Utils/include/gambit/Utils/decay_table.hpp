@@ -125,7 +125,7 @@ namespace Gambit
                 err << "Particle with PDG code" << final_state->first << " and context integer " << endl
                     << final_state->second << " is not in the in GAMBIT particle database." << endl
                     << "Please add such a particle to Models/src/particle_database.cpp and recompile.";
-                model_error().raise(LOCAL_INFO,err);
+                model_error().raise(LOCAL_INFO,err.str());
               }
             }
             channels[key] = std::pair<double, double>(BF, error);

@@ -12,8 +12,8 @@
 ///  Authors (add name and date if you modify):
 ///
 ///  \author Ben Farmer
-///          (ben.farmer@gmail.com)
-///    \date 2014 Sep
+///          (benjamin.farmer@fysik.su.se)
+///    \date 2014 Sep - Dec, 2015 Jan - Mar
 ///  
 ///  *********************************************
 
@@ -25,10 +25,9 @@
 #include "gambit/SpecBit/SpecBit_tests.hpp"
 
 // Flexible SUSY stuff (should not be needed by the rest of gambit)
+#include "gambit/SpecBit/model_files_and_boxes.hpp"
 #include "flexiblesusy/src/ew_input.hpp"
 #include "flexiblesusy/src/numerics.hpp"
-#include "flexiblesusy/models/CMSSM/CMSSM_two_scale_model.hpp"
-#include "flexiblesusy/models/CMSSM/CMSSM_two_scale_model_slha.hpp"
 
 namespace Gambit
 {
@@ -86,16 +85,19 @@ namespace Gambit
     void specbit_test_func1 (double &result)
     {
       // Access the pipes for this function to get model and parameter information
-      using namespace Pipes::specbit_test_func1;
-
+       using namespace Pipes::specbit_test_func1;
+       const SMplusUV* spec = *Dep::MSSM_spectrum;
       std::cout << "Running specbit_test_func1" << std::endl;
       std::cout << "Retrieving Spectrum*" << std::endl;
-      Spectrum* spec = *Dep::MSSM_spectrum; //Test retrieve pointer to Spectrum object 
+      //  const Spectrum* spec = *Dep::MSSM_spectrum; //Test retrieve pointer to Spectrum object 
 
       //const Spectrum& spec(*(Dep::particle_spectrum->get())); // Get Spectrum object ptr out of dependency pipe and make a nice reference out of it.
       std::cout << "Running spec_manipulate" << std::endl;
-      spec_manipulate(spec); //function can manipulate without knowing model.
 
+      // Clone the UV Spectum object so we can access a non-const version
+      std::unique_ptr<Spectrum> spec2 = spec->get_UV()->clone(); 
+
+      spec_manipulate(*spec2); //function can manipulate without knowing model.
     }
 
     /// Function to test out SpecBit features
@@ -152,12 +154,24 @@ namespace Gambit
     {
       // Requests a Spectrum object of capability SM_spectrum; test what we can retrieve from this
       using namespace Pipes::specbit_test_func3;
-      Spectrum* spec = *Dep::SM_spectrum; //Test retrieve pointer to Spectrum object 
+      const Spectrum* spec = *Dep::SM_spectrum; //Test retrieve pointer to Spectrum object 
 
-      SM_checks(spec); // Run some tests on standard model parameters 
+      std::unique_ptr<Spectrum> spec2 = spec->clone(); 
+
+      SM_checks(*spec2); // Run some tests on standard model parameters 
       logger() << EOM;
     }
 
+    /// Test out consistency of SMplusUV object (and pre-extracted SM Spectrum*)
+    void specbit_test_SMplusUV (double &result)
+    {
+      using namespace Pipes::specbit_test_SMplusUV;
+      const SMplusUV* matched_spectra = *Dep::MSSM_spectrum;
+      const Spectrum* sm = *Dep::SM_spectrum; 
+ 
+      SMplusUV_test(matched_spectra,sm); // Run consistency tests on Spectrum contents vs SMInputs 
+      logger() << EOM;
+    }
 
   } // end namespace SpecBit
 } // end namespace Gambit

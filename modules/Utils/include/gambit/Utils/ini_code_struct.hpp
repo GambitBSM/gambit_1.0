@@ -41,7 +41,7 @@ namespace Gambit
       {
         (*unroll)();
       }
-      catch (std::exception& e)
+      catch (const std::exception& e)
       {
         std::cout << "GAMBIT has failed to initialise due to fatal exception: " << e.what() << std::endl;
         std::cout << "raised from ini_code_struct declared at: " << location << std::endl;
