@@ -415,7 +415,9 @@ def main(argv):
                                                 scanbit_reqs[plugin[7]][plugin_name][version][6] += [inc]
                                     else:
                                         print "   Unknown infile option \"{0}\" needed for ScannerBit plugin {1} v{2}".format(key,plugin_name,version)
-                        
+                            else:
+                                print "   Unknown YAML format in file {0}.".format(config_file)
+                                
                         # add links commands to map (keys: {plug_type, directory}) to be linked to later
                         #if staticlinkcommands != "":
                         #    if scanbit_static_links[plugin[7]].has_key(plugin[6]):
