@@ -17,7 +17,7 @@
 ///   
 ///  \author Christoph Weniger
 ///          (c.weniger@uva.nl)
-///  \date 2013 Jul
+///  \date 2013 Jul - 2015 May
 ///
 ///  \author Torsten Bringmann
 ///          (torsten.bringmann@fys.uio.no)
@@ -1122,7 +1122,6 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION SimYieldTable_DarkSusy
     START_FUNCTION(Gambit::DarkBit::SimYieldTable)
-    DEPENDENCY(DarkSUSY_PointInit, bool)
     BACKEND_REQ(dshayield, (), double, (double&,double&,int&,int&,int&))
     #undef FUNCTION 
     #define FUNCTION SimYieldTable_MicrOmegas
@@ -1132,43 +1131,4 @@ START_MODULE
   #undef CAPABILITY
 
 #undef MODULE
-
-   
-
-// Tests for Torsten.
-/*
-
-#define MODULE DarkBit
-
-  #define CAPABILITY provideN
-  START_CAPABILITY
-    #define FUNCTION provideN_func
-      START_FUNCTION(int)
-    #undef FUNCTION
-  #undef CAPABILITY
-
-  #define CAPABILITY provideF
-  START_CAPABILITY
-    #define FUNCTION provideF_func
-    START_FUNCTION(fptr_dd)
-    BACKEND_REQ(funcGauss, (), double, (double(*)(double&), int&))
-    #undef FUNCTION
-  #undef CAPABILITY
-
-  #define CAPABILITY CalcAv 
-  START_CAPABILITY 
-    #define FUNCTION CalcAv_func
-      START_FUNCTION(double)
-      DEPENDENCY(provideN, int) 
-      DEPENDENCY(provideF, fptr_dd) 
-      BACKEND_REQ(average, (), double, (double&))
-    #undef FUNCTION
-  #undef CAPABILITY
-
-#undef MODULE
-*/
-
-
-
 #endif /* defined(__DarkBit_rollcall_hpp__) */
-
