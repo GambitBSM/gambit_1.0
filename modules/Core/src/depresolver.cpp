@@ -29,7 +29,9 @@
 #include <sstream>
 #include <fstream>
 
-#ifdef REGEX_SUPPORT
+#include <gambit/cmake/cmake_variables.hpp>
+
+#ifdef HAVE_REGEX_H
 #include <regex>
 #endif
 
@@ -210,6 +212,9 @@ namespace Gambit
     // Misc
     //
 
+    /// Global flag for regex use
+    bool use_regex;
+
     // Return runtime estimate for a set of nodes
     double getTimeEstimate(const std::set<VertexID> & vertexList, const DRes::MasterGraphType &graph)
     {
@@ -227,10 +232,9 @@ namespace Gambit
       if ( s1 == s2 ) return true;
       if ( s1 == "" ) return true;
       if ( s1 == "*" ) return true;
-#ifdef REGEX_SUPPORT
-      if ( std::regex_match ( s2, *(new std::regex(s1)) ) ) return true; 
+#ifdef HAVE_REGEX_H
+      if ( use_regex and std::regex_match ( s2, *(new std::regex(s1)) ) ) return true; 
 #endif
-      // TODO: Implement wildcard and regex comparison
       return false;
     }
 
@@ -1250,6 +1254,9 @@ namespace Gambit
       logger() << "# format: Capability (Type) [Function, Module] #" << endl;
       logger() << "################################################" << endl;
       logger() << EOM;
+
+      // Read ini entry
+      use_regex = boundIniFile->getValueOrDef<bool>(false, "dependency_resolution", "use_regex");
 
       //
       // Main loop: repeat until dependency queue is empty
