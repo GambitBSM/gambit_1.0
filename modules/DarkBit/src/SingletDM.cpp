@@ -111,9 +111,9 @@ namespace Gambit
         // not work at all??? --> TB
         DS_RDMGEV myrdmgev;
         myrdmgev.nco = 1;
-        myrdmgev.mco[0] = *Param["mass"];
-        myrdmgev.mdof[0] = 1;
-        myrdmgev.kcoann[0] = 42;  // ???
+        myrdmgev.mco(1) = *Param["mass"];
+        myrdmgev.mdof(1) = 1;
+        myrdmgev.kcoann(1) = 42;  // ???
         *BEreq::rdmgev = myrdmgev;
     }
 
