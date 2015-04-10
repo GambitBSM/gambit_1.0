@@ -44,7 +44,7 @@ set(BoldWhite   "${Esc}[1;37m")
 #Crash function for failed execute_processes
 function(check_result result command)
   if(NOT ${result} STREQUAL "0")
-    message(FATAL_ERROR "${Red}${ColourBold}Cmake failed because a GAMBIT python script failed.  Culprit: ${command}${ColourReset}")
+    message(FATAL_ERROR "${BoldRed}Cmake failed because a GAMBIT python script failed.  Culprit: ${command}${ColourReset}")
   endif()
 endfunction()
 

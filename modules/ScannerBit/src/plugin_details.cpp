@@ -35,7 +35,13 @@ namespace Gambit
 
                 namespace Plugins
                 {
-                                
+                        inline std::string spacing(int len, int maxlen)
+                        {
+                                int offset = 0;
+                                if (len < maxlen) {offset=maxlen-len;}
+                                return std::string(offset+5,' ');
+                        }
+                        
                         Plugin_Details::Plugin_Details(const std::string &str) : full_string(str)
                         {
                                 // 0 status = -1;
@@ -176,25 +182,44 @@ namespace Gambit
                         std::string Plugin_Details::printFull() const
                         {
                                 std::stringstream out;
-                                out << "plugin:  " << plugin << std::endl;
-                                out << "\tversion:  " << version << std::endl;
-                                out << "\tmajor version:  " << major_version << std::endl;
-                                out << "\tminor version:  " << minor_version << std::endl;
-                                out << "\tpatch version:  " << patch_version << std::endl;
-                                out << "\tplugin path:  " << path << std::endl;
-                                out << "\ttype:  " << type << std::endl;
-                                out << "\tlink status:  " << status << std::endl;
-                                out << "\trequired inifile entries:  " << reqd_inifile_entries << std::endl;
-                                out << "\trequested libraries not linked:  " << reqd_not_linked_libs << std::endl;
-                                out << "\tinifile libraries not found:  " << ini_libs_not_found << std::endl;
-                                out << "\tlinked libraries:\n";
-                                for (auto it = linked_libs.begin(), end = linked_libs.end(); it != end; it++)
-                                        out << "\t\t" << it->first << ":  " << it->second << std::endl;
-                                out << "\trequested paths not found:  " << reqd_incs_not_found << std::endl;
-                                out << "\tinifile paths not found:  " << ini_incs_not_found << std::endl;
-                                out << "\tincluded paths:\n";
-                                for (auto it = found_incs.begin(), end = found_incs.end(); it != end; it++)
-                                        out << "\t\t" << it->first << ":  " << it->second << std::endl;
+                                const int maxlen1 = 20;
+                                const int maxlen2 = 20;
+                                // Default, list-format output header
+                                out << type << " plugin" << spacing(type.length() + 7, maxlen1) << "version" << spacing(7, maxlen2) << "status" << std::endl;
+                                out << "----------------------------------------------------------------------------" << std::endl;
+                                out << plugin << spacing(plugin.length(), maxlen1) << version << spacing(version.length(), maxlen2) << status << std::endl;
+                                out << "\nrequired inifile entries:  " << reqd_inifile_entries << std::endl;
+                                out << "\nlink status" << std::endl;
+                                out << "-----------" << std::endl;
+                                out << "missing libraries requested by plugin: " << reqd_not_linked_libs << std::endl;
+                                out << "missing libraries specified in inifile: " << ini_libs_not_found << std::endl;
+                                out << "linked libraries:";
+                                if (linked_libs.size() == 0)
+                                {
+                                        out << " none" << std::endl;
+                                }
+                                else
+                                {
+                                        out << std::endl;
+                                        for (auto it = linked_libs.begin(), end = linked_libs.end(); it != end; it++)
+                                                out << "    " << it->first << ": " << it->second << std::endl;
+                                }
+                                
+                                out << "\ninclude header status" << std::endl;
+                                out << "---------------------" << std::endl;
+                                out << "missing headers requested by plugin: " << reqd_incs_not_found << std::endl;
+                                out << "missing headers specified in inifile: " << ini_incs_not_found << std::endl;
+                                out << "headers found:";
+                                if (found_incs.size() == 0)
+                                {
+                                        out << " none" << std::endl;
+                                }
+                                else
+                                {
+                                        out << std::endl;
+                                        for (auto it = found_incs.begin(), end = found_incs.end(); it != end; it++)
+                                                out << "    " << it->first << ": " << it->second << std::endl;
+                                }
                                 
                                 return out.str();
                         }

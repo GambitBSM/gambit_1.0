@@ -288,8 +288,11 @@ namespace Gambit
                 template <typename... T>
                 struct __find_variadic_type_not_exact__;
                 
+                template <typename... T>
+                struct _find_variadic_type_not_exact_;
+                
                 template <typename T1, typename T2, typename... T>
-                struct _find_variadic_type_not_exact_
+                struct _find_variadic_type_not_exact_<T1, T2, T...>
                 {
                         typedef typename __find_variadic_type_not_exact__ <typename remove_all_func<T1>::type, typename remove_all_func<T2>::type, T2, T...>::ret_type ret_type;
                         typedef typename __find_variadic_type_not_exact__ <typename remove_all_func<T1>::type, typename remove_all_func<T2>::type, T2, T...>::func_type func_type;
@@ -367,8 +370,11 @@ namespace Gambit
                 template<bool, typename... T>
                 struct __find_variadic_type_convert__;
                 
+                template<typename... T>
+                struct _find_variadic_type_convert_;
+                
                 template<typename Tc, typename T1, typename... T>
-                struct _find_variadic_type_convert_
+                struct _find_variadic_type_convert_<Tc, T1, T...>
                 {
                         typedef typename __find_variadic_type_convert__<is_args_convertible<Tc, T1>::value, T1, T...>::ret_type ret_type;
                         typedef typename __find_variadic_type_convert__<is_args_convertible<Tc, T1>::value, T1, T...>::func_type func_type;
