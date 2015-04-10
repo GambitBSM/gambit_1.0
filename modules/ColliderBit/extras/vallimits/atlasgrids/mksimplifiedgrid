@@ -1,0 +1,24 @@
+#! /usr/bin/env python
+
+import optparse, os
+op = optparse.OptionParser()
+opts, args = op.parse_args()
+
+import pyslha
+infile = args[0]
+doc = pyslha.read(infile)
+
+import numpy as np
+mg_range = np.arange(500, 2499, 200)
+mX_range = np.arange(500, 2499, 200)
+
+for mg in mg_range:
+    for mX in mX_range:
+        doc.blocks["MASS"][1000021] = mg
+        doc.blocks["MASS"][1000022] = mX
+        #print doc.blocks["MASS"]
+        outdir = infile.replace(".slha", "_scan")
+        if not os.path.exists(outdir):
+            os.makedirs(outdir)
+        outfile = infile.replace(".slha", "_{:d}_{:d}.slha".format(int(mg), int(mX)))
+        doc.write(os.path.join(outdir, outfile))

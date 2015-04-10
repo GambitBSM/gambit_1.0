@@ -1,0 +1,204 @@
+##******************************************************************
+##                      MadGraph/MadEvent                          *
+##******************************************************************
+## Les Houches friendly file for the (MS)SM parameters of MadGraph *
+##      SM parameter set and decay widths produced by MSSMCalc     *
+##******************************************************************
+##*Please note the following IMPORTANT issues:                     *
+##                                                                 *
+##0. REFRAIN from editing this file by hand! Some of the parame-   *
+##   ters are not independent. Always use a calculator.            *
+##                                                                 *
+##1. alpha_S(MZ) has been used in the calculation of the parameters*
+##   This value is KEPT by madgraph when no pdf are used lpp(i)=0, *
+##   but, for consistency, it will be reset by madgraph to the     *
+##   value expected IF the pdfs for collisions with hadrons are    *
+##   used.                                                         *
+##                                                                 *
+##2. Values of the charm and bottom kinematic (pole) masses are    *
+##   those used in the matrix elements and phase space UNLESS they *
+##   are set to ZERO from the start in the model (particles.dat)   *
+##   This happens, for example,  when using 5-flavor QCD where     *
+##   charm and bottom are treated as partons in the initial state  *
+##   and a zero mass might be hardwired in the model definition.   *
+##                                                                 *
+##       The SUSY decays have calculated using SDECAY 1.1a         *
+##                                                                 *
+##******************************************************************
+#
+BLOCK DCINFO  # Decay Program information
+    1   SDECAY      # decay calculator
+    2   1.1a        # version number
+#
+BLOCK SPINFO  # Spectrum calculator information
+    1   ISASUGRA                                          
+    2   7.81                                              
+#
+BLOCK MODSEL  # Model selection
+    1     1   #                                                 
+#
+BLOCK SMINPUTS  # Standard Model inputs
+    1     1.25778332E+02   # alpha_em^-1(M_Z)^MSbar
+    2     1.16570000E-05   # G_F [GeV^-2]
+    3     1.17200002E-01   # alpha_S(M_Z)^MSbar
+    4     8.93764874E+01   # M_Z pole mass
+    5     4.19999981E+00   # mb(mb)^MSbar
+    6     1.54540821E+02   # mt pole mass (extracted)
+    7     1.94850223E+00   # mtau pole mass (extracted)
+#
+BLOCK MINPAR  # Input parameters - minimal models
+    1     6.00000000E+02   #  m_0                
+    2     3.00000000E+02   #  m_{1/2}            
+    3     1.00000000E+01   #  tan(beta)          
+    4     1.00000000E+00   #  sign(mu)           
+#
+BLOCK EXTPAR  # Input parameters - non-minimal models
+    0     2.21278347E+16   #  Input scale        
+#
+BLOCK MASS  # Mass Spectrum
+# PDG code           mass       particle
+        5     4.81955182E+00   # b-quark pole mass (extracted)
+        6     1.54540821E+02   # t-quark pole mass (not read by ME)
+       24     7.71761851E+01   # W+
+       25     1.11844620E+02   # h
+       35     7.49062561E+02   # H
+       36     7.43967712E+02   # A
+       37     7.53755432E+02   # H+
+  1000001    1547.52  #
+  2000001    1547.52  #
+  1000002    1547.52  #
+  2000002    1547.52  #
+  1000003    1547.52  #
+  2000003    1547.52  #
+  1000004    1547.52  #
+  2000004    1547.52  #
+  1000005    4.50000000E+03  #
+  2000005    4.50000000E+03  #
+  1000006    4.50000000E+03  #
+  2000006    4.50000000E+03  #
+  1000011    4.50000000E+03  #
+  2000011    4.50000000E+03  #
+  1000012    4.50000000E+03  #
+  1000013    4.50000000E+03  #
+  2000013    4.50000000E+03  #
+  1000014    4.50000000E+03  #
+  1000015    4.50000000E+03  #
+  2000015    4.50000000E+03  #
+  1000016    4.50000000E+03  #
+  1000021    1612.0  #
+  1000022    337.0  #
+  1000023    4.50000000E+03  #
+  1000025    4.50000000E+03  #
+  1000035    4.50000000E+03  #
+  1000024    4.50000000E+03  #
+  1000037    4.50000000E+03  #
+#
+BLOCK NMIX  # Neutralino Mixing Matrix
+ 1  1     1.00000000E+00   # N_11
+ 1  2     0.00000000E+00   # N_12
+ 1  3     0.00000000E+00   # N_13
+ 1  4     0.00000000E+00   # N_14
+ 2  1     0.00000000E+00   # N_21
+ 2  2     1.00000000E+00   # N_22
+ 2  3     0.00000000E+00   # N_23
+ 2  4     0.00000000E+00   # N_24
+ 3  1     0.00000000E+00   # N_31
+ 3  2     0.00000000E+00   # N_32
+ 3  3     1.00000000E+00   # N_33
+ 3  4     0.00000000E+00   # N_34
+ 4  1     0.00000000E+00   # N_41
+ 4  2     0.00000000E+00   # N_42
+ 4  3     0.00000000E+00   # N_43
+ 4  4     1.00000000E+00   # N_44
+#   
+BLOCK UMIX  # Chargino Mixing Matrix U
+ 1  1     1.00000000E+00   # U_11
+ 1  2     0.00000000E+00   # U_12
+ 2  1     0.00000000E+00   # U_21
+ 2  2     1.00000000E+00   # U_22
+#   
+BLOCK VMIX  # Chargino Mixing Matrix V
+ 1  1     1.00000000E+00   # V_11
+ 1  2     0.00000000E+00   # V_12
+ 2  1     0.00000000E+00   # V_21
+ 2  2     1.00000000E+00   # V_22
+#
+BLOCK STOPMIX  # Stop Mixing Matrix
+ 1  1     1.00000000E+00   # O_{11}
+ 1  2     0.00000000E+00   # O_{12}
+ 2  1     0.00000000E+00   # O_{21}
+ 2  2     1.00000000E+00   # O_{22}
+#
+BLOCK SBOTMIX  # Sbottom Mixing Matrix
+ 1  1     1.00000000E+00   # O_{11}
+ 1  2     0.00000000E+00   # O_{12} 
+ 2  1     0.00000000E+00   # O_{21} 
+ 2  2     1.00000000E+00   # O_{22}
+#
+BLOCK STAUMIX  # Stau Mixing Matrix  
+ 1  1     1.00000000E+00   # O_{11}
+ 1  2     0.00000000E+00   # O_{12}
+ 2  1     0.00000000E+00   # O_{21}
+ 2  2     1.00000000E+00   # O_{22}   
+#
+BLOCK ALPHA  # Higgs mixing
+         -1.02914833E-01   # Mixing angle in the neutral Higgs boson sector
+#
+BLOCK HMIX Q=  6.61219971E+02  # DRbar Higgs Parameters
+    1     4.12454407E+02   #  mu(Q)              
+    2     9.36003455E+00   # tanb (extracted)    
+    3     2.50607727E+02   #  Higgs vev at Q     
+    4     5.53487938E+05   #  m_A^2(Q)           
+#
+BLOCK GAUGE Q=  6.61219971E+02  # The gauge couplings
+    3     1.07381373E+00   # g3(Q) MSbar
+#
+BLOCK AU Q=  6.61219971E+02  # The trilinear couplings
+ 3  3    -5.32061523E+02   # A_t(Q) DRbar
+  1  1     0.000000e+00 # dummy
+  2  2     0.000000e+00 # dummy
+#
+BLOCK AD Q=  6.61219971E+02  # The trilinear couplings
+ 3  3    -8.07902039E+02   # A_b(Q) DRbar
+  1  1     0.000000e+00 # dummy
+  2  2     0.000000e+00 # dummy
+#
+BLOCK AE Q=  6.61219971E+02  # The trilinear couplings
+ 3  3    -1.81115051E+02   # A_tau(Q) DRbar
+  1  1     0.000000e+00 # dummy
+  2  2     0.000000e+00 # dummy
+#
+BLOCK YU Q=  6.61219971E+02  # The Yukawa couplings
+ 3  3     8.85841429E-01   # y_t(Q) (extracted)
+  1  1     0.000000e+00 # dummy
+  2  2     0.000000e+00 # dummy
+#
+BLOCK YD Q=  6.61219971E+02  # The Yukawa couplings
+ 3  3     1.36232540E-01   # y_b(Q) (extracted)
+  1  1     0.000000e+00 # dummy
+  2  2     0.000000e+00 # dummy
+#
+BLOCK YE Q=  6.61219971E+02  # The Yukawa couplings
+ 3  3     1.01981103E-01   # y_tau(Q) (extracted)
+  1  1     0.000000e+00 # dummy
+  2  2     0.000000e+00 # dummy
+#
+BLOCK MSOFT Q=  6.61219971E+02  # The soft SUSY breaking masses at the scale Q
+    1     1.24019547E+02   #  M_1(Q)             
+    2     2.32185043E+02   #  M_2(Q)             
+    3     6.86750671E+02   #  M_3(Q)             
+   31     6.29402649E+02   #  MeL(Q)             
+   32     6.29402649E+02   #  MmuL(Q)            
+   33     6.26662476E+02   #  MtauL(Q)           
+   34     6.08800842E+02   #  MeR(Q)             
+   35     6.08800842E+02   #  MmuR(Q)            
+   36     6.03154236E+02   #  MtauR(Q)           
+   41     8.48326294E+02   #  MqL1(Q)            
+   42     8.48326294E+02   #  MqL2(Q)            
+   43     7.40788147E+02   #  MqL3(Q)            
+   44     8.34092896E+02   #  MuR(Q)             
+   45     8.34092896E+02   #  McR(Q)             
+   46     5.90198242E+02   #  MtR(Q)             
+   47     8.32408752E+02   #  MdR(Q)             
+   48     8.32408752E+02   #  MsR(Q)             
+   49     8.31454102E+02   #  MbR(Q)
