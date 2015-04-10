@@ -1,7 +1,13 @@
 #! /usr/bin/env python
 
+"""\
+Usage: %prog <slha_template_file>
+"""
+
 import optparse, os
-op = optparse.OptionParser()
+op = optparse.OptionParser(usage=__doc__)
+op.add_option("-o", "--output", help="output dir for scanned SLHA files; default to based on name of input file", dest="OUTDIR", default=None)
+# TODO: add options like PID:numpoints:low..high to define the scan?
 opts, args = op.parse_args()
 
 import pyslha
@@ -9,11 +15,15 @@ infile = args[0]
 doc = pyslha.read(infile)
 
 import numpy as np
-mg_range = np.arange(500, 2499, 200)
-mX_range = np.arange(500, 2499, 200)
+mg_range = np.arange(200, 1600, 100)
+mX_range = np.arange(0, 800, 100)
 
+numpts = 0
 for mg in mg_range:
     for mX in mX_range:
+        if mX > mg:
+            continue
+        numpts += 1
         doc.blocks["MASS"][1000021] = mg
         doc.blocks["MASS"][1000022] = mX
         #print doc.blocks["MASS"]
@@ -22,3 +32,5 @@ for mg in mg_range:
             os.makedirs(outdir)
         outfile = infile.replace(".slha", "_{:d}_{:d}.slha".format(int(mg), int(mX)))
         doc.write(os.path.join(outdir, outfile))
+
+print "Num points = %d" % numpts
