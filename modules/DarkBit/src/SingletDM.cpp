@@ -143,13 +143,17 @@ namespace Gambit
 
         static SingletDM singletDM("DarkBit/data/Higgs_decay_1101.0593.dat");
 
+        //const Spectrum* SM = *Dep::SM_spectrum;
+
         std::vector<std::string> finalStates;
         double mass, lambda, mW, mb, mZ;
 
         mass = *Param["mass"];
         lambda = *Param["lambda"];
-        mW = m_Wboson;
-        mZ = m_Zboson;
+        //mZ = SM->phys.get_Pole_Mass("Z");
+        //mW = SM->phys.get_Pole_Mass("W");
+        mZ = m_Zboson;  // FIXME
+        mW = m_Wboson;  // FIXME
         mb = 5;  // FIXME
 
         // Initialize catalog

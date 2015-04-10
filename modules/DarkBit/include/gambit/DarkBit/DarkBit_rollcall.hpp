@@ -408,6 +408,7 @@ START_MODULE
     #undef FUNCTION
     #define FUNCTION TH_ProcessCatalog_SingletDM
       START_FUNCTION(Gambit::DarkBit::TH_ProcessCatalog)
+      //DEPENDENCY(SM_spectrum, const Spectrum*)
       ALLOW_MODELS(SingletDM)
     #undef FUNCTION
   #undef CAPABILITY
