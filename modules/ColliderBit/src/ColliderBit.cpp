@@ -228,6 +228,12 @@ namespace Gambit {
     void specifyAnalysisPointerVector(std::vector<Gambit::ColliderBit::Analysis*> &result) {
       using namespace Pipes::specifyAnalysisPointerVector;
       if (resetAnalysisFlag and *Loop::iteration == INIT) {
+        /// Memory clean-up: Analyses
+        /* while (result.size() > 0) {
+          delete result.front();
+          result.erase(result.begin());
+        } */
+        result.clear();
         logger() << "\n==================\n";
         logger() << "ColliderBit says,\n";
         logger() << "\t\"specifyAnalysisPointerVector() was called.\"\n";
@@ -252,12 +258,6 @@ namespace Gambit {
         logger() << LogTags::info << endl << EOM;
         resetAnalysisFlag = false;
       } else if (*Loop::iteration == FINALIZE) {
-        /// Memory clean-up: Analyses
-        /* while (result.size() > 0) {
-          delete result.front();
-          result.erase(result.begin());
-        } */
-        result.clear();
         resetAnalysisFlag = true;
       }
     }
@@ -601,7 +601,8 @@ namespace Gambit {
       void runAnalyses(ColliderLogLikes& result)
       {
 	using namespace Pipes::runAnalyses;
-	if (*Loop::iteration == INIT or *Loop::iteration == END_SUBPROCESS) return;
+	if (*Loop::iteration == INIT)
+        if (*Loop::iteration == INIT or *Loop::iteration == END_SUBPROCESS) return;
 
 	if (*Loop::iteration == FINALIZE)
 	  {
@@ -634,7 +635,9 @@ namespace Gambit {
 
 	std::vector<double> observedLikelihoods;
 	for (size_t analysis = 0; analysis < analysisResults.size(); ++analysis) {
+          cout << "In analysis loop" << endl;
 	  for (size_t SR = 0; SR < analysisResults[analysis].size(); ++SR) {
+            cout << "In signal region loop" << endl;
 	    SignalRegionData srData = analysisResults[analysis][SR];
 
 	    /// Actual observed number of events

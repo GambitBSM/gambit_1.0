@@ -80,7 +80,7 @@ namespace Gambit
                                 const std::map<std::string, std::map<std::string, std::vector<Plugin_Details>>> &getPluginsMap() const {return total_plugin_map;}
                                 void loadExcluded(const std::string &);
                                 void loadLibrary (const std::string &, const std::string & = "");                        
-                                void print () const;
+                                void print (const std::string &plug_type = "") const;
                                 Plugin_Details find (const std::string &, const std::string &, const std::string &, const std::string &) const;
                         };
                         

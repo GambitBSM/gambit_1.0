@@ -28,14 +28,7 @@
 #include "gambit/ScannerBit/scan.hpp"
 
 using namespace Gambit;
-using namespace Gambit::Scanner;
-
-inline std::string spacing(int len, int maxlen)
-{
-        int offset = 0;
-        if (len < maxlen) {offset=maxlen-len;}
-        return std::string(offset+5,' ');
-} 
+using namespace Gambit::Scanner; 
 
 void scan_terminator()
 {
@@ -69,66 +62,6 @@ cout << "\nusage: scannerbit [options] [<command>]                              
         scan_error().silent_forced_throw();
 } 
 
-inline void print_plugins(std::map< std::string, std::map<std::string, std::vector<Scanner::Plugins::Plugin_Details> > >::const_iterator plugins)
-{
-        const int maxlen1 = 20;
-        const int maxlen2 = 20;
-        typedef std::map<std::string, std::vector<Scanner::Plugins::Plugin_Details> > plugin_map;
-        typedef std::map<std::string, plugin_map> plugin_mapmap;
-
-        // Default, list-format output header
-        std::cout << plugins->first << " Plugins" << spacing(plugins->first.length() + 8, maxlen1) << "Version" << spacing(7, maxlen2) << "Accepted options" << std::endl;
-        std::cout << "----------------------------------------------------------------------------" << std::endl;
-
-        // Loop over all entries in the plugins map map
-        for (auto it = plugins->second.begin(); it != plugins->second.end(); ++it)
-        {
-                for (auto jt = it->second.begin(); jt != it->second.end(); ++jt)
-                {
-                        // Print the scanner name if this is the first version, otherwise just space
-                        const str firstentry = (jt == it->second.begin() ? it->first : "");
-                        std::cout << firstentry << spacing(firstentry.length(),maxlen1); 
-                        // Print the scanner info.
-                        std::cout << jt->version << spacing(jt->version.length(),maxlen2);
-                        if (jt->reqd_inifile_entries.size() == 0)
-                                std::cout << "<no info available>" << std::endl;
-                        else
-                                std::cout << jt->reqd_inifile_entries << std::endl;
-                }
-                
-                std::cout << std::endl;
-        }
-}
-
-void print_plugins(const std::string &plug_type = "")
-{
-        // Display capability information
-        cout << "\nThis is ScannerBit." << endl << endl;
-        
-        // Import scanner plugin info from ScannerBit 
-        if (plug_type != "")
-        {
-                auto plugins = Scanner::Plugins::plugin_info().getPluginsMap().find(plug_type);
-                if (plugins == Scanner::Plugins::plugin_info().getPluginsMap().end())
-                {
-                        scan_err << "Plugin type \"" << plug_type << "\" does not exist." << scan_end;
-                        return;
-                }
-                else
-                {
-                        print_plugins(plugins);
-                }
-        }
-        else
-        {
-                auto plugins = Scanner::Plugins::plugin_info().getPluginsMap();
-                for (auto it = plugins.begin(), end = plugins.end(); it != end; it++)
-                {
-                        print_plugins(it);
-                }
-        }
-}
-
 int main(int argc, char **argv)
 {
         std::set_terminate(scan_terminator);
@@ -142,24 +75,24 @@ int main(int argc, char **argv)
                 }
                 else if (std::string(argv[1]) == "scanners")
                 {
-                        print_plugins("scanner");
+                        Plugins::plugin_info().print("scanner");
                         return 0;
                 }
                 else if (std::string(argv[1]) == "plugins")
                 {
                         if (argc > 2)
                         {
-                                print_plugins(argv[2]);
+                                Plugins::plugin_info().print(argv[2]);
                         }
                         else
                         {
-                                print_plugins();
+                                Plugins::plugin_info().print();
                         }
                         return 0;
                 }
                 else if (std::string(argv[1]) == "objectives")
                 {
-                        print_plugins("objective");
+                        Plugins::plugin_info().print("objective");
                         return 0;
                 }
                 else if (std::string(argv[1]) == "-f" && argc > 2)

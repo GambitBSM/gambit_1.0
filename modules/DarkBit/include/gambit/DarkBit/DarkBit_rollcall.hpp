@@ -119,7 +119,7 @@ START_MODULE
       // CMSSM
       BACKEND_REQ(dsgive_model_isasugra, (), void, (double&,double&,double&,double&,double&))
       BACKEND_REQ(dssusy_isasugra, (), void, (int&,int&))
-      // MSSM7
+      // MSSM7 -- not used at the moment!?
       BACKEND_REQ(mssmpar, (), DS_MSSMPAR)
       BACKEND_REQ(dssusy, (), void, (int&,int&))
       // Initialize DarkSUSY with SLHA file
@@ -408,6 +408,7 @@ START_MODULE
     #undef FUNCTION
     #define FUNCTION TH_ProcessCatalog_SingletDM
       START_FUNCTION(Gambit::DarkBit::TH_ProcessCatalog)
+      //DEPENDENCY(SM_spectrum, const Spectrum*)
       ALLOW_MODELS(SingletDM)
     #undef FUNCTION
   #undef CAPABILITY

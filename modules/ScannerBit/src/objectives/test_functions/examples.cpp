@@ -71,7 +71,7 @@ objective_plugin(gaussian, version(1, 0, 0))
                 
                 if (!chol.EnterMat(cov))
                 {
-                        std::vector <double> sigs = get_inifile_value <std::vector <double>> ("sigs", std::vector<double>(dim, 1));
+                        std::vector <double> sigs = get_inifile_value <std::vector <double>> ("sigs", std::vector<double>(dim, 1.0));
                         if (sigs.size() != dim)
                         {
                                 scan_err << "Gaussian: Sigma vector size of " << sigs.size() << " is different than the parameter size of " << dim << scan_end;
@@ -83,10 +83,6 @@ objective_plugin(gaussian, version(1, 0, 0))
                                         cov[i][i] = sigs[i]*sigs[i];
                                 }
                         }
-                }
-                else
-                {
-                        scan_err << "Gaussian: Need to enter a sigma or covariance matrix." << scan_end;
                 }
                 
                 mean = get_inifile_value<std::vector <double>> ("mean", std::vector <double>(dim, 0));

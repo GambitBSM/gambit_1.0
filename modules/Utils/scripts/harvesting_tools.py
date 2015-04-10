@@ -126,9 +126,15 @@ def addiffunctormacro(line,module,typeset,typeheaders,intrinsic_types,exclude_ty
                      "BE_INI_CONDITIONAL_DEPENDENCY":2}
     splitline = neatsplit('\(|\)|,|\s',line)
 
+    qualifier_list = ["const"]
+
     if len(splitline)>1 and splitline[0] in command_index.keys():
         #This line defines a function and one or more of the arguments defines a candidate type
-        candidate_types = set([splitline[command_index[splitline[0]]]])
+        index = command_index[splitline[0]]
+        if splitline[index] in qualifier_list:
+            candidate_types = set([splitline[index]+" "+splitline[index+1]])            
+        else:
+            candidate_types = set([splitline[index]])
         if splitline[0]=="QUICK_FUNCTION" and len(splitline)>6:
             #Get the dep types out of a QUICK_FUNCTION command
             splitline = re.findall("\(.*?\)",re.sub("QUICK_FUNCTION\(", "", re.sub("\)\)\s*$",")",line) ) )

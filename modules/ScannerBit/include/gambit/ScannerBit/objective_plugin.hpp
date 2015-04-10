@@ -88,6 +88,12 @@ inline std::vector<double> &prior_transform(const std::vector<double> &in)      
                                                                                                                         \
         return ret;                                                                                                     \
 }                                                                                                                       \
+                                                                                                                        \
+inline void prior_transform(const std::vector<double> &in, std::unordered_map<std::string, double> &key_map)            \
+{                                                                                                                       \
+        const static PriorTransform &prior = get_input_value<PriorTransform>(1);                                        \
+        prior.transform(in, key_map);                                                                                   \
+}                                                                                                                       \
 
 #define OBJECTIVE_PLUGIN(plug_name, ...) GAMBIT_PLUGIN_INITIALIZE(OBJECTIVE_SETUP, plug_name, objective, __VA_ARGS__)
 

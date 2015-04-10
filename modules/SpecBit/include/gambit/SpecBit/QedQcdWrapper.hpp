@@ -38,13 +38,30 @@ namespace Gambit {
       private:
          QedQcdWrapper& my_parent;
 
+         // Limits for running
+         double softup;
+         double hardup; // Be careful of order in constructor!
+         virtual double hard_upper() const {return hardup;}
+         virtual double soft_upper() const {return softup;}
+         virtual double soft_lower() const {return 0.;}
+         virtual double hard_lower() const {return 0.;}
+         virtual void RunToScaleOverride(double);
+
          /* MAPS */
 
-      public:
+         //mass
+         static fmap_plain mass_map_extra;
+         static fmap_plain fill_mass_map_extra();
+         virtual const fmap_plain& get_mass_map_extra() const;  // MUST have this name for overload 
+ 
+         //mass0
+         static fmap_plain mass0_map_extra;
+         static fmap_plain fill_mass0_map_extra();
+         virtual const fmap_plain& get_mass0_map_extra() const;  // MUST have this name for overload 
+
+   public:
          QedQcd_MSbarPars(QedQcdWrapper&, QedQcdModel&); 
          virtual ~QedQcd_MSbarPars();
-        
-         virtual void RunToScale(double scale);
          virtual double GetScale() const;
          virtual void SetScale(double scale);
            
@@ -78,15 +95,20 @@ namespace Gambit {
          QedQcdModel qedqcd; // We will make an internal copy of this object
 
       public:
+         /// Override of clone function
+         DEFINE_CLONE(QedQcdWrapper)
+
          /// Internal instances of the derived "inner" classes
          QedQcd_Phys qedqcd_ph;
          QedQcd_MSbarPars qedqcd_msbar_pars;
 
          // Constructors/destructors
          QedQcdWrapper(bool switch_index_convention=false);
-         QedQcdWrapper(QedQcdModel&, bool switch_index_convention=false);
+         QedQcdWrapper(const QedQcdModel&, bool switch_index_convention=false);
+         QedQcdWrapper(const QedQcdWrapper&);
          virtual ~QedQcdWrapper();
-         
+      
+         virtual int get_index_offset() const;   
          virtual int get_numbers_stable_particles() const; 
    };
  
