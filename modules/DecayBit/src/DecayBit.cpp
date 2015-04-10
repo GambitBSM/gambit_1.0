@@ -30,7 +30,7 @@ namespace Gambit
     /// \name DecayBit module functions
     /// @{
 
-    void decayTest (double &result)                                               // CsB >
+    void decayTest (double &result)
     {
       using namespace Pipes::decayTest;
       BEreq::sdecay();
@@ -38,19 +38,7 @@ namespace Gambit
       //  cout << "top 2 body Br's: " << BEreq::cb_sd_top2body->brtopbw << endl;
       result = BEreq::cb_sd_topwidth->toptot2; 
       cout << "top total width: " << BEreq::cb_sd_topwidth->toptot2 << endl;
-      //// A -> SM decays:
-      // cout << "BR(A -> b       bb     ): " << BEreq::cb_widtha_hdec->abrb << endl;
-      // cout << "BR(A -> tau+    tau-   ): " << BEreq::cb_widtha_hdec->abrl << endl;
-      // cout << "BR(A -> mu+     mu-    ): " << BEreq::cb_widtha_hdec->abrm << endl;
-      // cout << "BR(A -> s       sb     ): " << BEreq::cb_widtha_hdec->abrs << endl;
-      // cout << "BR(A -> c       cb     ): " << BEreq::cb_widtha_hdec->abrc << endl;
-      // cout << "BR(A -> t       tb     ): " << BEreq::cb_widtha_hdec->abrt << endl;
-      // cout << "BR(A -> g       g      ): " << BEreq::cb_widtha_hdec->abrg << endl;
-      // cout << "BR(A -> gam     gam    ): " << BEreq::cb_widtha_hdec->abrga << endl;
-      // cout << "BR(A -> Z       gam    ): " << BEreq::cb_widtha_hdec->abrzga << endl;
-      // cout << "BR(A -> Z       h      ): " << BEreq::cb_widtha_hdec->abrz << endl;
-      // cout << "A total width: " << BEreq::cb_widtha_hdec->awdth << endl;
-    }                                                                             // CsB <
+    }
 
     /// Calculate decay rates for Higgs in the SM
     void SMHiggs_decays (DecayTable::Entry& result) 
@@ -288,10 +276,72 @@ namespace Gambit
       //See PDG meson sheet in DecayBit/data/PDG if you want BFs               
     }
 
-    /// MSSM decays: 
-    void A_SM_decays (DecayTable::Entry& result) 
+    /// MSSM decays: h0_1
+    void h0_1_decays (DecayTable::Entry& result) 
     {
-      using namespace Pipes::A_SM_decays;
+      using namespace Pipes::h0_1_decays;
+      BEreq::sdecay();
+      result.width_in_GeV = BEreq::cb_widthhl_hdec->hlwdth;
+      result.set_BF(BEreq::cb_widthhl_hdec->hlbrb, 0.0, "b", "bbar");
+      result.set_BF(BEreq::cb_widthhl_hdec->hlbrl, 0.0, "tau+", "tau-");
+      result.set_BF(BEreq::cb_widthhl_hdec->hlbrm, 0.0, "mu+", "mu-");
+      result.set_BF(BEreq::cb_widthhl_hdec->hlbrs, 0.0, "s", "sbar");
+      result.set_BF(BEreq::cb_widthhl_hdec->hlbrc, 0.0, "c", "cbar");
+      result.set_BF(BEreq::cb_widthhl_hdec->hlbrt, 0.0, "t", "tbar");
+      result.set_BF(BEreq::cb_widthhl_hdec->hlbrg, 0.0, "g", "g");
+      result.set_BF(BEreq::cb_widthhl_hdec->hlbrga, 0.0, "gamma", "gamma");
+      result.set_BF(BEreq::cb_widthhl_hdec->hlbrzga, 0.0, "gamma", "Z0");
+      result.set_BF(BEreq::cb_widthhl_hdec->hlbrw, 0.0, "W+", "W-");
+      result.set_BF(BEreq::cb_widthhl_hdec->hlbrz, 0.0, "Z0", "Z0");
+      result.set_BF(BEreq::cb_wisusy_hdec->hlbrsc(1,1), 0.0, "~chi+_1", "~chi-_1");
+      result.set_BF(BEreq::cb_wisusy_hdec->hlbrsc(2,2), 0.0, "~chi+_2", "~chi-_2");
+      result.set_BF(BEreq::cb_wisusy_hdec->hlbrsc(1,2), 0.0, "~chi+_1", "~chi-_2");
+      result.set_BF(BEreq::cb_wisusy_hdec->hlbrsc(2,1), 0.0, "~chi+_2", "~chi-_1");
+      result.set_BF(BEreq::cb_wisusy_hdec->hlbrsn(1,1), 0.0, "~chi0_1", "~chi0_1");
+      result.set_BF(BEreq::cb_wisusy_hdec->hlbrsn(2,2), 0.0, "~chi0_2", "~chi0_2");
+      result.set_BF(BEreq::cb_wisusy_hdec->hlbrsn(3,3), 0.0, "~chi0_3", "~chi0_3");
+      result.set_BF(BEreq::cb_wisusy_hdec->hlbrsn(4,4), 0.0, "~chi0_4", "~chi0_4");
+      result.set_BF(BEreq::cb_wisusy_hdec->hlbrsn(1,2), 0.0, "~chi0_1", "~chi0_2");
+      result.set_BF(BEreq::cb_wisusy_hdec->hlbrsn(1,3), 0.0, "~chi0_1", "~chi0_3");
+      result.set_BF(BEreq::cb_wisusy_hdec->hlbrsn(1,4), 0.0, "~chi0_1", "~chi0_4");
+      result.set_BF(BEreq::cb_wisusy_hdec->hlbrsn(2,3), 0.0, "~chi0_2", "~chi0_3");
+      result.set_BF(BEreq::cb_wisusy_hdec->hlbrsn(2,4), 0.0, "~chi0_2", "~chi0_4");
+      result.set_BF(BEreq::cb_wisusy_hdec->hlbrsn(3,4), 0.0, "~chi0_3", "~chi0_4");
+      result.set_BF(BEreq::cb_wisfer_hdec->bhlsqul, 0.0, "~u_L", "~ubar_L");
+      result.set_BF(BEreq::cb_wisfer_hdec->bhlsqur, 0.0, "~u_R", "~ubar_R");
+      result.set_BF(BEreq::cb_wisfer_hdec->bhlsqul, 0.0, "~c_L", "~cbar_L");
+      result.set_BF(BEreq::cb_wisfer_hdec->bhlsqur, 0.0, "~c_R", "~cbar_R");
+      // result.set_BF(BEreq::cb_wisfer_hdec->bhlst(1,1), 0.0, "~t_L", "~tbar_1");
+      // result.set_BF(BEreq::cb_wisfer_hdec->bhlst(2,2), 0.0, "~t_R", "~tbar_2");
+      // result.set_BF(BEreq::cb_wisfer_hdec->bhlst(1,2), 0.0, "~t_L", "~tbar_2");
+      // result.set_BF(BEreq::cb_wisfer_hdec->bhlst(2,1), 0.0, "~t_R", "~tbar_1");
+      result.set_BF(BEreq::cb_wisfer_hdec->bhlsqdl, 0.0, "~d_L", "~dbar_L");
+      result.set_BF(BEreq::cb_wisfer_hdec->bhlsqdr, 0.0, "~d_R", "~dbar_R");
+      result.set_BF(BEreq::cb_wisfer_hdec->bhlsqdl, 0.0, "~s_L", "~sbar_L");
+      result.set_BF(BEreq::cb_wisfer_hdec->bhlsqdr, 0.0, "~s_R", "~sbar_R");
+      // result.set_BF(BEreq::cb_wisfer_hdec->bhlsb(1,1), 0.0, "~b_L", "~bbar_1");
+      // result.set_BF(BEreq::cb_wisfer_hdec->bhlsb(2,2), 0.0, "~b_R", "~bbar_2");
+      // result.set_BF(BEreq::cb_wisfer_hdec->bhlsb(1,2), 0.0, "~b_L", "~bbar_2");
+      // result.set_BF(BEreq::cb_wisfer_hdec->bhlsb(2,1), 0.0, "~b_R", "~bbar_1");
+      result.set_BF(BEreq::cb_wisfer_hdec->bhlslel, 0.0, "~e-_L", "~e+_L");
+      result.set_BF(BEreq::cb_wisfer_hdec->bhlsler, 0.0, "~e-_R", "~e+_R");
+      result.set_BF(BEreq::cb_wisfer_hdec->bhlslel, 0.0, "~mu-_L", "~mu+_L");
+      result.set_BF(BEreq::cb_wisfer_hdec->bhlsler, 0.0, "~mu-_R", "~mu+_R");
+      // result.set_BF(BEreq::cb_wisfer_hdec->bhlstau(1,1), 0.0, "~tau-_L", "~tau+_1");
+      // result.set_BF(BEreq::cb_wisfer_hdec->bhlstau(2,2), 0.0, "~tau-_R", "~tau+_2");
+      // result.set_BF(BEreq::cb_wisfer_hdec->bhlstau(1,2), 0.0, "~tau-_L", "~tau+_2");
+      // result.set_BF(BEreq::cb_wisfer_hdec->bhlstau(2,1), 0.0, "~tau-_R", "~tau+_1");
+      result.set_BF(BEreq::cb_wisfer_hdec->bhlslnl, 0.0, "~nu_e", "~nubar_e");
+      result.set_BF(BEreq::cb_wisfer_hdec->bhlslnl, 0.0, "~nu_mu", "~nubar_mu");
+      result.set_BF(BEreq::cb_wisfer_hdec->bhlslnl, 0.0, "~nu_tau", "~nubar_tau");
+      cout << "h0_1 total width: " << result.width_in_GeV << endl;
+      cout << "BR(h0_1->gamma gamma): " << BEreq::cb_widthhl_hdec->hlbrga << endl;
+    }
+
+    /// MSSM decays: A0...
+    void A_decays (DecayTable::Entry& result) 
+    {
+      using namespace Pipes::A_decays;
       BEreq::sdecay();
       result.width_in_GeV = BEreq::cb_widtha_hdec->awdth; // CsB: check that SUSYHIT gives the width in GeV
       result.positive_error = 0.0;
@@ -305,50 +355,8 @@ namespace Gambit
       result.set_BF(BEreq::cb_widtha_hdec->abrg, 0.0, "g", "g");              
       result.set_BF(BEreq::cb_widtha_hdec->abrga, 0.0, "gamma", "gamma");              
       result.set_BF(BEreq::cb_widtha_hdec->abrzga, 0.0, "Z0", "gamma");              
-      result.set_BF(BEreq::cb_widtha_hdec->abrz, 0.0, "Z0", "h0_1"); // CsB: check if h0_1 is the lightest scalar Higgs PS: it is - see Models/src/particle_database.cpp
+      result.set_BF(BEreq::cb_widtha_hdec->abrz, 0.0, "Z0", "h0_1");
       cout << "A total width: " << result.width_in_GeV << endl;
-    }
-
-    void H01_SM_decays (DecayTable::Entry& result) 
-    {
-      using namespace Pipes::H01_SM_decays;
-      BEreq::sdecay();
-      result.width_in_GeV = 0.0;
-    }
-
-    void H02_SM_decays (DecayTable::Entry& result) 
-    {
-      using namespace Pipes::H02_SM_decays;
-      BEreq::sdecay();
-      result.width_in_GeV = 0.0;
-    }
-
-    void HC_SM_decays (DecayTable::Entry& result) 
-    {
-      using namespace Pipes::HC_SM_decays;
-      BEreq::sdecay();
-      result.width_in_GeV = 0.0;
-    }
-
-    void Higgs_SUSY_decays (DecayTable::Entry& result) 
-    {
-      using namespace Pipes::Higgs_SUSY_decays;
-      BEreq::sdecay();
-      result.width_in_GeV = 0.0;
-    }
-
-    void Higgs_sfermion_decays (DecayTable::Entry& result) 
-    {
-      using namespace Pipes::Higgs_sfermion_decays;
-      BEreq::sdecay();
-      result.width_in_GeV = 0.0;
-    }
-
-    void Higgs_goldstone_decays (DecayTable::Entry& result) 
-    {
-      using namespace Pipes::Higgs_goldstone_decays;
-      BEreq::sdecay();
-      result.width_in_GeV = 0.0;
     }
 
     /// Collect all the DecayTable entries into an actual DecayTable 
@@ -387,7 +395,7 @@ namespace Gambit
       decays("omega") = *Dep::omega_decay_rates;    // Add the omega meson decays.
       
       // MSSM-specific
-      decays("A0") = *Dep::MSSM_Higgs_decay_rates;  // Add the CP-odd MSSM Higgs decays.
+      decays("A0") = *Dep::MSSM_Higgs_decays;       // Add the CP-odd MSSM Higgs decays.
 
       cout << "BF for tau+ -> pi+ nubar_tau: " << decays("tau+").BF("pi+", "nubar_tau") << endl;
       result = decays;
