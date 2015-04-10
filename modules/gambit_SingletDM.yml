@@ -134,6 +134,9 @@ Rules:
     function: RD_oh2_general   # general routines (DS backend)
     #function: RD_oh2_DarkSUSY   # darksusy backend
     #function: RD_oh2_MicrOmegas  # micromegas backend     
+  - capability: RD_spectrum
+    options: 
+      CoannMaxMass: 1.01 # include only co-annihilating particles up to this mass
       
   - capability: lnL_oh2
     options:

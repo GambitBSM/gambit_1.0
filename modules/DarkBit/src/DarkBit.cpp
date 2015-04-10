@@ -208,79 +208,76 @@ namespace Gambit {
     {
       using namespace Pipes::RD_spectrum_SUSY;
 
-      std::vector<int> colist; //potential coannihilating partilces (indices)
+      std::vector<int> colist; //potential coannihilating particles (indices)
+      colist.clear();
 
-      // flags for which coannihilation processes to include
-      // set by hand which coannihilation processes to include
-      // this should eventually be done via some driver/init file
-      bool wantCharginosNeutralinos = true;
-      bool wantSfermions = true;
-      // maximal coannihilating particle mass
-      double maximalMass = 2.1;
+      result.coannihilatingParticles.clear();
+      result.resonances.clear();
+      result.threshold_energy.clear();
+
+      // settings for coannihilations (default values if no input is specified in yaml file)
+      bool CoannCharginosNeutralinos = runOptions->getValueOrDef<bool>(true, "CoannCharginosNeutralinos");
+      bool CoannSfermions = runOptions->getValueOrDef<bool>(true, "CoannSfermions");
+      double CoannMaxMass = runOptions->getValueOrDef<double>(2.1, "CoannMaxMass");
 
       // NB: eventually, this function should not be BE-dependent anymore!
       // DarkSUSY conventions like the ones below are only used until we have 
       // decided on a format for the model representation
       int kgamma=13,kw=14,kz=15,kt=11,kh1=17,kh2=18,kh3=19,khc=20;
 
-      // read out DS mass spectrum and relevant particle info
-      DS_PACODES DSpart = *BEreq::pacodes;
-      DS_MSPCTM mymspctm= *BEreq::mspctm;
-      DS_INTDOF myintdof= *BEreq::intdof;
-      DS_WIDTHS mywidths= *BEreq::widths;
-
-      result.coannihilatingParticles.clear();
-      result.resonances.clear();
-      result.threshold_energy.clear();
+      // introduce pointers to DS mass spectrum and relevant particle info
+      DS_PACODES *DSpart = &(*BEreq::pacodes);
+      DS_MSPCTM *mymspctm= &(*BEreq::mspctm);
+      DS_INTDOF *myintdof= &(*BEreq::intdof);
+      DS_WIDTHS *mywidths= &(*BEreq::widths);
 
       // first add neutralino=WIMP=least massive 'coannihilating particle'
-      result.coannihilatingParticles.push_back(RD_coannihilating_particle(DSpart.kn(1), myintdof.kdof(DSpart.kn(1)),mymspctm.mass(DSpart.kn(1))));
+      result.coannihilatingParticles.push_back(RD_coannihilating_particle(DSpart->kn(1), 
+                                               myintdof->kdof(DSpart->kn(1)),mymspctm->mass(DSpart->kn(1))));
 
       //include  neutralino & chargino coannihilation
-      if(wantCharginosNeutralinos)
+      if(CoannCharginosNeutralinos)
       {
         for (int i=2; i<=4; i++)
-          colist.push_back(DSpart.kn(i));
-        colist.push_back(DSpart.kcha(1));
-        colist.push_back(DSpart.kcha(2));
+          colist.push_back(DSpart->kn(i));
+        colist.push_back(DSpart->kcha(1));
+        colist.push_back(DSpart->kcha(2));
       }
 
       //include sfermion coannihilation
-      if(wantSfermions)
+      if(CoannSfermions)
       {
         for (int i=1; i<=6; i++)
-         colist.push_back(DSpart.ksl(i));
+         colist.push_back(DSpart->ksl(i));
         for (int i=1; i<=3; i++)
-         colist.push_back(DSpart.ksnu(i));
+         colist.push_back(DSpart->ksnu(i));
         for (int i=1; i<=6; i++)
-         colist.push_back(DSpart.ksqu(i));
+         colist.push_back(DSpart->ksqu(i));
         for (int i=1; i<=6; i++)
-         colist.push_back(DSpart.ksqd(i));
+         colist.push_back(DSpart->ksqd(i));
       }
 
       // only keep sparticles that are not too heavy
       for (size_t i=0; i<colist.size(); i++)
-        if (mymspctm.mass(colist[i])/mymspctm.mass(DSpart.kn(1)) < maximalMass)
-          result.coannihilatingParticles.push_back(RD_coannihilating_particle(colist[i], myintdof.kdof(colist[i]), mymspctm.mass(colist[i])));
-
-      colist.clear();
+        if (mymspctm->mass(colist[i])/mymspctm->mass(DSpart->kn(1)) < CoannMaxMass)
+          result.coannihilatingParticles.push_back(RD_coannihilating_particle(colist[i], 
+                                                    myintdof->kdof(colist[i]), mymspctm->mass(colist[i])));
 
 
       // determine resonances for LSP annihilation
       int reslist[] = {kz,kh1,kh2,kh3,kw,khc};
       int resmax=sizeof(reslist) / sizeof(reslist[0]);
-
       if (result.coannihilatingParticles.size() == 1)
         resmax -= 2;    // the last 2 resonances in the list can only appear for coannihilations
 
       for (int i=0; i<resmax; i++)
       {
-        if (mymspctm.mass(reslist[i])/result.coannihilatingParticles[0].mass > 2.)
+        if (mymspctm->mass(reslist[i])/result.coannihilatingParticles[0].mass > 2.)
         {
-          if (reslist[i]==kh1 && mywidths.width(kh1) < 0.1)
-            result.resonances.push_back(TH_Resonance(mymspctm.mass(reslist[i]), 0.1)); // narrow res treatment adopted in DS
+          if (reslist[i]==kh1 && mywidths->width(kh1) < 0.1)
+            result.resonances.push_back(TH_Resonance(mymspctm->mass(reslist[i]), 0.1)); // narrow res treatment adopted in DS
           else
-            result.resonances.push_back(TH_Resonance(mymspctm.mass(reslist[i]), mywidths.width(reslist[i])));
+            result.resonances.push_back(TH_Resonance(mymspctm->mass(reslist[i]), mywidths->width(reslist[i])));
         }
       }
 
@@ -289,8 +286,8 @@ namespace Gambit {
       int thrlist[] = {kw,kz,kt};
       int thrmax=sizeof(thrlist) / sizeof(thrlist[0]);
       for (int i=0; i<thrmax; i++)
-        if (mymspctm.mass(thrlist[i])>result.coannihilatingParticles[0].mass)
-          result.threshold_energy.push_back(2*mymspctm.mass(thrlist[i]));
+        if (mymspctm->mass(thrlist[i])>result.coannihilatingParticles[0].mass)
+          result.threshold_energy.push_back(2*mymspctm->mass(thrlist[i]));
 
       // now add coannihilation thresholds
       if (result.coannihilatingParticles.size() > 1)
@@ -482,20 +479,17 @@ namespace Gambit {
 
         // write information about thresholds and resonances to DS common blocks
         // [this is the model-independent part of dsrdstart]
-        DS_RDMGEV myrdmgev = *BEreq::rdmgev; //NB:the other variables in that block have already been set!!!
-        myrdmgev.nres=0;
+        DS_RDMGEV *myrdmgev = &(*BEreq::rdmgev); //NB:the other variables in that block have already been set!!!
+        myrdmgev->nres=0;
         
         if (!myres.resonances.empty()){
-          myrdmgev.nres=myres.resonances.size();
+          myrdmgev->nres=myres.resonances.size();
           for (std::size_t i=1; i<=myres.resonances.size(); i++) {
-//          for (int i=1; i<=myres.resonances.size(); i++) {
-            myrdmgev.rgev(i)=myres.resonances[i-1].energy;
-            myrdmgev.rwid(i)=myres.resonances[i-1].width;
-//            std::cout << myrdmgev.rgev[i] << "  " << myrdmgev.rwid[i] << std::endl;
+            myrdmgev->rgev(i)=myres.resonances[i-1].energy;
+            myrdmgev->rwid(i)=myres.resonances[i-1].width;
           }
         }
-        // convert to momenta
-        *BEreq::rdmgev = myrdmgev;
+        // convert to momenta and write to DS common blocks
         DS_RDPTH myrdpth;
         myrdpth.nth=myres.threshold_energy.size()-1;   // NB: DS does not count 2* WIMP rest mass as thr
         myrdpth.pth(0)=0; myrdpth.incth(0)=1;
@@ -505,21 +499,20 @@ namespace Gambit {
         }
         *BEreq::rdpth = myrdpth;
 
-        // determine starting point for integration of Boltzmann eq
-        DS_RDDOF myrddof = *BEreq::rddof;
-        double xstart=std::max(myrdpars.xinit,1.0001*mwimp/myrddof.tgev(1));
+        // determine starting point for integration of Boltzmann eq and write to DS common blocks
+        DS_RDDOF *myrddof = &(*BEreq::rddof);
+        double xstart=std::max(myrdpars.xinit,1.0001*mwimp/myrddof->tgev(1));
         double tstart=mwimp/xstart;
-        int k; myrddof.khi=myrddof.nf; myrddof.klo=1;
-        while (myrddof.khi > myrddof.klo+1){
-          k=(myrddof.khi+myrddof.klo)/2;
-          if (myrddof.tgev(k) < tstart){
-            myrddof.khi=k;
+        int k; myrddof->khi=myrddof->nf; myrddof->klo=1;
+        while (myrddof->khi > myrddof->klo+1){
+          k=(myrddof->khi+myrddof->klo)/2;
+          if (myrddof->tgev(k) < tstart){
+            myrddof->khi=k;
           }
           else {
-            myrddof.klo=k;
+            myrddof->klo=k;
           }
         }
-        *BEreq::rddof=myrddof;
 
 
         // follow narrow res treatment for SM Higgs adopted in DS
@@ -545,7 +538,7 @@ namespace Gambit {
           yend=0;
         }  
         
-        result = 0.70365e8*myrddof.fh(myrddof.nf)*mwimp*yend;
+        result = 0.70365e8*myrddof->fh(myrddof->nf)*mwimp*yend;
 
       } // USING BE=DS
 
