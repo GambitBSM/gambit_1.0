@@ -178,13 +178,7 @@ set(GAMBIT_VERSION_MINOR 0)
 string (REPLACE ";" "," itch_with_commas "${itch}")
 
 # Generate the cmake_variables.hpp file
-message("${Yellow}-- Updating GAMBIT with config data${ColourReset}")
-set(update_config ${PROJECT_SOURCE_DIR}/cmake/cmake_variables.py ${PROJECT_BINARY_DIR})
-execute_process(RESULT_VARIABLE result COMMAND python ${update_config} WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
-check_result(${result} ${update_config})
-configure_file("${PROJECT_BINARY_DIR}/cmake_variables.hpp.in"
-               "${PROJECT_SOURCE_DIR}/cmake/include/gambit/cmake/cmake_variables.hpp")
-message("${Yellow}-- Updating GAMBIT with config data - done.${ColourReset}")
+include(cmake/preprocessor.cmake)
 
 # Generate the ScannerBit compilation files
 message("${Yellow}-- Updating GAMBIT scanner cmake and related files${ColourReset}")
