@@ -164,6 +164,49 @@ namespace Gambit
     };
     */
 
+    /// Dark matter particle identity
+    class DarkMatter_ID_type
+    {
+      public:
+        DarkMatter_ID_type() {};
+        DarkMatter_ID_type(std::vector<std::string> ids)
+        {
+          for (auto it = ids.begin(); it != ids.end(); it++)
+          {
+            particle_ids.insert(*it);
+          }
+        }
+
+        void add_id(std::string id)
+        {
+          particle_ids.insert(id);
+        }
+
+        bool isDM(std::string id)
+        {
+          return (particle_ids.count(id) == 1);
+        }
+
+        std::vector<std::string> getList()
+        {
+          return std::vector<std::string>(particle_ids.begin(), particle_ids.end());
+        }
+
+        std::string singleID() const
+        {
+          if ( particle_ids.size() > 1 )
+          {
+            std::cout << "WARNING: Accessing multi-component DM state with single component routines." << std::endl;
+            exit(1);
+            // FIXME: Is there a more elegant way to exit?
+          }
+          return *particle_ids.begin();
+        }
+
+      private:
+        std::set<std::string> particle_ids;
+    };
+
     // A simple example
     struct Wstruct
     {

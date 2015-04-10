@@ -157,6 +157,7 @@ START_MODULE
       START_FUNCTION(Gambit::DarkBit::TH_resonances_thresholds)
       DEPENDENCY(RD_spectrum, Gambit::DarkBit::RD_spectrum_type)
       DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)
+      DEPENDENCY(DarkMatter_ID, DarkMatter_ID_type)
     #undef FUNCTION
     #define FUNCTION RD_thresholds_resonances_from_spectrum
       START_FUNCTION(Gambit::DarkBit::TH_resonances_thresholds)
@@ -188,6 +189,7 @@ START_MODULE
     #define FUNCTION RD_eff_annrate_from_ProcessCatalog
       START_FUNCTION(fptr_dd)
       DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)
+      DEPENDENCY(DarkMatter_ID, DarkMatter_ID_type)
       ALLOW_MODELS(SingletDM)
     #undef FUNCTION
   #undef CAPABILITY
@@ -368,6 +370,7 @@ START_MODULE
       START_FUNCTION(std::vector<std::string>)
       DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)
       DEPENDENCY(SimYieldTable, Gambit::DarkBit::SimYieldTable)
+      DEPENDENCY(DarkMatter_ID, DarkMatter_ID_type)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -378,10 +381,12 @@ START_MODULE
       DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)
       DEPENDENCY(SimYieldTable, Gambit::DarkBit::SimYieldTable)
       DEPENDENCY(cascadeMC_gammaSpectra, Gambit::DarkBit::stringFunkMap)
+      DEPENDENCY(DarkMatter_ID, DarkMatter_ID_type)
     #undef FUNCTION
     #define FUNCTION GA_AnnYield_DarkSUSY
       START_FUNCTION(Funk::Funk)
       DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)
+      DEPENDENCY(DarkMatter_ID, DarkMatter_ID_type)
       BACKEND_REQ(dshayield, (), double, (double&,double&,int&,int&,int&))
     #undef FUNCTION
     #define FUNCTION ToyAnnYield
@@ -398,6 +403,7 @@ START_MODULE
       //ALLOW_MODELS(CMSSM_demo, MSSM25atQ)
       DEPENDENCY(DarkSUSY_PointInit, bool)
       DEPENDENCY(MSSMspectrum, eaSLHA) 
+      DEPENDENCY(DarkMatter_ID, DarkMatter_ID_type)
       BACKEND_REQ(mspctm, (), DS_MSPCTM)
       BACKEND_REQ(dssigmav, (), double, (int&))
       BACKEND_REQ(dsIBffdxdy, (), double, (int&, double&, double&))
@@ -434,6 +440,7 @@ START_MODULE
       START_FUNCTION(double)
       DEPENDENCY(GA_AnnYield, Funk::Funk)
       DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)
+      DEPENDENCY(DarkMatter_ID, DarkMatter_ID_type)
       BACKEND_REQ(lnL_GC, (gamLike), double, (const std::vector<double> &, const std::vector<double> &))
     #undef FUNCTION
   #undef CAPABILITY
@@ -458,7 +465,7 @@ START_MODULE
   // Simple WIMP property extractors =======================================
 
   // Retrieve the DM mass in GeV for generic models
-  QUICK_FUNCTION(DarkBit, mwimp, NEW_CAPABILITY, mwimp_generic, double, (), (TH_ProcessCatalog, DarkBit::TH_ProcessCatalog))
+  QUICK_FUNCTION(DarkBit, mwimp, NEW_CAPABILITY, mwimp_generic, double, (), (TH_ProcessCatalog, DarkBit::TH_ProcessCatalog), (DarkMatter_ID, DarkMatter_ID_type))
   // Retrieve the DM mass in GeV for the scalar singlet model
   QUICK_FUNCTION(DarkBit, mwimp, OLD_CAPABILITY, mwimp_SingletDM, double, (SingletDM))
   // Retrieve the total thermally-averaged annihilation cross-section for indirect detection (cm^3 / s)
@@ -1129,6 +1136,18 @@ START_MODULE
     #define FUNCTION SimYieldTable_MicrOmegas
     START_FUNCTION(Gambit::DarkBit::SimYieldTable)
     BACKEND_REQ(dNdE, (), double, (double,double,int,int))
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  #define CAPABILITY DarkMatter_ID
+  START_CAPABILITY
+    #define FUNCTION DarkMatter_ID_SingletDM
+    START_FUNCTION(DarkMatter_ID_type)
+    ALLOW_MODELS(SingletDM)
+    #undef FUNCTION
+    #define FUNCTION DarkMatter_ID_MSSM25atQ
+    START_FUNCTION(DarkMatter_ID_type)
+    ALLOW_MODELS(MSSM25atQ)
     #undef FUNCTION
   #undef CAPABILITY
 

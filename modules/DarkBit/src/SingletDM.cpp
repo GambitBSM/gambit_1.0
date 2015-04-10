@@ -159,6 +159,12 @@ namespace Gambit
         double mt = 172;  // FIXME
     };
 
+    void DarkMatter_ID_SingletDM(DarkMatter_ID_type & result)
+    {
+      using namespace Pipes::DarkMatter_ID_SingletDM;
+      result = DarkMatter_ID_type(initVector<std::string>("S"));
+    }
+
     /// Initializes thresholds/resonances for RD calculation for SingletDM
     void RD_thresholds_resonances_SingletDM(TH_resonances_thresholds &result)
     {

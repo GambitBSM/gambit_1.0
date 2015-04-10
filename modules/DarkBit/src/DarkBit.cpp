@@ -302,8 +302,9 @@ namespace Gambit {
     void RD_thresholds_resonances_from_ProcessCatalog(TH_resonances_thresholds &result)
     {
       using namespace Pipes::RD_thresholds_resonances_from_ProcessCatalog;
+      std::string DMid= Dep::DarkMatter_ID->singleID();
 
-      TH_Process annihilation = (*Dep::TH_ProcessCatalog).getProcess((std::string)"~chi0_1", (std::string)"~chi0_1");
+      TH_Process annihilation = (*Dep::TH_ProcessCatalog).getProcess(DMid, DMid);
 
       result = TH_resonances_thresholds(annihilation.thresholdResonances);
     }
@@ -416,7 +417,8 @@ namespace Gambit {
     {
         using namespace Pipes::RD_eff_annrate_from_ProcessCatalog;
 
-        TH_Process annProc = (*Dep::TH_ProcessCatalog).getProcess((std::string)"~chi0_1", (std::string)"~chi0_1");
+        std::string DMid= Dep::DarkMatter_ID->singleID();
+        TH_Process annProc = (*Dep::TH_ProcessCatalog).getProcess(DMid, DMid);
         double mDM = *Param["mass"];
         const double GeV2tocm3s1 = 1.17e-17;
 
@@ -1255,10 +1257,11 @@ namespace Gambit {
     {
         using namespace Pipes::GA_missingFinalStates;
         std::set<std::string> missingFinalStates;
+        std::string DMid= Dep::DarkMatter_ID->singleID();
 
         if ( runOptions->getValueOrDef(false, "ignore_all") ) return;
 
-        TH_Process process = (*Dep::TH_ProcessCatalog).getProcess((std::string)"~chi0_1", (std::string)"~chi0_1");
+        TH_Process process = (*Dep::TH_ProcessCatalog).getProcess(DMid, DMid);
 
         // Add only gamma-ray spectra for two and three body final states
         for (std::vector<TH_Channel>::iterator it = process.channelList.begin(); it != process.channelList.end(); ++it)
@@ -1344,6 +1347,8 @@ namespace Gambit {
     {
         using namespace Pipes::GA_AnnYield_General;
 
+        std::string DMid= Dep::DarkMatter_ID->singleID();
+
         // Grid and energy range used in interpolating functions.
         double Emin, Emax, line_width;
         Emin = runOptions->getValueOrDef<double>(1e-1, "Emin");
@@ -1351,10 +1356,10 @@ namespace Gambit {
         line_width = runOptions->getValueOrDef<double>(0.03,  "line_width");
 
         // Get annihilation process from process catalog
-        TH_Process annProc = (*Dep::TH_ProcessCatalog).getProcess((std::string)"~chi0_1", (std::string)"~chi0_1");
+        TH_Process annProc = (*Dep::TH_ProcessCatalog).getProcess(DMid, DMid);
 
         // Get particle mass from process catalog
-        double mass = (*Dep::TH_ProcessCatalog).getParticleProperty("~chi0_1").mass;
+        double mass = (*Dep::TH_ProcessCatalog).getParticleProperty(DMid).mass;
         double Ecm = 2*mass;
 
         // Loop over all channels for that process
@@ -1528,7 +1533,9 @@ namespace Gambit {
     // TODO: Delete
     void GA_AnnYield_DarkSUSY(Funk::Funk &result)
     {
-        using namespace Pipes::GA_AnnYield_DarkSUSY;
+      using namespace Pipes::GA_AnnYield_DarkSUSY;
+
+      std::string DMid = Dep::DarkMatter_ID->singleID();
 
         ////////////////////
         // 1) Initialization
@@ -1545,10 +1552,10 @@ namespace Gambit {
       std::vector<double> ygrid(n);
 
         // Get annihilation process from process catalog
-        TH_Process annProc = (*Dep::TH_ProcessCatalog).getProcess((std::string)"~chi0_1", (std::string)"~chi0_1");
+        TH_Process annProc = (*Dep::TH_ProcessCatalog).getProcess(DMid, DMid);
 
         // Get particle mass from process catalog
-        double mass = (*Dep::TH_ProcessCatalog).getParticleProperty("~chi0_1").mass;
+        double mass = (*Dep::TH_ProcessCatalog).getParticleProperty(DMid).mass;
 
 
         ///////////////////////////////////////////////////////////
@@ -1720,11 +1727,13 @@ namespace Gambit {
     void TH_ProcessCatalog_CMSSM(Gambit::DarkBit::TH_ProcessCatalog &result)
     {
         using namespace Pipes::TH_ProcessCatalog_CMSSM;
+
+        std::string DMid = Dep::DarkMatter_ID->singleID();  // FIXME: Add test that this is really chi0_1
         
         // Instantiate new ProcessCatalog
         TH_ProcessCatalog catalog;      
         // and DM annihilation process                   
-        TH_Process process((std::string)"~chi0_1", (std::string)"~chi0_1");   
+        TH_Process process(DMid, DMid);
         
         // Get DarkSUSY mass spectrum
         DS_MSPCTM mymspctm= *BEreq::mspctm;
@@ -1766,10 +1775,10 @@ namespace Gambit {
         catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("H-"     , TH_ParticleProperty(mymspctm.mass(20),    0)));     
         catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("H+"     , TH_ParticleProperty(mymspctm.mass(20),    0)));          
         // DM mass   
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("~chi0_1" , TH_ParticleProperty(mymspctm.mass(42),    1)));
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> (DMid, TH_ParticleProperty(mymspctm.mass(42),    1)));
         
         // Set DarkSUSY DM mass parameter used in 3-body decays
-        BEreq::IBintvars->ibcom_mx = catalog.getParticleProperty("~chi0_1").mass;
+        BEreq::IBintvars->ibcom_mx = catalog.getParticleProperty(DMid).mass;
                 
         // Helper variables
         int index; 
@@ -1781,7 +1790,7 @@ namespace Gambit {
             /* Check if process is kinematically allowed */                                         \
             m_1 = catalog.getParticleProperty(STRINGIFY(P1)).mass;                                  \
             m_2 = catalog.getParticleProperty(STRINGIFY(P1)).mass;                                  \
-            if(m_1 + m_2 < 2*catalog.getParticleProperty("~chi0_1").mass)                            \
+            if(m_1 + m_2 < 2*catalog.getParticleProperty(DMid).mass)                                \
             {                                                                                       \
                 /* Set cross-section */                                                             \
                 index = PARTCH;                                                                     \
@@ -1830,7 +1839,7 @@ namespace Gambit {
         // Undef the macro so it doesn't propagate through GAMBIT
         #undef SETUP_DS_PROCESS
         
-        double M_DM = catalog.getParticleProperty("~chi0_1").mass;
+        double M_DM = catalog.getParticleProperty(DMid).mass;
 
         // Macro for setting up 3-body decays with gammas
         #define SETUP_DS_PROCESS_GAMMA3BODY(NAME, IBCH, P1, P2, IBFUNC, SV_IDX, PREFACTOR)                                  \
@@ -2041,8 +2050,10 @@ namespace Gambit {
     void lnL_FermiGC_gamLike(double &result)
     {
         using namespace Pipes::lnL_FermiGC_gamLike;
+
+        std::string DMid = Dep::DarkMatter_ID->singleID();
         
-        double mass = (*Dep::TH_ProcessCatalog).getParticleProperty("~chi0_1").mass;
+        double mass = (*Dep::TH_ProcessCatalog).getParticleProperty(DMid).mass;
 
         std::vector<double> x = logspace(-1, 2.698, 100);  // from 0.1 to 500 GeV
         std::vector<double> y = (*Dep::GA_AnnYield/(mass*mass*8*M_PI))->set("v",0.)->bind("E")->vect(x);
@@ -2100,8 +2111,9 @@ namespace Gambit {
 
 
     /// Retrieve the DM mass in GeV for generic models (GeV)
-    // FIXME this needs to be updated once DM is not always referred to as "~chi0_1"
-    void mwimp_generic(double &result) { result = Pipes::mwimp_generic::Dep::TH_ProcessCatalog->getParticleProperty("~chi0_1").mass; }
+    void mwimp_generic(double &result) { 
+      result = Pipes::mwimp_generic::Dep::TH_ProcessCatalog->getParticleProperty(Pipes::mwimp_generic::Dep::DarkMatter_ID->singleID()).mass; 
+    }
 
     /// Retrieve the DM mass in GeV for the scalar singlet model (GeV)
     void mwimp_SingletDM(double &result) { result = *Pipes::mwimp_SingletDM::Param["mass"]; }
@@ -3156,6 +3168,12 @@ namespace Gambit {
         logger() << dNdE_bb->bind("E")->eval(10) << std::endl;
 
         result = dNdE_bb;  // Fix units
+    }
+
+    void DarkMatter_ID_MSSM25atQ(DarkMatter_ID_type & result)
+    {
+      using namespace Pipes::DarkMatter_ID_MSSM25atQ;
+      result = DarkMatter_ID_type(initVector<std::string>("~chi0_1"));
     }
   }
 }
