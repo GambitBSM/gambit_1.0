@@ -819,7 +819,7 @@ namespace Gambit {
             }
             else
             {
-                dN_dE= chn.dNdE->bind("E", "Ecm")->eval(E_CoM, endpoint->m);
+                dN_dE= chn.dNdE_bound->eval(E_CoM, endpoint->m);
             }
             // Only accept point if dN_dE is above threshold value
             if(dN_dE > cMC_specValidThreshold)
@@ -1305,7 +1305,7 @@ namespace Gambit {
         }
         
         // FIXME: For testing, add phip as missing final state
-        //missingFinalStates.insert("phip");
+        // missingFinalStates.insert("phip");
         
         std::cout << "Number of missing final states: " << missingFinalStates.size() << std::endl;
         for (auto it = missingFinalStates.begin(); it != missingFinalStates.end(); it++)
@@ -1422,8 +1422,9 @@ namespace Gambit {
                 // TODO: Correct?
                 Yield = Yield + (boost_dNdE(spec0, gamma0, 0.0) + boost_dNdE(spec1, gamma1, 0.0)) * it->genRate;
 
-                /*
+                
                 // FIXME: This is debug information. Remove it when no longer necessary.
+                /*
                 std::cout << "Spectrum debug info:" << std:: endl;
                 double E=5.0;
                 double factor=1.125;
@@ -1448,13 +1449,13 @@ namespace Gambit {
                 std::cout << it->finalStateIDs[1] << "-spectrum:" << std:: endl;
                 for(int i=0; i<Nen;i++)
                 {
-                    std::cout << spec1->eval("E", Evals[i])<< "  ";
+                    std::cout << spec1->bind("E")->eval(Evals[i])<< "  ";
                 }
                 std::cout << std::endl;
                 std::cout << "gamma result:" << std:: endl;
                 for(int i=0; i<Nen;i++)
                 {
-                    std::cout << Yield->eval("v", 0, "E", Evals[i])<< "  ";
+                //    std::cout << Yield->bind("v","E")->eval(0, Evals[i])<< "  ";
                 }
                 std::cout << std::endl;  
                 
@@ -1464,14 +1465,14 @@ namespace Gambit {
                     std::cout << "phip-spectrum:" << std:: endl;
                     for(int i=0; i<Nen;i++)
                     {
-                        std::cout << phipSpec->eval("E", Evals[i])<< "  ";
+                        std::cout << phipSpec->bind("E")->eval(Evals[i])<< "  ";
                     }
                     std::cout << std::endl;
                     Funk::Funk specDirect = (*Dep::SimYieldTable)("b", "bbar", "gamma", (*Dep::TH_ProcessCatalog).getParticleProperty("phi").mass);
                     std::cout << "phi-spectrum (b bbar) direct:" << std:: endl;
                     for(int i=0; i<Nen;i++)
                     {
-                        std::cout << specDirect->eval("E", Evals[i])<< "  ";
+                        std::cout << specDirect->bind("E")->eval(Evals[i])<< "  ";
                     }
                     std::cout << std::endl;
                     
@@ -1479,13 +1480,13 @@ namespace Gambit {
                     std::cout << "2 * phi-spectrum (b bbar) direct, boosted:" << std:: endl;
                     for(int i=0; i<Nen;i++)
                     {
-                        std::cout << specDirectB->eval("E", Evals[i])<< "  ";
+                        std::cout << specDirectB->bind("E")->eval(Evals[i])<< "  ";
                     }
                     std::cout << std::endl;
                 }
-                
-                // Debug information ends here
                 */
+                // Debug information ends here
+                
             }
         }
 

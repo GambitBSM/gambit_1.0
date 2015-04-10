@@ -544,8 +544,12 @@ namespace Gambit
     struct SimYieldChannel
     {
         SimYieldChannel(Funk::Funk dNdE, std::string p1, std::string p2, std::string finalState, double Ecm_min, double Ecm_max):
-            dNdE(dNdE), p1(p1), p2(p2), finalState(finalState), Ecm_min(Ecm_min), Ecm_max(Ecm_max) {}
-        Funk::Funk dNdE;            
+            dNdE(dNdE), p1(p1), p2(p2), finalState(finalState), Ecm_min(Ecm_min), Ecm_max(Ecm_max) 
+        {
+           dNdE_bound = dNdE->bind("E", "Ecm");
+        }
+        Funk::Funk dNdE;       
+        Funk::BoundFunk dNdE_bound; // Pre-bound version for use in cascade decays
         std::string p1;
         std::string p2;
         std::string finalState;
