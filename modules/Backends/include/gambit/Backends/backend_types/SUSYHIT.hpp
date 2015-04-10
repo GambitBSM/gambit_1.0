@@ -11,7 +11,8 @@
 ///  
 /// \author Peter Athron
 /// \author Csaba Balazs
-/// \date 2015 Jan,Feb
+/// \author Anders Kvellestad
+/// \date 2015 Jan-Apr
 ///
 ///  *********************************************
 
@@ -22,16 +23,6 @@
 
 namespace Gambit
 {
-    // CsB hand made >
-    // struct top2body_CB_type
-    // {
-    //     double brtopbw;
-    //     double brtopbh;
-    //     Farray<double, 1,4, 1,2> brtopneutrstop;
-    // };
-    // CsB hand made <
-
-    // CsB from Anders' CBGB script >
     struct widtha_hdec_type
     {
         Fdouble abrb;
@@ -62,6 +53,7 @@ namespace Gambit
         Fdouble hlbra;
         Fdouble hlbraz;
         Fdouble hlbrhw;
+        Fdouble hlwdth;
     };
     struct widthhh_hdec_type
     {
@@ -79,6 +71,8 @@ namespace Gambit
         Fdouble hhbrh;
         Fdouble hhbra;
         Fdouble hhbraz;
+        Fdouble hhbrhw;
+        Fdouble hhwdth;
     };
     struct widthhc_hdec_type
     {
@@ -107,6 +101,23 @@ namespace Gambit
         Fdouble habrcht;
         Fdouble hlbrnet;
         Fdouble hhbrnet;
+        Fdouble habrnet;
+        Fdouble hcbrcnt;
+        Fdouble hlbrsl;
+        Fdouble hhbrsl;
+        Fdouble hcbrsl;
+        Fdouble habrsl;
+        Fdouble habrst;
+        Fdouble habrsb;
+        Fdouble hhbrsq;
+        Farray< Fdouble,1,2,1,2 > hhbrst;
+        Farray< Fdouble,1,2,1,2 > hhbrsb;
+        Fdouble hhbrsqt;
+        Fdouble hcbrsq;
+        Farray< Fdouble,1,2,1,2 > hcbrstb;
+        Fdouble hcbrsqt;
+        Fdouble hlbrsq;
+        Fdouble hlbrsqt;
     };
     struct wisfer_hdec_type
     {
@@ -120,6 +131,24 @@ namespace Gambit
         Fdouble bhlst;
         Fdouble bhlsb;
         Fdouble bhlstau;
+        Fdouble bhhslnl;
+        Fdouble bhhslel;
+        Fdouble bhhsler;
+        Fdouble bhhsqul;
+        Fdouble bhhsqur;
+        Fdouble bhhsqdl;
+        Fdouble bhhsqdr;
+        Fdouble bhhst;
+        Fdouble bhhsb;
+        Fdouble bhhstau;
+        Fdouble bhastau;
+        Fdouble bhasb;
+        Fdouble bhast;
+        Fdouble bhcsl00;
+        Fdouble bhcsl11;
+        Fdouble bhcsl21;
+        Fdouble bhcsq;
+        Fdouble bhcstb;
     };
     struct hd_golddec_type
     {
@@ -137,7 +166,20 @@ namespace Gambit
         Farray< Fdouble,1,2 > brcharsupl;
         Farray< Fdouble,1,2 > brcharsupr;
         Farray< Fdouble,1,2 > brcharsdownl;
-        Fdouble brcharsdownr;
+        Farray< Fdouble,1,2 > brcharsdownr;
+        Farray< Fdouble,1,2 > brcharsnel;
+        Farray< Fdouble,1,2 > brcharsn1;
+        Farray< Fdouble,1,2 > brcharsn2;
+        Farray< Fdouble,1,2 > brcharsell;
+        Farray< Fdouble,1,2 > brcharselr;
+        Farray< Fdouble,1,2 > brcharstau1;
+        Farray< Fdouble,1,2 > brcharstau2;
+        Farray< Fdouble,1,2,1,4 > brcharhcneut;
+        Farray< Fdouble,1,2,1,4 > brcharwneut;
+        Fdouble brcharzchic;
+        Fdouble brcharhlchic;
+        Fdouble brcharhhchic;
+        Fdouble brcharhachic;
     };
     struct sd_char2bodygrav_type
     {
@@ -157,6 +199,16 @@ namespace Gambit
         Farray< Fdouble,1,2 > brgltopbb;
         Fdouble brchee;
         Fdouble brchmumu;
+        Fdouble brchtautau;
+        Fdouble brchnene;
+        Fdouble brchnmunmu;
+        Fdouble brchntauntau;
+        Fdouble brchupup;
+        Fdouble brchdodo;
+        Fdouble brchchch;
+        Fdouble brchstst;
+        Fdouble brchtoptop;
+        Fdouble brchbotbot;
     };
     struct sd_charwidth_type
     {
@@ -171,7 +223,20 @@ namespace Gambit
         Farray< Fdouble,1,4 > brneutsupl;
         Farray< Fdouble,1,4 > brneutsupr;
         Farray< Fdouble,1,4 > brneutsdownl;
-        Fdouble brneutsdownr;
+        Farray< Fdouble,1,4 > brneutsdownr;
+        Farray< Fdouble,1,4 > brneutsnel;
+        Farray< Fdouble,1,4 > brneutsn1;
+        Farray< Fdouble,1,4 > brneutsn2;
+        Farray< Fdouble,1,4 > brneutsell;
+        Farray< Fdouble,1,4 > brneutselr;
+        Farray< Fdouble,1,4 > brneutstau1;
+        Farray< Fdouble,1,4 > brneutstau2;
+        Farray< Fdouble,1,4,1,2 > brneutwchar;
+        Farray< Fdouble,1,4,1,2 > brneuthcchar;
+        Farray< Fdouble,1,4,1,4 > brneutzneut;
+        Farray< Fdouble,1,4,1,4 > brneuthlneut;
+        Farray< Fdouble,1,4,1,4 > brneuthhneut;
+        Farray< Fdouble,1,4,1,4 > brneuthaneut;
     };
     struct sd_neut2bodygrav_type
     {
@@ -189,9 +254,24 @@ namespace Gambit
         Farray< Fdouble,1,4,1,4 > brneutst;
         Farray< Fdouble,1,4,1,4 > brneutbot;
         Farray< Fdouble,1,4,1,4 > brneuttop;
-        Fdouble brneutel;
-        Fdouble brneutmu;
-        Fdouble brneuttau;
+        Farray< Fdouble,1,4,1,4 > brneutel;
+        Farray< Fdouble,1,4,1,4 > brneutmu;
+        Farray< Fdouble,1,4,1,4 > brneuttau;
+        Farray< Fdouble,1,4,1,4 > brneutnue;
+        Farray< Fdouble,1,4,1,4 > brneutnumu;
+        Farray< Fdouble,1,4,1,4 > brneutnutau;
+        Farray< Fdouble,1,4,1,2 > brchubd;
+        Farray< Fdouble,1,4,1,2 > brchcbs;
+        Farray< Fdouble,1,4,1,2 > brchtbb;
+        Farray< Fdouble,1,4,1,2 > brchelne;
+        Farray< Fdouble,1,4,1,2 > brchmunmu;
+        Farray< Fdouble,1,4,1,2 > brchtauntau;
+        Farray< Fdouble,1,4 > brglup;
+        Farray< Fdouble,1,4 > brgldo;
+        Farray< Fdouble,1,4 > brglch;
+        Farray< Fdouble,1,4 > brglst;
+        Farray< Fdouble,1,4 > brgltop;
+        Farray< Fdouble,1,4 > brglbot;
     };
     struct sd_neutloop_type
     {
@@ -199,7 +279,7 @@ namespace Gambit
     };
     struct sd_neutwidth_type
     {
-        Farray< Finteger,1,4 > neuttot;
+        Farray< Fdouble,1,4 > neuttot;
     };
     struct sd_glui2body_type
     {
@@ -271,8 +351,13 @@ namespace Gambit
         Farray< Fdouble,1,2 > brst1wsb;
         Farray< Fdouble,1,2 > brst2charb;
         Farray< Fdouble,1,2 > brst2hcsb;
-        Fdouble brst2wsb;
+        Farray< Fdouble,1,2 > brst2wsb;
         Fdouble brst1glui;
+        Fdouble brst2glui;
+        Fdouble brst2hl;
+        Fdouble brst2hh;
+        Fdouble brst2ha;
+        Fdouble brst2ztop;
     };
     struct sd_stop3body_type
     {
@@ -281,11 +366,20 @@ namespace Gambit
         Farray< Fdouble,1,2,1,2 > brststau;
         Farray< Fdouble,1,2,1,2 > brstsntau;
         Farray< Fdouble,1,2,1,2 > brstsel;
-        Fdouble brstbsbst;
-        Fdouble brstbbsbt;
-        Fdouble brsttausbnu;
-        Fdouble brstelsbnu;
-        Fdouble brstupsbdow;
+        Farray< Fdouble,1,2,1,2 > brstbsbst;
+        Farray< Fdouble,1,2,1,2 > brstbbsbt;
+        Farray< Fdouble,1,2,1,2 > brsttausbnu;
+        Farray< Fdouble,1,2,1,2 > brstelsbnu;
+        Farray< Fdouble,1,2,1,2 > brstupsbdow;
+        Farray< Fdouble,1,2 > brstsnel;
+        Fdouble brst2st1tt;
+        Fdouble brst2st1startt;
+        Fdouble brst2st1bb;
+        Fdouble brst2st1uu;
+        Fdouble brst2st1dd;
+        Fdouble brst2st1ee;
+        Fdouble brst2st1nunu;
+        Fdouble brst2st1tautau;
     };
     struct sd_stoploop_type
     {
@@ -313,8 +407,13 @@ namespace Gambit
         Farray< Fdouble,1,2 > brsb1hcst;
         Farray< Fdouble,1,2 > brsb2hcst;
         Farray< Fdouble,1,2 > brsb1wst;
-        Fdouble brsb2wst;
+        Farray< Fdouble,1,2 > brsb2wst;
         Fdouble brsb1glui;
+        Fdouble brsb2glui;
+        Fdouble brsb2hl;
+        Fdouble brsb2hh;
+        Fdouble brsb2ha;
+        Fdouble brsb2zbot;
     };
     struct sd_sbot3body_type
     {
@@ -324,13 +423,21 @@ namespace Gambit
         Farray< Fdouble,1,2,1,2 > brsbtstsb;
         Farray< Fdouble,1,2,1,2 > brsbtbstb;
         Farray< Fdouble,1,2,1,2 > brsbtaustnu;
-        Fdouble brsbelstnu;
-        Fdouble brsbupstdow;
-        Fdouble brsbsnel;
+        Farray< Fdouble,1,2,1,2 > brsbelstnu;
+        Farray< Fdouble,1,2,1,2 > brsbupstdow;
+        Farray< Fdouble,1,2 > brsbsnel;
+        Fdouble brsb2sb1bb;
+        Fdouble brsb2sb1starbb;
+        Fdouble brsb2sb1tt;
+        Fdouble brsb2sb1uu;
+        Fdouble brsb2sb1dd;
+        Fdouble brsb2sb1ee;
+        Fdouble brsb2sb1nunu;
+        Fdouble brsb2sb1tautau;
     };
     struct sd_sbotwidth_type
     {
-        Fdouble sbottot;
+        Farray< Fdouble,1,2 > sbottot;
     };
     struct sd_sel2body_type
     {
@@ -359,9 +466,14 @@ namespace Gambit
         Farray< Fdouble,1,4 > brstau2neut;
         Farray< Fdouble,1,2 > brstau1char;
         Farray< Fdouble,1,2 > brstau1hcsn;
-        Fdouble brstau1wsn;
+        Farray< Fdouble,1,2 > brstau1wsn;
         Farray< Fdouble,1,2 > brstau2char;
         Farray< Fdouble,1,2 > brstau2hcsn;
+        Farray< Fdouble,1,2 > brstau2wsn;
+        Fdouble brstau2hl;
+        Fdouble brstau2hh;
+        Fdouble brstau2ha;
+        Fdouble brstau2ztau;
     };
     struct sd_stau2bodygrav_type
     {
@@ -393,7 +505,6 @@ namespace Gambit
     {
         Fdouble toptot2;
     };
-    // CsB from Anders' CGBG script <
 }
 
 #endif // defined __SUSYHIT_types_hpp__
