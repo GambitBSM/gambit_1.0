@@ -48,7 +48,7 @@ namespace Gambit
       // This is just an example function that returns junk numbers at the moment.  It should be finished off
       // in order to use SUSYHIT properly.  When it works, a dependency on it added to the all_decays function.
       using namespace Pipes::SMHiggs_decays;
-      Spectrum* spec = *Dep::SM_spectrum;
+      const Spectrum* spec = *Dep::SM_spectrum;
       double m_H = spec->phys.get_Pole_Mass("h0_1"); // Retrieve the masses from the spectrum object.
       double m_b = spec->phys.get_Pole_Mass("b");
       double m_t = spec->phys.get_Pole_Mass("t");
@@ -75,7 +75,7 @@ namespace Gambit
       // This is just an example function that returns junk numbers at the moment.  It should be finished off
       // in order to use SUSYHIT properly. When it works, a dependency on it added to the all_decays function.
       using namespace Pipes::MSSMHiggs_decays;
-      Spectrum* spec = *Dep::MSSM_spectrum;
+      const Spectrum* spec = *Dep::MSSM_spectrum;
       double m_H = spec->phys.get_Pole_Mass("h0_1"); // Retrieve the masses from the spectrum object.
       double m_b = spec->phys.get_Pole_Mass("b");
       double m_t = spec->phys.get_Pole_Mass("t");
