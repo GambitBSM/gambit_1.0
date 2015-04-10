@@ -152,9 +152,9 @@ namespace Gambit
         std::vector<std::string> colnames;
 
         double Gamma_mh;
-        static constexpr double mh = 125.7;  // FIXME
-        static constexpr double v0 = 246.0;  // FIXME
-        static constexpr double alpha_s = 0.12;   // FIXME
+        double mh = 125.7;  // FIXME
+        double v0 = 246.0;  // FIXME
+        double alpha_s = 0.12;   // FIXME
         double mb = 5;  // FIXME
         double mc = 1;  // FIXME
         double mtau = 1;  // FIXME
@@ -190,11 +190,10 @@ namespace Gambit
         double mass = *Param["mass"];
         double lambda = *Param["lambda"];
         double mh = 125.7;  // FIXME
-        double mN = m_neutron;
-        double fN = 0.35;  // FIXME
-        result.gps = lambda*fN*mN/pow(mh,2)/mass;
-        result.gns = lambda*fN*mN/pow(mh,2)/mass;
-        result.gpa = 0;
+        double fN = 0.345;  // FIXME  This should not be hard-coded
+        result.gps = lambda*fN*m_neutron/pow(mh,2)/mass/2;
+        result.gns = lambda*fN*m_proton/pow(mh,2)/mass/2;
+        result.gpa = 0;  // Only SI cross-section
         result.gna = 0;
         result.M_DM = *Param["mass"];
     }
@@ -260,6 +259,3 @@ namespace Gambit
     }
   }
 }
-
-
-
