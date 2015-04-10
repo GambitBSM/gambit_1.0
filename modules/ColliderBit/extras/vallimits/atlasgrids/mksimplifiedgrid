@@ -6,7 +6,7 @@ Usage: %prog <slha_template_file>
 
 import optparse, os
 op = optparse.OptionParser(usage=__doc__)
-op.add_option("-o", "--output", help="output dir for scanned SLHA files; default to based on name of input file", dest="OUTDIR", default=None)
+op.add_option("-n", "--name", help="name to be used as output dir & base name of scanned SLHA files; default to based on name of input file", dest="NAME", default=None)
 # TODO: add options like PID:numpoints:low..high to define the scan?
 opts, args = op.parse_args()
 
@@ -27,10 +27,15 @@ for mg in mg_range:
         doc.blocks["MASS"][1000021] = mg
         doc.blocks["MASS"][1000022] = mX
         #print doc.blocks["MASS"]
-        outdir = infile.replace(".slha", "_scan")
+        if opts.NAME:
+            outdir = opts.NAME
+            basename = opts.NAME
+        else:
+            outdir = infile.replace(".slha", "_scan")
+            basename = infile.replace(".slha", "")
         if not os.path.exists(outdir):
             os.makedirs(outdir)
-        outfile = infile.replace(".slha", "_{:d}_{:d}.slha".format(int(mg), int(mX)))
+        outfile = basename + "_{:04d}_{:04d}.slha".format(int(mg), int(mX))
         doc.write(os.path.join(outdir, outfile))
 
 print "Num points = %d" % numpts
