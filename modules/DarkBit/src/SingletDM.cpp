@@ -56,8 +56,6 @@ namespace Gambit
          *         model parameters.
          *
          * channel: bb, tautau, mumu, ss, cc, tt, gg, gammagamma, Zgamma, WW, ZZ, hh
-         *
-         * FIXME:  Extend to 300 GeV
          */
         double sv(std::string channel, double lambda, double mass, double v)
         {
@@ -65,12 +63,12 @@ namespace Gambit
             double sqrt_s = sqrt(s);
             if ( sqrt_s < 90 ) 
             {
-                std::cout << "WARNING: Outside allowed energy range." << std::endl;
+                logger() << "WARNING in SingletDM: Requested center-of-mass energy is outside the supported energy range." << std::endl;
                 return 0;
             }
 
             if ( channel == "hh" ) { return sv_hh(lambda, mass, v); }
-            if ( sqrt_s < 150 )
+            if ( sqrt_s < 300 )
             {
                 double br = f_vs_mass[channel]->bind("mass")->eval(sqrt_s);
                 double Gamma_s = Gamma->eval(sqrt_s);
@@ -159,7 +157,6 @@ namespace Gambit
         double mc = 1;  // FIXME
         double mtau = 1;  // FIXME
         double mt = 172;  // FIXME
-
     };
 
     /// Initializes thresholds/resonances for RD calculation for SingletDM
@@ -190,9 +187,13 @@ namespace Gambit
         double mass = *Param["mass"];
         double lambda = *Param["lambda"];
         double mh = 125.7;  // FIXME
-        double fN = 0.345;  // FIXME  This should not be hard-coded
-        result.gps = lambda*fN*m_neutron/pow(mh,2)/mass/2;
-        result.gns = lambda*fN*m_proton/pow(mh,2)/mass/2;
+
+        // TODO: Double check expressions (taken from Cline et al. 2013)
+        double fp = 2/9 + 7/9*(*Param["fpu"] + *Param["fpd"] + *Param["fps"]);
+        double fn = 2/9 + 7/9*(*Param["fnu"] + *Param["fnd"] + *Param["fns"]);
+
+        result.gps = lambda*fp*m_neutron/pow(mh,2)/mass/2;
+        result.gns = lambda*fn*m_proton/pow(mh,2)/mass/2;
         result.gpa = 0;  // Only SI cross-section
         result.gna = 0;
         result.M_DM = *Param["mass"];
@@ -220,39 +221,35 @@ namespace Gambit
         mc = 1;  // FIXME
         mtau = 1;  // FIXME
         mt = 172;  // FIXME
+        double mh = 125.7;  // FIXME
 
         // Initialize catalog
         TH_ProcessCatalog catalog;
-        // FIXME: Replace "~chi0_1" with the proper identifier once DarkBit is set up to handle any DM candidate name
-        TH_Process process_ann((std::string)"~chi0_1", (std::string)"~chi0_1");
+        TH_Process process_ann((std::string)"S", (std::string)"S");
 
         // FIXME: Add top
 
         // Populate channel list
-        auto m_th = Funk::vec(mb, mW, mc, mtau, mZ);
-        // WW*, hh, tt, ZZ*
-        auto channel = Funk::vec<std::string>("bb", "WW", "cc", "tautau", "ZZ");
-        auto p1 = Funk::vec<std::string>("b", "W+", "c", "tau+", "Z0");
-        auto p2 = Funk::vec<std::string>("bbar", "W-", "cbar", "tau-", "Z0");
-        //if ( not runOptions->getValueOrDef<bool>(false, "phi") )
+        auto m_th = Funk::vec(mb, mW, mc, mtau, mZ, mt, mh);
+        auto channel = Funk::vec<std::string>("bb", "WW", "cc", "tautau", "ZZ", "tt", "hh");
+        auto p1 = Funk::vec<std::string>("b", "W+", "c", "tau+", "Z0", "t", "h");
+        auto p2 = Funk::vec<std::string>("bbar", "W-", "cbar", "tau-", "Z0", "tbar", "h");
         {
-            for ( int i = 0; i < 5; i++ )
+            for ( int i = 0; i < 7; i++ )
             {
                 if ( mass > m_th[i] )
                 {
-                    Funk::Funk kinematicFunction_bb = 
+                    Funk::Funk kinematicFunction = 
                         Funk::funcM(&singletDM, &SingletDM::sv, channel[i], lambda, mass, Funk::var("v"));
                     finalStates = Funk::vec<std::string>(p1[i], p2[i]);
-                    TH_Channel channel_bb(finalStates, kinematicFunction_bb);
-                    process_ann.channelList.push_back(channel_bb);
+                    TH_Channel channel(finalStates, kinematicFunction);
+                    process_ann.channelList.push_back(channel);
                 }
             }
         }
 
-        // Finally, store properties of "chi" in particleProperty list
-        TH_ParticleProperty chiProperty(mass, 1);  // Set mass and 2*spin
-        // FIXME: Replace "~chi0_1" with the proper identifier once DarkBit is set up to handle any DM candidate name
-        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("~chi0_1", chiProperty));
+        TH_ParticleProperty S_Property(mass, 1);  // Set mass and 2*spin
+        catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("S", S_Property));
         catalog.processList.push_back(process_ann);
 
         result = catalog;
