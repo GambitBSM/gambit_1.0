@@ -190,6 +190,9 @@ Rules:
       fast: 1  # Accuracy options (used by MicrOmegas)
       Beps: 1e-2
       omtype: 0
+  - capability: RD_spectrum
+    options: 
+      CoannMaxMass: 1.01 # include only co-annihilating particles up to this mass
 
 
 #########################
