@@ -490,6 +490,7 @@ START_MODULE
     #define FUNCTION DD_couplings_SingletDM
       START_FUNCTION(Gambit::DarkBit::DD_couplings)
       ALLOW_MODELS(SingletDM)
+      ALLOW_MODELS(nuclear_params_fnq)
     #undef FUNCTION
   #undef CAPABILITY
 

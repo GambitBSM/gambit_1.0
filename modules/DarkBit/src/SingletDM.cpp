@@ -56,8 +56,6 @@ namespace Gambit
          *         model parameters.
          *
          * channel: bb, tautau, mumu, ss, cc, tt, gg, gammagamma, Zgamma, WW, ZZ, hh
-         *
-         * FIXME:  Extend to 300 GeV
          */
         double sv(std::string channel, double lambda, double mass, double v)
         {
@@ -65,12 +63,12 @@ namespace Gambit
             double sqrt_s = sqrt(s);
             if ( sqrt_s < 90 ) 
             {
-                std::cout << "WARNING: Outside allowed energy range." << std::endl;
+                logger() << "WARNING in SingletDM: Requested center-of-mass energy is outside the supported energy range." << std::endl;
                 return 0;
             }
 
             if ( channel == "hh" ) { return sv_hh(lambda, mass, v); }
-            if ( sqrt_s < 150 )
+            if ( sqrt_s < 300 )
             {
                 double br = f_vs_mass[channel]->bind("mass")->eval(sqrt_s);
                 double Gamma_s = Gamma->eval(sqrt_s);
@@ -159,7 +157,6 @@ namespace Gambit
         double mc = 1;  // FIXME
         double mtau = 1;  // FIXME
         double mt = 172;  // FIXME
-
     };
 
     /// Initializes thresholds/resonances for RD calculation for SingletDM
@@ -190,9 +187,13 @@ namespace Gambit
         double mass = *Param["mass"];
         double lambda = *Param["lambda"];
         double mh = 125.7;  // FIXME
-        double fN = 0.345;  // FIXME  This should not be hard-coded
-        result.gps = lambda*fN*m_neutron/pow(mh,2)/mass/2;
-        result.gns = lambda*fN*m_proton/pow(mh,2)/mass/2;
+
+        // TODO: Double check expressions (taken from Cline et al. 2013)
+        double fp = 2/9 + 7/9*(*Param["fpu"] + *Param["fpd"] + *Param["fps"]);
+        double fn = 2/9 + 7/9*(*Param["fnu"] + *Param["fnd"] + *Param["fns"]);
+
+        result.gps = lambda*fp*m_neutron/pow(mh,2)/mass/2;
+        result.gns = lambda*fn*m_proton/pow(mh,2)/mass/2;
         result.gpa = 0;  // Only SI cross-section
         result.gna = 0;
         result.M_DM = *Param["mass"];
