@@ -54,6 +54,7 @@ namespace Funk
     class FunkIntegrate_gsl1d;
 
     typedef shared_ptr<FunkBase> Funk;
+    typedef shared_ptr<FunkBound> BoundFunk;
     typedef std::vector<std::string> ArgsType;
     typedef std::map<std::string, std::vector<std::pair<Funk, Funk>>> Singularities;
 
