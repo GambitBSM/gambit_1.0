@@ -1,3 +1,32 @@
+//   GAMBIT: Global and Modular BSM Inference Tool
+//   *********************************************
+///  \file
+///
+///  MSSM specific module functions for DarkBit.
+///
+///  *********************************************
+///
+///  Authors (add name and date if you modify):
+///   
+///  \author Torsten Bringmann
+///          (torsten.bringmann@desy.de) 
+///  \date 2013 Jun
+///  \date 2014 Mar [RD interface to DS finally working]
+///
+///  \author Christoph Weniger
+///          (c.weniger@uva.nl)
+///  \date 2013 Jul - 2015 May
+///
+///  \author Christopher Savage
+///          (chris@savage.name)
+///  \date 2014 Oct
+///  \date 2015 Jan, Feb
+///
+///  \author Jonathan Cornell
+///  \date ???
+///
+///  *********************************************
+
 #include "gambit/Utils/gambit_module_headers.hpp"
 #include "gambit/DarkBit/DarkBit_rollcall.hpp"
 
@@ -112,7 +141,7 @@ namespace Gambit {
         // Initialize SUSY spectrum from SLHA
         int len = 17;
         int flag = 15;
-        char * filename = "DarkBit_temp.slha";
+        const char * filename = "DarkBit_temp.slha";
         logger() << "Initializing DarkSUSY via SLHA." << std::endl;
         BEreq::dsSLHAread(byVal(filename),flag,byVal(len));
         BEreq::dsprep();

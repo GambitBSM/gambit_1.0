@@ -1,3 +1,20 @@
+//   GAMBIT: Global and Modular BSM Inference Tool
+//   *********************************************
+///  \file
+///
+///  Routines for the calculation of gamma-ray yield 
+///  from dark matter annihilation / decay.
+///
+///  *********************************************
+///
+///  Authors (add name and date if you modify):
+///   
+///  \author Christoph Weniger
+///          (c.weniger@uva.nl)
+///  \date 2013 Jul - 2015 May
+///
+///  *********************************************
+
 #include "gambit/Utils/gambit_module_headers.hpp"
 #include "gambit/DarkBit/DarkBit_rollcall.hpp"
 
@@ -158,10 +175,13 @@ namespace Gambit {
       std::string DMid= Dep::DarkMatter_ID->singleID();
 
       // Grid and energy range used in interpolating functions.
-      double Emin, Emax, line_width;
+      // FIXME: Make use of Emin and Emax
+      /*
+      double Emin, Emax;
       Emin = runOptions->getValueOrDef<double>(1e-1, "Emin");
       Emax = runOptions->getValueOrDef<double>(1e4,  "Emax");
-      line_width = runOptions->getValueOrDef<double>(0.03,  "line_width");
+      */
+      double line_width = runOptions->getValueOrDef<double>(0.03,  "line_width");
 
       // Get annihilation process from process catalog
       TH_Process annProc = (*Dep::TH_ProcessCatalog).getProcess(DMid, DMid);

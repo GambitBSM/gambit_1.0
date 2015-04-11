@@ -9,7 +9,8 @@
 ///  Authors (add name and date if you modify):
 ///   
 ///  \author Christoph Weniger  
-///  \date no idea
+///          (c.weniger@uva.nl)
+///  \date Oct 2014, Apr 2015
 ///
 ///  *********************************************
 

@@ -1,3 +1,19 @@
+//   GAMBIT: Global and Modular BSM Inference Tool
+//   *********************************************
+///  \file
+///
+///  Solar neutrino likelihoods.
+///
+///  *********************************************
+///
+///  Authors (add name and date if you modify):
+///   
+///  \author Pat Scott
+///          (pscott@imperial.ac.uk)
+///  \date 2015 Apr
+///
+///  *********************************************
+
 #include "gambit/Utils/gambit_module_headers.hpp"
 #include "gambit/DarkBit/DarkBit_rollcall.hpp"
 

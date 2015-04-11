@@ -1,3 +1,24 @@
+//   GAMBIT: Global and Modular BSM Inference Tool
+//   *********************************************
+///  \file
+///
+///  Relic density calculations.
+///
+///  *********************************************
+///
+///  Authors (add name and date if you modify):
+///   
+///  \author Torsten Bringmann
+///          (torsten.bringmann@desy.de) 
+///  \date 2013 Jun
+///  \date 2014 Mar [RD interface to DS finally working]
+///
+///  \author Christoph Weniger
+///          (c.weniger@uva.nl)
+///  \date 2013 Jul - 2015 May
+///
+///  *********************************************
+
 #include "gambit/Utils/gambit_module_headers.hpp"
 #include "gambit/DarkBit/DarkBit_rollcall.hpp"
 

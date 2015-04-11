@@ -1,3 +1,24 @@
+//   GAMBIT: Global and Modular BSM Inference Tool
+//   *********************************************
+///  \file
+///
+///  Routines for direct detection couplings and 
+///  likelihoods.
+///
+///  *********************************************
+///
+///  Authors (add name and date if you modify):
+///   
+///  \author Christopher Savage
+///          (chris@savage.name)
+///  \date 2014 Oct
+///  \date 2015 Jan, Feb
+///  
+///  \author Jonathan Cornell
+///  \date ???
+///
+///  *********************************************
+
 #include "gambit/Utils/gambit_module_headers.hpp"
 #include "gambit/DarkBit/DarkBit_rollcall.hpp"
 

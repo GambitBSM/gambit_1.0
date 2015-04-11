@@ -81,7 +81,7 @@ START_MODULE
       BACKEND_REQ(mssmpar, (), DS_MSSMPAR)
       BACKEND_REQ(dssusy, (), void, (int&,int&))
       // Initialize DarkSUSY with SLHA file
-      BACKEND_REQ(dsSLHAread, (), void, (char*, int&, int))
+      BACKEND_REQ(dsSLHAread, (), void, (const char*, int&, int))
       BACKEND_REQ(dsprep, (), void, ())
       // Print higgs widths
       BACKEND_REQ(dswwidth, (), void, (int&))

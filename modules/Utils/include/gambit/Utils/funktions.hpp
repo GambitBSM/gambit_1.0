@@ -296,7 +296,7 @@ namespace Funk
         public:
             FunkBound(Funk f, size_t datalen, intptr_t bindID) : f(f), datalen(datalen), bindID(bindID) {};
             ~FunkBound() {f->release(bindID);};
-            double value(std::vector<double> & map, intptr_t bindID) {return 0;};
+            double value(std::vector<double> & map, intptr_t bindID) {(void)bindID; (void)map; return 0;};
             template <typename... Args> void bind(Args... args);
 
             template <typename... Args> inline double eval(Args... argss)
@@ -429,6 +429,7 @@ namespace Funk
             double value(std::vector<double> & args, intptr_t bindID)
             { 
                 (void)args;
+                (void)bindID;
                 assert ( 0 == 1 );  // This function should never be called
                 return 0;
             }
@@ -452,6 +453,7 @@ namespace Funk
             double value(std::vector<double> & data, intptr_t bindID)
             {
                 (void)data;
+                (void)bindID;
                 return c;
             }
 
