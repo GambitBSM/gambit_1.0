@@ -121,6 +121,39 @@ namespace Funk
 
 
     //
+    // Math helper functions
+    //
+
+    // Generate linear 1-dim grid
+    inline std::vector<double> linspace(double x0, double x1, unsigned int n)
+    {
+        std::vector<double> ret;
+        double dx = 0;
+        if (n > 1)
+            dx = (x1-x0)/(n-1);
+            for (unsigned int i = 0; i<n; i++)
+            {
+                ret.push_back(x0 + i * dx);
+            }
+        return ret;
+    }
+
+    // Generate logarithmic 1-dim grid
+    inline std::vector<double> logspace(double x0, double x1, unsigned int n)
+    {
+        std::vector<double> ret;
+        double dx = 0;
+        if (n > 1)
+            dx = (x1-x0)/(n-1);
+            for (unsigned int i = 0; i<n; i++)
+            {
+                ret.push_back(pow(10, x0 + i * dx));
+            }
+        return ret;
+    }
+
+
+    //
     // Helper functions for internal calculations
     //
 

@@ -51,48 +51,6 @@
 #define MODULE DarkBit
 START_MODULE
 
-//  #define CAPABILITY PointInit  // Part of it will be moved to backend initialization
-//  START_CAPABILITY
-//
-//    //The function below has been moved into the DarkSUSY
-//    //backend initialization and should be eventually deleted
-//    #define FUNCTION DarkBit_PointInit_MSSM
-//      START_FUNCTION(void, INIT_FUNCTION)
-//      DEPENDENCY(MSSMspectrum, eaSLHA) 
-//      ALLOW_MODELS(CMSSM_demo)
-//      // Initialize DarkSUSY with SLHA file
-//      BACKEND_REQ(dsinit, (), void, ())
-//      BACKEND_REQ(dsrdinit, (), void, ())
-//      BACKEND_REQ(dsSLHAread, (), void, (char*, int&, int))
-//      BACKEND_REQ(dsprep, (), void, ())
-//    #undef FUNCTION
-//
-//    #define FUNCTION DarkBit_PointInit_CMSSM
-//      START_FUNCTION(void, INIT_FUNCTION)
-//      //ALLOW_MODELS(CMSSM_demo)
-//      // Initialize DarkSUSY with isasugra
-//      BACKEND_REQ(dsinit, (), void, ())
-//      BACKEND_REQ(dsrdinit, (), void, ())
-//      BACKEND_REQ(dsgive_model_isasugra, (), void, (double&,double&,double&,double&,double&))
-//      BACKEND_REQ(dssusy_isasugra, (), void, (int&,int&))
-//    #undef FUNCTION
-//
-//    #define FUNCTION DarkBit_PointInit_MSSM7
-//      START_FUNCTION(void, INIT_FUNCTION)
-//      //ALLOW_MODELS(CMSSM_demo)
-//      // Initialize DarkSUSY with dssusy
-//      BACKEND_REQ(dsinit, (), void, ())
-//      BACKEND_REQ(dsrdinit, (), void, ())
-//      BACKEND_REQ(mssmpar, (), DS_MSSMPAR)
-//      BACKEND_REQ(dssusy, (), void, (int&,int&))
-//    #undef FUNCTION
-//
-//    #define FUNCTION DarkBit_PointInit_Default
-//      START_FUNCTION(void, INIT_FUNCTION)
-//    #undef FUNCTION
-//
-//  #undef CAPABILITY  // PointInit
-
   #define CAPABILITY MSSMspectrum
   START_CAPABILITY
     #define FUNCTION getMSSMspectrum
@@ -128,12 +86,6 @@ START_MODULE
       // Print higgs widths
       BACKEND_REQ(dswwidth, (), void, (int&))
     #undef FUNCTION
-    /* TODO: This function has no purpose (since SingletDM is not supported by DS)
-    #define FUNCTION DarkSUSY_PointInit_NoMSSM
-      START_FUNCTION(bool)
-      ALLOW_MODELS(SingletDM)
-    #undef FUNCTION
-    */
   #undef CAPABILITY
 
 
@@ -389,11 +341,6 @@ START_MODULE
       DEPENDENCY(DarkMatter_ID, DarkMatter_ID_type)
       BACKEND_REQ(dshayield, (), double, (double&,double&,int&,int&,int&))
     #undef FUNCTION
-    #define FUNCTION ToyAnnYield
-      START_FUNCTION(Funk::Funk)
-      DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)
-      DEPENDENCY(SimYieldTable, Gambit::DarkBit::SimYieldTable)
-    #undef FUNCTION
   #undef CAPABILITY
 
   #define CAPABILITY TH_ProcessCatalog
@@ -465,11 +412,15 @@ START_MODULE
   // Simple WIMP property extractors =======================================
 
   // Retrieve the DM mass in GeV for generic models
-  QUICK_FUNCTION(DarkBit, mwimp, NEW_CAPABILITY, mwimp_generic, double, (), (TH_ProcessCatalog, DarkBit::TH_ProcessCatalog), (DarkMatter_ID, DarkMatter_ID_type))
+  QUICK_FUNCTION(DarkBit, mwimp, NEW_CAPABILITY, mwimp_generic, double, (),
+      (TH_ProcessCatalog, DarkBit::TH_ProcessCatalog), (DarkMatter_ID, DarkMatter_ID_type))
+
   // Retrieve the DM mass in GeV for the scalar singlet model
   QUICK_FUNCTION(DarkBit, mwimp, OLD_CAPABILITY, mwimp_SingletDM, double, (SingletDM))
+
   // Retrieve the total thermally-averaged annihilation cross-section for indirect detection (cm^3 / s)
-  QUICK_FUNCTION(DarkBit, sigmav, NEW_CAPABILITY, sigmav_late_universe, double, (), (TH_ProcessCatalog, DarkBit::TH_ProcessCatalog), (DarkMatter_ID, DarkMatter_ID_type))
+  QUICK_FUNCTION(DarkBit, sigmav, NEW_CAPABILITY, sigmav_late_universe, double, (),
+      (TH_ProcessCatalog, DarkBit::TH_ProcessCatalog), (DarkMatter_ID, DarkMatter_ID_type))
 
 
   // DIRECT DETECTION ==================================================
