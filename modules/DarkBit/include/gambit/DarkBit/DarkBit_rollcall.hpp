@@ -469,7 +469,7 @@ START_MODULE
   // Retrieve the DM mass in GeV for the scalar singlet model
   QUICK_FUNCTION(DarkBit, mwimp, OLD_CAPABILITY, mwimp_SingletDM, double, (SingletDM))
   // Retrieve the total thermally-averaged annihilation cross-section for indirect detection (cm^3 / s)
-  QUICK_FUNCTION(DarkBit, sigmav, NEW_CAPABILITY, sigmav_late_universe, double, (), (TH_ProcessCatalog, DarkBit::TH_ProcessCatalog))
+  QUICK_FUNCTION(DarkBit, sigmav, NEW_CAPABILITY, sigmav_late_universe, double, (), (TH_ProcessCatalog, DarkBit::TH_ProcessCatalog), (DarkMatter_ID, DarkMatter_ID_type))
 
 
   // DIRECT DETECTION ==================================================
@@ -877,6 +877,7 @@ START_MODULE
     DEPENDENCY(sigmav, double)
     DEPENDENCY(sigma_SI_p, double)
     DEPENDENCY(sigma_SD_p, double)
+    DEPENDENCY(DarkMatter_ID, DarkMatter_ID_type)
     BACKEND_REQ(nuyield_setup, (needs_DS), void, (const double(&)[29], 
      const double(&)[29][3], const double(&)[15], const double(&)[3], const double&, 
      const double&, const double&, const double&, const double&))
@@ -1124,6 +1125,7 @@ START_MODULE
     DEPENDENCY(RD_oh2, double)
     DEPENDENCY(GA_AnnYield, Funk::Funk)
     DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)
+    DEPENDENCY(DarkMatter_ID, DarkMatter_ID_type)
     #undef FUNCTION
   #undef CAPABILITY
 

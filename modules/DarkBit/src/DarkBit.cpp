@@ -2120,11 +2120,11 @@ namespace Gambit {
 
     /// Retrieve the total thermally-averaged annihilation cross-section for indirect detection (cm^3 / s)
     // FIXME this needs to be updated once annProc.genTotalRate->bind("v")->eval(0.) works.
-    // FIXME this needs to be updated once DM is not always referred to as "~chi0_1"
     void sigmav_late_universe(double &result)
     {
       using namespace Pipes::sigmav_late_universe;
-      TH_Process annProc = Dep::TH_ProcessCatalog->getProcess("~chi0_1", "~chi0_1");
+      std::string DMid = Dep::DarkMatter_ID->singleID();
+      TH_Process annProc = Dep::TH_ProcessCatalog->getProcess(DMid, DMid);
       result = 0.0;
       for (std::vector<TH_Channel>::iterator it = annProc.channelList.begin();
            it != annProc.channelList.end(); ++it)
@@ -2625,8 +2625,9 @@ namespace Gambit {
       double Higgs_mass_charged;
       
       // Set annihilation branching fractions
-      // FIXME needs to be fixed once DM is not ~chi0_1 always, and once BFs are available directly from TH_Process
-      TH_Process annProc = Dep::TH_ProcessCatalog->getProcess("~chi0_1", "~chi0_1");
+      // FIXME needs to be fixed once BFs are available directly from TH_Process
+      std::string DMid = Dep::DarkMatter_ID->singleID();
+      TH_Process annProc = Dep::TH_ProcessCatalog->getProcess(DMid, DMid);
       std::vector<str> neutral_channels[29];
       neutral_channels[0]  = initVector<str>("h0_1", "h0_1");
       neutral_channels[1]  = initVector<str>("h0_1", "h0_2");
@@ -2993,7 +2994,9 @@ namespace Gambit {
         double Gns = (*Dep::DD_couplings).gns;
         double Gna = (*Dep::DD_couplings).gna;
         double oh2 = *Dep::RD_oh2;
-        TH_Process annProc = (*Dep::TH_ProcessCatalog).getProcess((std::string)"~chi0_1", (std::string)"~chi0_1");
+
+        std::string DMid = Dep::DarkMatter_ID->singleID();
+        TH_Process annProc = (*Dep::TH_ProcessCatalog).getProcess(DMid, DMid);
         Funk::Funk spectrum = (*Dep::GA_AnnYield)->set("v", 0.);
 
         std::ostringstream filename;
