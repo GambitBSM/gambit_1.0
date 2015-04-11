@@ -36,9 +36,9 @@ namespace Gambit
     /// Rollcalled functions properly hooked up to Gambit
     /// *************************************************
  
-    void FlavBit_fill(struct parameters &result) 
+    void SI_FlavBit_fill(struct parameters &result) 
     {
-      using namespace Pipes::FlavBit_fill;
+      using namespace Pipes::SI_FlavBit_fill;
       using namespace std;
 	  	  
       char name[]="FlavBit/example.lha";
@@ -386,9 +386,9 @@ namespace Gambit
 
      /// *************************************************
 
-    void bsgamma(double &result)          
+    void SI_bsgamma(double &result)          
     {
-      using namespace Pipes::bsgamma;
+      using namespace Pipes::SI_bsgamma;
 
       struct parameters param = *Dep::FlavBit_fill;
 
@@ -411,9 +411,9 @@ namespace Gambit
      
      /// *************************************************
    
-    void Bsmumu(double &result)          
+    void SI_Bsmumu(double &result)          
     {
-      using namespace Pipes::Bsmumu;
+      using namespace Pipes::SI_Bsmumu;
 
       struct parameters param = *Dep::FlavBit_fill;
 
@@ -438,9 +438,9 @@ namespace Gambit
 
      /// *************************************************
    
-    void Bsmumu_untag(double &result)          
+    void SI_Bsmumu_untag(double &result)          
     {
-      using namespace Pipes::Bsmumu_untag;
+      using namespace Pipes::SI_Bsmumu_untag;
 
       struct parameters param = *Dep::FlavBit_fill;
 
@@ -465,9 +465,9 @@ namespace Gambit
     
      /// *************************************************
    
-    void Bdmumu(double &result)          
+    void SI_Bdmumu(double &result)          
     {
-      using namespace Pipes::Bdmumu;
+      using namespace Pipes::SI_Bdmumu;
 
       struct parameters param = *Dep::FlavBit_fill;
 
@@ -491,9 +491,9 @@ namespace Gambit
 
       /// *************************************************
    
-    void Btaunu(double &result)          
+    void SI_Btaunu(double &result)          
     {
-      using namespace Pipes::Btaunu;
+      using namespace Pipes::SI_Btaunu;
 
        struct parameters param = *Dep::FlavBit_fill;
 
@@ -505,9 +505,9 @@ namespace Gambit
 
       /// *************************************************
    
-    void BDtaunu(double &result)          
+    void SI_BDtaunu(double &result)          
     {
-      using namespace Pipes::BDtaunu;
+      using namespace Pipes::SI_BDtaunu;
 
        struct parameters param = *Dep::FlavBit_fill;
 
@@ -519,9 +519,9 @@ namespace Gambit
 
       /// *************************************************
    
-    void BDtaunu_BDenu(double &result)          
+    void SI_BDtaunu_BDenu(double &result)          
     {
-      using namespace Pipes::BDtaunu_BDenu;
+      using namespace Pipes::SI_BDtaunu_BDenu;
 
        struct parameters param = *Dep::FlavBit_fill;
 
@@ -533,9 +533,9 @@ namespace Gambit
 
       /// *************************************************
    
-    void Kmunu_pimunu(double &result)          
+    void SI_Kmunu_pimunu(double &result)          
     {
-      using namespace Pipes::Kmunu_pimunu;
+      using namespace Pipes::SI_Kmunu_pimunu;
 
        struct parameters param = *Dep::FlavBit_fill;
 
@@ -547,9 +547,9 @@ namespace Gambit
 
       /// *************************************************
    
-    void Rmu23(double &result)          
+    void SI_Rmu23(double &result)          
     {
-      using namespace Pipes::Rmu23;
+      using namespace Pipes::SI_Rmu23;
 
        struct parameters param = *Dep::FlavBit_fill;
 
@@ -561,9 +561,9 @@ namespace Gambit
 
       /// *************************************************
    
-    void Dstaunu(double &result)          
+    void SI_Dstaunu(double &result)          
     {
-      using namespace Pipes::Dstaunu;
+      using namespace Pipes::SI_Dstaunu;
 
        struct parameters param = *Dep::FlavBit_fill;
 
@@ -575,9 +575,9 @@ namespace Gambit
 
       /// *************************************************
    
-    void Dsmunu(double &result)          
+    void SI_Dsmunu(double &result)          
     {
-      using namespace Pipes::Dsmunu;
+      using namespace Pipes::SI_Dsmunu;
 
        struct parameters param = *Dep::FlavBit_fill;
 
@@ -589,9 +589,9 @@ namespace Gambit
 
       /// *************************************************
    
-    void Dmunu(double &result)          
+    void SI_Dmunu(double &result)          
     {
-      using namespace Pipes::Dmunu;
+      using namespace Pipes::SI_Dmunu;
 
        struct parameters param = *Dep::FlavBit_fill;
 
@@ -603,9 +603,9 @@ namespace Gambit
 
       /// *************************************************
    
-    void muon_gm2(double &result)          
+    void SI_muon_gm2(double &result)          
     {
-      using namespace Pipes::muon_gm2;
+      using namespace Pipes::SI_muon_gm2;
 
        struct parameters param = *Dep::FlavBit_fill;
 
@@ -617,9 +617,9 @@ namespace Gambit
 
      /// *************************************************
 
-    void delta0(double &result)          
+    void SI_delta0(double &result)          
     {
-      using namespace Pipes::delta0;
+      using namespace Pipes::SI_delta0;
 
       struct parameters param = *Dep::FlavBit_fill;
 
@@ -648,9 +648,9 @@ namespace Gambit
 
      /// *************************************************
 
-    void BRBXsmumu_lowq2(double &result)          
+    void SI_BRBXsmumu_lowq2(double &result)          
     {
-      using namespace Pipes::BRBXsmumu_lowq2;
+      using namespace Pipes::SI_BRBXsmumu_lowq2;
 
       struct parameters param = *Dep::FlavBit_fill;
 
@@ -675,9 +675,9 @@ namespace Gambit
 
      /// *************************************************
 
-    void BRBXsmumu_highq2(double &result)          
+    void SI_BRBXsmumu_highq2(double &result)          
     {
-      using namespace Pipes::BRBXsmumu_highq2;
+      using namespace Pipes::SI_BRBXsmumu_highq2;
 
       struct parameters param = *Dep::FlavBit_fill;
 
@@ -702,9 +702,9 @@ namespace Gambit
 
      /// *************************************************
 
-    void A_BXsmumu_lowq2(double &result)          
+    void SI_A_BXsmumu_lowq2(double &result)          
     {
-      using namespace Pipes::A_BXsmumu_lowq2;
+      using namespace Pipes::SI_A_BXsmumu_lowq2;
 
       struct parameters param = *Dep::FlavBit_fill;
 
@@ -729,9 +729,9 @@ namespace Gambit
 
      /// *************************************************
 
-    void A_BXsmumu_highq2(double &result)          
+    void SI_A_BXsmumu_highq2(double &result)          
     {
-      using namespace Pipes::A_BXsmumu_highq2;
+      using namespace Pipes::SI_A_BXsmumu_highq2;
 
       struct parameters param = *Dep::FlavBit_fill;
 
@@ -756,9 +756,9 @@ namespace Gambit
  
      /// *************************************************
 
-    void A_BXsmumu_zero(double &result)          
+    void SI_A_BXsmumu_zero(double &result)          
     {
-      using namespace Pipes::A_BXsmumu_zero;
+      using namespace Pipes::SI_A_BXsmumu_zero;
 
       struct parameters param = *Dep::FlavBit_fill;
 
@@ -783,9 +783,9 @@ namespace Gambit
 
      /// *************************************************
 
-    void BRBXstautau_highq2(double &result)          
+    void SI_BRBXstautau_highq2(double &result)          
     {
-      using namespace Pipes::BRBXstautau_highq2;
+      using namespace Pipes::SI_BRBXstautau_highq2;
 
       struct parameters param = *Dep::FlavBit_fill;
 
@@ -810,9 +810,9 @@ namespace Gambit
 
      /// *************************************************
 
-    void A_BXstautau_highq2(double &result)          
+    void SI_A_BXstautau_highq2(double &result)          
     {
-      using namespace Pipes::A_BXstautau_highq2;
+      using namespace Pipes::SI_A_BXstautau_highq2;
 
       struct parameters param = *Dep::FlavBit_fill;
 
@@ -837,9 +837,9 @@ namespace Gambit
 
      /// *************************************************
 
-    void BRBKstarmumu(double &result)          
+    void SI_BRBKstarmumu(double &result)          
     {
-      using namespace Pipes::BRBKstarmumu;
+      using namespace Pipes::SI_BRBKstarmumu;
 
       struct parameters param = *Dep::FlavBit_fill;
 
@@ -884,9 +884,9 @@ namespace Gambit
 
      /// *************************************************
 
-    void AI_BKstarmumu(double &result)          
+    void SI_AI_BKstarmumu(double &result)          
     {
-      using namespace Pipes::AI_BKstarmumu;
+      using namespace Pipes::SI_AI_BKstarmumu;
 
       struct parameters param = *Dep::FlavBit_fill;
 
@@ -908,9 +908,9 @@ namespace Gambit
 
      /// *************************************************
 
-    void AI_BKstarmumu_zero(double &result)          
+    void SI_AI_BKstarmumu_zero(double &result)          
     {
-      using namespace Pipes::AI_BKstarmumu_zero;
+      using namespace Pipes::SI_AI_BKstarmumu_zero;
 
       struct parameters param = *Dep::FlavBit_fill;
 
