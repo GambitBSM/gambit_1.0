@@ -126,29 +126,29 @@ Parameters:
 #    This model is only used if micrOMEGAs or DarkSUSY is being
 #    used to calculate direct detection couplings.
 
-#    nuclear_params_fnq:
-#      # proton hadronic matrix elements
-#      fpd:
-#        fixed_value: 0.0191
-#      fpu:
-#        fixed_value: 0.0153
-#      fps:
-#        fixed_value: 0.0447
-#      # neutron hadronic matrix elements
-#      fnd:
-#        fixed_value: 0.0273
-#      fnu:
-#        fixed_value: 0.011
-#      fns:
-#        fixed_value: 0.0447
-#      # proton spin content
-#      deltad:
-#        fixed_value: -0.427
-#      deltau:
-#        fixed_value: 0.842
-#      deltas:
-#        fixed_value: -0.085
-	
+    nuclear_params_fnq:
+      # proton hadronic matrix elements
+      fpd:
+        fixed_value: 0.0191
+      fpu:
+        fixed_value: 0.0153
+      fps:
+        fixed_value: 0.0447
+      # neutron hadronic matrix elements
+      fnd:
+        fixed_value: 0.0273
+      fnu:
+        fixed_value: 0.011
+      fns:
+        fixed_value: 0.0447
+      # proton spin content
+      deltad:
+        fixed_value: -0.427
+      deltau:
+        fixed_value: 0.842
+      deltas:
+        fixed_value: -0.085
+
 #    nuclear_params_sigma0_SigmaPiN:
 #      sigma0:
 #        fixed_value: 30.76
@@ -386,7 +386,7 @@ Rules:
   - capability: DD_couplings
     #function: DD_couplings_DarkSUSY    # couplings from darksusy backend
     #function: DD_couplings_MicrOmegas  # couplings from micromegas backend
-    #function: DD_couplings_SingletDM   # couplings for singlet DM model
+    function: DD_couplings_SingletDM   # couplings for singlet DM model
     options:
         rescale_couplings: 1  # For unit tests: rescale couplings
   # Miscellaneous ----------------------
