@@ -39,20 +39,20 @@ ObsLikes:
   #  type:         double
   #  function:     specbit_test_func2
 
+  #- purpose:      Likelihood
+  #  capability:   specbit_tests1
+  #  type:         double
+  #  function:     specbit_test_func1
+
   - purpose:      Likelihood
-    capability:   specbit_tests1
+    capability:   specbit_tests3
     type:         double
-    function:     specbit_test_func1
+    function:     specbit_test_func3
 
   #- purpose:      Likelihood
-  #  capability:   specbit_tests3
+  #  capability:   specbit_test_SMplusUV
   #  type:         double
-  #  function:     specbit_test_func3
-
-  - purpose:      Likelihood
-    capability:   specbit_test_SMplusUV
-    type:         double
-    function:     specbit_test_SMplusUV
+  #  function:     specbit_test_SMplusUV
 
   #- purpose:      Likelihood
   #  capability:   dump_spectrum_slha
@@ -82,6 +82,10 @@ Auxiliaries:
       use_higgs_2loop_at_at: true
       use_higgs_2loop_atau_atau: true
       invalid_point_fatal: false
+
+  # For testing out "SM-only" construction of QedQcdWrapper
+  - capability: SM_spectrum 
+    function: get_QedQcd_spectrum  # Use this function to compute this capability
 
 
 Logger:
