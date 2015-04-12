@@ -101,7 +101,7 @@ int main(int argc, char *argv[])
         if (hdrs)
         {
                 str += "-I" GAMBIT_DIR " "; 
-                str += "-I" GAMBIT_BUILD_DIR " ";
+                str += "-I" GAMBIT_DIR "/cmake/include ";
                 str += "-I" GAMBIT_DIR "/Utils/include ";
                 str += "-I" GAMBIT_DIR "/ScannerBit/include ";
                 str += "-I" GAMBIT_DIR "/Logs/include ";

@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // This file is part of MCUtils -- https://bitbucket.org/andybuckley/mcutils
-// Copyright (C) 2013-2014 Andy Buckley <andy.buckley@cern.ch>
+// Copyright (C) 2013-2015 Andy Buckley <andy.buckley@cern.ch>
 //
 // Embedding of MCUtils code in other projects is permitted provided this
 // notice is retained and the MCUtils namespace and include path are changed.

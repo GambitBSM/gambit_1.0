@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // This file is part of MCUtils -- https://bitbucket.org/andybuckley/mcutils
-// Copyright (C) 2013-2014 Andy Buckley <andy.buckley@cern.ch>
+// Copyright (C) 2013-2015 Andy Buckley <andy.buckley@cern.ch>
 //
 // Embedding of MCUtils code in other projects is permitted provided this
 // notice is retained and the MCUtils namespace and include path are changed.
@@ -318,7 +318,6 @@ namespace MCUtils {
   }
 
 
-  /// @todo Add isPrompt (with what definition?)
 
 
   /// A function object with state of the status code to be tested for
@@ -509,6 +508,7 @@ namespace MCUtils {
   }
   /// @brief Determine whether the given particle is from a hadron or tau decay
   ///
+  /// @todo Use a better, more explicit name?
   /// Specifically, walk up the ancestor chain until a status 2 hadron or tau is found, if at all.
   inline bool fromDecay(const HepMC::GenParticle* p) {
     return fromAncestorWith(p, _isDecayedHadronOrTau);
@@ -522,33 +522,88 @@ namespace MCUtils {
     return fromAncestorWith(p, isDecayedHadron);
   }
 
+  /// @brief Determine whether the given particle is from a heavy hadron decay
+  ///
+  /// Specifically, walk up the ancestor chain until a status 2 heavy hadron is found, if at all.
+  inline bool fromHeavyHadronDecay(const HepMC::GenParticle* p) {
+    return fromAncestorWith(p, isHeavyHadron);
+  }
+
+  /// @brief Determine whether the given particle is from a bottom hadron decay
+  ///
+  /// Specifically, walk up the ancestor chain until a status 2 bottom hadron is found, if at all.
+  inline bool fromBottomHadronDecay(const HepMC::GenParticle* p) {
+    return fromAncestorWith(p, isBottomHadron);
+  }
+
+  /// @brief Determine whether the given particle is from a charm hadron decay
+  ///
+  /// Specifically, walk up the ancestor chain until a status 2 charm hadron is found, if at all.
+  inline bool fromCharmHadronDecay(const HepMC::GenParticle* p) {
+    return fromAncestorWith(p, isCharmHadron);
+  }
+
   /// @brief Determine whether the given particle is from a tau decay
   ///
-  /// Specifically, walk up the ancestor chain until a status 2 tau is found, if at all.
-  inline bool fromTauDecay(const HepMC::GenParticle* p) {
+  /// Specifically, walk up the ancestor chain until a tau is found, if at all.
+  /// If @a only_prompt_taus is true then return false if the tau itself was from a hadron decay.
+  inline bool fromTauDecay(const HepMC::GenParticle* p, bool only_prompt_taus=false) {
+    // If the tau was non-prompt, there will also be a hadron in the history:
+    if (only_prompt_taus && fromHadronDecay(p)) return false;
+    // Else...
     return fromAncestorWith(p, isDecayedTau);
+  }
+
+  /// @brief Determine whether the given particle is from a prompt tau decay
+  ///
+  /// @note Syntactic sugar for fromTauDecay(p, true)
+  inline bool fromPromptTauDecay(const HepMC::GenParticle* p) {
+    return fromTauDecay(p, true);
   }
 
   /// @brief Determine whether the given particle is from a hadronic tau decay
   ///
   /// Specifically, walk up the ancestor chain until a status 2 tau is found, if at all.
-  inline bool fromHadronicTauDecay(const HepMC::GenParticle* p) {
+  /// If @a only_prompt_taus is true then return false if the tau itself was from a hadron decay.
+  inline bool fromHadronicTauDecay(const HepMC::GenParticle* p, bool only_prompt_taus=false) {
+    // If the tau was non-prompt, there will also be a hadron in the history:
+    if (only_prompt_taus && fromHadronDecay(p)) return false;
+    // Else...
     return fromAncestorWith(p, isHadronicTau);
   }
 
-
-  /// Helper function used in detecting HF hadron/tau decay daughters
-  /// @todo Use a C++11 inline lambda when available
-  inline bool _isDecayedHFHadronOrTau(const HepMC::GenParticle* p) {
-    // if (isDecayed(p) && (abs(p->pdg_id()) == PID::TAU || isHeavyHadron(p)))
-    //   std::cout << "HFTau: " << p->barcode() << ", " << p->pdg_id() << p->status() << std::endl;
-    return isDecayed(p) && (isTau(p) || isHeavyHadron(p));
+  /// @brief Determine whether the given particle is from a prompt tau decay
+  ///
+  /// @note Syntactic sugar for fromHadronicTauDecay(p, true)
+  inline bool fromPromptHadronicTauDecay(const HepMC::GenParticle* p) {
+    return fromHadronicTauDecay(p, true);
   }
+
+
   /// @brief Determine whether the given particle is from a HF hadron or tau decay
   ///
   /// Specifically, walk up the ancestor chain until a status 2 c/b hadron or tau is found, if at all.
-  inline bool fromTauOrHFDecay(const HepMC::GenParticle* p) {
-    return fromAncestorWith(p, _isDecayedHFHadronOrTau);
+  /// If @a only_prompt_taus is true then return false if the tau itself was from a hadron decay.
+  inline bool fromTauOrHFDecay(const HepMC::GenParticle* p, bool only_prompt_taus=false) {
+    return fromHeavyHadronDecay(p) || fromTauDecay(p, only_prompt_taus); //< Evaluation order & short-circuiting are important!!
+  }
+
+
+
+  /// Return if the give particle is prompt, defined as a physical particle emitted directly from the hard process
+  ///
+  /// The full and specific definition used is that the particle must be
+  /// physical (status 1 or 2), a photon or lepton (hadrons are never considered
+  /// prompt in this definition), and must not come from the decay of a hadron
+  /// or non-prompt tau. By default leptons and photons emitted from a prompt
+  /// tau are themselves considered prompt; changing the optional boolean
+  /// parameter to false will result in such particles being reported as
+  /// non-prompt (i.e. isPrompt = false).
+  inline bool isPrompt(const HepMC::GenParticle* p, bool accept_prompt_tau_decay_leptons=true) {
+    if (!isPhysical(p) || isHadron(p)) return false;
+    if (fromHadronDecay(p)) return false;
+    if (!accept_prompt_tau_decay_leptons && fromTauDecay(p, true)) return false;
+    return true;
   }
 
   //@}
