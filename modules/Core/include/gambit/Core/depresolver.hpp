@@ -77,8 +77,8 @@ namespace Gambit
         module = t.module;
         function = t.function;
       };
-      std::string module;
       std::string function;
+      std::string module;
     };
 
     /// Information in parameter queue
