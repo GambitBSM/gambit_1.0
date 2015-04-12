@@ -13,9 +13,9 @@
 ///  Authors (add name and date if you modify):
 ///   
 ///  \author Nazila Mahmoudi
-///          (mahmoudi@in2p3.fr)
 ///  \date 2013 Oct
-///  \date 2014 Jan, ..., Jun
+///  \date 2014
+///  \date 2015 Feb
 ///
 ///  \author Anders Kvellestad
 ///          (anders.kvellestad@fys.uio.no)
@@ -24,7 +24,7 @@
 
 #include "gambit/Utils/gambit_module_headers.hpp"
 #include "gambit/FlavBit/FlavBit_rollcall.hpp"
-#define Nobs_BKsll 24
+#define Nobs_BKsll 21
 
 namespace Gambit
 {
@@ -32,40 +32,16 @@ namespace Gambit
   namespace FlavBit
   {
  
-     /// ********************************************
-    /// Non-rollcalled Functions and Local Variables
-    /// ********************************************
-
-    /// @todo void? 
-    void PointInit_Default()
-    {
-      logger() << "==================" << endl;
-      logger() << "FlavBit says,";
-      logger() << "\"Hi there. Initializing...\"" << endl;
-      logger() << LogTags::info << endl << EOM;
-    }
-
-
     /// *************************************************
     /// Rollcalled functions properly hooked up to Gambit
     /// *************************************************
  
-    void initialize () 
+    void SI_FlavBit_fill(struct parameters &result) 
     {
-      cout << endl;
-      cout << "********************************************" << endl;
-      cout << "***       Initializing FlavBit      ***" << endl;
-      cout << "********************************************" << endl;
-    }
-
-    // Module functions
-
-    void SI_fill(struct parameters &result) 
-    {
-      using namespace Pipes::SI_fill;
+      using namespace Pipes::SI_FlavBit_fill;
       using namespace std;
-	  
-      char name[]="Example_SUSYspecBit/softsusy_example.slha";
+	  	  
+      char name[]="FlavBit/example.lha";
 
       eaSLHA spectrum;
       std::ifstream ifs(name);
@@ -98,7 +74,7 @@ namespace Gambit
 		if(spectrum["SMINPUTS"][4].is_data_line()) result.mass_Z=SLHAea::to<double>(spectrum["SMINPUTS"][4][1]);
 		if(spectrum["SMINPUTS"][5].is_data_line()) result.mass_b=SLHAea::to<double>(spectrum["SMINPUTS"][5][1]);
 		if(spectrum["SMINPUTS"][6].is_data_line()) result.mass_top_pole=SLHAea::to<double>(spectrum["SMINPUTS"][6][1]);
-		if(spectrum["SMINPUTS"][7].is_data_line()) result.mass_tau_pole=SLHAea::to<double>(spectrum["SMINPUTS"][7][1]);
+		if(spectrum["SMINPUTS"][7].is_data_line()) result.mass_tau=SLHAea::to<double>(spectrum["SMINPUTS"][7][1]);
 		if(spectrum["SMINPUTS"][8].is_data_line()) result.mass_nutau2=SLHAea::to<double>(spectrum["SMINPUTS"][8][1]);
 		if(spectrum["SMINPUTS"][11].is_data_line()) result.mass_e2=SLHAea::to<double>(spectrum["SMINPUTS"][11][1]);
 		if(spectrum["SMINPUTS"][12].is_data_line()) result.mass_nue2=SLHAea::to<double>(spectrum["SMINPUTS"][12][1]);
@@ -214,7 +190,7 @@ namespace Gambit
 		if(spectrum["MASS"][2].is_data_line()) result.mass_u=SLHAea::to<double>(spectrum["MASS"][2][1]);
 		if(spectrum["MASS"][3].is_data_line()) result.mass_s=SLHAea::to<double>(spectrum["MASS"][3][1]);
 		if(spectrum["MASS"][4].is_data_line()) result.mass_c=SLHAea::to<double>(spectrum["MASS"][4][1]);
-		if(spectrum["MASS"][6].is_data_line()) result.mass_t=SLHAea::to<double>(spectrum["MASS"][6][1]);
+		if(spectrum["MASS"][6].is_data_line()) result.mass_top=SLHAea::to<double>(spectrum["MASS"][6][1]);
 		if(spectrum["MASS"][11].is_data_line()) result.mass_e=SLHAea::to<double>(spectrum["MASS"][11][1]);
 		if(spectrum["MASS"][12].is_data_line()) result.mass_nue=SLHAea::to<double>(spectrum["MASS"][12][1]);
 		if(spectrum["MASS"][13].is_data_line()) result.mass_mu=SLHAea::to<double>(spectrum["MASS"][13][1]);
@@ -406,7 +382,7 @@ namespace Gambit
 
 
       BEreq::slha_adjust(&result);
-   }
+    }
 
      /// *************************************************
 
@@ -414,22 +390,22 @@ namespace Gambit
     {
       using namespace Pipes::SI_bsgamma;
 
-      struct parameters param;
-
-      SI_fill(param);
+      struct parameters param = *Dep::FlavBit_fill;
 
       if(param.model<0) result=0.;
       else
       {
 		double mu_W=2.*param.mass_W;
 		double mu_b=param.mass_b_1S/2.;
-		double C0w[11],C1w[11],C2w[11],C0b[11],C1b[11],C2b[11];
+		double C0w[11],C1w[11],C2w[11],C0b[11],C1b[11],C2b[11],Cpb[11];
+		std::complex<double> CQpb[3];
 
 		BEreq::CW_calculator(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
 		BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
-		result = BEreq::bsgamma(byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),byVal(mu_W),&param);
+		BEreq::Cprime_calculator(byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),&param);
+		result = BEreq::bsgamma(byVal(C0b),byVal(C1b),byVal(C2b),byVal(Cpb),byVal(mu_b),byVal(mu_W),&param);
 	  }
-      
+	  
       printf("BR(b->s gamma)=%.3e\n",result);
     }
      
@@ -439,9 +415,7 @@ namespace Gambit
     {
       using namespace Pipes::SI_Bsmumu;
 
-      struct parameters param;
-
-      SI_fill(param);
+      struct parameters param = *Dep::FlavBit_fill;
 
       if(param.model<0) result=0.;
       else
@@ -468,9 +442,7 @@ namespace Gambit
     {
       using namespace Pipes::SI_Bsmumu_untag;
 
-      struct parameters param;
-
-      SI_fill(param);
+      struct parameters param = *Dep::FlavBit_fill;
 
       if(param.model<0) result=0.;
       else
@@ -497,9 +469,7 @@ namespace Gambit
     {
       using namespace Pipes::SI_Bdmumu;
 
-      struct parameters param;
-
-      SI_fill(param);
+      struct parameters param = *Dep::FlavBit_fill;
 
       if(param.model<0) result=0.;
       else
@@ -525,9 +495,7 @@ namespace Gambit
     {
       using namespace Pipes::SI_Btaunu;
 
-       struct parameters param;
-
-      SI_fill(param);
+       struct parameters param = *Dep::FlavBit_fill;
 
       if(param.model<0) result=0.;
       else result = BEreq::Btaunu(&param);
@@ -541,9 +509,7 @@ namespace Gambit
     {
       using namespace Pipes::SI_BDtaunu;
 
-       struct parameters param;
-
-      SI_fill(param);
+       struct parameters param = *Dep::FlavBit_fill;
 
       if(param.model<0) result=0.;
       else result = BEreq::BDtaunu(&param);
@@ -557,9 +523,7 @@ namespace Gambit
     {
       using namespace Pipes::SI_BDtaunu_BDenu;
 
-       struct parameters param;
-
-      SI_fill(param);
+       struct parameters param = *Dep::FlavBit_fill;
 
       if(param.model<0) result=0.;
       else result = BEreq::BDtaunu_BDenu(&param);
@@ -573,9 +537,7 @@ namespace Gambit
     {
       using namespace Pipes::SI_Kmunu_pimunu;
 
-       struct parameters param;
-
-      SI_fill(param);
+       struct parameters param = *Dep::FlavBit_fill;
 
       if(param.model<0) result=0.;
       else result = BEreq::Kmunu_pimunu(&param);
@@ -589,9 +551,7 @@ namespace Gambit
     {
       using namespace Pipes::SI_Rmu23;
 
-       struct parameters param;
-
-      SI_fill(param);
+       struct parameters param = *Dep::FlavBit_fill;
 
       if(param.model<0) result=0.;
       else result = BEreq::Rmu23(&param);
@@ -605,9 +565,7 @@ namespace Gambit
     {
       using namespace Pipes::SI_Dstaunu;
 
-       struct parameters param;
-
-      SI_fill(param);
+       struct parameters param = *Dep::FlavBit_fill;
 
       if(param.model<0) result=0.;
       else result = BEreq::Dstaunu(&param);
@@ -621,9 +579,7 @@ namespace Gambit
     {
       using namespace Pipes::SI_Dsmunu;
 
-       struct parameters param;
-
-      SI_fill(param);
+       struct parameters param = *Dep::FlavBit_fill;
 
       if(param.model<0) result=0.;
       else result = BEreq::Dsmunu(&param);
@@ -637,9 +593,7 @@ namespace Gambit
     {
       using namespace Pipes::SI_Dmunu;
 
-       struct parameters param;
-
-      SI_fill(param);
+       struct parameters param = *Dep::FlavBit_fill;
 
       if(param.model<0) result=0.;
       else result = BEreq::Dmunu(&param);
@@ -653,9 +607,7 @@ namespace Gambit
     {
       using namespace Pipes::SI_muon_gm2;
 
-       struct parameters param;
-
-      SI_fill(param);
+       struct parameters param = *Dep::FlavBit_fill;
 
       if(param.model<0) result=0.;
       else result = BEreq::muon_gm2(&param);
@@ -669,9 +621,7 @@ namespace Gambit
     {
       using namespace Pipes::SI_delta0;
 
-      struct parameters param;
-
-      SI_fill(param);
+      struct parameters param = *Dep::FlavBit_fill;
 
       if(param.model<0) result=0.;
       else
@@ -683,12 +633,14 @@ namespace Gambit
 		double mu_spec=sqrt(lambda_h*param.mass_b);
 
 
-		double C0w[11],C1w[11],C2w[11],C0b[11],C1b[11],C0spec[11],C1spec[11];
+		double C0w[11],C1w[11],C2w[11],C0b[11],C1b[11],C0spec[11],C1spec[11],Cpb[11];
+		std::complex<double> CQpb[3];
 
 		BEreq::CW_calculator(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
 		BEreq::C_calculator_base2(byVal(C0w),byVal(C1w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(mu_b),&param);
 		BEreq::C_calculator_base2(byVal(C0w),byVal(C1w),byVal(mu_W),byVal(C0spec),byVal(C1spec),byVal(mu_spec),&param);
-		result = BEreq::delta0(byVal(C0b),byVal(C0spec),byVal(C1b),byVal(C1spec),&param,byVal(mu_b),byVal(mu_spec),byVal(lambda_h));
+		BEreq::Cprime_calculator(byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),&param);
+		result = BEreq::delta0(byVal(C0b),byVal(C0spec),byVal(C1b),byVal(C1spec),byVal(Cpb),&param,byVal(mu_b),byVal(mu_spec),byVal(lambda_h));
 	  }
       
       printf("Delta0(B->K* gamma)=%.3e\n",result);
@@ -700,9 +652,7 @@ namespace Gambit
     {
       using namespace Pipes::SI_BRBXsmumu_lowq2;
 
-      struct parameters param;
-
-      SI_fill(param);
+      struct parameters param = *Dep::FlavBit_fill;
 
       if(param.model<0) result=0.;
       else
@@ -710,13 +660,14 @@ namespace Gambit
 		double mu_W=120.;
 		double mu_b=5.;
 
-		double C0w[11],C1w[11],C2w[11],C0b[11],C1b[11],C2b[11];
-	    std::complex<double> CQ0b[3],CQ1b[3];
+		double C0w[11],C1w[11],C2w[11],C0b[11],C1b[11],C2b[11],Cpb[11];
+	    std::complex<double> CQ0b[3],CQ1b[3],CQpb[3];
 
 		BEreq::CW_calculator(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
 		BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
 		BEreq::CQ_calculator(byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),&param);
-		result = BEreq::BRBXsmumu_lowq2(byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),&param,byVal(mu_b));
+		BEreq::Cprime_calculator(byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),&param);
+		result = BEreq::BRBXsmumu_lowq2(byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),&param,byVal(mu_b));
 	  }
       
       printf("BR(B->Xs mu mu)_lowq2=%.3e\n",result);
@@ -728,9 +679,7 @@ namespace Gambit
     {
       using namespace Pipes::SI_BRBXsmumu_highq2;
 
-      struct parameters param;
-
-      SI_fill(param);
+      struct parameters param = *Dep::FlavBit_fill;
 
       if(param.model<0) result=0.;
       else
@@ -738,13 +687,14 @@ namespace Gambit
 		double mu_W=120.;
 		double mu_b=5.;
 
-		double C0w[11],C1w[11],C2w[11],C0b[11],C1b[11],C2b[11];
-	    std::complex<double> CQ0b[3],CQ1b[3];
+		double C0w[11],C1w[11],C2w[11],C0b[11],C1b[11],C2b[11],Cpb[11];
+	    std::complex<double> CQ0b[3],CQ1b[3],CQpb[3];
 
 		BEreq::CW_calculator(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
 		BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
 		BEreq::CQ_calculator(byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),&param);
-		result = BEreq::BRBXsmumu_highq2(byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),&param,byVal(mu_b));
+		BEreq::Cprime_calculator(byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),&param);
+		result = BEreq::BRBXsmumu_highq2(byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),&param,byVal(mu_b));
 	  }
       
       printf("BR(B->Xs mu mu)_highq2=%.3e\n",result);
@@ -756,9 +706,7 @@ namespace Gambit
     {
       using namespace Pipes::SI_A_BXsmumu_lowq2;
 
-      struct parameters param;
-
-      SI_fill(param);
+      struct parameters param = *Dep::FlavBit_fill;
 
       if(param.model<0) result=0.;
       else
@@ -766,13 +714,14 @@ namespace Gambit
 		double mu_W=120.;
 		double mu_b=5.;
 
-		double C0w[11],C1w[11],C2w[11],C0b[11],C1b[11],C2b[11];
-	    std::complex<double> CQ0b[3],CQ1b[3];
+		double C0w[11],C1w[11],C2w[11],C0b[11],C1b[11],C2b[11],Cpb[11];
+	    std::complex<double> CQ0b[3],CQ1b[3],CQpb[3];
 
 		BEreq::CW_calculator(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
 		BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
 		BEreq::CQ_calculator(byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),&param);
-		result = BEreq::A_BXsmumu_lowq2(byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),&param,byVal(mu_b));
+		BEreq::Cprime_calculator(byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),&param);
+		result = BEreq::A_BXsmumu_lowq2(byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),&param,byVal(mu_b));
 	  }
       
       printf("AFB(B->Xs mu mu)_lowq2=%.3e\n",result);
@@ -784,9 +733,7 @@ namespace Gambit
     {
       using namespace Pipes::SI_A_BXsmumu_highq2;
 
-      struct parameters param;
-
-      SI_fill(param);
+      struct parameters param = *Dep::FlavBit_fill;
 
       if(param.model<0) result=0.;
       else
@@ -794,13 +741,14 @@ namespace Gambit
 		double mu_W=120.;
 		double mu_b=5.;
 
-		double C0w[11],C1w[11],C2w[11],C0b[11],C1b[11],C2b[11];
-	    std::complex<double> CQ0b[3],CQ1b[3];
+		double C0w[11],C1w[11],C2w[11],C0b[11],C1b[11],C2b[11],Cpb[11];
+	    std::complex<double> CQ0b[3],CQ1b[3],CQpb[3];
 
 		BEreq::CW_calculator(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
 		BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
 		BEreq::CQ_calculator(byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),&param);
-		result = BEreq::A_BXsmumu_highq2(byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),&param,byVal(mu_b));
+		BEreq::Cprime_calculator(byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),&param);
+		result = BEreq::A_BXsmumu_highq2(byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),&param,byVal(mu_b));
 	  }
       
       printf("AFB(B->Xs mu mu)_highq2=%.3e\n",result);
@@ -812,9 +760,7 @@ namespace Gambit
     {
       using namespace Pipes::SI_A_BXsmumu_zero;
 
-      struct parameters param;
-
-      SI_fill(param);
+      struct parameters param = *Dep::FlavBit_fill;
 
       if(param.model<0) result=0.;
       else
@@ -822,13 +768,14 @@ namespace Gambit
 		double mu_W=120.;
 		double mu_b=5.;
 
-		double C0w[11],C1w[11],C2w[11],C0b[11],C1b[11],C2b[11];
-	    std::complex<double> CQ0b[3],CQ1b[3];
+		double C0w[11],C1w[11],C2w[11],C0b[11],C1b[11],C2b[11],Cpb[11];
+	    std::complex<double> CQ0b[3],CQ1b[3],CQpb[3];
 
 		BEreq::CW_calculator(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
 		BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
 		BEreq::CQ_calculator(byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),&param);
-		result = BEreq::A_BXsmumu_zero(byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),&param,byVal(mu_b));
+		BEreq::Cprime_calculator(byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),&param);
+		result = BEreq::A_BXsmumu_zero(byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),&param,byVal(mu_b));
 	  }
       
       printf("AFB(B->Xs mu mu)_zero=%.3e\n",result);
@@ -840,9 +787,7 @@ namespace Gambit
     {
       using namespace Pipes::SI_BRBXstautau_highq2;
 
-      struct parameters param;
-
-      SI_fill(param);
+      struct parameters param = *Dep::FlavBit_fill;
 
       if(param.model<0) result=0.;
       else
@@ -850,13 +795,14 @@ namespace Gambit
 		double mu_W=120.;
 		double mu_b=5.;
 
-		double C0w[11],C1w[11],C2w[11],C0b[11],C1b[11],C2b[11];
-	    std::complex<double> CQ0b[3],CQ1b[3];
+		double C0w[11],C1w[11],C2w[11],C0b[11],C1b[11],C2b[11],Cpb[11];
+	    std::complex<double> CQ0b[3],CQ1b[3],CQpb[3];
 
 		BEreq::CW_calculator(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
 		BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
 		BEreq::CQ_calculator(byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),&param);
-		result = BEreq::BRBXstautau_highq2(byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),&param,byVal(mu_b));
+		BEreq::Cprime_calculator(byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),&param);
+		result = BEreq::BRBXstautau_highq2(byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),&param,byVal(mu_b));
 	  }
       
       printf("BR(B->Xs tau tau)_highq2=%.3e\n",result);
@@ -868,9 +814,7 @@ namespace Gambit
     {
       using namespace Pipes::SI_A_BXstautau_highq2;
 
-      struct parameters param;
-
-      SI_fill(param);
+      struct parameters param = *Dep::FlavBit_fill;
 
       if(param.model<0) result=0.;
       else
@@ -878,13 +822,14 @@ namespace Gambit
 		double mu_W=120.;
 		double mu_b=5.;
 
-		double C0w[11],C1w[11],C2w[11],C0b[11],C1b[11],C2b[11];
-	    std::complex<double> CQ0b[3],CQ1b[3];
+		double C0w[11],C1w[11],C2w[11],C0b[11],C1b[11],C2b[11],Cpb[11];
+	    std::complex<double> CQ0b[3],CQ1b[3],CQpb[3];
 
 		BEreq::CW_calculator(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),&param);
 		BEreq::C_calculator_base1(byVal(C0w),byVal(C1w),byVal(C2w),byVal(mu_W),byVal(C0b),byVal(C1b),byVal(C2b),byVal(mu_b),&param);
 		BEreq::CQ_calculator(byVal(CQ0b),byVal(CQ1b),byVal(mu_W),byVal(mu_b),&param);
-		result = BEreq::A_BXstautau_highq2(byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),&param,byVal(mu_b));
+		BEreq::Cprime_calculator(byVal(Cpb),byVal(CQpb),byVal(mu_W),byVal(mu_b),&param);
+		result = BEreq::A_BXstautau_highq2(byVal(C0b),byVal(C1b),byVal(C2b),byVal(CQ0b),byVal(CQ1b),byVal(Cpb),byVal(CQpb),&param,byVal(mu_b));
 	  }
       
       printf("AFB(B->Xs tau tau)_highq2=%.3e\n",result);
@@ -896,9 +841,7 @@ namespace Gambit
     {
       using namespace Pipes::SI_BRBKstarmumu;
 
-      struct parameters param;
-
-      SI_fill(param);
+      struct parameters param = *Dep::FlavBit_fill;
 
       if(param.model<0) result=0.;
       else
@@ -936,9 +879,6 @@ namespace Gambit
 	    printf("P6prime(B->K* mu mu)_lowq2=%.3e\n",obs[19]);
 	    printf("P8(B->K* mu mu)_lowq2=%.3e\n",obs[20]);
 	    printf("P8prime(B->K* mu mu)_lowq2=%.3e\n",obs[21]);
-	    printf("A7(B->K* mu mu)_lowq2=%.3e\n",obs[22]);
-	    printf("A8(B->K* mu mu)_lowq2=%.3e\n",obs[23]);
-	    printf("A9(B->K* mu mu)_lowq2=%.3e\n",obs[24]);
 	  }      
     }
 
@@ -948,9 +888,7 @@ namespace Gambit
     {
       using namespace Pipes::SI_AI_BKstarmumu;
 
-      struct parameters param;
-
-      SI_fill(param);
+      struct parameters param = *Dep::FlavBit_fill;
 
       if(param.model<0) result=0.;
       else
@@ -974,9 +912,7 @@ namespace Gambit
     {
       using namespace Pipes::SI_AI_BKstarmumu_zero;
 
-      struct parameters param;
-
-      SI_fill(param);
+      struct parameters param = *Dep::FlavBit_fill;
 
       if(param.model<0) result=0.;
       else
