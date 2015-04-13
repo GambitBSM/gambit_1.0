@@ -306,7 +306,7 @@ ObsLikes:
 # Auxiliary entries
 #########################
 
-Auxiliaries:
+Rules:
 
   #ColliderBit options (note, these ones are mandatory at this moment)
   - capability:  colliderLoopManager
