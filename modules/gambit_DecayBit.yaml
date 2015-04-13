@@ -1,58 +1,20 @@
-# Ultra-minimal GAMBIT Initialization file (in YAML)
-# Only needs example modules ExampleBit_A and ExampleBit_B,
-# plus example backends libfirst and libFortran.
-#
-# Don't commit modified versions of this file!
-# If you want to change it in order to test 
-# your own modifications to the code, copy 
-# it to DecayBit_test_personal.yaml, which will be 
-# ignored by git.
+# DecayBit test file (in YAML)
+# Only needs DecayBit and backend SUSYHIT.
 #
 # Pat Scott <p.scott@imperial.ac.uk>
 # Oct 2014
-#
  
 ###################################
 # Input parameter declarations
 ###################################
 
-Parameters: 
-
-  CMSSM_demo:
-    A0:
-      range: [-1000, 1000]
-    M0:
-      prior_type: log
-      range: [0.001,1000]
-    M12:
-    #  same_as: CMSSM_demo::M0
-    Mstop:
-      same_as: CMSSM_demo::M0
-    sgnmu:
-      range: [-1, 1]
-      fixed_value: 1
-    tanb:
-      fixed_value: 1
-
-
-
-##############################
-# Prior setup
-##############################
+Parameters:
+  #StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
+  MSSM25atQ: !import LesHouches.in.MSSM_1.yaml
 
 Priors:
-  # Here specify the priors, the parameters they work with, and any options as needed for that prior
-  # A prior object is built for every entry here (along with any coming from 'ranges' keywords above), 
-  # and then they are combined into a "composite" prior 
+    # none: all parameters fixed.
 
-  m12_prior: 
-    parameters: [CMSSM_demo::M12]
-    prior_type: composite
-    options: 
-      new_prior: 
-        parameters: [CMSSM_demo::M12]
-        prior_type: log
-        range: [100,2000]
 
 ##############################
 # Printer setup
@@ -75,47 +37,26 @@ Printer:
     info_file: "runs/DecayBit_test/samples/gambit_output.info"
 
 Scanner:
-  use_scanner_plugin: toy_mcmc
+  use_scanner: toy_mcmc
   
-  plugins:
+  scanners:
     toy_mcmc:
       plugin: toy_mcmc
-      options:
-        point_number: 2
-        output_file:  output
-        like:  Likelihood
+      point_number: 2
+      output_file:  output
+      like:  Likelihood
             
 ObsLikes:
-
-  # Test CMSSM_I, ExampleBit_A and ExampleBit_B
-  - purpose:      Likelihood
-    capability:   lnL_ExampleBitB
-    type:         double
-    function:     ""
-    module:       ""
 
    # Test DecayBit    
   - purpose:      Test
     capability:   decay_rates
     type:         DecayTable
 
-Auxiliaries:
+Rules:
 
-  - capability:   "LibFirst_1_1_init"
-    dependencies:
-    - {capability: "nevents", module: "ExampleBit_A"}  
-
-  - capability:    "nevents_postcuts"
-    dependencies:
-    - {capability: "id", module: "ExampleBit_B"}
-
-  - capability:    "MSSM_demo_parameters"
-    dependencies:
-    - {capability: "id", module: "ExampleBit_B"}
-
-  - capability:    "function_pointer"
-    backends:
-    - {function: "externalFunction2"}
+   # None needed
+   
 
 #########################
 # Logging setup

@@ -40,61 +40,6 @@ namespace Gambit
       cout << "top total width: " << BEreq::cb_sd_topwidth->toptot2 << endl;
     }
 
-    /// Calculate decay rates for Higgs in the SM
-    void SMHiggs_decays (DecayTable::Entry& result) 
-    {
-      // Remember that result does not arrive pristine, but contains the result of the last point.  Make sure to overwrite it fully!
-      // This is just an example function that returns junk numbers at the moment.  It should be finished off
-      // in order to use SUSYHIT properly.  When it works, a dependency on it added to the all_decays function.
-      using namespace Pipes::SMHiggs_decays;
-      const Spectrum* spec = *Dep::SM_spectrum;
-      double m_H = spec->phys.get_Pole_Mass("h0_1"); // Retrieve the masses from the spectrum object.
-      double m_b = spec->phys.get_Pole_Mass("b");
-      double m_t = spec->phys.get_Pole_Mass("t");
-      double m_W = spec->phys.get_Pole_Mass("W+");
-      double m_Z = spec->phys.get_Pole_Mass("Z0");
-      double totalwidth = 5.0; // In GeV -- this should be calculated or retrieved from a backend
-      double BF_err = 0.01;// Error on the branching fractions
-      double BF_bb = 0.37; // In reality, this should be obtained from a backend, using m_b, m_H, etc
-      double BF_tt = 0.10; // In reality, this should be obtained from a backend, using m_t, m_H, etc
-      double BF_WW = 0.35; // In reality, this should be obtained from a backend, using m_W, m_H, etc
-      double BF_WWZ = 0.18;// In reality, this should be obtained from a backend, using m_W, m_H, m_Z, etc
-      cout << "H,b,t,W,Z masses: " << m_H << " " << m_b << " " << m_t <<  " " << m_W << " " << m_Z << endl;
-      result.width_in_GeV = totalwidth;       // Alternatively, you could make a blank one with result = DecayTable::Entry(totalwidth).
-      result.set_BF(BF_bb, BF_err, "b", "bbar");      // Set the BFs for each final state.
-      result.set_BF(BF_tt, BF_err, "t", "tbar");
-      result.set_BF(BF_WW, BF_err, "W+", "W-");
-      result.set_BF(BF_WWZ, BF_err, "W+", "W-", "Z0");
-    }
-
-    /// Calculate decay rates for Higgs in the MSSM
-    void MSSMHiggs_decays (DecayTable::Entry& result) 
-    {
-      // Remember that result does not arrive pristine, but contains the result of the last point.  Make sure to overwrite it fully!
-      // This is just an example function that returns junk numbers at the moment.  It should be finished off
-      // in order to use SUSYHIT properly. When it works, a dependency on it added to the all_decays function.
-      using namespace Pipes::MSSMHiggs_decays;
-      const Spectrum* spec = *Dep::MSSM_spectrum;
-      double m_H = spec->phys.get_Pole_Mass("h0_1"); // Retrieve the masses from the spectrum object.
-      double m_b = spec->phys.get_Pole_Mass("b");
-      double m_t = spec->phys.get_Pole_Mass("t");
-      double m_W = spec->phys.get_Pole_Mass("W+");
-      double m_Z = spec->phys.get_Pole_Mass("Z0");
-      double totalwidth = 10.0; // In GeV -- this should be calculated or retrieved from a backend
-      double BF_err = 0.01;// Error on the branching fractions
-      double BF_bb = 0.35; // In reality, this should be obtained from a backend, using m_b, m_H, etc
-      double BF_tt = 0.10; // In reality, this should be obtained from a backend, using m_t, m_H, etc
-      double BF_WW = 0.35; // In reality, this should be obtained from a backend, using m_W, m_H, etc
-      double BF_WWZ = 0.2; // In reality, this should be obtained from a backend, using m_W, m_H, m_Z, etc
-      result.width_in_GeV = totalwidth;       // Set the total width.
-      result.set_BF(BF_bb, BF_err, "b", "bbar");      // Set the BFs for each final state.
-      result.set_BF(BF_tt, BF_err, "t", "tbar");
-      result.set_BF(BF_WW, BF_err, "W+", "W-");
-      result.set_BF(BF_WWZ, BF_err, "W+", "W-", "Z0");
-      cout << "H,b,t,W,Z masses in DecayBit::MSSMHiggs_decays: " << m_H << " " << m_b << " " << m_t <<  " " << m_W << " " << m_Z << endl;
-      cout << "Higgs BF to WWZ: " << result.BF("W+", "W-", "Z0") << endl;
-      cout << "Higgs BF sum in DecayBit::MSSMHiggs_decays: " << result.sum_BF() << endl;
-    }
 
     /// SM decays: W+
     void W_plus_decays (DecayTable::Entry& result) 
@@ -276,10 +221,37 @@ namespace Gambit
       //See PDG meson sheet in DecayBit/data/PDG if you want BFs               
     }
 
-    /// MSSM decays: h0_1
-    void h0_1_decays (DecayTable::Entry& result) 
+    /// SM decays: Higgs
+    void SMHiggs_decays (DecayTable::Entry& result) 
     {
-      using namespace Pipes::h0_1_decays;
+      // Remember that result does not arrive pristine, but contains the result of the last point.  Make sure to overwrite it fully!
+      // This is just an example function that returns junk numbers at the moment.  It should be finished off
+      // in order to use SUSYHIT properly.  When it works, a dependency on it added to the all_decays function.
+      using namespace Pipes::SMHiggs_decays;
+      const Spectrum* spec = *Dep::SM_spectrum;
+      double m_H = spec->phys.get_Pole_Mass("h0_1"); // Retrieve the masses from the spectrum object.
+      double m_b = spec->phys.get_Pole_Mass("b");
+      double m_t = spec->phys.get_Pole_Mass("t");
+      double m_W = spec->phys.get_Pole_Mass("W+");
+      double m_Z = spec->phys.get_Pole_Mass("Z0");
+      double totalwidth = 5.0; // In GeV -- this should be calculated or retrieved from a backend
+      double BF_err = 0.01;// Error on the branching fractions
+      double BF_bb = 0.37; // In reality, this should be obtained from a backend, using m_b, m_H, etc
+      double BF_tt = 0.10; // In reality, this should be obtained from a backend, using m_t, m_H, etc
+      double BF_WW = 0.35; // In reality, this should be obtained from a backend, using m_W, m_H, etc
+      double BF_WWZ = 0.18;// In reality, this should be obtained from a backend, using m_W, m_H, m_Z, etc
+      cout << "H,b,t,W,Z masses: " << m_H << " " << m_b << " " << m_t <<  " " << m_W << " " << m_Z << endl;
+      result.width_in_GeV = totalwidth;       // Alternatively, you could make a blank one with result = DecayTable::Entry(totalwidth).
+      result.set_BF(BF_bb, BF_err, "b", "bbar");      // Set the BFs for each final state.
+      result.set_BF(BF_tt, BF_err, "t", "tbar");
+      result.set_BF(BF_WW, BF_err, "W+", "W-");
+      result.set_BF(BF_WWZ, BF_err, "W+", "W-", "Z0");
+    }
+
+    /// MSSM decays: h0_1
+    void MSSM_h0_1_decays (DecayTable::Entry& result) 
+    {
+      using namespace Pipes::MSSM_h0_1_decays;
       BEreq::sdecay();
       result.width_in_GeV = BEreq::cb_widthhl_hdec->hlwdth;
       result.set_BF(BEreq::cb_widthhl_hdec->hlbrb, 0.0, "b", "bbar");
@@ -339,7 +311,7 @@ namespace Gambit
       cout << "BR(h0_1->~tau-_L ~e+_5): " << BEreq::cb_wisfer_hdec->bhlstau(1,1) << endl;
     }
 
-    /// MSSM decays: A0...
+    /// MSSM decays: A0
     void A_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::A_decays;
@@ -357,7 +329,7 @@ namespace Gambit
       result.set_BF(BEreq::cb_widtha_hdec->abrga, 0.0, "gamma", "gamma");              
       result.set_BF(BEreq::cb_widtha_hdec->abrzga, 0.0, "Z0", "gamma");              
       result.set_BF(BEreq::cb_widtha_hdec->abrz, 0.0, "Z0", "h0_1");
-      cout << "A total width: " << result.width_in_GeV << endl;
+      cout << "A0 total width: " << result.width_in_GeV << endl;
     }
 
     /// Collect all the DecayTable entries into an actual DecayTable 
@@ -366,7 +338,7 @@ namespace Gambit
       using namespace Pipes::all_decays;
       DecayTable decays = DecayTable();             // Start with a blank DecayTable.
 
-      //decays("h0_1") = *Dep::Higgs_decay_rates;     // Add the Higgs decays.
+      decays("h0_1") = *Dep::Higgs_decay_rates;     // Add the Higgs decays.
       decays("Z0") = *Dep::W_minus_decay_rates;     // Add the Z decays
       decays("W+") = *Dep::W_plus_decay_rates;      // Add the W decays for W+.
       decays("W-") = *Dep::W_minus_decay_rates;     // Add the W decays for W-
@@ -396,7 +368,7 @@ namespace Gambit
       decays("omega") = *Dep::omega_decay_rates;    // Add the omega meson decays.
       
       // MSSM-specific
-      decays("A0") = *Dep::MSSM_Higgs_decays;       // Add the CP-odd MSSM Higgs decays.
+      decays("A0") = *Dep::A0_decay_rates;               // Add the CP-odd MSSM Higgs decays.
 
       cout << "BF for tau+ -> pi+ nubar_tau: " << decays("tau+").BF("pi+", "nubar_tau") << endl;
       result = decays;

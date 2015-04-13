@@ -55,27 +55,23 @@ START_MODULE
     DEPENDENCY(SM_spectrum, Spectrum*) 
     #undef FUNCTION
 
-    #define FUNCTION MSSMHiggs_decays
-    START_FUNCTION(DecayTable::Entry)
-    DEPENDENCY(MSSM_spectrum, Spectrum*) 
-    ALLOW_MODELS(MSSM78atQ)
-    #undef FUNCTION
-
-  #undef CAPABILITY
-  
-  #define CAPABILITY MSSM_Higgs_decays
-  START_CAPABILITY
-
-    #define FUNCTION h0_1_decays
+    #define FUNCTION MSSM_h0_1_decays
     START_FUNCTION(DecayTable::Entry)
     BACKEND_REQ(sdecay, (),void, ())
     BACKEND_REQ(cb_widthhl_hdec, (), widthhl_hdec_type)
     BACKEND_REQ(cb_wisusy_hdec, (), wisusy_hdec_type)
     BACKEND_REQ(cb_wisfer_hdec, (), wisfer_hdec_type)
+    ALLOW_MODELS(MSSM78atQ)
     #undef FUNCTION
+
+  #undef CAPABILITY
+  
+  #define CAPABILITY A0_decay_rates
+  START_CAPABILITY
 
     #define FUNCTION A_decays
     START_FUNCTION(DecayTable::Entry)
+    ALLOW_MODELS(MSSM78atQ)
     BACKEND_REQ(sdecay, (), void, ())
     BACKEND_REQ(cb_widtha_hdec, (), widtha_hdec_type)
     #undef FUNCTION
@@ -87,7 +83,7 @@ START_MODULE
 
     #define FUNCTION all_decays
     START_FUNCTION(DecayTable)
-    //DEPENDENCY(Higgs_decay_rates, DecayTable::Entry) 
+    DEPENDENCY(Higgs_decay_rates, DecayTable::Entry) 
     DEPENDENCY(W_minus_decay_rates, DecayTable::Entry)
     DEPENDENCY(W_plus_decay_rates, DecayTable::Entry)
     DEPENDENCY(Z_decay_rates, DecayTable::Entry)
@@ -106,8 +102,7 @@ START_MODULE
     DEPENDENCY(rho_plus_decay_rates, DecayTable::Entry)
     DEPENDENCY(omega_decay_rates, DecayTable::Entry)
     // The following are only relevant for the MSSM, and should eventually be made model-conditional dependencies
-    DEPENDENCY(MSSM_Higgs_decays, DecayTable::Entry) 
-
+    DEPENDENCY(A0_decay_rates, DecayTable::Entry) 
     #undef FUNCTION
 
   #undef CAPABILITY
@@ -132,9 +127,6 @@ QUICK_FUNCTION(DecayBit, rho_0_decay_rates, NEW_CAPABILITY, rho_0_decays, DecayT
 QUICK_FUNCTION(DecayBit, rho_minus_decay_rates, NEW_CAPABILITY, rho_minus_decays, DecayTable::Entry)
 QUICK_FUNCTION(DecayBit, rho_plus_decay_rates, NEW_CAPABILITY, rho_plus_decays, DecayTable::Entry)
 QUICK_FUNCTION(DecayBit, omega_decay_rates, NEW_CAPABILITY, omega_decays, DecayTable::Entry)
-
-// MSSM decay functions
-// QUICK_FUNCTION(DecayBit, MSSM_Higgs_decays, NEW_CAPABILITY, A_Decays, DecayTable::Entry)
 
 #endif /* defined(__DecayBit_rollcall_hpp__) */
 
