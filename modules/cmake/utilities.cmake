@@ -41,6 +41,13 @@ set(BoldMagenta "${Esc}[1;35m")
 set(BoldCyan    "${Esc}[1;36m")
 set(BoldWhite   "${Esc}[1;37m")
 
+#Crash function for failed execute_processes
+function(check_result result command)
+  if(NOT ${result} STREQUAL "0")
+    message(FATAL_ERROR "${BoldRed}Cmake failed because a GAMBIT python script failed.  Culprit: ${command}${ColourReset}")
+  endif()
+endfunction()
+
 #Macro to retrieve GAMBIT modules
 macro(retrieve_bits bits root excludes quiet)
 
@@ -64,7 +71,7 @@ macro(retrieve_bits bits root excludes quiet)
       # Exclude or add this bit.
       if(${excluded})
         if(NOT ${quiet} STREQUAL "Quiet") 
-message("${BoldCyan} X Excluding ${child} from GAMBIT configuration.${ColourReset}")
+          message("${BoldCyan} X Excluding ${child} from GAMBIT configuration.${ColourReset}")
         endif()
       else()
         list(APPEND ${bits} ${child})

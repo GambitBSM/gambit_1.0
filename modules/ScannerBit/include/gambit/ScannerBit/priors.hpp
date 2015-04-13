@@ -57,6 +57,8 @@ namespace Gambit
                         BasePrior(const int param_size) : param_size(param_size) {}
                         
                         virtual void transform(const std::vector<double> &, std::unordered_map<std::string, double> &) const = 0;
+                        
+                        virtual double operator()(const std::vector<double> &) const {return 0.0;}
 
                         inline unsigned int size() const {return param_size;}
                         

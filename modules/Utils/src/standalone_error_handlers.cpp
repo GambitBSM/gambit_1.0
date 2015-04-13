@@ -104,6 +104,26 @@ namespace Gambit
     }
 
   }
+  
+  namespace IniParser
+  {
+
+    /// IniFile errors
+    error& inifile_error()
+    {
+      static error local("A problem has been encountered in the iniFile reader subsystem.","inifile_error", inifile);
+      return local;
+    }
+
+    /// IniFile warnings
+    warning& inifile_warning()
+    {
+      static warning local("A problem has been encountered in the iniFile reader subsystem.","inifile_warning", inifile);
+      return local;
+    }
+
+  }
+
     
 }
 

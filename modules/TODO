@@ -2,37 +2,102 @@ GAMBIT To-do List
 =================
 
 
-Core
+Core / Scanner / Models
 ----
 
-IniFile:
-* Add syntactic facility for easily declaring chained dependencies, where all entries in the chain have the same capability-type pair. (**Christoph; after G3**) 
-* Support alternative ini format(s)
+
+For first analyses:
+
+Printers:
+* MPI initialisation in ScannerBit if needed (Ben, Greg)
+* MPI-compatible printer system (Ben)
 
 Dependency Resolver:
-* Make dependency resolver errors more informative (**Christoph; major time pressure**)
-* Make it possible to resolve dependencies that match a functor's own capability-type pair (**Christoph**)
-* Write new entry to auxiliary section of the YAML file if dependency resolution fails, according to user input. (**Christoph**)
+* Make dependency resolver errors more informative (Christoph, ASAP)
+* Write suggested new entry to stdout for auxiliary section of the YAML file if dependency resolution fails. (Christoph)
+* Modify GetObslike to deal with vectors of doubles internally (Christoph, Ben)
 
-Backends:
-* Implement The BOSS (backend-on-a-stick script; classloader) (**Anders; ASAP**)
-* Resolve residual issues with passing strings to fortran backends (**after first release**)
-* Implement backending of Mathematica codes (**Ben to dabble with; no time pressure**)
-* Implement backending of Python codes (**Ben to dabble with; no time pressure**)
-
-Messaging:
-* Separate output/log for points with "BadPoint" errors
-* Write printer functions for all common functor types and print streams (**Hopefully happens a bit on its own as the two points above get dealt with**)
+Spectrum objects:
+* Make spectrum scale limit getter public (Ben)
 
 General:
-* Get the doxygen documentation into the Trac Wiki somehow, and updated automatically (**Antje & Pat**)
-* Make a release that also includes some version of all backends
+* Fix error in type equivalencies (Pat)
+* Implement isNaN (look at cmath) (Pat)
+* Implement NaN check for likelihood in scanner (Pat, Greg)
 
-Ongoing:
-* General review of legacy code -> cull obsolete stuff (e.g. SUFit legacy in ModelParameters)
-* Fix naming conventions for filenames (lowercase+underscore)
-* Convert comment headers in source/header files to doxygen (///) format; many are still in old-style (//) format
-* Convert comments to Doxygen
+DecayBit:
+* Make decay table type from SLHAea (Pat)
+* SUSYHIT SLHA replacement interface (Pat)
+* SUSYHIT observable getters (Csaba)
+
+EWPOBit:
+* SUSY-POPE interface (Peter)
+* Testing of FeynHiggs interface (Peter)
+
+ScannerBit:
+* Connect Diver (Pat)
+
+Repo/cmake:
+* Split repo into public (code) bit and private extras, Collab doc etc, using git filter-branch (Pat)
+* Implement proper scanner ditching (Pat)
+
+
+For first release:
+
+Messaging:
+* Separate output/log for points with "BadPoint" errors (Ben)
+* Write printer functions for all common functor types and print streams (Ben)
+
+General:
+* Add credit/citation system (Pat)
+* Fill out capabilities database (all)
+* Fill out models database (all)
+* Make an alternative release setup that also includes some version of all backends (Antje, Pat)
+* Fix naming conventions for filenames (lowercase+underscore) (Pat)
+* Convert comment headers in source/header files to doxygen (///) format; many are still in old-style (//) format (all)
+* Convert comments to Doxygen (all)
+* Tinkering with rollcall macros to improve compile time with -O2 (Pat)
+* Bool pipe indicating if conditional deps / bereqs have been activated or not (Pat)
+
+ScannerBit:
+* Implement parallel postprocessor as a scanner (Greg)
+* Connect Great (Antje)
+* Allow partial linking of scanner external libraries, so that multiple versions of the same external scanner can be compiled into GAMBIT at the same time (Greg)
+
+Jenkins:
+* multiple test scripts (Andy, Antje, Pat)
+* combinatorics: OSes, compilers, boost (Andy, Antje, Pat)
+
+SpecBit:
+* Implement SoftSUSY wrapper (Peter)
+
+Release:
+* forking of git repo for each major revision
+* tarball release for module standalone release, git + tarball release for main gambit release
+
+cmake:
+* switching off openmp (Antje, Pat)
+
+
+After first release:
+
+IniFile:
+* Add syntactic facility for easily declaring chained dependencies, where all entries in the chain have the same capability-type pair. (Christoph) 
+* Support alternative simplified ini format (Pat / Christoph)
+
+Dependency Resolver:
+* Make it possible to resolve dependencies that match a functor's own capability-type pair (Christoph)
+
+Backends:
+* Implement template BOSS (Anders)
+* Resolve residual issues with passing strings to fortran backends (Lars / Pat)
+* Implement backending of Mathematica codes (Ben to dabble with; no time pressure)
+* Implement backending of Python codes (Ben to dabble with; no time pressure)
+
+General:
+* Get the doxygen documentation into the Trac Wiki somehow, and updated automatically (Antje & Pat)
+
+
 
 Done:
 * No more GET_DEP -> change all examples to safe pointers (*Dep::observable)

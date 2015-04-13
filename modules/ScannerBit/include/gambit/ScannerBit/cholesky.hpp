@@ -19,7 +19,7 @@
 
 #include <vector>
 #include <cmath>
-
+#include <iostream>
 namespace Gambit
 {
         // Cholesky decomposition class
@@ -87,12 +87,13 @@ namespace Gambit
                 {
                         int i, j, num = y.size();
                         double sum;
-                        std::vector<double> x;
+                        std::vector<double> x(num);
                         
                         for (i = 0; i < num; i++)
                         {
                                 for (sum = (y[i]-y0[i]), j=0; j < i; j++)
                                         sum -= el[i][j]*x[j];
+                                
                                 x[i]=sum/el[i][i];
                         }
                         
@@ -101,6 +102,15 @@ namespace Gambit
                                 sum += x[i]*x[i];
                         
                         return sum;
+                }
+                
+                double DetSqrt()
+                {
+                        double temp = 1.0;
+                        int num = el.size();
+                        for (int i = 0; i < num; i++)
+                                temp *= el[i][i];
+                        return temp;
                 }
         };
 }
