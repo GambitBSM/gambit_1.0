@@ -66,7 +66,21 @@ START_MODULE
 
   #undef CAPABILITY
   
-  #define CAPABILITY A0_decay_rates
+  #define CAPABILITY h0_2_decay_rates
+  START_CAPABILITY
+
+    #define FUNCTION h0_2_decays
+    START_FUNCTION(DecayTable::Entry)
+    BACKEND_REQ(sdecay, (),void, ())
+    BACKEND_REQ(cb_widthhh_hdec, (), widthhh_hdec_type)
+    BACKEND_REQ(cb_wisusy_hdec, (), wisusy_hdec_type)
+    BACKEND_REQ(cb_wisfer_hdec, (), wisfer_hdec_type)
+    ALLOW_MODELS(MSSM78atQ)
+    #undef FUNCTION
+
+  #undef CAPABILITY
+
+  #define CAPABILITY A_decay_rates
   START_CAPABILITY
 
     #define FUNCTION A_decays
@@ -102,7 +116,8 @@ START_MODULE
     DEPENDENCY(rho_plus_decay_rates, DecayTable::Entry)
     DEPENDENCY(omega_decay_rates, DecayTable::Entry)
     // The following are only relevant for the MSSM, and should eventually be made model-conditional dependencies
-    DEPENDENCY(A0_decay_rates, DecayTable::Entry) 
+    DEPENDENCY(h0_2_decay_rates, DecayTable::Entry) 
+    DEPENDENCY(A_decay_rates, DecayTable::Entry) 
     #undef FUNCTION
 
   #undef CAPABILITY
@@ -127,6 +142,14 @@ QUICK_FUNCTION(DecayBit, rho_0_decay_rates, NEW_CAPABILITY, rho_0_decays, DecayT
 QUICK_FUNCTION(DecayBit, rho_minus_decay_rates, NEW_CAPABILITY, rho_minus_decays, DecayTable::Entry)
 QUICK_FUNCTION(DecayBit, rho_plus_decay_rates, NEW_CAPABILITY, rho_plus_decays, DecayTable::Entry)
 QUICK_FUNCTION(DecayBit, omega_decay_rates, NEW_CAPABILITY, omega_decays, DecayTable::Entry)
+
+// MSSM decay rate functions
+// QUICK_FUNCTION(DecayBit, h0_2_decay_rates, NEW_CAPABILITY, h0_2_decays, DecayTable::Entry)
+// QUICK_FUNCTION(DecayBit, A_decay_rates, NEW_CAPABILITY, A_decays, DecayTable::Entry)
+// gives the error:
+//  /home/csaba/Codes/GAMBIT/modules/DecayBit/include/gambit/DecayBit/DecayBit_rollcall.hpp: At global scope:
+//  /home/csaba/Codes/GAMBIT/modules/Utils/include/gambit/Utils/module_macros_incore.hpp:613:14: error: redefinition of 
+//  ‘Gambit::module_functor<Gambit::DecayTable::Entry> Gambit::DecayBit::Functown::h0_2_decays’
 
 #endif /* defined(__DecayBit_rollcall_hpp__) */
 
