@@ -60,6 +60,7 @@ namespace Gambit
     /// Initialise QedQcd object from SMInputs data
     void setup_QedQcd(QedQcd& oneset, const SMInputs& sminputs)
     {
+      // Set pole masses (to be treated specially)
       oneset.setPoleMt(sminputs.mT);
       //oneset.setPoleMb(...);
       oneset.setPoleMtau(sminputs.mTau);
@@ -72,7 +73,11 @@ namespace Gambit
       /// set QED and QCD structure constants
       oneset.setAlpha(ALPHA, 1./sminputs.alphainv);
       oneset.setAlpha(ALPHAS, sminputs.alphaS);
-      ///TODO: Not sure how to set other stuff.
+      /// NOTE! These assume the input electron and muon pole masses are "close
+      /// enough" to MSbar masses at MZ. The object does the same with its 
+      /// default values so I guess it is ok.
+      oneset.setMass(mElectron, sminputs.mE);
+      oneset.setMass(mMuon,     sminputs.mMu);
     }
 
     /// Compute an MSSM spectrum using flexiblesusy
@@ -190,7 +195,9 @@ namespace Gambit
       static MSSMSpec<MI> mssmspec(model_interface);
 
       // Create a second Spectrum object to wrap the qedqcd object used to initialise the spectrum generator
-      static QedQcdWrapper qedqcdspec(oneset);
+      // Attach the sminputs object as well, so that SM pole masses can be passed on (these aren't easily
+      // extracted from the QedQcd object, so use the values that we put into it.)
+      static QedQcdWrapper qedqcdspec(oneset,sminputs);
 
       if( runOptions.getValue<bool>("invalid_point_fatal") and problems.have_problem() )
       {

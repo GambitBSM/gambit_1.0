@@ -84,17 +84,17 @@ namespace Gambit
           /// Construct a set of particles from a variadic list of full names or short names and indices 
           /// @{
           /// Base function version
-          static void construct_key(std::set< std::pair<int,int> >&) {}
+          static void construct_key(std::multiset< std::pair<int,int> >&) {}
           /// Templated version for long names
           template <typename... Args>
-          static void construct_key(std::set< std::pair<int,int> >& key, str p1, Args... args)
+          static void construct_key(std::multiset< std::pair<int,int> >& key, str p1, Args... args)
           {
             construct_key(key, args...);
             key.insert(Models::ParticleDB().pdg_pair(p1));
           }
           /// Templated version for short names and indices
           template <typename... Args>
-          static void construct_key(std::set< std::pair<int,int> >& key, str p1, int i1, Args... args)
+          static void construct_key(std::multiset< std::pair<int,int> >& key, str p1, int i1, Args... args)
           {
             construct_key(key, args...);
             key.insert(Models::ParticleDB().pdg_pair(p1, i1));
@@ -116,7 +116,7 @@ namespace Gambit
           void set_BF(double BF, double error, std::pair<int,int> p1, Args... args)
           {
             std::pair<int,int> particles[] = {p1, args...};
-            std::set< std::pair<int,int> > key(particles, particles+sizeof...(Args));
+            std::multiset< std::pair<int,int> > key(particles, particles+sizeof...(Args));
             for (auto final_state = key.begin(); final_state = key.end(); ++final_state)
             {
               if (not Models::ParticleDB().has_particle(*final_state))
@@ -133,7 +133,7 @@ namespace Gambit
           template <typename... Args>
           void set_BF(double BF, double error, str p1, Args... args)
           {
-            std::set< std::pair<int,int> > key;
+            std::multiset< std::pair<int,int> > key;
             construct_key(key, p1, args...);
             channels[key] = std::pair<double, double>(BF, error);
           }
@@ -147,17 +147,17 @@ namespace Gambit
           double BF(std::pair<int,int> p1, Args... args) const
           {
             std::pair<int,int> particles[] = {p1, args...};
-            std::set< std::pair<int,int> > key(particles, particles+sizeof...(Args));
+            std::multiset< std::pair<int,int> > key(particles, particles+sizeof...(Args));
             if (channels.find(key) == channels.end())
             {
               model_error().raise(LOCAL_INFO,"No branching fraction exists for the requested final states.");
             }
-            return channels.at(key);
+            return channels.at(key).first;
           }
           template <typename... Args>
           double BF(str p1, Args... args) const
           {
-            std::set< std::pair<int,int> > key;
+            std::multiset< std::pair<int,int> > key;
             construct_key(key, p1, args...);
             if (channels.find(key) == channels.end())
             {
@@ -175,7 +175,7 @@ namespace Gambit
           double BF_error(std::pair<int,int> p1, Args... args) const
           {
             std::pair<int,int> particles[] = {p1, args...};
-            std::set< std::pair<int,int> > key(particles, particles+sizeof...(Args));
+            std::multiset< std::pair<int,int> > key(particles, particles+sizeof...(Args));
             if (channels.find(key) == channels.end())
             {
               model_error().raise(LOCAL_INFO,"No branching fraction exists for the requested final states.");
@@ -185,7 +185,7 @@ namespace Gambit
           template <typename... Args>
           double BF_error(str p1, Args... args) const
           {
-            std::set< std::pair<int,int> > key;
+            std::multiset< std::pair<int,int> > key;
             construct_key(key, p1, args...);
             if (channels.find(key) == channels.end())
             {
@@ -200,10 +200,10 @@ namespace Gambit
           /// Supports arbitrarily many final state particles.
           /// @{
           template <typename... Args>
-          double BF_with_error(std::pair<int,int> p1, Args... args) const
+          std::pair<double, double> BF_with_error(std::pair<int,int> p1, Args... args) const
           {
             std::pair<int,int> particles[] = {p1, args...};
-            std::set< std::pair<int,int> > key(particles, particles+sizeof...(Args));
+            std::multiset< std::pair<int,int> > key(particles, particles+sizeof...(Args));
             if (channels.find(key) == channels.end())
             {
               model_error().raise(LOCAL_INFO,"No branching fraction exists for the requested final states.");
@@ -211,9 +211,9 @@ namespace Gambit
             return channels.at(key);
           }
           template <typename... Args>
-          double BF_with_error(str p1, Args... args) const
+          std::pair<double, double> BF_with_error(str p1, Args... args) const
           {
-            std::set< std::pair<int,int> > key;
+            std::multiset< std::pair<int,int> > key;
             construct_key(key, p1, args...);
             if (channels.find(key) == channels.end())
             {
@@ -246,7 +246,7 @@ namespace Gambit
 
           /// The actual underlying map of channels to their BFs.
           /// Just iterate over this directly if you need to iterate over all decays of this particle.
-          std::map< std::set< std::pair<int,int> >, std::pair<double, double> > channels;
+          std::map< std::multiset< std::pair<int,int> >, std::pair<double, double> > channels;
 
       };
 

@@ -151,18 +151,23 @@ void spec_print(Gambit::Spectrum& spec){
    PRINTOUT << "me2(3,3) = " 
           << spec.runningpars.get_mass2_parameter("mq2",3,3) << std::endl;
 
+   /// TODO: Ben: Used to be this, but "Mu" is in a no-index map so it's an error
+   /// Peter, was this this way for a reason?
+   //PRINTOUT << "Mu = " 
+   //       << spec.runningpars.get_mass_parameter("Mu",3,3) << std::endl;
    PRINTOUT << "Mu = " 
-          << spec.runningpars.get_mass_parameter("Mu",3,3) << std::endl;
+          << spec.runningpars.get_mass_parameter("Mu") << std::endl;
 
-   //what mot to do here
-   PRINTOUT << "mistake mq2(1) =  " 
-          <<  spec.runningpars.get_mass2_parameter("mq2",1) << std::endl;
-   PRINTOUT << "mistake 2 mq2(1) =  " 
-          <<  spec.runningpars.get_mass2_parameter("mqL2",1,1) << std::endl;
-    PRINTOUT << "mistake 3 mq2(1) =  " 
-          <<  spec.runningpars.get_mass_parameter("mq2",1) << std::endl;
+   //what not to do here...
+   // Ben: these now throw errors, so cannot continue test if we do them.
+   //PRINTOUT << "mistake mq2(1) =  " 
+   //       <<  spec.runningpars.get_mass2_parameter("mq2",1) << std::endl;
+   //PRINTOUT << "mistake 2 mq2(1) =  " 
+   //       <<  spec.runningpars.get_mass2_parameter("mqL2",1,1) << std::endl;
+   //PRINTOUT << "mistake 3 mq2(1) =  " 
+   //       <<  spec.runningpars.get_mass_parameter("mq2",1) << std::endl;
 
-   double mgluino = spec.phys.get_Pole_Mass("MGluino");
+   double mgluino = spec.phys.get_Pole_Mass("~g");
    PRINTOUT << "mgluino = " << mgluino<< std::endl;
 }
 
@@ -170,37 +175,37 @@ template <class M>
 void mssm_print(Gambit::MSSMSpec<M> & mssm)
 {
    
-   PRINTOUT << "mssm.mssm_drbar_pars.GetScale() =" 
-          << mssm.mssm_drbar_pars.GetScale() << std::endl;
+   PRINTOUT << "mssm.runningpars.GetScale() =" 
+          << mssm.runningpars.GetScale() << std::endl;
    PRINTOUT << "map mHd2 "  
-          << mssm.mssm_drbar_pars.get_mass2_parameter("mHd2") <<std::endl;
+          << mssm.runningpars.get_mass2_parameter("mHd2") <<std::endl;
    PRINTOUT << "map mHu2 "  
-          << mssm.mssm_drbar_pars.get_mass2_parameter("mHu2") <<std::endl;
+          << mssm.runningpars.get_mass2_parameter("mHu2") <<std::endl;
    PRINTOUT << "map BMu "  
-          << mssm.mssm_drbar_pars.get_mass2_parameter("BMu") <<std::endl; 
+          << mssm.runningpars.get_mass2_parameter("BMu") <<std::endl; 
    
    PRINTOUT << "mq2(1,1) = " 
-          << mssm.mssm_drbar_pars.get_mass2_parameter("mq2",1,1) 
+          << mssm.runningpars.get_mass2_parameter("mq2",1,1) 
           << std::endl;
      PRINTOUT << "mu2(1,2) = " 
-          <<  mssm.mssm_drbar_pars.get_mass2_parameter("mq2",1,2) << std::endl;
+          <<  mssm.runningpars.get_mass2_parameter("mq2",1,2) << std::endl;
    
    PRINTOUT << "me2(3,3) = " 
-          <<   mssm.mssm_drbar_pars.get_mass2_parameter("mq2",3,3) << std::endl;
+          <<   mssm.runningpars.get_mass2_parameter("mq2",3,3) << std::endl;
 
    PRINTOUT << "Mu = " 
-          << mssm.mssm_drbar_pars.get_mass_parameter("Mu",3,3) << std::endl;
+          << mssm.runningpars.get_mass_parameter("Mu",3,3) << std::endl;
 
    //what not to do
    PRINTOUT << "mistake  mq2(1) = " 
-          << mssm.mssm_drbar_pars.get_mass2_parameter("mq2",1) 
+          << mssm.runningpars.get_mass2_parameter("mq2",1) 
           << std::endl;
    PRINTOUT << "mistake 2 mq2(1) =  " 
-          <<  mssm.mssm_drbar_pars.get_mass2_parameter("mqL2",1,1) << std::endl;
+          <<  mssm.runningpars.get_mass2_parameter("mqL2",1,1) << std::endl;
     PRINTOUT << "mistake 3 mq2(1) =  " 
-          <<  mssm.mssm_drbar_pars.get_mass_parameter("mq2",1) << std::endl;
+          <<  mssm.runningpars.get_mass_parameter("mq2",1) << std::endl;
    
-    double mgluino = mssm.mssm_ph.get_Pole_Mass("MGluino");
+    double mgluino = mssm.phys.get_Pole_Mass("MGluino");
    PRINTOUT << "mgluino = " << mgluino<< std::endl;
    
 }
@@ -229,16 +234,16 @@ template <class M>
 void mssm_manipulate(Gambit::MSSMSpec<M> & mssm) 
 {
    PRINTOUT << "inside mssm_manipulate" <<std::endl;
-   double lowscale = mssm.mssm_drbar_pars.GetScale();
+   double lowscale = mssm.runningpars.GetScale();
    //setting to same scale to test
-   mssm.mssm_drbar_pars.SetScale(lowscale);
+   mssm.runningpars.SetScale(lowscale);
    double highscale = 1e+15;
    PRINTOUT << "Mssm start at lowscale = " << lowscale << std::endl;
    mssm_print(mssm);
-   mssm.mssm_drbar_pars.RunToScale(highscale);
+   mssm.runningpars.RunToScale(highscale);
    PRINTOUT << "after run to highscale" << std::endl;
    mssm_print(mssm);
-   mssm.mssm_drbar_pars.RunToScale(lowscale);
+   mssm.runningpars.RunToScale(lowscale);
    PRINTOUT << "after run scale back top low scale" <<  std::endl;
    mssm_print(mssm);
    
