@@ -21,12 +21,15 @@
 #include "gambit/Models/models/MSSM78atMGUT.hpp" // Must include models which are targets of translation functions
 
 #define MODEL CMSSM
+#define PARENT MSSM78atMGUT
   START_MODEL
   DEFINEPARS(M0,M12,A0,tanb,signmu)
 
-  INTERPRET_AS_X__FUNCTION(MSSM78atMGUT, CMSSM_to_MSSM78atMGUT)
-  // Translation functions defined in CMSSM.cpp
+  //INTERPRET_AS_X__FUNCTION(MSSM78atMGUT, CMSSM_to_MSSM78atMGUT)
+  INTERPRET_AS_PARENT__FUNCTION(CMSSM_to_MSSM78atMGUT)
 
+  // Translation functions defined in CMSSM.cpp
+#undef PARENT
 #undef MODEL
 
 

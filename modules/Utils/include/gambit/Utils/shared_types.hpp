@@ -33,8 +33,7 @@
 #define __shared_types_hpp__
 
 #include "gambit/Utils/numerical_constants.hpp" // Centralised constants header
-#include "gambit/Utils/funktions.hpp"           // Generalized functions
-#include "gambit/Utils/Spectrum.hpp"            // Spectrum object (carries particle spectrum info)
+#include "gambit/Utils/SMInputs.hpp"          // Struct carrying SMINPUTS block (SLHA2) 
 #include "gambit/Utils/SMplusUV.hpp"          // Spectrum object plus Standard Model info package
 #include "gambit/Utils/decay_table.hpp"         // Decay table class (carries particle decay info)
 #include "gambit/Models/model_parameters.hpp"   // Definitions required to understand model parameter objects

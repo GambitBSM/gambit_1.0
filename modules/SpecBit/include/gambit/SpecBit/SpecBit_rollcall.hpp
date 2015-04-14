@@ -203,7 +203,7 @@ START_MODULE
 
      #define FUNCTION exampleRead
      START_FUNCTION(bool)
-     DEPENDENCY(MSSM_spectrum, const Spectrum*)
+     DEPENDENCY(MSSM_spectrum, const SMplusUV*)
      #undef FUNCTION
 
  #undef CAPABILITY

@@ -11,11 +11,10 @@ For first analyses:
 Printers:
 * MPI initialisation in ScannerBit if needed (Ben, Greg)
 * MPI-compatible printer system (Ben)
+* Correlation of scanner printer system and GAMBIT printer system (Ben)
 
 Dependency Resolver:
-* Make dependency resolver errors more informative (Christoph, ASAP)
-* Write suggested new entry to stdout for auxiliary section of the YAML file if dependency resolution fails. (Christoph)
-* Modify GetObslike to deal with vectors of doubles internally (Christoph, Ben)
+* Make dependency resolver errors more informative (Christoph; partially done but needs more work)
 
 Spectrum objects:
 * Make spectrum scale limit getter public (Ben)
@@ -24,6 +23,8 @@ General:
 * Fix error in type equivalencies (Pat)
 * Implement isNaN (look at cmath) (Pat)
 * Implement NaN check for likelihood in scanner (Pat, Greg)
+* Split Utils dir into codes needed for ScannerBit standalone and those not needed (Pat)
+* Deal safely with errors arising from non-double results with purpose: Likelihood in yaml file (Pat)
 
 DecayBit:
 * Make decay table type from SLHAea (Pat)
@@ -34,11 +35,20 @@ EWPOBit:
 * SUSY-POPE interface (Peter)
 * Testing of FeynHiggs interface (Peter)
 
+BOSS:
+* Fix possible copy-constructor memory leak (Anders)
+* Fix erroneous header include bug (Anders)
+* Wrap global backend functions requiring BOSSed classes (Anders)
+
 ScannerBit:
 * Connect Diver (Pat)
+* Plugins need the option to link standard GAMBIT/ScannerBit libraries: MPI, GSL, etc (Greg)
+* Get rid of 'optional options:' entries in yaml options object.
 
 Repo/cmake:
 * Split repo into public (code) bit and private extras, Collab doc etc, using git filter-branch (Pat)
+* Run configure for pythia backend (Antje)
+* Add check and check-ignore switch for graphviz (Antje)
 * Implement proper scanner ditching (Pat)
 
 
@@ -63,6 +73,14 @@ ScannerBit:
 * Implement parallel postprocessor as a scanner (Greg)
 * Connect Great (Antje)
 * Allow partial linking of scanner external libraries, so that multiple versions of the same external scanner can be compiled into GAMBIT at the same time (Greg)
+* Test runs for ScannerBit paper
+
+BOSS:
+* Wrap member variables of type pointer-to-BOSSed (Anders)
+* Deal with function pointers (Anders)
+* Propagate constness properly (Anders)
+* Bow out more gracefully when encountering templates, etc (Anders)
+* Polishing (Anders)
 
 Jenkins:
 * multiple test scripts (Andy, Antje, Pat)
@@ -82,14 +100,12 @@ cmake:
 After first release:
 
 IniFile:
-* Add syntactic facility for easily declaring chained dependencies, where all entries in the chain have the same capability-type pair. (Christoph) 
 * Support alternative simplified ini format (Pat / Christoph)
 
-Dependency Resolver:
-* Make it possible to resolve dependencies that match a functor's own capability-type pair (Christoph)
+BOSS:
+* implement template BOSS (Anders)
 
 Backends:
-* Implement template BOSS (Anders)
 * Resolve residual issues with passing strings to fortran backends (Lars / Pat)
 * Implement backending of Mathematica codes (Ben to dabble with; no time pressure)
 * Implement backending of Python codes (Ben to dabble with; no time pressure)
@@ -99,7 +115,7 @@ General:
 
 
 
-Done:
+Core done:
 * No more GET_DEP -> change all examples to safe pointers (*Dep::observable)
 * Separate gambit_example.cpps
 * Fix naming convention GAMBIT->Gambit
@@ -140,14 +156,13 @@ Done:
 * Make ModelInUse flags
 * Make general-issue random number generator
 * Allow dep resolver to understand typedefs
+* Write suggested new entry to stdout for auxiliary section of the YAML file if dependency resolution fails.
+* Modify GetObslike to deal with vectors of doubles internally
+* Add syntactic facility for easily declaring chained dependencies, where all entries in the chain have the same capability-type pair.
+* Make it possible to resolve dependencies that match a functor's own capability-type pair
 
-Models
-------
-
-Ongoing:
+Models done:
 * Remove automatic declaration of "little guys"
-
-Done:
 * Reunify model macros with module macros as much as possible (dependency macro in particular)
 * Create "little guys" (parameter mini-functors)
 * Create boost graph to display model hierarchy
@@ -207,22 +222,15 @@ Scanner
 -------
 
 Ongoing:
-* Interface to Antje's MCMC code
-* Interface to differential evolution
-* Interface to k-walk
-* Interface to genetic algorithms
-* Organise dedicated scanner section in yaml .ini file structure
+* Interface to GREAT (Antje's MCMC code)
+* Interface to differential evolution (Pat)
+* Interface to k-walk (Greg)
+* Interface to genetic algorithms (Abram)
 * Organise grouping of parameters into fast and slow subsets (useful for some scanners), possibly via the ini file.
-
-* remove output capture
-* update printer system interface 
-* tidy up plugin interface
 * add documentation
   - quick start for each plugin
   - internal documentation
 * plugin descriptions in plugin files
-* switch to using Random::draw()
-* interface external scanner lib depedencies properly with cmake
 
 Done:
 * Interface to MultiNest
@@ -231,6 +239,12 @@ Done:
 * switch to using gambit error system
 * create plugin registry
 * tidy up scanner section in yaml file 
+* remove output capture
+* update printer system interface 
+* tidy up plugin interface
+* switch to using Random::draw()
+* interface external scanner lib depedencies properly with cmake
+* Organise dedicated scanner section in yaml .ini file structure
 
 
 DarkBit
