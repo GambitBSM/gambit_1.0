@@ -51,9 +51,9 @@
 #define MODULE DarkBit
 START_MODULE
 
-  #define CAPABILITY MSSMspectrum
+  #define CAPABILITY MSSM_spectrum
   START_CAPABILITY
-    #define FUNCTION getMSSMspectrum
+    #define FUNCTION get_MSSM_spectrum_from_file
       START_FUNCTION(eaSLHA)
       ALLOW_MODELS(MSSM25atQ)
     #undef FUNCTION
@@ -72,7 +72,7 @@ START_MODULE
     // (probably always true)
     #define FUNCTION DarkSUSY_PointInit_MSSM
       START_FUNCTION(bool)
-      DEPENDENCY(MSSMspectrum, eaSLHA) 
+      DEPENDENCY(MSSM_spectrum, eaSLHA) 
       ALLOW_MODELS(CMSSM_demo,CMSSM,MSSM25atQ)
       // CMSSM
       BACKEND_REQ(dsgive_model_isasugra, (), void, (double&,double&,double&,double&,double&))
@@ -349,7 +349,7 @@ START_MODULE
       START_FUNCTION(Gambit::DarkBit::TH_ProcessCatalog)
       //ALLOW_MODELS(CMSSM_demo, MSSM25atQ)
       DEPENDENCY(DarkSUSY_PointInit, bool)
-      DEPENDENCY(MSSMspectrum, eaSLHA) 
+      DEPENDENCY(MSSM_spectrum, eaSLHA) 
       DEPENDENCY(DarkMatter_ID, DarkMatter_ID_type)
       BACKEND_REQ(mspctm, (), DS_MSPCTM)
       BACKEND_REQ(dssigmav, (), double, (int&))
@@ -447,8 +447,9 @@ START_MODULE
     #undef FUNCTION
     #define FUNCTION DD_couplings_SingletDM
       START_FUNCTION(Gambit::DarkBit::DD_couplings)
-      ALLOW_MODELS(SingletDM)
-      ALLOW_MODELS(nuclear_params_fnq)
+      MODEL_GROUP(group1, (nuclear_params_fnq))
+      MODEL_GROUP(group2, (SingletDM))
+      ALLOW_MODEL_COMBINATION(group1, group2)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -1100,7 +1101,7 @@ START_MODULE
     #undef FUNCTION
     #define FUNCTION DarkMatter_ID_MSSM25atQ
     START_FUNCTION(DarkMatter_ID_type)
-    ALLOW_MODELS(MSSM25atQ)
+    ALLOW_MODELS(MSSM25atQ, CMSSM_demo)
     #undef FUNCTION
   #undef CAPABILITY
 
