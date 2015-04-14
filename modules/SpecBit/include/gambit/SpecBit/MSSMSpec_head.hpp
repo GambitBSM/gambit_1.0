@@ -60,8 +60,8 @@ namespace Gambit {
    template <class MI>
    class MSSMSpec : public Spec<MSSMSpec<MI>,MSSMSpecTraits<MI>>
    {
-      friend RunparDer<MSSMSpec<MI>,MSSMSpecTraits<MI>>;
-      friend PhysDer   <MSSMSpec<MI>,MSSMSpecTraits<MI>>;
+      friend class RunparDer<MSSMSpec<MI>,MSSMSpecTraits<MI>>;
+      friend class PhysDer  <MSSMSpec<MI>,MSSMSpecTraits<MI>>;
      
       private:
          typedef MapTypes<MSSMSpecTraits<MI>> MT; 

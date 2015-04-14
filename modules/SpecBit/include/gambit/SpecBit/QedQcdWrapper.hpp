@@ -45,8 +45,8 @@ namespace Gambit {
     
    class QedQcdWrapper : public Spec<QedQcdWrapper,QedQcdWrapperTraits> 
    {
-      friend RunparDer<QedQcdWrapper,QedQcdWrapperTraits>; /*P*/
-      friend PhysDer  <QedQcdWrapper,QedQcdWrapperTraits>; /*P*/
+      friend class RunparDer<QedQcdWrapper,QedQcdWrapperTraits>; /*P*/
+      friend class PhysDer  <QedQcdWrapper,QedQcdWrapperTraits>; /*P*/
 
       private:
          typedef MapTypes<QedQcdWrapperTraits> MT; 
