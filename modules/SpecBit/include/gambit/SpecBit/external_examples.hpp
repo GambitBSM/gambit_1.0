@@ -167,7 +167,7 @@ void spec_print(Gambit::Spectrum& spec){
    //PRINTOUT << "mistake 3 mq2(1) =  " 
    //       <<  spec.runningpars.get_mass_parameter("mq2",1) << std::endl;
 
-   double mgluino = spec.phys.get_Pole_Mass("MGluino");
+   double mgluino = spec.phys.get_Pole_Mass("~g");
    PRINTOUT << "mgluino = " << mgluino<< std::endl;
 }
 

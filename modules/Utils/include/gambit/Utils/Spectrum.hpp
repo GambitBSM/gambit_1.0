@@ -768,11 +768,12 @@ double getter_0indices(/* function maps */
    }
    else
    {
-       if( doublecheck and PDB.has_short_name(name) ){
+      if( doublecheck and PDB.has_short_name(name) ){
          // No long name exists matching "name" in the function pointer maps
          // Check if a corresponding short name plus index pair exists in 1index getter maps
          // (fptr should point to the appropriate 1 index, class member of O, getter)
          std::pair<str, int> p = PDB.short_name_pair(name);
+         std::cout << "running doublecheck: re-calling function with PDG short name pair: "<<name<<" --> "<<p.first<<", "<<p.second<<std::endl;
          result = (fakethis->*fptr)(p.first, p.second, false);
       } else {
          std::ostringstream errmsg;
@@ -806,6 +807,7 @@ double getter_1index(/* function maps */
          // No short name exists for short name plus index pair.
          // Check if long name exists in 0index getter maps
          // (fptr should point to the appropriate 0 index, class member of O, getter)           
+         std::cout << "running doublecheck: re-calling function with PDG long name: "<<name<<", "<<i<<" --> "<<PDB.long_name(name,i)<<std::endl;
          result = (fakethis->*fptr)(PDB.long_name(name,i), false);
       } else {
          std::ostringstream errmsg;
@@ -1068,12 +1070,6 @@ double  RunparDer<D,DT>::get_mass_eigenstate(const std::string& mass, int i, int
 template <class D, class DT>
 double PhysDer<D,DT>::get_Pole_Mass(const std::string& mass, bool doublecheck) const
 {
-   // Check whether string can be converted to a short name plus index by PDB
-   // If so, we need to use those instead to retrieve the correct pole mass
-   if( PDB.has_short_name(mass) )
-   {
-      return get_Pole_Mass( PDB.short_name_pair(mass) );  
-   }
    fp1 f1 = &PhysDer<D,DT>::get_Pole_Mass;
    return getter_0indices<DT>(get_PoleMass_map(), 
                               get_PoleMass_map_extraM(), 

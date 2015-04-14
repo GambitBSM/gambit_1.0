@@ -109,6 +109,9 @@ namespace Gambit {
    double get_mElectron(const softsusy::QedQcd& model) { return model.displayMass(softsusy::mElectron); }
    double get_mMuon    (const softsusy::QedQcd& model) { return model.displayMass(softsusy::mMuon); }
    double get_mTau     (const softsusy::QedQcd& model) { return model.displayMass(softsusy::mTau); }
+   // Might as well add photon and gluon for good measure, someone might need them for a loop or something.
+   double get_mPhoton  (const softsusy::QedQcd& model) { return 0.; }
+   double get_mGluon   (const softsusy::QedQcd& model) { return 0.; }
 
    /// Filler for mass_map
    MT::fmap_extraM QedQcdWrapper::fill_mass_map_extraM()
@@ -124,6 +127,9 @@ namespace Gambit {
       addtomap(("e-",   "e+",   "e",   "e-_1", "e+_1", "e_1"), &get_mElectron);
       addtomap(("mu-",  "mu+",  "mu",  "e-_2", "e+_2", "e_2"), &get_mMuon);
       addtomap(("tau-", "tau+", "tau", "e-_3", "e+_3", "e_3"), &get_mTau);
+
+      tmp_map["gamma"] = &get_mPhoton;
+      tmp_map["g"]     = &get_mGluon;
 
       return tmp_map;
    }
@@ -190,6 +196,12 @@ namespace Gambit {
    //  Note: model object not needed for these, but required by function signature
    double get_Pole_mElectron(const SMInputs& inputs) { return inputs.mE; }
    double get_Pole_mMuon    (const SMInputs& inputs) { return inputs.mMu; }
+   double get_Pole_mNu1    (const SMInputs& inputs) { return inputs.mNu1; }
+   double get_Pole_mNu2    (const SMInputs& inputs) { return inputs.mNu2; }
+   double get_Pole_mNu3    (const SMInputs& inputs) { return inputs.mNu3; }
+   // for good measure.
+   double get_Pole_mPhoton  (const SMInputs& inputs) { return 0.; }
+   double get_Pole_mGluon   (const SMInputs& inputs) { return 0.; }
 
    /// Filler for Pole_mass_map 
    /// Note the I for "Inputs"; changes the argument of the function pointers.
@@ -203,6 +215,12 @@ namespace Gambit {
 
       addtomap(("e-",   "e+",   "e",   "e-_1", "e+_1", "e_1"), &get_Pole_mElectron);
       addtomap(("mu-",  "mu+",  "mu",  "e-_2", "e+_2", "e_2"), &get_Pole_mMuon);
+      addtomap(("nu_1", "nubar_1"), &get_Pole_mNu1);
+      addtomap(("nu_2", "nubar_2"), &get_Pole_mNu2);
+      addtomap(("nu_3", "nubar_3"), &get_Pole_mNu3);
+
+      tmp_map["gamma"] = &get_Pole_mPhoton;
+      tmp_map["g"]     = &get_Pole_mGluon;
 
       return tmp_map; 
    }
