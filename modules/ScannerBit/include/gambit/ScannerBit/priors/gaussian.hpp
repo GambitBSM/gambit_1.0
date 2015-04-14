@@ -26,7 +26,6 @@
 #include <cmath>
 
 #include "gambit/ScannerBit/cholesky.hpp"
-#include "gambit/ScannerBit/scanner_utils.hpp"
 #include "gambit/ScannerBit/priors.hpp"
 #include "gambit/Utils/yaml_options.hpp"
 

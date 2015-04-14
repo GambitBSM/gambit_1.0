@@ -1,0 +1,41 @@
+#! /usr/bin/env python
+
+"""\
+Usage: %prog <slha_template_file>
+"""
+
+import optparse, os
+op = optparse.OptionParser(usage=__doc__)
+op.add_option("-n", "--name", help="name to be used as output dir & base name of scanned SLHA files; default to based on name of input file", dest="NAME", default=None)
+# TODO: add options like PID:numpoints:low..high to define the scan?
+opts, args = op.parse_args()
+
+import pyslha
+infile = args[0]
+doc = pyslha.read(infile)
+
+import numpy as np
+mg_range = np.arange(200, 1600, 100)
+mX_range = np.arange(0, 800, 100)
+
+numpts = 0
+for mg in mg_range:
+    for mX in mX_range:
+        if mX > mg:
+            continue
+        numpts += 1
+        doc.blocks["MASS"][1000021] = mg
+        doc.blocks["MASS"][1000022] = mX
+        #print doc.blocks["MASS"]
+        if opts.NAME:
+            outdir = opts.NAME
+            basename = opts.NAME
+        else:
+            outdir = infile.replace(".slha", "_scan")
+            basename = infile.replace(".slha", "")
+        if not os.path.exists(outdir):
+            os.makedirs(outdir)
+        outfile = basename + "_{:04d}_{:04d}.slha".format(int(mg), int(mX))
+        doc.write(os.path.join(outdir, outfile))
+
+print "Num points = %d" % numpts

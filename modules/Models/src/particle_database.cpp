@@ -42,16 +42,7 @@ namespace Gambit
 
     void define_particles(partmap* particles)
     {
-      // Ben: I am hereby claiming context integer 0 in the name of MSSM mass eigenstates!
-      //  I am still a little unsure what the "best" string names to use here are. I was
-      //  just going with the strings close to those already used in flexibleSUSY, but now
-      //  I am somewhat leaning towards something close to those used by Pythia since they
-      //  might be more familiar to people. That is what is currently used below (though
-      //  I don't have individual names for particles which flexibleSUSY puts into groups,
-      //  since that was a headache).
-      //  Anyway we should settle on something fairly quickly to avoid further such headaches later.
-
-
+ 
       // ---- Standard Model gauge bosons (context = 0) ----
 
       add_particle("g",     ( 21, 0) )
@@ -115,16 +106,18 @@ namespace Gambit
       add_particle("omega", ( 223, 0) ) 
 
 
-      // ---- MSSM sparticle mass eigenstates ---- (TODO to be extended to NMSSM)
+      // ---- MSSM sparticle mass eigenstates (context = 0) ---- (TODO to be extended to NMSSM)
       // Defined according to SLHA2 (http://arxiv.org/pdf/0801.0045v3.pdf, see eq. 28 - 31)
 
       // Gluino
       add_particle("~g", (1000021,0) )
+
       // Mass-ordered neutral, pseudoscalar, and charged Higgs bosons
       add_particle_set("h0", ((25, 0), (35, 0)) )
       add_particle("A0", ( 36, 0) )
       add_particle("H+", ( 37, 0) )
       add_particle("H-", (-37, 0) )
+
       // Mass-ordered down and up-type squarks
       add_particle_set("~d",    (( 1000001, 0), ( 1000003, 0), ( 1000005, 0),
                                  ( 2000001, 0), ( 2000003, 0), ( 2000005, 0)) )
@@ -134,6 +127,7 @@ namespace Gambit
                                  (-2000001, 0), (-2000003, 0), (-2000005, 0)) )
       add_particle_set("~ubar", ((-1000002, 0), (-1000004, 0), (-1000006, 0),
                                  (-2000002, 0), (-2000004, 0), (-2000006, 0)) )
+
       // Mass-ordered sleptons and sneutrinos 
       add_particle_set("~e-", (( 1000011, 0), ( 1000013, 0), ( 1000015, 0),
                                ( 2000011, 0), ( 2000013, 0), ( 2000015, 0)) )
@@ -146,6 +140,54 @@ namespace Gambit
       add_particle_set("~chi+", (( 1000024, 0), ( 1000037, 0)) )
       add_particle_set("~chi-", ((-1000024, 0), (-1000037, 0)) )
 
+      // ---- MSSM sfermion flavour eigenstates (context = 1) ----
+
+      // Down and up-type squarks
+      add_particle("~d_L",    ( 1000001, 1) )
+      add_particle("~s_L",    ( 1000003, 1) )
+      add_particle("~b_L",    ( 1000005, 1) )
+      add_particle("~d_R",    ( 2000001, 1) )
+      add_particle("~s_R",    ( 2000003, 1) )
+      add_particle("~b_R",    ( 2000005, 1) )
+      add_particle("~u_L",    ( 1000002, 1) )
+      add_particle("~c_L",    ( 1000004, 1) )
+      add_particle("~t_L",    ( 1000006, 1) )
+      add_particle("~u_R",    ( 2000002, 1) )
+      add_particle("~c_R",    ( 2000004, 1) )
+      add_particle("~t_R",    ( 2000006, 1) )
+      add_particle("~dbar_L", (-1000001, 1) )
+      add_particle("~sbar_L", (-1000003, 1) )
+      add_particle("~bbar_L", (-1000005, 1) )
+      add_particle("~dbar_R", (-2000001, 1) )
+      add_particle("~sbar_R", (-2000003, 1) )
+      add_particle("~bbar_R", (-2000005, 1) )
+      add_particle("~ubar_L", (-1000002, 1) )
+      add_particle("~cbar_L", (-1000004, 1) )
+      add_particle("~tbar_L", (-1000006, 1) )
+      add_particle("~ubar_R", (-2000002, 1) )
+      add_particle("~cbar_R", (-2000004, 1) )
+      add_particle("~tbar_R", (-2000006, 1) )
+
+      // Sleptons and sneutrinos 
+      add_particle("~e-_L",     ( 1000011, 1) )
+      add_particle("~mu-_L",    ( 1000013, 1) )
+      add_particle("~tau-_L",   ( 1000015, 1) )
+      add_particle("~e-_R",     ( 2000011, 1) )
+      add_particle("~mu-_R",    ( 2000013, 1) )
+      add_particle("~tau-_R",   ( 2000015, 1) )
+      add_particle("~nu_e",     ( 1000012, 1) )
+      add_particle("~nu_mu",    ( 1000014, 1) )
+      add_particle("~nu_tau",   ( 1000016, 1) )
+      add_particle("~e+_L",     (-1000011, 1) )
+      add_particle("~mu+_L",    (-1000013, 1) )
+      add_particle("~tau+_L",   (-1000015, 1) )
+      add_particle("~e+_R",     (-2000011, 1) )
+      add_particle("~mu+_R",    (-2000013, 1) )
+      add_particle("~tau+_R",   (-2000015, 1) )
+      add_particle("~nubar_e",  (-1000012, 1) )
+      add_particle("~nubar_mu", (-1000014, 1) )
+      add_particle("~nubar_tau",(-1000016, 1) )
+
 
       // ---- RPV NMSSM mass eigenstates (context = 10) ---- //TODO not yet totally complete?
 
@@ -154,7 +196,11 @@ namespace Gambit
            (1000022, 10), (1000023, 10), (1000025, 10), (1000035, 10), (1000045, 10)) )
 
 
-    }// end define_particles
+      // ---- Scalar singlet dark matter ----
+
+      add_particle("S", (9900001, 0))
+
+    }
 
   }
 
