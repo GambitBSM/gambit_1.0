@@ -39,6 +39,11 @@
 ///  \author Christopher Savage
 ///          (chris@savage.name)
 ///  \date 2015 Jan
+///
+///  \author Jonathan Cornell
+///          (jcornell@ucsc.edu)
+///  \date 2014
+///
 ///  *********************************************
 
 

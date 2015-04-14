@@ -15,7 +15,8 @@
 ///  \date 2015 Jan, Feb
 ///  
 ///  \author Jonathan Cornell
-///  \date ???
+///          (jcornell@ucsc.edu)
+///  \date 2015 Mar
 ///
 ///  *********************************************
 

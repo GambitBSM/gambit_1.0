@@ -22,9 +22,6 @@
 ///  \date 2014 Oct
 ///  \date 2015 Jan, Feb
 ///
-///  \author Jonathan Cornell
-///  \date ???
-///
 ///  *********************************************
 
 #include "gambit/Utils/gambit_module_headers.hpp"
