@@ -87,17 +87,17 @@ namespace Gambit
       // Access the pipes for this function to get model and parameter information
        using namespace Pipes::specbit_test_func1;
        const SMplusUV* spec = *Dep::MSSM_spectrum;
-      std::cout << "Running specbit_test_func1" << std::endl;
-      std::cout << "Retrieving Spectrum*" << std::endl;
-      //  const Spectrum* spec = *Dep::MSSM_spectrum; //Test retrieve pointer to Spectrum object 
-
-      //const Spectrum& spec(*(Dep::particle_spectrum->get())); // Get Spectrum object ptr out of dependency pipe and make a nice reference out of it.
-      std::cout << "Running spec_manipulate" << std::endl;
-
-      // Clone the UV Spectum object so we can access a non-const version
-      std::unique_ptr<Spectrum> spec2 = spec->get_UV()->clone(); 
-
-      spec_manipulate(*spec2); //function can manipulate without knowing model.
+       std::cout << "Running specbit_test_func1" << std::endl;
+       std::cout << "Retrieving Spectrum*" << std::endl;
+       //  const Spectrum* spec = *Dep::MSSM_spectrum; //Test retrieve pointer to Spectrum object 
+ 
+       //const Spectrum& spec(*(Dep::particle_spectrum->get())); // Get Spectrum object ptr out of dependency pipe and make a nice reference out of it.
+       std::cout << "Running spec_manipulate" << std::endl;
+ 
+       // Clone the UV Spectum object so we can access a non-const version
+       std::unique_ptr<Spectrum> spec2 = spec->get_UV()->clone(); 
+ 
+       spec_manipulate(*spec2); //function can manipulate without knowing model.
     }
 
     /// Function to test out SpecBit features

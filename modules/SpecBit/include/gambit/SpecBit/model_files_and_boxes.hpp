@@ -72,8 +72,8 @@
           QedQcd oneset;   /* SoftSUSY format Standard Model parameters */             \
           InputParameters input;    /* Parameters needed to compute points of Model */ \
           SlhaIo slha_io;   /* FlexibleSUSY SLHA input/output manager */               \
-          Scales scales;   /*scales at shich coundary conditions are applied*/         \
           Problems problems; /* FlexibleSUSY problems report manager */                \
+          Scales scales;   /*scales at shich coundary conditions are applied*/         \
           /* Function to create SLHAea object from 'model' */                          \
           /* THIS IS REQUIRED BY MSSMSpec */                                           \
           SLHAea::Coll getSLHAea() const                                               \
