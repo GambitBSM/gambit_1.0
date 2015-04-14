@@ -61,7 +61,7 @@ START_MODULE
     BACKEND_REQ(cb_widthhl_hdec, (), widthhl_hdec_type)
     BACKEND_REQ(cb_wisusy_hdec, (), wisusy_hdec_type)
     BACKEND_REQ(cb_wisfer_hdec, (), wisfer_hdec_type)
-    ALLOW_MODELS(MSSM78atQ)
+    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
     #undef FUNCTION
 
   #undef CAPABILITY
@@ -75,7 +75,7 @@ START_MODULE
     BACKEND_REQ(cb_widthhh_hdec, (), widthhh_hdec_type)
     BACKEND_REQ(cb_wisusy_hdec, (), wisusy_hdec_type)
     BACKEND_REQ(cb_wisfer_hdec, (), wisfer_hdec_type)
-    ALLOW_MODELS(MSSM78atQ)
+    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
     #undef FUNCTION
 
   #undef CAPABILITY
@@ -88,7 +88,7 @@ START_MODULE
     BACKEND_REQ(sdecay, (),void, ())
     BACKEND_REQ(cb_widtha_hdec, (), widtha_hdec_type)
     BACKEND_REQ(cb_wisusy_hdec, (), wisusy_hdec_type)
-    ALLOW_MODELS(MSSM78atQ)
+    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
     #undef FUNCTION
  
   #undef CAPABILITY
@@ -102,7 +102,7 @@ START_MODULE
     BACKEND_REQ(cb_widthhc_hdec, (), widthhc_hdec_type)
     BACKEND_REQ(cb_wisusy_hdec, (), wisusy_hdec_type)
     BACKEND_REQ(cb_wisfer_hdec, (), wisfer_hdec_type)
-    ALLOW_MODELS(MSSM78atQ)
+    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
     #undef FUNCTION
 
   #undef CAPABILITY
