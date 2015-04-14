@@ -37,9 +37,9 @@ namespace Gambit {
     //////////////////////////////////////////////////////////////////////////
 
     /// Retrieve MSSM spectra directly from a list of SLHA files
-    void getMSSMspectrum(eaSLHA &result)
+    void get_MSSM_spectrum_from_file(eaSLHA &result)
     {
-      using namespace Pipes::getMSSMspectrum;
+      using namespace Pipes::get_MSSM_spectrum_from_file;
       // Static counter running in a loop over all filenames
       static unsigned int counter = 0;
       eaSLHA spectrum;
@@ -130,7 +130,7 @@ namespace Gambit {
       else if (ModelInUse("CMSSM_demo") or ModelInUse("MSSM25atQ"))
       {
         // Save eaSLHA file to disk
-        eaSLHA mySLHA = *Dep::MSSMspectrum;
+        eaSLHA mySLHA = *Dep::MSSM_spectrum;
         std::ofstream ofs("DarkBit_temp.slha");
         ofs << mySLHA;
         ofs.close();

@@ -40,6 +40,28 @@ NormalDist:
   sigma:
     fixed_value: 1
 
+nuclear_params_fnq:
+  # proton hadronic matrix elements
+  fpd:
+    fixed_value: 0.0191
+  fpu:
+    fixed_value: 0.0153
+  fps:
+    fixed_value: 0.0447
+  # neutron hadronic matrix elements
+  fnd:
+    fixed_value: 0.0273
+  fnu:
+    fixed_value: 0.011
+  fns:
+    fixed_value: 0.0447
+  # proton spin content
+  deltad:
+    fixed_value: -0.427
+  deltau:
+    fixed_value: 0.842
+  deltas:
+    fixed_value: -0.085
 
 # Ben: this was in the old inifile: I don't know what it does 
 #  param_not_in_gambit:
