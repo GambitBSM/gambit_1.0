@@ -25,7 +25,9 @@ General:
 * Deal safely with errors arising from non-double results with purpose: Likelihood in yaml file (Pat)
 
 DecayBit:
+* Add SM Higgs partial decay widths (Pat / Csaba)
 * Make decay table type from SLHAea (Pat)
+* Add scalar singlet Higgs partial decay widths (SM + invisible; Pat)
 * SUSYHIT SLHA replacement interface (Pat)
 * SUSYHIT observable getters (Csaba)
 
