@@ -92,7 +92,7 @@ namespace Gambit {
         double am0    = *Param["M0"];     // m0
         double amhf   = *Param["M12"];    // m_1/2
         double aa0    = *Param["A0"];     // A0
-        double asgnmu = *Param["sgnmu"];  // sign(mu)
+        double asgnmu = *Param["signmu"];  // sign(mu)
         double atanbe = *Param["tanb"];   // tan(beta)
         logger() << "Initializing DarkSUSY via dsgive_model_isasugra:"
           << std::endl;
