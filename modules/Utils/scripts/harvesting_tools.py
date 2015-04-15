@@ -378,7 +378,7 @@ def make_module_rollcall(rollcall_headers,verbose):
 #ifndef __module_rollcall_hpp__                   \n\
 #define __module_rollcall_hpp__                   \n\
                                                   \n\
-#include \"gambit/Utils/module_macros_incore.hpp\"\n\n"
+#include \"gambit/Elements/module_macros_incore.hpp\"\n\n"
 
     for h in rollcall_headers:
         towrite+='#include \"{0}\"\n'.format(h)

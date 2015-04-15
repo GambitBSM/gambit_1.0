@@ -46,8 +46,8 @@
 ///   Y/include/Y_types.hpp,
 ///  and include that file from Y/include/Y_rollcall.hpp.
 ///  Y_types will be automatically included in 
-///  Utils/include/module_types_rollcall.hpp by the GAMBIT
-///  module harvester.
+///  Elements/include/gambit/Elements/module_types_rollcall.hpp
+///  by the GAMBIT module harvester.
 ///
 ///  BACKENDS
 ///  --------
@@ -92,8 +92,8 @@
 #ifndef __types_rollcall_hpp__
 #define __types_rollcall_hpp__
 
-#include "gambit/Utils/shared_types.hpp"          // All the shared types
-#include "gambit/Utils/module_types_rollcall.hpp" // Module-specific types
-#include "gambit/Models/model_types_rollcall.hpp" // Model-specific types
+#include "gambit/Elements/shared_types.hpp"          // All the shared types
+#include "gambit/Elements/module_types_rollcall.hpp" // Module-specific types
+#include "gambit/Models/model_types_rollcall.hpp"    // Model-specific types
 
 #endif /* defined __types_rollcall_hpp__ */

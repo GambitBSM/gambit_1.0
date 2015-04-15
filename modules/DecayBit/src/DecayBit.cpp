@@ -16,7 +16,7 @@
 ///
 ///  *********************************************
 
-#include "gambit/Utils/gambit_module_headers.hpp"
+#include "gambit/Elements/gambit_module_headers.hpp"
 #include "gambit/DecayBit/DecayBit_rollcall.hpp"
 
 namespace Gambit

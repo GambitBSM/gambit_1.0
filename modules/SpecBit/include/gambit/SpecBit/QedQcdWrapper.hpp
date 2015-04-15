@@ -30,9 +30,10 @@
 #ifndef __QedQcdWrapper_hpp__
 #define __QedQcdWrapper_hpp__
 
+#include "gambit/Elements/SMInputs.hpp"
+#include "gambit/Elements/Spectrum.hpp"
+
 #include "lowe.h" ///TODO: wrap using BOSS at some point, i.e. get this from FlexibleSUSY or SoftSUSY
-#include "gambit/Utils/SMInputs.hpp"
-#include "gambit/Utils/Spectrum.hpp"
 
 namespace Gambit {
 

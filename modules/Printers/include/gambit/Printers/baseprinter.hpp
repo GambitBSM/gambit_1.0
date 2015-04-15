@@ -27,11 +27,11 @@
 
 // Gambit
 #include "gambit/Printers/basebaseprinter.hpp"
-#include "gambit/Utils/all_functor_types.hpp"
+#include "gambit/Elements/all_functor_types.hpp"
+#include "gambit/Utils/factory_registry.hpp"
 #include "gambit/Utils/standalone_error_handlers.hpp"
 #include "gambit/Utils/yaml_options.hpp"
 #include "gambit/Utils/boost_fallbacks.hpp"
-#include "gambit/Utils/factory_registry.hpp"
 
 // Boost
 #include <boost/preprocessor/seq/for_each.hpp>

@@ -36,9 +36,9 @@
 #include <cmath>
 #include <fstream>
 
-#include "gambit/Utils/gambit_module_headers.hpp"
+#include "gambit/Elements/gambit_module_headers.hpp"
+#include "gambit/Elements/base_functions.hpp"
 #include "gambit/Utils/util_macros.hpp"
-#include "gambit/Utils/base_functions.hpp"
 #include "gambit/DarkBit/DarkBit_types.hpp"
 #include "gambit/DarkBit/DarkBit_rollcall.hpp"
 

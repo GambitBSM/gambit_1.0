@@ -18,15 +18,16 @@
 ///
 ///  *********************************************
 
-#include "gambit/Utils/gambit_module_headers.hpp"
-#include "gambit/DarkBit/DarkBit_rollcall.hpp"
-#include "gambit/DarkBit/DarkBit_types.hpp"
-#include "gambit/Utils/funktions.hpp"
 #include <algorithm>
 #include <iostream> 
 #include <math.h>
 #include <set>
 #include <sstream>
+
+#include "gambit/Elements/gambit_module_headers.hpp"
+#include "gambit/Elements/funktions.hpp"
+#include "gambit/DarkBit/DarkBit_rollcall.hpp"
+#include "gambit/DarkBit/DarkBit_types.hpp"
 
 namespace Gambit 
 {

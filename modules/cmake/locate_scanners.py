@@ -543,35 +543,20 @@ add_dependencies(scanlibs yaml-cpp)             \n\
 set_target_properties( scanlibs                 \n\
                        PROPERTIES               \n\
                        RUNTIME_OUTPUT_DIRECTORY \"${CMAKE_CURRENT_SOURCE_DIR}/bin\")\n\n\
-include(utils.cmake)                            \n\n\
 set( scanbit_standalone_src                     \n\
         ${scanbit_standalone_sources}           \n\
-        $<TARGET_OBJECTS:Logs>                  \n\
+        ${GAMBIT_BASIC_COMMON_OBJECTS}          \n\
         $<TARGET_OBJECTS:Printers>              \n\
         $<TARGET_OBJECTS:ScannerBit>            \n\
-        $<TARGET_OBJECTS:mkpath>                \n\
-        ${utils_source_files}                   \n\
 )                                               \n\n\
-set( scanbit_standalone_hdr                     \n\
-        ${scanbit_standalone_headers}           \n\
-        ${utils_header_files}                   \n\
-)                                               \n\n\
-add_gambit_executable( ScannerBit_standalone SOURCES ${scanbit_standalone_src} HEADERS ${scanbit_standalone_hdr})\n\
+add_gambit_executable( ScannerBit_standalone SOURCES ${scanbit_standalone_src} HEADERS ${scanbit_standalone_headers})\n\
 set_target_properties( ScannerBit_standalone    \n\
                        PROPERTIES               \n\
                        RUNTIME_OUTPUT_DIRECTORY \"${CMAKE_CURRENT_SOURCE_DIR}/bin\")\n\
 add_dependencies(ScannerBit_standalone ScannerBit)\n\
 add_dependencies(ScannerBit_standalone mkpath)  \n\
 add_dependencies(ScannerBit_standalone yaml-cpp)\n\
-target_link_libraries(ScannerBit_standalone yaml-cpp)\n\
-if (NOT EXCLUDE_FLEXIBLESUSY)                   \n\
-  add_dependencies(ScannerBit_standalone flexiblesusy)\n\
-  target_link_libraries(ScannerBit_standalone ${flexiblesusy_LDFLAGS})\n\
-endif()                                         \n\
-if (NOT EXCLUDE_DELPHES)                        \n\
-  add_dependencies(ScannerBit_standalone delphes)\n\
-  target_link_libraries(ScannerBit_standalone ${delphes_LDFLAGS} ${ROOT_LIBRARIES} ${ROOT_LIBRARY_DIR}/libEG.so)\n\
-endif()                                         \n\n"
+target_link_libraries(ScannerBit_standalone yaml-cpp)\n"
 
     towrite += "set( reqd_lib_output )\n"
     towrite += "set( exclude_lib_output )\n\n"

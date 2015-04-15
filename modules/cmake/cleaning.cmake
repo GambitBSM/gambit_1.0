@@ -46,9 +46,10 @@ set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${clean_files}"
 ##### distclean ########
 
 # Ensure that distclean sweeps out the scratch directory
-add_custom_target(clean-scratch-files COMMAND ${CMAKE_COMMAND} -E remove scratch/* WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
+add_custom_target(clean-scratch-files COMMAND ${CMAKE_COMMAND} -E remove -f scratch/* WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
 add_custom_target(clean-scratch-subdirs COMMAND ${CMAKE_COMMAND} -E remove_directory scratch/* WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
-add_dependencies(distclean clean-scratch-files clean-scratch-subdirs)
+add_dependencies(clean-scratch-subdirs clean-scratch-files)
+add_dependencies(distclean clean-scratch-subdirs)
 
 # Ensure that distclean removes .pyc files
 add_custom_target(clean-pyc COMMAND ${CMAKE_COMMAND} -E remove *.pyc */*.pyc */*/*.pyc */*/*/*.pyc */*/*/*/*.pyc WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})

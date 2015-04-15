@@ -16,8 +16,8 @@
 #include <string>
 
 #include "gambit/Utils/ASCIItableReader.hpp"
-#include "gambit/Utils/funktions.hpp"
-#include "gambit/Utils/gambit_module_headers.hpp"
+#include "gambit/Elements/funktions.hpp"
+#include "gambit/Elements/gambit_module_headers.hpp"
 #include "gambit/DarkBit/DarkBit_types.hpp"
 #include "gambit/DarkBit/DarkBit_rollcall.hpp"
 

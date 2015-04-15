@@ -25,7 +25,12 @@ set(uses_scannerbit gambit)
 
 # Add the main GAMBIT executable
 if(EXISTS "${PROJECT_SOURCE_DIR}/Core/")
-  add_gambit_executable(gambit SOURCES ${PROJECT_SOURCE_DIR}/Core/src/gambit.cpp ${GAMBIT_COMMON_OBJECTS} ${GAMBIT_OBJECTS} ${GAMBIT_BIT_OBJECTS})
+  add_gambit_executable(gambit SOURCES ${PROJECT_SOURCE_DIR}/Core/src/gambit.cpp 
+                                       ${GAMBIT_ALL_COMMON_OBJECTS} 
+                                       ${GAMBIT_BIT_OBJECTS}
+                                       $<TARGET_OBJECTS:Core>
+                                       $<TARGET_OBJECTS:Printers>
+  )
   add_dependencies(gambit mkpath)
   target_link_libraries(gambit yaml-cpp)
   if (NOT EXCLUDE_FLEXIBLESUSY)
@@ -40,7 +45,10 @@ endif()
 
 # Add the ExampleBit_A_standalone executable
 if(EXISTS "${PROJECT_SOURCE_DIR}/ExampleBit_A/" AND ";${GAMBIT_BITS};" MATCHES ";ExampleBit_A;")
-  add_gambit_executable(ExampleBit_A_standalone SOURCES ${PROJECT_SOURCE_DIR}/ExampleBit_A/examples/ExampleBit_A_standalone_example.cpp $<TARGET_OBJECTS:ExampleBit_A> ${GAMBIT_COMMON_OBJECTS})
+  add_gambit_executable(ExampleBit_A_standalone SOURCES ${PROJECT_SOURCE_DIR}/ExampleBit_A/examples/ExampleBit_A_standalone_example.cpp 
+                                                        $<TARGET_OBJECTS:ExampleBit_A>
+                                                        ${GAMBIT_ALL_COMMON_OBJECTS}
+  )
   add_dependencies(ExampleBit_A_standalone mkpath)
   target_link_libraries(ExampleBit_A_standalone yaml-cpp)
   if (NOT EXCLUDE_FLEXIBLESUSY)

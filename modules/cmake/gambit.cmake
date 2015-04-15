@@ -16,19 +16,19 @@
 #  \author Pat Scott
 #          (p.scott@imperial.ac.uk)              
 #  \date 2014 Nov, Dec
+#  \date 2015 Apr
 #                                               
 #************************************************
 
-# set include directores for GAMBIT common library
-set(GAMBIT_INCDIRS ${GAMBIT_INCDIRS} "${PROJECT_SOURCE_DIR}/Backends/include")
-set(GAMBIT_INCDIRS ${GAMBIT_INCDIRS} "${PROJECT_SOURCE_DIR}/Logs/include")
-set(GAMBIT_INCDIRS ${GAMBIT_INCDIRS} "${PROJECT_SOURCE_DIR}/Utils/include")
-set(GAMBIT_INCDIRS ${GAMBIT_INCDIRS} "${PROJECT_SOURCE_DIR}/Models/include")
-set(GAMBIT_INCDIRS ${GAMBIT_INCDIRS} "${PROJECT_SOURCE_DIR}/cmake/include")
-
-# set include directores for GAMBIT core library
-set(GAMBIT_INCDIRS ${GAMBIT_INCDIRS} "${PROJECT_SOURCE_DIR}/Printers/include")
-set(GAMBIT_INCDIRS ${GAMBIT_INCDIRS} "${PROJECT_SOURCE_DIR}/Core/include")
+# set include directores for GAMBIT
+set(GAMBIT_INCDIRS ${GAMBIT_INCDIRS} "${PROJECT_SOURCE_DIR}/Printers/include"
+                                     "${PROJECT_SOURCE_DIR}/Core/include"
+                                     "${PROJECT_SOURCE_DIR}/Logs/include"
+                                     "${PROJECT_SOURCE_DIR}/Utils/include"
+                                     "${PROJECT_SOURCE_DIR}/Models/include"
+                                     "${PROJECT_SOURCE_DIR}/cmake/include"
+                                     "${PROJECT_SOURCE_DIR}/Elements/include"
+                                     "${PROJECT_SOURCE_DIR}/Backends/include")
 
 #set include directores for GAMBIT modules
 retrieve_bits(GAMBIT_BITS ${PROJECT_SOURCE_DIR} "${itch}" "Quiet")

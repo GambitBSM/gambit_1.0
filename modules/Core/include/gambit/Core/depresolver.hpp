@@ -32,7 +32,7 @@
 #include "gambit/Core/error_handlers.hpp"
 #include "gambit/Core/yaml_parser.hpp"
 #include "gambit/Printers/baseprinter.hpp"
-#include "gambit/Utils/functors.hpp"
+#include "gambit/Elements/functors.hpp"
 #include "gambit/Utils/type_equivalency.hpp"
 
 #include <boost/graph/adjacency_list.hpp>

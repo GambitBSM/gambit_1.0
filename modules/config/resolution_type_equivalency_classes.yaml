@@ -6,18 +6,26 @@
 #
 # Add additional equivalencies/typedefs by hand
 # here if you want them to be considered during
-# dependency resolution.  You can place as many 
-# entries as you want in each class, just make
-# sure to put them in the same square-bracket-
-# enclosed list.  Don't add comments except on 
-# their own lines, like these (Python's YAML
-# parser is buggy).
+# dependency resolution.  
 #
-# Note that namespace issues with BOSSed types 
-# and the Gambit namespace itself both automatically
-# get taken care of, so there is no need to add
-# entries to deal with those.
+# A few things to keep in mind:
+#
+# - You can place as many entries as you want 
+#   in each class, just make sure to put them 
+#   in the same square-bracket-enclosed list.
+#
+# - Any type with a comma, brackets or other
+#   funky character in it needs to be enclosed
+#   in quotation marks.  
+#
+# - Don't add comments except on their own lines,
+#   like these (Python's YAML parser is buggy).
+#
+# - Namespace issues with BOSSed types and the 
+#   Gambit namespace itself both get dealt with 
+#   automatically, so there is no need to add
+#   entries to account for those.
 
 [std::string, str]
-[double(*)(double&, int&, void*), nuyield_functype]
+["double(*)(double&, int&, void*)", nuyield_functype]
 

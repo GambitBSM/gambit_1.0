@@ -24,7 +24,8 @@
 
 #include <exception>
 #include <string>
-#include "gambit/Utils/terminator.hpp"
+
+#include "gambit/Elements/terminator.hpp"
 
 namespace Gambit
 {
