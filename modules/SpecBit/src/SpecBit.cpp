@@ -58,7 +58,7 @@ namespace Gambit
     //  them up to their dependencies, and input parameters.
 
     /// Initialise QedQcd object from SMInputs data
-    void setup_QedQcd(QedQcd& oneset, const SMInputs& sminputs)
+    void setup_QedQcd(QedQcd& oneset /*output*/, const SMInputs& sminputs /*input*/)
     {
       // Set pole masses (to be treated specially)
       oneset.setPoleMt(sminputs.mT);
@@ -379,7 +379,7 @@ namespace Gambit
       oneset.toMz();
  
       // Create a Spectrum object to wrap the qedqcd object
-      static QedQcdWrapper qedqcdspec(oneset);
+      static QedQcdWrapper qedqcdspec(oneset,sminputs);
 
       result = &qedqcdspec;
     }
