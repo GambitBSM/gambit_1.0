@@ -126,6 +126,15 @@ namespace Gambit
     /// Get date and time
     std::string return_time_and_date(const time_point& in);
 
+    /// Check if two strings are a "close" match
+    /// Used for "did you mean?" type checking during command line argument processing
+    bool are_similar(const std::string& s1, const std::string& s2);   
+    /// Sub-checks for the above:
+    /// true if s1 can be obtained by deleting one character from s2
+    bool check1(const std::string& s1, const std::string& s2);   
+    /// true if s1 can be obtained from s2 by changing no more than X characters (X=2 for now)    
+    bool check2(const std::string& s1, const std::string& s2);
+ 
   }
 
 }

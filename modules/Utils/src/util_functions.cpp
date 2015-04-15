@@ -154,7 +154,55 @@ namespace Gambit
         ts.resize(ts.size()-1); // Remove the annoying trailing newline
         return ts;
     }
-    
+
+    /// Check if two strings are a "close" match
+    /// Used for "did you mean?" type checking during command line argument processing
+    bool are_similar(const std::string& s1, const std::string& s2)
+    {
+      if(check1(s1,s2) or check1(s2,s1)){ return true; }
+      else if(check2(s1,s2)){ return true; } // symmetric
+      else{ return false; }
+      //TODO: Add more checks? These ones are pretty minimal. Maybe something that computes percentage match between strings...
+    }
+
+    /// true if s1 can be obtained by deleting one character from s2
+    bool check1(const std::string& s1, const std::string& s2)
+    {
+      if(s2.length() - s1.length() != 1){ return false; }
+      int i,j;
+      for(i=0,j=0; i<s2.length(); i++,j++)
+      {
+          if(s2[i] == s1[j])
+          {/*do  nothing*/}
+          else if(i == j)
+          { j++;}
+          else
+          {return false;}
+      }
+      return true;
+    }
+
+    /// true if s1 can be obtained from s2 by changing no more than X characters (X=2 for now)
+    bool check2(const std::string& s1, const std::string& s2)
+    {
+      int error_limit = 2;
+      int number_of_errors = 0;
+
+      if(s2.length() != s1.length()){ return false; }
+      int i,j;
+      for(i=0,j=0; i<s2.length(); i++,j++)
+      {
+          if(s2[i] == s1[j])
+          {/*do  nothing*/}
+          else if(number_of_errors <= error_limit)
+          { number_of_errors++;}
+          else
+          {return false;}
+      }
+      return true;
+    }
+
+     
   }
 
 }
