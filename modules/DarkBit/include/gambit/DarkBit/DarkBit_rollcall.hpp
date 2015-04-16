@@ -351,6 +351,7 @@ START_MODULE
       DEPENDENCY(DarkSUSY_PointInit, bool)
       DEPENDENCY(MSSM_spectrum, eaSLHA) 
       DEPENDENCY(DarkMatter_ID, DarkMatter_ID_type)
+      DEPENDENCY(decay_rates,DecayTable)
       BACKEND_REQ(mspctm, (), DS_MSPCTM)
       BACKEND_REQ(dssigmav, (), double, (int&))
       BACKEND_REQ(dsIBffdxdy, (), double, (int&, double&, double&))
