@@ -3,32 +3,17 @@
 # to sample from a flat prior over this range. For any other prior, you need to specify it
 # properly in the "priors" section.
 
-# Standard_Model:
-#   alpha_emi:
-#     fixed_value: 80
-#   G_F:
-#     fixed_value: 80
-#   alpha_s:
-#     fixed_value: 80
-#   mZ:
-#     fixed_value: 80
-#   mb:
-#     fixed_value: 80
-#   mt:
-#     fixed_value: 80
-#   mtau:
-#     fixed_value: 80
-CMSSM_demo:
+StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
+
+CMSSM:
   A0:
-    range: [-1000, 1000]
+  #  range: [-1000, 1000]
   M0:
     prior_type: log
     range: [0.001,1000]
   M12:
   #  same_as: CMSSM_demo::M0
-  Mstop:
-  #  same_as: CMSSM_demo::M0
-  sgnmu:
+  signmu:
     range: [-1, 1]
     fixed_value: 1
   tanb:

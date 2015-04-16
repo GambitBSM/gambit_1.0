@@ -170,8 +170,8 @@ Rules:
         #fileroot: UnitTest_MSSMbenchmarks_MicrOmegas
         GA_AnnYield:
           nbins: 100
-  - capability: MSSMspectrum
-    function: getMSSMspectrum  # For unit test: reads in spectrum from SLHA file
+  - capability: MSSM_spectrum
+    function: get_MSSM_spectrum_from_file  # For unit test: reads in spectrum from SLHA file
     module: DarkBit
     options:
         filenames: 

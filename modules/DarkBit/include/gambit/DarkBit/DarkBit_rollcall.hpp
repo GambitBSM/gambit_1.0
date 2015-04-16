@@ -1102,7 +1102,7 @@ START_MODULE
     #undef FUNCTION
     #define FUNCTION DarkMatter_ID_MSSM25atQ
     START_FUNCTION(DarkMatter_ID_type)
-    ALLOW_MODELS(MSSM25atQ, CMSSM_demo)
+    ALLOW_MODELS(MSSM25atQ, CMSSM)
     #undef FUNCTION
   #undef CAPABILITY
 
