@@ -154,8 +154,9 @@ namespace Gambit {
         pythiaOptions.push_back("SLHA:file = " + slhaFilename);
         pythiaOptions.push_back("Random:seed = " + std::to_string(omp_get_thread_num()));
 
-        /// "Recycle" (clean memory and re-init) SpecializablePythia
-        result.recycle(*iter, pythiaOptions);
+        result.clear();
+        result.setSpecialization(*iter);
+        result.init(pythiaOptions);
 
         pythiaOptions.clear();
         resetPythiaFlag = false;
