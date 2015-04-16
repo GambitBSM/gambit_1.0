@@ -106,6 +106,50 @@ START_MODULE
     #undef FUNCTION
 
   #undef CAPABILITY
+
+  #define CAPABILITY gluino_decay_rates
+  START_CAPABILITY
+
+    #define FUNCTION gluino_decays
+    START_FUNCTION(DecayTable::Entry)
+    BACKEND_REQ(sdecay, (),void, ())
+    BACKEND_REQ(cb_sd_gluiwidth, (), sd_gluiwidth_type)
+    BACKEND_REQ(cb_sd_glui2body, (), sd_glui2body_type)
+    BACKEND_REQ(cb_sd_gluiloop, (), sd_gluiloop_type)
+    BACKEND_REQ(cb_sd_glui3body, (), sd_glui3body_type)
+    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
+    #undef FUNCTION
+
+  #undef CAPABILITY
+
+  #define CAPABILITY stop_1_decay_rates
+  START_CAPABILITY
+
+    #define FUNCTION stop_1_decays
+    START_FUNCTION(DecayTable::Entry)
+    BACKEND_REQ(sdecay, (),void, ())
+    BACKEND_REQ(cb_sd_stopwidth, (), sd_stopwidth_type)
+    BACKEND_REQ(cb_sd_stop2body, (), sd_stop2body_type)
+    BACKEND_REQ(cb_sd_stoploop, (), sd_stoploop_type)
+    BACKEND_REQ(cb_sd_stop3body, (), sd_stop3body_type)
+    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
+    #undef FUNCTION
+
+  #undef CAPABILITY
+
+  #define CAPABILITY stop_2_decay_rates
+  START_CAPABILITY
+
+    #define FUNCTION stop_2_decays
+    START_FUNCTION(DecayTable::Entry)
+    BACKEND_REQ(sdecay, (),void, ())
+    BACKEND_REQ(cb_sd_stopwidth, (), sd_stopwidth_type)
+    BACKEND_REQ(cb_sd_stop2body, (), sd_stop2body_type)
+    BACKEND_REQ(cb_sd_stop3body, (), sd_stop3body_type)
+    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
+    #undef FUNCTION
+
+  #undef CAPABILITY
  
   #define CAPABILITY decay_rates
   START_CAPABILITY
@@ -134,6 +178,9 @@ START_MODULE
     DEPENDENCY(h0_2_decay_rates, DecayTable::Entry) 
     DEPENDENCY(A0_decay_rates, DecayTable::Entry) 
     DEPENDENCY(Hplus_decay_rates, DecayTable::Entry) 
+    DEPENDENCY(gluino_decay_rates, DecayTable::Entry) 
+    DEPENDENCY(stop_1_decay_rates, DecayTable::Entry) 
+    DEPENDENCY(stop_2_decay_rates, DecayTable::Entry) 
     #undef FUNCTION
 
   #undef CAPABILITY
@@ -158,15 +205,6 @@ QUICK_FUNCTION(DecayBit, rho_0_decay_rates, NEW_CAPABILITY, rho_0_decays, DecayT
 QUICK_FUNCTION(DecayBit, rho_minus_decay_rates, NEW_CAPABILITY, rho_minus_decays, DecayTable::Entry)
 QUICK_FUNCTION(DecayBit, rho_plus_decay_rates, NEW_CAPABILITY, rho_plus_decays, DecayTable::Entry)
 QUICK_FUNCTION(DecayBit, omega_decay_rates, NEW_CAPABILITY, omega_decays, DecayTable::Entry)
-
-// MSSM decay rate functions
-// QUICK_FUNCTION(DecayBit, h0_2_decay_rates, NEW_CAPABILITY, h0_2_decays, DecayTable::Entry)
-// QUICK_FUNCTION(DecayBit, A0_decay_rates, NEW_CAPABILITY, A0_decays, DecayTable::Entry)
-// QUICK_FUNCTION(DecayBit, Hplus_decay_rates, NEW_CAPABILITY, Hplus_decays, DecayTable::Entry)
-// gives the error:
-//  /home/csaba/Codes/GAMBIT/modules/DecayBit/include/gambit/DecayBit/DecayBit_rollcall.hpp: At global scope:
-//  /home/csaba/Codes/GAMBIT/modules/Utils/include/gambit/Utils/module_macros_incore.hpp:613:14: error: redefinition of 
-//  ‘Gambit::module_functor<Gambit::DecayTable::Entry> Gambit::DecayBit::Functown::h0_2_decays’
 
 #endif /* defined(__DecayBit_rollcall_hpp__) */
 

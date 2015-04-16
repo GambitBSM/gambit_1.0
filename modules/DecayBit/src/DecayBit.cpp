@@ -306,9 +306,9 @@ namespace Gambit
       result.set_BF(BEreq::cb_wisfer_hdec->bhlslnl/3.0, 0.0, "~nu_e", "~nubar_e");
       result.set_BF(BEreq::cb_wisfer_hdec->bhlslnl/3.0, 0.0, "~nu_mu", "~nubar_mu");
       result.set_BF(BEreq::cb_wisfer_hdec->bhlslnl/3.0, 0.0, "~nu_tau", "~nubar_tau");
-      cout << " > h0_1 total width: " << result.width_in_GeV << endl;
-      cout << " > BR(h0_1 -> gamma gamma): " << BEreq::cb_widthhl_hdec->hlbrga << endl;
-      cout << " > BR(h0_1 -> ~tau-_L ~e+_5): " << BEreq::cb_wisfer_hdec->bhlstau(1,1) << endl;
+      // cout << "h0_1 total width: " << result.width_in_GeV << endl;
+      // cout << "BR(h0_1 -> gamma gamma): " << BEreq::cb_widthhl_hdec->hlbrga << endl;
+      // cout << "BR(h0_1 -> ~tau-_L ~e+_5): " << BEreq::cb_wisfer_hdec->bhlstau(1,1) << endl;
     }
 
     /// MSSM decays: h0_2
@@ -374,8 +374,8 @@ namespace Gambit
       result.set_BF(BEreq::cb_wisfer_hdec->bhhslnl/3.0, 0.0, "~nu_e", "~nubar_e");
       result.set_BF(BEreq::cb_wisfer_hdec->bhhslnl/3.0, 0.0, "~nu_mu", "~nubar_mu");
       result.set_BF(BEreq::cb_wisfer_hdec->bhhslnl/3.0, 0.0, "~nu_tau", "~nubar_tau");
-      cout << " > h0_2 total width: " << result.width_in_GeV << endl;
-      cout << " > BR(h0_2 -> ~chi0_1 ~chi0_2): " << BEreq::cb_wisusy_hdec->hhbrsn(1,2)*2.0 << endl;
+      // cout << "h0_2 total width: " << result.width_in_GeV << endl;
+      // cout << "BR(h0_2 -> ~chi0_1 ~chi0_2): " << BEreq::cb_wisusy_hdec->hhbrsn(1,2)*2.0 << endl;
     }
 
     /// MSSM decays: A0
@@ -414,7 +414,7 @@ namespace Gambit
       result.set_BF(BEreq::cb_wisusy_hdec->habrsb/2.0, 0.0, "~dbar_5", "~b_R");
       result.set_BF(BEreq::cb_wisusy_hdec->habrsl/2.0, 0.0, "~tau-_L", "~e+_6");
       result.set_BF(BEreq::cb_wisusy_hdec->habrsl/2.0, 0.0, "~e+_5", "~tau-_R");
-      cout << " > A0 total width: " << result.width_in_GeV << endl;
+      // cout << "A0 total width: " << result.width_in_GeV << endl;
     }
 
     /// MSSM decays: H+
@@ -450,7 +450,206 @@ namespace Gambit
       result.set_BF(BEreq::cb_wisusy_hdec->hcbrstb(2,2), 0.0, "~t_R", "~dbar_6");
       result.set_BF(BEreq::cb_wisusy_hdec->hcbrstb(1,2), 0.0, "~t_L", "~dbar_6");
       result.set_BF(BEreq::cb_wisusy_hdec->hcbrstb(2,1), 0.0, "~t_R", "~dbar_5");
-      cout << " > H+ total width: " << result.width_in_GeV << endl;
+      // cout << "H+ total width: " << result.width_in_GeV << endl;
+    }
+
+    /// MSSM decays: ~g
+    void gluino_decays (DecayTable::Entry& result) 
+    {
+      using namespace Pipes::gluino_decays;
+      BEreq::sdecay();
+      result.width_in_GeV = BEreq::cb_sd_gluiwidth->gluitot;
+      result.set_BF(BEreq::cb_sd_glui2body->brgsdownl, 0.0, "~d_L", "dbar");
+      result.set_BF(BEreq::cb_sd_glui2body->brgsdownl, 0.0, "~dbar_L", "d");
+      result.set_BF(BEreq::cb_sd_glui2body->brgsdownr, 0.0, "~d_R", "dbar");
+      result.set_BF(BEreq::cb_sd_glui2body->brgsdownr, 0.0, "~dbar_R", "d");
+      result.set_BF(BEreq::cb_sd_glui2body->brgsupl, 0.0, "~u_L", "ubar");
+      result.set_BF(BEreq::cb_sd_glui2body->brgsupl, 0.0, "~ubar_L", "u");
+      result.set_BF(BEreq::cb_sd_glui2body->brgsupr, 0.0, "~u_R", "ubar");
+      result.set_BF(BEreq::cb_sd_glui2body->brgsupr, 0.0, "~ubar_R", "u");
+      result.set_BF(BEreq::cb_sd_glui2body->brgsdownl, 0.0, "~s_L", "sbar");
+      result.set_BF(BEreq::cb_sd_glui2body->brgsdownl, 0.0, "~sbar_L", "s");
+      result.set_BF(BEreq::cb_sd_glui2body->brgsdownr, 0.0, "~s_R", "sbar");
+      result.set_BF(BEreq::cb_sd_glui2body->brgsdownr, 0.0, "~sbar_R", "s");
+      result.set_BF(BEreq::cb_sd_glui2body->brgsupl, 0.0, "~c_L", "cbar");
+      result.set_BF(BEreq::cb_sd_glui2body->brgsupl, 0.0, "~cbar_L", "c");
+      result.set_BF(BEreq::cb_sd_glui2body->brgsupr, 0.0, "~c_R", "cbar");
+      result.set_BF(BEreq::cb_sd_glui2body->brgsupr, 0.0, "~cbar_R", "c");
+      result.set_BF(BEreq::cb_sd_glui2body->brgsb1, 0.0, "~b_L", "bbar");
+      result.set_BF(BEreq::cb_sd_glui2body->brgsb1, 0.0, "~dbar_5", "b");
+      result.set_BF(BEreq::cb_sd_glui2body->brgsb2, 0.0, "~b_R", "bbar");
+      result.set_BF(BEreq::cb_sd_glui2body->brgsb2, 0.0, "~dbar_6", "b");
+      result.set_BF(BEreq::cb_sd_glui2body->brgst1, 0.0, "~t_L", "tbar");
+      result.set_BF(BEreq::cb_sd_glui2body->brgst1, 0.0, "~ubar_5", "t");
+      result.set_BF(BEreq::cb_sd_glui2body->brgst2, 0.0, "~t_R", "tbar");
+      result.set_BF(BEreq::cb_sd_glui2body->brgst2, 0.0, "~ubar_6", "t");
+      result.set_BF(BEreq::cb_sd_gluiloop->brglnjgluon(1), 0.0, "~chi0_1", "g");
+      result.set_BF(BEreq::cb_sd_gluiloop->brglnjgluon(2), 0.0, "~chi0_2", "g");
+      result.set_BF(BEreq::cb_sd_gluiloop->brglnjgluon(3), 0.0, "~chi0_3", "g");
+      result.set_BF(BEreq::cb_sd_gluiloop->brglnjgluon(4), 0.0, "~chi0_4", "g");
+      result.set_BF(BEreq::cb_sd_glui3body->brgodn(1), 0.0, "~chi0_1", "d", "dbar");
+      result.set_BF(BEreq::cb_sd_glui3body->brgodn(2), 0.0, "~chi0_2", "d", "dbar");
+      result.set_BF(BEreq::cb_sd_glui3body->brgodn(3), 0.0, "~chi0_3", "d", "dbar");
+      result.set_BF(BEreq::cb_sd_glui3body->brgodn(4), 0.0, "~chi0_4", "d", "dbar");
+      result.set_BF(BEreq::cb_sd_glui3body->brgoup(1), 0.0, "~chi0_1", "u", "ubar");
+      result.set_BF(BEreq::cb_sd_glui3body->brgoup(2), 0.0, "~chi0_2", "u", "ubar");
+      result.set_BF(BEreq::cb_sd_glui3body->brgoup(3), 0.0, "~chi0_3", "u", "ubar");
+      result.set_BF(BEreq::cb_sd_glui3body->brgoup(4), 0.0, "~chi0_4", "u", "ubar");
+      result.set_BF(BEreq::cb_sd_glui3body->brgodn(1), 0.0, "~chi0_1", "s", "sbar");
+      result.set_BF(BEreq::cb_sd_glui3body->brgodn(2), 0.0, "~chi0_2", "s", "sbar");
+      result.set_BF(BEreq::cb_sd_glui3body->brgodn(3), 0.0, "~chi0_3", "s", "sbar");
+      result.set_BF(BEreq::cb_sd_glui3body->brgodn(4), 0.0, "~chi0_4", "s", "sbar");
+      result.set_BF(BEreq::cb_sd_glui3body->brgoup(1), 0.0, "~chi0_1", "c", "cbar");
+      result.set_BF(BEreq::cb_sd_glui3body->brgoup(2), 0.0, "~chi0_2", "c", "cbar");
+      result.set_BF(BEreq::cb_sd_glui3body->brgoup(3), 0.0, "~chi0_3", "c", "cbar");
+      result.set_BF(BEreq::cb_sd_glui3body->brgoup(4), 0.0, "~chi0_4", "c", "cbar");
+      result.set_BF(BEreq::cb_sd_glui3body->brgobt(1), 0.0, "~chi0_1", "b", "bbar");
+      result.set_BF(BEreq::cb_sd_glui3body->brgobt(2), 0.0, "~chi0_2", "b", "bbar");
+      result.set_BF(BEreq::cb_sd_glui3body->brgobt(3), 0.0, "~chi0_3", "b", "bbar");
+      result.set_BF(BEreq::cb_sd_glui3body->brgobt(4), 0.0, "~chi0_4", "b", "bbar");
+      result.set_BF(BEreq::cb_sd_glui3body->brgotp(1), 0.0, "~chi0_1", "t", "tbar");
+      result.set_BF(BEreq::cb_sd_glui3body->brgotp(2), 0.0, "~chi0_2", "t", "tbar");
+      result.set_BF(BEreq::cb_sd_glui3body->brgotp(3), 0.0, "~chi0_3", "t", "tbar");
+      result.set_BF(BEreq::cb_sd_glui3body->brgotp(4), 0.0, "~chi0_4", "t", "tbar");
+      result.set_BF(BEreq::cb_sd_glui3body->brgoud(1), 0.0, "~chi+_1", "d", "ubar");
+      result.set_BF(BEreq::cb_sd_glui3body->brgoud(1), 0.0, "~chi-_1", "u", "dbar");
+      result.set_BF(BEreq::cb_sd_glui3body->brgoud(2), 0.0, "~chi+_2", "d", "ubar");
+      result.set_BF(BEreq::cb_sd_glui3body->brgoud(2), 0.0, "~chi-_2", "u", "dbar");
+      result.set_BF(BEreq::cb_sd_glui3body->brgoud(1), 0.0, "~chi+_1", "s", "cbar");
+      result.set_BF(BEreq::cb_sd_glui3body->brgoud(1), 0.0, "~chi-_1", "c", "sbar");
+      result.set_BF(BEreq::cb_sd_glui3body->brgoud(2), 0.0, "~chi+_2", "s", "cbar");
+      result.set_BF(BEreq::cb_sd_glui3body->brgoud(2), 0.0, "~chi-_2", "c", "sbar");
+      result.set_BF(BEreq::cb_sd_glui3body->brgotb(1), 0.0, "~chi+_1", "b", "tbar");
+      result.set_BF(BEreq::cb_sd_glui3body->brgotb(1), 0.0, "~chi-_1", "t", "bbar");
+      result.set_BF(BEreq::cb_sd_glui3body->brgotb(2), 0.0, "~chi+_2", "b", "tbar");
+      result.set_BF(BEreq::cb_sd_glui3body->brgotb(2), 0.0, "~chi-_2", "t", "bbar");
+      result.set_BF(BEreq::cb_sd_glui3body->brwst1b, 0.0, "~t_L", "bbar", "W-");
+      result.set_BF(BEreq::cb_sd_glui3body->brwst1b, 0.0, "~ubar_5", "b", "W+");
+      result.set_BF(BEreq::cb_sd_glui3body->brhcst1b, 0.0, "~t_L", "bbar", "H-");
+      result.set_BF(BEreq::cb_sd_glui3body->brhcst1b, 0.0, "~ubar_5", "b", "H+");
+      // cout << "gluino total width: " << result.width_in_GeV << endl;
+    }
+
+    /// MSSM decays: ~t_1
+    void stop_1_decays (DecayTable::Entry& result) 
+    {
+      using namespace Pipes::stop_1_decays;
+      BEreq::sdecay();
+      result.width_in_GeV = BEreq::cb_sd_stopwidth->stoptot4; // CsB: CHECK THIS WITH MAGGIE !!!
+      result.set_BF(BEreq::cb_sd_stop2body->brst1neutt(1), 0.0, "~chi0_1", "t");
+      result.set_BF(BEreq::cb_sd_stop2body->brst1neutt(2), 0.0, "~chi0_2", "t");
+      result.set_BF(BEreq::cb_sd_stop2body->brst1neutt(3), 0.0, "~chi0_3", "t");
+      result.set_BF(BEreq::cb_sd_stop2body->brst1neutt(4), 0.0, "~chi0_4", "t");
+      result.set_BF(BEreq::cb_sd_stop2body->brst1charb(1), 0.0, "~chi+_1", "b");
+      result.set_BF(BEreq::cb_sd_stop2body->brst1charb(2), 0.0, "~chi+_2", "b");
+      result.set_BF(BEreq::cb_sd_stop2body->brst1glui, 0.0, "~g", "t");
+      result.set_BF(BEreq::cb_sd_stop2body->brst1hcsb(1), 0.0, "~b_L", "H+");
+      result.set_BF(BEreq::cb_sd_stop2body->brst1hcsb(2), 0.0, "~b_R", "H+");
+      result.set_BF(BEreq::cb_sd_stop2body->brst1wsb(1), 0.0, "~b_L", "W+");
+      result.set_BF(BEreq::cb_sd_stop2body->brst1wsb(2), 0.0, "~b_R", "W+");
+      result.set_BF(BEreq::cb_sd_stoploop->brgamma, 0.0, "~chi0_1", "c");
+      result.set_BF(BEreq::cb_sd_stoploop->brgammaup, 0.0, "~chi0_1", "u");
+      result.set_BF(BEreq::cb_sd_stoploop->brgammagluino, 0.0, "~g", "c");
+      result.set_BF(BEreq::cb_sd_stop3body->brstopw(1,1), 0.0, "~chi0_1", "b", "W+");
+      result.set_BF(BEreq::cb_sd_stop3body->brstopw(1,2), 0.0, "~chi0_2", "b", "W+");
+      result.set_BF(BEreq::cb_sd_stop3body->brstopw(1,3), 0.0, "~chi0_3", "b", "W+");
+      result.set_BF(BEreq::cb_sd_stop3body->brstopw(1,4), 0.0, "~chi0_4", "b", "W+");
+      result.set_BF(BEreq::cb_sd_stop3body->brstoph(1,1), 0.0, "~chi0_1", "b", "H+");
+      result.set_BF(BEreq::cb_sd_stop3body->brstoph(1,2), 0.0, "~chi0_2", "b", "H+");
+      result.set_BF(BEreq::cb_sd_stop3body->brstoph(1,3), 0.0, "~chi0_3", "b", "H+");
+      result.set_BF(BEreq::cb_sd_stop3body->brstoph(1,4), 0.0, "~chi0_4", "b", "H+");
+      result.set_BF(BEreq::cb_sd_stop3body->brstsntau(1,1), 0.0, "~nu_tau", "b", "tau+");
+      result.set_BF(BEreq::cb_sd_stop3body->brstsnel(1), 0.0, "~nu_e", "b", "e+");
+      result.set_BF(BEreq::cb_sd_stop3body->brstsnel(1), 0.0, "~nu_mu", "b", "mu+");
+      result.set_BF(BEreq::cb_sd_stop3body->brststau(1,1), 0.0, "~e+_5", "b", "nu_tau");
+      result.set_BF(BEreq::cb_sd_stop3body->brststau(1,2), 0.0, "~e+_6", "b", "nu_tau");
+      result.set_BF(BEreq::cb_sd_stop3body->brstsel(1,1), 0.0, "~e+_L", "b", "nu_e");
+      result.set_BF(BEreq::cb_sd_stop3body->brstsel(1,2), 0.0, "~e+_R", "b", "nu_e");
+      result.set_BF(BEreq::cb_sd_stop3body->brstsel(1,1), 0.0, "~mu+_L", "b", "nu_mu");
+      result.set_BF(BEreq::cb_sd_stop3body->brstsel(1,2), 0.0, "~mu+_R", "b", "nu_mu");
+      result.set_BF(BEreq::cb_sd_stop3body->brstbsbst(1,1), 0.0, "~dbar_5", "b", "t");
+      result.set_BF(BEreq::cb_sd_stop3body->brstbsbst(1,2), 0.0, "~dbar_6", "b", "t");
+      result.set_BF(BEreq::cb_sd_stop3body->brstbbsbt(1,1), 0.0, "~b_L", "bbar", "t");
+      result.set_BF(BEreq::cb_sd_stop3body->brstbbsbt(1,2), 0.0, "~b_R", "bbar", "t");
+      result.set_BF(BEreq::cb_sd_stop3body->brstupsbdow(1,1), 0.0, "~b_L", "dbar", "u");
+      result.set_BF(BEreq::cb_sd_stop3body->brstupsbdow(1,2), 0.0, "~b_R", "dbar", "u");
+      result.set_BF(BEreq::cb_sd_stop3body->brstupsbdow(1,1), 0.0, "~b_L", "sbar", "c");
+      result.set_BF(BEreq::cb_sd_stop3body->brstupsbdow(1,2), 0.0, "~b_R", "sbar", "c");
+      result.set_BF(BEreq::cb_sd_stop3body->brsttausbnu(1,1), 0.0, "~b_L", "tau+", "nu_tau");
+      result.set_BF(BEreq::cb_sd_stop3body->brsttausbnu(1,2), 0.0, "~b_R", "tau+", "nu_tau");
+      result.set_BF(BEreq::cb_sd_stop3body->brstelsbnu(1,1), 0.0, "~b_L", "e+", "nu_e");
+      result.set_BF(BEreq::cb_sd_stop3body->brstelsbnu(1,2), 0.0, "~b_R", "e+", "nu_e");
+      result.set_BF(BEreq::cb_sd_stop3body->brstelsbnu(1,1), 0.0, "~b_L", "mu+", "nu_mu");
+      result.set_BF(BEreq::cb_sd_stop3body->brstelsbnu(1,2), 0.0, "~b_R", "mu+", "nu_mu");
+      cout << "~t_1 total width: " << result.width_in_GeV << endl;
+    }
+
+    /// MSSM decays: ~t_2
+    void stop_2_decays (DecayTable::Entry& result) 
+    {
+      using namespace Pipes::stop_2_decays;
+      BEreq::sdecay();
+      result.width_in_GeV = BEreq::cb_sd_stopwidth->stoptot4; // CsB: CHECK THIS WITH MAGGIE !!!
+      result.set_BF(BEreq::cb_sd_stop2body->brst2neutt(1), 0.0, "~chi0_1", "t");
+      result.set_BF(BEreq::cb_sd_stop2body->brst2neutt(2), 0.0, "~chi0_2", "t");
+      result.set_BF(BEreq::cb_sd_stop2body->brst2neutt(3), 0.0, "~chi0_3", "t");
+      result.set_BF(BEreq::cb_sd_stop2body->brst2neutt(4), 0.0, "~chi0_4", "t");
+      result.set_BF(BEreq::cb_sd_stop2body->brst2charb(1), 0.0, "~chi+_1", "b");
+      result.set_BF(BEreq::cb_sd_stop2body->brst2charb(2), 0.0, "~chi+_2", "b");
+      result.set_BF(BEreq::cb_sd_stop2body->brst2glui, 0.0, "~g", "t");
+      result.set_BF(BEreq::cb_sd_stop2body->brst2hl, 0.0, "~t_L", "h0_1");
+      result.set_BF(BEreq::cb_sd_stop2body->brst2hh, 0.0, "~t_L", "h0_2");
+      result.set_BF(BEreq::cb_sd_stop2body->brst2ha, 0.0, "~t_L", "A0");
+      result.set_BF(BEreq::cb_sd_stop2body->brst2hcsb(1), 0.0, "~b_L", "H+");
+      result.set_BF(BEreq::cb_sd_stop2body->brst2hcsb(2), 0.0, "~b_R", "H+");
+      result.set_BF(BEreq::cb_sd_stop2body->brst2ztop, 0.0, "~t_L", "Z0");
+      result.set_BF(BEreq::cb_sd_stop2body->brst2wsb(1), 0.0, "~b_L", "W+");
+      result.set_BF(BEreq::cb_sd_stop2body->brst2wsb(2), 0.0, "~b_R", "W+");
+      result.set_BF(BEreq::cb_sd_stop3body->brstopw(2,1), 0.0, "~chi0_1", "b", "W+");
+      result.set_BF(BEreq::cb_sd_stop3body->brstopw(2,2), 0.0, "~chi0_2", "b", "W+");
+      result.set_BF(BEreq::cb_sd_stop3body->brstopw(2,3), 0.0, "~chi0_3", "b", "W+");
+      result.set_BF(BEreq::cb_sd_stop3body->brstopw(2,4), 0.0, "~chi0_4", "b", "W+");
+      result.set_BF(BEreq::cb_sd_stop3body->brstoph(2,1), 0.0, "~chi0_1", "b", "H+");
+      result.set_BF(BEreq::cb_sd_stop3body->brstoph(2,2), 0.0, "~chi0_2", "b", "H+");
+      result.set_BF(BEreq::cb_sd_stop3body->brstoph(2,3), 0.0, "~chi0_3", "b", "H+");
+      result.set_BF(BEreq::cb_sd_stop3body->brstoph(2,4), 0.0, "~chi0_4", "b", "H+");
+      result.set_BF(BEreq::cb_sd_stop3body->brstsntau(2,1), 0.0, "~nu_tau", "b", "tau+");
+      result.set_BF(BEreq::cb_sd_stop3body->brstsnel(2), 0.0, "~nu_e", "b", "e+");
+      result.set_BF(BEreq::cb_sd_stop3body->brstsnel(2), 0.0, "~nu_mu", "b", "mu+");
+      result.set_BF(BEreq::cb_sd_stop3body->brststau(2,1), 0.0, "~e+_5", "b", "nu_tau");
+      result.set_BF(BEreq::cb_sd_stop3body->brststau(2,2), 0.0, "~e+_6", "b", "nu_tau");
+      result.set_BF(BEreq::cb_sd_stop3body->brstsel(2,1), 0.0, "~e+_L", "b", "nu_e");
+      result.set_BF(BEreq::cb_sd_stop3body->brstsel(2,2), 0.0, "~e+_R", "b", "nu_e");
+      result.set_BF(BEreq::cb_sd_stop3body->brstsel(2,1), 0.0, "~mu+_L", "b", "nu_mu");
+      result.set_BF(BEreq::cb_sd_stop3body->brstsel(2,2), 0.0, "~mu+_R", "b", "nu_mu");
+      result.set_BF(BEreq::cb_sd_stop3body->brstbsbst(2,1), 0.0, "~dbar_5", "b", "t");
+      result.set_BF(BEreq::cb_sd_stop3body->brstbsbst(2,2), 0.0, "~dbar_6", "b", "t");
+      result.set_BF(BEreq::cb_sd_stop3body->brstbbsbt(2,1), 0.0, "~b_L", "bbar", "t");
+      result.set_BF(BEreq::cb_sd_stop3body->brstbbsbt(2,2), 0.0, "~b_R", "bbar", "t");
+      result.set_BF(BEreq::cb_sd_stop3body->brstupsbdow(2,1), 0.0, "~b_L", "dbar", "u");
+      result.set_BF(BEreq::cb_sd_stop3body->brstupsbdow(2,2), 0.0, "~b_R", "dbar", "u");
+      result.set_BF(BEreq::cb_sd_stop3body->brstupsbdow(2,1), 0.0, "~b_L", "sbar", "c");
+      result.set_BF(BEreq::cb_sd_stop3body->brstupsbdow(2,2), 0.0, "~b_R", "sbar", "c");
+      result.set_BF(BEreq::cb_sd_stop3body->brsttausbnu(2,1), 0.0, "~b_L", "tau+", "nu_tau");
+      result.set_BF(BEreq::cb_sd_stop3body->brsttausbnu(2,2), 0.0, "~b_R", "tau+", "nu_tau");
+      result.set_BF(BEreq::cb_sd_stop3body->brstelsbnu(2,1), 0.0, "~b_L", "e+", "nu_e");
+      result.set_BF(BEreq::cb_sd_stop3body->brstelsbnu(2,2), 0.0, "~b_R", "e+", "nu_e");
+      result.set_BF(BEreq::cb_sd_stop3body->brstelsbnu(2,1), 0.0, "~b_L", "mu+", "nu_mu");
+      result.set_BF(BEreq::cb_sd_stop3body->brstelsbnu(2,2), 0.0, "~b_R", "mu+", "nu_mu");
+      result.set_BF(BEreq::cb_sd_stop3body->brst2st1tt, 0.0, "~t_L", "t", "tbar");
+      result.set_BF(BEreq::cb_sd_stop3body->brst2st1tt, 0.0, "~ubar_5", "t", "t");
+      result.set_BF(BEreq::cb_sd_stop3body->brst2st1bb, 0.0, "~t_L", "b", "bbar");
+      result.set_BF(BEreq::cb_sd_stop3body->brst2st1uu, 0.0, "~t_L", "u", "ubar");
+      result.set_BF(BEreq::cb_sd_stop3body->brst2st1dd, 0.0, "~t_L", "d", "dbar");
+      result.set_BF(BEreq::cb_sd_stop3body->brst2st1uu, 0.0, "~t_L", "c", "cbar");
+      result.set_BF(BEreq::cb_sd_stop3body->brst2st1dd, 0.0, "~t_L", "s", "sbar");
+      result.set_BF(BEreq::cb_sd_stop3body->brst2st1ee, 0.0, "~t_L", "e-", "e+");
+      result.set_BF(BEreq::cb_sd_stop3body->brst2st1ee, 0.0, "~t_L", "mu-", "mu+");
+      result.set_BF(BEreq::cb_sd_stop3body->brst2st1tautau, 0.0, "~t_L", "tau-", "tau+");
+      result.set_BF(BEreq::cb_sd_stop3body->brst2st1nunu, 0.0, "~t_L", "nu_e", "nubar_e");
+      result.set_BF(BEreq::cb_sd_stop3body->brst2st1nunu, 0.0, "~t_L", "nu_mu", "nubar_mu");
+      result.set_BF(BEreq::cb_sd_stop3body->brst2st1nunu, 0.0, "~t_L", "nu_tau", "nubar_tau");
+      cout << "~t_2 total width: " << result.width_in_GeV << endl;
     }
 
     /// Collect all the DecayTable entries into an actual DecayTable 
@@ -492,6 +691,9 @@ namespace Gambit
       decays("h0_2") = *Dep::h0_2_decay_rates;      // Add the h0_2 decays.
       decays("A0") = *Dep::A0_decay_rates;          // Add the A0 decays.
       decays("H+") = *Dep::Hplus_decay_rates;       // Add the H+ decays.
+      decays("~g") = *Dep::gluino_decay_rates;      // Add the gluino decays.
+      decays("~u_1") = *Dep::stop_1_decay_rates;    // Add the ~t_1 decays. // CsB: CHECK THIS WITH PETER !!!
+      decays("~u_2") = *Dep::stop_2_decay_rates;    // Add the ~t_2 decays. // CsB: CHECK THIS WITH PETER !!!
 
       cout << "BF for tau+ -> pi+ nubar_tau: " << decays("tau+").BF("pi+", "nubar_tau") << endl;
       result = decays;
