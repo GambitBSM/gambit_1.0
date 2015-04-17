@@ -131,11 +131,11 @@ double Spectrum::get_Pole_Mass(const std::string& mass) const
   try { 
     return UV->phys.get_Pole_Mass(mass); 
   }
-  catch(Gambit::error& e) {
+  catch(const Gambit::exception& e) {
     try {
       return LE->phys.get_Pole_Mass(mass); 
     }
-    catch(Gambit::error& e2) {
+    catch(const Gambit::exception& e2) {
        std::ostringstream errmsg;
        errmsg << "Error retrieving particle spectrum data!" << std::endl;
        errmsg << "No pole mass with string reference '"<<mass<<"' could be found in either LE or UV SubSpectrum!" <<std::endl;
@@ -147,7 +147,8 @@ double Spectrum::get_Pole_Mass(const std::string& mass) const
   // In c++11 we could add the [[noreturn]] attribute utils_error.raise()
   // to suppress the compiler warning about not returning anything (and enable
   // extra optimisations), however it isn't implemented in gcc until version 
-  // 4.8. So we'll just add an ugly default return that will never happen.
+  // 4.8 (and we decided to support earlier versions). So we'll just add an
+  // ugly default return that will never happen.
   return -1;
 }
 
@@ -156,11 +157,11 @@ double Spectrum::get_Pole_Mass(const std::string& mass, const int index) const
   try { 
     return UV->phys.get_Pole_Mass(mass,index); 
   }
-  catch(Gambit::error& e) {
+  catch(const Gambit::exception& e) {
     try {
       return LE->phys.get_Pole_Mass(mass,index); 
     }
-    catch(Gambit::error& e2) {
+    catch(const Gambit::exception& e2) {
        std::ostringstream errmsg;
        errmsg << "Error retrieving particle spectrum data!" << std::endl;
        errmsg << "No pole mass with string reference '"<<mass<<"' and index '"<<index<<"' could be found in either LE or UV SubSpectrum!" <<std::endl;
@@ -182,11 +183,11 @@ SLHAea::Coll Spectrum::getSLHAea() const
   try { 
     return UV->getSLHAea(); 
   }
-  catch(Gambit::error& e) {
+  catch(const Gambit::exception& e) {
     try {
       return LE->getSLHAea(); 
     }
-    catch(Gambit::error& e2) {
+    catch(const Gambit::exception& e2) {
        std::ostringstream errmsg;
        errmsg << "Could not convert particle spectrum data into SLHAea object! (errors returned by both UV->getSLHAea() and LE->getSLHAea())" << std::endl;
        errmsg << "(Error from UV SubSpectrum: "<< e.what() <<")"<< std::endl;

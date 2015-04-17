@@ -50,7 +50,7 @@ inline bool within_bounds(const int i, const std::set<int> allowed)
 /// Helper macro for throwing errors in base class versions of virtual functions
 ///TODO: probably want a Gambit error here
 #define vfcn_error(local_info) \
-  utils_error().raise(local_info,"This virtual function (of SubSpectrum object) has not been overridden in the derived class!")
+  utils_error().forced_throw(local_info,"This virtual function (of SubSpectrum object) has not been overridden in the derived class!")
 
 ///Note: (Ben) I have extracted these classes from the SubSpectrum class, so they are no longer nested.
 ///            I did this because there are no special access rights to nested classes in C++03, and
@@ -160,13 +160,13 @@ class SubSpectrum {
    inline double CLASS::FUNC(const std::pair<int,int> pdgpr) const            \
    {                                                                          \
       /* If there is a short name, then retrieve that plus the index */       \
-      if( PDB.has_short_name(pdgpr) )                                         \
+      if( Models::ParticleDB().has_short_name(pdgpr) )                                         \
       {                                                                       \
-        return FUNC( PDB.short_name_pair(pdgpr) );                            \
+        return FUNC( Models::ParticleDB().short_name_pair(pdgpr) );                            \
       }                                                                       \
       else /* Use the long name with no index instead */                      \
       {                                                                       \
-        return FUNC( PDB.long_name(pdgpr) );                                  \
+        return FUNC( Models::ParticleDB().long_name(pdgpr) );                                  \
       }                                                                       \
    }
 
@@ -780,7 +780,7 @@ double getter_0indices(/* function maps */
          std::ostringstream errmsg;
          errmsg << "Error retrieving particle spectrum data!" << std::endl;
          errmsg << "No "<<maplabel<<" with string reference '"<<name<<"' exists!" <<std::endl;
-         utils_error().raise(LOCAL_INFO,errmsg.str());  
+         utils_error().forced_throw(LOCAL_INFO,errmsg.str());  
       }
    }
    return result;
@@ -814,7 +814,7 @@ double getter_1index(/* function maps */
          std::ostringstream errmsg;
          errmsg << "Error retrieving particle spectrum data!" << std::endl;
          errmsg << "No "<<maplabel<<" with string reference '"<<name<<"' exists!" <<std::endl;
-         utils_error().raise(LOCAL_INFO,errmsg.str());  
+         utils_error().forced_throw(LOCAL_INFO,errmsg.str());  
       }
    }
    else
@@ -828,7 +828,7 @@ double getter_1index(/* function maps */
           std::ostringstream errmsg;
           errmsg << "Error retrieving particle spectrum data!" << std::endl;
           errmsg << "Index "<<i<<" out of bounds for "<<maplabel<<" with string reference '"<<name<<"'!" <<std::endl;
-          utils_error().raise(LOCAL_INFO,errmsg.str());  
+          utils_error().forced_throw(LOCAL_INFO,errmsg.str());  
        }
 
        ///  Get function out of map and call it on the bound flexiSUSY object
@@ -858,7 +858,7 @@ double getter_2indices(/* function maps */
       std::ostringstream errmsg;
       errmsg << "Error retrieving particle spectrum data!" << std::endl;
       errmsg << "No "<<maplabel<<" with string reference '"<<name<<"' exists!" <<std::endl;
-      utils_error().raise(LOCAL_INFO,errmsg.str());  
+      utils_error().forced_throw(LOCAL_INFO,errmsg.str());  
    }
    else
    {
@@ -872,7 +872,7 @@ double getter_2indices(/* function maps */
           std::ostringstream errmsg;
           errmsg << "Error retrieving particle spectrum data!" << std::endl;
           errmsg << "First index ("<<i<<") out of bounds for "<<maplabel<<" with string reference '"<<name<<"'!" <<std::endl;
-          utils_error().raise(LOCAL_INFO,errmsg.str());  
+          utils_error().forced_throw(LOCAL_INFO,errmsg.str());  
        }
        /// Check that index is in the permitted set
        if( not within_bounds(jo, it->second.iset2) )
@@ -880,7 +880,7 @@ double getter_2indices(/* function maps */
           std::ostringstream errmsg;
           errmsg << "Error retrieving particle spectrum data!" << std::endl;
           errmsg << "Second index ("<<j<<") out of bounds for "<<maplabel<<" with string reference '"<<name<<"'!" <<std::endl;
-          utils_error().raise(LOCAL_INFO,errmsg.str());  
+          utils_error().forced_throw(LOCAL_INFO,errmsg.str());  
        }
 
        ///  Get function out of map and call it on the bound flexiSUSY object

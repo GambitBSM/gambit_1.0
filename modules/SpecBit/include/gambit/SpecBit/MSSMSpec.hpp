@@ -414,13 +414,14 @@ namespace Gambit {
       // tmp_map["MZ"] = &Model::get_Pole_MZ;
       // tmp_map["MW"] = &Model::get_Pole_MW;
 
-      tmp_map["Z0"] = &Model::get_MVZ_pole_slha;
-      tmp_map["W+"] = &Model::get_MVWm_pole_slha;
-      tmp_map["W-"] = &Model::get_MVWm_pole_slha;
-      //tmp_map["g"] = &Model::get_MGluon_pole_slha;
-      tmp_map["g"] = &Model::get_MVG_pole_slha;
-         //tmp_map["gamma"] = &Model::get_pole_MPhoton;
-      tmp_map["gamma"] = &Model::get_MVP_pole_slha;
+      // ***REMOVED THESE! Leave them to the QedQcdWrapper.***
+      //// tmp_map["Z0"] = &Model::get_MVZ_pole_slha;
+      //// tmp_map["W+"] = &Model::get_MVWm_pole_slha;
+      //// tmp_map["W-"] = &Model::get_MVWm_pole_slha;
+      //// //tmp_map["g"] = &Model::get_MGluon_pole_slha;
+      //// tmp_map["g"] = &Model::get_MVG_pole_slha;
+      ////    //tmp_map["gamma"] = &Model::get_pole_MPhoton;
+      //// tmp_map["gamma"] = &Model::get_MVP_pole_slha;
 
       tmp_map["~g"] = &Model::get_MGlu_pole_slha; 
 
