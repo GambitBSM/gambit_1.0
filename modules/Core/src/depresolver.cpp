@@ -871,6 +871,7 @@ namespace Gambit
       graph_traits<DRes::MasterGraphType>::vertex_iterator vi, vi_end;
 
       std::vector<DRes::VertexID> vertexCandidates;  // List of all candidate vertices
+      std::vector<DRes::VertexID> disabledVertexCandidates;  // List of candidate vertices that are disabled
       std::vector<Rule> rules_1st_level;  // Rules from dependency entries
       std::vector<Rule> rules_2nd_level;  // Rules from plain entries
       std::vector<DRes::VertexID> filteredVertexCandidates_1st;  // List of all candidate vertices
@@ -879,24 +880,32 @@ namespace Gambit
       // Make list of candidate vertices.
       for (tie(vi, vi_end) = vertices(masterGraph); vi != vi_end; ++vi) 
       {
-        // Don't allow resolution by deactivated functors.
-        if (masterGraph[*vi]->status() > 0)
+        // Match capabilities and types (no type comparison when no types are
+        // given; this should only happen for output nodes).
+        if ( masterGraph[*vi]->capability() == quantity.first and
+              ( masterGraph[*vi]->type() == quantity.second or quantity.second == "" ) )
         {
-          // Match capabilities and types (no type comparison when no types are
-          // given; this should only happen for output nodes).
-          if ( masterGraph[*vi]->capability() == quantity.first and
-                ( masterGraph[*vi]->type() == quantity.second or quantity.second == "" ) )
-          {
-            // Add to vertex candidate list
-            vertexCandidates.push_back(*vi);
-          }
+          // Add to vertex candidate list
+          if (masterGraph[*vi]->status() > 0) vertexCandidates.push_back(*vi);
+          // Don't allow resolution by deactivated functors.
+          else disabledVertexCandidates.push_back(*vi);
         }
       }
       if (vertexCandidates.size() == 0)
       {
         std::ostringstream errmsg;
         errmsg << "No candidates found while trying to resolve:" << endl;
-        errmsg << printQuantityToBeResolved(quantity, toVertex) << endl << endl;
+        errmsg << printQuantityToBeResolved(quantity, toVertex) << endl;
+        if (disabledVertexCandidates.size() != 0)
+        {
+          errmsg << "\nNote that viable candidates exist but have been disabled:\n"
+                 << printGenericFunctorList(disabledVertexCandidates) 
+                 << std::endl;
+          errmsg << "Status flags:" << endl;
+          errmsg << " 0: model incompatibility" << endl;
+          errmsg << "-1: origin absent" << endl;
+          errmsg << "-2: function absent" << endl << endl;
+        }
         errmsg << "Please check inifile for typos, and make sure that the" << endl;
         errmsg << "models you are scanning are compatible with at least one function" << endl;
         errmsg << "that provides this capability (they may all have been deactivated" << endl;
@@ -1715,7 +1724,9 @@ namespace Gambit
       if (vertexCandidates.size() == 0)
       {
         std::ostringstream errmsg;
-        errmsg << "Found no candidates for backend requirements:\n" << reqs << "\nfrom group: " << group;
+        errmsg 
+          << "Found no candidates for backend requirements (capability, type):\n" 
+          << reqs << "\nfrom group: " << group;
         if (disabledVertexCandidates.size() != 0)
         {
           errmsg << "\nNote that viable candidates exist but have been disabled:\n"
