@@ -64,7 +64,7 @@ BE_INI_FUNCTION
   static bool scan_level = true;
   if (scan_level)
   {
-    logger() << "Initialising backend LibFirst, v1.1.  ";
+    logger() << "Initialising backend LibFirst, v1.1.  My .so file is in " << backendDir << ".";
     logger() << (*InUse::awesomenessByAnders ? "Ready to bust out some awesomeness." : "No awesomeness shall be forthcoming.") << EOM;
   }
   scan_level = false;

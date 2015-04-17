@@ -55,8 +55,6 @@ BE_INI_FUNCTION
     if (*InUse::nulike_bounds)
     {
 
-      str backend_dir = Backends::backendInfo().path_dir("nulike", "1.0.0");     
-
       // Fixed string length in nulike (from nulike fortran header nucommon.h)
       const int clen = 300;
       // Set the estimated relative theoretical error in neutrino flux calculation 
@@ -71,13 +69,13 @@ BE_INI_FUNCTION
       double phi_cut22 = 10.0;
       const char experiment_22[clen] = "IC-22";
       char eventf_22[clen], BGf_22[clen], file3_22[clen], edispf_22[clen];
-      Utils::strcpy2f(eventf_22, clen, runOptions->getValueOrDef<str>(backend_dir +
+      Utils::strcpy2f(eventf_22, clen, runOptions->getValueOrDef<str>(backendDir +
        "/../data/IceCube/likelihood2012/events_10deg_IC22.dat", "IC22_event_file"));      
-      Utils::strcpy2f(BGf_22, clen, runOptions->getValueOrDef<str>(backend_dir +
+      Utils::strcpy2f(BGf_22, clen, runOptions->getValueOrDef<str>(backendDir +
        "/../data/IceCube/likelihood2012/BG_distributions_IC22.dat", "IC22_BG_file"));
-      Utils::strcpy2f(file3_22, clen, runOptions->getValueOrDef<str>(backend_dir +
+      Utils::strcpy2f(file3_22, clen, runOptions->getValueOrDef<str>(backendDir +
        "/../data/IceCube/likelihood2012/nuEffArea_IC22.dat", "IC22_EffA_file"));
-      Utils::strcpy2f(edispf_22, clen, runOptions->getValueOrDef<str>(backend_dir +
+      Utils::strcpy2f(edispf_22, clen, runOptions->getValueOrDef<str>(backendDir +
        "/../data/IceCube/likelihood2012/energy_histograms_IC22.dat", "IC22_Edisp_file"));
       nulike_init(experiment_22[0], eventf_22[0], BGf_22[0], file3_22[0], edispf_22[0],
                   phi_cut22, theoryError, uselogNorm, BGLikePrecompute);
@@ -86,11 +84,11 @@ BE_INI_FUNCTION
       // then initialise it; edispf and phi_cut are ignored for 2014-type analyses.
       const char experiment_79WH[clen] = "IC-79 WH";
       char eventf_79WH[clen], BGf_79WH[clen], file3_79WH[clen];
-      Utils::strcpy2f(eventf_79WH, clen, runOptions->getValueOrDef<str>(backend_dir +
+      Utils::strcpy2f(eventf_79WH, clen, runOptions->getValueOrDef<str>(backendDir +
        "/../data/IceCube/likelihood2014/IC79_Events_WH_10degrees.dat", "IC79WH_event_file"));
-      Utils::strcpy2f(BGf_79WH, clen, runOptions->getValueOrDef<str>(backend_dir +
+      Utils::strcpy2f(BGf_79WH, clen, runOptions->getValueOrDef<str>(backendDir +
        "/../data/IceCube/likelihood2014/IC79_Background_distributions_WH.dat", "IC79WH_BG_file"));
-      Utils::strcpy2f(file3_79WH, clen, runOptions->getValueOrDef<str>(backend_dir +
+      Utils::strcpy2f(file3_79WH, clen, runOptions->getValueOrDef<str>(backendDir +
        "/../data/IceCube/likelihood2014/IC79_Partial_Likelihoods_WH", "IC79WH_partial_like_dir"));
       nulike_init(experiment_79WH[0], eventf_79WH[0], BGf_79WH[0], file3_79WH[0], edispf_22[0], 
                   phi_cut22, theoryError, uselogNorm, BGLikePrecompute);
@@ -98,11 +96,11 @@ BE_INI_FUNCTION
       // Define analysis handle and datafiles for IceCube 79-string WL analysis, then initialise it.
       const char experiment_79WL[clen] = "IC-79 WL";
       char eventf_79WL[clen], BGf_79WL[clen], file3_79WL[clen];
-      Utils::strcpy2f(eventf_79WL, clen, runOptions->getValueOrDef<str>(backend_dir +
+      Utils::strcpy2f(eventf_79WL, clen, runOptions->getValueOrDef<str>(backendDir +
        "/../data/IceCube/likelihood2014/IC79_Events_WL_10degrees.dat", "IC79WL_event_file"));
-      Utils::strcpy2f(BGf_79WL, clen, runOptions->getValueOrDef<str>(backend_dir +
+      Utils::strcpy2f(BGf_79WL, clen, runOptions->getValueOrDef<str>(backendDir +
        "/../data/IceCube/likelihood2014/IC79_Background_distributions_WL.dat", "IC79WL_BG_file"));
-      Utils::strcpy2f(file3_79WL, clen, runOptions->getValueOrDef<str>(backend_dir +
+      Utils::strcpy2f(file3_79WL, clen, runOptions->getValueOrDef<str>(backendDir +
        "/../data/IceCube/likelihood2014/IC79_Partial_Likelihoods_WL", "IC79WL_partial_like_dir"));
       nulike_init(experiment_79WL[0], eventf_79WL[0], BGf_79WL[0], file3_79WL[0], edispf_22[0], 
                   phi_cut22, theoryError, uselogNorm, BGLikePrecompute);
@@ -110,11 +108,11 @@ BE_INI_FUNCTION
       // Define analysis handle and datafiles for IceCube 79-string SL analysis, then initialise it.
       const char experiment_79SL[clen] = "IC-79 SL";
       char eventf_79SL[clen], BGf_79SL[clen], file3_79SL[clen];
-      Utils::strcpy2f(eventf_79SL, clen, runOptions->getValueOrDef<str>(backend_dir +
+      Utils::strcpy2f(eventf_79SL, clen, runOptions->getValueOrDef<str>(backendDir +
        "/../data/IceCube/likelihood2014/IC79_Events_SL_10degrees.dat", "IC79SL_event_file"));
-      Utils::strcpy2f(BGf_79SL, clen, runOptions->getValueOrDef<str>(backend_dir +
+      Utils::strcpy2f(BGf_79SL, clen, runOptions->getValueOrDef<str>(backendDir +
        "/../data/IceCube/likelihood2014/IC79_Background_distributions_SL.dat", "IC79SL_BG_file"));
-      Utils::strcpy2f(file3_79SL, clen, runOptions->getValueOrDef<str>(backend_dir +
+      Utils::strcpy2f(file3_79SL, clen, runOptions->getValueOrDef<str>(backendDir +
        "/../data/IceCube/likelihood2014/IC79_Partial_Likelihoods_SL", "IC79SL_partial_like_dir"));
       nulike_init(experiment_79SL[0], eventf_79SL[0], BGf_79SL[0], file3_79SL[0], edispf_22[0], 
                   phi_cut22, theoryError, uselogNorm, BGLikePrecompute);
