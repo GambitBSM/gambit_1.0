@@ -32,6 +32,41 @@ namespace Gambit
 
                 namespace Plugins
                 {
+                        inline std::string spacing(int len, int maxlen)
+                        {
+                                int offset = 0;
+                                if (len < maxlen) {offset=maxlen-len;}
+                                return std::string(offset+5,' ');
+                        }
+
+                        inline void print_plugins(std::map< std::string, std::map<std::string, std::vector<Plugin_Details> > >::const_iterator plugins)
+                        {
+                                const int maxlen1 = 20;
+                                const int maxlen2 = 20;
+                                typedef std::map<std::string, std::vector<Plugin_Details> > plugin_map;
+                                typedef std::map<std::string, plugin_map> plugin_mapmap;
+
+                                // Default, list-format output header
+                                std::cout << plugins->first << " plugins" << spacing(plugins->first.length() + 8, maxlen1) << "version" << spacing(7, maxlen2) << "status" << std::endl;
+                                std::cout << "----------------------------------------------------------------------------" << std::endl;
+
+                                // Loop over all entries in the plugins map map
+                                for (auto it = plugins->second.begin(); it != plugins->second.end(); ++it)
+                                {
+                                        for (auto jt = it->second.begin(); jt != it->second.end(); ++jt)
+                                        {
+                                                // Print the scanner name if this is the first version, otherwise just space
+                                                const str firstentry = (jt == it->second.begin() ? it->first : "");
+                                                std::cout << firstentry << spacing(firstentry.length(),maxlen1); 
+                                                // Print the scanner info.
+                                                std::cout << jt->version << spacing(jt->version.length(),maxlen2);
+                                                std::cout << jt->status << std::endl;
+                                        }
+                                        
+                                        std::cout << std::endl;
+                                }
+                        }
+                        
                         Plugin_Loader::Plugin_Loader() : path(GAMBIT_DIR "/ScannerBit/lib/")
                         {
                                 std::string p_str;
@@ -144,12 +179,28 @@ namespace Gambit
                                         pclose(f);
                                 }
                         }
-                                        
-                        void Plugin_Loader::print () const
+                        
+                        void Plugin_Loader::print(const std::string &plug_type) const
                         {
-                                for (auto it = plugins.begin(), end = plugins.end(); it != end; it++)
+                                if (plug_type != "")
                                 {
-                                        std::cout << it->print() << std::endl;
+                                        auto plugins = total_plugin_map.find(plug_type);
+                                        if (plugins == total_plugin_map.end())
+                                        {
+                                                scan_err << "Plugin type \"" << plug_type << "\" does not exist." << scan_end;
+                                                return;
+                                        }
+                                        else
+                                        {
+                                                print_plugins(plugins);
+                                        }
+                                }
+                                else
+                                {
+                                        for (auto it = total_plugin_map.begin(), end = total_plugin_map.end(); it != end; it++)
+                                        {
+                                                print_plugins(it);
+                                        }
                                 }
                         }
                         
@@ -220,8 +271,9 @@ namespace Gambit
                                                                 }
                                                                 else
                                                                 {
-                                                                        scan_err << "Plugin name is not defined under the \"" << *it << "\" tag.  "
-                                                                                << "using the tag \"" << it_p->first.as<std::string>() << "\" as the plugin name." << scan_end;
+                                                                        scan_warn << "Plugin name is not defined under the \"" << it->first << "\" tag.  "
+                                                                                  << "using the tag \"" << it_p->first.as<std::string>()
+                                                                                  << "\" as the plugin name." << scan_end;
                                                                         temp.plugin = it_p->first.as<std::string>();
                                                                 }
                                                                 

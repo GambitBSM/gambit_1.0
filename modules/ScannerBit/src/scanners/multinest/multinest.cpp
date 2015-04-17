@@ -55,7 +55,7 @@ scanner_plugin(MultiNest, version(0, 0, 0, bens_version))
    // Tell cmake system to search known paths for these libraries. If they aren't found,
    // they will have to be specified in config/scanner_locations.yaml before this plugin
    // can be activated. 
-   reqd_libraries("multinest_mpi");
+   reqd_libraries("multinest");
 
    plugin_constructor
    {
