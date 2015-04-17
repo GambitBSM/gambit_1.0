@@ -107,7 +107,15 @@ class SubSpectrum {
       /// If more than zero you probbaly *need* to know what model
       ///  you are working on, so we don't give all stable particles
       virtual int get_numbers_stable_particles() const { vfcn_error(LOCAL_INFO); return -1; }  
-   
+  
+      /// Limits to RGE running; warning/error raised if running beyond these is attempted.
+      /// If these aren't overridden in the derived class then effectively no limit on running will exist.
+      /// These are public so that module writers can use them to check what the limits are.
+      virtual double hard_upper() const {return DBL_MAX;}
+      virtual double soft_upper() const {return DBL_MAX;}
+      virtual double soft_lower() const {return 0.;}
+      virtual double hard_lower() const {return 0.;}
+ 
    protected:
       /// Functions to be overridden in classes derived from Spec<Derived> 
       /// (i.e. the final wrappers)
@@ -122,14 +130,7 @@ class SubSpectrum {
       /// Manually set the renormalisation scale of parameters 
       /// somewhat dangerous to allow this but may be needed
       virtual void SetScale(double) { vfcn_error(LOCAL_INFO); }
-     
-      /// Default limits to RGE running; warning/error raised if running beyond these is attempted.
-      // If these aren't overridden in the derived class then effectively no limit on running will exist.
-      virtual double hard_upper() const {return DBL_MAX;}
-      virtual double soft_upper() const {return DBL_MAX;}
-      virtual double soft_lower() const {return 0.;}
-      virtual double hard_lower() const {return 0.;}
- 
+      
 };
 
 /// Getter overloads for easier interaction with particle database

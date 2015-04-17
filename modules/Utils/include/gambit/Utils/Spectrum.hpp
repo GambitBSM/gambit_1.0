@@ -31,6 +31,7 @@
 
 #include "gambit/Utils/SMInputs.hpp"
 #include "gambit/Utils/SubSpectrum.hpp"
+#include "SLHAea/slhaea.h"
 
 namespace Gambit {
 
@@ -44,97 +45,66 @@ class Spectrum
       SubSpectrum* UV;
       SMInputs SMINPUTS;
       bool initialised;
-   
-      void check_init() const {
-        if(not initialised) utils_error().raise(LOCAL_INFO,"Access or deepcopy of empty Spectrum object attempted!");
-      }
+      void check_init() const;
 
    /// Swap resources of two Spectrum objects
    // Note: Not a member function! This is an external function which is a friend of this class.
-   friend void swap(Spectrum& first, Spectrum& second)
-   {
-       using std::swap; // enable ADL
-       swap(first.LE, second.LE); 
-       swap(first.UV, second.UV); 
-       swap(first.LE_new, second.LE_new); 
-       swap(first.UV_new, second.UV_new);
-       swap(first.SMINPUTS, second.SMINPUTS);
-       swap(first.initialised, second.initialised);
-   }
+   friend void swap(Spectrum& first, Spectrum& second);
 
    public:
+      /// @{ Constructors/Destructors
       /// Need custom copy and move constructors plus copy-assignment operator
       /// in order to manage the unique_ptrs properly.
-      /// @{
 
       /// Default constructor
-      Spectrum() : initialised(false) {}
- 
-      /// Construct new object, cloning the SubSpectrum objects supplied and taking posession of them.
-      Spectrum(const SubSpectrum& le, const SubSpectrum& uv, const SMInputs& smi)
-        : LE_new(le.clone())
-        , UV_new(uv.clone())
-        , LE(LE_new.get())   
-        , UV(UV_new.get())
-        , SMINPUTS(smi)
-        , initialised(true) 
-      {}
-
+      Spectrum();
+      /// Construct new object, cloning the SubSpectrum objects supplied and taking possession of them.
+      Spectrum(const SubSpectrum& le, const SubSpectrum& uv, const SMInputs& smi);
       /// Construct new object, wrapping existing SubSpectrum objects
-      //  Make sure the original objects don't get deleted before this wrapper does!
-      Spectrum(SubSpectrum* const le, SubSpectrum* const uv, const SMInputs& smi)
-        : LE(le)
-        , UV(uv)
-        , SMINPUTS(smi)
-        , initialised(true) 
-      {}
-
+      ///  Make sure the original objects don't get deleted before this wrapper does!
+      Spectrum(SubSpectrum* const le, SubSpectrum* const uv, const SMInputs& smi);
       /// Copy constructor, clones SubSpectrum objects.
-      // Make a non-const copy in order to use e.g. RunBothToScale function.
-      Spectrum(const Spectrum& other)
-        : LE_new(other.clone_LE())
-        , UV_new(other.clone_UV())
-        , LE(LE_new.get())   
-        , UV(UV_new.get())
-        , SMINPUTS(other.SMINPUTS)
-        , initialised(other.initialised) 
-      {}
-
+      /// Make a non-const copy in order to use e.g. RunBothToScale function.
+      Spectrum(const Spectrum& other);
       /// Copy-assignment
-      // Using "copy-and-swap" idiom
-      Spectrum& operator=(Spectrum other)
-      {
-         swap(*this, other);
-         return *this;
-      } 
-
+      /// Using "copy-and-swap" idiom
+      Spectrum& operator=(Spectrum other);
       /// Move constructor
-      Spectrum(Spectrum&& other)
-      {
-         swap(*this, other);
-      }
+      Spectrum(Spectrum&& other);
 
       /// @}
 
       /// Linked running
-      // Only possible with non-const object
-      void RunBothToScale(double scale)
-      {
-        LE->runningpars.RunToScale(scale);
-        UV->runningpars.RunToScale(scale);
-      }
+      /// Only possible with non-const object
+      void RunBothToScale(double scale);
 
-      /// Standard getters
-      // Return non-owning pointers. Make sure original Spectrum object doesn't
-      // get destroyed before you finish using these or you will cause a segfault.
-      const SubSpectrum* get_LE() const {check_init(); return LE;}
-      const SubSpectrum* get_UV() const {check_init(); return UV;}
-      const SMInputs& get_SMINPUTS() const {check_init(); return SMINPUTS;}
+      /// @{ Standard SubSpectrum getters
+      /// Return non-owning pointers. Make sure original Spectrum object doesn't
+      /// get destroyed before you finish using these or you will cause a segfault.
+      const SubSpectrum* get_LE() const; 
+      const SubSpectrum* get_UV() const; 
+      const SMInputs& get_SMINPUTS() const;
+      /// @}
 
-      /// Clone getters
-      // To clone whole object, just use copy constructor. 
-      std::unique_ptr<SubSpectrum> clone_LE() const {check_init(); return LE->clone();} 
-      std::unique_ptr<SubSpectrum> clone_UV() const {check_init(); return UV->clone();} 
+      /// @{ Clone SubSpectrum getters
+      /// To clone whole object, just use copy constructor. 
+      std::unique_ptr<SubSpectrum> clone_LE() const; 
+      std::unique_ptr<SubSpectrum> clone_UV() const; 
+      /// @}
+
+      /// @{ Pole mass getters
+      /// "Shortcut" getters to access pole masses in hosted SubSpectrum objects.
+      /// UV object given higher priority; if no match found, LE object will be 
+      /// checked. If still no match, error is thrown.
+      double get_Pole_Mass(const std::string& mass) const; 
+      double get_Pole_Mass(const std::string& mass, const int index) const; 
+      /// @}
+
+      /// SLHAea object getter
+      /// "Shortcut" getter. Tries to retrieve SLHAea object from UV SubSpectrum. If this fails,
+      /// attempts to get it from the LE SubSpectrum (though probably this will never work).
+      /// Error raised if this still fails.
+      SLHAea::Coll getSLHAea() const;
 };
 
 

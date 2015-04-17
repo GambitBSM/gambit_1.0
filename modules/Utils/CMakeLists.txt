@@ -25,6 +25,7 @@ set(source_files src/decay_table.cpp
                  src/exceptions.cpp
                  src/functors.cpp
                  src/ini_functions.cpp
+                 src/Spectrum.cpp
                  src/standalone_error_handlers.cpp
                  src/stream_overloads.cpp
                  src/terminator.cpp
@@ -36,7 +37,6 @@ set(source_files src/decay_table.cpp
 )
 
 set(header_files include/gambit/Utils/base_functions.hpp
-                 include/gambit/Utils/Spectrum.hpp
                  include/gambit/Utils/boost_fallbacks.hpp
                  include/gambit/Utils/cats.hpp
                  include/gambit/Utils/decay_table.hpp
@@ -50,6 +50,8 @@ set(header_files include/gambit/Utils/base_functions.hpp
                  include/gambit/Utils/module_macros_incore.hpp
                  include/gambit/Utils/module_macros_inmodule.hpp
                  include/gambit/Utils/safety_bucket.hpp
+                 include/gambit/Utils/Spectrum.hpp
+                 include/gambit/Utils/SubSpectrum.hpp
                  include/gambit/Utils/shared_types.hpp
                  include/gambit/Utils/standalone_module.hpp
                  include/gambit/Utils/standalone_error_handlers.hpp
