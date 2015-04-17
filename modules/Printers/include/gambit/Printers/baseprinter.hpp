@@ -31,6 +31,7 @@
 #include "gambit/Utils/yaml_options.hpp"
 #include "gambit/Utils/boost_fallbacks.hpp"
 #include "gambit/Utils/factory_registry.hpp"
+#include "gambit/Utils/model_parameters.hpp"
 
 // Boost
 #include <boost/preprocessor/seq/for_each.hpp>
