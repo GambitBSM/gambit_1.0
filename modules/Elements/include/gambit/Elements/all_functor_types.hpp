@@ -17,7 +17,7 @@
 ///  Authors:                                     
 ///                                               
 ///  \author The GAMBIT Collaboration            
-///  \date 06:03PM on April 15, 2015
+///  \date 12:30PM on April 17, 2015
 ///                                               
 ///  *********************************************
                                                   
@@ -30,6 +30,7 @@
 #define PRINTABLE_TYPES \
 (Gambit::DarkBit::simpleHistContainter)\
 (Gambit::DarkBit::stringFunkMap)\
+(std::vector<Gambit::ColliderBit::Analysis*>)\
 (Gambit::DarkBit::DD_couplings)\
 (int)\
 (DarkBit::nuyield_functype)\
@@ -37,23 +38,27 @@
 (ExampleBit_A::singleprec)\
 (DarkBit::fptr_dd)\
 (Gambit::DarkBit::DecayChain::ChainContainer)\
-(std::vector<double>)\
+(Gambit::DarkBit::stringIntMap)\
+(Gambit::ColliderBit::BuckFastBase*)\
+(Gambit::ColliderBit::PythiaBase*)\
 (parameters)\
 (Gambit::DarkBit::SimYieldTable)\
 (eaSLHA)\
 (bool)\
-(Gambit::DarkBit::stringIntMap)\
+(std::vector<double>)\
+(Gambit::ColliderBit::DelphesBase*)\
 (Gambit::DarkBit::RD_spectrum_type)\
 (SMInputs)\
 (Funk::Funk)\
-(Gambit::DarkBit::TH_ProcessCatalog)\
+(Pythia8::Event)\
+(fptr)\
 (HEPUtils::Event)\
 (Spectrum*)\
 (const SMplusUV*)\
 (Gambit::DarkBit::TH_resonances_thresholds)\
 (X)\
 (Gambit::DarkBit::DecayChain::DecayTable)\
-(fptr)\
+(Gambit::DarkBit::TH_ProcessCatalog)\
 (DecayTable)\
 (double)\
 (const Spectrum*)\
@@ -61,6 +66,7 @@
 (DecayTable::Entry)\
 (ModelParameters)\
 (str)\
+(ColliderBit::ColliderLogLikes)\
 
 // Automatically generated preprocessor sequence of backend functor types 
 #define BACKEND_FUNCTOR_TYPES \
@@ -68,7 +74,7 @@
 ((DS_PACODES*(*)(),DS_PACODES*))\
 ((void(*)(double*,double*,double*,double*),void,double*,double*,double*,double*))\
 ((void(*)(double*,double*,double*,double,double*,double*,double*,double,parameters*),void,double*,double*,double*,double,double*,double*,double*,double,parameters*))\
-((void(*)(int&,fh_real&,fh_real&,fh_real&,fh_real&,fh_real&,fh_real&,fh_real&,fh_real&,fh_real&,int&),void,int&,fh_real&,fh_real&,fh_real&,fh_real&,fh_real&,fh_real&,fh_real&,fh_real&,fh_real&,int&))\
+((void(*)(int&,fh_real&,fh_real&,fh_real&,fh_real&,fh_real&,fh_real&),void,int&,fh_real&,fh_real&,fh_real&,fh_real&,fh_real&,fh_real&))\
 ((sd_neut2body_type*(*)(),sd_neut2body_type*))\
 ((sd_sel2body_type*(*)(),sd_sel2body_type*))\
 ((sd_sdownwidth_type*(*)(),sd_sdownwidth_type*))\
@@ -103,7 +109,7 @@
 ((sd_stop4body_type*(*)(),sd_stop4body_type*))\
 ((void(*)(double*,double*,double*,double,parameters*),void,double*,double*,double*,double,parameters*))\
 ((sd_topwidth_type*(*)(),sd_topwidth_type*))\
-((void(*)(int&,fh_real&,fh_real&,fh_real&,fh_real&,fh_real&,fh_real&),void,int&,fh_real&,fh_real&,fh_real&,fh_real&,fh_real&,fh_real&))\
+((void(*)(int&,fh_real&,fh_real&,fh_real&,fh_real&,fh_real&,fh_real&,fh_real&,fh_real&,fh_real&,int&),void,int&,fh_real&,fh_real&,fh_real&,fh_real&,fh_real&,fh_real&,fh_real&,fh_real&,fh_real&,int&))\
 ((sd_char2body_type*(*)(),sd_char2body_type*))\
 ((sd_sntau2body_type*(*)(),sd_sntau2body_type*))\
 ((sd_supwidth_type*(*)(),sd_supwidth_type*))\
@@ -184,7 +190,7 @@
 ((sd_stauwidth_type*(*)(),sd_stauwidth_type*))\
 ((void(*)(char*,int&,int),void,char*,int&,int))\
 ((sd_neutloop_type*(*)(),sd_neutloop_type*))\
-((double(*)(double*,double*,double*,double*,double*,parameters*,double,double,double),double,double*,double*,double*,double*,double*,parameters*,double,double,double))\
+((void(*)(double&,double&,double&,double&),void,double&,double&,double&,double&))\
 ((double(*)(),double))\
 ((widtha_hdec_type*(*)(),widtha_hdec_type*))\
 ((void(*)(int&,fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,fh_ccomplex&),void,int&,fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,fh_ccomplex&))\
@@ -205,7 +211,7 @@
 ((dblarr*(*)(),dblarr*))\
 ((int(*)(char*),int,char*))\
 ((micrOMEGAs::MOcommonSTR*(*)(),micrOMEGAs::MOcommonSTR*))\
-((void(*)(double&,double&,double&,double&),void,double&,double&,double&,double&))\
+((double(*)(double*,double*,double*,double*,double*,parameters*,double,double,double),double,double*,double*,double*,double*,double*,parameters*,double,double,double))\
 ((DS_RDLUN*(*)(),DS_RDLUN*))\
 ((void(*)(const char *),void,const char *))\
 

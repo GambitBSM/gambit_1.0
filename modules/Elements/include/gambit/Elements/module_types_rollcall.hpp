@@ -20,7 +20,7 @@
 ///  Authors:                                     
 ///                                               
 ///  \author The GAMBIT Collaboration            
-///  \date 06:02PM on April 15, 2015
+///  \date 12:30PM on April 17, 2015
 ///                                               
 ///  *********************************************
                                                   
@@ -31,6 +31,7 @@
 #include "gambit/DecayBit/DecayBit_types.hpp"
 #include "gambit/ExampleBit_A/ExampleBit_A_types.hpp"
 #include "gambit/DarkBit/DarkBit_types.hpp"
+#include "gambit/ColliderBit/ColliderBit_types.hpp"
 #include "gambit/EWPOBit/EWPOBit_types.hpp"
 
 #endif // defined __module_types_rollcall_hpp__

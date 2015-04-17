@@ -181,6 +181,31 @@ def main(argv):
     cmakelist_txt_out += ")\n\n"
 
     ## end adding scannbit executable files to CMakeLists.txt ##
+    
+    ## begin adding printer files to CMakeLists.txt ##
+
+    scan_printer_srcs = []
+    scan_printer_hdrs = []
+    if os.path.exists("./Printers/src"):
+                 scan_printer_srcs = [ root + "/" + f for root,dirs,files in os.walk("./Printers/src") for f in files if f.endswith(".cpp") or f.endswith(".c") or f.endswith(".cc") or f.endswith(".cxx") ]
+    if os.path.exists("./Printers/include/gambit/Printers"):
+                 scan_printer_hdrs = [ root + "/" + f for root,dirs,files in os.walk("./Printers/include/gambit/Printers") for f in files if f.endswith(".hpp") or f.endswith(".h") ]
+
+    cmakelist_txt_out += "set( scanner_printer_sources\n"
+
+    for source in sorted(scan_printer_srcs):
+        cmakelist_txt_out += " "*16 + "${PROJECT_SOURCE_DIR}/Printers/src/" + source.split('/Printers/src/')[1] + "\n"
+
+    cmakelist_txt_out += ")\n\n"
+
+    cmakelist_txt_out += "set( scanner_printer_headers\n"
+
+    for header in sorted(scan_printer_hdrs):
+        cmakelist_txt_out += " "*16 + "${PROJECT_SOURCE_DIR}/Printers/include/gambit/Printers/" + header.split('/Printers/include/gambit/Printers/')[1] + "\n"
+
+    cmakelist_txt_out += ")\n\n"
+
+    ## end adding printer files to CMakeLists.txt ##
 
     # loop through the different plugin types
     for i in xrange(len(plug_type)):
@@ -543,15 +568,20 @@ add_dependencies(scanlibs yaml-cpp)             \n\
 set_target_properties( scanlibs                 \n\
                        PROPERTIES               \n\
                        RUNTIME_OUTPUT_DIRECTORY \"${CMAKE_CURRENT_SOURCE_DIR}/bin\")\n\n\
+set( scanbit_standalone_hdrs                    \n\
+        ${scanbit_standalone_headers}           \n\
+        ${scanner_printer_headers}              \n\
+)                                               \n\n\
 set( scanbit_standalone_src                     \n\
         ${scanbit_standalone_sources}           \n\
         ${GAMBIT_BASIC_COMMON_OBJECTS}          \n\
-        $<TARGET_OBJECTS:Printers>              \n\
+        ${scanner_printer_sources}              \n\
         $<TARGET_OBJECTS:ScannerBit>            \n\
 )                                               \n\n\
-add_gambit_executable( ScannerBit_standalone SOURCES ${scanbit_standalone_src} HEADERS ${scanbit_standalone_headers})\n\
+add_gambit_executable( ScannerBit_standalone SOURCES ${scanbit_standalone_src} HEADERS ${scanbit_standalone_hdrs})\n\
 set_target_properties( ScannerBit_standalone    \n\
                        PROPERTIES               \n\
+                       COMPILE_FLAGS \"-DSTANDALONE\"\n\
                        RUNTIME_OUTPUT_DIRECTORY \"${CMAKE_CURRENT_SOURCE_DIR}/bin\")\n\
 add_dependencies(ScannerBit_standalone ScannerBit)\n\
 add_dependencies(ScannerBit_standalone mkpath)  \n\
