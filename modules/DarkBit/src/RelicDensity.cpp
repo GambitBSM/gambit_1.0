@@ -60,7 +60,7 @@ namespace Gambit {
       // NB: eventually, this function should not be BE-dependent anymore!
       // DarkSUSY conventions like the ones below are only used until we have 
       // decided on a format for the model representation
-      int kgamma=13,kw=14,kz=15,kt=11,kh1=17,kh2=18,kh3=19,khc=20;
+      int kw=14,kz=15,kt=11,kh1=17,kh2=18,kh3=19,khc=20;
 
       // introduce pointers to DS mass spectrum and relevant particle info
       DS_PACODES *DSpart = &(*BEreq::pacodes);
