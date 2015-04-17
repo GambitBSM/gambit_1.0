@@ -49,9 +49,9 @@ namespace Gambit
       // Module function asks for Spectrum* with capability MSSM_spectrum.
       // i.e. has DEPENDENCY(MSSM_spectrum, Spectrum*) 
       namespace myPipe = Pipes::exampleRead;
-      const SMplusUV* matched_spectra = *myPipe::Dep::MSSM_spectrum;
-      const Spectrum* spec = matched_spectra->get_UV(); // MSSMSpec Spectrum object
-      const Spectrum* SM   = matched_spectra->get_SM(); // QedQcdWrapper Spectrum object
+      const Spectrum* matched_spectra = *myPipe::Dep::MSSM_spectrum;
+      const SubSpectrum* spec = matched_spectra->get_UV(); // MSSMSpec SubSpectrum object
+      const SubSpectrum* SM   = matched_spectra->get_LE(); // QedQcdWrapper SubSpectrum object
 
       // Extract SLHAea object
       // This copies the data out. Could possible change it to pass out a
@@ -284,13 +284,13 @@ namespace Gambit
              }
            }
 
-           get_polemass_functor(const Spectrum* specin, SLHAea::Coll& slhaeain) 
+           get_polemass_functor(const SubSpectrum* specin, SLHAea::Coll& slhaeain) 
              : spec(specin)
              , slhaea(slhaeain)
            {}
 
            private:
-             const Spectrum* spec;
+             const SubSpectrum* spec;
              SLHAea::Coll slhaea;
          }; 
 

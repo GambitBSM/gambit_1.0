@@ -2,7 +2,7 @@
 //   *********************************************
 ///  \file
 ///
-///  MSSM derivation of Spectrum class. Designed
+///  MSSM derived version of SubSpectrum class. Designed
 ///  for easy interface to FlexibleSUSY, but also
 ///  works with SoftSUSY as the backend with an
 ///  appropriately designed intermediate later.
@@ -29,7 +29,7 @@
 
 #include <memory>
 
-#include "gambit/Utils/Spectrum.hpp"
+#include "gambit/Utils/SubSpectrum.hpp"
 #include "gambit/Utils/util_functions.hpp"
 
 // Flexible SUSY stuff (should not be needed by the rest of gambit)
@@ -447,7 +447,7 @@ namespace Gambit {
    template <class Model> double get_MAh1_pole(const Model& model) { return model.get_MAh_pole_slha(1); }
    template <class Model> double get_MHpm1_pole(const Model& model) { return model.get_MHpm_pole_slha(1); }
 
-   // Note! Map fillers appended with "_extraM" or "_extraI" will be treated by the Spectrum object as
+   // Note! Map fillers appended with "_extraM" or "_extraI" will be treated by the SubSpectrum object as
    // alternative routines to call for that getter type.
    // e.g.
    // get_Pole_Mass(name)

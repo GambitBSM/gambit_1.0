@@ -3,7 +3,7 @@
 ///  \file
 ///
 ///  This class is used to wrap the QedQcd object used by SoftSUSY
-///  and FlexibleSUSY in a Gambit Spectrum object. This is to enable
+///  and FlexibleSUSY in a Gambit SubSpectrum object. This is to enable
 ///  access to the parameters of the SM defined as a low-energy effective theory 
 ///  (as opposed to correspending information defined in a UV model). 
 ///  Parameters defined this way are often used as input to a physics calculator.
@@ -23,9 +23,6 @@
 #include <boost/preprocessor/seq/elem.hpp>
 #include <boost/preprocessor/seq/for_each_product.hpp>
 
-#include "lowe.h" ///TODO: wrap using BOSS at some point, i.e. get this from FlexibleSUSY or SoftSUSY
-#include "gambit/Utils/SMInputs.hpp"
-#include "gambit/Utils/Spectrum.hpp"
 #include "gambit/SpecBit/QedQcdWrapper.hpp"
 
 /// Macro to help assign the same function pointers to multiple string keys
