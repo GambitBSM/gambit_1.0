@@ -455,10 +455,12 @@ is a unique record for every rank/pointID pair.";
 
     void asciiPrinter::print(int const& value, const std::string& label, const int IDcode, const int thread, const int pointID)
     { template_print(value,label,IDcode,thread,pointID); }
-    void asciiPrinter::print(unsigned int const& value, const std::string& label, const int IDcode, const int thread, const int pointID)
-    { template_print(value,label,IDcode,thread,pointID); }
     void asciiPrinter::print(double const& value, const std::string& label, const int IDcode, const int thread, const int pointID)
     { template_print(value,label,IDcode,thread,pointID); }
+    #ifndef STANDALONE  // Need to disable print functions for these if STANDALONE is defined (see baseprinter.hpp line ~41)
+    void asciiPrinter::print(unsigned int const& value, const std::string& label, const int IDcode, const int thread, const int pointID)
+    { template_print(value,label,IDcode,thread,pointID); }
+    #endif 
     // etc. as needed... 
 
     void asciiPrinter::print(std::vector<double> const& value, const std::string& label, const int IDcode, const int thread, const int pointID)

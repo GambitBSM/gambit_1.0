@@ -122,12 +122,17 @@ namespace Gambit
         // Need to define one of these for every type we want to print!
         // Could use macros again to generate identical print functions 
         // for all types that have a << operator already defined.
+
         void print(int const&,                 const std::string& label, const int IDcode, const int rank, const int pointID);
-        void print(unsigned int const&,        const std::string& label, const int IDcode, const int rank, const int pointID);
         void print(double const&,              const std::string& label, const int IDcode, const int rank, const int pointID);
         void print(std::vector<double> const&, const std::string& label, const int IDcode, const int rank, const int pointID);
         void print(ModelParameters const&,     const std::string& label, const int IDcode, const int rank, const int pointID);
-      
+        #ifndef STANDALONE  // Need to disable print functions for these if STANDALONE is defined (see baseprinter.hpp line ~41)
+        // unsigned int is chosen somewhat arbitrarily just to demonstrate this requirement. Will be more important if other
+        // fancier types need to be disabled.
+        void print(unsigned int const&,        const std::string& label, const int IDcode, const int rank, const int pointID);         
+        #endif      
+
         /// Helper print functions
         // Used to reduce repetition in definitions of virtual function overloads 
         // (useful since there is no automatic type conversion possible)
