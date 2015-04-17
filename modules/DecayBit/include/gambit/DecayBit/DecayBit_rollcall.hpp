@@ -150,6 +150,34 @@ START_MODULE
     #undef FUNCTION
 
   #undef CAPABILITY
+
+  #define CAPABILITY sbottom_1_decay_rates
+  START_CAPABILITY
+
+    #define FUNCTION sbottom_1_decays
+    START_FUNCTION(DecayTable::Entry)
+    BACKEND_REQ(sdecay, (),void, ())
+    BACKEND_REQ(cb_sd_sbotwidth, (), sd_sbotwidth_type)
+    BACKEND_REQ(cb_sd_sbot2body, (), sd_sbot2body_type)
+    BACKEND_REQ(cb_sd_sbot3body, (), sd_sbot3body_type)
+    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
+    #undef FUNCTION
+
+  #undef CAPABILITY
+
+  #define CAPABILITY sbottom_2_decay_rates
+  START_CAPABILITY
+
+    #define FUNCTION sbottom_2_decays
+    START_FUNCTION(DecayTable::Entry)
+    BACKEND_REQ(sdecay, (),void, ())
+    BACKEND_REQ(cb_sd_sbotwidth, (), sd_sbotwidth_type)
+    BACKEND_REQ(cb_sd_sbot2body, (), sd_sbot2body_type)
+    BACKEND_REQ(cb_sd_sbot3body, (), sd_sbot3body_type)
+    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
+    #undef FUNCTION
+
+  #undef CAPABILITY
  
   #define CAPABILITY decay_rates
   START_CAPABILITY
@@ -181,6 +209,8 @@ START_MODULE
     DEPENDENCY(gluino_decay_rates, DecayTable::Entry) 
     DEPENDENCY(stop_1_decay_rates, DecayTable::Entry) 
     DEPENDENCY(stop_2_decay_rates, DecayTable::Entry) 
+    DEPENDENCY(sbottom_1_decay_rates, DecayTable::Entry) 
+    DEPENDENCY(sbottom_2_decay_rates, DecayTable::Entry) 
     #undef FUNCTION
 
   #undef CAPABILITY
