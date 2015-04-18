@@ -40,20 +40,19 @@
 // Macros
 
 #ifndef STANDALONE
-   // If we are in a main gambit executable, we need to know all the potentially printable types
-   #include "gambit/Elements/all_functor_types.hpp"
+   // If we are in a main gambit executable, we need to know all the potentially printable types.
+   #include "gambit/Utils/all_functor_types.hpp"
 #else
-   // Otherwise, we only need a limited set, for use in ScannerBit standalone.
-   // For using printers in other standalone modules, some slightly different strategy may be needed
-   #define PRINTABLE_TYPES \
-(bool)\
-(int)\
-(double)\
-(std::vector<bool>)\
-(std::vector<int>)\
-(std::vector<double>)\
-(ModelParameters)\
-   // Add more as needed
+   // Otherwise, we are in the ScannerBit standalone and need only a limited set.
+   #define PRINTABLE_TYPES         \
+     (bool)                        \
+     (int)                         \
+     (double)                      \
+     (std::vector<bool>)           \
+     (std::vector<int>)            \
+     (std::vector<double>)         \
+     (ModelParameters)
+     // Add more as needed
 #endif
 
 

@@ -60,3 +60,23 @@ if(EXISTS "${PROJECT_SOURCE_DIR}/ExampleBit_A/" AND ";${GAMBIT_BITS};" MATCHES "
     target_link_libraries(ExampleBit_A_standalone ${delphes_LDFLAGS} ${ROOT_LIBRARIES} ${ROOT_LIBRARY_DIR}/libEG.so)
   endif()
 endif()
+
+# Add the ScannerBit standalone executable
+if(EXISTS "${PROJECT_SOURCE_DIR}/ScannerBit/")
+  add_gambit_executable(ScannerBit_standalone SOURCES ${PROJECT_SOURCE_DIR}/ScannerBit/examples/ScannerBit_standalone.cpp
+                                                      $<TARGET_OBJECTS:ScannerBit>
+                                                      $<TARGET_OBJECTS:Printers>              
+                                                      ${GAMBIT_BASIC_COMMON_OBJECTS}
+  )
+  set_target_properties(ScannerBit_standalone PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/ScannerBit/bin")
+  add_dependencies(ScannerBit_standalone ScannerBit mkpath)
+  target_link_libraries(ScannerBit_standalone yaml-cpp)
+  if (NOT EXCLUDE_FLEXIBLESUSY)
+    add_dependencies(ScannerBit_standalone flexiblesusy)
+    target_link_libraries(ScannerBit_standalone ${flexiblesusy_LDFLAGS})
+  endif()
+  if (NOT EXCLUDE_DELPHES)
+    add_dependencies(ScannerBit_standalone delphes)
+    target_link_libraries(ScannerBit_standalone ${delphes_LDFLAGS} ${ROOT_LIBRARIES} ${ROOT_LIBRARY_DIR}/libEG.so)
+  endif()
+endif()
