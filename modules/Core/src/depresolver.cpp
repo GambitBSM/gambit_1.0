@@ -903,8 +903,9 @@ namespace Gambit
                  << std::endl;
           errmsg << "Status flags:" << endl;
           errmsg << " 0: model incompatibility" << endl;
-          errmsg << "-1: origin absent" << endl;
-          errmsg << "-2: function absent" << endl << endl;
+          errmsg << "-1: backend absent" << endl;
+          errmsg << "-2: function absent from backend" << endl;
+          errmsg << "-3: required BOSSed class missing => backend providing class absent" << endl << endl; 
         }
         errmsg << "Please check inifile for typos, and make sure that the" << endl;
         errmsg << "models you are scanning are compatible with at least one function" << endl;
