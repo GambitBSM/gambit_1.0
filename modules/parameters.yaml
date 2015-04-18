@@ -12,7 +12,7 @@ CMSSM:
     prior_type: log
     range: [0.001,1000]
   M12:
-  #  same_as: CMSSM_demo::M0
+  #  same_as: CMSSM::M0
   signmu:
     range: [-1, 1]
     fixed_value: 1

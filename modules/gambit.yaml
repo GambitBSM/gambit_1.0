@@ -40,7 +40,7 @@ Priors:
   # decided that we can deal with this via the "purpose" system.
 
   #m0_prior:
-  #  parameters: [CMSSM_demo::M0]
+  #  parameters: [CMSSM::M0]
   #  prior_type: log
   #  range: [0.001,1000]
 

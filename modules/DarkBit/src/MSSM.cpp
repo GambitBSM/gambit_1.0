@@ -78,7 +78,7 @@ namespace Gambit {
      * indicating if point initialization was successful, which is essentially
      * always true for models that satisfy the dependency resolver.
      *
-     * Supported models: CMSSM, CMSSM_demo, MSSM25atQ
+     * Supported models: CMSSM, MSSM25atQ
      */
     void DarkSUSY_PointInit_MSSM(bool &result)
     {
@@ -127,7 +127,7 @@ namespace Gambit {
       }
 
       // use SLHA for initialization initialization
-      else if (ModelInUse("CMSSM_demo") or ModelInUse("MSSM25atQ"))
+      else if (ModelInUse("CMSSM") or ModelInUse("MSSM25atQ"))
       {
         // Save eaSLHA file to disk
         eaSLHA mySLHA = *Dep::MSSM_spectrum;

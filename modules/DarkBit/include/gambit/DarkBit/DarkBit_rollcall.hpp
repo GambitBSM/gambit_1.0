@@ -73,7 +73,7 @@ START_MODULE
     #define FUNCTION DarkSUSY_PointInit_MSSM
       START_FUNCTION(bool)
       DEPENDENCY(MSSM_spectrum, eaSLHA) 
-      ALLOW_MODELS(CMSSM_demo,CMSSM,MSSM25atQ)
+      ALLOW_MODELS(CMSSM,MSSM25atQ)
       // CMSSM
       BACKEND_REQ(dsgive_model_isasugra, (), void, (double&,double&,double&,double&,double&))
       BACKEND_REQ(dssusy_isasugra, (), void, (int&,int&))
@@ -347,7 +347,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION TH_ProcessCatalog_CMSSM
       START_FUNCTION(Gambit::DarkBit::TH_ProcessCatalog)
-      //ALLOW_MODELS(CMSSM_demo, MSSM25atQ)
+      //ALLOW_MODELS(CMSSM, MSSM25atQ)
       DEPENDENCY(DarkSUSY_PointInit, bool)
       DEPENDENCY(MSSM_spectrum, eaSLHA) 
       DEPENDENCY(DarkMatter_ID, DarkMatter_ID_type)

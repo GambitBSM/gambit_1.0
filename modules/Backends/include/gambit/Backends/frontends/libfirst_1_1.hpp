@@ -34,6 +34,7 @@ LOAD_LIBRARY
 
 // Set models that this backend can be used with.  If absent, all models are allowed.
 //BE_ALLOW_MODELS(test_parent_I)  // Ben: disabled since no longer using CMSSM_demo
+BE_ALLOW_MODELS(CMSSM, CMSSM_demo, test_parent_I)  // CW: Added CMSSM_demo back, since it is still used by ExampleBits and spartan.yaml
 
 // Functions
 BE_FUNCTION(initialize, void, (int), "_Z10initializei", "LibFirst_initialize_capability")
