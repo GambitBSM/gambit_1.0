@@ -1318,8 +1318,11 @@ namespace Gambit
             if (not masterGraph[fromVertex]->canBeLoopManager())
             {
               str errmsg = "Trying to resolve dependency on loop manager with";
-              errmsg += "\nmodule function that is not declared as loop manager.";
-              dependency_resolver_error().raise(LOCAL_INFO,errmsg); // TODO: streamline error message
+              errmsg += "\nmodule function that is not declared as loop manager.\n";
+              errmsg += printGenericFunctorList(
+                    initVector<functor*>(masterGraph[fromVertex]));
+              dependency_resolver_error().raise(LOCAL_INFO,errmsg);
+              // TODO: Test error output
             }
             std::set<DRes::VertexID> v;
             if (loopManagerMap.count(fromVertex) == 1)
@@ -1329,13 +1332,26 @@ namespace Gambit
             v.insert(toVertex);
             loopManagerMap[fromVertex] = v;
             (*masterGraph[toVertex]).resolveLoopManager(masterGraph[fromVertex]);
+
+            // Add dependencies of loop-managed vertices as "hidden"
+            // dependencies to loopmanager.
+            // TODO: Move somewhere else (make sure that all toVertex
+            // dependencies are resolved before)
+            /*
+            graph_traits<DRes::MasterGraphType>::in_edge_iterator ibegin, iend;
+            for (boost::tie(ibegin, iend) = in_edges(toVertex, masterGraph);
+                ibegin != iend; ++ibegin)
+            {
+              boost::tie(edge, ok) = 
+                add_edge(source(*ibegin, masterGraph), fromVertex, masterGraph);
+            }
+            */
           }
           // Default is to resovle dependency on functor level of toVertex
           else
           {
             (*masterGraph[toVertex]).resolveDependency(masterGraph[fromVertex]);
           }
-          // 
           // ...and on masterGraph level.
           boost::tie(edge, ok) = add_edge(fromVertex, toVertex, masterGraph);
         }
