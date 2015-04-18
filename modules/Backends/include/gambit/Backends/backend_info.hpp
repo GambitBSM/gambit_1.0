@@ -35,6 +35,7 @@ namespace Gambit
         backend_info();                            // Constructor
         str path(str, str) const;                  // Return the path to a backend library
         str corrected_path(str, str) const;        // Return the path to a backend library with GAMBIT_DIR expanded
+        str path_dir(str, str) const;              // Return the path to the folder in which a backend library resides
         std::map<str,str> dlerrors;                // Key: backend name + version
         std::map<str,str> defaults;                // Key: backend name
         std::map<str,bool> works;                  // Key: backend name + version
