@@ -245,11 +245,11 @@ include(cmake/extras.cmake)
 # Add GAMBIT subdirectories.
 add_subdirectory(Logs)
 add_subdirectory(Utils)
-add_subdirectory(Models)
-add_subdirectory(Backends)
-add_subdirectory(Elements)
-add_subdirectory(Printers)
-add_subdirectory(Core)
+add_subdirectory_if_present(Models)
+add_subdirectory_if_present(Backends)
+add_subdirectory_if_present(Elements)
+add_subdirectory_if_present(Printers)
+add_subdirectory_if_present(Core)
 
 # Lists of different GAMBIT object files to link
 set(GAMBIT_BASIC_COMMON_OBJECTS "${GAMBIT_BASIC_COMMON_OBJECTS}" $<TARGET_OBJECTS:Logs> $<TARGET_OBJECTS:Utils>)

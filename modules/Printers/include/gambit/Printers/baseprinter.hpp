@@ -41,9 +41,9 @@
 
 #ifndef STANDALONE
    // If we are in a main gambit executable, we need to know all the potentially printable types.
-   #include "gambit/Utils/all_functor_types.hpp"
+   #include "gambit/Elements/all_functor_types.hpp"
 #else
-   // Otherwise, we are in the ScannerBit standalone and need only a limited set.
+   // Otherwise, we are in the ScannerBit standalone executable and need only a limited set.
    #define PRINTABLE_TYPES         \
      (bool)                        \
      (int)                         \

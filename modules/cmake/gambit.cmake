@@ -25,6 +25,7 @@ set(GAMBIT_INCDIRS ${GAMBIT_INCDIRS} "${PROJECT_SOURCE_DIR}/Printers/include"
                                      "${PROJECT_SOURCE_DIR}/Core/include"
                                      "${PROJECT_SOURCE_DIR}/Logs/include"
                                      "${PROJECT_SOURCE_DIR}/Utils/include"
+                                     "${PROJECT_SOURCE_DIR}/Elements/include"
                                      "${PROJECT_SOURCE_DIR}/Models/include"
                                      "${PROJECT_SOURCE_DIR}/cmake/include"
                                      "${PROJECT_SOURCE_DIR}/Backends/include")

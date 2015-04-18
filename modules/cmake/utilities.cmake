@@ -82,6 +82,13 @@ macro(retrieve_bits bits root excludes quiet)
 
 endmacro()
 
+# Function to add GAMBIT directory if and only if it exists
+function(add_subdirectory_if_present dir)
+  if(EXISTS "${PROJECT_SOURCE_DIR}/${dir}")
+    add_subdirectory(${dir})
+  endif()
+endfunction()
+
 # Function to add static GAMBIT library
 function(add_gambit_library libraryname)
   cmake_parse_arguments(ARG "" "OPTION" "SOURCES;HEADERS" "" ${ARGN})
