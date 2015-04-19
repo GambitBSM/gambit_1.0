@@ -492,8 +492,13 @@ def main(argv):
     towrite += "\
 # Add the ScannerBit linking flag utility        \n\
 add_executable(scanlibs ${scanner_scanlibs_sources} ${scanner_scanlibs_headers})\n\
+if(${CMAKE_VERSION} VERSION_GREATER 2.8.10)      \n\
+  target_include_directories(scanlibs PUBLIC ${PROJECT_SOURCE_DIR}/cmake/include)\n\
+else()                                           \n\
+  include_directories(${PROJECT_SOURCE_DIR}/cmake/include)\n\
+endif()                                          \n\
 add_dependencies(scanlibs yaml-cpp)              \n\
-target_link_libraries(scanlibs yaml-cpp)\n\
+target_link_libraries(scanlibs yaml-cpp)         \n\
 set_target_properties(scanlibs PROPERTIES RUNTIME_OUTPUT_DIRECTORY \"${PROJECT_SOURCE_DIR}/ScannerBit/bin\")\n\
                                                  \n\
 # Specify known plugin include paths             \n\
