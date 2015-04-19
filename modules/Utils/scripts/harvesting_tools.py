@@ -144,8 +144,13 @@ def addiffunctormacro(line,module,typeset,typeheaders,intrinsic_types,exclude_ty
         # Remove excluded types from the set
         candidate_types.difference_update(exclude_types)
 
-        #Iterate over all the candidate types and check if they are defined.
+        #Iterate over all the candidate types and remove any leading Gambit namespace 
+        new_candidate_types = []
         for candidate_type in candidate_types:
+          new_candidate_types.append(re.sub("^Gambit::", "", candidate_type))
+
+        #Iterate over all the candidate types and check if they are defined.
+        for candidate_type in new_candidate_types:
             if candidate_type in equiv_classes: candidate_type = equiv_classes[candidate_type][0]
             #Skip out now if the type is already found.
             if (candidate_type in typeset or
@@ -221,9 +226,14 @@ def addifbefunctormacro(line,be_typeset,type_pack_set,equiv_classes,verbose=Fals
                 #Convert the type to a pointer if this is a backend variable functor rather than a backend function functor
                 functor_template_types[0] += "*"
 
-        #Iterate over all the candidate types and check if they are defined.
+        #Iterate over all the candidate types and remove any leading Gambit namespace 
         candidate_types = set(functor_template_types)
+        new_candidate_types = []
         for candidate_type in candidate_types:
+          new_candidate_types.append(re.sub("^Gambit::", "", candidate_type))
+
+        #Iterate over all the candidate types and check if they are defined.
+        for candidate_type in new_candidate_types:
             if candidate_type in equiv_classes: candidate_type = equiv_classes[candidate_type][0]
             initial_candidate = candidate_type
             #Skip to the end if the type is already found.

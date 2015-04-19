@@ -13,7 +13,7 @@
 ///          (patscott@physics.mcgill.ca)
 ///  \date 2013 Apr, Oct
 ///  \date 2014 Mar, Sep, Nov
-///  \date 2015 Jan
+///  \date 2015 Jan, Mar
 ///
 ///  \author Abram Krislock
 ///          (abram.krislock@fysik.su.se)
@@ -32,14 +32,15 @@
 #ifndef __shared_types_hpp__
 #define __shared_types_hpp__
 
-#include "gambit/Elements/funktions.hpp"      // Generalized functions
-#include "gambit/Elements/SMInputs.hpp"       // Struct carrying SMINPUTS block (SLHA2) 
-#include "gambit/Elements/Spectrum.hpp"       // Spectrum object (carries particle spectrum info)
-#include "gambit/Elements/SMplusUV.hpp"       // Spectrum object plus Standard Model info package
-#include "gambit/Elements/decay_table.hpp"    // Decay table class (carries particle decay info)
-#include "gambit/Utils/model_parameters.hpp"  // Definitions required to understand model parameter objects
+#include "gambit/Elements/numerical_constants.hpp" // Centralised constants header
+//#include "gambit/Elements/funktions.hpp"           // Generalized functions
+#include "gambit/Elements/SMInputs.hpp"            // Struct carrying SMINPUTS block (SLHA2) 
+//#include "gambit/Elements/Spectrum.hpp"            // Spectrum object (carries particle spectrum info)
+#include "gambit/Elements/SMplusUV.hpp"            // Spectrum object plus Standard Model info package
+#include "gambit/Elements/decay_table.hpp"         // Decay table class (carries particle decay info)
+#include "gambit/Utils/model_parameters.hpp"       // Definitions required to understand model parameter objects
 
-#include "SLHAea/slhaea.h"                    // SLHAea reader/writer class
+#include "SLHAea/slhaea.h"                         // SLHAea reader/writer class
 
 
 // Other types that don't belong in any of the existing includes.  As the number of such types grows, they

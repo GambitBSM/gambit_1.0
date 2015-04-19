@@ -93,6 +93,14 @@ namespace Gambit                                                            \
 {                                                                           \
   namespace BackendIniBit                                                   \
   {                                                                         \
+    namespace Pipes                                                         \
+    {                                                                       \
+      namespace CAT_4(BACKENDNAME,_,SAFE_VERSION,_init)                     \
+      {                                                                     \
+        static const str backendDir = Backends::backendInfo().              \
+         path_dir(STRINGIFY(BACKENDNAME), STRINGIFY(VERSION));              \
+      }                                                                     \
+    }                                                                       \
     void CAT_4(BACKENDNAME,_,SAFE_VERSION,_init)()                          \
     {                                                                       \
       using namespace Pipes :: CAT_4(BACKENDNAME,_,SAFE_VERSION,_init) ;    \
@@ -164,6 +172,9 @@ namespace Gambit                                                            \
       /* Register a LogTag for this backend with the logging system */      \
       int reg_log = register_backend_with_log(STRINGIFY(BACKENDNAME));      \
                                                                             \
+      /* Make backend path easily available to convenience functions. */    \
+      static const str backendDir = backendInfo().                          \
+       path_dir(STRINGIFY(BACKENDNAME), STRINGIFY(VERSION));                \
     }                                                                       \
   }                                                                         \
 }                                                                           \

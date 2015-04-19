@@ -58,7 +58,7 @@ namespace Gambit
     //  them up to their dependencies, and input parameters.
 
     /// Initialise QedQcd object from SMInputs data
-    void setup_QedQcd(QedQcd& oneset, const SMInputs& sminputs)
+    void setup_QedQcd(QedQcd& oneset /*output*/, const SMInputs& sminputs /*input*/)
     {
       // Set pole masses (to be treated specially)
       oneset.setPoleMt(sminputs.mT);
@@ -356,6 +356,33 @@ namespace Gambit
 
     //void convert_NMSSM_to_SM  (Spectrum* &result) {result = *Pipes::convert_NMSSM_to_SM::Dep::NMSSM_spectrum;}
     //void convert_E6MSSM_to_SM (Spectrum* &result) {result = *Pipes::convert_E6MSSM_to_SM::Dep::E6MSSM_spectrum;}
+
+    // Construct a spectrum object from SMInputs using QedQcdWrapper
+    void get_QedQcd_spectrum(const Spectrum* &result)
+    {
+      // Access the pipes for this function to get model and parameter information, and dependencies
+      namespace myPipe = Pipes::get_QedQcd_spectrum;
+
+      // Get SLHA2 SMINPUTS values
+      const SMInputs& sminputs = *myPipe::Dep::SMINPUTS;
+
+      // SoftSUSY object used to set quark and lepton masses and gauge
+      // couplings in QEDxQCD effective theory
+      // Will be initialised by default using values in lowe.h, which we will
+      // override next. 
+      QedQcd oneset;
+
+      // Fill QedQcd object with SMInputs values
+      setup_QedQcd(oneset,sminputs);
+
+      // Run everything to Mz
+      oneset.toMz();
+ 
+      // Create a Spectrum object to wrap the qedqcd object
+      static QedQcdWrapper qedqcdspec(oneset,sminputs);
+
+      result = &qedqcdspec;
+    }
 
     void get_CMSSM_spectrum (const SMplusUV* &result)
     {

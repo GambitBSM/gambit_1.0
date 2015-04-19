@@ -32,7 +32,7 @@ ObsLikes:
     capability:   decay_rates
     type:         DecayTable
 
-Auxiliaries:
+Rules:
   - capability: SpecBit_examples
     options:
       output_slha_filename: "SpecBit/MSSM_benchmark_points/gambit.LesHouches.out.MSSM_1"

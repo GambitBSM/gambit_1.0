@@ -29,6 +29,7 @@
 ///          (patscott@physics.mcgill.ca)
 ///  \date 2013 Oct
 ///  \date 2014 Jan, Apr
+///  \date 2015 Mar
 ///
 ///  \author Lars A. Dal  
 ///          (l.a.dal@fys.uio.no)
@@ -38,6 +39,11 @@
 ///  \author Christopher Savage
 ///          (chris@savage.name)
 ///  \date 2015 Jan
+///
+///  \author Jonathan Cornell
+///          (jcornell@ucsc.edu)
+///  \date 2014
+///
 ///  *********************************************
 
 
@@ -53,6 +59,8 @@
 #include <cmath>
 
 #include "gambit/DarkBit/decay_chain.hpp"
+#include "gambit/DarkBit/SimpleHist.hpp"
+#include "gambit/DarkBit/ProcessCatalogue.hpp"
 #include "gambit/Elements/base_functions.hpp"
 #include "gambit/Elements/funktions.hpp"
 
@@ -74,52 +82,6 @@ namespace Gambit
     using boost::enable_shared_from_this;
     //using Gambit::BF::intLimitFunc;
     //using Gambit::BF::BFargVec;
-
-    // Histogram class for cascade decays
-    struct SimpleHist
-    {
-        SimpleHist(){}
-        SimpleHist(int nBins, double Emin, double Emax, bool logscale);
-        // Constructor taking lower bins edges as input.
-        // Last element will be used as upper bin edge for upper bin (Vector with N elements will give N-1 bins).
-        SimpleHist(std::vector<double> binLower);
-        // Add an entry to histogram
-        void addEvent(double E, double weight=1.0);
-        // Add an entry to a specified bin
-        void addToBin(int bin, double weight=1.0);
-        // Add a box spectrum to the histogram
-        void addBox(double Emin, double Emax, double weight=1.0);
-        // Add content of input histogram as weights.
-        // Important: Input histogram MUST have identical binning for this to give correct results.
-        void addHistAsWeights_sameBin(SimpleHist &in);
-        // Get error for a specified bin
-        double getError(int bin) const;
-        // Get relative error for a specified bin
-        double getRelError(int bin) const;
-        // Divide all histogram bins by the respective bin size
-        void divideByBinSize();
-        // Multiply all bin contents by x
-        void multiply(double x);     
-        // Find bin index for given value
-        int findIndex(double val) const;
-        // Retrieve size of given bins
-        double binSize(int bin) const;
-        // Get central value of bin
-        double binCenter(int bin) const;
-        // Double get central values of all bins
-        std::vector<double> getBinCenters() const;
-        const std::vector<double>& getBinValues() const;
-        void getEdges(double& lower, double& upper) const;
-        // Member variables
-        std::vector<double> binLower;
-        std::vector<double> binVals;
-        std::vector<double> wtSq; // Sum of the squares of all weights
-        int nBins;
-    };
-
-    typedef std::map<std::string, std::map<std::string, Gambit::DarkBit::SimpleHist> > simpleHistContainter;
-    typedef std::map<std::string, int> stringIntMap;
-    typedef std::map<std::string, Funk::Funk> stringFunkMap;
 
     /*
     // Integration limits for E1 for the DS gamma 3-body decays.
@@ -207,6 +169,49 @@ namespace Gambit
     };
     */
 
+    /// Dark matter particle identity
+    class DarkMatter_ID_type
+    {
+      public:
+        DarkMatter_ID_type() {};
+        DarkMatter_ID_type(std::vector<std::string> ids)
+        {
+          for (auto it = ids.begin(); it != ids.end(); it++)
+          {
+            particle_ids.insert(*it);
+          }
+        }
+
+        void add_id(std::string id)
+        {
+          particle_ids.insert(id);
+        }
+
+        bool isDM(std::string id)
+        {
+          return (particle_ids.count(id) == 1);
+        }
+
+        std::vector<std::string> getList()
+        {
+          return std::vector<std::string>(particle_ids.begin(), particle_ids.end());
+        }
+
+        std::string singleID() const
+        {
+          if ( particle_ids.size() > 1 )
+          {
+            std::cout << "WARNING: Accessing multi-component DM state with single component routines." << std::endl;
+            exit(1);
+            // FIXME: Is there a more elegant way to exit?
+          }
+          return *particle_ids.begin();
+        }
+
+      private:
+        std::set<std::string> particle_ids;
+    };
+
     // A simple example
     struct Wstruct
     {
@@ -229,25 +234,6 @@ namespace Gambit
     //location of thresholds
       int n_thr;
       double E_thr[100];
-    };
-
-    struct TH_Resonance
-    {
-      TH_Resonance() : energy(0.), width (0.) {}
-      TH_Resonance(const double & energy, const double & width) : energy(energy), width(width) {}
-      double energy;
-      double width;
-    };
-
-    struct TH_resonances_thresholds
-    {
-      //location of resonances and thresholds in energy [GeV]
-      TH_resonances_thresholds() {}
-      TH_resonances_thresholds(const TH_resonances_thresholds & copy) : resonances(copy.resonances), threshold_energy(copy.threshold_energy) {}
-      TH_resonances_thresholds(const std::vector<TH_Resonance> & resonances, const std::vector<double> & thresholds) : resonances(resonances), threshold_energy(thresholds) {}
-
-      std::vector<TH_Resonance> resonances;
-      std::vector<double> threshold_energy;
     };
 
     struct RD_coannihilating_particle
@@ -275,187 +261,28 @@ namespace Gambit
     typedef double(*fptr_dd)(double&);
 
 
-    /////////////////////////////////////////////////
-    // General DarkBit annihilation/decay descriptor
-    /////////////////////////////////////////////////
-    
-    // TH_Channel describes a annihilation/decay channels, e.g. 
-    // chi --> gamma gamma, chi chi --> mu+ mu-
-    //
-    // TH_Process groupes channels together according to initial states,
-    // e.g. chi --> everything, chi chi --> everything
-    //
-    // TH_ProcessCatalog describes all initial states relevant for DarkBit
-
-    struct TH_ParticleProperty
-    {
-        TH_ParticleProperty(double mass, unsigned int spin2) : mass(mass), spin2(spin2) {};
-
-        double mass;
-        unsigned int spin2;  // Spin times two
-    };
-
-    struct TH_Channel
-    {
-        // Constructor
-        TH_Channel(std::vector<std::string> finalStateIDs, Funk::Funk genRate) :
-            finalStateIDs(finalStateIDs), nFinalStates(finalStateIDs.size()),
-            genRate(genRate)
-        {
-            if ( nFinalStates < 2 )
-            {
-                std::cout << "ERROR: Need at least two final state particles. " << std::endl;
-                exit(1);
-            }
-        }
-
-        // Final state identifiers
-        std::vector<std::string> finalStateIDs;
-
-        // Number of final state particles in this channel
-        int nFinalStates;
-
-        // Energy dependence of final state particles
-        // Includes v_rel as last argument in case of annihilation
-        // TODO: Implement checks
-        Funk::Funk genRate;
-
-        // Compare final states
-        bool isChannel(std::string p0, std::string p1, std::string p2 ="", std::string p3 = "") const
-        {
-            if ( nFinalStates == 2 and p0 == finalStateIDs[0] and p1 == finalStateIDs[1] ) return true;
-            if ( nFinalStates == 3 and p0 == finalStateIDs[0] and p1 == finalStateIDs[1] and p2 == finalStateIDs[2] ) return true;
-            if ( nFinalStates == 4 and p0 == finalStateIDs[0] and p1 == finalStateIDs[1] and p2 == finalStateIDs[2] and p3 == finalStateIDs[3] ) return true;
-            return false;
-        }
-
-        bool channelContains(std::string p) const
-        {
-            return std::find(finalStateIDs.begin(), finalStateIDs.end(), p) != finalStateIDs.end();
-        }
-
-        void printChannel() const
-        {
-            std::cout << "Channel: ";
-            for ( auto it = finalStateIDs.begin(); it != finalStateIDs.end(); it++ )
-            {
-                std::cout << *it << " ";
-            }
-            std::cout << std::endl;
-        }
-
-        // New version that allows permutations of the final states
-        //bool isChannel(std::string p0, std::string p1, std::string p2 = "", std::string p3 = "")
-        //{
-        //    std::vector<std::string> inIDs;
-        //    if      (p2=="") inIDs = {p0,p1};
-        //    else if (p3=="") inIDs = {p0,p1,p2};
-        //    else             inIDs = {p0,p1,p2,p3};
-        //    return std::is_permutation(finalStateIDs.begin(), finalStateIDs.end(), inIDs.begin());
-        //}
-        // CW: std::vector initializatino with lists, as well as
-        // is_permutatino, is not yet supported by g++ 4.5.4, so I am going
-        // back to the original version of isChannel().
-
-        // Generic flags
-        std::map<std::string, bool> flags;
-    };
-
-    struct TH_Process
-    {
-        // Constructor for decay process
-        TH_Process(std::string particle1ID) : isAnnihilation(false), particle1ID(particle1ID), particle2ID("") {}
-
-        // Constructor for annihilation process
-        TH_Process(std::string particle1ID, std::string particle2ID) :
-            isAnnihilation(true), particle1ID(particle1ID),
-            particle2ID(particle2ID)
-        {
-            if (particle1ID.compare(particle2ID) > 0)
-            {
-                std::cout << "ERROR: particle identifiers should be in alphabetical order." << std::endl;
-                exit(1);
-            }
-        }
-
-        // Compare initial states
-        bool isProcess(std::string p1, std::string p2 = "") const
-        {
-            return (p1 == this->particle1ID and p2 == this->particle2ID);
-        }
-
-        // Annihilation or decay?
-        bool isAnnihilation;
-
-        // Decaying particle or particle pair
-        std::string particle1ID;
-        std::string particle2ID;
-
-        // Generic flags
-        std::map<std::string, bool> flags;
-
-        // List of channels
-        std::vector<TH_Channel> channelList;
-
-        //List of resonances and thresholds => rename TH_resonances_thresholds
-        TH_resonances_thresholds thresholdResonances;
-
-        // Total decay rate or sigma v
-        Funk::Funk genRateTotal; // was a double, but needs to be a Funk of velocity
-    };
-
-    struct TH_ProcessCatalog
-    {
-        std::vector<TH_Process> processList;
-        std::map<std::string, TH_ParticleProperty> particleProperties;
-
-        TH_Process getProcess(std::string id1, std::string id2 = "") const
-        {
-            for (std::vector<TH_Process>::const_iterator it = processList.begin(); it != processList.end(); ++it)
-                if ( it -> isProcess(id1, id2) ) return processList[0];
-            std::cout << "Process with initial states " << id1 << " " << id2 << " missing." << std::endl;
-            exit(1);
-        }
-
-        TH_ParticleProperty getParticleProperty(std::string id) const
-        {
-            return particleProperties.at(id);
-        }
-
-    };
-
-
     //////////////////////////////////////////////
     // General Dark Matter Halos and Halo Catalog
     //////////////////////////////////////////////
 
-    /*
-    struct DMhalo
+    struct MWhalo
     {
-        public:
-            // Dummy constructor doing nothing
-            DMhalo() {}
-
-            DMhalo(std::string name, double r0, BF::BFptr rho, BF::BFptr drho2dv)
-            {
-                this->name = name;
-                this->r0 = r0;
-                this->rho = rho;
-                this->drho2dv= drho2dv;
-                // TODO: Add smoothing scale
-            }
-
-            std::string getName() {return name;}
-            BF::BFptr getDensity() {return rho;}
-            BF::BFptr getDensitySquared() {return drho2dv;}
-
-        private:
-            std::string name;  // Name of this halo (Milky Way, M31, ...)
-            double r0;  // Position in comoving Galactic coordinates (l [-180...180 deg], b [deg], R [kpc])
-            BF::BFptr rho;
-            BF::BFptr drho2dv;
+        MWhalo(Funk::Funk rho, Funk::Funk drho2dv) : rho(rho), drho2dv(drho2dv)
+        {
+            rho->assert_args(Funk::vec<std::string>("r"), Funk::vec<std::string>("x", "y", "z"));
+            drho2dv->assert_args(Funk::vec<std::string>("r", "v"), Funk::vec<std::string>("x", "y", "z", "v"));
+        };
+        MWhalo(Funk::Funk rho) : rho(rho)
+        {
+            rho->assert_args(Funk::vec<std::string>("r"), Funk::vec<std::string>("x", "y", "z"));
+            auto delta_v = Funk::delta("v", 1e-3, 1e-5);  // Add some fake velocity dependence
+            drho2dv = rho*rho * delta_v;
+        };
+        Funk::Funk rho;
+        Funk::Funk drho2dv;
     };
 
+    /*
     // This catalog is supposed to contain all DM halos that are relevant for a
     // given analysis (Milky way halo, satellites, galaxy clusters, their
     // memeber galaxies, etc).  However, unobserved subhalos are *not* included
@@ -651,36 +478,6 @@ namespace Gambit
     };
 
     //------------------------------------------------------
-    // Structures containing the hadronic matrix elements
-    // (fn=<n|qq|n>) and nucleon spin content (delta q)
-    struct fp
-    {
-      double u;
-      double d;
-      double c;
-      double s;
-      double t;
-      double b;
-    };
-
-    struct fn
-    {
-      double u;
-      double d;
-      double c;
-      double s;
-      double t;
-      double b;
-    };
-
-    struct deltaq
-    {
-      double u;
-      double d;
-      double s;
-    };
-
-    //------------------------------------------------------
     // Structure to contain the Sun & Earth's motion relative
     // to the Galactic rest frame in Galactic coordinates.
     struct DDEarthMotionS
@@ -795,8 +592,12 @@ namespace Gambit
     struct SimYieldChannel
     {
         SimYieldChannel(Funk::Funk dNdE, std::string p1, std::string p2, std::string finalState, double Ecm_min, double Ecm_max):
-            dNdE(dNdE), p1(p1), p2(p2), finalState(finalState), Ecm_min(Ecm_min), Ecm_max(Ecm_max) {}
-        Funk::Funk dNdE;            
+            dNdE(dNdE), p1(p1), p2(p2), finalState(finalState), Ecm_min(Ecm_min), Ecm_max(Ecm_max) 
+        {
+           dNdE_bound = dNdE->bind("E", "Ecm");
+        }
+        Funk::Funk dNdE;       
+        Funk::BoundFunk dNdE_bound; // Pre-bound version for use in cascade decays
         std::string p1;
         std::string p2;
         std::string finalState;

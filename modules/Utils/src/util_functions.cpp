@@ -118,6 +118,30 @@ namespace Gambit
       if (*s.rbegin() == ')')   s = s.substr(0, s.size()-1);
     }
 
+    /// Created a std::string of a specified length.
+    str str_fixed_len(str s, int len)
+    {
+      int oldlen = s.length();
+      if (oldlen > len)
+      {
+        return s.substr(0,len-1);
+      }
+      else if (oldlen < len)
+      {
+        s.append(len-oldlen,' ');
+      }
+      return s;
+    }
+    
+    /// Copy a std::string to a character array, stripping the null termination character.  Good for sending to Fortran.
+    void strcpy2f(char* arr, int len, str s)
+    {
+      s = str_fixed_len(s, len-1);
+      strcpy(arr, s.c_str());
+      arr[len-1] = ' ';
+    }
+
+
     /// Ensure that a path exists (and then return the path, for chaining purposes)
     const std::string& ensure_path_exists(const std::string& path)
     { 

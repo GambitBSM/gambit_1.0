@@ -17,6 +17,12 @@ dsddgpgn gives:
  gpa: -3.8421e-08
  gna: 4.32344e-08
  M_DM = 225.796
+DarkSUSY with micrOMEGAs nuclear spin/quark content and dddn = 1:
+DarkSUSY dsddgpgn gives:
+ gps = -1.61851e-09
+ gns = -1.65053e-09
+ gpa = -3.77111e-08
+ gna = 4.30299e-08
 micrOMEGAs:
 micrOMEGAs nucleonAmplitudes gives:
  gps: -1.55636e-09
@@ -53,6 +59,11 @@ dsddgpgn gives:
  gpa: -2.41239e-08
  gna: 2.99053e-08
  M_DM = 237.551
+DarkSUSY with micrOMEGAs nuclear spin/quark content and dddn = 1:
+ gps = -2.06391e-09
+ gns = -2.09104e-09
+ gpa = -2.34697e-08
+ gna = 2.9718e-08
 micrOMEGAs:
  gps: -1.90752e-09
  gns: -1.93139e-09
@@ -88,6 +99,11 @@ DarkSUSY with micrOMEGAs nuclear spin/quark content:
  gpa: -1.27973e-07
  gna: 1.13659e-07
  M_DM = 45.3628
+DarkSUSY with micrOMEGAs nuclear spin/quark content and dddn = 1:
+ gps = 6.09607e-10
+ gns = 6.23505e-10
+ gpa = -1.27972e-07
+ gna = 1.13659e-07
 micrOMEGAs:
  gps: 5.86743e-10
  gns: 5.99485e-10
@@ -123,6 +139,11 @@ DarkSUSY with micrOMEGAs nuclear spin/quark content:
  gpa: 3.30075e-09
  gna: 8.91232e-10
  M_DM = 1609.95
+DarkSUSY with micrOMEGAs nuclear spin/quark content and dddn = 1:
+ gps = -6.56964e-10
+ gns = -6.81658e-10
+ gpa = 3.3114e-08
+ gna = -7.96378e-09
 micrOMEGAs:
  gps: -6.45251e-10
  gns: -6.68899e-10
@@ -159,6 +180,11 @@ dsddgpgn gives:
  gpa: -1.51057e-07
  gna: 1.32203e-07
  M_DM = 257.123
+DarkSUSY with micrOMEGAs nuclear spin/quark content and dddn = 1:
+ gps = -1.93437e-10
+ gns = -1.74786e-10
+ gpa = -1.51057e-07
+ gna = 1.32203e-07
 micrOMEGAs:
  gps: 1.69901e-10
  gns: 1.51686e-10
@@ -194,6 +220,11 @@ dsddgpgn gives:
  gpa: -1.80245e-06
  gna: 1.5762e-06
  M_DM = 64.2152
+DarkSUSY with micrOMEGAs nuclear spin/quark content and dddn = 1:
+ gps = 1.6608e-08
+ gns = 1.78283e-08
+ gpa = -1.80245e-06
+ gna = 1.5762e-06
 micrOMEGAs:
  gps: -1.56852e-08
  gns: -1.68516e-08
@@ -228,6 +259,11 @@ DarkSUSY with micrOMEGAs nuclear spin/quark content:
  gpa: 2.76085e-09
  gna: -6.85778e-10
  M_DM = 2378.05
+DarkSUSY with micrOMEGAs nuclear spin/quark content and dddn = 1:
+ gps = 1.29142e-10
+ gns = 1.24668e-10
+ gpa = 1.62048e-08
+ gna = -4.67582e-09
 micrOMEGAs:
  gps: -1.46928e-10
  gns: -1.43617e-10

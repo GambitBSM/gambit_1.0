@@ -12,6 +12,7 @@
 ///          (patscott@physics.mcgill.ca)
 ///  \date 2013 Apr, July, Aug, Dec
 ///  \date 2014 Mar
+///  \date 2015 Apr
 ///
 ///  \author Ben Farmer
 ///          (benjamin.farmer@monash.edu.au)
@@ -78,6 +79,12 @@ namespace Gambit
     /// Strips leading and/or trailing parentheses from a string.
     void strip_parentheses(str&);
 
+    /// Created a std::string of a specified length.
+    str str_fixed_len(str, int);
+    
+    /// Copy a std::string to a character array, stripping the null termination character.
+    void strcpy2f(char*, int, str);
+
     /// Get pointers to beginning and end of array. 
     // Useful for initialising vectors with arrays, e.g.
     //   int vv[] = { 12,43 };
@@ -115,7 +122,7 @@ namespace Gambit
       return true;
     }
 
-    /// Ensure that a path exists (and then return the path, for chaining purposes)
+     /// Ensure that a path exists (and then return the path, for chaining purposes)
     const std::string& ensure_path_exists(const std::string&);
 
     typedef std::chrono::time_point<std::chrono::system_clock> time_point;
