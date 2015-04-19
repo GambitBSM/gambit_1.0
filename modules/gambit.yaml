@@ -187,9 +187,13 @@ ObsLikes:
     module:       ""
 
   # Uncomment to test neutrino likelihoods
+  #- purpose:      Likelihood
+  #  capability:   IceCube_likelihood
+  #  function:     IC79_loglike
+
+  # Uncomment to test DD likelihoods
   - purpose:      Likelihood
-    capability:   IceCube_likelihood
-    function:     IC79_loglike
+    capability:   lnL_LUX_2013
 
   # Uncomment to test FastSim
   #- purpose:      Likelihood
