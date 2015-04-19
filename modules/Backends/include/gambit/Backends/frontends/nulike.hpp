@@ -49,47 +49,51 @@ BE_INI_FUNCTION
   static bool scan_level = true;
   if (scan_level)
   {
-    // Fixed string length in nulike (from nulike fortran header nucommon.h)
-    const int nulike_clen = 300;
-    // Set the estimated relative theoretical error in neutrino flux calculation 
-    double theoryError = 0.05;
-    // Choose a log-normal or a Gaussian distribution for the systematic error on the number of neutrino events
-    bool uselogNorm = true;
-    // Choose whether to precompute the background p-value.
-    bool BGLikePrecompute = true;
-
-    // Define analysis cut cone in degrees around solar position, analysis handle and datafiles for IceCube 22-string analysis, then initialise it.
-    double phi_cut22 = 10.0;
-    const char experiment_22[nulike_clen] = "IC-22";
-    const char eventf_22[nulike_clen] = "../extras/nulike/data/IceCube/likelihood2012/events_10deg_IC22.dat";   //FIXME these names to go in a config file 
-    const char BGf_22[nulike_clen]    = "../extras/nulike/data/IceCube/likelihood2012/BG_distributions_IC22.dat";
-    const char file3_22[nulike_clen]  = "../extras/nulike/data/IceCube/likelihood2012/nuEffArea_IC22.dat";
-    const char edispf_22[nulike_clen] = "../extras/nulike/data/IceCube/likelihood2012/energy_histograms_IC22.dat"; 
-    nulike_init(experiment_22[0], eventf_22[0], BGf_22[0], file3_22[0], edispf_22[0], phi_cut22, theoryError, uselogNorm, BGLikePrecompute);
-
-    // Define analysis handle and datafiles for IceCube 79-string WH analysis, then initialise it.
-    const char experiment_79WH[nulike_clen] = "IC-79 WH";
-    const char eventf_79WH[nulike_clen] = "../extras/nulike/data/IceCube/likelihood2014/IC79_Events_WH_10degrees.dat";
-    const char BGf_79WH[nulike_clen]    = "../extras/nulike/data/IceCube/likelihood2014/IC79_Background_distributions_WH.dat";
-    char file3_79WH[nulike_clen]  = "../extras/nulike/data/IceCube/likelihood2014/IC79_Partial_Likelihoods_WH"; //(edispf and phi_cut ignored for IC79 analyses)
-    for (int i=strlen(file3_79WH); i<=nulike_clen; ++i) { file3_79WH[i] = ' '; } // Strip terminating null character for passing string to fortran.       
-    nulike_init(experiment_79WH[0], eventf_79WH[0], BGf_79WH[0], file3_79WH[0], edispf_22[0], phi_cut22, theoryError, uselogNorm, BGLikePrecompute);
-
-    // Define analysis handle and datafiles for IceCube 79-string WH analysis, then initialise it.
-    const char experiment_79WL[nulike_clen] = "IC-79 WL";
-    const char eventf_79WL[nulike_clen] = "../extras/nulike/data/IceCube/likelihood2014/IC79_Events_WL_10degrees.dat";
-    const char BGf_79WL[nulike_clen]    = "../extras/nulike/data/IceCube/likelihood2014/IC79_Background_distributions_WL.dat";
-    char file3_79WL[nulike_clen]  = "../extras/nulike/data/IceCube/likelihood2014/IC79_Partial_Likelihoods_WL"; //(edispf and phi_cut ignored for IC79 analyses)
-    for (int i=strlen(file3_79WL); i<=nulike_clen; ++i) { file3_79WL[i] = ' '; } // Strip terminating null character for passing string to fortran.       
-    nulike_init(experiment_79WL[0], eventf_79WL[0], BGf_79WL[0], file3_79WL[0], edispf_22[0], phi_cut22, theoryError, uselogNorm, BGLikePrecompute);
-
-    // Define analysis handle and datafiles for IceCube 79-string SL analysis, then initialise it.
-    const char experiment_79SL[nulike_clen] = "IC-79 SL";
-    const char eventf_79SL[nulike_clen] = "../extras/nulike/data/IceCube/likelihood2014/IC79_Events_SL_10degrees.dat";
-    const char BGf_79SL[nulike_clen]    = "../extras/nulike/data/IceCube/likelihood2014/IC79_Background_distributions_SL.dat";
-    char file3_79SL[nulike_clen]  = "../extras/nulike/data/IceCube/likelihood2014/IC79_Partial_Likelihoods_SL"; //(edispf and phi_cut ignored for IC79 analyses)
-    for (int i=strlen(file3_79SL); i<=nulike_clen; ++i) { file3_79SL[i] = ' '; } // Strip terminating null character for passing string to fortran.       
-    nulike_init(experiment_79SL[0], eventf_79SL[0], BGf_79SL[0], file3_79SL[0], edispf_22[0], phi_cut22, theoryError, uselogNorm, BGLikePrecompute);
+    // Call initialisation functions only if nulike is actually to be used for nu limits.
+    if (*InUse::nulike_bounds)
+    {
+      // Fixed string length in nulike (from nulike fortran header nucommon.h)
+      const int nulike_clen = 300;
+      // Set the estimated relative theoretical error in neutrino flux calculation 
+      double theoryError = 0.05;
+      // Choose a log-normal or a Gaussian distribution for the systematic error on the number of neutrino events
+      bool uselogNorm = true;
+      // Choose whether to precompute the background p-value.
+      bool BGLikePrecompute = true;
+  
+      // Define analysis cut cone in degrees around solar position, analysis handle and datafiles for IceCube 22-string analysis, then initialise it.
+      double phi_cut22 = 10.0;
+      const char experiment_22[nulike_clen] = "IC-22";
+      const char eventf_22[nulike_clen] = "../extras/nulike/data/IceCube/likelihood2012/events_10deg_IC22.dat";   //FIXME these names to go in a config file 
+      const char BGf_22[nulike_clen]    = "../extras/nulike/data/IceCube/likelihood2012/BG_distributions_IC22.dat";
+      const char file3_22[nulike_clen]  = "../extras/nulike/data/IceCube/likelihood2012/nuEffArea_IC22.dat";
+      const char edispf_22[nulike_clen] = "../extras/nulike/data/IceCube/likelihood2012/energy_histograms_IC22.dat"; 
+      nulike_init(experiment_22[0], eventf_22[0], BGf_22[0], file3_22[0], edispf_22[0], phi_cut22, theoryError, uselogNorm, BGLikePrecompute);
+  
+      // Define analysis handle and datafiles for IceCube 79-string WH analysis, then initialise it.
+      const char experiment_79WH[nulike_clen] = "IC-79 WH";
+      const char eventf_79WH[nulike_clen] = "../extras/nulike/data/IceCube/likelihood2014/IC79_Events_WH_10degrees.dat";
+      const char BGf_79WH[nulike_clen]    = "../extras/nulike/data/IceCube/likelihood2014/IC79_Background_distributions_WH.dat";
+      char file3_79WH[nulike_clen]  = "../extras/nulike/data/IceCube/likelihood2014/IC79_Partial_Likelihoods_WH"; //(edispf and phi_cut ignored for IC79 analyses)
+      for (int i=strlen(file3_79WH); i<=nulike_clen; ++i) { file3_79WH[i] = ' '; } // Strip terminating null character for passing string to fortran.       
+      nulike_init(experiment_79WH[0], eventf_79WH[0], BGf_79WH[0], file3_79WH[0], edispf_22[0], phi_cut22, theoryError, uselogNorm, BGLikePrecompute);
+  
+      // Define analysis handle and datafiles for IceCube 79-string WH analysis, then initialise it.
+      const char experiment_79WL[nulike_clen] = "IC-79 WL";
+      const char eventf_79WL[nulike_clen] = "../extras/nulike/data/IceCube/likelihood2014/IC79_Events_WL_10degrees.dat";
+      const char BGf_79WL[nulike_clen]    = "../extras/nulike/data/IceCube/likelihood2014/IC79_Background_distributions_WL.dat";
+      char file3_79WL[nulike_clen]  = "../extras/nulike/data/IceCube/likelihood2014/IC79_Partial_Likelihoods_WL"; //(edispf and phi_cut ignored for IC79 analyses)
+      for (int i=strlen(file3_79WL); i<=nulike_clen; ++i) { file3_79WL[i] = ' '; } // Strip terminating null character for passing string to fortran.       
+      nulike_init(experiment_79WL[0], eventf_79WL[0], BGf_79WL[0], file3_79WL[0], edispf_22[0], phi_cut22, theoryError, uselogNorm, BGLikePrecompute);
+  
+      // Define analysis handle and datafiles for IceCube 79-string SL analysis, then initialise it.
+      const char experiment_79SL[nulike_clen] = "IC-79 SL";
+      const char eventf_79SL[nulike_clen] = "../extras/nulike/data/IceCube/likelihood2014/IC79_Events_SL_10degrees.dat";
+      const char BGf_79SL[nulike_clen]    = "../extras/nulike/data/IceCube/likelihood2014/IC79_Background_distributions_SL.dat";
+      char file3_79SL[nulike_clen]  = "../extras/nulike/data/IceCube/likelihood2014/IC79_Partial_Likelihoods_SL"; //(edispf and phi_cut ignored for IC79 analyses)
+      for (int i=strlen(file3_79SL); i<=nulike_clen; ++i) { file3_79SL[i] = ' '; } // Strip terminating null character for passing string to fortran.       
+      nulike_init(experiment_79SL[0], eventf_79SL[0], BGf_79SL[0], file3_79SL[0], edispf_22[0], phi_cut22, theoryError, uselogNorm, BGLikePrecompute);
+    }
   }
   scan_level = false;
 }
