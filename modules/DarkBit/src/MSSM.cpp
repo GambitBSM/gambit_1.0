@@ -205,13 +205,43 @@ namespace Gambit {
     void TH_ProcessCatalog_CMSSM(Gambit::DarkBit::TH_ProcessCatalog &result)
     {
       using namespace Pipes::TH_ProcessCatalog_CMSSM;
+      using std::vector;
+      using std::string;
 
       // FIXME: Add test that this is really chi0_1
       std::string DMid = Dep::DarkMatter_ID->singleID();
 
+      const DecayTable* tbl = &(*Dep::decay_rates);
+      
       // Instantiate new ProcessCatalog
       TH_ProcessCatalog catalog;      
-      // and DM annihilation process                   
+      
+      // Import Decay information
+      double minBranching = 0.0; // TODO: Set this from yaml?
+      vector<string> decaysOfInterest = initVector<string>("H+", "H-", "h0_2", "A0"); // TODO: Decide which to include.
+      for(auto iState_it = decaysOfInterest.begin(); iState_it != decaysOfInterest.end(); ++iState_it)
+      {
+        const DecayTable::Entry &entry = tbl->at(*iState_it);
+        double totalWidth = entry.width_in_GeV;
+        TH_Process process(*iState_it);
+        process.genRateTotal = Funk::cnst(totalWidth);
+        for(auto fState_it = entry.channels.begin(); fState_it!= entry.channels.end(); ++fState_it)
+        {
+          vector<string> pIDs;
+          for(auto pit = fState_it->first.begin(); pit != fState_it->first.end(); ++pit)
+          {
+            pIDs.push_back(Models::ParticleDB().long_name(*pit));
+          } 
+          double bFraction    = (fState_it->second).first;
+          double partialWidth = totalWidth * bFraction;
+          // TODO: Add other criteria on which channels to include?
+          if(bFraction>minBranching)
+            process.channelList.push_back(TH_Channel(pIDs, Funk::cnst(partialWidth)));
+        }
+        catalog.processList.push_back(process);
+      }      
+      
+      // Declare DM annihilation process                   
       TH_Process process(DMid, DMid);
 
       // Get DarkSUSY mass spectrum
