@@ -115,7 +115,7 @@ set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../extras/micromegas/libmi
 ExternalProject_Add(pythia
   SOURCE_DIR ${PROJECT_SOURCE_DIR}/../extras/boss/bossed_pythia_source
   BUILD_IN_SOURCE 1
-  CONFIGURE_COMMAND export FC=${CMAKE_Fortran_COMPILER} && export CC=${CMAKE_C_COMPILER} && export USRSHAREDSUFFIX=so && ./configure --enable-shared #--enable-64bits
+  CONFIGURE_COMMAND export FC=${CMAKE_Fortran_COMPILER} && export CC=${CMAKE_C_COMPILER} && export USRSHAREDSUFFIX=so && ./configure --enable-shared --enable-64bits
   BUILD_COMMAND make CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${CMAKE_CXX_FLAGS} LDFLAGS=${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS}
   INSTALL_COMMAND cp lib/libpythia8.so ${PROJECT_SOURCE_DIR}/Backends/lib/libpythia8.so
 )
