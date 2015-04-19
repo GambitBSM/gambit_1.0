@@ -218,17 +218,23 @@ namespace Gambit {
       
       // Import Decay information
       double minBranching = 0.0; // TODO: Set this from yaml?
-      vector<string> decaysOfInterest = initVector<string>("H+", "H-", "h0_2", "A0"); // TODO: Decide which to include.
-      for(auto iState_it = decaysOfInterest.begin(); iState_it != decaysOfInterest.end(); ++iState_it)
+      vector<string> decaysOfInterest = initVector<string>
+        ("H+", "H-", "h0_2", "A0");  // TODO: Decide which to include.
+      for(auto iState_it = decaysOfInterest.begin();
+          iState_it != decaysOfInterest.end(); ++iState_it)
       {
+        std::cout << 
+          "Importing decay information for: " << *iState_it << std::endl;
         const DecayTable::Entry &entry = tbl->at(*iState_it);
         double totalWidth = entry.width_in_GeV;
         TH_Process process(*iState_it);
         process.genRateTotal = Funk::cnst(totalWidth);
-        for(auto fState_it = entry.channels.begin(); fState_it!= entry.channels.end(); ++fState_it)
+        for(auto fState_it = entry.channels.begin();
+            fState_it!= entry.channels.end(); ++fState_it)
         {
           vector<string> pIDs;
-          for(auto pit = fState_it->first.begin(); pit != fState_it->first.end(); ++pit)
+          for(auto pit = fState_it->first.begin();
+              pit != fState_it->first.end(); ++pit)
           {
             pIDs.push_back(Models::ParticleDB().long_name(*pit));
           } 
@@ -236,7 +242,8 @@ namespace Gambit {
           double partialWidth = totalWidth * bFraction;
           // TODO: Add other criteria on which channels to include?
           if(bFraction>minBranching)
-            process.channelList.push_back(TH_Channel(pIDs, Funk::cnst(partialWidth)));
+            process.channelList.push_back(
+                TH_Channel(pIDs, Funk::cnst(partialWidth)));
         }
         catalog.processList.push_back(process);
       }      

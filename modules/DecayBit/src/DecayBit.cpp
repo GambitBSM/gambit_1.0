@@ -311,6 +311,19 @@ namespace Gambit
       decays("rho+") = *Dep::rho_plus_decay_rates;  // Add the rho+ decays.
       decays("rho-") = *Dep::rho_minus_decay_rates; // Add the rho- decays.
       decays("omega") = *Dep::omega_decay_rates;    // Add the omega meson decays.
+
+      // CW: Some temporary code to avoid crashes in DarkBit
+      // TODO: Replace with correct information
+      DecayTable::Entry fake_decay;
+      fake_decay.width_in_GeV = 1E-20;                    
+      fake_decay.positive_error = 1E-22;
+      fake_decay.negative_error = 1E-22;
+      fake_decay.set_BF(0.5, 0.005, "b", "bbar");
+      fake_decay.set_BF(0.5, 0.005, "tau+", "tau-");
+      decays("H+") = fake_decay;
+      decays("H-") = fake_decay;
+      decays("A0") = fake_decay;
+      decays("h0_2") = fake_decay;
       
       cout << "BF for tau+ -> pi+ nubar_tau: " << decays("tau+").BF("pi+", "nubar_tau") << endl;
       result = decays;
