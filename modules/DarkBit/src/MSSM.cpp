@@ -217,7 +217,8 @@ namespace Gambit {
       TH_ProcessCatalog catalog;      
       
       // Import Decay information
-      vector<string> decaysOfInterest = initVector<string>("H+", "H-", "h0_2", "A0");
+      double minBranching = 0.0; // TODO: Set this from yaml?
+      vector<string> decaysOfInterest = initVector<string>("H+", "H-", "h0_2", "A0"); // TODO: Decide which to include.
       for(auto iState_it = decaysOfInterest.begin(); iState_it != decaysOfInterest.end(); ++iState_it)
       {
         const DecayTable::Entry &entry = tbl->at(*iState_it);
@@ -231,8 +232,11 @@ namespace Gambit {
           {
             pIDs.push_back(Models::ParticleDB().long_name(*pit));
           } 
-          double partialWidth = totalWidth * (fState_it->second).first;
-          process.channelList.push_back(TH_Channel(pIDs, Funk::cnst(partialWidth)));
+          double bFraction    = (fState_it->second).first;
+          double partialWidth = totalWidth * bFraction;
+          // TODO: Add other criteria on which channels to include?
+          if(bFraction>minBranching)
+            process.channelList.push_back(TH_Channel(pIDs, Funk::cnst(partialWidth)));
         }
         catalog.processList.push_back(process);
       }      
