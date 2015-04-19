@@ -30,6 +30,7 @@ set(header_files include/gambit/Elements/base_functions.hpp
                  include/gambit/Elements/module_macros_common.hpp
                  include/gambit/Elements/module_macros_incore.hpp
                  include/gambit/Elements/module_macros_inmodule.hpp
+                 include/gambit/Elements/numerical_constants.hpp
                  include/gambit/Elements/safety_bucket.hpp
                  include/gambit/Elements/shared_types.hpp
                  include/gambit/Elements/SMInputs.hpp
