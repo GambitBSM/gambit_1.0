@@ -41,7 +41,7 @@ namespace Gambit
     #define QUERYMODELS(MODEL) std::find(Pipe::Models->begin(), Pipe::Models->end(), MODEL) != Pipe::Models->end()
     
     /// Create a spectrum object for testing purposes
-    void make_test_spectrum(Spectrum* &result)
+    void make_test_spectrum(SubSpectrum* &result)
     {
       typedef CMSSM_interface<ALGORITHM1> MI;
       static MI::Model FS_model; //start with empty flexiblesusy object
@@ -51,7 +51,7 @@ namespace Gambit
       // Create model interface class (leaving input stuff with default values)
       MI model_interface(FS_model);
 
-      // Create Spectrum object to wrap flexiblesusy object
+      // Create SubSpectrum object to wrap flexiblesusy object
       static MSSMSpec<MI> mssm(FS_model);
 
       // I think these objects should only get created once since they are static...      
@@ -62,7 +62,7 @@ namespace Gambit
       mssm.model_interface.model.calculate_pole_masses();//now calculate pole masses
 
       // Check contents
-      logger() << "This is specbit_tests. Checking Spectrum object contents..." << std::endl;
+      logger() << "This is specbit_tests. Checking SubSpectrum object contents..." << std::endl;
       if(TestMssmParGets(mssm, mssm.model_interface.model)==false){
           logger() << "TestMssmParGets fail." << std::endl;
           return;
@@ -86,16 +86,13 @@ namespace Gambit
     {
       // Access the pipes for this function to get model and parameter information
        using namespace Pipes::specbit_test_func1;
-       const SMplusUV* spec = *Dep::MSSM_spectrum;
        std::cout << "Running specbit_test_func1" << std::endl;
        std::cout << "Retrieving Spectrum*" << std::endl;
-       //  const Spectrum* spec = *Dep::MSSM_spectrum; //Test retrieve pointer to Spectrum object 
+       const Spectrum* spec = *Dep::MSSM_spectrum;
  
-       //const Spectrum& spec(*(Dep::particle_spectrum->get())); // Get Spectrum object ptr out of dependency pipe and make a nice reference out of it.
        std::cout << "Running spec_manipulate" << std::endl;
- 
        // Clone the UV Spectum object so we can access a non-const version
-       std::unique_ptr<Spectrum> spec2 = spec->get_UV()->clone(); 
+       std::unique_ptr<SubSpectrum> spec2 = spec->get_UV()->clone(); 
  
        spec_manipulate(*spec2); //function can manipulate without knowing model.
     }
@@ -114,12 +111,12 @@ namespace Gambit
       std::cout << "Creating CMSSM_interface<Two_scale> object" << std::endl;
       CMSSM_interface<Two_scale> model_interface(FS_model);
 
-      // Create Spectrum object to wrap flexiblesusy object
+      // Create SubSpectrum object to wrap flexiblesusy object
       std::cout << "Creating MSSMSpec<CMSSM_interface<Two_scale>> object" << std::endl;
       MSSMSpec<CMSSM_interface<Two_scale>> mssm(model_interface);
 
       // Test run functions
-      std::cout << "Spectrum via MSSMSpec" << std::endl;
+      std::cout << "SubSpectrum via MSSMSpec" << std::endl;
       std::cout << "mssm.runningpars.GetScale() =" 
           << mssm.runningpars.GetScale() << std::endl;
       std::cout << "mHd2 = "  
@@ -127,9 +124,9 @@ namespace Gambit
       std::cout << "mHu2 = "  
           << mssm.runningpars.get_mass2_parameter("mHu2") << std::endl;
 
-      // Do it again using a Spectrum base pointer
-      Spectrum* spec = &mssm;
-      std::cout << "Spectrum via Spectrum*" << std::endl;
+      // Do it again using a SubSpectrum base pointer
+      SubSpectrum* spec = &mssm;
+      std::cout << "SubSpectrum via SubSpectrum*" << std::endl;
       std::cout << "spec->runningpars.GetScale() =" 
           << spec->runningpars.GetScale() << std::endl;
       std::cout << "mHd2 = "  
@@ -138,7 +135,7 @@ namespace Gambit
           << spec->runningpars.get_mass2_parameter("mHu2") << std::endl;
 
       // Fill the model and do it again
-      std::cout << "Spectrum via Spectrum* (filled)" << std::endl;
+      std::cout << "SubSpectrum via SubSpectrum* (filled)" << std::endl;
       setup(mssm.model_interface.model);
       std::cout << "spec->runningpars.GetScale() =" 
           << spec->runningpars.GetScale() << std::endl;
@@ -152,24 +149,24 @@ namespace Gambit
     /// Function to test out SpecBit features
     void specbit_test_func3 (double &result)
     {
-      // Requests a Spectrum object of capability SM_spectrum; test what we can retrieve from this
+      // Requests a SubSpectrum object of capability SM_spectrum; test what we can retrieve from this
       using namespace Pipes::specbit_test_func3;
-      const Spectrum* spec = *Dep::SM_spectrum; //Test retrieve pointer to Spectrum object 
+      const SubSpectrum* spec = *Dep::SM_spectrum; //Test retrieve pointer to Spectrum object 
 
-      std::unique_ptr<Spectrum> spec2 = spec->clone(); 
+      std::unique_ptr<SubSpectrum> spec2 = spec->clone(); 
 
       SM_checks(*spec2); // Run some tests on standard model parameters 
       logger() << EOM;
     }
 
-    /// Test out consistency of SMplusUV object (and pre-extracted SM Spectrum*)
-    void specbit_test_SMplusUV (double &result)
+    /// Test out consistency of Spectrum object (and pre-extracted SM SubSpectrum*)
+    void specbit_test_Spectrum (double &result)
     {
-      using namespace Pipes::specbit_test_SMplusUV;
-      const SMplusUV* matched_spectra = *Dep::MSSM_spectrum;
-      const Spectrum* sm = *Dep::SM_spectrum; 
+      using namespace Pipes::specbit_test_Spectrum;
+      const Spectrum* matched_spectra = *Dep::MSSM_spectrum;
+      const SubSpectrum* sm = *Dep::SM_spectrum; 
  
-      SMplusUV_test(matched_spectra,sm); // Run consistency tests on Spectrum contents vs SMInputs 
+      Spectrum_test(matched_spectra,sm); // Run consistency tests on Spectrum contents vs SMInputs 
       logger() << EOM;
     }
 

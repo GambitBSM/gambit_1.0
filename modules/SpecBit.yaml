@@ -50,9 +50,9 @@ ObsLikes:
   #  function:     specbit_test_func3
 
   - purpose:      Likelihood
-    capability:   specbit_test_SMplusUV
+    capability:   specbit_test_Spectrum
     type:         double
-    function:     specbit_test_SMplusUV
+    function:     specbit_test_Spectrum
 
   #- purpose:      Likelihood
   #  capability:   dump_spectrum_slha

@@ -130,7 +130,7 @@ void setpars(Model& mssm)
 }
     
       
-void spec_print(Gambit::Spectrum& spec){
+void spec_print(Gambit::SubSpectrum& spec){
 
    PRINTOUT << "spec.runningpars.GetScale() =" 
           << spec.runningpars.GetScale() << std::endl;
@@ -211,7 +211,7 @@ void mssm_print(Gambit::MSSMSpec<M> & mssm)
 }
 
 
-void spec_manipulate(Gambit::Spectrum& spec) 
+void spec_manipulate(Gambit::SubSpectrum& spec) 
 {
    PRINTOUT << "inside spectrum_manipulate" <<std::endl;
    double lowscale = spec.runningpars.GetScale();
@@ -249,9 +249,9 @@ void mssm_manipulate(Gambit::MSSMSpec<M> & mssm)
    
 }
 
-void SM_checks(Gambit::Spectrum& spec) {
+void SM_checks(Gambit::SubSpectrum& spec) {
    PRINTOUT << "In specbit_test_func3: " 
-          << " testing retrieval from Spectrum*"
+          << " testing retrieval from SubSpectrum*"
           << " with capability SM_spectrum..." << endl;
    PRINTOUT << "  Scale: " << spec.runningpars.GetScale() << endl;
    PRINTOUT << "  Gauge couplings:" << endl;
