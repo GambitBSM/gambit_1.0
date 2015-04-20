@@ -10,31 +10,29 @@
 ///  
 /// \author Peter Athron
 /// \author Csaba Balazs
-/// \date 2015 Jan,Feb
+/// \author Pat Scott
+/// \date 2015 Jan-Apr
 ///
 ///  *********************************************
 
 #ifdef BACKENDRENAME
   #define BACKENDNAME BACKENDRENAME
 #else
-  #define BACKENDNAME SUSYHIT
+  #define BACKENDNAME SUSY_HIT
 #endif
-#define VERSION 0.1
-#define SAFE_VERSION 0_1
+#define VERSION 1.4
+#define SAFE_VERSION 1_4
 
+// Let's go.
 LOAD_LIBRARY
 
-/* Syntax for BE_VARIABLE:
- * BE_VARIABLE([type], "[exact symbol name]", "[choose capability name]")  
- * */
+// Can't do anything non-MSSM with SUSY-HIT
+BE_ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
 
-// CsB hand made with old BE_VAIABLE syntax >
-// BE_VARIABLE(FORTRAN_COMMONBLOCK(top2body_CB_type, top2body), "sd_top2body_", "top2body")
-// CsB <
-
+// Functions
 BE_FUNCTION(sdecay, void, (), "sdecay_", "sdecay")  // CsB SUSYHIT main subroutine declaration
 
-// CsB from Anders' CBGB script >
+// Variables
 BE_VARIABLE(widtha_hdec_type, widtha_hdec, "widtha_hdec_", "cb_widtha_hdec")
 BE_VARIABLE(widthhl_hdec_type, widthhl_hdec, "widthhl_hdec_", "cb_widthhl_hdec")
 BE_VARIABLE(widthhh_hdec_type, widthhh_hdec, "widthhh_hdec_", "cb_widthhh_hdec")
@@ -78,48 +76,21 @@ BE_VARIABLE(sd_sntau2body_type, sd_sntau2body, "sd_sntau2body_", "cb_sd_sntau2bo
 BE_VARIABLE(sd_sntauwidth_type, sd_sntauwidth, "sd_sntauwidth_", "cb_sd_sntauwidth")
 BE_VARIABLE(sd_top2body_type, sd_top2body, "sd_top2body_", "cb_sd_top2body")
 BE_VARIABLE(sd_topwidth_type, sd_topwidth, "sd_topwidth_", "cb_sd_topwidth")
-// CsB from Anders' CBGB script <
 
-/* Syntax for BE_FUNCTION:
- * BE_FUNCTION([choose function name], [type], [arguement types], "[exact symbol name]", "[choose capability name]")
- */
-// CsB we cannot call the main program of a Fortran code >
-// BE_FUNCTION(SUSYHIT_MAIN, void, (), "MAIN__", "SUSYHIT_MAIN")
-// CsB <
-/* 
-BE_FUNCTION(printStuff, void, (), "printstuff_", "libFarrayTest_printStuff")
+// Initialisation function (dependencies)
+BE_INI_DEPENDENCY(MSSM_spectrum, const SMplusUV*)
 
-BE_FUNCTION(set_d, void, (), "set_d_", "libFarrayTest_set_d")
-
-BE_FUNCTION(fptrRoutine, void, (   ARG_FARRAY(double,1), int&,                     \
-                                        ARG_FARRAY_FPTR(double,(ARG_FARRAY(double,1)))  \
-                                    ), "fptrroutine_", "libFarrayTest_fptrRoutine")
-
-BE_FUNCTION(doubleFuncArray1, double, (ARG_FARRAY(double,1)), "doublefuncarray1_", "libFarrayTest_doubleFuncArray1", (), 1)
-
-BE_FUNCTION(doubleFuncArray2, double, (ARG_FARRAY(double,1)), "doublefuncarray2_", "libFarrayTest_doubleFuncArray2", (), 1)
-
-BE_FUNCTION(doubleFunc, double, (double&), "doublefunc_", "libFarrayTest_doubleFunc")
-
-*/
-
-namespace Gambit
+// Initialisation function (definition)
+BE_INI_FUNCTION
 {
-  namespace Backends
+  // Scan-level initialisation
+  static bool scan_level = true;
+  if (scan_level)
   {
-    namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
-    {
-
-      /* Convenience functions go here */
-
-    } /* end namespace BACKENDNAME_SAFE_VERSION */                                          
-  } /* end namespace Backends */                                                
-} /* end namespace Gambit */                                                   
-
-
-//BE_CONV_FUNCTION(awesomenessByAnders, double, "awesomeness")
-
-BE_INI_FUNCTION{}
+    sdecay();
+  }
+  scan_level = false;
+}
 DONE
 
 // Undefine macros to avoid conflict with other backends

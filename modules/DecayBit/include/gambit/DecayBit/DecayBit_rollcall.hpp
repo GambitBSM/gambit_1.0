@@ -40,9 +40,9 @@ START_MODULE
   
     #define FUNCTION decayTest              // Name of an observable function
     START_FUNCTION(double)                  // Declare that this function calculates the observable as a double precision variable
-    BACKEND_REQ(sdecay, (), void, ())                 // Register the backend function "sdecay"
-    BACKEND_REQ(cb_sd_top2body, (), sd_top2body_type)
-    BACKEND_REQ(cb_sd_topwidth, (), sd_topwidth_type)
+    BACKEND_REQ(cb_sd_top2body, (sh_reqd), sd_top2body_type)
+    BACKEND_REQ(cb_sd_topwidth, (sh_reqd), sd_topwidth_type)
+    BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
     #undef FUNCTION
 	
   #undef CAPABILITY
@@ -57,10 +57,10 @@ START_MODULE
 
     #define FUNCTION MSSM_h0_1_decays
     START_FUNCTION(DecayTable::Entry)
-    BACKEND_REQ(sdecay, (),void, ())
-    BACKEND_REQ(cb_widthhl_hdec, (), widthhl_hdec_type)
-    BACKEND_REQ(cb_wisusy_hdec, (), wisusy_hdec_type)
-    BACKEND_REQ(cb_wisfer_hdec, (), wisfer_hdec_type)
+    BACKEND_REQ(cb_widthhl_hdec, (sh_reqd), widthhl_hdec_type)
+    BACKEND_REQ(cb_wisusy_hdec, (sh_reqd), wisusy_hdec_type)
+    BACKEND_REQ(cb_wisfer_hdec, (sh_reqd), wisfer_hdec_type)
+    BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
     ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
     #undef FUNCTION
 
@@ -71,10 +71,10 @@ START_MODULE
 
     #define FUNCTION h0_2_decays
     START_FUNCTION(DecayTable::Entry)
-    BACKEND_REQ(sdecay, (),void, ())
-    BACKEND_REQ(cb_widthhh_hdec, (), widthhh_hdec_type)
-    BACKEND_REQ(cb_wisusy_hdec, (), wisusy_hdec_type)
-    BACKEND_REQ(cb_wisfer_hdec, (), wisfer_hdec_type)
+    BACKEND_REQ(cb_widthhh_hdec, (sh_reqd), widthhh_hdec_type)
+    BACKEND_REQ(cb_wisusy_hdec, (sh_reqd), wisusy_hdec_type)
+    BACKEND_REQ(cb_wisfer_hdec, (sh_reqd), wisfer_hdec_type)
+    BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
     ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
     #undef FUNCTION
 
@@ -85,9 +85,9 @@ START_MODULE
 
     #define FUNCTION A0_decays
     START_FUNCTION(DecayTable::Entry)
-    BACKEND_REQ(sdecay, (),void, ())
-    BACKEND_REQ(cb_widtha_hdec, (), widtha_hdec_type)
-    BACKEND_REQ(cb_wisusy_hdec, (), wisusy_hdec_type)
+    BACKEND_REQ(cb_widtha_hdec, (sh_reqd), widtha_hdec_type)
+    BACKEND_REQ(cb_wisusy_hdec, (sh_reqd), wisusy_hdec_type)
+    BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
     ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
     #undef FUNCTION
  
@@ -98,10 +98,10 @@ START_MODULE
 
     #define FUNCTION Hplus_decays
     START_FUNCTION(DecayTable::Entry)
-    BACKEND_REQ(sdecay, (),void, ())
-    BACKEND_REQ(cb_widthhc_hdec, (), widthhc_hdec_type)
-    BACKEND_REQ(cb_wisusy_hdec, (), wisusy_hdec_type)
-    BACKEND_REQ(cb_wisfer_hdec, (), wisfer_hdec_type)
+    BACKEND_REQ(cb_widthhc_hdec, (sh_reqd), widthhc_hdec_type)
+    BACKEND_REQ(cb_wisusy_hdec, (sh_reqd), wisusy_hdec_type)
+    BACKEND_REQ(cb_wisfer_hdec, (sh_reqd), wisfer_hdec_type)
+    BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
     ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
     #undef FUNCTION
 
@@ -112,11 +112,11 @@ START_MODULE
 
     #define FUNCTION gluino_decays
     START_FUNCTION(DecayTable::Entry)
-    BACKEND_REQ(sdecay, (),void, ())
-    BACKEND_REQ(cb_sd_gluiwidth, (), sd_gluiwidth_type)
-    BACKEND_REQ(cb_sd_glui2body, (), sd_glui2body_type)
-    BACKEND_REQ(cb_sd_gluiloop, (), sd_gluiloop_type)
-    BACKEND_REQ(cb_sd_glui3body, (), sd_glui3body_type)
+    BACKEND_REQ(cb_sd_gluiwidth, (sh_reqd), sd_gluiwidth_type)
+    BACKEND_REQ(cb_sd_glui2body, (sh_reqd), sd_glui2body_type)
+    BACKEND_REQ(cb_sd_gluiloop, (sh_reqd), sd_gluiloop_type)
+    BACKEND_REQ(cb_sd_glui3body, (sh_reqd), sd_glui3body_type)
+    BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
     ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
     #undef FUNCTION
 
@@ -127,11 +127,11 @@ START_MODULE
 
     #define FUNCTION stop_1_decays
     START_FUNCTION(DecayTable::Entry)
-    BACKEND_REQ(sdecay, (),void, ())
-    BACKEND_REQ(cb_sd_stopwidth, (), sd_stopwidth_type)
-    BACKEND_REQ(cb_sd_stop2body, (), sd_stop2body_type)
-    BACKEND_REQ(cb_sd_stoploop, (), sd_stoploop_type)
-    BACKEND_REQ(cb_sd_stop3body, (), sd_stop3body_type)
+    BACKEND_REQ(cb_sd_stopwidth, (sh_reqd), sd_stopwidth_type)
+    BACKEND_REQ(cb_sd_stop2body, (sh_reqd), sd_stop2body_type)
+    BACKEND_REQ(cb_sd_stoploop, (sh_reqd), sd_stoploop_type)
+    BACKEND_REQ(cb_sd_stop3body, (sh_reqd), sd_stop3body_type)
+    BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
     ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
     #undef FUNCTION
 
@@ -142,10 +142,10 @@ START_MODULE
 
     #define FUNCTION stop_2_decays
     START_FUNCTION(DecayTable::Entry)
-    BACKEND_REQ(sdecay, (),void, ())
-    BACKEND_REQ(cb_sd_stopwidth, (), sd_stopwidth_type)
-    BACKEND_REQ(cb_sd_stop2body, (), sd_stop2body_type)
-    BACKEND_REQ(cb_sd_stop3body, (), sd_stop3body_type)
+    BACKEND_REQ(cb_sd_stopwidth, (sh_reqd), sd_stopwidth_type)
+    BACKEND_REQ(cb_sd_stop2body, (sh_reqd), sd_stop2body_type)
+    BACKEND_REQ(cb_sd_stop3body, (sh_reqd), sd_stop3body_type)
+    BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
     ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
     #undef FUNCTION
 
@@ -156,10 +156,10 @@ START_MODULE
 
     #define FUNCTION sbottom_1_decays
     START_FUNCTION(DecayTable::Entry)
-    BACKEND_REQ(sdecay, (),void, ())
-    BACKEND_REQ(cb_sd_sbotwidth, (), sd_sbotwidth_type)
-    BACKEND_REQ(cb_sd_sbot2body, (), sd_sbot2body_type)
-    BACKEND_REQ(cb_sd_sbot3body, (), sd_sbot3body_type)
+    BACKEND_REQ(cb_sd_sbotwidth, (sh_reqd), sd_sbotwidth_type)
+    BACKEND_REQ(cb_sd_sbot2body, (sh_reqd), sd_sbot2body_type)
+    BACKEND_REQ(cb_sd_sbot3body, (sh_reqd), sd_sbot3body_type)
+    BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
     ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
     #undef FUNCTION
 
@@ -170,11 +170,12 @@ START_MODULE
 
     #define FUNCTION sbottom_2_decays
     START_FUNCTION(DecayTable::Entry)
-    BACKEND_REQ(sdecay, (),void, ())
-    BACKEND_REQ(cb_sd_sbotwidth, (), sd_sbotwidth_type)
-    BACKEND_REQ(cb_sd_sbot2body, (), sd_sbot2body_type)
-    BACKEND_REQ(cb_sd_sbot3body, (), sd_sbot3body_type)
+    BACKEND_REQ(cb_sd_sbotwidth, (sh_reqd), sd_sbotwidth_type)
+    BACKEND_REQ(cb_sd_sbot2body, (sh_reqd), sd_sbot2body_type)
+    BACKEND_REQ(cb_sd_sbot3body, (sh_reqd), sd_sbot3body_type)
+    BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
     ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
+
     #undef FUNCTION
 
   #undef CAPABILITY
@@ -184,9 +185,9 @@ START_MODULE
 
     #define FUNCTION sup_L_decays
     START_FUNCTION(DecayTable::Entry)
-    BACKEND_REQ(sdecay, (),void, ())
-    BACKEND_REQ(cb_sd_supwidth, (), sd_supwidth_type)
-    BACKEND_REQ(cb_sd_sup2body, (), sd_sup2body_type)
+    BACKEND_REQ(cb_sd_supwidth, (sh_reqd), sd_supwidth_type)
+    BACKEND_REQ(cb_sd_sup2body, (sh_reqd), sd_sup2body_type)
+    BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
     ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
     #undef FUNCTION
 
@@ -197,9 +198,9 @@ START_MODULE
 
     #define FUNCTION sup_R_decays
     START_FUNCTION(DecayTable::Entry)
-    BACKEND_REQ(sdecay, (),void, ())
-    BACKEND_REQ(cb_sd_supwidth, (), sd_supwidth_type)
-    BACKEND_REQ(cb_sd_sup2body, (), sd_sup2body_type)
+    BACKEND_REQ(cb_sd_supwidth, (sh_reqd), sd_supwidth_type)
+    BACKEND_REQ(cb_sd_sup2body, (sh_reqd), sd_sup2body_type)
+    BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
     ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
     #undef FUNCTION
 
@@ -210,9 +211,9 @@ START_MODULE
 
     #define FUNCTION sdown_L_decays
     START_FUNCTION(DecayTable::Entry)
-    BACKEND_REQ(sdecay, (),void, ())
-    BACKEND_REQ(cb_sd_sdownwidth, (), sd_sdownwidth_type)
-    BACKEND_REQ(cb_sd_sdown2body, (), sd_sdown2body_type)
+    BACKEND_REQ(cb_sd_sdownwidth, (sh_reqd), sd_sdownwidth_type)
+    BACKEND_REQ(cb_sd_sdown2body, (sh_reqd), sd_sdown2body_type)
+    BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
     ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
     #undef FUNCTION
 
@@ -223,9 +224,9 @@ START_MODULE
 
     #define FUNCTION sdown_R_decays
     START_FUNCTION(DecayTable::Entry)
-    BACKEND_REQ(sdecay, (),void, ())
-    BACKEND_REQ(cb_sd_sdownwidth, (), sd_sdownwidth_type)
-    BACKEND_REQ(cb_sd_sdown2body, (), sd_sdown2body_type)
+    BACKEND_REQ(cb_sd_sdownwidth, (sh_reqd), sd_sdownwidth_type)
+    BACKEND_REQ(cb_sd_sdown2body, (sh_reqd), sd_sdown2body_type)
+    BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
     ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
     #undef FUNCTION
 
@@ -236,9 +237,9 @@ START_MODULE
 
     #define FUNCTION scharm_L_decays
     START_FUNCTION(DecayTable::Entry)
-    BACKEND_REQ(sdecay, (),void, ())
-    BACKEND_REQ(cb_sd_supwidth, (), sd_supwidth_type)
-    BACKEND_REQ(cb_sd_sup2body, (), sd_sup2body_type)
+    BACKEND_REQ(cb_sd_supwidth, (sh_reqd), sd_supwidth_type)
+    BACKEND_REQ(cb_sd_sup2body, (sh_reqd), sd_sup2body_type)
+    BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
     ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
     #undef FUNCTION
 
@@ -249,9 +250,9 @@ START_MODULE
 
     #define FUNCTION scharm_R_decays
     START_FUNCTION(DecayTable::Entry)
-    BACKEND_REQ(sdecay, (),void, ())
-    BACKEND_REQ(cb_sd_supwidth, (), sd_supwidth_type)
-    BACKEND_REQ(cb_sd_sup2body, (), sd_sup2body_type)
+    BACKEND_REQ(cb_sd_supwidth, (sh_reqd), sd_supwidth_type)
+    BACKEND_REQ(cb_sd_sup2body, (sh_reqd), sd_sup2body_type)
+    BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
     ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
     #undef FUNCTION
 
@@ -262,9 +263,9 @@ START_MODULE
 
     #define FUNCTION sstrange_L_decays
     START_FUNCTION(DecayTable::Entry)
-    BACKEND_REQ(sdecay, (),void, ())
-    BACKEND_REQ(cb_sd_sdownwidth, (), sd_sdownwidth_type)
-    BACKEND_REQ(cb_sd_sdown2body, (), sd_sdown2body_type)
+    BACKEND_REQ(cb_sd_sdownwidth, (sh_reqd), sd_sdownwidth_type)
+    BACKEND_REQ(cb_sd_sdown2body, (sh_reqd), sd_sdown2body_type)
+    BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
     ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
     #undef FUNCTION
 
@@ -275,9 +276,9 @@ START_MODULE
 
     #define FUNCTION sstrange_R_decays
     START_FUNCTION(DecayTable::Entry)
-    BACKEND_REQ(sdecay, (),void, ())
-    BACKEND_REQ(cb_sd_sdownwidth, (), sd_sdownwidth_type)
-    BACKEND_REQ(cb_sd_sdown2body, (), sd_sdown2body_type)
+    BACKEND_REQ(cb_sd_sdownwidth, (sh_reqd), sd_sdownwidth_type)
+    BACKEND_REQ(cb_sd_sdown2body, (sh_reqd), sd_sdown2body_type)
+    BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
     ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
     #undef FUNCTION
 

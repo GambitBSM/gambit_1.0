@@ -33,7 +33,6 @@ namespace Gambit
     void decayTest (double &result)
     {
       using namespace Pipes::decayTest;
-      BEreq::sdecay();
       //  result = BEreq::cb_sd_top2body->brtopbw; 
       //  cout << "top 2 body Br's: " << BEreq::cb_sd_top2body->brtopbw << endl;
       result = BEreq::cb_sd_topwidth->toptot2; 
@@ -252,7 +251,6 @@ namespace Gambit
     void MSSM_h0_1_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::MSSM_h0_1_decays;
-      BEreq::sdecay();
       result.width_in_GeV = BEreq::cb_widthhl_hdec->hlwdth;
       result.set_BF(BEreq::cb_widthhl_hdec->hlbrb, 0.0, "b", "bbar");
       result.set_BF(BEreq::cb_widthhl_hdec->hlbrl, 0.0, "tau+", "tau-");
@@ -315,7 +313,6 @@ namespace Gambit
     void h0_2_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::h0_2_decays;
-      BEreq::sdecay();
       result.width_in_GeV = BEreq::cb_widthhh_hdec->hhwdth;
       result.set_BF(BEreq::cb_widthhh_hdec->hhbrb, 0.0, "b", "bbar");
       result.set_BF(BEreq::cb_widthhh_hdec->hhbrl, 0.0, "tau+", "tau-");
@@ -382,7 +379,6 @@ namespace Gambit
     void A0_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::A0_decays;
-      BEreq::sdecay();
       result.width_in_GeV = BEreq::cb_widtha_hdec->awdth;
       result.set_BF(BEreq::cb_widtha_hdec->abrb, 0.0, "b", "bbar");
       result.set_BF(BEreq::cb_widtha_hdec->abrl, 0.0, "tau+", "tau-");
@@ -421,7 +417,6 @@ namespace Gambit
     void Hplus_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::Hplus_decays;
-      BEreq::sdecay();
       result.width_in_GeV = BEreq::cb_widthhc_hdec->hcwdth;
       result.set_BF(BEreq::cb_widthhc_hdec->hcbrb, 0.0, "c", "bbar");
       result.set_BF(BEreq::cb_widthhc_hdec->hcbrl, 0.0, "tau+", "nu_tau");
@@ -457,7 +452,6 @@ namespace Gambit
     void gluino_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::gluino_decays;
-      BEreq::sdecay();
       result.width_in_GeV = BEreq::cb_sd_gluiwidth->gluitot;
       result.set_BF(BEreq::cb_sd_glui2body->brgsdownl, 0.0, "~d_L", "dbar");
       result.set_BF(BEreq::cb_sd_glui2body->brgsdownl, 0.0, "~dbar_L", "d");
@@ -534,7 +528,6 @@ namespace Gambit
     void stop_1_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::stop_1_decays;
-      BEreq::sdecay();
       result.width_in_GeV = BEreq::cb_sd_stopwidth->stoptot4; // CsB: CHECK THIS WITH MAGGIE !!!
       result.set_BF(BEreq::cb_sd_stop2body->brst1neutt(1), 0.0, "~chi0_1", "t");
       result.set_BF(BEreq::cb_sd_stop2body->brst1neutt(2), 0.0, "~chi0_2", "t");
@@ -588,7 +581,6 @@ namespace Gambit
     void stop_2_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::stop_2_decays;
-      BEreq::sdecay();
       result.width_in_GeV = BEreq::cb_sd_stopwidth->stoptot4; // CsB: CHECK THIS WITH MAGGIE !!!
       result.set_BF(BEreq::cb_sd_stop2body->brst2neutt(1), 0.0, "~chi0_1", "t");
       result.set_BF(BEreq::cb_sd_stop2body->brst2neutt(2), 0.0, "~chi0_2", "t");
@@ -656,7 +648,6 @@ namespace Gambit
     void sbottom_1_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::sbottom_1_decays;
-      BEreq::sdecay();
       result.width_in_GeV = BEreq::cb_sd_sbotwidth->sbottot(1);
       result.set_BF(BEreq::cb_sd_sbot2body->brsb1neutt(1), 0.0, "~chi0_1", "b");
       result.set_BF(BEreq::cb_sd_sbot2body->brsb1neutt(2), 0.0, "~chi0_2", "b");
@@ -699,7 +690,6 @@ namespace Gambit
     void sbottom_2_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::sbottom_2_decays;
-      BEreq::sdecay();
       result.width_in_GeV = BEreq::cb_sd_sbotwidth->sbottot(2);
       result.set_BF(BEreq::cb_sd_sbot2body->brsb2neutt(1), 0.0, "~chi0_1", "b");
       result.set_BF(BEreq::cb_sd_sbot2body->brsb2neutt(2), 0.0, "~chi0_2", "b");
@@ -759,7 +749,6 @@ namespace Gambit
     void sup_L_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::sup_L_decays;
-      BEreq::sdecay();
       result.width_in_GeV = BEreq::cb_sd_supwidth->supltot2;
       result.set_BF(BEreq::cb_sd_sup2body->brsuplnup(1), 0.0, "~chi0_1", "u");
       result.set_BF(BEreq::cb_sd_sup2body->brsuplnup(2), 0.0, "~chi0_2", "u");
@@ -775,7 +764,6 @@ namespace Gambit
     void sup_R_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::sup_R_decays;
-      BEreq::sdecay();
       result.width_in_GeV = BEreq::cb_sd_supwidth->suprtot2;
       result.set_BF(BEreq::cb_sd_sup2body->brsuprnup(1), 0.0, "~chi0_1", "u");
       result.set_BF(BEreq::cb_sd_sup2body->brsuprnup(2), 0.0, "~chi0_2", "u");
@@ -791,7 +779,6 @@ namespace Gambit
     void sdown_L_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::sdown_L_decays;
-      BEreq::sdecay();
       result.width_in_GeV = BEreq::cb_sd_sdownwidth->sdowltot2;
       result.set_BF(BEreq::cb_sd_sdown2body->brsdowlndow(1), 0.0, "~chi0_1", "d");
       result.set_BF(BEreq::cb_sd_sdown2body->brsdowlndow(2), 0.0, "~chi0_2", "d");
@@ -807,7 +794,6 @@ namespace Gambit
     void sdown_R_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::sdown_R_decays;
-      BEreq::sdecay();
       result.width_in_GeV = BEreq::cb_sd_sdownwidth->sdowrtot2;
       result.set_BF(BEreq::cb_sd_sdown2body->brsdowrndow(1), 0.0, "~chi0_1", "d");
       result.set_BF(BEreq::cb_sd_sdown2body->brsdowrndow(2), 0.0, "~chi0_2", "d");
@@ -823,7 +809,6 @@ namespace Gambit
     void scharm_L_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::scharm_L_decays;
-      BEreq::sdecay();
       result.width_in_GeV = BEreq::cb_sd_supwidth->supltot2;
       result.set_BF(BEreq::cb_sd_sup2body->brsuplnup(1), 0.0, "~chi0_1", "c");
       result.set_BF(BEreq::cb_sd_sup2body->brsuplnup(2), 0.0, "~chi0_2", "c");
@@ -839,7 +824,6 @@ namespace Gambit
     void scharm_R_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::scharm_R_decays;
-      BEreq::sdecay();
       result.width_in_GeV = BEreq::cb_sd_supwidth->suprtot2;
       result.set_BF(BEreq::cb_sd_sup2body->brsuprnup(1), 0.0, "~chi0_1", "c");
       result.set_BF(BEreq::cb_sd_sup2body->brsuprnup(2), 0.0, "~chi0_2", "c");
@@ -855,7 +839,6 @@ namespace Gambit
     void sstrange_L_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::sstrange_L_decays;
-      BEreq::sdecay();
       result.width_in_GeV = BEreq::cb_sd_sdownwidth->sdowltot2;
       result.set_BF(BEreq::cb_sd_sdown2body->brsdowlndow(1), 0.0, "~chi0_1", "s");
       result.set_BF(BEreq::cb_sd_sdown2body->brsdowlndow(2), 0.0, "~chi0_2", "s");
@@ -871,7 +854,6 @@ namespace Gambit
     void sstrange_R_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::sstrange_R_decays;
-      BEreq::sdecay();
       result.width_in_GeV = BEreq::cb_sd_sdownwidth->sdowrtot2;
       result.set_BF(BEreq::cb_sd_sdown2body->brsdowrndow(1), 0.0, "~chi0_1", "s");
       result.set_BF(BEreq::cb_sd_sdown2body->brsdowrndow(2), 0.0, "~chi0_2", "s");

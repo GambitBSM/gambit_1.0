@@ -9,7 +9,7 @@
 ###################################
 
 Parameters:
-  #StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
+  StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
   MSSM25atQ: !import LesHouches.in.MSSM_1.yaml
 
 Priors:
@@ -54,8 +54,12 @@ ObsLikes:
     type:         DecayTable
 
 Rules:
-   # None needed
-   
+
+  - capability: MSSM_spectrum 
+    function: get_MSSMatQ_spectrum  
+    options:
+      invalid_point_fatal: true
+
 
 #########################
 # Logging setup
