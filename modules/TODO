@@ -13,9 +13,6 @@ Printers:
 * MPI-compatible printer system (Ben)
 * Correlation of scanner printer system and GAMBIT printer system (Ben)
 
-Dependency Resolver:
-* Make dependency resolver errors more informative (Christoph; partially done but needs more work)
-
 Spectrum objects:
 * Make spectrum scale limit getter public (Ben)
 
@@ -160,6 +157,10 @@ Core done:
 * Modify GetObslike to deal with vectors of doubles internally
 * Add syntactic facility for easily declaring chained dependencies, where all entries in the chain have the same capability-type pair.
 * Make it possible to resolve dependencies that match a functor's own capability-type pair
+* Run configure for pythia backend
+* Fix error in type equivalencies 
+* Split Utils dir into codes needed for ScannerBit standalone and those not needed
+* Make dependency resolver errors more informative
 
 Models done:
 * Remove automatic declaration of "little guys"
