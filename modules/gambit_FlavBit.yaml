@@ -1,14 +1,14 @@
 Parameters:
-  CMSSM_demo:
+  CMSSM:
     A0:
       range: [-1000, 1000]
     M0:
       prior_type: log
       range: [0.001,1000]
     M12:
-      same_as: CMSSM_demo::M0
+      same_as: CMSSM::M0
     Mstop:
-      same_as: CMSSM_demo::M0
+      same_as: CMSSM::M0
     sgnmu:
       range: [-1, 1]
       fixed_value: 1
@@ -94,10 +94,10 @@ ObsLikes:
 
 
 #########################
-# Auxiliary entries
+# Rule entries
 #########################
 
-Auxiliaries:
+Rules:
 
   - capability:   "LibFirst_1_1_init"
     dependencies:

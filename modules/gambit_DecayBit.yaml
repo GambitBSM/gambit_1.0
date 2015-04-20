@@ -15,7 +15,6 @@ Parameters:
 Priors:
     # none: all parameters fixed.
 
-
 ##############################
 # Printer setup
 ##############################
@@ -55,7 +54,6 @@ ObsLikes:
     type:         DecayTable
 
 Rules:
-
    # None needed
    
 

@@ -54,8 +54,9 @@ namespace Gambit
         std::string version;
         bool printme; // Instruction to printer as to whether to write result to disk
         Options options;
-        std::vector<Observable> dependencies; // ..deps of deps of deps of obs possible
-        std::vector<Observable> backends; // ..deps of deps of deps of obs possible
+        std::vector<Observable> dependencies;
+        std::vector<Observable> backends;
+        std::vector<std::string> functionChain;
 
         ///Default constructor, to ensure the default values are not gibberish
         Observable():
@@ -69,7 +70,8 @@ namespace Gambit
           printme(true),
           options(),
           dependencies(),
-          backends()
+          backends(),
+          functionChain()
         {}
       };
 
@@ -87,15 +89,15 @@ namespace Gambit
         /// Read in the YAML file
         virtual void readFile(str filename);
 
-        /// Getters for private observable and auxiliary entries
+        /// Getters for private observable and rules entries
         /// @{
         const ObservablesType & getObservables() const;
-        const ObservablesType & getAuxiliaries() const;
+        const ObservablesType & getRules() const;
         /// @}
 
       private:
         ObservablesType observables;
-        ObservablesType auxiliaries;
+        ObservablesType rules;
 
     };
 
@@ -136,6 +138,8 @@ namespace YAML
       if (node["options"].IsDefined())
           rhs.options = Gambit::Options(node["options"]);
       #undef READ
+      if (node["functionChain"].IsDefined())
+          rhs.functionChain = node["functionChain"].as<std::vector<std::string>>();
       for(YAML::const_iterator it=node["dependencies"].begin();
           it!=node["dependencies"].end(); ++it)
       {

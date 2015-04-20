@@ -126,6 +126,12 @@ START_MODULE
     DEPENDENCY(MSSM_spectrum, const SMplusUV*)
     #undef FUNCTION
 
+    // Create QedQcdWrapper version of Spectrum* from SMInputs structs
+    #define FUNCTION get_QedQcd_spectrum
+    START_FUNCTION(const Spectrum*)
+    DEPENDENCY(SMINPUTS, SMInputs)
+    #undef FUNCTION
+
   #undef CAPABILITY
 
   /// @}

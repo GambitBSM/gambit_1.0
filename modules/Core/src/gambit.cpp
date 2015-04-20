@@ -120,6 +120,17 @@ int main(int argc, char* argv[])
       
   }
 
+  catch (str& e)
+  {
+    cout << endl << " \033[00;31;1mFATAL ERROR\033[00m" << endl << endl;
+    cout << "GAMBIT has exited with a fatal and uncaught exception " << endl;
+    cout << "thrown from a backend code.  Due to poor code design in " << e << endl;
+    cout << "the backend, the exception has been thrown as a string. " << endl;
+    cout << "If you are the author of the backend, please throw only " << endl;
+    cout << "exceptions that inheret from std::exception.  Error string: " << endl;
+    cout << e << endl;
+  }
+
   // Free the memory held by the RNG
   Random::delete_rng_engine();
 
