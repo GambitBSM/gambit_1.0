@@ -226,10 +226,10 @@ ObsLikes:
 
 
 #########################
-# Auxiliary entries
+# Rule entries
 #########################
 
-Auxiliaries:
+Rules:
 
   - capability:   "LibFirst_1_1_init"
     dependencies:

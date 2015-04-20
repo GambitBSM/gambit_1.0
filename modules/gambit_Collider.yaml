@@ -74,10 +74,10 @@ ObsLikes:
 
 
 #########################
-# Auxiliary entries
+# Rule entries
 #########################
 
-Auxiliaries:
+Rules:
 
   #ColliderBit options (note, these ones are mandatory at this moment)
 
