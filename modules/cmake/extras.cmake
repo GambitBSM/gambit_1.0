@@ -151,17 +151,17 @@ elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
 endif()
 set(nulike_ver "1\\.0\\.0")
 set(nulike_lib "libnulike")
-set(nulike_dir "${PROJECT_SOURCE_DIR}/../extras/nulike/lib")
-set(nulike_short_dir "./../extras/nulike/lib")
+set(nulike_dir "${PROJECT_SOURCE_DIR}/../extras/nulike")
+set(nulike_short_dir "./../extras/nulike")
 set(nulikeFFLAGS "${CMAKE_Fortran_FLAGS} -I${nulike_dir}/include")
 ExternalProject_Add(nulike
   SOURCE_DIR ${nulike_dir}
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND ""
   BUILD_COMMAND make ${nulike_lib}.so FC=${CMAKE_Fortran_COMPILER} FFLAGS=${nulikeFFLAGS} MODULE=${FMODULE} 
-  INSTALL_COMMAND sed -i "s#${nulike_ver}:.*${nulike_lib}\\.so#${nulike_ver}:       ${nulike_short_dir}/${nulike_lib}.so#g" ${PROJECT_SOURCE_DIR}/config/backend_locations.yaml
+  INSTALL_COMMAND sed -i "s#${nulike_ver}:.*${nulike_lib}\\.so#${nulike_ver}:       ${nulike_short_dir}/lib/${nulike_lib}.so#g" ${PROJECT_SOURCE_DIR}/config/backend_locations.yaml
 )
-set(clean_files ${clean_files} "${nulike_dir}/${nulike_lib}.so")
+set(clean_files ${clean_files} "${nulike_dir}/lib/${nulike_lib}.so")
 
 set_target_properties(ddcalc gamlike darksusy micromegas superiso nulike pythia fastsim BOSSMinimalExample PROPERTIES EXCLUDE_FROM_ALL 1)
 
