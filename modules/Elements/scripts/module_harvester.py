@@ -36,7 +36,7 @@
 #    \date 2015 Feb
 #
 #*********************************************
-from harvesting_tools import *
+execfile("./Utils/scripts/harvesting_tools.py")
 
 def main(argv):
 
@@ -67,7 +67,7 @@ def main(argv):
 
     # List of headers to search
     rollcall_headers = set(["gambit/Backends/backend_rollcall.hpp"])
-    type_headers     = set(["gambit/Utils/types_rollcall.hpp"])
+    type_headers     = set(["gambit/Elements/types_rollcall.hpp"])
 
     # List of headers NOT to search (things we know are not module rollcall headers or module type headers, 
     # but are included in module_rollcall.hpp or types_rollcall.hpp)
@@ -134,7 +134,7 @@ def main(argv):
         towrite+='#include \"{0}\"\n'.format(h)
     towrite+="\n#endif // defined __module_types_rollcall_hpp__\n"
     
-    with open("./Utils/include/gambit/Utils/module_types_rollcall.hpp","w") as f:
+    with open("./Elements/include/gambit/Elements/module_types_rollcall.hpp","w") as f:
         f.write(towrite)
 
     print "Harvesting types from headers..."
@@ -184,7 +184,7 @@ def main(argv):
     for t in be_types:
         if t != "": print ' ',t
 
-    # Generate a c++ header containing the preprocessor sequence needed by Utils/include/gambit/Printers/printers.hpp, containing all the types we have harvested.
+    # Generate a c++ header containing the preprocessor sequence needed by Printers/include/gambit/Printers/printers.hpp, containing all the types we have harvested.
     towrite = "\
 //   GAMBIT: Global and Modular BSM Inference Tool\n\
 //   *********************************************\n\
@@ -212,7 +212,7 @@ def main(argv):
 #ifndef __all_functor_types_hpp__                 \n\
 #define __all_functor_types_hpp__                 \n\
                                                   \n\
-#include \"gambit/Utils/types_rollcall.hpp\"      \n\
+#include \"gambit/Elements/types_rollcall.hpp\"   \n\
                                                   \n\
 // Automatically generated preprocessor sequence of module functor types \n\
 #define PRINTABLE_TYPES \\\n"
@@ -227,7 +227,7 @@ def main(argv):
 
     towrite+="\n\n#endif // defined __all_functor_types_hpp__\n"
     
-    with open("./Utils/include/gambit/Utils/all_functor_types.hpp","w") as f:
+    with open("./Elements/include/gambit/Elements/all_functor_types.hpp","w") as f:
         f.write(towrite)
 
     if verbose:

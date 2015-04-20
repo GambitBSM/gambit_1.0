@@ -48,8 +48,8 @@
 #include "gambit/Utils/util_types.hpp"
 #include "gambit/Utils/util_functions.hpp"
 #include "gambit/Utils/yaml_options.hpp"
+#include "gambit/Utils/model_parameters.hpp"
 #include "gambit/Logs/log.hpp"
-#include "gambit/Models/model_parameters.hpp"
 
 /// Decay rate of average runtime estimate [(number of functor evaluations)^-1]
 #define FUNCTORS_FADE_RATE 0.01

@@ -29,18 +29,13 @@
 
 #include <memory>
 
-#include "gambit/Utils/Spectrum.hpp"
+#include "gambit/Elements/Spectrum.hpp"
 #include "gambit/Utils/util_functions.hpp"
+#include "gambit/SpecBit/MSSMSpec_head.hpp"   // "Header" declarations for MSSMSpec class
 
 // Flexible SUSY stuff (should not be needed by the rest of gambit)
 #include "flexiblesusy/config/config.h"
 
-// "Header" declarations for MSSMSpec class
-// (the current file contains the member function definitions, which usually
-//  would go in a .cpp file, but cannot since this is a template class. But
-//  it is still nice to split up the declarations and definitions, so that
-//  is all that we are doing here.)
-#include "MSSMSpec_head.hpp"
 
 namespace Gambit {
 

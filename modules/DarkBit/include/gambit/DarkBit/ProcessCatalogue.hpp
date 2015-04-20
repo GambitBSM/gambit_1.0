@@ -27,7 +27,7 @@
 #include <map>
 
 #include "gambit/Utils/util_types.hpp"
-#include "gambit/Utils/funktions.hpp"
+#include "gambit/Elements/funktions.hpp"
 
 namespace Gambit
 {

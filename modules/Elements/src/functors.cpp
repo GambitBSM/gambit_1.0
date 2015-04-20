@@ -12,6 +12,7 @@
 ///          (patscott@physics.mcgill.ca)
 ///  \date 2013 Apr-July, Dec
 ///  \date 2014 Jan, Mar-May, Sep
+///  \date 2015 Apr
 ///
 ///  \author Anders Kvellestad
 ///          (anders.kvellestad@fys.uio.no)
@@ -34,8 +35,8 @@
 
 #include <chrono>
 
-#include "gambit/Utils/functors.hpp"
-#include "gambit/Utils/all_functor_types.hpp"
+#include "gambit/Elements/functors.hpp"
+#include "gambit/Elements/all_functor_types.hpp"
 #include "gambit/Utils/standalone_error_handlers.hpp"
 #include "gambit/Models/models.hpp"
 #include "gambit/Logs/log.hpp"

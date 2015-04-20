@@ -61,8 +61,8 @@
 #include "gambit/DarkBit/decay_chain.hpp"
 #include "gambit/DarkBit/SimpleHist.hpp"
 #include "gambit/DarkBit/ProcessCatalogue.hpp"
-#include "gambit/Utils/base_functions.hpp"
-#include "gambit/Utils/funktions.hpp"
+#include "gambit/Elements/base_functions.hpp"
+#include "gambit/Elements/funktions.hpp"
 
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/shared_ptr.hpp>

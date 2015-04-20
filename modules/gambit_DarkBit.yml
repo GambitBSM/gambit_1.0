@@ -296,9 +296,9 @@ ObsLikes:
       purpose: Observable    
       
 # 79-string IceCube likelihood
-    #- capability: IceCube_likelihood
-    #  purpose: Likelihood
-    #  function: IC79_loglike
+    - capability: IceCube_likelihood
+      purpose: Likelihood
+      function: IC79_loglike
 
 # This function dumps gamma-ray spectra into a ASCII table file.  The filename
 # is specified as option in the Rules section.

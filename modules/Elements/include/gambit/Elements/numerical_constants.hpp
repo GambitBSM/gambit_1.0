@@ -2,7 +2,7 @@
 //   *********************************************
 ///  \file
 ///
-///  Basic set of known mathematica and physical
+///  Basic set of known mathematical and physical
 ///  constants for GAMBIT.
 ///
 ///  *********************************************
