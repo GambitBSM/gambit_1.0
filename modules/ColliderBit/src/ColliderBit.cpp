@@ -24,7 +24,7 @@
 #include <numeric>
 #include <vector>
 
-#include "gambit/Utils/gambit_module_headers.hpp"
+#include "gambit/Elements/gambit_module_headers.hpp"
 #include "gambit/ColliderBit/ColliderBit_rollcall.hpp"
 
 // Again with my push not showing up... What gits?

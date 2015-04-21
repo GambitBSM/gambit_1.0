@@ -61,6 +61,29 @@ Parameters:
       Au_3:
         fixed_value: 0
 
+    nuclear_params_fnq:
+      # proton hadronic matrix elements
+      fpd:
+        fixed_value: 0.0191
+      fpu:
+        fixed_value: 0.0153
+      fps:
+        fixed_value: 0.0447
+      # neutron hadronic matrix elements
+      fnd:
+        fixed_value: 0.0273
+      fnu:
+        fixed_value: 0.011
+      fns:
+        fixed_value: 0.0447
+      # proton spin content
+      deltad:
+        fixed_value: -0.427
+      deltau:
+        fixed_value: 0.842
+      deltas:
+        fixed_value: -0.085
+
 ##############################
 # Prior setup
 ##############################
@@ -115,7 +138,9 @@ Scanner:
 ObsLikes:
     - capability: UnitTest_DarkBit
       
-Auxiliaries:
+Rules:
+  - capability: RD_thresholds_resonances
+    function:  RD_thresholds_resonances_from_spectrum
   - capability: DarkSUSY_PointInit
     options:
       show_higgs_widths: true
@@ -135,17 +160,18 @@ Auxiliaries:
     dependencies:
         - capability: DD_couplings
           function: DD_couplings_DarkSUSY
-          #function: DD_couplings_micrOMEGAs
+          #function: DD_couplings_MicrOmegas
         - capability: RD_oh2
           function: RD_oh2_DarkSUSY
-          #function: RD_oh2_micromegas
+          #function: RD_oh2_general
+          #function: RD_oh2_Micromegas
     options:
         fileroot: UnitTest_MSSMbenchmarks_DarkSUSY
-        #fileroot: UnitTest_MSSMbenchmarks_micromegas
+        #fileroot: UnitTest_MSSMbenchmarks_MicrOmegas
         GA_AnnYield:
           nbins: 100
-  - capability: MSSMspectrum
-    function: getMSSMspectrum  # For unit test: reads in spectrum from SLHA file
+  - capability: MSSM_spectrum
+    function: get_MSSM_spectrum_from_file  # For unit test: reads in spectrum from SLHA file
     module: DarkBit
     options:
         filenames: 
@@ -161,9 +187,12 @@ Auxiliaries:
             - DarkBit/slha-benchmarks/14-12-2014_joakim/JE87O_006600.slha1
   - capability: RD_oh2
     options:
-      fast: 1  # Accuracy options (used by micromegas)
+      fast: 1  # Accuracy options (used by MicrOmegas)
       Beps: 1e-2
       omtype: 0
+  - capability: RD_spectrum
+    options: 
+      CoannMaxMass: 1.01 # include only co-annihilating particles up to this mass
 
 
 #########################

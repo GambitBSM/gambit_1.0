@@ -12,7 +12,8 @@
 # Input parameter declarations
 ###################################
 
-Parameters: !import parameters.yaml
+Parameters: 
+ !import parameters.yaml
 
 
 ##############################
@@ -39,21 +40,21 @@ Priors:
   # decided that we can deal with this via the "purpose" system.
 
   #m0_prior:
-  #  parameters: [CMSSM_demo::M0]
+  #  parameters: [CMSSM::M0]
   #  prior_type: log
   #  range: [0.001,1000]
 
   m12_prior: 
-    parameters: [CMSSM_demo::M12]
+    parameters: [CMSSM::M12]
     prior_type: composite
     options: 
       new_prior: 
-        parameters: [CMSSM_demo::M12]
+        parameters: [CMSSM::M12]
         prior_type: log
         range: [100,2000]
 
-  tanbMstop_prior: 
-    parameters: [CMSSM_demo::tanb, CMSSM_demo::Mstop]
+  tanbA0_prior: 
+    parameters: [CMSSM::tanb, CMSSM::A0]
     prior_type: cauchy
     options:
       cov: [[0.5, 0.1],[0.1, 0.6]]
@@ -186,8 +187,13 @@ ObsLikes:
     module:       ""
 
   # Uncomment to test neutrino likelihoods
+  #- purpose:      Likelihood
+  #  capability:   IceCube_likelihood
+  #  function:     IC79_loglike
+
+  # Uncomment to test DD likelihoods
   - purpose:      Likelihood
-    capability:   IceCube_likelihood
+    capability:   lnL_LUX_2013
 
   # Uncomment to test FastSim
   #- purpose:      Likelihood
@@ -305,7 +311,24 @@ ObsLikes:
 # Auxiliary entries
 #########################
 
-Auxiliaries:
+Rules:
+  - capability: MSSM_spectrum
+    options:
+      precision_goal:        1.0e-4
+      max_iterations:        0
+      calculate_sm_masses:   false
+      pole_mass_loop_order:  2
+      ewsb_loop_order:       2
+      beta_loop_order:       2
+      threshold_corrections_loop_order: 1
+      use_higgs_2loop_at_as: true
+      use_higgs_2loop_ab_as: true
+      use_higgs_2loop_at_at: true
+      use_higgs_2loop_atau_atau: true
+      invalid_point_fatal: false
+
+  - capability: DD_couplings
+    function: DD_couplings_DarkSUSY
 
   #ColliderBit options (note, these ones are mandatory at this moment)
   - capability:  colliderLoopManager
@@ -438,7 +461,6 @@ KeyValues:
     dependency_resolver_error: fatal
     dependency_resolver_warning: non-fatal
     core_warning: fatal
-   # scan_error: non-fatal #make this fatal to see an example error
     ExampleBit_A_error: non-fatal
 
   enable_testing: false
