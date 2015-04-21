@@ -30,9 +30,10 @@ LOAD_LIBRARY
 BE_ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
 
 // Functions
-BE_FUNCTION(sdecay, void, (), "sdecay_", "sdecay")  // CsB SUSYHIT main subroutine declaration
+BE_FUNCTION(sdecay, void, (const int&), "sdecay_", "sdecay")  // Converted SUSY-HIT main routine
 
 // Variables
+BE_VARIABLE(susyhitin_type, susyhitin, "susyhitin_", "cb_susyhitin")
 BE_VARIABLE(widtha_hdec_type, widtha_hdec, "widtha_hdec_", "cb_widtha_hdec")
 BE_VARIABLE(widthhl_hdec_type, widthhl_hdec, "widthhl_hdec_", "cb_widthhl_hdec")
 BE_VARIABLE(widthhh_hdec_type, widthhh_hdec, "widthhh_hdec_", "cb_widthhh_hdec")
@@ -87,7 +88,16 @@ BE_INI_FUNCTION
   static bool scan_level = true;
   if (scan_level)
   {
-    sdecay();
+    susyhitin->amsin = 0.19;            // MSBAR(1)
+    susyhitin->amcin = 1.4;             // MC
+    susyhitin->ammuonin = 0.105658389;  // MMUON
+    susyhitin->alphin = 137.0359895;    // 1/ALPHA
+    susyhitin->gamwin = 2.08;           // GAMW
+    susyhitin->gamzin = 2.49;           // GAMZ
+    susyhitin->vusin = 0.2205;          // VUS
+    susyhitin->vcbin = 0.04;            // VCB
+    susyhitin->rvubin = 0.08;           // VUB/VCB    
+    sdecay(0); // Skip FV light stop decays
   }
   scan_level = false;
 }

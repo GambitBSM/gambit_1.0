@@ -12,6 +12,7 @@
 /// \author Peter Athron
 /// \author Csaba Balazs
 /// \author Anders Kvellestad
+/// \author Pat Scott
 /// \date 2015 Jan-Apr
 ///
 ///  *********************************************
@@ -23,6 +24,21 @@
 
 namespace Gambit
 {
+
+    struct susyhitin_type
+    {
+        Fdouble flagshsin;
+        Fdouble amsin;
+        Fdouble amcin;
+        Fdouble ammuonin;
+        Fdouble alphin;
+        Fdouble gamwin;
+        Fdouble gamzin;
+        Fdouble vusin;
+        Fdouble vcbin;
+        Fdouble rvubin;
+    };
+
     struct widtha_hdec_type
     {
         Fdouble abrb;
