@@ -8,6 +8,14 @@
 ///  (as opposed to correspending information defined in a UV model). 
 ///  Parameters defined this way are often used as input to a physics calculator.
 ///
+///  This is one of the simplest wrappers possible, so it is useful as a guide
+///  for designing other Spectrum wrappers. To assist this, code is documented
+///  with the following markings to distinguish pieces that are essential for
+///  all wrappers from those which are specific to this wrapper:
+///  /***/ - Required by all wrappers.
+///  /*O*/ - Optional (e.g. unused maps fillers can be left undeclared)
+///  /*P*/ - Required if map fillers are protected, which is sensible.
+///
 ///  *********************************************
 ///
 ///  Authors: 
@@ -19,97 +27,81 @@
 ///
 ///  *********************************************
 
-#ifndef __QedQcd_wrap_hpp__
-#define __QedQcd_wrap_hpp__
+#ifndef __QedQcdWrapper_hpp__
+#define __QedQcdWrapper_hpp__
+
+#include "gambit/Elements/SMInputs.hpp"
+#include "gambit/Elements/Spectrum.hpp"
 
 #include "lowe.h" ///TODO: wrap using BOSS at some point, i.e. get this from FlexibleSUSY or SoftSUSY
-#include "gambit/Utils/Spectrum.hpp"
 
 namespace Gambit {
 
-   typedef softsusy::QedQcd QedQcdModel;
-
-   class QedQcdWrapper;
-
-   //this contains scale and scheme dependent stuff
-   class QedQcd_MSbarPars : public RunparDer<QedQcdModel>
+   // Needed for typename aliases in Spec and MapTypes classes
+   struct QedQcdWrapperTraits
    {
-      REDO_TYPEDEFS(QedQcdModel)
+      typedef softsusy::QedQcd Model;
+      typedef SMInputs         Input;
+   };
+    
+   class QedQcdWrapper : public Spec<QedQcdWrapper,QedQcdWrapperTraits> 
+   {
+      friend class RunparDer<QedQcdWrapper,QedQcdWrapperTraits>; /*P*/
+      friend class PhysDer  <QedQcdWrapper,QedQcdWrapperTraits>; /*P*/
+
       private:
-         QedQcdWrapper& my_parent;
+         typedef MapTypes<QedQcdWrapperTraits> MT; 
+
+         // Keep copies of Model and Input objects internally
+         typename QedQcdWrapperTraits::Model qedqcd;
+         typename QedQcdWrapperTraits::Input sminputs;
+
+      public:
+         // Constructors/destructors
+         QedQcdWrapper();
+         QedQcdWrapper(const softsusy::QedQcd&, const SMInputs&);
+         QedQcdWrapper(const QedQcdWrapper&);
+         virtual ~QedQcdWrapper();        /***/
+ 
+         virtual int get_index_offset() const;  /***/   
+         virtual int get_numbers_stable_particles() const;  /***/
+
+         /// RunningPars interface overrides
+         virtual double GetScale() const;      /***/
+         virtual void SetScale(double scale);  /***/
+         virtual void RunToScale(double);      /***/
 
          // Limits for running
          double softup;
          double hardup; // Be careful of order in constructor!
-         virtual double hard_upper() const {return hardup;}
-         virtual double soft_upper() const {return softup;}
-         virtual double soft_lower() const {return 0.;}
-         virtual double hard_lower() const {return 0.;}
-         virtual void RunToScaleOverride(double);
 
-         /* MAPS */
+         // Limits for running
+         virtual double hard_upper() const {return hardup;} /*O*/
+         virtual double soft_upper() const {return softup;} /*O*/
+         virtual double soft_lower() const {return 0.;}     /*O*/
+         virtual double hard_lower() const {return 0.;}     /*O*/
 
-         //mass
-         static fmap_plain mass_map_extra;
-         static fmap_plain fill_mass_map_extra();
-         virtual const fmap_plain& get_mass_map_extra() const;  // MUST have this name for overload 
+      protected:
+         // These members are inherited from Spec<T> class! Make sure to
+         // initialise them from qedqcd and sminputs via Spec<T> constructor,
+         // so that they can be passed on through to the map functions.
+         // Model* model;          
+         // Input* input; 
+
+         // Note; make sure input (sminputs) matches the one used to set up qedqcd!
+
+         /// Map fillers
+         /// Used to initialise maps in the RunparDer and PhysDer classes
+         /// (specialisations created and stored automatically by Spec<QedQcdWrapper>)
+         
+         /// RunparDer overrides (access via spectrum.runningpar)
+         static typename MT::fmap_extraM fill_mass_map_extraM();   /*O*/
+         static typename MT::fmap_extraM fill_mass0_map_extraM();  /*O*/
+
+         /// PhysDer overrides (access via spectrum.phys)
+         static typename MT::fmap        fill_PoleMass_map();        /*O*/
+         static typename MT::fmap_extraI fill_PoleMass_map_extraI(); /*O*/
  
-         //mass0
-         static fmap_plain mass0_map_extra;
-         static fmap_plain fill_mass0_map_extra();
-         virtual const fmap_plain& get_mass0_map_extra() const;  // MUST have this name for overload 
-
-   public:
-         QedQcd_MSbarPars(QedQcdWrapper&, QedQcdModel&); 
-         virtual ~QedQcd_MSbarPars();
-         virtual double GetScale() const;
-         virtual void SetScale(double scale);
-           
-   };
- 
-   /// Class for accessing physical spectrum
-   class QedQcd_Phys : public PhysDer<QedQcdModel> 
-   {
-      REDO_TYPEDEFS(QedQcdModel)
-      private:
-         QedQcdWrapper &my_parent;
-
-         /* MAPS */
-         static fmap PoleMass_map;
-         static fmap fill_PoleMass_map();
-         virtual const fmap& get_PoleMass_map() const;  // MUST have this name for overload 
-
-      public:
-         QedQcd_Phys(QedQcdWrapper&, QedQcdModel&); 
-         virtual ~QedQcd_Phys();
-   };
-
-    
-   class QedQcdWrapper : public Spectrum 
-   {
-      friend class QedQcd_MSbarPars;
-      friend class QedQcd_Phys;
-      private:
-         //int index_offset;
-         //virtual int get_index_offset() const {return index_offset;}
-         QedQcdModel qedqcd; // We will make an internal copy of this object
-
-      public:
-         /// Override of clone function
-         DEFINE_CLONE(QedQcdWrapper)
-
-         /// Internal instances of the derived "inner" classes
-         QedQcd_Phys qedqcd_ph;
-         QedQcd_MSbarPars qedqcd_msbar_pars;
-
-         // Constructors/destructors
-         QedQcdWrapper(bool switch_index_convention=false);
-         QedQcdWrapper(const QedQcdModel&, bool switch_index_convention=false);
-         QedQcdWrapper(const QedQcdWrapper&);
-         virtual ~QedQcdWrapper();
-      
-         virtual int get_index_offset() const;   
-         virtual int get_numbers_stable_particles() const; 
    };
  
 

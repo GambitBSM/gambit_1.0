@@ -36,9 +36,9 @@ namespace Gambit
       YAML::Node root = filename_to_node(filename);
       basicParse(root);
       
-      // Get the observables and auxiliaries sections
+      // Get the observables and rules sections
       YAML::Node outputNode = root["ObsLikes"];
-      YAML::Node auxNode = root["Auxiliaries"];
+      YAML::Node rulesNode = root["Rules"];
 
       // Read likelihood/observables
       for(YAML::const_iterator it=outputNode.begin(); it!=outputNode.end(); ++it)
@@ -46,18 +46,18 @@ namespace Gambit
         observables.push_back((*it).as<Types::Observable>());
       }
 
-      // Read auxiliaries
-      for(YAML::const_iterator it=auxNode.begin(); it!=auxNode.end(); ++it)
+      // Read rules
+      for(YAML::const_iterator it=rulesNode.begin(); it!=rulesNode.end(); ++it)
       {
-        auxiliaries.push_back((*it).as<Types::Observable>());
+        rules.push_back((*it).as<Types::Observable>());
       }
 
     }
 
-    /// Getters for private observable and auxiliary entries
+    /// Getters for private observable and rules entries
     /// @{
     const ObservablesType& IniFile::getObservables() const { return observables; }
-    const ObservablesType& IniFile::getAuxiliaries() const { return auxiliaries; }
+    const ObservablesType& IniFile::getRules() const { return rules; }
     /// @}
 
   }

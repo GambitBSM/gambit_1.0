@@ -4,7 +4,7 @@
 # (requires graphviz)
 
 # Remove disconnected vertices from active functor graph.
-if [ $2 = "no-loners" ]; then
+if [ "$2" = "no-loners" ]; then
   for i in {1..200}
   do
     gvpr -c 'N[$.degree==0]{delete(0,$);}' $1 > $1.temp

@@ -18,16 +18,16 @@
 
 Parameters: 
 
-  CMSSM_demo:
+  CMSSM:
     A0:
       range: [-1000, 1000]
     M0:
       prior_type: log
       range: [0.001,1000]
     M12:
-    #  same_as: CMSSM_demo::M0
+    #  same_as: CMSSM::M0
     Mstop:
-      same_as: CMSSM_demo::M0
+      same_as: CMSSM::M0
     sgnmu:
       range: [-1, 1]
       fixed_value: 1
@@ -46,11 +46,11 @@ Priors:
   # and then they are combined into a "composite" prior 
 
   m12_prior: 
-    parameters: [CMSSM_demo::M12]
+    parameters: [CMSSM::M12]
     prior_type: composite
     options: 
       new_prior: 
-        parameters: [CMSSM_demo::M12]
+        parameters: [CMSSM::M12]
         prior_type: log
         range: [100,2000]
 
@@ -75,15 +75,18 @@ Printer:
     info_file: "runs/DecayBit_test/samples/gambit_output.info"
 
 Scanner:
-  use_scanner_plugin: toy_mcmc
+
+  use_scanner: toy_mcmc
+
+  scanners:
   
-  plugins:
     toy_mcmc:
       plugin: toy_mcmc
       options:
         point_number: 2
         output_file:  output
         like:  Likelihood
+
             
 ObsLikes:
 
@@ -99,7 +102,7 @@ ObsLikes:
     capability:   decay_rates
     type:         DecayTable
 
-Auxiliaries:
+Rules:
 
   - capability:   "LibFirst_1_1_init"
     dependencies:

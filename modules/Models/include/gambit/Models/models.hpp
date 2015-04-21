@@ -33,8 +33,8 @@
 #include <vector>
 #include <string>
 
+#include "gambit/Elements/functors.hpp"
 #include "gambit/Utils/util_types.hpp"
-#include "gambit/Utils/functors.hpp"
 #include "gambit/Utils/standalone_error_handlers.hpp"
 
 namespace Gambit

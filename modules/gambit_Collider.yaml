@@ -74,10 +74,10 @@ ObsLikes:
 
 
 #########################
-# Auxiliary entries
+# Rule entries
 #########################
 
-Auxiliaries:
+Rules:
 
   #ColliderBit options (note, these ones are mandatory at this moment)
 
@@ -177,4 +177,3 @@ KeyValues:
     dependency_resolver_error: fatal
     dependency_resolver_warning: non-fatal
     core_warning: fatal
-    scan_error: non-fatal #make this fatal to see an example error
