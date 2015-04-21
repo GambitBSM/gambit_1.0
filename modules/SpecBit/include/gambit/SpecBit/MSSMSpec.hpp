@@ -559,6 +559,17 @@ namespace Gambit {
       tmp_map["ZN"] =   FInfo2( &Model::get_ZN_pole_slha, i0123, i0123); 
       tmp_map["UM"] =   FInfo2( &Model::get_UM_pole_slha, i01, i01);
       tmp_map["UP"] =   FInfo2( &Model::get_UP_pole_slha, i01, i01);
+
+      tmp_map["~d"] =   FInfo2( &Model::get_ZD_pole_slha, i012345, i012345);
+      tmp_map["~nu"] =   FInfo2( &Model::get_ZV_pole_slha, i012, i012);
+      tmp_map["~u"] =   FInfo2( &Model::get_ZU_pole_slha, i012345, i012345);
+      tmp_map["~e"] =   FInfo2( &Model::get_ZE_pole_slha, i012345, i012345);
+      tmp_map["h0"] =   FInfo2( &Model::get_ZH_pole_slha, i01, i01);
+      tmp_map["A0"] =   FInfo2( &Model::get_ZA_pole_slha, i01, i01);
+      tmp_map["H+"] = FInfo2( &Model::get_ZP_pole_slha, i01, i01);
+      tmp_map["~chi"] =   FInfo2( &Model::get_ZN_pole_slha, i0123, i0123); 
+      tmp_map["~chi-"] =   FInfo2( &Model::get_UM_pole_slha, i01, i01);
+      tmp_map["~chi+"] =   FInfo2( &Model::get_UP_pole_slha, i01, i01);
    
       /* Could add SM fermion mixing but these are only filled
          when we actually calculate the SM pole masses
