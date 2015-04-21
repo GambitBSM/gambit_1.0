@@ -118,6 +118,30 @@ namespace Gambit
       if (*s.rbegin() == ')')   s = s.substr(0, s.size()-1);
     }
 
+    /// Created a std::string of a specified length.
+    str str_fixed_len(str s, int len)
+    {
+      int oldlen = s.length();
+      if (oldlen > len)
+      {
+        return s.substr(0,len-1);
+      }
+      else if (oldlen < len)
+      {
+        s.append(len-oldlen,' ');
+      }
+      return s;
+    }
+    
+    /// Copy a std::string to a character array, stripping the null termination character.  Good for sending to Fortran.
+    void strcpy2f(char* arr, int len, str s)
+    {
+      s = str_fixed_len(s, len-1);
+      strcpy(arr, s.c_str());
+      arr[len-1] = ' ';
+    }
+
+
     /// Ensure that a path exists (and then return the path, for chaining purposes)
     const std::string& ensure_path_exists(const std::string& path)
     { 
@@ -154,7 +178,55 @@ namespace Gambit
         ts.resize(ts.size()-1); // Remove the annoying trailing newline
         return ts;
     }
-    
+
+    /// Check if two strings are a "close" match
+    /// Used for "did you mean?" type checking during command line argument processing
+    bool are_similar(const std::string& s1, const std::string& s2)
+    {
+      if(check1(s1,s2) or check1(s2,s1)){ return true; }
+      else if(check2(s1,s2)){ return true; } // symmetric
+      else{ return false; }
+      //TODO: Add more checks? These ones are pretty minimal. Maybe something that computes percentage match between strings...
+    }
+
+    /// true if s1 can be obtained by deleting one character from s2
+    bool check1(const std::string& s1, const std::string& s2)
+    {
+      if(s2.length() - s1.length() != 1){ return false; }
+      int i,j;
+      for(i=0,j=0; i<s2.length(); i++,j++)
+      {
+          if(s2[i] == s1[j])
+          {/*do  nothing*/}
+          else if(i == j)
+          { j++;}
+          else
+          {return false;}
+      }
+      return true;
+    }
+
+    /// true if s1 can be obtained from s2 by changing no more than X characters (X=2 for now)
+    bool check2(const std::string& s1, const std::string& s2)
+    {
+      int error_limit = 2;
+      int number_of_errors = 0;
+
+      if(s2.length() != s1.length()){ return false; }
+      int i,j;
+      for(i=0,j=0; i<s2.length(); i++,j++)
+      {
+          if(s2[i] == s1[j])
+          {/*do  nothing*/}
+          else if(number_of_errors <= error_limit)
+          { number_of_errors++;}
+          else
+          {return false;}
+      }
+      return true;
+    }
+
+     
   }
 
 }

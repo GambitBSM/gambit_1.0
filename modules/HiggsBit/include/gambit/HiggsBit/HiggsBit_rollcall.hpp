@@ -19,39 +19,6 @@
 ///  \date 2014 Aug
 ///
 ///  *********************************************
-///
-/// \def MODULE
-/// Specifies that this is the MODULE named HiggsBit.
-///
-/// \def CAPABILITY
-/// Specifies that HiggsBit (this MODULE) is 
-/// capable of providing the service CAPABILITY.  
-/// Usually a CAPABILITY means that the MODULE can 
-/// compute some physical or statistical quantity 
-/// referred to by CAPABILITY.   
-///
-/// \def FUNCTION
-/// Specifies that HiggsBit (this MODULE) contains
-/// a function named FUNCTION that can execute the
-/// commands required to provided the current CAPABILITY.
-///
-/// \def BACKEND_REQ
-/// Specifies that the current FUNCTION in 
-/// HiggsBit (this MODULE) requires BACKEND_REQ from
-/// a backend code.  The requirement BACKEND_REQ corresponds
-/// to a capability that a valid backend function 
-/// is expected to report in its corresponding 
-/// registration header file.
-///
-/// \def CONDITIONAL_DEPENDENCY
-/// Specifies that the current FUNCTION in 
-/// HiggsBit (this MODULE) has a CONDITIONAL_DEPENDENCY
-/// that is only active under certain conditions.
-/// These conditions may include:
-///  - a specific backend is in use in order to fill
-///    a certain BACKEND_REQ
-///  - a certain model is under analysis 
-
 
 #ifndef __HiggsBit_rollcall_hpp__
 #define __HiggsBit_rollcall_hpp__
@@ -60,14 +27,6 @@
 #define MODULE HiggsBit
 START_MODULE
  
-  /// Initialization capabilities (initialisation is done in BackendIniBit now, with functions declared in frontend headers)
-  #define CAPABILITY PointInit
-  START_CAPABILITY
-    #define FUNCTION PointInit_Default
-      START_FUNCTION(void, INIT_FUNCTION)
-     #undef FUNCTION
-  #undef CAPABILITY
-
   #define CAPABILITY HB_LEPchisq               // Get a LEP chisq from HiggsBounds
   START_CAPABILITY
     #define FUNCTION HB_LEPchisq

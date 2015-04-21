@@ -19,11 +19,16 @@
 ///
 ///  *********************************************
 
+#include "gambit/Elements/SMInputs.hpp"
+#include "gambit/Elements/Spectrum.hpp"
+#include "gambit/SpecBit/QedQcdWrapper.hpp"
+
+#include "lowe.h" ///TODO: wrap using BOSS at some point, i.e. get this from FlexibleSUSY or SoftSUSY
+
 #include <boost/preprocessor/tuple/to_seq.hpp>
 #include <boost/preprocessor/seq/elem.hpp>
 #include <boost/preprocessor/seq/for_each_product.hpp>
 
-#include "gambit/SpecBit/QedQcdWrapper.hpp"
 
 /// Macro to help assign the same function pointers to multiple string keys
 // Relies on "tmp_map" being used as the variable name for the temporary maps

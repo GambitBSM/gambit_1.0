@@ -26,7 +26,7 @@
 #ifndef MSSMSPEC_HEAD_H
 #define MSSMSPEC_HEAD_H
 
-#include "gambit/Utils/SubSpectrum.hpp"
+#include "gambit/Elements/SubSpectrum.hpp"
 #include "gambit/Utils/util_functions.hpp"
 
 // Flexible SUSY stuff (should not be needed by the rest of gambit)

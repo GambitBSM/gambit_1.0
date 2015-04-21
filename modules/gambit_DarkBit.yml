@@ -121,6 +121,60 @@ Parameters:
 #      Au_3:
 #        fixed_value: 0
 
+#    The nuclear parameters below are set to the values from micrOMEGAs 3.5.5
+#    The three different sets of parameters are equivalent.
+#    This model is only used if micrOMEGAs or DarkSUSY is being
+#    used to calculate direct detection couplings.
+
+    nuclear_params_fnq:
+      # proton hadronic matrix elements
+      fpd:
+        fixed_value: 0.0191
+      fpu:
+        fixed_value: 0.0153
+      fps:
+        fixed_value: 0.0447
+      # neutron hadronic matrix elements
+      fnd:
+        fixed_value: 0.0273
+      fnu:
+        fixed_value: 0.011
+      fns:
+        fixed_value: 0.0447
+      # proton spin content
+      deltad:
+        fixed_value: -0.427
+      deltau:
+        fixed_value: 0.842
+      deltas:
+        fixed_value: -0.085
+
+#    nuclear_params_sigma0_SigmaPiN:
+#      sigma0:
+#        fixed_value: 30.76
+#      SigmaPiN:
+#        fixed_value: 34.0
+#      # proton spin content
+#      deltad:
+#        fixed_value: -0.427
+#      deltau:
+#        fixed_value: 0.842
+#      deltas:
+#        fixed_value: -0.085
+
+#    nuclear_params_sigmas_SigmaPiN:
+#      sigmas:
+#        fixed_value: 42.0
+#      SigmaPiN:
+#        fixed_value: 34.0
+#      # proton spin content
+#      deltad:
+#        fixed_value: -0.427
+#      deltau:
+#        fixed_value: 0.842
+#      deltas:
+#        fixed_value: -0.085
+
 ##############################
 # Prior setup
 ##############################
@@ -165,7 +219,7 @@ Scanner:
     mcmc:
       plugin: toy_mcmc
       options:
-        point_number: 1
+        point_number: 2
         output_file:  output
         like:  Likelihood
 
@@ -219,13 +273,39 @@ ObsLikes:
 # NOTE: treated as observable!
     - capability: lnL_DARWIN_Xe_2015
       purpose:  Observable
+
+# Total annihilation cross-section
+    - capability: sigmav
+      purpose: Observable
+# DD cross-sections
+    - capability: sigma_SI_p
+      purpose: Observable
+    - capability: sigma_SI_n
+      purpose: Observable
+    - capability: sigma_SD_p
+      purpose: Observable
+    - capability: sigma_SD_n
+      purpose: Observable
       
+# Capture rate, equilibrium time and annihilation rate in the Sun
+    - capability: capture_rate_Sun
+      purpose: Observable
+    - capability: equilibration_time_Sun
+      purpose: Observable
+    - capability: annihilation_rate_Sun
+      purpose: Observable    
+      
+# 79-string IceCube likelihood
+    - capability: IceCube_likelihood
+      purpose: Likelihood
+      function: IC79_loglike
+
 # This function dumps gamma-ray spectra into a ASCII table file.  The filename
-# is specified as option in the Auxiliaries section.
+# is specified as option in the Rules section.
 #    - capability: dump_GammaSpectrum
 
 
-Auxiliaries:
+Rules:
   # General options, accessible to multiple capabilities
   - options: 
         # Cascade decay settings
@@ -248,6 +328,12 @@ Auxiliaries:
         test_printMore:         false
 
 
+  # DarkSUSY ---------------------------
+  - capability: DarkSUSY_5_1_1_init # Initialization of DarkSUSY backend
+    options:
+        # Direct Detection Settings
+        ddpole: 1 # Include squark pole in scattering amplitude
+        dddn: 1 # Treat heavy quarks and gluons as in Drees & Nojiri 1993 (implies ddpole=1)
   # Gamma-rays -------------------------
   - capability: gamLike_1_0_0_init  # Initialization of gamLike backend
     options:
@@ -282,22 +368,25 @@ Auxiliaries:
       Beps: 1e-2
     function: RD_oh2_general   # general routines (DS backend)
     #function: RD_oh2_DarkSUSY   # darksusy backend
-    #function: RD_oh2_micromegas  # micromegas backend     
+    #function: RD_oh2_MicrOmegas  # micromegas backend     
+  - capability: RD_spectrum
+    options: 
+      CoannMaxMass: 2.1 # include only co-annihilating particles up to this mass
       
   - capability: lnL_oh2
     options:
        oh2_mean: 0.11
        oh2_err: 0.01
   # Direct detection -------------------
-  # For MSSM-based models, which of the DarkSUSY or micrOMEGAs routines
+  # For MSSM-based models, which of the DarkSUSY or MicrOmegas routines
   # to use must be explicitly specified here (uncomment the desired one).
   # The SingletDM function can be explicitly specified for the SingletDM
   # model, but the dependency resolver will choose it by default as it
   # is the only one available for that model.
   - capability: DD_couplings
     #function: DD_couplings_DarkSUSY    # couplings from darksusy backend
-    #function: DD_couplings_micrOMEGAs  # couplings from micromegas backend
-    #function: DD_couplings_SingletDM   # couplings for singlet DM model
+    #function: DD_couplings_MicrOmegas  # couplings from micromegas backend
+    function: DD_couplings_SingletDM   # couplings for singlet DM model
     options:
         rescale_couplings: 1  # For unit tests: rescale couplings
   # Miscellaneous ----------------------
@@ -327,17 +416,7 @@ Logger:
 
   prefix : "runs/DarkBit_minimalTest/logs/"
   redirection:
-    [Debug] : "debug.log"
-    [Default] : "default.log"
-    [Error] : "errors.log"
-    [Warning] : "warnings.log"
-    [Core,Error] : "core_errors.log"
-    [Core,Error,Fatal] : "fatal_core_errors.log"
-    [Dependency Resolver] : "stdout"
-    [ExampleBit_A] : "ExampleBit_A.log"
-    [ExampleBit_B] : "ExampleBit_B.log"
-    [BackendIniBit]: "BackendIniBit.log"
-    [LibFirst] : "libfirst.log"
+    [Default] : stdout
   #  [Logger, Debug] : "stdout"
   #  [Core] : "stdout"
   #  [Dependency Resolver] : "stdout"
@@ -360,8 +439,6 @@ KeyValues:
     dependency_resolver_error: fatal
     dependency_resolver_warning: non-fatal
     core_warning: fatal
-    scan_error: non-fatal #make this fatal to see an example error
-    ExampleBit_A_error: non-fatal
 
   enable_testing: false
 

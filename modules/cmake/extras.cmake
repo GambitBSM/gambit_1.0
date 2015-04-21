@@ -39,6 +39,7 @@ set(libs ${_ld_prefix} <SOURCE_DIR>/lib/libFH.a <SOURCE_DIR>/lib/libHB.a <SOURCE
 
 ExternalProject_Add(darksusy
   URL http://www.fysik.su.se/~edsjo/darksusy/tars/darksusy-5.1.1.tar.gz
+  URL_MD5 ebeb0e1cfb4d834858e120190e423f62
   DOWNLOAD_DIR ${PROJECT_SOURCE_DIR}/../extras/DarkSUSY
   SOURCE_DIR ${PROJECT_SOURCE_DIR}/../extras/DarkSUSY/DarkSUSY
   BUILD_IN_SOURCE 1
@@ -49,10 +50,11 @@ ExternalProject_Add(darksusy
 
 set_property(TARGET darksusy PROPERTY _EP_DOWNLOAD_ALWAYS 0)
 
-set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../extras/DarkSUSY/libdarksusy.so" "${PROJECT_SOURCE_DIR}/Backends/lib/libdarksusy.so")
+set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Backends/lib/libdarksusy.so")
 
 ExternalProject_Add(superiso
   URL http://superiso.in2p3.fr/download/superiso_v3.4.tgz
+  URL_MD5 ae4ecc45e7f608d9faf91ba8e5780053
   DOWNLOAD_DIR ${PROJECT_SOURCE_DIR}/../extras/SuperIso
   SOURCE_DIR ${PROJECT_SOURCE_DIR}/../extras/SuperIso/SuperIso
   BUILD_IN_SOURCE 1
@@ -114,12 +116,12 @@ set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../extras/micromegas/libmi
 ExternalProject_Add(pythia
   SOURCE_DIR ${PROJECT_SOURCE_DIR}/../extras/boss/bossed_pythia_source
   BUILD_IN_SOURCE 1
-  CONFIGURE_COMMAND ""
+  CONFIGURE_COMMAND export FC=${CMAKE_Fortran_COMPILER} && export CC=${CMAKE_C_COMPILER} && export USRSHAREDSUFFIX=so && ./configure --enable-shared --enable-64bits
   BUILD_COMMAND make CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${CMAKE_CXX_FLAGS} LDFLAGS=${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS}
   INSTALL_COMMAND cp lib/libpythia8.so ${PROJECT_SOURCE_DIR}/Backends/lib/libpythia8.so
 )
 
-set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../extras/boss/bossed_pythia_source/lib/libpythia8.so" "${PROJECT_SOURCE_DIR}/Backends/lib/libpythia8.so")
+set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../extras/boss/bossed_pythia_source/config.mk" "${PROJECT_SOURCE_DIR}/../extras/boss/bossed_pythia_source/lib/libpythia8.so" "${PROJECT_SOURCE_DIR}/Backends/lib/libpythia8.so")
 
 ExternalProject_Add(fastsim
   SOURCE_DIR ${PROJECT_SOURCE_DIR}/../extras/fast_sim
@@ -131,8 +133,9 @@ ExternalProject_Add(fastsim
 
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../extras/fast_sim/lib/libfastsim.so" "${PROJECT_SOURCE_DIR}/Backends/lib/libfastsim.so")
 
+set(BOSSMinimalExample_dir "${PROJECT_SOURCE_DIR}/../extras/boss")
 ExternalProject_Add(BOSSMinimalExample
-  SOURCE_DIR ${PROJECT_SOURCE_DIR}/../extras/boss
+  SOURCE_DIR ${BOSSMinimalExample_dir}
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND ""
   BUILD_COMMAND make CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${CMAKE_CXX_FLAGS} LDFLAGS=${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS} all
@@ -146,17 +149,19 @@ if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel")
 elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
   set(FMODULE "J")
 endif()
-set(nulikeFFLAGS "${CMAKE_Fortran_FLAGS} -I${PROJECT_SOURCE_DIR}/../extras/nulike/include")
-
+set(nulike_ver "1\\.0\\.0")
+set(nulike_lib "libnulike")
+set(nulike_dir "${PROJECT_SOURCE_DIR}/../extras/nulike")
+set(nulike_short_dir "./../extras/nulike")
+set(nulikeFFLAGS "${CMAKE_Fortran_FLAGS} -I${nulike_dir}/include")
 ExternalProject_Add(nulike
-  SOURCE_DIR ${PROJECT_SOURCE_DIR}/../extras/nulike
+  SOURCE_DIR ${nulike_dir}
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND ""
-  BUILD_COMMAND make libnulike.so FC=${CMAKE_Fortran_COMPILER} FFLAGS=${nulikeFFLAGS} MODULE=${FMODULE} 
-  INSTALL_COMMAND cp lib/libnulike.so ${PROJECT_SOURCE_DIR}/Backends/lib/.
+  BUILD_COMMAND make ${nulike_lib}.so FC=${CMAKE_Fortran_COMPILER} FFLAGS=${nulikeFFLAGS} MODULE=${FMODULE} 
+  INSTALL_COMMAND sed -i "s#${nulike_ver}:.*${nulike_lib}\\.so#${nulike_ver}:       ${nulike_short_dir}/lib/${nulike_lib}.so#g" ${PROJECT_SOURCE_DIR}/config/backend_locations.yaml
 )
-
-set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../extras/nulike/lib/libnulike.so" "${PROJECT_SOURCE_DIR}/Backends/lib/libnulike.so")
+set(clean_files ${clean_files} "${nulike_dir}/lib/${nulike_lib}.so")
 
 set_target_properties(ddcalc gamlike darksusy micromegas superiso nulike pythia fastsim BOSSMinimalExample PROPERTIES EXCLUDE_FROM_ALL 1)
 

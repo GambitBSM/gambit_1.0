@@ -17,7 +17,7 @@
 ///  
 ///  *********************************************
 
-#include "gambit/Utils/gambit_module_headers.hpp"
+#include "gambit/Elements/gambit_module_headers.hpp"
 #include "gambit/SpecBit/SpecBit_rollcall.hpp"
 #include "gambit/SpecBit/external_examples.hpp"
 #include "gambit/SpecBit/MSSMSpec.hpp"

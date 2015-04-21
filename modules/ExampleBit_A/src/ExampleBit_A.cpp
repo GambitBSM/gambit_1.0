@@ -29,7 +29,7 @@
 #include <cmath>
 #include <functional>
 
-#include "gambit/Utils/gambit_module_headers.hpp"
+#include "gambit/Elements/gambit_module_headers.hpp"
 #include "gambit/ExampleBit_A/ExampleBit_A_rollcall.hpp"
 
 namespace Gambit
