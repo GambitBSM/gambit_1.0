@@ -61,8 +61,8 @@ Printer:
 
 Scanner:
 
-  use_objectives: gaussian
-  use_scanner: bin_grid
+  use_objectives: object_detection
+  use_scanner: gnest, bin_grid_greg
 
   scanners:
   
@@ -110,6 +110,13 @@ Scanner:
           output_file: "runs/spartan_multinest/samples/gambit_output.live"
           info_file: "runs/spartan_multinest/samples/gambit_output.live_info"
           
+    gnest:
+      plugin: gnest
+      options:
+        file_name: "output_file"
+        like_purpose: Likelihood
+        live_number: 2000
+          
     bin_grid:
       plugin: bin_grid
       options:
@@ -117,12 +124,40 @@ Scanner:
         output_file: "output"
         xrange: [0, 1]
         yrange: [0, 1]
-        grid: [10, 10]
+        grid: [100, 100]
         selected_pts: [2, 3]
         mult: 4
         flags: ["linear"]
+        
+    bin_grid_greg:
+      plugin: bin_grid
+      options:
+        input_files: ["output_file"]
+        output_file: "output"
+        xrange: [0, 1]
+        yrange: [0, 1]
+        grid: [100, 100]
+        selected_pts: [1, 0]
+        mult: 0
+        flags: ["linear"]
     
   objectives:
+  
+    object_detection:
+      plugin: object_detection
+      purpose: Likelihood
+      options:
+        psf_file: "/home/gmartine/fits/c0052_psf_grid.fits"
+        image_file: "/home/gmartine/fits/c0052.fits"
+        grid_file: "/home/gmartine/fits/grid.fits"
+        min_pixel_number: -1
+      parameters:
+        pos_x:
+          range: [200, 700]
+        pos_y:
+          range: [200, 700]
+        #intensity:
+        #  range: [0, 1e10]
   
     uniform:
       purpose: Likelihood
@@ -143,6 +178,14 @@ Scanner:
         param...2:
           range: [1, 2]
           
+    EggBox:
+      plugin: EggBox
+      purpose: Likelihood
+      options:
+      parameters:
+        param...2:
+          range: [0, 1]
+          
     gaussian:
       plugin: gaussian
       purpose: Likelihood
@@ -152,21 +195,6 @@ Scanner:
       parameters:
         param...2:
           range: [1, 2]
-          
-    object_detection:
-      plugin: objection_detection
-      purpose: Likelihood
-      options:
-        psf_file: "c0052_psf_grid.fits"
-        image_file: "c0052.fits"
-        grid_file: "grid.fits"
-      parameters:
-        pos_x:
-          range: [0, 1048]
-        pos_y:
-          range: [0, 1048]
-        intensity:
-          range: [0, 1e10]
       
     test:
       plugin: test_plug
