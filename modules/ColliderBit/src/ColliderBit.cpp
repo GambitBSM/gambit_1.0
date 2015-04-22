@@ -605,33 +605,39 @@ namespace Gambit {
     void runAnalyses(ColliderLogLikes& result)
     {
       using namespace Pipes::runAnalyses;
-      if (*Loop::iteration == INIT)
-        if (*Loop::iteration == INIT or *Loop::iteration == END_SUBPROCESS) return;
+      if (*Loop::iteration == INIT) return;
+
+      if (*Loop::iteration == END_SUBPROCESS)
+      {
+        for (auto anaPtr = Dep::ListOfAnalyses->begin(); anaPtr != Dep::ListOfAnalyses->end(); ++anaPtr)
+        {
+          /// @TODO Clean this crap up... xsecArrays should be more Gambity.
+          /// @TODO THIS IS HARDCODED FOR ONLY ONE THREAD!!!
+          cout << "Adding xsec = " << xsecArray[0] << " +- " << xsecerrArray[0] << " pb" << endl;
+          (*anaPtr)->add_xsec(xsecArray[0], xsecerrArray[0]);
+        }
+        return;
+      }
 
       if (*Loop::iteration == FINALIZE)
+      {
+        // The final iteration: get log likelihoods for the analyses
+        result.clear();
+        for (auto anaPtr = Dep::ListOfAnalyses->begin(); anaPtr != Dep::ListOfAnalyses->end(); ++anaPtr)
         {
-          // The final iteration: get log likelihoods for the analyses
-          result.clear();
-          for (auto anaPtr = Dep::ListOfAnalyses->begin(); anaPtr != Dep::ListOfAnalyses->end(); ++anaPtr)
-            {
-              /// @TODO Clean this crap up... xsecArrays should be more Gambity.
-              /// @TODO THIS IS HARDCODED FOR ONLY ONE THREAD!!!
-              cout << "Setting xsec = " << xsecArray[0] << " +- " << xsecerrArray[0] << " pb" << endl;
-              (*anaPtr)->set_xsec(xsecArray[0], xsecerrArray[0]);
-              cout << "Set xsec from ana = " << (*anaPtr)->xsec() << " pb" << endl;
-              cout << "SR number test " << (*anaPtr)->get_results()[0].n_signal << endl;
-              result.push_back((*anaPtr)->get_results());
-            }
+          cout << "Set xsec from ana = " << (*anaPtr)->xsec() << " pb" << endl;
+          cout << "SR number test " << (*anaPtr)->get_results()[0].n_signal << endl;
+          result.push_back((*anaPtr)->get_results());
         }
-      else
-        {
-          #pragma omp critical (accumulatorUpdate)
-          {
-            // Loop over analyses and run them
-            for (auto anaPtr = Dep::ListOfAnalyses->begin(); anaPtr != Dep::ListOfAnalyses->end(); ++anaPtr)
-              (*anaPtr)->analyze(*Dep::ReconstructedEvent);
-          }
-        }
+        return;
+      }
+
+      #pragma omp critical (accumulatorUpdate)
+      {
+        // Loop over analyses and run them
+        for (auto anaPtr = Dep::ListOfAnalyses->begin(); anaPtr != Dep::ListOfAnalyses->end(); ++anaPtr)
+          (*anaPtr)->analyze(*Dep::ReconstructedEvent);
+      }
     }
 
 
