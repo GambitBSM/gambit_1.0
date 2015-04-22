@@ -4,10 +4,6 @@
 ///
 ///  Functions of module HiggsBit
 ///
-///  Put your functions in files like this
-///  if you wish to add observables or likelihoods
-///  to this module.
-///
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
@@ -18,7 +14,7 @@
 ///
 ///  *********************************************
 
-#include "gambit/Utils/gambit_module_headers.hpp"
+#include "gambit/Elements/gambit_module_headers.hpp"
 #include "gambit/HiggsBit/HiggsBit_rollcall.hpp"
 
 namespace Gambit
@@ -27,34 +23,6 @@ namespace Gambit
   namespace HiggsBit
   {
  
-     /// ********************************************
-    /// Non-rollcalled Functions and Local Variables
-    /// ********************************************
-
-    /// @todo void? 
-    void PointInit_Default()
-    {
-      logger() << "==================" << endl;
-      logger() << "HiggsBit says,";
-      logger() << "\"Yo Homie...Let's roll...\"" << endl;
-      logger() << LogTags::info << endl << EOM;
-    }
-
-
-    /// *************************************************
-    /// Rollcalled functions properly hooked up to Gambit
-    /// *************************************************
- 
-    void initialize () 
-    {
-      cout << endl;
-      cout << "********************************************" << endl;
-      cout << "***       Initializing HiggsBit      ***" << endl;
-      cout << "********************************************" << endl;
-    }
-
-    // Module functions
-
     void HB_LEPchisq(double &result) 
     {
       using namespace Pipes::HB_LEPchisq;

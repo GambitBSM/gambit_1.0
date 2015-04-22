@@ -28,7 +28,7 @@ namespace Gambit
 {
     namespace DarkBit
     {
-        class TH_Channel;
+        struct TH_Channel;
         class TH_ProcessCatalog;
         class SimYieldTable;
         namespace DecayChain

@@ -30,6 +30,7 @@
 #include "gambit/Core/modelgraph.hpp"
 #include "gambit/Core/yaml_description_database.hpp"
 #include "gambit/Utils/stream_overloads.hpp"
+#include "gambit/Utils/util_functions.hpp"
 #include "gambit/ScannerBit/plugin_loader.hpp"
 #include "gambit/cmake/cmake_variables.hpp"
 
@@ -532,7 +533,15 @@ namespace Gambit
       str filename;
       const str command = argc > 1 ? argv[1] : "none";
       bool no_scan = false; // Set to true if something happens that means we should stop cleanly after checking commands
-    
+      std::vector<std::string> didyoumean; // Add potentially mistyped commands here
+      std::vector<std::string> valid_commands; // List of valid commands to check "command" against
+      valid_commands.push_back("modules");
+      valid_commands.push_back("backends");
+      valid_commands.push_back("models");
+      valid_commands.push_back("capabilities");
+      valid_commands.push_back("scanners");
+      valid_commands.push_back("test-functions");      
+ 
       // Check which mode we are running in
       // (each mode may process command line arguments differently)
 
@@ -687,42 +696,12 @@ namespace Gambit
 
       else if (command == "scanners")
       {
-        const int maxlen1 = 20;
-        const int maxlen2 = 20;
-        typedef std::map<std::string, std::vector<Scanner::Plugins::Plugin_Details> > plugin_map;
-        typedef std::map<std::string, plugin_map> plugin_mapmap;
-
         // Display capability information
         cout << "\nThis is GAMBIT." << endl << endl; 
 
         // Import scanner plugin info from ScannerBit 
-        plugin_mapmap scanners = Scanner::Plugins::plugin_info().getPluginsMap();
+        Scanner::Plugins::plugin_info().print("scanner");
 
-        // Default, list-format output header
-        cout << "Scanners                 Version                  Accepted options" << endl;
-        cout << "----------------------------------------------------------------------------" << endl;
-
-        // Loop over all entries in the plugins map map
-        for (plugin_mapmap::const_iterator it = scanners.begin(); it != scanners.end(); ++it)
-        {
-          if (it->first == "scan")  // Only bother with scanners here          
-          {
-            // Loop over the different scanners
-            for (plugin_map::const_iterator jt = it->second.begin(); jt != it->second.end(); ++jt)
-            {
-              // Loop over the available versions of the scanner 
-              for (auto kt = jt->second.begin(); kt != jt->second.end(); ++kt)
-              {
-                // Print the scanner name if this is the first version, otherwise just space
-                const str firstentry = (kt == jt->second.begin() ? jt->first : "");
-                cout << firstentry << spacing(firstentry.length(),maxlen1); 
-                // Print the scanner info.
-                cout << kt->version << spacing(kt->version.length(),maxlen2) << "<no info available>" << endl;
-              }
-            }
-            cout << endl;
-          }
-        }
         no_scan = true;
       }
 
@@ -776,6 +755,7 @@ namespace Gambit
         //Iterate over all modules to see if command matches one of them
         for (std::set<str>::const_iterator it = modules.begin(); it != modules.end(); ++it)
         {
+          valid_commands.push_back(*it);      
           if (command == *it)
           {
             no_scan = true;
@@ -825,6 +805,7 @@ namespace Gambit
         //Iterate over all backends to see if command matches one of them
         for (std::map<str, std::set<str> >::const_iterator it = backend_versions.begin(); it != backend_versions.end(); ++it)
         {
+          valid_commands.push_back(it->first);      
           if (command == it->first)
           {
             const std::set<str> versions = it->second;
@@ -907,6 +888,7 @@ namespace Gambit
         for (pmfVec::const_iterator it = primaryModelFunctorList.begin(); it != primaryModelFunctorList.end(); ++it)
         {
           str model = (*it)->origin();
+          valid_commands.push_back(model);      
           if (command == model)
           {
             no_scan = true;
@@ -938,6 +920,7 @@ namespace Gambit
         //Iterate over all capabilities to see if command matches one of them
         for (std::set<str>::const_iterator it = capabilities.begin(); it != capabilities.end(); ++it)
         {
+          valid_commands.push_back(*it);      
           if (command == *it)
           {
             no_scan = true;
@@ -960,6 +943,7 @@ namespace Gambit
         //Iterate over all scanners to see if command matches one of them
         //for (std::set<str>::const_iterator it = scanners.begin(); it != scanners.end(); ++it)
         {
+          //valid_commands.push_back(*it);      
           //if (command == *it)
           //{
           //  cout << "\nThis is GAMBIT." << endl << endl; 
@@ -992,7 +976,27 @@ namespace Gambit
         {
           // Ok then, report an unrecognised command and bail
           cout<<"Unrecognised command received!"<<endl;
-          bail();
+          // Give a list of valid commands that user might have mistyped
+          for (std::vector<str>::iterator it = valid_commands.begin(); it != valid_commands.end(); ++it)
+          {
+            if(Utils::are_similar(command,*it)){ didyoumean.push_back(*it); }
+          }
+          if(didyoumean.size() > 0)
+          {
+            cout<<"Did you mean one of the following?"<<endl;
+            for (std::vector<str>::iterator it = didyoumean.begin(); it != didyoumean.end(); ++it)
+            {
+              if(Utils::are_similar(command,*it)){ cout<<"  "<<*it<<endl; }
+            }
+            cout<<endl;
+            cout<<"Run \"gambit --help\" for a full list of options and usage instructions"<<endl;  
+            logger().disable();
+            core_error().silent_forced_throw();
+          }
+          else
+          {
+            bail();
+          }
         }
       }
       else 

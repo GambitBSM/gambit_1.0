@@ -29,19 +29,19 @@ namespace Gambit
 	double Q; /* Qmax ; default = M_EWSB = sqrt(m_stop1*mstop2) */
 	double m0,m12,tan_beta,sign_mu,A0; /* CMSSM parameters */
 	double Lambda,Mmess,N5,cgrav,m32; /* AMSB, GMSB parameters */
-	double mass_Z,mass_W,mass_b,mass_top_pole,mass_tau_pole; /* SM parameters */
+	double mass_Z,mass_W,mass_b,mass_top_pole,mass_tau; /* SM parameters */
 	double inv_alpha_em,alphas_MZ,Gfermi,GAUGE_Q; /* SM parameters */
 	double charg_Umix[3][3],charg_Vmix[3][3],stop_mix[3][3],sbot_mix[3][3],stau_mix[3][3],neut_mix[6][6],mass_neut[6],alpha; /* mass mixing matrices */
 	double Min,M1_Min,M2_Min,M3_Min,At_Min,Ab_Min,Atau_Min,M2H1_Min,M2H2_Min,mu_Min,M2A_Min,tb_Min,mA_Min; /* optional input parameters at scale Min */
 	double MeL_Min,MmuL_Min,MtauL_Min,MeR_Min,MmuR_Min,MtauR_Min; /* optional input parameters at scale Min */
 	double MqL1_Min,MqL2_Min,MqL3_Min,MuR_Min,McR_Min,MtR_Min,MdR_Min,MsR_Min,MbR_Min; /* optional input parameters at scale Min */
 	double N51,N52,N53,M2H1_Q,M2H2_Q; /* optional input parameters (N51...3: GMSB) */
-	double mass_d,mass_u,mass_s,mass_c,mass_t,mass_e,mass_nue,mass_mu,mass_num,mass_tau,mass_nut; /* SM masses */
+	double mass_d,mass_u,mass_s,mass_c_pole,mass_b_pole,mass_e,mass_nue,mass_mu,mass_num,mass_nut; /* SM masses */
 	double mass_gluon,mass_photon,mass_Z0; /* SM masses */
 	double mass_h0,mass_H0,mass_A0,mass_H,mass_dnl,mass_upl,mass_stl,mass_chl,mass_b1,mass_t1; /* Higgs & superparticle masses */
 	double mass_el,mass_nuel,mass_mul,mass_numl,mass_tau1,mass_nutl,mass_gluino,mass_cha1,mass_cha2; /* superparticle masses */
 	double mass_dnr,mass_upr,mass_str,mass_chr,mass_b2,mass_t2,mass_er,mass_mur,mass_tau2; /* superparticle masses */
-	double mass_nuer,mass_numr,mass_nutr,mass_graviton,mass_gravitino; /* superparticle masses */
+	double mass_nuer,mass_numr,mass_nutr,mass_graviton,mass_gravitino; /* masses */
 	double gp,g2,gp_Q,g2_Q,g3_Q,YU_Q,yut[4],YD_Q,yub[4],YE_Q,yutau[4]; /* couplings */
 	double HMIX_Q,mu_Q,tanb_GUT,Higgs_VEV,mA2_Q,MSOFT_Q,M1_Q,M2_Q,M3_Q; /* parameters at scale Q */
 	double MeL_Q,MmuL_Q,MtauL_Q,MeR_Q,MmuR_Q,MtauR_Q,MqL1_Q,MqL2_Q,MqL3_Q,MuR_Q,McR_Q,MtR_Q,MdR_Q,MsR_Q,MbR_Q; /* masses at scale Q */
@@ -62,7 +62,7 @@ namespace Gambit
 	double TU[4][4],TD[4][4],TE[4][4]; /* trilinear couplings */
 	
 	/* non-SLHA*/
-	double mass_b_1S,mass_b_pole,mtmt;
+	double mass_b_1S,mass_c,mass_top;
 	double Lambda5; /* Lambda QCD */
 	
 	/* Flavour parameters */
@@ -73,7 +73,7 @@ namespace Gambit
 	double a1par,a2par,a1perp,a2perp;
 	double zeta3A,zeta3V,wA10,deltatp,deltatm;
 	double lambda_Bp,rho1,lambda2;
-	double BR_BXclnu_exp; /* Used in bsgamma.c and bsll.c */
+	double BR_BXclnu_exp;
 	
 	/* CKM matrix */
 	std::complex<double> Vud,Vus,Vub,Vcd,Vcs,Vcb,Vtd,Vts,Vtb;
@@ -87,7 +87,7 @@ namespace Gambit
 	
 	/* Decay widths */
 	double width_Z,width_W;
-  };
+ };
 }
 
 #endif /* defined __SuperIso_types_hpp__ */

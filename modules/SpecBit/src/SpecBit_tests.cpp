@@ -12,12 +12,12 @@
 ///  Authors (add name and date if you modify):
 ///
 ///  \author Ben Farmer
-///          (ben.farmer@gmail.com)
-///    \date 2014 Sep
+///          (benjamin.farmer@fysik.su.se)
+///    \date 2014 Sep - Dec, 2015 Jan - Mar
 ///  
 ///  *********************************************
 
-#include "gambit/Utils/gambit_module_headers.hpp"
+#include "gambit/Elements/gambit_module_headers.hpp"
 #include "gambit/SpecBit/SpecBit_rollcall.hpp"
 #include "gambit/SpecBit/external_examples.hpp"
 #include "gambit/SpecBit/MSSMSpec.hpp"
@@ -25,10 +25,9 @@
 #include "gambit/SpecBit/SpecBit_tests.hpp"
 
 // Flexible SUSY stuff (should not be needed by the rest of gambit)
+#include "gambit/SpecBit/model_files_and_boxes.hpp"
 #include "flexiblesusy/src/ew_input.hpp"
 #include "flexiblesusy/src/numerics.hpp"
-#include "flexiblesusy/models/CMSSM/CMSSM_two_scale_model.hpp"
-#include "flexiblesusy/models/CMSSM/CMSSM_two_scale_model_slha.hpp"
 
 namespace Gambit
 {
@@ -58,17 +57,17 @@ namespace Gambit
       // I think these objects should only get created once since they are static...      
       // ...and they should be destructed automatically when the program ends.
 
-      setup(mssm.model); //fill with some parameters
-      mssm.model.calculate_DRbar_parameters(); //calculated DRbar masses 
-      mssm.model.calculate_pole_masses();//now calculate pole masses
+      setup(mssm.model_interface.model); //fill with some parameters
+      mssm.model_interface.model.calculate_DRbar_parameters(); //calculated DRbar masses 
+      mssm.model_interface.model.calculate_pole_masses();//now calculate pole masses
 
       // Check contents
       logger() << "This is specbit_tests. Checking Spectrum object contents..." << std::endl;
-      if(TestMssmParGets(mssm, mssm.model)==false){
+      if(TestMssmParGets(mssm, mssm.model_interface.model)==false){
           logger() << "TestMssmParGets fail." << std::endl;
           return;
        }
-       if(TestMssmPoleGets(mssm, mssm.model)==false){
+       if(TestMssmPoleGets(mssm, mssm.model_interface.model)==false){
           logger() << "TestMssmPoleGets fail." << std::endl;
           return;
        }
@@ -86,16 +85,19 @@ namespace Gambit
     void specbit_test_func1 (double &result)
     {
       // Access the pipes for this function to get model and parameter information
-      using namespace Pipes::specbit_test_func1;
-
-      std::cout << "Running specbit_test_func1" << std::endl;
-      std::cout << "Retrieving Spectrum*" << std::endl;
-      Spectrum* spec = *Dep::MSSM_spectrum; //Test retrieve pointer to Spectrum object 
-
-      //const Spectrum& spec(*(Dep::particle_spectrum->get())); // Get Spectrum object ptr out of dependency pipe and make a nice reference out of it.
-      std::cout << "Running spec_manipulate" << std::endl;
-      spec_manipulate(spec); //function can manipulate without knowing model.
-
+       using namespace Pipes::specbit_test_func1;
+       const SMplusUV* spec = *Dep::MSSM_spectrum;
+       std::cout << "Running specbit_test_func1" << std::endl;
+       std::cout << "Retrieving Spectrum*" << std::endl;
+       //  const Spectrum* spec = *Dep::MSSM_spectrum; //Test retrieve pointer to Spectrum object 
+ 
+       //const Spectrum& spec(*(Dep::particle_spectrum->get())); // Get Spectrum object ptr out of dependency pipe and make a nice reference out of it.
+       std::cout << "Running spec_manipulate" << std::endl;
+ 
+       // Clone the UV Spectum object so we can access a non-const version
+       std::unique_ptr<Spectrum> spec2 = spec->get_UV()->clone(); 
+ 
+       spec_manipulate(*spec2); //function can manipulate without knowing model.
     }
 
     /// Function to test out SpecBit features
@@ -137,7 +139,7 @@ namespace Gambit
 
       // Fill the model and do it again
       std::cout << "Spectrum via Spectrum* (filled)" << std::endl;
-      setup(mssm.model);
+      setup(mssm.model_interface.model);
       std::cout << "spec->runningpars.GetScale() =" 
           << spec->runningpars.GetScale() << std::endl;
       std::cout << "mHd2 = "  
@@ -152,12 +154,24 @@ namespace Gambit
     {
       // Requests a Spectrum object of capability SM_spectrum; test what we can retrieve from this
       using namespace Pipes::specbit_test_func3;
-      Spectrum* spec = *Dep::SM_spectrum; //Test retrieve pointer to Spectrum object 
+      const Spectrum* spec = *Dep::SM_spectrum; //Test retrieve pointer to Spectrum object 
 
-      SM_checks(spec); // Run some tests on standard model parameters 
+      std::unique_ptr<Spectrum> spec2 = spec->clone(); 
+
+      SM_checks(*spec2); // Run some tests on standard model parameters 
       logger() << EOM;
     }
 
+    /// Test out consistency of SMplusUV object (and pre-extracted SM Spectrum*)
+    void specbit_test_SMplusUV (double &result)
+    {
+      using namespace Pipes::specbit_test_SMplusUV;
+      const SMplusUV* matched_spectra = *Dep::MSSM_spectrum;
+      const Spectrum* sm = *Dep::SM_spectrum; 
+ 
+      SMplusUV_test(matched_spectra,sm); // Run consistency tests on Spectrum contents vs SMInputs 
+      logger() << EOM;
+    }
 
   } // end namespace SpecBit
 } // end namespace Gambit

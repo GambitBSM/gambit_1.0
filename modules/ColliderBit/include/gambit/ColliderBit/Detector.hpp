@@ -7,7 +7,7 @@
 /// @note To configure a new detector, follow these steps:
 /// @note (To configure a new subprocess group, only do STEPS >= 5)
 /// @note STEP1)  BOSS your favorite collider simulator. Then:
-#include "gambit/Utils/shared_types.hpp"
+#include "gambit/Elements/shared_types.hpp"
 #include "gambit/ColliderBit/Py8Utils.hpp"
 #include "gambit/ColliderBit/ColliderBit_macros.hpp"
 
@@ -61,7 +61,6 @@ namespace Gambit {
     class BuckFastBase : public Detector<HEPUtils::Event, HEPUtils::Event> {
     public:
 
-      BuckFastBase() : _processedEvent(0) {}
       /// @name Initialization functions
       //@{
       virtual void defaults() {}
@@ -73,33 +72,6 @@ namespace Gambit {
       //@{
       virtual void processEvent(const HEPUtils::Event&, HEPUtils::Event&) = 0; //< @note Pure virtual.
       //@}
-
-
-    protected:
-
-      /// @name Event conversion functions.
-      //@{
-      virtual void convertInput(const HEPUtils::Event& event) {
-        /// Memory clean-up of any previous event.
-	std::cout << "In convertInput " <<  std::endl;
-        if (_processedEvent){
-	  std::cout << "Deleting event " << _processedEvent <<  std::endl;
-          delete _processedEvent;
-	  std::cout << "Deleted event " <<  std::endl;
-	  /// Make a local deep copy of the input event to be modified by processEvent.
-	}
-	std::cout << "Attempting to clone " <<  std::endl;
-        _processedEvent = event.clone();
-	std::cout << "Finished clone " <<  std::endl;
-      }
-
-      virtual void convertOutput(HEPUtils::Event& event) {
-        /// @note *Shallow* copy into passed Event (reference is not reset)
-        event = *_processedEvent;
-      }
-      //@}
-
-      HEPUtils::Event* _processedEvent;
     };
 
 
@@ -224,7 +196,7 @@ namespace Gambit {
         while ((candidate = static_cast<Candidate*>(iteratorElectrons.Next()))) {
           const TLorentzVector &momentum = candidate->Momentum;
           recoParticle = new HEPUtils::Particle(P4::mkXYZM(momentum.Px(), momentum.Py(), momentum.Pz(), 0.000510998902),
-                                      -sign(candidate->Charge) * PID::ELECTRON);
+                                                -sign(candidate->Charge) * PID::ELECTRON);
           recoParticle->set_prompt(true);
           event.add_particle(recoParticle);
         }
@@ -237,7 +209,7 @@ namespace Gambit {
         while ((candidate = static_cast<Candidate*>(iteratorMuons.Next()))) {
           const TLorentzVector &momentum = candidate->Momentum;
           recoParticle = new HEPUtils::Particle(P4::mkXYZM(momentum.Px(), momentum.Py(), momentum.Pz(), 0.105658389),
-                                      -sign(candidate->Charge) * PID::MUON);
+                                                -sign(candidate->Charge) * PID::MUON);
           recoParticle->set_prompt(true);
           event.add_particle(recoParticle);
         }
@@ -251,7 +223,7 @@ namespace Gambit {
           const TLorentzVector &momentum = candidate->Momentum;
           if (candidate->TauTag) {
             recoParticle = new HEPUtils::Particle(P4::mkXYZM(momentum.Px(), momentum.Py(), momentum.Pz(), 1e-6),
-                                        -sign(candidate->Charge) * PID::TAU);
+                                                  -sign(candidate->Charge) * PID::TAU);
             recoParticle->set_prompt(true);
             event.add_particle(recoParticle);
             //continue;

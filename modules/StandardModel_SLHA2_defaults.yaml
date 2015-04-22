@@ -1,0 +1,59 @@
+# Defaults for StandardModel_SLHA2 parameters.
+# These are ALL FIXED
+# To vary, say, mTop, or just use different fixed values, you should create a
+# new version of this file.
+
+# TODO: It would actually be quite handy if the fixed values could be specified
+# on a single line, i.e. like this:
+#   alphainv: 1.279340000e+02      # alpha^(-1) SM MSbar(MZ)
+#   GF:       1.166370000e-05      # G_Fermi
+#   alphaS:   1.176000000e-01      # alpha_s(MZ) SM MSbar
+#   etc...
+# because then one could just straight copy a block of numbers out of an SLHA
+# file and paste them in here (the parameter order here matches the SLHA order)
+# for easy matching against test SLHA files. I am thinking of a vim-style 
+# visual-block copy of the numbers.
+
+###
+# import this file into a Parameters node named:
+# StandardModel_SLHA2:
+
+# These values match LesHouches.in.MSSM_1; should change them to latest PDG values
+alphainv:
+  fixed_value: 1.279340000e+02      # alpha^(-1) SM MSbar(MZ)
+GF:
+  fixed_value: 1.166370000e-05      # G_Fermi
+alphaS:
+  fixed_value: 1.176000000e-01      # alpha_s(MZ) SM MSbar
+######
+mZ:
+  fixed_value: 9.118760000e+01      # MZ(pole)
+######
+mBmB:
+  fixed_value: 4.200000000e+00      # mb(mb) SM MSbar
+mT:
+  fixed_value: 1.733000000e+02      # mtop(pole)
+######
+mTau:
+  fixed_value: 1.777000000e+00      # mtau(pole)
+mNu3:
+  fixed_value: 0.000000000e+00      # mnu3(pole)
+mE:
+  fixed_value: 5.109989020e-04      # melectron(pole)
+mNu1:
+  fixed_value: 0.000000000e+00      # mnu1(pole)
+mMu:
+  fixed_value: 1.056583570e-01      # mmuon(pole)
+mNu2:
+  fixed_value: 0.000000000e+00      # mnu2(pole)
+######
+mD:
+  fixed_value: 4.750000000e-03      # md(2 GeV) MS-bar
+mU:
+  fixed_value: 2.400000000e-03      # mu(2 GeV) MS-bar
+mS:
+  fixed_value: 1.040000000e-01      # ms(2 GeV) MS-bar
+mCmC:
+  fixed_value: 1.270000000e+00      # mc(mc) MS-bar
+ 
+

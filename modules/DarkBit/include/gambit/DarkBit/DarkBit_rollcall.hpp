@@ -17,7 +17,7 @@
 ///   
 ///  \author Christoph Weniger
 ///          (c.weniger@uva.nl)
-///  \date 2013 Jul
+///  \date 2013 Jul - 2015 May
 ///
 ///  \author Torsten Bringmann
 ///          (torsten.bringmann@fys.uio.no)
@@ -36,6 +36,11 @@
 ///          (antje.putze@lapth.cnrs.fr)
 ///  \date 2015 Jan
 ///
+///  \author Pat Scott
+///          (pscott@imperial.ac.uk)
+///  \date 2014 Mar
+///  \date 2015 Mar
+///
 ///  *********************************************
 
 #ifndef __DarkBit_rollcall_hpp__
@@ -46,51 +51,9 @@
 #define MODULE DarkBit
 START_MODULE
 
-//  #define CAPABILITY PointInit  // Part of it will be moved to backend initialization
-//  START_CAPABILITY
-//
-//    //The function below has been moved into the DarkSUSY
-//    //backend initialization and should be eventually deleted
-//    #define FUNCTION DarkBit_PointInit_MSSM
-//      START_FUNCTION(void, INIT_FUNCTION)
-//      DEPENDENCY(MSSMspectrum, eaSLHA) 
-//      ALLOW_MODELS(CMSSM_demo)
-//      // Initialize DarkSUSY with SLHA file
-//      BACKEND_REQ(dsinit, (), void, ())
-//      BACKEND_REQ(dsrdinit, (), void, ())
-//      BACKEND_REQ(dsSLHAread, (), void, (char*, int&, int))
-//      BACKEND_REQ(dsprep, (), void, ())
-//    #undef FUNCTION
-//
-//    #define FUNCTION DarkBit_PointInit_CMSSM
-//      START_FUNCTION(void, INIT_FUNCTION)
-//      //ALLOW_MODELS(CMSSM_demo)
-//      // Initialize DarkSUSY with isasugra
-//      BACKEND_REQ(dsinit, (), void, ())
-//      BACKEND_REQ(dsrdinit, (), void, ())
-//      BACKEND_REQ(dsgive_model_isasugra, (), void, (double&,double&,double&,double&,double&))
-//      BACKEND_REQ(dssusy_isasugra, (), void, (int&,int&))
-//    #undef FUNCTION
-//
-//    #define FUNCTION DarkBit_PointInit_MSSM7
-//      START_FUNCTION(void, INIT_FUNCTION)
-//      //ALLOW_MODELS(CMSSM_demo)
-//      // Initialize DarkSUSY with dssusy
-//      BACKEND_REQ(dsinit, (), void, ())
-//      BACKEND_REQ(dsrdinit, (), void, ())
-//      BACKEND_REQ(mssmpar, (), DS_MSSMPAR)
-//      BACKEND_REQ(dssusy, (), void, (int&,int&))
-//    #undef FUNCTION
-//
-//    #define FUNCTION DarkBit_PointInit_Default
-//      START_FUNCTION(void, INIT_FUNCTION)
-//    #undef FUNCTION
-//
-//  #undef CAPABILITY  // PointInit
-
-  #define CAPABILITY MSSMspectrum
+  #define CAPABILITY MSSM_spectrum
   START_CAPABILITY
-    #define FUNCTION getMSSMspectrum
+    #define FUNCTION get_MSSM_spectrum_from_file
       START_FUNCTION(eaSLHA)
       ALLOW_MODELS(MSSM25atQ)
     #undef FUNCTION
@@ -109,21 +72,19 @@ START_MODULE
     // (probably always true)
     #define FUNCTION DarkSUSY_PointInit_MSSM
       START_FUNCTION(bool)
-      DEPENDENCY(MSSMspectrum, eaSLHA) 
-      ALLOW_MODELS(CMSSM_demo,CMSSM,MSSM25atQ)
+      DEPENDENCY(MSSM_spectrum, eaSLHA) 
+      ALLOW_MODELS(CMSSM,MSSM25atQ)
       // CMSSM
       BACKEND_REQ(dsgive_model_isasugra, (), void, (double&,double&,double&,double&,double&))
       BACKEND_REQ(dssusy_isasugra, (), void, (int&,int&))
-      // MSSM7
+      // MSSM7 -- not used at the moment!?
       BACKEND_REQ(mssmpar, (), DS_MSSMPAR)
       BACKEND_REQ(dssusy, (), void, (int&,int&))
       // Initialize DarkSUSY with SLHA file
-      BACKEND_REQ(dsSLHAread, (), void, (char*, int&, int))
+      BACKEND_REQ(dsSLHAread, (), void, (const char*, int&, int))
       BACKEND_REQ(dsprep, (), void, ())
-    #undef FUNCTION
-    #define FUNCTION DarkSUSY_PointInit_NoMSSM
-      START_FUNCTION(bool)
-      ALLOW_MODELS(SingletDM)
+      // Print higgs widths
+      BACKEND_REQ(dswwidth, (), void, (int&))
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -134,6 +95,7 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION RD_spectrum_SUSY
       START_FUNCTION(Gambit::DarkBit::RD_spectrum_type)
+      DEPENDENCY(DarkSUSY_PointInit, bool)
       BACKEND_REQ(mspctm, (), DS_MSPCTM)
       BACKEND_REQ(widths, (), DS_WIDTHS)
       BACKEND_REQ(intdof, (), DS_INTDOF)
@@ -147,6 +109,7 @@ START_MODULE
       START_FUNCTION(Gambit::DarkBit::TH_resonances_thresholds)
       DEPENDENCY(RD_spectrum, Gambit::DarkBit::RD_spectrum_type)
       DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)
+      DEPENDENCY(DarkMatter_ID, DarkMatter_ID_type)
     #undef FUNCTION
     #define FUNCTION RD_thresholds_resonances_from_spectrum
       START_FUNCTION(Gambit::DarkBit::TH_resonances_thresholds)
@@ -178,6 +141,7 @@ START_MODULE
     #define FUNCTION RD_eff_annrate_from_ProcessCatalog
       START_FUNCTION(fptr_dd)
       DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)
+      DEPENDENCY(DarkMatter_ID, DarkMatter_ID_type)
       ALLOW_MODELS(SingletDM)
     #undef FUNCTION
   #undef CAPABILITY
@@ -213,7 +177,7 @@ START_MODULE
     #undef FUNCTION
 
     // Routine for cross checking RD density results
-    #define FUNCTION RD_oh2_micromegas
+    #define FUNCTION RD_oh2_MicrOmegas
       START_FUNCTION(double)
       ALLOW_MODELS(MSSM25atQ)  // TODO: (CW) Check for which models this works
       BACKEND_REQ(oh2, (), double, (double*,int,double))
@@ -302,7 +266,9 @@ START_MODULE
       DEPENDENCY(cascadeMC_ChainEvent, Gambit::DarkBit::DecayChain::ChainContainer)
       DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)      
       DEPENDENCY(SimYieldTable, Gambit::DarkBit::SimYieldTable)      
-      DEPENDENCY(cascadeMC_FinalStates,std::vector<std::string>)       
+      DEPENDENCY(cascadeMC_FinalStates,std::vector<std::string>)  
+      // FIXME: Temporary, for testing   
+      BACKEND_REQ(dshayield, (), double, (double&,double&,int&,int&,int&)) 
       NEEDS_MANAGER_WITH_CAPABILITY(cascadeMC_LoopManagement) 
     #undef FUNCTION          
   #undef CAPABILITY
@@ -356,6 +322,7 @@ START_MODULE
       START_FUNCTION(std::vector<std::string>)
       DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)
       DEPENDENCY(SimYieldTable, Gambit::DarkBit::SimYieldTable)
+      DEPENDENCY(DarkMatter_ID, DarkMatter_ID_type)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -366,16 +333,13 @@ START_MODULE
       DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)
       DEPENDENCY(SimYieldTable, Gambit::DarkBit::SimYieldTable)
       DEPENDENCY(cascadeMC_gammaSpectra, Gambit::DarkBit::stringFunkMap)
+      DEPENDENCY(DarkMatter_ID, DarkMatter_ID_type)
     #undef FUNCTION
     #define FUNCTION GA_AnnYield_DarkSUSY
       START_FUNCTION(Funk::Funk)
       DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)
+      DEPENDENCY(DarkMatter_ID, DarkMatter_ID_type)
       BACKEND_REQ(dshayield, (), double, (double&,double&,int&,int&,int&))
-    #undef FUNCTION
-    #define FUNCTION ToyAnnYield
-      START_FUNCTION(Funk::Funk)
-      DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)
-      DEPENDENCY(SimYieldTable, Gambit::DarkBit::SimYieldTable)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -383,9 +347,10 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION TH_ProcessCatalog_CMSSM
       START_FUNCTION(Gambit::DarkBit::TH_ProcessCatalog)
-      //ALLOW_MODELS(CMSSM_demo, MSSM25atQ)
+      //ALLOW_MODELS(CMSSM, MSSM25atQ)
       DEPENDENCY(DarkSUSY_PointInit, bool)
-      DEPENDENCY(MSSMspectrum, eaSLHA) 
+      DEPENDENCY(MSSM_spectrum, eaSLHA) 
+      DEPENDENCY(DarkMatter_ID, DarkMatter_ID_type)
       BACKEND_REQ(mspctm, (), DS_MSPCTM)
       BACKEND_REQ(dssigmav, (), double, (int&))
       BACKEND_REQ(dsIBffdxdy, (), double, (int&, double&, double&))
@@ -396,6 +361,7 @@ START_MODULE
     #undef FUNCTION
     #define FUNCTION TH_ProcessCatalog_SingletDM
       START_FUNCTION(Gambit::DarkBit::TH_ProcessCatalog)
+      //DEPENDENCY(SM_spectrum, const Spectrum*)
       ALLOW_MODELS(SingletDM)
     #undef FUNCTION
   #undef CAPABILITY
@@ -421,6 +387,7 @@ START_MODULE
       START_FUNCTION(double)
       DEPENDENCY(GA_AnnYield, Funk::Funk)
       DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)
+      DEPENDENCY(DarkMatter_ID, DarkMatter_ID_type)
       BACKEND_REQ(lnL_GC, (gamLike), double, (const std::vector<double> &, const std::vector<double> &))
     #undef FUNCTION
   #undef CAPABILITY
@@ -442,9 +409,23 @@ START_MODULE
   #undef CAPABILITY
 
 
+  // Simple WIMP property extractors =======================================
+
+  // Retrieve the DM mass in GeV for generic models
+  QUICK_FUNCTION(DarkBit, mwimp, NEW_CAPABILITY, mwimp_generic, double, (),
+      (TH_ProcessCatalog, DarkBit::TH_ProcessCatalog), (DarkMatter_ID, DarkMatter_ID_type))
+
+  // Retrieve the DM mass in GeV for the scalar singlet model
+  QUICK_FUNCTION(DarkBit, mwimp, OLD_CAPABILITY, mwimp_SingletDM, double, (SingletDM))
+
+  // Retrieve the total thermally-averaged annihilation cross-section for indirect detection (cm^3 / s)
+  QUICK_FUNCTION(DarkBit, sigmav, NEW_CAPABILITY, sigmav_late_universe, double, (),
+      (TH_ProcessCatalog, DarkBit::TH_ProcessCatalog), (DarkMatter_ID, DarkMatter_ID_type))
+
+
   // DIRECT DETECTION ==================================================
 
-  // WIMP properties ---------------------------------------
+  // WIMP-nucleon couplings ---------------------------------------
 
   // Determine the WIMP mass and couplings
   #define CAPABILITY DD_couplings
@@ -454,19 +435,30 @@ START_MODULE
       DEPENDENCY(DarkSUSY_PointInit, bool)
       BACKEND_REQ(dsddgpgn, (), void, (double&, double&, double&, double&))
       BACKEND_REQ(mspctm, (), DS_MSPCTM)
+      BACKEND_REQ(ddcom, (DarkSUSY), DS_DDCOM)
+      ALLOW_MODELS(nuclear_params_fnq)
     #undef FUNCTION
-    #define FUNCTION DD_couplings_micrOMEGAs
+    #define FUNCTION DD_couplings_MicrOmegas
       START_FUNCTION(Gambit::DarkBit::DD_couplings)
-      BACKEND_REQ(nucleonAmplitudes, (micromegas), int, (double(*)(double,double,double,double), double*, double*, double*, double*))
-      BACKEND_REQ(FeScLoop, (micromegas), double, (double, double, double, double))
-      BACKEND_REQ(MOcommon, (micromegas), micrOMEGAs::MOcommonSTR)
+      BACKEND_REQ(nucleonAmplitudes, (MicrOmegas), int, (double(*)(double,double,double,double), double*, double*, double*, double*))
+      BACKEND_REQ(FeScLoop, (MicrOmegas), double, (double, double, double, double))
+      BACKEND_REQ(MOcommon, (MicrOmegas), MicrOmegas::MOcommonSTR)
+      ALLOW_MODELS(nuclear_params_fnq)
     #undef FUNCTION
     #define FUNCTION DD_couplings_SingletDM
       START_FUNCTION(Gambit::DarkBit::DD_couplings)
-      ALLOW_MODELS(SingletDM)
+      ALLOW_MODEL_DEPENDENCE(nuclear_params_fnq, SingletDM)
+      MODEL_GROUP(group1, (nuclear_params_fnq))
+      MODEL_GROUP(group2, (SingletDM))
+      ALLOW_MODEL_COMBINATION(group1, group2)
     #undef FUNCTION
   #undef CAPABILITY
 
+  // Simple calculators of the spin-(in)dependent WIMP-proton and WIMP-neutron cross-sections 
+  QUICK_FUNCTION(DarkBit, sigma_SI_p, NEW_CAPABILITY, sigma_SI_p_simple, double, (), (DD_couplings, DarkBit::DD_couplings), (mwimp, double))
+  QUICK_FUNCTION(DarkBit, sigma_SI_n, NEW_CAPABILITY, sigma_SI_n_simple, double, (), (DD_couplings, DarkBit::DD_couplings), (mwimp, double))
+  QUICK_FUNCTION(DarkBit, sigma_SD_p, NEW_CAPABILITY, sigma_SD_p_simple, double, (), (DD_couplings, DarkBit::DD_couplings), (mwimp, double))
+  QUICK_FUNCTION(DarkBit, sigma_SD_n, NEW_CAPABILITY, sigma_SD_n_simple, double, (), (DD_couplings, DarkBit::DD_couplings), (mwimp, double))
 
   // DDCalc0 dependencies ----------------------------------
   // Intermediate routines that must be called when intending
@@ -793,6 +785,61 @@ START_MODULE
 
   // INDIRECT DETECTION: NEUTRINOS =====================================
  
+  // Solar capture ------------------------
+
+  // Capture rate of regular dark matter in the Sun (no v-dependent or q-dependent cross-sections) (s^-1).
+  #define CAPABILITY capture_rate_Sun
+  START_CAPABILITY
+    #define FUNCTION capture_rate_Sun_constant_xsec
+      START_FUNCTION(double)
+      BACKEND_REQ(capture_rate_Sun, (DarkSUSY), double, (const double&, const double&, const double&))
+      DEPENDENCY(mwimp, double)
+      DEPENDENCY(sigma_SI_p, double)
+      DEPENDENCY(sigma_SD_p, double)
+    #undef FUNCTION
+  #undef CAPABILITY
+  
+  // Equilibration time for capture and annihilation of dark matter in the Sun (s)
+  #define CAPABILITY equilibration_time_Sun
+  START_CAPABILITY
+    #define FUNCTION equilibration_time_Sun
+      START_FUNCTION(double)
+      DEPENDENCY(sigmav, double)
+      DEPENDENCY(mwimp, double)
+      DEPENDENCY(capture_rate_Sun, double)                
+    #undef FUNCTION
+  #undef CAPABILITY
+  
+  // Annihilation rate of dark matter in the Sun (s^-1)
+  #define CAPABILITY annihilation_rate_Sun
+  START_CAPABILITY
+    #define FUNCTION annihilation_rate_Sun
+      START_FUNCTION(double)
+      DEPENDENCY(equilibration_time_Sun, double)
+      DEPENDENCY(capture_rate_Sun, double)
+    #undef FUNCTION
+  #undef CAPABILITY
+    
+  /// Neutrino yield function pointer and setup
+  #define CAPABILITY nuyield_ptr
+  START_CAPABILITY
+    #define FUNCTION nuyield_from_DS
+    START_FUNCTION(nuyield_functype)
+    DEPENDENCY(TH_ProcessCatalog, DarkBit::TH_ProcessCatalog)
+    DEPENDENCY(mwimp, double) 
+    DEPENDENCY(sigmav, double)
+    DEPENDENCY(sigma_SI_p, double)
+    DEPENDENCY(sigma_SD_p, double)
+    DEPENDENCY(DarkMatter_ID, DarkMatter_ID_type)
+    BACKEND_REQ(nuyield_setup, (needs_DS), void, (const double(&)[29], 
+     const double(&)[29][3], const double(&)[15], const double(&)[3], const double&, 
+     const double&, const double&, const double&, const double&))
+    BACKEND_REQ(nuyield, (needs_DS), double, (const double&, const int&, void*&))
+    BACKEND_OPTION((DarkSUSY, 5.1.1), (needs_DS))
+    #undef FUNCTION
+  #undef CAPABILITY
+    
+    
   // Neutrino telescope likelihoods ------------------------
 
   #define CAPABILITY IC22_data
@@ -800,10 +847,10 @@ START_MODULE
     #define FUNCTION IC22_full
       START_FUNCTION(nudata)
       DEPENDENCY(mwimp, double)
-      DEPENDENCY(annrate, double)
-      DEPENDENCY(nuyield, nuyield_functype)  
+      DEPENDENCY(annihilation_rate_Sun, double)
+      DEPENDENCY(nuyield_ptr, nuyield_functype)  
       BACKEND_REQ(nubounds, (), void, (const char&, const double&, const double&, double(*)(const double&, const int&, void*&), double&, double&,
-                                       int&, double&, double&, const int&, const bool&, const double&, const double&, void*&))
+                                       int&, double&, double&, const int&, const bool&, const bool&, const double&, const double&, void*&))
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -852,10 +899,10 @@ START_MODULE
     #define FUNCTION IC79WH_full
       START_FUNCTION(nudata)
       DEPENDENCY(mwimp, double)
-      DEPENDENCY(annrate, double)
-      DEPENDENCY(nuyield, nuyield_functype)  
+      DEPENDENCY(annihilation_rate_Sun, double)
+      DEPENDENCY(nuyield_ptr, nuyield_functype)  
       BACKEND_REQ(nubounds, (), void, (const char&, const double&, const double&, double(*)(const double&, const int&, void*&), double&, double&,
-                                       int&, double&, double&, const int&, const bool&, const double&, const double&, void*&))
+                                       int&, double&, double&, const int&, const bool&, const bool&, const double&, const double&, void*&))
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -904,10 +951,10 @@ START_MODULE
     #define FUNCTION IC79WL_full
       START_FUNCTION(nudata)
       DEPENDENCY(mwimp, double)
-      DEPENDENCY(annrate, double)
-      DEPENDENCY(nuyield, nuyield_functype)  
+      DEPENDENCY(annihilation_rate_Sun, double)
+      DEPENDENCY(nuyield_ptr, nuyield_functype)  
       BACKEND_REQ(nubounds, (), void, (const char&, const double&, const double&, double(*)(const double&, const int&, void*&), double&, double&,
-                                       int&, double&, double&, const int&, const bool&, const double&, const double&, void*&))
+                                       int&, double&, double&, const int&, const bool&, const bool&, const double&, const double&, void*&))
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -956,10 +1003,10 @@ START_MODULE
     #define FUNCTION IC79SL_full
       START_FUNCTION(nudata)
       DEPENDENCY(mwimp, double)
-      DEPENDENCY(annrate, double)
-      DEPENDENCY(nuyield, nuyield_functype)  
+      DEPENDENCY(annihilation_rate_Sun, double)
+      DEPENDENCY(nuyield_ptr, nuyield_functype)  
       BACKEND_REQ(nubounds, (), void, (const char&, const double&, const double&, double(*)(const double&, const int&, void*&), double&, double&,
-                                       int&, double&, double&, const int&, const bool&, const double&, const double&, void*&))
+                                       int&, double&, double&, const int&, const bool&, const bool&, const double&, const double&, void*&))
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -1005,6 +1052,14 @@ START_MODULE
 
   #define CAPABILITY IceCube_likelihood
   START_CAPABILITY
+
+    #define FUNCTION IC79_loglike
+    START_FUNCTION(double)
+    DEPENDENCY(IC79WH_loglike, double)
+    DEPENDENCY(IC79WL_loglike, double)
+    DEPENDENCY(IC79SL_loglike, double)
+    #undef FUNCTION
+
     #define FUNCTION IC_loglike
     START_FUNCTION(double)
     DEPENDENCY(IC22_loglike, double)
@@ -1012,14 +1067,8 @@ START_MODULE
     DEPENDENCY(IC79WL_loglike, double)
     DEPENDENCY(IC79SL_loglike, double)
     #undef FUNCTION
-  #undef CAPABILITY
 
-  //The following are just toy functions to allow the neutrino likelihoods to be tested.  
-  //They should be deleted when real functions are added to provide the WIMP mass, solar
-  //annihilation rate and neutrino yield.
-  QUICK_FUNCTION(DarkBit, nuyield, NEW_CAPABILITY, nuyield_toy, nuyield_functype)
-  QUICK_FUNCTION(DarkBit, mwimp,   NEW_CAPABILITY, mwimp_toy,   double          )
-  QUICK_FUNCTION(DarkBit, annrate, NEW_CAPABILITY, annrate_toy, double          )
+  #undef CAPABILITY
 
   #define CAPABILITY UnitTest_DarkBit
   START_CAPABILITY
@@ -1029,6 +1078,7 @@ START_MODULE
     DEPENDENCY(RD_oh2, double)
     DEPENDENCY(GA_AnnYield, Funk::Funk)
     DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)
+    DEPENDENCY(DarkMatter_ID, DarkMatter_ID_type)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -1036,7 +1086,6 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION SimYieldTable_DarkSusy
     START_FUNCTION(Gambit::DarkBit::SimYieldTable)
-    DEPENDENCY(DarkSUSY_PointInit, bool)
     BACKEND_REQ(dshayield, (), double, (double&,double&,int&,int&,int&))
     #undef FUNCTION 
     #define FUNCTION SimYieldTable_MicrOmegas
@@ -1045,44 +1094,17 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
-#undef MODULE
-
-    
-
-// Tests for Torsten.
-/*
-
-#define MODULE DarkBit
-
-  #define CAPABILITY provideN
+  #define CAPABILITY DarkMatter_ID
   START_CAPABILITY
-    #define FUNCTION provideN_func
-      START_FUNCTION(int)
+    #define FUNCTION DarkMatter_ID_SingletDM
+    START_FUNCTION(DarkMatter_ID_type)
+    ALLOW_MODELS(SingletDM)
     #undef FUNCTION
-  #undef CAPABILITY
-
-  #define CAPABILITY provideF
-  START_CAPABILITY
-    #define FUNCTION provideF_func
-    START_FUNCTION(fptr_dd)
-    BACKEND_REQ(funcGauss, (), double, (double(*)(double&), int&))
-    #undef FUNCTION
-  #undef CAPABILITY
-
-  #define CAPABILITY CalcAv 
-  START_CAPABILITY 
-    #define FUNCTION CalcAv_func
-      START_FUNCTION(double)
-      DEPENDENCY(provideN, int) 
-      DEPENDENCY(provideF, fptr_dd) 
-      BACKEND_REQ(average, (), double, (double&))
+    #define FUNCTION DarkMatter_ID_MSSM25atQ
+    START_FUNCTION(DarkMatter_ID_type)
+    ALLOW_MODELS(MSSM25atQ, CMSSM)
     #undef FUNCTION
   #undef CAPABILITY
 
 #undef MODULE
-*/
-
-
-
 #endif /* defined(__DarkBit_rollcall_hpp__) */
-

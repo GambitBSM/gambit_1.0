@@ -50,6 +50,8 @@ def update_only_if_different(existing, candidate):
         os.rename(candidate,existing)
     print "\033[1;33m   Updated "+re.sub("\\.\\/","",existing)+"\033[0m"
 
+def hidden(filename):
+    return (filename.endswith("~") or filename.startswith("."))
 
 # Actual updater program
 def main(argv):
@@ -84,7 +86,7 @@ def main(argv):
         srcs = []
         for root,dirs,files in os.walk("./"+mod+"/src"):
             for name in files:
-                if name.endswith(".c") or name.endswith(".cc") or name.endswith(".cpp"):
+                if (name.endswith(".c") or name.endswith(".cc") or name.endswith(".cpp")) and not hidden(name):
                     short_root = re.sub("\\./"+mod+"/src/?","",root)
                     if short_root != "" : short_root += "/" 
                     if verbose: print "    Located {0} source file '{1}'".format(mod,short_root+name)
@@ -94,7 +96,7 @@ def main(argv):
         headers = []
         for root,dirs,files in os.walk("./"+mod+"/include"):
             for name in files:
-                if name.endswith(".h") or name.endswith(".hh") or name.endswith(".hpp"):
+                if (name.endswith(".h") or name.endswith(".hh") or name.endswith(".hpp")) and not hidden(name):
                     short_root = re.sub("\\./"+mod+"/include/?","",root)
                     if short_root != "" : short_root += "/" 
                     if verbose: print "    Located {0} header file '{1}'".format(mod,short_root+name)
@@ -132,8 +134,9 @@ set(source_files                                \n"
         towrite+=")\n\n"
         towrite+="add_gambit_library("+mod+" OPTION OBJECT SOURCES ${source_files} HEADERS ${header_files})"
         cmakelist = "./"+mod+"/CMakeLists.txt"
-        with open(cmakelist+".candidate","w") as f: f.write(towrite)
-        update_only_if_different(cmakelist, cmakelist+".candidate")
+        candidate = "./scratch/"+mod+"_CMakeLists.txt"
+        with open(candidate,"w") as f: f.write(towrite)
+        update_only_if_different(cmakelist, candidate)
 
     if verbose: print "Finished updating module CMakeLists.txt files."
 

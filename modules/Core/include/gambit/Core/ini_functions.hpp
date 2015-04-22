@@ -22,7 +22,7 @@
 #define __ini_functions_core_hpp__
 
 #include "gambit/Utils/util_types.hpp"
-#include "gambit/Utils/functors.hpp"
+#include "gambit/Elements/functors.hpp"
 
 namespace Gambit
 {

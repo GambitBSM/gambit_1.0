@@ -131,11 +131,11 @@ void MSSM_spectrum_generator<T>::run(const QedQcd& oneset,
    susy_scale_constraint.initialize();
    low_scale_constraint .initialize();
 
-   std::vector<Constraint<T>*> upward_constraints(2, NULL);
+   std::vector<Constraint<T>*> upward_constraints(2, static_cast<Constraint<T>*>(NULL));
    upward_constraints[0] = &low_scale_constraint;
    upward_constraints[1] = &high_scale_constraint;
 
-   std::vector<Constraint<T>*> downward_constraints(3, NULL);
+   std::vector<Constraint<T>*> downward_constraints(3, static_cast<Constraint<T>*>(NULL));
    downward_constraints[0] = &high_scale_constraint;
    downward_constraints[1] = &susy_scale_constraint;
    downward_constraints[2] = &low_scale_constraint;

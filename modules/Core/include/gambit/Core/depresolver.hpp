@@ -32,7 +32,7 @@
 #include "gambit/Core/error_handlers.hpp"
 #include "gambit/Core/yaml_parser.hpp"
 #include "gambit/Printers/baseprinter.hpp"
-#include "gambit/Utils/functors.hpp"
+#include "gambit/Elements/functors.hpp"
 #include "gambit/Utils/type_equivalency.hpp"
 
 #include <boost/graph/adjacency_list.hpp>
@@ -71,13 +71,14 @@ namespace Gambit
     /// function name).
     struct Rule
     {
+      Rule(std::string function, std::string module) : function(function), module(module) {};
       Rule(IniParser::ObservableType t)
       {
         module = t.module;
         function = t.function;
       };
-      std::string module;
       std::string function;
+      std::string module;
     };
 
     /// Information in parameter queue
@@ -128,6 +129,7 @@ namespace Gambit
         void calcObsLike(VertexID, const int);
 
         double getObsLike(VertexID);
+        std::vector<double> getObsLikeVector(VertexID);
 
         const IniParser::ObservableType * getIniEntry(VertexID);
 
@@ -141,6 +143,10 @@ namespace Gambit
 
         /// Pretty print backend functor information
         str printGenericFunctorList(const std::vector<functor*>&);
+        str printGenericFunctorList(const std::vector<VertexID>&);
+
+        /// Print quantity to be resolved
+        str printQuantityToBeResolved(const sspair & quantity, const DRes::VertexID & vertex);
 
         /// Initialise the printer object with a list of functors for it to expect to be printed.
         void initialisePrinter();

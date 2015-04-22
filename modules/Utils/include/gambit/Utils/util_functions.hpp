@@ -12,6 +12,7 @@
 ///          (patscott@physics.mcgill.ca)
 ///  \date 2013 Apr, July, Aug, Dec
 ///  \date 2014 Mar
+///  \date 2015 Apr
 ///
 ///  \author Ben Farmer
 ///          (benjamin.farmer@monash.edu.au)
@@ -78,6 +79,12 @@ namespace Gambit
     /// Strips leading and/or trailing parentheses from a string.
     void strip_parentheses(str&);
 
+    /// Created a std::string of a specified length.
+    str str_fixed_len(str, int);
+    
+    /// Copy a std::string to a character array, stripping the null termination character.
+    void strcpy2f(char*, int, str);
+
     /// Get pointers to beginning and end of array. 
     // Useful for initialising vectors with arrays, e.g.
     //   int vv[] = { 12,43 };
@@ -115,8 +122,8 @@ namespace Gambit
       return true;
     }
 
-    /// Ensure that a path exists (and then return the path, for chaining purposes)
-    std::string ensure_path_exists(const std::string&);
+     /// Ensure that a path exists (and then return the path, for chaining purposes)
+    const std::string& ensure_path_exists(const std::string&);
 
     typedef std::chrono::time_point<std::chrono::system_clock> time_point;
 
@@ -126,6 +133,15 @@ namespace Gambit
     /// Get date and time
     std::string return_time_and_date(const time_point& in);
 
+    /// Check if two strings are a "close" match
+    /// Used for "did you mean?" type checking during command line argument processing
+    bool are_similar(const std::string& s1, const std::string& s2);   
+    /// Sub-checks for the above:
+    /// true if s1 can be obtained by deleting one character from s2
+    bool check1(const std::string& s1, const std::string& s2);   
+    /// true if s1 can be obtained from s2 by changing no more than X characters (X=2 for now)    
+    bool check2(const std::string& s1, const std::string& s2);
+ 
   }
 
 }

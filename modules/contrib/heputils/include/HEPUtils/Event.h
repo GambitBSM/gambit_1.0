@@ -35,6 +35,23 @@ namespace HEPUtils {
 
     //@}
 
+  private:
+
+    /// Hide copy assignment, since shallow copies of Particle & jet pointers create ownership/deletion problems
+    /// @todo Reinstate as a deep copy uing cloneTo?
+    void operator = (const Event& e) {
+      clear(); //< Delete current particles
+      _photons = e._photons;
+      _electrons = e._electrons;
+      _muons = e._muons;
+      _taus = e._taus;
+      _invisibles = e._invisibles;
+      _jets = e._jets;
+      _pmiss = e._pmiss;
+      //return *this;
+    }
+
+
   public:
 
     /// @todo Need separate types of event (subclasses?) for what gets passed to detsim and to analysis?
@@ -59,39 +76,33 @@ namespace HEPUtils {
       clear();
     }
 
-    /// Copy assignment (shallow-copies Particle pointers)
-    void operator = (const Event& e) {
-      clear(); //< Delete current particles
-      _photons = e._photons;
-      _electrons = e._electrons;
-      _muons = e._muons;
-      _taus = e._taus;
-      _invisibles = e._invisibles;
-      _jets = e._jets;
-      _pmiss = e._pmiss;
-      //return *this;
-    }
+
+  public:
 
     /// Clone a copy on the heap
     Event* clone() const {
-      std::cout << "In clone " <<  std::endl;
       Event* rtn = new Event();
-      std::cout << "Made new event " <<  std::endl;
-      std::vector<Particle*> ps = particles();
-      std::cout << "Got particles " <<  std::endl;
-      for (size_t i = 0; i < ps.size(); ++i) {
-        rtn->add_particle(new Particle(*ps[i]));
-      }
-      std::vector<Jet*> js = jets();
-      std::cout << "js size " << js.size() << std::endl;
-      for (size_t i = 0; i < js.size(); ++i) {
-	std::cout << "Jets " << js[i] << std::endl;
-        rtn->add_jet(new Jet(*js[i]));
-	std::cout << "Added jet" << std::endl;
-      }
-      
-      rtn->_pmiss = _pmiss;
+      cloneTo(rtn);
       return rtn;
+    }
+
+    /// Clone a deep copy (new Particles and Jets allocated) into the provided event pointer
+    void cloneTo(Event* e) const {
+      assert(e != NULL);
+      cloneTo(*e);
+    }
+
+    /// Clone a deep copy (new Particles and Jets allocated) into the provided event object
+    void cloneTo(Event& e) const {
+      const std::vector<Particle*> ps = particles();
+      for (size_t i = 0; i < ps.size(); ++i) {
+        e.add_particle(new Particle(*ps[i]));
+      }
+      const std::vector<Jet*> js = jets();
+      for (size_t i = 0; i < js.size(); ++i) {
+        e.add_jet(new Jet(*js[i]));
+      }
+      e._pmiss = _pmiss;
     }
 
     //@}
@@ -101,24 +112,14 @@ namespace HEPUtils {
     void clear() {
       /// @todo Prefer this form when we can use C++11's range-for
       // for (Particle* p : particles()) delete p;
-      std::vector<Particle*> ps = particles();
-      std::cout << "Particle size " << ps.size() << std::endl;
-      for (size_t i = 0; i < ps.size(); ++i){std::cout << "PARTICLE POINTER " << ps[i] << " ID " << ps[i]->pid() << " PT " << ps[i]->pT() << std::endl;}
-      for (size_t i = 0; i < ps.size(); ++i) { std::cout << "DELETING POINTER " << ps[i] << std::endl;delete ps[i]; std::cout << "DELETED" << std::endl; }
-      ps.clear();
-      _photons.clear();
-      _electrons.clear();
-      _muons.clear();
-      _taus.clear();
-      /// @todo Really need to store invisibles when we have a dedicated MET variable?
-      _invisibles.clear();
-
-      /// @todo Prefer this form when we can use C++11's range-for
-      // if (!_jets.empty()) for (Jet* j : jets()) delete j;
-      //if(!_jets.empty())std::cout << "Survived" << std::endl;
-      if (!_jets.empty()) for (size_t i = 0; i < _jets.size(); ++i)std::cout << "JET POINTER " << _jets[i] << " PT " << _jets[i]->pT() << std::endl;
-      if (!_jets.empty()) for (size_t i = 0; i < _jets.size(); ++i) delete _jets[i];
-         _jets.clear();
+      #define DELCLEAR(v) do { if (!v.empty()) for (size_t i = 0; i < v.size(); ++i) delete v[i]; v.clear(); } while (0)
+      DELCLEAR(_photons);
+      DELCLEAR(_electrons);
+      DELCLEAR(_muons);
+      DELCLEAR(_taus);
+      DELCLEAR(_invisibles);
+      DELCLEAR(_jets);
+      #undef DELCLEAR
 
       _pmiss.clear();
     }

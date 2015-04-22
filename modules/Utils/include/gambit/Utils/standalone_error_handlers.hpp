@@ -54,6 +54,14 @@ namespace Gambit
     warning& printer_warning();
   }
 
+  namespace IniParser
+  {
+    /// IniFile errors
+    error& inifile_error();
+    /// IniFile warnings
+    warning& inifile_warning();
+  }
+  
 }
 
 #endif //#ifndef __standalone_error_handlers_hpp__
