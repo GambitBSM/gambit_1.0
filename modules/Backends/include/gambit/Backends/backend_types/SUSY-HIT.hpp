@@ -600,6 +600,31 @@ namespace Gambit
     {
         Fdouble toptot2;
     };
+    
+    struct flavviolation_type
+    {
+        Farray< Fdouble,1,3,1,3 > vckm;
+        Farray< Fdouble,1,3,1,3 > msq2;
+        Farray< Fdouble,1,3,1,3 > msd2;
+        Farray< Fdouble,1,3,1,3 > msu2;
+        Farray< Fdouble,1,3,1,3 > td;
+        Farray< Fdouble,1,3,1,3 > tu;
+        Farray< Fdouble,1,6,1,6 > usqmix;
+        Finteger ifavvio;
+        Farray< Fdouble,1,6,1,6 > dsqmix;
+    };
+
+    struct sd_mbmb_type
+    {
+        Fdouble sd_mbmb;
+        Finteger i_sd_mbmb;
+    };
+
+    struct sd_selectron_type
+    {
+        Farray< Fdouble,1,6,1,6 > selmix;
+    };
+
 }
 
 #endif // defined __SUSYHIT_types_hpp__

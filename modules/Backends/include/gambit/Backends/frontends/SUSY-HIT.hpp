@@ -30,7 +30,7 @@ LOAD_LIBRARY
 BE_ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
 
 // Functions
-BE_FUNCTION(sdecay, void, (const int&), "sdecay_", "sdecay")     // Converted SUSY-HIT main routine
+BE_FUNCTION(sdecay, void, (), "sdecay_", "sdecay")               // Converted SUSY-HIT main routine
 BE_FUNCTION(unlikely, double, (), "s_hit_unlikely_", "unlikely") // Wrapper for 'unlikely' double 
 
 // Variables
@@ -80,6 +80,9 @@ BE_VARIABLE(sd_sntau2body_type, sd_sntau2body, "sd_sntau2body_", "cb_sd_sntau2bo
 BE_VARIABLE(sd_sntauwidth_type, sd_sntauwidth, "sd_sntauwidth_", "cb_sd_sntauwidth")
 BE_VARIABLE(sd_top2body_type, sd_top2body, "sd_top2body_", "cb_sd_top2body")
 BE_VARIABLE(sd_topwidth_type, sd_topwidth, "sd_topwidth_", "cb_sd_topwidth")
+BE_VARIABLE(flavviolation_type, flavviolation, "flavviolation_", "cb_flavviolation")
+BE_VARIABLE(sd_mbmb_type, sd_mbmb, "sd_mbmb_", "cb_sd_mbmb")
+BE_VARIABLE(sd_selectron_type, sd_selectron, "sd_selectron_", "cb_sd_selectron")
 
 // Initialisation function (dependencies)
 BE_INI_DEPENDENCY(MSSM_spectrum, const SMplusUV*)
@@ -103,7 +106,7 @@ BE_INI_FUNCTION
     susyhitin->rvubin = 0.08;                      // VUB/VCB    
 
     // Zero all SLHA2 Q values
-    //sd_leshouches2->qvalue(1:22) = 0.0
+    for (int i=1; i<=22; ++i) sd_leshouches2->qvalue(i) = 0.0;
 
     // SLHA2 block MODSEL
     sd_leshouches2->imod(1) = 1;
@@ -121,7 +124,7 @@ BE_INI_FUNCTION
 
     // SLHA2 block EXTPAR
     //sd_leshouches2->extval(0:100) = unlikely();    // indicate undefined
-    sd_leshouches2->extval(0) = 4.65777483E+02;    // EWSB scale          
+    sd_leshouches2->extval(0) = 4.65777483E+02;    // EWSB scale.  Not used by SUSY-HIT anymore.          
 
     // SLHA2 block MASS
     //sd_leshouches2->massval(1:50) = 0.0            // zeroing
@@ -158,26 +161,64 @@ BE_INI_FUNCTION
     sd_leshouches2->massval(31) = 3.77781490E+02;  // ~chi_40
     sd_leshouches2->massval(32) = 1.79671182E+02;  // ~chi_1+
     sd_leshouches2->massval(33) = 3.77983105E+02;  // ~chi_2+
-    sd_leshouches2->massval(34) = 4.87877839E+00;  // b pole mass calculated from mb(mb)_MSbar
+    sd_leshouches2->massval(34) = 4.87877839E+00;  // b pole mass
     sd_leshouches2->massval(35) = unlikely();      // ~G
 
     // SLHA2 block NMIX
-
-    // SLHA2 block UMIX
+    sd_leshouches2->nmixval(1,1) = 9.85345167E-01; // N_11
+    sd_leshouches2->nmixval(1,2) =-5.64225409E-02; // N_12
+    sd_leshouches2->nmixval(1,3) = 1.51059160E-01; // N_13
+    sd_leshouches2->nmixval(1,4) =-5.56105152E-02; // N_14
+    sd_leshouches2->nmixval(2,1) = 1.06123308E-01; // N_21
+    sd_leshouches2->nmixval(2,2) = 9.39651214E-01; // N_22
+    sd_leshouches2->nmixval(2,3) =-2.80885422E-01; // N_23
+    sd_leshouches2->nmixval(2,4) = 1.64002501E-01; // N_24
+    sd_leshouches2->nmixval(3,1) = 6.12835220E-02; // N_31
+    sd_leshouches2->nmixval(3,2) =-9.07288796E-02; // N_32
+    sd_leshouches2->nmixval(3,3) =-6.95178480E-01; // N_33
+    sd_leshouches2->nmixval(3,4) =-7.10450196E-01; // N_34
+    sd_leshouches2->nmixval(4,1) = 1.18646854E-01; // N_41
+    sd_leshouches2->nmixval(4,2) =-3.25023636E-01; // N_42
+    sd_leshouches2->nmixval(4,3) =-6.44213777E-01; // N_43
+    sd_leshouches2->nmixval(4,4) = 6.82107887E-01; // N_44
 
     // SLHA2 block VMIX
+    sd_leshouches2->vmixval(1,1) =-9.70421546E-01; // V_11
+    sd_leshouches2->vmixval(1,2) = 2.41416701E-01; // V_12
+    sd_leshouches2->vmixval(2,1) = 2.41416701E-01; // V_21
+    sd_leshouches2->vmixval(2,2) = 9.70421546E-01; // V_22
+
+    // SLHA2 block UMIX
+    sd_leshouches2->umixval(1,1) =-9.11420712E-01; // U_11
+    sd_leshouches2->umixval(1,2) = 4.11475741E-01; // U_12
+    sd_leshouches2->umixval(2,1) = 4.11475741E-01; // U_21
+    sd_leshouches2->umixval(2,2) = 9.11420712E-01; // U_22
 
     // SLHA2 block STOPMIX
+    sd_leshouches2->stopmixval(1,1) = 5.52988023E-01; // cos(theta_t)
+    sd_leshouches2->stopmixval(1,2) = 8.33189202E-01; // sin(theta_t)
+    sd_leshouches2->stopmixval(2,1) =-8.33189202E-01; // -sin(theta_t)
+    sd_leshouches2->stopmixval(2,2) = 5.52988023E-01; // cos(theta_t)
 
     // SLHA2 block SBOTMIX
+    sd_leshouches2->sbotmixval(1,1) = 9.30091013E-01; // cos(theta_b)
+    sd_leshouches2->sbotmixval(1,2) = 3.67329153E-01; // sin(theta_b)
+    sd_leshouches2->sbotmixval(2,1) =-3.67329153E-01; // -sin(theta_b)
+    sd_leshouches2->sbotmixval(2,2) = 9.30091013E-01; // cos(theta_b)
 
     // SLHA2 block STAUMIX
-   
+    sd_leshouches2->staumixval(1,1) = 2.84460080E-01; // cos(theta_tau)
+    sd_leshouches2->staumixval(1,2) = 9.58687886E-01; // sin(theta_tau)
+    sd_leshouches2->staumixval(2,1) =-9.58687886E-01; // -sin(theta_tau)
+    sd_leshouches2->staumixval(2,2) = 2.84460080E-01; // cos(theta_tau)
+
     // SLHA2 block ALPHA
+    sd_leshouches2->alphaval = -1.14188002E-01;    // Mixing angle in the neutral Higgs boson sector.
+    // Value is spectrum generator's "best choice" => can be on-shell, DRbar at a give scale, whatever.
     
     // SLHA2 block HMIX
     sd_leshouches2->qvalue(1) = 4.65777483E+02;    // Q(GeV)
-    //sd_leshouches2->hmixval(1:10) = unlikely();    // indicate undefined
+    for (int i=1; i<=10; ++i) sd_leshouches2->hmixval(i) = unlikely();    // indicate undefined
     sd_leshouches2->hmixval(1) = 3.52164860E+02;   // mu(Q)
     sd_leshouches2->hmixval(2) = 9.75041102E+00;   // tanbeta(Q)
     sd_leshouches2->hmixval(3) = 2.45014641E+02;   // vev(Q)
@@ -190,8 +231,8 @@ BE_INI_FUNCTION
     sd_leshouches2->gaugeval(3) = 1.09632112E+00;  // g_3(Q) DRbar
  
     // SLHA2 block MSOFT
-    sd_leshouches2->qvalue(2) = 4.65777483E+02;    // Q(GeV)
-    //sd_leshouches2->msoftval(1:100) = unlikely();  // indicate undefined
+    sd_leshouches2->qvalue(3) = 4.65777483E+02;    // Q(GeV)
+    for (int i=1; i<=100; ++i) sd_leshouches2->msoftval(i) = unlikely();  // indicate undefined
     sd_leshouches2->msoftval(1) = 1.01486794E+02;  // M_1
     sd_leshouches2->msoftval(2) = 1.91565439E+02;  // M_2
     sd_leshouches2->msoftval(3) = 5.86284400E+02;  // M_3
@@ -213,7 +254,105 @@ BE_INI_FUNCTION
     sd_leshouches2->msoftval(48) = 5.25444117E+02; // M_sR
     sd_leshouches2->msoftval(49) = 5.22139557E+02; // M_bR
 
-    sdecay(0); // Skip FV light stop decays
+    // SLHA1 block AU
+    sd_leshouches2->qvalue(4) = 4.65777483E+02;    // Q(GeV)
+    for (int i=1; i<=3; ++i) for (int j=1; j<=3; ++j) sd_leshouches2->auval(i,j) = unlikely();   // indicate undefined
+    sd_leshouches2->auval(1,1) = -6.83184382E+02;  // A_u(Q) DRbar
+    sd_leshouches2->auval(2,2) = -6.83184382E+02;  // A_c(Q) DRbar
+    sd_leshouches2->auval(3,3) = -5.06144039E+02;  // A_t(Q) DRbar
+
+    // SLHA1 block AD
+    sd_leshouches2->qvalue(5) = 4.65777483E+02;    // Q(GeV)
+    for (int i=1; i<=3; ++i) for (int j=1; j<=3; ++j) sd_leshouches2->adval(i,j) = unlikely();   // indicate undefined
+    sd_leshouches2->adval(1,1) = -8.58985213E+02;  // A_d(Q) DRbar
+    sd_leshouches2->adval(2,2) = -8.58985213E+02;  // A_s(Q) DRbar
+    sd_leshouches2->adval(3,3) = -7.96595982E+02;  // A_b(Q) DRbar
+
+    // SLHA1 block AE
+    sd_leshouches2->qvalue(6) = 4.65777483E+02;    // Q(GeV)
+    for (int i=1; i<=3; ++i) for (int j=1; j<=3; ++j) sd_leshouches2->aeval(i,j) = unlikely();   // indicate undefined
+    sd_leshouches2->aeval(1,1) = -2.53298464E+02;  // A_e(Q) DRbar
+    sd_leshouches2->aeval(2,2) = -2.53298464E+02;  // A_mu(Q) DRbar
+    sd_leshouches2->aeval(3,3) = -2.51542764E+02;  // A_tau(Q) DRbar
+
+    // SLHA2 block YU 
+    sd_leshouches2->qvalue(7) = 4.65777483E+02;    // Q(GeV)
+    for (int i=1; i<=3; ++i) for (int j=1; j<=3; ++j) sd_leshouches2->yuval(i,j) = 0.0;          // zero Yukawas (defined as diagonal in SLHA2)
+    sd_leshouches2->yuval(3,3) = 8.78978125E-01;   // y_top(Q) DRbar
+
+    // SLHA1 block YD
+    sd_leshouches2->qvalue(8) = 4.65777483E+02;    // Q(GeV)
+    for (int i=1; i<=3; ++i) for (int j=1; j<=3; ++j) sd_leshouches2->ydval(i,j) = 0.0;          // zero Yukawas (defined as diagonal in SLHA2)
+    sd_leshouches2->ydval(3,3) = 1.39517330E-01;   // y_b(Q) DRbar
+
+    // SLHA1 block YE
+    sd_leshouches2->qvalue(9) = 4.65777483E+02;    // Q(GeV)
+    for (int i=1; i<=3; ++i) for (int j=1; j<=3; ++j) sd_leshouches2->yeval(i,j) = 0.0;          // zero Yukawas (defined as diagonal in SLHA2)
+    sd_leshouches2->yeval(3,3) = 1.01147257E-01;   // y_tau(Q) DRbar
+
+    // SLHA1 block SPINFO
+    sd_leshouches1->spinfo1 = "GAMBIT";            // RGE +Spectrum calculator
+    sd_leshouches1->spinfo2 = "v1.0.0";            // version number
+    
+    // SLHA2 block MSQ2    
+    sd_leshouches2->qvalue(17) = 4.65777483E+02;   // Q(GeV) corrects minor bug in SUSY-HIT SLHA reader
+    for (int i=1; i<=3; ++i) for (int j=1; j<=3; ++j) flavviolation->msq2(i,j) = 0.0;            // zero squark_L mass matrices
+
+    // SLHA2 block MSD2
+    sd_leshouches2->qvalue(10) = 4.65777483E+02;   // Q(GeV)
+    for (int i=1; i<=3; ++i) for (int j=1; j<=3; ++j) flavviolation->msd2(i,j) = 0.0;            // zero d-type squark_R mass matrices
+
+    // SLHA2 block MSU2
+    sd_leshouches2->qvalue(11) = 4.65777483E+02;   // Q(GeV)
+    for (int i=1; i<=3; ++i) for (int j=1; j<=3; ++j) flavviolation->msu2(i,j) = 0.0;            // zero u-type squark_R mass matrices
+
+    // SLHA2 block TD
+    sd_leshouches2->qvalue(12) = 4.65777483E+02;   // Q(GeV)
+    for (int i=1; i<=3; ++i) for (int j=1; j<=3; ++j) flavviolation->td(i,j) = 0.0;              // zero d-type trilinear couplings
+
+    // SLHA2 block TU
+    sd_leshouches2->qvalue(13) = 4.65777483E+02;   // Q(GeV)
+    for (int i=1; i<=3; ++i) for (int j=1; j<=3; ++j) flavviolation->td(i,j) = 0.0;              // zero u-type trilinear couplings
+
+    // SLHA2 block USQMIX
+    sd_leshouches2->qvalue(14) = 4.65777483E+02;   // Q(GeV)
+    for (int i=1; i<=6; ++i) for (int j=1; j<=6; ++j) flavviolation->usqmix(i,j) = 0.0;          // zero u-type squark mixing matrix
+
+    // SLHA2 block DSQMIX 
+    sd_leshouches2->qvalue(15) = 4.65777483E+02;   // Q(GeV) corrects minor bug in SUSY-HIT SLHA reader.
+    for (int i=1; i<=6; ++i) for (int j=1; j<=6; ++j) flavviolation->dsqmix(i,j) = 0.0;          // zero d-type squark mixing matrix
+               
+    // SLHA2 block SELMIX 
+    sd_leshouches2->qvalue(16) = 4.65777483E+02;   // Q(GeV) corrects minor bug in SUSY-HIT SLHA reader.
+    for (int i=1; i<=6; ++i) for (int j=1; j<=6; ++j) sd_selectron->selmix(i,j) = 0.0;           // zero slepton mixing matrix
+                 
+    // SLHA2 block VCKM
+    sd_leshouches2->qvalue(21) = 4.65777483E+02;   // Q(GeV)
+    for (int i=1; i<=3; ++i) for (int j=1; j<=3; ++j) flavviolation->vckm(i,j) = 0.0;            // zero CKM matrix
+
+    // Must zero this flag in imitation of SUSY-HIT's SLHA reader, to tell it
+    // to calculate the b pole mass from mb(mb)_MSbar.  Given that we just tell
+    // it to use the b pole mass that we pass it anyway, the fact that it goes
+    // and calculates the b pole over again is stupid - but it seems to need
+    // to in order to initialise some other things.  It *might* be possible to
+    // speed up the decay calculation by setting this to 1, but that may be unsafe.
+    sd_mbmb->i_sd_mbmb = 0;
+    
+    // Do calculation without flavour-violating light stop decays.  To do these, you need to reset
+    // this to 1 in your module function and call sdecay() again.  Probably there's a smarter way
+    // to order this so that it happens automatically if you want it, but it still needs to be tested
+    // that running first without flavour violation and then re-running with flavour violation does 
+    // not break the non-FV results.
+    flavviolation->ifavvio = 0;
+ 
+    // Run SUSY-HIT
+    sdecay();
+
+    // Questions for SUSY-HIT authors
+    // q values -- repeated 11, 14, assignment of selmix to 21 vs < 20; are these bugs?
+    // safety of skipping sd_mbmb
+    // safety of running over with FV.
+
   }
   scan_level = false;
 }
