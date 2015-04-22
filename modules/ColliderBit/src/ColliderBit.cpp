@@ -610,8 +610,9 @@ namespace Gambit {
           result.clear();
           for (auto anaPtr = Dep::ListOfAnalyses->begin(); anaPtr != Dep::ListOfAnalyses->end(); ++anaPtr)
             {
-              /// @todo We need to tell each analysis the cross-section for its process somehow... but how?!?
-              // (*anaPtr)->set_xsec(xsecArray[???]);
+              /// @TODO Clean this crap up... xsecArrays should be more Gambity.
+              /// @TODO THIS IS HARDCODED FOR ONLY ONE THREAD!!!
+              (*anaPtr)->set_xsec(xsecArray[0], xsecerrArray[0]);
               cout << "SR number test " << (*anaPtr)->get_results()[0].n_signal << endl;
               result.push_back((*anaPtr)->get_results());
             }
