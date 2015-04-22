@@ -27,8 +27,6 @@
 #include "gambit/Elements/gambit_module_headers.hpp"
 #include "gambit/ColliderBit/ColliderBit_rollcall.hpp"
 
-// Again with my push not showing up... What gits?
-
 namespace Gambit {
   namespace ColliderBit {
 
@@ -110,7 +108,7 @@ namespace Gambit {
           std::cout << "\n\n\n\n Operation of Pythia named " << *iter
                     << " number " << std::to_string(pythiaNumber) << " has finished.";
           for (size_t i = 0; i < (size_t) omp_get_max_threads(); ++i)
-            std::cout << "\n  Thread " << i << ": xsec = " << xsecArray[i] << " +- " << xsecerrArray[i];
+            std::cout << "\n  Thread " << i << ": xsec = " << xsecArray[i] << " +- " << xsecerrArray[i] << " pb" << std::endl;
           #ifdef HESITATE
           std::cout<<"\n\n [Press Enter]";
           std::getchar();
@@ -134,6 +132,7 @@ namespace Gambit {
       using namespace Pipes::getPythia;
 
       if (resetPythiaFlag and *Loop::iteration > INIT) {
+
         /// Each thread gets its own Pythia instance.
         /// Thus, the Pythia instantiation is *after* INIT.
         std::vector<std::string> pythiaOptions;
@@ -158,9 +157,11 @@ namespace Gambit {
         result = mkPythia(*iter, pythiaOptions);
         pythiaOptions.clear();
         resetPythiaFlag = false;
+
       } else if (*Loop::iteration == END_SUBPROCESS) {
-        xsecArray[omp_get_thread_num()] = result->pythia()->info.sigmaGen();
-        xsecerrArray[omp_get_thread_num()] = result->pythia()->info.sigmaErr();
+
+        xsecArray[omp_get_thread_num()] = result->pythia()->info.sigmaGen() * 1e9; //< note converting mb to pb units
+        xsecerrArray[omp_get_thread_num()] = result->pythia()->info.sigmaErr() * 1e9; //< note converting mb to pb units
 
         /// Each thread gets its own Pythia instance.
         /// Thus, the Pythia memory clean-up is *before* FINALIZE.
@@ -168,11 +169,14 @@ namespace Gambit {
         delete result;
         result = 0;
         resetPythiaFlag = true;
+
       } else if (*Loop::iteration == FINALIZE) {
+
         /// Memory clean-up: xsecArrays
         /// @TODO: where is the matching allocation? Careful with these deletes
-        delete xsecArray;
-        delete xsecerrArray;
+        delete[] xsecArray;
+        delete[] xsecerrArray;
+
       }
     }
 
@@ -612,7 +616,9 @@ namespace Gambit {
             {
               /// @TODO Clean this crap up... xsecArrays should be more Gambity.
               /// @TODO THIS IS HARDCODED FOR ONLY ONE THREAD!!!
+              cout << "Setting xsec = " << xsecArray[0] << " +- " << xsecerrArray[0] << " pb" << endl;
               (*anaPtr)->set_xsec(xsecArray[0], xsecerrArray[0]);
+              cout << "Set xsec from ana = " << (*anaPtr)->xsec() << " pb" << endl;
               cout << "SR number test " << (*anaPtr)->get_results()[0].n_signal << endl;
               result.push_back((*anaPtr)->get_results());
             }
