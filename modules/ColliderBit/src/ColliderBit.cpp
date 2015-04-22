@@ -608,22 +608,26 @@ namespace Gambit {
 
       if (*Loop::iteration == INIT) {
 
-        for (auto anaPtr = Dep::ListOfAnalyses->begin(); anaPtr != Dep::ListOfAnalyses->end(); ++anaPtr)
-          (*anaPtr)->set_xsec(-1, -1);
+        // for (auto anaPtr = Dep::ListOfAnalyses->begin(); anaPtr != Dep::ListOfAnalyses->end(); ++anaPtr) {
+        //   (*anaPtr)->set_xsec(-1, -1);
+        // }
 
       } else if (*Loop::iteration == END_SUBPROCESS) {
 
-        return;
+        for (auto anaPtr = Dep::ListOfAnalyses->begin(); anaPtr != Dep::ListOfAnalyses->end(); ++anaPtr)
+        {
+          /// @TODO Clean this crap up... xsecArrays should be more Gambity.
+          /// @TODO THIS IS HARDCODED FOR ONLY ONE THREAD!!!
+          cout << "Adding xsec = " << xsecArray[0] << " +- " << xsecerrArray[0] << " pb" << endl;
+          (*anaPtr)->add_xsec(xsecArray[0], xsecerrArray[0]);
+        }
 
       } else if (*Loop::iteration == FINALIZE) {
 
         // The final iteration: get log likelihoods for the analyses
         result.clear();
-        for (auto anaPtr = Dep::ListOfAnalyses->begin(); anaPtr != Dep::ListOfAnalyses->end(); ++anaPtr) {
-          /// @TODO Clean this crap up... xsecArrays should be more Gambity.
-          /// @TODO THIS IS HARDCODED FOR ONLY ONE THREAD!!!
-          cout << "Setting xsec = " << xsecArray[0] << " +- " << xsecerrArray[0] << " pb" << endl;
-          (*anaPtr)->set_xsec(xsecArray[0], xsecerrArray[0]);
+        for (auto anaPtr = Dep::ListOfAnalyses->begin(); anaPtr != Dep::ListOfAnalyses->end(); ++anaPtr)
+        {
           cout << "Set xsec from ana = " << (*anaPtr)->xsec() << " pb" << endl;
           cout << "SR number test " << (*anaPtr)->get_results()[0].n_signal << endl;
           result.push_back((*anaPtr)->get_results());
@@ -634,13 +638,12 @@ namespace Gambit {
         #pragma omp critical (accumulatorUpdate)
         {
           // Loop over analyses and run them
-          for (auto anaPtr = Dep::ListOfAnalyses->begin(); anaPtr != Dep::ListOfAnalyses->end(); ++anaPtr) {
-            // (*anaPtr)->set_xsec(xsecArray[0], xsecerrArray[0]);
+          for (auto anaPtr = Dep::ListOfAnalyses->begin(); anaPtr != Dep::ListOfAnalyses->end(); ++anaPtr)
             (*anaPtr)->analyze(*Dep::ReconstructedEvent);
-          }
         }
 
       }
+
     }
 
 
