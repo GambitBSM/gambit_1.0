@@ -402,6 +402,99 @@ START_MODULE
 //    #undef FUNCTION
 //
 //  #undef CAPABILITY
+//
+//  #define CAPABILITY chargino_1_decay_rates
+//  START_CAPABILITY
+//
+//    #define FUNCTION chargino_1_decays
+//    START_FUNCTION(DecayTable::Entry)
+//    BACKEND_REQ(cb_sd_charwidth, (sh_reqd), sd_charwidth_type)
+//    BACKEND_REQ(cb_sd_char2body, (sh_reqd), sd_char2body_type)
+//    BACKEND_REQ(cb_sd_char2bodygrav, (sh_reqd), sd_char2bodygrav_type)
+//    BACKEND_REQ(cb_sd_char3body, (sh_reqd), sd_char3body_type)
+//    BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
+//    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
+//    #undef FUNCTION
+//
+//  #undef CAPABILITY
+//
+//  #define CAPABILITY chargino_2_decay_rates
+//  START_CAPABILITY
+//
+//    #define FUNCTION chargino_2_decays
+//    START_FUNCTION(DecayTable::Entry)
+//    BACKEND_REQ(cb_sd_charwidth, (sh_reqd), sd_charwidth_type)
+//    BACKEND_REQ(cb_sd_char2body, (sh_reqd), sd_char2body_type)
+//    BACKEND_REQ(cb_sd_char2bodygrav, (sh_reqd), sd_char2bodygrav_type)
+//    BACKEND_REQ(cb_sd_char3body, (sh_reqd), sd_char3body_type)
+//    BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
+//    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
+//    #undef FUNCTION
+//
+//  #undef CAPABILITY
+//
+//  #define CAPABILITY neutralino_1_decay_rates
+//  START_CAPABILITY
+//
+//    #define FUNCTION neutralino_1_decays
+//    START_FUNCTION(DecayTable::Entry)
+//    BACKEND_REQ(cb_sd_neutwidth, (sh_reqd), sd_neutwidth_type)
+//    BACKEND_REQ(cb_sd_neut2body, (sh_reqd), sd_neut2body_type)
+//    BACKEND_REQ(cb_sd_neut2bodygrav, (sh_reqd), sd_neut2bodygrav_type)
+//    BACKEND_REQ(cb_sd_neut3body, (sh_reqd), sd_neut3body_type)
+//    BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
+//    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
+//    #undef FUNCTION
+//
+//  #undef CAPABILITY
+//
+//  #define CAPABILITY neutralino_2_decay_rates
+//  START_CAPABILITY
+//
+//    #define FUNCTION neutralino_2_decays
+//    START_FUNCTION(DecayTable::Entry)
+//    BACKEND_REQ(cb_sd_neutwidth, (sh_reqd), sd_neutwidth_type)
+//    BACKEND_REQ(cb_sd_neut2body, (sh_reqd), sd_neut2body_type)
+//    BACKEND_REQ(cb_sd_neut2bodygrav, (sh_reqd), sd_neut2bodygrav_type)
+//    BACKEND_REQ(cb_sd_neutloop, (sh_reqd), sd_neutloop_type)
+//    BACKEND_REQ(cb_sd_neut3body, (sh_reqd), sd_neut3body_type)
+//    BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
+//    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
+//    #undef FUNCTION
+//
+//  #undef CAPABILITY
+//
+//  #define CAPABILITY neutralino_3_decay_rates
+//  START_CAPABILITY
+//
+//    #define FUNCTION neutralino_3_decays
+//    START_FUNCTION(DecayTable::Entry)
+//    BACKEND_REQ(cb_sd_neutwidth, (sh_reqd), sd_neutwidth_type)
+//    BACKEND_REQ(cb_sd_neut2body, (sh_reqd), sd_neut2body_type)
+//    BACKEND_REQ(cb_sd_neut2bodygrav, (sh_reqd), sd_neut2bodygrav_type)
+//    BACKEND_REQ(cb_sd_neutloop, (sh_reqd), sd_neutloop_type)
+//    BACKEND_REQ(cb_sd_neut3body, (sh_reqd), sd_neut3body_type)
+//    BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
+//    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
+//    #undef FUNCTION
+//
+//  #undef CAPABILITY
+//
+//  #define CAPABILITY neutralino_4_decay_rates
+//  START_CAPABILITY
+//
+//    #define FUNCTION neutralino_4_decays
+//    START_FUNCTION(DecayTable::Entry)
+//    BACKEND_REQ(cb_sd_neutwidth, (sh_reqd), sd_neutwidth_type)
+//    BACKEND_REQ(cb_sd_neut2body, (sh_reqd), sd_neut2body_type)
+//    BACKEND_REQ(cb_sd_neut2bodygrav, (sh_reqd), sd_neut2bodygrav_type)
+//    BACKEND_REQ(cb_sd_neutloop, (sh_reqd), sd_neutloop_type)
+//    BACKEND_REQ(cb_sd_neut3body, (sh_reqd), sd_neut3body_type)
+//    BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
+//    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
+//    #undef FUNCTION
+//
+//  #undef CAPABILITY
   
   #define CAPABILITY decay_rates
   START_CAPABILITY
@@ -453,6 +546,12 @@ START_MODULE
 //    DEPENDENCY(snu_e_decay_rates, DecayTable::Entry) 
 //    DEPENDENCY(snu_mu_decay_rates, DecayTable::Entry) 
 //    DEPENDENCY(snu_tau_decay_rates, DecayTable::Entry) 
+//    DEPENDENCY(chargino_1_decay_rates, DecayTable::Entry) 
+//    DEPENDENCY(chargino_2_decay_rates, DecayTable::Entry) 
+//    DEPENDENCY(neutralino_1_decay_rates, DecayTable::Entry) 
+//    DEPENDENCY(neutralino_2_decay_rates, DecayTable::Entry) 
+//    DEPENDENCY(neutralino_3_decay_rates, DecayTable::Entry) 
+//    DEPENDENCY(neutralino_4_decay_rates, DecayTable::Entry) 
     #undef FUNCTION
 
   #undef CAPABILITY
