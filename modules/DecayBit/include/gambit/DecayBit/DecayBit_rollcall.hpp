@@ -283,7 +283,126 @@ START_MODULE
     #undef FUNCTION
 
   #undef CAPABILITY
- 
+
+// CsB: code below needs testing
+//  #define CAPABILITY selectron_L_decay_rates
+//  START_CAPABILITY
+//
+//    #define FUNCTION selectron_L_decays
+//    START_FUNCTION(DecayTable::Entry)
+//    BACKEND_REQ(cb_sd_selwidth, (sh_reqd), sd_selwidth_type)
+//    BACKEND_REQ(cb_sd_sel2body, (sh_reqd), sd_sel2body_type)
+//    BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
+//    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
+//    #undef FUNCTION
+//
+//  #undef CAPABILITY
+//
+//  #define CAPABILITY selectron_R_decay_rates
+//  START_CAPABILITY
+//
+//    #define FUNCTION selectron_R_decays
+//    START_FUNCTION(DecayTable::Entry)
+//    BACKEND_REQ(cb_sd_selwidth, (sh_reqd), sd_selwidth_type)
+//    BACKEND_REQ(cb_sd_sel2body, (sh_reqd), sd_sel2body_type)
+//    BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
+//    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
+//    #undef FUNCTION
+//
+//  #undef CAPABILITY
+//
+//  #define CAPABILITY smuon_L_decay_rates
+//  START_CAPABILITY
+//
+//    #define FUNCTION smuon_L_decays
+//    START_FUNCTION(DecayTable::Entry)
+//    BACKEND_REQ(cb_sd_selwidth, (sh_reqd), sd_selwidth_type)
+//    BACKEND_REQ(cb_sd_sel2body, (sh_reqd), sd_sel2body_type)
+//    BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
+//    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
+//    #undef FUNCTION
+//
+//  #undef CAPABILITY
+//
+//  #define CAPABILITY smuon_R_decay_rates
+//  START_CAPABILITY
+//
+//    #define FUNCTION smuon_R_decays
+//    START_FUNCTION(DecayTable::Entry)
+//    BACKEND_REQ(cb_sd_selwidth, (sh_reqd), sd_selwidth_type)
+//    BACKEND_REQ(cb_sd_sel2body, (sh_reqd), sd_sel2body_type)
+//    BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
+//    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
+//    #undef FUNCTION
+//
+//  #undef CAPABILITY
+//
+//  #define CAPABILITY stau_L_decay_rates
+//  START_CAPABILITY
+//
+//    #define FUNCTION stau_L_decays
+//    START_FUNCTION(DecayTable::Entry)
+//    BACKEND_REQ(cb_sd_stauwidth, (sh_reqd), sd_stauwidth_type)
+//    BACKEND_REQ(cb_sd_stau2body, (sh_reqd), sd_stau2body_type)
+//    BACKEND_REQ(cb_sd_stau2bodygrav, (sh_reqd), sd_stau2bodygrav_type)
+//    BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
+//    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
+//    #undef FUNCTION
+//
+//  #undef CAPABILITY
+//
+//  #define CAPABILITY stau_R_decay_rates
+//  START_CAPABILITY
+//
+//    #define FUNCTION stau_R_decays
+//    START_FUNCTION(DecayTable::Entry)
+//    BACKEND_REQ(cb_sd_stauwidth, (sh_reqd), sd_stauwidth_type)
+//    BACKEND_REQ(cb_sd_stau2body, (sh_reqd), sd_stau2body_type)
+//    BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
+//    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
+//    #undef FUNCTION
+//
+//  #undef CAPABILITY
+//
+//  #define CAPABILITY snu_e_decay_rates
+//  START_CAPABILITY
+//
+//    #define FUNCTION snu_e_decays
+//    START_FUNCTION(DecayTable::Entry)
+//    BACKEND_REQ(cb_sd_snelwidth, (sh_reqd), sd_snelwidth_type)
+//    BACKEND_REQ(cb_sd_snel2body, (sh_reqd), sd_snel2body_type)
+//    BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
+//    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
+//    #undef FUNCTION
+//
+//  #undef CAPABILITY
+//
+//  #define CAPABILITY snu_mu_decay_rates
+//  START_CAPABILITY
+//
+//    #define FUNCTION snu_mu_decays
+//    START_FUNCTION(DecayTable::Entry)
+//    BACKEND_REQ(cb_sd_snelwidth, (sh_reqd), sd_snelwidth_type)
+//    BACKEND_REQ(cb_sd_snel2body, (sh_reqd), sd_snel2body_type)
+//    BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
+//    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
+//    #undef FUNCTION
+//
+//  #undef CAPABILITY
+//
+//  #define CAPABILITY snu_tau_decay_rates
+//  START_CAPABILITY
+//
+//    #define FUNCTION snu_tau_decays
+//    START_FUNCTION(DecayTable::Entry)
+//    BACKEND_REQ(cb_sd_sntauwidth, (sh_reqd), sd_sntauwidth_type)
+//    BACKEND_REQ(cb_sd_sntau2body, (sh_reqd), sd_sntau2body_type)
+//    BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
+//    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
+//    #undef FUNCTION
+//
+//  #undef CAPABILITY
+  
   #define CAPABILITY decay_rates
   START_CAPABILITY
 
@@ -324,6 +443,16 @@ START_MODULE
     DEPENDENCY(scharm_R_decay_rates, DecayTable::Entry) 
     DEPENDENCY(sstrange_L_decay_rates, DecayTable::Entry) 
     DEPENDENCY(sstrange_R_decay_rates, DecayTable::Entry) 
+// CsB: code below needs testing
+//    DEPENDENCY(selectron_L_decay_rates, DecayTable::Entry) 
+//    DEPENDENCY(selectron_R_decay_rates, DecayTable::Entry) 
+//    DEPENDENCY(smuon_L_decay_rates, DecayTable::Entry) 
+//    DEPENDENCY(smuon_R_decay_rates, DecayTable::Entry) 
+//    DEPENDENCY(stau_L_decay_rates, DecayTable::Entry) 
+//    DEPENDENCY(stau_R_decay_rates, DecayTable::Entry) 
+//    DEPENDENCY(snu_e_decay_rates, DecayTable::Entry) 
+//    DEPENDENCY(snu_mu_decay_rates, DecayTable::Entry) 
+//    DEPENDENCY(snu_tau_decay_rates, DecayTable::Entry) 
     #undef FUNCTION
 
   #undef CAPABILITY

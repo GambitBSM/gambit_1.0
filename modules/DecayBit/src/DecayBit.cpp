@@ -865,6 +865,146 @@ namespace Gambit
       cout << "~s_R total width: " << result.width_in_GeV << endl;
     }
 
+// CsB: code below needs testing
+//    /// MSSM decays: ~e-_L
+//    void selectron_L_decays (DecayTable::Entry& result) 
+//    {
+//      using namespace Pipes::selectron_L_decays;
+//      result.width_in_GeV = BEreq::cb_sd_selwidth->selltot2;
+//      result.set_BF(BEreq::cb_sd_sel2body->brsellneute(1), 0.0, "~chi0_1", "e-");
+//      result.set_BF(BEreq::cb_sd_sel2body->brsellneute(2), 0.0, "~chi0_2", "e-");
+//      result.set_BF(BEreq::cb_sd_sel2body->brsellneute(3), 0.0, "~chi0_3", "e-");
+//      result.set_BF(BEreq::cb_sd_sel2body->brsellneute(4), 0.0, "~chi0_4", "e-");
+//      result.set_BF(BEreq::cb_sd_sel2body->brsellcharnue(1), 0.0, "~chi-_1", "nu_e");
+//      result.set_BF(BEreq::cb_sd_sel2body->brsellcharnue(2), 0.0, "~chi-_2", "nu_e");
+//      cout << "~e-_L total width: " << result.width_in_GeV << endl;
+//    }
+//
+//    /// MSSM decays: ~e-_R
+//    void selectron_R_decays (DecayTable::Entry& result) 
+//    {
+//      using namespace Pipes::selectron_R_decays;
+//      result.width_in_GeV = BEreq::cb_sd_selwidth->selrtot2;
+//      result.set_BF(BEreq::cb_sd_sel2body->brselrneute(1), 0.0, "~chi0_1", "e-");
+//      result.set_BF(BEreq::cb_sd_sel2body->brselrneute(2), 0.0, "~chi0_2", "e-");
+//      result.set_BF(BEreq::cb_sd_sel2body->brselrneute(3), 0.0, "~chi0_3", "e-");
+//      result.set_BF(BEreq::cb_sd_sel2body->brselrneute(4), 0.0, "~chi0_4", "e-");
+//      result.set_BF(BEreq::cb_sd_sel2body->brselrcharnue(1), 0.0, "~chi-_1", "nu_e");
+//      result.set_BF(BEreq::cb_sd_sel2body->brselrcharnue(2), 0.0, "~chi-_2", "nu_e");
+//      cout << "~e-_R total width: " << result.width_in_GeV << endl;
+//    }
+//
+//    /// MSSM decays: ~mu-_L
+//    void smuon_L_decays (DecayTable::Entry& result) 
+//    {
+//      using namespace Pipes::smuon_L_decays;
+//      result.width_in_GeV = BEreq::cb_sd_selwidth->selltot2;
+//      result.set_BF(BEreq::cb_sd_sel2body->brsellneute(1), 0.0, "~chi0_1", "mu-");
+//      result.set_BF(BEreq::cb_sd_sel2body->brsellneute(2), 0.0, "~chi0_2", "mu-");
+//      result.set_BF(BEreq::cb_sd_sel2body->brsellneute(3), 0.0, "~chi0_3", "mu-");
+//      result.set_BF(BEreq::cb_sd_sel2body->brsellneute(4), 0.0, "~chi0_4", "mu-");
+//      result.set_BF(BEreq::cb_sd_sel2body->brsellcharnue(1), 0.0, "~chi-_1", "nu_mu");
+//      result.set_BF(BEreq::cb_sd_sel2body->brsellcharnue(2), 0.0, "~chi-_2", "nu_mu");
+//      cout << "~mu-_L total width: " << result.width_in_GeV << endl;
+//    }
+//
+//    /// MSSM decays: ~mu-_R
+//    void smuon_R_decays (DecayTable::Entry& result) 
+//    {
+//      using namespace Pipes::smuon_R_decays;
+//      result.width_in_GeV = BEreq::cb_sd_selwidth->selrtot2;
+//      result.set_BF(BEreq::cb_sd_sel2body->brselrneute(1), 0.0, "~chi0_1", "mu-");
+//      result.set_BF(BEreq::cb_sd_sel2body->brselrneute(2), 0.0, "~chi0_2", "mu-");
+//      result.set_BF(BEreq::cb_sd_sel2body->brselrneute(3), 0.0, "~chi0_3", "mu-");
+//      result.set_BF(BEreq::cb_sd_sel2body->brselrneute(4), 0.0, "~chi0_4", "mu-");
+//      result.set_BF(BEreq::cb_sd_sel2body->brselrcharnue(1), 0.0, "~chi-_1", "nu_mu");
+//      result.set_BF(BEreq::cb_sd_sel2body->brselrcharnue(2), 0.0, "~chi-_2", "nu_mu");
+//      cout << "~mu-_R total width: " << result.width_in_GeV << endl;
+//    }
+//
+//    /// MSSM decays: ~tau-_1
+//    void stau_1_decays (DecayTable::Entry& result) 
+//    {
+//      using namespace Pipes::stau_1_decays;
+//      result.width_in_GeV = BEreq::cb_sd_stauwidth->stau1tot2;
+//      result.set_BF(BEreq::cb_sd_stau2body->brstau1neut(1), 0.0, "~chi0_1", "tau-");
+//      result.set_BF(BEreq::cb_sd_stau2body->brstau1neut(2), 0.0, "~chi0_2", "tau-");
+//      result.set_BF(BEreq::cb_sd_stau2body->brstau1neut(3), 0.0, "~chi0_3", "tau-");
+//      result.set_BF(BEreq::cb_sd_stau2body->brstau1neut(4), 0.0, "~chi0_4", "tau-");
+//      result.set_BF(BEreq::cb_sd_stau2body->brstau1char(1), 0.0, "~chi-_1", "nu_tau");
+//      result.set_BF(BEreq::cb_sd_stau2body->brstau1char(2), 0.0, "~chi-_2", "nu_tau");
+//      result.set_BF(BEreq::cb_sd_stau2body->brstau1hcsn(1), 0.0, "~nu_tau", "H-");
+//      result.set_BF(BEreq::cb_sd_stau2body->brstau1wsn(1), 0.0, "~nu_tau", "W-");
+//      result.set_BF(BEreq::cb_sd_stau2bodygrav->brstautaugrav, 0.0, "1000039", "tau-");
+//      cout << "~tau-_L total width: " << result.width_in_GeV << endl;
+//    }
+//
+//    /// MSSM decays: ~tau-_2
+//    void stau_2_decays (DecayTable::Entry& result) 
+//    {
+//      using namespace Pipes::stau_2_decays;
+//      result.width_in_GeV = BEreq::cb_sd_stauwidth->stau2tot2;
+//      result.set_BF(BEreq::cb_sd_stau2body->brstau2neut(1), 0.0, "~chi0_1", "tau-");
+//      result.set_BF(BEreq::cb_sd_stau2body->brstau2neut(2), 0.0, "~chi0_2", "tau-");
+//      result.set_BF(BEreq::cb_sd_stau2body->brstau2neut(3), 0.0, "~chi0_3", "tau-");
+//      result.set_BF(BEreq::cb_sd_stau2body->brstau2neut(4), 0.0, "~chi0_4", "tau-");
+//      result.set_BF(BEreq::cb_sd_stau2body->brstau2char(1), 0.0, "~chi-_1", "nu_tau");
+//      result.set_BF(BEreq::cb_sd_stau2body->brstau2char(2), 0.0, "~chi-_2", "nu_tau");
+//      result.set_BF(BEreq::cb_sd_stau2body->brstau2hcsn(1), 0.0, "~nu_tau", "H-");
+//      result.set_BF(BEreq::cb_sd_stau2body->brstau2wsn(1), 0.0, "~nu_tau", "W-");
+//      result.set_BF(BEreq::cb_sd_stau2body->brstau2hl, 0.0, "~tau-_L", "h0_1");
+//      result.set_BF(BEreq::cb_sd_stau2body->brstau2hh, 0.0, "~tau-_L", "h0_2");
+//      result.set_BF(BEreq::cb_sd_stau2body->brstau2ha, 0.0, "~tau-_L", "A0");
+//      result.set_BF(BEreq::cb_sd_stau2body->brstau2ztau, 0.0, "~tau-_L", "Z0");
+//      cout << "~tau-_R total width: " << result.width_in_GeV << endl;
+//    }
+//
+//    /// MSSM decays: ~nu_e
+//    void snu_e_decays (DecayTable::Entry& result) 
+//    {
+//      using namespace Pipes::snu_e_decays;
+//      result.width_in_GeV = BEreq::cb_sd_snelwidth->sneltot2;
+//      result.set_BF(BEreq::cb_sd_snel2body->brsnellneut(1), 0.0, "~chi0_1", "nu_e");
+//      result.set_BF(BEreq::cb_sd_snel2body->brsnellneut(2), 0.0, "~chi0_2", "nu_e");
+//      result.set_BF(BEreq::cb_sd_snel2body->brsnellneut(3), 0.0, "~chi0_3", "nu_e");
+//      result.set_BF(BEreq::cb_sd_snel2body->brsnellneut(4), 0.0, "~chi0_4", "nu_e");
+//      result.set_BF(BEreq::cb_sd_snel2body->brsnellchar(1), 0.0, "~chi+_1", "e-");
+//      result.set_BF(BEreq::cb_sd_snel2body->brsnellchar(2), 0.0, "~chi+_2", "e-");
+//      cout << "~nu_e total width: " << result.width_in_GeV << endl;
+//    }
+//
+//    /// MSSM decays: ~nu_mu
+//    void snu_mu_decays (DecayTable::Entry& result) 
+//    {
+//      using namespace Pipes::snu_mu_decays;
+//      result.width_in_GeV = BEreq::cb_sd_snelwidth->sneltot2;
+//      result.set_BF(BEreq::cb_sd_snel2body->brsnellneut(1), 0.0, "~chi0_1", "nu_mu");
+//      result.set_BF(BEreq::cb_sd_snel2body->brsnellneut(2), 0.0, "~chi0_2", "nu_mu");
+//      result.set_BF(BEreq::cb_sd_snel2body->brsnellneut(3), 0.0, "~chi0_3", "nu_mu");
+//      result.set_BF(BEreq::cb_sd_snel2body->brsnellneut(4), 0.0, "~chi0_4", "nu_mu");
+//      result.set_BF(BEreq::cb_sd_snel2body->brsnellchar(1), 0.0, "~chi+_1", "mu-");
+//      result.set_BF(BEreq::cb_sd_snel2body->brsnellchar(2), 0.0, "~chi+_2", "mu-");
+//      cout << "~nu_mu total width: " << result.width_in_GeV << endl;
+//    }
+//
+//    /// MSSM decays: ~nu_tau
+//    void snu_tau_decays (DecayTable::Entry& result) 
+//    {
+//      using namespace Pipes::snu_tau_decays;
+//      result.width_in_GeV = BEreq::cb_sd_sntauwidth->sntautot2;
+//      result.set_BF(BEreq::cb_sd_sntau2body->brsntauneut(1), 0.0, "~chi0_1", "nu_tau");
+//      result.set_BF(BEreq::cb_sd_sntau2body->brsntauneut(2), 0.0, "~chi0_2", "nu_tau");
+//      result.set_BF(BEreq::cb_sd_sntau2body->brsntauneut(3), 0.0, "~chi0_3", "nu_tau");
+//      result.set_BF(BEreq::cb_sd_sntau2body->brsntauneut(4), 0.0, "~chi0_4", "nu_tau");
+//      result.set_BF(BEreq::cb_sd_sntau2body->brsntauchar(1), 0.0, "~chi+_1", "tau-");
+//      result.set_BF(BEreq::cb_sd_sntau2body->brsntauchar(2), 0.0, "~chi+_2", "tau-");
+//      result.set_BF(BEreq::cb_sd_sntau2body->brsntau1hcstau(1), 0.0, "~e+_5", "H-");
+//      result.set_BF(BEreq::cb_sd_sntau2body->brsntau1hcstau(2), 0.0, "~e+_6", "H-");
+//      result.set_BF(BEreq::cb_sd_sntau2body->brsntau1wstau(1), 0.0, "~e+_5", "W-");
+//      result.set_BF(BEreq::cb_sd_sntau2body->brsntau1wstau(2), 0.0, "~e+_6", "W-");
+//      cout << "~nu_tau total width: " << result.width_in_GeV << endl;
+//    }
+	
     /// Collect all the DecayTable entries into an actual DecayTable 
     void all_decays (DecayTable &result) 
     {
@@ -904,7 +1044,9 @@ namespace Gambit
       decays("h0_2") = *Dep::h0_2_decay_rates;       // Add the h0_2 decays.
       decays("A0") = *Dep::A0_decay_rates;           // Add the A0 decays.
       decays("H+") = *Dep::Hplus_decay_rates;        // Add the H+ decays.
+
       decays("~g") = *Dep::gluino_decay_rates;       // Add the gluino decays.
+
       decays("~u_1") = *Dep::stop_1_decay_rates;     // Add the ~t_1 decays.  CsB: CHECK THIS WITH PETER !!!
       decays("~u_2") = *Dep::stop_2_decay_rates;     // Add the ~t_2 decays.  CsB: CHECK THIS WITH PETER !!!
       decays("~d_1") = *Dep::sbottom_1_decay_rates;  // Add the ~b_1 decays.  CsB: CHECK THIS WITH PETER !!!
@@ -917,6 +1059,17 @@ namespace Gambit
       decays("~c_R") = *Dep::scharm_R_decay_rates;   // Add the ~c_R decays.
       decays("~s_L") = *Dep::sstrange_L_decay_rates; // Add the ~s_L decays.
       decays("~s_R") = *Dep::sstrange_R_decay_rates; // Add the ~s_R decays.
+
+// CsB: code below needs testing
+//      decays("~e-_L") = *Dep::selectron_L_decay_rates; // Add the ~e-_L decays.
+//      decays("~e-_R") = *Dep::selectron_R_decay_rates; // Add the ~e-_R decays.
+//      decays("~mu-_L") = *Dep::smuon_L_decay_rates;    // Add the ~mu-_L decays.
+//      decays("~mu-_R") = *Dep::smuon_R_decay_rates;    // Add the ~mu-_R decays.
+//      decays("~tau-_1") = *Dep::stau_1_decay_rates;    // Add the ~tau_1 decays.  CsB: CHECK THIS WITH PETER !!!
+//      decays("~tau-_2") = *Dep::stau_2_decay_rates;    // Add the ~tau_2 decays.  CsB: CHECK THIS WITH PETER !!!
+//      decays("~nu_e") = *Dep::snu_e_decay_rates;       // Add the ~nu_e decays.
+//      decays("~nu_mu") = *Dep::snu_mu_decay_rates;     // Add the ~nu_mu decays.
+//      decays("~nu_tau") = *Dep::snu_tau_decay_rates;   // Add the ~nu_tau decays.
 
       cout << "BF for tau+ -> pi+ nubar_tau: " << decays("tau+").BF("pi+", "nubar_tau") << endl;
       result = decays;
