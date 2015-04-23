@@ -14,7 +14,7 @@
 ///
 ///  *********************************************
 
-#include "gambit/Utils/decay_table.hpp"
+#include "gambit/Elements/decay_table.hpp"
 
 namespace Gambit
 {

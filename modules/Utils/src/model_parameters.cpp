@@ -40,11 +40,10 @@
 #include <iostream>
 #include <sstream>
 
-#include "gambit/Models/model_parameters.hpp"
+#include "gambit/Utils/model_parameters.hpp"
 
 namespace Gambit 
 {
-   // The ModelParameters class just lives straight in the Gambit namespace
 
    /// ModelParameters class member function definitions
  

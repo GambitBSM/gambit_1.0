@@ -24,8 +24,8 @@
 #ifndef __SMplusUV_hpp__
 #define __SMplusUV_hpp__
 
-#include "gambit/Utils/SMInputs.hpp"
-#include "gambit/Utils/Spectrum.hpp"
+#include "gambit/Elements/SMInputs.hpp"
+#include "gambit/Elements/Spectrum.hpp"
 
 namespace Gambit {
 

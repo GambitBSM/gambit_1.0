@@ -9,7 +9,7 @@
  *  v0.1 Dec 2014
  *  v0.2 Mar 2015 - Completely rewritten internal structure
  *
- *  Christoph Weniger, Dec 2014
+ *  Christoph Weniger, created Dec 2014
  *  <c.weniger@uva.nl>
  */
 
@@ -477,15 +477,13 @@ namespace Funk
         public:
             FunkDerived(Funk f, std::string arg, Funk g) : my_arg(arg)
             {
-                functions = vec(f, g);
-                Singularities tmp_singl = f->getSingl();
-                if ( tmp_singl.erase(arg) > 0 )
-                    std::cout << "WARNING: Loosing singularity information while setting " << arg << std::endl;
-                singularities = joinSingl(g->getSingl(), tmp_singl);
-                arguments = joinArgs(eraseArg(f->getArgs(), arg), g->getArgs());
+                setup(f, arg, g);
             };
 
-            FunkDerived(Funk f, std::string arg, double x) : FunkDerived(f, arg, cnst(x)) {};
+            FunkDerived(Funk f, std::string arg, double x) : my_arg(arg)
+            {
+                setup(f, arg, cnst(x));
+            }
 
             // We need to sneak in an additional parameter
             void resolve(std::map<std::string, size_t> datamap, size_t & datalen, intptr_t bindID)
@@ -506,6 +504,16 @@ namespace Funk
         private:
             std::string my_arg;
             std::map<intptr_t, size_t> my_index;
+
+            void setup(Funk f, std::string arg, Funk g)
+            {
+                functions = vec(f, g);
+                Singularities tmp_singl = f->getSingl();
+                if ( tmp_singl.erase(arg) > 0 )
+                    std::cout << "WARNING: Loosing singularity information while setting " << arg << std::endl;
+                singularities = joinSingl(g->getSingl(), tmp_singl);
+                arguments = joinArgs(eraseArg(f->getArgs(), arg), g->getArgs());
+            };
     };
 
 
@@ -942,8 +950,20 @@ namespace Funk
                 arguments = joinArgs(f1->getArgs(), f2->getArgs()); \
                 singularities = joinSingl(f1->getSingl(), f2->getSingl());\
             }                                                                                             \
-            FunkMath_##OPERATION(double x, Funk f) : FunkMath_##OPERATION(cnst(x), f) {};                 \
-            FunkMath_##OPERATION(Funk f, double x) : FunkMath_##OPERATION(f, cnst(x)) {};                 \
+            FunkMath_##OPERATION(double x, Funk f2)                 \
+            {                                                                                             \
+                auto f1 = cnst(x); \
+                functions = vec(f1, f2); \
+                arguments = joinArgs(f1->getArgs(), f2->getArgs()); \
+                singularities = joinSingl(f1->getSingl(), f2->getSingl());\
+            }                                                                                             \
+            FunkMath_##OPERATION(Funk f1, double x)              \
+            {                                                                                             \
+                auto f2 = cnst(x); \
+                functions = vec(f1, f2); \
+                arguments = joinArgs(f1->getArgs(), f2->getArgs()); \
+                singularities = joinSingl(f1->getSingl(), f2->getSingl());\
+            }                                                                                             \
             double value(std::vector<double> & data, intptr_t bindID)                                                      \
             {                                                                                             \
                 return functions[0]->value(data, bindID) SYMBOL functions[1]->value(data, bindID);                        \
@@ -1004,18 +1024,16 @@ namespace Funk
         public:
             FunkInterp(Funk f, std::vector<double> & Xgrid, std::vector<double> & Ygrid, std::string mode = "lin")
             {
-                functions = vec(f);
-                singularities = f->getSingl();
-                arguments = f->getArgs();
-                this->Xgrid = Xgrid;
-                this->Ygrid = Ygrid;
-                if ( mode == "lin" ) this->ptr = &FunkInterp::linearInterp;
-                else if ( mode == "log" ) this->ptr = &FunkInterp::logInterp;
+                setup(f, Xgrid, Ygrid, mode);
             };
-            FunkInterp(std::string arg, std::vector<double> & Xgrid, std::vector<double> & Ygrid, std::string mode = "lin") :
-                FunkInterp(var(arg), Xgrid, Ygrid, mode) {};
-            FunkInterp(double x, std::vector<double> & Xgrid, std::vector<double> & Ygrid, std::string mode = "lin") :
-                FunkInterp(cnst(x), Xgrid, Ygrid, mode) {};
+            FunkInterp(std::string arg, std::vector<double> & Xgrid, std::vector<double> & Ygrid, std::string mode = "lin")
+            {
+                setup(var(arg), Xgrid, Ygrid, mode);
+            }
+            FunkInterp(double x, std::vector<double> & Xgrid, std::vector<double> & Ygrid, std::string mode = "lin")
+            {
+                setup(cnst(x), Xgrid, Ygrid, mode);
+            }
 
             double value(std::vector<double> & data, intptr_t bindID)
             {
@@ -1024,6 +1042,17 @@ namespace Funk
             }
 
         private:
+            void setup(Funk f, std::vector<double> & Xgrid, std::vector<double> & Ygrid, std::string mode)
+            {
+                functions = vec(f);
+                singularities = f->getSingl();
+                arguments = f->getArgs();
+                this->Xgrid = Xgrid;
+                this->Ygrid = Ygrid;
+                if ( mode == "lin" ) this->ptr = &FunkInterp::linearInterp;
+                else if ( mode == "log" ) this->ptr = &FunkInterp::logInterp;
+            };
+
             double logInterp(double x)
             {
                 // Linear interpolation in log-log space
@@ -1063,28 +1092,42 @@ namespace Funk
     class FunkIntegrate_gsl1d: public FunkBase, public gsl_function
     {
         public:
-            FunkIntegrate_gsl1d(Funk f0, std::string arg, Funk f1, Funk f2) : arg(arg), limit(100), epsrel(1e-2), epsabs(1e-2)
+            FunkIntegrate_gsl1d(Funk f0, std::string arg, Funk f1, Funk f2)
             {
-                this->functions = vec(f0, f1, f2);
-
-                singularities = joinSingl(f1->getSingl(), f2->getSingl());
-                if ( f0->getSingl().find(arg) != f0->getSingl().end() )
-                    my_singularities = f0->getSingl()[arg];
-                Singularities tmp_singl = f0->getSingl();
-                tmp_singl.erase(arg);
-                singularities = joinSingl(singularities, tmp_singl);
-
-                arguments = joinArgs(eraseArg(f0->getArgs(), arg), joinArgs(f1->getArgs(), f2->getArgs()));
-                gsl_workspace = gsl_integration_workspace_alloc (100000);
+                setup(f0, arg, f1, f2);
             }
-            FunkIntegrate_gsl1d(Funk f0, std::string arg, double x, Funk f) : FunkIntegrate_gsl1d(f0, arg, cnst(x), f) {};
-            FunkIntegrate_gsl1d(Funk f0, std::string arg, double x, double y) : FunkIntegrate_gsl1d(f0, arg, cnst(x), cnst(y)) {};
-            FunkIntegrate_gsl1d(Funk f0, std::string arg, Funk f, double x) : FunkIntegrate_gsl1d(f0, arg, f, cnst(x)) {};
-            FunkIntegrate_gsl1d(Funk f0, std::string arg, std::string x, Funk f) : FunkIntegrate_gsl1d(f0, arg, var(x), f) {};
-            FunkIntegrate_gsl1d(Funk f0, std::string arg, std::string x, std::string y) : FunkIntegrate_gsl1d(f0, arg, var(x), var(y)) {};
-            FunkIntegrate_gsl1d(Funk f0, std::string arg, Funk f, std::string x) : FunkIntegrate_gsl1d(f0, arg, f, var(x)) {};
-            FunkIntegrate_gsl1d(Funk f0, std::string arg, std::string x, double y) : FunkIntegrate_gsl1d(f0, arg, var(x), cnst(y)) {};
-            FunkIntegrate_gsl1d(Funk f0, std::string arg, double y, std::string x) : FunkIntegrate_gsl1d(f0, arg, cnst(y), var(x)) {};
+            FunkIntegrate_gsl1d(Funk f0, std::string arg, double x, Funk f) 
+            {
+                setup(f0, arg, cnst(x), f);
+            }
+            FunkIntegrate_gsl1d(Funk f0, std::string arg, double x, double y) 
+            {
+                setup(f0, arg, cnst(x), cnst(y));
+            }
+            FunkIntegrate_gsl1d(Funk f0, std::string arg, Funk f, double x) 
+            {
+                setup(f0, arg, f, cnst(x));
+            }
+            FunkIntegrate_gsl1d(Funk f0, std::string arg, std::string x, Funk f)
+            {
+                setup(f0, arg, var(x), f);
+            }
+            FunkIntegrate_gsl1d(Funk f0, std::string arg, std::string x, std::string y)
+            {
+                setup(f0, arg, var(x), var(y));
+            }
+            FunkIntegrate_gsl1d(Funk f0, std::string arg, Funk f, std::string x)
+            {
+                setup(f0, arg, f, var(x));
+            }
+            FunkIntegrate_gsl1d(Funk f0, std::string arg, std::string x, double y)
+            {
+                setup(f0, arg, var(x), cnst(y));
+            }
+            FunkIntegrate_gsl1d(Funk f0, std::string arg, double y, std::string x)
+            {
+                setup(f0, arg, cnst(y), var(x));
+            }
 
             void resolve(std::map<std::string, size_t> datamap, size_t & datalen, intptr_t bindID)
             {
@@ -1160,6 +1203,27 @@ namespace Funk
             }
             
         private:
+            void setup(Funk f0, std::string arg, Funk f1, Funk f2)
+            {
+                this->functions = vec(f0, f1, f2);
+
+                singularities = joinSingl(f1->getSingl(), f2->getSingl());
+                if ( f0->getSingl().find(arg) != f0->getSingl().end() )
+                    my_singularities = f0->getSingl()[arg];
+                Singularities tmp_singl = f0->getSingl();
+                tmp_singl.erase(arg);
+                singularities = joinSingl(singularities, tmp_singl);
+
+                arguments = joinArgs(eraseArg(f0->getArgs(), arg), joinArgs(f1->getArgs(), f2->getArgs()));
+                gsl_workspace = gsl_integration_workspace_alloc (100000);
+
+                arg = arg;
+                limit = 100;
+                epsrel = 1e-2;
+                epsabs = 1e-2;
+                singl_factor = 4;
+            }
+
             // Static member function that invokes integrand
             static double invoke(double x, void *params) {
                 FunkIntegrate_gsl1d * ptr = static_cast<FunkIntegrate_gsl1d*>(params);
@@ -1182,7 +1246,7 @@ namespace Funk
             double epsrel;
             double epsabs;
 
-            double singl_factor = 4;
+            double singl_factor;
     };
 
     // Standard behaviour

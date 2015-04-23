@@ -19,7 +19,7 @@
 
 #include <dlfcn.h>
 
-#include "gambit/Utils/ini_functions.hpp"
+#include "gambit/Elements/ini_functions.hpp"
 #include "gambit/Utils/equivalency_singleton.hpp"
 #include "gambit/Backends/backend_singleton.hpp"
 #include "gambit/Models/claw_singleton.hpp"

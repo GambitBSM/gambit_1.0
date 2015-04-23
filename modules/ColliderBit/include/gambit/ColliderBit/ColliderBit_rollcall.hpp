@@ -20,7 +20,7 @@
 
 #include <string>
 
-#include "gambit/Utils/shared_types.hpp"
+#include "gambit/Elements/shared_types.hpp"
 #include "gambit/ColliderBit/ColliderBit_types.hpp"
 #include "gambit/ColliderBit/ColliderBit_macros.hpp"
 

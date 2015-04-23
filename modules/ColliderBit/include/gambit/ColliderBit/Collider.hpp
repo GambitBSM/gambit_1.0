@@ -6,7 +6,7 @@
 /// @note To configure a new collider, follow these steps:
 /// @note (To configure a new subprocess group, only do STEPS >= 5)
 /// @note STEP1)  BOSS your favorite collider simulator. Then:
-#include "gambit/Utils/shared_types.hpp"
+#include "gambit/Elements/shared_types.hpp"
 #include "gambit/ColliderBit/ColliderBit_macros.hpp"
 
 namespace Gambit {

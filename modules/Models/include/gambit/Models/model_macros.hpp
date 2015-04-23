@@ -27,9 +27,9 @@
 #include "gambit/Models/claw_singleton.hpp"
 #include "gambit/Utils/util_macros.hpp"
 #include "gambit/Utils/util_types.hpp"
-#include "gambit/Utils/ini_functions.hpp"
-#include "gambit/Utils/types_rollcall.hpp"
 #include "gambit/Utils/boost_fallbacks.hpp"
+#include "gambit/Elements/ini_functions.hpp"
+#include "gambit/Elements/types_rollcall.hpp"
 
 #include <boost/preprocessor/seq/for_each.hpp>
 
@@ -42,7 +42,7 @@
 #endif
 
 #ifdef __model_rollcall_hpp__
-  #include "gambit/Utils/module_macros_incore.hpp"
+  #include "gambit/Elements/module_macros_incore.hpp"
   #define START_MODEL                                             CORE_START_MODEL
   #define DEFINEPARS(...)                                         CORE_DEFINEPARS(__VA_ARGS__)
   #define MAP_TO_CAPABILITY(PARAMETER,CAPABILITY)                 CORE_MAP_TO_CAPABILITY(PARAMETER,CAPABILITY)

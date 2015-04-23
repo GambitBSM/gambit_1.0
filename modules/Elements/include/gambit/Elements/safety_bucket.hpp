@@ -24,9 +24,9 @@
 #include <iostream>
 #include <omp.h>
 
+#include "gambit/Elements/functors.hpp"
 #include "gambit/Utils/util_types.hpp"
 #include "gambit/Utils/standalone_error_handlers.hpp"
-#include "gambit/Utils/functors.hpp"
 
 
 namespace Gambit

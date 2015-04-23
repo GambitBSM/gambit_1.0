@@ -13,21 +13,18 @@ Printers:
 * MPI-compatible printer system (Ben)
 * Correlation of scanner printer system and GAMBIT printer system (Ben)
 
-Dependency Resolver:
-* Make dependency resolver errors more informative (Christoph; partially done but needs more work)
-
 Spectrum objects:
 * Make spectrum scale limit getter public (Ben)
 
 General:
-* Fix error in type equivalencies (Pat)
 * Implement isNaN (look at cmath) (Pat)
 * Implement NaN check for likelihood in scanner (Pat, Greg)
-* Split Utils dir into codes needed for ScannerBit standalone and those not needed (Pat)
 * Deal safely with errors arising from non-double results with purpose: Likelihood in yaml file (Pat)
 
 DecayBit:
+* Add SM Higgs partial decay widths (Pat / Csaba)
 * Make decay table type from SLHAea (Pat)
+* Add scalar singlet Higgs partial decay widths (SM + invisible; Pat)
 * SUSYHIT SLHA replacement interface (Pat)
 * SUSYHIT observable getters (Csaba)
 
@@ -43,11 +40,10 @@ BOSS:
 ScannerBit:
 * Connect Diver (Pat)
 * Plugins need the option to link standard GAMBIT/ScannerBit libraries: MPI, GSL, etc (Greg)
-* Get rid of 'optional options:' entries in yaml options object.
+* Get rid of 'optional options:' entries in yaml options object. (Greg)
 
 Repo/cmake:
 * Split repo into public (code) bit and private extras, Collab doc etc, using git filter-branch (Pat)
-* Run configure for pythia backend (Antje)
 * Add check and check-ignore switch for graphviz (Antje)
 * Implement proper scanner ditching (Pat)
 
@@ -160,6 +156,10 @@ Core done:
 * Modify GetObslike to deal with vectors of doubles internally
 * Add syntactic facility for easily declaring chained dependencies, where all entries in the chain have the same capability-type pair.
 * Make it possible to resolve dependencies that match a functor's own capability-type pair
+* Run configure for pythia backend
+* Fix error in type equivalencies 
+* Split Utils dir into codes needed for ScannerBit standalone and those not needed
+* Make dependency resolver errors more informative
 
 Models done:
 * Remove automatic declaration of "little guys"

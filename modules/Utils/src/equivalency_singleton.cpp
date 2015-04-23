@@ -15,7 +15,6 @@
 
 #include "gambit/Utils/equivalency_singleton.hpp"
 
-
 namespace Gambit
 {
 

@@ -17,9 +17,9 @@
 ///
 ///  *********************************************
 
-#include "gambit/Utils/type_equivalency.hpp"
 #include "gambit/Utils/util_types.hpp"
 #include "gambit/Utils/util_functions.hpp"
+#include "gambit/Utils/type_equivalency.hpp"
 #include "gambit/cmake/cmake_variables.hpp"
 
 /// Constructor

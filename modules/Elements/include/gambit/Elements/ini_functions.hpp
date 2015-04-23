@@ -22,8 +22,8 @@
 
 #include <vector>
 
+#include "gambit/Elements/functors.hpp"
 #include "gambit/Utils/util_types.hpp"
-#include "gambit/Utils/functors.hpp"
 
 /// Define the separator to use instead of "::" when macros get gnarly.
 #define NS_SEP ___ns_separator_that_will_never_appear_naturally___

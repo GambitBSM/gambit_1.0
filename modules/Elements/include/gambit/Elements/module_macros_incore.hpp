@@ -50,13 +50,13 @@
 
 #include <map>
 
+#include "gambit/Elements/functors.hpp"
+#include "gambit/Elements/types_rollcall.hpp"
+#include "gambit/Elements/module_macros_common.hpp"
+#include "gambit/Elements/safety_bucket.hpp"
+#include "gambit/Elements/ini_code_struct.hpp"
 #include "gambit/Utils/static_members.hpp"
-#include "gambit/Utils/functors.hpp"
 #include "gambit/Utils/exceptions.hpp"
-#include "gambit/Utils/types_rollcall.hpp"
-#include "gambit/Utils/module_macros_common.hpp"
-#include "gambit/Utils/safety_bucket.hpp"
-#include "gambit/Utils/ini_code_struct.hpp"
 #include "gambit/Logs/log.hpp"
 #include "gambit/Backends/backend_singleton.hpp"
 #include "gambit/Models/claw_singleton.hpp"
