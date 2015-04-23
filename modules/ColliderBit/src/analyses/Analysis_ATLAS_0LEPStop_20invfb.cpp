@@ -3,7 +3,7 @@
 #include <memory>
 #include <iomanip>
 
-#include "gambit/ColliderBit/Analysis.hpp"
+#include "gambit/ColliderBit/analyses/BaseAnalysis.hpp"
 #include "gambit/ColliderBit/mt2_bisect.h"
 
 /// @todo Eliminate the ROOT vectors!
@@ -33,7 +33,7 @@ namespace Gambit {
 
     bool sortByPT(Jet* jet1, Jet* jet2) { return (jet1->pT() > jet2->pT()); }
 
-    class Analysis_ATLAS_0LEPStop_20invfb : public Analysis {
+    class Analysis_ATLAS_0LEPStop_20invfb : public BaseAnalysis {
     private:
 
       // Numbers passing cuts

@@ -2,7 +2,7 @@
 #include <cmath>
 #include <memory>
 
-#include "gambit/ColliderBit/Analysis.hpp"
+#include "gambit/ColliderBit/analyses/BaseAnalysis.hpp"
 
 /// @todo ditch ROOT classes
 #ifdef MKHISTOS
@@ -19,7 +19,7 @@ namespace Gambit {
   namespace ColliderBit {
 
     /// Rename as Analysis_ATLAS_0LEP_XXinvfb when lumi known
-    class Analysis_ATLAS_0LEP : public Analysis {
+    class Analysis_ATLAS_0LEP : public BaseAnalysis {
     private:
 
       // Numbers passing cuts
@@ -57,7 +57,7 @@ namespace Gambit {
 
 
       void analyze(const Event* event) {
-        Analysis::analyze(event);
+        BaseAnalysis::analyze(event);
 
         // Missing energy
         P4 ptot = event->missingmom();
@@ -245,7 +245,7 @@ namespace Gambit {
       }
 
 
-      void add(const Analysis* a) {
+      void add(const BaseAnalysis* a) {
         const Analysis_ATLAS_0LEP* aa = dynamic_cast<const Analysis_ATLAS_0LEP*>(a);
         add_xsec(aa->xsec(), aa->xsec_err());
         // double tmp = _numAT;

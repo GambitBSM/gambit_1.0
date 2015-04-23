@@ -1,6 +1,6 @@
 #include <string>
 #include <stdexcept>
-#include "gambit/ColliderBit/Analysis.hpp"
+#include "gambit/ColliderBit/analyses/BaseAnalysis.hpp"
 #include "HEPUtils/MathUtils.h"
 
 using namespace std;
@@ -20,7 +20,7 @@ namespace Gambit {
     DECLARE_ANALYSIS_FACTORY(ATLAS_2LEPEW_20invfb);
     DECLARE_ANALYSIS_FACTORY(CMS_3LEPEW_20invfb);
 
-    Analysis* mkAnalysis(const std::string& name) {
+    BaseAnalysis* mkAnalysis(const std::string& name) {
       #define IF_X_RTN_CREATEX(A) if (name == #A) return create_Analysis_ ## A()
       IF_X_RTN_CREATEX(ATLAS_0LEP);
       IF_X_RTN_CREATEX(ATLAS_0LEP_20invfb);
@@ -39,7 +39,7 @@ namespace Gambit {
 
 
     /// Add the provided other-process cross-section to the existing one, assuming uncorrelated errors
-    void Analysis::add_xsec(double xs, double xserr) {
+    void BaseAnalysis::add_xsec(double xs, double xserr) {
       stringstream msg;
       msg << "Adding xsecs: " << xsec() << " +- " << xsec_err() << " += " << xs << " +- " << xserr;
       if (xs > 0) {
@@ -57,7 +57,7 @@ namespace Gambit {
 
     /// Combine the provided same-process cross-section with the existing one, assuming uncorrelated errors
     /// @todo Assumes equal stats at the moment: that breaks in >2 instance aggregation. Include some 1/(rel)error weighting?
-    void Analysis::improve_xsec(double xs, double xserr) {
+    void BaseAnalysis::improve_xsec(double xs, double xserr) {
       stringstream msg;
       msg << "Improving xsec: " << xsec() << " +- " << xsec_err() << " += " << xs << " +- " << xserr;
       if (xs > 0) {

@@ -3,7 +3,7 @@
 #include <memory>
 #include <iomanip>
 
-#include "gambit/ColliderBit/Analysis.hpp"
+#include "gambit/ColliderBit/analyses/BaseAnalysis.hpp"
 #include "gambit/ColliderBit/ATLASEfficiencies.hpp"
 #include "gambit/ColliderBit/mt2_bisect.h"
 
@@ -34,7 +34,7 @@ namespace Gambit {
 
     bool sortByPT_2lep(Particle* lep1, Particle* lep2) { return (lep1->pT() > lep2->pT()); }
 
-    class Analysis_ATLAS_2LEPEW_20invfb : public Analysis {
+    class Analysis_ATLAS_2LEPEW_20invfb : public BaseAnalysis {
     private:
 
       // Numbers passing cuts (doubles because we will use the trigger eff)

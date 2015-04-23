@@ -3,7 +3,7 @@
 #include <memory>
 #include <iomanip>
 
-#include "gambit/ColliderBit/Analysis.hpp"
+#include "gambit/ColliderBit/analyses/BaseAnalysis.hpp"
 #include "gambit/ColliderBit/ATLASEfficiencies.hpp"
 
 /* A simulation of CMS paper PAS SUS-13-006
@@ -20,7 +20,7 @@ namespace Gambit {
 
     using namespace std;
 
-    class Analysis_CMS_3LEPEW_20invfb : public Analysis {
+    class Analysis_CMS_3LEPEW_20invfb : public BaseAnalysis {
     private:
     
       // Array of signal regions, set to zero

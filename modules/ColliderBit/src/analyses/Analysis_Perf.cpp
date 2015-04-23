@@ -4,7 +4,7 @@
 #include <vector>
 #include <algorithm>
 
-#include "gambit/ColliderBit/Analysis.hpp"
+#include "gambit/ColliderBit/analyses/BaseAnalysis.hpp"
 #include "gambit/ColliderBit/ATLASEfficiencies.hpp"
 
 // ROOT
@@ -22,7 +22,7 @@ namespace Gambit {
     bool SortPt(const Particle* i, const Particle* j) { return (i->pT() > j->pT()); }
 
 
-    class Analysis_Perf : public Analysis {
+    class Analysis_Perf : public BaseAnalysis {
 
       TH1F *_hBosonPt, *_hBosonEta, *_hBosonPhi;
       TH1F *_hElectron1Pt, *_hElectron1eta, *_hElectron1phi;

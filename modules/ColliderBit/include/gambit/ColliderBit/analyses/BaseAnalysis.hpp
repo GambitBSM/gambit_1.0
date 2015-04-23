@@ -29,7 +29,7 @@ namespace Gambit {
     };
 
 
-    class Analysis {
+    class BaseAnalysis {
     private:
 
       /// Number of events and cross-section internal variables
@@ -40,10 +40,10 @@ namespace Gambit {
     public:
 
       /// Constructor
-      Analysis() : _ntot(0), _xsec(-1), _xsecerr(-1) {  }
+      BaseAnalysis() : _ntot(0), _xsec(-1), _xsecerr(-1) {  }
 
       /// Virtual destructor (needed for correct deletion of inherited classes)
-      virtual ~Analysis() { }
+      virtual ~BaseAnalysis() { }
 
 
       /// @name Standard event loop functions
@@ -88,16 +88,16 @@ namespace Gambit {
 
       //@}
 
-      /// @name Analysis combination operations
+      /// @name BaseAnalysis combination operations
       //@{
 
       /// An operator to do xsec-weighted combination of analysis runs
       /// @note We don't use operator += because it's awkward with pointer l/rvalues
       /// @todo Put some real implementation in the base class, e.g. checking
       ///       ana name consistency... or make it pure virtual (once anas are updated).
-      virtual void add(const Analysis*) { } //= 0;
+      virtual void add(const BaseAnalysis*) { } //= 0;
       /// Reference-based version of add()
-      void add(const Analysis& a) { add(&a); }
+      void add(const BaseAnalysis& a) { add(&a); }
 
       /// Add cross-sections and errors for two different process types
       void add_xsec(double xs, double xserr);
@@ -140,7 +140,7 @@ namespace Gambit {
     /// @brief Create a new analysis based on a name string
     ///
     /// The caller is responsible for deleting the returned analysis object.
-    Analysis* mkAnalysis(const std::string& name);
+    BaseAnalysis* mkAnalysis(const std::string& name);
 
 
   }

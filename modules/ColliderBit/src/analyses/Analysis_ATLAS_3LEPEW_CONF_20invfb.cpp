@@ -3,7 +3,7 @@
 #include <memory>
 #include <iomanip>
 
-#include "gambit/ColliderBit/Analysis.hpp"
+#include "gambit/ColliderBit/analyses/BaseAnalysis.hpp"
 
 #include <TLorentzVector.h>
 #include <TVector2.h>
@@ -24,7 +24,7 @@ namespace Gambit {
 
     using namespace std;
 
-    class Analysis_ATLAS_3LEPEW_CONF_20invfb : public Analysis {
+    class Analysis_ATLAS_3LEPEW_CONF_20invfb : public BaseAnalysis {
     private:
 
       // Numbers passing cuts

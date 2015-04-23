@@ -3,7 +3,7 @@
 #include <memory>
 #include <iomanip>
 
-#include "gambit/ColliderBit/Analysis.hpp"
+#include "gambit/ColliderBit/analyses/BaseAnalysis.hpp"
 #include "gambit/ColliderBit/mt2_bisect.h"
 
 using namespace std;
@@ -25,7 +25,7 @@ namespace Gambit {
   namespace ColliderBit {
 
 
-    class Analysis_ATLAS_2bStop_20invfb : public Analysis {
+    class Analysis_ATLAS_2bStop_20invfb : public BaseAnalysis {
     private:
 
       // Numbers passing cuts

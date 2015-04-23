@@ -3,7 +3,7 @@
 #include <memory>
 #include <iomanip>
 
-#include "gambit/ColliderBit/Analysis.hpp"
+#include "gambit/ColliderBit/analyses/BaseAnalysis.hpp"
 #include "gambit/ColliderBit/ATLASEfficiencies.hpp"
 
 using namespace std;
@@ -15,7 +15,7 @@ using namespace std;
 namespace Gambit {
   namespace ColliderBit {
 
-    class Analysis_ATLAS_0LEP_20invfb : public Analysis {
+    class Analysis_ATLAS_0LEP_20invfb : public BaseAnalysis {
     private:
 
       // Numbers passing cuts
@@ -48,7 +48,7 @@ namespace Gambit {
 
 
       void analyze(const Event* event) {
-        Analysis::analyze(event);
+        BaseAnalysis::analyze(event);
 
         // Missing energy
         P4 ptot = event->missingmom();
@@ -312,7 +312,7 @@ namespace Gambit {
       }
 
 
-      void add(const Analysis* a) {
+      void add(const BaseAnalysis* a) {
         const Analysis_ATLAS_0LEP_20invfb* aa = dynamic_cast<const Analysis_ATLAS_0LEP_20invfb*>(a);
         add_xsec(aa->xsec(), aa->xsec_err());
         /// @todo Need more?

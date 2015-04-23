@@ -19,10 +19,10 @@
 /// Macros for factory fns
 /// @todo Semicolon handling
 #define DECLARE_ANALYSIS_FACTORY(ANAME)                                          \
-  Analysis* create_Analysis_ ## ANAME();
+  BaseAnalysis* create_Analysis_ ## ANAME();
 /// @todo Semicolon handling
 #define DEFINE_ANALYSIS_FACTORY(ANAME)                                           \
-  Analysis* create_Analysis_ ## ANAME() { return new Analysis_ ## ANAME(); }
+  BaseAnalysis* create_Analysis_ ## ANAME() { return new Analysis_ ## ANAME(); }
 
 /// @todo Semicolon handling
 #define DECLARE_DETECTOR_FACTORY_NO_SETTINGS(DNAME, DCLASS)                      \

@@ -31,7 +31,7 @@
 
 #include "gambit/ColliderBit/colliders/SpecializablePythia.hpp"
 #include "gambit/ColliderBit/Detector.hpp"
-#include "gambit/ColliderBit/Analysis.hpp"
+#include "gambit/ColliderBit/analyses/BaseAnalysis.hpp"
 
 #include "HEPUtils/Event.h"
 
