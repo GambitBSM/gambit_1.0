@@ -42,6 +42,14 @@ namespace Gambit {
           }
           Gamma = f_vs_mass["Gamma"]->bind("mass");
           Gamma_mh = Gamma->eval(mh);
+
+          mh = 125.7;  // FIXME
+          v0 = 246.0;  // FIXME
+          alpha_s = 0.12;   // FIXME
+          mb = 5;  // FIXME
+          mc = 1;  // FIXME
+          mtau = 1;  // FIXME
+          mt = 172;  // FIXME
         };
         ~SingletDM() {}
 
@@ -159,13 +167,7 @@ namespace Gambit {
         std::vector<std::string> colnames;
 
         double Gamma_mh;
-        double mh = 125.7;  // FIXME
-        double v0 = 246.0;  // FIXME
-        double alpha_s = 0.12;   // FIXME
-        double mb = 5;  // FIXME
-        double mc = 1;  // FIXME
-        double mtau = 1;  // FIXME
-        double mt = 172;  // FIXME
+        double mh, v0, alpha_s, mb, mc, mtau, mt;
     };
 
     void DarkMatter_ID_SingletDM(DarkMatter_ID_type & result)
