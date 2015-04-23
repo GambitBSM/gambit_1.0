@@ -149,6 +149,9 @@ Parameters:
       deltas:
         fixed_value: -0.085
 
+#    The two models below require the StandardModel_SLHA2 model 
+#    (uncomment below).
+
 #    nuclear_params_sigma0_SigmaPiN:
 #      sigma0:
 #        fixed_value: 30.76
@@ -174,6 +177,8 @@ Parameters:
 #        fixed_value: 0.842
 #      deltas:
 #        fixed_value: -0.085
+
+#    StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
 
 ##############################
 # Prior setup
