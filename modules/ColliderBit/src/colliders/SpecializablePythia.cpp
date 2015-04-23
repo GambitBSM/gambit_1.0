@@ -63,14 +63,16 @@ namespace Gambit {
 
         if(!_pythiaInstance) throw InitializationError();
         _pythiaInstance->init();
+        ready=true;
       }
 
-      void SpecializablePythia::setSpecialization(const std::string& specName) {
-#define IF_X_SPECIALIZEX(X) if (specName == #X) { _specialInit = X::init; return; }
+      void SpecializablePythia::resetSpecialization(const std::string& specName) {
+        clear();
+        #define IF_X_SPECIALIZEX(X) if (specName == #X) { _specialInit = X::init; return; }
         IF_X_SPECIALIZEX(Pythia_external)
         IF_X_SPECIALIZEX(Pythia_SUSY_LHC_8TeV)
         IF_X_SPECIALIZEX(Pythia_glusq_LHC_8TeV)
-#undef IF_X_SPECIALIZEX
+        #undef IF_X_SPECIALIZEX
         // default to a Pythia instance configured entirely by external (yaml) settings:
         _specialInit = Pythia_external::init;
         std::cout<<"\n\n\n"

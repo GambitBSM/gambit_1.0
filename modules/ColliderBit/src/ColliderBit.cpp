@@ -15,8 +15,6 @@
 ///
 ///  *********************************************
 
-// #define HESITATE shallIGoOn
-//
 #include <string>
 #include <iostream>
 #include <fstream>
@@ -44,13 +42,12 @@ namespace Gambit {
     /// BuckFast stuff
     bool resetBuckFastFlag = true;
     /// Pythia stuff
-    bool resetPythiaFlag = true;
     std::vector<std::string> pythiaNames;
+    std::vector<std::string>::const_iterator iter;
     int pythiaConfigurations, pythiaNumber;
     std::string slhaFilename;
     /// Analysis stuff
     bool resetAnalysisFlag = true;
-    std::vector<std::string>::const_iterator iter;
     /// General collider sim info stuff
     #define SHARED_OVER_OMP iter,pythiaNumber,pythiaConfigurations
 
@@ -124,7 +121,7 @@ namespace Gambit {
     void getPythia(Gambit::ColliderBit::SpecializablePythia &result) {
       using namespace Pipes::getPythia;
 
-      if (resetPythiaFlag and *Loop::iteration > INIT) {
+      if (!result.ready and *Loop::iteration > INIT) {
         /// Each thread gets its own Pythia instance.
         /// Thus, the Pythia instantiation is *after* INIT.
         std::vector<std::string> pythiaOptions;
@@ -145,14 +142,10 @@ namespace Gambit {
         pythiaOptions.push_back("SLHA:file = " + slhaFilename);
         pythiaOptions.push_back("Random:seed = " + std::to_string(omp_get_thread_num()));
 
-        result.clear();
-        result.setSpecialization(*iter);
+        result.resetSpecialization(*iter);
         result.init(pythiaOptions);
-        pythiaOptions.clear();
-        resetPythiaFlag = false;
       } else if (*Loop::iteration == END_SUBPROCESS) {
-        /// TODO: Each thread gets its own Pythia instance. DEFINITELY NOT THREADSAFE:
-        resetPythiaFlag = true;
+        result.ready = false;
       }
     }
 
