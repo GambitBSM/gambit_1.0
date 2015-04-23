@@ -1,5 +1,5 @@
 #pragma once
-#include "gambit/ColliderBit/BaseCollider.hpp"
+#include "gambit/ColliderBit/colliders/BaseCollider.hpp"
 
 namespace Gambit {
   namespace ColliderBit {
@@ -57,7 +57,7 @@ namespace Gambit {
         void setSpecialization(const std::string&);
       //@}
 
-      /// @name Event generation functions
+      /// @name Event generation and cross section functions
       //@{
       public:
         /// @brief Event generation for any Pythia interface to Gambit.
@@ -66,6 +66,11 @@ namespace Gambit {
           if (!_pythiaInstance->next()) throw EventFailureError();
           event = _pythiaInstance->event;
         }
+
+        /// @brief Report the cross section (in pb) at the end of the subprocess.
+        double xsec_pb() const { return _pythiaInstance->info.sigmaGen() * 1e9; }
+        /// @brief Report the cross section uncertainty (in pb) at the end of the subprocess.
+        double xsecErr_pb() const { return _pythiaInstance->info.sigmaErr() * 1e9; }
       //@}
 
      };

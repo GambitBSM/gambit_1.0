@@ -190,6 +190,7 @@ START_MODULE
     ALLOW_MODELS(NormalDist)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
     DEPENDENCY(ReconstructedEvent, HEPUtils::Event)
+    DEPENDENCY(HardScatteringSim, Gambit::ColliderBit::SpecializablePythia)
     DEPENDENCY(ListOfAnalyses, std::vector<Gambit::ColliderBit::Analysis*>)
     //BACKEND_REQ_FROM_GROUP(lnlike_marg_poisson, lnlike_marg_poisson_lognormal_error, (), double, (int&, double&, double&, double&) )
     //BACKEND_REQ_FROM_GROUP(lnlike_marg_poisson, lnlike_marg_poisson_gaussian_error, (), double, (int&, double&, double&, double&) )

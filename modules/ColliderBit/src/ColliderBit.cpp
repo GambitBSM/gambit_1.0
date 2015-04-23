@@ -52,9 +52,7 @@ namespace Gambit {
     bool resetAnalysisFlag = true;
     std::vector<std::string>::const_iterator iter;
     /// General collider sim info stuff
-    double* xsecArray;
-    double* xsecerrArray;
-    #define SHARED_OVER_OMP iter,pythiaNumber,pythiaConfigurations,xsecArray,xsecerrArray
+    #define SHARED_OVER_OMP iter,pythiaNumber,pythiaConfigurations
 
 
     /// *************************************************
@@ -83,8 +81,6 @@ namespace Gambit {
         GET_COLLIDER_RUNOPTION(slhaFilename, std::string);
       }
 
-      xsecArray = new double[omp_get_max_threads()];
-      xsecerrArray = new double[omp_get_max_threads()];
       /// For every collider requested in the yaml file:
       for (iter = pythiaNames.cbegin(); iter != pythiaNames.cend(); ++iter) {
         pythiaNumber = 0;
@@ -107,8 +103,6 @@ namespace Gambit {
           }
           std::cout << "\n\n\n\n Operation of Pythia named " << *iter
                     << " number " << std::to_string(pythiaNumber) << " has finished." << std::endl;
-          for (size_t i = 0; i < (size_t) omp_get_max_threads(); ++i)
-            std::cout << "  Thread " << i << ": xsec = " << xsecArray[i] << " +- " << xsecerrArray[i] << " pb" << std::endl;
           #ifdef HESITATE
           std::cout<<"\n\n [Press Enter]";
           std::getchar();
@@ -128,7 +122,6 @@ namespace Gambit {
     /// *** Hard Scattering Collider Simulators ***
 
     void getPythia(Gambit::ColliderBit::SpecializablePythia &result) {
-      /// @TODO: capabilify xsecArrays
       using namespace Pipes::getPythia;
 
       if (resetPythiaFlag and *Loop::iteration > INIT) {
@@ -158,16 +151,8 @@ namespace Gambit {
         pythiaOptions.clear();
         resetPythiaFlag = false;
       } else if (*Loop::iteration == END_SUBPROCESS) {
-        xsecArray[omp_get_thread_num()] = result.pythia()->info.sigmaGen() * 1e9; //< note converting mb to pb units
-        xsecerrArray[omp_get_thread_num()] = result.pythia()->info.sigmaErr() * 1e9; //< note converting mb to pb units
-
         /// TODO: Each thread gets its own Pythia instance. DEFINITELY NOT THREADSAFE:
         resetPythiaFlag = true;
-      } else if (*Loop::iteration == FINALIZE) {
-        /// Memory clean-up: xsecArrays
-        /// @TODO: where is the matching allocation? Careful with these deletes
-        delete xsecArray;
-        delete xsecerrArray;
       }
     }
 
@@ -601,10 +586,11 @@ namespace Gambit {
       if (*Loop::iteration == END_SUBPROCESS) {
         for (auto anaPtr = Dep::ListOfAnalyses->begin(); anaPtr != Dep::ListOfAnalyses->end(); ++anaPtr)
         {
-          /// @TODO Clean this crap up... xsecArrays should be more Gambity.
-          /// @TODO THIS IS HARDCODED FOR ONLY ONE THREAD!!!
-          cout << "Adding xsec = " << xsecArray[0] << " +- " << xsecerrArray[0] << " pb" << endl;
-          (*anaPtr)->add_xsec(xsecArray[0], xsecerrArray[0]);
+          /// @TODO Will need work for multithreading!!!
+          cout << "Adding xsec = " << Dep::HardScatteringSim->xsec_pb()
+               << " +- " << Dep::HardScatteringSim->xsecErr_pb() << " pb" << endl;
+          (*anaPtr)->add_xsec(Dep::HardScatteringSim->xsec_pb(),
+                              Dep::HardScatteringSim->xsecErr_pb());
         }
         return;
       }

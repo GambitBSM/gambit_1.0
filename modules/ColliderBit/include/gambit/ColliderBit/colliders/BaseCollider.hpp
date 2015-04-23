@@ -25,10 +25,14 @@ namespace Gambit {
         virtual void clear() { }
       //@}
 
-      /// @name Event generation functions
+      /// @name Event generation and cross section functions
       //@{
         /// @brief Fill in the next collider event by reference.
         virtual void nextEvent(EventT& event) const = 0;
+        /// @brief Report the cross section (in pb) at the end of the subprocess.
+        virtual double xsec_pb() const = 0;
+        /// @brief Report the cross section uncertainty (in pb) at the end of the subprocess.
+        virtual double xsecErr_pb() const = 0;
       //@}
 
       /// @name (Re-)Initialization functions
