@@ -3,7 +3,7 @@
 #include <vector>
 #include <exception>
 
-#include "gambit/Utils/shared_types.hpp"
+#include "gambit/Elements/shared_types.hpp"
 #include "gambit/ColliderBit/ColliderBit_macros.hpp"
 
 namespace Gambit {

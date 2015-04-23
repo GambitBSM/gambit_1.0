@@ -70,28 +70,30 @@
           /* Internal data members for keeping track of objects needed/created by FlexibleSUSY */ \
           Model model;     /* FlexibleSUSY model */                                    \
           QedQcd oneset;   /* SoftSUSY format Standard Model parameters */             \
-          SlhaIo slha_io;   /* FlexibleSUSY SLHA input/output manager */               \
           InputParameters input;    /* Parameters needed to compute points of Model */ \
+          SlhaIo slha_io;   /* FlexibleSUSY SLHA input/output manager */               \
           Problems problems; /* FlexibleSUSY problems report manager */                \
           Scales scales;   /*scales at shich coundary conditions are applied*/         \
           /* Function to create SLHAea object from 'model' */                          \
           /* THIS IS REQUIRED BY MSSMSpec */                                           \
-          SLHAea::Coll getSLHAea()                                                     \
+          SLHAea::Coll getSLHAea() const                                               \
           {                                                                            \
-             fill_slhaio();                                                            \
-             return slha_io.fill_slhaea(model,oneset);                                 \
+             SlhaIo slhaio;                                                           \
+             fill_slhaio(slhaio);                                                     \
+             return slhaio.fill_slhaea(model,oneset);                                 \
           }                                                                            \
                                                                                        \
           /* Function to write SLHA file from 'model' */                               \
           /* THIS IS REQUIRED BY MSSMSpec */                                           \
-          void dump2slha(const std::string& slha_output_file)                          \
+          void dump2slha(const std::string& slha_output_file) const                    \
           {                                                                            \
+             SlhaIo slhaio;                                                           \
              /* Clone of output method used in run_CMSSM.cpp  */                       \
-             fill_slhaio();                                                            \
+             fill_slhaio(slhaio);                                                     \
              if (slha_output_file.empty()) {                                           \
-               slha_io.write_to_stream(std::cout); /*may not want this*/               \
+               slhaio.write_to_stream(std::cout); /*may not want this*/               \
              } else {                                                                  \
-               slha_io.write_to_file(slha_output_file);                                \
+               slhaio.write_to_file(slha_output_file);                                \
              }                                                                         \
           }                                                                            \
                                                                                        \
@@ -103,7 +105,6 @@
           CAT_3(MODELNAME,_,interface) (const SpectrumGenerator& spectrum_generator, const QedQcd& onesetIN, const InputParameters& inputIN) \
           : model(spectrum_generator.get_model())                                      \
           , oneset(onesetIN)                                                           \
-          , slha_io()                                                                  \
           , input(inputIN)                                                             \
           , problems(CAT_3(MODELNAME,_,info)::particle_names)                          \
           , scales()                                                                   \
@@ -117,7 +118,6 @@
           CAT_3(MODELNAME,_,interface) (const Model& modelIN)                          \
           : model(modelIN)                                                             \
           , oneset()                                                                   \
-          , slha_io()                                                                  \
           , input()                                                                    \
           , problems(CAT_3(MODELNAME,_,info)::particle_names)                          \
           , scales()                                                                   \
@@ -125,15 +125,15 @@
                                                                                        \
           /* Make sure the slhaio object is up to date in preparation for writing 
              output */                                                                 \
-          void fill_slhaio()                                                           \
+          void fill_slhaio(SlhaIo& slhaio) const                                      \
           {                                                                            \
-             slha_io.set_spinfo(problems);                                             \
-             slha_io.set_sminputs(oneset);                                             \
-             slha_io.set_minpar(input);                                                \
-             slha_io.set_extpar(input);                                                \
+             slhaio.set_spinfo(problems);                                             \
+             slhaio.set_sminputs(oneset);                                             \
+             slhaio.set_minpar(input);                                                \
+             slhaio.set_extpar(input);                                                \
              if (!problems.have_problem()) {                                           \
-                slha_io.set_spectrum(model);                                           \
-                slha_io.set_extra(model,scales);                                       \
+                slhaio.set_spectrum(model);                                           \
+                slhaio.set_extra(model,scales);                                       \
              }                                                                         \
           }                                                                            \
                                                                                        \

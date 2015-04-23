@@ -34,7 +34,7 @@
 #include <string>
 
 #include "gambit/Core/depresolver.hpp"
-#include "gambit/Utils/functors.hpp"
+#include "gambit/Elements/functors.hpp"
 #include "gambit/Utils/util_types.hpp"
 #include "gambit/ScannerBit/priors_rollcall.hpp"
 #include "gambit/ScannerBit/scanner_utils.hpp"

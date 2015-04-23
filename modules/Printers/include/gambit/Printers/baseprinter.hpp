@@ -26,18 +26,35 @@
 #include <vector>
 
 // Gambit
-#include "gambit/Utils/all_functor_types.hpp"
-#include "gambit/Utils/functors.hpp"
+#include "gambit/Printers/basebaseprinter.hpp"
 #include "gambit/Utils/standalone_error_handlers.hpp"
 #include "gambit/Utils/yaml_options.hpp"
 #include "gambit/Utils/boost_fallbacks.hpp"
-#include "gambit/ScannerBit/factory_registry.hpp"
+#include "gambit/Utils/factory_registry.hpp"
+#include "gambit/Utils/model_parameters.hpp"
 
 // Boost
 #include <boost/preprocessor/seq/for_each.hpp>
 #include <boost/preprocessor/punctuation/comma_if.hpp>
 
 // Macros
+
+#ifndef STANDALONE
+   // If we are in a main gambit executable, we need to know all the potentially printable types.
+   #include "gambit/Elements/all_functor_types.hpp"
+#else
+   // Otherwise, we are in the ScannerBit standalone executable and need only a limited set.
+   #define PRINTABLE_TYPES         \
+     (bool)                        \
+     (int)                         \
+     (double)                      \
+     (std::vector<bool>)           \
+     (std::vector<int>)            \
+     (std::vector<double>)         \
+     (ModelParameters)
+     // Add more as needed
+#endif
+
 
 // This macro registers each printer so that they can be constructed automatically from inifile instructions
 #define LOAD_PRINTER(tag, ...) REGISTER(printer_creators, tag, __VA_ARGS__)
@@ -79,12 +96,9 @@ namespace Gambit
     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
      
     /// BASE PRINTER CLASS
-    class BasePrinter  
+    class BasePrinter: public BaseBasePrinter
     {
       public:
-        // We need to have a virtual print method for EVERY type we ever want to print (i.e. for every type that can be held in the 'myValue' data member of a module functor). Generate these using a macro.
-        // Run the macro; add all the print functions
-        ADD_ALL_PRINT_FUNCTIONS
 
         /// Destructor
         // Need this to be virtual so that the PrinterManager can destroy any printer object via a pointer to base
@@ -127,6 +141,10 @@ namespace Gambit
            return -1;
         }
 
+        // We need to have a virtual print method for EVERY type we ever want to print (i.e. for every type that can be held in the 'myValue' data member of a module functor). Generate these using a macro.
+        // Run the macro; add all the print functions
+        ADD_ALL_PRINT_FUNCTIONS
+
     };
 
     // Need to implement the destructor, even though it is pure virtual. Seems like it will be called even if using derived classes, or something.
@@ -146,7 +164,5 @@ namespace Gambit
   } //end namespace Printers
 } // end namespace Gambit
 
-// Load up all the available printers
-#include "printer_rollcall.hpp"
 
 #endif //ifndef __base_printer_hpp__

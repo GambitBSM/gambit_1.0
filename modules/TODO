@@ -2,39 +2,116 @@ GAMBIT To-do List
 =================
 
 
-Core
+Core / Scanner / Models
 ----
 
-IniFile:
-* Add syntactic facility for easily declaring chained dependencies, where all entries in the chain have the same capability-type pair. (**Christoph; after G3**) 
-* Support alternative ini format(s)
 
-Dependency Resolver:
-* Make dependency resolver errors more informative (**Christoph; major time pressure**)
-* Make it possible to resolve dependencies that match a functor's own capability-type pair (**Christoph**)
-* Write new entry to auxiliary section of the YAML file if dependency resolution fails, according to user input. (**Christoph**)
+For first analyses:
 
-Backends:
-* Implement The BOSS (backend-on-a-stick script; classloader) (**Anders; ASAP**)
-* Resolve residual issues with passing strings to fortran backends (**after first release**)
-* Implement backending of Mathematica codes (**Ben to dabble with; no time pressure**)
-* Implement backending of Python codes (**Ben to dabble with; no time pressure**)
+Printers:
+* MPI initialisation in ScannerBit if needed (Ben, Greg)
+* MPI-compatible printer system (Ben)
+* Correlation of scanner printer system and GAMBIT printer system (Ben)
 
-Messaging:
-* Separate output/log for points with "BadPoint" errors
-* Write printer functions for all common functor types and print streams (**Hopefully happens a bit on its own as the two points above get dealt with**)
+Spectrum objects:
+* Make spectrum scale limit getter public (Ben)
 
 General:
-* Get the doxygen documentation into the Trac Wiki somehow, and updated automatically (**Antje & Pat**)
-* Make a release that also includes some version of all backends
+* Implement isNaN (look at cmath) (Pat)
+* Implement NaN check for likelihood in scanner (Pat, Greg)
+* Deal safely with errors arising from non-double results with purpose: Likelihood in yaml file (Pat)
 
-Ongoing:
-* General review of legacy code -> cull obsolete stuff (e.g. SUFit legacy in ModelParameters)
-* Fix naming conventions for filenames (lowercase+underscore)
-* Convert comment headers in source/header files to doxygen (///) format; many are still in old-style (//) format
-* Convert comments to Doxygen
+DecayBit:
+* Add SM Higgs partial decay widths (Pat / Csaba)
+* Make decay table type from SLHAea (Pat)
+* Add scalar singlet Higgs partial decay widths (SM + invisible; Pat)
+* SUSYHIT SLHA replacement interface (Pat)
+* SUSYHIT observable getters (Csaba)
 
-Done:
+EWPOBit:
+* SUSY-POPE interface (Peter)
+* Testing of FeynHiggs interface (Peter)
+
+BOSS:
+* Fix possible copy-constructor memory leak (Anders)
+* Fix erroneous header include bug (Anders)
+* Wrap global backend functions requiring BOSSed classes (Anders)
+
+ScannerBit:
+* Connect Diver (Pat)
+* Plugins need the option to link standard GAMBIT/ScannerBit libraries: MPI, GSL, etc (Greg)
+* Get rid of 'optional options:' entries in yaml options object. (Greg)
+
+Repo/cmake:
+* Split repo into public (code) bit and private extras, Collab doc etc, using git filter-branch (Pat)
+* Add check and check-ignore switch for graphviz (Antje)
+* Implement proper scanner ditching (Pat)
+
+
+For first release:
+
+Messaging:
+* Separate output/log for points with "BadPoint" errors (Ben)
+* Write printer functions for all common functor types and print streams (Ben)
+
+General:
+* Add credit/citation system (Pat)
+* Fill out capabilities database (all)
+* Fill out models database (all)
+* Make an alternative release setup that also includes some version of all backends (Antje, Pat)
+* Fix naming conventions for filenames (lowercase+underscore) (Pat)
+* Convert comment headers in source/header files to doxygen (///) format; many are still in old-style (//) format (all)
+* Convert comments to Doxygen (all)
+* Tinkering with rollcall macros to improve compile time with -O2 (Pat)
+* Bool pipe indicating if conditional deps / bereqs have been activated or not (Pat)
+
+ScannerBit:
+* Implement parallel postprocessor as a scanner (Greg)
+* Connect Great (Antje)
+* Allow partial linking of scanner external libraries, so that multiple versions of the same external scanner can be compiled into GAMBIT at the same time (Greg)
+* Test runs for ScannerBit paper
+
+BOSS:
+* Wrap member variables of type pointer-to-BOSSed (Anders)
+* Deal with function pointers (Anders)
+* Propagate constness properly (Anders)
+* Bow out more gracefully when encountering templates, etc (Anders)
+* Polishing (Anders)
+
+Jenkins:
+* multiple test scripts (Andy, Antje, Pat)
+* combinatorics: OSes, compilers, boost (Andy, Antje, Pat)
+
+SpecBit:
+* Implement SoftSUSY wrapper (Peter)
+
+Release:
+* forking of git repo for each major revision
+* tarball release for module standalone release, git + tarball release for main gambit release
+
+cmake:
+* switching off openmp (Antje, Pat)
+
+
+After first release:
+
+IniFile:
+* Support alternative simplified ini format (Pat / Christoph)
+
+BOSS:
+* implement template BOSS (Anders)
+
+Backends:
+* Resolve residual issues with passing strings to fortran backends (Lars / Pat)
+* Implement backending of Mathematica codes (Ben to dabble with; no time pressure)
+* Implement backending of Python codes (Ben to dabble with; no time pressure)
+
+General:
+* Get the doxygen documentation into the Trac Wiki somehow, and updated automatically (Antje & Pat)
+
+
+
+Core done:
 * No more GET_DEP -> change all examples to safe pointers (*Dep::observable)
 * Separate gambit_example.cpps
 * Fix naming convention GAMBIT->Gambit
@@ -75,14 +152,17 @@ Done:
 * Make ModelInUse flags
 * Make general-issue random number generator
 * Allow dep resolver to understand typedefs
+* Write suggested new entry to stdout for auxiliary section of the YAML file if dependency resolution fails.
+* Modify GetObslike to deal with vectors of doubles internally
+* Add syntactic facility for easily declaring chained dependencies, where all entries in the chain have the same capability-type pair.
+* Make it possible to resolve dependencies that match a functor's own capability-type pair
+* Run configure for pythia backend
+* Fix error in type equivalencies 
+* Split Utils dir into codes needed for ScannerBit standalone and those not needed
+* Make dependency resolver errors more informative
 
-Models
-------
-
-Ongoing:
+Models done:
 * Remove automatic declaration of "little guys"
-
-Done:
 * Reunify model macros with module macros as much as possible (dependency macro in particular)
 * Create "little guys" (parameter mini-functors)
 * Create boost graph to display model hierarchy
@@ -142,22 +222,15 @@ Scanner
 -------
 
 Ongoing:
-* Interface to Antje's MCMC code
-* Interface to differential evolution
-* Interface to k-walk
-* Interface to genetic algorithms
-* Organise dedicated scanner section in yaml .ini file structure
+* Interface to GREAT (Antje's MCMC code)
+* Interface to differential evolution (Pat)
+* Interface to k-walk (Greg)
+* Interface to genetic algorithms (Abram)
 * Organise grouping of parameters into fast and slow subsets (useful for some scanners), possibly via the ini file.
-
-* remove output capture
-* update printer system interface 
-* tidy up plugin interface
 * add documentation
   - quick start for each plugin
   - internal documentation
 * plugin descriptions in plugin files
-* switch to using Random::draw()
-* interface external scanner lib depedencies properly with cmake
 
 Done:
 * Interface to MultiNest
@@ -166,6 +239,12 @@ Done:
 * switch to using gambit error system
 * create plugin registry
 * tidy up scanner section in yaml file 
+* remove output capture
+* update printer system interface 
+* tidy up plugin interface
+* switch to using Random::draw()
+* interface external scanner lib depedencies properly with cmake
+* Organise dedicated scanner section in yaml .ini file structure
 
 
 DarkBit

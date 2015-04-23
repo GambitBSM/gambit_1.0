@@ -134,8 +134,9 @@ set(source_files                                \n"
         towrite+=")\n\n"
         towrite+="add_gambit_library("+mod+" OPTION OBJECT SOURCES ${source_files} HEADERS ${header_files})"
         cmakelist = "./"+mod+"/CMakeLists.txt"
-        with open(cmakelist+".candidate","w") as f: f.write(towrite)
-        update_only_if_different(cmakelist, cmakelist+".candidate")
+        candidate = "./scratch/"+mod+"_CMakeLists.txt"
+        with open(candidate,"w") as f: f.write(towrite)
+        update_only_if_different(cmakelist, candidate)
 
     if verbose: print "Finished updating module CMakeLists.txt files."
 
