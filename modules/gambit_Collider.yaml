@@ -126,7 +126,7 @@ Rules:
                           "HadronLevel:all = off",
                           "SUSY:idA = 1000021",
                           "SUSY:idB = 1000021"]
-        pythiaOptions_2: ["PartonLevel:MPI off",
+        pythiaOptions_2: ["PartonLevel:MPI = off",
                           "PartonLevel:ISR = on",
                           "PartonLevel:FSR = off",
                           "HadronLevel:all = off",

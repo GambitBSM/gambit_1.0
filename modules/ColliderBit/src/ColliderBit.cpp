@@ -129,10 +129,8 @@ namespace Gambit {
 
         /// Setup new Pythia
         pythiaConfigName = "pythiaOptions";
-        if (pythiaConfigurations) {
-          pythiaConfigName += "_";
-          pythiaConfigName += std::to_string(pythiaNumber);
-        }
+        pythiaConfigName += "_";
+        pythiaConfigName += std::to_string(pythiaNumber);
         /// If the SpecializablePythia specialization is hard-coded, okay with no options.
         #pragma omp critical (runOptions)
         {
