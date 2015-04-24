@@ -93,9 +93,12 @@ else( WIN32 AND NOT CYGWIN AND NOT MSYS )
         string( REGEX REPLACE "-I[^;]+;" ""
           GSL_CFLAGS "${GSL_CFLAGS}")
 
-        message("   GSL_DEFINITIONS=${GSL_DEFINITIONS}")
-        message("   GSL_INCLUDE_DIRS=${GSL_INCLUDE_DIRS}")
-        message("   GSL_CFLAGS=${GSL_CFLAGS}")
+        if(VERBOSE)
+          message("   GSL_DEFINITIONS=${GSL_DEFINITIONS}")
+          message("   GSL_INCLUDE_DIRS=${GSL_INCLUDE_DIRS}")
+          message("   GSL_CFLAGS=${GSL_CFLAGS}")
+        endif()
+          
       else( RET EQUAL 0 )
         set( GSL_FOUND FALSE )
       endif( RET EQUAL 0 )
@@ -120,10 +123,12 @@ else( WIN32 AND NOT CYGWIN AND NOT MSYS )
         set( GSL_FOUND FALSE )
       endif( RET EQUAL 0 )
 
-			MARK_AS_ADVANCED(
-				GSL_CFLAGS
-			)
-			message( STATUS "   Using GSL from ${GSL_PREFIX}" )
+			MARK_AS_ADVANCED(GSL_CFLAGS)
+
+      if(VERBOSE)
+  			message( STATUS "   Using GSL from ${GSL_PREFIX}" )
+      endif()
+
 		else( GSL_CONFIG_EXECUTABLE )
 			message( STATUS "   FindGSL: gsl-config not found.")
 		endif( GSL_CONFIG_EXECUTABLE )
@@ -131,9 +136,9 @@ else( WIN32 AND NOT CYGWIN AND NOT MSYS )
 endif( WIN32 AND NOT CYGWIN AND NOT MSYS )
 
 if( GSL_FOUND )
-  if( NOT GSL_FIND_QUIETLY )
+  if(VERBOSE)
     message( STATUS "   FindGSL: Found both GSL headers and library" )
-  endif( NOT GSL_FIND_QUIETLY )
+  endif()
 else( GSL_FOUND )
   if( GSL_FIND_REQUIRED )
     message( FATAL_ERROR "FindGSL: Could not find GSL headers or library" )
