@@ -1284,6 +1284,14 @@ namespace Gambit
         logger() << endl << "Resolving ";
         logger() << printQuantityToBeResolved(quantity, toVertex) << endl << endl;;
 
+        // Check that ObsLike vertices have non-empty capability 
+        if ( toVertex == OBSLIKE_VERTEXID and quantity.first == "" )
+        {
+          str errmsg = "ObsLike entry without without capability "
+                       "information encountered.\n";
+          dependency_resolver_error().raise(LOCAL_INFO,errmsg);
+        }
+
         // Figure out how to resolve dependency
         if ( boundIniFile->getValueOrDef<bool>(false, "dependency_resolution", "use_old_routines") )
         {
