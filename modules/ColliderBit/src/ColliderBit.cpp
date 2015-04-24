@@ -196,7 +196,7 @@ namespace Gambit {
 
     /// *** Initialization for analyses ***
 
-    void specifyAnalysisPointerVector(std::vector<Gambit::ColliderBit::BaseAnalysis*> &result) {
+    void specifyAnalysisPointerVector(std::vector<Gambit::ColliderBit::HEPUtilsAnalysis*> &result) {
       using namespace Pipes::specifyAnalysisPointerVector;
       if (resetAnalysisFlag and *Loop::iteration == INIT) {
         /// Memory clean-up: Analyses

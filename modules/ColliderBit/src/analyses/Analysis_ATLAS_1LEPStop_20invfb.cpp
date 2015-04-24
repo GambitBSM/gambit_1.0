@@ -44,7 +44,7 @@ namespace Gambit {
     };
 
 
-    class Analysis_ATLAS_1LEPStop_20invfb : public BaseAnalysis {
+    class Analysis_ATLAS_1LEPStop_20invfb : public HEPUtilsAnalysis {
     private:
 
       // Numbers passing cuts
@@ -72,7 +72,7 @@ namespace Gambit {
       }
 
 
-      MT2 MT2helper(vector<Jet *> jets, vector<Particle *>  electrons,  vector<Particle *> muons, P4 metVec){
+      MT2 MT2helper(vector<HEPUtils::Jet*> jets, vector<HEPUtils::Particle*>  electrons,  vector<HEPUtils::Particle*> muons, HEPUtils::P4 metVec){
 
         MT2 results;
 
@@ -91,11 +91,11 @@ namespace Gambit {
         //We have all b jets tagged (with 100% efficiency), so can use the two highest pT b jets
         //This corresponds to using the 2 b jets that are first in the collection
 
-        Jet * trueBjet1 = NULL; //need to assign this
-        Jet * trueBjet2 = NULL; //nee to assign this
+        HEPUtils::Jet* trueBjet1 = NULL; //need to assign this
+        HEPUtils::Jet* trueBjet2 = NULL; //nee to assign this
 
         int nTrueBJets=0;
-        for(Jet * tmpJet: jets){
+        for(HEPUtils::Jet* tmpJet: jets){
           if(tmpJet->btag()){
             trueBjet1=tmpJet;
             nTrueBJets++;
@@ -103,7 +103,7 @@ namespace Gambit {
           }
         }
 
-        for(Jet * tmpJet: jets){
+        for(HEPUtils::Jet* tmpJet: jets){
           if(tmpJet->btag() && tmpJet!=trueBjet1){
             trueBjet2=tmpJet;
             nTrueBJets++;
@@ -117,7 +117,7 @@ namespace Gambit {
         jet1B.SetPtEtaPhiE(trueBjet1->pT(),trueBjet1->eta(),trueBjet1->phi(),trueBjet1->E());
         jet2B.SetPtEtaPhiE(trueBjet2->pT(),trueBjet2->eta(),trueBjet2->phi(),trueBjet2->E());
 
-        P4 leptontmp;
+        HEPUtils::P4 leptontmp;
         double leptonmass = 0;
         if(passel){
           leptonmass = 0.510998910; //MeV
@@ -167,8 +167,8 @@ namespace Gambit {
         results.aMT2_BM=aMT2_BM;
 
         if (nJet > 3){
-          Jet * jet3=0;
-          for(Jet * current: jets){
+          HEPUtils::Jet* jet3=0;
+          for(HEPUtils::Jet* current: jets){
             if (current == trueBjet1)continue;
             if (current == trueBjet2)continue;
             jet3 = current;
@@ -198,29 +198,29 @@ namespace Gambit {
       }
 
 
-      void analyze(const Event* event) {
+      void analyze(const HEPUtils::Event* event) {
         // Missing energy
-        P4 ptot = event->missingmom();
+        HEPUtils::P4 ptot = event->missingmom();
         double met = event->met();
 
         // Now define vectors of baseline objects
-        vector<Particle*> baselineElectrons;
-        for (Particle* electron : event->electrons()) {
+        vector<HEPUtils::Particle*> baselineElectrons;
+        for (HEPUtils::Particle* electron : event->electrons()) {
           if (electron->pT() > 10. && electron->abseta() < 2.47 &&
               !object_in_cone(*event, *electron, 0.1*electron->pT(), 0.2)) baselineElectrons.push_back(electron);
         }
-        vector<Particle*> baselineMuons;
-        for (Particle* muon : event->muons()) {
+        vector<HEPUtils::Particle*> baselineMuons;
+        for (HEPUtils::Particle* muon : event->muons()) {
           if (muon->pT() > 10. && muon->abseta() < 2.4 &&
               !object_in_cone(*event, *muon, 1.8, 0.2)) baselineMuons.push_back(muon);
         }
 
         // Get b jets with efficiency and mistag (fake) rates
-        vector<Jet*> baselineJets, bJets; // trueBJets; //for debugging
-        for (Jet* jet : event->jets()) {
+        vector<HEPUtils::Jet*> baselineJets, bJets; // trueBJets; //for debugging
+        for (HEPUtils::Jet* jet : event->jets()) {
           if (jet->pT() > 20. && jet->abseta() < 10.0) baselineJets.push_back(jet);
           if (jet->abseta() < 2.5 && jet->pT() > 25.) {
-            if ((jet->btag() && rand01() < 0.75) || (!jet->btag() && rand01() < 0.02)) bJets.push_back(jet);
+            if ((jet->btag() && HEPUtils::rand01() < 0.75) || (!jet->btag() && HEPUtils::rand01() < 0.02)) bJets.push_back(jet);
           }
         }
 
@@ -229,31 +229,31 @@ namespace Gambit {
 
 
         // Overlap removal
-        vector<Particle*> signalElectrons, signalMuons;
-        vector<Particle*> electronsForVeto, muonsForVeto;
-        vector<Jet*> goodJets, signalJets;
+        vector<HEPUtils::Particle*> signalElectrons, signalMuons;
+        vector<HEPUtils::Particle*> electronsForVeto, muonsForVeto;
+        vector<HEPUtils::Jet*> goodJets, signalJets;
 
         // Note that ATLAS use |eta|<10 for removing jets close to electrons
         // Then 2.8 is used for the rest of the overlap process
         // Then the signal cut is applied for signal jets
 
         // Remove any jet within dR=0.2 of an electron
-        for (Jet* j : baselineJets) {
-          if (!any(baselineElectrons, [&](Particle* e){ return deltaR_eta(*e, *j) < 0.2; })) {
+        for (HEPUtils::Jet* j : baselineJets) {
+          if (!any(baselineElectrons, [&](HEPUtils::Particle* e){ return deltaR_eta(*e, *j) < 0.2; })) {
             if (j->abseta() < 2.8) goodJets.push_back(j);
             if (j->abseta() < 2.5 && j->pT() > 25) signalJets.push_back(j);
           }
         }
 
         // Remove electrons and muons within dR=0.4 of surviving jets
-        for (Particle* e : baselineElectrons) {
-          if (!any(goodJets, [&](const Jet* j){ return deltaR_eta(*e, *j) < 0.4; })) {
+        for (HEPUtils::Particle* e : baselineElectrons) {
+          if (!any(goodJets, [&](const HEPUtils::Jet* j){ return deltaR_eta(*e, *j) < 0.4; })) {
             electronsForVeto.push_back(e);
             if (e->pT() > 25) signalElectrons.push_back(e);
           }
         }
-        for (Particle* m : baselineMuons) {
-          if (!any(goodJets, [&](const Jet* j){ return deltaR_eta(*m, *j) < 0.4; })) {
+        for (HEPUtils::Particle* m : baselineMuons) {
+          if (!any(goodJets, [&](const HEPUtils::Jet* j){ return deltaR_eta(*m, *j) < 0.4; })) {
             muonsForVeto.push_back(m);
             if (m->pT() > 25) signalMuons.push_back(m);
           }
@@ -303,7 +303,7 @@ namespace Gambit {
         double metOverSqrtHT=met/sqrt(HT);
 
         //Calculate mT
-        P4 lepVec;
+        HEPUtils::P4 lepVec;
         if(nElectrons==1)lepVec=signalElectrons[0]->mom();
         if(nMuons==1)lepVec=signalMuons[0]->mom();
         //cout << "DPHI" << ptot.deltaPhi(lepVec) << endl;
@@ -315,7 +315,7 @@ namespace Gambit {
 
         //Calculate meff (all jets with pT>30 GeV, lepton pT and met)
         double meff = met + lepVec.pT();
-        for (Jet* jet : signalJets) {
+        for (HEPUtils::Jet* jet : signalJets) {
           if(jet->pT()>30.)meff += jet->pT();
         }
         //Cutflow flags
@@ -743,12 +743,6 @@ namespace Gambit {
 
         cout << "RESULTS 1LEP " << _numTN1Shape_bin1 << " " <<  _numTN1Shape_bin2 << " " << _numTN1Shape_bin3 << " " << _numTN2 << " " <<  _numTN3 << " " << _numBC1 << " " << _numBC2 << " " << _numBC3 << endl;
 
-      }
-
-
-      double loglikelihood() {
-        /// @todo Implement!
-        return 0;
       }
 
 

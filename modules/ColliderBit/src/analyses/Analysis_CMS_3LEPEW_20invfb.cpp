@@ -20,7 +20,7 @@ namespace Gambit {
 
     using namespace std;
 
-    class Analysis_CMS_3LEPEW_20invfb : public BaseAnalysis {
+    class Analysis_CMS_3LEPEW_20invfb : public HEPUtilsAnalysis {
     private:
     
       // Array of signal regions, set to zero
@@ -43,17 +43,17 @@ namespace Gambit {
 	
       }
     
-      void JetLeptonOverlapRemoval(vector<Jet*> &jetvec, vector<Particle*> &lepvec, double DeltaRMax) {
+      void JetLeptonOverlapRemoval(vector<HEPUtils::Jet*> &jetvec, vector<HEPUtils::Particle*> &lepvec, double DeltaRMax) {
 	//Routine to do jet-lepton check
 	//Discards jets if they are within DeltaRMax of a lepton
       
-	vector<Jet*> Survivors;
+	vector<HEPUtils::Jet*> Survivors;
       
 	for(unsigned int itjet = 0; itjet < jetvec.size(); itjet++) {
 	  bool overlap = false;
-	  P4 jetmom=jetvec.at(itjet)->mom();
+	  HEPUtils::P4 jetmom=jetvec.at(itjet)->mom();
 	  for(unsigned int itlep = 0; itlep < lepvec.size(); itlep++) {
-	    P4 lepmom=lepvec.at(itlep)->mom();
+	    HEPUtils::P4 lepmom=lepvec.at(itlep)->mom();
 	    float dR;
 	  
 	    dR=jetmom.deltaR_eta(lepmom);
@@ -68,17 +68,17 @@ namespace Gambit {
 	return;
       }
 
-      void LeptonJetOverlapRemoval(vector<Particle*> &lepvec, vector<Jet*> &jetvec, double DeltaRMax) {
+      void LeptonJetOverlapRemoval(vector<HEPUtils::Particle*> &lepvec, vector<HEPUtils::Jet*> &jetvec, double DeltaRMax) {
 	//Routine to do lepton-jet check
 	//Discards leptons if they are within DeltaRMax of a jet
 
-	vector<Particle*> Survivors;
+	vector<HEPUtils::Particle*> Survivors;
       
 	for(unsigned int itlep = 0; itlep < lepvec.size(); itlep++) {
 	  bool overlap = false;
-	  P4 lepmom=lepvec.at(itlep)->mom();
+	  HEPUtils::P4 lepmom=lepvec.at(itlep)->mom();
 	  for(unsigned int itjet= 0; itjet < jetvec.size(); itjet++) {
-	    P4 jetmom=jetvec.at(itjet)->mom();
+	    HEPUtils::P4 jetmom=jetvec.at(itjet)->mom();
 	    float dR;
 	  
 	    dR=jetmom.deltaR_eta(lepmom);
@@ -93,38 +93,38 @@ namespace Gambit {
 	return;
       }
 
-      double TransMass(double eMissing, double ePhi, Particle * thirdLepton ) {
+      double TransMass(double eMissing, double ePhi, HEPUtils::Particle* thirdLepton ) {
 	//Calculate transverse mass
 
 	double mT = sqrt(2*eMissing*(thirdLepton->pT())*(1. - cos(thirdLepton->phi() - ePhi)));
 	return mT;
       }
 
-      void analyze(const Event* event) {
+      void analyze(const HEPUtils::Event* event) {
 
 	// Missing energy
-	P4 ptot = event->missingmom();
+	HEPUtils::P4 ptot = event->missingmom();
 	double met = event->met();
 	double missingPhi = ptot.phi();
 
 	// Now define vectors of baseline objects
-	vector<Particle*> signalElectrons;
-	for (Particle* electron : event->electrons()) {
+	vector<HEPUtils::Particle*> signalElectrons;
+	for (HEPUtils::Particle* electron : event->electrons()) {
 	  if (electron->pT() > 10. && fabs(electron->eta()) < 2.4) signalElectrons.push_back(electron);
 	}
-	vector<Particle*> signalMuons;
-	for (Particle* muon : event->muons()) {
+	vector<HEPUtils::Particle*> signalMuons;
+	for (HEPUtils::Particle* muon : event->muons()) {
 	  if (muon->pT() > 10. && fabs(muon->eta()) < 2.4) signalMuons.push_back(muon);
 	}
-	vector<Particle*> signalTaus;
-	for (Particle* tau : event->taus()) {
+	vector<HEPUtils::Particle*> signalTaus;
+	for (HEPUtils::Particle* tau : event->taus()) {
 	  if (tau->pT() > 20. && fabs(tau->eta()) < 2.4) signalTaus.push_back(tau);
 	}
 
-	vector<Jet*> signalJets;
-	vector<Jet*> bJets;
+	vector<HEPUtils::Jet*> signalJets;
+	vector<HEPUtils::Jet*> bJets;
 
-	for (Jet* jet : event->jets()) {
+	for (HEPUtils::Jet* jet : event->jets()) {
 	  if (jet->pT() > 30. && fabs(jet->eta()) < 2.5) signalJets.push_back(jet); 
 	  if(jet->btag() && fabs(jet->eta()) < 2.5 && jet->pT() > 30.) bJets.push_back(jet);
 	}
@@ -142,13 +142,13 @@ namespace Gambit {
 	int numMuons=signalMuons.size();
 	int numTaus=signalTaus.size();
       
-	vector<Particle*> signalLeptons;
+	vector<HEPUtils::Particle*> signalLeptons;
     
-	for (Particle* ele : signalElectrons) {
+	for (HEPUtils::Particle* ele : signalElectrons) {
 	  signalLeptons.push_back(ele);
 	}
 
-	for (Particle* muo : signalMuons) {
+	for (HEPUtils::Particle* muo : signalMuons) {
 	  signalLeptons.push_back(muo);
 	}
 
@@ -175,8 +175,8 @@ namespace Gambit {
 	      if(signalLeptons.at(lep1)->pid()==-1*signalLeptons.at(lep2)->pid()){
 		flavourSign.at(0) = true;
 		flavourSign.at(1) = false;
-		P4 lepVec1=signalLeptons.at(lep1)->mom();
-		P4 lepVec2=signalLeptons.at(lep2)->mom();
+		HEPUtils::P4 lepVec1=signalLeptons.at(lep1)->mom();
+		HEPUtils::P4 lepVec2=signalLeptons.at(lep2)->mom();
 		double invMass1=(lepVec1+lepVec2).m();
 		if(fabs(invMass1-91.2)<smallestDiff1){
 		  smallestDiff1=fabs(invMass1-91.2);
@@ -187,8 +187,8 @@ namespace Gambit {
 	      //Search for the OSOF pair closest to Z->tau tau dilepton, use remaining lepton for transverse mass
 	      else if((signalLeptons.at(lep1)->pid() * signalLeptons.at(lep2)->pid()) < 0 && !flavourSign.at(0)){
 		flavourSign.at(1) = true;
-		P4 lepVec1=signalLeptons.at(lep1)->mom();
-		P4 lepVec2=signalLeptons.at(lep2)->mom();
+		HEPUtils::P4 lepVec1=signalLeptons.at(lep1)->mom();
+		HEPUtils::P4 lepVec2=signalLeptons.at(lep2)->mom();
 		double invMass2=(lepVec1+lepVec2).m();
 		if(fabs(invMass2-50)<smallestDiff2){
 		  smallestDiff2=fabs(invMass2-50);
@@ -205,9 +205,9 @@ namespace Gambit {
 	  //With SS pair
 	  if(signalLeptons.at(0)->pid() * signalLeptons.at(1)->pid() > 0){
 	    flavourSign.at(2) = true;
-	    P4 lepVec1=signalLeptons.at(0)->mom();
-	    P4 lepVec2=signalLeptons.at(1)->mom();
-	    P4 tauVec =signalTaus.at(0)->mom();
+	    HEPUtils::P4 lepVec1=signalLeptons.at(0)->mom();
+	    HEPUtils::P4 lepVec2=signalLeptons.at(1)->mom();
+	    HEPUtils::P4 tauVec =signalTaus.at(0)->mom();
 	    double invMass1 = (lepVec1+tauVec).m();
 	    double invMass2 = (lepVec2+tauVec).m();
 	    if(fabs(invMass1 - 60)<fabs(invMass2 - 60)){
@@ -223,14 +223,14 @@ namespace Gambit {
 	  else if(signalLeptons.at(0)->pid()!= -1*signalLeptons.at(1)->pid()){
 	    flavourSign.at(3) = true;
 	    if(signalLeptons.at(0)->pid() * signalTaus.at(0)->pid() < 0){
-	      P4 lepVec=signalLeptons.at(0)->mom();
-	      P4 tauVec=signalTaus.at(0)->mom();
+	      HEPUtils::P4 lepVec=signalLeptons.at(0)->mom();
+	      HEPUtils::P4 tauVec=signalTaus.at(0)->mom();
 	      mLL=(lepVec+tauVec).m();
 	      mT=TransMass(met,missingPhi,signalLeptons.at(1));
 	    }
 	    else {
-	      P4 lepVec=signalLeptons.at(1)->mom();
-	      P4 tauVec=signalTaus.at(0)->mom();
+	      HEPUtils::P4 lepVec=signalLeptons.at(1)->mom();
+	      HEPUtils::P4 tauVec=signalTaus.at(0)->mom();
 	      mLL=(lepVec+tauVec).m();
 	      mT=TransMass(met,missingPhi,signalLeptons.at(0));
 	    }
@@ -241,14 +241,14 @@ namespace Gambit {
       
 	bool signalAccepted=false;
 
-	for(Particle * lepton : signalLeptons){
+	for(HEPUtils::Particle* lepton : signalLeptons){
 	  if(lepton->pT()>20)signalAccepted=true;
 	}
 
 	for(int i=0;i<numLeptons;i++){
 	  for(int j=0;j<numLeptons;j++){
-	    P4 lepVec1=signalLeptons.at(i)->mom();
-	    P4 lepVec2=signalLeptons.at(j)->mom();
+	    HEPUtils::P4 lepVec1=signalLeptons.at(i)->mom();
+	    HEPUtils::P4 lepVec2=signalLeptons.at(j)->mom();
 	    double invMass = (lepVec1+lepVec2).m();
 	    if(invMass<12 && (signalLeptons.at(i)->pid()*signalLeptons.at(j)->pid() < 0)){
 	      signalAccepted=false;
@@ -309,8 +309,8 @@ namespace Gambit {
 	  double smallestDiff=9999;
 	  double testmass=0;
 	  if((signalLeptons.at(0)->pid()>0 && signalLeptons.at(1)->pid()<0 || signalLeptons.at(0)->pid()<0 && signalLeptons.at(1)->pid()>0) && signalLeptons.at(0)->pid()!=-1*signalLeptons.at(1)->pid()){
-	  P4 testlep1=signalLeptons.at(0)->mom();
-	  P4 testlep2=signalLeptons.at(1)->mom();
+	  HEPUtils::P4 testlep1=signalLeptons.at(0)->mom();
+	  HEPUtils::P4 testlep2=signalLeptons.at(1)->mom();
 	  testMLL = (testlep1+testlep2).m();
 	  smallestDiff = fabs(testMLL-50);
 	  testMT=TransMass(met,missingPhi,signalLeptons.at(2));
@@ -318,8 +318,8 @@ namespace Gambit {
 	  }
 	  
 	  if((signalLeptons.at(0)->pid()>0 && signalLeptons.at(2)->pid()<0 || signalLeptons.at(0)->pid()<0 && signalLeptons.at(2)->pid()>0) && signalLeptons.at(0)->pid()!=-1*signalLeptons.at(2)->pid()){
-	  P4 testlep1=signalLeptons.at(0)->mom();
-	  P4 testlep2=signalLeptons.at(2)->mom();
+	  HEPUtils::P4 testlep1=signalLeptons.at(0)->mom();
+	  HEPUtils::P4 testlep2=signalLeptons.at(2)->mom();
 	  testmass = (testlep1+testlep2).m();
 	  if(fabs(testmass-50)<smallestDiff){
 	  testMLL=testmass;
@@ -330,8 +330,8 @@ namespace Gambit {
 	  }
 	  
 	  if((signalLeptons.at(1)->pid()>0 && signalLeptons.at(2)->pid()<0 || signalLeptons.at(1)->pid()<0 && signalLeptons.at(2)->pid()>0) && signalLeptons.at(1)->pid()!=-1*signalLeptons.at(2)->pid()){
-	  P4 testlep1=signalLeptons.at(1)->mom();
-	  P4 testlep2=signalLeptons.at(2)->mom();
+	  HEPUtils::P4 testlep1=signalLeptons.at(1)->mom();
+	  HEPUtils::P4 testlep2=signalLeptons.at(2)->mom();
 	  testmass = (testlep1+testlep2).m();
 	  if(fabs(testmass-50)<smallestDiff){
 	  testMLL=testmass;
@@ -361,11 +361,6 @@ namespace Gambit {
 	}
 	std::cout << std::endl;
       
-      }
-      
-      double loglikelihood() {
-	/// @todo Implement!
-	return 1.0;
       }
       
       void collect_results() {

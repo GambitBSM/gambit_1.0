@@ -72,7 +72,7 @@ START_MODULE
   #define CAPABILITY ListOfAnalyses
   START_CAPABILITY
     #define FUNCTION specifyAnalysisPointerVector
-    START_FUNCTION(std::vector<Gambit::ColliderBit::BaseAnalysis*>)
+    START_FUNCTION(std::vector<Gambit::ColliderBit::HEPUtilsAnalysis*>)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
     #undef FUNCTION
   #undef CAPABILITY
@@ -191,7 +191,7 @@ START_MODULE
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
     DEPENDENCY(ReconstructedEvent, HEPUtils::Event)
     DEPENDENCY(HardScatteringSim, Gambit::ColliderBit::SpecializablePythia)
-    DEPENDENCY(ListOfAnalyses, std::vector<Gambit::ColliderBit::BaseAnalysis*>)
+    DEPENDENCY(ListOfAnalyses, std::vector<Gambit::ColliderBit::HEPUtilsAnalysis*>)
     //BACKEND_REQ_FROM_GROUP(lnlike_marg_poisson, lnlike_marg_poisson_lognormal_error, (), double, (int&, double&, double&, double&) )
     //BACKEND_REQ_FROM_GROUP(lnlike_marg_poisson, lnlike_marg_poisson_gaussian_error, (), double, (int&, double&, double&, double&) )
     //BACKEND_GROUP(lnlike_marg_poisson)

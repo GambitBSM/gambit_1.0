@@ -25,7 +25,7 @@ namespace Gambit {
   namespace ColliderBit {
 
 
-    class Analysis_ATLAS_2bStop_20invfb : public BaseAnalysis {
+    class Analysis_ATLAS_2bStop_20invfb : public HEPUtilsAnalysis {
     private:
 
       // Numbers passing cuts
@@ -54,49 +54,49 @@ namespace Gambit {
 
       }
 
-      void analyze(const Event* event) {
+      void analyze(const HEPUtils::Event* event) {
 
         // Missing energy
-        P4 ptot = event->missingmom();
+        HEPUtils::P4 ptot = event->missingmom();
         double met = event->met();
 
         // Now define vectors of baseline objects
-        vector<Particle*> baselineElectrons;
-        for (Particle* electron : event->electrons()) {
+        vector<HEPUtils::Particle*> baselineElectrons;
+        for (HEPUtils::Particle* electron : event->electrons()) {
           if (electron->pT() > 7. && fabs(electron->eta()) < 2.47) baselineElectrons.push_back(electron);
         }
-        vector<Particle*> baselineMuons;
-        for (Particle* muon : event->muons()) {
+        vector<HEPUtils::Particle*> baselineMuons;
+        for (HEPUtils::Particle* muon : event->muons()) {
           if (muon->pT() > 6. && fabs(muon->eta()) < 2.4) baselineMuons.push_back(muon);
         }
 
         const std::vector<double>  a = {0,10.};
         const std::vector<double>  b = {0,10000.};
         const std::vector<double> c = {0.60};
-        BinnedFn2D<double> _eff2d(a,b,c);
+        HEPUtils::BinnedFn2D<double> _eff2d(a,b,c);
 
-        vector<Jet*> baselineJets;
-        vector<Jet*> bJets;
-        vector<Jet*> trueBJets; //for debugging
+        vector<HEPUtils::Jet*> baselineJets;
+        vector<HEPUtils::Jet*> bJets;
+        vector<HEPUtils::Jet*> trueBJets; //for debugging
 
-        for (Jet* jet : event->jets()) {
+        for (HEPUtils::Jet* jet : event->jets()) {
           if (jet->pT() > 20. && fabs(jet->eta()) < 4.9) baselineJets.push_back(jet);
         }
 
         // Overlap removal
-        vector<Particle*> signalElectrons;
-        vector<Particle*> signalMuons;
-        vector<Particle*> electronsForVeto;
-        vector<Particle*> muonsForVeto;
-        vector<Jet*> goodJets;
-        vector<Jet*> signalJets;
+        vector<HEPUtils::Particle*> signalElectrons;
+        vector<HEPUtils::Particle*> signalMuons;
+        vector<HEPUtils::Particle*> electronsForVeto;
+        vector<HEPUtils::Particle*> muonsForVeto;
+        vector<HEPUtils::Jet*> goodJets;
+        vector<HEPUtils::Jet*> signalJets;
 
         // Remove any jet within dR=0.2 of an electrons
         for (size_t iJet=0;iJet<baselineJets.size();iJet++) {
           bool overlap=false;
-          P4 jetVec=baselineJets.at(iJet)->mom();
+          HEPUtils::P4 jetVec=baselineJets.at(iJet)->mom();
           for (size_t iEl=0;iEl<baselineElectrons.size();iEl++) {
-            P4 elVec=baselineElectrons.at(iEl)->mom();
+            HEPUtils::P4 elVec=baselineElectrons.at(iEl)->mom();
             if (fabs(elVec.deltaR_eta(jetVec))<0.2)overlap=true;
           }
           if (!overlap&&fabs(baselineJets.at(iJet)->eta())<2.8)goodJets.push_back(baselineJets.at(iJet));
@@ -106,9 +106,9 @@ namespace Gambit {
         // Remove electrons with dR=0.4 or surviving jets
         for (size_t iEl=0;iEl<baselineElectrons.size();iEl++) {
           bool overlap=false;
-          P4 elVec=baselineElectrons.at(iEl)->mom();
+          HEPUtils::P4 elVec=baselineElectrons.at(iEl)->mom();
           for (size_t iJet=0;iJet<goodJets.size();iJet++) {
-            P4 jetVec=goodJets.at(iJet)->mom();
+            HEPUtils::P4 jetVec=goodJets.at(iJet)->mom();
             if (fabs(elVec.deltaR_eta(jetVec))<0.4)overlap=true;
           }
           if (!overlap && elVec.pT()>25.)signalElectrons.push_back(baselineElectrons.at(iEl));
@@ -119,17 +119,17 @@ namespace Gambit {
         for (size_t iMu=0;iMu<baselineMuons.size();iMu++) {
           bool overlap=false;
 
-          P4 muVec=baselineMuons.at(iMu)->mom();
+          HEPUtils::P4 muVec=baselineMuons.at(iMu)->mom();
 
           for (size_t iJet=0;iJet<goodJets.size();iJet++) {
-            P4 jetVec=goodJets.at(iJet)->mom();
+            HEPUtils::P4 jetVec=goodJets.at(iJet)->mom();
             if (fabs(muVec.deltaR_eta(jetVec))<0.4)overlap=true;
           }
           if (!overlap && muVec.pT()>25.)signalMuons.push_back(baselineMuons.at(iMu));
           if(!overlap)muonsForVeto.push_back(baselineMuons.at(iMu));
         }
 
-        for (Jet* jet : signalJets) {
+        for (HEPUtils::Jet* jet : signalJets) {
           bool hasTag=has_tag(_eff2d, jet->eta(), jet->pT());
           if(jet->btag() && hasTag && fabs(jet->eta()) < 2.5 && jet->pT() > 20.) bJets.push_back(jet);
         }
@@ -269,11 +269,11 @@ namespace Gambit {
 
         //Calculate meff (all jets with pT>20 GeV, and met)
         double meff = met;
-        for (Jet* jet : signalJets) {
+        for (HEPUtils::Jet* jet : signalJets) {
           if(jet->pT()>20.)meff += jet->pT();
         }
         double meff2 = met; double meff3 = met; int nummeff=0;
-        for (Jet* jet : signalJets) {
+        for (HEPUtils::Jet* jet : signalJets) {
           nummeff++;
           if(nummeff<=2 && jet->pT()>20.)meff2 += jet->pT();
           if(nummeff<=3 && jet->pT()>20.)meff3 += jet->pT();
@@ -282,7 +282,7 @@ namespace Gambit {
 
         //Calculate HT,3 (all jets except 3 highest pT)
         double ht3 = 0; int num=0;
-        for (Jet* jet : signalJets) {
+        for (HEPUtils::Jet* jet : signalJets) {
           num++;
           if(num>3 && jet->pT()>20.)ht3 += jet->pT();
         }
@@ -404,12 +404,6 @@ namespace Gambit {
         cout << "RESULTS 2B " << _numSRA << " "  << _numSRB << " " << _numSRA15 << " " <<  _numSRA20 << " " <<  _numSRA25 << " " << _numSRA30 << " " <<  _numSRA35 << endl;
 
 
-      }
-
-
-      double loglikelihood() {
-        /// @todo Implement!
-        return 0;
       }
 
 
