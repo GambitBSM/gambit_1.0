@@ -903,9 +903,8 @@ namespace Gambit
                  << std::endl;
           errmsg << "Status flags:" << endl;
           errmsg << " 0: model incompatibility" << endl;
-          errmsg << "-1: backend absent" << endl;
-          errmsg << "-2: function absent from backend" << endl;
-          errmsg << "-3: required BOSSed class missing => backend providing class absent" << endl << endl; 
+          errmsg << "-1: module absent" << endl;
+          errmsg << "-2: function absent" << endl << endl;
         }
         errmsg << "Please check inifile for typos, and make sure that the" << endl;
         errmsg << "models you are scanning are compatible with at least one function" << endl;
@@ -1748,10 +1747,17 @@ namespace Gambit
         {
           errmsg << "\nNote that viable candidates exist but have been disabled:\n"
                  <<     printGenericFunctorList(disabledVertexCandidates)
+                 << std::endl
+                 << "Status flags:" << endl
+                 << " 0: model incompatibility" << endl
+                 << "-1: backend absent" << endl
+                 << "-2: function absent from backend" << endl
+                 << "-3: required BOSSed class missing => backend providing class absent" 
+                 << endl
                  << "\nPlease check that all shared objects exist for the"
                  << "\nnecessary backends, and that they contain all the"
                  << "\nnecessary functions required for this scan. Also "
-                 << "\ncheck your backend rules and YAML file.";
+                 << "\ncheck your backend rules and YAML file.\n";
         }
         dependency_resolver_error().raise(LOCAL_INFO,errmsg.str());
       }
