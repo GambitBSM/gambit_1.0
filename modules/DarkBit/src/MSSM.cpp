@@ -208,7 +208,7 @@ namespace Gambit {
       using std::vector;
       using std::string;
 
-      // FIXME: Add test that this is really chi0_1
+      // FIXME: Add test that this is really ~chi0_1
       std::string DMid = Dep::DarkMatter_ID->singleID();
 
       const DecayTable* tbl = &(*Dep::decay_rates);
@@ -217,9 +217,12 @@ namespace Gambit {
       TH_ProcessCatalog catalog;      
       
       // Import Decay information
+      
+      // TODO: Decide which to include
+      const vector<string> decaysOfInterest = initVector<string>
+        ("H+", "H-", "h0_2", "A0");        
+      
       double minBranching = 0.0; // TODO: Set this from yaml?
-      vector<string> decaysOfInterest = initVector<string>
-        ("H+", "H-", "h0_2", "A0");  // TODO: Decide which to include.
       for(auto iState_it = decaysOfInterest.begin();
           iState_it != decaysOfInterest.end(); ++iState_it)
       {
@@ -248,9 +251,60 @@ namespace Gambit {
         catalog.processList.push_back(process);
       }      
       
-      // Declare DM annihilation process                   
-      TH_Process process(DMid, DMid);
+      // Spectrum objects.
+      const SMplusUV* matched_spectra = *Dep::MSSM_spectrum;
+      const Spectrum* spec = matched_spectra->get_UV();
+      const Spectrum* SM   = matched_spectra->get_SM();
+      const SMInputs& SMI  = matched_spectra->get_SMINPUTS();  
+      
+      // Get SM masses
+      #define getSMmass(Name, spinX2) catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> (Name , TH_ParticleProperty(SM->phys.get_Pole_Mass(Name), spinX2)));      
+      getSMmass("e-",     1);
+      getSMmass("e+",     1);
+      getSMmass("mu-",    1);
+      getSMmass("mu+",    1);
+      getSMmass("tau-",   1);
+      getSMmass("tau+",   1);
+      getSMmass("nu_1",   1);
+      getSMmass("nubar_1",1); 
+      getSMmass("nu_2",   1);
+      getSMmass("nubar_2",1); 
+      getSMmass("nu_3",   1);
+      getSMmass("nubar_3",1);      
+      getSMmass("Z0",     2);
+      getSMmass("W+",     2);
+      getSMmass("W-",     2);      
+      getSMmass("g",      2);   
+      getSMmass("gamma",  2);   
+      // Pole masses not available for the light quarks.
+      catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("d_1"   , TH_ParticleProperty(SMI.mD,   1))); // md(2 GeV)^MS-bar, not pole mass
+      catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("dbar_1", TH_ParticleProperty(SMI.mD,   1))); // md(2 GeV)^MS-bar, not pole mass
+      catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("u_1"   , TH_ParticleProperty(SMI.mU,   1))); // mu(2 GeV)^MS-bar, not pole mass
+      catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("ubar_1", TH_ParticleProperty(SMI.mU,   1))); // mu(2 GeV)^MS-bar, not pole mass
+      catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("d_2"   , TH_ParticleProperty(SMI.mS,   1))); // ms(2 GeV)^MS-bar, not pole mass
+      catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("dbar_2", TH_ParticleProperty(SMI.mS,   1))); // ms(2 GeV)^MS-bar, not pole mass
+      catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("u_2"   , TH_ParticleProperty(SMI.mCmC, 1))); // mc(mc)^MS-bar, not pole mass
+      catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("ubar_2", TH_ParticleProperty(SMI.mCmC, 1))); // mc(mc)^MS-bar, not pole mass
+      getSMmass("d_3",    1);
+      getSMmass("dbar_3", 1);
+      getSMmass("u_3",    1);
+      getSMmass("ubar_3", 1);
+      #undef getSMmass
+      // Get MSSM masses
+      // TODO: Import more masses? (find wich ones are needed)
+      #define getMSSMmass(Name, spinX2) catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> (Name , TH_ParticleProperty(spec->phys.get_Pole_Mass(Name), spinX2)));
+      getMSSMmass("H+"     , 0);
+      getMSSMmass("H-"     , 0);
+      getMSSMmass("h0_1"   , 0);
+      getMSSMmass("h0_2"   , 0);
+      getMSSMmass("A0"     , 0);      
+      getMSSMmass("~chi0_1", 1);
+      #undef getMSSMmass
 
+      // Set DarkSUSY DM mass parameter used in 3-body decays
+      BEreq::IBintvars->ibcom_mx = catalog.getParticleProperty(DMid).mass;
+
+      /*
       // Get DarkSUSY mass spectrum
       DS_MSPCTM mymspctm= *BEreq::mspctm;
 
@@ -293,8 +347,9 @@ namespace Gambit {
       // DM mass   
       catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> (DMid, TH_ParticleProperty(mymspctm.mass(42),    1)));
 
-      // Set DarkSUSY DM mass parameter used in 3-body decays
-      BEreq::IBintvars->ibcom_mx = catalog.getParticleProperty(DMid).mass;
+      */
+      // Declare DM annihilation process                   
+      TH_Process process(DMid, DMid);      
 
       // Helper variables
       int index; 

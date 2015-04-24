@@ -99,8 +99,8 @@ namespace Gambit {
             if ( not Dep::SimYieldTable->hasChannel(it->finalStateIDs[0],
                   it->finalStateIDs[1], "gamma") )
             {
-              missingFinalStates.insert(it->finalStateIDs[0]);
-              missingFinalStates.insert(it->finalStateIDs[1]);
+              if( Dep::SimYieldTable->hasAnyChannel(it->finalStateIDs[0])) missingFinalStates.insert(it->finalStateIDs[0]);
+              if( Dep::SimYieldTable->hasAnyChannel(it->finalStateIDs[1])) missingFinalStates.insert(it->finalStateIDs[1]);
             }
           }
         }
@@ -108,14 +108,11 @@ namespace Gambit {
         {
           if ( not runOptions->getValueOrDef(false, "ignore_three_body") )
           {
-            if ( not Dep::SimYieldTable->hasChannel(it->finalStateIDs[0],
-                  "gamma") )
+            if ( Dep::SimYieldTable->hasAnyChannel(it->finalStateIDs[0]) and not Dep::SimYieldTable->hasChannel(it->finalStateIDs[0], "gamma") )
               missingFinalStates.insert(it->finalStateIDs[0]);
-            if ( not Dep::SimYieldTable->hasChannel(it->finalStateIDs[1],
-                  "gamma") )
+            if ( Dep::SimYieldTable->hasAnyChannel(it->finalStateIDs[1]) and not Dep::SimYieldTable->hasChannel(it->finalStateIDs[1], "gamma") )
               missingFinalStates.insert(it->finalStateIDs[1]);
-            if ( not Dep::SimYieldTable->hasChannel(it->finalStateIDs[2],
-                  "gamma") )
+            if ( Dep::SimYieldTable->hasAnyChannel(it->finalStateIDs[2]) and not Dep::SimYieldTable->hasChannel(it->finalStateIDs[2], "gamma") )
               missingFinalStates.insert(it->finalStateIDs[2]);
           }
         }
