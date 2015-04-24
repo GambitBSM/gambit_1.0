@@ -27,8 +27,6 @@
 #include "gambit/Elements/gambit_module_headers.hpp"
 #include "gambit/ColliderBit/ColliderBit_rollcall.hpp"
 
-// Again with my push not showing up... What gits?
-
 namespace Gambit {
   namespace ColliderBit {
 
@@ -106,9 +104,9 @@ namespace Gambit {
             Loop::executeIteration(END_SUBPROCESS);
           }
           std::cout << "\n\n\n\n Operation of Pythia named " << *iter
-                    << " number " << std::to_string(pythiaNumber) << " has finished.";
+                    << " number " << std::to_string(pythiaNumber) << " has finished." << std::endl;
           for (size_t i = 0; i < (size_t) omp_get_max_threads(); ++i)
-            std::cout << "\n  Thread " << i << ": xsec = " << xsecArray[i] << " +- " << xsecerrArray[i];
+            std::cout << "  Thread " << i << ": xsec = " << xsecArray[i] << " +- " << xsecerrArray[i] << " pb" << std::endl;
           #ifdef HESITATE
           std::cout<<"\n\n [Press Enter]";
           std::getchar();
@@ -132,6 +130,7 @@ namespace Gambit {
       using namespace Pipes::getPythia;
 
       if (resetPythiaFlag and *Loop::iteration > INIT) {
+
         /// Each thread gets its own Pythia instance.
         /// Thus, the Pythia instantiation is *after* INIT.
         std::vector<std::string> pythiaOptions;
@@ -156,9 +155,11 @@ namespace Gambit {
         result = mkPythia(*iter, pythiaOptions);
         pythiaOptions.clear();
         resetPythiaFlag = false;
+
       } else if (*Loop::iteration == END_SUBPROCESS) {
-        xsecArray[omp_get_thread_num()] = result->pythia()->info.sigmaGen();
-        xsecerrArray[omp_get_thread_num()] = result->pythia()->info.sigmaErr();
+
+        xsecArray[omp_get_thread_num()] = result->pythia()->info.sigmaGen() * 1e9; //< note converting mb to pb units
+        xsecerrArray[omp_get_thread_num()] = result->pythia()->info.sigmaErr() * 1e9; //< note converting mb to pb units
 
         /// Each thread gets its own Pythia instance.
         /// Thus, the Pythia memory clean-up is *before* FINALIZE.
@@ -166,11 +167,14 @@ namespace Gambit {
         delete result;
         result = 0;
         resetPythiaFlag = true;
+
       } else if (*Loop::iteration == FINALIZE) {
+
         /// Memory clean-up: xsecArrays
         /// @TODO: where is the matching allocation? Careful with these deletes
-        delete xsecArray;
-        delete xsecerrArray;
+        delete[] xsecArray;
+        delete[] xsecerrArray;
+
       }
     }
 
@@ -599,30 +603,45 @@ namespace Gambit {
     void runAnalyses(ColliderLogLikes& result)
     {
       using namespace Pipes::runAnalyses;
-      if (*Loop::iteration == INIT)
-        if (*Loop::iteration == INIT or *Loop::iteration == END_SUBPROCESS) return;
 
-      if (*Loop::iteration == FINALIZE)
+      if (*Loop::iteration == INIT) {
+
+        // for (auto anaPtr = Dep::ListOfAnalyses->begin(); anaPtr != Dep::ListOfAnalyses->end(); ++anaPtr) {
+        //   (*anaPtr)->set_xsec(-1, -1);
+        // }
+
+      } else if (*Loop::iteration == END_SUBPROCESS) {
+
+        for (auto anaPtr = Dep::ListOfAnalyses->begin(); anaPtr != Dep::ListOfAnalyses->end(); ++anaPtr)
         {
-          // The final iteration: get log likelihoods for the analyses
-          result.clear();
+          /// @TODO Clean this crap up... xsecArrays should be more Gambity.
+          /// @TODO THIS IS HARDCODED FOR ONLY ONE THREAD!!!
+          cout << "Adding xsec = " << xsecArray[0] << " +- " << xsecerrArray[0] << " pb" << endl;
+          (*anaPtr)->add_xsec(xsecArray[0], xsecerrArray[0]);
+        }
+
+      } else if (*Loop::iteration == FINALIZE) {
+
+        // The final iteration: get log likelihoods for the analyses
+        result.clear();
+        for (auto anaPtr = Dep::ListOfAnalyses->begin(); anaPtr != Dep::ListOfAnalyses->end(); ++anaPtr)
+        {
+          cout << "Set xsec from ana = " << (*anaPtr)->xsec() << " pb" << endl;
+          cout << "SR number test " << (*anaPtr)->get_results()[0].n_signal << endl;
+          result.push_back((*anaPtr)->get_results());
+        }
+
+      } else {
+
+        #pragma omp critical (accumulatorUpdate)
+        {
+          // Loop over analyses and run them
           for (auto anaPtr = Dep::ListOfAnalyses->begin(); anaPtr != Dep::ListOfAnalyses->end(); ++anaPtr)
-            {
-              /// @todo We need to tell each analysis the cross-section for its process somehow... but how?!?
-              // (*anaPtr)->set_xsec(xsecArray[???]);
-              cout << "SR number test " << (*anaPtr)->get_results()[0].n_signal << endl;
-              result.push_back((*anaPtr)->get_results());
-            }
+            (*anaPtr)->analyze(*Dep::ReconstructedEvent);
         }
-      else
-        {
-          #pragma omp critical (accumulatorUpdate)
-          {
-            // Loop over analyses and run them
-            for (auto anaPtr = Dep::ListOfAnalyses->begin(); anaPtr != Dep::ListOfAnalyses->end(); ++anaPtr)
-              (*anaPtr)->analyze(*Dep::ReconstructedEvent);
-          }
-        }
+
+      }
+
     }
 
 

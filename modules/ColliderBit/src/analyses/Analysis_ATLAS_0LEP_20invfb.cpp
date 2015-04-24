@@ -326,6 +326,7 @@ namespace Gambit {
 
         // const double scale_by = xsec() * 20.3*1000 / num_events();
         const double scale_by = xsec() * 20.3*1000 / cutFlowVector[0];
+        cout << "XXXXXX " << cutFlowVector[0] << " " << num_events() << " " << xsec() << " " << endl;
         //0.0244*1000.*20.1; //sigma * L
         //double trigger_cleaning_eff = 0.90;
 
