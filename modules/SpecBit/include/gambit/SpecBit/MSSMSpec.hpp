@@ -544,17 +544,7 @@ namespace Gambit {
       static const std::set<int> i012345(i012345v, Utils::endA(i012345v));
 
       //Need to add these to generated code before I can use them here.
-      tmp_map["ZD"] =   FInfo2( &Model::get_ZD_pole_slha, i012345, i012345);
-      tmp_map["ZV"] =   FInfo2( &Model::get_ZV_pole_slha, i012, i012);
-      tmp_map["ZU"] =   FInfo2( &Model::get_ZU_pole_slha, i012345, i012345);
-      tmp_map["ZE"] =   FInfo2( &Model::get_ZE_pole_slha, i012345, i012345);
-      tmp_map["ZH"] =   FInfo2( &Model::get_ZH_pole_slha, i01, i01);
-      tmp_map["ZA"] =   FInfo2( &Model::get_ZA_pole_slha, i01, i01);
-      tmp_map["ZHPM"] = FInfo2( &Model::get_ZP_pole_slha, i01, i01);
-      tmp_map["ZN"] =   FInfo2( &Model::get_ZN_pole_slha, i0123, i0123); 
-      tmp_map["UM"] =   FInfo2( &Model::get_UM_pole_slha, i01, i01);
-      tmp_map["UP"] =   FInfo2( &Model::get_UP_pole_slha, i01, i01);
-
+     
       tmp_map["~d"] =   FInfo2( &Model::get_ZD_pole_slha, i012345, i012345);
       tmp_map["~nu"] =   FInfo2( &Model::get_ZV_pole_slha, i012, i012);
       tmp_map["~u"] =   FInfo2( &Model::get_ZU_pole_slha, i012345, i012345);
@@ -562,7 +552,7 @@ namespace Gambit {
       tmp_map["h0"] =   FInfo2( &Model::get_ZH_pole_slha, i01, i01);
       tmp_map["A0"] =   FInfo2( &Model::get_ZA_pole_slha, i01, i01);
       tmp_map["H+"] = FInfo2( &Model::get_ZP_pole_slha, i01, i01);
-      tmp_map["~chi"] =   FInfo2( &Model::get_ZN_pole_slha, i0123, i0123); 
+      tmp_map["~chi0"] =   FInfo2( &Model::get_ZN_pole_slha, i0123, i0123); 
       tmp_map["~chi-"] =   FInfo2( &Model::get_UM_pole_slha, i01, i01);
       tmp_map["~chi+"] =   FInfo2( &Model::get_UP_pole_slha, i01, i01);
    
