@@ -152,7 +152,8 @@ namespace Gambit {
         {
           double s = 4*mass*mass/(1-v*v/4);  // v is relative velocity
           double vh = sqrt(1-4*mh*mh/s);  // vh and vs are lab velocities
-          double vs = v/2;
+          // Hardcoded lower velocity avoids nan results
+          double vs = std::max(v/2, 1e-6);  
           double tp = pow(mass,2)+pow(mh,2)-0.5*s*(1-vs*vh);
           double tm = pow(mass,2)+pow(mh,2)-0.5*s*(1+vs*vh);
 
