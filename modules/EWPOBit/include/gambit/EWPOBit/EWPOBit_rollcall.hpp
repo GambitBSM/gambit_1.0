@@ -53,7 +53,7 @@ START_MODULE
     START_FUNCTION(double)
       BACKEND_REQ(CalcObs_SUSYPOPE, (libsusypope), void, (int&,
                                                           Farray<Fdouble,1,35>&,
-                                                          Farray<Fdouble,1,35>&)
+                                                          Farray<Fdouble,1,35>&))
       BACKEND_OPTION( (SUSYPOPE, 0.2), (libsusypope) )
     #undef FUNCTION
   #undef CAPABILITY 

@@ -1,3 +1,4 @@
+
 #ifdef BACKENDRENAME
   #define BACKENDNAME BACKENDRENAME
 #else
@@ -11,9 +12,9 @@
 
 LOAD_LIBRARY
 
-BE_FUNCTION(SetFlags_SUSYPOPE, void, (int&,int&,int&,int&,int&,int&), "setflags_susypope_", "SetFlags_SUSYPOPE")
-/* This is SetPara_AMW via #define */  
-BE_FUNCTION(SetPara_SUSYPOPE, void, 
+BE_FUNCTION(SetFlags_SUSYPOPE, void, (int&,int&,int&,int&,int&,int&,int&), "setflags_susypope_", "SetFlags_SUSYPOPE")
+/* This is SetPara_AMW via #define */
+BE_FUNCTION(SetPara_SUSYPOPE, void,
             (int&,
              Fdouble&,Fdouble&,Fdouble&,Fdouble&,Fdouble&,
              Fdouble&,Fdouble&,Fdouble&,
@@ -30,7 +31,7 @@ BE_FUNCTION(SetPara_SUSYPOPE, void,
              Fdouble&,Fdouble&,Fdouble&,
              Fdouble_complex&,Fdouble_complex&,Fdouble_complex&,
              Fdouble&,Fdouble&,
-             Fdouble&,Fdouble&,Fdouble&) ), 
+             Fdouble&,Fdouble&,Fdouble&), 
    "setpara_susypope_", "SetPara_SUSYPOPE")
 /* This is CalcObs_AMW via #define */  
  BE_FUNCTION(CalcObs_SUSYPOPE, void,
@@ -67,10 +68,12 @@ BE_INI_FUNCTION{
    
     Fdouble Mho = 125;  /// light Higgs mass (specified for HOpt = 1)
     Fdouble MHH = 1250;  /// heavy Higgs mass (specified for HOpt = 1)
-    Fdouble_complex SA = 0.1; /// Higgs mixing angle
+    Fdouble_complex SA; /// Higgs mixing angle
+    SA.re =0.1;
+    SA.im = 0;
     Farray< Fdouble,1,4> MHiggs;  /// complex MSSM 3 higgs masses 
                                   /// don't specify in real MSSM or HOpt=3
-    Farray<Fdouble_complex,1,3,1,3>UHiggs; ///complex mising matrix for MHiggs
+    Farray<Fdouble_complex,1,3,1,3> UHiggs; ///complex mising matrix for MHiggs
                                        /// don't specify in real MSSM or HOpt=3
    
     
@@ -118,7 +121,7 @@ BE_INI_FUNCTION{
                      MUE, MUEPhase,
                      Atau, At, Ab, Amu, Ac, As, Ae, Au, Ad, 
                      AtPhase, AbPhase, AtauPhase,
-                     M1, M2, M3, 
+                     M_1, M_2, M_3, 
                      M2Phase, M1Phase,
                      Qtau, Qt, Qb);   
     //should probably test the error since we pass it

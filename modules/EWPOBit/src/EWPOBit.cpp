@@ -220,6 +220,7 @@ namespace Gambit
             std::cout << " MW in MSSM = " << MSSM_Obs(1) << std::endl;
             
          }
+      result = 0.1;
       return;
 
     }
