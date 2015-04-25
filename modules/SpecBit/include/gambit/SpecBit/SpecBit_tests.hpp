@@ -630,9 +630,9 @@ namespace Gambit
         for(int i=1; i<=6; i++){
            for(int j=1; j<=6; j++){
               std::set<std::pair<std::string,double>> name_value;
-              name_value.insert(std::make_pair( "ZD", FSmssm.get_physical_slha().ZD(i-1,j-1) ));
-              name_value.insert(std::make_pair( "ZU", FSmssm.get_physical_slha().ZU(i-1,j-1) ));
-              name_value.insert(std::make_pair( "ZE", FSmssm.get_physical_slha().ZE(i-1,j-1) ));
+              name_value.insert(std::make_pair( "~d", FSmssm.get_physical_slha().ZD(i-1,j-1) ));
+              name_value.insert(std::make_pair( "~u", FSmssm.get_physical_slha().ZU(i-1,j-1) ));
+              name_value.insert(std::make_pair( "~e", FSmssm.get_physical_slha().ZE(i-1,j-1) ));
                  
               std::set<std::pair<std::string, double>>::iterator iter;
               for(iter=name_value.begin(); iter != name_value.end(); ++iter)
@@ -649,7 +649,7 @@ namespace Gambit
           
         for(int i=1; i<=3; i++){
            for(int j=1; j<=3; j++){
-              string name = "ZV";
+              string name = "~nu";
               pass = test_getters("get_Pole_Mixing", name,  
                                   spec->phys.get_Pole_Mixing(name,i,j),
                                   FSmssm.get_physical_slha().ZV(i-1, j-1), i,j);
@@ -662,12 +662,12 @@ namespace Gambit
         for(int i=1; i<=2; i++){
            for(int j=1; j<=2; j++){
               std::set<std::pair<std::string,double>> name_value;
-              name_value.insert(std::make_pair( "ZH",   FSmssm.get_physical_slha().ZH(i-1,j-1) ));
-              name_value.insert(std::make_pair( "ZA",   FSmssm.get_physical_slha().ZA(i-1,j-1) ));
-              name_value.insert(std::make_pair( "ZHPM", FSmssm.get_physical_slha().ZP(i-1,j-1) ));
-              name_value.insert(std::make_pair( "UM", flexiblesusy::Re(FSmssm.get_physical_slha()
+              name_value.insert(std::make_pair( "h0",   FSmssm.get_physical_slha().ZH(i-1,j-1) ));
+              name_value.insert(std::make_pair( "A0",   FSmssm.get_physical_slha().ZA(i-1,j-1) ));
+              name_value.insert(std::make_pair( "H+", FSmssm.get_physical_slha().ZP(i-1,j-1) ));
+              name_value.insert(std::make_pair( "~chi-", flexiblesusy::Re(FSmssm.get_physical_slha()
                                      .UM(i-1,j-1)) ));
-              name_value.insert(std::make_pair( "UP", flexiblesusy::Re(FSmssm.get_physical_slha()
+              name_value.insert(std::make_pair( "~chi+", flexiblesusy::Re(FSmssm.get_physical_slha()
                                      .UP(i-1,j-1)) ));
                    
                     
@@ -695,9 +695,9 @@ namespace Gambit
         for(int i=1; i<=6; i++){
            for(int j=1; j<=6; j++){
               std::set<std::pair<std::string,double>> name_value;
-              name_value.insert(std::make_pair( "ZD", FSmssm.get_physical_slha().ZD(i-1,j-1) ));
-              name_value.insert(std::make_pair( "ZU", FSmssm.get_physical_slha().ZU(i-1,j-1) ));
-              name_value.insert(std::make_pair( "ZE", FSmssm.get_physical_slha().ZE(i-1,j-1) ));
+              name_value.insert(std::make_pair( "~d", FSmssm.get_physical_slha().ZD(i-1,j-1) ));
+              name_value.insert(std::make_pair( "~u", FSmssm.get_physical_slha().ZU(i-1,j-1) ));
+              name_value.insert(std::make_pair( "~e", FSmssm.get_physical_slha().ZE(i-1,j-1) ));
                  
               std::set<std::pair<std::string, double>>::iterator iter;
               for(iter=name_value.begin(); iter != name_value.end(); ++iter)
@@ -714,7 +714,7 @@ namespace Gambit
           
         for(int i=1; i<=3; i++){
            for(int j=1; j<=3; j++){
-              string name = "ZV";
+              string name = "~nu";
               pass = test_getters("get_Pole_Mixing", name,  
                                   mssm.phys.get_Pole_Mixing(name,i,j),
                                   FSmssm.get_physical_slha().ZV(i-1, j-1), i,j);
@@ -727,12 +727,12 @@ namespace Gambit
         for(int i=1; i<=2; i++){
            for(int j=1; j<=2; j++){
               std::set<std::pair<std::string,double>> name_value;
-              name_value.insert(std::make_pair( "ZH",   FSmssm.get_physical_slha().ZH(i-1,j-1) ));
-              name_value.insert(std::make_pair( "ZA",   FSmssm.get_physical_slha().ZA(i-1,j-1) ));
-              name_value.insert(std::make_pair( "ZHPM", FSmssm.get_physical_slha().ZP(i-1,j-1) ));
-              name_value.insert(std::make_pair( "UM", flexiblesusy::Re(FSmssm.get_physical_slha()
+              name_value.insert(std::make_pair( "h0",   FSmssm.get_physical_slha().ZH(i-1,j-1) ));
+              name_value.insert(std::make_pair( "A0",   FSmssm.get_physical_slha().ZA(i-1,j-1) ));
+              name_value.insert(std::make_pair( "H+", FSmssm.get_physical_slha().ZP(i-1,j-1) ));
+              name_value.insert(std::make_pair( "~chi-", flexiblesusy::Re(FSmssm.get_physical_slha()
                                      .UM(i-1,j-1)) ));
-              name_value.insert(std::make_pair( "UP", flexiblesusy::Re(FSmssm.get_physical_slha()
+              name_value.insert(std::make_pair( "~chi+", flexiblesusy::Re(FSmssm.get_physical_slha()
                                      .UP(i-1,j-1)) ));
                   
               std::set<std::pair<std::string, double>>::iterator iter;
