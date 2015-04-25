@@ -37,7 +37,8 @@ namespace Gambit
       //  cout << "top 2 body Br's: " << BEreq::cb_sd_top2body->brtopbw << endl;
       result = BEreq::cb_sd_topwidth->toptot2; 
       cout << "top total width: " << BEreq::cb_sd_topwidth->toptot2 << endl;
-    }
+
+    }                                                                           
 
 
     /// SM decays: W+
@@ -220,15 +221,16 @@ namespace Gambit
       //See PDG meson sheet in DecayBit/data/PDG if you want BFs               
     }
 
-    /// SM decays: Higgs
+     ///SM decays: Higgs
     void SMHiggs_decays (DecayTable::Entry& result) 
     {
       // Remember that result does not arrive pristine, but contains the result of the last point.  Make sure to overwrite it fully!
       // This is just an example function that returns junk numbers at the moment.  It should be finished off
       // in order to use SUSYHIT properly.  When it works, a dependency on it added to the all_decays function.
       using namespace Pipes::SMHiggs_decays;
-      const Spectrum* spec = *Dep::SM_spectrum;
-      double m_H = spec->phys.get_Pole_Mass("h0_1"); // Retrieve the masses from the spectrum object.
+      const SubSpectrum* spec = *Dep::SM_spectrum;
+      const SubSpectrum* mssm = *Dep::MSSM_spectrum;
+      double m_H = mssm->phys.get_Pole_Mass("h0_1"); // Retrieve the masses from the spectrum object.
       double m_b = spec->phys.get_Pole_Mass("b");
       double m_t = spec->phys.get_Pole_Mass("t");
       double m_W = spec->phys.get_Pole_Mass("W+");

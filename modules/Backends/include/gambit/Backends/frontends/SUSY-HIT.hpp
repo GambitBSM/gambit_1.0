@@ -85,7 +85,7 @@ BE_VARIABLE(sd_mbmb_type, sd_mbmb, "sd_mbmb_", "cb_sd_mbmb")
 BE_VARIABLE(sd_selectron_type, sd_selectron, "sd_selectron_", "cb_sd_selectron")
 
 // Initialisation function (dependencies)
-BE_INI_DEPENDENCY(MSSM_spectrum, const SMplusUV*)
+BE_INI_DEPENDENCY(MSSM_spectrum, const Spectrum*)
 
 // Initialisation function (definition)
 BE_INI_FUNCTION

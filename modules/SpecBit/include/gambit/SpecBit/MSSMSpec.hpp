@@ -2,7 +2,7 @@
 //   *********************************************
 ///  \file
 ///
-///  MSSM derivation of Spectrum class. Designed
+///  MSSM derived version of SubSpectrum class. Designed
 ///  for easy interface to FlexibleSUSY, but also
 ///  works with SoftSUSY as the backend with an
 ///  appropriately designed intermediate later.
@@ -29,7 +29,7 @@
 
 #include <memory>
 
-#include "gambit/Elements/Spectrum.hpp"
+#include "gambit/Elements/SubSpectrum.hpp"
 #include "gambit/Utils/util_functions.hpp"
 #include "gambit/SpecBit/MSSMSpec_head.hpp"   // "Header" declarations for MSSMSpec class
 
@@ -409,13 +409,14 @@ namespace Gambit {
       // tmp_map["MZ"] = &Model::get_Pole_MZ;
       // tmp_map["MW"] = &Model::get_Pole_MW;
 
-      tmp_map["Z0"] = &Model::get_MVZ_pole_slha;
-      tmp_map["W+"] = &Model::get_MVWm_pole_slha;
-      tmp_map["W-"] = &Model::get_MVWm_pole_slha;
-      //tmp_map["g"] = &Model::get_MGluon_pole_slha;
-      tmp_map["g"] = &Model::get_MVG_pole_slha;
-         //tmp_map["gamma"] = &Model::get_pole_MPhoton;
-      tmp_map["gamma"] = &Model::get_MVP_pole_slha;
+      // ***REMOVED THESE! Leave them to the QedQcdWrapper.***
+      //// tmp_map["Z0"] = &Model::get_MVZ_pole_slha;
+      //// tmp_map["W+"] = &Model::get_MVWm_pole_slha;
+      //// tmp_map["W-"] = &Model::get_MVWm_pole_slha;
+      //// //tmp_map["g"] = &Model::get_MGluon_pole_slha;
+      //// tmp_map["g"] = &Model::get_MVG_pole_slha;
+      ////    //tmp_map["gamma"] = &Model::get_pole_MPhoton;
+      //// tmp_map["gamma"] = &Model::get_MVP_pole_slha;
 
       tmp_map["~g"] = &Model::get_MGlu_pole_slha; 
 
@@ -442,7 +443,7 @@ namespace Gambit {
    template <class Model> double get_MAh1_pole(const Model& model) { return model.get_MAh_pole_slha(1); }
    template <class Model> double get_MHpm1_pole(const Model& model) { return model.get_MHpm_pole_slha(1); }
 
-   // Note! Map fillers appended with "_extraM" or "_extraI" will be treated by the Spectrum object as
+   // Note! Map fillers appended with "_extraM" or "_extraI" will be treated by the SubSpectrum object as
    // alternative routines to call for that getter type.
    // e.g.
    // get_Pole_Mass(name)
@@ -553,6 +554,17 @@ namespace Gambit {
       tmp_map["ZN"] =   FInfo2( &Model::get_ZN_pole_slha, i0123, i0123); 
       tmp_map["UM"] =   FInfo2( &Model::get_UM_pole_slha, i01, i01);
       tmp_map["UP"] =   FInfo2( &Model::get_UP_pole_slha, i01, i01);
+
+      tmp_map["~d"] =   FInfo2( &Model::get_ZD_pole_slha, i012345, i012345);
+      tmp_map["~nu"] =   FInfo2( &Model::get_ZV_pole_slha, i012, i012);
+      tmp_map["~u"] =   FInfo2( &Model::get_ZU_pole_slha, i012345, i012345);
+      tmp_map["~e"] =   FInfo2( &Model::get_ZE_pole_slha, i012345, i012345);
+      tmp_map["h0"] =   FInfo2( &Model::get_ZH_pole_slha, i01, i01);
+      tmp_map["A0"] =   FInfo2( &Model::get_ZA_pole_slha, i01, i01);
+      tmp_map["H+"] = FInfo2( &Model::get_ZP_pole_slha, i01, i01);
+      tmp_map["~chi"] =   FInfo2( &Model::get_ZN_pole_slha, i0123, i0123); 
+      tmp_map["~chi-"] =   FInfo2( &Model::get_UM_pole_slha, i01, i01);
+      tmp_map["~chi+"] =   FInfo2( &Model::get_UP_pole_slha, i01, i01);
    
       /* Could add SM fermion mixing but these are only filled
          when we actually calculate the SM pole masses

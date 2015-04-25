@@ -27,6 +27,10 @@
 ///          (anderkve@fys.uio.no)
 ///  \date 2014 Oct
 ///
+///  \author Ben Farmer
+///          (benjamin.farmer@fysik.su.su)
+///  \date 2015 Apr
+///
 ///  *********************************************
 
 #ifndef __shared_types_hpp__
@@ -35,8 +39,8 @@
 #include "gambit/Elements/numerical_constants.hpp" // Centralised constants header
 //#include "gambit/Elements/funktions.hpp"           // Generalized functions
 #include "gambit/Elements/SMInputs.hpp"            // Struct carrying SMINPUTS block (SLHA2) 
-//#include "gambit/Elements/Spectrum.hpp"            // Spectrum object (carries particle spectrum info)
-#include "gambit/Elements/SMplusUV.hpp"            // Spectrum object plus Standard Model info package
+//#include "gambit/Elements/SubSpectrum.hpp"            // Carries particle spectrum info for single model
+#include "gambit/Elements/Spectrum.hpp"            // Carries BSM plus Standard Model spectrum info
 #include "gambit/Elements/decay_table.hpp"         // Decay table class (carries particle decay info)
 #include "gambit/Utils/model_parameters.hpp"       // Definitions required to understand model parameter objects
 

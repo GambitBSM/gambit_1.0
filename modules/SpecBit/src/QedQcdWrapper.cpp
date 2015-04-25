@@ -3,7 +3,7 @@
 ///  \file
 ///
 ///  This class is used to wrap the QedQcd object used by SoftSUSY
-///  and FlexibleSUSY in a Gambit Spectrum object. This is to enable
+///  and FlexibleSUSY in a Gambit SubSpectrum object. This is to enable
 ///  access to the parameters of the SM defined as a low-energy effective theory 
 ///  (as opposed to correspending information defined in a UV model). 
 ///  Parameters defined this way are often used as input to a physics calculator.

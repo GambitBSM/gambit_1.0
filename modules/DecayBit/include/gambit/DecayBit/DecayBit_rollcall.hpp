@@ -52,7 +52,8 @@ START_MODULE
 
     #define FUNCTION SMHiggs_decays
     START_FUNCTION(DecayTable::Entry)
-    DEPENDENCY(SM_spectrum, Spectrum*) 
+    DEPENDENCY(SM_spectrum, SubSpectrum*)
+    DEPENDENCY(MSSM_spectrum, SubSpectrum*)
     #undef FUNCTION
 
     #define FUNCTION MSSM_h0_1_decays
@@ -175,7 +176,6 @@ START_MODULE
     BACKEND_REQ(cb_sd_sbot3body, (sh_reqd), sd_sbot3body_type)
     BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
     ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
-
     #undef FUNCTION
 
   #undef CAPABILITY
