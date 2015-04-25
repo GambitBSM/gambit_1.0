@@ -13,8 +13,33 @@ Parameters:
   MSSM25atQ: !import LesHouches.in.MSSM_1.yaml
 
 Priors:
-    # none: all parameters fixed.
+    # none: all parameters fixed in this example.
 
+Scanner:
+
+  use_scanner: toy_mcmc
+  
+  scanners:
+    toy_mcmc:
+      plugin: toy_mcmc
+      point_number: 2
+      output_file:  output
+      like:  Likelihood
+            
+ObsLikes:
+
+  # Test DecayBit    
+  - purpose:      Test
+    capability:   decay_rates
+    type:         DecayTable
+
+Rules:
+
+  - capability: MSSM_spectrum 
+    function: get_MSSMatQ_spectrum  
+    options:
+      invalid_point_fatal: true
+      
 ##############################
 # Printer setup
 ##############################
@@ -34,32 +59,6 @@ Printer:
     output_file: "runs/DecayBit_test/samples/gambit_output.txt"
     # name of info file (explains content of output file)
     info_file: "runs/DecayBit_test/samples/gambit_output.info"
-
-Scanner:
-
-  use_scanner: toy_mcmc
-  
-  scanners:
-    toy_mcmc:
-      plugin: toy_mcmc
-      point_number: 2
-      output_file:  output
-      like:  Likelihood
-            
-ObsLikes:
-
-   # Test DecayBit    
-  - purpose:      Test
-    capability:   decay_rates
-    type:         DecayTable
-
-Rules:
-
-  - capability: MSSM_spectrum 
-    function: get_MSSMatQ_spectrum  
-    options:
-      invalid_point_fatal: true
-
 
 #########################
 # Logging setup
