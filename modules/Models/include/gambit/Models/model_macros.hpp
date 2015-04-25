@@ -50,8 +50,7 @@
   #define INTERPRET_AS_PARENT__FUNCTION(FUNC)                     CORE_INTERPRET_AS_PARENT__FUNCTION(FUNC)
   #define INTERPRET_AS_X__DEPENDENCY(MODEL_X, DEP, TYPE)          CORE_INTERPRET_AS_X__DEPENDENCY(MODEL_X, DEP, TYPE)
 #else
-  //#include "gambit/Elements/module_macros_inmodule.hpp"  Seems to be not
-  //relevant (CW 2015-04-24)
+  #include "gambit/Elements/module_macros_inmodule.hpp"
   #define START_MODEL                                             MODULE_START_MODEL
   #define DEFINEPARS(...)                                         /* Do nothing */
   #define MAP_TO_CAPABILITY(PARAMETER,CAPABILITY)                 /* Do nothing */
