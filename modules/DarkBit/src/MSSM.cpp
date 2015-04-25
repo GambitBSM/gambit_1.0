@@ -127,7 +127,7 @@ namespace Gambit {
       }
 
       // use SLHA for initialization initialization
-      else if (ModelInUse("CMSSM") or ModelInUse("MSSM25atQ"))
+      else if (ModelInUse("MSSM25atQ"))
       {
         // Save eaSLHA file to disk
         eaSLHA mySLHA = *Dep::MSSM_spectrum;
@@ -211,12 +211,16 @@ namespace Gambit {
       // FIXME: Add test that this is really ~chi0_1
       std::string DMid = Dep::DarkMatter_ID->singleID();
 
-      const DecayTable* tbl = &(*Dep::decay_rates);
-      
       // Instantiate new ProcessCatalog
       TH_ProcessCatalog catalog;      
+
       
+      /////////////////////////////
       // Import Decay information
+      /////////////////////////////
+
+      // Import based on decay table from DecayBit
+      const DecayTable* tbl = &(*Dep::decay_rates);
       
       // TODO: Decide which to include
       const vector<string> decaysOfInterest = initVector<string>
@@ -250,59 +254,79 @@ namespace Gambit {
         }
         catalog.processList.push_back(process);
       }      
+
+
+      ///////////////////////////
+      // Import particle masses
+      ///////////////////////////
       
-      // Spectrum objects.
+      // Import based on Spectrum objects
       const Spectrum* matched_spectra = *Dep::MSSM_spectrum;
       const SubSpectrum* spec = matched_spectra->get_UV();
       const SubSpectrum* SM   = matched_spectra->get_LE();
       const SMInputs& SMI  = matched_spectra->get_SMINPUTS();  
       
       // Get SM masses
-      #define getSMmass(Name, spinX2) catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> (Name , TH_ParticleProperty(SM->phys.get_Pole_Mass(Name), spinX2)));      
-      getSMmass("e-",     1);
-      getSMmass("e+",     1);
-      getSMmass("mu-",    1);
-      getSMmass("mu+",    1);
-      getSMmass("tau-",   1);
-      getSMmass("tau+",   1);
-      getSMmass("nu_1",   1);
-      getSMmass("nubar_1",1); 
-      getSMmass("nu_2",   1);
-      getSMmass("nubar_2",1); 
-      getSMmass("nu_3",   1);
-      getSMmass("nubar_3",1);      
-      getSMmass("Z0",     2);
-      getSMmass("W+",     2);
-      getSMmass("W-",     2);      
-      getSMmass("g",      2);   
-      getSMmass("gamma",  2);   
-      // Pole masses not available for the light quarks.
-      catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("d_1"   , TH_ParticleProperty(SMI.mD,   1))); // md(2 GeV)^MS-bar, not pole mass
-      catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("dbar_1", TH_ParticleProperty(SMI.mD,   1))); // md(2 GeV)^MS-bar, not pole mass
-      catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("u_1"   , TH_ParticleProperty(SMI.mU,   1))); // mu(2 GeV)^MS-bar, not pole mass
-      catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("ubar_1", TH_ParticleProperty(SMI.mU,   1))); // mu(2 GeV)^MS-bar, not pole mass
-      catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("d_2"   , TH_ParticleProperty(SMI.mS,   1))); // ms(2 GeV)^MS-bar, not pole mass
-      catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("dbar_2", TH_ParticleProperty(SMI.mS,   1))); // ms(2 GeV)^MS-bar, not pole mass
-      catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("u_2"   , TH_ParticleProperty(SMI.mCmC, 1))); // mc(mc)^MS-bar, not pole mass
-      catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("ubar_2", TH_ParticleProperty(SMI.mCmC, 1))); // mc(mc)^MS-bar, not pole mass
-      getSMmass("d_3",    1);
-      getSMmass("dbar_3", 1);
-      getSMmass("u_3",    1);
-      getSMmass("ubar_3", 1);
-      #undef getSMmass
-      // Get MSSM masses
-      // TODO: Import more masses? (find wich ones are needed)
-      #define getMSSMmass(Name, spinX2) catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> (Name , TH_ParticleProperty(spec->phys.get_Pole_Mass(Name), spinX2)));
-      getMSSMmass("H+"     , 0);
-      getMSSMmass("H-"     , 0);
-      getMSSMmass("h0_1"   , 0);
-      getMSSMmass("h0_2"   , 0);
-      getMSSMmass("A0"     , 0);      
-      getMSSMmass("~chi0_1", 1);
-      #undef getMSSMmass
+#define getSMmass(Name, spinX2)                                                \
+      catalog.particleProperties.insert(                                       \
+          std::pair<std::string, TH_ParticleProperty>(                         \
+            Name , TH_ParticleProperty(SM->phys.get_Pole_Mass(Name), spinX2)   \
+            )                                                                  \
+          );    
+      getSMmass("e-",     1)
+      getSMmass("e+",     1)
+      getSMmass("mu-",    1)
+      getSMmass("mu+",    1)
+      getSMmass("tau-",   1)
+      getSMmass("tau+",   1)
+      getSMmass("nu_1",   1)
+      getSMmass("nubar_1",1) 
+      getSMmass("nu_2",   1)
+      getSMmass("nubar_2",1) 
+      getSMmass("nu_3",   1)
+      getSMmass("nubar_3",1)      
+      getSMmass("Z0",     2)
+      getSMmass("W+",     2)
+      getSMmass("W-",     2)      
+      getSMmass("g",      2)   
+      getSMmass("gamma",  2)   
+      getSMmass("d_3",    1)
+      getSMmass("dbar_3", 1)
+      getSMmass("u_3",    1)
+      getSMmass("ubar_3", 1)
+#undef getSMmass
 
-      // Set DarkSUSY DM mass parameter used in 3-body decays
-      BEreq::IBintvars->ibcom_mx = catalog.getParticleProperty(DMid).mass;
+      // Pole masses not available for the light quarks.
+#define getSMmassMS(Name, Mass, spinX2)                                        \
+      catalog.particleProperties.insert(                                       \
+          std::pair<std::string, TH_ParticleProperty>(                         \
+            Name , TH_ParticleProperty(Mass, spinX2)                           \
+            )                                                                  \
+          );    
+      getSMmassMS("d_1"   , SMI.mD,  1) // md(2 GeV)^MS-bar, not pole mass
+      getSMmassMS("dbar_1", SMI.mD,  1) // md(2 GeV)^MS-bar, not pole mass
+      getSMmassMS("u_1"   , SMI.mU,  1) // mu(2 GeV)^MS-bar, not pole mass
+      getSMmassMS("ubar_1", SMI.mU,  1) // mu(2 GeV)^MS-bar, not pole mass
+      getSMmassMS("d_2"   , SMI.mS,  1) // ms(2 GeV)^MS-bar, not pole mass
+      getSMmassMS("dbar_2", SMI.mS,  1) // ms(2 GeV)^MS-bar, not pole mass
+      getSMmassMS("u_2"   , SMI.mCmC,1) // mc(mc)^MS-bar, not pole mass
+      getSMmassMS("ubar_2", SMI.mCmC,1) // mc(mc)^MS-bar, not pole mass
+#undef getSMmassMS
+
+      // Get MSSM masses
+      // TODO: Import more masses? (find which ones are needed)
+#define getMSSMmass(Name, spinX2)                                              \
+      catalog.particleProperties.insert(                                       \
+          std::pair<std::string, TH_ParticleProperty> (                        \
+            Name , TH_ParticleProperty(spec->phys.get_Pole_Mass(Name), spinX2) \
+            ));
+      getMSSMmass("H+"     , 0)
+      getMSSMmass("H-"     , 0)
+      getMSSMmass("h0_1"   , 0)
+      getMSSMmass("h0_2"   , 0)
+      getMSSMmass("A0"     , 0)      
+      getMSSMmass("~chi0_1", 1)
+#undef getMSSMmass
 
       /*
       // Get DarkSUSY mass spectrum
@@ -346,8 +370,13 @@ namespace Gambit {
       catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("H+"     , TH_ParticleProperty(mymspctm.mass(20),    0)));          
       // DM mass   
       catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> (DMid, TH_ParticleProperty(mymspctm.mass(42),    1)));
-
       */
+
+
+      /////////////////////////////////////////
+      // Import two-body annihilation process
+      /////////////////////////////////////////
+
       // Declare DM annihilation process                   
       TH_Process process(DMid, DMid);      
 
@@ -355,27 +384,28 @@ namespace Gambit {
       int index; 
       double m_1, m_2, sv;
 
-      // Macro for setting up 2-body decays
-      // TODO: Move dshayield from GA_AnnYield into this (?)
-#define SETUP_DS_PROCESS(NAME, PARTCH, P1, P2, PREFACTOR)                                   \
-      /* Check if process is kinematically allowed */                                       \
-      m_1 = catalog.getParticleProperty(STRINGIFY(P1)).mass;                                \
-      m_2 = catalog.getParticleProperty(STRINGIFY(P1)).mass;                                \
-      if(m_1 + m_2 < 2*catalog.getParticleProperty(DMid).mass)                              \
-      {                                                                                     \
-        /* Set cross-section */                                                             \
-        index = PARTCH;                                                                     \
-        double CAT(sigma_,NAME) = BEreq::dssigmav(index);                                   \
-        /* Create associated kinematical functions (just dependent on vrel)                 \
-         *  here: s-wave, vrel independent 1-dim constant function */                       \
-        Funk::Funk CAT(kinematicFunction_,NAME) = Funk::cnst(CAT(sigma_,NAME)*PREFACTOR, "v");\
-        /* Create channel identifier string */                                              \
-        std::vector<std::string> CAT(finalStates_,NAME);                                    \
-        CAT(finalStates_,NAME).push_back(STRINGIFY(P1));                                    \
-        CAT(finalStates_,NAME).push_back(STRINGIFY(P2));                                    \
-        /* Create channel and push it into channel list of process */                       \
-        TH_Channel CAT(channel_,NAME)(CAT(finalStates_,NAME), CAT(kinematicFunction_,NAME));\
-        process.channelList.push_back(CAT(channel_,NAME));                                  \
+      // Macro for setting up 2-body decays from results in DS
+#define SETUP_DS_PROCESS(NAME, PARTCH, P1, P2, PREFACTOR)                      \
+      /* Check if process is kinematically allowed */                          \
+      m_1 = catalog.getParticleProperty(STRINGIFY(P1)).mass;                   \
+      m_2 = catalog.getParticleProperty(STRINGIFY(P1)).mass;                   \
+      if(m_1 + m_2 < 2*catalog.getParticleProperty(DMid).mass)                 \
+      {                                                                        \
+        /* Set cross-section */                                                \
+        index = PARTCH;                                                        \
+        double CAT(sigma_,NAME) = BEreq::dssigmav(index);                      \
+        /* Create associated kinematical functions (just dependent on vrel)    \
+         *  here: s-wave, vrel independent 1-dim constant function */          \
+        Funk::Funk CAT(kinematicFunction_,NAME) =                              \
+              Funk::cnst(CAT(sigma_,NAME)*PREFACTOR, "v");                     \
+        /* Create channel identifier string */                                 \
+        std::vector<std::string> CAT(finalStates_,NAME);                       \
+        CAT(finalStates_,NAME).push_back(STRINGIFY(P1));                       \
+        CAT(finalStates_,NAME).push_back(STRINGIFY(P2));                       \
+        /* Create channel and push it into channel list of process */          \
+        TH_Channel CAT(channel_,NAME)(CAT(finalStates_,NAME),                  \
+            CAT(kinematicFunction_,NAME));                                     \
+        process.channelList.push_back(CAT(channel_,NAME));                     \
       }
 
       SETUP_DS_PROCESS(H1H1,      1 , h0_2,   h0_2,   1   )
@@ -411,45 +441,71 @@ namespace Gambit {
       // Undef the macro so it doesn't propagate through GAMBIT
 #undef SETUP_DS_PROCESS
 
-        double M_DM = catalog.getParticleProperty(DMid).mass;
+
+      ///////////////////////////////////////////
+      // Import three-body annihilation process
+      ///////////////////////////////////////////
+
+      double M_DM = catalog.getParticleProperty(DMid).mass;
 
       // Macro for setting up 3-body decays with gammas
-#define SETUP_DS_PROCESS_GAMMA3BODY(NAME, IBCH, P1, P2, IBFUNC, SV_IDX, PREFACTOR)                                  \
-      /* Check if process is kinematically allowed */                                                                 \
-      m_1 = catalog.getParticleProperty(STRINGIFY(P1)).mass;                                                          \
-      m_2 = catalog.getParticleProperty(STRINGIFY(P2)).mass;                                                          \
-      if(m_1 + m_2 < 2*M_DM)                                                                                          \
-      {                                                                                                               \
-        index = SV_IDX;                                                                                             \
-        sv = PREFACTOR*BEreq::dssigmav(index);  /* TODO: Check whether this works */                                \
-        Funk::Funk CAT(kinematicFunction_,NAME) = sv*Funk::func(DSgamma3bdy, STRIP_PARENS(IBFUNC), IBCH, Funk::var("E"), Funk::var("E1"), M_DM, m_1, m_2);\
-        /* Create channel identifier string */                                                                      \
-        std::vector<std::string> CAT(finalStates_,NAME);                                                            \
-        CAT(finalStates_,NAME).push_back("gamma");                                                                  \
-        CAT(finalStates_,NAME).push_back(STRINGIFY(P1));                                                            \
-        CAT(finalStates_,NAME).push_back(STRINGIFY(P2));                                                            \
-        /* Create channel and push it into channel list of process */                                               \
-        TH_Channel CAT(channel_,NAME)(CAT(finalStates_,NAME), CAT(kinematicFunction_,NAME));                        \
-        process.channelList.push_back(CAT(channel_,NAME));                                                          \
+#define SETUP_DS_PROCESS_GAMMA3BODY(NAME,IBCH,P1,P2,IBFUNC,SV_IDX,PREFACTOR) \
+      /* Check if process is kinematically allowed */                        \
+      m_1 = catalog.getParticleProperty(STRINGIFY(P1)).mass;                 \
+      m_2 = catalog.getParticleProperty(STRINGIFY(P2)).mass;                 \
+      if(m_1 + m_2 < 2*M_DM)                                                 \
+      {                                                                      \
+        index = SV_IDX;                                                      \
+        /* TODO: Check whether this works */                                 \
+        sv = PREFACTOR*BEreq::dssigmav(index);                               \
+        Funk::Funk CAT(kinematicFunction_,NAME) = sv*Funk::func(DSgamma3bdy, \
+            STRIP_PARENS(IBFUNC), IBCH, Funk::var("E"), Funk::var("E1"),     \
+            M_DM, m_1, m_2);                                                 \
+        /* Create channel identifier string */                               \
+        std::vector<std::string> CAT(finalStates_,NAME);                     \
+        CAT(finalStates_,NAME).push_back("gamma");                           \
+        CAT(finalStates_,NAME).push_back(STRINGIFY(P1));                     \
+        CAT(finalStates_,NAME).push_back(STRINGIFY(P2));                     \
+        /* Create channel and push it into channel list of process */        \
+        TH_Channel CAT(channel_,NAME)(CAT(finalStates_,NAME),                \
+            CAT(kinematicFunction_,NAME));                                   \
+        process.channelList.push_back(CAT(channel_,NAME));                   \
       }                                        
 
       if ( not runOptions->getValueOrDef<bool>(false, "ignore_three_body") )
       {
-        SETUP_DS_PROCESS_GAMMA3BODY(gammaWW,        1, W+,      W-,     (BEreq::dsIBwwdxdy.pointer()),  13, 1   )     
-        SETUP_DS_PROCESS_GAMMA3BODY(gammaWpHm,      2, W+,      H-,     (BEreq::dsIBwhdxdy.pointer()),  11, 0.5 )   // Prefactor 0.5 since W+H- and W-H+ are summed in DS        
-        SETUP_DS_PROCESS_GAMMA3BODY(gammaWmHp,      2, W-,      H+,     (BEreq::dsIBwhdxdy.pointer()),  11, 0.5 )   // Prefactor 0.5 since W+H- and W-H+ are summed in DS
-        SETUP_DS_PROCESS_GAMMA3BODY(gammaHpHm,      3, H+,      H-,     (BEreq::dsIBhhdxdy.pointer()),  0,  1   )                    
-        SETUP_DS_PROCESS_GAMMA3BODY(gammaee,        4, e+,      e-,     (BEreq::dsIBffdxdy.pointer()) , 15, 1   )
-        SETUP_DS_PROCESS_GAMMA3BODY(gammamumu,      5, mu+,     mu-,    (BEreq::dsIBffdxdy.pointer()) , 17, 1   )
-        SETUP_DS_PROCESS_GAMMA3BODY(gammatautau,    6, tau+,    tau-,   (BEreq::dsIBffdxdy.pointer()) , 19, 1   )
-        SETUP_DS_PROCESS_GAMMA3BODY(gammauubar,     7, u,       ubar,   (BEreq::dsIBffdxdy.pointer()) , 20, 1   )
-        SETUP_DS_PROCESS_GAMMA3BODY(gammaddbar,     8, d,       dbar,   (BEreq::dsIBffdxdy.pointer()) , 21, 1   )            
-        SETUP_DS_PROCESS_GAMMA3BODY(gammaccbar,     9, c,       cbar,   (BEreq::dsIBffdxdy.pointer()) , 22, 1   )
-        SETUP_DS_PROCESS_GAMMA3BODY(gammassbar,     10,s,       sbar,   (BEreq::dsIBffdxdy.pointer()) , 23, 1   )
-        SETUP_DS_PROCESS_GAMMA3BODY(gammattbar,     11,t,       tbar,   (BEreq::dsIBffdxdy.pointer()) , 24, 1   )
-        SETUP_DS_PROCESS_GAMMA3BODY(gammabbbar,     12,b,       bbar,   (BEreq::dsIBffdxdy.pointer()) , 25, 1   )
+        // Set DarkSUSY DM mass parameter used in 3-body decays
+        BEreq::IBintvars->ibcom_mx = catalog.getParticleProperty(DMid).mass;
+
+        SETUP_DS_PROCESS_GAMMA3BODY(gammaWW,        1, W+,      W-,     
+            (BEreq::dsIBwwdxdy.pointer()),  13, 1   )     
+        // Prefactor 0.5 since W+H- and W-H+ are summed in DS        
+        SETUP_DS_PROCESS_GAMMA3BODY(gammaWpHm,      2, W+,      H-,     
+            (BEreq::dsIBwhdxdy.pointer()),  11, 0.5 )   
+        // Prefactor 0.5 since W+H- and W-H+ are summed in DS
+        SETUP_DS_PROCESS_GAMMA3BODY(gammaWmHp,      2, W-,      H+,     
+            (BEreq::dsIBwhdxdy.pointer()),  11, 0.5 )   
+        SETUP_DS_PROCESS_GAMMA3BODY(gammaHpHm,      3, H+,      H-,     
+            (BEreq::dsIBhhdxdy.pointer()),  0,  1   )                    
+        SETUP_DS_PROCESS_GAMMA3BODY(gammaee,        4, e+,      e-,     
+            (BEreq::dsIBffdxdy.pointer()) , 15, 1   )
+        SETUP_DS_PROCESS_GAMMA3BODY(gammamumu,      5, mu+,     mu-,    
+            (BEreq::dsIBffdxdy.pointer()) , 17, 1   )
+        SETUP_DS_PROCESS_GAMMA3BODY(gammatautau,    6, tau+,    tau-,   
+            (BEreq::dsIBffdxdy.pointer()) , 19, 1   )
+        SETUP_DS_PROCESS_GAMMA3BODY(gammauubar,     7, u,       ubar,   
+            (BEreq::dsIBffdxdy.pointer()) , 20, 1   )
+        SETUP_DS_PROCESS_GAMMA3BODY(gammaddbar,     8, d,       dbar,   
+            (BEreq::dsIBffdxdy.pointer()) , 21, 1   )            
+        SETUP_DS_PROCESS_GAMMA3BODY(gammaccbar,     9, c,       cbar,   
+            (BEreq::dsIBffdxdy.pointer()) , 22, 1   )
+        SETUP_DS_PROCESS_GAMMA3BODY(gammassbar,     10,s,       sbar,   
+            (BEreq::dsIBffdxdy.pointer()) , 23, 1   )
+        SETUP_DS_PROCESS_GAMMA3BODY(gammattbar,     11,t,       tbar,   
+            (BEreq::dsIBffdxdy.pointer()) , 24, 1   )
+        SETUP_DS_PROCESS_GAMMA3BODY(gammabbbar,     12,b,       bbar,   
+            (BEreq::dsIBffdxdy.pointer()) , 25, 1   )
       }
-      // Undef the macro so it doesn't propagate through GAMBIT
 #undef SETUP_DS_PROCESS_GAMMA3BODY
 
       // Add process to provess list
@@ -464,6 +520,5 @@ namespace Gambit {
       using namespace Pipes::DarkMatter_ID_MSSM25atQ;
       result = DarkMatter_ID_type(initVector<std::string>("~chi0_1"));
     }
-
   }
 }
