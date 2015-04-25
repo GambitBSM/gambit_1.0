@@ -349,7 +349,7 @@ START_MODULE
       START_FUNCTION(Gambit::DarkBit::TH_ProcessCatalog)
       //ALLOW_MODELS(CMSSM, MSSM25atQ)
       DEPENDENCY(DarkSUSY_PointInit, bool)
-      DEPENDENCY(MSSM_spectrum, const SMplusUV*)      
+      DEPENDENCY(MSSM_spectrum, const Spectrum*)      
       DEPENDENCY(DarkMatter_ID, DarkMatter_ID_type)
       DEPENDENCY(decay_rates,DecayTable)
 //      BACKEND_REQ(mspctm, (), DS_MSPCTM)

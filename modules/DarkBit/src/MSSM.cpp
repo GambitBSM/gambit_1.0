@@ -252,9 +252,9 @@ namespace Gambit {
       }      
       
       // Spectrum objects.
-      const SMplusUV* matched_spectra = *Dep::MSSM_spectrum;
-      const Spectrum* spec = matched_spectra->get_UV();
-      const Spectrum* SM   = matched_spectra->get_SM();
+      const Spectrum* matched_spectra = *Dep::MSSM_spectrum;
+      const SubSpectrum* spec = matched_spectra->get_UV();
+      const SubSpectrum* SM   = matched_spectra->get_LE();
       const SMInputs& SMI  = matched_spectra->get_SMINPUTS();  
       
       // Get SM masses
