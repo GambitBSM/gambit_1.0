@@ -200,6 +200,29 @@ namespace Gambit
       result = 0.1;
     }
 
-  }
+     
+     void SP_PrecisionObs(double &result) 
+    {
+      using namespace Pipes::SP_PrecisionObs;
+      int error = 0;
+      Farray<Fdouble,1,35> SM_Obs;
+      Farray<Fdouble,1,35> MSSM_Obs;
+      
+         
+      BEreq::CalcObs_SUSYPOPE(error, SM_Obs, MSSM_Obs);
+      if(error != 0)
+         {
+            std::cout << "something went wrong" << std::endl;
+         }
+      else 
+         {
+            std::cout << " MW in SM = " << SM_Obs(1) << std::endl;
+            std::cout << " MW in MSSM = " << MSSM_Obs(1) << std::endl;
+            
+         }
+      return;
 
+    }
+     
+  }
 }

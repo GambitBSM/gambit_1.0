@@ -43,6 +43,8 @@ BE_INI_FUNCTION{
     /// directory of SUSYPOPE-0.2
     int error = 0, L = 5, iter = 1, Obs = 1, SMObs = 1, HOpt = 1, Verb = 1;
     SetFlags_SUSYPOPE(error, L, iter, Obs, SMObs, HOpt, Verb);
+    //should probably test the error since we pass it
+
     //parameters as given in Appendix F (page 2 / 154 of) found in doc/ 
     /// directory of SUSYPOPE-0.2
     Fdouble MT = 172; //top quark mass, pole?
@@ -119,7 +121,8 @@ BE_INI_FUNCTION{
                      M1, M2, M3, 
                      M2Phase, M1Phase,
                      Qtau, Qt, Qb);   
-       
+    //should probably test the error since we pass it
+   
  }
 
                

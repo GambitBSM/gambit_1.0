@@ -46,6 +46,19 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY 
 
+
+  #define CAPABILITY SP_PrecisionObs // SUSYPOPE EWK precision observables
+  START_CAPABILITY
+    #define FUNCTION SP_PrecisionObs
+    START_FUNCTION(double)
+      BACKEND_REQ(CalcObs_SUSYPOPE, (libsusypope), void, (int&,
+                                                          Farray<Fdouble,1,35>&,
+                                                          Farray<Fdouble,1,35>&)
+      BACKEND_OPTION( (SUSYPOPE, 0.2), (libsusypope) )
+    #undef FUNCTION
+  #undef CAPABILITY 
+
+
   #define CAPABILITY FH_Masses              // FeynHiggs SUSY masses and mixings
   START_CAPABILITY
     #define FUNCTION FH_Masses
