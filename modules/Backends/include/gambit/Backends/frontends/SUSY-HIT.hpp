@@ -37,6 +37,8 @@ BE_FUNCTION(unlikely, double, (), "s_hit_unlikely_", "unlikely") // Wrapper for 
 BE_VARIABLE(susyhitin_type, susyhitin, "susyhitin_", "cb_susyhitin")
 BE_VARIABLE(sd_leshouches1_type, sd_leshouches1, "sd_leshouches1_", "cb_sd_leshouches1")
 BE_VARIABLE(sd_leshouches2_type, sd_leshouches2, "sd_leshouches2_", "cb_sd_leshouches2")
+BE_VARIABLE(sd_leshouches1_type, slha_leshouches1_hdec, "slha_leshouches1_hdec_", "cb_slha_leshouches1_hdec")
+BE_VARIABLE(slha_leshouches2_hdec_type, slha_leshouches2_hdec, "slha_leshouches2_hdec_", "cb_slha_leshouches2_hdec")
 BE_VARIABLE(widtha_hdec_type, widtha_hdec, "widtha_hdec_", "cb_widtha_hdec")
 BE_VARIABLE(widthhl_hdec_type, widthhl_hdec, "widthhl_hdec_", "cb_widthhl_hdec")
 BE_VARIABLE(widthhh_hdec_type, widthhh_hdec, "widthhh_hdec_", "cb_widthhh_hdec")
@@ -113,7 +115,7 @@ BE_INI_FUNCTION
     sd_leshouches2->imod(2) = 1;                   // model; 1, 1 = SUGRA.  6, x!=0  => flavour violating MSSM(prolly?).  Must be true if calling sdecay(1) later.  Must add a check for this.
 
     // SLHA2 block SMINPUTS
-    //sd_leshouches2->smval(1:20) = 0;               // zeroing
+    for (int i=1; i<=20; ++i) sd_leshouches2->smval(i) = 0.0; // zeroing
     sd_leshouches2->smval(1) = 1.27934000E+02;     // alpha_em^-1(M_Z)^MSbar
     sd_leshouches2->smval(2) = 1.16639000E-05;     // G_F [GeV^-2]
     sd_leshouches2->smval(3) = 1.17200000E-01;     // alpha_S(M_Z)^MSbar
@@ -123,11 +125,11 @@ BE_INI_FUNCTION
     sd_leshouches2->smval(7) = 1.77710000E+00;     // mtau pole mass
 
     // SLHA2 block EXTPAR
-    //sd_leshouches2->extval(0:100) = unlikely();    // indicate undefined
+    for (int i=1; i<=100; ++i) sd_leshouches2->extval(i) = unlikely(); // indicate undefined
     sd_leshouches2->extval(0) = 4.65777483E+02;    // EWSB scale.  Not used by SUSY-HIT anymore.          
 
     // SLHA2 block MASS
-    //sd_leshouches2->massval(1:50) = 0.0            // zeroing
+    for (int i=1; i<=50; ++i) sd_leshouches2->massval(i) = 0.0; // zeroing
     sd_leshouches2->massval(1) = 8.04847331E+01;   // W+
     sd_leshouches2->massval(2) = 1.09932416E+02;   // h
     sd_leshouches2->massval(3) = 3.94935594E+02;   // H
@@ -344,6 +346,34 @@ BE_INI_FUNCTION
     // that running first without flavour violation and then re-running with flavour violation does 
     // not break the non-FV results.
     flavviolation->ifavvio = 0;
+    
+    // Set equivalent SLHA common blocks for HDecay.  Only differences are dimension of qvalues and zero vs unlikely for au, ad & ae.
+    *slha_leshouches1_hdec = *sd_leshouches1;                 // SLHA1 block is identical in SDECAY and HDECAY.
+    slha_leshouches2_hdec->imod = sd_leshouches2->imod;      // model; 1, 1 = SUGRA.  6, x!=0  => flavour violating MSSM(prolly?).  Must be true if calling sdecay(1) later.  Must add a check for this.
+    slha_leshouches2_hdec->smval = sd_leshouches2->smval;     // SMINPUTS
+    slha_leshouches2_hdec->extval = sd_leshouches2->extval;    // EXTPAR      
+    slha_leshouches2_hdec->massval = sd_leshouches2->massval;   // MASS
+    slha_leshouches2_hdec->nmixval = sd_leshouches2->nmixval; // NMIX
+    slha_leshouches2_hdec->vmixval = sd_leshouches2->vmixval; // VMIX
+    slha_leshouches2_hdec-> = sd_leshouches2->umixval; // UMIX
+    slha_leshouches2_hdec-> = sd_leshouches2->stopmixval; // STOPMIX
+    slha_leshouches2_hdec-> = sd_leshouches2->sbotmixval; // SBOTMIX
+    slha_leshouches2_hdec-> = sd_leshouches2->staumixval; // STAUMIX
+    slha_leshouches2_hdec-> = sd_leshouches2->alphaval;    // Mixing angle in the neutral Higgs boson sector.
+    slha_leshouches2_hdec-> = sd_leshouches2->hmixval;   // HMIX
+    slha_leshouches2_hdec-> = sd_leshouches2->gaugeval;  // GAUGE
+    slha_leshouches2_hdec-> = sd_leshouches2->msoftval;  // MSOFT
+    slha_leshouches2_hdec-> = sd_leshouches2->yuval;   // YU
+    slha_leshouches2_hdec-> = sd_leshouches2->ydval;   // YD
+    slha_leshouches2_hdec-> = sd_leshouches2->yeval;   // YE
+    for (int i=1; i<=3; ++i) for (int j=1; j<=3; ++j) sd_leshouches2->adval(i,j) = unlikely();   // indicate undefined //FIXME
+    {
+      slha_leshouches2_hdec-> = sd_leshouches2->auval(1,1) = -6.83184382E+02;  // AU //FIXME
+      slha_leshouches2_hdec-> = sd_leshouches2->adval(1,1) = -8.58985213E+02;  // AD
+      slha_leshouches2_hdec-> = sd_leshouches2->aeval(1,1) = -2.53298464E+02;  // AE
+    }                 
+    = sd_leshouches2->qvalue(i)    // Q(GeV) //FIXME
+
  
     // Run SUSY-HIT
     sdecay();

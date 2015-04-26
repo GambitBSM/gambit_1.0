@@ -76,6 +76,32 @@ namespace Gambit
         Farray< Finteger,1,2 > imod;
     };
 
+    struct slha_leshouches2_hdec_type
+    {
+        Farray< Fdouble,1,20 > minval;
+        Farray< Fdouble,0,100 > extval;
+        Farray< Fdouble,1,20 > smval;
+        Farray< Fdouble,1,50 > massval;
+        Farray< Fdouble,1,4,1,4 > nmixval;
+        Farray< Fdouble,1,2,1,2 > umixval;
+        Farray< Fdouble,1,2,1,2 > vmixval;
+        Farray< Fdouble,1,2,1,2 > stopmixval;
+        Farray< Fdouble,1,2,1,2 > sbotmixval;
+        Farray< Fdouble,1,2,1,2 > staumixval;
+        Farray< Fdouble,1,10 > hmixval;
+        Farray< Fdouble,1,3 > gaugeval;
+        Farray< Fdouble,1,100 > msoftval;
+        Farray< Fdouble,1,3,1,3 > auval;
+        Farray< Fdouble,1,3,1,3 > adval;
+        Farray< Fdouble,1,3,1,3 > aeval;
+        Farray< Fdouble,1,3,1,3 > yuval;
+        Farray< Fdouble,1,3,1,3 > ydval;
+        Farray< Fdouble,1,3,1,3 > yeval;
+        Fdouble alphaval;
+        Farray< Fdouble,1,20 > qvalue;
+        Farray< Finteger,1,2 > imod;
+    };
+
     struct widtha_hdec_type
     {
         Fdouble abrb;
