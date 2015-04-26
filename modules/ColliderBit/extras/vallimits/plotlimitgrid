@@ -1,0 +1,78 @@
+#! /usr/bin/env python
+
+import optparse
+op = optparse.OptionParser()
+op.add_option("-s", "--save", dest="SAVE", action="store_true", default=False)
+opts, args = op.parse_args()
+DIR = args[0]
+
+import numpy as np
+mg_range = np.arange(200, 1601, 50)
+mX_range = np.arange(50, 801, 50)
+
+xx, yy = np.meshgrid(mg_range, mX_range)
+lls = np.empty([len(mg_range), len(mX_range)])
+srs = np.empty([len(mg_range), len(mX_range)])
+
+import os, glob
+for i, mg in enumerate(mg_range):
+    for j, mX in enumerate(mX_range):
+        # if mX > mg:
+        #     continue
+        resfiles = glob.glob(os.path.join(DIR, "results-*_{0:04d}_{1:04d}*.dat".format(mg, mX)))
+        lls[i,j] = np.nan
+        srs[i,j] = -1
+        if resfiles:
+            with open(resfiles[0], "r") as rf:
+                for line in rf:
+                    parts = line.strip().split()
+                    sr1 = int(parts[1])
+                    sr2 = int(parts[2])
+                    ll = float(parts[3])
+                    if True: #(sr1,sr2) == (0,0):
+                        bestll = min(ll, lls[i,j]) # every valid float > nan
+                        if bestll == ll:
+                            lls[i,j] = ll
+                            srs[i,j] = 10*sr1 + sr2
+
+## exp(LL) contour plot
+import matplotlib as mpl
+mpl.use("PGF")
+mpl.rc("font.family = serif")
+from matplotlib import pyplot as plt
+fig = plt.figure(figsize=[9,6])
+ax = fig.add_subplot(1,1,1)
+# vals = np.exp(lls.T)
+plt.hold(True)
+p = ax.contourf(xx, yy, lls.T)
+plt.colorbar(p)
+
+## Calculate and plot 95% CL contour via DLL = -1/2 chi2(2df, ...)
+import scipy.stats as stats
+llmax = np.nanmax(lls)
+print llmax
+llmax = 0
+dll = stats.chi2.cdf(0.95, 2) / 2
+print dll
+ll95 = llmax - dll
+c = plt.contour(xx, yy, lls.T, [ll95], colors=["white"]) #, linewidths=["2"])
+plt.clabel(c, fmt="95%%", fontsize="smaller")
+
+## Write LL text values on plot
+for i, mg in enumerate(mg_range):
+    for j, mX in enumerate(mX_range):
+        if i % 2 == 0 and j % 2 == 0:
+            ax.text(mg, mX, str(lls[i,j]), ha="center", va="center", fontsize="x-small")
+            # if srs[i,j] >= 0:
+            #      ax.text(mg, mX, str(int(srs[i,j])), ha="center", va="center", fontsize="small")
+
+ax.set_title("Log likelihood contours", x=0, ha="left")
+ax.set_xlabel("$M_g$", x=1, ha="right")
+ax.set_ylabel("$M_\\chi$", y=0.95, va="top", labelpad=16)
+
+# fig.tight_layout()
+if opts.SAVE:
+    fig.savefig("cl-atlas0lep.pdf")
+    # fig.savefig("cl-ana%d-sr%d.pdf" % ana_sr)
+else:
+    plt.show()
