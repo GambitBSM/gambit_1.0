@@ -1,3 +1,10 @@
+//   GAMBIT: Global and Modular BSM Inference Tool
+//   *********************************************
+///  \file
+///
+///  Frontend for SUSYPOPE 0.2 backend
+//
+///  *********************************************
 
 #ifdef BACKENDRENAME
   #define BACKENDNAME BACKENDRENAME
