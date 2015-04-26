@@ -348,32 +348,52 @@ BE_INI_FUNCTION
     flavviolation->ifavvio = 0;
     
     // Set equivalent SLHA common blocks for HDecay.  Only differences are dimension of qvalues and zero vs unlikely for au, ad & ae.
-    *slha_leshouches1_hdec = *sd_leshouches1;                 // SLHA1 block is identical in SDECAY and HDECAY.
-    slha_leshouches2_hdec->imod = sd_leshouches2->imod;      // model; 1, 1 = SUGRA.  6, x!=0  => flavour violating MSSM(prolly?).  Must be true if calling sdecay(1) later.  Must add a check for this.
-    slha_leshouches2_hdec->smval = sd_leshouches2->smval;     // SMINPUTS
-    slha_leshouches2_hdec->extval = sd_leshouches2->extval;    // EXTPAR      
-    slha_leshouches2_hdec->massval = sd_leshouches2->massval;   // MASS
-    slha_leshouches2_hdec->nmixval = sd_leshouches2->nmixval; // NMIX
-    slha_leshouches2_hdec->vmixval = sd_leshouches2->vmixval; // VMIX
-    slha_leshouches2_hdec-> = sd_leshouches2->umixval; // UMIX
-    slha_leshouches2_hdec-> = sd_leshouches2->stopmixval; // STOPMIX
-    slha_leshouches2_hdec-> = sd_leshouches2->sbotmixval; // SBOTMIX
-    slha_leshouches2_hdec-> = sd_leshouches2->staumixval; // STAUMIX
-    slha_leshouches2_hdec-> = sd_leshouches2->alphaval;    // Mixing angle in the neutral Higgs boson sector.
-    slha_leshouches2_hdec-> = sd_leshouches2->hmixval;   // HMIX
-    slha_leshouches2_hdec-> = sd_leshouches2->gaugeval;  // GAUGE
-    slha_leshouches2_hdec-> = sd_leshouches2->msoftval;  // MSOFT
-    slha_leshouches2_hdec-> = sd_leshouches2->yuval;   // YU
-    slha_leshouches2_hdec-> = sd_leshouches2->ydval;   // YD
-    slha_leshouches2_hdec-> = sd_leshouches2->yeval;   // YE
-    for (int i=1; i<=3; ++i) for (int j=1; j<=3; ++j) sd_leshouches2->adval(i,j) = unlikely();   // indicate undefined //FIXME
+    *slha_leshouches1_hdec = *sd_leshouches1;                       // SLHA1 block is identical in SDECAY and HDECAY.
+    slha_leshouches2_hdec->imod = sd_leshouches2->imod;             // model; 1, 1 = SUGRA.  6, x!=0  => flavour violating MSSM(prolly?).  Must be true if calling sdecay(1) later.  Must add a check for this.
+    slha_leshouches2_hdec->smval = sd_leshouches2->smval;           // SMINPUTS
+    slha_leshouches2_hdec->extval = sd_leshouches2->extval;         // EXTPAR      
+    slha_leshouches2_hdec->massval = sd_leshouches2->massval;       // MASS
+    slha_leshouches2_hdec->nmixval = sd_leshouches2->nmixval;       // NMIX
+    slha_leshouches2_hdec->vmixval = sd_leshouches2->vmixval;       // VMIX
+    slha_leshouches2_hdec->umixval = sd_leshouches2->umixval;       // UMIX
+    slha_leshouches2_hdec->stopmixval = sd_leshouches2->stopmixval; // STOPMIX
+    slha_leshouches2_hdec->sbotmixval = sd_leshouches2->sbotmixval; // SBOTMIX
+    slha_leshouches2_hdec->staumixval = sd_leshouches2->staumixval; // STAUMIX
+    slha_leshouches2_hdec->alphaval = sd_leshouches2->alphaval;     // ALPHA
+    slha_leshouches2_hdec->hmixval = sd_leshouches2->hmixval;       // HMIX
+    slha_leshouches2_hdec->gaugeval = sd_leshouches2->gaugeval;     // GAUGE
+    slha_leshouches2_hdec->msoftval = sd_leshouches2->msoftval;     // MSOFT
+    slha_leshouches2_hdec->yuval = sd_leshouches2->yuval;           // YU
+    slha_leshouches2_hdec->ydval = sd_leshouches2->ydval;           // YD
+    slha_leshouches2_hdec->yeval = sd_leshouches2->yeval;           // YE
+    for (int i=1; i<=3; ++i) for (int j=1; j<=3; ++j)    
     {
-      slha_leshouches2_hdec-> = sd_leshouches2->auval(1,1) = -6.83184382E+02;  // AU //FIXME
-      slha_leshouches2_hdec-> = sd_leshouches2->adval(1,1) = -8.58985213E+02;  // AD
-      slha_leshouches2_hdec-> = sd_leshouches2->aeval(1,1) = -2.53298464E+02;  // AE
+      if (sd_leshouches2->auval(i,j) == unlikely())                 // AU
+      {
+        slha_leshouches2_hdec->auval(i,j) = 0.0; 
+      }   
+      else 
+      {
+       slha_leshouches2_hdec->auval(i,j) = sd_leshouches2->auval(i,j);   
+      }
+      if (sd_leshouches2->adval(i,j) == unlikely())                 // AD
+      {
+        slha_leshouches2_hdec->adval(i,j) = 0.0; 
+      }   
+      else 
+      {
+       slha_leshouches2_hdec->adval(i,j) = sd_leshouches2->adval(i,j);   
+      }
+      if (sd_leshouches2->aeval(i,j) == unlikely())                 // AE
+      {
+        slha_leshouches2_hdec->aeval(i,j) = 0.0; 
+      }   
+      else 
+      {
+       slha_leshouches2_hdec->aeval(i,j) = sd_leshouches2->aeval(i,j);   
+      }
     }                 
-    = sd_leshouches2->qvalue(i)    // Q(GeV) //FIXME
-
+    for (int i=1; i<=20; ++i) slha_leshouches2_hdec->qvalue(i) = sd_leshouches2->qvalue(i); // Q(GeV)
  
     // Run SUSY-HIT
     sdecay();
