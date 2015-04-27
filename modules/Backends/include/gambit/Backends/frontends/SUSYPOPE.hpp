@@ -20,7 +20,7 @@
 LOAD_LIBRARY
 
 BE_FUNCTION(SetFlags_SUSYPOPE, void, (int&,int&,int&,int&,int&,int&,int&), "setflags_susypope_", "SetFlags_SUSYPOPE")
-/* This is SetPara_AMW via #define */
+
 BE_FUNCTION(SetPara_SUSYPOPE, void,
             (int&,
              Fdouble&,Fdouble&,Fdouble&,Fdouble&,Fdouble&,
@@ -40,11 +40,11 @@ BE_FUNCTION(SetPara_SUSYPOPE, void,
              Fdouble&,Fdouble&,
              Fdouble&,Fdouble&,Fdouble&), 
             "setpara_susypope_", "SetPara_SUSYPOPE")
-/* This is CalcObs_AMW via #define */  
+
 BE_FUNCTION(CalcObs_SUSYPOPE, void,
             (int&, Farray<Fdouble,1,35>&,Farray<Fdouble,1,35>&),
-            " calcobs_susypope_","CalcObs_SUSYPOPE")
-///This is just fake version for testing.  Will need to get spectrum.
+            "calcobs_susypope_","CalcObs_SUSYPOPE")
+
 BE_INI_FUNCTION{
    /// set flags for SUSYPOPE
    /// all flags as given in Appendix F (page 2 / 154 of) found in doc/ 
@@ -134,8 +134,6 @@ BE_INI_FUNCTION{
    //should probably test the error since we pass it
    
 }
-
-               
 DONE
 
 // Undefine macros to avoid conflict with other backends
