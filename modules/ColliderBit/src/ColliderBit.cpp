@@ -46,8 +46,6 @@ namespace Gambit {
     std::vector<std::string>::const_iterator iter;
     int pythiaConfigurations, pythiaNumber;
     std::string slhaFilename;
-    /// Analysis stuff
-    bool resetAnalysisFlag = true;
     /// General collider sim info stuff
     #define SHARED_OVER_OMP iter,pythiaNumber,pythiaConfigurations
 
@@ -142,6 +140,7 @@ namespace Gambit {
 
         result.resetSpecialization(*iter);
         result.init(pythiaOptions);
+        /// @TODO Can we test for xsec veto here? Might be analysis dependent, so see TODO below.
       } else if (*Loop::iteration == END_SUBPROCESS) {
         result.ready = false;
       }
@@ -196,40 +195,28 @@ namespace Gambit {
 
     /// *** Initialization for analyses ***
 
-    void specifyAnalysisPointerVector(std::vector<Gambit::ColliderBit::HEPUtilsAnalysis*> &result) {
-      using namespace Pipes::specifyAnalysisPointerVector;
-      if (resetAnalysisFlag and *Loop::iteration == INIT) {
-        /// Memory clean-up: Analyses
-        /* while (result.size() > 0) {
-           delete result.front();
-           result.erase(result.begin());
-           } */
+    void getAnalysisContainer(Gambit::ColliderBit::HEPUtilsAnalysisContainer& result) {
+      using namespace Pipes::getAnalysisContainer;
+      if (!result.ready and *Loop::iteration == INIT) {
         result.clear();
-        logger() << "\n==================\n";
-        logger() << "ColliderBit says,\n";
-        logger() << "\t\"specifyAnalysisPointerVector() was called.\"\n";
-        logger() << LogTags::info << endl << EOM;
-
         std::vector<std::string> analysisNames;
         #pragma omp critical (runOptions)
         {
           GET_COLLIDER_RUNOPTION(analysisNames, std::vector<std::string>);
         }
-
-        logger() << "\n==================\n";
-        logger() << "ColliderBit says,\n";
-        logger() << "\t\"Setting up analyses...\"\n";
-        for(auto name : analysisNames) {
-          logger() << "\t  Analysis name " << name << endl;
-          /// Memory allocation: Analyses
-          result.push_back( mkAnalysis(name) );
-        }
-        logger() << "ColliderBit says,\n";
-        logger() << "\t\"specifyAnalysisPointerVector() has finished.\"\n";
-        logger() << LogTags::info << endl << EOM;
-        resetAnalysisFlag = false;
-      } else if (*Loop::iteration == FINALIZE) {
-        resetAnalysisFlag = true;
+        /// @TODO Can we test for xsec veto here? Might be analysis dependent...
+        result.init(analysisNames);
+        return;
+      }
+      
+      if (*Loop::iteration == END_SUBPROCESS) {
+        const double xs = Dep::HardScatteringSim->xsec_pb();
+        const double xserr = Dep::HardScatteringSim->xsecErr_pb();
+        cout << "Adding xsec = " << xs << " +- " << xserr << " pb" << endl;
+        result.set_xsec(xs, xserr);
+        result.finalize();
+        result.ready = false;
+        return;
       }
     }
 
@@ -571,25 +558,15 @@ namespace Gambit {
 
     void runAnalyses(ColliderLogLikes& result)
     {
+      /// TODO Everything about the HEPUtilsAnalysisContainer still needs work... but too tired now.
       using namespace Pipes::runAnalyses;
       if (*Loop::iteration == INIT) return;
-
-      if (*Loop::iteration == END_SUBPROCESS) {
-        for (auto anaPtr = Dep::ListOfAnalyses->begin(); anaPtr != Dep::ListOfAnalyses->end(); ++anaPtr)
-        {
-          /// @TODO Will need work for multithreading!!!
-          cout << "Adding xsec = " << Dep::HardScatteringSim->xsec_pb()
-               << " +- " << Dep::HardScatteringSim->xsecErr_pb() << " pb" << endl;
-          (*anaPtr)->add_xsec(Dep::HardScatteringSim->xsec_pb(),
-                              Dep::HardScatteringSim->xsecErr_pb());
-        }
-        return;
-      }
 
       if (*Loop::iteration == FINALIZE) {
         // The final iteration: get log likelihoods for the analyses
         result.clear();
-        for (auto anaPtr = Dep::ListOfAnalyses->begin(); anaPtr != Dep::ListOfAnalyses->end(); ++anaPtr)
+        auto anaCont = Dep::AnalysisContainer->getCombinedAnalysisResults();
+        for (auto anaPtr = anaCont.begin(); anaPtr != anaCont.end(); ++anaPtr)
         {
           cout << "Set xsec from ana = " << (*anaPtr)->xsec() << " pb" << endl;
           cout << "SR number test " << (*anaPtr)->get_results()[0].n_signal << endl;
@@ -598,12 +575,8 @@ namespace Gambit {
         return;
       }
 
-      #pragma omp critical (accumulatorUpdate)
-      {
-        // Loop over analyses and run them
-        for (auto anaPtr = Dep::ListOfAnalyses->begin(); anaPtr != Dep::ListOfAnalyses->end(); ++anaPtr)
-          (*anaPtr)->analyze(*Dep::ReconstructedEvent);
-      }
+      // Loop over analyses and run them... Managed by HEPUtilsAnalysisContainer
+      Dep::AnalysisContainer->analyze(*Dep::ReconstructedEvent);
     }
 
 

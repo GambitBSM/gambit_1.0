@@ -69,11 +69,12 @@ START_MODULE
 
   /// Capability that holds list of analyses to run
   /// Eventually needs to be configurable from yaml file
-  #define CAPABILITY ListOfAnalyses
+  #define CAPABILITY AnalysisContainer
   START_CAPABILITY
-    #define FUNCTION specifyAnalysisPointerVector
-    START_FUNCTION(std::vector<Gambit::ColliderBit::HEPUtilsAnalysis*>)
+    #define FUNCTION getAnalysisContainer
+    START_FUNCTION(HEPUtilsAnalysisContainer)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
+    DEPENDENCY(HardScatteringSim, Gambit::ColliderBit::SpecializablePythia)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -191,7 +192,7 @@ START_MODULE
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
     DEPENDENCY(ReconstructedEvent, HEPUtils::Event)
     DEPENDENCY(HardScatteringSim, Gambit::ColliderBit::SpecializablePythia)
-    DEPENDENCY(ListOfAnalyses, std::vector<Gambit::ColliderBit::HEPUtilsAnalysis*>)
+    DEPENDENCY(AnalysisContainer, HEPUtilsAnalysisContainer)
     //BACKEND_REQ_FROM_GROUP(lnlike_marg_poisson, lnlike_marg_poisson_lognormal_error, (), double, (int&, double&, double&, double&) )
     //BACKEND_REQ_FROM_GROUP(lnlike_marg_poisson, lnlike_marg_poisson_gaussian_error, (), double, (int&, double&, double&, double&) )
     //BACKEND_GROUP(lnlike_marg_poisson)

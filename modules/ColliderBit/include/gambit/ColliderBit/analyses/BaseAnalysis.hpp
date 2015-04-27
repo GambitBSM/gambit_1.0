@@ -4,6 +4,7 @@
 #include <vector>
 #include "gambit/ColliderBit/ColliderBit_macros.hpp"
 #include "gambit/ColliderBit/Utils.hpp"
+#include "HEPUtils/MathUtils.h"
 #include "HEPUtils/Event.h"
 
 using std::vector;
@@ -102,7 +103,6 @@ namespace Gambit {
         virtual void add(const BaseAnalysis*) { }
         /// @brief Reference-based version of add()
         void add(const BaseAnalysis& a) { add(&a); }
-
         /// @brief Add cross-sections and errors for two different process types
         void add_xsec(double xs, double xserr) {
           std::stringstream msg;
@@ -118,7 +118,6 @@ namespace Gambit {
           msg << " => " << xsec() << " +- " << xsec_err();
           std::cout << msg.str() << std::endl;
         }
-
         /// @brief Combine the provided cross-section with the existing one of the same type, assuming uncorrelated errors
         void improve_xsec(double xs, double xserr) {
           std::stringstream msg;
@@ -138,12 +137,6 @@ namespace Gambit {
     };
 
     typedef BaseAnalysis<HEPUtils::Event> HEPUtilsAnalysis;
-
-    /// @brief Create a new analysis based on a name string
-    ///
-    /// The caller is responsible for deleting the returned analysis object.
-    HEPUtilsAnalysis* mkAnalysis(const std::string& name);
-
 
   }
 }
