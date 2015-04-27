@@ -26,8 +26,9 @@
 #include "gambit/Utils/stream_overloads.hpp" // Just for more convenient output to logger
 #include "gambit/Utils/util_macros.hpp"
 #include "gambit/SpecBit/SpecBit_rollcall.hpp"
-#include "gambit/SpecBit/MSSMSpec.hpp"
 #include "gambit/SpecBit/QedQcdWrapper.hpp"
+#include "gambit/SpecBit/MSSMskeleton.hpp"
+#include "gambit/SpecBit/MSSMSpec.hpp"
 #include "gambit/SpecBit/model_files_and_boxes.hpp" // #includes lots of flexiblesusy headers and defines interface classes
 
 // Flexible SUSY stuff (should not be needed by the rest of gambit)
@@ -480,7 +481,51 @@ namespace Gambit
       const SubSpectrum* spec(*myPipe::Dep::MSSM_spectrum);
       result = spec->getSLHAea();
     }
+
+    /// Get an MSSMSpectrum object from an SLHA file
+    /// Wraps it up in MSSMskeleton; i.e. no RGE running possible.
+    /// This is mainly for testing against benchmark points, but may be a useful last
+    /// resort for interacting with "difficult" spectrum generators.
+    void get_MSSM_spectrum_from_SLHAfile(const Spectrum* &result)
+    {
+      namespace myPipe = Pipes::get_MSSM_spectrum_from_SLHAfile;
+      // Get name of input SLHA file to wrap up
+      std::string filename(myPipe::runOptions->getValue<std::string>("filename"));
      
+      // Wrap file first as an SLHAea object
+      SLHAea::Coll input;
+      std::ifstream ifs(filename);
+      if(ifs){ ifs >> input; }
+      else{ 
+        std::ostringstream errmsg;
+        errmsg << "Could not open file '" << filename << "' for reading. Please check that the file exists at the path given in the inifile!";
+        SpecBit_error().raise(LOCAL_INFO,errmsg.str()); 
+      }     
+      ifs.close();
+ 
+      // Create MSSMskeleton SubSpectrum object from the SLHAea object
+      static MSSMskeleton mssmskel(input);
+
+      // Create SMInputs object from the SLHAea object
+      SMInputs sminputs;
+
+      // Create SMskeleton SubSpectrum object from the SLHAea object
+      
+      // Create full Spectrum object from components above
+      static Spectrum matched_spectra(&mssmskel,&mssmskel,sminputs);
+ 
+      result = &matched_spectra;
+
+      /// TESTING ONLY: TO BE REMOVED
+      
+      std::cout << "Examining mssmskel..." << std::endl;
+      std::cout << "Scale: " << mssmskel.GetScale() << std::endl;
+      //mssmskel.RunToScale(100); // Should throw error
+      std::cout << "MZ: " << mssmskel.phys.get_Pole_Mass("Z0") << std::endl;
+    } 
+    
+
+
     /// @} End Gambit module functions
 
   } // end namespace SpecBit

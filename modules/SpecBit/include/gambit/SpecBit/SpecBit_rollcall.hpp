@@ -75,6 +75,18 @@ START_MODULE
     #undef FUNCTION
 
     // ============================== 
+    // MSSM spectrum retrieved from an SLHA file
+    // Wraps it up in MSSMskeleton; i.e. no RGE running possible.
+    // This is mainly for testing against benchmark points, but may be a useful last
+    // resort for interacting with "difficult" spectrum generators.
+    #define FUNCTION get_MSSM_spectrum_from_SLHAfile 
+    START_FUNCTION(const Spectrum*)
+    // Technically doesn't need a Model to work...
+    // Could add some kind of dependency here, like on the input filename, to allow dependency
+    // resolver to ignore it most of the time. 
+    #undef FUNCTION
+    
+    // ==============================
 
     // Extract appropriate SubSpectrum* from Spectrum struct, while preserving the Capability
     #define FUNCTION get_MSSM_SubSpectrum_from_MSSM_Spectrum
