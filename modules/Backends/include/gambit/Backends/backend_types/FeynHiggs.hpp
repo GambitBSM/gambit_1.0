@@ -27,7 +27,6 @@ namespace Gambit
   typedef const fh_real fh_creal;
   typedef const fh_complex fh_ccomplex;
   
-
 }
 
 #endif /* defined __FeynHiggs_types_hpp__ */

@@ -68,7 +68,7 @@ START_MODULE
 						    Farray<fh_real, 1,6, 1,5>&, Farray<fh_complex, 1,36, 1,5>&,
 						    Farray< fh_real,1,2>&, Farray< fh_complex,1,4>&,
 						    Farray< fh_complex,1,4>&, Farray< fh_real,1,4>&,
-						    Farray< fh_complex, 1,16>&, fh_complex&, fh_real&,
+						    Farray< fh_complex,1,16>&, fh_complex&, fh_real&,
 						    Farray< fh_real,1,4>&, fh_real&))
       BACKEND_OPTION( (FeynHiggs, 2.10), (libfeynhiggs) )
     #undef FUNCTION
@@ -83,7 +83,7 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY 
 
-  #define CAPABILITY FH_Higgs               // Higgs observables with errors
+  #define CAPABILITY FH_Higgs               // Higgs masses and mixings with theoretical uncertainties
   START_CAPABILITY
     #define FUNCTION FH_Higgs
     START_FUNCTION(double)

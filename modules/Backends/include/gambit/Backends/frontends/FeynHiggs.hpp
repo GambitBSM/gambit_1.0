@@ -66,7 +66,7 @@ BE_FUNCTION(FHGetPara, void, (int&,int&,
 			      Farray<fh_real, 1,6, 1,5>&, Farray<fh_complex, 1,36, 1,5>&,
 			      Farray< fh_real,1,2>&, Farray< fh_complex,1,4>&,
 			      Farray< fh_complex,1,4>&, Farray< fh_real,1,4>&,
-			      Farray< fh_complex, 1,16>&, fh_complex&, fh_real&,
+			      Farray< fh_complex,1,16>&, fh_complex&, fh_real&,
 			      Farray< fh_real,1,4>&, fh_real&), "fhgetpara_", "FHGetPara")
 
 BE_FUNCTION(FHHiggsCorr, void, (int&, Farray< fh_real,1,4>&, fh_complex&, Farray<fh_complex, 1,3, 1,3>&, 
@@ -74,61 +74,72 @@ BE_FUNCTION(FHHiggsCorr, void, (int&, Farray< fh_real,1,4>&, fh_complex&, Farray
 BE_FUNCTION(FHUncertainties, void, (int&, Farray< fh_real,1,4>&, fh_complex&, Farray<fh_complex, 1,3, 1,3>&, 
 				    Farray<fh_complex, 1,3, 1,3>&), "fhuncertainties_", "FHUncertainties")
 
-
+// Initialisation function (dependencies)
+BE_INI_DEPENDENCY(SMINPUTS, SMInputs)               // Need SLHA2 SMINPUTS to initialize FH
+//BE_INI_DEPENDENCY(MSSM_spectrum, const Spectrum*)   // Need MSSM spectrum inputs to initialize FH
 
 BE_INI_FUNCTION{
+   int error = 1;
 
   // Scan-level initialisation
   static bool scan_level = true;
   if(scan_level){
+    // initialize FeynHiggs flags
+    int mssmpart = 4;  // scope of calculation (4 -> full MSSM, recommended)
+    int fieldren = 0;  // one-loop field-renormalization constants (0 -> DRbar, strongly recommended))
+    int tanbren = 0;   // one-loop one-loop tanBeta counter-term (0 -> DRbar, strongly recommended))
+    int higgsmix = 3;  // mixing in Higgs sector (3 -> full 3 x 3 in neutral sector)
+    int p2approx = 4;  // 1-loop approximation (4 -> none, UHiggs eval. at p^2=0, recommended)
+    int looplevel = 2; // higher-order corrections? (2 -> various 2-loop contrib., recommended)
+    int runningMT = 1; // top mass for 1/2-loop corr. (1 -> m_t^{run}, recommended)
+    int botResum = 1;  // O(tan^n Beta) corr. ressummed? (1 -> yes, recommended)
+    int tlCplxApprox = 3; // determines how 2-loop corr. are treated with complex param
     
+    FHSetFlags(error, mssmpart, fieldren, tanbren, higgsmix,
+	       p2approx, looplevel, runningMT, botResum, tlCplxApprox);
+    
+    //
+    // SM input parameters:   -1 gives default value
+    //
+    // retrive SMInputs dependency 
+    const SMInputs& sminputs = *Dep::SMINPUTS;
+
+    fh_real invAlfa = sminputs.alphainv; // 1/alpha_{QED}
+    fh_real AlfasMZ = sminputs.alphaS;   // alpha_s @ MZ
+    fh_real GF = sminputs.GF;            // Fermi constant
+    
+    fh_real ME = sminputs.mE;      // electron mass
+    fh_real MU = sminputs.mU;      // up quark mass @ 2 GeV
+    fh_real MD = sminputs.mD;      // down quark mass @ 2 GeV
+    fh_real MM = sminputs.mMu;     // muon mass
+    fh_real MC = sminputs.mCmC;    // charm mass at m_c
+    fh_real MS = sminputs.mS;      // stange mass @ 2 GeV
+    fh_real ML = sminputs.mTau;    // tau mass
+    fh_real MB = sminputs.mBmB;    // bottom mass at m_b
+    
+    fh_real MW = 8.04847331E+01;   // W boson mass
+    //fh_real MW = sminputs.;      // W boson mass
+    fh_real MZ = sminputs.mZ;      // Z boson mass
+    
+    // CKM input parameters in Wolfenstein parameterization
+    fh_real CKMlambda = -1;
+    fh_real CKMA = -1;
+    fh_real CKMrhobar = -1;
+    fh_real CKMetabar = -1;
+
+    error = 1;
+    FHSetSMPara(error, invAlfa, AlfasMZ, GF,
+		ME, MU, MD, MM, MC, MS, ML, MB,
+		MW, MZ,
+		CKMlambda, CKMA, CKMrhobar, CKMetabar);
+    
+
   }
   scan_level = false;
 
-  // initialize FeynHiggs flags
-  int mssmpart = 4;  // scope of calculation (4 -> full MSSM, recommended)
-  int fieldren = 0;  // one-loop field-renormalization constants (0 -> DRbar, strongly recommended))
-  int tanbren = 0;   // one-loop one-loop tanBeta counter-term (0 -> DRbar, strongly recommended))
-  int higgsmix = 3;  // mixing in Higgs sector (3 -> full 3 x 3 in neutral sector)
-  int p2approx = 4;  // 1-loop approximation (4 -> none, UHiggs eval. at p^2=0, recommended)
-  int looplevel = 2; // higher-order corrections? (2 -> various 2-loop contrib., recommended)
-  int runningMT = 1; // top mass for 1/2-loop corr. (1 -> m_t^{run}, recommended)
-  int botResum = 1;  // O(tan^n Beta) corr. ressummed? (1 -> yes, recommended)
-  int tlCplxApprox = 3; // determines how 2-loop corr. are treated with complex param
-  
-  int error = 1;
-  FHSetFlags(error, mssmpart, fieldren, tanbren, higgsmix,
-	     p2approx, looplevel, runningMT, botResum, tlCplxApprox);
-
-  //
-  // SM input parameters:   -1 gives default value
-  //
-  fh_real invAlfa = -1; // 1/alpha_{QED}
-  fh_real AlfasMZ = -1; // alpha_s @ MZ
-  fh_real GF = -1;      // Fermi constant
-
-  fh_real ME = -1;      // electron mass
-  fh_real MU = -1;      // up quark mass @ 2 GeV
-  fh_real MD = -1;      // down quark mass @ 2 GeV
-  fh_real MM = -1;      // muon mass
-  fh_real MC = -1;      // charm mass at m_c
-  fh_real MS = -1;      // stange mass @ 2 GeV
-  fh_real ML = -1;      // tau mass
-  fh_real MB = -1;      // bottom mass at m_b
-  fh_real MW = -1;      // W boson mass
-  fh_real MZ = -1;      // Z boson mass
-
-  // CKM input parameters in Wolfenstein parameterization
-  fh_real CKMlambda = -1;
-  fh_real CKMA = -1;
-  fh_real CKMrhobar = -1;
-  fh_real CKMetabar = -1;
-
-  error = 1;
-  FHSetSMPara(error, invAlfa, AlfasMZ, GF,
-	      ME, MU, MD, MM, MC, MS, ML, MB,
-	      MW, MZ,
-	      CKMlambda, CKMA, CKMrhobar, CKMetabar);
+  //using namespace SLHAea;
+  //eaSLHA mySLHA;
+  //mySLHA = *Dep::MSSMspectrum;
 
   fh_real MT = 172;  // top quark mass
   fh_real TB = 5;    // tan Beta
