@@ -60,13 +60,10 @@ plt.colorbar(p)
 
 ## Highlight the 95% etc. CL contour via dLL = -1/2 chi2(2df, ...)
 from scipy import stats
-#dll95 = stats.chi2.cdf(0.95, 2) / 2
-cl1sig = 2*(stats.norm.cdf(1) - 0.5)
-cl2sig = 2*(stats.norm.cdf(2) - 0.5)
-dll1sig = stats.chi2.ppf(cl1sig, 2) / 2
-dll2sig = stats.chi2.ppf(cl2sig, 2) / 2
-print dll1sig, dll2sig
-c = plt.contour(xx, yy, bestdlls.T, [dll1sig], colors="white", linestyles="--") #, linewidths=["2"])
+sigcls = [2*(stats.norm.cdf(sig) - 0.5) for sig in (1,2)]
+sigdlls = [stats.chi2.ppf(cl, 2)/2 for cl in sigcls]
+print sigdlls
+c = plt.contour(xx, yy, bestdlls.T, sigdlls, colors="white", linestyles="--") #, linewidths=["2"])
 # plt.clabel(c, fmt="95%%", fontsize="smaller")
 
 ## Write LL text values on plot
