@@ -193,7 +193,7 @@ namespace Gambit
     bool check1(const std::string& s1, const std::string& s2)
     {
       if(s2.length() - s1.length() != 1){ return false; }
-      int i,j;
+      unsigned int i,j;
       for(i=0,j=0; i<s2.length(); i++,j++)
       {
           if(s2[i] == s1[j])
@@ -209,11 +209,11 @@ namespace Gambit
     /// true if s1 can be obtained from s2 by changing no more than X characters (X=2 for now)
     bool check2(const std::string& s1, const std::string& s2)
     {
-      int error_limit = 2;
-      int number_of_errors = 0;
+      unsigned int error_limit = 2;
+      unsigned int number_of_errors = 0;
 
       if(s2.length() != s1.length()){ return false; }
-      int i,j;
+      unsigned int i,j;
       for(i=0,j=0; i<s2.length(); i++,j++)
       {
           if(s2[i] == s1[j])

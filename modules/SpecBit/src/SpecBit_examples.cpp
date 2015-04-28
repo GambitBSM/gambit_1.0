@@ -359,16 +359,16 @@ namespace Gambit
 
          // The names here could perhaps be improved. They are not so immediately obvious to me.
 
-         GET_MIX_MATRIX("UM","UMIX",(1,2),(1,2)) cout<<endl;
-         GET_MIX_MATRIX("UP","VMIX",(1,2),(1,2)) cout<<endl;
-         GET_MIX_MATRIX("ZA","PSEUDOSCALARMIX",(1,2),(1,2)) cout<<endl;
-         GET_MIX_MATRIX("ZD","DSQMIX",(1,2,3,4,5,6),(1,2,3,4,5,6)) cout<<endl;
-         GET_MIX_MATRIX("ZE","SELMIX",(1,2,3,4,5,6),(1,2,3,4,5,6)) cout<<endl;
-         GET_MIX_MATRIX("ZH","SCALARMIX",(1,2),(1,2)) cout<<endl;
-         GET_MIX_MATRIX("ZN","NMIX",(1,2,3,4),(1,2,3,4)) cout<<endl;
-         GET_MIX_MATRIX("ZHPM","CHARGEMIX",(1,2),(1,2)) cout<<endl;
-         GET_MIX_MATRIX("ZU","USQMIX",(1,2,3,4,5,6),(1,2,3,4,5,6)) cout<<endl;
-         GET_MIX_MATRIX("ZV","SNUMIX",(1,2,3),(1,2,3)) cout<<endl;
+         GET_MIX_MATRIX("~chi-","UMIX",(1,2),(1,2)) cout<<endl;
+         GET_MIX_MATRIX("~chi+","VMIX",(1,2),(1,2)) cout<<endl;
+         GET_MIX_MATRIX("A0","PSEUDOSCALARMIX",(1,2),(1,2)) cout<<endl;
+         GET_MIX_MATRIX("~d","DSQMIX",(1,2,3,4,5,6),(1,2,3,4,5,6)) cout<<endl;
+         GET_MIX_MATRIX("~e","SELMIX",(1,2,3,4,5,6),(1,2,3,4,5,6)) cout<<endl;
+         GET_MIX_MATRIX("h0","SCALARMIX",(1,2),(1,2)) cout<<endl;
+         GET_MIX_MATRIX("~chi0","NMIX",(1,2,3,4),(1,2,3,4)) cout<<endl;
+         GET_MIX_MATRIX("H+","CHARGEMIX",(1,2),(1,2)) cout<<endl;
+         GET_MIX_MATRIX("~u","USQMIX",(1,2,3,4,5,6),(1,2,3,4,5,6)) cout<<endl;
+         GET_MIX_MATRIX("~nu","SNUMIX",(1,2,3),(1,2,3)) cout<<endl;
 
          cout<<endl;
          cout << "Next up: running parameters" << endl;
