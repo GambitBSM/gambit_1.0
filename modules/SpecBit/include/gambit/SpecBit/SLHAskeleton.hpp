@@ -37,8 +37,9 @@ namespace Gambit {
            /// Get reference to internal SLHAea object
            const SLHAea::Coll& getSLHAea() const;
 
-           /// Helper function to do error checking for SLHAea object contents
-           double getdata(const std::string& block, const int index) const;
+           /// Helper functions to do error checking for SLHAea object contents
+           double getdata(const std::string& block, int index) const;
+           double getdata(const std::string& block, int i, int j) const;
       };
 
       // Needed for typename aliases in Spec and MapTypes classes
@@ -56,6 +57,7 @@ namespace Gambit {
          private:
             typedef MapTypes<DerivedTraits> MT; 
 
+         protected:
             // Store SLHAea object internally (via wrapper)
             typename DerivedTraits::Model slhawrap;
 

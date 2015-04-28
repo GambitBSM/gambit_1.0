@@ -529,11 +529,8 @@ namespace Gambit
          // - Standard Model mixings (need to be added to MSSMSpec as well)
          // - some extra stuff to do regarding organising Standard Model input
          //   parameters (and computing/transferring the pole masses)
-         // - Need to extend a couple of things in Spectrum.hpp so that we can
-         //   compute and return auxilliary things like TanBeta. Of course the
-         //   user can currently compute it themselves from the vevs.
 
-         SpecBit_warning().raise(LOCAL_INFO,"Stopped to examine spectrum contents");  
+         SpecBit_warning().raise(LOCAL_INFO,"\n *** Stopped on purpose to examine spectrum contents ***");  
          result = 0;
       }
       else if(spinfo.find(k3) != spinfo.end())

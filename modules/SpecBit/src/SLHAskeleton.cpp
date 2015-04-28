@@ -60,8 +60,10 @@ namespace Gambit {
         return data;
       }
 
-      /// Helper function to do error checking for SLHAea object contents
-      double SLHAeaModel::getdata(const std::string& block, const int index) const
+      /// @{ Helper functions to do error checking for SLHAea object contents
+
+      /// One index
+      double SLHAeaModel::getdata(const std::string& block, int index) const
       {
          double output;
          try {
@@ -69,12 +71,29 @@ namespace Gambit {
          }
          catch (const std::out_of_range& e) {
            std::ostringstream errmsg;
-           errmsg << "Error accessing data at index "<<index<<"of block "<<block<<". Please check that the SLHAea object was properly filled." << std::endl;
+           errmsg << "Error accessing data at index "<<index<<" of block "<<block<<". Please check that the SLHAea object was properly filled." << std::endl;
            errmsg  << "(Received out_of_range error from SLHAea class with message: " << e.what() << ")";
            SpecBit_error().raise(LOCAL_INFO,errmsg.str());    
          }
          return output;
       }
+
+      /// Two indices
+      double SLHAeaModel::getdata(const std::string& block, int i, int j) const
+      {
+         double output;
+         try {
+           output = to<double>(getSLHAea().at(block).at(i,j).at(1));
+         }
+         catch (const std::out_of_range& e) {
+           std::ostringstream errmsg;
+           errmsg << "Error accessing data at index "<<i<<","<<j<<" of block "<<block<<". Please check that the SLHAea object was properly filled." << std::endl;
+           errmsg  << "(Received out_of_range error from SLHAea class with message: " << e.what() << ")";
+           SpecBit_error().raise(LOCAL_INFO,errmsg.str());    
+         }
+         return output;
+      }
+
 
    } // end SpecBit namespace
 } // end Gambit namespace

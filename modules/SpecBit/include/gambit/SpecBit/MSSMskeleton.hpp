@@ -34,8 +34,60 @@ namespace Gambit {
            /// @}
 
            /// @{ Getters for MSSM information 
-           double get_MZ_pole() const; 
+           double get_Mu()  const; 
+           double get_BMu() const; 
+           double get_vd()  const; 
+           double get_vu()  const; 
 
+           double get_MassB () const; 
+           double get_MassWB() const; 
+           double get_MassG () const; 
+           double get_mHd2()   const;  
+           double get_mHu2()   const;  
+
+           double get_mq2(int i, int j) const;
+           double get_ml2(int i, int j) const;
+           double get_md2(int i, int j) const;
+           double get_mu2(int i, int j) const;
+           double get_me2(int i, int j) const;
+
+           double get_TYd(int i, int j) const;
+           double get_TYu(int i, int j) const;
+           double get_TYe(int i, int j) const;
+
+           double get_Yd(int i, int j) const; 
+           double get_Yu(int i, int j) const; 
+           double get_Ye(int i, int j) const; 
+   
+           double get_g1() const;
+           double get_g2() const;
+           double get_g3() const;
+           double get_tanbeta() const;
+  
+           double get_MGlu_pole() const;
+
+           double get_Mhh_pole_slha(int i) const;
+           double get_MAh_pole () const;
+           double get_MHpm_pole() const;
+
+           double get_MCha_pole_slha(int i) const;
+           double get_MSd_pole_slha(int i) const;
+           double get_MSu_pole_slha(int i) const;
+           double get_MSe_pole_slha(int i) const;
+           double get_MSv_pole_slha(int i) const;
+           double get_MChi_pole_slha(int i) const;
+           
+           // Pole Mixings
+           double get_ZD_pole_slha(int i, int j) const;
+           double get_ZU_pole_slha(int i, int j) const;
+           double get_ZV_pole_slha(int i, int j) const;
+           double get_ZE_pole_slha(int i, int j) const;
+           double get_ZH_pole_slha(int i, int j) const;
+           double get_ZA_pole_slha(int i, int j) const;
+           double get_ZP_pole_slha(int i, int j) const;
+           double get_ZN_pole_slha(int i, int j) const;
+           double get_UM_pole_slha(int i, int j) const;
+           double get_UP_pole_slha(int i, int j) const;
            /// @}
       };
 
@@ -47,6 +99,7 @@ namespace Gambit {
 
          private:
             typedef MapTypes<SLHAskeletonTraits<MSSMea>> MT; 
+            typedef MSSMea Model; 
 
          public:
             // Constructors/destructors
@@ -54,22 +107,23 @@ namespace Gambit {
             MSSMskeleton(const SLHAea::Coll&);
             MSSMskeleton(const MSSMskeleton&);
             virtual ~MSSMskeleton() {};
+
+            virtual int get_index_offset() const;
+            virtual SLHAea::Coll getSLHAea() const;
+            virtual void dump2slha(const std::string& filename) const;
  
          protected:
             /// Map fillers
-            /// Used to initialise maps in the RunparDer and PhysDer classes
-            /// (specialisations created and stored automatically by Spec<MSSMskeleton>)
-            
-            /// RunparDer overrides (access via spectrum.runningpar)
-            // static typename MT::fmap_extraM fill_mass_map_extraM();   /*O*/
-            // static typename MT::fmap_extraM fill_mass0_map_extraM();  /*O*/
-
-            /// PhysDer overrides (access via spectrum.phys)
-            static typename MT::fmap        fill_PoleMass_map();        /*O*/
-            // static typename MT::fmap_extraI fill_PoleMass_map_extraI(); /*O*/
- 
+            static typename MT::fmap  fill_mass2_map(); 
+            static typename MT::fmap2 fill_mass2_map2(); 
+            static typename MT::fmap  fill_mass_map(); 
+            static typename MT::fmap2 fill_mass_map2(); 
+            static typename MT::fmap  fill_mass0_map(); 
+            static typename MT::fmap2 fill_mass0_map2(); 
+            static typename MT::fmap  fill_PoleMass_map();
+            static typename MT::fmap1 fill_PoleMass_map1();
+            static typename MT::fmap2 fill_PoleMixing_map2();
       };
- 
 
    } // end SpecBit namespace
 } // end Gambit namespace

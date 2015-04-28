@@ -17,6 +17,7 @@
 set(source_files src/functors.cpp
                  src/decay_table.cpp
                  src/ini_functions.cpp
+                 src/SMInputs.cpp
                  src/Spectrum.cpp
                  src/terminator.cpp
 )

@@ -27,6 +27,7 @@
 #include "gambit/Utils/util_macros.hpp"
 #include "gambit/SpecBit/SpecBit_rollcall.hpp"
 #include "gambit/SpecBit/QedQcdWrapper.hpp"
+#include "gambit/SpecBit/SMskeleton.hpp"
 #include "gambit/SpecBit/MSSMskeleton.hpp"
 #include "gambit/SpecBit/MSSMSpec.hpp"
 #include "gambit/SpecBit/model_files_and_boxes.hpp" // #includes lots of flexiblesusy headers and defines interface classes
@@ -504,15 +505,18 @@ namespace Gambit
       ifs.close();
  
       // Create MSSMskeleton SubSpectrum object from the SLHAea object
+      // (interacts with MSSM blocks)
       static MSSMskeleton mssmskel(input);
 
       // Create SMInputs object from the SLHAea object
-      SMInputs sminputs;
+      SMInputs sminputs(fill_SMInputs_from_SLHAea(input));
 
       // Create SMskeleton SubSpectrum object from the SLHAea object
-      
+      // (basically just interacts with SMINPUTS block)
+      static SMskeleton smskel(input);
+
       // Create full Spectrum object from components above
-      static Spectrum matched_spectra(&mssmskel,&mssmskel,sminputs);
+      static Spectrum matched_spectra(&smskel,&mssmskel,sminputs);
  
       result = &matched_spectra;
 
@@ -520,8 +524,6 @@ namespace Gambit
       
       std::cout << "Examining mssmskel..." << std::endl;
       std::cout << "Scale: " << mssmskel.GetScale() << std::endl;
-      //mssmskel.RunToScale(100); // Should throw error
-      std::cout << "MZ: " << mssmskel.phys.get_Pole_Mass("Z0") << std::endl;
     } 
     
 
