@@ -160,18 +160,18 @@ namespace Gambit {
 
       } else if (*Loop::iteration == END_SUBPROCESS) {
 
-        xsecArray[omp_get_thread_num()] = result->pythia()->info.sigmaGen() * 1e9; //< note converting mb to pb units
-        xsecerrArray[omp_get_thread_num()] = result->pythia()->info.sigmaErr() * 1e9; //< note converting mb to pb units
-        std::cout << "XSEC_PY = " << xsecArray[omp_get_thread_num()] << " pb" << std::endl;
-        /// @todo Hackity hack
+        xsecArray[omp_get_thread_num()] = result->pythia()->info.sigmaGen() * 1e9; //< note converting Py8's mb to pb units
+        xsecerrArray[omp_get_thread_num()] = result->pythia()->info.sigmaErr() * 1e9; //< note converting Py8's mb to pb units
+        /// @todo Hackity hack of a exp(polynomial(mg)) fit to nllfast cross-sections, via a super-hacky mg.dat file... just for testing!
+        // std::cout << "XSEC_PY = " << xsecArray[omp_get_thread_num()] << " pb" << std::endl;
         // const double mg = result->pythia()->particleData.particleDataEntryPtr(1000021)->m0();
         // const double mg = result->pythia()->particleData.m0(1000021);
-        std::ifstream mgf("mg.dat"); double mg; mgf >> mg; mgf.close();
-        const double lxs = -1.031e-08*mg*mg*mg + 2.65e-05*mg*mg - 0.03222*mg + 12.24;
-        const double xs = exp(lxs);
-        std::cout << "MG = " << mg << " logXS = " << lxs << " XS = " << xs << " pb" << std::endl;
-        xsecArray[omp_get_thread_num()] = xs;
-        std::cout << "XSEC_NL = " << xsecArray[omp_get_thread_num()] << " pb" << std::endl;
+        // std::ifstream mgf("mg.dat"); double mg; mgf >> mg; mgf.close();
+        // const double lxs = -1.031e-08*mg*mg*mg + 2.65e-05*mg*mg - 0.03222*mg + 12.24;
+        // const double xs = exp(lxs);
+        // std::cout << "MG = " << mg << " logXS = " << lxs << " XS = " << xs << " pb" << std::endl;
+        // xsecArray[omp_get_thread_num()] = xs;
+        // std::cout << "XSEC_NL = " << xsecArray[omp_get_thread_num()] << " pb" << std::endl;
 
         /// Each thread gets its own Pythia instance.
         /// Thus, the Pythia memory clean-up is *before* FINALIZE.
