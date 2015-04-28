@@ -76,7 +76,7 @@ BE_FUNCTION(FHUncertainties, void, (int&, Farray< fh_real,1,4>&, fh_complex&, Fa
 
 // Initialisation function (dependencies)
 BE_INI_DEPENDENCY(SMINPUTS, SMInputs)               // Need SLHA2 SMINPUTS to initialize FH
-//BE_INI_DEPENDENCY(MSSM_spectrum, const Spectrum*)   // Need MSSM spectrum inputs to initialize FH
+BE_INI_DEPENDENCY(MSSM_spectrum, const Spectrum*)   // Need MSSM spectrum inputs to initialize FH
 
 BE_INI_FUNCTION{
    int error = 1;
@@ -97,49 +97,49 @@ BE_INI_FUNCTION{
     
     FHSetFlags(error, mssmpart, fieldren, tanbren, higgsmix,
 	       p2approx, looplevel, runningMT, botResum, tlCplxApprox);
-    
-    //
-    // SM input parameters:   -1 gives default value
-    //
-    // retrive SMInputs dependency 
-    const SMInputs& sminputs = *Dep::SMINPUTS;
-
-    fh_real invAlfa = sminputs.alphainv; // 1/alpha_{QED}
-    fh_real AlfasMZ = sminputs.alphaS;   // alpha_s @ MZ
-    fh_real GF = sminputs.GF;            // Fermi constant
-    
-    fh_real ME = sminputs.mE;      // electron mass
-    fh_real MU = sminputs.mU;      // up quark mass @ 2 GeV
-    fh_real MD = sminputs.mD;      // down quark mass @ 2 GeV
-    fh_real MM = sminputs.mMu;     // muon mass
-    fh_real MC = sminputs.mCmC;    // charm mass at m_c
-    fh_real MS = sminputs.mS;      // stange mass @ 2 GeV
-    fh_real ML = sminputs.mTau;    // tau mass
-    fh_real MB = sminputs.mBmB;    // bottom mass at m_b
-    
-    fh_real MW = 8.04847331E+01;   // W boson mass
-    //fh_real MW = sminputs.;      // W boson mass
-    fh_real MZ = sminputs.mZ;      // Z boson mass
-    
-    // CKM input parameters in Wolfenstein parameterization
-    fh_real CKMlambda = -1;
-    fh_real CKMA = -1;
-    fh_real CKMrhobar = -1;
-    fh_real CKMetabar = -1;
-
-    error = 1;
-    FHSetSMPara(error, invAlfa, AlfasMZ, GF,
-		ME, MU, MD, MM, MC, MS, ML, MB,
-		MW, MZ,
-		CKMlambda, CKMA, CKMrhobar, CKMetabar);
-    
-
   }
   scan_level = false;
 
+  // retrive SMInputs dependency 
+  const SMInputs& sminputs = *Dep::SMINPUTS;
+
+  // retrieve MSSM_spectrum dependency
   //using namespace SLHAea;
   //eaSLHA mySLHA;
   //mySLHA = *Dep::MSSMspectrum;
+
+  //
+  // SM input parameters: -1 gives default value
+  //
+
+  fh_real invAlfa = sminputs.alphainv; // 1/alpha_{QED}
+  fh_real AlfasMZ = sminputs.alphaS;   // alpha_s @ MZ
+  fh_real GF = sminputs.GF;            // Fermi constant
+    
+  fh_real ME = sminputs.mE;      // electron mass
+  fh_real MU = sminputs.mU;      // up quark mass @ 2 GeV
+  fh_real MD = sminputs.mD;      // down quark mass @ 2 GeV
+  fh_real MM = sminputs.mMu;     // muon mass
+  fh_real MC = sminputs.mCmC;    // charm mass at m_c
+  fh_real MS = sminputs.mS;      // stange mass @ 2 GeV
+  fh_real ML = sminputs.mTau;    // tau mass
+  fh_real MB = sminputs.mBmB;    // bottom mass at m_b
+    
+  fh_real MW = 8.04847331E+01;   // W boson mass
+  //fh_real MW = sminputs.;      // W boson mass
+  fh_real MZ = sminputs.mZ;      // Z boson mass
+    
+  // CKM input parameters in Wolfenstein parameterization
+  fh_real CKMlambda = -1;
+  fh_real CKMA = -1;
+  fh_real CKMrhobar = -1;
+  fh_real CKMetabar = -1;
+
+  error = 1;
+  FHSetSMPara(error, invAlfa, AlfasMZ, GF,
+	      ME, MU, MD, MM, MC, MS, ML, MB,
+	      MW, MZ,
+	      CKMlambda, CKMA, CKMrhobar, CKMetabar);
 
   fh_real MT = 172;  // top quark mass
   fh_real TB = 5;    // tan Beta
