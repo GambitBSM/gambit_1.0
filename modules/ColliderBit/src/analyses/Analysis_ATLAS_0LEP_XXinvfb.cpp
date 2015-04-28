@@ -245,19 +245,6 @@ namespace Gambit {
       }
 
 
-      void add(const HEPUtilsAnalysis* a) {
-        const Analysis_ATLAS_0LEP* aa = dynamic_cast<const Analysis_ATLAS_0LEP*>(a);
-        add_xsec(aa->xsec(), aa->xsec_err());
-        // double tmp = _numAT;
-        const double weight = (xsec() > 0) ? aa->xsec_per_event() / xsec_per_event() : 1;
-        #define ADD(NAME) NAME += weight * aa->NAME
-        ADD(_numAM); ADD(_numAL);
-        ADD(_numBT); ADD(_numBM); ADD(_numCT); ADD(_numCM);
-        ADD(_numD);  ADD(_numET); ADD(_numEM); ADD(_numEL);
-        #undef ADD
-        // cout << tmp << " -> " << _numAT << endl;
-      }
-
       void finalize() {
         cout << "NUMEVENTS: " << _numAM << " " << _numAL << " "
              << _numBT << " " << _numBM << " " << _numCT << " " << _numCM << " " << " "

@@ -39,11 +39,15 @@ namespace Gambit {
 
     /// @name HEPUtilsAnalysisContainer function definitions:
     //@{
-    void HEPUtilsAnalysisContainer::clear() {
+    void HEPUtilsAnalysisContainer::clear(bool clearStatic) {
+      ready=false;
+      _combined=false;
       if (!_analyses.empty())
         for (size_t i = 0; i < _analyses.size(); ++i)
           delete _analyses[i];
       _analyses.clear();
+
+      if (!clearStatic) return;
       #pragma omp critical (staticAnalysisAccess)
       {
         if (!HEPUtilsAnalysisContainer::_combinedAnalyses.empty())
@@ -51,8 +55,6 @@ namespace Gambit {
             delete HEPUtilsAnalysisContainer::_combinedAnalyses[i];
         HEPUtilsAnalysisContainer::_combinedAnalyses.clear();
       }
-      ready=false;
-      _finalized=false;
     }
 
     void HEPUtilsAnalysisContainer::init(const std::vector<std::string>& analysisNames) {
@@ -73,7 +75,7 @@ namespace Gambit {
         }
       }
       ready=true;
-      _finalized=false;
+      _combined=false;
     }
 
     void HEPUtilsAnalysisContainer::analyze(const HEPUtils::Event& event) const {
@@ -82,18 +84,18 @@ namespace Gambit {
       for (size_t i = 0; i < _analyses.size(); ++i) { _analyses[i]->analyze(event); }
     }
 
-    void HEPUtilsAnalysisContainer::set_xsec(double xs, double xserr) {
+    void HEPUtilsAnalysisContainer::add_xsec(double xs, double xserr) {
       assert(!_analyses.empty());
       assert(ready);
-      for (size_t i = 0; i < _analyses.size(); ++i) { _analyses[i]->set_xsec(xs, xserr); }
+      for (size_t i = 0; i < _analyses.size(); ++i) { _analyses[i]->add_xsec(xs, xserr); }
     }
 
-    void HEPUtilsAnalysisContainer::finalize() {
+    void HEPUtilsAnalysisContainer::combineAnalyses() {
       assert(!_analyses.empty());
       assert(!HEPUtilsAnalysisContainer::_combinedAnalyses.empty());
       assert(_analyses.size() == HEPUtilsAnalysisContainer::_combinedAnalyses.size());
       assert(ready);
-      if(!_finalized) {
+      if(!_combined) {
         #pragma omp critical (access_combinedAnalyses)
         {
           for (size_t i = 0; i < _analyses.size(); ++i) {
@@ -102,7 +104,7 @@ namespace Gambit {
             HEPUtilsAnalysisContainer::_combinedAnalyses[i]->add(_analyses[i]);
           }
         }
-        _finalized=true;
+        _combined=true;
       }
     }
     //@}

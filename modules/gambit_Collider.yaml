@@ -81,8 +81,8 @@ Rules:
 
   #ColliderBit options (note, these ones are mandatory at this moment)
 
-  - capability: ListOfAnalyses
-    function: specifyAnalysisPointerVector
+  - capability: AnalysisContainer
+    function: getAnalysisContainer
     options:  
       analysisNames: ["ATLAS_0LEPStop_20invfb", "ATLAS_1LEPStop_20invfb"]
 

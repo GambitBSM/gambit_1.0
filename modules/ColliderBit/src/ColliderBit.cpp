@@ -34,7 +34,7 @@ namespace Gambit {
     /// ********************************************
 
     /// Event labels
-    enum specialEvents {INIT = -1, END_SUBPROCESS = -2, FINALIZE = -3};
+    enum specialEvents {INIT = -1, START_SUBPROCESS = -2, END_SUBPROCESS = -3, FINALIZE = -4};
     /// Delphes stuff
     /// @TODO BOSS delphes? Euthanize delphes?
     bool resetDelphesFlag = true;
@@ -90,6 +90,7 @@ namespace Gambit {
           Loop::executeIteration(INIT);
           #pragma omp parallel shared(SHARED_OVER_OMP)
           {
+            Loop::executeIteration(START_SUBPROCESS);
             #pragma omp for
             for (int i = 1; i <= nEvents; ++i) {
               Loop::executeIteration(i);
@@ -119,9 +120,9 @@ namespace Gambit {
     void getPythia(Gambit::ColliderBit::SpecializablePythia &result) {
       using namespace Pipes::getPythia;
 
-      if (!result.ready and *Loop::iteration > INIT) {
+      if (!result.ready and *Loop::iteration == START_SUBPROCESS) {
         /// Each thread gets its own Pythia instance.
-        /// Thus, the Pythia instantiation is *after* INIT.
+        /// Thus, the initialization is *after* INIT.
         std::vector<std::string> pythiaOptions;
         std::string pythiaConfigName;
 
@@ -197,7 +198,14 @@ namespace Gambit {
 
     void getAnalysisContainer(Gambit::ColliderBit::HEPUtilsAnalysisContainer& result) {
       using namespace Pipes::getAnalysisContainer;
-      if (!result.ready and *Loop::iteration == INIT) {
+      if (*Loop::iteration == INIT) {
+        result.clear(true);
+        return;
+      }
+
+      if (*Loop::iteration == START_SUBPROCESS) {
+        /// Each thread gets its own Analysis Container.
+        /// Thus, the initialization is *after* INIT.
         result.clear();
         std::vector<std::string> analysisNames;
         #pragma omp critical (runOptions)
@@ -212,10 +220,8 @@ namespace Gambit {
       if (*Loop::iteration == END_SUBPROCESS) {
         const double xs = Dep::HardScatteringSim->xsec_pb();
         const double xserr = Dep::HardScatteringSim->xsecErr_pb();
-        cout << "Adding xsec = " << xs << " +- " << xserr << " pb" << endl;
-        result.set_xsec(xs, xserr);
-        result.finalize();
-        result.ready = false;
+        result.add_xsec(xs, xserr);
+        result.combineAnalyses();
         return;
       }
     }
@@ -558,7 +564,6 @@ namespace Gambit {
 
     void runAnalyses(ColliderLogLikes& result)
     {
-      /// TODO Everything about the HEPUtilsAnalysisContainer still needs work... but too tired now.
       using namespace Pipes::runAnalyses;
       if (*Loop::iteration == INIT) return;
 

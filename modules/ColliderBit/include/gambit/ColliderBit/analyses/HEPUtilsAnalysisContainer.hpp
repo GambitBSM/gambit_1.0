@@ -19,7 +19,7 @@ namespace Gambit {
       private:
         static std::vector<HEPUtilsAnalysis*> _combinedAnalyses;
         std::vector<HEPUtilsAnalysis*> _analyses;
-        bool _finalized;
+        bool _combined;
       public:
         bool ready;
       //@}
@@ -27,10 +27,10 @@ namespace Gambit {
       /// @name Construction, Destruction, and Recycling
       //@{
       public:
-        HEPUtilsAnalysisContainer() : _finalized(false), ready(false) { }
+        HEPUtilsAnalysisContainer() : _combined(false), ready(false) { }
         ~HEPUtilsAnalysisContainer() { clear(); }
         /// @brief Reset the analyses contained within this instance.
-        void clear(); 
+        void clear(bool clearStatic=false); 
       //@}
 
       /// @name (Re-)Initialization functions
@@ -46,9 +46,9 @@ namespace Gambit {
         /// @brief Analyze an event.
         void analyze(const HEPUtils::Event&) const;
         /// @brief Set cross-sections and errors for each analysis.
-        void set_xsec(double xs, double xserr);
+        void add_xsec(double xs, double xserr);
         /// @brief Add the results of all analyses from this instance to the static member.
-        void finalize(); 
+        void combineAnalyses(); 
         /// @brief Get the combined analysis results.
         const std::vector<HEPUtilsAnalysis*> getCombinedAnalysisResults() const 
             { return HEPUtilsAnalysisContainer::_combinedAnalyses; }

@@ -312,16 +312,6 @@ namespace Gambit {
       }
 
 
-      void add(const HEPUtilsAnalysis* a) {
-        const Analysis_ATLAS_0LEP_20invfb* aa = dynamic_cast<const Analysis_ATLAS_0LEP_20invfb*>(a);
-        add_xsec(aa->xsec(), aa->xsec_err());
-        /// @todo Need more?
-        // double tmp = _numAT;
-        //const double weight = (xsec() > 0) ? aa->xsec_per_event() / xsec_per_event() : 1;
-        // cout << tmp << " -> " << _numAT << endl;
-      }
-
-
       void finalize() {
 
         // const double scale_by = xsec() * 20.3*1000 / num_events();

@@ -100,9 +100,17 @@ namespace Gambit {
       //@{
       public:
         /// @brief An operator to do xsec-weighted combination of analysis runs
-        virtual void add(const BaseAnalysis*) { }
+        void add(BaseAnalysis* other) {
+          if (_results.empty()) collect_results();
+          std::vector<SignalRegionData> otherResults = other->get_results();
+          assert(otherResults.size() == _results.size());
+          for (size_t i=0; i < _results.size(); i++) {
+            _results[i].n_signal += otherResults[i].n_signal;
+          }
+          _ntot += other->num_events();
+        }
         /// @brief Reference-based version of add()
-        void add(const BaseAnalysis& a) { add(&a); }
+        void add(BaseAnalysis& other) { add(&other); }
         /// @brief Add cross-sections and errors for two different process types
         void add_xsec(double xs, double xserr) {
           std::stringstream msg;
