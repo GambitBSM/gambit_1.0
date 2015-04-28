@@ -162,6 +162,16 @@ namespace Gambit {
 
         xsecArray[omp_get_thread_num()] = result->pythia()->info.sigmaGen() * 1e9; //< note converting mb to pb units
         xsecerrArray[omp_get_thread_num()] = result->pythia()->info.sigmaErr() * 1e9; //< note converting mb to pb units
+        std::cout << "XSEC_PY = " << xsecArray[omp_get_thread_num()] << " pb" << std::endl;
+        /// @todo Hackity hack
+        // const double mg = result->pythia()->particleData.particleDataEntryPtr(1000021)->m0();
+        // const double mg = result->pythia()->particleData.m0(1000021);
+        std::ifstream mgf("mg.dat"); double mg; mgf >> mg; mgf.close();
+        const double lxs = -1.031e-08*mg*mg*mg + 2.65e-05*mg*mg - 0.03222*mg + 12.24;
+        const double xs = exp(lxs);
+        std::cout << "MG = " << mg << " logXS = " << lxs << " XS = " << xs << " pb" << std::endl;
+        xsecArray[omp_get_thread_num()] = xs;
+        std::cout << "XSEC_NL = " << xsecArray[omp_get_thread_num()] << " pb" << std::endl;
 
         /// Each thread gets its own Pythia instance.
         /// Thus, the Pythia memory clean-up is *before* FINALIZE.
@@ -618,6 +628,7 @@ namespace Gambit {
         {
           /// @TODO Clean this crap up... xsecArrays should be more Gambity.
           /// @TODO THIS IS HARDCODED FOR ONLY ONE THREAD!!!
+          /// @todo Shouldn't add_xsec really be set_xsec in this context? (It's not analysis combination)
           cout << "Adding xsec = " << xsecArray[0] << " +- " << xsecerrArray[0] << " pb" << endl;
           (*anaPtr)->add_xsec(xsecArray[0], xsecerrArray[0]);
         }
