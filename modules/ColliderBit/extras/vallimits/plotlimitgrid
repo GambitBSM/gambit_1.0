@@ -1,0 +1,86 @@
+#! /usr/bin/env python
+
+import optparse
+op = optparse.OptionParser()
+op.add_option("-s", "--save", dest="SAVE", action="store_true", default=False)
+opts, args = op.parse_args()
+DIR = args[0]
+
+
+## Set up value arrays
+import numpy as np
+mg_range = np.arange(200, 1601, 50)
+mX_range = np.arange(50, 801, 50)
+xx, yy = np.meshgrid(mg_range, mX_range)
+# bestdlls = np.full_like(xx, np.nan)
+# bestsrs = np.full_like(xx, -1)
+sr_lls = {} #< We'll populate this with an array of LLs for each SR
+
+
+## Read LLs for each SR and mg-mX point from the results files
+import os, glob
+for i, mg in enumerate(mg_range):
+    for j, mX in enumerate(mX_range):
+        resfiles = glob.glob(os.path.join(DIR, "results-*_{0:04d}_{1:04d}*.dat".format(mg, mX)))
+        if resfiles:
+            with open(resfiles[0], "r") as rf:
+                for line in rf:
+                    parts = line.strip().split()
+                    sr1 = int(parts[1])
+                    sr2 = int(parts[2])
+                    sr = 10*sr1 + sr2
+                    ll = float(parts[3])
+                    sr_lls.setdefault(sr, np.full_like(xx.T, np.nan, dtype=np.double))[i,j] = ll
+
+
+## Work out the maximum LL for each SR, returned as a full array of maxlls to make dLL computation easy
+sr_maxlls = { sr : np.full_like(xx.T, np.nanmax(lls), dtype=np.double) for (sr, lls) in sr_lls.iteritems() }
+#print sr_maxlls
+
+## Work out the dLLs for each SR
+sr_dlls = { sr : sr_maxlls[sr] - sr_lls[sr] for sr in sr_lls.keys() }
+#print sr_dlls
+
+## Work out the best (most negative) dLL for each point
+bestdlls = reduce(np.fmax, sr_dlls.values())
+print bestdlls
+
+
+## Plot dLL filled contours
+import matplotlib as mpl
+mpl.use("PGF")
+mpl.rc("font.family = serif")
+from matplotlib import pyplot as plt
+fig = plt.figure(figsize=[9,6])
+ax = fig.add_subplot(1,1,1)
+# vals = np.exp(lls.T)
+plt.hold(True)
+p = ax.contourf(xx, yy, bestdlls.T)
+plt.colorbar(p)
+
+## Highlight the 95% etc. CL contour via dLL = -1/2 chi2(2df, ...)
+from scipy import stats
+sigcls = [2*(stats.norm.cdf(sig) - 0.5) for sig in (1,2)]
+sigdlls = [stats.chi2.ppf(cl, 2)/2 for cl in sigcls]
+print sigdlls
+c = plt.contour(xx, yy, bestdlls.T, sigdlls, colors="white", linestyles="--") #, linewidths=["2"])
+# plt.clabel(c, fmt="95%%", fontsize="smaller")
+
+## Write LL text values on plot
+for i, mg in enumerate(mg_range):
+    for j, mX in enumerate(mX_range):
+        if i % 2 == 0 and j % 2 == 0:
+            ax.text(mg, mX, "{0:.3g}".format(bestdlls[i,j]), ha="center", va="center", fontsize="xx-small")
+            # if srs[i,j] >= 0:
+            #      ax.text(mg, mX, str(int(srs[i,j])), ha="center", va="center", fontsize="small")
+
+ax.set_title("$\\Delta LL$ contours", x=0, ha="left")
+ax.set_xlabel("$M_g$", x=1, ha="right")
+ax.set_ylabel("$M_\\chi$", y=0.95, va="top", labelpad=16)
+
+# fig.tight_layout()
+if opts.SAVE:
+    fig.savefig("cl-atlas0lep.pdf")
+    # fig.savefig("cl-ana%d-sr%d.pdf" % ana_sr)
+else:
+    plt.show()
