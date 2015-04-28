@@ -658,6 +658,7 @@ namespace Gambit {
 
 
     /// Loop over all analyses (and SRs within one analysis) and fill a vector of observed likelihoods
+    /// @todo Don't we also need to return a reference LL, or just the deltaLL?
     void calcLogLike(double& result) {
       using namespace Pipes::calcLogLike;
       ColliderLogLikes analysisResults = (*Dep::AnalysisNumbers);
@@ -680,30 +681,36 @@ namespace Gambit {
           double n_predicted_exact = 0.;
 
           // A contribution to the predicted number of events that is not known exactly
-          double n_predicted_uncertain = srData.n_signal + srData.n_background;
+          double n_predicted_uncertain_b = srData.n_background;
+          double n_predicted_uncertain_sb = srData.n_signal + srData.n_background;
 
-          // A fractional uncertainty on n_predicted_uncertain
-          // (e.g. 0.2 from 20% uncertainty on efficencty wrt signal events)
+          // A fractional uncertainty on n_predicted_uncertain e.g. 0.2 from 20% uncertainty on efficencty wrt signal events
           double bkg_ratio = srData.background_sys/srData.n_background;
-          double sig_ratio = (srData.n_signal != 0) ? srData.signal_sys/srData.n_signal : 0;
-          double uncertainty = sqrt(bkg_ratio*bkg_ratio + sig_ratio*sig_ratio);
+          double sig_ratio = (srData.n_signal != 0) ? srData.signal_sys/srData.n_signal : 0; ///< @todo Is this the best treatment?
+          double uncertainty_b = bkg_ratio;
+          double uncertainty_sb = sqrt(bkg_ratio*bkg_ratio + sig_ratio*sig_ratio);
 
-          cout << "OBS " << n_obs << " PRED " << n_predicted_exact << " UNCERTAIN " << n_predicted_uncertain << " UNCERTAINTY " << uncertainty << endl;
+          double llb, llsb;
+          cout << "OBS " << n_obs << " EXACT " << n_predicted_exact << " UNCERTAIN_B " << n_predicted_uncertain_b << " UNCERTAINTY_B " << uncertainty_b << endl;
+          cout << "OBS " << n_obs << " EXACT " << n_predicted_exact << " UNCERTAIN_S+B " << n_predicted_uncertain_sb << " UNCERTAINTY_S+B " << uncertainty_sb << endl;
           // Use a log-normal distribution for the nuisance parameter (more correct)
           if (*BEgroup::lnlike_marg_poisson == "lnlike_marg_poisson_lognormal_error") {
-            result = BEreq::lnlike_marg_poisson_lognormal_error(n_obs,n_predicted_exact,n_predicted_uncertain,uncertainty);
+            llb = BEreq::lnlike_marg_poisson_lognormal_error(n_obs, n_predicted_exact, n_predicted_uncertain_b, uncertainty_b);
+            llsb = BEreq::lnlike_marg_poisson_lognormal_error(n_obs, n_predicted_exact, n_predicted_uncertain_sb, uncertainty_sb);
           }
           // Use a Gaussian distribution for the nuisance parameter (marginally faster)
           else if (*BEgroup::lnlike_marg_poisson == "lnlike_marg_poisson_gaussian_error") {
-            result = BEreq::lnlike_marg_poisson_gaussian_error(n_obs,n_predicted_exact,n_predicted_uncertain,uncertainty);
+            llb = BEreq::lnlike_marg_poisson_gaussian_error(n_obs, n_predicted_exact, n_predicted_uncertain_b, uncertainty_b);
+            llsb = BEreq::lnlike_marg_poisson_gaussian_error(n_obs, n_predicted_exact, n_predicted_uncertain_sb, uncertainty_sb);
           }
-          cout << "COLLIDER_RESULT " << analysis << " " << SR << " " << result << endl;
+          cout << "COLLIDER_RESULT " << analysis << " " << SR << " " << llb << " " << llsb << endl;
 
+          observedLikelihoods.push_back(result);
 
         } // end SR loop
       } // end ana loop
 
-      /// @TODO Need to combine { ana+SR } to return the single most stringent likelihood / other combined-as-well-as-we-can LL number
+      /// @TODO Need to combine { ana+SR } to return the single most stringent likelihood (ratio) / other combined-as-well-as-we-can LL number
 
     }
 
