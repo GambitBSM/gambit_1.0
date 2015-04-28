@@ -94,7 +94,7 @@ Rules:
   - capability: SimpleSmearingSim
     function: getBuckFast
     options:
-      buckFastOption: "BuckFastIdentity"
+      buckFastOption: "BuckFastSmear"
  
   - capability:  ColliderOperator
     function: operatePythia

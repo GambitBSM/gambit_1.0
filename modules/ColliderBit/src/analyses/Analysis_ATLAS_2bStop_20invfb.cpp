@@ -148,6 +148,8 @@ namespace Gambit {
         double mbb=0;
         double mCT=0;
 
+	cout << "TEST njets " << nJets << " nbjets " << bJets.size() << endl;
+
         if(nJets>=2){
           if(signalJets[0]->pT() > 130.
              && signalJets[1]->pT() > 50) {

@@ -17,6 +17,7 @@
 set(source_files src/functors.cpp
                  src/decay_table.cpp
                  src/ini_functions.cpp
+                 src/Spectrum.cpp
                  src/terminator.cpp
 )
 
@@ -34,8 +35,8 @@ set(header_files include/gambit/Elements/base_functions.hpp
                  include/gambit/Elements/safety_bucket.hpp
                  include/gambit/Elements/shared_types.hpp
                  include/gambit/Elements/SMInputs.hpp
-                 include/gambit/Elements/SMplusUV.hpp
                  include/gambit/Elements/Spectrum.hpp
+                 include/gambit/Elements/SubSpectrum.hpp
                  include/gambit/Elements/terminator.hpp
                  include/gambit/Elements/types_rollcall.hpp
 )

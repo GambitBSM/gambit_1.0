@@ -350,8 +350,8 @@ namespace Gambit {
         if (!myres.resonances.empty()){
           myrdmgev->nres=myres.resonances.size();
           for (std::size_t i=1; i<=myres.resonances.size(); i++) {
-            myrdmgev->rgev(i)=myres.resonances[i-1].energy;
-            myrdmgev->rwid(i)=myres.resonances[i-1].width;
+            myrdmgev->rgev((int)i)=myres.resonances[i-1].energy;
+            myrdmgev->rwid((int)i)=myres.resonances[i-1].width;
           }
         }
         // convert to momenta and write to DS common blocks
@@ -360,8 +360,8 @@ namespace Gambit {
         myrdpth.nth=myres.threshold_energy.size()-1;
         myrdpth.pth(0)=0; myrdpth.incth(0)=1;
         for (std::size_t i=1; i<myres.threshold_energy.size(); i++) {
-          myrdpth.pth(i)=sqrt(pow(myres.threshold_energy[i],2)/4-pow(mwimp,2));
-          myrdpth.incth(i)=1;
+          myrdpth.pth((int)i)=sqrt(pow(myres.threshold_energy[i],2)/4-pow(mwimp,2));
+          myrdpth.incth((int)i)=1;
         }
         *BEreq::rdpth = myrdpth;
 
