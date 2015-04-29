@@ -118,7 +118,7 @@ namespace Gambit
     fh_complex VCha[4];
 
     // neutralino masses
-    fh_complex MNeu[4];
+    fh_real MNeu[4];
 
     // neutralino mixing matrices (mass,gauge) eigenstates (4 x 4)
     fh_complex ZNeu[16];
@@ -136,6 +136,21 @@ namespace Gambit
     fh_real SinAlphatree;
   };
   
+  // Container for FeynHiggs couplings (from FHCouplings backend function)
+  struct fh_Couplings
+  {
+    fh_complex couplings[681];
+    fh_complex couplings_sm[231];
+    fh_real gammas[978];
+    fh_real gammas_sm[250];
+  };
+
+  // Container for FeynHiggs Higgs prod xsecs (from FHHiggsProd backend function)
+  struct fh_HiggsProd
+  {
+    fh_real prodxs[52];
+  };
+
 }
 
 #endif /* defined __FeynHiggs_types_hpp__ */

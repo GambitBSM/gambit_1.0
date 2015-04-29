@@ -30,18 +30,13 @@ namespace Gambit
 
     using namespace LogTags;
 
-    /// \name EWPOBit module functions
-    /// @{
-
-    //void deleteme(int &result) { using namespace Pipes::deleteme; result = 1; }   
-
-    /// @}
-
     // Module functions
 
-    void FH_Masses(double &result) 
+    void FH_MSSMMasses(fh_MSSMMassObs &result) 
     {
-      using namespace Pipes::FH_Masses;
+      using namespace Pipes::FH_MSSMMasses;
+
+      cout << "****** calling FH_MSSMMasses ******" << endl;
    
       // zero if minimal, non-zero if non-minimal flavour violation
       int nmfv; 
@@ -69,7 +64,7 @@ namespace Gambit
       // a2 = 1..6  extended sfermion index (gauge eigenstates)
       //  t = 1..5  sftermion type nu,e,u,d,?
       Farray<fh_complex, 1,36, 1,5> UASf; 
-      
+
       // chargino masses
       Farray<fh_real, 1,2> MCha;
 
@@ -95,20 +90,51 @@ namespace Gambit
       // tree-level Higgs mixing parameters sin alpha
       fh_real SAtree;
 
-      int error;
-      
+      int error = 1;
       BEreq::FHGetPara(error, nmfv, MSf, USf, MASf, UASf,
 		       MCha, UCha, VCha, MNeu, ZNeu, 
 		       DeltaMB, MGl, MHtree, SAtree);
 
-      result = 0.1;
+      fh_MSSMMassObs MassObs; 
+      for(int i = 0; i < 2; i++)
+	for(int j = 0; j < 5; j++)
+	  for(int k = 0; k < 3; k++)
+	    MassObs.MSf[i][j][k] = MSf(i+1,j+1,k+1);
+      for(int i = 0; i < 2; i++)
+	for(int j = 0; j < 2; j++)
+	  for(int k = 0; k < 5; k++)
+	    for(int l = 0; l < 3; l++)
+	      MassObs.USf[i][j][k][l] = USf(i+1,j+1,k+1,l+1);
+      for(int i = 0; i < 6; i++)
+	for(int j = 0; j < 5; j++)
+	  MassObs.MASf[i][j] = MASf(i+1,j+1);
+      for(int i = 0; i < 36; i++)
+	for(int j = 0; j < 5; j++)
+	  MassObs.UASf[i][j] = UASf(i+1,j+1);
+      for(int i = 0; i < 2; i++)
+	MassObs.MCha[i] = MCha(i+1);
+      for(int i = 0; i < 4; i++){
+	MassObs.UCha[i] = UCha(i+1);
+	MassObs.VCha[i] = VCha(i+1);
+      }
+      for(int i = 0; i < 4; i++)
+	MassObs.MNeu[i] = MNeu(i+1);
+      for(int i = 0; i < 16; i++)
+	MassObs.ZNeu[i] = ZNeu(i+1);
+      MassObs.deltaMB = DeltaMB;
+      MassObs.MGl = MGl;
+      for(int i = 0; i < 4; i++)
+	MassObs.MHtree[i] = MHtree(i+1);
+      MassObs.SinAlphatree = SAtree;
 
-      cout << "sin alpha = " << SAtree << endl;
+      result = MassObs; 
     }
 
-    void FH_Precision(double &result) 
+    void FH_PrecisionObs(fh_PrecisionObs &result) 
     {
-      using namespace Pipes::FH_Precision;
+      using namespace Pipes::FH_PrecisionObs;
+
+      cout << "****** calling FH_PrecisionObs ******" << endl;
 
       fh_real gm2;        // g_{mu}-2
       fh_real Deltarho;   // deltaRho
@@ -125,20 +151,27 @@ namespace Gambit
       BEreq::FHConstraints(error, gm2, Deltarho, 
 			   MWMSSM, MWSM, SW2MSSM, SW2SM,
 			   edmeTh, edmn, edmHg, ccb);
-      
-      cout << "****** FeynHiggs Precision Observables ******" << endl;
-      cout << "g_{mu}-2 = " << gm2 << endl;
-      cout << "delta rho = " << Deltarho << endl;
-      cout << "W mass = " <<  MWMSSM << " (MSSM) " << MWSM << " (SM)" << endl;
-      cout << "weak mixing angle = " <<  SW2MSSM << " (MSSM) " << SW2SM << " (SM)" << endl;
-      cout << "EDMs : " << edmeTh << " (electron) " << edmn << " (neutron) " << edmHg << " (mercury)" << endl;
 
-      result = 0.1;
+      fh_PrecisionObs PrecisionObs;
+      PrecisionObs.gmu2 = gm2;       
+      PrecisionObs.deltaRho = Deltarho;   
+      PrecisionObs.MW_MSSM = MWMSSM;     
+      PrecisionObs.MW_SM = MWSM;      
+      PrecisionObs.sinW2_MSSM = SW2MSSM; 
+      PrecisionObs.sinW2_SM = SW2SM;  
+      PrecisionObs.edm_ele = edmeTh;    
+      PrecisionObs.edm_neu = edmn;    
+      PrecisionObs.edm_Hg = edmHg;     
+      PrecisionObs.ccb = ccb;           
+
+      result = PrecisionObs;
     }
 
-    void FH_Flavor(double &result) 
+    void FH_FlavorObs(fh_FlavorObs &result) 
     {
-      using namespace Pipes::FH_Flavor;
+      using namespace Pipes::FH_FlavorObs;
+
+      cout << "****** calling FH_FlavorObs ******" << endl;
       
       fh_real bsgMSSM;     // B -> Xs gamma in MSSM
       fh_real bsgSM;       // B -> Xs gamma in SM
@@ -152,17 +185,22 @@ namespace Gambit
 		       deltaMsMSSM, deltaMsSM,
 		       bsmumuMSSM, bsmumuSM);
 
-      cout << "****** FeynHiggs Flavor ******" << endl;
-      cout << "B -> Xs gamma = " << bsgMSSM << " (MSSM) " << bsgSM << " (SM)" << endl;
-      cout << "delta Ms = " << deltaMsMSSM << " (MSSM) " << deltaMsSM << " (SM)" << endl;
-      cout << "Bs -> mu mu = " << bsmumuMSSM << " (MSSM) " << bsmumuSM << " (SM)" << endl;
+      fh_FlavorObs FlavorObs;
+      FlavorObs.Bsg_MSSM = bsgMSSM;     
+      FlavorObs.Bsg_SM = bsgSM;       
+      FlavorObs.deltaMs_MSSM = deltaMsMSSM; 
+      FlavorObs.deltaMs_SM = deltaMsSM;   
+      FlavorObs.Bsmumu_MSSM = bsmumuMSSM;  
+      FlavorObs.Bsmumu_SM = bsmumuSM;    
 
-      result = 0.1;
+      result = FlavorObs;
     }
 
-    void FH_Higgs(double &result) 
+    void FH_HiggsMasses(fh_HiggsMassObs &result) 
     {
-      using namespace Pipes::FH_Higgs;
+      using namespace Pipes::FH_HiggsMasses;
+
+      cout << "****** calling FH_HiggsMasses ******" << endl;
 
       // Higgs mass with
       // 0 - m1 (Mh in rMSSM)
@@ -191,13 +229,86 @@ namespace Gambit
 
       error = 1;
       BEreq::FHUncertainties(error, DeltaMHiggs, DeltaSAeff, DeltaUHiggs, DeltaZHiggs);
-      
-      cout << "****** FeynHiggs Higgs Masses ******" << endl;
-      for(int i = 0; i < 4; i++){
-	cout << "Higgs #" << i << " with M = " << MHiggs(i+1) << " +/- " << DeltaMHiggs(i+1) << " [GeV]" << endl;
-      }
 
-      result = 0.1;
+      fh_HiggsMassObs HiggsMassObs;
+      for(int i = 0; i < 4; i++){
+	HiggsMassObs.MH[i] = MHiggs(i+1);
+	HiggsMassObs.deltaMH[i] = DeltaMHiggs(i+1);
+      }
+      HiggsMassObs.SinAlphaEff = SAeff; 
+      HiggsMassObs.deltaSinAlphaEff = DeltaSAeff; 
+      for(int i = 0; i < 3; i++)
+	for(int j = 0; j < 3; j++){
+	  HiggsMassObs.UH[i][j] = UHiggs(i+1,j+1);
+	  HiggsMassObs.deltaUH[i][j] = DeltaUHiggs(i+1,j+1);
+	  HiggsMassObs.ZH[i][j] = ZHiggs(i+1,j+1);
+	  HiggsMassObs.deltaZH[i][j] = DeltaZHiggs(i+1,j+1);
+	}
+
+      result = HiggsMassObs;
+    }
+
+    void FH_Couplings(fh_Couplings &result) 
+    {
+      using namespace Pipes::FH_Couplings;
+      
+      cout << "****** calling FH_Couplings ******" << endl;
+
+      // what to use for internal Higgs mixing
+      // (ex. in couplings)
+      // (default = 1)
+      // 0 - no mixing
+      // 1 - UHiggs
+      // 2 - ZHiggs
+      int uzint = 2;
+      // what to use for external Higgs mixing
+      // (ex. in decays)
+      // (default = 2)
+      // 0 - no mixing
+      // 1 - UHiggs
+      // 2 - ZHiggs
+      int uzext = 2; 
+      // which effective bottom mass to use
+      int mfeff = 1;
+
+      int error = 1;
+      BEreq::FHSelectUZ(error, uzint, uzext, mfeff);
+
+      Farray<fh_complex, 1,681> couplings;     // MSSM Higgs couplings
+      Farray<fh_complex, 1,231> couplings_sm;  // SM Higgs couplings
+      Farray<fh_real, 1,978> gammas;           // Higgs decay widths and BR's (MSSM)
+      Farray<fh_real, 1,250> gammas_sm;        // Higgs decay widths and BR's (SM)
+      int fast = 1;  // include off-diagonal fermion decays? (1 = no)
+
+      error = 1;
+      BEreq::FHCouplings(error, couplings, couplings_sm,
+			 gammas, gammas_sm, fast);
+
+      fh_Couplings Couplings;
+      for(int i = 0; i < 681; i++) Couplings.couplings[i] = couplings(i+1);
+      for(int i = 0; i < 231; i++) Couplings.couplings_sm[i] = couplings_sm(i+1);
+      for(int i = 0; i < 978; i++) Couplings.gammas[i] = gammas(i+1);
+      for(int i = 0; i < 250; i++) Couplings.gammas_sm[i] = gammas_sm(i+1);
+
+      result = Couplings;
+    }
+
+    void FH_HiggsProd(fh_HiggsProd &result) 
+    {
+      using namespace Pipes::FH_HiggsProd;
+      
+      cout << "****** calling FH_HiggsProd ******" << endl;
+
+      fh_real sqrts = 8.; // sqrt(s) (TeV)
+      Farray<fh_real, 1,52> prodxs;
+
+      int error = 1;
+      BEreq::FHHiggsProd(error, sqrts, prodxs);
+
+      fh_HiggsProd HiggsProd;
+      for(int i = 0; i < 52; i++) HiggsProd.prodxs[i] = prodxs(i+1);
+
+      result = HiggsProd;
     }
 
      

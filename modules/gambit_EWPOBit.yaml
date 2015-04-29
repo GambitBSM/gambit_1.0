@@ -33,15 +33,19 @@ ObsLikes:
   #  capability:   decay_rates
   #  type:         DecayTable
 
-  # Uncomment to test EWPOBit
+  # Uncomment to test FeynHiggs-related module functions
   - purpose:  whatever
-    capability:  FH_Higgs
+    capability:  FH_HiggsMasses
   - purpose:  whatever		
-    capability:  FH_Precision
+    capability:  FH_PrecisionObs
   - purpose:  whatever
-    capability:  FH_Flavor
+    capability:  FH_FlavorObs
   - purpose:  whatever
-    capability:  FH_Masses
+    capability:  FH_MSSMMasses
+  - purpose:  whatever
+    capability:  FH_Couplings
+  - purpose:  whatever
+    capability:  FH_HiggsProd
 
   # Uncomment to test HiggsBit
   - purpose:  Likelihood
