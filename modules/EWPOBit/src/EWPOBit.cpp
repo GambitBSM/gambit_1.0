@@ -299,14 +299,27 @@ namespace Gambit
       
       cout << "****** calling FH_HiggsProd ******" << endl;
 
-      fh_real sqrts = 8.; // sqrt(s) (TeV)
       Farray<fh_real, 1,52> prodxs;
 
-      int error = 1;
-      BEreq::FHHiggsProd(error, sqrts, prodxs);
-
       fh_HiggsProd HiggsProd;
-      for(int i = 0; i < 52; i++) HiggsProd.prodxs[i] = prodxs(i+1);
+      int error;
+      fh_real sqrts;
+
+      // Tevatron
+      sqrts = 2.;
+      error = 1;
+      BEreq::FHHiggsProd(error, sqrts, prodxs);
+      for(int i = 0; i < 52; i++) HiggsProd.prodxs_Tev[i] = prodxs(i+1);
+      // LHC7
+      sqrts = 7.;
+      error = 1;
+      BEreq::FHHiggsProd(error, sqrts, prodxs);
+      for(int i = 0; i < 52; i++) HiggsProd.prodxs_LHC7[i] = prodxs(i+1);
+      // LHC8
+      sqrts = 8.;
+      error = 1;
+      BEreq::FHHiggsProd(error, sqrts, prodxs);
+      for(int i = 0; i < 52; i++) HiggsProd.prodxs_LHC8[i] = prodxs(i+1);
 
       result = HiggsProd;
     }

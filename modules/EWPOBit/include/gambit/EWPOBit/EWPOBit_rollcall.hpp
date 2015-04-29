@@ -23,7 +23,7 @@
 ///
 ///  \author Christopher Rogan
 ///          (christophersrogan@gmail.com)
-///  \date 2015 Feb
+///  \date 2015 Apr
 ///
 ///  *********************************************
 

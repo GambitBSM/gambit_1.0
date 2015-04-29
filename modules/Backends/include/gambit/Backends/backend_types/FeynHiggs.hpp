@@ -77,7 +77,7 @@ namespace Gambit
     fh_real edm_ele;     // electron EDM
     fh_real edm_neu;     // neutron EDM
     fh_real edm_Hg;      // mercury EDM
-    int ccb;            // ?
+    int ccb;             // ?
   };
 
   // Container for FeynHiggs MSSM masses (from FHGetPara backend function)
@@ -148,7 +148,9 @@ namespace Gambit
   // Container for FeynHiggs Higgs prod xsecs (from FHHiggsProd backend function)
   struct fh_HiggsProd
   {
-    fh_real prodxs[52];
+    fh_real prodxs_Tev[52];
+    fh_real prodxs_LHC7[52];
+    fh_real prodxs_LHC8[52];
   };
 
 }
