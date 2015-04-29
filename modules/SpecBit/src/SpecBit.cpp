@@ -489,41 +489,58 @@ namespace Gambit
     /// resort for interacting with "difficult" spectrum generators.
     void get_MSSM_spectrum_from_SLHAfile(const Spectrum* &result)
     {
+      // Static counter running in a loop over all filenames
+      static unsigned int counter = 0;
+      static long int ncycle = 1;
+      SLHAea::Coll input_slha;
+
       namespace myPipe = Pipes::get_MSSM_spectrum_from_SLHAfile;
-      // Get name of input SLHA file to wrap up
-      std::string filename(myPipe::runOptions->getValue<std::string>("filename"));
-     
-      // Wrap file first as an SLHAea object
-      SLHAea::Coll input;
-      std::ifstream ifs(filename);
-      if(ifs){ ifs >> input; }
-      else{ 
-        std::ostringstream errmsg;
-        errmsg << "Could not open file '" << filename << "' for reading. Please check that the file exists at the path given in the inifile!";
-        SpecBit_error().raise(LOCAL_INFO,errmsg.str()); 
-      }     
+   
+      // Read filename from yaml file
+      std::vector<std::string> filenames = 
+        myPipe::runOptions->getValue<std::vector<std::string>>("filenames");
+
+      // Check how many loop over the input files we are doing.
+      long int cycles = myPipe::runOptions->getValueOrDef<int>(-1,"cycles");
+
+      // Check if we have completed the requested number of cycles 
+      if(cycles>0 and ncycle>cycles)
+      {
+         std::ostringstream msg;
+         msg << "Preset number of loops through input files reached! Stopping. (tried to start cycle "<<ncycle<<" of "<<cycles<<")"; 
+         SpecBit_error().raise(LOCAL_INFO,msg.str());
+      }
+
+      std::string filename = filenames[counter];
+
+      logger() << "Reading SLHA file: " << filename << EOM;
+      std::ifstream ifs(filename.c_str());
+      if(!ifs.good()){ SpecBit_error().raise(LOCAL_INFO,"ERROR: SLHA file not found."); }
+      ifs >> input_slha;
       ifs.close();
+      counter++;
+      if( counter >= filenames.size() )
+      {
+        logger() << "Returning to start of input SLHA file list (finished "<<ncycle<<" cycles)" << EOM;
+        counter = 0;
+        ncycle++; 
+      }
  
       // Create MSSMskeleton SubSpectrum object from the SLHAea object
       // (interacts with MSSM blocks)
-      static MSSMskeleton mssmskel(input);
+      static MSSMskeleton mssmskel(input_slha);
 
       // Create SMInputs object from the SLHAea object
-      SMInputs sminputs(fill_SMInputs_from_SLHAea(input));
+      SMInputs sminputs(fill_SMInputs_from_SLHAea(input_slha));
 
       // Create SMskeleton SubSpectrum object from the SLHAea object
       // (basically just interacts with SMINPUTS block)
-      static SMskeleton smskel(input);
+      static SMskeleton smskel(input_slha);
 
       // Create full Spectrum object from components above
       static Spectrum matched_spectra(&smskel,&mssmskel,sminputs);
  
       result = &matched_spectra;
-
-      /// TESTING ONLY: TO BE REMOVED
-      
-      std::cout << "Examining mssmskel..." << std::endl;
-      std::cout << "Scale: " << mssmskel.GetScale() << std::endl;
     } 
     
 

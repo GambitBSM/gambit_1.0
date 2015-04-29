@@ -278,7 +278,6 @@ namespace Gambit
            void operator()(const std::string& longname) 
            {                                            
              std::ostringstream echo1, echo2, echo3;                                           
-               ECHO(  fullspectrum->get_Pole_Mass("W+")       )
              echo1 <<     "  fullspectrum->get_Pole_Mass("<<longname<<") = ";       
              double value1 = fullspectrum->get_Pole_Mass(longname);                 
              echo2 <<     "  spec->phys.get_Pole_Mass("<<longname<<") = ";       
