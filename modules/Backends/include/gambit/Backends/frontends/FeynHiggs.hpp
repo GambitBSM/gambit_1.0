@@ -2,7 +2,7 @@
  * Frontend for FeynHiggs backend
  * 
  * Last modified:
- * Christopher Rogan 2015-02-04
+ * Christopher Rogan Apr 2015
  */
 
 #ifdef BACKENDRENAME
@@ -104,14 +104,21 @@ BE_INI_FUNCTION{
   const SMInputs& sminputs = *Dep::SMINPUTS;
 
   // retrieve MSSM_spectrum dependency
-  //using namespace SLHAea;
-  //eaSLHA mySLHA;
-  //mySLHA = *Dep::MSSMspectrum;
+  const Spectrum* fullspectrum = *Dep::MSSM_spectrum;
+  const SubSpectrum* spec = fullspectrum->get_UV();
+  SLHAea::Coll slhaea = fullspectrum->getSLHAea();
+
+  SLHAea::Block spinfo = slhaea.at("SPINFO");
+  std::vector<std::string> k3(1, "3");
+  std::vector<std::string> k4(1, "4");
+
+  if(spinfo.find(k3) != spinfo.end() || spinfo.find(k4) != spinfo.end()){
+    // throw an error?
+  }
 
   //
   // SM input parameters: -1 gives default value
   //
-
   fh_real invAlfa = sminputs.alphainv; // 1/alpha_{QED}
   fh_real AlfasMZ = sminputs.alphaS;   // alpha_s @ MZ
   fh_real GF = sminputs.GF;            // Fermi constant
@@ -125,10 +132,9 @@ BE_INI_FUNCTION{
   fh_real ML = sminputs.mTau;    // tau mass
   fh_real MB = sminputs.mBmB;    // bottom mass at m_b
     
-  fh_real MW = 8.04847331E+01;   // W boson mass
-  //fh_real MW = sminputs.;      // W boson mass
-  fh_real MZ = sminputs.mZ;      // Z boson mass
-    
+  fh_real MW = fullspectrum->get_Pole_Mass("W+");  // W boson mass
+  fh_real MZ = sminputs.mZ;                        // Z boson mass
+
   // CKM input parameters in Wolfenstein parameterization
   fh_real CKMlambda = -1;
   fh_real CKMA = -1;
@@ -141,43 +147,77 @@ BE_INI_FUNCTION{
 	      MW, MZ,
 	      CKMlambda, CKMA, CKMrhobar, CKMetabar);
 
-  fh_real MT = 172;  // top quark mass
-  fh_real TB = 5;    // tan Beta
-  fh_real MA0 = 250; // masses of CP-odd and 
-  fh_real MHp = -1;  // charged Higgs (only one should be given)
+  //
+  // SM input parameters: -1 gives default value
+  //
+
+  fh_real MT = fullspectrum->get_Pole_Mass("t");                      // top quark mass
+  fh_real TB = SLHAea::to<double>( slhaea.at("MINPAR").at(3).at(1) ); // tan Beta
+  fh_real MA0 = fullspectrum->get_Pole_Mass("A0");                    // masses of CP-odd and 
+  fh_real MHp = -1;                                                   // charged Higgs (only one should be given)
 
   // soft-SUSY breaking parameters for g=1,2,3 generation sfermions
-  fh_real MSusy = 1000;
-  fh_real M3SL = MSusy, M2SL = M3SL, M1SL = M2SL; // slepton doublet
-  fh_real M3SE = MSusy, M2SE = M3SE, M1SE = M2SE; // slepton singlet
-  fh_real M3SQ = MSusy, M2SQ = M3SQ, M1SQ = M2SQ; // squark doublet
-  fh_real M3SU = MSusy, M2SU = M3SU, M1SU = M2SU; // up-type squark singlet
-  fh_real M3SD = MSusy, M2SD = M3SD, M1SD = M2SD; // down-type squark singlet
+  // slepton doublet
+  fh_real M1SL = SLHAea::to<double>( slhaea.at("MSOFT").at(31).at(1) );
+  fh_real M2SL = SLHAea::to<double>( slhaea.at("MSOFT").at(32).at(1) );
+  fh_real M3SL = SLHAea::to<double>( slhaea.at("MSOFT").at(33).at(1) );  
+  // slepton singlet
+  fh_real M1SE = SLHAea::to<double>( slhaea.at("MSOFT").at(34).at(1) );
+  fh_real M2SE = SLHAea::to<double>( slhaea.at("MSOFT").at(35).at(1) );
+  fh_real M3SE = SLHAea::to<double>( slhaea.at("MSOFT").at(36).at(1) ); 
+  // squark doublet
+  fh_real M1SQ = SLHAea::to<double>( slhaea.at("MSOFT").at(41).at(1) );
+  fh_real M2SQ = SLHAea::to<double>( slhaea.at("MSOFT").at(42).at(1) );
+  fh_real M3SQ = SLHAea::to<double>( slhaea.at("MSOFT").at(43).at(1) ); 
+  // up-type squark singlet
+  fh_real M1SU = SLHAea::to<double>( slhaea.at("MSOFT").at(44).at(1) );
+  fh_real M2SU = SLHAea::to<double>( slhaea.at("MSOFT").at(45).at(1) );
+  fh_real M3SU = SLHAea::to<double>( slhaea.at("MSOFT").at(46).at(1) ); 
+  // down-type squark singlet
+  fh_real M1SD = SLHAea::to<double>( slhaea.at("MSOFT").at(47).at(1) );
+  fh_real M2SD = SLHAea::to<double>( slhaea.at("MSOFT").at(48).at(1) );
+  fh_real M3SD = SLHAea::to<double>( slhaea.at("MSOFT").at(49).at(1) ); 
 
   // soft-SUSY breaking parameters
   fh_complex Af; 
-  Af.re = 2000; 
+  Af.re = 0.; 
   Af.im = 0.;
   fh_complex At = Af, Ac = At, Au = Ac;
   fh_complex Ab = Af, As = Ab, Ad = As;
   fh_complex Atau = Af, Amu = Atau, Ae = Amu;
 
+  Au.re   = SLHAea::to<double>( slhaea.at("Au").at(1,1).at(2) );
+  Ac.re   = SLHAea::to<double>( slhaea.at("Au").at(2,2).at(2) );
+  At.re   = SLHAea::to<double>( slhaea.at("Au").at(3,3).at(2) );
+  Ad.re   = SLHAea::to<double>( slhaea.at("Ad").at(1,1).at(2) );
+  As.re   = SLHAea::to<double>( slhaea.at("Ad").at(2,2).at(2) );
+  Ab.re   = SLHAea::to<double>( slhaea.at("Ad").at(3,3).at(2) );
+  Ae.re   = SLHAea::to<double>( slhaea.at("Ae").at(1,1).at(2) );
+  Amu.re  = SLHAea::to<double>( slhaea.at("Ae").at(2,2).at(2) );
+  Atau.re = SLHAea::to<double>( slhaea.at("Ae").at(3,3).at(2) );
+
   fh_complex MUE;  // Higgs mixing parameter mu
-  MUE.re = 200; 
+  MUE.re = spec->runningpars.get_mass_parameter("Mu"); 
   MUE.im = 0;
   // gaugino mass parameters. M_1 == 0 => GUT relation is used
   fh_complex M_1, M_2, M_3; 
-  M_1.re = 0;   M_1.im = 0;
-  M_2.re = 500; M_2.im = 0;
-  M_3.re = 800; M_3.im = 0;
+  M_1.re = spec->runningpars.get_mass_parameter("M1");   
+  M_1.im = 0;
+  M_2.re = spec->runningpars.get_mass_parameter("M2"); 
+  M_2.im = 0;
+  M_3.re = spec->runningpars.get_mass_parameter("M3"); 
+  M_3.im = 0;
 
   // the scales at which the sfermion input parameters M3S are given
   // 0 indicates on-shell parameters
-  fh_real Qtau = 0;
-  fh_real Qt = 0;
-  fh_real Qb = 0;
+  double SCALE = spec->runningpars.GetScale();
+  // is this correct????
+  fh_real Qtau = SCALE;
+  fh_real Qt = SCALE;
+  fh_real Qb = SCALE;
 
-  fh_real scalefactor = 1;
+  // the renormalization scale is Mtop times the scalefactor
+  fh_real scalefactor = SCALE/MT;
 
   error = 1;
   FHSetPara(error, scalefactor, MT, TB, MA0, MHp,
