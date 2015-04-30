@@ -153,10 +153,8 @@ namespace Gambit {
 	}
 
 	int numLeptons = signalLeptons.size(); //Only electrons and muons
-      
+		
 	//Find transverse mass and invariant mass depending on presence of tau, OSSF/OSOF/SS
-
-     
     
 	double mLL = 0;
 	double mT = 0;
@@ -267,11 +265,12 @@ namespace Gambit {
 	  for(unsigned int j=0;j<(boundsMll.size()-1);j++){
 	    for(unsigned int k=0;k<(boundsMt.size()-1);k++){
 	      for(unsigned int l=0;l<(boundsmet.size()-1);l++){
+		//cout << "FLAVSIGN " << flavourSign.at(i) << endl;
 		if(flavourSign.at(i) && mLL>=boundsMll.at(j) && mLL<boundsMll.at(j+1) && mT>=boundsMt.at(k) && mT<boundsMt.at(k+1) && met>=boundsmet.at(l) && met<boundsmet.at(l+1)){
 		  SR[m]++;
 		}
 		//cout << m << " ";
-		std::cout << "REGION " << m << " Mll bounds " << boundsMll2[j]<< " to " << boundsMll2[j+1] << " MT bound " << boundsMt[k] << " to " << boundsMt[k+1] << " MET bound " << boundsmet[l] << " to " << boundsmet[l+1] << std::endl;
+		std::cout << "REGION " << m << " Mll bounds " << boundsMll[j]<< " to " << boundsMll[j+1] << " MT bound " << boundsMt[k] << " to " << boundsMt[k+1] << " MET bound " << boundsmet[l] << " to " << boundsmet[l+1] << std::endl;
 		m++;
 	      }
 	    }
@@ -296,10 +295,6 @@ namespace Gambit {
 	  }
 	}
 	         
-	      	      
-	    
-      
-
 	/*Region 45 test
    
 	  double testMLL=9999;

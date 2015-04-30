@@ -53,8 +53,6 @@ namespace Gambit {
     /// *************************************************
     /// Rollcalled functions properly hooked up to Gambit
     /// *************************************************
-
-
     /// *** Loop Managers ***
 
     void operatePythia() {
