@@ -54,20 +54,24 @@ for i, mx in enumerate(mx_range):
         else:
             print (mx, my), "data file not found"
 
+
+## Find the LL_b for each SR (should be the same throughout the grid, but some will be NaN)
 sr_llb = { sr : np.nanmax(llbs) for (sr, llbs) in sr_llbs.iteritems() }
-print sr_llb
+# print sr_llb
 
 ## Work out the maximum LL for each SR, returned as a full array of maxlls to make dLL computation easy
-sr_maxlls = { sr : np.full_like(xx.T, np.nanmax(lls), dtype=np.double) for (sr, lls) in sr_llsbs.iteritems() }
-#print sr_maxlls
+# sr_maxlls = { sr : np.full_like(xx.T, np.nanmax(lls), dtype=np.double) for (sr, lls) in sr_llsbs.iteritems() }
+# print sr_maxlls
 
 ## Work out the dLLs for each SR
-sr_dlls = { sr : sr_maxlls[sr] - sr_llsbs[sr] for sr in sr_llsbs.keys() }
-#print sr_dlls
+# sr_dlls = { sr : sr_maxlls[sr] - sr_llsbs[sr] for sr in sr_llsbs.keys() } #< w.r.t. LL_{s+b}^max
+sr_dlls = { sr : sr_llb[sr] - sr_llsbs[sr] for sr in sr_llsbs.keys() } #< w.r.t. LL_b
+# print sr_dlls
 
 ## Work out the best (most negative) dLL for each point
+# TODO: But this loses the info about which SR "won" at each point... can we re-find it?
 bestdlls = reduce(np.fmax, sr_dlls.values())
-print bestdlls.T
+# print bestdlls.T
 
 
 ## Plot dLL filled contours
@@ -95,9 +99,13 @@ plt.clabel(c, fmt="95%%", fontsize="smaller")
 for i, mx in enumerate(mx_range):
     for j, my in enumerate(my_range):
         if i % 2 == 0 and j % 2 == 0:
-            ax.text(mx, my, "{0:.3g}".format(bestdlls[i,j]), ha="center", va="center", fontsize="xx-small")
+            # ax.text(mx, my, "{0:.3g}".format(bestdlls[i,j]), ha="center", va="center", fontsize="xx-small")
             # if srs[i,j] >= 0:
             #      ax.text(mx, my, str(int(srs[i,j])), ha="center", va="center", fontsize="small")
+            bestsrs = [sr for (sr, dlls) in sr_dlls.iteritems() if dlls[i,j] == bestdlls[i,j]]
+            if bestsrs:
+                ax.text(mx, my, str(int(bestsrs[0])), ha="center", va="center", fontsize="small")
+
 
 ax.set_title("$\\Delta LL$ contours", x=0, ha="left")
 ax.set_xlabel(MX_LABEL, x=1.00, ha="right")
