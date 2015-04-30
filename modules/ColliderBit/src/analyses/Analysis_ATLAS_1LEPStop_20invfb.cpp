@@ -705,10 +705,34 @@ namespace Gambit {
              bJets[0]->pT()>120.&&
              bJets[1]->pT()>90)_numBC3++;
         }
-
         return;
-
       }
+
+
+      void add(BaseAnalysis* other) {
+        // The base class add function handles the signal region vector and total # events. 
+        HEPUtilsAnalysis::add(other);
+
+        Analysis_ATLAS_1LEPStop_20invfb* specificOther
+                = dynamic_cast<Analysis_ATLAS_1LEPStop_20invfb*>(other);
+
+        // Here we will add the subclass member variables:
+        if (NCUTS != specificOther->NCUTS) NCUTS = specificOther->NCUTS;
+        for (int j=0; j<NCUTS; j++) {
+          cutFlowVector[j] = specificOther->cutFlowVector[j];
+          cutFlowVector_str[j] = specificOther->cutFlowVector_str[j];
+          cutFlowVector_alt[j] = specificOther->cutFlowVector_alt[j];
+        }
+        _numTN1Shape_bin1 += specificOther->_numTN1Shape_bin1;
+        _numTN1Shape_bin2 += specificOther->_numTN1Shape_bin2;
+        _numTN1Shape_bin3 += specificOther->_numTN1Shape_bin3;
+        _numTN2 += specificOther->_numTN2;
+        _numTN3 += specificOther->_numTN3;
+        _numBC1 += specificOther->_numBC1;
+        _numBC2 += specificOther->_numBC2;
+        _numBC3 += specificOther->_numBC3;
+      }
+
 
       void finalize() {
 
@@ -747,9 +771,6 @@ namespace Gambit {
 
 
       void collect_results() {
-
-        finalize();
-
         //Note: am not using shape fit bins
         //They need to be added (but will probably update to paper result)
 

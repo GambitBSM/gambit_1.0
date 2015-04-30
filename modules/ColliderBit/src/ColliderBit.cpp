@@ -573,6 +573,8 @@ namespace Gambit {
         {
           cout << "Set xsec from ana = " << (*anaPtr)->xsec() << " pb" << endl;
           cout << "SR number test " << (*anaPtr)->get_results()[0].n_signal << endl;
+          // Finalize is currently only used to report a cut flow.... rename?
+          (*anaPtr)->finalize();
           result.push_back((*anaPtr)->get_results());
         }
         return;

@@ -93,7 +93,7 @@ namespace Gambit {
         virtual void init() { }
         /// @brief Finalize: scale by number of input events, etc.
         /// @todo Necessary?
-        virtual void finalize() {  }
+        virtual void finalize() { }
       //@}
 
       /// @name BaseAnalysis combination operations

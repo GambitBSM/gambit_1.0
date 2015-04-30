@@ -23,14 +23,14 @@ namespace Gambit {
 
 
     class Analysis_Perf : public HEPUtilsAnalysis {
-
+    private:
       TH1F *_hBosonPt, *_hBosonEta, *_hBosonPhi;
-      TH1F *_hElectron1Pt, *_hElectron1eta, *_hElectron1phi;
-      TH1F *_hElectron2Pt, *_hElectron2eta, *_hElectron2phi;
+      TH1F *_hElectron1Pt, *_hElectron1Eta, *_hElectron1Phi;
+      TH1F *_hElectron2Pt, *_hElectron2Eta, *_hElectron2Phi;
       TH1F *_hMuon1Pt;
       TH1F *_hMuon2Pt;
-      TH1F *_hElectron1Pt_truth, *_hElectron1eta_truth, *_hElectron1phi_truth;
-      TH1F *_hElectron2Pt_truth, *_hElectron2eta_truth, *_hElectron2phi_truth;
+      TH1F *_hElectron1Pt_truth, *_hElectron1Eta_truth, *_hElectron1Phi_truth;
+      TH1F *_hElectron2Pt_truth, *_hElectron2Eta_truth, *_hElectron2Phi_truth;
       TH1F *_hNelec, *_hNelec_truth, *_hNelec30, *_hNelec100, *_hNelec500;
       TH1F *_hNtau, *_hNtau30, *_hNtau100, *_hNtau500;
       TH1F *_hNmuon, *_hNmuon30, *_hNmuon100, *_hNmuon500;
@@ -48,38 +48,44 @@ namespace Gambit {
 
       std::string _output_filename;
       TFile *_ROOToutFile;
-
+      static bool _openTFile;
+      bool _hasTFile;
 
     public:
 
       ~Analysis_Perf() {
-        delete _ROOToutFile;
+        if(_hasTFile)
+          delete _ROOToutFile;
       }
 
 
       Analysis_Perf() {
         _output_filename = "SimOutput.root";
-        std::cout << "Opening ROOT file" << _output_filename << endl;
-
-        _ROOToutFile = new TFile(_output_filename.c_str(), "RECREATE");
+        _hasTFile = false;
+        if(!Analysis_Perf::_openTFile) {
+          std::cout << "Opening ROOT file" << _output_filename << endl;
+          _ROOToutFile = new TFile(_output_filename.c_str(), "RECREATE");
+          Analysis_Perf::_openTFile = true;
+          _hasTFile = true;
+        }
 
         _hBosonPt = new TH1F("BosonPt", "Boson generated p_{T};GeV;", 100, 0., 200.);
         _hBosonEta = new TH1F("BosonEta", "Boson generated #eta;", 100, -5., 5.);
         _hBosonPhi = new TH1F( "BosonPhi", "Boson generated #phi;", 100, -6.0, 6.0);
 
         _hElectron1Pt = new TH1F("Electron1Pt", "Leading electron p_{T};GeV;", 100, 0., 200.);
-        _hElectron1eta = new TH1F("Electron1Eta", "Leading electron #eta;", 100, -5., 5.);
-        _hElectron1phi = new TH1F("Electron1Phi", "Leading electron #phi;", 100, -6.0, 6.0);
+        _hElectron1Eta = new TH1F("Electron1Eta", "Leading electron #eta;", 100, -5., 5.);
+        _hElectron1Phi = new TH1F("Electron1Phi", "Leading electron #phi;", 100, -6.0, 6.0);
         _hElectron1Pt_truth = new TH1F("Electron1PtTruth", "Leading electron p_{T} (truth);GeV;", 100, 0., 200.);
-        _hElectron1eta_truth = new TH1F("Electron1EtaTruth", "Leading electron #eta (truth);", 100, -5., 5.);
-        _hElectron1phi_truth = new TH1F("Electron1PhiTruth", "Leading electron #phi (truth);", 100, -6.0, 6.0);
+        _hElectron1Eta_truth = new TH1F("Electron1EtaTruth", "Leading electron #eta (truth);", 100, -5., 5.);
+        _hElectron1Phi_truth = new TH1F("Electron1PhiTruth", "Leading electron #phi (truth);", 100, -6.0, 6.0);
 
         _hElectron2Pt_truth = new TH1F("Electron2PtTruth", "Subleading electron p_{T} (truth);GeV;", 100, 0., 200.);
-        _hElectron2eta_truth = new TH1F("Electron2EtaTruth", "Subleading electron #eta (truth);", 100, -5., 5.);
-        _hElectron2phi_truth = new TH1F("Electron2PhiTruth", "Subleading electron #phi (truth);", 100, -6.0, 6.0);
+        _hElectron2Eta_truth = new TH1F("Electron2EtaTruth", "Subleading electron #eta (truth);", 100, -5., 5.);
+        _hElectron2Phi_truth = new TH1F("Electron2PhiTruth", "Subleading electron #phi (truth);", 100, -6.0, 6.0);
         _hElectron2Pt = new TH1F("Electron2Pt","Subleading electron p_{T};GeV;", 100, 0., 200.);
-        _hElectron2eta = new TH1F("Electron2Eta","Subleading electron #eta;", 100, -5., 5.);
-        _hElectron2phi = new TH1F("Electron2Phi","Subleading electron #phi;", 100, -6.0, 6.0);
+        _hElectron2Eta = new TH1F("Electron2Eta","Subleading electron #eta;", 100, -5., 5.);
+        _hElectron2Phi = new TH1F("Electron2Phi","Subleading electron #phi;", 100, -6.0, 6.0);
 
         _hMuon1Pt = new TH1F("Muon1Pt","Leading muon p_{T};GeV;", 100, 0., 200.);
         _hMuon2Pt = new TH1F("Muon2Pt","Leading muon p_{T};GeV;", 100, 0., 200.);
@@ -300,20 +306,96 @@ namespace Gambit {
 
         if (signalElectrons.size() > 0) {
           _hElectron1Pt->Fill(signalElectrons[0]->pT());
-          _hElectron1eta->Fill(signalElectrons[0]->eta());
-          _hElectron1phi->Fill(signalElectrons[0]->phi());
+          _hElectron1Eta->Fill(signalElectrons[0]->eta());
+          _hElectron1Phi->Fill(signalElectrons[0]->phi());
         }
 
         if (signalElectrons.size() > 1) {
           HEPUtils::P4 temp = signalElectrons[0]->mom() + signalElectrons[1]->mom();
           _hinv->Fill(temp.m());
           _hElectron2Pt->Fill(signalElectrons[1]->pT());
-          _hElectron2eta->Fill(signalElectrons[1]->eta());
-          _hElectron2phi->Fill(signalElectrons[1]->phi());
+          _hElectron2Eta->Fill(signalElectrons[1]->eta());
+          _hElectron2Phi->Fill(signalElectrons[1]->phi());
         }
 
         if (signalMuons.size() > 0) _hMuon1Pt->Fill(signalMuons[0]->pT());
         if (signalMuons.size() > 1) _hMuon2Pt->Fill(signalMuons[1]->pT());
+      }
+
+
+      void add(BaseAnalysis* other) {
+        // The base class add function handles the signal region vector and total # events. 
+        HEPUtilsAnalysis::add(other);
+
+        Analysis_Perf* specificOther = dynamic_cast<Analysis_Perf*>(other);
+
+        // Here we will add the subclass member variables:
+        _hBosonPt->Add(specificOther->_hBosonPt);
+        _hBosonEta->Add(specificOther->_hBosonEta);
+        _hBosonPhi->Add(specificOther->_hBosonPhi);
+        _hElectron1Pt->Add(specificOther->_hElectron1Pt);
+        _hElectron1Eta->Add(specificOther->_hElectron1Eta);
+        _hElectron1Phi->Add(specificOther->_hElectron1Phi);
+        _hElectron2Pt->Add(specificOther->_hElectron2Pt);
+        _hElectron2Eta->Add(specificOther->_hElectron2Eta);
+        _hElectron2Phi->Add(specificOther->_hElectron2Phi);
+        _hMuon1Pt->Add(specificOther->_hMuon1Pt);
+        _hMuon2Pt->Add(specificOther->_hMuon2Pt);
+        _hElectron1Pt_truth->Add(specificOther->_hElectron1Pt_truth);
+        _hElectron1Eta_truth->Add(specificOther->_hElectron1Eta_truth);
+        _hElectron1Phi_truth->Add(specificOther->_hElectron1Phi_truth);
+        _hElectron2Pt_truth->Add(specificOther->_hElectron2Pt_truth);
+        _hElectron2Eta_truth->Add(specificOther->_hElectron2Eta_truth);
+        _hElectron2Phi_truth->Add(specificOther->_hElectron2Phi_truth);
+        _hNelec->Add(specificOther->_hNelec);
+        _hNelec_truth->Add(specificOther->_hNelec_truth);
+        _hNelec30->Add(specificOther->_hNelec30);
+        _hNelec100->Add(specificOther->_hNelec100);
+        _hNelec500->Add(specificOther->_hNelec500);
+        _hNtau->Add(specificOther->_hNtau);
+        _hNtau30->Add(specificOther->_hNtau30);
+        _hNtau100->Add(specificOther->_hNtau100);
+        _hNtau500->Add(specificOther->_hNtau500);
+        _hNmuon->Add(specificOther->_hNelec);
+        _hNmuon30->Add(specificOther->_hNmuon30);
+        _hNmuon100->Add(specificOther->_hNmuon100);
+        _hNmuon500->Add(specificOther->_hNmuon500);
+        _hNjet30->Add(specificOther->_hNjet30);
+        _hNjet100->Add(specificOther->_hNjet100);
+        _hNjet500->Add(specificOther->_hNjet500);
+        _hNcentraljet30->Add(specificOther->_hNcentraljet30);
+        _hNcentraljet100->Add(specificOther->_hNcentraljet100);
+        _hNcentraljet500->Add(specificOther->_hNcentraljet500);
+        _hNbjet30->Add(specificOther->_hNbjet30);
+        _hNbjet100->Add(specificOther->_hNbjet100);
+        _hNbjet500->Add(specificOther->_hNbjet500);
+        _hinv->Add(specificOther->_hinv);
+        _hmet->Add(specificOther->_hmet);
+        _hmet_1_electron->Add(specificOther->_hmet_1_electron);
+        _hmet_1_muon->Add(specificOther->_hmet_1_muon);
+        _hinv_truth->Add(specificOther->_hinv_truth);
+        _hElectronPt->Add(specificOther->_hElectronPt);
+        _hElectronEta->Add(specificOther->_hElectronEta);
+        _hElectronPhi->Add(specificOther->_hElectronPhi);
+        _hElectronE->Add(specificOther->_hElectronE);
+        _hTauPt->Add(specificOther->_hTauPt);
+        _hTauEta->Add(specificOther->_hTauEta);
+        _hTauPhi->Add(specificOther->_hTauPhi);
+        _hTauE->Add(specificOther->_hTauE);
+        _hMuonPt->Add(specificOther->_hMuonPt);
+        _hMuonEta->Add(specificOther->_hMuonEta);
+        _hMuonPhi->Add(specificOther->_hMuonPhi);
+        _hMuonE->Add(specificOther->_hMuonE);
+        _hJetPt->Add(specificOther->_hJetPt);
+        _hJetEta->Add(specificOther->_hJetEta);
+        _hJetPhi->Add(specificOther->_hJetPhi);
+        _hJetE->Add(specificOther->_hJetE);
+        _hCentralJetPt->Add(specificOther->_hCentralJetPt);
+        _hCentralJetE->Add(specificOther->_hCentralJetE);
+        _hBJetPt->Add(specificOther->_hBJetPt);
+        _hBJetEta->Add(specificOther->_hBJetEta);
+        _hBJetPhi->Add(specificOther->_hBJetPhi);
+        _hBJetE->Add(specificOther->_hBJetE);
       }
 
 
@@ -324,12 +406,12 @@ namespace Gambit {
         /// @todo Can delete this? Aren't they automatically all written from the current file?
         /*_ROOToutFile->cd();
           _hElectron1Pt->Write();
-          _hElectron1eta->Write();
-          _hElectron1phi->Write();
+          _hElectron1Eta->Write();
+          _hElectron1Phi->Write();
 
           _hElectron2Pt->Write();
-          _hElectron2eta->Write();
-          _hElectron2phi->Write();
+          _hElectron2Eta->Write();
+          _hElectron2Phi->Write();
 
           _hNelec->Write();
           _hNjet->Write();
@@ -350,8 +432,8 @@ namespace Gambit {
           _hJetE->Write();
 
           _hNmuon->Write();*/
-
-        _ROOToutFile->Write();
+        if(_hasTFile)
+          _ROOToutFile->Write();
         //_ROOToutFile->Close();
 
         /// @todo We should close the file. Shouldn't we also delete the histo pointers?... or are they owned by the file?
@@ -360,8 +442,6 @@ namespace Gambit {
 
       void collect_results() {
         // DO NOTHING
-
-        finalize();
 
         SignalRegionData dummy;
         dummy.set_observation(10.);
@@ -380,6 +460,8 @@ namespace Gambit {
 
     DEFINE_ANALYSIS_FACTORY(Perf)
 
+    // Weird, but necessary, static member initialization:
+    bool Analysis_Perf::_openTFile = false;
 
   }
 }

@@ -39,9 +39,9 @@ namespace Gambit {
     private:
 
       // Numbers passing cuts
-      int _numSRM90SF, _numSRM100SF, _numSRM110SF, _numSRM120SF, _numSRM90DF, _numSRM100DF, _numSRM110DF, _numSRM120DF;
+      int _numSRM90SF, _numSRM100SF, _numSRM110SF, _numSRM120SF,
+          _numSRM90DF, _numSRM100DF, _numSRM110DF, _numSRM120DF;
 
-      vector<int> cutFlowVector_alt;
       vector<int> cutFlowVector;
       vector<string> cutFlowVector_str;
       int NCUTS; //=24;
@@ -58,7 +58,6 @@ namespace Gambit {
         for (int i=0; i<NCUTS; i++) {
           cutFlowVector.push_back(0);
           cutFlowVector_str.push_back("");
-          cutFlowVector_alt.push_back(0);
         }
       }
 
@@ -356,11 +355,34 @@ namespace Gambit {
         if(cut_2leptons_base && cut_2leptons && cut_2leptons_emu && isOS && isMLL && ispT && isdphi && isdphib && cut_MT2120) _numSRM120DF++;
 
         return;
-
       }
 
-      void finalize() {
 
+      void add(BaseAnalysis* other) {
+        // The base class add function handles the signal region vector and total # events. 
+        HEPUtilsAnalysis::add(other);
+
+        Analysis_ATLAS_2LEPStop_20invfb* specificOther
+                = dynamic_cast<Analysis_ATLAS_2LEPStop_20invfb*>(other);
+
+        // Here we will add the subclass member variables:
+        if (NCUTS != specificOther->NCUTS) NCUTS = specificOther->NCUTS;
+        for (int j=0; j<NCUTS; j++) {
+          cutFlowVector[j] = specificOther->cutFlowVector[j];
+          cutFlowVector_str[j] = specificOther->cutFlowVector_str[j];
+        }
+         _numSRM90SF +=  specificOther->_numSRM90SF;
+        _numSRM100SF += specificOther->_numSRM100SF;
+        _numSRM110SF += specificOther->_numSRM110SF;
+        _numSRM120SF += specificOther->_numSRM120SF;
+         _numSRM90DF +=  specificOther->_numSRM90DF;
+        _numSRM100DF += specificOther->_numSRM100DF;
+        _numSRM110DF += specificOther->_numSRM110DF;
+        _numSRM120DF += specificOther->_numSRM120DF;
+      }
+
+
+      void finalize() {
         using namespace std;
 
         double scale_to = 1339.6;
@@ -386,8 +408,6 @@ namespace Gambit {
 
 
       void collect_results() {
-        finalize();
-
         SignalRegionData results_SRM90;
         results_SRM90.set_observation(274.);
         results_SRM90.set_background(300.);

@@ -30,12 +30,9 @@ namespace Gambit {
       // Numbers passing cuts
       int _numSRnoZa, _numSRnoZb, _numSRnoZc, _numSRZa, _numSRZb, _numSRZc;
 
-      vector<int> cutFlowVector_alt;
       vector<int> cutFlowVector;
       vector<string> cutFlowVector_str;
       const static int NCUTS=8;
-
-      // Debug histos
 
     public:
 
@@ -45,7 +42,6 @@ namespace Gambit {
         for(int i=0;i<NCUTS;i++){
           cutFlowVector.push_back(0);
           cutFlowVector_str.push_back("");
-          cutFlowVector_alt.push_back(0);
         }
 
       }
@@ -386,8 +382,29 @@ namespace Gambit {
         if(trigger && leptonCut && bJets.size()==0 && isZ && met>120. && mT>110.)_numSRZc++;
 
         return;
-
       }
+
+
+      void add(BaseAnalysis* other) {
+        // The base class add function handles the signal region vector and total # events. 
+        HEPUtilsAnalysis::add(other);
+
+        Analysis_ATLAS_3LEPEW_CONF_20invfb* specificOther
+                = dynamic_cast<Analysis_ATLAS_3LEPEW_CONF_20invfb*>(other);
+
+        // Here we will add the subclass member variables:
+        for (int j=0; j<NCUTS; j++) {
+          cutFlowVector[j] = specificOther->cutFlowVector[j];
+          cutFlowVector_str[j] = specificOther->cutFlowVector_str[j];
+        }
+        _numSRnoZa += specificOther->_numSRnoZa;
+        _numSRnoZb += specificOther->_numSRnoZb;
+        _numSRnoZc += specificOther->_numSRnoZc;
+        _numSRZa += specificOther->_numSRZa;
+        _numSRZb += specificOther->_numSRZb;
+        _numSRZc += specificOther->_numSRZc;
+      }
+
 
       void finalize() {
 

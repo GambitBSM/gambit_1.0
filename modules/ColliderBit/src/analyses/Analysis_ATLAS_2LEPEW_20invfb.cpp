@@ -52,13 +52,10 @@ namespace Gambit {
       double _num_WWc_DF;
       double _num_Zjets;
 
-      vector<int> cutFlowVector_alt;
       vector<double> cutFlowVector;
       vector<double> cutFlowIncrements;
       vector<string> cutFlowVector_str;
       const static int NCUTS=90;
-
-      // Debug histos
 
     public:
 
@@ -80,7 +77,6 @@ namespace Gambit {
         for(int i=0;i<NCUTS;i++){
           cutFlowVector.push_back(0);
           cutFlowVector_str.push_back("");
-          cutFlowVector_alt.push_back(0);
           cutFlowIncrements.push_back(0.);
         }
 
@@ -820,13 +816,40 @@ namespace Gambit {
               )cutFlowVector[j]=cutFlowVector[j]+cutFlowIncrements[j];
 
         }
-
         return;
-
       }
 
-      void finalize() {
 
+      void add(BaseAnalysis* other) {
+        // The base class add function handles the signal region vector and total # events. 
+        HEPUtilsAnalysis::add(other);
+
+        Analysis_ATLAS_2LEPEW_20invfb* specificOther
+                = dynamic_cast<Analysis_ATLAS_2LEPEW_20invfb*>(other);
+
+        // Here we will add the subclass member variables:
+        for (int j=0; j<NCUTS; j++) {
+          cutFlowVector[j] = specificOther->cutFlowVector[j];
+          cutFlowIncrements[j] = specificOther->cutFlowIncrements[j];
+          cutFlowVector_str[j] = specificOther->cutFlowVector_str[j];
+        }
+        _num_MT2_90_SF += specificOther->_num_MT2_90_SF;
+        _num_MT2_90_DF += specificOther->_num_MT2_90_DF;
+        _num_MT2_120_SF += specificOther->_num_MT2_120_SF;
+        _num_MT2_120_DF += specificOther->_num_MT2_120_DF;
+        _num_MT2_150_SF += specificOther->_num_MT2_150_SF;
+        _num_MT2_150_DF += specificOther->_num_MT2_150_DF;
+        _num_WWa_SF += specificOther->_num_WWa_SF;
+        _num_WWa_DF += specificOther->_num_WWa_DF;
+        _num_WWb_SF += specificOther->_num_WWb_SF;
+        _num_WWb_DF += specificOther->_num_WWb_DF;
+        _num_WWc_SF += specificOther->_num_WWc_SF;
+        _num_WWc_DF += specificOther->_num_WWc_DF;
+        _num_Zjets += specificOther->_num_Zjets;
+      }
+
+
+      void finalize() {
         using namespace std;
 
         double scale_to = 20.7*5800./cutFlowVector[0];
@@ -850,9 +873,6 @@ namespace Gambit {
 
 
       void collect_results() {
-
-        finalize();
-
         SignalRegionData results_MT2_90_SF;
         results_MT2_90_SF.set_observation(33.);
         results_MT2_90_SF.set_background(38.2);

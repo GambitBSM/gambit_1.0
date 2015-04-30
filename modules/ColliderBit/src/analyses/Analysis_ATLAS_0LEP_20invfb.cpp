@@ -312,6 +312,35 @@ namespace Gambit {
       }
 
 
+      void add(BaseAnalysis* other) {
+        // The base class add function handles the signal region vector and total # events. 
+        HEPUtilsAnalysis::add(other);
+
+        Analysis_ATLAS_0LEP_20invfb* specificOther
+                = dynamic_cast<Analysis_ATLAS_0LEP_20invfb*>(other);
+
+        // Here we will add the subclass member variables:
+        if (NCUTS != specificOther->NCUTS) NCUTS = specificOther->NCUTS;
+        for (int j=0; j<NCUTS; j++) {
+          cutFlowVector[j] = specificOther->cutFlowVector[j];
+          cutFlowVector_str[j] = specificOther->cutFlowVector_str[j];
+        }
+        _num2jl += specificOther->_num2jl;
+        _num2jm += specificOther->_num2jm;
+        _num2jt += specificOther->_num2jt;
+        _num3j += specificOther->_num3j;
+        _num4jlm += specificOther->_num4jlm;
+        _num4jl += specificOther->_num4jl;
+        _num4jm += specificOther->_num4jm;
+        _num4jt += specificOther->_num4jt;
+        _num5j += specificOther->_num5j;
+        _num6jl += specificOther->_num6jl;
+        _num6jm += specificOther->_num6jm;
+        _num6jt += specificOther->_num6jt;
+        _num6jtp += specificOther->_num6jtp;
+      }
+
+
       void finalize() {
 
         // const double scale_by = xsec() * 20.3*1000 / num_events();
@@ -334,8 +363,6 @@ namespace Gambit {
 
 
       void collect_results() {
-        finalize();
-
         // const double scale = xsec() * 20.3*1000 / num_events();
         const double scale = xsec() * 20.3*1000 / cutFlowVector[0];
 

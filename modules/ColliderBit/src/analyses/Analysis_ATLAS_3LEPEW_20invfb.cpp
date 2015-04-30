@@ -32,36 +32,18 @@ namespace Gambit {
     private:
 
       // Numbers passing cuts
-      int _num_SR0tau_a_bin_1;
-      int _num_SR0tau_a_bin_2;
-      int _num_SR0tau_a_bin_3;
-      int _num_SR0tau_a_bin_4;
-      int _num_SR0tau_a_bin_5;
-      int _num_SR0tau_a_bin_6;
-      int _num_SR0tau_a_bin_7;
-      int _num_SR0tau_a_bin_8;
-      int _num_SR0tau_a_bin_9;
-      int _num_SR0tau_a_bin_10;
-      int _num_SR0tau_a_bin_11;
-      int _num_SR0tau_a_bin_12;
-      int _num_SR0tau_a_bin_13;
-      int _num_SR0tau_a_bin_14;
-      int _num_SR0tau_a_bin_15;
-      int _num_SR0tau_a_bin_16;
-      int _num_SR0tau_a_bin_17;
-      int _num_SR0tau_a_bin_18;
-      int _num_SR0tau_a_bin_19;
-      int _num_SR0tau_a_bin_20;
+      int _num_SR0tau_a_bin_1, _num_SR0tau_a_bin_2, _num_SR0tau_a_bin_3, _num_SR0tau_a_bin_4;
+      int _num_SR0tau_a_bin_5, _num_SR0tau_a_bin_6, _num_SR0tau_a_bin_7, _num_SR0tau_a_bin_8;
+      int _num_SR0tau_a_bin_9, _num_SR0tau_a_bin_10, _num_SR0tau_a_bin_11, _num_SR0tau_a_bin_12;
+      int _num_SR0tau_a_bin_13, _num_SR0tau_a_bin_14, _num_SR0tau_a_bin_15, _num_SR0tau_a_bin_16;
+      int _num_SR0tau_a_bin_17, _num_SR0tau_a_bin_18, _num_SR0tau_a_bin_19, _num_SR0tau_a_bin_20;
       int _num_SR0tau_b;
       int _num_SR1tau;
       int _num_SR2tau_a;
       int _num_SR2tau_b;
-      vector<int> cutFlowVector_alt;
       vector<int> cutFlowVector;
       vector<string> cutFlowVector_str;
       const static int NCUTS=55;
-
-      // Debug histos
 
     public:
 
@@ -95,7 +77,6 @@ namespace Gambit {
         for(int i=0;i<NCUTS;i++){
           cutFlowVector.push_back(0);
           cutFlowVector_str.push_back("");
-          cutFlowVector_alt.push_back(0);
         }
 
       }
@@ -791,12 +772,49 @@ namespace Gambit {
 
 
               )cutFlowVector[j]++;
-
         }
-
-
         return;
       }
+
+
+      void add(BaseAnalysis* other) {
+        // The base class add function handles the signal region vector and total # events. 
+        HEPUtilsAnalysis::add(other);
+
+        Analysis_ATLAS_3LEPEW_20invfb* specificOther
+                = dynamic_cast<Analysis_ATLAS_3LEPEW_20invfb*>(other);
+
+        // Here we will add the subclass member variables:
+        for (int j=0; j<NCUTS; j++) {
+          cutFlowVector[j] = specificOther->cutFlowVector[j];
+          cutFlowVector_str[j] = specificOther->cutFlowVector_str[j];
+        }
+        _num_SR0tau_a_bin_1 += specificOther->_num_SR0tau_a_bin_1;
+        _num_SR0tau_a_bin_2 += specificOther->_num_SR0tau_a_bin_2;
+        _num_SR0tau_a_bin_3 += specificOther->_num_SR0tau_a_bin_3;
+        _num_SR0tau_a_bin_4 += specificOther->_num_SR0tau_a_bin_4;
+        _num_SR0tau_a_bin_5 += specificOther->_num_SR0tau_a_bin_5;
+        _num_SR0tau_a_bin_6 += specificOther->_num_SR0tau_a_bin_6;
+        _num_SR0tau_a_bin_7 += specificOther->_num_SR0tau_a_bin_7;
+        _num_SR0tau_a_bin_8 += specificOther->_num_SR0tau_a_bin_8;
+        _num_SR0tau_a_bin_9 += specificOther->_num_SR0tau_a_bin_9;
+        _num_SR0tau_a_bin_10 += specificOther->_num_SR0tau_a_bin_10;
+        _num_SR0tau_a_bin_11 += specificOther->_num_SR0tau_a_bin_11;
+        _num_SR0tau_a_bin_12 += specificOther->_num_SR0tau_a_bin_12;
+        _num_SR0tau_a_bin_13 += specificOther->_num_SR0tau_a_bin_13;
+        _num_SR0tau_a_bin_14 += specificOther->_num_SR0tau_a_bin_14;
+        _num_SR0tau_a_bin_15 += specificOther->_num_SR0tau_a_bin_15;
+        _num_SR0tau_a_bin_16 += specificOther->_num_SR0tau_a_bin_16;
+        _num_SR0tau_a_bin_17 += specificOther->_num_SR0tau_a_bin_17;
+        _num_SR0tau_a_bin_18 += specificOther->_num_SR0tau_a_bin_18;
+        _num_SR0tau_a_bin_19 += specificOther->_num_SR0tau_a_bin_19;
+        _num_SR0tau_a_bin_20 += specificOther->_num_SR0tau_a_bin_20;
+        _num_SR0tau_b += specificOther->_num_SR0tau_b;
+        _num_SR1tau += specificOther->_num_SR1tau;
+        _num_SR2tau_a += specificOther->_num_SR2tau_a;
+        _num_SR2tau_b += specificOther->_num_SR2tau_b;
+      }
+
 
       void finalize() {
 
@@ -822,9 +840,6 @@ namespace Gambit {
 
 
       void collect_results() {
-
-        finalize();
-
         SignalRegionData results_SR0tau_a_bin_1;
         results_SR0tau_a_bin_1.set_observation(36.);
         results_SR0tau_a_bin_1.set_background(23.);

@@ -40,7 +40,6 @@ namespace Gambit {
       int _numSRA1, _numSRA2, _numSRA3, _numSRA4;
       int _numSRC1, _numSRC2, _numSRC3;
 
-      vector<int> cutFlowVector_alt;
       vector<int> cutFlowVector;
       vector<string> cutFlowVector_str;
       int NCUTS; //=16;
@@ -109,7 +108,6 @@ namespace Gambit {
         for(int i=0;i<NCUTS;i++){
           cutFlowVector.push_back(0);
           cutFlowVector_str.push_back("");
-          cutFlowVector_alt.push_back(0);
         }
 
       }
@@ -646,6 +644,30 @@ namespace Gambit {
         return;
 
       }
+      
+
+      void add(BaseAnalysis* other) {
+        // The base class add function handles the signal region vector and total # events. 
+        HEPUtilsAnalysis::add(other);
+
+        Analysis_ATLAS_0LEPStop_20invfb* specificOther
+                = dynamic_cast<Analysis_ATLAS_0LEPStop_20invfb*>(other);
+
+        // Here we will add the subclass member variables:
+        if (NCUTS != specificOther->NCUTS) NCUTS = specificOther->NCUTS;
+        for (int j=0; j<NCUTS; j++) {
+          cutFlowVector[j] = specificOther->cutFlowVector[j];
+          cutFlowVector_str[j] = specificOther->cutFlowVector_str[j];
+        }
+        _numSRA1 += specificOther->_numSRA1;
+        _numSRA2 += specificOther->_numSRA2;
+        _numSRA3 += specificOther->_numSRA3;
+        _numSRA4 += specificOther->_numSRA4;
+        _numSRC1 += specificOther->_numSRC1;
+        _numSRC2 += specificOther->_numSRC2;
+        _numSRC3 += specificOther->_numSRC3;
+      }
+
 
       void finalize() {
 
@@ -665,14 +687,10 @@ namespace Gambit {
         cout << "------------------------------------------------------------------------------------------------------------------------------ "<<std::endl;
 
         cout << "RESULTS 0LEP " << _numSRA1 << " " <<  _numSRA2 << " " << _numSRA3 << " " << _numSRA4 << " " << _numSRC1 << " " << _numSRC2 << " " << _numSRC3 << endl;
-
-
       }
 
 
       void collect_results() {
-
-        finalize();
 
         SignalRegionData results_SRA1;
         results_SRA1.set_observation(11.);

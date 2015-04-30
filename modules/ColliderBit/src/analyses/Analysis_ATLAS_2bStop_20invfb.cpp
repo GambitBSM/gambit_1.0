@@ -32,7 +32,6 @@ namespace Gambit {
       int _numSRA, _numSRB;
       int _numSRA15, _numSRA20, _numSRA25, _numSRA30, _numSRA35;
 
-      vector<int> cutFlowVector_alt;
       vector<int> cutFlowVector;
       vector<string> cutFlowVector_str;
       int NCUTS; //=2;
@@ -49,7 +48,6 @@ namespace Gambit {
         for(int i=0;i<NCUTS;i++){
           cutFlowVector.push_back(0);
           cutFlowVector_str.push_back("");
-          cutFlowVector_alt.push_back(0);
         }
 
       }
@@ -386,6 +384,30 @@ namespace Gambit {
 
       }
 
+
+      void add(BaseAnalysis* other) {
+        // The base class add function handles the signal region vector and total # events. 
+        HEPUtilsAnalysis::add(other);
+
+        Analysis_ATLAS_2bStop_20invfb* specificOther
+                = dynamic_cast<Analysis_ATLAS_2bStop_20invfb*>(other);
+
+        // Here we will add the subclass member variables:
+        if (NCUTS != specificOther->NCUTS) NCUTS = specificOther->NCUTS;
+        for (int j=0; j<NCUTS; j++) {
+          cutFlowVector[j] = specificOther->cutFlowVector[j];
+          cutFlowVector_str[j] = specificOther->cutFlowVector_str[j];
+        }
+        _numSRA += specificOther->_numSRA;
+        _numSRB += specificOther->_numSRB;
+        _numSRA15 += specificOther->_numSRA15;
+        _numSRA20 += specificOther->_numSRA20;
+        _numSRA25 += specificOther->_numSRA25;
+        _numSRA30 += specificOther->_numSRA30;
+        _numSRA35 += specificOther->_numSRA35;
+      }
+
+
       void finalize() {
 
         using namespace std;
@@ -404,14 +426,10 @@ namespace Gambit {
         cout << "------------------------------------------------------------------------------------------------------------------------------ "<<std::endl;
 
         cout << "RESULTS 2B " << _numSRA << " "  << _numSRB << " " << _numSRA15 << " " <<  _numSRA20 << " " <<  _numSRA25 << " " << _numSRA30 << " " <<  _numSRA35 << endl;
-
-
       }
 
 
       void collect_results() {
-        finalize();
-
         SignalRegionData results_SRA15;
         results_SRA15.set_observation(102.);
         results_SRA15.set_background(94.);
