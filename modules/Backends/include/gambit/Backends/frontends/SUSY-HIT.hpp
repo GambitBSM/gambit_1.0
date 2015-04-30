@@ -2,7 +2,7 @@
 //   *********************************************
 ///  \file
 ///
-///  Frontend for SUSY-HIT 1.4 backend
+///  Frontend for SUSY-HIT 1.5 backend
 ///
 ///  *********************************************
 ///
@@ -20,7 +20,7 @@
 #else
   #define BACKENDNAME SUSY_HIT
 #endif
-#define VERSION 1.4
+#define VERSION 1.5
 #define SAFE_VERSION 1_4
 
 // Let's go.
