@@ -21,10 +21,10 @@
 #include <string>
 #include <sstream>
 
-#include "gambit/Utils/gambit_module_headers.hpp"
+#include "gambit/Elements/gambit_module_headers.hpp"
+#include "gambit/Elements/Spectrum.hpp"
 #include "gambit/Utils/stream_overloads.hpp" // Just for more convenient output to logger
 #include "gambit/Utils/util_macros.hpp"
-#include "gambit/Utils/Spectrum.hpp"
 #include "gambit/SpecBit/SpecBit_rollcall.hpp"
 #include "gambit/SpecBit/MSSMSpec.hpp"
 #include "gambit/SpecBit/QedQcdWrapper.hpp"
@@ -58,8 +58,9 @@ namespace Gambit
     //  them up to their dependencies, and input parameters.
 
     /// Initialise QedQcd object from SMInputs data
-    void setup_QedQcd(QedQcd& oneset, const SMInputs& sminputs)
+    void setup_QedQcd(QedQcd& oneset /*output*/, const SMInputs& sminputs /*input*/)
     {
+      // Set pole masses (to be treated specially)
       oneset.setPoleMt(sminputs.mT);
       //oneset.setPoleMb(...);
       oneset.setPoleMtau(sminputs.mTau);
@@ -72,7 +73,11 @@ namespace Gambit
       /// set QED and QCD structure constants
       oneset.setAlpha(ALPHA, 1./sminputs.alphainv);
       oneset.setAlpha(ALPHAS, sminputs.alphaS);
-      ///TODO: Not sure how to set other stuff.
+      /// NOTE! These assume the input electron and muon pole masses are "close
+      /// enough" to MSbar masses at MZ. The object does the same with its 
+      /// default values so I guess it is ok.
+      oneset.setMass(mElectron, sminputs.mE);
+      oneset.setMass(mMuon,     sminputs.mMu);
     }
 
     /// Compute an MSSM spectrum using flexiblesusy
@@ -86,7 +91,7 @@ namespace Gambit
     // the below template function.
     // MI for Model Interface, as defined in model_files_and_boxes.hpp 
     template <class MI> 
-    const SMplusUV* run_FS_spectrum_generator
+    const Spectrum* run_FS_spectrum_generator
         ( const typename MI::InputParameters& input
         , const SMInputs& sminputs
         , const Options& runOptions 
@@ -177,20 +182,22 @@ namespace Gambit
       // parameters into SLHA format)
       MI model_interface(spectrum_generator,oneset,input);
 
-      // Create Spectrum object to wrap flexiblesusy data
+      // Create SubSpectrum object to wrap flexiblesusy data
       // THIS IS STATIC so that it lives on once we leave this module function. We 
       // therefore cannot run the same spectrum generator twice in the same loop and 
       // maintain the spectrum resulting from both. But we should never want to do 
       // this.
-      // A pointer to this object is what gets turned into a Spectrum pointer and
+      // A pointer to this object is what gets turned into a SubSpectrum pointer and
       // passed around Gambit.
       //
       // This object will COPY the interface data members into itself, so it is now the 
       // one-stop-shop for all spectrum information, including the model interface object.
       static MSSMSpec<MI> mssmspec(model_interface);
 
-      // Create a second Spectrum object to wrap the qedqcd object used to initialise the spectrum generator
-      static QedQcdWrapper qedqcdspec(oneset);
+      // Create a second SubSpectrum object to wrap the qedqcd object used to initialise the spectrum generator
+      // Attach the sminputs object as well, so that SM pole masses can be passed on (these aren't easily
+      // extracted from the QedQcd object, so use the values that we put into it.)
+      static QedQcdWrapper qedqcdspec(oneset,sminputs);
 
       if( runOptions.getValue<bool>("invalid_point_fatal") and problems.have_problem() )
       {
@@ -215,10 +222,10 @@ namespace Gambit
          slha_io.write_to_file("SpecBit/initial_CMSSM_spectrum.slha");
       #endif
 
-      // Package pointer to QedQcd Spectrum object along with pointer to MSSM Spectrum object, 
+      // Package pointer to QedQcd SubSpectrum object along with pointer to MSSM SubSpectrum object, 
       // and SMInputs struct.
       // Return pointer to this package.
-      static SMplusUV matched_spectra(&qedqcdspec,&mssmspec,sminputs);
+      static Spectrum matched_spectra(&qedqcdspec,&mssmspec,sminputs);
       return &matched_spectra;
     }
 
@@ -350,7 +357,34 @@ namespace Gambit
     //void convert_NMSSM_to_SM  (Spectrum* &result) {result = *Pipes::convert_NMSSM_to_SM::Dep::NMSSM_spectrum;}
     //void convert_E6MSSM_to_SM (Spectrum* &result) {result = *Pipes::convert_E6MSSM_to_SM::Dep::E6MSSM_spectrum;}
 
-    void get_CMSSM_spectrum (const SMplusUV* &result)
+    // Construct a spectrum object from SMInputs using QedQcdWrapper
+    void get_QedQcd_spectrum(const SubSpectrum* &result)
+    {
+      // Access the pipes for this function to get model and parameter information, and dependencies
+      namespace myPipe = Pipes::get_QedQcd_spectrum;
+
+      // Get SLHA2 SMINPUTS values
+      const SMInputs& sminputs = *myPipe::Dep::SMINPUTS;
+
+      // SoftSUSY object used to set quark and lepton masses and gauge
+      // couplings in QEDxQCD effective theory
+      // Will be initialised by default using values in lowe.h, which we will
+      // override next. 
+      QedQcd oneset;
+
+      // Fill QedQcd object with SMInputs values
+      setup_QedQcd(oneset,sminputs);
+
+      // Run everything to Mz
+      oneset.toMz();
+ 
+      // Create a Spectrum object to wrap the qedqcd object
+      static QedQcdWrapper qedqcdspec(oneset,sminputs);
+
+      result = &qedqcdspec;
+    }
+
+    void get_CMSSM_spectrum (const Spectrum* &result)
     {
 
       // Access the pipes for this function to get model and parameter information
@@ -376,7 +410,7 @@ namespace Gambit
     }
 
     // Runs MSSM spectrum generator with EWSB scale input
-    void get_MSSMatQ_spectrum (const SMplusUV* &result)
+    void get_MSSMatQ_spectrum (const Spectrum* &result)
     {
       using namespace softsusy;
       namespace myPipe = Pipes::get_MSSMatQ_spectrum;
@@ -388,7 +422,7 @@ namespace Gambit
     }
 
     // Runs MSSM spectrum generator with GUT scale input
-    void get_MSSMatMGUT_spectrum (const SMplusUV* &result)
+    void get_MSSMatMGUT_spectrum (const Spectrum* &result)
     {
       using namespace softsusy;
       namespace myPipe = Pipes::get_MSSMatMGUT_spectrum;
@@ -398,31 +432,31 @@ namespace Gambit
       result = run_FS_spectrum_generator<MSSMatMGUT_interface<ALGORITHM1>>(input,sminputs,*myPipe::runOptions);
     }
 
-    void get_GUTMSSMB_spectrum (const SMplusUV* &result)
+    void get_GUTMSSMB_spectrum (const Spectrum* &result)
     {
       // Placeholder
     }
 
     /// @{
-    /// Functions to decompose SMplusUV object (of type MSSM_spectrum)
+    /// Functions to decompose Spectrum object (of type MSSM_spectrum)
 
-    /// Retrieve Spectrum* to MSSM UV model from SMplusUV object
-    /// DEPENDENCY(MSSM_spectrum, SMplusUV)
-    void get_MSSM_spectrum_as_SpectrumPtr_from_matchedMSSM (const Spectrum* &result)
+    /// Retrieve SubSpectrum* to MSSM UV model from Spectrum object
+    /// DEPENDENCY(MSSM_spectrum, Spectrum)
+    void get_MSSM_SubSpectrum_from_MSSM_Spectrum (const SubSpectrum* &result)
     {
-      namespace myPipe = Pipes::get_MSSM_spectrum_as_SpectrumPtr_from_matchedMSSM;
-      const SMplusUV* matched_spectra(*myPipe::Dep::MSSM_spectrum);
+      namespace myPipe = Pipes::get_MSSM_SubSpectrum_from_MSSM_Spectrum;
+      const Spectrum* matched_spectra(*myPipe::Dep::MSSM_spectrum);
       result = matched_spectra->get_UV();
     }
 
     /// @} 
-    /// Retrieve Spectrum* to MSSM UV model from SMplusUV object
-    /// DEPENDENCY(MSSM_spectrum, SMplusUV)
-    void get_SM_spectrum_as_SpectrumPtr_from_matchedMSSM (const Spectrum* &result)
+    /// Retrieve SubSpectrum* to SM LE model from Spectrum object
+    /// DEPENDENCY(MSSM_spectrum, Spectrum)
+    void get_SM_SubSpectrum_from_MSSM_Spectrum (const SubSpectrum* &result)
     {
-      namespace myPipe = Pipes::get_SM_spectrum_as_SpectrumPtr_from_matchedMSSM;
-      const SMplusUV* matched_spectra(*myPipe::Dep::MSSM_spectrum);
-      result = matched_spectra->get_SM();
+      namespace myPipe = Pipes::get_SM_SubSpectrum_from_MSSM_Spectrum;
+      const Spectrum* matched_spectra(*myPipe::Dep::MSSM_spectrum);
+      result = matched_spectra->get_LE();
     }
 
 
@@ -431,19 +465,19 @@ namespace Gambit
     void dump_spectrum(double &result)
     {
       namespace myPipe = Pipes::dump_spectrum;
-      const Spectrum* spec(*myPipe::Dep::SM_spectrum);
+      const SubSpectrum* spec(*myPipe::Dep::SM_spectrum);
       std::string filename(myPipe::runOptions->getValue<std::string>("filename"));
       spec->dump2slha(filename);
       result = 1;
     }
 
-    /// Extract an SLHAea version of the spectrum contained in a Spectrum object
+    /// Extract an SLHAea version of the spectrum contained in a SubSpectrum object
     //  (with capability MSSM_spectrum)
-    //  DEPENDENCY(MSSM_spectrum, Spectrum*)  
+    //  DEPENDENCY(MSSM_spectrum, SubSpectrum*)  
     void get_MSSM_spectrum_as_SLHAea (SLHAea::Coll &result)
     {
       namespace myPipe = Pipes::get_MSSM_spectrum_as_SLHAea;
-      const Spectrum* spec(*myPipe::Dep::MSSM_spectrum);
+      const SubSpectrum* spec(*myPipe::Dep::MSSM_spectrum);
       result = spec->getSLHAea();
     }
      

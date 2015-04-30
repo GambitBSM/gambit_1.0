@@ -27,17 +27,34 @@
 
 // Gambit
 #include "gambit/Printers/basebaseprinter.hpp"
-#include "gambit/Utils/all_functor_types.hpp"
 #include "gambit/Utils/standalone_error_handlers.hpp"
 #include "gambit/Utils/yaml_options.hpp"
 #include "gambit/Utils/boost_fallbacks.hpp"
 #include "gambit/Utils/factory_registry.hpp"
+#include "gambit/Utils/model_parameters.hpp"
 
 // Boost
 #include <boost/preprocessor/seq/for_each.hpp>
 #include <boost/preprocessor/punctuation/comma_if.hpp>
 
 // Macros
+
+#ifndef STANDALONE
+   // If we are in a main gambit executable, we need to know all the potentially printable types.
+   #include "gambit/Elements/all_functor_types.hpp"
+#else
+   // Otherwise, we are in the ScannerBit standalone executable and need only a limited set.
+   #define PRINTABLE_TYPES         \
+     (bool)                        \
+     (int)                         \
+     (double)                      \
+     (std::vector<bool>)           \
+     (std::vector<int>)            \
+     (std::vector<double>)         \
+     (ModelParameters)
+     // Add more as needed
+#endif
+
 
 // This macro registers each printer so that they can be constructed automatically from inifile instructions
 #define LOAD_PRINTER(tag, ...) REGISTER(printer_creators, tag, __VA_ARGS__)

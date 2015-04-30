@@ -75,6 +75,17 @@ namespace Gambit
     return p;
   }
 
+  /// Return the path to the folder in which a backend library resides
+  str Backends::backend_info::path_dir(str be, str ver) const
+  {
+    str p = corrected_path(be,ver);
+    for (int i = p.length()-1; i >= 0; --i)
+    {
+      if (p[i] == '/') return p.substr(0,i); 
+    }  
+    return p;
+  }
+
   /// Given a backend and a safe version (with no periods), return the true version
   str Backends::backend_info::version_from_safe_version (str be, str sv) const 
   { 
