@@ -100,7 +100,7 @@ namespace Gambit {
       //@{
       public:
         /// @brief An operator to do xsec-weighted combination of analysis runs
-        void add(BaseAnalysis* other) {
+        virtual void add(BaseAnalysis* other) {
           if (_results.empty()) collect_results();
           std::vector<SignalRegionData> otherResults = other->get_results();
           assert(otherResults.size() == _results.size());
