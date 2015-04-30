@@ -54,13 +54,15 @@ SuperIso:
 gamLike:
   1.0.0:       ./Backends/lib/libgamLike.so
 
-micromegas:
-  3.5.5:         ./Backends/lib/libmicromegas.so
+MicrOmegas:
+  3.5.5:       ./Backends/lib/libmicromegas.so
 
+MicrOmegas_SingletDM:
+  3.5.5:       ./Backends/lib/libmicromegas_SingletDM.so
+  
 nulike:
   1.0.0:       ./../extras/nulike/libnulike.so
 
 SUSYHIT:
   0.1:         ./Backends/lib/libsusyhit.so
   1.4:         ./Backends/lib/libsusyhit.so
-
