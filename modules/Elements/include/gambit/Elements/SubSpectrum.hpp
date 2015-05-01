@@ -133,43 +133,68 @@ namespace Gambit {
          
    };
    
-   /// Getter overloads for easier interaction with particle database
+   /// Getter and checker overloads for easier interaction with particle database
    /// @{
    
    #define DECLARE_PDG_GETTERS(FUNC) \
       /* Overloads of these functions to allow access using PDG codes */ \
       /* as defined in Models/src/particle_database.cpp */ \
       /* These don't have to be virtual; they just call the virtual functions in the end. */ \
-      double FUNC(const int, const int) const;     /* Input PDG code plus context integer */ \
-      double FUNC(const std::pair<int,int>) const; /* Input PDG code plus context integer */ \
-      double FUNC(const std::pair<str,int>) const; /* Input short name plus index */
+      bool   CAT(has_,FUNC)(const int, const int) const;     /* Input PDG code plus context integer */ \
+      double CAT(get_,FUNC)(const int, const int) const;     /* Input PDG code plus context integer */ \
+      bool   CAT(has_,FUNC)(const std::pair<int,int>) const; /* Input PDG code plus context integer */ \
+      double CAT(get_,FUNC)(const std::pair<int,int>) const; /* Input PDG code plus context integer */ \
+      bool   CAT(has_,FUNC)(const std::pair<str,int>) const; /* Input short name plus index */         \
+      double CAT(get_,FUNC)(const std::pair<str,int>) const; /* Input short name plus index */
    
-   #define DEFINE_PDG_GETTERS(CLASS,FUNC)                                        \
-      inline double CLASS::FUNC(const std::pair<str,int> shortpr) const          \
-      {                                                                          \
-        return FUNC(shortpr.first, shortpr.second);                              \
-      }                                                                          \
-                                                                                 \
-      inline double CLASS::FUNC(const int pdg_code, const int context) const     \
-      {                                                                          \
-         /* PDB context integer must be zero for pole mass retrieval             \
-            (this is the context integer for mass eigenstate) */                 \
-         return FUNC( std::make_pair(pdg_code,context) );                        \
-      }                                                                          \
-                                                                                 \
-      inline double CLASS::FUNC(const std::pair<int,int> pdgpr) const            \
-      {                                                                          \
-         /* If there is a short name, then retrieve that plus the index */       \
-         if( Models::ParticleDB().has_short_name(pdgpr) )                                         \
-         {                                                                       \
-           return FUNC( Models::ParticleDB().short_name_pair(pdgpr) );                            \
-         }                                                                       \
-         else /* Use the long name with no index instead */                      \
-         {                                                                       \
-           return FUNC( Models::ParticleDB().long_name(pdgpr) );                                  \
-         }                                                                       \
+   #define DEFINE_PDG_GETTERS(CLASS,FUNC)                                          \
+      inline bool   CLASS::CAT(has_,FUNC)(const std::pair<str,int> shortpr) const  \
+      {                                                                            \
+        return CAT(has_,FUNC)(shortpr.first, shortpr.second);                      \
+      }                                                                            \
+      inline double CLASS::CAT(get_,FUNC)(const std::pair<str,int> shortpr) const  \
+      {                                                                            \
+        return CAT(get_,FUNC)(shortpr.first, shortpr.second);                      \
+      }                                                                            \
+                                                                                   \
+      inline bool   CLASS::CAT(has_,FUNC)(const int pdg_code, const int context) const \
+      {                                                                            \
+         /* PDB context integer must be zero for pole mass retrieval               \
+            (this is the context integer for mass eigenstate) */                   \
+         return CAT(has_,FUNC)( std::make_pair(pdg_code,context) );                \
+      }                                                                            \
+      inline double CLASS::CAT(get_,FUNC)(const int pdg_code, const int context) const \
+      {                                                                            \
+         /* PDB context integer must be zero for pole mass retrieval               \
+            (this is the context integer for mass eigenstate) */                   \
+         return CAT(get_,FUNC)( std::make_pair(pdg_code,context) );                \
+      }                                                                            \
+                                                                                    \
+      inline bool   CLASS::CAT(has_,FUNC)(const std::pair<int,int> pdgpr) const    \
+      {                                                                            \
+         /* If there is a short name, then retrieve that plus the index */         \
+         if( Models::ParticleDB().has_short_name(pdgpr) )                          \
+         {                                                                         \
+           return CAT(has_,FUNC)( Models::ParticleDB().short_name_pair(pdgpr) );   \
+         }                                                                         \
+         else /* Use the long name with no index instead */                        \
+         {                                                                         \
+           return CAT(has_,FUNC)( Models::ParticleDB().long_name(pdgpr) );         \
+         }                                                                         \
+      }                                                                            \
+      inline double CLASS::CAT(get_,FUNC)(const std::pair<int,int> pdgpr) const    \
+      {                                                                            \
+         /* If there is a short name, then retrieve that plus the index */         \
+         if( Models::ParticleDB().has_short_name(pdgpr) )                          \
+         {                                                                         \
+           return CAT(get_,FUNC)( Models::ParticleDB().short_name_pair(pdgpr) );   \
+         }                                                                         \
+         else /* Use the long name with no index instead */                        \
+         {                                                                         \
+           return CAT(get_,FUNC)( Models::ParticleDB().long_name(pdgpr) );         \
+         }                                                                         \
       }
-   
+    
    /// @}
    
    class RunningPars 
@@ -248,39 +273,57 @@ namespace Gambit {
          virtual double soft_lower() const = 0; 
          virtual double hard_lower() const = 0; 
     
-         /// getters using map
-         virtual double get_mass4_parameter(const std::string&, bool=true) const = 0;
-         virtual double get_mass4_parameter(const std::string&, int, bool=true) const = 0;
+         /// getters using map (and "checkers")
+         virtual bool   has_mass4_parameter(const std::string&) const = 0;
+         virtual double get_mass4_parameter(const std::string&) const = 0;
+         virtual bool   has_mass4_parameter(const std::string&, int) const = 0;
+         virtual double get_mass4_parameter(const std::string&, int) const = 0;
+         virtual bool   has_mass4_parameter(const std::string&, int, int) const = 0;
          virtual double get_mass4_parameter(const std::string&, int, int) const = 0;
-         virtual double get_mass3_parameter(const std::string&, bool=true) const = 0;
-         virtual double get_mass3_parameter(const std::string&, int, bool=true) const = 0;
+         virtual bool   has_mass3_parameter(const std::string&) const = 0;
+         virtual double get_mass3_parameter(const std::string&) const = 0;
+         virtual bool   has_mass3_parameter(const std::string&, int) const = 0;
+         virtual double get_mass3_parameter(const std::string&, int) const = 0;
+         virtual bool   has_mass3_parameter(const std::string&, int, int) const = 0;
          virtual double get_mass3_parameter(const std::string&, int, int) const = 0;
-         virtual double get_mass2_parameter(const std::string&, bool=true) const = 0;
-         virtual double get_mass2_parameter(const std::string&, int, bool=true) const = 0;
+         virtual bool   has_mass2_parameter(const std::string&) const = 0;
+         virtual double get_mass2_parameter(const std::string&) const = 0;
+         virtual bool   has_mass2_parameter(const std::string&, int) const = 0;
+         virtual double get_mass2_parameter(const std::string&, int) const = 0;
+         virtual bool   has_mass2_parameter(const std::string&, int, int) const = 0;
          virtual double get_mass2_parameter(const std::string&, int, int) const = 0;
-         virtual double get_mass_parameter(const std::string&, bool=true) const = 0;
-         virtual double get_mass_parameter(const std::string&, int, bool=true) const = 0;
+         virtual bool   has_mass_parameter(const std::string&) const = 0;
+         virtual double get_mass_parameter(const std::string&) const = 0;
+         virtual bool   has_mass_parameter(const std::string&, int) const = 0;
+         virtual double get_mass_parameter(const std::string&, int) const = 0;
+         virtual bool   has_mass_parameter(const std::string&, int, int) const = 0;
          virtual double get_mass_parameter(const std::string&, int, int) const = 0;
-         virtual double get_dimensionless_parameter(const std::string&, bool=true) const = 0;
-         virtual double get_dimensionless_parameter(const std::string&, int, bool=true) const = 0;
+         virtual bool   has_dimensionless_parameter(const std::string&) const = 0;
+         virtual double get_dimensionless_parameter(const std::string&) const = 0;
+         virtual bool   has_dimensionless_parameter(const std::string&, int) const = 0;
+         virtual double get_dimensionless_parameter(const std::string&, int) const = 0;
+         virtual bool   has_dimensionless_parameter(const std::string&, int, int) const = 0;
          virtual double get_dimensionless_parameter(const std::string&, int, int) const = 0;
-         virtual double get_mass_eigenstate(const std::string&, bool=true) const = 0;
-         virtual double get_mass_eigenstate(const std::string&, int, bool=true) const = 0;
+         virtual bool   has_mass_eigenstate(const std::string&) const = 0;
+         virtual double get_mass_eigenstate(const std::string&) const = 0;
+         virtual bool   has_mass_eigenstate(const std::string&, int) const = 0;
+         virtual double get_mass_eigenstate(const std::string&, int) const = 0;
+         virtual bool   has_mass_eigenstate(const std::string&, int, int) const = 0;
          virtual double get_mass_eigenstate(const std::string&, int, int) const = 0;
    
-         DECLARE_PDG_GETTERS(get_mass4_parameter)
-         DECLARE_PDG_GETTERS(get_mass3_parameter)
-         DECLARE_PDG_GETTERS(get_mass2_parameter)
-         DECLARE_PDG_GETTERS(get_mass_parameter)
-         DECLARE_PDG_GETTERS(get_dimensionless_parameter)
-         DECLARE_PDG_GETTERS(get_mass_eigenstate)
+         DECLARE_PDG_GETTERS(mass4_parameter)
+         DECLARE_PDG_GETTERS(mass3_parameter)
+         DECLARE_PDG_GETTERS(mass2_parameter)
+         DECLARE_PDG_GETTERS(mass_parameter)
+         DECLARE_PDG_GETTERS(dimensionless_parameter)
+         DECLARE_PDG_GETTERS(mass_eigenstate)
    };
-   DEFINE_PDG_GETTERS(RunningPars,get_mass_parameter)
-   DEFINE_PDG_GETTERS(RunningPars,get_mass2_parameter)
-   DEFINE_PDG_GETTERS(RunningPars,get_mass3_parameter)
-   DEFINE_PDG_GETTERS(RunningPars,get_mass4_parameter)
-   DEFINE_PDG_GETTERS(RunningPars,get_dimensionless_parameter)
-   DEFINE_PDG_GETTERS(RunningPars,get_mass_eigenstate)
+   DEFINE_PDG_GETTERS(RunningPars,mass_parameter)
+   DEFINE_PDG_GETTERS(RunningPars,mass2_parameter)
+   DEFINE_PDG_GETTERS(RunningPars,mass3_parameter)
+   DEFINE_PDG_GETTERS(RunningPars,mass4_parameter)
+   DEFINE_PDG_GETTERS(RunningPars,dimensionless_parameter)
+   DEFINE_PDG_GETTERS(RunningPars,mass_eigenstate)
    
    class Phys 
    {
@@ -290,17 +333,22 @@ namespace Gambit {
          virtual ~Phys() {}      
    
          /// map based getters
-         virtual double get_Pole_Mass(const std::string&, bool=true) const { vfcn_error(LOCAL_INFO); return -1; };
-         virtual double get_Pole_Mass(const std::string&, int, bool=true) const { vfcn_error(LOCAL_INFO); return -1; };
-         virtual double get_Pole_Mixing(const std::string&, bool=false) const { vfcn_error(LOCAL_INFO); return -1; };
-         virtual double get_Pole_Mixing(const std::string&, int, bool=false) const { vfcn_error(LOCAL_INFO); return -1; };
-         virtual double get_Pole_Mixing(const std::string&, int, int) const { vfcn_error(LOCAL_INFO); return -1; };
+         virtual bool   has_Pole_Mass(const std::string&) const = 0;
+         virtual double get_Pole_Mass(const std::string&) const = 0;
+         virtual bool   has_Pole_Mass(const std::string&, int) const = 0;
+         virtual double get_Pole_Mass(const std::string&, int) const = 0;
+         virtual bool   has_Pole_Mixing(const std::string&) const = 0;
+         virtual double get_Pole_Mixing(const std::string&) const = 0;
+         virtual bool   has_Pole_Mixing(const std::string&, int) const = 0;
+         virtual double get_Pole_Mixing(const std::string&, int) const = 0;
+         virtual bool   has_Pole_Mixing(const std::string&, int, int) const = 0;
+         virtual double get_Pole_Mixing(const std::string&, int, int) const = 0;
    
-         DECLARE_PDG_GETTERS(get_Pole_Mass)
-         DECLARE_PDG_GETTERS(get_Pole_Mixing)
+         DECLARE_PDG_GETTERS(Pole_Mass)
+         DECLARE_PDG_GETTERS(Pole_Mixing)
    };
-   DEFINE_PDG_GETTERS(Phys,get_Pole_Mass)
-   DEFINE_PDG_GETTERS(Phys,get_Pole_Mixing)
+   DEFINE_PDG_GETTERS(Phys,Pole_Mass)
+   DEFINE_PDG_GETTERS(Phys,Pole_Mixing)
    
    /// =====================================================
    
@@ -471,29 +519,11 @@ namespace Gambit {
       DECLARE_MAP_FILLER_COLLECTION(NAME) \
       DECLARE_MAP_FILLER(NAME,map2)
    /// @}
-    
-   /// @{ Friend helper functions of PhysDer and RunparDer
-   /// Helper macros and forward declarations
-   #define FBODY0 const typename MapTypes<DT>::fmap&, \
-                          const typename MapTypes<DT>::fmap_extraM&, \
-                          const typename MapTypes<DT>::fmap_extraI&, \
-                          const str&, const str&, \
-                          const Self*, double(Self::*)(const str&, int, bool) const, \
-                          bool
-   #define FBODY1 const typename MapTypes<DT>::fmap1&, \
-                        const std::string&, const int, const str&, \
-                        const Self*, double(Self::*)(const str&, bool) const, \
-                        bool
-   #define FBODY2 const typename MapTypes<DT>::fmap2&, \
-                          const str&, const int, const int, const str&, \
-                          const Self*
    
-   template<class DT, class Self> double getter_0indices(FBODY0);
-   template<class DT, class Self> double getter_1index  (FBODY1);
-   template<class DT, class Self> double getter_2indices(FBODY2);
+   /// Forward declarations related to FptrFinder class
+   template<class,class> class SetMaps;
+   template<class,class> class FptrFinder;  
    
-   /// @}
-    
    template <class DerivedSpec, class DerivedSpecTraits>
    class PhysDer : public Phys 
    {
@@ -501,15 +531,10 @@ namespace Gambit {
          typedef DerivedSpecTraits DT;
          typedef PhysDer<D,DT> Self;
          typedef MapTypes<DT> MT; 
-         typedef double (PhysDer::*fp0)(const str&, bool) const;
-         typedef double (PhysDer::*fp1)(const str&, int, bool) const;
          friend class Spec<D,DT>;
+         friend class FptrFinder<DT,Self>;
          using Phys::get_Pole_Mass; // Need to expose the base class function overloads with this name
-         /// Friend helper functions
-         friend double getter_0indices<DT,Self>(FBODY0);
-         friend double getter_1index  <DT,Self>(FBODY1);
-         friend double getter_2indices<DT,Self>(FBODY2);
-   
+  
       protected:
          /// Needed for access to "parent" object member functions
          /// Needs to be protected so that derived classes can access it
@@ -525,10 +550,15 @@ namespace Gambit {
          PhysDer(Spec<D,DT>& s) : parent(s) {}
          virtual ~PhysDer() {}    
    
-         virtual double get_Pole_Mass(const std::string&, bool) const;
-         virtual double get_Pole_Mass(const std::string&, int, bool) const;
-         virtual double get_Pole_Mixing(const std::string&, bool) const;
-         virtual double get_Pole_Mixing(const std::string&, int, bool) const;
+         virtual bool   has_Pole_Mass(const std::string&) const;
+         virtual double get_Pole_Mass(const std::string&) const;
+         virtual bool   has_Pole_Mass(const std::string&, int) const;
+         virtual double get_Pole_Mass(const std::string&, int) const;
+         virtual bool   has_Pole_Mixing(const std::string&) const;
+         virtual double get_Pole_Mixing(const std::string&) const;
+         virtual bool   has_Pole_Mixing(const std::string&, int) const;
+         virtual double get_Pole_Mixing(const std::string&, int) const;
+         virtual bool   has_Pole_Mixing(const std::string&, int, int) const;
          virtual double get_Pole_Mixing(const std::string&, int, int) const;
    };
    /// Initialise maps (using filler overrides from DerivedSpec if defined)
@@ -542,13 +572,8 @@ namespace Gambit {
         typedef DerivedSpecTraits DT;
         typedef RunparDer<D,DT> Self;
         typedef MapTypes<DT> MT; 
-        typedef double (RunparDer::*fp0)(const str&, bool) const;
-        typedef double (RunparDer::*fp1)(const str&, int, bool) const;
         friend class Spec<D,DT>;
-        /// Friend helper functions
-        friend double getter_0indices<DT,Self>(FBODY0);
-        friend double getter_1index  <DT,Self>(FBODY1);
-        friend double getter_2indices<DT,Self>(FBODY2);
+        friend class FptrFinder<DT,Self>;
    
       protected:
          /// Needed for access to "parent" object member functions
@@ -578,23 +603,41 @@ namespace Gambit {
          virtual double hard_lower() const { return parent.hard_lower(); }
     
          /// Public interface functions
-         virtual double get_mass4_parameter(const std::string&, bool) const;
-         virtual double get_mass4_parameter(const std::string&, int, bool) const;
+         virtual bool   has_mass4_parameter(const std::string&) const;
+         virtual double get_mass4_parameter(const std::string&) const;
+         virtual bool   has_mass4_parameter(const std::string&, int) const;
+         virtual double get_mass4_parameter(const std::string&, int) const;
+         virtual bool   has_mass4_parameter(const std::string&, int, int) const;
          virtual double get_mass4_parameter(const std::string&, int, int) const;
-         virtual double get_mass3_parameter(const std::string&, bool) const;
-         virtual double get_mass3_parameter(const std::string&, int, bool) const;
+         virtual bool   has_mass3_parameter(const std::string&) const;
+         virtual double get_mass3_parameter(const std::string&) const;
+         virtual bool   has_mass3_parameter(const std::string&, int) const;
+         virtual double get_mass3_parameter(const std::string&, int) const;
+         virtual bool   has_mass3_parameter(const std::string&, int, int) const;
          virtual double get_mass3_parameter(const std::string&, int, int) const;
-         virtual double get_mass2_parameter(const std::string&, bool) const;
-         virtual double get_mass2_parameter(const std::string&, int, bool) const;
+         virtual bool   has_mass2_parameter(const std::string&) const;
+         virtual double get_mass2_parameter(const std::string&) const;
+         virtual bool   has_mass2_parameter(const std::string&, int) const;
+         virtual double get_mass2_parameter(const std::string&, int) const;
+         virtual bool   has_mass2_parameter(const std::string&, int, int) const;
          virtual double get_mass2_parameter(const std::string&, int, int) const;
-         virtual double get_mass_parameter(const std::string&, bool) const;
-         virtual double get_mass_parameter(const std::string&, int, bool) const;
+         virtual bool   has_mass_parameter(const std::string&) const;
+         virtual double get_mass_parameter(const std::string&) const;
+         virtual bool   has_mass_parameter(const std::string&, int) const;
+         virtual double get_mass_parameter(const std::string&, int) const;
+         virtual bool   has_mass_parameter(const std::string&, int, int) const;
          virtual double get_mass_parameter(const std::string&, int, int) const;
-         virtual double get_dimensionless_parameter(const std::string&, bool) const;
-         virtual double get_dimensionless_parameter(const std::string&, int, bool) const;
+         virtual bool   has_dimensionless_parameter(const std::string&) const;
+         virtual double get_dimensionless_parameter(const std::string&) const;
+         virtual bool   has_dimensionless_parameter(const std::string&, int) const;
+         virtual double get_dimensionless_parameter(const std::string&, int) const;
+         virtual bool   has_dimensionless_parameter(const std::string&, int, int) const;
          virtual double get_dimensionless_parameter(const std::string&, int, int) const;
-         virtual double get_mass_eigenstate(const std::string&, bool) const;
-         virtual double get_mass_eigenstate(const std::string&, int, bool) const;
+         virtual bool   has_mass_eigenstate(const std::string&) const;
+         virtual double get_mass_eigenstate(const std::string&) const;
+         virtual bool   has_mass_eigenstate(const std::string&, int) const;
+         virtual double get_mass_eigenstate(const std::string&, int) const;
+         virtual bool   has_mass_eigenstate(const std::string&, int, int) const;
          virtual double get_mass_eigenstate(const std::string&, int, int) const;
    };
    /// Initialise maps (using filler overrides from DerivedSpec if defined)
@@ -613,10 +656,6 @@ namespace Gambit {
          typedef DerivedSpecTraits DT;
          friend class RunparDer<D,DT>;
          friend class PhysDer<D,DT>;
-         /// Helper template friend functions (need to access 'model' and 'input')
-         template<class DT, class Self> friend double getter_0indices(FBODY0);
-         template<class DT, class Self> friend double getter_1index  (FBODY1);
-         template<class DT, class Self> friend double getter_2indices(FBODY2);
     
       private:   
          typedef MapTypes<DT> MT; 
@@ -631,12 +670,11 @@ namespace Gambit {
          /// Internal instances of specialised running and physical parameter classes   
          RunparDer<D,DT> rp;
          PhysDer<D,DT> pp;
-      
          /// Model object on which to call function pointers
          Model* model; 
          /// Contains extra data input on SubSpectrum object creation
          Input* input;
-   
+     
       protected:
          /// @{ Map filler functions
          /// Override as needed in derived classes
@@ -703,7 +741,11 @@ namespace Gambit {
            , model(&m)
            , input(&i)
          {}
-      
+     
+         Model* get_Model(){ return model; } 
+         Input* get_Input(){ return input; }
+
+ 
          /// CRTP-style polymorphic clone function
          /// Now derived classes will not need to re-implement the clone function.
          virtual std::unique_ptr<SubSpectrum> clone() const       
@@ -719,412 +761,483 @@ namespace Gambit {
    /// are not needed by the getters.
    class DummyModel {};
    class DummyInput {};
+
+   /// FptrFinder friend class for implementing named parameter idiom
+   template<class DT, class This>
+   class SetMaps
+   {
+      public:
+         SetMaps(const std::string& label, const This* const fakethis)
+          : label_(label) 
+          , fakethis_(fakethis)
+          , map_ (NULL)
+          , mapM_(NULL)
+          , mapI_(NULL)
+          , map1_(NULL)
+          , map2_(NULL)
+         {}
+         SetMaps& map (const typename MapTypes<DT>::fmap&        map) { map_=&map;   return *this; }
+         SetMaps& mapM(const typename MapTypes<DT>::fmap_extraM& mapM){ mapM_=&mapM; return *this; }
+         SetMaps& mapI(const typename MapTypes<DT>::fmap_extraI& mapI){ mapI_=&mapI; return *this; }
+         SetMaps& map1(const typename MapTypes<DT>::fmap1&       map1){ map1_=&map1; return *this; }
+         SetMaps& map2(const typename MapTypes<DT>::fmap2&       map2){ map2_=&map2; return *this; }
+
+      private:
+         friend class FptrFinder<DT,This>; 
+         const std::string label_;
+         const This* const fakethis_;
+         const typename MapTypes<DT>::fmap*        map_;
+         const typename MapTypes<DT>::fmap_extraM* mapM_; 
+         const typename MapTypes<DT>::fmap_extraI* mapI_; 
+         const typename MapTypes<DT>::fmap1*       map1_; 
+         const typename MapTypes<DT>::fmap2*       map2_; 
+          
+   }; 
  
-   /// @{ Getter function definitions
-   
-   /// To define all the getters, it is useful to define first the following helper functions which will
-   /// be reused a lot (which just extract the named functions from the supplied maps and run them)
-   
-   /// Getter/runner for functions taking no indices
-   // (note: currently only the no-index getters are set up to allow an "extra" map of function pointers to be defined. Can be extended
-   //  if needed.)
-   // template parameters:
-   // DT - DerivedSpecTraits; carries typedef fro Model and Input
-   // O  - The host class which uses this function, i.e. Phys or RunningPars
-   template<class DT, class O>
-   double getter_0indices(/* function maps */
-                          const typename MapTypes<DT>::fmap& map, 
-                          const typename MapTypes<DT>::fmap_extraM& map_extraM, 
-                          const typename MapTypes<DT>::fmap_extraI& map_extraI, 
-                          /* function call data (and error message data */
-                          const std::string& name, const std::string& maplabel, 
-                          /* host object pointer and pointer to alternate getter */
-                          const O* fakethis, double(O::*fptr)(const std::string&, int, bool) const, 
-                          bool doublecheck)
+
+   /// Helper class for locating the function pointer corresponding to a 
+   /// requested string, from amongst the various different maps in which
+   /// it could be located.
+   template<class DT, class This>
+   class FptrFinder
    {
-      typename MapTypes<DT>::fmap::const_iterator it = map.find(name); ///  Find desired Model object function
-      typename MapTypes<DT>::fmap_extraM::const_iterator itM;
-      typename MapTypes<DT>::fmap_extraI::const_iterator itI; 
-      double result = -1;
-      if(it==map.end()) { itM = map_extraM.find(name); } ///  Check if it exists in the extraM map
-      if(it==map.end() and itM==map_extraM.end()) { itI = map_extraI.find(name); } ///  Check if it exists in the extraI map
-   
-      /// TODO: Currently there will be a segfault if, say fmap is filled, but "model" not initialised to point to something.
-      /// Can probably wrap the pointers in a safer structure so that this obvious error can be identified easily.
-      if( it!=map.end() )
-      {
-         //  Get function out of map and call it on the bound Model object
-         typename MapTypes<DT>::FSptr f = it->second;
-         typename DT::Model* model = fakethis->parent.model;
-         result = (model->*f)();
-      }
-      else if( itM!=map_extraM.end() )
-      {
-         // Get function out of the extraM map and call it with Model object as the argument
-         typename MapTypes<DT>::plainfptrM f = itM->second;
-         typename DT::Model* model = fakethis->parent.model;
-         result = (*f)(*model);
-      }
-      else if( itI!=map_extraI.end() )
-      {
-         // Get function out of the extraI map and call it with Input object as the argument
-         typename MapTypes<DT>::plainfptrI f = itI->second;
-         typename DT::Input* input = fakethis->parent.input;
-         result = (*f)(*input);
-      }
-      else
-      {
-         if( doublecheck and PDB.has_short_name(name) ){
-            // No long name exists matching "name" in the function pointer maps
-            // Check if a corresponding short name plus index pair exists in 1index getter maps
-            // (fptr should point to the appropriate 1 index, class member of O, getter)
-            std::pair<str, int> p = PDB.short_name_pair(name);
-            std::cout << "running doublecheck: re-calling function with PDG short name pair: "<<name<<" --> "<<p.first<<", "<<p.second<<std::endl;
-            result = (fakethis->*fptr)(p.first, p.second, false);
-         } else {
-            std::ostringstream errmsg;
-            errmsg << "Error retrieving particle spectrum data!" << std::endl;
-            errmsg << "No "<<maplabel<<" with string reference '"<<name<<"' exists!" <<std::endl;
-            utils_error().forced_throw(LOCAL_INFO,errmsg.str());  
+      private:
+         /// Label to help track down errors if they occur
+         const std::string label;
+ 
+         /// Last used search string (only set if there was a problem, for error messages)
+         std::string lastname;
+
+         /// This class pretending to be an extra set of class functions, so need the "this" pointer
+         const This* const fakethis;
+
+         /// Pointers to const maps to use for search
+         const typename MapTypes<DT>::fmap*        map_;
+         const typename MapTypes<DT>::fmap_extraM* mapM_; 
+         const typename MapTypes<DT>::fmap_extraI* mapI_; 
+         const typename MapTypes<DT>::fmap1*       map1_; 
+         const typename MapTypes<DT>::fmap2*       map2_; 
+
+         /// Iterators needed for to locate search result
+         typename MapTypes<DT>::fmap::const_iterator        it;  // 0
+         typename MapTypes<DT>::fmap_extraM::const_iterator itM; // 1
+         typename MapTypes<DT>::fmap_extraI::const_iterator itI; // 2
+         typename MapTypes<DT>::fmap1::const_iterator       it1; // 3
+         typename MapTypes<DT>::fmap2::const_iterator       it2; // 4
+
+         /// Booleans to indicate whether or not it is safe to dereference
+         /// the above iterators
+         bool it_safe;
+         bool itM_safe;
+         bool itI_safe;
+         bool it1_safe;
+         bool it2_safe;
+
+         // int which records which iterator points to the search result 
+         int whichiter;    
+
+         // indices required for function call
+         int index1;
+         int index2;
+
+         // error code
+         // -1 : search not yet attempted
+         //  0 : no problem, search succeeded
+         //  1 : string name lookup failed
+         //  2 : string name lookup succeeded, index1 out of bounds
+         //  3 : string name lookup succeeded, index2 out of bounds
+         int error_code;
+
+         // Messages corresponding to the above error codes
+         static const std::map<int, const std::string> error_msg; 
+
+      public:
+         // Constructor utilising named "parameters"
+         FptrFinder(const SetMaps<DT,This>& params)
+           : label(params.label_)
+           , lastname("NONE")
+           , fakethis(params.fakethis_)
+           , map_ (params.map_)   
+           , mapM_(params.mapM_)
+           , mapI_(params.mapI_)
+           , map1_(params.map1_)
+           , map2_(params.map2_)
+           , it ()
+           , itM()
+           , itI()
+           , it1()
+           , it2()
+           , it_safe (false)
+           , itM_safe(false)
+           , itI_safe(false)
+           , it1_safe(false)
+           , it2_safe(false) 
+           , whichiter(-1)
+           , index1(-1)
+           , index2(-1)
+           , error_code(-1) 
+         {}
+
+         /// @{ Error reporting
+         int          get_error_code(){ return error_code; }
+         std::string  get_error_message()
+         {
+            std::string msg;
+            switch(error_code)
+            {
+                case -1: msg = "Search not yet attempted"; break; 
+                case 0:  msg = "No problem, search succeeded"; break;
+                case 1:  msg = "String name lookup failed"; break;
+                case 2:  msg = "String name lookup succeeded, index1 out of bounds"; break;
+                case 3:  msg = "String name lookup succeeded, index2 out of bounds"; break;
+                default: msg = "Unrecognised error code! This is a bug in FptrFinder!";
+           }
+           return msg;
          }
-      }
-      return result;
-   }
-   
-   
-   /// Getter/runner for functions taking one index
-   // template parameters:
-   // DT - DerivedSpecTraits; carries typedef fro Model and Input
-   // O  - The host class which uses this function, i.e. Phys or RunningPars
-   template<class DT, class O>
-   double getter_1index(/* function maps */
-                        const typename MapTypes<DT>::fmap1& map, 
-                        /* function call data (and error message data) */
-                        const std::string& name, const int i, const std::string& maplabel, 
-                        /* host object pointer and pointer to alternate getter */
-                        const O* fakethis, double(O::*fptr)(const std::string&, bool) const, 
-                        bool doublecheck)
-   {
-      typename MapTypes<DT>::fmap1::const_iterator it = map.find(name); ///  Find desired Model object function
-      double result = -1;
-      if( it==map.end() )
-      {
-         if( doublecheck ) {
-            // No short name exists for short name plus index pair.
-            // Check if long name exists in 0index getter maps
-            // (fptr should point to the appropriate 0 index, class member of O, getter)           
-            std::cout << "running doublecheck: re-calling function with PDG long name: "<<name<<", "<<i<<" --> "<<PDB.long_name(name,i)<<std::endl;
-            result = (fakethis->*fptr)(PDB.long_name(name,i), false);
-         } else {
-            std::ostringstream errmsg;
-            errmsg << "Error retrieving particle spectrum data!" << std::endl;
-            errmsg << "No "<<maplabel<<" with string reference '"<<name<<"' exists!" <<std::endl;
-            utils_error().forced_throw(LOCAL_INFO,errmsg.str());  
+         // Raise error if the calling context can't handle a failed search
+         void raise_error()
+         {
+           std::ostringstream errmsg;
+           errmsg << "Error retrieving particle spectrum data!" << std::endl;
+           errmsg << "No "<<label<<" with string reference '"<<lastname<<"' exists!" <<std::endl;
+           errmsg << "Search failed with error_code "<<error_code<<" from FptrFinder with label "<<label<<": "<<get_error_message();
+           utils_error().forced_throw(LOCAL_INFO,errmsg.str());  
          }
-      }
-      else
-      {
-          /// Switch index convention
-          int offset = fakethis->parent.get_index_offset();
-          int io = i + offset;
-          /// Check that index is in the permitted set
-          if( not within_bounds(io, it->second.iset1) )
-          {
-             std::ostringstream errmsg;
-             errmsg << "Error retrieving particle spectrum data!" << std::endl;
-             errmsg << "Index "<<i<<" out of bounds for "<<maplabel<<" with string reference '"<<name<<"'!" <<std::endl;
-             utils_error().forced_throw(LOCAL_INFO,errmsg.str());  
-          }
-   
-          ///  Get function out of map and call it on the bound flexiSUSY object
-          typename MapTypes<DT>::FSptr1 f = it->second.fptr;
-          typename DT::Model* model = fakethis->parent.model;
-          result = (model->*f)(io);
-      }
-      return result;
-   }
-   
-   /// Getter/runner for functions taking two indices
-   // template parameters:
-   // DT - DerivedSpecTraits; carries typedef fro Model and Input
-   // O  - The host class which uses this function, i.e. Phys or RunningPars
-   template<class DT, class O>
-   double getter_2indices(/* function maps */
-                          const typename MapTypes<DT>::fmap2& map, 
-                          /* function call data (and error message data) */
-                          const std::string& name, const int i, const int j, const std::string& maplabel, 
-                          /* host object pointer */
-                          const O* fakethis)
-   {
-      typename MapTypes<DT>::fmap2::const_iterator it = map.find(name); ///  Find desired FlexiSUSY function
-      double result = -1;
-      if( it==map.end() )
-      {
-         std::ostringstream errmsg;
-         errmsg << "Error retrieving particle spectrum data!" << std::endl;
-         errmsg << "No "<<maplabel<<" with string reference '"<<name<<"' exists!" <<std::endl;
-         utils_error().forced_throw(LOCAL_INFO,errmsg.str());  
-      }
-      else
-      {
-          /// Switch index convention
-          int offset = fakethis->parent.get_index_offset();
-          int io = i + offset;
-          int jo = j + offset;
-          /// Check that index is in the permitted set
-          if( not within_bounds(io, it->second.iset1) )
-          {
-             std::ostringstream errmsg;
-             errmsg << "Error retrieving particle spectrum data!" << std::endl;
-             errmsg << "First index ("<<i<<") out of bounds for "<<maplabel<<" with string reference '"<<name<<"'!" <<std::endl;
-             utils_error().forced_throw(LOCAL_INFO,errmsg.str());  
-          }
-          /// Check that index is in the permitted set
-          if( not within_bounds(jo, it->second.iset2) )
-          {
-             std::ostringstream errmsg;
-             errmsg << "Error retrieving particle spectrum data!" << std::endl;
-             errmsg << "Second index ("<<j<<") out of bounds for "<<maplabel<<" with string reference '"<<name<<"'!" <<std::endl;
-             utils_error().forced_throw(LOCAL_INFO,errmsg.str());  
-          }
-   
-          ///  Get function out of map and call it on the bound flexiSUSY object
-          typename MapTypes<DT>::FSptr2 f = it->second.fptr;
-          typename DT::Model* model = fakethis->parent.model;
-          result = (model->*f)(io,jo);
-      }
-      return result;
-   }
-   
-   
-   
-   /// mass4
-   template<class D, class DT>
-   double RunparDer<D,DT>::get_mass4_parameter(const str& mass, bool doublecheck) const
-   {
-      fp1 f1 = &RunparDer<D,DT>::get_mass4_parameter; // needed for overload resolution
-      return getter_0indices<DT>( get_mass4_map(), 
-                                  get_mass4_map_extraM(), 
-                                  get_mass4_map_extraI(), 
-                                  mass, "mass4",
-                                  this, f1, doublecheck);
-   }
-   
-   template <class D, class DT>
-   double RunparDer<D,DT>::get_mass4_parameter(const str& mass, int i, bool doublecheck) const
-   {
-      fp0 f0 = &RunparDer<D,DT>::get_mass4_parameter;
-      return getter_1index<DT>( get_mass4_map1(), 
-                                mass, i, "mass4",
-                                this, f0, doublecheck);
-   }
-   
-   template <class D, class DT>
-   double  RunparDer<D,DT>::get_mass4_parameter(const str& mass, int i, int j) const
-   {
-      return getter_2indices<DT>(get_mass4_map2(), 
-                                 mass, i, j, "mass4", 
-                                 this);
-   }
-   
-   /// mass^3
-   template <class D, class DT>
-   double RunparDer<D,DT>::get_mass3_parameter(const str& mass, bool doublecheck) const
-   {
-      fp1 f1 = &RunparDer<D,DT>::get_mass3_parameter;
-      return getter_0indices<DT>(get_mass3_map(), 
-                                 get_mass3_map_extraM(), 
-                                 get_mass3_map_extraI(), 
-                                 mass, "mass3", 
-                                 this, f1, doublecheck);
-   }
-   
-   template <class D, class DT>
-   double RunparDer<D,DT>::get_mass3_parameter(const str& mass, int i, bool doublecheck) const
-   {
-      fp0 f0 = &RunparDer<D,DT>::get_mass3_parameter;
-      return getter_1index<DT>(get_mass3_map1(), 
-                               mass, i, "mass3", 
-                               this, f0, doublecheck);
-   }
-   
-   template <class D, class DT>
-   double  RunparDer<D,DT>::get_mass3_parameter(const std::string& mass, int i, int j) const
-   {
-      return getter_2indices<DT>(get_mass3_map2(), 
-                                 mass, i, j, "mass3",
-                                 this);
-   }
-   
-   /// mass^2
-   template <class D, class DT>
-   double  RunparDer<D,DT>::get_mass2_parameter(const std::string& mass, bool doublecheck) const
-   {
-      fp1 f1 = &RunparDer<D,DT>::get_mass2_parameter;
-      return getter_0indices<DT>(get_mass2_map(), 
-                                 get_mass2_map_extraM(), 
-                                 get_mass2_map_extraI(), 
-                                 mass, "mass2", 
-                                 this, f1, doublecheck);
-   }
-   
-   template <class D, class DT>
-   double  RunparDer<D,DT>::get_mass2_parameter(const std::string& mass, int i, bool doublecheck) const
-   {
-      fp0 f0 = &RunparDer<D,DT>::get_mass2_parameter;
-      return getter_1index<DT>(get_mass2_map1(), 
-                               mass, i, "mass2", 
-                               this, f0, doublecheck);
-   }
-   
-   template <class D, class DT>
-   double  RunparDer<D,DT>::get_mass2_parameter(const std::string& mass, int i, int j) const
-   {
-      return getter_2indices<DT>(get_mass2_map2(),
-                                 mass, i, j, "mass2",
-                                 this);
-   }
-   
-   /// mass^1
-   template <class D, class DT>
-   double  RunparDer<D,DT>::get_mass_parameter(const std::string& mass, bool doublecheck) const
-   {
-      fp1 f1 = &RunparDer<D,DT>::get_mass_parameter;
-      return getter_0indices<DT>(get_mass_map(), 
-                                 get_mass_map_extraM(), 
-                                 get_mass_map_extraI(), 
-                                 mass, "mass", 
-                                 this, f1, doublecheck);
-   }
-   
-   template <class D, class DT>
-   double  RunparDer<D,DT>::get_mass_parameter(const std::string& mass, int i, bool doublecheck) const
-   {
-      fp0 f0 = &RunparDer<D,DT>::get_mass_parameter;
-      return getter_1index<DT>(get_mass_map1(), 
-                               mass, i, "mass",
-                               this, f0, doublecheck);            
-   }
-   
-   template <class D, class DT>
-   double  RunparDer<D,DT>::get_mass_parameter(const std::string& mass, int i, int j) const
-   {
-      return getter_2indices<DT>(get_mass_map2(), 
-                                 mass, i, j, "mass", 
-                                 this);
-   }
-   
-   /// mass^0
-   template <class D, class DT>
-   double  RunparDer<D,DT>::get_dimensionless_parameter(const std::string& par, bool doublecheck) const
-   {
-      fp1 f1 = &RunparDer<D,DT>::get_dimensionless_parameter;
-      return getter_0indices<DT>(get_mass0_map(), 
-                                 get_mass0_map_extraM(), 
-                                 get_mass0_map_extraI(), 
-                                 par, "dimensionless parameter", 
-                                 this, f1, doublecheck);
-   }
-   
-   template <class D, class DT>
-   double  RunparDer<D,DT>::get_dimensionless_parameter(const std::string& par, int i, bool doublecheck) const
-   {
-      fp0 f0 = &RunparDer<D,DT>::get_dimensionless_parameter;
-      return getter_1index<DT>(get_mass0_map1(), 
-                               par, i, "dimensionless parameter",
-                               this, f0, doublecheck);
-   }
-   
-   template <class D, class DT>
-   double  RunparDer<D,DT>::get_dimensionless_parameter(const std::string& par, int i, int j) const
-   {
-      return getter_2indices<DT>(get_mass0_map2(), 
-                                 par, i, j, "dimensionless parameter",
-                                 this);
-   }
-   
-   /// mass_eigenstate
-   template <class D, class DT>
-   double  RunparDer<D,DT>::get_mass_eigenstate(const std::string& mass, bool doublecheck) const
-   {
-      fp1 f1 = &RunparDer<D,DT>::get_mass_eigenstate;
-      return getter_0indices<DT>(get_mass_eigenstate_map(), 
-                                 get_mass_eigenstate_map_extraM(), 
-                                 get_mass_eigenstate_map_extraI(), 
-                                 mass, "mass_eigenstate",
-                                 this, f1, doublecheck);
-   }
-   
-   template <class D, class DT>
-   double  RunparDer<D,DT>::get_mass_eigenstate(const std::string& mass, int i, bool doublecheck) const
-   {
-      fp0 f0 = &RunparDer<D,DT>::get_mass_eigenstate;
-      return getter_1index<DT>(get_mass_eigenstate_map1(), 
-                               mass, i, "mass eigenstate",
-                               this, f0, doublecheck);
-   }
-   
-   template <class D, class DT>
-   double  RunparDer<D,DT>::get_mass_eigenstate(const std::string& mass, int i, int j) const
-   {
-      return getter_2indices<DT>(get_mass_eigenstate_map2(), 
-                                 mass, i, j, "mass_eigenstate", 
-                                 this);
-   }
-   
-   /// Pole masses
-   template <class D, class DT>
-   double PhysDer<D,DT>::get_Pole_Mass(const std::string& mass, bool doublecheck) const
-   {
-      fp1 f1 = &PhysDer<D,DT>::get_Pole_Mass;
-      return getter_0indices<DT>(get_PoleMass_map(), 
-                                 get_PoleMass_map_extraM(), 
-                                 get_PoleMass_map_extraI(), 
-                                 mass, "pole mass",
-                                 this, f1, doublecheck);
-   }
-   
-   template <class D, class DT>
-   double PhysDer<D,DT>::get_Pole_Mass(const std::string& mass, int i, bool doublecheck) const
-   {
-      fp0 f0 = &PhysDer<D,DT>::get_Pole_Mass;
-      return getter_1index<DT>(get_PoleMass_map1(), 
-                               mass, i, "pole mass",
-                               this, f0, doublecheck);
-   }
-   
-   /// Pole mixings
-   template <class D, class DT>
-   double PhysDer<D,DT>::get_Pole_Mixing(const std::string& mixing, bool doublecheck) const
-   {
-      fp1 f1 = &PhysDer<D,DT>::get_Pole_Mixing;
-      return getter_0indices<DT>(get_PoleMixing_map(), 
-                                 get_PoleMixing_map_extraM(), 
-                                 get_PoleMixing_map_extraI(), 
-                                 mixing, "pole mixing",
-                                 this, f1, doublecheck);
-   }
-   
-   template <class D, class DT>
-   double PhysDer<D,DT>::get_Pole_Mixing(const std::string& mixing, int i, bool doublecheck) const
-   {
-      fp0 f0 = &PhysDer<D,DT>::get_Pole_Mixing;
-      return getter_1index<DT>(get_PoleMixing_map1(), 
-                               mixing, i, "pole mixing",
-                               this, f0, doublecheck);
-   }
-   
-   template <class D, class DT>
-   double PhysDer<D,DT>::get_Pole_Mixing(const std::string& mixing, int i, int j) const
-   {
-      return getter_2indices<DT>(get_PoleMixing_map2(), 
-                                 mixing, i, j, "pole mixing",
-                                 this);
-   }
-   
+         /// @}
+ 
+         /// helper functions for searching individual maps
+         template<class Map>
+         bool search_map(const std::string& name, const Map* const map, typename Map::const_iterator& it)
+         {
+           bool found = true; 
+           if(map==NULL)
+           {
+              std::ostringstream errmsg;
+              errmsg << "Tried to use FptrFinder to search a SubSpectrum function pointer map, but did not correctly supply the map to FptrFinder! This is a bug in the SubSpectrum class; please report it. (Attempted to access map of type "<<typeid(Map).name()<<")";
+              utils_error().forced_throw(LOCAL_INFO,errmsg.str());  
+           }
+           it = map->find(name);
+           if( it == map->end() ){ found = false; }
+           return found; 
+         }
+
+         /// Check if it is (supposed to be) safe to dereference a map iterator
+         /// Throw an error if it isn't
+         void check(bool safe)
+         {
+           if(not safe)
+           {
+              std::ostringstream errmsg;
+              errmsg << "Safety check for map iterator failed! (in FptrFinder). This indicates a bug in the FptrFinder class; please report it.";
+              utils_error().forced_throw(LOCAL_INFO,errmsg.str());  
+           }
+         } 
+
+         /// Methods for setting parameters (named parameter idiom)
+         /// E.g. call constructor like this to use named "parameters"
+         /// FptrFinder().map(x).map2(z).mapM(y)
+         /// Could protect parameters from being reset by putting these setters in a friend class,
+         /// which can only set the FptrFinder parameters via the FptrFinder constructor, but this
+         /// is good enough for the use here I think.
+      
+         /// Search function for 0-index maps
+         bool find(const std::string& name, bool doublecheck=true)
+         {
+            bool found = true;   
+            error_code = 0;
+            //  Search maps for function; if found then store it
+            if     ( search_map(name,map_,it)   ){ it_safe=true; whichiter=1; }
+            else if( search_map(name,mapM_,itM) ){ itM_safe=true; whichiter=2; }
+            else if( search_map(name,mapI_,itI) ){ itI_safe=true; whichiter=3; }
+            else if( doublecheck and PDB.has_short_name(name) )
+            {
+               // Didn't find it in 0-index maps; translate using PDB entry and try 1-index maps
+               std::pair<str, int> p = PDB.short_name_pair(name);
+               //std::cout << "running doublecheck: re-calling function with PDG short name pair: "<<name<<" --> "<<p.first<<", "<<p.second<<std::endl;
+               found = find(p.first, p.second, false);
+            }
+            else { 
+              found = false;
+              lastname = name;
+              error_code = 1; 
+            }
+            return found;
+         }
+
+         /// Search function for 1-index maps
+         bool find(const std::string& name, int i, bool doublecheck=true)
+         {
+            bool found = true;
+            error_code = 0;
+            //  Search maps for function; if found then store it
+            if( search_map(name,map1_,it1) )
+            {
+               it1_safe=true; 
+               /// Switch index convention
+               int offset = fakethis->parent.get_index_offset();
+               index1 = i + offset; // set for later use
+               /// Check that index is in the permitted set
+               if( not within_bounds(index1, it1->second.iset1) )
+               {
+                  // index1 out of bounds
+                  found = false;
+                  lastname = name;
+                  error_code = 2;
+               }
+               else {
+                  // everything cool. 
+                  whichiter=4;
+               } 
+            }
+            else if( doublecheck and PDB.has_particle(std::make_pair(name,i)) )
+            {
+               // Didn't find it in 1-index maps; translate using PDB entry and try 0-index maps
+               //std::cout << "running doublecheck: re-calling function with PDG long name: "<<name<<", "<<i<<" --> "<<PDB.long_name(name,i)<<std::endl;
+               found = find(PDB.long_name(name,i), false);
+            }
+            else { 
+              found = false;
+              lastname = name;
+              error_code = 1;
+            }
+            return found;
+         }
+
+         /// Search function for 2-index maps
+         bool find(const std::string& name, int i, int j)
+         {
+            bool found = true;   
+            error_code = 0;
+            //  Search maps for function; if found then store it
+            if( search_map(name,map2_,it2) )
+            {
+               it2_safe=true; 
+               /// Switch index convention
+               int offset = fakethis->parent.get_index_offset();
+               index1 = i + offset; // set for later use
+               index2 = j + offset; // set for later use
+               /// Check that index is in the permitted set
+               if( not within_bounds(index1, it2->second.iset1) )
+               {
+                  // index1 out of bounds
+                  found = false;
+                  lastname = name;
+                  error_code = 2;
+               }
+               else if( not within_bounds(index2, it2->second.iset2) )
+               {
+                  // index2 out of bounds
+                  found = false;
+                  lastname = name;
+                  error_code = 3;
+               }
+               else {
+                  // everything cool. 
+                  whichiter=5;
+               } 
+            }
+            else { 
+              found = false;
+              lastname = name;
+              error_code = 1;
+            }
+            return found;
+         }
+
+         /// Call whatever function was found
+         double callfcn()
+         {
+            double result(-1); // should not be returned in this state
+            if(error_code==0)
+            {
+               typename DT::Model* model = fakethis->parent.get_Model();
+               typename DT::Input* input = fakethis->parent.get_Input();
+               switch( whichiter )
+               {
+                  case 1: {
+                    check(it_safe);
+                    typename MapTypes<DT>::FSptr f = it->second;
+                    result = (model->*f)();
+                    break;}
+                  case 2: {
+                    check(itM_safe);
+                    typename MapTypes<DT>::plainfptrM f = itM->second;
+                    result = (*f)(*model);
+                    break;}
+                  case 3: {
+                    check(itI_safe);
+                    typename MapTypes<DT>::plainfptrI f = itI->second;
+                    result = (*f)(*input);
+                    break;}
+                  case 4: {
+                    check(it1_safe);
+                    typename MapTypes<DT>::FSptr1 f = it1->second.fptr;
+                    result = (model->*f)(index1);
+                    break;}
+                  case 5: {
+                    check(it2_safe);
+                    typename MapTypes<DT>::FSptr2 f = it2->second.fptr;
+                    result = (model->*f)(index1,index2);
+                    break;}
+                  default:{
+                    std::ostringstream errmsg;
+                    errmsg << "Error! Unanticipated whichiter code received while trying to call a function from SubSpectrum maps. This indicates a bug in the FptrFinder class. Please report it! (this FptrFinder has label="<<label<<", current error_code="<<error_code<<", whichiter="<<whichiter<<")"<<std::endl;
+                    utils_error().forced_throw(LOCAL_INFO,errmsg.str());  
+                    }
+               }
+            } else if(error_code==-1) 
+            {
+              std::ostringstream errmsg;
+              errmsg << "Error! Tried to call function from SubSpectrum maps without first finding the function! This indicates a bug, probably in the Spectrum or SubSpectrum classes. Please report it! (this FptrFinder has label="<<label<<", current error_code="<<error_code<<")"<<std::endl;
+              utils_error().forced_throw(LOCAL_INFO,errmsg.str());  
+            } else {
+              std::ostringstream errmsg;
+              errmsg << "Error! Unanticipated error code received while trying to call a function from SubSpectrum maps. This indicates a bug in the FptrFinder class. Please report it! (this FptrFinder has label="<<label<<", current error_code="<<error_code<<")"<<std::endl;
+              utils_error().forced_throw(LOCAL_INFO,errmsg.str());  
+            }
+            return result;
+         }
+
+    }; // end class FptrFinder
+
+ 
+   /// @{ Getter and checker function definitions
+ 
+   /// @{ Macros to define parameter checker and getter functions
+   // No indices
+   #define DEFINE_GETTERS(CLASS,FLABEL,MLABEL)                                   \
+      template<class D, class DT>                                                \
+      bool CLASS<D,DT>::CAT(has_,FLABEL)(const str& name) const       \
+      {                                                                          \
+         /* Create finder object, tell it what maps to search, and do the search */\
+         FptrFinder<DT,CLASS> finder = SetMaps<DT,CLASS>(STRINGIFY(FLABEL),this) \
+                                 .map(  CAT_3(get_,MLABEL,_map)() )               \
+                                 .mapM( CAT_3(get_,MLABEL,_map_extraM)() )        \
+                                 .mapI( CAT_3(get_,MLABEL,_map_extraI)() )        \
+                                 .map1( CAT_3(get_,MLABEL,_map1)() );             \
+         return finder.find(name);                                               \
+      }                                                                          \
+                                                                                 \
+      template<class D, class DT>                                                \
+      double CLASS<D,DT>::CAT(get_,FLABEL)(const str& name) const     \
+      {                                                                          \
+         double result;                                                          \
+         /* Create finder object, tell it what maps to search, and do the search */\
+         FptrFinder<DT,CLASS> finder = SetMaps<DT,CLASS>(STRINGIFY(FLABEL),this) \
+                                 .map(  CAT_3(get_,MLABEL,_map)() )               \
+                                 .mapM( CAT_3(get_,MLABEL,_map_extraM)() )        \
+                                 .mapI( CAT_3(get_,MLABEL,_map_extraI)() )        \
+                                 .map1( CAT_3(get_,MLABEL,_map1)() );             \
+         if( finder.find(name) ){ result = finder.callfcn(); }                   \
+         else { finder.raise_error(); }                                           \
+         return result;                                                          \
+      }                                                                              
+
+   #define DEFINE_GETTERS1(CLASS,FLABEL,MLABEL)                                  \
+      template<class D, class DT>                                                \
+      bool CLASS<D,DT>::CAT(has_,FLABEL)(const str& name, int i) const\
+      {                                                                          \
+         /* Create finder object, tell it what maps to search, and do the search */\
+         FptrFinder<DT,CLASS> finder = SetMaps<DT,CLASS>(STRINGIFY(FLABEL),this)  \
+                                 .map(  CAT_3(get_,MLABEL,_map)() )               \
+                                 .mapM( CAT_3(get_,MLABEL,_map_extraM)() )        \
+                                 .mapI( CAT_3(get_,MLABEL,_map_extraI)() )        \
+                                 .map1( CAT_3(get_,MLABEL,_map1)() );             \
+         return finder.find(name,i);                                             \
+      }                                                                          \
+                                                                                 \
+      template<class D, class DT>                                                \
+      double CLASS<D,DT>::CAT(get_,FLABEL)(const str& name, int i) const\
+      {                                                                          \
+         double result;                                                          \
+         /* Create finder object, tell it what maps to search, and do the search */\
+         FptrFinder<DT,CLASS> finder = SetMaps<DT,CLASS>(STRINGIFY(FLABEL),this) \
+                                 .map(  CAT_3(get_,MLABEL,_map)() )               \
+                                 .mapM( CAT_3(get_,MLABEL,_map_extraM)() )        \
+                                 .mapI( CAT_3(get_,MLABEL,_map_extraI)() )        \
+                                 .map1( CAT_3(get_,MLABEL,_map1)() );             \
+         if( finder.find(name,i) ){ result = finder.callfcn(); }                 \
+         else { finder.raise_error(); }                                           \
+         return result;                                                          \
+      }                                                                              
+
+   #define DEFINE_GETTERS2(CLASS,FLABEL,MLABEL)                                  \
+      template<class D, class DT>                                                \
+      bool CLASS<D,DT>::CAT(has_,FLABEL)(const str& name, int i, int j) const\
+      {                                                                          \
+         /* Create finder object, tell it what maps to search, and do the search */\
+         FptrFinder<DT,CLASS> finder = SetMaps<DT,CLASS>(STRINGIFY(FLABEL),this) \
+                                 .map2( CAT_3(get_,MLABEL,_map2)() );             \
+         return finder.find(name,i,j);                                           \
+      }                                                                          \
+                                                                                 \
+      template<class D, class DT>                                                \
+      double CLASS<D,DT>::CAT(get_,FLABEL)(const str& name, int i, int j) const\
+      {                                                                          \
+         double result;                                                          \
+         /* Create finder object, tell it what maps to search, and do the search */\
+         FptrFinder<DT,CLASS> finder = SetMaps<DT,CLASS>(STRINGIFY(FLABEL),this)  \
+                                 .map2( CAT_3(get_,MLABEL,_map2)() );             \
+         if( finder.find(name,i,j) ){ result = finder.callfcn(); }               \
+         else { finder.raise_error(); }                                           \
+         return result;                                                          \
+      }                                                                              
+
+      /// @}
+
+      // mass^4
+      DEFINE_GETTERS(RunparDer,mass4_parameter,mass4) 
+      DEFINE_GETTERS1(RunparDer,mass4_parameter,mass4) 
+      DEFINE_GETTERS2(RunparDer,mass4_parameter,mass4) 
+      // mass^3
+      DEFINE_GETTERS(RunparDer,mass3_parameter,mass3) 
+      DEFINE_GETTERS1(RunparDer,mass3_parameter,mass3) 
+      DEFINE_GETTERS2(RunparDer,mass3_parameter,mass3) 
+      // mass^2
+      DEFINE_GETTERS(RunparDer,mass2_parameter,mass2) 
+      DEFINE_GETTERS1(RunparDer,mass2_parameter,mass2) 
+      DEFINE_GETTERS2(RunparDer,mass2_parameter,mass2) 
+      // mass^1
+      DEFINE_GETTERS(RunparDer,mass_parameter,mass) 
+      DEFINE_GETTERS1(RunparDer,mass_parameter,mass) 
+      DEFINE_GETTERS2(RunparDer,mass_parameter,mass) 
+      // mass0
+      DEFINE_GETTERS(RunparDer,dimensionless_parameter,mass0) 
+      DEFINE_GETTERS1(RunparDer,dimensionless_parameter,mass0) 
+      DEFINE_GETTERS2(RunparDer,dimensionless_parameter,mass0) 
+      // mass eigenstate
+      DEFINE_GETTERS(RunparDer,mass_eigenstate,mass_eigenstate) 
+      DEFINE_GETTERS1(RunparDer,mass_eigenstate,mass_eigenstate) 
+      DEFINE_GETTERS2(RunparDer,mass_eigenstate,mass_eigenstate) 
+      // Pole masses
+      DEFINE_GETTERS(PhysDer,Pole_Mass,PoleMass) 
+      DEFINE_GETTERS1(PhysDer,Pole_Mass,PoleMass) 
+      /* no two-index pole mass getters */
+      // Pole mixings
+      DEFINE_GETTERS(PhysDer,Pole_Mixing,PoleMixing) 
+      DEFINE_GETTERS1(PhysDer,Pole_Mixing,PoleMixing) 
+      DEFINE_GETTERS2(PhysDer,Pole_Mixing,PoleMixing) 
+
    /// @}
 
 } // end namespace Gambit
 
+// Undef the various helper macros to avoid contaminating other files
 #undef PDB // Just for safety; this macro is short so could accidentally mess some stuff up
+#undef DECLARE_MAP
+#undef DECLARE_MAP_COLLECTION
+#undef DECLARE_MAP_COLLECTION2
+#undef FILL_MAP
+#undef FILL_MAP_COLLECTION
+#undef FILL_MAP_COLLECTION2
+#undef DECLARE_MAP_FILLER
+#undef DECLARE_MAP_FILLER_COLLECTION
+#undef DECLARE_MAP_FILLER_COLLECTION2
+#undef FBODY0
+#undef FBODY1
+#undef FBODY2
+#undef DEFINE_GETTERS                   
+#undef DEFINE_GETTERS1                  
+#undef DEFINE_GETTERS2     
+
 #endif

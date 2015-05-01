@@ -136,7 +136,7 @@ namespace Gambit
          // the particle database information. It is only the MASS block in the 
          // spectrum generator output SLHA files which use PDG numbers anyway, so I
          // think this makes sense.
-         cout<<"Lighest neutral Higgs boson pole mass:"<<endl;
+         cout<<"Lightest neutral Higgs boson pole mass:"<<endl;
          ECHO(  fullspectrum->get_Pole_Mass( PDB.short_name_pair(25,0) )   )
          ECHO(  fullspectrum->get_Pole_Mass( PDB.long_name(25,0) )         )
          ECHO(  fullspectrum->get_Pole_Mass(25,0)                          )
