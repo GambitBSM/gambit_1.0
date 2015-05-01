@@ -72,7 +72,7 @@ START_MODULE
     // (probably always true)
     #define FUNCTION DarkSUSY_PointInit_MSSM
       START_FUNCTION(bool)
-      DEPENDENCY(MSSM_spectrum, eaSLHA) 
+      DEPENDENCY(MSSM_spectrum, const Spectrum*) 
       ALLOW_MODELS(CMSSM,MSSM25atQ)
       // CMSSM
       BACKEND_REQ(dsgive_model_isasugra, (), void, (double&,double&,double&,double&,double&))

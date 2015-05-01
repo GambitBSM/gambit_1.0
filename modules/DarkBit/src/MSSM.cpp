@@ -130,7 +130,9 @@ namespace Gambit {
       else if (ModelInUse("MSSM25atQ"))
       {
         // Save eaSLHA file to disk
-        eaSLHA mySLHA = *Dep::MSSM_spectrum;
+        //eaSLHA mySLHA = *Dep::MSSM_spectrum;
+        const Spectrum* mySpec = *Dep::MSSM_spectrum;
+        eaSLHA mySLHA = mySpec->getSLHAea();
         std::ofstream ofs("DarkBit_temp.slha");
         ofs << mySLHA;
         ofs.close();
