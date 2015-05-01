@@ -144,6 +144,8 @@ namespace Gambit
          ECHO(  fullspectrum->get_Pole_Mass("h0",1)                        )
          ECHO(  fullspectrum->get_Pole_Mass("h0_1")                        )
 
+         spec->phys.get_Pole_Mass("blah blah");        
+
          ECHO(  spec->phys.get_Pole_Mass( PDB.short_name_pair(25,0) )   )
          ECHO(  spec->phys.get_Pole_Mass( PDB.long_name(25,0) )         )
          ECHO(  spec->phys.get_Pole_Mass(25,0)                          )

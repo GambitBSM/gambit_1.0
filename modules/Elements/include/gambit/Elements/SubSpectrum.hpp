@@ -15,7 +15,7 @@
 ///
 ///  \author Ben Farmer
 ///          (benjamin.farmer@fysik.su.se)
-///  \date 2014, 2015 Jan, Feb, Mar 
+///  \date 2014, 2015 Jan - May 
 ///
 ///  *********************************************
 
@@ -35,9 +35,6 @@
 
 // Particle database access
 #define PDB Models::ParticleDB()        
-
-/// TODO: All the errors in this file should be made into proper Gambit warnings I think.
-///       They are a bit too "weak" at the moment; we really should stop everything when most of them occur.
 
 namespace Gambit {
 
@@ -895,13 +892,13 @@ namespace Gambit {
            return msg;
          }
          // Raise error if the calling context can't handle a failed search
-         void raise_error()
+         void raise_error(const std::string& origin)
          {
            std::ostringstream errmsg;
            errmsg << "Error retrieving particle spectrum data!" << std::endl;
            errmsg << "No "<<label<<" with string reference '"<<lastname<<"' exists!" <<std::endl;
            errmsg << "Search failed with error_code "<<error_code<<" from FptrFinder with label "<<label<<": "<<get_error_message();
-           utils_error().forced_throw(LOCAL_INFO,errmsg.str());  
+           utils_error().forced_throw(origin,errmsg.str());  
          }
          /// @}
  
@@ -1129,7 +1126,7 @@ namespace Gambit {
                                  .mapI( CAT_3(get_,MLABEL,_map_extraI)() )        \
                                  .map1( CAT_3(get_,MLABEL,_map1)() );             \
          if( finder.find(name) ){ result = finder.callfcn(); }                   \
-         else { finder.raise_error(); }                                           \
+         else { finder.raise_error(LOCAL_INFO); }                                \
          return result;                                                          \
       }                                                                              
 
@@ -1157,7 +1154,7 @@ namespace Gambit {
                                  .mapI( CAT_3(get_,MLABEL,_map_extraI)() )        \
                                  .map1( CAT_3(get_,MLABEL,_map1)() );             \
          if( finder.find(name,i) ){ result = finder.callfcn(); }                 \
-         else { finder.raise_error(); }                                           \
+         else { finder.raise_error(LOCAL_INFO); }                                \
          return result;                                                          \
       }                                                                              
 
@@ -1179,7 +1176,7 @@ namespace Gambit {
          FptrFinder<DT,CLASS> finder = SetMaps<DT,CLASS>(STRINGIFY(FLABEL),this)  \
                                  .map2( CAT_3(get_,MLABEL,_map2)() );             \
          if( finder.find(name,i,j) ){ result = finder.callfcn(); }               \
-         else { finder.raise_error(); }                                           \
+         else { finder.raise_error(LOCAL_INFO); }                                \
          return result;                                                          \
       }                                                                              
 
@@ -1223,7 +1220,7 @@ namespace Gambit {
 } // end namespace Gambit
 
 // Undef the various helper macros to avoid contaminating other files
-#undef PDB // Just for safety; this macro is short so could accidentally mess some stuff up
+#undef PDB
 #undef DECLARE_MAP
 #undef DECLARE_MAP_COLLECTION
 #undef DECLARE_MAP_COLLECTION2
@@ -1233,9 +1230,6 @@ namespace Gambit {
 #undef DECLARE_MAP_FILLER
 #undef DECLARE_MAP_FILLER_COLLECTION
 #undef DECLARE_MAP_FILLER_COLLECTION2
-#undef FBODY0
-#undef FBODY1
-#undef FBODY2
 #undef DEFINE_GETTERS                   
 #undef DEFINE_GETTERS1                  
 #undef DEFINE_GETTERS2     
