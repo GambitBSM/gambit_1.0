@@ -65,6 +65,12 @@ START_MODULE
     ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
     #undef FUNCTION
 
+    #define FUNCTION FH_MSSM_h0_1_decays
+    START_FUNCTION(DecayTable::Entry)
+    DEPENDENCY(FH_Couplings, fh_Couplings)
+    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
+    #undef FUNCTION
+
   #undef CAPABILITY
   
   #define CAPABILITY h0_2_decay_rates
@@ -76,6 +82,12 @@ START_MODULE
     BACKEND_REQ(cb_wisusy_hdec, (sh_reqd), wisusy_hdec_type)
     BACKEND_REQ(cb_wisfer_hdec, (sh_reqd), wisfer_hdec_type)
     BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
+    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
+    #undef FUNCTION
+
+    #define FUNCTION FH_h0_2_decays
+    START_FUNCTION(DecayTable::Entry)
+    DEPENDENCY(FH_Couplings, fh_Couplings)
     ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
     #undef FUNCTION
 
@@ -91,6 +103,12 @@ START_MODULE
     BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
     ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
     #undef FUNCTION
+
+    #define FUNCTION FH_A0_decays
+    START_FUNCTION(DecayTable::Entry)
+    DEPENDENCY(FH_Couplings, fh_Couplings)
+    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
+    #undef FUNCTION
  
   #undef CAPABILITY
 
@@ -103,6 +121,12 @@ START_MODULE
     BACKEND_REQ(cb_wisusy_hdec, (sh_reqd), wisusy_hdec_type)
     BACKEND_REQ(cb_wisfer_hdec, (sh_reqd), wisfer_hdec_type)
     BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
+    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
+    #undef FUNCTION
+
+    #define FUNCTION FH_Hplus_decays
+    START_FUNCTION(DecayTable::Entry)
+    DEPENDENCY(FH_Couplings, fh_Couplings)
     ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
     #undef FUNCTION
 
