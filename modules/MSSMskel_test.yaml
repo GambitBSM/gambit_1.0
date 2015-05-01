@@ -40,6 +40,7 @@ Rules:
       filenames:
         - "SpecBit/initial_CMSSM_spectrum.slha"
         - "SpecBit/initial_spectrum.slha"
+        - "../extras/test_slha/14-12-2014_joakim/FMCp03000765.slha"
       cycles: -1
 
   - capability: SM_spectrum
