@@ -67,47 +67,47 @@ START_MODULE
 
   #undef CAPABILITY
   
-//  #define CAPABILITY h0_2_decay_rates
-//  START_CAPABILITY
-//
-//    #define FUNCTION h0_2_decays
-//    START_FUNCTION(DecayTable::Entry)
-//    BACKEND_REQ(cb_widthhh_hdec, (sh_reqd), widthhh_hdec_type)
-//    BACKEND_REQ(cb_wisusy_hdec, (sh_reqd), wisusy_hdec_type)
-//    BACKEND_REQ(cb_wisfer_hdec, (sh_reqd), wisfer_hdec_type)
-//    BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
-//    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
-//    #undef FUNCTION
-//
-//  #undef CAPABILITY
-//
-//  #define CAPABILITY A0_decay_rates
-//  START_CAPABILITY
-//
-//    #define FUNCTION A0_decays
-//    START_FUNCTION(DecayTable::Entry)
-//    BACKEND_REQ(cb_widtha_hdec, (sh_reqd), widtha_hdec_type)
-//    BACKEND_REQ(cb_wisusy_hdec, (sh_reqd), wisusy_hdec_type)
-//    BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
-//    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
-//    #undef FUNCTION
-// 
-//  #undef CAPABILITY
-//
-//  #define CAPABILITY Hplus_decay_rates
-//  START_CAPABILITY
-//
-//    #define FUNCTION Hplus_decays
-//    START_FUNCTION(DecayTable::Entry)
-//    BACKEND_REQ(cb_widthhc_hdec, (sh_reqd), widthhc_hdec_type)
-//    BACKEND_REQ(cb_wisusy_hdec, (sh_reqd), wisusy_hdec_type)
-//    BACKEND_REQ(cb_wisfer_hdec, (sh_reqd), wisfer_hdec_type)
-//    BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
-//    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
-//    #undef FUNCTION
-//
-//  #undef CAPABILITY
-//
+  #define CAPABILITY h0_2_decay_rates
+  START_CAPABILITY
+  
+    #define FUNCTION h0_2_decays
+    START_FUNCTION(DecayTable::Entry)
+    BACKEND_REQ(cb_widthhh_hdec, (sh_reqd), widthhh_hdec_type)
+    BACKEND_REQ(cb_wisusy_hdec, (sh_reqd), wisusy_hdec_type)
+    BACKEND_REQ(cb_wisfer_hdec, (sh_reqd), wisfer_hdec_type)
+    BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
+    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
+    #undef FUNCTION
+  
+  #undef CAPABILITY
+  
+  #define CAPABILITY A0_decay_rates
+  START_CAPABILITY
+
+    #define FUNCTION A0_decays
+    START_FUNCTION(DecayTable::Entry)
+    BACKEND_REQ(cb_widtha_hdec, (sh_reqd), widtha_hdec_type)
+    BACKEND_REQ(cb_wisusy_hdec, (sh_reqd), wisusy_hdec_type)
+    BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
+    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
+    #undef FUNCTION
+ 
+  #undef CAPABILITY
+
+  #define CAPABILITY Hplus_decay_rates
+  START_CAPABILITY
+
+    #define FUNCTION Hplus_decays
+    START_FUNCTION(DecayTable::Entry)
+    BACKEND_REQ(cb_widthhc_hdec, (sh_reqd), widthhc_hdec_type)
+    BACKEND_REQ(cb_wisusy_hdec, (sh_reqd), wisusy_hdec_type)
+    BACKEND_REQ(cb_wisfer_hdec, (sh_reqd), wisfer_hdec_type)
+    BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
+    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
+    #undef FUNCTION
+
+  #undef CAPABILITY
+
 //  #define CAPABILITY gluino_decay_rates
 //  START_CAPABILITY
 //
@@ -520,9 +520,9 @@ START_MODULE
     DEPENDENCY(rho_plus_decay_rates, DecayTable::Entry)
     DEPENDENCY(omega_decay_rates, DecayTable::Entry)
     // The following are only relevant for the MSSM, and should eventually be made model-conditional dependencies
-    // DEPENDENCY(h0_2_decay_rates, DecayTable::Entry) 
-    // DEPENDENCY(A0_decay_rates, DecayTable::Entry) 
-    // DEPENDENCY(Hplus_decay_rates, DecayTable::Entry) 
+    DEPENDENCY(h0_2_decay_rates, DecayTable::Entry) 
+    DEPENDENCY(A0_decay_rates, DecayTable::Entry) 
+    DEPENDENCY(Hplus_decay_rates, DecayTable::Entry) 
     // DEPENDENCY(gluino_decay_rates, DecayTable::Entry) 
     // DEPENDENCY(stop_1_decay_rates, DecayTable::Entry) 
     // DEPENDENCY(stop_2_decay_rates, DecayTable::Entry) 

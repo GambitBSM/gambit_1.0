@@ -250,8 +250,55 @@ namespace Gambit
     }
 
 	/// MSSM sfermion states 
-	const char *isul = "~u_1";
-	const char *isulbar = "~ubar_1";
+	const char *isdl = "~d_1";
+    const char *isul = "~u_1";
+    const char *issl = "~d_2";
+    const char *iscl = "~u_2";
+    const char *isb1 = "~d_3";
+    const char *ist1 = "~u_3";
+    const char *isell = "~e-_1";
+    const char *inel = "~nu_1";
+    const char *ismul = "~e-_2";
+    const char *inmul = "~nu_2";
+    const char *istau1 = "~e-_3";
+    const char *intau1 = "~nu_3";
+    const char *isdr = "~d_4";
+    const char *isur = "~u_4";
+    const char *issr = "~d_5";
+    const char *iscr = "~u_5";
+    const char *isb2 = "~d_6";
+    const char *ist2 = "~u_6";
+    const char *iselr = "~e-_4";
+    const char *iner = "~nu_1"; // 2000012 until we don't have RHNs in particle_database
+    const char *ismur = "~e-_5";
+    const char *inmur = "~nu_2"; // 2000014
+    const char *istau2 = "~e-_6";
+    const char *intau2 = "~nu_3"; // 2000016
+
+    const char *isdlbar = "~dbar_1";
+    const char *isulbar = "~ubar_1";
+    const char *isslbar = "~dbar_2";
+    const char *isclbar = "~ubar_2";
+    const char *isb1bar = "~dbar_3";
+    const char *ist1bar = "~ubar_3";
+    const char *isellbar = "~e+_1";
+    const char *inelbar = "~nubar_1";
+    const char *ismulbar = "~e+_2";
+    const char *inmulbar = "~nubar_2";
+    const char *istau1bar = "~e+_3";
+    const char *intau1bar = "~nubar_3";
+    const char *isdrbar = "~dbar_4";
+    const char *isurbar = "~ubar_4";
+    const char *issrbar = "~dbar_5";
+    const char *iscrbar = "~ubar_5";
+    const char *isb2bar = "~dbar_6";
+    const char *ist2bar = "~ubar_6";
+    const char *iselrbar = "~e+_4";
+    const char *inerbar = "~nubar_1"; // -2000012 until we don't have RHNs in particle_database
+    const char *ismurbar = "~e+_5";
+    const char *inmurbar = "~nubar_2"; // -2000014
+    const char *istau2bar = "~e+_6";
+    const char *intau2bar = "~nubar_3"; // -2000016
 	
     /// MSSM decays: h0_1
     void MSSM_h0_1_decays (DecayTable::Entry& result) 
@@ -284,12 +331,176 @@ namespace Gambit
       result.set_BF(BEreq::cb_wisusy_hdec->hlbrsn(2,4)*2.0, 0.0, "~chi0_2", "~chi0_4");
       result.set_BF(BEreq::cb_wisusy_hdec->hlbrsn(3,4)*2.0, 0.0, "~chi0_3", "~chi0_4");
       result.set_BF(BEreq::cb_wisfer_hdec->bhlsqul/2.0, 0.0, isul, isulbar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhlsqur/2.0, 0.0, isur, isurbar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhlsqul/2.0, 0.0, iscl, isclbar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhlsqur/2.0, 0.0, iscr, iscrbar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhlst(1,1), 0.0, ist1, ist1bar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhlst(2,2), 0.0, ist2, ist2bar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhlst(1,2), 0.0, ist1, ist2bar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhlst(2,1), 0.0, ist2, ist1bar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhlsqdl/2.0, 0.0, isdl, isdlbar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhlsqdr/2.0, 0.0, isdr, isdrbar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhlsqdl/2.0, 0.0, issl, isslbar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhlsqdr/2.0, 0.0, issr, issrbar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhlsb(1,1), 0.0, isb1, isb1bar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhlsb(2,2), 0.0, isb2, isb2bar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhlsb(1,2), 0.0, isb1, isb2bar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhlsb(2,1), 0.0, isb2, isb1bar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhlslel/2.0, 0.0, isell, isellbar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhlsler/2.0, 0.0, iselr, iselrbar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhlslel/2.0, 0.0, ismul, ismulbar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhlsler/2.0, 0.0, ismur, ismurbar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhlstau(1,1), 0.0, istau1, istau1bar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhlstau(2,2), 0.0, istau2, istau2bar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhlstau(1,2), 0.0, istau1, istau2bar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhlstau(2,1), 0.0, istau2, istau1bar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhlslnl/3.0, 0.0, inel, inelbar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhlslnl/3.0, 0.0, inmul, inmulbar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhlslnl/3.0, 0.0, intau1, intau1bar);
       cout << "h0_1 total width: " << result.width_in_GeV << endl;
-      cout << "BR(h0_1 -> gamma gamma): " << BEreq::cb_widthhl_hdec->hlbrga << endl;
-      cout << "BR(h0_1 -> ~u_L ~u_L_bar): " << BEreq::cb_wisfer_hdec->bhlsqul/2.0 << endl;
-      cout << "BR(h0_1 -> ~tau-_L ~e+_5): " << BEreq::cb_wisfer_hdec->bhlstau(1,1) << endl;
+      // cout << "BR(h0_1 -> gamma gamma): " << BEreq::cb_widthhl_hdec->hlbrga << endl;
+      // cout << "BR(h0_1 -> ~u_L ~u_L_bar): " << BEreq::cb_wisfer_hdec->bhlsqul/2.0 << endl;
+      // cout << "BR(h0_1 -> ~tau-_L ~e+_5): " << BEreq::cb_wisfer_hdec->bhlstau(1,1) << endl;
     }
-    	
+
+    /// MSSM decays: h0_2
+    void h0_2_decays (DecayTable::Entry& result) 
+    {
+      using namespace Pipes::h0_2_decays;
+      result.width_in_GeV = BEreq::cb_widthhh_hdec->hhwdth;
+      result.set_BF(BEreq::cb_widthhh_hdec->hhbrb, 0.0, "b", "bbar");
+      result.set_BF(BEreq::cb_widthhh_hdec->hhbrl, 0.0, "tau+", "tau-");
+      result.set_BF(BEreq::cb_widthhh_hdec->hhbrm, 0.0, "mu+", "mu-");
+      result.set_BF(BEreq::cb_widthhh_hdec->hhbrs, 0.0, "s", "sbar");
+      result.set_BF(BEreq::cb_widthhh_hdec->hhbrc, 0.0, "c", "cbar");
+      result.set_BF(BEreq::cb_widthhh_hdec->hhbrt, 0.0, "t", "tbar");
+      result.set_BF(BEreq::cb_widthhh_hdec->hhbrg, 0.0, "g", "g");
+      result.set_BF(BEreq::cb_widthhh_hdec->hhbrga, 0.0, "gamma", "gamma");
+      result.set_BF(BEreq::cb_widthhh_hdec->hhbrzga, 0.0, "Z0", "gamma");
+      result.set_BF(BEreq::cb_widthhh_hdec->hhbrw, 0.0, "W+", "W-");
+      result.set_BF(BEreq::cb_widthhh_hdec->hhbrz, 0.0, "Z0", "Z0");
+      result.set_BF(BEreq::cb_widthhh_hdec->hhbrh, 0.0, "h0_1", "h0_1");
+      result.set_BF(BEreq::cb_widthhh_hdec->hhbra, 0.0, "A0", "A0");
+      result.set_BF(BEreq::cb_widthhh_hdec->hhbraz, 0.0, "Z0", "A0");
+      result.set_BF(BEreq::cb_widthhh_hdec->hhbrhw/2.0, 0.0, "W+", "H-");
+      result.set_BF(BEreq::cb_widthhh_hdec->hhbrhw/2.0, 0.0, "W-", "H+");
+      result.set_BF(BEreq::cb_wisusy_hdec->hhbrsc(1,1), 0.0, "~chi+_1", "~chi-_1");
+      result.set_BF(BEreq::cb_wisusy_hdec->hhbrsc(2,2), 0.0, "~chi+_2", "~chi-_2");
+      result.set_BF(BEreq::cb_wisusy_hdec->hhbrsc(1,2), 0.0, "~chi+_1", "~chi-_2");
+      result.set_BF(BEreq::cb_wisusy_hdec->hhbrsc(2,1), 0.0, "~chi+_2", "~chi-_1");
+      result.set_BF(BEreq::cb_wisusy_hdec->hhbrsn(1,1), 0.0, "~chi0_1", "~chi0_1");
+      result.set_BF(BEreq::cb_wisusy_hdec->hhbrsn(2,2), 0.0, "~chi0_2", "~chi0_2");
+      result.set_BF(BEreq::cb_wisusy_hdec->hhbrsn(3,3), 0.0, "~chi0_3", "~chi0_3");
+      result.set_BF(BEreq::cb_wisusy_hdec->hhbrsn(4,4), 0.0, "~chi0_4", "~chi0_4");
+      result.set_BF(BEreq::cb_wisusy_hdec->hhbrsn(1,2)*2.0, 0.0, "~chi0_1", "~chi0_2");
+      result.set_BF(BEreq::cb_wisusy_hdec->hhbrsn(1,3)*2.0, 0.0, "~chi0_1", "~chi0_3");
+      result.set_BF(BEreq::cb_wisusy_hdec->hhbrsn(1,4)*2.0, 0.0, "~chi0_1", "~chi0_4");
+      result.set_BF(BEreq::cb_wisusy_hdec->hhbrsn(2,3)*2.0, 0.0, "~chi0_2", "~chi0_3");
+      result.set_BF(BEreq::cb_wisusy_hdec->hhbrsn(2,4)*2.0, 0.0, "~chi0_2", "~chi0_4");
+      result.set_BF(BEreq::cb_wisusy_hdec->hhbrsn(3,4)*2.0, 0.0, "~chi0_3", "~chi0_4");
+      result.set_BF(BEreq::cb_wisfer_hdec->bhhsqul/2.0, 0.0, isul, isulbar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhhsqur/2.0, 0.0, isur, isurbar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhhsqul/2.0, 0.0, iscl, isclbar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhhsqur/2.0, 0.0, iscr, iscrbar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhhst(1,1), 0.0, ist1, ist1bar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhhst(2,2), 0.0, ist2, ist2bar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhhst(1,2), 0.0, ist1, ist2bar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhhst(2,1), 0.0, ist2, ist1bar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhhsqdl/2.0, 0.0, isdl, isdlbar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhhsqdr/2.0, 0.0, isdr, isdrbar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhhsqdl/2.0, 0.0, issl, isslbar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhhsqdr/2.0, 0.0, issr, issrbar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhhsb(1,1), 0.0, isb1, isb1bar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhhsb(2,2), 0.0, isb2, isb2bar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhhsb(1,2), 0.0, isb1, isb2bar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhhsb(2,1), 0.0, isb2, isb1bar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhhslel/2.0, 0.0, isell, isellbar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhhsler/2.0, 0.0, iselr, iselrbar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhhslel/2.0, 0.0, ismul, ismulbar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhhsler/2.0, 0.0, ismur, ismurbar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhhstau(1,1), 0.0, istau1, istau1bar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhhstau(2,2), 0.0, istau2, istau2bar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhhstau(1,2), 0.0, istau1, istau2bar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhhstau(2,1), 0.0, istau2, istau1bar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhhslnl/3.0, 0.0, inel, inelbar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhhslnl/3.0, 0.0, inmul, inmulbar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhhslnl/3.0, 0.0, intau1, intau1bar);
+      cout << "h0_2 total width: " << result.width_in_GeV << endl;
+    }
+
+    /// MSSM decays: A0
+    void A0_decays (DecayTable::Entry& result) 
+    {
+      using namespace Pipes::A0_decays;
+      result.width_in_GeV = BEreq::cb_widtha_hdec->awdth;
+      result.set_BF(BEreq::cb_widtha_hdec->abrb, 0.0, "b", "bbar");
+      result.set_BF(BEreq::cb_widtha_hdec->abrl, 0.0, "tau+", "tau-");
+      result.set_BF(BEreq::cb_widtha_hdec->abrm, 0.0, "mu+", "mu-");
+      result.set_BF(BEreq::cb_widtha_hdec->abrs, 0.0, "s", "sbar");
+      result.set_BF(BEreq::cb_widtha_hdec->abrc, 0.0, "c", "cbar");
+      result.set_BF(BEreq::cb_widtha_hdec->abrt, 0.0, "t", "tbar");
+      result.set_BF(BEreq::cb_widtha_hdec->abrg, 0.0, "g", "g");
+      result.set_BF(BEreq::cb_widtha_hdec->abrga, 0.0, "gamma", "gamma");
+      result.set_BF(BEreq::cb_widtha_hdec->abrzga, 0.0, "Z0", "gamma");
+      result.set_BF(BEreq::cb_widtha_hdec->abrz, 0.0, "Z0", "h0_1");
+      result.set_BF(BEreq::cb_wisusy_hdec->habrsc(1,1), 0.0, "~chi+_1", "~chi-_1");
+      result.set_BF(BEreq::cb_wisusy_hdec->habrsc(2,2), 0.0, "~chi+_2", "~chi-_2");
+      result.set_BF(BEreq::cb_wisusy_hdec->habrsc(1,2), 0.0, "~chi+_1", "~chi-_2");
+      result.set_BF(BEreq::cb_wisusy_hdec->habrsc(2,1), 0.0, "~chi+_2", "~chi-_1");
+      result.set_BF(BEreq::cb_wisusy_hdec->habrsn(1,1), 0.0, "~chi0_1", "~chi0_1");
+      result.set_BF(BEreq::cb_wisusy_hdec->habrsn(2,2), 0.0, "~chi0_2", "~chi0_2");
+      result.set_BF(BEreq::cb_wisusy_hdec->habrsn(3,3), 0.0, "~chi0_3", "~chi0_3");
+      result.set_BF(BEreq::cb_wisusy_hdec->habrsn(4,4), 0.0, "~chi0_4", "~chi0_4");
+      result.set_BF(BEreq::cb_wisusy_hdec->habrsn(1,2)*2.0, 0.0, "~chi0_1", "~chi0_2");
+      result.set_BF(BEreq::cb_wisusy_hdec->habrsn(1,3)*2.0, 0.0, "~chi0_1", "~chi0_3");
+      result.set_BF(BEreq::cb_wisusy_hdec->habrsn(1,4)*2.0, 0.0, "~chi0_1", "~chi0_4");
+      result.set_BF(BEreq::cb_wisusy_hdec->habrsn(2,3)*2.0, 0.0, "~chi0_2", "~chi0_3");
+      result.set_BF(BEreq::cb_wisusy_hdec->habrsn(2,4)*2.0, 0.0, "~chi0_2", "~chi0_4");
+      result.set_BF(BEreq::cb_wisusy_hdec->habrsn(3,4)*2.0, 0.0, "~chi0_3", "~chi0_4");
+      result.set_BF(BEreq::cb_wisusy_hdec->habrst/2.0, 0.0, ist1, ist2bar);
+      result.set_BF(BEreq::cb_wisusy_hdec->habrst/2.0, 0.0, ist1bar, ist2);
+      result.set_BF(BEreq::cb_wisusy_hdec->habrsb/2.0, 0.0, isb1, isb2bar);
+      result.set_BF(BEreq::cb_wisusy_hdec->habrsb/2.0, 0.0, isb1bar, isb2);
+      result.set_BF(BEreq::cb_wisusy_hdec->habrsl/2.0, 0.0, istau1, istau2bar);
+      result.set_BF(BEreq::cb_wisusy_hdec->habrsl/2.0, 0.0, istau1bar, istau2);
+      cout << "A0 total width: " << result.width_in_GeV << endl;
+    }
+
+    /// MSSM decays: Hplus
+    void Hplus_decays (DecayTable::Entry& result) 
+    {
+      using namespace Pipes::Hplus_decays;
+      result.width_in_GeV = BEreq::cb_widthhc_hdec->hcwdth;
+      result.set_BF(BEreq::cb_widthhc_hdec->hcbrb, 0.0, "c", "bbar");
+      result.set_BF(BEreq::cb_widthhc_hdec->hcbrl, 0.0, "tau+", "nu_RPV_5");
+      result.set_BF(BEreq::cb_widthhc_hdec->hcbrm, 0.0, "mu+", "nu_mu");
+      result.set_BF(BEreq::cb_widthhc_hdec->hcbrbu, 0.0, "u", "bbar");
+      result.set_BF(BEreq::cb_widthhc_hdec->hcbrs, 0.0, "u", "sbar");
+      result.set_BF(BEreq::cb_widthhc_hdec->hcbrc, 0.0, "c", "sbar");
+      result.set_BF(BEreq::cb_widthhc_hdec->hcbrt, 0.0, "t", "bbar");
+      result.set_BF(BEreq::cb_widthhc_hdec->hcbrw, 0.0, "W+", "h0_1");
+      result.set_BF(BEreq::cb_widthhc_hdec->hcbra, 0.0, "W+", "A0");
+      result.set_BF(BEreq::cb_wisusy_hdec->hcbrsu(1,1), 0.0, "~chi+_1", "~chi0_1");
+      result.set_BF(BEreq::cb_wisusy_hdec->hcbrsu(1,2), 0.0, "~chi+_1", "~chi0_2");
+      result.set_BF(BEreq::cb_wisusy_hdec->hcbrsu(1,3), 0.0, "~chi+_1", "~chi0_3");
+      result.set_BF(BEreq::cb_wisusy_hdec->hcbrsu(1,4), 0.0, "~chi+_1", "~chi0_4");
+      result.set_BF(BEreq::cb_wisusy_hdec->hcbrsu(2,1), 0.0, "~chi+_2", "~chi0_1");
+      result.set_BF(BEreq::cb_wisusy_hdec->hcbrsu(2,2), 0.0, "~chi+_2", "~chi0_2");
+      result.set_BF(BEreq::cb_wisusy_hdec->hcbrsu(2,3), 0.0, "~chi+_2", "~chi0_3");
+      result.set_BF(BEreq::cb_wisusy_hdec->hcbrsu(2,4), 0.0, "~chi+_2", "~chi0_4");
+      result.set_BF(BEreq::cb_wisfer_hdec->bhcsl00/2.0, 0.0, isellbar, inel);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhcsl00/2.0, 0.0, ismulbar, inmul);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhcsl11, 0.0, istau1bar, intau1);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhcsl21, 0.0, istau2bar, intau1);
+      result.set_BF(BEreq::cb_wisusy_hdec->hcbrsq/2.0, 0.0, isul, isdlbar);
+      result.set_BF(BEreq::cb_wisusy_hdec->hcbrsq/2.0, 0.0, iscl, isslbar);
+      result.set_BF(BEreq::cb_wisusy_hdec->hcbrstb(1,1), 0.0, ist1, isb1bar);
+      result.set_BF(BEreq::cb_wisusy_hdec->hcbrstb(2,2), 0.0, ist2, isb2bar);
+      result.set_BF(BEreq::cb_wisusy_hdec->hcbrstb(1,2), 0.0, ist1, isb2bar);
+      result.set_BF(BEreq::cb_wisusy_hdec->hcbrstb(2,1), 0.0, ist2, isb1bar);
+      cout << "Hplus total width: " << result.width_in_GeV << endl;
+    }
+	
     /// Collect all the DecayTable entries into an actual DecayTable 
     void all_decays (DecayTable &result) 
     {
@@ -326,9 +537,9 @@ namespace Gambit
       decays("omega") = *Dep::omega_decay_rates;    // Add the omega meson decays.
       
       // MSSM-specific
-      // decays("h0_2") = *Dep::h0_2_decay_rates;       // Add the h0_2 decays.
-      // decays("A0") = *Dep::A0_decay_rates;           // Add the A0 decays.
-      // decays("H+") = *Dep::Hplus_decay_rates;        // Add the H+ decays.
+      decays("h0_2") = *Dep::h0_2_decay_rates;       // Add the h0_2 decays.
+      decays("A0") = *Dep::A0_decay_rates;           // Add the A0 decays.
+      decays("H+") = *Dep::Hplus_decay_rates;        // Add the H+ decays.
       // 
       // decays("~g") = *Dep::gluino_decay_rates;       // Add the gluino decays.
       // 
