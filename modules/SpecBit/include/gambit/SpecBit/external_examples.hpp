@@ -172,7 +172,7 @@ void spec_print(Gambit::SubSpectrum& spec){
 }
 
 template <class M>
-void mssm_print(Gambit::MSSMSpec<M> & mssm)
+void mssm_print(Gambit::SpecBit::MSSMSpec<M> & mssm)
 {
    
    PRINTOUT << "mssm.runningpars.GetScale() =" 
@@ -231,7 +231,7 @@ void spec_manipulate(Gambit::SubSpectrum& spec)
 }
 
 template <class M>
-void mssm_manipulate(Gambit::MSSMSpec<M> & mssm) 
+void mssm_manipulate(Gambit::SpecBit::MSSMSpec<M> & mssm) 
 {
    PRINTOUT << "inside mssm_manipulate" <<std::endl;
    double lowscale = mssm.runningpars.GetScale();

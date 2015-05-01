@@ -157,6 +157,7 @@ namespace Gambit
 
       SM_checks(*spec2); // Run some tests on standard model parameters 
       logger() << EOM;
+      result = 0;
     }
 
     /// Test out consistency of Spectrum object (and pre-extracted SM SubSpectrum*)
@@ -165,10 +166,40 @@ namespace Gambit
       using namespace Pipes::specbit_test_Spectrum;
       const Spectrum* matched_spectra = *Dep::MSSM_spectrum;
       const SubSpectrum* sm = *Dep::SM_spectrum; 
- 
-      Spectrum_test(matched_spectra,sm); // Run consistency tests on Spectrum contents vs SMInputs 
+      bool noRGE = runOptions->getValueOrDef<bool>(0,"noRGE"); // don't test running on skeleton Spectrum wrappers 
+      logger() << "Running specbit_test_Spectrum with noRGE="<<noRGE<<std::endl;
       logger() << EOM;
+      Spectrum_test(matched_spectra,sm,noRGE); // Run consistency tests on Spectrum contents vs SMInputs 
+      logger() << EOM;
+      result = 0;
     }
+
+    /// Display SMInputs values
+    void specbit_test_show_SMInputs(double &result)
+    {
+      using namespace Pipes::specbit_test_show_SMInputs;
+      const SMInputs sminputs = *Dep::SMINPUTS;
+      logger() << "Contents of SMInputs struct:" << std::endl;
+      logger() << "alphainv: " << sminputs.alphainv << std::endl; 
+      logger() << "GF      : " << sminputs.GF       << std::endl;
+      logger() << "alphaS  : " << sminputs.alphaS   << std::endl;
+      logger() << "mZ      : " << sminputs.mZ       << std::endl;
+      logger() << "mE      : " << sminputs.mE       << std::endl;
+      logger() << "mMu     : " << sminputs.mMu      << std::endl;
+      logger() << "mTau    : " << sminputs.mTau     << std::endl;
+      logger() << "mNu1    : " << sminputs.mNu1     << std::endl;
+      logger() << "mNu2    : " << sminputs.mNu2     << std::endl;
+      logger() << "mNu3    : " << sminputs.mNu3     << std::endl;
+      logger() << "mD      : " << sminputs.mD       << std::endl;
+      logger() << "mU      : " << sminputs.mU       << std::endl;
+      logger() << "mS      : " << sminputs.mS       << std::endl;
+      logger() << "mCmC    : " << sminputs.mCmC     << std::endl;
+      logger() << "mBmB    : " << sminputs.mBmB     << std::endl;
+      logger() << "mT      : " << sminputs.mT       << std::endl;
+      logger() << EOM;
+      result = 0;
+    }
+
 
   } // end namespace SpecBit
 } // end namespace Gambit
