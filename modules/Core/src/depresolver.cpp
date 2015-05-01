@@ -902,9 +902,11 @@ namespace Gambit
                  << printGenericFunctorList(disabledVertexCandidates) 
                  << std::endl;
           errmsg << "Status flags:" << endl;
-          errmsg << " 0: model incompatibility" << endl;
-          errmsg << "-1: module absent" << endl;
-          errmsg << "-2: function absent" << endl << endl;
+          errmsg << " 0: This function is not compatible with any model you are scanning." << endl;
+          errmsg << "-3: This function requires a BOSSed class that is missing. The " << endl;
+          errmsg << "    backend that provides the class is missing (most likely), the " << endl;
+          errmsg << "    class is missing from the backend, or the factory functions" << endl;
+          errmsg << "    for this class have not been BOSSed and loaded correctly." << endl; 
         }
         errmsg << "Please check inifile for typos, and make sure that the" << endl;
         errmsg << "models you are scanning are compatible with at least one function" << endl;
@@ -1755,16 +1757,15 @@ namespace Gambit
         {
           errmsg << "\nNote that viable candidates exist but have been disabled:\n"
                  <<     printGenericFunctorList(disabledVertexCandidates)
-                 << std::endl
-                 << "Status flags:" << endl
-                 << " 0: model incompatibility" << endl
-                 << "-1: backend absent" << endl
-                 << "-2: function absent from backend" << endl
-                 << "-3: required BOSSed class missing => backend providing class absent" 
                  << endl
-                 << "\nPlease check that all shared objects exist for the"
-                 << "\nnecessary backends, and that they contain all the"
-                 << "\nnecessary functions required for this scan. Also "
+                 << "Status flags:" << endl
+                 << " 0: This function is not compatible with any model you are scanning." << endl
+                 << "-1: The backend that provides this function is missing." << endl
+                 << "-2: The backend is present, but function is absent or broken." << endl
+                 << endl
+                 << "\nPlease check that all shared objects exist for the" << endl
+                 << "\nnecessary backends, and that they contain all the" << endl
+                 << "\nnecessary functions required for this scan. Also "  << endl
                  << "\ncheck your backend rules and YAML file.\n";
         }
         dependency_resolver_error().raise(LOCAL_INFO,errmsg.str());
