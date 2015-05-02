@@ -61,6 +61,5 @@ nulike:
   1.0.0:       ./../extras/nulike/libnulike.so
 
 SUSY_HIT:
-  1.4:         ./Backends/lib/libsusyhit.so
   1.5:         ./Backends/lib/libsusyhit.so
 
