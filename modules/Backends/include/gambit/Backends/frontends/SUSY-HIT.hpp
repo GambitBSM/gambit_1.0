@@ -87,16 +87,21 @@ BE_VARIABLE(sd_mbmb_type, sd_mbmb, "sd_mbmb_", "cb_sd_mbmb")
 BE_VARIABLE(sd_selectron_type, sd_selectron, "sd_selectron_", "cb_sd_selectron")
 
 // Convenience functions (registration)
-BE_CONV_FUNCTION(run_susy_hit, void, (SLHAstruct), "susy_hit_backend_level_init")
+BE_CONV_FUNCTION(run_susy_hit, void, (SLHAstruct, double, double, double, double, double), "susy_hit_backend_level_init")
 
 // Initialisation function (dependencies)
 BE_INI_DEPENDENCY(MSSM_spectrum, const Spectrum*)
+BE_INI_DEPENDENCY(W_minus_decay_rates, DecayTable::Entry)
+BE_INI_DEPENDENCY(W_plus_decay_rates, DecayTable::Entry)
+BE_INI_DEPENDENCY(Z_decay_rates, DecayTable::Entry)
 
 // Convenience functions (definitions)
 BE_NAMESPACE
 {
-  void run_susy_hit(SLHAstruct slha) 
+  void run_susy_hit(SLHAstruct slha, double m_s_1GeV_msbar, double m_c_pole, double m_mu_pole, double W_width, double Z_width) 
   {
+
+    #include "boost/lexical_cast.hpp"
 
     // Bypass model and use hardcoded SLHA values for debug purposes.
     const bool debug = false;
@@ -104,77 +109,58 @@ BE_NAMESPACE
     if (not debug) 
     {
 
-      cout << "mbmb in SUSYhit fe: " << slha.at("SMINPUTS").at(5).at(1) << endl;
-      
+      // SLHA2 block SMINPUTS
+      SLHAea::Block sminputs = slha.at("SMINPUTS");
+      for (int i=1; i<=7; ++i) sd_leshouches2->smval(i) = SLHAea::to<double>(sminputs.at(i).at(1));
+      for (int i=8; i<=20; ++i) sd_leshouches2->smval(i) = 0.0; // zeroing
+
       // SUSY-HIT / HDecay inputs
-      susyhitin->amsin = 0.19;                       // MSBAR(1)
-      susyhitin->amcin = 1.4;                        // MC (pole or at what scale, in which scheme?)
-      susyhitin->ammuonin = 0.105658389;             // MMUON (pole or at what scale, in which scheme?)
-      susyhitin->alphin = 137.0359895;               // 1/ALPHA (at what scale, in which scheme?)
-      susyhitin->gamwin = 2.08;                      // GAMW
-      susyhitin->gamzin = 2.49;                      // GAMZ
-      susyhitin->vusin = 0.2205;                     // VUS
-      susyhitin->vcbin = 0.04;                       // VCB
-      susyhitin->rvubin = 0.08;                      // VUB/VCB    
+      susyhitin->amsin = m_s_1GeV_msbar;             // MSBAR(1): ms(1GeV)^MSbar
+      susyhitin->amcin = m_c_pole;                   // MC: mc(pole)
+      susyhitin->ammuonin = m_mu_pole;               // MMUON: mmu(pole)
+      susyhitin->alphin = sd_leshouches2->smval(1);  // ALPHA: alpha_em^-1(M_Z)^MSbar (scheme and scale not specified in SUSYHIT or HDECAY documentation)
+      susyhitin->gamwin = W_width;                   // GAMW: W width
+      susyhitin->gamzin = Z_width;                   // GAMZ: Z width
+      susyhitin->vusin = 0.2205;                     // VUS: CKM V_US FIXME needs adding to spectrum object 
+      susyhitin->vcbin = 0.04;                       // VCB: CKM V_CB FIXME needs adding to spectrum object
+      susyhitin->rvubin = 0.08;                      // VUB/VCB: Ratio of CKM V_UB/V_CB FIXME needs adding to spectrum object    
   
       // Zero all SLHA2 Q values
       for (int i=1; i<=22; ++i) sd_leshouches2->qvalue(i) = 0.0;
   
-      // SLHA2 block MODSEL
+      // SLHA2 block MODSEL  FIXME
       sd_leshouches2->imod(1) = 1;
       sd_leshouches2->imod(2) = 1;                   // model; 1, 1 = SUGRA.  6, x!=0  => flavour violating MSSM(prolly?).  Must be true if calling sdecay(1) later.  Must add a check for this.
-  
-      // SLHA2 block SMINPUTS
-      for (int i=1; i<=20; ++i) sd_leshouches2->smval(i) = 0.0; // zeroing
-      sd_leshouches2->smval(1) = 1.27934000E+02;     // alpha_em^-1(M_Z)^MSbar
-      sd_leshouches2->smval(2) = 1.16639000E-05;     // G_F [GeV^-2]
-      sd_leshouches2->smval(3) = 1.17200000E-01;     // alpha_S(M_Z)^MSbar
-      sd_leshouches2->smval(4) = 9.11870000E+01;     // M_Z pole mass
-      sd_leshouches2->smval(5) = 4.25000000E+00;     // mb(mb)^MSbar
-      sd_leshouches2->smval(6) = 1.72500000E+02;     // mt pole mass
-      sd_leshouches2->smval(7) = 1.77710000E+00;     // mtau pole mass
-  
-      // SLHA2 block EXTPAR
+    
+      #include <fstream>
+      std::ofstream ofs("slha1.exampleout");
+      ofs << slha;
+      ofs.close();
+
+      // SLHA2 block EXTPAR FIXME
       for (int i=1; i<=100; ++i) sd_leshouches2->extval(i) = unlikely(); // indicate undefined
-      sd_leshouches2->extval(0) = 4.65777483E+02;    // EWSB scale.  Not used by SUSY-HIT anymore.          
+      cout << slha.at("MSOFT").name() << endl;
+      std::vector<str> block_name = Utils::delimiterSplit(slha.at("MSOFT").name(), " ");
+      cout << block_name.size() << endl;
+      if (block_name.size() >= 4) 
+      {
+        cout << block_name.size() << " " << block_name.at(3) << endl;    
+      }
+
+      sd_leshouches2->extval(0) = 500.0;//(*Dep::MSSM_spectrum)->get_UV()->runningpars.GetScale();  // EWSB scale (set to SUSY scale).  Not used by SUSY-HIT anymore.
   
       // SLHA2 block MASS
-      for (int i=1; i<=50; ++i) sd_leshouches2->massval(i) = 0.0; // zeroing
-      sd_leshouches2->massval(1) = 8.04847331E+01;   // W+
-      sd_leshouches2->massval(2) = 1.09932416E+02;   // h
-      sd_leshouches2->massval(3) = 3.94935594E+02;   // H
-      sd_leshouches2->massval(4) = 3.94525488E+02;   // A
-      sd_leshouches2->massval(5) = 4.02953218E+02;   // H+
-      sd_leshouches2->massval(6) = 5.67618444E+02;   // ~d_L
-      sd_leshouches2->massval(7) = 5.45467940E+02;   // ~d_R
-      sd_leshouches2->massval(8) = 5.62111753E+02;   // ~u_L
-      sd_leshouches2->massval(9) = 5.45739159E+02;   // ~u_R
-      sd_leshouches2->massval(10) = 5.67618444E+02;  // ~s_L
-      sd_leshouches2->massval(11) = 5.45467940E+02;  // ~s_R
-      sd_leshouches2->massval(12) = 5.62111753E+02;  // ~c_L
-      sd_leshouches2->massval(13) = 5.45739159E+02;  // ~c_R
-      sd_leshouches2->massval(14) = 5.16777573E+02;  // ~b_1
-      sd_leshouches2->massval(15) = 5.46086561E+02;  // ~b_2
-      sd_leshouches2->massval(16) = 3.99615017E+02;  // ~t_1
-      sd_leshouches2->massval(17) = 5.86391641E+02;  // ~t_2
-      sd_leshouches2->massval(18) = 2.00774228E+02;  // ~e_L
-      sd_leshouches2->massval(19) = 1.42820157E+02;  // ~e_R
-      sd_leshouches2->massval(20) = 1.84853985E+02;  // ~nu_eL
-      sd_leshouches2->massval(21) = 2.00774228E+02;  // ~mu_L
-      sd_leshouches2->massval(22) = 1.42820157E+02;  // ~mu_R
-      sd_leshouches2->massval(23) = 1.84853985E+02;  // ~nu_muL
-      sd_leshouches2->massval(24) = 1.33342244E+02;  // ~tau_1
-      sd_leshouches2->massval(25) = 2.04795115E+02;  // ~tau_2
-      sd_leshouches2->massval(26) = 1.83966053E+02;  // ~nu_tauL
-      sd_leshouches2->massval(27) = 6.05955887E+02;  // ~g
-      sd_leshouches2->massval(28) = 9.71954610E+01;  // ~chi_10
-      sd_leshouches2->massval(29) = 1.80297146E+02;  // ~chi_20
-      sd_leshouches2->massval(30) =-3.58443995E+02;  // ~chi_30
-      sd_leshouches2->massval(31) = 3.77781490E+02;  // ~chi_40
-      sd_leshouches2->massval(32) = 1.79671182E+02;  // ~chi_1+
-      sd_leshouches2->massval(33) = 3.77983105E+02;  // ~chi_2+
-      sd_leshouches2->massval(34) = 4.87877839E+00;  // b pole mass
-      sd_leshouches2->massval(35) = unlikely();      // ~G
+      SLHAea::Block mass = slha.at("MASS");
+      int slha_indices[35] = {24, 25, 35, 36, 37, 1000001, 2000001, 1000002, 2000002, 1000003, 2000003, 1000004, 2000004, 1000005, 2000005, 1000006, 2000006,
+                           /* W+,  h,  H,  A, H+,    ~d_L,    ~d_R,    ~u_L,    ~u_R,    ~s_L,    ~s_R,    ~c_L,    ~c_R,    ~b_1,    ~b_2,    ~t_1,    ~t_2, */
+       1000011, 2000011, 1000012, 1000013, 2000013, 1000014, 1000015, 2000015, 1000016, 1000021, 1000022, 1000023, 1000025, 1000035, 1000024, 1000037, 5, 1000039};
+      /*  ~e_L,    ~e_R,  ~nu_eL,   ~mu_L,   ~mu_R, ~nu_muL,  ~tau_1,  ~tau_2,~nu_tauL,      ~g, ~chi_10, ~chi_20, ~chi_30, ~chi_40, ~chi_1+, ~chi_2+, b pole, ~G */
+      for (int i=1; i<=35; ++i) 
+      {
+        std::vector<str> key(1, boost::lexical_cast<str>(slha_indices[i]));
+        sd_leshouches2->massval(i) = (mass.find(key) == mass.end()) ? unlikely() : SLHAea::to<double>(mass.at(slha_indices[i]).at(1));
+      }
+      for (int i=36; i<=50; ++i) sd_leshouches2->massval(i) = 0.0; // zeroing
   
       // SLHA2 block NMIX
       sd_leshouches2->nmixval(1,1) = 9.85345167E-01; // N_11
@@ -725,7 +711,9 @@ DONE
 // Initialisation function (definition)
 BE_INI_FUNCTION
 {
-  const double msusy_tol = 1.0; // Run spectrum to MSUSY if |Q_input-MSUSY| > msusy_tol
+  const double scale_tol = 0.1; // Run spectrum to MSUSY if |Q_input-MSUSY| > scale_tol GeV
+  double m_s_1GeV_msbar;
+  SLHAstruct slha;
 
   // Scan-level initialisation
   static bool scan_level = true;
@@ -733,23 +721,48 @@ BE_INI_FUNCTION
   {
   }
   scan_level = false;
+
  
   // Check whether the spectrum object is already at the SUSY scale
   double msusy = sqrt((*Dep::MSSM_spectrum)->get_Pole_Mass("~e-_5")*(*Dep::MSSM_spectrum)->get_Pole_Mass("~e-_6"));  
-  if (fabs(msusy - (*Dep::MSSM_spectrum)->get_UV()->runningpars.GetScale()) > msusy_tol)
+  cout << "MSUSY: " << msusy << " Q:" << (*Dep::MSSM_spectrum)->get_UV()->runningpars.GetScale() << endl;
+  if (fabs(msusy - (*Dep::MSSM_spectrum)->get_UV()->runningpars.GetScale()) > scale_tol)
   {
     // Take a local copy to allow running.
     std::unique_ptr<SubSpectrum> local_mssm_copy = (*Dep::MSSM_spectrum)->get_UV()->clone();
     // Run to SUSY scale.
     local_mssm_copy->runningpars.RunToScale(msusy);
-    // Calculate decay rates
-    run_susy_hit(local_mssm_copy->getSLHAea());      
+    slha = local_mssm_copy->getSLHAea();      
   }
   else 
   {
     // Calculate decay rates using the spectrum 'as is'.
-    run_susy_hit((*Dep::MSSM_spectrum)->getSLHAea());
+    slha = (*Dep::MSSM_spectrum)->getSLHAea();
   }
+
+  // Clone the SM effective low-E spectrum, run to 1 GeV and extract the strange mass for Hdecay
+  if (fabs(1.0 - (*Dep::MSSM_spectrum)->get_LE()->runningpars.GetScale()) > scale_tol)
+  {
+    // Take a local copy to allow running.
+    std::unique_ptr<SubSpectrum> local_sm_copy = (*Dep::MSSM_spectrum)->get_LE()->clone();
+    // Run to 1 GeV.
+    local_sm_copy->runningpars.RunToScale(1.0);
+    m_s_1GeV_msbar = local_sm_copy->runningpars.get_mass_parameter("s");      
+  }
+  else 
+  {
+    // Calculate strange mass using the low-E spectrum 'as is'.
+    m_s_1GeV_msbar = (*Dep::MSSM_spectrum)->get_LE()->runningpars.get_mass_parameter("s");      
+  }
+
+  // Get the charm and mu pole masses, and W and Z widths.
+  double m_mu_pole = (*Dep::MSSM_spectrum)->get_Pole_Mass("mu-");
+  double m_c_pole = 1.0;//(*Dep::MSSM_spectrum)->get_Pole_Mass("c");  //FIXME
+  double W_width = 0.5*(Dep::W_plus_decay_rates->width_in_GeV + Dep::W_minus_decay_rates->width_in_GeV);
+  double Z_width = Dep::Z_decay_rates->width_in_GeV;
+
+  // Calculate decay rates
+  run_susy_hit(slha, m_s_1GeV_msbar, m_c_pole, m_mu_pole, W_width, Z_width);      
 
 }
 DONE
@@ -757,3 +770,8 @@ DONE
 // Undefine macros to avoid conflict with other backends
 #include "gambit/Backends/backend_undefs.hpp"
 
+// Issues: 
+//   - c pole mass
+//   - SUSY scale - Q mismatch
+//   - flavour-eigenstate SLHA1 MASS blocks and their validity
+//   - writing and retrieveing block-specific Qs
