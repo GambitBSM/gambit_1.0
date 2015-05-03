@@ -61,16 +61,16 @@ Rules:
       invalid_point_fatal: true
 
   - capability: Higgs_decay_rates
-    function: MSSM_h0_1_decays
+    function: FH_MSSM_h0_1_decays
 
   - capability: h0_2_decay_rates
-    function: h0_2_decays
+    function: FH_h0_2_decays
 
   - capability: A0_decay_rates
-    function: A0_decays
+    function: FH_A0_decays
 
   - capability: Hplus_decay_rates
-    function: Hplus_decays
+    function: FH_Hplus_decays
       
 ##############################
 # Printer setup

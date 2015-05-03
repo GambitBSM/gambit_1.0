@@ -47,6 +47,36 @@ START_MODULE
 	
   #undef CAPABILITY
 
+  #define CAPABILITY t_decay_rates
+  START_CAPABILITY
+
+    #define FUNCTION t_decays
+    START_FUNCTION(DecayTable::Entry)
+    #undef FUNCTION
+
+    #define FUNCTION FH_t_decays
+    START_FUNCTION(DecayTable::Entry)
+    DEPENDENCY(FH_Couplings, fh_Couplings)
+    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
+    #undef FUNCTION
+
+  #undef CAPABILITY
+
+  #define CAPABILITY tbar_decay_rates
+  START_CAPABILITY
+
+    #define FUNCTION tbar_decays
+    START_FUNCTION(DecayTable::Entry)
+    #undef FUNCTION
+
+    #define FUNCTION FH_tbar_decays
+    START_FUNCTION(DecayTable::Entry)
+    DEPENDENCY(FH_Couplings, fh_Couplings)
+    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
+    #undef FUNCTION
+
+  #undef CAPABILITY
+
   #define CAPABILITY Higgs_decay_rates
   START_CAPABILITY
 
@@ -586,8 +616,6 @@ START_MODULE
 QUICK_FUNCTION(DecayBit, W_minus_decay_rates, NEW_CAPABILITY, W_minus_decays, DecayTable::Entry)
 QUICK_FUNCTION(DecayBit, W_plus_decay_rates, NEW_CAPABILITY, W_plus_decays, DecayTable::Entry)
 QUICK_FUNCTION(DecayBit, Z_decay_rates, NEW_CAPABILITY, Z_decays, DecayTable::Entry)
-QUICK_FUNCTION(DecayBit, t_decay_rates, NEW_CAPABILITY, t_decays, DecayTable::Entry)
-QUICK_FUNCTION(DecayBit, tbar_decay_rates, NEW_CAPABILITY, tbar_decays, DecayTable::Entry)
 QUICK_FUNCTION(DecayBit, mu_minus_decay_rates, NEW_CAPABILITY, mu_minus_decays, DecayTable::Entry)
 QUICK_FUNCTION(DecayBit, mu_plus_decay_rates, NEW_CAPABILITY, mu_plus_decays, DecayTable::Entry)
 QUICK_FUNCTION(DecayBit, tau_minus_decay_rates, NEW_CAPABILITY, tau_minus_decays, DecayTable::Entry)
