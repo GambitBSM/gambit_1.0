@@ -87,7 +87,7 @@ BE_VARIABLE(sd_mbmb_type, sd_mbmb, "sd_mbmb_", "cb_sd_mbmb")
 BE_VARIABLE(sd_selectron_type, sd_selectron, "sd_selectron_", "cb_sd_selectron")
 
 // Convenience functions (registration)
-BE_CONV_FUNCTION(run_susy_hit, void, (SLHAstruct, double, double, double, double, double), "susy_hit_backend_level_init")
+BE_CONV_FUNCTION(run_susy_hit, void, (SLHAstruct, double, double, double), "susy_hit_backend_level_init")
 
 // Initialisation function (dependencies)
 BE_INI_DEPENDENCY(MSSM_spectrum, const Spectrum*)
@@ -98,7 +98,7 @@ BE_INI_DEPENDENCY(Z_decay_rates, DecayTable::Entry)
 // Convenience functions (definitions)
 BE_NAMESPACE
 {
-  void run_susy_hit(SLHAstruct slha, double m_s_1GeV_msbar, double m_c_pole, double m_mu_pole, double W_width, double Z_width) 
+  void run_susy_hit(SLHAstruct slha, double m_s_1GeV_msbar, double W_width, double Z_width) 
   {
 
     #include "boost/lexical_cast.hpp"
@@ -111,19 +111,23 @@ BE_NAMESPACE
 
       // SLHA2 block SMINPUTS
       SLHAea::Block sminputs = slha.at("SMINPUTS");
-      for (int i=1; i<=7; ++i) sd_leshouches2->smval(i) = SLHAea::to<double>(sminputs.at(i).at(1));
-      for (int i=8; i<=20; ++i) sd_leshouches2->smval(i) = 0.0; // zeroing
+      for (int i=1; i<=14; ++i)
+      {
+        std::vector<str> key(1, boost::lexical_cast<str>(i));
+        sd_leshouches2->massval(i) = (sminputs.find(key) == sminputs.end()) ? 0.0 : SLHAea::to<double>(sminputs.at(i).at(1));
+      }
+      for (int i=15; i<=20; ++i) sd_leshouches2->smval(i) = 0.0; // zeroing
 
       // SUSY-HIT / HDecay inputs
-      susyhitin->amsin = m_s_1GeV_msbar;             // MSBAR(1): ms(1GeV)^MSbar
-      susyhitin->amcin = m_c_pole;                   // MC: mc(pole)
-      susyhitin->ammuonin = m_mu_pole;               // MMUON: mmu(pole)
-      susyhitin->alphin = sd_leshouches2->smval(1);  // ALPHA: alpha_em^-1(M_Z)^MSbar (scheme and scale not specified in SUSYHIT or HDECAY documentation)
-      susyhitin->gamwin = W_width;                   // GAMW: W width
-      susyhitin->gamzin = Z_width;                   // GAMZ: Z width
-      susyhitin->vusin = 0.2205;                     // VUS: CKM V_US FIXME needs adding to spectrum object 
-      susyhitin->vcbin = 0.04;                       // VCB: CKM V_CB FIXME needs adding to spectrum object
-      susyhitin->rvubin = 0.08;                      // VUB/VCB: Ratio of CKM V_UB/V_CB FIXME needs adding to spectrum object    
+      susyhitin->amsin = m_s_1GeV_msbar;                            // MSBAR(1): ms(1GeV)^MSbar
+      susyhitin->amcin = SLHAea::to<double>(sminputs.at(24).at(1)); // MC: mc(pole) /FIXME
+      susyhitin->ammuonin = sd_leshouches2->smval(11);              // MMUON: mmu(pole)
+      susyhitin->alphin = sd_leshouches2->smval(1);                 // ALPHA: alpha_em^-1(M_Z)^MSbar (scheme and scale not specified in SUSYHIT or HDECAY documentation)
+      susyhitin->gamwin = W_width;                                  // GAMW: W width
+      susyhitin->gamzin = Z_width;                                  // GAMZ: Z width
+      susyhitin->vusin = 0.2205;                                    // VUS: CKM V_US FIXME needs adding to spectrum object 
+      susyhitin->vcbin = 0.04;                                      // VCB: CKM V_CB FIXME needs adding to spectrum object
+      susyhitin->rvubin = 0.08;                                     // VUB/VCB: Ratio of CKM V_UB/V_CB FIXME needs adding to spectrum object    
   
       // Zero all SLHA2 Q values
       for (int i=1; i<=22; ++i) sd_leshouches2->qvalue(i) = 0.0;
@@ -755,14 +759,12 @@ BE_INI_FUNCTION
     m_s_1GeV_msbar = (*Dep::MSSM_spectrum)->get_LE()->runningpars.get_mass_parameter("s");      
   }
 
-  // Get the charm and mu pole masses, and W and Z widths.
-  double m_mu_pole = (*Dep::MSSM_spectrum)->get_Pole_Mass("mu-");
-  double m_c_pole = 1.0;//(*Dep::MSSM_spectrum)->get_Pole_Mass("c");  //FIXME
+  // Get the W and Z widths.
   double W_width = 0.5*(Dep::W_plus_decay_rates->width_in_GeV + Dep::W_minus_decay_rates->width_in_GeV);
   double Z_width = Dep::Z_decay_rates->width_in_GeV;
 
   // Calculate decay rates
-  run_susy_hit(slha, m_s_1GeV_msbar, m_c_pole, m_mu_pole, W_width, Z_width);      
+  run_susy_hit(slha, m_s_1GeV_msbar, W_width, Z_width);      
 
 }
 DONE
