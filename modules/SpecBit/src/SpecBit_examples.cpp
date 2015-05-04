@@ -136,7 +136,7 @@ namespace Gambit
          // the particle database information. It is only the MASS block in the 
          // spectrum generator output SLHA files which use PDG numbers anyway, so I
          // think this makes sense.
-         cout<<"Lighest neutral Higgs boson pole mass:"<<endl;
+         cout<<"Lightest neutral Higgs boson pole mass:"<<endl;
          ECHO(  fullspectrum->get_Pole_Mass( PDB.short_name_pair(25,0) )   )
          ECHO(  fullspectrum->get_Pole_Mass( PDB.long_name(25,0) )         )
          ECHO(  fullspectrum->get_Pole_Mass(25,0)                          )
@@ -278,7 +278,6 @@ namespace Gambit
            void operator()(const std::string& longname) 
            {                                            
              std::ostringstream echo1, echo2, echo3;                                           
-               ECHO(  fullspectrum->get_Pole_Mass("W+")       )
              echo1 <<     "  fullspectrum->get_Pole_Mass("<<longname<<") = ";       
              double value1 = fullspectrum->get_Pole_Mass(longname);                 
              echo2 <<     "  spec->phys.get_Pole_Mass("<<longname<<") = ";       
@@ -359,16 +358,16 @@ namespace Gambit
 
          // The names here could perhaps be improved. They are not so immediately obvious to me.
 
-         GET_MIX_MATRIX("UM","UMIX",(1,2),(1,2)) cout<<endl;
-         GET_MIX_MATRIX("UP","VMIX",(1,2),(1,2)) cout<<endl;
-         GET_MIX_MATRIX("ZA","PSEUDOSCALARMIX",(1,2),(1,2)) cout<<endl;
-         GET_MIX_MATRIX("ZD","DSQMIX",(1,2,3,4,5,6),(1,2,3,4,5,6)) cout<<endl;
-         GET_MIX_MATRIX("ZE","SELMIX",(1,2,3,4,5,6),(1,2,3,4,5,6)) cout<<endl;
-         GET_MIX_MATRIX("ZH","SCALARMIX",(1,2),(1,2)) cout<<endl;
-         GET_MIX_MATRIX("ZN","NMIX",(1,2,3,4),(1,2,3,4)) cout<<endl;
-         GET_MIX_MATRIX("ZHPM","CHARGEMIX",(1,2),(1,2)) cout<<endl;
-         GET_MIX_MATRIX("ZU","USQMIX",(1,2,3,4,5,6),(1,2,3,4,5,6)) cout<<endl;
-         GET_MIX_MATRIX("ZV","SNUMIX",(1,2,3),(1,2,3)) cout<<endl;
+         GET_MIX_MATRIX("~chi-","UMIX",(1,2),(1,2)) cout<<endl;
+         GET_MIX_MATRIX("~chi+","VMIX",(1,2),(1,2)) cout<<endl;
+         GET_MIX_MATRIX("A0","PSEUDOSCALARMIX",(1,2),(1,2)) cout<<endl;
+         GET_MIX_MATRIX("~d","DSQMIX",(1,2,3,4,5,6),(1,2,3,4,5,6)) cout<<endl;
+         GET_MIX_MATRIX("~e","SELMIX",(1,2,3,4,5,6),(1,2,3,4,5,6)) cout<<endl;
+         GET_MIX_MATRIX("h0","SCALARMIX",(1,2),(1,2)) cout<<endl;
+         GET_MIX_MATRIX("~chi0","NMIX",(1,2,3,4),(1,2,3,4)) cout<<endl;
+         GET_MIX_MATRIX("H+","CHARGEMIX",(1,2),(1,2)) cout<<endl;
+         GET_MIX_MATRIX("~u","USQMIX",(1,2,3,4,5,6),(1,2,3,4,5,6)) cout<<endl;
+         GET_MIX_MATRIX("~nu","SNUMIX",(1,2,3),(1,2,3)) cout<<endl;
 
          cout<<endl;
          cout << "Next up: running parameters" << endl;
@@ -529,11 +528,8 @@ namespace Gambit
          // - Standard Model mixings (need to be added to MSSMSpec as well)
          // - some extra stuff to do regarding organising Standard Model input
          //   parameters (and computing/transferring the pole masses)
-         // - Need to extend a couple of things in Spectrum.hpp so that we can
-         //   compute and return auxilliary things like TanBeta. Of course the
-         //   user can currently compute it themselves from the vevs.
 
-         SpecBit_warning().raise(LOCAL_INFO,"Stopped to examine spectrum contents");  
+         SpecBit_warning().raise(LOCAL_INFO,"\n *** Stopped on purpose to examine spectrum contents ***");  
          result = 0;
       }
       else if(spinfo.find(k3) != spinfo.end())

@@ -630,9 +630,9 @@ namespace Gambit
         for(int i=1; i<=6; i++){
            for(int j=1; j<=6; j++){
               std::set<std::pair<std::string,double>> name_value;
-              name_value.insert(std::make_pair( "ZD", FSmssm.get_physical_slha().ZD(i-1,j-1) ));
-              name_value.insert(std::make_pair( "ZU", FSmssm.get_physical_slha().ZU(i-1,j-1) ));
-              name_value.insert(std::make_pair( "ZE", FSmssm.get_physical_slha().ZE(i-1,j-1) ));
+              name_value.insert(std::make_pair( "~d", FSmssm.get_physical_slha().ZD(i-1,j-1) ));
+              name_value.insert(std::make_pair( "~u", FSmssm.get_physical_slha().ZU(i-1,j-1) ));
+              name_value.insert(std::make_pair( "~e", FSmssm.get_physical_slha().ZE(i-1,j-1) ));
                  
               std::set<std::pair<std::string, double>>::iterator iter;
               for(iter=name_value.begin(); iter != name_value.end(); ++iter)
@@ -649,7 +649,7 @@ namespace Gambit
           
         for(int i=1; i<=3; i++){
            for(int j=1; j<=3; j++){
-              string name = "ZV";
+              string name = "~nu";
               pass = test_getters("get_Pole_Mixing", name,  
                                   spec->phys.get_Pole_Mixing(name,i,j),
                                   FSmssm.get_physical_slha().ZV(i-1, j-1), i,j);
@@ -662,12 +662,12 @@ namespace Gambit
         for(int i=1; i<=2; i++){
            for(int j=1; j<=2; j++){
               std::set<std::pair<std::string,double>> name_value;
-              name_value.insert(std::make_pair( "ZH",   FSmssm.get_physical_slha().ZH(i-1,j-1) ));
-              name_value.insert(std::make_pair( "ZA",   FSmssm.get_physical_slha().ZA(i-1,j-1) ));
-              name_value.insert(std::make_pair( "ZHPM", FSmssm.get_physical_slha().ZP(i-1,j-1) ));
-              name_value.insert(std::make_pair( "UM", flexiblesusy::Re(FSmssm.get_physical_slha()
+              name_value.insert(std::make_pair( "h0",   FSmssm.get_physical_slha().ZH(i-1,j-1) ));
+              name_value.insert(std::make_pair( "A0",   FSmssm.get_physical_slha().ZA(i-1,j-1) ));
+              name_value.insert(std::make_pair( "H+", FSmssm.get_physical_slha().ZP(i-1,j-1) ));
+              name_value.insert(std::make_pair( "~chi-", flexiblesusy::Re(FSmssm.get_physical_slha()
                                      .UM(i-1,j-1)) ));
-              name_value.insert(std::make_pair( "UP", flexiblesusy::Re(FSmssm.get_physical_slha()
+              name_value.insert(std::make_pair( "~chi+", flexiblesusy::Re(FSmssm.get_physical_slha()
                                      .UP(i-1,j-1)) ));
                    
                     
@@ -695,9 +695,9 @@ namespace Gambit
         for(int i=1; i<=6; i++){
            for(int j=1; j<=6; j++){
               std::set<std::pair<std::string,double>> name_value;
-              name_value.insert(std::make_pair( "ZD", FSmssm.get_physical_slha().ZD(i-1,j-1) ));
-              name_value.insert(std::make_pair( "ZU", FSmssm.get_physical_slha().ZU(i-1,j-1) ));
-              name_value.insert(std::make_pair( "ZE", FSmssm.get_physical_slha().ZE(i-1,j-1) ));
+              name_value.insert(std::make_pair( "~d", FSmssm.get_physical_slha().ZD(i-1,j-1) ));
+              name_value.insert(std::make_pair( "~u", FSmssm.get_physical_slha().ZU(i-1,j-1) ));
+              name_value.insert(std::make_pair( "~e", FSmssm.get_physical_slha().ZE(i-1,j-1) ));
                  
               std::set<std::pair<std::string, double>>::iterator iter;
               for(iter=name_value.begin(); iter != name_value.end(); ++iter)
@@ -714,7 +714,7 @@ namespace Gambit
           
         for(int i=1; i<=3; i++){
            for(int j=1; j<=3; j++){
-              string name = "ZV";
+              string name = "~nu";
               pass = test_getters("get_Pole_Mixing", name,  
                                   mssm.phys.get_Pole_Mixing(name,i,j),
                                   FSmssm.get_physical_slha().ZV(i-1, j-1), i,j);
@@ -727,12 +727,12 @@ namespace Gambit
         for(int i=1; i<=2; i++){
            for(int j=1; j<=2; j++){
               std::set<std::pair<std::string,double>> name_value;
-              name_value.insert(std::make_pair( "ZH",   FSmssm.get_physical_slha().ZH(i-1,j-1) ));
-              name_value.insert(std::make_pair( "ZA",   FSmssm.get_physical_slha().ZA(i-1,j-1) ));
-              name_value.insert(std::make_pair( "ZHPM", FSmssm.get_physical_slha().ZP(i-1,j-1) ));
-              name_value.insert(std::make_pair( "UM", flexiblesusy::Re(FSmssm.get_physical_slha()
+              name_value.insert(std::make_pair( "h0",   FSmssm.get_physical_slha().ZH(i-1,j-1) ));
+              name_value.insert(std::make_pair( "A0",   FSmssm.get_physical_slha().ZA(i-1,j-1) ));
+              name_value.insert(std::make_pair( "H+", FSmssm.get_physical_slha().ZP(i-1,j-1) ));
+              name_value.insert(std::make_pair( "~chi-", flexiblesusy::Re(FSmssm.get_physical_slha()
                                      .UM(i-1,j-1)) ));
-              name_value.insert(std::make_pair( "UP", flexiblesusy::Re(FSmssm.get_physical_slha()
+              name_value.insert(std::make_pair( "~chi+", flexiblesusy::Re(FSmssm.get_physical_slha()
                                      .UP(i-1,j-1)) ));
                   
               std::set<std::pair<std::string, double>>::iterator iter;
@@ -1078,7 +1078,8 @@ namespace Gambit
 
       // Test that output of Standard Model wrapper (e.g. QedQcdWrapper) matches
       // SMINPUTS sufficiently accurately
-      void Spectrum_test(const Spectrum* matched_spectra, const SubSpectrum* smin)
+      // Set flag SLHAonly=1 if SMskeleton and/or MSSMskeleton are being used.
+      void Spectrum_test(const Spectrum* matched_spectra, const SubSpectrum* smin, bool SLHAonly=0)
       {
          // Extract pieces of Spectrum to make it clear what they are supposed to be
          SMInputs sminputs = matched_spectra->get_SMINPUTS();
@@ -1129,31 +1130,32 @@ namespace Gambit
          //SM->runningpars.RunToScale(sminputs.mZ);
          OUTPUT << "Current scale: " << SM->runningpars.GetScale() << std::endl;
          OUTPUT << "Z pole mass  : " << SM->phys.get_Pole_Mass("Z") << std::endl;
-         test_within_tol( sminputs.alphainv, 1./ SM->runningpars.get_dimensionless_parameter("alpha"), tol, "1/alpha(mZ)" );
-         test_within_tol( sminputs.alphaS,       SM->runningpars.get_dimensionless_parameter("alphaS"), tol, "alphaS(mZ)" );
+         if(not SLHAonly) test_within_tol( sminputs.alphainv, 1./ SM->runningpars.get_dimensionless_parameter("alpha"), tol, "1/alpha(mZ)" );
+         if(not SLHAonly) test_within_tol( sminputs.alphaS,       SM->runningpars.get_dimensionless_parameter("alphaS"), tol, "alphaS(mZ)" );
 
          // Check running quantities evaluated at 2 GeV
-         SM->runningpars.RunToScale(2);
+         if(not SLHAonly) SM->runningpars.RunToScale(2);
          OUTPUT << "Current scale: " << SM->runningpars.GetScale() << std::endl;
          test_within_tol( sminputs.mU, SM->runningpars.get_mass_parameter("u"), tolm, "mu(2)" );
          test_within_tol( sminputs.mD, SM->runningpars.get_mass_parameter("d"), tolm, "md(2)" );
          test_within_tol( sminputs.mS, SM->runningpars.get_mass_parameter("s"), tolm, "ms(2)" );
 
          // Check mC(mC) and mB(mB)
-         SM->runningpars.RunToScale(sminputs.mCmC);
-         OUTPUT << "Current scale: " << SM->runningpars.GetScale() << std::endl;
-         OUTPUT << "mC (MSbar)   : " << SM->runningpars.get_mass_parameter("c") << std::endl;
-         test_within_tol( sminputs.mCmC, SM->runningpars.get_mass_parameter("c"), tolm, "mc(mc)" );
-         SM->runningpars.RunToScale(sminputs.mBmB);
-         OUTPUT << "Current scale: " << SM->runningpars.GetScale() << std::endl;
-         OUTPUT << "mB (MSbar)   : " << SM->runningpars.get_mass_parameter("b") << std::endl;
-         test_within_tol( sminputs.mBmB, SM->runningpars.get_mass_parameter("b"), tolm, "mb(mb)" );
-         OUTPUT << EOM;
-
+         if(not SLHAonly){
+           SM->runningpars.RunToScale(sminputs.mCmC);
+           OUTPUT << "Current scale: " << SM->runningpars.GetScale() << std::endl;
+           OUTPUT << "mC (MSbar)   : " << SM->runningpars.get_mass_parameter("c") << std::endl;
+           test_within_tol( sminputs.mCmC, SM->runningpars.get_mass_parameter("c"), tolm, "mc(mc)" );
+           SM->runningpars.RunToScale(sminputs.mBmB);
+           OUTPUT << "Current scale: " << SM->runningpars.GetScale() << std::endl;
+           OUTPUT << "mB (MSbar)   : " << SM->runningpars.get_mass_parameter("b") << std::endl;
+           test_within_tol( sminputs.mBmB, SM->runningpars.get_mass_parameter("b"), tolm, "mb(mb)" );
+           OUTPUT << EOM;
+         }
 
          // Check that pre-extracted SM SubSpectrum* and the one from Spectrum object match
-         SM->runningpars.RunToScale(sminputs.mZ);
-         smin->runningpars.RunToScale(sminputs.mZ);
+         if(not SLHAonly) SM->runningpars.RunToScale(sminputs.mZ);
+         if(not SLHAonly) smin->runningpars.RunToScale(sminputs.mZ);
          OUTPUT << "Checking match between SM SubSpectrum* retrieved in different ways..." << std::endl;
          test_within_tol(SM->phys.get_Pole_Mass("Z"),
                          smin->phys.get_Pole_Mass("Z"),                          tol, "Z pole" );
@@ -1167,9 +1169,9 @@ namespace Gambit
                          smin->phys.get_Pole_Mass("mu"),                         tol, "mu pole" );
          test_within_tol(SM->phys.get_Pole_Mass("e"), 
                          smin->phys.get_Pole_Mass("e"),                          tol, "e pole" );
-         test_within_tol(SM->runningpars.get_dimensionless_parameter("alpha"),
+         if(not SLHAonly) test_within_tol(SM->runningpars.get_dimensionless_parameter("alpha"),
                          smin->runningpars.get_dimensionless_parameter("alpha"), tol, "1/alpha(mZ)" );
-         test_within_tol(SM->runningpars.get_dimensionless_parameter("alphaS"), 
+         if(not SLHAonly) test_within_tol(SM->runningpars.get_dimensionless_parameter("alphaS"), 
                          smin->runningpars.get_dimensionless_parameter("alphaS"),tol, "alphaS(mZ)" );
          test_within_tol(SM->runningpars.get_mass_parameter("u"), 
                          smin->runningpars.get_mass_parameter("u"),              tolm, "mu(2)" );
@@ -1177,9 +1179,9 @@ namespace Gambit
                          smin->runningpars.get_mass_parameter("d"),              tolm, "md(2)" );
          test_within_tol(SM->runningpars.get_mass_parameter("s"),   
                          smin->runningpars.get_mass_parameter("s"),              tolm, "ms(2)" );
-         test_within_tol(SM->runningpars.get_mass_parameter("c"),           
+         if(not SLHAonly) test_within_tol(SM->runningpars.get_mass_parameter("c"),           
                          smin->runningpars.get_mass_parameter("c"),              tolm, "mc(mc)" );
-         test_within_tol(SM->runningpars.get_mass_parameter("b"),   
+         if(not SLHAonly) test_within_tol(SM->runningpars.get_mass_parameter("b"),   
                          smin->runningpars.get_mass_parameter("b"),              tolm, "mb(mb)" );
 
 
@@ -1188,14 +1190,14 @@ namespace Gambit
       
          std::vector<double> scales;
          scales.push_back(10);
-         scales.push_back(2);
-         scales.push_back(1);
-         scales.push_back(0.5);
-         scales.push_back(0.1);
+         if(not SLHAonly) scales.push_back(2);
+         if(not SLHAonly) scales.push_back(1);
+         if(not SLHAonly) scales.push_back(0.5);
+         if(not SLHAonly) scales.push_back(0.1);
 
          for(std::vector<double>::iterator it = scales.begin(); it != scales.end(); ++it) 
          {
-            SM->runningpars.RunToScale(*it);
+            if(not SLHAonly) SM->runningpars.RunToScale(*it);
             double Q = SM->runningpars.GetScale();
             double mu = SM->runningpars.get_mass_parameter("u");
             double md = SM->runningpars.get_mass_parameter("d");
@@ -1219,7 +1221,7 @@ namespace Gambit
          // Try to access non-const member functions
          OUTPUT << std::endl;
          OUTPUT << "Testing non-const access to Spectrum object:" << std::endl;
-         nonconst_spectra.RunBothToScale(sminputs.mT); // This is the only non-const function atm.
+         if(not SLHAonly) nonconst_spectra.RunBothToScale(sminputs.mT); // This is the only non-const function atm.
          OUTPUT << "Current SM SubSpectrum* scale: " << nonconst_spectra.get_LE()->runningpars.GetScale() << std::endl;
          OUTPUT << "Current UV SubSpectrum* scale: " << nonconst_spectra.get_UV()->runningpars.GetScale() << std::endl;
          // Make sure nothing happened to the original objects
@@ -1240,35 +1242,36 @@ namespace Gambit
          // behave = 1  -- If running beyond soft limit requested, throw warning
          //                  "           "   hard limit     "    , throw error
          // behave = anything else -- Ignore limits and attempt running to requested scale 
+         if(not SLHAonly) {
+           OUTPUT << "Testing QedQcdWrapper running limits:" << std::endl;
+           // behave=0 (default)
+           // Running halted at soft limit
+           OUTPUT << "behave=0" << std::endl;
+           SM->runningpars.RunToScale(sminputs.mT);   // Soft limit (and hard limit)
+           OUTPUT << "Current scale: " << SM->runningpars.GetScale() << std::endl;
+           SM->runningpars.RunToScale(1.5*sminputs.mT);
+           OUTPUT << "Current scale: " << SM->runningpars.GetScale() << std::endl;
+           OUTPUT << EOM;
 
-         OUTPUT << "Testing QedQcdWrapper running limits:" << std::endl;
-         // behave=0 (default)
-         // Running halted at soft limit
-         OUTPUT << "behave=0" << std::endl;
-         SM->runningpars.RunToScale(sminputs.mT);   // Soft limit (and hard limit)
-         OUTPUT << "Current scale: " << SM->runningpars.GetScale() << std::endl;
-         SM->runningpars.RunToScale(1.5*sminputs.mT);
-         OUTPUT << "Current scale: " << SM->runningpars.GetScale() << std::endl;
-         OUTPUT << EOM;
+           // behave=2
+           // Should be no errors, just potentially inaccurate running
+           // EDIT: Whoops, so QedQcd object itself will throw an error if you try
+           // to run above mT. Remove comments to observe this behaviour.
+           OUTPUT << "behave=2" << std::endl;
+           SM->runningpars.RunToScale(sminputs.mT,2);   // Soft limit (and hard limit)
+           OUTPUT << "Current scale: " << SM->runningpars.GetScale() << std::endl;
+           //SM->runningpars.RunToScale(1.5*sminputs.mT,2);
+           //OUTPUT << "Current scale: " << SM->runningpars.GetScale() << std::endl;
+           OUTPUT << EOM;
 
-         // behave=2
-         // Should be no errors, just potentially inaccurate running
-         // EDIT: Whoops, so QedQcd object itself will throw an error if you try
-         // to run above mT. Remove comments to observe this behaviour.
-         OUTPUT << "behave=2" << std::endl;
-         SM->runningpars.RunToScale(sminputs.mT,2);   // Soft limit (and hard limit)
-         OUTPUT << "Current scale: " << SM->runningpars.GetScale() << std::endl;
-         //SM->runningpars.RunToScale(1.5*sminputs.mT,2);
-         //OUTPUT << "Current scale: " << SM->runningpars.GetScale() << std::endl;
-         OUTPUT << EOM;
-
-         // behave=1
-         OUTPUT << "behave=1" << std::endl;
-         SM->runningpars.RunToScale(sminputs.mT,1);   // Soft limit (and hard limit)
-         OUTPUT << "Current scale: " << SM->runningpars.GetScale() << std::endl;
-         SM->runningpars.RunToScale(1.5*sminputs.mT,1); // Beyond hard limit (error)
-         OUTPUT << "Current scale: " << SM->runningpars.GetScale() << std::endl;
-         OUTPUT << EOM;
+           // behave=1
+           OUTPUT << "behave=1" << std::endl;
+           SM->runningpars.RunToScale(sminputs.mT,1);   // Soft limit (and hard limit)
+           OUTPUT << "Current scale: " << SM->runningpars.GetScale() << std::endl;
+           SM->runningpars.RunToScale(1.5*sminputs.mT,1); // Beyond hard limit (error)
+           OUTPUT << "Current scale: " << SM->runningpars.GetScale() << std::endl;
+           OUTPUT << EOM;
+         }
       }
 
    }  // end namespace SpecBit

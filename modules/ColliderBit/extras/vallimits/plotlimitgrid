@@ -1,0 +1,119 @@
+#! /usr/bin/env python
+
+import optparse
+op = optparse.OptionParser()
+op.add_option("-s", "--save", dest="SAVE", action="store_true", default=False)
+opts, args = op.parse_args()
+DIR = args[0]
+
+
+## Set up value arrays
+import numpy as np
+MX_LABEL = "$M_0$"
+MY_LABEL = "$M_{1/2}$"
+mx_range = np.arange(300, 5801, 500)
+my_range = np.arange(300, 841, 60)
+#
+# MX_LABEL = "$M_g$"
+# MY_LABEL = "$M_\\chi$"
+# mx_range = np.arange(200, 1601, 50)
+# my_range = np.arange(50, 801, 50)
+
+
+xx, yy = np.meshgrid(mx_range, my_range)
+# bestdlls = np.full_like(xx, np.nan)
+# bestsrs = np.full_like(xx, -1)
+sr_llbs = {} #< We'll populate this with an array of LL_{b} for each SR
+sr_llsbs = {} #< We'll populate this with an array of LL_{s+b} for each SR
+
+
+## Read LLs for each SR and mx-my point from the results files
+import os, glob
+for i, mx in enumerate(mx_range):
+    for j, my in enumerate(my_range):
+        fglob = "results*-*_{0:04d}_{1:04d}*.dat".format(mx, my)
+        fglob = "result*-*{0:d}_{1:d}*.dat".format(mx, my)
+        resfiles = glob.glob(os.path.join(DIR, fglob))
+        if resfiles:
+            with open(resfiles[0], "r") as rf:
+                for line in rf:
+                    parts = line.strip().split()
+                    sr1 = int(parts[1])
+                    sr2 = int(parts[2])
+                    sr = 10*sr1 + sr2
+                    if len(parts) == 4:
+                        ll_b = None
+                        ll_sb = float(parts[3])
+                    if len(parts) == 5:
+                        ll_b = float(parts[3])
+                        ll_sb = float(parts[4])
+                    # TODO: create the array untransposed, and index backwards?
+                    if ll_b:
+                        sr_llbs.setdefault(sr, np.full_like(xx.T, np.nan, dtype=np.double))[i,j] = ll_b
+                    sr_llsbs.setdefault(sr, np.full_like(xx.T, np.nan, dtype=np.double))[i,j] = ll_sb
+        else:
+            print (mx, my), "data file not found"
+
+
+## Find the LL_b for each SR (should be the same throughout the grid, but some will be NaN)
+sr_llb = { sr : np.nanmax(llbs) for (sr, llbs) in sr_llbs.iteritems() }
+# print sr_llb
+
+## Work out the maximum LL for each SR, returned as a full array of maxlls to make dLL computation easy
+# sr_maxlls = { sr : np.full_like(xx.T, np.nanmax(lls), dtype=np.double) for (sr, lls) in sr_llsbs.iteritems() }
+# print sr_maxlls
+
+## Work out the dLLs for each SR
+# sr_dlls = { sr : sr_maxlls[sr] - sr_llsbs[sr] for sr in sr_llsbs.keys() } #< w.r.t. LL_{s+b}^max
+sr_dlls = { sr : sr_llb[sr] - sr_llsbs[sr] for sr in sr_llsbs.keys() } #< w.r.t. LL_b
+# print sr_dlls
+
+## Work out the best (most negative) dLL for each point
+# TODO: But this loses the info about which SR "won" at each point... can we re-find it?
+bestdlls = reduce(np.fmax, sr_dlls.values())
+# print bestdlls.T
+
+
+## Plot dLL filled contours
+import matplotlib as mpl
+mpl.use("PGF")
+mpl.rc("font.family = serif")
+from matplotlib import pyplot as plt
+fig = plt.figure(figsize=[9,6])
+ax = fig.add_subplot(1,1,1)
+# vals = np.exp(lls.T)
+plt.hold(True)
+p = ax.contourf(xx, yy, bestdlls.T)
+plt.colorbar(p)
+
+## Highlight the 95% etc. CL contour via dLL = -1/2 chi2(2df, ...)
+from scipy import stats
+# sigcls = [2*(stats.norm.cdf(sig) - 0.5) for sig in (1,2)]
+sigcls = [0.95]
+sigdlls = [stats.chi2.ppf(cl, 2)/2 for cl in sigcls]
+# print sigdlls
+c = plt.contour(xx, yy, bestdlls.T, sigdlls, colors="white", linestyles="--") #, linewidths=["2"])
+plt.clabel(c, fmt="95%%", fontsize="smaller")
+
+## Write dLL text values on plot
+for i, mx in enumerate(mx_range):
+    for j, my in enumerate(my_range):
+        if i % 2 == 0 and j % 2 == 0:
+            # ax.text(mx, my, "{0:.3g}".format(bestdlls[i,j]), ha="center", va="center", fontsize="xx-small")
+            # if srs[i,j] >= 0:
+            #      ax.text(mx, my, str(int(srs[i,j])), ha="center", va="center", fontsize="small")
+            bestsrs = [sr for (sr, dlls) in sr_dlls.iteritems() if dlls[i,j] == bestdlls[i,j]]
+            if bestsrs:
+                ax.text(mx, my, str(int(bestsrs[0])), ha="center", va="center", fontsize="small")
+
+
+ax.set_title("$\\Delta LL$ contours", x=0, ha="left")
+ax.set_xlabel(MX_LABEL, x=1.00, ha="right")
+ax.set_ylabel(MY_LABEL, y=0.95, va="top", labelpad=16)
+
+# fig.tight_layout()
+if opts.SAVE:
+    fig.savefig("dll-atlas0lep.pdf")
+    # fig.savefig("cl-ana%d-sr%d.pdf" % ana_sr)
+else:
+    plt.show()
