@@ -17,9 +17,7 @@ namespace Gambit {
       /// @name Member variables
       //@{
       private:
-        static std::vector<HEPUtilsAnalysis*> _combinedAnalyses;
         std::vector<HEPUtilsAnalysis*> _analyses;
-        bool _combined;
       public:
         bool ready;
       //@}
@@ -27,10 +25,10 @@ namespace Gambit {
       /// @name Construction, Destruction, and Recycling
       //@{
       public:
-        HEPUtilsAnalysisContainer() : _combined(false), ready(false) { }
+        HEPUtilsAnalysisContainer() : ready(false) { }
         ~HEPUtilsAnalysisContainer() { clear(); }
         /// @brief Reset the analyses contained within this instance.
-        void clear(bool clearStatic=false); 
+        void clear(); 
       //@}
 
       /// @name (Re-)Initialization functions
@@ -47,11 +45,19 @@ namespace Gambit {
         void analyze(const HEPUtils::Event&) const;
         /// @brief Set cross-sections and errors for each analysis.
         void add_xsec(double xs, double xserr);
-        /// @brief Add the results of all analyses from this instance to the static member.
-        void combineAnalyses(); 
-        /// @brief Get the combined analysis results.
-        const std::vector<HEPUtilsAnalysis*> getCombinedAnalysisResults() const 
-            { return HEPUtilsAnalysisContainer::_combinedAnalyses; }
+        /// @brief Add the results of all analyses from this instance to the given one.
+        void combine(HEPUtilsAnalysisContainer& combinedAnalyses); 
+      //@}
+
+      /// @name Analysis vector access
+      //@{
+      public:
+        /// @brief Get the size of the analysis vector.
+        size_t size() { return _analyses.size(); }
+        /// @brief Get the iterator at the beginning of the analysis vector.
+        std::vector<HEPUtilsAnalysis*>::iterator begin() { return _analyses.begin(); }
+        /// @brief Get the iterator at the end of the analysis vector.
+        std::vector<HEPUtilsAnalysis*>::iterator end() { return _analyses.end(); }
       //@}
     };
 

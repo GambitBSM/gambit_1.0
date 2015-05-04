@@ -35,6 +35,9 @@ namespace Gambit {
 
     /// Event labels
     enum specialEvents {INIT = -1, START_SUBPROCESS = -2, END_SUBPROCESS = -3, FINALIZE = -4};
+    /// Analysis stuff
+    HEPUtilsAnalysisContainer* combinedAnalyses = new HEPUtilsAnalysisContainer();
+    std::vector<std::string> analysisNames;
     /// Delphes stuff
     /// @TODO BOSS delphes? Euthanize delphes?
     bool resetDelphesFlag = true;
@@ -47,7 +50,7 @@ namespace Gambit {
     int pythiaConfigurations, pythiaNumber;
     std::string slhaFilename;
     /// General collider sim info stuff
-    #define SHARED_OVER_OMP iter,pythiaNumber,pythiaConfigurations
+    #define SHARED_OVER_OMP iter,pythiaNumber,pythiaConfigurations,combinedAnalyses
 
 
     /// *************************************************
@@ -58,6 +61,7 @@ namespace Gambit {
     void operatePythia() {
       using namespace Pipes::operatePythia;
       int nEvents = 0;
+      combinedAnalyses->clear();
 
       logger() << "\n==================\n";
       logger() << "ColliderBit says,\n";
@@ -197,19 +201,21 @@ namespace Gambit {
     void getAnalysisContainer(Gambit::ColliderBit::HEPUtilsAnalysisContainer& result) {
       using namespace Pipes::getAnalysisContainer;
       if (*Loop::iteration == INIT) {
-        result.clear(true);
+        #pragma omp critical (runOptions)
+        {
+          GET_COLLIDER_RUNOPTION(analysisNames, std::vector<std::string>);
+        }
+        #pragma omp critical (access_combinedAnalyses)
+        {
+          if(!combinedAnalyses->ready)
+            combinedAnalyses->init(analysisNames);
+        }
         return;
       }
 
       if (*Loop::iteration == START_SUBPROCESS) {
         /// Each thread gets its own Analysis Container.
         /// Thus, the initialization is *after* INIT.
-        result.clear();
-        std::vector<std::string> analysisNames;
-        #pragma omp critical (runOptions)
-        {
-          GET_COLLIDER_RUNOPTION(analysisNames, std::vector<std::string>);
-        }
         /// @TODO Can we test for xsec veto here? Might be analysis dependent...
         result.init(analysisNames);
         return;
@@ -219,7 +225,10 @@ namespace Gambit {
         const double xs = Dep::HardScatteringSim->xsec_pb();
         const double xserr = Dep::HardScatteringSim->xsecErr_pb();
         result.add_xsec(xs, xserr);
-        result.combineAnalyses();
+        #pragma omp critical (access_combinedAnalyses)
+        {
+          result.combine(*combinedAnalyses);
+        }
         return;
       }
     }
@@ -563,13 +572,10 @@ namespace Gambit {
     void runAnalyses(ColliderLogLikes& result)
     {
       using namespace Pipes::runAnalyses;
-      if (*Loop::iteration == INIT) return;
-
       if (*Loop::iteration == FINALIZE) {
         // The final iteration: get log likelihoods for the analyses
         result.clear();
-        auto anaCont = Dep::AnalysisContainer->getCombinedAnalysisResults();
-        for (auto anaPtr = anaCont.begin(); anaPtr != anaCont.end(); ++anaPtr)
+        for (auto anaPtr = combinedAnalyses->begin(); anaPtr != combinedAnalyses->end(); ++anaPtr)
         {
           cout << "Set xsec from ana = " << (*anaPtr)->xsec() << " pb" << endl;
           cout << "SR number test " << (*anaPtr)->get_results()[0].n_signal << endl;
@@ -580,6 +586,8 @@ namespace Gambit {
         return;
       }
 
+      if (*Loop::iteration <= INIT) return;
+
       // Loop over analyses and run them... Managed by HEPUtilsAnalysisContainer
       Dep::AnalysisContainer->analyze(*Dep::ReconstructedEvent);
     }
@@ -587,6 +595,7 @@ namespace Gambit {
 
 
     /// Loop over all analyses (and SRs within one analysis) and fill a vector of observed likelihoods
+    /// @todo Don't we also need to return a reference LL, or just the deltaLL?
     void calcLogLike(double& result) {
       using namespace Pipes::calcLogLike;
       ColliderLogLikes analysisResults = (*Dep::AnalysisNumbers);
@@ -607,29 +616,36 @@ namespace Gambit {
           double n_predicted_exact = 0.;
 
           // A contribution to the predicted number of events that is not known exactly
-          double n_predicted_uncertain = srData.n_signal + srData.n_background;
+          double n_predicted_uncertain_b = srData.n_background;
+          double n_predicted_uncertain_sb = srData.n_signal + srData.n_background;
 
           /// A fractional uncertainty on n_predicted_uncertain
           /// (e.g. 0.2 from 20% uncertainty on efficencty wrt signal events)
           double bkg_ratio = srData.background_sys/srData.n_background;
-          double sig_ratio = (srData.n_signal != 0) ? srData.signal_sys/srData.n_signal : 0;
-          double uncertainty = sqrt(bkg_ratio*bkg_ratio + sig_ratio*sig_ratio);
+          double sig_ratio = (srData.n_signal != 0) ? srData.signal_sys/srData.n_signal : 0; ///< @todo Is this the best treatment?
+          double uncertainty_b = bkg_ratio;
+          double uncertainty_sb = sqrt(bkg_ratio*bkg_ratio + sig_ratio*sig_ratio);
 
-          cout << "OBS " << n_obs << " PRED " << n_predicted_exact << " UNCERTAIN " << n_predicted_uncertain << " UNCERTAINTY " << uncertainty << endl;
+          double llb, llsb;
+          cout << "OBS " << n_obs << " EXACT " << n_predicted_exact << " UNCERTAIN_B " << n_predicted_uncertain_b << " UNCERTAINTY_B " << uncertainty_b << endl;
+          cout << "OBS " << n_obs << " EXACT " << n_predicted_exact << " UNCERTAIN_S+B " << n_predicted_uncertain_sb << " UNCERTAINTY_S+B " << uncertainty_sb << endl;
           // Use a log-normal distribution for the nuisance parameter (more correct)
           if (*BEgroup::lnlike_marg_poisson == "lnlike_marg_poisson_lognormal_error") {
-            result = BEreq::lnlike_marg_poisson_lognormal_error(n_obs,n_predicted_exact,n_predicted_uncertain,uncertainty);
+            llb = BEreq::lnlike_marg_poisson_lognormal_error(n_obs, n_predicted_exact, n_predicted_uncertain_b, uncertainty_b);
+            llsb = BEreq::lnlike_marg_poisson_lognormal_error(n_obs, n_predicted_exact, n_predicted_uncertain_sb, uncertainty_sb);
           }
           // Use a Gaussian distribution for the nuisance parameter (marginally faster)
           else if (*BEgroup::lnlike_marg_poisson == "lnlike_marg_poisson_gaussian_error") {
-            result = BEreq::lnlike_marg_poisson_gaussian_error(n_obs,n_predicted_exact,n_predicted_uncertain,uncertainty);
+            llb = BEreq::lnlike_marg_poisson_gaussian_error(n_obs, n_predicted_exact, n_predicted_uncertain_b, uncertainty_b);
+            llsb = BEreq::lnlike_marg_poisson_gaussian_error(n_obs, n_predicted_exact, n_predicted_uncertain_sb, uncertainty_sb);
           }
-          cout << "COLLIDER_RESULT " << analysis << " " << SR << " " << result << endl;
+          cout << "COLLIDER_RESULT " << analysis << " " << SR << " " << llb << " " << llsb << endl;
 
+          observedLikelihoods.push_back(result);
         } // end SR loop
       } // end ana loop
 
-      /// @TODO Need to combine { ana+SR } to return the single most stringent likelihood / other combined-as-well-as-we-can LL number
+      /// @TODO Need to combine { ana+SR } to return the single most stringent likelihood (ratio) / other combined-as-well-as-we-can LL number
 
     }
 

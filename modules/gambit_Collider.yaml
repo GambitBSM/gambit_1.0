@@ -105,28 +105,31 @@ Rules:
   - capability:  ColliderOperator
     function: operatePythia
     options:
-      nEvents: 20
+      nEvents: 1000
       slhaFilename: "ColliderBit/data/sps1aWithDecays.spc" 
       pythiaNames: ["Pythia_SUSY_LHC_8TeV", "Pythia_glusq_LHC_8TeV"]
       Pythia_SUSY_LHC_8TeV: 2  # <-- How many configurations of this one you want
-      #pythia_glusq_LHC_8TeV: 1  # <-- One is the default anyways
+      #Pythia_glusq_LHC_8TeV: 1  # <-- One is the default anyways
   
   - capability:  HardScatteringSim
     function:  getPythia
     options:
       Pythia_glusq_LHC_8TeV:
         pythiaOptions_1: ["PartonLevel:MPI = off",
+                          "PartonLevel:MPI = off",
                           "PartonLevel:ISR = on",
                           "PartonLevel:FSR = off",
                           "HadronLevel:all = off"]
       Pythia_SUSY_LHC_8TeV:
         pythiaOptions_1: ["PartonLevel:MPI = off",
+                          "PartonLevel:MPI = off",
                           "PartonLevel:ISR = on",
                           "PartonLevel:FSR = off",
                           "HadronLevel:all = off",
                           "SUSY:idA = 1000021",
                           "SUSY:idB = 1000021"]
         pythiaOptions_2: ["PartonLevel:MPI = off",
+                          "PartonLevel:MPI = off",
                           "PartonLevel:ISR = on",
                           "PartonLevel:FSR = off",
                           "HadronLevel:all = off",
