@@ -25,16 +25,16 @@ namespace Gambit {
     {
       public:
         /// Initialize SingletDM object (branching ratios etc)
-        SingletDM(std::string filename)
+        SingletDM(TH_ProcessCatalog &catalog, std::string filename)
         {
           // FIXME: This should not be hard-coded
-          mh = 125.7;  // FIXME
-          v0 = 246.0;  // FIXME
+          mh   = catalog.particleProperties.at("h0_1").mass;
+          v0   = 246.0;       // FIXME
           alpha_s = 0.12;   // FIXME
-          mb = 5;  // FIXME
-          mc = 1;  // FIXME
-          mtau = 1;  // FIXME
-          mt = 172;  // FIXME
+          mb   = catalog.particleProperties.at("d_3").mass;
+          mc   = catalog.particleProperties.at("u_2").mass;
+          mtau = catalog.particleProperties.at("tau-").mass;
+          mt   = catalog.particleProperties.at("u_3").mass;
           // Higgs branching ratios and total width Gamma [GeV], as function of
           // mass [GeV] (90 - 150 GeV)
           ASCIItableReader table(filename);  
@@ -49,14 +49,6 @@ namespace Gambit {
           }
           Gamma = f_vs_mass["Gamma"]->bind("mass");
           Gamma_mh = Gamma->eval(mh);
-
-          mh = 125.7;  // FIXME
-          v0 = 246.0;  // FIXME
-          alpha_s = 0.12;   // FIXME
-          mb = 5;  // FIXME
-          mc = 1;  // FIXME
-          mtau = 1;  // FIXME
-          mt = 172;  // FIXME
         };
         ~SingletDM() {}
 
@@ -228,8 +220,6 @@ namespace Gambit {
     {
       using namespace Pipes::TH_ProcessCatalog_SingletDM;
 
-      static SingletDM singletDM("DarkBit/data/Higgs_decay_1101.0593.dat");
-
       double mass = *Param["mass"];
       double lambda = *Param["lambda"];
 
@@ -299,6 +289,8 @@ namespace Gambit {
       // FIXME: Get Higgs mass from elsewhere
       TH_ParticleProperty h0_1_Property(125.7, 0);
       catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("h0_1", h0_1_Property));
+
+      static SingletDM singletDM(catalog, "DarkBit/data/Higgs_decay_1101.0593.dat");
 
       // FIXME: Add top (is this still TODO?)
 
