@@ -611,9 +611,9 @@ namespace Gambit {
           /// Actual observed number of events
           int n_obs = (int) srData.n_observed;
 
-          /// A contribution to the predicted number of events that is known exactly
-          /// (e.g. from data-driven background estimate)
-          double n_predicted_exact = 0.;
+          // A contribution to the predicted number of events that is known exactly
+          // (e.g. from data-driven background estimate)
+          double n_predicted_exact = 0;
 
           // A contribution to the predicted number of events that is not known exactly
           double n_predicted_uncertain_b = srData.n_background;
@@ -626,20 +626,27 @@ namespace Gambit {
           double uncertainty_b = bkg_ratio;
           double uncertainty_sb = sqrt(bkg_ratio*bkg_ratio + sig_ratio*sig_ratio);
 
-          double llb, llsb;
+          int n_predicted_total_b_int = (int) round(n_predicted_exact + n_predicted_uncertain_b);
+          // int n_predicted_total_sb_int = (int) round(n_predicted_exact + n_predicted_uncertain_sb); //< we don't use this: predictions all use exp[b] as the "observed"
+
+          double llb_exp, llsb_exp, llb_obs, llsb_obs;
           cout << "OBS " << n_obs << " EXACT " << n_predicted_exact << " UNCERTAIN_B " << n_predicted_uncertain_b << " UNCERTAINTY_B " << uncertainty_b << endl;
           cout << "OBS " << n_obs << " EXACT " << n_predicted_exact << " UNCERTAIN_S+B " << n_predicted_uncertain_sb << " UNCERTAINTY_S+B " << uncertainty_sb << endl;
           // Use a log-normal distribution for the nuisance parameter (more correct)
           if (*BEgroup::lnlike_marg_poisson == "lnlike_marg_poisson_lognormal_error") {
-            llb = BEreq::lnlike_marg_poisson_lognormal_error(n_obs, n_predicted_exact, n_predicted_uncertain_b, uncertainty_b);
-            llsb = BEreq::lnlike_marg_poisson_lognormal_error(n_obs, n_predicted_exact, n_predicted_uncertain_sb, uncertainty_sb);
+            llb_exp = BEreq::lnlike_marg_poisson_lognormal_error(n_predicted_total_b_int, n_predicted_exact, n_predicted_uncertain_b, uncertainty_b);
+            llsb_exp = BEreq::lnlike_marg_poisson_lognormal_error(n_predicted_total_b_int, n_predicted_exact, n_predicted_uncertain_sb, uncertainty_sb);
+            llb_obs = BEreq::lnlike_marg_poisson_lognormal_error(n_obs, n_predicted_exact, n_predicted_uncertain_b, uncertainty_b);
+            llsb_obs = BEreq::lnlike_marg_poisson_lognormal_error(n_obs, n_predicted_exact, n_predicted_uncertain_sb, uncertainty_sb);
           }
           // Use a Gaussian distribution for the nuisance parameter (marginally faster)
           else if (*BEgroup::lnlike_marg_poisson == "lnlike_marg_poisson_gaussian_error") {
-            llb = BEreq::lnlike_marg_poisson_gaussian_error(n_obs, n_predicted_exact, n_predicted_uncertain_b, uncertainty_b);
-            llsb = BEreq::lnlike_marg_poisson_gaussian_error(n_obs, n_predicted_exact, n_predicted_uncertain_sb, uncertainty_sb);
+            llb_exp = BEreq::lnlike_marg_poisson_gaussian_error(n_predicted_total_b_int, n_predicted_exact, n_predicted_uncertain_b, uncertainty_b);
+            llsb_exp = BEreq::lnlike_marg_poisson_gaussian_error(n_predicted_total_b_int, n_predicted_exact, n_predicted_uncertain_sb, uncertainty_sb);
+            llb_obs = BEreq::lnlike_marg_poisson_gaussian_error(n_obs, n_predicted_exact, n_predicted_uncertain_b, uncertainty_b);
+            llsb_obs = BEreq::lnlike_marg_poisson_gaussian_error(n_obs, n_predicted_exact, n_predicted_uncertain_sb, uncertainty_sb);
           }
-          cout << "COLLIDER_RESULT " << analysis << " " << SR << " " << llb << " " << llsb << endl;
+          cout << "COLLIDER_RESULT " << analysis << " " << SR << " " << llb_exp << " " << llsb_exp << " " << llb_obs << " " << llsb_obs << endl;
 
           observedLikelihoods.push_back(result);
         } // end SR loop
