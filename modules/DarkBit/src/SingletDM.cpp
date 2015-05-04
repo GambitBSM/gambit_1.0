@@ -230,54 +230,99 @@ namespace Gambit {
 
       static SingletDM singletDM("DarkBit/data/Higgs_decay_1101.0593.dat");
 
-      //const Spectrum* SM = *Dep::SM_spectrum;
-
-      std::vector<std::string> finalStates;
-      double mass, lambda, mW, mb, mZ, mc, mtau, mt;
-
-      mass = *Param["mass"];
-      lambda = *Param["lambda"];
-      //mZ = SM->phys.get_Pole_Mass("Z");
-      //mW = SM->phys.get_Pole_Mass("W");
-      mZ = m_Zboson;  // FIXME
-      mW = m_Wboson;  // FIXME
-      mb = 5;  // FIXME
-      mc = 1;  // FIXME
-      mtau = 1;  // FIXME
-      mt = 172;  // FIXME
-      double mh = 125.7;  // FIXME
+      double mass = *Param["mass"];
+      double lambda = *Param["lambda"];
 
       // Initialize catalog
       TH_ProcessCatalog catalog;
       TH_Process process_ann((std::string)"S", (std::string)"S");
 
-      // FIXME: Add top
+      ///////////////////////////
+      // Import particle masses
+      ///////////////////////////
+      
+      // Import based on Spectrum objects
+      const SubSpectrum* SM = *Dep::SM_spectrum;
+      const SMInputs& SMI   = *Dep::SMINPUTS;  
+
+      // Get SM masses
+#define getSMmass(Name, spinX2)                                                \
+      catalog.particleProperties.insert(                                       \
+          std::pair<std::string, TH_ParticleProperty>(                         \
+            Name , TH_ParticleProperty(SM->phys.get_Pole_Mass(Name), spinX2)   \
+            )                                                                  \
+          );    
+      getSMmass("e-",     1)
+      getSMmass("e+",     1)
+      getSMmass("mu-",    1)
+      getSMmass("mu+",    1)
+      getSMmass("tau-",   1)
+      getSMmass("tau+",   1)
+      getSMmass("nu_1",   1)
+      getSMmass("nubar_1",1) 
+      getSMmass("nu_2",   1)
+      getSMmass("nubar_2",1) 
+      getSMmass("nu_3",   1)
+      getSMmass("nubar_3",1)      
+      getSMmass("Z0",     2)
+      getSMmass("W+",     2)
+      getSMmass("W-",     2)      
+      getSMmass("g",      2)   
+      getSMmass("gamma",  2)   
+      getSMmass("d_3",    1)
+      getSMmass("dbar_3", 1)
+      getSMmass("u_3",    1)
+      getSMmass("ubar_3", 1)
+#undef getSMmass
+
+      // Pole masses not available for the light quarks.
+#define getSMmassMS(Name, Mass, spinX2)                                        \
+      catalog.particleProperties.insert(                                       \
+          std::pair<std::string, TH_ParticleProperty>(                         \
+            Name , TH_ParticleProperty(Mass, spinX2)                           \
+            )                                                                  \
+          );    
+      getSMmassMS("d_1"   , SMI.mD,  1) // md(2 GeV)^MS-bar, not pole mass
+      getSMmassMS("dbar_1", SMI.mD,  1) // md(2 GeV)^MS-bar, not pole mass
+      getSMmassMS("u_1"   , SMI.mU,  1) // mu(2 GeV)^MS-bar, not pole mass
+      getSMmassMS("ubar_1", SMI.mU,  1) // mu(2 GeV)^MS-bar, not pole mass
+      getSMmassMS("d_2"   , SMI.mS,  1) // ms(2 GeV)^MS-bar, not pole mass
+      getSMmassMS("dbar_2", SMI.mS,  1) // ms(2 GeV)^MS-bar, not pole mass
+      getSMmassMS("u_2"   , SMI.mCmC,1) // mc(mc)^MS-bar, not pole mass
+      getSMmassMS("ubar_2", SMI.mCmC,1) // mc(mc)^MS-bar, not pole mass
+#undef getSMmassMS
+
+      // Insert singlet mass
+      TH_ParticleProperty S_Property(mass, 1);
+      catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("S", S_Property));
+      
+      // FIXME: Get Higgs mass from elsewhere
+      TH_ParticleProperty h0_1_Property(125.7, 0);
+      catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("h0_1", h0_1_Property));
+
+      // FIXME: Add top (is this still TODO?)
 
       // Populate channel list
-      auto m_th = Funk::vec(mb, mW, mc, mtau, mZ, mt, mh);
+      // FIXME: Mass eigenstates are now being used here. Check if CKM factors are necessary anywhere.
       auto channel = Funk::vec<std::string>(
           "bb", "WW", "cc", "tautau", "ZZ", "tt", "hh");
-      auto p1 = Funk::vec<std::string>("b", "W+", "c", "tau+", "Z0", "t", "h");
-      auto p2 = Funk::vec<std::string>(
-          "bbar", "W-", "cbar", "tau-", "Z0", "tbar", "h");
+      auto p1 = Funk::vec<std::string>("d_3", "W+", "u_2", "tau+", "Z0", "u_3", "h0_1");
+      auto p2 = Funk::vec<std::string>("dbar_3", "W-", "ubar_2", "tau-", "Z0", "ubar_3", "h0_1");
       {
         for ( int i = 0; i < 7; i++ )
         {
-          if ( mass > m_th[i] )
+          if ( mass > catalog.particleProperties.at(p1[i]).mass )
           {
             Funk::Funk kinematicFunction = 
               Funk::funcM(&singletDM, &SingletDM::sv, channel[i], lambda,
                   mass, Funk::var("v"));
-            finalStates = Funk::vec<std::string>(p1[i], p2[i]);
+            std::vector<std::string> finalStates = Funk::vec<std::string>(p1[i], p2[i]);
             TH_Channel channel(finalStates, kinematicFunction);
             process_ann.channelList.push_back(channel);
           }
         }
       }
 
-      TH_ParticleProperty S_Property(mass, 1);  // Set mass and 2*spin
-      catalog.particleProperties.insert(
-          std::pair<std::string, TH_ParticleProperty> ("S", S_Property));
       catalog.processList.push_back(process_ann);
 
       result = catalog;
