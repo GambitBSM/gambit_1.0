@@ -50,6 +50,7 @@ namespace Gambit
       add_particle("Z0",    ( 23, 0) )
       add_particle("W+",    ( 24, 0) )
       add_particle("W-",    (-24, 0) )
+      add_particle("G",     ( 39, 0) )
 
       // ---- Standard Model mass eigenstates (context = 0) ----
 
@@ -109,8 +110,9 @@ namespace Gambit
       // ---- MSSM sparticle mass eigenstates (context = 0) ---- (TODO to be extended to NMSSM)
       // Defined according to SLHA2 (http://arxiv.org/pdf/0801.0045v3.pdf, see eq. 28 - 31)
 
-      // Gluino
+      // Gluino and gravitino
       add_particle("~g", (1000021,0) )
+      add_particle("~G", (1000039,0) )
 
       // Mass-ordered neutral, pseudoscalar, and charged Higgs bosons
       add_particle_set("h0", ((25, 0), (35, 0)) )
@@ -129,65 +131,17 @@ namespace Gambit
                                  (-2000002, 0), (-2000004, 0), (-2000006, 0)) )
 
       // Mass-ordered sleptons and sneutrinos 
-      add_particle_set("~e-", (( 1000011, 0), ( 1000013, 0), ( 1000015, 0),
-                               ( 2000011, 0), ( 2000013, 0), ( 2000015, 0)) )
-      add_particle_set("~e+", ((-1000011, 0), (-1000013, 0), (-1000015, 0),
-                               (-2000011, 0), (-2000013, 0), (-2000015, 0)) )
-      add_particle_set("~nu", (( 1000012, 0), ( 1000014, 0), ( 1000016, 0)) )
+      add_particle_set("~e-",    (( 1000011, 0), ( 1000013, 0), ( 1000015, 0),
+                                  ( 2000011, 0), ( 2000013, 0), ( 2000015, 0)) )
+      add_particle_set("~e+",    ((-1000011, 0), (-1000013, 0), (-1000015, 0),
+                                  (-2000011, 0), (-2000013, 0), (-2000015, 0)) )
+      add_particle_set("~nu",    (( 1000012, 0), ( 1000014, 0), ( 1000016, 0)) )
       add_particle_set("~nubar", ((-1000012, 0), (-1000014, 0), (-1000016, 0)) )
+
       // Mass-ordered charginos and neutralinos
       add_particle_set("~chi0", (( 1000022, 0), ( 1000023, 0), (1000025, 0), (1000035, 0)) )
       add_particle_set("~chi+", (( 1000024, 0), ( 1000037, 0)) )
       add_particle_set("~chi-", ((-1000024, 0), (-1000037, 0)) )
-
-      // ---- MSSM sfermion flavour eigenstates (context = 1) ----
-
-      // Down and up-type squarks
-      add_particle("~d_L",    ( 1000001, 1) )
-      add_particle("~s_L",    ( 1000003, 1) )
-      add_particle("~b_L",    ( 1000005, 1) )
-      add_particle("~d_R",    ( 2000001, 1) )
-      add_particle("~s_R",    ( 2000003, 1) )
-      add_particle("~b_R",    ( 2000005, 1) )
-      add_particle("~u_L",    ( 1000002, 1) )
-      add_particle("~c_L",    ( 1000004, 1) )
-      add_particle("~t_L",    ( 1000006, 1) )
-      add_particle("~u_R",    ( 2000002, 1) )
-      add_particle("~c_R",    ( 2000004, 1) )
-      add_particle("~t_R",    ( 2000006, 1) )
-      add_particle("~dbar_L", (-1000001, 1) )
-      add_particle("~sbar_L", (-1000003, 1) )
-      add_particle("~bbar_L", (-1000005, 1) )
-      add_particle("~dbar_R", (-2000001, 1) )
-      add_particle("~sbar_R", (-2000003, 1) )
-      add_particle("~bbar_R", (-2000005, 1) )
-      add_particle("~ubar_L", (-1000002, 1) )
-      add_particle("~cbar_L", (-1000004, 1) )
-      add_particle("~tbar_L", (-1000006, 1) )
-      add_particle("~ubar_R", (-2000002, 1) )
-      add_particle("~cbar_R", (-2000004, 1) )
-      add_particle("~tbar_R", (-2000006, 1) )
-
-      // Sleptons and sneutrinos 
-      add_particle("~e-_L",     ( 1000011, 1) )
-      add_particle("~mu-_L",    ( 1000013, 1) )
-      add_particle("~tau-_L",   ( 1000015, 1) )
-      add_particle("~e-_R",     ( 2000011, 1) )
-      add_particle("~mu-_R",    ( 2000013, 1) )
-      add_particle("~tau-_R",   ( 2000015, 1) )
-      add_particle("~nu_e",     ( 1000012, 1) )
-      add_particle("~nu_mu",    ( 1000014, 1) )
-      add_particle("~nu_tau",   ( 1000016, 1) )
-      add_particle("~e+_L",     (-1000011, 1) )
-      add_particle("~mu+_L",    (-1000013, 1) )
-      add_particle("~tau+_L",   (-1000015, 1) )
-      add_particle("~e+_R",     (-2000011, 1) )
-      add_particle("~mu+_R",    (-2000013, 1) )
-      add_particle("~tau+_R",   (-2000015, 1) )
-      add_particle("~nubar_e",  (-1000012, 1) )
-      add_particle("~nubar_mu", (-1000014, 1) )
-      add_particle("~nubar_tau",(-1000016, 1) )
-
 
       // ---- RPV NMSSM mass eigenstates (context = 10) ---- //TODO not yet totally complete?
 

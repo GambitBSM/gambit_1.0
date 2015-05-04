@@ -60,8 +60,6 @@ namespace Gambit {
     /// *************************************************
     /// Rollcalled functions properly hooked up to Gambit
     /// *************************************************
-
-
     /// *** Loop Managers ***
 
     void operatePythia() {
@@ -160,8 +158,18 @@ namespace Gambit {
 
       } else if (*Loop::iteration == END_SUBPROCESS) {
 
-        xsecArray[omp_get_thread_num()] = result->pythia()->info.sigmaGen() * 1e9; //< note converting mb to pb units
-        xsecerrArray[omp_get_thread_num()] = result->pythia()->info.sigmaErr() * 1e9; //< note converting mb to pb units
+        xsecArray[omp_get_thread_num()] = result->pythia()->info.sigmaGen() * 1e9; //< note converting Py8's mb to pb units
+        xsecerrArray[omp_get_thread_num()] = result->pythia()->info.sigmaErr() * 1e9; //< note converting Py8's mb to pb units
+        /// @todo Hackity hack of a exp(polynomial(mg)) fit to nllfast cross-sections, via a super-hacky mg.dat file... just for testing!
+        // std::cout << "XSEC_PY = " << xsecArray[omp_get_thread_num()] << " pb" << std::endl;
+        // const double mg = result->pythia()->particleData.particleDataEntryPtr(1000021)->m0();
+        // const double mg = result->pythia()->particleData.m0(1000021);
+        // std::ifstream mgf("mg.dat"); double mg; mgf >> mg; mgf.close();
+        // const double lxs = -1.031e-08*mg*mg*mg + 2.65e-05*mg*mg - 0.03222*mg + 12.24;
+        // const double xs = exp(lxs);
+        // std::cout << "MG = " << mg << " logXS = " << lxs << " XS = " << xs << " pb" << std::endl;
+        // xsecArray[omp_get_thread_num()] = xs;
+        // std::cout << "XSEC_NL = " << xsecArray[omp_get_thread_num()] << " pb" << std::endl;
 
         /// Each thread gets its own Pythia instance.
         /// Thus, the Pythia memory clean-up is *before* FINALIZE.
@@ -618,6 +626,7 @@ namespace Gambit {
         {
           /// @TODO Clean this crap up... xsecArrays should be more Gambity.
           /// @TODO THIS IS HARDCODED FOR ONLY ONE THREAD!!!
+          /// @todo Shouldn't add_xsec really be set_xsec in this context? (It's not analysis combination)
           cout << "Adding xsec = " << xsecArray[0] << " +- " << xsecerrArray[0] << " pb" << endl;
           (*anaPtr)->add_xsec(xsecArray[0], xsecerrArray[0]);
         }
@@ -649,6 +658,7 @@ namespace Gambit {
 
 
     /// Loop over all analyses (and SRs within one analysis) and fill a vector of observed likelihoods
+    /// @todo Don't we also need to return a reference LL, or just the deltaLL?
     void calcLogLike(double& result) {
       using namespace Pipes::calcLogLike;
       ColliderLogLikes analysisResults = (*Dep::AnalysisNumbers);
@@ -668,33 +678,46 @@ namespace Gambit {
 
           // A contribution to the predicted number of events that is known exactly
           // (e.g. from data-driven background estimate)
-          double n_predicted_exact = 0.;
+          double n_predicted_exact = 0;
 
           // A contribution to the predicted number of events that is not known exactly
-          double n_predicted_uncertain = srData.n_signal + srData.n_background;
+          double n_predicted_uncertain_b = srData.n_background;
+          double n_predicted_uncertain_sb = srData.n_signal + srData.n_background;
 
-          // A fractional uncertainty on n_predicted_uncertain
-          // (e.g. 0.2 from 20% uncertainty on efficencty wrt signal events)
+          // A fractional uncertainty on n_predicted_uncertain e.g. 0.2 from 20% uncertainty on efficencty wrt signal events
           double bkg_ratio = srData.background_sys/srData.n_background;
-          double sig_ratio = (srData.n_signal != 0) ? srData.signal_sys/srData.n_signal : 0;
-          double uncertainty = sqrt(bkg_ratio*bkg_ratio + sig_ratio*sig_ratio);
+          double sig_ratio = (srData.n_signal != 0) ? srData.signal_sys/srData.n_signal : 0; ///< @todo Is this the best treatment?
+          double uncertainty_b = bkg_ratio;
+          double uncertainty_sb = sqrt(bkg_ratio*bkg_ratio + sig_ratio*sig_ratio);
 
-          cout << "OBS " << n_obs << " PRED " << n_predicted_exact << " UNCERTAIN " << n_predicted_uncertain << " UNCERTAINTY " << uncertainty << endl;
+          int n_predicted_total_b_int = (int) round(n_predicted_exact + n_predicted_uncertain_b);
+          // int n_predicted_total_sb_int = (int) round(n_predicted_exact + n_predicted_uncertain_sb); //< we don't use this: predictions all use exp[b] as the "observed"
+
+          double llb_exp, llsb_exp, llb_obs, llsb_obs;
+          cout << "OBS " << n_obs << " EXACT " << n_predicted_exact << " UNCERTAIN_B " << n_predicted_uncertain_b << " UNCERTAINTY_B " << uncertainty_b << endl;
+          cout << "OBS " << n_obs << " EXACT " << n_predicted_exact << " UNCERTAIN_S+B " << n_predicted_uncertain_sb << " UNCERTAINTY_S+B " << uncertainty_sb << endl;
           // Use a log-normal distribution for the nuisance parameter (more correct)
           if (*BEgroup::lnlike_marg_poisson == "lnlike_marg_poisson_lognormal_error") {
-            result = BEreq::lnlike_marg_poisson_lognormal_error(n_obs,n_predicted_exact,n_predicted_uncertain,uncertainty);
+            llb_exp = BEreq::lnlike_marg_poisson_lognormal_error(n_predicted_total_b_int, n_predicted_exact, n_predicted_uncertain_b, uncertainty_b);
+            llsb_exp = BEreq::lnlike_marg_poisson_lognormal_error(n_predicted_total_b_int, n_predicted_exact, n_predicted_uncertain_sb, uncertainty_sb);
+            llb_obs = BEreq::lnlike_marg_poisson_lognormal_error(n_obs, n_predicted_exact, n_predicted_uncertain_b, uncertainty_b);
+            llsb_obs = BEreq::lnlike_marg_poisson_lognormal_error(n_obs, n_predicted_exact, n_predicted_uncertain_sb, uncertainty_sb);
           }
           // Use a Gaussian distribution for the nuisance parameter (marginally faster)
           else if (*BEgroup::lnlike_marg_poisson == "lnlike_marg_poisson_gaussian_error") {
-            result = BEreq::lnlike_marg_poisson_gaussian_error(n_obs,n_predicted_exact,n_predicted_uncertain,uncertainty);
+            llb_exp = BEreq::lnlike_marg_poisson_gaussian_error(n_predicted_total_b_int, n_predicted_exact, n_predicted_uncertain_b, uncertainty_b);
+            llsb_exp = BEreq::lnlike_marg_poisson_gaussian_error(n_predicted_total_b_int, n_predicted_exact, n_predicted_uncertain_sb, uncertainty_sb);
+            llb_obs = BEreq::lnlike_marg_poisson_gaussian_error(n_obs, n_predicted_exact, n_predicted_uncertain_b, uncertainty_b);
+            llsb_obs = BEreq::lnlike_marg_poisson_gaussian_error(n_obs, n_predicted_exact, n_predicted_uncertain_sb, uncertainty_sb);
           }
-          cout << "COLLIDER_RESULT " << analysis << " " << SR << " " << result << endl;
+          cout << "COLLIDER_RESULT " << analysis << " " << SR << " " << llb_exp << " " << llsb_exp << " " << llb_obs << " " << llsb_obs << endl;
 
+          observedLikelihoods.push_back(result);
 
         } // end SR loop
       } // end ana loop
 
-      /// @TODO Need to combine { ana+SR } to return the single most stringent likelihood / other combined-as-well-as-we-can LL number
+      /// @TODO Need to combine { ana+SR } to return the single most stringent likelihood (ratio) / other combined-as-well-as-we-can LL number
 
     }
 

@@ -989,8 +989,20 @@ namespace Funk
                 arguments = joinArgs(f1->getArgs(), f2->getArgs()); \
                 singularities = joinSingl(f1->getSingl(), f2->getSingl());\
             }                                                                                             \
-            FunkMath_##OPERATION(double x1, Funk f2) : FunkMath_##OPERATION(cnst(x1), f2) {};                        \
-            FunkMath_##OPERATION(Funk f1, double x2) : FunkMath_##OPERATION(f1, cnst(x2)) {};                        \
+            FunkMath_##OPERATION(double x, Funk f2)                        \
+            {                                                                                             \
+                auto f1 = cnst(x); \
+                functions = vec(f1, f2);   \
+                arguments = joinArgs(f1->getArgs(), f2->getArgs()); \
+                singularities = joinSingl(f1->getSingl(), f2->getSingl());\
+            }                                                                                             \
+            FunkMath_##OPERATION(Funk f1, double x)                        \
+            {                                                                                             \
+                auto f2 = cnst(x); \
+                functions = vec(f1, f2);   \
+                arguments = joinArgs(f1->getArgs(), f2->getArgs()); \
+                singularities = joinSingl(f1->getSingl(), f2->getSingl());\
+            }                                                                                             \
             double value(std::vector<double> & data, intptr_t bindID)                                                 \
             {                                                                                             \
                 return OPERATION(functions[0]->value(data, bindID), functions[1]->value(data, bindID));                                 \
