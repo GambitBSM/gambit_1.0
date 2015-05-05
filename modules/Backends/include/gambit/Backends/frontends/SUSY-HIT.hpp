@@ -98,6 +98,10 @@ BE_INI_DEPENDENCY(Z_decay_rates, DecayTable::Entry)
 // Convenience functions (definitions)
 BE_NAMESPACE
 {
+
+  /// Runs actual SUSY-HIT decay calculations.
+  /// Inputs: m_s_1GeV_msbar    strange mass in GeV, in MSbar scheme at an energy of 1GeV
+  ///         W_width, Z_width  EW gauge boson total widths in GeV
   void run_susy_hit(SLHAstruct slha, double m_s_1GeV_msbar, double W_width, double Z_width) 
   {
 
@@ -123,8 +127,8 @@ BE_NAMESPACE
       susyhitin->amcin = SLHAea::to<double>(sminputs.at(24).at(1)); // MC: mc(pole) /FIXME
       susyhitin->ammuonin = sd_leshouches2->smval(11);              // MMUON: mmu(pole)
       susyhitin->alphin = sd_leshouches2->smval(1);                 // ALPHA: alpha_em^-1(M_Z)^MSbar (scheme and scale not specified in SUSYHIT or HDECAY documentation)
-      susyhitin->gamwin = W_width;                                  // GAMW: W width
-      susyhitin->gamzin = Z_width;                                  // GAMZ: Z width
+      susyhitin->gamwin = W_width;                                  // GAMW: W width (GeV)
+      susyhitin->gamzin = Z_width;                                  // GAMZ: Z width (GeV)
       susyhitin->vusin = 0.2205;                                    // VUS: CKM V_US FIXME needs adding to spectrum object 
       susyhitin->vcbin = 0.04;                                      // VCB: CKM V_CB FIXME needs adding to spectrum object
       susyhitin->rvubin = 0.08;                                     // VUB/VCB: Ratio of CKM V_UB/V_CB FIXME needs adding to spectrum object    
@@ -136,10 +140,10 @@ BE_NAMESPACE
       sd_leshouches2->imod(1) = 1;
       sd_leshouches2->imod(2) = 1;                   // model; 1, 1 = SUGRA.  6, x!=0  => flavour violating MSSM(prolly?).  Must be true if calling sdecay(1) later.  Must add a check for this.
     
-      #include <fstream>
-      std::ofstream ofs("slha1.exampleout");
-      ofs << slha;
-      ofs.close();
+      //#include <fstream>
+      //std::ofstream ofs("slha1.exampleout");
+      //ofs << slha;
+      //ofs.close();
 
       // SLHA2 block EXTPAR FIXME
       for (int i=1; i<=100; ++i) sd_leshouches2->extval(i) = unlikely(); // indicate undefined
@@ -153,7 +157,7 @@ BE_NAMESPACE
 
       sd_leshouches2->extval(0) = 500.0;//(*Dep::MSSM_spectrum)->get_UV()->runningpars.GetScale();  // EWSB scale (set to SUSY scale).  Not used by SUSY-HIT anymore.
   
-      // SLHA2 block MASS
+      // SLHA2 block MASS /FIXME needs checking for mass-gauge/flav eigenstate conversion.
       SLHAea::Block mass = slha.at("MASS");
       int slha_indices[35] = {24, 25, 35, 36, 37, 1000001, 2000001, 1000002, 2000002, 1000003, 2000003, 1000004, 2000004, 1000005, 2000005, 1000006, 2000006,
                            /* W+,  h,  H,  A, H+,    ~d_L,    ~d_R,    ~u_L,    ~u_R,    ~s_L,    ~s_R,    ~c_L,    ~c_R,    ~b_1,    ~b_2,    ~t_1,    ~t_2, */
@@ -715,20 +719,19 @@ DONE
 // Initialisation function (definition)
 BE_INI_FUNCTION
 {
+  // Scan-level initialisation
+  //static bool scan_level = true;
+  //if (scan_level)
+  //{
+  //}
+  //scan_level = false;
+
   const double scale_tol = 0.1; // Run spectrum to MSUSY if |Q_input-MSUSY| > scale_tol GeV
   double m_s_1GeV_msbar;
   SLHAstruct slha;
-
-  // Scan-level initialisation
-  static bool scan_level = true;
-  if (scan_level)
-  {
-  }
-  scan_level = false;
-
  
   // Check whether the spectrum object is already at the SUSY scale
-  double msusy = sqrt((*Dep::MSSM_spectrum)->get_Pole_Mass("~e-_5")*(*Dep::MSSM_spectrum)->get_Pole_Mass("~e-_6"));  
+  double msusy = sqrt((*Dep::MSSM_spectrum)->get_Pole_Mass("~u_5")*(*Dep::MSSM_spectrum)->get_Pole_Mass("~u_6"));  
   cout << "MSUSY: " << msusy << " Q:" << (*Dep::MSSM_spectrum)->get_UV()->runningpars.GetScale() << endl;
   if (fabs(msusy - (*Dep::MSSM_spectrum)->get_UV()->runningpars.GetScale()) > scale_tol)
   {
@@ -771,9 +774,3 @@ DONE
 
 // Undefine macros to avoid conflict with other backends
 #include "gambit/Backends/backend_undefs.hpp"
-
-// Issues: 
-//   - c pole mass
-//   - SUSY scale - Q mismatch
-//   - flavour-eigenstate SLHA1 MASS blocks and their validity
-//   - writing and retrieveing block-specific Qs
