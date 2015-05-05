@@ -893,8 +893,7 @@ namespace Gambit
         if (masterGraph[*vi]->capability() == quantity.first and 
              (
               masterGraph[*vi]->type() == quantity.second or 
-              quantity.second == "" or 
-              quantity.second == "*"
+              quantity.second == "" or quantity.second == "*"
              )
            )
         {
@@ -943,13 +942,17 @@ namespace Gambit
         {
           {
             // Evaluate "dependencies" section
-            if (funcMatchesIniEntry(masterGraph[toVertex], *it, *boundTEs))
+            if (funcMatchesIniEntry(masterGraph[toVertex], *it, *boundTEs) and 
+                (it->capability != "" or it->function != "" or 
+                 it->type != "" or it->module != ""))
             {
               for (IniParser::ObservablesType::const_iterator 
                   it2 = (*it).dependencies.begin(); 
                   it2 != (*it).dependencies.end(); ++it2)
               {
-                if (quantityMatchesIniEntry(quantity, *it2))
+                if (quantityMatchesIniEntry(quantity, *it2) and 
+                    (it->capability != "" or it->type != "") and
+                    (it->function != "" or it->module != ""))
                 {
                   rules.push_back(Rule(*it2));
                   if (it->enforced or it2->enforced)
@@ -975,7 +978,9 @@ namespace Gambit
             }
             // Evaluate second order rules
             if (quantityMatchesIniEntry(quantity, *it) and 
-                it->dependencies.size()==0) 
+                it->dependencies.size()==0 and
+                (it->capability != "" or it->type != "") and
+                (it->function != "" or it->module != ""))
             {
               rules.push_back(Rule(*it));
               if (it->enforced)
@@ -991,7 +996,9 @@ namespace Gambit
         for (IniParser::ObservablesType::const_iterator it =
             entries.begin(); it != entries.end(); ++it)
         {
-          if (quantityMatchesIniEntry(quantity, *it))
+          if (quantityMatchesIniEntry(quantity, *it) and
+              (it->capability != "" or it->type != "") and
+              (it->function != "" or it->module != ""))
           {
             rules.push_back(Rule(*it));
           }
@@ -1002,7 +1009,9 @@ namespace Gambit
             entries2.begin(); it != entries2.end(); ++it)
         {
           if (quantityMatchesIniEntry(quantity, *it) and
-              it->dependencies.size()==0) 
+              it->dependencies.size()==0 and
+              (it->capability != "" or it->type != "") and
+              (it->function != "" or it->module != ""))
           {
             rules.push_back(Rule(*it));
             if (it->enforced)
@@ -1011,7 +1020,7 @@ namespace Gambit
         }
       }
 
-      if (forced_rules.size() < rules.size())
+      if (forced_rules.size() < rules.size() and forced_rules.size() > 0)
       {
         logger() << "Only using rules marked with '!force' tag for this vertex."
           << endl;
@@ -1755,10 +1764,9 @@ namespace Gambit
                  << " 0: This function is not compatible with any model you are scanning." << endl
                  << "-1: The backend that provides this function is missing." << endl
                  << "-2: The backend is present, but function is absent or broken." << endl
-                 << endl
-                 << "\nPlease check that all shared objects exist for the" << endl
-                 << "\nnecessary backends, and that they contain all the" << endl
-                 << "\nnecessary functions required for this scan. Also "  << endl
+                 << "\nPlease check that all shared objects exist for the"
+                 << "\nnecessary backends, and that they contain all the"
+                 << "\nnecessary functions required for this scan. Also "
                  << "\ncheck your backend rules and YAML file.\n";
         }
         dependency_resolver_error().raise(LOCAL_INFO,errmsg.str());
