@@ -53,6 +53,7 @@ namespace Gambit
         std::string backend;
         std::string version;
         bool printme; // Instruction to printer as to whether to write result to disk
+        bool enforced;  // Indicates that encoded rule should be enforced
         Options options;
         std::vector<Observable> dependencies;
         std::vector<Observable> backends;
@@ -128,6 +129,9 @@ namespace YAML
       READ(module)
       READ(backend)
       READ(version)
+
+      if (node.Tag() == "!force") rhs.enforced = true;
+      else rhs.enforced = false;
 
       // Strip leading "Gambit::" namespaces and whitespace, but preserve "const ".
       rhs.type = Gambit::Utils::fix_type(rhs.type);
