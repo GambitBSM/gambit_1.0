@@ -180,10 +180,11 @@ set(clean_files ${clean_files} "${nulike_dir}/lib/${nulike_lib}.so")
 
 ExternalProject_Add(feynhiggs
   URL http://wwwth.mpp.mpg.de/members/heinemey/feynhiggs/newversion/FeynHiggs-2.10.4.tar.gz
+  URL_MD5 3fe0b927dce70d3a7404661725d9d6ac
   DOWNLOAD_DIR ${PROJECT_SOURCE_DIR}/../extras/FeynHiggs
   SOURCE_DIR ${PROJECT_SOURCE_DIR}/../extras/FeynHiggs/FeynHiggs
   BUILD_IN_SOURCE 1
-  CONFIGURE_COMMAND <SOURCE_DIR>/configure
+  CONFIGURE_COMMAND <SOURCE_DIR>/configure COMMAND sed -i -e "s|FC = .*|FC = ${CMAKE_Fortran_COMPILER}|" <SOURCE_DIR>/makefile COMMAND sed -i -e "s|FFLAGS =.*|& ${CMAKE_Fortran_FLAGS}|" <SOURCE_DIR>/makefile
   BUILD_COMMAND make COMMAND mkdir -p lib COMMAND echo "${CMAKE_Fortran_COMPILER} -shared -o lib/libfeynhiggs.so build/*.o" > make_so.sh COMMAND chmod u+x make_so.sh COMMAND ./make_so.sh
   INSTALL_COMMAND cp <SOURCE_DIR>/lib/libfeynhiggs.so ${PROJECT_SOURCE_DIR}/Backends/lib/.
 )
@@ -194,6 +195,7 @@ set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../extras/FeynHiggs/FeynHi
 
 ExternalProject_Add(higgsbounds_tables
   URL http://www.hepforge.org/archive/higgsbounds/csboutput_trans_binary.tar.gz
+  URL_MD5 004decca30335ddad95654a04dd034a6
   DOWNLOAD_DIR ${PROJECT_SOURCE_DIR}/../extras/HiggsBounds
   SOURCE_DIR ${PROJECT_SOURCE_DIR}/../extras/HiggsBounds/csboutput_trans_binary
   BUILD_IN_SOURCE 1
@@ -205,9 +207,9 @@ ExternalProject_Add(higgsbounds_tables
 set_property(TARGET higgsbounds_tables PROPERTY _EP_DOWNLOAD_ALWAYS 0)
 
 ExternalProject_Add(higgsbounds
-  DEPENDS feynhiggs
   DEPENDS higgsbounds_tables
   URL http://www.hepforge.org/archive/higgsbounds/HiggsBounds-4.2.0.tar.gz
+  URL_MD5 9d76eefecea870d941a6fe8c0ee7a6ae
   DOWNLOAD_DIR ${PROJECT_SOURCE_DIR}/../extras/HiggsBounds
   SOURCE_DIR ${PROJECT_SOURCE_DIR}/../extras/HiggsBounds/HiggsBounds
   BUILD_IN_SOURCE 1
@@ -221,9 +223,9 @@ set_property(TARGET higgsbounds PROPERTY _EP_DOWNLOAD_ALWAYS 0)
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../extras/HiggsBounds/HiggsBounds/lib/higgsbounds.so" "${PROJECT_SOURCE_DIR}/Backends/lib/higgsbounds.so")
 
 ExternalProject_Add(higgssignals
-  DEPENDS feynhiggs
   DEPENDS higgsbounds
   URL http://www.hepforge.org/archive/higgsbounds/HiggsSignals-1.3.2.tar.gz
+  URL_MD5 2e300a3784eb5d3a9e1dd905d2af7676
   DOWNLOAD_DIR ${PROJECT_SOURCE_DIR}/../extras/HiggsSignals
   SOURCE_DIR ${PROJECT_SOURCE_DIR}/../extras/HiggsSignals/HiggsSignals
   BUILD_IN_SOURCE 1
