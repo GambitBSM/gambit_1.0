@@ -449,7 +449,7 @@ START_MODULE
       MODEL_GROUP(group2, (MSSM25atQ, SingletDM))
       ALLOW_MODEL_COMBINATION(group1, group2)
       BACKEND_OPTION((MicrOmegas),(backends))
-      BACKEND_OPTION((MicrOmegas_SingletDM),(backends))
+      BACKEND_OPTION((MicrOmegasSingletDM),(backends))
       FORCE_SAME_BACKEND(backends)
     #undef FUNCTION
     #define FUNCTION DD_couplings_SingletDM
