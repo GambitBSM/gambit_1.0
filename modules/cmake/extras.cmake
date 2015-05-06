@@ -236,7 +236,8 @@ set_property(TARGET higgssignals PROPERTY _EP_DOWNLOAD_ALWAYS 0)
 
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../extras/HiggsSignals/HiggsSignals/lib/higgssignals.so" "${PROJECT_SOURCE_DIR}/Backends/lib/higgssignals.so")
 
-set_target_properties(ddcalc gamlike darksusy micromegas superiso nulike pythia fastsim BOSSMinimalExample PROPERTIES EXCLUDE_FROM_ALL 1)
+set_target_properties(ddcalc gamlike darksusy micromegas superiso nulike pythia fastsim BOSSMinimalExample 
+                      higgssignals higgsbounds higgsbounds_tables feynhiggs PROPERTIES EXCLUDE_FROM_ALL 1)
 
 add_custom_target(backends COMMAND make gamlike nulike ddcalc pythia BOSSMinimalExample darksusy superiso) #fastsim micromegas
 
