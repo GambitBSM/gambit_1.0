@@ -184,7 +184,7 @@ ExternalProject_Add(feynhiggs
   DOWNLOAD_DIR ${PROJECT_SOURCE_DIR}/../extras/FeynHiggs
   SOURCE_DIR ${PROJECT_SOURCE_DIR}/../extras/FeynHiggs/FeynHiggs
   BUILD_IN_SOURCE 1
-  CONFIGURE_COMMAND <SOURCE_DIR>/configure COMMAND sed -i -e "s|FC = .*|FC = ${CMAKE_Fortran_COMPILER}|" <SOURCE_DIR>/makefile COMMAND sed -i -e "s|FFLAGS =.*|& ${CMAKE_Fortran_FLAGS}|" <SOURCE_DIR>/makefile
+  CONFIGURE_COMMAND <SOURCE_DIR>/configure COMMAND sed -i -e "s|FC = .*|FC = ${CMAKE_Fortran_COMPILER}|" <SOURCE_DIR>/makefile COMMAND sed -i -e "s|FFLAGS =.*|& ${CMAKE_Fortran_FLAGS}|" <SOURCE_DIR>/makefile COMMAND sed -i -e "s|CFLAGS =.*|& -fPIC|" <SOURCE_DIR>/makefile COMMAND sed -i -e "s|CXXFLAGS =.*|& -fPIC|" <SOURCE_DIR>/makefile
   BUILD_COMMAND make COMMAND mkdir -p lib COMMAND echo "${CMAKE_Fortran_COMPILER} -shared -o lib/libfeynhiggs.so build/*.o" > make_so.sh COMMAND chmod u+x make_so.sh COMMAND ./make_so.sh
   INSTALL_COMMAND cp <SOURCE_DIR>/lib/libfeynhiggs.so ${PROJECT_SOURCE_DIR}/Backends/lib/.
 )
