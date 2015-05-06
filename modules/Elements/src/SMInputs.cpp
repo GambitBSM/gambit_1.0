@@ -126,12 +126,12 @@ namespace Gambit {
       // Note: angles given as x = sin^2(2*theta), so I have converted them as:
       // theta = 0.5*arcsin(sqrt(x))
       // CP-violating phases not measured, so I set them to zero. 
-      sminputs.PMNS.theta12 = SLHAea_get_or_def(data,"UPMNSIN",1, 0.58376);
-      sminputs.PMNS.theta23 = SLHAea_get_or_def(data,"UPMNSIN",2, 0.76958);
-      sminputs.PMNS.theta13 = SLHAea_get_or_def(data,"UPMNSIN",3, 0.15495);
-      sminputs.PMNS.delta13 = SLHAea_get_or_def(data,"UPMNSIN",4, 0);
-      sminputs.PMNS.alpha1  = SLHAea_get_or_def(data,"UPMNSIN",5, 0);
-      sminputs.PMNS.alpha2  = SLHAea_get_or_def(data,"UPMNSIN",6, 0);
+      sminputs.PMNS.theta12 = SLHAea_get_or_def(data,"UPMNSIN",1, 0.58376); // the solar angle
+      sminputs.PMNS.theta23 = SLHAea_get_or_def(data,"UPMNSIN",2, 0.76958); // the atmospheric mixing angle
+      sminputs.PMNS.theta13 = SLHAea_get_or_def(data,"UPMNSIN",3, 0.15495);                                           
+      sminputs.PMNS.delta13 = SLHAea_get_or_def(data,"UPMNSIN",4, 0);       // the Dirac CP-violating phase
+      sminputs.PMNS.alpha1  = SLHAea_get_or_def(data,"UPMNSIN",5, 0);       // the first Majorana CP-violating phase
+      sminputs.PMNS.alpha2  = SLHAea_get_or_def(data,"UPMNSIN",6, 0);       // the second CP-violating Majorana phase
   
       return sminputs;
    }
