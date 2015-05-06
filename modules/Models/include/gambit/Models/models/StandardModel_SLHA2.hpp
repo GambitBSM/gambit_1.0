@@ -63,6 +63,18 @@
   DEFINEPARS(mD, mU)               // 21,22
   DEFINEPARS(mS, mCmC)             // 23,24
   DEFINEPARS(mBmB, mT)             // 5,6
-#undef MODEL
 
+  // CKM parameters
+  DEFINEPARS(lambda, A, rhobar, etabar)
+
+  // PMNS parameters
+  DEFINEPARS(theta12, theta23, theta13)
+  DEFINEPARS(delta13, alpha1, alpha2)
+
+ #undef MODEL
 #endif 
+
+
+
+
+

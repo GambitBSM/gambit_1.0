@@ -57,6 +57,12 @@ namespace Gambit
       // This copies the data out. Could possible change it to pass out a
       // reference instead, or have another function to do that.
       SLHAea::Coll slhaea = fullspectrum->getSLHAea();
+      // for testing, write this to file      
+      std::ofstream out1;
+      out1.open("SpecBit/exampleRead_test.slha");
+      out1 << slhaea;
+      out1.close();
+
       // SLHAea::Coll slhaea = spec->getSLHAea(); // The above is just a wrapper for this.
 
       // If this is a valid model point, return true and dump information, else false

@@ -3,57 +3,38 @@
 # To vary, say, mTop, or just use different fixed values, you should create a
 # new version of this file.
 
-# TODO: It would actually be quite handy if the fixed values could be specified
-# on a single line, i.e. like this:
-#   alphainv: 1.279340000e+02      # alpha^(-1) SM MSbar(MZ)
-#   GF:       1.166370000e-05      # G_Fermi
-#   alphaS:   1.176000000e-01      # alpha_s(MZ) SM MSbar
-#   etc...
-# because then one could just straight copy a block of numbers out of an SLHA
-# file and paste them in here (the parameter order here matches the SLHA order)
-# for easy matching against test SLHA files. I am thinking of a vim-style 
-# visual-block copy of the numbers.
-
 ###
 # import this file into a Parameters node named:
 # StandardModel_SLHA2:
 
-# These values match LesHouches.in.MSSM_1; should change them to latest PDG values
-alphainv:
-  fixed_value: 1.279340000e+02      # alpha^(-1) SM MSbar(MZ)
-GF:
-  fixed_value: 1.166370000e-05      # G_Fermi
-alphaS:
-  fixed_value: 1.176000000e-01      # alpha_s(MZ) SM MSbar
-######
-mZ:
-  fixed_value: 9.118760000e+01      # MZ(pole)
-######
-mBmB:
-  fixed_value: 4.200000000e+00      # mb(mb) SM MSbar
-mT:
-  fixed_value: 1.733000000e+02      # mtop(pole)
-######
-mTau:
-  fixed_value: 1.777000000e+00      # mtau(pole)
-mNu3:
-  fixed_value: 0.000000000e+00      # mnu3(pole)
-mE:
-  fixed_value: 5.109989020e-04      # melectron(pole)
-mNu1:
-  fixed_value: 0.000000000e+00      # mnu1(pole)
-mMu:
-  fixed_value: 1.056583570e-01      # mmuon(pole)
-mNu2:
-  fixed_value: 0.000000000e+00      # mnu2(pole)
-######
-mD:
-  fixed_value: 4.750000000e-03      # md(2 GeV) MS-bar
-mU:
-  fixed_value: 2.400000000e-03      # mu(2 GeV) MS-bar
-mS:
-  fixed_value: 1.040000000e-01      # ms(2 GeV) MS-bar
-mCmC:
-  fixed_value: 1.270000000e+00      # mc(mc) MS-bar
+# SLHA1
+alphainv:  1.27940010E+02 # alpha^{-1}(mZ)^MSbar *
+GF      :  1.16637870E-05 # G_Fermi **
+alphaS  :  1.19300000E-01 # alpha_s(mZ)^MSbar *
+mZ      :  9.11880000E+01 # mZ(pole) *   
+mBmB    :  4.19900000E+00 # mb(mb)^MSbar *
+mT      :  1.73240000E+02 # mtop(pole) *
+mTau    :  1.77682000E+00 # mtau(pole) §
+mNu3    :               0 # mnu3(pole)
+# SLHA2
+mE      :  5.10998928E-04 # melectron(pole) § **
+mNu1    :               0 # mnu1(pole)
+mMu     :  1.05658372E-01 # mmuon(pole) §
+mNu2    :               0 # mnu2(pole)
+mD      :  4.80000000E-03 # md(2 GeV)^MSbar @
+mU      :  2.30000000E-03 # mu(2 GeV)^MSbar @
+mS      :  9.50000000E-02 # ms(2 GeV)^MSbar @
+mCmC    :  1.27400000E+00 # mc(mc)^MSbar *
+# CKM
+lambda  :  0.22537
+A       :  0.814
+rhobar  :  0.117
+etabar  :  0.353
+# PMNS
+theta12 :  0.58376
+theta23 :  0.76958
+theta13 :  0.15495
+delta13 :  0
+alpha1  :  0
+alpha2  :  0
  
-
