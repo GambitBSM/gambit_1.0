@@ -226,13 +226,13 @@ BE_INI_FUNCTION{
   // the scales at which the sfermion input parameters M3S are given
   // 0 indicates on-shell parameters
   double SCALE = spec->runningpars.GetScale();
-  // is this correct????
+  
   fh_real Qtau = SCALE;
   fh_real Qt = SCALE;
   fh_real Qb = SCALE;
 
   // the renormalization scale is Mtop times the 'scalefactor'
-  fh_real scalefactor = SCALE/MT;
+  fh_real scalefactor = 1.;
 
   error = 1;
   FHSetPara(error, scalefactor, MT, TB, MA0, MHp,
