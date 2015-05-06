@@ -87,7 +87,7 @@ BE_VARIABLE(sd_mbmb_type, sd_mbmb, "sd_mbmb_", "cb_sd_mbmb")
 BE_VARIABLE(sd_selectron_type, sd_selectron, "sd_selectron_", "cb_sd_selectron")
 
 // Convenience functions (registration)
-BE_CONV_FUNCTION(run_susy_hit, void, (SLHAstruct, double, double, double), "susy_hit_backend_level_init")
+BE_CONV_FUNCTION(run_susy_hit, void, (SLHAstruct, double, double), "susy_hit_backend_level_init")
 
 // Initialisation function (dependencies)
 BE_INI_DEPENDENCY(MSSM_spectrum, const Spectrum*)
@@ -102,7 +102,7 @@ BE_NAMESPACE
   /// Runs actual SUSY-HIT decay calculations.
   /// Inputs: m_s_1GeV_msbar    strange mass in GeV, in MSbar scheme at an energy of 1GeV
   ///         W_width, Z_width  EW gauge boson total widths in GeV
-  void run_susy_hit(SLHAstruct slha, double m_s_1GeV_msbar, double W_width, double Z_width) 
+  void run_susy_hit(SLHAstruct slha, double W_width, double Z_width) 
   {
 
     #include "boost/lexical_cast.hpp"
@@ -123,8 +123,8 @@ BE_NAMESPACE
       for (int i=15; i<=20; ++i) sd_leshouches2->smval(i) = 0.0; // zeroing
 
       // SUSY-HIT / HDecay inputs
-      susyhitin->amsin = m_s_1GeV_msbar;                            // MSBAR(1): ms(1GeV)^MSbar
-      susyhitin->amcin = SLHAea::to<double>(sminputs.at(24).at(1)); // MC: mc(pole) /FIXME
+      susyhitin->amsin = SLHAea::to<double>(sminputs.at(23).at(1)); // MSBAR(1): HDECAY claims it wants ms(1GeV)^MSbar, but we don't believe it, and give it m_s(2GeV)^MSBar 
+      susyhitin->amcin = SLHAea::to<double>(sminputs.at(24).at(1)); // MC: HDECAY claims it wants the c pole mass, but that is not well defined, so we give it mc(mc)^MSBar 
       susyhitin->ammuonin = sd_leshouches2->smval(11);              // MMUON: mmu(pole)
       susyhitin->alphin = sd_leshouches2->smval(1);                 // ALPHA: alpha_em^-1(M_Z)^MSbar (scheme and scale not specified in SUSYHIT or HDECAY documentation)
       susyhitin->gamwin = W_width;                                  // GAMW: W width (GeV)
@@ -708,6 +708,7 @@ BE_NAMESPACE
     sdecay();
 
     // Questions for SUSY-HIT authors
+    // ms_1Gev? mc pole?
     // q values -- repeated 11, 14, assignment of selmix to 21 vs < 20; are these bugs?
     // safety of skipping sd_mbmb
     // safety of running over with FV.
@@ -727,11 +728,10 @@ BE_INI_FUNCTION
   //scan_level = false;
 
   const double scale_tol = 0.1; // Run spectrum to MSUSY if |Q_input-MSUSY| > scale_tol GeV
-  double m_s_1GeV_msbar;
   SLHAstruct slha;
  
   // Check whether the spectrum object is already at the SUSY scale
-  double msusy = sqrt((*Dep::MSSM_spectrum)->get_Pole_Mass("~u_5")*(*Dep::MSSM_spectrum)->get_Pole_Mass("~u_6"));  
+  double msusy = sqrt((*Dep::MSSM_spectrum)->get_Pole_Mass("~u_1")*(*Dep::MSSM_spectrum)->get_Pole_Mass("~u_2"));  
   cout << "MSUSY: " << msusy << " Q:" << (*Dep::MSSM_spectrum)->get_UV()->runningpars.GetScale() << endl;
   if (fabs(msusy - (*Dep::MSSM_spectrum)->get_UV()->runningpars.GetScale()) > scale_tol)
   {
@@ -747,27 +747,12 @@ BE_INI_FUNCTION
     slha = (*Dep::MSSM_spectrum)->getSLHAea();
   }
 
-  // Clone the SM effective low-E spectrum, run to 1 GeV and extract the strange mass for Hdecay
-  if (fabs(1.0 - (*Dep::MSSM_spectrum)->get_LE()->runningpars.GetScale()) > scale_tol)
-  {
-    // Take a local copy to allow running.
-    std::unique_ptr<SubSpectrum> local_sm_copy = (*Dep::MSSM_spectrum)->get_LE()->clone();
-    // Run to 1 GeV.
-    local_sm_copy->runningpars.RunToScale(1.0);
-    m_s_1GeV_msbar = local_sm_copy->runningpars.get_mass_parameter("s");      
-  }
-  else 
-  {
-    // Calculate strange mass using the low-E spectrum 'as is'.
-    m_s_1GeV_msbar = (*Dep::MSSM_spectrum)->get_LE()->runningpars.get_mass_parameter("s");      
-  }
-
   // Get the W and Z widths.
   double W_width = 0.5*(Dep::W_plus_decay_rates->width_in_GeV + Dep::W_minus_decay_rates->width_in_GeV);
   double Z_width = Dep::Z_decay_rates->width_in_GeV;
 
   // Calculate decay rates
-  run_susy_hit(slha, m_s_1GeV_msbar, W_width, Z_width);      
+  run_susy_hit(slha, W_width, Z_width);      
 
 }
 DONE
