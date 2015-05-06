@@ -15,8 +15,8 @@ infile = args[0]
 doc = pyslha.read(infile)
 
 import numpy as np
-mg_range = np.arange(200, 1600, 100)
-mX_range = np.arange(0, 800, 100)
+mg_range = np.arange(200, 1601, 50)
+mX_range = np.arange(50, 801, 50)
 
 numpts = 0
 for mg in mg_range:

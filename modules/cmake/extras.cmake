@@ -30,6 +30,13 @@
 
 include(ExternalProject)
 
+# Define the sed command to use differently for OSX and linux
+if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+  set(dashi "-i ''")
+else()
+  set(dashi "-i")
+endif()
+
 set(remove_files_from_libdarksusy dssetdsinstall.o dssetdsversion.o ddilog.o drkstp.o eisrs1.o tql2.o tred2.o)
 set(remove_files_from_libisajet fa12.o  func_int.o  func.o  isalhd.o  isared.o)
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
@@ -63,7 +70,7 @@ ExternalProject_Add(superiso
   SOURCE_DIR ${PROJECT_SOURCE_DIR}/../extras/SuperIso/SuperIso
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND ""
-  BUILD_COMMAND sed -i "s#CC = gcc#CC = ${CMAKE_C_COMPILER}#g" <SOURCE_DIR>/Makefile COMMAND sed -i "s/CFLAGS= -O3 -pipe -fomit-frame-pointer/CFLAGS= -lm -fPIC ${CMAKE_C_FLAGS}/g" <SOURCE_DIR>/Makefile COMMAND make COMMAND ar x <SOURCE_DIR>/src/libisospin.a COMMAND echo "${CMAKE_C_COMPILER} -shared -o libsuperiso.so *.o -lm" > make_so.sh COMMAND chmod u+x make_so.sh COMMAND ./make_so.sh
+  BUILD_COMMAND sed ${dashi} "s#CC = gcc#CC = ${CMAKE_C_COMPILER}#g" <SOURCE_DIR>/Makefile COMMAND sed ${dashi} "s/CFLAGS= -O3 -pipe -fomit-frame-pointer/CFLAGS= -lm -fPIC ${CMAKE_C_FLAGS}/g" <SOURCE_DIR>/Makefile COMMAND make COMMAND ar x <SOURCE_DIR>/src/libisospin.a COMMAND echo "${CMAKE_C_COMPILER} -shared -o libsuperiso.so *.o -lm" > make_so.sh COMMAND chmod u+x make_so.sh COMMAND ./make_so.sh
   INSTALL_COMMAND cp <SOURCE_DIR>/libsuperiso.so ${PROJECT_SOURCE_DIR}/Backends/lib/.
 )
 
@@ -117,10 +124,14 @@ ExternalProject_Add(micromegas
 
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../extras/micromegas/libmicromegas.so" "${PROJECT_SOURCE_DIR}/Backends/lib/libmicromegas.so")
 
+if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64")
+  set(pythia_CONFIGURE_EXTRAS "--enable-64bits")
+endif()
+
 ExternalProject_Add(pythia
   SOURCE_DIR ${PROJECT_SOURCE_DIR}/../extras/boss/bossed_pythia_source
   BUILD_IN_SOURCE 1
-  CONFIGURE_COMMAND export FC=${CMAKE_Fortran_COMPILER} && export CC=${CMAKE_C_COMPILER} && export USRSHAREDSUFFIX=so && ./configure --enable-shared --enable-64bits
+  CONFIGURE_COMMAND export FC=${CMAKE_Fortran_COMPILER} && export CC=${CMAKE_C_COMPILER} && export USRSHAREDSUFFIX=so && ./configure --enable-shared ${pythia_CONFIGURE_EXTRAS}
   BUILD_COMMAND make CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${CMAKE_CXX_FLAGS} LDFLAGS=${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS}
   INSTALL_COMMAND cp lib/libpythia8.so ${PROJECT_SOURCE_DIR}/Backends/lib/libpythia8.so
 )
@@ -163,7 +174,7 @@ ExternalProject_Add(nulike
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND ""
   BUILD_COMMAND make ${nulike_lib}.so FC=${CMAKE_Fortran_COMPILER} FFLAGS=${nulikeFFLAGS} MODULE=${FMODULE} 
-  INSTALL_COMMAND sed -i "s#${nulike_ver}:.*${nulike_lib}\\.so#${nulike_ver}:       ${nulike_short_dir}/lib/${nulike_lib}.so#g" ${PROJECT_SOURCE_DIR}/config/backend_locations.yaml
+  INSTALL_COMMAND sed ${dashi} "s#${nulike_ver}:.*${nulike_lib}\\.so#${nulike_ver}:       ${nulike_short_dir}/lib/${nulike_lib}.so#g" ${PROJECT_SOURCE_DIR}/config/backend_locations.yaml
 )
 set(clean_files ${clean_files} "${nulike_dir}/lib/${nulike_lib}.so")
 
