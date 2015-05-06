@@ -126,7 +126,7 @@ Scanner:
         yrange: [0, 1]
         grid: [100, 100]
         selected_pts: [2, 3]
-        mult: 4
+        mult: 5
         flags: ["linear"]
         
     bin_grid_greg:
@@ -134,10 +134,10 @@ Scanner:
       options:
         input_files: ["output_file"]
         output_file: "output"
-        xrange: [0, 1]
-        yrange: [0, 1]
+        xrange: [0.0, 1.0]
+        yrange: [0.0, 1.0]
         grid: [100, 100]
-        selected_pts: [1, 0]
+        selected_pts: [0, 1]
         mult: 0
         flags: ["linear"]
     
@@ -153,11 +153,11 @@ Scanner:
         min_pixel_number: -1
       parameters:
         pos_x:
-          range: [200, 700]
+          range: [200, 800]
         pos_y:
-          range: [200, 700]
+          range: [200, 800]
         #intensity:
-        #  range: [0, 1e10]
+        #  range: [0, 10000]
   
     uniform:
       purpose: Likelihood
