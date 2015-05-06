@@ -21,6 +21,10 @@
 #  \author Pat Scott
 #          (p.scott@imperial.ac.uk)              
 #  \date 2014 Nov, Dec
+#
+#  \author Chris Rogan
+#          (crogan@cern.ch)              
+#  \date 2015 May
 #                                               
 #************************************************
 
@@ -162,6 +166,64 @@ ExternalProject_Add(nulike
   INSTALL_COMMAND sed -i "s#${nulike_ver}:.*${nulike_lib}\\.so#${nulike_ver}:       ${nulike_short_dir}/lib/${nulike_lib}.so#g" ${PROJECT_SOURCE_DIR}/config/backend_locations.yaml
 )
 set(clean_files ${clean_files} "${nulike_dir}/lib/${nulike_lib}.so")
+
+ExternalProject_Add(feynhiggs
+  URL http://wwwth.mpp.mpg.de/members/heinemey/feynhiggs/newversion/FeynHiggs-2.10.4.tar.gz
+  DOWNLOAD_DIR ${PROJECT_SOURCE_DIR}/../extras/FeynHiggs
+  SOURCE_DIR ${PROJECT_SOURCE_DIR}/../extras/FeynHiggs/FeynHiggs
+  BUILD_IN_SOURCE 1
+  CONFIGURE_COMMAND <SOURCE_DIR>/configure
+  BUILD_COMMAND make COMMAND mkdir -p lib COMMAND echo "${CMAKE_Fortran_COMPILER} -shared -o lib/libfeynhiggs.so build/*.o" > make_so.sh COMMAND chmod u+x make_so.sh COMMAND ./make_so.sh
+  INSTALL_COMMAND cp <SOURCE_DIR>/lib/libfeynhiggs.so ${PROJECT_SOURCE_DIR}/Backends/lib/.
+)
+
+set_property(TARGET feynhiggs PROPERTY _EP_DOWNLOAD_ALWAYS 0)
+
+set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../extras/FeynHiggs/FeynHiggs/lib/feynhiggs.so" "${PROJECT_SOURCE_DIR}/Backends/lib/feynhiggs.so")
+
+ExternalProject_Add(higgsbounds_tables
+  URL http://www.hepforge.org/archive/higgsbounds/csboutput_trans_binary.tar.gz
+  DOWNLOAD_DIR ${PROJECT_SOURCE_DIR}/../extras/HiggsBounds
+  SOURCE_DIR ${PROJECT_SOURCE_DIR}/../extras/HiggsBounds/csboutput_trans_binary
+  BUILD_IN_SOURCE 1
+  CONFIGURE_COMMAND ""
+  BUILD_COMMAND ""
+  INSTALL_COMMAND ""
+)
+
+set_property(TARGET higgsbounds_tables PROPERTY _EP_DOWNLOAD_ALWAYS 0)
+
+ExternalProject_Add(higgsbounds
+  DEPENDS feynhiggs
+  DEPENDS higgsbounds_tables
+  URL http://www.hepforge.org/archive/higgsbounds/HiggsBounds-4.2.0.tar.gz
+  DOWNLOAD_DIR ${PROJECT_SOURCE_DIR}/../extras/HiggsBounds
+  SOURCE_DIR ${PROJECT_SOURCE_DIR}/../extras/HiggsBounds/HiggsBounds
+  BUILD_IN_SOURCE 1
+  CONFIGURE_COMMAND cp configure-with-chisq my_configure COMMAND sed -i -e "s|.*clsbtablesdir=.*|clsbtablesdir=\"${PROJECT_SOURCE_DIR}/../extras/HiggsBounds/\"|" <SOURCE_DIR>/my_configure COMMAND sed -i -e "s|F90C =.*|F90C = ${CMAKE_Fortran_COMPILER}|" <SOURCE_DIR>/my_configure COMMAND sed -i -e "s|F77C =.*|F77C = ${CMAKE_Fortran_COMPILER}|" <SOURCE_DIR>/my_configure COMMAND sed -i -e "s|F90FLAGS =.*|F90FLAGS = ${CMAKE_Fortran_FLAGS}|" <SOURCE_DIR>/my_configure COMMAND <SOURCE_DIR>/my_configure
+  BUILD_COMMAND make COMMAND mkdir -p lib COMMAND echo "${CMAKE_Fortran_COMPILER} -shared -o lib/libhiggsbounds.so *.o" > make_so.sh COMMAND chmod u+x make_so.sh COMMAND ./make_so.sh
+  INSTALL_COMMAND cp <SOURCE_DIR>/lib/libhiggsbounds.so ${PROJECT_SOURCE_DIR}/Backends/lib/.
+)
+
+set_property(TARGET higgsbounds PROPERTY _EP_DOWNLOAD_ALWAYS 0)
+
+set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../extras/HiggsBounds/HiggsBounds/lib/higgsbounds.so" "${PROJECT_SOURCE_DIR}/Backends/lib/higgsbounds.so")
+
+ExternalProject_Add(higgssignals
+  DEPENDS feynhiggs
+  DEPENDS higgsbounds
+  URL http://www.hepforge.org/archive/higgsbounds/HiggsSignals-1.3.2.tar.gz
+  DOWNLOAD_DIR ${PROJECT_SOURCE_DIR}/../extras/HiggsSignals
+  SOURCE_DIR ${PROJECT_SOURCE_DIR}/../extras/HiggsSignals/HiggsSignals
+  BUILD_IN_SOURCE 1
+  CONFIGURE_COMMAND cp configure my_configure COMMAND sed -i -e "s|HBLIBS =.*|HBLIBS =-L../../HiggsBounds/HiggsBounds|" <SOURCE_DIR>/my_configure COMMAND sed -i -e "s|HBINCLUDE =.*|HBINCLUDE =-I../../HiggsBounds/HiggsBounds|" <SOURCE_DIR>/my_configure COMMAND sed -i -e "s|F90C =.*|F90C = ${CMAKE_Fortran_COMPILER}|" <SOURCE_DIR>/my_configure COMMAND sed -i -e "s|F77C =.*|F77C = ${CMAKE_Fortran_COMPILER}|" <SOURCE_DIR>/my_configure COMMAND sed -i -e "s|F90FLAGS =.*|F90FLAGS = ${CMAKE_Fortran_FLAGS}|" <SOURCE_DIR>/my_configure COMMAND <SOURCE_DIR>/my_configure
+  BUILD_COMMAND make COMMAND mkdir -p lib COMMAND rm HiggsSignals.o COMMAND echo "${CMAKE_Fortran_COMPILER} -shared -o lib/libhiggssignals.so ./*.o ../../HiggsBounds/HiggsBounds/*.o" > make_so.sh COMMAND chmod u+x make_so.sh COMMAND ./make_so.sh
+  INSTALL_COMMAND cp <SOURCE_DIR>/lib/libhiggssignals.so ${PROJECT_SOURCE_DIR}/Backends/lib/.
+)
+
+set_property(TARGET higgssignals PROPERTY _EP_DOWNLOAD_ALWAYS 0)
+
+set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../extras/HiggsSignals/HiggsSignals/lib/higgssignals.so" "${PROJECT_SOURCE_DIR}/Backends/lib/higgssignals.so")
 
 set_target_properties(ddcalc gamlike darksusy micromegas superiso nulike pythia fastsim BOSSMinimalExample PROPERTIES EXCLUDE_FROM_ALL 1)
 
