@@ -101,6 +101,9 @@ START_MODULE
       BACKEND_REQ(intdof, (), DS_INTDOF)
       BACKEND_REQ(pacodes, (), DS_PACODES)
     #undef FUNCTION
+    #define FUNCTION RD_spectrum_SingletDM
+      START_FUNCTION(Gambit::DarkBit::RD_spectrum_type)
+    #undef FUNCTION
   #undef CAPABILITY
 
   #define CAPABILITY RD_thresholds_resonances

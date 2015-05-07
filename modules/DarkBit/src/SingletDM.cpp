@@ -12,6 +12,9 @@
 ///          (c.weniger@uva.nl)
 ///  \date Oct 2014, Apr 2015
 ///
+///  \author Torsten Bringmann 
+///  \date May 2015
+///
 ///  *********************************************
 
 #include "gambit/Elements/gambit_module_headers.hpp"
@@ -173,7 +176,7 @@ namespace Gambit {
     {
       using namespace Pipes::DarkMatter_ID_SingletDM;
       result = DarkMatter_ID_type(initVector<std::string>("S"));
-    }
+    } // DarkMatter_ID_SingletDM
 
     /// Initializes thresholds/resonances for RD calculation for SingletDM
     void RD_thresholds_resonances_SingletDM(TH_resonances_thresholds &result)
@@ -185,7 +188,7 @@ namespace Gambit {
 
       result.threshold_energy.push_back(2*(*Param["mass"]));
       double mh = 125.7;  // FIXME
-      result.resonances.push_back(TH_Resonance(mh/2., mh/2./10.));
+      result.resonances.push_back(TH_Resonance(mh, 0.01)); // FIXME use proper Higgs width!
 
       // FIXME: Move somewhere else
       DS_RDMGEV myrdmgev;
@@ -194,7 +197,62 @@ namespace Gambit {
       myrdmgev.mdof(1) = 1;
       myrdmgev.kcoann(1) = 42;  // ???
       *BEreq::rdmgev = myrdmgev;
-    }
+    } // function DarkMatter_ID_SingletDM
+
+    /*! \brief Some helper function that gets spectrum information needed for
+     *         relic density calculations directly from DarkSUSY.
+     *
+     * Collects information about coannihilating particles, resonances and
+     * threshold energies.
+     */
+    void RD_spectrum_SingletDM(RD_spectrum_type &result)
+    {
+      using namespace Pipes::RD_spectrum_SingletDM;
+
+      std::vector<int> colist; //potential coannihilating particles (indices)
+      colist.clear();
+      result.coannihilatingParticles.clear();
+      result.resonances.clear();
+      result.threshold_energy.clear();
+
+      // FIXME: eventually, this function should not be BE-dependent anymore!
+      // thise is the DarkSUSY particle code for the neutralino (used as WIMP template)
+      int kdm=42;
+
+      // first add WIMP=least massive 'coannihilating particle'
+      result.coannihilatingParticles.push_back(
+          RD_coannihilating_particle(kdm,1,*Param["mass"]));
+
+
+      // in the ScalarSinglet model, only the Higgs appears as resonance
+      // FIXME: don't hardcode these values
+      double resmasses[] = {125.7};
+      double reswidths[] = {0.01};
+      int resmax=sizeof(resmasses) / sizeof(resmasses[0]);
+
+      for (int i=0; i<resmax; i++)
+      {
+        if (resmasses[i]/result.coannihilatingParticles[0].mass > 2.)
+        {
+          result.resonances.push_back(TH_Resonance(resmasses[i], reswidths[i]));
+        }
+      }
+
+      // determine thresholds; lowest threshold = 2*WIMP rest mass  (unlike DS
+      // convention!) NB: no coannihilation thresholds for SingletScalar model!
+      result.threshold_energy.push_back(
+          2*result.coannihilatingParticles[0].mass);
+      // add W, Z, H and top thresholds
+      // FIXME: don't hardcode these values
+      double thrmasses[] = {80.2, 91.19, 125.7, 173};
+      int thrmax=sizeof(thrmasses) / sizeof(thrmasses[0]);
+      for (int i=0; i<thrmax; i++)
+        if (thrmasses[i]>result.coannihilatingParticles[0].mass)
+          result.threshold_energy.push_back(2*thrmasses[i]);
+
+    } // function RD_spectrum_SingletDM
+
+
 
     /// Direct detection couplings for Singlet DM.
     void DD_couplings_SingletDM(Gambit::DarkBit::DD_couplings &result)
@@ -213,7 +271,7 @@ namespace Gambit {
       result.gpa = 0;  // Only SI cross-section
       result.gna = 0;
       result.M_DM = *Param["mass"];
-    }
+    } // function DD_couplings_SingletDM
 
     /// Set up process catalogue for Singlet DM.
     void TH_ProcessCatalog_SingletDM(Gambit::DarkBit::TH_ProcessCatalog &result)
@@ -318,6 +376,6 @@ namespace Gambit {
       catalog.processList.push_back(process_ann);
 
       result = catalog;
-    }
+    } // function TH_ProcessCatalog_SingletDM
   }
 }
