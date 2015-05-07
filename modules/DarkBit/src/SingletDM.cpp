@@ -20,6 +20,9 @@
 #include "gambit/Elements/gambit_module_headers.hpp"
 #include "gambit/DarkBit/DarkBit_rollcall.hpp"
 #include "gambit/Utils/ASCIItableReader.hpp"
+#include "boost/make_shared.hpp"
+
+using boost::make_shared;
 
 namespace Gambit {
   namespace DarkBit {
@@ -28,7 +31,9 @@ namespace Gambit {
     {
       public:
         /// Initialize SingletDM object (branching ratios etc)
-        SingletDM(TH_ProcessCatalog &catalog, std::string filename)
+        SingletDM(
+            TH_ProcessCatalog &catalog,
+            std::map<std::string, Funk::Funk> & arg_f_vs_mass)
         {
           // FIXME: This should not be hard-coded
           mh   = catalog.particleProperties.at("h0_1").mass;
@@ -38,18 +43,8 @@ namespace Gambit {
           mc   = catalog.particleProperties.at("u_2").mass;
           mtau = catalog.particleProperties.at("tau-").mass;
           mt   = catalog.particleProperties.at("u_3").mass;
-          // Higgs branching ratios and total width Gamma [GeV], as function of
-          // mass [GeV] (90 - 150 GeV)
-          ASCIItableReader table(filename);  
-          colnames = initVector<std::string>("mass", "bb", "tautau", "mumu",
-              "ss", "cc", "tt", "gg", "gammagamma", "Zgamma",
-              "WW", "ZZ", "Gamma");
-          table.setcolnames(colnames);
 
-          for (auto it = colnames.begin(); it != colnames.end(); it++)
-          {
-            f_vs_mass[*it] = Funk::interp("mass", table["mass"], table[*it]);
-          }
+          f_vs_mass = arg_f_vs_mass;
           Gamma = f_vs_mass["Gamma"]->bind("mass");
           Gamma_mh = Gamma->eval(mh);
         };
@@ -69,6 +64,12 @@ namespace Gambit {
          */
         double sv(std::string channel, double lambda, double mass, double v)
         {
+          // FIXME: Comment this in to get a segfault... Sigh
+          //f_vs_mass["Gamma"]->bind("mass");
+          // FIXME: Comment this in to get not a segfault... Sigh-sigh
+          //auto h = f_vs_mass["Gamma"]->bind("mass");
+          // I think this is related to a bug in the funktions.hpp.  But I
+          // don't understand how.
           double s = 4*mass*mass/(1-v*v/4);
           double sqrt_s = sqrt(s);
           if ( sqrt_s < 90 ) 
@@ -167,7 +168,6 @@ namespace Gambit {
       private:
         std::map<std::string, Funk::Funk> f_vs_mass;
         Funk::BoundFunk Gamma;
-        std::vector<std::string> colnames;
 
         double Gamma_mh, mh, v0, alpha_s, mb, mc, mtau, mt;
     };
@@ -273,6 +273,25 @@ namespace Gambit {
       result.M_DM = *Param["mass"];
     } // function DD_couplings_SingletDM
 
+    std::map<std::string, Funk::Funk> get_f_vs_mass(std::string filename)
+    {
+      // Higgs branching ratios and total width Gamma [GeV], as function of
+      // mass [GeV] (90 - 150 GeV)
+      ASCIItableReader table(filename);
+      std::vector<std::string> colnames = 
+        initVector<std::string>("mass", "bb", "tautau", "mumu",
+            "ss", "cc", "tt", "gg", "gammagamma", "Zgamma",
+            "WW", "ZZ", "Gamma");
+      table.setcolnames(colnames);
+
+      std::map<std::string, Funk::Funk> f_vs_mass;
+      for (auto it = colnames.begin(); it != colnames.end(); it++)
+      {
+        f_vs_mass[*it] = Funk::interp("mass", table["mass"], table[*it]);
+      }
+      return f_vs_mass;
+    }
+
     /// Set up process catalogue for Singlet DM.
     void TH_ProcessCatalog_SingletDM(Gambit::DarkBit::TH_ProcessCatalog &result)
     {
@@ -342,13 +361,20 @@ namespace Gambit {
 
       // Insert singlet mass
       TH_ParticleProperty S_Property(mass, 1);
-      catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("S", S_Property));
+      catalog.particleProperties.insert(
+          std::pair<std::string, TH_ParticleProperty> ("S", S_Property));
       
       // FIXME: Get Higgs mass from elsewhere
       TH_ParticleProperty h0_1_Property(125.7, 0);
-      catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("h0_1", h0_1_Property));
+      catalog.particleProperties.insert(
+          std::pair<std::string, TH_ParticleProperty> ("h0_1", h0_1_Property));
 
-      static SingletDM singletDM(catalog, "DarkBit/data/Higgs_decay_1101.0593.dat");
+      // Instantiate tables (only once)
+      static std::map<std::string, Funk::Funk> f_vs_mass = 
+        get_f_vs_mass("DarkBit/data/Higgs_decay_1101.0593.dat");
+
+      // Instantiate SingletDM object
+      auto singletDM = make_shared<SingletDM>(catalog, f_vs_mass);
 
       // FIXME: Add top (is this still TODO?)
 
@@ -364,7 +390,7 @@ namespace Gambit {
           if ( mass > catalog.particleProperties.at(p1[i]).mass )
           {
             Funk::Funk kinematicFunction = 
-              Funk::funcM(&singletDM, &SingletDM::sv, channel[i], lambda,
+              Funk::funcM(singletDM, &SingletDM::sv, channel[i], lambda,
                   mass, Funk::var("v"));
             std::vector<std::string> finalStates = Funk::vec<std::string>(p1[i], p2[i]);
             TH_Channel channel(finalStates, kinematicFunction);

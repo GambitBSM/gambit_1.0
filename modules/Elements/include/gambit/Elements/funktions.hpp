@@ -603,6 +603,13 @@ namespace Funk
                 digest_input(argss...);
             }
 
+            template <typename... Args>
+            FunkFuncM(shared_ptr<O> obj, double (O::* f)(funcargs...), Args... argss) : shared_obj(obj), obj(&*obj)
+            {
+                ptr = f;
+                digest_input(argss...);
+            }
+
             double value(std::vector<double> & data, intptr_t bindID)
             {
                 double result;
@@ -629,6 +636,7 @@ namespace Funk
             std::vector<double*> map;
             double (O::* ptr)(funcargs...);
             O* obj;
+            shared_ptr<O> shared_obj;
 
             // Digest input parameters 
             // (forwarding everything except Funk::Funk types, which is mapped onto
@@ -656,6 +664,11 @@ namespace Funk
 
     template <typename O, typename... funcargs, typename... Args>
     Funk funcM(O* obj, double (O::* f)(funcargs...), Args... args) {
+        return Funk(new FunkFuncM<O, funcargs...>(obj, f, args...));
+    }
+
+    template <typename O, typename... funcargs, typename... Args>
+    Funk funcM(shared_ptr<O> obj, double (O::* f)(funcargs...), Args... args) {
         return Funk(new FunkFuncM<O, funcargs...>(obj, f, args...));
     }
 
