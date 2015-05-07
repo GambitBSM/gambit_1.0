@@ -43,10 +43,10 @@
 #include "gambit/Utils/util_macros.hpp"
 #include "gambit/Utils/util_types.hpp"
 #include "gambit/Utils/util_functions.hpp"
-#include "gambit/Utils/types_rollcall.hpp"
-#include "gambit/Utils/functors.hpp"
-#include "gambit/Utils/module_macros_incore.hpp"
 #include "gambit/Utils/standalone_error_handlers.hpp"
+#include "gambit/Elements/types_rollcall.hpp"
+#include "gambit/Elements/functors.hpp"
+#include "gambit/Elements/module_macros_incore.hpp"
 #include "gambit/Logs/log.hpp"
 #include "gambit/Backends/ini_functions.hpp"
 #ifndef STANDALONE
@@ -93,13 +93,19 @@ namespace Gambit                                                            \
 {                                                                           \
   namespace BackendIniBit                                                   \
   {                                                                         \
+    namespace Pipes                                                         \
+    {                                                                       \
+      namespace CAT_4(BACKENDNAME,_,SAFE_VERSION,_init)                     \
+      {                                                                     \
+        static const str backendDir = Backends::backendInfo().              \
+         path_dir(STRINGIFY(BACKENDNAME), STRINGIFY(VERSION));              \
+      }                                                                     \
+    }                                                                       \
     void CAT_4(BACKENDNAME,_,SAFE_VERSION,_init)()                          \
     {                                                                       \
-      using namespace Pipes :: CAT_4(BACKENDNAME,_,SAFE_VERSION,_init) ;     \
-      using namespace Backends :: CAT_3(BACKENDNAME,_,SAFE_VERSION) ;        \
+      using namespace Pipes :: CAT_4(BACKENDNAME,_,SAFE_VERSION,_init) ;    \
+      using namespace Backends :: CAT_3(BACKENDNAME,_,SAFE_VERSION) ;       \
 
-//      logger().entering_backend(Logging::str2tag(STRINGIFY(BACKENDNAME)));  \
-  
 /// Boilerplate code for convenience function definitions
 #define BE_NAMESPACE                                                        \
 namespace Gambit                                                            \
@@ -166,6 +172,9 @@ namespace Gambit                                                            \
       /* Register a LogTag for this backend with the logging system */      \
       int reg_log = register_backend_with_log(STRINGIFY(BACKENDNAME));      \
                                                                             \
+      /* Make backend path easily available to convenience functions. */    \
+      static const str backendDir = backendInfo().                          \
+       path_dir(STRINGIFY(BACKENDNAME), STRINGIFY(VERSION));                \
     }                                                                       \
   }                                                                         \
 }                                                                           \

@@ -19,8 +19,8 @@
 #include <sstream>
 #include <cmath>
 
-#include "gambit/Utils/gambit_module_headers.hpp"
-#include "gambit/Utils/Spectrum.hpp"
+#include "gambit/Elements/gambit_module_headers.hpp"
+#include "gambit/Elements/Spectrum.hpp"
 #include "gambit/SpecBit/SpecBit_rollcall.hpp"
 
 #include "SLHAea/slhaea.h"
@@ -48,13 +48,16 @@ namespace Gambit
       // Retreive pointer to Spectrum object, delivered by dependency resolver
       // Module function asks for Spectrum* with capability MSSM_spectrum.
       // i.e. has DEPENDENCY(MSSM_spectrum, Spectrum*) 
-      namespace Pipe = Pipes::exampleRead;
-      const Spectrum* spec = *Pipe::Dep::MSSM_spectrum;
+      namespace myPipe = Pipes::exampleRead;
+      const Spectrum* fullspectrum = *myPipe::Dep::MSSM_spectrum;
+      const SubSpectrum* spec = fullspectrum->get_UV(); // MSSMSpec SubSpectrum object
+      const SubSpectrum* SM   = fullspectrum->get_LE(); // QedQcdWrapper SubSpectrum object
 
       // Extract SLHAea object
       // This copies the data out. Could possible change it to pass out a
       // reference instead, or have another function to do that.
-      SLHAea::Coll slhaea = spec->getSLHAea();
+      SLHAea::Coll slhaea = fullspectrum->getSLHAea();
+      // SLHAea::Coll slhaea = spec->getSLHAea(); // The above is just a wrapper for this.
 
       // If this is a valid model point, return true and dump information, else false
 
@@ -72,7 +75,7 @@ namespace Gambit
          std::cout << std::endl << slhaea << std::endl;
          
          // Write to file so we can check it
-         std::string filename(Pipe::runOptions->getValue<std::string>("output_slha_filename"));
+         std::string filename(myPipe::runOptions->getValue<std::string>("output_slha_filename"));
          spec->dump2slha(filename);
 
          // ---------------------------------------------------------
@@ -124,7 +127,7 @@ namespace Gambit
          cout<<endl;
          /* ----------------- Pole masses --------------------------- */
      
-         cout<<"Begin demo retrievals from Spectrum object"<<endl;
+         cout<<"Begin demo retrievals from Spectrum and SubSpectrum objects"<<endl;
          cout<<"-----------------------------------------------------------------"<<endl;
          cout<<endl;
          cout<<"First, general methods for accessing different sorts of information."<<endl;
@@ -134,6 +137,13 @@ namespace Gambit
          // spectrum generator output SLHA files which use PDG numbers anyway, so I
          // think this makes sense.
          cout<<"Lighest neutral Higgs boson pole mass:"<<endl;
+         ECHO(  fullspectrum->get_Pole_Mass( PDB.short_name_pair(25,0) )   )
+         ECHO(  fullspectrum->get_Pole_Mass( PDB.long_name(25,0) )         )
+         ECHO(  fullspectrum->get_Pole_Mass(25,0)                          )
+         ECHO(  fullspectrum->get_Pole_Mass( PDB.pdg_pair("h0",1) )        )
+         ECHO(  fullspectrum->get_Pole_Mass("h0",1)                        )
+         ECHO(  fullspectrum->get_Pole_Mass("h0_1")                        )
+
          ECHO(  spec->phys.get_Pole_Mass( PDB.short_name_pair(25,0) )   )
          ECHO(  spec->phys.get_Pole_Mass( PDB.long_name(25,0) )         )
          ECHO(  spec->phys.get_Pole_Mass(25,0)                          )
@@ -153,16 +163,20 @@ namespace Gambit
          cout<<endl;
          cout<<"Gauge boson pole masses:"<<endl;
          cout<<endl;
-         ECHO(  spec->phys.get_Pole_Mass("Z0")       )
-         ECHO(  slhaea.at("SMINPUTS").at(4).at(1)    )
+         ECHO(  fullspectrum->get_Pole_Mass("Z0") )
+         ECHO(  SM->phys.get_Pole_Mass("Z0")           )
+         ECHO(  slhaea.at("SMINPUTS").at(4).at(1)      )
          cout<<endl;
-         ECHO(  spec->phys.get_Pole_Mass("gamma")    )
+         ECHO(  fullspectrum->get_Pole_Mass("gamma")    )
+         ECHO(  SM->phys.get_Pole_Mass("gamma")    )
          cout<<"  ***Not in slha***"<<endl;
          cout<<endl;
-         ECHO(  spec->phys.get_Pole_Mass("W+")       )
+         ECHO(  fullspectrum->get_Pole_Mass("W+")       )
+         ECHO(  SM->phys.get_Pole_Mass("W+")         )
          ECHO(  slhaea.at("SMINPUTS").at(9).at(1)    )
          cout<<endl;
-         ECHO(  spec->phys.get_Pole_Mass("g")        )
+         ECHO(  fullspectrum->get_Pole_Mass("g")       )
+         ECHO(  SM->phys.get_Pole_Mass("g")          )
          cout<<"  ***Not in slha***"<<endl;
          cout<<endl;
          cout<<"Quark pole masses (actually the slha entries are MSbar except the top mass):"<<endl;
@@ -171,45 +185,65 @@ namespace Gambit
          // that non-perturbative effects made definining them difficult... well anyway will have
          // to ask Peter what is being computed here.
 
-         ECHO(  spec->phys.get_Pole_Mass("u",1)      )  // i.e. up (mass eigenstate)
+         //ECHO(  spec->phys.get_Pole_Mass("u",1)      )  // i.e. up (mass eigenstate)
+         cout<<"  ***u Pole mass not well defined***"<<endl;
          ECHO(  slhaea.at("SMINPUTS").at(22).at(1)   )  // mu(2 GeV)^MS-bar, not pole mass
          cout<<endl;
-         ECHO(  spec->phys.get_Pole_Mass("u",2)      )  // i.e. charm
+         //ECHO(  spec->phys.get_Pole_Mass("u",2)      )  // i.e. charm
+         cout<<"  ***c Pole mass not well defined***"<<endl;
          ECHO(  slhaea.at("SMINPUTS").at(24).at(1)   )  // mc(mc)^MS-bar, not pole mass
          cout<<endl;
-         ECHO(  spec->phys.get_Pole_Mass("u",3)      )  // i.e. top
+         //ECHO(  spec->phys.get_Pole_Mass("u",3)      )  // i.e. top
+         ECHO(  fullspectrum->get_Pole_Mass("t")       )
+         ECHO(  SM->phys.get_Pole_Mass("u",3)      )  // i.e. top
          ECHO(  slhaea.at("SMINPUTS").at(6).at(1)    )
          cout<<endl;
-         ECHO(  spec->phys.get_Pole_Mass("d",1)      )  // i.e. down
+         //ECHO(  spec->phys.get_Pole_Mass("d",1)      )  // i.e. down
+         cout<<"  ***d Pole mass not well defined***"<<endl;
          ECHO(  slhaea.at("SMINPUTS").at(21).at(1)   )  // md(2 GeV)^MS-bar, not pole mass
          cout<<endl;
-         ECHO(  spec->phys.get_Pole_Mass("d",2)      )  // i.e. strange
+         //ECHO(  spec->phys.get_Pole_Mass("d",2)      )  // i.e. strange
+         cout<<"  ***s Pole mass not well defined***"<<endl;
          ECHO(  slhaea.at("SMINPUTS").at(23).at(1)   )  // ms(2 GeV)^MS-bar, not pole mass
          cout<<endl;
-         ECHO(  spec->phys.get_Pole_Mass("d",3)      )  // i.e. bottom
+         //ECHO(  spec->phys.get_Pole_Mass("d",3)      )  // i.e. bottom
+         ECHO(  fullspectrum->get_Pole_Mass("b")       )
+         ECHO(  SM->phys.get_Pole_Mass("d",3)      )  // i.e. bottom
          ECHO(  slhaea.at("SMINPUTS").at(5).at(1)    )  //  mb(mb)^MS-bar, not pole mass.
          cout<<endl;
          cout<<"Charged fermions pole masses:"<<endl;
          cout<<endl;
-         ECHO(  spec->phys.get_Pole_Mass("e-",1)     )  // i.e. electron
+         //ECHO(  spec->phys.get_Pole_Mass("e-",1)     )  // i.e. electron
+         ECHO(  fullspectrum->get_Pole_Mass("e-")       )
+         ECHO(  SM->phys.get_Pole_Mass("e-",1)     )  // i.e. electron
          ECHO(  slhaea.at("SMINPUTS").at(11).at(1)   )
          cout<<endl;
-         ECHO(  spec->phys.get_Pole_Mass("e-",2)     )  // i.e. muon
+         //ECHO(  spec->phys.get_Pole_Mass("e-",2)     )  // i.e. muon
+         ECHO(  fullspectrum->get_Pole_Mass("mu-")       )
+         ECHO(  SM->phys.get_Pole_Mass("e-",2)     )  // i.e. muon
          ECHO(  slhaea.at("SMINPUTS").at(13).at(1)   )
          cout<<endl;
-         ECHO(  spec->phys.get_Pole_Mass("e-",3)     )  // i.e. tau
+         //ECHO(  spec->phys.get_Pole_Mass("e-",3)     )  // i.e. tau
+         ECHO(  fullspectrum->get_Pole_Mass("tau-")       )
+         ECHO(  SM->phys.get_Pole_Mass("e-",3)     )  // i.e. tau
          ECHO(  slhaea.at("SMINPUTS").at(7).at(1)    )
          cout<<endl;
          cout<<"Neutrinos pole masses:"<<endl;
          cout<<endl;
          // These will produce errors because currently no neutrino mass getters are hooked up
-         ECHO(  spec->phys.get_Pole_Mass("nu",1)     )  // Just mass ordered (if there is mixing)
+         //ECHO(  spec->phys.get_Pole_Mass("nu",1)     )  // Just mass ordered (if there is mixing)
+         ECHO(  fullspectrum->get_Pole_Mass("nu",1)       )
+         ECHO(  SM->phys.get_Pole_Mass("nu",1)     )  // Just mass ordered (if there is mixing)
          ECHO(  slhaea.at("SMINPUTS").at(12).at(1)   )
          cout<<endl;
-         ECHO(  spec->phys.get_Pole_Mass("nu",2)     )
+         //ECHO(  spec->phys.get_Pole_Mass("nu",2)     )
+         ECHO(  fullspectrum->get_Pole_Mass("nu",2)       )
+         ECHO(  SM->phys.get_Pole_Mass("nu",2)     )
          ECHO(  slhaea.at("SMINPUTS").at(14).at(1)   )
          cout<<endl;
-         ECHO(  spec->phys.get_Pole_Mass("nu",3)     )
+         //ECHO(  spec->phys.get_Pole_Mass("nu",3)     )
+         ECHO(  fullspectrum->get_Pole_Mass("nu",3)       )
+         ECHO(  SM->phys.get_Pole_Mass("nu",3)     )
          ECHO(  slhaea.at("SMINPUTS").at(8).at(1)    )
          cout<<endl;
 
@@ -217,62 +251,86 @@ namespace Gambit
          cout<<endl;
          cout<<"MSSM Higgs sector pole masses:"<<endl;
          cout<<endl;
+         ECHO(  fullspectrum->get_Pole_Mass("h0",1)       )
          ECHO(  spec->phys.get_Pole_Mass("h0",1)     )  // Lightest neutral Higgs boson
          ECHO(  slhaea.at("MASS").at(25).at(1)       )
          cout<<endl;
+         ECHO(  fullspectrum->get_Pole_Mass("h0",2)       )
          ECHO(  spec->phys.get_Pole_Mass("h0",2)     )  // Heavy neutral Higgs boson
          ECHO(  slhaea.at("MASS").at(35).at(1)       )
          cout<<endl;
+         ECHO(  fullspectrum->get_Pole_Mass("H+")       )
          ECHO(  spec->phys.get_Pole_Mass("H+")       )  // Charged Higgs
          ECHO(  slhaea.at("MASS").at(37).at(1)       )
          cout<<endl;
+         ECHO(  fullspectrum->get_Pole_Mass("A0")       )
          ECHO(  spec->phys.get_Pole_Mass("A0")       )  // Pseudoscalar neutral Higgs
          ECHO(  slhaea.at("MASS").at(36).at(1)       )
          cout<<endl;
 
-         // I'm going to use these macros to save lots of typing for the rest. If you run this function
-         // (e.g. using MSSM25_test.yaml) you will see how it all expands. But it is just the
+         // I'm going to use these nested functors to save lots of typing for the rest. It is just the
          // same as the examples above, except that the PDG codes are retrieved from the particle database.
          // The PDG code - string name correspondences are defined in 'Models/src/particle_database.cpp'
 
-         #define GET_POLEMASS(LONGNAME)                                         \
-         {                                                                      \
-            std::ostringstream echo1;                                           \
-            std::ostringstream echo2;                                           \
-            echo1 <<     "  spec->phys.get_Pole_Mass("<<LONGNAME<<") = ";       \
-            double value1 = spec->phys.get_Pole_Mass(LONGNAME);                 \
-            echo2 <<  "  slhaea.at(\"MASS\").at("<<PDB.pdg_pair(LONGNAME).first<<").at(1) = "; \
-            str value2 = slhaea.at("MASS").at( PDB.pdg_pair(LONGNAME).first ).at(1); \
-            cout << echo1.str() << value1 << endl;                              \
-            cout << echo2.str() << value2 << endl;                              \
-            cout<<endl;                                                         \
-         } 
+         struct get_polemass_functor
+         {                 
+           // Single mass
+           void operator()(const std::string& longname) 
+           {                                            
+             std::ostringstream echo1, echo2, echo3;                                           
+               ECHO(  fullspectrum->get_Pole_Mass("W+")       )
+             echo1 <<     "  fullspectrum->get_Pole_Mass("<<longname<<") = ";       
+             double value1 = fullspectrum->get_Pole_Mass(longname);                 
+             echo2 <<     "  spec->phys.get_Pole_Mass("<<longname<<") = ";       
+             double value2 = spec->phys.get_Pole_Mass(longname);                 
+             echo3 <<  "  slhaea.at(\"MASS\").at("<<PDB.pdg_pair(longname).first<<").at(1) = ";
+             str value3 = slhaea.at("MASS").at( PDB.pdg_pair(longname).first ).at(1);
+             cout << echo1.str() << value1 << endl;                              
+             cout << echo2.str() << value2 << endl;                              
+             cout << echo3.str() << value3 << endl;                              
+             cout<<endl;                                                         
+           }
+           // Range of indexes masses
+           void operator()(const std::string& longname, int from, int to) 
+           {                                            
+             for(int i=from; i<=to; ++i)           
+             {
+               std::ostringstream echo1;                                           
+               std::ostringstream echo2;                                           
+               echo1 <<     "  spec->phys.get_Pole_Mass("<<longname<<","<<i<<") = ";
+               double value1 = spec->phys.get_Pole_Mass(longname,i);                
+               echo2 <<  "  slhaea.at(\"MASS\").at("<<PDB.pdg_pair(longname,i).first<<").at(1) = ";
+               str value2 = slhaea.at("MASS").at( PDB.pdg_pair(longname,i).first ).at(1);
+               cout << echo1.str() << value1 << endl;                              
+               cout << echo2.str() << value2 << endl;                              
+               cout<<endl;                                                        
+             }
+           }
 
-         #define GET_POLEMASS_I(r, DATA, ELEM)                                  \
-         {                                                                      \
-            std::ostringstream echo1;                                           \
-            std::ostringstream echo2;                                           \
-            echo1 <<     "  spec->phys.get_Pole_Mass("<<DATA<<","<<ELEM<<") = "; \
-            double value1 = spec->phys.get_Pole_Mass(DATA,ELEM);                \
-            echo2 <<  "  slhaea.at(\"MASS\").at("<<PDB.pdg_pair(DATA,ELEM).first<<").at(1) = "; \
-            str value2 = slhaea.at("MASS").at( PDB.pdg_pair(DATA,ELEM).first ).at(1); \
-            cout << echo1.str() << value1 << endl;                              \
-            cout << echo2.str() << value2 << endl;                              \
-            cout<<endl;                                                         \
-         }
+           get_polemass_functor(const Spectrum* fullin, const SubSpectrum* specin, SLHAea::Coll& slhaeain) 
+             : fullspectrum(fullin)
+             , spec(specin)
+             , slhaea(slhaeain)
+           {}
 
-         #define GET_POLEMASSES(NAME, __INDICES) BOOST_PP_SEQ_FOR_EACH(GET_POLEMASS_I, NAME, BOOST_PP_TUPLE_TO_SEQ(__INDICES))
+           private:
+             const Spectrum* fullspectrum;
+             const SubSpectrum* spec;
+             SLHAea::Coll slhaea;
+         }; 
+
+         get_polemass_functor get_polemass(fullspectrum,spec,slhaea);
 
          cout<<endl<<"Gaugino pole masses:"<<endl<<endl;
-         GET_POLEMASS("~g")
-         GET_POLEMASSES("~chi+",(1,2)) 
-         GET_POLEMASSES("~chi0",(1,2,3,4)) 
+         get_polemass("~g");
+         get_polemass("~chi+",1,2);
+         get_polemass("~chi0",1,4); 
          cout<<endl<<"Squark pole masses:"<<endl<<endl;
-         GET_POLEMASSES("~d",(1,2,3,4,5,6)) 
-         GET_POLEMASSES("~u",(1,2,3,4,5,6)) 
+         get_polemass("~d",1,6); 
+         get_polemass("~u",1,6); 
          cout<<endl<<"Slepton pole masses:"<<endl<<endl;
-         GET_POLEMASSES("~e-",(1,2,3,4,5,6)) 
-         GET_POLEMASSES("~nu",(1,2,3)) 
+         get_polemass("~e-",1,6); 
+         get_polemass("~nu",1,3); 
 
          cout << endl << "Mixing matrices:" << endl << endl;
 
@@ -301,16 +359,16 @@ namespace Gambit
 
          // The names here could perhaps be improved. They are not so immediately obvious to me.
 
-         GET_MIX_MATRIX("UM","UMIX",(1,2),(1,2)) cout<<endl;
-         GET_MIX_MATRIX("UP","VMIX",(1,2),(1,2)) cout<<endl;
-         GET_MIX_MATRIX("ZA","PSEUDOSCALARMIX",(1,2),(1,2)) cout<<endl;
-         GET_MIX_MATRIX("ZD","DSQMIX",(1,2,3,4,5,6),(1,2,3,4,5,6)) cout<<endl;
-         GET_MIX_MATRIX("ZE","SELMIX",(1,2,3,4,5,6),(1,2,3,4,5,6)) cout<<endl;
-         GET_MIX_MATRIX("ZH","SCALARMIX",(1,2),(1,2)) cout<<endl;
-         GET_MIX_MATRIX("ZN","NMIX",(1,2,3,4),(1,2,3,4)) cout<<endl;
-         GET_MIX_MATRIX("ZHPM","CHARGEMIX",(1,2),(1,2)) cout<<endl;
-         GET_MIX_MATRIX("ZU","USQMIX",(1,2,3,4,5,6),(1,2,3,4,5,6)) cout<<endl;
-         GET_MIX_MATRIX("ZV","SNUMIX",(1,2,3),(1,2,3)) cout<<endl;
+         GET_MIX_MATRIX("~chi-","UMIX",(1,2),(1,2)) cout<<endl;
+         GET_MIX_MATRIX("~chi+","VMIX",(1,2),(1,2)) cout<<endl;
+         GET_MIX_MATRIX("A0","PSEUDOSCALARMIX",(1,2),(1,2)) cout<<endl;
+         GET_MIX_MATRIX("~d","DSQMIX",(1,2,3,4,5,6),(1,2,3,4,5,6)) cout<<endl;
+         GET_MIX_MATRIX("~e","SELMIX",(1,2,3,4,5,6),(1,2,3,4,5,6)) cout<<endl;
+         GET_MIX_MATRIX("h0","SCALARMIX",(1,2),(1,2)) cout<<endl;
+         GET_MIX_MATRIX("~chi0","NMIX",(1,2,3,4),(1,2,3,4)) cout<<endl;
+         GET_MIX_MATRIX("H+","CHARGEMIX",(1,2),(1,2)) cout<<endl;
+         GET_MIX_MATRIX("~u","USQMIX",(1,2,3,4,5,6),(1,2,3,4,5,6)) cout<<endl;
+         GET_MIX_MATRIX("~nu","SNUMIX",(1,2,3),(1,2,3)) cout<<endl;
 
          cout<<endl;
          cout << "Next up: running parameters" << endl;

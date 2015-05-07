@@ -71,7 +71,8 @@
         Second Author\thanksref{e2,addr2,addr3} %etc.
 }
 
-\thankstext{e1}{e-mail: fauthor@example.com}
+\thankstext{e1}{e-mail: firstauthor@example.com}
+\thankstext{e2}{e-mail: secondauthor@example.com}
 
 %\authorrunning{Short form of author list} % if too long for running head
 
@@ -100,7 +101,7 @@ Some examples for illustration...
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Introduction}
+\section{Introduction {\bf [TB/AP]}}
 \label{intro}
 
 \begin{itemize}
@@ -112,32 +113,32 @@ Some examples for illustration...
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Physics background}
+\section{Physics framework}
 \label{phys}
 
 $\to$ Here, we briefly describe the background necessary to understand what the code modules do...
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Relic density}
+\subsection{Relic density {\bf [JE]}}
 \label{phys_rd}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Direct detection}
+\subsection{Direct detection {\bf [CS]}}
 \label{phys_dd}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Indirect detection}
+\subsection{Indirect detection {\bf [TB]}}
 \label{phys_id}
 
 $\to$ general physics \& concepts; specifics go to next two subsections 
 (including descriptions of respective likelihood)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Indirect detection with gamma rays}
+\subsection{Indirect detection with gamma rays {\bf [CW]}}
 \label{phys_ga}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Indirect detection with neutrinos}
+\subsection{Indirect detection with neutrinos {\bf [PS/JE]}}
 \label{phys_nu}
 
 
@@ -145,85 +146,79 @@ $\to$ general physics \& concepts; specifics go to next two subsections
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Code description}
+\section{Module description}
 \label{code}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Getting started (?)}
-\label{code_init}
-
-$\to$ Installation, how to run test example
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{General code framework}
+\subsection{General code framework {\bf [CW]}}
 \label{code_gen}
 
 $\to$ connection to GAMBIT(?), introduce concept of backends, setup and initialization of particle models
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Backends}
-\label{code_gen}
-
+\medskip
+\noindent
 $\to$ briefly describe which backends are used, and what they contribute 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Relic density}
+\subsection{Relic density {\bf [JE/TB]}}
 \label{code_rd}
 \begin{itemize}
 \item two possibilities: $W_\mathrm{eff}$ directly from DS or built from process catalogue (as introduced below)
-\item Different final states: "basic" 2-body vs. cascade vs higher-order corrections
 \item...
 \end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Direct detection}
+\subsection{Direct detection {\bf [CS]}}
 \label{code_dd}
-\begin{itemize}
-\item Differences between mO and DS: relic density, DD couplings, ...
-\item spectra comparison: Cascade code vs. other codes and/or analytical spectra
-\item reproducing limits ? (lines, DD, ...)
-\item...
-\end{itemize}
 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Indirect detection}
+\subsection{Indirect detection {\bf [CW/TB]}}
 \label{code_id}
 
 $\to$ general physics \& concepts; specifics go to next two subsections
 \begin{itemize}
 \item Describe process catalogue 
-\item Different final states: "basic" 2-body vs. cascade vs higher-order corrections
+\item Different final states: "basic" 2-body vs. cascade {\bf [LD]} vs higher-order corrections
 \item...
 \end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Indirect detection with gamma rays}
+\subsection{Indirect detection with gamma rays {\bf [CS]}}
 \label{code_ga}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Indirect detection with neutrinos}
+\subsection{Indirect detection with neutrinos {\bf [PS]}}
 \label{code_nu}
 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Examples}
+\section{Validation \& examples}
 \label{examples}
 
 A few nice \& simple physics applications; to be discussed and worked out...
 
 E.g.
 \begin{itemize}
-\item Differences between mO and DS: relic density, DD couplings, maybe spectra...
-\item spectra comparison: Cascade code vs. other codes and/or analytical spectra
-\item Results for MSSM and/or Singlet DM benchmark points
+\item effective WIMP
+\item comparison between GC and dwarf likelihoods
+\item Differences between mO and DS: relic density, DD couplings, maybe spectra... {\bf [JE/JC]}
+\item spectra comparison: Cascade code vs. other codes and/or analytical spectra  {\bf [LD/MP]}
+\item Results for MSSM (and/or Singlet DM) benchmark points
 \item  ...
 \end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Outlook}
+\label{out}
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -234,6 +229,18 @@ E.g.
 \begin{acknowledgements}
 ...
 \end{acknowledgements}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\appendix
+\label{}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Getting started  {\bf [AP]}}
+\label{code_init}
+
+$\to$ Installation, how to run test example
 
 
 % BibTeX users please use one of

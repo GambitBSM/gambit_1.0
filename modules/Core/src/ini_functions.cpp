@@ -18,7 +18,7 @@
 ///
 ///  *********************************************
 
-#include "gambit/Utils/ini_functions.hpp"
+#include "gambit/Elements/ini_functions.hpp"
 #include "gambit/Core/ini_functions.hpp"
 #include "gambit/Core/core_singleton.hpp"
 
