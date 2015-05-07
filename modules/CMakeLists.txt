@@ -64,11 +64,11 @@ set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
 # Add the automatically determined parts of the RPATH that point to directories outside the build tree to the install RPATH
 SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
-# Check for optional packages and disable sections of GAMBIT accordingly
-include(cmake/optional.cmake)
-
 # Include cmake utility scripts
 include(cmake/utilities.cmake)
+
+# Check for optional packages and disable sections of GAMBIT accordingly
+include(cmake/optional.cmake)
 
 # Check for Python and required libs
 include(FindPythonInterp)
