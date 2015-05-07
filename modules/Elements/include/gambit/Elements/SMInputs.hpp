@@ -24,11 +24,10 @@
 
 namespace Gambit {
 
-   // Container class for SMINPUTS information (defined as in SLHA2)
+   // Container class for Standard Model input information (defined as in SLHA2)
    struct SMInputs
    {
-      // Set some defaults?
-   
+      // Block SMINPUTS 
       // SLHA1
       double alphainv;  // 1: Inverse electromagnetic coupling at the Z pole in the MSbar scheme (with 5 active flavours)
       double GF;        // 2: Fermi constant (in units of GeV^-2)
@@ -51,13 +50,47 @@ namespace Gambit {
       double mS;        // 23: s quark running mass in the MSbar scheme at 2 GeV        
       double mCmC;      // 24: c quark running mass in the MSbar scheme at mC      
    
-      // CKM? PMNS? 
-   
+      // Block VCKMIN
+      // Note: from SLHA2 manual:
+      // "The input CKM matrix in the Wolfenstein parameterisation
+      // Note that present CKM studies do not precisely define a 
+      // renormalisation scheme for this matrix since the electroweak 
+      // effects that renormalise it are highly suppressed and 
+      // generally neglected. We therefore assume that the CKM elements
+      // given by PDG (or by UTFit[31] and CKMFitter [32], the main 
+      // collaborations that extract the CKM parameters) refer to SM
+      // MSbar quantities defined at Q=mZ, to avoid any possible ambiguity."
+      struct CKMdef { 
+        double lambda;
+        double A;  
+        double rhobar;
+        double etabar;
+      };
+      CKMdef CKM;
+
+      // Block UPMNSIN
+      // PDG parameterisation in terms of rotation angles (all in radians)
+      struct PMNSdef {
+        double theta12; // the solar angle
+        double theta23; // the atmospheric mixing angle
+        double theta13;
+        double delta13; // the Dirac CP-violating phase
+        double alpha1;  // the first Majorana CP-violating phase
+        double alpha2;  // the second CP-violating Majorana phase
+      };
+      PMNSdef PMNS;
+
+      // Add any missing information to the input SLHAea object
+      // (since many codes will leave out information that they don't use)
+      void add_to_SLHAea(SLHAea::Coll& data /*modify*/) const;
    };
    
    // Get an entry from an SLHAea object, with some error checking
    double SLHAea_get(const SLHAea::Coll& data, const std::string& block, const int index);
-   
+
+   // Add an entry to an SLHAea object if it doesn't already exist (unless overwrite=true)
+   void SLHAea_add(SLHAea::Coll& data /*modify*/, const std::string& block, const int index, const double value, const std::string& comment="", const bool overwrite=false);
+
    // Fill SMInputs struct from an SLHAea object
    SMInputs fill_SMInputs_from_SLHAea(SLHAea::Coll&);
 

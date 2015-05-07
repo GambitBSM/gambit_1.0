@@ -337,6 +337,21 @@ namespace Gambit
          sminputs.mCmC     = *myPipe::Param["mCmC"    ];
          sminputs.mBmB     = *myPipe::Param["mBmB"    ]; 
          sminputs.mT       = *myPipe::Param["mT"      ];
+
+         // CKM
+         sminputs.CKM.lambda   = *myPipe::Param["lambda" ];
+         sminputs.CKM.A        = *myPipe::Param["A" ];
+         sminputs.CKM.rhobar   = *myPipe::Param["rhobar" ];
+         sminputs.CKM.etabar   = *myPipe::Param["etabar" ];
+               
+         // PMNS 
+         sminputs.PMNS.theta12 = *myPipe::Param["theta12"];
+         sminputs.PMNS.theta23 = *myPipe::Param["theta23"];
+         sminputs.PMNS.theta13 = *myPipe::Param["theta13"];
+         sminputs.PMNS.delta13 = *myPipe::Param["delta13"];
+         sminputs.PMNS.alpha1  = *myPipe::Param["alpha1"];
+         sminputs.PMNS.alpha2  = *myPipe::Param["alpha2"];
+
       }
       else
       {

@@ -1082,7 +1082,7 @@ namespace Gambit
       void Spectrum_test(const Spectrum* matched_spectra, const SubSpectrum* smin, bool SLHAonly=0)
       {
          // Extract pieces of Spectrum to make it clear what they are supposed to be
-         SMInputs sminputs = matched_spectra->get_SMINPUTS();
+         SMInputs sminputs = matched_spectra->get_SMInputs();
          std::unique_ptr<SubSpectrum> SM = matched_spectra->clone_LE(); // COPIES Spectrum object
          // const SubSpectrum* SM = matched_spectra->get_LE(); // Cannot do running on original object.
 
@@ -1212,6 +1212,60 @@ namespace Gambit
             OUTPUT << "ms/md = " << ms/md << std::endl;
          }
          OUTPUT << EOM;
+
+         /// Generate data for a plot of quark mass running.
+         if(not SLHAonly) {
+
+         double Qs[] = {
+         1.00000000e-02,   1.25892541e-02,   1.58489319e-02,
+         1.99526231e-02,   2.51188643e-02,   3.16227766e-02,
+         3.98107171e-02,   5.01187234e-02,   6.30957344e-02,
+         7.94328235e-02,   1.00000000e-01,   1.25892541e-01,
+         1.58489319e-01,   1.99526231e-01,   2.51188643e-01,
+         3.16227766e-01,   3.98107171e-01,   5.01187234e-01,
+         6.30957344e-01,   7.94328235e-01,   1.00000000e+00,
+         1.25892541e+00,   1.58489319e+00,   1.99526231e+00,
+         2.51188643e+00,   3.16227766e+00,   3.98107171e+00,
+         5.01187234e+00,   6.30957344e+00,   7.94328235e+00,
+         1.00000000e+01,   1.25892541e+01,   1.58489319e+01,
+         1.99526231e+01,   2.51188643e+01,   3.16227766e+01,
+         3.98107171e+01,   5.01187234e+01,   6.30957344e+01,
+         7.94328235e+01,   1.00000000e+02,   1.25892541e+02,
+         1.58489319e+02,   1.99526231e+02,   2.51188643e+02,
+         3.16227766e+02,   3.98107171e+02,   5.01187234e+02,
+         6.30957344e+02,   7.94328235e+02,   1.00000000e+03,
+         1.25892541e+03,   1.58489319e+03,   1.99526231e+03,
+         2.51188643e+03,   3.16227766e+03,   3.98107171e+03,
+         5.01187234e+03,   6.30957344e+03,   7.94328235e+03,
+         1.00000000e+04,   1.25892541e+04,   1.58489319e+04,
+         1.99526231e+04,   2.51188643e+04,   3.16227766e+04,
+         3.98107171e+04,   5.01187234e+04,   6.30957344e+04,
+         7.94328235e+04
+         };
+
+         std::vector<double> Qvec(Qs, Utils::endA(Qs));
+
+         std::ofstream Qout;
+         Qout.open("SpecBit/light_quark_running.txt");
+         
+         for(std::vector<double>::iterator it = Qvec.begin(); it != Qvec.end(); ++it) 
+         {
+            // Clone to avoid buildup of errors
+            std::unique_ptr<SubSpectrum> SMloop = matched_spectra->clone_LE();
+
+            SMloop->runningpars.RunToScale(*it);
+            double Q = SMloop->runningpars.GetScale();
+            double mu = SMloop->runningpars.get_mass_parameter("u");
+            double md = SMloop->runningpars.get_mass_parameter("d");
+            double ms = SMloop->runningpars.get_mass_parameter("s");
+
+            // Write to file
+            Qout << Q << ", " << md << ", " << mu << ", " << ms << std::endl;
+         }
+
+         Qout.close();
+ 
+         } // endif
 
          /// Testing copyability of Spectrum;
          // Copy to object to clone the hosted SubSpectrum objects.
