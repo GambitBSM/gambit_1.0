@@ -371,9 +371,9 @@ Rules:
     options:
       fast: 1  # Accuracy options (used by micromegas)
       Beps: 1e-2
-    function: RD_oh2_general   # general routines (DS backend)
+    #function: RD_oh2_general   # general routines (DS backend)
     #function: RD_oh2_DarkSUSY   # darksusy backend
-    #function: RD_oh2_MicrOmegas  # micromegas backend     
+    function: RD_oh2_MicrOmegas  # micromegas backend     
   - capability: RD_spectrum
     options: 
       CoannMaxMass: 2.1 # include only co-annihilating particles up to this mass
@@ -390,8 +390,8 @@ Rules:
   # is the only one available for that model.
   - capability: DD_couplings
     #function: DD_couplings_DarkSUSY    # couplings from darksusy backend
-    #function: DD_couplings_MicrOmegas  # couplings from micromegas backend
-    function: DD_couplings_SingletDM   # couplings for singlet DM model
+    function: DD_couplings_MicrOmegas  # couplings from micromegas backend
+    #function: DD_couplings_SingletDM   # couplings for singlet DM model
     options:
         rescale_couplings: 1  # For unit tests: rescale couplings
   # Miscellaneous ----------------------
