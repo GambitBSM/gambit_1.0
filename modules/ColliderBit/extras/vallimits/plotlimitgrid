@@ -93,7 +93,7 @@ obs_sr_dlls = { sr : obs_sr_llbs[sr] - obs_sr_llsbs[sr] for sr in obs_sr_llsbs.k
 # print sr_dlls
 ## Work out the best (most negative) dLL for each point
 # TODO: But this loses the info about which SR "won" at each point... can we re-find it?
-obs_best_dlls = reduce(np.fmax, obs_sr_dlls.values())
+obs_best_dlls = reduce(np.fmax, obs_sr_dlls.values() + [np.zeros_like(obs_sr_dlls.values()[0])]) #< note cmp to zero
 # print bestdlls.T
 
 ## Now reverse-engineer which SR gave the best _observed_ limit!
