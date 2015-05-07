@@ -8,16 +8,24 @@ DIR = args[0]
 
 
 ## Set up value arrays
+# TODO: automatically compute ranges and steps
 import numpy as np
-MX_LABEL = "$M_0$"
-MY_LABEL = "$M_{1/2}$"
-mx_range = np.arange(300, 5801, 500)
-my_range = np.arange(300, 841, 60)
+# MX_LABEL = "$M_0$"
+# MY_LABEL = "$M_{1/2}$"
+# mx_range = np.arange(300, 1551, 250)
+# my_range = np.arange(300,  871, 30)
+# # mx_range = np.arange(300, 5801, 500)
+# # my_range = np.arange(300, 841, 60)
 #
-# MX_LABEL = "$M_g$"
-# MY_LABEL = "$M_\\chi$"
+# MX_LABEL = "$M_\\tilde{g}$"
+# MY_LABEL = "$M_\\tilde{\\chi}$"
 # mx_range = np.arange(200, 1601, 50)
 # my_range = np.arange(50, 801, 50)
+#
+MX_LABEL = "$M_q$"
+MY_LABEL = "$M_\\chi$"
+mx_range = np.arange(50, 1101, 50)
+my_range = np.arange(50, 551, 50)
 
 
 xx, yy = np.meshgrid(mx_range, my_range)
@@ -32,7 +40,7 @@ import os, glob
 for i, mx in enumerate(mx_range):
     for j, my in enumerate(my_range):
         fglob = "results*-*_{0:04d}_{1:04d}*.dat".format(mx, my)
-        fglob = "result*-*{0:d}_{1:d}*.dat".format(mx, my)
+        # fglob = "result*-*{0:d}_{1:d}*.dat".format(mx, my)
         resfiles = glob.glob(os.path.join(DIR, fglob))
         if resfiles:
             with open(resfiles[0], "r") as rf:
@@ -47,6 +55,9 @@ for i, mx in enumerate(mx_range):
                     if len(parts) == 5:
                         ll_b = float(parts[3])
                         ll_sb = float(parts[4])
+                    if len(parts) == 7:
+                        ll_b = float(parts[5])
+                        ll_sb = float(parts[6])
                     # TODO: create the array untransposed, and index backwards?
                     if ll_b:
                         sr_llbs.setdefault(sr, np.full_like(xx.T, np.nan, dtype=np.double))[i,j] = ll_b
@@ -57,7 +68,7 @@ for i, mx in enumerate(mx_range):
 
 ## Find the LL_b for each SR (should be the same throughout the grid, but some will be NaN)
 sr_llb = { sr : np.nanmax(llbs) for (sr, llbs) in sr_llbs.iteritems() }
-# print sr_llb
+print sr_llb
 
 ## Work out the maximum LL for each SR, returned as a full array of maxlls to make dLL computation easy
 # sr_maxlls = { sr : np.full_like(xx.T, np.nanmax(lls), dtype=np.double) for (sr, lls) in sr_llsbs.iteritems() }
@@ -73,10 +84,10 @@ sr_dlls = { sr : sr_llb[sr] - sr_llsbs[sr] for sr in sr_llsbs.keys() } #< w.r.t.
 bestdlls = reduce(np.fmax, sr_dlls.values())
 # print bestdlls.T
 
-
 ## Plot dLL filled contours
 import matplotlib as mpl
-mpl.use("PGF")
+if opts.SAVE:
+    mpl.use("PGF")
 mpl.rc("font.family = serif")
 from matplotlib import pyplot as plt
 fig = plt.figure(figsize=[9,6])
