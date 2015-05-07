@@ -622,13 +622,25 @@ namespace Gambit {
         ADD_CHANNEL(10, "Z0", "Z0", "gamma", 4., 10000.)
         ADD_CHANNEL(13, "W+", "W-", "gamma", 4., 10000.)
 #undef ADD_CHANNEL
-          initialized = true;
+        initialized = true;
         result.addChannel(
             Funk::zero("Ecm", "E"), "nu_1", "nubar_1", "gamma", 4., 10000.);
         result.addChannel(
             Funk::zero("Ecm", "E"), "nu_2", "nubar_2", "gamma", 4., 10000.);
         result.addChannel(
             Funk::zero("Ecm", "E"), "nu_3", "nubar_3", "gamma", 4., 10000.);
+      }
+    }
+
+    /// SimYieldTable based on PPPC4DMID Cirelli et al. 2010
+    void SimYieldTable_PPPC(SimYieldTable& result)
+    {
+      using namespace Pipes::SimYieldTable_PPPC;
+      static bool initialized = false;
+
+      if ( not initialized )
+      {
+        initialized = true;
       }
     }
   }

@@ -1097,6 +1097,9 @@ START_MODULE
     START_FUNCTION(Gambit::DarkBit::SimYieldTable)
     BACKEND_REQ(dNdE, (), double, (double,double,int,int))
     #undef FUNCTION
+    #define FUNCTION SimYieldTable_PPPC
+    START_FUNCTION(Gambit::DarkBit::SimYieldTable)
+    #undef FUNCTION
   #undef CAPABILITY
 
   #define CAPABILITY DarkMatter_ID
