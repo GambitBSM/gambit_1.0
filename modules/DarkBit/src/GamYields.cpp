@@ -549,23 +549,24 @@ namespace Gambit {
         //int ch = 0;        // channel information  //bjf> unused variable
         Funk::Funk dNdE;
 
+// FIXME: Fix neutrino channels
 #define ADD_CHANNEL(ch, P1, P2, FINAL, EcmMin, EcmMax)                                                    \
         dNdE = Funk::func(BEreq::dshayield.pointer(), Funk::var("mwimp"), Funk::var("E"), ch, yieldk, flag)->set("mwimp", Funk::var("Ecm")/2);  \
         result.addChannel(dNdE, P1, P2, FINAL, EcmMin, EcmMax);  // specifies also center of mass energy range
         ADD_CHANNEL(12, "Z0", "Z0", "gamma", 0., 10000.)
         ADD_CHANNEL(13, "W+", "W-", "gamma", 0., 10000.)
-        ADD_CHANNEL(14, "nu_e", "nubar_e", "gamma", 0., 10000.)
+//        ADD_CHANNEL(14, "nu_e", "nubar_e", "gamma", 0., 10000.)
         ADD_CHANNEL(15, "e+", "e-", "gamma", 0., 10000.)
-        ADD_CHANNEL(16, "nu_mu", "nubar_mu", "gamma", 0., 10000.)
+//        ADD_CHANNEL(16, "nu_mu", "nubar_mu", "gamma", 0., 10000.)
         ADD_CHANNEL(17, "mu+", "mu-", "gamma", 0., 10000.)
-        ADD_CHANNEL(18, "nu_tau", "nubar_tau", "gamma", 0., 10000.)
+//        ADD_CHANNEL(18, "nu_tau", "nubar_tau", "gamma", 0., 10000.)
         ADD_CHANNEL(19, "tau+", "tau-", "gamma", 0., 10000.)
-        ADD_CHANNEL(20, "u", "ubar", "gamma", 0., 10000.)
-        ADD_CHANNEL(21, "d", "dbar", "gamma", 0., 10000.)
-        ADD_CHANNEL(22, "c", "cbar", "gamma", 0., 10000.)
-        ADD_CHANNEL(23, "s", "sbar", "gamma", 0., 10000.)
-        ADD_CHANNEL(24, "t", "tbar", "gamma", 0., 10000.)
-        ADD_CHANNEL(25, "b", "bbar", "gamma", 0., 10000.)
+        ADD_CHANNEL(20, "u_1", "ubar_1", "gamma", 0., 10000.)
+        ADD_CHANNEL(21, "d_1", "dbar_1", "gamma", 0., 10000.)
+        ADD_CHANNEL(22, "u_2", "ubar_2", "gamma", 0., 10000.)
+        ADD_CHANNEL(23, "d_2", "dbar_2", "gamma", 0., 10000.)
+        ADD_CHANNEL(24, "u_3", "ubar_3", "gamma", 0., 10000.)
+        ADD_CHANNEL(25, "d_3", "dbar_3", "gamma", 0., 10000.)
         ADD_CHANNEL(26, "g", "g", "gamma", 0., 10000.)
 #undef ADD_CHANNEL
 
@@ -609,12 +610,12 @@ namespace Gambit {
         dNdE = Funk::func(BEreq::dNdE.pointer(), Funk::var("Ecm"), Funk::var("E"), inP, outN)/Funk::var("E"); \
         result.addChannel(dNdE, P1, P2, FINAL, EcmMin, EcmMax);  // specifies also center of mass energy range
         ADD_CHANNEL(0, "g", "g", "gamma", 4., 10000.)
-        ADD_CHANNEL(1, "d", "dbar", "gamma", 4., 10000.)
-        ADD_CHANNEL(2, "u", "ubar", "gamma", 4., 10000.)
-        ADD_CHANNEL(3, "s", "sbar", "gamma", 4., 10000.)
-        ADD_CHANNEL(4, "c", "cbar", "gamma", 4., 10000.)
-        ADD_CHANNEL(5, "b", "bbar", "gamma", 4., 10000.)
-        ADD_CHANNEL(6, "t", "tbar", "gamma", 4., 10000.)
+        ADD_CHANNEL(1, "d_1", "dbar_1", "gamma", 4., 10000.)
+        ADD_CHANNEL(2, "u_1", "ubar_1", "gamma", 4., 10000.)
+        ADD_CHANNEL(3, "d_2", "dbar_2", "gamma", 4., 10000.)
+        ADD_CHANNEL(4, "u_2", "ubar_2", "gamma", 4., 10000.)
+        ADD_CHANNEL(5, "d_3", "dbar_3", "gamma", 4., 10000.)
+        ADD_CHANNEL(6, "u_3", "ubar_3", "gamma", 4., 10000.)
         ADD_CHANNEL(7, "e+", "e-", "gamma", 4., 10000.)
         ADD_CHANNEL(8, "mu+", "mu-", "gamma", 4., 10000.)
         ADD_CHANNEL(9, "tau+", "tau-", "gamma", 4., 10000.)
@@ -623,11 +624,11 @@ namespace Gambit {
 #undef ADD_CHANNEL
           initialized = true;
         result.addChannel(
-            Funk::zero("Ecm", "E"), "nu_e", "nubar_e", "gamma", 4., 10000.);
+            Funk::zero("Ecm", "E"), "nu_1", "nubar_1", "gamma", 4., 10000.);
         result.addChannel(
-            Funk::zero("Ecm", "E"), "nu_mu", "nubar_mu", "gamma", 4., 10000.);
+            Funk::zero("Ecm", "E"), "nu_2", "nubar_2", "gamma", 4., 10000.);
         result.addChannel(
-            Funk::zero("Ecm", "E"), "nu_tau", "nubar_tau", "gamma", 4., 10000.);
+            Funk::zero("Ecm", "E"), "nu_3", "nubar_3", "gamma", 4., 10000.);
       }
     }
   }

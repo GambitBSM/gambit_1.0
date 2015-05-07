@@ -59,7 +59,7 @@ namespace Gambit {
 
       // NB: eventually, this function should not be BE-dependent anymore!
       // DarkSUSY conventions like the ones below are only used until we have 
-      // decided on a format for the model representation
+      // decided on a format for the model representation, NB: kh2 is the SM Higgs!
       int kw=14,kz=15,kt=11,kh1=17,kh2=18,kh3=19,khc=20;
 
       // introduce pointers to DS mass spectrum and relevant particle info
@@ -117,7 +117,7 @@ namespace Gambit {
             > 2.)
         {
           if (reslist[i]==kh1 && mywidths->width(kh1) < 0.1)
-            // narrow res treatment adopted in DS
+            // wide res treatment adopted in DS
             result.resonances.push_back(
                 TH_Resonance(mymspctm->mass(reslist[i]), 0.1)); 
           else
@@ -150,6 +150,7 @@ namespace Gambit {
 
     /*! \brief Derive thresholds & resonances from process catalogue.
     */
+    // FIXME: currently not in use / operational!
     void RD_thresholds_resonances_from_ProcessCatalog(
         TH_resonances_thresholds &result)
     {
@@ -382,9 +383,9 @@ namespace Gambit {
         }
 
 
-        // follow narrow res treatment for SM Higgs adopted in DS
-        double widthSMHiggs=(*BEreq::widths).width(17);
-        if (widthSMHiggs<0.1) 
+        // follow wide res treatment for heavy Higgs adopted in DS
+        double widthheavyHiggs=(*BEreq::widths).width(17);
+        if (widthheavyHiggs<0.1) 
           (*BEreq::widths).width(17)=0.1;
 
         // tabulate invariant rate
@@ -400,8 +401,8 @@ namespace Gambit {
         // slower:
         // BEreq::dsrdeqn(byVal(*Dep::RD_eff_annrate),xstart,xend,yend,xf,nfcn);
 
-        // change SM Higgs width in DS back to standard value
-        (*BEreq::widths).width(17)=widthSMHiggs;
+        // change heavy Higgs width in DS back to standard value
+        (*BEreq::widths).width(17)=widthheavyHiggs;
 
         //capture NAN result and map it to zero RD
         if (yend!=yend){
@@ -416,6 +417,10 @@ namespace Gambit {
       } // USING BE=DS
 
       logger() << "RD_oh2_general: oh2 =" << result << std::endl;
+      
+      std::cout << std::endl << "DM mass = " << mwimp<< std::endl;
+      std::cout << "Oh2     = " << result << std::endl << std::endl;
+      
 
     } // function RD_oh2_general
 

@@ -5,6 +5,7 @@
 ###################################
 
 Parameters: 
+    StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
     SingletDM:
         mass:
             range: [45, 100]
@@ -116,6 +117,9 @@ ObsLikes:
 #      purpose:  Observable
       
 Rules:
+  # SM information from SpecBit
+  - capability: SM_spectrum 
+    function: get_QedQcd_spectrum  # Use this function to compute this capability
   # Gamma-rays -------------------------
   - capability: UnitTest_DarkBit
     options:

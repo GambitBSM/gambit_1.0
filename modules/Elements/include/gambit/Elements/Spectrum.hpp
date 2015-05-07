@@ -97,9 +97,11 @@ class Spectrum
       /// "Shortcut" getters to access pole masses in hosted SubSpectrum objects.
       /// UV object given higher priority; if no match found, LE object will be 
       /// checked. If still no match, error is thrown.
+      bool   has_Pole_Mass(const std::string& mass) const; 
       double get_Pole_Mass(const std::string& mass) const; 
+      bool   has_Pole_Mass(const std::string& mass, const int index) const; 
       double get_Pole_Mass(const std::string& mass, const int index) const; 
-      DECLARE_PDG_GETTERS(get_Pole_Mass) // Overloads for PDG types
+      DECLARE_PDG_GETTERS(Pole_Mass) // Overloads for PDG types
       /// @}
 
       /// SLHAea object getter
@@ -111,7 +113,7 @@ class Spectrum
 /// Overloads for PDG types
 /// These just convert the types and then call the properly defined functions
 /// (Note; they are inline due to their use in SubSpectrum.hpp, so need to be in header)
-DEFINE_PDG_GETTERS(Spectrum,get_Pole_Mass)
+DEFINE_PDG_GETTERS(Spectrum,Pole_Mass)
 
 } // end namespace Gambit
 

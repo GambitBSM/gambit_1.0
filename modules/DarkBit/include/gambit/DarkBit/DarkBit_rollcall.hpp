@@ -72,7 +72,7 @@ START_MODULE
     // (probably always true)
     #define FUNCTION DarkSUSY_PointInit_MSSM
       START_FUNCTION(bool)
-      DEPENDENCY(MSSM_spectrum, eaSLHA) 
+      DEPENDENCY(MSSM_spectrum, const Spectrum*) 
       ALLOW_MODELS(CMSSM,MSSM25atQ)
       // CMSSM
       BACKEND_REQ(dsgive_model_isasugra, (), void, (double&,double&,double&,double&,double&))
@@ -100,6 +100,9 @@ START_MODULE
       BACKEND_REQ(widths, (), DS_WIDTHS)
       BACKEND_REQ(intdof, (), DS_INTDOF)
       BACKEND_REQ(pacodes, (), DS_PACODES)
+    #undef FUNCTION
+    #define FUNCTION RD_spectrum_SingletDM
+      START_FUNCTION(Gambit::DarkBit::RD_spectrum_type)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -362,7 +365,8 @@ START_MODULE
     #undef FUNCTION
     #define FUNCTION TH_ProcessCatalog_SingletDM
       START_FUNCTION(Gambit::DarkBit::TH_ProcessCatalog)
-      //DEPENDENCY(SM_spectrum, const Spectrum*)
+      DEPENDENCY(SM_spectrum, const SubSpectrum*)
+      DEPENDENCY(SMINPUTS, SMInputs)
       ALLOW_MODELS(SingletDM)
     #undef FUNCTION
   #undef CAPABILITY

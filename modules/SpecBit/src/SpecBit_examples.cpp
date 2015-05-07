@@ -136,7 +136,7 @@ namespace Gambit
          // the particle database information. It is only the MASS block in the 
          // spectrum generator output SLHA files which use PDG numbers anyway, so I
          // think this makes sense.
-         cout<<"Lighest neutral Higgs boson pole mass:"<<endl;
+         cout<<"Lightest neutral Higgs boson pole mass:"<<endl;
          ECHO(  fullspectrum->get_Pole_Mass( PDB.short_name_pair(25,0) )   )
          ECHO(  fullspectrum->get_Pole_Mass( PDB.long_name(25,0) )         )
          ECHO(  fullspectrum->get_Pole_Mass(25,0)                          )
@@ -278,7 +278,6 @@ namespace Gambit
            void operator()(const std::string& longname) 
            {                                            
              std::ostringstream echo1, echo2, echo3;                                           
-               ECHO(  fullspectrum->get_Pole_Mass("W+")       )
              echo1 <<     "  fullspectrum->get_Pole_Mass("<<longname<<") = ";       
              double value1 = fullspectrum->get_Pole_Mass(longname);                 
              echo2 <<     "  spec->phys.get_Pole_Mass("<<longname<<") = ";       
@@ -529,11 +528,8 @@ namespace Gambit
          // - Standard Model mixings (need to be added to MSSMSpec as well)
          // - some extra stuff to do regarding organising Standard Model input
          //   parameters (and computing/transferring the pole masses)
-         // - Need to extend a couple of things in Spectrum.hpp so that we can
-         //   compute and return auxilliary things like TanBeta. Of course the
-         //   user can currently compute it themselves from the vevs.
 
-         SpecBit_warning().raise(LOCAL_INFO,"Stopped to examine spectrum contents");  
+         SpecBit_warning().raise(LOCAL_INFO,"\n *** Stopped on purpose to examine spectrum contents ***");  
          result = 0;
       }
       else if(spinfo.find(k3) != spinfo.end())
