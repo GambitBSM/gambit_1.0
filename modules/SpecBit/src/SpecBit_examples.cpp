@@ -40,6 +40,15 @@ namespace Gambit
 
     using namespace LogTags;
 
+    // Helper function to add error information to report
+    void add_error(std::ostringstream& out, const std::exception& e, const std::string& msg)
+    {
+       out << "------------------------------" << std::endl;
+       out << "TEST FAIL: " << msg << std::endl;
+       out << "Exception thrown was: "<<e.what()<<std::endl;
+       return;
+    }
+
     // Example showing reading of SLHA information from Spectrum object, using
     // both SLHAea objects and direct Spectrum getter functions.
     void exampleRead (bool &result)
@@ -52,6 +61,8 @@ namespace Gambit
       const Spectrum* fullspectrum = *myPipe::Dep::MSSM_spectrum;
       const SubSpectrum* spec = fullspectrum->get_UV(); // MSSMSpec SubSpectrum object
       const SubSpectrum* SM   = fullspectrum->get_LE(); // QedQcdWrapper SubSpectrum object
+
+      std::ostringstream report; // Information about any problems encountered
 
       // Extract SLHAea object
       // This copies the data out. Could possible change it to pass out a
@@ -71,11 +82,12 @@ namespace Gambit
       // "at" and "operator[]", it does automatic conversion, but for "find" it does
       // not, so we have to manually do it.   
       SLHAea::Block spinfo = slhaea.at("SPINFO");
-      std::vector<std::string> k3(1, "3");
+      //std::vector<std::string> k3(1, "3");
       std::vector<std::string> k4(1, "4");
 
       // See if error code entries exist
-      if(spinfo.find(k3) == spinfo.end() and spinfo.find(k4) == spinfo.end())
+      //if(spinfo.find(k3) == spinfo.end() and spinfo.find(k4) == spinfo.end())
+      if(spinfo.find(k4) == spinfo.end())
       {
          std::cout << "Good spectrum found! Inspecting contents..." << std::endl;
          std::cout << std::endl << slhaea << std::endl;
@@ -94,9 +106,8 @@ namespace Gambit
          {                                                    \
              std::ostringstream msg;                          \
              try { msg << COMMAND; }                          \
-             catch (const std::out_of_range& oor)             \
-             { msg << "Out of Range error: " << oor.what(); } \
-             cout << "  " << STRINGIFY(COMMAND) << " = " << msg.str() << endl; \
+             catch (const std::exception& e)                  \
+             { add_error(report,e,STRINGIFY(COMMAND)); }      \
          }
          
          /* ----------Test particle database access ---------------- */
@@ -179,7 +190,7 @@ namespace Gambit
          cout<<endl;
          ECHO(  fullspectrum->get_Pole_Mass("W+")       )
          ECHO(  SM->phys.get_Pole_Mass("W+")         )
-         ECHO(  slhaea.at("SMINPUTS").at(9).at(1)    )
+         ECHO(  slhaea.at("MASS").at(24).at(1)    )
          cout<<endl;
          ECHO(  fullspectrum->get_Pole_Mass("g")       )
          ECHO(  SM->phys.get_Pole_Mass("g")          )
@@ -252,7 +263,6 @@ namespace Gambit
          ECHO(  SM->phys.get_Pole_Mass("nu",3)     )
          ECHO(  slhaea.at("SMINPUTS").at(8).at(1)    )
          cout<<endl;
-
          // Now for SUSY particles
          cout<<endl;
          cout<<"MSSM Higgs sector pole masses:"<<endl;
@@ -312,19 +322,21 @@ namespace Gambit
              }
            }
 
-           get_polemass_functor(const Spectrum* fullin, const SubSpectrum* specin, SLHAea::Coll& slhaeain) 
-             : fullspectrum(fullin)
+           get_polemass_functor(std::ostringstream& report, const Spectrum* fullin, const SubSpectrum* specin, SLHAea::Coll& slhaeain) 
+             : report(report)
+             , fullspectrum(fullin)
              , spec(specin)
              , slhaea(slhaeain)
            {}
 
            private:
+             std::ostringstream& report;
              const Spectrum* fullspectrum;
              const SubSpectrum* spec;
              SLHAea::Coll slhaea;
          }; 
 
-         get_polemass_functor get_polemass(fullspectrum,spec,slhaea);
+         get_polemass_functor get_polemass(report,fullspectrum,spec,slhaea);
 
          cout<<endl<<"Gaugino pole masses:"<<endl<<endl;
          get_polemass("~g");
@@ -349,6 +361,7 @@ namespace Gambit
             str block = BOOST_PP_SEQ_ELEM(1, PRODUCT);                           \
             int i = BOOST_PP_SEQ_ELEM(2, PRODUCT);                               \
             int j = BOOST_PP_SEQ_ELEM(3, PRODUCT);                               \
+           try{                                                                  \
             std::ostringstream echo1;                                            \
             std::ostringstream echo2;                                            \
             echo1 <<     "  spec->phys.get_Pole_Mixing("<<label<<","<<i<<","<<j<<") = "; \
@@ -358,6 +371,9 @@ namespace Gambit
             cout << echo1.str() << value1 <<endl;                                \
             cout << echo2.str() << value2 <<endl;                                \
             cout << endl;                                                        \
+           }                                                                     \
+           catch (const std::exception& e)                                       \
+           { add_error(report,e,label+": "+block); }                             \
          }
 
          #define GET_MIX_MATRIX(NAME,BLOCK,__IND1,__IND2) BOOST_PP_SEQ_FOR_EACH_PRODUCT(GET_MIX_MATRIX_EL, ((NAME))((BLOCK))(BOOST_PP_TUPLE_TO_SEQ(__IND1))(BOOST_PP_TUPLE_TO_SEQ(__IND2)))
@@ -409,6 +425,7 @@ namespace Gambit
             str block = BOOST_PP_SEQ_ELEM(1, PRODUCT);                           \
             int i = BOOST_PP_SEQ_ELEM(2, PRODUCT);                               \
             int j = BOOST_PP_SEQ_ELEM(3, PRODUCT);                               \
+           try{                                                                  \
             std::ostringstream echo1;                                            \
             std::ostringstream echo2;                                            \
             echo1 <<     "  spec->runningpars.get_dimensionless_parameter("<<label<<","<<i<<","<<j<<") = "; \
@@ -418,6 +435,8 @@ namespace Gambit
             cout << echo1.str() << value1 <<endl;                                \
             cout << echo2.str() << value2 <<endl;                                \
             cout << endl;                                                        \
+           } catch (const std::exception& e)                                       \
+           { add_error(report,e,label+": "+block); }                             \
          }
 
          #define GET_MATRIX(NAME,BLOCK,__IND1,__IND2) BOOST_PP_SEQ_FOR_EACH_PRODUCT(GET_MATRIX_EL, ((NAME))((BLOCK))(BOOST_PP_TUPLE_TO_SEQ(__IND1))(BOOST_PP_TUPLE_TO_SEQ(__IND2)))
@@ -458,6 +477,7 @@ namespace Gambit
             str block = BOOST_PP_SEQ_ELEM(1, PRODUCT);                           \
             int i = BOOST_PP_SEQ_ELEM(2, PRODUCT);                               \
             int j = BOOST_PP_SEQ_ELEM(3, PRODUCT);                               \
+           try{                                                                  \
             std::ostringstream echo1;                                            \
             std::ostringstream echo2;                                            \
             echo1 <<     "  spec->runningpars.get_mass_parameter("<<label<<","<<i<<","<<j<<") = "; \
@@ -467,6 +487,8 @@ namespace Gambit
             cout << echo1.str() << value1 <<endl;                                \
             cout << echo2.str() << value2 <<endl;                                \
             cout << endl;                                                        \
+           } catch (const std::exception& e)                                       \
+           { add_error(report,e,label+": "+block); }                             \
          }
 
          #define GET_M1_MATRIX(NAME,BLOCK,__IND1,__IND2) BOOST_PP_SEQ_FOR_EACH_PRODUCT(GET_M1_MATRIX_EL, ((NAME))((BLOCK))(BOOST_PP_TUPLE_TO_SEQ(__IND1))(BOOST_PP_TUPLE_TO_SEQ(__IND2)))
@@ -507,6 +529,7 @@ namespace Gambit
             int i = BOOST_PP_SEQ_ELEM(2, PRODUCT);                               \
             int j = BOOST_PP_SEQ_ELEM(3, PRODUCT);                               \
             std::ostringstream echo1;                                            \
+           try {                                                                 \
             std::ostringstream echo2;                                            \
             echo1 <<     "  spec->runningpars.get_mass2_parameter("<<label<<","<<i<<","<<j<<") = "; \
             double value1 = spec->runningpars.get_mass2_parameter(label,i,j); \
@@ -515,7 +538,9 @@ namespace Gambit
             cout << echo1.str() << value1 <<endl;                                \
             cout << echo2.str() << value2 <<endl;                                \
             cout << endl;                                                        \
-         }
+           } catch (const std::exception& e)                                       \
+           { add_error(report,e,label+": "+block); }                             \
+        }
 
          #define GET_M2_MATRIX(NAME,BLOCK,__IND1,__IND2) BOOST_PP_SEQ_FOR_EACH_PRODUCT(GET_M2_MATRIX_EL, ((NAME))((BLOCK))(BOOST_PP_TUPLE_TO_SEQ(__IND1))(BOOST_PP_TUPLE_TO_SEQ(__IND2)))
 
@@ -535,14 +560,16 @@ namespace Gambit
          // - some extra stuff to do regarding organising Standard Model input
          //   parameters (and computing/transferring the pole masses)
 
+         cout << "Test report:" << std::endl << report.str();
+
          SpecBit_warning().raise(LOCAL_INFO,"\n *** Stopped on purpose to examine spectrum contents ***");  
          result = 0;
       }
-      else if(spinfo.find(k3) != spinfo.end())
-      {
-         std::cout << "Bad spectrum: " << spinfo.at(3) << std::endl;
-         result = 1;
-      }
+      //else if(spinfo.find(k3) != spinfo.end())
+      //{
+      //   std::cout << "Bad spectrum: " << spinfo.at(3) << std::endl;
+      //   result = 1;
+      //}
       else if(spinfo.find(k4) != spinfo.end())
       {
          std::cout << "Bad spectrum: " << spinfo.at(4) << std::endl;
