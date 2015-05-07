@@ -17,13 +17,13 @@ import numpy as np
 # # mx_range = np.arange(300, 5801, 500)
 # # my_range = np.arange(300, 841, 60)
 #
-# MX_LABEL = "$M_\\tilde{g}$"
-# MY_LABEL = "$M_\\tilde{\\chi}$"
+# MX_LABEL = "$M_{\\tilde{g}}$"
+# MY_LABEL = "$M_{\\tilde{\\chi}}$"
 # mx_range = np.arange(200, 1601, 50)
 # my_range = np.arange(50, 801, 50)
 #
-MX_LABEL = "$M_q$"
-MY_LABEL = "$M_\\chi$"
+MX_LABEL = "$M_{\\tilde{q}}$"
+MY_LABEL = "$M_{\\tilde{\\chi}}$"
 mx_range = np.arange(50, 1101, 50)
 my_range = np.arange(50, 551, 50)
 
