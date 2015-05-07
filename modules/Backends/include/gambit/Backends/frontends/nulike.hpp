@@ -33,8 +33,8 @@ LOAD_LIBRARY
 BE_FUNCTION(nulike_init, void, (const char&, const char&, const char&, const char&, const char&, double&, double&, bool&, bool&), "nulike_init_", "nulike_init")
 BE_FUNCTION(nulike_bounds, void, (const char&, const double&, const double&, double(*)(const double&, const int&, void*&), double&, double&, int&,
                                   double&, double&, const int&, const bool&, const bool&, const double&, const double&, void*&), "nulike_bounds", "nubounds")
-BE_FUNCTION(nulike_lnpiln, double, (int&, double&, double&, double&), "nulike_lnpiln_", "lnlike_marg_poisson_lognormal_error")
-BE_FUNCTION(nulike_lnpin,  double, (int&, double&, double&, double&), "nulike_lnpin_",  "lnlike_marg_poisson_gaussian_error")
+BE_FUNCTION(nulike_lnpiln, double, (const int&, const double&, const double&, const double&), "nulike_lnpiln_", "lnlike_marg_poisson_lognormal_error")
+BE_FUNCTION(nulike_lnpin,  double, (const int&, const double&, const double&, const double&), "nulike_lnpin_",  "lnlike_marg_poisson_gaussian_error")
 // Arguments for the last two above are: 
 //  int    nobs   number of observed events
 //  double npred1 number of predicted events with no uncertainty

@@ -5,6 +5,7 @@
 ###################################
 
 Parameters: 
+    StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
     SingletDM:
         lambda:
             range: [0.001, 1]
@@ -332,6 +333,9 @@ Rules:
             - bbar
         test_printMore:         false
 
+  # SM information from SpecBit
+  - capability: SM_spectrum 
+    function: get_QedQcd_spectrum  # Use this function to compute this capability
 
   # DarkSUSY ---------------------------
   - capability: DarkSUSY_5_1_1_init # Initialization of DarkSUSY backend

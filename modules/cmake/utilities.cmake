@@ -115,7 +115,7 @@ function(add_gambit_library libraryname)
 endfunction()
 
 # Function to add GAMBIT executable
-function(add_gambit_executable executablename)
+function(add_gambit_executable executablename LIBRARIES)
   cmake_parse_arguments(ARG "" "" "SOURCES;HEADERS;" "" ${ARGN})
 
   add_executable(${executablename} ${ARG_SOURCES} ${ARG_HEADERS})
@@ -140,22 +140,16 @@ function(add_gambit_executable executablename)
     set(LIBRARIES ${LIBRARIES} ${Boost_LIBRARIES})
   endif()
   if (GSL_FOUND)
-    if(GSL_LDFLAGS)
-      set(LIBRARIES ${LIBRARIES} ${GSL_LDFLAGS})
-    else()
-      set(LIBRARIES ${LIBRARIES} "-L${GSL_LIBRARY_DIRS}")
-      foreach(LIB ${GSL_LIBRARIES})
-        set(LIBRARIES ${LIBRARIES} ${LIB})
-      endforeach()
-    endif()
+    set(LIBRARIES ${LIBRARIES} ${GSL_LIBRARIES})
   endif()
+  target_link_libraries(${executablename} ${LIBRARIES} yaml-cpp)
+  add_dependencies(${executablename} mkpath)
 
   #For checking if all the needed libs are present.  Don't add them manually with -lsomelib!!
   if(VERBOSE)
     message(STATUS ${LIBRARIES})
   endif()
 
-  target_link_libraries(${executablename} ${LIBRARIES})
 endfunction()
 
 # Simple function to find specific Python modules
