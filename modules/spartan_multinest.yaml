@@ -55,8 +55,8 @@ ObsLikes:
     module:       ExampleBit_A
     type:         double
 
-#======== Auxiliary entries ========
-Auxiliaries:
+#======== Rule entries ========
+Rules:
   # None required
 
 #======== Logging setup ========

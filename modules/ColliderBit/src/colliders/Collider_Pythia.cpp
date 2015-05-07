@@ -2,16 +2,16 @@
 #include "gambit/ColliderBit/Collider.hpp"
 
 /// @note STEP1-3)  How to configure a new collider: Start in Collider.hpp
-/// @note (To configure a new subprocess group, only do STEPS >= 4) 
+/// @note (To configure a new subprocess group, only do STEPS >= 4)
 
 namespace Gambit {
   namespace ColliderBit {
 
-/// @note STEP4)  Create factory functions for further subclasses.
+    /// @note STEP4)  Create factory functions for further subclasses.
     // Fwd declaration by macros
     DECLARE_COLLIDER_FACTORY(Pythia_SUSY_LHC_8TeV, PythiaBase)
     DECLARE_COLLIDER_FACTORY(Pythia_glusq_LHC_8TeV, PythiaBase)
-    
+
     PythiaBase* mkPythia(const std::string& name,
                          const std::vector<std::string>& settings) {
       #define IF_X_RTN_CREATEX(A) if (name == #A) \
@@ -23,7 +23,7 @@ namespace Gambit {
       #undef IF_X_RTN_CREATEX
     }
 
-/// @note STEP5)  Set up the subclasses themselves, with more specific settings.
+    /// @note STEP5)  Set up the subclasses themselves, with more specific settings.
     /// @brief Most general 8TeV SUSY LHC simulator
     class Pythia_SUSY_LHC_8TeV : public PythiaBase {
       public:

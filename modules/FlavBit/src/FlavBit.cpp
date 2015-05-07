@@ -22,7 +22,7 @@
 ///  \date 2013 Nov
 ///  *********************************************
 
-#include "gambit/Utils/gambit_module_headers.hpp"
+#include "gambit/Elements/gambit_module_headers.hpp"
 #include "gambit/FlavBit/FlavBit_rollcall.hpp"
 #define Nobs_BKsll 21
 

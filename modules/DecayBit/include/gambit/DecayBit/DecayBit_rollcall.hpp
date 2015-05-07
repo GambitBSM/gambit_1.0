@@ -54,12 +54,12 @@ START_CAPABILITY                          //  functions in this module that can 
 
     #define FUNCTION SMHiggs_decays
     START_FUNCTION(DecayTable::Entry)
-    DEPENDENCY(SM_spectrum, Spectrum*) 
+    DEPENDENCY(SM_spectrum, SubSpectrum*) 
     #undef FUNCTION
 
     #define FUNCTION MSSMHiggs_decays
     START_FUNCTION(DecayTable::Entry)
-    DEPENDENCY(MSSM_spectrum, Spectrum*) 
+    DEPENDENCY(MSSM_spectrum, SubSpectrum*) 
     ALLOW_MODELS(MSSM78atQ)
     #undef FUNCTION
 

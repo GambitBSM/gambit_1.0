@@ -3,13 +3,13 @@
 ///  \file
 ///
 ///  This class is used to wrap the QedQcd object used by SoftSUSY
-///  and FlexibleSUSY in a Gambit Spectrum object. This is to enable
+///  and FlexibleSUSY in a Gambit SubSpectrum object. This is to enable
 ///  access to the parameters of the SM defined as a low-energy effective theory 
 ///  (as opposed to correspending information defined in a UV model). 
 ///  Parameters defined this way are often used as input to a physics calculator.
 ///
 ///  This is one of the simplest wrappers possible, so it is useful as a guide
-///  for designing other Spectrum wrappers. To assist this, code is documented
+///  for designing other SubSpectrum wrappers. To assist this, code is documented
 ///  with the following markings to distinguish pieces that are essential for
 ///  all wrappers from those which are specific to this wrapper:
 ///  /***/ - Required by all wrappers.
@@ -30,9 +30,10 @@
 #ifndef __QedQcdWrapper_hpp__
 #define __QedQcdWrapper_hpp__
 
+#include "gambit/Elements/SMInputs.hpp"
+#include "gambit/Elements/SubSpectrum.hpp"
+
 #include "lowe.h" ///TODO: wrap using BOSS at some point, i.e. get this from FlexibleSUSY or SoftSUSY
-#include "gambit/Utils/SMInputs.hpp"
-#include "gambit/Utils/Spectrum.hpp"
 
 namespace Gambit {
 

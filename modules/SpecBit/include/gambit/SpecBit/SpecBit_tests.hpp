@@ -5,7 +5,7 @@
 ///  Test functions for Spectrum object
 ///
 ///  These functions test various aspects of the
-///  Spectrum class and derived classes. They are
+///  Spectrum class and related classes. They are
 ///  not dependent on any other parts of Gambit,
 ///  so that Spectrum object test code can be
 ///  compiled and run seperately from Gambit, but
@@ -101,7 +101,7 @@ namespace Gambit
       // These are not known to Gambit
     
       template <class M>
-      bool TestMssmParMass2_0(Spectrum * spec, M FSmssm, 
+      bool TestMssmParMass2_0(SubSpectrum * spec, M FSmssm, 
                               bool immediate_exit = true)
       {      
          bool pass = false;
@@ -161,7 +161,7 @@ namespace Gambit
 
      
     template <class M>  
-    bool TestMssmParMass2_2(Spectrum * spec, M FSmssm, 
+    bool TestMssmParMass2_2(SubSpectrum * spec, M FSmssm, 
                             bool immediate_exit=true)
     {
        bool pass = false;
@@ -225,7 +225,7 @@ namespace Gambit
 
 
       template <class M>  
-      bool TestMssmParMass1_0(Spectrum * spec, M FSmssm, 
+      bool TestMssmParMass1_0(SubSpectrum * spec, M FSmssm, 
                               bool immediate_exit=true)
       {
          bool pass = false;
@@ -279,7 +279,7 @@ namespace Gambit
 
       
       template <class M>  
-      bool TestMssmParMass1_2(Spectrum * spec, M FSmssm, 
+      bool TestMssmParMass1_2(SubSpectrum * spec, M FSmssm, 
                               bool immediate_exit =true)
       {
          bool pass = false;
@@ -332,7 +332,7 @@ namespace Gambit
       }
     
     template <class M>
-    bool TestMssmParMass0_0(Spectrum * spec, M FSmssm, 
+    bool TestMssmParMass0_0(SubSpectrum * spec, M FSmssm, 
                             bool immediate_exit =true )
     {
        bool pass = false;
@@ -379,7 +379,7 @@ namespace Gambit
     }
     
     template <class M>
-    bool TestMssmParMass0_2(Spectrum * spec, M FSmssm, 
+    bool TestMssmParMass0_2(SubSpectrum * spec, M FSmssm, 
                                bool immediate_exit = true)
     {
        bool pass = false;
@@ -438,7 +438,7 @@ namespace Gambit
     }
     
     template <class M>
-    bool TestMssmPoleGets0(Spectrum * spec, M FSmssm, 
+    bool TestMssmPoleGets0(SubSpectrum * spec, M FSmssm, 
                            bool immediate_exit = true)
     {
        bool pass = false;
@@ -488,7 +488,7 @@ namespace Gambit
        
 
     template <class M>
-    bool TestMssmPoleGets1(Spectrum * spec, M FSmssm, 
+    bool TestMssmPoleGets1(SubSpectrum * spec, M FSmssm, 
                            bool immediate_exit = true)
     {
        bool pass = false;
@@ -623,16 +623,16 @@ namespace Gambit
 
      
      template <class M>
-     bool TestMssmPoleMixingGets2(Spectrum * spec, M FSmssm, 
+     bool TestMssmPoleMixingGets2(SubSpectrum * spec, M FSmssm, 
                                   bool immediate_exit = true)
      {
         bool pass = false;
         for(int i=1; i<=6; i++){
            for(int j=1; j<=6; j++){
               std::set<std::pair<std::string,double>> name_value;
-              name_value.insert(std::make_pair( "ZD", FSmssm.get_physical_slha().ZD(i-1,j-1) ));
-              name_value.insert(std::make_pair( "ZU", FSmssm.get_physical_slha().ZU(i-1,j-1) ));
-              name_value.insert(std::make_pair( "ZE", FSmssm.get_physical_slha().ZE(i-1,j-1) ));
+              name_value.insert(std::make_pair( "~d", FSmssm.get_physical_slha().ZD(i-1,j-1) ));
+              name_value.insert(std::make_pair( "~u", FSmssm.get_physical_slha().ZU(i-1,j-1) ));
+              name_value.insert(std::make_pair( "~e", FSmssm.get_physical_slha().ZE(i-1,j-1) ));
                  
               std::set<std::pair<std::string, double>>::iterator iter;
               for(iter=name_value.begin(); iter != name_value.end(); ++iter)
@@ -649,7 +649,7 @@ namespace Gambit
           
         for(int i=1; i<=3; i++){
            for(int j=1; j<=3; j++){
-              string name = "ZV";
+              string name = "~nu";
               pass = test_getters("get_Pole_Mixing", name,  
                                   spec->phys.get_Pole_Mixing(name,i,j),
                                   FSmssm.get_physical_slha().ZV(i-1, j-1), i,j);
@@ -662,12 +662,12 @@ namespace Gambit
         for(int i=1; i<=2; i++){
            for(int j=1; j<=2; j++){
               std::set<std::pair<std::string,double>> name_value;
-              name_value.insert(std::make_pair( "ZH",   FSmssm.get_physical_slha().ZH(i-1,j-1) ));
-              name_value.insert(std::make_pair( "ZA",   FSmssm.get_physical_slha().ZA(i-1,j-1) ));
-              name_value.insert(std::make_pair( "ZHPM", FSmssm.get_physical_slha().ZP(i-1,j-1) ));
-              name_value.insert(std::make_pair( "UM", flexiblesusy::Re(FSmssm.get_physical_slha()
+              name_value.insert(std::make_pair( "h0",   FSmssm.get_physical_slha().ZH(i-1,j-1) ));
+              name_value.insert(std::make_pair( "A0",   FSmssm.get_physical_slha().ZA(i-1,j-1) ));
+              name_value.insert(std::make_pair( "H+", FSmssm.get_physical_slha().ZP(i-1,j-1) ));
+              name_value.insert(std::make_pair( "~chi-", flexiblesusy::Re(FSmssm.get_physical_slha()
                                      .UM(i-1,j-1)) ));
-              name_value.insert(std::make_pair( "UP", flexiblesusy::Re(FSmssm.get_physical_slha()
+              name_value.insert(std::make_pair( "~chi+", flexiblesusy::Re(FSmssm.get_physical_slha()
                                      .UP(i-1,j-1)) ));
                    
                     
@@ -695,9 +695,9 @@ namespace Gambit
         for(int i=1; i<=6; i++){
            for(int j=1; j<=6; j++){
               std::set<std::pair<std::string,double>> name_value;
-              name_value.insert(std::make_pair( "ZD", FSmssm.get_physical_slha().ZD(i-1,j-1) ));
-              name_value.insert(std::make_pair( "ZU", FSmssm.get_physical_slha().ZU(i-1,j-1) ));
-              name_value.insert(std::make_pair( "ZE", FSmssm.get_physical_slha().ZE(i-1,j-1) ));
+              name_value.insert(std::make_pair( "~d", FSmssm.get_physical_slha().ZD(i-1,j-1) ));
+              name_value.insert(std::make_pair( "~u", FSmssm.get_physical_slha().ZU(i-1,j-1) ));
+              name_value.insert(std::make_pair( "~e", FSmssm.get_physical_slha().ZE(i-1,j-1) ));
                  
               std::set<std::pair<std::string, double>>::iterator iter;
               for(iter=name_value.begin(); iter != name_value.end(); ++iter)
@@ -714,7 +714,7 @@ namespace Gambit
           
         for(int i=1; i<=3; i++){
            for(int j=1; j<=3; j++){
-              string name = "ZV";
+              string name = "~nu";
               pass = test_getters("get_Pole_Mixing", name,  
                                   mssm.phys.get_Pole_Mixing(name,i,j),
                                   FSmssm.get_physical_slha().ZV(i-1, j-1), i,j);
@@ -727,12 +727,12 @@ namespace Gambit
         for(int i=1; i<=2; i++){
            for(int j=1; j<=2; j++){
               std::set<std::pair<std::string,double>> name_value;
-              name_value.insert(std::make_pair( "ZH",   FSmssm.get_physical_slha().ZH(i-1,j-1) ));
-              name_value.insert(std::make_pair( "ZA",   FSmssm.get_physical_slha().ZA(i-1,j-1) ));
-              name_value.insert(std::make_pair( "ZHPM", FSmssm.get_physical_slha().ZP(i-1,j-1) ));
-              name_value.insert(std::make_pair( "UM", flexiblesusy::Re(FSmssm.get_physical_slha()
+              name_value.insert(std::make_pair( "h0",   FSmssm.get_physical_slha().ZH(i-1,j-1) ));
+              name_value.insert(std::make_pair( "A0",   FSmssm.get_physical_slha().ZA(i-1,j-1) ));
+              name_value.insert(std::make_pair( "H+", FSmssm.get_physical_slha().ZP(i-1,j-1) ));
+              name_value.insert(std::make_pair( "~chi-", flexiblesusy::Re(FSmssm.get_physical_slha()
                                      .UM(i-1,j-1)) ));
-              name_value.insert(std::make_pair( "UP", flexiblesusy::Re(FSmssm.get_physical_slha()
+              name_value.insert(std::make_pair( "~chi+", flexiblesusy::Re(FSmssm.get_physical_slha()
                                      .UP(i-1,j-1)) ));
                   
               std::set<std::pair<std::string, double>>::iterator iter;
@@ -752,7 +752,7 @@ namespace Gambit
 
      
     template <class M> 
-    bool TestMssmPoleGets(Spectrum * spec, M FSmssm)
+    bool TestMssmPoleGets(SubSpectrum * spec, M FSmssm)
     {
        bool pass = false;
        pass = TestMssmPoleGets0(spec,FSmssm);
@@ -778,7 +778,7 @@ namespace Gambit
     }
 
     template <class M>
-    bool TestMssmParGets(Spectrum * spec, M FSmssm)
+    bool TestMssmParGets(SubSpectrum * spec, M FSmssm)
     {
        bool pass = false; 
        pass = TestMssmParMass2_0(spec,FSmssm);
@@ -957,7 +957,7 @@ namespace Gambit
       }
 
       template <class M>
-      double test_exact(Spectrum * spec, M FS_model_slha)
+      double test_exact(SubSpectrum * spec, M FS_model_slha)
       {
          bool pass = TestMssmParGets(spec,FS_model_slha);
          if(pass == false)
@@ -1015,7 +1015,7 @@ namespace Gambit
       }
 
       template <class Model>
-      bool running_test(Spectrum * spec, Model & FS_model_slha, 
+      bool running_test(SubSpectrum * spec, Model & FS_model_slha, 
                    double tol)
       {
          double highscale = 1e+16;
@@ -1051,7 +1051,7 @@ namespace Gambit
          return pass;
       }
 
-      // Helper function for tests in SMplusUV_test
+      // Helper function for tests in Spectrum_test
       bool test_within_tol(double a, double b, double tol, std::string label)
       {
          // Tol is considered as a fraction of a
@@ -1078,12 +1078,12 @@ namespace Gambit
 
       // Test that output of Standard Model wrapper (e.g. QedQcdWrapper) matches
       // SMINPUTS sufficiently accurately
-      void SMplusUV_test(const SMplusUV* matched_spectra, const Spectrum* smin)
+      void Spectrum_test(const Spectrum* matched_spectra, const SubSpectrum* smin)
       {
-         // Extract pieces of SMplusUV to make it clear what they are supposed to be
+         // Extract pieces of Spectrum to make it clear what they are supposed to be
          SMInputs sminputs = matched_spectra->get_SMINPUTS();
-         std::unique_ptr<Spectrum> SM = matched_spectra->clone_SM(); // COPIES Spectrum object
-         // const Spectrum* SM = matched_spectra->get_SM(); // Cannot do running on original object.
+         std::unique_ptr<SubSpectrum> SM = matched_spectra->clone_LE(); // COPIES Spectrum object
+         // const SubSpectrum* SM = matched_spectra->get_LE(); // Cannot do running on original object.
 
          double tol     = 1e-9; // Demanding matching to 1 part in a billion (pole masses, things that don't change)
          double tolg    = 1e-4; // Seem to get about this level of precision recovering running couplings from QedQcd object.
@@ -1151,10 +1151,10 @@ namespace Gambit
          OUTPUT << EOM;
 
 
-         // Check that pre-extracted SM Spectrum* and the one from SMplusUV object match
+         // Check that pre-extracted SM SubSpectrum* and the one from Spectrum object match
          SM->runningpars.RunToScale(sminputs.mZ);
          smin->runningpars.RunToScale(sminputs.mZ);
-         OUTPUT << "Checking match between SM Spectrum* retrieved in different ways..." << std::endl;
+         OUTPUT << "Checking match between SM SubSpectrum* retrieved in different ways..." << std::endl;
          test_within_tol(SM->phys.get_Pole_Mass("Z"),
                          smin->phys.get_Pole_Mass("Z"),                          tol, "Z pole" );
          test_within_tol(SM->phys.get_Pole_Mass("W"),
@@ -1211,27 +1211,27 @@ namespace Gambit
          }
          OUTPUT << EOM;
 
-         /// Testing copyability of SMplusUV;
-         // Copy to object to clone the hosted Spectrum objects.
+         /// Testing copyability of Spectrum;
+         // Copy to object to clone the hosted SubSpectrum objects.
          // i.e. all copies are deep copies.
-         SMplusUV nonconst_spectra(*matched_spectra);
+         Spectrum nonconst_spectra(*matched_spectra);
 
          // Try to access non-const member functions
          OUTPUT << std::endl;
-         OUTPUT << "Testing non-const access to SMplusUV object:" << std::endl;
+         OUTPUT << "Testing non-const access to Spectrum object:" << std::endl;
          nonconst_spectra.RunBothToScale(sminputs.mT); // This is the only non-const function atm.
-         OUTPUT << "Current SM Spectrum* scale: " << nonconst_spectra.get_SM()->runningpars.GetScale() << std::endl;
-         OUTPUT << "Current UV Spectrum* scale: " << nonconst_spectra.get_UV()->runningpars.GetScale() << std::endl;
+         OUTPUT << "Current SM SubSpectrum* scale: " << nonconst_spectra.get_LE()->runningpars.GetScale() << std::endl;
+         OUTPUT << "Current UV SubSpectrum* scale: " << nonconst_spectra.get_UV()->runningpars.GetScale() << std::endl;
          // Make sure nothing happened to the original objects
-         OUTPUT << "Old SM Spectrum* scale: " << matched_spectra->get_SM()->runningpars.GetScale() << std::endl;
-         OUTPUT << "Old UV Spectrum* scale: " << matched_spectra->get_UV()->runningpars.GetScale() << std::endl;
+         OUTPUT << "Old SM SubSpectrum* scale: " << matched_spectra->get_LE()->runningpars.GetScale() << std::endl;
+         OUTPUT << "Old UV SubSpectrum* scale: " << matched_spectra->get_UV()->runningpars.GetScale() << std::endl;
          // Check some other numbers
-         OUTPUT << "Current SM Spectrum* mu :" << nonconst_spectra.get_SM()->runningpars.get_mass_parameter("u") << std::endl;
-         OUTPUT << "Current SM Spectrum* md :" << nonconst_spectra.get_SM()->runningpars.get_mass_parameter("d") << std::endl;
-         OUTPUT << "Current SM Spectrum* ms :" << nonconst_spectra.get_SM()->runningpars.get_mass_parameter("s") << std::endl;
-         OUTPUT << "Old SM Spectrum* mu :" << matched_spectra->get_SM()->runningpars.get_mass_parameter("u") << std::endl;
-         OUTPUT << "Old SM Spectrum* md :" << matched_spectra->get_SM()->runningpars.get_mass_parameter("d") << std::endl;
-         OUTPUT << "Old SM Spectrum* ms :" << matched_spectra->get_SM()->runningpars.get_mass_parameter("s") << std::endl;
+         OUTPUT << "Current SM SubSpectrum* mu :" << nonconst_spectra.get_LE()->runningpars.get_mass_parameter("u") << std::endl;
+         OUTPUT << "Current SM Spectrum* md :" << nonconst_spectra.get_LE()->runningpars.get_mass_parameter("d") << std::endl;
+         OUTPUT << "Current SM Spectrum* ms :" << nonconst_spectra.get_LE()->runningpars.get_mass_parameter("s") << std::endl;
+         OUTPUT << "Old SM Spectrum* mu :" << matched_spectra->get_LE()->runningpars.get_mass_parameter("u") << std::endl;
+         OUTPUT << "Old SM Spectrum* md :" << matched_spectra->get_LE()->runningpars.get_mass_parameter("d") << std::endl;
+         OUTPUT << "Old SM Spectrum* ms :" << matched_spectra->get_LE()->runningpars.get_mass_parameter("s") << std::endl;
          OUTPUT << EOM;
 
          // Check running beyond soft and hard limits (assumes QedQcdWrapper for SM)

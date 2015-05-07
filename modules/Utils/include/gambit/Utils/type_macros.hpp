@@ -38,7 +38,7 @@
 // and REGISTER_DEFAULT differently from the way they are normally defined.
 #ifdef __gambit_main_hpp__
 
-  #include "gambit/Utils/ini_functions.hpp"
+  #include "gambit/Elements/ini_functions.hpp"
 
   /// Helper macro to register the default version of a classloading backend to use
   #define REGISTER_DEFAULT(BE, VER, DEFAULT)                                          \

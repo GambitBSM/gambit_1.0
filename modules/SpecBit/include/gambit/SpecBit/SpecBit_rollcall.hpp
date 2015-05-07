@@ -49,19 +49,19 @@ START_MODULE
     // (CMSSM and its various non-universal generalisations)    
  
     /// Get MSSM spectrum from CMSSM boundary conditions
-    //  The type, (const) SMplusUV, is a struct containing two Spectrum* members and an SMInputs
-    //  member. The Spectrum* members point to a "UV" Spectrum object (the MSSM) and an
-    //  "SM" Spectrum object (an effective Standard Model description), while SMInputs
+    //  The type, (const) Spectrum, is a class containing two SubSpectrum* members and an SMInputs
+    //  member. The SubSpectrum* members point to a "UV" Spectrum object (the MSSM) and an
+    //  "LE" (low energy) Spectrum object (an effective Standard Model description), while SMInputs
     //  contains the information in the SMINPUTS block defined by SLHA2.
     #define FUNCTION get_CMSSM_spectrum            
-    START_FUNCTION(const SMplusUV*)                  
+    START_FUNCTION(const Spectrum*)                  
     ALLOW_MODELS(CMSSM)
     DEPENDENCY(SMINPUTS, SMInputs) // Need SLHA2 SMINPUTS to set up spectrum generator
     #undef FUNCTION
 
     // FlexibleSUSY compatible maximal CMSSM generalisation (MSSM with GUT boundary conditions) 
     #define FUNCTION get_MSSMatMGUT_spectrum
-    START_FUNCTION(const SMplusUV*)                  
+    START_FUNCTION(const Spectrum*)                  
     ALLOW_MODELS(MSSM78atMGUT)
     DEPENDENCY(SMINPUTS, SMInputs) // Need SLHA2 SMINPUTS to set up spectrum generator
     #undef FUNCTION
@@ -69,23 +69,23 @@ START_MODULE
     // ============================== 
     // MSSM parameterised with input at (user-defined) scale Q 
     #define FUNCTION get_MSSMatQ_spectrum
-    START_FUNCTION(const SMplusUV*)                  
+    START_FUNCTION(const Spectrum*)                  
     ALLOW_MODELS(MSSM78atQ)
     DEPENDENCY(SMINPUTS, SMInputs) // Need SLHA2 SMINPUTS to set up spectrum generator
     #undef FUNCTION
 
     // ============================== 
 
-    // Extract appropriate Spectrum* from SMplusUV struct, while preserving the Capability
-    #define FUNCTION get_MSSM_spectrum_as_SpectrumPtr_from_matchedMSSM
-    START_FUNCTION(const Spectrum*)
-    DEPENDENCY(MSSM_spectrum, const SMplusUV*)
+    // Extract appropriate SubSpectrum* from Spectrum struct, while preserving the Capability
+    #define FUNCTION get_MSSM_SubSpectrum_from_MSSM_Spectrum
+    START_FUNCTION(const SubSpectrum*)
+    DEPENDENCY(MSSM_spectrum, const Spectrum*)
     #undef FUNCTION
 
     // Get MSSM spectrum as an SLHAea object
     #define FUNCTION get_MSSM_spectrum_as_SLHAea
     START_FUNCTION(eaSLHA)                  
-    DEPENDENCY(MSSM_spectrum, const Spectrum*)           // Takes a (pointer to a) Spectrum object and returns an eaSLHA object
+    DEPENDENCY(MSSM_spectrum, const SubSpectrum*)           // Takes a (pointer to a) SubSpectrum object and returns an eaSLHA object
     #undef FUNCTION
 
   #undef CAPABILITY
@@ -94,7 +94,7 @@ START_MODULE
   #define CAPABILITY test_MSSM_spectrum   
   START_CAPABILITY                          
     #define FUNCTION make_test_spectrum  // Get (pointer to) test MSSM spectrum
-    START_FUNCTION(Spectrum*)
+    START_FUNCTION(SubSpectrum*)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -120,10 +120,16 @@ START_MODULE
 
     //  // etc. for other functions
 
-    // Extract appropriate Spectrum* from SMplusUV struct, starting from MSSM_spectrum
-    #define FUNCTION get_SM_spectrum_as_SpectrumPtr_from_matchedMSSM
-    START_FUNCTION(const Spectrum*)
-    DEPENDENCY(MSSM_spectrum, const SMplusUV*)
+    // Extract appropriate SubSpectrum* from Spectrum struct, starting from MSSM_spectrum
+    #define FUNCTION get_SM_SubSpectrum_from_MSSM_Spectrum
+    START_FUNCTION(const SubSpectrum*)
+    DEPENDENCY(MSSM_spectrum, const Spectrum*)
+    #undef FUNCTION
+
+    // Create QedQcdWrapper version of Spectrum* from SMInputs structs
+    #define FUNCTION get_QedQcd_spectrum
+    START_FUNCTION(const SubSpectrum*)
+    DEPENDENCY(SMINPUTS, SMInputs)
     #undef FUNCTION
 
   #undef CAPABILITY
@@ -152,7 +158,7 @@ START_MODULE
   START_CAPABILITY
      #define FUNCTION specbit_test_func1
      START_FUNCTION(double)
-     DEPENDENCY(MSSM_spectrum, const SMplusUV*)
+     DEPENDENCY(MSSM_spectrum, const Spectrum*)
      #undef FUNCTION
   #undef CAPABILITY
 
@@ -167,16 +173,16 @@ START_MODULE
   START_CAPABILITY
      #define FUNCTION specbit_test_func3
      START_FUNCTION(double)
-     DEPENDENCY(SM_spectrum, const Spectrum*)
+     DEPENDENCY(SM_spectrum, const SubSpectrum*)
      #undef FUNCTION
   #undef CAPABILITY
 
-  #define CAPABILITY specbit_test_SMplusUV
+  #define CAPABILITY specbit_test_Spectrum
   START_CAPABILITY
-     #define FUNCTION specbit_test_SMplusUV
+     #define FUNCTION specbit_test_Spectrum
      START_FUNCTION(double)
-     DEPENDENCY(MSSM_spectrum, const SMplusUV*)
-     DEPENDENCY(SM_spectrum, const Spectrum*)
+     DEPENDENCY(MSSM_spectrum, const Spectrum*)
+     DEPENDENCY(SM_spectrum, const SubSpectrum*)
    #undef FUNCTION
   #undef CAPABILITY
 
@@ -186,7 +192,7 @@ START_MODULE
  
      #define FUNCTION dump_spectrum
      START_FUNCTION(double)
-     DEPENDENCY(SM_spectrum, const Spectrum*)
+     DEPENDENCY(SM_spectrum, const SubSpectrum*)
      #undef FUNCTION
 
  #undef CAPABILITY
@@ -197,7 +203,7 @@ START_MODULE
 
      #define FUNCTION exampleRead
      START_FUNCTION(bool)
-     DEPENDENCY(MSSM_spectrum, const SMplusUV*)
+     DEPENDENCY(MSSM_spectrum, const Spectrum*)
      #undef FUNCTION
 
  #undef CAPABILITY
