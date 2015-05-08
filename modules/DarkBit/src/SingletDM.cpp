@@ -22,8 +22,6 @@
 #include "gambit/Utils/ASCIItableReader.hpp"
 #include "boost/make_shared.hpp"
 
-using boost::make_shared;
-
 namespace Gambit {
   namespace DarkBit {
 
@@ -374,7 +372,7 @@ namespace Gambit {
         get_f_vs_mass("DarkBit/data/Higgs_decay_1101.0593.dat");
 
       // Instantiate SingletDM object
-      auto singletDM = make_shared<SingletDM>(catalog, f_vs_mass);
+      auto singletDM = boost::make_shared<SingletDM>(catalog, f_vs_mass);
 
       // FIXME: Add top (is this still TODO?)
 
