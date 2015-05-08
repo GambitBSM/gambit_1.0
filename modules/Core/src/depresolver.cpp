@@ -881,9 +881,10 @@ namespace Gambit
       std::vector<DRes::VertexID> disabledVertexCandidates;  // disabled 
       // Rules
       std::vector<Rule> rules;
-      std::vector<Rule> forced_rules;
+      std::vector<Rule> strong_rules;
       // Candidate vertices after applying rules
       std::vector<DRes::VertexID> filteredVertexCandidates;
+      std::vector<DRes::VertexID> filteredVertexCandidates2;
 
       // Make list of candidate vertices.
       for (tie(vi, vi_end) = vertices(masterGraph); vi != vi_end; ++vi) 
@@ -955,8 +956,8 @@ namespace Gambit
                     (it->function != "" or it->module != ""))
                 {
                   rules.push_back(Rule(*it2));
-                  if (it->enforced or it2->enforced)
-                    forced_rules.push_back(Rule(*it2));
+                  if (not it->weakrule and not it2->weakrule)
+                    strong_rules.push_back(Rule(*it2));
                 }
               }
             }
@@ -973,6 +974,8 @@ namespace Gambit
                 {
                   Rule rule(*(it2+1), masterGraph[toVertex]->origin());
                   rules.push_back(rule);
+                  if (not it->weakrule)
+                    strong_rules.push_back(rule);
                 }
               }
             }
@@ -983,8 +986,8 @@ namespace Gambit
                 (it->function != "" or it->module != ""))
             {
               rules.push_back(Rule(*it));
-              if (it->enforced)
-                forced_rules.push_back(Rule(*it));
+              if (not it->weakrule)
+                strong_rules.push_back(Rule(*it));
             }
           }
         }
@@ -1001,6 +1004,8 @@ namespace Gambit
               (it->function != "" or it->module != ""))
           {
             rules.push_back(Rule(*it));
+            if (not it->weakrule)
+              strong_rules.push_back(Rule(*it));
           }
           // FIXME: Throw error if dependency or options entry exists
         }
@@ -1014,21 +1019,15 @@ namespace Gambit
               (it->function != "" or it->module != ""))
           {
             rules.push_back(Rule(*it));
-            if (it->enforced)
-              forced_rules.push_back(Rule(*it));
+            if (not it->weakrule)
+              strong_rules.push_back(Rule(*it));
           }
         }
       }
 
-      if (forced_rules.size() < rules.size() and forced_rules.size() > 0)
-      {
-        logger() << "Only using rules marked with '!force' tag for this vertex."
-          << endl;
-        rules = forced_rules;
-      }
-
-      logger() << "Number of identified rules: " << 
-        rules.size() << endl << endl;
+      logger()<<"Number of identified rules (weak rules): "
+        <<rules.size()<< " ("<<rules.size() - strong_rules.size()<<")"
+        <<endl<<endl;
 
       // Make filtered lists
       for (std::vector<DRes::VertexID>::const_iterator 
@@ -1046,11 +1045,30 @@ namespace Gambit
         }
         if (valid)
             filteredVertexCandidates.push_back(*it);
+        valid = true;
+        for (std::vector<Rule>::const_iterator it2 = strong_rules.begin(); 
+            it2 != strong_rules.end(); it2 ++)
+        {
+          if ( not matchesRules(masterGraph[*it], *it2) )
+          {
+            valid = false;
+          }
+        }
+        if (valid)
+            filteredVertexCandidates2.push_back(*it);
       }
 
-      if (rules.size() > 0)
+      if (rules.size() > 0 and filteredVertexCandidates.size() > 0)
       {
         logger() << "Candidate vertices that fulfill all rules:" << endl;
+        logger() << printGenericFunctorList(filteredVertexCandidates) << endl;
+      }
+
+      if (filteredVertexCandidates.size() == 0)
+      {
+        filteredVertexCandidates = filteredVertexCandidates2;
+        logger() << "Ignoring rules declared as '!weak'" << endl;
+        logger() << "Candidate vertices that fulfill all non-weak rules:" << endl;
         logger() << printGenericFunctorList(filteredVertexCandidates) << endl;
       }
 
