@@ -163,6 +163,9 @@ Rules:
   - capability: RD_spectrum
     options: 
       CoannMaxMass: 1.01 # include only co-annihilating particles up to this mass
+
+#  - capability: RD_thresholds_resonances
+#    function: RD_thresholds_resonances_from_spectrum
       
   - capability: lnL_oh2
     options:
