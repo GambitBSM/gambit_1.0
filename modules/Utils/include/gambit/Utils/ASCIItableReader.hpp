@@ -42,6 +42,7 @@ namespace Gambit
         ncol = data.size();
         nrow = data[0].size();
       };
+      ASCIItableReader() : ncol(0), nrow(0) {};  // Dummy initializer
       ~ASCIItableReader() {}
 
       int read(std::string filename);

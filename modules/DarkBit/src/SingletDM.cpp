@@ -35,10 +35,10 @@ namespace Gambit {
             TH_ProcessCatalog &catalog,
             std::map<std::string, Funk::Funk> & arg_f_vs_mass)
         {
-          // FIXME: This should not be hard-coded
           mh   = catalog.particleProperties.at("h0_1").mass;
-          v0   = 246.0;       // FIXME
-          alpha_s = 0.12;   // FIXME
+          // FIXME: This should not be hard-coded
+          v0   = 246.0;
+          alpha_s = 0.12;
           mb   = catalog.particleProperties.at("d_3").mass;
           mc   = catalog.particleProperties.at("u_2").mass;
           mtau = catalog.particleProperties.at("tau-").mass;
@@ -188,8 +188,8 @@ namespace Gambit {
       result.threshold_energy.clear();
 
       result.threshold_energy.push_back(2*(*Param["mass"]));
-      double mh = 125.7;  // FIXME
-      result.resonances.push_back(TH_Resonance(mh, 0.01)); // FIXME use proper Higgs width!
+      double mh = (*Dep::TH_ProcessCatalog).getParticleProperty("h0_1").mass;
+      result.resonances.push_back(TH_Resonance(mh, 0.01));  // FIXME use proper Higgs width!
 
       // FIXME: Move somewhere else
       DS_RDMGEV myrdmgev;
@@ -226,10 +226,13 @@ namespace Gambit {
       result.coannihilatingParticles.push_back(
           RD_coannihilating_particle(kdm,1,*Param["mass"]));
 
+      double mh = (*Dep::TH_ProcessCatalog).getParticleProperty("h0_1").mass;
+      double mW = (*Dep::TH_ProcessCatalog).getParticleProperty("W+").mass;
+      double mZ = (*Dep::TH_ProcessCatalog).getParticleProperty("Z0").mass;
+      double mt = (*Dep::TH_ProcessCatalog).getParticleProperty("u_3").mass;
 
       // in the ScalarSinglet model, only the Higgs appears as resonance
-      // FIXME: don't hardcode these values
-      double resmasses[] = {125.7};
+      double resmasses[] = {mh};
       double reswidths[] = {0.01};
       int resmax=sizeof(resmasses) / sizeof(resmasses[0]);
 
@@ -246,8 +249,7 @@ namespace Gambit {
       result.threshold_energy.push_back(
           2*result.coannihilatingParticles[0].mass);
       // add W, Z, H and top thresholds
-      // FIXME: don't hardcode these values
-      double thrmasses[] = {80.2, 91.19, 125.7, 173};
+      double thrmasses[] = {mW, mZ, mh, mt};
       int thrmax=sizeof(thrmasses) / sizeof(thrmasses[0]);
       for (int i=0; i<thrmax; i++)
         if (thrmasses[i]>result.coannihilatingParticles[0].mass)
@@ -263,7 +265,9 @@ namespace Gambit {
       using namespace Pipes::DD_couplings_SingletDM;
       double mass = *Param["mass"];
       double lambda = *Param["lambda"];
-      double mh = 125.7;  // FIXME
+      // FIXME: It would be cleaner if this actually does not come from the
+      // process catalog, but instead from the Spectrum Object
+      double mh = (*Dep::TH_ProcessCatalog).getParticleProperty("h0_1").mass;
 
       // TODO: Double check expressions (taken from Cline et al. 2013)
       double fp = 2/9 + 7/9*(*Param["fpu"] + *Param["fpd"] + *Param["fps"]);
@@ -367,7 +371,7 @@ namespace Gambit {
       catalog.particleProperties.insert(
           std::pair<std::string, TH_ParticleProperty> ("S", S_Property));
       
-      // FIXME: Get Higgs mass from elsewhere
+      // FIXME: Get Higgs mass from Spec Bit
       TH_ParticleProperty h0_1_Property(125.7, 0);
       catalog.particleProperties.insert(
           std::pair<std::string, TH_ParticleProperty> ("h0_1", h0_1_Property));
