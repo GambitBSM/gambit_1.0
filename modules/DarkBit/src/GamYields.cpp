@@ -17,6 +17,7 @@
 
 #include "gambit/Elements/gambit_module_headers.hpp"
 #include "gambit/DarkBit/DarkBit_rollcall.hpp"
+#include "gambit/Utils/ASCIItableReader.hpp"
 
 namespace Gambit {
   namespace DarkBit {
@@ -622,13 +623,54 @@ namespace Gambit {
         ADD_CHANNEL(10, "Z0", "Z0", "gamma", 4., 10000.)
         ADD_CHANNEL(13, "W+", "W-", "gamma", 4., 10000.)
 #undef ADD_CHANNEL
-          initialized = true;
+        initialized = true;
         result.addChannel(
             Funk::zero("Ecm", "E"), "nu_1", "nubar_1", "gamma", 4., 10000.);
         result.addChannel(
             Funk::zero("Ecm", "E"), "nu_2", "nubar_2", "gamma", 4., 10000.);
         result.addChannel(
             Funk::zero("Ecm", "E"), "nu_3", "nubar_3", "gamma", 4., 10000.);
+      }
+    }
+
+    class PPPC_interpolation
+    {
+      public:
+        PPPC_interpolation(std::string filename)
+        {
+          table = ASCIItableReader(filename);
+          std::vector<std::string> colnames = initVector<std::string>(
+              "mass", "log10x", "ee", "mumu", "tautau", "qq", "cc", "bb", "tt",
+              "WW", "ZZ", "gg", "gammagamma", "hh");
+          table.setcolnames(colnames);
+          // log10x = log10(E_gamma/m);
+          log10x = std::vector<double>(table["log10x"].begin(), table["log10x"].begin()+180);
+        }
+        PPPC_interpolation() {}  // Dummy initializer
+
+        double operator()(std::string channel, double m, double e)
+        {
+          // FIXME: Write interpolation routine
+          std::vector<double> y(table[channel].begin(), table[channel].end());
+        }
+
+      private:
+        std::vector<double> log10x;
+        ASCIItableReader table;
+    };
+
+    /// SimYieldTable based on PPPC4DMID Cirelli et al. 2010
+    void SimYieldTable_PPPC(SimYieldTable& result)
+    {
+      using namespace Pipes::SimYieldTable_PPPC;
+      static bool initialized = false;
+      static PPPC_interpolation PPPC_gam_object;
+
+      if ( not initialized )
+      {
+        std::string filename = "DarkBit/data/AtProductionNoEW_gammas.dat";
+        PPPC_gam_object = PPPC_interpolation(filename);
+        initialized = true;
       }
     }
   }

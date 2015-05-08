@@ -103,6 +103,8 @@ START_MODULE
     #undef FUNCTION
     #define FUNCTION RD_spectrum_SingletDM
       START_FUNCTION(Gambit::DarkBit::RD_spectrum_type)
+      DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)
+      ALLOW_MODELS(SingletDM)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -120,6 +122,7 @@ START_MODULE
     #undef FUNCTION
     #define FUNCTION RD_thresholds_resonances_SingletDM
       START_FUNCTION(Gambit::DarkBit::TH_resonances_thresholds)
+      DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)
       ALLOW_MODELS(SingletDM)
       BACKEND_REQ(rdmgev, (), DS_RDMGEV)
     #undef FUNCTION
@@ -458,6 +461,7 @@ START_MODULE
     #undef FUNCTION
     #define FUNCTION DD_couplings_SingletDM
       START_FUNCTION(Gambit::DarkBit::DD_couplings)
+      DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)
       ALLOW_MODEL_DEPENDENCE(nuclear_params_fnq, SingletDM)
       MODEL_GROUP(group1, (nuclear_params_fnq))
       MODEL_GROUP(group2, (SingletDM))
@@ -1102,6 +1106,9 @@ START_MODULE
     #define FUNCTION SimYieldTable_MicrOmegas
     START_FUNCTION(Gambit::DarkBit::SimYieldTable)
     BACKEND_REQ(dNdE, (), double, (double,double,int,int))
+    #undef FUNCTION
+    #define FUNCTION SimYieldTable_PPPC
+    START_FUNCTION(Gambit::DarkBit::SimYieldTable)
     #undef FUNCTION
   #undef CAPABILITY
 
