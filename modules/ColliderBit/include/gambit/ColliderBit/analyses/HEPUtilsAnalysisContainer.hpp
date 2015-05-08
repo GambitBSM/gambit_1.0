@@ -16,9 +16,8 @@ namespace Gambit {
     class HEPUtilsAnalysisContainer {
       /// @name Member variables
       //@{
-      private:
-        std::vector<HEPUtilsAnalysis*> _analyses;
       public:
+        std::vector<HEPUtilsAnalysis*> analyses;
         bool ready;
       //@}
 
@@ -46,18 +45,7 @@ namespace Gambit {
         /// @brief Set cross-sections and errors for each analysis.
         void add_xsec(double xs, double xserr);
         /// @brief Add the results of all analyses from this instance to the given one.
-        void combine(HEPUtilsAnalysisContainer& combinedAnalyses); 
-      //@}
-
-      /// @name Analysis vector access
-      //@{
-      public:
-        /// @brief Get the size of the analysis vector.
-        size_t size() { return _analyses.size(); }
-        /// @brief Get the iterator at the beginning of the analysis vector.
-        std::vector<HEPUtilsAnalysis*>::iterator begin() { return _analyses.begin(); }
-        /// @brief Get the iterator at the end of the analysis vector.
-        std::vector<HEPUtilsAnalysis*>::iterator end() { return _analyses.end(); }
+        void add(const HEPUtilsAnalysisContainer&); 
       //@}
     };
 

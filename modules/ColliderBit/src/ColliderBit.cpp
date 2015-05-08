@@ -207,8 +207,11 @@ namespace Gambit {
         }
         #pragma omp critical (access_combinedAnalyses)
         {
-          if(!combinedAnalyses->ready)
+          if(!combinedAnalyses->ready) {
+            std::cout<<"\n\n Sanity check...\n\n";
             combinedAnalyses->init(analysisNames);
+            std::cout<<"\n\n Sanity check...\n\n";
+          }
         }
         return;
       }
@@ -225,10 +228,6 @@ namespace Gambit {
         const double xs = Dep::HardScatteringSim->xsec_pb();
         const double xserr = Dep::HardScatteringSim->xsecErr_pb();
         result.add_xsec(xs, xserr);
-        #pragma omp critical (access_combinedAnalyses)
-        {
-          result.combine(*combinedAnalyses);
-        }
         return;
       }
     }
@@ -575,13 +574,22 @@ namespace Gambit {
       if (*Loop::iteration == FINALIZE) {
         // The final iteration: get log likelihoods for the analyses
         result.clear();
-        for (auto anaPtr = combinedAnalyses->begin(); anaPtr != combinedAnalyses->end(); ++anaPtr)
+        for (auto anaPtr = combinedAnalyses->analyses.begin();
+             anaPtr != combinedAnalyses->analyses.end(); ++anaPtr)
         {
           cout << "Set xsec from ana = " << (*anaPtr)->xsec() << " pb" << endl;
           cout << "SR number test " << (*anaPtr)->get_results()[0].n_signal << endl;
           // Finalize is currently only used to report a cut flow.... rename?
           (*anaPtr)->finalize();
           result.push_back((*anaPtr)->get_results());
+        }
+        return;
+      }
+
+      if (*Loop::iteration == END_SUBPROCESS) {
+        #pragma omp critical (access_combinedAnalyses)
+        {
+          combinedAnalyses->add(*Dep::AnalysisContainer);
         }
         return;
       }

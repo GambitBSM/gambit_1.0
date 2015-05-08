@@ -46,12 +46,12 @@ namespace Gambit {
     /// @name HEPUtilsAnalysisContainer function definitions:
     //@{
     void HEPUtilsAnalysisContainer::clear() {
-      if (_analyses.size() != 0) {
-        for (auto it = _analyses.begin(); it != _analyses.end(); ++it) {
+      if (analyses.size() != 0) {
+        for (auto it = analyses.begin(); it != analyses.end(); ++it) {
           delete *it;
           *it = nullptr;
         }
-        _analyses.clear();
+        analyses.clear();
       }
 
       ready=false;
@@ -64,7 +64,7 @@ namespace Gambit {
 
       /// @TODO: test thread safety.
       for (auto it = analysisNames.begin(); it != analysisNames.end(); ++it) {
-        _analyses.push_back(mkAnalysis(*it));
+        analyses.push_back(mkAnalysis(*it));
       }
 
       ready=true;
@@ -72,32 +72,32 @@ namespace Gambit {
 
 
     void HEPUtilsAnalysisContainer::analyze(const HEPUtils::Event& event) const {
-      assert(!_analyses.empty());
+      assert(!analyses.empty());
       assert(ready);
-      for (auto it = _analyses.begin(); it != _analyses.end(); ++it)
+      for (auto it = analyses.begin(); it != analyses.end(); ++it)
         (*it)->analyze(event);
     }
 
 
     void HEPUtilsAnalysisContainer::add_xsec(double xs, double xserr) {
-      assert(!_analyses.empty());
+      assert(!analyses.empty());
       assert(ready);
-      for (auto it = _analyses.begin(); it != _analyses.end(); ++it)
+      for (auto it = analyses.begin(); it != analyses.end(); ++it)
         (*it)->add_xsec(xs, xserr);
     }
 
 
-    void HEPUtilsAnalysisContainer::combine(HEPUtilsAnalysisContainer& combinedAnalyses) {
-      assert(combinedAnalyses.size() != 0);
-      assert(_analyses.size() == combinedAnalyses.size());
+    void HEPUtilsAnalysisContainer::add(const HEPUtilsAnalysisContainer& other) {
+      assert(other.analyses.size() != 0);
+      assert(analyses.size() == other.analyses.size());
       assert(ready);
-      auto myIter = _analyses.begin();
-      auto combIter = combinedAnalyses.begin();
-      while (myIter != _analyses.end()) {
-        (*combIter)->add_xsec((*myIter)->xsec(), (*myIter)->xsec_err());
-        (*combIter)->add(*myIter);
+      auto myIter = analyses.begin();
+      auto otherIter = other.analyses.begin();
+      add_xsec((*otherIter)->xsec(), (*otherIter)->xsec_err());
+      while (myIter != analyses.end()) {
+        (*myIter)->add(*otherIter);
         myIter++;
-        combIter++;
+        otherIter++;
       }
     }
     //@}
