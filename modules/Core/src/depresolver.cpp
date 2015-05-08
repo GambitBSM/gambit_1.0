@@ -914,7 +914,7 @@ namespace Gambit
         {
           errmsg << "\nNote that viable candidates exist but have been disabled:\n"
                  << printGenericFunctorList(disabledVertexCandidates) 
-                 << std::endl
+                 << endl
           << "Status flags:" << endl
           << " 0: This function is not compatible with any model you are scanning." << endl
           << "-3: This function requires a BOSSed class that is missing. The " << endl
@@ -943,7 +943,7 @@ namespace Gambit
         {
           {
             // Evaluate "dependencies" section
-            if (funcMatchesIniEntry(masterGraph[toVertex], *it, *boundTEs) and 
+            if (funcMatchesIniEntry(masterGraph[toVertex], *it, *boundTEs) and
                 (it->capability != "" or it->function != "" or 
                  it->type != "" or it->module != ""))
             {
@@ -952,8 +952,8 @@ namespace Gambit
                   it2 != (*it).dependencies.end(); ++it2)
               {
                 if (quantityMatchesIniEntry(quantity, *it2) and 
-                    (it->capability != "" or it->type != "") and
-                    (it->function != "" or it->module != ""))
+                    (it2->capability != "" or it2->type != "") and
+                    (it2->function != "" or it2->module != ""))
                 {
                   rules.push_back(Rule(*it2));
                   if (not it->weakrule and not it2->weakrule)
@@ -1287,7 +1287,9 @@ namespace Gambit
       logger() << EOM;
 
       // Read ini entry
-      use_regex = boundIniFile->getValueOrDef<bool>(false, "dependency_resolution", "use_regex");
+      use_regex = boundIniFile->getValueOrDef<bool>(true, "dependency_resolution", "use_regex");
+      if ( use_regex )
+        logger() << "Using regex for string comparison." << endl;
 
       //
       // Main loop: repeat until dependency queue is empty
