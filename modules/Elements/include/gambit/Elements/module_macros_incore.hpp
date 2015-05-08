@@ -632,7 +632,7 @@
     {                                                                          \
       /* Create a map to hold pointers to all the model parameters accessible  \
       to this functor */                                                       \
-      Models::safe_param_map<safe_ptr<const double> > Param;              \
+      Models::safe_param_map<safe_ptr<const double> > Param;                   \
       /* Pointer to function indicating whether a given model is in use.*/     \
       BOOST_PP_IIF(IS_TYPE(ModelParameters,TYPE), ,                            \
        bool (*ModelInUse)(str) = &Functown::CAT(FUNCTION,_modelInUse); )       \
