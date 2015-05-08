@@ -25,7 +25,7 @@
 #include <dlfcn.h>
 
 #include "gambit/Utils/util_types.hpp"
-#include "gambit/Utils/ini_functions.hpp"
+#include "gambit/Elements/ini_functions.hpp"
 
 
 namespace Gambit

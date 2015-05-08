@@ -64,28 +64,12 @@ set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
 # Add the automatically determined parts of the RPATH that point to directories outside the build tree to the install RPATH
 SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
-# Check for optional packages and disable sections of GAMBIT accordingly
-include(cmake/optional.cmake)
-
 # Include cmake utility scripts
 # Note: colors defined in here; colored output won't work before this!
 include(cmake/utilities.cmake)
 
-# Check for MPI libraries
-option(MPI "Compile with MPI enabled" ON)
-# (Force no-MPI build with "cmake -DMPI=OFF ..")
-if(MPI)
-  find_package(MPI)
-  if(MPI_FOUND)
-    include_directories(${MPI_INCLUDE_PATH})
-    add_definitions(-DWITH_MPI)
-    message("${BoldYellow}-- MPI libraries found. Executables will be MPI-enabled.${ColourReset}")
-  else()
-    message("${Red} X MPI libraries NOT found. Executables may only be run in serial.${ColourReset}")
-  endif()
-else()
-  message("${BoldCyan} X MPI manually disabled! Executables may only be run in serial.${ColourReset}")
-endif()
+# Check for optional packages and disable sections of GAMBIT accordingly
+include(cmake/optional.cmake)
 
 # Check for Python and required libs
 include(FindPythonInterp)
@@ -228,16 +212,18 @@ endif()
 # Identify the different harvester scripts
 set(MODEL_HARVESTER ${PROJECT_SOURCE_DIR}/Models/scripts/model_harvester.py)
 set(BACKEND_HARVESTER ${PROJECT_SOURCE_DIR}/Backends/scripts/backend_harvester.py)
-set(MODULE_HARVESTER ${PROJECT_SOURCE_DIR}/Utils/scripts/module_harvester.py)
+set(MODULE_HARVESTER ${PROJECT_SOURCE_DIR}/Elements/scripts/module_harvester.py)
 set(HARVEST_TOOLS ${PROJECT_SOURCE_DIR}/Utils/scripts/harvesting_tools.py)
 
 # Create all_functor_types.hpp, module_rollcall.hpp, module_types_rollcall.hpp, models_rollcall.hpp,
 # model_types_rollcall.hpp, backend_rollcall.hpp and backend_types_rollcall.hpp
 file(GLOB MODEL_HARVESTER_FILES   "${PROJECT_SOURCE_DIR}/Models/include/gambit/Models/models/*.hpp")
 file(GLOB BACKEND_HARVESTER_FILES "${PROJECT_SOURCE_DIR}/Backends/include/gambit/Backends/frontends/*.hpp")
-file(GLOB MODULE_HARVESTER_FILES  "${PROJECT_SOURCE_DIR}/*Bit*/include/gambit/*Bit*/*_rollcall.hpp")
+file(GLOB MODULE_HARVESTER_FILES  "${PROJECT_SOURCE_DIR}/*Bit*/include/gambit/*Bit*/*_rollcall.hpp"
+                                  "${PROJECT_SOURCE_DIR}/Backends/include/gambit/Backends/frontends/*.hpp")
 list(REMOVE_ITEM MODULE_HARVESTER_FILES "${PROJECT_SOURCE_DIR}/ScannerBit//include//gambit//ScannerBit//priors_rollcall.hpp"
                                         "${PROJECT_SOURCE_DIR}/ScannerBit//include//gambit//ScannerBit//test_function_rollcall.hpp")
+
 add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/Models/include/gambit/Models/model_rollcall.hpp
                    COMMAND python ${MODEL_HARVESTER} -x __not_a_real_name__,${itch_with_commas}
                    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
@@ -246,37 +232,31 @@ add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/Backends/include/gambit/Backends
                    COMMAND python ${BACKEND_HARVESTER} -x __not_a_real_name__,${itch_with_commas}
                    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
                    DEPENDS ${BACKEND_HARVESTER} ${HARVEST_TOOLS} ${BACKEND_HARVESTER_FILES} ${PROJECT_BINARY_DIR}/CMakeCache.txt)
-add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/Utils/include/gambit/Utils/all_functor_types.hpp ${PROJECT_SOURCE_DIR}/Core/include/gambit/Core/module_rollcall.hpp ${PROJECT_SOURCE_DIR}/Utils/include/gambit/Utils/module_types_rollcall.hpp
+add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/Elements/include/gambit/Elements/all_functor_types.hpp ${PROJECT_SOURCE_DIR}/Core/include/gambit/Core/module_rollcall.hpp ${PROJECT_SOURCE_DIR}/Elements/include/gambit/Elements/module_types_rollcall.hpp
                    COMMAND python ${MODULE_HARVESTER} -x __not_a_real_name__,${itch_with_commas}
                    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
                    DEPENDS ${MODULE_HARVESTER} ${HARVEST_TOOLS} ${MODULE_HARVESTER_FILES} ${PROJECT_BINARY_DIR}/CMakeCache.txt)
 add_custom_target(model_harvest   DEPENDS ${PROJECT_SOURCE_DIR}/Models/include/gambit/Models/model_rollcall.hpp ${MODEL_HARVESTER_FILES})
 add_custom_target(backend_harvest DEPENDS ${PROJECT_SOURCE_DIR}/Backends/include/gambit/Backends/backend_rollcall.hpp ${BACKEND_HARVESTER_FILES})
-add_custom_target(module_harvest DEPENDS ${PROJECT_SOURCE_DIR}/Utils/include/gambit/Utils/all_functor_types.hpp ${PROJECT_SOURCE_DIR}/Core/include/gambit/Core/module_rollcall.hpp ${PROJECT_SOURCE_DIR}/Utils/include/gambit/Utils/module_types_rollcall.hpp ${MODULE_HARVESTER_FILES} backend_harvest)
+add_custom_target(module_harvest DEPENDS ${PROJECT_SOURCE_DIR}/Elements/include/gambit/Elements/all_functor_types.hpp ${PROJECT_SOURCE_DIR}/Core/include/gambit/Core/module_rollcall.hpp ${PROJECT_SOURCE_DIR}/Elements/include/gambit/Elements/module_types_rollcall.hpp ${MODULE_HARVESTER_FILES} backend_harvest)
 
 # Include other cmake scripts
 include(cmake/warnings.cmake)
 include(cmake/gambit.cmake)
 include(cmake/extras.cmake)
 
-# Add subdirectories. This does not actually cause another cmake executable to run. The same process will walk through the project's entire directory structure.
-add_subdirectory(Backends)
+# Add GAMBIT subdirectories.
 add_subdirectory(Logs)
 add_subdirectory(Utils)
-add_subdirectory(Models)
+add_subdirectory_if_present(Models)
+add_subdirectory_if_present(Backends)
+add_subdirectory_if_present(Elements)
+add_subdirectory_if_present(Printers)
+add_subdirectory_if_present(Core)
 
-# List of GAMBIT common library object files to link
-set(GAMBIT_COMMON_OBJECTS "${GAMBIT_COMMON_OBJECTS}"
-                          $<TARGET_OBJECTS:Backends>
-                          $<TARGET_OBJECTS:Logs>
-                          $<TARGET_OBJECTS:Utils>
-                          $<TARGET_OBJECTS:Models>
-)
-
-# List of GAMBIT core library object files to link
-add_subdirectory(Core)
-add_subdirectory(Printers)
-set(GAMBIT_OBJECTS $<TARGET_OBJECTS:Core> $<TARGET_OBJECTS:Printers>)
+# Lists of different GAMBIT object files to link
+set(GAMBIT_BASIC_COMMON_OBJECTS "${GAMBIT_BASIC_COMMON_OBJECTS}" $<TARGET_OBJECTS:Logs> $<TARGET_OBJECTS:Utils>)
+set(GAMBIT_ALL_COMMON_OBJECTS "${GAMBIT_BASIC_COMMON_OBJECTS}" $<TARGET_OBJECTS:Models> $<TARGET_OBJECTS:Backends> $<TARGET_OBJECTS:Elements>)
 
 # Set compilation targets for GAMBIT modules
 foreach(bit ${GAMBIT_BITS})

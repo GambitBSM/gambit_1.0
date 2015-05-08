@@ -13,6 +13,28 @@ Parameters:
             range: [0.005, 0.5]
             #fixed_value: 0.0366524 
             prior_type: log
+    nuclear_params_fnq:
+      # proton hadronic matrix elements
+      fpd:
+        fixed_value: 0.0191
+      fpu:
+        fixed_value: 0.0153
+      fps:
+        fixed_value: 0.0447
+      # neutron hadronic matrix elements
+      fnd:
+        fixed_value: 0.0273
+      fnu:
+        fixed_value: 0.011
+      fns:
+        fixed_value: 0.0447
+      # proton spin content
+      deltad:
+        fixed_value: -0.427
+      deltau:
+        fixed_value: 0.842
+      deltas:
+        fixed_value: -0.085
 
 ##############################
 # Prior setup
@@ -75,6 +97,7 @@ ObsLikes:
 # Simple gaussian relic density likelihood
     - capability: RD_oh2
       purpose: Observable
+      function: RD_oh2_general
     - capability: lnL_oh2
       purpose: Likelihood 
 # XENON100 2012 direct detection likelihood
@@ -92,7 +115,7 @@ ObsLikes:
 #    - capability: lnL_DARWIN_Xe_2015
 #      purpose:  Observable
       
-Auxiliaries:
+Rules:
   # Gamma-rays -------------------------
   - capability: UnitTest_DarkBit
     options:
@@ -132,7 +155,10 @@ Auxiliaries:
       Beps: 1e-2
     function: RD_oh2_general   # general routines (DS backend)
     #function: RD_oh2_DarkSUSY   # darksusy backend
-    #function: RD_oh2_micromegas  # micromegas backend     
+    #function: RD_oh2_MicrOmegas  # micromegas backend     
+  - capability: RD_spectrum
+    options: 
+      CoannMaxMass: 1.01 # include only co-annihilating particles up to this mass
       
   - capability: lnL_oh2
     options:
@@ -146,8 +172,8 @@ Auxiliaries:
   # is the only one available for that model.
   - capability: DD_couplings
     #function: DD_couplings_DarkSUSY    # couplings from darksusy backend
-    #function: DD_couplings_micrOMEGAs  # couplings from micromegas backend
-    #function: DD_couplings_SingletDM   # couplings for singlet DM model
+    #function: DD_couplings_MicrOmegas  # couplings from micromegas backend
+    function: DD_couplings_SingletDM   # couplings for singlet DM model
     options:
         rescale_couplings: 1  # For unit tests: rescale couplings
   # Miscellaneous ----------------------
@@ -175,7 +201,7 @@ Logger:
   # Obviously this also means it is impossible to redirect output to actual
   # files with these names.
 
-  prefix : "runs/DarkBit_minimalTest/logs/"
+  prefix : "runs/DarkBit_SingletDM/logs/"
   redirection:
     [Debug] : "debug.log"
     [Default] : "default.log"
@@ -210,7 +236,6 @@ KeyValues:
     dependency_resolver_error: fatal
     dependency_resolver_warning: non-fatal
     core_warning: fatal
-    scan_error: non-fatal #make this fatal to see an example error
     ExampleBit_A_error: non-fatal
 
   enable_testing: false

@@ -33,28 +33,29 @@
 LOAD_LIBRARY
 
 // Set models that this backend can be used with.  If absent, all models are allowed.
-BE_ALLOW_MODELS(test_parent_I)
+//BE_ALLOW_MODELS(test_parent_I)  // Ben: disabled since no longer using CMSSM_demo
+BE_ALLOW_MODELS(CMSSM, CMSSM_demo, test_parent_I)  // CW: Added CMSSM_demo back, since it is still used by ExampleBits and spartan.yaml
 
 // Functions
 BE_FUNCTION(initialize, void, (int), "_Z10initializei", "LibFirst_initialize_capability")
-BE_FUNCTION(someFunction, void, (), "_Z12someFunctionv", "someFunction", (CMSSM_I, UED))
+BE_FUNCTION(someFunction, void, (), "_Z12someFunctionv", "someFunction", (CMSSM, UED))
 BE_FUNCTION(returnResult, double, (), "_Z12returnResultv","LibFirst_returnResult_capability")
 BE_FUNCTION(byRefExample, double, (double&), "_Z12byRefExampleRd", "refex")
 BE_FUNCTION(byRefExample2, void, (double&, double), "_Z13byRefExample2Rdd", "refex2")
 BE_FUNCTION(nastyExample, double, (int, etc), "_Z12nastyExampleiz", "varex")
 
 // Variables
-BE_VARIABLE(int,SomeInt, "someInt", "SomeInt", (UED))
+BE_VARIABLE(int,SomeInt, "someInt", "SomeInt", (CMSSM, UED))
 BE_VARIABLE(double,SomeDouble, "someDouble", "SomeDouble")
 BE_VARIABLE(dblarr,SomeArray, "someArray", "SomeArray")
 BE_VARIABLE(std::vector<double>,SomeVector, "someVector", "test_vector")
 
 // Initialisation function (dependencies)
 BE_INI_DEPENDENCY(nevents, int)
-BE_INI_CONDITIONAL_DEPENDENCY(bar, double, CMSSM_I)
+//BE_INI_CONDITIONAL_DEPENDENCY(bar, double, CMSSM)  // Ben: nothing seems to exist to fulfil this
 
 // Convenience functions (registration)
-BE_CONV_FUNCTION(awesomenessByAnders, double, (int), "awesomeness", (CMSSM_I, UED))
+BE_CONV_FUNCTION(awesomenessByAnders, double, (int), "awesomeness", (CMSSM, UED))
 BE_CONV_FUNCTION(variadicConvenience, double, (int, etc), "varex2")
 
 // Initialisation function (definition)
@@ -64,7 +65,7 @@ BE_INI_FUNCTION
   static bool scan_level = true;
   if (scan_level)
   {
-    logger() << "Initialising backend LibFirst, v1.1.  ";
+    logger() << "Initialising backend LibFirst, v1.1.  My .so file is in " << backendDir << ".";
     logger() << (*InUse::awesomenessByAnders ? "Ready to bust out some awesomeness." : "No awesomeness shall be forthcoming.") << EOM;
   }
   scan_level = false;

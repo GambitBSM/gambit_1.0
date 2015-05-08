@@ -24,7 +24,7 @@
 #include "gambit/Models/models.hpp"
 #include "gambit/Backends/backend_info.hpp"
 #include "gambit/Utils/util_types.hpp"
-#include "gambit/Utils/functors.hpp"
+#include "gambit/Elements/functors.hpp"
 
 #include "yaml-cpp/yaml.h"
 
