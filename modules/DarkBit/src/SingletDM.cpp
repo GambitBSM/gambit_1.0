@@ -176,6 +176,7 @@ namespace Gambit {
       result = DarkMatter_ID_type(initVector<std::string>("S"));
     } // DarkMatter_ID_SingletDM
 
+
     /// Initializes thresholds/resonances for RD calculation for SingletDM
     void RD_thresholds_resonances_SingletDM(TH_resonances_thresholds &result)
     {
@@ -195,9 +196,10 @@ namespace Gambit {
       myrdmgev.mdof(1) = 1;
       myrdmgev.kcoann(1) = 42;  // ???
       *BEreq::rdmgev = myrdmgev;
-    } // function DarkMatter_ID_SingletDM
+    } // function RD_thresholds_resonances_SingletDM
 
-    /*! \brief Some helper function that gets spectrum information needed for
+
+   /*! \brief Some helper function that gets spectrum information needed for
      *         relic density calculations directly from DarkSUSY.
      *
      * Collects information about coannihilating particles, resonances and
@@ -251,6 +253,8 @@ namespace Gambit {
           result.threshold_energy.push_back(2*thrmasses[i]);
 
     } // function RD_spectrum_SingletDM
+
+
 
 
 
