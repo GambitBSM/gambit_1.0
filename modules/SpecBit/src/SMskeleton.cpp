@@ -81,8 +81,11 @@ namespace Gambit {
 
       double SMea::get_MPhoton_pole()   const { return 0.; }
       double SMea::get_MGluon_pole()    const { return 0.; }
-  
-      double SMea::get_MW_pole()        const { return getdata("SMINPUTS",9); }
+       
+      // In SLHA the W mass is an output, though some spectrum generator authors
+      // allow it as a non-standard entry in SMINPUTS. Here we will stick to
+      // SLHA.
+      double SMea::get_MW_pole()        const { return getdata("MASS",24); }
       
       /// Running masses
       //  Only available for light quarks
