@@ -201,8 +201,7 @@ namespace Gambit {
     } // function RD_thresholds_resonances_SingletDM
 
 
-
-    /*! \brief Some helper function that gets spectrum information needed for
+   /*! \brief Some helper function that gets spectrum information needed for
      *         relic density calculations directly from DarkSUSY.
      *
      * Collects information about coannihilating particles, resonances and
@@ -256,6 +255,8 @@ namespace Gambit {
           result.threshold_energy.push_back(2*thrmasses[i]);
 
     } // function RD_spectrum_SingletDM
+
+
 
 
 
@@ -381,7 +382,7 @@ namespace Gambit {
         get_f_vs_mass("DarkBit/data/Higgs_decay_1101.0593.dat");
 
       // Instantiate SingletDM object
-      auto singletDM = make_shared<SingletDM>(catalog, f_vs_mass);
+      auto singletDM = boost::make_shared<SingletDM>(catalog, f_vs_mass);
 
       // FIXME: Add top (is this still TODO?)
 
