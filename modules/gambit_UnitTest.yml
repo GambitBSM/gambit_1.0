@@ -250,7 +250,7 @@ Logger:
 KeyValues:
 
   dependency_resolution:
-    prefer_model_specific_functions: false
+    prefer_model_specific_functions: true
     use_old_routines: false
 
   likelihood:
