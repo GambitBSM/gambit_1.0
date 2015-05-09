@@ -115,7 +115,7 @@ namespace Gambit {
    /// get destroyed before you finish using these or you will cause a segfault.
    const SubSpectrum* Spectrum::get_LE()       const {check_init(); return LE;}
    const SubSpectrum* Spectrum::get_UV()       const {check_init(); return UV;}
-   const SMInputs&    Spectrum::get_SMINPUTS() const {check_init(); return SMINPUTS;}
+   const SMInputs&    Spectrum::get_SMInputs() const {check_init(); return SMINPUTS;}
    
    /// Clone getters
    /// Note: If you want to clone the whole Spectrum object, just use copy constructor, not these.
@@ -180,13 +180,14 @@ namespace Gambit {
    /// attempts to get it from the LE SubSpectrum (though probably this will never work).
    /// Error raised if this still fails.
    SLHAea::Coll Spectrum::getSLHAea() const 
-   { 
+   {
+     SLHAea::Coll output;
      try { 
-       return UV->getSLHAea(); 
+       output = UV->getSLHAea(); 
      }
      catch(const Gambit::exception& e) {
        try {
-         return LE->getSLHAea(); 
+         output = LE->getSLHAea(); 
        }
        catch(const Gambit::exception& e2) {
           std::ostringstream errmsg;
@@ -196,8 +197,12 @@ namespace Gambit {
           utils_error().raise(LOCAL_INFO,errmsg.str());   
        }
      }
-     // [[noreturn]]
-     return SLHAea::Coll();
+     // TODO: do we want to remove the above error, since can always return the SMInputs entries?     
+
+     // Add any information from SMInputs to the SLHAea object, if those entries don't exist already
+     SMINPUTS.add_to_SLHAea(output);
+
+     return output;
    }
 
 } // end namespace Gambit

@@ -266,7 +266,7 @@ namespace Gambit {
       const Spectrum* matched_spectra = *Dep::MSSM_spectrum;
       const SubSpectrum* spec = matched_spectra->get_UV();
       const SubSpectrum* SM   = matched_spectra->get_LE();
-      const SMInputs& SMI  = matched_spectra->get_SMINPUTS();  
+      const SMInputs& SMI  = matched_spectra->get_SMInputs();  
       
       // Get SM masses
 #define getSMmass(Name, spinX2)                                                \
