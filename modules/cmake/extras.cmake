@@ -180,18 +180,18 @@ set(clean_files ${clean_files} "${nulike_dir}/lib/${nulike_lib}.so")
 
 ExternalProject_Add(feynhiggs
   URL http://wwwth.mpp.mpg.de/members/heinemey/feynhiggs/newversion/FeynHiggs-2.10.4.tar.gz
-  URL_MD5 3fe0b927dce70d3a7404661725d9d6ac
+  URL_MD5 afd04154870ab5519603ffdb0e4e2d5b
   DOWNLOAD_DIR ${PROJECT_SOURCE_DIR}/../extras/FeynHiggs
   SOURCE_DIR ${PROJECT_SOURCE_DIR}/../extras/FeynHiggs/FeynHiggs
   BUILD_IN_SOURCE 1
-  CONFIGURE_COMMAND <SOURCE_DIR>/configure COMMAND sed -i -e "s|FC = .*|FC = ${CMAKE_Fortran_COMPILER}|" <SOURCE_DIR>/makefile COMMAND sed -i -e "s|FFLAGS =.*|& ${CMAKE_Fortran_FLAGS}|" <SOURCE_DIR>/makefile COMMAND sed -i -e "s|CFLAGS =.*|& -fPIC|" <SOURCE_DIR>/makefile COMMAND sed -i -e "s|CXXFLAGS =.*|& -fPIC|" <SOURCE_DIR>/makefile
-  BUILD_COMMAND make COMMAND mkdir -p lib COMMAND echo "${CMAKE_Fortran_COMPILER} -shared -o lib/libfeynhiggs.so build/*.o" > make_so.sh COMMAND chmod u+x make_so.sh COMMAND ./make_so.sh
-  INSTALL_COMMAND cp <SOURCE_DIR>/lib/libfeynhiggs.so ${PROJECT_SOURCE_DIR}/Backends/lib/.
+  CONFIGURE_COMMAND <SOURCE_DIR>/configure FC=${CMAKE_Fortran_COMPILER} FFLAGS=${CMAKE_Fortran_FLAGS} CC=${CMAKE_C_COMPILER} CFLAGS=${CMAKE_C_FLAGS} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${CMAKE_CXX_FLAGS}
+  BUILD_COMMAND make COMMAND mkdir -p lib COMMAND echo "${CMAKE_Fortran_COMPILER} -shared -o lib/libFH.so build/*.o" > make_so.sh COMMAND chmod u+x make_so.sh COMMAND ./make_so.sh
+  INSTALL_COMMAND cp <SOURCE_DIR>/lib/libFH.so ${PROJECT_SOURCE_DIR}/Backends/lib/.
 )
 
 set_property(TARGET feynhiggs PROPERTY _EP_DOWNLOAD_ALWAYS 0)
 
-set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../extras/FeynHiggs/FeynHiggs/lib/feynhiggs.so" "${PROJECT_SOURCE_DIR}/Backends/lib/feynhiggs.so")
+set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../extras/FeynHiggs/FeynHiggs/lib/libFH.so" "${PROJECT_SOURCE_DIR}/Backends/lib/libFH.so")
 
 ExternalProject_Add(higgsbounds_tables
   URL http://www.hepforge.org/archive/higgsbounds/csboutput_trans_binary.tar.gz

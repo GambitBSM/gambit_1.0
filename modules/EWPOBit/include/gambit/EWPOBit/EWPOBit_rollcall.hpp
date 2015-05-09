@@ -43,7 +43,7 @@ START_MODULE
     DEPENDENCY(FH_Couplings, fh_Couplings)
       BACKEND_REQ(FHConstraints, (libfeynhiggs), void, (int&,fh_real&,fh_real&,fh_real&,fh_real&,
 							fh_real&,fh_real&,fh_real&,fh_real&,fh_real&,int&))
-      BACKEND_OPTION( (FeynHiggs, 2.10), (libfeynhiggs) )
+      BACKEND_OPTION( (FeynHiggs, 2.10.4), (libfeynhiggs) )
     ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
     #undef FUNCTION
   #undef CAPABILITY 
@@ -73,7 +73,7 @@ START_MODULE
 						    Farray< fh_complex,1,4>&, Farray< fh_real,1,4>&,
 						    Farray< fh_complex,1,16>&, fh_complex&, fh_real&,
 						    Farray< fh_real,1,4>&, fh_real&))
-      BACKEND_OPTION( (FeynHiggs, 2.10), (libfeynhiggs) )
+      BACKEND_OPTION( (FeynHiggs, 2.10.4), (libfeynhiggs) )
     ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
     #undef FUNCTION
   #undef CAPABILITY 
@@ -84,7 +84,7 @@ START_MODULE
     START_FUNCTION(fh_FlavorObs)
     DEPENDENCY(FH_HiggsMasses, fh_HiggsMassObs)
       BACKEND_REQ(FHFlavour, (libfeynhiggs), void, (int&,fh_real&,fh_real&,fh_real&,fh_real&,fh_real&,fh_real&))
-      BACKEND_OPTION( (FeynHiggs, 2.10), (libfeynhiggs) )
+      BACKEND_OPTION( (FeynHiggs, 2.10.4), (libfeynhiggs) )
     ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
     #undef FUNCTION
   #undef CAPABILITY 
@@ -100,7 +100,7 @@ START_MODULE
 BACKEND_REQ(FHUncertainties, (libfeynhiggs), void, (int&, Farray< fh_real,1,4>&, fh_complex&, 
 						    Farray<fh_complex, 1,3, 1,3>&, 
 						    Farray<fh_complex, 1,3, 1,3>&))
-      BACKEND_OPTION( (FeynHiggs, 2.10), (libfeynhiggs) )
+      BACKEND_OPTION( (FeynHiggs, 2.10.4), (libfeynhiggs) )
     ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
     #undef FUNCTION
   #undef CAPABILITY 
@@ -115,7 +115,7 @@ BACKEND_REQ(FHUncertainties, (libfeynhiggs), void, (int&, Farray< fh_real,1,4>&,
                                                       Farray< fh_complex,1,231>&,
                                                       Farray< fh_real,1,978>&,
                                                       Farray< fh_real,1,250>&, int&))
-      BACKEND_OPTION( (FeynHiggs, 2.10), (libfeynhiggs) )
+      BACKEND_OPTION( (FeynHiggs, 2.10.4), (libfeynhiggs) )
     ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
     #undef FUNCTION
   #undef CAPABILITY
@@ -126,7 +126,7 @@ BACKEND_REQ(FHUncertainties, (libfeynhiggs), void, (int&, Farray< fh_real,1,4>&,
     START_FUNCTION(fh_HiggsProd)
     DEPENDENCY(FH_Couplings, fh_Couplings)
       BACKEND_REQ(FHHiggsProd, (libfeynhiggs), void, (int&, fh_real&, Farray< fh_real,1,52>&))
-      BACKEND_OPTION( (FeynHiggs, 2.10), (libfeynhiggs) )
+      BACKEND_OPTION( (FeynHiggs, 2.10.4), (libfeynhiggs) )
     ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
     #undef FUNCTION
   #undef CAPABILITY

@@ -1759,9 +1759,10 @@ namespace Gambit
                  <<     printGenericFunctorList(disabledVertexCandidates)
                  << endl
                  << "Status flags:" << endl
+                 << " 1: This function is available, but the backend version does not match your request." << endl
                  << " 0: This function is not compatible with any model you are scanning." << endl
                  << "-1: The backend that provides this function is missing." << endl
-                 << "-2: The backend is present, but function is absent or broken." << endl
+                 << "-2: The backend is present, but the function is absent or broken." << endl
                  << endl
                  << "\nPlease check that all shared objects exist for the" << endl
                  << "\nnecessary backends, and that they contain all the" << endl
