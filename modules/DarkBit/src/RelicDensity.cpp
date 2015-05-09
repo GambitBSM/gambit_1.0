@@ -148,20 +148,22 @@ namespace Gambit {
 
     } // function RD_spectrum_SUSY
 
-    /*! \brief Derive thresholds & resonances from process catalogue.
-    */
-    // FIXME: currently not in use / operational!
-    void RD_thresholds_resonances_from_ProcessCatalog(
-        TH_resonances_thresholds &result)
-    {
-      using namespace Pipes::RD_thresholds_resonances_from_ProcessCatalog;
-      std::string DMid= Dep::DarkMatter_ID->singleID();
 
-      TH_Process annihilation = 
-        (*Dep::TH_ProcessCatalog).getProcess(DMid, DMid);
-
-      result = TH_resonances_thresholds(annihilation.thresholdResonances);
-    }
+// obsolete!
+//    /*! \brief Derive thresholds & resonances from process catalogue.
+//    */
+//    // FIXME: currently not in use / operational!
+//    void RD_thresholds_resonances_from_ProcessCatalog(
+//        TH_resonances_thresholds &result)
+//    {
+//      using namespace Pipes::RD_thresholds_resonances_from_ProcessCatalog;
+//      std::string DMid= Dep::DarkMatter_ID->singleID();
+//
+//      TH_Process annihilation = 
+//        (*Dep::TH_ProcessCatalog).getProcess(DMid, DMid);
+//
+//      result = TH_resonances_thresholds(annihilation.thresholdResonances);
+//    }
 
     /*! \brief Derive thresholds & resonances from RD_spectrum helper object.
     */
@@ -211,9 +213,9 @@ namespace Gambit {
     /*! \brief Some helper function to prepare evaluation of Weff from
      *         DarkSUSY.
      */
-    void RD_eff_annrate_SUSY_DSprep_func(int &result)
+    void RD_eff_annrate_DSprep_func(int &result)
     {
-      using namespace Pipes::RD_eff_annrate_SUSY_DSprep_func;
+      using namespace Pipes::RD_eff_annrate_DSprep_func;
 
       // Read out location and number of resonances and thresholds from
       // RDspectrum.
@@ -227,6 +229,9 @@ namespace Gambit {
         myrdmgev.mco(i)=fabs(specres.coannihilatingParticles[i-1].mass);
         myrdmgev.mdof(i)=specres.coannihilatingParticles[i-1].degreesOfFreedom;
         myrdmgev.kcoann(i)=specres.coannihilatingParticles[i-1].index;
+        // NB: only this particle code is DS/SUSY specific, and needed if Weff is 
+        // to be provided by DS (only for SUSY models). If a Weff not from DS is 
+        // used, the entries here have no effect
       }
       // now order
       double tmp; int itmp;
@@ -247,9 +252,9 @@ namespace Gambit {
       }
       *BEreq::rdmgev = myrdmgev;
 
-      result=1; // everthing OK
+      result=1; // everything OK
 
-    } // function RD_eff_annrate_SUSY_DSprep_func
+    } // function RD_eff_annrate_DSprep_func
 
 
     /*! \brief Get Weff directly from initialized DarkSUSY.

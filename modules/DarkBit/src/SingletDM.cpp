@@ -178,33 +178,30 @@ namespace Gambit {
       result = DarkMatter_ID_type(initVector<std::string>("S"));
     } // DarkMatter_ID_SingletDM
 
+// Obsolete !
+//    /// Initializes thresholds/resonances for RD calculation for SingletDM
+//    void RD_thresholds_resonances_SingletDM(TH_resonances_thresholds &result)
+//    {
+//      using namespace Pipes::RD_thresholds_resonances_SingletDM;
+//
+//      result.resonances.clear();
+//      result.threshold_energy.clear();
+//
+//      result.threshold_energy.push_back(2*(*Param["mass"]));
+//      double mh = (*Dep::TH_ProcessCatalog).getParticleProperty("h0_1").mass;
+//      result.resonances.push_back(TH_Resonance(mh, 0.01));  // FIXME use proper Higgs width!
+//
+//      // FIXME: Move somewhere else
+//      DS_RDMGEV myrdmgev;
+//      myrdmgev.nco = 1;
+//      myrdmgev.mco(1) = *Param["mass"];
+//      myrdmgev.mdof(1) = 1;
+//      myrdmgev.kcoann(1) = 42;  // ???
+//      *BEreq::rdmgev = myrdmgev;
+//    } // function RD_thresholds_resonances_SingletDM
 
-    /// Initializes thresholds/resonances for RD calculation for SingletDM
-    void RD_thresholds_resonances_SingletDM(TH_resonances_thresholds &result)
-    {
-      using namespace Pipes::RD_thresholds_resonances_SingletDM;
 
-      result.resonances.clear();
-      result.threshold_energy.clear();
-
-      result.threshold_energy.push_back(2*(*Param["mass"]));
-      double mh = (*Dep::TH_ProcessCatalog).getParticleProperty("h0_1").mass;
-      result.resonances.push_back(TH_Resonance(mh, 0.01));  // FIXME use proper Higgs width!
-
-      // FIXME: Move somewhere else
-      DS_RDMGEV myrdmgev;
-      myrdmgev.nco = 1;
-      myrdmgev.mco(1) = *Param["mass"];
-      myrdmgev.mdof(1) = 1;
-      myrdmgev.kcoann(1) = 42;  // ???
-      *BEreq::rdmgev = myrdmgev;
-    } // function RD_thresholds_resonances_SingletDM
-
-
-   /*! \brief Some helper function that gets spectrum information needed for
-     *         relic density calculations directly from DarkSUSY.
-     *
-     * Collects information about coannihilating particles, resonances and
+   /*! \brief Collects information about coannihilating particles, resonances and
      * threshold energies.
      */
     void RD_spectrum_SingletDM(RD_spectrum_type &result)
@@ -217,22 +214,21 @@ namespace Gambit {
       result.resonances.clear();
       result.threshold_energy.clear();
 
-      // FIXME: eventually, this function should not be BE-dependent anymore!
-      // thise is the DarkSUSY particle code for the neutralino (used as WIMP template)
-      int kdm=42;
-
       // first add WIMP=least massive 'coannihilating particle'
+      // note that particle code (1st entry) is irrelevant unless DS is used to
+      // calculate Weff for SUSY models
       result.coannihilatingParticles.push_back(
-          RD_coannihilating_particle(kdm,1,*Param["mass"]));
+          RD_coannihilating_particle(100,1,*Param["mass"]));
 
       double mh = (*Dep::TH_ProcessCatalog).getParticleProperty("h0_1").mass;
       double mW = (*Dep::TH_ProcessCatalog).getParticleProperty("W+").mass;
       double mZ = (*Dep::TH_ProcessCatalog).getParticleProperty("Z0").mass;
       double mt = (*Dep::TH_ProcessCatalog).getParticleProperty("u_3").mass;
 
+
       // in the ScalarSinglet model, only the Higgs appears as resonance
       double resmasses[] = {mh};
-      double reswidths[] = {0.01};
+      double reswidths[] = {0.01};  // FIXME: import Higgs width
       int resmax=sizeof(resmasses) / sizeof(resmasses[0]);
 
       for (int i=0; i<resmax; i++)
@@ -251,8 +247,10 @@ namespace Gambit {
       double thrmasses[] = {mW, mZ, mh, mt};
       int thrmax=sizeof(thrmasses) / sizeof(thrmasses[0]);
       for (int i=0; i<thrmax; i++)
+      {
         if (thrmasses[i]>result.coannihilatingParticles[0].mass)
           result.threshold_energy.push_back(2*thrmasses[i]);
+      }
 
     } // function RD_spectrum_SingletDM
 

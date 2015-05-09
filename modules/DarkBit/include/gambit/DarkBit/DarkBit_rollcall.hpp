@@ -110,27 +110,29 @@ START_MODULE
 
   #define CAPABILITY RD_thresholds_resonances
   START_CAPABILITY
-    #define FUNCTION RD_thresholds_resonances_from_ProcessCatalog
-      START_FUNCTION(Gambit::DarkBit::TH_resonances_thresholds)
-      DEPENDENCY(RD_spectrum, Gambit::DarkBit::RD_spectrum_type)
-      DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)
-      DEPENDENCY(DarkMatter_ID, DarkMatter_ID_type)
-    #undef FUNCTION
+// obsolete
+//    #define FUNCTION RD_thresholds_resonances_from_ProcessCatalog
+//      START_FUNCTION(Gambit::DarkBit::TH_resonances_thresholds)
+//      DEPENDENCY(RD_spectrum, Gambit::DarkBit::RD_spectrum_type)
+//      DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)
+//      DEPENDENCY(DarkMatter_ID, DarkMatter_ID_type)
+//    #undef FUNCTION
     #define FUNCTION RD_thresholds_resonances_from_spectrum
       START_FUNCTION(Gambit::DarkBit::TH_resonances_thresholds)
       DEPENDENCY(RD_spectrum, Gambit::DarkBit::RD_spectrum_type)
     #undef FUNCTION
-    #define FUNCTION RD_thresholds_resonances_SingletDM
-      START_FUNCTION(Gambit::DarkBit::TH_resonances_thresholds)
-      DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)
-      ALLOW_MODELS(SingletDM)
-      BACKEND_REQ(rdmgev, (), DS_RDMGEV)
-    #undef FUNCTION
+// obsolete
+//    #define FUNCTION RD_thresholds_resonances_SingletDM
+//      START_FUNCTION(Gambit::DarkBit::TH_resonances_thresholds)
+//      DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)
+//      ALLOW_MODELS(SingletDM)
+//      BACKEND_REQ(rdmgev, (), DS_RDMGEV)
+//    #undef FUNCTION
   #undef CAPABILITY
 
-  #define CAPABILITY RD_eff_annrate_SUSY_DSprep
+  #define CAPABILITY RD_eff_annrate_DSprep
   START_CAPABILITY 
-    #define FUNCTION RD_eff_annrate_SUSY_DSprep_func
+    #define FUNCTION RD_eff_annrate_DSprep_func
       START_FUNCTION(int)
       DEPENDENCY(RD_spectrum, Gambit::DarkBit::RD_spectrum_type)
       BACKEND_REQ(rdmgev, (), DS_RDMGEV)
@@ -141,11 +143,12 @@ START_MODULE
   START_CAPABILITY 
     #define FUNCTION RD_eff_annrate_SUSY
       START_FUNCTION(fptr_dd)
-        DEPENDENCY(RD_eff_annrate_SUSY_DSprep, int)
+        DEPENDENCY(RD_eff_annrate_DSprep, int)
         BACKEND_REQ(dsanwx, (), double, (double&))
     #undef FUNCTION
     #define FUNCTION RD_eff_annrate_from_ProcessCatalog
       START_FUNCTION(fptr_dd)
+      DEPENDENCY(RD_eff_annrate_DSprep, int)
       DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)
       DEPENDENCY(DarkMatter_ID, DarkMatter_ID_type)
       ALLOW_MODELS(SingletDM)
