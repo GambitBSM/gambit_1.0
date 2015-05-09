@@ -738,8 +738,16 @@ BE_INI_FUNCTION
     // Take a local copy to allow running.
     std::unique_ptr<SubSpectrum> local_mssm_copy = (*Dep::MSSM_spectrum)->get_UV()->clone();
     // Run to SUSY scale.
-    local_mssm_copy->runningpars.RunToScale(msusy);
-    slha = local_mssm_copy->getSLHAea();      
+    try
+    {
+      local_mssm_copy->runningpars.RunToScale(msusy);
+      slha = local_mssm_copy->getSLHAea();
+    }
+    // FIXME: Maybe this should be solved with a flag? (CW 2015-05-09)
+    catch (...)
+    {
+      slha = (*Dep::MSSM_spectrum)->getSLHAea();
+    }
   }
   else 
   {
