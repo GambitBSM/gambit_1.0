@@ -46,6 +46,7 @@ namespace Gambit {
         std::ostringstream warn;
         warn << "Warning! No entry found at index "<<index<<" of block "<<block<<". Using default value: "<<defvalue<< std::endl;
         utils_warning().raise(LOCAL_INFO,warn.str());    
+        output = defvalue;
       }
       return output;
    }
