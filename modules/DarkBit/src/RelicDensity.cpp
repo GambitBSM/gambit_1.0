@@ -31,11 +31,8 @@ namespace Gambit {
     //
     //////////////////////////////////////////////////////////////////////////
 
-    /*! \brief Some helper function that gets spectrum information needed for
-     *         relic density calculations directly from DarkSUSY.
-     *
-     * Collects information about coannihilating particles, resonances and
-     * threshold energies.
+    /*! \brief Collects spectrum information about coannihilating particles, 
+     *         resonances and threshold energies -- so far directly from DarkSUSY.
      */
     void RD_spectrum_SUSY(RD_spectrum_type &result)
     {
@@ -147,6 +144,32 @@ namespace Gambit {
                 +result.coannihilatingParticles[j].mass);
 
     } // function RD_spectrum_SUSY
+
+
+   /*! \brief Collects information about resonances and threshold energies 
+     *        directly from the ProcessCatalog 
+     *        [NB: this assumes no coannihilating particles!]
+     */
+    void RD_spectrum_from_ProcessCatalog(RD_spectrum_type &result)
+    {
+      using namespace Pipes::RD_spectrum_from_ProcessCatalog;
+
+      result.coannihilatingParticles.clear();
+      // add WIMP=least massive 'coannihilating particle'
+      // NB: particle code (1st entry) is irrelevant (unless Weff is ibatined from DS)
+      result.coannihilatingParticles.push_back(
+          RD_coannihilating_particle(100,1,*Param["mass"]));
+
+      // now derive thresholds & resonances from process catalogue
+      std::string DMid= Dep::DarkMatter_ID->singleID();
+      TH_Process annihilation = 
+              (*Dep::TH_ProcessCatalog).getProcess(DMid, DMid);
+      result.resonances = annihilation.thresholdResonances.resonances;
+      result.threshold_energy = annihilation.thresholdResonances.threshold_energy;
+      // (coannihilation thresholds would have to be added now for any concrete model)
+
+    } // function RD_spectrum_from_ProcessCatalog
+
 
 
 // obsolete!
@@ -283,7 +306,7 @@ namespace Gambit {
         std::string DMid= Dep::DarkMatter_ID->singleID();
         TH_Process annProc = (*Dep::TH_ProcessCatalog).getProcess(DMid, DMid);
         double mDM = *Param["mass"];
-        const double GeV2tocm3s1 = 1.17e-17;
+        const double GeV2tocm3s1 = 1.17e-17; //FIXME: more digits!
 
         auto Weff = Funk::zero("peff");
         auto peff = Funk::var("peff");
