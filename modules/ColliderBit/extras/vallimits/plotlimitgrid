@@ -34,7 +34,6 @@ xx, yy = np.meshgrid(mx_range, my_range)
 obs_sr_llbs, obs_sr_llsbs = {}, {} #< We'll populate these with arrays of LL_{b,s+b} for each SR
 exp_sr_llbs, exp_sr_llsbs = {}, {} #< We'll populate this with arrays of LLexp_{b,s+b} for each SR
 
-
 ## Read LLs for each SR and mx-my point from the results files
 import os, glob
 for i, mx in enumerate(mx_range):
@@ -52,13 +51,13 @@ for i, mx in enumerate(mx_range):
                     assert len(parts) == 7
                     exp_ll_b = float(parts[3])
                     exp_ll_sb = float(parts[4])
-                    ll_b = float(parts[5])
-                    ll_sb = float(parts[6])
+                    obs_ll_b = float(parts[5])
+                    obs_ll_sb = float(parts[6])
                     # TODO: create these arrays untransposed, and index backwards?
                     exp_sr_llbs.setdefault(sr, np.full_like(xx.T, np.nan, dtype=np.double))[i,j] = exp_ll_b
                     exp_sr_llsbs.setdefault(sr, np.full_like(xx.T, np.nan, dtype=np.double))[i,j] = exp_ll_sb
-                    obs_sr_llbs.setdefault(sr, np.full_like(xx.T, np.nan, dtype=np.double))[i,j] = ll_b
-                    obs_sr_llsbs.setdefault(sr, np.full_like(xx.T, np.nan, dtype=np.double))[i,j] = ll_sb
+                    obs_sr_llbs.setdefault(sr, np.full_like(xx.T, np.nan, dtype=np.double))[i,j] = obs_ll_b
+                    obs_sr_llsbs.setdefault(sr, np.full_like(xx.T, np.nan, dtype=np.double))[i,j] = obs_ll_sb
         else:
             print (mx, my), "data file not found"
 
@@ -69,6 +68,10 @@ exp_sr_dlls = { sr : exp_sr_llbs[sr] - exp_sr_llsbs[sr] for sr in exp_sr_llbs.ke
 ## Find the best such expectation
 exp_best_dlls = reduce(np.fmax, exp_sr_dlls.values() + [np.zeros_like(exp_sr_dlls.values()[0])]) #< note cmp to zero
 
+# for sr in (2,5):
+#     print exp_sr_dlls[sr]
+# print "\nEXP BEST DLLS\n", exp_best_dlls
+
 ## Now reverse-engineer which SR gave the best expectation!
 exp_best_srs = np.full_like(exp_sr_dlls.values()[0], np.nan)
 for i in xrange(exp_best_srs.shape[0]):
@@ -77,7 +80,13 @@ for i in xrange(exp_best_srs.shape[0]):
             if exp_dll[i,j] == exp_best_dlls[i,j]:
                 exp_best_srs[i,j] = sr
                 break
-print "\nExpected best SRs:\n", exp_best_srs
+# print "\nExpected best SRs:\n", exp_best_srs
+
+print "\nExpected LLs"
+for sr in exp_sr_dlls.keys():
+    print sr, ": LL_b_exp =", exp_sr_llbs[sr][-1,-1], "  LL_s+b_exp =", exp_sr_llsbs[sr][-1,-1], "  dLL_exp =", exp_sr_dlls[sr][-1,-1]
+print "Best SR, dLL =", int(exp_best_srs[-1,-1]), exp_best_dlls[-1,-1]
+
 
 ## Find the scalar LL_b for each SR (should be the same throughout the grid, but some will be NaN)
 obs_sr_llb = { sr : np.nanmax(llbs) for (sr, llbs) in obs_sr_llbs.iteritems() }
@@ -104,18 +113,25 @@ for i in xrange(obs_best_srs.shape[0]):
             if obs_dll[i,j] == obs_best_dlls[i,j]:
                 obs_best_srs[i,j] = sr
                 break
-print "\nObserved best SRs:\n", obs_best_srs
+# print "\nObserved best SRs:\n", obs_best_srs
+
+print "\nObserved LLs"
+for sr in obs_sr_dlls.keys():
+    print sr, ": LL_b_obs =", obs_sr_llbs[sr][-1,-1], "  LL_s+b_obs =", obs_sr_llsbs[sr][-1,-1], "  dLL_obs =", obs_sr_dlls[sr][-1,-1]
+print "Best SR, dLL =", int(obs_best_srs[-1,-1]), obs_best_dlls[-1,-1]
+
 
 ## We're actually going to plot the observed dLLs in the _expected_ best SR for each point
 limit_dlls = np.full_like(xx.T, np.nan, dtype=np.double)
 for i in xrange(exp_best_srs.shape[0]):
     for j in xrange(exp_best_srs.shape[1]):
         limit_sr = exp_best_srs[i,j]
-        print limit_sr
+        #print limit_sr
         if not np.isnan(limit_sr):
-            print "@", limit_sr
             limit_dlls[i,j] = obs_sr_dlls[limit_sr][i,j]
-print "\ndLL map:\n", limit_dlls
+#print "\ndLL map:\n", limit_dlls
+
+print "\nLimit dLL =", limit_dlls[-1,-1]
 
 
 ## Plot dLL filled contours
@@ -143,7 +159,7 @@ plt.clabel(c, fmt="95%%", fontsize="smaller")
 ## Write dLL text values on plot
 for i, mx in enumerate(mx_range):
     for j, my in enumerate(my_range):
-        if i % 2 == 0 and j % 2 == 0:
+        if True: #i % 2 == 0 and j % 2 == 0:
             sr = exp_best_srs[i,j]
             if not np.isnan(sr):
                 ax.text(mx, my, str(int(sr)), ha="center", va="center", fontsize="small")
@@ -154,7 +170,28 @@ ax.set_ylabel(MY_LABEL, y=0.95, va="top", labelpad=16)
 
 # fig.tight_layout()
 if opts.SAVE:
-    fig.savefig("dll-atlas0lep.pdf")
-    # fig.savefig("cl-ana%d-sr%d.pdf" % ana_sr)
+    fig.savefig("atlas0lep-obsdll.pdf")
 else:
     plt.show()
+
+
+def plot_dlls(arr):
+    plt.clf()
+    plt.hold(True)
+    plt.contourf(xx, yy, np.nan_to_num(np.log1p(arr.T)), range(0,9))
+    plt.colorbar()
+    for i, mx in enumerate(mx_range):
+        for j, my in enumerate(my_range):
+            dll = arr[i,j]
+            if not np.isnan(dll):
+                plt.text(mx, my, "%1.0f" % dll, ha="center", va="center", fontsize="x-small")
+
+if opts.SAVE:
+    plot_dlls(exp_best_dlls)
+    fig.savefig("atlas0lep-expbestdll.pdf")
+
+    plot_dlls(obs_best_dlls)
+    fig.savefig("atlas0lep-obsbestdll.pdf")
+
+    plot_dlls(limit_dlls)
+    fig.savefig("atlas0lep-limitdll.pdf")
