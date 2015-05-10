@@ -120,8 +120,8 @@ namespace Funk
         else
         {
             mymap[key] = value;
-            return true;
         }
+        return true;
     }
 
 
