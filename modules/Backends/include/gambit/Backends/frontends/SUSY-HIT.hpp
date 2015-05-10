@@ -105,33 +105,36 @@ BE_NAMESPACE
   void run_susy_hit(SLHAstruct slha, double W_width, double Z_width) 
   {
 
-    #include "boost/lexical_cast.hpp"
-
     // Bypass model and use hardcoded SLHA values for debug purposes.
-    const bool debug = false;
+    const bool debug = true;
 
     if (not debug) 
     {
 
-      // SLHA2 block SMINPUTS
+      // SLHA2 SM blocks
       SLHAea::Block sminputs = slha.at("SMINPUTS");
+      SLHAea::Block ckm = slha.at("VCKMIN");
+      SLHAea::Block pmns = slha.at("UPMNSIN");
       for (int i=1; i<=14; ++i)
       {
-        std::vector<str> key(1, boost::lexical_cast<str>(i));
-        sd_leshouches2->massval(i) = (sminputs.find(key) == sminputs.end()) ? 0.0 : SLHAea::to<double>(sminputs.at(i).at(1));
+        sd_leshouches2->smval(i) = (siminputs[i].is_data_line()) ? 0.0 : SLHAea::to<double>(sminputs[i][1]);
       }
       for (int i=15; i<=20; ++i) sd_leshouches2->smval(i) = 0.0; // zeroing
 
       // SUSY-HIT / HDecay inputs
-      susyhitin->amsin = SLHAea::to<double>(sminputs.at(23).at(1)); // MSBAR(1): HDECAY claims it wants ms(1GeV)^MSbar, but we don't believe it, and give it m_s(2GeV)^MSBar 
-      susyhitin->amcin = SLHAea::to<double>(sminputs.at(24).at(1)); // MC: HDECAY claims it wants the c pole mass, but that is not well defined, so we give it mc(mc)^MSBar 
-      susyhitin->ammuonin = sd_leshouches2->smval(11);              // MMUON: mmu(pole)
-      susyhitin->alphin = sd_leshouches2->smval(1);                 // ALPHA: alpha_em^-1(M_Z)^MSbar (scheme and scale not specified in SUSYHIT or HDECAY documentation)
-      susyhitin->gamwin = W_width;                                  // GAMW: W width (GeV)
-      susyhitin->gamzin = Z_width;                                  // GAMZ: Z width (GeV)
-      susyhitin->vusin = 0.2205;                                    // VUS: CKM V_US FIXME needs adding to spectrum object 
-      susyhitin->vcbin = 0.04;                                      // VCB: CKM V_CB FIXME needs adding to spectrum object
-      susyhitin->rvubin = 0.08;                                     // VUB/VCB: Ratio of CKM V_UB/V_CB FIXME needs adding to spectrum object    
+      susyhitin->amsin = SLHAea::to<double>(sminputs.at(23).at(1));      // MSBAR(1): HDECAY claims it wants ms(1GeV)^MSbar, but we don't believe it, and give it m_s(2GeV)^MSBar 
+      susyhitin->amcin = SLHAea::to<double>(sminputs.at(24).at(1));      // MC: HDECAY claims it wants the c pole mass, but that is not well defined, so we give it mc(mc)^MSBar 
+      susyhitin->ammuonin = sd_leshouches2->smval(11);                   // MMUON: mmu(pole)
+      susyhitin->alphin = sd_leshouches2->smval(1);                      // ALPHA: alpha_em^-1(M_Z)^MSbar (scheme and scale not specified in SUSYHIT or HDECAY documentation)
+      susyhitin->gamwin = W_width;                                       // GAMW: W width (GeV)
+      susyhitin->gamzin = Z_width;                                       // GAMZ: Z width (GeV)
+      double lambda = SLHAea::to<double>(ckm.at(1).at(1));               // Wolfenstein lambda 
+      double A = SLHAea::to<double>(ckm.at(2).at(2));                    // Wolfenstein A 
+      double rhobar = SLHAea::to<double>(ckm.at(3).at(3));               // Wolfenstein rhobar 
+      double etabar = SLHAea::to<double>(ckm.at(4).at(4));               // Wolfenstein etabar 
+      susyhitin->vusin = Spectrum::Wolf2V_us(lambda, A, rhobar, etabar); // VUS: CKM V_us
+      susyhitin->vcbin = Spectrum::Wolf2V_cb(lambda, A, rhobar, etabar); // VCB: CKM V_cb 
+      susyhitin->rvubin = Spectrum::Wolf2V_ub(lambda, A, rhobar, etabar) / susyhitin->vcbin; // VUB/VCB: Ratio of CKM V_UB/V_CB     
   
       // Zero all SLHA2 Q values
       for (int i=1; i<=22; ++i) sd_leshouches2->qvalue(i) = 0.0;
@@ -165,8 +168,7 @@ BE_NAMESPACE
       /*  ~e_L,    ~e_R,  ~nu_eL,   ~mu_L,   ~mu_R, ~nu_muL,  ~tau_1,  ~tau_2,~nu_tauL,      ~g, ~chi_10, ~chi_20, ~chi_30, ~chi_40, ~chi_1+, ~chi_2+, b pole, ~G */
       for (int i=1; i<=35; ++i) 
       {
-        std::vector<str> key(1, boost::lexical_cast<str>(slha_indices[i]));
-        sd_leshouches2->massval(i) = (mass.find(key) == mass.end()) ? unlikely() : SLHAea::to<double>(mass.at(slha_indices[i]).at(1));
+        sd_leshouches2->massval(i) = (mass[slha_indices[i]].is_data_line()) ? unlikely() : SLHAea::to<double>(mass[slha_indices[i]][1]);
       }
       for (int i=36; i<=50; ++i) sd_leshouches2->massval(i) = 0.0; // zeroing
   
@@ -731,23 +733,16 @@ BE_INI_FUNCTION
   SLHAstruct slha;
  
   // Check whether the spectrum object is already at the SUSY scale
-  double msusy = sqrt((*Dep::MSSM_spectrum)->get_Pole_Mass("~u_1")*(*Dep::MSSM_spectrum)->get_Pole_Mass("~u_2"));  
+  //double msusy = (*Dep::MSSM_spectrum)->get_DRBar_parameter("M_SUSY");  FIXME when M_SUSY is available from the spectrum object.
+  double msusy = (*Dep::MSSM_spectrum)->get_UV()->runningpars.GetScale();
   cout << "MSUSY: " << msusy << " Q:" << (*Dep::MSSM_spectrum)->get_UV()->runningpars.GetScale() << endl;
   if (fabs(msusy - (*Dep::MSSM_spectrum)->get_UV()->runningpars.GetScale()) > scale_tol)
   {
     // Take a local copy to allow running.
     std::unique_ptr<SubSpectrum> local_mssm_copy = (*Dep::MSSM_spectrum)->get_UV()->clone();
     // Run to SUSY scale.
-    try
-    {
-      local_mssm_copy->runningpars.RunToScale(msusy);
-      slha = local_mssm_copy->getSLHAea();
-    }
-    // FIXME: Maybe this should be solved with a flag? (CW 2015-05-09)
-    catch (...)
-    {
-      slha = (*Dep::MSSM_spectrum)->getSLHAea();
-    }
+    local_mssm_copy->runningpars.RunToScale(msusy);
+    slha = local_mssm_copy->getSLHAea();
   }
   else 
   {
