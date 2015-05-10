@@ -151,12 +151,12 @@ namespace Gambit {
             "boost_dNdE: Requested Lorentz boost with gamma < 1");
       }
       double betaGamma = sqrt(gamma*gamma-1);
-      Funk::Funk Ep = Funk::var("Ep");
       Funk::Funk E = Funk::var("E");
-      // TODO: Correct now?
-      Funk::Funk halfBox = betaGamma*sqrt(E*E-mass*mass);
-      Funk::Funk integrand = (dNdE/(2*halfBox))->set("E", Ep);
-      return integrand->gsl_integration("Ep", E*gamma-halfBox, E*gamma+halfBox);
+      Funk::Funk Ep = Funk::var("Ep");
+      Funk::Funk halfBox_int = betaGamma*sqrt(Ep*Ep-mass*mass);
+      Funk::Funk halfBox_bound = betaGamma*sqrt(E*E-mass*mass);
+      Funk::Funk integrand = (dNdE->set("E", Ep)/(2*halfBox_int));
+      return integrand->gsl_integration("Ep", E*gamma-halfBox_bound, E*gamma+halfBox_bound);
     }
 
     /*! \brief General routine to derive annihilation yield.
