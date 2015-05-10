@@ -98,11 +98,7 @@ Rules:
     function: IC79_loglike
     #function: IC_loglike
 
-  - capability: GA_AnnYield
-    function: GA_AnnYield_General
-    #function: GA_AnnYield_DarkSUSY
-
-  - capability: SimYieldTable  # Required for GA_AnnYield_General
+  - capability: SimYieldTable
     function: SimYieldTable_DarkSusy
     #function: SimYieldTable_MicrOmegas
     #function: SimYieldTable_PPPC
@@ -113,7 +109,7 @@ Rules:
 
   - capability: DD_couplings
     function: DD_couplings_SingletDM
-    #function: DD_couplings_MicrOmegas  # Does this actually work???
+    #function: DD_couplings_MicrOmegas  # This does not work properly!
     #function: DD_couplings_DarkSUSY  # This requires MSSM initialization of DS
 
 

@@ -146,10 +146,6 @@ Rules:
     function: IC79_loglike
     #function: IC_loglike
 
-  - capability: GA_AnnYield
-    function: GA_AnnYield_General
-    function: GA_AnnYield_DarkSUSY
-
   - capability: SimYieldTable
     function: SimYieldTable_DarkSusy
     #function: SimYieldTable_MicrOmegas

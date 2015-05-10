@@ -382,6 +382,7 @@ namespace Gambit {
      * NOTE: This function will be completely replaced by GA_AnnYield_General
      */
 
+    /*
     // DEPRECATED!!!
     // TODO: Delete
     void GA_AnnYield_DarkSUSY(Funk::Funk &result)
@@ -517,7 +518,6 @@ namespace Gambit {
               "E1", E1_low, E1_high);
           DiffYield3Body = DiffYield3Body + dsigmavde;
 
-          /*
              logger() << "Test output three-body annihilation:" << std::endl;
              it->printChannel();
              logger() << "  m1  = " << m1 << std::endl;
@@ -530,7 +530,6 @@ namespace Gambit {
              logger() << "dsigmavde (E=10 GeV) = " << it->genRate->set("E1", E1_high/1.02)->eval("E", 10) << std::endl;
              logger() << "dsigmavde (E=10 GeV) = " << it->genRate->set("E1", sqrt(E1_low*E1_high))->eval("E", 10) << std::endl;
              logger() << "dsigmavde (E=10 GeV) = " << it->genRate->gsl_integration("E1", E1_low, E1_high)->eval("E", 10) << std::endl;
-             */
         }
       }
       logger() << "Yield calculated!" << endl;
@@ -543,6 +542,7 @@ namespace Gambit {
       // TODO: Add validity range
       result = (DiffYield2Body + DiffYield3Body)/(mass*mass);
     }
+    */
 
     /// SimYieldTable based on DarkSUSY tabulated results.
     void SimYieldTable_DarkSusy(SimYieldTable& result)
