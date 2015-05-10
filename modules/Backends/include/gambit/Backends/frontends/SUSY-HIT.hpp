@@ -34,6 +34,7 @@ BE_FUNCTION(sdecay, void, (), "sdecay_", "sdecay")               // Converted SU
 BE_FUNCTION(unlikely, double, (), "s_hit_unlikely_", "unlikely") // Wrapper for 'unlikely' double 
 
 // Variables
+BE_VARIABLE(checkfavvio_type, checkfavvio, "checkfavvio_", "cb_checkfavvio")
 BE_VARIABLE(susyhitin_type, susyhitin, "susyhitin_", "cb_susyhitin")
 BE_VARIABLE(sd_leshouches1_type, sd_leshouches1, "sd_leshouches1_", "cb_sd_leshouches1")
 BE_VARIABLE(sd_leshouches2_type, sd_leshouches2, "sd_leshouches2_", "cb_sd_leshouches2")
@@ -104,74 +105,95 @@ BE_NAMESPACE
   ///         W_width, Z_width  EW gauge boson total widths in GeV
   void run_susy_hit(SLHAstruct slha, double W_width, double Z_width) 
   {
+    using SLHAea::to;
 
     // Bypass model and use hardcoded SLHA values for debug purposes.
-    const bool debug = true;
+    const bool debug = false;
 
     if (not debug) 
     {
 
-      // SLHA2 SM blocks
-      SLHAea::Block sminputs = slha.at("SMINPUTS");
-      SLHAea::Block ckm = slha.at("VCKMIN");
-      SLHAea::Block pmns = slha.at("UPMNSIN");
-      for (int i=1; i<=14; ++i)
-      {
-        sd_leshouches2->smval(i) = (siminputs[i].is_data_line()) ? 0.0 : SLHAea::to<double>(sminputs[i][1]);
-      }
-      for (int i=15; i<=20; ++i) sd_leshouches2->smval(i) = 0.0; // zeroing
-
-      // SUSY-HIT / HDecay inputs
-      susyhitin->amsin = SLHAea::to<double>(sminputs.at(23).at(1));      // MSBAR(1): HDECAY claims it wants ms(1GeV)^MSbar, but we don't believe it, and give it m_s(2GeV)^MSBar 
-      susyhitin->amcin = SLHAea::to<double>(sminputs.at(24).at(1));      // MC: HDECAY claims it wants the c pole mass, but that is not well defined, so we give it mc(mc)^MSBar 
-      susyhitin->ammuonin = sd_leshouches2->smval(11);                   // MMUON: mmu(pole)
-      susyhitin->alphin = sd_leshouches2->smval(1);                      // ALPHA: alpha_em^-1(M_Z)^MSbar (scheme and scale not specified in SUSYHIT or HDECAY documentation)
-      susyhitin->gamwin = W_width;                                       // GAMW: W width (GeV)
-      susyhitin->gamzin = Z_width;                                       // GAMZ: Z width (GeV)
-      double lambda = SLHAea::to<double>(ckm.at(1).at(1));               // Wolfenstein lambda 
-      double A = SLHAea::to<double>(ckm.at(2).at(2));                    // Wolfenstein A 
-      double rhobar = SLHAea::to<double>(ckm.at(3).at(3));               // Wolfenstein rhobar 
-      double etabar = SLHAea::to<double>(ckm.at(4).at(4));               // Wolfenstein etabar 
-      susyhitin->vusin = Spectrum::Wolf2V_us(lambda, A, rhobar, etabar); // VUS: CKM V_us
-      susyhitin->vcbin = Spectrum::Wolf2V_cb(lambda, A, rhobar, etabar); // VCB: CKM V_cb 
-      susyhitin->rvubin = Spectrum::Wolf2V_ub(lambda, A, rhobar, etabar) / susyhitin->vcbin; // VUB/VCB: Ratio of CKM V_UB/V_CB     
-  
       // Zero all SLHA2 Q values
       for (int i=1; i<=22; ++i) sd_leshouches2->qvalue(i) = 0.0;
-  
-      // SLHA2 block MODSEL  FIXME
-      sd_leshouches2->imod(1) = 1;
-      sd_leshouches2->imod(2) = 1;                   // model; 1, 1 = SUGRA.  6, x!=0  => flavour violating MSSM(prolly?).  Must be true if calling sdecay(1) later.  Must add a check for this.
-    
-      //#include <fstream>
-      //std::ofstream ofs("slha1.exampleout");
-      //ofs << slha;
-      //ofs.close();
 
-      // SLHA2 block EXTPAR FIXME
-      for (int i=1; i<=100; ++i) sd_leshouches2->extval(i) = unlikely(); // indicate undefined
-      cout << slha.at("MSOFT").name() << endl;
-      std::vector<str> block_name = Utils::delimiterSplit(slha.at("MSOFT").name(), " ");
-      cout << block_name.size() << endl;
-      if (block_name.size() >= 4) 
+      // Get SLHA2 blocks
+      SLHAea::Block sminputs = slha.at("SMINPUTS");
+      SLHAea::Block vckm     = slha.at("VCKMIN");
+      SLHAea::Block pmns     = slha.at("UPMNSIN");
+      SLHAea::Block msoft    = slha.at("MSOFT");
+      SLHAea::Block mass     = slha.at("MASS");
+      SLHAea::Block nmix     = slha.at("NMIX");
+      SLHAea::Block vmix     = slha.at("VMIX");
+      SLHAea::Block umix     = slha.at("UMIX");
+      //SLHAea::Block stopmix  = slha.at("STOPMIX");
+      //SLHAea::Block sbotmix  = slha.at("SBOTMIX");
+      //SLHAea::Block staumix  = slha.at("STAUMIX");
+      SLHAea::Block alpha    = slha.at("ALPHA");
+      SLHAea::Block hmix     = slha.at("HMIX");
+      SLHAea::Block gauge    = slha.at("GAUGE");
+      SLHAea::Block au       = slha.at("AU");
+      SLHAea::Block ad       = slha.at("AD");
+      SLHAea::Block ae       = slha.at("AE");
+      SLHAea::Block yu       = slha.at("YU");
+      SLHAea::Block yd       = slha.at("YD");
+      SLHAea::Block ye       = slha.at("YE");     
+      SLHAea::Block msq2     = slha.at("MSQ2");     
+      SLHAea::Block msd2     = slha.at("MSD2");
+      SLHAea::Block msu2     = slha.at("MSU2");
+      SLHAea::Block td       = slha.at("TD");
+      SLHAea::Block tu       = slha.at("TU");
+      SLHAea::Block usqmix   = slha.at("USQMIX");
+      SLHAea::Block dsqmix   = slha.at("DSQMIX");
+      SLHAea::Block selmix   = slha.at("SELMIX");
+      SLHAea::Block spinfo   = slha.at("SPINFO");
+
+      // SMINPUTS
+      for (int i=1; i<=14; ++i)
       {
-        cout << block_name.size() << " " << block_name.at(3) << endl;    
+        sd_leshouches2->smval(i) = (sminputs[i].is_data_line()) ? 0.0 : to<double>(sminputs[i][1]);
       }
+      for (int i=15; i<=20; ++i) sd_leshouches2->smval(i) = 0.0;           // zeroing
 
-      sd_leshouches2->extval(0) = 500.0;//(*Dep::MSSM_spectrum)->get_UV()->runningpars.GetScale();  // EWSB scale (set to SUSY scale).  Not used by SUSY-HIT anymore.
-  
-      // SLHA2 block MASS /FIXME needs checking for mass-gauge/flav eigenstate conversion.
-      SLHAea::Block mass = slha.at("MASS");
+      // SUSY-HIT and HDecay non-SLHA inputs
+      susyhitin->amsin = to<double>(sminputs.at(23).at(1));          // MSBAR(1): HDECAY claims it wants ms(1GeV)^MSbar, but we don't believe it, and give it m_s(2GeV)^MSBar 
+      susyhitin->amcin = to<double>(sminputs.at(24).at(1));          // MC: HDECAY claims it wants the c pole mass, but that is not well defined, so we give it mc(mc)^MSBar 
+      susyhitin->ammuonin = sd_leshouches2->smval(11);               // MMUON: mmu(pole)
+      susyhitin->alphin = sd_leshouches2->smval(1);                  // ALPHA: alpha_em^-1(M_Z)^MSbar (scheme and scale not specified in SUSYHIT or HDECAY documentation)
+      susyhitin->gamwin = W_width;                                   // GAMW: W width (GeV)
+      susyhitin->gamzin = Z_width;                                   // GAMZ: Z width (GeV)
+      //double lambda = to<double>(vckm.at(1).at(1));                // Wolfenstein lambda 
+      //double A = to<double>(vckm.at(2).at(2));                     // Wolfenstein A 
+      //double rhobar = to<double>(vckm.at(3).at(3));                // Wolfenstein rhobar 
+      //double etabar = to<double>(vckm.at(4).at(4));                // Wolfenstein etabar 
+      susyhitin->vusin = 0.2205;                     // VUS          FIXME
+      susyhitin->vcbin = 0.04;                       // VCB
+      susyhitin->rvubin = 0.08;                      // VUB/VCB    
+      //susyhitin->vusin = Spectrum::Wolf2V_us(lambda, A, rhobar, etabar); // VUS: CKM V_us
+      //susyhitin->vcbin = Spectrum::Wolf2V_cb(lambda, A, rhobar, etabar); // VCB: CKM V_cb 
+      //susyhitin->rvubin = Spectrum::Wolf2V_ub(lambda, A, rhobar, etabar) / susyhitin->vcbin; // VUB/VCB: Ratio of CKM V_UB/V_CB     
+    
+      // MODSEL
+      sd_leshouches2->imod(1) = 1;    // 1, x = SUSY model info. 
+      sd_leshouches2->imod(2) = 0;    // 0 = general MSSM, 1 = SUGRA => do not calculate metastable NLSP decays to gravitinos.
+      //sd_leshouches2->imod(2) = 2;  // 2 = GMSB => calculate metastable NLSP decays to gravitinos.  Not yet implemented in GAMBIT.
+      checkfavvio->imodfav(1) = 6;    // 6, x =  Flavour violation info. 
+      checkfavvio->imodfav(2) = 0;    // 0 = no FV, 1 = q FV, 2 = l FV, 3 = both.  For FV decays, must be set non-zero later before calling sdecay() again.  Not yet implemented in GAMBIT.
+    
+      // SLHA2 block EXTPAR
+      sd_leshouches2->qvalue(3) = to<double>(msoft.find_block_def()->at(3)); // Q(GeV)
+      sd_leshouches2->extval(0) = sd_leshouches2->qvalue(3);         // EWSB scale (set to SUSY scale as per MSOFT).  Not used by SUSY-HIT anymore.
+
+      // SLHA2 block MASS    FIXME needs checking for mass-gauge/flav eigenstate conversion.
       int slha_indices[35] = {24, 25, 35, 36, 37, 1000001, 2000001, 1000002, 2000002, 1000003, 2000003, 1000004, 2000004, 1000005, 2000005, 1000006, 2000006,
                            /* W+,  h,  H,  A, H+,    ~d_L,    ~d_R,    ~u_L,    ~u_R,    ~s_L,    ~s_R,    ~c_L,    ~c_R,    ~b_1,    ~b_2,    ~t_1,    ~t_2, */
        1000011, 2000011, 1000012, 1000013, 2000013, 1000014, 1000015, 2000015, 1000016, 1000021, 1000022, 1000023, 1000025, 1000035, 1000024, 1000037, 5, 1000039};
-      /*  ~e_L,    ~e_R,  ~nu_eL,   ~mu_L,   ~mu_R, ~nu_muL,  ~tau_1,  ~tau_2,~nu_tauL,      ~g, ~chi_10, ~chi_20, ~chi_30, ~chi_40, ~chi_1+, ~chi_2+, b pole, ~G */
-      for (int i=1; i<=35; ++i) 
+      //  ~e_L,    ~e_R,  ~nu_eL,   ~mu_L,   ~mu_R, ~nu_muL,  ~tau_1,  ~tau_2,~nu_tauL,      ~g, ~chi_10, ~chi_20, ~chi_30, ~chi_40, ~chi_1+, ~chi_2+, b pole, ~G
+      for (int i; i<=35; ++i) 
       {
-        sd_leshouches2->massval(i) = (mass[slha_indices[i]].is_data_line()) ? unlikely() : SLHAea::to<double>(mass[slha_indices[i]][1]);
+        sd_leshouches2->massval(i) = (mass[slha_indices[i]].is_data_line()) ? unlikely() : to<double>(mass[slha_indices[i]][1]);
       }
-      for (int i=36; i<=50; ++i) sd_leshouches2->massval(i) = 0.0; // zeroing
-  
+      for (int i=36; i<=50; ++i) sd_leshouches2->massval(i) = 0.0;   // zeroing
+       
       // SLHA2 block NMIX
       sd_leshouches2->nmixval(1,1) = 9.85345167E-01; // N_11
       sd_leshouches2->nmixval(1,2) =-5.64225409E-02; // N_12
@@ -337,79 +359,143 @@ BE_NAMESPACE
       // SLHA2 block VCKM
       sd_leshouches2->qvalue(21) = 4.65777483E+02;   // Q(GeV)
       for (int i=1; i<=3; ++i) for (int j=1; j<=3; ++j) flavviolation->vckm(i,j) = 0.0;            // zero CKM matrix
-  
-      // Must zero this flag in imitation of SUSY-HIT's SLHA reader, to tell it
-      // to calculate the b pole mass from mb(mb)_MSbar.  Given that we just tell
-      // it to use the b pole mass that we pass it anyway, the fact that it goes
-      // and calculates the b pole over again is stupid - but it seems to need
-      // to in order to initialise some other things.  It *might* be possible to
-      // speed up the decay calculation by setting this to 1, but that may be unsafe.
-      sd_mbmb->i_sd_mbmb = 0;
-      
-      // Do calculation without flavour-violating light stop decays.  To do these, you need to reset
-      // this to 1 in your module function and call sdecay() again.  Probably there's a smarter way
-      // to order this so that it happens automatically if you want it, but it still needs to be tested
-      // that running first without flavour violation and then re-running with flavour violation does 
-      // not break the non-FV results.
-      flavviolation->ifavvio = 0;
-      
-      // Set equivalent SLHA common blocks for HDecay.  Only differences are dimension of qvalues and zero vs unlikely for au, ad & ae.
-      *slha_leshouches1_hdec = *sd_leshouches1;                       // SLHA1 block is identical in SDECAY and HDECAY.
-      slha_leshouches2_hdec->imod = sd_leshouches2->imod;             // model; 1, 1 = SUGRA.  6, x!=0  => flavour violating MSSM(prolly?).  Must be true if calling sdecay(1) later.  Must add a check for this.
-      slha_leshouches2_hdec->smval = sd_leshouches2->smval;           // SMINPUTS
-      slha_leshouches2_hdec->extval = sd_leshouches2->extval;         // EXTPAR      
-      slha_leshouches2_hdec->massval = sd_leshouches2->massval;       // MASS
-      slha_leshouches2_hdec->nmixval = sd_leshouches2->nmixval;       // NMIX
-      slha_leshouches2_hdec->vmixval = sd_leshouches2->vmixval;       // VMIX
-      slha_leshouches2_hdec->umixval = sd_leshouches2->umixval;       // UMIX
-      slha_leshouches2_hdec->stopmixval = sd_leshouches2->stopmixval; // STOPMIX
-      slha_leshouches2_hdec->sbotmixval = sd_leshouches2->sbotmixval; // SBOTMIX
-      slha_leshouches2_hdec->staumixval = sd_leshouches2->staumixval; // STAUMIX
-      slha_leshouches2_hdec->alphaval = sd_leshouches2->alphaval;     // ALPHA
-      slha_leshouches2_hdec->hmixval = sd_leshouches2->hmixval;       // HMIX
-      slha_leshouches2_hdec->gaugeval = sd_leshouches2->gaugeval;     // GAUGE
-      slha_leshouches2_hdec->msoftval = sd_leshouches2->msoftval;     // MSOFT
-      slha_leshouches2_hdec->yuval = sd_leshouches2->yuval;           // YU
-      slha_leshouches2_hdec->ydval = sd_leshouches2->ydval;           // YD
-      slha_leshouches2_hdec->yeval = sd_leshouches2->yeval;           // YE
-      for (int i=1; i<=3; ++i) for (int j=1; j<=3; ++j)    
+     
+
+if (false)
+{
+      // MSOFT
+      for (int i=1; i<=100; ++i) sd_leshouches2->msoftval(i) = unlikely(); // indicate undefined
+      sd_leshouches2->qvalue(3) = to<double>(msoft.find_block_def()->at(3)); // Q(GeV)
+      int msoft_indices[20] = {1, 2, 3, 21, 22, 31, 32, 33, 34, 35, 36, 41, 42, 43, 44, 45, 46, 47, 48, 49};
+      // M_1, M_2, M_3, M^2_Hd, M^2_Hu, M_eL, M_muL, M_tauL, M_eR, M_muR, M_tauR, M_q1L, M_q2L, M_q3L, M_uR, M_cR, M_tR, M_dR, M_sR, M_bR
+      for (int i : msoft_indices)
+      {       
+        if (msoft[i].is_data_line()) sd_leshouches2->msoftval(i) = to<double>(msoft.at(i).at(1));  
+      }
+
+      // SLHA2 block EXTPAR
+      sd_leshouches2->extval(0) = sd_leshouches2->qvalue(3);         // EWSB scale (set to SUSY scale as per MSOFT).  Not used by SUSY-HIT anymore.
+
+      // SLHA2 block MASS    FIXME needs checking for mass-gauge/flav eigenstate conversion.
+      int slha_indices[35] = {24, 25, 35, 36, 37, 1000001, 2000001, 1000002, 2000002, 1000003, 2000003, 1000004, 2000004, 1000005, 2000005, 1000006, 2000006,
+                           /* W+,  h,  H,  A, H+,    ~d_L,    ~d_R,    ~u_L,    ~u_R,    ~s_L,    ~s_R,    ~c_L,    ~c_R,    ~b_1,    ~b_2,    ~t_1,    ~t_2, */
+       1000011, 2000011, 1000012, 1000013, 2000013, 1000014, 1000015, 2000015, 1000016, 1000021, 1000022, 1000023, 1000025, 1000035, 1000024, 1000037, 5, 1000039};
+      //  ~e_L,    ~e_R,  ~nu_eL,   ~mu_L,   ~mu_R, ~nu_muL,  ~tau_1,  ~tau_2,~nu_tauL,      ~g, ~chi_10, ~chi_20, ~chi_30, ~chi_40, ~chi_1+, ~chi_2+, b pole, ~G
+      for (int i; i<=35; ++i) 
       {
-        if (sd_leshouches2->auval(i,j) == unlikely())                 // AU
+        sd_leshouches2->massval(i) = (mass[slha_indices[i]].is_data_line()) ? unlikely() : to<double>(mass[slha_indices[i]][1]);
+      }
+      for (int i=36; i<=50; ++i) sd_leshouches2->massval(i) = 0.0;   // zeroing
+  
+      // NMIX
+      for (int i=1; i<=4; ++i) for (int j=1; j<=4; ++j) sd_leshouches2->nmixval(i,j) = (nmix[initVector<int>(i,j)].is_data_line()) ? 0.0 : to<double>(nmix.at(i,j)[2]);
+
+      // VMIX, UMIX, STOPMIX, SBOTMIX, STAUMIX
+      for (int i=1; i<=2; ++i) 
+      {
+        for (int j=1; j<=2; ++j)
         {
-          slha_leshouches2_hdec->auval(i,j) = 0.0; 
-        }   
-        else 
-        {
-         slha_leshouches2_hdec->auval(i,j) = sd_leshouches2->auval(i,j);   
+          std::vector<int> ij = initVector<int>(i,j);
+          sd_leshouches2->vmixval(i,j) = (vmix[ij].is_data_line()) ? 0.0 : to<double>(vmix.at(i,j)[2]);
+          sd_leshouches2->umixval(i,j) = (umix[ij].is_data_line()) ? 0.0 : to<double>(umix.at(i,j)[2]);
+          //FIXME these need to come from the spectrum's mixing functions
+          //sd_leshouches2->stopmixval(i,j) = (stopmix[ij].is_data_line()) ? 0.0 : to<double>(stopmix.at(i,j)[2]);
+          //sd_leshouches2->sbotmixval(i,j) = (sbotmix[ij].is_data_line()) ? 0.0 : to<double>(sbotmix.at(i,j)[2]);
+          //sd_leshouches2->staumixval(i,j) = (staumix[ij].is_data_line()) ? 0.0 : to<double>(staumix.at(i,j)[2]);
         }
-        if (sd_leshouches2->adval(i,j) == unlikely())                 // AD
-        {
-          slha_leshouches2_hdec->adval(i,j) = 0.0; 
-        }   
-        else 
-        {
-         slha_leshouches2_hdec->adval(i,j) = sd_leshouches2->adval(i,j);   
-        }
-        if (sd_leshouches2->aeval(i,j) == unlikely())                 // AE
-        {
-          slha_leshouches2_hdec->aeval(i,j) = 0.0; 
-        }   
-        else 
-        {
-         slha_leshouches2_hdec->aeval(i,j) = sd_leshouches2->aeval(i,j);   
-        }
-      }                 
-      for (int i=1; i<=20; ++i) slha_leshouches2_hdec->qvalue(i) = sd_leshouches2->qvalue(i); // Q(GeV)
+      }
+      // SLHA2 block STOPMIX -- FIXME delete when mixings avail from spectrum!
+      sd_leshouches2->stopmixval(1,1) = 5.52988023E-01; // cos(theta_t)
+      sd_leshouches2->stopmixval(1,2) = 8.33189202E-01; // sin(theta_t)
+      sd_leshouches2->stopmixval(2,1) =-8.33189202E-01; // -sin(theta_t)
+      sd_leshouches2->stopmixval(2,2) = 5.52988023E-01; // cos(theta_t) 
+      // SLHA2 block SBOTMIX -- FIXME delete when mixings avail from spectrum!
+      sd_leshouches2->sbotmixval(1,1) = 9.30091013E-01; // cos(theta_b)
+      sd_leshouches2->sbotmixval(1,2) = 3.67329153E-01; // sin(theta_b)
+      sd_leshouches2->sbotmixval(2,1) =-3.67329153E-01; // -sin(theta_b)
+      sd_leshouches2->sbotmixval(2,2) = 9.30091013E-01; // cos(theta_b)
+      // SLHA2 block STAUMIX -- FIXME delete when mixings avail from spectrum!
+      sd_leshouches2->staumixval(1,1) = 2.84460080E-01; // cos(theta_tau)
+      sd_leshouches2->staumixval(1,2) = 9.58687886E-01; // sin(theta_tau)
+      sd_leshouches2->staumixval(2,1) =-9.58687886E-01; // -sin(theta_tau)
+      sd_leshouches2->staumixval(2,2) = 2.84460080E-01; // cos(theta_tau)
+
+  
+      // ALPHA (value is spectrum generator's "best choice" => can be on-shell, DRbar at a give scale, whatever)
+      sd_leshouches2->alphaval = to<double>(alpha.back().at(0));             // Mixing angle in the neutral Higgs boson sector.
       
+      // HMIX
+      sd_leshouches2->qvalue(1) = to<double>(hmix.find_block_def()->at(3));  // Q(GeV)
+      for (int i=1; i<=10; ++i) sd_leshouches2->hmixval(i) = (hmix[i].is_data_line()) ? unlikely() : to<double>(hmix[i]);
+
+      // GAUGE
+      sd_leshouches2->qvalue(2) = to<double>(gauge.find_block_def()->at(3)); // Q(GeV)
+      sd_leshouches2->gaugeval(1) = to<double>(gauge.at(1).at(1));           // gprime(Q) DRbar
+      sd_leshouches2->gaugeval(2) = to<double>(gauge.at(2).at(1));           // g(Q) DRbar
+      sd_leshouches2->gaugeval(3) = to<double>(gauge.at(3).at(1));           // g_3(Q) DRbar
+   
+      // AU, AD, AE, YU, YD, YE, MSQ2, MSD2, MSU2, TD, TU, VCKM
+      sd_leshouches2->qvalue(4)  = to<double>(au.find_block_def()->at(3));   // Q(GeV)
+      sd_leshouches2->qvalue(5)  = to<double>(ad.find_block_def()->at(3));   // Q(GeV)
+      sd_leshouches2->qvalue(6)  = to<double>(ae.find_block_def()->at(3));   // Q(GeV)
+      sd_leshouches2->qvalue(7)  = to<double>(yu.find_block_def()->at(3));   // Q(GeV)
+      sd_leshouches2->qvalue(8)  = to<double>(yd.find_block_def()->at(3));   // Q(GeV)
+      sd_leshouches2->qvalue(9)  = to<double>(ye.find_block_def()->at(3));   // Q(GeV)
+      sd_leshouches2->qvalue(17) = to<double>(msq2.find_block_def()->at(3)); // Q(GeV) corrects minor bug in SUSY-HIT SLHA reader
+      sd_leshouches2->qvalue(10) = to<double>(msd2.find_block_def()->at(3)); // Q(GeV)
+      sd_leshouches2->qvalue(11) = to<double>(msu2.find_block_def()->at(3)); // Q(GeV)
+      sd_leshouches2->qvalue(12) = to<double>(td.find_block_def()->at(3));   // Q(GeV)
+      sd_leshouches2->qvalue(13) = to<double>(tu.find_block_def()->at(3));   // Q(GeV)
+      sd_leshouches2->qvalue(21) = to<double>(vckm.find_block_def()->at(3)); // Q(GeV)
+      for (int i=1; i<=3; ++i) 
+      {
+        for (int j=1; j<=3; ++j)
+        {
+          std::vector<int> ij = initVector<int>(i,j);
+          sd_leshouches2->auval(i,j) = (au[ij].is_data_line()) ? unlikely() : to<double>(au.at(i,j)[2]);
+          sd_leshouches2->adval(i,j) = (ad[ij].is_data_line()) ? unlikely() : to<double>(ad.at(i,j)[2]);
+          sd_leshouches2->aeval(i,j) = (ae[ij].is_data_line()) ? unlikely() : to<double>(ae.at(i,j)[2]);
+          sd_leshouches2->yuval(i,j) = (yu[ij].is_data_line()) ? 0.0 : to<double>(yu.at(i,j)[2]);
+          sd_leshouches2->ydval(i,j) = (yd[ij].is_data_line()) ? 0.0 : to<double>(yd.at(i,j)[2]);
+          sd_leshouches2->yeval(i,j) = (ye[ij].is_data_line()) ? 0.0 : to<double>(ye.at(i,j)[2]);
+          flavviolation->msq2(i,j) = (msq2[ij].is_data_line()) ? 0.0 : to<double>(msq2.at(i,j)[2]);
+          flavviolation->msd2(i,j) = (msd2[ij].is_data_line()) ? 0.0 : to<double>(msd2.at(i,j)[2]);
+          flavviolation->msu2(i,j) = (msu2[ij].is_data_line()) ? 0.0 : to<double>(msu2.at(i,j)[2]);
+          flavviolation->td(i,j) = (td[ij].is_data_line()) ? 0.0 : to<double>(td.at(i,j)[2]);
+          flavviolation->tu(i,j) = (tu[ij].is_data_line()) ? 0.0 : to<double>(tu.at(i,j)[2]);
+          flavviolation->vckm(i,j) = (vckm[ij].is_data_line()) ? 0.0 : 0.0; //to<double>(vckm.at(i,j)[2]); FIXME
+        }
+      }
+
+      // USQMIX, DSQMIX, SELMIX    
+      sd_leshouches2->qvalue(14) = to<double>(usqmix.find_block_def()->at(3)); // Q(GeV)
+      sd_leshouches2->qvalue(15) = to<double>(dsqmix.find_block_def()->at(3)); // Q(GeV) corrects minor bug in SUSY-HIT SLHA reader.
+      sd_leshouches2->qvalue(16) = to<double>(selmix.find_block_def()->at(3)); // Q(GeV) corrects minor bug in SUSY-HIT SLHA reader.
+      for (int i=1; i<=6; ++i) 
+      {
+        for (int j=1; j<=6; ++j)
+        {
+          std::vector<int> ij = initVector<int>(i,j);
+          flavviolation->usqmix(i,j) = (usqmix[ij].is_data_line()) ? 0.0 : to<double>(usqmix.at(i,j)[2]);
+          flavviolation->dsqmix(i,j) = (dsqmix[ij].is_data_line()) ? 0.0 : to<double>(dsqmix.at(i,j)[2]);
+          sd_selectron->selmix(i,j)  = (selmix[ij].is_data_line()) ? 0.0 : to<double>(selmix.at(i,j)[2]);
+        }
+      }
+  
+      // SLHA1 block SPINFO
+      sd_leshouches1->spinfo1 = (spinfo[1].is_data_line()) ? "" : spinfo[1][1]; // RGE +Spectrum calculator
+      sd_leshouches1->spinfo2 = (spinfo[2].is_data_line()) ? "" : spinfo[2][1]; // version number
+              
     }
+  }
     else
     {
 
       // SUSY-HIT / HDecay inputs
       susyhitin->amsin = 0.19;                       // MSBAR(1)
-      susyhitin->amcin = 1.4;                        // MC (pole or at what scale, in which scheme?)
-      susyhitin->ammuonin = 0.105658389;             // MMUON (pole or at what scale, in which scheme?)
-      susyhitin->alphin = 137.0359895;               // 1/ALPHA (at what scale, in which scheme?)
+      susyhitin->amcin = 1.4;                        // MC
+      susyhitin->ammuonin = 0.105658389;             // MMUON
+      susyhitin->alphin = 137.0359895;               // 1/ALPHA
       susyhitin->gamwin = 2.08;                      // GAMW
       susyhitin->gamzin = 2.49;                      // GAMZ
       susyhitin->vusin = 0.2205;                     // VUS
@@ -421,7 +507,7 @@ BE_NAMESPACE
   
       // SLHA2 block MODSEL
       sd_leshouches2->imod(1) = 1;
-      sd_leshouches2->imod(2) = 1;                   // model; 1, 1 = SUGRA.  6, x!=0  => flavour violating MSSM(prolly?).  Must be true if calling sdecay(1) later.  Must add a check for this.
+      sd_leshouches2->imod(2) = 1;                   // model; 1, 1 = SUGRA
   
       // SLHA2 block SMINPUTS
       for (int i=1; i<=20; ++i) sd_leshouches2->smval(i) = 0.0; // zeroing
@@ -640,71 +726,71 @@ BE_NAMESPACE
       // SLHA2 block VCKM
       sd_leshouches2->qvalue(21) = 4.65777483E+02;   // Q(GeV)
       for (int i=1; i<=3; ++i) for (int j=1; j<=3; ++j) flavviolation->vckm(i,j) = 0.0;            // zero CKM matrix
-  
-      // Must zero this flag in imitation of SUSY-HIT's SLHA reader, to tell it
-      // to calculate the b pole mass from mb(mb)_MSbar.  Given that we just tell
-      // it to use the b pole mass that we pass it anyway, the fact that it goes
-      // and calculates the b pole over again is stupid - but it seems to need
-      // to in order to initialise some other things.  It *might* be possible to
-      // speed up the decay calculation by setting this to 1, but that may be unsafe.
-      sd_mbmb->i_sd_mbmb = 0;
-      
-      // Do calculation without flavour-violating light stop decays.  To do these, you need to reset
-      // this to 1 in your module function and call sdecay() again.  Probably there's a smarter way
-      // to order this so that it happens automatically if you want it, but it still needs to be tested
-      // that running first without flavour violation and then re-running with flavour violation does 
-      // not break the non-FV results.
-      flavviolation->ifavvio = 0;
-      
-      // Set equivalent SLHA common blocks for HDecay.  Only differences are dimension of qvalues and zero vs unlikely for au, ad & ae.
-      *slha_leshouches1_hdec = *sd_leshouches1;                       // SLHA1 block is identical in SDECAY and HDECAY.
-      slha_leshouches2_hdec->imod = sd_leshouches2->imod;             // model; 1, 1 = SUGRA.  6, x!=0  => flavour violating MSSM(prolly?).  Must be true if calling sdecay(1) later.  Must add a check for this.
-      slha_leshouches2_hdec->smval = sd_leshouches2->smval;           // SMINPUTS
-      slha_leshouches2_hdec->extval = sd_leshouches2->extval;         // EXTPAR      
-      slha_leshouches2_hdec->massval = sd_leshouches2->massval;       // MASS
-      slha_leshouches2_hdec->nmixval = sd_leshouches2->nmixval;       // NMIX
-      slha_leshouches2_hdec->vmixval = sd_leshouches2->vmixval;       // VMIX
-      slha_leshouches2_hdec->umixval = sd_leshouches2->umixval;       // UMIX
-      slha_leshouches2_hdec->stopmixval = sd_leshouches2->stopmixval; // STOPMIX
-      slha_leshouches2_hdec->sbotmixval = sd_leshouches2->sbotmixval; // SBOTMIX
-      slha_leshouches2_hdec->staumixval = sd_leshouches2->staumixval; // STAUMIX
-      slha_leshouches2_hdec->alphaval = sd_leshouches2->alphaval;     // ALPHA
-      slha_leshouches2_hdec->hmixval = sd_leshouches2->hmixval;       // HMIX
-      slha_leshouches2_hdec->gaugeval = sd_leshouches2->gaugeval;     // GAUGE
-      slha_leshouches2_hdec->msoftval = sd_leshouches2->msoftval;     // MSOFT
-      slha_leshouches2_hdec->yuval = sd_leshouches2->yuval;           // YU
-      slha_leshouches2_hdec->ydval = sd_leshouches2->ydval;           // YD
-      slha_leshouches2_hdec->yeval = sd_leshouches2->yeval;           // YE
-      for (int i=1; i<=3; ++i) for (int j=1; j<=3; ++j)    
-      {
-        if (sd_leshouches2->auval(i,j) == unlikely())                 // AU
-        {
-          slha_leshouches2_hdec->auval(i,j) = 0.0; 
-        }   
-        else 
-        {
-         slha_leshouches2_hdec->auval(i,j) = sd_leshouches2->auval(i,j);   
-        }
-        if (sd_leshouches2->adval(i,j) == unlikely())                 // AD
-        {
-          slha_leshouches2_hdec->adval(i,j) = 0.0; 
-        }   
-        else 
-        {
-         slha_leshouches2_hdec->adval(i,j) = sd_leshouches2->adval(i,j);   
-        }
-        if (sd_leshouches2->aeval(i,j) == unlikely())                 // AE
-        {
-          slha_leshouches2_hdec->aeval(i,j) = 0.0; 
-        }   
-        else 
-        {
-         slha_leshouches2_hdec->aeval(i,j) = sd_leshouches2->aeval(i,j);   
-        }
-      }                 
-      for (int i=1; i<=20; ++i) slha_leshouches2_hdec->qvalue(i) = sd_leshouches2->qvalue(i); // Q(GeV)
-   
+     
     }
+
+    // Must zero this flag in imitation of SUSY-HIT's SLHA reader, to tell it
+    // to calculate the b pole mass from mb(mb)_MSbar.  Given that we just tell
+    // it to use the b pole mass that we pass it anyway, the fact that it goes
+    // and calculates the b pole over again is stupid - but it seems to need
+    // to in order to initialise some other things.  It *might* be possible to
+    // speed up the decay calculation by setting this to 1, but that may be unsafe.
+    sd_mbmb->i_sd_mbmb = 0;
+    
+    // Do calculation without flavour-violating light stop decays.  To do these, you need to reset
+    // this to 1 in your module function and call sdecay() again.  Probably there's a smarter way
+    // to order this so that it happens automatically if you want it, but it still needs to be tested
+    // that running first without flavour violation and then re-running with flavour violation does 
+    // not break the non-FV results.
+    flavviolation->ifavvio = 0;
+    
+    // Set equivalent SLHA common blocks for HDecay.  Only differences are dimension of qvalues and zero vs unlikely for au, ad & ae.
+    *slha_leshouches1_hdec = *sd_leshouches1;                       // SLHA1 block is identical in SDECAY and HDECAY.
+    slha_leshouches2_hdec->imod = sd_leshouches2->imod;             // model; 1, 1 = SUGRA.  6, x!=0  => flavour violating MSSM(prolly?).  Must be true if calling sdecay(1) later.  Must add a check for this.
+    slha_leshouches2_hdec->smval = sd_leshouches2->smval;           // SMINPUTS
+    slha_leshouches2_hdec->extval = sd_leshouches2->extval;         // EXTPAR      
+    slha_leshouches2_hdec->massval = sd_leshouches2->massval;       // MASS
+    slha_leshouches2_hdec->nmixval = sd_leshouches2->nmixval;       // NMIX
+    slha_leshouches2_hdec->vmixval = sd_leshouches2->vmixval;       // VMIX
+    slha_leshouches2_hdec->umixval = sd_leshouches2->umixval;       // UMIX
+    slha_leshouches2_hdec->stopmixval = sd_leshouches2->stopmixval; // STOPMIX
+    slha_leshouches2_hdec->sbotmixval = sd_leshouches2->sbotmixval; // SBOTMIX
+    slha_leshouches2_hdec->staumixval = sd_leshouches2->staumixval; // STAUMIX
+    slha_leshouches2_hdec->alphaval = sd_leshouches2->alphaval;     // ALPHA
+    slha_leshouches2_hdec->hmixval = sd_leshouches2->hmixval;       // HMIX
+    slha_leshouches2_hdec->gaugeval = sd_leshouches2->gaugeval;     // GAUGE
+    slha_leshouches2_hdec->msoftval = sd_leshouches2->msoftval;     // MSOFT
+    slha_leshouches2_hdec->yuval = sd_leshouches2->yuval;           // YU
+    slha_leshouches2_hdec->ydval = sd_leshouches2->ydval;           // YD
+    slha_leshouches2_hdec->yeval = sd_leshouches2->yeval;           // YE
+    for (int i=1; i<=3; ++i) for (int j=1; j<=3; ++j)    
+    {
+      if (sd_leshouches2->auval(i,j) == unlikely())                 // AU
+      {
+        slha_leshouches2_hdec->auval(i,j) = 0.0; 
+      }   
+      else 
+      {
+       slha_leshouches2_hdec->auval(i,j) = sd_leshouches2->auval(i,j);   
+      }
+      if (sd_leshouches2->adval(i,j) == unlikely())                 // AD
+      {
+        slha_leshouches2_hdec->adval(i,j) = 0.0; 
+      }   
+      else 
+      {
+       slha_leshouches2_hdec->adval(i,j) = sd_leshouches2->adval(i,j);   
+      }
+      if (sd_leshouches2->aeval(i,j) == unlikely())                 // AE
+      {
+        slha_leshouches2_hdec->aeval(i,j) = 0.0; 
+      }   
+      else 
+      {
+       slha_leshouches2_hdec->aeval(i,j) = sd_leshouches2->aeval(i,j);   
+      }
+    }                 
+    for (int i=1; i<=20; ++i) slha_leshouches2_hdec->qvalue(i) = sd_leshouches2->qvalue(i); // Q(GeV)
 
     // Run SUSY-HIT
     sdecay();
@@ -712,7 +798,7 @@ BE_NAMESPACE
     // Questions for SUSY-HIT authors
     // ms_1Gev? mc pole?
     // q values -- repeated 11, 14, assignment of selmix to 21 vs < 20; are these bugs?
-    // safety of skipping sd_mbmb
+    // safety of just skipping sd_mbmb calculation
     // safety of running over with FV.
       
   }
@@ -722,34 +808,35 @@ DONE
 // Initialisation function (definition)
 BE_INI_FUNCTION
 {
-  // Scan-level initialisation
-  //static bool scan_level = true;
-  //if (scan_level)
-  //{
-  //}
-  //scan_level = false;
-
   const double scale_tol = 0.1; // Run spectrum to MSUSY if |Q_input-MSUSY| > scale_tol GeV
   SLHAstruct slha;
  
-  // Check whether the spectrum object is already at the SUSY scale
-  //double msusy = (*Dep::MSSM_spectrum)->get_DRBar_parameter("M_SUSY");  FIXME when M_SUSY is available from the spectrum object.
-  double msusy = (*Dep::MSSM_spectrum)->get_UV()->runningpars.GetScale();
-  cout << "MSUSY: " << msusy << " Q:" << (*Dep::MSSM_spectrum)->get_UV()->runningpars.GetScale() << endl;
-  if (fabs(msusy - (*Dep::MSSM_spectrum)->get_UV()->runningpars.GetScale()) > scale_tol)
+  // Just read in an SLHA file and ignore the MSSM_spectrum dependency if the user provides one for debugging.
+  if (false)
   {
-    // Take a local copy to allow running.
-    std::unique_ptr<SubSpectrum> local_mssm_copy = (*Dep::MSSM_spectrum)->get_UV()->clone();
-    // Run to SUSY scale.
-    local_mssm_copy->runningpars.RunToScale(msusy);
-    slha = local_mssm_copy->getSLHAea();
+        
+        
   }
-  else 
+  else // Use the actual spectrum object.
   {
-    // Calculate decay rates using the spectrum 'as is'.
-    slha = (*Dep::MSSM_spectrum)->getSLHAea();
+    // Check whether the spectrum object is already at the SUSY scale
+    //double msusy = (*Dep::MSSM_spectrum)->get_DRBar_parameter("M_SUSY");  FIXME when M_SUSY is available from the spectrum object.
+    double msusy = (*Dep::MSSM_spectrum)->get_UV()->runningpars.GetScale();
+    if (fabs(msusy - (*Dep::MSSM_spectrum)->get_UV()->runningpars.GetScale()) > scale_tol)
+    {
+      // Take a local copy to allow running.
+      std::unique_ptr<SubSpectrum> local_mssm_copy = (*Dep::MSSM_spectrum)->get_UV()->clone();
+      // Run to SUSY scale.
+      local_mssm_copy->runningpars.RunToScale(msusy);
+      slha = local_mssm_copy->getSLHAea();
+    }
+    else 
+    {
+      // Calculate decay rates using the spectrum 'as is'.
+      slha = (*Dep::MSSM_spectrum)->getSLHAea();
+    }
   }
-
+  
   // Get the W and Z widths.
   double W_width = 0.5*(Dep::W_plus_decay_rates->width_in_GeV + Dep::W_minus_decay_rates->width_in_GeV);
   double Z_width = Dep::Z_decay_rates->width_in_GeV;
