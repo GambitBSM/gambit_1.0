@@ -243,9 +243,16 @@ namespace Gambit {
           double gamma1 = (Ecm*Ecm-m0*m0+m1*m1)/(2*Ecm*m1);
           std::cout << Ecm << " " << m0 << " " << m1 << std::endl;
           std::cout << "gammas: " << gamma0 << ", " << gamma1 << std::endl;
-          // TODO: Correct?
-          Yield = Yield + (boost_dNdE(spec0, gamma0, 0.0) 
-              + boost_dNdE(spec1, gamma1, 0.0)) * it->genRate;
+
+          ///////////////////////////////////////
+          //
+          // Boosted particle spectra are disabled
+          //
+          // FIXME: This causes problems with gsl
+          //
+          //Yield = Yield + (boost_dNdE(spec0, gamma0, 0.0) 
+          //    + boost_dNdE(spec1, gamma1, 0.0)) * it->genRate;
+          ///////////////////////////////////////
 
           // FIXME: This is debug information. Remove it when no longer
           // necessary.
