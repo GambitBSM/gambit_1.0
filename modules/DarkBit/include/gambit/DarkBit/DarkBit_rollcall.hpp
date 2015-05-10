@@ -101,9 +101,10 @@ START_MODULE
       BACKEND_REQ(intdof, (), DS_INTDOF)
       BACKEND_REQ(pacodes, (), DS_PACODES)
     #undef FUNCTION
-    #define FUNCTION RD_spectrum_SingletDM
+    #define FUNCTION RD_spectrum_from_ProcessCatalog
       START_FUNCTION(Gambit::DarkBit::RD_spectrum_type)
       DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)
+      DEPENDENCY(DarkMatter_ID, DarkMatter_ID_type)
       ALLOW_MODELS(SingletDM)
     #undef FUNCTION
   #undef CAPABILITY
