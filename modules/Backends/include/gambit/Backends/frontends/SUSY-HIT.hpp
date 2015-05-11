@@ -117,35 +117,42 @@ BE_NAMESPACE
       for (int i=1; i<=22; ++i) sd_leshouches2->qvalue(i) = 0.0;
 
       // Get SLHA2 blocks
-      SLHAea::Block sminputs = slha.at("SMINPUTS");
-      SLHAea::Block vckm     = slha.at("VCKMIN");
-      SLHAea::Block pmns     = slha.at("UPMNSIN");
-      SLHAea::Block msoft    = slha.at("MSOFT");
-      SLHAea::Block mass     = slha.at("MASS");
-      SLHAea::Block nmix     = slha.at("NMIX");
-      SLHAea::Block vmix     = slha.at("VMIX");
-      SLHAea::Block umix     = slha.at("UMIX");
-      //SLHAea::Block stopmix  = slha.at("STOPMIX");
-      //SLHAea::Block sbotmix  = slha.at("SBOTMIX");
-      //SLHAea::Block staumix  = slha.at("STAUMIX");
-      SLHAea::Block alpha    = slha.at("ALPHA");
-      SLHAea::Block hmix     = slha.at("HMIX");
-      SLHAea::Block gauge    = slha.at("GAUGE");
-      SLHAea::Block au       = slha.at("AU");
-      SLHAea::Block ad       = slha.at("AD");
-      SLHAea::Block ae       = slha.at("AE");
-      SLHAea::Block yu       = slha.at("YU");
-      SLHAea::Block yd       = slha.at("YD");
-      SLHAea::Block ye       = slha.at("YE");     
-      SLHAea::Block msq2     = slha.at("MSQ2");     
-      SLHAea::Block msd2     = slha.at("MSD2");
-      SLHAea::Block msu2     = slha.at("MSU2");
-      SLHAea::Block td       = slha.at("TD");
-      SLHAea::Block tu       = slha.at("TU");
-      SLHAea::Block usqmix   = slha.at("USQMIX");
-      SLHAea::Block dsqmix   = slha.at("DSQMIX");
-      SLHAea::Block selmix   = slha.at("SELMIX");
-      SLHAea::Block spinfo   = slha.at("SPINFO");
+      try
+      {
+        SLHAea::Block sminputs = slha.at("SMINPUTS");
+        SLHAea::Block vckm     = slha.at("VCKMIN");
+        SLHAea::Block pmns     = slha.at("UPMNSIN");
+        SLHAea::Block msoft    = slha.at("MSOFT");
+        SLHAea::Block mass     = slha.at("MASS");
+        SLHAea::Block nmix     = slha.at("NMIX");
+        SLHAea::Block vmix     = slha.at("VMIX");
+        SLHAea::Block umix     = slha.at("UMIX");
+        //SLHAea::Block stopmix  = slha.at("STOPMIX");
+        //SLHAea::Block sbotmix  = slha.at("SBOTMIX");
+        //SLHAea::Block staumix  = slha.at("STAUMIX");
+        SLHAea::Block alpha    = slha.at("ALPHA");
+        SLHAea::Block hmix     = slha.at("HMIX");
+        SLHAea::Block gauge    = slha.at("GAUGE");
+        SLHAea::Block au       = slha.at("AU");
+        SLHAea::Block ad       = slha.at("AD");
+        SLHAea::Block ae       = slha.at("AE");
+        SLHAea::Block yu       = slha.at("YU");
+        SLHAea::Block yd       = slha.at("YD");
+        SLHAea::Block ye       = slha.at("YE");     
+        SLHAea::Block msq2     = slha.at("MSQ2");     
+        SLHAea::Block msd2     = slha.at("MSD2");
+        SLHAea::Block msu2     = slha.at("MSU2");
+        SLHAea::Block td       = slha.at("TD");
+        SLHAea::Block tu       = slha.at("TU");
+        SLHAea::Block usqmix   = slha.at("USQMIX");
+        SLHAea::Block dsqmix   = slha.at("DSQMIX");
+        SLHAea::Block selmix   = slha.at("SELMIX");
+        SLHAea::Block spinfo   = slha.at("SPINFO");
+      }
+      catch (std::exception e)
+      {
+        backend_error().raise(LOCAL_INFO, "Exception raised when trying to read SLHA blocks -- a block seems to be missing.\nException: "+e.what()); 
+      }
 
       // SMINPUTS
       for (int i=1; i<=14; ++i)
@@ -178,7 +185,7 @@ BE_NAMESPACE
       //sd_leshouches2->imod(2) = 2;  // 2 = GMSB => calculate metastable NLSP decays to gravitinos.  Not yet implemented in GAMBIT.
       checkfavvio->imodfav(1) = 6;    // 6, x =  Flavour violation info. 
       checkfavvio->imodfav(2) = 0;    // 0 = no FV, 1 = q FV, 2 = l FV, 3 = both.  For FV decays, must be set non-zero later before calling sdecay() again.  Not yet implemented in GAMBIT.
-    
+
       // MSOFT
       for (int i=1; i<=100; ++i) sd_leshouches2->msoftval(i) = unlikely(); // indicate undefined
       if (msoft.find_block_def()->size() >= 4) sd_leshouches2->qvalue(3) = to<double>(msoft.find_block_def()->at(3)); // Q(GeV)
@@ -189,23 +196,20 @@ BE_NAMESPACE
         if (msoft[i].is_data_line()) sd_leshouches2->msoftval(i) = to<double>(msoft.at(i).at(1));  
       }
 
-      cout << LOCAL_INFO << endl;
-
       // SLHA2 block EXTPAR
       sd_leshouches2->extval(0) = sd_leshouches2->qvalue(3);         // EWSB scale (set to SUSY scale as per MSOFT).  Not used by SUSY-HIT anymore.
-      cout << LOCAL_INFO << endl;
 
       // SLHA2 block MASS    FIXME needs checking for mass-gauge/flav eigenstate conversion.
       int slha_indices[35] = {24, 25, 35, 36, 37, 1000001, 2000001, 1000002, 2000002, 1000003, 2000003, 1000004, 2000004, 1000005, 2000005, 1000006, 2000006,
                            /* W+,  h,  H,  A, H+,    ~d_L,    ~d_R,    ~u_L,    ~u_R,    ~s_L,    ~s_R,    ~c_L,    ~c_R,    ~b_1,    ~b_2,    ~t_1,    ~t_2, */
        1000011, 2000011, 1000012, 1000013, 2000013, 1000014, 1000015, 2000015, 1000016, 1000021, 1000022, 1000023, 1000025, 1000035, 1000024, 1000037, 5, 1000039};
       //  ~e_L,    ~e_R,  ~nu_eL,   ~mu_L,   ~mu_R, ~nu_muL,  ~tau_1,  ~tau_2,~nu_tauL,      ~g, ~chi_10, ~chi_20, ~chi_30, ~chi_40, ~chi_1+, ~chi_2+, b pole, ~G
-      for (int i; i<=35; ++i) 
+      for (int i=1; i<=35; ++i) 
       {
-        sd_leshouches2->massval(i) = (mass[slha_indices[i]].is_data_line()) ? to<double>(mass[slha_indices[i]][1]) : unlikely();
+        sd_leshouches2->massval(i) = (mass[slha_indices[i-1]].is_data_line()) ? to<double>(mass[slha_indices[i-1]][1]) : unlikely();
       }
       for (int i=36; i<=50; ++i) sd_leshouches2->massval(i) = 0.0;   // zeroing
-       cout << LOCAL_INFO << endl;
+      sd_leshouches2->massval(34) = 4.87877839E+00;  // b pole mass FIXME when available from slhaea object!!
  
       // NMIX
       for (int i=1; i<=4; ++i) for (int j=1; j<=4; ++j) sd_leshouches2->nmixval(i,j) = (nmix[initVector<int>(i,j)].is_data_line()) ? to<double>(nmix.at(i,j)[2]) : 0.0;
@@ -239,7 +243,6 @@ BE_NAMESPACE
       sd_leshouches2->staumixval(1,2) = 9.58687886E-01; // sin(theta_tau)
       sd_leshouches2->staumixval(2,1) =-9.58687886E-01; // -sin(theta_tau)
       sd_leshouches2->staumixval(2,2) = 2.84460080E-01; // cos(theta_tau)
-      cout << LOCAL_INFO << endl;
   
       // ALPHA (value is spectrum generator's "best choice" => can be on-shell, DRbar at a give scale, whatever)
       sd_leshouches2->alphaval = to<double>(alpha.back().at(0));             // Mixing angle in the neutral Higgs boson sector.
@@ -249,24 +252,23 @@ BE_NAMESPACE
       for (int i=1; i<=10; ++i) sd_leshouches2->hmixval(i) = (hmix[i].is_data_line()) ? to<double>(hmix[i][1]) : unlikely();
 
       // GAUGE
-      if (gauge.find_block_def()->size() >= 4) sd_leshouches2->qvalue(2) = to<double>(gauge.find_block_def()->at(3)); // Q(GeV)
-      sd_leshouches2->gaugeval(1) = to<double>(gauge.at(1).at(1));           // gprime(Q) DRbar
-      sd_leshouches2->gaugeval(2) = to<double>(gauge.at(2).at(1));           // g(Q) DRbar
-      sd_leshouches2->gaugeval(3) = to<double>(gauge.at(3).at(1));           // g_3(Q) DRbar
-       cout << LOCAL_INFO << endl;
+      if (gauge.find_block_def()->size() >= 4) sd_leshouches2->qvalue(2) = to<double>(gauge.find_block_def()->at(3));// Q(GeV)
+      sd_leshouches2->gaugeval(1) = to<double>(gauge.at(1).at(1));                                                   // gprime(Q) DRbar
+      sd_leshouches2->gaugeval(2) = to<double>(gauge.at(2).at(1));                                                   // g(Q) DRbar
+      sd_leshouches2->gaugeval(3) = to<double>(gauge.at(3).at(1));                                                   // g_3(Q) DRbar
   
       // AU, AD, AE, YU, YD, YE, MSQ2, MSD2, MSU2, TD, TU, VCKM
-      if (au.find_block_def()->size() >= 4) sd_leshouches2->qvalue(4)  = to<double>(au.find_block_def()->at(3));   // Q(GeV)
-      if (ad.find_block_def()->size() >= 4) sd_leshouches2->qvalue(5)  = to<double>(ad.find_block_def()->at(3));   // Q(GeV)
-      if (ae.find_block_def()->size() >= 4) sd_leshouches2->qvalue(6)  = to<double>(ae.find_block_def()->at(3));   // Q(GeV)
-      if (yu.find_block_def()->size() >= 4) sd_leshouches2->qvalue(7)  = to<double>(yu.find_block_def()->at(3));   // Q(GeV)
-      if (yd.find_block_def()->size() >= 4) sd_leshouches2->qvalue(8)  = to<double>(yd.find_block_def()->at(3));   // Q(GeV)
-      if (ye.find_block_def()->size() >= 4) sd_leshouches2->qvalue(9)  = to<double>(ye.find_block_def()->at(3));   // Q(GeV)
+      if (au.find_block_def()->size() >= 4) sd_leshouches2->qvalue(4)  = to<double>(au.find_block_def()->at(3));     // Q(GeV)
+      if (ad.find_block_def()->size() >= 4) sd_leshouches2->qvalue(5)  = to<double>(ad.find_block_def()->at(3));     // Q(GeV)
+      if (ae.find_block_def()->size() >= 4) sd_leshouches2->qvalue(6)  = to<double>(ae.find_block_def()->at(3));     // Q(GeV)
+      if (yu.find_block_def()->size() >= 4) sd_leshouches2->qvalue(7)  = to<double>(yu.find_block_def()->at(3));     // Q(GeV)
+      if (yd.find_block_def()->size() >= 4) sd_leshouches2->qvalue(8)  = to<double>(yd.find_block_def()->at(3));     // Q(GeV)
+      if (ye.find_block_def()->size() >= 4) sd_leshouches2->qvalue(9)  = to<double>(ye.find_block_def()->at(3));     // Q(GeV)
       if (msq2.find_block_def()->size() >= 4) sd_leshouches2->qvalue(17) = to<double>(msq2.find_block_def()->at(3)); // Q(GeV) corrects minor bug in SUSY-HIT SLHA reader
       if (msd2.find_block_def()->size() >= 4) sd_leshouches2->qvalue(10) = to<double>(msd2.find_block_def()->at(3)); // Q(GeV)
       if (msu2.find_block_def()->size() >= 4) sd_leshouches2->qvalue(11) = to<double>(msu2.find_block_def()->at(3)); // Q(GeV)
-      if (td.find_block_def()->size() >= 4) sd_leshouches2->qvalue(12) = to<double>(td.find_block_def()->at(3));   // Q(GeV)
-      if (tu.find_block_def()->size() >= 4) sd_leshouches2->qvalue(13) = to<double>(tu.find_block_def()->at(3));   // Q(GeV)
+      if (td.find_block_def()->size() >= 4) sd_leshouches2->qvalue(12) = to<double>(td.find_block_def()->at(3));     // Q(GeV)
+      if (tu.find_block_def()->size() >= 4) sd_leshouches2->qvalue(13) = to<double>(tu.find_block_def()->at(3));     // Q(GeV)
       if (vckm.find_block_def()->size() >= 4) sd_leshouches2->qvalue(21) = to<double>(vckm.find_block_def()->at(3)); // Q(GeV)
       for (int i=1; i<=3; ++i) 
       {
@@ -287,7 +289,6 @@ BE_NAMESPACE
           flavviolation->vckm(i,j) = (vckm[ij].is_data_line()) ? 0.0 : 0.0; //to<double>(vckm.at(i,j)[2]) : 0.0; FIXME
         }
       }
-      cout << LOCAL_INFO << endl;
 
       // USQMIX, DSQMIX, SELMIX    
       if (usqmix.find_block_def()->size() >= 4) sd_leshouches2->qvalue(14) = to<double>(usqmix.find_block_def()->at(3)); // Q(GeV)
@@ -307,7 +308,6 @@ BE_NAMESPACE
       // SLHA1 block SPINFO
       sd_leshouches1->spinfo1 = (spinfo[1].is_data_line()) ? spinfo[1][1] : ""; // RGE +Spectrum calculator
       sd_leshouches1->spinfo2 = (spinfo[2].is_data_line()) ? spinfo[2][1] : ""; // version number
-       cout << LOCAL_INFO << endl;
              
     }
     else // The following is hard-coded model in SLHA format, for debugging.
@@ -565,7 +565,6 @@ BE_NAMESPACE
     // that running first without flavour violation and then re-running with flavour violation does 
     // not break the non-FV results.
     flavviolation->ifavvio = 0;
-      cout << LOCAL_INFO << endl;
     
     // Set equivalent SLHA common blocks for HDecay.  Only differences are dimension of qvalues and zero vs unlikely for au, ad & ae.
     *slha_leshouches1_hdec = *sd_leshouches1;                       // SLHA1 block is identical in SDECAY and HDECAY.
@@ -614,11 +613,9 @@ BE_NAMESPACE
       }
     }                 
     for (int i=1; i<=20; ++i) slha_leshouches2_hdec->qvalue(i) = sd_leshouches2->qvalue(i); // Q(GeV)
-      cout << LOCAL_INFO << endl;
 
     // Run SUSY-HIT
     sdecay();
-      cout << LOCAL_INFO << endl;
 
     // Questions for SUSY-HIT authors
     // ms_1Gev? mc pole?
