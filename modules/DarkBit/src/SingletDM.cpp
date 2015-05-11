@@ -176,84 +176,53 @@ namespace Gambit {
       result = DarkMatter_ID_type(initVector<std::string>("S"));
     } // DarkMatter_ID_SingletDM
 
+// Obsolete !
+//    /// Initializes thresholds/resonances for RD calculation for SingletDM
+//    void RD_thresholds_resonances_SingletDM(TH_resonances_thresholds &result)
+//    {
+//      using namespace Pipes::RD_thresholds_resonances_SingletDM;
+//
+//      result.resonances.clear();
+//      result.threshold_energy.clear();
+//
+//      result.threshold_energy.push_back(2*(*Param["mass"]));
+//      double mh = (*Dep::TH_ProcessCatalog).getParticleProperty("h0_1").mass;
+//      result.resonances.push_back(TH_Resonance(mh, 0.01));  // FIXME use proper Higgs width!
+//
+//      // FIXME: Move somewhere else
+//      DS_RDMGEV myrdmgev;
+//      myrdmgev.nco = 1;
+//      myrdmgev.mco(1) = *Param["mass"];
+//      myrdmgev.mdof(1) = 1;
+//      myrdmgev.kcoann(1) = 42;  // ???
+//      *BEreq::rdmgev = myrdmgev;
+//    } // function RD_thresholds_resonances_SingletDM
 
-    /// Initializes thresholds/resonances for RD calculation for SingletDM
-    void RD_thresholds_resonances_SingletDM(TH_resonances_thresholds &result)
-    {
-      using namespace Pipes::RD_thresholds_resonances_SingletDM;
 
-      result.resonances.clear();
-      result.threshold_energy.clear();
-
-      result.threshold_energy.push_back(2*(*Param["mass"]));
-      double mh = (*Dep::TH_ProcessCatalog).getParticleProperty("h0_1").mass;
-      result.resonances.push_back(TH_Resonance(mh, 0.01));  // FIXME use proper Higgs width!
-
-      // FIXME: Move somewhere else
-      DS_RDMGEV myrdmgev;
-      myrdmgev.nco = 1;
-      myrdmgev.mco(1) = *Param["mass"];
-      myrdmgev.mdof(1) = 1;
-      myrdmgev.kcoann(1) = 42;  // ???
-      *BEreq::rdmgev = myrdmgev;
-    } // function RD_thresholds_resonances_SingletDM
-
-
-   /*! \brief Some helper function that gets spectrum information needed for
-     *         relic density calculations directly from DarkSUSY.
-     *
-     * Collects information about coannihilating particles, resonances and
-     * threshold energies.
-     */
-    void RD_spectrum_SingletDM(RD_spectrum_type &result)
-    {
-      using namespace Pipes::RD_spectrum_SingletDM;
-
-      std::vector<int> colist; //potential coannihilating particles (indices)
-      colist.clear();
-      result.coannihilatingParticles.clear();
-      result.resonances.clear();
-      result.threshold_energy.clear();
-
-      // FIXME: eventually, this function should not be BE-dependent anymore!
-      // thise is the DarkSUSY particle code for the neutralino (used as WIMP template)
-      int kdm=42;
-
-      // first add WIMP=least massive 'coannihilating particle'
-      result.coannihilatingParticles.push_back(
-          RD_coannihilating_particle(kdm,1,*Param["mass"]));
-
-      double mh = (*Dep::TH_ProcessCatalog).getParticleProperty("h0_1").mass;
-      double mW = (*Dep::TH_ProcessCatalog).getParticleProperty("W+").mass;
-      double mZ = (*Dep::TH_ProcessCatalog).getParticleProperty("Z0").mass;
-      double mt = (*Dep::TH_ProcessCatalog).getParticleProperty("u_3").mass;
-
-      // in the ScalarSinglet model, only the Higgs appears as resonance
-      double resmasses[] = {mh};
-      double reswidths[] = {0.01};
-      int resmax=sizeof(resmasses) / sizeof(resmasses[0]);
-
-      for (int i=0; i<resmax; i++)
-      {
-        if (resmasses[i]/result.coannihilatingParticles[0].mass > 2.)
-        {
-          result.resonances.push_back(TH_Resonance(resmasses[i], reswidths[i]));
-        }
-      }
-
-      // determine thresholds; lowest threshold = 2*WIMP rest mass  (unlike DS
-      // convention!) NB: no coannihilation thresholds for SingletScalar model!
-      result.threshold_energy.push_back(
-          2*result.coannihilatingParticles[0].mass);
-      // add W, Z, H and top thresholds
-      double thrmasses[] = {mW, mZ, mh, mt};
-      int thrmax=sizeof(thrmasses) / sizeof(thrmasses[0]);
-      for (int i=0; i<thrmax; i++)
-        if (thrmasses[i]>result.coannihilatingParticles[0].mass)
-          result.threshold_energy.push_back(2*thrmasses[i]);
-
-    } // function RD_spectrum_SingletDM
-
+// OBSOLETE
+//   /*! \brief Collects information about coannihilating particles, resonances and
+//     * threshold energies.
+//     */
+//    void RD_spectrum_SingletDM(RD_spectrum_type &result)
+//    {
+//      using namespace Pipes::RD_spectrum_SingletDM;
+//
+//      result.coannihilatingParticles.clear();
+//      // add WIMP=least massive 'coannihilating particle'
+//      // NB: particle code (1st entry) is irrelevant (unless Weff is ibatined from DS)
+//      result.coannihilatingParticles.push_back(
+//          RD_coannihilating_particle(100,1,*Param["mass"]));
+//
+//      // now derive thresholds & resonances from process catalogue
+//      std::string DMid= Dep::DarkMatter_ID->singleID();
+//      TH_Process annihilation = 
+//              (*Dep::TH_ProcessCatalog).getProcess(DMid, DMid);
+//      result.resonances = annihilation.thresholdResonances.resonances;
+//      result.threshold_energy = annihilation.thresholdResonances.threshold_energy;
+//
+//      // coannihilation thresholds would have to be added now -- but don't exist for SingletDM...
+//
+//    } // function RD_spectrum_SingletDM
 
 
 
@@ -384,8 +353,10 @@ namespace Gambit {
 
       // FIXME: Add top (is this still TODO?)
 
-      // Populate channel list
+      // Populate channel list and add thresholds
       // FIXME: Mass eigenstates are now being used here. Check if CKM factors are necessary anywhere.
+      // lowest threshold = 2*WIMP rest mass  (unlike DS convention!)
+      process_ann.thresholdResonances.threshold_energy.push_back(2*mass); 
       auto channel = Funk::vec<std::string>(
           "bb", "WW", "cc", "tautau", "ZZ", "tt", "hh");
       auto p1 = Funk::vec<std::string>("d_3", "W+", "u_2", "tau+", "Z0", "u_3", "h0_1");
@@ -402,10 +373,29 @@ namespace Gambit {
             TH_Channel channel(finalStates, kinematicFunction);
             process_ann.channelList.push_back(channel);
           }
+          else
+          {
+           process_ann.thresholdResonances.threshold_energy.push_back(2*catalog.particleProperties.at(p1[i]).mass); 
+          }
         }
       }
 
+      // Populate resonance list; Singlet model: only SM Higgs can appear as resonance 
+      double resmasses[] = {catalog.getParticleProperty("h0_1").mass};
+      double reswidths[] = {0.01};  // FIXME: import Higgs width
+      int resmax=sizeof(resmasses) / sizeof(resmasses[0]);
+
+      for (int i=0; i<resmax; i++)
+      {
+        if (resmasses[i]/mass > 2.)
+        {
+          process_ann.thresholdResonances.resonances.push_back(TH_Resonance(resmasses[i], reswidths[i]));
+        }
+      }
+      
+
       catalog.processList.push_back(process_ann);
+
 
       result = catalog;
     } // function TH_ProcessCatalog_SingletDM

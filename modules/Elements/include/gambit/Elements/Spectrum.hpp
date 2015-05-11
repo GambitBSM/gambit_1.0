@@ -84,7 +84,7 @@ class Spectrum
       /// get destroyed before you finish using these or you will cause a segfault.
       const SubSpectrum* get_LE() const; 
       const SubSpectrum* get_UV() const; 
-      const SMInputs& get_SMINPUTS() const;
+      const SMInputs& get_SMInputs() const;
       /// @}
 
       /// @{ Clone SubSpectrum getters

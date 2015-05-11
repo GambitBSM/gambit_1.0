@@ -218,20 +218,20 @@ namespace Gambit
 
 
     // Obsolete structure; replaced with RD_spectrum_type
-    struct RDspectype
-    {
-    //coannihilating particles
-      int n_co;
-      int part_co[1000],dof_co[1000];
-      double mass_co[1000];
-    //location and type of resonances
-      int n_res;
-      int part_res[10]; // never used. Do we need this?
-      double mass_res[10], width_res[10];
-    //location of thresholds
-      int n_thr;
-      double E_thr[100];
-    };
+//    struct RDspectype
+//    {
+//    //coannihilating particles
+//      int n_co;
+//      int part_co[1000],dof_co[1000];
+//      double mass_co[1000];
+//    //location and type of resonances
+//      int n_res;
+//      int part_res[10]; // never used. Do we need this?
+//      double mass_res[10], width_res[10];
+//    //location of thresholds
+//      int n_thr;
+//      double E_thr[100];
+//    };
 
     struct RD_coannihilating_particle
     {

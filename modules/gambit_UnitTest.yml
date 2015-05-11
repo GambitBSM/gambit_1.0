@@ -122,7 +122,7 @@ Scanner:
   
   scanners:
     toy_mcmc:
-      point_number: 10
+      point_number: 2
       output_file:  output
       like:  Likelihood
 
@@ -139,7 +139,7 @@ Scanner:
 
 ObsLikes:
     - capability: UnitTest_DarkBit
-      
+
 Rules:
   - capability: RD_thresholds_resonances
     function:  RD_thresholds_resonances_from_spectrum
@@ -164,9 +164,9 @@ Rules:
           function: DD_couplings_DarkSUSY
           #function: DD_couplings_MicrOmegas
         - capability: RD_oh2
-          function: RD_oh2_DarkSUSY
           #function: RD_oh2_general
-          #function: RD_oh2_Micromegas
+          function: RD_oh2_DarkSUSY
+          #function: RD_oh2_MicrOmegas
     options:
         fileroot: UnitTest_MSSMbenchmarks_DarkSUSY
         #fileroot: UnitTest_MSSMbenchmarks_MicrOmegas
@@ -178,16 +178,16 @@ Rules:
     module: SpecBit
     options:
         filenames: 
-#            - DarkBit/slha-benchmarks/01-01-2013_torsten/test_co.slha
-#            - DarkBit/slha-benchmarks/01-01-2013_torsten/test_100.slha
-#            - DarkBit/slha-benchmarks/01-01-2013_torsten/test_200.slha
-#            - DarkBit/slha-benchmarks/01-01-2013_torsten/test_300.slha
+            - DarkBit/slha-benchmarks/01-01-2013_torsten/test_co.slha
+            - DarkBit/slha-benchmarks/01-01-2013_torsten/test_100.slha
+            - DarkBit/slha-benchmarks/01-01-2013_torsten/test_200.slha
+            - DarkBit/slha-benchmarks/01-01-2013_torsten/test_300.slha
             - DarkBit/slha-benchmarks/14-12-2014_joakim/FMCp03000765.slha1
-#            - DarkBit/slha-benchmarks/14-12-2014_joakim/JE56C_003717.slha1
-#            - DarkBit/slha-benchmarks/14-12-2014_joakim/JE58D_007879.slha1
-#            - DarkBit/slha-benchmarks/14-12-2014_joakim/JE67B_006998.slha1
-#            - DarkBit/slha-benchmarks/14-12-2014_joakim/JE67D_001840.slha1
-#            - DarkBit/slha-benchmarks/14-12-2014_joakim/JE87O_006600.slha1
+            - DarkBit/slha-benchmarks/14-12-2014_joakim/JE56C_003717.slha1
+            - DarkBit/slha-benchmarks/14-12-2014_joakim/JE58D_007879.slha1
+            - DarkBit/slha-benchmarks/14-12-2014_joakim/JE67B_006998.slha1
+            - DarkBit/slha-benchmarks/14-12-2014_joakim/JE67D_001840.slha1
+            - DarkBit/slha-benchmarks/14-12-2014_joakim/JE87O_006600.slha1
 
 #  - capability: MSSM_spectrum
 #    function: get_MSSM_spectrum_from_file  # For unit test: reads in spectrum from SLHA file
@@ -229,7 +229,7 @@ Logger:
   prefix : "runs/DarkBit_minimalTest/logs/"
   redirection:
     [Debug] : "debug.log"
-    [Default] : "default.log"
+    [Default] : "stdout" #"default.log"
     [Error] : "errors.log"
     [Warning] : "warnings.log"
     [Core,Error] : "core_errors.log"
@@ -250,7 +250,7 @@ Logger:
 KeyValues:
 
   dependency_resolution:
-    prefer_model_specific_functions: false
+    prefer_model_specific_functions: true
     use_old_routines: false
 
   likelihood:

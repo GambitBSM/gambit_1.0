@@ -31,11 +31,8 @@ namespace Gambit {
     //
     //////////////////////////////////////////////////////////////////////////
 
-    /*! \brief Some helper function that gets spectrum information needed for
-     *         relic density calculations directly from DarkSUSY.
-     *
-     * Collects information about coannihilating particles, resonances and
-     * threshold energies.
+    /*! \brief Collects spectrum information about coannihilating particles, 
+     *         resonances and threshold energies -- so far directly from DarkSUSY.
      */
     void RD_spectrum_SUSY(RD_spectrum_type &result)
     {
@@ -148,20 +145,48 @@ namespace Gambit {
 
     } // function RD_spectrum_SUSY
 
-    /*! \brief Derive thresholds & resonances from process catalogue.
-    */
-    // FIXME: currently not in use / operational!
-    void RD_thresholds_resonances_from_ProcessCatalog(
-        TH_resonances_thresholds &result)
+
+   /*! \brief Collects information about resonances and threshold energies 
+     *        directly from the ProcessCatalog 
+     *        [NB: this assumes no coannihilating particles!]
+     */
+    void RD_spectrum_from_ProcessCatalog(RD_spectrum_type &result)
     {
-      using namespace Pipes::RD_thresholds_resonances_from_ProcessCatalog;
+      using namespace Pipes::RD_spectrum_from_ProcessCatalog;
+
+      result.coannihilatingParticles.clear();
+      // add WIMP=least massive 'coannihilating particle'
+      // NB: particle code (1st entry) is irrelevant (unless Weff is ibatined from DS)
+      result.coannihilatingParticles.push_back(
+          RD_coannihilating_particle(100,1,*Param["mass"]));
+
+      // now derive thresholds & resonances from process catalogue
       std::string DMid= Dep::DarkMatter_ID->singleID();
-
       TH_Process annihilation = 
-        (*Dep::TH_ProcessCatalog).getProcess(DMid, DMid);
+              (*Dep::TH_ProcessCatalog).getProcess(DMid, DMid);
+      result.resonances = annihilation.thresholdResonances.resonances;
+      result.threshold_energy = annihilation.thresholdResonances.threshold_energy;
+      // (coannihilation thresholds would have to be added now for any concrete model)
 
-      result = TH_resonances_thresholds(annihilation.thresholdResonances);
-    }
+    } // function RD_spectrum_from_ProcessCatalog
+
+
+
+// obsolete!
+//    /*! \brief Derive thresholds & resonances from process catalogue.
+//    */
+//    // FIXME: currently not in use / operational!
+//    void RD_thresholds_resonances_from_ProcessCatalog(
+//        TH_resonances_thresholds &result)
+//    {
+//      using namespace Pipes::RD_thresholds_resonances_from_ProcessCatalog;
+//      std::string DMid= Dep::DarkMatter_ID->singleID();
+//
+//      TH_Process annihilation = 
+//        (*Dep::TH_ProcessCatalog).getProcess(DMid, DMid);
+//
+//      result = TH_resonances_thresholds(annihilation.thresholdResonances);
+//    }
 
     /*! \brief Derive thresholds & resonances from RD_spectrum helper object.
     */
@@ -211,9 +236,9 @@ namespace Gambit {
     /*! \brief Some helper function to prepare evaluation of Weff from
      *         DarkSUSY.
      */
-    void RD_eff_annrate_SUSY_DSprep_func(int &result)
+    void RD_eff_annrate_DSprep_func(int &result)
     {
-      using namespace Pipes::RD_eff_annrate_SUSY_DSprep_func;
+      using namespace Pipes::RD_eff_annrate_DSprep_func;
 
       // Read out location and number of resonances and thresholds from
       // RDspectrum.
@@ -227,6 +252,9 @@ namespace Gambit {
         myrdmgev.mco(i)=fabs(specres.coannihilatingParticles[i-1].mass);
         myrdmgev.mdof(i)=specres.coannihilatingParticles[i-1].degreesOfFreedom;
         myrdmgev.kcoann(i)=specres.coannihilatingParticles[i-1].index;
+        // NB: only this particle code is DS/SUSY specific, and needed if Weff is 
+        // to be provided by DS (only for SUSY models). If a Weff not from DS is 
+        // used, the entries here have no effect
       }
       // now order
       double tmp; int itmp;
@@ -247,9 +275,9 @@ namespace Gambit {
       }
       *BEreq::rdmgev = myrdmgev;
 
-      result=1; // everthing OK
+      result=1; // everything OK
 
-    } // function RD_eff_annrate_SUSY_DSprep_func
+    } // function RD_eff_annrate_DSprep_func
 
 
     /*! \brief Get Weff directly from initialized DarkSUSY.
@@ -278,7 +306,7 @@ namespace Gambit {
         std::string DMid= Dep::DarkMatter_ID->singleID();
         TH_Process annProc = (*Dep::TH_ProcessCatalog).getProcess(DMid, DMid);
         double mDM = *Param["mass"];
-        const double GeV2tocm3s1 = 1.17e-17;
+        const double GeV2tocm3s1 = 1.17e-17; //FIXME: more digits!
 
         auto Weff = Funk::zero("peff");
         auto peff = Funk::var("peff");

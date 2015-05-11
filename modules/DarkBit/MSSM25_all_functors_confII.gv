@@ -1,0 +1,659 @@
+digraph G {
+	graph [rankdir=LR];
+	0	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">nuclear_params_fnq_parameters</font><br/>Type: ModelParameters<br/>Function: primary_parameters<br/>Module: nuclear_params_fnq>,
+		shape=box,
+		style="rounded,filled"];
+	97	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">DD_couplings</font><br/>Type: DarkBit::DD_couplings<br/>Function: DD_couplings_MicrOmegas<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	0 -> 97;
+	103	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">SetWIMP_DDCalc0</font><br/>Type: bool<br/>Function: SetWIMP_DDCalc0<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	97 -> 103;
+	99	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">sigma_SI_p</font><br/>Type: double<br/>Function: sigma_SI_p_simple<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	97 -> 99;
+	101	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">sigma_SD_p</font><br/>Type: double<br/>Function: sigma_SD_p_simple<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	97 -> 101;
+	104	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">CalcRates_XENON100_2012_DDCalc0</font><br/>Type: bool<br/>Function: CalcRates_XENON100_2012_DDCalc0<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	103 -> 104;
+	105	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">CalcRates_LUX_2013_DDCalc0</font><br/>Type: bool<br/>Function: CalcRates_LUX_2013_DDCalc0<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	103 -> 105;
+	106	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">CalcRates_DARWIN_Ar_2015_DDCalc0</font><br/>Type: bool<br/>Function: CalcRates_DARWIN_Ar_2015_DDCalc0<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	103 -> 106;
+	107	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">CalcRates_DARWIN_Xe_2015_DDCalc0</font><br/>Type: bool<br/>Function: CalcRates_DARWIN_Xe_2015_DDCalc0<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	103 -> 107;
+	135	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">nuyield_ptr</font><br/>Type: nuyield_functype<br/>Function: nuyield_from_DS<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	99 -> 135;
+	132	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">capture_rate_Sun</font><br/>Type: double<br/>Function: capture_rate_Sun_constant_xsec<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	99 -> 132;
+	101 -> 135;
+	101 -> 132;
+	108	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">lnL_XENON100_2012</font><br/>Type: double<br/>Function: XENON100_2012_LogLikelihood_DDCalc0<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	104 -> 108;
+	114	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">lnL_LUX_2013</font><br/>Type: double<br/>Function: LUX_2013_LogLikelihood_DDCalc0<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	105 -> 114;
+	120	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">lnL_DARWIN_Ar_2015</font><br/>Type: double<br/>Function: DARWIN_Ar_2015_LogLikelihood_DDCalc0<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	106 -> 120;
+	126	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">lnL_DARWIN_Xe_2015</font><br/>Type: double<br/>Function: DARWIN_Xe_2015_LogLikelihood_DDCalc0<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	107 -> 126;
+	142	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">IC79WH_data</font><br/>Type: nudata<br/>Function: IC79WH_full<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	135 -> 142;
+	148	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">IC79WL_data</font><br/>Type: nudata<br/>Function: IC79WL_full<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	135 -> 148;
+	154	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">IC79SL_data</font><br/>Type: nudata<br/>Function: IC79SL_full<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	135 -> 154;
+	133	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">equilibration_time_Sun</font><br/>Type: double<br/>Function: equilibration_time_Sun<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	132 -> 133;
+	134	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">annihilation_rate_Sun</font><br/>Type: double<br/>Function: annihilation_rate_Sun<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	132 -> 134;
+	145	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">IC79WH_loglike</font><br/>Type: double<br/>Function: IC79WH_loglike<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	142 -> 145;
+	151	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">IC79WL_loglike</font><br/>Type: double<br/>Function: IC79WL_loglike<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	148 -> 151;
+	157	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">IC79SL_loglike</font><br/>Type: double<br/>Function: IC79SL_loglike<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	154 -> 157;
+	133 -> 134;
+	134 -> 142;
+	134 -> 148;
+	134 -> 154;
+	160	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">IceCube_likelihood</font><br/>Type: double<br/>Function: IC79_loglike<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	145 -> 160;
+	151 -> 160;
+	157 -> 160;
+	1	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">StandardModel_SLHA2_parameters</font><br/>Type: ModelParameters<br/>Function: primary_parameters<br/>Module: StandardModel_SLHA2>,
+		shape=box,
+		style="rounded,filled"];
+	168	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">SMINPUTS</font><br/>Type: SMInputs<br/>Function: get_SMINPUTS<br/>Module: SpecBit>,
+		shape=box,
+		style="rounded,filled"];
+	1 -> 168;
+	171	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">MSSM_spectrum</font><br/>Type: const Spectrum*<br/>Function: get_MSSMatQ_spectrum<br/>Module: SpecBit>,
+		shape=box,
+		style="rounded,filled"];
+	168 -> 171;
+	61	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">DarkSUSY_PointInit</font><br/>Type: bool<br/>Function: DarkSUSY_PointInit_MSSM<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	171 -> 61;
+	86	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">TH_ProcessCatalog</font><br/>Type: DarkBit::TH_ProcessCatalog<br/>Function: TH_ProcessCatalog_CMSSM<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	171 -> 86;
+	3	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">SUSY_HIT_1_5_init</font><br/>Type: void<br/>Function: SUSY_HIT_1_5_init<br/>Module: BackendIniBit>,
+		shape=box,
+		style="rounded,filled"];
+	171 -> 3;
+	12	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">MicrOmegas_3_5_5_init</font><br/>Type: void<br/>Function: MicrOmegas_3_5_5_init<br/>Module: BackendIniBit>,
+		shape=box,
+		style="rounded,filled"];
+	171 -> 12;
+	61 -> 86;
+	86 -> 135;
+	90	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">lnL_FermiGC</font><br/>Type: double<br/>Function: lnL_FermiGC_gamLike<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	86 -> 90;
+	84	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">GA_AnnYield</font><br/>Type: Funk::Funk<br/>Function: GA_AnnYield_General<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	86 -> 84;
+	83	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">GA_missingFinalStates</font><br/>Type: std::vector&lt;std::string&gt;<br/>Function: GA_missingFinalStates<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	86 -> 83;
+	93	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">mwimp</font><br/>Type: double<br/>Function: mwimp_generic<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	86 -> 93;
+	95	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">sigmav</font><br/>Type: double<br/>Function: sigmav_late_universe<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	86 -> 95;
+	78	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">cascadeMC_Histograms</font><br/>Type: DarkBit::simpleHistContainter<br/>Function: cascadeMC_Histograms<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	86 -> 78;
+	73	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">cascadeMC_DecayTable</font><br/>Type: DarkBit::DecayChain::DecayTable<br/>Function: cascadeMC_DecayTable<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	86 -> 73;
+	74	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">cascadeMC_LoopManagement</font><br/>Type: void<br/>Function: cascadeMC_LoopManager<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	86 -> 74;
+	89	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">lnL_FermiLATdwarfs</font><br/>Type: double<br/>Function: lnL_FermiLATdwarfs_gamLike<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	86 -> 89;
+	217	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">Higgs_decay_rates</font><br/>Type: DecayTable::Entry<br/>Function: MSSM_h0_1_decays<br/>Module: DecayBit>,
+		shape=box,
+		style="rounded,filled"];
+	3 -> 217;
+	218	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">h0_2_decay_rates</font><br/>Type: DecayTable::Entry<br/>Function: h0_2_decays<br/>Module: DecayBit>,
+		shape=box,
+		style="rounded,filled"];
+	3 -> 218;
+	219	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">A0_decay_rates</font><br/>Type: DecayTable::Entry<br/>Function: A0_decays<br/>Module: DecayBit>,
+		shape=box,
+		style="rounded,filled"];
+	3 -> 219;
+	220	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">Hplus_decay_rates</font><br/>Type: DecayTable::Entry<br/>Function: Hplus_decays<br/>Module: DecayBit>,
+		shape=box,
+		style="rounded,filled"];
+	3 -> 220;
+	221	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">gluino_decay_rates</font><br/>Type: DecayTable::Entry<br/>Function: gluino_decays<br/>Module: DecayBit>,
+		shape=box,
+		style="rounded,filled"];
+	3 -> 221;
+	222	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">stop_1_decay_rates</font><br/>Type: DecayTable::Entry<br/>Function: stop_1_decays<br/>Module: DecayBit>,
+		shape=box,
+		style="rounded,filled"];
+	3 -> 222;
+	223	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">stop_2_decay_rates</font><br/>Type: DecayTable::Entry<br/>Function: stop_2_decays<br/>Module: DecayBit>,
+		shape=box,
+		style="rounded,filled"];
+	3 -> 223;
+	224	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">sbottom_1_decay_rates</font><br/>Type: DecayTable::Entry<br/>Function: sbottom_1_decays<br/>Module: DecayBit>,
+		shape=box,
+		style="rounded,filled"];
+	3 -> 224;
+	225	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">sbottom_2_decay_rates</font><br/>Type: DecayTable::Entry<br/>Function: sbottom_2_decays<br/>Module: DecayBit>,
+		shape=box,
+		style="rounded,filled"];
+	3 -> 225;
+	226	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">sup_l_decay_rates</font><br/>Type: DecayTable::Entry<br/>Function: sup_l_decays<br/>Module: DecayBit>,
+		shape=box,
+		style="rounded,filled"];
+	3 -> 226;
+	227	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">sup_r_decay_rates</font><br/>Type: DecayTable::Entry<br/>Function: sup_r_decays<br/>Module: DecayBit>,
+		shape=box,
+		style="rounded,filled"];
+	3 -> 227;
+	228	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">sdown_l_decay_rates</font><br/>Type: DecayTable::Entry<br/>Function: sdown_l_decays<br/>Module: DecayBit>,
+		shape=box,
+		style="rounded,filled"];
+	3 -> 228;
+	229	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">sdown_r_decay_rates</font><br/>Type: DecayTable::Entry<br/>Function: sdown_r_decays<br/>Module: DecayBit>,
+		shape=box,
+		style="rounded,filled"];
+	3 -> 229;
+	230	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">scharm_l_decay_rates</font><br/>Type: DecayTable::Entry<br/>Function: scharm_l_decays<br/>Module: DecayBit>,
+		shape=box,
+		style="rounded,filled"];
+	3 -> 230;
+	231	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">scharm_r_decay_rates</font><br/>Type: DecayTable::Entry<br/>Function: scharm_r_decays<br/>Module: DecayBit>,
+		shape=box,
+		style="rounded,filled"];
+	3 -> 231;
+	232	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">sstrange_l_decay_rates</font><br/>Type: DecayTable::Entry<br/>Function: sstrange_l_decays<br/>Module: DecayBit>,
+		shape=box,
+		style="rounded,filled"];
+	3 -> 232;
+	233	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">sstrange_r_decay_rates</font><br/>Type: DecayTable::Entry<br/>Function: sstrange_r_decays<br/>Module: DecayBit>,
+		shape=box,
+		style="rounded,filled"];
+	3 -> 233;
+	234	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">selectron_l_decay_rates</font><br/>Type: DecayTable::Entry<br/>Function: selectron_l_decays<br/>Module: DecayBit>,
+		shape=box,
+		style="rounded,filled"];
+	3 -> 234;
+	235	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">selectron_r_decay_rates</font><br/>Type: DecayTable::Entry<br/>Function: selectron_r_decays<br/>Module: DecayBit>,
+		shape=box,
+		style="rounded,filled"];
+	3 -> 235;
+	236	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">smuon_l_decay_rates</font><br/>Type: DecayTable::Entry<br/>Function: smuon_l_decays<br/>Module: DecayBit>,
+		shape=box,
+		style="rounded,filled"];
+	3 -> 236;
+	237	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">smuon_r_decay_rates</font><br/>Type: DecayTable::Entry<br/>Function: smuon_r_decays<br/>Module: DecayBit>,
+		shape=box,
+		style="rounded,filled"];
+	3 -> 237;
+	238	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">stau_1_decay_rates</font><br/>Type: DecayTable::Entry<br/>Function: stau_1_decays<br/>Module: DecayBit>,
+		shape=box,
+		style="rounded,filled"];
+	3 -> 238;
+	239	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">stau_2_decay_rates</font><br/>Type: DecayTable::Entry<br/>Function: stau_2_decays<br/>Module: DecayBit>,
+		shape=box,
+		style="rounded,filled"];
+	3 -> 239;
+	240	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">snu_electronl_decay_rates</font><br/>Type: DecayTable::Entry<br/>Function: snu_electronl_decays<br/>Module: DecayBit>,
+		shape=box,
+		style="rounded,filled"];
+	3 -> 240;
+	241	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">snu_muonl_decay_rates</font><br/>Type: DecayTable::Entry<br/>Function: snu_muonl_decays<br/>Module: DecayBit>,
+		shape=box,
+		style="rounded,filled"];
+	3 -> 241;
+	242	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">snu_taul_decay_rates</font><br/>Type: DecayTable::Entry<br/>Function: snu_taul_decays<br/>Module: DecayBit>,
+		shape=box,
+		style="rounded,filled"];
+	3 -> 242;
+	243	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">chargino_1_decay_rates</font><br/>Type: DecayTable::Entry<br/>Function: chargino_1_decays<br/>Module: DecayBit>,
+		shape=box,
+		style="rounded,filled"];
+	3 -> 243;
+	244	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">chargino_2_decay_rates</font><br/>Type: DecayTable::Entry<br/>Function: chargino_2_decays<br/>Module: DecayBit>,
+		shape=box,
+		style="rounded,filled"];
+	3 -> 244;
+	245	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">neutralino_1_decay_rates</font><br/>Type: DecayTable::Entry<br/>Function: neutralino_1_decays<br/>Module: DecayBit>,
+		shape=box,
+		style="rounded,filled"];
+	3 -> 245;
+	246	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">neutralino_2_decay_rates</font><br/>Type: DecayTable::Entry<br/>Function: neutralino_2_decays<br/>Module: DecayBit>,
+		shape=box,
+		style="rounded,filled"];
+	3 -> 246;
+	247	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">neutralino_3_decay_rates</font><br/>Type: DecayTable::Entry<br/>Function: neutralino_3_decays<br/>Module: DecayBit>,
+		shape=box,
+		style="rounded,filled"];
+	3 -> 247;
+	248	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">neutralino_4_decay_rates</font><br/>Type: DecayTable::Entry<br/>Function: neutralino_4_decays<br/>Module: DecayBit>,
+		shape=box,
+		style="rounded,filled"];
+	3 -> 248;
+	12 -> 97;
+	70	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">RD_oh2</font><br/>Type: double<br/>Function: RD_oh2_MicrOmegas<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	12 -> 70;
+	164	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">SimYieldTable</font><br/>Type: DarkBit::SimYieldTable<br/>Function: SimYieldTable_MicrOmegas<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	12 -> 164;
+	84 -> 90;
+	84 -> 89;
+	83 -> 74;
+	79	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">cascadeMC_gammaSpectra</font><br/>Type: DarkBit::stringFunkMap<br/>Function: cascadeMC_gammaSpectra<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	83 -> 79;
+	75	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">cascadeMC_InitialState</font><br/>Type: std::string<br/>Function: cascadeMC_InitialState<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	83 -> 75;
+	93 -> 99;
+	93 -> 101;
+	93 -> 135;
+	93 -> 132;
+	93 -> 142;
+	93 -> 148;
+	93 -> 154;
+	93 -> 133;
+	95 -> 135;
+	95 -> 133;
+	78 -> 79;
+	73 -> 74;
+	77	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">cascadeMC_ChainEvent</font><br/>Type: DarkBit::DecayChain::ChainContainer<br/>Function: cascadeMC_GenerateChain<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	73 -> 77;
+	74 -> 78;
+	74 -> 75;
+	74 -> 77;
+	76	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">cascadeMC_EventCount</font><br/>Type: DarkBit::stringIntMap<br/>Function: cascadeMC_EventCount<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	74 -> 76;
+	249	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">decay_rates</font><br/>Type: DecayTable<br/>Function: all_decays<br/>Module: DecayBit>,
+		shape=box,
+		style="rounded,filled"];
+	217 -> 249;
+	218 -> 249;
+	219 -> 249;
+	220 -> 249;
+	221 -> 249;
+	222 -> 249;
+	223 -> 249;
+	224 -> 249;
+	225 -> 249;
+	226 -> 249;
+	227 -> 249;
+	228 -> 249;
+	229 -> 249;
+	230 -> 249;
+	231 -> 249;
+	232 -> 249;
+	233 -> 249;
+	234 -> 249;
+	235 -> 249;
+	236 -> 249;
+	237 -> 249;
+	238 -> 249;
+	239 -> 249;
+	240 -> 249;
+	241 -> 249;
+	242 -> 249;
+	243 -> 249;
+	244 -> 249;
+	245 -> 249;
+	246 -> 249;
+	247 -> 249;
+	248 -> 249;
+	92	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">lnL_oh2</font><br/>Type: double<br/>Function: lnL_oh2_Simple<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	70 -> 92;
+	164 -> 84;
+	164 -> 83;
+	164 -> 78;
+	164 -> 73;
+	164 -> 74;
+	79 -> 84;
+	75 -> 78;
+	75 -> 77;
+	75 -> 76;
+	77 -> 78;
+	76 -> 79;
+	249 -> 86;
+	2	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">MSSM25atQ_parameters</font><br/>Type: ModelParameters<br/>Function: primary_parameters<br/>Module: MSSM25atQ>,
+		shape=box,
+		style="rounded,filled"];
+	2 -> 61;
+	2 -> 70;
+	167	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">DarkMatter_ID</font><br/>Type: DarkMatter_ID_type<br/>Function: DarkMatter_ID_MSSM25atQ<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	2 -> 167;
+	279	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">MSSM78atQ_parameters</font><br/>Type: ModelParameters<br/>Function: MSSM78atQ_parameters<br/>Module: MSSM25atQ>,
+		shape=box,
+		style="rounded,filled"];
+	2 -> 279;
+	167 -> 135;
+	167 -> 86;
+	167 -> 90;
+	167 -> 84;
+	167 -> 83;
+	167 -> 93;
+	167 -> 95;
+	279 -> 171;
+	279 -> 3;
+	279 -> 217;
+	279 -> 218;
+	279 -> 219;
+	279 -> 220;
+	279 -> 221;
+	279 -> 222;
+	279 -> 223;
+	279 -> 224;
+	279 -> 225;
+	279 -> 226;
+	279 -> 227;
+	279 -> 228;
+	279 -> 229;
+	279 -> 230;
+	279 -> 231;
+	279 -> 232;
+	279 -> 233;
+	279 -> 234;
+	279 -> 235;
+	279 -> 236;
+	279 -> 237;
+	279 -> 238;
+	279 -> 239;
+	279 -> 240;
+	279 -> 241;
+	279 -> 242;
+	279 -> 243;
+	279 -> 244;
+	279 -> 245;
+	279 -> 246;
+	279 -> 247;
+	279 -> 248;
+	13	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">nulike_1_0_0_init</font><br/>Type: void<br/>Function: nulike_1_0_0_init<br/>Module: BackendIniBit>,
+		shape=box,
+		style="rounded,filled"];
+	13 -> 142;
+	13 -> 148;
+	13 -> 154;
+	15	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">DarkSUSY_5_1_1_init</font><br/>Type: void<br/>Function: DarkSUSY_5_1_1_init<br/>Module: BackendIniBit>,
+		shape=box,
+		style="rounded,filled"];
+	15 -> 135;
+	15 -> 132;
+	15 -> 61;
+	15 -> 86;
+	15 -> 78;
+	17	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">DDCalc0_0_0_init</font><br/>Type: void<br/>Function: DDCalc0_0_0_init<br/>Module: BackendIniBit>,
+		shape=box,
+		style="rounded,filled"];
+	17 -> 103;
+	17 -> 104;
+	17 -> 105;
+	17 -> 106;
+	17 -> 107;
+	17 -> 108;
+	17 -> 114;
+	17 -> 120;
+	17 -> 126;
+	18	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">gamLike_1_0_0_init</font><br/>Type: void<br/>Function: gamLike_1_0_0_init<br/>Module: BackendIniBit>,
+		shape=box,
+		style="rounded,filled"];
+	18 -> 90;
+	18 -> 89;
+	71	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">cascadeMC_FinalStates</font><br/>Type: std::vector&lt;std::string&gt;<br/>Function: cascadeMC_FinalStates<br/>Module: DarkBit>,
+		shape=box,
+		style="rounded,filled"];
+	71 -> 78;
+	71 -> 79;
+	250	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">W_minus_decay_rates</font><br/>Type: DecayTable::Entry<br/>Function: W_minus_decays<br/>Module: DecayBit>,
+		shape=box,
+		style="rounded,filled"];
+	250 -> 3;
+	250 -> 249;
+	251	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">W_plus_decay_rates</font><br/>Type: DecayTable::Entry<br/>Function: W_plus_decays<br/>Module: DecayBit>,
+		shape=box,
+		style="rounded,filled"];
+	251 -> 3;
+	251 -> 249;
+	252	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">Z_decay_rates</font><br/>Type: DecayTable::Entry<br/>Function: Z_decays<br/>Module: DecayBit>,
+		shape=box,
+		style="rounded,filled"];
+	252 -> 3;
+	252 -> 249;
+	253	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">t_decay_rates</font><br/>Type: DecayTable::Entry<br/>Function: t_decays<br/>Module: DecayBit>,
+		shape=box,
+		style="rounded,filled"];
+	253 -> 249;
+	254	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">tbar_decay_rates</font><br/>Type: DecayTable::Entry<br/>Function: tbar_decays<br/>Module: DecayBit>,
+		shape=box,
+		style="rounded,filled"];
+	254 -> 249;
+	255	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">mu_minus_decay_rates</font><br/>Type: DecayTable::Entry<br/>Function: mu_minus_decays<br/>Module: DecayBit>,
+		shape=box,
+		style="rounded,filled"];
+	255 -> 249;
+	256	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">mu_plus_decay_rates</font><br/>Type: DecayTable::Entry<br/>Function: mu_plus_decays<br/>Module: DecayBit>,
+		shape=box,
+		style="rounded,filled"];
+	256 -> 249;
+	257	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">tau_minus_decay_rates</font><br/>Type: DecayTable::Entry<br/>Function: tau_minus_decays<br/>Module: DecayBit>,
+		shape=box,
+		style="rounded,filled"];
+	257 -> 249;
+	258	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">tau_plus_decay_rates</font><br/>Type: DecayTable::Entry<br/>Function: tau_plus_decays<br/>Module: DecayBit>,
+		shape=box,
+		style="rounded,filled"];
+	258 -> 249;
+	259	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">pi_0_decay_rates</font><br/>Type: DecayTable::Entry<br/>Function: pi_0_decays<br/>Module: DecayBit>,
+		shape=box,
+		style="rounded,filled"];
+	259 -> 249;
+	260	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">pi_minus_decay_rates</font><br/>Type: DecayTable::Entry<br/>Function: pi_minus_decays<br/>Module: DecayBit>,
+		shape=box,
+		style="rounded,filled"];
+	260 -> 249;
+	261	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">pi_plus_decay_rates</font><br/>Type: DecayTable::Entry<br/>Function: pi_plus_decays<br/>Module: DecayBit>,
+		shape=box,
+		style="rounded,filled"];
+	261 -> 249;
+	262	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">eta_decay_rates</font><br/>Type: DecayTable::Entry<br/>Function: eta_decays<br/>Module: DecayBit>,
+		shape=box,
+		style="rounded,filled"];
+	262 -> 249;
+	263	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">rho_0_decay_rates</font><br/>Type: DecayTable::Entry<br/>Function: rho_0_decays<br/>Module: DecayBit>,
+		shape=box,
+		style="rounded,filled"];
+	263 -> 249;
+	264	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">rho_minus_decay_rates</font><br/>Type: DecayTable::Entry<br/>Function: rho_minus_decays<br/>Module: DecayBit>,
+		shape=box,
+		style="rounded,filled"];
+	264 -> 249;
+	265	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">rho_plus_decay_rates</font><br/>Type: DecayTable::Entry<br/>Function: rho_plus_decays<br/>Module: DecayBit>,
+		shape=box,
+		style="rounded,filled"];
+	265 -> 249;
+	266	 [fillcolor="#F0F0D0",
+		label=< <font point-size="20" color="red">omega_decay_rates</font><br/>Type: DecayTable::Entry<br/>Function: omega_decays<br/>Module: DecayBit>,
+		shape=box,
+		style="rounded,filled"];
+	266 -> 249;
+}

@@ -266,7 +266,7 @@ namespace Gambit {
       const Spectrum* matched_spectra = *Dep::MSSM_spectrum;
       const SubSpectrum* spec = matched_spectra->get_UV();
       const SubSpectrum* SM   = matched_spectra->get_LE();
-      const SMInputs& SMI  = matched_spectra->get_SMINPUTS();  
+      const SMInputs& SMI  = matched_spectra->get_SMInputs();  
       
       // Get SM masses
 #define getSMmass(Name, spinX2)                                                \
@@ -281,21 +281,21 @@ namespace Gambit {
       getSMmass("mu+",    1)
       getSMmass("tau-",   1)
       getSMmass("tau+",   1)
-      getSMmass("nu_1",   1)
-      getSMmass("nubar_1",1) 
-      getSMmass("nu_2",   1)
-      getSMmass("nubar_2",1) 
-      getSMmass("nu_3",   1)
-      getSMmass("nubar_3",1)      
+//      getSMmass("nu_1",   1)
+//      getSMmass("nubar_1",1) 
+//      getSMmass("nu_2",   1)
+//      getSMmass("nubar_2",1) 
+//      getSMmass("nu_3",   1)
+//      getSMmass("nubar_3",1)      
       getSMmass("Z0",     2)
       getSMmass("W+",     2)
       getSMmass("W-",     2)      
       getSMmass("g",      2)   
       getSMmass("gamma",  2)   
-      getSMmass("d_3",    1)
-      getSMmass("dbar_3", 1)
-      getSMmass("u_3",    1)
-      getSMmass("ubar_3", 1)
+      getSMmass("b",    1)
+      getSMmass("bbar", 1)
+      getSMmass("t",    1)
+      getSMmass("tbar", 1)
 #undef getSMmass
 
       // Pole masses not available for the light quarks.
@@ -305,14 +305,23 @@ namespace Gambit {
             Name , TH_ParticleProperty(Mass, spinX2)                           \
             )                                                                  \
           );    
-      getSMmassMS("d_1"   , SMI.mD,  1) // md(2 GeV)^MS-bar, not pole mass
-      getSMmassMS("dbar_1", SMI.mD,  1) // md(2 GeV)^MS-bar, not pole mass
-      getSMmassMS("u_1"   , SMI.mU,  1) // mu(2 GeV)^MS-bar, not pole mass
-      getSMmassMS("ubar_1", SMI.mU,  1) // mu(2 GeV)^MS-bar, not pole mass
-      getSMmassMS("d_2"   , SMI.mS,  1) // ms(2 GeV)^MS-bar, not pole mass
-      getSMmassMS("dbar_2", SMI.mS,  1) // ms(2 GeV)^MS-bar, not pole mass
-      getSMmassMS("u_2"   , SMI.mCmC,1) // mc(mc)^MS-bar, not pole mass
-      getSMmassMS("ubar_2", SMI.mCmC,1) // mc(mc)^MS-bar, not pole mass
+      getSMmassMS("d"   , SMI.mD,  1) // md(2 GeV)^MS-bar, not pole mass
+      getSMmassMS("dbar", SMI.mD,  1) // md(2 GeV)^MS-bar, not pole mass
+      getSMmassMS("u"   , SMI.mU,  1) // mu(2 GeV)^MS-bar, not pole mass
+      getSMmassMS("ubar", SMI.mU,  1) // mu(2 GeV)^MS-bar, not pole mass
+      getSMmassMS("s"   , SMI.mS,  1) // ms(2 GeV)^MS-bar, not pole mass
+      getSMmassMS("sbar", SMI.mS,  1) // ms(2 GeV)^MS-bar, not pole mass
+      // FIXME: Is this the correct mass assignment?  Why "mCmC"?
+      getSMmassMS("c"   , SMI.mCmC,1) // mc(mc)^MS-bar, not pole mass
+      getSMmassMS("cbar", SMI.mCmC,1) // mc(mc)^MS-bar, not pole mass
+
+      // FIXME: Correct to assume zero neutrino masses?
+      getSMmassMS("nu_e", 0,1);
+      getSMmassMS("nubar_e", 0,1);
+      getSMmassMS("nu_mu", 0,1);
+      getSMmassMS("nubar_mu", 0,1);
+      getSMmassMS("nu_tau", 0,1);
+      getSMmassMS("nubar_tau", 0,1);
 #undef getSMmassMS
 
       // Get MSSM masses
@@ -329,50 +338,6 @@ namespace Gambit {
       getMSSMmass("A0"     , 0)      
       getMSSMmass("~chi0_1", 1)
 #undef getMSSMmass
-
-      /*
-      // Get DarkSUSY mass spectrum
-      DS_MSPCTM mymspctm= *BEreq::mspctm;
-
-      // Store properties of relevant particles. Constructor for TH_ParticleProperty takes particle mass and 2*spin.
-      // Make sure to add any particles used as final states in 2 or 3-body decays.
-      catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("nu_e"   , TH_ParticleProperty(mymspctm.mass(1),     1)));
-      catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("nubar_e"  , TH_ParticleProperty(mymspctm.mass(1),     1)));
-      catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("e-"     , TH_ParticleProperty(mymspctm.mass(2),     1)));
-      catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("e+"     , TH_ParticleProperty(mymspctm.mass(2),     1)));
-      catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("nu_mu"  , TH_ParticleProperty(mymspctm.mass(3),     1)));
-      catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("nubar_mu" , TH_ParticleProperty(mymspctm.mass(3),     1)));
-      catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("mu-"    , TH_ParticleProperty(mymspctm.mass(4),     1)));
-      catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("mu+"    , TH_ParticleProperty(mymspctm.mass(4),     1)));
-      catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("nu_tau" , TH_ParticleProperty(mymspctm.mass(5),     1)));
-      catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("nubar_tau", TH_ParticleProperty(mymspctm.mass(5),     1)));
-      catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("tau-"   , TH_ParticleProperty(mymspctm.mass(6),     1)));
-      catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("tau+"   , TH_ParticleProperty(mymspctm.mass(6),     1)));
-      catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("u"      , TH_ParticleProperty(mymspctm.mass(7),     1)));
-      catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("ubar"   , TH_ParticleProperty(mymspctm.mass(7),     1)));
-      catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("d"      , TH_ParticleProperty(mymspctm.mass(8),     1)));
-      catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("dbar"   , TH_ParticleProperty(mymspctm.mass(8),     1)));
-      catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("c"      , TH_ParticleProperty(mymspctm.mass(9),     1)));
-      catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("cbar"   , TH_ParticleProperty(mymspctm.mass(9),     1)));
-      catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("s"      , TH_ParticleProperty(mymspctm.mass(10),    1)));
-      catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("sbar"   , TH_ParticleProperty(mymspctm.mass(10),    1)));
-      catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("t"      , TH_ParticleProperty(mymspctm.mass(11),    1)));
-      catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("tbar"   , TH_ParticleProperty(mymspctm.mass(11),    1)));
-      catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("b"      , TH_ParticleProperty(mymspctm.mass(12),    1)));
-      catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("bbar"   , TH_ParticleProperty(mymspctm.mass(12),    1)));
-      catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("gamma"  , TH_ParticleProperty(mymspctm.mass(13),    2)));
-      catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("W-"     , TH_ParticleProperty(mymspctm.mass(14),    2)));
-      catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("W+"     , TH_ParticleProperty(mymspctm.mass(14),    2)));   
-      catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("Z0"     , TH_ParticleProperty(mymspctm.mass(15),    2)));   
-      catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("g"      , TH_ParticleProperty(mymspctm.mass(16),    2)));  
-      catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("h0_2"   , TH_ParticleProperty(mymspctm.mass(17),    0)));  
-      catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("h0_1"   , TH_ParticleProperty(mymspctm.mass(18),    0)));  
-      catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("A0"     , TH_ParticleProperty(mymspctm.mass(19),    0)));  
-      catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("H-"     , TH_ParticleProperty(mymspctm.mass(20),    0)));     
-      catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> ("H+"     , TH_ParticleProperty(mymspctm.mass(20),    0)));          
-      // DM mass   
-      catalog.particleProperties.insert(std::pair<std::string, TH_ParticleProperty> (DMid, TH_ParticleProperty(mymspctm.mass(42),    1)));
-      */
 
 
       /////////////////////////////////////////

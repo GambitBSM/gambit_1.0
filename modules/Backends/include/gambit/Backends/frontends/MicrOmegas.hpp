@@ -57,15 +57,14 @@ namespace Gambit
 
 BE_CONV_FUNCTION(dNdE, double, (double,double,int,int), "dNdE")
 
-BE_INI_DEPENDENCY(MSSMspectrum, eaSLHA)
+BE_INI_DEPENDENCY(MSSM_spectrum, const Spectrum*)
 
 BE_INI_FUNCTION
 {
     using namespace SLHAea;
 
-    eaSLHA mySLHA;
-
-    mySLHA = *Dep::MSSMspectrum;
+    const Spectrum* mySpec = *Dep::MSSM_spectrum;
+    eaSLHA mySLHA = mySpec->getSLHAea();
     std::ofstream ofs("DarkBit_temp.slha");
     ofs << mySLHA;
     ofs.close();
