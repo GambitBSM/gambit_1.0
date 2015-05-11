@@ -10,8 +10,8 @@
 #else
   #define BACKENDNAME FeynHiggs
 #endif
-#define VERSION 2.10.4
-#define SAFE_VERSION 2_10_4
+#define VERSION 2.10
+#define SAFE_VERSION 2_10
 
 /* The following macro loads the library using dlopen 
  * when this header file is included somewhere. */
