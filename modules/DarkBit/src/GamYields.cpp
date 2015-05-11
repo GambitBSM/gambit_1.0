@@ -151,12 +151,12 @@ namespace Gambit {
             "boost_dNdE: Requested Lorentz boost with gamma < 1");
       }
       double betaGamma = sqrt(gamma*gamma-1);
-      Funk::Funk Ep = Funk::var("Ep");
       Funk::Funk E = Funk::var("E");
-      // TODO: Correct now?
-      Funk::Funk halfBox = betaGamma*sqrt(E*E-mass*mass);
-      Funk::Funk integrand = (dNdE/(2*halfBox))->set("E", Ep);
-      return integrand->gsl_integration("Ep", E*gamma-halfBox, E*gamma+halfBox);
+      Funk::Funk Ep = Funk::var("Ep");
+      Funk::Funk halfBox_int = betaGamma*sqrt(Ep*Ep-mass*mass);
+      Funk::Funk halfBox_bound = betaGamma*sqrt(E*E-mass*mass);
+      Funk::Funk integrand = (dNdE->set("E", Ep)/(2*halfBox_int));
+      return integrand->gsl_integration("Ep", E*gamma-halfBox_bound, E*gamma+halfBox_bound);
     }
 
     /*! \brief General routine to derive annihilation yield.
@@ -243,9 +243,16 @@ namespace Gambit {
           double gamma1 = (Ecm*Ecm-m0*m0+m1*m1)/(2*Ecm*m1);
           std::cout << Ecm << " " << m0 << " " << m1 << std::endl;
           std::cout << "gammas: " << gamma0 << ", " << gamma1 << std::endl;
-          // TODO: Correct?
-          Yield = Yield + (boost_dNdE(spec0, gamma0, 0.0) 
-              + boost_dNdE(spec1, gamma1, 0.0)) * it->genRate;
+
+          ///////////////////////////////////////
+          //
+          // Boosted particle spectra are disabled
+          //
+          // FIXME: This causes problems with gsl
+          //
+          //Yield = Yield + (boost_dNdE(spec0, gamma0, 0.0) 
+          //    + boost_dNdE(spec1, gamma1, 0.0)) * it->genRate;
+          ///////////////////////////////////////
 
           // FIXME: This is debug information. Remove it when no longer
           // necessary.
@@ -375,6 +382,7 @@ namespace Gambit {
      * NOTE: This function will be completely replaced by GA_AnnYield_General
      */
 
+    /*
     // DEPRECATED!!!
     // TODO: Delete
     void GA_AnnYield_DarkSUSY(Funk::Funk &result)
@@ -510,7 +518,6 @@ namespace Gambit {
               "E1", E1_low, E1_high);
           DiffYield3Body = DiffYield3Body + dsigmavde;
 
-          /*
              logger() << "Test output three-body annihilation:" << std::endl;
              it->printChannel();
              logger() << "  m1  = " << m1 << std::endl;
@@ -523,7 +530,6 @@ namespace Gambit {
              logger() << "dsigmavde (E=10 GeV) = " << it->genRate->set("E1", E1_high/1.02)->eval("E", 10) << std::endl;
              logger() << "dsigmavde (E=10 GeV) = " << it->genRate->set("E1", sqrt(E1_low*E1_high))->eval("E", 10) << std::endl;
              logger() << "dsigmavde (E=10 GeV) = " << it->genRate->gsl_integration("E1", E1_low, E1_high)->eval("E", 10) << std::endl;
-             */
         }
       }
       logger() << "Yield calculated!" << endl;
@@ -536,6 +542,7 @@ namespace Gambit {
       // TODO: Add validity range
       result = (DiffYield2Body + DiffYield3Body)/(mass*mass);
     }
+    */
 
     /// SimYieldTable based on DarkSUSY tabulated results.
     void SimYieldTable_DarkSusy(SimYieldTable& result)

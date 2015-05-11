@@ -331,12 +331,14 @@ START_MODULE
       DEPENDENCY(cascadeMC_gammaSpectra, Gambit::DarkBit::stringFunkMap)
       DEPENDENCY(DarkMatter_ID, DarkMatter_ID_type)
     #undef FUNCTION
+  /*
     #define FUNCTION GA_AnnYield_DarkSUSY
       START_FUNCTION(Funk::Funk)
       DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)
       DEPENDENCY(DarkMatter_ID, DarkMatter_ID_type)
       BACKEND_REQ(dshayield, (), double, (double&,double&,int&,int&,int&))
     #undef FUNCTION
+  */
   #undef CAPABILITY
 
   #define CAPABILITY TH_ProcessCatalog
