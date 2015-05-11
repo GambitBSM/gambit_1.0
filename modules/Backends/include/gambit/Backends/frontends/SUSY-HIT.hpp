@@ -100,6 +100,8 @@ BE_INI_DEPENDENCY(Z_decay_rates, DecayTable::Entry)
 BE_NAMESPACE
 {
 
+  #include <sstream>
+
   /// Runs actual SUSY-HIT decay calculations.
   /// Inputs: m_s_1GeV_msbar    strange mass in GeV, in MSbar scheme at an energy of 1GeV
   ///         W_width, Z_width  EW gauge boson total widths in GeV
@@ -117,41 +119,47 @@ BE_NAMESPACE
       for (int i=1; i<=22; ++i) sd_leshouches2->qvalue(i) = 0.0;
 
       // Get SLHA2 blocks
+      SLHAea::Block sminputs, vckm, msoft, mass, nmix, vmix, umix;
+      SLHAea::Block stopmix, sbotmix, staumix, alpha, hmix, gauge;
+      SLHAea::Block au, ad, ae, yu, yd, ye, msq2, msd2, msu2, td, tu;
+      SLHAea::Block usqmix, dsqmix, selmix, spinfo;
       try
       {
-        SLHAea::Block sminputs = slha.at("SMINPUTS");
-        SLHAea::Block vckm     = slha.at("VCKMIN");
-        SLHAea::Block pmns     = slha.at("UPMNSIN");
-        SLHAea::Block msoft    = slha.at("MSOFT");
-        SLHAea::Block mass     = slha.at("MASS");
-        SLHAea::Block nmix     = slha.at("NMIX");
-        SLHAea::Block vmix     = slha.at("VMIX");
-        SLHAea::Block umix     = slha.at("UMIX");
-        //SLHAea::Block stopmix  = slha.at("STOPMIX");
-        //SLHAea::Block sbotmix  = slha.at("SBOTMIX");
-        //SLHAea::Block staumix  = slha.at("STAUMIX");
-        SLHAea::Block alpha    = slha.at("ALPHA");
-        SLHAea::Block hmix     = slha.at("HMIX");
-        SLHAea::Block gauge    = slha.at("GAUGE");
-        SLHAea::Block au       = slha.at("AU");
-        SLHAea::Block ad       = slha.at("AD");
-        SLHAea::Block ae       = slha.at("AE");
-        SLHAea::Block yu       = slha.at("YU");
-        SLHAea::Block yd       = slha.at("YD");
-        SLHAea::Block ye       = slha.at("YE");     
-        SLHAea::Block msq2     = slha.at("MSQ2");     
-        SLHAea::Block msd2     = slha.at("MSD2");
-        SLHAea::Block msu2     = slha.at("MSU2");
-        SLHAea::Block td       = slha.at("TD");
-        SLHAea::Block tu       = slha.at("TU");
-        SLHAea::Block usqmix   = slha.at("USQMIX");
-        SLHAea::Block dsqmix   = slha.at("DSQMIX");
-        SLHAea::Block selmix   = slha.at("SELMIX");
-        SLHAea::Block spinfo   = slha.at("SPINFO");
+        sminputs = slha.at("SMINPUTS");
+        vckm     = slha.at("VCKMIN");
+        msoft    = slha.at("MSOFT");
+        mass     = slha.at("MASS");
+        nmix     = slha.at("NMIX");
+        vmix     = slha.at("VMIX");
+        umix     = slha.at("UMIX");
+        //stopmix  = slha.at("STOPMIX");
+        //sbotmix  = slha.at("SBOTMIX");
+        //staumix  = slha.at("STAUMIX");
+        alpha    = slha.at("ALPHA");
+        hmix     = slha.at("HMIX");
+        gauge    = slha.at("GAUGE");
+        au       = slha.at("AU");
+        ad       = slha.at("AD");
+        ae       = slha.at("AE");
+        yu       = slha.at("YU");
+        yd       = slha.at("YD");
+        ye       = slha.at("YE");     
+        msq2     = slha.at("MSQ2");     
+        msd2     = slha.at("MSD2");
+        msu2     = slha.at("MSU2");
+        td       = slha.at("TD");
+        tu       = slha.at("TU");
+        usqmix   = slha.at("USQMIX");
+        dsqmix   = slha.at("DSQMIX");
+        selmix   = slha.at("SELMIX");
+        spinfo   = slha.at("SPINFO");
       }
-      catch (std::exception e)
+      catch (const std::exception& e)
       {
-        backend_error().raise(LOCAL_INFO, "Exception raised when trying to read SLHA blocks -- a block seems to be missing.\nException: "+e.what()); 
+        std::ostringstream err;
+        err << "Exception raised when trying to read SLHA blocks -- a block seems to be missing." << endl
+            << "Exception: " << e.what();
+        backend_error().raise(LOCAL_INFO, err.str()); 
       }
 
       // SMINPUTS
