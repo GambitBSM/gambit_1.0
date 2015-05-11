@@ -719,9 +719,9 @@ namespace Gambit {
         // Here we will add the subclass member variables:
         if (NCUTS != specificOther->NCUTS) NCUTS = specificOther->NCUTS;
         for (int j=0; j<NCUTS; j++) {
-          cutFlowVector[j] = specificOther->cutFlowVector[j];
+          cutFlowVector[j] += specificOther->cutFlowVector[j];
           cutFlowVector_str[j] = specificOther->cutFlowVector_str[j];
-          cutFlowVector_alt[j] = specificOther->cutFlowVector_alt[j];
+          cutFlowVector_alt[j] += specificOther->cutFlowVector_alt[j];
         }
         _numTN1Shape_bin1 += specificOther->_numTN1Shape_bin1;
         _numTN1Shape_bin2 += specificOther->_numTN1Shape_bin2;

@@ -36,7 +36,7 @@ namespace Gambit {
     /// Event labels
     enum specialEvents {INIT = -1, START_SUBPROCESS = -2, END_SUBPROCESS = -3, FINALIZE = -4};
     /// Analysis stuff
-    HEPUtilsAnalysisContainer* combinedAnalyses = new HEPUtilsAnalysisContainer();
+    HEPUtilsAnalysisContainer* globalAnalyses = new HEPUtilsAnalysisContainer();
     std::vector<std::string> analysisNames;
     /// Delphes stuff
     /// @TODO BOSS delphes? Euthanize delphes?
@@ -50,7 +50,7 @@ namespace Gambit {
     int pythiaConfigurations, pythiaNumber;
     std::string slhaFilename;
     /// General collider sim info stuff
-    #define SHARED_OVER_OMP iter,pythiaNumber,pythiaConfigurations,combinedAnalyses
+    #define SHARED_OVER_OMP iter,pythiaNumber,pythiaConfigurations,globalAnalyses
 
 
     /// *************************************************
@@ -61,12 +61,7 @@ namespace Gambit {
     void operatePythia() {
       using namespace Pipes::operatePythia;
       int nEvents = 0;
-      combinedAnalyses->clear();
-
-      logger() << "\n==================\n";
-      logger() << "ColliderBit says,\n";
-      logger() << "\t\"operatePythia() was called.\"\n";
-      logger() << LogTags::info << endl << EOM;
+      globalAnalyses->clear();
 
       #pragma omp critical (runOptions)
       {
@@ -108,11 +103,6 @@ namespace Gambit {
         }
       }
       Loop::executeIteration(FINALIZE);
-
-      logger() << "==================" << endl;
-      logger() << "ColliderBit says,";
-      logger() << "\"operatePythia() completed.\"" << endl;
-      logger() << LogTags::info << endl << EOM;
     }
 
 
@@ -124,7 +114,7 @@ namespace Gambit {
 
       if (!result.ready and *Loop::iteration == START_SUBPROCESS) {
         /// Each thread gets its own Pythia instance.
-        /// Thus, the initialization is *after* INIT.
+        /// Thus, the initialization is *after* INIT, within omp parallel.
         std::vector<std::string> pythiaOptions;
         std::string pythiaConfigName;
 
@@ -205,20 +195,19 @@ namespace Gambit {
         {
           GET_COLLIDER_RUNOPTION(analysisNames, std::vector<std::string>);
         }
-        #pragma omp critical (access_combinedAnalyses)
+        #pragma omp critical (access_globalAnalyses)
         {
-          if(!combinedAnalyses->ready) {
-            std::cout<<"\n\n Sanity check...\n\n";
-            combinedAnalyses->init(analysisNames);
-            std::cout<<"\n\n Sanity check...\n\n";
+          if(!globalAnalyses->ready) {
+            /// A global Analyses container exists to hold combined results from all threads.
+            globalAnalyses->init(analysisNames);
           }
         }
         return;
       }
 
       if (*Loop::iteration == START_SUBPROCESS) {
-        /// Each thread gets its own Analysis Container.
-        /// Thus, the initialization is *after* INIT.
+        /// Each thread gets its own Analysis container.
+        /// Thus, their initialization is *after* INIT, within omp parallel.
         /// @TODO Can we test for xsec veto here? Might be analysis dependent...
         result.init(analysisNames);
         return;
@@ -228,6 +217,10 @@ namespace Gambit {
         const double xs = Dep::HardScatteringSim->xsec_pb();
         const double xserr = Dep::HardScatteringSim->xsecErr_pb();
         result.add_xsec(xs, xserr);
+        #pragma omp critical (access_globalAnalyses)
+        {
+          globalAnalyses->add(result);
+        }
         return;
       }
     }
@@ -574,22 +567,13 @@ namespace Gambit {
       if (*Loop::iteration == FINALIZE) {
         // The final iteration: get log likelihoods for the analyses
         result.clear();
-        for (auto anaPtr = combinedAnalyses->analyses.begin();
-             anaPtr != combinedAnalyses->analyses.end(); ++anaPtr)
+        for (auto anaPtr = globalAnalyses->analyses.begin();
+             anaPtr != globalAnalyses->analyses.end(); ++anaPtr)
         {
           cout << "Set xsec from ana = " << (*anaPtr)->xsec() << " pb" << endl;
-          cout << "SR number test " << (*anaPtr)->get_results()[0].n_signal << endl;
           // Finalize is currently only used to report a cut flow.... rename?
           (*anaPtr)->finalize();
           result.push_back((*anaPtr)->get_results());
-        }
-        return;
-      }
-
-      if (*Loop::iteration == END_SUBPROCESS) {
-        #pragma omp critical (access_combinedAnalyses)
-        {
-          combinedAnalyses->add(*Dep::AnalysisContainer);
         }
         return;
       }

@@ -95,9 +95,9 @@ namespace Gambit {
       auto otherIter = other.analyses.begin();
       add_xsec((*otherIter)->xsec(), (*otherIter)->xsec_err());
       while (myIter != analyses.end()) {
-        (*myIter)->add(*otherIter);
-        myIter++;
-        otherIter++;
+        // analyses is a vector of HEPUtilsAnalysis pointers...
+        // Thus, dereferencing the iterator gets me a HEPUtilsAnalysis pointer.
+        (*myIter++)->add(*otherIter++);
       }
     }
     //@}
