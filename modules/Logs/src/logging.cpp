@@ -751,9 +751,11 @@ namespace Gambit
       writetags(mail.component_tags);
       writetags(mail.type_tags);
       writetags(mail.flag_tags);
+      my_stream<<":"<<std::endl;
       // Message proper
-      my_stream<<" : "<<mail.message<<std::endl; 
-
+      my_stream<<mail.message<<std::endl; 
+      my_stream<<"--<>--<>--<>--<>--<>--<>--<>--"<<std::endl;
+      // (I picked a weird end of message boundary so that it would be easily distinguished from formatting that may appear in the message body)
     }
 
     void StdLogger::writetags(const std::set<LogTag>& tags)
