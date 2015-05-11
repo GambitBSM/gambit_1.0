@@ -178,56 +178,6 @@ namespace Gambit {
       result = DarkMatter_ID_type(initVector<std::string>("S"));
     } // DarkMatter_ID_SingletDM
 
-// Obsolete !
-//    /// Initializes thresholds/resonances for RD calculation for SingletDM
-//    void RD_thresholds_resonances_SingletDM(TH_resonances_thresholds &result)
-//    {
-//      using namespace Pipes::RD_thresholds_resonances_SingletDM;
-//
-//      result.resonances.clear();
-//      result.threshold_energy.clear();
-//
-//      result.threshold_energy.push_back(2*(*Param["mass"]));
-//      double mh = (*Dep::TH_ProcessCatalog).getParticleProperty("h0_1").mass;
-//      result.resonances.push_back(TH_Resonance(mh, 0.01));  // FIXME use proper Higgs width!
-//
-//      // FIXME: Move somewhere else
-//      DS_RDMGEV myrdmgev;
-//      myrdmgev.nco = 1;
-//      myrdmgev.mco(1) = *Param["mass"];
-//      myrdmgev.mdof(1) = 1;
-//      myrdmgev.kcoann(1) = 42;  // ???
-//      *BEreq::rdmgev = myrdmgev;
-//    } // function RD_thresholds_resonances_SingletDM
-
-
-// OBSOLETE
-//   /*! \brief Collects information about coannihilating particles, resonances and
-//     * threshold energies.
-//     */
-//    void RD_spectrum_SingletDM(RD_spectrum_type &result)
-//    {
-//      using namespace Pipes::RD_spectrum_SingletDM;
-//
-//      result.coannihilatingParticles.clear();
-//      // add WIMP=least massive 'coannihilating particle'
-//      // NB: particle code (1st entry) is irrelevant (unless Weff is ibatined from DS)
-//      result.coannihilatingParticles.push_back(
-//          RD_coannihilating_particle(100,1,*Param["mass"]));
-//
-//      // now derive thresholds & resonances from process catalogue
-//      std::string DMid= Dep::DarkMatter_ID->singleID();
-//      TH_Process annihilation = 
-//              (*Dep::TH_ProcessCatalog).getProcess(DMid, DMid);
-//      result.resonances = annihilation.thresholdResonances.resonances;
-//      result.threshold_energy = annihilation.thresholdResonances.threshold_energy;
-//
-//      // coannihilation thresholds would have to be added now -- but don't exist for SingletDM...
-//
-//    } // function RD_spectrum_SingletDM
-
-
-
 
     /// Direct detection couplings for Singlet DM.
     void DD_couplings_SingletDM(Gambit::DarkBit::DD_couplings &result)

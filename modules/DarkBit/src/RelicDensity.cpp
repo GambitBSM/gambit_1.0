@@ -171,23 +171,6 @@ namespace Gambit {
     } // function RD_spectrum_from_ProcessCatalog
 
 
-
-// obsolete!
-//    /*! \brief Derive thresholds & resonances from process catalogue.
-//    */
-//    // FIXME: currently not in use / operational!
-//    void RD_thresholds_resonances_from_ProcessCatalog(
-//        TH_resonances_thresholds &result)
-//    {
-//      using namespace Pipes::RD_thresholds_resonances_from_ProcessCatalog;
-//      std::string DMid= Dep::DarkMatter_ID->singleID();
-//
-//      TH_Process annihilation = 
-//        (*Dep::TH_ProcessCatalog).getProcess(DMid, DMid);
-//
-//      result = TH_resonances_thresholds(annihilation.thresholdResonances);
-//    }
-
     /*! \brief Derive thresholds & resonances from RD_spectrum helper object.
     */
     void RD_thresholds_resonances_from_spectrum(
