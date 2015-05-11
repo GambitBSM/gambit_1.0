@@ -149,7 +149,7 @@ namespace Gambit {
             pythiaOptions = runOptions->getValue<std::vector<std::string>>(*iter, pythiaConfigName);
         }
         pythiaOptions.push_back("SLHA:file = " + slhaFilename);
-        pythiaOptions.push_back("Random:seed = " + std::to_string(omp_get_thread_num()));
+        pythiaOptions.push_back("Random:seed = " + std::to_string(12345 + omp_get_thread_num()));
 
         /// Memory allocation: Pythia
         result = mkPythia(*iter, pythiaOptions);
