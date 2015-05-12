@@ -242,13 +242,16 @@ namespace Gambit {
             fState_it!= entry.channels.end(); ++fState_it)
         {
           vector<string> pIDs;
+          std::cout << "- ";
           for(auto pit = fState_it->first.begin();
               pit != fState_it->first.end(); ++pit)
           {
             pIDs.push_back(Models::ParticleDB().long_name(*pit));
+            std::cout << Models::ParticleDB().long_name(*pit) << "\t";
           } 
           double bFraction    = (fState_it->second).first;
           double partialWidth = totalWidth * bFraction;
+          std::cout<< bFraction << std::endl;          
           // TODO: Add other criteria on which channels to include?
           if(bFraction>minBranching)
             process.channelList.push_back(

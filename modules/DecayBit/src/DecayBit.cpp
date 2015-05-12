@@ -472,7 +472,7 @@ namespace Gambit
       using namespace Pipes::Hplus_decays;
       result.width_in_GeV = BEreq::cb_widthhc_hdec->hcwdth;
       result.set_BF(BEreq::cb_widthhc_hdec->hcbrb, 0.0, "c", "bbar");
-      result.set_BF(BEreq::cb_widthhc_hdec->hcbrl, 0.0, "tau+", "nu_RPV_5");
+      result.set_BF(BEreq::cb_widthhc_hdec->hcbrl, 0.0, "tau+", "nu_tau");
       result.set_BF(BEreq::cb_widthhc_hdec->hcbrm, 0.0, "mu+", "nu_mu");
       result.set_BF(BEreq::cb_widthhc_hdec->hcbrbu, 0.0, "u", "bbar");
       result.set_BF(BEreq::cb_widthhc_hdec->hcbrs, 0.0, "u", "sbar");
