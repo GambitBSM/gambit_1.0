@@ -74,9 +74,9 @@ namespace Gambit {
           double sqrt_s = sqrt(s);
           if ( sqrt_s < 90 ) 
           {
-            logger() << 
-              "WARNING in SingletDM: Requested center-of-mass energy is\n"
-              "outside the supported energy range." << std::endl;
+            // FIXME: This should not crash the code
+            invalid_point().raise(
+                "SingletDM sigmav called with sqrt_s < 90 GeV.");
             return 0;
           }
 
@@ -377,7 +377,7 @@ namespace Gambit {
           }
           else
           {
-           process_ann.thresholdResonances.threshold_energy.push_back(2*catalog.particleProperties.at(p1[i]).mass); 
+            process_ann.thresholdResonances.threshold_energy.push_back(2*catalog.particleProperties.at(p1[i]).mass); 
           }
         }
       }
