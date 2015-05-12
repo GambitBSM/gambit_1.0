@@ -273,6 +273,8 @@ namespace Gambit {
     void TH_ProcessCatalog_SingletDM(Gambit::DarkBit::TH_ProcessCatalog &result)
     {
       using namespace Pipes::TH_ProcessCatalog_SingletDM;
+      using std::vector;
+      using std::string;
 
       double mass = *Param["mass"];
       double lambda = *Param["lambda"];
@@ -280,6 +282,46 @@ namespace Gambit {
       // Initialize catalog
       TH_ProcessCatalog catalog;
       TH_Process process_ann((std::string)"S", (std::string)"S");
+
+
+      /////////////////////////////
+      // Import Decay information
+      /////////////////////////////
+
+      // Import based on decay table from DecayBit
+      const DecayTable* tbl = &(*Dep::decay_rates);
+      
+      // List of decays to include
+      const vector<string> decaysOfInterest = initVector<string> ("h0_1");        
+      
+      double minBranching = 0.0; // TODO: Set this from yaml?
+      for(auto iState_it = decaysOfInterest.begin();
+          iState_it != decaysOfInterest.end(); ++iState_it)
+      {
+        std::cout << 
+          "Importing decay information for: " << *iState_it << std::endl;
+        const DecayTable::Entry &entry = tbl->at(*iState_it);
+        double totalWidth = entry.width_in_GeV;
+        TH_Process process(*iState_it);
+        process.genRateTotal = Funk::cnst(totalWidth);
+        for(auto fState_it = entry.channels.begin();
+            fState_it!= entry.channels.end(); ++fState_it)
+        {
+          vector<string> pIDs;
+          for(auto pit = fState_it->first.begin();
+              pit != fState_it->first.end(); ++pit)
+          {
+            pIDs.push_back(Models::ParticleDB().long_name(*pit));
+          } 
+          double bFraction    = (fState_it->second).first;
+          double partialWidth = totalWidth * bFraction;
+          // TODO: Add other criteria on which channels to include?
+          if(bFraction>minBranching)
+            process.channelList.push_back(
+                TH_Channel(pIDs, Funk::cnst(partialWidth)));
+        }
+        catalog.processList.push_back(process);
+      }     
 
       ///////////////////////////
       // Import particle masses
@@ -313,28 +355,34 @@ namespace Gambit {
       getSMmass("W-",     2)      
       getSMmass("g",      2)   
       getSMmass("gamma",  2)   
-      getSMmass("d_3",    1)
-      getSMmass("dbar_3", 1)
-      getSMmass("u_3",    1)
-      getSMmass("ubar_3", 1)
+      getSMmass("b",      1)
+      getSMmass("bbar",   1)
+      getSMmass("t",      1)
+      getSMmass("tbar",   1)
 #undef getSMmass
-
-      // Pole masses not available for the light quarks.
 #define getSMmassMS(Name, Mass, spinX2)                                        \
       catalog.particleProperties.insert(                                       \
           std::pair<std::string, TH_ParticleProperty>(                         \
             Name , TH_ParticleProperty(Mass, spinX2)                           \
             )                                                                  \
           );    
-      getSMmassMS("d_1"   , SMI.mD,  1) // md(2 GeV)^MS-bar, not pole mass
-      getSMmassMS("dbar_1", SMI.mD,  1) // md(2 GeV)^MS-bar, not pole mass
-      getSMmassMS("u_1"   , SMI.mU,  1) // mu(2 GeV)^MS-bar, not pole mass
-      getSMmassMS("ubar_1", SMI.mU,  1) // mu(2 GeV)^MS-bar, not pole mass
-      getSMmassMS("d_2"   , SMI.mS,  1) // ms(2 GeV)^MS-bar, not pole mass
-      getSMmassMS("dbar_2", SMI.mS,  1) // ms(2 GeV)^MS-bar, not pole mass
-      getSMmassMS("u_2"   , SMI.mCmC,1) // mc(mc)^MS-bar, not pole mass
-      getSMmassMS("ubar_2", SMI.mCmC,1) // mc(mc)^MS-bar, not pole mass
-#undef getSMmassMS
+      // Pole masses not available for the light quarks.    
+      getSMmassMS("d"   , SMI.mD,  1) // md(2 GeV)^MS-bar, not pole mass
+      getSMmassMS("dbar", SMI.mD,  1) // md(2 GeV)^MS-bar, not pole mass
+      getSMmassMS("u"   , SMI.mU,  1) // mu(2 GeV)^MS-bar, not pole mass
+      getSMmassMS("ubar", SMI.mU,  1) // mu(2 GeV)^MS-bar, not pole mass
+      getSMmassMS("s"   , SMI.mS,  1) // ms(2 GeV)^MS-bar, not pole mass
+      getSMmassMS("sbar", SMI.mS,  1) // ms(2 GeV)^MS-bar, not pole mass
+      getSMmassMS("c"   , SMI.mCmC,1) // mc(mc)^MS-bar, not pole mass
+      getSMmassMS("cbar", SMI.mCmC,1) // mc(mc)^MS-bar, not pole mass
+      // Dummy masses for neutrino flavour eigenstates. Set to zero.
+      getSMmassMS("nu_e",     0.0, 1)
+      getSMmassMS("nubar_e",  0.0, 1)
+      getSMmassMS("nu_mu",    0.0, 1)
+      getSMmassMS("nubar_mu", 0.0, 1)
+      getSMmassMS("nu_tau",   0.0, 1)
+      getSMmassMS("nubar_tau",0.0, 1)      
+#undef getSMmassMS  
 
       // Insert singlet mass
       TH_ParticleProperty S_Property(mass, 1);
@@ -361,8 +409,8 @@ namespace Gambit {
       process_ann.thresholdResonances.threshold_energy.push_back(2*mass); 
       auto channel = Funk::vec<std::string>(
           "bb", "WW", "cc", "tautau", "ZZ", "tt", "hh");
-      auto p1 = Funk::vec<std::string>("d_3", "W+", "u_2", "tau+", "Z0", "u_3", "h0_1");
-      auto p2 = Funk::vec<std::string>("dbar_3", "W-", "ubar_2", "tau-", "Z0", "ubar_3", "h0_1");
+      auto p1 = Funk::vec<std::string>("b",   "W+", "c",   "tau+", "Z0", "t",   "h0_1");
+      auto p2 = Funk::vec<std::string>("bbar","W-", "cbar","tau-", "Z0", "tbar","h0_1");
       {
         for ( int i = 0; i < 7; i++ )
         {

@@ -140,7 +140,24 @@ Scanner:
 ObsLikes:
     - capability: UnitTest_DarkBit
 
+
 Rules:
+  - module: DarkBit
+    options: 
+        # Cascade decay settings
+        cMC_maxChainLength:     -1    # Maximum length of decay chains. -1 => disabled
+        cMC_Emin:               -1.   # Ignore all particles with energies below this value. value < 0 => disabled
+        cMC_minEvents:          100   # Minimum number of decay chains to generate
+        cMC_maxEvents:          50000 # Maximum number of decay chains to generate
+        cMC_endCheckFrequency:  25    # Check end condition every this many events
+        cMC_gammaRelError:      0.01  # Gamma ray end condition for event generation, relative error.      
+        cMC_gammaBGPower:       -2.5  # Gamma spectrum power used in gamma ray end condition
+        cMC_minSpecSamples:     5     # Minimum number of samples to use when sampling tabulated spectra from decay chain endpoints like q qbar
+        cMC_maxSpecSamples:     50    # As above, maximum number.
+        cMC_specValidThreshold: 1e-20 # Only accept a sampled spectrum value if it's above this threshold. Use carefully, as high values will give a biased sample.
+        cMC_finalStates:              # List of final states to search for in cascade decays
+            - gamma
+
   - capability: RD_thresholds_resonances
     function:  RD_thresholds_resonances_from_spectrum
   - capability: DarkSUSY_PointInit
@@ -148,11 +165,11 @@ Rules:
       show_higgs_widths: true
   - capability: GA_missingFinalStates
     options:
-      ignore_three_body: True
-      ignore_two_body: True
+      ignore_three_body: false
+      ignore_two_body: false
   - capability: TH_ProcessCatalog
     options:
-      ignore_three_body: False
+      ignore_three_body: false
   - capability: GA_AnnYield
     function: GA_AnnYield_General
   - capability: SimYieldTable
@@ -178,15 +195,15 @@ Rules:
     module: SpecBit
     options:
         filenames: 
-            - DarkBit/slha-benchmarks/01-01-2013_torsten/test_co.slha
-            - DarkBit/slha-benchmarks/01-01-2013_torsten/test_100.slha
-            - DarkBit/slha-benchmarks/01-01-2013_torsten/test_200.slha
-            - DarkBit/slha-benchmarks/01-01-2013_torsten/test_300.slha
-            - DarkBit/slha-benchmarks/14-12-2014_joakim/FMCp03000765.slha1
-            - DarkBit/slha-benchmarks/14-12-2014_joakim/JE56C_003717.slha1
-            - DarkBit/slha-benchmarks/14-12-2014_joakim/JE58D_007879.slha1
-            - DarkBit/slha-benchmarks/14-12-2014_joakim/JE67B_006998.slha1
-            - DarkBit/slha-benchmarks/14-12-2014_joakim/JE67D_001840.slha1
+#            - DarkBit/slha-benchmarks/01-01-2013_torsten/test_co.slha
+#            - DarkBit/slha-benchmarks/01-01-2013_torsten/test_100.slha
+#            - DarkBit/slha-benchmarks/01-01-2013_torsten/test_200.slha
+#            - DarkBit/slha-benchmarks/01-01-2013_torsten/test_300.slha
+#            - DarkBit/slha-benchmarks/14-12-2014_joakim/FMCp03000765.slha1
+#            - DarkBit/slha-benchmarks/14-12-2014_joakim/JE56C_003717.slha1
+#            - DarkBit/slha-benchmarks/14-12-2014_joakim/JE58D_007879.slha1
+#            - DarkBit/slha-benchmarks/14-12-2014_joakim/JE67B_006998.slha1
+#            - DarkBit/slha-benchmarks/14-12-2014_joakim/JE67D_001840.slha1
             - DarkBit/slha-benchmarks/14-12-2014_joakim/JE87O_006600.slha1
 
 #  - capability: MSSM_spectrum
