@@ -30,6 +30,7 @@ BE_FUNCTION(zInterp, double, (double,double*) , "zInterp", "zInterp")
 BE_FUNCTION(readSpectra, int, (), "readSpectra", "readSpectra")
 
 BE_VARIABLE(MicrOmegas::MOcommonSTR, mocommon_, "mocommon_", "MOcommon")
+BE_VARIABLE(int, ForceUG, "ForceUG", "ForceUG")
 
 namespace Gambit
 {
@@ -58,7 +59,14 @@ BE_CONV_FUNCTION(dNdE, double, (double,double,int,int), "dNdE")
 BE_INI_FUNCTION
 {
      int error;
+     char cdmName[10];
 
+     // Currently only works correctly in unitary gauge
+     *ForceUG=1;
+
+     error = sortOddParticles(byVal(cdmName));
+     if (error != 0) BackendIniBit_error().raise(LOCAL_INFO, "MicrOmegas function "
+             "sortOddParticles returned error code: " + std::to_string(error));
      error = assignVal("MS", *Param["mass"]);
      if (error != 0) BackendIniBit_error().raise(LOCAL_INFO, "Unable to set DM mass in"
              "MicrOmegas. MicrOmegas error code: " + std::to_string(error));

@@ -32,6 +32,7 @@ BE_FUNCTION(zInterp, double, (double,double*) , "zInterp", "zInterp")
 BE_FUNCTION(readSpectra, int, (), "readSpectra", "readSpectra")
 
 BE_VARIABLE(MicrOmegas::MOcommonSTR, mocommon_, "mocommon_", "MOcommon")
+BE_VARIABLE(int, ForceUG, "ForceUG", "ForceUG")
 
 namespace Gambit
 {
