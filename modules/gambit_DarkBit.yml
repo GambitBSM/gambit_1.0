@@ -387,11 +387,9 @@ Rules:
        oh2_mean: 0.11
        oh2_err: 0.01
   # Direct detection -------------------
-  # For MSSM-based models, which of the DarkSUSY or MicrOmegas routines
-  # to use must be explicitly specified here (uncomment the desired one).
-  # The SingletDM function can be explicitly specified for the SingletDM
-  # model, but the dependency resolver will choose it by default as it
-  # is the only one available for that model.
+  # For MSSM-based models, which of the DarkSUSY, MicrOmegas, or internal
+  # SingletDM routines to use must be explicitly specified here (uncomment
+  # the desired one).
   - capability: DD_couplings
     #function: DD_couplings_DarkSUSY    # couplings from darksusy backend
     #function: DD_couplings_MicrOmegas  # couplings from micromegas backend

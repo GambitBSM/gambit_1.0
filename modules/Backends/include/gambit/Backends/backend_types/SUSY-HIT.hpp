@@ -25,6 +25,12 @@
 namespace Gambit
 {
 
+    struct checkfavvio_type
+    {
+        Finteger icheckfav;
+        Farray< Finteger,1,2 > imodfav;
+    };
+
     struct susyhitin_type
     {
         Fdouble flagshsin;

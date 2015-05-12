@@ -28,7 +28,6 @@ namespace Gambit
   {
     namespace DecayChain
     {
-      using namespace Gambit::BF;
       using std::ostringstream;
       using std::set;        
       using std::cout;

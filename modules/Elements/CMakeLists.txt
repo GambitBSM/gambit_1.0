@@ -22,8 +22,7 @@ set(source_files src/functors.cpp
                  src/terminator.cpp
 )
 
-set(header_files include/gambit/Elements/base_functions.hpp
-                 include/gambit/Elements/decay_table.hpp
+set(header_files include/gambit/Elements/decay_table.hpp
                  include/gambit/Elements/functors.hpp
                  include/gambit/Elements/funktions.hpp
                  include/gambit/Elements/gambit_module_headers.hpp

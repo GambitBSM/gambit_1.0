@@ -22,8 +22,6 @@
 #include "gambit/Utils/ASCIItableReader.hpp"
 #include "boost/make_shared.hpp"
 
-using boost::make_shared;
-
 namespace Gambit {
   namespace DarkBit {
 
@@ -74,9 +72,9 @@ namespace Gambit {
           double sqrt_s = sqrt(s);
           if ( sqrt_s < 90 ) 
           {
-            logger() << 
-              "WARNING in SingletDM: Requested center-of-mass energy is\n"
-              "outside the supported energy range." << std::endl;
+            // FIXME: This should not crash the code
+            invalid_point().raise(
+                "SingletDM sigmav called with sqrt_s < 90 GeV.");
             return 0;
           }
 
@@ -240,14 +238,22 @@ namespace Gambit {
       double mh = (*Dep::TH_ProcessCatalog).getParticleProperty("h0_1").mass;
 
       // TODO: Double check expressions (taken from Cline et al. 2013)
-      double fp = 2/9 + 7/9*(*Param["fpu"] + *Param["fpd"] + *Param["fps"]);
-      double fn = 2/9 + 7/9*(*Param["fnu"] + *Param["fnd"] + *Param["fns"]);
+      double fp = 2./9. + 7./9.*(*Param["fpu"] + *Param["fpd"] + *Param["fps"]);
+      double fn = 2./9. + 7./9.*(*Param["fnu"] + *Param["fnd"] + *Param["fns"]);
 
       result.gps = lambda*fp*m_neutron/pow(mh,2)/mass/2;
       result.gns = lambda*fn*m_proton/pow(mh,2)/mass/2;
       result.gpa = 0;  // Only SI cross-section
       result.gna = 0;
       result.M_DM = *Param["mass"];
+
+      logger() << "Singlet DM DD couplings:" << std::endl;
+      logger() << " gps = " << result.gps << std::endl;
+      logger() << " gns = " << result.gns << std::endl;
+      logger() << " gpa = " << result.gpa << std::endl;
+      logger() << " gna = " << result.gna << std::endl;
+      logger() << "M_DM = " << result.M_DM << std::endl;
+
     } // function DD_couplings_SingletDM
 
     std::map<std::string, Funk::Funk> get_f_vs_mass(std::string filename)
@@ -425,7 +431,7 @@ namespace Gambit {
           }
           else
           {
-           process_ann.thresholdResonances.threshold_energy.push_back(2*catalog.particleProperties.at(p1[i]).mass); 
+            process_ann.thresholdResonances.threshold_energy.push_back(2*catalog.particleProperties.at(p1[i]).mass); 
           }
         }
       }
