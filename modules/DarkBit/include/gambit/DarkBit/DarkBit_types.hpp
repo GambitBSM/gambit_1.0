@@ -61,7 +61,6 @@
 #include "gambit/DarkBit/decay_chain.hpp"
 #include "gambit/DarkBit/SimpleHist.hpp"
 #include "gambit/DarkBit/ProcessCatalogue.hpp"
-#include "gambit/Elements/base_functions.hpp"
 #include "gambit/Elements/funktions.hpp"
 
 #include <boost/enable_shared_from_this.hpp>
@@ -80,8 +79,6 @@ namespace Gambit
     using boost::dynamic_pointer_cast;
     using boost::static_pointer_cast;
     using boost::enable_shared_from_this;
-    //using Gambit::BF::intLimitFunc;
-    //using Gambit::BF::BFargVec;
 
     /*
     // Integration limits for E1 for the DS gamma 3-body decays.
