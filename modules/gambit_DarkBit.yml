@@ -375,9 +375,9 @@ Rules:
     options:
       fast: 1  # Accuracy options (used by micromegas)
       Beps: 1e-2
-    function: RD_oh2_general   # general routines (DS backend)
+    #function: RD_oh2_general   # general routines (DS backend)
     #function: RD_oh2_DarkSUSY   # darksusy backend
-    #function: RD_oh2_MicrOmegas  # micromegas backend     
+    function: RD_oh2_MicrOmegas  # micromegas backend     
   - capability: RD_spectrum
     options: 
       CoannMaxMass: 2.1 # include only co-annihilating particles up to this mass
@@ -387,15 +387,13 @@ Rules:
        oh2_mean: 0.11
        oh2_err: 0.01
   # Direct detection -------------------
-  # For MSSM-based models, which of the DarkSUSY or MicrOmegas routines
-  # to use must be explicitly specified here (uncomment the desired one).
-  # The SingletDM function can be explicitly specified for the SingletDM
-  # model, but the dependency resolver will choose it by default as it
-  # is the only one available for that model.
+  # For MSSM-based models, which of the DarkSUSY, MicrOmegas, or internal
+  # SingletDM routines to use must be explicitly specified here (uncomment
+  # the desired one).
   - capability: DD_couplings
     #function: DD_couplings_DarkSUSY    # couplings from darksusy backend
-    #function: DD_couplings_MicrOmegas  # couplings from micromegas backend
-    function: DD_couplings_SingletDM   # couplings for singlet DM model
+    function: DD_couplings_MicrOmegas  # couplings from micromegas backend
+    #function: DD_couplings_SingletDM   # couplings for singlet DM model
     options:
         rescale_couplings: 1  # For unit tests: rescale couplings
   # Miscellaneous ----------------------

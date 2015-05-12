@@ -15,6 +15,8 @@
 
 LOAD_LIBRARY
 
+BE_ALLOW_MODELS(MSSM25atQ)
+
 BE_FUNCTION(assignVal, int, (char*,double),"assignVal","assignVal")
 BE_FUNCTION(vSigma, double, (double, double, int), "vSigma","vSigma")
 BE_FUNCTION(darkOmega, double, (double*, int, double), "darkOmega", "oh2")
@@ -30,6 +32,7 @@ BE_FUNCTION(zInterp, double, (double,double*) , "zInterp", "zInterp")
 BE_FUNCTION(readSpectra, int, (), "readSpectra", "readSpectra")
 
 BE_VARIABLE(MicrOmegas::MOcommonSTR, mocommon_, "mocommon_", "MOcommon")
+BE_VARIABLE(int, ForceUG, "ForceUG", "ForceUG")
 
 namespace Gambit
 {
