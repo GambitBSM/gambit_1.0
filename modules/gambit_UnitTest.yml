@@ -148,7 +148,7 @@ Rules:
         cMC_maxChainLength:     -1    # Maximum length of decay chains. -1 => disabled
         cMC_Emin:               -1.   # Ignore all particles with energies below this value. value < 0 => disabled
         cMC_minEvents:          100   # Minimum number of decay chains to generate
-        cMC_maxEvents:          50000 # Maximum number of decay chains to generate
+        cMC_maxEvents:          10000 # Maximum number of decay chains to generate
         cMC_endCheckFrequency:  25    # Check end condition every this many events
         cMC_gammaRelError:      0.01  # Gamma ray end condition for event generation, relative error.      
         cMC_gammaBGPower:       -2.5  # Gamma spectrum power used in gamma ray end condition
@@ -199,17 +199,26 @@ Rules:
 #            - DarkBit/slha-benchmarks/01-01-2013_torsten/test_100.slha
 #            - DarkBit/slha-benchmarks/01-01-2013_torsten/test_200.slha
 #            - DarkBit/slha-benchmarks/01-01-2013_torsten/test_300.slha
-#            - DarkBit/slha-benchmarks/14-12-2014_joakim/FMCp03000765.slha1
-#            - DarkBit/slha-benchmarks/14-12-2014_joakim/JE56C_003717.slha1
-#            - DarkBit/slha-benchmarks/14-12-2014_joakim/JE58D_007879.slha1
-#            - DarkBit/slha-benchmarks/14-12-2014_joakim/JE67B_006998.slha1
-#            - DarkBit/slha-benchmarks/14-12-2014_joakim/JE67D_001840.slha1
-            - DarkBit/slha-benchmarks/14-12-2014_joakim/JE87O_006600.slha
+#            - DarkBit/slha-benchmarks/14-12-2014_joakim/FMCp03000765.slha
+#            - DarkBit/slha-benchmarks/14-12-2014_joakim/JE56C_003717.slha
+            - DarkBit/slha-benchmarks/14-12-2014_joakim/JE58D_007879.slha
+#            - DarkBit/slha-benchmarks/14-12-2014_joakim/JE67B_006998.slha
+#            - DarkBit/slha-benchmarks/14-12-2014_joakim/JE67D_001840.slha
+#            - DarkBit/slha-benchmarks/14-12-2014_joakim/JE87O_006600.slha
 
   - function: SUSY_HIT_1_5_init
     options:
       debug_SLHA_files:
-        - DarkBit/slha-benchmarks/14-12-2014_joakim/JE87O_006600.slha
+#            - DarkBit/slha-benchmarks/01-01-2013_torsten/test_co.slha
+#            - DarkBit/slha-benchmarks/01-01-2013_torsten/test_100.slha
+#            - DarkBit/slha-benchmarks/01-01-2013_torsten/test_200.slha
+#            - DarkBit/slha-benchmarks/01-01-2013_torsten/test_300.slha
+#            - DarkBit/slha-benchmarks/14-12-2014_joakim/FMCp03000765.slha
+#            - DarkBit/slha-benchmarks/14-12-2014_joakim/JE56C_003717.slha
+            - DarkBit/slha-benchmarks/14-12-2014_joakim/JE58D_007879.slha
+#            - DarkBit/slha-benchmarks/14-12-2014_joakim/JE67B_006998.slha
+#            - DarkBit/slha-benchmarks/14-12-2014_joakim/JE67D_001840.slha
+#            - DarkBit/slha-benchmarks/14-12-2014_joakim/JE87O_006600.slha
 
 #  - capability: MSSM_spectrum
 #    function: get_MSSM_spectrum_from_file  # For unit test: reads in spectrum from SLHA file

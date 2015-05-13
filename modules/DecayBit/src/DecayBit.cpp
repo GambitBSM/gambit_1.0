@@ -1742,15 +1742,10 @@ namespace Gambit
       // CW: Some temporary code to avoid crashes in DarkBit
       // TODO: Replace with correct information
       DecayTable::Entry fake_decay;
-      fake_decay.width_in_GeV = 1E-20;                    
-      fake_decay.positive_error = 1E-22;
-      fake_decay.negative_error = 1E-22;
-      fake_decay.set_BF(0.5, 0.005, "b", "bbar");
-      fake_decay.set_BF(0.5, 0.005, "tau+", "tau-");
-      decays("H+") = fake_decay;
+      fake_decay.width_in_GeV = 0;                    
+      fake_decay.positive_error = 0;
+      fake_decay.negative_error = 0;
       decays("H-") = fake_decay;
-      decays("A0") = fake_decay;
-      decays("h0_2") = fake_decay;
       
       // MSSM-specific
       decays("h0_2") = *Dep::h0_2_decay_rates;       // Add the h0_2 decays.

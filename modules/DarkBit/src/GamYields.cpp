@@ -268,67 +268,39 @@ namespace Gambit {
           // FIXME: This is debug information. Remove it when no longer
           // necessary.
           /*
-             std::cout << "Spectrum debug info:" << std:: endl;
-             double E=5.0;
-             double factor=1.125;
-             std::vector<double> Evals;
-             std::cout.precision(5);
-             std::cout.setf( std::ios::fixed, std:: ios::floatfield );
-             int Nen = 20;
-             std::cout << "Energies:" << std:: endl;
-             for(int i=0; i<Nen;i++)
-             {
-             E*=factor;
-             Evals.push_back(E);
-             std::cout << E << "  ";
-             }
-             std::cout << std::endl; 
-             std::cout << it->finalStateIDs[0] << "-spectrum:" << std:: endl;
-             for(int i=0; i<Nen;i++)
-             {
-             std::cout << spec0->bind("E")->eval(Evals[i]) << "  ";
-             }
-             std::cout << std::endl; 
-             std::cout << it->finalStateIDs[1] << "-spectrum:" << std:: endl;
-             for(int i=0; i<Nen;i++)
-             {
-             std::cout << spec1->bind("E")->eval(Evals[i])<< "  ";
-             }
-             std::cout << std::endl;
-             std::cout << "gamma result:" << std:: endl;
-             for(int i=0; i<Nen;i++)
-             {
-          //    std::cout << Yield->bind("v","E")->eval(0, Evals[i])<< "  ";
+          std::cout << "Spectrum debug info:" << std:: endl;
+          double E=5.0;
+          double factor=1.125;
+          std::vector<double> Evals;
+          std::cout.precision(5);
+          std::cout.setf( std::ios::fixed, std:: ios::floatfield );
+          int Nen = 20;
+          std::cout << "Energies:" << std:: endl;
+          for(int i=0; i<Nen;i++)
+          {
+          E*=factor;
+          Evals.push_back(E);
+          std::cout << E << "  ";
+          }
+          std::cout << std::endl; 
+          std::cout << it->finalStateIDs[0] << "-spectrum:" << std:: endl;
+          for(int i=0; i<Nen;i++)
+          {
+            std::cout << spec0->bind("E")->eval(Evals[i]) << "  ";
+          }
+          std::cout << std::endl; 
+          std::cout << it->finalStateIDs[1] << "-spectrum:" << std:: endl;
+          for(int i=0; i<Nen;i++)
+          {
+            std::cout << spec1->bind("E")->eval(Evals[i])<< "  ";
+          }
+          std::cout << std::endl;
+          std::cout << "gamma result:" << std:: endl;
+          for(int i=0; i<Nen;i++)
+          {
+            std::cout << Yield->bind("v","E")->eval(0, Evals[i])<< "  ";
           }
           std::cout << std::endl;  
-
-          if(runOptions->getValueOrDef<bool> (false,"test_printMore"))
-          {
-          Funk::Funk phipSpec  = Dep::cascadeMC_gammaSpectra->at("phip");
-          std::cout << "phip-spectrum:" << std:: endl;
-          for(int i=0; i<Nen;i++)
-          {
-          std::cout << phipSpec->bind("E")->eval(Evals[i])<< "  ";
-          }
-          std::cout << std::endl;
-          Funk::Funk specDirect = (*Dep::SimYieldTable)("b", "bbar", "gamma", 
-            (*Dep::TH_ProcessCatalog).getParticleProperty("phi").mass);
-          std::cout << "phi-spectrum (b bbar) direct:" << std:: endl;
-          for(int i=0; i<Nen;i++)
-          {
-          std::cout << specDirect->bind("E")->eval(Evals[i])<< "  ";
-          }
-          std::cout << std::endl;
-
-          Funk::Funk specDirectB = 2.0*boost_dNdE(specDirect,gamma1,0.0);
-          std::cout << "2 * phi-spectrum (b bbar) direct, boosted:" 
-            << std:: endl;
-          for(int i=0; i<Nen;i++)
-          {
-          std::cout << specDirectB->bind("E")->eval(Evals[i])<< "  ";
-          }
-          std::cout << std::endl;
-          }
           */
           // Debug information ends here
 

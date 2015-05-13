@@ -289,46 +289,6 @@ namespace Gambit {
       TH_ProcessCatalog catalog;
       TH_Process process_ann((std::string)"S", (std::string)"S");
 
-
-      /////////////////////////////
-      // Import Decay information
-      /////////////////////////////
-
-      // Import based on decay table from DecayBit
-      const DecayTable* tbl = &(*Dep::decay_rates);
-      
-      // List of decays to include
-      const vector<string> decaysOfInterest = initVector<string> ("h0_1");        
-      
-      double minBranching = 0.0; // TODO: Set this from yaml?
-      for(auto iState_it = decaysOfInterest.begin();
-          iState_it != decaysOfInterest.end(); ++iState_it)
-      {
-        std::cout << 
-          "Importing decay information for: " << *iState_it << std::endl;
-        const DecayTable::Entry &entry = tbl->at(*iState_it);
-        double totalWidth = entry.width_in_GeV;
-        TH_Process process(*iState_it);
-        process.genRateTotal = Funk::cnst(totalWidth);
-        for(auto fState_it = entry.channels.begin();
-            fState_it!= entry.channels.end(); ++fState_it)
-        {
-          vector<string> pIDs;
-          for(auto pit = fState_it->first.begin();
-              pit != fState_it->first.end(); ++pit)
-          {
-            pIDs.push_back(Models::ParticleDB().long_name(*pit));
-          } 
-          double bFraction    = (fState_it->second).first;
-          double partialWidth = totalWidth * bFraction;
-          // TODO: Add other criteria on which channels to include?
-          if(bFraction>minBranching)
-            process.channelList.push_back(
-                TH_Channel(pIDs, Funk::cnst(partialWidth)));
-        }
-        catalog.processList.push_back(process);
-      }     
-
       ///////////////////////////
       // Import particle masses
       ///////////////////////////
@@ -403,6 +363,65 @@ namespace Gambit {
       // Instantiate tables (only once)
       static std::map<std::string, Funk::Funk> f_vs_mass = 
         get_f_vs_mass("DarkBit/data/Higgs_decay_1101.0593.dat");
+
+      /////////////////////////////
+      // Import Decay information
+      /////////////////////////////
+
+      // Import based on decay table from DecayBit
+      const DecayTable* tbl = &(*Dep::decay_rates);
+      
+      // List of decays to include
+      const vector<string> decaysOfInterest = initVector<string> ("h0_1");        
+      
+      double minBranching = runOptions->getValueOrDef<double>(0.0,
+          "ProcessCatalog_MinBranching");
+      for(auto iState_it = decaysOfInterest.begin();
+          iState_it != decaysOfInterest.end(); ++iState_it)
+      {
+        std::cout << 
+          "Importing decay information for: " << *iState_it << std::endl;
+        const DecayTable::Entry &entry = tbl->at(*iState_it);
+        double totalWidth = entry.width_in_GeV;
+        if(totalWidth>0)
+        {     
+          TH_Process process(*iState_it);
+          process.genRateTotal = Funk::cnst(totalWidth);
+          for(auto fState_it = entry.channels.begin();
+              fState_it!= entry.channels.end(); ++fState_it)
+          {
+            double bFraction = (fState_it->second).first;
+            if(bFraction>minBranching)
+            {
+              vector<string> pIDs;
+              std::cout << "- ";
+              const double m_init  = catalog.getParticleProperty(*iState_it).mass;
+              double m_final = 0;
+              for(auto pit = fState_it->first.begin();
+                  pit != fState_it->first.end(); ++pit)
+              {
+                std::string name = Models::ParticleDB().long_name(*pit);
+                m_final += catalog.getParticleProperty(name).mass;
+                pIDs.push_back(name);
+                std::cout << name << "\t";
+              } 
+              double partialWidth = totalWidth * bFraction;       
+              bool checkKinematics = runOptions->getValueOrDef<bool>(true,
+              "ProcessCatalog_KinCheck");
+              // TODO: Add other criteria on which channels to include?
+              if(!checkKinematics or m_final<=m_init)
+              {
+                std::cout<< bFraction << std::endl;   
+                process.channelList.push_back(
+                    TH_Channel(pIDs, Funk::cnst(partialWidth)));
+              }
+              else
+                std::cout<< "kin. closed" << std::endl;   
+            }
+          }
+          catalog.processList.push_back(process);
+        }
+      }       
 
       // Instantiate SingletDM object
       auto singletDM = boost::make_shared<SingletDM>(catalog, f_vs_mass);
