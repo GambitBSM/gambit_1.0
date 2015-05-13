@@ -49,7 +49,7 @@ Rules:
       
 #  - function: SUSY_HIT_1_5_init
 #    options:
-#      debug_SLHA_files:
+#      debug_SLHA_filenames:
 #        - slha1.exampleout
 
    # FIXME should not be needed once dep resolver is fixed

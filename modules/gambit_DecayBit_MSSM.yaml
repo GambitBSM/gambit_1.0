@@ -40,10 +40,10 @@ Rules:
     options:
       invalid_point_fatal: true
       
-#  - function: SUSY_HIT_1_5_init
-#    options:
-#      debug_SLHA_files:
-#        - slha1.exampleout
+  - function: SUSY_HIT_1_5_init
+    options:
+     debug_SLHA_filenames:
+        - DarkBit/slha-benchmarks/14-12-2014_joakim/JE87O_006600.slha
       
       
 ##############################

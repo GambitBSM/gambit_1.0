@@ -101,8 +101,8 @@ BE_NAMESPACE
 {
 
   #include <sstream>
-  #define REQUIRED_BLOCK(NAME, BLOCK) (slha.find(NAME) != slha.end()) ? BLOCK = slha.at(NAME) : backend_error().raise(LOCAL_INFO, "Missing SLHA block: " NAME); 
-  #define OPTIONAL_BLOCK(NAME, BLOCK) (slha.find(NAME) != slha.end()) ? BLOCK = slha.at(NAME) : ; 
+  #define REQUIRED_BLOCK(NAME, BLOCK) if (slha.find(NAME) != slha.end()) BLOCK = slha.at(NAME); else backend_error().raise(LOCAL_INFO, "Missing SLHA block: " NAME); 
+  #define OPTIONAL_BLOCK(NAME, BLOCK) if (slha.find(NAME) != slha.end()) BLOCK = slha.at(NAME); 
 
   /// Runs actual SUSY-HIT decay calculations.
   /// Inputs: m_s_1GeV_msbar    strange mass in GeV, in MSbar scheme at an energy of 1GeV
@@ -126,14 +126,14 @@ BE_NAMESPACE
       SLHAea::Block au, ad, ae, yu, yd, ye, msq2, msd2, msu2, td, tu;
       SLHAea::Block usqmix, dsqmix, selmix, spinfo;
       REQUIRED_BLOCK("SMINPUTS", sminputs)
-      REQUIRED_BLOCK("VCKMIN", vckmin)
+      REQUIRED_BLOCK("VCKMIN", vckm)
       REQUIRED_BLOCK("MSOFT", msoft)
       REQUIRED_BLOCK("MASS", mass)
       REQUIRED_BLOCK("NMIX", nmix)
       REQUIRED_BLOCK("VMIX", vmix)
       REQUIRED_BLOCK("UMIX", umix)
       REQUIRED_BLOCK("ALPHA", alpha)
-      REQUIRED_BLOCK("HMIX", hix)
+      REQUIRED_BLOCK("HMIX", hmix)
       REQUIRED_BLOCK("GAUGE", gauge)
       REQUIRED_BLOCK("YU", yu)
       REQUIRED_BLOCK("YD", yd)
@@ -636,7 +636,7 @@ BE_INI_FUNCTION
   // If the user provides a file list, just read in SLHA files for debugging and ignore the MSSM_spectrum dependency.
   if (runOptions->hasKey("debug_SLHA_filenames"))
   {
-    static int counter = 0;
+    static unsigned int counter = 0;
     std::vector<str> filenames = runOptions->getValue<std::vector<str> >("debug_SLHA_filenames");
     logger() << "Reading SLHA file: " << filenames[counter] << std::endl;
     std::ifstream ifs(filenames[counter]);
