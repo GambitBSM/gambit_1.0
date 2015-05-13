@@ -287,7 +287,7 @@ namespace Gambit {
 #undef getSMmassMS
 
       // Insert singlet mass
-      TH_ParticleProperty S_Property(mass, 1);
+      TH_ParticleProperty S_Property(mass, 0);
       catalog.particleProperties.insert(
           std::pair<std::string, TH_ParticleProperty> ("S", S_Property));
       
@@ -311,10 +311,13 @@ namespace Gambit {
       process_ann.thresholdResonances.threshold_energy.push_back(2*mass); 
       auto channel = Funk::vec<std::string>(
           "bb", "WW", "cc", "tautau", "ZZ", "tt", "hh");
+//      auto channel = Funk::vec<std::string>(
+//          "bb", "WW", "cc", "tautau", "ZZ", "tt");
+      int nchannel=sizeof(channel) / sizeof(channel[0]);    
       auto p1 = Funk::vec<std::string>("d_3", "W+", "u_2", "tau+", "Z0", "u_3", "h0_1");
       auto p2 = Funk::vec<std::string>("dbar_3", "W-", "ubar_2", "tau-", "Z0", "ubar_3", "h0_1");
       {
-        for ( int i = 0; i < 7; i++ )
+        for ( int i = 0; i < nchannel; i++ )
         {
           if ( mass > catalog.particleProperties.at(p1[i]).mass )
           {
