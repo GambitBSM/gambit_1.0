@@ -12,7 +12,6 @@ namespace Gambit {
         Pythia8::Pythia* _pythiaInstance;
       public:
         Pythia8::Pythia* const pythia() const { return _pythiaInstance; }
-        bool ready;
       //@}
 
       /// @name Specialization function pointers
@@ -40,12 +39,9 @@ namespace Gambit {
       /// @name Construction, Destruction, and Recycling
       //@{
       public:
-        SpecializablePythia() : _pythiaInstance(nullptr), ready(false) { }
+        SpecializablePythia() : _pythiaInstance(nullptr) { }
         ~SpecializablePythia() { _pythiaSettings.clear(); delete _pythiaInstance; }
-        void clear() {
-          _pythiaSettings.clear();  ready=false;
-          delete _pythiaInstance;  _pythiaInstance=nullptr;
-        }
+        void clear() { _pythiaSettings.clear(); delete _pythiaInstance; _pythiaInstance=nullptr; }
       //@}
 
       /// @name (Re-)Initialization functions

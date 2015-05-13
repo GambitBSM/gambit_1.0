@@ -30,7 +30,7 @@
 #include <vector>
 
 #include "gambit/ColliderBit/colliders/SpecializablePythia.hpp"
-#include "gambit/ColliderBit/Detector.hpp"
+#include "gambit/ColliderBit/detectors/BaseDetector.hpp"
 #include "gambit/ColliderBit/analyses/HEPUtilsAnalysisContainer.hpp"
 
 #include "HEPUtils/Event.h"

@@ -112,7 +112,7 @@ namespace Gambit {
     void getPythia(Gambit::ColliderBit::SpecializablePythia &result) {
       using namespace Pipes::getPythia;
 
-      if (!result.ready and *Loop::iteration == START_SUBPROCESS) {
+      if (*Loop::iteration == START_SUBPROCESS) {
         /// Each thread gets its own Pythia instance.
         /// Thus, the initialization is *after* INIT, within omp parallel.
         std::vector<std::string> pythiaOptions;
@@ -134,8 +134,6 @@ namespace Gambit {
         result.resetSpecialization(*iter);
         result.init(pythiaOptions);
         /// @TODO Can we test for xsec veto here? Might be analysis dependent, so see TODO below.
-      } else if (*Loop::iteration == END_SUBPROCESS) {
-        result.ready = false;
       }
     }
 

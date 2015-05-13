@@ -28,15 +28,15 @@ namespace Gambit {
   namespace ColliderBit {
 
 
-    /// @note Abstract base class Detector
+    /// @note Abstract base class BaseDetector
     template <typename EventIn, typename EventOut>
-    class Detector {
+    class BaseDetector {
     public:
 
       typedef EventIn EventInType;
       typedef EventOut EventOutType;
-      Detector() {}
-      virtual ~Detector() {}
+      BaseDetector() {}
+      virtual ~BaseDetector() {}
 
       /// @name Initialization functions
       //@{
@@ -55,7 +55,7 @@ namespace Gambit {
 
 
     /// @note Abstract base class BuckFastBase
-    class BuckFastBase : public Detector<HEPUtils::Event, HEPUtils::Event> {
+    class BuckFastBase : public BaseDetector<HEPUtils::Event, HEPUtils::Event> {
     public:
 
       /// @name Initialization functions
@@ -73,7 +73,7 @@ namespace Gambit {
 
 
     /// @note Abstract base class Delphes_ToHEPUtilsBase
-    class DelphesBase : public Detector<Pythia8::Event, HEPUtils::Event> {
+    class DelphesBase : public BaseDetector<Pythia8::Event, HEPUtils::Event> {
     protected:
       /// @name Class variables
       //@{

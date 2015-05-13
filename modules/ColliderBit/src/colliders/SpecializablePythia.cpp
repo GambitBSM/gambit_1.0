@@ -63,7 +63,6 @@ namespace Gambit {
 
         if(!_pythiaInstance) throw InitializationError();
         _pythiaInstance->init();
-        ready=true;
       }
 
       void SpecializablePythia::resetSpecialization(const std::string& specName) {
