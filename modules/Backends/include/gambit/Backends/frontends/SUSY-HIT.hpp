@@ -101,6 +101,8 @@ BE_NAMESPACE
 {
 
   #include <sstream>
+  #define REQUIRED_BLOCK(NAME, BLOCK) (slha.find(NAME) != slha.end()) ? BLOCK = slha.at(NAME) : backend_error().raise(LOCAL_INFO, "Missing SLHA block: " NAME); 
+  #define OPTIONAL_BLOCK(NAME, BLOCK) (slha.find(NAME) != slha.end()) ? BLOCK = slha.at(NAME) : ; 
 
   /// Runs actual SUSY-HIT decay calculations.
   /// Inputs: m_s_1GeV_msbar    strange mass in GeV, in MSbar scheme at an energy of 1GeV
@@ -123,44 +125,34 @@ BE_NAMESPACE
       SLHAea::Block stopmix, sbotmix, staumix, alpha, hmix, gauge;
       SLHAea::Block au, ad, ae, yu, yd, ye, msq2, msd2, msu2, td, tu;
       SLHAea::Block usqmix, dsqmix, selmix, spinfo;
-      try
-      {
-        sminputs = slha.at("SMINPUTS");
-        vckm     = slha.at("VCKMIN");
-        msoft    = slha.at("MSOFT");
-        mass     = slha.at("MASS");
-        nmix     = slha.at("NMIX");
-        vmix     = slha.at("VMIX");
-        umix     = slha.at("UMIX");
-        //stopmix  = slha.at("STOPMIX");
-        //sbotmix  = slha.at("SBOTMIX");
-        //staumix  = slha.at("STAUMIX");
-        alpha    = slha.at("ALPHA");
-        hmix     = slha.at("HMIX");
-        gauge    = slha.at("GAUGE");
-        au       = slha.at("AU");
-        ad       = slha.at("AD");
-        ae       = slha.at("AE");
-        yu       = slha.at("YU");
-        yd       = slha.at("YD");
-        ye       = slha.at("YE");     
-        msq2     = slha.at("MSQ2");     
-        msd2     = slha.at("MSD2");
-        msu2     = slha.at("MSU2");
-        td       = slha.at("TD");
-        tu       = slha.at("TU");
-        usqmix   = slha.at("USQMIX");
-        dsqmix   = slha.at("DSQMIX");
-        selmix   = slha.at("SELMIX");
-        spinfo   = slha.at("SPINFO");
-      }
-      catch (const std::exception& e)
-      {
-        std::ostringstream err;
-        err << "Exception raised when trying to read SLHA blocks -- a block seems to be missing." << endl
-            << "Exception: " << e.what();
-        backend_error().raise(LOCAL_INFO, err.str()); 
-      }
+      REQUIRED_BLOCK("SMINPUTS", sminputs)
+      REQUIRED_BLOCK("VCKMIN", vckmin)
+      REQUIRED_BLOCK("MSOFT", msoft)
+      REQUIRED_BLOCK("MASS", mass)
+      REQUIRED_BLOCK("NMIX", nmix)
+      REQUIRED_BLOCK("VMIX", vmix)
+      REQUIRED_BLOCK("UMIX", umix)
+      REQUIRED_BLOCK("ALPHA", alpha)
+      REQUIRED_BLOCK("HMIX", hix)
+      REQUIRED_BLOCK("GAUGE", gauge)
+      REQUIRED_BLOCK("YU", yu)
+      REQUIRED_BLOCK("YD", yd)
+      REQUIRED_BLOCK("YE", ye)     
+      REQUIRED_BLOCK("MSQ2", msq2)     
+      REQUIRED_BLOCK("MSD2", msd2)
+      REQUIRED_BLOCK("MSU2", msu2)
+      REQUIRED_BLOCK("TD", td)
+      REQUIRED_BLOCK("TU", tu)
+      REQUIRED_BLOCK("USQMIX", usqmix)
+      REQUIRED_BLOCK("DSQMIX", dsqmix)
+      REQUIRED_BLOCK("SELMIX", selmix)
+      REQUIRED_BLOCK("SPINFO", spinfo)
+      OPTIONAL_BLOCK("STOPMIX", stopmix)
+      OPTIONAL_BLOCK("SBOTMIX", sbotmix)
+      OPTIONAL_BLOCK("STAUMIX", staumix)
+      OPTIONAL_BLOCK("AU", au)
+      OPTIONAL_BLOCK("AD", ad)
+      OPTIONAL_BLOCK("AE", ae)
 
       // SMINPUTS
       for (int i=1; i<=14; ++i)
