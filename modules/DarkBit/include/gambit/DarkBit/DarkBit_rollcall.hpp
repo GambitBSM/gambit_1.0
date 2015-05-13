@@ -173,7 +173,7 @@ START_MODULE
     // Routine for cross checking RD density results
     #define FUNCTION RD_oh2_MicrOmegas
       START_FUNCTION(double)
-      ALLOW_MODELS(MSSM25atQ)  // TODO: (CW) Check for which models this works
+      ALLOW_MODELS(MSSM25atQ, SingletDM)  // TODO: (CW) Check for which models this works
       BACKEND_REQ(oh2, (), double, (double*,int,double))
     #undef FUNCTION
   #undef CAPABILITY
@@ -438,10 +438,16 @@ START_MODULE
     #undef FUNCTION
     #define FUNCTION DD_couplings_MicrOmegas
       START_FUNCTION(Gambit::DarkBit::DD_couplings)
-      BACKEND_REQ(nucleonAmplitudes, (MicrOmegas), int, (double(*)(double,double,double,double), double*, double*, double*, double*))
-      BACKEND_REQ(FeScLoop, (MicrOmegas), double, (double, double, double, double))
-      BACKEND_REQ(MOcommon, (MicrOmegas), MicrOmegas::MOcommonSTR)
-      ALLOW_MODELS(nuclear_params_fnq)
+      BACKEND_REQ(nucleonAmplitudes, (backends), int, (double(*)(double,double,double,double), double*, double*, double*, double*))
+      BACKEND_REQ(FeScLoop, (backends), double, (double, double, double, double))
+      BACKEND_REQ(MOcommon, (backends), MicrOmegas::MOcommonSTR)
+      ALLOW_MODEL_DEPENDENCE(nuclear_params_fnq, MSSM25atQ, SingletDM)
+      MODEL_GROUP(group1, (nuclear_params_fnq))
+      MODEL_GROUP(group2, (MSSM25atQ, SingletDM))
+      ALLOW_MODEL_COMBINATION(group1, group2)
+      BACKEND_OPTION((MicrOmegas),(backends))
+      BACKEND_OPTION((MicrOmegasSingletDM),(backends))
+      FORCE_SAME_BACKEND(backends)
     #undef FUNCTION
     #define FUNCTION DD_couplings_SingletDM
       START_FUNCTION(Gambit::DarkBit::DD_couplings)
