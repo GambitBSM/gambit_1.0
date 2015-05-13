@@ -11,7 +11,7 @@
 ///  \author Torsten Bringmann
 ///          (torsten.bringmann@desy.de) 
 ///  \date 2013 Jun
-///  \date 2014 Mar [RD interface to DS finally working]
+///  \date 2014 Mar - 2015 May
 ///
 ///  \author Christoph Weniger
 ///          (c.weniger@uva.nl)
