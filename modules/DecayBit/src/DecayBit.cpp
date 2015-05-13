@@ -1745,7 +1745,8 @@ namespace Gambit
       fake_decay.width_in_GeV = 0;                    
       fake_decay.positive_error = 0;
       fake_decay.negative_error = 0;
-      decays("H-") = fake_decay;
+      decays("H-") = *Dep::Hplus_decay_rates; // FIXME!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      std::cout << "FIXME!!!! using H+ decay to approximate H- decays!" << std::endl;
       
       // MSSM-specific
       decays("h0_2") = *Dep::h0_2_decay_rates;       // Add the h0_2 decays.

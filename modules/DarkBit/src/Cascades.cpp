@@ -62,6 +62,7 @@ namespace Gambit {
       using namespace Pipes::cascadeMC_DecayTable;     
       std::cout << "cascadeMC_DecayTable" << std::endl;
       table = DecayTable(*Dep::TH_ProcessCatalog, *Dep::SimYieldTable);
+      //table.printTable();
     }
 
     // Loop manager for cascade decays
@@ -391,7 +392,7 @@ namespace Gambit {
             // FIXME: This defines 50 bins from 1e-3 to 1e3 GeV.
             // Should not be hardcoded.
             histList[*Dep::cascadeMC_InitialState][*it]=
-              SimpleHist(100,0.001,1000.0,true);
+              SimpleHist(70,0.001,10000.0,true);
           }
           return;
         case MC_FINALIZE:
