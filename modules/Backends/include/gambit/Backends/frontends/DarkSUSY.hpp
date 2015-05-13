@@ -26,7 +26,7 @@
 ///
 ///  \author Torsten Bringmann
 ///          (torsten.bringmann@fys.uio.no)
-///  \date 2013 Jul, 2014 Mar
+///  \date 2013 Jul, 2014 Mar, 2015 May
 ///
 ///  \author Lars A. Dal  
 ///          (l.a.dal@fys.uio.no)
