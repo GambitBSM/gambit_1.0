@@ -221,36 +221,11 @@ namespace Gambit
       //See PDG meson sheet in DecayBit/data/PDG if you want BFs               
     }
 
-     ///SM decays: Higgs
-    void SMHiggs_decays (DecayTable::Entry& result) 
-    {
-      // Remember that result does not arrive pristine, but contains the result of the last point.  Make sure to overwrite it fully!
-      // This is just an example function that returns junk numbers at the moment.  It should be finished off
-      // in order to use SUSYHIT properly.  When it works, a dependency on it added to the all_decays function.
-      using namespace Pipes::SMHiggs_decays;
-      const SubSpectrum* spec = *Dep::SM_spectrum;
-      const SubSpectrum* mssm = *Dep::MSSM_spectrum;
-      double m_H = mssm->phys.get_Pole_Mass("h0_1"); // Retrieve the masses from the spectrum object.
-      double m_b = spec->phys.get_Pole_Mass("b");
-      double m_t = spec->phys.get_Pole_Mass("t");
-      double m_W = spec->phys.get_Pole_Mass("W+");
-      double m_Z = spec->phys.get_Pole_Mass("Z0");
-      double totalwidth = 5.0; // In GeV -- this should be calculated or retrieved from a backend
-      double BF_err = 0.01;// Error on the branching fractions
-      double BF_bb = 0.37; // In reality, this should be obtained from a backend, using m_b, m_H, etc
-      double BF_tt = 0.10; // In reality, this should be obtained from a backend, using m_t, m_H, etc
-      double BF_WW = 0.35; // In reality, this should be obtained from a backend, using m_W, m_H, etc
-      double BF_WWZ = 0.18;// In reality, this should be obtained from a backend, using m_W, m_H, m_Z, etc
-      cout << "H,b,t,W,Z masses: " << m_H << " " << m_b << " " << m_t <<  " " << m_W << " " << m_Z << endl;
-      result.width_in_GeV = totalwidth;       // Alternatively, you could make a blank one with result = DecayTable::Entry(totalwidth).
-      result.set_BF(BF_bb, BF_err, "b", "bbar");      // Set the BFs for each final state.
-      result.set_BF(BF_tt, BF_err, "t", "tbar");
-      result.set_BF(BF_WW, BF_err, "W+", "W-");
-      result.set_BF(BF_WWZ, BF_err, "W+", "W-", "Z0");
-    }
+    ///SM decays: Higgs
+    // TODO
 
-	/// MSSM sfermion states 
-	const char *isdl = "~d_1";
+    /// MSSM sfermion states
+    const char *isdl = "~d_1";
     const char *isul = "~u_1";
     const char *issl = "~d_2";
     const char *iscl = "~u_2";
@@ -472,7 +447,7 @@ namespace Gambit
       using namespace Pipes::Hplus_decays;
       result.width_in_GeV = BEreq::cb_widthhc_hdec->hcwdth;
       result.set_BF(BEreq::cb_widthhc_hdec->hcbrb, 0.0, "c", "bbar");
-      result.set_BF(BEreq::cb_widthhc_hdec->hcbrl, 0.0, "tau+", "nu_RPV_5");
+      result.set_BF(BEreq::cb_widthhc_hdec->hcbrl, 0.0, "tau+", "nu_tau");
       result.set_BF(BEreq::cb_widthhc_hdec->hcbrm, 0.0, "mu+", "nu_mu");
       result.set_BF(BEreq::cb_widthhc_hdec->hcbrbu, 0.0, "u", "bbar");
       result.set_BF(BEreq::cb_widthhc_hdec->hcbrs, 0.0, "u", "sbar");
@@ -582,7 +557,7 @@ namespace Gambit
     void stop_1_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::stop_1_decays;
-      result.width_in_GeV = BEreq::cb_sd_stopwidth->stoptot4;
+      result.width_in_GeV = BEreq::cb_sd_stopwidth->stoptot(1);
       result.set_BF(BEreq::cb_sd_stop2body->brst1neutt(1), 0.0, "~chi0_1", "t");
       result.set_BF(BEreq::cb_sd_stop2body->brst1neutt(2), 0.0, "~chi0_2", "t");
       result.set_BF(BEreq::cb_sd_stop2body->brst1neutt(3), 0.0, "~chi0_3", "t");
@@ -608,8 +583,8 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_stop3body->brstsntau(1,1), 0.0, intau1, "b", "tau+");
       result.set_BF(BEreq::cb_sd_stop3body->brstsnel(1), 0.0, inel, "b", "e+");
       result.set_BF(BEreq::cb_sd_stop3body->brstsnel(1), 0.0, inmul, "b", "mu+");
-      result.set_BF(BEreq::cb_sd_stop3body->brststau(1,1), 0.0, istau1bar, "b", "nu_RPV_5");
-      result.set_BF(BEreq::cb_sd_stop3body->brststau(1,2), 0.0, istau2bar, "b", "nu_RPV_5");
+      result.set_BF(BEreq::cb_sd_stop3body->brststau(1,1), 0.0, istau1bar, "b", "nu_tau");
+      result.set_BF(BEreq::cb_sd_stop3body->brststau(1,2), 0.0, istau2bar, "b", "nu_tau");
       result.set_BF(BEreq::cb_sd_stop3body->brstsel(1,1), 0.0, isellbar, "b", "nu_e");
       result.set_BF(BEreq::cb_sd_stop3body->brstsel(1,2), 0.0, iselrbar, "b", "nu_e");
       result.set_BF(BEreq::cb_sd_stop3body->brstsel(1,1), 0.0, ismulbar, "b", "nu_mu");
@@ -622,8 +597,8 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_stop3body->brstupsbdow(1,2), 0.0, isb2, "dbar", "u");
       result.set_BF(BEreq::cb_sd_stop3body->brstupsbdow(1,1), 0.0, isb1, "sbar", "c");
       result.set_BF(BEreq::cb_sd_stop3body->brstupsbdow(1,2), 0.0, isb2, "sbar", "c");
-      result.set_BF(BEreq::cb_sd_stop3body->brsttausbnu(1,1), 0.0, isb1, "tau+", "nu_RPV_5");
-      result.set_BF(BEreq::cb_sd_stop3body->brsttausbnu(1,2), 0.0, isb2, "tau+", "nu_RPV_5");
+      result.set_BF(BEreq::cb_sd_stop3body->brsttausbnu(1,1), 0.0, isb1, "tau+", "nu_tau");
+      result.set_BF(BEreq::cb_sd_stop3body->brsttausbnu(1,2), 0.0, isb2, "tau+", "nu_tau");
       result.set_BF(BEreq::cb_sd_stop3body->brstelsbnu(1,1), 0.0, isb1, "e+", "nu_e");
       result.set_BF(BEreq::cb_sd_stop3body->brstelsbnu(1,2), 0.0, isb2, "e+", "nu_e");
       result.set_BF(BEreq::cb_sd_stop3body->brstelsbnu(1,1), 0.0, isb1, "mu+", "nu_mu");
@@ -635,7 +610,7 @@ namespace Gambit
     void stop_2_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::stop_2_decays;
-      result.width_in_GeV = BEreq::cb_sd_stopwidth->stoptot4;
+      result.width_in_GeV = BEreq::cb_sd_stopwidth->stoptot(2);
       result.set_BF(BEreq::cb_sd_stop2body->brst2neutt(1), 0.0, "~chi0_1", "t");
       result.set_BF(BEreq::cb_sd_stop2body->brst2neutt(2), 0.0, "~chi0_2", "t");
       result.set_BF(BEreq::cb_sd_stop2body->brst2neutt(3), 0.0, "~chi0_3", "t");
@@ -662,8 +637,8 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_stop3body->brstsntau(2,1), 0.0, intau1, "b", "tau+");
       result.set_BF(BEreq::cb_sd_stop3body->brstsnel(2), 0.0, inel, "b", "e+");
       result.set_BF(BEreq::cb_sd_stop3body->brstsnel(2), 0.0, inmul, "b", "mu+");
-      result.set_BF(BEreq::cb_sd_stop3body->brststau(2,1), 0.0, istau1bar, "b", "nu_RPV_5");
-      result.set_BF(BEreq::cb_sd_stop3body->brststau(2,2), 0.0, istau2bar, "b", "nu_RPV_5");
+      result.set_BF(BEreq::cb_sd_stop3body->brststau(2,1), 0.0, istau1bar, "b", "nu_tau");
+      result.set_BF(BEreq::cb_sd_stop3body->brststau(2,2), 0.0, istau2bar, "b", "nu_tau");
       result.set_BF(BEreq::cb_sd_stop3body->brstsel(2,1), 0.0, isellbar, "b", "nu_e");
       result.set_BF(BEreq::cb_sd_stop3body->brstsel(2,2), 0.0, iselrbar, "b", "nu_e");
       result.set_BF(BEreq::cb_sd_stop3body->brstsel(2,1), 0.0, ismulbar, "b", "nu_mu");
@@ -676,8 +651,8 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_stop3body->brstupsbdow(2,2), 0.0, isb2, "dbar", "u");
       result.set_BF(BEreq::cb_sd_stop3body->brstupsbdow(2,1), 0.0, isb1, "sbar", "c");
       result.set_BF(BEreq::cb_sd_stop3body->brstupsbdow(2,2), 0.0, isb2, "sbar", "c");
-      result.set_BF(BEreq::cb_sd_stop3body->brsttausbnu(2,1), 0.0, isb1, "tau+", "nu_RPV_5");
-      result.set_BF(BEreq::cb_sd_stop3body->brsttausbnu(2,2), 0.0, isb2, "tau+", "nu_RPV_5");
+      result.set_BF(BEreq::cb_sd_stop3body->brsttausbnu(2,1), 0.0, isb1, "tau+", "nu_tau");
+      result.set_BF(BEreq::cb_sd_stop3body->brsttausbnu(2,2), 0.0, isb2, "tau+", "nu_tau");
       result.set_BF(BEreq::cb_sd_stop3body->brstelsbnu(2,1), 0.0, isb1, "e+", "nu_e");
       result.set_BF(BEreq::cb_sd_stop3body->brstelsbnu(2,2), 0.0, isb2, "e+", "nu_e");
       result.set_BF(BEreq::cb_sd_stop3body->brstelsbnu(2,1), 0.0, isb1, "mu+", "nu_mu");
@@ -694,7 +669,7 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_stop3body->brst2st1tautau, 0.0, ist1, "tau-", "tau+");
       result.set_BF(BEreq::cb_sd_stop3body->brst2st1nunu, 0.0, ist1, "nu_e", "nubar_e");
       result.set_BF(BEreq::cb_sd_stop3body->brst2st1nunu, 0.0, ist1, "nu_mu", "nubar_mu");
-      result.set_BF(BEreq::cb_sd_stop3body->brst2st1nunu, 0.0, ist1, "nu_RPV_5", "nubar_tau");
+      result.set_BF(BEreq::cb_sd_stop3body->brst2st1nunu, 0.0, ist1, "nu_tau", "nubar_tau");
       cout << "stop_2 total width: " << result.width_in_GeV << endl;
     }
 
@@ -795,7 +770,7 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_sbot3body->brsb2sb1tautau, 0.0, isb1, "tau-", "tau+");
       result.set_BF(BEreq::cb_sd_sbot3body->brsb2sb1nunu, 0.0, isb1, "nu_e", "nubar_e");
       result.set_BF(BEreq::cb_sd_sbot3body->brsb2sb1nunu, 0.0, isb1, "nu_mu", "nubar_mu");
-      result.set_BF(BEreq::cb_sd_sbot3body->brsb2sb1nunu, 0.0, isb1, "nu_RPV_5", "nubar_tau");
+      result.set_BF(BEreq::cb_sd_sbot3body->brsb2sb1nunu, 0.0, isb1, "nu_tau", "nubar_tau");
       cout << "sbottom_2 total width: " << result.width_in_GeV << endl;
     }
 
@@ -984,8 +959,8 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_stau2body->brstau1neut(2), 0.0, "~chi0_2", "tau-");
       result.set_BF(BEreq::cb_sd_stau2body->brstau1neut(3), 0.0, "~chi0_3", "tau-");
       result.set_BF(BEreq::cb_sd_stau2body->brstau1neut(4), 0.0, "~chi0_4", "tau-");
-      result.set_BF(BEreq::cb_sd_stau2body->brstau1char(1), 0.0, "~chi-_1", "nu_RPV_5");
-      result.set_BF(BEreq::cb_sd_stau2body->brstau1char(2), 0.0, "~chi-_2", "nu_RPV_5");
+      result.set_BF(BEreq::cb_sd_stau2body->brstau1char(1), 0.0, "~chi-_1", "nu_tau");
+      result.set_BF(BEreq::cb_sd_stau2body->brstau1char(2), 0.0, "~chi-_2", "nu_tau");
       result.set_BF(BEreq::cb_sd_stau2body->brstau1hcsn(1), 0.0, intau1, "H-");
       result.set_BF(BEreq::cb_sd_stau2body->brstau1wsn(1), 0.0, intau1, "W-");
       result.set_BF(BEreq::cb_sd_stau2bodygrav->brstautaugrav, 0.0, "~G", "tau-");
@@ -1001,8 +976,8 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_stau2body->brstau2neut(2), 0.0, "~chi0_2", "tau-");
       result.set_BF(BEreq::cb_sd_stau2body->brstau2neut(3), 0.0, "~chi0_3", "tau-");
       result.set_BF(BEreq::cb_sd_stau2body->brstau2neut(4), 0.0, "~chi0_4", "tau-");
-      result.set_BF(BEreq::cb_sd_stau2body->brstau2char(1), 0.0, "~chi-_1", "nu_RPV_5");
-      result.set_BF(BEreq::cb_sd_stau2body->brstau2char(2), 0.0, "~chi-_2", "nu_RPV_5");
+      result.set_BF(BEreq::cb_sd_stau2body->brstau2char(1), 0.0, "~chi-_1", "nu_tau");
+      result.set_BF(BEreq::cb_sd_stau2body->brstau2char(2), 0.0, "~chi-_2", "nu_tau");
       result.set_BF(BEreq::cb_sd_stau2body->brstau2hcsn(1), 0.0, intau1, "H-");
       result.set_BF(BEreq::cb_sd_stau2body->brstau2wsn(1), 0.0, intau1, "W-");
       result.set_BF(BEreq::cb_sd_stau2body->brstau2hl, 0.0, istau1, "h0_1");
@@ -1045,10 +1020,10 @@ namespace Gambit
     {
       using namespace Pipes::snu_taul_decays;
       result.width_in_GeV = BEreq::cb_sd_sntauwidth->sntautot2;
-      result.set_BF(BEreq::cb_sd_sntau2body->brsntauneut(1), 0.0, "~chi0_1", "nu_RPV_5");
-      result.set_BF(BEreq::cb_sd_sntau2body->brsntauneut(2), 0.0, "~chi0_2", "nu_RPV_5");
-      result.set_BF(BEreq::cb_sd_sntau2body->brsntauneut(3), 0.0, "~chi0_3", "nu_RPV_5");
-      result.set_BF(BEreq::cb_sd_sntau2body->brsntauneut(4), 0.0, "~chi0_4", "nu_RPV_5");
+      result.set_BF(BEreq::cb_sd_sntau2body->brsntauneut(1), 0.0, "~chi0_1", "nu_tau");
+      result.set_BF(BEreq::cb_sd_sntau2body->brsntauneut(2), 0.0, "~chi0_2", "nu_tau");
+      result.set_BF(BEreq::cb_sd_sntau2body->brsntauneut(3), 0.0, "~chi0_3", "nu_tau");
+      result.set_BF(BEreq::cb_sd_sntau2body->brsntauneut(4), 0.0, "~chi0_4", "nu_tau");
       result.set_BF(BEreq::cb_sd_sntau2body->brsntauchar(1), 0.0, "~chi+_1", "tau-");
       result.set_BF(BEreq::cb_sd_sntau2body->brsntauchar(2), 0.0, "~chi+_2", "tau-");
       result.set_BF(BEreq::cb_sd_sntau2body->brsntau1hcstau(1), 0.0, istau1bar, "H-");
@@ -1082,8 +1057,8 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_char2body->brcharselr(1), 0.0, iselrbar, "nu_e");
       result.set_BF(BEreq::cb_sd_char2body->brcharsell(1), 0.0, ismulbar, "nu_mu");
       result.set_BF(BEreq::cb_sd_char2body->brcharselr(1), 0.0, ismurbar, "nu_mu");
-      result.set_BF(BEreq::cb_sd_char2body->brcharstau1(1), 0.0, istau1bar, "nu_RPV_5");
-      result.set_BF(BEreq::cb_sd_char2body->brcharstau2(1), 0.0, istau2bar, "nu_RPV_5");
+      result.set_BF(BEreq::cb_sd_char2body->brcharstau1(1), 0.0, istau1bar, "nu_tau");
+      result.set_BF(BEreq::cb_sd_char2body->brcharstau2(1), 0.0, istau2bar, "nu_tau");
       result.set_BF(BEreq::cb_sd_char2body->brcharwneut(1,1), 0.0, "~chi0_1", "W+");
       result.set_BF(BEreq::cb_sd_char2body->brcharwneut(1,2), 0.0, "~chi0_2", "W+");
       result.set_BF(BEreq::cb_sd_char2body->brcharwneut(1,3), 0.0, "~chi0_3", "W+");
@@ -1116,10 +1091,10 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_char3body->brnmunumu(1,2), 0.0, "~chi0_2", "mu+", "nu_mu");
       result.set_BF(BEreq::cb_sd_char3body->brnmunumu(1,3), 0.0, "~chi0_3", "mu+", "nu_mu");
       result.set_BF(BEreq::cb_sd_char3body->brnmunumu(1,4), 0.0, "~chi0_4", "mu+", "nu_mu");
-      result.set_BF(BEreq::cb_sd_char3body->brntaunut(1,1), 0.0, "~chi0_1", "tau+", "nu_RPV_5");
-      result.set_BF(BEreq::cb_sd_char3body->brntaunut(1,2), 0.0, "~chi0_2", "tau+", "nu_RPV_5");
-      result.set_BF(BEreq::cb_sd_char3body->brntaunut(1,3), 0.0, "~chi0_3", "tau+", "nu_RPV_5");
-      result.set_BF(BEreq::cb_sd_char3body->brntaunut(1,4), 0.0, "~chi0_4", "tau+", "nu_RPV_5");
+      result.set_BF(BEreq::cb_sd_char3body->brntaunut(1,1), 0.0, "~chi0_1", "tau+", "nu_tau");
+      result.set_BF(BEreq::cb_sd_char3body->brntaunut(1,2), 0.0, "~chi0_2", "tau+", "nu_tau");
+      result.set_BF(BEreq::cb_sd_char3body->brntaunut(1,3), 0.0, "~chi0_3", "tau+", "nu_tau");
+      result.set_BF(BEreq::cb_sd_char3body->brntaunut(1,4), 0.0, "~chi0_4", "tau+", "nu_tau");
       result.set_BF(BEreq::cb_sd_char3body->brglupdb(1), 0.0, "~g", "u", "dbar");
       result.set_BF(BEreq::cb_sd_char3body->brglchsb(1), 0.0, "~g", "c", "sbar");
       result.set_BF(BEreq::cb_sd_char3body->brgltopbb(1), 0.0, "~g", "t", "bbar");
@@ -1150,8 +1125,8 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_char2body->brcharselr(2), 0.0, iselrbar, "nu_e");
       result.set_BF(BEreq::cb_sd_char2body->brcharsell(2), 0.0, ismulbar, "nu_mu");
       result.set_BF(BEreq::cb_sd_char2body->brcharselr(2), 0.0, ismurbar, "nu_mu");
-      result.set_BF(BEreq::cb_sd_char2body->brcharstau1(2), 0.0, istau1bar, "nu_RPV_5");
-      result.set_BF(BEreq::cb_sd_char2body->brcharstau2(2), 0.0, istau2bar, "nu_RPV_5");
+      result.set_BF(BEreq::cb_sd_char2body->brcharstau1(2), 0.0, istau1bar, "nu_tau");
+      result.set_BF(BEreq::cb_sd_char2body->brcharstau2(2), 0.0, istau2bar, "nu_tau");
       result.set_BF(BEreq::cb_sd_char2body->brcharzchic, 0.0, "~chi+_1", "Z0");
       result.set_BF(BEreq::cb_sd_char2body->brcharwneut(2,1), 0.0, "~chi0_1", "W+");
       result.set_BF(BEreq::cb_sd_char2body->brcharwneut(2,2), 0.0, "~chi0_2", "W+");
@@ -1188,10 +1163,10 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_char3body->brnmunumu(2,2), 0.0, "~chi0_2", "mu+", "nu_mu");
       result.set_BF(BEreq::cb_sd_char3body->brnmunumu(2,3), 0.0, "~chi0_3", "mu+", "nu_mu");
       result.set_BF(BEreq::cb_sd_char3body->brnmunumu(2,4), 0.0, "~chi0_4", "mu+", "nu_mu");
-      result.set_BF(BEreq::cb_sd_char3body->brntaunut(2,1), 0.0, "~chi0_1", "tau+", "nu_RPV_5");
-      result.set_BF(BEreq::cb_sd_char3body->brntaunut(2,2), 0.0, "~chi0_2", "tau+", "nu_RPV_5");
-      result.set_BF(BEreq::cb_sd_char3body->brntaunut(2,3), 0.0, "~chi0_3", "tau+", "nu_RPV_5");
-      result.set_BF(BEreq::cb_sd_char3body->brntaunut(2,4), 0.0, "~chi0_4", "tau+", "nu_RPV_5");
+      result.set_BF(BEreq::cb_sd_char3body->brntaunut(2,1), 0.0, "~chi0_1", "tau+", "nu_tau");
+      result.set_BF(BEreq::cb_sd_char3body->brntaunut(2,2), 0.0, "~chi0_2", "tau+", "nu_tau");
+      result.set_BF(BEreq::cb_sd_char3body->brntaunut(2,3), 0.0, "~chi0_3", "tau+", "nu_tau");
+      result.set_BF(BEreq::cb_sd_char3body->brntaunut(2,4), 0.0, "~chi0_4", "tau+", "nu_tau");
       result.set_BF(BEreq::cb_sd_char3body->brchupup, 0.0, "~chi+_1", "u", "ubar");
       result.set_BF(BEreq::cb_sd_char3body->brchdodo, 0.0, "~chi+_1", "d", "dbar");
       result.set_BF(BEreq::cb_sd_char3body->brchchch, 0.0, "~chi+_1", "c", "cbar");
@@ -1203,7 +1178,7 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_char3body->brchtautau, 0.0, "~chi+_1", "tau+", "tau-");
       result.set_BF(BEreq::cb_sd_char3body->brchnene, 0.0, "~chi+_1", "nu_e", "nubar_e");
       result.set_BF(BEreq::cb_sd_char3body->brchnmunmu, 0.0, "~chi+_1", "nu_mu", "nubar_mu");
-      result.set_BF(BEreq::cb_sd_char3body->brchntauntau, 0.0, "~chi+_1", "nu_RPV_5", "nubar_tau");
+      result.set_BF(BEreq::cb_sd_char3body->brchntauntau, 0.0, "~chi+_1", "nu_tau", "nubar_tau");
       result.set_BF(BEreq::cb_sd_char3body->brglupdb(2), 0.0, "~g", "u", "dbar");
       result.set_BF(BEreq::cb_sd_char3body->brglchsb(2), 0.0, "~g", "c", "sbar");
       result.set_BF(BEreq::cb_sd_char3body->brgltopbb(2), 0.0, "~g", "t", "bbar");
@@ -1264,7 +1239,7 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_neut2body->brneutsnel(1), 0.0, inmul, "nubar_mu");
       result.set_BF(BEreq::cb_sd_neut2body->brneutsnel(1), 0.0, inmulbar, "nu_mu");
       result.set_BF(BEreq::cb_sd_neut2body->brneutsn1(1), 0.0, intau1, "nubar_tau");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsn1(1), 0.0, intau1bar, "nu_RPV_5");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsn1(1), 0.0, intau1bar, "nu_tau");
       result.set_BF(BEreq::cb_sd_neut2bodygrav->brneutgamgrav(1), 0.0, "~G", "gamma");
       result.set_BF(BEreq::cb_sd_neut2bodygrav->brneutzgrav(1), 0.0, "~G", "Z0");
       result.set_BF(BEreq::cb_sd_neut2bodygrav->brneuthlgrav(1), 0.0, "~G", "h0_1");
@@ -1296,9 +1271,9 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_neut3body->brchmunmu(1,2), 0.0, "~chi+_2", "nubar_mu", "mu-");
       result.set_BF(BEreq::cb_sd_neut3body->brchmunmu(1,2), 0.0, "~chi-_2", "nu_mu", "mu+");
       result.set_BF(BEreq::cb_sd_neut3body->brchtauntau(1,1), 0.0, "~chi+_1", "nubar_tau", "tau-");
-      result.set_BF(BEreq::cb_sd_neut3body->brchtauntau(1,1), 0.0, "~chi-_1", "nu_RPV_5", "tau+");
+      result.set_BF(BEreq::cb_sd_neut3body->brchtauntau(1,1), 0.0, "~chi-_1", "nu_tau", "tau+");
       result.set_BF(BEreq::cb_sd_neut3body->brchtauntau(1,2), 0.0, "~chi+_2", "nubar_tau", "tau-");
-      result.set_BF(BEreq::cb_sd_neut3body->brchtauntau(1,2), 0.0, "~chi-_2", "nu_RPV_5", "tau+");
+      result.set_BF(BEreq::cb_sd_neut3body->brchtauntau(1,2), 0.0, "~chi-_2", "nu_tau", "tau+");
       result.set_BF(BEreq::cb_sd_neut3body->brglup(1), 0.0, "~g", "ubar", "u");
       result.set_BF(BEreq::cb_sd_neut3body->brgldo(1), 0.0, "~g", "dbar", "d");
       result.set_BF(BEreq::cb_sd_neut3body->brglch(1), 0.0, "~g", "cbar", "c");
@@ -1366,7 +1341,7 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_neut2body->brneutsnel(2), 0.0, inmul, "nubar_mu");
       result.set_BF(BEreq::cb_sd_neut2body->brneutsnel(2), 0.0, inmulbar, "nu_mu");
       result.set_BF(BEreq::cb_sd_neut2body->brneutsn1(2), 0.0, intau1, "nubar_tau");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsn1(2), 0.0, intau1bar, "nu_RPV_5");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsn1(2), 0.0, intau1bar, "nu_tau");
       result.set_BF(BEreq::cb_sd_neut2bodygrav->brneutgamgrav(2), 0.0, "~G", "gamma");
       result.set_BF(BEreq::cb_sd_neut2bodygrav->brneutzgrav(2), 0.0, "~G", "Z0");
       result.set_BF(BEreq::cb_sd_neut2bodygrav->brneuthlgrav(2), 0.0, "~G", "h0_1");
@@ -1389,7 +1364,7 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_neut3body->brneuttau(2,1), 0.0, "~chi0_1", "tau+", "tau-");
       result.set_BF(BEreq::cb_sd_neut3body->brneutnue(2,1), 0.0, "~chi0_1", "nubar_e", "nu_e");
       result.set_BF(BEreq::cb_sd_neut3body->brneutnumu(2,1), 0.0, "~chi0_1", "nubar_mu", "nu_mu");
-      result.set_BF(BEreq::cb_sd_neut3body->brneutnutau(2,1), 0.0, "~chi0_1", "nubar_tau", "nu_RPV_5");
+      result.set_BF(BEreq::cb_sd_neut3body->brneutnutau(2,1), 0.0, "~chi0_1", "nubar_tau", "nu_tau");
       result.set_BF(BEreq::cb_sd_neut3body->brchubd(2,1), 0.0, "~chi+_1", "ubar", "d");
       result.set_BF(BEreq::cb_sd_neut3body->brchubd(2,1), 0.0, "~chi-_1", "dbar", "u");
       result.set_BF(BEreq::cb_sd_neut3body->brchubd(2,2), 0.0, "~chi+_2", "ubar", "d");
@@ -1411,9 +1386,9 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_neut3body->brchmunmu(2,2), 0.0, "~chi+_2", "nubar_mu", "mu-");
       result.set_BF(BEreq::cb_sd_neut3body->brchmunmu(2,2), 0.0, "~chi-_2", "nu_mu", "mu+");
       result.set_BF(BEreq::cb_sd_neut3body->brchtauntau(2,1), 0.0, "~chi+_1", "nubar_tau", "tau-");
-      result.set_BF(BEreq::cb_sd_neut3body->brchtauntau(2,1), 0.0, "~chi-_1", "nu_RPV_5", "tau+");
+      result.set_BF(BEreq::cb_sd_neut3body->brchtauntau(2,1), 0.0, "~chi-_1", "nu_tau", "tau+");
       result.set_BF(BEreq::cb_sd_neut3body->brchtauntau(2,2), 0.0, "~chi+_2", "nubar_tau", "tau-");
-      result.set_BF(BEreq::cb_sd_neut3body->brchtauntau(2,2), 0.0, "~chi-_2", "nu_RPV_5", "tau+");
+      result.set_BF(BEreq::cb_sd_neut3body->brchtauntau(2,2), 0.0, "~chi-_2", "nu_tau", "tau+");
       result.set_BF(BEreq::cb_sd_neut3body->brglup(2), 0.0, "~g", "ubar", "u");
       result.set_BF(BEreq::cb_sd_neut3body->brgldo(2), 0.0, "~g", "dbar", "d");
       result.set_BF(BEreq::cb_sd_neut3body->brglch(2), 0.0, "~g", "cbar", "c");
@@ -1485,7 +1460,7 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_neut2body->brneutsnel(3), 0.0, inmul, "nubar_mu");
       result.set_BF(BEreq::cb_sd_neut2body->brneutsnel(3), 0.0, inmulbar, "nu_mu");
       result.set_BF(BEreq::cb_sd_neut2body->brneutsn1(3), 0.0, intau1, "nubar_tau");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsn1(3), 0.0, intau1bar, "nu_RPV_5");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsn1(3), 0.0, intau1bar, "nu_tau");
       result.set_BF(BEreq::cb_sd_neut2bodygrav->brneutgamgrav(3), 0.0, "~G", "gamma");
       result.set_BF(BEreq::cb_sd_neut2bodygrav->brneutzgrav(3), 0.0, "~G", "Z0");
       result.set_BF(BEreq::cb_sd_neut2bodygrav->brneuthlgrav(3), 0.0, "~G", "h0_1");
@@ -1509,7 +1484,7 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_neut3body->brneuttau(3,1), 0.0, "~chi0_1", "tau+", "tau-");
       result.set_BF(BEreq::cb_sd_neut3body->brneutnue(3,1), 0.0, "~chi0_1", "nubar_e", "nu_e");
       result.set_BF(BEreq::cb_sd_neut3body->brneutnumu(3,1), 0.0, "~chi0_1", "nubar_mu", "nu_mu");
-      result.set_BF(BEreq::cb_sd_neut3body->brneutnutau(3,1), 0.0, "~chi0_1", "nubar_tau", "nu_RPV_5");
+      result.set_BF(BEreq::cb_sd_neut3body->brneutnutau(3,1), 0.0, "~chi0_1", "nubar_tau", "nu_tau");
       result.set_BF(BEreq::cb_sd_neut3body->brneutup(3,2), 0.0, "~chi0_2", "ubar", "u");
       result.set_BF(BEreq::cb_sd_neut3body->brneutdow(3,2), 0.0, "~chi0_2", "dbar", "d");
       result.set_BF(BEreq::cb_sd_neut3body->brneutch(3,2), 0.0, "~chi0_2", "cbar", "c");
@@ -1521,7 +1496,7 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_neut3body->brneuttau(3,2), 0.0, "~chi0_2", "tau+", "tau-");
       result.set_BF(BEreq::cb_sd_neut3body->brneutnue(3,2), 0.0, "~chi0_2", "nubar_e", "nu_e");
       result.set_BF(BEreq::cb_sd_neut3body->brneutnumu(3,2), 0.0, "~chi0_2", "nubar_mu", "nu_mu");
-      result.set_BF(BEreq::cb_sd_neut3body->brneutnutau(3,2), 0.0, "~chi0_2", "nubar_tau", "nu_RPV_5");
+      result.set_BF(BEreq::cb_sd_neut3body->brneutnutau(3,2), 0.0, "~chi0_2", "nubar_tau", "nu_tau");
       result.set_BF(BEreq::cb_sd_neut3body->brchubd(3,1), 0.0, "~chi+_1", "ubar", "d");
       result.set_BF(BEreq::cb_sd_neut3body->brchubd(3,1), 0.0, "~chi-_1", "dbar", "u");
       result.set_BF(BEreq::cb_sd_neut3body->brchubd(3,2), 0.0, "~chi+_2", "ubar", "d");
@@ -1543,9 +1518,9 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_neut3body->brchmunmu(3,2), 0.0, "~chi+_2", "nubar_mu", "mu-");
       result.set_BF(BEreq::cb_sd_neut3body->brchmunmu(3,2), 0.0, "~chi-_2", "nu_mu", "mu+");
       result.set_BF(BEreq::cb_sd_neut3body->brchtauntau(3,1), 0.0, "~chi+_1", "nubar_tau", "tau-");
-      result.set_BF(BEreq::cb_sd_neut3body->brchtauntau(3,1), 0.0, "~chi-_1", "nu_RPV_5", "tau+");
+      result.set_BF(BEreq::cb_sd_neut3body->brchtauntau(3,1), 0.0, "~chi-_1", "nu_tau", "tau+");
       result.set_BF(BEreq::cb_sd_neut3body->brchtauntau(3,2), 0.0, "~chi+_2", "nubar_tau", "tau-");
-      result.set_BF(BEreq::cb_sd_neut3body->brchtauntau(3,2), 0.0, "~chi-_2", "nu_RPV_5", "tau+");
+      result.set_BF(BEreq::cb_sd_neut3body->brchtauntau(3,2), 0.0, "~chi-_2", "nu_tau", "tau+");
       result.set_BF(BEreq::cb_sd_neut3body->brglup(3), 0.0, "~g", "ubar", "u");
       result.set_BF(BEreq::cb_sd_neut3body->brgldo(3), 0.0, "~g", "dbar", "d");
       result.set_BF(BEreq::cb_sd_neut3body->brglch(3), 0.0, "~g", "cbar", "c");
@@ -1621,7 +1596,7 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_neut2body->brneutsnel(4), 0.0, inmul, "nubar_mu");
       result.set_BF(BEreq::cb_sd_neut2body->brneutsnel(4), 0.0, inmulbar, "nu_mu");
       result.set_BF(BEreq::cb_sd_neut2body->brneutsn1(4), 0.0, intau1, "nubar_tau");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsn1(4), 0.0, intau1bar, "nu_RPV_5");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsn1(4), 0.0, intau1bar, "nu_tau");
       result.set_BF(BEreq::cb_sd_neut2bodygrav->brneutgamgrav(4), 0.0, "~G", "gamma");
       result.set_BF(BEreq::cb_sd_neut2bodygrav->brneutzgrav(4), 0.0, "~G", "Z0");
       result.set_BF(BEreq::cb_sd_neut2bodygrav->brneuthlgrav(4), 0.0, "~G", "h0_1");
@@ -1646,7 +1621,7 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_neut3body->brneuttau(4,1), 0.0, "~chi0_1", "tau+", "tau-");
       result.set_BF(BEreq::cb_sd_neut3body->brneutnue(4,1), 0.0, "~chi0_1", "nubar_e", "nu_e");
       result.set_BF(BEreq::cb_sd_neut3body->brneutnumu(4,1), 0.0, "~chi0_1", "nubar_mu", "nu_mu");
-      result.set_BF(BEreq::cb_sd_neut3body->brneutnutau(4,1), 0.0, "~chi0_1", "nubar_tau", "nu_RPV_5");
+      result.set_BF(BEreq::cb_sd_neut3body->brneutnutau(4,1), 0.0, "~chi0_1", "nubar_tau", "nu_tau");
       result.set_BF(BEreq::cb_sd_neut3body->brneutup(4,2), 0.0, "~chi0_2", "ubar", "u");
       result.set_BF(BEreq::cb_sd_neut3body->brneutdow(4,2), 0.0, "~chi0_2", "dbar", "d");
       result.set_BF(BEreq::cb_sd_neut3body->brneutch(4,2), 0.0, "~chi0_2", "cbar", "c");
@@ -1658,7 +1633,7 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_neut3body->brneuttau(4,2), 0.0, "~chi0_2", "tau+", "tau-");
       result.set_BF(BEreq::cb_sd_neut3body->brneutnue(4,2), 0.0, "~chi0_2", "nubar_e", "nu_e");
       result.set_BF(BEreq::cb_sd_neut3body->brneutnumu(4,2), 0.0, "~chi0_2", "nubar_mu", "nu_mu");
-      result.set_BF(BEreq::cb_sd_neut3body->brneutnutau(4,2), 0.0, "~chi0_2", "nubar_tau", "nu_RPV_5");
+      result.set_BF(BEreq::cb_sd_neut3body->brneutnutau(4,2), 0.0, "~chi0_2", "nubar_tau", "nu_tau");
       result.set_BF(BEreq::cb_sd_neut3body->brneutup(4,3), 0.0, "~chi0_3", "ubar", "u");
       result.set_BF(BEreq::cb_sd_neut3body->brneutdow(4,3), 0.0, "~chi0_3", "dbar", "d");
       result.set_BF(BEreq::cb_sd_neut3body->brneutch(4,3), 0.0, "~chi0_3", "cbar", "c");
@@ -1670,7 +1645,7 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_neut3body->brneuttau(4,3), 0.0, "~chi0_3", "tau+", "tau-");
       result.set_BF(BEreq::cb_sd_neut3body->brneutnue(4,3), 0.0, "~chi0_3", "nubar_e", "nu_e");
       result.set_BF(BEreq::cb_sd_neut3body->brneutnumu(4,3), 0.0, "~chi0_3", "nubar_mu", "nu_mu");
-      result.set_BF(BEreq::cb_sd_neut3body->brneutnutau(4,3), 0.0, "~chi0_3", "nubar_tau", "nu_RPV_5");
+      result.set_BF(BEreq::cb_sd_neut3body->brneutnutau(4,3), 0.0, "~chi0_3", "nubar_tau", "nu_tau");
       result.set_BF(BEreq::cb_sd_neut3body->brchubd(4,1), 0.0, "~chi+_1", "ubar", "d");
       result.set_BF(BEreq::cb_sd_neut3body->brchubd(4,1), 0.0, "~chi-_1", "dbar", "u");
       result.set_BF(BEreq::cb_sd_neut3body->brchubd(4,2), 0.0, "~chi+_2", "ubar", "d");
@@ -1692,9 +1667,9 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_neut3body->brchmunmu(4,2), 0.0, "~chi+_2", "nubar_mu", "mu-");
       result.set_BF(BEreq::cb_sd_neut3body->brchmunmu(4,2), 0.0, "~chi-_2", "nu_mu", "mu+");
       result.set_BF(BEreq::cb_sd_neut3body->brchtauntau(4,1), 0.0, "~chi+_1", "nubar_tau", "tau-");
-      result.set_BF(BEreq::cb_sd_neut3body->brchtauntau(4,1), 0.0, "~chi-_1", "nu_RPV_5", "tau+");
+      result.set_BF(BEreq::cb_sd_neut3body->brchtauntau(4,1), 0.0, "~chi-_1", "nu_tau", "tau+");
       result.set_BF(BEreq::cb_sd_neut3body->brchtauntau(4,2), 0.0, "~chi+_2", "nubar_tau", "tau-");
-      result.set_BF(BEreq::cb_sd_neut3body->brchtauntau(4,2), 0.0, "~chi-_2", "nu_RPV_5", "tau+");
+      result.set_BF(BEreq::cb_sd_neut3body->brchtauntau(4,2), 0.0, "~chi-_2", "nu_tau", "tau+");
       result.set_BF(BEreq::cb_sd_neut3body->brglup(4), 0.0, "~g", "ubar", "u");
       result.set_BF(BEreq::cb_sd_neut3body->brgldo(4), 0.0, "~g", "dbar", "d");
       result.set_BF(BEreq::cb_sd_neut3body->brglch(4), 0.0, "~g", "cbar", "c");
@@ -1704,6 +1679,22 @@ namespace Gambit
       // cout << "neutralino_4 total width: " << result.width_in_GeV << endl;
     }
 	
+    /// Add the decay of Higgs to singlets for the SingletDM model
+    void SS_Higgs_decays (DecayTable::Entry& result)
+    {
+      using namespace Pipes::SS_Higgs_decays;
+      double mass = *Param["mass"];     //FIXME get from spectrum
+      double lambda = *Param["lambda"]; //FIXME get from spectrum
+      double v0 = 246.0;                //FIXME get from spectrum
+      double mhpole = 125.0;            //FIXME get from spectrum
+      double massratio2 = mass*mass/(mhpole*mhpole);
+      double gamma = lambda*lambda*v0*v0/(32.0*pi*mhpole) * sqrt(1.0 - 4.0*massratio2);  
+      result = *Dep::Higgs_decay_rates;                        // Get the SM decays.
+      result.width_in_GeV = result.width_in_GeV + gamma;       // Add the h->SS width
+      result.set_BF(gamma/result.width_in_GeV, 0.0, "S", "S"); // Add the h->SS branching fraction
+    }
+
+  
     /// Collect all the DecayTable entries into an actual DecayTable 
     void all_decays (DecayTable &result) 
     {
@@ -1740,44 +1731,44 @@ namespace Gambit
       decays("omega") = *Dep::omega_decay_rates;    // Add the omega meson decays.
       
       // MSSM-specific
-      decays("h0_2") = *Dep::h0_2_decay_rates;       // Add the h0_2 decays.
-      decays("A0") = *Dep::A0_decay_rates;           // Add the A0 decays.
-      decays("H+") = *Dep::Hplus_decay_rates;        // Add the H+ decays.
-      
-      decays("~g") = *Dep::gluino_decay_rates;       // Add the gluino decays.
-      
-      decays(ist1) = *Dep::stop_1_decay_rates;     // Add the ~t_1 decays.
-      decays(ist2) = *Dep::stop_2_decay_rates;     // Add the ~t_2 decays.
-      decays(isb1) = *Dep::sbottom_1_decay_rates;  // Add the ~b_1 decays.
-      decays(isb2) = *Dep::sbottom_2_decay_rates;  // Add the ~b_2 decays.
-      decays(isul) = *Dep::sup_l_decay_rates;      // Add the ~u_L decays.
-      decays(isur) = *Dep::sup_r_decay_rates;      // Add the ~u_R decays.
-      decays(isdl) = *Dep::sdown_l_decay_rates;    // Add the ~d_L decays.
-      decays(isdr) = *Dep::sdown_r_decay_rates;    // Add the ~d_R decays.
-      decays(iscl) = *Dep::scharm_l_decay_rates;   // Add the ~c_L decays.
-      decays(iscr) = *Dep::scharm_r_decay_rates;   // Add the ~c_R decays.
-      decays(issl) = *Dep::sstrange_l_decay_rates; // Add the ~s_L decays.
-      decays(issr) = *Dep::sstrange_r_decay_rates; // Add the ~s_R decays.
+      if (ModelInUse("MSSM78atQ") or ModelInUse("MSSM78atMGUT"))
+      {
+        decays("h0_2") = *Dep::h0_2_decay_rates;            // Add the h0_2 decays.
+        decays("A0") = *Dep::A0_decay_rates;                // Add the A0 decays.
+        decays("H+") = *Dep::Hplus_decay_rates;             // Add the H+ decays.       
 
-      decays(isell) = *Dep::selectron_l_decay_rates;  // Add the ~e-_L decays.
-      decays(iselr) = *Dep::selectron_r_decay_rates;  // Add the ~e-_R decays.
-      decays(ismul) = *Dep::smuon_l_decay_rates;      // Add the ~mu-_L decays.
-      decays(ismur) = *Dep::smuon_r_decay_rates;      // Add the ~mu-_R decays.
-      decays(istau1) = *Dep::stau_1_decay_rates;      // Add the ~tau_1 decays.
-      decays(istau2) = *Dep::stau_2_decay_rates;      // Add the ~tau_2 decays.
-      decays(inel) = *Dep::snu_electronl_decay_rates; // Add the ~nu_e decays.
-      decays(inmul) = *Dep::snu_muonl_decay_rates;    // Add the ~nu_mu decays.
-      decays(intau1) = *Dep::snu_taul_decay_rates;    // Add the ~nu_tau decays.
+        decays("~g") = *Dep::gluino_decay_rates;            // Add the gluino decays.
 
-      decays("~chi+_1") = *Dep::chargino_1_decay_rates;   // Add the ~chi+_1 decays.
-      decays("~chi+_2") = *Dep::chargino_2_decay_rates;   // Add the ~chi+_2 decays.
-      decays("~chi0_1") = *Dep::neutralino_1_decay_rates; // Add the ~chi0_1 decays.
-      decays("~chi0_2") = *Dep::neutralino_2_decay_rates; // Add the ~chi0_2 decays.
-      decays("~chi0_3") = *Dep::neutralino_3_decay_rates; // Add the ~chi0_3 decays.
-      decays("~chi0_4") = *Dep::neutralino_4_decay_rates; // Add the ~chi0_4 decays.
+        decays("~chi+_1") = *Dep::chargino_1_decay_rates;   // Add the ~chi+_1 decays.
+        decays("~chi+_2") = *Dep::chargino_2_decay_rates;   // Add the ~chi+_2 decays.
+        decays("~chi0_1") = *Dep::neutralino_1_decay_rates; // Add the ~chi0_1 decays.
+        decays("~chi0_2") = *Dep::neutralino_2_decay_rates; // Add the ~chi0_2 decays.
+        decays("~chi0_3") = *Dep::neutralino_3_decay_rates; // Add the ~chi0_3 decays.
+        decays("~chi0_4") = *Dep::neutralino_4_decay_rates; // Add the ~chi0_4 decays.
 
-      cout << "BF for tau+ -> pi+ nubar_tau: " << decays("tau+").BF("pi+", "nubar_tau") << endl;
-      result = decays;
+        decays(ist1) = *Dep::stop_1_decay_rates;            // Add the ~t_1 decays.
+        decays(ist2) = *Dep::stop_2_decay_rates;            // Add the ~t_2 decays.
+        decays(isb1) = *Dep::sbottom_1_decay_rates;         // Add the ~b_1 decays.
+        decays(isb2) = *Dep::sbottom_2_decay_rates;         // Add the ~b_2 decays.
+        decays(isul) = *Dep::sup_l_decay_rates;             // Add the ~u_L decays.
+        decays(isur) = *Dep::sup_r_decay_rates;             // Add the ~u_R decays.
+        decays(isdl) = *Dep::sdown_l_decay_rates;           // Add the ~d_L decays.
+        decays(isdr) = *Dep::sdown_r_decay_rates;           // Add the ~d_R decays.
+        decays(iscl) = *Dep::scharm_l_decay_rates;          // Add the ~c_L decays.
+        decays(iscr) = *Dep::scharm_r_decay_rates;          // Add the ~c_R decays.
+        decays(issl) = *Dep::sstrange_l_decay_rates;        // Add the ~s_L decays.
+        decays(issr) = *Dep::sstrange_r_decay_rates;        // Add the ~s_R decays.
+        decays(isell) = *Dep::selectron_l_decay_rates;      // Add the ~e-_L decays.
+        decays(iselr) = *Dep::selectron_r_decay_rates;      // Add the ~e-_R decays.
+        decays(ismul) = *Dep::smuon_l_decay_rates;          // Add the ~mu-_L decays.
+        decays(ismur) = *Dep::smuon_r_decay_rates;          // Add the ~mu-_R decays.
+        decays(istau1) = *Dep::stau_1_decay_rates;          // Add the ~tau_1 decays.
+        decays(istau2) = *Dep::stau_2_decay_rates;          // Add the ~tau_2 decays.
+        decays(inel) = *Dep::snu_electronl_decay_rates;     // Add the ~nu_e decays.
+        decays(inmul) = *Dep::snu_muonl_decay_rates;        // Add the ~nu_mu decays.
+        decays(intau1) = *Dep::snu_taul_decay_rates;        // Add the ~nu_tau decays.
+      }
+
     }
 
     /// @}

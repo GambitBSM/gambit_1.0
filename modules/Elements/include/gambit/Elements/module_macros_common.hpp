@@ -121,7 +121,6 @@
 #define QFBODY_ABC(A,B,C,...)        VARARG_SWITCH_ON_GT_TWO_ABC(QFBODY, A, B, C, __VA_ARGS__)
 /// }@
 
-
 /// \name Variadic redirection macro for START_FUNCTION(TYPE,[CAN_MANAGE_LOOPS/CANNOT_MANAGE_LOOPS])
 /// Registers the current \link FUNCTION() FUNCTION\endlink of the current 
 /// \link MODULE() MODULE\endlink as a provider
