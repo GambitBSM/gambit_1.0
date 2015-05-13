@@ -249,8 +249,8 @@ namespace Gambit
       result.set_BF(BF_WWZ, BF_err, "W+", "W-", "Z0");
     }
 
-	/// MSSM sfermion states 
-	const char *isdl = "~d_1";
+    /// MSSM sfermion states 
+    const char *isdl = "~d_1";
     const char *isul = "~u_1";
     const char *issl = "~d_2";
     const char *iscl = "~u_2";
@@ -304,6 +304,26 @@ namespace Gambit
     void MSSM_h0_1_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::MSSM_h0_1_decays;
+      const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_UV();
+      //works
+      //const Spectrum* mssm_full(*Dep::MSSM_spectrum);
+      //const SubSpectrum* mssm = mssm_full->get_UV();
+     
+      //works
+       // const Spectrum* mssm_full = *Dep::MSSM_spectrum;
+       // const SubSpectrum* mssm = mssm_full->get_UV();
+
+      //const SubSpectrum* mssm(*Dep::MSSM_spectrum->get_UV());
+      //const SubSpectrum* mssm = Dep::MSSM_spectrum->get_UV();
+      //fails
+      // const SubSpectrum* spec = *Dep::SM_spectrum;
+      // const SubSpectrum* mssm = *Dep::MSSM_spectrum;
+      double msu1 = mssm->phys.get_Pole_Mass("~u",1);
+      double ZU11 = mssm->phys.get_Pole_Mixing("~u",1,1);
+      std::cout << "msu1 = " << msu1 << std::endl;
+      std::cout << "ZU11 = " << ZU11 << std::endl;
+         
+
       result.width_in_GeV = BEreq::cb_widthhl_hdec->hlwdth;
       result.set_BF(BEreq::cb_widthhl_hdec->hlbrb, 0.0, "b", "bbar");
       result.set_BF(BEreq::cb_widthhl_hdec->hlbrl, 0.0, "tau+", "tau-");
