@@ -42,48 +42,15 @@
 #ifndef STANDALONE
    // If we are in a main gambit executable, we need to know all the potentially printable types.
    #include "gambit/Elements/all_functor_types.hpp"
+   // Defines the macro PRINTABLE_TYPES which is a PP sequence of the types we need.
 #else
    // Otherwise, we are in the ScannerBit standalone executable and need only a limited set.
-   #define PRINTABLE_TYPES         \
-     (bool)                        \
-     (int)                         \
-     (double)                      \
-     (std::vector<bool>)           \
-     (std::vector<int>)            \
-     (std::vector<double>)         \
-     (ModelParameters)
-     // Add more as needed
+   // See BaseBasePrinter.hpp for the list
+   #define PRINTABLE_TYPES SCANNER_PRINTABLE_TYPES
 #endif
-
 
 // This macro registers each printer so that they can be constructed automatically from inifile instructions
 #define LOAD_PRINTER(tag, ...) REGISTER(printer_creators, tag, __VA_ARGS__)
-
-//#pragma message BOOST_PP_STRINGIZE(PRINTABLE_TYPES) //PRINTABLE_TYPES resides in all_functor_types.hpp 
-
-// Virtual print methods for base printer class
-#define VPRINT(r,data,elem)                                 \
-  virtual void print(elem const&, const std::string& label, \
-                     const int vertexID, const int /*rank*/, const int /*pointID*/) \
-  {                                                         \
-    std::ostringstream err;                                 \
-                                                            \
-    err << "No print function override has been "           \
-        << "\ndefined for this type (for whatever printer"  \
-        << "\nclass the current printer comes from)"        \
-        << "\n  Dumping available info..."                  \
-        << "\n   Label      : " << label                    \
-        << "\n   vertexID   : " << vertexID                 \
-        << "\n   Type       : " << STRINGIFY(elem);         \
-    printer_warning().raise(LOCAL_INFO,err.str());          \
-  }                                              
-
-// Creates all necessary virtual print methods for base printer class
-#define ADD_ALL_PRINT_FUNCTIONS \
-  BOOST_PP_SEQ_FOR_EACH(VPRINT, _, PRINTABLE_TYPES)
-
-//#pragma message "Base class print functions:"
-//#pragma message BOOST_PP_STRINGIZE(ADD_ALL_PRINT_FUNCTIONS)
 
 // Code!
 namespace Gambit
@@ -143,7 +110,7 @@ namespace Gambit
 
         // We need to have a virtual print method for EVERY type we ever want to print (i.e. for every type that can be held in the 'myValue' data member of a module functor). Generate these using a macro.
         // Run the macro; add all the print functions
-        ADD_ALL_PRINT_FUNCTIONS
+        ADD_VIRTUAL_PRINTS(PRINTABLE_TYPES) 
 
     };
 

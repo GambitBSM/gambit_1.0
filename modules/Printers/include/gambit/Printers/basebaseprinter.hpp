@@ -23,16 +23,24 @@
 
 // Standard libraries
 #include <string>
+#include <sstream>
 #include <vector>
+
+// Gambit headers
+#include "gambit/Utils/standalone_error_handlers.hpp"
 
 namespace Gambit
 {
   namespace Printers 
   {
-
+    // Convenienece typedefs for printers
+    typedef unsigned int      uint;
+    typedef unsigned long int ulong;
+ 
     class BaseBasePrinter  
     {
       public:
+        virtual ~BaseBasePrinter() {};
 
         /// Function to signal to the printer to write buffer contents to disk
         virtual void flush() = 0;
@@ -43,12 +51,35 @@ namespace Gambit
         /// Retrieve MPI rank
         virtual int getRank() = 0;
 
-        /// Manual declarations of minimal print functions needed by ScannerBit
-        virtual void print(int                 const&, const std::string&, const int, const int, const int) = 0;
-        virtual void print(unsigned int        const&, const std::string&, const int, const int, const int) = 0;
-        virtual void print(double              const&, const std::string&, const int, const int, const int) = 0;
-        virtual void print(std::vector<double> const&, const std::string&, const int, const int, const int) = 0;
+        /// Declarations of minimal print functions needed by ScannerBit
+        #define SCANNER_PRINTABLE_TYPES \
+          (bool)                     \
+          (int)(uint)(long)(ulong)   \
+          (float)(double)            \
+          (std::vector<bool>)        \
+          (std::vector<int>)         \
+          (std::vector<double>)      \
+          (ModelParameters)  
+ 
+        // Virtual print methods for base printer classes
+        #define VPRINT(r,data,elem)                               \
+        virtual void print(elem const&, const std::string& label, \
+                           const int vertexID, const int /*rank*/, const int /*pointID*/) \
+        {                                                         \
+          std::ostringstream err;                                 \
+                                                                  \
+          err << "No print function override has been "           \
+              << "\ndefined for this type (for whatever printer"  \
+              << "\nclass the current printer comes from)"        \
+              << "\n  Dumping available info..."                  \
+              << "\n   Label      : " << label                    \
+              << "\n   vertexID   : " << vertexID                 \
+              << "\n   Type       : " << STRINGIFY(elem);         \
+          printer_warning().raise(LOCAL_INFO,err.str());          \
+        }                                              
 
+        #define ADD_VIRTUAL_PRINTS(TYPES) BOOST_PP_SEQ_FOR_EACH(VPRINT, _, TYPES)
+        ADD_VIRTUAL_PRINTS(SCANNER_PRINTABLE_TYPES) 
     };
  
   } //end namespace Printers
