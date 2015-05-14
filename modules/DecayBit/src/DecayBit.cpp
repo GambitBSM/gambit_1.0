@@ -18,6 +18,7 @@
 
 #include "gambit/Elements/gambit_module_headers.hpp"
 #include "gambit/DecayBit/DecayBit_rollcall.hpp"
+#include "gambit/DecayBit/decay_utils.hpp"
 
 namespace Gambit
 {
@@ -41,7 +42,7 @@ namespace Gambit
     }                                                                           
 
 
-    /// SM decays: W+
+    /// SM decays: W+/W-
     void W_plus_decays (DecayTable::Entry& result) 
     {
       result.width_in_GeV = 2.08;                    
@@ -54,13 +55,8 @@ namespace Gambit
 
     /// SM decays: W-
     void W_minus_decays (DecayTable::Entry& result) 
-    {
-      result.width_in_GeV = 2.08;                    
-      result.positive_error = 4.0e-02;
-      result.negative_error = 4.0e-02;
-      result.set_BF(0.1071, 0.0016, "e-", "nubar_e");              
-      result.set_BF(0.1063, 0.0015, "mu-", "nubar_mu");              
-      result.set_BF(0.1138, 0.0021, "tau-", "nubar_tau");              
+    {     
+      result = CP_conjugate(*Pipes::W_minus_decays::Dep::W_plus_decay_rates);
     }
 
     /// SM decays: Z
@@ -88,19 +84,7 @@ namespace Gambit
     /// SM decays: tbar
     void tbar_decays (DecayTable::Entry& result) 
     {
-      result.width_in_GeV = 2.0;                    
-      result.positive_error = 5.0e-01;
-      result.negative_error = 5.0e-01;
-      result.set_BF(0.91, 0.04, "W-", "bbar");              
-    }
-
-    /// SM decays: mu-
-    void mu_minus_decays (DecayTable::Entry& result) 
-    {
-      result.width_in_GeV = 2.9959847e-19;                    
-      result.positive_error = 3.0e-25;
-      result.negative_error = 3.0e-25;
-      result.set_BF(1.0, 0.0, "e-", "nubar_e", "nu_mu");              
+      result = CP_conjugate(*Pipes::tbar_decays::Dep::t_decay_rates);
     }
 
     /// SM decays: mu+
@@ -112,20 +96,10 @@ namespace Gambit
       result.set_BF(1.0, 0.0, "e+", "nu_e", "nubar_mu");              
     }
 
-    /// SM decays: tau-
-    void tau_minus_decays (DecayTable::Entry& result) 
+    /// SM decays: mu-
+    void mu_minus_decays (DecayTable::Entry& result) 
     {
-      result.width_in_GeV = 2.267E-12;                    
-      result.positive_error = 4.0e-15;
-      result.negative_error = 4.0e-15;
-      result.set_BF(0.1741, 0.0004, "mu-", "nubar_mu", "nu_tau");              
-      result.set_BF(0.1783, 0.0004, "e-", "nubar_e", "nu_tau");              
-      result.set_BF(0.1083, 0.0006, "pi-", "nu_tau");              
-      result.set_BF(0.2552, 0.0009, "pi-", "pi0", "nu_tau");              
-      result.set_BF(0.0930, 0.0011, "pi-", "pi0", "pi0", "nu_tau");              
-      result.set_BF(0.0105, 0.0007, "pi-", "pi0", "pi0", "pi0", "nu_tau");              
-      result.set_BF(0.0931, 0.0006, "pi-", "pi+", "pi-", "nu_tau");              
-      result.set_BF(0.0462, 0.0006, "pi-", "pi+", "pi-", "pi0", "nu_tau");              
+      result = CP_conjugate(*Pipes::mu_minus_decays::Dep::mu_plus_decay_rates);
     }
 
     /// SM decays: tau+
@@ -142,6 +116,12 @@ namespace Gambit
       result.set_BF(0.0105, 0.0007, "pi+", "pi0", "pi0", "pi0", "nubar_tau");              
       result.set_BF(0.0931, 0.0006, "pi+", "pi+", "pi-", "nubar_tau");              
       result.set_BF(0.0462, 0.0006, "pi+", "pi+", "pi-", "pi0", "nubar_tau");              
+    }
+
+    /// SM decays: tau-
+    void tau_minus_decays (DecayTable::Entry& result) 
+    {
+      result = CP_conjugate(*Pipes::tau_minus_decays::Dep::tau_plus_decay_rates);
     }
 
     /// SM decays: pi0
@@ -169,11 +149,7 @@ namespace Gambit
     /// SM decays: pi-
     void pi_minus_decays (DecayTable::Entry& result) 
     {
-      result.width_in_GeV = 2.5284e-17;                    
-      result.positive_error = 5.0e-21;
-      result.negative_error = 5.0e-21;
-      result.set_BF(0.9998770, 0.0000004, "mu-", "nubar_mu");              
-      result.set_BF(1.230e-4, 0.004e-4, "e-", "nubar_e");              
+      result = CP_conjugate(*Pipes::pi_minus_decays::Dep::pi_plus_decay_rates);
     }
 
     /// SM decays: eta
@@ -206,10 +182,7 @@ namespace Gambit
     /// SM decays: rho-
     void rho_minus_decays (DecayTable::Entry& result) 
     {
-      result.width_in_GeV = 1.491e-01;                    
-      result.positive_error = 8.0e-04;
-      result.negative_error = 8.0e-04;
-      //See PDG meson sheet in DecayBit/data/PDG if you want BFs               
+      result = CP_conjugate(*Pipes::rho_minus_decays::Dep::rho_plus_decay_rates);
     }
 
     /// SM decays: omega
@@ -476,6 +449,11 @@ namespace Gambit
       // cout << "Hplus total width: " << result.width_in_GeV << endl;
     }
 
+    /// MSSM decays: Hminus
+    void Hminus_decays (DecayTable::Entry& result) 
+    {
+      result = CP_conjugate(*Pipes::Hminus_decays::Dep::Hplus_decay_rates);
+    }
 
     /// MSSM decays: gluino
     void gluino_decays (DecayTable::Entry& result) 
@@ -606,6 +584,12 @@ namespace Gambit
       cout << "stop_1 total width: " << result.width_in_GeV << endl;
     }
 
+    /// MSSM decays: stopbar_1
+    void stopbar_1_decays (DecayTable::Entry& result) 
+    {
+      result = CP_conjugate(*Pipes::stopbar_1_decays::Dep::stop_1_decay_rates);
+    }
+
     /// MSSM decays: stop_2
     void stop_2_decays (DecayTable::Entry& result) 
     {
@@ -673,6 +657,12 @@ namespace Gambit
       cout << "stop_2 total width: " << result.width_in_GeV << endl;
     }
 
+    /// MSSM decays: stopbar_2
+    void stopbar_2_decays (DecayTable::Entry& result) 
+    {
+      result = CP_conjugate(*Pipes::stopbar_2_decays::Dep::stop_2_decay_rates);
+    }
+
     /// MSSM decays: sbottom_1
     void sbottom_1_decays (DecayTable::Entry& result) 
     {
@@ -713,6 +703,12 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_sbot3body->brsbelstnu(1,1), 0.0, ist1, "mu-", "nubar_mu");
       result.set_BF(BEreq::cb_sd_sbot3body->brsbelstnu(1,2), 0.0, ist1, "mu-", "nubar_mu");
       cout << "sbottom_1 total width: " << result.width_in_GeV << endl;
+    }
+
+    /// MSSM decays: sbottombar_1
+    void sbottombar_1_decays (DecayTable::Entry& result) 
+    {
+      result = CP_conjugate(*Pipes::sbottombar_1_decays::Dep::sbottom_1_decay_rates);
     }
 
     /// MSSM decays: sbottom_2
@@ -772,6 +768,12 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_sbot3body->brsb2sb1nunu, 0.0, isb1, "nu_mu", "nubar_mu");
       result.set_BF(BEreq::cb_sd_sbot3body->brsb2sb1nunu, 0.0, isb1, "nu_tau", "nubar_tau");
       cout << "sbottom_2 total width: " << result.width_in_GeV << endl;
+    }
+
+    /// MSSM decays: sbottombar_2
+    void sbottombar_2_decays (DecayTable::Entry& result) 
+    {
+      result = CP_conjugate(*Pipes::sbottombar_2_decays::Dep::sbottom_2_decay_rates);
     }
 
     /// MSSM decays: sup_l
