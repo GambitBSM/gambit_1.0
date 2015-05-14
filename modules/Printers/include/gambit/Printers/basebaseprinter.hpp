@@ -26,7 +26,10 @@
 #include <sstream>
 #include <vector>
 
-// Gambit headers
+// Boost
+#include <boost/preprocessor/seq/for_each.hpp>
+
+// Gambit
 #include "gambit/Utils/standalone_error_handlers.hpp"
 
 namespace Gambit
@@ -58,13 +61,13 @@ namespace Gambit
           (float)(double)            \
           (std::vector<bool>)        \
           (std::vector<int>)         \
-          (std::vector<double>)      \
-          (ModelParameters)  
+          (std::vector<double>)
  
         // Virtual print methods for base printer classes
         #define VPRINT(r,data,elem)                               \
         virtual void print(elem const&, const std::string& label, \
-                           const int vertexID, const int /*rank*/, const int /*pointID*/) \
+                           const int vertexID, const uint /*rank*/, \
+                           const ulong /*pointID*/)               \
         {                                                         \
           std::ostringstream err;                                 \
                                                                   \

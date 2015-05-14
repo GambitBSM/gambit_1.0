@@ -262,7 +262,7 @@ namespace Gambit
      // Add more as needed
 
     #define TEMPLATE_PRINT(r,data,elem)                                 \
-    void print(elem const&, const std::string& label, const int vertexID, const int /*rank*/, const int /*pointID*/) \
+    void print(elem const&, const std::string& label, const int vertexID, const uint /*rank*/, const ulong /*pointID*/) \
     {                                                          \
       template_print(value,label,IDcode,thread,pointID);       \
     }                                                          

@@ -20,14 +20,18 @@
 #************************************************
 
 set(source_files src/asciiprinter.cpp
+                 src/hdf5printer.cpp
+                 src/hdf5tools.cpp
                  src/ostreamprinter.cpp
                  src/printermanager.cpp
 )
 
 set(header_files include/gambit/Printers/baseprinter.hpp
+                 include/gambit/Printers/hdf5tools.hpp
                  include/gambit/Printers/printer_rollcall.hpp
                  include/gambit/Printers/printermanager.hpp
                  include/gambit/Printers/printers/asciiprinter.hpp
+                 include/gambit/Printers/printers/hdf5printer.hpp
                  include/gambit/Printers/printers/ostreamprinter.hpp
 )
 

@@ -124,23 +124,23 @@ namespace Gambit
         // for all types that have a << operator already defined.
 
         // Scanner-friendly types to print
-        void print(int const&,                 const std::string& label, const int IDcode, const int rank, const int pointID);
-        void print(double const&,              const std::string& label, const int IDcode, const int rank, const int pointID);
-        void print(std::vector<double> const&, const std::string& label, const int IDcode, const int rank, const int pointID);
-        void print(ModelParameters const&,     const std::string& label, const int IDcode, const int rank, const int pointID);
+        void print(int const&,                 const std::string& label, const int IDcode, const uint rank, const ulong pointID);
+        void print(double const&,              const std::string& label, const int IDcode, const uint rank, const ulong pointID);
+        void print(std::vector<double> const&, const std::string& label, const int IDcode, const uint rank, const ulong pointID);
+        void print(ModelParameters const&,     const std::string& label, const int IDcode, const uint rank, const ulong pointID);
 
         // Scanner-unfriendly print functions
         #ifndef STANDALONE  // Need to disable print functions for these if STANDALONE is defined (see baseprinter.hpp line ~41)
         // unsigned int is chosen somewhat arbitrarily just to demonstrate this requirement. Will be more important if other
         // fancier types need to be disabled.
-        void print(unsigned int const&,        const std::string& label, const int IDcode, const int rank, const int pointID);         
+        void print(unsigned int const&,        const std::string& label, const int IDcode, const uint rank, const ulong pointID); 
         #endif      
 
         /// Helper print functions
         // Used to reduce repetition in definitions of virtual function overloads 
         // (useful since there is no automatic type conversion possible)
         template<class T>
-        void template_print(T const&, const std::string&, const int, const int, const int);
+        void template_print(T const&, const std::string&, const int, const uint, const ulong);
 
       private:
         /// Output file

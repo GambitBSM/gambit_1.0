@@ -47,6 +47,8 @@ if(EXISTS "${PROJECT_SOURCE_DIR}/Core/")
   if(MPI_FOUND)
     target_link_libraries(gambit ${MPI_LIBRARIES})
   endif()
+    # For now, HDF5 is a necessity
+    target_link_libraries(gambit ${HDF5_LIBRARIES})
 endif()
 
 # Add the ExampleBit_A_standalone executable

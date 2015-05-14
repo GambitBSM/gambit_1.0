@@ -168,6 +168,14 @@ else()
   message(FATAL_ERROR "GAMBIT requires the GSL libraries.")
 endif()
 
+# Check for HDF5 libraries
+find_package(HDF5 REQUIRED)
+if(HDF5_FOUND)
+  # TODO: Disable HDF5 printer if not found
+  include_directories(${HDF5_INCLUDE_DIR})
+  # should also set ${HDF5_LIBRARIES} 
+endif()
+
 # Check for DL libraries
 include(cmake/FindLibDL.cmake)
 
