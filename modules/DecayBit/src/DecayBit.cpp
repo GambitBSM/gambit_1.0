@@ -791,6 +791,12 @@ namespace Gambit
       // cout << "sup_l total width: " << result.width_in_GeV << endl;
     }
 
+    /// MSSM decays: supbar_l
+    void supbar_l_decays (DecayTable::Entry& result) 
+    {
+      result = CP_conjugate(*Pipes::supbar_l_decays::Dep::sup_l_decay_rates);
+    }
+
     /// MSSM decays: sup_r
     void sup_r_decays (DecayTable::Entry& result) 
     {
@@ -804,6 +810,12 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_sup2body->brsuprcdow(2), 0.0, "~chi+_2", "d");
       result.set_BF(BEreq::cb_sd_sup2body->brsuprglui, 0.0, "~g", "u");
       // cout << "sup_r total width: " << result.width_in_GeV << endl;
+    }
+
+    /// MSSM decays: supbar_r
+    void supbar_r_decays (DecayTable::Entry& result) 
+    {
+      result = CP_conjugate(*Pipes::supbar_r_decays::Dep::sup_r_decay_rates);
     }
 
     /// MSSM decays: sdown_l
@@ -821,6 +833,12 @@ namespace Gambit
       // cout << "sdown_l total width: " << result.width_in_GeV << endl;
     }
 
+    /// MSSM decays: sdownbar_l
+    void sdownbar_l_decays (DecayTable::Entry& result) 
+    {
+      result = CP_conjugate(*Pipes::sdownbar_l_decays::Dep::sdown_l_decay_rates);
+    }
+
     /// MSSM decays: sdown_r
     void sdown_r_decays (DecayTable::Entry& result) 
     {
@@ -834,6 +852,12 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_sdown2body->brsdowrchup(2), 0.0, "~chi-_2", "u");
       result.set_BF(BEreq::cb_sd_sdown2body->brsdowrglui, 0.0, "~g", "d");
       // cout << "sdown_r total width: " << result.width_in_GeV << endl;
+    }
+
+    /// MSSM decays: sdownbar_r
+    void sdownbar_r_decays (DecayTable::Entry& result) 
+    {
+      result = CP_conjugate(*Pipes::sdownbar_r_decays::Dep::sdown_r_decay_rates);
     }
 
     /// MSSM decays: scharm_l
@@ -851,6 +875,12 @@ namespace Gambit
       // cout << "scharm_l total width: " << result.width_in_GeV << endl;
     }
 
+    /// MSSM decays: scharmbar_l
+    void scharmbar_l_decays (DecayTable::Entry& result) 
+    {
+      result = CP_conjugate(*Pipes::scharmbar_l_decays::Dep::scharm_l_decay_rates);
+    }
+
     /// MSSM decays: scharm_r
     void scharm_r_decays (DecayTable::Entry& result) 
     {
@@ -864,6 +894,12 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_sup2body->brsuprcdow(2), 0.0, "~chi+_2", "s");
       result.set_BF(BEreq::cb_sd_sup2body->brsuprglui, 0.0, "~g", "c");
       // cout << "scharm_r total width: " << result.width_in_GeV << endl;
+    }
+
+    /// MSSM decays: scharmbar_r
+    void scharmbar_r_decays (DecayTable::Entry& result) 
+    {
+      result = CP_conjugate(*Pipes::scharmbar_r_decays::Dep::scharm_r_decay_rates);
     }
 
     /// MSSM decays: sstrange_l
@@ -881,6 +917,12 @@ namespace Gambit
       // cout << "sstrange_l total width: " << result.width_in_GeV << endl;
     }
 
+    /// MSSM decays: sstrangebar_l
+    void sstrangebar_l_decays (DecayTable::Entry& result) 
+    {
+      result = CP_conjugate(*Pipes::sstrangebar_l_decays::Dep::sstrange_l_decay_rates);
+    }
+
     /// MSSM decays: sstrange_r
     void sstrange_r_decays (DecayTable::Entry& result) 
     {
@@ -894,6 +936,12 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_sdown2body->brsdowrchup(2), 0.0, "~chi-_2", "c");
       result.set_BF(BEreq::cb_sd_sdown2body->brsdowrglui, 0.0, "~g", "s");
       // cout << "sstrange_r total width: " << result.width_in_GeV << endl;
+    }
+
+    /// MSSM decays: sstrangebar_r
+    void sstrangebar_r_decays (DecayTable::Entry& result) 
+    {
+      result = CP_conjugate(*Pipes::sstrangebar_r_decays::Dep::sstrange_r_decay_rates);
     }
 
     /// MSSM decays: selectron_l
@@ -910,6 +958,12 @@ namespace Gambit
       // cout << "selectron_l total width: " << result.width_in_GeV << endl;
     }
 
+    /// MSSM decays: selectronbar_l
+    void selectronbar_l_decays (DecayTable::Entry& result) 
+    {
+      result = CP_conjugate(*Pipes::selectronbar_l_decays::Dep::selectron_l_decay_rates);
+    }
+
     /// MSSM decays: selectron_r
     void selectron_r_decays (DecayTable::Entry& result) 
     {
@@ -922,6 +976,12 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_sel2body->brselrcharnue(1), 0.0, "~chi-_1", "nu_e");
       result.set_BF(BEreq::cb_sd_sel2body->brselrcharnue(2), 0.0, "~chi-_2", "nu_e");
       // cout << "selectron_r total width: " << result.width_in_GeV << endl;
+    }
+
+    /// MSSM decays: selectronbar_r
+    void selectronbar_r_decays (DecayTable::Entry& result) 
+    {
+      result = CP_conjugate(*Pipes::selectronbar_r_decays::Dep::selectron_r_decay_rates);
     }
 
     /// MSSM decays: smuon_l
@@ -938,6 +998,12 @@ namespace Gambit
       // cout << "smuon_l total width: " << result.width_in_GeV << endl;
     }
 
+    /// MSSM decays: smuonbar_l
+    void smuonbar_l_decays (DecayTable::Entry& result) 
+    {
+      result = CP_conjugate(*Pipes::smuonbar_l_decays::Dep::smuon_l_decay_rates);
+    }
+
     /// MSSM decays: smuon_r
     void smuon_r_decays (DecayTable::Entry& result) 
     {
@@ -950,6 +1016,12 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_sel2body->brselrcharnue(1), 0.0, "~chi-_1", "nu_mu");
       result.set_BF(BEreq::cb_sd_sel2body->brselrcharnue(2), 0.0, "~chi-_2", "nu_mu");
       // cout << "smuon_r total width: " << result.width_in_GeV << endl;
+    }
+
+    /// MSSM decays: smuonbar_r
+    void smuonbar_r_decays (DecayTable::Entry& result) 
+    {
+      result = CP_conjugate(*Pipes::smuonbar_r_decays::Dep::smuon_r_decay_rates);
     }
 
     /// MSSM decays: stau_1
@@ -967,6 +1039,12 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_stau2body->brstau1wsn(1), 0.0, intau1, "W-");
       result.set_BF(BEreq::cb_sd_stau2bodygrav->brstautaugrav, 0.0, "~G", "tau-");
       // cout << "stau_1 total width: " << result.width_in_GeV << endl;
+    }
+
+    /// MSSM decays: staubar_1
+    void staubar_1_decays (DecayTable::Entry& result) 
+    {
+      result = CP_conjugate(*Pipes::staubar_1_decays::Dep::stau_1_decay_rates);
     }
 
     /// MSSM decays: stau_2
@@ -989,9 +1067,15 @@ namespace Gambit
       // cout << "stau_2 total width: " << result.width_in_GeV << endl;
     }
 
+    /// MSSM decays: staubar_2
+    void staubar_2_decays (DecayTable::Entry& result) 
+    {
+      result = CP_conjugate(*Pipes::staubar_2_decays::Dep::stau_2_decay_rates);
+    }
+
     /// MSSM decays: snu_electronl
     void snu_electronl_decays (DecayTable::Entry& result) 
-    {
+    {      
       using namespace Pipes::snu_electronl_decays;
       result.width_in_GeV = BEreq::cb_sd_snelwidth->sneltot2;
       result.set_BF(BEreq::cb_sd_snel2body->brsnellneut(1), 0.0, "~chi0_1", "nu_e");
@@ -1001,6 +1085,12 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_snel2body->brsnellchar(1), 0.0, "~chi+_1", "e-");
       result.set_BF(BEreq::cb_sd_snel2body->brsnellchar(2), 0.0, "~chi+_2", "e-");
       // cout << "snu_electronl total width: " << result.width_in_GeV << endl;
+    }
+
+    /// MSSM decays: snubar_electronl
+    void snubar_electronl_decays (DecayTable::Entry& result) 
+    {
+      result = CP_conjugate(*Pipes::snubar_electronl_decays::Dep::snu_electronl_decay_rates);
     }
 
     /// MSSM decays: snu_muonl
@@ -1015,6 +1105,12 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_snel2body->brsnellchar(1), 0.0, "~chi+_1", "mu-");
       result.set_BF(BEreq::cb_sd_snel2body->brsnellchar(2), 0.0, "~chi+_2", "mu-");
       // cout << "snu_muonl total width: " << result.width_in_GeV << endl;
+    }
+
+    /// MSSM decays: snubar_muonl
+    void snubar_muonl_decays (DecayTable::Entry& result) 
+    {
+      result = CP_conjugate(*Pipes::snubar_muonl_decays::Dep::snu_muonl_decay_rates);
     }
 
     /// MSSM decays: snu_taul
@@ -1035,10 +1131,16 @@ namespace Gambit
       // cout << "snu_taul total width: " << result.width_in_GeV << endl;
     }
 
-    /// MSSM decays: chargino_1
-    void chargino_1_decays (DecayTable::Entry& result) 
+    /// MSSM decays: snubar_taul
+    void snubar_taul_decays (DecayTable::Entry& result) 
     {
-      using namespace Pipes::chargino_1_decays;
+      result = CP_conjugate(*Pipes::snubar_taul_decays::Dep::snu_taul_decay_rates);
+    }
+
+    /// MSSM decays: charginoplus_1
+    void charginoplus_1_decays (DecayTable::Entry& result) 
+    {
+      using namespace Pipes::charginoplus_1_decays;
       result.width_in_GeV = BEreq::cb_sd_charwidth->chartot(1);
       result.set_BF(BEreq::cb_sd_char2body->brcharsupl(1), 0.0, isul, "dbar");
       result.set_BF(BEreq::cb_sd_char2body->brcharsupr(1), 0.0, isur, "dbar");
@@ -1100,13 +1202,19 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_char3body->brglupdb(1), 0.0, "~g", "u", "dbar");
       result.set_BF(BEreq::cb_sd_char3body->brglchsb(1), 0.0, "~g", "c", "sbar");
       result.set_BF(BEreq::cb_sd_char3body->brgltopbb(1), 0.0, "~g", "t", "bbar");
-      // cout << "chargino_1 total width: " << result.width_in_GeV << endl;
+      // cout << "charginoplus_1 total width: " << result.width_in_GeV << endl;
     }
 
-    /// MSSM decays: chargino_2
-    void chargino_2_decays (DecayTable::Entry& result) 
+    /// MSSM decays: charginominus_1
+    void charginominus_1_decays (DecayTable::Entry& result) 
     {
-      using namespace Pipes::chargino_2_decays;
+      result = CP_conjugate(*Pipes::charginominus_1_decays::Dep::charginoplus_1_decay_rates);
+    }
+
+    /// MSSM decays: charginoplus_2
+    void charginoplus_2_decays (DecayTable::Entry& result) 
+    {
+      using namespace Pipes::charginoplus_2_decays;
       result.width_in_GeV = BEreq::cb_sd_charwidth->chartot(2);
       result.set_BF(BEreq::cb_sd_char2body->brcharsupl(2), 0.0, isul, "dbar");
       result.set_BF(BEreq::cb_sd_char2body->brcharsupr(2), 0.0, isur, "dbar");
@@ -1184,7 +1292,13 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_char3body->brglupdb(2), 0.0, "~g", "u", "dbar");
       result.set_BF(BEreq::cb_sd_char3body->brglchsb(2), 0.0, "~g", "c", "sbar");
       result.set_BF(BEreq::cb_sd_char3body->brgltopbb(2), 0.0, "~g", "t", "bbar");
-      // cout << "chargino_2 total width: " << result.width_in_GeV << endl;
+      // cout << "charginoplus_2 total width: " << result.width_in_GeV << endl;
+    }
+
+    /// MSSM decays: charginominus_2
+    void charginominus_2_decays (DecayTable::Entry& result) 
+    {
+      result = CP_conjugate(*Pipes::charginominus_2_decays::Dep::charginoplus_2_decay_rates);
     }
 
     /// MSSM decays: neutralino_1
@@ -1738,15 +1852,18 @@ namespace Gambit
         decays("h0_2") = *Dep::h0_2_decay_rates;            // Add the h0_2 decays.
         decays("A0") = *Dep::A0_decay_rates;                // Add the A0 decays.
         decays("H+") = *Dep::Hplus_decay_rates;             // Add the H+ decays.       
+        decays("H-") = *Dep::Hminus_decay_rates;            // Add the H+ decays.       
 
         decays("~g") = *Dep::gluino_decay_rates;            // Add the gluino decays.
 
-        decays("~chi+_1") = *Dep::chargino_1_decay_rates;   // Add the ~chi+_1 decays.
-        decays("~chi+_2") = *Dep::chargino_2_decay_rates;   // Add the ~chi+_2 decays.
-        decays("~chi0_1") = *Dep::neutralino_1_decay_rates; // Add the ~chi0_1 decays.
-        decays("~chi0_2") = *Dep::neutralino_2_decay_rates; // Add the ~chi0_2 decays.
-        decays("~chi0_3") = *Dep::neutralino_3_decay_rates; // Add the ~chi0_3 decays.
-        decays("~chi0_4") = *Dep::neutralino_4_decay_rates; // Add the ~chi0_4 decays.
+        decays("~chi+_1") = *Dep::charginoplus_1_decay_rates;  // Add the ~chi+_1 decays.
+        decays("~chi-_1") = *Dep::charginominus_1_decay_rates; // Add the ~chi+_1 decays.
+        decays("~chi+_2") = *Dep::charginoplus_2_decay_rates;  // Add the ~chi+_2 decays.
+        decays("~chi-_2") = *Dep::charginominus_2_decay_rates; // Add the ~chi+_2 decays.
+        decays("~chi0_1") = *Dep::neutralino_1_decay_rates;    // Add the ~chi0_1 decays.
+        decays("~chi0_2") = *Dep::neutralino_2_decay_rates;    // Add the ~chi0_2 decays.
+        decays("~chi0_3") = *Dep::neutralino_3_decay_rates;    // Add the ~chi0_3 decays.
+        decays("~chi0_4") = *Dep::neutralino_4_decay_rates;    // Add the ~chi0_4 decays.
 
         decays(ist1) = *Dep::stop_1_decay_rates;            // Add the ~t_1 decays.
         decays(ist2) = *Dep::stop_2_decay_rates;            // Add the ~t_2 decays.
@@ -1769,6 +1886,29 @@ namespace Gambit
         decays(inel) = *Dep::snu_electronl_decay_rates;     // Add the ~nu_e decays.
         decays(inmul) = *Dep::snu_muonl_decay_rates;        // Add the ~nu_mu decays.
         decays(intau1) = *Dep::snu_taul_decay_rates;        // Add the ~nu_tau decays.
+
+        decays(ist1bar) = *Dep::stopbar_1_decay_rates;      // Add the ~tbar_1 decays.
+        decays(ist2bar) = *Dep::stopbar_2_decay_rates;      // Add the ~tbar_2 decays.
+        decays(isb1bar) = *Dep::sbottombar_1_decay_rates;   // Add the ~bbar_1 decays.
+        decays(isb2bar) = *Dep::sbottombar_2_decay_rates;   // Add the ~bbar_2 decays.
+        decays(isulbar) = *Dep::supbar_l_decay_rates;       // Add the ~ubar_L decays.
+        decays(isurbar) = *Dep::supbar_r_decay_rates;       // Add the ~ubar_R decays.
+        decays(isdlbar) = *Dep::sdownbar_l_decay_rates;     // Add the ~dbar_L decays.
+        decays(isdrbar) = *Dep::sdownbar_r_decay_rates;     // Add the ~dbar_R decays.
+        decays(isclbar) = *Dep::scharmbar_l_decay_rates;    // Add the ~cbar_L decays.
+        decays(iscrbar) = *Dep::scharmbar_r_decay_rates;    // Add the ~cbar_R decays.
+        decays(isslbar) = *Dep::sstrangebar_l_decay_rates;  // Add the ~sbar_L decays.
+        decays(issrbar) = *Dep::sstrangebar_r_decay_rates;  // Add the ~sbar_R decays.
+        decays(isellbar) = *Dep::selectronbar_l_decay_rates;// Add the ~e+_L decays.
+        decays(iselrbar) = *Dep::selectronbar_r_decay_rates;// Add the ~e+_R decays.
+        decays(ismulbar) = *Dep::smuonbar_l_decay_rates;    // Add the ~mu+_L decays.
+        decays(ismurbar) = *Dep::smuonbar_r_decay_rates;    // Add the ~mu+_R decays.
+        decays(istau1bar) = *Dep::staubar_1_decay_rates;    // Add the ~taubar_1 decays.
+        decays(istau2bar) = *Dep::staubar_2_decay_rates;    // Add the ~taubar_2 decays.
+        decays(inelbar)= *Dep::snubar_electronl_decay_rates;// Add the ~nu_e decays.
+        decays(inmulbar) = *Dep::snubar_muonl_decay_rates;  // Add the ~nu_mu decays.
+        decays(intau1bar) = *Dep::snubar_taul_decay_rates;  // Add the ~nu_tau decays.
+
       }
 
     }
