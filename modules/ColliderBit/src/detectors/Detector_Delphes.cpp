@@ -101,7 +101,7 @@ namespace Gambit {
         const TObjArray *arrayMissingET = modularDelphes->ImportArray("MissingET/momentum");
         if ((candidate = static_cast<Candidate*>(arrayMissingET->At(0)))) {
           const TLorentzVector &momentum = candidate->Momentum;
-          event.set_missingmom(P4::mkXYZM(-1*momentum.Px(), -1*momentum.Py(), 0., 0.));
+          event.set_missingmom(HEPUtils::P4::mkXYZM(-1*momentum.Px(), -1*momentum.Py(), 0., 0.));
         }
 
         // Delphes particle arrays: Post-Detector Sim
@@ -111,7 +111,7 @@ namespace Gambit {
         iteratorPhotons.Reset();
         while ((candidate = static_cast<Candidate*>(iteratorPhotons.Next()))) {
           const TLorentzVector &momentum = candidate->Momentum;
-          recoParticle = new HEPUtils::Particle(P4::mkXYZM(momentum.Px(), momentum.Py(), momentum.Pz(), 0.), PID::PHOTON);
+          recoParticle = new HEPUtils::Particle(HEPUtils::P4::mkXYZM(momentum.Px(), momentum.Py(), momentum.Pz(), 0.), MCUtils::PID::PHOTON);
           recoParticle->set_prompt(true);
           event.add_particle(recoParticle);
         }
@@ -123,8 +123,8 @@ namespace Gambit {
         iteratorElectrons.Reset();
         while ((candidate = static_cast<Candidate*>(iteratorElectrons.Next()))) {
           const TLorentzVector &momentum = candidate->Momentum;
-          recoParticle = new HEPUtils::Particle(P4::mkXYZM(momentum.Px(), momentum.Py(), momentum.Pz(), 0.000510998902),
-                                      -sign(candidate->Charge) * PID::ELECTRON);
+          recoParticle = new HEPUtils::Particle(HEPUtils::P4::mkXYZM(momentum.Px(), momentum.Py(), momentum.Pz(), 0.000510998902),
+                                      -HEPUtils::sign(candidate->Charge) * MCUtils::PID::ELECTRON);
           recoParticle->set_prompt(true);
           event.add_particle(recoParticle);
         }
@@ -136,8 +136,8 @@ namespace Gambit {
         iteratorMuons.Reset();
         while ((candidate = static_cast<Candidate*>(iteratorMuons.Next()))) {
           const TLorentzVector &momentum = candidate->Momentum;
-          recoParticle = new HEPUtils::Particle(P4::mkXYZM(momentum.Px(), momentum.Py(), momentum.Pz(), 0.105658389),
-                                      -sign(candidate->Charge) * PID::MUON);
+          recoParticle = new HEPUtils::Particle(HEPUtils::P4::mkXYZM(momentum.Px(), momentum.Py(), momentum.Pz(), 0.105658389),
+                                      -HEPUtils::sign(candidate->Charge) * MCUtils::PID::MUON);
           recoParticle->set_prompt(true);
           event.add_particle(recoParticle);
         }
@@ -150,15 +150,15 @@ namespace Gambit {
         while ((candidate = static_cast<Candidate*>(iteratorJets.Next()))) {
           const TLorentzVector &momentum = candidate->Momentum;
           if (candidate->TauTag) {
-            recoParticle = new HEPUtils::Particle(P4::mkXYZM(momentum.Px(), momentum.Py(), momentum.Pz(), 1e-6),
-                                        -sign(candidate->Charge) * PID::TAU);
+            recoParticle = new HEPUtils::Particle(HEPUtils::P4::mkXYZM(momentum.Px(), momentum.Py(), momentum.Pz(), 1e-6),
+                                        -HEPUtils::sign(candidate->Charge) * MCUtils::PID::TAU);
             recoParticle->set_prompt(true);
             event.add_particle(recoParticle);
             //continue;
           }
           else {
             /// @todo Should the jet mass be assigned properly rather than set as microscopic?
-            recoJet = new HEPUtils::Jet(P4::mkXYZM(momentum.Px(), momentum.Py(), momentum.Pz(), 1e-6), candidate->BTag);
+            recoJet = new HEPUtils::Jet(HEPUtils::P4::mkXYZM(momentum.Px(), momentum.Py(), momentum.Pz(), 1e-6), candidate->BTag);
             event.add_jet(recoJet);
           }
         }

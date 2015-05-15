@@ -246,55 +246,51 @@ namespace Gambit {
       result.clear();
 
       /// Get the next event from Pythia8
-      const auto& pevt = *Dep::HardScatteringEvent;
+      const Pythia8::Event& pevt = *Dep::HardScatteringEvent;
 
       std::vector<fastjet::PseudoJet> bhadrons; //< for input to FastJet b-tagging
-      std::vector<Particle*> bpartons;
-      std::vector<Particle*> tauCandidates;
-      P4 pout; //< Sum of momenta outside acceptance
+      std::vector<HEPUtils::Particle*> bpartons;
+      std::vector<HEPUtils::Particle*> tauCandidates;
+      HEPUtils::P4 pout; //< Sum of momenta outside acceptance
 
       // Make a first pass of non-final particles to gather b-hadrons and taus
       for (int i = 0; i < pevt.size(); ++i) {
         const Pythia8::Particle& p = pevt[i];
 
         // Find last b-hadrons in b decay chains as the best proxy for b-tagging
-        //if (isFinalB(i, pevt)) bhadrons.push_back(mk_pseudojet(p.p()));
-
         if(p.idAbs()==5) {
           std::vector<int> bDaughterList = p.daughterList();
           bool isGoodB=true;
+
           for (size_t daughter = 0; daughter < bDaughterList.size(); daughter++) {
             const Pythia8::Particle& pDaughter = pevt[bDaughterList[daughter]];
             int daughterID = pDaughter.idAbs();
             if(daughterID == 5)isGoodB=false;
           }
-          if(isGoodB){
 
+          if(isGoodB){
             HEPUtils::Particle* tmpB = new HEPUtils::Particle(mk_p4(p.p()), p.id());
             bpartons.push_back(tmpB);
           }
 
         }
 
+        // Veto leptonic taus
         if(p.idAbs()==15) {
-
-          // Veto leptonic taus
-          //bool isLeptonicTau = false;
           std::vector<int> tauDaughterList = p.daughterList();
-          P4 tmpMomentum;
+          HEPUtils::P4 tmpMomentum;
           bool isGoodTau=true;
 
           for (size_t daughter = 0; daughter < tauDaughterList.size(); daughter++) {
             const Pythia8::Particle& pDaughter = pevt[tauDaughterList[daughter]];
             int daughterID = pDaughter.idAbs();
-            //std::cout << "DAUGHTER ID " << daughterID << std::endl;
-            if (daughterID == MCUtils::PID::ELECTRON || daughterID == MCUtils::PID::MUON || daughterID == MCUtils::PID::WPLUSBOSON || daughterID == MCUtils::PID::TAU)isGoodTau=false;
-
+            if (daughterID == MCUtils::PID::ELECTRON || daughterID == MCUtils::PID::MUON
+                || daughterID == MCUtils::PID::WPLUSBOSON || daughterID == MCUtils::PID::TAU)
+              isGoodTau=false;
             if(!daughterID == MCUtils::PID::TAU)tmpMomentum+= mk_p4(pDaughter.p());
           }
 
           if(isGoodTau){
-
             HEPUtils::Particle* tmpTau = new HEPUtils::Particle(mk_p4(p.p()), p.id());
             tauCandidates.push_back(tmpTau);
           }
@@ -345,16 +341,8 @@ namespace Gambit {
         /// @todo Replace with HEPUtils::any(bhadrons, [&](const auto& pb){ pj.delta_R(pb) < 0.4 })
         bool isB = false;
 
-        /*for (auto& pb : bhadrons) {
-          if (pj.delta_R(pb) < 0.4) {
-          isB = true;
-          break;
-          }
-          }*/
-        P4 jetMom=HEPUtils::mk_p4(pj);
-
+        HEPUtils::P4 jetMom=HEPUtils::mk_p4(pj);
         for (auto& pb : bpartons) {
-
           if (jetMom.deltaR_eta(pb->mom()) < 0.4) {
             isB = true;
             break;
@@ -363,12 +351,12 @@ namespace Gambit {
 
         bool isTau=false;
         for(auto& ptau : tauCandidates){
-
           if(jetMom.deltaR_eta(ptau->mom()) < 0.5){
             isTau=true;
             break;
           }
         }
+
         // Add to the event (use jet momentum for tau)
         if(isTau){
           HEPUtils::Particle* gp = new HEPUtils::Particle(HEPUtils::mk_p4(pj), MCUtils::PID::TAU);
@@ -383,7 +371,7 @@ namespace Gambit {
       //
       // From balance of all visible momenta (requires isolation)
       // const std::vector<Particle*> visibles = result.visible_particles();
-      // P4 pvis;
+      // HEPUtils::P4 pvis;
       // for (size_t i = 0; i < visibles.size(); ++i) {
       //   pvis += visibles[i]->mom();
       // }
@@ -406,7 +394,7 @@ namespace Gambit {
       result.clear();
 
       /// Get the next event from Pythia8
-      std::vector<Particle*> tauCandidates;
+      std::vector<HEPUtils::Particle*> tauCandidates;
       const auto& pevt = *Dep::HardScatteringEvent;
 
       // Make a first pass of non-final particles to gather taus
@@ -414,19 +402,17 @@ namespace Gambit {
         const Pythia8::Particle& p = pevt[i];
 
         // Find last tau in prompt tau replica chains as a proxy for tau-tagging
-
         if(p.idAbs()==15) {
-
           std::vector<int> tauDaughterList = p.daughterList();
-          P4 tmpMomentum;
+          HEPUtils::P4 tmpMomentum;
           bool isGoodTau=true;
 
           for (size_t daughter = 0; daughter < tauDaughterList.size(); daughter++) {
             const Pythia8::Particle& pDaughter = pevt[tauDaughterList[daughter]];
             int daughterID = pDaughter.idAbs();
-
-            if (daughterID == MCUtils::PID::ELECTRON || daughterID == MCUtils::PID::MUON || daughterID == MCUtils::PID::WPLUSBOSON || daughterID == MCUtils::PID::TAU)isGoodTau=false;
-
+            if (daughterID == MCUtils::PID::ELECTRON || daughterID == MCUtils::PID::MUON
+                || daughterID == MCUtils::PID::WPLUSBOSON || daughterID == MCUtils::PID::TAU)
+              isGoodTau=false;
             if(!daughterID == MCUtils::PID::TAU)tmpMomentum+= mk_p4(pDaughter.p());
           }
 
@@ -438,7 +424,7 @@ namespace Gambit {
       }
 
       std::vector<fastjet::PseudoJet> jetparticles; //< Pseudojets for input to FastJet
-      P4 pout; //< Sum of momenta outside acceptance
+      HEPUtils::P4 pout; //< Sum of momenta outside acceptance
 
       // Make a single pass over the event to gather final leptons, partons, and photons
       for (int i = 0; i < pevt.size(); ++i) {
@@ -487,12 +473,12 @@ namespace Gambit {
         // Do jet b-tagging, etc. by looking for b quark constituents (i.e. user index = |parton ID| = 5)
         /// @note This b-tag is removed in the detector sim if outside the tracker acceptance!
         const bool isB = HEPUtils::any(pj.constituents(),
-                                       [](const fastjet::PseudoJet& c){ return c.user_index() == MCUtils::PID::BQUARK; });
+                 [](const fastjet::PseudoJet& c){ return c.user_index() == MCUtils::PID::BQUARK; });
         result.add_jet(new HEPUtils::Jet(HEPUtils::mk_p4(pj), isB));
 
         bool isTau=false;
         for(auto& ptau : tauCandidates){
-          P4 jetMom=HEPUtils::mk_p4(pj);
+          HEPUtils::P4 jetMom = HEPUtils::mk_p4(pj);
           if(jetMom.deltaR_eta(ptau->mom()) < 0.5){
             isTau=true;
             break;
@@ -510,7 +496,7 @@ namespace Gambit {
       //
       // From balance of all visible momenta (requires isolation)
       // const std::vector<Particle*> visibles = result.visible_particles();
-      // P4 pvis;
+      // HEPUtils::P4 pvis;
       // for (size_t i = 0; i < visibles.size(); ++i) {
       //   pvis += visibles[i]->mom();
       // }
@@ -520,19 +506,11 @@ namespace Gambit {
       // set_missingmom(-pvis);
       //
       // From sum of invisibles, including those out of range
-      for (const Particle* p : result.invisible_particles())
+      for (const HEPUtils::Particle* p : result.invisible_particles())
         pout += p->mom();
       result.set_missingmom(pout);
     }
 
-
-    /// Gambit facing interface function
-    void convertPythia8Event(HEPUtils::Event &result) {
-
-      //convertPythia8PartonEvent(result);
-      convertPythia8ParticleEvent(result);
-
-    }
 
     /// *** Standard Event Format Functions ***
 
