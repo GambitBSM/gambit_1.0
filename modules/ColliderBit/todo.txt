@@ -9,6 +9,8 @@ Try to statically declare and "reset" subclasses of things...
   - ex. getPythia can simply return a PythiaBase... no need for a pointer
   - no need for things to be new'd
 
+Eliminate range-based for loops... Not supported by all compiler versions in
+Code Policies document.
 
 
 How to valgrind to find ColliderBit memory issues:
