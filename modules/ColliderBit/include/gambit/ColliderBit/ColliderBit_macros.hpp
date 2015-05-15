@@ -33,12 +33,10 @@
 #define DEFINE_DETECTOR_FACTORY_NO_SETTINGS(DNAME, DCLASS)               \
   DCLASS* create_ ## DNAME() {                                           \
     DCLASS* result = new DNAME();                                        \
-    result->defaults();                                                  \
     result->init();                                                      \
     return result;                                                       \
   }
 
-// TODO: may need to be different than collider factory at some point
 /// @todo Semicolon handling
 #define DECLARE_DETECTOR_FACTORY(DNAME, DCLASS)                          \
   DCLASS* create_ ## DNAME(const std::vector<std::string>&);
@@ -46,7 +44,6 @@
 #define DEFINE_DETECTOR_FACTORY(DNAME, DCLASS)                           \
   DCLASS* create_ ## DNAME(const std::vector<std::string>& settings) {   \
     DCLASS* result = new DNAME();                                        \
-    result->defaults();                                                  \
     result->init(settings);                                              \
     return result;                                                       \
   }

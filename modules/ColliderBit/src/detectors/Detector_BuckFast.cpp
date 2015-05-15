@@ -11,54 +11,51 @@ namespace Gambit {
 
     /// Pass-through detector simulation
     /// @todo No smearing... but should apply some acceptance cuts?
-    class BuckFastIdentity : public BuckFastBase {
-    public:
+    struct BuckFastIdentity : BuckFastBase {
       /// @name Event detection simulation.
       //@{
-      virtual void processEvent(const HEPUtils::Event& eventIn, HEPUtils::Event& eventOut) {
-        /// Clone the input event.
-        eventIn.cloneTo(eventOut);
-        // Do nothing to it.
-      }
+        virtual void processEvent(const HEPUtils::Event& eventIn, HEPUtils::Event& eventOut) {
+          /// Clone the input event.
+          eventIn.cloneTo(eventOut);
+          // Do nothing to it.
+        }
       //@}
     };
 
 
     /// Detector simulation
-    class BuckFastSmear : public BuckFastBase {
-    public:
+    struct BuckFastSmear : BuckFastBase {
+      /// @name Event detection simulation.
+      //@{
+        virtual void processEvent(const HEPUtils::Event& eventIn, HEPUtils::Event& eventOut) {
+          /// Clone the input event.
+          eventIn.cloneTo(eventOut);
 
-      virtual void processEvent(const HEPUtils::Event& eventIn, HEPUtils::Event& eventOut) {
-        /// Clone the input event.
-        eventIn.cloneTo(eventOut);
+          // Electron smearing and efficiency
+          applyDelphesElectronTrackingEff(eventOut.electrons());
+          smearElectronEnergy(eventOut.electrons());
+          applyDelphesElectronEff(eventOut.electrons());
 
-        // Electron smearing and efficiency
-        applyDelphesElectronTrackingEff(eventOut.electrons());
-        smearElectronEnergy(eventOut.electrons());
-        applyDelphesElectronEff(eventOut.electrons());
+          // Muon smearing and efficiency
+          applyDelphesMuonTrackEff(eventOut.muons());
+          smearMuonMomentum(eventOut.muons());
+          applyDelphesMuonEff(eventOut.muons());
 
-        // Muon smearing and efficiency
-        applyDelphesMuonTrackEff(eventOut.muons());
-        smearMuonMomentum(eventOut.muons());
-        applyDelphesMuonEff(eventOut.muons());
+          // Apply hadronic tau BR * reco efficiency
+          //MJW remove for now
+          applyTauEfficiency(eventOut.taus());
+          //Smear taus
+          smearTaus(eventOut.taus());
 
-        // Apply hadronic tau BR * reco efficiency
-        //MJW remove for now
-        applyTauEfficiency(eventOut.taus());
-        //Smear taus
-        smearTaus(eventOut.taus());
+          // Smear jet momenta
+          smearJets(eventOut.jets());
 
-        // Smear jet momenta
-        smearJets(eventOut.jets());
-
-        // Unset b-tags outside |eta|=5 (same as DELPHES)
-        for (HEPUtils::Jet* j : eventOut.jets()) {
-          if (j->abseta() > 5.0) j->set_btag(false);
+          // Unset b-tags outside |eta|=5 (same as DELPHES)
+          for (HEPUtils::Jet* j : eventOut.jets()) {
+            if (j->abseta() > 5.0) j->set_btag(false);
+          }
         }
-      }
-
-
-
+      //@}
     };
 
 

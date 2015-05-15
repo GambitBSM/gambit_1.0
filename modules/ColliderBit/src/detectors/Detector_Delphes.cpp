@@ -37,21 +37,21 @@ namespace Gambit {
           confReader->ReadFile(configFilename.c_str());
 
           // Modularity of Delphes set by Config File
-          modularDelphes = new Delphes("Delphes");
-          modularDelphes->SetConfReader(confReader);
+          _modularDelphes = new Delphes("Delphes");
+          _modularDelphes->SetConfReader(confReader);
 
           // Factory production of particle "candidates"
-          factory = modularDelphes->GetFactory();
+          factory = _modularDelphes->GetFactory();
 
           // Delphes particle arrays: Pre-Detector-Sim
-          allParticleOutputArray = modularDelphes->ExportArray("allParticles");
-          stableParticleOutputArray = modularDelphes->ExportArray("stableParticles");
-          partonOutputArray = modularDelphes->ExportArray("partons");
+          allParticleOutputArray = _modularDelphes->ExportArray("allParticles");
+          stableParticleOutputArray = _modularDelphes->ExportArray("stableParticles");
+          partonOutputArray = _modularDelphes->ExportArray("partons");
 
           // Database of PDG codes and particle info
           pdg = TDatabasePDG::Instance();
 
-          modularDelphes->InitTask();
+          _modularDelphes->InitTask();
         } catch(std::runtime_error &e) {
           std::cerr << "** ERROR: " << e.what() << endl;
           exit(EXIT_FAILURE);
@@ -98,7 +98,7 @@ namespace Gambit {
         HEPUtils::Jet *recoJet;
         // Delphes particle arrays: Post-Detector Sim
         //    MISSING ET:
-        const TObjArray *arrayMissingET = modularDelphes->ImportArray("MissingET/momentum");
+        const TObjArray *arrayMissingET = _modularDelphes->ImportArray("MissingET/momentum");
         if ((candidate = static_cast<Candidate*>(arrayMissingET->At(0)))) {
           const TLorentzVector &momentum = candidate->Momentum;
           event.set_missingmom(HEPUtils::P4::mkXYZM(-1*momentum.Px(), -1*momentum.Py(), 0., 0.));
@@ -106,7 +106,7 @@ namespace Gambit {
 
         // Delphes particle arrays: Post-Detector Sim
         //    PHOTONS:
-        const TObjArray *arrayPhotons = modularDelphes->ImportArray("PhotonIsolation/photons");
+        const TObjArray *arrayPhotons = _modularDelphes->ImportArray("PhotonIsolation/photons");
         TIter iteratorPhotons(arrayPhotons);
         iteratorPhotons.Reset();
         while ((candidate = static_cast<Candidate*>(iteratorPhotons.Next()))) {
@@ -118,7 +118,7 @@ namespace Gambit {
 
         // Delphes particle arrays: Post-Detector Sim
         //    ELECTRONS:
-        const TObjArray *arrayElectrons = modularDelphes->ImportArray("ElectronIsolation/electrons");
+        const TObjArray *arrayElectrons = _modularDelphes->ImportArray("ElectronIsolation/electrons");
         TIter iteratorElectrons(arrayElectrons);
         iteratorElectrons.Reset();
         while ((candidate = static_cast<Candidate*>(iteratorElectrons.Next()))) {
@@ -131,7 +131,7 @@ namespace Gambit {
 
         // Delphes particle arrays: Post-Detector Sim
         //    MUONS:
-        const TObjArray *arrayMuons = modularDelphes->ImportArray("MuonIsolation/muons");
+        const TObjArray *arrayMuons = _modularDelphes->ImportArray("MuonIsolation/muons");
         TIter iteratorMuons(arrayMuons);
         iteratorMuons.Reset();
         while ((candidate = static_cast<Candidate*>(iteratorMuons.Next()))) {
@@ -144,7 +144,7 @@ namespace Gambit {
 
         // Delphes particle arrays: Post-Detector Sim
         //    JETS and TAUS:
-        const TObjArray *arrayJets = modularDelphes->ImportArray("FastJetFinder/jets");
+        const TObjArray *arrayJets = _modularDelphes->ImportArray("FastJetFinder/jets");
         TIter iteratorJets(arrayJets);
         iteratorJets.Reset();
         while ((candidate = static_cast<Candidate*>(iteratorJets.Next()))) {

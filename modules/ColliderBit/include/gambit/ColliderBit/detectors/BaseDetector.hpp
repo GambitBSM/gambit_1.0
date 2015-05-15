@@ -19,25 +19,32 @@ namespace Gambit {
 
     /// @note Abstract base class BaseDetector
     template <typename EventIn, typename EventOut>
-    class BaseDetector {
-    public:
-
-      typedef EventIn EventInType;
-      typedef EventOut EventOutType;
-      BaseDetector() {}
-      virtual ~BaseDetector() {}
-
-      /// @name Initialization functions
+    struct BaseDetector {
+      /// @name Member variables
       //@{
-      /// @brief Default settings for each sub-class.
-      virtual void defaults() = 0;
-      /// @brief Settings parsing and initialization for each sub-class.
-      virtual void init(const std::vector<std::string>& settings) = 0;
+        typedef EventIn EventInType;
+        typedef EventOut EventOutType;
       //@}
 
-      /// @name Event detection simulation. Pure virtual; must override.
+      /// @name Construction, Destruction, and Recycling
       //@{
-      virtual void processEvent(const EventIn&, EventOut&) = 0;
+        BaseDetector() {}
+        virtual ~BaseDetector() {}
+        /// @brief Reset this instance for reuse, avoiding the need for "new" or "delete".
+        virtual void clear() { }
+      //@}
+
+      /// @name Event detection simulation
+      //@{
+        virtual void processEvent(const EventIn&, EventOut&) = 0;
+      //@}
+
+      /// @name (Re-)Initialization functions
+      //@{
+        /// @brief Settings parsing and initialization for each sub-class.
+        virtual void init(const std::vector<std::string>& settings) { };
+        /// @brief General init for any collider of this type - no settings version.
+        virtual void init() { };
       //@}
 
     };
