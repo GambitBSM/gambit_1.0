@@ -129,9 +129,61 @@ namespace Gambit
      // NOTE: will have to change the auxilliary printers a bit, so that they
      // communicate what they intend to write back to the main printer... or something.
 
+
+    /// @{ H5P_LocalBufferManager member functions
+
+    template<class BuffType>
+    void H5P_LocalBufferManager<BuffType>::init(HDF5Printer* p)
+    {
+       if(p==NULL)
+       {
+          std::ostringstream errmsg;
+          errmsg << "Error! Tried to initialise a H5P_LocalBufferManager with a null pointer! Need an actual HDF5Printer object in order to work. This is a bug in the HDF5Printer class, please report it.";
+          printer_error().raise(LOCAL_INFO, errmsg.str());
+       }
+       if(not ready()) {
+          printer = p; 
+       } else {
+          std::ostringstream errmsg;
+          errmsg << "Error! Tried to initialise a H5P_LocalBufferManager twice! This is a bug in the HDF5Printer class, please report it.";
+          printer_error().raise(LOCAL_INFO, errmsg.str());
+       }
+    }    
+
+    template<class BuffType>
+    BuffType& H5P_LocalBufferManager<BuffType>::get_buffer(const int vertexID, const uint aux_i, const std::string& label) 
+    {
+       VBIDpair key = std::make_pair(vertexID,aux_i);
+       typename std::map<VBIDpair, BuffType>::iterator it = local_buffers.find(key);
+       if( it == local_buffers.end() ) 
+       {
+          // No buffer (should) exists for this output stream yet, so make one
+          error_if_key_exists(local_buffers, key, "local_buffers");
+          local_buffers[key] = BuffType(location,label/*deconstruct?*/,vertexID);
+
+          // Get the new buffer back out of the map
+          it = local_buffers.find(key);
+
+          // Add a pointer to the new buffer to the full list as well
+          if(printer!=NULL) {
+            printer->insert_buffer( key, it->second );
+          } else {
+            std::ostringstream errmsg;
+            errmsg << "Error! Tried to use H5P_LocalBufferManager before initialising it! This is a bug in the HDF5Printer class, please report it.";
+            printer_error().raise(LOCAL_INFO, errmsg.str());
+          }
+       }
+       return it->second; 
+    }
+  
+    /// @}
+
+
+    /// @{ HDF5Printer member functions
      
     // Constructor
     HDF5Printer::HDF5Printer(const Options& options)
+      : printer_name("Primary printer")
     {
       DBUG( std::cout << "Constructing Primary HDF5Printer object..." << std::endl; )
  
@@ -143,7 +195,7 @@ namespace Gambit
       fileptr = HDF5::openFile(file);
  
       // Open requested group (creating it plus parents if needed)
-      groupptr = HDF5::openGroup(group);
+      groupptr = HDF5::openGroup(fileptr,group);
 
       // Set the target dataset write location to the chosen group
       location = groupptr; 
@@ -151,6 +203,7 @@ namespace Gambit
  
     /// Auxiliary mode constructor 
     HDF5Printer::HDF5Printer(const Options& options, std::string& name, bool globalIN)
+      : printer_name(name)
     {
       // Could set these things via options also if we like.
       DBUG( std::cout << "Constructing Auxilliary HDF5Printer object (with name=\""<<printer_name<<"\")..." << std::endl; )
@@ -162,13 +215,13 @@ namespace Gambit
     {
       // Make sure buffer is completely written to disk
       DBUG( std::cout << "Destructing HDF5Printer object (with name=\""<<printer_name<<"\")..." << std::endl; )
-      dump_buffer(true);
-      DBUG( std::cout << "Buffer (of HDF5Printer with name=\""<<printer_name<<"\") successfully dumped..." << std::endl; )
+      //dump_buffer(true); // Buffers should dump themselves as they are destructed
+      //DBUG( std::cout << "Buffer (of HDF5Printer with name=\""<<printer_name<<"\") successfully dumped..." << std::endl; )
     }
  
     /// Initialisation function
     // Run by dependency resolver, which supplies the functors with a vector of VertexIDs whose requiresPrinting flags are set to true.
-    void HDF5Printer::asciiPrinter::initialise(const std::vector<int>& printmevec)
+    void HDF5Printer::initialise(const std::vector<int>& printmevec)
     {
       // Currently don't seem to need this... could use it to check if all VertexID's have submitted print requests.
     }
@@ -176,7 +229,7 @@ namespace Gambit
     void HDF5Printer::flush() {}
 
     /// Delete contents of output file (to be replaced/updated) and erase everything in the buffer
-    void HDF5Printer::reset() 
+    void HDF5Printer::reset() {} 
   
     /// Retrieve MPI rank
     int HDF5Printer::getRank() {return myRank;}
@@ -192,14 +245,13 @@ namespace Gambit
     void HDF5Printer::add_PPID_to_list(const PPIDpair& ppid)
     {
       // TODO: is this going to cause memory issues? may have to rethink...
-      std::map<PPIDpair, ulong> 
 
       // Check if it is in the lookup map already
       std::map<PPIDpair, ulong>::const_iterator it = global_index_lookup.find(ppid);
       if ( it != global_index_lookup.end() ) {
-         std::ostringsteam errmsg;
+         std::ostringstream errmsg;
          errmsg << "Error! Supplied PPID already exists in global_index_lookup map! It should only be added once, so there is a bug in HDF5Printer. Please report this error.";
-         printer_error().raise(LOCAL_INFO, errmsg);
+         printer_error().raise(LOCAL_INFO, errmsg.str());
       }
       
       // Ok, now safe to add it 
@@ -253,25 +305,7 @@ namespace Gambit
     // Need to define one of these for every type we want to print!
     // Could use macros again to generate identical print functions 
     // for all types that have a << operator already defined.
-   
-    /// @{ Helper macros to write all the print functions which can use the "easy" template
-    #define TEMPLATE_TYPES      \
-     (bool)                     \
-     (int)(uint)(long)(ulong)   \
-     (float)(double)        
-     // Add more as needed
-
-    #define TEMPLATE_PRINT(r,data,elem)                                 \
-    void print(elem const&, const std::string& label, const int vertexID, const uint /*rank*/, const ulong /*pointID*/) \
-    {                                                          \
-      template_print(value,label,IDcode,thread,pointID);       \
-    }                                                          
-
-    #define ADD_TEMPLATE_PRINTS BOOST_PP_SEQ_FOR_EACH(TEMPLATE_PRINT, _, TEMPLATE_TYPES)
-
-    ADD_TEMPLATE_PRINTS
-    /// @}
-
+  
     void HDF5Printer::print(std::vector<double> const& value, const std::string& label, const int vID, const uint mpirank, const ulong pointID)
     {
        // We will write to several 'double' buffers, rather than a single vector buffer.
@@ -293,7 +327,7 @@ namespace Gambit
          //labels.push_back(ss.str());
 
          // Write to each buffer
-         buffer_manager.get_buffer(vID, i, ss.str()).append(value);
+         buffer_manager.get_buffer(vID, i, ss.str()).append(value[i]);
        }
     }
    
@@ -320,7 +354,9 @@ namespace Gambit
          i++;
        }
     }
-     
+ 
+    /// @}  
+   
   } // end namespace printers
 } // end namespace Gambit
 

@@ -96,11 +96,11 @@ namespace Gambit {
        * does not yet exist.
        *
        */ 
-      H5GroupPtr H5Utils::openGroup(H5FilePtr file, const std::string& name, int accessmode) 
+      H5GroupPtr H5Utils::openGroup(H5FilePtr file, const std::string& name, bool nocreate) //, int accessmode) 
       {
          H5::Group* group = NULL;
          // User does not want to create group
-         if(accessmode & H5Utils::DONOTCREATE) {
+         if(nocreate) //accessmode & H5Utils::DONOTCREATE) {
             try {
                group = new H5::Group(file->openGroup(name.c_str()));
             } catch(const H5::FileIException& err_does_not_exist) {

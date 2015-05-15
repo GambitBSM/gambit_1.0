@@ -27,25 +27,43 @@
 
 // HDF5 C++ bindings
 #include "H5Cpp.h" 
-    
+ 
+// Gambit
+#include "gambit/Utils/standalone_error_handlers.hpp"
+   
 namespace Gambit {
   namespace Printers {
 
       /// Typedefs for managed H5 pointers
-      typedef std::shared_ptr<H5::H5CommonFG> H5FGPtr; // common ancestor of H5File and Group
+      typedef std::shared_ptr<H5::CommonFG> H5FGPtr; // common ancestor of H5File and Group
       typedef std::shared_ptr<H5::H5File> H5FilePtr;
       typedef std::shared_ptr<H5::Group>  H5GroupPtr;
       
       namespace HDF5 { 
          /// Create or open hdf5 file
-         H5FilePtr H5createOrOpenFile(const std::string& fname);
+         H5FilePtr openFile(const std::string& fname);
 
          /// Create hdf5 file (always overwrite existing files)
-         H5FilePtr H5createFile(const std::string& fname);
+         H5FilePtr createFile(const std::string& fname);
 
          /// Create a group inside the specified location
          // Argument "location" can be a pointer to either a file or another group
-         H5GroupPtr H5createGroup(H5FGPtr location, const std::string& name);
+         H5GroupPtr createGroup(H5FGPtr location, const std::string& name);
+
+         // Modified minimally from https://github.com/gregreen/h5utils/blob/master/src/h5utils.cpp#L92
+         // Credit: Gregory Green 2012
+         /*
+          * Opens a group, creating it if it does not exist. Nonexistent parent groups are also
+          * created. This works similarly to the Unix/Linux command
+          * mkdir -p /parent/subgroup/group
+          * in that if /parent and /parent/subgroup do not exist, they will be created.
+          *
+          * If no accessmode has H5Utils::DONOTCREATE flag set, then returns NULL if group
+          * does not yet exist.
+          *
+          */ 
+         H5GroupPtr openGroup(H5FilePtr file, const std::string& name, bool nocreate=false);
+ 
       }
 
       // from http://stackoverflow.com/questions/9250237/write-a-boostmulti-array-to-hdf5-dataset 
@@ -99,9 +117,9 @@ namespace Gambit {
             bool donethispoint;
 
             // Metadata
-            const int vertexID;
-            const uint index; // discriminator in case of multiple output streams from one vertex
-            const std::string label;
+            int vertexID;
+            uint index; // discriminator in case of multiple output streams from one vertex
+            std::string label;
              
          public:
             VertexBufferBase(const std::string& l, const int vID, const uint i=0) 
@@ -127,16 +145,16 @@ namespace Gambit {
             bool donepoint() {return donethispoint;}
 
             // setter for donethispoint
-            void set_donepoint(bool flag) {donethispoint=false;}
+            void set_donepoint(bool flag) {donethispoint=flag;}
 
             // Error thrower for when append is attempted with point already set to "done"
             void error_if_done()
             {
                if(donethispoint)
                { 
-                  std::ostringsteam errmsg;
+                  std::ostringstream errmsg;
                   errmsg << "Error! VertexBuffer set to 'done'! Append may have been attempted without \"unlocking\" the buffer.";
-                  printer_error().raise(LOCAL_INFO, errmsg);
+                  printer_error().raise(LOCAL_INFO, errmsg.str());
                }
             }
 
@@ -147,17 +165,19 @@ namespace Gambit {
             // be moved ahead only one index at a time. But there is some freedom
             // for different behaviour by other writers.
             virtual void synchronise_output_to_position(const unsigned long i) = 0;
-      }
+      };
 
       /// VertexBuffer for simple numerical types
       template<class T, std::size_t LENGTH>
       class VertexBufferNumeric1D : public VertexBufferBase
       {
-        private:
+        protected:
           // Buffer variables
           // Using arrays as these are easier to write to hdf5
           bool buffer_valid[LENGTH]; // Array telling us which buffer entries are properly filled
           T    buffer_entries[LENGTH];
+   
+        private:
           unsigned int nextempty; // index of the next free buffer slot
 
           static const std::size_t bufferlength = LENGTH;
@@ -168,7 +188,7 @@ namespace Gambit {
           /// Constructor
           VertexBufferNumeric1D(const std::string& label, const int vID, const unsigned int i=0)
             : VertexBufferBase(label,vID,i)
-            , buffer_valid(false) 
+            , buffer_valid() 
             , buffer_entries()
             , nextempty(0)
           {}
@@ -184,18 +204,18 @@ namespace Gambit {
           void skip_append();
 
           /// Extract (copy) a record
-          T get_entry(const unsigned int i) const;
+          T get_entry(const std::size_t i) const;
  
           /// Clear the buffer
           void clear();
 
-      }
+      };
 
       /// @{ VertexBufferNumeric1D function definitions
 
       /// Append a record to the buffer
-      template<class T, std::size_t>
-      void VertexBufferNumeric1D::append(const T& data)
+      template<class T, std::size_t L>
+      void VertexBufferNumeric1D<T,L>::append(const T& data)
       {
          error_if_done(); // make sure buffer hasn't written to the current point already
          buffer_entries[nextempty] = data;
@@ -210,8 +230,8 @@ namespace Gambit {
       }
 
       /// No data to append this iteration; skip this slot
-      template<class, std::size_t>
-      void VertexBufferNumeric1D::skip_append()
+      template<class T, std::size_t L>
+      void VertexBufferNumeric1D<T,L>::skip_append()
       {
          error_if_done(); // make sure buffer hasn't written to the current point already
          buffer_valid[nextempty] = false;
@@ -225,8 +245,8 @@ namespace Gambit {
       }
 
       /// Extract (copy) a record
-      template<class T, std::size_t>
-      T VertexBufferNumeric1D::get_entry(const std::size_t i) const
+      template<class T, std::size_t L>
+      T VertexBufferNumeric1D<T,L>::get_entry(const std::size_t i) const
       {
          if(buffer_valid[i])
          {
@@ -234,14 +254,14 @@ namespace Gambit {
          }
          else
          {
-           std::string errmsg = "Error! Attempted to retrieve data from an invalidated VertexBufferNumeric1D entry!"
+           std::string errmsg = "Error! Attempted to retrieve data from an invalidated VertexBufferNumeric1D entry!";
            printer_error().raise(LOCAL_INFO, errmsg);
          }
       }
 
       /// Clear the buffer
-      template<class, std::size_t>
-      void VertexBufferNumeric1D::clear()
+      template<class T, std::size_t L>
+      void VertexBufferNumeric1D<T,L>::clear()
       {
          for(std::size_t i=0; i<bufferlength; i++)
          {
@@ -253,7 +273,10 @@ namespace Gambit {
 
       /// @}
 
-
+      // forward declaration
+      template<typename T, std::size_t CHUNKLENGTH>
+      class DataSetInterfaceScalar;
+ 
       /// VertexBuffer for simple numerical types - derived version that handles output to hdf5
       template<class T, std::size_t CHUNKLENGTH>
       class VertexBufferNumeric1D_HDF5 : public VertexBufferNumeric1D<T,CHUNKLENGTH> 
@@ -266,94 +289,94 @@ namespace Gambit {
          public:
            /// Constructor
            VertexBufferNumeric1D_HDF5(H5FGPtr location, const std::string& name, const int vID, const unsigned int i=0)
-             : VertexBufferNumeric1D(name,vID, i)
+             : VertexBufferNumeric1D<T,CHUNKLENGTH>(name,vID, i)
              , dsetvalid(location, name+"_isvalid")
              , dsetdata(location, name)
-             , dsetnextempty(0)
            {}
         
            /// Override of buffer dump function to handle HDF5 output
-           void dump();
+           void dump()
            {
-             dsetvalid.writenewchunk(buffer_valid); 
-             dsetdata.writenewchunk(buffer_entries);
+             dsetvalid.writenewchunk(this->buffer_valid); 
+             dsetdata.writenewchunk(this->buffer_entries);
            }
 
            /// Ensure dataset "write head" (i.e. next append) is prepared to
            /// write to the supplied absolute dataset index (e.g. by inserting
            /// blank entries if need)
-           void synchronise_output_to_position(const unsigned long i)
+           void synchronise_output_to_position(const ulong i)
            {
               // dataset position is the "next slab" index plus the buffer index
-              dsetvalid_pos = dsetvalid.get_nextemptyslab() + get_nextempty();
-              dsetdata_pos  = dsetdata.get_nextemptyslab() + get_nextempty();
+              const ulong dsetvalid_pos = dsetvalid.get_nextemptyslab() + this->get_nextempty();
+              const ulong dsetdata_pos  = dsetdata.get_nextemptyslab() + this->get_nextempty();
               if(dsetvalid_pos!=dsetdata_pos)
               {
                   // The two datasets controlled by this buffer should always remain synchronised!
-                  std::ostringsteam errmsg;
-                  errmsg << "Error! Validity and Data datasets have gone out of sync in buffer with label '"<<get_label()<<"'! This is a bug in the VertexBufferNumeric1D_HDF5 class. Please report it.";
-                  printer_error().raise(LOCAL_INFO, errmsg); 
+                  std::ostringstream errmsg;
+                  errmsg << "Error! Validity and Data datasets have gone out of sync in buffer with label '"<<this->get_label()<<"'! This is a bug in the VertexBufferNumeric1D_HDF5 class. Please report it.";
+                  printer_error().raise(LOCAL_INFO, errmsg.str()); 
               }
 
               // Compare this to the move position and see what we need to do
-              movediff = i - dsetvalid_pos;
+              const long movediff = i - dsetvalid_pos;
               if(movediff==1)             
               {
                   // Set the current point as having no valid data and move to the next
-                  skip_append();    
+                  this->skip_append();    
               } 
               else if(movediff<0)
               {
-                  std::ostringsteam errmsg;
-                  errmsg << "Error! Attempted to move HDF5 write position backwards in buffer with label '"<<get_label()<<"'! This is a bug in the VertexBufferNumeric1D_HDF5 class or in a class which uses it (probably HDF5Printer). Please report it. (Note, writing to old points can be done but requires using special write functions).";
-                  printer_error().raise(LOCAL_INFO, errmsg);
+                  std::ostringstream errmsg;
+                  errmsg << "Error! Attempted to move HDF5 write position backwards in buffer with label '"<<this->get_label()<<"'! This is a bug in the VertexBufferNumeric1D_HDF5 class or in a class which uses it (probably HDF5Printer). Please report it. (Note, writing to old points can be done but requires using special write functions).";
+                  printer_error().raise(LOCAL_INFO, errmsg.str());
               } 
               else if (movediff==0)
               {
-                if(donepoint())
+                if(this->donepoint())
                 {
-                  std::ostringsteam errmsg;
-                  errmsg << "Error! Attempted to move HDF5 write position by 0 slots in buffer with label '"<<get_label()<<"'; this part is fine, however the buffer indicates that this position has already received a write (donepoint()==true) so it should have moved forward! This is a bug in the VertexBufferNumeric1D_HDF5 class or in a class which uses it (probably HDF5Printer). Please report it.";
-                  printer_error().raise(LOCAL_INFO, errmsg);
+                  std::ostringstream errmsg;
+                  errmsg << "Error! Attempted to move HDF5 write position by 0 slots in buffer with label '"<<this->get_label()<<"'; this part is fine, however the buffer indicates that this position has already received a write (donepoint()==true) so it should have moved forward! This is a bug in the VertexBufferNumeric1D_HDF5 class or in a class which uses it (probably HDF5Printer). Please report it.";
+                  printer_error().raise(LOCAL_INFO, errmsg.str());
                 }
                 // otherwise no problem; carry on.
               }
               else if (movediff>1) 
               {
-                  std::ostringsteam errmsg;
-                  errmsg << "Error! Attempted to move HDF5 write position by >1 slots ("<<movediff<<") in buffer with label '"<<get_label()<<"'. Buffer synchronisation should only happen one slot at a time. This is a bug in the VertexBufferNumeric1D_HDF5 class or in a class which uses it (probably HDF5Printer). Please report it.";
-                  printer_error().raise(LOCAL_INFO, errmsg);
+                  std::ostringstream errmsg;
+                  errmsg << "Error! Attempted to move HDF5 write position by >1 slots ("<<movediff<<") in buffer with label '"<<this->get_label()<<"'. Buffer synchronisation should only happen one slot at a time. This is a bug in the VertexBufferNumeric1D_HDF5 class or in a class which uses it (probably HDF5Printer). Please report it.";
+                  printer_error().raise(LOCAL_INFO, errmsg.str());
               }
            }
          
-      }
+      };
   
  
       /// Wrapper object to manage a single dataset
       // Mostly just creates the dataset and holds metadata about it
       // Would be nice to extend to handle writing as well, but currently
       // I have to do it differently depending on the RANK.
-      template<typename T, std::size_t RECORDRANK, std::size_t CHUNKLENGTH>
+      template<class T, std::size_t RECORDRANK, std::size_t CHUNKLENGTH>
       class DataSetInterfaceBase
       {
         private: 
          static const std::size_t DSETRANK = RECORDRANK+1; // Rank of the dataset array
-         const get_hdf5_data_type<T> hdf_dtype;
+         static const get_hdf5_data_type<T> hdf_dtype;
 
          H5FGPtr mylocation; // where this datasets is located in the hdf5 file
          std::string myname; // name of the dataset in the hdf5 file         
 
-         const std::size_t record_dims[RECORDRANK];
-         H5::DataSet my_dataset;
+         std::size_t record_dims[];
 
          // Dataset and chunk dimensions
-         H5::hsize_t  dims[DSETRANK];
-         H5::hsize_t  maxdims[DSETRANK];
-         H5::hsize_t  chunkdims[DSETRANK];
-
+         hsize_t  dims[DSETRANK];
+         hsize_t  maxdims[DSETRANK];
+         hsize_t  chunkdims[DSETRANK];
 
         protected:
          // Derived classes need full access to these
+
+         // Wrapped dataset
+         H5::DataSet my_dataset;
 
          // index of the beginning of the next empty slot in the output array
          // i.e. the offset in dimension 0 of the dataset needed to select the
@@ -368,21 +391,21 @@ namespace Gambit {
 
         public:
          // Const public data accessors
-         std::size_t get_dsetrank()   { return DSETRANK; } const
-         std::size_t get_chunklength()  { return CHUNKLENGTH; } const
-         H5::hsize_t[DSETRANK] get_dsetdims()    { return dims; } const
-         H5::hsize_t[DSETRANK] get_maxdsetdims() { return maxdims; } const
-         H5::hsize_t[DSETRANK] get_chunkdims()   { return chunk_dims; } const
-         H5::PredType get_hdftype() { return hdf_dtype.type(); } const
-         unsigned long get_nextemptyslab() { return dsetnextemptyslab; } const
+         std::size_t get_dsetrank() const    { return DSETRANK; };
+         std::size_t get_chunklength() const { return CHUNKLENGTH; };
+         hsize_t* get_dsetdims() const       { return dims; };
+         hsize_t* get_maxdsetdims() const    { return maxdims; };
+         hsize_t* get_chunkdims() const      { return chunkdims; };
+         H5::PredType get_hdftype() const    { return hdf_dtype.type(); };
+         ulong get_nextemptyslab() const     { return dsetnextemptyslab; };
 
          /// Constructor
          DataSetInterfaceBase(H5FGPtr location, const std::string& name, const std::size_t rdims[]) 
-           , mylocation(location)
+           : mylocation(location)
            , myname(name)
            , record_dims(rdims)
            , my_dataset(createDataSet(location,name,rdims))
-           , dsetnextempty(0)
+           , dsetnextemptyslab(0)
          {}
 
          /// Create a (chunked) dataset 
@@ -393,7 +416,7 @@ namespace Gambit {
             
             // Compute initial dataspace and chunk dimensions
             dims[0] = 1*CHUNKLENGTH; // Start off with space for 1 chunk
-            maxdims[0] = H5::H5S_UNLIMITED; // No upper limit on number of records allowed in dataset
+            maxdims[0] = H5S_UNLIMITED; // No upper limit on number of records allowed in dataset
             chunkdims[0] = CHUNKLENGTH;
             for(std::size_t i=0; i<RECORDRANK; i++)
             {
@@ -405,7 +428,7 @@ namespace Gambit {
             }
 
             // Create the data space
-            DataSpace dspace(DSETRANK, dims, maxdims);
+            H5::DataSpace dspace(DSETRANK, dims, maxdims);
 
             // Object containing dataset creation parameters
             H5::DSetCreatPropList cparms;   
@@ -419,49 +442,49 @@ namespace Gambit {
             return location->createDataSet( name.c_str(), hdf_dtype.type(), dspace, cparms);
          }
 
-      }
+      };
 
       /// Derived dataset interface, with methods for writing scalar records (i.e. single ints, doubles, etc.)
       /// i.e. RANK=0 case
-      template<typename T, std::size_t CHUNKLENGTH>
-      class DataSetInterfaceScalar
+      template<class T, std::size_t CHUNKLENGTH>
+      class DataSetInterfaceScalar : public DataSetInterfaceBase<T,0,CHUNKLENGTH>
       {
         private:
-          const std::size_t empty_rdims[1]; // just to trick base class constructor, not used.
-          static const DSETRANK=1; 
+          static const std::size_t empty_rdims[1]; // just to trick base class constructor, not used.
+          static const std::size_t DSETRANK=1; 
 
         public: 
           /// Constructor
           DataSetInterfaceScalar(H5FGPtr location, const std::string& name) 
             : DataSetInterfaceBase<T,0,CHUNKLENGTH>(location, name, empty_rdims)
-            , empty_rdims()
           {}
 
-          void writenewchunk(const T[CHUNKLENGTH] chunkdata)
+          void writenewchunk(const T (&chunkdata)[CHUNKLENGTH])
           {
              // Extend the dataset. Dataset on disk becomes 1 chunk larger.
              hsize_t newsize[DSETRANK];
-             newsize[0] = get_dsetdims()[0] + CHUNKLENGTH; // extend dataset by 1 chunk
+             hsize_t offsets[DSETRANK];
+             newsize[0] = this->get_dsetdims()[0] + CHUNKLENGTH; // extend dataset by 1 chunk
              // newsize[1] = dims[1]; // don't need: only 1D for now.
-             my_dataset.extend( newsize );
+             this->my_dataset.extend( newsize );
             
              // Select a hyperslab.
-             DataSpace filespace = my_dataset.getSpace();
-             offsets[0] = dsetnextempty;
+             H5::DataSpace filespace = this->my_dataset.getSpace();
+             offsets[0] = this->dsetnextemptyslab;
              //offsets[1] = 0; // don't need: only 1D for now.
-             filespace.selectHyperslab( H5S_SELECT_SET, get_chunkdims(), offsets );
+             filespace.selectHyperslab( H5S_SELECT_SET, this->get_chunkdims(), offsets );
              
              // Define memory space
-             DataSpace memspace( DSETRANK, get_chunkdims() );
+             H5::DataSpace memspace( DSETRANK, this->get_chunkdims() );
              
              // Write the data to the hyperslab.
-             my_dataset.write( chunkdata, get_hdftype(), memspace, filespace );
+             this->my_dataset.write( chunkdata, this->get_hdftype(), memspace, filespace );
 
              // Update the "next empty hyperslab" counter
-             dsetnextempty = dsetnextempty + CHUNKLENGTH;
+             this->dsetnextempty += CHUNKLENGTH;
           }
 
-      }
+      };
 
 
   }
