@@ -50,11 +50,9 @@ START_MODULE
   #define CAPABILITY Higgs_decay_rates
   START_CAPABILITY
 
-    #define FUNCTION SMHiggs_decays
-    START_FUNCTION(DecayTable::Entry)
-    DEPENDENCY(SM_spectrum, const SubSpectrum*)
-    DEPENDENCY(MSSM_spectrum, const SubSpectrum*)
-    #undef FUNCTION
+    //#define FUNCTION SMHiggs_decays
+    //START_FUNCTION(DecayTable::Entry)
+    //#undef FUNCTION
 
     #define FUNCTION MSSM_h0_1_decays
     START_FUNCTION(DecayTable::Entry)
@@ -66,6 +64,13 @@ START_MODULE
     DEPENDENCY(MSSM_spectrum, const Spectrum*)
     // DEPENDENCY(SM_spectrum, const SubSpectrum*)
     // DEPENDENCY(MSSM_spectrum, const SubSpectrum*)
+    #undef FUNCTION
+
+    #define FUNCTION SS_Higgs_decays
+    START_FUNCTION(DecayTable::Entry)
+    //DEPENDENCY(SS_Spectrum, const Spectrum*) 
+    DEPENDENCY(Higgs_decay_rates, DecayTable::Entry)
+    ALLOW_MODEL(SingletDM)
     #undef FUNCTION
 
   #undef CAPABILITY
@@ -521,38 +526,37 @@ START_MODULE
     DEPENDENCY(rho_minus_decay_rates, DecayTable::Entry)
     DEPENDENCY(rho_plus_decay_rates, DecayTable::Entry)
     DEPENDENCY(omega_decay_rates, DecayTable::Entry)
-    // The following are only relevant for the MSSM, and should eventually be made model-conditional dependencies
-    DEPENDENCY(h0_2_decay_rates, DecayTable::Entry) 
-    DEPENDENCY(A0_decay_rates, DecayTable::Entry) 
-    DEPENDENCY(Hplus_decay_rates, DecayTable::Entry) 
-    DEPENDENCY(gluino_decay_rates, DecayTable::Entry) 
-    DEPENDENCY(stop_1_decay_rates, DecayTable::Entry) 
-    DEPENDENCY(stop_2_decay_rates, DecayTable::Entry) 
-    DEPENDENCY(sbottom_1_decay_rates, DecayTable::Entry) 
-    DEPENDENCY(sbottom_2_decay_rates, DecayTable::Entry) 
-    DEPENDENCY(sup_l_decay_rates, DecayTable::Entry) 
-    DEPENDENCY(sup_r_decay_rates, DecayTable::Entry) 
-    DEPENDENCY(sdown_l_decay_rates, DecayTable::Entry) 
-    DEPENDENCY(sdown_r_decay_rates, DecayTable::Entry) 
-    DEPENDENCY(scharm_l_decay_rates, DecayTable::Entry) 
-    DEPENDENCY(scharm_r_decay_rates, DecayTable::Entry) 
-    DEPENDENCY(sstrange_l_decay_rates, DecayTable::Entry) 
-    DEPENDENCY(sstrange_r_decay_rates, DecayTable::Entry) 
-    DEPENDENCY(selectron_l_decay_rates, DecayTable::Entry) 
-    DEPENDENCY(selectron_r_decay_rates, DecayTable::Entry) 
-    DEPENDENCY(smuon_l_decay_rates, DecayTable::Entry) 
-    DEPENDENCY(smuon_r_decay_rates, DecayTable::Entry) 
-    DEPENDENCY(stau_1_decay_rates, DecayTable::Entry) 
-    DEPENDENCY(stau_2_decay_rates, DecayTable::Entry) 
-    DEPENDENCY(snu_electronl_decay_rates, DecayTable::Entry) 
-    DEPENDENCY(snu_muonl_decay_rates, DecayTable::Entry) 
-    DEPENDENCY(snu_taul_decay_rates, DecayTable::Entry) 
-    DEPENDENCY(chargino_1_decay_rates, DecayTable::Entry) 
-    DEPENDENCY(chargino_2_decay_rates, DecayTable::Entry) 
-    DEPENDENCY(neutralino_1_decay_rates, DecayTable::Entry) 
-    DEPENDENCY(neutralino_2_decay_rates, DecayTable::Entry) 
-    DEPENDENCY(neutralino_3_decay_rates, DecayTable::Entry) 
-    DEPENDENCY(neutralino_4_decay_rates, DecayTable::Entry) 
+    MODEL_CONDITIONAL_DEPENDENCY(h0_2_decay_rates, DecayTable::Entry, MSSM78atQ, MSSM78atMGUT) 
+    MODEL_CONDITIONAL_DEPENDENCY(A0_decay_rates, DecayTable::Entry, MSSM78atQ, MSSM78atMGUT) 
+    MODEL_CONDITIONAL_DEPENDENCY(Hplus_decay_rates, DecayTable::Entry, MSSM78atQ, MSSM78atMGUT) 
+    MODEL_CONDITIONAL_DEPENDENCY(gluino_decay_rates, DecayTable::Entry, MSSM78atQ, MSSM78atMGUT) 
+    MODEL_CONDITIONAL_DEPENDENCY(stop_1_decay_rates, DecayTable::Entry, MSSM78atQ, MSSM78atMGUT) 
+    MODEL_CONDITIONAL_DEPENDENCY(stop_2_decay_rates, DecayTable::Entry, MSSM78atQ, MSSM78atMGUT) 
+    MODEL_CONDITIONAL_DEPENDENCY(sbottom_1_decay_rates, DecayTable::Entry, MSSM78atQ, MSSM78atMGUT) 
+    MODEL_CONDITIONAL_DEPENDENCY(sbottom_2_decay_rates, DecayTable::Entry, MSSM78atQ, MSSM78atMGUT) 
+    MODEL_CONDITIONAL_DEPENDENCY(sup_l_decay_rates, DecayTable::Entry, MSSM78atQ, MSSM78atMGUT) 
+    MODEL_CONDITIONAL_DEPENDENCY(sup_r_decay_rates, DecayTable::Entry, MSSM78atQ, MSSM78atMGUT) 
+    MODEL_CONDITIONAL_DEPENDENCY(sdown_l_decay_rates, DecayTable::Entry, MSSM78atQ, MSSM78atMGUT) 
+    MODEL_CONDITIONAL_DEPENDENCY(sdown_r_decay_rates, DecayTable::Entry, MSSM78atQ, MSSM78atMGUT) 
+    MODEL_CONDITIONAL_DEPENDENCY(scharm_l_decay_rates, DecayTable::Entry, MSSM78atQ, MSSM78atMGUT) 
+    MODEL_CONDITIONAL_DEPENDENCY(scharm_r_decay_rates, DecayTable::Entry, MSSM78atQ, MSSM78atMGUT) 
+    MODEL_CONDITIONAL_DEPENDENCY(sstrange_l_decay_rates, DecayTable::Entry, MSSM78atQ, MSSM78atMGUT) 
+    MODEL_CONDITIONAL_DEPENDENCY(sstrange_r_decay_rates, DecayTable::Entry, MSSM78atQ, MSSM78atMGUT) 
+    MODEL_CONDITIONAL_DEPENDENCY(selectron_l_decay_rates, DecayTable::Entry, MSSM78atQ, MSSM78atMGUT) 
+    MODEL_CONDITIONAL_DEPENDENCY(selectron_r_decay_rates, DecayTable::Entry, MSSM78atQ, MSSM78atMGUT) 
+    MODEL_CONDITIONAL_DEPENDENCY(smuon_l_decay_rates, DecayTable::Entry, MSSM78atQ, MSSM78atMGUT) 
+    MODEL_CONDITIONAL_DEPENDENCY(smuon_r_decay_rates, DecayTable::Entry, MSSM78atQ, MSSM78atMGUT) 
+    MODEL_CONDITIONAL_DEPENDENCY(stau_1_decay_rates, DecayTable::Entry, MSSM78atQ, MSSM78atMGUT) 
+    MODEL_CONDITIONAL_DEPENDENCY(stau_2_decay_rates, DecayTable::Entry, MSSM78atQ, MSSM78atMGUT) 
+    MODEL_CONDITIONAL_DEPENDENCY(snu_electronl_decay_rates, DecayTable::Entry, MSSM78atQ, MSSM78atMGUT) 
+    MODEL_CONDITIONAL_DEPENDENCY(snu_muonl_decay_rates, DecayTable::Entry, MSSM78atQ, MSSM78atMGUT) 
+    MODEL_CONDITIONAL_DEPENDENCY(snu_taul_decay_rates, DecayTable::Entry, MSSM78atQ, MSSM78atMGUT) 
+    MODEL_CONDITIONAL_DEPENDENCY(chargino_1_decay_rates, DecayTable::Entry, MSSM78atQ, MSSM78atMGUT) 
+    MODEL_CONDITIONAL_DEPENDENCY(chargino_2_decay_rates, DecayTable::Entry, MSSM78atQ, MSSM78atMGUT) 
+    MODEL_CONDITIONAL_DEPENDENCY(neutralino_1_decay_rates, DecayTable::Entry, MSSM78atQ, MSSM78atMGUT) 
+    MODEL_CONDITIONAL_DEPENDENCY(neutralino_2_decay_rates, DecayTable::Entry, MSSM78atQ, MSSM78atMGUT) 
+    MODEL_CONDITIONAL_DEPENDENCY(neutralino_3_decay_rates, DecayTable::Entry, MSSM78atQ, MSSM78atMGUT) 
+    MODEL_CONDITIONAL_DEPENDENCY(neutralino_4_decay_rates, DecayTable::Entry, MSSM78atQ, MSSM78atMGUT) 
     #undef FUNCTION
 
   #undef CAPABILITY

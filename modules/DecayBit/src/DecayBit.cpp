@@ -221,35 +221,10 @@ namespace Gambit
       //See PDG meson sheet in DecayBit/data/PDG if you want BFs               
     }
 
-     ///SM decays: Higgs
-    void SMHiggs_decays (DecayTable::Entry& result) 
-    {
-      // Remember that result does not arrive pristine, but contains the result of the last point.  Make sure to overwrite it fully!
-      // This is just an example function that returns junk numbers at the moment.  It should be finished off
-      // in order to use SUSYHIT properly.  When it works, a dependency on it added to the all_decays function.
-      using namespace Pipes::SMHiggs_decays;
-      const SubSpectrum* spec = *Dep::SM_spectrum;
-      const SubSpectrum* mssm = *Dep::MSSM_spectrum;
-      double m_H = mssm->phys.get_Pole_Mass("h0_1"); // Retrieve the masses from the spectrum object.
-      double m_b = spec->phys.get_Pole_Mass("b");
-      double m_t = spec->phys.get_Pole_Mass("t");
-      double m_W = spec->phys.get_Pole_Mass("W+");
-      double m_Z = spec->phys.get_Pole_Mass("Z0");
-      double totalwidth = 5.0; // In GeV -- this should be calculated or retrieved from a backend
-      double BF_err = 0.01;// Error on the branching fractions
-      double BF_bb = 0.37; // In reality, this should be obtained from a backend, using m_b, m_H, etc
-      double BF_tt = 0.10; // In reality, this should be obtained from a backend, using m_t, m_H, etc
-      double BF_WW = 0.35; // In reality, this should be obtained from a backend, using m_W, m_H, etc
-      double BF_WWZ = 0.18;// In reality, this should be obtained from a backend, using m_W, m_H, m_Z, etc
-      cout << "H,b,t,W,Z masses: " << m_H << " " << m_b << " " << m_t <<  " " << m_W << " " << m_Z << endl;
-      result.width_in_GeV = totalwidth;       // Alternatively, you could make a blank one with result = DecayTable::Entry(totalwidth).
-      result.set_BF(BF_bb, BF_err, "b", "bbar");      // Set the BFs for each final state.
-      result.set_BF(BF_tt, BF_err, "t", "tbar");
-      result.set_BF(BF_WW, BF_err, "W+", "W-");
-      result.set_BF(BF_WWZ, BF_err, "W+", "W-", "Z0");
-    }
+    ///SM decays: Higgs
+    // TODO
 
-    /// MSSM sfermion states 
+    /// MSSM sfermion states
     const char *isdl = "~d_1";
     const char *isul = "~u_1";
     const char *issl = "~d_2";
@@ -602,7 +577,7 @@ namespace Gambit
     void stop_1_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::stop_1_decays;
-      result.width_in_GeV = BEreq::cb_sd_stopwidth->stoptot4;
+      result.width_in_GeV = BEreq::cb_sd_stopwidth->stoptot(1);
       result.set_BF(BEreq::cb_sd_stop2body->brst1neutt(1), 0.0, "~chi0_1", "t");
       result.set_BF(BEreq::cb_sd_stop2body->brst1neutt(2), 0.0, "~chi0_2", "t");
       result.set_BF(BEreq::cb_sd_stop2body->brst1neutt(3), 0.0, "~chi0_3", "t");
@@ -655,7 +630,7 @@ namespace Gambit
     void stop_2_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::stop_2_decays;
-      result.width_in_GeV = BEreq::cb_sd_stopwidth->stoptot4;
+      result.width_in_GeV = BEreq::cb_sd_stopwidth->stoptot(2);
       result.set_BF(BEreq::cb_sd_stop2body->brst2neutt(1), 0.0, "~chi0_1", "t");
       result.set_BF(BEreq::cb_sd_stop2body->brst2neutt(2), 0.0, "~chi0_2", "t");
       result.set_BF(BEreq::cb_sd_stop2body->brst2neutt(3), 0.0, "~chi0_3", "t");
@@ -1724,6 +1699,22 @@ namespace Gambit
       // cout << "neutralino_4 total width: " << result.width_in_GeV << endl;
     }
 	
+    /// Add the decay of Higgs to singlets for the SingletDM model
+    void SS_Higgs_decays (DecayTable::Entry& result)
+    {
+      using namespace Pipes::SS_Higgs_decays;
+      double mass = *Param["mass"];     //FIXME get from spectrum
+      double lambda = *Param["lambda"]; //FIXME get from spectrum
+      double v0 = 246.0;                //FIXME get from spectrum
+      double mhpole = 125.0;            //FIXME get from spectrum
+      double massratio2 = mass*mass/(mhpole*mhpole);
+      double gamma = lambda*lambda*v0*v0/(32.0*pi*mhpole) * sqrt(1.0 - 4.0*massratio2);  
+      result = *Dep::Higgs_decay_rates;                        // Get the SM decays.
+      result.width_in_GeV = result.width_in_GeV + gamma;       // Add the h->SS width
+      result.set_BF(gamma/result.width_in_GeV, 0.0, "S", "S"); // Add the h->SS branching fraction
+    }
+
+  
     /// Collect all the DecayTable entries into an actual DecayTable 
     void all_decays (DecayTable &result) 
     {
@@ -1773,44 +1764,44 @@ namespace Gambit
       decays("h0_2") = fake_decay;
       
       // MSSM-specific
-      decays("h0_2") = *Dep::h0_2_decay_rates;       // Add the h0_2 decays.
-      decays("A0") = *Dep::A0_decay_rates;           // Add the A0 decays.
-      decays("H+") = *Dep::Hplus_decay_rates;        // Add the H+ decays.
-      
-      decays("~g") = *Dep::gluino_decay_rates;       // Add the gluino decays.
-      
-      decays(ist1) = *Dep::stop_1_decay_rates;     // Add the ~t_1 decays.
-      decays(ist2) = *Dep::stop_2_decay_rates;     // Add the ~t_2 decays.
-      decays(isb1) = *Dep::sbottom_1_decay_rates;  // Add the ~b_1 decays.
-      decays(isb2) = *Dep::sbottom_2_decay_rates;  // Add the ~b_2 decays.
-      decays(isul) = *Dep::sup_l_decay_rates;      // Add the ~u_L decays.
-      decays(isur) = *Dep::sup_r_decay_rates;      // Add the ~u_R decays.
-      decays(isdl) = *Dep::sdown_l_decay_rates;    // Add the ~d_L decays.
-      decays(isdr) = *Dep::sdown_r_decay_rates;    // Add the ~d_R decays.
-      decays(iscl) = *Dep::scharm_l_decay_rates;   // Add the ~c_L decays.
-      decays(iscr) = *Dep::scharm_r_decay_rates;   // Add the ~c_R decays.
-      decays(issl) = *Dep::sstrange_l_decay_rates; // Add the ~s_L decays.
-      decays(issr) = *Dep::sstrange_r_decay_rates; // Add the ~s_R decays.
+      if (ModelInUse("MSSM78atQ") or ModelInUse("MSSM78atMGUT"))
+      {
+        decays("h0_2") = *Dep::h0_2_decay_rates;            // Add the h0_2 decays.
+        decays("A0") = *Dep::A0_decay_rates;                // Add the A0 decays.
+        decays("H+") = *Dep::Hplus_decay_rates;             // Add the H+ decays.       
 
-      decays(isell) = *Dep::selectron_l_decay_rates;  // Add the ~e-_L decays.
-      decays(iselr) = *Dep::selectron_r_decay_rates;  // Add the ~e-_R decays.
-      decays(ismul) = *Dep::smuon_l_decay_rates;      // Add the ~mu-_L decays.
-      decays(ismur) = *Dep::smuon_r_decay_rates;      // Add the ~mu-_R decays.
-      decays(istau1) = *Dep::stau_1_decay_rates;      // Add the ~tau_1 decays.
-      decays(istau2) = *Dep::stau_2_decay_rates;      // Add the ~tau_2 decays.
-      decays(inel) = *Dep::snu_electronl_decay_rates; // Add the ~nu_e decays.
-      decays(inmul) = *Dep::snu_muonl_decay_rates;    // Add the ~nu_mu decays.
-      decays(intau1) = *Dep::snu_taul_decay_rates;    // Add the ~nu_tau decays.
+        decays("~g") = *Dep::gluino_decay_rates;            // Add the gluino decays.
 
-      decays("~chi+_1") = *Dep::chargino_1_decay_rates;   // Add the ~chi+_1 decays.
-      decays("~chi+_2") = *Dep::chargino_2_decay_rates;   // Add the ~chi+_2 decays.
-      decays("~chi0_1") = *Dep::neutralino_1_decay_rates; // Add the ~chi0_1 decays.
-      decays("~chi0_2") = *Dep::neutralino_2_decay_rates; // Add the ~chi0_2 decays.
-      decays("~chi0_3") = *Dep::neutralino_3_decay_rates; // Add the ~chi0_3 decays.
-      decays("~chi0_4") = *Dep::neutralino_4_decay_rates; // Add the ~chi0_4 decays.
+        decays("~chi+_1") = *Dep::chargino_1_decay_rates;   // Add the ~chi+_1 decays.
+        decays("~chi+_2") = *Dep::chargino_2_decay_rates;   // Add the ~chi+_2 decays.
+        decays("~chi0_1") = *Dep::neutralino_1_decay_rates; // Add the ~chi0_1 decays.
+        decays("~chi0_2") = *Dep::neutralino_2_decay_rates; // Add the ~chi0_2 decays.
+        decays("~chi0_3") = *Dep::neutralino_3_decay_rates; // Add the ~chi0_3 decays.
+        decays("~chi0_4") = *Dep::neutralino_4_decay_rates; // Add the ~chi0_4 decays.
 
-      cout << "BF for tau+ -> pi+ nubar_tau: " << decays("tau+").BF("pi+", "nubar_tau") << endl;
-      result = decays;
+        decays(ist1) = *Dep::stop_1_decay_rates;            // Add the ~t_1 decays.
+        decays(ist2) = *Dep::stop_2_decay_rates;            // Add the ~t_2 decays.
+        decays(isb1) = *Dep::sbottom_1_decay_rates;         // Add the ~b_1 decays.
+        decays(isb2) = *Dep::sbottom_2_decay_rates;         // Add the ~b_2 decays.
+        decays(isul) = *Dep::sup_l_decay_rates;             // Add the ~u_L decays.
+        decays(isur) = *Dep::sup_r_decay_rates;             // Add the ~u_R decays.
+        decays(isdl) = *Dep::sdown_l_decay_rates;           // Add the ~d_L decays.
+        decays(isdr) = *Dep::sdown_r_decay_rates;           // Add the ~d_R decays.
+        decays(iscl) = *Dep::scharm_l_decay_rates;          // Add the ~c_L decays.
+        decays(iscr) = *Dep::scharm_r_decay_rates;          // Add the ~c_R decays.
+        decays(issl) = *Dep::sstrange_l_decay_rates;        // Add the ~s_L decays.
+        decays(issr) = *Dep::sstrange_r_decay_rates;        // Add the ~s_R decays.
+        decays(isell) = *Dep::selectron_l_decay_rates;      // Add the ~e-_L decays.
+        decays(iselr) = *Dep::selectron_r_decay_rates;      // Add the ~e-_R decays.
+        decays(ismul) = *Dep::smuon_l_decay_rates;          // Add the ~mu-_L decays.
+        decays(ismur) = *Dep::smuon_r_decay_rates;          // Add the ~mu-_R decays.
+        decays(istau1) = *Dep::stau_1_decay_rates;          // Add the ~tau_1 decays.
+        decays(istau2) = *Dep::stau_2_decay_rates;          // Add the ~tau_2 decays.
+        decays(inel) = *Dep::snu_electronl_decay_rates;     // Add the ~nu_e decays.
+        decays(inmul) = *Dep::snu_muonl_decay_rates;        // Add the ~nu_mu decays.
+        decays(intau1) = *Dep::snu_taul_decay_rates;        // Add the ~nu_tau decays.
+      }
+
     }
 
     /// @}
