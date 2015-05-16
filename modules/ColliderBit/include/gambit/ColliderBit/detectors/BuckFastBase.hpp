@@ -9,7 +9,7 @@ namespace Gambit {
     struct BuckFastBase : BaseDetector<HEPUtils::Event, HEPUtils::Event> {
       /// @name Event detection simulation.
       //@{
-        virtual void processEvent(const HEPUtils::Event&, HEPUtils::Event&) = 0; //< @note Pure virtual.
+        virtual void processEvent(const HEPUtils::Event&, HEPUtils::Event&) = 0;
       //@}
 
       /// @name Construction, Destruction, and Recycling
