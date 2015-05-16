@@ -47,7 +47,7 @@ BE_FUNCTION(HB_calc_stats, void, (double&, double&, double&, int&), "hb_calc_sta
 BE_FUNCTION(finish_HiggsBounds_chisqtables, void, (), "finish_higgsbounds_chisqtables_","finish_HiggsBounds_chisqtables")
 
 BE_INI_FUNCTION{}
-DONE
+END_BE_INI_FUNCTION
 
 // Undefine macros to avoid conflict with other backends
 #include "gambit/Backends/backend_undefs.hpp"

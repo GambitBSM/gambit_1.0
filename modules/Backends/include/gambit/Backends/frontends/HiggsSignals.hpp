@@ -45,7 +45,7 @@ BE_FUNCTION(setup_rate_uncertainties, void, (double*, double*), "setup_rate_unce
 BE_FUNCTION(finish_HiggsSignals, void, (), "finish_higgssignals_", "finish_HiggsSignals")
 BE_FUNCTION(finish_HiggsBounds_HS, void, (), "finish_higgsbounds_", "finish_HiggsBounds_HS")
 BE_INI_FUNCTION{}
-DONE
+END_BE_INI_FUNCTION
 
 // Undefine macros to avoid conflict with other backends
 #include "gambit/Backends/backend_undefs.hpp"

@@ -109,7 +109,7 @@ namespace Gambit
 BE_CONV_FUNCTION(awesomenessByAnders, double, (int), "awesomeness")
 
 BE_INI_FUNCTION {}
-DONE
+END_BE_INI_FUNCTION
 
 // Undefine macros to avoid conflict with other backends
 #include "gambit/Backends/backend_undefs.hpp"
