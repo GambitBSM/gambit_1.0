@@ -36,7 +36,7 @@ namespace Gambit {
 
       /// @name Event detection simulation
       //@{
-        virtual void processEvent(const EventIn&, EventOut&) = 0;
+        virtual void processEvent(const EventIn&, EventOut&) const = 0;
       //@}
 
       /// @name (Re-)Initialization functions

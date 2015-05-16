@@ -52,7 +52,7 @@ START_MODULE
   #define CAPABILITY DetectorSim
   START_CAPABILITY
     #define FUNCTION getDelphes
-    START_FUNCTION(Gambit::ColliderBit::DelphesBase*)
+    START_FUNCTION(Gambit::ColliderBit::DelphesVanilla)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
     NEEDS_CLASSES_FROM(Pythia, default)
     #undef FUNCTION
@@ -61,7 +61,7 @@ START_MODULE
   #define CAPABILITY SimpleSmearingSim
   START_CAPABILITY
     #define FUNCTION getBuckFast
-    START_FUNCTION(Gambit::ColliderBit::BuckFastBase*)
+    START_FUNCTION(Gambit::ColliderBit::BuckFastSmear)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
     #undef FUNCTION
   #undef CAPABILITY
@@ -145,14 +145,14 @@ START_MODULE
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
     NEEDS_CLASSES_FROM(Pythia, default)
     DEPENDENCY(HardScatteringEvent, Pythia8::Event)
-    DEPENDENCY(DetectorSim, Gambit::ColliderBit::DelphesBase*)
+    DEPENDENCY(DetectorSim, Gambit::ColliderBit::DelphesVanilla)
     #undef FUNCTION
 
     #define FUNCTION reconstructBuckFastEvent
     START_FUNCTION(HEPUtils::Event)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
     DEPENDENCY(ConvertedScatteringEvent, HEPUtils::Event)
-    DEPENDENCY(SimpleSmearingSim, Gambit::ColliderBit::BuckFastBase*)
+    DEPENDENCY(SimpleSmearingSim, Gambit::ColliderBit::BuckFastSmear)
     #undef FUNCTION
   /// For now, let's stick to what we already have running.
   /// \todo Replace BLAH_* with the proper types.  Put those types in the proper place for typedefs.

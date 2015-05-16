@@ -30,8 +30,8 @@
 #include <vector>
 
 #include "gambit/ColliderBit/colliders/SpecializablePythia.hpp"
-#include "gambit/ColliderBit/detectors/DelphesBase.hpp"
-#include "gambit/ColliderBit/detectors/BuckFastBase.hpp"
+#include "gambit/ColliderBit/detectors/DelphesVanilla.hpp"
+#include "gambit/ColliderBit/detectors/BuckFastSmear.hpp"
 #include "gambit/ColliderBit/analyses/HEPUtilsAnalysisContainer.hpp"
 
 #include "HEPUtils/Event.h"

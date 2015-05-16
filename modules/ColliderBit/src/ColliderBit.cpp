@@ -40,10 +40,7 @@ namespace Gambit {
     std::vector<std::string> analysisNames;
     /// Delphes stuff
     /// @TODO BOSS delphes? Euthanize delphes?
-    bool resetDelphesFlag = true;
     std::string delphesConfigFilename;
-    /// BuckFast stuff
-    bool resetBuckFastFlag = true;
     /// Pythia stuff
     std::vector<std::string> pythiaNames;
     std::vector<std::string>::const_iterator iter;
@@ -141,44 +138,32 @@ namespace Gambit {
 
     /// *** Detector Simulators ***
 
-    void getDelphes(Gambit::ColliderBit::DelphesBase* &result) {
+    void getDelphes(Gambit::ColliderBit::DelphesVanilla &result) {
       using namespace Pipes::getDelphes;
       std::vector<std::string> delphesOptions;
-      if (resetDelphesFlag and *Loop::iteration == INIT) {
+      if (*Loop::iteration == INIT) {
+        result.clear();
         #pragma omp critical (Delphes)
         {
           /// Setup new Delphes
           GET_COLLIDER_RUNOPTION(delphesOptions, std::vector<std::string>);
-          /// Memory allocation: Delphes
-          result = mkDelphes("DelphesVanilla", delphesOptions);
-          resetDelphesFlag = false;
+          result.init(delphesOptions);
         }
-      } else if (*Loop::iteration == FINALIZE) {
-        /// Memory clean-up: Delphes
-        delete result;
-        result = 0;
-        resetDelphesFlag = true;
       }
     }
 
 
-    void getBuckFast(Gambit::ColliderBit::BuckFastBase* &result) {
+    void getBuckFast(Gambit::ColliderBit::BuckFastSmear &result) {
       using namespace Pipes::getBuckFast;
       std::string buckFastOption;
-      if (resetBuckFastFlag and *Loop::iteration == INIT) {
+      if (*Loop::iteration == INIT) {
+        result.clear();
         #pragma omp critical (BuckFast)
         {
           /// Setup new BuckFast
-          GET_COLLIDER_RUNOPTION(buckFastOption, std::string);
-          /// Memory allocation: BuckFast
-          result = mkBuckFast(buckFastOption);
-          resetBuckFastFlag = false;
+          /// @note There's really nothing to do. BuckFast doesn't even have class variables.
+          result.init();
         }
-      } else if (*Loop::iteration == FINALIZE) {
-        /// Memory clean-up: BuckFast
-        delete result;
-        result = 0;
-        resetBuckFastFlag = true;
       }
     }
 
@@ -521,7 +506,7 @@ namespace Gambit {
 
       #pragma omp critical (Delphes)
       {
-        (*Dep::DetectorSim)->processEvent(*Dep::HardScatteringEvent, result);
+        (*Dep::DetectorSim).processEvent(*Dep::HardScatteringEvent, result);
       }
     }
 
@@ -530,7 +515,7 @@ namespace Gambit {
       if (*Loop::iteration <= INIT) return;
       result.clear();
 
-      (*Dep::SimpleSmearingSim)->processEvent(*Dep::ConvertedScatteringEvent, result);
+      (*Dep::SimpleSmearingSim).processEvent(*Dep::ConvertedScatteringEvent, result);
     }
 
 
