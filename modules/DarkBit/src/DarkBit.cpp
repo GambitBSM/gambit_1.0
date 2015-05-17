@@ -104,7 +104,8 @@ namespace Gambit {
 
       static unsigned int counter = 0;
 
-      double M_DM = (*Dep::DD_couplings).M_DM;
+      double M_DM = 
+        Dep::TH_ProcessCatalog->getParticleProperty(*Dep::DarkMatter_ID).mass; 
       double Gps = (*Dep::DD_couplings).gps;
       double Gpa = (*Dep::DD_couplings).gpa;
       double Gns = (*Dep::DD_couplings).gns;

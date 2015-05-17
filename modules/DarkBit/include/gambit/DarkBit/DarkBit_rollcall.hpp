@@ -477,6 +477,8 @@ START_MODULE
     #define FUNCTION SetWIMP_DDCalc0
       START_FUNCTION(bool)
       DEPENDENCY(DD_couplings, Gambit::DarkBit::DD_couplings)
+      DEPENDENCY(TH_ProcessCatalog, DarkBit::TH_ProcessCatalog)
+      DEPENDENCY(DarkMatter_ID, std::string)
       BACKEND_REQ(DDCalc0_SetWIMP_mG, (DDCalc0), void, (double*,double*,double*,double*,double*))
       // Following only used for logging (not necessary for capability)
       BACKEND_REQ(DDCalc0_GetWIMP_msigma, (DDCalc0), void, (double*,double*,double*,double*,double*))

@@ -195,14 +195,12 @@ namespace Gambit {
       result.gns = lambda*fn*m_proton/pow(mh,2)/mass/2;
       result.gpa = 0;  // Only SI cross-section
       result.gna = 0;
-      result.M_DM = *Param["mass"];
 
       logger() << "Singlet DM DD couplings:" << std::endl;
       logger() << " gps = " << result.gps << std::endl;
       logger() << " gns = " << result.gns << std::endl;
       logger() << " gpa = " << result.gpa << std::endl;
       logger() << " gna = " << result.gna << std::endl;
-      logger() << "M_DM = " << result.M_DM << std::endl;
 
     } // function DD_couplings_SingletDM
 

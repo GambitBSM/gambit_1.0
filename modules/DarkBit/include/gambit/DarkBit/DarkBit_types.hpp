@@ -465,7 +465,6 @@ namespace Gambit
     // GAMBIT development; to be superceded by structures below.
     struct DD_couplings
     {
-      double M_DM;
       double gps;
       double gns;
       double gpa;
