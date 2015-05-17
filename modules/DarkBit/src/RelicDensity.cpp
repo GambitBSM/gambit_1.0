@@ -159,7 +159,7 @@ namespace Gambit {
       using namespace Pipes::RD_spectrum_from_ProcessCatalog;
 
       // retrieve annihilation processes and DM properties
-      std::string DMid= Dep::DarkMatter_ID->singleID();
+      std::string DMid= *Dep::DarkMatter_ID;
       TH_Process annihilation = 
               (*Dep::TH_ProcessCatalog).getProcess(DMid, DMid);
       TH_ParticleProperty DMproperty = 
@@ -309,7 +309,7 @@ namespace Gambit {
       {
         using namespace Pipes::RD_eff_annrate_from_ProcessCatalog;
 
-        std::string DMid= Dep::DarkMatter_ID->singleID();
+        std::string DMid= *Dep::DarkMatter_ID;
         TH_Process annProc = (*Dep::TH_ProcessCatalog).getProcess(DMid, DMid);
         double mDM = (*Dep::TH_ProcessCatalog).getParticleProperty(DMid).mass;
         const double GeV2tocm3s1 = 1.16733e-17;

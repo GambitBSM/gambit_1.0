@@ -224,7 +224,7 @@ namespace Gambit {
       using std::string;
 
       // FIXME: Add test that this is really ~chi0_1
-      std::string DMid = Dep::DarkMatter_ID->singleID();
+      std::string DMid = *Dep::DarkMatter_ID;
 
       // Instantiate new ProcessCatalog
       TH_ProcessCatalog catalog;      
@@ -495,10 +495,10 @@ namespace Gambit {
       result = catalog;
     }
 
-    void DarkMatter_ID_MSSM25atQ(DarkMatter_ID_type & result)
+    void DarkMatter_ID_MSSM25atQ(std::string & result)
     {
       using namespace Pipes::DarkMatter_ID_MSSM25atQ;
-      result = DarkMatter_ID_type(initVector<std::string>("~chi0_1"));
+      result = "~chi0_1";
     }
   }
 }

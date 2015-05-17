@@ -72,7 +72,7 @@ namespace Gambit
 
       // Set annihilation branching fractions
       // FIXME needs to be fixed once BFs are available directly from TH_Process
-      std::string DMid = Dep::DarkMatter_ID->singleID();
+      std::string DMid = *Dep::DarkMatter_ID;
       TH_Process annProc = Dep::TH_ProcessCatalog->getProcess(DMid, DMid);
       std::vector<str> neutral_channels[29];
       neutral_channels[0]  = initVector<str>("h0_1", "h0_1");

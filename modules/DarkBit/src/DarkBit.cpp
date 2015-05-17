@@ -51,9 +51,8 @@ namespace Gambit {
 
     /// Retrieve the DM mass in GeV for generic models (GeV)
     void mwimp_generic(double &result) { 
-      result = 
-        Pipes::mwimp_generic::Dep::TH_ProcessCatalog->getParticleProperty(
-          Pipes::mwimp_generic::Dep::DarkMatter_ID->singleID()).mass; 
+      using namespace Pipes::mwimp_generic;
+      result = Dep::TH_ProcessCatalog->getParticleProperty(*Dep::DarkMatter_ID).mass; 
     }
 
     /// Retrieve the DM mass in GeV for the scalar singlet model (GeV)
@@ -70,7 +69,7 @@ namespace Gambit {
     void sigmav_late_universe(double &result)
     {
       using namespace Pipes::sigmav_late_universe;
-      std::string DMid = Dep::DarkMatter_ID->singleID();
+      std::string DMid = *Dep::DarkMatter_ID;
       TH_Process annProc = Dep::TH_ProcessCatalog->getProcess(DMid, DMid);
       result = 0.0;
       for (std::vector<TH_Channel>::iterator it = annProc.channelList.begin();
@@ -112,7 +111,7 @@ namespace Gambit {
       double Gna = (*Dep::DD_couplings).gna;
       double oh2 = *Dep::RD_oh2;
 
-      std::string DMid = Dep::DarkMatter_ID->singleID();
+      std::string DMid = *Dep::DarkMatter_ID;
       TH_Process annProc = (*Dep::TH_ProcessCatalog).getProcess(DMid, DMid);
       Funk::Funk spectrum = (*Dep::GA_AnnYield)->set("v", 0.);
 

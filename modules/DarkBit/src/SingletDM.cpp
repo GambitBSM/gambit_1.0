@@ -170,10 +170,10 @@ namespace Gambit {
         double Gamma_mh, mh, v0, alpha_s, mb, mc, mtau, mt;
     };
 
-    void DarkMatter_ID_SingletDM(DarkMatter_ID_type & result)
+    void DarkMatter_ID_SingletDM(std::string & result)
     {
       using namespace Pipes::DarkMatter_ID_SingletDM;
-      result = DarkMatter_ID_type(initVector<std::string>("S"));
+      result = "S";
     } // DarkMatter_ID_SingletDM
 
 

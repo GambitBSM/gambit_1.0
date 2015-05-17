@@ -166,6 +166,7 @@ namespace Gambit
     };
     */
 
+    /*
     /// Dark matter particle identity
     class DarkMatter_ID_type
     {
@@ -208,6 +209,7 @@ namespace Gambit
       private:
         std::set<std::string> particle_ids;
     };
+    */
 
     // A simple example
     struct Wstruct

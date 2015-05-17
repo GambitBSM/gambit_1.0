@@ -104,7 +104,7 @@ START_MODULE
     #define FUNCTION RD_spectrum_from_ProcessCatalog
       START_FUNCTION(Gambit::DarkBit::RD_spectrum_type)
       DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)
-      DEPENDENCY(DarkMatter_ID, DarkMatter_ID_type)
+      DEPENDENCY(DarkMatter_ID, std::string)
       ALLOW_MODELS(SingletDM)
     #undef FUNCTION
   #undef CAPABILITY
@@ -136,7 +136,7 @@ START_MODULE
     #define FUNCTION RD_eff_annrate_from_ProcessCatalog
       START_FUNCTION(fptr_dd)
       DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)
-      DEPENDENCY(DarkMatter_ID, DarkMatter_ID_type)
+      DEPENDENCY(DarkMatter_ID, std::string)
       ALLOW_MODELS(SingletDM)
     #undef FUNCTION
   #undef CAPABILITY
@@ -316,7 +316,7 @@ START_MODULE
       START_FUNCTION(std::vector<std::string>)
       DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)
       DEPENDENCY(SimYieldTable, Gambit::DarkBit::SimYieldTable)
-      DEPENDENCY(DarkMatter_ID, DarkMatter_ID_type)
+      DEPENDENCY(DarkMatter_ID, std::string)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -327,13 +327,13 @@ START_MODULE
       DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)
       DEPENDENCY(SimYieldTable, Gambit::DarkBit::SimYieldTable)
       DEPENDENCY(cascadeMC_gammaSpectra, Gambit::DarkBit::stringFunkMap)
-      DEPENDENCY(DarkMatter_ID, DarkMatter_ID_type)
+      DEPENDENCY(DarkMatter_ID, std::string)
     #undef FUNCTION
   /*
     #define FUNCTION GA_AnnYield_DarkSUSY
       START_FUNCTION(Funk::Funk)
       DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)
-      DEPENDENCY(DarkMatter_ID, DarkMatter_ID_type)
+      DEPENDENCY(DarkMatter_ID, std::string)
       BACKEND_REQ(dshayield, (), double, (double&,double&,int&,int&,int&))
     #undef FUNCTION
   */
@@ -346,7 +346,7 @@ START_MODULE
       //ALLOW_MODELS(CMSSM, MSSM25atQ)
       DEPENDENCY(DarkSUSY_PointInit, bool)
       DEPENDENCY(MSSM_spectrum, const Spectrum*)      
-      DEPENDENCY(DarkMatter_ID, DarkMatter_ID_type)
+      DEPENDENCY(DarkMatter_ID, std::string)
       DEPENDENCY(decay_rates,DecayTable)
 //      BACKEND_REQ(mspctm, (), DS_MSPCTM)
       BACKEND_REQ(dssigmav, (), double, (int&))
@@ -385,7 +385,7 @@ START_MODULE
       START_FUNCTION(double)
       DEPENDENCY(GA_AnnYield, Funk::Funk)
       DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)
-      DEPENDENCY(DarkMatter_ID, DarkMatter_ID_type)
+      DEPENDENCY(DarkMatter_ID, std::string)
       BACKEND_REQ(lnL_GC, (gamLike), double, (const std::vector<double> &, const std::vector<double> &))
     #undef FUNCTION
   #undef CAPABILITY
@@ -411,14 +411,14 @@ START_MODULE
 
   // Retrieve the DM mass in GeV for generic models
   QUICK_FUNCTION(DarkBit, mwimp, NEW_CAPABILITY, mwimp_generic, double, (),
-      (TH_ProcessCatalog, DarkBit::TH_ProcessCatalog), (DarkMatter_ID, DarkMatter_ID_type))
+      (TH_ProcessCatalog, DarkBit::TH_ProcessCatalog), (DarkMatter_ID, std::string))
 
   // Retrieve the DM mass in GeV for the scalar singlet model
   QUICK_FUNCTION(DarkBit, mwimp, OLD_CAPABILITY, mwimp_SingletDM, double, (SingletDM))
 
   // Retrieve the total thermally-averaged annihilation cross-section for indirect detection (cm^3 / s)
   QUICK_FUNCTION(DarkBit, sigmav, NEW_CAPABILITY, sigmav_late_universe, double, (),
-      (TH_ProcessCatalog, DarkBit::TH_ProcessCatalog), (DarkMatter_ID, DarkMatter_ID_type))
+      (TH_ProcessCatalog, DarkBit::TH_ProcessCatalog), (DarkMatter_ID, std::string))
 
 
   // DIRECT DETECTION ==================================================
@@ -835,7 +835,7 @@ START_MODULE
     DEPENDENCY(sigmav, double)
     DEPENDENCY(sigma_SI_p, double)
     DEPENDENCY(sigma_SD_p, double)
-    DEPENDENCY(DarkMatter_ID, DarkMatter_ID_type)
+    DEPENDENCY(DarkMatter_ID, std::string)
     BACKEND_REQ(nuyield_setup, (needs_DS), void, (const double(&)[29], 
      const double(&)[29][3], const double(&)[15], const double(&)[3], const double&, 
      const double&, const double&, const double&, const double&))
@@ -1083,7 +1083,7 @@ START_MODULE
     DEPENDENCY(RD_oh2, double)
     DEPENDENCY(GA_AnnYield, Funk::Funk)
     DEPENDENCY(TH_ProcessCatalog, Gambit::DarkBit::TH_ProcessCatalog)
-    DEPENDENCY(DarkMatter_ID, DarkMatter_ID_type)
+    DEPENDENCY(DarkMatter_ID, std::string)
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -1105,11 +1105,11 @@ START_MODULE
   #define CAPABILITY DarkMatter_ID
   START_CAPABILITY
     #define FUNCTION DarkMatter_ID_SingletDM
-    START_FUNCTION(DarkMatter_ID_type)
+    START_FUNCTION(std::string)
     ALLOW_MODELS(SingletDM)
     #undef FUNCTION
     #define FUNCTION DarkMatter_ID_MSSM25atQ
-    START_FUNCTION(DarkMatter_ID_type)
+    START_FUNCTION(std::string)
     ALLOW_MODELS(MSSM25atQ, CMSSM)
     #undef FUNCTION
   #undef CAPABILITY
