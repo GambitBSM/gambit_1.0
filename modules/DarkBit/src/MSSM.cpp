@@ -217,7 +217,7 @@ namespace Gambit {
     /*! \brief Initialization of Process Catalogue based on DarkSUSY
      *         calculations.
      */
-    void TH_ProcessCatalog_CMSSM(Gambit::DarkBit::TH_ProcessCatalog &result)
+    void TH_ProcessCatalog_CMSSM(DarkBit::TH_ProcessCatalog &result)
     {
       using namespace Pipes::TH_ProcessCatalog_CMSSM;
       using std::vector;

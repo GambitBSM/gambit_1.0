@@ -178,7 +178,7 @@ namespace Gambit {
 
 
     /// Direct detection couplings for Singlet DM.
-    void DD_couplings_SingletDM(Gambit::DarkBit::DD_couplings &result)
+    void DD_couplings_SingletDM(DarkBit::DD_couplings &result)
     {
       using namespace Pipes::DD_couplings_SingletDM;
       double mass = *Param["mass"];
@@ -224,7 +224,7 @@ namespace Gambit {
     }
 
     /// Set up process catalogue for Singlet DM.
-    void TH_ProcessCatalog_SingletDM(Gambit::DarkBit::TH_ProcessCatalog &result)
+    void TH_ProcessCatalog_SingletDM(DarkBit::TH_ProcessCatalog &result)
     {
       using namespace Pipes::TH_ProcessCatalog_SingletDM;
 

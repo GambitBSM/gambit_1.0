@@ -34,7 +34,7 @@ namespace Gambit {
 
     /*! \brief Get direct detection couplings from initialized DarkSUSY.
     */
-    void DD_couplings_DarkSUSY(Gambit::DarkBit::DD_couplings &result)
+    void DD_couplings_DarkSUSY(DarkBit::DD_couplings &result)
     {
       using namespace Pipes::DD_couplings_DarkSUSY;
 
@@ -110,7 +110,7 @@ namespace Gambit {
 
     /*! \brief Get direct detection couplings from initialized MicrOmegas.
     */
-    void DD_couplings_MicrOmegas(Gambit::DarkBit::DD_couplings &result)
+    void DD_couplings_MicrOmegas(DarkBit::DD_couplings &result)
     {
       using namespace Pipes::DD_couplings_MicrOmegas;
 
