@@ -56,7 +56,7 @@ namespace Gambit {
     }   
 
     // Function setting up the decay table used in decay chains
-    void cascadeMC_DecayTable(Gambit::DarkBit::DecayChain::DecayTable &table)
+    void cascadeMC_DecayTable(DarkBit::DecayChain::DecayTable &table)
     {
       using namespace DecayChain;
       using namespace Pipes::cascadeMC_DecayTable;     
@@ -174,7 +174,7 @@ namespace Gambit {
 
     // Function for generating decay chains
     void cascadeMC_GenerateChain(
-        Gambit::DarkBit::DecayChain::ChainContainer &chain)
+        DarkBit::DecayChain::ChainContainer &chain)
     {
       //std::cout << "cascadeMC_GenerateChain" << std::endl;        
       using namespace DecayChain;
@@ -204,7 +204,7 @@ namespace Gambit {
     // This is a convenience function used in cascadeMC_Histograms, and does
     // not have an associated capability.
     void cascadeMC_sampleSimYield( const SimYieldTable &table, 
-        const Gambit::DarkBit::DecayChain::ChainParticle* endpoint, 
+        const DarkBit::DecayChain::ChainParticle* endpoint, 
         std::string finalState, 
         const TH_ProcessCatalog &catalog, 
         std::map<std::string, std::map<std::string, SimpleHist> > &histList, 
@@ -663,7 +663,7 @@ namespace Gambit {
 
     // Process catalog for testing purposes
     void cascadeMC_test_TH_ProcessCatalog(
-        Gambit::DarkBit::TH_ProcessCatalog &result)
+        DarkBit::TH_ProcessCatalog &result)
     {
       using namespace Pipes::cascadeMC_test_TH_ProcessCatalog;
 

@@ -11,7 +11,7 @@
 ///  \author Torsten Bringmann
 ///          (torsten.bringmann@desy.de) 
 ///  \date 2013 Jun
-///  \date 2014 Mar [RD interface to DS finally working]
+///  \date 2014 Mar - 2015 May
 ///
 ///  \author Christoph Weniger
 ///          (c.weniger@uva.nl)
@@ -85,8 +85,29 @@ namespace Gambit {
       using namespace Pipes::DarkSUSY_PointInit_MSSM;
       result = false;
 
+      // If the user provides a file list, just read in SLHA files for debugging
+      // and ignore the MSSM_spectrum dependency.
+      if (runOptions->hasKey("debug_SLHA_filenames"))
+      {
+        static int counter = 0;
+        logger() << 
+          "Initializing DarkSUSY via debug_SLHA_filenames option." << std::endl;
+
+        std::vector<str> filenames = 
+          runOptions->getValue<std::vector<str> >("debug_SLHA_filenames");
+        const char * filename = filenames[counter].c_str();
+        int len = filenames[counter].length();
+        int flag = 15;
+        BEreq::dsSLHAread(byVal(filename),flag,byVal(len));
+        BEreq::dsprep();
+
+        counter++;
+        if (counter >= filenames.size()) counter = 0;
+        result = true;
+      }
+
       // CMSSM
-      if (ModelInUse("CMSSM"))
+      else if (ModelInUse("CMSSM"))
       {
         // Setup mSUGRA model from CMSSM parameters
         double am0    = *Param["M0"];     // m0
@@ -147,18 +168,10 @@ namespace Gambit {
         result = true;
       }
 
-      // TODO: Better way to log this?
       if (!result) {
         DarkBit_warning().raise(LOCAL_INFO,
             "DarkSUSY point initialization failed.");
         invalid_point().raise("DarkSUSY point initialization failed.");
-      }
-
-      // TODO: Only for testing.  Remove later.
-      if ( runOptions->getValueOrDef( false, "show_higgs_widths" ) )
-      {
-        int unit = 6;
-        BEreq::dswwidth(unit);
       }
     }
 
@@ -204,14 +217,14 @@ namespace Gambit {
     /*! \brief Initialization of Process Catalogue based on DarkSUSY
      *         calculations.
      */
-    void TH_ProcessCatalog_CMSSM(Gambit::DarkBit::TH_ProcessCatalog &result)
+    void TH_ProcessCatalog_CMSSM(DarkBit::TH_ProcessCatalog &result)
     {
       using namespace Pipes::TH_ProcessCatalog_CMSSM;
       using std::vector;
       using std::string;
 
       // FIXME: Add test that this is really ~chi0_1
-      std::string DMid = Dep::DarkMatter_ID->singleID();
+      std::string DMid = *Dep::DarkMatter_ID;
 
       // Instantiate new ProcessCatalog
       TH_ProcessCatalog catalog;      
@@ -482,10 +495,10 @@ namespace Gambit {
       result = catalog;
     }
 
-    void DarkMatter_ID_MSSM25atQ(DarkMatter_ID_type & result)
+    void DarkMatter_ID_MSSM25atQ(std::string & result)
     {
       using namespace Pipes::DarkMatter_ID_MSSM25atQ;
-      result = DarkMatter_ID_type(initVector<std::string>("~chi0_1"));
+      result = "~chi0_1";
     }
   }
 }

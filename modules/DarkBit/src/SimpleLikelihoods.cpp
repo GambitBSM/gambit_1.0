@@ -137,7 +137,7 @@ namespace Gambit {
     {
       using namespace Pipes::lnL_FermiGC_gamLike;
 
-      std::string DMid = Dep::DarkMatter_ID->singleID();
+      std::string DMid = *Dep::DarkMatter_ID;
 
       double mass = (*Dep::TH_ProcessCatalog).getParticleProperty(DMid).mass;
 

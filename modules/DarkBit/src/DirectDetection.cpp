@@ -34,7 +34,7 @@ namespace Gambit {
 
     /*! \brief Get direct detection couplings from initialized DarkSUSY.
     */
-    void DD_couplings_DarkSUSY(Gambit::DarkBit::DD_couplings &result)
+    void DD_couplings_DarkSUSY(DarkBit::DD_couplings &result)
     {
       using namespace Pipes::DD_couplings_DarkSUSY;
 
@@ -84,7 +84,6 @@ namespace Gambit {
       logger() << "\tdels = delta s = " << (*BEreq::ddcom).dels << endl;
 
       if (*Dep::DarkSUSY_PointInit) {
-        result.M_DM = (*BEreq::mspctm).mass(42);        
         // Calling DarkSUSY subroutine dsddgpgn(gps,gns,gpa,gna)
         // to set all four couplings.
         BEreq::dsddgpgn(result.gps, result.gns, result.gpa, result.gna);
@@ -94,19 +93,16 @@ namespace Gambit {
         result.gns *= factor;
         result.gpa *= factor;
         result.gna *= factor;
-        logger() << "M_DM = " << result.M_DM << std::endl;
         logger() << "DarkSUSY dsddgpgn gives:" << std::endl;
         logger() << " gps = " << result.gps << std::endl;
         logger() << " gns = " << result.gns << std::endl;
         logger() << " gpa = " << result.gpa << std::endl;
         logger() << " gna = " << result.gna << std::endl;
       } else {
-        result.M_DM = (*BEreq::mspctm).mass(42);        
         // Set couplings to zero if DarkSUSY point initialization
         // was not successful
         result.gps = 0.0; result.gns = 0.0;
         result.gpa = 0.0; result.gna = 0.0;
-        logger() << "M_DM = " << result.M_DM << std::endl;
         logger() << "DarkSUSY point initialization failed:" << std::endl;
         logger() << " couplings set to zero." << std::endl;
       }
@@ -114,7 +110,7 @@ namespace Gambit {
 
     /*! \brief Get direct detection couplings from initialized MicrOmegas.
     */
-    void DD_couplings_MicrOmegas(Gambit::DarkBit::DD_couplings &result)
+    void DD_couplings_MicrOmegas(DarkBit::DD_couplings &result)
     {
       using namespace Pipes::DD_couplings_MicrOmegas;
 
@@ -170,14 +166,12 @@ namespace Gambit {
       result.gpa = p2[0]*2;
       result.gns = p3[0]*2;
       result.gna = p4[0]*2;
-      result.M_DM = (*BEreq::MOcommon).par[1];
 
       logger() << "micrOMEGAs nucleonAmplitudes gives:" << endl;
       logger() << " gps: " << result.gps << endl;
       logger() << " gns: " << result.gns << endl;
       logger() << " gpa: " << result.gpa << endl;
       logger() << " gna: " << result.gna << endl;
-      logger() << " M_DM = " << result.M_DM << endl;
     }
 
     /// Simple calculator of the spin-independent WIMP-proton cross-section 
@@ -227,7 +221,8 @@ namespace Gambit {
     // TODO: Move halo settings from backend to here?
     void SetWIMP_DDCalc0(bool &result) {
       using namespace Pipes::SetWIMP_DDCalc0;
-      double M    = (*Dep::DD_couplings).M_DM;
+      double M = 
+        Dep::TH_ProcessCatalog->getParticleProperty(*Dep::DarkMatter_ID).mass; 
       double GpSI = (*Dep::DD_couplings).gps;
       double GnSI = (*Dep::DD_couplings).gns;
       double GpSD = (*Dep::DD_couplings).gpa;

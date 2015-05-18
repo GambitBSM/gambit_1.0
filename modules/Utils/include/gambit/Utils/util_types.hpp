@@ -189,23 +189,6 @@ namespace Gambit
 
   };
 
-  /// Helper structs for the Farray class
-  template<int... lims>
-  struct Farray_nElem{};
-
-  template<int limL, int limU, int... lims>
-  struct Farray_nElem<limL,limU,lims...>
-  {
-    enum{val= (limU-limL+1)*Farray_nElem<lims... >::val};
-    static_assert(limU>limL, "Farray error: Upper array index limit is lower than lower limit.");
-  };
-
-  template<int limL, int limU>
-  struct Farray_nElem<limL,limU>
-  {
-    enum{val=(limU-limL+1)};
-    static_assert(limU>limL, "Farray error: Upper array index limit is lower than lower limit.");
-  };
 
   /// Array class that matches the memory structure and functionality of arrays in Fortran codes
   /// Syntax: Farray<[type], [lower index, dim 1], [upper index, dim 1], [alternating lower/upper indices for subsequent dimensions]>
@@ -214,18 +197,44 @@ namespace Gambit
   template <typename T, int... lims>
   class Farray
   {
-    public:
+    protected:
       static_assert(sizeof...(lims)%2==0,    "Farray error: Odd number of index limits.");      
-      static_assert(sizeof...(lims)!=0,      "Farray error: No array index limits given.");    
-      typedef Farray_nElem<lims... > nElem;
+      static_assert(sizeof...(lims)!=0,      "Farray error: No array index limits given.");        
+      // Allowed array access types (expand if necessary)
+      typedef mult_types< short, const short, short&, const short&,
+                          unsigned short, const unsigned short, unsigned short&, const unsigned short&,
+                          int, const int, int&, const int&,
+                          unsigned, const unsigned, unsigned&, const unsigned&,
+                          long, const long, long&, const long&,
+                          unsigned long, const unsigned long, unsigned long&, const unsigned long&,
+                          long long , const long long, long long&, const long long&,
+                          unsigned long long, const unsigned long long, unsigned long long&, const unsigned long long&> allowed_types;     
+      // Helper structs for calculating number of elements
+      template<int... _lims>
+      struct calc_nElem{};
+      template<int limL, int limU, int... _lims>
+      struct calc_nElem<limL,limU,_lims...>
+      {
+        enum{val= (limU-limL+1)*calc_nElem<_lims... >::val};
+        static_assert(limU>limL, "Farray error: Upper array index limit is lower than lower limit.");
+      };
+      template<int limL, int limU>
+      struct calc_nElem<limL,limU>
+      {
+        enum{val=(limU-limL+1)};
+        static_assert(limU>limL, "Farray error: Upper array index limit is lower than lower limit.");
+      };
+    public:
+      typedef calc_nElem<lims... > nElem;   
       T array[nElem::val]; 
       Farray(){}
-      Farray(Farray<T,lims... > &in){*this = in;}
+      Farray(Farray<T,lims... > &in){*this = in;} 
       template <typename ... Args>
-      T& operator () (Args ... a)
+      typename enable_if_all_member<allowed_types, T&, Args...>::type::type      
+      operator () (Args ... a)
       {   
         static_assert(2*sizeof...(a)==sizeof...(lims), "Farray error: Invalid number of arguments passed to () operator.");              
-        int indices[] = {a...};             
+        int indices[] = {int(a)...};             
         int limits[] = {lims...};
         int idx = 0;
         // Calculate index for array access
@@ -244,10 +253,11 @@ namespace Gambit
         return array[idx];   
       }      
       template <typename ... Args>
-      const T& operator () (Args ... a) const
+      typename enable_if_all_member<allowed_types, const T&, Args...>::type::type
+      operator () (Args ... a) const
       {      
         static_assert(2*sizeof...(a)==sizeof...(lims), "Farray error: Invalid number of arguments passed to () operator.");         
-        int indices[] = {a...};             
+        int indices[] = {int(a)...};             
         int limits[] = {lims...};
         int idx = 0;
         // Calculate index for array access
@@ -356,10 +366,11 @@ namespace Gambit
   {
     public:
       template <typename ... Args>
-      Fstring<len>& operator () (Args ... a)
+      typename enable_if_all_member<typename Farray<char,1,len, lims... >::allowed_types, Fstring<len>&, Args...>::type::type      
+      operator () (Args ... a)
       {   
         static_assert(2*sizeof...(a)==sizeof...(lims), "FstringArray error: Invalid number of arguments passed to () operator");              
-        int indices[] = {1,a...};             
+        int indices[] = {1,int(a)...};             
         int limits[] = {1,len,lims...};
         int idx = 0;
         // Calculate index for array access
@@ -394,7 +405,7 @@ namespace Gambit
         im = in.im;
         return *this;
       }
-      // Todo: Implement convenient operators here...
+      // TODO: Implement convenient operators here...
   };
 
   /// Fortran type typedefs

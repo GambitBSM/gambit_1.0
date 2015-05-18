@@ -83,7 +83,7 @@ namespace Gambit {
     {
       using namespace Pipes::GA_missingFinalStates;
       std::set<std::string> missingFinalStates;
-      std::string DMid= Dep::DarkMatter_ID->singleID();
+      std::string DMid= *Dep::DarkMatter_ID;
 
       if ( runOptions->getValueOrDef(false, "ignore_all") ) return;
 
@@ -170,7 +170,7 @@ namespace Gambit {
     {
       using namespace Pipes::GA_AnnYield_General;
 
-      std::string DMid= Dep::DarkMatter_ID->singleID();
+      std::string DMid= *Dep::DarkMatter_ID;
 
       // Grid and energy range used in interpolating functions.
       // FIXME: Make use of Emin and Emax
@@ -389,7 +389,7 @@ namespace Gambit {
     {
       using namespace Pipes::GA_AnnYield_DarkSUSY;
 
-      std::string DMid = Dep::DarkMatter_ID->singleID();
+      std::string DMid = *Dep::DarkMatter_ID;
 
       ////////////////////
       // 1) Initialization

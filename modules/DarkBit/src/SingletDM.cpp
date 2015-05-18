@@ -170,65 +170,15 @@ namespace Gambit {
         double Gamma_mh, mh, v0, alpha_s, mb, mc, mtau, mt;
     };
 
-    void DarkMatter_ID_SingletDM(DarkMatter_ID_type & result)
+    void DarkMatter_ID_SingletDM(std::string & result)
     {
       using namespace Pipes::DarkMatter_ID_SingletDM;
-      result = DarkMatter_ID_type(initVector<std::string>("S"));
+      result = "S";
     } // DarkMatter_ID_SingletDM
-
-// Obsolete !
-//    /// Initializes thresholds/resonances for RD calculation for SingletDM
-//    void RD_thresholds_resonances_SingletDM(TH_resonances_thresholds &result)
-//    {
-//      using namespace Pipes::RD_thresholds_resonances_SingletDM;
-//
-//      result.resonances.clear();
-//      result.threshold_energy.clear();
-//
-//      result.threshold_energy.push_back(2*(*Param["mass"]));
-//      double mh = (*Dep::TH_ProcessCatalog).getParticleProperty("h0_1").mass;
-//      result.resonances.push_back(TH_Resonance(mh, 0.01));  // FIXME use proper Higgs width!
-//
-//      // FIXME: Move somewhere else
-//      DS_RDMGEV myrdmgev;
-//      myrdmgev.nco = 1;
-//      myrdmgev.mco(1) = *Param["mass"];
-//      myrdmgev.mdof(1) = 1;
-//      myrdmgev.kcoann(1) = 42;  // ???
-//      *BEreq::rdmgev = myrdmgev;
-//    } // function RD_thresholds_resonances_SingletDM
-
-
-// OBSOLETE
-//   /*! \brief Collects information about coannihilating particles, resonances and
-//     * threshold energies.
-//     */
-//    void RD_spectrum_SingletDM(RD_spectrum_type &result)
-//    {
-//      using namespace Pipes::RD_spectrum_SingletDM;
-//
-//      result.coannihilatingParticles.clear();
-//      // add WIMP=least massive 'coannihilating particle'
-//      // NB: particle code (1st entry) is irrelevant (unless Weff is ibatined from DS)
-//      result.coannihilatingParticles.push_back(
-//          RD_coannihilating_particle(100,1,*Param["mass"]));
-//
-//      // now derive thresholds & resonances from process catalogue
-//      std::string DMid= Dep::DarkMatter_ID->singleID();
-//      TH_Process annihilation = 
-//              (*Dep::TH_ProcessCatalog).getProcess(DMid, DMid);
-//      result.resonances = annihilation.thresholdResonances.resonances;
-//      result.threshold_energy = annihilation.thresholdResonances.threshold_energy;
-//
-//      // coannihilation thresholds would have to be added now -- but don't exist for SingletDM...
-//
-//    } // function RD_spectrum_SingletDM
-
-
 
 
     /// Direct detection couplings for Singlet DM.
-    void DD_couplings_SingletDM(Gambit::DarkBit::DD_couplings &result)
+    void DD_couplings_SingletDM(DarkBit::DD_couplings &result)
     {
       using namespace Pipes::DD_couplings_SingletDM;
       double mass = *Param["mass"];
@@ -245,14 +195,12 @@ namespace Gambit {
       result.gns = lambda*fn*m_proton/pow(mh,2)/mass/2;
       result.gpa = 0;  // Only SI cross-section
       result.gna = 0;
-      result.M_DM = *Param["mass"];
 
       logger() << "Singlet DM DD couplings:" << std::endl;
       logger() << " gps = " << result.gps << std::endl;
       logger() << " gns = " << result.gns << std::endl;
       logger() << " gpa = " << result.gpa << std::endl;
       logger() << " gna = " << result.gna << std::endl;
-      logger() << "M_DM = " << result.M_DM << std::endl;
 
     } // function DD_couplings_SingletDM
 
@@ -276,7 +224,7 @@ namespace Gambit {
     }
 
     /// Set up process catalogue for Singlet DM.
-    void TH_ProcessCatalog_SingletDM(Gambit::DarkBit::TH_ProcessCatalog &result)
+    void TH_ProcessCatalog_SingletDM(DarkBit::TH_ProcessCatalog &result)
     {
       using namespace Pipes::TH_ProcessCatalog_SingletDM;
 
@@ -343,7 +291,7 @@ namespace Gambit {
 #undef getSMmassMS
 
       // Insert singlet mass
-      TH_ParticleProperty S_Property(mass, 1);
+      TH_ParticleProperty S_Property(mass, 0);
       catalog.particleProperties.insert(
           std::pair<std::string, TH_ParticleProperty> ("S", S_Property));
       
@@ -367,10 +315,13 @@ namespace Gambit {
       process_ann.thresholdResonances.threshold_energy.push_back(2*mass); 
       auto channel = Funk::vec<std::string>(
           "bb", "WW", "cc", "tautau", "ZZ", "tt", "hh");
+//      auto channel = Funk::vec<std::string>(
+//          "bb", "WW", "cc", "tautau", "ZZ", "tt");
+      int nchannel=sizeof(channel) / sizeof(channel[0]);    
       auto p1 = Funk::vec<std::string>("d_3", "W+", "u_2", "tau+", "Z0", "u_3", "h0_1");
       auto p2 = Funk::vec<std::string>("dbar_3", "W-", "ubar_2", "tau-", "Z0", "ubar_3", "h0_1");
       {
-        for ( int i = 0; i < 7; i++ )
+        for ( int i = 0; i < nchannel; i++ )
         {
           if ( mass > catalog.particleProperties.at(p1[i]).mass )
           {
