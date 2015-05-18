@@ -9,7 +9,7 @@
 ###################################
 
 Parameters:
-  StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
+  #StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
   #MSSM25atQ: !import LesHouches.in.MSSM_1.yaml
   SingletDM:
       mass:
@@ -51,13 +51,6 @@ Rules:
 #    options:
 #      debug_SLHA_filenames:
 #        - slha1.exampleout
-
-   # FIXME should not be needed once dep resolver is fixed
-#   - capability: Higgs_decay_rates
-#     function: SS_Higgs_decays
-#     dependencies:
-#       - capability: Higgs_decay_rates
-#       - function: SM_Higgs_decays
       
 ##############################
 # Printer setup
@@ -111,7 +104,7 @@ Logger:
 KeyValues:
 
   dependency_resolution:
-    prefer_model_specific_functions: false
+    prefer_model_specific_functions: true
 
   likelihood:
     model_invalid_for_lnlike_below: -1e6
