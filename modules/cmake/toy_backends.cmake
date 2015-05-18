@@ -2,7 +2,15 @@
 #************************************************
 # \file
 #
-#  CMake CMakeLists.txt file for Backends
+#  CMake file for example backend libraries that
+#  ship with GAMBIT.
+# 
+#  You don't need to add to or emulate this file
+#  if you add new backends; this file just builds
+#  the example backends easiy within the GAMBIT
+#  cmake system.  True backends will come with
+#  their own build systems.  Those will probably
+#  be far more painful than this. ;)
 #
 #************************************************
 #
@@ -37,12 +45,3 @@ PROPERTIES
   LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/lib"
   RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin"
 )
-
-set(source_files src/backend_singleton.cpp
-                 src/backend_info.cpp)
-
-set(header_files include/gambit/Backends/backend_singleton.hpp
-                 include/gambit/Backends/backend_info.hpp
-                 include/gambit/Backends/ini_functions.hpp)
-
-add_gambit_library(Backends OPTION OBJECT SOURCES ${source_files} HEADERS ${header_files})

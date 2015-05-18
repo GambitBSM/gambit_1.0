@@ -30,7 +30,7 @@ LOAD_LIBRARY
 // Convenience functions (registration)
 
 // Initialisation function (definition)
-BE_INI_FUNCTION{} DONE
+BE_INI_FUNCTION{} END_BE_INI_FUNCTION
 
 // Convenience functions (definitions)
 

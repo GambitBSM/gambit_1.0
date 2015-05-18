@@ -24,12 +24,17 @@
 ///          (benjamin.farmer@fysik.su.se)
 ///  \date 2015 Mar 
 ///
+///  \author Pat Scott
+///          (p.scott@imperial.ac.uk)
+///  \date 2015 May 
+///
 ///  *********************************************
 
 #include "gambit/Elements/Spectrum.hpp"
 #include "gambit/Utils/standalone_error_handlers.hpp"
 
-namespace Gambit {
+namespace Gambit
+{
 
    /// @{ Spectrum class member function definitions
    
@@ -203,6 +208,60 @@ namespace Gambit {
      SMINPUTS.add_to_SLHAea(output);
 
      return output;
+   }
+
+   /// CKM Wolfenstein --> V_ud parameterisation convertor
+   double Spectrum::Wolf2V_ud(double lambda, double A, double rhobar, double etabar)
+   {
+      
+   }
+   
+   /// CKM Wolfenstein --> V_us parameterisation convertor
+   double Spectrum::Wolf2V_us(double lambda, double A, double rhobar, double etabar)
+   {
+      
+   }
+   
+   /// CKM Wolfenstein --> V_ub parameterisation convertor
+   std::complex<double> Spectrum::Wolf2V_ub(double lambda, double A, double rhobar, double etabar)
+   {
+      
+   }
+   
+   /// CKM Wolfenstein --> V_cd parameterisation convertor
+   std::complex<double> Spectrum::Wolf2V_cd(double lambda, double A, double rhobar, double etabar)
+   {
+      
+   }
+   
+   /// CKM Wolfenstein --> V_cs parameterisation convertor
+   std::complex<double> Spectrum::Wolf2V_cs(double lambda, double A, double rhobar, double etabar)
+   {
+      
+   }
+   
+   /// CKM Wolfenstein --> V_cb parameterisation convertor
+   double Spectrum::Wolf2V_cb(double lambda, double A, double rhobar, double etabar)
+   {
+      
+   }
+   
+   /// CKM Wolfenstein --> V_td parameterisation convertor
+   std::complex<double> Spectrum::Wolf2V_td(double lambda, double A, double rhobar, double etabar)
+   {
+      
+   }
+   
+   /// CKM Wolfenstein --> V_ts parameterisation convertor
+   std::complex<double> Spectrum::Wolf2V_ts(double lambda, double A, double rhobar, double etabar)
+   {
+      
+   }
+   
+   /// CKM Wolfenstein --> V_tb parameterisation convertor
+   double Spectrum::Wolf2V_tb(double lambda, double A, double rhobar, double etabar)
+   {
+      
    }
 
 } // end namespace Gambit

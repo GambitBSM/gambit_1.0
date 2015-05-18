@@ -43,6 +43,7 @@ BE_FUNCTION(HiggsSignals_neutral_input_MassUncertainty, void, (double*), "higgss
 BE_FUNCTION(setup_rate_uncertainties, void, (double*, double*), "setup_rate_uncertainties_", "setup_rate_uncertainties")
 BE_FUNCTION(finish_HiggsSignals, void, (), "finish_higgssignals_", "finish_HiggsSignals")
 BE_FUNCTION(finish_HiggsBounds_HS, void, (), "finish_higgsbounds_", "finish_HiggsBounds_HS")
+
 // input parameter functions
 BE_FUNCTION(HiggsBounds_input_SLHA_HS, void, (const char&), "higgsbounds_input_slha_", "HiggsBounds_input_SLHA_HS")
 BE_FUNCTION(HiggsBounds_neutral_input_part_HS, void, (double*, double*, int*, double*, double*, double*, Farray<double, 1,3, 1,3>&,

@@ -20,6 +20,7 @@ General:
 * Implement isNaN (look at cmath) (Pat)
 * Implement NaN check for likelihood in scanner (Pat, Greg)
 * Deal safely with errors arising from non-double results with purpose: Likelihood in yaml file (Pat)
+* Make bossed-type-requirements trigger a dependency on the providing backend's ini function.
 
 DecayBit:
 * Add SM Higgs partial decay widths (Pat / Csaba)

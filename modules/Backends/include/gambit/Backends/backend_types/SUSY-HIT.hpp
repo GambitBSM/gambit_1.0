@@ -25,6 +25,12 @@
 namespace Gambit
 {
 
+    struct checkfavvio_type
+    {
+        Finteger icheckfav;
+        Farray< Finteger,1,2 > imodfav;
+    };
+
     struct susyhitin_type
     {
         Fdouble flagshsin;
@@ -504,6 +510,7 @@ namespace Gambit
     struct sd_stopwidth_type
     {
         Fdouble stoptot4;
+        Farray< Fdouble,1,2 > stoptot;
     };
 
     struct sd_sbot2body_type
