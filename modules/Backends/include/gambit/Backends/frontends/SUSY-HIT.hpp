@@ -2,7 +2,7 @@
 //   *********************************************
 ///  \file
 ///
-///  Frontend for SUSY-HIT 1.4 backend
+///  Frontend for SUSY-HIT 1.5 backend
 ///
 ///  *********************************************
 ///
@@ -10,31 +10,36 @@
 ///  
 /// \author Peter Athron
 /// \author Csaba Balazs
-/// \date 2015 Jan,Feb
+/// \author Pat Scott
+/// \date 2015 Jan-May
 ///
 ///  *********************************************
 
 #ifdef BACKENDRENAME
   #define BACKENDNAME BACKENDRENAME
 #else
-  #define BACKENDNAME SUSYHIT
+  #define BACKENDNAME SUSY_HIT
 #endif
-#define VERSION 0.1
-#define SAFE_VERSION 0_1
+#define VERSION 1.5
+#define SAFE_VERSION 1_5
 
+// Let's go.
 LOAD_LIBRARY
 
-/* Syntax for BE_VARIABLE:
- * BE_VARIABLE([type], "[exact symbol name]", "[choose capability name]")  
- * */
+// Can't do anything non-MSSM with SUSY-HIT
+BE_ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
 
-// CsB hand made with old BE_VAIABLE syntax >
-// BE_VARIABLE(FORTRAN_COMMONBLOCK(top2body_CB_type, top2body), "sd_top2body_", "top2body")
-// CsB <
+// Functions
+BE_FUNCTION(sdecay, void, (), "sdecay_", "sdecay")               // Converted SUSY-HIT main routine
+BE_FUNCTION(unlikely, double, (), "s_hit_unlikely_", "unlikely") // Wrapper for 'unlikely' double 
 
-BE_FUNCTION(sdecay, void, (), "sdecay_", "sdecay")  // CsB SUSYHIT main subroutine declaration
-
-// CsB from Anders' CBGB script >
+// Variables
+BE_VARIABLE(checkfavvio_type, checkfavvio, "checkfavvio_", "cb_checkfavvio")
+BE_VARIABLE(susyhitin_type, susyhitin, "susyhitin_", "cb_susyhitin")
+BE_VARIABLE(sd_leshouches1_type, sd_leshouches1, "sd_leshouches1_", "cb_sd_leshouches1")
+BE_VARIABLE(sd_leshouches2_type, sd_leshouches2, "sd_leshouches2_", "cb_sd_leshouches2")
+BE_VARIABLE(sd_leshouches1_type, slha_leshouches1_hdec, "slha_leshouches1_hdec_", "cb_slha_leshouches1_hdec")
+BE_VARIABLE(slha_leshouches2_hdec_type, slha_leshouches2_hdec, "slha_leshouches2_hdec_", "cb_slha_leshouches2_hdec")
 BE_VARIABLE(widtha_hdec_type, widtha_hdec, "widtha_hdec_", "cb_widtha_hdec")
 BE_VARIABLE(widthhl_hdec_type, widthhl_hdec, "widthhl_hdec_", "cb_widthhl_hdec")
 BE_VARIABLE(widthhh_hdec_type, widthhh_hdec, "widthhh_hdec_", "cb_widthhh_hdec")
@@ -78,50 +83,18 @@ BE_VARIABLE(sd_sntau2body_type, sd_sntau2body, "sd_sntau2body_", "cb_sd_sntau2bo
 BE_VARIABLE(sd_sntauwidth_type, sd_sntauwidth, "sd_sntauwidth_", "cb_sd_sntauwidth")
 BE_VARIABLE(sd_top2body_type, sd_top2body, "sd_top2body_", "cb_sd_top2body")
 BE_VARIABLE(sd_topwidth_type, sd_topwidth, "sd_topwidth_", "cb_sd_topwidth")
-// CsB from Anders' CBGB script <
+BE_VARIABLE(flavviolation_type, flavviolation, "flavviolation_", "cb_flavviolation")
+BE_VARIABLE(sd_mbmb_type, sd_mbmb, "sd_mbmb_", "cb_sd_mbmb")
+BE_VARIABLE(sd_selectron_type, sd_selectron, "sd_selectron_", "cb_sd_selectron")
 
-/* Syntax for BE_FUNCTION:
- * BE_FUNCTION([choose function name], [type], [arguement types], "[exact symbol name]", "[choose capability name]")
- */
-// CsB we cannot call the main program of a Fortran code >
-// BE_FUNCTION(SUSYHIT_MAIN, void, (), "MAIN__", "SUSYHIT_MAIN")
-// CsB <
-/* 
-BE_FUNCTION(printStuff, void, (), "printstuff_", "libFarrayTest_printStuff")
+// Convenience functions (registration)
+BE_CONV_FUNCTION(run_susy_hit, void, (SLHAstruct, double, double), "susy_hit_backend_level_init")
 
-BE_FUNCTION(set_d, void, (), "set_d_", "libFarrayTest_set_d")
-
-BE_FUNCTION(fptrRoutine, void, (   ARG_FARRAY(double,1), int&,                     \
-                                        ARG_FARRAY_FPTR(double,(ARG_FARRAY(double,1)))  \
-                                    ), "fptrroutine_", "libFarrayTest_fptrRoutine")
-
-BE_FUNCTION(doubleFuncArray1, double, (ARG_FARRAY(double,1)), "doublefuncarray1_", "libFarrayTest_doubleFuncArray1", (), 1)
-
-BE_FUNCTION(doubleFuncArray2, double, (ARG_FARRAY(double,1)), "doublefuncarray2_", "libFarrayTest_doubleFuncArray2", (), 1)
-
-BE_FUNCTION(doubleFunc, double, (double&), "doublefunc_", "libFarrayTest_doubleFunc")
-
-*/
-
-namespace Gambit
-{
-  namespace Backends
-  {
-    namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
-    {
-
-      /* Convenience functions go here */
-
-    } /* end namespace BACKENDNAME_SAFE_VERSION */                                          
-  } /* end namespace Backends */                                                
-} /* end namespace Gambit */                                                   
-
-
-//BE_CONV_FUNCTION(awesomenessByAnders, double, "awesomeness")
-
-BE_INI_FUNCTION{}
-DONE
+// Initialisation function (dependencies)
+BE_INI_DEPENDENCY(MSSM_spectrum, const Spectrum*)
+BE_INI_DEPENDENCY(W_minus_decay_rates, DecayTable::Entry)
+BE_INI_DEPENDENCY(W_plus_decay_rates, DecayTable::Entry)
+BE_INI_DEPENDENCY(Z_decay_rates, DecayTable::Entry)
 
 // Undefine macros to avoid conflict with other backends
 #include "gambit/Backends/backend_undefs.hpp"
-

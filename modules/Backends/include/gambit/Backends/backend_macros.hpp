@@ -43,30 +43,20 @@
 #include "gambit/Utils/util_macros.hpp"
 #include "gambit/Utils/util_types.hpp"
 #include "gambit/Utils/util_functions.hpp"
-#include "gambit/Utils/standalone_error_handlers.hpp"
-#include "gambit/Elements/types_rollcall.hpp"
-#include "gambit/Elements/functors.hpp"
 #include "gambit/Elements/module_macros_incore.hpp"
+#include "gambit/Elements/functors.hpp"
 #include "gambit/Logs/log.hpp"
 #include "gambit/Backends/ini_functions.hpp"
+#include "gambit/Backends/common_macros.hpp"
 #ifndef STANDALONE
   #include "gambit/Core/ini_functions.hpp"
 #endif
 
-#include <boost/preprocessor/control/iif.hpp>
 #include <boost/preprocessor/logical/bitand.hpp>
 #include <boost/preprocessor/logical/bitor.hpp>
 #include <boost/preprocessor/list/size.hpp>
-#include <boost/preprocessor/seq/transform.hpp>
-#include <boost/preprocessor/seq/for_each.hpp>
-#include <boost/preprocessor/seq/for_each_i.hpp>
-#include <boost/preprocessor/tuple/elem.hpp>
-#include <boost/preprocessor/tuple/to_seq.hpp>
 #include <boost/preprocessor/punctuation/comma_if.hpp>
 
-
-/// Turn classloading off by default (this is redefined by BOSSed backends).
-#define DO_CLASSLOADING 0
 
 /// Declare the backend initialisation module BackendIniBit.
 #define MODULE BackendIniBit
@@ -81,51 +71,19 @@
   CORE_START_CONDITIONAL_DEPENDENCY(BackendIniBit, CAT_5(BACKENDNAME,_,SAFE_VERSION,_,init), CAT_5(BACKENDNAME,_,SAFE_VERSION,_,init), DEP, TYPE) \
   ACTIVATE_DEP_MODEL(BackendIniBit, CAT_5(BACKENDNAME,_,SAFE_VERSION,_,init), CAT_5(BACKENDNAME,_,SAFE_VERSION,_,init), DEP, #__VA_ARGS__)
 
-/// Macro for assigning allowed models to an entire backend.
-#define BE_ALLOW_MODELS(...) BOOST_PP_SEQ_FOR_EACH(BE_ALLOW_MODEL_INTERMEDIATE, , BOOST_PP_TUPLE_TO_SEQ((__VA_ARGS__)))
-
-/// Intermediate macro for expanding BE_ALLOW_MODELS.
-#define BE_ALLOW_MODEL_INTERMEDIATE(r,data,MODEL) BE_ALLOW_MODEL(MODEL)
-
-/// Boilerplate code for point-level backend initialisation function definitions
-#define BE_INI_FUNCTION                                                     \
-namespace Gambit                                                            \
-{                                                                           \
-  namespace BackendIniBit                                                   \
-  {                                                                         \
-    namespace Pipes                                                         \
-    {                                                                       \
-      namespace CAT_4(BACKENDNAME,_,SAFE_VERSION,_init)                     \
-      {                                                                     \
-        static const str backendDir = Backends::backendInfo().              \
-         path_dir(STRINGIFY(BACKENDNAME), STRINGIFY(VERSION));              \
-      }                                                                     \
-    }                                                                       \
-    void CAT_4(BACKENDNAME,_,SAFE_VERSION,_init)()                          \
-    {                                                                       \
-      using namespace Pipes :: CAT_4(BACKENDNAME,_,SAFE_VERSION,_init) ;    \
-      using namespace Backends :: CAT_3(BACKENDNAME,_,SAFE_VERSION) ;       \
-
-/// Boilerplate code for convenience function definitions
-#define BE_NAMESPACE                                                        \
-namespace Gambit                                                            \
-{                                                                           \
-  namespace Backends                                                        \
-  {                                                                         \
-    namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)                             \
-    {                                                                       \
-      namespace                                                             \
-
-/// Closer for convenience and initialisation function definitional boilerplate.
-#define DONE }}}    
-
 /// Macro for assigning a single allowed model to an entire backend.
 #define BE_ALLOW_MODEL(MODEL)                                               \
 BE_NAMESPACE                                                                \
 {                                                                           \
-  int CAT(MODEL,_OK) = vectorstr_push_back(allowed_models,STRINGIFY(MODEL));\
+  namespace                                                                 \
+  {                                                                         \
+    const int CAT(MODEL,_OK) =                                              \
+     vectorstr_push_back(allowed_models,STRINGIFY(MODEL));                  \
+  }                                                                         \
 }                                                                           \
-DONE                                                                        \
+END_BE_NAMESPACE                                                            \
+CORE_ALLOWED_MODEL(BackendIniBit,CAT_4(BACKENDNAME,_,SAFE_VERSION,_init),   \
+ MODEL)                                                                     \
         
 /// Set all the allowed models for a given backend functor.
 #define SET_ALLOWED_MODELS(NAME, MODELS)                                    \
@@ -138,7 +96,7 @@ int CAT(allowed_models_set_,NAME) =                                         \
   {                                                                         \
     namespace Pipes                                                         \
     {                                                                       \
-      namespace CAT_5(BACKENDNAME,_,SAFE_VERSION,_,init)                    \
+      namespace CAT_4(BACKENDNAME,_,SAFE_VERSION,_init)                     \
       {                                                                     \
         namespace InUse                                                     \
         {                                                                   \
@@ -173,7 +131,7 @@ namespace Gambit                                                            \
       int reg_log = register_backend_with_log(STRINGIFY(BACKENDNAME));      \
                                                                             \
       /* Make backend path easily available to convenience functions. */    \
-      static const str backendDir = backendInfo().                          \
+      extern const str backendDir = backendInfo().                          \
        path_dir(STRINGIFY(BACKENDNAME), STRINGIFY(VERSION));                \
     }                                                                       \
   }                                                                         \
@@ -184,10 +142,10 @@ BOOST_PP_IIF(DO_CLASSLOADING, LOAD_ALL_FACTORIES, )                         \
                                                                             \
 /* Register the initialisation function for this backend */                 \
 CORE_START_CAPABILITY(BackendIniBit,                                        \
- CAT_5(BACKENDNAME,_,SAFE_VERSION,_,init))                                  \
+ CAT_4(BACKENDNAME,_,SAFE_VERSION,_init))                                   \
 CORE_DECLARE_FUNCTION(BackendIniBit,                                        \
- CAT_5(BACKENDNAME,_,SAFE_VERSION,_,init),                                  \
- CAT_5(BACKENDNAME,_,SAFE_VERSION,_,init),                                  \
+ CAT_4(BACKENDNAME,_,SAFE_VERSION,_init),                                   \
+ CAT_4(BACKENDNAME,_,SAFE_VERSION,_init),                                   \
  void,2)                                                                    \
 
 /// Register this backend with the Core if not running in standalone mode.
@@ -269,7 +227,7 @@ namespace Gambit                                                                
       typedef ABSTRACT*(*CAT(NAME,_type))CONVERT_VARIADIC_ARG(ARGS);                            \
                                                                                                 \
       /* Get the pointer to the function in the shared library. */                              \
-      const CAT(NAME,_type) NAME =                                                              \
+      extern const CAT(NAME,_type) NAME =                                                       \
        load_backend_symbol<CAT(NAME,_type)>(pHandle, pSym, SYMBOLNAME);                         \
                                                                                                 \
       /* Function to throw an error if a backend is absent. */                                  \
@@ -317,18 +275,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)                                     
 }                                                                                               \
 
 
-/// \name Variadic redirection macro for BE_VARIABLE(TYPE, NAME, SYMBOLNAME, CAPABILITY, [(ALLOWED_MODELS)])
-#define BE_VARIABLE_5(_1, _2, _3, _4, _5)      BE_VARIABLE_I(_1, _2, _3, _4, _5)  
-#define BE_VARIABLE_4(_1, _2, _3, _4)          BE_VARIABLE_I(_1, _2, _3, _4, ()) 
-#define BE_VARIABLE(...)                       VARARG(BE_VARIABLE, __VA_ARGS__)
-
-
-/// \name Variadic redirection macro for BE_CONV_FUNCTION(NAME, TYPE, ARGSLIST, CAPABILITY, [(ALLOWED_MODELS)])
-#define BE_CONV_FUNCTION_5(_1, _2, _3, _4, _5) BE_CONV_FUNCTION_FULL(_1, _2, _3, _4, _5)  
-#define BE_CONV_FUNCTION_4(_1, _2, _3, _4)     BE_CONV_FUNCTION_FULL(_1, _2, _3, _4, ()) 
-#define BE_CONV_FUNCTION(...)                  VARARG(BE_CONV_FUNCTION, __VA_ARGS__)
-
-
 // Determine whether to make registration calls to the Core or not in BE_VARIABLE_I, depending on STANDALONE flag 
 #ifdef STANDALONE
   #define BE_VARIABLE_I(TYPE, NAME, SYMBOLNAME, CAPABILITY, MODELS)           \
@@ -350,7 +296,8 @@ namespace Gambit                                                              \
     {                                                                         \
                                                                               \
       /* Set the variable pointer and the getptr function. */                 \
-      TYPE* const NAME= load_backend_symbol<TYPE*>(pHandle, pSym, SYMBOLNAME);\
+      extern TYPE* const NAME =                                               \
+       load_backend_symbol<TYPE*>(pHandle, pSym, SYMBOLNAME);                 \
       TYPE* CAT(getptr,NAME)() { return NAME; }                               \
                                                                               \
       /* Create functor objects */                                            \
@@ -439,7 +386,7 @@ namespace Gambit                                                                
       typedef TYPE (*NAME##_type) CONVERT_VARIADIC_ARG(ARGLIST);                                \
                                                                                                 \
       /* Get the pointer to the function in the shared library. */                              \
-      const NAME##_type NAME = load_backend_symbol<NAME##_type>(pHandle, pSym, SYMBOLNAME);     \
+      extern const NAME##_type NAME = load_backend_symbol<NAME##_type>(pHandle,pSym,SYMBOLNAME);\
                                                                                                 \
       /* Create functor object */                                                               \
       namespace Functown                                                                        \
@@ -507,7 +454,7 @@ namespace Gambit                                                                
     namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)                                                 \
     {                                                                                           \
       /* Forward declare function */                                                            \
-      namespace { TYPE NAME(STRIP_PARENS(CONVERT_VARIADIC_ARG(ARGSLIST))); }                    \
+      TYPE NAME(STRIP_PARENS(CONVERT_VARIADIC_ARG(ARGSLIST)));                                  \
       /* Create functor object */                                                               \
       namespace Functown                                                                        \
       {                                                                                         \

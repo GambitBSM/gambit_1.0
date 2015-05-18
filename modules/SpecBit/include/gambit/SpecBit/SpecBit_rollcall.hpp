@@ -75,6 +75,18 @@ START_MODULE
     #undef FUNCTION
 
     // ============================== 
+    // MSSM spectrum retrieved from an SLHA file
+    // Wraps it up in MSSMskeleton; i.e. no RGE running possible.
+    // This is mainly for testing against benchmark points, but may be a useful last
+    // resort for interacting with "difficult" spectrum generators.
+    #define FUNCTION get_MSSM_spectrum_from_SLHAfile 
+    START_FUNCTION(const Spectrum*)
+    // Technically doesn't need a Model to work...
+    // Could add some kind of dependency here, like on the input filename, to allow dependency
+    // resolver to ignore it most of the time. 
+    #undef FUNCTION
+    
+    // ==============================
 
     // Extract appropriate SubSpectrum* from Spectrum struct, while preserving the Capability
     #define FUNCTION get_MSSM_SubSpectrum_from_MSSM_Spectrum
@@ -186,27 +198,34 @@ START_MODULE
    #undef FUNCTION
   #undef CAPABILITY
 
-
- #define CAPABILITY dump_spectrum_slha
- START_CAPABILITY
- 
-     #define FUNCTION dump_spectrum
+  #define CAPABILITY specbit_test_show_SMInputs
+  START_CAPABILITY
+     #define FUNCTION specbit_test_show_SMInputs
      START_FUNCTION(double)
-     DEPENDENCY(SM_spectrum, const SubSpectrum*)
-     #undef FUNCTION
+     DEPENDENCY(SMINPUTS, SMInputs)
+   #undef FUNCTION
+  #undef CAPABILITY
 
- #undef CAPABILITY
+  #define CAPABILITY dump_spectrum_slha
+  START_CAPABILITY
+  
+      #define FUNCTION dump_spectrum
+      START_FUNCTION(double)
+      DEPENDENCY(SM_spectrum, const SubSpectrum*)
+      #undef FUNCTION
+
+  #undef CAPABILITY
 
 
- #define CAPABILITY SpecBit_examples
- START_CAPABILITY
+  #define CAPABILITY SpecBit_examples
+  START_CAPABILITY
 
-     #define FUNCTION exampleRead
-     START_FUNCTION(bool)
-     DEPENDENCY(MSSM_spectrum, const Spectrum*)
-     #undef FUNCTION
+      #define FUNCTION exampleRead
+      START_FUNCTION(bool)
+      DEPENDENCY(MSSM_spectrum, const Spectrum*)
+      #undef FUNCTION
 
- #undef CAPABILITY
+  #undef CAPABILITY
 
 #undef MODULE
 
