@@ -395,8 +395,8 @@ namespace Gambit {
         if (!myRDspec.resonances.empty()){
           myrdmgev->nres=myRDspec.resonances.size();
           for (std::size_t i=1; i<=myRDspec.resonances.size(); i++) {
-            myrdmgev->rgev((int)i)=myRDspec.resonances[i-1].energy;
-            myrdmgev->rwid((int)i)=myRDspec.resonances[i-1].width;
+            myrdmgev->rgev(i)=myRDspec.resonances[i-1].energy;
+            myrdmgev->rwid(i)=myRDspec.resonances[i-1].width;
           }
         }
         // convert to momenta and write to DS common blocks
