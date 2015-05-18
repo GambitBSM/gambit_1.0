@@ -144,16 +144,6 @@ ExternalProject_Add(fastsim
 
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../extras/fast_sim/lib/libfastsim.so" "${PROJECT_SOURCE_DIR}/Backends/lib/libfastsim.so")
 
-set(BOSSMinimalExample_dir "${PROJECT_SOURCE_DIR}/../extras/boss")
-ExternalProject_Add(BOSSMinimalExample
-  SOURCE_DIR ${BOSSMinimalExample_dir}
-  BUILD_IN_SOURCE 1
-  CONFIGURE_COMMAND ""
-  BUILD_COMMAND make CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${CMAKE_CXX_FLAGS} LDFLAGS=${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS} all
-  INSTALL_COMMAND cp libminimal_1_0.so ${PROJECT_SOURCE_DIR}/Backends/lib/ COMMAND cp libminimal_1_1.so ${PROJECT_SOURCE_DIR}/Backends/lib/ COMMAND cp libminimal_1_2.so ${PROJECT_SOURCE_DIR}/Backends/lib/
-)
-
-set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../extras/boss/*.so" "${PROJECT_SOURCE_DIR}/Backends/lib/libminimal_1_0.so" "${PROJECT_SOURCE_DIR}/Backends/lib/libminimal_1_1.so" "${PROJECT_SOURCE_DIR}/Backends/lib/libminimal_1_2.so")
 
 if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel")
   set(FMODULE "module")
@@ -174,7 +164,7 @@ ExternalProject_Add(nulike
 )
 set(clean_files ${clean_files} "${nulike_dir}/lib/${nulike_lib}.so")
 
-set_target_properties(ddcalc gamlike darksusy micromegas superiso nulike pythia fastsim BOSSMinimalExample PROPERTIES EXCLUDE_FROM_ALL 1)
+set_target_properties(ddcalc gamlike darksusy micromegas superiso nulike pythia fastsim PROPERTIES EXCLUDE_FROM_ALL 1)
 
-add_custom_target(backends COMMAND make gamlike nulike ddcalc pythia BOSSMinimalExample darksusy superiso) #fastsim micromegas
+add_custom_target(backends COMMAND make gamlike nulike ddcalc pythia darksusy superiso) #fastsim micromegas
 
