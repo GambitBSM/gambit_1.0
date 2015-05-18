@@ -891,11 +891,10 @@ namespace Gambit
       {
         // Match capabilities and types (no type comparison when no types are
         // given; this can only apply to output nodes).
-        if (masterGraph[*vi]->capability() == quantity.first and 
-             (
-              masterGraph[*vi]->type() == quantity.second or 
-              quantity.second == "" or quantity.second == "*"
-             )
+        if ( masterGraph[*vi]->capability() == quantity.first and
+             (masterGraph[*vi]->type() == quantity.second or
+              quantity.second == "" or quantity.second == "*") and
+             *vi != toVertex  // No self-resolution
            )
         {
           // Add vertex to appropriate candidate list
