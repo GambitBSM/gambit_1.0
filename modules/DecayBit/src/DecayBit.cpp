@@ -1810,6 +1810,8 @@ namespace Gambit
       result.set_BF(gamma/result.width_in_GeV, 0.0, "S", "S"); // Add the h->SS branching fraction
     }
 
+    /// FIXME just a dummy for now
+    void SM_Higgs_decays (DecayTable::Entry& result) { result.width_in_GeV = 0.004; }
   
     /// Collect all the DecayTable entries into an actual DecayTable 
     void all_decays (DecayTable &result) 
