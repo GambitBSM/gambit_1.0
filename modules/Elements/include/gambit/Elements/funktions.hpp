@@ -285,11 +285,21 @@ namespace Funk
             Singularities singularities;
     };
 
-    class Free : public std::vector<size_t>
+    // A vector class with global knowledge about its health status.
+    // (BoundFunk objects are occasionally destructed *after* livingVector has
+    // been destructed, causing segfaults if not catched properly.)
+    class livingVector: public std::vector<size_t>
     {
         public:
-            Free() {std::cout << "Funk debug: Free constructor" << std::endl;}
-            ~Free() {std::cout << "Funk debug: Free destructor" << std::endl;}
+            ~livingVector()
+            {
+                livingVector::is_dead() = true;
+            }
+            static bool & is_dead()
+            {
+                static bool dead = false;
+                return dead;
+            }
     };
 
     class FunkBound
@@ -320,8 +330,7 @@ namespace Funk
             static void bindID_manager(size_t &bindID, bool bind)
             {
               static size_t n_idx = 0;
-              static Free free;
-              //static std::vector<size_t> free;
+              static livingVector free;
               if(bind)
               {
                 #pragma omp critical (bindID_allocation)
@@ -340,10 +349,11 @@ namespace Funk
               }
               else
               {
-                  // FIXME: Avoid system crash
-                #pragma omp critical (bindID_allocation)
-                    std::cout << "Funk debug: Accessing Free vector with bind=false" << std::endl;
-                    free.push_back(bindID);
+                    if ( not livingVector::is_dead() )
+                    {
+                        #pragma omp critical (bindID_allocation)
+                        free.push_back(bindID);
+                    }
               }
             }
             template <typename... Args> inline std::vector<double> vect2(std::vector<std::vector<double>> & coll)
