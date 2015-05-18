@@ -1,19 +1,6 @@
 Parameters:
-  CMSSM:
-    A0:
-      range: [-1000, 1000]
-    M0:
-      prior_type: log
-      range: [0.001,1000]
-    M12:
-      same_as: CMSSM::M0
-    Mstop:
-      same_as: CMSSM::M0
-    sgnmu:
-      range: [-1, 1]
-      fixed_value: 1
-    tanb:
-      fixed_value: 1
+  StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
+  MSSM25atQ: !import LesHouches.in.MSSM_1.yaml
 
 Priors:
 
@@ -24,24 +11,17 @@ Printer:
     info_file: "runs/FlavBit_test/samples/gambit_output.info"
 
 Scanner:
-  use_scanner_plugin: random
+
+  use_scanner: toy_mcmc
   
-  plugins:
-    random:
-      plugin: random_sampler
-      options:
-        point_number: 1
-        like:  Likelihood
+  scanners:
+    toy_mcmc:
+      plugin: toy_mcmc
+      point_number: 2
+      output_file:  output
+      like:  Likelihood
 
 ObsLikes:
-
-  # Test CMSSM_I, ExampleBit_A and ExampleBit_B
-  - purpose:      Likelihood
-    capability:   lnL_ExampleBitB
-    type:         double
-    function:     ""
-    module:       ""
-    printme:      false
 
   - purpose:      Observable
     capability:   bsgamma
@@ -99,22 +79,10 @@ ObsLikes:
 
 Rules:
 
-  - capability:   "LibFirst_1_1_init"
-    dependencies:
-    - {capability: "nevents", module: "ExampleBit_B"}  
-
-  - capability:    "nevents_postcuts"
-    dependencies:
-    - {capability: "id", module: "ExampleBit_B"}
-
-  - capability:    "MSSM_demo_parameters"
-    dependencies:
-    - {capability: "id", module: "ExampleBit_B"}
-
-  - capability:    "function_pointer"
-    backends:
-    - {function: "externalFunction2"}
-
+  - capability: MSSM_spectrum 
+    function: get_MSSMatQ_spectrum  
+    options:
+      invalid_point_fatal: true
 
 Logger:
 

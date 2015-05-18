@@ -24,9 +24,61 @@
 #include "gambit/Backends/frontend_macros.hpp"
 #include "gambit/Backends/frontends/SUSY-HIT.hpp"
 
+
 // Some SUSY-HIT-specific shortcuts for dealing with SLHA blocks
 #define REQUIRED_BLOCK(NAME, BLOCK) if (slha.find(NAME) != slha.end()) BLOCK = slha.at(NAME); else backend_error().raise(LOCAL_INFO, "Missing SLHA block: " NAME); 
 #define OPTIONAL_BLOCK(NAME, BLOCK) if (slha.find(NAME) != slha.end()) BLOCK = slha.at(NAME); 
+
+
+// Initialisation function (definition)
+BE_INI_FUNCTION
+{
+  const double scale_tol = 0.1; // Run spectrum to MSUSY if |Q_input-MSUSY| > scale_tol GeV
+  SLHAstruct slha;
+ 
+  // If the user provides a file list, just read in SLHA files for debugging and ignore the MSSM_spectrum dependency.
+  if (runOptions->hasKey("debug_SLHA_filenames"))
+  {
+    static unsigned int counter = 0;
+    std::vector<str> filenames = runOptions->getValue<std::vector<str> >("debug_SLHA_filenames");
+    logger() << "Reading SLHA file: " << filenames[counter] << std::endl;
+    std::ifstream ifs(filenames[counter]);
+    if(!ifs.good()) backend_error().raise(LOCAL_INFO, "SLHA file not found.");
+    ifs >> slha;
+    ifs.close();
+    counter++;
+    if (counter >= filenames.size()) counter = 0;
+  }
+  else // Use the actual spectrum object.
+  {
+    // Check whether the spectrum object is already at the SUSY scale
+    //double msusy = (*Dep::MSSM_spectrum)->get_DRBar_parameter("M_SUSY");  FIXME when M_SUSY is available from the spectrum object.
+    double msusy = (*Dep::MSSM_spectrum)->get_UV()->runningpars.GetScale();
+    if (fabs(msusy - (*Dep::MSSM_spectrum)->get_UV()->runningpars.GetScale()) > scale_tol)
+    {
+      // Take a local copy to allow running.
+      std::unique_ptr<SubSpectrum> local_mssm_copy = (*Dep::MSSM_spectrum)->get_UV()->clone();
+      // Run to SUSY scale.
+      local_mssm_copy->runningpars.RunToScale(msusy);
+      slha = local_mssm_copy->getSLHAea();
+    }
+    else 
+    {
+      // Calculate decay rates using the spectrum 'as is'.
+      slha = (*Dep::MSSM_spectrum)->getSLHAea();
+    }
+  }
+  
+  // Get the W and Z widths.
+  double W_width = 0.5*(Dep::W_plus_decay_rates->width_in_GeV + Dep::W_minus_decay_rates->width_in_GeV);
+  double Z_width = Dep::Z_decay_rates->width_in_GeV;
+
+  // Calculate decay rates
+  run_susy_hit(slha, W_width, Z_width);      
+
+}
+END_BE_INI_FUNCTION
+
 
 // Convenience functions (definitions)
 BE_NAMESPACE
@@ -556,52 +608,3 @@ BE_NAMESPACE
   }
 }
 END_BE_NAMESPACE
-
-// Initialisation function (definition)
-BE_INI_FUNCTION
-{
-  const double scale_tol = 0.1; // Run spectrum to MSUSY if |Q_input-MSUSY| > scale_tol GeV
-  SLHAstruct slha;
- 
-  // If the user provides a file list, just read in SLHA files for debugging and ignore the MSSM_spectrum dependency.
-  if (runOptions->hasKey("debug_SLHA_filenames"))
-  {
-    static unsigned int counter = 0;
-    std::vector<str> filenames = runOptions->getValue<std::vector<str> >("debug_SLHA_filenames");
-    logger() << "Reading SLHA file: " << filenames[counter] << std::endl;
-    std::ifstream ifs(filenames[counter]);
-    if(!ifs.good()) backend_error().raise(LOCAL_INFO, "SLHA file not found.");
-    ifs >> slha;
-    ifs.close();
-    counter++;
-    if (counter >= filenames.size()) counter = 0;
-  }
-  else // Use the actual spectrum object.
-  {
-    // Check whether the spectrum object is already at the SUSY scale
-    //double msusy = (*Dep::MSSM_spectrum)->get_DRBar_parameter("M_SUSY");  FIXME when M_SUSY is available from the spectrum object.
-    double msusy = (*Dep::MSSM_spectrum)->get_UV()->runningpars.GetScale();
-    if (fabs(msusy - (*Dep::MSSM_spectrum)->get_UV()->runningpars.GetScale()) > scale_tol)
-    {
-      // Take a local copy to allow running.
-      std::unique_ptr<SubSpectrum> local_mssm_copy = (*Dep::MSSM_spectrum)->get_UV()->clone();
-      // Run to SUSY scale.
-      local_mssm_copy->runningpars.RunToScale(msusy);
-      slha = local_mssm_copy->getSLHAea();
-    }
-    else 
-    {
-      // Calculate decay rates using the spectrum 'as is'.
-      slha = (*Dep::MSSM_spectrum)->getSLHAea();
-    }
-  }
-  
-  // Get the W and Z widths.
-  double W_width = 0.5*(Dep::W_plus_decay_rates->width_in_GeV + Dep::W_minus_decay_rates->width_in_GeV);
-  double Z_width = Dep::Z_decay_rates->width_in_GeV;
-
-  // Calculate decay rates
-  run_susy_hit(slha, W_width, Z_width);      
-
-}
-END_BE_INI_FUNCTION
