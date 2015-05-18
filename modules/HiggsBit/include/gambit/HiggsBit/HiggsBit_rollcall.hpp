@@ -77,14 +77,14 @@ START_MODULE
 
     #define FUNCTION SMHiggs_ModelParameters  // SM Higgs only model parameters
     START_FUNCTION(hb_ModelParameters)
-    DEPENDENCY(MSSM_spectrum, const SubSpectrum*) // need to replace with SM-only spectrum w/ Higgs
+    DEPENDENCY(MSSM_spectrum, const Spectrum*) // need to replace with SM-only spectrum w/ Higgs
     DEPENDENCY(Higgs_decay_rates, DecayTable::Entry)
     #undef FUNCTION
 
-    #define FUNCTION MSSMHiggs_ModelParameters  // MSSM Higgs only model parameters
+    #define FUNCTION MSSMHiggs_ModelParameters  // MSSM Higgs model parameters
     START_FUNCTION(hb_ModelParameters)
     DEPENDENCY(SMINPUTS, SMInputs)
-    DEPENDENCY(MSSM_spectrum, const SubSpectrum*)
+    DEPENDENCY(MSSM_spectrum, const Spectrum*)
     DEPENDENCY(decay_rates, DecayTable)
     DEPENDENCY(FH_Couplings, fh_Couplings) // temprorary dependency 
     DEPENDENCY(FH_HiggsProd, fh_HiggsProd) // temprorary dependency 

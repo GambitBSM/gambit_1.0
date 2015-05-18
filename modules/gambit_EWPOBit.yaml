@@ -60,6 +60,9 @@ Rules:
     options:
       invalid_point_fatal: true
 
+  - capability: HB_ModelParameters
+    function: MSSMHiggs_ModelParameters
+
   - capability: Higgs_decay_rates
     function: FH_MSSM_h0_1_decays
 

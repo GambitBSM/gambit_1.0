@@ -194,7 +194,8 @@ namespace Gambit
       result.BR_Hpjcb = 0.;
       result.BR_Hptaunu = 0.;
 
-      const SubSpectrum* spec = *Dep::MSSM_spectrum;
+      const Spectrum* fullspectrum = *Dep::MSSM_spectrum;
+      const SubSpectrum* spec = fullspectrum->get_UV(); 
       const DecayTable::Entry* decays = &(*Dep::Higgs_decay_rates);
 
       result.Mh[0] = spec->phys.get_Pole_Mass(25,0); 
@@ -249,7 +250,8 @@ namespace Gambit
       sHneut.push_back("h0_2");
       sHneut.push_back("A0");
 
-      const SubSpectrum* spec = *Dep::MSSM_spectrum;
+      const Spectrum* fullspectrum = *Dep::MSSM_spectrum;
+      const SubSpectrum* spec = fullspectrum->get_UV(); 
       const DecayTable decaytable = *Dep::decay_rates;
 
       const DecayTable::Entry* Hneut_decays[3];
@@ -315,16 +317,14 @@ namespace Gambit
 	if(inv_lsp){
 	  // sneutrino is LSP - need to figure out how to get correct invisible BF...
 	  if(i_snu > 0){
-	    result.BR_hjinvisible[i] += Hneut_decays[i]->BF("~nu_e", "~nubar_e");
-	    result.BR_hjinvisible[i] += Hneut_decays[i]->BF("~nu_mu", "~nubar_mu");
-	    result.BR_hjinvisible[i] += Hneut_decays[i]->BF("~nu_tau", "~nubar_tau");
+	    result.BR_hjinvisible[i] += Hneut_decays[i]->BF(PDB.long_name("~nu",i_snu),PDB.long_name("~nubar",i_snu));
 	  }
 	  else {
 	    result.BR_hjinvisible[i] = Hneut_decays[i]->BF("~chi0_1","~chi0_1");
 	  }
 	}
       }
-      
+
       result.MHplus = spec->phys.get_Pole_Mass("H+"); 
       result.deltaMHplus = 0.;
       
@@ -437,6 +437,7 @@ namespace Gambit
       // higgs to higgs + V xsection ratios
       // retrive SMInputs dependency 
       const SMInputs& sminputs = *Dep::SMINPUTS;
+
       double norm = sminputs.GF*sqrt(2.)*sminputs.mZ*sminputs.mZ;
       for(int i = 0; i < 3; i++)
 	for(int j = 0; j < 3; j++){
