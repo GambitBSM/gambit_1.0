@@ -285,6 +285,12 @@ namespace Funk
             Singularities singularities;
     };
 
+    class Free : public std::vector<size_t>
+    {
+        public:
+            Free() {std::cout << "Funk debug: Free constructor" << std::endl;}
+            ~Free() {std::cout << "Funk debug: Free destructor" << std::endl;}
+    };
 
     class FunkBound
     {
@@ -292,7 +298,6 @@ namespace Funk
             FunkBound(Funk f, size_t datalen, size_t bindID) : f(f), datalen(datalen), bindID(bindID) {};
             ~FunkBound() {bindID_manager(bindID,false);};
             double value(std::vector<double> & map, size_t bindID) {(void)bindID; (void)map; return 0;};
-            template <typename... Args> void bind(Args... args);
 
             template <typename... Args> inline double eval(Args... argss)
             {
@@ -315,7 +320,8 @@ namespace Funk
             static void bindID_manager(size_t &bindID, bool bind)
             {
               static size_t n_idx = 0;
-              static std::vector<size_t> free;
+              static Free free;
+              //static std::vector<size_t> free;
               if(bind)
               {
                 #pragma omp critical (bindID_allocation)
@@ -336,6 +342,7 @@ namespace Funk
               {
                   // FIXME: Avoid system crash
                 #pragma omp critical (bindID_allocation)
+                    std::cout << "Funk debug: Accessing Free vector with bind=false" << std::endl;
                     free.push_back(bindID);
               }
             }
