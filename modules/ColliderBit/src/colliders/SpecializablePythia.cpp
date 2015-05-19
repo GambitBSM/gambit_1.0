@@ -44,15 +44,13 @@ namespace Gambit {
     /// @name SpecializablePythia definitions
     //@{
       void SpecializablePythia::init(const std::vector<std::string>& externalSettings) {
-        // Standard and specialized settings:
-        /// @TODO absolute paths!!!
-        _pythiaSettings.push_back("../extras/boss/bossed_pythia_source/xmldoc/");
-        _specialInit(this);
-
         // Settings acquired externally (ex from a gambit yaml file)
         for(const auto command : externalSettings) {
           _pythiaSettings.push_back(command);
         }
+
+        // Specialized settings:
+        _specialInit(this);
 
         // Use all settings to instantiate and initialize Pythia
         for(const auto command : _pythiaSettings)
