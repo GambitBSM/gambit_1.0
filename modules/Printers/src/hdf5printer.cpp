@@ -159,7 +159,8 @@ namespace Gambit
        {
           // No buffer (should) exists for this output stream yet, so make one
           error_if_key_exists(local_buffers, key, "local_buffers");
-          local_buffers[key] = BuffType(location,label/*deconstruct?*/,vertexID);
+
+          local_buffers[key] = BuffType(printer->get_location(),label/*deconstruct?*/,vertexID);
 
           // Get the new buffer back out of the map
           it = local_buffers.find(key);
@@ -188,11 +189,14 @@ namespace Gambit
       DBUG( std::cout << "Constructing Primary HDF5Printer object..." << std::endl; )
  
       std::string file = options.getValue<std::string>("output_file");
-      std::string group = options.getValue<std::string>("group");
+      std::string group = options.getValueOrDef<std::string>("/","group");
+      bool overwrite = options.getValueOrDef<bool>(false,"delete_file_if_exists");
+
+      std::cout<<"overwrite? "<<overwrite<<std::endl;
 
       // Open HDF5 file (create if non-existant)
       Utils::ensure_path_exists(file);
-      fileptr = HDF5::openFile(file);
+      fileptr = HDF5::openFile(file,overwrite);
  
       // Open requested group (creating it plus parents if needed)
       groupptr = HDF5::openGroup(fileptr,group);
@@ -219,6 +223,18 @@ namespace Gambit
       //DBUG( std::cout << "Buffer (of HDF5Printer with name=\""<<printer_name<<"\") successfully dumped..." << std::endl; )
     }
  
+    /// Retrieve pointer to HDF5 location to which datasets are added
+    H5FGPtr HDF5Printer::get_location()
+    {
+       if(location==NULL)
+       {
+         std::ostringstream errmsg;
+         errmsg << "Error! Tried to retrieve 'location' pointer from HDF5Printer, but it is NULL! This means the printer has not been set up correctly. This is a bug, please report it.";
+         printer_error().raise(LOCAL_INFO, errmsg.str());
+       }
+       return location;
+    }
+
     /// Initialisation function
     // Run by dependency resolver, which supplies the functors with a vector of VertexIDs whose requiresPrinting flags are set to true.
     void HDF5Printer::initialise(const std::vector<int>& printmevec)

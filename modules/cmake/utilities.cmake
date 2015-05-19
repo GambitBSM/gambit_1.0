@@ -142,6 +142,7 @@ function(add_gambit_executable executablename LIBRARIES)
   if (GSL_FOUND)
     set(LIBRARIES ${LIBRARIES} ${GSL_LIBRARIES})
   endif()
+
   target_link_libraries(${executablename} ${LIBRARIES} yaml-cpp)
   add_dependencies(${executablename} mkpath)
 

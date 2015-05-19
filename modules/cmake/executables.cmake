@@ -47,8 +47,8 @@ if(EXISTS "${PROJECT_SOURCE_DIR}/Core/")
   if(MPI_FOUND)
     target_link_libraries(gambit ${MPI_LIBRARIES})
   endif()
-    # For now, HDF5 is a necessity
-    target_link_libraries(gambit ${HDF5_LIBRARIES})
+  # For now, HDF5 is a necessity
+  target_link_libraries(gambit ${HDF5_LIBRARIES})
 endif()
 
 # Add the ExampleBit_A_standalone executable
@@ -94,7 +94,7 @@ if(EXISTS "${PROJECT_SOURCE_DIR}/ScannerBit/")
       add_dependencies(ScannerBit_standalone flexiblesusy)
     endif()
     if (NOT EXCLUDE_DELPHES)
-      add_dependencies(ExampleBit_A_standalone delphes)
+      add_dependencies(ScannerBit_standalone delphes)
     endif()
   else()
     # Make sure the printers compile OK if the rest of GAMBIT is missing
@@ -102,6 +102,8 @@ if(EXISTS "${PROJECT_SOURCE_DIR}/ScannerBit/")
   endif()
   # Probably don't need this? Don't think it will hurt though.
   if(MPI_FOUND)
-    target_link_libraries(ExampleBit_A_standalone ${MPI_LIBRARIES})
+    target_link_libraries(ScannerBit_standalone ${MPI_LIBRARIES})
   endif()
+  # For now, HDF5 is a necessity
+  target_link_libraries(ScannerBit_standalone ${HDF5_LIBRARIES})
 endif()

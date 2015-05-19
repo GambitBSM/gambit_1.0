@@ -25,6 +25,7 @@
 //#include "printers/ostreamprinter.hpp"
 
 #include "gambit/Printers/printers/asciiprinter.hpp"
+#include "gambit/Printers/printers/hdf5printer.hpp"
 
 #endif
 

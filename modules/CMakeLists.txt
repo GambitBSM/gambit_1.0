@@ -169,11 +169,29 @@ else()
 endif()
 
 # Check for HDF5 libraries
+# TODO: Disable HDF5 printer if not found
 find_package(HDF5 REQUIRED)
 if(HDF5_FOUND)
-  # TODO: Disable HDF5 printer if not found
+  #Make sure C++ interface exists
+  link_directories(${HDF5_LIBRARY_DIRS})
+  if("${HDF5_CXX_LIBRARIES}" STREQUAL "")
+    # Didn't seem to find it, try some extra tricks
+    find_library(HDF5_CPP 
+       NAMES hdf5_cpp libhdf5_cpp
+       HINTS "${HDF5_LIBRARY_DIRS}"
+    )
+    if(HDF5_CPP)
+       message("-- Found hdf5_cpp: ${HDF5_CPP}")
+       set(HDF5_LIBRARIES ${HDF5_LIBRARIES} ${HDF5_CPP})
+    else()
+       message(FATAL_ERROR "GAMBIT requires the HDF5 C++ libraries. The C libraries were found, but hdf5_cpp was not.")
+    endif()
+  endif()
   include_directories(${HDF5_INCLUDE_DIR})
+  #set(_hdf5_libs hdf5 hdf5_cpp)
   # should also set ${HDF5_LIBRARIES} 
+  message("-- Found HDF5 libraries")  
+  message("  : ${HDF5_LIBRARIES}")
 endif()
 
 # Check for DL libraries

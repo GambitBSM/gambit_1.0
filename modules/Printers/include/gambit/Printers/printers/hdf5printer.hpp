@@ -81,9 +81,6 @@ namespace Gambit
         // Buffers local to a print function. Access whichever ones match the IDcode.
         std::map<VBIDpair, BuffType> local_buffers;
 
-        // HDF5 file location at which to write datasets
-        H5FGPtr location;
-
         // Pointer to "parent" HDF5Printer object
         // Need to use two-stage initialisation because the automated
         // declaration of new buffer managers requires a default
@@ -97,7 +94,7 @@ namespace Gambit
       public:
         /// Constructor
         H5P_LocalBufferManager() 
-          : printer(NULL), location(NULL) 
+          : printer(NULL) 
         {} 
 
         /// Initialise the buffer (attach it to a printer)
@@ -142,6 +139,9 @@ namespace Gambit
         ///@}
      
         /// @{ HDF5Printer-specific functions
+
+        /// Retrieve pointer to HDF5 location to which datasets are added
+        H5FGPtr get_location();
 
         /// Add a pointer to a new buffer to the global list
         void insert_buffer(VBIDpair& key, VertexBufferBase& newbuffer);

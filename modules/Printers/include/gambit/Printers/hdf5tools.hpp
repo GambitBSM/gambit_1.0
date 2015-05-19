@@ -23,6 +23,9 @@
 #define __hdf5tools_hpp__
 
 #include <cstdint>
+#include <memory>
+#include <sstream>
+#include <iostream>
 //#include <boost/multi_array.hpp> // Used in buffers
 
 // HDF5 C++ bindings
@@ -41,7 +44,8 @@ namespace Gambit {
       
       namespace HDF5 { 
          /// Create or open hdf5 file
-         H5FilePtr openFile(const std::string& fname);
+         // If overwrite=true then any existing file will be deleted and replaced. USE CAREFULLY!!!
+         H5FilePtr openFile(const std::string& fname, bool overwrite=false);
 
          /// Create hdf5 file (always overwrite existing files)
          H5FilePtr createFile(const std::string& fname);
@@ -66,7 +70,7 @@ namespace Gambit {
  
       }
 
-      // from http://stackoverflow.com/questions/9250237/write-a-boostmulti-array-to-hdf5-dataset 
+      // modified from http://stackoverflow.com/questions/9250237/write-a-boostmulti-array-to-hdf5-dataset 
       //!_______________________________________________________________________________________
       //!     
       //!     map types to HDF5 types
@@ -79,33 +83,33 @@ namespace Gambit {
       //!_______________________________________________________________________________________ 
       template<typename T> 
       struct get_hdf5_data_type
-      {   static H5::PredType type()  
+      {   static H5::PredType type() 
           {   
               //static_assert(false, "Unknown HDF5 data type"); 
               return H5::PredType::NATIVE_DOUBLE; 
           }
       };
-      template<> struct get_hdf5_data_type<char>              { H5::IntType type   { H5::PredType::NATIVE_CHAR    }; };
-      //template<> struct get_hdf5_data_type<unsigned char>   { H5::IntType type   { H5::PredType::NATIVE_UCHAR   }; };
-      //template<> struct get_hdf5_data_type<short>           { H5::IntType type   { H5::PredType::NATIVE_SHORT   }; };
-      //template<> struct get_hdf5_data_type<unsigned short>  { H5::IntType type   { H5::PredType::NATIVE_USHORT  }; };
-      //template<> struct get_hdf5_data_type<int>             { H5::IntType type   { H5::PredType::NATIVE_INT     }; };
-      //template<> struct get_hdf5_data_type<unsigned int>    { H5::IntType type   { H5::PredType::NATIVE_UINT    }; };
-      //template<> struct get_hdf5_data_type<long>            { H5::IntType type   { H5::PredType::NATIVE_LONG    }; };
-      //template<> struct get_hdf5_data_type<unsigned long>   { H5::IntType type   { H5::PredType::NATIVE_ULONG   }; };
-      template<> struct get_hdf5_data_type<long long>         { H5::IntType type   { H5::PredType::NATIVE_LLONG   }; };
-      template<> struct get_hdf5_data_type<unsigned long long>{ H5::IntType type   { H5::PredType::NATIVE_ULLONG  }; };
-      template<> struct get_hdf5_data_type<int8_t>            { H5::IntType type   { H5::PredType::NATIVE_INT8    }; };
-      template<> struct get_hdf5_data_type<uint8_t>           { H5::IntType type   { H5::PredType::NATIVE_UINT8   }; };
-      template<> struct get_hdf5_data_type<int16_t>           { H5::IntType type   { H5::PredType::NATIVE_INT16   }; };
-      template<> struct get_hdf5_data_type<uint16_t>          { H5::IntType type   { H5::PredType::NATIVE_UINT16  }; };
-      template<> struct get_hdf5_data_type<int32_t>           { H5::IntType type   { H5::PredType::NATIVE_INT32   }; };
-      template<> struct get_hdf5_data_type<uint32_t>          { H5::IntType type   { H5::PredType::NATIVE_UINT32  }; };
-      template<> struct get_hdf5_data_type<int64_t>           { H5::IntType type   { H5::PredType::NATIVE_INT64   }; };
-      template<> struct get_hdf5_data_type<uint64_t>          { H5::IntType type   { H5::PredType::NATIVE_UINT64  }; };
-      template<> struct get_hdf5_data_type<float>             { H5::FloatType type { H5::PredType::NATIVE_FLOAT   }; };
-      template<> struct get_hdf5_data_type<double>            { H5::FloatType type { H5::PredType::NATIVE_DOUBLE  }; };
-      template<> struct get_hdf5_data_type<long double>       { H5::FloatType type { H5::PredType::NATIVE_LDOUBLE }; };
+      template<> struct get_hdf5_data_type<char>              { H5::IntType type()   const { return H5::PredType::NATIVE_CHAR   ; } };
+      //template<> struct get_hdf5_data_type<unsigned char>   { H5::IntType type()   const { return H5::PredType::NATIVE_UCHAR  ; } };
+      //template<> struct get_hdf5_data_type<short>           { H5::IntType type()   const { return H5::PredType::NATIVE_SHORT  ; } };
+      //template<> struct get_hdf5_data_type<unsigned short>  { H5::IntType type()   const { return H5::PredType::NATIVE_USHORT ; } };
+      //template<> struct get_hdf5_data_type<int>             { H5::IntType type()   const { return H5::PredType::NATIVE_INT    ; } };
+      //template<> struct get_hdf5_data_type<unsigned int>    { H5::IntType type()   const { return H5::PredType::NATIVE_UINT   ; } };
+      //template<> struct get_hdf5_data_type<long>            { H5::IntType type()   const { return H5::PredType::NATIVE_LONG   ; } };
+      //template<> struct get_hdf5_data_type<unsigned long>   { H5::IntType type()   const { return H5::PredType::NATIVE_ULONG  ; } };
+      template<> struct get_hdf5_data_type<long long>         { H5::IntType type()   const { return H5::PredType::NATIVE_LLONG  ; } };
+      template<> struct get_hdf5_data_type<unsigned long long>{ H5::IntType type()   const { return H5::PredType::NATIVE_ULLONG ; } };
+      template<> struct get_hdf5_data_type<int8_t>            { H5::IntType type()   const { return H5::PredType::NATIVE_INT8   ; } };
+      template<> struct get_hdf5_data_type<uint8_t>           { H5::IntType type()   const { return H5::PredType::NATIVE_UINT8  ; } };
+      template<> struct get_hdf5_data_type<int16_t>           { H5::IntType type()   const { return H5::PredType::NATIVE_INT16  ; } };
+      template<> struct get_hdf5_data_type<uint16_t>          { H5::IntType type()   const { return H5::PredType::NATIVE_UINT16 ; } };
+      template<> struct get_hdf5_data_type<int32_t>           { H5::IntType type()   const { return H5::PredType::NATIVE_INT32  ; } };
+      template<> struct get_hdf5_data_type<uint32_t>          { H5::IntType type()   const { return H5::PredType::NATIVE_UINT32 ; } };
+      template<> struct get_hdf5_data_type<int64_t>           { H5::IntType type()   const { return H5::PredType::NATIVE_INT64  ; } };
+      template<> struct get_hdf5_data_type<uint64_t>          { H5::IntType type()   const { return H5::PredType::NATIVE_UINT64 ; } };
+      template<> struct get_hdf5_data_type<float>             { H5::FloatType type() const { return H5::PredType::NATIVE_FLOAT  ; } };
+      template<> struct get_hdf5_data_type<double>            { H5::FloatType type() const { return H5::PredType::NATIVE_DOUBLE ; } };
+      template<> struct get_hdf5_data_type<long double>       { H5::FloatType type() const { return H5::PredType::NATIVE_LDOUBLE; } };
       //!_______________________________________________________________________________________
 
 
@@ -117,13 +121,21 @@ namespace Gambit {
             bool donethispoint;
 
             // Metadata
+            std::string label;
             int vertexID;
             uint index; // discriminator in case of multiple output streams from one vertex
-            std::string label;
              
          public:
+            VertexBufferBase()
+              : donethispoint()
+              , label()
+              , vertexID()
+              , index()
+            {}   
+
             VertexBufferBase(const std::string& l, const int vID, const uint i=0) 
-              : label(l)
+              : donethispoint(false)
+              , label(l)
               , vertexID(vID)
               , index(i)
             {}
@@ -136,7 +148,7 @@ namespace Gambit {
             std::string get_label() { return label; }
 
             // Needed to externally trigger buffer write to disk (e.g. at end of scan)
-            virtual void dump() = 0;            
+            virtual void dump() {}; ///TODO: write proper cleanout function = 0;            
 
             // Needed to externally inform buffer of a skipped iteration (when no data to write)
             virtual void skip_append() = 0;           
@@ -185,7 +197,14 @@ namespace Gambit {
         public:
           unsigned int get_nextempty() { return nextempty; } 
 
-          /// Constructor
+          /// Constructors
+          VertexBufferNumeric1D()
+            : VertexBufferBase()
+            , buffer_valid()
+            , buffer_entries()
+            , nextempty(0)
+          {}
+
           VertexBufferNumeric1D(const std::string& label, const int vID, const unsigned int i=0)
             : VertexBufferBase(label,vID,i)
             , buffer_valid() 
@@ -217,6 +236,12 @@ namespace Gambit {
       template<class T, std::size_t L>
       void VertexBufferNumeric1D<T,L>::append(const T& data)
       {
+         // Debug dump
+         std::cout<<"-------------------------------------"<<std::endl;
+         std::cout<<"Dump from buffer '"<<this->get_label()<<"'"<<std::endl;
+         std::cout<<"nextempty   = "<<nextempty<<std::endl;
+         std::cout<<"donepoint() = "<<this->donepoint()<<std::endl;
+
          error_if_done(); // make sure buffer hasn't written to the current point already
          buffer_entries[nextempty] = data;
          buffer_valid[nextempty] = true;
@@ -287,7 +312,13 @@ namespace Gambit {
            DataSetInterfaceScalar<T,CHUNKLENGTH>    dsetdata;  // actual data 
 
          public:
-           /// Constructor
+           /// Constructors
+           VertexBufferNumeric1D_HDF5()
+             : VertexBufferNumeric1D<T,CHUNKLENGTH>()
+             , dsetvalid()
+             , dsetdata()
+           {}
+
            VertexBufferNumeric1D_HDF5(H5FGPtr location, const std::string& name, const int vID, const unsigned int i=0)
              : VertexBufferNumeric1D<T,CHUNKLENGTH>(name,vID, i)
              , dsetvalid(location, name+"_isvalid")
@@ -360,12 +391,14 @@ namespace Gambit {
       {
         private: 
          static const std::size_t DSETRANK = RECORDRANK+1; // Rank of the dataset array
-         static const get_hdf5_data_type<T> hdf_dtype;
-
          H5FGPtr mylocation; // where this datasets is located in the hdf5 file
          std::string myname; // name of the dataset in the hdf5 file         
 
-         std::size_t record_dims[];
+         // Dimension sizes for each record. 
+         // This only needs to be RECORDRANK long, however zero-size arrays are not
+         // standard compliant so we will use arrays one larger than we need and
+         // just ignore the last entry.
+         std::size_t record_dims[DSETRANK];
 
          // Dataset and chunk dimensions
          hsize_t  dims[DSETRANK];
@@ -374,6 +407,9 @@ namespace Gambit {
 
         protected:
          // Derived classes need full access to these
+
+         // Type specifier for datasets
+         static const get_hdf5_data_type<T> hdf_dtype;
 
          // Wrapped dataset
          H5::DataSet my_dataset;
@@ -393,23 +429,32 @@ namespace Gambit {
          // Const public data accessors
          std::size_t get_dsetrank() const    { return DSETRANK; };
          std::size_t get_chunklength() const { return CHUNKLENGTH; };
-         hsize_t* get_dsetdims() const       { return dims; };
-         hsize_t* get_maxdsetdims() const    { return maxdims; };
-         hsize_t* get_chunkdims() const      { return chunkdims; };
-         H5::PredType get_hdftype() const    { return hdf_dtype.type(); };
+         const hsize_t* get_dsetdims() const       { return dims; };
+         const hsize_t* get_maxdsetdims() const    { return maxdims; };
+         const hsize_t* get_chunkdims() const      { return chunkdims; };
          ulong get_nextemptyslab() const     { return dsetnextemptyslab; };
 
-         /// Constructor
-         DataSetInterfaceBase(H5FGPtr location, const std::string& name, const std::size_t rdims[]) 
-           : mylocation(location)
-           , myname(name)
-           , record_dims(rdims)
-           , my_dataset(createDataSet(location,name,rdims))
-           , dsetnextemptyslab(0)
+         /// Constructors
+         DataSetInterfaceBase() 
+           : mylocation(NULL)
+           , myname()
+           , record_dims()
+           , my_dataset()
+           , dsetnextemptyslab()
          {}
 
+         DataSetInterfaceBase(H5FGPtr location, const std::string& name, const std::size_t rdims[DSETRANK]) 
+           : mylocation(location)
+           , myname(name)
+           , record_dims() /* doh have to copy array element by element */
+           , my_dataset(createDataSet(location,name,rdims))
+           , dsetnextemptyslab(0)
+         {
+           for(std::size_t i=0; i<DSETRANK; i++) { record_dims[i] = rdims[i]; }
+         }
+
          /// Create a (chunked) dataset 
-         H5::DataSet createDataSet(H5FGPtr location, const std::string& name, const std::size_t rdims[])
+         H5::DataSet createDataSet(H5FGPtr location, const std::string& name, const std::size_t rdims[DSETRANK])
          {
             // I'd like to declare rdims as rdims[RECORDRANK], but apparantly zero length arrays are not allowed,
             // so this would not compile in the RECORDRANK=0 case, which I need. Irritating.
@@ -437,12 +482,33 @@ namespace Gambit {
             // Set fill value for dataset
             //int fill_val = 0;
             //cparms.setFillValue( hdf_dtype.type, &fill_value);
-       
+      
+            // Check if location pointer is NULL
+            if(location==NULL)
+            {
+               std::ostringstream errmsg;
+               errmsg << "Error! Tried to create hdf5 dataset (with name: \""<<myname<<"\" at NULL location (H5FGPtr was NULL). Please check that calling code supplied a valid location ptr. This is a bug, please report it."; 
+               printer_error().raise(LOCAL_INFO, errmsg.str()); 
+            }
+ 
             // Create the dataset
-            return location->createDataSet( name.c_str(), hdf_dtype.type(), dspace, cparms);
+            H5::DataSet output;
+            try {
+               output = location->createDataSet( name.c_str(), hdf_dtype.type(), dspace, cparms);
+            } catch(const H5::Exception& e) {
+                  std::ostringstream errmsg;
+                  errmsg << "Error creating dataset (with name: \""<<myname<<"\") in HDF5 file. Dataset with same name may already exist. Message was: "<<e.getDetailMsg();
+                  printer_error().raise(LOCAL_INFO, errmsg.str());
+            }
+            return output;
          }
 
       };
+
+      // Define some static members
+      template<class T, std::size_t RR, std::size_t CL>
+      const get_hdf5_data_type<T> DataSetInterfaceBase<T,RR,CL>::hdf_dtype; // Default initialisation is fine
+
 
       /// Derived dataset interface, with methods for writing scalar records (i.e. single ints, doubles, etc.)
       /// i.e. RANK=0 case
@@ -450,11 +516,15 @@ namespace Gambit {
       class DataSetInterfaceScalar : public DataSetInterfaceBase<T,0,CHUNKLENGTH>
       {
         private:
-          static const std::size_t empty_rdims[1]; // just to trick base class constructor, not used.
+          static const std::size_t empty_rdims[1]; // just to satisfy base class constructor, not used.
           static const std::size_t DSETRANK=1; 
 
         public: 
-          /// Constructor
+          /// Constructors
+          DataSetInterfaceScalar() 
+            : DataSetInterfaceBase<T,0,CHUNKLENGTH>()
+          {}
+
           DataSetInterfaceScalar(H5FGPtr location, const std::string& name) 
             : DataSetInterfaceBase<T,0,CHUNKLENGTH>(location, name, empty_rdims)
           {}
@@ -478,14 +548,17 @@ namespace Gambit {
              H5::DataSpace memspace( DSETRANK, this->get_chunkdims() );
              
              // Write the data to the hyperslab.
-             this->my_dataset.write( chunkdata, this->get_hdftype(), memspace, filespace );
+             this->my_dataset.write( chunkdata, this->hdf_dtype.type(), memspace, filespace );
 
              // Update the "next empty hyperslab" counter
-             this->dsetnextempty += CHUNKLENGTH;
+             this->dsetnextemptyslab += CHUNKLENGTH;
           }
 
       };
 
+      // Define some static members
+      template<class T, std::size_t CL>
+      const std::size_t DataSetInterfaceScalar<T,CL>::empty_rdims[1] = {};
 
   }
 }
