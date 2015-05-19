@@ -1,0 +1,80 @@
+Parameters:
+  StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
+  MSSM25atQ: !import LesHouches.in.MSSM_1.yaml
+
+Priors:
+    # none: all parameters fixed.
+    
+Printer:
+  printer: hdf5
+  options:
+    output_file: "runs/MSSM25_test/samples/gambit_output.hdf5"
+    group: "/test/test2"
+    delete_file_if_exists: true
+
+Scanner:
+  use_scanner: toy_mcmc
+  
+  scanners:
+    toy_mcmc:
+      plugin: toy_mcmc
+      options:
+        point_number: 15
+        output_file:  output
+        like:  Likelihood
+
+ObsLikes:
+  - purpose:      Test
+    capability:   SpecBit_examples
+    type:         bool
+    function:     exampleRead
+
+  - purpose:      Test
+    capability:   decay_rates
+    type:         DecayTable
+
+Rules:
+  - capability: SpecBit_examples
+    options:
+      output_slha_filename: "SpecBit/MSSM_benchmark_points/gambit.LesHouches.out.MSSM_1"
+
+  - capability: MSSM_spectrum 
+    function: get_MSSMatQ_spectrum  # Use this function to compute this capability
+    options:
+      # Set to match benchmark point specified in
+      # SpecBit/MSSM_benchmark_points/LesHouches.in.MSSM_1
+      precision_goal:        1.0e-4
+      max_iterations:        0
+      calculate_sm_masses:   false
+      pole_mass_loop_order:  2
+      ewsb_loop_order:       2
+      beta_loop_order:       2
+      threshold_corrections_loop_order: 1
+      use_higgs_2loop_at_as: true
+      use_higgs_2loop_ab_as: true
+      use_higgs_2loop_at_at: true
+      use_higgs_2loop_atau_atau: true
+      invalid_point_fatal: false
+
+Logger:
+
+  prefix : "runs/MSSM25_test/logs/"
+  redirection:
+    [Debug] : "debug.log"
+    [Default] : "default.log"
+    [SpecBit] : "SpecBit.log"
+    [Dependency Resolver] : "dep_resolver.log"
+
+KeyValues:
+
+  dependency_resolution:
+    prefer_model_specific_functions: true
+    use_old_routines: true
+
+  likelihood:
+    model_invalid_for_lnlike_below: -1e6
+ 
+  exceptions:
+    # To trigger stop in 'exampleRead' function, set this to fatal
+    SpecBit_warning: non-fatal
+
