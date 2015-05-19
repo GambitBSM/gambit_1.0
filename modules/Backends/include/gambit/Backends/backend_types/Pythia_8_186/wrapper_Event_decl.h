@@ -5,11 +5,12 @@
 #include "forward_decls_wrapper_classes.h"
 #include "gambit/Backends/wrapperbase.hpp"
 #include "abstract_Event.h"
-#include <vector>
 #include <string>
+#include "wrapper_ParticleData_decl.h"
 #include "wrapper_Particle_decl.h"
 #include "wrapper_Vec4_decl.h"
 #include <ostream>
+#include <vector>
 
 #include "identification.hpp"
 
@@ -22,13 +23,26 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         class Event : public WrapperBase<Pythia8::Abstract_Event>
         {
             public:
+                typedef WrapperBase<Pythia8::Abstract_Event> wrapperbase;
+        
                 // Member variables: 
+            public:
                 // -- Static factory pointers: 
                 static Pythia8::Abstract_Event* (*__factory0)(int);
                 static Pythia8::Abstract_Event* (*__factory1)();
+        
                 // -- Other member variables: 
         
                 // Member functions: 
+            public:
+                void init(std::basic_string<char,std::char_traits<char>,std::allocator<char> > headerIn, WrapperBase< Pythia8::Abstract_ParticleData >* particleDataPtrIn, int startColTagIn);
+        
+                void init(std::basic_string<char,std::char_traits<char>,std::allocator<char> > headerIn, WrapperBase< Pythia8::Abstract_ParticleData >* particleDataPtrIn);
+        
+                void init(std::basic_string<char,std::char_traits<char>,std::allocator<char> > headerIn);
+        
+                void init();
+        
                 void clear();
         
                 void reset();
@@ -89,13 +103,13 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 void list() const;
         
-                void list(std::ostream& os) const;
+                void list(std::basic_ostream<char,std::char_traits<char> >& os) const;
         
                 void list(bool showScaleAndVertex, bool showMothersAndDaughters) const;
         
                 void list(bool showScaleAndVertex) const;
         
-                void list(bool showScaleAndVertex, bool showMothersAndDaughters, std::ostream& os) const;
+                void list(bool showScaleAndVertex, bool showMothersAndDaughters, std::basic_ostream<char,std::char_traits<char> >& os) const;
         
                 void popBack(int nRemove);
         
@@ -129,9 +143,9 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 double scaleSecond() const;
         
-                std::vector<int, std::allocator<int> > motherList(int i) const;
+                std::vector<int,std::allocator<int> > motherList(int i) const;
         
-                std::vector<int, std::allocator<int> > daughterList(int i) const;
+                std::vector<int,std::allocator<int> > daughterList(int i) const;
         
                 int statusHepMC(int i) const;
         
@@ -143,11 +157,11 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 int iBotCopyId(int i) const;
         
-                std::vector<int, std::allocator<int> > sisterList(int i) const;
+                std::vector<int,std::allocator<int> > sisterList(int i) const;
         
-                std::vector<int, std::allocator<int> > sisterListTopBot(int i, bool widenSearch) const;
+                std::vector<int,std::allocator<int> > sisterListTopBot(int i, bool widenSearch) const;
         
-                std::vector<int, std::allocator<int> > sisterListTopBot(int i) const;
+                std::vector<int,std::allocator<int> > sisterListTopBot(int i) const;
         
                 bool isAncestor(int i, int iAncestor) const;
         
@@ -189,7 +203,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 void restoreJunctionSize();
         
-                void listJunctions(std::ostream& os) const;
+                void listJunctions(std::basic_ostream<char,std::char_traits<char> >& os) const;
         
                 void listJunctions() const;
         
@@ -197,17 +211,22 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         
                 // Wrappers for original constructors: 
+            public:
                 Event(int capacity);
                 Event();
         
                 // Special pointer-based constructor: 
-                Event(Pythia8::Abstract_Event* in, bool memvar_in=false);
+                Event(Pythia8::Abstract_Event* in);
+                Event(Pythia8::Abstract_Event* const & in, bool);
         
                 // Copy constructor: 
                 Event(const Event& in);
         
                 // Assignment operator: 
                 Event& operator=(const Event& in);
+        
+                // Destructor: 
+                ~Event();
         
         };
     }
