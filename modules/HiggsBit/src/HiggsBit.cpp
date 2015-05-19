@@ -271,8 +271,6 @@ namespace Gambit
 	}
       }
 
-      cout << "HERE 2" << endl;
-
       bool inv_lsp = true;
       if(spec->phys.get_Pole_Mass("~chi+",1) < lsp_mass) inv_lsp = false;
       if(spec->phys.get_Pole_Mass("~g") < lsp_mass) inv_lsp = false;
