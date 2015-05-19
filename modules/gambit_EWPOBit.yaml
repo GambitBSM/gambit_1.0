@@ -34,18 +34,18 @@ ObsLikes:
   #  type:         DecayTable
 
   # Uncomment to test FeynHiggs-related module functions
-  - purpose:  whatever
-    capability:  FH_HiggsMasses
-  - purpose:  whatever		
-    capability:  FH_PrecisionObs
-  - purpose:  whatever
-    capability:  FH_FlavorObs
-  - purpose:  whatever
-    capability:  FH_MSSMMasses
-  - purpose:  whatever
-    capability:  FH_Couplings
-  - purpose:  whatever
-    capability:  FH_HiggsProd
+  #- purpose:  whatever
+  #  capability:  FH_HiggsMasses
+  #- purpose:  whatever		
+  #  capability:  FH_PrecisionObs
+  #- purpose:  whatever
+  #  capability:  FH_FlavorObs
+  #- purpose:  whatever
+  #  capability:  FH_MSSMMasses
+  #- purpose:  whatever
+  #  capability:  FH_Couplings
+  #- purpose:  whatever
+  #  capability:  FH_HiggsProd
 
   # Uncomment to test HiggsBit
   - purpose:  Likelihood

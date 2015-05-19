@@ -2350,9 +2350,8 @@ namespace Gambit
         decays(inelbar)= *Dep::snubar_electronl_decay_rates;// Add the ~nu_e decays.
         decays(inmulbar) = *Dep::snubar_muonl_decay_rates;  // Add the ~nu_mu decays.
         decays(intau1bar) = *Dep::snubar_taul_decay_rates;  // Add the ~nu_tau decays.
-
       }
-
+      result = decays;
     }
 
     /// @}

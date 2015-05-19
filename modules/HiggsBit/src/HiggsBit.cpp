@@ -238,7 +238,7 @@ namespace Gambit
     }
 
     void MSSMHiggs_ModelParameters(hb_ModelParameters &result){
-
+      
       using namespace Pipes::MSSMHiggs_ModelParameters;
       #define PDB Models::ParticleDB()
 
@@ -270,6 +270,9 @@ namespace Gambit
 	  lsp_mass = spec->phys.get_Pole_Mass("~nu",i);
 	}
       }
+
+      cout << "HERE 2" << endl;
+
       bool inv_lsp = true;
       if(spec->phys.get_Pole_Mass("~chi+",1) < lsp_mass) inv_lsp = false;
       if(spec->phys.get_Pole_Mass("~g") < lsp_mass) inv_lsp = false;
@@ -289,11 +292,11 @@ namespace Gambit
 	  }
 	}
       }
-      
+
       for(int i = 0; i < 3; i++){
 	// Branching ratios and total widths
 	Hneut_decays[i] = &(decaytable(sHneut[i]));
-    
+
 	result.hGammaTot[i] = Hneut_decays[i]->width_in_GeV; 
 
 	result.BR_hjss[i] = Hneut_decays[i]->BF("s", "sbar");
