@@ -86,13 +86,13 @@ START_MODULE
     START_FUNCTION(DecayTable::Entry)
     DEPENDENCY(FH_Couplings, fh_Couplings)
     ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
+    #undef FUNCTION
 
     #define FUNCTION SS_Higgs_decays
     START_FUNCTION(DecayTable::Entry)
     //DEPENDENCY(SS_Spectrum, const Spectrum*) 
     DEPENDENCY(Higgs_decay_rates, DecayTable::Entry)
     ALLOW_MODEL(SingletDM)
-
     #undef FUNCTION
 
   #undef CAPABILITY
