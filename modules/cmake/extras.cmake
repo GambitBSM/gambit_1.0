@@ -174,7 +174,51 @@ ExternalProject_Add(nulike
 )
 set(clean_files ${clean_files} "${nulike_dir}/lib/${nulike_lib}.so")
 
-set_target_properties(ddcalc gamlike darksusy micromegas superiso nulike pythia fastsim BOSSMinimalExample PROPERTIES EXCLUDE_FROM_ALL 1)
+set(susyhit_ver "1\\.5")
+set(susyhit_lib "libsusyhit")
+set(susyhit_dir "${PROJECT_SOURCE_DIR}/../extras/SUSY-HIT")
+set(susyhit_short_dir "./../extras/SUSY-HIT")
+ExternalProject_Add(susyhit
+  URL http://www.itp.kit.edu/~maggie/SUSY-HIT/susyhit.tar.gz
+  URL_MD5 493c7ba3a07e192918d3412875fb386a
+  DOWNLOAD_DIR ${susyhit_dir}
+  SOURCE_DIR ${susyhit_dir}
+  BUILD_IN_SOURCE 1
+  CONFIGURE_COMMAND cp -n makefile makefile.orig COMMAND cp -n sdecay.f sdecay.orig COMMAND cp -n hdecay.f hdecay.orig 
+            COMMAND cp    makefile.orig makefile COMMAND cp    sdecay.orig sdecay.f COMMAND cp    hdecay.orig hdecay.f
+            COMMAND sed ${dashi} -e "s#FC=\\(.*\\)\\s*$#FF=\\1\\n\\nFC=\\$\\(FF\\)\\nFFLAGS= -O2 -fPIC#g"
+                                 -e "s#FC)\\s*-c#FC\\) \\$\\(FFLAGS\\) -c#g" 
+                                 -e "s#\\(clean:.*\\)$#${susyhit_lib}.so:\\$\\(OBJS1\\) \\$\\(OBJS2\\) \\$\\(OBJS3\\)\\n\t\\$\\(FC\\) -shared -o \\$@ \\$\\(OBJS1\\) \\$\\(OBJS2\\) \\$\\(OBJS3\\)\\n\\n\\1#g"
+                                 <SOURCE_DIR>/makefile
+            COMMAND sed ${dashi} -e "s#^\\s*program sdecay\\s*$#      !Added by GAMBIT to make 100% sure \\'unlikely\\' matches the fortran value.\\n      double precision function s_hit_unlikely()\\n        s_hit_unlikely = -123456789D0\\n      end\\n\\n      subroutine sdecay                          !Modified by GAMBIT.#g"
+                                 -e "s#COMMON/SD_stopwidth/stoptot4\\s*$#COMMON/SD_stopwidth/stoptot4,stoptot       !Modified by GAMBIT#g"
+                                 -e "s#\\(\\s*open(ninshs,file=.*\\)$#      if (.false.) then                          !Added by GAMBIT.\\n\\n\\1#g"
+                                 -e "s#\\(^\\s*flagshsin=2d0\\)$#\\1\\n      endif                                      !Added by GAMBIT.\\n\\n      else                                       !Added by GAMBIT.\\n\\n        flagshsin=0d0                            !Added by GAMBIT.\\n        flagoutput=2d0                           !Added by GAMBIT.\\n        i4bod=1                                  !Added by GAMBIT.\\n#g"
+                                 -e "s#\\(\\s*if((flagoutput\\.eq\\.1\\.D0).or.(ifavvio\\.eq\\.1)) then\\)#c\\1 !Commented out by GAMBIT.#g"
+                                 -e "s#\\!\\(\\s*if(flagoutput\\.eq\\.1\\.D0) then\\)\\s*$#\\1                !Reinstated by GAMBIT.#g"
+                                 -e "/output not a la Les Houches accord/{N" -e "N" -e "s/else/elseif(flagoutput.eq.0.D0) then            !Modified by GAMBIT./}"
+                                 -e "s#\\(^\\s*if(flagshsin\\.\\)eq\\(\\.1\\.D0) then\\)#\\1le\\2                 !Modified by GAMBIT.#g"
+                                 <SOURCE_DIR>/sdecay.f
+            COMMAND sed ${dashi} -e "/=1: READ SUSY LES HOUCHES ACCORD INPUT/{N" -e "N" -e "s/\\(.*\\nc end change susyhit\\s\\)/\\1C           =2: SLHA INPUT PROVIDED BY CALLING PROGRAM  !Added by GAMBIT.\\n/}"
+                                 -e "/=1: WRITE SUSY LES HOUCHES ACCORD OUTPUT/{N" -e "N" -e "s/\\(.*\\nc end change susyhit\\s\\)/\\1C           =2: WRITE NOTHING                           !Added by GAMBIT.\\n/}"
+                                 -e "s#\\s*if(islhao\\.ne\\.1) then\\s*\$#      if(islhao.eq.0) then                       !Modified by GAMBIT.#g"
+                                 -e "s#\\s*\\(CALL CLOSE_HDEC\\)\\s*\$#      if(islhao.eq.0) \\1            !Modified by GAMBIT.#g"
+                                 -e "s#\\s*islhai\\s*=\\s*1\\s*\$#      islhai  = 2                                !Modified by GAMBIT.#g"
+                                 -e "s#\\s*islhao\\s*=\\s*1\\s*\$#      islhao  = 2                                !Modified by GAMBIT.#g"
+                                 -e "/\\s*if(islhai\\.eq\\.1)\\s*then\\s*\$/{N" -e "s#\\(\\s*if(islhai\\.eq\\.1)\\s*then\\s*\\n\\)#      if(islhai.ge.1) then                       !Added by GAMBIT.\\n  \\1#}"
+                                 -e "s#\\s*call SLHA_read_leshouches_HDEC(ninlha)#         call SLHA_read_leshouches_HDEC(ninlha)\\n        endif                                    !Added by GAMBIT.#g"
+                                 -e "s#\\(c -- calculation of the mb pole mass from mb(mb)_MSbar --\\s*\\)\$#      if(ishai.eq.2) fmb = massval(34)           !Added by GAMBIT.\\n\\1#g"
+                                 -e "/c -- calculation of the mb pole mass from mb(mb)_MSbar --\\s*\$/{N" -e "s#\\(\\s*if(smval(5)\\.ne\\.0\\.D0\\))\\s*then\\s*\$#\\1 .and. ishai.ne.2) then !Modified by GAMBIT.#}"
+                                 -e "/\\s*close(nout)\\s*\$/{N" -e "N" -e "s#else#elseif (islhao .eq. 0) then                !Modified by GAMBIT.#}"
+                                 <SOURCE_DIR>/hdecay.f
+  BUILD_COMMAND make ${susyhit_lib}.so FC=${CMAKE_Fortran_COMPILER} FFLAGS=${CMAKE_Fortran_FLAGS}
+  INSTALL_COMMAND sed ${dashi} "s#${susyhit_ver}:.*${susyhit_lib}\\.so#${susyhit_ver}:         ${susyhit_short_dir}/${susyhit_lib}.so#g" ${PROJECT_SOURCE_DIR}/config/backend_locations.yaml
+)
+set_property(TARGET susyhit PROPERTY _EP_DOWNLOAD_ALWAYS 0)
+set(clean_files ${clean_files} "${susyhit_dir}/${susyhit_lib}.so")
 
-add_custom_target(backends COMMAND make gamlike nulike ddcalc pythia BOSSMinimalExample darksusy superiso) #fastsim micromegas
+
+set_target_properties(ddcalc gamlike darksusy micromegas superiso nulike pythia fastsim BOSSMinimalExample susyhit PROPERTIES EXCLUDE_FROM_ALL 1)
+
+add_custom_target(backends COMMAND make gamlike nulike ddcalc pythia BOSSMinimalExample darksusy superiso susyhit) #fastsim micromegas
 
