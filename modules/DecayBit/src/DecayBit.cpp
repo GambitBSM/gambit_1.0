@@ -1814,10 +1814,9 @@ namespace Gambit
     void SM_Higgs_decays (DecayTable::Entry& result) { result.width_in_GeV = 0.004; }
   
     /// Collect all the DecayTable entries into an actual DecayTable 
-    void all_decays (DecayTable &result) 
+    void all_decays (DecayTable &decays) 
     {
       using namespace Pipes::all_decays;
-      DecayTable decays = DecayTable();             // Start with a blank DecayTable.
 
       decays("h0_1") = *Dep::Higgs_decay_rates;     // Add the Higgs decays.
       decays("Z0") = *Dep::W_minus_decay_rates;     // Add the Z decays
