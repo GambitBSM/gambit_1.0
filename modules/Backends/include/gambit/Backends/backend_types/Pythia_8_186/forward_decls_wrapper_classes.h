@@ -10,15 +10,11 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
     namespace Pythia8
     {
-        class Pythia;
+        class Rndm;
     }
     namespace Pythia8
     {
-        class Hist;
-    }
-    namespace Pythia8
-    {
-        class Event;
+        class PartonLevel;
     }
     namespace Pythia8
     {
@@ -26,12 +22,57 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     }
     namespace Pythia8
     {
+        class ParticleData;
+    }
+    namespace Pythia8
+    {
+        class CoupSUSY;
+    }
+    namespace Pythia8
+    {
+        class SlowJet;
+    }
+    namespace Pythia8
+    {
         class Info;
+    }
+    namespace Pythia8
+    {
+        class ParticleDataEntry;
+    }
+    namespace Pythia8
+    {
+        class Settings;
     }
     namespace Pythia8
     {
         class Vec4;
     }
+    namespace Pythia8
+    {
+        class Hist;
+    }
+    namespace Pythia8
+    {
+        class SLHAinterface;
+    }
+    namespace Pythia8
+    {
+        class Couplings;
+    }
+    namespace Pythia8
+    {
+        class Event;
+    }
+    namespace Pythia8
+    {
+        class Pythia;
+    }
+    namespace Pythia8
+    {
+        class CoupSM;
+    }
+    
     
 }
 

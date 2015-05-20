@@ -36,7 +36,7 @@ namespace Gambit
      myMessage             (message),
      isFatal               (fatal)
     {
-      exception_map[inikey] = this;
+      exception_map()[inikey] = this;
     }
 
     /// Constructor with 1 log tag
@@ -49,7 +49,7 @@ namespace Gambit
      isFatal               (fatal)
     {
       myLogTags.insert(t1);
-      exception_map[inikey] = this; 
+      exception_map()[inikey] = this; 
     }
 
     /// Constructor with 2 log tags
@@ -63,7 +63,7 @@ namespace Gambit
     {
       myLogTags.insert(t1);
       myLogTags.insert(t2);
-      exception_map[inikey] = this; 
+      exception_map()[inikey] = this; 
     }
 
     /// Constructor with 3 log tags
@@ -78,7 +78,7 @@ namespace Gambit
       myLogTags.insert(t1);
       myLogTags.insert(t2);
       myLogTags.insert(t3);
-      exception_map[inikey] = this;
+      exception_map()[inikey] = this;
     }
 
     /// Constructor with 4 log tags
@@ -94,7 +94,7 @@ namespace Gambit
       myLogTags.insert(t2);
       myLogTags.insert(t3);
       myLogTags.insert(t4);
-      exception_map[inikey] = this;
+      exception_map()[inikey] = this;
     }
 
     /// Constructor with 5 log tags
@@ -111,7 +111,7 @@ namespace Gambit
       myLogTags.insert(t3);
       myLogTags.insert(t4);
       myLogTags.insert(t5);
-      exception_map[inikey] = this;
+      exception_map()[inikey] = this;
     }
 
     /// Constructor with 6 log tags
@@ -129,7 +129,7 @@ namespace Gambit
       myLogTags.insert(t4);
       myLogTags.insert(t5);
       myLogTags.insert(t6);
-      exception_map[inikey] = this;
+      exception_map()[inikey] = this;
     }
 
     /// Constructor with 7 log tags
@@ -148,7 +148,7 @@ namespace Gambit
       myLogTags.insert(t5);
       myLogTags.insert(t6);
       myLogTags.insert(t7);
-      exception_map[inikey] = this;
+      exception_map()[inikey] = this;
     }
 
     /// Constructor with log tags as a set
@@ -160,7 +160,7 @@ namespace Gambit
      myMessage             (message),
      isFatal               (fatal)
     {
-      exception_map[inikey] = this;
+      exception_map()[inikey] = this;
     }
 
     /// Setter for the fatal flag.
@@ -206,7 +206,20 @@ namespace Gambit
       throw_iff_outside_parallel();
     }
 
+    /// Get a read-only map of pointers to all instances of this class.
+    const std::map<const char*,exception*>& exception::all_exceptions()
+    {
+      return exception_map();
+    }
+
   // Private members of GAMBIT exception base class.
+
+    /// Get a map of pointers to all instances of this class.
+    std::map<const char*,exception*>& exception::exception_map()
+    {
+      static std::map<const char*,exception*> local_map;
+      return local_map;
+    }
 
     /// Log the details of the exception
     void exception::log_exception(const std::string& origin, const std::string& specific_message)
