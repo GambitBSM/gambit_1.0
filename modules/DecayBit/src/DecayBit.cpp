@@ -2263,8 +2263,8 @@ namespace Gambit
       decays("W+") = *Dep::W_plus_decay_rates;      // Add the W decays for W+.
       decays("W-") = *Dep::W_minus_decay_rates;     // Add the W decays for W-
 
-      decays("t") = *Dep::t_decay_rates;      // Add the top decays for t.
-      decays("tbar") = *Dep::tbar_decay_rates;  // Add the top decays for tbar
+      decays("t") = *Dep::t_decay_rates;            // Add the top decays for t.
+      decays("tbar") = *Dep::tbar_decay_rates;      // Add the top decays for tbar
       decays("u_3") = decays("t");                  // Duplicate for mass-ordered quarks
       decays("ubar_3") = decays("tbar");            // Duplicate for mass-ordered quarks
 
@@ -2274,7 +2274,7 @@ namespace Gambit
       decays("e-_2") = decays("mu-");               // Duplicate for mass-ordered leptons
 
       decays("tau+") = *Dep::tau_plus_decay_rates;  // Add the tauon decays for tau+.
-      decays("tau-") = *Dep::tau_minus_decay_rates; // Do the same for tau-, assuming no CP asymmetry.
+      decays("tau-") = *Dep::tau_minus_decay_rates; // Add the tauon decays for tau-.
       decays("e+_3") = decays("tau+");              // Duplicate for mass-ordered leptons
       decays("e-_3") = decays("tau-");              // Duplicate for mass-ordered leptons
 
@@ -2350,7 +2350,7 @@ namespace Gambit
         decays(inmulbar) = *Dep::snubar_muonl_decay_rates;  // Add the ~nu_mu decays.
         decays(intau1bar) = *Dep::snubar_taul_decay_rates;  // Add the ~nu_tau decays.
       }
-      result = decays;
+
     }
 
     /// @}
