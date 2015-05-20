@@ -164,27 +164,27 @@ namespace Gambit
 
 #define ncouplings 681
 #define Roffset 472
-#define Coupling(c)		couplingS(c)
-#define LCoupling(c)		couplingS(c)
-#define RCoupling(c)		couplingS(c+Roffset)
+// #define Coupling(c)		couplingS(c)
+// #define LCoupling(c)		couplingS(c)
+// #define RCoupling(c)		couplingS(c+Roffset)
 
 #define ncouplingsms 231
 #define RSMoffset 108
-#define CouplingSM(c)		couplingsmS(c)
-#define LCouplingSM(c)		couplingsmS(c)
-#define RCouplingSM(c)		couplingsmS(c+RSMoffset)
+// #define CouplingSM(c)		couplingsmS(c)
+// #define LCouplingSM(c)		couplingsmS(c)
+// #define RCouplingSM(c)		couplingsmS(c+RSMoffset)
 
 #define ngammas 978
 #define BRoffset 491
-#define GammaTot(h)		gammaS(h)
-#define Gamma(c)		gammaS(c+4)
-#define BR(c)			gammaS(c+BRoffset)
+// #define GammaTot(h)		gammaS(h)
+// #define Gamma(c)		gammaS(c+4)
+// #define BR(c)			gammaS(c+BRoffset)
 
 #define ngammasms 250
 #define BRSMoffset 127
-#define GammaSMTot(h)		gammasmS(h)
-#define GammaSM(c)		gammasmS(c+4)
-#define BRSM(c)			gammasmS(c+BRSMoffset)
+// #define GammaSMTot(h)		gammasmS(h)
+// #define GammaSM(c)		gammasmS(c+4)
+// #define BRSM(c)			gammasmS(c+BRSMoffset)
 
 
 #define H0VV(h,vv) h+3*vv-3
