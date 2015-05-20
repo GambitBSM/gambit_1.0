@@ -62,6 +62,7 @@ namespace Gambit {
       using namespace Pipes::cascadeMC_DecayTable;     
       std::cout << "cascadeMC_DecayTable" << std::endl;
       table = DecayTable(*Dep::TH_ProcessCatalog, *Dep::SimYieldTable);
+      //table.printTable();
     }
 
     // Loop manager for cascade decays
@@ -325,11 +326,14 @@ namespace Gambit {
           Nsampl++;
         }
       }
-      spectrum.multiply(1.0/Nsampl);
-      // Add bin contents of spectrum histogram to main histogram as weighted
-      // events
-#pragma omp critical (cascadeMC_histList)
-      histList[initialState][finalState].addHistAsWeights_sameBin(spectrum);
+      if(Nsampl>0)
+      {
+        spectrum.multiply(1.0/Nsampl);
+        // Add bin contents of spectrum histogram to main histogram as weighted
+        // events
+        #pragma omp critical (cascadeMC_histList)
+          histList[initialState][finalState].addHistAsWeights_sameBin(spectrum);
+      }
     }
 
     // Function responsible for histogramming, and evaluating end conditions
@@ -388,7 +392,7 @@ namespace Gambit {
             // FIXME: This defines 50 bins from 1e-3 to 1e3 GeV.
             // Should not be hardcoded.
             histList[*Dep::cascadeMC_InitialState][*it]=
-              SimpleHist(100,0.001,1000.0,true);
+              SimpleHist(70,0.001,10000.0,true);
           }
           return;
         case MC_FINALIZE:
@@ -555,10 +559,11 @@ namespace Gambit {
       for(std::vector<std::string>::const_iterator it = ini.begin();
           it != ini.end(); ++it )
       {
-        // std::cout << "Trying to get cascade spectra for initial state: " << *it << std::endl;
+        std::cout << "Trying to get cascade spectra for initial state: " << *it << std::endl;
         if(calculated)
         {
-          // std::cout << finalState << "...was calculated!" << std::endl;
+          std::cout << finalState << "...was calculated!" << std::endl;
+          std::cout << eventCounts.at(*it) << " events generated" << std::endl;
           SimpleHist hist = h.at(*it).at(finalState);
           hist.divideByBinSize();
           std::vector<double> E = hist.getBinCenters();

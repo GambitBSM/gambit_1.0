@@ -358,7 +358,8 @@ START_MODULE
     #undef FUNCTION
     #define FUNCTION TH_ProcessCatalog_SingletDM
       START_FUNCTION(DarkBit::TH_ProcessCatalog)
-      DEPENDENCY(SM_spectrum, const SubSpectrum*)
+      DEPENDENCY(SM_spectrum, const SubSpectrum*)      
+      DEPENDENCY(decay_rates,DecayTable)      
       DEPENDENCY(SMINPUTS, SMInputs)
       ALLOW_MODELS(SingletDM)
     #undef FUNCTION

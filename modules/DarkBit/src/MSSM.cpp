@@ -229,47 +229,6 @@ namespace Gambit {
       // Instantiate new ProcessCatalog
       TH_ProcessCatalog catalog;      
 
-      
-      /////////////////////////////
-      // Import Decay information
-      /////////////////////////////
-
-      // Import based on decay table from DecayBit
-      const DecayTable* tbl = &(*Dep::decay_rates);
-      
-      // TODO: Decide which to include
-      const vector<string> decaysOfInterest = initVector<string>
-        ("H+", "H-", "h0_2", "A0");        
-      
-      double minBranching = 0.0; // TODO: Set this from yaml?
-      for(auto iState_it = decaysOfInterest.begin();
-          iState_it != decaysOfInterest.end(); ++iState_it)
-      {
-        std::cout << 
-          "Importing decay information for: " << *iState_it << std::endl;
-        const DecayTable::Entry &entry = tbl->at(*iState_it);
-        double totalWidth = entry.width_in_GeV;
-        TH_Process process(*iState_it);
-        process.genRateTotal = Funk::cnst(totalWidth);
-        for(auto fState_it = entry.channels.begin();
-            fState_it!= entry.channels.end(); ++fState_it)
-        {
-          vector<string> pIDs;
-          for(auto pit = fState_it->first.begin();
-              pit != fState_it->first.end(); ++pit)
-          {
-            pIDs.push_back(Models::ParticleDB().long_name(*pit));
-          } 
-          double bFraction    = (fState_it->second).first;
-          double partialWidth = totalWidth * bFraction;
-          // TODO: Add other criteria on which channels to include?
-          if(bFraction>minBranching)
-            process.channelList.push_back(
-                TH_Channel(pIDs, Funk::cnst(partialWidth)));
-        }
-        catalog.processList.push_back(process);
-      }      
-
 
       ///////////////////////////
       // Import particle masses
@@ -294,12 +253,12 @@ namespace Gambit {
       getSMmass("mu+",    1)
       getSMmass("tau-",   1)
       getSMmass("tau+",   1)
-//      getSMmass("nu_1",   1)
-//      getSMmass("nubar_1",1) 
-//      getSMmass("nu_2",   1)
-//      getSMmass("nubar_2",1) 
-//      getSMmass("nu_3",   1)
-//      getSMmass("nubar_3",1)      
+      getSMmass("nu_1",   1)
+      getSMmass("nubar_1",1) 
+      getSMmass("nu_2",   1)
+      getSMmass("nubar_2",1) 
+      getSMmass("nu_3",   1)
+      getSMmass("nubar_3",1)      
       getSMmass("Z0",     2)
       getSMmass("W+",     2)
       getSMmass("W-",     2)      
@@ -327,22 +286,20 @@ namespace Gambit {
       // FIXME: Is this the correct mass assignment?  Why "mCmC"?
       getSMmassMS("c"   , SMI.mCmC,1) // mc(mc)^MS-bar, not pole mass
       getSMmassMS("cbar", SMI.mCmC,1) // mc(mc)^MS-bar, not pole mass
-
-      // FIXME: Correct to assume zero neutrino masses?
-      getSMmassMS("nu_e", 0,1);
-      getSMmassMS("nubar_e", 0,1);
-      getSMmassMS("nu_mu", 0,1);
-      getSMmassMS("nubar_mu", 0,1);
-      getSMmassMS("nu_tau", 0,1);
-      getSMmassMS("nubar_tau", 0,1);
+      // Dummy masses for neutrino flavour eigenstates. Set to zero.
+      getSMmassMS("nu_e",     0.0, 1)
+      getSMmassMS("nubar_e",  0.0, 1)
+      getSMmassMS("nu_mu",    0.0, 1)
+      getSMmassMS("nubar_mu", 0.0, 1)
+      getSMmassMS("nu_tau",   0.0, 1)
+      getSMmassMS("nubar_tau",0.0, 1)   
 #undef getSMmassMS
 
-      // Get MSSM masses
-      // TODO: Import more masses? (find which ones are needed)
+      // Get MSSM masses, FIXME: Remove absolute value once SpecBit guarantees positive masses
 #define getMSSMmass(Name, spinX2)                                              \
       catalog.particleProperties.insert(                                       \
           std::pair<std::string, TH_ParticleProperty> (                        \
-            Name , TH_ParticleProperty(spec->phys.get_Pole_Mass(Name), spinX2) \
+            Name , TH_ParticleProperty(abs(spec->phys.get_Pole_Mass(Name)), spinX2) \
             ));
       getMSSMmass("H+"     , 0)
       getMSSMmass("H-"     , 0)
@@ -353,13 +310,74 @@ namespace Gambit {
 #undef getMSSMmass
 
 
+      /////////////////////////////
+      // Import Decay information
+      /////////////////////////////
+
+      // Import based on decay table from DecayBit
+      const DecayTable* tbl = &(*Dep::decay_rates);
+      
+      // List of decays to include
+      const vector<string> decaysOfInterest = initVector<string>
+        ("H+", "H-", "h0_1", "h0_2", "A0");        
+      
+      double minBranching = runOptions->getValueOrDef<double>(0.0,
+          "ProcessCatalog_MinBranching");
+      for(auto iState_it = decaysOfInterest.begin();
+          iState_it != decaysOfInterest.end(); ++iState_it)
+      {
+        std::cout << 
+          "Importing decay information for: " << *iState_it << std::endl;
+        const DecayTable::Entry &entry = tbl->at(*iState_it);
+        double totalWidth = entry.width_in_GeV;
+        if(totalWidth>0)
+        {        
+          TH_Process process(*iState_it);
+          process.genRateTotal = Funk::cnst(totalWidth);
+          for(auto fState_it = entry.channels.begin();
+              fState_it!= entry.channels.end(); ++fState_it)
+          {
+            double bFraction = (fState_it->second).first;
+            if(bFraction>minBranching)
+            {
+              vector<string> pIDs;
+              std::cout << "- ";
+              const double m_init  = catalog.getParticleProperty(*iState_it).mass;
+              double m_final = 0;
+              for(auto pit = fState_it->first.begin();
+                  pit != fState_it->first.end(); ++pit)
+              {
+                std::string name = Models::ParticleDB().long_name(*pit);
+                m_final += catalog.getParticleProperty(name).mass;
+                pIDs.push_back(name);
+                std::cout << name << "\t";
+              } 
+              double partialWidth = totalWidth * bFraction;        
+              bool checkKinematics = runOptions->getValueOrDef<bool>(true,
+              "ProcessCatalog_KinCheck");
+              // TODO: Add other criteria on which channels to include?
+              if(!checkKinematics or m_final<=m_init)
+              {
+                std::cout<< bFraction << std::endl;   
+                process.channelList.push_back(
+                    TH_Channel(pIDs, Funk::cnst(partialWidth)));
+              }
+              else
+                std::cout<< "kin. closed" << std::endl;   
+            }
+          }
+          catalog.processList.push_back(process);          
+        }
+      }      
+
+
       /////////////////////////////////////////
       // Import two-body annihilation process
       /////////////////////////////////////////
 
       // Declare DM annihilation process                   
       TH_Process process(DMid, DMid);      
-
+      double M_DM = catalog.getParticleProperty(DMid).mass;
       // Helper variables
       int index; 
       double m_1, m_2, sv;
@@ -368,8 +386,8 @@ namespace Gambit {
 #define SETUP_DS_PROCESS(NAME, PARTCH, P1, P2, PREFACTOR)                      \
       /* Check if process is kinematically allowed */                          \
       m_1 = catalog.getParticleProperty(STRINGIFY(P1)).mass;                   \
-      m_2 = catalog.getParticleProperty(STRINGIFY(P1)).mass;                   \
-      if(m_1 + m_2 < 2*catalog.getParticleProperty(DMid).mass)                 \
+      m_2 = catalog.getParticleProperty(STRINGIFY(P2)).mass;                   \
+      if(m_1 + m_2 < 2*M_DM)                                                   \
       {                                                                        \
         /* Set cross-section */                                                \
         index = PARTCH;                                                        \
@@ -425,8 +443,6 @@ namespace Gambit {
       ///////////////////////////////////////////
       // Import three-body annihilation process
       ///////////////////////////////////////////
-
-      double M_DM = catalog.getParticleProperty(DMid).mass;
 
       // Macro for setting up 3-body decays with gammas
 #define SETUP_DS_PROCESS_GAMMA3BODY(NAME,IBCH,P1,P2,IBFUNC,SV_IDX,PREFACTOR) \

@@ -742,9 +742,11 @@ namespace Gambit
           {
             ostringstream err;
             err <<  
-              "Kinematically impossible decay in decay chain.\n"
+              "Kinematically impossible decay in decay chain:\n" <<
+              pID << "-> " << 
+              ((chn->finalStateIDs)[0]) << ", " << ((chn->finalStateIDs)[1]) << "\n" <<
               "Please check your process catalog." << endl;
-            err << "Relevant particle masses: " << m1 << " " << m2 << " " << m;
+            err << "Relevant particle masses: " << m << " -> " << m1 << " + " << m2;
             DarkBit_error().raise(LOCAL_INFO, err.str());
           }           
           const double &Etot = m;

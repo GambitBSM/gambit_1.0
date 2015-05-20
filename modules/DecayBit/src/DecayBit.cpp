@@ -2308,26 +2308,16 @@ namespace Gambit
       decays("rho-") = *Dep::rho_minus_decay_rates; // Add the rho- decays.
       decays("omega") = *Dep::omega_decay_rates;    // Add the omega meson decays.
 
-      // CW: Some temporary code to avoid crashes in DarkBit
-      // TODO: Replace with correct information
-      DecayTable::Entry fake_decay;
-      fake_decay.width_in_GeV = 1E-20;                    
-      fake_decay.positive_error = 1E-22;
-      fake_decay.negative_error = 1E-22;
-      fake_decay.set_BF(0.5, 0.005, "b", "bbar");
-      fake_decay.set_BF(0.5, 0.005, "tau+", "tau-");
-      decays("H+") = fake_decay;
-      decays("H-") = fake_decay;
-      decays("A0") = fake_decay;
-      decays("h0_2") = fake_decay;
-      
       // MSSM-specific
       if (ModelInUse("MSSM78atQ") or ModelInUse("MSSM78atMGUT"))
       {
         decays("h0_2") = *Dep::h0_2_decay_rates;            // Add the h0_2 decays.
         decays("A0") = *Dep::A0_decay_rates;                // Add the A0 decays.
         decays("H+") = *Dep::Hplus_decay_rates;             // Add the H+ decays.       
-        decays("H-") = *Dep::Hminus_decay_rates;            // Add the H+ decays.       
+        //decays("H-") = *Dep::Hminus_decay_rates;            // Add the H+ decays.       
+        // FIXME!!!!!!!!!!!!!!
+        std::cout << "FIXME!!!! using H+ decay to approximate H- decays!" << std::endl;
+        decays("H-") = *Dep::Hplus_decay_rates; 
 
         decays("~g") = *Dep::gluino_decay_rates;            // Add the gluino decays.
 
