@@ -29,10 +29,10 @@
 #define BACKEND_SPECIFIC_COMPILE_UNIT 1
 
 /// Dependency macro for point-level backend initialisation functions (in BackendIniBit)
-#define BE_INI_DEPENDENCY(DEP, TYPE) MODULE_DEPENDENCY(DEP, TYPE, BackendIniBit, CAT_5(BACKENDNAME,_,SAFE_VERSION,_,init))
+#define BE_INI_DEPENDENCY(DEP, TYPE) MODULE_DEPENDENCY(DEP, TYPE, BackendIniBit, CAT_5(BACKENDNAME,_,SAFE_VERSION,_,init), NOT_MODEL)
 
 /// Model-conditional dependency macro for point-level backend initialisation functions (in BackendIniBit)
-#define BE_INI_CONDITIONAL_DEPENDENCY(DEP, TYPE, ...) MODULE_DEPENDENCY(DEP, TYPE, BackendIniBit, CAT_5(BACKENDNAME,_,SAFE_VERSION,_,init))
+#define BE_INI_CONDITIONAL_DEPENDENCY(DEP, TYPE, ...) MODULE_DEPENDENCY(DEP, TYPE, BackendIniBit, CAT_5(BACKENDNAME,_,SAFE_VERSION,_,init), NOT_MODEL)
 
 /// Macro for assigning a single allowed model to an entire backend.
 #define BE_ALLOW_MODEL(MODEL) MODULE_ALLOWED_MODEL(BackendIniBit,           \
