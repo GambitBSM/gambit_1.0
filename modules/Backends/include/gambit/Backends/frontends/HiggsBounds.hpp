@@ -37,7 +37,6 @@ LOAD_LIBRARY
 
 BE_FUNCTION(initialize_HiggsBounds_int, void, (int&, int&, int&), "initialize_higgsbounds_int_", "initialize_HiggsBounds_int")
 BE_FUNCTION(run_HiggsBounds_classic, void, (double&, int&, double&, int&), "run_higgsbounds_classic_", "run_HiggsBounds_classic")
-BE_FUNCTION(HiggsBounds_input_SLHA, void, (const char&), "higgsbounds_input_slha_", "HiggsBounds_input_SLHA")
 BE_FUNCTION(finish_HiggsBounds, void, (), "finish_higgsbounds_", "finish_HiggsBounds")
 BE_FUNCTION(HiggsBounds_set_mass_uncertainties, void, (double*, double*), "higgsbounds_set_mass_uncertainties_", "HiggsBounds_set_mass_uncertainties")
 
@@ -46,7 +45,39 @@ BE_FUNCTION(initialize_HiggsBounds_chisqtables, void, (), "initialize_higgsbound
 BE_FUNCTION(HB_calc_stats, void, (double&, double&, double&, int&), "hb_calc_stats_", "HB_calc_stats")
 BE_FUNCTION(finish_HiggsBounds_chisqtables, void, (), "finish_higgsbounds_chisqtables_","finish_HiggsBounds_chisqtables")
 
-BE_INI_FUNCTION{}
+// Input sub-routines
+BE_FUNCTION(HiggsBounds_input_SLHA, void, (const char&), "higgsbounds_input_slha_", "HiggsBounds_input_SLHA")
+BE_FUNCTION(HiggsBounds_neutral_input_part, void, (double*, double*, int*, double*, double*, double*, Farray<double, 1,3, 1,3>&,
+						   double*, double*, double*, double*, double*, double*, double*,
+						   double*, double*, double*, double*, double*, double*, double*,
+						   double*, double*, double*, double*, double*, double*, double*,
+						   double*, double*, double*, double*, double*, double*, double*,
+						   double*, double*, Farray<double, 1,3, 1,3>&), "higgsbounds_neutral_input_part_", "HiggsBounds_neutral_input_part")
+BE_FUNCTION(HiggsBounds_charged_input, void, (double*, double*, double*, double*,
+					      double*, double*, double*, double*), "higgsbounds_charged_input_", "HiggsBounds_charged_input")
+
+BE_INI_FUNCTION{
+
+  // Scan-level initialisation
+  static bool scan_level = true;
+  if(scan_level){
+    // initialize LEP chisq tables
+    initialize_HiggsBounds_chisqtables();
+  
+    int nHneut = 3; // number of neutral higgses
+    int nHplus = 1; // number of charged higgses
+    int ANA = 1;    // indicates LEP-only analysis
+    
+    // initialize HiggsBounds to LEP only
+    initialize_HiggsBounds_int(nHneut,nHplus,ANA);
+  }
+  scan_level = false;
+  
+  // clean-up
+  // finish_HiggsBounds_chisqtables();
+  // finish_HiggsBounds();
+
+}
 END_BE_INI_FUNCTION
 
 // Undefine macros to avoid conflict with other backends

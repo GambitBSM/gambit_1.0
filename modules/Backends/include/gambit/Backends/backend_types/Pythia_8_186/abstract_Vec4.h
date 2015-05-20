@@ -4,6 +4,12 @@
 #include "gambit/Backends/abstractbase.hpp"
 #include "forward_decls_abstract_classes.h"
 #include "forward_decls_wrapper_classes.h"
+#include <cstddef>
+
+#ifndef ENUMS_DECLARED
+#define ENUMS_DECLARED
+#include "enum_decl_copies.h"
+#endif
 
 #include "identification.hpp"
 
@@ -20,11 +26,11 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         class Abstract_Vec4 : virtual public AbstractBase
         {
             private:
-                // IGNORED: Variable  -- Name: TINY  -- XML id: _22813
-                // IGNORED: Field  -- Name: xx  -- XML id: _22814
-                // IGNORED: Field  -- Name: yy  -- XML id: _22815
-                // IGNORED: Field  -- Name: zz  -- XML id: _22816
-                // IGNORED: Field  -- Name: tt  -- XML id: _22817
+                // IGNORED: Variable  -- Name: TINY  -- XML id: _22812
+                // IGNORED: Field  -- Name: xx  -- XML id: _22813
+                // IGNORED: Field  -- Name: yy  -- XML id: _22814
+                // IGNORED: Field  -- Name: zz  -- XML id: _22815
+                // IGNORED: Field  -- Name: tt  -- XML id: _22816
             public:
     
                 virtual Pythia8::Abstract_Vec4* operator_equal__BOSS(const Pythia8::Abstract_Vec4&) =0;
@@ -124,13 +130,18 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 virtual Abstract_Vec4* pointerCopy__BOSS() =0;
     
             private:
-                Vec4* wptr;
+                mutable Vec4* wptr;
     
             public:
+                Abstract_Vec4()
+                {
+                }
+    
                 void wrapper__BOSS(Vec4* wptr_in)
                 {
                     wptr = wptr_in;
                     is_wrapped(true);
+                    can_delete_wrapper(true);
                 }
     
                 Vec4* wrapper__BOSS()

@@ -78,13 +78,30 @@ namespace Gambit
       result.width_in_GeV = 2.0;                    
       result.positive_error = 5.0e-01;
       result.negative_error = 5.0e-01;
-      result.set_BF(0.91, 0.04, "W+", "b");              
+      result.set_BF(0.91, 0.04, "W+", "b");  
+      result.set_BF(0.0, 0.0, "H+", "b");
     }
 
     /// SM decays: tbar
     void tbar_decays (DecayTable::Entry& result) 
     {
       result = CP_conjugate(*Pipes::tbar_decays::Dep::t_decay_rates);
+    }
+
+    /// FeynHiggs top decays
+    void FH_t_decays (DecayTable::Entry& result) 
+    {
+
+       using namespace Pipes::FH_t_decays;
+      
+      // unpack FeynHiggs Couplings
+      fh_Couplings FH_input = *Dep::FH_Couplings;
+
+      result.width_in_GeV = 2.0;                    
+      result.positive_error = 5.0e-01;
+      result.negative_error = 5.0e-01;
+      result.set_BF(FH_input.gammas[tBF(1)-1], 0.0, "W+", "b"); 
+      result.set_BF(FH_input.gammas[tBF(2)-1], 0.0, "H+", "b");
     }
 
     /// SM decays: mu+
@@ -305,10 +322,120 @@ namespace Gambit
       result.set_BF(BEreq::cb_wisfer_hdec->bhlslnl/3.0, 0.0, inel, inelbar);
       result.set_BF(BEreq::cb_wisfer_hdec->bhlslnl/3.0, 0.0, inmul, inmulbar);
       result.set_BF(BEreq::cb_wisfer_hdec->bhlslnl/3.0, 0.0, intau1, intau1bar);
+
       // cout << "h0_1 total width: " << result.width_in_GeV << endl;
       // cout << "BR(h0_1 -> gamma gamma): " << BEreq::cb_widthhl_hdec->hlbrga << endl;
       // cout << "BR(h0_1 -> ~u_L ~u_L_bar): " << BEreq::cb_wisfer_hdec->bhlsqul/2.0 << endl;
       // cout << "BR(h0_1 -> ~tau-_L ~e+_5): " << BEreq::cb_wisfer_hdec->bhlstau(1,1) << endl;
+    }
+
+     /// FeynHiggs MSSM decays: h0_1
+    void FH_MSSM_h0_1_decays (DecayTable::Entry& result) 
+    {
+      using namespace Pipes::FH_MSSM_h0_1_decays;
+      
+      // unpack FeynHiggs Couplings
+      fh_Couplings FH_input = *Dep::FH_Couplings;
+
+      int iH = 0; // h0_1
+
+      result.width_in_GeV = FH_input.gammas[iH];
+
+      // vector-boson pair decays
+      result.set_BF(FH_input.gammas[H0VV(iH,1)+BRoffset], 0.0, "gamma", "gamma");
+      result.set_BF(FH_input.gammas[H0VV(iH,2)+BRoffset], 0.0, "gamma", "Z0");
+      result.set_BF(FH_input.gammas[H0VV(iH,3)+BRoffset], 0.0, "Z0", "Z0");
+      result.set_BF(FH_input.gammas[H0VV(iH,4)+BRoffset], 0.0, "W+", "W-");
+      result.set_BF(FH_input.gammas[H0VV(iH,5)+BRoffset], 0.0, "g", "g");
+
+      // SM fermion decays
+      result.set_BF(FH_input.gammas[H0FF(iH,1,1,1)+BRoffset], 0.0, "nu_e", "nubar_e");
+      result.set_BF(FH_input.gammas[H0FF(iH,1,2,2)+BRoffset], 0.0, "nu_mu", "nubar_mu");
+      result.set_BF(FH_input.gammas[H0FF(iH,1,3,3)+BRoffset], 0.0, "nu_tau", "nubar_tau");
+      result.set_BF(FH_input.gammas[H0FF(iH,2,1,1)+BRoffset], 0.0, "e+", "e-");
+      result.set_BF(FH_input.gammas[H0FF(iH,2,2,2)+BRoffset], 0.0, "mu+", "mu-");
+      result.set_BF(FH_input.gammas[H0FF(iH,2,3,3)+BRoffset], 0.0, "tau+", "tau-");
+      result.set_BF(FH_input.gammas[H0FF(iH,3,1,1)+BRoffset], 0.0, "u", "ubar");
+      result.set_BF(FH_input.gammas[H0FF(iH,3,2,2)+BRoffset], 0.0, "c", "cbar");
+      result.set_BF(FH_input.gammas[H0FF(iH,3,3,3)+BRoffset], 0.0, "t", "tbar");
+      result.set_BF(FH_input.gammas[H0FF(iH,4,1,1)+BRoffset], 0.0, "d", "dbar");
+      result.set_BF(FH_input.gammas[H0FF(iH,4,2,2)+BRoffset], 0.0, "s", "sbar");
+      result.set_BF(FH_input.gammas[H0FF(iH,4,3,3)+BRoffset], 0.0, "b", "bbar");
+
+      // chargino decays
+      result.set_BF(FH_input.gammas[H0ChaCha(iH,1,1)+BRoffset], 0.0, "~chi-_1", "~chi+_1");
+      result.set_BF(FH_input.gammas[H0ChaCha(iH,1,2)+BRoffset], 0.0, "~chi-_1", "~chi+_2");
+      result.set_BF(FH_input.gammas[H0ChaCha(iH,2,1)+BRoffset], 0.0, "~chi-_2", "~chi+_1");
+      result.set_BF(FH_input.gammas[H0ChaCha(iH,2,2)+BRoffset], 0.0, "~chi-_2", "~chi+_2");
+
+      // neutralino decays
+      result.set_BF(FH_input.gammas[H0NeuNeu(iH,1,1)+BRoffset], 0.0, "~chi0_1", "~chi0_1");
+      result.set_BF(FH_input.gammas[H0NeuNeu(iH,2,2)+BRoffset], 0.0, "~chi0_2", "~chi0_2");
+      result.set_BF(FH_input.gammas[H0NeuNeu(iH,3,3)+BRoffset], 0.0, "~chi0_3", "~chi0_3");
+      result.set_BF(FH_input.gammas[H0NeuNeu(iH,4,4)+BRoffset], 0.0, "~chi0_4", "~chi0_4");
+      result.set_BF(FH_input.gammas[H0NeuNeu(iH,1,2)+BRoffset], 0.0, "~chi0_1", "~chi0_2");
+      result.set_BF(FH_input.gammas[H0NeuNeu(iH,1,3)+BRoffset], 0.0, "~chi0_1", "~chi0_3");
+      result.set_BF(FH_input.gammas[H0NeuNeu(iH,1,4)+BRoffset], 0.0, "~chi0_1", "~chi0_4");
+      result.set_BF(FH_input.gammas[H0NeuNeu(iH,2,3)+BRoffset], 0.0, "~chi0_2", "~chi0_3");
+      result.set_BF(FH_input.gammas[H0NeuNeu(iH,2,4)+BRoffset], 0.0, "~chi0_2", "~chi0_4");
+      result.set_BF(FH_input.gammas[H0NeuNeu(iH,3,4)+BRoffset], 0.0, "~chi0_3", "~chi0_4");
+
+      // higgs + Z0 decays
+      result.set_BF(FH_input.gammas[H0HV(iH,1)+BRoffset], 0.0, "h0_1", "Z0");
+      result.set_BF(FH_input.gammas[H0HV(iH,2)+BRoffset], 0.0, "h0_2", "Z0");
+      result.set_BF(FH_input.gammas[H0HV(iH,3)+BRoffset], 0.0, "A0", "Z0");
+
+      // higgs+higgs decays
+      result.set_BF(FH_input.gammas[H0HH(iH,1,1)+BRoffset], 0.0, "h0_1", "h0_1");
+      result.set_BF(FH_input.gammas[H0HH(iH,2,2)+BRoffset], 0.0, "h0_2", "h0_2");
+      result.set_BF(FH_input.gammas[H0HH(iH,3,3)+BRoffset], 0.0, "A0", "A0");
+      result.set_BF(FH_input.gammas[H0HH(iH,4,4)+BRoffset], 0.0, "H+", "H-");
+      result.set_BF(FH_input.gammas[H0HH(iH,1,2)+BRoffset], 0.0, "h0_1", "h0_2");
+      result.set_BF(FH_input.gammas[H0HH(iH,1,3)+BRoffset], 0.0, "h0_1", "A0");
+      result.set_BF(FH_input.gammas[H0HH(iH,2,3)+BRoffset], 0.0, "h0_2", "A0");
+
+      // sfermion decays
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,1,1)+BRoffset], 0.0, inel, inelbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,1,2)+BRoffset], 0.0, inmul, inmulbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,1,3)+BRoffset], 0.0, intau1, intau1bar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,2,1)+BRoffset], 0.0, isell, isellbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,2,1)+BRoffset], 0.0, isell, iselrbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,2,1)+BRoffset], 0.0, iselr, isellbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,2,1)+BRoffset], 0.0, iselr, iselrbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,2,2)+BRoffset], 0.0, ismul, ismulbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,2,2)+BRoffset], 0.0, ismul, ismurbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,2,2)+BRoffset], 0.0, ismur, ismulbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,2,2)+BRoffset], 0.0, ismur, ismurbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,2,3)+BRoffset], 0.0, istau1, istau1bar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,2,3)+BRoffset], 0.0, istau1, istau2bar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,2,3)+BRoffset], 0.0, istau2, istau1bar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,2,3)+BRoffset], 0.0, istau2, istau2bar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,3,1)+BRoffset], 0.0, isul, isulbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,3,1)+BRoffset], 0.0, isul, isurbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,3,1)+BRoffset], 0.0, isur, isulbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,3,1)+BRoffset], 0.0, isur, isurbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,3,2)+BRoffset], 0.0, iscl, isclbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,3,2)+BRoffset], 0.0, iscl, iscrbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,3,2)+BRoffset], 0.0, iscr, isclbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,3,2)+BRoffset], 0.0, iscr, iscrbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,3,3)+BRoffset], 0.0, ist1, ist1bar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,3,3)+BRoffset], 0.0, ist1, ist2bar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,3,3)+BRoffset], 0.0, ist2, ist1bar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,3,3)+BRoffset], 0.0, ist2, ist2bar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,3,1)+BRoffset], 0.0, isdl, isdlbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,3,1)+BRoffset], 0.0, isdl, isdrbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,3,1)+BRoffset], 0.0, isdr, isdlbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,3,1)+BRoffset], 0.0, isdr, isdrbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,3,2)+BRoffset], 0.0, issl, isslbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,3,2)+BRoffset], 0.0, issl, issrbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,3,2)+BRoffset], 0.0, issr, isslbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,3,2)+BRoffset], 0.0, issr, issrbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,3,3)+BRoffset], 0.0, isb1, isb1bar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,3,3)+BRoffset], 0.0, isb1, isb2bar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,3,3)+BRoffset], 0.0, isb2, isb1bar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,3,3)+BRoffset], 0.0, isb2, isb2bar);
+
+      cout << "h0_1 total width: " << result.width_in_GeV << endl;
     }
 
     /// MSSM decays: h0_2
@@ -373,7 +500,117 @@ namespace Gambit
       result.set_BF(BEreq::cb_wisfer_hdec->bhhslnl/3.0, 0.0, inel, inelbar);
       result.set_BF(BEreq::cb_wisfer_hdec->bhhslnl/3.0, 0.0, inmul, inmulbar);
       result.set_BF(BEreq::cb_wisfer_hdec->bhhslnl/3.0, 0.0, intau1, intau1bar);
+
       // cout << "h0_2 total width: " << result.width_in_GeV << endl;
+    }
+
+    /// FeynHiggs MSSM decays: h0_2
+    void FH_h0_2_decays (DecayTable::Entry& result) 
+    {
+      using namespace Pipes::FH_h0_2_decays;
+
+      // unpack FeynHiggs Couplings
+      fh_Couplings FH_input = *Dep::FH_Couplings;
+
+      int iH = 1; // h0_2
+
+      result.width_in_GeV = FH_input.gammas[iH];
+
+      // vector-boson pair decays
+      result.set_BF(FH_input.gammas[H0VV(iH,1)+BRoffset], 0.0, "gamma", "gamma");
+      result.set_BF(FH_input.gammas[H0VV(iH,2)+BRoffset], 0.0, "gamma", "Z0");
+      result.set_BF(FH_input.gammas[H0VV(iH,3)+BRoffset], 0.0, "Z0", "Z0");
+      result.set_BF(FH_input.gammas[H0VV(iH,4)+BRoffset], 0.0, "W+", "W-");
+      result.set_BF(FH_input.gammas[H0VV(iH,5)+BRoffset], 0.0, "g", "g");
+
+      // SM fermion decays
+      result.set_BF(FH_input.gammas[H0FF(iH,1,1,1)+BRoffset], 0.0, "nu_e", "nubar_e");
+      result.set_BF(FH_input.gammas[H0FF(iH,1,2,2)+BRoffset], 0.0, "nu_mu", "nubar_mu");
+      result.set_BF(FH_input.gammas[H0FF(iH,1,3,3)+BRoffset], 0.0, "nu_tau", "nubar_tau");
+      result.set_BF(FH_input.gammas[H0FF(iH,2,1,1)+BRoffset], 0.0, "e+", "e-");
+      result.set_BF(FH_input.gammas[H0FF(iH,2,2,2)+BRoffset], 0.0, "mu+", "mu-");
+      result.set_BF(FH_input.gammas[H0FF(iH,2,3,3)+BRoffset], 0.0, "tau+", "tau-");
+      result.set_BF(FH_input.gammas[H0FF(iH,3,1,1)+BRoffset], 0.0, "u", "ubar");
+      result.set_BF(FH_input.gammas[H0FF(iH,3,2,2)+BRoffset], 0.0, "c", "cbar");
+      result.set_BF(FH_input.gammas[H0FF(iH,3,3,3)+BRoffset], 0.0, "t", "tbar");
+      result.set_BF(FH_input.gammas[H0FF(iH,4,1,1)+BRoffset], 0.0, "d", "dbar");
+      result.set_BF(FH_input.gammas[H0FF(iH,4,2,2)+BRoffset], 0.0, "s", "sbar");
+      result.set_BF(FH_input.gammas[H0FF(iH,4,3,3)+BRoffset], 0.0, "b", "bbar");
+
+      // chargino decays
+      result.set_BF(FH_input.gammas[H0ChaCha(iH,1,1)+BRoffset], 0.0, "~chi-_1", "~chi+_1");
+      result.set_BF(FH_input.gammas[H0ChaCha(iH,1,2)+BRoffset], 0.0, "~chi-_1", "~chi+_2");
+      result.set_BF(FH_input.gammas[H0ChaCha(iH,2,1)+BRoffset], 0.0, "~chi-_2", "~chi+_1");
+      result.set_BF(FH_input.gammas[H0ChaCha(iH,2,2)+BRoffset], 0.0, "~chi-_2", "~chi+_2");
+
+      // neutralino decays
+      result.set_BF(FH_input.gammas[H0NeuNeu(iH,1,1)+BRoffset], 0.0, "~chi0_1", "~chi0_1");
+      result.set_BF(FH_input.gammas[H0NeuNeu(iH,2,2)+BRoffset], 0.0, "~chi0_2", "~chi0_2");
+      result.set_BF(FH_input.gammas[H0NeuNeu(iH,3,3)+BRoffset], 0.0, "~chi0_3", "~chi0_3");
+      result.set_BF(FH_input.gammas[H0NeuNeu(iH,4,4)+BRoffset], 0.0, "~chi0_4", "~chi0_4");
+      result.set_BF(FH_input.gammas[H0NeuNeu(iH,1,2)+BRoffset], 0.0, "~chi0_1", "~chi0_2");
+      result.set_BF(FH_input.gammas[H0NeuNeu(iH,1,3)+BRoffset], 0.0, "~chi0_1", "~chi0_3");
+      result.set_BF(FH_input.gammas[H0NeuNeu(iH,1,4)+BRoffset], 0.0, "~chi0_1", "~chi0_4");
+      result.set_BF(FH_input.gammas[H0NeuNeu(iH,2,3)+BRoffset], 0.0, "~chi0_2", "~chi0_3");
+      result.set_BF(FH_input.gammas[H0NeuNeu(iH,2,4)+BRoffset], 0.0, "~chi0_2", "~chi0_4");
+      result.set_BF(FH_input.gammas[H0NeuNeu(iH,3,4)+BRoffset], 0.0, "~chi0_3", "~chi0_4");
+
+      // higgs + Z0 decays
+      result.set_BF(FH_input.gammas[H0HV(iH,1)+BRoffset], 0.0, "h0_1", "Z0");
+      result.set_BF(FH_input.gammas[H0HV(iH,2)+BRoffset], 0.0, "h0_2", "Z0");
+      result.set_BF(FH_input.gammas[H0HV(iH,3)+BRoffset], 0.0, "A0", "Z0");
+
+      // higgs+higgs decays
+      result.set_BF(FH_input.gammas[H0HH(iH,1,1)+BRoffset], 0.0, "h0_1", "h0_1");
+      result.set_BF(FH_input.gammas[H0HH(iH,2,2)+BRoffset], 0.0, "h0_2", "h0_2");
+      result.set_BF(FH_input.gammas[H0HH(iH,3,3)+BRoffset], 0.0, "A0", "A0");
+      result.set_BF(FH_input.gammas[H0HH(iH,4,4)+BRoffset], 0.0, "H+", "H-");
+      result.set_BF(FH_input.gammas[H0HH(iH,1,2)+BRoffset], 0.0, "h0_1", "h0_2");
+      result.set_BF(FH_input.gammas[H0HH(iH,1,3)+BRoffset], 0.0, "h0_1", "A0");
+      result.set_BF(FH_input.gammas[H0HH(iH,2,3)+BRoffset], 0.0, "h0_2", "A0");
+
+      // sfermion decays
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,1,1)+BRoffset], 0.0, inel, inelbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,1,2)+BRoffset], 0.0, inmul, inmulbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,1,3)+BRoffset], 0.0, intau1, intau1bar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,2,1)+BRoffset], 0.0, isell, isellbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,2,1)+BRoffset], 0.0, isell, iselrbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,2,1)+BRoffset], 0.0, iselr, isellbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,2,1)+BRoffset], 0.0, iselr, iselrbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,2,2)+BRoffset], 0.0, ismul, ismulbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,2,2)+BRoffset], 0.0, ismul, ismurbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,2,2)+BRoffset], 0.0, ismur, ismulbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,2,2)+BRoffset], 0.0, ismur, ismurbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,2,3)+BRoffset], 0.0, istau1, istau1bar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,2,3)+BRoffset], 0.0, istau1, istau2bar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,2,3)+BRoffset], 0.0, istau2, istau1bar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,2,3)+BRoffset], 0.0, istau2, istau2bar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,3,1)+BRoffset], 0.0, isul, isulbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,3,1)+BRoffset], 0.0, isul, isurbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,3,1)+BRoffset], 0.0, isur, isulbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,3,1)+BRoffset], 0.0, isur, isurbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,3,2)+BRoffset], 0.0, iscl, isclbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,3,2)+BRoffset], 0.0, iscl, iscrbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,3,2)+BRoffset], 0.0, iscr, isclbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,3,2)+BRoffset], 0.0, iscr, iscrbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,3,3)+BRoffset], 0.0, ist1, ist1bar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,3,3)+BRoffset], 0.0, ist1, ist2bar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,3,3)+BRoffset], 0.0, ist2, ist1bar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,3,3)+BRoffset], 0.0, ist2, ist2bar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,3,1)+BRoffset], 0.0, isdl, isdlbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,3,1)+BRoffset], 0.0, isdl, isdrbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,3,1)+BRoffset], 0.0, isdr, isdlbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,3,1)+BRoffset], 0.0, isdr, isdrbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,3,2)+BRoffset], 0.0, issl, isslbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,3,2)+BRoffset], 0.0, issl, issrbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,3,2)+BRoffset], 0.0, issr, isslbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,3,2)+BRoffset], 0.0, issr, issrbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,3,3)+BRoffset], 0.0, isb1, isb1bar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,3,3)+BRoffset], 0.0, isb1, isb2bar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,3,3)+BRoffset], 0.0, isb2, isb1bar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,3,3)+BRoffset], 0.0, isb2, isb2bar);
+
+      cout << "h0_2 total width: " << result.width_in_GeV << endl;
     }
 
     /// MSSM decays: A0
@@ -391,6 +628,13 @@ namespace Gambit
       result.set_BF(BEreq::cb_widtha_hdec->abrga, 0.0, "gamma", "gamma");
       result.set_BF(BEreq::cb_widtha_hdec->abrzga, 0.0, "Z0", "gamma");
       result.set_BF(BEreq::cb_widtha_hdec->abrz, 0.0, "Z0", "h0_1");
+      result.set_BF(0.0, 0.0, "Z0", "Z0");
+      result.set_BF(0.0, 0.0, "W+", "W-");
+      result.set_BF(0.0, 0.0, "h0_1", "h0_1");
+      result.set_BF(0.0, 0.0, "h0_2", "h0_2");
+      result.set_BF(0.0, 0.0, "~nu_1", "~nubar_1");
+      result.set_BF(0.0, 0.0, "~nu_2", "~nubar_2");
+      result.set_BF(0.0, 0.0, "~nu_3", "~nubar_3");
       result.set_BF(BEreq::cb_wisusy_hdec->habrsc(1,1), 0.0, "~chi+_1", "~chi-_1");
       result.set_BF(BEreq::cb_wisusy_hdec->habrsc(2,2), 0.0, "~chi+_2", "~chi-_2");
       result.set_BF(BEreq::cb_wisusy_hdec->habrsc(1,2), 0.0, "~chi+_1", "~chi-_2");
@@ -412,6 +656,115 @@ namespace Gambit
       result.set_BF(BEreq::cb_wisusy_hdec->habrsl/2.0, 0.0, istau1, istau2bar);
       result.set_BF(BEreq::cb_wisusy_hdec->habrsl/2.0, 0.0, istau1bar, istau2);
       // cout << "A0 total width: " << result.width_in_GeV << endl;
+    }
+
+    /// FeynHiggs MSSM decays: A0
+    void FH_A0_decays (DecayTable::Entry& result) 
+    {
+      using namespace Pipes::FH_A0_decays;
+
+      // unpack FeynHiggs Couplings
+      fh_Couplings FH_input = *Dep::FH_Couplings;
+
+      int iH = 2; // A0
+
+      result.width_in_GeV = FH_input.gammas[iH];
+
+      // vector-boson pair decays
+      result.set_BF(FH_input.gammas[H0VV(iH,1)+BRoffset], 0.0, "gamma", "gamma");
+      result.set_BF(FH_input.gammas[H0VV(iH,2)+BRoffset], 0.0, "gamma", "Z0");
+      result.set_BF(FH_input.gammas[H0VV(iH,3)+BRoffset], 0.0, "Z0", "Z0");
+      result.set_BF(FH_input.gammas[H0VV(iH,4)+BRoffset], 0.0, "W+", "W-");
+      result.set_BF(FH_input.gammas[H0VV(iH,5)+BRoffset], 0.0, "g", "g");
+
+      // SM fermion decays
+      result.set_BF(FH_input.gammas[H0FF(iH,1,1,1)+BRoffset], 0.0, "nu_e", "nubar_e");
+      result.set_BF(FH_input.gammas[H0FF(iH,1,2,2)+BRoffset], 0.0, "nu_mu", "nubar_mu");
+      result.set_BF(FH_input.gammas[H0FF(iH,1,3,3)+BRoffset], 0.0, "nu_tau", "nubar_tau");
+      result.set_BF(FH_input.gammas[H0FF(iH,2,1,1)+BRoffset], 0.0, "e+", "e-");
+      result.set_BF(FH_input.gammas[H0FF(iH,2,2,2)+BRoffset], 0.0, "mu+", "mu-");
+      result.set_BF(FH_input.gammas[H0FF(iH,2,3,3)+BRoffset], 0.0, "tau+", "tau-");
+      result.set_BF(FH_input.gammas[H0FF(iH,3,1,1)+BRoffset], 0.0, "u", "ubar");
+      result.set_BF(FH_input.gammas[H0FF(iH,3,2,2)+BRoffset], 0.0, "c", "cbar");
+      result.set_BF(FH_input.gammas[H0FF(iH,3,3,3)+BRoffset], 0.0, "t", "tbar");
+      result.set_BF(FH_input.gammas[H0FF(iH,4,1,1)+BRoffset], 0.0, "d", "dbar");
+      result.set_BF(FH_input.gammas[H0FF(iH,4,2,2)+BRoffset], 0.0, "s", "sbar");
+      result.set_BF(FH_input.gammas[H0FF(iH,4,3,3)+BRoffset], 0.0, "b", "bbar");
+
+      // chargino decays
+      result.set_BF(FH_input.gammas[H0ChaCha(iH,1,1)+BRoffset], 0.0, "~chi-_1", "~chi+_1");
+      result.set_BF(FH_input.gammas[H0ChaCha(iH,1,2)+BRoffset], 0.0, "~chi-_1", "~chi+_2");
+      result.set_BF(FH_input.gammas[H0ChaCha(iH,2,1)+BRoffset], 0.0, "~chi-_2", "~chi+_1");
+      result.set_BF(FH_input.gammas[H0ChaCha(iH,2,2)+BRoffset], 0.0, "~chi-_2", "~chi+_2");
+
+      // neutralino decays
+      result.set_BF(FH_input.gammas[H0NeuNeu(iH,1,1)+BRoffset], 0.0, "~chi0_1", "~chi0_1");
+      result.set_BF(FH_input.gammas[H0NeuNeu(iH,2,2)+BRoffset], 0.0, "~chi0_2", "~chi0_2");
+      result.set_BF(FH_input.gammas[H0NeuNeu(iH,3,3)+BRoffset], 0.0, "~chi0_3", "~chi0_3");
+      result.set_BF(FH_input.gammas[H0NeuNeu(iH,4,4)+BRoffset], 0.0, "~chi0_4", "~chi0_4");
+      result.set_BF(FH_input.gammas[H0NeuNeu(iH,1,2)+BRoffset], 0.0, "~chi0_1", "~chi0_2");
+      result.set_BF(FH_input.gammas[H0NeuNeu(iH,1,3)+BRoffset], 0.0, "~chi0_1", "~chi0_3");
+      result.set_BF(FH_input.gammas[H0NeuNeu(iH,1,4)+BRoffset], 0.0, "~chi0_1", "~chi0_4");
+      result.set_BF(FH_input.gammas[H0NeuNeu(iH,2,3)+BRoffset], 0.0, "~chi0_2", "~chi0_3");
+      result.set_BF(FH_input.gammas[H0NeuNeu(iH,2,4)+BRoffset], 0.0, "~chi0_2", "~chi0_4");
+      result.set_BF(FH_input.gammas[H0NeuNeu(iH,3,4)+BRoffset], 0.0, "~chi0_3", "~chi0_4");
+
+      // higgs + Z0 decays
+      result.set_BF(FH_input.gammas[H0HV(iH,1)+BRoffset], 0.0, "h0_1", "Z0");
+      result.set_BF(FH_input.gammas[H0HV(iH,2)+BRoffset], 0.0, "h0_2", "Z0");
+      result.set_BF(FH_input.gammas[H0HV(iH,3)+BRoffset], 0.0, "A0", "Z0");
+
+      // higgs+higgs decays
+      result.set_BF(FH_input.gammas[H0HH(iH,1,1)+BRoffset], 0.0, "h0_1", "h0_1");
+      result.set_BF(FH_input.gammas[H0HH(iH,2,2)+BRoffset], 0.0, "h0_2", "h0_2");
+      result.set_BF(FH_input.gammas[H0HH(iH,3,3)+BRoffset], 0.0, "A0", "A0");
+      result.set_BF(FH_input.gammas[H0HH(iH,4,4)+BRoffset], 0.0, "H+", "H-");
+      result.set_BF(FH_input.gammas[H0HH(iH,1,2)+BRoffset], 0.0, "h0_1", "h0_2");
+      result.set_BF(FH_input.gammas[H0HH(iH,1,3)+BRoffset], 0.0, "h0_1", "A0");
+      result.set_BF(FH_input.gammas[H0HH(iH,2,3)+BRoffset], 0.0, "h0_2", "A0");
+
+      // sfermion decays
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,1,1)+BRoffset], 0.0, inel, inelbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,1,2)+BRoffset], 0.0, inmul, inmulbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,1,3)+BRoffset], 0.0, intau1, intau1bar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,2,1)+BRoffset], 0.0, isell, isellbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,2,1)+BRoffset], 0.0, isell, iselrbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,2,1)+BRoffset], 0.0, iselr, isellbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,2,1)+BRoffset], 0.0, iselr, iselrbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,2,2)+BRoffset], 0.0, ismul, ismulbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,2,2)+BRoffset], 0.0, ismul, ismurbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,2,2)+BRoffset], 0.0, ismur, ismulbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,2,2)+BRoffset], 0.0, ismur, ismurbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,2,3)+BRoffset], 0.0, istau1, istau1bar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,2,3)+BRoffset], 0.0, istau1, istau2bar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,2,3)+BRoffset], 0.0, istau2, istau1bar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,2,3)+BRoffset], 0.0, istau2, istau2bar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,3,1)+BRoffset], 0.0, isul, isulbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,3,1)+BRoffset], 0.0, isul, isurbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,3,1)+BRoffset], 0.0, isur, isulbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,3,1)+BRoffset], 0.0, isur, isurbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,3,2)+BRoffset], 0.0, iscl, isclbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,3,2)+BRoffset], 0.0, iscl, iscrbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,3,2)+BRoffset], 0.0, iscr, isclbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,3,2)+BRoffset], 0.0, iscr, iscrbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,3,3)+BRoffset], 0.0, ist1, ist1bar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,3,3)+BRoffset], 0.0, ist1, ist2bar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,3,3)+BRoffset], 0.0, ist2, ist1bar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,3,3)+BRoffset], 0.0, ist2, ist2bar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,3,1)+BRoffset], 0.0, isdl, isdlbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,3,1)+BRoffset], 0.0, isdl, isdrbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,3,1)+BRoffset], 0.0, isdr, isdlbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,3,1)+BRoffset], 0.0, isdr, isdrbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,3,2)+BRoffset], 0.0, issl, isslbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,3,2)+BRoffset], 0.0, issl, issrbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,3,2)+BRoffset], 0.0, issr, isslbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,3,2)+BRoffset], 0.0, issr, issrbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,3,3)+BRoffset], 0.0, isb1, isb1bar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,3,3)+BRoffset], 0.0, isb1, isb2bar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,3,3)+BRoffset], 0.0, isb2, isb1bar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,3,3)+BRoffset], 0.0, isb2, isb2bar);
+
+      cout << "A0 total width: " << result.width_in_GeV << endl;
     }
 
     /// MSSM decays: Hplus
@@ -449,6 +802,92 @@ namespace Gambit
       // cout << "Hplus total width: " << result.width_in_GeV << endl;
     }
 
+    /// FeynHiggs MSSM decays: H+
+    void FH_Hplus_decays (DecayTable::Entry& result) 
+    {
+      using namespace Pipes::FH_Hplus_decays;
+
+      // unpack FeynHiggs Couplings
+      fh_Couplings FH_input = *Dep::FH_Couplings;
+
+      result.width_in_GeV = FH_input.gammas[3];
+
+      int offset = BRoffset-1;
+
+      // SM fermion decays
+      result.set_BF(FH_input.gammas[HpFF(1,1,1)+offset], 0.0, "e+", "nu_e");
+      result.set_BF(FH_input.gammas[HpFF(1,2,2)+offset], 0.0, "mu+", "nu_mu");
+      result.set_BF(FH_input.gammas[HpFF(1,2,2)+offset], 0.0, "tau+", "nu_tau");
+      result.set_BF(FH_input.gammas[HpFF(2,1,1)+offset], 0.0, "u", "dbar");
+      result.set_BF(FH_input.gammas[HpFF(2,1,2)+offset], 0.0, "u", "sbar");
+      result.set_BF(FH_input.gammas[HpFF(2,1,3)+offset], 0.0, "u", "bbar");
+      result.set_BF(FH_input.gammas[HpFF(2,2,1)+offset], 0.0, "c", "dbar");
+      result.set_BF(FH_input.gammas[HpFF(2,2,2)+offset], 0.0, "c", "sbar");
+      result.set_BF(FH_input.gammas[HpFF(2,2,3)+offset], 0.0, "c", "bbar");
+      result.set_BF(FH_input.gammas[HpFF(2,3,1)+offset], 0.0, "t", "dbar");
+      result.set_BF(FH_input.gammas[HpFF(2,3,2)+offset], 0.0, "t", "sbar");
+      result.set_BF(FH_input.gammas[HpFF(2,3,3)+offset], 0.0, "t", "bbar");
+
+      // neutralino+chargino decays
+      result.set_BF(FH_input.gammas[HpNeuCha(1,1)+offset], 0.0, "~chi0_1", "~chi+_1");
+      result.set_BF(FH_input.gammas[HpNeuCha(1,2)+offset], 0.0, "~chi0_1", "~chi+_2");
+      result.set_BF(FH_input.gammas[HpNeuCha(2,1)+offset], 0.0, "~chi0_2", "~chi+_1");
+      result.set_BF(FH_input.gammas[HpNeuCha(2,2)+offset], 0.0, "~chi0_2", "~chi+_2");
+      result.set_BF(FH_input.gammas[HpNeuCha(3,1)+offset], 0.0, "~chi0_3", "~chi+_1");
+      result.set_BF(FH_input.gammas[HpNeuCha(3,2)+offset], 0.0, "~chi0_3", "~chi+_2");
+      result.set_BF(FH_input.gammas[HpNeuCha(4,1)+offset], 0.0, "~chi0_4", "~chi+_1");
+      result.set_BF(FH_input.gammas[HpNeuCha(4,2)+offset], 0.0, "~chi0_4", "~chi+_2");
+
+      // higgs + W decays
+      result.set_BF(FH_input.gammas[HpHV(1)+offset], 0.0, "W+", "h0_1");
+      result.set_BF(FH_input.gammas[HpHV(2)+offset], 0.0, "W+", "h0_2");
+      result.set_BF(FH_input.gammas[HpHV(3)+offset], 0.0, "W+", "A0");
+
+      // sfermion decays
+      result.set_BF(FH_input.gammas[HpSfSf(1,1,1,1,1)+offset], 0.0, isellbar, inel);
+      result.set_BF(FH_input.gammas[HpSfSf(1,1,1,2,2)+offset], 0.0, ismulbar, inmul);
+      result.set_BF(FH_input.gammas[HpSfSf(1,1,1,3,3)+offset], 0.0, istau1bar, intau1);
+      result.set_BF(FH_input.gammas[HpSfSf(2,1,1,3,3)+offset], 0.0, istau2bar, intau1);
+      result.set_BF(FH_input.gammas[HpSfSf(1,1,2,1,1)+offset], 0.0, isul, isdlbar);
+      result.set_BF(FH_input.gammas[HpSfSf(1,2,2,1,1)+offset], 0.0, isul, isdrbar);
+      result.set_BF(FH_input.gammas[HpSfSf(2,1,2,1,1)+offset], 0.0, isur, isdlbar);
+      result.set_BF(FH_input.gammas[HpSfSf(2,2,2,1,1)+offset], 0.0, isur, isdrbar);
+      result.set_BF(FH_input.gammas[HpSfSf(1,1,2,1,2)+offset], 0.0, isul, isslbar);
+      result.set_BF(FH_input.gammas[HpSfSf(1,2,2,1,2)+offset], 0.0, isul, issrbar);
+      result.set_BF(FH_input.gammas[HpSfSf(2,1,2,1,2)+offset], 0.0, isur, isslbar);
+      result.set_BF(FH_input.gammas[HpSfSf(2,2,2,1,2)+offset], 0.0, isur, issrbar);
+      result.set_BF(FH_input.gammas[HpSfSf(1,1,2,1,3)+offset], 0.0, isul, isb1bar);
+      result.set_BF(FH_input.gammas[HpSfSf(1,2,2,1,3)+offset], 0.0, isul, isb2bar);
+      result.set_BF(FH_input.gammas[HpSfSf(2,1,2,1,3)+offset], 0.0, isur, isb1bar);
+      result.set_BF(FH_input.gammas[HpSfSf(2,2,2,1,3)+offset], 0.0, isur, isb2bar);
+      result.set_BF(FH_input.gammas[HpSfSf(1,1,2,2,1)+offset], 0.0, iscl, isdlbar);
+      result.set_BF(FH_input.gammas[HpSfSf(1,2,2,2,1)+offset], 0.0, iscl, isdrbar);
+      result.set_BF(FH_input.gammas[HpSfSf(2,1,2,2,1)+offset], 0.0, iscr, isdlbar);
+      result.set_BF(FH_input.gammas[HpSfSf(2,2,2,2,1)+offset], 0.0, iscr, isdrbar);
+      result.set_BF(FH_input.gammas[HpSfSf(1,1,2,2,2)+offset], 0.0, iscl, isslbar);
+      result.set_BF(FH_input.gammas[HpSfSf(1,2,2,2,2)+offset], 0.0, iscl, issrbar);
+      result.set_BF(FH_input.gammas[HpSfSf(2,1,2,2,2)+offset], 0.0, iscr, isslbar);
+      result.set_BF(FH_input.gammas[HpSfSf(2,2,2,2,2)+offset], 0.0, iscr, issrbar);
+      result.set_BF(FH_input.gammas[HpSfSf(1,1,2,2,3)+offset], 0.0, iscl, isb1bar);
+      result.set_BF(FH_input.gammas[HpSfSf(1,2,2,2,3)+offset], 0.0, iscl, isb2bar);
+      result.set_BF(FH_input.gammas[HpSfSf(2,1,2,2,3)+offset], 0.0, iscr, isb1bar);
+      result.set_BF(FH_input.gammas[HpSfSf(2,2,2,2,3)+offset], 0.0, iscr, isb2bar);
+      result.set_BF(FH_input.gammas[HpSfSf(1,1,2,3,1)+offset], 0.0, ist1, isdlbar);
+      result.set_BF(FH_input.gammas[HpSfSf(1,2,2,3,1)+offset], 0.0, ist1, isdrbar);
+      result.set_BF(FH_input.gammas[HpSfSf(2,1,2,3,1)+offset], 0.0, ist2, isdlbar);
+      result.set_BF(FH_input.gammas[HpSfSf(2,2,2,3,1)+offset], 0.0, ist2, isdrbar);
+      result.set_BF(FH_input.gammas[HpSfSf(1,1,2,3,2)+offset], 0.0, ist1, isslbar);
+      result.set_BF(FH_input.gammas[HpSfSf(1,2,2,3,2)+offset], 0.0, ist1, issrbar);
+      result.set_BF(FH_input.gammas[HpSfSf(2,1,2,3,2)+offset], 0.0, ist2, isslbar);
+      result.set_BF(FH_input.gammas[HpSfSf(2,2,2,3,2)+offset], 0.0, ist2, issrbar);
+      result.set_BF(FH_input.gammas[HpSfSf(1,1,2,3,3)+offset], 0.0, ist1, isb1bar);
+      result.set_BF(FH_input.gammas[HpSfSf(1,2,2,3,3)+offset], 0.0, ist1, isb2bar);
+      result.set_BF(FH_input.gammas[HpSfSf(2,1,2,3,3)+offset], 0.0, ist2, isb1bar);
+      result.set_BF(FH_input.gammas[HpSfSf(2,2,2,3,3)+offset], 0.0, ist2, isb2bar);
+
+      cout << "H+ total width: " << result.width_in_GeV << endl;
+    }
+
     /// MSSM decays: Hminus
     void Hminus_decays (DecayTable::Entry& result) 
     {
@@ -456,6 +895,7 @@ namespace Gambit
     }
 
     /// MSSM decays: gluino
+
     void gluino_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::gluino_decays;
@@ -1823,8 +2263,8 @@ namespace Gambit
       decays("W+") = *Dep::W_plus_decay_rates;      // Add the W decays for W+.
       decays("W-") = *Dep::W_minus_decay_rates;     // Add the W decays for W-
 
-      decays("t") = *Dep::mu_plus_decay_rates;      // Add the top decays for t.
-      decays("tbar") = *Dep::mu_minus_decay_rates;  // Add the top decays for tbar
+      decays("t") = *Dep::t_decay_rates;      // Add the top decays for t.
+      decays("tbar") = *Dep::tbar_decay_rates;  // Add the top decays for tbar
       decays("u_3") = decays("t");                  // Duplicate for mass-ordered quarks
       decays("ubar_3") = decays("tbar");            // Duplicate for mass-ordered quarks
 
@@ -1909,9 +2349,8 @@ namespace Gambit
         decays(inelbar)= *Dep::snubar_electronl_decay_rates;// Add the ~nu_e decays.
         decays(inmulbar) = *Dep::snubar_muonl_decay_rates;  // Add the ~nu_mu decays.
         decays(intau1bar) = *Dep::snubar_taul_decay_rates;  // Add the ~nu_tau decays.
-
       }
-
+      result = decays;
     }
 
     /// @}
