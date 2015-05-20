@@ -15,6 +15,7 @@
 ///
 ///  *********************************************
 
+<<<<<<< HEAD
 #ifndef BACKEND_SPECIFIC_COMPILE_UNIT
   #undef BACKENDNAME
   #undef VERSION
