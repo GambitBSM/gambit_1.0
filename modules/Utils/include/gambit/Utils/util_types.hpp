@@ -303,7 +303,7 @@ namespace Gambit
       Fstring(const Fstring<ilen> &in){*this = in;}       
       Fstring& operator= (const std::string &in)
       {
-        for(int i=0; i<len; i++)
+        for(unsigned int i=0; i<len; i++)
         {
           Farray<char,1,len>::array[i] = (i<in.length()) ? in[i] : ' ';
         }
@@ -311,9 +311,9 @@ namespace Gambit
       }
       Fstring& operator= (const char* in)
       {
-        for(int i=0; i<len; i++)
+        for(unsigned int i=0; i<len; i++)
         {
-          Farray<char,1,len>::array[i] = (i<int(std::strlen(in))) ? in[i] : ' ';
+          Farray<char,1,len>::array[i] = (i<std::strlen(in)) ? in[i] : ' ';
         }
         return *this;
       }        

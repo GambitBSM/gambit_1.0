@@ -220,7 +220,7 @@ BE_INI_FUNCTION
     err = sortOddParticles(byVal(cdmName));
     std::cout << "MicrOmegas sortOddParticles error code: " << err << std::endl;
 }
-DONE
+END_BE_INI_FUNCTION
 
 #include "gambit/Backends/backend_undefs.hpp"
 

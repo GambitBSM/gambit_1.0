@@ -7,6 +7,12 @@
 #include <string>
 #include <vector>
 #include <ostream>
+#include <cstddef>
+
+#ifndef ENUMS_DECLARED
+#define ENUMS_DECLARED
+#include "enum_decl_copies.h"
+#endif
 
 #include "identification.hpp"
 
@@ -23,40 +29,40 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         class Abstract_Hist : virtual public AbstractBase
         {
             private:
-                // IGNORED: Variable  -- Name: NBINMAX  -- XML id: _23078
-                // IGNORED: Variable  -- Name: NCOLMAX  -- XML id: _23079
-                // IGNORED: Variable  -- Name: NLINES  -- XML id: _23080
-                // IGNORED: Variable  -- Name: TOLERANCE  -- XML id: _23081
-                // IGNORED: Variable  -- Name: TINY  -- XML id: _23082
-                // IGNORED: Variable  -- Name: LARGE  -- XML id: _23083
-                // IGNORED: Variable  -- Name: SMALLFRAC  -- XML id: _23084
-                // IGNORED: Variable  -- Name: DYAC  -- XML id: _23085
-                // IGNORED: Variable  -- Name: NUMBER  -- XML id: _23086
-                // IGNORED: Field  -- Name: title  -- XML id: _23087
-                // IGNORED: Field  -- Name: nBin  -- XML id: _23088
-                // IGNORED: Field  -- Name: nFill  -- XML id: _23089
-                // IGNORED: Field  -- Name: xMin  -- XML id: _23090
-                // IGNORED: Field  -- Name: xMax  -- XML id: _23091
-                // IGNORED: Field  -- Name: dx  -- XML id: _23092
-                // IGNORED: Field  -- Name: under  -- XML id: _23093
-                // IGNORED: Field  -- Name: inside  -- XML id: _23094
-                // IGNORED: Field  -- Name: over  -- XML id: _23095
-                // IGNORED: Field  -- Name: res  -- XML id: _23096
+                // IGNORED: Variable  -- Name: NBINMAX  -- XML id: _23077
+                // IGNORED: Variable  -- Name: NCOLMAX  -- XML id: _23078
+                // IGNORED: Variable  -- Name: NLINES  -- XML id: _23079
+                // IGNORED: Variable  -- Name: TOLERANCE  -- XML id: _23080
+                // IGNORED: Variable  -- Name: TINY  -- XML id: _23081
+                // IGNORED: Variable  -- Name: LARGE  -- XML id: _23082
+                // IGNORED: Variable  -- Name: SMALLFRAC  -- XML id: _23083
+                // IGNORED: Variable  -- Name: DYAC  -- XML id: _23084
+                // IGNORED: Variable  -- Name: NUMBER  -- XML id: _23085
+                // IGNORED: Field  -- Name: title  -- XML id: _23086
+                // IGNORED: Field  -- Name: nBin  -- XML id: _23087
+                // IGNORED: Field  -- Name: nFill  -- XML id: _23088
+                // IGNORED: Field  -- Name: xMin  -- XML id: _23089
+                // IGNORED: Field  -- Name: xMax  -- XML id: _23090
+                // IGNORED: Field  -- Name: dx  -- XML id: _23091
+                // IGNORED: Field  -- Name: under  -- XML id: _23092
+                // IGNORED: Field  -- Name: inside  -- XML id: _23093
+                // IGNORED: Field  -- Name: over  -- XML id: _23094
+                // IGNORED: Field  -- Name: res  -- XML id: _23095
             public:
     
                 virtual Pythia8::Abstract_Hist* operator_equal__BOSS(const Pythia8::Abstract_Hist&) =0;
     
-                virtual void book(std::string, int, double, double) =0;
+                virtual void book(std::basic_string<char,std::char_traits<char>,std::allocator<char> >, int, double, double) =0;
     
-                virtual void book__BOSS(std::string, int, double) =0;
+                virtual void book__BOSS(std::basic_string<char,std::char_traits<char>,std::allocator<char> >, int, double) =0;
     
-                virtual void book__BOSS(std::string, int) =0;
+                virtual void book__BOSS(std::basic_string<char,std::char_traits<char>,std::allocator<char> >, int) =0;
     
-                virtual void book__BOSS(std::string) =0;
+                virtual void book__BOSS(std::basic_string<char,std::char_traits<char>,std::allocator<char> >) =0;
     
                 virtual void book__BOSS() =0;
     
-                virtual void name(std::string) =0;
+                virtual void name(std::basic_string<char,std::char_traits<char>,std::allocator<char> >) =0;
     
                 virtual void name__BOSS() =0;
     
@@ -66,19 +72,19 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual void fill__BOSS(double) =0;
     
-                virtual void table(std::ostream&, bool, bool) const =0;
+                virtual void table(std::basic_ostream<char,std::char_traits<char> >&, bool, bool) const =0;
     
-                virtual void table__BOSS(std::ostream&, bool) const =0;
+                virtual void table__BOSS(std::basic_ostream<char,std::char_traits<char> >&, bool) const =0;
     
-                virtual void table__BOSS(std::ostream&) const =0;
+                virtual void table__BOSS(std::basic_ostream<char,std::char_traits<char> >&) const =0;
     
                 virtual void table__BOSS() const =0;
     
-                virtual void table(std::string, bool, bool) const =0;
+                virtual void table(std::basic_string<char,std::char_traits<char>,std::allocator<char> >, bool, bool) const =0;
     
-                virtual void table__BOSS(std::string, bool) const =0;
+                virtual void table__BOSS(std::basic_string<char,std::char_traits<char>,std::allocator<char> >, bool) const =0;
     
-                virtual void table__BOSS(std::string) const =0;
+                virtual void table__BOSS(std::basic_string<char,std::char_traits<char>,std::allocator<char> >) const =0;
     
                 virtual double getBinContent(int) const =0;
     
@@ -113,13 +119,18 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 virtual Abstract_Hist* pointerCopy__BOSS() =0;
     
             private:
-                Hist* wptr;
+                mutable Hist* wptr;
     
             public:
+                Abstract_Hist()
+                {
+                }
+    
                 void wrapper__BOSS(Hist* wptr_in)
                 {
                     wptr = wptr_in;
                     is_wrapped(true);
+                    can_delete_wrapper(true);
                 }
     
                 Hist* wrapper__BOSS()

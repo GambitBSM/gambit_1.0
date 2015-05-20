@@ -6,6 +6,7 @@
 #include "gambit/Backends/wrapperbase.hpp"
 #include "abstract_Particle.h"
 #include "wrapper_Vec4_decl.h"
+#include "wrapper_ParticleDataEntry_decl.h"
 #include <vector>
 #include <string>
 
@@ -20,7 +21,10 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         class Particle : public WrapperBase<Pythia8::Abstract_Particle>
         {
             public:
+                typedef WrapperBase<Pythia8::Abstract_Particle> wrapperbase;
+        
                 // Member variables: 
+            public:
                 // -- Static factory pointers: 
                 static Pythia8::Abstract_Particle* (*__factory0)();
                 static Pythia8::Abstract_Particle* (*__factory1)(int, int, int, int, int, int, int, int, double, double, double, double, double, double, double);
@@ -42,12 +46,16 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 static Pythia8::Abstract_Particle* (*__factory17)(int, int, int, int, int, int, int, int, Pythia8::Vec4, double, double);
                 static Pythia8::Abstract_Particle* (*__factory18)(int, int, int, int, int, int, int, int, Pythia8::Vec4, double);
                 static Pythia8::Abstract_Particle* (*__factory19)(int, int, int, int, int, int, int, int, Pythia8::Vec4);
+        
                 // -- Other member variables: 
         
                 // Member functions: 
+            public:
                 void setEvtPtr(WrapperBase< Pythia8::Abstract_Event >* evtPtrIn);
         
-                Pythia8::Event* getEvtPtr();
+                void setPDEPtr(WrapperBase< Pythia8::Abstract_ParticleDataEntry >* pdePtrIn);
+        
+                void setPDEPtr();
         
                 void id(int idIn);
         
@@ -235,23 +243,23 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 int iBotCopyId() const;
         
-                std::vector<int, std::allocator<int> > motherList() const;
+                std::vector<int,std::allocator<int> > motherList() const;
         
-                std::vector<int, std::allocator<int> > daughterList() const;
+                std::vector<int,std::allocator<int> > daughterList() const;
         
-                std::vector<int, std::allocator<int> > sisterList(bool traceTopBot) const;
+                std::vector<int,std::allocator<int> > sisterList(bool traceTopBot) const;
         
-                std::vector<int, std::allocator<int> > sisterList() const;
+                std::vector<int,std::allocator<int> > sisterList() const;
         
                 bool isAncestor(int iAncestor) const;
         
                 bool undoDecay();
         
-                std::string name() const;
+                std::basic_string<char,std::char_traits<char>,std::allocator<char> > name() const;
         
-                std::string nameWithStatus(int maxLen) const;
+                std::basic_string<char,std::char_traits<char>,std::allocator<char> > nameWithStatus(int maxLen) const;
         
-                std::string nameWithStatus() const;
+                std::basic_string<char,std::char_traits<char>,std::allocator<char> > nameWithStatus() const;
         
                 int spinType() const;
         
@@ -301,6 +309,8 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 bool isHadron() const;
         
+                Pythia8::ParticleDataEntry& particleDataEntry() const;
+        
                 void rescale3(double fac);
         
                 void rescale4(double fac);
@@ -327,6 +337,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         
                 // Wrappers for original constructors: 
+            public:
                 Particle();
                 Particle(int idIn, int statusIn, int mother1In, int mother2In, int daughter1In, int daughter2In, int colIn, int acolIn, double pxIn, double pyIn, double pzIn, double eIn, double mIn, double scaleIn, double polIn);
                 Particle(int idIn, int statusIn, int mother1In, int mother2In, int daughter1In, int daughter2In, int colIn, int acolIn, double pxIn, double pyIn, double pzIn, double eIn, double mIn, double scaleIn);
@@ -349,13 +360,17 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 Particle(int idIn, int statusIn, int mother1In, int mother2In, int daughter1In, int daughter2In, int colIn, int acolIn, Pythia8::Vec4 pIn);
         
                 // Special pointer-based constructor: 
-                Particle(Pythia8::Abstract_Particle* in, bool memvar_in=false);
+                Particle(Pythia8::Abstract_Particle* in);
+                Particle(Pythia8::Abstract_Particle* const & in, bool);
         
                 // Copy constructor: 
                 Particle(const Particle& in);
         
                 // Assignment operator: 
                 Particle& operator=(const Particle& in);
+        
+                // Destructor: 
+                ~Particle();
         
         };
     }
