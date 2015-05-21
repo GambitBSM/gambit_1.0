@@ -53,6 +53,7 @@ namespace Gambit
         std::string backend;
         std::string version;
         bool printme; // Instruction to printer as to whether to write result to disk
+        bool weakrule;  // Indicates that rule can be broken
         Options options;
         std::vector<Observable> dependencies;
         std::vector<Observable> backends;
@@ -129,7 +130,13 @@ namespace YAML
       READ(backend)
       READ(version)
 
-      // Strip leading "Gambit::" namespaces and whitespace, but preserve "const ".
+      if (node.Tag() == "!weak" or node.Tag() == "!weakrule") 
+        rhs.weakrule = true;
+      else 
+        rhs.weakrule = false;
+
+      // Strip leading "Gambit::" namespaces and whitespace, but preserve
+      // "const ".
       rhs.type = Gambit::Utils::fix_type(rhs.type);
       
       if (node["printme"].IsDefined())

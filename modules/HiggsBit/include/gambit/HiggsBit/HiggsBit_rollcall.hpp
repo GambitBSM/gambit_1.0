@@ -31,14 +31,21 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION HB_LEPchisq
     START_FUNCTION(double)
-       BACKEND_REQ(initialize_HiggsBounds_chisqtables, (libhiggsbounds), void, ())
-       BACKEND_REQ(initialize_HiggsBounds_int, (libhiggsbounds), void, (int&, int&, int&))
-       BACKEND_REQ(HiggsBounds_input_SLHA, (libhiggsbounds), void, (const char&))
+    DEPENDENCY(HB_ModelParameters, hb_ModelParameters)
+       BACKEND_REQ(HiggsBounds_neutral_input_part, (libhiggsbounds), void, 
+		   (double*, double*, int*, double*, double*, double*, Farray<double, 1,3, 1,3>&,
+		    double*, double*, double*, double*, double*, double*, double*,
+		    double*, double*, double*, double*, double*, double*, double*,
+		    double*, double*, double*, double*, double*, double*, double*,
+		    double*, double*, double*, double*, double*, double*, double*,
+		    double*, double*, Farray<double, 1,3, 1,3>&))
+       BACKEND_REQ(HiggsBounds_charged_input, (libhiggsbounds), void,
+		   (double*, double*, double*, double*,
+		    double*, double*, double*, double*))
        BACKEND_REQ(HiggsBounds_set_mass_uncertainties, (libhiggsbounds), void, (double*, double*))
        BACKEND_REQ(run_HiggsBounds_classic, (libhiggsbounds), void, (double&, int&, double&, int&))            
        BACKEND_REQ(HB_calc_stats, (libhiggsbounds), void, (double&, double&, double&, int&))
-       BACKEND_REQ(finish_HiggsBounds_chisqtables, (), void, ())
-       BACKEND_REQ(finish_HiggsBounds, (libhiggsbounds), void, ())
+       
        BACKEND_OPTION( (HiggsBounds, 4.1), (libhiggsbounds) )
     #undef FUNCTION
   #undef CAPABILITY
@@ -47,16 +54,44 @@ START_MODULE
     START_CAPABILITY
       #define FUNCTION HS_LHCchisq
       START_FUNCTION(double)
-        BACKEND_REQ(initialize_HiggsSignals_latestresults, (libhiggssignals), void, (int&, int&))
-        BACKEND_REQ(HiggsBounds_input_SLHA_HS, (libhiggssignals), void, (const char&))
-        BACKEND_REQ(setup_pdf, (libhiggssignals), void, (int&))  
+      DEPENDENCY(HB_ModelParameters, hb_ModelParameters)
+         BACKEND_REQ(HiggsBounds_neutral_input_part_HS, (libhiggssignals), void, 
+		     (double*, double*, int*, double*, double*, double*, Farray<double, 1,3, 1,3>&,
+		      double*, double*, double*, double*, double*, double*, double*,
+		      double*, double*, double*, double*, double*, double*, double*,
+		      double*, double*, double*, double*, double*, double*, double*,
+		      double*, double*, double*, double*, double*, double*, double*,
+		      double*, double*, Farray<double, 1,3, 1,3>&))
+        BACKEND_REQ(HiggsBounds_charged_input_HS, (libhiggssignals), void,
+		    (double*, double*, double*, double*,
+		     double*, double*, double*, double*))
         BACKEND_REQ(run_HiggsSignals, (libhiggssignals), void, (int&, double&, double&, double&, int&, double&))  
         BACKEND_REQ(HiggsSignals_neutral_input_MassUncertainty, (libhiggssignals), void, (double*))
         BACKEND_REQ(setup_rate_uncertainties, (libhiggssignals), void, (double*, double*))
-        BACKEND_REQ(finish_HiggsSignals, (libhiggssignals), void, ())
         BACKEND_OPTION( (HiggsSignals, 1.2), (libhiggssignals) )
      #undef FUNCTION
   #undef CAPABILITY
+
+  #define CAPABILITY HB_ModelParameters   // HiggsBounds input model parameters
+  START_CAPABILITY
+
+    #define FUNCTION SMHiggs_ModelParameters  // SM Higgs only model parameters
+    START_FUNCTION(hb_ModelParameters)
+    DEPENDENCY(MSSM_spectrum, const Spectrum*) // need to replace with SM-only spectrum w/ Higgs
+    DEPENDENCY(Higgs_decay_rates, DecayTable::Entry)
+    #undef FUNCTION
+
+    #define FUNCTION MSSMHiggs_ModelParameters  // MSSM Higgs model parameters
+    START_FUNCTION(hb_ModelParameters)
+    DEPENDENCY(SMINPUTS, SMInputs)
+    DEPENDENCY(MSSM_spectrum, const Spectrum*)
+    DEPENDENCY(decay_rates, DecayTable)
+    DEPENDENCY(FH_Couplings, fh_Couplings) // temprorary dependency 
+    DEPENDENCY(FH_HiggsProd, fh_HiggsProd) // temprorary dependency 
+    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
+    #undef FUNCTION
+
+  #undef CAPABILITY 
 
 #undef MODULE
 

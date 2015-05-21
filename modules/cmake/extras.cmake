@@ -21,6 +21,10 @@
 #  \author Pat Scott
 #          (p.scott@imperial.ac.uk)              
 #  \date 2014 Nov, Dec
+#
+#  \author Chris Rogan
+#          (crogan@cern.ch)              
+#  \date 2015 May
 #                                               
 #************************************************
 
@@ -124,11 +128,13 @@ if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64")
   set(pythia_CONFIGURE_EXTRAS "--enable-64bits")
 endif()
 
+set(pythia_CXXFLAGS "${CMAKE_CXX_FLAGS} -Wno-extra")
+
 ExternalProject_Add(pythia
   SOURCE_DIR ${PROJECT_SOURCE_DIR}/../extras/boss/bossed_pythia_source
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND export FC=${CMAKE_Fortran_COMPILER} && export CC=${CMAKE_C_COMPILER} && export USRSHAREDSUFFIX=so && ./configure --enable-shared ${pythia_CONFIGURE_EXTRAS}
-  BUILD_COMMAND make CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${CMAKE_CXX_FLAGS} LDFLAGS=${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS}
+  BUILD_COMMAND make CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${pythia_CXXFLAGS} LDFLAGS=${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS}
   INSTALL_COMMAND cp lib/libpythia8.so ${PROJECT_SOURCE_DIR}/Backends/lib/libpythia8.so
 )
 
@@ -144,16 +150,6 @@ ExternalProject_Add(fastsim
 
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../extras/fast_sim/lib/libfastsim.so" "${PROJECT_SOURCE_DIR}/Backends/lib/libfastsim.so")
 
-set(BOSSMinimalExample_dir "${PROJECT_SOURCE_DIR}/../extras/boss")
-ExternalProject_Add(BOSSMinimalExample
-  SOURCE_DIR ${BOSSMinimalExample_dir}
-  BUILD_IN_SOURCE 1
-  CONFIGURE_COMMAND ""
-  BUILD_COMMAND make CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${CMAKE_CXX_FLAGS} LDFLAGS=${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS} all
-  INSTALL_COMMAND cp libminimal_1_0.so ${PROJECT_SOURCE_DIR}/Backends/lib/ COMMAND cp libminimal_1_1.so ${PROJECT_SOURCE_DIR}/Backends/lib/ COMMAND cp libminimal_1_2.so ${PROJECT_SOURCE_DIR}/Backends/lib/
-)
-
-set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../extras/boss/*.so" "${PROJECT_SOURCE_DIR}/Backends/lib/libminimal_1_0.so" "${PROJECT_SOURCE_DIR}/Backends/lib/libminimal_1_1.so" "${PROJECT_SOURCE_DIR}/Backends/lib/libminimal_1_2.so")
 
 if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel")
   set(FMODULE "module")
@@ -174,7 +170,68 @@ ExternalProject_Add(nulike
 )
 set(clean_files ${clean_files} "${nulike_dir}/lib/${nulike_lib}.so")
 
-set_target_properties(ddcalc gamlike darksusy micromegas superiso nulike pythia fastsim BOSSMinimalExample PROPERTIES EXCLUDE_FROM_ALL 1)
+ExternalProject_Add(feynhiggs
+  URL http://wwwth.mpp.mpg.de/members/heinemey/feynhiggs/newversion/FeynHiggs-2.10.4.tar.gz
+  URL_MD5 afd04154870ab5519603ffdb0e4e2d5b
+  DOWNLOAD_DIR ${PROJECT_SOURCE_DIR}/../extras/FeynHiggs
+  SOURCE_DIR ${PROJECT_SOURCE_DIR}/../extras/FeynHiggs/FeynHiggs
+  BUILD_IN_SOURCE 1
+  CONFIGURE_COMMAND <SOURCE_DIR>/configure FC=${CMAKE_Fortran_COMPILER} FFLAGS=${CMAKE_Fortran_FLAGS} CC=${CMAKE_C_COMPILER} CFLAGS=${CMAKE_C_FLAGS} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${CMAKE_CXX_FLAGS}
+  BUILD_COMMAND make COMMAND mkdir -p lib COMMAND echo "${CMAKE_Fortran_COMPILER} -shared -o lib/libFH.so build/*.o" > make_so.sh COMMAND chmod u+x make_so.sh COMMAND ./make_so.sh
+  INSTALL_COMMAND cp <SOURCE_DIR>/lib/libFH.so ${PROJECT_SOURCE_DIR}/Backends/lib/.
+)
 
-add_custom_target(backends COMMAND make gamlike nulike ddcalc pythia BOSSMinimalExample darksusy superiso) #fastsim micromegas
+set_property(TARGET feynhiggs PROPERTY _EP_DOWNLOAD_ALWAYS 0)
+
+set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../extras/FeynHiggs/FeynHiggs/lib/libFH.so" "${PROJECT_SOURCE_DIR}/Backends/lib/libFH.so")
+
+ExternalProject_Add(higgsbounds_tables
+  URL http://www.hepforge.org/archive/higgsbounds/csboutput_trans_binary.tar.gz
+  URL_MD5 004decca30335ddad95654a04dd034a6
+  DOWNLOAD_DIR ${PROJECT_SOURCE_DIR}/../extras/HiggsBounds
+  SOURCE_DIR ${PROJECT_SOURCE_DIR}/../extras/HiggsBounds/csboutput_trans_binary
+  BUILD_IN_SOURCE 1
+  CONFIGURE_COMMAND ""
+  BUILD_COMMAND ""
+  INSTALL_COMMAND ""
+)
+
+set_property(TARGET higgsbounds_tables PROPERTY _EP_DOWNLOAD_ALWAYS 0)
+
+ExternalProject_Add(higgsbounds
+  DEPENDS higgsbounds_tables
+  URL http://www.hepforge.org/archive/higgsbounds/HiggsBounds-4.2.0.tar.gz
+  URL_MD5 9d76eefecea870d941a6fe8c0ee7a6ae
+  DOWNLOAD_DIR ${PROJECT_SOURCE_DIR}/../extras/HiggsBounds
+  SOURCE_DIR ${PROJECT_SOURCE_DIR}/../extras/HiggsBounds/HiggsBounds
+  BUILD_IN_SOURCE 1
+  CONFIGURE_COMMAND cp configure-with-chisq my_configure COMMAND sed -i -e "s|.*clsbtablesdir=.*|clsbtablesdir=\"${PROJECT_SOURCE_DIR}/../extras/HiggsBounds/\"|" <SOURCE_DIR>/my_configure COMMAND sed -i -e "s|F90C =.*|F90C = ${CMAKE_Fortran_COMPILER}|" <SOURCE_DIR>/my_configure COMMAND sed -i -e "s|F77C =.*|F77C = ${CMAKE_Fortran_COMPILER}|" <SOURCE_DIR>/my_configure COMMAND sed -i -e "s|F90FLAGS =.*|F90FLAGS = ${CMAKE_Fortran_FLAGS}|" <SOURCE_DIR>/my_configure COMMAND <SOURCE_DIR>/my_configure
+  BUILD_COMMAND make COMMAND mkdir -p lib COMMAND echo "${CMAKE_Fortran_COMPILER} -shared -o lib/libhiggsbounds.so *.o" > make_so.sh COMMAND chmod u+x make_so.sh COMMAND ./make_so.sh
+  INSTALL_COMMAND cp <SOURCE_DIR>/lib/libhiggsbounds.so ${PROJECT_SOURCE_DIR}/Backends/lib/.
+)
+
+set_property(TARGET higgsbounds PROPERTY _EP_DOWNLOAD_ALWAYS 0)
+
+set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../extras/HiggsBounds/HiggsBounds/lib/higgsbounds.so" "${PROJECT_SOURCE_DIR}/Backends/lib/higgsbounds.so")
+
+ExternalProject_Add(higgssignals
+  DEPENDS higgsbounds
+  URL http://www.hepforge.org/archive/higgsbounds/HiggsSignals-1.3.2.tar.gz
+  URL_MD5 2e300a3784eb5d3a9e1dd905d2af7676
+  DOWNLOAD_DIR ${PROJECT_SOURCE_DIR}/../extras/HiggsSignals
+  SOURCE_DIR ${PROJECT_SOURCE_DIR}/../extras/HiggsSignals/HiggsSignals
+  BUILD_IN_SOURCE 1
+  CONFIGURE_COMMAND cp configure my_configure COMMAND sed -i -e "s|HBLIBS =.*|HBLIBS =-L../../HiggsBounds/HiggsBounds|" <SOURCE_DIR>/my_configure COMMAND sed -i -e "s|HBINCLUDE =.*|HBINCLUDE =-I../../HiggsBounds/HiggsBounds|" <SOURCE_DIR>/my_configure COMMAND sed -i -e "s|F90C =.*|F90C = ${CMAKE_Fortran_COMPILER}|" <SOURCE_DIR>/my_configure COMMAND sed -i -e "s|F77C =.*|F77C = ${CMAKE_Fortran_COMPILER}|" <SOURCE_DIR>/my_configure COMMAND sed -i -e "s|F90FLAGS =.*|F90FLAGS = ${CMAKE_Fortran_FLAGS}|" <SOURCE_DIR>/my_configure COMMAND <SOURCE_DIR>/my_configure
+  BUILD_COMMAND make COMMAND mkdir -p lib COMMAND rm HiggsSignals.o COMMAND echo "${CMAKE_Fortran_COMPILER} -shared -o lib/libhiggssignals.so ./*.o ../../HiggsBounds/HiggsBounds/*.o" > make_so.sh COMMAND chmod u+x make_so.sh COMMAND ./make_so.sh
+  INSTALL_COMMAND cp <SOURCE_DIR>/lib/libhiggssignals.so ${PROJECT_SOURCE_DIR}/Backends/lib/.
+)
+
+set_property(TARGET higgssignals PROPERTY _EP_DOWNLOAD_ALWAYS 0)
+
+set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../extras/HiggsSignals/HiggsSignals/lib/higgssignals.so" "${PROJECT_SOURCE_DIR}/Backends/lib/higgssignals.so")
+
+set_target_properties(ddcalc gamlike darksusy micromegas superiso nulike pythia fastsim  
+                      higgssignals higgsbounds higgsbounds_tables feynhiggs PROPERTIES EXCLUDE_FROM_ALL 1)
+
+add_custom_target(backends COMMAND make gamlike nulike ddcalc pythia darksusy superiso) #fastsim micromegas
 

@@ -116,6 +116,7 @@ namespace Gambit
       // Compares dependency specifications of rules entries or observable
       // entries with capability (capabilities have to be unique for these
       // lists))
+      // FIXME: Add type equivalence stuff
       if ( stringComp( observable.capability, quantity.first ) and
            stringComp( observable.type, quantity.second )) 
           return true;
@@ -866,29 +867,41 @@ namespace Gambit
     }
 
     /// Resolve dependency
-    DRes::VertexID DependencyResolver::resolveDependencyFromRules(const DRes::VertexID & toVertex, const sspair & quantity)
+    // Can resolve:
+    // - capability, type pair (requires toVertex)
+    // Rules ordering:
+    //   [Capability, Type] --> [Module, Function]
+    DRes::VertexID DependencyResolver::resolveDependencyFromRules(
+        const DRes::VertexID & toVertex, const sspair & quantity)
     {
       graph_traits<DRes::MasterGraphType>::vertex_iterator vi, vi_end;
 
-      std::vector<DRes::VertexID> vertexCandidates;  // List of all candidate vertices
-      std::vector<DRes::VertexID> disabledVertexCandidates;  // List of candidate vertices that are disabled
-      std::vector<Rule> rules_1st_level;  // Rules from dependency entries
-      std::vector<Rule> rules_2nd_level;  // Rules from plain entries
-      std::vector<DRes::VertexID> filteredVertexCandidates_1st;  // List of all candidate vertices
-      std::vector<DRes::VertexID> filteredVertexCandidates_2nd;  // List of all candidate vertices
+      // List of candidate vertices
+      std::vector<DRes::VertexID> vertexCandidates;  // enabled
+      std::vector<DRes::VertexID> disabledVertexCandidates;  // disabled 
+      // Rules
+      std::vector<Rule> rules;
+      std::vector<Rule> strong_rules;
+      // Candidate vertices after applying rules
+      std::vector<DRes::VertexID> filteredVertexCandidates;
+      std::vector<DRes::VertexID> filteredVertexCandidates2;
 
       // Make list of candidate vertices.
       for (tie(vi, vi_end) = vertices(masterGraph); vi != vi_end; ++vi) 
       {
         // Match capabilities and types (no type comparison when no types are
-        // given; this should only happen for output nodes).
+        // given; this can only apply to output nodes).
         if ( masterGraph[*vi]->capability() == quantity.first and
-              ( masterGraph[*vi]->type() == quantity.second or quantity.second == "" ) )
+             (masterGraph[*vi]->type() == quantity.second or
+              quantity.second == "" or quantity.second == "*") and
+             *vi != toVertex  // No self-resolution
+           )
         {
-          // Add to vertex candidate list
-          if (masterGraph[*vi]->status() > 0) vertexCandidates.push_back(*vi);
-          // Don't allow resolution by deactivated functors.
-          else disabledVertexCandidates.push_back(*vi);
+          // Add vertex to appropriate candidate list
+          if (masterGraph[*vi]->status() > 0) 
+            vertexCandidates.push_back(*vi);
+          else 
+            disabledVertexCandidates.push_back(*vi);
         }
       }
       if (vertexCandidates.size() == 0)
@@ -900,19 +913,19 @@ namespace Gambit
         {
           errmsg << "\nNote that viable candidates exist but have been disabled:\n"
                  << printGenericFunctorList(disabledVertexCandidates) 
-                 << std::endl;
-          errmsg << "Status flags:" << endl;
-          errmsg << " 0: This function is not compatible with any model you are scanning." << endl;
-          errmsg << "-3: This function requires a BOSSed class that is missing. The " << endl;
-          errmsg << "    backend that provides the class is missing (most likely), the " << endl;
-          errmsg << "    class is missing from the backend, or the factory functions" << endl;
-          errmsg << "    for this class have not been BOSSed and loaded correctly." << endl; 
+                 << endl
+          << "Status flags:" << endl
+          << " 0: This function is not compatible with any model you are scanning." << endl
+          << "-3: This function requires a BOSSed class that is missing. The " << endl
+          << "    backend that provides the class is missing (most likely), the " << endl
+          << "    class is missing from the backend, or the factory functions" << endl
+          << "    for this class have not been BOSSed and loaded correctly." << endl;
         }
-        errmsg << "Please check inifile for typos, and make sure that the" << endl;
-        errmsg << "models you are scanning are compatible with at least one function" << endl;
-        errmsg << "that provides this capability (they may all have been deactivated" << endl;
-        errmsg << "due to having ALLOW_MODELS declarations which are" << endl;
-        errmsg << "incompatible with the models selected for scanning)." << endl;  
+        errmsg << "Please check inifile for typos, and make sure that the" << endl
+        << "models you are scanning are compatible with at least one function" << endl
+        << "that provides this capability (they may all have been deactivated" << endl
+        << "due to having ALLOW_MODELS declarations which are" << endl
+        << "incompatible with the models selected for scanning)." << endl;  
         dependency_resolver_error().raise(LOCAL_INFO,errmsg.str());
       }
 
@@ -920,47 +933,60 @@ namespace Gambit
       logger() << "List of candidate vertices:" << endl;
       logger() << printGenericFunctorList(vertexCandidates) << endl;
 
-      if ( toVertex != OBSLIKE_VERTEXID )
+      if (toVertex != OBSLIKE_VERTEXID)
       {
         // Make list of all relevant 1st and 2nd level dependency rules.
         const IniParser::ObservablesType & entries = boundIniFile->getRules();
-        for (IniParser::ObservablesType::const_iterator it =
-            entries.begin(); it != entries.end(); ++it)
+        for (IniParser::ObservablesType::const_iterator 
+            it = entries.begin(); it != entries.end(); ++it)
         {
           {
-            // Evaluate "dependencies:" section
-            if ( funcMatchesIniEntry(masterGraph[toVertex], *it, *boundTEs) and it->capability != "" )
+            // Evaluate "dependencies" section
+            if (funcMatchesIniEntry(masterGraph[toVertex], *it, *boundTEs) and
+                (it->capability != "" or it->function != "" or 
+                 it->type != "" or it->module != ""))
             {
-              for (IniParser::ObservablesType::const_iterator it2 =
-              (*it).dependencies.begin(); it2 != (*it).dependencies.end(); ++it2)
+              for (IniParser::ObservablesType::const_iterator 
+                  it2 = (*it).dependencies.begin(); 
+                  it2 != (*it).dependencies.end(); ++it2)
               {
-                if ( quantityMatchesIniEntry(quantity, *it2) )
+                if (quantityMatchesIniEntry(quantity, *it2) and 
+                    (it2->capability != "" or it2->type != "") and
+                    (it2->function != "" or it2->module != ""))
                 {
-                  if ( (*it2).capability == ""  or (*it2).capability == "*" )
-                  {
-                    str errmsg = "ERROR: Capabilities in dependency intries cannot be empty.";
-                    dependency_resolver_error().raise(LOCAL_INFO,errmsg);
-                  }
-                  rules_1st_level.push_back(Rule(*it2));
+                  rules.push_back(Rule(*it2));
+                  if (not it->weakrule and not it2->weakrule)
+                    strong_rules.push_back(Rule(*it2));
                 }
               }
             }
             // Evaluate "functionChain:" section
-            if ( funcMatchesIniEntry(masterGraph[toVertex], *it, *boundTEs) 
-                    and it->capability != "" and it->function == "" and (*it).functionChain.size() > 1 )
+            if (funcMatchesIniEntry(masterGraph[toVertex], *it, *boundTEs) and 
+                it->capability != "" and
+                it->function == "" and
+                (*it).functionChain.size() > 1)
             {
-              for (auto it2 = (*it).functionChain.begin(); it2 != (*it).functionChain.end() - 1; ++it2)
+              for (auto it2 = (*it).functionChain.begin(); 
+                  it2 != (*it).functionChain.end() - 1; ++it2)
               {
-                if ( (*it2) == masterGraph[toVertex]->name() )
+                if ((*it2) == masterGraph[toVertex]->name())
                 {
                   Rule rule(*(it2+1), masterGraph[toVertex]->origin());
-                  rules_1st_level.push_back(rule);
+                  rules.push_back(rule);
+                  if (not it->weakrule)
+                    strong_rules.push_back(rule);
                 }
               }
             }
-            if ( quantityMatchesIniEntry(quantity, *it) and it->capability != "" )
+            // Evaluate second order rules
+            if (quantityMatchesIniEntry(quantity, *it) and 
+                it->dependencies.size()==0 and
+                (it->capability != "" or it->type != "") and
+                (it->function != "" or it->module != ""))
             {
-              rules_2nd_level.push_back(Rule(*it));
+              rules.push_back(Rule(*it));
+              if (not it->weakrule)
+                strong_rules.push_back(Rule(*it));
             }
           }
         }
@@ -972,112 +998,105 @@ namespace Gambit
         for (IniParser::ObservablesType::const_iterator it =
             entries.begin(); it != entries.end(); ++it)
         {
-          if ( quantityMatchesIniEntry(quantity, *it) )
+          if (quantityMatchesIniEntry(quantity, *it) and
+              (it->capability != "" or it->type != "") and
+              (it->function != "" or it->module != ""))
           {
-            rules_2nd_level.push_back(Rule(*it));
+            rules.push_back(Rule(*it));
+            if (not it->weakrule)
+              strong_rules.push_back(Rule(*it));
           }
+          // FIXME: Throw error if dependency or options entry exists
         }
         const IniParser::ObservablesType & entries2 = boundIniFile->getRules();
         for (IniParser::ObservablesType::const_iterator it =
             entries2.begin(); it != entries2.end(); ++it)
         {
-          if ( quantityMatchesIniEntry(quantity, *it) )
+          if (quantityMatchesIniEntry(quantity, *it) and
+              it->dependencies.size()==0 and
+              (it->capability != "" or it->type != "") and
+              (it->function != "" or it->module != ""))
           {
-            rules_2nd_level.push_back(Rule(*it));
+            rules.push_back(Rule(*it));
+            if (not it->weakrule)
+              strong_rules.push_back(Rule(*it));
           }
         }
       }
 
-      logger() << "Number of identified 1st (2nd) class rules: " << rules_1st_level.size() << " (" << rules_2nd_level.size() << ")" << endl << endl;
+      logger()<<"Number of identified rules (weak rules): "
+        <<rules.size()<< " ("<<rules.size() - strong_rules.size()<<")"
+        <<endl<<endl;
 
       // Make filtered lists
-      for (std::vector<DRes::VertexID>::const_iterator it = vertexCandidates.begin(); 
+      for (std::vector<DRes::VertexID>::const_iterator 
+          it = vertexCandidates.begin(); 
           it != vertexCandidates.end(); it ++)
       {
         bool valid = true;
-        for (std::vector<Rule>::const_iterator it2 = rules_1st_level.begin(); 
-            it2 != rules_1st_level.end(); it2 ++)
+        for (std::vector<Rule>::const_iterator it2 = rules.begin(); 
+            it2 != rules.end(); it2 ++)
         {
           if ( not matchesRules(masterGraph[*it], *it2) )
           {
             valid = false;
           }
         }
-        if ( valid )
-            filteredVertexCandidates_1st.push_back(*it);
+        if (valid)
+            filteredVertexCandidates.push_back(*it);
         valid = true;
-        for (std::vector<Rule>::const_iterator it2 = rules_2nd_level.begin(); 
-            it2 != rules_2nd_level.end(); it2 ++)
+        for (std::vector<Rule>::const_iterator it2 = strong_rules.begin(); 
+            it2 != strong_rules.end(); it2 ++)
         {
           if ( not matchesRules(masterGraph[*it], *it2) )
           {
             valid = false;
           }
         }
-        if ( valid )
-          filteredVertexCandidates_2nd.push_back(*it);
+        if (valid)
+            filteredVertexCandidates2.push_back(*it);
       }
 
-      //cout << "Filtered vertex candidates (1st, 2nd): " << filteredVertexCandidates_1st << ", " << filteredVertexCandidates_2nd << endl;
-      if ( rules_1st_level.size() > 0 )
+      if (rules.size() > 0 and filteredVertexCandidates.size() > 0)
       {
-        logger() << "Candidate vertices that fulfill 1st class rules:" << endl;
-        logger() << printGenericFunctorList(filteredVertexCandidates_1st) << endl;
+        logger() << "Candidate vertices that fulfill all rules:" << endl;
+        logger() << printGenericFunctorList(filteredVertexCandidates) << endl;
       }
-      if ( rules_2nd_level.size() > 0 )
+
+      if (filteredVertexCandidates.size() == 0)
       {
-        logger() << "Candidate vertices that fulfill 2nd class rules:" << endl;
-        logger() << printGenericFunctorList(filteredVertexCandidates_2nd) << endl;
+        filteredVertexCandidates = filteredVertexCandidates2;
+        logger() << "Ignoring rules declared as '!weak'" << endl;
+        logger() << "Candidate vertices that fulfill all non-weak rules:" << endl;
+        logger() << printGenericFunctorList(filteredVertexCandidates) << endl;
       }
 
       // Apply tailor-made filter
-      if ( boundIniFile->getValueOrDef<bool>(true, "dependency_resolution", "prefer_model_specific_functions") )
+      if (boundIniFile->getValueOrDef<bool>(
+            true, "dependency_resolution", "prefer_model_specific_functions")
+          and filteredVertexCandidates.size() > 1)
       {
-        bool usedFilter = false;
-        if ( filteredVertexCandidates_1st.size() > 1 )
-        {
-          filteredVertexCandidates_1st = closestCandidateForModel(filteredVertexCandidates_1st);
-          usedFilter = true;
-        }
-        if ( filteredVertexCandidates_2nd.size() > 1 )
-        {
-          filteredVertexCandidates_2nd = closestCandidateForModel(filteredVertexCandidates_2nd);
-          usedFilter = true;
-        }
-        std::vector<VertexID> filteredVertexCandidates = closestCandidateForModel(vertexCandidates);
-        if ( usedFilter and filteredVertexCandidates.size() < vertexCandidates.size() )
-        {
-          logger() << "A subset of vertex candidates is tailor-made for the scanned model." << endl;
-          logger() << "This is used as additional constraint since the YAML rules alone" << endl;
-          logger() << "are not constraining enough:" << endl;
-          logger() << printGenericFunctorList(filteredVertexCandidates) << endl;
-        }
+        filteredVertexCandidates = 
+          closestCandidateForModel(filteredVertexCandidates);
+        logger() << "A subset of vertex candidates is tailor-made for the scanned model." << endl;
+        logger() << "This is used as additional constraint since the YAML rules alone" << endl;
+        logger() << "are not constraining enough. These vertices are:" << endl;
+        logger() << printGenericFunctorList(filteredVertexCandidates) << endl;
       }
 
-      // Nothing left according to 1st class rules?
-      if ( filteredVertexCandidates_1st.size() == 0 )
+      // Nothing left?
+      if ( filteredVertexCandidates.size() == 0 )
       {
         str errmsg = "None of the vertex candidates for";
         errmsg += "\n" + printQuantityToBeResolved(quantity, toVertex);
-        errmsg += "\nfulfills all 1st class rules in the YAML file.";
-        errmsg += "\nPlease check your YAML file for contradictory rules.";
-        dependency_resolver_error().raise(LOCAL_INFO,errmsg);
-      }
-
-      if ( filteredVertexCandidates_2nd.size() == 0  and filteredVertexCandidates_1st.size() != 1 )
-      {
-        str errmsg = "None of the vertex candidates for";
-        errmsg += "\n" + printQuantityToBeResolved(quantity, toVertex);
-        errmsg += "\nfulfills all 2nd class rules in the YAML file.";
+        errmsg += "\nfulfills all rules in the YAML file.";
         errmsg += "\nPlease check your YAML file for contradictory rules.";
         dependency_resolver_error().raise(LOCAL_INFO,errmsg);
       }
 
       // Did vertices survive?
-      if ( filteredVertexCandidates_1st.size() == 1 )
-        return filteredVertexCandidates_1st[0];  // Done!
-      if ( filteredVertexCandidates_2nd.size() == 1 )
-        return filteredVertexCandidates_2nd[0];  // Done1
+      if ( filteredVertexCandidates.size() == 1 )
+        return filteredVertexCandidates[0];  // And done!
 
       str errmsg = "Unfortuantely, the dependency resolution for";
       errmsg += "\n" + printQuantityToBeResolved(quantity, toVertex);
@@ -1089,14 +1108,14 @@ namespace Gambit
       errmsg += "\nthe first of the above candidates could read ";
       if ( toVertex != OBSLIKE_VERTEXID )
       {
-        errmsg += "as a 1st class rule (in the Rules section):\n";
+        errmsg += "as a targeted rule (in the Rules section):\n";
         errmsg += "\n    - capability: "+masterGraph[toVertex]->capability();
         errmsg += "\n      function: "+masterGraph[toVertex]->name();
         errmsg += "\n      dependencies:";
         errmsg += "\n        - capability: " +masterGraph[vertexCandidates[0]]->capability();
         errmsg += "\n          function: " +masterGraph[vertexCandidates[0]]->name() +"\n\nor ";
       }
-      errmsg += "as a 2nd class rule (in the Rules or ObsLike section):\n";
+      errmsg += "as an untargeted rule (in the Rules or ObsLike section):\n";
       errmsg += "\n    - capability: "+masterGraph[vertexCandidates[0]]->capability();
       errmsg += "\n      function: "+masterGraph[vertexCandidates[0]]->name() + "\n";
       if ( toVertex == OBSLIKE_VERTEXID )
@@ -1267,7 +1286,9 @@ namespace Gambit
       logger() << EOM;
 
       // Read ini entry
-      use_regex = boundIniFile->getValueOrDef<bool>(false, "dependency_resolution", "use_regex");
+      use_regex = boundIniFile->getValueOrDef<bool>(true, "dependency_resolution", "use_regex");
+      if ( use_regex )
+        logger() << "Using regex for string comparison." << endl;
 
       //
       // Main loop: repeat until dependency queue is empty
@@ -1759,13 +1780,13 @@ namespace Gambit
                  <<     printGenericFunctorList(disabledVertexCandidates)
                  << endl
                  << "Status flags:" << endl
+                 << " 1: This function is available, but the backend version does not match your request." << endl
                  << " 0: This function is not compatible with any model you are scanning." << endl
                  << "-1: The backend that provides this function is missing." << endl
                  << "-2: The backend is present, but function is absent or broken." << endl
-                 << endl
-                 << "\nPlease check that all shared objects exist for the" << endl
-                 << "\nnecessary backends, and that they contain all the" << endl
-                 << "\nnecessary functions required for this scan. Also "  << endl
+                 << "\nPlease check that all shared objects exist for the"
+                 << "\nnecessary backends, and that they contain all the"
+                 << "\nnecessary functions required for this scan. Also "
                  << "\ncheck your backend rules and YAML file.\n";
         }
         dependency_resolver_error().raise(LOCAL_INFO,errmsg.str());
