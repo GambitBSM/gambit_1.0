@@ -213,8 +213,8 @@ ExternalProject_Add(susyhit
             COMMAND awk "{gsub(/${nl}/,${true_nl})}{print}" sdecay.f.tmp > sdecay.f
             COMMAND awk "{gsub(/${nl}/,${true_nl})}{print}" hdecay.f.tmp > hdecay.f
             COMMAND cmake -E remove makefile.tmp
-            COMMAND cmake -E remove sdecay.tmp
-            COMMAND cmake -E remove hdecay.tmp
+            COMMAND cmake -E remove sdecay.f.tmp
+            COMMAND cmake -E remove hdecay.f.tmp
   BUILD_COMMAND make ${susyhit_lib}.so FC=${CMAKE_Fortran_COMPILER} FFLAGS=${CMAKE_Fortran_FLAGS}
   INSTALL_COMMAND sed ${dashi} "s#${susyhit_ver}:.*${susyhit_lib}\\.so#${susyhit_ver}:         ${susyhit_short_dir}/${susyhit_lib}.so#g" ${PROJECT_SOURCE_DIR}/config/backend_locations.yaml
 )
