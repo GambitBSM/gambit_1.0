@@ -330,6 +330,7 @@ namespace Gambit {
         std::cout << "Importing decay information for: " << *iState_it << std::endl;
         const DecayTable::Entry &entry = tbl->at(*iState_it);
         double totalWidth = entry.width_in_GeV;
+        std::cout << "The total width is: " << totalWidth << std::endl;
         if(totalWidth>0)
         {     
           TH_Process process(*iState_it);
