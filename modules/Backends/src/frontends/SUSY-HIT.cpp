@@ -211,6 +211,7 @@ BE_NAMESPACE
           flavviolation->msu2(i,j) = (msu2[ij].is_data_line()) ? to<double>(msu2.at(i,j)[2]) : 0.0;
           flavviolation->td(i,j) = (td[ij].is_data_line()) ? to<double>(td.at(i,j)[2]) : 0.0;
           flavviolation->tu(i,j) = (tu[ij].is_data_line()) ? to<double>(tu.at(i,j)[2]) : 0.0;
+          flavviolation->vckm(i,j) = 0.0; 
         }
       }
       // The following is only relevant if considering FV stop decays.  Code below is tested and ready to be used in future.
