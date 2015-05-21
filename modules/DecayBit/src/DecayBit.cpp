@@ -2244,9 +2244,9 @@ namespace Gambit
       double v0 = 246.0;                //FIXME get from spectrum
       double mhpole = 125.0;            //FIXME get from spectrum
       double massratio2 = mass*mass/(mhpole*mhpole);
-      double gamma = lambda*lambda*v0*v0/(32.0*pi*mhpole) * sqrt(1.0 - 4.0*massratio2);  
+      double gamma = (2.0*mass <= mhpole) ? lambda*lambda*v0*v0/(32.0*pi*mhpole) * sqrt(1.0 - 4.0*massratio2) : 0.0;        
       result = *Dep::Higgs_decay_rates;                        // Get the SM decays.
-      result.width_in_GeV = result.width_in_GeV + gamma;       // Add the h->SS width
+      result.width_in_GeV = result.width_in_GeV + gamma;       // Add the h->SS width        
       result.set_BF(gamma/result.width_in_GeV, 0.0, "S", "S"); // Add the h->SS branching fraction
     }
 
