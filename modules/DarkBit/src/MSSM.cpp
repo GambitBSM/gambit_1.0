@@ -326,12 +326,21 @@ namespace Gambit {
       for(auto iState_it = decaysOfInterest.begin();
           iState_it != decaysOfInterest.end(); ++iState_it)
       {
+        const double m_init = catalog.getParticleProperty(*iState_it).mass;
+        const double m_dm = catalog.getParticleProperty(DMid).mass;
         std::cout << 
           "Importing decay information for: " << *iState_it << std::endl;
+        if ( m_init > m_dm )
+        {
+          std::cout << 
+            "  irrelevant for DM annihilation for kinematical reasons." 
+            << std::endl;
+          continue;
+        }
         const DecayTable::Entry &entry = tbl->at(*iState_it);
         double totalWidth = entry.width_in_GeV;
         if(totalWidth>0)
-        {        
+        {
           TH_Process process(*iState_it);
           process.genRateTotal = Funk::cnst(totalWidth);
           for(auto fState_it = entry.channels.begin();
@@ -341,8 +350,7 @@ namespace Gambit {
             if(bFraction>minBranching)
             {
               vector<string> pIDs;
-              std::cout << "- ";
-              const double m_init  = catalog.getParticleProperty(*iState_it).mass;
+              std::cout << "  ";
               double m_final = 0;
               for(auto pit = fState_it->first.begin();
                   pit != fState_it->first.end(); ++pit)
