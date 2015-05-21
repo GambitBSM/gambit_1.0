@@ -33,14 +33,14 @@ namespace Gambit {
             TH_ProcessCatalog &catalog,
             std::map<std::string, Funk::Funk> & arg_f_vs_mass)
         {
-          mh   = catalog.particleProperties.at("h0_1").mass;
+          mh   = catalog.getParticleProperty("h0_1").mass;
           // FIXME: This should not be hard-coded
           v0   = 246.0;
           alpha_s = 0.12;
-          mb   = catalog.particleProperties.at("d_3").mass;
-          mc   = catalog.particleProperties.at("u_2").mass;
-          mtau = catalog.particleProperties.at("tau-").mass;
-          mt   = catalog.particleProperties.at("u_3").mass;
+          mb   = catalog.getParticleProperty("b").mass;
+          mc   = catalog.getParticleProperty("c").mass;
+          mtau = catalog.getParticleProperty("tau-").mass;
+          mt   = catalog.getParticleProperty("t").mass;
 
           f_vs_mass = arg_f_vs_mass;
           Gamma = f_vs_mass["Gamma"]->bind("mass");
@@ -320,15 +320,14 @@ namespace Gambit {
       const DecayTable* tbl = &(*Dep::decay_rates);
       
       // List of decays to include
-      const vector<string> decaysOfInterest = initVector<string> ("h0_1");        
+      const vector<string> decaysOfInterest = initVector<string> ("h0_1");
       
       double minBranching = runOptions->getValueOrDef<double>(0.0,
           "ProcessCatalog_MinBranching");
       for(auto iState_it = decaysOfInterest.begin();
           iState_it != decaysOfInterest.end(); ++iState_it)
       {
-        std::cout << 
-          "Importing decay information for: " << *iState_it << std::endl;
+        std::cout << "Importing decay information for: " << *iState_it << std::endl;
         const DecayTable::Entry &entry = tbl->at(*iState_it);
         double totalWidth = entry.width_in_GeV;
         if(totalWidth>0)
@@ -342,7 +341,7 @@ namespace Gambit {
             if(bFraction>minBranching)
             {
               vector<string> pIDs;
-              std::cout << "- ";
+              std::cout << "  ";
               const double m_init  = catalog.getParticleProperty(*iState_it).mass;
               double m_final = 0;
               for(auto pit = fState_it->first.begin();
