@@ -33,6 +33,8 @@
  
 // Gambit
 #include "gambit/Utils/standalone_error_handlers.hpp"
+
+#define HDF5_DEBUG // Triggers debugging output
    
 namespace Gambit {
   namespace Printers {
@@ -82,13 +84,15 @@ namespace Gambit {
       //!     char)"
       //!_______________________________________________________________________________________ 
       template<typename T> 
-      struct get_hdf5_data_type
-      {   static H5::PredType type() 
-          {   
-              //static_assert(false, "Unknown HDF5 data type"); 
-              return H5::PredType::NATIVE_DOUBLE; 
-          }
-      };
+      struct get_hdf5_data_type;
+      // EDIT: Left undefined because I want a compile error if specialisation doesn't exist.
+      //{   static H5::PredType type() 
+      //    {   
+      //        //static_assert(false, "Unknown HDF5 data type");
+      //        return H5::PredType::NATIVE_DOUBLE; 
+      //    }
+      //};
+
       template<> struct get_hdf5_data_type<char>              { H5::IntType type()   const { return H5::PredType::NATIVE_CHAR   ; } };
       //template<> struct get_hdf5_data_type<unsigned char>   { H5::IntType type()   const { return H5::PredType::NATIVE_UCHAR  ; } };
       //template<> struct get_hdf5_data_type<short>           { H5::IntType type()   const { return H5::PredType::NATIVE_SHORT  ; } };
@@ -110,6 +114,13 @@ namespace Gambit {
       template<> struct get_hdf5_data_type<float>             { H5::FloatType type() const { return H5::PredType::NATIVE_FLOAT  ; } };
       template<> struct get_hdf5_data_type<double>            { H5::FloatType type() const { return H5::PredType::NATIVE_DOUBLE ; } };
       template<> struct get_hdf5_data_type<long double>       { H5::FloatType type() const { return H5::PredType::NATIVE_LDOUBLE; } };
+
+      // Bools are a bit trickier because C has no builtin boolean type (until recently; anyway 
+      // the HDF5 libraries are written in C before this existed). I also want something that
+      // will be recognised as a bool by h5py. For now just use an unsigned int...
+      template<> struct get_hdf5_data_type<bool>              { H5::IntType type()   const { return H5::PredType::NATIVE_UINT8  ; } };
+
+
       //!_______________________________________________________________________________________
 
 
@@ -237,10 +248,12 @@ namespace Gambit {
       void VertexBufferNumeric1D<T,L>::append(const T& data)
       {
          // Debug dump
+         #ifdef HDF5_DEBUG
          std::cout<<"-------------------------------------"<<std::endl;
          std::cout<<"Dump from buffer '"<<this->get_label()<<"'"<<std::endl;
          std::cout<<"nextempty   = "<<nextempty<<std::endl;
          std::cout<<"donepoint() = "<<this->donepoint()<<std::endl;
+         #endif
 
          error_if_done(); // make sure buffer hasn't written to the current point already
          buffer_entries[nextempty] = data;
@@ -427,12 +440,16 @@ namespace Gambit {
 
         public:
          // Const public data accessors
-         std::size_t get_dsetrank() const    { return DSETRANK; };
-         std::size_t get_chunklength() const { return CHUNKLENGTH; };
-         const hsize_t* get_dsetdims() const       { return dims; };
-         const hsize_t* get_maxdsetdims() const    { return maxdims; };
-         const hsize_t* get_chunkdims() const      { return chunkdims; };
-         ulong get_nextemptyslab() const     { return dsetnextemptyslab; };
+         std::string get_myname() const      { return myname; }
+         std::size_t get_dsetrank() const    { return DSETRANK; }
+         std::size_t get_chunklength() const { return CHUNKLENGTH; }
+         const hsize_t* get_maxdsetdims() const    { return maxdims; }
+         const hsize_t* get_chunkdims() const      { return chunkdims; }
+         ulong get_nextemptyslab() const     { return dsetnextemptyslab; }
+
+         // Full accessor needed for dataset dimensions 
+         // so that they can be updated when chunks are added
+         hsize_t* dsetdims() { return dims; }
 
          /// Constructors
          DataSetInterfaceBase() 
@@ -440,7 +457,7 @@ namespace Gambit {
            , myname()
            , record_dims()
            , my_dataset()
-           , dsetnextemptyslab()
+           , dsetnextemptyslab(0)
          {}
 
          DataSetInterfaceBase(H5FGPtr location, const std::string& name, const std::size_t rdims[DSETRANK]) 
@@ -531,13 +548,13 @@ namespace Gambit {
 
           void writenewchunk(const T (&chunkdata)[CHUNKLENGTH])
           {
-             // Extend the dataset. Dataset on disk becomes 1 chunk larger.
-             hsize_t newsize[DSETRANK];
              hsize_t offsets[DSETRANK];
-             newsize[0] = this->get_dsetdims()[0] + CHUNKLENGTH; // extend dataset by 1 chunk
+
+             // Extend the dataset. Dataset on disk becomes 1 chunk larger.
+             this->dsetdims()[0] += CHUNKLENGTH; // extend dataset by 1 chunk
              // newsize[1] = dims[1]; // don't need: only 1D for now.
-             this->my_dataset.extend( newsize );
-            
+             this->my_dataset.extend( this->dsetdims() );  
+
              // Select a hyperslab.
              H5::DataSpace filespace = this->my_dataset.getSpace();
              offsets[0] = this->dsetnextemptyslab;
@@ -546,11 +563,29 @@ namespace Gambit {
              
              // Define memory space
              H5::DataSpace memspace( DSETRANK, this->get_chunkdims() );
-             
+            
+             #ifdef HDF5_DEBUG 
+             std::cout << "Debug variables:" << std::endl
+                       << "  dsetdims()[0]      = " << this->dsetdims()[0] << std::endl
+                       << "  offsets[0]         = " << offsets[0] << std::endl
+                       << "  CHUNKLENGTH        = " << CHUNKLENGTH << std::endl
+                       << "  get_chunkdims()[0] = " << this->get_chunkdims()[0] << std::endl;
+             #endif
+ 
              // Write the data to the hyperslab.
-             this->my_dataset.write( chunkdata, this->hdf_dtype.type(), memspace, filespace );
+             try {
+                this->my_dataset.write( chunkdata, this->hdf_dtype.type(), memspace, filespace );
+             } catch(const H5::Exception& e) {
+                std::ostringstream errmsg;
+                errmsg << "Error writing new chunk to dataset (with name: \""<<this->get_myname()<<"\") in HDF5 file. Message was: "<<e.getDetailMsg() << std::endl;
+                printer_error().raise(LOCAL_INFO, errmsg.str());
+             }
 
              // Update the "next empty hyperslab" counter
+             #ifdef HDF5_DEBUG
+             std::cout<<"Chunk written! Incrementing chunk offset:"
+                      <<this->dsetnextemptyslab<<" --> "<<this->dsetnextemptyslab+CHUNKLENGTH<<std::endl;
+             #endif
              this->dsetnextemptyslab += CHUNKLENGTH;
           }
 
@@ -645,6 +680,7 @@ namespace Gambit {
 
     ////   }
 
-
+#undef HDF5_DEBUG
 
 #endif
+

@@ -50,6 +50,15 @@ def printcontents(item,prelines):
         print dset[:]  
 
 printcontents(f,'')
+
+### test extraction:
+## import numpy as np
+## group = f["/test/test2"]
+## ainv       = group["#StandardModel_SLHA2_parameters @StandardModel_SLHA2::primary_parameters::alphainv"]
+## ainv_isvalid = np.array(group["#StandardModel_SLHA2_parameters @StandardModel_SLHA2::primary_parameters::alphainv_isvalid"],dtype=np.bool)
+## print ainv
+## print ainv_isvalid
+## print ainv[ainv_isvalid]
                                         
 quit()
 

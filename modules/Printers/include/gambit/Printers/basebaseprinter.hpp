@@ -46,7 +46,7 @@ namespace Gambit
         virtual ~BaseBasePrinter() {};
 
         /// Function to signal to the printer to write buffer contents to disk
-        virtual void flush() = 0;
+        virtual void flush() {}; // TODO: needed?
 
         /// Signal printer to reset contents, i.e. delete old data in preperation for replacement
         virtual void reset() = 0;

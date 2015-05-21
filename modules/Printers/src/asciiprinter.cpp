@@ -166,8 +166,6 @@ namespace Gambit
       // } 
     }
 
-    void asciiPrinter::flush() {}
-
     /// Delete contents of output file (to be replaced/updated) and erase everything in the buffer
     void asciiPrinter::reset() 
     {

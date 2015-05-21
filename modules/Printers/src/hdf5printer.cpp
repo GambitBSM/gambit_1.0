@@ -133,8 +133,12 @@ namespace Gambit
     /// @{ H5P_LocalBufferManager member functions
 
     template<class BuffType>
-    void H5P_LocalBufferManager<BuffType>::init(HDF5Printer* p)
+    void H5P_LocalBufferManager<BuffType>::init(HDF5Printer* p, bool g)
     {
+       /* Set global behaviour flag */
+       global = g;
+
+       /* Attempt to attach to printer */
        if(p==NULL)
        {
           std::ostringstream errmsg;
@@ -208,11 +212,25 @@ namespace Gambit
     /// Auxiliary mode constructor 
     HDF5Printer::HDF5Printer(const Options& options, std::string& name, bool globalIN)
       : printer_name(name)
+      , global(globalIN)
     {
       // Could set these things via options also if we like.
       DBUG( std::cout << "Constructing Auxilliary HDF5Printer object (with name=\""<<printer_name<<"\")..." << std::endl; )
     }
  
+    /// Initialisation for the auxilliary printer
+    void HDF5Printer::auxilliary_init()
+    {
+      // Get a pointer to the primary printer
+      // Need to cast it to the derived type, but this should always be safe 
+      // for the auxilliary printers.
+      primary_printer = dynamic_cast<HDF5Printer*>(this->get_primary_printer());
+
+      // Retrieve the target location for adding new datasets from the primary
+      // printer
+      location = primary_printer->get_location();
+    }
+
     /// Destructor
     // Overload the base class virtual destructor
     HDF5Printer::~HDF5Printer()
@@ -294,6 +312,43 @@ namespace Gambit
         it->second->synchronise_output_to_position(sync_pos);
       }
     } 
+
+    /// Empty all the buffers to disk
+    /// TODO: This is not currently completely safe. If it gets called during a scan on one
+    /// of the primary buffers, then the chunk-writer will get desynchronised and crash. 
+    /// Need to make this work, or die gracefully.
+    void flush()
+    {
+      for (BaseBufferMap::iterator it = all_buffers.begin(); it != all_buffers.end(); it++)
+      {
+        it->second->flush();
+      }
+    }
+
+    /// Invalidate all data on disk which has been printed by this printer so far,
+    /// and reset all the buffers to write back to the first data slots.
+    /// This is only allowed if this is an auxilliary printer with global=true
+    void reset();
+    {
+      if(not this->is_auxilliary_printer())
+      {
+         std::ostringstream errmsg;
+         errmsg << "Error! Tried to call reset() on the primary HDF5Printer (printer_name = "<<printer_name<<")! This would delete all the data from the scan and is not currently allowed! Probably this was called accidentally due to a bug.";
+         printer_error().raise(LOCAL_INFO, errmsg.str());
+      }
+      else if(not global)
+      { 
+         errmsg << "Error! Tried to call reset() on an auxilliary HDF5Printer (printer_name = "<<printer_name<<") not flagged as 'global'! This would delete all the point-level data written by this printer during the scan and is not currently allowed! Probably this was called accidentally due to a bug.";
+      }
+      else
+      {
+         // Ok safe to do the resets.
+         for (BaseBufferMap::iterator it = all_buffers.begin(); it != all_buffers.end(); it++)
+         {
+           it->second->reset();
+         }
+      }
+    }
 
     /// Check whether printing to a new parameter space point is about to occur
     // and perform adjustments needed to prepare the printer.

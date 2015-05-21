@@ -19,7 +19,7 @@ Scanner:
     toy_mcmc:
       plugin: toy_mcmc
       options:
-        point_number: 15
+        point_number: 25
         output_file:  output
         like:  Likelihood
 

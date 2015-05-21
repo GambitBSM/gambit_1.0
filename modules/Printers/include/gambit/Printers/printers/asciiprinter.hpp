@@ -96,7 +96,6 @@ namespace Gambit
         // Initialisation function
         // Run by dependency resolver, which supplies the functors with a vector of VertexIDs whose requiresPrinting flags are set to true.
         void initialise(const std::vector<int>&);
-        void flush();
         void reset();
         int getRank();
 

@@ -91,14 +91,19 @@ namespace Gambit
         // (map is from IDcodes to flags)
         std::map<VBIDpair,bool> first_print;
 
+        /// Flag to trigger treatment of buffers as "global"
+        /// i.e. decouples buffers from the scanner iteration synchronisation.
+        bool global;
+
       public:
         /// Constructor
         H5P_LocalBufferManager() 
           : printer(NULL) 
+          , global(false)
         {} 
 
-        /// Initialise the buffer (attach it to a printer)
-        void init(HDF5Printer* p); 
+        /// Initialise the buffer (attach it to a printer and set its behaviour)
+        void init(HDF5Printer* p, bool global); 
 
         /// Signal whether initialisation has occured
         bool ready() { if(printer==NULL){return false;}else{return true;} }
@@ -132,6 +137,7 @@ namespace Gambit
         // Initialisation function
         // Run by dependency resolver, which supplies the functors with a vector of VertexIDs whose requiresPrinting flags are set to true.
         void initialise(const std::vector<int>&);
+        void auxilliary_init();
         void flush();
         void reset();
         int getRank();
@@ -158,7 +164,13 @@ namespace Gambit
  
         /// Function used by print functions to retrieve their local buffer manager object
         template<class BuffType>
-        H5P_LocalBufferManager<BuffType>& get_mybuffermanager(ulong pointID, uint mpirank);
+        H5P_LocalBufferManager<BuffType>& get_mybuffermanager(ulong pointID, uint mpirank, bool global);
+
+        /// Retrieve a pointer to the primary printer object
+        /// This is stored in the base class (BaseBasePrinter) as a pointer of type
+        /// BaseBasePrinter, so we need to  
+
+
 
         /// Macro to help declare new buffer managers for various types
         #define NEW_BUFFMAN(BUFFTYPE,NAME)     \
@@ -168,21 +180,43 @@ namespace Gambit
 
         /// Macro to help define the buffer manager getter functions
         // Need to use it outside the class body
+        // 
+        // The getter functions serve to both retrieve the buffer matching an
+        // output stream, and to handle creation of those buffers.
         #define DEFINE_BUFFMAN_GETTER(BUFFTYPE,NAME) \
-          template<>                                                           \
+          /* This first overload is just to provide the currently set "global" data
+             member value as the "default parameter" for the "global" argument in
+             the full function below. */                                           \
+          template<>                                                               \
           inline H5P_LocalBufferManager<BUFFTYPE>&                                 \
            HDF5Printer::get_mybuffermanager<BUFFTYPE>(ulong pointID, uint mpirank) \
-          {                                                                    \
-            /* While we are at it, check if the buffers need to be 
-               synchronised to a new point */                                  \
-            check_for_new_point(pointID, mpirank);                             \
-                                                                               \
-            /* If the buffermanger hasn't been initialised, do so now */       \
-            if( not CAT(hdf5_localbufferman_,NAME).ready() )                   \
-            {                                                                  \
-               CAT(hdf5_localbufferman_,NAME).init(this);                      \
-            }                                                                  \
-            return CAT(hdf5_localbufferman_,NAME);                             \
+          {                                                                        \
+               get_mybuffermanager<BUFFTYPE>(pointID, mpirank, global);            \
+          }                                                                        \
+                                                                                   \
+          template<>                                                               \
+          inline H5P_LocalBufferManager<BUFFTYPE>&                                 \
+           HDF5Printer::get_mybuffermanager<BUFFTYPE>(ulong pointID, uint mpirank, bool global) \
+          {                                                                        \
+            /* If this is an auxilliary printer, need to get the buffer from the      
+               primary printer. */                                                 \
+            if(this->is_auxilliary_printer())                                      \
+            {                                                                      \
+               return primary_printer->get_mybuffermanager<BUFFTYPE>(pointID, mpirank, global); \
+            }                                                                      \
+            else                                                                   \
+            {                                                                      \
+               /* While we are at it, check if the buffers need to be
+                  synchronised to a new point */                                   \
+               check_for_new_point(pointID, mpirank);                              \
+                                                                                   \
+               /* If the buffermanger hasn't been initialised, do so now */        \
+               if( not CAT(hdf5_localbufferman_,NAME).ready() )                    \
+               {                                                                   \
+                  CAT(hdf5_localbufferman_,NAME).init(this,global);                \
+               }                                                                   \
+               return CAT(hdf5_localbufferman_,NAME);                              \
+            }                                                                      \
           }
 
         /// @}
@@ -228,7 +262,7 @@ namespace Gambit
            // Write the data to the selected buffer ("just works" for simple numeric types)
            selected_buffer.append(value);
         }
-
+ 
         /// @{ Helper macros to write all the print functions which can use the "easy" template
         #define TEMPLATE_TYPES      \
          (bool)                     \
@@ -276,6 +310,10 @@ namespace Gambit
         // i.e. a file or a group.
         H5FGPtr location;
 
+        /// Pointer to the primary printer object 
+        // (if this is an auxilliary printer, else it is NULL)
+        HDF5Printer* primary_printer = NULL;      
+
         /// Map containing pointers to all VertexBuffers
         // Note: Each buffer contains a bool to indicate whether it has done an "append" for the point "lastPointID"
         BaseBufferMap all_buffers;
@@ -302,6 +340,11 @@ namespace Gambit
         /// Label for printer, mostly for more helpful error messages
         std::string printer_name;
 
+        /// Flag to trigger "global" write mode for printer
+        // i.e. print data will not be associated with parameter space points,
+        // but will be "global" data about the whole scan (e.g. max log likelihood 
+        // found, scan statistics, etc.)
+        bool global = false;
     };
 
     /// Macros which define the getter functions for the buffer managers

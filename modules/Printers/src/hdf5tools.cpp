@@ -35,7 +35,9 @@ namespace Gambit {
       /// Create or open hdf5 file
       H5FilePtr openFile(const std::string& fname, bool overwrite)
       {
-          H5::Exception::dontPrint();
+          // Switch error printing back on when debugging by commenting this out
+          //H5::Exception::dontPrint();
+
           H5::H5File* file = NULL;
            
           if(overwrite)
