@@ -434,7 +434,18 @@ namespace Gambit {
           (*BEreq::widths).width(DarkBit_utils::DSparticle_code("h0_2"))=0.1;
 
         // tabulate invariant rate
-        BEreq::dsrdtab(byVal(*Dep::RD_eff_annrate),xstart);
+        // FIXME: This error is not really caught.  Why???
+        try
+        {
+          logger() << "Tabulating RD_eff_annrate..." << std::endl;
+          BEreq::dsrdtab(byVal(*Dep::RD_eff_annrate),xstart);
+          logger() << "...done!" << std::endl;
+        }
+        catch (...)
+        {
+          DarkBit_error().raise(LOCAL_INFO, 
+              "Something went wrong while tabulating RD_eff_annrate.");
+        }
         // determine integration limit
         BEreq::dsrdthlim();                                 
 
