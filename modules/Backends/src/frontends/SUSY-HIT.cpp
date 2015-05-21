@@ -26,7 +26,7 @@
 
 // Some SUSY-HIT-specific shortcuts for dealing with SLHA blocks
 #define REQUIRED_BLOCK(NAME, BLOCK) if (slha.find(NAME) != slha.end()) BLOCK = slha.at(NAME); else backend_error().raise(LOCAL_INFO, "Missing SLHA block: " NAME); 
-#define OPTIONAL_BLOCK(NAME, BLOCK) if (slha.find(NAME) != slha.end()) BLOCK = slha.at(NAME); 
+#define OPTIONAL_BLOCK(NAME, BLOCK) if (slha.find(NAME) != slha.end()) BLOCK = slha.at(NAME); else BLOCK.push_back ("BLOCK " NAME);
 
 // Convenience functions (definitions)
 BE_NAMESPACE
@@ -96,17 +96,14 @@ BE_NAMESPACE
       susyhitin->alphin = sd_leshouches2->smval(1);                  // ALPHA: alpha_em^-1(M_Z)^MSbar (scheme and scale not specified in SUSYHIT or HDECAY documentation)
       susyhitin->gamwin = W_width;                                   // GAMW: W width (GeV)
       susyhitin->gamzin = Z_width;                                   // GAMZ: Z width (GeV)
-      //double lambda = to<double>(vckm.at(1).at(1));                // Wolfenstein lambda 
-      //double A = to<double>(vckm.at(2).at(2));                     // Wolfenstein A 
-      //double rhobar = to<double>(vckm.at(3).at(3));                // Wolfenstein rhobar 
-      //double etabar = to<double>(vckm.at(4).at(4));                // Wolfenstein etabar 
-      susyhitin->vusin = 0.2205;                     // VUS          FIXME
-      susyhitin->vcbin = 0.04;                       // VCB
-      susyhitin->rvubin = 0.08;                      // VUB/VCB    
-      //susyhitin->vusin = Spectrum::Wolf2V_us(lambda, A, rhobar, etabar); // VUS: CKM V_us
-      //susyhitin->vcbin = Spectrum::Wolf2V_cb(lambda, A, rhobar, etabar); // VCB: CKM V_cb 
-      //susyhitin->rvubin = Spectrum::Wolf2V_ub(lambda, A, rhobar, etabar) / susyhitin->vcbin; // VUB/VCB: Ratio of CKM V_UB/V_CB     
-    
+      double lambda = to<double>(vckm.at(1).at(1));                  // Wolfenstein lambda 
+      double A = to<double>(vckm.at(2).at(1));                       // Wolfenstein A 
+      double rhobar = to<double>(vckm.at(3).at(1));                  // Wolfenstein rhobar 
+      double etabar = to<double>(vckm.at(4).at(1));                  // Wolfenstein etabar 
+      susyhitin->vusin = Spectrum::Wolf2V_us(lambda, A, rhobar, etabar); // VUS: |CKM V_us|
+      susyhitin->vcbin = Spectrum::Wolf2V_cb(lambda, A, rhobar, etabar); // VCB: |CKM V_cb|
+      susyhitin->rvubin = abs(Spectrum::Wolf2V_ub(lambda, A, rhobar, etabar)) / susyhitin->vcbin; // VUB/VCB: Ratio of CKM |V_UB|/|V_CB|     
+      
       // MODSEL
       sd_leshouches2->imod(1) = 1;    // 1, x = SUSY model info. 
       sd_leshouches2->imod(2) = 0;    // 0 = general MSSM, 1 = SUGRA => do not calculate metastable NLSP decays to gravitinos.
@@ -214,9 +211,18 @@ BE_NAMESPACE
           flavviolation->msu2(i,j) = (msu2[ij].is_data_line()) ? to<double>(msu2.at(i,j)[2]) : 0.0;
           flavviolation->td(i,j) = (td[ij].is_data_line()) ? to<double>(td.at(i,j)[2]) : 0.0;
           flavviolation->tu(i,j) = (tu[ij].is_data_line()) ? to<double>(tu.at(i,j)[2]) : 0.0;
-          flavviolation->vckm(i,j) = (vckm[ij].is_data_line()) ? 0.0 : 0.0; //to<double>(vckm.at(i,j)[2]) : 0.0; FIXME
         }
       }
+      // The following is only relevant if considering FV stop decays.  Code below is tested and ready to be used in future.
+      //flavviolation->vckm(1,1) =     Spectrum::Wolf2V_ud(lambda, A, rhobar, etabar);  
+      //flavviolation->vckm(1,2) =     Spectrum::Wolf2V_us(lambda, A, rhobar, etabar);  
+      //flavviolation->vckm(1,3) = abs(Spectrum::Wolf2V_ud(lambda, A, rhobar, etabar));  
+      //flavviolation->vckm(2,1) = abs(Spectrum::Wolf2V_cb(lambda, A, rhobar, etabar));  
+      //flavviolation->vckm(2,2) = abs(Spectrum::Wolf2V_cs(lambda, A, rhobar, etabar));  
+      //flavviolation->vckm(2,3) =     Spectrum::Wolf2V_cb(lambda, A, rhobar, etabar);  
+      //flavviolation->vckm(3,1) = abs(Spectrum::Wolf2V_td(lambda, A, rhobar, etabar));  
+      //flavviolation->vckm(3,2) = abs(Spectrum::Wolf2V_ts(lambda, A, rhobar, etabar));  
+      //flavviolation->vckm(3,3) =     Spectrum::Wolf2V_tb(lambda, A, rhobar, etabar);  
 
       // USQMIX, DSQMIX, SELMIX    
       if (usqmix.find_block_def()->size() >= 4) sd_leshouches2->qvalue(14) = to<double>(usqmix.find_block_def()->at(3)); // Q(GeV)
@@ -550,7 +556,6 @@ BE_NAMESPACE
     // q values -- repeated 11, 14, assignment of selmix to 21 vs < 20; are these bugs?
     // safety of just skipping sd_mbmb calculation
     // safety of running over with FV.
-    // assumption about realness of V_ub --> no CP violation?
     // stop decay common block entries
       
   }
@@ -575,6 +580,11 @@ BE_INI_FUNCTION
     ifs.close();
     counter++;
     if (counter >= filenames.size()) counter = 0;
+    // If the CKM entries are missing from the SLHA file, fill them in with defaults.
+    SLHAea_add(slha, "VCKMIN", 1, 0.22537, "lambda", false);
+    SLHAea_add(slha, "VCKMIN", 2, 0.814, "A", false);
+    SLHAea_add(slha, "VCKMIN", 3, 0.117, "rhobar", false);
+    SLHAea_add(slha, "VCKMIN", 4, 0.353, "etabar", false);
   }
   else // Use the actual spectrum object.
   {

@@ -33,6 +33,8 @@
 #ifndef __Spectrum_hpp__
 #define __Spectrum_hpp__
 
+#include <complex>
+
 #include "gambit/Elements/SMInputs.hpp"
 #include "gambit/Elements/SubSpectrum.hpp"
 #include "gambit/Models/partmap.hpp"
@@ -52,6 +54,9 @@ namespace Gambit
          SMInputs SMINPUTS;
          bool initialised;
          void check_init() const;
+         
+         ///Helper function to calculate Wolfenstein rho+i*eta from rhobar and etabar
+         static std::complex<double> rhoplusieta(double, double, double, double);
    
       /// Swap resources of two Spectrum objects
       // Note: Not a member function! This is an external function which is a friend of this class.
@@ -115,7 +120,7 @@ namespace Gambit
          /// Error raised if this still fails.
          SLHAea::Coll getSLHAea() const;
          
-         /// CKM Wolfenstein (lambda, A, rhobar, etabar) --> V_qq parameterisation convertors
+         /// CKM Wolfenstein (lambda, A, rhobar, etabar) --> V_qq standard parameterisation convertors
          /// @{
          static double Wolf2V_ud(double, double, double, double);
          static double Wolf2V_us(double, double, double, double);
