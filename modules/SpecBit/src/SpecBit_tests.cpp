@@ -151,7 +151,7 @@ namespace Gambit
     {
       // Requests a SubSpectrum object of capability SM_spectrum; test what we can retrieve from this
       using namespace Pipes::specbit_test_func3;
-      const SubSpectrum* spec = *Dep::SM_spectrum; //Test retrieve pointer to Spectrum object 
+      const SubSpectrum* spec = *Dep::SM_subspectrum; //Test retrieve pointer to Spectrum object 
 
       std::unique_ptr<SubSpectrum> spec2 = spec->clone(); 
 
@@ -165,7 +165,7 @@ namespace Gambit
     {
       using namespace Pipes::specbit_test_Spectrum;
       const Spectrum* matched_spectra = *Dep::MSSM_spectrum;
-      const SubSpectrum* sm = *Dep::SM_spectrum; 
+      const SubSpectrum* sm = *Dep::SM_subspectrum; 
       bool noRGE = runOptions->getValueOrDef<bool>(0,"noRGE"); // don't test running on skeleton Spectrum wrappers 
       logger() << "Running specbit_test_Spectrum with noRGE="<<noRGE<<std::endl;
       logger() << EOM;
@@ -200,6 +200,26 @@ namespace Gambit
       result = 0;
     }
 
+    /// Check that the SingletDM spectrum object is working
+    void test_Singlet_spectrum(bool &result)
+    {
+      using namespace Pipes::test_Singlet_spectrum;
+      const Spectrum* spec = *Dep::SingletDM_spectrum;
+      logger() << "Parameters from SingletDM_spectrum:" << std::endl;
+      logger() << "Higgs pole mass  : " << spec->get_Pole_Mass("mH") << std::endl; 
+      logger() << "Higgs VEV        : " << spec->get_UV()->runningpars.get_mass_parameter("<H>") << std::endl; 
+      logger() << "Singlet pole mass: " << spec->get_Pole_Mass("mS") << std::endl; 
+      logger() << EOM;
+
+      logger() << "Parameters directly from ModelParameters functors:" << std::endl;
+      logger() << "Higgs pole mass  : " << *Param.at("mH") << std::endl; 
+      logger() << "Higgs VEV        : " << *Param.at("vev") << std::endl; 
+      logger() << "Singlet pole mass: " << *Param.at("mass") << std::endl; 
+      logger() << EOM;
+
+      result = 0;
+
+    }
 
   } // end namespace SpecBit
 } // end namespace Gambit

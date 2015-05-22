@@ -228,8 +228,8 @@ namespace Gambit
       // This is just an example function that returns junk numbers at the moment.  It should be finished off
       // in order to use SUSYHIT properly.  When it works, a dependency on it added to the all_decays function.
       using namespace Pipes::SMHiggs_decays;
-      const SubSpectrum* spec = *Dep::SM_spectrum;
-      const SubSpectrum* mssm = *Dep::MSSM_spectrum;
+      const SubSpectrum* spec = *Dep::SM_subspectrum;
+      const SubSpectrum* mssm = *Dep::MSSM_subspectrum;
       double m_H = mssm->phys.get_Pole_Mass("h0_1"); // Retrieve the masses from the spectrum object.
       double m_b = spec->phys.get_Pole_Mass("b");
       double m_t = spec->phys.get_Pole_Mass("t");
@@ -316,8 +316,8 @@ namespace Gambit
       //const SubSpectrum* mssm(*Dep::MSSM_spectrum->get_UV());
       //const SubSpectrum* mssm = Dep::MSSM_spectrum->get_UV();
       //fails
-      // const SubSpectrum* spec = *Dep::SM_spectrum;
-      // const SubSpectrum* mssm = *Dep::MSSM_spectrum;
+      // const SubSpectrum* spec = *Dep::SM_subspectrum;
+      // const SubSpectrum* mssm = *Dep::MSSM_subspectrum;
       double msu1 = mssm->phys.get_Pole_Mass("~u",1);
       double ZU11 = mssm->phys.get_Pole_Mixing("~u",1,1);
       std::cout << "msu1 = " << msu1 << std::endl;
