@@ -17,6 +17,7 @@
 ///  *********************************************
 
 #include "gambit/Elements/gambit_module_headers.hpp"
+#include "gambit/Elements/virtualH.hpp"
 #include "gambit/DecayBit/DecayBit_rollcall.hpp"
 #include "gambit/DecayBit/decay_utils.hpp"
 
@@ -31,16 +32,7 @@ namespace Gambit
     /// \name DecayBit module functions
     /// @{
 
-    void decayTest (double &result)
-    {
-      using namespace Pipes::decayTest;
-      //  result = BEreq::cb_sd_top2body->brtopbw; 
-      //  cout << "top 2 body Br's: " << BEreq::cb_sd_top2body->brtopbw << endl;
-      result = BEreq::cb_sd_topwidth->toptot2; 
-      cout << "top total width: " << BEreq::cb_sd_topwidth->toptot2 << endl;
-
-    }                                                                           
-
+/////////////// Standard Model ///////////////////
 
     /// SM decays: W+/W-
     void W_plus_decays (DecayTable::Entry& result) 
@@ -86,22 +78,6 @@ namespace Gambit
     void tbar_decays (DecayTable::Entry& result) 
     {
       result = CP_conjugate(*Pipes::tbar_decays::Dep::t_decay_rates);
-    }
-
-    /// FeynHiggs top decays
-    void FH_t_decays (DecayTable::Entry& result) 
-    {
-
-       using namespace Pipes::FH_t_decays;
-      
-      // unpack FeynHiggs Couplings
-      fh_Couplings FH_input = *Dep::FH_Couplings;
-
-      result.width_in_GeV = 2.0;                    
-      result.positive_error = 5.0e-01;
-      result.negative_error = 5.0e-01;
-      result.set_BF(FH_input.gammas[tBF(1)-1], 0.0, "W+", "b"); 
-      result.set_BF(FH_input.gammas[tBF(2)-1], 0.0, "H+", "b");
     }
 
     /// SM decays: mu+
@@ -211,8 +187,26 @@ namespace Gambit
       //See PDG meson sheet in DecayBit/data/PDG if you want BFs               
     }
 
-    ///SM decays: Higgs
-    // TODO
+    /// SM decays: Higgs
+    void SM_Higgs_decays (DecayTable::Entry& result)
+    {
+      double mh = 125.0; // *Dep::SM_Spectrum->get_Pole_Mass("h0_1"); //FIXME
+      result.width_in_GeV = Virtual_SMHiggs_widths("Gamma",mh);   
+      result.set_BF(Virtual_SMHiggs_widths("bb",mh), 0.0, "b", "bbar");
+      result.set_BF(Virtual_SMHiggs_widths("tautau",mh), 0.0, "tau+", "tau-");
+      result.set_BF(Virtual_SMHiggs_widths("mumu",mh), 0.0, "mu+", "mu-");
+      result.set_BF(Virtual_SMHiggs_widths("ss",mh), 0.0, "s", "sbar");
+      result.set_BF(Virtual_SMHiggs_widths("cc",mh), 0.0, "c", "cbar");
+      result.set_BF(Virtual_SMHiggs_widths("tt",mh), 0.0, "t", "tbar");
+      result.set_BF(Virtual_SMHiggs_widths("gg",mh), 0.0, "g", "g");
+      result.set_BF(Virtual_SMHiggs_widths("gammagamma",mh), 0.0, "gamma", "gamma");
+      result.set_BF(Virtual_SMHiggs_widths("Zgamma",mh), 0.0, "Z0", "gamma");
+      result.set_BF(Virtual_SMHiggs_widths("WW",mh), 0.0, "W+", "W-");
+      result.set_BF(Virtual_SMHiggs_widths("ZZ",mh), 0.0, "Z0", "Z0");
+    }
+
+
+//////////// MSSM /////////////////////
 
     /// MSSM sfermion states
     const char *isdl = "~d_1";
@@ -265,6 +259,17 @@ namespace Gambit
     const char *istau2bar = "~e+_6";
     const char *intau2bar = "~nubar_3"; // -2000016
 	
+    /// FeynHiggs MSSM decays: t
+    void FH_t_decays (DecayTable::Entry& result) 
+    {
+      fh_Couplings FH_input = *Pipes::FH_t_decays::Dep::FH_Couplings;
+      result.width_in_GeV = 2.0;                    
+      result.positive_error = 5.0e-01;
+      result.negative_error = 5.0e-01;
+      result.set_BF(FH_input.gammas[tBF(1)-1], 0.0, "W+", "b"); 
+      result.set_BF(FH_input.gammas[tBF(2)-1], 0.0, "H+", "b");
+    }
+
     /// MSSM decays: h0_1
     void MSSM_h0_1_decays (DecayTable::Entry& result) 
     {
@@ -895,7 +900,6 @@ namespace Gambit
     }
 
     /// MSSM decays: gluino
-
     void gluino_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::gluino_decays;
@@ -2234,7 +2238,10 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_neut3body->brglbot(4), 0.0, "~g", "bbar", "b");
       // cout << "neutralino_4 total width: " << result.width_in_GeV << endl;
     }
+
 	
+//////////// Singlet DM /////////////////////
+
     /// Add the decay of Higgs to singlets for the SingletDM model
     void SS_Higgs_decays (DecayTable::Entry& result)
     {
@@ -2244,28 +2251,27 @@ namespace Gambit
       double v0 = 246.0;                //FIXME get from spectrum
       double mhpole = 125.0;            //FIXME get from spectrum
       double massratio2 = mass*mass/(mhpole*mhpole);
-      double gamma = lambda*lambda*v0*v0/(32.0*pi*mhpole) * sqrt(1.0 - 4.0*massratio2);  
+      double gamma = (2.0*mass <= mhpole) ? lambda*lambda*v0*v0/(32.0*pi*mhpole) * sqrt(1.0 - 4.0*massratio2) : 0.0;        
       result = *Dep::Higgs_decay_rates;                        // Get the SM decays.
-      result.width_in_GeV = result.width_in_GeV + gamma;       // Add the h->SS width
+      result.width_in_GeV = result.width_in_GeV + gamma;       // Add the h->SS width        
       result.set_BF(gamma/result.width_in_GeV, 0.0, "S", "S"); // Add the h->SS branching fraction
     }
 
-    /// FIXME just a dummy for now
-    void SM_Higgs_decays (DecayTable::Entry& result) { result.width_in_GeV = 0.004; }
+
+//////////// Everything ///////////////////
   
     /// Collect all the DecayTable entries into an actual DecayTable 
-    void all_decays (DecayTable &result) 
+    void all_decays (DecayTable &decays) 
     {
       using namespace Pipes::all_decays;
-      DecayTable decays = DecayTable();             // Start with a blank DecayTable.
 
       decays("h0_1") = *Dep::Higgs_decay_rates;     // Add the Higgs decays.
       decays("Z0") = *Dep::W_minus_decay_rates;     // Add the Z decays
       decays("W+") = *Dep::W_plus_decay_rates;      // Add the W decays for W+.
       decays("W-") = *Dep::W_minus_decay_rates;     // Add the W decays for W-
 
-      decays("t") = *Dep::t_decay_rates;      // Add the top decays for t.
-      decays("tbar") = *Dep::tbar_decay_rates;  // Add the top decays for tbar
+      decays("t") = *Dep::t_decay_rates;            // Add the top decays for t.
+      decays("tbar") = *Dep::tbar_decay_rates;      // Add the top decays for tbar
       decays("u_3") = decays("t");                  // Duplicate for mass-ordered quarks
       decays("ubar_3") = decays("tbar");            // Duplicate for mass-ordered quarks
 
@@ -2275,7 +2281,7 @@ namespace Gambit
       decays("e-_2") = decays("mu-");               // Duplicate for mass-ordered leptons
 
       decays("tau+") = *Dep::tau_plus_decay_rates;  // Add the tauon decays for tau+.
-      decays("tau-") = *Dep::tau_minus_decay_rates; // Do the same for tau-, assuming no CP asymmetry.
+      decays("tau-") = *Dep::tau_minus_decay_rates; // Add the tauon decays for tau-.
       decays("e+_3") = decays("tau+");              // Duplicate for mass-ordered leptons
       decays("e-_3") = decays("tau-");              // Duplicate for mass-ordered leptons
 
@@ -2351,7 +2357,7 @@ namespace Gambit
         decays(inmulbar) = *Dep::snubar_muonl_decay_rates;  // Add the ~nu_mu decays.
         decays(intau1bar) = *Dep::snubar_taul_decay_rates;  // Add the ~nu_tau decays.
       }
-      result = decays;
+
     }
 
     /// @}
