@@ -15,15 +15,23 @@
 ///  \author Torsten Bringmann 
 ///  \date May 2015
 ///
+///  \author Pat Scott
+///          <p.scott@imperial.ac.uk>
+///  \date 2015 May
+///
 ///  *********************************************
 
 #include "gambit/Elements/gambit_module_headers.hpp"
+#include "gambit/Elements/virtualH.hpp"
 #include "gambit/DarkBit/DarkBit_rollcall.hpp"
 #include "gambit/Utils/ASCIItableReader.hpp"
 #include "boost/make_shared.hpp"
 
-namespace Gambit {
-  namespace DarkBit {
+namespace Gambit
+{
+  
+  namespace DarkBit
+  {
 
     class SingletDM
     {
@@ -81,8 +89,8 @@ namespace Gambit {
           if ( channel == "hh" ) { return sv_hh(lambda, mass, v); }
           if ( sqrt_s < 300 )
           {
-            double br = f_vs_mass[channel]->bind("mass")->eval(sqrt_s);
-            double Gamma_s = Gamma->eval(sqrt_s);
+            double br = Virtual_SMHiggs_widths(channel,sqrt_s);
+            double Gamma_s = Virtual_SMHiggs_widths("Gamma",sqrt_s);
             double GeV2tocm3s1 = gev2cm2*s2cm;
 
             double res = 2*lambda*lambda*v0*v0/
@@ -310,7 +318,7 @@ namespace Gambit {
 
       // Instantiate tables (only once)
       static std::map<std::string, Funk::Funk> f_vs_mass = 
-        get_f_vs_mass("DarkBit/data/Higgs_decay_1101.0593.dat");
+        get_f_vs_mass("Elements/data/Higgs_decay_1101.0593.dat");
 
       /////////////////////////////
       // Import Decay information
