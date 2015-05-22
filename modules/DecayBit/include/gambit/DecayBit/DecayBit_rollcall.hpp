@@ -35,18 +35,6 @@
 #define MODULE DecayBit
 START_MODULE
 
-  #define CAPABILITY testSUSYBRs            // A physical observable or likelihood that this module can calculate.  There may be one or more 
-  START_CAPABILITY                          //  functions in this module that can calculate this particular thing in different ways.
-  
-    #define FUNCTION decayTest              // Name of an observable function
-    START_FUNCTION(double)                  // Declare that this function calculates the observable as a double precision variable
-    BACKEND_REQ(cb_sd_top2body, (sh_reqd), sd_top2body_type)
-    BACKEND_REQ(cb_sd_topwidth, (sh_reqd), sd_topwidth_type)
-    BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
-    #undef FUNCTION
-	
-  #undef CAPABILITY
-
   #define CAPABILITY t_decay_rates
   START_CAPABILITY
 
@@ -65,9 +53,9 @@ START_MODULE
   #define CAPABILITY Higgs_decay_rates
   START_CAPABILITY
 
-    //FIXME just a dummy
     #define FUNCTION SM_Higgs_decays
     START_FUNCTION(DecayTable::Entry)
+    //DEPENDENCY(SM_Spectrum, const Spectrum*)
     #undef FUNCTION
 
     #define FUNCTION MSSM_h0_1_decays
