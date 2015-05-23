@@ -154,6 +154,13 @@ namespace Gambit {
         //eaSLHA mySLHA = *Dep::MSSM_spectrum;
         const Spectrum* mySpec = *Dep::MSSM_spectrum;
         eaSLHA mySLHA = mySpec->getSLHAea();
+
+        // Add model select block to inform DS about 6x6 mixing
+        SLHAea::Block modsel_block("MODSEL");
+        modsel_block.push_back("BLOCK MODSEL");
+        modsel_block.push_back("6 3 # FV");
+        mySLHA.push_back(modsel_block);
+
         std::ofstream ofs("DarkBit_temp.slha");
         ofs << mySLHA;
         ofs.close();
