@@ -194,9 +194,9 @@ Rules:
     function: DD_couplings_DarkSUSY
     #function: DD_couplings_MicrOmegas
 
-  - capability: DarkSUSY_PointInit
-    options:
-      debug_SLHA_filenames:
+#  - capability: DarkSUSY_PointInit
+#    options:
+#      debug_SLHA_filenames:
 #            - DarkBit/slha-benchmarks/01-01-2013_torsten/test_co.slha
 #            - DarkBit/slha-benchmarks/01-01-2013_torsten/test_100.slha
 #            - DarkBit/slha-benchmarks/01-01-2013_torsten/test_200.slha
