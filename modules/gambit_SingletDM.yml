@@ -92,9 +92,9 @@ ObsLikes:
 #          nbins: 20
 
 # Fermi LAT dwarf limits
-    - capability: lnL_FermiLATdwarfs
-      function: lnL_FermiLATdwarfs_gamLike
-      purpose:  Likelihood
+#    - capability: lnL_FermiLATdwarfs
+#      function: lnL_FermiLATdwarfs_gamLike
+#      purpose:  Likelihood
 # Simple gaussian relic density likelihood
     - capability: RD_oh2
       purpose: Observable
