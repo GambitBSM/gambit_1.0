@@ -20,6 +20,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         class Abstract_ParticleDataEntry;
         class Abstract_Settings;
         class Abstract_Vec4;
+        class Abstract_DecayChannel;
         class Abstract_Hist;
         class Abstract_SLHAinterface;
         class Abstract_Couplings;

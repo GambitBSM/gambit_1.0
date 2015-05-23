@@ -126,7 +126,6 @@ namespace Gambit {
             pythiaOptions = runOptions->getValue<std::vector<std::string>>(*iter, pythiaConfigName);
         }
 /// @TODO Replace SLHAea pseudo-code with actual code
-        /// const SLHAea &slhaea = *Dep::SLHAeaFromSomewhere;
       /// @note The next line is actual code, so just uncomment it upon removal of slhaFilename...
         /// pythiaOptions.push_back("SLHA:readFrom = 0");
         pythiaOptions.push_back("SLHA:file = " + slhaFilename);
@@ -135,7 +134,7 @@ namespace Gambit {
         result.resetSpecialization(*iter);
 /// @TODO Replace SLHAea pseudo-code with actual code
 /// @note I think/hope that I can call our custom SLHAea init function *before* Pythia's usual init.
-        /// const SLHAea &slhaea = *Dep::SLHAeaFromSomewhere;
+        /// const SLHAea::Coll &slhaea = *Dep::SLHAeaFromSomewhere;
 /// @TODO Program the 'initSLHAea' function in the SpecializablePythia class.
         /// result.initSLHAea(slhaea);
         result.init(pythiaOptions);

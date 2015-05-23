@@ -1,5 +1,6 @@
 #pragma once
 #include "gambit/ColliderBit/colliders/BaseCollider.hpp"
+#include "SLHAea/slhaea.h"
 
 namespace Gambit {
   namespace ColliderBit {
@@ -52,6 +53,9 @@ namespace Gambit {
 
         /// @brief General init for any Pythia interface to Gambit.
         void init(const std::vector<std::string>&);
+
+        /// @brief Pre-initialization step for reading from an SLHAea object.
+        void initSLHAea(const SLHAea::Coll&);
 
         /// @brief Specialize this Pythia interface to Gambit with a specialization function.
         void resetSpecialization(const std::string&);

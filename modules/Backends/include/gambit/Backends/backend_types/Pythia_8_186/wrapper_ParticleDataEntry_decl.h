@@ -6,6 +6,7 @@
 #include "gambit/Backends/wrapperbase.hpp"
 #include "abstract_ParticleDataEntry.h"
 #include <string>
+#include "wrapper_DecayChannel_decl.h"
 #include "wrapper_Info_decl.h"
 #include "wrapper_Settings_decl.h"
 #include "wrapper_Couplings_decl.h"
@@ -229,6 +230,10 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 int sizeChannels() const;
         
+                Pythia8::DecayChannel& channel(int i);
+        
+                const Pythia8::DecayChannel& channel(int i) const;
+        
                 void rescaleBR(double newSumBR);
         
                 void rescaleBR();
@@ -238,6 +243,8 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 bool preparePick(int idSgn, double mHat);
         
                 bool preparePick(int idSgn);
+        
+                Pythia8::DecayChannel& pickChannel();
         
                 void resInit(WrapperBase< Pythia8::Abstract_Info >* infoPtrIn, WrapperBase< Pythia8::Abstract_Settings >* settingsPtrIn, WrapperBase< Pythia8::Abstract_ParticleData >* particleDataPtrIn, WrapperBase< Pythia8::Abstract_Couplings >* couplingsPtrIn);
         

@@ -50,6 +50,10 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     }
     namespace Pythia8
     {
+        class DecayChannel;
+    }
+    namespace Pythia8
+    {
         class Hist;
     }
     namespace Pythia8

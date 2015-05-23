@@ -14,10 +14,6 @@
 ///
 ///  *********************************************
 
-///
-/// @TODO Replace SLHAea pseudo-code with actual code
-///
-
 #ifndef __ColliderBit_rollcall_hpp__
 #define __ColliderBit_rollcall_hpp__
 
@@ -91,7 +87,7 @@ START_MODULE
     NEEDS_CLASSES_FROM(Pythia, default)
     DEPENDENCY(HardScatteringSim, Gambit::ColliderBit::SpecializablePythia)
 /// @TODO Replace SLHAea pseudo-code with actual code:
-    /// DEPENDENCY(SLHAeaFromSomewhere, SLHAea)
+    /// DEPENDENCY(SLHAeaFromSomewhere, SLHAea::Coll)
     #undef FUNCTION
   /// For now, let's stick to what we already have running.
   /// \todo Replace BLAH_* with the proper types.  Put those types in the proper place for types / typedefs.
