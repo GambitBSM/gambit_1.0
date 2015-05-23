@@ -64,9 +64,10 @@
 #define DECLARE_BACKEND_REQ(GROUP, REQUIREMENT, TAGS, TYPE, ARGS, IS_VARIABLE) \
                                                           MODULE_BACKEND_REQ(GROUP, REQUIREMENT, TAGS, TYPE, ARGS, IS_VARIABLE) 
 #define ACTIVATE_BACKEND_REQ_FOR_MODELS(MODELS,TAGS)      DUMMYARG(MODELS,TAGS)                   
-#define START_CONDITIONAL_DEPENDENCY(TYPE)                MODULE_START_CONDITIONAL_DEPENDENCY(TYPE,MODULE,FUNCTION)
+#define START_CONDITIONAL_DEPENDENCY(TYPE)                MODULE_DEPENDENCY(CONDITIONAL_DEPENDENCY, TYPE, MODULE, FUNCTION)
 #define ACTIVATE_DEP_BE(BACKEND_REQ, BACKEND, VERSTRING)  DUMMYARG(BACKEND_REQ, BACKEND, VERSTRING)
 #define ACTIVATE_FOR_MODELS(...)                          DUMMYARG(__VA_ARGS__)
+#define MODEL_CONDITIONAL_DEPENDENCY(DEP, TYPE, ...)      MODULE_DEPENDENCY(DEP, TYPE, MODULE, FUNCTION)
 #define BACKEND_OPTION(BACKEND_AND_VERSIONS,TAGS)         DUMMYARG(BACKEND_AND_VERSIONS,TAGS)
 #define FORCE_SAME_BACKEND(...)                           DUMMYARG(__VA_ARGS__)                               
 #define CLASSLOAD_NEEDED(...)                             DUMMYARG(__VA_ARGS__)
@@ -300,12 +301,6 @@
       }                                                                        \
     }                                                                          \
   }                                                                            \
-
-
-/// Redirection of START_CONDITIONAL_DEPENDENCY(TYPE) when invoked from within 
-/// a module.
-#define MODULE_START_CONDITIONAL_DEPENDENCY(TYPE, MODULE, FUNCTION)            \
-  MODULE_DEPENDENCY(CONDITIONAL_DEPENDENCY, TYPE, MODULE, FUNCTION)            \
 
 /// @}
 

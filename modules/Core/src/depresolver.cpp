@@ -891,11 +891,10 @@ namespace Gambit
       {
         // Match capabilities and types (no type comparison when no types are
         // given; this can only apply to output nodes).
-        if (masterGraph[*vi]->capability() == quantity.first and 
-             (
-              masterGraph[*vi]->type() == quantity.second or 
-              quantity.second == "" or quantity.second == "*"
-             )
+        if ( masterGraph[*vi]->capability() == quantity.first and
+             (masterGraph[*vi]->type() == quantity.second or
+              quantity.second == "" or quantity.second == "*") and
+             *vi != toVertex  // No self-resolution
            )
         {
           // Add vertex to appropriate candidate list
@@ -1781,6 +1780,7 @@ namespace Gambit
                  <<     printGenericFunctorList(disabledVertexCandidates)
                  << endl
                  << "Status flags:" << endl
+                 << " 1: This function is available, but the backend version does not match your request." << endl
                  << " 0: This function is not compatible with any model you are scanning." << endl
                  << "-1: The backend that provides this function is missing." << endl
                  << "-2: The backend is present, but function is absent or broken." << endl
