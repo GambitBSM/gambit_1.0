@@ -1024,9 +1024,10 @@ namespace Gambit
         }
       }
 
-      logger()<<"Number of identified rules (weak rules): "
-        <<rules.size()<< " ("<<rules.size() - strong_rules.size()<<")"
-        <<endl<<endl;
+      logger()<<"Number of identified rules: "
+        <<rules.size()<< endl;
+      logger()<<"Number of these rules that are marked as !weak: "
+        <<rules.size()-strong_rules.size()<<endl<<endl;
 
       // Make filtered lists
       for (std::vector<DRes::VertexID>::const_iterator 
