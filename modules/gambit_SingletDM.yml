@@ -8,7 +8,7 @@ Parameters:
     StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
     SingletDM:
         mass:
-            range: [45, 100]
+            range: [45.001, 100]
             prior_type: log
         lambda:
             range: [0.005, 0.5]

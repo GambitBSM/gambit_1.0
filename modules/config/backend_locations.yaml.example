@@ -47,7 +47,7 @@ SuperIso:
   3.4:         ./Backends/lib/libsuperiso.so
 
 gamLike:
-  1.0.0:       ./Backends/lib/libgamLike.so
+  1.0.0:       ../extras/gamLike/gamLike.so
 
 MicrOmegas:
   3.5.5:       ./Backends/lib/libmicromegas.so
