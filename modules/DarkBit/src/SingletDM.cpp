@@ -81,6 +81,8 @@ namespace Gambit
           if ( sqrt_s < 90 ) 
           {
             // FIXME: This should not crash the code
+            std::cout << "SingletDM sigmav called with sqrt_s < 90 GeV." << std::endl;
+            std::cout << "This exception should be caught correctly and not crash gambit." << std::endl;
             invalid_point().raise(
                 "SingletDM sigmav called with sqrt_s < 90 GeV.");
             return 0;
@@ -398,9 +400,9 @@ namespace Gambit
         {
           if ( mass > catalog.particleProperties.at(p1[i]).mass )
           {
-            Funk::Funk kinematicFunction = 
-              Funk::funcM(singletDM, &SingletDM::sv, channel[i], lambda,
-                  mass, Funk::var("v"));
+            Funk::Funk kinematicFunction = Funk::funcM(singletDM,
+                &SingletDM::sv, channel[i], lambda, mass, Funk::var("v"));
+            auto w = kinematicFunction->bind("v");
             std::vector<std::string> finalStates = Funk::vec<std::string>(p1[i], p2[i]);
             TH_Channel channel(finalStates, kinematicFunction);
             process_ann.channelList.push_back(channel);

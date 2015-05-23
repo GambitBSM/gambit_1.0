@@ -1144,6 +1144,7 @@ namespace Funk
         private:
             void setup(Funk f, std::vector<double> & Xgrid, std::vector<double> & Ygrid, std::string mode)
             {
+                // FIXME: Catch invalid setup
                 functions = vec(f);
                 singularities = f->getSingl();
                 arguments = f->getArgs();
@@ -1156,8 +1157,9 @@ namespace Funk
             double logInterp(double x)
             {
                 // Linear interpolation in log-log space
-                if (x<Xgrid.front() or x>Xgrid.back()) return 0;
-                int i = 0; for (; Xgrid[i] < x; i++) {};  // Find index
+                int i = 0; int imax = Xgrid.size() - 1;
+                if (x<Xgrid[0] or x>Xgrid[imax]) return 0;
+                for (; i < imax; i++) {if (Xgrid[i] > x) break;};
                 double x0 = Xgrid[i-1];
                 double x1 = Xgrid[i];
                 double y0 = Ygrid[i-1];
@@ -1168,8 +1170,9 @@ namespace Funk
             double linearInterp(double x)
             {
                 // Linear interpolation in lin-lin space
-                if (x<Xgrid.front() or x>Xgrid.back()) return 0;
-                int i = 0; for (; Xgrid[i] < x; i++) {};  // Find index
+                int i = 0; int imax = Xgrid.size() - 1;
+                if (x<Xgrid[0] or x>Xgrid[imax]) return 0;
+                for (; i < imax; i++) {if (Xgrid[i] > x) break;};
                 double x0 = Xgrid[i-1];
                 double x1 = Xgrid[i];
                 double y0 = Ygrid[i-1];
