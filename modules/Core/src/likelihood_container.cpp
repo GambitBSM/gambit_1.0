@@ -11,7 +11,7 @@
 ///  \author Christoph Weniger
 ///    (c.weniger@uva.nl)
 ///  \date 2013 May, June, July
-//
+///
 ///  \author Gregory Martinez
 ///    (gregory.david.martinez@gmail.com)
 ///  \date 2013 July
@@ -57,11 +57,9 @@ namespace Gambit
     target_vertices.resize(size);
   }
 			
-  inline void Likelihood_Container_Base::calcObsLike(DRes::VertexID&)
+  inline void Likelihood_Container_Base::calcObsLike(DRes::VertexID& it)
   {
-    // TODO: dependencyResolver.calcObsLike now requires (int) pointID argument
-    // See Likelihood_Container version
-    //dependencyResolver.calcObsLike(it);
+    dependencyResolver.calcObsLike(it,getPtID());
   }
 
   inline double Likelihood_Container_Base::getObsLike(DRes::VertexID &it)
@@ -112,14 +110,10 @@ namespace Gambit
    min_valid_lnlike (iniFile.getValue<double>("likelihood", "model_invalid_for_lnlike_below"))
   {}
   
-  /// TODO: Had to overwrite this so that pointID can be accessed
-  inline void Likelihood_Container::calcObsLike(DRes::VertexID &it)
-  {
-    dependencyResolver.calcObsLike(it,getPtID());
-  }
- 
   /// Evaluate total likelihood function
-  // TODO sort out print statements for invalid points and invalid observables associated with otherwise valid points (ie ones with valid like calculations).				
+  // TODO sort out print statements for invalid points and invalid observables associated with otherwise valid points 
+  // (ie ones with valid likelihood calculations but invalid auxilary observables).	 Invalid observables should be identified by
+  // functor::retrieve_invalid_point_exception() != NULL in printers.
   double Likelihood_Container::main (const std::vector<double> &in)
   {
     double lnlike = 0;
@@ -136,7 +130,8 @@ namespace Gambit
       {
         calcObsLike(*it); //pointID is passed through to the printer call for each functor
         lnlike += getObsLike(*it);
-        if (lnlike <= min_valid_lnlike) dependencyResolver.invalidatePointAt(*it);
+        bool isnan = Utils::isnan(lnlike);
+        if (isnan or lnlike <= min_valid_lnlike) dependencyResolver.invalidatePointAt(*it, isnan);
         logger() << LogTags::core << "done with likelihood vertex " << *it << EOM;
       }
       // Catch points that are invalid, either due to low like or pathology.  Skip the rest of the vertices if a point is invalid.
@@ -164,12 +159,11 @@ namespace Gambit
         {
           logger() << LogTags::core << "The calculation was declared invalid by " << e.thrower()->origin()
                    << "::" << e.thrower()->name() << ".  *Shrug*." << EOM;
-          // FIXME Pat: not sure what else to do here exactly when a calculation of an auxiliary quantity fails but the likelihood is ok.
         }
       }
     }
       
-    resetAll();     
+    resetAll();
     return lnlike;
   }
 

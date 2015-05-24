@@ -430,7 +430,7 @@ Logger:
     [BackendIniBit]: "BackendIniBit.log"
     [LibFirst] : "libfirst.log"
   #  [Logger, Debug] : "stdout"
-  #  [Core] : "stdout"
+    [Core] : "Core.log"
   #  [Dependency Resolver] : "stdout"
 
 
@@ -448,12 +448,6 @@ Logger:
 
 KeyValues:
 
-  # Some example keys and subkeys
-  my_key: 123
-  another_key:
-    subkey3:
-      subsubkey1: value2
-
   dependency_resolution:
     prefer_model_specific_functions: true
 
@@ -466,14 +460,3 @@ KeyValues:
     dependency_resolver_warning: non-fatal
     core_warning: fatal
     ExampleBit_A_error: non-fatal
-
-  enable_testing: false
-  test_function: uniform
-      
-  uniform:
-    dim: 2
-    priors:
-      gauss_prior:
-        parameters: [0, 1]
-        options:
-          cov: [[1, 0], [0, 1]]

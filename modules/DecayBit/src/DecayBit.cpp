@@ -71,7 +71,6 @@ namespace Gambit
       result.positive_error = 5.0e-01;
       result.negative_error = 5.0e-01;
       result.set_BF(0.91, 0.04, "W+", "b");  
-      result.set_BF(0.0, 0.0, "H+", "b");
     }
 
     /// SM decays: tbar
