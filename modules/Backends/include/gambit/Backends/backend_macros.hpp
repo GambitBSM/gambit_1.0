@@ -123,9 +123,12 @@ namespace Gambit                                                            \
 #define BE_ALLOW_MODEL(MODEL)                                               \
 BE_NAMESPACE                                                                \
 {                                                                           \
-  int CAT(MODEL,_OK) = vectorstr_push_back(allowed_models,STRINGIFY(MODEL));\
+  const int CAT(MODEL,_OK) =                                                \
+   vectorstr_push_back(allowed_models,STRINGIFY(MODEL));                    \
 }                                                                           \
 DONE                                                                        \
+CORE_ALLOWED_MODEL(BackendIniBit,CAT_4(BACKENDNAME,_,SAFE_VERSION,_init),   \
+ MODEL)                                                                     \
         
 /// Set all the allowed models for a given backend functor.
 #define SET_ALLOWED_MODELS(NAME, MODELS)                                    \
@@ -138,7 +141,7 @@ int CAT(allowed_models_set_,NAME) =                                         \
   {                                                                         \
     namespace Pipes                                                         \
     {                                                                       \
-      namespace CAT_5(BACKENDNAME,_,SAFE_VERSION,_,init)                    \
+      namespace CAT_4(BACKENDNAME,_,SAFE_VERSION,_init)                     \
       {                                                                     \
         namespace InUse                                                     \
         {                                                                   \
@@ -184,10 +187,10 @@ BOOST_PP_IIF(DO_CLASSLOADING, LOAD_ALL_FACTORIES, )                         \
                                                                             \
 /* Register the initialisation function for this backend */                 \
 CORE_START_CAPABILITY(BackendIniBit,                                        \
- CAT_5(BACKENDNAME,_,SAFE_VERSION,_,init))                                  \
+ CAT_4(BACKENDNAME,_,SAFE_VERSION,_init))                                   \
 CORE_DECLARE_FUNCTION(BackendIniBit,                                        \
- CAT_5(BACKENDNAME,_,SAFE_VERSION,_,init),                                  \
- CAT_5(BACKENDNAME,_,SAFE_VERSION,_,init),                                  \
+ CAT_4(BACKENDNAME,_,SAFE_VERSION,_init),                                   \
+ CAT_4(BACKENDNAME,_,SAFE_VERSION,_init),                                   \
  void,2)                                                                    \
 
 /// Register this backend with the Core if not running in standalone mode.

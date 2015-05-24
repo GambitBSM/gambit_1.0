@@ -330,6 +330,10 @@ Rules:
   - capability: DD_couplings
     function: DD_couplings_DarkSUSY
 
+  - !weak
+    capability: DD_couplings
+    function: DD_couplings_MicrOmegas
+
   #ColliderBit options (note, these ones are mandatory at this moment)
   - capability:  colliderLoopManager
     function:    manageVanillaLoop

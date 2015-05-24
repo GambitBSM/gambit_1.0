@@ -22,7 +22,7 @@
 ///          (p.scott@imperial.ac.uk)
 ///  \date 2014 Aug
 ///  \author Csaba Balazs
-///  \date 2015 Jan-Mar
+///  \date 2015 Jan-May
 ///
 ///  *********************************************
 
@@ -35,42 +35,477 @@
 #define MODULE DecayBit
 START_MODULE
 
-// CsB >
-#define CAPABILITY testSUSYBRs            // A physical observable or likelihood that this module can calculate.  There may be one or more 
-START_CAPABILITY                          //  functions in this module that can calculate this particular thing in different ways.
-
-  #define FUNCTION decayTest              // Name of an observable function
-  START_FUNCTION(double)                  // Declare that this function calculates the observable as a double precision variable
-  BACKEND_REQ(sdecay, (), void, ())       // Register the backend function "sdecay"
-  BACKEND_REQ(cb_sd_top2body, (), sd_top2body_type)
-  BACKEND_REQ(cb_sd_topwidth, (), sd_topwidth_type)
-  #undef FUNCTION
+  #define CAPABILITY testSUSYBRs            // A physical observable or likelihood that this module can calculate.  There may be one or more 
+  START_CAPABILITY                          //  functions in this module that can calculate this particular thing in different ways.
+  
+    #define FUNCTION decayTest              // Name of an observable function
+    START_FUNCTION(double)                  // Declare that this function calculates the observable as a double precision variable
+    BACKEND_REQ(cb_sd_top2body, (sh_reqd), sd_top2body_type)
+    BACKEND_REQ(cb_sd_topwidth, (sh_reqd), sd_topwidth_type)
+    BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
+    #undef FUNCTION
 	
-#undef CAPABILITY
-// CsB <
+  #undef CAPABILITY
 
   #define CAPABILITY Higgs_decay_rates
   START_CAPABILITY
 
-    #define FUNCTION SMHiggs_decays
+    //#define FUNCTION SMHiggs_decays
+    //START_FUNCTION(DecayTable::Entry)
+    //#undef FUNCTION
+
+    #define FUNCTION MSSM_h0_1_decays
     START_FUNCTION(DecayTable::Entry)
-    DEPENDENCY(SM_spectrum, SubSpectrum*) 
+    BACKEND_REQ(cb_widthhl_hdec, (sh_reqd), widthhl_hdec_type)
+    BACKEND_REQ(cb_wisusy_hdec, (sh_reqd), wisusy_hdec_type)
+    BACKEND_REQ(cb_wisfer_hdec, (sh_reqd), wisfer_hdec_type)
+    BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
+    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
     #undef FUNCTION
 
-    #define FUNCTION MSSMHiggs_decays
+    #define FUNCTION SS_Higgs_decays
     START_FUNCTION(DecayTable::Entry)
-    DEPENDENCY(MSSM_spectrum, SubSpectrum*) 
-    ALLOW_MODELS(MSSM78atQ)
+    //DEPENDENCY(SS_Spectrum, const Spectrum*) 
+    DEPENDENCY(Higgs_decay_rates, DecayTable::Entry)
+    ALLOW_MODEL(SingletDM)
+    #undef FUNCTION
+
+  #undef CAPABILITY
+  
+  #define CAPABILITY h0_2_decay_rates
+  START_CAPABILITY
+  
+    #define FUNCTION h0_2_decays
+    START_FUNCTION(DecayTable::Entry)
+    BACKEND_REQ(cb_widthhh_hdec, (sh_reqd), widthhh_hdec_type)
+    BACKEND_REQ(cb_wisusy_hdec, (sh_reqd), wisusy_hdec_type)
+    BACKEND_REQ(cb_wisfer_hdec, (sh_reqd), wisfer_hdec_type)
+    BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
+    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
+    #undef FUNCTION
+  
+  #undef CAPABILITY
+  
+  #define CAPABILITY A0_decay_rates
+  START_CAPABILITY
+
+    #define FUNCTION A0_decays
+    START_FUNCTION(DecayTable::Entry)
+    BACKEND_REQ(cb_widtha_hdec, (sh_reqd), widtha_hdec_type)
+    BACKEND_REQ(cb_wisusy_hdec, (sh_reqd), wisusy_hdec_type)
+    BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
+    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
+    #undef FUNCTION
+ 
+  #undef CAPABILITY
+
+  #define CAPABILITY Hplus_decay_rates
+  START_CAPABILITY
+
+    #define FUNCTION Hplus_decays
+    START_FUNCTION(DecayTable::Entry)
+    BACKEND_REQ(cb_widthhc_hdec, (sh_reqd), widthhc_hdec_type)
+    BACKEND_REQ(cb_wisusy_hdec, (sh_reqd), wisusy_hdec_type)
+    BACKEND_REQ(cb_wisfer_hdec, (sh_reqd), wisfer_hdec_type)
+    BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
+    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
     #undef FUNCTION
 
   #undef CAPABILITY
 
+  #define CAPABILITY gluino_decay_rates
+  START_CAPABILITY
+
+    #define FUNCTION gluino_decays
+    START_FUNCTION(DecayTable::Entry)
+    BACKEND_REQ(cb_sd_gluiwidth, (sh_reqd), sd_gluiwidth_type)
+    BACKEND_REQ(cb_sd_glui2body, (sh_reqd), sd_glui2body_type)
+    BACKEND_REQ(cb_sd_gluiloop, (sh_reqd), sd_gluiloop_type)
+    BACKEND_REQ(cb_sd_glui3body, (sh_reqd), sd_glui3body_type)
+    BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
+    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
+    #undef FUNCTION
+
+  #undef CAPABILITY
+
+  #define CAPABILITY stop_1_decay_rates
+  START_CAPABILITY
+
+    #define FUNCTION stop_1_decays
+    START_FUNCTION(DecayTable::Entry)
+    BACKEND_REQ(cb_sd_stopwidth, (sh_reqd), sd_stopwidth_type)
+    BACKEND_REQ(cb_sd_stop2body, (sh_reqd), sd_stop2body_type)
+    BACKEND_REQ(cb_sd_stoploop, (sh_reqd), sd_stoploop_type)
+    BACKEND_REQ(cb_sd_stop3body, (sh_reqd), sd_stop3body_type)
+    BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
+    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
+    #undef FUNCTION
+
+  #undef CAPABILITY
+
+  #define CAPABILITY stop_2_decay_rates
+  START_CAPABILITY
+
+    #define FUNCTION stop_2_decays
+    START_FUNCTION(DecayTable::Entry)
+    BACKEND_REQ(cb_sd_stopwidth, (sh_reqd), sd_stopwidth_type)
+    BACKEND_REQ(cb_sd_stop2body, (sh_reqd), sd_stop2body_type)
+    BACKEND_REQ(cb_sd_stop3body, (sh_reqd), sd_stop3body_type)
+    BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
+    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
+    #undef FUNCTION
+
+  #undef CAPABILITY
+
+  #define CAPABILITY sbottom_1_decay_rates
+  START_CAPABILITY
+
+    #define FUNCTION sbottom_1_decays
+    START_FUNCTION(DecayTable::Entry)
+    BACKEND_REQ(cb_sd_sbotwidth, (sh_reqd), sd_sbotwidth_type)
+    BACKEND_REQ(cb_sd_sbot2body, (sh_reqd), sd_sbot2body_type)
+    BACKEND_REQ(cb_sd_sbot3body, (sh_reqd), sd_sbot3body_type)
+    BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
+    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
+    #undef FUNCTION
+
+  #undef CAPABILITY
+
+  #define CAPABILITY sbottom_2_decay_rates
+  START_CAPABILITY
+
+    #define FUNCTION sbottom_2_decays
+    START_FUNCTION(DecayTable::Entry)
+    BACKEND_REQ(cb_sd_sbotwidth, (sh_reqd), sd_sbotwidth_type)
+    BACKEND_REQ(cb_sd_sbot2body, (sh_reqd), sd_sbot2body_type)
+    BACKEND_REQ(cb_sd_sbot3body, (sh_reqd), sd_sbot3body_type)
+    BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
+    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
+    #undef FUNCTION
+
+  #undef CAPABILITY
+
+  #define CAPABILITY sup_l_decay_rates
+  START_CAPABILITY
+
+    #define FUNCTION sup_l_decays
+    START_FUNCTION(DecayTable::Entry)
+    BACKEND_REQ(cb_sd_supwidth, (sh_reqd), sd_supwidth_type)
+    BACKEND_REQ(cb_sd_sup2body, (sh_reqd), sd_sup2body_type)
+    BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
+    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
+    #undef FUNCTION
+
+  #undef CAPABILITY
+
+  #define CAPABILITY sup_r_decay_rates
+  START_CAPABILITY
+
+    #define FUNCTION sup_r_decays
+    START_FUNCTION(DecayTable::Entry)
+    BACKEND_REQ(cb_sd_supwidth, (sh_reqd), sd_supwidth_type)
+    BACKEND_REQ(cb_sd_sup2body, (sh_reqd), sd_sup2body_type)
+    BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
+    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
+    #undef FUNCTION
+
+  #undef CAPABILITY
+
+  #define CAPABILITY sdown_l_decay_rates
+  START_CAPABILITY
+
+    #define FUNCTION sdown_l_decays
+    START_FUNCTION(DecayTable::Entry)
+    BACKEND_REQ(cb_sd_sdownwidth, (sh_reqd), sd_sdownwidth_type)
+    BACKEND_REQ(cb_sd_sdown2body, (sh_reqd), sd_sdown2body_type)
+    BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
+    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
+    #undef FUNCTION
+
+  #undef CAPABILITY
+
+  #define CAPABILITY sdown_r_decay_rates
+  START_CAPABILITY
+
+    #define FUNCTION sdown_r_decays
+    START_FUNCTION(DecayTable::Entry)
+    BACKEND_REQ(cb_sd_sdownwidth, (sh_reqd), sd_sdownwidth_type)
+    BACKEND_REQ(cb_sd_sdown2body, (sh_reqd), sd_sdown2body_type)
+    BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
+    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
+    #undef FUNCTION
+
+  #undef CAPABILITY
+
+  #define CAPABILITY scharm_l_decay_rates
+  START_CAPABILITY
+
+    #define FUNCTION scharm_l_decays
+    START_FUNCTION(DecayTable::Entry)
+    BACKEND_REQ(cb_sd_supwidth, (sh_reqd), sd_supwidth_type)
+    BACKEND_REQ(cb_sd_sup2body, (sh_reqd), sd_sup2body_type)
+    BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
+    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
+    #undef FUNCTION
+
+  #undef CAPABILITY
+
+  #define CAPABILITY scharm_r_decay_rates
+  START_CAPABILITY
+
+    #define FUNCTION scharm_r_decays
+    START_FUNCTION(DecayTable::Entry)
+    BACKEND_REQ(cb_sd_supwidth, (sh_reqd), sd_supwidth_type)
+    BACKEND_REQ(cb_sd_sup2body, (sh_reqd), sd_sup2body_type)
+    BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
+    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
+    #undef FUNCTION
+
+  #undef CAPABILITY
+
+  #define CAPABILITY sstrange_l_decay_rates
+  START_CAPABILITY
+
+    #define FUNCTION sstrange_l_decays
+    START_FUNCTION(DecayTable::Entry)
+    BACKEND_REQ(cb_sd_sdownwidth, (sh_reqd), sd_sdownwidth_type)
+    BACKEND_REQ(cb_sd_sdown2body, (sh_reqd), sd_sdown2body_type)
+    BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
+    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
+    #undef FUNCTION
+
+  #undef CAPABILITY
+
+  #define CAPABILITY sstrange_r_decay_rates
+  START_CAPABILITY
+
+    #define FUNCTION sstrange_r_decays
+    START_FUNCTION(DecayTable::Entry)
+    BACKEND_REQ(cb_sd_sdownwidth, (sh_reqd), sd_sdownwidth_type)
+    BACKEND_REQ(cb_sd_sdown2body, (sh_reqd), sd_sdown2body_type)
+    BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
+    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
+    #undef FUNCTION
+
+  #undef CAPABILITY
+
+  #define CAPABILITY selectron_l_decay_rates
+  START_CAPABILITY
+
+    #define FUNCTION selectron_l_decays
+    START_FUNCTION(DecayTable::Entry)
+    BACKEND_REQ(cb_sd_selwidth, (sh_reqd), sd_selwidth_type)
+    BACKEND_REQ(cb_sd_sel2body, (sh_reqd), sd_sel2body_type)
+    BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
+    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
+    #undef FUNCTION
+
+  #undef CAPABILITY
+
+  #define CAPABILITY selectron_r_decay_rates
+  START_CAPABILITY
+
+    #define FUNCTION selectron_r_decays
+    START_FUNCTION(DecayTable::Entry)
+    BACKEND_REQ(cb_sd_selwidth, (sh_reqd), sd_selwidth_type)
+    BACKEND_REQ(cb_sd_sel2body, (sh_reqd), sd_sel2body_type)
+    BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
+    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
+    #undef FUNCTION
+
+  #undef CAPABILITY
+
+  #define CAPABILITY smuon_l_decay_rates
+  START_CAPABILITY
+
+    #define FUNCTION smuon_l_decays
+    START_FUNCTION(DecayTable::Entry)
+    BACKEND_REQ(cb_sd_selwidth, (sh_reqd), sd_selwidth_type)
+    BACKEND_REQ(cb_sd_sel2body, (sh_reqd), sd_sel2body_type)
+    BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
+    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
+    #undef FUNCTION
+
+  #undef CAPABILITY
+
+  #define CAPABILITY smuon_r_decay_rates
+  START_CAPABILITY
+
+    #define FUNCTION smuon_r_decays
+    START_FUNCTION(DecayTable::Entry)
+    BACKEND_REQ(cb_sd_selwidth, (sh_reqd), sd_selwidth_type)
+    BACKEND_REQ(cb_sd_sel2body, (sh_reqd), sd_sel2body_type)
+    BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
+    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
+    #undef FUNCTION
+
+  #undef CAPABILITY
+
+  #define CAPABILITY stau_1_decay_rates
+  START_CAPABILITY
+
+    #define FUNCTION stau_1_decays
+    START_FUNCTION(DecayTable::Entry)
+    BACKEND_REQ(cb_sd_stauwidth, (sh_reqd), sd_stauwidth_type)
+    BACKEND_REQ(cb_sd_stau2body, (sh_reqd), sd_stau2body_type)
+    BACKEND_REQ(cb_sd_stau2bodygrav, (sh_reqd), sd_stau2bodygrav_type)
+    BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
+    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
+    #undef FUNCTION
+
+  #undef CAPABILITY
+
+  #define CAPABILITY stau_2_decay_rates
+  START_CAPABILITY
+
+    #define FUNCTION stau_2_decays
+    START_FUNCTION(DecayTable::Entry)
+    BACKEND_REQ(cb_sd_stauwidth, (sh_reqd), sd_stauwidth_type)
+    BACKEND_REQ(cb_sd_stau2body, (sh_reqd), sd_stau2body_type)
+    BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
+    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
+    #undef FUNCTION
+
+  #undef CAPABILITY
+
+  #define CAPABILITY snu_electronl_decay_rates
+  START_CAPABILITY
+
+    #define FUNCTION snu_electronl_decays
+    START_FUNCTION(DecayTable::Entry)
+    BACKEND_REQ(cb_sd_snelwidth, (sh_reqd), sd_snelwidth_type)
+    BACKEND_REQ(cb_sd_snel2body, (sh_reqd), sd_snel2body_type)
+    BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
+    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
+    #undef FUNCTION
+
+  #undef CAPABILITY
+
+  #define CAPABILITY snu_muonl_decay_rates
+  START_CAPABILITY
+
+    #define FUNCTION snu_muonl_decays
+    START_FUNCTION(DecayTable::Entry)
+    BACKEND_REQ(cb_sd_snelwidth, (sh_reqd), sd_snelwidth_type)
+    BACKEND_REQ(cb_sd_snel2body, (sh_reqd), sd_snel2body_type)
+    BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
+    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
+    #undef FUNCTION
+
+  #undef CAPABILITY
+
+  #define CAPABILITY snu_taul_decay_rates
+  START_CAPABILITY
+
+    #define FUNCTION snu_taul_decays
+    START_FUNCTION(DecayTable::Entry)
+    BACKEND_REQ(cb_sd_sntauwidth, (sh_reqd), sd_sntauwidth_type)
+    BACKEND_REQ(cb_sd_sntau2body, (sh_reqd), sd_sntau2body_type)
+    BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
+    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
+    #undef FUNCTION
+
+  #undef CAPABILITY
+
+  #define CAPABILITY chargino_1_decay_rates
+  START_CAPABILITY
+
+    #define FUNCTION chargino_1_decays
+    START_FUNCTION(DecayTable::Entry)
+    BACKEND_REQ(cb_sd_charwidth, (sh_reqd), sd_charwidth_type)
+    BACKEND_REQ(cb_sd_char2body, (sh_reqd), sd_char2body_type)
+    BACKEND_REQ(cb_sd_char2bodygrav, (sh_reqd), sd_char2bodygrav_type)
+    BACKEND_REQ(cb_sd_char3body, (sh_reqd), sd_char3body_type)
+    BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
+    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
+    #undef FUNCTION
+
+  #undef CAPABILITY
+
+  #define CAPABILITY chargino_2_decay_rates
+  START_CAPABILITY
+
+    #define FUNCTION chargino_2_decays
+    START_FUNCTION(DecayTable::Entry)
+    BACKEND_REQ(cb_sd_charwidth, (sh_reqd), sd_charwidth_type)
+    BACKEND_REQ(cb_sd_char2body, (sh_reqd), sd_char2body_type)
+    BACKEND_REQ(cb_sd_char2bodygrav, (sh_reqd), sd_char2bodygrav_type)
+    BACKEND_REQ(cb_sd_char3body, (sh_reqd), sd_char3body_type)
+    BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
+    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
+    #undef FUNCTION
+
+  #undef CAPABILITY
+
+  #define CAPABILITY neutralino_1_decay_rates
+  START_CAPABILITY
+
+    #define FUNCTION neutralino_1_decays
+    START_FUNCTION(DecayTable::Entry)
+    BACKEND_REQ(cb_sd_neutwidth, (sh_reqd), sd_neutwidth_type)
+    BACKEND_REQ(cb_sd_neut2body, (sh_reqd), sd_neut2body_type)
+    BACKEND_REQ(cb_sd_neut2bodygrav, (sh_reqd), sd_neut2bodygrav_type)
+    BACKEND_REQ(cb_sd_neut3body, (sh_reqd), sd_neut3body_type)
+    BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
+    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
+    #undef FUNCTION
+
+  #undef CAPABILITY
+
+  #define CAPABILITY neutralino_2_decay_rates
+  START_CAPABILITY
+
+    #define FUNCTION neutralino_2_decays
+    START_FUNCTION(DecayTable::Entry)
+    BACKEND_REQ(cb_sd_neutwidth, (sh_reqd), sd_neutwidth_type)
+    BACKEND_REQ(cb_sd_neut2body, (sh_reqd), sd_neut2body_type)
+    BACKEND_REQ(cb_sd_neut2bodygrav, (sh_reqd), sd_neut2bodygrav_type)
+    BACKEND_REQ(cb_sd_neutloop, (sh_reqd), sd_neutloop_type)
+    BACKEND_REQ(cb_sd_neut3body, (sh_reqd), sd_neut3body_type)
+    BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
+    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
+    #undef FUNCTION
+
+  #undef CAPABILITY
+
+  #define CAPABILITY neutralino_3_decay_rates
+  START_CAPABILITY
+
+    #define FUNCTION neutralino_3_decays
+    START_FUNCTION(DecayTable::Entry)
+    BACKEND_REQ(cb_sd_neutwidth, (sh_reqd), sd_neutwidth_type)
+    BACKEND_REQ(cb_sd_neut2body, (sh_reqd), sd_neut2body_type)
+    BACKEND_REQ(cb_sd_neut2bodygrav, (sh_reqd), sd_neut2bodygrav_type)
+    BACKEND_REQ(cb_sd_neutloop, (sh_reqd), sd_neutloop_type)
+    BACKEND_REQ(cb_sd_neut3body, (sh_reqd), sd_neut3body_type)
+    BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
+    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
+    #undef FUNCTION
+
+  #undef CAPABILITY
+
+  #define CAPABILITY neutralino_4_decay_rates
+  START_CAPABILITY
+
+    #define FUNCTION neutralino_4_decays
+    START_FUNCTION(DecayTable::Entry)
+    BACKEND_REQ(cb_sd_neutwidth, (sh_reqd), sd_neutwidth_type)
+    BACKEND_REQ(cb_sd_neut2body, (sh_reqd), sd_neut2body_type)
+    BACKEND_REQ(cb_sd_neut2bodygrav, (sh_reqd), sd_neut2bodygrav_type)
+    BACKEND_REQ(cb_sd_neutloop, (sh_reqd), sd_neutloop_type)
+    BACKEND_REQ(cb_sd_neut3body, (sh_reqd), sd_neut3body_type)
+    BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
+    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
+    #undef FUNCTION
+
+  #undef CAPABILITY
+  
   #define CAPABILITY decay_rates
   START_CAPABILITY
 
     #define FUNCTION all_decays
     START_FUNCTION(DecayTable)
-    //DEPENDENCY(Higgs_decay_rates, DecayTable::Entry) 
+    DEPENDENCY(Higgs_decay_rates, DecayTable::Entry) 
     DEPENDENCY(W_minus_decay_rates, DecayTable::Entry)
     DEPENDENCY(W_plus_decay_rates, DecayTable::Entry)
     DEPENDENCY(Z_decay_rates, DecayTable::Entry)
@@ -88,6 +523,37 @@ START_CAPABILITY                          //  functions in this module that can 
     DEPENDENCY(rho_minus_decay_rates, DecayTable::Entry)
     DEPENDENCY(rho_plus_decay_rates, DecayTable::Entry)
     DEPENDENCY(omega_decay_rates, DecayTable::Entry)
+    MODEL_CONDITIONAL_DEPENDENCY(h0_2_decay_rates, DecayTable::Entry, MSSM78atQ, MSSM78atMGUT) 
+    MODEL_CONDITIONAL_DEPENDENCY(A0_decay_rates, DecayTable::Entry, MSSM78atQ, MSSM78atMGUT) 
+    MODEL_CONDITIONAL_DEPENDENCY(Hplus_decay_rates, DecayTable::Entry, MSSM78atQ, MSSM78atMGUT) 
+    MODEL_CONDITIONAL_DEPENDENCY(gluino_decay_rates, DecayTable::Entry, MSSM78atQ, MSSM78atMGUT) 
+    MODEL_CONDITIONAL_DEPENDENCY(stop_1_decay_rates, DecayTable::Entry, MSSM78atQ, MSSM78atMGUT) 
+    MODEL_CONDITIONAL_DEPENDENCY(stop_2_decay_rates, DecayTable::Entry, MSSM78atQ, MSSM78atMGUT) 
+    MODEL_CONDITIONAL_DEPENDENCY(sbottom_1_decay_rates, DecayTable::Entry, MSSM78atQ, MSSM78atMGUT) 
+    MODEL_CONDITIONAL_DEPENDENCY(sbottom_2_decay_rates, DecayTable::Entry, MSSM78atQ, MSSM78atMGUT) 
+    MODEL_CONDITIONAL_DEPENDENCY(sup_l_decay_rates, DecayTable::Entry, MSSM78atQ, MSSM78atMGUT) 
+    MODEL_CONDITIONAL_DEPENDENCY(sup_r_decay_rates, DecayTable::Entry, MSSM78atQ, MSSM78atMGUT) 
+    MODEL_CONDITIONAL_DEPENDENCY(sdown_l_decay_rates, DecayTable::Entry, MSSM78atQ, MSSM78atMGUT) 
+    MODEL_CONDITIONAL_DEPENDENCY(sdown_r_decay_rates, DecayTable::Entry, MSSM78atQ, MSSM78atMGUT) 
+    MODEL_CONDITIONAL_DEPENDENCY(scharm_l_decay_rates, DecayTable::Entry, MSSM78atQ, MSSM78atMGUT) 
+    MODEL_CONDITIONAL_DEPENDENCY(scharm_r_decay_rates, DecayTable::Entry, MSSM78atQ, MSSM78atMGUT) 
+    MODEL_CONDITIONAL_DEPENDENCY(sstrange_l_decay_rates, DecayTable::Entry, MSSM78atQ, MSSM78atMGUT) 
+    MODEL_CONDITIONAL_DEPENDENCY(sstrange_r_decay_rates, DecayTable::Entry, MSSM78atQ, MSSM78atMGUT) 
+    MODEL_CONDITIONAL_DEPENDENCY(selectron_l_decay_rates, DecayTable::Entry, MSSM78atQ, MSSM78atMGUT) 
+    MODEL_CONDITIONAL_DEPENDENCY(selectron_r_decay_rates, DecayTable::Entry, MSSM78atQ, MSSM78atMGUT) 
+    MODEL_CONDITIONAL_DEPENDENCY(smuon_l_decay_rates, DecayTable::Entry, MSSM78atQ, MSSM78atMGUT) 
+    MODEL_CONDITIONAL_DEPENDENCY(smuon_r_decay_rates, DecayTable::Entry, MSSM78atQ, MSSM78atMGUT) 
+    MODEL_CONDITIONAL_DEPENDENCY(stau_1_decay_rates, DecayTable::Entry, MSSM78atQ, MSSM78atMGUT) 
+    MODEL_CONDITIONAL_DEPENDENCY(stau_2_decay_rates, DecayTable::Entry, MSSM78atQ, MSSM78atMGUT) 
+    MODEL_CONDITIONAL_DEPENDENCY(snu_electronl_decay_rates, DecayTable::Entry, MSSM78atQ, MSSM78atMGUT) 
+    MODEL_CONDITIONAL_DEPENDENCY(snu_muonl_decay_rates, DecayTable::Entry, MSSM78atQ, MSSM78atMGUT) 
+    MODEL_CONDITIONAL_DEPENDENCY(snu_taul_decay_rates, DecayTable::Entry, MSSM78atQ, MSSM78atMGUT) 
+    MODEL_CONDITIONAL_DEPENDENCY(chargino_1_decay_rates, DecayTable::Entry, MSSM78atQ, MSSM78atMGUT) 
+    MODEL_CONDITIONAL_DEPENDENCY(chargino_2_decay_rates, DecayTable::Entry, MSSM78atQ, MSSM78atMGUT) 
+    MODEL_CONDITIONAL_DEPENDENCY(neutralino_1_decay_rates, DecayTable::Entry, MSSM78atQ, MSSM78atMGUT) 
+    MODEL_CONDITIONAL_DEPENDENCY(neutralino_2_decay_rates, DecayTable::Entry, MSSM78atQ, MSSM78atMGUT) 
+    MODEL_CONDITIONAL_DEPENDENCY(neutralino_3_decay_rates, DecayTable::Entry, MSSM78atQ, MSSM78atMGUT) 
+    MODEL_CONDITIONAL_DEPENDENCY(neutralino_4_decay_rates, DecayTable::Entry, MSSM78atQ, MSSM78atMGUT) 
     #undef FUNCTION
 
   #undef CAPABILITY
@@ -113,6 +579,5 @@ QUICK_FUNCTION(DecayBit, rho_minus_decay_rates, NEW_CAPABILITY, rho_minus_decays
 QUICK_FUNCTION(DecayBit, rho_plus_decay_rates, NEW_CAPABILITY, rho_plus_decays, DecayTable::Entry)
 QUICK_FUNCTION(DecayBit, omega_decay_rates, NEW_CAPABILITY, omega_decays, DecayTable::Entry)
 
-
 #endif /* defined(__DecayBit_rollcall_hpp__) */
-
+ 

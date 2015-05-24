@@ -203,6 +203,10 @@
 /// should be activated if the model being scanned matches one of the models passed as an argument.
 #define ACTIVATE_FOR_MODELS(...)                          ACTIVATE_DEP_MODEL(MODULE, CAPABILITY, FUNCTION, CONDITIONAL_DEPENDENCY, #__VA_ARGS__)
 
+/// Quick, one-line declaration of model-conditional dependencies
+#define MODEL_CONDITIONAL_DEPENDENCY(DEP, TYPE, ...)      CORE_START_CONDITIONAL_DEPENDENCY(MODULE, CAPABILITY, FUNCTION, DEP, TYPE) \
+                                                          ACTIVATE_DEP_MODEL(MODULE, CAPABILITY, FUNCTION, DEP, #__VA_ARGS__)                        
+
 /// Indicate that the current \link FUNCTION() FUNCTION\endlink requires classes that
 /// must be loaded from \em BACKEND, version \em VERSION.  
 #define CLASSLOAD_NEEDED(BACKEND, VERSION)               CORE_CLASSLOAD_NEEDED(BACKEND, VERSION)
@@ -632,7 +636,7 @@
     {                                                                          \
       /* Create a map to hold pointers to all the model parameters accessible  \
       to this functor */                                                       \
-      Models::safe_param_map<safe_ptr<const double> > Param;              \
+      Models::safe_param_map<safe_ptr<const double> > Param;                   \
       /* Pointer to function indicating whether a given model is in use.*/     \
       BOOST_PP_IIF(IS_TYPE(ModelParameters,TYPE), ,                            \
        bool (*ModelInUse)(str) = &Functown::CAT(FUNCTION,_modelInUse); )       \
