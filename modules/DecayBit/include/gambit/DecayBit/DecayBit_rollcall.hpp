@@ -57,6 +57,12 @@ START_MODULE
     START_FUNCTION(DecayTable::Entry)
     //DEPENDENCY(SM_Spectrum, const Spectrum*)
     #undef FUNCTION
+    // //FIXME just a dummy
+    // #define FUNCTION SM_Higgs_decays
+    // START_FUNCTION(DecayTable::Entry)
+    // DEPENDENCY(SM_spectrum, const SubSpectrum*)
+    // DEPENDENCY(MSSM_spectrum, const SubSpectrum*)
+    // #undef FUNCTION
 
     #define FUNCTION MSSM_h0_1_decays
     START_FUNCTION(DecayTable::Entry)
@@ -66,8 +72,8 @@ START_MODULE
     BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
     ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
     DEPENDENCY(MSSM_spectrum, const Spectrum*)
-    // DEPENDENCY(SM_spectrum, const SubSpectrum*)
-    // DEPENDENCY(MSSM_spectrum, const SubSpectrum*)
+    // DEPENDENCY(SM_subspectrum, const SubSpectrum*)
+    // DEPENDENCY(MSSM_subspectrum, const SubSpectrum*)
     #undef FUNCTION
 
     #define FUNCTION FH_MSSM_h0_1_decays

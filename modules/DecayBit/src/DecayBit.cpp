@@ -286,8 +286,8 @@ namespace Gambit
       //const SubSpectrum* mssm(*Dep::MSSM_spectrum->get_UV());
       //const SubSpectrum* mssm = Dep::MSSM_spectrum->get_UV();
       //fails
-      // const SubSpectrum* spec = *Dep::SM_spectrum;
-      // const SubSpectrum* mssm = *Dep::MSSM_spectrum;
+      // const SubSpectrum* spec = *Dep::SM_subspectrum;
+      // const SubSpectrum* mssm = *Dep::MSSM_subspectrum;
       double msu1 = mssm->phys.get_Pole_Mass("~u",1);
       double ZU11 = mssm->phys.get_Pole_Mixing("~u",1,1);
       std::cout << "msu1 = " << msu1 << std::endl;
