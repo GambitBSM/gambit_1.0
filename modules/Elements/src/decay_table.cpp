@@ -55,7 +55,7 @@ namespace Gambit
     
 
   /// Sum up the branching fractions for a single particle's entry and return the result.
-  double DecayTable::Entry::sum_BF()
+  double DecayTable::Entry::sum_BF() const
   {
     double sum = 0.0;
     for (auto channel = channels.begin(); channel != channels.end(); ++channel)  

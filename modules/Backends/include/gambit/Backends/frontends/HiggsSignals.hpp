@@ -37,15 +37,46 @@ LOAD_LIBRARY
 
 BE_FUNCTION(initialize_HiggsSignals_latestresults, void, (int&, int&), "initialize_higgssignals_latestresults_", "initialize_HiggsSignals_latestresults")
 BE_FUNCTION(initialize_HiggsBounds_int_HS, void, (int&, int&, int&), "initialize_higgsbounds_int_", "initialize_HiggsBounds_int_HS")
-BE_FUNCTION(HiggsBounds_input_SLHA_HS, void, (const char&), "higgsbounds_input_slha_", "HiggsBounds_input_SLHA_HS")
 BE_FUNCTION(setup_pdf, void, (int&), "setup_pdf_", "setup_pdf")
 BE_FUNCTION(run_HiggsSignals, void, (int&, double&, double&, double&, int&, double&), "run_higgssignals_", "run_HiggsSignals")
 BE_FUNCTION(HiggsSignals_neutral_input_MassUncertainty, void, (double*), "higgssignals_neutral_input_massuncertainty_", "HiggsSignals_neutral_input_MassUncertainty")
 BE_FUNCTION(setup_rate_uncertainties, void, (double*, double*), "setup_rate_uncertainties_", "setup_rate_uncertainties")
 BE_FUNCTION(finish_HiggsSignals, void, (), "finish_higgssignals_", "finish_HiggsSignals")
 BE_FUNCTION(finish_HiggsBounds_HS, void, (), "finish_higgsbounds_", "finish_HiggsBounds_HS")
-BE_INI_FUNCTION{}
-DONE
+
+// input parameter functions
+BE_FUNCTION(HiggsBounds_input_SLHA_HS, void, (const char&), "higgsbounds_input_slha_", "HiggsBounds_input_SLHA_HS")
+BE_FUNCTION(HiggsBounds_neutral_input_part_HS, void, (double*, double*, int*, double*, double*, double*, Farray<double, 1,3, 1,3>&,
+						      double*, double*, double*, double*, double*, double*, double*,
+						      double*, double*, double*, double*, double*, double*, double*,
+						      double*, double*, double*, double*, double*, double*, double*,
+						      double*, double*, double*, double*, double*, double*, double*,
+						      double*, double*, Farray<double, 1,3, 1,3>&), "higgsbounds_neutral_input_part_", "HiggsBounds_neutral_input_part_HS")
+BE_FUNCTION(HiggsBounds_charged_input_HS, void, (double*, double*, double*, double*,
+						 double*, double*, double*, double*), "higgsbounds_charged_input_", "HiggsBounds_charged_input_HS")
+
+BE_INI_FUNCTION{
+
+  // Scan-level initialisation
+  static bool scan_level = true;
+  if(scan_level){
+    int nHneut = 3; // number of neutral higgses
+    int nHplus = 1; // number of charged higgses
+    
+    // initialize HiggsSignals with the latest results
+    initialize_HiggsSignals_latestresults(nHneut,nHplus);
+
+    // choose which pdf style to use for Higgs lineshape
+    int pdf = 2; // Gaussian
+    setup_pdf(pdf);
+  }
+  scan_level = false;
+
+  // clean-up
+  // finish_HiggsSignals();
+
+}
+END_BE_INI_FUNCTION
 
 // Undefine macros to avoid conflict with other backends
 #include "gambit/Backends/backend_undefs.hpp"

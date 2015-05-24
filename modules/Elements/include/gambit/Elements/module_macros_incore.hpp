@@ -203,6 +203,10 @@
 /// should be activated if the model being scanned matches one of the models passed as an argument.
 #define ACTIVATE_FOR_MODELS(...)                          ACTIVATE_DEP_MODEL(MODULE, CAPABILITY, FUNCTION, CONDITIONAL_DEPENDENCY, #__VA_ARGS__)
 
+/// Quick, one-line declaration of model-conditional dependencies
+#define MODEL_CONDITIONAL_DEPENDENCY(DEP, TYPE, ...)      CORE_START_CONDITIONAL_DEPENDENCY(MODULE, CAPABILITY, FUNCTION, DEP, TYPE) \
+                                                          ACTIVATE_DEP_MODEL(MODULE, CAPABILITY, FUNCTION, DEP, #__VA_ARGS__)                        
+
 /// Indicate that the current \link FUNCTION() FUNCTION\endlink requires classes that
 /// must be loaded from \em BACKEND, version \em VERSION.  
 #define CLASSLOAD_NEEDED(BACKEND, VERSION)               CORE_CLASSLOAD_NEEDED(BACKEND, VERSION)

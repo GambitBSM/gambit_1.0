@@ -65,9 +65,6 @@ namespace Gambit
       double min_valid_lnlike;
 
     public:
-      /// TODO: As above, I had to add this, probably temporarily
-      inline void calcObsLike(DRes::VertexID &it);
-
       /// Constructor
       Likelihood_Container (const std::map<str, primary_model_functor *> &functorMap, 
        DRes::DependencyResolver &dependencyResolver, IniParser::IniFile &iniFile, 

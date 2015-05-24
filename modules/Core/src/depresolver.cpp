@@ -606,10 +606,17 @@ namespace Gambit
       return (*(dynamic_cast<module_functor<std::vector<double>>*>(masterGraph[vertex])))(0);
     }
 
-    // Tell functor that it invalidated the current point in model space (due to a large contribution to lnL)
-    void DependencyResolver::invalidatePointAt(VertexID vertex)
+    // Tell functor that it invalidated the current point in model space (due to a large or NaN contribution to lnL)
+    void DependencyResolver::invalidatePointAt(VertexID vertex, bool isnan)
     {
-      masterGraph[vertex]->notifyOfInvalidation("Cumulative log-likelihood pushed below threshold.");
+      if (isnan)
+      {
+        masterGraph[vertex]->notifyOfInvalidation("NaN returned for likelihood value.");
+      }
+      else
+      {
+        masterGraph[vertex]->notifyOfInvalidation("Cumulative log-likelihood pushed below threshold.");
+      }
     }
 
     // Returns pointer to ini-file entry associated with ObsLike
@@ -891,11 +898,10 @@ namespace Gambit
       {
         // Match capabilities and types (no type comparison when no types are
         // given; this can only apply to output nodes).
-        if (masterGraph[*vi]->capability() == quantity.first and 
-             (
-              masterGraph[*vi]->type() == quantity.second or 
-              quantity.second == "" or quantity.second == "*"
-             )
+        if ( masterGraph[*vi]->capability() == quantity.first and
+             (masterGraph[*vi]->type() == quantity.second or
+              quantity.second == "" or quantity.second == "*") and
+             *vi != toVertex  // No self-resolution
            )
         {
           // Add vertex to appropriate candidate list
@@ -1781,6 +1787,7 @@ namespace Gambit
                  <<     printGenericFunctorList(disabledVertexCandidates)
                  << endl
                  << "Status flags:" << endl
+                 << " 1: This function is available, but the backend version does not match your request." << endl
                  << " 0: This function is not compatible with any model you are scanning." << endl
                  << "-1: The backend that provides this function is missing." << endl
                  << "-2: The backend is present, but function is absent or broken." << endl
