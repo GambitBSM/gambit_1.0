@@ -5,86 +5,10 @@
 ###################################
 
 Parameters: 
-    StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
-  #MSSM25atQ: !import LesHouches.in.MSSM_1.yaml
-    MSSM25atQ:
-      Qin:
-        fixed_value: 1.9422e+16
-      SignMu:
-        fixed_value: 1
-      TanBeta:
-        fixed_value: 10
-      mHu2:
-        fixed_value: 15625
-      mHd2:
-        fixed_value: 15625
-      M1:
-        fixed_value: 500
-      M2:
-        fixed_value: 500
-      M3:
-        fixed_value: 500
-      mq2_1:
-        fixed_value: 15625.0
-      mq2_2:
-        fixed_value: 15625.0
-      mq2_3:
-        fixed_value: 15625.0
-      ml2_1:
-        fixed_value: 15625.0
-      ml2_2:
-        fixed_value: 15625.0
-      ml2_3:
-        fixed_value: 15625.0
-      md2_1:
-        fixed_value: 15625.0
-      md2_2:
-        fixed_value: 15625.0
-      md2_3:
-        fixed_value: 15625.0
-      mu2_1:
-        fixed_value: 15625.0
-      mu2_2:
-        fixed_value: 15625.0
-      mu2_3:
-        fixed_value: 15625.0
-      me2_1:
-        fixed_value: 15625.0
-      me2_2:
-        fixed_value: 15625.0
-      me2_3:
-        fixed_value: 15625.0
-      Ae_12:
-        fixed_value: 0
-      Ae_3:
-        fixed_value: 0
-      Ad_3:
-        fixed_value: 0
-      Au_3:
-        fixed_value: 0
+    #StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
+    nuclear_params_fnq: !import NuclearParams_fnq_defaults.yaml
+    MSSM25atQ: !import LesHouches.in.MSSM_1.yaml
 
-    nuclear_params_fnq:
-      # proton hadronic matrix elements
-      fpd:
-        fixed_value: 0.0191
-      fpu:
-        fixed_value: 0.0153
-      fps:
-        fixed_value: 0.0447
-      # neutron hadronic matrix elements
-      fnd:
-        fixed_value: 0.0273
-      fnu:
-        fixed_value: 0.011
-      fns:
-        fixed_value: 0.0447
-      # proton spin content
-      deltad:
-        fixed_value: -0.427
-      deltau:
-        fixed_value: 0.842
-      deltas:
-        fixed_value: -0.085
 
 ##############################
 # Prior setup
@@ -140,7 +64,6 @@ Scanner:
 ObsLikes:
     - capability: UnitTest_DarkBit
 
-
 Rules:
   - capability: A0_decay_rates
     function: A0_decays
@@ -153,39 +76,11 @@ Rules:
   - capability: t_decay_rates
     function: t_decays
 
-  - capability: MSSM_spectrum 
-  #  function: get_MSSMatMGUT_spectrum  # Use this function to compute this capability
-    options:
-      # Set to match benchmark point specified in
-      # SpecBit/MSSM_benchmark_points/LesHouches.in.MSSM_1
-      precision_goal:        1.0e-4
-      max_iterations:        0
-      calculate_sm_masses:   false
-      pole_mass_loop_order:  2
-      ewsb_loop_order:       2
-      beta_loop_order:       2
-      threshold_corrections_loop_order: 1
-      use_higgs_2loop_at_as: true
-      use_higgs_2loop_ab_as: true
-      use_higgs_2loop_at_at: true
-      use_higgs_2loop_atau_atau: true
-      invalid_point_fatal: false
+#  - capability: MSSM_spectrum 
+#    function: get_MSSMatQ_spectrum
+#    options:
+#      invalid_point_fatal: false
 
-
-#  - capability: RD_thresholds_resonances
-#    function:  RD_thresholds_resonances_from_spectrum
-#  - capability: DarkSUSY_PointInit
-#    options:
-#      show_higgs_widths: true
-#  - capability: GA_missingFinalStates
-#    options:
-#      ignore_three_body: True
-#      ignore_two_body: True
-#  - capability: TH_ProcessCatalog
-#    options:
-#      ignore_three_body: False
-#  - capability: GA_AnnYield
-#    function: GA_AnnYield_General
   - module: DarkBit
     options: 
         # Cascade decay settings
@@ -202,117 +97,41 @@ Rules:
         cMC_finalStates:              # List of final states to search for in cascade decays
             - gamma
 
-  - capability: RD_thresholds_resonances
-    function:  RD_thresholds_resonances_from_spectrum
   - capability: DarkSUSY_PointInit
     options:
-      show_higgs_widths: true
-      debug_SLHA_filenames:
-#            - DarkBit/slha-benchmarks/01-01-2013_torsten/test_co.slha
-#            - DarkBit/slha-benchmarks/01-01-2013_torsten/test_100.slha
-            - DarkBit/slha-benchmarks/01-01-2013_torsten/test_200.slha
-#            - DarkBit/slha-benchmarks/01-01-2013_torsten/test_300.slha
-#            - DarkBit/slha-benchmarks/14-12-2014_joakim/FMCp03000765.slha
-#            - DarkBit/slha-benchmarks/14-12-2014_joakim/JE56C_003717.slha
-#            - DarkBit/slha-benchmarks/14-12-2014_joakim/JE58D_007879.slha
-#            - DarkBit/slha-benchmarks/14-12-2014_joakim/JE67B_006998.slha
-#            - DarkBit/slha-benchmarks/14-12-2014_joakim/JE67D_001840.slha
-#            - DarkBit/slha-benchmarks/14-12-2014_joakim/JE87O_006600.slha
-  - capability: GA_missingFinalStates
-    options:
-      ignore_three_body: false
-      ignore_two_body: false
-  - capability: TH_ProcessCatalog
-    options:
-      ignore_three_body: false
-  - capability: GA_AnnYield
-    function: GA_AnnYield_General
-    options:
-      debug_dump_spectra: true
-      debug_spectrum_file: DarkBit/MSSM_debug_spectrum.yml
+      debug_SLHA_filenames: !import debug_SLHA_filenames.yaml
+
+#  - capability: GA_AnnYield
+#    function: GA_AnnYield_General
+#    options:
+#      debug_dump_spectra: true
+#      debug_spectrum_file: DarkBit/MSSM_debug_spectrum.yml
+
   - capability: SimYieldTable
     function: SimYieldTable_DarkSusy
-#    #function: SimYieldTable_MicrOmegas
+
   - capability: UnitTest_DarkBit
-    dependencies:
-        - capability: RD_oh2
-          function: RD_oh2_general
-#        - capability: DD_couplings
-#          function: DD_couplings_DarkSUSY
-#          #function: DD_couplings_MicrOmegas
-#          function: RD_oh2_DarkSUSY
-#          #function: RD_oh2_MicrOmegas
-#    options:
-#        fileroot: UnitTest_MSSMbenchmarks_DarkSUSY
+    options:
+        fileroot: UnitTest_MSSMbenchmarks_DarkSUSY
 #        #fileroot: UnitTest_MSSMbenchmarks_MicrOmegas
 #        GA_AnnYield:
 #          nbins: 100
 
-#  - capability: MSSM_spectrum
-#    function: get_MSSM_spectrum_from_SLHAfile # For unit test: reads in spectrum from SLHA file
-#    module: SpecBit
-#    options:
-#        filenames: 
+
   - capability: MSSM_spectrum
-#    function: get_MSSM_spectrum_from_SLHAfile # For unit test: reads in spectrum from SLHA file
-#    module: SpecBit
-#    options:
-#        filenames: 
-#            - DarkBit/slha-benchmarks/01-01-2013_torsten/test_co.slha
-#            - DarkBit/slha-benchmarks/01-01-2013_torsten/test_100.slha
-#            - DarkBit/slha-benchmarks/01-01-2013_torsten/test_200.slha
-#            - DarkBit/slha-benchmarks/01-01-2013_torsten/test_300.slha
-#            - DarkBit/slha-benchmarks/14-12-2014_joakim/FMCp03000765.slha1
-#            - DarkBit/slha-benchmarks/14-12-2014_joakim/JE56C_003717.slha1
-#            - DarkBit/slha-benchmarks/14-12-2014_joakim/JE58D_007879.slha1
-#            - DarkBit/slha-benchmarks/14-12-2014_joakim/JE67B_006998.slha1
-#            - DarkBit/slha-benchmarks/14-12-2014_joakim/JE67D_001840.slha1
-#            - DarkBit/slha-benchmarks/14-12-2014_joakim/JE87O_006600.slha1
-#            - DarkBit/slha-benchmarks/14-12-2014_joakim/FMCp03000765.slha
-#            - DarkBit/slha-benchmarks/14-12-2014_joakim/JE56C_003717.slha
-#            - DarkBit/slha-benchmarks/14-12-2014_joakim/JE58D_007879.slha
-#            - DarkBit/slha-benchmarks/14-12-2014_joakim/JE67B_006998.slha
-#            - DarkBit/slha-benchmarks/14-12-2014_joakim/JE67D_001840.slha
-#            - DarkBit/slha-benchmarks/14-12-2014_joakim/JE87O_006600.slha
+    function: get_MSSM_spectrum_from_SLHAfile
+    options:
+        filenames: !import debug_SLHA_filenames.yaml
+
+  - capability: RD_oh2
+    function: .*DarkSUSY.*
+    options:
+      fast: 1
+      omtype: 0
 
   - function: SUSY_HIT_1_5_init
     options:
-      debug_SLHA_files:
-#            - DarkBit/slha-benchmarks/01-01-2013_torsten/test_co.slha
-#            - DarkBit/slha-benchmarks/01-01-2013_torsten/test_100.slha
-            - DarkBit/slha-benchmarks/01-01-2013_torsten/test_200.slha
-#            - DarkBit/slha-benchmarks/01-01-2013_torsten/test_300.slha
-#            - DarkBit/slha-benchmarks/14-12-2014_joakim/FMCp03000765.slha
-#            - DarkBit/slha-benchmarks/14-12-2014_joakim/JE56C_003717.slha
-#            - DarkBit/slha-benchmarks/14-12-2014_joakim/JE58D_007879.slha
-#            - DarkBit/slha-benchmarks/14-12-2014_joakim/JE67B_006998.slha
-#            - DarkBit/slha-benchmarks/14-12-2014_joakim/JE67D_001840.slha
-#            - DarkBit/slha-benchmarks/14-12-2014_joakim/JE87O_006600.slha
-
-#  - capability: MSSM_spectrum
-#    function: get_MSSM_spectrum_from_file  # For unit test: reads in spectrum from SLHA file
-#    module: DarkBit
-#    options:
-#        filenames: 
-#            - DarkBit/slha-benchmarks/01-01-2013_torsten/test_co.slha
-#            - DarkBit/slha-benchmarks/01-01-2013_torsten/test_100.slha
-#            - DarkBit/slha-benchmarks/01-01-2013_torsten/test_200.slha
-#            - DarkBit/slha-benchmarks/01-01-2013_torsten/test_300.slha
-#            - DarkBit/slha-benchmarks/14-12-2014_joakim/FMCp03000765.slha1
-#            - DarkBit/slha-benchmarks/14-12-2014_joakim/JE56C_003717.slha1
-#            - DarkBit/slha-benchmarks/14-12-2014_joakim/JE58D_007879.slha1
-#            - DarkBit/slha-benchmarks/14-12-2014_joakim/JE67B_006998.slha1
-#            - DarkBit/slha-benchmarks/14-12-2014_joakim/JE67D_001840.slha1
-#            - DarkBit/slha-benchmarks/14-12-2014_joakim/JE87O_006600.slha1
-
-#  - capability: RD_oh2
-#    options:
-#      fast: 1  # Accuracy options (used by MicrOmegas)
-#      Beps: 1e-2
-#      omtype: 0
-#  - capability: RD_spectrum
-#    options: 
-#      CoannMaxMass: 1.01 # include only co-annihilating particles up to this mass
+      debug_SLHA_files: !import debug_SLHA_filenames.yaml
 
 
 #########################
