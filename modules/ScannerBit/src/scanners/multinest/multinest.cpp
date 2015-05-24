@@ -117,7 +117,10 @@ scanner_plugin(MultiNest, version(0, 0, 0, bens_version))
       Gambit::Options stats_options = get_inifile_node("aux_printer_stats_options");
       Gambit::Options live_options  = get_inifile_node("aux_printer_live_options");
 
-      stats_options.setValue("global",1); // Option to set this stream to "global" mode, i.e. it does not operated on a point-by-point basis. Therefore no thread or point number is needed when printing.
+      stats_options.setValue("global",true); // Option to set this stream to "global" mode, i.e. it does not operated on a point-by-point basis. Therefore no thread or point number is needed when printing.
+
+      txt_options.setValue("global",true);
+      live_options.setValue("global",true);
 
       // Initialise auxiliary print streams
       get_printer().new_stream("txt",txt_options);
@@ -323,10 +326,12 @@ namespace Gambit {
           //                  Quantity    Label         IDcode	thread	pointID
           // stats file stuff
           // For now, thread set to 0 and pointID set to -1, as not needed. Might change how this works later.
-          stats_stream->print(maxLogLike, "maxLogLike", -1,	0,	-1);
-          stats_stream->print(logZ,       "logZ",       -2,	0,	-1);
-          stats_stream->print(logZerr,    "logZerr",    -3,	0,	-1);
-          stats_stream->flush(); // Empty printer buffer
+
+          // Disabled while testing hdf5printer...
+          //stats_stream->print(maxLogLike, "maxLogLike", -1,	0,	-1);
+          //stats_stream->print(logZ,       "logZ",       -2,	0,	-1);
+          //stats_stream->print(logZerr,    "logZerr",    -3,	0,	-1);
+          //stats_stream->flush(); // Empty printer buffer
 
           // txt file stuff
           // Send info for each point to printer one command at a time

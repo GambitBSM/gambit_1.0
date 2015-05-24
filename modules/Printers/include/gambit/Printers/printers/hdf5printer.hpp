@@ -164,7 +164,12 @@ namespace Gambit
  
         /// Function used by print functions to retrieve their local buffer manager object
         template<class BuffType>
+        H5P_LocalBufferManager<BuffType>& get_mybuffermanager(ulong pointID, uint mpirank);
+        template<class BuffType>
         H5P_LocalBufferManager<BuffType>& get_mybuffermanager(ulong pointID, uint mpirank, bool global);
+
+        /// Retrieve index from global lookup table, with error checking
+        ulong get_global_index(const ulong pointID, const uint mpirank);
 
         /// Retrieve a pointer to the primary printer object
         /// This is stored in the base class (BaseBasePrinter) as a pointer of type
@@ -184,6 +189,11 @@ namespace Gambit
         // The getter functions serve to both retrieve the buffer matching an
         // output stream, and to handle creation of those buffers.
         #define DEFINE_BUFFMAN_GETTER(BUFFTYPE,NAME) \
+          /* Forward declaration of specialisation */                              \
+          template<>                                                               \
+          inline H5P_LocalBufferManager<BUFFTYPE>&                                 \
+           HDF5Printer::get_mybuffermanager<BUFFTYPE>(ulong, uint, bool);          \
+                                                                                   \
           /* This first overload is just to provide the currently set "global" data
              member value as the "default parameter" for the "global" argument in
              the full function below. */                                           \
@@ -191,7 +201,7 @@ namespace Gambit
           inline H5P_LocalBufferManager<BUFFTYPE>&                                 \
            HDF5Printer::get_mybuffermanager<BUFFTYPE>(ulong pointID, uint mpirank) \
           {                                                                        \
-               get_mybuffermanager<BUFFTYPE>(pointID, mpirank, global);            \
+               return get_mybuffermanager<BUFFTYPE>(pointID, mpirank, global);     \
           }                                                                        \
                                                                                    \
           template<>                                                               \
@@ -259,8 +269,17 @@ namespace Gambit
            // Extract a buffer from the manager corresponding to this 
            BuffType& selected_buffer = buffer_manager.get_buffer(IDcode, 0, label); 
 
-           // Write the data to the selected buffer ("just works" for simple numeric types)
-           selected_buffer.append(value);
+           if(not global)
+           {
+             // Write the data to the selected buffer ("just works" for simple numeric types)
+             selected_buffer.append(value);
+           }
+           else
+           {
+             // Queue up a desynchronised ("random access") dataset write to previous scan iteration
+             ulong dset_index = get_global_index(pointID,mpirank);
+             selected_buffer.RA_write(value,dset_index); 
+           }
         }
  
         /// @{ Helper macros to write all the print functions which can use the "easy" template
@@ -311,8 +330,8 @@ namespace Gambit
         H5FGPtr location;
 
         /// Pointer to the primary printer object 
-        // (if this is an auxilliary printer, else it is NULL)
-        HDF5Printer* primary_printer = NULL;      
+        // (if this is an auxilliary printer, else it is "this" //NULL)
+        HDF5Printer* primary_printer = this; //NULL;
 
         /// Map containing pointers to all VertexBuffers
         // Note: Each buffer contains a bool to indicate whether it has done an "append" for the point "lastPointID"

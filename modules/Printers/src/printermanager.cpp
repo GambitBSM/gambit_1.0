@@ -86,7 +86,10 @@ namespace Gambit
        //TODO need some way for the scanners to change the options
        //for the auxiliary printers, e.g. so we can print to a different file
        DBUG( std::cout << "PrinterManager: Creating Auxilliary printer \"" << tag << "\" with name \"" << streamname << "\"" << std::endl; )
-       auxprinters[streamname] = printer_creators.at(tag)(options);
+       Options mod_options = options;
+       mod_options.setValue("auxilliary",true);
+       mod_options.setValue("name",streamname);
+       auxprinters[streamname] = printer_creators.at(tag)(mod_options);
        // Provide the new printer with a pointer to the primary printer so that
        // they can interact with each other. Also flags the new printer as "auxilliary"
        // for the purposes of its own internal logic.

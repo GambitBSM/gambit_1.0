@@ -154,13 +154,13 @@ namespace Gambit
         std::ofstream info_fstream;
 
         /// Number of lines to store in buffer before printing
-        unsigned int bufferlength;
+        unsigned int bufferlength = 1000;
 
         /// MPI rank (currently not hooked up to MPI, just hardcoded to 0)
-        int myRank;
+        int myRank = 0;
 
         /// Number of digits of precision to use in output columns
-        int precision;
+        int precision = 10;
  
         /// Full buffer of output to be printed
         // Key is <int rank, int pointID>; value is a Record (for a single model point)
@@ -178,7 +178,7 @@ namespace Gambit
 
         /// Record a set of labels for each printer item: used to write "info" file explain what is in each column
         std::map<int,std::vector<std::string>> label_record; //the 'int' here is the vertex ID. Could make a typedef to make this safer.
-        bool info_file_written; // Flag to let us know that the info file has been written
+        bool info_file_written = false; // Flag to let us know that the info file has been written
 
         /// Flag to trigger "global" print mode. 
         // In this mode, the output file will be *overwritten* when reset() is 

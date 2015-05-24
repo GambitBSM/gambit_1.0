@@ -164,7 +164,7 @@ namespace Gambit
           // No buffer (should) exists for this output stream yet, so make one
           error_if_key_exists(local_buffers, key, "local_buffers");
 
-          local_buffers[key] = BuffType(printer->get_location(),label/*deconstruct?*/,vertexID);
+          local_buffers[key] = BuffType(printer->get_location(),label/*deconstruct?*/,vertexID,global);
 
           // Get the new buffer back out of the map
           it = local_buffers.find(key);
@@ -190,26 +190,38 @@ namespace Gambit
     HDF5Printer::HDF5Printer(const Options& options)
       : printer_name("Primary printer")
     {
-      DBUG( std::cout << "Constructing Primary HDF5Printer object..." << std::endl; )
+      if(options.getValueOrDef<bool>(false,"auxilliary"))
+      {
+        // Set up this printer in auxilliary mode
+        printer_name = options.getValueOrDef<std::string>("Primary printer","name");
+        global       = options.getValueOrDef<bool>(false,"global");
+        DBUG( std::cout << "Constructing Auxilliary HDF5Printer object (with name=\""<<printer_name<<"\" global="<<global<<")..." << std::endl; )
+      } 
+      else
+      {
+        // Set up this printer in primary mode
+        DBUG( std::cout << "Constructing Primary HDF5Printer object..." << std::endl; )
  
-      std::string file = options.getValue<std::string>("output_file");
-      std::string group = options.getValueOrDef<std::string>("/","group");
-      bool overwrite = options.getValueOrDef<bool>(false,"delete_file_if_exists");
+        std::string file = options.getValue<std::string>("output_file");
+        std::string group = options.getValueOrDef<std::string>("/","group");
+        bool overwrite = options.getValueOrDef<bool>(false,"delete_file_if_exists");
 
-      std::cout<<"overwrite? "<<overwrite<<std::endl;
+        std::cout<<"overwrite? "<<overwrite<<std::endl;
 
-      // Open HDF5 file (create if non-existant)
-      Utils::ensure_path_exists(file);
-      fileptr = HDF5::openFile(file,overwrite);
+        // Open HDF5 file (create if non-existant)
+        Utils::ensure_path_exists(file);
+        fileptr = HDF5::openFile(file,overwrite);
  
-      // Open requested group (creating it plus parents if needed)
-      groupptr = HDF5::openGroup(fileptr,group);
+        // Open requested group (creating it plus parents if needed)
+        groupptr = HDF5::openGroup(fileptr,group);
 
-      // Set the target dataset write location to the chosen group
-      location = groupptr; 
+        // Set the target dataset write location to the chosen group
+        location = groupptr;
+      } 
    }
  
     /// Auxiliary mode constructor 
+    /// DOESN'T ACTUALLY GET CALLED YET
     HDF5Printer::HDF5Printer(const Options& options, std::string& name, bool globalIN)
       : printer_name(name)
       , global(globalIN)
@@ -260,11 +272,6 @@ namespace Gambit
       // Currently don't seem to need this... could use it to check if all VertexID's have submitted print requests.
     }
 
-    void HDF5Printer::flush() {}
-
-    /// Delete contents of output file (to be replaced/updated) and erase everything in the buffer
-    void HDF5Printer::reset() {} 
-  
     /// Retrieve MPI rank
     int HDF5Printer::getRank() {return myRank;}
 
@@ -281,18 +288,40 @@ namespace Gambit
       // TODO: is this going to cause memory issues? may have to rethink...
 
       // Check if it is in the lookup map already
-      std::map<PPIDpair, ulong>::const_iterator it = global_index_lookup.find(ppid);
-      if ( it != global_index_lookup.end() ) {
+      std::map<PPIDpair, ulong>& lookup = primary_printer->global_index_lookup;
+      std::vector<PPIDpair>& reverse_lookup = primary_printer->reverse_global_index_lookup;
+      std::map<PPIDpair, ulong>::const_iterator it = lookup.find(ppid);
+      if ( it != lookup.end() ) {
          std::ostringstream errmsg;
          errmsg << "Error! Supplied PPID already exists in global_index_lookup map! It should only be added once, so there is a bug in HDF5Printer. Please report this error.";
          printer_error().raise(LOCAL_INFO, errmsg.str());
       }
       
       // Ok, now safe to add it 
-      global_index_lookup[ppid] = reverse_global_index_lookup.size();
-      reverse_global_index_lookup.push_back(ppid);
+      lookup[ppid] = reverse_lookup.size();
+      reverse_lookup.push_back(ppid);
     } 
 
+    /// Retrieve index from global lookup table, with error checking
+    ulong HDF5Printer::get_global_index(const ulong pointID, const uint mpirank)
+    {
+       std::map<PPIDpair, ulong>::iterator it;
+       std::map<PPIDpair, ulong>& lookup = primary_printer->global_index_lookup;
+       it = lookup.find(std::make_pair(pointID,mpirank));
+       if ( it == lookup.end() ) 
+       {
+         #ifdef DEBUG_MODE    
+         std::cout<<"Contents of global_index_lookup map:"<<std::endl;
+         for(it = lookup.begin(); it != lookup.end(); it++) {
+           std::cout<<"[pointID="<<it->first.first<<", mpirank="<<it->first.second<<"] : index="<<it->second<<std::endl;
+         } 
+         #endif
+         std::ostringstream errmsg;
+         errmsg << "Error retrieving global index for pointID="<<pointID<<", mpirank="<<mpirank<<"; no corresponding global index found. This means this point has not yet passed through the primary printer. This function is called in preparation for writing to data files via random access, so possibly something has gone wrong there.";
+         printer_error().raise(LOCAL_INFO, errmsg.str());
+       }
+       return it->second;
+    }
 
     /// Function to ensure buffers are all synchronised to the same absolute position
     // Will move the "write heads" of all buffers to "current_dset_position"
@@ -301,7 +330,7 @@ namespace Gambit
     void HDF5Printer::synchronise_buffers()
     {
       // Determine the new sync position
-      const ulong sync_pos = reverse_global_index_lookup.size()-1;  
+      const ulong sync_pos = primary_printer->reverse_global_index_lookup.size()-1;  
 
       // Cycle through all buffers and tell them to ensure they are at the right position
       // The buffers should throw an error if we are accidentally telling them to go backwards
@@ -317,7 +346,7 @@ namespace Gambit
     /// TODO: This is not currently completely safe. If it gets called during a scan on one
     /// of the primary buffers, then the chunk-writer will get desynchronised and crash. 
     /// Need to make this work, or die gracefully.
-    void flush()
+    void HDF5Printer::flush()
     {
       for (BaseBufferMap::iterator it = all_buffers.begin(); it != all_buffers.end(); it++)
       {
@@ -328,8 +357,11 @@ namespace Gambit
     /// Invalidate all data on disk which has been printed by this printer so far,
     /// and reset all the buffers to write back to the first data slots.
     /// This is only allowed if this is an auxilliary printer with global=true
-    void reset();
+    void HDF5Printer::reset()
     {
+      std::cout<<"is_auxilliary_printer() = "<<is_auxilliary_printer()<<std::endl;
+      std::cout<<"global                  = "<<global<<std::endl;
+      std::cout<<"printer_name            = "<<printer_name<<std::endl;
       if(not this->is_auxilliary_printer())
       {
          std::ostringstream errmsg;
@@ -338,7 +370,9 @@ namespace Gambit
       }
       else if(not global)
       { 
+         std::ostringstream errmsg;
          errmsg << "Error! Tried to call reset() on an auxilliary HDF5Printer (printer_name = "<<printer_name<<") not flagged as 'global'! This would delete all the point-level data written by this printer during the scan and is not currently allowed! Probably this was called accidentally due to a bug.";
+         printer_error().raise(LOCAL_INFO, errmsg.str());
       }
       else
       {
@@ -389,6 +423,7 @@ namespace Gambit
 
        //std::vector<std::string> labels;
        //labels.reserve(value.size());
+       ulong dset_index = get_global_index(pointID,mpirank);
 
        for(unsigned int i=0;i<value.size();i++)
        {
@@ -398,7 +433,17 @@ namespace Gambit
          //labels.push_back(ss.str());
 
          // Write to each buffer
-         buffer_manager.get_buffer(vID, i, ss.str()).append(value[i]);
+         //buffer_manager.get_buffer(vID, i, ss.str()).append(value[i]);
+         if(not global)
+         {
+           // Write the data to the selected buffer ("just works" for simple numeric types)
+           buffer_manager.get_buffer(vID, i, ss.str()).append(value[i]);
+         }
+         else
+         {
+           // Queue up a desynchronised ("random access") dataset write to previous scan iteration
+           buffer_manager.get_buffer(vID, i, ss.str()).RA_write(value[i],dset_index); 
+         }
        }
     }
    
@@ -412,7 +457,9 @@ namespace Gambit
        BuffMan& buffer_manager = get_mybuffermanager<BuffType>(pointID,mpirank);
 
        std::map<std::string, double> parameter_map = value.getValues();
-    
+ 
+       ulong dset_index = get_global_index(pointID,mpirank);
+   
        uint i=0; // index for each buffer 
        for (std::map<std::string, double>::iterator 
          it = parameter_map.begin(); it != parameter_map.end(); it++)
@@ -421,7 +468,17 @@ namespace Gambit
          ss<<label<<"::"<<it->first;
 
          // Write to each buffer
-         buffer_manager.get_buffer(vID, i, ss.str()).append(it->second);
+         //buffer_manager.get_buffer(vID, i, ss.str()).append(it->second);
+         if(not global)
+         {
+           // Write the data to the selected buffer ("just works" for simple numeric types)
+           buffer_manager.get_buffer(vID, i, ss.str()).append(it->second);
+         }
+         else
+         {
+           // Queue up a desynchronised ("random access") dataset write to previous scan iteration
+           buffer_manager.get_buffer(vID, i, ss.str()).RA_write(it->second,dset_index); 
+         }
          i++;
        }
     }

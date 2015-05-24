@@ -111,10 +111,6 @@ namespace Gambit
     asciiPrinter::asciiPrinter(const Options& options)
       : output_file( Utils::ensure_path_exists(options.getValue<std::string>("output_file")) )
       , info_file( Utils::ensure_path_exists(options.getValue<std::string>("info_file")) )
-      , bufferlength(1000)
-      , myRank(0)
-      , precision(10)
-      , info_file_written(false)
       , global(false)
       , printer_name("Primary")
     {
@@ -126,13 +122,11 @@ namespace Gambit
     asciiPrinter::asciiPrinter(const Options& options, std::string& name, bool globalIN)
       : output_file( Utils::ensure_path_exists(options.getValue<std::string>("output_file")) )
       , info_file( Utils::ensure_path_exists(options.getValue<std::string>("info_file")) )
-      , bufferlength(1000)
-      , myRank(0)
-      , precision(10)
-      , info_file_written(false)
       , global(globalIN)
       , printer_name(name)
     {
+      std::cout << "does this ever get called???" << std::endl;
+      exit(0);
       // Could set these things via options also if we like.
       DBUG( std::cout << "Constructing Auxilliary asciiPrinter object (with name=\""<<printer_name<<"\")..." << std::endl; )
       common_constructor();
