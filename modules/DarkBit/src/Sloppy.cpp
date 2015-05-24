@@ -39,8 +39,10 @@ namespace Gambit {
       int ierr;  // error flag
       int iwar;  // warming flag
       int nfc;  // number of fnct calls to effective annihilation cross section
+      logger() << "Starting DarkSUSY relic density calculation..." << std::endl;
       double oh2 = BEreq::dsrdomega(omtype,fast,xf,ierr,iwar,nfc);
       result = oh2;
+      logger() << "...done, at last!" << oh2 << std::endl;
       logger() << "RD_oh2_DarkSUSY: oh2 is " << oh2 << std::endl;
     }
 

@@ -434,7 +434,8 @@ namespace Gambit {
           (*BEreq::widths).width(DarkBit_utils::DSparticle_code("h0_2"))=0.1;
 
         // tabulate invariant rate
-        // FIXME: This error is not really caught.  Why???
+        // FIXME: This error is really caught if it is thrown inside the Weff
+        // object.
         try
         {
           logger() << "Tabulating RD_eff_annrate..." << std::endl;

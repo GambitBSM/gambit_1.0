@@ -38,17 +38,17 @@ namespace Gambit
       public:
         /// Initialize SingletDM object (branching ratios etc)
         SingletDM(
-            TH_ProcessCatalog &catalog,
+            TH_ProcessCatalog* catalog,
             std::map<std::string, Funk::Funk> & arg_f_vs_mass)
         {
-          mh   = catalog.getParticleProperty("h0_1").mass;
+          mh   = catalog->getParticleProperty("h0_1").mass;
           // FIXME: This should not be hard-coded
           v0   = 246.0;
           alpha_s = 0.12;
-          mb   = catalog.getParticleProperty("b").mass;
-          mc   = catalog.getParticleProperty("c").mass;
-          mtau = catalog.getParticleProperty("tau-").mass;
-          mt   = catalog.getParticleProperty("t").mass;
+          mb   = catalog->getParticleProperty("b").mass;
+          mc   = catalog->getParticleProperty("c").mass;
+          mtau = catalog->getParticleProperty("tau-").mass;
+          mt   = catalog->getParticleProperty("t").mass;
 
           f_vs_mass = arg_f_vs_mass;
           Gamma = f_vs_mass["Gamma"]->bind("mass");
@@ -240,25 +240,34 @@ namespace Gambit
       using std::vector;
       using std::string;
 
-      double mass = *Param["mass"];
-      double lambda = *Param["lambda"];
+      // Initialize Higgs decay tables (static, hence only once)
+      static std::map<string, Funk::Funk> f_vs_mass = 
+        get_f_vs_mass("Elements/data/Higgs_decay_1101.0593.dat");
 
-      // Initialize catalog
+      // Import model parameters
+      double mS = *Param["mass"];
+      double lambda = *Param["lambda"];
+      double mH = 125.7;  // FIXME: Get from Spec objects
+      double gammaH = 0.01;  // FIXME: Get from Spec object
+
+      // Initialize empty catalog and main annihilation process
       TH_ProcessCatalog catalog;
-      TH_Process process_ann((std::string)"S", (std::string)"S");
+      TH_Process process_ann((string)"S", (string)"S");
+
 
       ///////////////////////////
       // Import particle masses
       ///////////////////////////
       
-      // Import based on Spectrum objects
+      // Import Spectrum objects
+      // FIXME: This should import from one object only
       const SubSpectrum* SM = *Dep::SM_spectrum;
       const SMInputs& SMI   = *Dep::SMINPUTS;  
 
-      // Get SM masses
+      // Get SM pole masses
 #define getSMmass(Name, spinX2)                                                \
       catalog.particleProperties.insert(                                       \
-          std::pair<std::string, TH_ParticleProperty>(                         \
+          std::pair<string, TH_ParticleProperty>(                              \
             Name , TH_ParticleProperty(SM->phys.get_Pole_Mass(Name), spinX2)   \
             )                                                                  \
           );    
@@ -268,12 +277,6 @@ namespace Gambit
       getSMmass("mu+",    1)
       getSMmass("tau-",   1)
       getSMmass("tau+",   1)
-      getSMmass("nu_1",   1)
-      getSMmass("nubar_1",1) 
-      getSMmass("nu_2",   1)
-      getSMmass("nubar_2",1) 
-      getSMmass("nu_3",   1)
-      getSMmass("nubar_3",1)      
       getSMmass("Z0",     2)
       getSMmass("W+",     2)
       getSMmass("W-",     2)      
@@ -284,67 +287,66 @@ namespace Gambit
       getSMmass("t",      1)
       getSMmass("tbar",   1)
 #undef getSMmass
-#define getSMmassMS(Name, Mass, spinX2)                                        \
+      // Get remaining masses
+#define addParticle(Name, Mass, spinX2)                                        \
       catalog.particleProperties.insert(                                       \
-          std::pair<std::string, TH_ParticleProperty>(                         \
+          std::pair<string, TH_ParticleProperty>(                              \
             Name , TH_ParticleProperty(Mass, spinX2)                           \
             )                                                                  \
           );    
       // Pole masses not available for the light quarks.    
-      getSMmassMS("d"   , SMI.mD,  1) // md(2 GeV)^MS-bar, not pole mass
-      getSMmassMS("dbar", SMI.mD,  1) // md(2 GeV)^MS-bar, not pole mass
-      getSMmassMS("u"   , SMI.mU,  1) // mu(2 GeV)^MS-bar, not pole mass
-      getSMmassMS("ubar", SMI.mU,  1) // mu(2 GeV)^MS-bar, not pole mass
-      getSMmassMS("s"   , SMI.mS,  1) // ms(2 GeV)^MS-bar, not pole mass
-      getSMmassMS("sbar", SMI.mS,  1) // ms(2 GeV)^MS-bar, not pole mass
-      getSMmassMS("c"   , SMI.mCmC,1) // mc(mc)^MS-bar, not pole mass
-      getSMmassMS("cbar", SMI.mCmC,1) // mc(mc)^MS-bar, not pole mass
-      // Dummy masses for neutrino flavour eigenstates. Set to zero.
-      getSMmassMS("nu_e",     0.0, 1)
-      getSMmassMS("nubar_e",  0.0, 1)
-      getSMmassMS("nu_mu",    0.0, 1)
-      getSMmassMS("nubar_mu", 0.0, 1)
-      getSMmassMS("nu_tau",   0.0, 1)
-      getSMmassMS("nubar_tau",0.0, 1)      
-#undef getSMmassMS  
-
-      // Insert singlet mass
-      TH_ParticleProperty S_Property(mass, 0);
-      catalog.particleProperties.insert(
-          std::pair<std::string, TH_ParticleProperty> ("S", S_Property));
-      
+      addParticle("d"   , SMI.mD,  1) // md(2 GeV)^MS-bar, not pole mass
+      addParticle("dbar", SMI.mD,  1) // md(2 GeV)^MS-bar, not pole mass
+      addParticle("u"   , SMI.mU,  1) // mu(2 GeV)^MS-bar, not pole mass
+      addParticle("ubar", SMI.mU,  1) // mu(2 GeV)^MS-bar, not pole mass
+      addParticle("s"   , SMI.mS,  1) // ms(2 GeV)^MS-bar, not pole mass
+      addParticle("sbar", SMI.mS,  1) // ms(2 GeV)^MS-bar, not pole mass
+      addParticle("c"   , SMI.mCmC,1) // mc(mc)^MS-bar, not pole mass
+      addParticle("cbar", SMI.mCmC,1) // mc(mc)^MS-bar, not pole mass
+      // Masses for neutrino flavour eigenstates. Set to zero.
+      // FIXME: Is this information required for anything?
+      addParticle("nu_e",     0.0, 1)
+      addParticle("nubar_e",  0.0, 1)
+      addParticle("nu_mu",    0.0, 1)
+      addParticle("nubar_mu", 0.0, 1)
+      addParticle("nu_tau",   0.0, 1)
+      addParticle("nubar_tau",0.0, 1)      
+      addParticle("S",        mS , 0)  // Singlet mass
+      addParticle("h0_1",     mH , 0)  // SM-like Higgs
       // FIXME: Get Higgs mass from Spec Bit
-      TH_ParticleProperty h0_1_Property(125.7, 0);
-      catalog.particleProperties.insert(
-          std::pair<std::string, TH_ParticleProperty> ("h0_1", h0_1_Property));
+#undef addParticle
 
-      // Instantiate tables (only once)
-      static std::map<std::string, Funk::Funk> f_vs_mass = 
-        get_f_vs_mass("Elements/data/Higgs_decay_1101.0593.dat");
 
       /////////////////////////////
       // Import Decay information
       /////////////////////////////
 
-      // Import based on decay table from DecayBit
+      // Import decay table from DecayBit
       const DecayTable* tbl = &(*Dep::decay_rates);
       
-      // List of decays to include
+      // List of decays to include (here only SM-like higgs)
       const vector<string> decaysOfInterest = initVector<string> ("h0_1");
       
-      double minBranching = runOptions->getValueOrDef<double>(0.0,
-          "ProcessCatalog_MinBranching");
+      // Minimum branching ratio to include
+      double minBranching = 
+        runOptions->getValueOrDef<double>(0.0, "ProcessCatalog_MinBranching");
+
       for(auto iState_it = decaysOfInterest.begin();
           iState_it != decaysOfInterest.end(); ++iState_it)
       {
-        std::cout << "Importing decay information for: " << *iState_it << std::endl;
+        std::cout << 
+          "Importing decay information for: " << *iState_it << std::endl;
+
         const DecayTable::Entry &entry = tbl->at(*iState_it);
         double totalWidth = entry.width_in_GeV;
-        std::cout << "The total width is: " << totalWidth << std::endl;
+
+        std::cout << "Total width [GeV]: " << totalWidth << std::endl;
         if(totalWidth>0)
         {     
+          // Initialize new process with fixed rate
           TH_Process process(*iState_it);
           process.genRateTotal = Funk::cnst(totalWidth);
+
           for(auto fState_it = entry.channels.begin();
               fState_it!= entry.channels.end(); ++fState_it)
           {
@@ -354,20 +356,21 @@ namespace Gambit
               vector<string> pIDs;
               std::cout << "  ";
               const double m_init  = catalog.getParticleProperty(*iState_it).mass;
-              double m_final = 0;
+              double mtot_final = 0;
               for(auto pit = fState_it->first.begin();
                   pit != fState_it->first.end(); ++pit)
               {
-                std::string name = Models::ParticleDB().long_name(*pit);
-                m_final += catalog.getParticleProperty(name).mass;
+                string name = Models::ParticleDB().long_name(*pit);
+                mtot_final += catalog.getParticleProperty(name).mass;
                 pIDs.push_back(name);
                 std::cout << name << "\t";
               } 
               double partialWidth = totalWidth * bFraction;       
+              // FIXME: This should not be optional
               bool checkKinematics = runOptions->getValueOrDef<bool>(true,
               "ProcessCatalog_KinCheck");
               // TODO: Add other criteria on which channels to include?
-              if(!checkKinematics or m_final<=m_init)
+              if(!checkKinematics or mtot_final<=m_init)
               {
                 std::cout<< bFraction << std::endl;   
                 process.channelList.push_back(
@@ -379,57 +382,66 @@ namespace Gambit
           }
           catalog.processList.push_back(process);
         }
-      }       
+      }
 
-      // Instantiate SingletDM object
-      auto singletDM = boost::make_shared<SingletDM>(catalog, f_vs_mass);
+      // Instantiate new SingletDM object
+      // FIXME: Probably this can be speed up f_vs_mass
+      auto singletDM = boost::make_shared<SingletDM>(&catalog, f_vs_mass);
 
-      // FIXME: Add top (is this still TODO?)
-
-      // Populate channel list and add thresholds
-      // FIXME: Mass eigenstates are now being used here. Check if CKM factors are necessary anywhere.
-      // lowest threshold = 2*WIMP rest mass  (unlike DS convention!)
-      process_ann.thresholdResonances.threshold_energy.push_back(2*mass); 
-      auto channel = Funk::vec<std::string>(
-          "bb", "WW", "cc", "tautau", "ZZ", "tt", "hh");
-      int nchannel=sizeof(channel) / sizeof(channel[0]);    
-      auto p1 = Funk::vec<std::string>("b",   "W+", "c",   "tau+", "Z0", "t",   "h0_1");
-      auto p2 = Funk::vec<std::string>("bbar","W-", "cbar","tau-", "Z0", "tbar","h0_1");
+      // Populate annihilation channel list and add thresholds to threshold
+      // list.
+      // (remark: the lowest threshold is here = 2*mS, whereas in DS-internal
+      // conventions, this lowest threshold is not listed)
+      process_ann.thresholdResonances.threshold_energy.push_back(2*mS); 
+      auto channel = 
+        Funk::vec<string>("bb", "WW", "cc", "tautau", "ZZ", "tt", "hh");
+      auto p1 = 
+        Funk::vec<string>("b",   "W+", "c",   "tau+", "Z0", "t",   "h0_1");
+      auto p2 = 
+        Funk::vec<string>("bbar","W-", "cbar","tau-", "Z0", "tbar","h0_1");
       {
-        for ( int i = 0; i < nchannel; i++ )
+        for ( int i = 0; i < channel.size(); i++ )
         {
-          if ( mass > catalog.particleProperties.at(p1[i]).mass )
+          double mtot_final = 
+            catalog.particleProperties.at(p1[i]).mass +
+            catalog.particleProperties.at(p2[i]).mass;
+          if ( mS*2 > mtot_final )
           {
             Funk::Funk kinematicFunction = Funk::funcM(singletDM,
-                &SingletDM::sv, channel[i], lambda, mass, Funk::var("v"));
-            auto w = kinematicFunction->bind("v");
-            std::vector<std::string> finalStates = Funk::vec<std::string>(p1[i], p2[i]);
-            TH_Channel channel(finalStates, kinematicFunction);
+                &SingletDM::sv, channel[i], lambda, mS, Funk::var("v"));
+            TH_Channel channel(
+                Funk::vec<string>(p1[i], p2[i]), kinematicFunction
+                );
             process_ann.channelList.push_back(channel);
           }
           else
           {
-            process_ann.thresholdResonances.threshold_energy.push_back(2*catalog.particleProperties.at(p1[i]).mass); 
+            process_ann.thresholdResonances.threshold_energy.
+              push_back(mtot_final);
           }
         }
       }
 
-      // Populate resonance list; Singlet model: only SM Higgs can appear as resonance 
+      /* FIXME: This is too general, but could go somewhere else
       double resmasses[] = {catalog.getParticleProperty("h0_1").mass};
-      double reswidths[] = {0.01};  // FIXME: import Higgs width
+      double reswidths[] = {0.01};  
       int resmax=sizeof(resmasses) / sizeof(resmasses[0]);
 
       for (int i=0; i<resmax; i++)
       {
-        if (resmasses[i]/mass > 2.)
+        if (resmasses[i]/mS > 2.)
         {
-          process_ann.thresholdResonances.resonances.push_back(TH_Resonance(resmasses[i], reswidths[i]));
+          process_ann.thresholdResonances.resonances.
+            push_back(TH_Resonance(resmasses[i], reswidths[i]));
         }
       }
+      */
       
+      // Populate resonance list
+      if ( mH >= mS*2 ) process_ann.thresholdResonances.resonances.
+          push_back(TH_Resonance(mH, gammaH));
 
       catalog.processList.push_back(process_ann);
-
 
       result = catalog;
     } // function TH_ProcessCatalog_SingletDM
