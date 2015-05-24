@@ -230,10 +230,14 @@ namespace Gambit {
       using std::vector;
       using std::string;
 
-      // FIXME: Add test that this is really ~chi0_1
       std::string DMid = *Dep::DarkMatter_ID;
+      if ( DMid != "~chi0_1" )
+      {
+        invalid_point().raise(
+            "TH_ProcessCatalog_CMSSM requires DMid to be ~chi0_1.");
+      }
 
-      // Instantiate new ProcessCatalog
+      // Instantiate new empty ProcessCatalog
       TH_ProcessCatalog catalog;      
 
 
@@ -260,12 +264,13 @@ namespace Gambit {
       getSMmass("mu+",    1)
       getSMmass("tau-",   1)
       getSMmass("tau+",   1)
-      getSMmass("nu_1",   1)
-      getSMmass("nubar_1",1) 
-      getSMmass("nu_2",   1)
-      getSMmass("nubar_2",1) 
-      getSMmass("nu_3",   1)
-      getSMmass("nubar_3",1)      
+// FIXME: Should be deprecated
+//      getSMmass("nu_1",   1)
+//      getSMmass("nubar_1",1) 
+//      getSMmass("nu_2",   1)
+//      getSMmass("nubar_2",1) 
+//      getSMmass("nu_3",   1)
+//      getSMmass("nubar_3",1)      
       getSMmass("Z0",     2)
       getSMmass("W+",     2)
       getSMmass("W-",     2)      
@@ -278,31 +283,31 @@ namespace Gambit {
 #undef getSMmass
 
       // Pole masses not available for the light quarks.
-#define getSMmassMS(Name, Mass, spinX2)                                        \
+#define addParticle(Name, Mass, spinX2)                                        \
       catalog.particleProperties.insert(                                       \
           std::pair<std::string, TH_ParticleProperty>(                         \
             Name , TH_ParticleProperty(Mass, spinX2)                           \
             )                                                                  \
           );    
-      getSMmassMS("d"   , SMI.mD,  1) // md(2 GeV)^MS-bar, not pole mass
-      getSMmassMS("dbar", SMI.mD,  1) // md(2 GeV)^MS-bar, not pole mass
-      getSMmassMS("u"   , SMI.mU,  1) // mu(2 GeV)^MS-bar, not pole mass
-      getSMmassMS("ubar", SMI.mU,  1) // mu(2 GeV)^MS-bar, not pole mass
-      getSMmassMS("s"   , SMI.mS,  1) // ms(2 GeV)^MS-bar, not pole mass
-      getSMmassMS("sbar", SMI.mS,  1) // ms(2 GeV)^MS-bar, not pole mass
-      // FIXME: Is this the correct mass assignment?  Why "mCmC"?
-      getSMmassMS("c"   , SMI.mCmC,1) // mc(mc)^MS-bar, not pole mass
-      getSMmassMS("cbar", SMI.mCmC,1) // mc(mc)^MS-bar, not pole mass
-      // Dummy masses for neutrino flavour eigenstates. Set to zero.
-      getSMmassMS("nu_e",     0.0, 1)
-      getSMmassMS("nubar_e",  0.0, 1)
-      getSMmassMS("nu_mu",    0.0, 1)
-      getSMmassMS("nubar_mu", 0.0, 1)
-      getSMmassMS("nu_tau",   0.0, 1)
-      getSMmassMS("nubar_tau",0.0, 1)   
-#undef getSMmassMS
+      addParticle("d"   , SMI.mD,  1) // md(2 GeV)^MS-bar, not pole mass
+      addParticle("dbar", SMI.mD,  1) // md(2 GeV)^MS-bar, not pole mass
+      addParticle("u"   , SMI.mU,  1) // mu(2 GeV)^MS-bar, not pole mass
+      addParticle("ubar", SMI.mU,  1) // mu(2 GeV)^MS-bar, not pole mass
+      addParticle("s"   , SMI.mS,  1) // ms(2 GeV)^MS-bar, not pole mass
+      addParticle("sbar", SMI.mS,  1) // ms(2 GeV)^MS-bar, not pole mass
+      addParticle("c"   , SMI.mCmC,1) // mc(mc)^MS-bar, not pole mass
+      addParticle("cbar", SMI.mCmC,1) // mc(mc)^MS-bar, not pole mass
+      // Masses for neutrino flavour eigenstates. Set to zero.
+      addParticle("nu_e",     0.0, 1)
+      addParticle("nubar_e",  0.0, 1)
+      addParticle("nu_mu",    0.0, 1)
+      addParticle("nubar_mu", 0.0, 1)
+      addParticle("nu_tau",   0.0, 1)
+      addParticle("nubar_tau",0.0, 1)   
+#undef addParticle
 
-      // Get MSSM masses, FIXME: Remove absolute value once SpecBit guarantees positive masses
+      // Get MSSM masses
+      // FIXME: Remove absolute value once SpecBit guarantees positive masses
 #define getMSSMmass(Name, spinX2)                                              \
       catalog.particleProperties.insert(                                       \
           std::pair<std::string, TH_ParticleProperty> (                        \
@@ -325,8 +330,8 @@ namespace Gambit {
       const DecayTable* tbl = &(*Dep::decay_rates);
       
       // List of decays to include
-      const vector<string> decaysOfInterest = initVector<string>
-        ("H+", "H-", "h0_1", "h0_2", "A0");        
+      const vector<string> decaysOfInterest = 
+        initVector<string>("H+", "H-", "h0_1", "h0_2", "A0");        
       
       double minBranching = runOptions->getValueOrDef<double>(0.0,
           "ProcessCatalog_MinBranching");
@@ -334,6 +339,7 @@ namespace Gambit {
           iState_it != decaysOfInterest.end(); ++iState_it)
       {
         const double m_init = catalog.getParticleProperty(*iState_it).mass;
+        // FIXME: Optimize m_dm use
         const double m_dm = catalog.getParticleProperty(DMid).mass;
         std::cout << 
           "Importing decay information for: " << *iState_it << std::endl;
@@ -368,8 +374,9 @@ namespace Gambit {
                 std::cout << name << "\t";
               } 
               double partialWidth = totalWidth * bFraction;        
+              // FIXME: This should not be optional
               bool checkKinematics = runOptions->getValueOrDef<bool>(true,
-              "ProcessCatalog_KinCheck");
+                  "ProcessCatalog_KinCheck");
               // TODO: Add other criteria on which channels to include?
               if(!checkKinematics or m_final<=m_init)
               {
@@ -529,6 +536,7 @@ namespace Gambit {
     void DarkMatter_ID_MSSM25atQ(std::string & result)
     {
       using namespace Pipes::DarkMatter_ID_MSSM25atQ;
+      // FIXME: This should return the lightest neutralino identifier
       result = "~chi0_1";
     }
   }
