@@ -43,7 +43,7 @@ namespace Gambit
     min_valid_lnlike   (iniFile.getValue<double>("likelihood", "model_invalid_for_lnlike_below"))
   {
     // Set the list of valid return types of functions that can be used for 'purpose' by this container class. 
-    const std::vector<str> allowed_types_for_purpose = initVector<str>("double", "std::vector<double>");
+    const std::vector<str> allowed_types_for_purpose = initVector<str>("double", "std::vector<double>", "float", "std::vector<float>");
     // Find subset of vertices that match requested purpose
     target_vertices = dependencyResolver.getObsLikeOrder();
     int size = 0;
@@ -113,7 +113,7 @@ namespace Gambit
       try
       {
         dependencyResolver.calcObsLike(*it,getPtID()); //pointID is passed through to the printer call for each functor
-        // Switch depending on whether the functor returns a single likelihood or a vector of them.
+        // Switch depending on whether the functor returns floats or doubles and a single likelihood or a vector of them.
         str rtype = return_types[*it];
         if (rtype == "double")
         {
@@ -122,6 +122,15 @@ namespace Gambit
         else if (rtype == "std::vector<double>")
         {
           std::vector<double> result = dependencyResolver.getObsLike<std::vector<double> >(*it);
+          for (auto jt = result.begin(); jt != result.end(); ++jt) lnlike += *jt;
+        }
+        else if (rtype == "float")
+        {
+          lnlike += dependencyResolver.getObsLike<float>(*it);
+        }
+        else if (rtype == "std::vector<float>")
+        {
+          std::vector<float> result = dependencyResolver.getObsLike<std::vector<float> >(*it);
           for (auto jt = result.begin(); jt != result.end(); ++jt) lnlike += *jt;
         }
         else core_error().raise(LOCAL_INFO, "Unexpected target functor type.");

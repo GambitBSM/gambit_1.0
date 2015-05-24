@@ -248,7 +248,7 @@ namespace Gambit
     }
 
     /// Produces a random floating-point 'event count' between 0 and 5.
-    void exampleEventGen(singleprec &result)
+    void exampleEventGen(float &result)
     {
       using namespace Pipes::exampleEventGen;
       result = Random::draw()*5.0;                 // Generate and return the random number
