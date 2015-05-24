@@ -1,0 +1,51 @@
+# Direct detection couplings
+DDcouplings:
+  gps: -1.93429e-10
+  gpa: -1.51057e-07
+  gns: -1.74777e-10
+  gna: 1.32203e-07
+
+# Particle masses [GeV] 
+ParticleMasses:
+  Mchi: 257
+
+# Relic density Omega h^2
+RelicDensity:
+  oh2: 0.07495
+
+# Annihilation spectrum dNdE [1/GeV]
+GammaRaySpectrum:
+  E: [0.1, 0.158489, 0.251189, 0.398107, 0.630957, 1, 1.58489, 2.51189, 3.98107, 6.30957, 10, 15.8489, 25.1189, 39.8107, 63.0957, 100, 158.489, 251.189, 398.107, 630.957, 1000, 1584.89, 2511.89, 3981.07, 6309.57, 10000, ]
+  dNdE: [7.43124e-29, 6.58601e-29, 5.34218e-29, 3.98047e-29, 2.72436e-29, 1.72035e-29, 9.98491e-30, 5.27511e-30, 2.53503e-30, 1.09172e-30, 4.12009e-31, 1.33459e-31, 3.59877e-32, 7.82533e-33, 1.35873e-33, 1.93394e-34, 2.11809e-35, 1.64e-36, 9.96322e-70, 1.43519e-124, 2.06354e-173, 5.48846e-210, 1.90998e-235, 1.51735e-252, 7.76528e-264, 3.0028e-271, ]
+
+# Annihilation rates
+AnnihilationRates:
+  h0_1h0_1: 3.51102e-61
+  h0_1Z0: 7.66179e-28
+  Z0Z0: 5.28779e-30
+  W+W-: 7.13515e-30
+  nu_enubar_e: 8.19746e-66
+  e+e-: 1.06642e-34
+  nu_munubar_mu: 8.19746e-66
+  mu+mu-: 4.55925e-30
+  nu_taunubar_tau: 8.19746e-66
+  tau+tau-: 1.28958e-27
+  uubar: 2.34128e-35
+  ddbar: 4.41032e-32
+  ccbar: 4.23853e-31
+  ssbar: 1.2997e-29
+  ttbar: 6.25031e-26
+  bbbar: 9.54465e-27
+  gg: 1.33071e-28
+  gammagamma: 8.03757e-31
+  gammaW+W-: 0
+  gammae+e-: 0
+  gammamu+mu-: 0
+  gammatau+tau-: 0
+  gammauubar: 0
+  gammaddbar: 0
+  gammaccbar: 0
+  gammassbar: 0
+  gammattbar: 0
+  gammabbbar: 0
+
