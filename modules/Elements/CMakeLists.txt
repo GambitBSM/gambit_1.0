@@ -21,6 +21,7 @@ set(source_files src/functors.cpp
                  src/Spectrum.cpp
                  src/terminator.cpp
                  src/virtualH.cpp
+		 src/MSSM_slhahelp.cpp
 )
 
 set(header_files include/gambit/Elements/base_functions.hpp
@@ -42,6 +43,7 @@ set(header_files include/gambit/Elements/base_functions.hpp
                  include/gambit/Elements/terminator.hpp
                  include/gambit/Elements/types_rollcall.hpp
                  include/gambit/Elements/virtualH.hpp
+		 include/gambit/Elements/MSSM_slhahelp.hpp
 )
 
 add_gambit_library(Elements OPTION OBJECT SOURCES ${source_files} HEADERS ${header_files})
