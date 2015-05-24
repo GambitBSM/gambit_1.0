@@ -71,7 +71,6 @@ namespace Gambit
       result.positive_error = 5.0e-01;
       result.negative_error = 5.0e-01;
       result.set_BF(0.91, 0.04, "W+", "b");  
-      result.set_BF(0.0, 0.0, "H+", "b");
     }
 
     /// SM decays: tbar
@@ -2270,11 +2269,22 @@ namespace Gambit
       double lambda = *Param["lambda"]; //FIXME get from spectrum
       double v0 = 246.0;                //FIXME get from spectrum
       double mhpole = 125.0;            //FIXME get from spectrum
-      double massratio2 = mass*mass/(mhpole*mhpole);
-      double gamma = (2.0*mass <= mhpole) ? lambda*lambda*v0*v0/(32.0*pi*mhpole) * sqrt(1.0 - 4.0*massratio2) : 0.0;        
-      result = *Dep::Higgs_decay_rates;                        // Get the SM decays.
-      result.width_in_GeV = result.width_in_GeV + gamma;       // Add the h->SS width        
-      result.set_BF(gamma/result.width_in_GeV, 0.0, "S", "S"); // Add the h->SS branching fraction
+      double massratio2 = pow(mass/mhpole,2);
+      double gamma = (2.0*mass <= mhpole) ? pow(lambda*v0,2)/(32.0*pi*mhpole) * sqrt(1.0 - 4.0*massratio2) : 0.0;        
+      // Add the h->SS width to the total
+      double newwidth = Dep::Higgs_decay_rates->width_in_GeV + gamma;
+      result.width_in_GeV = newwidth;
+      // Import the previous error estimates on the total width
+      result.positive_error = Dep::Higgs_decay_rates->positive_error;
+      result.negative_error = Dep::Higgs_decay_rates->negative_error;
+      // Add the h->SS branching fraction
+      result.set_BF(gamma/newwidth, 0.0, "S", "S");
+      // Get the SM decays and rescale them
+      double wscaling = Dep::Higgs_decay_rates->width_in_GeV / newwidth;
+      for (auto it = Dep::Higgs_decay_rates->channels.begin(); it != Dep::Higgs_decay_rates->channels.end(); ++it)  
+      {                                     
+        result.channels[it->first] = std::pair<double, double>(it->second.first*wscaling, it->second.second*wscaling);
+      }
     }
 
 

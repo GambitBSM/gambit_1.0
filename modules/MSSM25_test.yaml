@@ -28,9 +28,9 @@ ObsLikes:
     type:         bool
     function:     exampleRead
 
-  - purpose:      Test
-    capability:   decay_rates
-    type:         DecayTable
+  #- purpose:      Test
+  #  capability:   decay_rates
+  #  type:         DecayTable
 
 Rules:
   - capability: SpecBit_examples

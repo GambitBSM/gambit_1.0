@@ -606,10 +606,17 @@ namespace Gambit
       return (*(dynamic_cast<module_functor<std::vector<double>>*>(masterGraph[vertex])))(0);
     }
 
-    // Tell functor that it invalidated the current point in model space (due to a large contribution to lnL)
-    void DependencyResolver::invalidatePointAt(VertexID vertex)
+    // Tell functor that it invalidated the current point in model space (due to a large or NaN contribution to lnL)
+    void DependencyResolver::invalidatePointAt(VertexID vertex, bool isnan)
     {
-      masterGraph[vertex]->notifyOfInvalidation("Cumulative log-likelihood pushed below threshold.");
+      if (isnan)
+      {
+        masterGraph[vertex]->notifyOfInvalidation("NaN returned for likelihood value.");
+      }
+      else
+      {
+        masterGraph[vertex]->notifyOfInvalidation("Cumulative log-likelihood pushed below threshold.");
+      }
     }
 
     // Returns pointer to ini-file entry associated with ObsLike

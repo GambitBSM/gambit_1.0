@@ -666,3 +666,4 @@ QUICK_FUNCTION(DecayBit, charginominus_1_decay_rates, NEW_CAPABILITY, charginomi
 QUICK_FUNCTION(DecayBit, charginominus_2_decay_rates, NEW_CAPABILITY, charginominus_2_decays, DecayTable::Entry, (MSSM78atQ, MSSM78atMGUT), (charginoplus_2_decay_rates, DecayTable::Entry)) 
  
 #endif /* defined(__DecayBit_rollcall_hpp__) */
+
