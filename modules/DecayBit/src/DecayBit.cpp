@@ -211,34 +211,9 @@ namespace Gambit
       //See PDG meson sheet in DecayBit/data/PDG if you want BFs               
     }
 
-
      ///SM decays: Higgs
-    void SMHiggs_decays (DecayTable::Entry& result) 
-    {
-      // Remember that result does not arrive pristine, but contains the result of the last point.  Make sure to overwrite it fully!
-      // This is just an example function that returns junk numbers at the moment.  It should be finished off
-      // in order to use SUSYHIT properly.  When it works, a dependency on it added to the all_decays function.
-      using namespace Pipes::SMHiggs_decays;
-      const SubSpectrum* spec = *Dep::SM_spectrum;
-      const SubSpectrum* mssm = *Dep::MSSM_spectrum;
-      double m_H = mssm->phys.get_Pole_Mass("h0_1"); // Retrieve the masses from the spectrum object.
-      double m_b = spec->phys.get_Pole_Mass("b");
-      double m_t = spec->phys.get_Pole_Mass("t");
-      double m_W = spec->phys.get_Pole_Mass("W+");
-      double m_Z = spec->phys.get_Pole_Mass("Z0");
-      double totalwidth = 5.0; // In GeV -- this should be calculated or retrieved from a backend
-      double BF_err = 0.01;// Error on the branching fractions
-      double BF_bb = 0.37; // In reality, this should be obtained from a backend, using m_b, m_H, etc
-      double BF_tt = 0.10; // In reality, this should be obtained from a backend, using m_t, m_H, etc
-      double BF_WW = 0.35; // In reality, this should be obtained from a backend, using m_W, m_H, etc
-      double BF_WWZ = 0.18;// In reality, this should be obtained from a backend, using m_W, m_H, m_Z, etc
-      cout << "H,b,t,W,Z masses: " << m_H << " " << m_b << " " << m_t <<  " " << m_W << " " << m_Z << endl;
-      result.width_in_GeV = totalwidth;       // Alternatively, you could make a blank one with result = DecayTable::Entry(totalwidth).
-      result.set_BF(BF_bb, BF_err, "b", "bbar");      // Set the BFs for each final state.
-      result.set_BF(BF_tt, BF_err, "t", "tbar");
-      result.set_BF(BF_WW, BF_err, "W+", "W-");
-      result.set_BF(BF_WWZ, BF_err, "W+", "W-", "Z0");
-    }
+     // TODO
+    
 
     /// MSSM sfermion states 
 

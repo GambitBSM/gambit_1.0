@@ -64,13 +64,17 @@ START_MODULE
 
   #define CAPABILITY Higgs_decay_rates
   START_CAPABILITY
-
+   
     //FIXME just a dummy
     #define FUNCTION SM_Higgs_decays
     START_FUNCTION(DecayTable::Entry)
-    DEPENDENCY(SM_spectrum, const SubSpectrum*)
-    DEPENDENCY(MSSM_spectrum, const SubSpectrum*)
     #undef FUNCTION
+    // //FIXME just a dummy
+    // #define FUNCTION SM_Higgs_decays
+    // START_FUNCTION(DecayTable::Entry)
+    // DEPENDENCY(SM_spectrum, const SubSpectrum*)
+    // DEPENDENCY(MSSM_spectrum, const SubSpectrum*)
+    // #undef FUNCTION
 
     #define FUNCTION MSSM_h0_1_decays
     START_FUNCTION(DecayTable::Entry)
