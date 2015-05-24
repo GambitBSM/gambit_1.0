@@ -30,12 +30,17 @@
 namespace Gambit
 {
 
-  Likelihood_Container_Base::Likelihood_Container_Base(const std::map<str, primary_model_functor *> &functorMap, 
-   DRes::DependencyResolver &dependencyResolver, Priors::CompositePrior &prior, const str &purpose) 
-  : dependencyResolver(dependencyResolver), 
-    realParameters(prior.getShownParameters().size()), 
-    prior(prior),
-    functorMap(functorMap)
+  // Methods for Likelihood_Container class.
+
+  /// Constructor
+  Likelihood_Container::Likelihood_Container(const std::map<str, primary_model_functor *> &functorMap, 
+   DRes::DependencyResolver &dependencyResolver, IniParser::IniFile &iniFile, 
+   Priors::CompositePrior &prior, const str &purpose) 
+  : dependencyResolver (dependencyResolver), 
+    realParameters     (prior.getShownParameters().size()), 
+    prior              (prior),
+    functorMap         (functorMap),
+    min_valid_lnlike   (iniFile.getValue<double>("likelihood", "model_invalid_for_lnlike_below"))
   {
     // Find subset of vertices that match requested purpose
     target_vertices = dependencyResolver.getObsLikeOrder();
@@ -45,6 +50,7 @@ namespace Gambit
     {
       if (dependencyResolver.getIniEntry(*vert_it)->purpose == purpose)
       {
+        // Here check that the types of the functors are depres type equivalent to double or std::vector<double>
         *(it++) = *vert_it;
         size++;
       }
@@ -57,17 +63,8 @@ namespace Gambit
     target_vertices.resize(size);
   }
 			
-  inline void Likelihood_Container_Base::calcObsLike(DRes::VertexID& it)
-  {
-    dependencyResolver.calcObsLike(it,getPtID());
-  }
-
-  inline double Likelihood_Container_Base::getObsLike(DRes::VertexID &it)
-  {
-    return dependencyResolver.getObsLike(it);
-  }
-    
-  void Likelihood_Container_Base::setParameters (const std::vector<double> &vec) 
+  /// Do the prior transformation and populate the parameter map  
+  void Likelihood_Container::setParameters (const std::vector<double> &vec) 
   {
     prior.transform(vec, parameterMap);
     
@@ -89,27 +86,13 @@ namespace Gambit
     //getchar();
   }
     
-  void Likelihood_Container_Base::resetAll() 
-  {
-    dependencyResolver.resetAll();
-  }
-
-  void Likelihood_Container_Base::print(double in, const str &type) const
+  /// Print the results of the likelihood evaluation
+  void Likelihood_Container::print(double in, const str &type) const
   {
     //real stuff here to replace what is below;
     double tmp = in; tmp++; str tmp2 = type;
   }
-		
-
-// Methods for Likelihood_Container class.
-
-  /// Constructor
-  Likelihood_Container::Likelihood_Container (const std::map<str, primary_model_functor *> &functorMap, 
-   DRes::DependencyResolver &dependencyResolver, IniParser::IniFile &iniFile, Priors::CompositePrior &prior, const str &purpose) :
-   Likelihood_Container_Base (functorMap, dependencyResolver, prior, purpose),
-   min_valid_lnlike (iniFile.getValue<double>("likelihood", "model_invalid_for_lnlike_below"))
-  {}
-  
+		  
   /// Evaluate total likelihood function
   // TODO sort out print statements for invalid points and invalid observables associated with otherwise valid points 
   // (ie ones with valid likelihood calculations but invalid auxilary observables).	 Invalid observables should be identified by
@@ -128,8 +111,8 @@ namespace Gambit
       logger() << LogTags::core << "Calculating likelihood vertex " << *it << EOM;
       try
       {
-        calcObsLike(*it); //pointID is passed through to the printer call for each functor
-        lnlike += getObsLike(*it);
+        dependencyResolver.calcObsLike(*it,getPtID()); //pointID is passed through to the printer call for each functor
+        lnlike += dependencyResolver.getObsLike(*it);
         bool isnan = Utils::isnan(lnlike);
         if (isnan or lnlike <= min_valid_lnlike) dependencyResolver.invalidatePointAt(*it, isnan);
         logger() << LogTags::core << "done with likelihood vertex " << *it << EOM;
@@ -152,7 +135,7 @@ namespace Gambit
         logger() << LogTags::core << "Calculating auxiliary vertex " << *it << EOM;
         try
         {
-          calcObsLike(*it);
+          dependencyResolver.calcObsLike(*it,getPtID());
           logger() << LogTags::core << "done with auxiliary vertex " << *it << EOM;;
         }
         catch(Gambit::invalid_point_exception& e)
@@ -163,7 +146,7 @@ namespace Gambit
       }
     }
       
-    resetAll();
+    dependencyResolver.resetAll();
     return lnlike;
   }
 
