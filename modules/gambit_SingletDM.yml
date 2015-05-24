@@ -6,12 +6,17 @@
 
 Parameters: 
     StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
+
+    StandardModel_Higgs:
+      mH: 125
+      vev: 238
+
     SingletDM:
         mass:
             range: [45.001, 100]
             prior_type: log
         lambda:
-            range: [0.005, 0.5]
+            range: [0.002, 0.5]
             #fixed_value: 0.0366524 
             prior_type: log
     nuclear_params_fnq:

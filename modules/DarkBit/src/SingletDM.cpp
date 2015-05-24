@@ -247,8 +247,6 @@ namespace Gambit
       // Import model parameters
       double mS = *Param["mass"];
       double lambda = *Param["lambda"];
-      double mH = 125.7;  // FIXME: Get from Spec objects
-      double gammaH = 0.01;  // FIXME: Get from Spec object
 
       // Initialize empty catalog and main annihilation process
       TH_ProcessCatalog catalog;
@@ -260,9 +258,14 @@ namespace Gambit
       ///////////////////////////
       
       // Import Spectrum objects
-      // FIXME: This should import from one object only
-      const SubSpectrum* SM = *Dep::SM_spectrum;
-      const SMInputs& SMI   = *Dep::SMINPUTS;  
+      const Spectrum* spec = *Dep::SingletDM_spectrum;
+      const SubSpectrum* spec_uv = spec->get_UV();
+      const SubSpectrum* SM = spec->get_LE();
+      const SMInputs& SMI   = spec->get_SMInputs();
+
+      // FIXME: Update "<H>" etc
+      double mH = spec->get_Pole_Mass("h0_1");
+      double v = spec_uv->runningpars.get_mass_parameter("<H>");
 
       // Get SM pole masses
 #define getSMmass(Name, spinX2)                                                \
@@ -324,6 +327,9 @@ namespace Gambit
       // Import decay table from DecayBit
       const DecayTable* tbl = &(*Dep::decay_rates);
       
+      // Save Higgs width for later
+      double gammaH = tbl->at("h0_1").width_in_GeV;
+
       // List of decays to include (here only SM-like higgs)
       const vector<string> decaysOfInterest = initVector<string> ("h0_1");
       

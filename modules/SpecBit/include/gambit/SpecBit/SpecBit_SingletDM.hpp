@@ -26,10 +26,11 @@
     // and the SingletDM parameters
     #define FUNCTION get_SingletDM_spectrum
     START_FUNCTION(const Spectrum*)
-    MODEL_GROUP(higgs,   (StardardModel_Higgs))
+    DEPENDENCY(SMINPUTS, SMInputs)
+    ALLOW_MODEL_DEPENDENCE(StandardModel_Higgs, SingletDM)
+    MODEL_GROUP(higgs,   (StandardModel_Higgs))
     MODEL_GROUP(singlet, (SingletDM))
     ALLOW_MODEL_COMBINATION(higgs, singlet)
-    DEPENDENCY(SMINPUTS, SMInputs)
     #undef FUNCTION
 
   #undef CAPABILITY
