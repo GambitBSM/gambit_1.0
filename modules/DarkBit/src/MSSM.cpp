@@ -106,8 +106,11 @@ namespace Gambit {
         result = true;
       }
 
-      // CMSSM
-      else if (ModelInUse("CMSSM"))
+      // CMSSM with DS-internal ISASUGRA (should be avoided, only for
+      // debugging)
+      else if (ModelInUse("CMSSM") and 
+          runOptions->getValueOrDef<bool>(false, "use_DS_isasugra")
+          )
       {
         // Setup mSUGRA model from CMSSM parameters
         double am0    = *Param["M0"];     // m0
@@ -147,8 +150,8 @@ namespace Gambit {
         }
       }
 
-      // use SLHA for initialization initialization
-      else if (ModelInUse("MSSM25atQ"))
+      // use SLHA for initialization initialization of MSSM25atQ or CMSSM
+      else if (ModelInUse("MSSM25atQ") or ModelInUse("CMSSM"))
       {
         // Save eaSLHA file to disk
         //eaSLHA mySLHA = *Dep::MSSM_spectrum;

@@ -312,6 +312,17 @@ ObsLikes:
 #########################
 
 Rules:
+  - capability: A0_decay_rates
+    function: A0_decays
+  - capability: Higgs_decay_rates
+    function: MSSM_h0_1_decays
+  - capability: Hplus_decay_rates
+    function: Hplus_decays
+  - capability: h0_2_decay_rates
+    function: h0_2_decays
+  - capability: t_decay_rates
+    function: t_decays
+
   - capability: MSSM_spectrum
     options:
       precision_goal:        1.0e-4
@@ -418,13 +429,13 @@ Logger:
 
   prefix : "runs/example_minimal_test/logs/"
   redirection:
-    [Debug] : "debug.log"
-    [Default] : "default.log"
+    [Debug] : stdout # "debug.log"
+    [Default] : stdout #"default.log"
     [Error] : "errors.log"
     [Warning] : "warnings.log"
     [Core,Error] : "core_errors.log"
     [Core,Error,Fatal] : "fatal_core_errors.log"
-    [Dependency Resolver] : "dependency_resolver.log"
+    [Dependency Resolver] : stdout #"dependency_resolver.log"
     [ExampleBit_A] : "ExampleBit_A.log"
     [ExampleBit_B] : "ExampleBit_B.log"
     [BackendIniBit]: "BackendIniBit.log"
