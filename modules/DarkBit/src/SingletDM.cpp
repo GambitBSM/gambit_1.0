@@ -12,20 +12,27 @@
 ///          (c.weniger@uva.nl)
 ///  \date Oct 2014, Apr 2015
 ///
+///  \author Pat Scott
+///          <p.scott@imperial.ac.uk>
+///  \date 2015 May
+///
 ///  *********************************************
 
 #include "gambit/Elements/gambit_module_headers.hpp"
+#include "gambit/Elements/virtualH.hpp"
 #include "gambit/DarkBit/DarkBit_rollcall.hpp"
-#include "gambit/Utils/ASCIItableReader.hpp"
 
-namespace Gambit {
-  namespace DarkBit {
+namespace Gambit
+{
+  
+  namespace DarkBit
+  {
 
     class SingletDM
     {
       public:
-        /// Initialize SingletDM object (branching ratios etc)
-        SingletDM(std::string filename)
+        /// Initialize SingletDM object
+        SingletDM()
         {
           // FIXME: This should not be hard-coded
           mh = 125.7;  // FIXME
@@ -35,20 +42,6 @@ namespace Gambit {
           mc = 1;  // FIXME
           mtau = 1;  // FIXME
           mt = 172;  // FIXME
-          // Higgs branching ratios and total width Gamma [GeV], as function of
-          // mass [GeV] (90 - 150 GeV)
-          ASCIItableReader table(filename);  
-          colnames = initVector<std::string>("mass", "bb", "tautau", "mumu",
-              "ss", "cc", "tt", "gg", "gammagamma", "Zgamma",
-              "WW", "ZZ", "Gamma");
-          table.setcolnames(colnames);
-
-          for (auto it = colnames.begin(); it != colnames.end(); it++)
-          {
-            f_vs_mass[*it] = Funk::interp("mass", table["mass"], table[*it]);
-          }
-          Gamma = f_vs_mass["Gamma"]->bind("mass");
-          Gamma_mh = Gamma->eval(mh);
         };
         ~SingletDM() {}
 
@@ -79,8 +72,8 @@ namespace Gambit {
           if ( channel == "hh" ) { return sv_hh(lambda, mass, v); }
           if ( sqrt_s < 300 )
           {
-            double br = f_vs_mass[channel]->bind("mass")->eval(sqrt_s);
-            double Gamma_s = Gamma->eval(sqrt_s);
+            double br = Virtual_SMHiggs_widths(channel,sqrt_s);
+            double Gamma_s = Virtual_SMHiggs_widths("Gamma",sqrt_s);
             double GeV2tocm3s1 = gev2cm2*s2cm;
 
             double res = 2*lambda*lambda*v0*v0/
@@ -161,11 +154,7 @@ namespace Gambit {
         }
 
       private:
-        std::map<std::string, Funk::Funk> f_vs_mass;
-        Funk::BoundFunk Gamma;
-        std::vector<std::string> colnames;
-
-        double Gamma_mh, mh, v0, alpha_s, mb, mc, mtau, mt;
+         double Gamma_mh, mh, v0, alpha_s, mb, mc, mtau, mt;
     };
 
     void DarkMatter_ID_SingletDM(DarkMatter_ID_type & result)
@@ -199,9 +188,9 @@ namespace Gambit {
     void DD_couplings_SingletDM(Gambit::DarkBit::DD_couplings &result)
     {
       using namespace Pipes::DD_couplings_SingletDM;
-      double mass = *Param["mass"];
-      double lambda = *Param["lambda"];
-      double mh = 125.7;  // FIXME
+      double mass = *Param["mass"];     // FIXME to come from SS_spectrum
+      double lambda = *Param["lambda"]; // FIXME to come from SS_spectrum
+      double mh = 125.7;                // FIXME to come from SS_spectrum
 
       // TODO: Double check expressions (taken from Cline et al. 2013)
       double fp = 2/9 + 7/9*(*Param["fpu"] + *Param["fpd"] + *Param["fps"]);
@@ -211,7 +200,7 @@ namespace Gambit {
       result.gns = lambda*fn*m_proton/pow(mh,2)/mass/2;
       result.gpa = 0;  // Only SI cross-section
       result.gna = 0;
-      result.M_DM = *Param["mass"];
+      result.M_DM = mass;
     }
 
     /// Set up process catalogue for Singlet DM.
@@ -219,17 +208,16 @@ namespace Gambit {
     {
       using namespace Pipes::TH_ProcessCatalog_SingletDM;
 
-      static SingletDM singletDM("DarkBit/data/Higgs_decay_1101.0593.dat");
-
-      //const Spectrum* SM = *Dep::SM_spectrum;
+      static SingletDM singletDM;
+      //const Spectrum* SS = *Dep::SS_spectrum;
 
       std::vector<std::string> finalStates;
       double mass, lambda, mW, mb, mZ, mc, mtau, mt;
 
-      mass = *Param["mass"];
-      lambda = *Param["lambda"];
-      //mZ = SM->phys.get_Pole_Mass("Z");
-      //mW = SM->phys.get_Pole_Mass("W");
+      mass = *Param["mass"];     //FIXME to come from SS_spectrum
+      lambda = *Param["lambda"]; //FIXME to come from SS_spectrum
+      //mZ = SS->phys.get_Pole_Mass("Z");
+      //mW = SS->phys.get_Pole_Mass("W");
       mZ = m_Zboson;  // FIXME
       mW = m_Wboson;  // FIXME
       mb = 5;  // FIXME
