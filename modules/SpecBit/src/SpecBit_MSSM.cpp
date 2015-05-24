@@ -26,6 +26,7 @@
 #include "gambit/Utils/stream_overloads.hpp" // Just for more convenient output to logger
 #include "gambit/Utils/util_macros.hpp"
 #include "gambit/SpecBit/SpecBit_rollcall.hpp"
+#include "gambit/SpecBit/SpecBit_helpers.hpp"
 #include "gambit/SpecBit/QedQcdWrapper.hpp"
 #include "gambit/SpecBit/SMskeleton.hpp"
 #include "gambit/SpecBit/MSSMskeleton.hpp"
@@ -51,36 +52,11 @@ namespace Gambit
     // To check if a model is currently being scanned:
     // bool Pipes::<fname>::ModelInUse(str model_name)
 
-    /// @{
-
-    /// Non-Gambit convenience functions
+    /// @{ Non-Gambit convenience functions
     //  =======================================================================
     //  These are not known to Gambit, but they do basically all the real work.
     //  The Gambit module functions merely wrap the functions here and hook 
     //  them up to their dependencies, and input parameters.
-
-    /// Initialise QedQcd object from SMInputs data
-    void setup_QedQcd(QedQcd& oneset /*output*/, const SMInputs& sminputs /*input*/)
-    {
-      // Set pole masses (to be treated specially)
-      oneset.setPoleMt(sminputs.mT);
-      //oneset.setPoleMb(...);
-      oneset.setPoleMtau(sminputs.mTau);
-      oneset.setMbMb(sminputs.mBmB);
-      /// set running quark masses
-      oneset.setMass(mDown,    sminputs.mD);
-      oneset.setMass(mUp,      sminputs.mU);
-      oneset.setMass(mStrange, sminputs.mS);
-      oneset.setMass(mCharm,   sminputs.mCmC);
-      /// set QED and QCD structure constants
-      oneset.setAlpha(ALPHA, 1./sminputs.alphainv);
-      oneset.setAlpha(ALPHAS, sminputs.alphaS);
-      /// NOTE! These assume the input electron and muon pole masses are "close
-      /// enough" to MSbar masses at MZ. The object does the same with its 
-      /// default values so I guess it is ok.
-      oneset.setMass(mElectron, sminputs.mE);
-      oneset.setMass(mMuon,     sminputs.mMu);
-    }
 
     /// Compute an MSSM spectrum using flexiblesusy
     // In GAMBIT there are THREE flexiblesusy MSSM spectrum generators currently in
@@ -293,78 +269,15 @@ namespace Gambit
         #undef ostr
         #undef oend
       #endif
-
     }
+
     /// @} End module convenience functions
 
-    /// @{ 
-  
-    /// Gambit module functions 
+
+    /// @{ Gambit module functions 
     //  =======================================================================
     //  These are wrapped up in Gambit functor objects according to the
     //  instructions in the rollcall header
-
-    /// Set SMINPUTS (SLHA2) struct to match StandardModel_SLHA2 parameters.
-    //  Effectively just changes these model parameters into a more convenient form.
-    //  But also opens up the possibility of rebuilding this struct from some other
-    //  parameterisation.
-    void get_SMINPUTS(SMInputs &result)
-    {
-      namespace myPipe = Pipes::get_SMINPUTS;
-      SMInputs sminputs; 
-      
-      // Get values from Params pipe
-      // (as defined in SLHA2)
-      if(myPipe::ModelInUse("StandardModel_SLHA2"))
-      {
-         sminputs.alphainv = *myPipe::Param["alphainv"];
-         sminputs.GF       = *myPipe::Param["GF"      ];
-         sminputs.alphaS   = *myPipe::Param["alphaS"  ];
-
-         sminputs.mZ       = *myPipe::Param["mZ"      ]; 
-
-         sminputs.mE       = *myPipe::Param["mE"      ];
-         sminputs.mMu      = *myPipe::Param["mMu"     ];
-         sminputs.mTau     = *myPipe::Param["mTau"    ];
-
-         sminputs.mNu1     = *myPipe::Param["mNu1"    ];
-         sminputs.mNu2     = *myPipe::Param["mNu2"    ];
-         sminputs.mNu3     = *myPipe::Param["mNu3"    ];
-
-         sminputs.mD       = *myPipe::Param["mD"      ];
-         sminputs.mU       = *myPipe::Param["mU"      ];
-         sminputs.mS       = *myPipe::Param["mS"      ];
-         sminputs.mCmC     = *myPipe::Param["mCmC"    ];
-         sminputs.mBmB     = *myPipe::Param["mBmB"    ]; 
-         sminputs.mT       = *myPipe::Param["mT"      ];
-
-         // CKM
-         sminputs.CKM.lambda   = *myPipe::Param["lambda" ];
-         sminputs.CKM.A        = *myPipe::Param["A" ];
-         sminputs.CKM.rhobar   = *myPipe::Param["rhobar" ];
-         sminputs.CKM.etabar   = *myPipe::Param["etabar" ];
-               
-         // PMNS 
-         sminputs.PMNS.theta12 = *myPipe::Param["theta12"];
-         sminputs.PMNS.theta23 = *myPipe::Param["theta23"];
-         sminputs.PMNS.theta13 = *myPipe::Param["theta13"];
-         sminputs.PMNS.delta13 = *myPipe::Param["delta13"];
-         sminputs.PMNS.alpha1  = *myPipe::Param["alpha1"];
-         sminputs.PMNS.alpha2  = *myPipe::Param["alpha2"];
-
-      }
-      else
-      {
-         std::ostringstream errmsg;
-         errmsg << "Error mapping Standard Model parameters to SMINPUTS capabilities!";
-         errmsg << "Perhaps you have added a new model to the ALLOWED_MODELS of this ";
-         errmsg << "module function but have not added a corresponding case in the ";
-         errmsg << "function source (here)." << std::endl;
-         SpecBit_error().raise(LOCAL_INFO,errmsg.str());  
-      }
-      // Return filled struct
-      result = sminputs;
-    }
 
     // Functions to changes the capability associated with a Spectrum object to 
     // "SM_spectrum"
@@ -374,32 +287,6 @@ namespace Gambit
     //void convert_NMSSM_to_SM  (Spectrum* &result) {result = *Pipes::convert_NMSSM_to_SM::Dep::NMSSM_spectrum;}
     //void convert_E6MSSM_to_SM (Spectrum* &result) {result = *Pipes::convert_E6MSSM_to_SM::Dep::E6MSSM_spectrum;}
 
-    // Construct a spectrum object from SMInputs using QedQcdWrapper
-    void get_QedQcd_spectrum(const SubSpectrum* &result)
-    {
-      // Access the pipes for this function to get model and parameter information, and dependencies
-      namespace myPipe = Pipes::get_QedQcd_spectrum;
-
-      // Get SLHA2 SMINPUTS values
-      const SMInputs& sminputs = *myPipe::Dep::SMINPUTS;
-
-      // SoftSUSY object used to set quark and lepton masses and gauge
-      // couplings in QEDxQCD effective theory
-      // Will be initialised by default using values in lowe.h, which we will
-      // override next. 
-      QedQcd oneset;
-
-      // Fill QedQcd object with SMInputs values
-      setup_QedQcd(oneset,sminputs);
-
-      // Run everything to Mz
-      oneset.toMz();
- 
-      // Create a Spectrum object to wrap the qedqcd object
-      static QedQcdWrapper qedqcdspec(oneset,sminputs);
-
-      result = &qedqcdspec;
-    }
 
     void get_CMSSM_spectrum (const Spectrum* &result)
     {
@@ -482,7 +369,7 @@ namespace Gambit
     void dump_spectrum(double &result)
     {
       namespace myPipe = Pipes::dump_spectrum;
-      const SubSpectrum* spec(*myPipe::Dep::SM_spectrum);
+      const SubSpectrum* spec(*myPipe::Dep::SM_subspectrum);
       std::string filename(myPipe::runOptions->getValue<std::string>("filename"));
       spec->dump2slha(filename);
       result = 1;
@@ -494,7 +381,7 @@ namespace Gambit
     void get_MSSM_spectrum_as_SLHAea (SLHAea::Coll &result)
     {
       namespace myPipe = Pipes::get_MSSM_spectrum_as_SLHAea;
-      const SubSpectrum* spec(*myPipe::Dep::MSSM_spectrum);
+      const SubSpectrum* spec(*myPipe::Dep::MSSM_subspectrum);
       result = spec->getSLHAea();
     }
 
