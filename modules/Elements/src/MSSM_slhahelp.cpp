@@ -13,6 +13,31 @@
 namespace Gambit {
    namespace slhahelp {
 
+      
+      /// setup all the maps
+      /// should be called somewhere in gambit setup like 
+      /// with our other maps     
+      void init_maps(){
+
+         
+      /// this is probably banned c++11, can uglify later if kept     
+      std::set<std::string> up_squark_strs   = {"~u_1", "~u_2", "~u_3", 
+                                                "~u_4", "~u_5", "~u_6"}; 
+      std::set<std::string> down_squark_strs = {"~d_1", "~d_2", "~d_3", 
+                                                "~d_4", "~d_5", "~d_6"};
+      std::set<std::string> ch_slepton_strs  = {"~e_1", "~e_2", "~e_3", 
+                                                "~e_4", "~e_5", "~e_6"};
+      /// for iterations over rows and columns
+      /// all the same so only need one at most but this does
+      /// make it easier to generalise when adding new states etc
+      /// or change something via a hack
+      std::set<int> up_squark_rows = {1,2,3,4,5,6};
+      std::set<int> down_squark_rows = {1,2,3,4,5,6};
+      std::set<int> ch_slepton_rows = {1,2,3,4,5,6};
+      std::set<int> up_squark_cols = {1,2,3,4,5,6};
+      std::set<int> down_squark_cols = {1,2,3,4,5,6};
+      std::set<int> ch_slepton_cols = {1,2,3,4,5,6};    
+         
       /// pairs etc that we need for maps
       p_int_string six_up_squark(6,"~u");
       p_int_string six_down_squark(6,"~d");
@@ -73,30 +98,8 @@ namespace Gambit {
       pair_strings sdown_gauge("~d_L","~d_R");
       pair_strings selectron_gauge("~e_L","~e_R");
       
-      /// this is probably banned c++11, can uglify later if kept     
-      std::set<std::string> up_squark_strs   = {"~u_1", "~u_2", "~u_3", 
-                                                "~u_4", "~u_5", "~u_6"}; 
-      std::set<std::string> down_squark_strs = {"~d_1", "~d_2", "~d_3", 
-                                                "~d_4", "~d_5", "~d_6"};
-      std::set<std::string> ch_slepton_strs  = {"~e_1", "~e_2", "~e_3", 
-                                                "~e_4", "~e_5", "~e_6"};
-      /// for iterations over rows and columns
-      /// all the same so only need one at most but this does
-      /// make it easier to generalise when adding new states etc
-      /// or change something via a hack
-      std::set<int> up_squark_rows = {1,2,3,4,5,6};
-      std::set<int> down_squark_rows = {1,2,3,4,5,6};
-      std::set<int> ch_slepton_rows = {1,2,3,4,5,6};
-      std::set<int> up_squark_cols = {1,2,3,4,5,6};
-      std::set<int> down_squark_cols = {1,2,3,4,5,6};
-      std::set<int> ch_slepton_cols = {1,2,3,4,5,6};    
-      
-      
-      /// setup all the maps
-      /// should be called somewhere in gambit setup like 
-      /// with our other maps     
-      void init_maps(){
-         
+
+
          gauge_label_to_index_type["~e_L"] = one_ch_lepton;
          gauge_label_to_index_type["~mu_L"] = two_ch_lepton;
          gauge_label_to_index_type["~tau_L"] = three_ch_lepton;
@@ -267,8 +270,9 @@ namespace Gambit {
       
       ///routine to return mass state admixure for given gauge state
       /// in the end this is a trival routine but may help      
-      double get_mass_addmix_for_gauge(std::string gauge_es, std::string mass_es, 
-                                 const SubSpectrum* mssm)
+      double get_mass_addmix_for_gauge(std::string gauge_es, 
+                                       std::string mass_es, 
+                                       const SubSpectrum* mssm)
       { 
          ///extract info from maps
          p_int_string mass_es_index_type = mass_label_to_index_type[mass_es]; 
