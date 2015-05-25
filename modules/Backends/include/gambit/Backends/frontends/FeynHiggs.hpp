@@ -2,7 +2,7 @@
  * Frontend for FeynHiggs backend
  * 
  * Last modified:
- * Christopher Rogan 2015-02-04
+ * Christopher Rogan Apr 2015
  */
 
 #ifdef BACKENDRENAME
@@ -37,10 +37,13 @@ LOAD_LIBRARY
 
 
 BE_FUNCTION(FHSetFlags, void, (int&,int&,int&,int&,int&,int&,int&,int&,int&,int&), "fhsetflags_", "FHSetFlags")
+
 BE_FUNCTION(FHSetDebug, void, (int&), "fhsetdebug_", "FHSetDebug")
+
 BE_FUNCTION(FHSetSMPara, void, (int&,fh_creal&,fh_creal&,fh_creal&,fh_creal&,fh_creal&,
 				fh_creal&,fh_creal&,fh_creal&,fh_creal&,fh_creal&,fh_creal&,
 				fh_creal&,fh_creal&,fh_creal&,fh_creal&,fh_creal&,fh_creal&), "fhsetsmpara_", "FHSetSMPara")
+
 BE_FUNCTION(FHSetPara, void, (int&,fh_creal&,fh_creal&,fh_creal&,fh_creal&,fh_creal&,
 			      fh_creal&,fh_creal&,fh_creal&,fh_creal&,fh_creal&,
 			      fh_creal&,fh_creal&,fh_creal&,fh_creal&,fh_creal&,
@@ -49,16 +52,20 @@ BE_FUNCTION(FHSetPara, void, (int&,fh_creal&,fh_creal&,fh_creal&,fh_creal&,fh_cr
 			      fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,
 			      fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,
 			      fh_ccomplex&,fh_creal&,fh_creal&,fh_creal&), "fhsetpara_", "FHSetPara")
+
 BE_FUNCTION(FHSetNMFV, void, (int&,fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,
 			      fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,
 			      fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,
 			      fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,
 			      fh_ccomplex&,fh_ccomplex&), "fhsetnmfv_", "FHSetNMFV")
+
 BE_FUNCTION(FHSetLFV, void, (int&,fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,
 			     fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,
 			     fh_ccomplex&,fh_ccomplex&,fh_ccomplex&,fh_ccomplex&), "fhsetlfv_", "FHSetLFV")
+
 BE_FUNCTION(FHConstraints, void, (int&,fh_real&,fh_real&,fh_real&,fh_real&,
 				  fh_real&,fh_real&,fh_real&,fh_real&,fh_real&,int&), "fhconstraints_", "FHConstraints")
+
 BE_FUNCTION(FHFlavour, void, (int&,fh_real&,fh_real&,fh_real&,fh_real&,fh_real&,fh_real&), "fhflavour_", "FHFlavour")
 
 BE_FUNCTION(FHGetPara, void, (int&,int&,
@@ -66,57 +73,82 @@ BE_FUNCTION(FHGetPara, void, (int&,int&,
 			      Farray<fh_real, 1,6, 1,5>&, Farray<fh_complex, 1,36, 1,5>&,
 			      Farray< fh_real,1,2>&, Farray< fh_complex,1,4>&,
 			      Farray< fh_complex,1,4>&, Farray< fh_real,1,4>&,
-			      Farray< fh_complex, 1,16>&, fh_complex&, fh_real&,
+			      Farray< fh_complex,1,16>&, fh_complex&, fh_real&,
 			      Farray< fh_real,1,4>&, fh_real&), "fhgetpara_", "FHGetPara")
 
 BE_FUNCTION(FHHiggsCorr, void, (int&, Farray< fh_real,1,4>&, fh_complex&, Farray<fh_complex, 1,3, 1,3>&, 
 				Farray<fh_complex, 1,3, 1,3>&), "fhhiggscorr_", "FHHiggsCorr")
+
 BE_FUNCTION(FHUncertainties, void, (int&, Farray< fh_real,1,4>&, fh_complex&, Farray<fh_complex, 1,3, 1,3>&, 
 				    Farray<fh_complex, 1,3, 1,3>&), "fhuncertainties_", "FHUncertainties")
 
+BE_FUNCTION(FHSelectUZ, void, (int&,int&,int&,int&), "fhselectuz_", "FHSelectUZ")
 
+BE_FUNCTION(FHCouplings, void, (int&, Farray< fh_complex,1,681>&, Farray< fh_complex,1,231>&,
+                                Farray< fh_real,1,978>&, Farray< fh_real,1,250>&, int&), "fhcouplings_", "FHCouplings")
+
+BE_FUNCTION(FHHiggsProd, void, (int&, fh_real&, Farray< fh_real,1,52>&), "fhhiggsprod_", "FHHiggsProd")
+
+// Initialisation function (dependencies)
+BE_INI_DEPENDENCY(SMINPUTS, SMInputs)               // Need SLHA2 SMINPUTS to initialize FH
+BE_INI_DEPENDENCY(MSSM_spectrum, const Spectrum*)   // Need MSSM spectrum inputs to initialize FH
 
 BE_INI_FUNCTION{
+   int error = 1;
 
   // Scan-level initialisation
   static bool scan_level = true;
   if(scan_level){
+    // initialize FeynHiggs flags
+    int mssmpart = 4;  // scope of calculation (4 -> full MSSM, recommended)
+    int fieldren = 0;  // one-loop field-renormalization constants (0 -> DRbar, strongly recommended))
+    int tanbren = 0;   // one-loop one-loop tanBeta counter-term (0 -> DRbar, strongly recommended))
+    int higgsmix = 3;  // mixing in Higgs sector (3 -> full 3 x 3 in neutral sector)
+    int p2approx = 4;  // 1-loop approximation (4 -> none, UHiggs eval. at p^2=0, recommended)
+    int looplevel = 2; // higher-order corrections? (2 -> various 2-loop contrib., recommended)
+    int runningMT = 1; // top mass for 1/2-loop corr. (1 -> m_t^{run}, recommended)
+    int botResum = 1;  // O(tan^n Beta) corr. ressummed? (1 -> yes, recommended)
+    int tlCplxApprox = 3; // determines how 2-loop corr. are treated with complex param
     
+    FHSetFlags(error, mssmpart, fieldren, tanbren, higgsmix,
+	       p2approx, looplevel, runningMT, botResum, tlCplxApprox);
   }
   scan_level = false;
 
-  // initialize FeynHiggs flags
-  int mssmpart = 4;  // scope of calculation (4 -> full MSSM, recommended)
-  int fieldren = 0;  // one-loop field-renormalization constants (0 -> DRbar, strongly recommended))
-  int tanbren = 0;   // one-loop one-loop tanBeta counter-term (0 -> DRbar, strongly recommended))
-  int higgsmix = 3;  // mixing in Higgs sector (3 -> full 3 x 3 in neutral sector)
-  int p2approx = 4;  // 1-loop approximation (4 -> none, UHiggs eval. at p^2=0, recommended)
-  int looplevel = 2; // higher-order corrections? (2 -> various 2-loop contrib., recommended)
-  int runningMT = 1; // top mass for 1/2-loop corr. (1 -> m_t^{run}, recommended)
-  int botResum = 1;  // O(tan^n Beta) corr. ressummed? (1 -> yes, recommended)
-  int tlCplxApprox = 3; // determines how 2-loop corr. are treated with complex param
-  
-  int error = 1;
-  FHSetFlags(error, mssmpart, fieldren, tanbren, higgsmix,
-	     p2approx, looplevel, runningMT, botResum, tlCplxApprox);
+  // retrive SMInputs dependency 
+  const SMInputs& sminputs = *Dep::SMINPUTS;
+
+  // retrieve MSSM_spectrum dependency
+  const Spectrum* fullspectrum = *Dep::MSSM_spectrum;
+  const SubSpectrum* spec = fullspectrum->get_UV();
+  SLHAea::Coll slhaea = fullspectrum->getSLHAea();
+
+  SLHAea::Block spinfo = slhaea.at("SPINFO");
+  std::vector<std::string> k3(1, "3");
+  std::vector<std::string> k4(1, "4");
+
+  if(spinfo.find(k3) != spinfo.end() || spinfo.find(k4) != spinfo.end()){
+    // throw an error?
+  }
 
   //
-  // SM input parameters:   -1 gives default value
+  // SM input parameters: -1 gives default value
   //
-  fh_real invAlfa = -1; // 1/alpha_{QED}
-  fh_real AlfasMZ = -1; // alpha_s @ MZ
-  fh_real GF = -1;      // Fermi constant
-
-  fh_real ME = -1;      // electron mass
-  fh_real MU = -1;      // up quark mass @ 2 GeV
-  fh_real MD = -1;      // down quark mass @ 2 GeV
-  fh_real MM = -1;      // muon mass
-  fh_real MC = -1;      // charm mass at m_c
-  fh_real MS = -1;      // stange mass @ 2 GeV
-  fh_real ML = -1;      // tau mass
-  fh_real MB = -1;      // bottom mass at m_b
-  fh_real MW = -1;      // W boson mass
-  fh_real MZ = -1;      // Z boson mass
+  fh_real invAlfa = sminputs.alphainv; // 1/alpha_{QED}
+  fh_real AlfasMZ = sminputs.alphaS;   // alpha_s @ MZ
+  fh_real GF = sminputs.GF;            // Fermi constant
+    
+  fh_real ME = sminputs.mE;      // electron mass
+  fh_real MU = sminputs.mU;      // up quark mass @ 2 GeV
+  fh_real MD = sminputs.mD;      // down quark mass @ 2 GeV
+  fh_real MM = sminputs.mMu;     // muon mass
+  fh_real MC = sminputs.mCmC;    // charm mass at m_c
+  fh_real MS = sminputs.mS;      // stange mass @ 2 GeV
+  fh_real ML = sminputs.mTau;    // tau mass
+  fh_real MB = sminputs.mBmB;    // bottom mass at m_b
+    
+  fh_real MW = fullspectrum->get_Pole_Mass("W+");  // W boson mass
+  fh_real MZ = sminputs.mZ;                        // Z boson mass
 
   // CKM input parameters in Wolfenstein parameterization
   fh_real CKMlambda = -1;
@@ -130,43 +162,77 @@ BE_INI_FUNCTION{
 	      MW, MZ,
 	      CKMlambda, CKMA, CKMrhobar, CKMetabar);
 
-  fh_real MT = 172;  // top quark mass
-  fh_real TB = 5;    // tan Beta
-  fh_real MA0 = 250; // masses of CP-odd and 
-  fh_real MHp = -1;  // charged Higgs (only one should be given)
+  //
+  // SM input parameters: -1 gives default value
+  //
+
+  fh_real MT = fullspectrum->get_Pole_Mass("t");                      // top quark mass
+  fh_real TB = SLHAea::to<double>( slhaea.at("MINPAR").at(3).at(1) ); // tan Beta
+  fh_real MA0 = fullspectrum->get_Pole_Mass("A0");                    // masses of CP-odd and 
+  fh_real MHp = -1;                                                   // charged Higgs (only one should be given)
 
   // soft-SUSY breaking parameters for g=1,2,3 generation sfermions
-  fh_real MSusy = 1000;
-  fh_real M3SL = MSusy, M2SL = M3SL, M1SL = M2SL; // slepton doublet
-  fh_real M3SE = MSusy, M2SE = M3SE, M1SE = M2SE; // slepton singlet
-  fh_real M3SQ = MSusy, M2SQ = M3SQ, M1SQ = M2SQ; // squark doublet
-  fh_real M3SU = MSusy, M2SU = M3SU, M1SU = M2SU; // up-type squark singlet
-  fh_real M3SD = MSusy, M2SD = M3SD, M1SD = M2SD; // down-type squark singlet
+  // slepton doublet
+  fh_real M1SL = SLHAea::to<double>( slhaea.at("MSOFT").at(31).at(1) );
+  fh_real M2SL = SLHAea::to<double>( slhaea.at("MSOFT").at(32).at(1) );
+  fh_real M3SL = SLHAea::to<double>( slhaea.at("MSOFT").at(33).at(1) );  
+  // slepton singlet
+  fh_real M1SE = SLHAea::to<double>( slhaea.at("MSOFT").at(34).at(1) );
+  fh_real M2SE = SLHAea::to<double>( slhaea.at("MSOFT").at(35).at(1) );
+  fh_real M3SE = SLHAea::to<double>( slhaea.at("MSOFT").at(36).at(1) ); 
+  // squark doublet
+  fh_real M1SQ = SLHAea::to<double>( slhaea.at("MSOFT").at(41).at(1) );
+  fh_real M2SQ = SLHAea::to<double>( slhaea.at("MSOFT").at(42).at(1) );
+  fh_real M3SQ = SLHAea::to<double>( slhaea.at("MSOFT").at(43).at(1) ); 
+  // up-type squark singlet
+  fh_real M1SU = SLHAea::to<double>( slhaea.at("MSOFT").at(44).at(1) );
+  fh_real M2SU = SLHAea::to<double>( slhaea.at("MSOFT").at(45).at(1) );
+  fh_real M3SU = SLHAea::to<double>( slhaea.at("MSOFT").at(46).at(1) ); 
+  // down-type squark singlet
+  fh_real M1SD = SLHAea::to<double>( slhaea.at("MSOFT").at(47).at(1) );
+  fh_real M2SD = SLHAea::to<double>( slhaea.at("MSOFT").at(48).at(1) );
+  fh_real M3SD = SLHAea::to<double>( slhaea.at("MSOFT").at(49).at(1) ); 
 
   // soft-SUSY breaking parameters
   fh_complex Af; 
-  Af.re = 2000; 
+  Af.re = 0.; 
   Af.im = 0.;
   fh_complex At = Af, Ac = At, Au = Ac;
   fh_complex Ab = Af, As = Ab, Ad = As;
   fh_complex Atau = Af, Amu = Atau, Ae = Amu;
 
+  Au.re   = SLHAea::to<double>( slhaea.at("Au").at(1,1).at(2) );
+  Ac.re   = SLHAea::to<double>( slhaea.at("Au").at(2,2).at(2) );
+  At.re   = SLHAea::to<double>( slhaea.at("Au").at(3,3).at(2) );
+  Ad.re   = SLHAea::to<double>( slhaea.at("Ad").at(1,1).at(2) );
+  As.re   = SLHAea::to<double>( slhaea.at("Ad").at(2,2).at(2) );
+  Ab.re   = SLHAea::to<double>( slhaea.at("Ad").at(3,3).at(2) );
+  Ae.re   = SLHAea::to<double>( slhaea.at("Ae").at(1,1).at(2) );
+  Amu.re  = SLHAea::to<double>( slhaea.at("Ae").at(2,2).at(2) );
+  Atau.re = SLHAea::to<double>( slhaea.at("Ae").at(3,3).at(2) );
+
   fh_complex MUE;  // Higgs mixing parameter mu
-  MUE.re = 200; 
+  MUE.re = spec->runningpars.get_mass_parameter("Mu"); 
   MUE.im = 0;
   // gaugino mass parameters. M_1 == 0 => GUT relation is used
   fh_complex M_1, M_2, M_3; 
-  M_1.re = 0;   M_1.im = 0;
-  M_2.re = 500; M_2.im = 0;
-  M_3.re = 800; M_3.im = 0;
+  M_1.re = spec->runningpars.get_mass_parameter("M1");   
+  M_1.im = 0;
+  M_2.re = spec->runningpars.get_mass_parameter("M2"); 
+  M_2.im = 0;
+  M_3.re = spec->runningpars.get_mass_parameter("M3"); 
+  M_3.im = 0;
 
   // the scales at which the sfermion input parameters M3S are given
   // 0 indicates on-shell parameters
-  fh_real Qtau = 0;
-  fh_real Qt = 0;
-  fh_real Qb = 0;
+  double SCALE = spec->runningpars.GetScale();
+  
+  fh_real Qtau = SCALE;
+  fh_real Qt = SCALE;
+  fh_real Qb = SCALE;
 
-  fh_real scalefactor = 1;
+  // the renormalization scale is Mtop times the 'scalefactor'
+  fh_real scalefactor = 1.;
 
   error = 1;
   FHSetPara(error, scalefactor, MT, TB, MA0, MHp,
@@ -216,7 +282,7 @@ BE_INI_FUNCTION{
   */
   
 }
-DONE
+END_BE_INI_FUNCTION
 
 // Undefine macros to avoid conflict with other backends
 #include "gambit/Backends/backend_undefs.hpp"

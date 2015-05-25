@@ -79,7 +79,7 @@ BE_INI_FUNCTION
   logger() << "M0 in libfirst v1.1 initialisation function: " << *Param["M0"] << EOM;
   awesomenessByAnders(*Dep::nevents); 
 }
-DONE
+END_BE_INI_FUNCTION
 
 // Convenience functions (definitions)
 BE_NAMESPACE
@@ -108,7 +108,7 @@ BE_NAMESPACE
   }
 
 }
-DONE
+END_BE_NAMESPACE
 
 // End
 #include "gambit/Backends/backend_undefs.hpp"

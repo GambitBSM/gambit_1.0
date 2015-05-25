@@ -224,7 +224,7 @@ namespace Gambit
           /// @}
 
           /// Sum up the partial widths and return the result.
-          double sum_BF();
+          double sum_BF() const;
 
           /// Total particle width (in GeV)
           double width_in_GeV;

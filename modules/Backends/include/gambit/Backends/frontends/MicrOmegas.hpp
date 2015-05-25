@@ -95,7 +95,7 @@ BE_INI_FUNCTION
             "sortOddParticles returned error code: " + std::to_string(error));
 
 }
-DONE
+END_BE_INI_FUNCTION
 
 #include "gambit/Backends/backend_undefs.hpp"
 

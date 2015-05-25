@@ -15,32 +15,40 @@
 ///  \author Torsten Bringmann 
 ///  \date May 2015
 ///
+///  \author Pat Scott
+///          <p.scott@imperial.ac.uk>
+///  \date 2015 May
+///
 ///  *********************************************
 
 #include "gambit/Elements/gambit_module_headers.hpp"
+#include "gambit/Elements/virtualH.hpp"
 #include "gambit/DarkBit/DarkBit_rollcall.hpp"
 #include "gambit/Utils/ASCIItableReader.hpp"
 #include "boost/make_shared.hpp"
 
-namespace Gambit {
-  namespace DarkBit {
+namespace Gambit
+{
+  
+  namespace DarkBit
+  {
 
     class SingletDM
     {
       public:
         /// Initialize SingletDM object (branching ratios etc)
         SingletDM(
-            TH_ProcessCatalog &catalog,
+            TH_ProcessCatalog* catalog,
             std::map<std::string, Funk::Funk> & arg_f_vs_mass)
         {
-          mh   = catalog.particleProperties.at("h0_1").mass;
+          mh   = catalog->getParticleProperty("h0_1").mass;
           // FIXME: This should not be hard-coded
           v0   = 246.0;
           alpha_s = 0.12;
-          mb   = catalog.particleProperties.at("d_3").mass;
-          mc   = catalog.particleProperties.at("u_2").mass;
-          mtau = catalog.particleProperties.at("tau-").mass;
-          mt   = catalog.particleProperties.at("u_3").mass;
+          mb   = catalog->getParticleProperty("b").mass;
+          mc   = catalog->getParticleProperty("c").mass;
+          mtau = catalog->getParticleProperty("tau-").mass;
+          mt   = catalog->getParticleProperty("t").mass;
 
           f_vs_mass = arg_f_vs_mass;
           Gamma = f_vs_mass["Gamma"]->bind("mass");
@@ -73,6 +81,8 @@ namespace Gambit {
           if ( sqrt_s < 90 ) 
           {
             // FIXME: This should not crash the code
+            std::cout << "SingletDM sigmav called with sqrt_s < 90 GeV." << std::endl;
+            std::cout << "This exception should be caught correctly and not crash gambit." << std::endl;
             invalid_point().raise(
                 "SingletDM sigmav called with sqrt_s < 90 GeV.");
             return 0;
@@ -81,8 +91,8 @@ namespace Gambit {
           if ( channel == "hh" ) { return sv_hh(lambda, mass, v); }
           if ( sqrt_s < 300 )
           {
-            double br = f_vs_mass[channel]->bind("mass")->eval(sqrt_s);
-            double Gamma_s = Gamma->eval(sqrt_s);
+            double br = Virtual_SMHiggs_widths(channel,sqrt_s);
+            double Gamma_s = Virtual_SMHiggs_widths("Gamma",sqrt_s);
             double GeV2tocm3s1 = gev2cm2*s2cm;
 
             double res = 2*lambda*lambda*v0*v0/
@@ -170,65 +180,15 @@ namespace Gambit {
         double Gamma_mh, mh, v0, alpha_s, mb, mc, mtau, mt;
     };
 
-    void DarkMatter_ID_SingletDM(DarkMatter_ID_type & result)
+    void DarkMatter_ID_SingletDM(std::string & result)
     {
       using namespace Pipes::DarkMatter_ID_SingletDM;
-      result = DarkMatter_ID_type(initVector<std::string>("S"));
+      result = "S";
     } // DarkMatter_ID_SingletDM
-
-// Obsolete !
-//    /// Initializes thresholds/resonances for RD calculation for SingletDM
-//    void RD_thresholds_resonances_SingletDM(TH_resonances_thresholds &result)
-//    {
-//      using namespace Pipes::RD_thresholds_resonances_SingletDM;
-//
-//      result.resonances.clear();
-//      result.threshold_energy.clear();
-//
-//      result.threshold_energy.push_back(2*(*Param["mass"]));
-//      double mh = (*Dep::TH_ProcessCatalog).getParticleProperty("h0_1").mass;
-//      result.resonances.push_back(TH_Resonance(mh, 0.01));  // FIXME use proper Higgs width!
-//
-//      // FIXME: Move somewhere else
-//      DS_RDMGEV myrdmgev;
-//      myrdmgev.nco = 1;
-//      myrdmgev.mco(1) = *Param["mass"];
-//      myrdmgev.mdof(1) = 1;
-//      myrdmgev.kcoann(1) = 42;  // ???
-//      *BEreq::rdmgev = myrdmgev;
-//    } // function RD_thresholds_resonances_SingletDM
-
-
-// OBSOLETE
-//   /*! \brief Collects information about coannihilating particles, resonances and
-//     * threshold energies.
-//     */
-//    void RD_spectrum_SingletDM(RD_spectrum_type &result)
-//    {
-//      using namespace Pipes::RD_spectrum_SingletDM;
-//
-//      result.coannihilatingParticles.clear();
-//      // add WIMP=least massive 'coannihilating particle'
-//      // NB: particle code (1st entry) is irrelevant (unless Weff is ibatined from DS)
-//      result.coannihilatingParticles.push_back(
-//          RD_coannihilating_particle(100,1,*Param["mass"]));
-//
-//      // now derive thresholds & resonances from process catalogue
-//      std::string DMid= Dep::DarkMatter_ID->singleID();
-//      TH_Process annihilation = 
-//              (*Dep::TH_ProcessCatalog).getProcess(DMid, DMid);
-//      result.resonances = annihilation.thresholdResonances.resonances;
-//      result.threshold_energy = annihilation.thresholdResonances.threshold_energy;
-//
-//      // coannihilation thresholds would have to be added now -- but don't exist for SingletDM...
-//
-//    } // function RD_spectrum_SingletDM
-
-
 
 
     /// Direct detection couplings for Singlet DM.
-    void DD_couplings_SingletDM(Gambit::DarkBit::DD_couplings &result)
+    void DD_couplings_SingletDM(DarkBit::DD_couplings &result)
     {
       using namespace Pipes::DD_couplings_SingletDM;
       double mass = *Param["mass"];
@@ -245,14 +205,12 @@ namespace Gambit {
       result.gns = lambda*fn*m_proton/pow(mh,2)/mass/2;
       result.gpa = 0;  // Only SI cross-section
       result.gna = 0;
-      result.M_DM = *Param["mass"];
 
       logger() << "Singlet DM DD couplings:" << std::endl;
       logger() << " gps = " << result.gps << std::endl;
       logger() << " gns = " << result.gns << std::endl;
       logger() << " gpa = " << result.gpa << std::endl;
       logger() << " gna = " << result.gna << std::endl;
-      logger() << "M_DM = " << result.M_DM << std::endl;
 
     } // function DD_couplings_SingletDM
 
@@ -276,29 +234,43 @@ namespace Gambit {
     }
 
     /// Set up process catalogue for Singlet DM.
-    void TH_ProcessCatalog_SingletDM(Gambit::DarkBit::TH_ProcessCatalog &result)
+    void TH_ProcessCatalog_SingletDM(DarkBit::TH_ProcessCatalog &result)
     {
       using namespace Pipes::TH_ProcessCatalog_SingletDM;
+      using std::vector;
+      using std::string;
 
-      double mass = *Param["mass"];
+      // Initialize Higgs decay tables (static, hence only once)
+      static std::map<string, Funk::Funk> f_vs_mass = 
+        get_f_vs_mass("Elements/data/Higgs_decay_1101.0593.dat");
+
+      // Import model parameters
+      double mS = *Param["mass"];
       double lambda = *Param["lambda"];
 
-      // Initialize catalog
+      // Initialize empty catalog and main annihilation process
       TH_ProcessCatalog catalog;
-      TH_Process process_ann((std::string)"S", (std::string)"S");
+      TH_Process process_ann((string)"S", (string)"S");
+
 
       ///////////////////////////
       // Import particle masses
       ///////////////////////////
       
-      // Import based on Spectrum objects
-      const SubSpectrum* SM = *Dep::SM_spectrum;
-      const SMInputs& SMI   = *Dep::SMINPUTS;  
+      // Import Spectrum objects
+      const Spectrum* spec = *Dep::SingletDM_spectrum;
+      const SubSpectrum* spec_uv = spec->get_UV();
+      const SubSpectrum* SM = spec->get_LE();
+      const SMInputs& SMI   = spec->get_SMInputs();
 
-      // Get SM masses
+      // FIXME: Update "<H>" etc
+      double mH = spec->get_Pole_Mass("h0_1");
+      double v = spec_uv->runningpars.get_mass_parameter("<H>");
+
+      // Get SM pole masses
 #define getSMmass(Name, spinX2)                                                \
       catalog.particleProperties.insert(                                       \
-          std::pair<std::string, TH_ParticleProperty>(                         \
+          std::pair<string, TH_ParticleProperty>(                              \
             Name , TH_ParticleProperty(SM->phys.get_Pole_Mass(Name), spinX2)   \
             )                                                                  \
           );    
@@ -308,102 +280,174 @@ namespace Gambit {
       getSMmass("mu+",    1)
       getSMmass("tau-",   1)
       getSMmass("tau+",   1)
-      getSMmass("nu_1",   1)
-      getSMmass("nubar_1",1) 
-      getSMmass("nu_2",   1)
-      getSMmass("nubar_2",1) 
-      getSMmass("nu_3",   1)
-      getSMmass("nubar_3",1)      
       getSMmass("Z0",     2)
       getSMmass("W+",     2)
       getSMmass("W-",     2)      
       getSMmass("g",      2)   
       getSMmass("gamma",  2)   
-      getSMmass("d_3",    1)
-      getSMmass("dbar_3", 1)
-      getSMmass("u_3",    1)
-      getSMmass("ubar_3", 1)
+      getSMmass("b",      1)
+      getSMmass("bbar",   1)
+      getSMmass("t",      1)
+      getSMmass("tbar",   1)
 #undef getSMmass
-
-      // Pole masses not available for the light quarks.
-#define getSMmassMS(Name, Mass, spinX2)                                        \
+      // Get remaining masses
+#define addParticle(Name, Mass, spinX2)                                        \
       catalog.particleProperties.insert(                                       \
-          std::pair<std::string, TH_ParticleProperty>(                         \
+          std::pair<string, TH_ParticleProperty>(                              \
             Name , TH_ParticleProperty(Mass, spinX2)                           \
             )                                                                  \
           );    
-      getSMmassMS("d_1"   , SMI.mD,  1) // md(2 GeV)^MS-bar, not pole mass
-      getSMmassMS("dbar_1", SMI.mD,  1) // md(2 GeV)^MS-bar, not pole mass
-      getSMmassMS("u_1"   , SMI.mU,  1) // mu(2 GeV)^MS-bar, not pole mass
-      getSMmassMS("ubar_1", SMI.mU,  1) // mu(2 GeV)^MS-bar, not pole mass
-      getSMmassMS("d_2"   , SMI.mS,  1) // ms(2 GeV)^MS-bar, not pole mass
-      getSMmassMS("dbar_2", SMI.mS,  1) // ms(2 GeV)^MS-bar, not pole mass
-      getSMmassMS("u_2"   , SMI.mCmC,1) // mc(mc)^MS-bar, not pole mass
-      getSMmassMS("ubar_2", SMI.mCmC,1) // mc(mc)^MS-bar, not pole mass
-#undef getSMmassMS
-
-      // Insert singlet mass
-      TH_ParticleProperty S_Property(mass, 1);
-      catalog.particleProperties.insert(
-          std::pair<std::string, TH_ParticleProperty> ("S", S_Property));
-      
+      // Pole masses not available for the light quarks.    
+      addParticle("d"   , SMI.mD,  1) // md(2 GeV)^MS-bar, not pole mass
+      addParticle("dbar", SMI.mD,  1) // md(2 GeV)^MS-bar, not pole mass
+      addParticle("u"   , SMI.mU,  1) // mu(2 GeV)^MS-bar, not pole mass
+      addParticle("ubar", SMI.mU,  1) // mu(2 GeV)^MS-bar, not pole mass
+      addParticle("s"   , SMI.mS,  1) // ms(2 GeV)^MS-bar, not pole mass
+      addParticle("sbar", SMI.mS,  1) // ms(2 GeV)^MS-bar, not pole mass
+      addParticle("c"   , SMI.mCmC,1) // mc(mc)^MS-bar, not pole mass
+      addParticle("cbar", SMI.mCmC,1) // mc(mc)^MS-bar, not pole mass
+      // Masses for neutrino flavour eigenstates. Set to zero.
+      // FIXME: Is this information required for anything?
+      addParticle("nu_e",     0.0, 1)
+      addParticle("nubar_e",  0.0, 1)
+      addParticle("nu_mu",    0.0, 1)
+      addParticle("nubar_mu", 0.0, 1)
+      addParticle("nu_tau",   0.0, 1)
+      addParticle("nubar_tau",0.0, 1)      
+      addParticle("S",        mS , 0)  // Singlet mass
+      addParticle("h0_1",     mH , 0)  // SM-like Higgs
       // FIXME: Get Higgs mass from Spec Bit
-      TH_ParticleProperty h0_1_Property(125.7, 0);
-      catalog.particleProperties.insert(
-          std::pair<std::string, TH_ParticleProperty> ("h0_1", h0_1_Property));
+#undef addParticle
 
-      // Instantiate tables (only once)
-      static std::map<std::string, Funk::Funk> f_vs_mass = 
-        get_f_vs_mass("DarkBit/data/Higgs_decay_1101.0593.dat");
 
-      // Instantiate SingletDM object
-      auto singletDM = boost::make_shared<SingletDM>(catalog, f_vs_mass);
+      /////////////////////////////
+      // Import Decay information
+      /////////////////////////////
 
-      // FIXME: Add top (is this still TODO?)
+      // Import decay table from DecayBit
+      const DecayTable* tbl = &(*Dep::decay_rates);
+      
+      // Save Higgs width for later
+      double gammaH = tbl->at("h0_1").width_in_GeV;
 
-      // Populate channel list and add thresholds
-      // FIXME: Mass eigenstates are now being used here. Check if CKM factors are necessary anywhere.
-      // lowest threshold = 2*WIMP rest mass  (unlike DS convention!)
-      process_ann.thresholdResonances.threshold_energy.push_back(2*mass); 
-      auto channel = Funk::vec<std::string>(
-          "bb", "WW", "cc", "tautau", "ZZ", "tt", "hh");
-      auto p1 = Funk::vec<std::string>("d_3", "W+", "u_2", "tau+", "Z0", "u_3", "h0_1");
-      auto p2 = Funk::vec<std::string>("dbar_3", "W-", "ubar_2", "tau-", "Z0", "ubar_3", "h0_1");
+      // List of decays to include (here only SM-like higgs)
+      const vector<string> decaysOfInterest = initVector<string> ("h0_1");
+      
+      // Minimum branching ratio to include
+      double minBranching = 
+        runOptions->getValueOrDef<double>(0.0, "ProcessCatalog_MinBranching");
+
+      for(auto iState_it = decaysOfInterest.begin();
+          iState_it != decaysOfInterest.end(); ++iState_it)
       {
-        for ( int i = 0; i < 7; i++ )
-        {
-          if ( mass > catalog.particleProperties.at(p1[i]).mass )
+        std::cout << 
+          "Importing decay information for: " << *iState_it << std::endl;
+
+        const DecayTable::Entry &entry = tbl->at(*iState_it);
+        double totalWidth = entry.width_in_GeV;
+
+        std::cout << "Total width [GeV]: " << totalWidth << std::endl;
+        if(totalWidth>0)
+        {     
+          // Initialize new process with fixed rate
+          TH_Process process(*iState_it);
+          process.genRateTotal = Funk::cnst(totalWidth);
+
+          for(auto fState_it = entry.channels.begin();
+              fState_it!= entry.channels.end(); ++fState_it)
           {
-            Funk::Funk kinematicFunction = 
-              Funk::funcM(singletDM, &SingletDM::sv, channel[i], lambda,
-                  mass, Funk::var("v"));
-            std::vector<std::string> finalStates = Funk::vec<std::string>(p1[i], p2[i]);
-            TH_Channel channel(finalStates, kinematicFunction);
+            double bFraction = (fState_it->second).first;
+            if(bFraction>minBranching)
+            {
+              vector<string> pIDs;
+              std::cout << "  ";
+              const double m_init  = catalog.getParticleProperty(*iState_it).mass;
+              double mtot_final = 0;
+              for(auto pit = fState_it->first.begin();
+                  pit != fState_it->first.end(); ++pit)
+              {
+                string name = Models::ParticleDB().long_name(*pit);
+                mtot_final += catalog.getParticleProperty(name).mass;
+                pIDs.push_back(name);
+                std::cout << name << "\t";
+              } 
+              double partialWidth = totalWidth * bFraction;       
+              // FIXME: This should not be optional
+              bool checkKinematics = runOptions->getValueOrDef<bool>(true,
+              "ProcessCatalog_KinCheck");
+              // TODO: Add other criteria on which channels to include?
+              if(!checkKinematics or mtot_final<=m_init)
+              {
+                std::cout<< bFraction << std::endl;   
+                process.channelList.push_back(
+                    TH_Channel(pIDs, Funk::cnst(partialWidth)));
+              }
+              else
+                std::cout<< "kin. closed" << std::endl;   
+            }
+          }
+          catalog.processList.push_back(process);
+        }
+      }
+
+      // Instantiate new SingletDM object
+      // FIXME: Probably this can be speed up f_vs_mass
+      auto singletDM = boost::make_shared<SingletDM>(&catalog, f_vs_mass);
+
+      // Populate annihilation channel list and add thresholds to threshold
+      // list.
+      // (remark: the lowest threshold is here = 2*mS, whereas in DS-internal
+      // conventions, this lowest threshold is not listed)
+      process_ann.thresholdResonances.threshold_energy.push_back(2*mS); 
+      auto channel = 
+        Funk::vec<string>("bb", "WW", "cc", "tautau", "ZZ", "tt", "hh");
+      auto p1 = 
+        Funk::vec<string>("b",   "W+", "c",   "tau+", "Z0", "t",   "h0_1");
+      auto p2 = 
+        Funk::vec<string>("bbar","W-", "cbar","tau-", "Z0", "tbar","h0_1");
+      {
+        for ( int i = 0; i < channel.size(); i++ )
+        {
+          double mtot_final = 
+            catalog.particleProperties.at(p1[i]).mass +
+            catalog.particleProperties.at(p2[i]).mass;
+          if ( mS*2 > mtot_final )
+          {
+            Funk::Funk kinematicFunction = Funk::funcM(singletDM,
+                &SingletDM::sv, channel[i], lambda, mS, Funk::var("v"));
+            TH_Channel channel(
+                Funk::vec<string>(p1[i], p2[i]), kinematicFunction
+                );
             process_ann.channelList.push_back(channel);
           }
           else
           {
-            process_ann.thresholdResonances.threshold_energy.push_back(2*catalog.particleProperties.at(p1[i]).mass); 
+            process_ann.thresholdResonances.threshold_energy.
+              push_back(mtot_final);
           }
         }
       }
 
-      // Populate resonance list; Singlet model: only SM Higgs can appear as resonance 
+      /* FIXME: This is too general, but could go somewhere else
       double resmasses[] = {catalog.getParticleProperty("h0_1").mass};
-      double reswidths[] = {0.01};  // FIXME: import Higgs width
+      double reswidths[] = {0.01};  
       int resmax=sizeof(resmasses) / sizeof(resmasses[0]);
 
       for (int i=0; i<resmax; i++)
       {
-        if (resmasses[i]/mass > 2.)
+        if (resmasses[i]/mS > 2.)
         {
-          process_ann.thresholdResonances.resonances.push_back(TH_Resonance(resmasses[i], reswidths[i]));
+          process_ann.thresholdResonances.resonances.
+            push_back(TH_Resonance(resmasses[i], reswidths[i]));
         }
       }
+      */
       
+      // Populate resonance list
+      if ( mH >= mS*2 ) process_ann.thresholdResonances.resonances.
+          push_back(TH_Resonance(mH, gammaH));
 
       catalog.processList.push_back(process_ann);
-
 
       result = catalog;
     } // function TH_ProcessCatalog_SingletDM

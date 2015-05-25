@@ -11,7 +11,7 @@
 ///  \author Torsten Bringmann
 ///          (torsten.bringmann@desy.de) 
 ///  \date 2013 Jun
-///  \date 2014 Mar [RD interface to DS finally working]
+///  \date 2014 Mar - 2015 May
 ///
 ///  \author Christoph Weniger
 ///          (c.weniger@uva.nl)
@@ -85,8 +85,32 @@ namespace Gambit {
       using namespace Pipes::DarkSUSY_PointInit_MSSM;
       result = false;
 
-      // CMSSM
-      if (ModelInUse("CMSSM"))
+      // If the user provides a file list, just read in SLHA files for debugging
+      // and ignore the MSSM_spectrum dependency.
+      if (runOptions->hasKey("debug_SLHA_filenames"))
+      {
+        static int counter = 0;
+        logger() << 
+          "Initializing DarkSUSY via debug_SLHA_filenames option." << std::endl;
+
+        std::vector<str> filenames = 
+          runOptions->getValue<std::vector<str> >("debug_SLHA_filenames");
+        const char * filename = filenames[counter].c_str();
+        int len = filenames[counter].length();
+        int flag = 15;
+        BEreq::dsSLHAread(byVal(filename),flag,byVal(len));
+        BEreq::dsprep();
+
+        counter++;
+        if (counter >= filenames.size()) counter = 0;
+        result = true;
+      }
+
+      // CMSSM with DS-internal ISASUGRA (should be avoided, only for
+      // debugging)
+      else if (ModelInUse("CMSSM") and 
+          runOptions->getValueOrDef<bool>(false, "use_DS_isasugra")
+          )
       {
         // Setup mSUGRA model from CMSSM parameters
         double am0    = *Param["M0"];     // m0
@@ -126,13 +150,20 @@ namespace Gambit {
         }
       }
 
-      // use SLHA for initialization initialization
-      else if (ModelInUse("MSSM25atQ"))
+      // use SLHA for initialization initialization of MSSM25atQ or CMSSM
+      else if (ModelInUse("MSSM25atQ") or ModelInUse("CMSSM"))
       {
         // Save eaSLHA file to disk
         //eaSLHA mySLHA = *Dep::MSSM_spectrum;
         const Spectrum* mySpec = *Dep::MSSM_spectrum;
         eaSLHA mySLHA = mySpec->getSLHAea();
+
+        // Add model select block to inform DS about 6x6 mixing
+        SLHAea::Block modsel_block("MODSEL");
+        modsel_block.push_back("BLOCK MODSEL");
+        modsel_block.push_back("6 3 # FV");
+        mySLHA.push_back(modsel_block);
+
         std::ofstream ofs("DarkBit_temp.slha");
         ofs << mySLHA;
         ofs.close();
@@ -147,18 +178,10 @@ namespace Gambit {
         result = true;
       }
 
-      // TODO: Better way to log this?
       if (!result) {
         DarkBit_warning().raise(LOCAL_INFO,
             "DarkSUSY point initialization failed.");
         invalid_point().raise("DarkSUSY point initialization failed.");
-      }
-
-      // TODO: Only for testing.  Remove later.
-      if ( runOptions->getValueOrDef( false, "show_higgs_widths" ) )
-      {
-        int unit = 6;
-        BEreq::dswwidth(unit);
       }
     }
 
@@ -204,58 +227,21 @@ namespace Gambit {
     /*! \brief Initialization of Process Catalogue based on DarkSUSY
      *         calculations.
      */
-    void TH_ProcessCatalog_CMSSM(Gambit::DarkBit::TH_ProcessCatalog &result)
+    void TH_ProcessCatalog_CMSSM(DarkBit::TH_ProcessCatalog &result)
     {
       using namespace Pipes::TH_ProcessCatalog_CMSSM;
       using std::vector;
       using std::string;
 
-      // FIXME: Add test that this is really ~chi0_1
-      std::string DMid = Dep::DarkMatter_ID->singleID();
-
-      // Instantiate new ProcessCatalog
-      TH_ProcessCatalog catalog;      
-
-      
-      /////////////////////////////
-      // Import Decay information
-      /////////////////////////////
-
-      // Import based on decay table from DecayBit
-      const DecayTable* tbl = &(*Dep::decay_rates);
-      
-      // TODO: Decide which to include
-      const vector<string> decaysOfInterest = initVector<string>
-        ("H+", "H-", "h0_2", "A0");        
-      
-      double minBranching = 0.0; // TODO: Set this from yaml?
-      for(auto iState_it = decaysOfInterest.begin();
-          iState_it != decaysOfInterest.end(); ++iState_it)
+      std::string DMid = *Dep::DarkMatter_ID;
+      if ( DMid != "~chi0_1" )
       {
-        std::cout << 
-          "Importing decay information for: " << *iState_it << std::endl;
-        const DecayTable::Entry &entry = tbl->at(*iState_it);
-        double totalWidth = entry.width_in_GeV;
-        TH_Process process(*iState_it);
-        process.genRateTotal = Funk::cnst(totalWidth);
-        for(auto fState_it = entry.channels.begin();
-            fState_it!= entry.channels.end(); ++fState_it)
-        {
-          vector<string> pIDs;
-          for(auto pit = fState_it->first.begin();
-              pit != fState_it->first.end(); ++pit)
-          {
-            pIDs.push_back(Models::ParticleDB().long_name(*pit));
-          } 
-          double bFraction    = (fState_it->second).first;
-          double partialWidth = totalWidth * bFraction;
-          // TODO: Add other criteria on which channels to include?
-          if(bFraction>minBranching)
-            process.channelList.push_back(
-                TH_Channel(pIDs, Funk::cnst(partialWidth)));
-        }
-        catalog.processList.push_back(process);
-      }      
+        invalid_point().raise(
+            "TH_ProcessCatalog_CMSSM requires DMid to be ~chi0_1.");
+      }
+
+      // Instantiate new empty ProcessCatalog
+      TH_ProcessCatalog catalog;      
 
 
       ///////////////////////////
@@ -281,6 +267,7 @@ namespace Gambit {
       getSMmass("mu+",    1)
       getSMmass("tau-",   1)
       getSMmass("tau+",   1)
+// FIXME: Should be deprecated
 //      getSMmass("nu_1",   1)
 //      getSMmass("nubar_1",1) 
 //      getSMmass("nu_2",   1)
@@ -299,37 +286,35 @@ namespace Gambit {
 #undef getSMmass
 
       // Pole masses not available for the light quarks.
-#define getSMmassMS(Name, Mass, spinX2)                                        \
+#define addParticle(Name, Mass, spinX2)                                        \
       catalog.particleProperties.insert(                                       \
           std::pair<std::string, TH_ParticleProperty>(                         \
             Name , TH_ParticleProperty(Mass, spinX2)                           \
             )                                                                  \
           );    
-      getSMmassMS("d"   , SMI.mD,  1) // md(2 GeV)^MS-bar, not pole mass
-      getSMmassMS("dbar", SMI.mD,  1) // md(2 GeV)^MS-bar, not pole mass
-      getSMmassMS("u"   , SMI.mU,  1) // mu(2 GeV)^MS-bar, not pole mass
-      getSMmassMS("ubar", SMI.mU,  1) // mu(2 GeV)^MS-bar, not pole mass
-      getSMmassMS("s"   , SMI.mS,  1) // ms(2 GeV)^MS-bar, not pole mass
-      getSMmassMS("sbar", SMI.mS,  1) // ms(2 GeV)^MS-bar, not pole mass
-      // FIXME: Is this the correct mass assignment?  Why "mCmC"?
-      getSMmassMS("c"   , SMI.mCmC,1) // mc(mc)^MS-bar, not pole mass
-      getSMmassMS("cbar", SMI.mCmC,1) // mc(mc)^MS-bar, not pole mass
-
-      // FIXME: Correct to assume zero neutrino masses?
-      getSMmassMS("nu_e", 0,1);
-      getSMmassMS("nubar_e", 0,1);
-      getSMmassMS("nu_mu", 0,1);
-      getSMmassMS("nubar_mu", 0,1);
-      getSMmassMS("nu_tau", 0,1);
-      getSMmassMS("nubar_tau", 0,1);
-#undef getSMmassMS
+      addParticle("d"   , SMI.mD,  1) // md(2 GeV)^MS-bar, not pole mass
+      addParticle("dbar", SMI.mD,  1) // md(2 GeV)^MS-bar, not pole mass
+      addParticle("u"   , SMI.mU,  1) // mu(2 GeV)^MS-bar, not pole mass
+      addParticle("ubar", SMI.mU,  1) // mu(2 GeV)^MS-bar, not pole mass
+      addParticle("s"   , SMI.mS,  1) // ms(2 GeV)^MS-bar, not pole mass
+      addParticle("sbar", SMI.mS,  1) // ms(2 GeV)^MS-bar, not pole mass
+      addParticle("c"   , SMI.mCmC,1) // mc(mc)^MS-bar, not pole mass
+      addParticle("cbar", SMI.mCmC,1) // mc(mc)^MS-bar, not pole mass
+      // Masses for neutrino flavour eigenstates. Set to zero.
+      addParticle("nu_e",     0.0, 1)
+      addParticle("nubar_e",  0.0, 1)
+      addParticle("nu_mu",    0.0, 1)
+      addParticle("nubar_mu", 0.0, 1)
+      addParticle("nu_tau",   0.0, 1)
+      addParticle("nubar_tau",0.0, 1)   
+#undef addParticle
 
       // Get MSSM masses
-      // TODO: Import more masses? (find which ones are needed)
+      // FIXME: Remove absolute value once SpecBit guarantees positive masses
 #define getMSSMmass(Name, spinX2)                                              \
       catalog.particleProperties.insert(                                       \
           std::pair<std::string, TH_ParticleProperty> (                        \
-            Name , TH_ParticleProperty(spec->phys.get_Pole_Mass(Name), spinX2) \
+            Name , TH_ParticleProperty(abs(spec->phys.get_Pole_Mass(Name)), spinX2) \
             ));
       getMSSMmass("H+"     , 0)
       getMSSMmass("H-"     , 0)
@@ -340,13 +325,84 @@ namespace Gambit {
 #undef getMSSMmass
 
 
+      /////////////////////////////
+      // Import Decay information
+      /////////////////////////////
+
+      // Import based on decay table from DecayBit
+      const DecayTable* tbl = &(*Dep::decay_rates);
+      
+      // List of decays to include
+      const vector<string> decaysOfInterest = 
+        initVector<string>("H+", "H-", "h0_1", "h0_2", "A0");        
+      
+      double minBranching = runOptions->getValueOrDef<double>(0.0,
+          "ProcessCatalog_MinBranching");
+      for(auto iState_it = decaysOfInterest.begin();
+          iState_it != decaysOfInterest.end(); ++iState_it)
+      {
+        const double m_init = catalog.getParticleProperty(*iState_it).mass;
+        // FIXME: Optimize m_dm use
+        const double m_dm = catalog.getParticleProperty(DMid).mass;
+        std::cout << 
+          "Importing decay information for: " << *iState_it << std::endl;
+        if ( m_init > m_dm )
+        {
+          std::cout << 
+            "  irrelevant for DM annihilation for kinematical reasons." 
+            << std::endl;
+          continue;
+        }
+        const DecayTable::Entry &entry = tbl->at(*iState_it);
+        double totalWidth = entry.width_in_GeV;
+        if(totalWidth>0)
+        {
+          TH_Process process(*iState_it);
+          process.genRateTotal = Funk::cnst(totalWidth);
+          for(auto fState_it = entry.channels.begin();
+              fState_it!= entry.channels.end(); ++fState_it)
+          {
+            double bFraction = (fState_it->second).first;
+            if(bFraction>minBranching)
+            {
+              vector<string> pIDs;
+              std::cout << "  ";
+              double m_final = 0;
+              for(auto pit = fState_it->first.begin();
+                  pit != fState_it->first.end(); ++pit)
+              {
+                std::string name = Models::ParticleDB().long_name(*pit);
+                m_final += catalog.getParticleProperty(name).mass;
+                pIDs.push_back(name);
+                std::cout << name << "\t";
+              } 
+              double partialWidth = totalWidth * bFraction;        
+              // FIXME: This should not be optional
+              bool checkKinematics = runOptions->getValueOrDef<bool>(true,
+                  "ProcessCatalog_KinCheck");
+              // TODO: Add other criteria on which channels to include?
+              if(!checkKinematics or m_final<=m_init)
+              {
+                std::cout<< bFraction << std::endl;   
+                process.channelList.push_back(
+                    TH_Channel(pIDs, Funk::cnst(partialWidth)));
+              }
+              else
+                std::cout<< "kin. closed" << std::endl;   
+            }
+          }
+          catalog.processList.push_back(process);          
+        }
+      }      
+
+
       /////////////////////////////////////////
       // Import two-body annihilation process
       /////////////////////////////////////////
 
       // Declare DM annihilation process                   
       TH_Process process(DMid, DMid);      
-
+      double M_DM = catalog.getParticleProperty(DMid).mass;
       // Helper variables
       int index; 
       double m_1, m_2, sv;
@@ -355,8 +411,8 @@ namespace Gambit {
 #define SETUP_DS_PROCESS(NAME, PARTCH, P1, P2, PREFACTOR)                      \
       /* Check if process is kinematically allowed */                          \
       m_1 = catalog.getParticleProperty(STRINGIFY(P1)).mass;                   \
-      m_2 = catalog.getParticleProperty(STRINGIFY(P1)).mass;                   \
-      if(m_1 + m_2 < 2*catalog.getParticleProperty(DMid).mass)                 \
+      m_2 = catalog.getParticleProperty(STRINGIFY(P2)).mass;                   \
+      if(m_1 + m_2 < 2*M_DM)                                                   \
       {                                                                        \
         /* Set cross-section */                                                \
         index = PARTCH;                                                        \
@@ -412,8 +468,6 @@ namespace Gambit {
       ///////////////////////////////////////////
       // Import three-body annihilation process
       ///////////////////////////////////////////
-
-      double M_DM = catalog.getParticleProperty(DMid).mass;
 
       // Macro for setting up 3-body decays with gammas
 #define SETUP_DS_PROCESS_GAMMA3BODY(NAME,IBCH,P1,P2,IBFUNC,SV_IDX,PREFACTOR) \
@@ -482,10 +536,11 @@ namespace Gambit {
       result = catalog;
     }
 
-    void DarkMatter_ID_MSSM25atQ(DarkMatter_ID_type & result)
+    void DarkMatter_ID_MSSM25atQ(std::string & result)
     {
       using namespace Pipes::DarkMatter_ID_MSSM25atQ;
-      result = DarkMatter_ID_type(initVector<std::string>("~chi0_1"));
+      // FIXME: This should return the lightest neutralino identifier
+      result = "~chi0_1";
     }
   }
 }

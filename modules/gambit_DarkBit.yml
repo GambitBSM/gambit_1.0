@@ -124,8 +124,6 @@ Parameters:
 
 #    The nuclear parameters below are set to the values from micrOMEGAs 3.5.5
 #    The three different sets of parameters are equivalent.
-#    This model is only used if micrOMEGAs or DarkSUSY is being
-#    used to calculate direct detection couplings.
 
     nuclear_params_fnq:
       # proton hadronic matrix elements
@@ -150,8 +148,6 @@ Parameters:
       deltas:
         fixed_value: -0.085
 
-#    The two models below require the StandardModel_SLHA2 model 
-#    (uncomment below).
 
 #    nuclear_params_sigma0_SigmaPiN:
 #      sigma0:
@@ -179,7 +175,8 @@ Parameters:
 #      deltas:
 #        fixed_value: -0.085
 
-#    StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
+#   Uncomment the below to use DarkSUSY nuclear parameters.
+#    nuclear_params_fnq: !import NuclearParams_fnq_DarkSUSY.yml
 
 ##############################
 # Prior setup

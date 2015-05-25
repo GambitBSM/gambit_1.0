@@ -26,7 +26,7 @@
 ///
 ///  \author Torsten Bringmann
 ///          (torsten.bringmann@fys.uio.no)
-///  \date 2013 Jul, 2014 Mar
+///  \date 2013 Jul, 2014 Mar, 2015 May
 ///
 ///  \author Lars A. Dal  
 ///          (l.a.dal@fys.uio.no)
@@ -145,7 +145,7 @@ BE_INI_FUNCTION
     }
 
 }
-DONE
+END_BE_INI_FUNCTION
 
 // Convenience functions (definitions)
 BE_NAMESPACE
@@ -217,7 +217,7 @@ BE_NAMESPACE
   }
 
 }
-DONE
+END_BE_NAMESPACE
 
 // Undefine macros to avoid conflict with other backends
 #include "gambit/Backends/backend_undefs.hpp"

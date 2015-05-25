@@ -510,6 +510,7 @@ namespace Gambit
     struct sd_stopwidth_type
     {
         Fdouble stoptot4;
+        Farray< Fdouble,1,2 > stoptot;
     };
 
     struct sd_sbot2body_type

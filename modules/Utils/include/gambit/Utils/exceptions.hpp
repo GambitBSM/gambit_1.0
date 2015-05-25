@@ -83,16 +83,19 @@ namespace Gambit
       /// As per forced_throw but without logging.
       void silent_forced_throw();
       /// @}
-
-      /// Map of pointers to all instances of this class.
-      static std::map<const char*,exception*> exception_map;
     
+      /// Get a read-only map of pointers to all instances of this class.
+      static const std::map<const char*,exception*>& all_exceptions();
+
     protected:
 
       /// The set of tags to be passed to the logger
       std::set<LogTag> myLogTags;
 
     private:
+
+      /// Get a map of pointers to all instances of this class.
+      static std::map<const char*,exception*>& exception_map();
 
       /// Log the details of the exception
       void log_exception(const std::string&, const std::string&);

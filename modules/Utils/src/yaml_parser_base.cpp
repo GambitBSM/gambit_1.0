@@ -134,8 +134,8 @@ namespace Gambit
       if (hasKey("exceptions"))
       {       
         // Iterate over the map of all recognised exception objects
-        std::map<const char*,exception*>::iterator iter;
-        for (iter = exception::exception_map.begin(); iter != exception::exception_map.end(); ++iter)
+        std::map<const char*,exception*>::const_iterator iter;
+        for (iter = exception::all_exceptions().begin(); iter != exception::all_exceptions().end(); ++iter)
         {
           // Check if the exception has an entry in the YAML file
           if (hasKey("exceptions",iter->first))
