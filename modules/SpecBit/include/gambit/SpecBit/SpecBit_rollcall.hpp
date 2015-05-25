@@ -141,8 +141,8 @@ START_MODULE
 
       #define FUNCTION test_Singlet_spectrum
       START_FUNCTION(bool)
-      MODEL_GROUP(sm,      (StardardModel_SLHA2))
-      MODEL_GROUP(higgs,   (StardardModel_Higgs))
+      MODEL_GROUP(sm,      (StandardModel_SLHA2))
+      MODEL_GROUP(higgs,   (StandardModel_Higgs))
       MODEL_GROUP(singlet, (SingletDM))
       ALLOW_MODEL_COMBINATION(sm, higgs, singlet)
       DEPENDENCY(SingletDM_spectrum, const Spectrum*)
