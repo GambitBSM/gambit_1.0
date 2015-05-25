@@ -1527,24 +1527,11 @@
     namespace MODULE                                                           \
     {                                                                          \
                                                                                \
-      /* Set up the commands to be called at runtime to apply the rule.*/      \
-      void CAT_6(apply_rule_,FUNCTION,_,                                       \
+      /* Apply the rule.*/                                                     \
+      const int CAT_6(apply_rule_,FUNCTION,_,                                  \
        BOOST_PP_SEQ_CAT(BOOST_PP_TUPLE_TO_SEQ((STRIP_PARENS(MODELS)))),_,      \
-       BOOST_PP_SEQ_CAT(BOOST_PP_TUPLE_TO_SEQ((STRIP_PARENS(TAGS)))) ) ()      \
-      {                                                                        \
-        Functown::FUNCTION.makeBackendRuleForModel(#MODELS, #TAGS);            \
-      }                                                                        \
-                                                                               \
-      /* Create the rule's initialisation object. */                           \
-      namespace Ini                                                            \
-      {                                                                        \
-        ini_code CAT_5(FUNCTION,_,                                             \
-         BOOST_PP_SEQ_CAT(BOOST_PP_TUPLE_TO_SEQ((STRIP_PARENS(MODELS)))),_,    \
-         BOOST_PP_SEQ_CAT(BOOST_PP_TUPLE_TO_SEQ((STRIP_PARENS(TAGS)))) )       \
-         (LOCAL_INFO, &CAT_6(apply_rule_,FUNCTION,_,                           \
-         BOOST_PP_SEQ_CAT(BOOST_PP_TUPLE_TO_SEQ((STRIP_PARENS(MODELS)))),_,    \
-         BOOST_PP_SEQ_CAT(BOOST_PP_TUPLE_TO_SEQ((STRIP_PARENS(TAGS)))) ) );    \
-      }                                                                        \
+       BOOST_PP_SEQ_CAT(BOOST_PP_TUPLE_TO_SEQ((STRIP_PARENS(TAGS)))) ) =       \
+       iniBackendRuleForModel(Functown::FUNCTION,#MODELS,#TAGS);               \
                                                                                \
     }                                                                          \
                                                                                \
@@ -1640,25 +1627,9 @@
     namespace MODULE                                                           \
     {                                                                          \
                                                                                \
-      void CAT_4(classload_requirements_for_,FUNCTION,_from_,BACKEND)()        \
-      {                                                                        \
-        typedef std::vector<str> vec;                                          \
-        vec versions = Utils::delimiterSplit(VERSTRING, ",");                  \
-        for (vec::iterator it = versions.begin() ; it != versions.end(); ++it) \
-        {                                                                      \
-          if (*it == "default") *it = Backends::backendInfo().                 \
-           version_from_safe_version(STRINGIFY(BACKEND),                       \
-           STRINGIFY(CAT(Default_,BACKEND)));                                  \
-          Functown::FUNCTION.setRequiredClassloader(STRINGIFY(BACKEND),*it);   \
-        }                                                                      \
-      }                                                                        \
-                                                                               \
-      namespace ini                                                            \
-      {                                                                        \
-        ini_code CAT_4(ini_classload_req_rego_for_,FUNCTION,_from_,BACKEND)    \
-         (LOCAL_INFO,                                                          \
-          &CAT_4(classload_requirements_for_,FUNCTION,_from_,BACKEND));        \
-      }                                                                        \
+      const int CAT_4(classloading_from_,BACKEND,_for_,FUNCTION) =             \
+       set_classload_requirements(Functown::FUNCTION, STRINGIFY(BACKEND),      \
+       VERSTRING, STRINGIFY(CAT(Default_,BACKEND)));                           \
                                                                                \
     }                                                                          \
                                                                                \

@@ -21,7 +21,6 @@
 
 #include "gambit/Elements/ini_functions.hpp"
 #include "gambit/Utils/equivalency_singleton.hpp"
-#include "gambit/Backends/backend_singleton.hpp"
 #include "gambit/Models/claw_singleton.hpp"
 
 namespace Gambit
@@ -276,6 +275,31 @@ namespace Gambit
       if (s.substr(slen-cclen,cclen) == cc) s.replace(slen-cclen,cclen,"");
     #endif
     return s;
+  }
+
+  /// Set a backend rule for one or more models.
+  int iniBackendRuleForModel(module_functor_common& func, str models, str tags)
+  {
+    func.makeBackendRuleForModel(models, tags);
+    return 0;
+  }
+  
+  /// Set the classloading requirements of a given functor.
+  int set_classload_requirements(module_functor_common& func, str be, str verstr, str default_ver)
+  {                                                                        
+    // Split up the passed version string into individual versions
+    std::vector<str> versions = Utils::delimiterSplit(verstr, ",");
+    // Add each version individually as required for classloading
+    for (auto it = versions.begin() ; it != versions.end(); ++it)
+    {
+      // Retrieve the version corresponding to the default if needed
+      if (*it == "default") *it = Backends::backendInfo().version_from_safe_version(be, default_ver);
+      // Retrieve the safe version corresponding to this version
+      str sv = Backends::backendInfo().safe_version_from_version(be, *it);
+      // Set the requirement in the functor
+      func.setRequiredClassloader(be,*it,sv);
+    }
+    return 0;
   }
 
 }

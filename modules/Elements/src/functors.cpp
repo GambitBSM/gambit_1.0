@@ -1175,7 +1175,17 @@ namespace Gambit
     }
 
     /// Add a rule indicating that classes from a given backend must be available
-    void module_functor_common::setRequiredClassloader(str be, str ver) { required_classloading_backends[be].insert(ver); }
+    void module_functor_common::setRequiredClassloader(str be, str ver, str safe_ver)
+    {
+      // Add the rule.
+      required_classloading_backends[be].insert(ver);
+      // Add a dependency on the backend's initialisation function. 
+      sspair be_ini_quantity(be + "_" + safe_ver + "_init", "void");
+      if (std::find(myDependencies.begin(), myDependencies.end(), be_ini_quantity) == myDependencies.end())
+      {
+        myDependencies.insert(be_ini_quantity);
+      }
+    }
 
     /// Indicate to the functor which backends are actually loaded and working
     void module_functor_common::notifyOfBackends(std::map<str, std::set<str> > be_ver_map)

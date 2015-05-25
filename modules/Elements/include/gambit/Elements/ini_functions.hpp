@@ -24,9 +24,10 @@
 
 #include "gambit/Elements/functors.hpp"
 #include "gambit/Utils/util_types.hpp"
+#include "gambit/Backends/backend_singleton.hpp"
 
 /// Define the separator to use instead of "::" when macros get gnarly.
-#define NS_SEP ___ns_separator_that_will_never_appear_naturally___
+#define NS_SEP ___no_apologies_for_rocking_macros___
 
 namespace Gambit
 {
@@ -75,6 +76,12 @@ namespace Gambit
 
   /// Get the status of a factory pointer to a BOSSed type's wrapper constructor.        
   int get_ctor_status(str, str, str, str, str, str, bool);
+
+  /// Set a backend rule for one or more models.
+  int iniBackendRuleForModel(module_functor_common&, str, str);
+  
+  /// Set the classloading requirements of a given functor.
+  int set_classload_requirements(module_functor_common&, str, str, str);
 
 }
 
