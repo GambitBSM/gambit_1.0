@@ -7,6 +7,8 @@
 Parameters: 
     #StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
     nuclear_params_fnq: !import NuclearParams_fnq_defaults.yaml
+#   Uncomment the below to use DarkSUSY nuclear parameters.
+#    nuclear_params_fnq: !import NuclearParams_fnq_DarkSUSY.yml
     MSSM25atQ: !import LesHouches.in.MSSM_1.yaml
 
 

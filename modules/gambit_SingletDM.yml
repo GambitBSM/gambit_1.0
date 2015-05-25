@@ -42,6 +42,9 @@ Parameters:
       deltas:
         fixed_value: -0.085
 
+#   Uncomment the below to use DarkSUSY nuclear parameters.
+#    nuclear_params_fnq: !import NuclearParams_fnq_DarkSUSY.yml
+
 ##############################
 # Prior setup
 ##############################
