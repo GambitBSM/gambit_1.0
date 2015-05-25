@@ -26,6 +26,7 @@
 #include <memory>
 #include <sstream>
 #include <iostream>
+#include <algorithm>
 //#include <boost/multi_array.hpp> // Used in buffers
 
 // HDF5 C++ bindings
@@ -136,8 +137,11 @@ namespace Gambit {
             int vertexID;
             uint index; // discriminator in case of multiple output streams from one vertex
              
-            // flag to trigger de-synchronised buffer writing
-            bool global;
+            // flag to trigger synchronised buffer writing
+            bool synchronised;
+ 
+            // flag to disable any writing (turns this into a null buffer)
+            bool silenced;
 
          public:
             VertexBufferBase()
@@ -145,16 +149,26 @@ namespace Gambit {
               , label()
               , vertexID()
               , index()
-              , global()
-            {}   
+              , synchronised()
+              , silenced()
+            {
+              #ifdef HDF5_DEBUG
+              std::cout<<"Default constructing buffer name='"<<label<<"', synchronised="<<synchronised<<std::endl;
+              #endif
+            }   
 
-            VertexBufferBase(const std::string& l, const int vID, const uint i=0, const bool g=false) 
+            VertexBufferBase(const std::string& l, const int vID, const uint i, const bool sync, const bool sil) 
               : donethispoint(false)
               , label(l)
               , vertexID(vID)
               , index(i)
-              , global(g)
-            {}
+              , synchronised(sync)
+              , silenced(sil)
+            {
+              #ifdef HDF5_DEBUG
+              std::cout<<"Constructing buffer name='"<<label<<"', synchronised="<<synchronised<<std::endl;
+              #endif
+            }
 
             virtual ~VertexBufferBase() {}
 
@@ -162,10 +176,14 @@ namespace Gambit {
             int get_vertexID() { return vertexID; }
             uint get_index()   { return index; }
             std::string get_label() { return label; }
-            bool is_global() { return global; }
+            bool is_synchronised() { return synchronised; }
+            bool is_silenced() { return silenced; }
 
             // Needed to externally trigger buffer write to disk (e.g. at end of scan)
             virtual void flush() {} ///TODO: write proper cleanout function = 0;            
+
+            // Flush the random-access write queue (i.e. do the queued-up writes)
+            virtual void RA_flush() {}
 
             // Resets buffer and signals to printer to empty out the contents of the output
             // dataset in preparation of new writing.
@@ -205,11 +223,21 @@ namespace Gambit {
       class VertexBufferNumeric1D : public VertexBufferBase
       {
         protected:
-          // Buffer variables
+          /// @{ Buffer variables for sequential writing
           // Using arrays as these are easier to write to hdf5
-          bool buffer_valid[LENGTH]; // Array telling us which buffer entries are properly filled
-          T    buffer_entries[LENGTH];
-   
+          bool  buffer_valid[LENGTH]; // Array telling us which buffer entries are properly filled
+          T     buffer_entries[LENGTH];
+          /// @}
+ 
+          /// @{ Buffer variables for random access writing
+          /// Queue for random access writes to dataset (independent of main buffer)
+          T     RA_write_queue[LENGTH];
+          /// Target dataset positions for RA writes.
+          hsize_t RA_write_locations[LENGTH];
+          /// Current length of the RA write queue
+          uint  RA_queue_length = 0;
+          /// @}
+
         private:
           unsigned int nextempty; // index of the next free buffer slot
 
@@ -226,8 +254,8 @@ namespace Gambit {
             , nextempty(0)
           {}
 
-          VertexBufferNumeric1D(const std::string& label, const int vID, const unsigned int i=0, bool global=false)
-            : VertexBufferBase(label,vID,i,global)
+          VertexBufferNumeric1D(const std::string& label, const int vID, const unsigned int i, bool sync, bool sil)
+            : VertexBufferBase(label,vID,i,sync,sil)
             , buffer_valid() 
             , buffer_entries()
             , nextempty(0)
@@ -239,6 +267,9 @@ namespace Gambit {
 
           /// Append a record to the buffer
           void append(const T& data);
+
+          /// Queue up a desynchronised ("random access") dataset write to previous scan iteration
+          void RA_write(const T& value, const ulong dset_index);
 
           /// No data to append this iteration; skip this slot
           void skip_append();
@@ -257,23 +288,25 @@ namespace Gambit {
       template<class T, std::size_t L>
       void VertexBufferNumeric1D<T,L>::append(const T& data)
       {
-         // Debug dump
-         #ifdef HDF5_DEBUG
-         std::cout<<"-------------------------------------"<<std::endl;
-         std::cout<<"Dump from buffer '"<<this->get_label()<<"'"<<std::endl;
-         std::cout<<"nextempty   = "<<nextempty<<std::endl;
-         std::cout<<"donepoint() = "<<this->donepoint()<<std::endl;
-         #endif
+         if(not this->is_silenced()) {
+            // Debug dump
+            #ifdef HDF5_DEBUG
+            std::cout<<"-------------------------------------"<<std::endl;
+            std::cout<<"Dump from buffer '"<<this->get_label()<<"'"<<std::endl;
+            std::cout<<"nextempty   = "<<nextempty<<std::endl;
+            std::cout<<"donepoint() = "<<this->donepoint()<<std::endl;
+            #endif
 
-         error_if_done(); // make sure buffer hasn't written to the current point already
-         buffer_entries[nextempty] = data;
-         buffer_valid[nextempty] = true;
-         nextempty++;
-         if(nextempty==bufferlength)
-         {
-            flush();
-            clear();
-            nextempty=0;
+            error_if_done(); // make sure buffer hasn't written to the current point already
+            buffer_entries[nextempty] = data;
+            buffer_valid[nextempty] = true;
+            nextempty++;
+            if(nextempty==bufferlength)
+            {
+               flush();
+               clear();
+               nextempty=0;
+            }
          }   
       }
 
@@ -281,21 +314,44 @@ namespace Gambit {
       template<class T, std::size_t L>
       void VertexBufferNumeric1D<T,L>::skip_append()
       {
-         error_if_done(); // make sure buffer hasn't written to the current point already
-         buffer_valid[nextempty] = false;
-         nextempty++;
-         if(nextempty==bufferlength)
-         {
-            flush();
-            clear();
-            nextempty=0;
-         } 
+         if(not this->is_silenced()) {
+            error_if_done(); // make sure buffer hasn't written to the current point already
+            buffer_valid[nextempty] = false;
+            nextempty++;
+            if(nextempty==bufferlength)
+            {
+               flush();
+               clear();
+               nextempty=0;
+            } 
+         }
+      }
+
+      /// Queue up a desynchronised ("random access") dataset write to previous scan iteration
+      template<class T, std::size_t L>
+      void VertexBufferNumeric1D<T,L>::RA_write(const T& value, const ulong dset_index)
+      {
+         if(not this->is_silenced()) {
+            uint i = RA_queue_length;
+            RA_write_queue[i]     = value;
+            RA_write_locations[i] = dset_index;
+            RA_queue_length += 1;
+            if(RA_queue_length==L)
+            {
+              RA_flush();
+              RA_queue_length=0;
+            }
+         }
       }
 
       /// Extract (copy) a record
       template<class T, std::size_t L>
       T VertexBufferNumeric1D<T,L>::get_entry(const std::size_t i) const
       {
+         if(this->is_silenced()) {
+           std::string errmsg = "Error! Attempted to retrieve data from a silenced buffer!";
+           printer_error().raise(LOCAL_INFO, errmsg);
+         }
          if(buffer_valid[i])
          {
            return buffer_entries[i];
@@ -311,12 +367,14 @@ namespace Gambit {
       template<class T, std::size_t L>
       void VertexBufferNumeric1D<T,L>::clear()
       {
-         for(std::size_t i=0; i<bufferlength; i++)
-         {
-            buffer_valid[i] = false;
-            buffer_entries[i] = 0;
+         if(not this->is_silenced()) {
+            for(std::size_t i=0; i<bufferlength; i++)
+            {
+               buffer_valid[i] = false;
+               buffer_entries[i] = 0;
+            }
+            nextempty=0;  
          }
-         nextempty=0;  
       }
 
       /// @}
@@ -342,11 +400,17 @@ namespace Gambit {
              , dsetdata()
            {}
 
-           VertexBufferNumeric1D_HDF5(H5FGPtr location, const std::string& name, const int vID, const unsigned int i=0, bool g=false)
-             : VertexBufferNumeric1D<T,CHUNKLENGTH>(name,vID, i, g)
-             , dsetvalid(location, name+"_isvalid")
-             , dsetdata(location, name)
-           {}
+           VertexBufferNumeric1D_HDF5(H5FGPtr location, const std::string& name, const int vID, const unsigned int i, bool sync, bool silence)
+             : VertexBufferNumeric1D<T,CHUNKLENGTH>(name,vID, i, sync, silence)
+             , dsetvalid()
+             , dsetdata()
+           {
+             if(not silence)
+             {
+               dsetvalid = DataSetInterfaceScalar<bool,CHUNKLENGTH>(location, name+"_isvalid");
+               dsetdata  = DataSetInterfaceScalar<T,CHUNKLENGTH>(location, name);
+             }
+           }
        
            /// Destructor
            /// Make sure buffer contents are written to file when buffer object is destroyed
@@ -355,18 +419,21 @@ namespace Gambit {
            /// Override of buffer dump function to handle HDF5 output
            void flush()
            {
-             dsetvalid.writenewchunk(this->buffer_valid); 
-             dsetdata.writenewchunk(this->buffer_entries);
+             if(not this->is_silenced()) {
+                dsetvalid.writenewchunk(this->buffer_valid); 
+                dsetdata.writenewchunk(this->buffer_entries);
+             }
            }
 
-           /// Perform a desynchronised ("random access") dataset write to previous scan iteration
-           /// Currently this just immediately submits the write command, and lets hdf5 sort out
-           /// any required bufferring. Since the random access writes are not likely to be grouped
-           /// together in any useful way I don't think an internal buffer would help much here.
-           void RA_write(const T& value, const ulong dset_index)
+           /// Send random access write queue to dataset interfaces for writing
+           void RA_flush()
            {
-              dsetvalid.RA_write(true,dset_index); 
-              dsetdata.RA_write(value,dset_index);
+              if(not this->is_silenced()) {
+                 bool valid[CHUNKLENGTH];
+                 std::fill_n(valid, this->RA_queue_length, true); 
+                 dsetvalid.RA_write(valid,this->RA_write_locations,this->RA_queue_length); 
+                 dsetdata.RA_write(this->RA_write_queue,this->RA_write_locations,this->RA_queue_length);
+              }
            }
 
            /// Ensure dataset "write head" (i.e. next append) is prepared to
@@ -374,45 +441,54 @@ namespace Gambit {
            /// blank entries if need)
            void synchronise_output_to_position(const ulong i)
            {
-              // dataset position is the "next slab" index plus the buffer index
-              const ulong dsetvalid_pos = dsetvalid.get_nextemptyslab() + this->get_nextempty();
-              const ulong dsetdata_pos  = dsetdata.get_nextemptyslab() + this->get_nextempty();
-              if(dsetvalid_pos!=dsetdata_pos)
-              {
-                  // The two datasets controlled by this buffer should always remain synchronised!
-                  std::ostringstream errmsg;
-                  errmsg << "Error! Validity and Data datasets have gone out of sync in buffer with label '"<<this->get_label()<<"'! This is a bug in the VertexBufferNumeric1D_HDF5 class. Please report it.";
-                  printer_error().raise(LOCAL_INFO, errmsg.str()); 
-              }
+              if(not this->is_silenced()) {
+                 if(not this->is_synchronised())  
+                 {
+                    std::ostringstream errmsg;
+                    errmsg << "Error! Attempted to perform synchronisation on buffer not flagged for synchronisation (label '"<<this->get_label()<<"')! Please report this bug.";
+                    printer_error().raise(LOCAL_INFO, errmsg.str()); 
+                 }
 
-              // Compare this to the move position and see what we need to do
-              const long movediff = i - dsetvalid_pos;
-              if(movediff==1)             
-              {
-                  // Set the current point as having no valid data and move to the next
-                  this->skip_append();    
-              } 
-              else if(movediff<0)
-              {
-                  std::ostringstream errmsg;
-                  errmsg << "Error! Attempted to move HDF5 write position backwards in buffer with label '"<<this->get_label()<<"'! This is a bug in the VertexBufferNumeric1D_HDF5 class or in a class which uses it (probably HDF5Printer). Please report it. (Note, writing to old points can be done but requires using special write functions).";
-                  printer_error().raise(LOCAL_INFO, errmsg.str());
-              } 
-              else if (movediff==0)
-              {
-                if(this->donepoint())
-                {
-                  std::ostringstream errmsg;
-                  errmsg << "Error! Attempted to move HDF5 write position by 0 slots in buffer with label '"<<this->get_label()<<"'; this part is fine, however the buffer indicates that this position has already received a write (donepoint()==true) so it should have moved forward! This is a bug in the VertexBufferNumeric1D_HDF5 class or in a class which uses it (probably HDF5Printer). Please report it.";
-                  printer_error().raise(LOCAL_INFO, errmsg.str());
-                }
-                // otherwise no problem; carry on.
-              }
-              else if (movediff>1) 
-              {
-                  std::ostringstream errmsg;
-                  errmsg << "Error! Attempted to move HDF5 write position by >1 slots ("<<movediff<<") in buffer with label '"<<this->get_label()<<"'. Buffer synchronisation should only happen one slot at a time. This is a bug in the VertexBufferNumeric1D_HDF5 class or in a class which uses it (probably HDF5Printer). Please report it.";
-                  printer_error().raise(LOCAL_INFO, errmsg.str());
+                 // dataset position is the "next slab" index plus the buffer index
+                 const ulong dsetvalid_pos = dsetvalid.get_nextemptyslab() + this->get_nextempty();
+                 const ulong dsetdata_pos  = dsetdata.get_nextemptyslab() + this->get_nextempty();
+                 if(dsetvalid_pos!=dsetdata_pos)
+                 {
+                     // The two datasets controlled by this buffer should always remain synchronised!
+                     std::ostringstream errmsg;
+                     errmsg << "Error! Validity and Data datasets have gone out of sync in buffer with label '"<<this->get_label()<<"'! This is a bug in the VertexBufferNumeric1D_HDF5 class. Please report it.";
+                     printer_error().raise(LOCAL_INFO, errmsg.str()); 
+                 }
+
+                 // Compare this to the move position and see what we need to do
+                 const long movediff = i - dsetvalid_pos;
+                 if(movediff==1)             
+                 {
+                     // Set the current point as having no valid data and move to the next
+                     this->skip_append();    
+                 } 
+                 else if(movediff<0)
+                 {
+                     std::ostringstream errmsg;
+                     errmsg << "Error! Attempted to move HDF5 write position backwards in buffer with label '"<<this->get_label()<<"'! This is a bug in the VertexBufferNumeric1D_HDF5 class or in a class which uses it (probably HDF5Printer). Please report it. (Note, writing to old points can be done but requires using special write functions).";
+                     printer_error().raise(LOCAL_INFO, errmsg.str());
+                 } 
+                 else if (movediff==0)
+                 {
+                   if(this->donepoint())
+                   {
+                     std::ostringstream errmsg;
+                     errmsg << "Error! Attempted to move HDF5 write position by 0 slots in buffer with label '"<<this->get_label()<<"'; this part is fine, however the buffer indicates that this position has already received a write (donepoint()==true) so it should have moved forward! This is a bug in the VertexBufferNumeric1D_HDF5 class or in a class which uses it (probably HDF5Printer). Please report it.";
+                     printer_error().raise(LOCAL_INFO, errmsg.str());
+                   }
+                   // otherwise no problem; carry on.
+                 }
+                 else if (movediff>1) 
+                 {
+                     std::ostringstream errmsg;
+                     errmsg << "Error! Attempted to move HDF5 write position by >1 slots ("<<movediff<<") in buffer with label '"<<this->get_label()<<"'. Buffer synchronisation should only happen one slot at a time. This is a bug in the VertexBufferNumeric1D_HDF5 class or in a class which uses it (probably HDF5Printer). Please report it.";
+                     printer_error().raise(LOCAL_INFO, errmsg.str());
+                 }
               }
            }
          
@@ -471,8 +547,8 @@ namespace Gambit {
          const hsize_t* get_maxdsetdims() const    { return maxdims; }
          const hsize_t* get_chunkdims() const      { return chunkdims; }
          const hsize_t* get_slicedims() const      { return slicedims; }
-        ulong get_nextemptyslab() const     { return dsetnextemptyslab; }
-
+         ulong get_nextemptyslab() const     { return dsetnextemptyslab; }
+  
          // Full accessor needed for dataset dimensions 
          // so that they can be updated when chunks are added
          hsize_t* dsetdims() { return dims; }
@@ -617,69 +693,103 @@ namespace Gambit {
              this->dsetnextemptyslab += CHUNKLENGTH;
           }
 
-          /// Perform a desynchronised ("random access") dataset write to previous scan iteration
-          /// Currently this just immediately submits the write command, and lets hdf5 sort out
-          /// any required bufferring. Since the random access writes are not likely to be grouped
-          /// together in any useful way I don't think an internal buffer would help much here.
-          void RA_write(const T& value, const ulong dset_index)
+          /// Perform desynchronised ("random access") dataset writes to previous scan iterations
+          /// from a queue.
+          void RA_write(const T (&values)[CHUNKLENGTH], const hsize_t (&coords)[CHUNKLENGTH], std::size_t npoints) 
           {
-             hsize_t offsets[DSETRANK];
-
-             // Put data into a length 1 array, for writing as a length 1 "slab"
-             //T data_slice[1];
-             //data_slice[0] = value;
-
-             // Check if dataset needs extending; we may be trying to write to a point that wasn't
-             // yet written to by a buffer. Can write up to 1 chunk-length beyond the current
-             // position              
-
-             // Extend the dataset. Dataset on disk becomes 1 chunk larger.
-             if( dset_index >= this->dsetdims()[0] )
+             // Extend the dataset if needed
+             // To do this need to know largest target coordinate
+             ulong max_coord = *std::max_element(coords,coords+npoints);
+             if( max_coord >= this->dsetdims()[0] )
              {
-               //if( dset_index >= this->dsetdims()[0] + CHUNKLENGTH )
-               //{
-               //  // Too far; error.
-               //  std::ostringstream errmsg;
-               //  errmsg << "Error writing RA value to dataset (with name: \""<<this->get_myname()<<"\") in HDF5 file. Requested write position ("<<dset_index<<") is more than one chunk-length ("<<CHUNKLENGTH<<") beyond the present end of the dataset ("<<this->dsetdims()[0]<<")";
-               //  printer_error().raise(LOCAL_INFO, errmsg.str());
-               //}
-               //
-               //// Ok to extend.
-               //this->dsetdims()[0] += CHUNKLENGTH; // extend dataset by 1 chunk
-
-               // Extend the dataset to the nearest multiple of CHUNKLENGTH above dset_index
-               std::size_t remainder = dset_index % CHUNKLENGTH; 
-               this->dsetdims()[0] = dset_index - remainder + CHUNKLENGTH;
-
-               // newsize[1] = dims[1]; // don't need: only 1D for now.
+               // Extend the dataset to the nearest multiple of CHUNKLENGTH above max_coord
+               std::size_t remainder = max_coord % CHUNKLENGTH; 
+               this->dsetdims()[0] = max_coord - remainder + CHUNKLENGTH;
                this->my_dataset.extend( this->dsetdims() );  
              }
 
-             // Select hyperslab starting at dset_index
-             H5::DataSpace filespace = this->my_dataset.getSpace();
-             offsets[0] = dset_index;
-             //offsets[1] = 0; // don't need: only 1D for now.
-             filespace.selectHyperslab( H5S_SELECT_SET, this->get_slicedims(), offsets );
+             // Dataset size in memory
+             static const std::size_t MDIM_RANK = 1; 
+             hsize_t mdim[] = {npoints};
              
-             // Define memory space
-             H5::DataSpace memspace( DSETRANK, this->get_slicedims() );
-            
-             #ifdef HDF5_DEBUG 
-             std::cout << "Debug variables:" << std::endl
-                       << "  dsetdims()[0]      = " << this->dsetdims()[0] << std::endl
-                       << "  offsets[0]         = " << offsets[0] << std::endl
-                       << "  get_slicedims()[0] = " << this->get_slicedims()[0] << std::endl;
-             #endif
+             // Dataspace for the output values
+             hid_t dspace = H5Screate_simple(MDIM_RANK, mdim, NULL);
+
+             // Get the C interface identifier for the output dataset
+             hid_t dset_id = this->my_dataset.getId();
  
-             // Write the data to the hyperslab.
-             try {
-                this->my_dataset.write( &value, this->hdf_dtype.type(), memspace, filespace );
-             } catch(const H5::Exception& e) {
-                std::ostringstream errmsg;
-                errmsg << "Error writing RA value to dataset (with name: \""<<this->get_myname()<<"\") in HDF5 file. Message was: "<<e.getDetailMsg() << std::endl;
-                printer_error().raise(LOCAL_INFO, errmsg.str());
-             }
-          }
+             // Get the C interface identifier for a copy of the dataspace
+             // of the dataset (confusing...)
+             hid_t dspace_id = H5Dget_space(dset_id);
+
+             // Select the target write points in the file dataspace
+             H5Sselect_elements(dspace_id, H5S_SELECT_SET, npoints, coords);
+            
+             // Get the C interface identifier for the type of the output dataset
+             hid_t dtype = this->hdf_dtype.type().getId();
+ 
+             // Write data to selected points
+             // (H5P_DEFAULT specifies some transfer properties for the I/O 
+             //  operation. These are the default values, probably are ok.)
+             H5Dwrite(dset_id, dtype, dspace, dspace_id, H5P_DEFAULT, values);
+
+         ////     hsize_t offsets[DSETRANK];
+
+         ////     // Put data into a length 1 array, for writing as a length 1 "slab"
+         ////     //T data_slice[1];
+         ////     //data_slice[0] = value;
+
+         ////     // Check if dataset needs extending; we may be trying to write to a point that wasn't
+         ////     // yet written to by a buffer. Can write up to 1 chunk-length beyond the current
+         ////     // position              
+
+         ////     // Extend the dataset. Dataset on disk becomes 1 chunk larger.
+         ////     if( dset_index >= this->dsetdims()[0] )
+         ////     {
+         ////       //if( dset_index >= this->dsetdims()[0] + CHUNKLENGTH )
+         ////       //{
+         ////       //  // Too far; error.
+         ////       //  std::ostringstream errmsg;
+         ////       //  errmsg << "Error writing RA value to dataset (with name: \""<<this->get_myname()<<"\") in HDF5 file. Requested write position ("<<dset_index<<") is more than one chunk-length ("<<CHUNKLENGTH<<") beyond the present end of the dataset ("<<this->dsetdims()[0]<<")";
+         ////       //  printer_error().raise(LOCAL_INFO, errmsg.str());
+         ////       //}
+         ////       //
+         ////       //// Ok to extend.
+         ////       //this->dsetdims()[0] += CHUNKLENGTH; // extend dataset by 1 chunk
+
+         ////       // Extend the dataset to the nearest multiple of CHUNKLENGTH above dset_index
+         ////       std::size_t remainder = dset_index % CHUNKLENGTH; 
+         ////       this->dsetdims()[0] = dset_index - remainder + CHUNKLENGTH;
+
+         ////       // newsize[1] = dims[1]; // don't need: only 1D for now.
+         ////       this->my_dataset.extend( this->dsetdims() );  
+         ////     }
+
+         ////     // Select hyperslab starting at dset_index
+         ////     H5::DataSpace filespace = this->my_dataset.getSpace();
+         ////     offsets[0] = dset_index;
+         ////     //offsets[1] = 0; // don't need: only 1D for now.
+         ////     filespace.selectHyperslab( H5S_SELECT_SET, this->get_slicedims(), offsets );
+         ////     
+         ////     // Define memory space
+         ////     H5::DataSpace memspace( DSETRANK, this->get_slicedims() );
+         ////    
+         ////     #ifdef HDF5_DEBUG 
+         ////     std::cout << "Debug variables:" << std::endl
+         ////               << "  dsetdims()[0]      = " << this->dsetdims()[0] << std::endl
+         ////               << "  offsets[0]         = " << offsets[0] << std::endl
+         ////               << "  get_slicedims()[0] = " << this->get_slicedims()[0] << std::endl;
+         ////     #endif
+ 
+         ////     // Write the data to the hyperslab.
+         ////     try {
+         ////        this->my_dataset.write( &value, this->hdf_dtype.type(), memspace, filespace );
+         ////     } catch(const H5::Exception& e) {
+         ////        std::ostringstream errmsg;
+         ////        errmsg << "Error writing RA value to dataset (with name: \""<<this->get_myname()<<"\") in HDF5 file. Message was: "<<e.getDetailMsg() << std::endl;
+         ////        printer_error().raise(LOCAL_INFO, errmsg.str());
+         ////     }
+         }
  
       };
 

@@ -117,10 +117,9 @@ scanner_plugin(MultiNest, version(0, 0, 0, bens_version))
       Gambit::Options stats_options = get_inifile_node("aux_printer_stats_options");
       Gambit::Options live_options  = get_inifile_node("aux_printer_live_options");
 
-      stats_options.setValue("global",true); // Option to set this stream to "global" mode, i.e. it does not operated on a point-by-point basis. Therefore no thread or point number is needed when printing.
-
-      txt_options.setValue("global",true);
-      live_options.setValue("global",true);
+      stats_options.setValue("synchronised",false); // Option to desynchronised this print stream from the main Gambit iterations. This allows for random access writing, or writing of global scan data.
+      txt_options.setValue("synchronised",false);
+      live_options.setValue("synchronised",false);
 
       // Initialise auxiliary print streams
       get_printer().new_stream("txt",txt_options);

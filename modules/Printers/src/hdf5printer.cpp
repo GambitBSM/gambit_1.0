@@ -133,10 +133,10 @@ namespace Gambit
     /// @{ H5P_LocalBufferManager member functions
 
     template<class BuffType>
-    void H5P_LocalBufferManager<BuffType>::init(HDF5Printer* p, bool g)
+    void H5P_LocalBufferManager<BuffType>::init(HDF5Printer* p, bool sync)
     {
        /* Set global behaviour flag */
-       global = g;
+       synchronised = sync;
 
        /* Attempt to attach to printer */
        if(p==NULL)
@@ -157,25 +157,45 @@ namespace Gambit
     template<class BuffType>
     BuffType& H5P_LocalBufferManager<BuffType>::get_buffer(const int vertexID, const uint aux_i, const std::string& label) 
     {
+       if(not ready()) {
+          std::ostringstream errmsg;
+          errmsg << "Error! Tried to retrieve a buffer from a buffer manager without first initialising it! This is a bug in the HDF5Printer class, please report it.";
+          printer_error().raise(LOCAL_INFO, errmsg.str());
+       }
+
        VBIDpair key = std::make_pair(vertexID,aux_i);
        typename std::map<VBIDpair, BuffType>::iterator it = local_buffers.find(key);
        if( it == local_buffers.end() ) 
        {
-          // No buffer (should) exists for this output stream yet, so make one
           error_if_key_exists(local_buffers, key, "local_buffers");
-
-          local_buffers[key] = BuffType(printer->get_location(),label/*deconstruct?*/,vertexID,global);
+          // No local buffer exists for this output stream yet, so make one
+          // But check first if another printer manager is already handling this
+          // output stream. If so, we relinquish control over it and silence the
+          // new output stream.
+          bool silence = false;
+          #ifdef DEBUG_MODE
+          std::cout<<"Preparing to create new print output stream..."<<std::endl;
+          std::cout<<"...label = "<<label<<std::endl;
+          std::cout<<"...is stream already managed? "<<printer->is_stream_managed(key)<<std::endl;
+          #endif
+          if( printer->is_stream_managed(key) )
+          {
+            silence = true;
+          }            
+          local_buffers[key] = BuffType(printer->get_location(),label/*deconstruct?*/,vertexID,aux_i,synchronised,silence);
 
           // Get the new buffer back out of the map
           it = local_buffers.find(key);
 
-          // Add a pointer to the new buffer to the full list as well
-          if(printer!=NULL) {
-            printer->insert_buffer( key, it->second );
-          } else {
-            std::ostringstream errmsg;
-            errmsg << "Error! Tried to use H5P_LocalBufferManager before initialising it! This is a bug in the HDF5Printer class, please report it.";
-            printer_error().raise(LOCAL_INFO, errmsg.str());
+          if(not silence) {
+             // Add a pointer to the new buffer to the full list as well
+             if(printer!=NULL) {
+               printer->insert_buffer( key, it->second );
+             } else {
+               std::ostringstream errmsg;
+               errmsg << "Error! Tried to use H5P_LocalBufferManager before initialising it! This is a bug in the HDF5Printer class, please report it.";
+               printer_error().raise(LOCAL_INFO, errmsg.str());
+             }
           }
        }
        return it->second; 
@@ -194,8 +214,8 @@ namespace Gambit
       {
         // Set up this printer in auxilliary mode
         printer_name = options.getValueOrDef<std::string>("Primary printer","name");
-        global       = options.getValueOrDef<bool>(false,"global");
-        DBUG( std::cout << "Constructing Auxilliary HDF5Printer object (with name=\""<<printer_name<<"\" global="<<global<<")..." << std::endl; )
+        synchronised = options.getValueOrDef<bool>(true,"synchronised");
+        DBUG( std::cout << "Constructing Auxilliary HDF5Printer object (with name=\""<<printer_name<<"\" synchronised="<<synchronised<<")..." << std::endl; )
       } 
       else
       {
@@ -219,17 +239,7 @@ namespace Gambit
         location = groupptr;
       } 
    }
- 
-    /// Auxiliary mode constructor 
-    /// DOESN'T ACTUALLY GET CALLED YET
-    HDF5Printer::HDF5Printer(const Options& options, std::string& name, bool globalIN)
-      : printer_name(name)
-      , global(globalIN)
-    {
-      // Could set these things via options also if we like.
-      DBUG( std::cout << "Constructing Auxilliary HDF5Printer object (with name=\""<<printer_name<<"\")..." << std::endl; )
-    }
- 
+
     /// Initialisation for the auxilliary printer
     void HDF5Printer::auxilliary_init()
     {
@@ -275,11 +285,27 @@ namespace Gambit
     /// Retrieve MPI rank
     int HDF5Printer::getRank() {return myRank;}
 
-    /// Add a pointer to a new buffer to the global list
+    /// Add a pointer to a new buffer to the global list for this printer
+    /// and also register it with the list global to all printers.
     void HDF5Printer::insert_buffer(VBIDpair& key, VertexBufferBase& newbuffer)
     {
+       error_if_key_exists(all_my_buffers, key, "all_my_buffers");
+       all_my_buffers[key] = &newbuffer;
+
        error_if_key_exists(all_buffers, key, "all_buffers");
-       all_buffers[key] = &newbuffer;
+       primary_printer->all_buffers[key] = &newbuffer;
+    }
+
+    /// Check if an output stream is already managed by some buffer in any printer. 
+    bool HDF5Printer::is_stream_managed(VBIDpair& key)
+    {
+      bool answer = true;
+      if( primary_printer->all_buffers.find(key) 
+           == primary_printer->all_buffers.end() )
+      {
+        answer = false;
+      }
+      return answer;
     }
 
     /// Add PPIDpair to global index list
@@ -329,8 +355,15 @@ namespace Gambit
     // went wrong if more are required.
     void HDF5Printer::synchronise_buffers()
     {
+      if(is_auxilliary_printer())
+      {
+	 std::ostringstream errmsg;
+	 errmsg << "Error! synchronise_buffers() called by auxilliary hdf5 printer (name="<<printer_name<<")! Only the primary hdf5 printer is allowed to do this. This is a bug in the HDF5Printer class, please report it."; 
+	 printer_error().raise(LOCAL_INFO, errmsg.str());
+      }
+
       // Determine the new sync position
-      const ulong sync_pos = primary_printer->reverse_global_index_lookup.size()-1;  
+      const ulong sync_pos = reverse_global_index_lookup.size()-1;  
 
       // Cycle through all buffers and tell them to ensure they are at the right position
       // The buffers should throw an error if we are accidentally telling them to go backwards
@@ -338,7 +371,13 @@ namespace Gambit
       // Here though we should only be moving them forward by one position.
       for (BaseBufferMap::iterator it = all_buffers.begin(); it != all_buffers.end(); it++)
       {
-        it->second->synchronise_output_to_position(sync_pos);
+        if(it->second->is_synchronised()) {
+           #ifdef DEBUG_MODE
+           std::cout<<"Synchronising buffer '"<<it->second->get_label()<<"' to position "<<sync_pos;
+           std::cout<<"(message from printer: "<<printer_name<<", is_auxilliary: "<<is_auxilliary_printer()<<", synchronised: "<<synchronised<<")"<<std::endl;
+           #endif
+           it->second->synchronise_output_to_position(sync_pos);
+        }
       }
     } 
 
@@ -348,7 +387,7 @@ namespace Gambit
     /// Need to make this work, or die gracefully.
     void HDF5Printer::flush()
     {
-      for (BaseBufferMap::iterator it = all_buffers.begin(); it != all_buffers.end(); it++)
+      for (BaseBufferMap::iterator it = all_my_buffers.begin(); it != all_my_buffers.end(); it++)
       {
         it->second->flush();
       }
@@ -359,25 +398,27 @@ namespace Gambit
     /// This is only allowed if this is an auxilliary printer with global=true
     void HDF5Printer::reset()
     {
+      #ifdef HDFG_DEBUG
       std::cout<<"is_auxilliary_printer() = "<<is_auxilliary_printer()<<std::endl;
-      std::cout<<"global                  = "<<global<<std::endl;
+      std::cout<<"synchronised            = "<<synchronised<<std::endl;
       std::cout<<"printer_name            = "<<printer_name<<std::endl;
+      #endif
       if(not this->is_auxilliary_printer())
       {
          std::ostringstream errmsg;
          errmsg << "Error! Tried to call reset() on the primary HDF5Printer (printer_name = "<<printer_name<<")! This would delete all the data from the scan and is not currently allowed! Probably this was called accidentally due to a bug.";
          printer_error().raise(LOCAL_INFO, errmsg.str());
       }
-      else if(not global)
+      else if(synchronised)
       { 
          std::ostringstream errmsg;
-         errmsg << "Error! Tried to call reset() on an auxilliary HDF5Printer (printer_name = "<<printer_name<<") not flagged as 'global'! This would delete all the point-level data written by this printer during the scan and is not currently allowed! Probably this was called accidentally due to a bug.";
+         errmsg << "Error! Tried to call reset() on an auxilliary HDF5Printer (printer_name = "<<printer_name<<") which is synchronised with the primary printer! This would delete all the point-level data written by this printer during the scan and is not currently allowed! Probably this was called accidentally due to a bug.";
          printer_error().raise(LOCAL_INFO, errmsg.str());
       }
       else
       {
          // Ok safe to do the resets.
-         for (BaseBufferMap::iterator it = all_buffers.begin(); it != all_buffers.end(); it++)
+         for (BaseBufferMap::iterator it = all_my_buffers.begin(); it != all_my_buffers.end(); it++)
          {
            it->second->reset();
          }
@@ -388,6 +429,13 @@ namespace Gambit
     // and perform adjustments needed to prepare the printer.
     void HDF5Printer::check_for_new_point(const ulong candidate_newpoint, const uint mpirank)
     {
+       if(is_auxilliary_printer())
+       {
+          std::ostringstream errmsg;
+	  errmsg << "Error! check_for_new_point called by auxilliary hdf5 printer (name="<<printer_name<<")! Only the primary hdf5 printer is allowed to do this. This is a bug in the HDF5Printer class, please report it."; 
+          printer_error().raise(LOCAL_INFO, errmsg.str());
+       }
+
        // Check that we are still writing to the same output "slot" as during the last print call
        if(candidate_newpoint!=lastPointID)
        {
@@ -425,6 +473,12 @@ namespace Gambit
        //labels.reserve(value.size());
        ulong dset_index = get_global_index(pointID,mpirank);
 
+       #ifdef DEBUG_MODE
+       std::cout<<"printing vector<double>: "<<label<<std::endl;
+       std::cout<<"pointID: "<<pointID<<", mpirank: "<<mpirank<<std::endl;
+       std::cout<<"dset position: "<<dset_index<<std::endl;
+       #endif
+ 
        for(unsigned int i=0;i<value.size();i++)
        {
          // Might want to find some way to avoid doing this every single loop, seems kind of wasteful.
@@ -434,7 +488,7 @@ namespace Gambit
 
          // Write to each buffer
          //buffer_manager.get_buffer(vID, i, ss.str()).append(value[i]);
-         if(not global)
+         if(synchronised)
          {
            // Write the data to the selected buffer ("just works" for simple numeric types)
            buffer_manager.get_buffer(vID, i, ss.str()).append(value[i]);
@@ -459,7 +513,7 @@ namespace Gambit
        std::map<std::string, double> parameter_map = value.getValues();
  
        ulong dset_index = get_global_index(pointID,mpirank);
-   
+  
        uint i=0; // index for each buffer 
        for (std::map<std::string, double>::iterator 
          it = parameter_map.begin(); it != parameter_map.end(); it++)
@@ -469,7 +523,7 @@ namespace Gambit
 
          // Write to each buffer
          //buffer_manager.get_buffer(vID, i, ss.str()).append(it->second);
-         if(not global)
+         if(synchronised)
          {
            // Write the data to the selected buffer ("just works" for simple numeric types)
            buffer_manager.get_buffer(vID, i, ss.str()).append(it->second);
