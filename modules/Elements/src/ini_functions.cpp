@@ -26,11 +26,33 @@
 namespace Gambit
 {
     
+  /// Get back the "::" from things that use NS_SEP instead
+  str fixns(str s)
+  {
+    str ns = STRINGIFY(NS_SEP);
+    const str cc = "::";
+    #if GAMBIT_CONFIG_FLAG_use_regex     // Using regex :D
+      regex rgx1(ns), rgx2("my_ns"+cc), rgx3(cc+"\\("), rgx4(cc+"$");
+      s = regex_replace(s, rgx1, cc);
+      s = regex_replace(s, rgx2, "");
+      s = regex_replace(s, rgx3, "(");
+      s = regex_replace(s, rgx4, "");
+    #else                                // Using lame-o methods >:(
+      boost::replace_all(s, ns, cc);
+      boost::replace_all(s, "my_ns"+cc, "");
+      boost::replace_all(s, cc+"(", "(");
+      const int cclen = cc.length();
+      const int slen = s.length();
+      if (cclen > slen) return s;
+      if (s.substr(slen-cclen,cclen) == cc) s.replace(slen-cclen,cclen,"");
+    #endif
+    return s;
+  }
+
   /// Catch initialisation exceptions
   void ini_catch(std::exception& e)
   {
     std::cout << "GAMBIT has failed to initialise due to fatal exception: " << e.what() << std::endl;
-    //std::cout << "raised from ini_code_struct declared at: " << location << std::endl;
     throw(e);
   }
     
@@ -254,51 +276,69 @@ namespace Gambit
     return 0;
   }
 
-  /// Get back the "::" from things that use NS_SEP instead
-  str fixns(str s)
+  /// Create a log tag for a new module.
+  int register_module_with_log(str module)
   {
-    str ns = STRINGIFY(NS_SEP);
-    const str cc = "::";
-    #if GAMBIT_CONFIG_FLAG_use_regex     // Using regex :D
-      regex rgx1(ns), rgx2("my_ns"+cc), rgx3(cc+"\\("), rgx4(cc+"$");
-      s = regex_replace(s, rgx1, cc);
-      s = regex_replace(s, rgx2, "");
-      s = regex_replace(s, rgx3, "(");
-      s = regex_replace(s, rgx4, "");
-    #else                                // Using lame-o methods >:(
-      boost::replace_all(s, ns, cc);
-      boost::replace_all(s, "my_ns"+cc, "");
-      boost::replace_all(s, cc+"(", "(");
-      const int cclen = cc.length();
-      const int slen = s.length();
-      if (cclen > slen) return s;
-      if (s.substr(slen-cclen,cclen) == cc) s.replace(slen-cclen,cclen,"");
-    #endif
-    return s;
+    int mytag;
+    try
+    {
+      mytag = Logging::getfreetag();
+      Logging::tag2str()[mytag] = module;
+      Logging::components().insert(mytag);
+    }
+    catch (std::exception& e) { ini_catch(e); }
+    return mytag;
+  }
+  
+  /// Register a function with a module.
+  int register_function(module_functor_common& f, bool can_manage, safe_ptr<bool>* done,
+   std::map<str,str>& iCanDo, std::map<str, bool(*)()>& map, bool(&provides)(), safe_ptr<Options>& opts)
+  {
+    try
+    {
+      if (can_manage)
+      {
+        f.setCanBeLoopManager(true);
+        *done = f.loopIsDone();
+      }
+      map[f.capability()] = &provides;
+      iCanDo[f.name()] = f.type();
+      opts = f.getOptions();
+    }
+    catch (std::exception& e) { ini_catch(e); }
+    return 0;
   }
 
   /// Set a backend rule for one or more models.
-  int iniBackendRuleForModel(module_functor_common& func, str models, str tags)
+  int set_backend_rule_for_model(module_functor_common& f, str models, str tags)
   {
-    func.makeBackendRuleForModel(models, tags);
+    try
+    {
+      f.makeBackendRuleForModel(models, tags);
+    }
+    catch (std::exception& e) { ini_catch(e); }
     return 0;
   }
   
   /// Set the classloading requirements of a given functor.
-  int set_classload_requirements(module_functor_common& func, str be, str verstr, str default_ver)
+  int set_classload_requirements(module_functor_common& f, str be, str verstr, str default_ver)
   {                                                                        
-    // Split up the passed version string into individual versions
-    std::vector<str> versions = Utils::delimiterSplit(verstr, ",");
-    // Add each version individually as required for classloading
-    for (auto it = versions.begin() ; it != versions.end(); ++it)
+    try
     {
-      // Retrieve the version corresponding to the default if needed
-      if (*it == "default") *it = Backends::backendInfo().version_from_safe_version(be, default_ver);
-      // Retrieve the safe version corresponding to this version
-      str sv = Backends::backendInfo().safe_version_from_version(be, *it);
-      // Set the requirement in the functor
-      func.setRequiredClassloader(be,*it,sv);
+      // Split up the passed version string into individual versions
+      std::vector<str> versions = Utils::delimiterSplit(verstr, ",");
+      // Add each version individually as required for classloading
+      for (auto it = versions.begin() ; it != versions.end(); ++it)
+      {
+        // Retrieve the version corresponding to the default if needed
+        if (*it == "default") *it = Backends::backendInfo().version_from_safe_version(be, default_ver);
+        // Retrieve the safe version corresponding to this version
+        str sv = Backends::backendInfo().safe_version_from_version(be, *it);
+        // Set the requirement in the functor
+        f.setRequiredClassloader(be,*it,sv);
+      }
     }
+    catch (std::exception& e) { ini_catch(e); }
     return 0;
   }
 

@@ -603,6 +603,7 @@ namespace Gambit
           << "  " << masterGraph[vertex]->capability() << endl << "and result type: " << endl 
           << "  [" << masterGraph[vertex]->type() << "]" << endl << "Please assign a different purpose to this entry.";          
       core_error().raise(LOCAL_INFO, msg.str());
+      return "If you make core errors non-fatal you deserve what you get.";
     }
 
     // Tell functor that it invalidated the current point in model space (due to a large or NaN contribution to lnL)
