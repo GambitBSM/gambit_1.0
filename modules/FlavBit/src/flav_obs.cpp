@@ -301,7 +301,7 @@ double Flav_reader::calc_Chi2(vector<double> theory, vector<double> theory_error
     }
   return Chi2;
 }
-void Flav_reader::construct_theory_cov()
+void Flav_reader::construct_theory_b2sll()
 {
   const int cov_size=128; // input from Nazila
   double covariance[cov_size][cov_size];  // declaring table that is filled in file from Nazila
@@ -309,13 +309,49 @@ void Flav_reader::construct_theory_cov()
 
   names_obs=vector<string>(cov_size, ""); // names Nazila usese
 #include "names.txt"; // filling big list
+  vector<string> q2_bins={"0.1-0.98", "1.1-2.5", "2.5-4", "4-6", "6-8", "15-17", "17-19"};
+  vector<string> S_bins={"FL_B0Kstar0mumu_", "S3_B0Kstar0mumu_", "S4_B0Kstar0mumu_", "S5_B0Kstar0mumu_", "S7_B0Kstar0mumu_", "S8_B0Kstar0mumu_", "S9_B0Kstar0mumu_"};
   if(use_S) // assuming 2GeV bins
     {
-      //      vector<string> nam_red={"BR_B0Kstar0mumu_0.1-2", "FL_B0Kstar0mumu_0.1-2", "AFB_B0Kstar0mumu_0.1-2", " 
+      vector<string> input;
+      for(unsigned iq2=0;iq2<q2_bins.size();++iq2)
+	{
+	  for(unsigned iname=0;iname<S_bins.size();++iname)
+	    {
+	      string tmp=S_bins.at(iname)+q2_bins.at(iq2);
+	      input.push_back(tmp);	
+		
+	    }      
+	}  // we got names of the variables in for B->K*mumu
+      //##############################################################
+      //    putting the intigers from lists
+      //##############################################################
+      vector<int> input_int;
+      for(unsigned i=0;i <input.size();++i)
+	{
+	  for(int j=0;j<cov_size;++j)
+	    {
+	      if(input[i]== names_obs[j]) input_int.push_back( j);
+	    }
+	}
+      // now making the correlations 
+      b2sll_cov =  new double*[input_int.size()];
+      for(int i = 0; i < input_int.size(); i++)
+	{
+	  b2sll_cov[i]=new double[input_int.size()];
+	}
       
-    }  
-  
-  
+      for(unsigned x=0;x<input_int.size();++x)
+	{
+	  for(unsigned y=0;y<input_int.size();++y)
+	    {                 
+	      int x_tmp=input_int[x];
+	      int y_tmp=input_int[y];
+	      b2sll_cov[x][y]=covariance[x_tmp][y_tmp];
+	      
+	    }
+	}
+    } //if(use_S)
 }
 
 

@@ -53,6 +53,8 @@ class Flav_reader
 {
  private:
 
+  double **b2sll_cov;
+  
   
   vector <string> names_obs;
   vector< Measurement > measurements;
@@ -86,7 +88,7 @@ class Flav_reader
   int read_yaml(string name); // reads a yaml file
   int read_root(string name); // reads a root saved histogram
   int read(string name); // reads root or yaml files, by checking the name
-  void construct_theory_cov();
+  void construct_theory_b2sll();
   void print(Measurement);
   void debug_mode() {debug= true;};
   void create_global_corr();
