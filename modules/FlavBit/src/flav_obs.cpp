@@ -98,6 +98,8 @@ Flav_reader::Flav_reader(string loc)
   measurements=vector< Measurement >(0);
   measurement_location=loc;
   debug=false;
+  use_S=true;
+  use_P=false;
 }
 
 int Flav_reader::read_yaml(string name)
@@ -298,6 +300,22 @@ double Flav_reader::calc_Chi2(vector<double> theory, vector<double> theory_error
 	}
     }
   return Chi2;
+}
+void Flav_reader::construct_theory_cov()
+{
+  const int cov_size=128; // input from Nazila
+  double covariance[cov_size][cov_size];  // declaring table that is filled in file from Nazila
+#include "covmatrix.tab" ;
+
+  names_obs=vector<string>(cov_size, ""); // names Nazila usese
+#include "names.txt"; // filling big list
+  if(use_S) // assuming 2GeV bins
+    {
+      //      vector<string> nam_red={"BR_B0Kstar0mumu_0.1-2", "FL_B0Kstar0mumu_0.1-2", "AFB_B0Kstar0mumu_0.1-2", " 
+      
+    }  
+  
+  
 }
 
 
