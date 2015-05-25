@@ -341,7 +341,7 @@ START_MODULE
 
   #define CAPABILITY TH_ProcessCatalog
   START_CAPABILITY
-    #define FUNCTION TH_ProcessCatalog_CMSSM
+    #define FUNCTION TH_ProcessCatalog_MSSM
       START_FUNCTION(DarkBit::TH_ProcessCatalog)
       //ALLOW_MODELS(CMSSM, MSSM25atQ)
       DEPENDENCY(DarkSUSY_PointInit, bool)

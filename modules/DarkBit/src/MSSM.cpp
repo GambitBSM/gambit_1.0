@@ -227,9 +227,9 @@ namespace Gambit {
     /*! \brief Initialization of Process Catalogue based on DarkSUSY
      *         calculations.
      */
-    void TH_ProcessCatalog_CMSSM(DarkBit::TH_ProcessCatalog &result)
+    void TH_ProcessCatalog_MSSM(DarkBit::TH_ProcessCatalog &result)
     {
-      using namespace Pipes::TH_ProcessCatalog_CMSSM;
+      using namespace Pipes::TH_ProcessCatalog_MSSM;
       using std::vector;
       using std::string;
 
@@ -237,7 +237,7 @@ namespace Gambit {
       if ( DMid != "~chi0_1" )
       {
         invalid_point().raise(
-            "TH_ProcessCatalog_CMSSM requires DMid to be ~chi0_1.");
+            "TH_ProcessCatalog_MSSM requires DMid to be ~chi0_1.");
       }
 
       // Instantiate new empty ProcessCatalog
