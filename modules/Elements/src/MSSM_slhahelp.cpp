@@ -27,6 +27,8 @@ namespace Gambit {
                                                 "~d_4", "~d_5", "~d_6"};
       std::set<std::string> ch_slepton_strs  = {"~e_1", "~e_2", "~e_3", 
                                                 "~e_4", "~e_5", "~e_6"};
+      std::set<std::string> sneutrino_strs   = {"~nu_1", "~nu_2", "~nu_3"};
+      
       /// for iterations over rows and columns
       /// all the same so only need one at most but this does
       /// make it easier to generalise when adding new states etc
@@ -37,7 +39,10 @@ namespace Gambit {
       std::set<int> up_squark_cols = {1,2,3,4,5,6};
       std::set<int> down_squark_cols = {1,2,3,4,5,6};
       std::set<int> ch_slepton_cols = {1,2,3,4,5,6};    
-         
+      std::set<int> sneutrino_rows = {1,2,3};
+      std::set<int> sneutrino_cols = {1,2,3};
+
+   
       /// pairs etc that we need for maps
       p_int_string six_up_squark(6,"~u");
       p_int_string six_down_squark(6,"~d");
@@ -58,6 +63,11 @@ namespace Gambit {
       p_int_string one_down_squark(1,"~d");
       p_int_string one_ch_lepton(1,"~e");
       
+      p_int_string three_snuetrino(3,"~nu");
+      p_int_string two_snuetrino(2,"~nu");
+      p_int_string one_snuetrino(1,"~nu");
+      
+      
       //pairs labeling family, mass
       pair_ints const three_one(3,1);
       pair_ints const three_two(3,2);
@@ -65,7 +75,7 @@ namespace Gambit {
       pair_ints const two_two(3,2);
       pair_ints const one_one(3,1);
       pair_ints const one_two(3,2);
-      
+
       ///triple labelling type, generation and mass order of family states
       pair_string_ints const stop1("~u",three_one);
       pair_string_ints const stop2("~u",three_two);
@@ -73,19 +83,24 @@ namespace Gambit {
       pair_string_ints const sbot2("~d",three_two);
       pair_string_ints const stau1("~e",three_one);
       pair_string_ints const stau2("~e",three_two);
-      pair_string_ints const scharm1("~u",three_one);
-      pair_string_ints const scharm2("~u",three_two);
-      pair_string_ints const sstrange1("~d",three_one);
-      pair_string_ints const sstrange2("~d",three_two);
-      pair_string_ints const smuon1("~e",three_one);
-      pair_string_ints const smuon2("~e",three_two);
-      pair_string_ints const sup1("~u",three_one);
-      pair_string_ints const sup2("~u",three_two);
-      pair_string_ints const sdown1("~d",three_one);
-      pair_string_ints const sdown2("~d",three_two);
-      pair_string_ints const selectron1("~e",three_one);
-      pair_string_ints const selectron2("~e",three_two);
-      
+      pair_string_ints const scharm1("~u",two_one);
+      pair_string_ints const scharm2("~u",two_two);
+      pair_string_ints const sstrange1("~d",two_one);
+      pair_string_ints const sstrange2("~d",two_two);
+      pair_string_ints const smuon1("~e",two_one);
+      pair_string_ints const smuon2("~e",two_two);
+      pair_string_ints const sup1("~u",one_one);
+      pair_string_ints const sup2("~u",one_two);
+      pair_string_ints const sdown1("~d",one_one);
+      pair_string_ints const sdown2("~d",one_two);
+      pair_string_ints const selectron1("~e",one_one);
+      pair_string_ints const selectron2("~e",one_two);
+      /// only have left handed sneutrinos in MSSM
+      pair_string_ints const snue1("~nu",three_one);
+      pair_string_ints const snumu1("~nu",two_one);
+      pair_string_ints const snutau1("~nu",one_one);
+
+
       /// the left_right gauge_pairs 
       /// usefu -fl when identifying family states
       pair_strings stop_gauge("~t_L","~t_R");
@@ -97,6 +112,7 @@ namespace Gambit {
       pair_strings sup_gauge("~u_L","~u_R");
       pair_strings sdown_gauge("~d_L","~d_R");
       pair_strings selectron_gauge("~e_L","~e_R");
+      
       
 
 
@@ -121,6 +137,11 @@ namespace Gambit {
          gauge_label_to_index_type["~c_R"] = five_up_squark;
          gauge_label_to_index_type["~t_R"] = six_up_squark; 
          
+         gauge_label_to_index_type["~nu_e_L"] = one_sneutrino;
+         gauge_label_to_index_type["~nu_mu_L"] = two_sneutrino;
+         gauge_label_to_index_type["~nu_tau_L"] = three_sneutrino;
+
+
 
          mass_label_to_index_type["~e_1"] = one_ch_lepton;
          mass_label_to_index_type["~e_2"] = two_ch_lepton;
@@ -143,6 +164,11 @@ namespace Gambit {
          mass_label_to_index_type["~u_5"] = five_up_squark;
          mass_label_to_index_type["~u_6"] = six_up_squark; 
    
+         mass_label_to_index_type["~nu_e_L"] = one_sneutrino;
+         mass_label_to_index_type["~nu_mu_L"] = two_sneutrino;
+         mass_label_to_index_type["~nu_tau_L"] = three_sneutrino;
+
+
          familystate_label["~t_1"] = stop1; 
          familystate_label["~t_2"] = stop2;
          familystate_label["~b_1"] = sbot1; 
@@ -164,6 +190,11 @@ namespace Gambit {
          familystate_label["~d_2"] = sdown2; 
          familystate_label["~e_1"] = selectron1; 
          familystate_label["~e_2"] = selectron2;
+         /// these are even less needed since no l-r mixing without r state
+         familystate_label["~nu_1"] = snue1;
+         familystate_label["~nu_2"] = snumu1;
+         familystate_label["~nu_3"] = snutau1;
+         
          
          type_family_to_gauge_states[three_up_squark] = stop_gauge;
          type_family_to_gauge_states[three_down_squark] = sbot_gauge;
@@ -173,8 +204,10 @@ namespace Gambit {
          type_family_to_gauge_states[two_ch_lepton] = smuon_gauge;
          type_family_to_gauge_states[one_up_squark] = sup_gauge;
          type_family_to_gauge_states[one_down_squark] = sdown_gauge;
-         type_family_to_gauge_states[one_ch_lepton] = selectron_gauge;
-   
+         type_family_to_gauge_states[one_ch_lepton] = selectron_gauge; 
+         //no sneutrino gauges pairs as no right sneutrino
+
+
          family_state_to_gauge_state["~t_1"] = stop_gauge;
          family_state_to_gauge_state["~t_2"] = stop_gauge;
          family_state_to_gauge_state["~b_1"] = sbot_gauge;
@@ -203,14 +236,19 @@ namespace Gambit {
          /// charged selptons) to appropriate set of mass eigenstates
          type_to_set_of_mass_es["~u"] = up_squark_strs;
          type_to_set_of_mass_es["~d"] = down_squark_strs; 
-         type_to_set_of_mass_es["~e"] = ch_slepton_strs;       
+         type_to_set_of_mass_es["~e"] = ch_slepton_strs;
+         type_to_set_of_mass_es["~e"] = sneutrino_strs;
+         
          type_to_set_of_row_indices["~u"] = up_squark_rows;
          type_to_set_of_row_indices["~d"] = down_squark_rows;
          type_to_set_of_row_indices["~e"] = ch_slepton_rows;
+         type_to_set_of_row_indices["~nu"] = sneutrino_rows;
+         
          type_to_set_of_col_indices["~u"] = up_squark_cols;
          type_to_set_of_col_indices["~d"] = down_squark_cols;
          type_to_set_of_col_indices["~e"] = ch_slepton_cols;
-         
+         type_to_set_of_col_indices["~e"] = sneutrino_cols;
+
       }
       
       // these two should be switched over to members of the sectrum object itself
