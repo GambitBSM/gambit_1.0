@@ -14,7 +14,7 @@
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-///   
+///
 ///  \author Nazila Mahmoudi
 ///  \date 2013 Oct
 ///  \date 2014 Jun
@@ -22,10 +22,45 @@
 ///  \date 2015 Feb
 ///
 ///  \author Pat Scott
-///  \date 2015 May
+///  \data 2015 May
+///  \author Marcin Chrzaszcz
+///  \data 2015 May
+///
 ///
 ///  *********************************************
 ///
+/// \def MODULE
+/// Specifies that this is the MODULE named FlavBit.
+///
+/// \def CAPABILITY
+/// Specifies that FlavBit (this MODULE) is
+/// capable of providing the service CAPABILITY.
+/// Usually a CAPABILITY means that the MODULE can
+/// compute some physical or statistical quantity
+/// referred to by CAPABILITY.
+///
+/// \def FUNCTION
+/// Specifies that FlavBit (this MODULE) contains
+/// a function named FUNCTION that can execute the
+/// commands required to provided the current CAPABILITY.
+///
+/// \def BACKEND_REQ
+/// Specifies that the current FUNCTION in
+/// FlavBit (this MODULE) requires BACKEND_REQ from
+/// a backend code.  The requirement BACKEND_REQ corresponds
+/// to a capability that a valid backend function
+/// is expected to report in its corresponding
+/// registration header file.
+///
+/// \def CONDITIONAL_DEPENDENCY
+/// Specifies that the current FUNCTION in
+/// ExampleBit_B (this MODULE) has a CONDITIONAL_DEPENDENCY
+/// that is only active under certain conditions.
+/// These conditions may include:
+///  - a specific backend is in use in order to fill
+///    a certain BACKEND_REQ
+///  - a certain model is under analysis
+
 
 #ifndef __FlavBit_rollcall_hpp__
 #define __FlavBit_rollcall_hpp__
@@ -33,17 +68,17 @@
 
 #define MODULE FlavBit
 START_MODULE
- 
-  /// Initialization capabilities
+
+  /// Initialization capabilities (initialisation is done in BackendIniBit now, with functions declared in frontend headers)
   #define CAPABILITY FlavBit_fill               // Fill the structure
-  
+
   START_CAPABILITY
-    #define FUNCTION SI_FlavBit_fill 
+    #define FUNCTION SI_FlavBit_fill
     START_FUNCTION(parameters)
-        DEPENDENCY(MSSM_spectrum, const Spectrum*)
 		BACKEND_REQ(Init_param, (libsuperiso), void, (struct parameters*))
 		BACKEND_REQ(slha_adjust, (libsuperiso), void, (struct parameters*))
 		BACKEND_OPTION( (SuperIso, 3.4), (libsuperiso) )
+                DEPENDENCY(MSSM_spectrum, const Spectrum*) // needed for spectrum object
     #undef FUNCTION
   #undef CAPABILITY
 
@@ -343,4 +378,3 @@ START_MODULE
 #undef MODULE
 
 #endif // defined(__FlavBit_rollcall_hpp__)
-
