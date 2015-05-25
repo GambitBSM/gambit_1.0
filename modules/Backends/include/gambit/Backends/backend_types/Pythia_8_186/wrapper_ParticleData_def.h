@@ -9,6 +9,7 @@
 #include <string>
 #include <ostream>
 #include <vector>
+#include "wrapper_ResonanceWidths_decl.h"
 
 #include "identification.hpp"
 
@@ -602,6 +603,11 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         inline void ParticleData::rescaleBR(int idIn)
         {
             wrapperbase::BEptr->rescaleBR__BOSS(idIn);
+        }
+        
+        inline void ParticleData::setResonancePtr(int idIn, WrapperBase< Pythia8::Abstract_ResonanceWidths >* resonancePtrIn)
+        {
+            wrapperbase::BEptr->setResonancePtr__BOSS(idIn, (*resonancePtrIn).BEptr);
         }
         
         inline void ParticleData::resInit(int idIn)

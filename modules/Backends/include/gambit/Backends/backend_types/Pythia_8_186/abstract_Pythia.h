@@ -14,8 +14,13 @@
 #include <string>
 #include "wrapper_Vec4_decl.h"
 #include <vector>
+#include "wrapper_BeamParticle_decl.h"
+#include "wrapper_UserHooks_decl.h"
 #include "wrapper_PartonLevel_decl.h"
+#include "wrapper_SigmaTotal_decl.h"
 #include <istream>
+#include "wrapper_SigmaProcess_decl.h"
+#include "wrapper_ResonanceWidths_decl.h"
 #include <ostream>
 #include <cstddef>
 
@@ -187,6 +192,12 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 virtual bool readFile__BOSS() =0;
     
                 virtual bool readFile(std::basic_istream<char,std::char_traits<char> >&, int) =0;
+    
+                virtual bool setUserHooksPtr__BOSS(Pythia8::Abstract_UserHooks*) =0;
+    
+                virtual bool setSigmaPtr__BOSS(Pythia8::Abstract_SigmaProcess*) =0;
+    
+                virtual bool setResonancePtr__BOSS(Pythia8::Abstract_ResonanceWidths*) =0;
     
                 virtual bool init() =0;
     
