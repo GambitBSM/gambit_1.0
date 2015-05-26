@@ -2,7 +2,8 @@
 //   *********************************************
 ///  \file
 ///
-///  Functions of module HiggsBit
+///  Functions of module HiggsBit (to go into 
+///  ColliderBit).
 ///
 ///  *********************************************
 ///

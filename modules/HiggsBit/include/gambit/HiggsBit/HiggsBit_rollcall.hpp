@@ -4,12 +4,7 @@
 ///
 ///  Rollcall header for module HiggsBit.
 ///
-///  Compile-time registration of available
-///  observables and likelihoods, as well as their
-///  dependencies.
-///
-///  Add to this if you want to add an observable
-///  or likelihood to this module.
+///  The functions to be moved into ColliderBit.
 ///
 ///  *********************************************
 ///
@@ -77,7 +72,7 @@ START_MODULE
 
     #define FUNCTION SMHiggs_ModelParameters  // SM Higgs only model parameters
     START_FUNCTION(hb_ModelParameters)
-    DEPENDENCY(MSSM_spectrum, const Spectrum*) // need to replace with SM-only spectrum w/ Higgs
+    DEPENDENCY(MSSM_spectrum, const Spectrum*) // FIXME need to replace with SM-only spectrum w/ Higgs
     DEPENDENCY(Higgs_decay_rates, DecayTable::Entry)
     #undef FUNCTION
 

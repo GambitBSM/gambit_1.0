@@ -31,7 +31,7 @@
 #ifndef __EWPOBit_rollcall_hpp__
 #define __EWPOBit_rollcall_hpp__
 
-#include "EWPOBit_types.hpp"
+#include "gambit/EWPOBit/EWPOBit_types.hpp"
 
 #define MODULE EWPOBit
 START_MODULE
