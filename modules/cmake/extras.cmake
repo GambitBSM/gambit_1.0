@@ -25,6 +25,10 @@
 #  \author Chris Rogan
 #          (crogan@cern.ch)              
 #  \date 2015 May
+#
+#  \author Anders Kvellestad
+#          (anderkve@fys.uio.no)
+#  \date 2015 May
 #                                               
 #************************************************
 
@@ -128,13 +132,13 @@ if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64")
   set(pythia_CONFIGURE_EXTRAS "--enable-64bits")
 endif()
 
-set(pythia_CXXFLAGS "${CMAKE_CXX_FLAGS} -Wno-extra")
+set(pythia_CXXFLAGS "-O2 -ansi -pedantic -W -Wall -Wshadow -fPIC -Wno-extra")
 
 ExternalProject_Add(pythia
   SOURCE_DIR ${PROJECT_SOURCE_DIR}/../extras/boss/bossed_pythia_source
   BUILD_IN_SOURCE 1
-  CONFIGURE_COMMAND export FC=${CMAKE_Fortran_COMPILER} && export CC=${CMAKE_C_COMPILER} && export USRSHAREDSUFFIX=so && ./configure --enable-shared ${pythia_CONFIGURE_EXTRAS}
-  BUILD_COMMAND make CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${pythia_CXXFLAGS} LDFLAGS=${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS}
+  CONFIGURE_COMMAND export FC=${CMAKE_Fortran_COMPILER} && export CC=${CMAKE_C_COMPILER} && export USRSHAREDSUFFIX=so && ./configure --enable-shared --cxx-common="${pythia_CXXFLAGS}" ${pythia_CONFIGURE_EXTRAS}
+  BUILD_COMMAND make CXX=${CMAKE_CXX_COMPILER} LDFLAGS=${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS}
   INSTALL_COMMAND cp lib/libpythia8.so ${PROJECT_SOURCE_DIR}/Backends/lib/libpythia8.so
 )
 
