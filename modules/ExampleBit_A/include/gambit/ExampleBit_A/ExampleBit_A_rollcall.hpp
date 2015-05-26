@@ -172,7 +172,7 @@ START_MODULE
     //MODEL_GROUP(group1, (NormalDist))
     //MODEL_GROUP(group2, (CMSSM_demo, SingletDM))
     //MODEL_GROUP(group3, (CMSSM_demo, NormalDist))
-    //ALLOW_MODEL_COMBINATION(group1, group2)
+    //ALLOW_MODEL_COMBINATION(group1, group2)    
     #undef FUNCTION
 
   #undef CAPABILITY

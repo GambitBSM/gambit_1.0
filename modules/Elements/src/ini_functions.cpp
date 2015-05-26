@@ -211,7 +211,7 @@ namespace Gambit
   {
     try
     {  
-      classname = Utils::strip_whitespace_except_after_const(classname);
+      Utils::strip_whitespace_except_after_const(classname);
       Backends::backendInfo().classes[bever].insert(classname);
     }
     catch (std::exception& e) { ini_catch(e); }

@@ -372,7 +372,7 @@ namespace Gambit
     /// Test whether the functor is allowed (either explicitly or implicitly) to be used with a given combination of models
     bool functor::modelComboAllowed(std::set<str> combo)
     {
-      // If any model in the combo is always allowed, then give the combo a thumbs up.
+     // If any model in the combo is always allowed, then give the combo a thumbs up.
       for(std::set<str>::const_iterator model = combo.begin(); model != combo.end(); model++)
       {
         if (modelAllowed(*model)) return true;
@@ -430,8 +430,9 @@ namespace Gambit
     /// Add a model group combination to the internal list of combinations for which this functor is allowed to be used.
     void functor::setAllowedModelGroupCombo(str groups)
     {
-      //Strip the group combo of its parentheses, then split it and save it in the vector of allowed combos
+      //Strip the group combo of its parentheses and whitespace, then split it and save it in the vector of allowed combos
       Utils::strip_parentheses(groups);
+      Utils::strip_whitespace_except_after_const(groups);
       std::vector<str> v = Utils::delimiterSplit(groups, ",");
       std::set<str> group_combo(v.begin(), v.end());
       allowedGroupCombos.insert(group_combo);
