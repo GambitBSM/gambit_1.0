@@ -70,7 +70,7 @@ namespace Gambit {
       if (abs(p.id()) == 5 || MCUtils::PID::hasBottom(p.id())) return true;
       /// @todo What about partonic decays?
       if (p.isParton()) return false; // stop the walking at hadron level
-      BOOST_FOREACH (int m, evt.motherList(n)) {
+      BOOST_FOREACH (int m, p.motherList()) {
         if (fromBottom(m, evt)) return true;
       }
       return false;
@@ -84,7 +84,7 @@ namespace Gambit {
       const Pythia8::Particle& p = evt[n];
       if (abs(p.id()) == 15) return true;
       if (p.isParton()) return false; // stop the walking at the end of the hadron level
-      BOOST_FOREACH (int m, evt.motherList(n)) {
+      BOOST_FOREACH (int m, p.motherList()) {
         if (fromTau(m, evt)) return true;
       }
       return false;
@@ -98,7 +98,7 @@ namespace Gambit {
       const Pythia8::Particle& p = evt[n];
       if (p.isHadron()) return true;
       if (p.isParton()) return false; // stop the walking at the end of the hadron level
-      BOOST_FOREACH (int m, evt.motherList(n)) {
+      BOOST_FOREACH (int m, p.motherList()) {
         if (fromHadron(m, evt)) return true;
       }
       return false;
