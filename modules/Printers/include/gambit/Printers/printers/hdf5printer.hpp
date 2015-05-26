@@ -31,6 +31,8 @@
 #include "gambit/Printers/hdf5tools.hpp"
 #include "gambit/Utils/yaml_options.hpp"
 
+#define DEBUG_MODE
+
 // Code!
 namespace Gambit
 {
@@ -201,9 +203,11 @@ namespace Gambit
              }                                                                   \
                                                                                  \
              /* While we are at it, check if the buffers need to be
-                synchronised to a new point */                                   \
-             primary_printer->check_for_new_point(pointID, mpirank);             \
-                                                                                 \
+                synchronised to a new point. But only if this printer is running
+                in "synchronised" mode. */                                       \
+             if(synchronised) {                                                  \
+               primary_printer->check_for_new_point(pointID, mpirank);           \
+             }                                                                   \
              return CAT(hdf5_localbufferman_,NAME);                              \
           }
 
@@ -247,6 +251,11 @@ namespace Gambit
            // Extract a buffer from the manager corresponding to this 
            BuffType& selected_buffer = buffer_manager.get_buffer(IDcode, 0, label); 
 
+           #ifdef DEBUG_MODE
+           std::cout<<"printing "<<typeid(T).name()<<": "<<label<<std::endl;
+           std::cout<<"pointID: "<<pointID<<", mpirank: "<<mpirank<<std::endl;
+           #endif
+ 
            if(synchronised)
            {
              // Write the data to the selected buffer ("just works" for simple numeric types)
@@ -256,6 +265,9 @@ namespace Gambit
            {
              // Queue up a desynchronised ("random access") dataset write to previous scan iteration
              ulong dset_index = get_global_index(pointID,mpirank);
+             #ifdef DEBUG_MODE
+             std::cout<<"dset_index: "<<dset_index<<std::endl;
+             #endif
              selected_buffer.RA_write(value,dset_index); 
            }
         }
@@ -393,5 +405,7 @@ namespace Gambit
      
   } // end namespace Printers
 } // end namespace Gambit
+
+#undef DEBUG_MODE
 
 #endif //ifndef __hdf5printer_hpp__

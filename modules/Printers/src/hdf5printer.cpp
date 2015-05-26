@@ -209,6 +209,7 @@ namespace Gambit
     // Constructor
     HDF5Printer::HDF5Printer(const Options& options)
       : printer_name("Primary printer")
+      , myRank(0) // Hook up to MPI
     {
       if(options.getValueOrDef<bool>(false,"auxilliary"))
       {
@@ -471,12 +472,13 @@ namespace Gambit
 
        //std::vector<std::string> labels;
        //labels.reserve(value.size());
-       ulong dset_index = get_global_index(pointID,mpirank);
+       ulong dset_index;
+       if(not synchronised) dset_index = get_global_index(pointID,mpirank);
 
        #ifdef DEBUG_MODE
        std::cout<<"printing vector<double>: "<<label<<std::endl;
        std::cout<<"pointID: "<<pointID<<", mpirank: "<<mpirank<<std::endl;
-       std::cout<<"dset position: "<<dset_index<<std::endl;
+       if(not synchronised) std::cout<<"dset position: "<<dset_index<<std::endl;
        #endif
  
        for(unsigned int i=0;i<value.size();i++)
@@ -512,7 +514,8 @@ namespace Gambit
 
        std::map<std::string, double> parameter_map = value.getValues();
  
-       ulong dset_index = get_global_index(pointID,mpirank);
+       ulong dset_index;
+       if(not synchronised) dset_index = get_global_index(pointID,mpirank);
   
        uint i=0; // index for each buffer 
        for (std::map<std::string, double>::iterator 

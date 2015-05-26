@@ -697,6 +697,8 @@ namespace Gambit {
           /// from a queue.
           void RA_write(const T (&values)[CHUNKLENGTH], const hsize_t (&coords)[CHUNKLENGTH], std::size_t npoints) 
           {
+             bool error_occurred = false; // simple error flag
+
              // Extend the dataset if needed
              // To do this need to know largest target coordinate
              ulong max_coord = *std::max_element(coords,coords+npoints);
@@ -714,6 +716,7 @@ namespace Gambit {
              
              // Dataspace for the output values
              hid_t dspace = H5Screate_simple(MDIM_RANK, mdim, NULL);
+             if(dspace<0) error_occurred = true; 
 
              // Get the C interface identifier for the output dataset
              hid_t dset_id = this->my_dataset.getId();
@@ -721,17 +724,32 @@ namespace Gambit {
              // Get the C interface identifier for a copy of the dataspace
              // of the dataset (confusing...)
              hid_t dspace_id = H5Dget_space(dset_id);
+             if(dspace_id<0) error_occurred = true; 
 
              // Select the target write points in the file dataspace
-             H5Sselect_elements(dspace_id, H5S_SELECT_SET, npoints, coords);
-            
+             hid_t errflag = H5Sselect_elements(dspace_id, H5S_SELECT_SET, npoints, coords);
+             if(errflag<0) error_occurred = true; 
+
              // Get the C interface identifier for the type of the output dataset
              hid_t dtype = this->hdf_dtype.type().getId();
  
              // Write data to selected points
              // (H5P_DEFAULT specifies some transfer properties for the I/O 
              //  operation. These are the default values, probably are ok.)
-             H5Dwrite(dset_id, dtype, dspace, dspace_id, H5P_DEFAULT, values);
+             hid_t errflag2 = H5Dwrite(dset_id, dtype, dspace, dspace_id, H5P_DEFAULT, values);
+             if(errflag2<0) error_occurred = true; 
+ 
+             if(error_occurred)
+             {
+                 std::ostringstream errmsg;
+                 errmsg << "Error! Failed to write desynchronised buffer data to file! (dataset name="<<this->get_myname()<<")"<<std::endl
+                        << "Error flags were:" << std::endl
+                        << "  dspace   : " << dspace << std::endl
+                        << "  dspace_id: " << dspace_id << std::endl
+                        << "  errflag  : " << errflag << std::endl
+                        << "  errflag2 : " << errflag2;
+                 printer_error().raise(LOCAL_INFO, errmsg.str());
+             }
 
          ////     hsize_t offsets[DSETRANK];
 
