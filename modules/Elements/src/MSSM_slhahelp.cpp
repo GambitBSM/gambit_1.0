@@ -12,14 +12,30 @@
 
 namespace Gambit {
    namespace slhahelp {
-
+ 
+      std::map<std::string, p_int_string> gauge_label_to_index_type;
+      std::map<std::string, p_int_string> mass_label_to_index_type;
+      /// map to extract info from family state   
+      std::map<std::string, pair_string_ints> familystate_label;
       
+      ///map to obtain left_right gauge_pairs from state info
+      /// helps us reuse other routiones with string arguments 
+      std::map<p_int_string, pair_strings>  type_family_to_gauge_states;
+      ///maps directly from family string to left_right gauge_pairs
+      /// helps us reuse other routines that take string arguments 
+      std::map<std::string, pair_strings>  family_state_to_gauge_state;
+      /// map from string representing type (ie up-squars, down-squars or 
+      /// charged selptons) to appropriate set of mass eigenstates 
+      std::map<std::string,std::set<std::string>> type_to_set_of_mass_es;
+      ///maps between type and the sets of indices
+      std::map<std::string,std::set<int>> type_to_set_of_row_indices;
+      std::map<std::string,std::set<int>> type_to_set_of_col_indices;
+
       /// setup all the maps
       /// should be called somewhere in gambit setup like 
       /// with our other maps     
       void init_maps(){
-
-         
+    
       /// this is probably banned c++11, can uglify later if kept     
       std::set<std::string> up_squark_strs   = {"~u_1", "~u_2", "~u_3", 
                                                 "~u_4", "~u_5", "~u_6"}; 
@@ -63,9 +79,9 @@ namespace Gambit {
       p_int_string one_down_squark(1,"~d");
       p_int_string one_ch_lepton(1,"~e");
       
-      p_int_string three_snuetrino(3,"~nu");
-      p_int_string two_snuetrino(2,"~nu");
-      p_int_string one_snuetrino(1,"~nu");
+      p_int_string three_sneutrino(3,"~nu");
+      p_int_string two_sneutrino(2,"~nu");
+      p_int_string one_sneutrino(1,"~nu");
       
       
       //pairs labeling family, mass
@@ -322,10 +338,8 @@ namespace Gambit {
          std::string type_gauge = gauge_es_index_type.second;
          if(type!=type_gauge) 
             {
-               /// throw error in gambit
-               std::cout << "add proper error here." 
-                         << std::endl;
-               return -6.66e66;
+               /// throw exception in gambit
+               utils_error().raise(LOCAL_INFO, "function get_mass_addmix_for_gauge called with type's for the gauge eigenstate and mass eigenstate that don't match.");
             }
          /// will need to add mssm object to cal method in gambit
          double addmix = mssm->phys.get_Pole_Mixing(type, gauge_index, 
@@ -347,9 +361,7 @@ namespace Gambit {
          if(type!=type_gauge) 
             {
                /// throw error in gambit
-               std::cout << "we need to add proper errors here."
-                         << std::endl;
-               return -6.66e66;
+              utils_error().raise(LOCAL_INFO, "function get_mass_addmix_for_gauge2 called with type's for the gauge eigenstate and mass eigenstate that don't match.");
             }
          std::vector<double> mass_state_content 
             = get_mass_comp_for_gauge(gauge_es, mssm);
@@ -486,16 +498,15 @@ namespace Gambit {
          return answer;
       }
       
-      /// returns vector with composition of closest the mass state 
-      /// to give family state in terms of gauge eigenstates 
-      std::vector<double> get_gauge_comp_for_family_state(std::string 
-                                                          familystate,
-                                                          const SubSpectrum* 
-                                                          mssm)
+      /// returns vector with composition of closest the mass eigenstate 
+      /// to give family state in terms of gauge eigenstates and stores
+      /// mass eigenstate in mass_es
+      std::vector<double> get_gauge_comp_for_family_state(std::string familystate,
+                                                          std::string & mass_es,
+                                                          const SubSpectrum* mssm)
       {   
          //get mass_es using one of our routines
-         std::string mass_es = identify_mass_es_closest_to_family(familystate,
-                                                                  mssm);
+         mass_es = identify_mass_es_closest_to_family(familystate, mssm);
          /// extract info from strings via maps
          int mass_index = (mass_label_to_index_type[mass_es]).first;
          pair_string_ints state_info = familystate_label[familystate];
@@ -506,12 +517,64 @@ namespace Gambit {
          return gauge_es_content;
          
       }
-      
 
+
+      /// identifies the mass_es which is the closest match to specified family state
+      /// then returns mass es's admixture of the two gauge states with same family
+      /// and stores the rest of the gauge content for this state in a std::vector
+      /// The latter should have entries which are zero in absense of family mixing
+      std::vector<double> gauge_decomp_of_family_state(std::string familystate,
+                                                       std::string & mass_es,
+                                                       std::vector<double> & 
+                                                       wrong_fam_gauge_content,
+                                                       const SubSpectrum* mssm)
+      {   
+         //get mass_es using one of our routines
+         mass_es = identify_mass_es_closest_to_family(familystate, mssm);
+         /// extract info from strings via maps
+         pair_strings gauge_states = family_state_to_gauge_state[familystate];
+         std::string gauge_state_L = gauge_states.first;
+         std::string gauge_state_R = gauge_states.second;
+         /// get index of right family states (ie gauge states with same family as
+         /// requested family state
+         p_int_string gauge_Lindex_type = 
+            gauge_label_to_index_type[gauge_state_L];
+         int gauge_L_index = gauge_Lindex_type.first;
+         std::string type = gauge_Lindex_type.second;
+         int gauge_R_index = (gauge_label_to_index_type[gauge_state_R]).first;
+         int mass_index = (mass_label_to_index_type[mass_es]).first;          
+         std::set<int> row_indices = type_to_set_of_row_indices[type];
+         //double row_length = row_indices.size();
+         std::vector<double> right_fam_gauge_content;
+         double temp;
+         for(iter it = row_indices.begin(); it != row_indices.end(); ++it)
+            {
+               temp = mssm->phys.get_Pole_Mixing(type, *it, mass_index); 
+               if(*it == gauge_L_index || *it == gauge_R_index) 
+                  right_fam_gauge_content.push_back(temp);
+               else  wrong_fam_gauge_content.push_back(temp);
+            }
+
+         return right_fam_gauge_content;
+         
+      }
+
+      /// as above but don't store mass_es
+      std::vector<double> get_gauge_comp_for_family_state(std::string familystate,
+                                                          const SubSpectrum* mssm)
+      {   
+         //get mass_es using one of our routines
+         std::string mass_es;
+         return get_gauge_comp_for_family_state(familystate, mass_es, mssm);     
+      }
    
-      ///As above but returns specific admixture
+      
+      /// returns admix of gauge eigenstate in the mass eigenstate 
+      /// closest to the given family state and stores
+      /// mass eigenstate in mass_es
       double get_gauge_admix_for_family_state(std::string familystate, 
-                                              std::string gauge_es, 
+                                              std::string gauge_es,
+                                              std::string & mass_es,
                                               const SubSpectrum* mssm) 
       {
          pair_string_ints type_family_massorder 
@@ -523,20 +586,31 @@ namespace Gambit {
          std::string type_gauge = gauge_es_index_type.second;
          if(family_type!=type_gauge) 
             { /// throw error in gambit
-               std::cout << "we need to add proper errors " << std::endl;
-               return -6.66e66;
+               utils_error().raise(LOCAL_INFO, "function get_gauge_admix_for_family_state called with type's for the family state and mass eigenstate that don't match.");
             }
          ///get mass_es using one of our routines
-         std::string mass_es = identify_mass_es_closest_to_family(familystate,
-                                                                  mssm);
+         mass_es = identify_mass_es_closest_to_family(familystate, mssm);
          /// extract info from strings via maps
          int mass_index = (mass_label_to_index_type[mass_es]).first;   
-         double admix = mssm->phys.get_Pole_Mixing(type_gauge, gauge_index, 
-                                                   mass_index);   
-         
-         return admix;      
+         double addmix = mssm->phys.get_Pole_Mixing(type_gauge, gauge_index, 
+                                                   mass_index);      
+         return addmix;      
+      }
+
+
+      ///As above but doesn't store string
+      double get_gauge_admix_for_family_state(std::string familystate, 
+                                              std::string gauge_es, 
+                                              const SubSpectrum* mssm) 
+      {
+         std::string mass_es;
+         double addmix = get_gauge_admix_for_family_state(familystate, gauge_es,
+                                                          mass_es, mssm);  
+         return addmix;      
       }
       
+
+
       /// As above but we reuse the get_gauge_comp_for_family_state method
       /// this is slower but may reduce code duplication and keep short
       /// but actually sine we want to test taht the types match it 
@@ -554,8 +628,7 @@ namespace Gambit {
          std::string type_gauge = gauge_es_index_type.second;
          if(family_type!=type_gauge) 
             { /// throw error in gambit
-               std::cout << "we need proper eqrrors " << std::endl;
-               return -6.66e66;
+                utils_error().raise(LOCAL_INFO, "function get_gauge_admix_for_family_state2 called with type's for the gauge eigenstate and mass eigenstate that don't match.");
             }
          ///  get the composition of the family state in terms of the 
          ///  gauge eigenstates, as a vector, using our routine
@@ -565,6 +638,10 @@ namespace Gambit {
          //subtract 1 from gauge_index to switch to zero index convention of c++
          return gauge_es_content[gauge_index - 1];      
       }
+      
+      /// returns the 
+
+
       
    }  // namespace slhahelp
 } //namespace gambit
