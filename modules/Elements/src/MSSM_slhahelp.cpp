@@ -36,101 +36,99 @@ namespace Gambit {
       /// with our other maps     
       void init_maps(){
     
-      /// this is probably banned c++11, can uglify later if kept     
-      std::set<std::string> up_squark_strs   = {"~u_1", "~u_2", "~u_3", 
-                                                "~u_4", "~u_5", "~u_6"}; 
-      std::set<std::string> down_squark_strs = {"~d_1", "~d_2", "~d_3", 
-                                                "~d_4", "~d_5", "~d_6"};
-      std::set<std::string> ch_slepton_strs  = {"~e_1", "~e_2", "~e_3", 
-                                                "~e_4", "~e_5", "~e_6"};
-      std::set<std::string> sneutrino_strs   = {"~nu_1", "~nu_2", "~nu_3"};
-      
-      /// for iterations over rows and columns
-      /// all the same so only need one at most but this does
-      /// make it easier to generalise when adding new states etc
-      /// or change something via a hack
-      std::set<int> up_squark_rows = {1,2,3,4,5,6};
-      std::set<int> down_squark_rows = {1,2,3,4,5,6};
-      std::set<int> ch_slepton_rows = {1,2,3,4,5,6};
-      std::set<int> up_squark_cols = {1,2,3,4,5,6};
-      std::set<int> down_squark_cols = {1,2,3,4,5,6};
-      std::set<int> ch_slepton_cols = {1,2,3,4,5,6};    
-      std::set<int> sneutrino_rows = {1,2,3};
-      std::set<int> sneutrino_cols = {1,2,3};
-
+         /// this is probably banned c++11, can uglify later if kept     
+         std::set<std::string> up_squark_strs   = {"~u_1", "~u_2", "~u_3", 
+                                                   "~u_4", "~u_5", "~u_6"}; 
+         std::set<std::string> down_squark_strs = {"~d_1", "~d_2", "~d_3", 
+                                                   "~d_4", "~d_5", "~d_6"};
+         std::set<std::string> ch_slepton_strs  = {"~e-_1", "~e-_2", "~e-_3", 
+                                                   "~e-_4", "~e-_5", "~e-_6"};
+         std::set<std::string> sneutrino_strs   = {"~nu_1", "~nu_2", "~nu_3"};
+         
+         /// for iterations over rows and columns
+         /// all the same so only need one at most but this does
+         /// make it easier to generalise when adding new states etc
+         /// or change something via a hack
+         std::set<int> up_squark_rows = {1,2,3,4,5,6};
+         std::set<int> down_squark_rows = {1,2,3,4,5,6};
+         std::set<int> ch_slepton_rows = {1,2,3,4,5,6};
+         std::set<int> up_squark_cols = {1,2,3,4,5,6};
+         std::set<int> down_squark_cols = {1,2,3,4,5,6};
+         std::set<int> ch_slepton_cols = {1,2,3,4,5,6};    
+         std::set<int> sneutrino_rows = {1,2,3};
+         std::set<int> sneutrino_cols = {1,2,3};
+         
    
-      /// pairs etc that we need for maps
-      p_int_string six_up_squark(6,"~u");
-      p_int_string six_down_squark(6,"~d");
-      p_int_string six_ch_lepton(6,"~e");
-      p_int_string five_up_squark(5,"~u");
-      p_int_string five_down_squark(5,"~d");
-      p_int_string five_ch_lepton(5,"~e");
-      p_int_string four_up_squark(4,"~u");
-      p_int_string four_down_squark(4,"~d");
-      p_int_string four_ch_lepton(4,"~e"); 
-      p_int_string three_up_squark(3,"~u");
-      p_int_string three_down_squark(3,"~d");
-      p_int_string three_ch_lepton(3,"~e");
-      p_int_string two_up_squark(2,"~u");
-      p_int_string two_down_squark(2,"~d");
-      p_int_string two_ch_lepton(2,"~e");
-      p_int_string one_up_squark(1,"~u");
-      p_int_string one_down_squark(1,"~d");
-      p_int_string one_ch_lepton(1,"~e");
+         /// pairs etc that we need for maps 
+         
+         //pairs labeling family, mass
+         pair_ints const three_one(3,1);
+         pair_ints const three_two(3,2);
+         pair_ints const two_one(3,1);
+         pair_ints const two_two(3,2);
+         pair_ints const one_one(3,1);
+         pair_ints const one_two(3,2);
       
-      p_int_string three_sneutrino(3,"~nu");
-      p_int_string two_sneutrino(2,"~nu");
-      p_int_string one_sneutrino(1,"~nu");
-      
-      
-      //pairs labeling family, mass
-      pair_ints const three_one(3,1);
-      pair_ints const three_two(3,2);
-      pair_ints const two_one(3,1);
-      pair_ints const two_two(3,2);
-      pair_ints const one_one(3,1);
-      pair_ints const one_two(3,2);
+         ///triple labelling type, generation and mass order of family states
+         pair_string_ints const stop1("~u",three_one);
+         pair_string_ints const stop2("~u",three_two);
+         pair_string_ints const sbot1("~d",three_one);
+         pair_string_ints const sbot2("~d",three_two);
+         pair_string_ints const stau1("~e",three_one);
+         pair_string_ints const stau2("~e",three_two);
+         pair_string_ints const scharm1("~u",two_one);
+         pair_string_ints const scharm2("~u",two_two);
+         pair_string_ints const sstrange1("~d",two_one);
+         pair_string_ints const sstrange2("~d",two_two);
+         pair_string_ints const smuon1("~e",two_one);
+         pair_string_ints const smuon2("~e",two_two);
+         pair_string_ints const sup1("~u",one_one);
+         pair_string_ints const sup2("~u",one_two);
+         pair_string_ints const sdown1("~d",one_one);
+         pair_string_ints const sdown2("~d",one_two);
+         pair_string_ints const selectron1("~e",one_one);
+         pair_string_ints const selectron2("~e",one_two);
+         /// only have left handed sneutrinos in MSSM
+         pair_string_ints const snue1("~nu",three_one);
+         pair_string_ints const snumu1("~nu",two_one);
+         pair_string_ints const snutau1("~nu",one_one);
+         
 
-      ///triple labelling type, generation and mass order of family states
-      pair_string_ints const stop1("~u",three_one);
-      pair_string_ints const stop2("~u",three_two);
-      pair_string_ints const sbot1("~d",three_one);
-      pair_string_ints const sbot2("~d",three_two);
-      pair_string_ints const stau1("~e",three_one);
-      pair_string_ints const stau2("~e",three_two);
-      pair_string_ints const scharm1("~u",two_one);
-      pair_string_ints const scharm2("~u",two_two);
-      pair_string_ints const sstrange1("~d",two_one);
-      pair_string_ints const sstrange2("~d",two_two);
-      pair_string_ints const smuon1("~e",two_one);
-      pair_string_ints const smuon2("~e",two_two);
-      pair_string_ints const sup1("~u",one_one);
-      pair_string_ints const sup2("~u",one_two);
-      pair_string_ints const sdown1("~d",one_one);
-      pair_string_ints const sdown2("~d",one_two);
-      pair_string_ints const selectron1("~e",one_one);
-      pair_string_ints const selectron2("~e",one_two);
-      /// only have left handed sneutrinos in MSSM
-      pair_string_ints const snue1("~nu",three_one);
-      pair_string_ints const snumu1("~nu",two_one);
-      pair_string_ints const snutau1("~nu",one_one);
-
-
-      /// the left_right gauge_pairs 
-      /// usefu -fl when identifying family states
-      pair_strings stop_gauge("~t_L","~t_R");
-      pair_strings sbot_gauge("~b_L","~b_R");
-      pair_strings stau_gauge("~tau_L","~tau_R");
-      pair_strings scharm_gauge("~c_L","~c_R");
-      pair_strings sstrange_gauge("~s_L","~s_R");
-      pair_strings smuon_gauge("~mu_L","~mu_R");
-      pair_strings sup_gauge("~u_L","~u_R");
-      pair_strings sdown_gauge("~d_L","~d_R");
-      pair_strings selectron_gauge("~e_L","~e_R");
+           /// the left_right gauge_pairs 
+         /// usefu -fl when identifying family states
+         pair_strings stop_gauge("~t_L","~t_R");
+         pair_strings sbot_gauge("~b_L","~b_R");
+         pair_strings stau_gauge("~tau_L","~tau_R");
+         pair_strings scharm_gauge("~c_L","~c_R");
+         pair_strings sstrange_gauge("~s_L","~s_R");
+         pair_strings smuon_gauge("~mu_L","~mu_R");
+         pair_strings sup_gauge("~u_L","~u_R");
+         pair_strings sdown_gauge("~d_L","~d_R");
+         pair_strings selectron_gauge("~e_L","~e_R");
       
       
-
+         p_int_string six_up_squark(6,"~u");
+         p_int_string six_down_squark(6,"~d");
+         p_int_string six_ch_lepton(6,"~e");
+         p_int_string five_up_squark(5,"~u");
+         p_int_string five_down_squark(5,"~d");
+         p_int_string five_ch_lepton(5,"~e");
+         p_int_string four_up_squark(4,"~u");
+         p_int_string four_down_squark(4,"~d");
+         p_int_string four_ch_lepton(4,"~e"); 
+         p_int_string three_up_squark(3,"~u");
+         p_int_string three_down_squark(3,"~d");
+         p_int_string three_ch_lepton(3,"~e");
+         p_int_string two_up_squark(2,"~u");
+         p_int_string two_down_squark(2,"~d");
+         p_int_string two_ch_lepton(2,"~e");
+         p_int_string one_up_squark(1,"~u");
+         p_int_string one_down_squark(1,"~d");
+         p_int_string one_ch_lepton(1,"~e");
+         
+         p_int_string three_sneutrino(3,"~nu");
+         p_int_string two_sneutrino(2,"~nu");
+         p_int_string one_sneutrino(1,"~nu");
 
          gauge_label_to_index_type["~e_L"] = one_ch_lepton;
          gauge_label_to_index_type["~mu_L"] = two_ch_lepton;
@@ -138,52 +136,50 @@ namespace Gambit {
          gauge_label_to_index_type["~e_R"] = four_ch_lepton;
          gauge_label_to_index_type["~mu_R"] = five_ch_lepton;
          gauge_label_to_index_type["~tau_R"] = six_ch_lepton;
-         
+
+
          gauge_label_to_index_type["~d_L"] = one_down_squark;
          gauge_label_to_index_type["~s_L"] = two_down_squark;
          gauge_label_to_index_type["~b_L"] = three_down_squark;
          gauge_label_to_index_type["~d_R"] = four_down_squark;
          gauge_label_to_index_type["~s_R"] = five_down_squark;
          gauge_label_to_index_type["~b_R"] = six_down_squark;   
-         
+
          gauge_label_to_index_type["~u_L"] = one_up_squark;
          gauge_label_to_index_type["~c_L"] = two_up_squark;
          gauge_label_to_index_type["~t_L"] = three_up_squark;
          gauge_label_to_index_type["~u_R"] = four_up_squark;
          gauge_label_to_index_type["~c_R"] = five_up_squark;
          gauge_label_to_index_type["~t_R"] = six_up_squark; 
-         
+
          gauge_label_to_index_type["~nu_e_L"] = one_sneutrino;
          gauge_label_to_index_type["~nu_mu_L"] = two_sneutrino;
          gauge_label_to_index_type["~nu_tau_L"] = three_sneutrino;
 
+         mass_label_to_index_type["~e-_1"] = one_ch_lepton;
+         mass_label_to_index_type["~e-_2"] = two_ch_lepton;
+         mass_label_to_index_type["~e-_3"] = three_ch_lepton;
+         mass_label_to_index_type["~e-_4"] = four_ch_lepton;
+         mass_label_to_index_type["~e-_5"] = five_ch_lepton;
+         mass_label_to_index_type["~e-_6"] = six_ch_lepton;
 
-
-         mass_label_to_index_type["~e_1"] = one_ch_lepton;
-         mass_label_to_index_type["~e_2"] = two_ch_lepton;
-         mass_label_to_index_type["~e_3"] = three_ch_lepton;
-         mass_label_to_index_type["~e_4"] = four_ch_lepton;
-         mass_label_to_index_type["~e_5"] = five_ch_lepton;
-         mass_label_to_index_type["~e_6"] = six_ch_lepton;
-   
          mass_label_to_index_type["~d_1"] = one_down_squark;
          mass_label_to_index_type["~d_2"] = two_down_squark;
          mass_label_to_index_type["~d_3"] = three_down_squark;
          mass_label_to_index_type["~d_4"] = four_down_squark;
          mass_label_to_index_type["~d_5"] = five_down_squark;
          mass_label_to_index_type["~d_6"] = six_down_squark;   
-         
+
          mass_label_to_index_type["~u_1"] = one_up_squark;
          mass_label_to_index_type["~u_2"] = two_up_squark;
          mass_label_to_index_type["~u_3"] = three_up_squark;
          mass_label_to_index_type["~u_4"] = four_up_squark;
          mass_label_to_index_type["~u_5"] = five_up_squark;
          mass_label_to_index_type["~u_6"] = six_up_squark; 
-   
-         mass_label_to_index_type["~nu_e_L"] = one_sneutrino;
-         mass_label_to_index_type["~nu_mu_L"] = two_sneutrino;
-         mass_label_to_index_type["~nu_tau_L"] = three_sneutrino;
 
+         mass_label_to_index_type["~nu_1"] = one_sneutrino;
+         mass_label_to_index_type["~nu_2"] = two_sneutrino;
+         mass_label_to_index_type["~nu_3"] = three_sneutrino;        
 
          familystate_label["~t_1"] = stop1; 
          familystate_label["~t_2"] = stop2;
@@ -204,13 +200,13 @@ namespace Gambit {
          familystate_label["~u_2"] = sup2;
          familystate_label["~d_1"] = sdown1; 
          familystate_label["~d_2"] = sdown2; 
-         familystate_label["~e_1"] = selectron1; 
-         familystate_label["~e_2"] = selectron2;
+         familystate_label["~e-_1"] = selectron1; 
+         familystate_label["~e-_2"] = selectron2;
          /// these are even less needed since no l-r mixing without r state
          familystate_label["~nu_1"] = snue1;
          familystate_label["~nu_2"] = snumu1;
          familystate_label["~nu_3"] = snutau1;
-         
+     
          
          type_family_to_gauge_states[three_up_squark] = stop_gauge;
          type_family_to_gauge_states[three_down_squark] = sbot_gauge;
@@ -245,15 +241,15 @@ namespace Gambit {
          family_state_to_gauge_state["~u_2"] = sup_gauge;
          family_state_to_gauge_state["~d_1"] = sdown_gauge;
          family_state_to_gauge_state["~d_2"] = sdown_gauge;
-         family_state_to_gauge_state["~e_1"] = selectron_gauge;
-         family_state_to_gauge_state["~e_2"] = selectron_gauge;
+         family_state_to_gauge_state["~e-_1"] = selectron_gauge;
+         family_state_to_gauge_state["~e-_2"] = selectron_gauge;
    
          /// map from string representing type (ie up-squarks, down-squarks or 
          /// charged selptons) to appropriate set of mass eigenstates
          type_to_set_of_mass_es["~u"] = up_squark_strs;
          type_to_set_of_mass_es["~d"] = down_squark_strs; 
          type_to_set_of_mass_es["~e"] = ch_slepton_strs;
-         type_to_set_of_mass_es["~e"] = sneutrino_strs;
+         type_to_set_of_mass_es["~nu"] = sneutrino_strs;
          
          type_to_set_of_row_indices["~u"] = up_squark_rows;
          type_to_set_of_row_indices["~d"] = down_squark_rows;
@@ -263,7 +259,7 @@ namespace Gambit {
          type_to_set_of_col_indices["~u"] = up_squark_cols;
          type_to_set_of_col_indices["~d"] = down_squark_cols;
          type_to_set_of_col_indices["~e"] = ch_slepton_cols;
-         type_to_set_of_col_indices["~e"] = sneutrino_cols;
+         type_to_set_of_col_indices["~nu"] = sneutrino_cols;
 
       }
       
@@ -280,8 +276,10 @@ namespace Gambit {
          //iterate over collumn in some way, e..g
          for(iter it = col_indices.begin(); it != col_indices.end(); ++it)
             {
+               //Mix_{row, col}
+               /// iterate through row indice with column indice fixed
                mass_state_content[*it - 1] =  
-                  mssm->phys.get_Pole_Mixing(type, gauge_index, *it); /// fill         
+                  mssm->phys.get_Pole_Mixing(type, *it, gauge_index); /// fill         
             }
          
          return mass_state_content;
@@ -296,8 +294,10 @@ namespace Gambit {
          std::vector<double> gauge_state_content(row_length);   
          for(iter it = row_indices.begin(); it != row_indices.end(); ++it)
             {
+               /// Mix_{row, col}
+               /// iterate through column indice with row indice fixed
                gauge_state_content[*it - 1] =  
-                  mssm->phys.get_Pole_Mixing(type, *it, mass_index); /// fill         
+                  mssm->phys.get_Pole_Mixing(type, mass_index, *it); /// fill         
             }
          return gauge_state_content;
       }
@@ -324,7 +324,7 @@ namespace Gambit {
       
       ///routine to return mass state admixure for given gauge state
       /// in the end this is a trival routine but may help      
-      double get_mass_addmix_for_gauge(std::string gauge_es, 
+      double get_mass_admix_for_gauge(std::string gauge_es, 
                                        std::string mass_es, 
                                        const SubSpectrum* mssm)
       { 
@@ -336,20 +336,24 @@ namespace Gambit {
          /// type's should match but getting both allows us to throw error
          std::string type = mass_es_index_type.second;
          std::string type_gauge = gauge_es_index_type.second;
+         std::cout << "gauge_es = "  << gauge_es << std::endl;
+         std::cout << "mass_es = "  << mass_es << std::endl;
+         std::cout << "type = "  << type << std::endl;
+         std::cout << "type_gauge = "  << type_gauge << std::endl;
          if(type!=type_gauge) 
             {
                /// throw exception in gambit
-               utils_error().raise(LOCAL_INFO, "function get_mass_addmix_for_gauge called with type's for the gauge eigenstate and mass eigenstate that don't match.");
+               utils_error().raise(LOCAL_INFO, "function get_mass_admix_for_gauge called with type's for the gauge eigenstate and mass eigenstate that don't match.");
             }
          /// will need to add mssm object to cal method in gambit
-         double addmix = mssm->phys.get_Pole_Mixing(type, gauge_index, 
-                                                    mass_index);
-         return addmix;
+         double admix = mssm->phys.get_Pole_Mixing(type, mass_index, 
+                                                   gauge_index);
+         return admix;
       }
       
       /// slower but tidier alternative that resuses earlier routine
       /// quick cross check
-      double get_mass_addmix_for_gauge2(std::string gauge_es, std::string mass_es,
+      double get_mass_admix_for_gauge2(std::string gauge_es, std::string mass_es,
                                         const SubSpectrum* mssm)
       {
          p_int_string mass_es_index_type = mass_label_to_index_type[mass_es]; 
@@ -361,7 +365,7 @@ namespace Gambit {
          if(type!=type_gauge) 
             {
                /// throw error in gambit
-              utils_error().raise(LOCAL_INFO, "function get_mass_addmix_for_gauge2 called with type's for the gauge eigenstate and mass eigenstate that don't match.");
+              utils_error().raise(LOCAL_INFO, "function get_mass_admix_for_gauge2 called with type's for the gauge eigenstate and mass eigenstate that don't match.");
             }
          std::vector<double> mass_state_content 
             = get_mass_comp_for_gauge(gauge_es, mssm);
@@ -387,15 +391,15 @@ namespace Gambit {
          return mass_state_content;
       }
       
-      /// get largest addmix and indentifies the state by filling mass_es
+      /// get largest admix and indentifies the state by filling mass_es
       /// could pass tol for test here, but maybe better to leave til step after
-      double get_largest_mass_addmix_for_gauge(std::string gauge_es, 
+      double get_largest_mass_admix_for_gauge(std::string gauge_es, 
                                                std::string & mass_es, 
                                                const SubSpectrum* mssm)
       {
          /// passed in massstate to be set
-         double temp_addmix = 0.0;
-         double addmix = 0.0;
+         double temp_admix = 0.0;
+         double admix = 0.0;
          /// retrive type from the gauge_es string
          std::string type = (gauge_label_to_index_type[gauge_es]).second;
          std::string temp_mass_es;
@@ -409,19 +413,18 @@ namespace Gambit {
          // for(auto temp_mass_es : mass_es_set) { do stuff with temp_mass_es }
          typedef std::set<std::string>::iterator iter;
          for(iter it = mass_es_set.begin(); it != mass_es_set.end(); ++it){
-            temp_mass_es = *it;
-            temp_addmix = get_mass_addmix_for_gauge(gauge_es, temp_mass_es, 
+            temp_mass_es = *it;    
+            temp_admix = get_mass_admix_for_gauge(gauge_es, temp_mass_es, 
                                                     mssm);
             //select largest 
-            if(temp_addmix > addmix) {
-               addmix = temp_addmix; 
+            if(fabs(temp_admix) > fabs(admix)) {
+               admix = temp_admix; 
                mass_es = temp_mass_es;
             }
-         } //end iteration over temp_massstate
-         
+         } //end iteration over temp_mass_es
          
          //return largest
-         return addmix;
+         return admix;
       }
       
 
@@ -450,8 +453,8 @@ namespace Gambit {
          std::string mass_esL, mass_esR;
          /// we don't need the return value of these
          /// unless we want to do a test on them?
-         get_largest_mass_addmix_for_gauge(gauge_esL, mass_esL, mssm);
-         get_largest_mass_addmix_for_gauge(gauge_esR, mass_esR, mssm);
+         get_largest_mass_admix_for_gauge(gauge_esL, mass_esL, mssm);
+         get_largest_mass_admix_for_gauge(gauge_esR, mass_esR, mssm);
          
          pair_strings answer;
          int mass_index_L = (mass_label_to_index_type[mass_esL]).first;
@@ -479,8 +482,8 @@ namespace Gambit {
          std::string mass_esL, mass_esR;
          /// we don't need the return value of these
          /// unless we want to do a test on them?
-         get_largest_mass_addmix_for_gauge(gauge_esL, mass_esL, mssm);
-         get_largest_mass_addmix_for_gauge(gauge_esR, mass_esR, mssm);
+         get_largest_mass_admix_for_gauge(gauge_esL, mass_esL, mssm);
+         get_largest_mass_admix_for_gauge(gauge_esR, mass_esR, mssm);
          // extract mass order (1 or 2) from string via map
          pair_string_ints type_family_massorder = 
             familystate_label[familystate];
@@ -549,7 +552,7 @@ namespace Gambit {
          double temp;
          for(iter it = row_indices.begin(); it != row_indices.end(); ++it)
             {
-               temp = mssm->phys.get_Pole_Mixing(type, *it, mass_index); 
+               temp = mssm->phys.get_Pole_Mixing(type, mass_index, *it); 
                if(*it == gauge_L_index || *it == gauge_R_index) 
                   right_fam_gauge_content.push_back(temp);
                else  wrong_fam_gauge_content.push_back(temp);
@@ -592,9 +595,9 @@ namespace Gambit {
          mass_es = identify_mass_es_closest_to_family(familystate, mssm);
          /// extract info from strings via maps
          int mass_index = (mass_label_to_index_type[mass_es]).first;   
-         double addmix = mssm->phys.get_Pole_Mixing(type_gauge, gauge_index, 
-                                                   mass_index);      
-         return addmix;      
+         double admix = mssm->phys.get_Pole_Mixing(type_gauge, mass_index, 
+                                                   gauge_index);      
+         return admix;      
       }
 
 
@@ -604,9 +607,9 @@ namespace Gambit {
                                               const SubSpectrum* mssm) 
       {
          std::string mass_es;
-         double addmix = get_gauge_admix_for_family_state(familystate, gauge_es,
+         double admix = get_gauge_admix_for_family_state(familystate, gauge_es,
                                                           mass_es, mssm);  
-         return addmix;      
+         return admix;      
       }
       
 

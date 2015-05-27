@@ -66,11 +66,11 @@ namespace Gambit {
    std::vector<double> get_mass_comp_for_gauge(std::string gauge_es,
                                                const SubSpectrum* mssm);
    ///routine to return mass state admixure for given gauge state
-   double get_mass_addmix_for_gauge(std::string gauge_es, std::string mass_es,
+   double get_mass_admix_for_gauge(std::string gauge_es, std::string mass_es,
                                     const SubSpectrum* mssm);
    /// slower alterantive as currently implemented that resuses earlier routine
    /// quick cross check - to be removed after tests
-   double get_mass_addmix_for_gauge2(std::string gauge_es, std::string mass_es,
+   double get_mass_admix_for_gauge2(std::string gauge_es, std::string mass_es,
                                      const SubSpectrum* mssm);
    /// returns vector representing composition of requested mass eigenstate
    /// in terms of the slha2 gauge eigenstates (~u_L,~c_L,...~t_R etc)
@@ -78,9 +78,9 @@ namespace Gambit {
    /// really just wraps get_Pole_Mixing_col after extracting info from string
    std::vector<double> get_gauge_comp_for_mass(std::string mass_es,
                                                const SubSpectrum* mssm);
-   /// get largest addmix and indentifies the state by filling mass_es
+   /// get largest admix and indentifies the state by filling mass_es
    /// could pass tol for test here, but maybe better to leave til step after
-   double get_largest_mass_addmix_for_gauge(std::string gauge_es, 
+   double get_largest_mass_admix_for_gauge(std::string gauge_es, 
                                             std::string & mass_es,
                                             const SubSpectrum* mssm);
    /// indentify the two mass eigenstate corresponding to the approximate 

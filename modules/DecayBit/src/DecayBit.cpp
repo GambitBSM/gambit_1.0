@@ -21,6 +21,8 @@
 #include "gambit/DecayBit/DecayBit_rollcall.hpp"
 #include "gambit/DecayBit/decay_utils.hpp"
 #include "gambit/Elements/MSSM_slhahelp.hpp"
+#include <string>
+#include <map>
 
 namespace Gambit
 {
@@ -207,7 +209,41 @@ namespace Gambit
      
      
      //////////// MSSM /////////////////////
+
     
+     std::map<std::string, std::string> particle_to_anti_particle;
+     
+        void fill_p_to_ap_map () {
+        particle_to_anti_particle["~u_1"] = "~ubar_1";
+        particle_to_anti_particle["~u_2"] = "~ubar_2";
+        particle_to_anti_particle["~u_3"] = "~ubar_3";
+        particle_to_anti_particle["~u_4"] = "~ubar_4";
+        particle_to_anti_particle["~u_5"] = "~ubar_5";
+        particle_to_anti_particle["~u_6"] = "~ubar_6";
+        
+        particle_to_anti_particle["~d_1"] = "~dbar_1";
+        particle_to_anti_particle["~d_2"] = "~dbar_2";
+        particle_to_anti_particle["~d_3"] = "~dbar_3";
+        particle_to_anti_particle["~d_4"] = "~dbar_4";
+        particle_to_anti_particle["~d_5"] = "~dbar_5";
+        particle_to_anti_particle["~d_6"] = "~dbar_6";
+        
+        particle_to_anti_particle["~e-_1"] = "~e+_1";
+        particle_to_anti_particle["~e-_2"] = "~e+_2";
+        particle_to_anti_particle["~e-_3"] = "~e+_3";
+        particle_to_anti_particle["~e-_4"] = "~e+_4";
+        particle_to_anti_particle["~e-_5"] = "~e+_5";
+        particle_to_anti_particle["~e-_6"] = "~e+_6";
+        
+
+        particle_to_anti_particle["~nu_1"] = "~nubar_1";
+        particle_to_anti_particle["~nu_2"] = "~nubar_2";
+        particle_to_anti_particle["~nu_3"] = "~nubar_3";
+     }
+
+     
+     
+
 
       /// just leave these as regular functions just now
      /// in case we change approach or test alternative
@@ -216,14 +252,31 @@ namespace Gambit
                                  const SubSpectrum* mssm,
                                  double tol) {
         
+        fill_p_to_ap_map();
         std::string mass_es;
-        double addmix = 0; 
-        addmix = slhahelp::get_largest_mass_addmix_for_gauge(gauge_es, mass_es, mssm);
-        if(addmix >= 1-tol){
+        double admix = 0; 
+        admix = slhahelp::get_largest_mass_admix_for_gauge(gauge_es, mass_es, mssm);
+        if((admix*admix) >= 1-tol){
            is = mass_es;   
-           isbar = mass_es + "bar";
+           isbar = particle_to_anti_particle[mass_es];
         }
-        else {std::cout << "flag error properly."  << std::endl;}  
+        else {/// throw exception in gambit
+           /// I am actually not sure if this is code error or a problem point
+           /// to be flagged
+           
+           /// can i write the deviation and the states in this message?  Or does it only accept string
+           std::cout << "tol = " << tol << std::endl;
+           std::cout << "admix = " << admix << std::endl;
+           std::cout << "gauge_es = "  << gauge_es << std::endl;
+           std::cout << "mass_es = "  << mass_es << std::endl;
+           
+           DecayBit_error().raise(LOCAL_INFO, "function fill_mass_es_psn_gauge has too large sfermion mixing for state that assumed to be a pure gauge state"); 
+           DecayBit_warning().raise(LOCAL_INFO,
+              "This point violates the assumption that certain sfermion states have no family mixing  by a degree larger than tol made in a DecayBit routine.");
+           invalid_point().raise("This point violates the assumption that certain sfermion states have no family mixing  by a degree larger than tol made in a DecayBit routine.");
+
+
+}  
 
         return;
      }
@@ -233,6 +286,7 @@ namespace Gambit
                                   std::string family_state,
                                   const SubSpectrum* mssm,
                                   double tol) {
+        fill_p_to_ap_map();
         std::string mass_es; 
         /// use special routine which first identifies the mass_es which 
         /// best matches the requested family state. then returns the
@@ -246,12 +300,41 @@ namespace Gambit
         /// This is question for decaybit
         auto it = max_element(std::begin(wrong_fam_gauge_comp), 
                               std::end(wrong_fam_gauge_comp));
-        if(*it < tol) 
+
+        std::cout << " wrong_fam_gauge_comp[0] = " << wrong_fam_gauge_comp[0] 
+                  <<std::endl;
+
+        std::cout << " wrong_fam_gauge_comp[1] = " << wrong_fam_gauge_comp[1] 
+                  <<std::endl;
+
+        std::cout << " wrong_fam_gauge_comp[2] = " << wrong_fam_gauge_comp[2] 
+                  <<std::endl;
+
+        std::cout << " wrong_fam_gauge_comp[3] = " << wrong_fam_gauge_comp[3] 
+                  <<std::endl;
+        
+        std::cout << " right_fam_gauge_comp[0] = " << right_fam_gauge_comp[0] 
+                  <<std::endl;
+
+        std::cout << " right_fam_gauge_comp[1] = " << right_fam_gauge_comp[1] 
+                  <<std::endl;
+
+        if(fabs(*it) *fabs(*it) < tol) 
            {
               is = mass_es;   
-              isbar = mass_es + "bar";
+              isbar = particle_to_anti_particle[mass_es];
            }
-        else {std::cout << "flag error properly."  << std::endl;}
+        else 
+           {
+           std::cout << "tol = " << tol << std::endl;
+           std::cout << "*it = " << *it << std::endl;
+           std::cout << "family_state = "  << family_state << std::endl;
+           std::cout << "mass_es = "  << mass_es << std::endl;
+           DecayBit_error().raise(LOCAL_INFO, "function get_mass_admix_for_gauge called with type's for the gauge eigenstate and mass eigenstate that don't match."); 
+           DecayBit_warning().raise(LOCAL_INFO,
+              "This point violates the assumption that certain sfermion states have no family mixing  by a degree larger than tol made in a DecayBit routine.");
+           invalid_point().raise("This point violates the assumption that certain sfermion states have no family mixing  by a degree larger than tol made in a DecayBit routine.");
+        }
         
         return;
  }
@@ -338,6 +421,38 @@ namespace Gambit
         if(filled == true) return;  // don't repeat unless necessary
         /// adding isdl,isdlbar and strings together like this is error prone
         /// maybe stitch together later
+        ///this should happen elsewhere.
+        Gambit::slhahelp::init_maps();
+        std::cout << "Dmix :" << std::endl;;
+        for(int i = 1; i <=6; i++){
+            for(int j = 1; j <=6; j++){
+               std::cout << "     " << i << j << " = "  
+                         << mssm->phys.get_Pole_Mixing("~d", i, j);
+            }
+            std::cout << std::endl;
+        }
+
+        std::cout << "Umix :" << std::endl;;
+        for(int i = 1; i <=6; i++){
+            for(int j = 1; j <=6; j++){
+               std::cout << "     " << i << j << " = "  
+                         << mssm->phys.get_Pole_Mixing("~u", i, j);
+            }
+            std::cout << std::endl;
+        }
+
+
+        std::cout << "Emix :" << std::endl;;
+        for(int i = 1; i <=6; i++){
+            for(int j = 1; j <=6; j++){
+               std::cout << "     " << i << j << " = "  
+                         << mssm->phys.get_Pole_Mixing("~e", i, j);
+            }
+            std::cout << std::endl;
+        }
+
+
+
         fill_mass_es_psn_gauge(isdl, isdlbar, "~d_L", mssm, tol);
         fill_mass_es_psn_gauge(isul, isulbar, "~u_L", mssm, tol);
         fill_mass_es_psn_gauge(issl, isslbar, "~s_L", mssm, tol);
@@ -368,6 +483,64 @@ namespace Gambit
         fill_mass_es_psn_gauge(ismur, ismurbar, "~mu_R", mssm, tol);
         fill_mass_es_psn_family(istau2, istau2bar, "~tau_2", mssm, tol);
         
+        std::cout << "isdl = "  << isdl << std::endl;
+        std::cout << "isdlbar = "  << isdlbar << std::endl;
+        std::cout << "isdr = "  << isdr << std::endl;
+        std::cout << "isdrbar = "  << isdrbar << std::endl;
+
+        std::cout << "isul = "  << isul << std::endl;
+        std::cout << "isulbar = "  << isulbar << std::endl;
+        std::cout << "isur = "  << isur << std::endl;
+        std::cout << "isurbar = "  << isurbar << std::endl;
+        
+
+        std::cout << "issl = "  << issl << std::endl;
+        std::cout << "isslbar = "  << isslbar << std::endl;
+        std::cout << "issr = "  << issr << std::endl;
+        std::cout << "issrbar = "  << issrbar << std::endl;
+
+        std::cout << "iscl = "  << iscl << std::endl;
+        std::cout << "isclbar = "  << isclbar << std::endl;
+        std::cout << "iscr = "  << iscr << std::endl;
+        std::cout << "iscrbar = "  << iscrbar << std::endl;
+
+
+
+        std::cout << "isb1 = "  << isb1 << std::endl;
+        std::cout << "isb1bar = "  << isb1bar << std::endl;
+        std::cout << "isb2 = "  << isb2 << std::endl;
+        std::cout << "isb2bar = "  << isb2bar << std::endl;
+
+        std::cout << "ist1 = "  << ist1 << std::endl;
+        std::cout << "ist1bar = "  << ist1bar << std::endl;
+        std::cout << "ist2 = "  << ist2 << std::endl;
+        std::cout << "ist2bar = "  << ist2bar << std::endl;
+
+
+        std::cout << "isell = "  << isell << std::endl;
+        std::cout << "isellbar = "  << isellbar << std::endl;
+        std::cout << "iselr = "  << iselr << std::endl;
+        std::cout << "iselrbar = "  << iselrbar << std::endl;
+
+        std::cout << "isnel = "  << isnel << std::endl;
+        std::cout << "isnelbar = "  << isnelbar << std::endl;
+
+        std::cout << "ismul = "  << ismul << std::endl;
+        std::cout << "ismulbar = "  << ismulbar << std::endl;
+        std::cout << "ismur = "  << ismur << std::endl;
+        std::cout << "ismurbar = "  << ismurbar << std::endl;
+
+        std::cout << "isnmull = "  << isnmul << std::endl;
+        std::cout << "isnmullbar = "  << isnmulbar << std::endl;
+
+        std::cout << "istau1 = "  << istau1 << std::endl;
+        std::cout << "istau1bar = "  << istau1bar << std::endl;
+        std::cout << "istau2 = "  << istau2 << std::endl;
+        std::cout << "istau2bar = "  << istau2bar << std::endl;
+
+        std::cout << "isntau1 = "  << isntau1 << std::endl;
+        std::cout << "isntau1bar = "  << isntau1bar << std::endl;
+
         filled=true;
         
         return;
