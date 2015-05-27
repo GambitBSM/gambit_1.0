@@ -33,6 +33,9 @@
 
 #include <boost/preprocessor/comparison/greater.hpp>
 #include <boost/preprocessor/control/iif.hpp>
+#include <boost/preprocessor/repetition/enum.hpp>
+#include <boost/preprocessor/seq/for_each_i.hpp>
+#include <boost/preprocessor/tuple/to_seq.hpp>
 
 
 /// \name Simple macro constants
@@ -168,6 +171,16 @@
 ///Simple alias for BACKEND_GROUP/S
 #define BACKEND_GROUP BACKEND_GROUPS
 
+/// Shortcuts for allowing declarations of joint models (single-line model combinations)
+/// @{
+#define MODEL_GROUP_AUX(r, data, i, elem) MODEL_GROUP(CAT(data,i), (elem))
+#define MODEL_COMBO_AUX(z, i, data) CAT(data,i)
+#define ALLOW_JOINT_MODEL(...)                                                                           \
+ALLOW_MODEL_DEPENDENCE(__VA_ARGS__)                                                                      \
+BOOST_PP_SEQ_FOR_EACH_I(MODEL_GROUP_AUX,model_group_,BOOST_PP_TUPLE_TO_SEQ((__VA_ARGS__)))               \
+ALLOW_MODEL_COMBINATION(BOOST_PP_ENUM(BOOST_PP_VARIADIC_SIZE(__VA_ARGS__),MODEL_COMBO_AUX,model_group_))
+/// @}
+
 /// \name Variadic redirection macros for ALLOW_MODELS([MODELS])
 /// Register that the current \link FUNCTION() FUNCTION\endlink may
 /// only be used with the listed models.  The current maximum number
@@ -176,24 +189,24 @@
 /// If ALLOW_MODELS and ALLOW_MODEL_COMBINATION are both absent,
 /// all models are considered to be allowed.
 /// @{
-#define ALLOW_MODELS_10(A,B,_1, _2, _3, _4, _5, _6, _7, _8, _9, _10) ALLOWED_MODEL(A,B,_1) ALLOWED_MODEL(A,B,_2) ALLOWED_MODEL(A,B,_3) \
+#define ALLOW_MODELS_10(A,B,_1, _2, _3, _4, _5, _6, _7, _8, _9, _10) ALLOWED_MODEL(A,B,_1) ALLOWED_MODEL(A,B,_2) ALLOWED_MODEL(A,B,_3)  \
                                                                       ALLOWED_MODEL(A,B,_4) ALLOWED_MODEL(A,B,_5) ALLOWED_MODEL(A,B,_6) \
                                                                       ALLOWED_MODEL(A,B,_7) ALLOWED_MODEL(A,B,_8) ALLOWED_MODEL(A,B,_9) \
                                                                       ALLOWED_MODEL(A,B,_10)
-#define ALLOW_MODELS_9(A,B,_1, _2, _3, _4, _5, _6, _7, _8, _9)       ALLOWED_MODEL(A,B,_1) ALLOWED_MODEL(A,B,_2) ALLOWED_MODEL(A,B,_3) \
+#define ALLOW_MODELS_9(A,B,_1, _2, _3, _4, _5, _6, _7, _8, _9)       ALLOWED_MODEL(A,B,_1) ALLOWED_MODEL(A,B,_2) ALLOWED_MODEL(A,B,_3)  \
                                                                       ALLOWED_MODEL(A,B,_4) ALLOWED_MODEL(A,B,_5) ALLOWED_MODEL(A,B,_6) \
                                                                       ALLOWED_MODEL(A,B,_7) ALLOWED_MODEL(A,B,_8) ALLOWED_MODEL(A,B,_9) 
-#define ALLOW_MODELS_8(A,B,_1, _2, _3, _4, _5, _6, _7, _8)           ALLOWED_MODEL(A,B,_1) ALLOWED_MODEL(A,B,_2) ALLOWED_MODEL(A,B,_3) \
+#define ALLOW_MODELS_8(A,B,_1, _2, _3, _4, _5, _6, _7, _8)           ALLOWED_MODEL(A,B,_1) ALLOWED_MODEL(A,B,_2) ALLOWED_MODEL(A,B,_3)  \
                                                                       ALLOWED_MODEL(A,B,_4) ALLOWED_MODEL(A,B,_5) ALLOWED_MODEL(A,B,_6) \
                                                                       ALLOWED_MODEL(A,B,_7) ALLOWED_MODEL(A,B,_8)
-#define ALLOW_MODELS_7(A,B,_1, _2, _3, _4, _5, _6, _7)               ALLOWED_MODEL(A,B,_1) ALLOWED_MODEL(A,B,_2) ALLOWED_MODEL(A,B,_3) \
+#define ALLOW_MODELS_7(A,B,_1, _2, _3, _4, _5, _6, _7)               ALLOWED_MODEL(A,B,_1) ALLOWED_MODEL(A,B,_2) ALLOWED_MODEL(A,B,_3)  \
                                                                       ALLOWED_MODEL(A,B,_4) ALLOWED_MODEL(A,B,_5) ALLOWED_MODEL(A,B,_6) \
                                                                       ALLOWED_MODEL(A,B,_7)
-#define ALLOW_MODELS_6(A,B,_1, _2, _3, _4, _5, _6)                   ALLOWED_MODEL(A,B,_1) ALLOWED_MODEL(A,B,_2) ALLOWED_MODEL(A,B,_3) \
+#define ALLOW_MODELS_6(A,B,_1, _2, _3, _4, _5, _6)                   ALLOWED_MODEL(A,B,_1) ALLOWED_MODEL(A,B,_2) ALLOWED_MODEL(A,B,_3)  \
                                                                       ALLOWED_MODEL(A,B,_4) ALLOWED_MODEL(A,B,_5) ALLOWED_MODEL(A,B,_6)
-#define ALLOW_MODELS_5(A,B,_1, _2, _3, _4, _5)                       ALLOWED_MODEL(A,B,_1) ALLOWED_MODEL(A,B,_2) ALLOWED_MODEL(A,B,_3) \
+#define ALLOW_MODELS_5(A,B,_1, _2, _3, _4, _5)                       ALLOWED_MODEL(A,B,_1) ALLOWED_MODEL(A,B,_2) ALLOWED_MODEL(A,B,_3)  \
                                                                       ALLOWED_MODEL(A,B,_4) ALLOWED_MODEL(A,B,_5)
-#define ALLOW_MODELS_4(A,B,_1, _2, _3, _4)                           ALLOWED_MODEL(A,B,_1) ALLOWED_MODEL(A,B,_2) ALLOWED_MODEL(A,B,_3) \
+#define ALLOW_MODELS_4(A,B,_1, _2, _3, _4)                           ALLOWED_MODEL(A,B,_1) ALLOWED_MODEL(A,B,_2) ALLOWED_MODEL(A,B,_3)  \
                                                                       ALLOWED_MODEL(A,B,_4) 
 #define ALLOW_MODELS_3(A,B,_1, _2, _3)                               ALLOWED_MODEL(A,B,_1) ALLOWED_MODEL(A,B,_2) ALLOWED_MODEL(A,B,_3) 
 #define ALLOW_MODELS_2(A,B,_1, _2)                                   ALLOWED_MODEL(A,B,_1) ALLOWED_MODEL(A,B,_2)  

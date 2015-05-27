@@ -403,6 +403,24 @@ namespace Gambit
       throw(*this);
     }
 
+    /// Request an exception.
+    void Piped_invalid_point::request(std::string message)
+    {
+      this->message = message;
+      this->flag = true;
+    }
+
+    /// Check whether an exception was requested, and throw it if necessary.
+    void Piped_invalid_point::check()
+    {
+      if (this->flag == true)
+      {
+        invalid_point().raise(this->message);
+      }
+    }
+
+    /// Global instance of piped invalid point class.
+    Piped_invalid_point piped_invalid_point;
 }
 
 

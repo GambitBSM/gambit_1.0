@@ -89,13 +89,20 @@ namespace Gambit
   /// Given a backend and a safe version (with no periods), return the true version
   str Backends::backend_info::version_from_safe_version (str be, str sv) const 
   { 
-    return safe_version_map.at(be).at(sv);
+    return safe_version_map.at(be).first.at(sv);
   } 
  
+  /// Given a backend and a true version (with periods), return the safe version
+  str Backends::backend_info::safe_version_from_version (str be, str v) const 
+  { 
+    return safe_version_map.at(be).second.at(v);
+  } 
+
   /// Link a backend's version and safe version
   void Backends::backend_info::link_versions(str be, str v, str sv)
   {
-    safe_version_map[be][sv] = v;
+    safe_version_map[be].first[sv] = v;
+    safe_version_map[be].second[v] = sv;
   }
 
 }

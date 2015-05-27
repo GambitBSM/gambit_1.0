@@ -17,7 +17,7 @@
 ///  *********************************************
 
 #include "gambit/Elements/gambit_module_headers.hpp"
-#include "gambit/Elements/virtualH.hpp"
+#include "gambit/Elements/virtual_higgs.hpp"
 #include "gambit/DecayBit/DecayBit_rollcall.hpp"
 #include "gambit/DecayBit/decay_utils.hpp"
 
@@ -190,18 +190,18 @@ namespace Gambit
     void SM_Higgs_decays (DecayTable::Entry& result)
     {
       double mh = 125.0; // *Dep::SM_Spectrum->get_Pole_Mass("h0_1"); //FIXME
-      result.width_in_GeV = Virtual_SMHiggs_widths("Gamma",mh);   
-      result.set_BF(Virtual_SMHiggs_widths("bb",mh), 0.0, "b", "bbar");
-      result.set_BF(Virtual_SMHiggs_widths("tautau",mh), 0.0, "tau+", "tau-");
-      result.set_BF(Virtual_SMHiggs_widths("mumu",mh), 0.0, "mu+", "mu-");
-      result.set_BF(Virtual_SMHiggs_widths("ss",mh), 0.0, "s", "sbar");
-      result.set_BF(Virtual_SMHiggs_widths("cc",mh), 0.0, "c", "cbar");
-      result.set_BF(Virtual_SMHiggs_widths("tt",mh), 0.0, "t", "tbar");
-      result.set_BF(Virtual_SMHiggs_widths("gg",mh), 0.0, "g", "g");
-      result.set_BF(Virtual_SMHiggs_widths("gammagamma",mh), 0.0, "gamma", "gamma");
-      result.set_BF(Virtual_SMHiggs_widths("Zgamma",mh), 0.0, "Z0", "gamma");
-      result.set_BF(Virtual_SMHiggs_widths("WW",mh), 0.0, "W+", "W-");
-      result.set_BF(Virtual_SMHiggs_widths("ZZ",mh), 0.0, "Z0", "Z0");
+      result.width_in_GeV = virtual_SMHiggs_widths("Gamma",mh);   
+      result.set_BF(virtual_SMHiggs_widths("bb",mh), 0.0, "b", "bbar");
+      result.set_BF(virtual_SMHiggs_widths("tautau",mh), 0.0, "tau+", "tau-");
+      result.set_BF(virtual_SMHiggs_widths("mumu",mh), 0.0, "mu+", "mu-");
+      result.set_BF(virtual_SMHiggs_widths("ss",mh), 0.0, "s", "sbar");
+      result.set_BF(virtual_SMHiggs_widths("cc",mh), 0.0, "c", "cbar");
+      result.set_BF(virtual_SMHiggs_widths("tt",mh), 0.0, "t", "tbar");
+      result.set_BF(virtual_SMHiggs_widths("gg",mh), 0.0, "g", "g");
+      result.set_BF(virtual_SMHiggs_widths("gammagamma",mh), 0.0, "gamma", "gamma");
+      result.set_BF(virtual_SMHiggs_widths("Zgamma",mh), 0.0, "Z0", "gamma");
+      result.set_BF(virtual_SMHiggs_widths("WW",mh), 0.0, "W+", "W-");
+      result.set_BF(virtual_SMHiggs_widths("ZZ",mh), 0.0, "Z0", "Z0");
     }
 
 
@@ -2330,10 +2330,7 @@ namespace Gambit
         decays("h0_2") = *Dep::h0_2_decay_rates;            // Add the h0_2 decays.
         decays("A0") = *Dep::A0_decay_rates;                // Add the A0 decays.
         decays("H+") = *Dep::Hplus_decay_rates;             // Add the H+ decays.       
-        //decays("H-") = *Dep::Hminus_decay_rates;            // Add the H+ decays.       
-        // FIXME!!!!!!!!!!!!!!
-        std::cout << "FIXME!!!! using H+ decay to approximate H- decays!" << std::endl;
-        decays("H-") = *Dep::Hplus_decay_rates; 
+        decays("H-") = *Dep::Hminus_decay_rates;            // Add the H+ decays.       
 
         decays("~g") = *Dep::gluino_decay_rates;            // Add the gluino decays.
 

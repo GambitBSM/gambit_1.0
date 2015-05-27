@@ -261,8 +261,6 @@ START_MODULE
       DEPENDENCY(TH_ProcessCatalog, DarkBit::TH_ProcessCatalog)      
       DEPENDENCY(SimYieldTable, DarkBit::SimYieldTable)      
       DEPENDENCY(cascadeMC_FinalStates,std::vector<std::string>)  
-      // FIXME: Temporary, for testing   
-      BACKEND_REQ(dshayield, (), double, (double&,double&,int&,int&,int&)) 
       NEEDS_MANAGER_WITH_CAPABILITY(cascadeMC_LoopManagement) 
     #undef FUNCTION          
   #undef CAPABILITY
@@ -290,6 +288,7 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
+  /*
   // Process catalog for testing purposes
   #define CAPABILITY cascadeMC_test_TH_ProcessCatalog
   START_CAPABILITY
@@ -306,8 +305,9 @@ START_MODULE
       DEPENDENCY(cascadeMC_test_TH_ProcessCatalog, DarkBit::TH_ProcessCatalog)
       DEPENDENCY(SimYieldTable, DarkBit::SimYieldTable)           
     #undef FUNCTION
-  #undef CAPABILITY
-
+  #undef CAPABILITY 
+  */
+  
   // Gamma rays --------------------------------------------
   //
   #define CAPABILITY GA_missingFinalStates
@@ -341,7 +341,7 @@ START_MODULE
 
   #define CAPABILITY TH_ProcessCatalog
   START_CAPABILITY
-    #define FUNCTION TH_ProcessCatalog_CMSSM
+    #define FUNCTION TH_ProcessCatalog_MSSM
       START_FUNCTION(DarkBit::TH_ProcessCatalog)
       //ALLOW_MODELS(CMSSM, MSSM25atQ)
       DEPENDENCY(DarkSUSY_PointInit, bool)
@@ -452,11 +452,8 @@ START_MODULE
     #define FUNCTION DD_couplings_SingletDM
       START_FUNCTION(DarkBit::DD_couplings)
       DEPENDENCY(TH_ProcessCatalog, DarkBit::TH_ProcessCatalog)
-      ALLOW_MODEL_DEPENDENCE(nuclear_params_fnq, SingletDM)
-      MODEL_GROUP(group1, (nuclear_params_fnq))
-      MODEL_GROUP(group2, (SingletDM))
-      ALLOW_MODEL_COMBINATION(group1, group2)
-    #undef FUNCTION
+      ALLOW_JOINT_MODEL(nuclear_params_fnq, SingletDM)
+     #undef FUNCTION
   #undef CAPABILITY
 
   // Simple calculators of the spin-(in)dependent WIMP-proton and WIMP-neutron cross-sections 

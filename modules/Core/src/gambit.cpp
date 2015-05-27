@@ -68,12 +68,11 @@ int main(int argc, char* argv[])
     //std::ofstream infofile("gambit_output.info", std::ofstream::out);
     //Printers::asciiPrinter printer(outfile,infofile);
 
-    // Set up the printer (redirection of scan output)
+    // Set up the printer manager for redirection of scan output.
     Printers::PrinterManager printerManager(iniFile.getPrinterNode());
-    Printers::BasePrinter& printer (*printerManager.printerptr);   
 
     // Set up dependency resolver
-    DRes::DependencyResolver dependencyResolver(Core(), Models::ModelDB(), iniFile, Utils::typeEquivalencies(), *printerManager.printerptr);
+    DRes::DependencyResolver dependencyResolver(Core(), Models::ModelDB(), iniFile, Utils::typeEquivalencies(), *(printerManager.printerptr));
 
     // Log module function infos
     dependencyResolver.printFunctorList();
