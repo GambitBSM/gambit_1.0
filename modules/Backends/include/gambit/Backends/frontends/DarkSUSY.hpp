@@ -46,6 +46,7 @@ LOAD_LIBRARY
 
 // Functions
 BE_FUNCTION(dsinit, void, (), "dsinit_", "dsinit")
+BE_FUNCTION(dshainit, void, (const int&), "dshainit_", "dshainit")
 BE_FUNCTION(dssusy, void, (int&,int&), "dssusy_", "dssusy")
 BE_FUNCTION(dsrdomega, double, (int&,int&,double&,int&,int&,int&), "dsrdomega_", "dsrdomega")
 BE_FUNCTION(dsrdinit, void, (), "dsrdinit_", "dsrdinit")
@@ -118,6 +119,10 @@ BE_INI_FUNCTION
         std::cout << "DarkSUSY initialization" << std::endl;
         dsinit();
         dsrdinit();
+        // Initialize yield tables for use in cascade decays (initialize more if needed)
+        dshainit(151); // Initialize positron tables
+        dshainit(152); // Initialize gamma ray tables
+        dshainit(154); // Initialize antiproton tables        
         scan_level = false;
 
         if (runOptions->hasKey("dddn"))

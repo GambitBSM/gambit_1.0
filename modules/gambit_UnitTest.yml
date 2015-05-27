@@ -94,7 +94,7 @@ Rules:
         cMC_gammaRelError:      0.01  # Gamma ray end condition for event generation, relative error.      
         cMC_gammaBGPower:       -2.5  # Gamma spectrum power used in gamma ray end condition
         cMC_minSpecSamples:     5     # Minimum number of samples to use when sampling tabulated spectra from decay chain endpoints like q qbar
-        cMC_maxSpecSamples:     100   # As above, maximum number.
+        cMC_maxSpecSamples:     50   # As above, maximum number.
         cMC_specValidThreshold: 1e-20 # Only accept a sampled spectrum value if it's above this threshold. Use carefully, as high values will give a biased sample.
         cMC_finalStates:              # List of final states to search for in cascade decays
             - gamma
@@ -103,11 +103,11 @@ Rules:
     options:
       debug_SLHA_filenames: !import debug_SLHA_filenames.yaml
 
-#  - capability: GA_AnnYield
-#    function: GA_AnnYield_General
-#    options:
-#      debug_dump_spectra: true
-#      debug_spectrum_file: DarkBit/MSSM_debug_spectrum.yml
+  - capability: GA_AnnYield
+    function: GA_AnnYield_General
+    options:
+      debug_dump_spectra: true
+      debug_spectrum_file: DarkBit/MSSM_debug_spectrum.yml
 
   - capability: SimYieldTable
     function: SimYieldTable_DarkSusy
@@ -116,8 +116,8 @@ Rules:
     options:
         fileroot: UnitTest_MSSMbenchmarks_DarkSUSY
 #        #fileroot: UnitTest_MSSMbenchmarks_MicrOmegas
-#        GA_AnnYield:
-#          nbins: 100
+        GA_AnnYield:
+          nbins: 100
 
 
   - capability: MSSM_spectrum

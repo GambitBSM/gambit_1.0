@@ -7,11 +7,11 @@ DDcouplings:
 
 # Particle masses [GeV] 
 ParticleMasses:
-  Mchi: 64.2152
+  Mchi: 64
 
 # Relic density Omega h^2
 RelicDensity:
-  oh2: 0.112193
+  oh2: 0.112215
 
 # Annihilation spectrum dNdE [1/GeV]
 GammaRaySpectrum:

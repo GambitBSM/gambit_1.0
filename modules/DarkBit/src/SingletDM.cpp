@@ -26,6 +26,7 @@
 #include "gambit/DarkBit/DarkBit_rollcall.hpp"
 #include "gambit/Utils/ASCIItableReader.hpp"
 #include "boost/make_shared.hpp"
+#include "gambit/DarkBit/DarkBit_utils.hpp"
 
 namespace Gambit
 {
@@ -317,6 +318,16 @@ namespace Gambit
       addParticle("S",        mS , 0)  // Singlet mass
       addParticle("h0_1",     mH , 0)  // SM-like Higgs
       // FIXME: Get Higgs mass from Spec Bit
+      
+      // FIXME: Get meson masses from somewhere
+      addParticle("pi0",      0.135,   0)
+      addParticle("pi+",      0.1396,  0)
+      addParticle("pi-",      0.1396,  0)
+      addParticle("eta",      0.547,   0)
+      addParticle("rho0",     0.775,   1)        
+      addParticle("rho+",     0.775,   1)       
+      addParticle("rho-",     0.775,   1)             
+      addParticle("omega",    0.7827,  1)         
 #undef addParticle
 
 
@@ -330,65 +341,17 @@ namespace Gambit
       // Save Higgs width for later
       double gammaH = tbl->at("h0_1").width_in_GeV;
 
-      // List of decays to include (here only SM-like higgs)
-      const vector<string> decaysOfInterest = initVector<string> ("h0_1");
-      
+      // Set of imported decays
+      std::set<string> importedDecays;
+
       // Minimum branching ratio to include
       double minBranching = 
         runOptions->getValueOrDef<double>(0.0, "ProcessCatalog_MinBranching");
 
-      for(auto iState_it = decaysOfInterest.begin();
-          iState_it != decaysOfInterest.end(); ++iState_it)
-      {
-        std::cout << 
-          "Importing decay information for: " << *iState_it << std::endl;
-
-        const DecayTable::Entry &entry = tbl->at(*iState_it);
-        double totalWidth = entry.width_in_GeV;
-
-        std::cout << "Total width [GeV]: " << totalWidth << std::endl;
-        if(totalWidth>0)
-        {     
-          // Initialize new process with fixed rate
-          TH_Process process(*iState_it);
-          process.genRateTotal = Funk::cnst(totalWidth);
-
-          for(auto fState_it = entry.channels.begin();
-              fState_it!= entry.channels.end(); ++fState_it)
-          {
-            double bFraction = (fState_it->second).first;
-            if(bFraction>minBranching)
-            {
-              vector<string> pIDs;
-              std::cout << "  ";
-              const double m_init  = catalog.getParticleProperty(*iState_it).mass;
-              double mtot_final = 0;
-              for(auto pit = fState_it->first.begin();
-                  pit != fState_it->first.end(); ++pit)
-              {
-                string name = Models::ParticleDB().long_name(*pit);
-                mtot_final += catalog.getParticleProperty(name).mass;
-                pIDs.push_back(name);
-                std::cout << name << "\t";
-              } 
-              double partialWidth = totalWidth * bFraction;       
-              // FIXME: This should not be optional
-              bool checkKinematics = runOptions->getValueOrDef<bool>(true,
-              "ProcessCatalog_KinCheck");
-              // TODO: Add other criteria on which channels to include?
-              if(!checkKinematics or mtot_final<=m_init)
-              {
-                std::cout<< bFraction << std::endl;   
-                process.channelList.push_back(
-                    TH_Channel(pIDs, Funk::cnst(partialWidth)));
-              }
-              else
-                std::cout<< "kin. closed" << std::endl;   
-            }
-          }
-          catalog.processList.push_back(process);
-        }
-      }
+      // Import relevant decays (only Higgs and subsequent decays)
+      std::cout << "Importing decays..." << std::endl;
+      using DarkBit_utils::ImportDecays;
+      ImportDecays("h0_1", catalog, importedDecays, tbl, minBranching);
 
       // Instantiate new SingletDM object
       // FIXME: Probably this can be speed up f_vs_mass

@@ -34,15 +34,18 @@ namespace Gambit
     namespace DarkBit_utils
     {
 
-        // Functions
+      // Functions
 
-  // DSparticle_code translates GAMBIT string identifiers to the SUSY
-  // particle codes used internally in DS (as stored in common block /pacodes/)          
-  int DSparticle_code(const str particleID);
+      // DSparticle_code translates GAMBIT string identifiers to the SUSY
+      // particle codes used internally in DS (as stored in common block /pacodes/)          
+      int DSparticle_code(const str particleID);
 
+      // Helper function for recursively importing decays and decays of resulting final states into a process catalog
+      void ImportDecays(std::string pID, TH_ProcessCatalog &catalog, 
+                        std::set<std::string> &importedDecays, 
+                        const DecayTable* tbl, double minBranching);
 
-    };
-
+    }
 
   }
 
