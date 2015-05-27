@@ -33,18 +33,18 @@
 ///  ------
 ///  To add a new type that will be used exclusively to 
 ///  communicate with some model X, declare it in a header
-///   X/include/X_types.hpp,
-///  and include that file from Models/models/X.hpp.
+///   Models/include/gambit/Models/model_types/X_types.hpp,
+///  and include that file from Models/include/gambit/Models/models/X.hpp.
 ///  X_types will be automatically included in 
-///  Models/include/model_types_rollcall.hpp by the GAMBIT
+///  Models/include/gambit/Models/model_types_rollcall.hpp by the GAMBIT
 ///  model harvester.
 ///
 ///  MODULES
 ///  -------
 ///  To add a new type that will be used exclusively to 
 ///  communicate with some module Y, declare it in a header
-///   Y/include/Y_types.hpp,
-///  and include that file from Y/include/Y_rollcall.hpp.
+///   Y/include/gambit/Y/Y_types.hpp,
+///  and include that file from Y/include/gambit/Y/Y_rollcall.hpp.
 ///  Y_types will be automatically included in 
 ///  Elements/include/gambit/Elements/module_types_rollcall.hpp
 ///  by the GAMBIT module harvester.
@@ -53,9 +53,9 @@
 ///  --------
 ///  To add a new type that will be used to communicate
 ///  with a backend Z, declare it in a header
-///   Backends/include/backend_types/Z_types.hpp
+///   Backends/include/gambit/Backends/backend_types/Z_types.hpp
 ///  Z_types will be automatically included in 
-///  Backends/include/backend_types_rollcall.hpp 
+///  Backends/include/gambit/Backends/backend_types_rollcall.hpp 
 ///  by the GAMBIT backend harvester.
 ///
 ///  MIXED-USE TYPES
@@ -63,10 +63,10 @@
 ///  If the type will be used by multiple modules, 
 ///  multiple models or multiple backends, or any 
 ///  mixture thereof, make some header 
-///   Utils/include/__your_header_name__.hpp
+///   Utils/include/gambit/Utils/__your_header_name__.hpp
 ///  that declares the type, and include
-///  that header from 
-///   Utils/include/shared_types.hpp.
+///  that header by hand from 
+///   Utils/include/gambit/Utils/shared_types.hpp.
 ///  
 ///  PRINTING
 ///  --------
@@ -75,7 +75,7 @@
 ///  or other output medium, you will need to add 
 ///  specialisations for it in the various printers
 ///  included in 
-///   Utils/include/printers_rollcall.hpp.
+///   Utils/include/gambit/Utils/printers_rollcall.hpp.
 ///
 ///
 ///  *********************************************
