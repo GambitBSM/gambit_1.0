@@ -42,6 +42,8 @@ namespace Gambit
     functorMap         (functorMap),
     min_valid_lnlike   (iniFile.getValue<double>("likelihood", "model_invalid_for_lnlike_below"))
   {
+    // Set the list of valid return types of functions that can be used for 'purpose' by this container class. 
+    const std::vector<str> allowed_types_for_purpose = initVector<str>("double", "std::vector<double>", "float", "std::vector<float>");
     // Find subset of vertices that match requested purpose
     target_vertices = dependencyResolver.getObsLikeOrder();
     int size = 0;
@@ -50,7 +52,7 @@ namespace Gambit
     {
       if (dependencyResolver.getIniEntry(*vert_it)->purpose == purpose)
       {
-        // Here check that the types of the functors are depres type equivalent to double or std::vector<double>
+        return_types[*vert_it] = dependencyResolver.checkTypeMatch(*vert_it, purpose, allowed_types_for_purpose);
         *(it++) = *vert_it;
         size++;
       }
@@ -59,7 +61,6 @@ namespace Gambit
         aux_vertices.push_back(*vert_it);
       }
     }
-
     target_vertices.resize(size);
   }
 			
@@ -108,14 +109,34 @@ namespace Gambit
     // First work through the target functors, i.e. the ones contributing to the likelihood.
     for (auto it = target_vertices.begin(), end = target_vertices.end(); it != end; ++it)
     {
-      logger() << LogTags::core << "Calculating likelihood vertex " << *it << EOM;
+      logger() << LogTags::core << "Calculating likelihood vertex " << *it << "." << EOM;
       try
       {
         dependencyResolver.calcObsLike(*it,getPtID()); //pointID is passed through to the printer call for each functor
-        lnlike += dependencyResolver.getObsLike(*it);
+        // Switch depending on whether the functor returns floats or doubles and a single likelihood or a vector of them.
+        str rtype = return_types[*it];
+        if (rtype == "double")
+        {
+          lnlike += dependencyResolver.getObsLike<double>(*it);
+        }
+        else if (rtype == "std::vector<double>")
+        {
+          std::vector<double> result = dependencyResolver.getObsLike<std::vector<double> >(*it);
+          for (auto jt = result.begin(); jt != result.end(); ++jt) lnlike += *jt;
+        }
+        else if (rtype == "float")
+        {
+          lnlike += dependencyResolver.getObsLike<float>(*it);
+        }
+        else if (rtype == "std::vector<float>")
+        {
+          std::vector<float> result = dependencyResolver.getObsLike<std::vector<float> >(*it);
+          for (auto jt = result.begin(); jt != result.end(); ++jt) lnlike += *jt;
+        }
+        else core_error().raise(LOCAL_INFO, "Unexpected target functor type.");
         bool isnan = Utils::isnan(lnlike);
         if (isnan or lnlike <= min_valid_lnlike) dependencyResolver.invalidatePointAt(*it, isnan);
-        logger() << LogTags::core << "done with likelihood vertex " << *it << EOM;
+        logger() << LogTags::core << "Computed likelihood vertex " << *it << "." << EOM;
       }
       // Catch points that are invalid, either due to low like or pathology.  Skip the rest of the vertices if a point is invalid.
       catch(invalid_point_exception& e)

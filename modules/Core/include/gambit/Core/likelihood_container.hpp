@@ -38,16 +38,33 @@ namespace Gambit
   {
 
     private:
+
+      /// Graph vertices corresponding to functors in the ObsLike section of yaml file
       std::vector<DRes::VertexID> target_vertices;
+
+      /// Graph vertices corresponding to additional functors not in ObsLike part of yaml file
       std::vector<DRes::VertexID> aux_vertices;
+
+      /// Bound dependency resolver object
       DRes::DependencyResolver &dependencyResolver;
+
+      /// Actual values of the parameters
       std::vector<double> realParameters;
+
+      /// Bound prior object
       Priors::CompositePrior &prior;
+      
+      /// Map of parameter names to values
       std::unordered_map<str, double> parameterMap;
+
+      /// Map of scanned model names to primiary model functors
       std::map<str, primary_model_functor *> functorMap;
 			
       /// Value of the log likelihood at which a point is considered so unlikely that it can be ruled out (invalid).
       double min_valid_lnlike;
+      
+      /// Map of return types of target functors
+      std::map<DRes::VertexID,str> return_types;
 
     public:
 

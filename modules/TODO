@@ -16,12 +16,6 @@ Printers:
 Spectrum objects:
 * Make spectrum scale limit getter public (Ben)
 
-General:
-* Implement isNaN (look at cmath) (Pat)
-* Implement NaN check for likelihood in scanner (Pat, Greg)
-* Deal safely with errors arising from non-double results with purpose: Likelihood in yaml file (Pat)
-* Make bossed-type-requirements trigger a dependency on the providing backend's ini function. (Pat)
-
 DecayBit:
 * Make decay table type from SLHAea (Pat)
 
@@ -157,6 +151,10 @@ Core done:
 * Fix error in type equivalencies 
 * Split Utils dir into codes needed for ScannerBit standalone and those not needed
 * Make dependency resolver errors more informative
+* Implement isNaN
+* Implement NaN check for likelihood in scanner
+* Deal safely with errors arising from non-double results with purpose: Likelihood in yaml file
+* Make bossed-type-requirements trigger a dependency on the providing backend's ini function.
 
 Models done:
 * Remove automatic declaration of "little guys"
