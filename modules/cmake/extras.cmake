@@ -131,21 +131,27 @@ ExternalProject_Add(micromegas
 )
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../extras/micromegas/libmicromegas.so" "${PROJECT_SOURCE_DIR}/Backends/lib/libmicromegas.so")
 
+
 # Pythia
 if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64")
   set(pythia_CONFIGURE_EXTRAS "--enable-64bits")
 endif()
 
-set(pythia_CXXFLAGS "-O2 -ansi -pedantic -W -Wall -Wshadow -fPIC -Wno-extra")
+# - Pythia will not accept the -std=c++11 flag. Create a special pythia_CXXFLAGS variable without it. 
+string(REGEX REPLACE "(-std=c\\+\\+11)" "" pythia_CXXFLAGS ${CMAKE_CXX_FLAGS})
+
+# - Suppress warnings from -Wextra when building Pythia. 
+set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -Wno-extra")
 
 ExternalProject_Add(pythia
   SOURCE_DIR ${PROJECT_SOURCE_DIR}/../extras/boss/bossed_pythia_source
   BUILD_IN_SOURCE 1
-  CONFIGURE_COMMAND export FC=${CMAKE_Fortran_COMPILER} && export CC=${CMAKE_C_COMPILER} && export USRSHAREDSUFFIX=so && ./configure --enable-shared --cxx-common="${pythia_CXXFLAGS}" ${pythia_CONFIGURE_EXTRAS}
-  BUILD_COMMAND make CXX=${CMAKE_CXX_COMPILER} LDFLAGS=${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS}
+  CONFIGURE_COMMAND ./configure --enable-shared --cxx="${CMAKE_CXX_COMPILER}" --cxx-common="${pythia_CXXFLAGS}" --cxx-shared="${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS}" --lib-suffix=".so" ${pythia_CONFIGURE_EXTRAS}
+  BUILD_COMMAND make
   INSTALL_COMMAND cp lib/libpythia8.so ${PROJECT_SOURCE_DIR}/Backends/lib/libpythia8.so
 )
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../extras/boss/bossed_pythia_source/config.mk" "${PROJECT_SOURCE_DIR}/../extras/boss/bossed_pythia_source/lib/libpythia8.so" "${PROJECT_SOURCE_DIR}/Backends/lib/libpythia8.so")
+
 
 # Fastsim
 ExternalProject_Add(fastsim
