@@ -255,9 +255,7 @@ namespace Gambit {
         else if ( it->nFinalStates == 2 )
         {
           Funk::Funk spec0 = Funk::zero("E");
-          Funk::Funk spec1 = Funk::zero("E");
-          Funk::Funk spec2 = Funk::zero("E");
-          Funk::Funk spec3 = Funk::zero("E");          
+          Funk::Funk spec1 = Funk::zero("E");        
 
           double m0 = (*Dep::TH_ProcessCatalog).getParticleProperty(
               it->finalStateIDs[0]).mass;
