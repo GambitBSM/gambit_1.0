@@ -434,19 +434,13 @@ namespace Gambit {
           (*BEreq::widths).width(DarkBit_utils::DSparticle_code("h0_2"))=0.1;
 
         // tabulate invariant rate
-        // FIXME: This error is really caught if it is thrown inside the Weff
-        // object.
-        try
-        {
-          logger() << "Tabulating RD_eff_annrate..." << std::endl;
-          BEreq::dsrdtab(byVal(*Dep::RD_eff_annrate),xstart);
-          logger() << "...done!" << std::endl;
-        }
-        catch (...)
-        {
-          DarkBit_error().raise(LOCAL_INFO, 
-              "Something went wrong while tabulating RD_eff_annrate.");
-        }
+        logger() << "Tabulating RD_eff_annrate..." << std::endl;
+        BEreq::dsrdtab(byVal(*Dep::RD_eff_annrate),xstart);
+        logger() << "...done!" << std::endl;
+
+        // Check whether piped invalid point was thrown
+        piped_invalid_point.check();
+
         // determine integration limit
         BEreq::dsrdthlim();                                 
 

@@ -239,6 +239,26 @@ namespace Gambit
     
   };
 
+  /// Gambit piped exception class.
+  class Piped_invalid_point
+  {
+    public:
+      /// Constructor
+      Piped_invalid_point() : flag(false), message("") {};
+
+      /// Request an exception.
+      void request(std::string message);
+
+      /// Check whether an exception was requested, and throw it if necessary.
+      void check();
+
+    private:
+      bool flag;
+      std::string message;
+  };
+
+  /// Global instance of piped invalid point class.
+  extern Piped_invalid_point piped_invalid_point;
 
 }
 

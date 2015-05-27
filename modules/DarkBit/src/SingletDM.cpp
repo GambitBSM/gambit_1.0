@@ -80,10 +80,7 @@ namespace Gambit
           double sqrt_s = sqrt(s);
           if ( sqrt_s < 90 ) 
           {
-            // FIXME: This should not crash the code
-            std::cout << "SingletDM sigmav called with sqrt_s < 90 GeV." << std::endl;
-            std::cout << "This exception should be caught correctly and not crash gambit." << std::endl;
-            invalid_point().raise(
+            piped_invalid_point.request(
                 "SingletDM sigmav called with sqrt_s < 90 GeV.");
             return 0;
           }
