@@ -451,6 +451,7 @@ START_MODULE
     #undef FUNCTION
     #define FUNCTION DD_couplings_SingletDM
       START_FUNCTION(DarkBit::DD_couplings)
+      DEPENDENCY(TH_ProcessCatalog, DarkBit::TH_ProcessCatalog)
       ALLOW_JOINT_MODEL(nuclear_params_fnq, SingletDM)
      #undef FUNCTION
   #undef CAPABILITY
