@@ -104,7 +104,7 @@
 
 // Switch for debugging output (manual at the moment)
 
-#define DEBUG_MODE
+//#define DEBUG_MODE
 
 #ifdef DEBUG_MODE 
   #define DBUG(x) x
@@ -390,7 +390,12 @@ namespace Gambit
     {
       for (BaseBufferMap::iterator it = all_my_buffers.begin(); it != all_my_buffers.end(); it++)
       {
-        it->second->flush();
+        if(it->second->is_synchronised()) {
+          it->second->flush();
+        }
+        else {
+          it->second->RA_flush();
+        }
       }
     }
 

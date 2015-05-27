@@ -31,7 +31,7 @@
 #include "gambit/Printers/hdf5tools.hpp"
 #include "gambit/Utils/yaml_options.hpp"
 
-#define DEBUG_MODE
+//#define DEBUG_MODE
 
 // Code!
 namespace Gambit
@@ -40,7 +40,7 @@ namespace Gambit
   {
  
     // Parameter controlling the length of all the standard buffers
-    static const std::size_t BUFFERLENGTH = 10; // Change to 10000 or something. Currently cannot change this dynamically though, sorry.
+    static const std::size_t BUFFERLENGTH = 100; // Change to 10000 or something. Currently cannot change this dynamically though, sorry.
 
     /// @{ Helpful typedefs
 
@@ -343,11 +343,11 @@ namespace Gambit
         // Matching vector for the above, for reverse lookup
         std::vector<PPIDpair> reverse_global_index_lookup;
 
-        /// MPI rank (currently not hooked up to MPI, just hardcoded to 0)
-        int myRank;
-
         /// Label for printer, mostly for more helpful error messages
         std::string printer_name;
+
+        /// MPI rank (currently not hooked up to MPI, just hardcoded to 0)
+        int myRank;
 
         /// Flag to specify whether all buffers created by this printer 
         /// should be synchronised and iterated along with the Gambit

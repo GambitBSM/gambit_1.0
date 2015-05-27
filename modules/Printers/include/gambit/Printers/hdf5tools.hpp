@@ -35,7 +35,7 @@
 // Gambit
 #include "gambit/Utils/standalone_error_handlers.hpp"
 
-#define HDF5_DEBUG // Triggers debugging output
+//#define HDF5_DEBUG // Triggers debugging output
    
 namespace Gambit {
   namespace Printers {
@@ -180,14 +180,14 @@ namespace Gambit {
             bool is_silenced() { return silenced; }
 
             // Needed to externally trigger buffer write to disk (e.g. at end of scan)
-            virtual void flush() {} ///TODO: write proper cleanout function = 0;            
+            virtual void flush() = 0; ///TODO: write proper cleanout function = 0;            
 
             // Flush the random-access write queue (i.e. do the queued-up writes)
-            virtual void RA_flush() {}
+            virtual void RA_flush() = 0;
 
             // Resets buffer and signals to printer to empty out the contents of the output
             // dataset in preparation of new writing.
-            virtual void reset() {}
+            virtual void reset() = 0;
 
             // Needed to externally inform buffer of a skipped iteration (when no data to write)
             virtual void skip_append() = 0;           
@@ -272,7 +272,7 @@ namespace Gambit {
           void RA_write(const T& value, const ulong dset_index);
 
           /// No data to append this iteration; skip this slot
-          void skip_append();
+          virtual void skip_append();
 
           /// Extract (copy) a record
           T get_entry(const std::size_t i) const;
@@ -388,9 +388,21 @@ namespace Gambit {
       class VertexBufferNumeric1D_HDF5 : public VertexBufferNumeric1D<T,CHUNKLENGTH> 
       {
          private:
-           // Interfaces to HDF5 datasets
+           /// Interfaces to HDF5 datasets
            DataSetInterfaceScalar<bool,CHUNKLENGTH> dsetvalid; // validity bools
            DataSetInterfaceScalar<T,CHUNKLENGTH>    dsetdata;  // actual data 
+
+           /// Private function to trigger buffer write to disk.
+           /// This is just to convince myself that the base virtual
+           /// function is not called accidentally
+           /// in certain places.
+           void private_flush()
+           {
+             if(not this->is_silenced()) {
+                dsetvalid.writenewchunk(this->buffer_valid); 
+                dsetdata.writenewchunk(this->buffer_entries);
+             }
+           }
 
          public:
            /// Constructors
@@ -414,21 +426,30 @@ namespace Gambit {
        
            /// Destructor
            /// Make sure buffer contents are written to file when buffer object is destroyed
-           ~VertexBufferNumeric1D_HDF5() { flush(); }
-
-           /// Override of buffer dump function to handle HDF5 output
-           void flush()
+           ~VertexBufferNumeric1D_HDF5() 
            {
-             if(not this->is_silenced()) {
-                dsetvalid.writenewchunk(this->buffer_valid); 
-                dsetdata.writenewchunk(this->buffer_entries);
-             }
+              if(this->is_synchronised()) { private_flush(); }
+              else { RA_flush(); }
            }
 
+           /// Override of buffer dump function to handle HDF5 output
+           virtual void flush() 
+           { 
+              if(this->is_synchronised()) { private_flush(); }
+              else {
+                 std::ostringstream errmsg;
+                 errmsg << "Error! Tried to flush() synchronised write buffer of buffer with name "<<this->get_label()<<", but buffer is not flagged as running in synchronised mode! Please report this bug.";
+                 printer_error().raise(LOCAL_INFO, errmsg.str()); 
+              }
+           }
+
+           /// Reset the output (non-synchronised datasets only)
+           virtual void reset() { }
+
            /// Send random access write queue to dataset interfaces for writing
-           void RA_flush()
+           virtual void RA_flush()
            {
-              if(not this->is_silenced()) {
+              if((not this->is_silenced()) and (not this->RA_queue_length==0)) {
                  bool valid[CHUNKLENGTH];
                  std::fill_n(valid, this->RA_queue_length, true); 
                  dsetvalid.RA_write(valid,this->RA_write_locations,this->RA_queue_length); 
@@ -579,7 +600,7 @@ namespace Gambit {
             // so this would not compile in the RECORDRANK=0 case, which I need. Irritating.
             
             // Compute initial dataspace and chunk dimensions
-            dims[0] = 1*CHUNKLENGTH; // Start off with space for 1 chunk
+            dims[0] = 0; //1*CHUNKLENGTH; // Start off with space for 1 chunk
             maxdims[0] = H5S_UNLIMITED; // No upper limit on number of records allowed in dataset
             chunkdims[0] = CHUNKLENGTH;
             slicedims[0] = 1; // Dimensions of a single record in the data space
@@ -654,8 +675,15 @@ namespace Gambit {
           {
              hsize_t offsets[DSETRANK];
 
+             #ifdef HDF5_DEBUG
+             std::cout << "Preparing to write new chunk to dataset "<<this->get_myname()<<std::endl
+                       << "Extending dataset from current size "<<this->dsetdims()[0]; 
+             #endif
              // Extend the dataset. Dataset on disk becomes 1 chunk larger.
              this->dsetdims()[0] += CHUNKLENGTH; // extend dataset by 1 chunk
+             #ifdef HDF5_DEBUG
+             std::cout << " to new size "<<this->dsetdims()[0]<< std::endl; 
+             #endif
              // newsize[1] = dims[1]; // don't need: only 1D for now.
              this->my_dataset.extend( this->dsetdims() );  
 
@@ -687,7 +715,7 @@ namespace Gambit {
 
              // Update the "next empty hyperslab" counter
              #ifdef HDF5_DEBUG
-             std::cout<<"Chunk written! Incrementing chunk offset:"
+             std::cout<<"Chunk written to dataset \""<<this->get_myname()<<"\"! Incrementing chunk offset:"
                       <<this->dsetnextemptyslab<<" --> "<<this->dsetnextemptyslab+CHUNKLENGTH<<std::endl;
              #endif
              this->dsetnextemptyslab += CHUNKLENGTH;
@@ -704,9 +732,18 @@ namespace Gambit {
              ulong max_coord = *std::max_element(coords,coords+npoints);
              if( max_coord >= this->dsetdims()[0] )
              {
-               // Extend the dataset to the nearest multiple of CHUNKLENGTH above max_coord
-               std::size_t remainder = max_coord % CHUNKLENGTH; 
-               this->dsetdims()[0] = max_coord - remainder + CHUNKLENGTH;
+               // Extend the dataset to the nearest multiple of CHUNKLENGTH above max_coord,
+               // unless max_coord is itself a multiple of CHUNKLENGTH.
+               std::size_t remainder = max_coord % CHUNKLENGTH;
+               std::size_t newlength;
+               if(remainder==0) { newlength = max_coord; } 
+               else             { newlength = max_coord - remainder + CHUNKLENGTH; }
+               #ifdef HDF5_DEBUG
+               std::cout << "Max coord ("<<max_coord<<") larger than current dataset length ("<<this->dsetdims()[0]<<") (dset name="<<this->get_myname()<<")" << std::endl
+                         << "Extending dataset to newlength="<<newlength<<std::endl
+                         << "npoints = "<< npoints << std::endl;
+               #endif
+               this->dsetdims()[0] = newlength;
                this->my_dataset.extend( this->dsetdims() );  
              }
 
@@ -731,8 +768,16 @@ namespace Gambit {
              if(errflag<0) error_occurred = true; 
 
              // Get the C interface identifier for the type of the output dataset
-             hid_t dtype = this->hdf_dtype.type().getId();
- 
+             hid_t expected_dtype = this->hdf_dtype.type().getId();
+             //hid_t dtype = H5::PredType::NATIVE_DOUBLE.getId(); //the above does something like this
+             hid_t dtype = H5Dget_type(dset_id); // type with which the dset was created
+             if(not H5Tequal(dtype, expected_dtype))
+             {
+                 std::ostringstream errmsg;
+                 errmsg << "Error! Tried to write to dataset (name="<<this->get_myname()<<") with type id "<<dtype<<" but expected it to have type id "<<expected_dtype<<". This is a bug in the DataSetInterfaceScalar class, please report it."; 
+                 printer_error().raise(LOCAL_INFO, errmsg.str());
+             }
+
              // Write data to selected points
              // (H5P_DEFAULT specifies some transfer properties for the I/O 
              //  operation. These are the default values, probably are ok.)
@@ -747,7 +792,9 @@ namespace Gambit {
                         << "  dspace   : " << dspace << std::endl
                         << "  dspace_id: " << dspace_id << std::endl
                         << "  errflag  : " << errflag << std::endl
-                        << "  errflag2 : " << errflag2;
+                        << "  errflag2 : " << errflag2 << std::endl
+                        << "Variables:" << std::endl
+                        << "  dtype = " << dtype;
                  printer_error().raise(LOCAL_INFO, errmsg.str());
              }
 

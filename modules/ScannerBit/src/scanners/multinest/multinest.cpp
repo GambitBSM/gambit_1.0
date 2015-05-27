@@ -28,6 +28,7 @@
 #include "gambit/ScannerBit/scanner_plugin.hpp"
 #include "gambit/ScannerBit/scanners/multinest/multinest.hpp"
 #include "gambit/Utils/yaml_options.hpp"
+#include "gambit/Utils/util_functions.hpp"
 //#include "gambit/Printers/basebaseprinter.hpp"
 
 #include <iomanip>  // For debugging only
@@ -95,7 +96,8 @@ scanner_plugin(MultiNest, version(0, 0, 0, bens_version))
          
       std::string root_str ( get_inifile_value<std::string>("root", "chains/") ); // root for output files
       char root[100];
-      root_str.copy(root,100,0);  // copy std::string into char array for transport to fortran/
+      // copy std::string into char array for transport to fortran
+      Gambit::Utils::strcpy2f(root, 100, root_str);       
 
       int seed (	get_inifile_value<int>("seed", -1) );		// random no. generator seed, if < 0 then take the seed from system clock
       int fb (		get_inifile_value<int>("fb", 1) );		// need feedback on standard output?
