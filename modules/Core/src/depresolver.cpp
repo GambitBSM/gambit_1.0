@@ -228,22 +228,22 @@ namespace Gambit
     }
 
     // Check whether s1 (wildcard + regex allowed) matches s2
-    bool stringComp(const str & s1, const str & s2)
+    bool stringComp(const str & s1, const str & s2, bool with_regex)
     {
       if ( s1 == s2 ) return true;
       if ( s1 == "" ) return true;
       if ( s1 == "*" ) return true;
 #ifdef HAVE_REGEX_H
-      if ( use_regex and std::regex_match ( s2, *(new std::regex(s1)) ) ) return true; 
+      if (with_regex) if (std::regex_match(s2, std::regex(s1))) return true; 
 #endif
       return false;
     }
 
     // Same thing for types (taking into account equivalence classes)
-    bool typeComp(const str & s1, const str & s2, const Utils::type_equivalency & eq)
+    bool typeComp(const str & s1, const str & s2, const Utils::type_equivalency & eq, bool with_regex)
     {
       bool match1, match2;
-      if (stringComp(s1, s2)) return true;  // Does it just match?
+      if (stringComp(s1, s2, with_regex)) return true;  // Does it just match?
       // Otherwise loop over equivalence classes.
       for (auto it1 = eq.equivalency_classes.begin(); it1 != eq.equivalency_classes.end(); it1++)
       {
@@ -251,7 +251,7 @@ namespace Gambit
         for (auto it2 = it1->begin(); it2 != it1->end(); it2++)
         {
           if (s1 == *it2) match1 = true;
-          if (stringComp(*it2, s2)) match2 = true;
+          if (stringComp(*it2, s2, with_regex)) match2 = true;
         }
         if (match1 and match2) return true;
       }
@@ -588,22 +588,22 @@ namespace Gambit
       }
     }
 
-    // Returns value from ObsLike (only doubles)
-    double DependencyResolver::getObsLike(VertexID vertex)
+    // Ensure that the type of a given vertex is equivalent to at least one of a provided list, and return the match.
+    str DependencyResolver::checkTypeMatch(VertexID vertex, const str& purpose, const std::vector<str>& types)
     {
-      // Returns just doubles, and crashes for other types
-      // TODO: Catch errors
-      // Pat: Note that this always accesses the 0-index result (which is considered to be
-      // the 'final result' when more than one thread has run the functor, and is the 
-      // only result when the functor has not been run in parallel); accessing the results
-      // from any other threads requires passing the desired thread index explicity instead of 0.
-      return (*(dynamic_cast<module_functor<double>*>(masterGraph[vertex])))(0);
-    }
-
-    // Returns value from ObsLike (only doubles)
-    std::vector<double> DependencyResolver::getObsLikeVector(VertexID vertex)
-    {
-      return (*(dynamic_cast<module_functor<std::vector<double>>*>(masterGraph[vertex])))(0);
+      for (auto it = types.begin(); it != types.end(); ++it)
+      {
+        if (typeComp(*it, masterGraph[vertex]->type(), *boundTEs, false)) return *it;
+      }
+      std::stringstream msg;
+      msg << "All quantities with purpose \"" << purpose << "\" in your yaml file must have one " << endl
+          << "of the following types: " << endl << "  " << types << endl
+          << "You have tried to assign this purpose to " << masterGraph[vertex]->origin() << "::"
+          << masterGraph[vertex]->name() << "," << endl << "which has capability: " << endl
+          << "  " << masterGraph[vertex]->capability() << endl << "and result type: " << endl 
+          << "  [" << masterGraph[vertex]->type() << "]" << endl << "Please assign a different purpose to this entry.";          
+      core_error().raise(LOCAL_INFO, msg.str());
+      return "If you make core errors non-fatal you deserve what you get.";
     }
 
     // Tell functor that it invalidated the current point in model space (due to a large or NaN contribution to lnL)

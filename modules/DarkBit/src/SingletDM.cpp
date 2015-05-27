@@ -22,7 +22,7 @@
 ///  *********************************************
 
 #include "gambit/Elements/gambit_module_headers.hpp"
-#include "gambit/Elements/virtualH.hpp"
+#include "gambit/Elements/virtual_higgs.hpp"
 #include "gambit/DarkBit/DarkBit_rollcall.hpp"
 #include "gambit/Utils/ASCIItableReader.hpp"
 #include "boost/make_shared.hpp"
@@ -81,10 +81,7 @@ namespace Gambit
           double sqrt_s = sqrt(s);
           if ( sqrt_s < 90 ) 
           {
-            // FIXME: This should not crash the code
-            std::cout << "SingletDM sigmav called with sqrt_s < 90 GeV." << std::endl;
-            std::cout << "This exception should be caught correctly and not crash gambit." << std::endl;
-            invalid_point().raise(
+            piped_invalid_point.request(
                 "SingletDM sigmav called with sqrt_s < 90 GeV.");
             return 0;
           }
@@ -92,8 +89,8 @@ namespace Gambit
           if ( channel == "hh" ) { return sv_hh(lambda, mass, v); }
           if ( sqrt_s < 300 )
           {
-            double br = Virtual_SMHiggs_widths(channel,sqrt_s);
-            double Gamma_s = Virtual_SMHiggs_widths("Gamma",sqrt_s);
+            double br = virtual_SMHiggs_widths(channel,sqrt_s);
+            double Gamma_s = virtual_SMHiggs_widths("Gamma",sqrt_s);
             double GeV2tocm3s1 = gev2cm2*s2cm;
 
             double res = 2*lambda*lambda*v0*v0/

@@ -25,7 +25,7 @@
 #include <vector>
 #include <sstream>
 
-#include "gambit/Elements/virtualH.hpp"
+#include "gambit/Elements/virtual_higgs.hpp"
 #include "gambit/Utils/ASCIItableReader.hpp"
 #include "gambit/cmake/cmake_variables.hpp"
 
@@ -33,13 +33,13 @@ namespace Gambit
 {
     
   /// Higgs branching ratios and total width Gamma [GeV], as function of mass [GeV] (90 - 300 GeV)
-  double Virtual_SMHiggs_widths(str channel, double mh)
+  double virtual_SMHiggs_widths(str channel, double mh)
   {
     // Path to file containing virtual Higgs width tables.
-    const str VirtualH_tabfile = GAMBIT_DIR "/Elements/data/Higgs_decay_1101.0593.dat";
+    const str virtualH_tabfile = GAMBIT_DIR "/Elements/data/Higgs_decay_1101.0593.dat";
 
     // Initialise, reading in the data table and setting up the interpolators.
-    static ASCIItableReader table(VirtualH_tabfile);  
+    static ASCIItableReader table(virtualH_tabfile);  
     static std::map<std::string, Funk::Funk> f_vs_mass;
     static bool initialised = false;
     static double minmass, maxmass;
