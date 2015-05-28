@@ -34,6 +34,7 @@ BE_FUNCTION(readSpectra, int, (), "readSpectra", "readSpectra")
 BE_VARIABLE(MicrOmegas::MOcommonSTR, mocommon_, "mocommon_", "MOcommon")
 BE_VARIABLE(int, ForceUG, "ForceUG", "ForceUG")
 
+/*
 namespace Gambit
 {
   namespace Backends
@@ -52,14 +53,16 @@ namespace Gambit
         return zInterp(log(E/Ecm*2), tab);
       }
 
-    } /* end namespace BACKENDNAME_SAFE_VERSION */
-  } /* end namespace Backends */
-} /* end namespace Gambit */
+    }
+  }
+}
+*/
 
 BE_CONV_FUNCTION(dNdE, double, (double,double,int,int), "dNdE")
 
 BE_INI_DEPENDENCY(MSSM_spectrum, const Spectrum*)
 
+/*
 BE_INI_FUNCTION
 {
     using namespace SLHAea;
@@ -72,6 +75,7 @@ BE_INI_FUNCTION
     const Spectrum* mySpec = *Dep::MSSM_spectrum;
     eaSLHA mySLHA = mySpec->getSLHAea();
 
+    input[""]
     std::ofstream ofs(filename);
     ofs << mySLHA;
     ofs.close();
@@ -89,13 +93,14 @@ BE_INI_FUNCTION
 
     error = lesHinput(byVal(filename_c));
     if (error != 0) BackendIniBit_error().raise(LOCAL_INFO, "MicrOmegas function "
-            "sortOddParticles returned error code: " + std::to_string(error));
+            "lesHinput returned error code: " + std::to_string(error));
     error = sortOddParticles(byVal(cdmName));
     if (error != 0) BackendIniBit_error().raise(LOCAL_INFO, "MicrOmegas function "
             "sortOddParticles returned error code: " + std::to_string(error));
 
 }
 END_BE_INI_FUNCTION
+*/
 
 #include "gambit/Backends/backend_undefs.hpp"
 
