@@ -33,25 +33,7 @@ namespace Gambit {
    typedef std::pair<std::string,pair_ints> pair_string_ints;
    typedef std::pair<std::string,std::string> pair_strings;
    typedef std::set<int>::iterator iter;
-   /// maps to extact info from strings
-   extern std::map<std::string, p_int_string> gauge_label_to_index_type;
-   extern std::map<std::string, p_int_string> mass_label_to_index_type;
-   /// map to extract info from family state   
-   extern std::map<std::string, pair_string_ints> familystate_label;
    
-   ///map to obtain left_right gauge_pairs from state info
-   /// helps us reuse other routiones with string arguments 
-   extern std::map<p_int_string, pair_strings>  type_family_to_gauge_states;
-   ///maps directly from family string to left_right gauge_pairs
-   /// helps us reuse other routines that take string arguments 
-   extern std::map<std::string, pair_strings>  family_state_to_gauge_state;
-   /// map from string representing type (ie up-squars, down-squars or 
-   /// charged selptons) to appropriate set of mass eigenstates 
-   extern std::map<std::string,std::set<std::string>> type_to_set_of_mass_es;
-   ///maps between type and the sets of indices
-   extern std::map<std::string,std::set<int>> type_to_set_of_row_indices;
-   extern std::map<std::string,std::set<int>> type_to_set_of_col_indices;
-
    /// setup all the maps
    void init_maps();
    //get column of the mixing matrix
@@ -68,10 +50,6 @@ namespace Gambit {
    ///routine to return mass state admixure for given gauge state
    double get_mass_admix_for_gauge(std::string gauge_es, std::string mass_es,
                                     const SubSpectrum* mssm);
-   /// slower alterantive as currently implemented that resuses earlier routine
-   /// quick cross check - to be removed after tests
-   double get_mass_admix_for_gauge2(std::string gauge_es, std::string mass_es,
-                                     const SubSpectrum* mssm);
    /// returns vector representing composition of requested mass eigenstate
    /// in terms of the slha2 gauge eigenstates (~u_L,~c_L,...~t_R etc)
    /// which is just a row in the mixing matrix 
@@ -105,7 +83,7 @@ namespace Gambit {
    std::vector<double> get_gauge_comp_for_family_state(std::string familystate,
                                                        const SubSpectrum* mssm);
 
-   ///As above but returns specific admixture
+   /// As above but returns specific admixture
    double get_gauge_admix_for_family_state(std::string familystate, 
                                            std::string gauge_es,
                                            std::string & mass_es,
@@ -113,10 +91,6 @@ namespace Gambit {
    double get_gauge_admix_for_family_state(std::string familystate, 
                                            std::string gauge_es,
                                            const SubSpectrum* mssm);
-   /// cross check of above - to be removed after tests
-   double get_gauge_admix_for_family_state2(std::string familystate, 
-                                            std::string gauge_es,
-                                            const SubSpectrum* mssm);
    /// identifies the mass_es which best matches specified family state
    /// then returns mass es's admixture of the two gauge states with same family
    /// and stores the rest of the gauge content for this state in a std::vector
