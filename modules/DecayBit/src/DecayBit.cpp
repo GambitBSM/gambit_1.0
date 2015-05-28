@@ -20,6 +20,9 @@
 #include "gambit/Elements/virtualH.hpp"
 #include "gambit/DecayBit/DecayBit_rollcall.hpp"
 #include "gambit/DecayBit/decay_utils.hpp"
+#include "gambit/Elements/MSSM_slhahelp.hpp"
+#include <string>
+#include <map>
 
 namespace Gambit
 {
@@ -203,61 +206,229 @@ namespace Gambit
       result.set_BF(Virtual_SMHiggs_widths("WW",mh), 0.0, "W+", "W-");
       result.set_BF(Virtual_SMHiggs_widths("ZZ",mh), 0.0, "Z0", "Z0");
     }
+     
+     
+     //////////// MSSM /////////////////////
+
+     /// this another variable with global scope for this file
+     std::map<std::string, std::string> particle_to_anti_particle;
+     
+        void fill_p_to_ap_map () {
+        particle_to_anti_particle["~u_1"] = "~ubar_1";
+        particle_to_anti_particle["~u_2"] = "~ubar_2";
+        particle_to_anti_particle["~u_3"] = "~ubar_3";
+        particle_to_anti_particle["~u_4"] = "~ubar_4";
+        particle_to_anti_particle["~u_5"] = "~ubar_5";
+        particle_to_anti_particle["~u_6"] = "~ubar_6";
+        
+        particle_to_anti_particle["~d_1"] = "~dbar_1";
+        particle_to_anti_particle["~d_2"] = "~dbar_2";
+        particle_to_anti_particle["~d_3"] = "~dbar_3";
+        particle_to_anti_particle["~d_4"] = "~dbar_4";
+        particle_to_anti_particle["~d_5"] = "~dbar_5";
+        particle_to_anti_particle["~d_6"] = "~dbar_6";
+        
+        particle_to_anti_particle["~e-_1"] = "~e+_1";
+        particle_to_anti_particle["~e-_2"] = "~e+_2";
+        particle_to_anti_particle["~e-_3"] = "~e+_3";
+        particle_to_anti_particle["~e-_4"] = "~e+_4";
+        particle_to_anti_particle["~e-_5"] = "~e+_5";
+        particle_to_anti_particle["~e-_6"] = "~e+_6";
+        
+
+        particle_to_anti_particle["~nu_1"] = "~nubar_1";
+        particle_to_anti_particle["~nu_2"] = "~nubar_2";
+        particle_to_anti_particle["~nu_3"] = "~nubar_3";
+     }
+
+      /// just leave these as regular functions just now
+     /// in case we change approach or test alternative
+     void fill_mass_es_psn_gauge(std::string & is, std::string & isbar,  
+                                 std::string gauge_es,
+                                 const SubSpectrum* mssm,
+                                 double tol) {
+        
+        fill_p_to_ap_map();
+        std::string mass_es;
+        double admix = 0; 
+        admix = slhahelp::get_largest_mass_admix_for_gauge(gauge_es, mass_es, mssm);
+        if((admix*admix) >= 1-tol){
+           is = mass_es;   
+           isbar = particle_to_anti_particle[mass_es];
+        }
+        else {/// throw exception in gambit
+           /// I am actually not sure if this is code error or a problem point
+           /// to be flagged
+           
+           /// can i write the deviation and the states in this message?  O
+           /// or does it only accept string
+             
+           DecayBit_error().raise(LOCAL_INFO, "function fill_mass_es_psn_gauge has too large sfermion mixing for state that assumed to be a pure gauge state"); 
+           DecayBit_warning().raise(LOCAL_INFO,
+              "This point violates the assumption that certain sfermion states have no family mixing  by a degree larger than tol made in a DecayBit routine.");
+           invalid_point().raise("This point violates the assumption that certain sfermion states have no family mixing  by a degree larger than tol made in a DecayBit routine.");
+}  
+        return;
+     }
 
 
-//////////// MSSM /////////////////////
+     void fill_mass_es_psn_family(std::string & is, std::string & isbar,  
+                                  std::string family_state,
+                                  const SubSpectrum* mssm,
+                                  double tol) {
+        fill_p_to_ap_map();
+        std::string mass_es; 
+        /// use special routine which first identifies the mass_es which 
+        /// best matches the requested family state. then returns the
+        /// decomposition of that mass_es state in terms of gaige states 
+        /// from the same family as the family state
+        std::vector<double> wrong_fam_gauge_comp;
+        std::vector<double> right_fam_gauge_comp = 
+           slhahelp::gauge_decomp_of_family_state(family_state, mass_es,
+                                        wrong_fam_gauge_comp, mssm);
+        /// Do very simple test for now, discuss best approach
+        /// This is question for decaybit
+        auto it = max_element(std::begin(wrong_fam_gauge_comp), 
+                              std::end(wrong_fam_gauge_comp));
 
-    /// MSSM sfermion states
-    const char *isdl = "~d_1";
-    const char *isul = "~u_1";
-    const char *issl = "~d_2";
-    const char *iscl = "~u_2";
-    const char *isb1 = "~d_3";
-    const char *ist1 = "~u_3";
-    const char *isell = "~e-_1";
-    const char *inel = "~nu_1";
-    const char *ismul = "~e-_2";
-    const char *inmul = "~nu_2";
-    const char *istau1 = "~e-_3";
-    const char *intau1 = "~nu_3";
-    const char *isdr = "~d_4";
-    const char *isur = "~u_4";
-    const char *issr = "~d_5";
-    const char *iscr = "~u_5";
-    const char *isb2 = "~d_6";
-    const char *ist2 = "~u_6";
-    const char *iselr = "~e-_4";
-    const char *iner = "~nu_1"; // 2000012 until we don't have RHNs in particle_database
-    const char *ismur = "~e-_5";
-    const char *inmur = "~nu_2"; // 2000014
-    const char *istau2 = "~e-_6";
-    const char *intau2 = "~nu_3"; // 2000016
 
-    const char *isdlbar = "~dbar_1";
-    const char *isulbar = "~ubar_1";
-    const char *isslbar = "~dbar_2";
-    const char *isclbar = "~ubar_2";
-    const char *isb1bar = "~dbar_3";
-    const char *ist1bar = "~ubar_3";
-    const char *isellbar = "~e+_1";
-    const char *inelbar = "~nubar_1";
-    const char *ismulbar = "~e+_2";
-    const char *inmulbar = "~nubar_2";
-    const char *istau1bar = "~e+_3";
-    const char *intau1bar = "~nubar_3";
-    const char *isdrbar = "~dbar_4";
-    const char *isurbar = "~ubar_4";
-    const char *issrbar = "~dbar_5";
-    const char *iscrbar = "~ubar_5";
-    const char *isb2bar = "~dbar_6";
-    const char *ist2bar = "~ubar_6";
-    const char *iselrbar = "~e+_4";
-    const char *inerbar = "~nubar_1"; // -2000012 until we don't have RHNs in particle_database
-    const char *ismurbar = "~e+_5";
-    const char *inmurbar = "~nubar_2"; // -2000014
-    const char *istau2bar = "~e+_6";
-    const char *intau2bar = "~nubar_3"; // -2000016
-	
+        if(fabs(*it) *fabs(*it) < tol) 
+           {
+              is = mass_es;   
+              isbar = particle_to_anti_particle[mass_es];
+           }
+        else 
+           {
+           DecayBit_error().raise(LOCAL_INFO, "function get_mass_admix_for_gauge called with type's for the gauge eigenstate and mass eigenstate that don't match."); 
+           DecayBit_warning().raise(LOCAL_INFO,
+              "This point violates the assumption that certain sfermion states have no family mixing  by a degree larger than tol made in a DecayBit routine.");
+           invalid_point().raise("This point violates the assumption that certain sfermion states have no family mixing  by a degree larger than tol made in a DecayBit routine.");
+        }
+        
+        return;
+ }
+
+ 
+     /// put in a strict at least instead of global variables
+     struct mass_es_pseudonyms {
+     public:
+        mass_es_pseudonyms();
+        std::string isdl;
+        std::string isul;
+        std::string issl;
+        std::string iscl;
+        std::string isb1;
+        std::string ist1;
+        std::string isell;
+        std::string isnel;
+        std::string ismul;
+        std::string isnmul;
+        std::string istau1;
+        std::string isntau1;
+        std::string isdr;
+        std::string isur;
+        std::string issr;
+        std::string iscr;
+        std::string isb2;
+        std::string ist2;
+        std::string iselr;
+        /// This doesn't exist in the MSSM why is it here?
+        ///std::string iner; // 2000012 until we don't have RHNs in particle_database
+        std::string ismur;
+        /// This doesn't exist in the MSSM why is it here?
+        ///  std::string inmur; // 2000014
+        std::string istau2;
+        /// This doesn't exist in the MSSM why is it here?
+        /// std::string intau2; // 2000016
+        
+        std::string isdlbar;
+        std::string isulbar;
+        std::string isslbar;
+        std::string isclbar;
+        std::string isb1bar;
+        std::string ist1bar;
+        std::string isellbar;
+        std::string isnelbar;  //need to add sneutrinos to helpers
+        std::string ismulbar;
+        std::string isnmulbar;
+        std::string istau1bar;
+        std::string isntau1bar;
+        std::string isdrbar;
+        std::string isurbar;
+        std::string issrbar;
+        std::string iscrbar;
+        std::string isb2bar;
+        std::string ist2bar;
+        std::string iselrbar;
+        /// This doesn't exist in the MSSM why is it here?
+        ///std::string isnerbar;// -2000012 until we don't have RHNs in particle_database
+        std::string ismurbar;
+        /// This doesn't exist in the MSSM why is it here?
+        /// std::string isnmurbar; // -2000014
+        std::string istau2bar;
+        /// This doesn't exist in the MSSM why is it here?
+        ///std::string isntau2bar; // -2000016
+        
+        void fill_mass_es_psns(const SubSpectrum* mssm, double tol);
+     private:
+        bool filled; 
+     };
+     /// this is hideous at the moment I needs a global tol
+     /// to keep it the same in each function
+     double tol = 1e-2;
+     /// empty constructor
+     mass_es_pseudonyms::mass_es_pseudonyms()
+     {
+        filled = false;
+     }
+      
+     
+     /// fill strings in struct
+     void  mass_es_pseudonyms::fill_mass_es_psns(const SubSpectrum* mssm,
+                                                  double tol) 
+     {
+        if(filled == true) return;  // don't repeat unless necessary
+        
+        ///this should happen elsewhere.
+        Gambit::slhahelp::init_maps();
+
+        fill_mass_es_psn_gauge(isdl, isdlbar, "~d_L", mssm, tol);
+        fill_mass_es_psn_gauge(isul, isulbar, "~u_L", mssm, tol);
+        fill_mass_es_psn_gauge(issl, isslbar, "~s_L", mssm, tol);
+        fill_mass_es_psn_gauge(iscl, isclbar, "~c_L", mssm, tol);
+        fill_mass_es_psn_family(isb1, isb1bar, "~b_1", mssm, tol);
+        fill_mass_es_psn_family(ist1, ist1bar, "~t_1", mssm, tol);
+        
+        fill_mass_es_psn_gauge(isell, isellbar, "~e_L", mssm, tol);
+        fill_mass_es_psn_gauge(isnel, isnelbar, "~nu_e_L", mssm, tol);
+        fill_mass_es_psn_gauge(ismul, ismulbar, "~mu_L", mssm, tol);
+        fill_mass_es_psn_gauge(isnmul, isnmulbar, "~nu_mu_L", mssm, tol);
+        fill_mass_es_psn_family(istau1, istau1bar, "~tau_1", mssm, tol);
+        // why on earth do we or they have a family state for the tau neutrino 
+        /// what does that mean?  Either the left handed states mix amongst 
+        /// each other or they don't, there are no right handed sneutrinos
+        /// because the mssm has no right neutrino superfields.
+        /// I will pretend these are Left states for jsut now but leave the
+        /// confusing name
+        fill_mass_es_psn_gauge(isntau1, isntau1bar, "~nu_tau_L", mssm, tol);
+
+        fill_mass_es_psn_gauge(isdr, isdrbar, "~d_R", mssm, tol);
+        fill_mass_es_psn_gauge(isur, isurbar, "~u_R", mssm, tol);
+        fill_mass_es_psn_gauge(issr, issrbar, "~s_R", mssm, tol);
+        fill_mass_es_psn_gauge(iscr, iscrbar, "~c_R", mssm, tol);
+        fill_mass_es_psn_family(isb2, isb2bar, "~b_2", mssm, tol);
+        fill_mass_es_psn_family(ist2, ist2bar, "~t_2", mssm, tol);
+        fill_mass_es_psn_gauge(iselr, iselrbar, "~e_R", mssm, tol);
+        fill_mass_es_psn_gauge(ismur, ismurbar, "~mu_R", mssm, tol);
+        fill_mass_es_psn_family(istau2, istau2bar, "~tau_2", mssm, tol);
+        
+        filled=true;
+        
+        return;
+     }
+     
+  
+    	
     /// FeynHiggs MSSM decays: t
     void FH_t_decays (DecayTable::Entry& result) 
     {
@@ -274,24 +445,12 @@ namespace Gambit
     {
       using namespace Pipes::MSSM_h0_1_decays;
       const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_UV();
-      //works
-      //const Spectrum* mssm_full(*Dep::MSSM_spectrum);
-      //const SubSpectrum* mssm = mssm_full->get_UV();
      
-      //works
-       // const Spectrum* mssm_full = *Dep::MSSM_spectrum;
-       // const SubSpectrum* mssm = mssm_full->get_UV();
-
-      //const SubSpectrum* mssm(*Dep::MSSM_spectrum->get_UV());
-      //const SubSpectrum* mssm = Dep::MSSM_spectrum->get_UV();
-      //fails
-      // const SubSpectrum* spec = *Dep::SM_subspectrum;
-      // const SubSpectrum* mssm = *Dep::MSSM_subspectrum;
-      double msu1 = mssm->phys.get_Pole_Mass("~u",1);
-      double ZU11 = mssm->phys.get_Pole_Mixing("~u",1,1);
-      std::cout << "msu1 = " << msu1 << std::endl;
-      std::cout << "ZU11 = " << ZU11 << std::endl;
-         
+      mass_es_pseudonyms psn;
+      /// I shouldn't be redoing this in each function but I don't like
+      /// alternatives (global copy, static shitiness, ? make it a capability?)
+      /// must be a better way these.
+      psn.fill_mass_es_psns(mssm,tol);
 
       result.width_in_GeV = BEreq::cb_widthhl_hdec->hlwdth;
       result.set_BF(BEreq::cb_widthhl_hdec->hlbrb, 0.0, "b", "bbar");
@@ -319,33 +478,33 @@ namespace Gambit
       result.set_BF(BEreq::cb_wisusy_hdec->hlbrsn(2,3)*2.0, 0.0, "~chi0_2", "~chi0_3");
       result.set_BF(BEreq::cb_wisusy_hdec->hlbrsn(2,4)*2.0, 0.0, "~chi0_2", "~chi0_4");
       result.set_BF(BEreq::cb_wisusy_hdec->hlbrsn(3,4)*2.0, 0.0, "~chi0_3", "~chi0_4");
-      result.set_BF(BEreq::cb_wisfer_hdec->bhlsqul/2.0, 0.0, isul, isulbar);
-      result.set_BF(BEreq::cb_wisfer_hdec->bhlsqur/2.0, 0.0, isur, isurbar);
-      result.set_BF(BEreq::cb_wisfer_hdec->bhlsqul/2.0, 0.0, iscl, isclbar);
-      result.set_BF(BEreq::cb_wisfer_hdec->bhlsqur/2.0, 0.0, iscr, iscrbar);
-      result.set_BF(BEreq::cb_wisfer_hdec->bhlst(1,1), 0.0, ist1, ist1bar);
-      result.set_BF(BEreq::cb_wisfer_hdec->bhlst(2,2), 0.0, ist2, ist2bar);
-      result.set_BF(BEreq::cb_wisfer_hdec->bhlst(1,2), 0.0, ist1, ist2bar);
-      result.set_BF(BEreq::cb_wisfer_hdec->bhlst(2,1), 0.0, ist2, ist1bar);
-      result.set_BF(BEreq::cb_wisfer_hdec->bhlsqdl/2.0, 0.0, isdl, isdlbar);
-      result.set_BF(BEreq::cb_wisfer_hdec->bhlsqdr/2.0, 0.0, isdr, isdrbar);
-      result.set_BF(BEreq::cb_wisfer_hdec->bhlsqdl/2.0, 0.0, issl, isslbar);
-      result.set_BF(BEreq::cb_wisfer_hdec->bhlsqdr/2.0, 0.0, issr, issrbar);
-      result.set_BF(BEreq::cb_wisfer_hdec->bhlsb(1,1), 0.0, isb1, isb1bar);
-      result.set_BF(BEreq::cb_wisfer_hdec->bhlsb(2,2), 0.0, isb2, isb2bar);
-      result.set_BF(BEreq::cb_wisfer_hdec->bhlsb(1,2), 0.0, isb1, isb2bar);
-      result.set_BF(BEreq::cb_wisfer_hdec->bhlsb(2,1), 0.0, isb2, isb1bar);
-      result.set_BF(BEreq::cb_wisfer_hdec->bhlslel/2.0, 0.0, isell, isellbar);
-      result.set_BF(BEreq::cb_wisfer_hdec->bhlsler/2.0, 0.0, iselr, iselrbar);
-      result.set_BF(BEreq::cb_wisfer_hdec->bhlslel/2.0, 0.0, ismul, ismulbar);
-      result.set_BF(BEreq::cb_wisfer_hdec->bhlsler/2.0, 0.0, ismur, ismurbar);
-      result.set_BF(BEreq::cb_wisfer_hdec->bhlstau(1,1), 0.0, istau1, istau1bar);
-      result.set_BF(BEreq::cb_wisfer_hdec->bhlstau(2,2), 0.0, istau2, istau2bar);
-      result.set_BF(BEreq::cb_wisfer_hdec->bhlstau(1,2), 0.0, istau1, istau2bar);
-      result.set_BF(BEreq::cb_wisfer_hdec->bhlstau(2,1), 0.0, istau2, istau1bar);
-      result.set_BF(BEreq::cb_wisfer_hdec->bhlslnl/3.0, 0.0, inel, inelbar);
-      result.set_BF(BEreq::cb_wisfer_hdec->bhlslnl/3.0, 0.0, inmul, inmulbar);
-      result.set_BF(BEreq::cb_wisfer_hdec->bhlslnl/3.0, 0.0, intau1, intau1bar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhlsqul/2.0, 0.0, psn.isul, psn.isulbar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhlsqur/2.0, 0.0, psn.isur, psn.isurbar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhlsqul/2.0, 0.0, psn.iscl, psn.isclbar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhlsqur/2.0, 0.0, psn.iscr, psn.iscrbar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhlst(1,1), 0.0, psn.ist1, psn.ist1bar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhlst(2,2), 0.0, psn.ist2, psn.ist2bar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhlst(1,2), 0.0, psn.ist1, psn.ist2bar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhlst(2,1), 0.0, psn.ist2, psn.ist1bar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhlsqdl/2.0, 0.0, psn.isdl, psn.isdlbar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhlsqdr/2.0, 0.0, psn.isdr, psn.isdrbar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhlsqdl/2.0, 0.0, psn.issl, psn.isslbar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhlsqdr/2.0, 0.0, psn.issr, psn.issrbar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhlsb(1,1), 0.0, psn.isb1, psn.isb1bar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhlsb(2,2), 0.0, psn.isb2, psn.isb2bar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhlsb(1,2), 0.0, psn.isb1, psn.isb2bar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhlsb(2,1), 0.0, psn.isb2, psn.isb1bar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhlslel/2.0, 0.0, psn.isell, psn.isellbar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhlsler/2.0, 0.0, psn.iselr, psn.iselrbar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhlslel/2.0, 0.0, psn.ismul, psn.ismulbar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhlsler/2.0, 0.0, psn.ismur, psn.ismurbar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhlstau(1,1), 0.0, psn.istau1, psn.istau1bar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhlstau(2,2), 0.0, psn.istau2, psn.istau2bar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhlstau(1,2), 0.0, psn.istau1, psn.istau2bar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhlstau(2,1), 0.0, psn.istau2, psn.istau1bar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhlslnl/3.0, 0.0, psn.isnel, psn.isnelbar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhlslnl/3.0, 0.0, psn.isnmul, psn.isnmulbar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhlslnl/3.0, 0.0, psn.isntau1, psn.isntau1bar);
 
       // cout << "h0_1 total width: " << result.width_in_GeV << endl;
       // cout << "BR(h0_1 -> gamma gamma): " << BEreq::cb_widthhl_hdec->hlbrga << endl;
@@ -362,7 +521,14 @@ namespace Gambit
       fh_Couplings FH_input = *Dep::FH_Couplings;
 
       int iH = 0; // h0_1
-
+      
+      const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_UV();
+      mass_es_pseudonyms psn;
+      /// I shouldn't be redoing this in each function but I don't like
+      /// alternatives (global copy, static shitiness, ? make it a capability?)
+      /// must be a better way these.
+      psn.fill_mass_es_psns(mssm,tol);
+      
       result.width_in_GeV = FH_input.gammas[iH];
 
       // vector-boson pair decays
@@ -418,46 +584,49 @@ namespace Gambit
       result.set_BF(FH_input.gammas[H0HH(iH,1,3)+BRoffset], 0.0, "h0_1", "A0");
       result.set_BF(FH_input.gammas[H0HH(iH,2,3)+BRoffset], 0.0, "h0_2", "A0");
 
+      
+
+
       // sfermion decays
-      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,1,1)+BRoffset], 0.0, inel, inelbar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,1,2)+BRoffset], 0.0, inmul, inmulbar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,1,3)+BRoffset], 0.0, intau1, intau1bar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,2,1)+BRoffset], 0.0, isell, isellbar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,2,1)+BRoffset], 0.0, isell, iselrbar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,2,1)+BRoffset], 0.0, iselr, isellbar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,2,1)+BRoffset], 0.0, iselr, iselrbar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,2,2)+BRoffset], 0.0, ismul, ismulbar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,2,2)+BRoffset], 0.0, ismul, ismurbar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,2,2)+BRoffset], 0.0, ismur, ismulbar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,2,2)+BRoffset], 0.0, ismur, ismurbar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,2,3)+BRoffset], 0.0, istau1, istau1bar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,2,3)+BRoffset], 0.0, istau1, istau2bar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,2,3)+BRoffset], 0.0, istau2, istau1bar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,2,3)+BRoffset], 0.0, istau2, istau2bar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,3,1)+BRoffset], 0.0, isul, isulbar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,3,1)+BRoffset], 0.0, isul, isurbar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,3,1)+BRoffset], 0.0, isur, isulbar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,3,1)+BRoffset], 0.0, isur, isurbar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,3,2)+BRoffset], 0.0, iscl, isclbar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,3,2)+BRoffset], 0.0, iscl, iscrbar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,3,2)+BRoffset], 0.0, iscr, isclbar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,3,2)+BRoffset], 0.0, iscr, iscrbar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,3,3)+BRoffset], 0.0, ist1, ist1bar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,3,3)+BRoffset], 0.0, ist1, ist2bar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,3,3)+BRoffset], 0.0, ist2, ist1bar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,3,3)+BRoffset], 0.0, ist2, ist2bar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,3,1)+BRoffset], 0.0, isdl, isdlbar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,3,1)+BRoffset], 0.0, isdl, isdrbar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,3,1)+BRoffset], 0.0, isdr, isdlbar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,3,1)+BRoffset], 0.0, isdr, isdrbar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,3,2)+BRoffset], 0.0, issl, isslbar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,3,2)+BRoffset], 0.0, issl, issrbar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,3,2)+BRoffset], 0.0, issr, isslbar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,3,2)+BRoffset], 0.0, issr, issrbar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,3,3)+BRoffset], 0.0, isb1, isb1bar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,3,3)+BRoffset], 0.0, isb1, isb2bar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,3,3)+BRoffset], 0.0, isb2, isb1bar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,3,3)+BRoffset], 0.0, isb2, isb2bar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,1,1)+BRoffset], 0.0, psn.isnel, psn.isnelbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,1,2)+BRoffset], 0.0, psn.isnmul, psn.isnmulbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,1,3)+BRoffset], 0.0, psn.isntau1, psn.isntau1bar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,2,1)+BRoffset], 0.0, psn.isell, psn.isellbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,2,1)+BRoffset], 0.0, psn.isell, psn.iselrbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,2,1)+BRoffset], 0.0, psn.iselr, psn.isellbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,2,1)+BRoffset], 0.0, psn.iselr, psn.iselrbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,2,2)+BRoffset], 0.0, psn.ismul, psn.ismulbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,2,2)+BRoffset], 0.0, psn.ismul, psn.ismurbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,2,2)+BRoffset], 0.0, psn.ismur, psn.ismulbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,2,2)+BRoffset], 0.0, psn.ismur, psn.ismurbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,2,3)+BRoffset], 0.0, psn.istau1, psn.istau1bar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,2,3)+BRoffset], 0.0, psn.istau1, psn.istau2bar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,2,3)+BRoffset], 0.0, psn.istau2, psn.istau1bar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,2,3)+BRoffset], 0.0, psn.istau2, psn.istau2bar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,3,1)+BRoffset], 0.0, psn.isul, psn.isulbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,3,1)+BRoffset], 0.0, psn.isul, psn.isurbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,3,1)+BRoffset], 0.0, psn.isur, psn.isulbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,3,1)+BRoffset], 0.0, psn.isur, psn.isurbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,3,2)+BRoffset], 0.0, psn.iscl, psn.isclbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,3,2)+BRoffset], 0.0, psn.iscl, psn.iscrbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,3,2)+BRoffset], 0.0, psn.iscr, psn.isclbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,3,2)+BRoffset], 0.0, psn.iscr, psn.iscrbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,3,3)+BRoffset], 0.0, psn.ist1, psn.ist1bar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,3,3)+BRoffset], 0.0, psn.ist1, psn.ist2bar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,3,3)+BRoffset], 0.0, psn.ist2, psn.ist1bar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,3,3)+BRoffset], 0.0, psn.ist2, psn.ist2bar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,3,1)+BRoffset], 0.0, psn.isdl, psn.isdlbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,3,1)+BRoffset], 0.0, psn.isdl, psn.isdrbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,3,1)+BRoffset], 0.0, psn.isdr, psn.isdlbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,3,1)+BRoffset], 0.0, psn.isdr, psn.isdrbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,3,2)+BRoffset], 0.0, psn.issl, psn.isslbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,3,2)+BRoffset], 0.0, psn.issl, psn.issrbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,3,2)+BRoffset], 0.0, psn.issr, psn.isslbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,3,2)+BRoffset], 0.0, psn.issr, psn.issrbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,3,3)+BRoffset], 0.0, psn.isb1, psn.isb1bar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,3,3)+BRoffset], 0.0, psn.isb1, psn.isb2bar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,3,3)+BRoffset], 0.0, psn.isb2, psn.isb1bar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,3,3)+BRoffset], 0.0, psn.isb2, psn.isb2bar);
 
       cout << "h0_1 total width: " << result.width_in_GeV << endl;
     }
@@ -466,6 +635,14 @@ namespace Gambit
     void h0_2_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::h0_2_decays;
+
+      const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_UV();
+      mass_es_pseudonyms psn;
+      /// I shouldn't be redoing this in each function but I don't like
+      /// alternatives (global copy, static shitiness, ? make it a capability?)
+      /// must be a better way these.
+      psn.fill_mass_es_psns(mssm,tol);
+
       result.width_in_GeV = BEreq::cb_widthhh_hdec->hhwdth;
       result.set_BF(BEreq::cb_widthhh_hdec->hhbrb, 0.0, "b", "bbar");
       result.set_BF(BEreq::cb_widthhh_hdec->hhbrl, 0.0, "tau+", "tau-");
@@ -497,33 +674,33 @@ namespace Gambit
       result.set_BF(BEreq::cb_wisusy_hdec->hhbrsn(2,3)*2.0, 0.0, "~chi0_2", "~chi0_3");
       result.set_BF(BEreq::cb_wisusy_hdec->hhbrsn(2,4)*2.0, 0.0, "~chi0_2", "~chi0_4");
       result.set_BF(BEreq::cb_wisusy_hdec->hhbrsn(3,4)*2.0, 0.0, "~chi0_3", "~chi0_4");
-      result.set_BF(BEreq::cb_wisfer_hdec->bhhsqul/2.0, 0.0, isul, isulbar);
-      result.set_BF(BEreq::cb_wisfer_hdec->bhhsqur/2.0, 0.0, isur, isurbar);
-      result.set_BF(BEreq::cb_wisfer_hdec->bhhsqul/2.0, 0.0, iscl, isclbar);
-      result.set_BF(BEreq::cb_wisfer_hdec->bhhsqur/2.0, 0.0, iscr, iscrbar);
-      result.set_BF(BEreq::cb_wisfer_hdec->bhhst(1,1), 0.0, ist1, ist1bar);
-      result.set_BF(BEreq::cb_wisfer_hdec->bhhst(2,2), 0.0, ist2, ist2bar);
-      result.set_BF(BEreq::cb_wisfer_hdec->bhhst(1,2), 0.0, ist1, ist2bar);
-      result.set_BF(BEreq::cb_wisfer_hdec->bhhst(2,1), 0.0, ist2, ist1bar);
-      result.set_BF(BEreq::cb_wisfer_hdec->bhhsqdl/2.0, 0.0, isdl, isdlbar);
-      result.set_BF(BEreq::cb_wisfer_hdec->bhhsqdr/2.0, 0.0, isdr, isdrbar);
-      result.set_BF(BEreq::cb_wisfer_hdec->bhhsqdl/2.0, 0.0, issl, isslbar);
-      result.set_BF(BEreq::cb_wisfer_hdec->bhhsqdr/2.0, 0.0, issr, issrbar);
-      result.set_BF(BEreq::cb_wisfer_hdec->bhhsb(1,1), 0.0, isb1, isb1bar);
-      result.set_BF(BEreq::cb_wisfer_hdec->bhhsb(2,2), 0.0, isb2, isb2bar);
-      result.set_BF(BEreq::cb_wisfer_hdec->bhhsb(1,2), 0.0, isb1, isb2bar);
-      result.set_BF(BEreq::cb_wisfer_hdec->bhhsb(2,1), 0.0, isb2, isb1bar);
-      result.set_BF(BEreq::cb_wisfer_hdec->bhhslel/2.0, 0.0, isell, isellbar);
-      result.set_BF(BEreq::cb_wisfer_hdec->bhhsler/2.0, 0.0, iselr, iselrbar);
-      result.set_BF(BEreq::cb_wisfer_hdec->bhhslel/2.0, 0.0, ismul, ismulbar);
-      result.set_BF(BEreq::cb_wisfer_hdec->bhhsler/2.0, 0.0, ismur, ismurbar);
-      result.set_BF(BEreq::cb_wisfer_hdec->bhhstau(1,1), 0.0, istau1, istau1bar);
-      result.set_BF(BEreq::cb_wisfer_hdec->bhhstau(2,2), 0.0, istau2, istau2bar);
-      result.set_BF(BEreq::cb_wisfer_hdec->bhhstau(1,2), 0.0, istau1, istau2bar);
-      result.set_BF(BEreq::cb_wisfer_hdec->bhhstau(2,1), 0.0, istau2, istau1bar);
-      result.set_BF(BEreq::cb_wisfer_hdec->bhhslnl/3.0, 0.0, inel, inelbar);
-      result.set_BF(BEreq::cb_wisfer_hdec->bhhslnl/3.0, 0.0, inmul, inmulbar);
-      result.set_BF(BEreq::cb_wisfer_hdec->bhhslnl/3.0, 0.0, intau1, intau1bar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhhsqul/2.0, 0.0, psn.isul, psn.isulbar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhhsqur/2.0, 0.0, psn.isur, psn.isurbar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhhsqul/2.0, 0.0, psn.iscl, psn.isclbar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhhsqur/2.0, 0.0, psn.iscr, psn.iscrbar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhhst(1,1), 0.0, psn.ist1, psn.ist1bar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhhst(2,2), 0.0, psn.ist2, psn.ist2bar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhhst(1,2), 0.0, psn.ist1, psn.ist2bar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhhst(2,1), 0.0, psn.ist2, psn.ist1bar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhhsqdl/2.0, 0.0, psn.isdl, psn.isdlbar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhhsqdr/2.0, 0.0, psn.isdr, psn.isdrbar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhhsqdl/2.0, 0.0, psn.issl, psn.isslbar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhhsqdr/2.0, 0.0, psn.issr, psn.issrbar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhhsb(1,1), 0.0, psn.isb1, psn.isb1bar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhhsb(2,2), 0.0, psn.isb2, psn.isb2bar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhhsb(1,2), 0.0, psn.isb1, psn.isb2bar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhhsb(2,1), 0.0, psn.isb2, psn.isb1bar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhhslel/2.0, 0.0, psn.isell, psn.isellbar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhhsler/2.0, 0.0, psn.iselr, psn.iselrbar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhhslel/2.0, 0.0, psn.ismul, psn.ismulbar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhhsler/2.0, 0.0, psn.ismur, psn.ismurbar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhhstau(1,1), 0.0, psn.istau1, psn.istau1bar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhhstau(2,2), 0.0, psn.istau2, psn.istau2bar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhhstau(1,2), 0.0, psn.istau1, psn.istau2bar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhhstau(2,1), 0.0, psn.istau2, psn.istau1bar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhhslnl/3.0, 0.0, psn.isnel, psn.isnelbar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhhslnl/3.0, 0.0, psn.isnmul, psn.isnmulbar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhhslnl/3.0, 0.0, psn.isntau1, psn.isntau1bar);
 
       // cout << "h0_2 total width: " << result.width_in_GeV << endl;
     }
@@ -533,7 +710,14 @@ namespace Gambit
     {
       using namespace Pipes::FH_h0_2_decays;
 
+      const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_UV();
+      mass_es_pseudonyms psn;
+      /// I shouldn't be redoing this in each function but I don't like
+      /// alternatives (global copy, static shitiness, ? make it a capability?)
+      /// must be a better way these.
+      psn.fill_mass_es_psns(mssm,tol);
       // unpack FeynHiggs Couplings
+
       fh_Couplings FH_input = *Dep::FH_Couplings;
 
       int iH = 1; // h0_2
@@ -594,45 +778,45 @@ namespace Gambit
       result.set_BF(FH_input.gammas[H0HH(iH,2,3)+BRoffset], 0.0, "h0_2", "A0");
 
       // sfermion decays
-      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,1,1)+BRoffset], 0.0, inel, inelbar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,1,2)+BRoffset], 0.0, inmul, inmulbar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,1,3)+BRoffset], 0.0, intau1, intau1bar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,2,1)+BRoffset], 0.0, isell, isellbar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,2,1)+BRoffset], 0.0, isell, iselrbar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,2,1)+BRoffset], 0.0, iselr, isellbar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,2,1)+BRoffset], 0.0, iselr, iselrbar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,2,2)+BRoffset], 0.0, ismul, ismulbar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,2,2)+BRoffset], 0.0, ismul, ismurbar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,2,2)+BRoffset], 0.0, ismur, ismulbar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,2,2)+BRoffset], 0.0, ismur, ismurbar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,2,3)+BRoffset], 0.0, istau1, istau1bar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,2,3)+BRoffset], 0.0, istau1, istau2bar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,2,3)+BRoffset], 0.0, istau2, istau1bar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,2,3)+BRoffset], 0.0, istau2, istau2bar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,3,1)+BRoffset], 0.0, isul, isulbar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,3,1)+BRoffset], 0.0, isul, isurbar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,3,1)+BRoffset], 0.0, isur, isulbar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,3,1)+BRoffset], 0.0, isur, isurbar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,3,2)+BRoffset], 0.0, iscl, isclbar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,3,2)+BRoffset], 0.0, iscl, iscrbar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,3,2)+BRoffset], 0.0, iscr, isclbar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,3,2)+BRoffset], 0.0, iscr, iscrbar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,3,3)+BRoffset], 0.0, ist1, ist1bar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,3,3)+BRoffset], 0.0, ist1, ist2bar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,3,3)+BRoffset], 0.0, ist2, ist1bar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,3,3)+BRoffset], 0.0, ist2, ist2bar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,3,1)+BRoffset], 0.0, isdl, isdlbar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,3,1)+BRoffset], 0.0, isdl, isdrbar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,3,1)+BRoffset], 0.0, isdr, isdlbar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,3,1)+BRoffset], 0.0, isdr, isdrbar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,3,2)+BRoffset], 0.0, issl, isslbar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,3,2)+BRoffset], 0.0, issl, issrbar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,3,2)+BRoffset], 0.0, issr, isslbar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,3,2)+BRoffset], 0.0, issr, issrbar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,3,3)+BRoffset], 0.0, isb1, isb1bar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,3,3)+BRoffset], 0.0, isb1, isb2bar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,3,3)+BRoffset], 0.0, isb2, isb1bar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,3,3)+BRoffset], 0.0, isb2, isb2bar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,1,1)+BRoffset], 0.0, psn.isnel, psn.isnelbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,1,2)+BRoffset], 0.0, psn.isnmul, psn.isnmulbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,1,3)+BRoffset], 0.0, psn.isntau1, psn.isntau1bar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,2,1)+BRoffset], 0.0, psn.isell, psn.isellbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,2,1)+BRoffset], 0.0, psn.isell, psn.iselrbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,2,1)+BRoffset], 0.0, psn.iselr, psn.isellbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,2,1)+BRoffset], 0.0, psn.iselr, psn.iselrbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,2,2)+BRoffset], 0.0, psn.ismul, psn.ismulbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,2,2)+BRoffset], 0.0, psn.ismul, psn.ismurbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,2,2)+BRoffset], 0.0, psn.ismur, psn.ismulbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,2,2)+BRoffset], 0.0, psn.ismur, psn.ismurbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,2,3)+BRoffset], 0.0, psn.istau1, psn.istau1bar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,2,3)+BRoffset], 0.0, psn.istau1, psn.istau2bar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,2,3)+BRoffset], 0.0, psn.istau2, psn.istau1bar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,2,3)+BRoffset], 0.0, psn.istau2, psn.istau2bar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,3,1)+BRoffset], 0.0, psn.isul, psn.isulbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,3,1)+BRoffset], 0.0, psn.isul, psn.isurbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,3,1)+BRoffset], 0.0, psn.isur, psn.isulbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,3,1)+BRoffset], 0.0, psn.isur, psn.isurbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,3,2)+BRoffset], 0.0, psn.iscl, psn.isclbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,3,2)+BRoffset], 0.0, psn.iscl, psn.iscrbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,3,2)+BRoffset], 0.0, psn.iscr, psn.isclbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,3,2)+BRoffset], 0.0, psn.iscr, psn.iscrbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,3,3)+BRoffset], 0.0, psn.ist1, psn.ist1bar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,3,3)+BRoffset], 0.0, psn.ist1, psn.ist2bar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,3,3)+BRoffset], 0.0, psn.ist2, psn.ist1bar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,3,3)+BRoffset], 0.0, psn.ist2, psn.ist2bar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,3,1)+BRoffset], 0.0, psn.isdl, psn.isdlbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,3,1)+BRoffset], 0.0, psn.isdl, psn.isdrbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,3,1)+BRoffset], 0.0, psn.isdr, psn.isdlbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,3,1)+BRoffset], 0.0, psn.isdr, psn.isdrbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,3,2)+BRoffset], 0.0, psn.issl, psn.isslbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,3,2)+BRoffset], 0.0, psn.issl, psn.issrbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,3,2)+BRoffset], 0.0, psn.issr, psn.isslbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,3,2)+BRoffset], 0.0, psn.issr, psn.issrbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,3,3)+BRoffset], 0.0, psn.isb1, psn.isb1bar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,3,3)+BRoffset], 0.0, psn.isb1, psn.isb2bar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,3,3)+BRoffset], 0.0, psn.isb2, psn.isb1bar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,3,3)+BRoffset], 0.0, psn.isb2, psn.isb2bar);
 
       cout << "h0_2 total width: " << result.width_in_GeV << endl;
     }
@@ -641,6 +825,14 @@ namespace Gambit
     void A0_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::A0_decays;
+      
+      const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_UV();
+      mass_es_pseudonyms psn;
+      /// I shouldn't be redoing this in each function but I don't like
+      /// alternatives (global copy, static shitiness, ? make it a capability?)
+      /// must be a better way these.
+      psn.fill_mass_es_psns(mssm,tol);
+      
       result.width_in_GeV = BEreq::cb_widtha_hdec->awdth;
       result.set_BF(BEreq::cb_widtha_hdec->abrb, 0.0, "b", "bbar");
       result.set_BF(BEreq::cb_widtha_hdec->abrl, 0.0, "tau+", "tau-");
@@ -673,12 +865,12 @@ namespace Gambit
       result.set_BF(BEreq::cb_wisusy_hdec->habrsn(2,3)*2.0, 0.0, "~chi0_2", "~chi0_3");
       result.set_BF(BEreq::cb_wisusy_hdec->habrsn(2,4)*2.0, 0.0, "~chi0_2", "~chi0_4");
       result.set_BF(BEreq::cb_wisusy_hdec->habrsn(3,4)*2.0, 0.0, "~chi0_3", "~chi0_4");
-      result.set_BF(BEreq::cb_wisusy_hdec->habrst/2.0, 0.0, ist1, ist2bar);
-      result.set_BF(BEreq::cb_wisusy_hdec->habrst/2.0, 0.0, ist1bar, ist2);
-      result.set_BF(BEreq::cb_wisusy_hdec->habrsb/2.0, 0.0, isb1, isb2bar);
-      result.set_BF(BEreq::cb_wisusy_hdec->habrsb/2.0, 0.0, isb1bar, isb2);
-      result.set_BF(BEreq::cb_wisusy_hdec->habrsl/2.0, 0.0, istau1, istau2bar);
-      result.set_BF(BEreq::cb_wisusy_hdec->habrsl/2.0, 0.0, istau1bar, istau2);
+      result.set_BF(BEreq::cb_wisusy_hdec->habrst/2.0, 0.0, psn.ist1, psn.ist2bar);
+      result.set_BF(BEreq::cb_wisusy_hdec->habrst/2.0, 0.0, psn.ist1bar, psn.ist2);
+      result.set_BF(BEreq::cb_wisusy_hdec->habrsb/2.0, 0.0, psn.isb1, psn.isb2bar);
+      result.set_BF(BEreq::cb_wisusy_hdec->habrsb/2.0, 0.0, psn.isb1bar, psn.isb2);
+      result.set_BF(BEreq::cb_wisusy_hdec->habrsl/2.0, 0.0, psn.istau1, psn.istau2bar);
+      result.set_BF(BEreq::cb_wisusy_hdec->habrsl/2.0, 0.0, psn.istau1bar, psn.istau2);
       // cout << "A0 total width: " << result.width_in_GeV << endl;
     }
 
@@ -686,6 +878,13 @@ namespace Gambit
     void FH_A0_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::FH_A0_decays;
+
+      const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_UV();
+      mass_es_pseudonyms psn;
+      /// I shouldn't be redoing this in each function but I don't like
+      /// alternatives (global copy, static shitiness, ? make it a capability?)
+      /// must be a better way these.
+      psn.fill_mass_es_psns(mssm,tol);
 
       // unpack FeynHiggs Couplings
       fh_Couplings FH_input = *Dep::FH_Couplings;
@@ -748,45 +947,45 @@ namespace Gambit
       result.set_BF(FH_input.gammas[H0HH(iH,2,3)+BRoffset], 0.0, "h0_2", "A0");
 
       // sfermion decays
-      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,1,1)+BRoffset], 0.0, inel, inelbar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,1,2)+BRoffset], 0.0, inmul, inmulbar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,1,3)+BRoffset], 0.0, intau1, intau1bar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,2,1)+BRoffset], 0.0, isell, isellbar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,2,1)+BRoffset], 0.0, isell, iselrbar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,2,1)+BRoffset], 0.0, iselr, isellbar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,2,1)+BRoffset], 0.0, iselr, iselrbar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,2,2)+BRoffset], 0.0, ismul, ismulbar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,2,2)+BRoffset], 0.0, ismul, ismurbar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,2,2)+BRoffset], 0.0, ismur, ismulbar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,2,2)+BRoffset], 0.0, ismur, ismurbar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,2,3)+BRoffset], 0.0, istau1, istau1bar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,2,3)+BRoffset], 0.0, istau1, istau2bar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,2,3)+BRoffset], 0.0, istau2, istau1bar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,2,3)+BRoffset], 0.0, istau2, istau2bar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,3,1)+BRoffset], 0.0, isul, isulbar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,3,1)+BRoffset], 0.0, isul, isurbar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,3,1)+BRoffset], 0.0, isur, isulbar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,3,1)+BRoffset], 0.0, isur, isurbar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,3,2)+BRoffset], 0.0, iscl, isclbar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,3,2)+BRoffset], 0.0, iscl, iscrbar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,3,2)+BRoffset], 0.0, iscr, isclbar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,3,2)+BRoffset], 0.0, iscr, iscrbar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,3,3)+BRoffset], 0.0, ist1, ist1bar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,3,3)+BRoffset], 0.0, ist1, ist2bar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,3,3)+BRoffset], 0.0, ist2, ist1bar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,3,3)+BRoffset], 0.0, ist2, ist2bar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,3,1)+BRoffset], 0.0, isdl, isdlbar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,3,1)+BRoffset], 0.0, isdl, isdrbar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,3,1)+BRoffset], 0.0, isdr, isdlbar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,3,1)+BRoffset], 0.0, isdr, isdrbar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,3,2)+BRoffset], 0.0, issl, isslbar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,3,2)+BRoffset], 0.0, issl, issrbar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,3,2)+BRoffset], 0.0, issr, isslbar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,3,2)+BRoffset], 0.0, issr, issrbar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,3,3)+BRoffset], 0.0, isb1, isb1bar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,3,3)+BRoffset], 0.0, isb1, isb2bar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,3,3)+BRoffset], 0.0, isb2, isb1bar);
-      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,3,3)+BRoffset], 0.0, isb2, isb2bar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,1,1)+BRoffset], 0.0, psn.isnel, psn.isnelbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,1,2)+BRoffset], 0.0, psn.isnmul, psn.isnmulbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,1,3)+BRoffset], 0.0, psn.isntau1, psn.isntau1bar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,2,1)+BRoffset], 0.0, psn.isell, psn.isellbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,2,1)+BRoffset], 0.0, psn.isell, psn.iselrbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,2,1)+BRoffset], 0.0, psn.iselr, psn.isellbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,2,1)+BRoffset], 0.0, psn.iselr, psn.iselrbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,2,2)+BRoffset], 0.0, psn.ismul, psn.ismulbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,2,2)+BRoffset], 0.0, psn.ismul, psn.ismurbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,2,2)+BRoffset], 0.0, psn.ismur, psn.ismulbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,2,2)+BRoffset], 0.0, psn.ismur, psn.ismurbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,2,3)+BRoffset], 0.0, psn.istau1, psn.istau1bar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,2,3)+BRoffset], 0.0, psn.istau1, psn.istau2bar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,2,3)+BRoffset], 0.0, psn.istau2, psn.istau1bar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,2,3)+BRoffset], 0.0, psn.istau2, psn.istau2bar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,3,1)+BRoffset], 0.0, psn.isul, psn.isulbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,3,1)+BRoffset], 0.0, psn.isul, psn.isurbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,3,1)+BRoffset], 0.0, psn.isur, psn.isulbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,3,1)+BRoffset], 0.0, psn.isur, psn.isurbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,3,2)+BRoffset], 0.0, psn.iscl, psn.isclbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,3,2)+BRoffset], 0.0, psn.iscl, psn.iscrbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,3,2)+BRoffset], 0.0, psn.iscr, psn.isclbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,3,2)+BRoffset], 0.0, psn.iscr, psn.iscrbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,3,3)+BRoffset], 0.0, psn.ist1, psn.ist1bar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,3,3)+BRoffset], 0.0, psn.ist1, psn.ist2bar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,3,3)+BRoffset], 0.0, psn.ist2, psn.ist1bar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,3,3)+BRoffset], 0.0, psn.ist2, psn.ist2bar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,3,1)+BRoffset], 0.0, psn.isdl, psn.isdlbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,3,1)+BRoffset], 0.0, psn.isdl, psn.isdrbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,3,1)+BRoffset], 0.0, psn.isdr, psn.isdlbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,3,1)+BRoffset], 0.0, psn.isdr, psn.isdrbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,3,2)+BRoffset], 0.0, psn.issl, psn.isslbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,3,2)+BRoffset], 0.0, psn.issl, psn.issrbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,3,2)+BRoffset], 0.0, psn.issr, psn.isslbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,3,2)+BRoffset], 0.0, psn.issr, psn.issrbar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,3,3)+BRoffset], 0.0, psn.isb1, psn.isb1bar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,3,3)+BRoffset], 0.0, psn.isb1, psn.isb2bar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,3,3)+BRoffset], 0.0, psn.isb2, psn.isb1bar);
+      result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,3,3)+BRoffset], 0.0, psn.isb2, psn.isb2bar);
 
       cout << "A0 total width: " << result.width_in_GeV << endl;
     }
@@ -795,6 +994,14 @@ namespace Gambit
     void Hplus_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::Hplus_decays;
+      
+      const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_UV();
+      mass_es_pseudonyms psn;
+      /// I shouldn't be redoing this in each function but I don't like
+      /// alternatives (global copy, static shitiness, ? make it a capability?)
+      /// must be a better way these.
+      psn.fill_mass_es_psns(mssm,tol);
+
       result.width_in_GeV = BEreq::cb_widthhc_hdec->hcwdth;
       result.set_BF(BEreq::cb_widthhc_hdec->hcbrb, 0.0, "c", "bbar");
       result.set_BF(BEreq::cb_widthhc_hdec->hcbrl, 0.0, "tau+", "nu_tau");
@@ -813,16 +1020,16 @@ namespace Gambit
       result.set_BF(BEreq::cb_wisusy_hdec->hcbrsu(2,2), 0.0, "~chi+_2", "~chi0_2");
       result.set_BF(BEreq::cb_wisusy_hdec->hcbrsu(2,3), 0.0, "~chi+_2", "~chi0_3");
       result.set_BF(BEreq::cb_wisusy_hdec->hcbrsu(2,4), 0.0, "~chi+_2", "~chi0_4");
-      result.set_BF(BEreq::cb_wisfer_hdec->bhcsl00/2.0, 0.0, isellbar, inel);
-      result.set_BF(BEreq::cb_wisfer_hdec->bhcsl00/2.0, 0.0, ismulbar, inmul);
-      result.set_BF(BEreq::cb_wisfer_hdec->bhcsl11, 0.0, istau1bar, intau1);
-      result.set_BF(BEreq::cb_wisfer_hdec->bhcsl21, 0.0, istau2bar, intau1);
-      result.set_BF(BEreq::cb_wisusy_hdec->hcbrsq/2.0, 0.0, isul, isdlbar);
-      result.set_BF(BEreq::cb_wisusy_hdec->hcbrsq/2.0, 0.0, iscl, isslbar);
-      result.set_BF(BEreq::cb_wisusy_hdec->hcbrstb(1,1), 0.0, ist1, isb1bar);
-      result.set_BF(BEreq::cb_wisusy_hdec->hcbrstb(2,2), 0.0, ist2, isb2bar);
-      result.set_BF(BEreq::cb_wisusy_hdec->hcbrstb(1,2), 0.0, ist1, isb2bar);
-      result.set_BF(BEreq::cb_wisusy_hdec->hcbrstb(2,1), 0.0, ist2, isb1bar);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhcsl00/2.0, 0.0, psn.isellbar, psn.isnel);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhcsl00/2.0, 0.0, psn.ismulbar, psn.isnmul);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhcsl11, 0.0, psn.istau1bar, psn.isntau1);
+      result.set_BF(BEreq::cb_wisfer_hdec->bhcsl21, 0.0, psn.istau2bar, psn.isntau1);
+      result.set_BF(BEreq::cb_wisusy_hdec->hcbrsq/2.0, 0.0, psn.isul, psn.isdlbar);
+      result.set_BF(BEreq::cb_wisusy_hdec->hcbrsq/2.0, 0.0, psn.iscl, psn.isslbar);
+      result.set_BF(BEreq::cb_wisusy_hdec->hcbrstb(1,1), 0.0, psn.ist1, psn.isb1bar);
+      result.set_BF(BEreq::cb_wisusy_hdec->hcbrstb(2,2), 0.0, psn.ist2, psn.isb2bar);
+      result.set_BF(BEreq::cb_wisusy_hdec->hcbrstb(1,2), 0.0, psn.ist1, psn.isb2bar);
+      result.set_BF(BEreq::cb_wisusy_hdec->hcbrstb(2,1), 0.0, psn.ist2, psn.isb1bar);
       // cout << "Hplus total width: " << result.width_in_GeV << endl;
     }
 
@@ -830,6 +1037,13 @@ namespace Gambit
     void FH_Hplus_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::FH_Hplus_decays;
+
+      const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_UV();
+      mass_es_pseudonyms psn;
+      /// I shouldn't be redoing this in each function but I don't like
+      /// alternatives (global copy, static shitiness, ? make it a capability?)
+      /// must be a better way these.
+      psn.fill_mass_es_psns(mssm,tol);
 
       // unpack FeynHiggs Couplings
       fh_Couplings FH_input = *Dep::FH_Couplings;
@@ -868,46 +1082,46 @@ namespace Gambit
       result.set_BF(FH_input.gammas[HpHV(3)+offset], 0.0, "W+", "A0");
 
       // sfermion decays
-      result.set_BF(FH_input.gammas[HpSfSf(1,1,1,1,1)+offset], 0.0, isellbar, inel);
-      result.set_BF(FH_input.gammas[HpSfSf(1,1,1,2,2)+offset], 0.0, ismulbar, inmul);
-      result.set_BF(FH_input.gammas[HpSfSf(1,1,1,3,3)+offset], 0.0, istau1bar, intau1);
-      result.set_BF(FH_input.gammas[HpSfSf(2,1,1,3,3)+offset], 0.0, istau2bar, intau1);
-      result.set_BF(FH_input.gammas[HpSfSf(1,1,2,1,1)+offset], 0.0, isul, isdlbar);
-      result.set_BF(FH_input.gammas[HpSfSf(1,2,2,1,1)+offset], 0.0, isul, isdrbar);
-      result.set_BF(FH_input.gammas[HpSfSf(2,1,2,1,1)+offset], 0.0, isur, isdlbar);
-      result.set_BF(FH_input.gammas[HpSfSf(2,2,2,1,1)+offset], 0.0, isur, isdrbar);
-      result.set_BF(FH_input.gammas[HpSfSf(1,1,2,1,2)+offset], 0.0, isul, isslbar);
-      result.set_BF(FH_input.gammas[HpSfSf(1,2,2,1,2)+offset], 0.0, isul, issrbar);
-      result.set_BF(FH_input.gammas[HpSfSf(2,1,2,1,2)+offset], 0.0, isur, isslbar);
-      result.set_BF(FH_input.gammas[HpSfSf(2,2,2,1,2)+offset], 0.0, isur, issrbar);
-      result.set_BF(FH_input.gammas[HpSfSf(1,1,2,1,3)+offset], 0.0, isul, isb1bar);
-      result.set_BF(FH_input.gammas[HpSfSf(1,2,2,1,3)+offset], 0.0, isul, isb2bar);
-      result.set_BF(FH_input.gammas[HpSfSf(2,1,2,1,3)+offset], 0.0, isur, isb1bar);
-      result.set_BF(FH_input.gammas[HpSfSf(2,2,2,1,3)+offset], 0.0, isur, isb2bar);
-      result.set_BF(FH_input.gammas[HpSfSf(1,1,2,2,1)+offset], 0.0, iscl, isdlbar);
-      result.set_BF(FH_input.gammas[HpSfSf(1,2,2,2,1)+offset], 0.0, iscl, isdrbar);
-      result.set_BF(FH_input.gammas[HpSfSf(2,1,2,2,1)+offset], 0.0, iscr, isdlbar);
-      result.set_BF(FH_input.gammas[HpSfSf(2,2,2,2,1)+offset], 0.0, iscr, isdrbar);
-      result.set_BF(FH_input.gammas[HpSfSf(1,1,2,2,2)+offset], 0.0, iscl, isslbar);
-      result.set_BF(FH_input.gammas[HpSfSf(1,2,2,2,2)+offset], 0.0, iscl, issrbar);
-      result.set_BF(FH_input.gammas[HpSfSf(2,1,2,2,2)+offset], 0.0, iscr, isslbar);
-      result.set_BF(FH_input.gammas[HpSfSf(2,2,2,2,2)+offset], 0.0, iscr, issrbar);
-      result.set_BF(FH_input.gammas[HpSfSf(1,1,2,2,3)+offset], 0.0, iscl, isb1bar);
-      result.set_BF(FH_input.gammas[HpSfSf(1,2,2,2,3)+offset], 0.0, iscl, isb2bar);
-      result.set_BF(FH_input.gammas[HpSfSf(2,1,2,2,3)+offset], 0.0, iscr, isb1bar);
-      result.set_BF(FH_input.gammas[HpSfSf(2,2,2,2,3)+offset], 0.0, iscr, isb2bar);
-      result.set_BF(FH_input.gammas[HpSfSf(1,1,2,3,1)+offset], 0.0, ist1, isdlbar);
-      result.set_BF(FH_input.gammas[HpSfSf(1,2,2,3,1)+offset], 0.0, ist1, isdrbar);
-      result.set_BF(FH_input.gammas[HpSfSf(2,1,2,3,1)+offset], 0.0, ist2, isdlbar);
-      result.set_BF(FH_input.gammas[HpSfSf(2,2,2,3,1)+offset], 0.0, ist2, isdrbar);
-      result.set_BF(FH_input.gammas[HpSfSf(1,1,2,3,2)+offset], 0.0, ist1, isslbar);
-      result.set_BF(FH_input.gammas[HpSfSf(1,2,2,3,2)+offset], 0.0, ist1, issrbar);
-      result.set_BF(FH_input.gammas[HpSfSf(2,1,2,3,2)+offset], 0.0, ist2, isslbar);
-      result.set_BF(FH_input.gammas[HpSfSf(2,2,2,3,2)+offset], 0.0, ist2, issrbar);
-      result.set_BF(FH_input.gammas[HpSfSf(1,1,2,3,3)+offset], 0.0, ist1, isb1bar);
-      result.set_BF(FH_input.gammas[HpSfSf(1,2,2,3,3)+offset], 0.0, ist1, isb2bar);
-      result.set_BF(FH_input.gammas[HpSfSf(2,1,2,3,3)+offset], 0.0, ist2, isb1bar);
-      result.set_BF(FH_input.gammas[HpSfSf(2,2,2,3,3)+offset], 0.0, ist2, isb2bar);
+      result.set_BF(FH_input.gammas[HpSfSf(1,1,1,1,1)+offset], 0.0, psn.isellbar, psn.isnel);
+      result.set_BF(FH_input.gammas[HpSfSf(1,1,1,2,2)+offset], 0.0, psn.ismulbar, psn.isnmul);
+      result.set_BF(FH_input.gammas[HpSfSf(1,1,1,3,3)+offset], 0.0, psn.istau1bar, psn.isntau1);
+      result.set_BF(FH_input.gammas[HpSfSf(2,1,1,3,3)+offset], 0.0, psn.istau2bar, psn.isntau1);
+      result.set_BF(FH_input.gammas[HpSfSf(1,1,2,1,1)+offset], 0.0, psn.isul, psn.isdlbar);
+      result.set_BF(FH_input.gammas[HpSfSf(1,2,2,1,1)+offset], 0.0, psn.isul, psn.isdrbar);
+      result.set_BF(FH_input.gammas[HpSfSf(2,1,2,1,1)+offset], 0.0, psn.isur, psn.isdlbar);
+      result.set_BF(FH_input.gammas[HpSfSf(2,2,2,1,1)+offset], 0.0, psn.isur, psn.isdrbar);
+      result.set_BF(FH_input.gammas[HpSfSf(1,1,2,1,2)+offset], 0.0, psn.isul, psn.isslbar);
+      result.set_BF(FH_input.gammas[HpSfSf(1,2,2,1,2)+offset], 0.0, psn.isul, psn.issrbar);
+      result.set_BF(FH_input.gammas[HpSfSf(2,1,2,1,2)+offset], 0.0, psn.isur, psn.isslbar);
+      result.set_BF(FH_input.gammas[HpSfSf(2,2,2,1,2)+offset], 0.0, psn.isur, psn.issrbar);
+      result.set_BF(FH_input.gammas[HpSfSf(1,1,2,1,3)+offset], 0.0, psn.isul, psn.isb1bar);
+      result.set_BF(FH_input.gammas[HpSfSf(1,2,2,1,3)+offset], 0.0, psn.isul, psn.isb2bar);
+      result.set_BF(FH_input.gammas[HpSfSf(2,1,2,1,3)+offset], 0.0, psn.isur, psn.isb1bar);
+      result.set_BF(FH_input.gammas[HpSfSf(2,2,2,1,3)+offset], 0.0, psn.isur, psn.isb2bar);
+      result.set_BF(FH_input.gammas[HpSfSf(1,1,2,2,1)+offset], 0.0, psn.iscl, psn.isdlbar);
+      result.set_BF(FH_input.gammas[HpSfSf(1,2,2,2,1)+offset], 0.0, psn.iscl, psn.isdrbar);
+      result.set_BF(FH_input.gammas[HpSfSf(2,1,2,2,1)+offset], 0.0, psn.iscr, psn.isdlbar);
+      result.set_BF(FH_input.gammas[HpSfSf(2,2,2,2,1)+offset], 0.0, psn.iscr, psn.isdrbar);
+      result.set_BF(FH_input.gammas[HpSfSf(1,1,2,2,2)+offset], 0.0, psn.iscl, psn.isslbar);
+      result.set_BF(FH_input.gammas[HpSfSf(1,2,2,2,2)+offset], 0.0, psn.iscl, psn.issrbar);
+      result.set_BF(FH_input.gammas[HpSfSf(2,1,2,2,2)+offset], 0.0, psn.iscr, psn.isslbar);
+      result.set_BF(FH_input.gammas[HpSfSf(2,2,2,2,2)+offset], 0.0, psn.iscr, psn.issrbar);
+      result.set_BF(FH_input.gammas[HpSfSf(1,1,2,2,3)+offset], 0.0, psn.iscl, psn.isb1bar);
+      result.set_BF(FH_input.gammas[HpSfSf(1,2,2,2,3)+offset], 0.0, psn.iscl, psn.isb2bar);
+      result.set_BF(FH_input.gammas[HpSfSf(2,1,2,2,3)+offset], 0.0, psn.iscr, psn.isb1bar);
+      result.set_BF(FH_input.gammas[HpSfSf(2,2,2,2,3)+offset], 0.0, psn.iscr, psn.isb2bar);
+      result.set_BF(FH_input.gammas[HpSfSf(1,1,2,3,1)+offset], 0.0, psn.ist1, psn.isdlbar);
+      result.set_BF(FH_input.gammas[HpSfSf(1,2,2,3,1)+offset], 0.0, psn.ist1, psn.isdrbar);
+      result.set_BF(FH_input.gammas[HpSfSf(2,1,2,3,1)+offset], 0.0, psn.ist2, psn.isdlbar);
+      result.set_BF(FH_input.gammas[HpSfSf(2,2,2,3,1)+offset], 0.0, psn.ist2, psn.isdrbar);
+      result.set_BF(FH_input.gammas[HpSfSf(1,1,2,3,2)+offset], 0.0, psn.ist1, psn.isslbar);
+      result.set_BF(FH_input.gammas[HpSfSf(1,2,2,3,2)+offset], 0.0, psn.ist1, psn.issrbar);
+      result.set_BF(FH_input.gammas[HpSfSf(2,1,2,3,2)+offset], 0.0, psn.ist2, psn.isslbar);
+      result.set_BF(FH_input.gammas[HpSfSf(2,2,2,3,2)+offset], 0.0, psn.ist2, psn.issrbar);
+      result.set_BF(FH_input.gammas[HpSfSf(1,1,2,3,3)+offset], 0.0, psn.ist1, psn.isb1bar);
+      result.set_BF(FH_input.gammas[HpSfSf(1,2,2,3,3)+offset], 0.0, psn.ist1, psn.isb2bar);
+      result.set_BF(FH_input.gammas[HpSfSf(2,1,2,3,3)+offset], 0.0, psn.ist2, psn.isb1bar);
+      result.set_BF(FH_input.gammas[HpSfSf(2,2,2,3,3)+offset], 0.0, psn.ist2, psn.isb2bar);
 
       cout << "H+ total width: " << result.width_in_GeV << endl;
     }
@@ -922,31 +1136,39 @@ namespace Gambit
     void gluino_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::gluino_decays;
+      
+      const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_UV();
+      mass_es_pseudonyms psn;
+      /// I shouldn't be redoing this in each function but I don't like
+      /// alternatives (global copy, static shitiness, ? make it a capability?)
+      /// must be a better way these.
+      psn.fill_mass_es_psns(mssm,tol);
+
       result.width_in_GeV = BEreq::cb_sd_gluiwidth->gluitot;
-      result.set_BF(BEreq::cb_sd_glui2body->brgsdownl, 0.0, isdl, "dbar");
-      result.set_BF(BEreq::cb_sd_glui2body->brgsdownl, 0.0, isdlbar, "d");
-      result.set_BF(BEreq::cb_sd_glui2body->brgsdownr, 0.0, isdr, "dbar");
-      result.set_BF(BEreq::cb_sd_glui2body->brgsdownr, 0.0, isdrbar, "d");
-      result.set_BF(BEreq::cb_sd_glui2body->brgsupl, 0.0, isul, "ubar");
-      result.set_BF(BEreq::cb_sd_glui2body->brgsupl, 0.0, isulbar, "u");
-      result.set_BF(BEreq::cb_sd_glui2body->brgsupr, 0.0, isur, "ubar");
-      result.set_BF(BEreq::cb_sd_glui2body->brgsupr, 0.0, isurbar, "u");
-      result.set_BF(BEreq::cb_sd_glui2body->brgsdownl, 0.0, issl, "sbar");
-      result.set_BF(BEreq::cb_sd_glui2body->brgsdownl, 0.0, isslbar, "s");
-      result.set_BF(BEreq::cb_sd_glui2body->brgsdownr, 0.0, issr, "sbar");
-      result.set_BF(BEreq::cb_sd_glui2body->brgsdownr, 0.0, issrbar, "s");
-      result.set_BF(BEreq::cb_sd_glui2body->brgsupl, 0.0, iscl, "cbar");
-      result.set_BF(BEreq::cb_sd_glui2body->brgsupl, 0.0, isclbar, "c");
-      result.set_BF(BEreq::cb_sd_glui2body->brgsupr, 0.0, iscr, "cbar");
-      result.set_BF(BEreq::cb_sd_glui2body->brgsupr, 0.0, iscrbar, "c");
-      result.set_BF(BEreq::cb_sd_glui2body->brgsb1, 0.0, isb1, "bbar");
-      result.set_BF(BEreq::cb_sd_glui2body->brgsb1, 0.0, isb1bar, "b");
-      result.set_BF(BEreq::cb_sd_glui2body->brgsb2, 0.0, isb2, "bbar");
-      result.set_BF(BEreq::cb_sd_glui2body->brgsb2, 0.0, isb2bar, "b");
-      result.set_BF(BEreq::cb_sd_glui2body->brgst1, 0.0, ist1, "tbar");
-      result.set_BF(BEreq::cb_sd_glui2body->brgst1, 0.0, ist1bar, "t");
-      result.set_BF(BEreq::cb_sd_glui2body->brgst2, 0.0, ist2, "tbar");
-      result.set_BF(BEreq::cb_sd_glui2body->brgst2, 0.0, ist2bar, "t");
+      result.set_BF(BEreq::cb_sd_glui2body->brgsdownl, 0.0, psn.isdl, "dbar");
+      result.set_BF(BEreq::cb_sd_glui2body->brgsdownl, 0.0, psn.isdlbar, "d");
+      result.set_BF(BEreq::cb_sd_glui2body->brgsdownr, 0.0, psn.isdr, "dbar");
+      result.set_BF(BEreq::cb_sd_glui2body->brgsdownr, 0.0, psn.isdrbar, "d");
+      result.set_BF(BEreq::cb_sd_glui2body->brgsupl, 0.0, psn.isul, "ubar");
+      result.set_BF(BEreq::cb_sd_glui2body->brgsupl, 0.0, psn.isulbar, "u");
+      result.set_BF(BEreq::cb_sd_glui2body->brgsupr, 0.0, psn.isur, "ubar");
+      result.set_BF(BEreq::cb_sd_glui2body->brgsupr, 0.0, psn.isurbar, "u");
+      result.set_BF(BEreq::cb_sd_glui2body->brgsdownl, 0.0, psn.issl, "sbar");
+      result.set_BF(BEreq::cb_sd_glui2body->brgsdownl, 0.0, psn.isslbar, "s");
+      result.set_BF(BEreq::cb_sd_glui2body->brgsdownr, 0.0, psn.issr, "sbar");
+      result.set_BF(BEreq::cb_sd_glui2body->brgsdownr, 0.0, psn.issrbar, "s");
+      result.set_BF(BEreq::cb_sd_glui2body->brgsupl, 0.0, psn.iscl, "cbar");
+      result.set_BF(BEreq::cb_sd_glui2body->brgsupl, 0.0, psn.isclbar, "c");
+      result.set_BF(BEreq::cb_sd_glui2body->brgsupr, 0.0, psn.iscr, "cbar");
+      result.set_BF(BEreq::cb_sd_glui2body->brgsupr, 0.0, psn.iscrbar, "c");
+      result.set_BF(BEreq::cb_sd_glui2body->brgsb1, 0.0, psn.isb1, "bbar");
+      result.set_BF(BEreq::cb_sd_glui2body->brgsb1, 0.0, psn.isb1bar, "b");
+      result.set_BF(BEreq::cb_sd_glui2body->brgsb2, 0.0, psn.isb2, "bbar");
+      result.set_BF(BEreq::cb_sd_glui2body->brgsb2, 0.0, psn.isb2bar, "b");
+      result.set_BF(BEreq::cb_sd_glui2body->brgst1, 0.0, psn.ist1, "tbar");
+      result.set_BF(BEreq::cb_sd_glui2body->brgst1, 0.0, psn.ist1bar, "t");
+      result.set_BF(BEreq::cb_sd_glui2body->brgst2, 0.0, psn.ist2, "tbar");
+      result.set_BF(BEreq::cb_sd_glui2body->brgst2, 0.0, psn.ist2bar, "t");
       result.set_BF(BEreq::cb_sd_gluiloop->brglnjgluon(1), 0.0, "~chi0_1", "g");
       result.set_BF(BEreq::cb_sd_gluiloop->brglnjgluon(2), 0.0, "~chi0_2", "g");
       result.set_BF(BEreq::cb_sd_gluiloop->brglnjgluon(3), 0.0, "~chi0_3", "g");
@@ -987,10 +1209,10 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_glui3body->brgotb(1), 0.0, "~chi-_1", "t", "bbar");
       result.set_BF(BEreq::cb_sd_glui3body->brgotb(2), 0.0, "~chi+_2", "b", "tbar");
       result.set_BF(BEreq::cb_sd_glui3body->brgotb(2), 0.0, "~chi-_2", "t", "bbar");
-      result.set_BF(BEreq::cb_sd_glui3body->brwst1b, 0.0, ist1, "bbar", "W-");
-      result.set_BF(BEreq::cb_sd_glui3body->brwst1b, 0.0, ist1bar, "b", "W+");
-      result.set_BF(BEreq::cb_sd_glui3body->brhcst1b, 0.0, ist1, "bbar", "H-");
-      result.set_BF(BEreq::cb_sd_glui3body->brhcst1b, 0.0, ist1bar, "b", "H+");
+      result.set_BF(BEreq::cb_sd_glui3body->brwst1b, 0.0, psn.ist1, "bbar", "W-");
+      result.set_BF(BEreq::cb_sd_glui3body->brwst1b, 0.0, psn.ist1bar, "b", "W+");
+      result.set_BF(BEreq::cb_sd_glui3body->brhcst1b, 0.0, psn.ist1, "bbar", "H-");
+      result.set_BF(BEreq::cb_sd_glui3body->brhcst1b, 0.0, psn.ist1bar, "b", "H+");
       cout << "gluino total width: " << result.width_in_GeV << endl;
     }
 
@@ -998,6 +1220,14 @@ namespace Gambit
     void stop_1_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::stop_1_decays;
+      
+      const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_UV();
+      mass_es_pseudonyms psn;
+      /// I shouldn't be redoing this in each function but I don't like
+      /// alternatives (global copy, static shitiness, ? make it a capability?)
+      /// must be a better way these.
+      psn.fill_mass_es_psns(mssm,tol);
+
       result.width_in_GeV = BEreq::cb_sd_stopwidth->stoptot(1);
       result.set_BF(BEreq::cb_sd_stop2body->brst1neutt(1), 0.0, "~chi0_1", "t");
       result.set_BF(BEreq::cb_sd_stop2body->brst1neutt(2), 0.0, "~chi0_2", "t");
@@ -1006,10 +1236,10 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_stop2body->brst1charb(1), 0.0, "~chi+_1", "b");
       result.set_BF(BEreq::cb_sd_stop2body->brst1charb(2), 0.0, "~chi+_2", "b");
       result.set_BF(BEreq::cb_sd_stop2body->brst1glui, 0.0, "~g", "t");
-      result.set_BF(BEreq::cb_sd_stop2body->brst1hcsb(1), 0.0, isb1, "H+");
-      result.set_BF(BEreq::cb_sd_stop2body->brst1hcsb(2), 0.0, isb2, "H+");
-      result.set_BF(BEreq::cb_sd_stop2body->brst1wsb(1), 0.0, isb1, "W+");
-      result.set_BF(BEreq::cb_sd_stop2body->brst1wsb(2), 0.0, isb2, "W+");
+      result.set_BF(BEreq::cb_sd_stop2body->brst1hcsb(1), 0.0, psn.isb1, "H+");
+      result.set_BF(BEreq::cb_sd_stop2body->brst1hcsb(2), 0.0, psn.isb2, "H+");
+      result.set_BF(BEreq::cb_sd_stop2body->brst1wsb(1), 0.0, psn.isb1, "W+");
+      result.set_BF(BEreq::cb_sd_stop2body->brst1wsb(2), 0.0, psn.isb2, "W+");
       result.set_BF(BEreq::cb_sd_stoploop->brgamma, 0.0, "~chi0_1", "c");
       result.set_BF(BEreq::cb_sd_stoploop->brgammaup, 0.0, "~chi0_1", "u");
       result.set_BF(BEreq::cb_sd_stoploop->brgammagluino, 0.0, "~g", "c");
@@ -1021,29 +1251,29 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_stop3body->brstoph(1,2), 0.0, "~chi0_2", "b", "H+");
       result.set_BF(BEreq::cb_sd_stop3body->brstoph(1,3), 0.0, "~chi0_3", "b", "H+");
       result.set_BF(BEreq::cb_sd_stop3body->brstoph(1,4), 0.0, "~chi0_4", "b", "H+");
-      result.set_BF(BEreq::cb_sd_stop3body->brstsntau(1,1), 0.0, intau1, "b", "tau+");
-      result.set_BF(BEreq::cb_sd_stop3body->brstsnel(1), 0.0, inel, "b", "e+");
-      result.set_BF(BEreq::cb_sd_stop3body->brstsnel(1), 0.0, inmul, "b", "mu+");
-      result.set_BF(BEreq::cb_sd_stop3body->brststau(1,1), 0.0, istau1bar, "b", "nu_tau");
-      result.set_BF(BEreq::cb_sd_stop3body->brststau(1,2), 0.0, istau2bar, "b", "nu_tau");
-      result.set_BF(BEreq::cb_sd_stop3body->brstsel(1,1), 0.0, isellbar, "b", "nu_e");
-      result.set_BF(BEreq::cb_sd_stop3body->brstsel(1,2), 0.0, iselrbar, "b", "nu_e");
-      result.set_BF(BEreq::cb_sd_stop3body->brstsel(1,1), 0.0, ismulbar, "b", "nu_mu");
-      result.set_BF(BEreq::cb_sd_stop3body->brstsel(1,2), 0.0, ismurbar, "b", "nu_mu");
-      result.set_BF(BEreq::cb_sd_stop3body->brstbsbst(1,1), 0.0, isb1bar, "b", "t");
-      result.set_BF(BEreq::cb_sd_stop3body->brstbsbst(1,2), 0.0, isb2bar, "b", "t");
-      result.set_BF(BEreq::cb_sd_stop3body->brstbbsbt(1,1), 0.0, isb1, "bbar", "t");
-      result.set_BF(BEreq::cb_sd_stop3body->brstbbsbt(1,2), 0.0, isb2, "bbar", "t");
-      result.set_BF(BEreq::cb_sd_stop3body->brstupsbdow(1,1), 0.0, isb1, "dbar", "u");
-      result.set_BF(BEreq::cb_sd_stop3body->brstupsbdow(1,2), 0.0, isb2, "dbar", "u");
-      result.set_BF(BEreq::cb_sd_stop3body->brstupsbdow(1,1), 0.0, isb1, "sbar", "c");
-      result.set_BF(BEreq::cb_sd_stop3body->brstupsbdow(1,2), 0.0, isb2, "sbar", "c");
-      result.set_BF(BEreq::cb_sd_stop3body->brsttausbnu(1,1), 0.0, isb1, "tau+", "nu_tau");
-      result.set_BF(BEreq::cb_sd_stop3body->brsttausbnu(1,2), 0.0, isb2, "tau+", "nu_tau");
-      result.set_BF(BEreq::cb_sd_stop3body->brstelsbnu(1,1), 0.0, isb1, "e+", "nu_e");
-      result.set_BF(BEreq::cb_sd_stop3body->brstelsbnu(1,2), 0.0, isb2, "e+", "nu_e");
-      result.set_BF(BEreq::cb_sd_stop3body->brstelsbnu(1,1), 0.0, isb1, "mu+", "nu_mu");
-      result.set_BF(BEreq::cb_sd_stop3body->brstelsbnu(1,2), 0.0, isb2, "mu+", "nu_mu");
+      result.set_BF(BEreq::cb_sd_stop3body->brstsntau(1,1), 0.0, psn.isntau1, "b", "tau+");
+      result.set_BF(BEreq::cb_sd_stop3body->brstsnel(1), 0.0, psn.isnel, "b", "e+");
+      result.set_BF(BEreq::cb_sd_stop3body->brstsnel(1), 0.0, psn.isnmul, "b", "mu+");
+      result.set_BF(BEreq::cb_sd_stop3body->brststau(1,1), 0.0, psn.istau1bar, "b", "nu_tau");
+      result.set_BF(BEreq::cb_sd_stop3body->brststau(1,2), 0.0, psn.istau2bar, "b", "nu_tau");
+      result.set_BF(BEreq::cb_sd_stop3body->brstsel(1,1), 0.0, psn.isellbar, "b", "nu_e");
+      result.set_BF(BEreq::cb_sd_stop3body->brstsel(1,2), 0.0, psn.iselrbar, "b", "nu_e");
+      result.set_BF(BEreq::cb_sd_stop3body->brstsel(1,1), 0.0, psn.ismulbar, "b", "nu_mu");
+      result.set_BF(BEreq::cb_sd_stop3body->brstsel(1,2), 0.0, psn.ismurbar, "b", "nu_mu");
+      result.set_BF(BEreq::cb_sd_stop3body->brstbsbst(1,1), 0.0, psn.isb1bar, "b", "t");
+      result.set_BF(BEreq::cb_sd_stop3body->brstbsbst(1,2), 0.0, psn.isb2bar, "b", "t");
+      result.set_BF(BEreq::cb_sd_stop3body->brstbbsbt(1,1), 0.0, psn.isb1, "bbar", "t");
+      result.set_BF(BEreq::cb_sd_stop3body->brstbbsbt(1,2), 0.0, psn.isb2, "bbar", "t");
+      result.set_BF(BEreq::cb_sd_stop3body->brstupsbdow(1,1), 0.0, psn.isb1, "dbar", "u");
+      result.set_BF(BEreq::cb_sd_stop3body->brstupsbdow(1,2), 0.0, psn.isb2, "dbar", "u");
+      result.set_BF(BEreq::cb_sd_stop3body->brstupsbdow(1,1), 0.0, psn.isb1, "sbar", "c");
+      result.set_BF(BEreq::cb_sd_stop3body->brstupsbdow(1,2), 0.0, psn.isb2, "sbar", "c");
+      result.set_BF(BEreq::cb_sd_stop3body->brsttausbnu(1,1), 0.0, psn.isb1, "tau+", "nu_tau");
+      result.set_BF(BEreq::cb_sd_stop3body->brsttausbnu(1,2), 0.0, psn.isb2, "tau+", "nu_tau");
+      result.set_BF(BEreq::cb_sd_stop3body->brstelsbnu(1,1), 0.0, psn.isb1, "e+", "nu_e");
+      result.set_BF(BEreq::cb_sd_stop3body->brstelsbnu(1,2), 0.0, psn.isb2, "e+", "nu_e");
+      result.set_BF(BEreq::cb_sd_stop3body->brstelsbnu(1,1), 0.0, psn.isb1, "mu+", "nu_mu");
+      result.set_BF(BEreq::cb_sd_stop3body->brstelsbnu(1,2), 0.0, psn.isb2, "mu+", "nu_mu");
       cout << "stop_1 total width: " << result.width_in_GeV << endl;
     }
 
@@ -1057,6 +1287,14 @@ namespace Gambit
     void stop_2_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::stop_2_decays;
+      
+      const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_UV();
+      mass_es_pseudonyms psn;
+      /// I shouldn't be redoing this in each function but I don't like
+      /// alternatives (global copy, static shitiness, ? make it a capability?)
+      /// must be a better way these.
+      psn.fill_mass_es_psns(mssm,tol);
+
       result.width_in_GeV = BEreq::cb_sd_stopwidth->stoptot(2);
       result.set_BF(BEreq::cb_sd_stop2body->brst2neutt(1), 0.0, "~chi0_1", "t");
       result.set_BF(BEreq::cb_sd_stop2body->brst2neutt(2), 0.0, "~chi0_2", "t");
@@ -1065,14 +1303,14 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_stop2body->brst2charb(1), 0.0, "~chi+_1", "b");
       result.set_BF(BEreq::cb_sd_stop2body->brst2charb(2), 0.0, "~chi+_2", "b");
       result.set_BF(BEreq::cb_sd_stop2body->brst2glui, 0.0, "~g", "t");
-      result.set_BF(BEreq::cb_sd_stop2body->brst2hl, 0.0, ist1, "h0_1");
-      result.set_BF(BEreq::cb_sd_stop2body->brst2hh, 0.0, ist1, "h0_2");
-      result.set_BF(BEreq::cb_sd_stop2body->brst2ha, 0.0, ist1, "A0");
-      result.set_BF(BEreq::cb_sd_stop2body->brst2hcsb(1), 0.0, isb1, "H+");
-      result.set_BF(BEreq::cb_sd_stop2body->brst2hcsb(2), 0.0, isb2, "H+");
-      result.set_BF(BEreq::cb_sd_stop2body->brst2ztop, 0.0, ist1, "Z0");
-      result.set_BF(BEreq::cb_sd_stop2body->brst2wsb(1), 0.0, isb1, "W+");
-      result.set_BF(BEreq::cb_sd_stop2body->brst2wsb(2), 0.0, isb2, "W+");
+      result.set_BF(BEreq::cb_sd_stop2body->brst2hl, 0.0, psn.ist1, "h0_1");
+      result.set_BF(BEreq::cb_sd_stop2body->brst2hh, 0.0, psn.ist1, "h0_2");
+      result.set_BF(BEreq::cb_sd_stop2body->brst2ha, 0.0, psn.ist1, "A0");
+      result.set_BF(BEreq::cb_sd_stop2body->brst2hcsb(1), 0.0, psn.isb1, "H+");
+      result.set_BF(BEreq::cb_sd_stop2body->brst2hcsb(2), 0.0, psn.isb2, "H+");
+      result.set_BF(BEreq::cb_sd_stop2body->brst2ztop, 0.0, psn.ist1, "Z0");
+      result.set_BF(BEreq::cb_sd_stop2body->brst2wsb(1), 0.0, psn.isb1, "W+");
+      result.set_BF(BEreq::cb_sd_stop2body->brst2wsb(2), 0.0, psn.isb2, "W+");
       result.set_BF(BEreq::cb_sd_stop3body->brstopw(2,1), 0.0, "~chi0_1", "b", "W+");
       result.set_BF(BEreq::cb_sd_stop3body->brstopw(2,2), 0.0, "~chi0_2", "b", "W+");
       result.set_BF(BEreq::cb_sd_stop3body->brstopw(2,3), 0.0, "~chi0_3", "b", "W+");
@@ -1081,42 +1319,42 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_stop3body->brstoph(2,2), 0.0, "~chi0_2", "b", "H+");
       result.set_BF(BEreq::cb_sd_stop3body->brstoph(2,3), 0.0, "~chi0_3", "b", "H+");
       result.set_BF(BEreq::cb_sd_stop3body->brstoph(2,4), 0.0, "~chi0_4", "b", "H+");
-      result.set_BF(BEreq::cb_sd_stop3body->brstsntau(2,1), 0.0, intau1, "b", "tau+");
-      result.set_BF(BEreq::cb_sd_stop3body->brstsnel(2), 0.0, inel, "b", "e+");
-      result.set_BF(BEreq::cb_sd_stop3body->brstsnel(2), 0.0, inmul, "b", "mu+");
-      result.set_BF(BEreq::cb_sd_stop3body->brststau(2,1), 0.0, istau1bar, "b", "nu_tau");
-      result.set_BF(BEreq::cb_sd_stop3body->brststau(2,2), 0.0, istau2bar, "b", "nu_tau");
-      result.set_BF(BEreq::cb_sd_stop3body->brstsel(2,1), 0.0, isellbar, "b", "nu_e");
-      result.set_BF(BEreq::cb_sd_stop3body->brstsel(2,2), 0.0, iselrbar, "b", "nu_e");
-      result.set_BF(BEreq::cb_sd_stop3body->brstsel(2,1), 0.0, ismulbar, "b", "nu_mu");
-      result.set_BF(BEreq::cb_sd_stop3body->brstsel(2,2), 0.0, ismurbar, "b", "nu_mu");
-      result.set_BF(BEreq::cb_sd_stop3body->brstbsbst(2,1), 0.0, isb1bar, "b", "t");
-      result.set_BF(BEreq::cb_sd_stop3body->brstbsbst(2,2), 0.0, isb2bar, "b", "t");
-      result.set_BF(BEreq::cb_sd_stop3body->brstbbsbt(2,1), 0.0, isb1, "bbar", "t");
-      result.set_BF(BEreq::cb_sd_stop3body->brstbbsbt(2,2), 0.0, isb2, "bbar", "t");
-      result.set_BF(BEreq::cb_sd_stop3body->brstupsbdow(2,1), 0.0, isb1, "dbar", "u");
-      result.set_BF(BEreq::cb_sd_stop3body->brstupsbdow(2,2), 0.0, isb2, "dbar", "u");
-      result.set_BF(BEreq::cb_sd_stop3body->brstupsbdow(2,1), 0.0, isb1, "sbar", "c");
-      result.set_BF(BEreq::cb_sd_stop3body->brstupsbdow(2,2), 0.0, isb2, "sbar", "c");
-      result.set_BF(BEreq::cb_sd_stop3body->brsttausbnu(2,1), 0.0, isb1, "tau+", "nu_tau");
-      result.set_BF(BEreq::cb_sd_stop3body->brsttausbnu(2,2), 0.0, isb2, "tau+", "nu_tau");
-      result.set_BF(BEreq::cb_sd_stop3body->brstelsbnu(2,1), 0.0, isb1, "e+", "nu_e");
-      result.set_BF(BEreq::cb_sd_stop3body->brstelsbnu(2,2), 0.0, isb2, "e+", "nu_e");
-      result.set_BF(BEreq::cb_sd_stop3body->brstelsbnu(2,1), 0.0, isb1, "mu+", "nu_mu");
-      result.set_BF(BEreq::cb_sd_stop3body->brstelsbnu(2,2), 0.0, isb2, "mu+", "nu_mu");
-      result.set_BF(BEreq::cb_sd_stop3body->brst2st1tt, 0.0, ist1, "t", "tbar");
-      result.set_BF(BEreq::cb_sd_stop3body->brst2st1tt, 0.0, ist1bar, "t", "t");
-      result.set_BF(BEreq::cb_sd_stop3body->brst2st1bb, 0.0, ist1, "b", "bbar");
-      result.set_BF(BEreq::cb_sd_stop3body->brst2st1uu, 0.0, ist1, "u", "ubar");
-      result.set_BF(BEreq::cb_sd_stop3body->brst2st1dd, 0.0, ist1, "d", "dbar");
-      result.set_BF(BEreq::cb_sd_stop3body->brst2st1uu, 0.0, ist1, "c", "cbar");
-      result.set_BF(BEreq::cb_sd_stop3body->brst2st1dd, 0.0, ist1, "s", "sbar");
-      result.set_BF(BEreq::cb_sd_stop3body->brst2st1ee, 0.0, ist1, "e-", "e+");
-      result.set_BF(BEreq::cb_sd_stop3body->brst2st1ee, 0.0, ist1, "mu-", "mu+");
-      result.set_BF(BEreq::cb_sd_stop3body->brst2st1tautau, 0.0, ist1, "tau-", "tau+");
-      result.set_BF(BEreq::cb_sd_stop3body->brst2st1nunu, 0.0, ist1, "nu_e", "nubar_e");
-      result.set_BF(BEreq::cb_sd_stop3body->brst2st1nunu, 0.0, ist1, "nu_mu", "nubar_mu");
-      result.set_BF(BEreq::cb_sd_stop3body->brst2st1nunu, 0.0, ist1, "nu_tau", "nubar_tau");
+      result.set_BF(BEreq::cb_sd_stop3body->brstsntau(2,1), 0.0, psn.isntau1, "b", "tau+");
+      result.set_BF(BEreq::cb_sd_stop3body->brstsnel(2), 0.0, psn.isnel, "b", "e+");
+      result.set_BF(BEreq::cb_sd_stop3body->brstsnel(2), 0.0, psn.isnmul, "b", "mu+");
+      result.set_BF(BEreq::cb_sd_stop3body->brststau(2,1), 0.0, psn.istau1bar, "b", "nu_tau");
+      result.set_BF(BEreq::cb_sd_stop3body->brststau(2,2), 0.0, psn.istau2bar, "b", "nu_tau");
+      result.set_BF(BEreq::cb_sd_stop3body->brstsel(2,1), 0.0, psn.isellbar, "b", "nu_e");
+      result.set_BF(BEreq::cb_sd_stop3body->brstsel(2,2), 0.0, psn.iselrbar, "b", "nu_e");
+      result.set_BF(BEreq::cb_sd_stop3body->brstsel(2,1), 0.0, psn.ismulbar, "b", "nu_mu");
+      result.set_BF(BEreq::cb_sd_stop3body->brstsel(2,2), 0.0, psn.ismurbar, "b", "nu_mu");
+      result.set_BF(BEreq::cb_sd_stop3body->brstbsbst(2,1), 0.0, psn.isb1bar, "b", "t");
+      result.set_BF(BEreq::cb_sd_stop3body->brstbsbst(2,2), 0.0, psn.isb2bar, "b", "t");
+      result.set_BF(BEreq::cb_sd_stop3body->brstbbsbt(2,1), 0.0, psn.isb1, "bbar", "t");
+      result.set_BF(BEreq::cb_sd_stop3body->brstbbsbt(2,2), 0.0, psn.isb2, "bbar", "t");
+      result.set_BF(BEreq::cb_sd_stop3body->brstupsbdow(2,1), 0.0, psn.isb1, "dbar", "u");
+      result.set_BF(BEreq::cb_sd_stop3body->brstupsbdow(2,2), 0.0, psn.isb2, "dbar", "u");
+      result.set_BF(BEreq::cb_sd_stop3body->brstupsbdow(2,1), 0.0, psn.isb1, "sbar", "c");
+      result.set_BF(BEreq::cb_sd_stop3body->brstupsbdow(2,2), 0.0, psn.isb2, "sbar", "c");
+      result.set_BF(BEreq::cb_sd_stop3body->brsttausbnu(2,1), 0.0, psn.isb1, "tau+", "nu_tau");
+      result.set_BF(BEreq::cb_sd_stop3body->brsttausbnu(2,2), 0.0, psn.isb2, "tau+", "nu_tau");
+      result.set_BF(BEreq::cb_sd_stop3body->brstelsbnu(2,1), 0.0, psn.isb1, "e+", "nu_e");
+      result.set_BF(BEreq::cb_sd_stop3body->brstelsbnu(2,2), 0.0, psn.isb2, "e+", "nu_e");
+      result.set_BF(BEreq::cb_sd_stop3body->brstelsbnu(2,1), 0.0, psn.isb1, "mu+", "nu_mu");
+      result.set_BF(BEreq::cb_sd_stop3body->brstelsbnu(2,2), 0.0, psn.isb2, "mu+", "nu_mu");
+      result.set_BF(BEreq::cb_sd_stop3body->brst2st1tt, 0.0, psn.ist1, "t", "tbar");
+      result.set_BF(BEreq::cb_sd_stop3body->brst2st1tt, 0.0, psn.ist1bar, "t", "t");
+      result.set_BF(BEreq::cb_sd_stop3body->brst2st1bb, 0.0, psn.ist1, "b", "bbar");
+      result.set_BF(BEreq::cb_sd_stop3body->brst2st1uu, 0.0, psn.ist1, "u", "ubar");
+      result.set_BF(BEreq::cb_sd_stop3body->brst2st1dd, 0.0, psn.ist1, "d", "dbar");
+      result.set_BF(BEreq::cb_sd_stop3body->brst2st1uu, 0.0, psn.ist1, "c", "cbar");
+      result.set_BF(BEreq::cb_sd_stop3body->brst2st1dd, 0.0, psn.ist1, "s", "sbar");
+      result.set_BF(BEreq::cb_sd_stop3body->brst2st1ee, 0.0, psn.ist1, "e-", "e+");
+      result.set_BF(BEreq::cb_sd_stop3body->brst2st1ee, 0.0, psn.ist1, "mu-", "mu+");
+      result.set_BF(BEreq::cb_sd_stop3body->brst2st1tautau, 0.0, psn.ist1, "tau-", "tau+");
+      result.set_BF(BEreq::cb_sd_stop3body->brst2st1nunu, 0.0, psn.ist1, "nu_e", "nubar_e");
+      result.set_BF(BEreq::cb_sd_stop3body->brst2st1nunu, 0.0, psn.ist1, "nu_mu", "nubar_mu");
+      result.set_BF(BEreq::cb_sd_stop3body->brst2st1nunu, 0.0, psn.ist1, "nu_tau", "nubar_tau");
       cout << "stop_2 total width: " << result.width_in_GeV << endl;
     }
 
@@ -1130,6 +1368,14 @@ namespace Gambit
     void sbottom_1_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::sbottom_1_decays;
+      
+      const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_UV();
+      mass_es_pseudonyms psn;
+      /// I shouldn't be redoing this in each function but I don't like
+      /// alternatives (global copy, static shitiness, ? make it a capability?)
+      /// must be a better way these.
+      psn.fill_mass_es_psns(mssm,tol);
+
       result.width_in_GeV = BEreq::cb_sd_sbotwidth->sbottot(1);
       result.set_BF(BEreq::cb_sd_sbot2body->brsb1neutt(1), 0.0, "~chi0_1", "b");
       result.set_BF(BEreq::cb_sd_sbot2body->brsb1neutt(2), 0.0, "~chi0_2", "b");
@@ -1138,33 +1384,33 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_sbot2body->brsb1chart(1), 0.0, "~chi-_1", "t");
       result.set_BF(BEreq::cb_sd_sbot2body->brsb1chart(2), 0.0, "~chi-_2", "t");
       result.set_BF(BEreq::cb_sd_sbot2body->brsb1glui, 0.0, "~g", "b");
-      result.set_BF(BEreq::cb_sd_sbot2body->brsb1hcst(1), 0.0, ist1, "H-");
-      result.set_BF(BEreq::cb_sd_sbot2body->brsb1hcst(2), 0.0, ist2, "H-");
-      result.set_BF(BEreq::cb_sd_sbot2body->brsb1wst(1), 0.0, ist1, "W-");
-      result.set_BF(BEreq::cb_sd_sbot2body->brsb1wst(2), 0.0, ist2, "W-");
-      result.set_BF(BEreq::cb_sd_sbot3body->brsbsntau(1,1), 0.0, intau1bar, "t", "tau-");
-      result.set_BF(BEreq::cb_sd_sbot3body->brsbsnel(1), 0.0, inelbar, "t", "e-");
-      result.set_BF(BEreq::cb_sd_sbot3body->brsbsnel(1), 0.0, inmulbar, "t", "mu-");
-      result.set_BF(BEreq::cb_sd_sbot3body->brsbstau(1,1), 0.0, istau1, "t", "nubar_tau");
-      result.set_BF(BEreq::cb_sd_sbot3body->brsbstau(1,2), 0.0, istau2, "t", "nubar_tau");
-      result.set_BF(BEreq::cb_sd_sbot3body->brsbsel(1,1), 0.0, isell, "t", "nubar_e");
-      result.set_BF(BEreq::cb_sd_sbot3body->brsbsel(1,2), 0.0, iselr, "t", "nubar_e");
-      result.set_BF(BEreq::cb_sd_sbot3body->brsbsel(1,1), 0.0, ismul, "t", "nubar_mu");
-      result.set_BF(BEreq::cb_sd_sbot3body->brsbsel(1,2), 0.0, ismur, "t", "nubar_mu");
-      result.set_BF(BEreq::cb_sd_sbot3body->brsbtstsb(1,1), 0.0, ist1bar, "t", "b");
-      result.set_BF(BEreq::cb_sd_sbot3body->brsbtstsb(1,2), 0.0, ist2bar, "t", "b");
-      result.set_BF(BEreq::cb_sd_sbot3body->brsbtbstb(1,1), 0.0, ist1, "tbar", "b");
-      result.set_BF(BEreq::cb_sd_sbot3body->brsbtbstb(1,2), 0.0, ist2, "tbar", "b");
-      result.set_BF(BEreq::cb_sd_sbot3body->brsbupstdow(1,1), 0.0, ist1, "ubar", "d");
-      result.set_BF(BEreq::cb_sd_sbot3body->brsbupstdow(1,2), 0.0, ist2, "ubar", "d");
-      result.set_BF(BEreq::cb_sd_sbot3body->brsbupstdow(1,1), 0.0, ist1, "cbar", "s");
-      result.set_BF(BEreq::cb_sd_sbot3body->brsbupstdow(1,2), 0.0, ist2, "cbar", "s");
-      result.set_BF(BEreq::cb_sd_sbot3body->brsbtaustnu(1,1), 0.0, ist1, "tau-", "nubar_tau");
-      result.set_BF(BEreq::cb_sd_sbot3body->brsbtaustnu(1,2), 0.0, ist2, "tau-", "nubar_tau");
-      result.set_BF(BEreq::cb_sd_sbot3body->brsbelstnu(1,1), 0.0, ist1, "e-", "nubar_e");
-      result.set_BF(BEreq::cb_sd_sbot3body->brsbelstnu(1,2), 0.0, ist1, "e-", "nubar_e");
-      result.set_BF(BEreq::cb_sd_sbot3body->brsbelstnu(1,1), 0.0, ist1, "mu-", "nubar_mu");
-      result.set_BF(BEreq::cb_sd_sbot3body->brsbelstnu(1,2), 0.0, ist1, "mu-", "nubar_mu");
+      result.set_BF(BEreq::cb_sd_sbot2body->brsb1hcst(1), 0.0, psn.ist1, "H-");
+      result.set_BF(BEreq::cb_sd_sbot2body->brsb1hcst(2), 0.0, psn.ist2, "H-");
+      result.set_BF(BEreq::cb_sd_sbot2body->brsb1wst(1), 0.0, psn.ist1, "W-");
+      result.set_BF(BEreq::cb_sd_sbot2body->brsb1wst(2), 0.0, psn.ist2, "W-");
+      result.set_BF(BEreq::cb_sd_sbot3body->brsbsntau(1,1), 0.0, psn.isntau1bar, "t", "tau-");
+      result.set_BF(BEreq::cb_sd_sbot3body->brsbsnel(1), 0.0, psn.isnelbar, "t", "e-");
+      result.set_BF(BEreq::cb_sd_sbot3body->brsbsnel(1), 0.0, psn.isnmulbar, "t", "mu-");
+      result.set_BF(BEreq::cb_sd_sbot3body->brsbstau(1,1), 0.0, psn.istau1, "t", "nubar_tau");
+      result.set_BF(BEreq::cb_sd_sbot3body->brsbstau(1,2), 0.0, psn.istau2, "t", "nubar_tau");
+      result.set_BF(BEreq::cb_sd_sbot3body->brsbsel(1,1), 0.0, psn.isell, "t", "nubar_e");
+      result.set_BF(BEreq::cb_sd_sbot3body->brsbsel(1,2), 0.0, psn.iselr, "t", "nubar_e");
+      result.set_BF(BEreq::cb_sd_sbot3body->brsbsel(1,1), 0.0, psn.ismul, "t", "nubar_mu");
+      result.set_BF(BEreq::cb_sd_sbot3body->brsbsel(1,2), 0.0, psn.ismur, "t", "nubar_mu");
+      result.set_BF(BEreq::cb_sd_sbot3body->brsbtstsb(1,1), 0.0, psn.ist1bar, "t", "b");
+      result.set_BF(BEreq::cb_sd_sbot3body->brsbtstsb(1,2), 0.0, psn.ist2bar, "t", "b");
+      result.set_BF(BEreq::cb_sd_sbot3body->brsbtbstb(1,1), 0.0, psn.ist1, "tbar", "b");
+      result.set_BF(BEreq::cb_sd_sbot3body->brsbtbstb(1,2), 0.0, psn.ist2, "tbar", "b");
+      result.set_BF(BEreq::cb_sd_sbot3body->brsbupstdow(1,1), 0.0, psn.ist1, "ubar", "d");
+      result.set_BF(BEreq::cb_sd_sbot3body->brsbupstdow(1,2), 0.0, psn.ist2, "ubar", "d");
+      result.set_BF(BEreq::cb_sd_sbot3body->brsbupstdow(1,1), 0.0, psn.ist1, "cbar", "s");
+      result.set_BF(BEreq::cb_sd_sbot3body->brsbupstdow(1,2), 0.0, psn.ist2, "cbar", "s");
+      result.set_BF(BEreq::cb_sd_sbot3body->brsbtaustnu(1,1), 0.0, psn.ist1, "tau-", "nubar_tau");
+      result.set_BF(BEreq::cb_sd_sbot3body->brsbtaustnu(1,2), 0.0, psn.ist2, "tau-", "nubar_tau");
+      result.set_BF(BEreq::cb_sd_sbot3body->brsbelstnu(1,1), 0.0, psn.ist1, "e-", "nubar_e");
+      result.set_BF(BEreq::cb_sd_sbot3body->brsbelstnu(1,2), 0.0, psn.ist1, "e-", "nubar_e");
+      result.set_BF(BEreq::cb_sd_sbot3body->brsbelstnu(1,1), 0.0, psn.ist1, "mu-", "nubar_mu");
+      result.set_BF(BEreq::cb_sd_sbot3body->brsbelstnu(1,2), 0.0, psn.ist1, "mu-", "nubar_mu");
       cout << "sbottom_1 total width: " << result.width_in_GeV << endl;
     }
 
@@ -1178,6 +1424,14 @@ namespace Gambit
     void sbottom_2_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::sbottom_2_decays;
+      
+      const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_UV();
+      mass_es_pseudonyms psn;
+      /// I shouldn't be redoing this in each function but I don't like
+      /// alternatives (global copy, static shitiness, ? make it a capability?)
+      /// must be a better way these.
+      psn.fill_mass_es_psns(mssm,tol);
+
       result.width_in_GeV = BEreq::cb_sd_sbotwidth->sbottot(2);
       result.set_BF(BEreq::cb_sd_sbot2body->brsb2neutt(1), 0.0, "~chi0_1", "b");
       result.set_BF(BEreq::cb_sd_sbot2body->brsb2neutt(2), 0.0, "~chi0_2", "b");
@@ -1186,50 +1440,50 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_sbot2body->brsb2chart(1), 0.0, "~chi-_1", "t");
       result.set_BF(BEreq::cb_sd_sbot2body->brsb2chart(2), 0.0, "~chi-_2", "t");
       result.set_BF(BEreq::cb_sd_sbot2body->brsb2glui, 0.0, "~g", "b");
-      result.set_BF(BEreq::cb_sd_sbot2body->brsb2hl, 0.0, isb1, "h0_1");
-      result.set_BF(BEreq::cb_sd_sbot2body->brsb2hh, 0.0, isb1, "h0_2");
-      result.set_BF(BEreq::cb_sd_sbot2body->brsb2ha, 0.0, isb1, "A0");
-      result.set_BF(BEreq::cb_sd_sbot2body->brsb2hcst(1), 0.0, ist1, "H-");
-      result.set_BF(BEreq::cb_sd_sbot2body->brsb2hcst(2), 0.0, ist2, "H-");
-      result.set_BF(BEreq::cb_sd_sbot2body->brsb2zbot, 0.0, isb1, "Z0");
-      result.set_BF(BEreq::cb_sd_sbot2body->brsb2wst(1), 0.0, ist1, "W-");
-      result.set_BF(BEreq::cb_sd_sbot2body->brsb2wst(2), 0.0, ist2, "W-");
-      result.set_BF(BEreq::cb_sd_sbot3body->brsbsntau(2,1), 0.0, intau1bar, "t", "tau-");
-      result.set_BF(BEreq::cb_sd_sbot3body->brsbsnel(2), 0.0, inelbar, "t", "e-");
-      result.set_BF(BEreq::cb_sd_sbot3body->brsbsnel(2), 0.0, inmulbar, "t", "mu-");
-      result.set_BF(BEreq::cb_sd_sbot3body->brsbstau(2,1), 0.0, istau1, "t", "nubar_tau");
-      result.set_BF(BEreq::cb_sd_sbot3body->brsbstau(2,2), 0.0, istau2, "t", "nubar_tau");
-      result.set_BF(BEreq::cb_sd_sbot3body->brsbsel(2,1), 0.0, isell, "t", "nubar_e");
-      result.set_BF(BEreq::cb_sd_sbot3body->brsbsel(2,2), 0.0, iselr, "t", "nubar_e");
-      result.set_BF(BEreq::cb_sd_sbot3body->brsbsel(2,1), 0.0, ismul, "t", "nubar_mu");
-      result.set_BF(BEreq::cb_sd_sbot3body->brsbsel(2,2), 0.0, ismur, "t", "nubar_mu");
-      result.set_BF(BEreq::cb_sd_sbot3body->brsbtstsb(2,1), 0.0, ist1bar, "t", "b");
-      result.set_BF(BEreq::cb_sd_sbot3body->brsbtstsb(2,2), 0.0, ist2bar, "t", "b");
-      result.set_BF(BEreq::cb_sd_sbot3body->brsbtbstb(2,1), 0.0, ist1, "tbar", "b");
-      result.set_BF(BEreq::cb_sd_sbot3body->brsbtbstb(2,2), 0.0, ist2, "tbar", "b");
-      result.set_BF(BEreq::cb_sd_sbot3body->brsbupstdow(2,1), 0.0, ist1, "ubar", "d");
-      result.set_BF(BEreq::cb_sd_sbot3body->brsbupstdow(2,2), 0.0, ist2, "ubar", "d");
-      result.set_BF(BEreq::cb_sd_sbot3body->brsbupstdow(2,1), 0.0, ist1, "cbar", "s");
-      result.set_BF(BEreq::cb_sd_sbot3body->brsbupstdow(2,2), 0.0, ist2, "cbar", "s");
-      result.set_BF(BEreq::cb_sd_sbot3body->brsbtaustnu(2,1), 0.0, ist1, "tau-", "nubar_tau");
-      result.set_BF(BEreq::cb_sd_sbot3body->brsbtaustnu(2,2), 0.0, ist2, "tau-", "nubar_tau");
-      result.set_BF(BEreq::cb_sd_sbot3body->brsbelstnu(2,1), 0.0, ist1, "e-", "nubar_e");
-      result.set_BF(BEreq::cb_sd_sbot3body->brsbelstnu(2,2), 0.0, ist1, "e-", "nubar_e");
-      result.set_BF(BEreq::cb_sd_sbot3body->brsbelstnu(2,1), 0.0, ist1, "mu-", "nubar_mu");
-      result.set_BF(BEreq::cb_sd_sbot3body->brsbelstnu(2,2), 0.0, ist1, "mu-", "nubar_mu");
-      result.set_BF(BEreq::cb_sd_sbot3body->brsb2sb1bb, 0.0, isb1, "b", "bbar");
-      result.set_BF(BEreq::cb_sd_sbot3body->brsb2sb1starbb, 0.0, isb1bar, "b", "b");
-      result.set_BF(BEreq::cb_sd_sbot3body->brsb2sb1tt, 0.0, isb1, "t", "tbar");
-      result.set_BF(BEreq::cb_sd_sbot3body->brsb2sb1uu, 0.0, isb1, "u", "ubar");
-      result.set_BF(BEreq::cb_sd_sbot3body->brsb2sb1dd, 0.0, isb1, "d", "dbar");
-      result.set_BF(BEreq::cb_sd_sbot3body->brsb2sb1uu, 0.0, isb1, "c", "cbar");
-      result.set_BF(BEreq::cb_sd_sbot3body->brsb2sb1dd, 0.0, isb1, "s", "sbar");
-      result.set_BF(BEreq::cb_sd_sbot3body->brsb2sb1ee, 0.0, isb1, "e-", "e+");
-      result.set_BF(BEreq::cb_sd_sbot3body->brsb2sb1ee, 0.0, isb1, "mu-", "mu+");
-      result.set_BF(BEreq::cb_sd_sbot3body->brsb2sb1tautau, 0.0, isb1, "tau-", "tau+");
-      result.set_BF(BEreq::cb_sd_sbot3body->brsb2sb1nunu, 0.0, isb1, "nu_e", "nubar_e");
-      result.set_BF(BEreq::cb_sd_sbot3body->brsb2sb1nunu, 0.0, isb1, "nu_mu", "nubar_mu");
-      result.set_BF(BEreq::cb_sd_sbot3body->brsb2sb1nunu, 0.0, isb1, "nu_tau", "nubar_tau");
+      result.set_BF(BEreq::cb_sd_sbot2body->brsb2hl, 0.0, psn.isb1, "h0_1");
+      result.set_BF(BEreq::cb_sd_sbot2body->brsb2hh, 0.0, psn.isb1, "h0_2");
+      result.set_BF(BEreq::cb_sd_sbot2body->brsb2ha, 0.0, psn.isb1, "A0");
+      result.set_BF(BEreq::cb_sd_sbot2body->brsb2hcst(1), 0.0, psn.ist1, "H-");
+      result.set_BF(BEreq::cb_sd_sbot2body->brsb2hcst(2), 0.0, psn.ist2, "H-");
+      result.set_BF(BEreq::cb_sd_sbot2body->brsb2zbot, 0.0, psn.isb1, "Z0");
+      result.set_BF(BEreq::cb_sd_sbot2body->brsb2wst(1), 0.0, psn.ist1, "W-");
+      result.set_BF(BEreq::cb_sd_sbot2body->brsb2wst(2), 0.0, psn.ist2, "W-");
+      result.set_BF(BEreq::cb_sd_sbot3body->brsbsntau(2,1), 0.0, psn.isntau1bar, "t", "tau-");
+      result.set_BF(BEreq::cb_sd_sbot3body->brsbsnel(2), 0.0, psn.isnelbar, "t", "e-");
+      result.set_BF(BEreq::cb_sd_sbot3body->brsbsnel(2), 0.0, psn.isnmulbar, "t", "mu-");
+      result.set_BF(BEreq::cb_sd_sbot3body->brsbstau(2,1), 0.0, psn.istau1, "t", "nubar_tau");
+      result.set_BF(BEreq::cb_sd_sbot3body->brsbstau(2,2), 0.0, psn.istau2, "t", "nubar_tau");
+      result.set_BF(BEreq::cb_sd_sbot3body->brsbsel(2,1), 0.0, psn.isell, "t", "nubar_e");
+      result.set_BF(BEreq::cb_sd_sbot3body->brsbsel(2,2), 0.0, psn.iselr, "t", "nubar_e");
+      result.set_BF(BEreq::cb_sd_sbot3body->brsbsel(2,1), 0.0, psn.ismul, "t", "nubar_mu");
+      result.set_BF(BEreq::cb_sd_sbot3body->brsbsel(2,2), 0.0, psn.ismur, "t", "nubar_mu");
+      result.set_BF(BEreq::cb_sd_sbot3body->brsbtstsb(2,1), 0.0, psn.ist1bar, "t", "b");
+      result.set_BF(BEreq::cb_sd_sbot3body->brsbtstsb(2,2), 0.0, psn.ist2bar, "t", "b");
+      result.set_BF(BEreq::cb_sd_sbot3body->brsbtbstb(2,1), 0.0, psn.ist1, "tbar", "b");
+      result.set_BF(BEreq::cb_sd_sbot3body->brsbtbstb(2,2), 0.0, psn.ist2, "tbar", "b");
+      result.set_BF(BEreq::cb_sd_sbot3body->brsbupstdow(2,1), 0.0, psn.ist1, "ubar", "d");
+      result.set_BF(BEreq::cb_sd_sbot3body->brsbupstdow(2,2), 0.0, psn.ist2, "ubar", "d");
+      result.set_BF(BEreq::cb_sd_sbot3body->brsbupstdow(2,1), 0.0, psn.ist1, "cbar", "s");
+      result.set_BF(BEreq::cb_sd_sbot3body->brsbupstdow(2,2), 0.0, psn.ist2, "cbar", "s");
+      result.set_BF(BEreq::cb_sd_sbot3body->brsbtaustnu(2,1), 0.0, psn.ist1, "tau-", "nubar_tau");
+      result.set_BF(BEreq::cb_sd_sbot3body->brsbtaustnu(2,2), 0.0, psn.ist2, "tau-", "nubar_tau");
+      result.set_BF(BEreq::cb_sd_sbot3body->brsbelstnu(2,1), 0.0, psn.ist1, "e-", "nubar_e");
+      result.set_BF(BEreq::cb_sd_sbot3body->brsbelstnu(2,2), 0.0, psn.ist1, "e-", "nubar_e");
+      result.set_BF(BEreq::cb_sd_sbot3body->brsbelstnu(2,1), 0.0, psn.ist1, "mu-", "nubar_mu");
+      result.set_BF(BEreq::cb_sd_sbot3body->brsbelstnu(2,2), 0.0, psn.ist1, "mu-", "nubar_mu");
+      result.set_BF(BEreq::cb_sd_sbot3body->brsb2sb1bb, 0.0, psn.isb1, "b", "bbar");
+      result.set_BF(BEreq::cb_sd_sbot3body->brsb2sb1starbb, 0.0, psn.isb1bar, "b", "b");
+      result.set_BF(BEreq::cb_sd_sbot3body->brsb2sb1tt, 0.0, psn.isb1, "t", "tbar");
+      result.set_BF(BEreq::cb_sd_sbot3body->brsb2sb1uu, 0.0, psn.isb1, "u", "ubar");
+      result.set_BF(BEreq::cb_sd_sbot3body->brsb2sb1dd, 0.0, psn.isb1, "d", "dbar");
+      result.set_BF(BEreq::cb_sd_sbot3body->brsb2sb1uu, 0.0, psn.isb1, "c", "cbar");
+      result.set_BF(BEreq::cb_sd_sbot3body->brsb2sb1dd, 0.0, psn.isb1, "s", "sbar");
+      result.set_BF(BEreq::cb_sd_sbot3body->brsb2sb1ee, 0.0, psn.isb1, "e-", "e+");
+      result.set_BF(BEreq::cb_sd_sbot3body->brsb2sb1ee, 0.0, psn.isb1, "mu-", "mu+");
+      result.set_BF(BEreq::cb_sd_sbot3body->brsb2sb1tautau, 0.0, psn.isb1, "tau-", "tau+");
+      result.set_BF(BEreq::cb_sd_sbot3body->brsb2sb1nunu, 0.0, psn.isb1, "nu_e", "nubar_e");
+      result.set_BF(BEreq::cb_sd_sbot3body->brsb2sb1nunu, 0.0, psn.isb1, "nu_mu", "nubar_mu");
+      result.set_BF(BEreq::cb_sd_sbot3body->brsb2sb1nunu, 0.0, psn.isb1, "nu_tau", "nubar_tau");
       cout << "sbottom_2 total width: " << result.width_in_GeV << endl;
     }
 
@@ -1446,7 +1700,7 @@ namespace Gambit
     {
       result = CP_conjugate(*Pipes::selectronbar_r_decays::Dep::selectron_r_decay_rates);
     }
-
+  
     /// MSSM decays: smuon_l
     void smuon_l_decays (DecayTable::Entry& result) 
     {
@@ -1466,7 +1720,7 @@ namespace Gambit
     {
       result = CP_conjugate(*Pipes::smuonbar_l_decays::Dep::smuon_l_decay_rates);
     }
-
+  
     /// MSSM decays: smuon_r
     void smuon_r_decays (DecayTable::Entry& result) 
     {
@@ -1480,17 +1734,25 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_sel2body->brselrcharnue(2), 0.0, "~chi-_2", "nu_mu");
       // cout << "smuon_r total width: " << result.width_in_GeV << endl;
     }
-
+  
     /// MSSM decays: smuonbar_r
     void smuonbar_r_decays (DecayTable::Entry& result) 
     {
       result = CP_conjugate(*Pipes::smuonbar_r_decays::Dep::smuon_r_decay_rates);
     }
-
+  
     /// MSSM decays: stau_1
     void stau_1_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::stau_1_decays;
+      
+      const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_UV();
+      mass_es_pseudonyms psn;
+      /// I shouldn't be redoing this in each function but I don't like
+      /// alternatives (global copy, static shitiness, ? make it a capability?)
+      /// must be a better way these.
+      psn.fill_mass_es_psns(mssm,tol);
+
       result.width_in_GeV = BEreq::cb_sd_stauwidth->stau1tot2;
       result.set_BF(BEreq::cb_sd_stau2body->brstau1neut(1), 0.0, "~chi0_1", "tau-");
       result.set_BF(BEreq::cb_sd_stau2body->brstau1neut(2), 0.0, "~chi0_2", "tau-");
@@ -1498,8 +1760,8 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_stau2body->brstau1neut(4), 0.0, "~chi0_4", "tau-");
       result.set_BF(BEreq::cb_sd_stau2body->brstau1char(1), 0.0, "~chi-_1", "nu_tau");
       result.set_BF(BEreq::cb_sd_stau2body->brstau1char(2), 0.0, "~chi-_2", "nu_tau");
-      result.set_BF(BEreq::cb_sd_stau2body->brstau1hcsn(1), 0.0, intau1, "H-");
-      result.set_BF(BEreq::cb_sd_stau2body->brstau1wsn(1), 0.0, intau1, "W-");
+      result.set_BF(BEreq::cb_sd_stau2body->brstau1hcsn(1), 0.0, psn.isntau1, "H-");
+      result.set_BF(BEreq::cb_sd_stau2body->brstau1wsn(1), 0.0, psn.isntau1, "W-");
       result.set_BF(BEreq::cb_sd_stau2bodygrav->brstautaugrav, 0.0, "~G", "tau-");
       // cout << "stau_1 total width: " << result.width_in_GeV << endl;
     }
@@ -1509,11 +1771,19 @@ namespace Gambit
     {
       result = CP_conjugate(*Pipes::staubar_1_decays::Dep::stau_1_decay_rates);
     }
-
+  
     /// MSSM decays: stau_2
     void stau_2_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::stau_2_decays;
+
+      const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_UV();
+      mass_es_pseudonyms psn;
+      /// I shouldn't be redoing this in each function but I don't like
+      /// alternatives (global copy, static shitiness, ? make it a capability?)
+      /// must be a better way these.
+      psn.fill_mass_es_psns(mssm,tol);
+      
       result.width_in_GeV = BEreq::cb_sd_stauwidth->stau2tot2;
       result.set_BF(BEreq::cb_sd_stau2body->brstau2neut(1), 0.0, "~chi0_1", "tau-");
       result.set_BF(BEreq::cb_sd_stau2body->brstau2neut(2), 0.0, "~chi0_2", "tau-");
@@ -1521,15 +1791,15 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_stau2body->brstau2neut(4), 0.0, "~chi0_4", "tau-");
       result.set_BF(BEreq::cb_sd_stau2body->brstau2char(1), 0.0, "~chi-_1", "nu_tau");
       result.set_BF(BEreq::cb_sd_stau2body->brstau2char(2), 0.0, "~chi-_2", "nu_tau");
-      result.set_BF(BEreq::cb_sd_stau2body->brstau2hcsn(1), 0.0, intau1, "H-");
-      result.set_BF(BEreq::cb_sd_stau2body->brstau2wsn(1), 0.0, intau1, "W-");
-      result.set_BF(BEreq::cb_sd_stau2body->brstau2hl, 0.0, istau1, "h0_1");
-      result.set_BF(BEreq::cb_sd_stau2body->brstau2hh, 0.0, istau1, "h0_2");
-      result.set_BF(BEreq::cb_sd_stau2body->brstau2ha, 0.0, istau1, "A0");
-      result.set_BF(BEreq::cb_sd_stau2body->brstau2ztau, 0.0, istau1, "Z0");
+      result.set_BF(BEreq::cb_sd_stau2body->brstau2hcsn(1), 0.0, psn.isntau1, "H-");
+      result.set_BF(BEreq::cb_sd_stau2body->brstau2wsn(1), 0.0, psn.isntau1, "W-");
+      result.set_BF(BEreq::cb_sd_stau2body->brstau2hl, 0.0, psn.istau1, "h0_1");
+      result.set_BF(BEreq::cb_sd_stau2body->brstau2hh, 0.0, psn.istau1, "h0_2");
+      result.set_BF(BEreq::cb_sd_stau2body->brstau2ha, 0.0, psn.istau1, "A0");
+      result.set_BF(BEreq::cb_sd_stau2body->brstau2ztau, 0.0, psn.istau1, "Z0");
       // cout << "stau_2 total width: " << result.width_in_GeV << endl;
     }
-
+     
     /// MSSM decays: staubar_2
     void staubar_2_decays (DecayTable::Entry& result) 
     {
@@ -1580,6 +1850,14 @@ namespace Gambit
     void snu_taul_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::snu_taul_decays;
+
+      const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_UV();
+      mass_es_pseudonyms psn;
+      /// I shouldn't be redoing this in each function but I don't like
+      /// alternatives (global copy, static shitiness, ? make it a capability?)
+      /// must be a better way these.
+      psn.fill_mass_es_psns(mssm,tol);
+
       result.width_in_GeV = BEreq::cb_sd_sntauwidth->sntautot2;
       result.set_BF(BEreq::cb_sd_sntau2body->brsntauneut(1), 0.0, "~chi0_1", "nu_tau");
       result.set_BF(BEreq::cb_sd_sntau2body->brsntauneut(2), 0.0, "~chi0_2", "nu_tau");
@@ -1587,10 +1865,10 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_sntau2body->brsntauneut(4), 0.0, "~chi0_4", "nu_tau");
       result.set_BF(BEreq::cb_sd_sntau2body->brsntauchar(1), 0.0, "~chi+_1", "tau-");
       result.set_BF(BEreq::cb_sd_sntau2body->brsntauchar(2), 0.0, "~chi+_2", "tau-");
-      result.set_BF(BEreq::cb_sd_sntau2body->brsntau1hcstau(1), 0.0, istau1bar, "H-");
-      result.set_BF(BEreq::cb_sd_sntau2body->brsntau1hcstau(2), 0.0, istau2bar, "H-");
-      result.set_BF(BEreq::cb_sd_sntau2body->brsntau1wstau(1), 0.0, istau1bar, "W-");
-      result.set_BF(BEreq::cb_sd_sntau2body->brsntau1wstau(2), 0.0, istau2bar, "W-");
+      result.set_BF(BEreq::cb_sd_sntau2body->brsntau1hcstau(1), 0.0, psn.istau1bar, "H-");
+      result.set_BF(BEreq::cb_sd_sntau2body->brsntau1hcstau(2), 0.0, psn.istau2bar, "H-");
+      result.set_BF(BEreq::cb_sd_sntau2body->brsntau1wstau(1), 0.0, psn.istau1bar, "W-");
+      result.set_BF(BEreq::cb_sd_sntau2body->brsntau1wstau(2), 0.0, psn.istau2bar, "W-");
       // cout << "snu_taul total width: " << result.width_in_GeV << endl;
     }
 
@@ -1604,28 +1882,36 @@ namespace Gambit
     void charginoplus_1_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::charginoplus_1_decays;
+
+      const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_UV();
+      mass_es_pseudonyms psn;
+      /// I shouldn't be redoing this in each function but I don't like
+      /// alternatives (global copy, static shitiness, ? make it a capability?)
+      /// must be a better way these.
+      psn.fill_mass_es_psns(mssm,tol);
+
       result.width_in_GeV = BEreq::cb_sd_charwidth->chartot(1);
-      result.set_BF(BEreq::cb_sd_char2body->brcharsupl(1), 0.0, isul, "dbar");
-      result.set_BF(BEreq::cb_sd_char2body->brcharsupr(1), 0.0, isur, "dbar");
-      result.set_BF(BEreq::cb_sd_char2body->brcharsdownl(1), 0.0, isdlbar, "u");
-      result.set_BF(BEreq::cb_sd_char2body->brcharsdownr(1), 0.0, isdrbar, "u");
-      result.set_BF(BEreq::cb_sd_char2body->brcharsupl(1), 0.0, iscl, "sbar");
-      result.set_BF(BEreq::cb_sd_char2body->brcharsupr(1), 0.0, iscr, "sbar");
-      result.set_BF(BEreq::cb_sd_char2body->brcharsdownl(1), 0.0, isslbar, "c");
-      result.set_BF(BEreq::cb_sd_char2body->brcharsdownr(1), 0.0, issrbar, "c");
-      result.set_BF(BEreq::cb_sd_char2body->brcharst1(1), 0.0, ist1, "bbar");
-      result.set_BF(BEreq::cb_sd_char2body->brcharst2(1), 0.0, ist2, "bbar");
-      result.set_BF(BEreq::cb_sd_char2body->brcharsb1(1), 0.0, isb1bar, "t");
-      result.set_BF(BEreq::cb_sd_char2body->brcharsb2(1), 0.0, isb2bar, "t");
-      result.set_BF(BEreq::cb_sd_char2body->brcharsnel(1), 0.0, inel, "e+");
-      result.set_BF(BEreq::cb_sd_char2body->brcharsnel(1), 0.0, inmul, "mu+");
-      result.set_BF(BEreq::cb_sd_char2body->brcharsn1(1), 0.0, intau1, "tau+");
-      result.set_BF(BEreq::cb_sd_char2body->brcharsell(1), 0.0, isellbar, "nu_e");
-      result.set_BF(BEreq::cb_sd_char2body->brcharselr(1), 0.0, iselrbar, "nu_e");
-      result.set_BF(BEreq::cb_sd_char2body->brcharsell(1), 0.0, ismulbar, "nu_mu");
-      result.set_BF(BEreq::cb_sd_char2body->brcharselr(1), 0.0, ismurbar, "nu_mu");
-      result.set_BF(BEreq::cb_sd_char2body->brcharstau1(1), 0.0, istau1bar, "nu_tau");
-      result.set_BF(BEreq::cb_sd_char2body->brcharstau2(1), 0.0, istau2bar, "nu_tau");
+      result.set_BF(BEreq::cb_sd_char2body->brcharsupl(1), 0.0, psn.isul, "dbar");
+      result.set_BF(BEreq::cb_sd_char2body->brcharsupr(1), 0.0, psn.isur, "dbar");
+      result.set_BF(BEreq::cb_sd_char2body->brcharsdownl(1), 0.0, psn.isdlbar, "u");
+      result.set_BF(BEreq::cb_sd_char2body->brcharsdownr(1), 0.0, psn.isdrbar, "u");
+      result.set_BF(BEreq::cb_sd_char2body->brcharsupl(1), 0.0, psn.iscl, "sbar");
+      result.set_BF(BEreq::cb_sd_char2body->brcharsupr(1), 0.0, psn.iscr, "sbar");
+      result.set_BF(BEreq::cb_sd_char2body->brcharsdownl(1), 0.0, psn.isslbar, "c");
+      result.set_BF(BEreq::cb_sd_char2body->brcharsdownr(1), 0.0, psn.issrbar, "c");
+      result.set_BF(BEreq::cb_sd_char2body->brcharst1(1), 0.0, psn.ist1, "bbar");
+      result.set_BF(BEreq::cb_sd_char2body->brcharst2(1), 0.0, psn.ist2, "bbar");
+      result.set_BF(BEreq::cb_sd_char2body->brcharsb1(1), 0.0, psn.isb1bar, "t");
+      result.set_BF(BEreq::cb_sd_char2body->brcharsb2(1), 0.0, psn.isb2bar, "t");
+      result.set_BF(BEreq::cb_sd_char2body->brcharsnel(1), 0.0, psn.isnel, "e+");
+      result.set_BF(BEreq::cb_sd_char2body->brcharsnel(1), 0.0, psn.isnmul, "mu+");
+      result.set_BF(BEreq::cb_sd_char2body->brcharsn1(1), 0.0, psn.isntau1, "tau+");
+      result.set_BF(BEreq::cb_sd_char2body->brcharsell(1), 0.0, psn.isellbar, "nu_e");
+      result.set_BF(BEreq::cb_sd_char2body->brcharselr(1), 0.0, psn.iselrbar, "nu_e");
+      result.set_BF(BEreq::cb_sd_char2body->brcharsell(1), 0.0, psn.ismulbar, "nu_mu");
+      result.set_BF(BEreq::cb_sd_char2body->brcharselr(1), 0.0, psn.ismurbar, "nu_mu");
+      result.set_BF(BEreq::cb_sd_char2body->brcharstau1(1), 0.0, psn.istau1bar, "nu_tau");
+      result.set_BF(BEreq::cb_sd_char2body->brcharstau2(1), 0.0, psn.istau2bar, "nu_tau");
       result.set_BF(BEreq::cb_sd_char2body->brcharwneut(1,1), 0.0, "~chi0_1", "W+");
       result.set_BF(BEreq::cb_sd_char2body->brcharwneut(1,2), 0.0, "~chi0_2", "W+");
       result.set_BF(BEreq::cb_sd_char2body->brcharwneut(1,3), 0.0, "~chi0_3", "W+");
@@ -1678,28 +1964,36 @@ namespace Gambit
     void charginoplus_2_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::charginoplus_2_decays;
+      
+      const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_UV();
+      mass_es_pseudonyms psn;
+      /// I shouldn't be redoing this in each function but I don't like
+      /// alternatives (global copy, static shitiness, ? make it a capability?)
+      /// must be a better way these.
+      psn.fill_mass_es_psns(mssm,tol);
+      
       result.width_in_GeV = BEreq::cb_sd_charwidth->chartot(2);
-      result.set_BF(BEreq::cb_sd_char2body->brcharsupl(2), 0.0, isul, "dbar");
-      result.set_BF(BEreq::cb_sd_char2body->brcharsupr(2), 0.0, isur, "dbar");
-      result.set_BF(BEreq::cb_sd_char2body->brcharsdownl(2), 0.0, isdlbar, "u");
-      result.set_BF(BEreq::cb_sd_char2body->brcharsdownr(2), 0.0, isdrbar, "u");
-      result.set_BF(BEreq::cb_sd_char2body->brcharsupl(2), 0.0, iscl, "sbar");
-      result.set_BF(BEreq::cb_sd_char2body->brcharsupr(2), 0.0, iscr, "sbar");
-      result.set_BF(BEreq::cb_sd_char2body->brcharsdownl(2), 0.0, isslbar, "c");
-      result.set_BF(BEreq::cb_sd_char2body->brcharsdownr(2), 0.0, issrbar, "c");
-      result.set_BF(BEreq::cb_sd_char2body->brcharst1(2), 0.0, ist1, "bbar");
-      result.set_BF(BEreq::cb_sd_char2body->brcharst2(2), 0.0, ist2, "bbar");
-      result.set_BF(BEreq::cb_sd_char2body->brcharsb1(2), 0.0, isb1bar, "t");
-      result.set_BF(BEreq::cb_sd_char2body->brcharsb2(2), 0.0, isb2bar, "t");
-      result.set_BF(BEreq::cb_sd_char2body->brcharsnel(2), 0.0, inel, "e+");
-      result.set_BF(BEreq::cb_sd_char2body->brcharsnel(2), 0.0, inmul, "mu+");
-      result.set_BF(BEreq::cb_sd_char2body->brcharsn1(2), 0.0, intau1, "tau+");
-      result.set_BF(BEreq::cb_sd_char2body->brcharsell(2), 0.0, isellbar, "nu_e");
-      result.set_BF(BEreq::cb_sd_char2body->brcharselr(2), 0.0, iselrbar, "nu_e");
-      result.set_BF(BEreq::cb_sd_char2body->brcharsell(2), 0.0, ismulbar, "nu_mu");
-      result.set_BF(BEreq::cb_sd_char2body->brcharselr(2), 0.0, ismurbar, "nu_mu");
-      result.set_BF(BEreq::cb_sd_char2body->brcharstau1(2), 0.0, istau1bar, "nu_tau");
-      result.set_BF(BEreq::cb_sd_char2body->brcharstau2(2), 0.0, istau2bar, "nu_tau");
+      result.set_BF(BEreq::cb_sd_char2body->brcharsupl(2), 0.0, psn.isul, "dbar");
+      result.set_BF(BEreq::cb_sd_char2body->brcharsupr(2), 0.0, psn.isur, "dbar");
+      result.set_BF(BEreq::cb_sd_char2body->brcharsdownl(2), 0.0, psn.isdlbar, "u");
+      result.set_BF(BEreq::cb_sd_char2body->brcharsdownr(2), 0.0, psn.isdrbar, "u");
+      result.set_BF(BEreq::cb_sd_char2body->brcharsupl(2), 0.0, psn.iscl, "sbar");
+      result.set_BF(BEreq::cb_sd_char2body->brcharsupr(2), 0.0, psn.iscr, "sbar");
+      result.set_BF(BEreq::cb_sd_char2body->brcharsdownl(2), 0.0, psn.isslbar, "c");
+      result.set_BF(BEreq::cb_sd_char2body->brcharsdownr(2), 0.0, psn.issrbar, "c");
+      result.set_BF(BEreq::cb_sd_char2body->brcharst1(2), 0.0, psn.ist1, "bbar");
+      result.set_BF(BEreq::cb_sd_char2body->brcharst2(2), 0.0, psn.ist2, "bbar");
+      result.set_BF(BEreq::cb_sd_char2body->brcharsb1(2), 0.0, psn.isb1bar, "t");
+      result.set_BF(BEreq::cb_sd_char2body->brcharsb2(2), 0.0, psn.isb2bar, "t");
+      result.set_BF(BEreq::cb_sd_char2body->brcharsnel(2), 0.0, psn.isnel, "e+");
+      result.set_BF(BEreq::cb_sd_char2body->brcharsnel(2), 0.0, psn.isnmul, "mu+");
+      result.set_BF(BEreq::cb_sd_char2body->brcharsn1(2), 0.0, psn.isntau1, "tau+");
+      result.set_BF(BEreq::cb_sd_char2body->brcharsell(2), 0.0, psn.isellbar, "nu_e");
+      result.set_BF(BEreq::cb_sd_char2body->brcharselr(2), 0.0, psn.iselrbar, "nu_e");
+      result.set_BF(BEreq::cb_sd_char2body->brcharsell(2), 0.0, psn.ismulbar, "nu_mu");
+      result.set_BF(BEreq::cb_sd_char2body->brcharselr(2), 0.0, psn.ismurbar, "nu_mu");
+      result.set_BF(BEreq::cb_sd_char2body->brcharstau1(2), 0.0, psn.istau1bar, "nu_tau");
+      result.set_BF(BEreq::cb_sd_char2body->brcharstau2(2), 0.0, psn.istau2bar, "nu_tau");
       result.set_BF(BEreq::cb_sd_char2body->brcharzchic, 0.0, "~chi+_1", "Z0");
       result.set_BF(BEreq::cb_sd_char2body->brcharwneut(2,1), 0.0, "~chi0_1", "W+");
       result.set_BF(BEreq::cb_sd_char2body->brcharwneut(2,2), 0.0, "~chi0_2", "W+");
@@ -1757,6 +2051,7 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_char3body->brgltopbb(2), 0.0, "~g", "t", "bbar");
       // cout << "charginoplus_2 total width: " << result.width_in_GeV << endl;
     }
+  
 
     /// MSSM decays: charginominus_2
     void charginominus_2_decays (DecayTable::Entry& result) 
@@ -1768,6 +2063,14 @@ namespace Gambit
     void neutralino_1_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::neutralino_1_decays;
+
+      const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_UV();
+      mass_es_pseudonyms psn;
+      /// I shouldn't be redoing this in each function but I don't like
+      /// alternatives (global copy, static shitiness, ? make it a capability?)
+      /// must be a better way these.
+      psn.fill_mass_es_psns(mssm,tol);
+
       result.width_in_GeV = BEreq::cb_sd_neutwidth->neuttot(1);
       result.set_BF(BEreq::cb_sd_neut2body->brneutwchar(1,1), 0.0, "~chi+_1", "W-");
       result.set_BF(BEreq::cb_sd_neut2body->brneutwchar(1,1), 0.0, "~chi-_1", "W+");
@@ -1777,48 +2080,48 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_neut2body->brneuthcchar(1,1), 0.0, "~chi-_1", "H+");
       result.set_BF(BEreq::cb_sd_neut2body->brneuthcchar(1,2), 0.0, "~chi+_2", "H-");
       result.set_BF(BEreq::cb_sd_neut2body->brneuthcchar(1,2), 0.0, "~chi-_2", "H+");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsupl(1), 0.0, isul, "ubar");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsupl(1), 0.0, isulbar, "u");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsupr(1), 0.0, isur, "ubar");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsupr(1), 0.0, isurbar, "u");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsdownl(1), 0.0, isdl, "dbar");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsdownl(1), 0.0, isdlbar, "d");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsdownr(1), 0.0, isdr, "dbar");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsdownr(1), 0.0, isdrbar, "d");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsupl(1), 0.0, iscl, "cbar");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsupl(1), 0.0, isclbar, "c");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsupr(1), 0.0, iscr, "cbar");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsupr(1), 0.0, iscrbar, "c");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsdownl(1), 0.0, issl, "sbar");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsdownl(1), 0.0, isslbar, "s");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsdownr(1), 0.0, issr, "sbar");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsdownr(1), 0.0, issrbar, "s");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutst1(1), 0.0, ist1, "tbar");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutst1(1), 0.0, ist1bar, "t");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutst2(1), 0.0, ist2, "tbar");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutst2(1), 0.0, ist2bar, "t");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsb1(1), 0.0, isb1, "bbar");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsb1(1), 0.0, isb1bar, "b");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsb2(1), 0.0, isb2, "bbar");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsb2(1), 0.0, isb2bar, "b");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsell(1), 0.0, isell, "e+");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsell(1), 0.0, isellbar, "e-");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutselr(1), 0.0, iselr, "e+");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutselr(1), 0.0, iselrbar, "e-");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsell(1), 0.0, ismul, "mu+");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsell(1), 0.0, ismulbar, "mu-");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutselr(1), 0.0, ismur, "mu+");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutselr(1), 0.0, ismurbar, "mu-");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutstau1(1), 0.0, istau1, "tau+");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutstau1(1), 0.0, istau1bar, "tau-");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutstau2(1), 0.0, istau2, "tau+");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutstau2(1), 0.0, istau2bar, "tau-");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsnel(1), 0.0, inel, "nubar_e");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsnel(1), 0.0, inelbar, "nu_e");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsnel(1), 0.0, inmul, "nubar_mu");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsnel(1), 0.0, inmulbar, "nu_mu");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsn1(1), 0.0, intau1, "nubar_tau");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsn1(1), 0.0, intau1bar, "nu_tau");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsupl(1), 0.0, psn.isul, "ubar");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsupl(1), 0.0, psn.isulbar, "u");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsupr(1), 0.0, psn.isur, "ubar");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsupr(1), 0.0, psn.isurbar, "u");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsdownl(1), 0.0, psn.isdl, "dbar");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsdownl(1), 0.0, psn.isdlbar, "d");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsdownr(1), 0.0, psn.isdr, "dbar");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsdownr(1), 0.0, psn.isdrbar, "d");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsupl(1), 0.0, psn.iscl, "cbar");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsupl(1), 0.0, psn.isclbar, "c");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsupr(1), 0.0, psn.iscr, "cbar");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsupr(1), 0.0, psn.iscrbar, "c");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsdownl(1), 0.0, psn.issl, "sbar");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsdownl(1), 0.0, psn.isslbar, "s");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsdownr(1), 0.0, psn.issr, "sbar");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsdownr(1), 0.0, psn.issrbar, "s");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutst1(1), 0.0, psn.ist1, "tbar");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutst1(1), 0.0, psn.ist1bar, "t");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutst2(1), 0.0, psn.ist2, "tbar");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutst2(1), 0.0, psn.ist2bar, "t");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsb1(1), 0.0, psn.isb1, "bbar");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsb1(1), 0.0, psn.isb1bar, "b");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsb2(1), 0.0, psn.isb2, "bbar");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsb2(1), 0.0, psn.isb2bar, "b");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsell(1), 0.0, psn.isell, "e+");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsell(1), 0.0, psn.isellbar, "e-");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutselr(1), 0.0, psn.iselr, "e+");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutselr(1), 0.0, psn.iselrbar, "e-");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsell(1), 0.0, psn.ismul, "mu+");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsell(1), 0.0, psn.ismulbar, "mu-");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutselr(1), 0.0, psn.ismur, "mu+");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutselr(1), 0.0, psn.ismurbar, "mu-");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutstau1(1), 0.0, psn.istau1, "tau+");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutstau1(1), 0.0, psn.istau1bar, "tau-");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutstau2(1), 0.0, psn.istau2, "tau+");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutstau2(1), 0.0, psn.istau2bar, "tau-");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsnel(1), 0.0, psn.isnel, "nubar_e");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsnel(1), 0.0, psn.isnelbar, "nu_e");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsnel(1), 0.0, psn.isnmul, "nubar_mu");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsnel(1), 0.0, psn.isnmulbar, "nu_mu");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsn1(1), 0.0, psn.isntau1, "nubar_tau");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsn1(1), 0.0, psn.isntau1bar, "nu_tau");
       result.set_BF(BEreq::cb_sd_neut2bodygrav->brneutgamgrav(1), 0.0, "~G", "gamma");
       result.set_BF(BEreq::cb_sd_neut2bodygrav->brneutzgrav(1), 0.0, "~G", "Z0");
       result.set_BF(BEreq::cb_sd_neut2bodygrav->brneuthlgrav(1), 0.0, "~G", "h0_1");
@@ -1861,11 +2164,20 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_neut3body->brglbot(1), 0.0, "~g", "bbar", "b");
       cout << "neutralino_1 total width: " << result.width_in_GeV << endl;
     }
+  
 
     /// MSSM decays: neutralino_2
     void neutralino_2_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::neutralino_2_decays;
+      
+      const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_UV();
+      mass_es_pseudonyms psn;
+      /// I shouldn't be redoing this in each function but I don't like
+      /// alternatives (global copy, static shitiness, ? make it a capability?)
+      /// must be a better way these.
+      psn.fill_mass_es_psns(mssm,tol);
+      
       result.width_in_GeV = BEreq::cb_sd_neutwidth->neuttot(2);
       result.set_BF(BEreq::cb_sd_neut2body->brneutzneut(2,1), 0.0, "~chi0_1", "Z0");
       result.set_BF(BEreq::cb_sd_neut2body->brneutwchar(2,1), 0.0, "~chi+_1", "W-");
@@ -1879,48 +2191,48 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_neut2body->brneuthcchar(2,1), 0.0, "~chi-_1", "H+");
       result.set_BF(BEreq::cb_sd_neut2body->brneuthcchar(2,2), 0.0, "~chi+_2", "H-");
       result.set_BF(BEreq::cb_sd_neut2body->brneuthcchar(2,2), 0.0, "~chi-_2", "H+");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsupl(2), 0.0, isul, "ubar");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsupl(2), 0.0, isulbar, "u");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsupr(2), 0.0, isur, "ubar");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsupr(2), 0.0, isurbar, "u");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsdownl(2), 0.0, isdl, "dbar");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsdownl(2), 0.0, isdlbar, "d");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsdownr(2), 0.0, isdr, "dbar");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsdownr(2), 0.0, isdrbar, "d");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsupl(2), 0.0, iscl, "cbar");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsupl(2), 0.0, isclbar, "c");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsupr(2), 0.0, iscr, "cbar");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsupr(2), 0.0, iscrbar, "c");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsdownl(2), 0.0, issl, "sbar");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsdownl(2), 0.0, isslbar, "s");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsdownr(2), 0.0, issr, "sbar");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsdownr(2), 0.0, issrbar, "s");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutst1(2), 0.0, ist1, "tbar");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutst1(2), 0.0, ist1bar, "t");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutst2(2), 0.0, ist2, "tbar");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutst2(2), 0.0, ist2bar, "t");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsb1(2), 0.0, isb1, "bbar");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsb1(2), 0.0, isb1bar, "b");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsb2(2), 0.0, isb2, "bbar");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsb2(2), 0.0, isb2bar, "b");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsell(2), 0.0, isell, "e+");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsell(2), 0.0, isellbar, "e-");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutselr(2), 0.0, iselr, "e+");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutselr(2), 0.0, iselrbar, "e-");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsell(2), 0.0, ismul, "mu+");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsell(2), 0.0, ismulbar, "mu-");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutselr(2), 0.0, ismur, "mu+");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutselr(2), 0.0, ismurbar, "mu-");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutstau1(2), 0.0, istau1, "tau+");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutstau1(2), 0.0, istau1bar, "tau-");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutstau2(2), 0.0, istau2, "tau+");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutstau2(2), 0.0, istau2bar, "tau-");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsnel(2), 0.0, inel, "nubar_e");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsnel(2), 0.0, inelbar, "nu_e");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsnel(2), 0.0, inmul, "nubar_mu");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsnel(2), 0.0, inmulbar, "nu_mu");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsn1(2), 0.0, intau1, "nubar_tau");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsn1(2), 0.0, intau1bar, "nu_tau");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsupl(2), 0.0, psn.isul, "ubar");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsupl(2), 0.0, psn.isulbar, "u");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsupr(2), 0.0, psn.isur, "ubar");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsupr(2), 0.0, psn.isurbar, "u");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsdownl(2), 0.0, psn.isdl, "dbar");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsdownl(2), 0.0, psn.isdlbar, "d");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsdownr(2), 0.0, psn.isdr, "dbar");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsdownr(2), 0.0, psn.isdrbar, "d");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsupl(2), 0.0, psn.iscl, "cbar");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsupl(2), 0.0, psn.isclbar, "c");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsupr(2), 0.0, psn.iscr, "cbar");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsupr(2), 0.0, psn.iscrbar, "c");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsdownl(2), 0.0, psn.issl, "sbar");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsdownl(2), 0.0, psn.isslbar, "s");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsdownr(2), 0.0, psn.issr, "sbar");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsdownr(2), 0.0, psn.issrbar, "s");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutst1(2), 0.0, psn.ist1, "tbar");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutst1(2), 0.0, psn.ist1bar, "t");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutst2(2), 0.0, psn.ist2, "tbar");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutst2(2), 0.0, psn.ist2bar, "t");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsb1(2), 0.0, psn.isb1, "bbar");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsb1(2), 0.0, psn.isb1bar, "b");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsb2(2), 0.0, psn.isb2, "bbar");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsb2(2), 0.0, psn.isb2bar, "b");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsell(2), 0.0, psn.isell, "e+");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsell(2), 0.0, psn.isellbar, "e-");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutselr(2), 0.0, psn.iselr, "e+");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutselr(2), 0.0, psn.iselrbar, "e-");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsell(2), 0.0, psn.ismul, "mu+");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsell(2), 0.0, psn.ismulbar, "mu-");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutselr(2), 0.0, psn.ismur, "mu+");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutselr(2), 0.0, psn.ismurbar, "mu-");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutstau1(2), 0.0, psn.istau1, "tau+");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutstau1(2), 0.0, psn.istau1bar, "tau-");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutstau2(2), 0.0, psn.istau2, "tau+");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutstau2(2), 0.0, psn.istau2bar, "tau-");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsnel(2), 0.0, psn.isnel, "nubar_e");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsnel(2), 0.0, psn.isnelbar, "nu_e");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsnel(2), 0.0, psn.isnmul, "nubar_mu");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsnel(2), 0.0, psn.isnmulbar, "nu_mu");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsn1(2), 0.0, psn.isntau1, "nubar_tau");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsn1(2), 0.0, psn.isntau1bar, "nu_tau");
       result.set_BF(BEreq::cb_sd_neut2bodygrav->brneutgamgrav(2), 0.0, "~G", "gamma");
       result.set_BF(BEreq::cb_sd_neut2bodygrav->brneutzgrav(2), 0.0, "~G", "Z0");
       result.set_BF(BEreq::cb_sd_neut2bodygrav->brneuthlgrav(2), 0.0, "~G", "h0_1");
@@ -1976,11 +2288,20 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_neut3body->brglbot(2), 0.0, "~g", "bbar", "b");
       // cout << "neutralino_2 total width: " << result.width_in_GeV << endl;
     }
+  
 
     /// MSSM decays: neutralino_3
     void neutralino_3_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::neutralino_3_decays;
+      
+      const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_UV();
+      mass_es_pseudonyms psn;
+      /// I shouldn't be redoing this in each function but I don't like
+      /// alternatives (global copy, static shitiness, ? make it a capability?)
+      /// must be a better way these.
+      psn.fill_mass_es_psns(mssm,tol);
+
       result.width_in_GeV = BEreq::cb_sd_neutwidth->neuttot(3);
       result.set_BF(BEreq::cb_sd_neut2body->brneutzneut(3,1), 0.0, "~chi0_1", "Z0");
       result.set_BF(BEreq::cb_sd_neut2body->brneutzneut(3,2), 0.0, "~chi0_2", "Z0");
@@ -1998,48 +2319,48 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_neut2body->brneuthcchar(3,1), 0.0, "~chi-_1", "H+");
       result.set_BF(BEreq::cb_sd_neut2body->brneuthcchar(3,2), 0.0, "~chi+_2", "H-");
       result.set_BF(BEreq::cb_sd_neut2body->brneuthcchar(3,2), 0.0, "~chi-_2", "H+");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsupl(3), 0.0, isul, "ubar");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsupl(3), 0.0, isulbar, "u");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsupr(3), 0.0, isur, "ubar");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsupr(3), 0.0, isurbar, "u");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsdownl(3), 0.0, isdl, "dbar");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsdownl(3), 0.0, isdlbar, "d");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsdownr(3), 0.0, isdr, "dbar");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsdownr(3), 0.0, isdrbar, "d");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsupl(3), 0.0, iscl, "cbar");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsupl(3), 0.0, isclbar, "c");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsupr(3), 0.0, iscr, "cbar");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsupr(3), 0.0, iscrbar, "c");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsdownl(3), 0.0, issl, "sbar");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsdownl(3), 0.0, isslbar, "s");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsdownr(3), 0.0, issr, "sbar");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsdownr(3), 0.0, issrbar, "s");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutst1(3), 0.0, ist1, "tbar");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutst1(3), 0.0, ist1bar, "t");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutst2(3), 0.0, ist2, "tbar");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutst2(3), 0.0, ist2bar, "t");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsb1(3), 0.0, isb1, "bbar");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsb1(3), 0.0, isb1bar, "b");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsb2(3), 0.0, isb2, "bbar");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsb2(3), 0.0, isb2bar, "b");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsell(3), 0.0, isell, "e+");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsell(3), 0.0, isellbar, "e-");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutselr(3), 0.0, iselr, "e+");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutselr(3), 0.0, iselrbar, "e-");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsell(3), 0.0, ismul, "mu+");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsell(3), 0.0, ismulbar, "mu-");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutselr(3), 0.0, ismur, "mu+");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutselr(3), 0.0, ismurbar, "mu-");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutstau1(3), 0.0, istau1, "tau+");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutstau1(3), 0.0, istau1bar, "tau-");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutstau2(3), 0.0, istau2, "tau+");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutstau2(3), 0.0, istau2bar, "tau-");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsnel(3), 0.0, inel, "nubar_e");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsnel(3), 0.0, inelbar, "nu_e");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsnel(3), 0.0, inmul, "nubar_mu");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsnel(3), 0.0, inmulbar, "nu_mu");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsn1(3), 0.0, intau1, "nubar_tau");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsn1(3), 0.0, intau1bar, "nu_tau");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsupl(3), 0.0, psn.isul, "ubar");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsupl(3), 0.0, psn.isulbar, "u");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsupr(3), 0.0, psn.isur, "ubar");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsupr(3), 0.0, psn.isurbar, "u");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsdownl(3), 0.0, psn.isdl, "dbar");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsdownl(3), 0.0, psn.isdlbar, "d");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsdownr(3), 0.0, psn.isdr, "dbar");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsdownr(3), 0.0, psn.isdrbar, "d");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsupl(3), 0.0, psn.iscl, "cbar");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsupl(3), 0.0, psn.isclbar, "c");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsupr(3), 0.0, psn.iscr, "cbar");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsupr(3), 0.0, psn.iscrbar, "c");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsdownl(3), 0.0, psn.issl, "sbar");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsdownl(3), 0.0, psn.isslbar, "s");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsdownr(3), 0.0, psn.issr, "sbar");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsdownr(3), 0.0, psn.issrbar, "s");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutst1(3), 0.0, psn.ist1, "tbar");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutst1(3), 0.0, psn.ist1bar, "t");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutst2(3), 0.0, psn.ist2, "tbar");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutst2(3), 0.0, psn.ist2bar, "t");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsb1(3), 0.0, psn.isb1, "bbar");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsb1(3), 0.0, psn.isb1bar, "b");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsb2(3), 0.0, psn.isb2, "bbar");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsb2(3), 0.0, psn.isb2bar, "b");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsell(3), 0.0, psn.isell, "e+");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsell(3), 0.0, psn.isellbar, "e-");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutselr(3), 0.0, psn.iselr, "e+");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutselr(3), 0.0, psn.iselrbar, "e-");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsell(3), 0.0, psn.ismul, "mu+");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsell(3), 0.0, psn.ismulbar, "mu-");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutselr(3), 0.0, psn.ismur, "mu+");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutselr(3), 0.0, psn.ismurbar, "mu-");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutstau1(3), 0.0, psn.istau1, "tau+");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutstau1(3), 0.0, psn.istau1bar, "tau-");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutstau2(3), 0.0, psn.istau2, "tau+");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutstau2(3), 0.0, psn.istau2bar, "tau-");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsnel(3), 0.0, psn.isnel, "nubar_e");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsnel(3), 0.0, psn.isnelbar, "nu_e");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsnel(3), 0.0, psn.isnmul, "nubar_mu");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsnel(3), 0.0, psn.isnmulbar, "nu_mu");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsn1(3), 0.0, psn.isntau1, "nubar_tau");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsn1(3), 0.0, psn.isntau1bar, "nu_tau");
       result.set_BF(BEreq::cb_sd_neut2bodygrav->brneutgamgrav(3), 0.0, "~G", "gamma");
       result.set_BF(BEreq::cb_sd_neut2bodygrav->brneutzgrav(3), 0.0, "~G", "Z0");
       result.set_BF(BEreq::cb_sd_neut2bodygrav->brneuthlgrav(3), 0.0, "~G", "h0_1");
@@ -2108,11 +2429,20 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_neut3body->brglbot(3), 0.0, "~g", "bbar", "b");
       // cout << "neutralino_3 total width: " << result.width_in_GeV << endl;
     }
+  
 
     /// MSSM decays: neutralino_4
     void neutralino_4_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::neutralino_4_decays;
+
+      const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_UV();
+      mass_es_pseudonyms psn;
+      /// I shouldn't be redoing this in each function but I don't like
+      /// alternatives (global copy, static shitiness, ? make it a capability?)
+      /// must be a better way these.
+      psn.fill_mass_es_psns(mssm,tol);
+
       result.width_in_GeV = BEreq::cb_sd_neutwidth->neuttot(4);
       result.set_BF(BEreq::cb_sd_neut2body->brneutzneut(4,1), 0.0, "~chi0_1", "Z0");
       result.set_BF(BEreq::cb_sd_neut2body->brneutzneut(4,2), 0.0, "~chi0_2", "Z0");
@@ -2134,48 +2464,48 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_neut2body->brneuthcchar(4,1), 0.0, "~chi-_1", "H+");
       result.set_BF(BEreq::cb_sd_neut2body->brneuthcchar(4,2), 0.0, "~chi+_2", "H-");
       result.set_BF(BEreq::cb_sd_neut2body->brneuthcchar(4,2), 0.0, "~chi-_2", "H+");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsupl(4), 0.0, isul, "ubar");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsupl(4), 0.0, isulbar, "u");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsupr(4), 0.0, isur, "ubar");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsupr(4), 0.0, isurbar, "u");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsdownl(4), 0.0, isdl, "dbar");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsdownl(4), 0.0, isdlbar, "d");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsdownr(4), 0.0, isdr, "dbar");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsdownr(4), 0.0, isdrbar, "d");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsupl(4), 0.0, iscl, "cbar");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsupl(4), 0.0, isclbar, "c");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsupr(4), 0.0, iscr, "cbar");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsupr(4), 0.0, iscrbar, "c");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsdownl(4), 0.0, issl, "sbar");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsdownl(4), 0.0, isslbar, "s");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsdownr(4), 0.0, issr, "sbar");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsdownr(4), 0.0, issrbar, "s");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutst1(4), 0.0, ist1, "tbar");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutst1(4), 0.0, ist1bar, "t");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutst2(4), 0.0, ist2, "tbar");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutst2(4), 0.0, ist2bar, "t");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsb1(4), 0.0, isb1, "bbar");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsb1(4), 0.0, isb1bar, "b");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsb2(4), 0.0, isb2, "bbar");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsb2(4), 0.0, isb2bar, "b");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsell(4), 0.0, isell, "e+");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsell(4), 0.0, isellbar, "e-");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutselr(4), 0.0, iselr, "e+");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutselr(4), 0.0, iselrbar, "e-");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsell(4), 0.0, ismul, "mu+");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsell(4), 0.0, ismulbar, "mu-");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutselr(4), 0.0, ismur, "mu+");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutselr(4), 0.0, ismurbar, "mu-");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutstau1(4), 0.0, istau1, "tau+");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutstau1(4), 0.0, istau1bar, "tau-");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutstau2(4), 0.0, istau2, "tau+");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutstau2(4), 0.0, istau2bar, "tau-");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsnel(4), 0.0, inel, "nubar_e");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsnel(4), 0.0, inelbar, "nu_e");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsnel(4), 0.0, inmul, "nubar_mu");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsnel(4), 0.0, inmulbar, "nu_mu");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsn1(4), 0.0, intau1, "nubar_tau");
-      result.set_BF(BEreq::cb_sd_neut2body->brneutsn1(4), 0.0, intau1bar, "nu_tau");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsupl(4), 0.0, psn.isul, "ubar");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsupl(4), 0.0, psn.isulbar, "u");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsupr(4), 0.0, psn.isur, "ubar");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsupr(4), 0.0, psn.isurbar, "u");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsdownl(4), 0.0, psn.isdl, "dbar");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsdownl(4), 0.0, psn.isdlbar, "d");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsdownr(4), 0.0, psn.isdr, "dbar");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsdownr(4), 0.0, psn.isdrbar, "d");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsupl(4), 0.0, psn.iscl, "cbar");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsupl(4), 0.0, psn.isclbar, "c");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsupr(4), 0.0, psn.iscr, "cbar");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsupr(4), 0.0, psn.iscrbar, "c");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsdownl(4), 0.0, psn.issl, "sbar");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsdownl(4), 0.0, psn.isslbar, "s");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsdownr(4), 0.0, psn.issr, "sbar");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsdownr(4), 0.0, psn.issrbar, "s");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutst1(4), 0.0, psn.ist1, "tbar");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutst1(4), 0.0, psn.ist1bar, "t");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutst2(4), 0.0, psn.ist2, "tbar");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutst2(4), 0.0, psn.ist2bar, "t");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsb1(4), 0.0, psn.isb1, "bbar");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsb1(4), 0.0, psn.isb1bar, "b");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsb2(4), 0.0, psn.isb2, "bbar");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsb2(4), 0.0, psn.isb2bar, "b");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsell(4), 0.0, psn.isell, "e+");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsell(4), 0.0, psn.isellbar, "e-");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutselr(4), 0.0, psn.iselr, "e+");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutselr(4), 0.0, psn.iselrbar, "e-");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsell(4), 0.0, psn.ismul, "mu+");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsell(4), 0.0, psn.ismulbar, "mu-");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutselr(4), 0.0, psn.ismur, "mu+");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutselr(4), 0.0, psn.ismurbar, "mu-");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutstau1(4), 0.0, psn.istau1, "tau+");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutstau1(4), 0.0, psn.istau1bar, "tau-");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutstau2(4), 0.0, psn.istau2, "tau+");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutstau2(4), 0.0, psn.istau2bar, "tau-");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsnel(4), 0.0, psn.isnel, "nubar_e");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsnel(4), 0.0, psn.isnelbar, "nu_e");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsnel(4), 0.0, psn.isnmul, "nubar_mu");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsnel(4), 0.0, psn.isnmulbar, "nu_mu");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsn1(4), 0.0, psn.isntau1, "nubar_tau");
+      result.set_BF(BEreq::cb_sd_neut2body->brneutsn1(4), 0.0, psn.isntau1bar, "nu_tau");
       result.set_BF(BEreq::cb_sd_neut2bodygrav->brneutgamgrav(4), 0.0, "~G", "gamma");
       result.set_BF(BEreq::cb_sd_neut2bodygrav->brneutzgrav(4), 0.0, "~G", "Z0");
       result.set_BF(BEreq::cb_sd_neut2bodygrav->brneuthlgrav(4), 0.0, "~G", "h0_1");
@@ -2286,7 +2616,7 @@ namespace Gambit
         result.channels[it->first] = std::pair<double, double>(it->second.first*wscaling, it->second.second*wscaling);
       }
     }
-
+  
 
 //////////// Everything ///////////////////
   
@@ -2294,6 +2624,13 @@ namespace Gambit
     void all_decays (DecayTable &decays) 
     {
       using namespace Pipes::all_decays;
+      
+      const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_UV();
+      mass_es_pseudonyms psn;
+      /// I shouldn't be redoing this in each function but I don't like
+      /// alternatives (global copy, static shitiness, ? make it a capability?)
+      /// must be a better way these.
+      psn.fill_mass_es_psns(mssm,tol);
 
       decays("h0_1") = *Dep::Higgs_decay_rates;     // Add the Higgs decays.
       decays("Z0") = *Dep::W_minus_decay_rates;     // Add the Z decays
@@ -2343,49 +2680,49 @@ namespace Gambit
         decays("~chi0_3") = *Dep::neutralino_3_decay_rates;    // Add the ~chi0_3 decays.
         decays("~chi0_4") = *Dep::neutralino_4_decay_rates;    // Add the ~chi0_4 decays.
 
-        decays(ist1) = *Dep::stop_1_decay_rates;            // Add the ~t_1 decays.
-        decays(ist2) = *Dep::stop_2_decay_rates;            // Add the ~t_2 decays.
-        decays(isb1) = *Dep::sbottom_1_decay_rates;         // Add the ~b_1 decays.
-        decays(isb2) = *Dep::sbottom_2_decay_rates;         // Add the ~b_2 decays.
-        decays(isul) = *Dep::sup_l_decay_rates;             // Add the ~u_L decays.
-        decays(isur) = *Dep::sup_r_decay_rates;             // Add the ~u_R decays.
-        decays(isdl) = *Dep::sdown_l_decay_rates;           // Add the ~d_L decays.
-        decays(isdr) = *Dep::sdown_r_decay_rates;           // Add the ~d_R decays.
-        decays(iscl) = *Dep::scharm_l_decay_rates;          // Add the ~c_L decays.
-        decays(iscr) = *Dep::scharm_r_decay_rates;          // Add the ~c_R decays.
-        decays(issl) = *Dep::sstrange_l_decay_rates;        // Add the ~s_L decays.
-        decays(issr) = *Dep::sstrange_r_decay_rates;        // Add the ~s_R decays.
-        decays(isell) = *Dep::selectron_l_decay_rates;      // Add the ~e-_L decays.
-        decays(iselr) = *Dep::selectron_r_decay_rates;      // Add the ~e-_R decays.
-        decays(ismul) = *Dep::smuon_l_decay_rates;          // Add the ~mu-_L decays.
-        decays(ismur) = *Dep::smuon_r_decay_rates;          // Add the ~mu-_R decays.
-        decays(istau1) = *Dep::stau_1_decay_rates;          // Add the ~tau_1 decays.
-        decays(istau2) = *Dep::stau_2_decay_rates;          // Add the ~tau_2 decays.
-        decays(inel) = *Dep::snu_electronl_decay_rates;     // Add the ~nu_e decays.
-        decays(inmul) = *Dep::snu_muonl_decay_rates;        // Add the ~nu_mu decays.
-        decays(intau1) = *Dep::snu_taul_decay_rates;        // Add the ~nu_tau decays.
+        decays(psn.ist1) = *Dep::stop_1_decay_rates;            // Add the ~t_1 decays.
+        decays(psn.ist2) = *Dep::stop_2_decay_rates;            // Add the ~t_2 decays.
+        decays(psn.isb1) = *Dep::sbottom_1_decay_rates;         // Add the ~b_1 decays.
+        decays(psn.isb2) = *Dep::sbottom_2_decay_rates;         // Add the ~b_2 decays.
+        decays(psn.isul) = *Dep::sup_l_decay_rates;             // Add the ~u_L decays.
+        decays(psn.isur) = *Dep::sup_r_decay_rates;             // Add the ~u_R decays.
+        decays(psn.isdl) = *Dep::sdown_l_decay_rates;           // Add the ~d_L decays.
+        decays(psn.isdr) = *Dep::sdown_r_decay_rates;           // Add the ~d_R decays.
+        decays(psn.iscl) = *Dep::scharm_l_decay_rates;          // Add the ~c_L decays.
+        decays(psn.iscr) = *Dep::scharm_r_decay_rates;          // Add the ~c_R decays.
+        decays(psn.issl) = *Dep::sstrange_l_decay_rates;        // Add the ~s_L decays.
+        decays(psn.issr) = *Dep::sstrange_r_decay_rates;        // Add the ~s_R decays.
+        decays(psn.isell) = *Dep::selectron_l_decay_rates;      // Add the ~e-_L decays.
+        decays(psn.iselr) = *Dep::selectron_r_decay_rates;      // Add the ~e-_R decays.
+        decays(psn.ismul) = *Dep::smuon_l_decay_rates;          // Add the ~mu-_L decays.
+        decays(psn.ismur) = *Dep::smuon_r_decay_rates;          // Add the ~mu-_R decays.
+        decays(psn.istau1) = *Dep::stau_1_decay_rates;          // Add the ~tau_1 decays.
+        decays(psn.istau2) = *Dep::stau_2_decay_rates;          // Add the ~tau_2 decays.
+        decays(psn.isnel) = *Dep::snu_electronl_decay_rates;     // Add the ~nu_e decays.
+        decays(psn.isnmul) = *Dep::snu_muonl_decay_rates;        // Add the ~nu_mu decays.
+        decays(psn.isntau1) = *Dep::snu_taul_decay_rates;        // Add the ~nu_tau decays.
 
-        decays(ist1bar) = *Dep::stopbar_1_decay_rates;      // Add the ~tbar_1 decays.
-        decays(ist2bar) = *Dep::stopbar_2_decay_rates;      // Add the ~tbar_2 decays.
-        decays(isb1bar) = *Dep::sbottombar_1_decay_rates;   // Add the ~bbar_1 decays.
-        decays(isb2bar) = *Dep::sbottombar_2_decay_rates;   // Add the ~bbar_2 decays.
-        decays(isulbar) = *Dep::supbar_l_decay_rates;       // Add the ~ubar_L decays.
-        decays(isurbar) = *Dep::supbar_r_decay_rates;       // Add the ~ubar_R decays.
-        decays(isdlbar) = *Dep::sdownbar_l_decay_rates;     // Add the ~dbar_L decays.
-        decays(isdrbar) = *Dep::sdownbar_r_decay_rates;     // Add the ~dbar_R decays.
-        decays(isclbar) = *Dep::scharmbar_l_decay_rates;    // Add the ~cbar_L decays.
-        decays(iscrbar) = *Dep::scharmbar_r_decay_rates;    // Add the ~cbar_R decays.
-        decays(isslbar) = *Dep::sstrangebar_l_decay_rates;  // Add the ~sbar_L decays.
-        decays(issrbar) = *Dep::sstrangebar_r_decay_rates;  // Add the ~sbar_R decays.
-        decays(isellbar) = *Dep::selectronbar_l_decay_rates;// Add the ~e+_L decays.
-        decays(iselrbar) = *Dep::selectronbar_r_decay_rates;// Add the ~e+_R decays.
-        decays(ismulbar) = *Dep::smuonbar_l_decay_rates;    // Add the ~mu+_L decays.
-        decays(ismurbar) = *Dep::smuonbar_r_decay_rates;    // Add the ~mu+_R decays.
-        decays(istau1bar) = *Dep::staubar_1_decay_rates;    // Add the ~taubar_1 decays.
-        decays(istau2bar) = *Dep::staubar_2_decay_rates;    // Add the ~taubar_2 decays.
-        decays(inelbar)= *Dep::snubar_electronl_decay_rates;// Add the ~nu_e decays.
-        decays(inmulbar) = *Dep::snubar_muonl_decay_rates;  // Add the ~nu_mu decays.
-        decays(intau1bar) = *Dep::snubar_taul_decay_rates;  // Add the ~nu_tau decays.
+        decays(psn.ist1bar) = *Dep::stopbar_1_decay_rates;      // Add the ~tbar_1 decays.
+        decays(psn.ist2bar) = *Dep::stopbar_2_decay_rates;      // Add the ~tbar_2 decays.
+        decays(psn.isb1bar) = *Dep::sbottombar_1_decay_rates;   // Add the ~bbar_1 decays.
+        decays(psn.isb2bar) = *Dep::sbottombar_2_decay_rates;   // Add the ~bbar_2 decays.
+        decays(psn.isulbar) = *Dep::supbar_l_decay_rates;       // Add the ~ubar_L decays.
+        decays(psn.isurbar) = *Dep::supbar_r_decay_rates;       // Add the ~ubar_R decays.
+        decays(psn.isdlbar) = *Dep::sdownbar_l_decay_rates;     // Add the ~dbar_L decays.
+        decays(psn.isdrbar) = *Dep::sdownbar_r_decay_rates;     // Add the ~dbar_R decays.
+        decays(psn.isclbar) = *Dep::scharmbar_l_decay_rates;    // Add the ~cbar_L decays.
+        decays(psn.iscrbar) = *Dep::scharmbar_r_decay_rates;    // Add the ~cbar_R decays.
+        decays(psn.isslbar) = *Dep::sstrangebar_l_decay_rates;  // Add the ~sbar_L decays.
+        decays(psn.issrbar) = *Dep::sstrangebar_r_decay_rates;  // Add the ~sbar_R decays.
+        decays(psn.isellbar) = *Dep::selectronbar_l_decay_rates;// Add the ~e+_L decays.
+        decays(psn.iselrbar) = *Dep::selectronbar_r_decay_rates;// Add the ~e+_R decays.
+        decays(psn.ismulbar) = *Dep::smuonbar_l_decay_rates;    // Add the ~mu+_L decays.
+        decays(psn.ismurbar) = *Dep::smuonbar_r_decay_rates;    // Add the ~mu+_R decays.
+        decays(psn.istau1bar) = *Dep::staubar_1_decay_rates;    // Add the ~taubar_1 decays.
+        decays(psn.istau2bar) = *Dep::staubar_2_decay_rates;    // Add the ~taubar_2 decays.
+        decays(psn.isnelbar)= *Dep::snubar_electronl_decay_rates;// Add the ~nu_e decays.
+        decays(psn.isnmulbar) = *Dep::snubar_muonl_decay_rates;  // Add the ~nu_mu decays.
+        decays(psn.isntau1bar) = *Dep::snubar_taul_decay_rates;  // Add the ~nu_tau decays.
       }
 
     }
