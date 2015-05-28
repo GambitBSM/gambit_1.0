@@ -24,7 +24,7 @@
 #
 #*********************************************
 import os
-execfile("./Utils/scripts/harvesting_tools.py")
+import update_cmakelists
 
 def main(argv):
 
@@ -47,9 +47,10 @@ def main(argv):
     # Handle command line options
     verbose = False
     try:
-        opts, args = getopt.getopt(argv,"vx:",["verbose","exclude-printers="])
+       build_dir = argv[0]
+       opts, args = getopt.getopt(argv,"vx:",["verbose","exclude-printers="])
     except getopt.GetoptError:
-        print 'Usage: printer_harvestor.py [flags]'
+        print 'Usage: printer_harvestor.py build_dir [flags]'
         print ' flags:'
         print '        -v                       : More verbose output'  
         print '        -x printer1,printer2,... : Exclude printer1, printer2, etc.' 
@@ -129,9 +130,12 @@ def main(argv):
     for h in printer_headers:
         towrite+='#include \"include/gambit/Printers/printers/{0}\"\n'.format(h)
     towrite+="\n#endif // defined __printer_rollcall_hpp__\n"
-    
-    with open("./Printers/include/gambit/Printers/printer_rollcall.hpp","w") as f:
-        f.write(towrite)
+
+    # Don't touch any existing file unless it is actually different from what we will create
+    header = "./Printers/include/gambit/Printers/printers_rollcall.hpp"
+    candidate = build_dir+"/printers_rollcall.hpp.candidate"
+    with open(candidate,"w") as f: f.write(towrite)
+    update_cmakelists.update_only_if_different(header, candidate)
 
     if verbose:
         print "\nGenerated printer_rollcall.hpp." 
@@ -180,8 +184,11 @@ set(header_files                                 \n\
                                                  \n\
 add_gambit_library(Printers OPTION OBJECT SOURCES ${source_files} HEADERS ${header_files})\n"
 
-    with open("./Printers/CMakeLists.txt","w") as f:
-        f.write(towrite)
+    # Don't touch any existing file unless it is actually different from what we will create
+    cmake = "./Printers/CMakeLists.txt"
+    candidate = build_dir+"/Printers_CMakeLists.txt.candidate"
+    with open(candidate,"w") as f: f.write(towrite)
+    update_cmakelists.update_only_if_different(cmake, candidate)
 
     if verbose:
         print "\nGenerated Printers/CMakeLists.txt" 

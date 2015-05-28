@@ -94,7 +94,7 @@
 
 // Gambit
 #include "gambit/Printers/printers/hdf5printer.hpp"
-#include "gambit/Printers/hdf5tools.hpp"
+#include "gambit/Printers/printers/hdf5printer/hdf5tools.hpp"
 #include "gambit/Core/error_handlers.hpp"
 #include "gambit/Utils/stream_overloads.hpp"
 #include "gambit/Utils/util_functions.hpp"

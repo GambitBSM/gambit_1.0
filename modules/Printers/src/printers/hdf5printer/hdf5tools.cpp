@@ -19,7 +19,7 @@
 ///
 ///  *********************************************
 
-#include "gambit/Printers/hdf5tools.hpp"
+#include "gambit/Printers/printers/hdf5printer/hdf5tools.hpp"
 #include "gambit/Logs/log.hpp"
 
 // HDF5 C++ bindings

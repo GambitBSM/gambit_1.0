@@ -170,7 +170,7 @@ endif()
 
 # Check for HDF5 libraries
 # TODO: Disable HDF5 printer if not found
-find_package(HDF5 REQUIRED)
+find_package(HDF5)
 if(HDF5_FOUND)
   #Make sure C++ interface exists
   link_directories(${HDF5_LIBRARY_DIRS})
@@ -182,16 +182,21 @@ if(HDF5_FOUND)
     )
     if(HDF5_CPP)
        message("-- Found hdf5_cpp: ${HDF5_CPP}")
+       set(HDF5_FOUND HDF5_FOUND)
        set(HDF5_LIBRARIES ${HDF5_LIBRARIES} ${HDF5_CPP})
     else()
-       message(FATAL_ERROR "GAMBIT requires the HDF5 C++ libraries. The C libraries were found, but hdf5_cpp was not.")
-    endif()
+       message("${Red} X HDF5 C libraries found, but C++ API (libhdf5_cpp) was NOT found. \"hdf5printer\" will be ditched.${ColourReset}")
+       set (itch "${itch}" "hdf5printer")
+   endif()
   endif()
   include_directories(${HDF5_INCLUDE_DIR})
   #set(_hdf5_libs hdf5 hdf5_cpp)
   # should also set ${HDF5_LIBRARIES} 
   message("-- Found HDF5 libraries")  
   message("  : ${HDF5_LIBRARIES}")
+else()
+  message("${Red} X HDF5 libraries NOT found. \"hdf5printer\" will be ditched.${ColourReset}")
+  set (itch "${itch}" "hdf5printer")
 endif()
 
 # Check for DL libraries
@@ -213,6 +218,13 @@ set(locate_scanners ${PROJECT_SOURCE_DIR}/cmake/locate_scanners.py ${PROJECT_BIN
 execute_process(RESULT_VARIABLE result COMMAND python ${locate_scanners} WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
 check_result(${result} ${locate_scanners}) 
 message("${Yellow}-- Updating GAMBIT scanner cmake and related files - done.${ColourReset}")
+
+# Generate the Printer compilation files
+message("${Yellow}-- Updating GAMBIT printer cmake and related files${ColourReset}")
+set(harvest_printers ${PROJECT_SOURCE_DIR}/cmake/printer_harvester.py ${PROJECT_BINARY_DIR} -x __not_a_real_name__,${itch_with_commas})
+execute_process(RESULT_VARIABLE result COMMAND python ${harvest_printers} WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
+check_result(${result} ${harvest_printers}) 
+message("${Yellow}-- Updating GAMBIT printer cmake and related files - done.${ColourReset}")
 
 # Add a true clean target that can have dependencies, to allow us to trigger cleaning of external projects (or run any other custom commands)
 add_custom_target(distclean COMMAND ${CMAKE_MAKE_PROGRAM} clean)
@@ -239,12 +251,15 @@ endif()
 set(MODEL_HARVESTER ${PROJECT_SOURCE_DIR}/Models/scripts/model_harvester.py)
 set(BACKEND_HARVESTER ${PROJECT_SOURCE_DIR}/Backends/scripts/backend_harvester.py)
 set(MODULE_HARVESTER ${PROJECT_SOURCE_DIR}/Elements/scripts/module_harvester.py)
+set(PRINTER_HARVESTER ${PROJECT_SOURCE_DIR}/cmake/printer_harvester.py)
 set(HARVEST_TOOLS ${PROJECT_SOURCE_DIR}/Utils/scripts/harvesting_tools.py)
 
 # Create all_functor_types.hpp, module_rollcall.hpp, module_types_rollcall.hpp, models_rollcall.hpp,
-# model_types_rollcall.hpp, backend_rollcall.hpp and backend_types_rollcall.hpp
+# model_types_rollcall.hpp, backend_rollcall.hpp, backend_types_rollcall.hpp, printer_rollcall.hpp,
+# and Printers/CMakeLists.txt
 file(GLOB MODEL_HARVESTER_FILES   "${PROJECT_SOURCE_DIR}/Models/include/gambit/Models/models/*.hpp")
 file(GLOB BACKEND_HARVESTER_FILES "${PROJECT_SOURCE_DIR}/Backends/include/gambit/Backends/frontends/*.hpp")
+file(GLOB PRINTER_HARVESTER_FILES "${PROJECT_SOURCE_DIR}/Printers/include/gambit/Printers/printers/*.hpp")
 file(GLOB MODULE_HARVESTER_FILES  "${PROJECT_SOURCE_DIR}/*Bit*/include/gambit/*Bit*/*_rollcall.hpp"
                                   "${PROJECT_SOURCE_DIR}/Backends/include/gambit/Backends/frontends/*.hpp")
 list(REMOVE_ITEM MODULE_HARVESTER_FILES "${PROJECT_SOURCE_DIR}/ScannerBit//include//gambit//ScannerBit//priors_rollcall.hpp"
@@ -258,12 +273,17 @@ add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/Backends/include/gambit/Backends
                    COMMAND python ${BACKEND_HARVESTER} -x __not_a_real_name__,${itch_with_commas}
                    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
                    DEPENDS ${BACKEND_HARVESTER} ${HARVEST_TOOLS} ${BACKEND_HARVESTER_FILES} ${PROJECT_BINARY_DIR}/CMakeCache.txt)
+add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/Printers/include/gambit/Printers/printer_rollcall.hpp ${PROJECT_SOURCE_DIR}/Printers/CMakeLists.txt
+                   COMMAND python ${PRINTER_HARVESTER} -x __not_a_real_name__,${itch_with_commas}
+                   WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+                   DEPENDS ${PRINTER_HARVESTER} ${HARVEST_TOOLS} ${PRINTER_HARVESTER_FILES} ${PROJECT_BINARY_DIR}/CMakeCache.txt)
 add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/Elements/include/gambit/Elements/all_functor_types.hpp ${PROJECT_SOURCE_DIR}/Core/include/gambit/Core/module_rollcall.hpp ${PROJECT_SOURCE_DIR}/Elements/include/gambit/Elements/module_types_rollcall.hpp
                    COMMAND python ${MODULE_HARVESTER} -x __not_a_real_name__,${itch_with_commas}
                    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
                    DEPENDS ${MODULE_HARVESTER} ${HARVEST_TOOLS} ${MODULE_HARVESTER_FILES} ${PROJECT_BINARY_DIR}/CMakeCache.txt)
 add_custom_target(model_harvest   DEPENDS ${PROJECT_SOURCE_DIR}/Models/include/gambit/Models/model_rollcall.hpp ${MODEL_HARVESTER_FILES})
 add_custom_target(backend_harvest DEPENDS ${PROJECT_SOURCE_DIR}/Backends/include/gambit/Backends/backend_rollcall.hpp ${BACKEND_HARVESTER_FILES})
+add_custom_target(printer_harvest DEPENDS ${PROJECT_SOURCE_DIR}/Printers/include/gambit/Printers/printer_rollcall.hpp ${PRINTER_HARVESTER_FILES} ${PROJECT_SOURCE_DIR}/Printers/CMakeLists.txt)
 add_custom_target(module_harvest DEPENDS ${PROJECT_SOURCE_DIR}/Elements/include/gambit/Elements/all_functor_types.hpp ${PROJECT_SOURCE_DIR}/Core/include/gambit/Core/module_rollcall.hpp ${PROJECT_SOURCE_DIR}/Elements/include/gambit/Elements/module_types_rollcall.hpp ${MODULE_HARVESTER_FILES} backend_harvest)
 
 # Include other cmake scripts
