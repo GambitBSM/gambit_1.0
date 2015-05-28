@@ -4,6 +4,7 @@
 #include "gambit/Backends/abstractbase.hpp"
 #include "forward_decls_abstract_classes.h"
 #include "forward_decls_wrapper_classes.h"
+#include "wrapper_SusyLesHouches_decl.h"
 #include "wrapper_CoupSUSY_decl.h"
 #include "wrapper_Couplings_decl.h"
 #include "wrapper_Info_decl.h"
@@ -32,7 +33,8 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         class Abstract_SLHAinterface : virtual public AbstractBase
         {
             public:
-                // IGNORED: Field  -- Name: slha  -- XML id: _27156
+    
+                virtual Pythia8::Abstract_SusyLesHouches& slha_ref__BOSS() =0;
     
                 virtual Pythia8::Abstract_CoupSUSY& coupSUSY_ref__BOSS() =0;
                 // IGNORED: Field  -- Name: couplingsPtr  -- XML id: _27158

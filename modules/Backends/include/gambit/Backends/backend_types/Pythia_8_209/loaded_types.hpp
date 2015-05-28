@@ -22,6 +22,7 @@
 #include "wrapper_Hist.h"
 #include "wrapper_AlphaEM.h"
 #include "wrapper_SLHAinterface.h"
+#include "wrapper_SusyLesHouches.h"
 #include "wrapper_Couplings.h"
 #include "wrapper_Event.h"
 #include "wrapper_Pythia.h"
@@ -53,6 +54,7 @@
   (( /*class*/(Pythia8)(Hist),    /*constructors*/(("_ZN7Pythia814Factory_Hist_0Ev",())) (("_ZN7Pythia814Factory_Hist_1ESsidd",(std::basic_string<char,std::char_traits<char>,std::allocator<char> >, int, double, double))) (("_ZN7Pythia814Factory_Hist_2ESsid",(std::basic_string<char,std::char_traits<char>,std::allocator<char> >, int, double))) (("_ZN7Pythia814Factory_Hist_3ESsi",(std::basic_string<char,std::char_traits<char>,std::allocator<char> >, int))) (("_ZN7Pythia814Factory_Hist_4ESs",(std::basic_string<char,std::char_traits<char>,std::allocator<char> >))) (("_ZN7Pythia814Factory_Hist_5ESsRKN12Pythia_8_2097Pythia84HistE",(std::basic_string<char,std::char_traits<char>,std::allocator<char> >, const my_ns::Pythia8::Hist&))) )) \
   (( /*class*/(Pythia8)(AlphaEM),    /*constructors*/(("_ZN7Pythia817Factory_AlphaEM_0Ev",())) )) \
   (( /*class*/(Pythia8)(SLHAinterface),    /*constructors*/(("_ZN7Pythia823Factory_SLHAinterface_0Ev",())) )) \
+  (( /*class*/(Pythia8)(SusyLesHouches),    /*constructors*/(("_ZN7Pythia824Factory_SusyLesHouches_0Ei",(int))) (("_ZN7Pythia824Factory_SusyLesHouches_1Ev",())) (("_ZN7Pythia824Factory_SusyLesHouches_2ESsi",(std::basic_string<char,std::char_traits<char>,std::allocator<char> >, int))) (("_ZN7Pythia824Factory_SusyLesHouches_3ESs",(std::basic_string<char,std::char_traits<char>,std::allocator<char> >))) )) \
   (( /*class*/(Pythia8)(Couplings),    /*constructors*/(("_ZN7Pythia819Factory_Couplings_0Ev",())) )) \
   (( /*class*/(Pythia8)(Event),    /*constructors*/(("_ZN7Pythia815Factory_Event_0Ei",(int))) (("_ZN7Pythia815Factory_Event_1Ev",())) )) \
   (( /*class*/(Pythia8)(Pythia),    /*constructors*/(("_ZN7Pythia816Factory_Pythia_0ESsb",(std::basic_string<char,std::char_traits<char>,std::allocator<char> >, bool))) (("_ZN7Pythia816Factory_Pythia_1ESs",(std::basic_string<char,std::char_traits<char>,std::allocator<char> >))) (("_ZN7Pythia816Factory_Pythia_2Ev",())) )) \

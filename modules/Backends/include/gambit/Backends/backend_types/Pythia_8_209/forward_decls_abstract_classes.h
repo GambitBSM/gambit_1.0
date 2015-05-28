@@ -32,6 +32,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         class Abstract_Hist;
         class Abstract_AlphaEM;
         class Abstract_SLHAinterface;
+        class Abstract_SusyLesHouches;
         class Abstract_Couplings;
         class Abstract_SigmaProcess;
         class Abstract_Event;

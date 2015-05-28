@@ -1,6 +1,7 @@
 #ifndef __wrapper_SLHAinterface_def_Pythia_8_209_h__
 #define __wrapper_SLHAinterface_def_Pythia_8_209_h__
 
+#include "wrapper_SusyLesHouches_decl.h"
 #include "wrapper_CoupSUSY_decl.h"
 #include "wrapper_Couplings_decl.h"
 #include "wrapper_Info_decl.h"
@@ -41,11 +42,14 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         // Wrappers for original constructors: 
         inline Pythia8::SLHAinterface::SLHAinterface() :
             WrapperBase<Pythia8::Abstract_SLHAinterface>(__factory0()),
+            slha(&(wrapperbase::BEptr->slha_ref__BOSS())),
             coupSUSY(&(wrapperbase::BEptr->coupSUSY_ref__BOSS())),
             meMode(wrapperbase::BEptr->meMode_ref__BOSS())
         {
             wrapperbase::BEptr->wrapper__BOSS(this);
             wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            (slha).wrapperbase::BEptr->can_delete_wrapper(false);
+            (slha).wrapperbase::BEptr->can_delete_me(false);
             (coupSUSY).wrapperbase::BEptr->can_delete_wrapper(false);
             (coupSUSY).wrapperbase::BEptr->can_delete_me(false);
         }
@@ -53,22 +57,28 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         // Special pointer-based constructor: 
         inline Pythia8::SLHAinterface::SLHAinterface(Pythia8::Abstract_SLHAinterface* in) :
             WrapperBase<Pythia8::Abstract_SLHAinterface>(in),
+            slha(&(wrapperbase::BEptr->slha_ref__BOSS())),
             coupSUSY(&(wrapperbase::BEptr->coupSUSY_ref__BOSS())),
             meMode(wrapperbase::BEptr->meMode_ref__BOSS())
         {
             wrapperbase::BEptr->wrapper__BOSS(this);
             wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            (slha).wrapperbase::BEptr->can_delete_wrapper(false);
+            (slha).wrapperbase::BEptr->can_delete_me(false);
             (coupSUSY).wrapperbase::BEptr->can_delete_wrapper(false);
             (coupSUSY).wrapperbase::BEptr->can_delete_me(false);
         }
         
         inline Pythia8::SLHAinterface::SLHAinterface(Pythia8::Abstract_SLHAinterface* const & in, bool) :
             WrapperBase<Pythia8::Abstract_SLHAinterface>(in, true),
+            slha(&(wrapperbase::BEptr->slha_ref__BOSS())),
             coupSUSY(&(wrapperbase::BEptr->coupSUSY_ref__BOSS())),
             meMode(wrapperbase::BEptr->meMode_ref__BOSS())
         {
             wrapperbase::BEptr->wrapper__BOSS(this);
             wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            (slha).wrapperbase::BEptr->can_delete_wrapper(false);
+            (slha).wrapperbase::BEptr->can_delete_me(false);
             (coupSUSY).wrapperbase::BEptr->can_delete_wrapper(false);
             (coupSUSY).wrapperbase::BEptr->can_delete_me(false);
         }
@@ -76,12 +86,15 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         // Copy constructor: 
         inline Pythia8::SLHAinterface::SLHAinterface(const SLHAinterface& in) :
             WrapperBase<Pythia8::Abstract_SLHAinterface>(in),
+            slha(&(wrapperbase::BEptr->slha_ref__BOSS())),
             coupSUSY(&(wrapperbase::BEptr->coupSUSY_ref__BOSS())),
             meMode(wrapperbase::BEptr->meMode_ref__BOSS())
         {
             wrapperbase::BEptr->can_delete_me(true);
             wrapperbase::BEptr->wrapper__BOSS(this);
             wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+            (slha).wrapperbase::BEptr->can_delete_wrapper(false);
+            (slha).wrapperbase::BEptr->can_delete_me(false);
             (coupSUSY).wrapperbase::BEptr->can_delete_wrapper(false);
             (coupSUSY).wrapperbase::BEptr->can_delete_me(false);
         }

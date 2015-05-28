@@ -5,6 +5,7 @@
 #include "forward_decls_abstract_classes.h"
 #include "forward_decls_wrapper_classes.h"
 #include <complex>
+#include "wrapper_SusyLesHouches_decl.h"
 #include "wrapper_Info_decl.h"
 #include "wrapper_Settings_decl.h"
 #include "wrapper_ParticleData_decl.h"
@@ -184,6 +185,8 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 // IGNORED: Field  -- Name: settingsPtr  -- XML id: _23456
                 // IGNORED: Field  -- Name: particleDataPtr  -- XML id: _23457
             public:
+    
+                virtual void initSUSY__BOSS(Pythia8::Abstract_SusyLesHouches*, Pythia8::Abstract_Info*, Pythia8::Abstract_ParticleData*, Pythia8::Abstract_Settings*) =0;
     
                 virtual std::complex<double> getLsqqG(int, int) =0;
     

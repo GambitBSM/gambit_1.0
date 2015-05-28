@@ -7,6 +7,7 @@
 #include "abstract_CoupSUSY.h"
 #include "wrapper_Couplings_decl.h"
 #include <complex>
+#include "wrapper_SusyLesHouches_decl.h"
 #include "wrapper_Info_decl.h"
 #include "wrapper_Settings_decl.h"
 
@@ -106,6 +107,8 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 // Member functions: 
             public:
+                void initSUSY(WrapperBase< Pythia8::Abstract_SusyLesHouches >* slhaPtrIn, WrapperBase< Pythia8::Abstract_Info >* infoPtrIn, WrapperBase< Pythia8::Abstract_ParticleData >* particleDataPtrIn, WrapperBase< Pythia8::Abstract_Settings >* settingsPtrIn);
+        
                 std::complex<double> getLsqqG(int iGenSq, int idQ);
         
                 std::complex<double> getRsqqG(int iGenSq, int idQ);

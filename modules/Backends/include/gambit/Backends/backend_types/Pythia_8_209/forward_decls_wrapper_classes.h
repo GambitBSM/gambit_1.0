@@ -98,6 +98,10 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     }
     namespace Pythia8
     {
+        class SusyLesHouches;
+    }
+    namespace Pythia8
+    {
         class Couplings;
     }
     namespace Pythia8

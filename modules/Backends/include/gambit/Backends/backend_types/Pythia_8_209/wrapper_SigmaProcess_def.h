@@ -8,6 +8,7 @@
 #include "wrapper_BeamParticle_decl.h"
 #include "wrapper_Couplings_decl.h"
 #include "wrapper_SigmaTotal_decl.h"
+#include "wrapper_SusyLesHouches_decl.h"
 #include "wrapper_Particle_decl.h"
 #include "wrapper_Vec4_decl.h"
 #include "wrapper_SLHAinterface_decl.h"

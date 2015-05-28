@@ -5,6 +5,7 @@
 #include "forward_decls_wrapper_classes.h"
 #include "gambit/Backends/wrapperbase.hpp"
 #include "abstract_SLHAinterface.h"
+#include "wrapper_SusyLesHouches_decl.h"
 #include "wrapper_CoupSUSY_decl.h"
 #include "wrapper_Couplings_decl.h"
 #include "wrapper_Info_decl.h"
@@ -32,6 +33,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 // -- Other member variables: 
             public:
+                Pythia8::SusyLesHouches slha;
                 Pythia8::CoupSUSY coupSUSY;
                 int& meMode;
         

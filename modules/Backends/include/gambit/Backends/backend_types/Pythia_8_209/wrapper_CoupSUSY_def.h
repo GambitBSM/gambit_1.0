@@ -2,6 +2,7 @@
 #define __wrapper_CoupSUSY_def_Pythia_8_209_h__
 
 #include <complex>
+#include "wrapper_SusyLesHouches_decl.h"
 #include "wrapper_Info_decl.h"
 #include "wrapper_Settings_decl.h"
 #include "wrapper_ParticleData_decl.h"
@@ -15,6 +16,11 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     {
         
         // Member functions: 
+        inline void CoupSUSY::initSUSY(WrapperBase< Pythia8::Abstract_SusyLesHouches >* slhaPtrIn, WrapperBase< Pythia8::Abstract_Info >* infoPtrIn, WrapperBase< Pythia8::Abstract_ParticleData >* particleDataPtrIn, WrapperBase< Pythia8::Abstract_Settings >* settingsPtrIn)
+        {
+            wrapperbase::BEptr->initSUSY__BOSS((*slhaPtrIn).BEptr, (*infoPtrIn).BEptr, (*particleDataPtrIn).BEptr, (*settingsPtrIn).BEptr);
+        }
+        
         inline std::complex<double> CoupSUSY::getLsqqG(int iGenSq, int idQ)
         {
             return wrapperbase::BEptr->getLsqqG(iGenSq, idQ);
