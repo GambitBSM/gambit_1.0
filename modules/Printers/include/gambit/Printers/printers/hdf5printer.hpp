@@ -31,6 +31,15 @@
 #include "gambit/Printers/hdf5tools.hpp"
 #include "gambit/Utils/yaml_options.hpp"
 
+// Instructions to printer_harvester.py to add files associated with this
+// printer (Printer directory tree only) to Printers/CMakeLists.txt for 
+// inclusion in the main gambit compile, unless this printer is -Ditch'ed.
+#define ADD_TO_GAMBIT_COMPILE /* null */
+ADD_TO_GAMBIT_COMPILE( "include/gambit/Printers/hdf5tools.hpp" )
+ADD_TO_GAMBIT_COMPILE( "src/hdf5tools.cpp"                     )
+ADD_TO_GAMBIT_COMPILE( "src/hdf5printer.cpp"                   )
+#undef ADD_TO_GAMBIT_COMPILE
+
 //#define DEBUG_MODE
 
 // Code!
