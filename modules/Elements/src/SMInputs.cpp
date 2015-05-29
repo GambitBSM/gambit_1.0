@@ -75,7 +75,7 @@ namespace Gambit {
      }
      std::ostringstream commentwhash;
      commentwhash << "# " << comment;
-     std::cout << "Adding entry to block "<<block<<": "<<index<<"\t"<<value<<"\t"<<commentwhash.str()<<std::endl;
+     //std::cout << "Adding entry to block "<<block<<": "<<index<<"\t"<<value<<"\t"<<commentwhash.str()<<std::endl;
      data[block][""] << index << value << commentwhash.str();
      return;
    }

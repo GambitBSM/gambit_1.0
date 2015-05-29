@@ -45,7 +45,7 @@ namespace Gambit
   /// Return the path to a backend library, given a backend name and version.
   str Backends::backend_info::path(str be, str ver) const
   {
-    const str default_path("/no/path/in/config/backend_locations/"); 
+    const str default_path("no path in config/backend_locations.yaml"); 
     str p;
     if (bepathfile[be][ver])
     {
@@ -58,7 +58,7 @@ namespace Gambit
       std::ostringstream msg;
       msg << "Could not find path for backend "<< be <<" v" << ver << endl;
       msg << "in " << filename << "." << endl;
-      msg << "Setting path to default (" << default_path << ").";
+      msg << "Setting path to \"" << default_path << "\".";
       utils_warning().raise(LOCAL_INFO,msg.str());
     }
     return p;
@@ -89,13 +89,20 @@ namespace Gambit
   /// Given a backend and a safe version (with no periods), return the true version
   str Backends::backend_info::version_from_safe_version (str be, str sv) const 
   { 
-    return safe_version_map.at(be).at(sv);
+    return safe_version_map.at(be).first.at(sv);
   } 
  
+  /// Given a backend and a true version (with periods), return the safe version
+  str Backends::backend_info::safe_version_from_version (str be, str v) const 
+  { 
+    return safe_version_map.at(be).second.at(v);
+  } 
+
   /// Link a backend's version and safe version
   void Backends::backend_info::link_versions(str be, str v, str sv)
   {
-    safe_version_map[be][sv] = v;
+    safe_version_map[be].first[sv] = v;
+    safe_version_map[be].second[v] = sv;
   }
 
 }

@@ -109,7 +109,7 @@ BE_FUNCTION(FastSim_Init_Test, int, (int), "_Z17FastSim_Init_Testi", "fast_sim_i
 
 
 BE_INI_FUNCTION{}
-DONE
+END_BE_INI_FUNCTION
 
 
 // Undefine macros to avoid conflict with other backends

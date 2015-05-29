@@ -18,6 +18,8 @@ a.out
 # Compiled Python scripts
 *.pyc
 
+# Compiled Fortran headers
+
 # Hidden files
 .*
 

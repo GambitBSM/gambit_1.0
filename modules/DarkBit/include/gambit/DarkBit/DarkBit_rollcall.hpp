@@ -447,11 +447,8 @@ START_MODULE
     #undef FUNCTION
     #define FUNCTION DD_couplings_SingletDM
       START_FUNCTION(Gambit::DarkBit::DD_couplings)
-      ALLOW_MODEL_DEPENDENCE(nuclear_params_fnq, SingletDM)
-      MODEL_GROUP(group1, (nuclear_params_fnq))
-      MODEL_GROUP(group2, (SingletDM))
-      ALLOW_MODEL_COMBINATION(group1, group2)
-    #undef FUNCTION
+      ALLOW_JOINT_MODEL(nuclear_params_fnq, SingletDM)
+     #undef FUNCTION
   #undef CAPABILITY
 
   // Simple calculators of the spin-(in)dependent WIMP-proton and WIMP-neutron cross-sections 
