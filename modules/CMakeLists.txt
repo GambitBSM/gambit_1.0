@@ -45,8 +45,8 @@ foreach(p
   endif()
 endforeach()
 
-# Set the project name
-project(GAMBIT)
+# Set the project name, enabling C, C++ and Fortran support
+project(GAMBIT C CXX Fortran)
 
 # Don't relink all binaries when shared lib changes (programs will be rebuilt anyway if used headers change)
 set(CMAKE_LINK_DEPENDS_NO_SHARED 1)
@@ -64,8 +64,7 @@ set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
 # Add the automatically determined parts of the RPATH that point to directories outside the build tree to the install RPATH
 SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
-# Include cmake utility scripts
-# Note: colors defined in here; colored output won't work before this!
+# Include cmake utility scripts, including colour definitions.
 include(cmake/utilities.cmake)
 
 # Check for optional packages and disable sections of GAMBIT accordingly
@@ -80,9 +79,6 @@ endforeach()
 
 # Do OSX checks
 include(cmake/MacOSX.cmake)
-
-# Enable Fortran compiler
-enable_language(Fortran)
 
 # Add -fPIC for 64 bit systems
 if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64")
@@ -166,37 +162,6 @@ if(GSL_FOUND)
   endif()
 else()
   message(FATAL_ERROR "GAMBIT requires the GSL libraries.")
-endif()
-
-# Check for HDF5 libraries
-# TODO: Disable HDF5 printer if not found
-find_package(HDF5)
-if(HDF5_FOUND)
-  #Make sure C++ interface exists
-  link_directories(${HDF5_LIBRARY_DIRS})
-  if("${HDF5_CXX_LIBRARIES}" STREQUAL "")
-    # Didn't seem to find it, try some extra tricks
-    find_library(HDF5_CPP 
-       NAMES hdf5_cpp libhdf5_cpp
-       HINTS "${HDF5_LIBRARY_DIRS}"
-    )
-    if(HDF5_CPP)
-       message("-- Found hdf5_cpp: ${HDF5_CPP}")
-       set(HDF5_FOUND HDF5_FOUND)
-       set(HDF5_LIBRARIES ${HDF5_LIBRARIES} ${HDF5_CPP})
-    else()
-       message("${Red} X HDF5 C libraries found, but C++ API (libhdf5_cpp) was NOT found. \"hdf5printer\" will be ditched.${ColourReset}")
-       set (itch "${itch}" "hdf5printer")
-   endif()
-  endif()
-  include_directories(${HDF5_INCLUDE_DIR})
-  #set(_hdf5_libs hdf5 hdf5_cpp)
-  # should also set ${HDF5_LIBRARIES} 
-  message("-- Found HDF5 libraries")  
-  message("  : ${HDF5_LIBRARIES}")
-else()
-  message("${Red} X HDF5 libraries NOT found. \"hdf5printer\" will be ditched.${ColourReset}")
-  set (itch "${itch}" "hdf5printer")
 endif()
 
 # Check for DL libraries
