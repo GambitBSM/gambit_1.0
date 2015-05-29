@@ -31,6 +31,9 @@
 #include "gambit/Printers/printers/hdf5printer/hdf5tools.hpp"
 #include "gambit/Utils/yaml_options.hpp"
 
+// MPI bindings
+#include "gambit/Utils/mpiwrapper.hpp"
+
 //#define DEBUG_MODE
 
 // Code!
@@ -330,7 +333,7 @@ namespace Gambit
         /// Map recording which model point this process is working on
         // Need this so that we can compute when (at least initial) writing to a model point has ceased
         // Key: rank; Value: last pointID sent by that rank.
-        ulong lastPointID;
+        std::map<int,ulong> lastPointID;
 
         /// Current absolute dataset index
         // i.e. this location in the output dataset is currently the target of print functions

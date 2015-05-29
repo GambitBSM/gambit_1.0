@@ -42,6 +42,30 @@
 
 namespace Gambit {
    namespace GMPI {
+
+      /// Mapping from (basic) C++ types to MPI datatypes
+      /// Idea based off of "get_hdf5_data_type" in hdf5tools.hpp
+
+      template<typename T> 
+      int get_mpi_data_type();
+      // Left undefined because I want a compile error if specialisation doesn't exist.
+
+      int get_mpi_data_type<char>              { return MPI_CHAR               };
+      // bunch of types omitted in get_hdf5_data_type for reasons not totally clear to me...
+      int get_mpi_data_type<long long>         { return MPI_LONG_LONG          };
+      int get_mpi_data_type<unsigned long long>{ return MPI_UNSIGNED_LONG_LONG };
+      int get_mpi_data_type<int8_t>            { return MPI_INT8_T             };
+      int get_mpi_data_type<uint8_t>           { return MPI_UINT8_T            };
+      int get_mpi_data_type<int16_t>           { return MPI_INT16_T            };
+      int get_mpi_data_type<uint16_t>          { return MPI_UINT16_T           };
+      int get_mpi_data_type<int32_t>           { return MPI_INT32_T            };
+      int get_mpi_data_type<uint32_t>          { return MPI_UINT32_T           };
+      int get_mpi_data_type<int64_t>           { return MPI_INT64_T            };
+      int get_mpi_data_type<uint64_t>          { return MPI_UINT64_T           };
+      int get_mpi_data_type<float>             { return MPI_FLOAT              };
+      int get_mpi_data_type<double>            { return MPI_DOUBLE             };
+      int get_mpi_data_type<long double>       { return MPI_LONG_DOUBLE        };
+
  
       /// Main "Communicator" class
       class Comm
@@ -55,6 +79,33 @@ namespace Gambit {
 
             /// Get "rank" (ID number) of current task in this communicator group
             int Get_rank() const;
+
+            /// Blocking receive
+            ///  void*        buf      - memory address in which to store received message
+            ///  int          count    - number of elements in message
+            ///  MPI_Datatype datatpye - datatype of each message element
+            ///  int          source   - rank of sending (receiving?) process
+            ///  int          tag      - message tag          
+            ///  MPI_status*  status   - struct containing data about the received message
+            /// Returns:
+            ///  MPI_status - struct containing data about the received message
+            void Recv(void *buf, int count, MPI_Datatype datatype, 
+                                  int source, int tag, 
+                                  MPI_Status *status=MPI_STATUS_IGNORE)
+            {
+               int errflag; 
+               errflag = MPI_Recv(buf, count, datatype, source, tag, boundcomm, status)
+            }
+
+            /// Templated blocking receive to automatically determine types
+            template<class T>
+            void Recv(T *buf, int count, 
+                      int source, int tag, 
+                      MPI_Status *status=MPI_STATUS_IGNORE)
+            {
+               static const int datatype = get_mpi_data_type<T>();
+               Recv(buf, count, datatype, source, tag, status);
+            }
 
          private:
             // The MPI communicator to which the current object "talks".

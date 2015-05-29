@@ -182,6 +182,11 @@ namespace Gambit {
             // Needed to externally trigger buffer write to disk (e.g. at end of scan)
             virtual void flush() = 0; ///TODO: write proper cleanout function = 0;            
 
+            #ifdef DISABLED_FOR_NOW
+            // Write an external set of buffer data to disk
+            virtual void flush_external(const T (&values)[CHUNKLENGTH], const bool (&isvalid)[CHUNKLENGTH]) = 0;
+            #endif
+
             // Flush the random-access write queue (i.e. do the queued-up writes)
             virtual void RA_flush() = 0;
 
@@ -191,7 +196,13 @@ namespace Gambit {
 
             // Needed to externally inform buffer of a skipped iteration (when no data to write)
             virtual void skip_append() = 0;           
- 
+
+            #ifdef DISABLED_FOR_NOW
+            // Retrieve buffer data from an MPI message
+            // Should only be triggered if a valid message is known to exist to be retrieved!
+            virtual void get_mpi_message() = 0;
+            #endif   
+
             // getter for donethispoint
             bool donepoint() {return donethispoint;}
 
@@ -274,6 +285,12 @@ namespace Gambit {
           /// No data to append this iteration; skip this slot
           virtual void skip_append();
 
+          #ifdef DISABLED_FOR_NOW
+          // Retrieve buffer data from an MPI message
+          // Should only be triggered if a valid message is known to exist to be retrieved!
+          virtual void get_mpi_message() = 0;
+          #endif
+
           /// Extract (copy) a record
           T get_entry(const std::size_t i) const;
  
@@ -343,6 +360,47 @@ namespace Gambit {
             }
          }
       }
+
+      #ifdef DISABLED_FOR_NOW
+      // Retrieve buffer data from an MPI message
+      // Should only be triggered if a valid message is known to exist to be retrieved!
+      template<class T, std::size_t L>
+      void VertexBufferNumeric1D<T,L>::get_mpi_message()
+      {
+        #ifndef WITH_MPI
+        // This function should never be called when MPI is not available.
+        std::string errmsg = "Error! Attempted to retrieve MPI message with buffer data, but MPI is not active!";
+        printer_error().raise(LOCAL_INFO, errmsg);
+        #endif
+
+        #ifdef WITH_MPI
+        // An MPI_Iprobe should have been done prior to calling this function, 
+        // in order to trigger delivery of the message to the correct buffer. 
+        // So now we trust that this buffer is indeed supposed to receive the 
+        // message. We can also use a blocking receive since we know that a
+        // message is already waiting to be sent.
+
+        // Buffers to store received message
+        bool  recv_buffer_valid[LENGTH];
+        T     recv_buffer_entries[LENGTH];
+
+        GMPI::COMM_WORLD::Recv(&recv_buffer_valid, LENGTH, int source, int tag);
+        GMPI::COMM_WORLD::Recv(&recv_buffer_entries, LENGTH, int source, int tag);
+
+        // Write the buffers to disk
+        flush_external(recv_buffer_entries,recv_buffer_valid);
+
+        // TODO: - Need to identify whether message is synchronous or RA data
+        //       - Need to update absolute dataset indices to reflect the newly added
+        //         chunk.
+        //       - Regarding the above, may need to send an additional message containing
+        //         the pointID and rank for each entry, and then insert these into the
+        //         master process map. Also means buffers will need to be passed this
+        //         information, rather than just having the hdf5printer give them an
+        //         absolute index...
+        #endif
+      }
+      #endif
 
       /// Extract (copy) a record
       template<class T, std::size_t L>
@@ -442,6 +500,17 @@ namespace Gambit {
                  printer_error().raise(LOCAL_INFO, errmsg.str()); 
               }
            }
+
+           #ifdef DISABLED_FOR_NOW
+           /// Manual command to send an arbitrary buffer to be written to disk
+           virtual void flush_external(const T (&values)[CHUNKLENGTH], const bool (&isvalid)[CHUNKLENGTH])
+           {
+              if(not this->is_silenced()) {
+                dsetvalid.writenewchunk(isvalid); 
+                dsetdata.writenewchunk(values);
+              }
+           }
+           #endif
 
            /// Reset the output (non-synchronised datasets only)
            virtual void reset() { }

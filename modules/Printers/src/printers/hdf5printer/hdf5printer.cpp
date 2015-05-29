@@ -94,7 +94,7 @@
 
 // Gambit
 #include "gambit/Printers/printers/hdf5printer.hpp"
-#include "gambit/Printers/printers/hdf5printer/hdf5tools.hpp"
+#include "gambit/Printers/hdf5tools.hpp"
 #include "gambit/Core/error_handlers.hpp"
 #include "gambit/Utils/stream_overloads.hpp"
 #include "gambit/Utils/util_functions.hpp"
@@ -209,8 +209,20 @@ namespace Gambit
     // Constructor
     HDF5Printer::HDF5Printer(const Options& options)
       : printer_name("Primary printer")
-      , myRank(0) // Hook up to MPI
+      , myRank(0)
     {
+      #ifdef WITH_MPI
+        // Do basic MPI check
+        std::cout << "Hooking up to MPI..." << std::endl;
+        std::cout << " Size: " << GMPI::COMM_WORLD.Get_size() << std::endl;
+        std::cout << " Rank: " << GMPI::COMM_WORLD.Get_rank() << std::endl;
+        myRank = GMPI::COMM_WORLD.Get_rank(); 
+      #endif
+
+      // (Needs modifying when full MPI implentation is done)
+      // Initialise "lastPointID" map to -1 (i.e. no last point)
+      lastPointID[myRank] = -1; // Only rank 0 process for now; parallel mode not implemented
+
       if(options.getValueOrDef<bool>(false,"auxilliary"))
       {
         // Set up this printer in auxilliary mode
@@ -443,10 +455,10 @@ namespace Gambit
        }
 
        // Check that we are still writing to the same output "slot" as during the last print call
-       if(candidate_newpoint!=lastPointID)
+       if(candidate_newpoint!=lastPointID.at(myRank))
        {
          // Yep the scanner has moved on, at least as far as the current process sees
-         lastPointID = candidate_newpoint;
+         lastPointID[myRank] = candidate_newpoint;
 
          // In principle this should only happen once per pointID/process rank pair.
          // So add the new pair to the lookup table and register that we have moved to
