@@ -83,16 +83,19 @@ namespace Gambit
       /// As per forced_throw but without logging.
       void silent_forced_throw();
       /// @}
-
-      /// Map of pointers to all instances of this class.
-      static std::map<const char*,exception*> exception_map;
     
+      /// Get a read-only map of pointers to all instances of this class.
+      static const std::map<const char*,exception*>& all_exceptions();
+
     protected:
 
       /// The set of tags to be passed to the logger
       std::set<LogTag> myLogTags;
 
     private:
+
+      /// Get a map of pointers to all instances of this class.
+      static std::map<const char*,exception*>& exception_map();
 
       /// Log the details of the exception
       void log_exception(const std::string&, const std::string&);
@@ -236,6 +239,26 @@ namespace Gambit
     
   };
 
+  /// Gambit piped exception class.
+  class Piped_invalid_point
+  {
+    public:
+      /// Constructor
+      Piped_invalid_point() : flag(false), message("") {};
+
+      /// Request an exception.
+      void request(std::string message);
+
+      /// Check whether an exception was requested, and throw it if necessary.
+      void check();
+
+    private:
+      bool flag;
+      std::string message;
+  };
+
+  /// Global instance of piped invalid point class.
+  extern Piped_invalid_point piped_invalid_point;
 
 }
 

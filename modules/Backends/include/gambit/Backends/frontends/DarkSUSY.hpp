@@ -145,7 +145,7 @@ BE_INI_FUNCTION
     }
 
 }
-DONE
+END_BE_INI_FUNCTION
 
 // Convenience functions (definitions)
 BE_NAMESPACE
@@ -217,7 +217,7 @@ BE_NAMESPACE
   }
 
 }
-DONE
+END_BE_NAMESPACE
 
 // Undefine macros to avoid conflict with other backends
 #include "gambit/Backends/backend_undefs.hpp"

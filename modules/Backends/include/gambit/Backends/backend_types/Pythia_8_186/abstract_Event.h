@@ -4,11 +4,18 @@
 #include "gambit/Backends/abstractbase.hpp"
 #include "forward_decls_abstract_classes.h"
 #include "forward_decls_wrapper_classes.h"
-#include <vector>
 #include <string>
-#include "abstract_Particle.h"
-#include "abstract_Vec4.h"
+#include "wrapper_ParticleData_decl.h"
+#include "wrapper_Particle_decl.h"
+#include "wrapper_Vec4_decl.h"
 #include <ostream>
+#include <vector>
+#include <cstddef>
+
+#ifndef ENUMS_DECLARED
+#define ENUMS_DECLARED
+#include "enum_decl_copies.h"
+#endif
 
 #include "identification.hpp"
 
@@ -25,20 +32,28 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         class Abstract_Event : virtual public AbstractBase
         {
             private:
-                // IGNORED: Variable  -- Name: IPERLINE  -- XML id: _24568
-                // IGNORED: Field  -- Name: startColTag  -- XML id: _24569
-                // IGNORED: Field  -- Name: entry  -- XML id: _24570
-                // IGNORED: Field  -- Name: junction  -- XML id: _24571
-                // IGNORED: Field  -- Name: maxColTag  -- XML id: _24572
-                // IGNORED: Field  -- Name: savedSize  -- XML id: _24573
-                // IGNORED: Field  -- Name: savedJunctionSize  -- XML id: _24574
-                // IGNORED: Field  -- Name: scaleSave  -- XML id: _24575
-                // IGNORED: Field  -- Name: scaleSecondSave  -- XML id: _24576
-                // IGNORED: Field  -- Name: headerList  -- XML id: _24577
-                // IGNORED: Field  -- Name: particleDataPtr  -- XML id: _24578
+                // IGNORED: Variable  -- Name: IPERLINE  -- XML id: _24567
+                // IGNORED: Field  -- Name: startColTag  -- XML id: _24568
+                // IGNORED: Field  -- Name: entry  -- XML id: _24569
+                // IGNORED: Field  -- Name: junction  -- XML id: _24570
+                // IGNORED: Field  -- Name: maxColTag  -- XML id: _24571
+                // IGNORED: Field  -- Name: savedSize  -- XML id: _24572
+                // IGNORED: Field  -- Name: savedJunctionSize  -- XML id: _24573
+                // IGNORED: Field  -- Name: scaleSave  -- XML id: _24574
+                // IGNORED: Field  -- Name: scaleSecondSave  -- XML id: _24575
+                // IGNORED: Field  -- Name: headerList  -- XML id: _24576
+                // IGNORED: Field  -- Name: particleDataPtr  -- XML id: _24577
             public:
     
                 virtual Pythia8::Abstract_Event* operator_equal__BOSS(const Pythia8::Abstract_Event&) =0;
+    
+                virtual void init__BOSS(std::basic_string<char,std::char_traits<char>,std::allocator<char> >, Pythia8::Abstract_ParticleData*, int) =0;
+    
+                virtual void init__BOSS(std::basic_string<char,std::char_traits<char>,std::allocator<char> >, Pythia8::Abstract_ParticleData*) =0;
+    
+                virtual void init__BOSS(std::basic_string<char,std::char_traits<char>,std::allocator<char> >) =0;
+    
+                virtual void init__BOSS() =0;
     
                 virtual void clear() =0;
     
@@ -100,13 +115,13 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual void list() const =0;
     
-                virtual void list(std::ostream&) const =0;
+                virtual void list(std::basic_ostream<char,std::char_traits<char> >&) const =0;
     
                 virtual void list(bool, bool) const =0;
     
                 virtual void list__BOSS(bool) const =0;
     
-                virtual void list(bool, bool, std::ostream&) const =0;
+                virtual void list(bool, bool, std::basic_ostream<char,std::char_traits<char> >&) const =0;
     
                 virtual void popBack(int) =0;
     
@@ -140,9 +155,9 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual double scaleSecond() const =0;
     
-                virtual std::vector<int, std::allocator<int> > motherList(int) const =0;
+                virtual std::vector<int,std::allocator<int> > motherList(int) const =0;
     
-                virtual std::vector<int, std::allocator<int> > daughterList(int) const =0;
+                virtual std::vector<int,std::allocator<int> > daughterList(int) const =0;
     
                 virtual int statusHepMC(int) const =0;
     
@@ -154,11 +169,11 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual int iBotCopyId(int) const =0;
     
-                virtual std::vector<int, std::allocator<int> > sisterList(int) const =0;
+                virtual std::vector<int,std::allocator<int> > sisterList(int) const =0;
     
-                virtual std::vector<int, std::allocator<int> > sisterListTopBot(int, bool) const =0;
+                virtual std::vector<int,std::allocator<int> > sisterListTopBot(int, bool) const =0;
     
-                virtual std::vector<int, std::allocator<int> > sisterListTopBot__BOSS(int) const =0;
+                virtual std::vector<int,std::allocator<int> > sisterListTopBot__BOSS(int) const =0;
     
                 virtual bool isAncestor(int, int) const =0;
     
@@ -200,7 +215,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual void restoreJunctionSize() =0;
     
-                virtual void listJunctions(std::ostream&) const =0;
+                virtual void listJunctions(std::basic_ostream<char,std::char_traits<char> >&) const =0;
     
                 virtual void listJunctions__BOSS() const =0;
     
@@ -211,13 +226,18 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 virtual Abstract_Event* pointerCopy__BOSS() =0;
     
             private:
-                Event* wptr;
+                mutable Event* wptr;
     
             public:
+                Abstract_Event()
+                {
+                }
+    
                 void wrapper__BOSS(Event* wptr_in)
                 {
                     wptr = wptr_in;
                     is_wrapped(true);
+                    can_delete_wrapper(true);
                 }
     
                 Event* wrapper__BOSS()

@@ -15,8 +15,10 @@
 ///
 ///  *********************************************
 
-#undef BACKENDNAME
-#undef VERSION
-#undef SAFE_VERSION
-#undef DO_CLASSLOADING
-#define DO_CLASSLOADING 0
+#ifndef BACKEND_SPECIFIC_COMPILE_UNIT
+  #undef BACKENDNAME
+  #undef VERSION
+  #undef SAFE_VERSION
+  #undef DO_CLASSLOADING
+  #define DO_CLASSLOADING 0
+#endif

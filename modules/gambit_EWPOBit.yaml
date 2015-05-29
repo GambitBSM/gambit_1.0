@@ -1,0 +1,134 @@
+# EWPOBit/HiggsBit test file (in YAML)
+# Only needs EWPOBit, HiggsBit and backends FeynHiggs, HiggsBounds and HiggsSignals.
+#
+# Chris Rogan <crogan@cern.ch>
+# Apr 2015
+ 
+###################################
+# Input parameter declarations
+###################################
+
+Parameters:
+  StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
+  MSSM25atQ: !import LesHouches.in.MSSM_1.yaml
+
+Priors:
+    # none: all parameters fixed in this example.
+
+Scanner:
+
+  use_scanner: toy_mcmc
+  
+  scanners:
+    toy_mcmc:
+      plugin: toy_mcmc
+      point_number: 2
+      output_file:  output
+      like:  Likelihood
+            
+ObsLikes:
+
+  # Test DecayBit    
+  #- purpose:      Test
+  #  capability:   decay_rates
+  #  type:         DecayTable
+
+  # Uncomment to test FeynHiggs-related module functions
+  #- purpose:  whatever
+  #  capability:  FH_HiggsMasses
+  #- purpose:  whatever		
+  #  capability:  FH_PrecisionObs
+  #- purpose:  whatever
+  #  capability:  FH_FlavorObs
+  #- purpose:  whatever
+  #  capability:  FH_MSSMMasses
+  #- purpose:  whatever
+  #  capability:  FH_Couplings
+  #- purpose:  whatever
+  #  capability:  FH_HiggsProd
+
+  # Uncomment to test HiggsBit
+  - purpose:  Likelihood
+    capability:  HB_LEPchisq
+  - purpose:  Likelihood
+    capability:  HS_LHCchisq
+
+Rules:
+
+  - capability: MSSM_spectrum 
+    function: get_MSSMatQ_spectrum  
+    options:
+      invalid_point_fatal: true
+
+  - capability: HB_ModelParameters
+    function: MSSMHiggs_ModelParameters
+
+  - capability: Higgs_decay_rates
+    function: FH_MSSM_h0_1_decays
+
+  - capability: h0_2_decay_rates
+    function: FH_h0_2_decays
+
+  - capability: A0_decay_rates
+    function: FH_A0_decays
+
+  - capability: Hplus_decay_rates
+    function: FH_Hplus_decays
+      
+##############################
+# Printer setup
+##############################
+
+Printer:
+
+  # Select printer to use via string tag
+  # (currently only ascii printer available)
+  printer: ascii
+
+  # This options node is passed on wholesale to
+  # the printer object; required options may
+  # therefore vary according to the selected
+  # printer. 
+  options:
+    # name of output file
+    output_file: "runs/EWPOBit_test/samples/gambit_output.txt"
+    # name of info file (explains content of output file)
+    info_file: "runs/EWPOBit_test/samples/gambit_output.info"
+
+#########################
+# Logging setup
+#########################
+
+Logger:
+
+  # Redirection of specific messages according to tags
+  # Can redirect to stdout or stderr by specifying these as the "filenames". 
+  # Obviously this also means it is impossible to redirect output to actual
+  # files with these names.
+
+  prefix : "runs/EWPOBit_test/logs/"
+  redirection:
+    [Debug] : "debug.log"
+    [Default] : "default.log"
+    [Error] : "errors.log"
+    [Warning] : "warnings.log"
+    [Core,Error] : "core_errors.log"
+    [Core,Error,Fatal] : "fatal_core_errors.log"
+    [Dependency Resolver] : "dependency_resolver.log"
+    [ExampleBit_A] : "ExampleBit_A.log"
+    [ExampleBit_B] : "ExampleBit_B.log"
+    [EWPOBit] : "EWPOBit.log"
+
+
+##########################
+# Name/Value Section
+##########################
+
+KeyValues:
+
+  dependency_resolution:
+    prefer_model_specific_functions: true
+
+  likelihood:
+    model_invalid_for_lnlike_below: -1e6
+

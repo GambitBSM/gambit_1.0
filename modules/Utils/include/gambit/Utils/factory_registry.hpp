@@ -1,9 +1,10 @@
 //  GAMBIT: Global and Modular BSM Inference Tool
 //  *********************************************
 /// \file
-///  Utility Functions for the Gambit Scanner
-///  (now also used by printer system to register
-///   the available printers; see baseprinter.hpp)
+///
+///  Utility functions used by ScannerBit and the
+///  GAMBIT printers to register available scanners
+///  and printers.
 ///
 ///  *********************************************
 ///

@@ -124,7 +124,7 @@ BE_INI_FUNCTION
   scan_level = false;
 
 }
-DONE
+END_BE_INI_FUNCTION
 
 // Undefine macros to avoid conflict with other backends
 #include "gambit/Backends/backend_undefs.hpp"

@@ -8,6 +8,12 @@
 #include <string>
 #include <vector>
 #include <ostream>
+#include <cstddef>
+
+#ifndef ENUMS_DECLARED
+#define ENUMS_DECLARED
+#include "enum_decl_copies.h"
+#endif
 
 #include "identification.hpp"
 
@@ -24,102 +30,102 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         class Abstract_Info : virtual public AbstractBase
         {
             private:
-                // IGNORED: Variable  -- Name: TIMESTOPRINT  -- XML id: _21791
-                // IGNORED: Variable  -- Name: CONVERTMB2PB  -- XML id: _21792
-                // IGNORED: Field  -- Name: idASave  -- XML id: _21793
-                // IGNORED: Field  -- Name: idBSave  -- XML id: _21794
-                // IGNORED: Field  -- Name: pzASave  -- XML id: _21795
-                // IGNORED: Field  -- Name: eASave  -- XML id: _21796
-                // IGNORED: Field  -- Name: mASave  -- XML id: _21797
-                // IGNORED: Field  -- Name: pzBSave  -- XML id: _21798
-                // IGNORED: Field  -- Name: eBSave  -- XML id: _21799
-                // IGNORED: Field  -- Name: mBSave  -- XML id: _21800
-                // IGNORED: Field  -- Name: eCMSave  -- XML id: _21801
-                // IGNORED: Field  -- Name: sSave  -- XML id: _21802
-                // IGNORED: Field  -- Name: lowPTmin  -- XML id: _21803
-                // IGNORED: Field  -- Name: nTry  -- XML id: _21804
-                // IGNORED: Field  -- Name: nSel  -- XML id: _21805
-                // IGNORED: Field  -- Name: nAcc  -- XML id: _21806
-                // IGNORED: Field  -- Name: sigGen  -- XML id: _21807
-                // IGNORED: Field  -- Name: sigErr  -- XML id: _21808
-                // IGNORED: Field  -- Name: wtAccSum  -- XML id: _21809
-                // IGNORED: Field  -- Name: procNameM  -- XML id: _21810
-                // IGNORED: Field  -- Name: nTryM  -- XML id: _21811
-                // IGNORED: Field  -- Name: nSelM  -- XML id: _21812
-                // IGNORED: Field  -- Name: nAccM  -- XML id: _21813
-                // IGNORED: Field  -- Name: sigGenM  -- XML id: _21814
-                // IGNORED: Field  -- Name: sigErrM  -- XML id: _21815
-                // IGNORED: Field  -- Name: lhaStrategySave  -- XML id: _21816
-                // IGNORED: Field  -- Name: a0MPISave  -- XML id: _21817
-                // IGNORED: Field  -- Name: isRes  -- XML id: _21818
-                // IGNORED: Field  -- Name: isDiffA  -- XML id: _21819
-                // IGNORED: Field  -- Name: isDiffB  -- XML id: _21820
-                // IGNORED: Field  -- Name: isDiffC  -- XML id: _21821
-                // IGNORED: Field  -- Name: isND  -- XML id: _21822
-                // IGNORED: Field  -- Name: isLH  -- XML id: _21823
-                // IGNORED: Field  -- Name: hasSubSave  -- XML id: _21824
-                // IGNORED: Field  -- Name: bIsSet  -- XML id: _21825
-                // IGNORED: Field  -- Name: evolIsSet  -- XML id: _21826
-                // IGNORED: Field  -- Name: atEOF  -- XML id: _21827
-                // IGNORED: Field  -- Name: isVal1  -- XML id: _21828
-                // IGNORED: Field  -- Name: isVal2  -- XML id: _21829
-                // IGNORED: Field  -- Name: hasHistorySave  -- XML id: _21830
-                // IGNORED: Field  -- Name: codeSave  -- XML id: _21831
-                // IGNORED: Field  -- Name: codeSubSave  -- XML id: _21832
-                // IGNORED: Field  -- Name: nFinalSave  -- XML id: _21833
-                // IGNORED: Field  -- Name: nFinalSubSave  -- XML id: _21834
-                // IGNORED: Field  -- Name: nTotal  -- XML id: _21835
-                // IGNORED: Field  -- Name: id1Save  -- XML id: _21836
-                // IGNORED: Field  -- Name: id2Save  -- XML id: _21837
-                // IGNORED: Field  -- Name: id1pdfSave  -- XML id: _21838
-                // IGNORED: Field  -- Name: id2pdfSave  -- XML id: _21839
-                // IGNORED: Field  -- Name: nMPISave  -- XML id: _21840
-                // IGNORED: Field  -- Name: nISRSave  -- XML id: _21841
-                // IGNORED: Field  -- Name: nFSRinProcSave  -- XML id: _21842
-                // IGNORED: Field  -- Name: nFSRinResSave  -- XML id: _21843
-                // IGNORED: Field  -- Name: x1Save  -- XML id: _21844
-                // IGNORED: Field  -- Name: x2Save  -- XML id: _21845
-                // IGNORED: Field  -- Name: x1pdfSave  -- XML id: _21846
-                // IGNORED: Field  -- Name: x2pdfSave  -- XML id: _21847
-                // IGNORED: Field  -- Name: pdf1Save  -- XML id: _21848
-                // IGNORED: Field  -- Name: pdf2Save  -- XML id: _21849
-                // IGNORED: Field  -- Name: Q2FacSave  -- XML id: _21850
-                // IGNORED: Field  -- Name: alphaEMSave  -- XML id: _21851
-                // IGNORED: Field  -- Name: alphaSSave  -- XML id: _21852
-                // IGNORED: Field  -- Name: Q2RenSave  -- XML id: _21853
-                // IGNORED: Field  -- Name: scalupSave  -- XML id: _21854
-                // IGNORED: Field  -- Name: sH  -- XML id: _21855
-                // IGNORED: Field  -- Name: tH  -- XML id: _21856
-                // IGNORED: Field  -- Name: uH  -- XML id: _21857
-                // IGNORED: Field  -- Name: pTH  -- XML id: _21858
-                // IGNORED: Field  -- Name: m3H  -- XML id: _21859
-                // IGNORED: Field  -- Name: m4H  -- XML id: _21860
-                // IGNORED: Field  -- Name: thetaH  -- XML id: _21861
-                // IGNORED: Field  -- Name: phiH  -- XML id: _21862
-                // IGNORED: Field  -- Name: weightSave  -- XML id: _21863
-                // IGNORED: Field  -- Name: bMPISave  -- XML id: _21864
-                // IGNORED: Field  -- Name: enhanceMPISave  -- XML id: _21865
-                // IGNORED: Field  -- Name: pTmaxMPISave  -- XML id: _21866
-                // IGNORED: Field  -- Name: pTmaxISRSave  -- XML id: _21867
-                // IGNORED: Field  -- Name: pTmaxFSRSave  -- XML id: _21868
-                // IGNORED: Field  -- Name: pTnowSave  -- XML id: _21869
-                // IGNORED: Field  -- Name: zNowISRSave  -- XML id: _21870
-                // IGNORED: Field  -- Name: pT2NowISRSave  -- XML id: _21871
-                // IGNORED: Field  -- Name: nameSave  -- XML id: _21872
-                // IGNORED: Field  -- Name: nameSubSave  -- XML id: _21873
-                // IGNORED: Field  -- Name: codeMPISave  -- XML id: _21874
-                // IGNORED: Field  -- Name: iAMPISave  -- XML id: _21875
-                // IGNORED: Field  -- Name: iBMPISave  -- XML id: _21876
-                // IGNORED: Field  -- Name: pTMPISave  -- XML id: _21877
-                // IGNORED: Field  -- Name: eMPISave  -- XML id: _21878
-                // IGNORED: Field  -- Name: counters  -- XML id: _21879
-                // IGNORED: Field  -- Name: messages  -- XML id: _21880
-                // IGNORED: Field  -- Name: headers  -- XML id: _21881
-                // IGNORED: Field  -- Name: weightCKKWLSave  -- XML id: _21882
-                // IGNORED: Field  -- Name: weightFIRSTSave  -- XML id: _21883
+                // IGNORED: Variable  -- Name: TIMESTOPRINT  -- XML id: _21790
+                // IGNORED: Variable  -- Name: CONVERTMB2PB  -- XML id: _21791
+                // IGNORED: Field  -- Name: idASave  -- XML id: _21792
+                // IGNORED: Field  -- Name: idBSave  -- XML id: _21793
+                // IGNORED: Field  -- Name: pzASave  -- XML id: _21794
+                // IGNORED: Field  -- Name: eASave  -- XML id: _21795
+                // IGNORED: Field  -- Name: mASave  -- XML id: _21796
+                // IGNORED: Field  -- Name: pzBSave  -- XML id: _21797
+                // IGNORED: Field  -- Name: eBSave  -- XML id: _21798
+                // IGNORED: Field  -- Name: mBSave  -- XML id: _21799
+                // IGNORED: Field  -- Name: eCMSave  -- XML id: _21800
+                // IGNORED: Field  -- Name: sSave  -- XML id: _21801
+                // IGNORED: Field  -- Name: lowPTmin  -- XML id: _21802
+                // IGNORED: Field  -- Name: nTry  -- XML id: _21803
+                // IGNORED: Field  -- Name: nSel  -- XML id: _21804
+                // IGNORED: Field  -- Name: nAcc  -- XML id: _21805
+                // IGNORED: Field  -- Name: sigGen  -- XML id: _21806
+                // IGNORED: Field  -- Name: sigErr  -- XML id: _21807
+                // IGNORED: Field  -- Name: wtAccSum  -- XML id: _21808
+                // IGNORED: Field  -- Name: procNameM  -- XML id: _21809
+                // IGNORED: Field  -- Name: nTryM  -- XML id: _21810
+                // IGNORED: Field  -- Name: nSelM  -- XML id: _21811
+                // IGNORED: Field  -- Name: nAccM  -- XML id: _21812
+                // IGNORED: Field  -- Name: sigGenM  -- XML id: _21813
+                // IGNORED: Field  -- Name: sigErrM  -- XML id: _21814
+                // IGNORED: Field  -- Name: lhaStrategySave  -- XML id: _21815
+                // IGNORED: Field  -- Name: a0MPISave  -- XML id: _21816
+                // IGNORED: Field  -- Name: isRes  -- XML id: _21817
+                // IGNORED: Field  -- Name: isDiffA  -- XML id: _21818
+                // IGNORED: Field  -- Name: isDiffB  -- XML id: _21819
+                // IGNORED: Field  -- Name: isDiffC  -- XML id: _21820
+                // IGNORED: Field  -- Name: isND  -- XML id: _21821
+                // IGNORED: Field  -- Name: isLH  -- XML id: _21822
+                // IGNORED: Field  -- Name: hasSubSave  -- XML id: _21823
+                // IGNORED: Field  -- Name: bIsSet  -- XML id: _21824
+                // IGNORED: Field  -- Name: evolIsSet  -- XML id: _21825
+                // IGNORED: Field  -- Name: atEOF  -- XML id: _21826
+                // IGNORED: Field  -- Name: isVal1  -- XML id: _21827
+                // IGNORED: Field  -- Name: isVal2  -- XML id: _21828
+                // IGNORED: Field  -- Name: hasHistorySave  -- XML id: _21829
+                // IGNORED: Field  -- Name: codeSave  -- XML id: _21830
+                // IGNORED: Field  -- Name: codeSubSave  -- XML id: _21831
+                // IGNORED: Field  -- Name: nFinalSave  -- XML id: _21832
+                // IGNORED: Field  -- Name: nFinalSubSave  -- XML id: _21833
+                // IGNORED: Field  -- Name: nTotal  -- XML id: _21834
+                // IGNORED: Field  -- Name: id1Save  -- XML id: _21835
+                // IGNORED: Field  -- Name: id2Save  -- XML id: _21836
+                // IGNORED: Field  -- Name: id1pdfSave  -- XML id: _21837
+                // IGNORED: Field  -- Name: id2pdfSave  -- XML id: _21838
+                // IGNORED: Field  -- Name: nMPISave  -- XML id: _21839
+                // IGNORED: Field  -- Name: nISRSave  -- XML id: _21840
+                // IGNORED: Field  -- Name: nFSRinProcSave  -- XML id: _21841
+                // IGNORED: Field  -- Name: nFSRinResSave  -- XML id: _21842
+                // IGNORED: Field  -- Name: x1Save  -- XML id: _21843
+                // IGNORED: Field  -- Name: x2Save  -- XML id: _21844
+                // IGNORED: Field  -- Name: x1pdfSave  -- XML id: _21845
+                // IGNORED: Field  -- Name: x2pdfSave  -- XML id: _21846
+                // IGNORED: Field  -- Name: pdf1Save  -- XML id: _21847
+                // IGNORED: Field  -- Name: pdf2Save  -- XML id: _21848
+                // IGNORED: Field  -- Name: Q2FacSave  -- XML id: _21849
+                // IGNORED: Field  -- Name: alphaEMSave  -- XML id: _21850
+                // IGNORED: Field  -- Name: alphaSSave  -- XML id: _21851
+                // IGNORED: Field  -- Name: Q2RenSave  -- XML id: _21852
+                // IGNORED: Field  -- Name: scalupSave  -- XML id: _21853
+                // IGNORED: Field  -- Name: sH  -- XML id: _21854
+                // IGNORED: Field  -- Name: tH  -- XML id: _21855
+                // IGNORED: Field  -- Name: uH  -- XML id: _21856
+                // IGNORED: Field  -- Name: pTH  -- XML id: _21857
+                // IGNORED: Field  -- Name: m3H  -- XML id: _21858
+                // IGNORED: Field  -- Name: m4H  -- XML id: _21859
+                // IGNORED: Field  -- Name: thetaH  -- XML id: _21860
+                // IGNORED: Field  -- Name: phiH  -- XML id: _21861
+                // IGNORED: Field  -- Name: weightSave  -- XML id: _21862
+                // IGNORED: Field  -- Name: bMPISave  -- XML id: _21863
+                // IGNORED: Field  -- Name: enhanceMPISave  -- XML id: _21864
+                // IGNORED: Field  -- Name: pTmaxMPISave  -- XML id: _21865
+                // IGNORED: Field  -- Name: pTmaxISRSave  -- XML id: _21866
+                // IGNORED: Field  -- Name: pTmaxFSRSave  -- XML id: _21867
+                // IGNORED: Field  -- Name: pTnowSave  -- XML id: _21868
+                // IGNORED: Field  -- Name: zNowISRSave  -- XML id: _21869
+                // IGNORED: Field  -- Name: pT2NowISRSave  -- XML id: _21870
+                // IGNORED: Field  -- Name: nameSave  -- XML id: _21871
+                // IGNORED: Field  -- Name: nameSubSave  -- XML id: _21872
+                // IGNORED: Field  -- Name: codeMPISave  -- XML id: _21873
+                // IGNORED: Field  -- Name: iAMPISave  -- XML id: _21874
+                // IGNORED: Field  -- Name: iBMPISave  -- XML id: _21875
+                // IGNORED: Field  -- Name: pTMPISave  -- XML id: _21876
+                // IGNORED: Field  -- Name: eMPISave  -- XML id: _21877
+                // IGNORED: Field  -- Name: counters  -- XML id: _21878
+                // IGNORED: Field  -- Name: messages  -- XML id: _21879
+                // IGNORED: Field  -- Name: headers  -- XML id: _21880
+                // IGNORED: Field  -- Name: weightCKKWLSave  -- XML id: _21881
+                // IGNORED: Field  -- Name: weightFIRSTSave  -- XML id: _21882
             public:
     
-                virtual void list(std::ostream&) const =0;
+                virtual void list(std::basic_ostream<char,std::char_traits<char> >&) const =0;
     
                 virtual void list__BOSS() const =0;
     
@@ -145,7 +151,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual bool tooLowPTmin() const =0;
     
-                virtual std::string name() const =0;
+                virtual std::basic_string<char,std::char_traits<char>,std::allocator<char> > name() const =0;
     
                 virtual int code() const =0;
     
@@ -171,9 +177,9 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual bool hasSub__BOSS() const =0;
     
-                virtual std::string nameSub(int) const =0;
+                virtual std::basic_string<char,std::char_traits<char>,std::allocator<char> > nameSub(int) const =0;
     
-                virtual std::string nameSub__BOSS() const =0;
+                virtual std::basic_string<char,std::char_traits<char>,std::allocator<char> > nameSub__BOSS() const =0;
     
                 virtual int codeSub(int) const =0;
     
@@ -341,11 +347,11 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual int iBMPI(int) const =0;
     
-                virtual std::vector<int, std::allocator<int> > codesHard() =0;
+                virtual std::vector<int,std::allocator<int> > codesHard() =0;
     
-                virtual std::string nameProc(int) =0;
+                virtual std::basic_string<char,std::char_traits<char>,std::allocator<char> > nameProc(int) =0;
     
-                virtual std::string nameProc__BOSS() =0;
+                virtual std::basic_string<char,std::char_traits<char>,std::allocator<char> > nameProc__BOSS() =0;
     
                 virtual long int nTried(int) =0;
     
@@ -379,17 +385,17 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual void errorReset() =0;
     
-                virtual void errorMsg(std::string, std::string, bool, std::ostream&) =0;
+                virtual void errorMsg(std::basic_string<char,std::char_traits<char>,std::allocator<char> >, std::basic_string<char,std::char_traits<char>,std::allocator<char> >, bool, std::basic_ostream<char,std::char_traits<char> >&) =0;
     
-                virtual void errorMsg__BOSS(std::string, std::string, bool) =0;
+                virtual void errorMsg__BOSS(std::basic_string<char,std::char_traits<char>,std::allocator<char> >, std::basic_string<char,std::char_traits<char>,std::allocator<char> >, bool) =0;
     
-                virtual void errorMsg__BOSS(std::string, std::string) =0;
+                virtual void errorMsg__BOSS(std::basic_string<char,std::char_traits<char>,std::allocator<char> >, std::basic_string<char,std::char_traits<char>,std::allocator<char> >) =0;
     
-                virtual void errorMsg__BOSS(std::string) =0;
+                virtual void errorMsg__BOSS(std::basic_string<char,std::char_traits<char>,std::allocator<char> >) =0;
     
                 virtual int errorTotalNumber() =0;
     
-                virtual void errorStatistics(std::ostream&) =0;
+                virtual void errorStatistics(std::basic_ostream<char,std::char_traits<char> >&) =0;
     
                 virtual void errorStatistics__BOSS() =0;
     
@@ -421,9 +427,9 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual void setWeightFIRST(double) =0;
     
-                virtual std::string header(const std::string&) =0;
+                virtual std::basic_string<char,std::char_traits<char>,std::allocator<char> > header(const std::basic_string<char,std::char_traits<char>,std::allocator<char> >&) =0;
     
-                virtual std::vector<std::string, std::allocator<std::string> > headerKeys() =0;
+                virtual std::vector<std::basic_string<char, std::char_traits<char>, std::allocator<char> >,std::allocator<std::basic_string<char, std::char_traits<char>, std::allocator<char> > > > headerKeys() =0;
             private:
     
                 virtual void setBeamA(int, double, double, double) =0;
@@ -438,21 +444,21 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual void resizeMPIarrays(int) =0;
     
-                virtual void setType(std::string, int, int, bool, bool, bool, bool, bool, bool) =0;
+                virtual void setType(std::basic_string<char,std::char_traits<char>,std::allocator<char> >, int, int, bool, bool, bool, bool, bool, bool) =0;
     
-                virtual void setType__BOSS(std::string, int, int, bool, bool, bool, bool, bool) =0;
+                virtual void setType__BOSS(std::basic_string<char,std::char_traits<char>,std::allocator<char> >, int, int, bool, bool, bool, bool, bool) =0;
     
-                virtual void setType__BOSS(std::string, int, int, bool, bool, bool, bool) =0;
+                virtual void setType__BOSS(std::basic_string<char,std::char_traits<char>,std::allocator<char> >, int, int, bool, bool, bool, bool) =0;
     
-                virtual void setType__BOSS(std::string, int, int, bool, bool, bool) =0;
+                virtual void setType__BOSS(std::basic_string<char,std::char_traits<char>,std::allocator<char> >, int, int, bool, bool, bool) =0;
     
-                virtual void setType__BOSS(std::string, int, int, bool, bool) =0;
+                virtual void setType__BOSS(std::basic_string<char,std::char_traits<char>,std::allocator<char> >, int, int, bool, bool) =0;
     
-                virtual void setType__BOSS(std::string, int, int, bool) =0;
+                virtual void setType__BOSS(std::basic_string<char,std::char_traits<char>,std::allocator<char> >, int, int, bool) =0;
     
-                virtual void setType__BOSS(std::string, int, int) =0;
+                virtual void setType__BOSS(std::basic_string<char,std::char_traits<char>,std::allocator<char> >, int, int) =0;
     
-                virtual void setSubType(int, std::string, int, int) =0;
+                virtual void setSubType(int, std::basic_string<char,std::char_traits<char>,std::allocator<char> >, int, int) =0;
     
                 virtual void setPDFalpha(int, int, int, double, double, double, double, double, double, double, double, double) =0;
     
@@ -470,7 +476,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual void sigmaReset() =0;
     
-                virtual void setSigma(int, std::string, long int, long int, long int, double, double, double) =0;
+                virtual void setSigma(int, std::basic_string<char,std::char_traits<char>,std::allocator<char> >, long int, long int, long int, double, double, double) =0;
     
                 virtual void addSigma(int, long int, long int, long int, double, double) =0;
     
@@ -490,20 +496,25 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     
                 virtual void setWeight(double, int) =0;
     
-                virtual void setHeader(const std::string&, const std::string&) =0;
+                virtual void setHeader(const std::basic_string<char,std::char_traits<char>,std::allocator<char> >&, const std::basic_string<char,std::char_traits<char>,std::allocator<char> >&) =0;
     
             public:
                 virtual void pointerAssign__BOSS(Abstract_Info*) =0;
                 virtual Abstract_Info* pointerCopy__BOSS() =0;
     
             private:
-                Info* wptr;
+                mutable Info* wptr;
     
             public:
+                Abstract_Info()
+                {
+                }
+    
                 void wrapper__BOSS(Info* wptr_in)
                 {
                     wptr = wptr_in;
                     is_wrapped(true);
+                    can_delete_wrapper(true);
                 }
     
                 Info* wrapper__BOSS()
