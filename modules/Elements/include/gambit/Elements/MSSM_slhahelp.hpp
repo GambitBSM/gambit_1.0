@@ -64,7 +64,12 @@ namespace slhahelp {
    double get_largest_mass_mixing_for_gauge(std::string gauge_es, 
                                             std::string & mass_es,
                                             const SubSpectrum* mssm);
-
+    
+   /// get largest mixing and identifies the state by filling gauge_es
+   double get_largest_gauge_mixing_for_mass(std::string mass_es, 
+                                            std::string & gauge_es, 
+                                            const SubSpectrum* mssm);
+      
 
    /******************* family state -> mass_es, gauge_es  helpers ***********/
    
@@ -76,9 +81,7 @@ namespace slhahelp {
    /// predominatly of gauge states from the appropriate family, so ~t_1 is the
    /// lightest of the two mass_es which are made up predominatly of third 
    /// family squarks.
-   /// This is moore useful for ourt purposes
-
-
+   /// This is moore useful for our purposes
 
 
    /// returns vector with composition of closest the mass state 

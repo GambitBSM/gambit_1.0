@@ -27,6 +27,7 @@ namespace Gambit {
       /// map from string representing type (ie up-squars, down-squars or 
       /// charged selptons) to appropriate set of mass eigenstates 
       std::map<std::string,std::set<std::string>> type_to_set_of_mass_es;
+      std::map<std::string,std::set<std::string>> type_to_set_of_gauge_es;
       ///maps between type and the sets of indices
       std::map<std::string,std::set<int>> type_to_set_of_row_indices;
       std::map<std::string,std::set<int>> type_to_set_of_col_indices;
@@ -44,6 +45,16 @@ namespace Gambit {
          std::set<std::string> ch_slepton_strs  = {"~e-_1", "~e-_2", "~e-_3", 
                                                    "~e-_4", "~e-_5", "~e-_6"};
          std::set<std::string> sneutrino_strs   = {"~nu_1", "~nu_2", "~nu_3"};
+
+         /// this is probably banned c++11, can uglify later if kept     
+         std::set<std::string> up_sq_gauge_strs   = {"~u_L", "~c_L", "~t_L", 
+                                                   "~u_R", "~c_R", "~t_R"}; 
+         std::set<std::string> down_sq_gauge_strs ={"~d_L", "~s_L", "~b_L", 
+                                                   "~d_R", "~s_R", "~b_R"};
+         std::set<std::string> ch_sl_gauge_strs  = {"~e_L", "~mu_L", "~tau_L", 
+                                                   "~e_R", "~mu_R", "~tau_R"};
+         std::set<std::string> sne_gauge_strs = {"~nu_e_L", "~nu_mu_L", "~nu_tau_L"};
+
          
          /// for iterations over rows and columns
          /// all the same so only need one at most but this does
@@ -249,6 +260,11 @@ namespace Gambit {
          type_to_set_of_mass_es["~d"] = down_squark_strs; 
          type_to_set_of_mass_es["~e"] = ch_slepton_strs;
          type_to_set_of_mass_es["~nu"] = sneutrino_strs;
+
+         type_to_set_of_gauge_es["~u"] = up_sq_gauge_strs;
+         type_to_set_of_mass_es["~d"] = down_sq_gauge_strs; 
+         type_to_set_of_mass_es["~e"] = ch_sl_gauge_strs;
+         type_to_set_of_mass_es["~nu"] = sne_gauge_strs;
          
          type_to_set_of_row_indices["~u"] = up_squark_rows;
          type_to_set_of_row_indices["~d"] = down_squark_rows;
@@ -323,7 +339,7 @@ namespace Gambit {
       
       ///routine to return mass state admixure for given gauge state
       /// in the end this is a trival routine but may help      
-      double get_mass_admix_for_gauge(std::string gauge_es, 
+      double get_mixing_element(std::string gauge_es, 
                                        std::string mass_es, 
                                        const SubSpectrum* mssm)
       { 
@@ -338,7 +354,7 @@ namespace Gambit {
          if(type!=type_gauge) 
             {
                /// throw exception in gambit
-               utils_error().raise(LOCAL_INFO, "function get_mass_admix_for_gauge called with type's for the gauge eigenstate and mass eigenstate that don't match.");
+               utils_error().raise(LOCAL_INFO, "function get_mixing_element called with type's for the gauge eigenstate and mass eigenstate that don't match.");
             }
          /// will need to add mssm object to cal method in gambit
          double admix = mssm->phys.get_Pole_Mixing(type, mass_index, 
@@ -346,6 +362,8 @@ namespace Gambit {
          return admix;
       }
       
+      
+
 
       /// returns vector representing composition of requested mass eigenstate
       /// in terms of the slha2 gauge eigenstates (~u_L,~c_L,...~t_R etc)
@@ -388,12 +406,48 @@ namespace Gambit {
          typedef std::set<std::string>::iterator iter;
          for(iter it = mass_es_set.begin(); it != mass_es_set.end(); ++it){
             temp_mass_es = *it;    
-            temp_admix = get_mass_admix_for_gauge(gauge_es, temp_mass_es, 
+            temp_admix = get_mixing_element(gauge_es, temp_mass_es, 
                                                     mssm);
             //select largest 
             if(fabs(temp_admix) > fabs(admix)) {
                admix = temp_admix; 
                mass_es = temp_mass_es;
+            }
+         } //end iteration over temp_mass_es
+         
+         //return largest
+         return admix;
+      }
+
+ 
+      /// get largest admix and indentifies the state by filling gauge_es
+      double get_largest_gauge_mixing_for_mass(std::string mass_es, 
+                                               std::string & gauge_es, 
+                                               const SubSpectrum* mssm)
+      {
+         /// passed in massstate to be set
+         double temp_admix = 0.0;
+         double admix = 0.0;
+         /// retrive type from the gauge_es string
+         std::string type = (mass_label_to_index_type[mass_es]).second;
+         std::string temp_gauge_es;
+         /// iterate over set of strings for mass states using temp_massstate
+         /// could create a set of strings for each type 
+         /// and choose which by type
+         /// I am concerned about creating excessive numbers of internal code
+         /// structures in terms of code readability though
+         std::set<std::string> gauge_es_set = type_to_set_of_gauge_es[type];
+         /// c++11 would be cool here but I think is banned :(.
+         // for(auto temp_mass_es : mass_es_set) { do stuff with temp_mass_es }
+         typedef std::set<std::string>::iterator iter;
+         for(iter it = gauge_es_set.begin(); it != gauge_es_set.end(); ++it){
+            temp_gauge_es = *it;    
+            temp_admix = get_mixing_element(temp_gauge_es, mass_es, 
+                                                    mssm);
+            //select largest 
+            if(fabs(temp_admix) > fabs(admix)) {
+               admix = temp_admix; 
+               gauge_es = temp_gauge_es;
             }
          } //end iteration over temp_mass_es
          
