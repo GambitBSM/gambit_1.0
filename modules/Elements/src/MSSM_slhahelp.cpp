@@ -262,9 +262,9 @@ namespace Gambit {
          type_to_set_of_mass_es["~nu"] = sneutrino_strs;
 
          type_to_set_of_gauge_es["~u"] = up_sq_gauge_strs;
-         type_to_set_of_mass_es["~d"] = down_sq_gauge_strs; 
-         type_to_set_of_mass_es["~e"] = ch_sl_gauge_strs;
-         type_to_set_of_mass_es["~nu"] = sne_gauge_strs;
+         type_to_set_of_gauge_es["~d"] = down_sq_gauge_strs; 
+         type_to_set_of_gauge_es["~e"] = ch_sl_gauge_strs;
+         type_to_set_of_gauge_es["~nu"] = sne_gauge_strs;
          
          type_to_set_of_row_indices["~u"] = up_squark_rows;
          type_to_set_of_row_indices["~d"] = down_squark_rows;
