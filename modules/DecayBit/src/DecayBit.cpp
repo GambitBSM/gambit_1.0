@@ -312,6 +312,8 @@ namespace Gambit
         return;
  }
 
+
+     
  
      /// put in a strict at least instead of global variables
      struct mass_es_pseudonyms {
@@ -374,6 +376,7 @@ namespace Gambit
         ///std::string isntau2bar; // -2000016
         
         void fill_mass_es_psns(const SubSpectrum* mssm, double tol);
+        void test_print(const SubSpectrum* mssm);
      private:
         bool filled; 
      };
@@ -385,7 +388,108 @@ namespace Gambit
      {
         filled = false;
      }
-      
+       
+     void  mass_es_pseudonyms::test_print(const SubSpectrum* mssm) {
+        std::cout.precision(8);
+        std::cout << "Dmix :" << std::endl;;
+        for(int i = 1; i <=6; i++){
+           for(int j = 1; j <=6; j++){
+              std::cout << "     " << i << j << " = "  
+                        << std::scientific << std::setw(10) << 
+                        <<  mssm->phys.get_Pole_Mixing("~d", i, j);
+           }
+           std::cout << std::endl;
+        }
+        
+        std::cout << "Umix :" << std::endl;;
+        for(int i = 1; i <=6; i++){
+           for(int j = 1; j <=6; j++){
+              std::cout << "     " << i << j << " = "  
+                        << mssm->phys.get_Pole_Mixing("~u", i, j);
+           }
+           std::cout << std::endl;
+        }
+        
+        
+        std::cout << "Emix :" << std::endl;;
+        for(int i = 1; i <=6; i++){
+           for(int j = 1; j <=6; j++){
+              std::cout << "     " << i << j << " = "  
+                        << mssm->phys.get_Pole_Mixing("~e", i, j);
+            }
+           std::cout << std::endl;
+        }
+
+         std::cout << "NUmix :" << std::endl;;
+        for(int i = 1; i <=3; i++){
+           for(int j = 1; j <=3; j++){
+              std::cout << "     " << i << j << " = "  
+                        << mssm->phys.get_Pole_Mixing("~nu", i, j);
+            }
+           std::cout << std::endl;
+        }
+        
+        
+        std::cout << "isdl = "  << isdl << std::endl;
+        std::cout << "isdlbar = "  << isdlbar << std::endl;
+        std::cout << "isdr = "  << isdr << std::endl;
+        std::cout << "isdrbar = "  << isdrbar << std::endl;
+        
+        std::cout << "isul = "  << isul << std::endl;
+        std::cout << "isulbar = "  << isulbar << std::endl;
+        std::cout << "isur = "  << isur << std::endl;
+        std::cout << "isurbar = "  << isurbar << std::endl;
+        
+
+        std::cout << "issl = "  << issl << std::endl;
+        std::cout << "isslbar = "  << isslbar << std::endl;
+        std::cout << "issr = "  << issr << std::endl;
+        std::cout << "issrbar = "  << issrbar << std::endl;
+
+        std::cout << "iscl = "  << iscl << std::endl;
+        std::cout << "isclbar = "  << isclbar << std::endl;
+        std::cout << "iscr = "  << iscr << std::endl;
+        std::cout << "iscrbar = "  << iscrbar << std::endl;
+
+
+
+        std::cout << "isb1 = "  << isb1 << std::endl;
+        std::cout << "isb1bar = "  << isb1bar << std::endl;
+        std::cout << "isb2 = "  << isb2 << std::endl;
+        std::cout << "isb2bar = "  << isb2bar << std::endl;
+
+        std::cout << "ist1 = "  << ist1 << std::endl;
+        std::cout << "ist1bar = "  << ist1bar << std::endl;
+        std::cout << "ist2 = "  << ist2 << std::endl;
+        std::cout << "ist2bar = "  << ist2bar << std::endl;
+
+
+        std::cout << "isell = "  << isell << std::endl;
+        std::cout << "isellbar = "  << isellbar << std::endl;
+        std::cout << "iselr = "  << iselr << std::endl;
+        std::cout << "iselrbar = "  << iselrbar << std::endl;
+
+        std::cout << "isnel = "  << isnel << std::endl;
+        std::cout << "isnelbar = "  << isnelbar << std::endl;
+
+        std::cout << "ismul = "  << ismul << std::endl;
+        std::cout << "ismulbar = "  << ismulbar << std::endl;
+        std::cout << "ismur = "  << ismur << std::endl;
+        std::cout << "ismurbar = "  << ismurbar << std::endl;
+
+        std::cout << "isnmull = "  << isnmul << std::endl;
+        std::cout << "isnmullbar = "  << isnmulbar << std::endl;
+
+        std::cout << "istau1 = "  << istau1 << std::endl;
+        std::cout << "istau1bar = "  << istau1bar << std::endl;
+        std::cout << "istau2 = "  << istau2 << std::endl;
+        std::cout << "istau2bar = "  << istau2bar << std::endl;
+
+        std::cout << "isntau1 = "  << isntau1 << std::endl;
+        std::cout << "isntau1bar = "  << isntau1bar << std::endl;
+
+
+     }
      
      /// fill strings in struct
      void  mass_es_pseudonyms::fill_mass_es_psns(const SubSpectrum* mssm,
@@ -426,8 +530,10 @@ namespace Gambit
         fill_mass_es_psn_gauge(ismur, ismurbar, "~mu_R", mssm, tol);
         fill_mass_es_psn_family(istau2, istau2bar, "~tau_2", mssm, tol);
         
-        filled=true;
+        //test_print(mssm);
         
+        filled=true;
+
         return;
      }
      
