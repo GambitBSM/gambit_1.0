@@ -251,8 +251,8 @@ namespace Gambit
         fill_p_to_ap_map();
         std::string mass_es;
         double max_mix = 0; 
-        max_mix = slhahelp::get_largest_mass_mixing_for_gauge(gauge_es,mass_es, 
-                                                              mssm);
+        max_mix = slhahelp::largest_mass_mixing_for_gauge(gauge_es,mass_es, 
+                                                          mssm);
         if((max_mix*max_mix) >= 1-tol){
            is = mass_es;   
            isbar = particle_to_anti_particle[mass_es];
@@ -284,7 +284,7 @@ namespace Gambit
         /// from the same family as the family state
         std::vector<double> wrong_fam_gauge_comp;
         std::vector<double> right_fam_gauge_comp = 
-           slhahelp::get_family_state_mix_elements(family_state, mass_es,
+           slhahelp::family_state_mix_elements(family_state, mass_es,
                                                    wrong_fam_gauge_comp, mssm);
         /// Do very simple test for now, discuss best approach
         /// This is a question for decaybit

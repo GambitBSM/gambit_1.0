@@ -58,24 +58,22 @@ namespace slhahelp {
    std::vector<double> get_gauge_comp_for_mass(std::string mass_es,
                                                const SubSpectrum* mssm);
       
-
    // get largest admix and indentifies the state by filling mass_es
    /// could pass tol for test here, but maybe better to leave til step after
-   double get_largest_mass_mixing_for_gauge(std::string gauge_es, 
-                                            std::string & mass_es,
-                                            const SubSpectrum* mssm);
-    
-   /// get largest mixing and identifies the state by filling gauge_es
-   double get_largest_gauge_mixing_for_mass(std::string mass_es, 
-                                            std::string & gauge_es, 
-                                            const SubSpectrum* mssm);
+   double largest_mass_mixing_for_gauge(std::string gauge_es, 
+                                        std::string & mass_es,
+                                        const SubSpectrum* mssm);
+       /// get largest mixing and identifies the state by filling gauge_es
+   double largest_gauge_mixing_for_mass(std::string mass_es, 
+                                        std::string & gauge_es, 
+                                        const SubSpectrum* mssm);
       
 
    /******************* family state -> mass_es, gauge_es  helpers ***********/
    
    /// Note: when there is family mixing there's no clear definition ~t_1, 
    /// ~t_2 etc as these are neither gauge_es nor mass_es
-   /// if defined as the states you get from diagonalising a 2by2 
+   /// If defined as the states you get from diagonalising a 2by2 
    /// mass (sub)matrix then extensive manipulations would be required
    /// Here we defone the family states to be the mass eigenstates made up 
    /// predominatly of gauge states from the appropriate family, so ~t_1 is the
@@ -99,11 +97,11 @@ namespace slhahelp {
    /// ie the appropriate row in the stop mixing matrix 
    /// and stores the rest of the gauge content for this state in a std::vector
    /// The latter should have entries which are zero in absense of family mixing
-   std::vector<double> get_family_state_mix_elements(std::string familystate,
-                                                    std::string & mass_es,
-                                                    std::vector<double> & 
-                                                    wrong_fam_gauge_content,
-                                                    const SubSpectrum* mssm);
+   std::vector<double> family_state_mix_elements(std::string familystate,
+                                                 std::string & mass_es,
+                                                 std::vector<double> & 
+                                                 wrong_fam_gauge_content,
+                                                 const SubSpectrum* mssm);
 
    /// identifies the two mass_es which best matches specified family state
    /// storing them in strings and then returns 
@@ -115,12 +113,12 @@ namespace slhahelp {
    /// (one for each of the two family states) which hold the off-family mixing
    // elements, eg. the mixing between ~t_1 and the ~u_L, ~c_L, ~u_R, ~c_R 
    /// This will be zero in absense of family mixing
-   std::vector<double> get_family_state_mix_matrix(std::string type,
-                                                   int family,
-                                                   std::string & mass_es1,
-                                                   std::string & mass_es2,
-                                                   double & max_mix_mag_sq,
-                                                   const SubSpectrum* mssm);
+   std::vector<double> family_state_mix_matrix(std::string type,
+                                               int family,
+                                               std::string & mass_es1,
+                                               std::string & mass_es2,
+                                               double & max_mix_mag_sq,
+                                               const SubSpectrum* mssm);
    
    
 

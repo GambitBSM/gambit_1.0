@@ -385,7 +385,7 @@ namespace Gambit {
       
       /// get largest admix and indentifies the state by filling mass_es
       /// could pass tol for test here, but maybe better to leave til step after
-      double get_largest_mass_mixing_for_gauge(std::string gauge_es, 
+      double largest_mass_mixing_for_gauge(std::string gauge_es, 
                                                std::string & mass_es, 
                                                const SubSpectrum* mssm)
       {
@@ -421,9 +421,9 @@ namespace Gambit {
 
  
       /// get largest admix and indentifies the state by filling gauge_es
-      double get_largest_gauge_mixing_for_mass(std::string mass_es, 
-                                               std::string & gauge_es, 
-                                               const SubSpectrum* mssm)
+      double largest_gauge_mixing_for_mass(std::string mass_es, 
+                                           std::string & gauge_es, 
+                                           const SubSpectrum* mssm)
       {
          /// passed in massstate to be set
          double temp_admix = 0.0;
@@ -481,8 +481,8 @@ namespace Gambit {
          std::string mass_esL, mass_esR;
          /// we don't need the return value of these
          /// unless we want to do a test on them?
-         get_largest_mass_mixing_for_gauge(gauge_esL, mass_esL, mssm);
-         get_largest_mass_mixing_for_gauge(gauge_esR, mass_esR, mssm);
+         largest_mass_mixing_for_gauge(gauge_esL, mass_esL, mssm);
+         largest_mass_mixing_for_gauge(gauge_esR, mass_esR, mssm);
          
          pair_strings answer;
          int mass_index_L = (mass_label_to_index_type[mass_esL]).first;
@@ -510,8 +510,8 @@ namespace Gambit {
          std::string mass_esL, mass_esR;
          /// we don't need the return value of these
          /// unless we want to do a test on them?
-         get_largest_mass_mixing_for_gauge(gauge_esL, mass_esL, mssm);
-         get_largest_mass_mixing_for_gauge(gauge_esR, mass_esR, mssm);
+         largest_mass_mixing_for_gauge(gauge_esL, mass_esL, mssm);
+         largest_mass_mixing_for_gauge(gauge_esR, mass_esR, mssm);
          // extract mass order (1 or 2) from string via map
          pair_string_ints type_family_massorder = 
             familystate_label[familystate];
@@ -554,7 +554,7 @@ namespace Gambit {
       /// then returns mass es's admixture of the two gauge states with same family
       /// and stores the rest of the gauge content for this state in a std::vector
       /// The latter should have entries which are zero in absense of family mixing
-      std::vector<double> get_family_state_mix_elements(std::string familystate,
+      std::vector<double> family_state_mix_elements(std::string familystate,
                                                        std::string & mass_es,
                                                        std::vector<double> & 
                                                        wrong_fam_gauge_content,
@@ -598,7 +598,7 @@ namespace Gambit {
       /// belong to the correct family for this state in a std::vector
       /// The latter should have entries which are zero in absense of 
       /// family mixing
-      std::vector<double> get_family_state_mix_matrix(std::string type,
+      std::vector<double> family_state_mix_matrix(std::string type,
                                                       int family,
                                                       std::string & mass_es1,
                                                       std::string & mass_es2,
