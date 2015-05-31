@@ -20,10 +20,12 @@ set(source_files src/functors.cpp
                  src/SMInputs.cpp
                  src/Spectrum.cpp
                  src/terminator.cpp
-                 src/virtual_higgs.cpp
+                 src/virtualH.cpp
+		 src/MSSM_slhahelp.cpp
 )
 
-set(header_files include/gambit/Elements/decay_table.hpp
+set(header_files include/gambit/Elements/base_functions.hpp
+                 include/gambit/Elements/decay_table.hpp
                  include/gambit/Elements/functors.hpp
                  include/gambit/Elements/funktions.hpp
                  include/gambit/Elements/gambit_module_headers.hpp
@@ -40,7 +42,8 @@ set(header_files include/gambit/Elements/decay_table.hpp
                  include/gambit/Elements/SubSpectrum.hpp
                  include/gambit/Elements/terminator.hpp
                  include/gambit/Elements/types_rollcall.hpp
-                 include/gambit/Elements/virtual_higgs.hpp
+                 include/gambit/Elements/virtualH.hpp
+		 include/gambit/Elements/MSSM_slhahelp.hpp
 )
 
 add_gambit_library(Elements OPTION OBJECT SOURCES ${source_files} HEADERS ${header_files})
