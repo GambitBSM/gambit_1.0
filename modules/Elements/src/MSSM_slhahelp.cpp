@@ -556,8 +556,6 @@ namespace Gambit {
       /// The latter should have entries which are zero in absense of family mixing
       std::vector<double> family_state_mix_elements(std::string familystate,
                                                        std::string & mass_es,
-                                                       std::vector<double> & 
-                                                       wrong_fam_gauge_content,
                                                        const SubSpectrum* mssm)
       {   
          //get mass_es using one of our routines
@@ -577,13 +575,11 @@ namespace Gambit {
          std::set<int> row_indices = type_to_set_of_row_indices[type];
          //double row_length = row_indices.size();
          std::vector<double> right_fam_gauge_content;
-         double temp;
          for(iter it = row_indices.begin(); it != row_indices.end(); ++it)
             {
-               temp = mssm->phys.get_Pole_Mixing(type, mass_index, *it); 
+               double temp = mssm->phys.get_Pole_Mixing(type, mass_index, *it); 
                if(*it == gauge_L_index || *it == gauge_R_index) 
                   right_fam_gauge_content.push_back(temp);
-               else  wrong_fam_gauge_content.push_back(temp);
             }
 
          return right_fam_gauge_content;
@@ -599,11 +595,10 @@ namespace Gambit {
       /// The latter should have entries which are zero in absense of 
       /// family mixing
       std::vector<double> family_state_mix_matrix(std::string type,
-                                                      int family,
-                                                      std::string & mass_es1,
-                                                      std::string & mass_es2,
-                                                      double & max_sum_fam_mix_sq,
-                                                      const SubSpectrum* mssm) 
+                                                  int family,
+                                                  std::string & mass_es1,
+                                                  std::string & mass_es2,
+                                                  const SubSpectrum* mssm) 
       {
          /// get mass_es using one of our routines
          pair_strings mass_ess =
@@ -648,17 +643,8 @@ namespace Gambit {
                      mix_row_1.push_back(temp1);
                      mix_row_2.push_back(temp2);
                   }
-               else
-                  {
-                    sum_mix_sq_1 = temp1*temp1;
-                    sum_mix_sq_2 = temp2*temp2;                   
-                  }
             }
-         /// if we only return a number I am not sure what is best
-         /// this will gives the largest magnitude_sq of the two vectors
-         /// contain the off-family mixings for each family state 
-         max_sum_fam_mix_sq = std::max(sum_mix_sq_1, sum_mix_sq_2);
-         
+
          ///Put row 1 and row 2 into the same vector to return
          mix_row_1.insert(mix_row_1.end(), mix_row_2.begin(), mix_row_2.end());
 

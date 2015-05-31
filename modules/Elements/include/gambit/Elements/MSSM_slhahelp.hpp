@@ -88,29 +88,25 @@ namespace slhahelp {
    /// identifies the mass_es which best matches specified family state
    /// then returns the mixing elements into the two gauge states of that family
    /// ie the appropriate row in the stop mixing matrix 
-   /// and stores the rest of the gauge content for this state in a std::vector
-   /// The latter should have entries which are zero in absense of family mixing
+   /// to test against family mixing check the square sum of elements of the row
+   /// are sufficiently close to 1, i.e. if(sqr(vec(1))+sqr(vec(2)) > 1-tol)
+   /// where vec is the std::vector returned by this method
    std::vector<double> family_state_mix_elements(std::string familystate,
                                                  std::string & mass_es,
-                                                 std::vector<double> & 
-                                                 wrong_fam_gauge_content,
                                                  const SubSpectrum* mssm);
 
    /// identifies the two mass_es which best matches specified family state
    /// storing them in strings and then returns 
    /// the 2by2 mixing matrix for that family state in the form
    /// (Mix_{11}, Mix_{12}, Mix_{21}, Mix_{22})
-   /// It also fills a double, max_mix_mag_sq, which represents the
-   /// deviation from the assumption of no family mixing for these states
-   /// More precisely it is the largest magnitude squared of two vectors 
-   /// (one for each of the two family states) which hold the off-family mixing
-   // elements, eg. the mixing between ~t_1 and the ~u_L, ~c_L, ~u_R, ~c_R 
-   /// This will be zero in absense of family mixing
+   /// to test there is negligible family mixing chek that for both rows
+   /// the squar some of each element is sufficently close to 1
+   /// ie if(sqr(vec(1))+sqr(vec(2)) > 1-tol && sqr(vec(3))+sqr(vec(4)) > 1-tol)
+   /// where vec is the std::vector returned by this method
    std::vector<double> family_state_mix_matrix(std::string type,
                                                int family,
                                                std::string & mass_es1,
                                                std::string & mass_es2,
-                                               double & max_mix_mag_sq,
                                                const SubSpectrum* mssm);
    
    

@@ -284,8 +284,7 @@ namespace Gambit
         /// from the same family as the family state
         std::vector<double> wrong_fam_gauge_comp;
         std::vector<double> right_fam_gauge_comp = 
-           slhahelp::family_state_mix_elements(family_state, mass_es,
-                                                   wrong_fam_gauge_comp, mssm);
+           slhahelp::family_state_mix_elements(family_state, mass_es, mssm);
         /// Do very simple test for now, discuss best approach
         /// This is a question for decaybit
         double mix_mag_sq = 0.0;
@@ -530,7 +529,7 @@ namespace Gambit
         fill_mass_es_psn_gauge(ismur, ismurbar, "~mu_R", mssm, tol);
         fill_mass_es_psn_family(istau2, istau2bar, "~tau_2", mssm, tol);
         
-        /// test_print(mssm);
+        ///test_print(mssm);
         
         filled=true;
 
