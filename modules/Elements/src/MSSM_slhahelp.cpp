@@ -367,7 +367,7 @@ namespace Gambit {
       
       /// get largest admix and indentifies the state by filling mass_es
       /// could pass tol for test here, but maybe better to leave til step after
-      double get_largest_mass_admix_for_gauge(std::string gauge_es, 
+      double get_largest_mass_mixing_for_gauge(std::string gauge_es, 
                                                std::string & mass_es, 
                                                const SubSpectrum* mssm)
       {
@@ -412,7 +412,7 @@ namespace Gambit {
       ///which is a better defined question when there is family mixing prsesent
       ///and more useful here anyway
       //returns a pair of strings labling the lighter one first 
-      pair_strings identify_mass_es_closest_to_family(std::string type, 
+      pair_strings identify_mass_ess_for_family(std::string type, 
                                                       int family,
                                                       const SubSpectrum* mssm)
       {
@@ -427,8 +427,8 @@ namespace Gambit {
          std::string mass_esL, mass_esR;
          /// we don't need the return value of these
          /// unless we want to do a test on them?
-         get_largest_mass_admix_for_gauge(gauge_esL, mass_esL, mssm);
-         get_largest_mass_admix_for_gauge(gauge_esR, mass_esR, mssm);
+         get_largest_mass_mixing_for_gauge(gauge_esL, mass_esL, mssm);
+         get_largest_mass_mixing_for_gauge(gauge_esR, mass_esR, mssm);
          
          pair_strings answer;
          int mass_index_L = (mass_label_to_index_type[mass_esL]).first;
@@ -456,8 +456,8 @@ namespace Gambit {
          std::string mass_esL, mass_esR;
          /// we don't need the return value of these
          /// unless we want to do a test on them?
-         get_largest_mass_admix_for_gauge(gauge_esL, mass_esL, mssm);
-         get_largest_mass_admix_for_gauge(gauge_esR, mass_esR, mssm);
+         get_largest_mass_mixing_for_gauge(gauge_esL, mass_esL, mssm);
+         get_largest_mass_mixing_for_gauge(gauge_esR, mass_esR, mssm);
          // extract mass order (1 or 2) from string via map
          pair_string_ints type_family_massorder = 
             familystate_label[familystate];
@@ -500,7 +500,7 @@ namespace Gambit {
       /// then returns mass es's admixture of the two gauge states with same family
       /// and stores the rest of the gauge content for this state in a std::vector
       /// The latter should have entries which are zero in absense of family mixing
-      std::vector<double> gauge_decomp_of_family_state(std::string familystate,
+      std::vector<double> get_family_state_mix_elements(std::string familystate,
                                                        std::string & mass_es,
                                                        std::vector<double> & 
                                                        wrong_fam_gauge_content,
@@ -535,17 +535,83 @@ namespace Gambit {
          return right_fam_gauge_content;
          
       }
-
-      /// as above but don't store mass_es
-      std::vector<double> get_gauge_comp_for_family_state(std::string familystate,
-                                                          const SubSpectrum* mssm)
-      {   
-         //get mass_es using one of our routines
-         std::string mass_es;
-         return get_gauge_comp_for_family_state(familystate, mass_es, mssm);     
-      }
    
-      
+      /// identifies the two mass_es which best matches specified family state
+      /// storing them in strings and then returns 
+      /// the 2by2 mixing matrix for that family state in the form
+      /// (Mix_{11}, Mix_{12}, Mix_{21}, Mix_{22})
+      /// It also  stores the mixing elements for the gauge states that don't 
+      /// belong to the correct family for this state in a std::vector
+      /// The latter should have entries which are zero in absense of 
+      /// family mixing
+      std::vector<double> get_family_state_mix_matrix(std::string type,
+                                                      int family,
+                                                      std::string & mass_es1,
+                                                      std::string & mass_es2,
+                                                      double & max_sum_fam_mix_sq,
+                                                      const SubSpectrum* mssm) 
+      {
+         /// get mass_es using one of our routines
+         pair_strings mass_ess =
+            identify_mass_ess_for_family(type, family, mssm);
+         mass_es1 = mass_ess.first;
+         mass_es2 = mass_ess.second;
+
+         /// need to turn type and family into a string
+         /// should simplify the number of translations we do!
+         p_int_string gen_type(family,type);
+         pair_strings gauge_states = 
+            type_family_to_gauge_states[gen_type];
+         std::string gauge_es_L=gauge_states.first;
+         std::string gauge_es_R=gauge_states.second;
+         
+         
+         /// get index of right family states (ie gauge states with same family as
+         /// requested family state
+         p_int_string gauge_Lindex_type = 
+            gauge_label_to_index_type[gauge_es_L];
+         int gauge_L_index = gauge_Lindex_type.first;
+         int gauge_R_index = (gauge_label_to_index_type[gauge_es_R]).first;
+         /// these should always match type - remove after testing
+         std::string type_L = gauge_Lindex_type.second;
+         std::string type_R = gauge_Lindex_type.second;
+         
+         int mass_index1 = (mass_label_to_index_type[mass_es1]).first;
+         int mass_index2 = (mass_label_to_index_type[mass_es2]).first;
+         std::set<int> row_indices = type_to_set_of_row_indices[type];
+         //double row_length = row_indices.size();
+         std::vector<double> mix_row_1;
+         std::vector<double> mix_row_2;
+         double sum_mix_sq_1 = 0.0;
+         double sum_mix_sq_2 = 0.0;
+            
+         for(iter it = row_indices.begin(); it != row_indices.end(); ++it)
+            {
+               double temp1 = mssm->phys.get_Pole_Mixing(type, mass_index1, *it);
+               double temp2 = mssm->phys.get_Pole_Mixing(type, mass_index2, *it);
+               if(*it == gauge_L_index || *it == gauge_R_index) 
+                  {
+                     mix_row_1.push_back(temp1);
+                     mix_row_2.push_back(temp2);
+                  }
+               else
+                  {
+                    sum_mix_sq_1 = temp1*temp1;
+                    sum_mix_sq_2 = temp2*temp2;                   
+                  }
+            }
+         /// if we only return a number I am not sure what is best
+         /// this will gives the largest magnitude_sq of the two vectors
+         /// contain the off-family mixings for each family state 
+         max_sum_fam_mix_sq = std::max(sum_mix_sq_1, sum_mix_sq_2);
+         
+         ///Put row 1 and row 2 into the same vector to return
+         mix_row_1.insert(mix_row_1.end(), mix_row_2.begin(), mix_row_2.end());
+
+         return mix_row_1;
+      }
+
+
       /// returns admix of gauge eigenstate in the mass eigenstate 
       /// closest to the given family state and stores
       /// mass eigenstate in mass_es
@@ -574,18 +640,7 @@ namespace Gambit {
          return admix;      
       }
 
-
-      ///As above but doesn't store string
-      double get_gauge_admix_for_family_state(std::string familystate, 
-                                              std::string gauge_es, 
-                                              const SubSpectrum* mssm) 
-      {
-         std::string mass_es;
-         double admix = get_gauge_admix_for_family_state(familystate, gauge_es,
-                                                          mass_es, mssm);  
-         return admix;      
-      }
-      
+ 
       
    }  // namespace slhahelp
 } //namespace gambit

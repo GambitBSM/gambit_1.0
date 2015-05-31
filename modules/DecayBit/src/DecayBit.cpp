@@ -241,7 +241,7 @@ namespace Gambit
         particle_to_anti_particle["~nu_3"] = "~nubar_3";
      }
 
-      /// just leave these as regular functions just now
+     /// just leave these as regular functions just now
      /// in case we change approach or test alternative
      void fill_mass_es_psn_gauge(std::string & is, std::string & isbar,  
                                  std::string gauge_es,
@@ -250,9 +250,10 @@ namespace Gambit
         
         fill_p_to_ap_map();
         std::string mass_es;
-        double admix = 0; 
-        admix = slhahelp::get_largest_mass_admix_for_gauge(gauge_es, mass_es, mssm);
-        if((admix*admix) >= 1-tol){
+        double max_mix = 0; 
+        max_mix = slhahelp::get_largest_mass_mixing_for_gauge(gauge_es,mass_es, 
+                                                              mssm);
+        if((max_mix*max_mix) >= 1-tol){
            is = mass_es;   
            isbar = particle_to_anti_particle[mass_es];
         }
@@ -271,28 +272,31 @@ namespace Gambit
         return;
      }
 
-
      void fill_mass_es_psn_family(std::string & is, std::string & isbar,  
                                   std::string family_state,
                                   const SubSpectrum* mssm,
                                   double tol) {
         fill_p_to_ap_map();
         std::string mass_es; 
-        /// use special routine which first identifies the mass_es which 
+        /// use slhahelp routine which first identifies the mass_es which 
         /// best matches the requested family state. then returns the
-        /// decomposition of that mass_es state in terms of gaige states 
+        /// decomposition of that mass_es state in terms of gauge states 
         /// from the same family as the family state
         std::vector<double> wrong_fam_gauge_comp;
         std::vector<double> right_fam_gauge_comp = 
-           slhahelp::gauge_decomp_of_family_state(family_state, mass_es,
-                                        wrong_fam_gauge_comp, mssm);
+           slhahelp::get_family_state_mix_elements(family_state, mass_es,
+                                                   wrong_fam_gauge_comp, mssm);
         /// Do very simple test for now, discuss best approach
-        /// This is question for decaybit
-        auto it = max_element(std::begin(wrong_fam_gauge_comp), 
-                              std::end(wrong_fam_gauge_comp));
-
-
-        if(fabs(*it) *fabs(*it) < tol) 
+        /// This is a question for decaybit
+        double mix_mag_sq = 0.0;
+        for(auto i = wrong_fam_gauge_comp.begin(); 
+            i != wrong_fam_gauge_comp.end(); i++)
+           {
+              double mix = *i;
+              mix_mag_sq += mix*mix;
+           }    
+        
+        if(mix_mag_sq < tol) 
            {
               is = mass_es;   
               isbar = particle_to_anti_particle[mass_es];
