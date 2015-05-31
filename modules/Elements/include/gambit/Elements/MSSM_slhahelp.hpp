@@ -39,13 +39,6 @@ namespace slhahelp {
 
    /******************* gauge_es <-> mass_es helpers ****************/
 
-   //get column of the mixing matrix
-   std::vector<double> get_Pole_Mixing_col(std::string type, int gauge_index,
-                                           const SubSpectrum* mssm);
-   //get row of the mixing matrix
-   std::vector<double> get_Pole_Mixing_row(std::string type, int mass_index,
-                                           const SubSpectrum* mssm);
-   
    /// returns vector representing composition of requested gauge state
    /// in terms of the slha2 mass eigenstates (~u_1 ...~u_6 etc)
    /// which is just a column in the mixing matrix 
