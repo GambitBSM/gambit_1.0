@@ -289,14 +289,14 @@ namespace Gambit
         /// Do very simple test for now, discuss best approach
         /// This is a question for decaybit
         double mix_mag_sq = 0.0;
-        for(auto i = wrong_fam_gauge_comp.begin(); 
-            i != wrong_fam_gauge_comp.end(); i++)
+        for(auto i = right_fam_gauge_comp.begin(); 
+            i != right_fam_gauge_comp.end(); i++)
            {
               double mix = *i;
               mix_mag_sq += mix*mix;
            }    
         
-        if(mix_mag_sq < tol) 
+        if(mix_mag_sq > 1-tol) 
            {
               is = mass_es;   
               isbar = particle_to_anti_particle[mass_es];
@@ -395,7 +395,7 @@ namespace Gambit
         for(int i = 1; i <=6; i++){
            for(int j = 1; j <=6; j++){
               std::cout << "     " << i << j << " = "  
-                        << std::scientific << std::setw(10) << 
+                        << std::scientific << std::setw(10)  
                         <<  mssm->phys.get_Pole_Mixing("~d", i, j);
            }
            std::cout << std::endl;
@@ -530,7 +530,7 @@ namespace Gambit
         fill_mass_es_psn_gauge(ismur, ismurbar, "~mu_R", mssm, tol);
         fill_mass_es_psn_family(istau2, istau2bar, "~tau_2", mssm, tol);
         
-        //test_print(mssm);
+        /// test_print(mssm);
         
         filled=true;
 
