@@ -495,10 +495,7 @@ namespace Gambit
                                                   double tol) 
      {
         if(filled == true) return;  // don't repeat unless necessary
-        
-        ///this should happen elsewhere.
-        Gambit::slhahelp::init_maps();
-
+       
         fill_mass_es_psn_gauge(isdl, isdlbar, "~d_L", mssm, tol);
         fill_mass_es_psn_gauge(isul, isulbar, "~u_L", mssm, tol);
         fill_mass_es_psn_gauge(issl, isslbar, "~s_L", mssm, tol);
@@ -529,7 +526,7 @@ namespace Gambit
         fill_mass_es_psn_gauge(ismur, ismurbar, "~mu_R", mssm, tol);
         fill_mass_es_psn_family(istau2, istau2bar, "~tau_2", mssm, tol);
         
-        ///test_print(mssm);
+        test_print(mssm);
         
         filled=true;
 

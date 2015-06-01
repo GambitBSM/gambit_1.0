@@ -9,6 +9,7 @@
 ///  *********************************************
 
 #include "gambit/Elements/MSSM_slhahelp.hpp"
+#include "gambit/Elements/ini_code_struct.hpp"
 
 namespace Gambit {
    namespace slhahelp {
@@ -278,6 +279,8 @@ namespace Gambit {
 
       }
       
+      ini_code init_maps_call(LOCAL_INFO, init_maps);
+
       // these two should be switched over to members of the sectrum object itself
       /// This will simplify things.
       std::vector<double> get_Pole_Mixing_col(std::string type, 
@@ -299,7 +302,7 @@ namespace Gambit {
          
          return mass_state_content;
       }
-      
+
 /// This will simplify things.
       std::vector<double> get_Pole_Mixing_row(std::string type, int mass_index, 
                                               const SubSpectrum* mssm) 
