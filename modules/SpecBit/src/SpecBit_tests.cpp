@@ -27,7 +27,7 @@
 // Flexible SUSY stuff (should not be needed by the rest of gambit)
 #include "gambit/SpecBit/model_files_and_boxes.hpp"
 #include "flexiblesusy/src/ew_input.hpp"
-#include "flexiblesusy/src/numerics.hpp"
+#include "flexiblesusy/src/numerics2.hpp"
 
 namespace Gambit
 {

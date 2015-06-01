@@ -4,10 +4,15 @@
 
 models="@MODELS@"
 addons="@ADDONS@"
+boostflags="@BOOSTFLAGS@"
 version="@FLEXIBLESUSY_VERSION@"
 cppflags="@CPPFLAGS@"
 cxxflags="@CXXFLAGS@"
+eigenflags="@EIGENFLAGS@"
 fflags="@FFLAGS@"
+gslflags="@GSLFLAGS@"
+gsllibs="@GSLLIBS@"
+loopfuncflags="@LOOPFUNCFLAGS@"
 cxx="@CXX@"
 fc="@FC@"
 flibs="@FLIBS@"
@@ -17,14 +22,28 @@ packagename="@PKGNAME@"
 threadlibs="@THREADLIBS@"
 
 usage="\
-Usage: `basename $0` [--all-addons] [--all-models] [--cxx] [--cxxflags]\
- [--cppflags] [--fc] [--fflags] [--flibs] [--make-lib-cmd] [--math-cmd]\
- [--threadlibs] [--with-<model>] [--help] [--version]"
-
-if test $# -eq 0; then
-    echo "${usage}" 1>&2
-    exit 1
-fi
+Usage: `basename $0`\
+ [--all-addons]\
+ [--all-models]\
+ [--boostflags]\
+ [--cxx]\
+ [--cxxflags]\
+ [--cppflags]\
+ [--eigenflags]\
+ [--fc]\
+ [--fflags]\
+ [--flibs]\
+ [--gslflags]\
+ [--gsllibs]\
+ [--loopfuncflags]\
+ [--make-lib-cmd]\
+ [--math-cmd]\
+ [--threadlibs]\
+ [--with-<addon>]\
+ [--with-<model>]\
+ [--help]\
+ [--version]\
+"
 
 help() {
 cat <<EOF
@@ -32,12 +51,17 @@ Usage: `basename $0` [options]
 Options:
   --all-addons          Print all addons that are build
   --all-models          Print all models that are build
+  --boostflags          Print compiler flags for BOOST
   --cxx                 Print C++ compiler
   --cxxflags            Print CXXFLAGS
   --cppflags            Print CPPFLAGS
+  --eigenflags          Print compiler flags for Eigen
   --fc                  Print Fortran compiler
   --fflags              Print FFLAGS
   --flibs               Print FLIBS
+  --gslflags            Print compiler flags for GSL
+  --gsllibs             Print linker flags for GSL
+  --loopfuncflags       Print compiler flags for loop function library
   --make-lib-cmd        Print make library command
   --math-cmd            Print Mathematica kernel command
   --threadlibs          Print thread library
@@ -59,12 +83,17 @@ while test $# -gt 0; do
     case $1 in
         --all-addons)    out="$out $addons"   ;;
         --all-models)    out="$out $models"   ;;
+        --boostflags)    out="$out $boostflags" ;;
         --cxx)           out="$out $cxx"      ;;
         --cxxflags)      out="$out $cxxflags" ;;
         --cppflags)      out="$out $cppflags" ;;
+        --eigenflags)    out="$out $eigenflags" ;;
         --fc)            out="$out $fc"       ;;
         --fflags)        out="$out $fflags"   ;;
         --flibs)         out="$out $flibs"    ;;
+        --gslflags)      out="$out $gslflags" ;;
+        --gsllibs)       out="$out $gsllibs"  ;;
+        --loopfuncflags) out="$out $loopfuncflags" ;;
         --make-lib-cmd)  out="$out $makelib"  ;;
         --math-cmd)      out="$out $math"     ;;
         --threadlibs)    out="$out $threadlibs" ;;
@@ -90,7 +119,7 @@ while test $# -gt 0; do
             ;;
         *)
       ### Give an error
-            echo "Unknown argument \"$1\"!" 1>&2
+            echo "Unknown argument: $1" 1>&2
             echo "${usage}" 1>&2
             exit 1
             ;;

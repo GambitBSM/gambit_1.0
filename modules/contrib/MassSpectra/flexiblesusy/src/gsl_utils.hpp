@@ -19,13 +19,12 @@
 #ifndef GSL_UTILS_H
 #define GSL_UTILS_H
 
-#include <cstddef>
 #include <gsl/gsl_vector.h>
 
 namespace flexiblesusy {
 
-/// Returns true if GSL vector contains a Nan, false otherwise
-bool contains_nan(const gsl_vector*, std::size_t);
+/// Returns true if GSL vector contains only finite elements, false otherwise
+bool is_finite(const gsl_vector*);
 
 }
 

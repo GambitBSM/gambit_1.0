@@ -34,6 +34,7 @@ LIBCMSSM_HDR :=
 
 ifneq ($(findstring two_scale,$(ALGORITHMS)),)
 LIBCMSSM_SRC += \
+		$(DIR)/CMSSM_mass_eigenstates.cpp \
 		$(DIR)/CMSSM_info.cpp \
 		$(DIR)/CMSSM_input_parameters.cpp \
 		$(DIR)/CMSSM_slha_io.cpp \
@@ -55,6 +56,7 @@ EXECMSSM_SRC += \
 LIBCMSSM_HDR += \
 		$(DIR)/CMSSM_convergence_tester.hpp \
 		$(DIR)/CMSSM_high_scale_constraint.hpp \
+		$(DIR)/CMSSM_mass_eigenstates.hpp \
 		$(DIR)/CMSSM_info.hpp \
 		$(DIR)/CMSSM_initial_guesser.hpp \
 		$(DIR)/CMSSM_input_parameters.hpp \

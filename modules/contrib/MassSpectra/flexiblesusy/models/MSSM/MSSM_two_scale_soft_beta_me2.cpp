@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Fri 16 Jan 2015 13:12:33
+// File generated at Mon 1 Jun 2015 13:31:56
 
 #include "MSSM_two_scale_soft_parameters.hpp"
 #include "wrappers.hpp"
@@ -38,10 +38,10 @@ Eigen::Matrix<double,3,3> MSSM_soft_parameters::calc_beta_me2_one_loop(const Sof
 
    Eigen::Matrix<double,3,3> beta_me2;
 
-   beta_me2 = oneOver16PiSqr*(2*(2*mHd2*(Ye*Ye.adjoint()) + 2*(TYe*(TYe)
+   beta_me2 = (oneOver16PiSqr*(2*(2*mHd2*(Ye*Ye.adjoint()) + 2*(TYe*(TYe)
       .adjoint()) + me2*Ye*Ye.adjoint() + 2*(Ye*ml2*Ye.adjoint()) + Ye*
       Ye.adjoint()*me2) + 1.5491933384829668*g1*Tr11*UNITMATRIX(3) - 4.8*AbsSqr
-      (MassB)*Sqr(g1)*UNITMATRIX(3));
+      (MassB)*Sqr(g1)*UNITMATRIX(3))).real();
 
 
    return beta_me2;
@@ -72,7 +72,7 @@ Eigen::Matrix<double,3,3> MSSM_soft_parameters::calc_beta_me2_two_loop(const Sof
 
    Eigen::Matrix<double,3,3> beta_me2;
 
-   beta_me2 = 0.08*twoLoop*(-5*(2*(15*traceconjTYdTpTYd + 5*
+   beta_me2 = (0.08*twoLoop*(-5*(2*(15*traceconjTYdTpTYd + 5*
       traceconjTYeTpTYe + 15*tracemd2YdAdjYd + 5*traceme2YeAdjYe + 5*
       traceml2AdjYeYe + 15*tracemq2AdjYdYd + 30*mHd2*traceYdAdjYd + 10*mHd2*
       traceYeAdjYe + 3*mHd2*Sqr(g1) - 15*mHd2*Sqr(g2) - 30*AbsSqr(MassWB)*Sqr(
@@ -96,7 +96,7 @@ Eigen::Matrix<double,3,3> MSSM_soft_parameters::calc_beta_me2_two_loop(const Sof
       Ye.adjoint()) + 5*(Ye*Ye.adjoint()*Ye*Ye.adjoint()*me2)) + 20*g1*(3*g1*
       Tr2U111 + 3.872983346207417*Tr31)*UNITMATRIX(3) + 6*Conj(MassB)*Sqr(g1)*(
       5*(-2*MassB*(Ye*Ye.adjoint()) + TYe*Ye.adjoint()) + 234*MassB*Sqr(g1)*
-      UNITMATRIX(3)));
+      UNITMATRIX(3)))).real();
 
 
    return beta_me2;

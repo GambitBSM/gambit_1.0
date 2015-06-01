@@ -100,6 +100,19 @@ Eigen::MatrixXd ToEigenMatrix(const softsusy::DoubleMatrix& m)
    return result;
 }
 
+Eigen::MatrixXcd ToEigenMatrix(const softsusy::ComplexMatrix& m)
+{
+   const int r = m.displayRows();
+   const int c = m.displayCols();
+   Eigen::MatrixXcd result(r,c);
+
+   for (int i = 1; i <= r; i++)
+      for (int k = 1; k <= c; k++)
+         result(i-1, k-1) = m(i,k);
+
+   return result;
+}
+
 softsusy::DoubleMatrix ToDoubleMatrix(const Eigen::MatrixXd& m)
 {
    const int r = m.rows();

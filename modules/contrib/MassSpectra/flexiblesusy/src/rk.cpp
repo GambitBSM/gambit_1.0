@@ -73,12 +73,12 @@ void integrateOdes(ArrayXd& ystart, double from, double to, double eps,
 }
 
 void odeStepper(ArrayXd& y, const ArrayXd& dydx, double *x, double htry,
-                double eps, ArrayXd& yscal, double *hdid, double *hnext,
+                double eps, const ArrayXd& yscal, double *hdid, double *hnext,
                 Derivs derivs)
 {
   const double SAFETY = 0.9, PGROW = -0.2, PSHRNK = -0.25, ERRCON = 1.89e-4;
 
-  int n = y.size();
+  const int n = y.size();
   double errmax, h, htemp, xnew;
 
   ArrayXd yerr(n), ytemp(n);
@@ -126,20 +126,20 @@ void rungeKuttaStep(const ArrayXd& y, const ArrayXd& dydx, double x,
     dc4 = c4-13525.0 / 55296.0,dc6 = c6-0.25;
 
   ArrayXd ytemp = b21 * h * dydx + y;
-  ArrayXd ak2 = derivs(x + a2 * h, ytemp);
+  const ArrayXd ak2 = derivs(x + a2 * h, ytemp);
 
   // Allowing piece-wise calculating of ytemp for speed reasons
   ytemp = y + h * (b31 * dydx + b32 * ak2);
-  ArrayXd ak3 = derivs(x + a3 * h, ytemp);
+  const ArrayXd ak3 = derivs(x + a3 * h, ytemp);
 
   ytemp = y + h * (b41 * dydx + b42 * ak2 + b43 * ak3);
-  ArrayXd ak4 = derivs(x+a4*h,ytemp);
+  const ArrayXd ak4 = derivs(x+a4*h,ytemp);
 
   ytemp = y + h * (b51 * dydx + b52 * ak2 + b53 * ak3 + b54 * ak4);
-  ArrayXd ak5 = derivs(x + a5 * h, ytemp);
+  const ArrayXd ak5 = derivs(x + a5 * h, ytemp);
 
   ytemp = y + h * (b61 * dydx + b62 * ak2 + b63 * ak3 + b64 * ak4 + b65 * ak5);
-  ArrayXd ak6 = derivs(x + a6 * h, ytemp);
+  const ArrayXd ak6 = derivs(x + a6 * h, ytemp);
 
   yout = y + h * (c1 * dydx + c3 * ak3 + c4 * ak4 + c6 * ak6);
   yerr = h * (dc1 * dydx + dc3 * ak3 + dc4 * ak4 + dc5 * ak5 + dc6 * ak6);

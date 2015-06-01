@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Fri 16 Jan 2015 13:11:32
+// File generated at Mon 1 Jun 2015 13:31:25
 
 #include "MSSM_two_scale_susy_parameters.hpp"
 #include "wrappers.hpp"
@@ -38,8 +38,8 @@ double MSSM_susy_parameters::calc_beta_vu_one_loop(const Susy_traces& susy_trace
 
    double beta_vu;
 
-   beta_vu = 0.3*oneOver16PiSqr*vu*(-10*traceYuAdjYu + Sqr(g1) + 5*Sqr(g2
-      ));
+   beta_vu = Re(0.3*oneOver16PiSqr*vu*(-10*traceYuAdjYu + Sqr(g1) + 5*Sqr
+      (g2)));
 
 
    return beta_vu;
@@ -59,9 +59,9 @@ double MSSM_susy_parameters::calc_beta_vu_two_loop(const Susy_traces& susy_trace
 
    double beta_vu;
 
-   beta_vu = -0.005*twoLoop*vu*(207*Power(g1,4) + 275*Power(g2,4) - 600*
-      traceYdAdjYuYuAdjYd - 1800*traceYuAdjYuYuAdjYu + 90*Sqr(g1)*Sqr(g2) + 20*
-      traceYuAdjYu*(17*Sqr(g1) + 45*Sqr(g2) + 160*Sqr(g3)));
+   beta_vu = Re(-0.005*twoLoop*vu*(207*Power(g1,4) + 275*Power(g2,4) -
+      600*traceYdAdjYuYuAdjYd - 1800*traceYuAdjYuYuAdjYu + 90*Sqr(g1)*Sqr(g2) +
+      20*traceYuAdjYu*(17*Sqr(g1) + 45*Sqr(g2) + 160*Sqr(g3))));
 
 
    return beta_vu;
