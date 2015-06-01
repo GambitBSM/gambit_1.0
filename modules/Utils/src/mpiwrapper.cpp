@@ -17,6 +17,7 @@
 #ifdef WITH_MPI // Contents of this file ignored if MPI not enabled
 
 #include "gambit/Utils/mpiwrapper.hpp"
+#include <iostream>
 
 namespace Gambit {
    namespace GMPI {

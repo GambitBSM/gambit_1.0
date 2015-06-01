@@ -577,6 +577,13 @@ set( exclude_lib_output )                        \n\n"
                     for lib in scanbit_link_libs[plug_type[i]][directory]:
                         towrite += "set (" + plug_type[i] + "_plugin_linked_libs_" + directory + " \"${" + plug_type[i] + "_plugin_linked_libs_" + directory + "}"
                         towrite += "    " + lib[0] + ": " + lib[1] + "\\n\")\n"
+                        
+            towrite += "set (" + plug_type[i] + "_plugin_lib_full_paths_" + directory + "\n"
+            if scanbit_link_libs.has_key(plug_type[i]):
+                if scanbit_link_libs[plug_type[i]].has_key(directory):
+                    for lib in scanbit_link_libs[plug_type[i]][directory]:        
+                        towrite += " "*16 + lib[1] + "\n"
+            towrite += ")\n\n"
 
             towrite += "set (" + plug_type[i] + "_plugin_found_incs_" + directory + " \"\")\n"
             if scanbit_incs.has_key(plug_type[i]):
@@ -610,6 +617,9 @@ set( exclude_lib_output )                        \n\n"
                             towrite += " "*8 + "set (" + plug_type[i] + "_plugin_libraries_" + directory
                             towrite += " \"${" + plug_type[i] + "_plugin_libraries_" + directory + "}"
                             towrite += " -L${lib_path} -l${lib_name}\")\n"
+                            towrite += " "*8 + "set (" + plug_type[i] + "_plugin_lib_full_paths_" + directory
+                            towrite += " ${" + plug_type[i] + "_plugin_lib_full_paths_" + directory + "}"
+                            towrite += " ${" + lib + "_LIBRARIES})\n"
                             towrite += " "*8 + "set (" + plug_type[i] + "_plugin_linked_libs_" + directory
                             towrite += " \"${" + plug_type[i] + "_plugin_linked_libs_" + directory +"}    " + lib + ": ${" + lib + "_LIB}\\n\")\n"
                             towrite += " "*4 + "endforeach()\n"
@@ -628,11 +638,14 @@ set( exclude_lib_output )                        \n\n"
                             towrite += " "*4 + "set (" + plug_type[i] + "_plugin_libraries_" + directory
                             towrite += " \"${" + plug_type[i] + "_plugin_libraries_" + directory + "}"
                             towrite += " -L${lib_path} -l${lib_name}\")\n"
+                            towrite += " "*8 + "set (" + plug_type[i] + "_plugin_lib_full_paths_" + directory
+                            towrite += " ${" + plug_type[i] + "_plugin_lib_full_paths_" + directory + "}"
+                            towrite += " ${" + lib_name + "})\n"
                             towrite += " "*4 + "set (" + plug_type[i] + "_plugin_rpath_" + directory
                             towrite += " \"${" + plug_type[i] + "_plugin_rpath_" + directory + "};${lib_path}\")\n"
                             towrite += " "*4 + "set (" + plug_type[i] + "_plugin_linked_libs_" + directory
                             towrite += " \"${" + plug_type[i] + "_plugin_linked_libs_" + directory +"}    " + lib + ": ${" + lib_name + "}\\n\")\n"
-                            towrite += "    message(\"-- Found "+ plug_type[i] + " library: ${lib_path}/${lib_name}\")\n"
+                            towrite += "    message(\"-- Found "+ plug_type[i] + " library: ${" + lib_name + "}\")\n"
                             towrite += "endif()\n\n"
 
             if scanbit_auto_incs.has_key(plug_type[i]):
@@ -665,7 +678,7 @@ set( exclude_lib_output )                        \n\n"
                             towrite += " "*4 + "set (" + plug_type[i] + "_plugin_found_incs_" + directory
                             towrite += " \"${" +  plug_type[i] + "_plugin_found_incs_" + directory + "}"
                             towrite += "    \\\"" + inc + "\\\": ${" + inc_name + "}\\n\")\n"
-                            towrite += "    message(\"-- Found "+ plug_type[i] + " header: ${inc_name}/" + inc + "\")\n"
+                            towrite += "    message(\"-- Found " + plug_type[i] + " header: ${inc_name}/" + inc + "\")\n"
                             towrite += "else()\n"
                             towrite += " "*4 + "set (" + plug_type[i] + "_compile_flag_" + directory + " \"    file_missing: \\\"" + inc + "\\\"\")\n"
                             towrite += "    message(\"-- Did not find "+ plug_type[i] + " header " + inc + ". Disabling scanners that depend on this.\")\n"
@@ -686,10 +699,10 @@ set( exclude_lib_output )                        \n\n"
             towrite += plug_type[i] + "_plugin_headers_" + directory + "} )\n"
             towrite += " "*4 + "set_target_properties( " + plug_type[i] + "_" + directory + "\n" + " "*23 + "PROPERTIES\n"
             if sys.platform == "darwin":
-                towrite += " "*23 + "LINK_FLAGS \"-dynamiclib ${" + plug_type[i] + "_plugin_libraries_" + directory + "}\"\n"
+                towrite += " "*23 + "LINK_FLAGS \"-dynamiclib\"\n"# ${" + plug_type[i] + "_plugin_libraries_" + directory + "}\"\n"
             else:
-                towrite += " "*23 + "LINK_FLAGS \"-rdynamic ${" + plug_type[i] + "_plugin_libraries_" + directory + "}\"\n"
-            towrite += " "*23 + "INSTALL_RPATH \"${" + plug_type[i] + "_plugin_rpath_" + directory + "}\"\n";
+                towrite += " "*23 + "LINK_FLAGS \"-rdynamic\"\n"# ${" + plug_type[i] + "_plugin_libraries_" + directory + "}\"\n"
+            #towrite += " "*23 + "INSTALL_RPATH \"${" + plug_type[i] + "_plugin_rpath_" + directory + "}\"\n";
             if sys.platform == "darwin":
                 cflags = "-dynamiclib"
             else:
@@ -704,6 +717,7 @@ set( exclude_lib_output )                        \n\n"
             towrite += " "*23 + "INCLUDE_DIRECTORIES \"${" + plug_type[i] + "_plugin_includes_" + directory + "}\"\n"
             towrite += " "*23 + "ARCHIVE_OUTPUT_DIRECTORY \"${CMAKE_CURRENT_SOURCE_DIR}/lib\"\n"
             towrite += " "*23 + "LIBRARY_OUTPUT_DIRECTORY \"${CMAKE_CURRENT_SOURCE_DIR}/lib\")\n"
+            towrite += " "*4 + "target_link_libraries( " + plug_type[i] + "_" + directory + " PRIVATE ${" + plug_type[i] + "_plugin_lib_full_paths_" + directory + "})\n"
             #towrite += "target_include_directories( " + inc_dirs ")\n\n"
             towrite += "else()\n"
             towrite += " "*4 + "set ( exclude_lib_output \"${exclude_lib_output}lib" + plug_type[i] + "_" + directory + ".so:\\n"
