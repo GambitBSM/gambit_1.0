@@ -631,8 +631,6 @@ namespace Gambit {
          //double row_length = row_indices.size();
          std::vector<double> mix_row_1;
          std::vector<double> mix_row_2;
-         double sum_mix_sq_1 = 0.0;
-         double sum_mix_sq_2 = 0.0;
             
          for(iter it = row_indices.begin(); it != row_indices.end(); ++it)
             {
