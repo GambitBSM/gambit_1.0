@@ -36,6 +36,7 @@
 #include "gambit/Utils/standalone_error_handlers.hpp"
 
 //#define HDF5_DEBUG // Triggers debugging output
+#define DISABLED_FOR_NOW
    
 namespace Gambit {
   namespace Printers {
@@ -124,7 +125,6 @@ namespace Gambit {
 
       //!_______________________________________________________________________________________
 
-
       /// VertexBuffer abstract interface base class
       class VertexBufferBase
       {
@@ -182,11 +182,6 @@ namespace Gambit {
             // Needed to externally trigger buffer write to disk (e.g. at end of scan)
             virtual void flush() = 0; ///TODO: write proper cleanout function = 0;            
 
-            #ifdef DISABLED_FOR_NOW
-            // Write an external set of buffer data to disk
-            virtual void flush_external(const T (&values)[CHUNKLENGTH], const bool (&isvalid)[CHUNKLENGTH]) = 0;
-            #endif
-
             // Flush the random-access write queue (i.e. do the queued-up writes)
             virtual void RA_flush() = 0;
 
@@ -238,6 +233,21 @@ namespace Gambit {
           // Using arrays as these are easier to write to hdf5
           bool  buffer_valid[LENGTH]; // Array telling us which buffer entries are properly filled
           T     buffer_entries[LENGTH];
+
+          /// Buffers to store data waiting to be sent via MPI
+          #ifdef WITH_MPI
+          bool  send_buffer_valid[LENGTH];
+          T     send_buffer_entries[LENGTH];
+          bool  send_buffer_ready = true; // flag to signal if send buffer can be filled with new data.
+
+          // Request handles for tracking status of a sent message
+          MPI_Request req_valid  =MPI_REQUEST_NULL;
+          MPI_Request req_entries=MPI_REQUEST_NULL;
+
+          // Status handles
+          MPI_Status stat_valid  =MPI_STATUS_IGNORE;
+          MPI_Status stat_entries=MPI_STATUS_IGNORE;
+          #endif
           /// @}
  
           /// @{ Buffer variables for random access writing
@@ -286,6 +296,9 @@ namespace Gambit {
           virtual void skip_append();
 
           #ifdef DISABLED_FOR_NOW
+          // Write data from an arbitrary buffer to disk
+          virtual void flush_external(const T (&values)[CHUNKLENGTH], const bool (&isvalid)[CHUNKLENGTH]) = 0;
+
           // Retrieve buffer data from an MPI message
           // Should only be triggered if a valid message is known to exist to be retrieved!
           virtual void get_mpi_message() = 0;
@@ -313,14 +326,44 @@ namespace Gambit {
             std::cout<<"nextempty   = "<<nextempty<<std::endl;
             std::cout<<"donepoint() = "<<this->donepoint()<<std::endl;
             #endif
-
+            
             error_if_done(); // make sure buffer hasn't written to the current point already
             buffer_entries[nextempty] = data;
             buffer_valid[nextempty] = true;
             nextempty++;
             if(nextempty==bufferlength)
             {
+               #ifdef WITH_MPI
+               // Prepate to send buffer data to master node
+               myRank = 
+               masterRank = 0;
+               if(myRank!=masterRank)
+               { // Worker node instructions
+                  if(not send_buffer_ready);
+                  { 
+                     // Make sure previous messages are out of the send buffer before sending new ones.
+                     MPI_Wait(&req_valid, &stat_valid);
+                     MPI_Wait(&req_entries, &stat_entries);
+                     send_buffer_ready = true;
+                  }
+                  /// Copy buffer data into the send buffer 
+                  for(uint i=0; i<bufferlength; i++)
+                  {
+                     send_buffer_valid[i]   = buffer_valid[i];
+                     send_buffer_entries[i] = buffer_entries[i];
+                  }
+                  /// Perform non-blocking sends
+                  GMPI::COMM_WORLD::Isend(send_buffer_valid,   bufferlength, masterRank, MPItags::SYNC_valid, &req_valid);
+                  GMPI::COMM_WORLD::Isend(send_buffer_entries, bufferlength, masterRank, MPItags::SYNC_data,  &req_entries);
+                  send_buffer_ready = false;
+               }
+               else
+               { // Master node instructions
+                  flush();
+               }
+               #else
                flush();
+               #endif
                clear();
                nextempty=0;
             }

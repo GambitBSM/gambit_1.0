@@ -163,7 +163,10 @@ namespace Gambit
           printer_error().raise(LOCAL_INFO, errmsg.str());
        }
 
-       VBIDpair key = std::make_pair(vertexID,aux_i);
+       VBIDpair key;
+       key.vertexID = vertexID;
+       key.index    = aux_i;
+
        typename std::map<VBIDpair, BuffType>::iterator it = local_buffers.find(key);
        if( it == local_buffers.end() ) 
        {
@@ -210,13 +213,18 @@ namespace Gambit
     HDF5Printer::HDF5Printer(const Options& options)
       : printer_name("Primary printer")
       , myRank(0)
-    {
+     #ifdef WITH_MPI
+      , mpiSize(1)
+      , tag_manager()
+     #endif
+     {
       #ifdef WITH_MPI
-        // Do basic MPI check
-        std::cout << "Hooking up to MPI..." << std::endl;
-        std::cout << " Size: " << GMPI::COMM_WORLD.Get_size() << std::endl;
-        std::cout << " Rank: " << GMPI::COMM_WORLD.Get_rank() << std::endl;
-        myRank = GMPI::COMM_WORLD.Get_rank(); 
+      // Do basic MPI checks
+      mpiSize = GMPI::COMM_WORLD.Get_size()
+      myRank = GMPI::COMM_WORLD.Get_rank(); 
+      std::cout << "Hooking up to MPI..." << std::endl;
+      std::cout << " Size: " << mpiSize << std::endl;
+      std::cout << " Rank: " << myRank << std::endl;
       #endif
 
       // (Needs modifying when full MPI implentation is done)
@@ -394,6 +402,88 @@ namespace Gambit
       }
     } 
 
+    #ifdef WITH_MPI
+    /// Check for buffers waiting to be delivered from other processes 
+    HDF5Printer::collect_mpi_buffers();
+    {
+       if(is_auxilliary_printer())
+       {
+          std::ostringstream errmsg;
+          errmsg << "Error! collect_mpi_buffers() called by auxilliary hdf5 printer (name="<<printer_name<<")! Only the primary hdf5 printer is allowed to do this. This is a bug in the HDF5Printer class, please report it."; 
+          printer_error().raise(LOCAL_INFO, errmsg.str());
+       }
+       if(myRank!=0)
+       {
+          std::ostringstream errmsg;
+          errmsg << "Error! Called collect_mpi_buffers() from non-master node! (myRank="<<myRank<<"). Only the master node may collect buffers from other processes.";
+          printer_error().raise(LOCAL_INFO, errmsg.str());
+       }
+       // It is assumed that we are collecting a FULL set of buffers from some other node.
+       // There may be multiple nodes sending buffers at once though, so need to make sure we
+       // check for messages from only one process at a time, so that the output datasets
+       // stay synchronised point-by-point
+
+       // First we will see what messages are waiting.
+       // If any are waiting from some particular process, we will wait for ALL the messages to 
+       for(uint rank=1; rank<mpiSize; rank++)
+       {
+          bool Iprobe(rank, int tag)
+
+          // Need to sort out messages based on tags... guess I need to tag each vertex and each buffer within it, somehow...
+          // Maybe one of the first things each print statements needs to do it to register tags for itself with the master
+          // process...
+       }
+    }
+
+    /// Request existing tag or register a new MPI tag for a buffer
+    BuffTags HDF5Printer::get_tags(VBIDpair bufID)
+    {
+       int first_tag_in_group;
+       if(myRank==0)
+       {
+          // We are the master, just get the tags ourselves.
+          first_tag_in_group = tag_manager.get_tags(bufID);
+       }
+       // Otherwise have to ask the master node for the tags
+
+       // Send request for new tag
+       GMPI::COMM_WORLD::Send(&bufID, 1, 0, TAG_REQ);
+
+       // Receive the new tag
+       GMPI::COMM_WORLD::Recv(&first_tag_in_group, 1, 0, TAG_REQ);
+
+       return BuffTags(first_tag_in_group);
+    }
+
+    /// Check for tag requests from worker nodes
+    void HDF5Printer::check_for_tag_request()
+    {
+      if(myRank!=0)
+      {
+          std::ostringstream errmsg;
+          errmsg << "Error! Called check_for_tag_request() from non-master node! (myRank="<<myRank<<"). Only the master node may fulfil requests for new MPI tags.";
+          printer_error().raise(LOCAL_INFO, errmsg.str());
+      }
+      for(uint rank=1; rank<mpiSize; rank++)
+      {
+        // Check for tag request
+        bool message_waiting = GMPI::COMM_WORLD::Iprobe(rank, TAG_REQ);
+        if( message_waiting )
+        {
+           // Get the tag request
+           VBIDpair bufID;
+           GMPI::COMM_WORLD::Recv(&bufID, 1, rank, TAG_REQ);
+  
+           // Do the tag lookup/issue
+           int tag = tag_manager.get_tags(bufID);
+          
+           // Send the tag back to the worker
+           GMPI::COMM_WORLD::Send(&tag, 1, rank, TAG_REQ);
+        }        
+      }
+    }
+    #endif
+
     /// Empty all the buffers to disk
     /// TODO: This is not currently completely safe. If it gets called during a scan on one
     /// of the primary buffers, then the chunk-writer will get desynchronised and crash. 
@@ -467,6 +557,11 @@ namespace Gambit
  
          // Make sure all the buffers are synchronised at the new position.
          synchronise_buffers();          
+           
+         #ifdef WITH_MPI
+         // Check for buffers waiting to be delivered from other processes
+         if(myRank=0) collect_mpi_buffers();
+         #endif
        }
     }
 

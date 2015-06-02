@@ -55,6 +55,23 @@ namespace Gambit {
         return flag;
       }
 
+      /// @{ Helpers for registration of compound datatypes
+
+      /// Vector storing functions to be run when MPI initialises.
+      std::vector<MpiIniFunc> mpi_ini_functions;
+
+      /// Constructor for AddMpiInitFunc
+      ///
+      /// AddMpiInitFunc will add functions to the map when it is constructed. Works
+      /// on the same idea as the "ini_code" struct, except it doesn't
+      /// cause the functions to be run, just "queues them up" so to speak.
+      AddMpiIniFunc::AddMpiIniFunc(std::string local_info, std::string name, void(*func)())
+      {
+        mpi_ini_functions.push_back(MpiIniFunc(local_info,name,func));
+      }
+
+      /// @}
+
       /// Initialise MPI
       void Init(int& argc, char**& argv) {
         // Do basic interrogation
@@ -62,6 +79,25 @@ namespace Gambit {
         MPI_Init(&argc,&argv); 
         std::cout << "  Process pool size : " << COMM_WORLD.Get_size() << std::endl;
         std::cout << "  I am process number " << COMM_WORLD.Get_rank() << std::endl;
+
+        // Run externally defined initialisation functions
+        std::cout << "  Running MPI initialisation functions..." << std::endl;
+        for (std::vector<MpiIniFunc>::iterator it=mpi_ini_functions.begin();
+              it != mpi_ini_functions.end(); it++)
+        {
+          std::cout << "    - Running function '"<<it->myname()<<"'" << std::endl;
+          try
+          {
+             it->runme(); // Run function.
+          }
+          catch (const std::exception& e)
+          {
+             std::cout << "Gambit has failed to initialise MPI due to fatal exception: " << e.what() << std::endl;
+             std::cout << "raised from an mpi_ini_function (with label="<<it->myname()<<") declared at: " << it->mylocation() << std::endl;
+             throw(e);
+          }
+        }
+        std::cout << "  MPI initialisation complete." << std::endl;
       }
       
       /// Shut down MPI

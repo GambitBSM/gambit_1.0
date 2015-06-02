@@ -42,30 +42,6 @@
 
 namespace Gambit {
    namespace GMPI {
-
-      /// Mapping from (basic) C++ types to MPI datatypes
-      /// Idea based off of "get_hdf5_data_type" in hdf5tools.hpp
-
-      template<typename T> 
-      int get_mpi_data_type();
-      // Left undefined because I want a compile error if specialisation doesn't exist.
-
-      int get_mpi_data_type<char>              { return MPI_CHAR               };
-      // bunch of types omitted in get_hdf5_data_type for reasons not totally clear to me...
-      int get_mpi_data_type<long long>         { return MPI_LONG_LONG          };
-      int get_mpi_data_type<unsigned long long>{ return MPI_UNSIGNED_LONG_LONG };
-      int get_mpi_data_type<int8_t>            { return MPI_INT8_T             };
-      int get_mpi_data_type<uint8_t>           { return MPI_UINT8_T            };
-      int get_mpi_data_type<int16_t>           { return MPI_INT16_T            };
-      int get_mpi_data_type<uint16_t>          { return MPI_UINT16_T           };
-      int get_mpi_data_type<int32_t>           { return MPI_INT32_T            };
-      int get_mpi_data_type<uint32_t>          { return MPI_UINT32_T           };
-      int get_mpi_data_type<int64_t>           { return MPI_INT64_T            };
-      int get_mpi_data_type<uint64_t>          { return MPI_UINT64_T           };
-      int get_mpi_data_type<float>             { return MPI_FLOAT              };
-      int get_mpi_data_type<double>            { return MPI_DOUBLE             };
-      int get_mpi_data_type<long double>       { return MPI_LONG_DOUBLE        };
-
  
       /// Main "Communicator" class
       class Comm
@@ -89,25 +65,82 @@ namespace Gambit {
             ///  MPI_status*  status   - struct containing data about the received message
             /// Returns:
             ///  MPI_status - struct containing data about the received message
-            void Recv(void *buf, int count, MPI_Datatype datatype, 
+            void Recv(void *buf /*out*/, int count, MPI_Datatype datatype, 
                                   int source, int tag, 
-                                  MPI_Status *status=MPI_STATUS_IGNORE)
+                                  MPI_Status *status=NULL /*out*/)
             {
-               int errflag; 
+               int errflag;
+               MPI_Status def_status = MPI_STATUS_IGNORE; 
+               if(status!=NULL) status=&def_status;
                errflag = MPI_Recv(buf, count, datatype, source, tag, boundcomm, status)
             }
 
             /// Templated blocking receive to automatically determine types
             template<class T>
-            void Recv(T *buf, int count, 
+            void Recv(T *buf /*out*/, int count, 
                       int source, int tag, 
-                      MPI_Status *status=MPI_STATUS_IGNORE)
+                      MPI_Status *status=NULL /*out*/)
             {
                static const int datatype = get_mpi_data_type<T>();
                Recv(buf, count, datatype, source, tag, status);
             }
 
+            /// Blocking send
+            void Send(void *buf, int count, MPI_Datatype datatype, 
+                                  int destination, int tag)
+            {
+               int errflag; 
+               errflag = MPI_Send(buf, count, datatype, destination, tag, boundcomm);
+            }
+
+            /// Templated blocking send
+            template<class T>
+            void Send(T *buf, int count, 
+                      int destination, int tag)
+            {
+               static const int datatype = get_mpi_data_type<T>();
+               Send(buf, count, datatype, destination, tag);
+            }
+
+ 
+            /// Non-blocking send
+            void Isend(void *buf, int count, MPI_Datatype datatype, 
+                                  int destination, int tag, 
+                                  MPI_Request *request /*out*/)
+            {
+               int errflag; 
+               errflag = MPI_Isend(buf, count, datatype, destination, tag, boundcomm, request);
+            }
+
+            /// Templated Non-blocking send
+            template<class T>
+            void Isend(T *buf, int count, 
+                      int destination, int tag, 
+                      MPI_Request *request /*out*/)
+            {
+               static const int datatype = get_mpi_data_type<T>();
+               Isend(buf, count, datatype, destination, tag, request);
+            }
+
+            /// Blocking wait for e.g. Isend to complete
+            //void Wait(MPI_Request *request, MPI_Status *status)
+            //{
+            //   MPI_Wait(MPI_Request *request, MPI_Status *status)
+            // }
+
+            // Probe for messages waiting to be delivered
+            bool Iprobe(int source, int tag, MPI_Status* status=NULL /*out*/)
+            {
+               int errflag;
+               bool you_have_mail;
+               MPI_Status def_status = MPI_STATUS_IGNORE; 
+               if(status!=NULL) status=&def_status;
+               errflag = MPI_Iprobe(source, tag, boundcomm, you_have_mail, status);
+               return you_have_mail;
+            }
+
          private:
+
             // The MPI communicator to which the current object "talks".
             const MPI_Comm boundcomm;
       };
@@ -126,6 +159,63 @@ namespace Gambit {
 
       /// Shut down MPI
       void Finalize();
+
+
+      /// @{ Helpers for registration of compound datatypes
+ 
+      /// Structure to hold an MPI startup function plus metadata
+      class MpiIniFunc {
+        private:
+          std::string location;
+          std::string name;
+          void (*func)();
+        public:
+          MpiIniFunc(std::string l, std::string n, void(*f)())
+            : location(l)
+            , name(n)
+            , func(f)
+          {}
+          void runme()
+          {
+            (*func)();
+          }
+          std::string mylocation(){return location;}
+          std::string myname    (){return name;}
+      }
+
+      /// Struct for adding functions to the 'mpi_ini_functions' map
+      ///
+      /// This will add functions to the map when it is constructed. Works
+      /// on the same idea as the "ini_code" struct, except it doesn't
+      /// cause the functions to be run, just "queues them up" so to speak.
+      struct AddMpiIniFunc {
+        AddMpiIniFunc(std::string local_info, std::string name, void(*func)());
+      }
+
+      /// @}
+
+      /// Mapping from (basic) C++ types to MPI datatypes
+      /// Idea based off of "get_hdf5_data_type" in hdf5tools.hpp
+
+      template<typename T> 
+      int get_mpi_data_type();
+      // Left undefined because I want a compile error if specialisation doesn't exist.
+
+      int get_mpi_data_type<char>              { return MPI_CHAR               };
+      // bunch of types omitted in get_hdf5_data_type for reasons not totally clear to me...
+      int get_mpi_data_type<long long>         { return MPI_LONG_LONG          };
+      int get_mpi_data_type<unsigned long long>{ return MPI_UNSIGNED_LONG_LONG };
+      int get_mpi_data_type<int8_t>            { return MPI_INT8_T             };
+      int get_mpi_data_type<uint8_t>           { return MPI_UINT8_T            };
+      int get_mpi_data_type<int16_t>           { return MPI_INT16_T            };
+      int get_mpi_data_type<uint16_t>          { return MPI_UINT16_T           };
+      int get_mpi_data_type<int32_t>           { return MPI_INT32_T            };
+      int get_mpi_data_type<uint32_t>          { return MPI_UINT32_T           };
+      int get_mpi_data_type<int64_t>           { return MPI_INT64_T            };
+      int get_mpi_data_type<uint64_t>          { return MPI_UINT64_T           };
+      int get_mpi_data_type<float>             { return MPI_FLOAT              };
+      int get_mpi_data_type<double>            { return MPI_DOUBLE             };
+      int get_mpi_data_type<long double>       { return MPI_LONG_DOUBLE        };
 
    }
 }
