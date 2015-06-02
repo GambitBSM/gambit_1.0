@@ -29,6 +29,6 @@ namespace Gambit
 {
   
   /// Higgs branching ratios and total width Gamma [GeV], as function of mass [GeV] (90 - 300 GeV)
-  double Virtual_SMHiggs_widths(str, double);
+  double virtual_SMHiggs_widths(str, double);
   
 }

@@ -226,6 +226,7 @@ KeyValues:
 
   dependency_resolution:
     prefer_model_specific_functions: true
+    log_runtime: true
 
   likelihood:
     model_invalid_for_lnlike_below: -1e6
