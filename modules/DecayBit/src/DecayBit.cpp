@@ -235,7 +235,6 @@ namespace Gambit
         particle_to_anti_particle["~e-_5"] = "~e+_5";
         particle_to_anti_particle["~e-_6"] = "~e+_6";
         
-
         particle_to_anti_particle["~nu_1"] = "~nubar_1";
         particle_to_anti_particle["~nu_2"] = "~nubar_2";
         particle_to_anti_particle["~nu_3"] = "~nubar_3";
@@ -247,11 +246,9 @@ namespace Gambit
                                  std::string gauge_es,
                                  const SubSpectrum* mssm,
                                  double tol) {
-        
-        fill_p_to_ap_map();
         std::string mass_es;
         double max_mix = 0; 
-        max_mix = slhahelp::largest_mass_mixing_for_gauge(gauge_es,mass_es, 
+        max_mix = slhahelp::largest_mass_mixing_for_gauge(gauge_es,mass_es,
                                                           mssm);
         if((max_mix*max_mix) >= 1-tol){
            is = mass_es;   
@@ -276,7 +273,6 @@ namespace Gambit
                                   std::string family_state,
                                   const SubSpectrum* mssm,
                                   double tol) {
-        fill_p_to_ap_map();
         std::string mass_es; 
         /// use slhahelp routine which first identifies the mass_es which 
         /// best matches the requested family state. then returns the
@@ -318,6 +314,7 @@ namespace Gambit
      struct mass_es_pseudonyms {
      public:
         mass_es_pseudonyms();
+        mass_es_pseudonyms(const SubSpectrum* mssm, double tol);
         std::string isdl;
         std::string isul;
         std::string issl;
@@ -379,14 +376,23 @@ namespace Gambit
      private:
         bool filled; 
      };
-     /// this is hideous at the moment I needs a global tol
+     /// this is hideous at the moment, I need a global tol
      /// to keep it the same in each function
      double tol = 1e-2;
-     /// empty constructor
-     mass_es_pseudonyms::mass_es_pseudonyms()
+     /// empty constructor   
+      mass_es_pseudonyms::mass_es_pseudonyms()
      {
         filled = false;
      }
+
+     mass_es_pseudonyms::mass_es_pseudonyms(const SubSpectrum* mssm, double tol)
+     {
+        filled = false;
+        fill_p_to_ap_map();
+        fill_mass_es_psns(mssm, tol);
+        filled = true;
+     }
+
        
      void  mass_es_pseudonyms::test_print(const SubSpectrum* mssm) {
         std::cout.precision(8);
@@ -533,7 +539,7 @@ namespace Gambit
         return;
      }
      
-  
+    
     	
     /// FeynHiggs MSSM decays: t
     void FH_t_decays (DecayTable::Entry& result) 
@@ -551,13 +557,9 @@ namespace Gambit
     {
       using namespace Pipes::MSSM_h0_1_decays;
       const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_UV();
+      ///constructor calls fill - this is not ideal
+      mass_es_pseudonyms psn(mssm, tol);
      
-      mass_es_pseudonyms psn;
-      /// I shouldn't be redoing this in each function but I don't like
-      /// alternatives (global copy, static shitiness, ? make it a capability?)
-      /// must be a better way these.
-      psn.fill_mass_es_psns(mssm,tol);
-
       result.width_in_GeV = BEreq::cb_widthhl_hdec->hlwdth;
       result.set_BF(BEreq::cb_widthhl_hdec->hlbrb, 0.0, "b", "bbar");
       result.set_BF(BEreq::cb_widthhl_hdec->hlbrl, 0.0, "tau+", "tau-");
@@ -629,11 +631,9 @@ namespace Gambit
       int iH = 0; // h0_1
       
       const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_UV();
-      mass_es_pseudonyms psn;
-      /// I shouldn't be redoing this in each function but I don't like
-      /// alternatives (global copy, static shitiness, ? make it a capability?)
-      /// must be a better way these.
-      psn.fill_mass_es_psns(mssm,tol);
+      ///constructor calls fill - this is not ideal
+      mass_es_pseudonyms psn(mssm, tol);
+      
       
       result.width_in_GeV = FH_input.gammas[iH];
 
@@ -743,11 +743,9 @@ namespace Gambit
       using namespace Pipes::h0_2_decays;
 
       const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_UV();
-      mass_es_pseudonyms psn;
-      /// I shouldn't be redoing this in each function but I don't like
-      /// alternatives (global copy, static shitiness, ? make it a capability?)
-      /// must be a better way these.
-      psn.fill_mass_es_psns(mssm,tol);
+      ///constructor calls fill - this is not ideal
+      mass_es_pseudonyms psn(mssm, tol);
+     
 
       result.width_in_GeV = BEreq::cb_widthhh_hdec->hhwdth;
       result.set_BF(BEreq::cb_widthhh_hdec->hhbrb, 0.0, "b", "bbar");
@@ -817,11 +815,9 @@ namespace Gambit
       using namespace Pipes::FH_h0_2_decays;
 
       const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_UV();
-      mass_es_pseudonyms psn;
-      /// I shouldn't be redoing this in each function but I don't like
-      /// alternatives (global copy, static shitiness, ? make it a capability?)
-      /// must be a better way these.
-      psn.fill_mass_es_psns(mssm,tol);
+      ///constructor calls fill - this is not ideal
+      mass_es_pseudonyms psn(mssm, tol);
+      
       // unpack FeynHiggs Couplings
 
       fh_Couplings FH_input = *Dep::FH_Couplings;
@@ -933,11 +929,8 @@ namespace Gambit
       using namespace Pipes::A0_decays;
       
       const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_UV();
-      mass_es_pseudonyms psn;
-      /// I shouldn't be redoing this in each function but I don't like
-      /// alternatives (global copy, static shitiness, ? make it a capability?)
-      /// must be a better way these.
-      psn.fill_mass_es_psns(mssm,tol);
+      ///constructor calls fill - this is not ideal
+      mass_es_pseudonyms psn(mssm, tol);
       
       result.width_in_GeV = BEreq::cb_widtha_hdec->awdth;
       result.set_BF(BEreq::cb_widtha_hdec->abrb, 0.0, "b", "bbar");
@@ -986,11 +979,8 @@ namespace Gambit
       using namespace Pipes::FH_A0_decays;
 
       const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_UV();
-      mass_es_pseudonyms psn;
-      /// I shouldn't be redoing this in each function but I don't like
-      /// alternatives (global copy, static shitiness, ? make it a capability?)
-      /// must be a better way these.
-      psn.fill_mass_es_psns(mssm,tol);
+      ///constructor calls fill - this is not ideal
+      mass_es_pseudonyms psn(mssm, tol);
 
       // unpack FeynHiggs Couplings
       fh_Couplings FH_input = *Dep::FH_Couplings;
@@ -1102,11 +1092,8 @@ namespace Gambit
       using namespace Pipes::Hplus_decays;
       
       const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_UV();
-      mass_es_pseudonyms psn;
-      /// I shouldn't be redoing this in each function but I don't like
-      /// alternatives (global copy, static shitiness, ? make it a capability?)
-      /// must be a better way these.
-      psn.fill_mass_es_psns(mssm,tol);
+      ///constructor calls fill - this is not ideal
+      mass_es_pseudonyms psn(mssm, tol);
 
       result.width_in_GeV = BEreq::cb_widthhc_hdec->hcwdth;
       result.set_BF(BEreq::cb_widthhc_hdec->hcbrb, 0.0, "c", "bbar");
@@ -1145,11 +1132,8 @@ namespace Gambit
       using namespace Pipes::FH_Hplus_decays;
 
       const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_UV();
-      mass_es_pseudonyms psn;
-      /// I shouldn't be redoing this in each function but I don't like
-      /// alternatives (global copy, static shitiness, ? make it a capability?)
-      /// must be a better way these.
-      psn.fill_mass_es_psns(mssm,tol);
+      ///constructor calls fill - this is not ideal
+      mass_es_pseudonyms psn(mssm, tol);
 
       // unpack FeynHiggs Couplings
       fh_Couplings FH_input = *Dep::FH_Couplings;
@@ -1244,11 +1228,8 @@ namespace Gambit
       using namespace Pipes::gluino_decays;
       
       const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_UV();
-      mass_es_pseudonyms psn;
-      /// I shouldn't be redoing this in each function but I don't like
-      /// alternatives (global copy, static shitiness, ? make it a capability?)
-      /// must be a better way these.
-      psn.fill_mass_es_psns(mssm,tol);
+       ///constructor calls fill - this is not ideal
+      mass_es_pseudonyms psn(mssm, tol);
 
       result.width_in_GeV = BEreq::cb_sd_gluiwidth->gluitot;
       result.set_BF(BEreq::cb_sd_glui2body->brgsdownl, 0.0, psn.isdl, "dbar");
@@ -1328,11 +1309,8 @@ namespace Gambit
       using namespace Pipes::stop_1_decays;
       
       const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_UV();
-      mass_es_pseudonyms psn;
-      /// I shouldn't be redoing this in each function but I don't like
-      /// alternatives (global copy, static shitiness, ? make it a capability?)
-      /// must be a better way these.
-      psn.fill_mass_es_psns(mssm,tol);
+      ///constructor calls fill - this is not ideal
+      mass_es_pseudonyms psn(mssm, tol);
 
       result.width_in_GeV = BEreq::cb_sd_stopwidth->stoptot(1);
       result.set_BF(BEreq::cb_sd_stop2body->brst1neutt(1), 0.0, "~chi0_1", "t");
@@ -1395,11 +1373,8 @@ namespace Gambit
       using namespace Pipes::stop_2_decays;
       
       const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_UV();
-      mass_es_pseudonyms psn;
-      /// I shouldn't be redoing this in each function but I don't like
-      /// alternatives (global copy, static shitiness, ? make it a capability?)
-      /// must be a better way these.
-      psn.fill_mass_es_psns(mssm,tol);
+      ///constructor calls fill - this is not ideal
+      mass_es_pseudonyms psn(mssm, tol);
 
       result.width_in_GeV = BEreq::cb_sd_stopwidth->stoptot(2);
       result.set_BF(BEreq::cb_sd_stop2body->brst2neutt(1), 0.0, "~chi0_1", "t");
@@ -1476,11 +1451,8 @@ namespace Gambit
       using namespace Pipes::sbottom_1_decays;
       
       const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_UV();
-      mass_es_pseudonyms psn;
-      /// I shouldn't be redoing this in each function but I don't like
-      /// alternatives (global copy, static shitiness, ? make it a capability?)
-      /// must be a better way these.
-      psn.fill_mass_es_psns(mssm,tol);
+      ///constructor calls fill - this is not ideal
+      mass_es_pseudonyms psn(mssm, tol);
 
       result.width_in_GeV = BEreq::cb_sd_sbotwidth->sbottot(1);
       result.set_BF(BEreq::cb_sd_sbot2body->brsb1neutt(1), 0.0, "~chi0_1", "b");
@@ -1532,11 +1504,8 @@ namespace Gambit
       using namespace Pipes::sbottom_2_decays;
       
       const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_UV();
-      mass_es_pseudonyms psn;
-      /// I shouldn't be redoing this in each function but I don't like
-      /// alternatives (global copy, static shitiness, ? make it a capability?)
-      /// must be a better way these.
-      psn.fill_mass_es_psns(mssm,tol);
+      ///constructor calls fill - this is not ideal
+      mass_es_pseudonyms psn(mssm, tol);
 
       result.width_in_GeV = BEreq::cb_sd_sbotwidth->sbottot(2);
       result.set_BF(BEreq::cb_sd_sbot2body->brsb2neutt(1), 0.0, "~chi0_1", "b");
@@ -1853,11 +1822,8 @@ namespace Gambit
       using namespace Pipes::stau_1_decays;
       
       const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_UV();
-      mass_es_pseudonyms psn;
-      /// I shouldn't be redoing this in each function but I don't like
-      /// alternatives (global copy, static shitiness, ? make it a capability?)
-      /// must be a better way these.
-      psn.fill_mass_es_psns(mssm,tol);
+      /// constructor calls fill - this is not ideal
+      mass_es_pseudonyms psn(mssm, tol);
 
       result.width_in_GeV = BEreq::cb_sd_stauwidth->stau1tot2;
       result.set_BF(BEreq::cb_sd_stau2body->brstau1neut(1), 0.0, "~chi0_1", "tau-");
@@ -1884,11 +1850,8 @@ namespace Gambit
       using namespace Pipes::stau_2_decays;
 
       const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_UV();
-      mass_es_pseudonyms psn;
-      /// I shouldn't be redoing this in each function but I don't like
-      /// alternatives (global copy, static shitiness, ? make it a capability?)
-      /// must be a better way these.
-      psn.fill_mass_es_psns(mssm,tol);
+      ///constructor calls fill - this is not ideal
+      mass_es_pseudonyms psn(mssm, tol);
       
       result.width_in_GeV = BEreq::cb_sd_stauwidth->stau2tot2;
       result.set_BF(BEreq::cb_sd_stau2body->brstau2neut(1), 0.0, "~chi0_1", "tau-");
@@ -1958,11 +1921,9 @@ namespace Gambit
       using namespace Pipes::snu_taul_decays;
 
       const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_UV();
-      mass_es_pseudonyms psn;
-      /// I shouldn't be redoing this in each function but I don't like
-      /// alternatives (global copy, static shitiness, ? make it a capability?)
-      /// must be a better way these.
-      psn.fill_mass_es_psns(mssm,tol);
+      ///constructor calls fill - this is not ideal
+      mass_es_pseudonyms psn(mssm, tol);
+     
 
       result.width_in_GeV = BEreq::cb_sd_sntauwidth->sntautot2;
       result.set_BF(BEreq::cb_sd_sntau2body->brsntauneut(1), 0.0, "~chi0_1", "nu_tau");
@@ -1990,11 +1951,8 @@ namespace Gambit
       using namespace Pipes::charginoplus_1_decays;
 
       const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_UV();
-      mass_es_pseudonyms psn;
-      /// I shouldn't be redoing this in each function but I don't like
-      /// alternatives (global copy, static shitiness, ? make it a capability?)
-      /// must be a better way these.
-      psn.fill_mass_es_psns(mssm,tol);
+      ///constructor calls fill - this is not ideal
+      mass_es_pseudonyms psn(mssm, tol);
 
       result.width_in_GeV = BEreq::cb_sd_charwidth->chartot(1);
       result.set_BF(BEreq::cb_sd_char2body->brcharsupl(1), 0.0, psn.isul, "dbar");
@@ -2072,11 +2030,8 @@ namespace Gambit
       using namespace Pipes::charginoplus_2_decays;
       
       const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_UV();
-      mass_es_pseudonyms psn;
-      /// I shouldn't be redoing this in each function but I don't like
-      /// alternatives (global copy, static shitiness, ? make it a capability?)
-      /// must be a better way these.
-      psn.fill_mass_es_psns(mssm,tol);
+      ///constructor calls fill - this is not ideal
+      mass_es_pseudonyms psn(mssm, tol);
       
       result.width_in_GeV = BEreq::cb_sd_charwidth->chartot(2);
       result.set_BF(BEreq::cb_sd_char2body->brcharsupl(2), 0.0, psn.isul, "dbar");
@@ -2171,11 +2126,8 @@ namespace Gambit
       using namespace Pipes::neutralino_1_decays;
 
       const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_UV();
-      mass_es_pseudonyms psn;
-      /// I shouldn't be redoing this in each function but I don't like
-      /// alternatives (global copy, static shitiness, ? make it a capability?)
-      /// must be a better way these.
-      psn.fill_mass_es_psns(mssm,tol);
+      ///constructor calls fill - this is not ideal
+      mass_es_pseudonyms psn(mssm, tol);
 
       result.width_in_GeV = BEreq::cb_sd_neutwidth->neuttot(1);
       result.set_BF(BEreq::cb_sd_neut2body->brneutwchar(1,1), 0.0, "~chi+_1", "W-");
@@ -2278,11 +2230,8 @@ namespace Gambit
       using namespace Pipes::neutralino_2_decays;
       
       const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_UV();
-      mass_es_pseudonyms psn;
-      /// I shouldn't be redoing this in each function but I don't like
-      /// alternatives (global copy, static shitiness, ? make it a capability?)
-      /// must be a better way these.
-      psn.fill_mass_es_psns(mssm,tol);
+      ///constructor calls fill - this is not ideal
+      mass_es_pseudonyms psn(mssm, tol);
       
       result.width_in_GeV = BEreq::cb_sd_neutwidth->neuttot(2);
       result.set_BF(BEreq::cb_sd_neut2body->brneutzneut(2,1), 0.0, "~chi0_1", "Z0");
@@ -2402,12 +2351,9 @@ namespace Gambit
       using namespace Pipes::neutralino_3_decays;
       
       const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_UV();
-      mass_es_pseudonyms psn;
-      /// I shouldn't be redoing this in each function but I don't like
-      /// alternatives (global copy, static shitiness, ? make it a capability?)
-      /// must be a better way these.
-      psn.fill_mass_es_psns(mssm,tol);
-
+      ///constructor calls fill - this is not ideal
+      mass_es_pseudonyms psn(mssm, tol);
+      
       result.width_in_GeV = BEreq::cb_sd_neutwidth->neuttot(3);
       result.set_BF(BEreq::cb_sd_neut2body->brneutzneut(3,1), 0.0, "~chi0_1", "Z0");
       result.set_BF(BEreq::cb_sd_neut2body->brneutzneut(3,2), 0.0, "~chi0_2", "Z0");
@@ -2543,11 +2489,8 @@ namespace Gambit
       using namespace Pipes::neutralino_4_decays;
 
       const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_UV();
-      mass_es_pseudonyms psn;
-      /// I shouldn't be redoing this in each function but I don't like
-      /// alternatives (global copy, static shitiness, ? make it a capability?)
-      /// must be a better way these.
-      psn.fill_mass_es_psns(mssm,tol);
+      ///constructor calls fill - this is not ideal
+      mass_es_pseudonyms psn(mssm, tol);
 
       result.width_in_GeV = BEreq::cb_sd_neutwidth->neuttot(4);
       result.set_BF(BEreq::cb_sd_neut2body->brneutzneut(4,1), 0.0, "~chi0_1", "Z0");
@@ -2732,11 +2675,8 @@ namespace Gambit
       using namespace Pipes::all_decays;
       
       const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_UV();
-      mass_es_pseudonyms psn;
-      /// I shouldn't be redoing this in each function but I don't like
-      /// alternatives (global copy, static shitiness, ? make it a capability?)
-      /// must be a better way these.
-      psn.fill_mass_es_psns(mssm,tol);
+      ///constructor calls fill - this is not ideal
+      mass_es_pseudonyms psn(mssm, tol);
 
       decays("h0_1") = *Dep::Higgs_decay_rates;     // Add the Higgs decays.
       decays("Z0") = *Dep::W_minus_decay_rates;     // Add the Z decays
