@@ -91,6 +91,7 @@
 #include <sstream>
 #include <fstream>
 #include <iomanip>
+#include <thread> // Am I allowed to use this? Might be forbidden C++11
 
 // Gambit
 #include "gambit/Printers/printers/hdf5printer.hpp"
@@ -184,6 +185,13 @@ namespace Gambit
           if( printer->is_stream_managed(key) )
           {
             silence = true;
+          }
+          else
+          {
+             #ifdef WITH_MPI
+             // Retrieve/create MPI tags for this buffer
+             BuffTags printer->get_bufftags(key);
+             #endif
           }            
           local_buffers[key] = BuffType(printer->get_location(),label/*deconstruct?*/,vertexID,aux_i,synchronised,silence);
 
@@ -436,8 +444,14 @@ namespace Gambit
     }
 
     /// Request existing tag or register a new MPI tag for a buffer
-    BuffTags HDF5Printer::get_tags(VBIDpair bufID)
+    BuffTags HDF5Printer::get_bufftags(VBIDpair bufID)
     {
+       if(is_auxilliary_printer())
+       {
+          // Primary printer must handle the tag requests
+          return primary_printer->get_bufftags(bufID);
+       }
+
        int first_tag_in_group;
        if(myRank==0)
        {
@@ -452,16 +466,23 @@ namespace Gambit
        // Receive the new tag
        GMPI::COMM_WORLD::Recv(&first_tag_in_group, 1, 0, TAG_REQ);
 
+       // Reconstruct the whole tag group and return
        return BuffTags(first_tag_in_group);
     }
 
     /// Check for tag requests from worker nodes
-    void HDF5Printer::check_for_tag_request()
+    void HDF5Printer::check_for_bufftag_request()
     {
+      if(is_auxilliary_printer())
+      {
+         // Primary printer must handle the tag requests
+         primary_printer->check_for_bufftag_requests();
+      }
+
       if(myRank!=0)
       {
           std::ostringstream errmsg;
-          errmsg << "Error! Called check_for_tag_request() from non-master node! (myRank="<<myRank<<"). Only the master node may fulfil requests for new MPI tags.";
+          errmsg << "Error! Called check_for_buftag_request() from non-master node! (myRank="<<myRank<<"). Only the master node may fulfil requests for new MPI tags.";
           printer_error().raise(LOCAL_INFO, errmsg.str());
       }
       for(uint rank=1; rank<mpiSize; rank++)
@@ -539,9 +560,8 @@ namespace Gambit
     {
        if(is_auxilliary_printer())
        {
-          std::ostringstream errmsg;
-	  errmsg << "Error! check_for_new_point called by auxilliary hdf5 printer (name="<<printer_name<<")! Only the primary hdf5 printer is allowed to do this. This is a bug in the HDF5Printer class, please report it."; 
-          printer_error().raise(LOCAL_INFO, errmsg.str());
+          // Redirect task to primary printer
+          primary_printer->check_for_new_point(candidate_newpoint, mpirank);
        }
 
        // Check that we are still writing to the same output "slot" as during the last print call

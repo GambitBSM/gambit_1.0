@@ -130,16 +130,37 @@ namespace Gambit
         /// numbers, and that we only store one VBID per TAGS_PER_BUFFER tags.
         typedef std::vector<VBIDpair> VBID_from_tag;
 
-        MPITagManager() 
+        /// MPI properties
+        uint mpiRank
+        uint mpiSize;
+ 
+        /// Flag to stop the tag_daemon thread
+        bool stop_tag_daemon = false;
+
+      public:
+        MPITagManager()
+           : mpiRank(GMPI::COMM_WORLD.Get_rank())
+           , mpiSize(GMPI::COMM_WORLD.Get_size())
         {
-           int rank = GMPI::COMM_WORLD.Get_rank();
-           if( rank != 0 );
+           if( mpiRank != 0 );
            {
               std::ostringstream errmsg;
-              errmsg << "Error! Worker process tried to construct an MPITagManager object (rank is "<<rank<<")! This is forbidden; all tag management must be handled via the master process, and tags dispatched to workers.";
+              errmsg << "Error! Worker process tried to construct an MPITagManager object (rank is "<<mpiRank<<")! This is forbidden; all tag management must be handled via the master process, and tags dispatched to workers.";
               printer_error().raise(LOCAL_INFO, errmsg.str());
            }
+
+           /// TODO: Start tag_daemon in new thread
+           //tag_daemon()
+
         }
+
+        // Destructor, make sure to stop the tag_daemon
+        ~MPITagManager()
+        {
+           stop_tag_daemon = true;
+           /// TODO: re-join tag_daemon thread
+        }
+        
 
         /// Retrieve buffer tags from lookup map, or issue some if none yet reserved.
         /// Returned is the value of the first tag in the group; use the BuffTags
@@ -180,6 +201,48 @@ namespace Gambit
            }
            return VBID_from_tag[index];
         }
+
+        /// Tag daemon function
+        /// This is run in a separate thread on the master node, and just monitors
+        /// for tag requests from the worker nodes. Thread is stopped and joined
+        /// when the MPITagManager destructs.
+        void tag_daemon()
+        {
+           while(not stop_tag_daemon)
+           {
+              MPI_Status status;
+              while( GMPI::COMM_WORLD::Iprobe(MPI_ANY_SOURCE, TAG_REQ, &status) )
+              {
+                 // Returns true if there is a message waiting
+                 
+                 // Find out who sent the message
+                 int sender_rank = status.MPI_SOURCE;
+   
+                 // Receive the tag request message
+                 VBIDpair bufID;
+                 GMPI::COMM_WORLD::Recv(&bufID, 1, sender_rank, TAG_REQ);
+  
+                 // Do the tag lookup/issue
+                 int tag = get_tags(bufID);
+                   
+                 // Send the tag data back to the worker
+                 GMPI::COMM_WORLD::Send(&tag, 1, sender_rank, TAG_REQ);
+              }
+              // No more tag request messages waiting 
+
+              // Wait a little before checking again
+              if (tag_daemon_longsleep)
+              {
+                 // long sleep, do after all known tags are dispatched to workers
+              }
+              else
+              {
+                 // short sleep
+              }
+
+           }
+        }
+
     }
     #endif
 
@@ -303,12 +366,12 @@ namespace Gambit
         /// assign tags in groups of 4.
         //enum Tags { SYNC_data, SYNC_valid, RA_data, RA_valid };
 
-        /// Request existing tag or register a new MPI tag for a buffer
-        int get_tag(VBIDpair);
+        /// Request existing buffer MPI-tag set or register a new set for a buffer
+        BuffTags get_bufftags(VBIDpair);
 
         /// Check for tag requests from worker nodes
-        void check_for_tag_request();
-
+        void check_for_bufftag_request();
+ 
         /// Check for buffers waiting to be delivered from other processes 
         void collect_mpi_buffers();
         #endif  
@@ -356,7 +419,7 @@ namespace Gambit
                 synchronised to a new point. But only if this printer is running
                 in "synchronised" mode. */                                       \
              if(synchronised) {                                                  \
-               primary_printer->check_for_new_point(pointID, mpirank);           \
+               check_for_new_point(pointID, mpirank);                            \
              }                                                                   \
              return CAT(hdf5_localbufferman_,NAME);                              \
           }
