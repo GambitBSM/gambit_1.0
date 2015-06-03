@@ -229,10 +229,10 @@ void Root_finder<dimension>::print_state(const gsl_multiroot_fsolver* solver,
 {
    std::cout << "\tIteration " << iteration << ": x =";
    for (std::size_t i = 0; i < dimension; ++i)
-      std::cout << " " << gsl_vector_get(solver->x, i);
+      std::cout << ' ' << gsl_vector_get(solver->x, i);
    std::cout << ", f(x) =";
    for (std::size_t i = 0; i < dimension; ++i)
-      std::cout << " " << gsl_vector_get(solver->f, i);
+      std::cout << ' ' << gsl_vector_get(solver->f, i);
    std::cout << '\n';
 }
 

@@ -16,13 +16,12 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Fri 16 Jan 2015 12:58:45
+// File generated at Mon 1 Jun 2015 13:17:30
 
 #ifndef lowMSSM_TWO_SCALE_INITIAL_GUESSER_H
 #define lowMSSM_TWO_SCALE_INITIAL_GUESSER_H
 
 #include "lowMSSM_initial_guesser.hpp"
-#include "lowMSSM_input_parameters.hpp"
 #include "lowMSSM_two_scale_low_scale_constraint.hpp"
 #include "lowMSSM_two_scale_susy_scale_constraint.hpp"
 #include "two_scale_initial_guesser.hpp"
@@ -47,7 +46,6 @@ template<>
 class lowMSSM_initial_guesser<Two_scale> : public Initial_guesser<Two_scale> {
 public:
    lowMSSM_initial_guesser(lowMSSM<Two_scale>*,
-                               const lowMSSM_input_parameters&,
                                const QedQcd&,
                                const lowMSSM_low_scale_constraint<Two_scale>&,
                                const lowMSSM_susy_scale_constraint<Two_scale>&);
@@ -58,7 +56,6 @@ public:
 
 private:
    lowMSSM<Two_scale>* model; ///< pointer to model class
-   lowMSSM_input_parameters input_pars;
    QedQcd oneset;   ///< Standard Model low-energy data
    double mu_guess; ///< guessed DR-bar mass of up-quark
    double mc_guess; ///< guessed DR-bar mass of charm-quark

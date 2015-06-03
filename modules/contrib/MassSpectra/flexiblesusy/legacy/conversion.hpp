@@ -28,6 +28,7 @@ Eigen::ArrayXd ToEigenArray(double);
 std::valarray<double> ToValarray(const softsusy::DoubleVector&);
 std::valarray<double> ToValarray(double);
 Eigen::MatrixXd ToEigenMatrix(const softsusy::DoubleMatrix&);
+Eigen::MatrixXcd ToEigenMatrix(const softsusy::ComplexMatrix&);
 
 template<class Derived>
 softsusy::DoubleVector ToDoubleVector(const Eigen::ArrayBase<Derived>& a)

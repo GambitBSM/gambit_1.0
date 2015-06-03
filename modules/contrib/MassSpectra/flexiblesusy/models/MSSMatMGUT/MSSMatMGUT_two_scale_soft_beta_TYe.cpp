@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Fri 16 Jan 2015 13:02:46
+// File generated at Mon 1 Jun 2015 13:21:50
 
 #include "MSSMatMGUT_two_scale_soft_parameters.hpp"
 #include "wrappers.hpp"
@@ -41,10 +41,10 @@ Eigen::Matrix<double,3,3> MSSMatMGUT_soft_parameters::calc_beta_TYe_one_loop(con
 
    Eigen::Matrix<double,3,3> beta_TYe;
 
-   beta_TYe = oneOver16PiSqr*(Ye*(6*traceAdjYdTYd + 2*traceAdjYeTYe + 3.6
-      *MassB*Sqr(g1) + 6*MassWB*Sqr(g2)) + 3*traceYdAdjYd*TYe + traceYeAdjYe*
-      TYe - 1.8*Sqr(g1)*TYe - 3*Sqr(g2)*TYe + 4*(Ye*Ye.adjoint()*TYe) + 5*(TYe*
-      Ye.adjoint()*Ye));
+   beta_TYe = (oneOver16PiSqr*(Ye*(6*traceAdjYdTYd + 2*traceAdjYeTYe +
+      3.6*MassB*Sqr(g1) + 6*MassWB*Sqr(g2)) + 3*traceYdAdjYd*TYe + traceYeAdjYe
+      *TYe - 1.8*Sqr(g1)*TYe - 3*Sqr(g2)*TYe + 4*(Ye*Ye.adjoint()*TYe) + 5*(TYe
+      *Ye.adjoint()*Ye))).real();
 
 
    return beta_TYe;
@@ -72,7 +72,7 @@ Eigen::Matrix<double,3,3> MSSMatMGUT_soft_parameters::calc_beta_TYe_two_loop(con
 
    Eigen::Matrix<double,3,3> beta_TYe;
 
-   beta_TYe = twoLoop*(-0.4*Ye*(135*Power(g1,4)*MassB + 75*Power(g2,4)*
+   beta_TYe = (twoLoop*(-0.4*Ye*(135*Power(g1,4)*MassB + 75*Power(g2,4)*
       MassWB + 90*traceYdAdjYdTYdAdjYd + 15*traceYdAdjYuTYuAdjYd + 30*
       traceYeAdjYeTYeAdjYe + 15*traceYuAdjYdTYdAdjYu + 2*traceAdjYdTYd*Sqr(g1)
       - 6*traceAdjYeTYe*Sqr(g1) + 6*MassB*traceYeAdjYe*Sqr(g1) + 9*MassB*Sqr(g1
@@ -88,7 +88,7 @@ Eigen::Matrix<double,3,3> MSSMatMGUT_soft_parameters::calc_beta_TYe_two_loop(con
       - 5*traceYeAdjYe*(TYe*Ye.adjoint()*Ye) - 1.2*Sqr(g1)*(TYe*Ye.adjoint()*
       Ye) + 12*Sqr(g2)*(TYe*Ye.adjoint()*Ye) - 6*(Ye*Ye.adjoint()*Ye*Ye.adjoint
       ()*TYe) - 8*(Ye*Ye.adjoint()*TYe*Ye.adjoint()*Ye) - 6*(TYe*Ye.adjoint()*
-      Ye*Ye.adjoint()*Ye));
+      Ye*Ye.adjoint()*Ye))).real();
 
 
    return beta_TYe;

@@ -57,6 +57,12 @@ START_MODULE
     START_FUNCTION(DecayTable::Entry)
     //DEPENDENCY(SM_Spectrum, const Spectrum*)
     #undef FUNCTION
+    // //FIXME just a dummy
+    // #define FUNCTION SM_Higgs_decays
+    // START_FUNCTION(DecayTable::Entry)
+    // DEPENDENCY(SM_spectrum, const SubSpectrum*)
+    // DEPENDENCY(MSSM_spectrum, const SubSpectrum*)
+    // #undef FUNCTION
 
     #define FUNCTION MSSM_h0_1_decays
     START_FUNCTION(DecayTable::Entry)
@@ -65,11 +71,15 @@ START_MODULE
     BACKEND_REQ(cb_wisfer_hdec, (sh_reqd), wisfer_hdec_type)
     BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
     ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
+    DEPENDENCY(MSSM_spectrum, const Spectrum*)
+    // DEPENDENCY(SM_subspectrum, const SubSpectrum*)
+    // DEPENDENCY(MSSM_subspectrum, const SubSpectrum*)
     #undef FUNCTION
 
     #define FUNCTION FH_MSSM_h0_1_decays
     START_FUNCTION(DecayTable::Entry)
     DEPENDENCY(FH_Couplings, fh_Couplings)
+    DEPENDENCY(MSSM_spectrum, const Spectrum*)
     ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
     #undef FUNCTION
 
@@ -87,6 +97,7 @@ START_MODULE
   
     #define FUNCTION h0_2_decays
     START_FUNCTION(DecayTable::Entry)
+    DEPENDENCY(MSSM_spectrum, const Spectrum*)
     BACKEND_REQ(cb_widthhh_hdec, (sh_reqd), widthhh_hdec_type)
     BACKEND_REQ(cb_wisusy_hdec, (sh_reqd), wisusy_hdec_type)
     BACKEND_REQ(cb_wisfer_hdec, (sh_reqd), wisfer_hdec_type)
@@ -96,6 +107,7 @@ START_MODULE
 
     #define FUNCTION FH_h0_2_decays
     START_FUNCTION(DecayTable::Entry)
+    DEPENDENCY(MSSM_spectrum, const Spectrum*)
     DEPENDENCY(FH_Couplings, fh_Couplings)
     ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
     #undef FUNCTION
@@ -107,6 +119,7 @@ START_MODULE
 
     #define FUNCTION A0_decays
     START_FUNCTION(DecayTable::Entry)
+    DEPENDENCY(MSSM_spectrum, const Spectrum*)
     BACKEND_REQ(cb_widtha_hdec, (sh_reqd), widtha_hdec_type)
     BACKEND_REQ(cb_wisusy_hdec, (sh_reqd), wisusy_hdec_type)
     BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
@@ -116,6 +129,7 @@ START_MODULE
     #define FUNCTION FH_A0_decays
     START_FUNCTION(DecayTable::Entry)
     DEPENDENCY(FH_Couplings, fh_Couplings)
+    DEPENDENCY(MSSM_spectrum, const Spectrum*)
     ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
     #undef FUNCTION
  
@@ -126,6 +140,7 @@ START_MODULE
 
     #define FUNCTION Hplus_decays
     START_FUNCTION(DecayTable::Entry)
+    DEPENDENCY(MSSM_spectrum, const Spectrum*)
     BACKEND_REQ(cb_widthhc_hdec, (sh_reqd), widthhc_hdec_type)
     BACKEND_REQ(cb_wisusy_hdec, (sh_reqd), wisusy_hdec_type)
     BACKEND_REQ(cb_wisfer_hdec, (sh_reqd), wisfer_hdec_type)
@@ -135,6 +150,7 @@ START_MODULE
 
     #define FUNCTION FH_Hplus_decays
     START_FUNCTION(DecayTable::Entry)
+    DEPENDENCY(MSSM_spectrum, const Spectrum*)
     DEPENDENCY(FH_Couplings, fh_Couplings)
     ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
     #undef FUNCTION
@@ -146,6 +162,7 @@ START_MODULE
 
     #define FUNCTION gluino_decays
     START_FUNCTION(DecayTable::Entry)
+    DEPENDENCY(MSSM_spectrum, const Spectrum*)
     BACKEND_REQ(cb_sd_gluiwidth, (sh_reqd), sd_gluiwidth_type)
     BACKEND_REQ(cb_sd_glui2body, (sh_reqd), sd_glui2body_type)
     BACKEND_REQ(cb_sd_gluiloop, (sh_reqd), sd_gluiloop_type)
@@ -161,6 +178,7 @@ START_MODULE
 
     #define FUNCTION stop_1_decays
     START_FUNCTION(DecayTable::Entry)
+    DEPENDENCY(MSSM_spectrum, const Spectrum*)
     BACKEND_REQ(cb_sd_stopwidth, (sh_reqd), sd_stopwidth_type)
     BACKEND_REQ(cb_sd_stop2body, (sh_reqd), sd_stop2body_type)
     BACKEND_REQ(cb_sd_stoploop, (sh_reqd), sd_stoploop_type)
@@ -176,6 +194,7 @@ START_MODULE
 
     #define FUNCTION stop_2_decays
     START_FUNCTION(DecayTable::Entry)
+    DEPENDENCY(MSSM_spectrum, const Spectrum*)
     BACKEND_REQ(cb_sd_stopwidth, (sh_reqd), sd_stopwidth_type)
     BACKEND_REQ(cb_sd_stop2body, (sh_reqd), sd_stop2body_type)
     BACKEND_REQ(cb_sd_stop3body, (sh_reqd), sd_stop3body_type)
@@ -190,6 +209,7 @@ START_MODULE
 
     #define FUNCTION sbottom_1_decays
     START_FUNCTION(DecayTable::Entry)
+    DEPENDENCY(MSSM_spectrum, const Spectrum*)
     BACKEND_REQ(cb_sd_sbotwidth, (sh_reqd), sd_sbotwidth_type)
     BACKEND_REQ(cb_sd_sbot2body, (sh_reqd), sd_sbot2body_type)
     BACKEND_REQ(cb_sd_sbot3body, (sh_reqd), sd_sbot3body_type)
@@ -204,6 +224,7 @@ START_MODULE
 
     #define FUNCTION sbottom_2_decays
     START_FUNCTION(DecayTable::Entry)
+    DEPENDENCY(MSSM_spectrum, const Spectrum*)
     BACKEND_REQ(cb_sd_sbotwidth, (sh_reqd), sd_sbotwidth_type)
     BACKEND_REQ(cb_sd_sbot2body, (sh_reqd), sd_sbot2body_type)
     BACKEND_REQ(cb_sd_sbot3body, (sh_reqd), sd_sbot3body_type)
@@ -374,6 +395,7 @@ START_MODULE
 
     #define FUNCTION stau_1_decays
     START_FUNCTION(DecayTable::Entry)
+    DEPENDENCY(MSSM_spectrum, const Spectrum*)
     BACKEND_REQ(cb_sd_stauwidth, (sh_reqd), sd_stauwidth_type)
     BACKEND_REQ(cb_sd_stau2body, (sh_reqd), sd_stau2body_type)
     BACKEND_REQ(cb_sd_stau2bodygrav, (sh_reqd), sd_stau2bodygrav_type)
@@ -388,6 +410,7 @@ START_MODULE
 
     #define FUNCTION stau_2_decays
     START_FUNCTION(DecayTable::Entry)
+    DEPENDENCY(MSSM_spectrum, const Spectrum*)
     BACKEND_REQ(cb_sd_stauwidth, (sh_reqd), sd_stauwidth_type)
     BACKEND_REQ(cb_sd_stau2body, (sh_reqd), sd_stau2body_type)
     BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
@@ -427,6 +450,7 @@ START_MODULE
 
     #define FUNCTION snu_taul_decays
     START_FUNCTION(DecayTable::Entry)
+    DEPENDENCY(MSSM_spectrum, const Spectrum*)
     BACKEND_REQ(cb_sd_sntauwidth, (sh_reqd), sd_sntauwidth_type)
     BACKEND_REQ(cb_sd_sntau2body, (sh_reqd), sd_sntau2body_type)
     BACKEND_OPTION( (SUSY_HIT), (sh_reqd) )
@@ -440,6 +464,7 @@ START_MODULE
 
     #define FUNCTION charginoplus_1_decays
     START_FUNCTION(DecayTable::Entry)
+    DEPENDENCY(MSSM_spectrum, const Spectrum*)
     BACKEND_REQ(cb_sd_charwidth, (sh_reqd), sd_charwidth_type)
     BACKEND_REQ(cb_sd_char2body, (sh_reqd), sd_char2body_type)
     BACKEND_REQ(cb_sd_char2bodygrav, (sh_reqd), sd_char2bodygrav_type)
@@ -455,6 +480,7 @@ START_MODULE
 
     #define FUNCTION charginoplus_2_decays
     START_FUNCTION(DecayTable::Entry)
+    DEPENDENCY(MSSM_spectrum, const Spectrum*)
     BACKEND_REQ(cb_sd_charwidth, (sh_reqd), sd_charwidth_type)
     BACKEND_REQ(cb_sd_char2body, (sh_reqd), sd_char2body_type)
     BACKEND_REQ(cb_sd_char2bodygrav, (sh_reqd), sd_char2bodygrav_type)
@@ -470,6 +496,7 @@ START_MODULE
 
     #define FUNCTION neutralino_1_decays
     START_FUNCTION(DecayTable::Entry)
+    DEPENDENCY(MSSM_spectrum, const Spectrum*)
     BACKEND_REQ(cb_sd_neutwidth, (sh_reqd), sd_neutwidth_type)
     BACKEND_REQ(cb_sd_neut2body, (sh_reqd), sd_neut2body_type)
     BACKEND_REQ(cb_sd_neut2bodygrav, (sh_reqd), sd_neut2bodygrav_type)
@@ -485,6 +512,7 @@ START_MODULE
 
     #define FUNCTION neutralino_2_decays
     START_FUNCTION(DecayTable::Entry)
+    DEPENDENCY(MSSM_spectrum, const Spectrum*)
     BACKEND_REQ(cb_sd_neutwidth, (sh_reqd), sd_neutwidth_type)
     BACKEND_REQ(cb_sd_neut2body, (sh_reqd), sd_neut2body_type)
     BACKEND_REQ(cb_sd_neut2bodygrav, (sh_reqd), sd_neut2bodygrav_type)
@@ -501,6 +529,7 @@ START_MODULE
 
     #define FUNCTION neutralino_3_decays
     START_FUNCTION(DecayTable::Entry)
+    DEPENDENCY(MSSM_spectrum, const Spectrum*)
     BACKEND_REQ(cb_sd_neutwidth, (sh_reqd), sd_neutwidth_type)
     BACKEND_REQ(cb_sd_neut2body, (sh_reqd), sd_neut2body_type)
     BACKEND_REQ(cb_sd_neut2bodygrav, (sh_reqd), sd_neut2bodygrav_type)
@@ -517,6 +546,7 @@ START_MODULE
 
     #define FUNCTION neutralino_4_decays
     START_FUNCTION(DecayTable::Entry)
+    DEPENDENCY(MSSM_spectrum, const Spectrum*)
     BACKEND_REQ(cb_sd_neutwidth, (sh_reqd), sd_neutwidth_type)
     BACKEND_REQ(cb_sd_neut2body, (sh_reqd), sd_neut2body_type)
     BACKEND_REQ(cb_sd_neut2bodygrav, (sh_reqd), sd_neut2bodygrav_type)
@@ -533,6 +563,7 @@ START_MODULE
 
     #define FUNCTION all_decays
     START_FUNCTION(DecayTable)
+    DEPENDENCY(MSSM_spectrum, const Spectrum*)
     DEPENDENCY(Higgs_decay_rates, DecayTable::Entry) 
     DEPENDENCY(W_minus_decay_rates, DecayTable::Entry)
     DEPENDENCY(W_plus_decay_rates, DecayTable::Entry)
@@ -657,3 +688,4 @@ QUICK_FUNCTION(DecayBit, charginominus_1_decay_rates, NEW_CAPABILITY, charginomi
 QUICK_FUNCTION(DecayBit, charginominus_2_decay_rates, NEW_CAPABILITY, charginominus_2_decays, DecayTable::Entry, (MSSM78atQ, MSSM78atMGUT), (charginoplus_2_decay_rates, DecayTable::Entry)) 
  
 #endif /* defined(__DecayBit_rollcall_hpp__) */
+

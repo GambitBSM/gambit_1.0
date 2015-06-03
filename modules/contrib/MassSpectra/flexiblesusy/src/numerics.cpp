@@ -14,6 +14,7 @@
 #ifdef USE_LOOPTOOLS
 #include "clooptools.h"
 #endif
+#include <boost/bind.hpp>
 
 using namespace softsusy;
 using namespace Eigen;
@@ -118,8 +119,20 @@ ArrayXd dd(double x, const ArrayXd& /* y */) {
   return dydx;
 }
 
+ArrayXd dd_threadsave(double x, const ArrayXd&, int n1, double p, double m1, double m2, double mt)
+{
+  ArrayXd dydx(1);
+  dydx(0) = -integrandThreshbnr(x, n1, p, m1, m2, mt);
+  return dydx;
+}
+
 double integrandThreshbnr(double x) {
   return fnfn(x).real();
+}
+
+double integrandThreshbnr(double x, int n1, double p, double m1, double m2, double mt)
+{
+  return fnfn(x, n1, p, m1, m2, mt).real();
 }
 
 // Integration routine needs these variables
@@ -135,6 +148,20 @@ Complex fnfn(double x) {
     log( ((1 - x) * sqr(m1Int) + x * sqr(m2Int) - x * (1 - x) *
 	  sqr(pInt) - iEpsilon)
 	 / sqr(mtInt));
+}
+
+Complex fnfn(double x, int n1, double p, double m1, double m2, double mt)
+{
+  const static Complex iEpsilon(0.0, TOLERANCE * 1.0e-20);
+
+  double xn = 1.0;
+
+  for (int i = 1; i <= n1; i++)
+     xn *= x;
+
+  return xn *
+    log(((1 - x) * sqr(m1) + x * sqr(m2)
+         - x * (1 - x) * sqr(p) - iEpsilon) / sqr(mt));
 }
 
 DoubleVector dilogarg(double t, const DoubleVector & /* y */) {
@@ -182,16 +209,33 @@ double bIntegral(int n1, double p, double m1, double m2, double mt) {
   return v(0) - 1.0;
 }
 
+// Returns real part of integral
+double bIntegral_threadsave(int n1, double p, double m1, double m2, double mt) {
+  using namespace flexiblesusy;
+
+  const double from = 0.0, to = 1.0, guess = 0.1, hmin = TOLERANCE * 1.0e-5;
+  const double eps = TOLERANCE * 1.0e-3;
+  ArrayXd v(1);
+  v(0) = 1.0;
+
+  runge_kutta::Derivs derivs = boost::bind(&dd_threadsave, _1, _2, n1, p, m1, m2, mt);
+
+  runge_kutta::integrateOdes(v, from, to, eps, guess, hmin, derivs,
+                             runge_kutta::odeStepper);
+
+  return v(0) - 1.0;
+}
+
 double fB(const Complex & a) {
   /// First, special cases at problematic points
-  double x = a.real();
+  const double x = a.real();
   if (fabs(x) < EPSTOL) {
-    double ans = -1. - x + sqr(x) * 0.5;
+    const double ans = -1. - x + sqr(x) * 0.5;
     return ans;
   }
   if (close(x, 1., EPSTOL)) return -1.;
 
-  Complex ans = log(1. - a) - 1. - a * log(1.0 - 1.0 / a);
+  const Complex ans(log(1. - a) - 1. - a * log(1.0 - 1.0 / a));
 
   return ans.real();
 }
@@ -214,22 +258,21 @@ double b0(double p, double m1, double m2, double q) {
      return 0.0;
 
   double ans  = 0.;
-  double mMin = minimum(fabs(m1), fabs(m2));
-  double mMax = maximum(fabs(m1), fabs(m2));
+  const double mMin = minimum(fabs(m1), fabs(m2));
+  const double mMax = maximum(fabs(m1), fabs(m2));
 
-  double pSq = sqr(p), mMinSq = sqr(mMin), mMaxSq = sqr(mMax);
-  double s = 0.;
+  const double pSq = sqr(p), mMinSq = sqr(mMin), mMaxSq = sqr(mMax);
   /// Try to increase the accuracy of s
-  double dmSq = mMaxSq - mMinSq;
-  s = pSq + dmSq;
+  const double dmSq = mMaxSq - mMinSq;
+  const double s = pSq + dmSq;
 
-  double pTest = sqr(p) / sqr(mMax);
+  const double pTest = sqr(p) / sqr(mMax);
   /// Decides level at which one switches to p=0 limit of calculations
   const double pTolerance = 1.0e-6; 
 
   /// p is not 0  
   if (pTest > pTolerance) {  
-    Complex iEpsilon(0.0, EPSTOL * sqr(mMax));
+    const Complex iEpsilon(0.0, EPSTOL * sqr(mMax));
     
     Complex xPlus, xMinus;
 
@@ -243,7 +286,7 @@ double b0(double p, double m1, double m2, double q) {
     if (close(m1, m2, EPSTOL)) {
       ans = - log(sqr(m1 / q));
     } else {
-      double Mmax2 = sqr(mMax), Mmin2 = sqr(mMin); 
+      const double Mmax2 = sqr(mMax), Mmin2 = sqr(mMin);
       if (Mmin2 < 1.e-30) {
 	ans = 1.0 - log(Mmax2 / sqr(q));
       } else {
@@ -265,6 +308,75 @@ double b0(double p, double m1, double m2, double q) {
   return ans;
 }
 
+double fB_fast(const Complex& a) {
+
+  const double x = a.real();
+
+  if (fabs(x) < EPSTOL) {
+    return -1. - x + sqr(x) * 0.5;
+  }
+
+  if (close(x, 1., EPSTOL))
+     return -1.;
+
+  return Complex(log(1. - a) - 1. - a * log(1.0 - 1.0 / a)).real();
+}
+
+double b0_fast(double p, double m1, double m2, double q) {
+  // protect against infrared divergence
+  if (close(p, 0.0, EPSTOL) && close(m1, 0.0, EPSTOL)
+      && close(m2, 0.0, EPSTOL))
+     return 0.0;
+
+  double ans  = 0.;
+  const double mMin = minimum(fabs(m1), fabs(m2));
+  const double mMax = maximum(fabs(m1), fabs(m2));
+
+  const double pSq = sqr(p), mMinSq = sqr(mMin), mMaxSq = sqr(mMax),
+     q2 = sqr(q);
+  /// Try to increase the accuracy of s
+  const double dmSq = mMaxSq - mMinSq;
+  const double s = pSq + dmSq, s2 = sqr(s);
+
+  const double pTest = pSq / mMaxSq;
+  /// Decides level at which one switches to p=0 limit of calculations
+  const double pTolerance = 1.0e-6;
+
+  /// p is not 0
+  if (pTest > pTolerance) {
+     const Complex iEpsilon(0.0, EPSTOL * mMaxSq);
+     if (mMinSq < 1.e-30) {
+        if (mMaxSq < 1.e-30) {
+           ans = - log((-pSq - iEpsilon)/q2).real() + 2.;
+        } else if (close(pSq, mMaxSq, EPSTOL)) {
+           ans = - log(mMaxSq / q2) + 2.;
+        } else {
+           ans = - log(mMaxSq / q2) + 2. + (mMaxSq - pSq) / pSq * log((mMaxSq - pSq - iEpsilon)/mMaxSq).real();
+        }
+     } else if (close(pSq, mMaxSq, EPSTOL) && close(pSq, mMinSq, EPSTOL)) {
+        ans = - log(mMaxSq / q2) + 2. - PI/sqrt(3.);
+     } else {
+        const Complex xPlus(0.5 * (s + sqrt(s2 - 4. * pSq * (mMaxSq - iEpsilon))) / pSq);
+        const Complex xMinus(2. * (mMaxSq - iEpsilon) / (s + sqrt(s2 - 4. * pSq * (mMaxSq - iEpsilon))));
+        ans = -2.0 * log(p / q) - fB_fast(xPlus) - fB_fast(xMinus);
+     }
+  } else {
+     if (close(m1, m2, EPSTOL)) {
+        ans = - log(sqr(m1 / q));
+     } else {
+        const double Mmax2 = mMaxSq, Mmin2 = mMinSq;
+        if (Mmin2 < 1.e-30) {
+           ans = 1.0 - log(Mmax2 / q2);
+        } else {
+           ans = 1.0 - log(Mmax2 / q2) + Mmin2 * log(Mmax2 / Mmin2)
+              / (Mmin2 - Mmax2);
+        }
+     }
+  }
+
+  return ans;
+}
+
 /// Note that b1 is NOT symmetric in m1 <-> m2!!!
 double b1(double p, double m1, double m2, double q) {
 #ifdef USE_LOOPTOOLS
@@ -279,25 +391,24 @@ double b1(double p, double m1, double m2, double q) {
      return 0.0;
 
   double ans = 0.;
-  double pTest = sqr(p) / maximum(sqr(m1), sqr(m2));
+
+  const double p2 = sqr(p), m12 = sqr(m1), m22 = sqr(m2), q2 = sqr(q);
+  const double pTest = p2 / maximum(m12, sqr(m2));
 
   /// Decides level at which one switches to p=0 limit of calculations
   const double pTolerance = 1.0e-4; 
 
   if (pTest > pTolerance) {
-    ans = (a0(m2, q) - a0(m1, q) + (sqr(p) + sqr(m1) - sqr(m2)) 
-	   * b0(p, m1, m2, q)) / (2.0 * sqr(p)); 
-  } else if (fabs(m1) > 1.0e-15 && !close(m1, m2, EPSTOL) 
+    ans = (a0(m2, q) - a0(m1, q) + (p2 + m12 - m22)
+	   * b0(p, m1, m2, q)) / (2.0 * p2);
+  } else if (fabs(m1) > 1.0e-15 && !close(m1, m2, EPSTOL)
 	     && fabs(m2) > 1.0e-15) { ///< checked
-    double Mmax2 = maximum(sqr(m1) , sqr(m2)), x = sqr(m2 / m1);
-    ans = 0.5 * (-log(Mmax2 / sqr(q)) + 0.5 + 1.0 / (1.0 - x) + log(x) /
-		 sqr(1.0 - x) - theta(1.0 - x) * log(x)); ///< checked
-    ans = 0.5 * (1. + log(sqr(q) / sqr(m2)) + 
-		 sqr(sqr(m1) / (sqr(m1) - sqr(m2))) * log(sqr(m2) / sqr(m1)) +
-		 0.5 * (sqr(m1) + sqr(m2)) / (sqr(m1) - sqr(m2))
+    ans = 0.5 * (1. + log(q2 / m22) +
+		 sqr(m12 / (m12 - m22)) * log(m22 / m12) +
+		 0.5 * (m12 + m22) / (m12 - m22)
 		 );
   } else {
-    ans = bIntegral(1, p, m1, m2, q); 
+    ans = bIntegral_threadsave(1, p, m1, m2, q);
   }
 
 #ifdef USE_LOOPTOOLS
@@ -328,36 +439,37 @@ double b22(double p,  double m1, double m2, double q) {
   double answer = 0.;
   
   /// Decides level at which one switches to p=0 limit of calculations
+  const double p2 = sqr(p), m12 = sqr(m1), m22 = sqr(m2);
   const double pTolerance = 1.0e-6; 
 
-  if (sqr(p) < pTolerance * maximum(sqr(m1), sqr(m2)) ) {
+  if (p2 < pTolerance * maximum(m12, m22) ) {
     // m1 == m2 with good accuracy
     if (close(m1, m2, EPSTOL)) {
-      answer = -sqr(m1) * log(sqr(m1 / q)) * 0.5 + sqr(m1) * 0.5;
+      answer = -m12 * log(sqr(m1 / q)) * 0.5 + m12 * 0.5;
     }
     else
       /// This zero p limit is good
       if (fabs(m1) > EPSTOL && fabs(m2) > EPSTOL) {
-	answer = 0.375 * (sqr(m1) + sqr(m2)) - 0.25 * 
-	  (sqr(sqr(m2)) * log(sqr(m2 / q)) - sqr(sqr(m1)) * 
-	   log(sqr(m1 / q))) / (sqr(m2) - sqr(m1)); 
+	answer = 0.375 * (m12 + m22) - 0.25 *
+	  (sqr(m22) * log(sqr(m2 / q)) - sqr(m12) *
+	   log(sqr(m1 / q))) / (m22 - m12);
       }
       else
 	if (fabs(m1) < EPSTOL) {
-	  answer = 0.375 * sqr(m2) - 0.25 * sqr(m2) * log(sqr(m2 / q));
+	  answer = 0.375 * m22 - 0.25 * m22 * log(sqr(m2 / q));
 	}
 	else {
-	  answer = 0.375 * sqr(m1) - 0.25 * sqr(m1) * log(sqr(m1 / q));
+	  answer = 0.375 * m12 - 0.25 * m12 * log(sqr(m1 / q));
 	}
   }
   else {// checked
-    double b0Save = b0(p, m1, m2, q);
+    const double b0Save = b0(p, m1, m2, q);
 
     answer = 1.0 / 6.0 * 
-      (0.5 * (a0(m1, q) + a0(m2, q)) + (sqr(m1) + sqr(m2) - 0.5 * sqr(p))
-       * b0Save + (sqr(m2) - sqr(m1)) / (2.0 * sqr(p)) *
-       (a0(m2, q) - a0(m1, q) - (sqr(m2) - sqr(m1)) * b0Save) +
-       sqr(m1) + sqr(m2) - sqr(p) / 3.0);
+      (0.5 * (a0(m1, q) + a0(m2, q)) + (m12 + m22 - 0.5 * p2)
+       * b0Save + (m22 - m12) / (2.0 * p2) *
+       (a0(m2, q) - a0(m1, q) - (m22 - m12) * b0Save) +
+       m12 + m22 - p2 / 3.0);
   }
 
 #ifdef USE_LOOPTOOLS
@@ -403,7 +515,7 @@ double d0(double m1, double m2, double m3, double m4) {
 double d27(double m1, double m2, double m3, double m4) {// checked
 
   if (close(m1, m2, EPSTOL)) {
-    double m1n = m1 + TOLERANCE * 0.01;
+    const double m1n = m1 + TOLERANCE * 0.01;
     return (sqr(m1n) * c0(m1n, m3, m4) - sqr(m2) * c0(m2, m3, m4)) 
       / (4.0 * (sqr(m1n) - sqr(m2)));
   }
@@ -1523,7 +1635,6 @@ void broydn(DoubleVector x, int & check,
     }
   }
   throw("MAXITS exceeded in broydn\n");
-  return;
 }
 
 void qrdcmp(DoubleMatrix & a, int n, DoubleVector & c, DoubleVector & d, 

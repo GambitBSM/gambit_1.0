@@ -104,8 +104,9 @@ namespace Gambit
          //Replacing with a version that deals with SLHAea access errors            
          #define ECHO(COMMAND)                                \
          {                                                    \
-             std::ostringstream msg;                          \
-             try { msg << COMMAND; }                          \
+             try {                                            \
+                cout << "  " << STRINGIFY(COMMAND) << " = " << COMMAND << endl;\
+             }                                                \
              catch (const std::exception& e)                  \
              { add_error(report,e,STRINGIFY(COMMAND)); }      \
          }
@@ -128,7 +129,43 @@ namespace Gambit
          ECHO( PDB.short_name_pair("~chi0_1")            ) // Input long name, retrieve short name + index
          ECHO( PDB.short_name_pair(std::make_pair(1000022,0)) ) // Input PDG code plus context integer, retrieve short name + index 
          ECHO( PDB.short_name_pair(1000022,0)            ) // Input PDG code plus context integer, retrieve short name + index 
-
+ 
+         cout<<endl;
+         cout<<"Demo retrieval of antiparticle names/codes using particle names/codes"<<endl;
+         cout<<"-----------------------------------------------------------------"<<endl;
+         // Check existence in various ways
+         ECHO( PDB.has_antiparticle("~chi0_1")                 ) 
+         ECHO( PDB.has_antiparticle("~chi0",1)                 ) 
+         ECHO( PDB.has_antiparticle(std::make_pair("~chi0",1)) ) 
+         ECHO( PDB.has_antiparticle(1000022,0)                 ) 
+         ECHO( PDB.has_antiparticle(std::make_pair(1000022,0)) ) 
+         ECHO( PDB.get_antiparticle("~chi0_1")                 ) // Input long name, retrieve antiparticle long name
+         ECHO( PDB.get_antiparticle("~chi0",1)                 ) // Input short name + index, retrieve antiparticle short name + index
+         ECHO( PDB.get_antiparticle(std::make_pair("~chi0",1)) ) // Input short name + index, retrieve antiparticle short name + index
+         ECHO( PDB.get_antiparticle(1000022,0)                 ) // Input PDG code + context integet, retrieve antiparticle PDG code + context integer
+         ECHO( PDB.get_antiparticle(std::make_pair(1000022,0)) ) // Input PDG code + context integet, retrieve antiparticle PDG code + context integer
+         ECHO( PDB.has_antiparticle("~chi+_1")                 ) 
+         ECHO( PDB.has_antiparticle("~chi+",1)                 ) 
+         ECHO( PDB.has_antiparticle(std::make_pair("~chi+",1)) ) 
+         ECHO( PDB.has_antiparticle(1000024,0)                 ) 
+         ECHO( PDB.has_antiparticle(std::make_pair(1000024,0)) ) 
+         ECHO( PDB.get_antiparticle("~chi+_1")                 ) // Input long name, retrieve antiparticle long name
+         ECHO( PDB.get_antiparticle("~chi+",1)                 ) // Input short name + index, retrieve antiparticle short name + index
+         ECHO( PDB.get_antiparticle(std::make_pair("~chi+",1)) ) // Input short name + index, retrieve antiparticle short name + index
+         ECHO( PDB.get_antiparticle(1000024,0)                 ) // Input PDG code + context integet, retrieve antiparticle PDG code + context integer
+         ECHO( PDB.get_antiparticle(std::make_pair(1000024,0)) ) // Input PDG code + context integet, retrieve antiparticle PDG code + context integer
+         ECHO( PDB.has_antiparticle("u_1")                 ) 
+         ECHO( PDB.has_antiparticle("u",1)                 ) 
+         ECHO( PDB.has_antiparticle(std::make_pair("u",1)) ) 
+         ECHO( PDB.has_antiparticle(2,0)                   ) 
+         ECHO( PDB.has_antiparticle(std::make_pair(2,0))   ) 
+         ECHO( PDB.get_antiparticle("u_1")                 ) // Input long name, retrieve antiparticle long name
+         ECHO( PDB.get_antiparticle("u",1)                 ) // Input short name + index, retrieve antiparticle short name + index
+         ECHO( PDB.get_antiparticle(std::make_pair("u",1)) ) // Input short name + index, retrieve antiparticle short name + index
+         ECHO( PDB.get_antiparticle(2,0)                   ) // Input PDG code + context integet, retrieve antiparticle PDG code + context integer
+         ECHO( PDB.get_antiparticle(std::make_pair(2,0))   ) // Input PDG code + context integet, retrieve antiparticle PDG code + context integer
+     
+     
          cout<<endl;
          cout<<"Demo retrieval when no short name exists"<<endl;
          cout<<"-----------------------------------------------------------------"<<endl;

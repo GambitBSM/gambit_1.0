@@ -26,7 +26,6 @@
 #include <string>
 #include <Eigen/Core>
 #include <boost/lexical_cast.hpp>
-#include "compare.hpp"
 
 namespace flexiblesusy {
 
@@ -71,6 +70,36 @@ Derived AbsSqrt(const Eigen::ArrayBase<Derived>& m)
    return m.cwiseAbs().cwiseSqrt();
 }
 
+/**
+ * Calculates the mass of a singlet from a (possibly complex)
+ * numerical value by taking the magnitude of the value.
+ *
+ * @param value numerical value
+ * @return mass
+ */
+template <typename T>
+double calculate_singlet_mass(T value)
+{
+   return std::abs(value);
+}
+
+/**
+ * Calculates the mass of a singlet from a (possibly complex)
+ * numerical value by taking the magnitude of the value.  The phase is
+ * set to exp(i theta/2), where theta is the phase angle of the
+ * complex value.
+ *
+ * @param value numerical value
+ * @param[out] phase phase
+ * @return mass
+ */
+template <typename T>
+double calculate_singlet_mass(T value, std::complex<double>& phase)
+{
+   phase = std::polar(1., 0.5 * std::arg(std::complex<double>(value)));
+   return std::abs(value);
+}
+
 inline double ArcTan(double a)
 {
    return std::atan(a);
@@ -86,16 +115,9 @@ inline double ArcCos(double a)
    return std::acos(a);
 }
 
-template <typename Derived>
-unsigned closest_index(double mass, Eigen::ArrayBase<Derived>& v)
+inline double Arg(const std::complex<double>& z)
 {
-   unsigned pos;
-   typename Derived::PlainObject tmp;
-   tmp.setConstant(mass);
-
-   (v - tmp).abs().minCoeff(&pos);
-
-   return pos;
+   return std::arg(z);
 }
 
 inline double Conj(double a)
@@ -106,6 +128,12 @@ inline double Conj(double a)
 inline std::complex<double> Conj(const std::complex<double>& a)
 {
    return std::conj(a);
+}
+
+template <typename T>
+T Exp(T z)
+{
+   return std::exp(z);
 }
 
 inline double Tan(double a)
@@ -138,6 +166,22 @@ inline int Delta(int i, int j)
    return i == j;
 }
 
+inline bool IsFinite(double x)
+{
+   return std::isfinite(x);
+}
+
+inline bool IsFinite(const std::complex<double>& x)
+{
+   return std::isfinite(x.real()) && std::isfinite(x.imag());
+}
+
+template <class Derived>
+bool IsFinite(const Eigen::DenseBase<Derived>& m)
+{
+   return m.allFinite();
+}
+
 inline int KroneckerDelta(int i, int j)
 {
    return i == j;
@@ -166,6 +210,24 @@ typename Eigen::MatrixBase<Derived>::PlainObject Diag(const Eigen::MatrixBase<De
 inline double FiniteLog(double a)
 {
    return a > std::numeric_limits<double>::epsilon() ? std::log(a) : 0;
+}
+
+/**
+ * Fills lower triangle of hermitian matrix from values
+ * in upper triangle.
+ *
+ * @param m matrix
+ */
+template <typename Derived>
+void Hermitianize(Eigen::MatrixBase<Derived>& m)
+{
+   static_assert(Eigen::MatrixBase<Derived>::RowsAtCompileTime ==
+                 Eigen::MatrixBase<Derived>::ColsAtCompileTime,
+                 "Hermitianize is only defined for squared matrices");
+
+   for (int i = 0; i < Eigen::MatrixBase<Derived>::RowsAtCompileTime; i++)
+      for (int k = 0; k < i; k++)
+         m(i,k) = Conj(m(k,i));
 }
 
 inline double Log(double a)
@@ -204,6 +266,11 @@ inline double MaxAbsValue(double x)
    return Abs(x);
 }
 
+inline double MaxAbsValue(const std::complex<double>& x)
+{
+   return Abs(x);
+}
+
 template <class Derived>
 double MaxAbsValue(const Eigen::MatrixBase<Derived>& x)
 {
@@ -220,39 +287,8 @@ inline int Sign(int x)
    return (x >= 0 ? 1 : -1);
 }
 
-/**
- * The element of v, which is closest to mass, is moved to the
- * position idx.
- *
- * @param idx new index of the mass eigenvalue
- * @param mass mass to compare against
- * @param v vector of masses
- * @param z corresponding mixing matrix
- */
-
-template <typename DerivedArray, typename DerivedMatrix>
-void move_goldstone_to(int idx, double mass, Eigen::ArrayBase<DerivedArray>& v,
-                       Eigen::MatrixBase<DerivedMatrix>& z)
-{
-   int pos = closest_index(mass, v);
-   if (pos == idx)
-      return;
-
-   const int sign = Sign(idx - pos);
-   int steps = std::abs(idx - pos);
-
-   // now we shuffle the states
-   while (steps--) {
-      const int new_pos = pos + sign;
-      v.row(new_pos).swap(v.row(pos));
-      z.row(new_pos).swap(z.row(pos));
-      pos = new_pos;
-   }
-
-}
-
 template <typename Base, typename Exponent>
-double Power(Base base, Exponent exp)
+Base Power(Base base, Exponent exp)
 {
    return std::pow(base, exp);
 }
@@ -268,44 +304,25 @@ inline double Re(const std::complex<double>& x)
    return std::real(x);
 }
 
-/**
- * @brief reorders vector v according to ordering in vector v2
- * @param v vector with elementes to be reordered
- * @param v2 vector with reference ordering
- */
-template<class Real, int N>
-void reorder_vector(
-   Eigen::Array<Real,N,1>& v,
-   const Eigen::Array<Real,N,1>& v2)
-{
-   Eigen::PermutationMatrix<N> p;
-   p.setIdentity();
-   std::sort(p.indices().data(), p.indices().data() + p.indices().size(),
-             CompareAbs<Real, N>(v2));
-
-#if EIGEN_VERSION_AT_LEAST(3,1,4)
-   v.matrix().transpose() *= p.inverse();
-#else
-   Eigen::Map<Eigen::Matrix<Real,N,1> >(v.data()).transpose() *= p.inverse();
-#endif
-}
-
-/**
- * @brief reorders vector v according to ordering of diagonal elements in mass_matrix
- * @param v vector with elementes to be reordered
- * @param matrix matrix with diagonal elements with reference ordering
- */
-template<class Derived>
-void reorder_vector(
-   Eigen::Array<double,Eigen::MatrixBase<Derived>::RowsAtCompileTime,1>& v,
-   const Eigen::MatrixBase<Derived>& matrix)
-{
-   reorder_vector(v, matrix.diagonal().array().eval());
-}
-
-inline double Im(double x)
+template<int M, int N>
+Eigen::Matrix<double,M,N> Re(const Eigen::Matrix<double,M,N>& x)
 {
    return x;
+}
+
+template<class Derived>
+typename Eigen::Matrix<
+   double,
+   Eigen::MatrixBase<Derived>::RowsAtCompileTime,
+   Eigen::MatrixBase<Derived>::ColsAtCompileTime>
+Re(const Eigen::MatrixBase<Derived>& x)
+{
+   return x.real();
+}
+
+inline double Im(double)
+{
+   return 0.;
 }
 
 inline double Im(const std::complex<double>& x)
@@ -319,10 +336,20 @@ namespace {
    };
 }
 
+inline int Round(double a)
+{
+   return static_cast<int>(a >= 0. ? a + 0.5 : a - 0.5);
+}
+
 template<int N>
 void Sort(Eigen::Array<double, N, 1>& v)
 {
    std::sort(v.data(), v.data() + v.size(), CompareAbs_d());
+}
+
+inline double SignedAbsSqrt(double a)
+{
+   return Sign(a) * AbsSqrt(a);
 }
 
 inline double Sqrt(double a)
@@ -336,6 +363,30 @@ T Sqr(T a)
    return a * a;
 }
 
+#define DEFINE_COMMUTATIVE_OPERATOR_COMPLEX_INT(op)                     \
+   template <typename T>                                                \
+   std::complex<T> operator op(const std::complex<T>& lhs, int rhs)     \
+   {                                                                    \
+      return lhs op static_cast<T>(rhs);                                \
+   }                                                                    \
+                                                                        \
+   template <typename T>                                                \
+   std::complex<T> operator op(int lhs, const std::complex<T>& rhs)     \
+   {                                                                    \
+      return static_cast<T>(lhs) op rhs;                                \
+   }
+
+DEFINE_COMMUTATIVE_OPERATOR_COMPLEX_INT(*)
+DEFINE_COMMUTATIVE_OPERATOR_COMPLEX_INT(/)
+DEFINE_COMMUTATIVE_OPERATOR_COMPLEX_INT(+)
+DEFINE_COMMUTATIVE_OPERATOR_COMPLEX_INT(-)
+
+/**
+ * Fills lower triangle of symmetric matrix from values in upper
+ * triangle.
+ *
+ * @param m matrix
+ */
 template <typename Derived>
 void Symmetrize(Eigen::MatrixBase<Derived>& m)
 {
@@ -348,10 +399,26 @@ void Symmetrize(Eigen::MatrixBase<Derived>& m)
          m(i,k) = m(k,i);
 }
 
-#define UNITMATRIX(rows) Eigen::Matrix<double,rows,rows>::Identity()
-#define ZEROMATRIX(rows,cols) Eigen::Matrix<double,rows,cols>::Zero()
-#define ZEROVECTOR(rows) Eigen::Matrix<double,rows,1>::Zero()
-#define ZEROARRAY(rows) Eigen::Array<double,rows,1>::Zero()
+#define UNITMATRIX(rows)             Eigen::Matrix<double,rows,rows>::Identity()
+#define ZEROMATRIX(rows,cols)        Eigen::Matrix<double,rows,cols>::Zero()
+#define ZEROVECTOR(rows)             Eigen::Matrix<double,rows,1>::Zero()
+#define ZEROARRAY(rows)              Eigen::Array<double,rows,1>::Zero()
+#define UNITMATRIXCOMPLEX(rows)      Eigen::Matrix<std::complex<double>,rows,rows>::Identity()
+#define ZEROMATRIXCOMPLEX(rows,cols) Eigen::Matrix<std::complex<double>,rows,cols>::Zero()
+#define ZEROVECTORCOMPLEX(rows)      Eigen::Matrix<std::complex<double>,rows,1>::Zero()
+#define ZEROARRAYCOMPLEX(rows)       Eigen::Array<std::complex<double>,rows,1>::Zero()
+
+template<class Scalar, int M>
+Eigen::Matrix<Scalar,M,M> ToMatrix(const Eigen::Array<Scalar,M,1>& a)
+{
+   return Eigen::Matrix<Scalar,M,M>(a.matrix().asDiagonal());
+}
+
+template<class Scalar, int M, int N>
+Eigen::Matrix<Scalar,M,N> ToMatrix(const Eigen::Matrix<Scalar,M,N>& a)
+{
+   return a;
+}
 
 template <typename T>
 std::string ToString(T a)
