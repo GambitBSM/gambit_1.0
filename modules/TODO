@@ -29,8 +29,9 @@ BOSS:
 * Wrap global backend functions requiring BOSSed classes (Anders)
 
 ScannerBit:
+* Give full info on scanners with ./gambit <scannername> (Greg)
 * Connect Diver (Pat)
-* Plugins need the option to link standard GAMBIT/ScannerBit libraries: MPI, GSL, etc (Greg)
+* Plugins need the option to link standard GAMBIT/ScannerBit libraries: etc (Greg)
 * Get rid of 'optional options:' entries in yaml options object. (Greg)
 
 Repo/cmake:
@@ -46,6 +47,7 @@ Messaging:
 * Write printer functions for all common functor types and print streams (Ben)
 
 General:
+* Make ditchlist (Pat + Ben)
 * Add credit/citation system (Pat)
 * Fill out capabilities database (all)
 * Fill out models database (all)
