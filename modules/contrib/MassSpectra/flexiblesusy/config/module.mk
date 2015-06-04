@@ -24,6 +24,9 @@ REQUIRED_SARAH_VERSION_FILE := \
 FLEXIBLESUSY_VERSION_FILE := \
 		$(DIR)/version
 
+FLEXIBLESUSY_GIT_COMMIT_FILE := \
+		$(DIR)/git_commit
+
 REMOVE_EXPORT_MARKERS := \
 		$(DIR)/remove_export_markers.sh
 
@@ -47,6 +50,7 @@ clean-$(MODNAME):
 distclean-$(MODNAME): clean-$(MODNAME)
 		-rm -f $(CONFIG_HDR)
 		-rm -f $(FLEXIBLESUSY_VERSION_FILE)
+		-rm -f $(FLEXIBLESUSY_GIT_COMMIT_FILE)
 		-rm -f $(REQUIRED_SARAH_VERSION_FILE)
 
 clean::         clean-$(MODNAME)

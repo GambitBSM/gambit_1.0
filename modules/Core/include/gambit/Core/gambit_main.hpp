@@ -24,6 +24,7 @@
 #include "gambit/Core/yaml_parser.hpp"
 #include "gambit/Core/likelihood_container.hpp"
 #include "gambit/Core/module_rollcall.hpp"
+#include "gambit/Core/core_singleton.hpp"
 #include "gambit/Logs/log.hpp"
 #include "gambit/Printers/printermanager.hpp"
 #include "gambit/Models/model_rollcall.hpp"

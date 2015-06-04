@@ -37,6 +37,11 @@ struct CompareAbs {
     const Eigen::Array<Real, N, 1>& w;
 };
 
+template <class T>
+struct Is_not_finite {
+   bool operator()(T x) { return !std::isfinite(x); }
+};
+
 } // namespace flexiblesusy
 
 #endif

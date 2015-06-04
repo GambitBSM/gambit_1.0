@@ -154,33 +154,34 @@ IFIC--14--40 \\
 ADP-14-17/T875
 \end{textblock*}
 
+\clearpage
 \section{Program Summary}
-\noindent{\em Program title:} \fs\\ {\em Program obtainable from:}
-         {\tt http://flexiblesusy.hepforge.org/}\\ {\em Distribution
-           format:}\/ tar.gz\\ {\em Programming language:} {\tt
-           C++, Wolfram/\mathematica, FORTRAN, Bourne shell}\\ {\em Computer:}\/ Personal computer\\ {\em Operating
-           system:}\/ Tested on Linux 3.x, Mac OS X\\
+\noindent{\em Program title:} \fs\\[0.5em] {\em Program obtainable from:}
+         {\tt http://flexiblesusy.hepforge.org/}\\[0.5em] {\em Distribution
+           format:}\/ tar.gz\\[0.5em] {\em Programming language:} {\tt
+           C++, Wolfram/\mathematica, FORTRAN, Bourne shell}\\[0.5em]
+         {\em Computer:}\/ Personal computer\\[0.5em] {\em Operating
+           system:}\/ Tested on Linux 3.x, Mac OS X\\[0.5em]
          {\em External routines:}\/ SARAH 4.0.4, Boost library,
-         Eigen, LAPACK\\ {\em
-           Typical running time:}\/ 0.06-0.2 seconds per parameter
-         point.\\ {\em Nature of problem:}\/ Determining the mass
+         Eigen, LAPACK\\[0.5em] {\em
+           Typical running time:}\/ 0.06--0.2 seconds per parameter
+         point\\[0.5em] {\em Nature of problem:}\/ Determining the mass
          spectrum and mixings for any supersymmetric model. The
          generated code must find simultaneous solutions to
          constraints which are specified at two or more different
          renormalization scales, which are connected by
          renormalization group equations forming a large set of
-         coupled first-order differential equations. \\ {\em Solution method:}\/
+         coupled first-order differential equations. \\[0.5em] {\em Solution method:}\/
          Nested iterative algorithm and numerical minimization of the
-         Higgs potential.  \\ {\em Restrictions:} The couplings must
+         Higgs potential.  \\[0.5em] {\em Restrictions:} The couplings must
          remain perturbative at all scales between the highest and
          lowest boundary condition.  \fs~ assumes that all couplings
-         of the model are real (i.e.\ $CP-$conserving). Due to the
+         of the model are real (i.e.\ $CP$-conserving). Due to the
          modular nature of the generated code adaption and extension
          to overcome restrictions in scope is quite straightforward.
 
-
-
-
+\clearpage
+\tableofcontents
 
 \newpage
 \section{Introduction}
@@ -218,7 +219,7 @@ recent reviews see \cite{Ellwanger:2009dp, Maniatis:2009re}).
 
 
 
-None of the fundamental motivations of supersymmetry require
+None of the fundamental motivations of supersymmetry requires
 minimality, and specific alternatives to (or extensions of) the MSSM
 are, for example, motivated by the $\mu$-problem of the MSSM
 \cite{Kim:1983dt}; explaining the family structure (see
@@ -419,7 +420,7 @@ mixed particles:
 \begin{itemize}
 \item \emph{Calculation of the $\beta$-functions:} The RG solving
   algorithms usually need $O(10)$ iterations between the high and the
-  low scale to find a set of parameters consistent will all boundary
+  low scale to find a set of parameters consistent with all boundary
   conditions with a $0.01\%$ precision goal.  During each iteration
   the Runge-Kutta algorithm needs to calculate all $\beta$-functions
   $O(50)$ times.  Most two-loop $\beta$-functions involve $O(50)$
@@ -682,7 +683,7 @@ The model boundary conditions are defined in the \fs model file
 \code{model_files/<model>/}.  When the \code{./createmodel} script is
 executed, the \code{FlexibleSUSY.m} file is created from the
 \code{model_files/<model-file-name>/FlexibleSUSY.m.in} file, where the
-directory \code{<model-file-name>} is the specified by the
+directory \code{<model-file-name>} is specified by the
 \code{--model-file=<model-file-name>} option.  If no such option is
 given the directory matching the \code{--name=<model>} option is used.
 In either case the \code{FlexibleSUSY.m} file which is created is then
@@ -738,9 +739,9 @@ SUSYScaleFirstGuess = Sqrt[m0^2 + 4 m12^2];
 
 SUSYScaleInput = {};
 
-LowScale = SM[MZ];
+LowScale = LowEnergyConstant[MZ];
 
-LowScaleFirstGuess = SM[MZ];
+LowScaleFirstGuess = LowEnergyConstant[MZ];
 
 LowScaleInput = {
    {Yu, Automatic},
@@ -753,8 +754,8 @@ LowScaleInput = {
 };
 
 InitialGuessAtLowScale = {
-   {vd, SM[vev] Cos[ArcTan[TanBeta]]},
-   {vu, SM[vev] Sin[ArcTan[TanBeta]]},
+   {vd, LowEnergyConstant[vev] Cos[ArcTan[TanBeta]]},
+   {vu, LowEnergyConstant[vev] Sin[ArcTan[TanBeta]]},
    {Yu, Automatic},
    {Yd, Automatic},
    {Ye, Automatic}
@@ -899,7 +900,7 @@ The meaning of the three constraints is the following:
   \secref{sec:calculation-of-yukawa-couplings}.
 \end{itemize}
 %
-The variables \code{LowScaleInput}, \code{SUSYScaleInput}
+The variables \code{LowScaleInput}, \code{SUSYScaleInput} and
 \code{HighScaleInput}, which list the parameter settings for imposing
 the constraints can contain as elements any of the following:
 %
@@ -935,8 +936,8 @@ SUSYScaleInput = {
   %
   \begin{lstlisting}
 FSMinimize[{vd,vu},
-           (SM[MZ] - Pole[M[VZ]])^2 / STANDARDDEVIATION[MZ]^2 +
-           (SM[MH] - Pole[M[hh[1]]])^2 / STANDARDDEVIATION[MH]^2]
+           (LowEnergyConstant[MZ] - Pole[M[VZ]])^2 / STANDARDDEVIATION[MZ]^2 +
+           (LowEnergyConstant[MH] - Pole[M[hh[1]]])^2 / STANDARDDEVIATION[MH]^2]
   \end{lstlisting}
   %
   Here, the parameters \code{vu} and \code{vd} are varied until the
@@ -944,17 +945,17 @@ FSMinimize[{vd,vu},
   %
   \begin{align}
     \chi^2(v_d,v_u) =
-    \frac{(\texttt{SM[MZ]}-m_Z^\pole)^2}{\sigma_{m_Z}^2} +
-    \frac{(\texttt{SM[MH]}-m_{h_1}^\pole)^2}{\sigma_{m_h}^2}
+    \frac{(\texttt{LowEnergyConstant[MZ]}-m_Z^\pole)^2}{\sigma_{m_Z}^2} +
+    \frac{(\texttt{LowEnergyConstant[MH]}-m_{h_1}^\pole)^2}{\sigma_{m_h}^2}
   \end{align}
   %
-  is minimal.  The constants \code{SM[MZ]}, \code{SM[MH]},
+  is minimal.  The constants \code{LowEnergyConstant[MZ]}, \code{LowEnergyConstant[MH]},
   $\sigma_{m_Z}$ and $\sigma_{m_h}$ are defined in
   \code{src/ew_input.hpp} to be
   %
   \begin{align}
-    \texttt{SM[MZ]} &= 91.1876, &
-    \texttt{SM[MH]} &= 125.9, \\
+    \texttt{LowEnergyConstant[MZ]} &= 91.1876, &
+    \texttt{LowEnergyConstant[MH]} &= 125.9, \\
     \sigma_{m_Z} &= 0.0021, &
     \sigma_{m_h} &= 0.4 .
   \end{align}
@@ -967,7 +968,7 @@ FSMinimize[{vd,vu},
   %
   \begin{lstlisting}
 FSFindRoot[{vd,vu},
-           {SM[MZ] - Pole[M[VZ]], SM[MH] - Pole[M[hh[1]]]}]
+           {LowEnergyConstant[MZ] - Pole[M[VZ]], LowEnergyConstant[MH] - Pole[M[hh[1]]]}]
   \end{lstlisting}
   %
   Here, the parameters \code{vu} and \code{vd} are varied until the
@@ -976,8 +977,8 @@ FSFindRoot[{vd,vu},
   \begin{align}
     f(v_d,v_u) =
     \begin{pmatrix}
-      \texttt{SM[MZ]} - m_Z^\pole \\
-      \texttt{SM[MH]} - m_{h_1}^\pole
+      \texttt{LowEnergyConstant[MZ]} - m_Z^\pole \\
+      \texttt{LowEnergyConstant[MH]} - m_{h_1}^\pole
     \end{pmatrix}
   \end{align}
   %
@@ -1030,7 +1031,7 @@ approximation when singlet mixing is very small\footnote{These
  partial two-loop corrections does not change the formal accuracy
  the user should choose whether or not to include these corrections
  based on the physics they study.  Similarly in models that go beyond
- the NMSSM the user must decide based the physics whether on not these
+ the NMSSM the user must decide based on the physics whether or not these
  corrections will give the leading two-loop corrections in their
  model.
 
@@ -1059,11 +1060,11 @@ be calculated at the output scale, which is specified in entry $12$ in
 the SLHA input block \code{MODSEL}.  In the example model file above
 the following six extra SLHA compliant output blocks are defined:
 \code{ALPHA}, \code{HMIX}, \code{Au}, \code{Ad}, \code{Ae} and
-\code{MSOFT}.  The \code{ALPHA} output block contains the CP-even
+\code{MSOFT}.  The \code{ALPHA} output block contains the $CP$-even
 Higgs pole mass mixing angle as the only entry.  The \code{HMIX}
 output block contains the $\mu$-parameter, the ratio $\tan\beta =
 v_u/v_d$, the combination $v=\sqrt{v_u^2 + v_d^2}$, the squared mass
-of the CP-odd Higgs $m_A^2$, the soft-breaking parameter $B\mu$ and
+of the $CP$-odd Higgs $m_A^2$, the soft-breaking parameter $B\mu$ and
 the values of $v_u$ and $v_d$, all defined in the \DRbar\ scheme.  In
 an analogous way four more output blocks for the soft-breaking \DRbar\
 parameters are defined.  For a CMSSM example parameter point with $m_0
@@ -1234,7 +1235,8 @@ allows to split these parameters into two classes:
   parameters and VEVs and
 \item \emph{soft-breaking parameters} \cite{Girardello:1981wz}: soft
   linear scalar terms, soft bilinear scalar interactions, soft
-  trilinear scalar interactions, soft gaugino mass terms and soft
+  trilinear scalar interactions, soft quadlinear scalar interactions,
+  soft gaugino mass terms and soft
   scalar squared masses.
 \end{enumerate}
 %
@@ -1522,12 +1524,13 @@ detail, the top quark \DRbar mass is calculated as
 %
 where the $\Sigma_{t}$ is the top one-loop self-energy without QCD
 contributions.  The labels $L,R,S$ denote the left-, right- and
-non-polarized part of the self-energy.  The separated QCD corrections
+non-polarized part of the self-energy, $\Sigma_{t}$.  The separated QCD corrections
 $\Delta m_t^{(1),\text{qcd}}$ and $\Delta m_t^{(2),\text{qcd}}$ are
 taken from \cite{Avdeev:1997sz,Bednyakov:2002sf} and read
 %
 \begin{align}
-  \Delta m_t^{(1),\text{qcd}} &= -\frac{g_3^2}{12 \pi^2} \left[5-3 \log\left(\frac{m_t^2}{\mu^2}\right)\right],\\
+  \Delta m_t^{(1),\text{qcd}} &= -\frac{g_3^2}{12 \pi^2} \left[5-3 \log\left(\frac{m_t^2}{\mu^2}\right)\right],
+  \label{eq:top-selfenergy-qcd-1L}\\
   \begin{split}
     \Delta m_t^{(2),\text{qcd}} &= \left(\Delta
       m_t^{(1),\text{qcd}}\right)^2 \\
@@ -1536,7 +1539,12 @@ taken from \cite{Avdeev:1997sz,Bednyakov:2002sf} and read
     \log\left(\frac{m_t^2}{\mu^2}\right)
     -48 \zeta(3)+2011+16 \pi ^2 (1+\log 4)\Bigg].
   \end{split}
+  \label{eq:top-selfenergy-qcd-2L}
 \end{align}
+%
+In Eqs.\ \eqref{eq:top-selfenergy-qcd-1L} and
+\eqref{eq:top-selfenergy-qcd-2L} $m_t$ denotes the \DRbar mass of the
+top quark.
 %
 The \DRbar mass of the bottom quark is calculated as
 \cite{Avdeev:1997sz,Baer:2002ek,Skands:2003cj}
@@ -1593,10 +1601,10 @@ level as
 \end{align}
 %
 where $V^\text{tree}$ is the tree-level Higgs potential, $v_i$ is the
-VEV corresponding to the Higgs fields $H_i$ and $t_i$ is the one-loop
+VEV corresponding to the Higgs field $H_i$ and $t_i$ is the one-loop
 tadpole diagram of $H_i$.  Already at the tree-level ($t_i = 0$) Eqs.\
 \eqref{eq:one-loop-ewsb-eq} can have multiple solutions, depending on
-which paramters are chosen to be fixed by these equations.  A
+which parameters are chosen to be fixed by these equations.  A
 well-known example is the real MSSM, where the $\mu$-parameter is
 chosen to be fixed by the EWSB equations.  In this model, the EWSB
 equations, Eqs.\ \eqref{eq:one-loop-ewsb-eq} can only determine
@@ -1610,7 +1618,7 @@ solutions for $\mu$ of the form
 %
 Currently, \fs handles only real model parameters and renormalizable
 theories, which restricts the number of possible multiple solutions of
-Eqs.\ \eqref{eq:one-loop-ewsb-eq} to be less or equal to $4N$.  In
+Eqs.\ \eqref{eq:one-loop-ewsb-eq} to be less than or equal to $4N$.  In
 some cases, as for example in the real MSSM, the different solutions
 are related by one or more global signs for the parameters, as for example in
 Eq.~\eqref{eq:EWSB-solution-for-mu}.  \fs recognizes such cases and
@@ -1825,7 +1833,7 @@ we use
   \qquad U^\dagger U = \unity = V^\dagger V ,
 \end{align}
 %
-where we're again choosing the phases of $U$ and $V$ such that all mass
+where we are again choosing the phases of $U$ and $V$ such that all mass
 eigenvalues are positive.
 
 \subsection{Two-scale fixed point iteration}
@@ -2020,11 +2028,11 @@ flag.
 
 It is important to note that in the case of such problem points it is
 non-trivial to judge whether this is because there is no physical
-solution for the given parameter space point or whether a solution
+solution for the given parameter space point or a solution
 exists but the fixed point iteration is unable to find the solution.
 While \fs makes it as easy as possible to find spectra, when studying
 new models a physical understanding of the model is still essential
-and this can help the user determine why the such problems arise.
+and this can help the user determine why such problems arise.
 
 Nonetheless \fs provides help for such cases in several ways. One may
 adjust initial guesses specified in the \fs model file, such
@@ -2577,7 +2585,7 @@ SuperPotential = Yu u.q.Hu - Yd d.q.Hd - Ye e.l.Hd + \[Mu] Hu.Hd \
                + WOp/2 l.Hu.l.Hu;
 \end{numlstlisting}
 where line 2 contains the dimension-5 operator
-multiplied by its coeffficient matrix \code{WOp}.
+multiplied by its coefficient matrix \code{WOp}.
 The declarations of the neutrino Dirac spinors and mixing are
 very similar to those in the MSSMRHN,
 except that \code{FvR} is absent.
@@ -2807,14 +2815,14 @@ command \code{make execute-tests}.  All unit tests are carried out
 nightly in order to continuously check the correctness of the meta
 code and the generated spectrum generators for the shipped models.
 The nightly test results can be found at
-\url{http://iktp.tu-dresden.de/~avoigt/FlexibleSUSY/test.xhtml}
+\url{https://www.desy.de/~alvoigt/FlexibleSUSY/test.xhtml}
 
 The \fs generated NUHM \ESSM\ spectrum generator has also been
 compared against a handwritten one for a constrained version of the
 \ESSM \cite{Athron:2009ue, Athron:2009bs, Athron:2012pw}.  The
 $\beta$-functions were systematically compared in unit tests and were
 found to match within numerical precision.  The handwritten code
-doesn't include full one-loop self-energies or tadpoles, so tests on
+does not include full one-loop self-energies or tadpoles, so tests on
 these were not carried out.  Although the generators assume different
 constraints and solve the boundary value problem with completely
 different algorithms they could be compared by using the output of
@@ -2841,7 +2849,7 @@ two different sets of CMSSM spectrum generators:
 \item \emph{Without sfermion flavour violation:} Disallowing sfermion
   flavour violation simplifies the calculation of the pole masses,
   because flavour-off-diagonal sfermion self-energy matrix elements
-  don't need to be calculated.  Here we compare \fs's non-flavour
+  do not need to be calculated.  Here we compare \fs's non-flavour
   violating CMSSM spectrum generator FlexibleSUSY-NoFV (version 1.0.0)
   against SPheno (version 3.2.4) and Softsusy (version 3.4.0).
 %
@@ -2861,7 +2869,7 @@ disabled.  \fs and Softsusy are compiled with g++ 4.8.0 and Intel
 ifort 13.1.3 20130607.  SPheno and SPhenoMSSM are compiled with Intel
 ifort 13.1.3 20130607.\footnote{Intel's ifort compiler decreases the
   run-time of SPheno and SPhenoMSSM by approximately a factor $1.5$,
-  compared to gfortran.}  We're generating $2\cdot 10^{4}$ random
+  compared to gfortran.}  We are generating $2\cdot 10^{4}$ random
 CMSSM parameter points with $m_0\in [50,1000]\unit{GeV}$, $m_{1/2}\in
 [50,1000]\unit{GeV}$, $\tan\beta\in [1,100]$, $\sign\mu\in \{-1,+1\}$
 and $A_0\in [-1000,$ $1000]\unit{GeV}$.  For each point an SLHA input
@@ -2872,7 +2880,7 @@ The resulting SLHA input file is passed to each spectrum generator and
 the (wall-clock) time is measured until the program has finished.  The
 average run-times for three different CPU types can be found in
 \tabref{tab:run-time-comparison}.  The first column shows the run-time
-on a Intel Core2 Duo (P8600, $2.40\unit{GHz}$) where only one core was
+on an Intel Core2 Duo (P8600, $2.40\unit{GHz}$) where only one core was
 enabled.  The second column shows the run-time on the same processor
 where both cores were enabled.  In the third column a machine with two
 Intel Xeon CPUs (L5640, $2.27\unit{GHz}$, $6$ cores) was used.
@@ -2900,11 +2908,11 @@ Intel Xeon CPUs (L5640, $2.27\unit{GHz}$, $6$ cores) was used.
   \label{tab:run-time-comparison}
 \end{table}
 
-Under both the non-flavour violating spectrum generators (first three
+Among both the non-flavour violating spectrum generators (first three
 rows) as well as the flavour violating ones (4th and 5th row) we find
 that \fs is significantly fastest.  Compared to SPheno,
 FlexibleSUSY-NoFV is faster by a factor $1.4$--$1.7$, and compared to
-Softsusy around a factor $2$--$2.5$.  Under the flavour violating
+Softsusy around a factor $2$--$2.5$.  Between the flavour violating
 spectrum generators FlexibleSUSY-FV is faster than SPhenoMSSM by a
 factor $2.8$--$5$.  Reason for the long run-time of SPhenoMSSM is the
 long calculation duration of the two-loop $\beta$-functions.  Here \fs
@@ -2959,7 +2967,9 @@ for further adaptions to the E6SSM model file and for supplying it to
 us and for for testing and identifying several bugs in \fs and in
 SARAH, in work on the MRSSM; Ulrik Günther for compilation tests on
 Mac OS X and Dylan Harries for spotting a bug in the configuration
-script.
+script and creating an EWSB fixed-point iteration implementation for
+the CNE$_6$SSM, which served as a prototype for implementing a
+generalized EWSB fixed-point iteration.
 %
 J.P. acknowledges support from the MEC and FEDER (EC) Grants
 FPA2011--23596 and the Generalitat Valenciana under grant PROMETEOII/2013/017.
@@ -2967,6 +2977,7 @@ This work has been supported by the German Research Foundation DFG
 through Grant No.~STO876/2-1.
 
 \appendix
+\renewcommand{\thesection}{\Alph{section}}
 
 \section{Examples of C++ code adaptation}
 \label{sec:examples of c++ code adaptation}

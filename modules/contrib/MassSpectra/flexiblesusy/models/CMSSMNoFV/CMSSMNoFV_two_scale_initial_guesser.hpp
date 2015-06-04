@@ -16,13 +16,12 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Fri 16 Jan 2015 12:45:04
+// File generated at Mon 1 Jun 2015 12:56:38
 
 #ifndef CMSSMNoFV_TWO_SCALE_INITIAL_GUESSER_H
 #define CMSSMNoFV_TWO_SCALE_INITIAL_GUESSER_H
 
 #include "CMSSMNoFV_initial_guesser.hpp"
-#include "CMSSMNoFV_input_parameters.hpp"
 #include "CMSSMNoFV_two_scale_low_scale_constraint.hpp"
 #include "CMSSMNoFV_two_scale_susy_scale_constraint.hpp"
 #include "CMSSMNoFV_two_scale_high_scale_constraint.hpp"
@@ -46,7 +45,6 @@ template<>
 class CMSSMNoFV_initial_guesser<Two_scale> : public Initial_guesser<Two_scale> {
 public:
    CMSSMNoFV_initial_guesser(CMSSMNoFV<Two_scale>*,
-                               const CMSSMNoFV_input_parameters&,
                                const QedQcd&,
                                const CMSSMNoFV_low_scale_constraint<Two_scale>&,
                                const CMSSMNoFV_susy_scale_constraint<Two_scale>&,
@@ -58,7 +56,6 @@ public:
 
 private:
    CMSSMNoFV<Two_scale>* model; ///< pointer to model class
-   CMSSMNoFV_input_parameters input_pars;
    QedQcd oneset;   ///< Standard Model low-energy data
    double mu_guess; ///< guessed DR-bar mass of up-quark
    double mc_guess; ///< guessed DR-bar mass of charm-quark

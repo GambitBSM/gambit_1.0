@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Fri 16 Jan 2015 12:44:43
+// File generated at Mon 1 Jun 2015 12:56:16
 
 #include "CMSSMNoFV_two_scale_soft_parameters.hpp"
 #include "wrappers.hpp"
@@ -38,11 +38,11 @@ Eigen::Matrix<double,3,3> CMSSMNoFV_soft_parameters::calc_beta_md2_one_loop(cons
 
    Eigen::Matrix<double,3,3> beta_md2;
 
-   beta_md2 = oneOver16PiSqr*(4*mHd2*(Yd*Yd.adjoint()) + 4*(TYd*(TYd)
+   beta_md2 = (oneOver16PiSqr*(4*mHd2*(Yd*Yd.adjoint()) + 4*(TYd*(TYd)
       .adjoint()) + 2*(md2*Yd*Yd.adjoint()) + 4*(Yd*mq2*Yd.adjoint()) + 2*(Yd*
       Yd.adjoint()*md2) + 0.5163977794943222*g1*Tr11*UNITMATRIX(3) -
       0.5333333333333333*AbsSqr(MassB)*Sqr(g1)*UNITMATRIX(3) -
-      10.666666666666666*AbsSqr(MassG)*Sqr(g3)*UNITMATRIX(3));
+      10.666666666666666*AbsSqr(MassG)*Sqr(g3)*UNITMATRIX(3))).real();
 
 
    return beta_md2;
@@ -74,7 +74,7 @@ Eigen::Matrix<double,3,3> CMSSMNoFV_soft_parameters::calc_beta_md2_two_loop(cons
 
    Eigen::Matrix<double,3,3> beta_md2;
 
-   beta_md2 = twoLoop*(-12*traceconjTYdTpTYd*(Yd*Yd.adjoint()) - 4*
+   beta_md2 = (twoLoop*(-12*traceconjTYdTpTYd*(Yd*Yd.adjoint()) - 4*
       traceconjTYeTpTYe*(Yd*Yd.adjoint()) - 12*tracemd2YdAdjYd*(Yd*Yd.adjoint()
       ) - 4*traceme2YeAdjYe*(Yd*Yd.adjoint()) - 4*traceml2AdjYeYe*(Yd*
       Yd.adjoint()) - 12*tracemq2AdjYdYd*(Yd*Yd.adjoint()) - 24*mHd2*
@@ -111,7 +111,7 @@ Eigen::Matrix<double,3,3> CMSSMNoFV_soft_parameters::calc_beta_md2_two_loop(cons
       Conj(MassG)*Sqr(g3)*((MassB + 2*MassG)*Sqr(g1) - 30*MassG*Sqr(g3))*
       UNITMATRIX(3) + 0.017777777777777778*Conj(MassB)*Sqr(g1)*(90*MassB*(Yd*
       Yd.adjoint()) - 45*(TYd*Yd.adjoint()) + 2*(303*MassB*Sqr(g1) + 40*(2*
-      MassB + MassG)*Sqr(g3))*UNITMATRIX(3)));
+      MassB + MassG)*Sqr(g3))*UNITMATRIX(3)))).real();
 
 
    return beta_md2;

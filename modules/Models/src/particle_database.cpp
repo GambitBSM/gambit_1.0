@@ -116,6 +116,7 @@ namespace Gambit
 
       // Mass-ordered neutral, pseudoscalar, and charged Higgs bosons
       add_particle_set("h0", ((25, 0), (35, 0)) )
+      // I think PDG 25 doubles as the SM Higgs boson, though in the MSSM it is not always the most SM-like
       add_particle("A0", ( 36, 0) )
       add_particle("H+", ( 37, 0) )
       add_particle("H-", (-37, 0) )

@@ -19,7 +19,7 @@
 #ifndef SPECTRUM_GENERATOR_SETTINGS_H
 #define SPECTRUM_GENERATOR_SETTINGS_H
 
-#include "higgs_2loop_corrections.hpp"
+#include "two_loop_corrections.hpp"
 
 namespace flexiblesusy {
 
@@ -47,6 +47,8 @@ public:
       higgs_2loop_correction_at_at,     ///< [10] Higgs 2-loop correction O(alpha_t alpha_t + alpha_t alpha_b + alpha_b alpha_b)
       higgs_2loop_correction_atau_atau, ///< [11] Higgs 2-loop correction O(alpha_tau alpha_tau)
       force_output,          ///< [12] force output
+      top_2loop_corrections_qcd,        ///< [13] Top-quark 2-loop QCD corrections
+      beta_zero_threshold,   ///< [14] beta function zero threshold
       NUMBER_OF_OPTIONS      ///< number of possible options
    };
 
@@ -57,7 +59,7 @@ public:
    void set(Settings, double); ///< set value of spectrum generator setting
    void reset();               ///< resets all settings to their defaults
 
-   Higgs_2loop_corrections get_higgs_2loop_corrections() const;
+   Two_loop_corrections get_two_loop_corrections() const;
 
 private:
    double values[NUMBER_OF_OPTIONS]; ///< spectrum generator settings

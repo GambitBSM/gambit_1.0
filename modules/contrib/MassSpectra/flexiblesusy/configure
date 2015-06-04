@@ -5,8 +5,8 @@
 
 PROGRAM_NAME=FlexibleSUSY
 FLEXIBLESUSY_MAJOR=1
-FLEXIBLESUSY_MINOR=0
-FLEXIBLESUSY_PATCH=4
+FLEXIBLESUSY_MINOR=1
+FLEXIBLESUSY_PATCH=0
 FLEXIBLESUSY_EXTRA=""
 FLEXIBLESUSY_VERSION="${FLEXIBLESUSY_MAJOR}.${FLEXIBLESUSY_MINOR}.${FLEXIBLESUSY_PATCH}${FLEXIBLESUSY_EXTRA}"
 GIT_COMMIT="`git describe --tags 2> /dev/null || echo unknown`"
@@ -27,7 +27,8 @@ DATE="`date 2>/dev/null || echo unknown`"
 debmultiarch=""
 
 # default library directories
-default_lib_paths="/usr/lib /usr/local/lib"
+ld_library_path="`echo ${LD_LIBRARY_PATH} | tr ':' ' '`"
+default_lib_paths="${ld_library_path} /usr/lib /usr/local/lib"
 default_inc_paths="/usr/include /usr/local/include"
 
 # configure log file
@@ -273,7 +274,8 @@ log_package_information() {
 guess_machine_word_size() {
     chip=`uname -m | tr '[A-Z]' '[a-z]'`
     case "$chip" in
-        *32) machine_word_size="32"; return 0 ;;
+        *32|i[36]86)
+             machine_word_size="32"; return 0 ;;
         *64) machine_word_size="64"; return 0 ;;
         *)   machine_word_size="unknown"
              message "Warning: could not guess machine word size"
@@ -919,7 +921,7 @@ check_models() {
         fi
         if ! test -r ${m}/start.m; then
             logmsg ""
-            logmsg "Note: No start script not found in ${m}"
+            logmsg "Note: No start script found in ${m}"
         fi
         if ! test -r ${m}/FlexibleSUSY.m; then
             logmsg ""
@@ -998,6 +1000,11 @@ check_platform() {
     done
     logmsg ""
 
+    for p in ${ld_library_path}; do
+        logmsg "LD_LIBRARY_PATH: ${p}"
+    done
+    logmsg ""
+
     operating_system="`(uname -s) 2>/dev/null || echo unknown`"
     kernel_version="`(uname -r) 2>/dev/null || echo unknown`"
 }
@@ -1022,7 +1029,7 @@ check_multiarch() {
                 result "$debmultiarch"
             fi
         else
-            result "`basename $0`: dpkg-architecture MUST be installed"
+            result "`basename $0`: dpkg-architecture or dpkg-dev MUST be installed"
             exit 1
         fi
     fi
@@ -1859,16 +1866,9 @@ EOF
     if test "x${_sarah_is_available}" = "x0" ; then
         if test -r "${sarahconfig}" ; then
             SARAH_VERSION=`cat ${sarahconfig}`
-            SARAH_MAJOR=`echo ${SARAH_VERSION} | awk -F . '{ print $1 }'`
-            SARAH_MINOR=`echo ${SARAH_VERSION} | awk -F . '{ print $2 }'`
-            SARAH_PATCH=`echo ${SARAH_VERSION} | awk -F . '{ print $3 }'`
-            if test \
-                \( "${SARAH_MAJOR}" -lt "${required_sarah_major}" \) -o \
-                \( \( "${SARAH_MAJOR}" -eq "${required_sarah_major}" \) -a \
-                   \( "${SARAH_MINOR}" -lt "${required_sarah_minor}" \) \) -o \
-                \( \( "${SARAH_MAJOR}" -eq "${required_sarah_major}" \) -a \
-                   \( "${SARAH_MINOR}" -eq "${required_sarah_minor}" \) -a \
-                   \( "${SARAH_PATCH}" -lt "${required_sarah_patch}" \) \)
+            split_version "$SARAH_VERSION" SARAH_MAJOR SARAH_MINOR SARAH_PATCH
+
+            if ! major_minor_patch_at_least $SARAH_MAJOR $SARAH_MINOR $SARAH_PATCH "${required_sarah_major}" "${required_sarah_minor}" "${required_sarah_patch}"
             then
                 result "not ok"
                 message "Error: SARAH version ${SARAH_VERSION} no longer supported!"
@@ -2291,12 +2291,17 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@GIT_COMMIT@|$GIT_COMMIT|"   \
     -e "s|@PKGNAME@|$PROGRAM_NAME|"    \
     -e "s|@ADDONS@|$ADDONS|"           \
+    -e "s|@BOOSTFLAGS@|$BOOSTFLAGS|"   \
     -e "s|@CPPFLAGS@|$CPPFLAGS|"       \
     -e "s|@CXXFLAGS@|$CXXFLAGS|"       \
     -e "s|@CXX@|$CXX|"                 \
+    -e "s|@EIGENFLAGS@|$EIGENFLAGS|"   \
     -e "s|@FC@|$FC|"                   \
     -e "s|@FFLAGS@|$FFLAGS|"           \
     -e "s|@FLIBS@|$FLIBS|"             \
+    -e "s|@GSLFLAGS@|$GSLFLAGS|"       \
+    -e "s|@GSLLIBS@|$GSLLIBS|"         \
+    -e "s|@LOOPFUNCFLAGS@|$LOOPTOOLSFLAGS|" \
     -e "s|@MAKELIB@|$MAKELIB|"         \
     -e "s|@MATH@|$MATH|"               \
     -e "s|@MODELS@|$MODELS|"           \
@@ -2366,6 +2371,7 @@ sed -e "s|@MATH@|$MATH|" \
     < $SARAH_DEP_GEN_TMPL > $SARAH_DEP_GEN
 
 echo "$FLEXIBLESUSY_VERSION" > ${CONFIGDIR}/version
+echo "$GIT_COMMIT" > ${CONFIGDIR}/git_commit
 echo "{${required_sarah_major}, ${required_sarah_minor}, ${required_sarah_patch}}" > ${CONFIGDIR}/required_sarah_version.m
 
 chmod a+x $FSCONFIG

@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Fri 16 Jan 2015 12:36:23
+// File generated at Mon 1 Jun 2015 12:48:02
 
 #include "MSSMNoFVatMGUT_two_scale_high_scale_constraint.hpp"
 #include "MSSMNoFVatMGUT_two_scale_model.hpp"
@@ -26,7 +26,7 @@
 #include "gsl_utils.hpp"
 #include "minimizer.hpp"
 #include "root_finder.hpp"
-#include "numerics.hpp"
+#include "numerics2.hpp"
 
 #include <cassert>
 #include <cmath>
@@ -35,11 +35,12 @@
 
 namespace flexiblesusy {
 
-#define INPUTPARAMETER(p) inputPars.p
+#define INPUTPARAMETER(p) model->get_input().p
 #define MODELPARAMETER(p) model->get_##p()
+#define PHASE(p) model->get_##p()
 #define BETAPARAMETER(p) beta_functions.get_##p()
 #define BETA(p) beta_##p
-#define SM(p) Electroweak_constants::p
+#define LowEnergyConstant(p) Electroweak_constants::p
 #define STANDARDDEVIATION(p) Electroweak_constants::Error_##p
 #define Pole(p) model->get_physical().p
 #define MODEL model
@@ -50,16 +51,13 @@ MSSMNoFVatMGUT_high_scale_constraint<Two_scale>::MSSMNoFVatMGUT_high_scale_const
    , scale(0.)
    , initial_scale_guess(0.)
    , model(0)
-   , inputPars()
 {
 }
 
 MSSMNoFVatMGUT_high_scale_constraint<Two_scale>::MSSMNoFVatMGUT_high_scale_constraint(
-   MSSMNoFVatMGUT<Two_scale>* model_,
-   const MSSMNoFVatMGUT_input_parameters& inputPars_)
+   MSSMNoFVatMGUT<Two_scale>* model_)
    : Constraint<Two_scale>()
    , model(model_)
-   , inputPars(inputPars_)
 {
    initialize();
 }
@@ -73,26 +71,26 @@ void MSSMNoFVatMGUT_high_scale_constraint<Two_scale>::apply()
    assert(model && "Error: MSSMNoFVatMGUT_high_scale_constraint::apply():"
           " model pointer must not be zero");
 
-   if (std::fabs(model->get_g1()) > 3.0) {
+   if (std::fabs(model->get_g1()) > 3.54491) {
 #ifdef ENABLE_VERBOSE
       ERROR("MSSMNoFVatMGUT_high_scale_constraint: Non-perturbative gauge "
             "coupling g1 = " << model->get_g1());
 #endif
-      model->set_g1(1.0);
+      model->set_g1(3.54491);
    }
-   if (std::fabs(model->get_g2()) > 3.0) {
+   if (std::fabs(model->get_g2()) > 3.54491) {
 #ifdef ENABLE_VERBOSE
       ERROR("MSSMNoFVatMGUT_high_scale_constraint: Non-perturbative gauge "
             "coupling g2 = " << model->get_g2());
 #endif
-      model->set_g2(1.0);
+      model->set_g2(3.54491);
    }
-   if (std::fabs(model->get_g3()) > 3.0) {
+   if (std::fabs(model->get_g3()) > 3.54491) {
 #ifdef ENABLE_VERBOSE
       ERROR("MSSMNoFVatMGUT_high_scale_constraint: Non-perturbative gauge "
             "coupling g3 = " << model->get_g3());
 #endif
-      model->set_g3(1.0);
+      model->set_g3(3.54491);
    }
 
    update_scale();
@@ -130,35 +128,35 @@ void MSSMNoFVatMGUT_high_scale_constraint<Two_scale>::apply()
    const auto Yd = MODELPARAMETER(Yd);
    const auto Yu = MODELPARAMETER(Yu);
 
-   MODEL->set_TYe(0, 0, AeIN*Ye(0,0));
-   MODEL->set_TYe(1, 1, AmuonIN*Ye(1,1));
-   MODEL->set_TYe(2, 2, AtauIN*Ye(2,2));
-   MODEL->set_TYd(0, 0, AdIN*Yd(0,0));
-   MODEL->set_TYd(1, 1, AsIN*Yd(1,1));
-   MODEL->set_TYd(2, 2, AbIN*Yd(2,2));
-   MODEL->set_TYu(0, 0, AuIN*Yu(0,0));
-   MODEL->set_TYu(1, 1, AcIN*Yu(1,1));
-   MODEL->set_TYu(2, 2, AtIN*Yu(2,2));
-   MODEL->set_mHd2(mHd2IN);
-   MODEL->set_mHu2(mHu2IN);
-   MODEL->set_mq2(0, 0, Sqr(mq11IN));
-   MODEL->set_mq2(1, 1, Sqr(mq22IN));
-   MODEL->set_mq2(2, 2, Sqr(mq33IN));
-   MODEL->set_ml2(0, 0, Sqr(ml11IN));
-   MODEL->set_ml2(1, 1, Sqr(ml22IN));
-   MODEL->set_ml2(2, 2, Sqr(ml33IN));
-   MODEL->set_md2(0, 0, Sqr(md11IN));
-   MODEL->set_md2(1, 1, Sqr(md22IN));
-   MODEL->set_md2(2, 2, Sqr(md33IN));
-   MODEL->set_mu2(0, 0, Sqr(mu11IN));
-   MODEL->set_mu2(1, 1, Sqr(mu22IN));
-   MODEL->set_mu2(2, 2, Sqr(mu33IN));
-   MODEL->set_me2(0, 0, Sqr(me11IN));
-   MODEL->set_me2(1, 1, Sqr(me22IN));
-   MODEL->set_me2(2, 2, Sqr(me33IN));
-   MODEL->set_MassB(M1);
-   MODEL->set_MassWB(M2);
-   MODEL->set_MassG(M3);
+   MODEL->set_TYe(0,0,Re(AeIN*Ye(0,0)));
+   MODEL->set_TYe(1,1,Re(AmuonIN*Ye(1,1)));
+   MODEL->set_TYe(2,2,Re(AtauIN*Ye(2,2)));
+   MODEL->set_TYd(0,0,Re(AdIN*Yd(0,0)));
+   MODEL->set_TYd(1,1,Re(AsIN*Yd(1,1)));
+   MODEL->set_TYd(2,2,Re(AbIN*Yd(2,2)));
+   MODEL->set_TYu(0,0,Re(AuIN*Yu(0,0)));
+   MODEL->set_TYu(1,1,Re(AcIN*Yu(1,1)));
+   MODEL->set_TYu(2,2,Re(AtIN*Yu(2,2)));
+   MODEL->set_mHd2(Re(mHd2IN));
+   MODEL->set_mHu2(Re(mHu2IN));
+   MODEL->set_mq2(0,0,Re(Sqr(mq11IN)));
+   MODEL->set_mq2(1,1,Re(Sqr(mq22IN)));
+   MODEL->set_mq2(2,2,Re(Sqr(mq33IN)));
+   MODEL->set_ml2(0,0,Re(Sqr(ml11IN)));
+   MODEL->set_ml2(1,1,Re(Sqr(ml22IN)));
+   MODEL->set_ml2(2,2,Re(Sqr(ml33IN)));
+   MODEL->set_md2(0,0,Re(Sqr(md11IN)));
+   MODEL->set_md2(1,1,Re(Sqr(md22IN)));
+   MODEL->set_md2(2,2,Re(Sqr(md33IN)));
+   MODEL->set_mu2(0,0,Re(Sqr(mu11IN)));
+   MODEL->set_mu2(1,1,Re(Sqr(mu22IN)));
+   MODEL->set_mu2(2,2,Re(Sqr(mu33IN)));
+   MODEL->set_me2(0,0,Re(Sqr(me11IN)));
+   MODEL->set_me2(1,1,Re(Sqr(me22IN)));
+   MODEL->set_me2(2,2,Re(Sqr(me33IN)));
+   MODEL->set_MassB(Re(M1));
+   MODEL->set_MassWB(Re(M2));
+   MODEL->set_MassG(Re(M3));
 
    {
       const auto g1 = MODELPARAMETER(g1);
@@ -169,29 +167,29 @@ void MSSMNoFVatMGUT_high_scale_constraint<Two_scale>::apply()
       const auto Yu = MODELPARAMETER(Yu);
 
       if (MaxAbsValue(g1) > 3.5449077018110318)
-         model->get_problems().flag_non_perturbative_parameter_warning("g1", MaxAbsValue(g1), model->get_scale(), 3.5449077018110318);
+         model->get_problems().flag_non_perturbative_parameter("g1", MaxAbsValue(g1), model->get_scale(), 3.5449077018110318);
       else
-         model->get_problems().unflag_non_perturbative_parameter_warning("g1");
+         model->get_problems().unflag_non_perturbative_parameter("g1");
       if (MaxAbsValue(g2) > 3.5449077018110318)
-         model->get_problems().flag_non_perturbative_parameter_warning("g2", MaxAbsValue(g2), model->get_scale(), 3.5449077018110318);
+         model->get_problems().flag_non_perturbative_parameter("g2", MaxAbsValue(g2), model->get_scale(), 3.5449077018110318);
       else
-         model->get_problems().unflag_non_perturbative_parameter_warning("g2");
+         model->get_problems().unflag_non_perturbative_parameter("g2");
       if (MaxAbsValue(g3) > 3.5449077018110318)
-         model->get_problems().flag_non_perturbative_parameter_warning("g3", MaxAbsValue(g3), model->get_scale(), 3.5449077018110318);
+         model->get_problems().flag_non_perturbative_parameter("g3", MaxAbsValue(g3), model->get_scale(), 3.5449077018110318);
       else
-         model->get_problems().unflag_non_perturbative_parameter_warning("g3");
+         model->get_problems().unflag_non_perturbative_parameter("g3");
       if (MaxAbsValue(Yd) > 3.5449077018110318)
-         model->get_problems().flag_non_perturbative_parameter_warning("Yd", MaxAbsValue(Yd), model->get_scale(), 3.5449077018110318);
+         model->get_problems().flag_non_perturbative_parameter("Yd", MaxAbsValue(Yd), model->get_scale(), 3.5449077018110318);
       else
-         model->get_problems().unflag_non_perturbative_parameter_warning("Yd");
+         model->get_problems().unflag_non_perturbative_parameter("Yd");
       if (MaxAbsValue(Ye) > 3.5449077018110318)
-         model->get_problems().flag_non_perturbative_parameter_warning("Ye", MaxAbsValue(Ye), model->get_scale(), 3.5449077018110318);
+         model->get_problems().flag_non_perturbative_parameter("Ye", MaxAbsValue(Ye), model->get_scale(), 3.5449077018110318);
       else
-         model->get_problems().unflag_non_perturbative_parameter_warning("Ye");
+         model->get_problems().unflag_non_perturbative_parameter("Ye");
       if (MaxAbsValue(Yu) > 3.5449077018110318)
-         model->get_problems().flag_non_perturbative_parameter_warning("Yu", MaxAbsValue(Yu), model->get_scale(), 3.5449077018110318);
+         model->get_problems().flag_non_perturbative_parameter("Yu", MaxAbsValue(Yu), model->get_scale(), 3.5449077018110318);
       else
-         model->get_problems().unflag_non_perturbative_parameter_warning("Yu");
+         model->get_problems().unflag_non_perturbative_parameter("Yu");
 
    }
 }
@@ -206,14 +204,19 @@ double MSSMNoFVatMGUT_high_scale_constraint<Two_scale>::get_initial_scale_guess(
    return initial_scale_guess;
 }
 
+const MSSMNoFVatMGUT_input_parameters& MSSMNoFVatMGUT_high_scale_constraint<Two_scale>::get_input_parameters() const
+{
+   return model->get_input();
+}
+
+MSSMNoFVatMGUT<Two_scale>* MSSMNoFVatMGUT_high_scale_constraint<Two_scale>::get_model() const
+{
+   return model;
+}
+
 void MSSMNoFVatMGUT_high_scale_constraint<Two_scale>::set_model(Two_scale_model* model_)
 {
    model = cast_model<MSSMNoFVatMGUT<Two_scale>*>(model_);
-}
-
-void MSSMNoFVatMGUT_high_scale_constraint<Two_scale>::set_input_parameters(const MSSMNoFVatMGUT_input_parameters& inputPars_)
-{
-   inputPars = inputPars_;
 }
 
 void MSSMNoFVatMGUT_high_scale_constraint<Two_scale>::set_scale(double s)
@@ -251,7 +254,7 @@ void MSSMNoFVatMGUT_high_scale_constraint<Two_scale>::update_scale()
    const auto beta_g1 = BETAPARAMETER(g1);
    const auto beta_g2 = BETAPARAMETER(g2);
 
-   scale = currentScale*exp((-g1 + g2)/(BETA(g1) - BETA(g2)));
+   scale = currentScale*Exp((-g1 + g2)/(BETA(g1) - BETA(g2)));
 
 
    if (errno == ERANGE) {

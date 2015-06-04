@@ -15,11 +15,6 @@ DarkSUSY:
   5.1.1:       ./Backends/lib/libdarksusy.so
   6.0.0:        /sometime/soon/maybe
 
-BOSSMinimalExample:
-  1.0:         ./Backends/lib/libminimal_1_0.so
-  1.1:         ./Backends/lib/libminimal_1_1.so
-  1.2:         ./Backends/lib/libminimal_1_2.so
-
 DDCalc0:
   0.0:         ./Backends/lib/libDDCalc0.so
 
@@ -30,7 +25,7 @@ HiggsSignals:
   1.2:         ./Backends/lib/libhiggssignals.so
 
 FeynHiggs:
-  2.10:         ./Backends/lib/libfeynhiggs.so
+  2.10.4:      ./Backends/lib/libFH.so
 
 LibFarrayTest:
   1.0:         ./Backends/lib/libFarrayTest.so
@@ -60,7 +55,6 @@ micromegas:
 nulike:
   1.0.0:       ./../extras/nulike/libnulike.so
 
-SUSYHIT:
-  0.1:         ./Backends/lib/libsusyhit.so
-  1.4:         ./Backends/lib/libsusyhit.so
+SUSY_HIT:
+  1.5:         ./Backends/lib/libsusyhit.so
 

@@ -16,17 +16,8 @@ Printers:
 Spectrum objects:
 * Make spectrum scale limit getter public (Ben)
 
-General:
-* Implement isNaN (look at cmath) (Pat)
-* Implement NaN check for likelihood in scanner (Pat, Greg)
-* Deal safely with errors arising from non-double results with purpose: Likelihood in yaml file (Pat)
-
 DecayBit:
-* Add SM Higgs partial decay widths (Pat / Csaba)
 * Make decay table type from SLHAea (Pat)
-* Add scalar singlet Higgs partial decay widths (SM + invisible; Pat)
-* SUSYHIT SLHA replacement interface (Pat)
-* SUSYHIT observable getters (Csaba)
 
 EWPOBit:
 * SUSY-POPE interface (Peter)
@@ -103,8 +94,8 @@ BOSS:
 
 Backends:
 * Resolve residual issues with passing strings to fortran backends (Lars / Pat)
-* Implement backending of Mathematica codes (Ben to dabble with; no time pressure)
-* Implement backending of Python codes (Ben to dabble with; no time pressure)
+* Implement backending of Mathematica codes 
+* Implement backending of Python codes 
 
 General:
 * Get the doxygen documentation into the Trac Wiki somehow, and updated automatically (Antje & Pat)
@@ -160,6 +151,10 @@ Core done:
 * Fix error in type equivalencies 
 * Split Utils dir into codes needed for ScannerBit standalone and those not needed
 * Make dependency resolver errors more informative
+* Implement isNaN
+* Implement NaN check for likelihood in scanner
+* Deal safely with errors arising from non-double results with purpose: Likelihood in yaml file
+* Make bossed-type-requirements trigger a dependency on the providing backend's ini function.
 
 Models done:
 * Remove automatic declaration of "little guys"
@@ -170,6 +165,10 @@ Models done:
 * Massage function in ModelBit that checks that all the user-requested models are actually used by the dependency resolver.  If not, throw an error to say that they are wasting their CPU time with the unused parameters. 
 * Make it possible to declare in module function rollcall macro calls that multiple models are required to be scanned, e.g. ALLOWED_MODELS(GROUP1, blah), ALLOWED_MODELS(GROUP2, blah), s.t. the function requires something from GROUP1 and GROUP2 to be scanned, in order to be used in a given scan. 
 * Explicitly disallow multiple parents in all parts of Models (and other) code.
+* Add SM Higgs partial decay widths
+* Add scalar singlet Higgs partial decay widths (SM + invisible)
+* SUSYHIT SLHA replacement interface
+* SUSYHIT observable getters
 
 
 HE Collider
