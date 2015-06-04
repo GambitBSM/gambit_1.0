@@ -63,7 +63,7 @@ Scanner:
 
   use_objectives: EggBox
   #object_detection
-  use_scanner: find_kernel
+  use_scanner: ransample
   #gnest, bin_grid_greg
 
   scanners:

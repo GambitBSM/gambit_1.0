@@ -48,6 +48,9 @@ endforeach()
 # Set the project name
 project(GAMBIT)
 
+# Enable Fortran compiler
+enable_language(Fortran)
+
 # Don't relink all binaries when shared lib changes (programs will be rebuilt anyway if used headers change)
 set(CMAKE_LINK_DEPENDS_NO_SHARED 1)
 
@@ -80,9 +83,6 @@ endforeach()
 
 # Do OSX checks
 include(cmake/MacOSX.cmake)
-
-# Enable Fortran compiler
-enable_language(Fortran)
 
 # Add -fPIC for 64 bit systems
 if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64")
