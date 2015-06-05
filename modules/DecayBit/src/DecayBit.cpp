@@ -21,6 +21,7 @@
 #include "gambit/DecayBit/DecayBit_rollcall.hpp"
 #include "gambit/DecayBit/decay_utils.hpp"
 #include "gambit/Elements/MSSM_slhahelp.hpp"
+
 #include <string>
 #include <map>
 
@@ -36,6 +37,268 @@ namespace Gambit
     /// @{
 
 /////////////// Standard Model ///////////////////
+     /// this another variable with global scope for this file
+     std::map<std::string, std::string> particle_to_anti_particle2;
+     /// this is hideous at the moment, I need a global tol
+     /// to keep it the same in each function
+     double tol = 1e-2;
+
+      void fill_p_to_ap_map2 () {
+        particle_to_anti_particle2["~u_1"] = "~ubar_1";
+        particle_to_anti_particle2["~u_2"] = "~ubar_2";
+        particle_to_anti_particle2["~u_3"] = "~ubar_3";
+        particle_to_anti_particle2["~u_4"] = "~ubar_4";
+        particle_to_anti_particle2["~u_5"] = "~ubar_5";
+        particle_to_anti_particle2["~u_6"] = "~ubar_6";
+        
+        particle_to_anti_particle2["~d_1"] = "~dbar_1";
+        particle_to_anti_particle2["~d_2"] = "~dbar_2";
+        particle_to_anti_particle2["~d_3"] = "~dbar_3";
+        particle_to_anti_particle2["~d_4"] = "~dbar_4";
+        particle_to_anti_particle2["~d_5"] = "~dbar_5";
+        particle_to_anti_particle2["~d_6"] = "~dbar_6";
+        
+        particle_to_anti_particle2["~e-_1"] = "~e+_1";
+        particle_to_anti_particle2["~e-_2"] = "~e+_2";
+        particle_to_anti_particle2["~e-_3"] = "~e+_3";
+        particle_to_anti_particle2["~e-_4"] = "~e+_4";
+        particle_to_anti_particle2["~e-_5"] = "~e+_5";
+        particle_to_anti_particle2["~e-_6"] = "~e+_6";
+        
+        particle_to_anti_particle2["~nu_1"] = "~nubar_1";
+        particle_to_anti_particle2["~nu_2"] = "~nubar_2";
+        particle_to_anti_particle2["~nu_3"] = "~nubar_3";
+     } 
+     
+     mass_es_pseudonyms2::mass_es_pseudonyms2(const SubSpectrum* mssm,
+                                              double tol)
+     {
+        filled = false;
+        fill_p_to_ap_map2();
+        fill_mass_es_psns2(mssm, tol);
+        filled = true;
+     }
+
+     
+       
+
+     /// just leave these as regular functions just now
+     /// in case we change approach or test alternative
+     void fill_mass_es_psn_gauge2(std::string & is, std::string & isbar,  
+                                 std::string gauge_es,
+                                 const SubSpectrum* mssm,
+                                 double tol) {
+        std::string mass_es;
+        double max_mix = 0; 
+        max_mix = slhahelp::largest_mass_mixing_for_gauge(gauge_es,mass_es,
+                                                          mssm);
+        if((max_mix*max_mix) >= 1-tol){
+           is = mass_es;   
+           isbar = particle_to_anti_particle2[mass_es];
+        }
+        else {/// throw exception in gambit
+           /// I am actually not sure if this is code error or a problem point
+           /// to be flagged
+           
+           /// can i write the deviation and the states in this message?  O
+           /// or does it only accept string
+             
+           DecayBit_error().raise(LOCAL_INFO, "function fill_mass_es_psn_gauge has too large sfermion mixing for state that assumed to be a pure gauge state"); 
+           DecayBit_warning().raise(LOCAL_INFO,
+              "This point violates the assumption that certain sfermion states have no family mixing  by a degree larger than tol made in a DecayBit routine.");
+           invalid_point().raise("This point violates the assumption that certain sfermion states have no family mixing  by a degree larger than tol made in a DecayBit routine.");
+}  
+        return;
+     }
+
+     void fill_mass_es_psn_family2(std::string & is, std::string & isbar,  
+                                  std::string family_state,
+                                  const SubSpectrum* mssm,
+                                  double tol) {
+        std::string mass_es; 
+        /// use slhahelp routine which first identifies the mass_es which 
+        /// best matches the requested family state. then returns the
+        /// decomposition of that mass_es state in terms of gauge states 
+        /// from the same family as the family state
+        std::vector<double> wrong_fam_gauge_comp;
+        std::vector<double> right_fam_gauge_comp = 
+           slhahelp::family_state_mix_elements(family_state, mass_es, mssm);
+        /// Do very simple test for now, discuss best approach
+        /// This is a question for decaybit
+        double mix_mag_sq = 0.0;
+        for(auto i = right_fam_gauge_comp.begin(); 
+            i != right_fam_gauge_comp.end(); i++)
+           {
+              double mix = *i;
+              mix_mag_sq += mix*mix;
+           }    
+        
+        if(mix_mag_sq > 1-tol) 
+           {
+              is = mass_es;   
+              isbar = particle_to_anti_particle2[mass_es];
+           }
+        else 
+           {
+           DecayBit_error().raise(LOCAL_INFO, "function get_mass_admix_for_gauge called with type's for the gauge eigenstate and mass eigenstate that don't match."); 
+           DecayBit_warning().raise(LOCAL_INFO,
+              "This point violates the assumption that certain sfermion states have no family mixing  by a degree larger than tol made in a DecayBit routine.");
+           invalid_point().raise("This point violates the assumption that certain sfermion states have no family mixing  by a degree larger than tol made in a DecayBit routine.");
+        }
+        
+        return;
+ }
+
+
+     
+ 
+       
+     void  mass_es_pseudonyms2::test_print(const SubSpectrum* mssm) {
+        std::cout.precision(8);
+        std::cout << "Dmix :" << std::endl;;
+        for(int i = 1; i <=6; i++){
+           for(int j = 1; j <=6; j++){
+              std::cout << "     " << i << j << " = "  
+                        << std::scientific << std::setw(10)  
+                        <<  mssm->phys.get_Pole_Mixing("~d", i, j);
+           }
+           std::cout << std::endl;
+        }
+        
+        std::cout << "Umix :" << std::endl;;
+        for(int i = 1; i <=6; i++){
+           for(int j = 1; j <=6; j++){
+              std::cout << "     " << i << j << " = "  
+                        << mssm->phys.get_Pole_Mixing("~u", i, j);
+           }
+           std::cout << std::endl;
+        }
+        
+        
+        std::cout << "Emix :" << std::endl;;
+        for(int i = 1; i <=6; i++){
+           for(int j = 1; j <=6; j++){
+              std::cout << "     " << i << j << " = "  
+                        << mssm->phys.get_Pole_Mixing("~e", i, j);
+            }
+           std::cout << std::endl;
+        }
+
+         std::cout << "NUmix :" << std::endl;;
+        for(int i = 1; i <=3; i++){
+           for(int j = 1; j <=3; j++){
+              std::cout << "     " << i << j << " = "  
+                        << mssm->phys.get_Pole_Mixing("~nu", i, j);
+            }
+           std::cout << std::endl;
+        }
+        
+        
+        std::cout << "isdl = "  << isdl << std::endl;
+        std::cout << "isdlbar = "  << isdlbar << std::endl;
+        std::cout << "isdr = "  << isdr << std::endl;
+        std::cout << "isdrbar = "  << isdrbar << std::endl;
+        
+        std::cout << "isul = "  << isul << std::endl;
+        std::cout << "isulbar = "  << isulbar << std::endl;
+        std::cout << "isur = "  << isur << std::endl;
+        std::cout << "isurbar = "  << isurbar << std::endl;
+        
+
+        std::cout << "issl = "  << issl << std::endl;
+        std::cout << "isslbar = "  << isslbar << std::endl;
+        std::cout << "issr = "  << issr << std::endl;
+        std::cout << "issrbar = "  << issrbar << std::endl;
+
+        std::cout << "iscl = "  << iscl << std::endl;
+        std::cout << "isclbar = "  << isclbar << std::endl;
+        std::cout << "iscr = "  << iscr << std::endl;
+        std::cout << "iscrbar = "  << iscrbar << std::endl;
+
+
+
+        std::cout << "isb1 = "  << isb1 << std::endl;
+        std::cout << "isb1bar = "  << isb1bar << std::endl;
+        std::cout << "isb2 = "  << isb2 << std::endl;
+        std::cout << "isb2bar = "  << isb2bar << std::endl;
+
+        std::cout << "ist1 = "  << ist1 << std::endl;
+        std::cout << "ist1bar = "  << ist1bar << std::endl;
+        std::cout << "ist2 = "  << ist2 << std::endl;
+        std::cout << "ist2bar = "  << ist2bar << std::endl;
+
+
+        std::cout << "isell = "  << isell << std::endl;
+        std::cout << "isellbar = "  << isellbar << std::endl;
+        std::cout << "iselr = "  << iselr << std::endl;
+        std::cout << "iselrbar = "  << iselrbar << std::endl;
+
+        std::cout << "isnel = "  << isnel << std::endl;
+        std::cout << "isnelbar = "  << isnelbar << std::endl;
+
+        std::cout << "ismul = "  << ismul << std::endl;
+        std::cout << "ismulbar = "  << ismulbar << std::endl;
+        std::cout << "ismur = "  << ismur << std::endl;
+        std::cout << "ismurbar = "  << ismurbar << std::endl;
+
+        std::cout << "isnmull = "  << isnmul << std::endl;
+        std::cout << "isnmullbar = "  << isnmulbar << std::endl;
+
+        std::cout << "istau1 = "  << istau1 << std::endl;
+        std::cout << "istau1bar = "  << istau1bar << std::endl;
+        std::cout << "istau2 = "  << istau2 << std::endl;
+        std::cout << "istau2bar = "  << istau2bar << std::endl;
+
+        std::cout << "isntau1 = "  << isntau1 << std::endl;
+        std::cout << "isntau1bar = "  << isntau1bar << std::endl;
+
+
+     }
+     
+     /// fill strings in struct
+     void  mass_es_pseudonyms2::fill_mass_es_psns2(const SubSpectrum* mssm,
+                                                  double tol) 
+     {
+        if(filled == true) return;  // don't repeat unless necessary
+       
+        fill_mass_es_psn_gauge2(isdl, isdlbar, "~d_L", mssm, tol);
+        fill_mass_es_psn_gauge2(isul, isulbar, "~u_L", mssm, tol);
+        fill_mass_es_psn_gauge2(issl, isslbar, "~s_L", mssm, tol);
+        fill_mass_es_psn_gauge2(iscl, isclbar, "~c_L", mssm, tol);
+        fill_mass_es_psn_family2(isb1, isb1bar, "~b_1", mssm, tol);
+        fill_mass_es_psn_family2(ist1, ist1bar, "~t_1", mssm, tol);
+        
+        fill_mass_es_psn_gauge2(isell, isellbar, "~e_L", mssm, tol);
+        fill_mass_es_psn_gauge2(isnel, isnelbar, "~nu_e_L", mssm, tol);
+        fill_mass_es_psn_gauge2(ismul, ismulbar, "~mu_L", mssm, tol);
+        fill_mass_es_psn_gauge2(isnmul, isnmulbar, "~nu_mu_L", mssm, tol);
+        fill_mass_es_psn_family2(istau1, istau1bar, "~tau_1", mssm, tol);
+        // why on earth do we or they have a family state for the tau neutrino 
+        /// what does that mean?  Either the left handed states mix amongst 
+        /// each other or they don't, there are no right handed sneutrinos
+        /// because the mssm has no right neutrino superfields.
+        /// I will pretend these are Left states for jsut now but leave the
+        /// confusing name
+        fill_mass_es_psn_gauge2(isntau1, isntau1bar, "~nu_tau_L", mssm, tol);
+
+        fill_mass_es_psn_gauge2(isdr, isdrbar, "~d_R", mssm, tol);
+        fill_mass_es_psn_gauge2(isur, isurbar, "~u_R", mssm, tol);
+        fill_mass_es_psn_gauge2(issr, issrbar, "~s_R", mssm, tol);
+        fill_mass_es_psn_gauge2(iscr, iscrbar, "~c_R", mssm, tol);
+        fill_mass_es_psn_family2(isb2, isb2bar, "~b_2", mssm, tol);
+        fill_mass_es_psn_family2(ist2, ist2bar, "~t_2", mssm, tol);
+        fill_mass_es_psn_gauge2(iselr, iselrbar, "~e_R", mssm, tol);
+        fill_mass_es_psn_gauge2(ismur, ismurbar, "~mu_R", mssm, tol);
+        fill_mass_es_psn_family2(istau2, istau2bar, "~tau_2", mssm, tol);
+        
+        test_print(mssm);
+        
+        filled=true;
+
+        return;
+     }
+
+
 
     /// SM decays: W+/W-
     void W_plus_decays (DecayTable::Entry& result) 
@@ -212,8 +475,8 @@ namespace Gambit
 
      /// this another variable with global scope for this file
      std::map<std::string, std::string> particle_to_anti_particle;
-     
-        void fill_p_to_ap_map () {
+    
+     void fill_p_to_ap_map () {
         particle_to_anti_particle["~u_1"] = "~ubar_1";
         particle_to_anti_particle["~u_2"] = "~ubar_2";
         particle_to_anti_particle["~u_3"] = "~ubar_3";
@@ -378,9 +641,9 @@ namespace Gambit
      };
      /// this is hideous at the moment, I need a global tol
      /// to keep it the same in each function
-     double tol = 1e-2;
+     //double tol = 1e-2;
      /// empty constructor   
-      mass_es_pseudonyms::mass_es_pseudonyms()
+     mass_es_pseudonyms::mass_es_pseudonyms()
      {
         filled = false;
      }
@@ -552,15 +815,21 @@ namespace Gambit
       result.set_BF(FH_input.gammas[tBF(2)-1], 0.0, "H+", "b");
     }
 
+     void Get_psns (mass_es_pseudonyms2 & result)
+     {
+        using namespace Pipes::Get_psns;
+        const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_UV();
+        mass_es_pseudonyms2 psn(mssm, tol);
+        result = psn;   
+     }
+
     /// MSSM decays: h0_1
     void MSSM_h0_1_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::MSSM_h0_1_decays;
-      const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_UV();
-      ///constructor calls fill - this is not ideal
-      mass_es_pseudonyms psn(mssm, tol);
-     
-      result.width_in_GeV = BEreq::cb_widthhl_hdec->hlwdth;
+      mass_es_pseudonyms2 psn = *(Dep::SLHA_pseudonyms);
+
+      result.width_in_GeV = BEreq::cb_widthhl_hdec->hlwdth;  
       result.set_BF(BEreq::cb_widthhl_hdec->hlbrb, 0.0, "b", "bbar");
       result.set_BF(BEreq::cb_widthhl_hdec->hlbrl, 0.0, "tau+", "tau-");
       result.set_BF(BEreq::cb_widthhl_hdec->hlbrm, 0.0, "mu+", "mu-");
@@ -586,6 +855,7 @@ namespace Gambit
       result.set_BF(BEreq::cb_wisusy_hdec->hlbrsn(2,3)*2.0, 0.0, "~chi0_2", "~chi0_3");
       result.set_BF(BEreq::cb_wisusy_hdec->hlbrsn(2,4)*2.0, 0.0, "~chi0_2", "~chi0_4");
       result.set_BF(BEreq::cb_wisusy_hdec->hlbrsn(3,4)*2.0, 0.0, "~chi0_3", "~chi0_4");
+
       result.set_BF(BEreq::cb_wisfer_hdec->bhlsqul/2.0, 0.0, psn.isul, psn.isulbar);
       result.set_BF(BEreq::cb_wisfer_hdec->bhlsqur/2.0, 0.0, psn.isur, psn.isurbar);
       result.set_BF(BEreq::cb_wisfer_hdec->bhlsqul/2.0, 0.0, psn.iscl, psn.isclbar);
@@ -613,8 +883,8 @@ namespace Gambit
       result.set_BF(BEreq::cb_wisfer_hdec->bhlslnl/3.0, 0.0, psn.isnel, psn.isnelbar);
       result.set_BF(BEreq::cb_wisfer_hdec->bhlslnl/3.0, 0.0, psn.isnmul, psn.isnmulbar);
       result.set_BF(BEreq::cb_wisfer_hdec->bhlslnl/3.0, 0.0, psn.isntau1, psn.isntau1bar);
-
-      // cout << "h0_1 total width: " << result.width_in_GeV << endl;
+     
+      ///cout << "h0_1 total width: " << result.width_in_GeV << endl;
       // cout << "BR(h0_1 -> gamma gamma): " << BEreq::cb_widthhl_hdec->hlbrga << endl;
       // cout << "BR(h0_1 -> ~u_L ~u_L_bar): " << BEreq::cb_wisfer_hdec->bhlsqul/2.0 << endl;
       // cout << "BR(h0_1 -> ~tau-_L ~e+_5): " << BEreq::cb_wisfer_hdec->bhlstau(1,1) << endl;
@@ -630,9 +900,8 @@ namespace Gambit
 
       int iH = 0; // h0_1
       
-      const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_UV();
-      ///constructor calls fill - this is not ideal
-      mass_es_pseudonyms psn(mssm, tol);
+      mass_es_pseudonyms2 psn = *(Dep::SLHA_pseudonyms);
+      
       
       
       result.width_in_GeV = FH_input.gammas[iH];
@@ -741,10 +1010,7 @@ namespace Gambit
     void h0_2_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::h0_2_decays;
-
-      const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_UV();
-      ///constructor calls fill - this is not ideal
-      mass_es_pseudonyms psn(mssm, tol);
+      mass_es_pseudonyms2 psn = *(Dep::SLHA_pseudonyms);
      
 
       result.width_in_GeV = BEreq::cb_widthhh_hdec->hhwdth;
@@ -813,10 +1079,7 @@ namespace Gambit
     void FH_h0_2_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::FH_h0_2_decays;
-
-      const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_UV();
-      ///constructor calls fill - this is not ideal
-      mass_es_pseudonyms psn(mssm, tol);
+      mass_es_pseudonyms2 psn = *(Dep::SLHA_pseudonyms);
       
       // unpack FeynHiggs Couplings
 
@@ -927,11 +1190,8 @@ namespace Gambit
     void A0_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::A0_decays;
-      
-      const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_UV();
-      ///constructor calls fill - this is not ideal
-      mass_es_pseudonyms psn(mssm, tol);
-      
+      mass_es_pseudonyms2 psn = *(Dep::SLHA_pseudonyms);
+
       result.width_in_GeV = BEreq::cb_widtha_hdec->awdth;
       result.set_BF(BEreq::cb_widtha_hdec->abrb, 0.0, "b", "bbar");
       result.set_BF(BEreq::cb_widtha_hdec->abrl, 0.0, "tau+", "tau-");
@@ -977,10 +1237,7 @@ namespace Gambit
     void FH_A0_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::FH_A0_decays;
-
-      const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_UV();
-      ///constructor calls fill - this is not ideal
-      mass_es_pseudonyms psn(mssm, tol);
+      mass_es_pseudonyms2 psn = *(Dep::SLHA_pseudonyms);
 
       // unpack FeynHiggs Couplings
       fh_Couplings FH_input = *Dep::FH_Couplings;
@@ -1090,11 +1347,8 @@ namespace Gambit
     void Hplus_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::Hplus_decays;
-      
-      const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_UV();
-      ///constructor calls fill - this is not ideal
-      mass_es_pseudonyms psn(mssm, tol);
-
+      mass_es_pseudonyms2 psn = *(Dep::SLHA_pseudonyms);
+     
       result.width_in_GeV = BEreq::cb_widthhc_hdec->hcwdth;
       result.set_BF(BEreq::cb_widthhc_hdec->hcbrb, 0.0, "c", "bbar");
       result.set_BF(BEreq::cb_widthhc_hdec->hcbrl, 0.0, "tau+", "nu_tau");
@@ -1130,10 +1384,7 @@ namespace Gambit
     void FH_Hplus_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::FH_Hplus_decays;
-
-      const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_UV();
-      ///constructor calls fill - this is not ideal
-      mass_es_pseudonyms psn(mssm, tol);
+      mass_es_pseudonyms2 psn = *(Dep::SLHA_pseudonyms);
 
       // unpack FeynHiggs Couplings
       fh_Couplings FH_input = *Dep::FH_Couplings;
@@ -1226,10 +1477,7 @@ namespace Gambit
     void gluino_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::gluino_decays;
-      
-      const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_UV();
-       ///constructor calls fill - this is not ideal
-      mass_es_pseudonyms psn(mssm, tol);
+      mass_es_pseudonyms2 psn = *(Dep::SLHA_pseudonyms);
 
       result.width_in_GeV = BEreq::cb_sd_gluiwidth->gluitot;
       result.set_BF(BEreq::cb_sd_glui2body->brgsdownl, 0.0, psn.isdl, "dbar");
@@ -1307,11 +1555,8 @@ namespace Gambit
     void stop_1_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::stop_1_decays;
-      
-      const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_UV();
-      ///constructor calls fill - this is not ideal
-      mass_es_pseudonyms psn(mssm, tol);
-
+      mass_es_pseudonyms2 psn = *(Dep::SLHA_pseudonyms);
+     
       result.width_in_GeV = BEreq::cb_sd_stopwidth->stoptot(1);
       result.set_BF(BEreq::cb_sd_stop2body->brst1neutt(1), 0.0, "~chi0_1", "t");
       result.set_BF(BEreq::cb_sd_stop2body->brst1neutt(2), 0.0, "~chi0_2", "t");
@@ -1371,10 +1616,7 @@ namespace Gambit
     void stop_2_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::stop_2_decays;
-      
-      const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_UV();
-      ///constructor calls fill - this is not ideal
-      mass_es_pseudonyms psn(mssm, tol);
+      mass_es_pseudonyms2 psn = *(Dep::SLHA_pseudonyms);
 
       result.width_in_GeV = BEreq::cb_sd_stopwidth->stoptot(2);
       result.set_BF(BEreq::cb_sd_stop2body->brst2neutt(1), 0.0, "~chi0_1", "t");
@@ -1449,10 +1691,7 @@ namespace Gambit
     void sbottom_1_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::sbottom_1_decays;
-      
-      const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_UV();
-      ///constructor calls fill - this is not ideal
-      mass_es_pseudonyms psn(mssm, tol);
+      mass_es_pseudonyms2 psn = *(Dep::SLHA_pseudonyms);
 
       result.width_in_GeV = BEreq::cb_sd_sbotwidth->sbottot(1);
       result.set_BF(BEreq::cb_sd_sbot2body->brsb1neutt(1), 0.0, "~chi0_1", "b");
@@ -1502,11 +1741,8 @@ namespace Gambit
     void sbottom_2_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::sbottom_2_decays;
-      
-      const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_UV();
-      ///constructor calls fill - this is not ideal
-      mass_es_pseudonyms psn(mssm, tol);
-
+      mass_es_pseudonyms2 psn = *(Dep::SLHA_pseudonyms);
+     
       result.width_in_GeV = BEreq::cb_sd_sbotwidth->sbottot(2);
       result.set_BF(BEreq::cb_sd_sbot2body->brsb2neutt(1), 0.0, "~chi0_1", "b");
       result.set_BF(BEreq::cb_sd_sbot2body->brsb2neutt(2), 0.0, "~chi0_2", "b");
@@ -1820,11 +2056,8 @@ namespace Gambit
     void stau_1_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::stau_1_decays;
+      mass_es_pseudonyms2 psn = *(Dep::SLHA_pseudonyms);
       
-      const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_UV();
-      /// constructor calls fill - this is not ideal
-      mass_es_pseudonyms psn(mssm, tol);
-
       result.width_in_GeV = BEreq::cb_sd_stauwidth->stau1tot2;
       result.set_BF(BEreq::cb_sd_stau2body->brstau1neut(1), 0.0, "~chi0_1", "tau-");
       result.set_BF(BEreq::cb_sd_stau2body->brstau1neut(2), 0.0, "~chi0_2", "tau-");
@@ -1848,10 +2081,7 @@ namespace Gambit
     void stau_2_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::stau_2_decays;
-
-      const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_UV();
-      ///constructor calls fill - this is not ideal
-      mass_es_pseudonyms psn(mssm, tol);
+      mass_es_pseudonyms2 psn = *(Dep::SLHA_pseudonyms);
       
       result.width_in_GeV = BEreq::cb_sd_stauwidth->stau2tot2;
       result.set_BF(BEreq::cb_sd_stau2body->brstau2neut(1), 0.0, "~chi0_1", "tau-");
@@ -1919,11 +2149,7 @@ namespace Gambit
     void snu_taul_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::snu_taul_decays;
-
-      const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_UV();
-      ///constructor calls fill - this is not ideal
-      mass_es_pseudonyms psn(mssm, tol);
-     
+      mass_es_pseudonyms2 psn = *(Dep::SLHA_pseudonyms);
 
       result.width_in_GeV = BEreq::cb_sd_sntauwidth->sntautot2;
       result.set_BF(BEreq::cb_sd_sntau2body->brsntauneut(1), 0.0, "~chi0_1", "nu_tau");
@@ -1949,10 +2175,7 @@ namespace Gambit
     void charginoplus_1_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::charginoplus_1_decays;
-
-      const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_UV();
-      ///constructor calls fill - this is not ideal
-      mass_es_pseudonyms psn(mssm, tol);
+      mass_es_pseudonyms2 psn = *(Dep::SLHA_pseudonyms);
 
       result.width_in_GeV = BEreq::cb_sd_charwidth->chartot(1);
       result.set_BF(BEreq::cb_sd_char2body->brcharsupl(1), 0.0, psn.isul, "dbar");
@@ -2028,10 +2251,7 @@ namespace Gambit
     void charginoplus_2_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::charginoplus_2_decays;
-      
-      const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_UV();
-      ///constructor calls fill - this is not ideal
-      mass_es_pseudonyms psn(mssm, tol);
+      mass_es_pseudonyms2 psn = *(Dep::SLHA_pseudonyms);
       
       result.width_in_GeV = BEreq::cb_sd_charwidth->chartot(2);
       result.set_BF(BEreq::cb_sd_char2body->brcharsupl(2), 0.0, psn.isul, "dbar");
@@ -2124,10 +2344,7 @@ namespace Gambit
     void neutralino_1_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::neutralino_1_decays;
-
-      const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_UV();
-      ///constructor calls fill - this is not ideal
-      mass_es_pseudonyms psn(mssm, tol);
+      mass_es_pseudonyms2 psn = *(Dep::SLHA_pseudonyms);
 
       result.width_in_GeV = BEreq::cb_sd_neutwidth->neuttot(1);
       result.set_BF(BEreq::cb_sd_neut2body->brneutwchar(1,1), 0.0, "~chi+_1", "W-");
@@ -2228,10 +2445,7 @@ namespace Gambit
     void neutralino_2_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::neutralino_2_decays;
-      
-      const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_UV();
-      ///constructor calls fill - this is not ideal
-      mass_es_pseudonyms psn(mssm, tol);
+      mass_es_pseudonyms2 psn = *(Dep::SLHA_pseudonyms);
       
       result.width_in_GeV = BEreq::cb_sd_neutwidth->neuttot(2);
       result.set_BF(BEreq::cb_sd_neut2body->brneutzneut(2,1), 0.0, "~chi0_1", "Z0");
@@ -2349,10 +2563,7 @@ namespace Gambit
     void neutralino_3_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::neutralino_3_decays;
-      
-      const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_UV();
-      ///constructor calls fill - this is not ideal
-      mass_es_pseudonyms psn(mssm, tol);
+      mass_es_pseudonyms2 psn = *(Dep::SLHA_pseudonyms);
       
       result.width_in_GeV = BEreq::cb_sd_neutwidth->neuttot(3);
       result.set_BF(BEreq::cb_sd_neut2body->brneutzneut(3,1), 0.0, "~chi0_1", "Z0");
@@ -2487,11 +2698,8 @@ namespace Gambit
     void neutralino_4_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::neutralino_4_decays;
-
-      const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_UV();
-      ///constructor calls fill - this is not ideal
-      mass_es_pseudonyms psn(mssm, tol);
-
+      mass_es_pseudonyms2 psn = *(Dep::SLHA_pseudonyms);
+     
       result.width_in_GeV = BEreq::cb_sd_neutwidth->neuttot(4);
       result.set_BF(BEreq::cb_sd_neut2body->brneutzneut(4,1), 0.0, "~chi0_1", "Z0");
       result.set_BF(BEreq::cb_sd_neut2body->brneutzneut(4,2), 0.0, "~chi0_2", "Z0");
@@ -2673,10 +2881,7 @@ namespace Gambit
     void all_decays (DecayTable &decays) 
     {
       using namespace Pipes::all_decays;
-      
-      const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_UV();
-      ///constructor calls fill - this is not ideal
-      mass_es_pseudonyms psn(mssm, tol);
+      mass_es_pseudonyms2 psn = *(Dep::SLHA_pseudonyms);
 
       decays("h0_1") = *Dep::Higgs_decay_rates;     // Add the Higgs decays.
       decays("Z0") = *Dep::W_minus_decay_rates;     // Add the Z decays
