@@ -32,14 +32,12 @@ namespace Gambit
 
   namespace DecayBit
   {
-     //////////// MSSM /////////////////////
-     void fill_p_to_ap_map ();
-
+   
      /// put in a strict at least instead of global variables
-     struct mass_es_pseudonyms2 {
+     struct mass_es_pseudonyms {
      public:
-        mass_es_pseudonyms2(){filled = false;}
-        mass_es_pseudonyms2(const SubSpectrum* mssm, double tol);
+        mass_es_pseudonyms(){filled = false;}
+        mass_es_pseudonyms(const SubSpectrum* mssm, double tol);
         std::string isdl;
         std::string isul;
         std::string issl;
@@ -96,7 +94,7 @@ namespace Gambit
         /// This doesn't exist in the MSSM why is it here?
         ///std::string isntau2bar; // -2000016
         
-        void fill_mass_es_psns2(const SubSpectrum* mssm, double tol);
+        void fill_mass_es_psns(const SubSpectrum* mssm, double tol);
         void test_print(const SubSpectrum* mssm);
      private:
         bool filled; 
