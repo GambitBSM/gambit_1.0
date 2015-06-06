@@ -51,35 +51,6 @@ namespace Gambit {
       return output;
    }
 
-   // Add an entry to an SLHAea object if it doesn't already exist
-   void SLHAea_add(SLHAea::Coll& data /*modify*/, const std::string& block, const int index, const double value, const std::string& comment, const bool overwrite)
-   {
-     // Check if block exists
-     try {
-       data.at(block);
-     }
-     catch (const std::out_of_range& e) {
-       // Nope; add it.
-       data[block][""] << "BLOCK" << block;  
-     }
-     // Check for existing entry
-     if(not overwrite) {
-       try {
-         data.at(block).at(index).at(1);
-         // Entry exists, no further action required
-         return;
-       }
-       catch (const std::out_of_range& e) {
-         // entry doesn't exist; continue with writing
-       } 
-     }
-     std::ostringstream commentwhash;
-     commentwhash << "# " << comment;
-     //std::cout << "Adding entry to block "<<block<<": "<<index<<"\t"<<value<<"\t"<<commentwhash.str()<<std::endl;
-     data[block][""] << index << value << commentwhash.str();
-     return;
-   }
-
    // Fill SMInputs struct from an SLHAea object
    SMInputs fill_SMInputs_from_SLHAea(SLHAea::Coll& data)
    { 
