@@ -15,791 +15,802 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
     {
         
         // Member functions: 
-        inline void Info::list(std::ostream& os) const
+        inline void Info::list(std::basic_ostream<char,std::char_traits<char> >& os) const
         {
-            BEptr->list(os);
+            wrapperbase::BEptr->list(os);
         }
         
         inline void Info::list() const
         {
-            BEptr->list__BOSS();
+            wrapperbase::BEptr->list__BOSS();
         }
         
         inline int Info::idA() const
         {
-            return BEptr->idA();
+            return wrapperbase::BEptr->idA();
         }
         
         inline int Info::idB() const
         {
-            return BEptr->idB();
+            return wrapperbase::BEptr->idB();
         }
         
         inline double Info::pzA() const
         {
-            return BEptr->pzA();
+            return wrapperbase::BEptr->pzA();
         }
         
         inline double Info::pzB() const
         {
-            return BEptr->pzB();
+            return wrapperbase::BEptr->pzB();
         }
         
         inline double Info::eA() const
         {
-            return BEptr->eA();
+            return wrapperbase::BEptr->eA();
         }
         
         inline double Info::eB() const
         {
-            return BEptr->eB();
+            return wrapperbase::BEptr->eB();
         }
         
         inline double Info::mA() const
         {
-            return BEptr->mA();
+            return wrapperbase::BEptr->mA();
         }
         
         inline double Info::mB() const
         {
-            return BEptr->mB();
+            return wrapperbase::BEptr->mB();
         }
         
         inline double Info::eCM() const
         {
-            return BEptr->eCM();
+            return wrapperbase::BEptr->eCM();
         }
         
         inline double Info::s() const
         {
-            return BEptr->s();
+            return wrapperbase::BEptr->s();
         }
         
         inline bool Info::tooLowPTmin() const
         {
-            return BEptr->tooLowPTmin();
+            return wrapperbase::BEptr->tooLowPTmin();
         }
         
-        inline std::string Info::name() const
+        inline std::basic_string<char,std::char_traits<char>,std::allocator<char> > Info::name() const
         {
-            return BEptr->name();
+            return wrapperbase::BEptr->name();
         }
         
         inline int Info::code() const
         {
-            return BEptr->code();
+            return wrapperbase::BEptr->code();
         }
         
         inline int Info::nFinal() const
         {
-            return BEptr->nFinal();
+            return wrapperbase::BEptr->nFinal();
         }
         
         inline bool Info::isResolved() const
         {
-            return BEptr->isResolved();
+            return wrapperbase::BEptr->isResolved();
         }
         
         inline bool Info::isDiffractiveA() const
         {
-            return BEptr->isDiffractiveA();
+            return wrapperbase::BEptr->isDiffractiveA();
         }
         
         inline bool Info::isDiffractiveB() const
         {
-            return BEptr->isDiffractiveB();
+            return wrapperbase::BEptr->isDiffractiveB();
         }
         
         inline bool Info::isDiffractiveC() const
         {
-            return BEptr->isDiffractiveC();
+            return wrapperbase::BEptr->isDiffractiveC();
         }
         
         inline bool Info::isNonDiffractive() const
         {
-            return BEptr->isNonDiffractive();
+            return wrapperbase::BEptr->isNonDiffractive();
         }
         
         inline bool Info::isMinBias() const
         {
-            return BEptr->isMinBias();
+            return wrapperbase::BEptr->isMinBias();
         }
         
         inline bool Info::isLHA() const
         {
-            return BEptr->isLHA();
+            return wrapperbase::BEptr->isLHA();
         }
         
         inline bool Info::atEndOfFile() const
         {
-            return BEptr->atEndOfFile();
+            return wrapperbase::BEptr->atEndOfFile();
         }
         
         inline bool Info::hasSub(int i) const
         {
-            return BEptr->hasSub(i);
+            return wrapperbase::BEptr->hasSub(i);
         }
         
         inline bool Info::hasSub() const
         {
-            return BEptr->hasSub__BOSS();
+            return wrapperbase::BEptr->hasSub__BOSS();
         }
         
-        inline std::string Info::nameSub(int i) const
+        inline std::basic_string<char,std::char_traits<char>,std::allocator<char> > Info::nameSub(int i) const
         {
-            return BEptr->nameSub(i);
+            return wrapperbase::BEptr->nameSub(i);
         }
         
-        inline std::string Info::nameSub() const
+        inline std::basic_string<char,std::char_traits<char>,std::allocator<char> > Info::nameSub() const
         {
-            return BEptr->nameSub__BOSS();
+            return wrapperbase::BEptr->nameSub__BOSS();
         }
         
         inline int Info::codeSub(int i) const
         {
-            return BEptr->codeSub(i);
+            return wrapperbase::BEptr->codeSub(i);
         }
         
         inline int Info::codeSub() const
         {
-            return BEptr->codeSub__BOSS();
+            return wrapperbase::BEptr->codeSub__BOSS();
         }
         
         inline int Info::nFinalSub(int i) const
         {
-            return BEptr->nFinalSub(i);
+            return wrapperbase::BEptr->nFinalSub(i);
         }
         
         inline int Info::nFinalSub() const
         {
-            return BEptr->nFinalSub__BOSS();
+            return wrapperbase::BEptr->nFinalSub__BOSS();
         }
         
         inline int Info::id1(int i) const
         {
-            return BEptr->id1(i);
+            return wrapperbase::BEptr->id1(i);
         }
         
         inline int Info::id1() const
         {
-            return BEptr->id1__BOSS();
+            return wrapperbase::BEptr->id1__BOSS();
         }
         
         inline int Info::id2(int i) const
         {
-            return BEptr->id2(i);
+            return wrapperbase::BEptr->id2(i);
         }
         
         inline int Info::id2() const
         {
-            return BEptr->id2__BOSS();
+            return wrapperbase::BEptr->id2__BOSS();
         }
         
         inline double Info::x1(int i) const
         {
-            return BEptr->x1(i);
+            return wrapperbase::BEptr->x1(i);
         }
         
         inline double Info::x1() const
         {
-            return BEptr->x1__BOSS();
+            return wrapperbase::BEptr->x1__BOSS();
         }
         
         inline double Info::x2(int i) const
         {
-            return BEptr->x2(i);
+            return wrapperbase::BEptr->x2(i);
         }
         
         inline double Info::x2() const
         {
-            return BEptr->x2__BOSS();
+            return wrapperbase::BEptr->x2__BOSS();
         }
         
         inline double Info::y(int i) const
         {
-            return BEptr->y(i);
+            return wrapperbase::BEptr->y(i);
         }
         
         inline double Info::y() const
         {
-            return BEptr->y__BOSS();
+            return wrapperbase::BEptr->y__BOSS();
         }
         
         inline double Info::tau(int i) const
         {
-            return BEptr->tau(i);
+            return wrapperbase::BEptr->tau(i);
         }
         
         inline double Info::tau() const
         {
-            return BEptr->tau__BOSS();
+            return wrapperbase::BEptr->tau__BOSS();
         }
         
         inline int Info::id1pdf(int i) const
         {
-            return BEptr->id1pdf(i);
+            return wrapperbase::BEptr->id1pdf(i);
         }
         
         inline int Info::id1pdf() const
         {
-            return BEptr->id1pdf__BOSS();
+            return wrapperbase::BEptr->id1pdf__BOSS();
         }
         
         inline int Info::id2pdf(int i) const
         {
-            return BEptr->id2pdf(i);
+            return wrapperbase::BEptr->id2pdf(i);
         }
         
         inline int Info::id2pdf() const
         {
-            return BEptr->id2pdf__BOSS();
+            return wrapperbase::BEptr->id2pdf__BOSS();
         }
         
         inline double Info::x1pdf(int i) const
         {
-            return BEptr->x1pdf(i);
+            return wrapperbase::BEptr->x1pdf(i);
         }
         
         inline double Info::x1pdf() const
         {
-            return BEptr->x1pdf__BOSS();
+            return wrapperbase::BEptr->x1pdf__BOSS();
         }
         
         inline double Info::x2pdf(int i) const
         {
-            return BEptr->x2pdf(i);
+            return wrapperbase::BEptr->x2pdf(i);
         }
         
         inline double Info::x2pdf() const
         {
-            return BEptr->x2pdf__BOSS();
+            return wrapperbase::BEptr->x2pdf__BOSS();
         }
         
         inline double Info::pdf1(int i) const
         {
-            return BEptr->pdf1(i);
+            return wrapperbase::BEptr->pdf1(i);
         }
         
         inline double Info::pdf1() const
         {
-            return BEptr->pdf1__BOSS();
+            return wrapperbase::BEptr->pdf1__BOSS();
         }
         
         inline double Info::pdf2(int i) const
         {
-            return BEptr->pdf2(i);
+            return wrapperbase::BEptr->pdf2(i);
         }
         
         inline double Info::pdf2() const
         {
-            return BEptr->pdf2__BOSS();
+            return wrapperbase::BEptr->pdf2__BOSS();
         }
         
         inline double Info::QFac(int i) const
         {
-            return BEptr->QFac(i);
+            return wrapperbase::BEptr->QFac(i);
         }
         
         inline double Info::QFac() const
         {
-            return BEptr->QFac__BOSS();
+            return wrapperbase::BEptr->QFac__BOSS();
         }
         
         inline double Info::Q2Fac(int i) const
         {
-            return BEptr->Q2Fac(i);
+            return wrapperbase::BEptr->Q2Fac(i);
         }
         
         inline double Info::Q2Fac() const
         {
-            return BEptr->Q2Fac__BOSS();
+            return wrapperbase::BEptr->Q2Fac__BOSS();
         }
         
         inline bool Info::isValence1() const
         {
-            return BEptr->isValence1();
+            return wrapperbase::BEptr->isValence1();
         }
         
         inline bool Info::isValence2() const
         {
-            return BEptr->isValence2();
+            return wrapperbase::BEptr->isValence2();
         }
         
         inline double Info::alphaS(int i) const
         {
-            return BEptr->alphaS(i);
+            return wrapperbase::BEptr->alphaS(i);
         }
         
         inline double Info::alphaS() const
         {
-            return BEptr->alphaS__BOSS();
+            return wrapperbase::BEptr->alphaS__BOSS();
         }
         
         inline double Info::alphaEM(int i) const
         {
-            return BEptr->alphaEM(i);
+            return wrapperbase::BEptr->alphaEM(i);
         }
         
         inline double Info::alphaEM() const
         {
-            return BEptr->alphaEM__BOSS();
+            return wrapperbase::BEptr->alphaEM__BOSS();
         }
         
         inline double Info::QRen(int i) const
         {
-            return BEptr->QRen(i);
+            return wrapperbase::BEptr->QRen(i);
         }
         
         inline double Info::QRen() const
         {
-            return BEptr->QRen__BOSS();
+            return wrapperbase::BEptr->QRen__BOSS();
         }
         
         inline double Info::Q2Ren(int i) const
         {
-            return BEptr->Q2Ren(i);
+            return wrapperbase::BEptr->Q2Ren(i);
         }
         
         inline double Info::Q2Ren() const
         {
-            return BEptr->Q2Ren__BOSS();
+            return wrapperbase::BEptr->Q2Ren__BOSS();
         }
         
         inline double Info::scalup(int i) const
         {
-            return BEptr->scalup(i);
+            return wrapperbase::BEptr->scalup(i);
         }
         
         inline double Info::scalup() const
         {
-            return BEptr->scalup__BOSS();
+            return wrapperbase::BEptr->scalup__BOSS();
         }
         
         inline double Info::mHat(int i) const
         {
-            return BEptr->mHat(i);
+            return wrapperbase::BEptr->mHat(i);
         }
         
         inline double Info::mHat() const
         {
-            return BEptr->mHat__BOSS();
+            return wrapperbase::BEptr->mHat__BOSS();
         }
         
         inline double Info::sHat(int i) const
         {
-            return BEptr->sHat(i);
+            return wrapperbase::BEptr->sHat(i);
         }
         
         inline double Info::sHat() const
         {
-            return BEptr->sHat__BOSS();
+            return wrapperbase::BEptr->sHat__BOSS();
         }
         
         inline double Info::tHat(int i) const
         {
-            return BEptr->tHat(i);
+            return wrapperbase::BEptr->tHat(i);
         }
         
         inline double Info::tHat() const
         {
-            return BEptr->tHat__BOSS();
+            return wrapperbase::BEptr->tHat__BOSS();
         }
         
         inline double Info::uHat(int i) const
         {
-            return BEptr->uHat(i);
+            return wrapperbase::BEptr->uHat(i);
         }
         
         inline double Info::uHat() const
         {
-            return BEptr->uHat__BOSS();
+            return wrapperbase::BEptr->uHat__BOSS();
         }
         
         inline double Info::pTHat(int i) const
         {
-            return BEptr->pTHat(i);
+            return wrapperbase::BEptr->pTHat(i);
         }
         
         inline double Info::pTHat() const
         {
-            return BEptr->pTHat__BOSS();
+            return wrapperbase::BEptr->pTHat__BOSS();
         }
         
         inline double Info::pT2Hat(int i) const
         {
-            return BEptr->pT2Hat(i);
+            return wrapperbase::BEptr->pT2Hat(i);
         }
         
         inline double Info::pT2Hat() const
         {
-            return BEptr->pT2Hat__BOSS();
+            return wrapperbase::BEptr->pT2Hat__BOSS();
         }
         
         inline double Info::m3Hat(int i) const
         {
-            return BEptr->m3Hat(i);
+            return wrapperbase::BEptr->m3Hat(i);
         }
         
         inline double Info::m3Hat() const
         {
-            return BEptr->m3Hat__BOSS();
+            return wrapperbase::BEptr->m3Hat__BOSS();
         }
         
         inline double Info::m4Hat(int i) const
         {
-            return BEptr->m4Hat(i);
+            return wrapperbase::BEptr->m4Hat(i);
         }
         
         inline double Info::m4Hat() const
         {
-            return BEptr->m4Hat__BOSS();
+            return wrapperbase::BEptr->m4Hat__BOSS();
         }
         
         inline double Info::thetaHat(int i) const
         {
-            return BEptr->thetaHat(i);
+            return wrapperbase::BEptr->thetaHat(i);
         }
         
         inline double Info::thetaHat() const
         {
-            return BEptr->thetaHat__BOSS();
+            return wrapperbase::BEptr->thetaHat__BOSS();
         }
         
         inline double Info::phiHat(int i) const
         {
-            return BEptr->phiHat(i);
+            return wrapperbase::BEptr->phiHat(i);
         }
         
         inline double Info::phiHat() const
         {
-            return BEptr->phiHat__BOSS();
+            return wrapperbase::BEptr->phiHat__BOSS();
         }
         
         inline double Info::weight() const
         {
-            return BEptr->weight();
+            return wrapperbase::BEptr->weight();
         }
         
         inline double Info::weightSum() const
         {
-            return BEptr->weightSum();
+            return wrapperbase::BEptr->weightSum();
         }
         
         inline double Info::lhaStrategy() const
         {
-            return BEptr->lhaStrategy();
+            return wrapperbase::BEptr->lhaStrategy();
         }
         
         inline int Info::nISR() const
         {
-            return BEptr->nISR();
+            return wrapperbase::BEptr->nISR();
         }
         
         inline int Info::nFSRinProc() const
         {
-            return BEptr->nFSRinProc();
+            return wrapperbase::BEptr->nFSRinProc();
         }
         
         inline int Info::nFSRinRes() const
         {
-            return BEptr->nFSRinRes();
+            return wrapperbase::BEptr->nFSRinRes();
         }
         
         inline double Info::pTmaxMPI() const
         {
-            return BEptr->pTmaxMPI();
+            return wrapperbase::BEptr->pTmaxMPI();
         }
         
         inline double Info::pTmaxISR() const
         {
-            return BEptr->pTmaxISR();
+            return wrapperbase::BEptr->pTmaxISR();
         }
         
         inline double Info::pTmaxFSR() const
         {
-            return BEptr->pTmaxFSR();
+            return wrapperbase::BEptr->pTmaxFSR();
         }
         
         inline double Info::pTnow() const
         {
-            return BEptr->pTnow();
+            return wrapperbase::BEptr->pTnow();
         }
         
         inline double Info::a0MPI() const
         {
-            return BEptr->a0MPI();
+            return wrapperbase::BEptr->a0MPI();
         }
         
         inline double Info::bMPI() const
         {
-            return BEptr->bMPI();
+            return wrapperbase::BEptr->bMPI();
         }
         
         inline double Info::enhanceMPI() const
         {
-            return BEptr->enhanceMPI();
+            return wrapperbase::BEptr->enhanceMPI();
         }
         
         inline double Info::eMPI(int i) const
         {
-            return BEptr->eMPI(i);
+            return wrapperbase::BEptr->eMPI(i);
         }
         
         inline int Info::nMPI() const
         {
-            return BEptr->nMPI();
+            return wrapperbase::BEptr->nMPI();
         }
         
         inline int Info::codeMPI(int i) const
         {
-            return BEptr->codeMPI(i);
+            return wrapperbase::BEptr->codeMPI(i);
         }
         
         inline double Info::pTMPI(int i) const
         {
-            return BEptr->pTMPI(i);
+            return wrapperbase::BEptr->pTMPI(i);
         }
         
         inline int Info::iAMPI(int i) const
         {
-            return BEptr->iAMPI(i);
+            return wrapperbase::BEptr->iAMPI(i);
         }
         
         inline int Info::iBMPI(int i) const
         {
-            return BEptr->iBMPI(i);
+            return wrapperbase::BEptr->iBMPI(i);
         }
         
-        inline std::vector<int, std::allocator<int> > Info::codesHard()
+        inline std::vector<int,std::allocator<int> > Info::codesHard()
         {
-            return BEptr->codesHard();
+            return wrapperbase::BEptr->codesHard();
         }
         
-        inline std::string Info::nameProc(int i)
+        inline std::basic_string<char,std::char_traits<char>,std::allocator<char> > Info::nameProc(int i)
         {
-            return BEptr->nameProc(i);
+            return wrapperbase::BEptr->nameProc(i);
         }
         
-        inline std::string Info::nameProc()
+        inline std::basic_string<char,std::char_traits<char>,std::allocator<char> > Info::nameProc()
         {
-            return BEptr->nameProc__BOSS();
+            return wrapperbase::BEptr->nameProc__BOSS();
         }
         
         inline long int Info::nTried(int i)
         {
-            return BEptr->nTried(i);
+            return wrapperbase::BEptr->nTried(i);
         }
         
         inline long int Info::nTried()
         {
-            return BEptr->nTried__BOSS();
+            return wrapperbase::BEptr->nTried__BOSS();
         }
         
         inline long int Info::nSelected(int i)
         {
-            return BEptr->nSelected(i);
+            return wrapperbase::BEptr->nSelected(i);
         }
         
         inline long int Info::nSelected()
         {
-            return BEptr->nSelected__BOSS();
+            return wrapperbase::BEptr->nSelected__BOSS();
         }
         
         inline long int Info::nAccepted(int i)
         {
-            return BEptr->nAccepted(i);
+            return wrapperbase::BEptr->nAccepted(i);
         }
         
         inline long int Info::nAccepted()
         {
-            return BEptr->nAccepted__BOSS();
+            return wrapperbase::BEptr->nAccepted__BOSS();
         }
         
         inline double Info::sigmaGen(int i)
         {
-            return BEptr->sigmaGen(i);
+            return wrapperbase::BEptr->sigmaGen(i);
         }
         
         inline double Info::sigmaGen()
         {
-            return BEptr->sigmaGen__BOSS();
+            return wrapperbase::BEptr->sigmaGen__BOSS();
         }
         
         inline double Info::sigmaErr(int i)
         {
-            return BEptr->sigmaErr(i);
+            return wrapperbase::BEptr->sigmaErr(i);
         }
         
         inline double Info::sigmaErr()
         {
-            return BEptr->sigmaErr__BOSS();
+            return wrapperbase::BEptr->sigmaErr__BOSS();
         }
         
         inline int Info::getCounter(int i) const
         {
-            return BEptr->getCounter(i);
+            return wrapperbase::BEptr->getCounter(i);
         }
         
         inline void Info::setCounter(int i, int value)
         {
-            BEptr->setCounter(i, value);
+            wrapperbase::BEptr->setCounter(i, value);
         }
         
         inline void Info::setCounter(int i)
         {
-            BEptr->setCounter__BOSS(i);
+            wrapperbase::BEptr->setCounter__BOSS(i);
         }
         
         inline void Info::addCounter(int i, int value)
         {
-            BEptr->addCounter(i, value);
+            wrapperbase::BEptr->addCounter(i, value);
         }
         
         inline void Info::addCounter(int i)
         {
-            BEptr->addCounter__BOSS(i);
+            wrapperbase::BEptr->addCounter__BOSS(i);
         }
         
         inline void Info::errorReset()
         {
-            BEptr->errorReset();
+            wrapperbase::BEptr->errorReset();
         }
         
-        inline void Info::errorMsg(std::string messageIn, std::string extraIn, bool showAlways, std::ostream& os)
+        inline void Info::errorMsg(std::basic_string<char,std::char_traits<char>,std::allocator<char> > messageIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > extraIn, bool showAlways, std::basic_ostream<char,std::char_traits<char> >& os)
         {
-            BEptr->errorMsg(messageIn, extraIn, showAlways, os);
+            wrapperbase::BEptr->errorMsg(messageIn, extraIn, showAlways, os);
         }
         
-        inline void Info::errorMsg(std::string messageIn, std::string extraIn, bool showAlways)
+        inline void Info::errorMsg(std::basic_string<char,std::char_traits<char>,std::allocator<char> > messageIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > extraIn, bool showAlways)
         {
-            BEptr->errorMsg__BOSS(messageIn, extraIn, showAlways);
+            wrapperbase::BEptr->errorMsg__BOSS(messageIn, extraIn, showAlways);
         }
         
-        inline void Info::errorMsg(std::string messageIn, std::string extraIn)
+        inline void Info::errorMsg(std::basic_string<char,std::char_traits<char>,std::allocator<char> > messageIn, std::basic_string<char,std::char_traits<char>,std::allocator<char> > extraIn)
         {
-            BEptr->errorMsg__BOSS(messageIn, extraIn);
+            wrapperbase::BEptr->errorMsg__BOSS(messageIn, extraIn);
         }
         
-        inline void Info::errorMsg(std::string messageIn)
+        inline void Info::errorMsg(std::basic_string<char,std::char_traits<char>,std::allocator<char> > messageIn)
         {
-            BEptr->errorMsg__BOSS(messageIn);
+            wrapperbase::BEptr->errorMsg__BOSS(messageIn);
         }
         
         inline int Info::errorTotalNumber()
         {
-            return BEptr->errorTotalNumber();
+            return wrapperbase::BEptr->errorTotalNumber();
         }
         
-        inline void Info::errorStatistics(std::ostream& os)
+        inline void Info::errorStatistics(std::basic_ostream<char,std::char_traits<char> >& os)
         {
-            BEptr->errorStatistics(os);
+            wrapperbase::BEptr->errorStatistics(os);
         }
         
         inline void Info::errorStatistics()
         {
-            BEptr->errorStatistics__BOSS();
+            wrapperbase::BEptr->errorStatistics__BOSS();
         }
         
         inline void Info::setTooLowPTmin(bool lowPTminIn)
         {
-            BEptr->setTooLowPTmin(lowPTminIn);
+            wrapperbase::BEptr->setTooLowPTmin(lowPTminIn);
         }
         
         inline void Info::setValence(bool isVal1In, bool isVal2In)
         {
-            BEptr->setValence(isVal1In, isVal2In);
+            wrapperbase::BEptr->setValence(isVal1In, isVal2In);
         }
         
         inline void Info::hasHistory(bool hasHistoryIn)
         {
-            BEptr->hasHistory(hasHistoryIn);
+            wrapperbase::BEptr->hasHistory(hasHistoryIn);
         }
         
         inline bool Info::hasHistory()
         {
-            return BEptr->hasHistory();
+            return wrapperbase::BEptr->hasHistory();
         }
         
         inline void Info::zNowISR(double zNowIn)
         {
-            BEptr->zNowISR(zNowIn);
+            wrapperbase::BEptr->zNowISR(zNowIn);
         }
         
         inline double Info::zNowISR()
         {
-            return BEptr->zNowISR();
+            return wrapperbase::BEptr->zNowISR();
         }
         
         inline void Info::pT2NowISR(double pT2NowIn)
         {
-            BEptr->pT2NowISR(pT2NowIn);
+            wrapperbase::BEptr->pT2NowISR(pT2NowIn);
         }
         
         inline double Info::pT2NowISR()
         {
-            return BEptr->pT2NowISR();
+            return wrapperbase::BEptr->pT2NowISR();
         }
         
         inline double Info::getWeightCKKWL() const
         {
-            return BEptr->getWeightCKKWL();
+            return wrapperbase::BEptr->getWeightCKKWL();
         }
         
         inline void Info::setWeightCKKWL(double weightIn)
         {
-            BEptr->setWeightCKKWL(weightIn);
+            wrapperbase::BEptr->setWeightCKKWL(weightIn);
         }
         
         inline double Info::mergingWeight() const
         {
-            return BEptr->mergingWeight();
+            return wrapperbase::BEptr->mergingWeight();
         }
         
         inline double Info::mergingWeightNLO() const
         {
-            return BEptr->mergingWeightNLO();
+            return wrapperbase::BEptr->mergingWeightNLO();
         }
         
         inline double Info::getWeightFIRST() const
         {
-            return BEptr->getWeightFIRST();
+            return wrapperbase::BEptr->getWeightFIRST();
         }
         
         inline void Info::setWeightFIRST(double weightIn)
         {
-            BEptr->setWeightFIRST(weightIn);
+            wrapperbase::BEptr->setWeightFIRST(weightIn);
         }
         
-        inline std::string Info::header(const std::string& key)
+        inline std::basic_string<char,std::char_traits<char>,std::allocator<char> > Info::header(const std::basic_string<char,std::char_traits<char>,std::allocator<char> >& key)
         {
-            return BEptr->header(key);
+            return wrapperbase::BEptr->header(key);
         }
         
-        inline std::vector<std::string, std::allocator<std::string> > Info::headerKeys()
+        inline std::vector<std::basic_string<char, std::char_traits<char>, std::allocator<char> >,std::allocator<std::basic_string<char, std::char_traits<char>, std::allocator<char> > > > Info::headerKeys()
         {
-            return BEptr->headerKeys();
+            return wrapperbase::BEptr->headerKeys();
         }
         
         
         // Wrappers for original constructors: 
         inline Pythia8::Info::Info() :
-            WrapperBase<Pythia8::Abstract_Info>( __factory0(), false )
+            WrapperBase<Pythia8::Abstract_Info>(__factory0())
         {
-            BEptr->wrapper__BOSS(this);
+            wrapperbase::BEptr->wrapper__BOSS(this);
+            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
         }
         
         // Special pointer-based constructor: 
-        inline Pythia8::Info::Info(Pythia8::Abstract_Info* in, bool memvar_in) :
-            WrapperBase<Pythia8::Abstract_Info>( in, memvar_in )
+        inline Pythia8::Info::Info(Pythia8::Abstract_Info* in) :
+            WrapperBase<Pythia8::Abstract_Info>(in)
         {
-            BEptr->wrapper__BOSS(this);
+            wrapperbase::BEptr->wrapper__BOSS(this);
+            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
+        }
+        
+        inline Pythia8::Info::Info(Pythia8::Abstract_Info* const & in, bool) :
+            WrapperBase<Pythia8::Abstract_Info>(in, true)
+        {
+            wrapperbase::BEptr->wrapper__BOSS(this);
+            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
         }
         
         // Copy constructor: 
         inline Pythia8::Info::Info(const Info& in) :
             WrapperBase<Pythia8::Abstract_Info>(in)
         {
-            BEptr->wrapper__BOSS(this);
+            wrapperbase::BEptr->can_delete_me(true);
+            wrapperbase::BEptr->wrapper__BOSS(this);
+            wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
         }
         
         // Assignment operator: 
@@ -807,6 +818,12 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         {
             WrapperBase<Pythia8::Abstract_Info>::operator=(in);
             return *this;
+        }
+        
+        
+        // Destructor: 
+        inline Pythia8::Info::~Info()
+        {
         }
         
     }

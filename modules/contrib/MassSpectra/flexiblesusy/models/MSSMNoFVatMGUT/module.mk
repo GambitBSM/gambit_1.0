@@ -34,6 +34,7 @@ LIBMSSMNoFVatMGUT_HDR :=
 
 ifneq ($(findstring two_scale,$(ALGORITHMS)),)
 LIBMSSMNoFVatMGUT_SRC += \
+		$(DIR)/MSSMNoFVatMGUT_mass_eigenstates.cpp \
 		$(DIR)/MSSMNoFVatMGUT_info.cpp \
 		$(DIR)/MSSMNoFVatMGUT_input_parameters.cpp \
 		$(DIR)/MSSMNoFVatMGUT_slha_io.cpp \
@@ -55,6 +56,7 @@ EXEMSSMNoFVatMGUT_SRC += \
 LIBMSSMNoFVatMGUT_HDR += \
 		$(DIR)/MSSMNoFVatMGUT_convergence_tester.hpp \
 		$(DIR)/MSSMNoFVatMGUT_high_scale_constraint.hpp \
+		$(DIR)/MSSMNoFVatMGUT_mass_eigenstates.hpp \
 		$(DIR)/MSSMNoFVatMGUT_info.hpp \
 		$(DIR)/MSSMNoFVatMGUT_initial_guesser.hpp \
 		$(DIR)/MSSMNoFVatMGUT_input_parameters.hpp \

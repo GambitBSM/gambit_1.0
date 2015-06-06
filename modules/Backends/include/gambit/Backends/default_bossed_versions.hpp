@@ -22,7 +22,6 @@
 #define __default_bossed_versions_hpp__
 
 // Choose default versions here, using underscores instead of periods
-#define  Default_BOSSMinimalExample 1_1
 #define  Default_Pythia 8_186
 
 #endif

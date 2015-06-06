@@ -23,10 +23,13 @@
 #include <vector>
 
 #include "gambit/Elements/functors.hpp"
+#include "gambit/Utils/exceptions.hpp"
 #include "gambit/Utils/util_types.hpp"
+#include "gambit/Backends/backend_singleton.hpp"
+#include "gambit/Logs/log.hpp"
 
 /// Define the separator to use instead of "::" when macros get gnarly.
-#define NS_SEP ___ns_separator_that_will_never_appear_naturally___
+#define NS_SEP ___no_apologies_for_rocking_macros___
 
 namespace Gambit
 {
@@ -75,6 +78,18 @@ namespace Gambit
 
   /// Get the status of a factory pointer to a BOSSed type's wrapper constructor.        
   int get_ctor_status(str, str, str, str, str, str, bool);
+
+  /// Create a log tag for a new module.
+  int register_module_with_log(str);
+
+  /// Register a function with a module.
+  int register_function(module_functor_common&, bool, safe_ptr<bool>*, std::map<str,str>&, std::map<str, bool(*)()>&, bool(&)(), safe_ptr<Options>&);
+
+  /// Set a backend rule for one or more models.
+  int set_backend_rule_for_model(module_functor_common&, str, str);
+  
+  /// Set the classloading requirements of a given functor.
+  int set_classload_requirements(module_functor_common&, str, str, str);
 
 }
 

@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Fri 16 Jan 2015 13:05:08
+// File generated at Mon 1 Jun 2015 13:24:12
 
 #include "MSSMatMGUT_input_parameters.hpp"
 #include "MSSMatMGUT_spectrum_generator.hpp"
@@ -41,6 +41,9 @@ void print_usage()
       "  --SignMu=<value>\n"
       "  --mHd2IN=<value>\n"
       "  --mHu2IN=<value>\n"
+      "  --MassBInput=<value>\n"
+      "  --MassWBInput=<value>\n"
+      "  --MassGInput=<value>\n"
 
       "  --help,-h                         print this help message"
              << std::endl;
@@ -62,6 +65,15 @@ void set_command_line_parameters(int argc, char* argv[],
          continue;
 
       if(Command_line_options::get_parameter_value(option, "--mHu2IN=", input.mHu2IN))
+         continue;
+
+      if(Command_line_options::get_parameter_value(option, "--MassBInput=", input.MassBInput))
+         continue;
+
+      if(Command_line_options::get_parameter_value(option, "--MassWBInput=", input.MassWBInput))
+         continue;
+
+      if(Command_line_options::get_parameter_value(option, "--MassGInput=", input.MassGInput))
          continue;
 
       

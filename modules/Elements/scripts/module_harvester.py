@@ -147,7 +147,7 @@ def main(argv):
     find_and_harvest_headers(type_headers,full_type_headers,exclude_header,verbose=verbose)
      
     # Search through rollcall headers and look for macro calls that create module_functors or safe pointers to them 
-    types=set(["ModelParameters"]) #Manually add this one to avoid scanning through Models directory
+    types=set(["ModelParameters", "double", "float", "std::vector<double>", "std::vector<float>"]) #Manually add these, as they must always be included.
     for header in full_rollcall_headers:
         with open(header) as f:
             if verbose: print "  Scanning header {0} for types used to instantiate module functor class templates".format(header)

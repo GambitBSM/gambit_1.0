@@ -25,7 +25,29 @@
 namespace Gambit
 {
     
-  /// Register a model with the Core.
+  /// Register a module with the Core.
+  int register_module(str module)
+  {
+    try
+    {
+      Core().registerModule(module);
+    }
+    catch (std::exception& e) { ini_catch(e); }
+    return 0;
+  }
+
+  /// Register a module functor with the Core.
+  int register_module_functor_core(module_functor_common& f)
+  {
+    try
+    {
+      Core().registerModuleFunctor(f);
+    }
+    catch (std::exception& e) { ini_catch(e); }
+    return 0;    
+  }
+
+  /// Register a model functor with the Core.
   int register_model_functor_core(primary_model_functor& primary_parameters)
   {
     try
@@ -58,4 +80,15 @@ namespace Gambit
     return 0;    
   }
   
+    /// Register a loop management requirement with the Core
+  int register_management_req(module_functor_common& f)
+  {
+    try
+    {
+      Core().registerNestedModuleFunctor(f);
+    }
+    catch (std::exception& e) { ini_catch(e); }
+    return 0;    
+  }
+
 }

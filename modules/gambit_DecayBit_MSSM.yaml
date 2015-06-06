@@ -39,6 +39,18 @@ Rules:
     function: get_MSSMatQ_spectrum  
     options:
       invalid_point_fatal: true
+
+  - capability: Higgs_decay_rates
+    function: MSSM_h0_1_decays
+
+  - capability: h0_2_decay_rates
+    function: h0_2_decays
+
+  - capability: A0_decay_rates
+    function: A0_decays
+
+  - capability: Hplus_decay_rates
+    function: Hplus_decays
       
 #  - function: SUSY_HIT_1_5_init
 #    options:

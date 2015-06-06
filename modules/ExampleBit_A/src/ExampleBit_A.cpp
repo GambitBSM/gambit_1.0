@@ -248,7 +248,7 @@ namespace Gambit
     }
 
     /// Produces a random floating-point 'event count' between 0 and 5.
-    void exampleEventGen(singleprec &result)
+    void exampleEventGen(float &result)
     {
       using namespace Pipes::exampleEventGen;
       result = Random::draw()*5.0;                 // Generate and return the random number
@@ -428,63 +428,6 @@ namespace Gambit
         else ExampleBit_A_error().raise(LOCAL_INFO,"Unrecognised choice from lnlike_marg_poisson BEgroup.");
 
         logger() << "This is marg_poisson_test using req " << *BEgroup::lnlike_marg_poisson << ". My result is " << result << EOM;
-    }
-
-    /// Basic example use of some loaded classes.
-    void bossed_class_example1(X &result)
-    {
-      cout << "Testing X type." << endl;
-      cout << "===================" << endl;
-
-      result.i = 0;
-      cout << "Result X's int: " << result.i << endl;
-      result.i+=1;
-      cout << "After adding 1: " << result.i << endl;
-
-      X localX(1);
-      cout << "Local X's int: " << localX.i << endl;
-      localX.i+=1;
-      cout << "After adding 1: " << localX.i << endl;
-
-      BOSSMinimalExample_1_0::nspace1::nspace2::X oldX(3);
-      cout << "v1.0 X's int: " << oldX.i << endl;
-
-      result = localX;
-      cout << "Now we set result = localX" << endl;
-      cout << "result.i: " << result.i << endl;
-
-      cout << "Testing Y type." << endl;
-      cout << "===================" << endl;
-
-      Y myY;
-      cout << "myY's X's int: " << myY.x.i << endl;
-      myY.x.i+=1;
-      cout << "After adding 1: " << myY.x.i << endl;
-
-      cout << "Making localY from localX." << endl;
-      Y localY(localX);
-      cout << "LocalY's int: " << localY.x.i << endl;
-      localY.x.i+=1;
-      cout << "After adding 1: " << localY.x.i << endl;
-      cout << "LocalX's int after LocalY's int has been incremented: " << localX.i << endl;
-
-      localX = localY.get_x();
-      cout << "i of X retrieved from localY: " << localX.i << endl;
-
-      localX.i-=1;
-      localY.set_x(localX);
-      cout << "LocalY's int after sending an X to localY: " << localY.x.i << endl;
-
-      BOSSMinimalExample_1_0::nspace3::Y oldY(oldX);
-      cout << "v1.0 Y's int: " << oldY.x.i << endl;
-    }
-
-    /// Higher-level example use of some loaded classes.
-    void bossed_class_example2(int &result)
-    {
-      using namespace Pipes::bossed_class_example2;
-      Y localY(*Dep::BOSSed_X);
-      result = localY.x.i;
     }
 
 

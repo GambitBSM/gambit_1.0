@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Fri 16 Jan 2015 13:02:48
+// File generated at Mon 1 Jun 2015 13:21:52
 
 #include "MSSMatMGUT_two_scale_soft_parameters.hpp"
 #include "wrappers.hpp"
@@ -39,11 +39,12 @@ Eigen::Matrix<double,3,3> MSSMatMGUT_soft_parameters::calc_beta_TYu_one_loop(con
 
    Eigen::Matrix<double,3,3> beta_TYu;
 
-   beta_TYu = oneOver16PiSqr*(Yu*(6*traceAdjYuTYu + 1.7333333333333334*
+   beta_TYu = (oneOver16PiSqr*(Yu*(6*traceAdjYuTYu + 1.7333333333333334*
       MassB*Sqr(g1) + 6*MassWB*Sqr(g2) + 10.666666666666666*MassG*Sqr(g3)) + 3*
       traceYuAdjYu*TYu - 0.8666666666666667*Sqr(g1)*TYu - 3*Sqr(g2)*TYu -
       5.333333333333333*Sqr(g3)*TYu + 2*(Yu*Yd.adjoint()*TYd) + 4*(Yu*
-      Yu.adjoint()*TYu) + TYu*Yd.adjoint()*Yd + 5*(TYu*Yu.adjoint()*Yu));
+      Yu.adjoint()*TYu) + TYu*Yd.adjoint()*Yd + 5*(TYu*Yu.adjoint()*Yu))).real(
+      );
 
 
    return beta_TYu;
@@ -71,8 +72,8 @@ Eigen::Matrix<double,3,3> MSSMatMGUT_soft_parameters::calc_beta_TYu_two_loop(con
 
    Eigen::Matrix<double,3,3> beta_TYu;
 
-   beta_TYu = twoLoop*(-0.008888888888888889*Yu*(2743*Power(g1,4)*MassB -
-      800*Power(g3,4)*MassG + 3375*Power(g2,4)*MassWB + 675*
+   beta_TYu = (twoLoop*(-0.008888888888888889*Yu*(2743*Power(g1,4)*MassB
+      - 800*Power(g3,4)*MassG + 3375*Power(g2,4)*MassWB + 675*
       traceYdAdjYuTYuAdjYd + 675*traceYuAdjYdTYdAdjYu + 4050*
       traceYuAdjYuTYuAdjYu + 225*MassB*Sqr(g1)*Sqr(g2) + 225*MassWB*Sqr(g1)*Sqr
       (g2) + 680*MassB*Sqr(g1)*Sqr(g3) + 680*MassG*Sqr(g1)*Sqr(g3) + 1800*MassG
@@ -96,7 +97,7 @@ Eigen::Matrix<double,3,3> MSSMatMGUT_soft_parameters::calc_beta_TYu_two_loop(con
       Yd.adjoint()*TYd*Yu.adjoint()*Yu) - 6*(Yu*Yu.adjoint()*Yu*Yu.adjoint()*
       TYu) - 8*(Yu*Yu.adjoint()*TYu*Yu.adjoint()*Yu) - 2*(TYu*Yd.adjoint()*Yd*
       Yd.adjoint()*Yd) - 4*(TYu*Yd.adjoint()*Yd*Yu.adjoint()*Yu) - 6*(TYu*
-      Yu.adjoint()*Yu*Yu.adjoint()*Yu));
+      Yu.adjoint()*Yu*Yu.adjoint()*Yu))).real();
 
 
    return beta_TYu;

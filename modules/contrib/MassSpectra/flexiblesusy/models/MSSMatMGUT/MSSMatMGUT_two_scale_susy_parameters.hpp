@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Fri 16 Jan 2015 13:02:04
+// File generated at Mon 1 Jun 2015 13:21:34
 
 #ifndef MSSMatMGUT_TWO_SCALE_susy_parameters_H
 #define MSSMatMGUT_TWO_SCALE_susy_parameters_H
@@ -49,6 +49,7 @@ public:
    virtual void print(std::ostream&) const;
    virtual void set(const Eigen::ArrayXd&);
    const MSSMatMGUT_input_parameters& get_input() const;
+   MSSMatMGUT_input_parameters& get_input();
    void set_input_parameters(const MSSMatMGUT_input_parameters&);
 
    MSSMatMGUT_susy_parameters calc_beta() const;
@@ -139,6 +140,8 @@ private:
 };
 
 std::ostream& operator<<(std::ostream&, const MSSMatMGUT_susy_parameters&);
+
+#undef TRACE_STRUCT_TYPE
 
 } // namespace flexiblesusy
 

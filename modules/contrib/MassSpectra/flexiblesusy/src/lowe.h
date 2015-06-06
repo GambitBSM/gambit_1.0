@@ -20,6 +20,8 @@
 #include "utils.h"
 #include "linalg.h"
 #include "rge.h"
+#include "ckm.hpp"
+#include "pmns.hpp"
 
 namespace softsusy {
 const double MUP = 2.4e-3; ///< default running quark mass from PDG
@@ -57,11 +59,15 @@ class QedQcd: public RGE
 private:
   DoubleVector a;   ///< gauge couplings
   DoubleVector mf;  ///< fermion running masses
+  DoubleVector mnu; ///< neutrino pole masses
   double mtPole, mbPole; ///< pole masses of third family quarks
   double mbMb; ///< mb(mb) in the MSbar scheme with only QCD corrections
   double mtauPole; ///< tau pole mass
   double mwPole; ///< W boson pole mass
   double mzPole; ///< Z boson pole mass
+  double gfermi; ///< Fermi constant
+  flexiblesusy::CKM_parameters ckm; ///< CKM parameters (in the MS-bar scheme at MZ)
+  flexiblesusy::PMNS_parameters pmns; ///< PMNS parameters (in the MS-bar scheme at MZ)
 
 public:
   QedQcd(); ///< Initialises with default values defined in lowe.h
@@ -77,8 +83,16 @@ public:
   void setPoleMZ(double mz) { mzPole = mz; } ///< set Z boson pole mass
   /// sets a running quark mass
   void setMass(mass mno, double m) { mf(mno) = m; }; 
+  /// sets a neutrino pole mass
+  void setNeutrinoPoleMass(int i, double m) { mnu(i) = m; }
   /// sets QED or QCD structure constant
   void setAlpha(leGauge ai, double ap) { a(ai) = ap; }; 
+  /// sets CKM parameters (in the MS-bar scheme at MZ)
+  void setCKM(const flexiblesusy::CKM_parameters& ckm_) { ckm = ckm_; }
+  /// sets PMNS parameters (in the MS-bar scheme at MZ)
+  void setPMNS(const flexiblesusy::PMNS_parameters& pmns_) { pmns = pmns_; }
+  /// sets Fermi constant
+  void setFermiConstant(double gf) { gfermi = gf; }
   /// For exporting beta functions to Runge-Kutta
   void set(const DoubleVector &); 
   
@@ -96,12 +110,28 @@ public:
   const DoubleVector & displayMass() const { return mf; };
   /// Returns a single running mass
   double displayMass(mass mno) const { return mf.display(mno); };
+  /// Returns a single neutrino pole mass
+  double displayNeutrinoPoleMass(int i) const { return mnu.display(i); }
   /// Returns a single gauge structure constant
   double displayAlpha(leGauge ai) const { return a.display(ai); };
+  /// Returns Fermi constant
+  double displayFermiConstant() const { return gfermi; }
   /// Obgligatory: returns vector of all running parameters
   const DoubleVector display() const;
   /// Returns mb(mb) MSbar
   double displayMbMb() const { return mbMb; }
+  /// returns CKM parameters
+  flexiblesusy::CKM_parameters displayCKM() const { return ckm; }
+  /// Returns real CKM matrix
+  Eigen::Matrix<double,3,3> get_real_ckm() const { return ckm.get_real_ckm(); }
+  /// Returns complex CKM matrix
+  Eigen::Matrix<std::complex<double>,3,3> get_complex_ckm() const { return ckm.get_complex_ckm(); }
+  /// returns PMNS parameters
+  flexiblesusy::PMNS_parameters displayPMNS() const { return pmns; }
+  /// Returns real PMNS matrix
+  Eigen::Matrix<double,3,3> get_real_pmns() const { return pmns.get_real_pmns(); }
+  /// Returns complex PMNS matrix
+  Eigen::Matrix<std::complex<double>,3,3> get_complex_pmns() const { return pmns.get_complex_pmns(); }
   
   int flavours(double) const;  /// returns number of active flavours
   
@@ -156,8 +186,10 @@ double getAsmt(double mtop, double alphasMz);
 double getRunMtFromMz(double poleMt, double asMZ);
 
 inline QedQcd::QedQcd(const QedQcd &m)
-  : RGE(), a(m.a), mf(m.mf), mtPole(m.mtPole), mbPole(m.mbPole), mbMb(m.mbMb), 
-   mtauPole(m.mtauPole), mwPole(m.mwPole), mzPole(m.mzPole) {
+  : RGE(), a(m.a), mf(m.mf), mnu(m.mnu), mtPole(m.mtPole), mbPole(m.mbPole), mbMb(m.mbMb), 
+   mtauPole(m.mtauPole), mwPole(m.mwPole), mzPole(m.mzPole), gfermi(m.gfermi),
+   ckm(m.ckm), pmns(m.pmns)
+{
   setPars(11); 
   setMu(m.displayMu());
   setLoops(m.displayLoops());

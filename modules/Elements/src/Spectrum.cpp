@@ -210,58 +210,80 @@ namespace Gambit
      return output;
    }
 
-   /// CKM Wolfenstein --> V_ud parameterisation convertor
-   double Spectrum::Wolf2V_ud(double lambda, double A, double rhobar, double etabar)
+   // The expressions in all of the following CKM functions are from the CKMFitter paper hep-ph/0406184v3.
+
+   ///Helper function to calculate Wolfenstein rho+i*eta from rhobar and etabar
+   std::complex<double> Spectrum::rhoplusieta(double lambda, double A, double rhobar, double etabar)
    {
-      
+     std::complex<double> x(rhobar, etabar);  
+     double y = pow(A*lambda*lambda,2);
+     return sqrt((1.0-y)/(1.0-lambda*lambda))*x/(1.0-x*y);
+   }
+
+   /// CKM Wolfenstein --> V_ud standard parameterisation convertor
+   double Spectrum::Wolf2V_ud(double l, double A, double rhobar, double etabar)
+   {
+     double norm = std::norm(rhoplusieta(l,A,rhobar,etabar));
+     return 1.0 - 0.5*pow(l,2) - 0.125*pow(l,4) - 0.0625*pow(l,6)*(1.0+8.0*A*A*norm) 
+            - 0.0078125*pow(l,8)*(5.0-32.0*A*A*norm);
    }
    
-   /// CKM Wolfenstein --> V_us parameterisation convertor
-   double Spectrum::Wolf2V_us(double lambda, double A, double rhobar, double etabar)
+   /// CKM Wolfenstein --> V_us standard parameterisation convertor
+   double Spectrum::Wolf2V_us(double l, double A, double rhobar, double etabar)
    {
-      
+     double norm = std::norm(rhoplusieta(l,A,rhobar,etabar));
+     return l - 0.5*A*A*pow(l,7)*norm; 
    }
    
-   /// CKM Wolfenstein --> V_ub parameterisation convertor
-   std::complex<double> Spectrum::Wolf2V_ub(double lambda, double A, double rhobar, double etabar)
+   /// CKM Wolfenstein --> V_ub standard parameterisation convertor
+   std::complex<double> Spectrum::Wolf2V_ub(double l, double A, double rhobar, double etabar)
    {
-      
+     return A*pow(l,3)*std::conj(rhoplusieta(l,A,rhobar,etabar));   
    }
    
-   /// CKM Wolfenstein --> V_cd parameterisation convertor
-   std::complex<double> Spectrum::Wolf2V_cd(double lambda, double A, double rhobar, double etabar)
+   /// CKM Wolfenstein --> V_cd standard parameterisation convertor
+   std::complex<double> Spectrum::Wolf2V_cd(double l, double A, double rhobar, double etabar)
    {
-      
+     std::complex<double> x(rhoplusieta(l,A,rhobar,etabar));
+     return 0.5*pow(A*l,2)*(pow(l,3)*(1.0-2.0*x) + pow(l,5)*x) - l;       
    }
    
-   /// CKM Wolfenstein --> V_cs parameterisation convertor
-   std::complex<double> Spectrum::Wolf2V_cs(double lambda, double A, double rhobar, double etabar)
+   /// CKM Wolfenstein --> V_cs standard parameterisation convertor
+   std::complex<double> Spectrum::Wolf2V_cs(double l, double A, double rhobar, double etabar)
    {
-      
+     double l2 = l*l;
+     double fA2 = 4.0*A*A;
+     return 1.0 - 0.5*l2 - 0.125*l2*l2*(1.0+fA2) 
+            - 0.0625*pow(l2,3)*(1.0-fA2+4.0*fA2*rhoplusieta(l,A,rhobar,etabar))
+            - 0.0078125*pow(l2,4)*(5.0-fA2*(2.0+4.0*fA2));
    }
    
-   /// CKM Wolfenstein --> V_cb parameterisation convertor
-   double Spectrum::Wolf2V_cb(double lambda, double A, double rhobar, double etabar)
+   /// CKM Wolfenstein --> V_cb standard parameterisation convertor
+   double Spectrum::Wolf2V_cb(double l, double A, double rhobar, double etabar)
    {
-      
+     return A*l*l * (1.0 - 0.5*A*A*pow(l,6)*std::norm(rhoplusieta(l,A,rhobar,etabar)));
    }
    
-   /// CKM Wolfenstein --> V_td parameterisation convertor
-   std::complex<double> Spectrum::Wolf2V_td(double lambda, double A, double rhobar, double etabar)
+   /// CKM Wolfenstein --> V_td standard parameterisation convertor
+   std::complex<double> Spectrum::Wolf2V_td(double l, double A, double rhobar, double etabar)
    {
-      
+     std::complex<double> x(rhoplusieta(l,A,rhobar,etabar));
+     return A*l*l * (l*(1.0-x) + 0.5*pow(l,3)*x + 0.125*pow(l,5)*(1.0+4.0*A*A)*x);
    }
    
-   /// CKM Wolfenstein --> V_ts parameterisation convertor
-   std::complex<double> Spectrum::Wolf2V_ts(double lambda, double A, double rhobar, double etabar)
+   /// CKM Wolfenstein --> V_ts standard parameterisation convertor
+   std::complex<double> Spectrum::Wolf2V_ts(double l, double A, double rhobar, double etabar)
    {
-      
+     std::complex<double> x(rhoplusieta(l,A,rhobar,etabar));
+     return A*l*l * (0.5*pow(l,2)*(1.0-2.0*x) + 0.125*pow(l,4) + 0.0625*pow(l,6)*(1.0+8.0*A*A*x) - 1.0);
    }
    
-   /// CKM Wolfenstein --> V_tb parameterisation convertor
-   double Spectrum::Wolf2V_tb(double lambda, double A, double rhobar, double etabar)
+   /// CKM Wolfenstein --> V_tb standard parameterisation convertor
+   double Spectrum::Wolf2V_tb(double l, double A, double rhobar, double etabar)
    {
-      
+     double norm = std::norm(rhoplusieta(l,A,rhobar,etabar));
+     double l4 = pow(l,4);
+     return 1.0 - 0.5*A*A*l4 * (1.0 + l*l*norm + 0.25*A*A*l4);   
    }
 
 } // end namespace Gambit

@@ -34,6 +34,7 @@ LIBMSSMatMGUT_HDR :=
 
 ifneq ($(findstring two_scale,$(ALGORITHMS)),)
 LIBMSSMatMGUT_SRC += \
+		$(DIR)/MSSMatMGUT_mass_eigenstates.cpp \
 		$(DIR)/MSSMatMGUT_info.cpp \
 		$(DIR)/MSSMatMGUT_input_parameters.cpp \
 		$(DIR)/MSSMatMGUT_slha_io.cpp \
@@ -55,6 +56,7 @@ EXEMSSMatMGUT_SRC += \
 LIBMSSMatMGUT_HDR += \
 		$(DIR)/MSSMatMGUT_convergence_tester.hpp \
 		$(DIR)/MSSMatMGUT_high_scale_constraint.hpp \
+		$(DIR)/MSSMatMGUT_mass_eigenstates.hpp \
 		$(DIR)/MSSMatMGUT_info.hpp \
 		$(DIR)/MSSMatMGUT_initial_guesser.hpp \
 		$(DIR)/MSSMatMGUT_input_parameters.hpp \
