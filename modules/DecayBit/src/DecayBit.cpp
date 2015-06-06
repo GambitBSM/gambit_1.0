@@ -21,6 +21,7 @@
 #include "gambit/DecayBit/DecayBit_rollcall.hpp"
 #include "gambit/DecayBit/decay_utils.hpp"
 #include "gambit/Elements/MSSM_slhahelp.hpp"
+#include "gambit/Models/partmap.hpp"
 
 #include <string>
 #include <map>
@@ -35,52 +36,18 @@ namespace Gambit
 
     /// \name DecayBit module functions
     /// @{
-
-/////////////// Standard Model ///////////////////
-     /// this another variable with global scope for this file
-     std::map<std::string, std::string> particle_to_anti_particle;
+   
      /// this is hideous at the moment, I need a global tol
      /// to keep it the same in each function
      double tol = 1e-2;
-
-      void fill_p_to_ap_map () {
-        particle_to_anti_particle["~u_1"] = "~ubar_1";
-        particle_to_anti_particle["~u_2"] = "~ubar_2";
-        particle_to_anti_particle["~u_3"] = "~ubar_3";
-        particle_to_anti_particle["~u_4"] = "~ubar_4";
-        particle_to_anti_particle["~u_5"] = "~ubar_5";
-        particle_to_anti_particle["~u_6"] = "~ubar_6";
-        
-        particle_to_anti_particle["~d_1"] = "~dbar_1";
-        particle_to_anti_particle["~d_2"] = "~dbar_2";
-        particle_to_anti_particle["~d_3"] = "~dbar_3";
-        particle_to_anti_particle["~d_4"] = "~dbar_4";
-        particle_to_anti_particle["~d_5"] = "~dbar_5";
-        particle_to_anti_particle["~d_6"] = "~dbar_6";
-        
-        particle_to_anti_particle["~e-_1"] = "~e+_1";
-        particle_to_anti_particle["~e-_2"] = "~e+_2";
-        particle_to_anti_particle["~e-_3"] = "~e+_3";
-        particle_to_anti_particle["~e-_4"] = "~e+_4";
-        particle_to_anti_particle["~e-_5"] = "~e+_5";
-        particle_to_anti_particle["~e-_6"] = "~e+_6";
-        
-        particle_to_anti_particle["~nu_1"] = "~nubar_1";
-        particle_to_anti_particle["~nu_2"] = "~nubar_2";
-        particle_to_anti_particle["~nu_3"] = "~nubar_3";
-     } 
      
      mass_es_pseudonyms::mass_es_pseudonyms(const SubSpectrum* mssm,
                                               double tol)
      {
         filled = false;
-        fill_p_to_ap_map();
         fill_mass_es_psns(mssm, tol);
         filled = true;
      }
-
-     
-       
 
      /// just leave these as regular functions just now
      /// in case we change approach or test alternative
@@ -92,9 +59,11 @@ namespace Gambit
         double max_mix = 0; 
         max_mix = slhahelp::largest_mass_mixing_for_gauge(gauge_es,mass_es,
                                                           mssm);
+       
         if((max_mix*max_mix) >= 1-tol){
+           Models::partmap pm;
            is = mass_es;   
-           isbar = particle_to_anti_particle[mass_es];
+           isbar = pm.get_antiparticle(mass_es);
         }
         else {/// throw exception in gambit
            /// I am actually not sure if this is code error or a problem point
@@ -135,8 +104,9 @@ namespace Gambit
         
         if(mix_mag_sq > 1-tol) 
            {
-              is = mass_es;   
-              isbar = particle_to_anti_particle[mass_es];
+              Models::partmap pm;
+              is = mass_es;
+              isbar = pm.get_antiparticle(mass_es);
            }
         else 
            {
@@ -298,7 +268,7 @@ namespace Gambit
         return;
      }
 
-
+     /////////////// Standard Model ///////////////////
 
     /// SM decays: W+/W-
     void W_plus_decays (DecayTable::Entry& result) 
@@ -471,9 +441,7 @@ namespace Gambit
     }
      
      
-     //////////// MSSM /////////////////////
-
-   
+     //////////// MSSM /////////////////////   
     	
     /// FeynHiggs MSSM decays: t
     void FH_t_decays (DecayTable::Entry& result) 
