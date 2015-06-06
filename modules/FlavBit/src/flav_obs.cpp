@@ -305,10 +305,10 @@ void Flav_reader::construct_theory_b2sll()
 {
   const int cov_size=128; // input from Nazila
   double covariance[cov_size][cov_size];  // declaring table that is filled in file from Nazila
-#include "covmatrix.tab" ;
+  #include "gambit/FlavBit/covmatrix.tab" ;
 
   names_obs=vector<string>(cov_size, ""); // names Nazila usese
-#include "names.txt"; // filling big list
+  #include "gambit/FlavBit/names.txt"; // filling big list
   vector<string> q2_bins={"0.1-0.98", "1.1-2.5", "2.5-4", "4-6", "6-8", "15-17", "17-19"};
   vector<string> S_bins={"FL_B0Kstar0mumu_", "S3_B0Kstar0mumu_", "S4_B0Kstar0mumu_", "S5_B0Kstar0mumu_", "S7_B0Kstar0mumu_", "S8_B0Kstar0mumu_", "S9_B0Kstar0mumu_"};
   if(use_S) // assuming 2GeV bins
