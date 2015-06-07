@@ -112,6 +112,25 @@ namespace slhahelp {
                                  double & sqr_sum_mix,
                                  const SubSpectrum* mssm);
 
+   /// returns family state that best matches the given mass_es
+   /// fills a double with the sum of the square mixings to gauge_es
+   /// of the matching family
+   /// and fills the mixing of the matching mass_es into gauge eigenstates 
+   str family_state_closest_to_mass_es(str mass_es, double &  sum_sq_mix,
+                                       std::vector<double> & mass_comp,
+                                       const SubSpectrum* mssm);
+   /// returns family state that best matches the given mass_es
+   /// fills a double with the sum of the square mixings to gauge_es
+   /// of the matching family
+   str family_state_closest_to_mass_es(str mass_es, double & sum_sq_mix,
+                                       const SubSpectrum* mssm);   
+   /// returns family state that best matches the given mass_es
+   /// and fills the mixing of the matching mass_es into gauge eigenstates 
+   str family_state_closest_to_mass_es(str mass_es, 
+                                       std::vector<double> & mass_comp,
+                                       const SubSpectrum* mssm);   
+      
+   
    /// identifies the two mass_es which best matches specified family state
    /// storing them in strings and then returns 
    /// the 2by2 mixing matrix for that family state in the form
@@ -124,10 +143,7 @@ namespace slhahelp {
                                                int family,
                                                str & mass_es1,
                                                str & mass_es2,
-                                               const SubSpectrum* mssm);
-   
-  
-  
+                                               const SubSpectrum* mssm);  
       
    }  // namespace slhahelp
 } // namespace gambit

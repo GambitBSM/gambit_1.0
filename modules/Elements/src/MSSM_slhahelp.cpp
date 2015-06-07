@@ -25,6 +25,10 @@ namespace Gambit {
       ///maps directly from family string to left_right gauge_pairs
       /// helps us reuse other routines that take string arguments 
       std::map<str, pair_strings>  family_state_to_gauge_state;
+       ///maps directly from gauge_es string to familystates
+      /// helps us reuse other routines that take string arguments 
+      std::map<str, pair_strings>  gauge_es_to_family_states;
+
       /// map from string representing type (ie up-squars, down-squars or 
       /// charged selptons) to appropriate set of mass eigenstates 
       std::map<str,std::set<str>> type_to_set_of_mass_es;
@@ -105,8 +109,8 @@ namespace Gambit {
          pair_string_ints const snutau1("~nu",one_one);
          
 
-           /// the left_right gauge_pairs 
-         /// usefu -fl when identifying family states
+         /// the left_right gauge_pairs 
+         /// useful when identifying family states
          pair_strings stop_gauge("~t_L","~t_R");
          pair_strings sbot_gauge("~b_L","~b_R");
          pair_strings stau_gauge("~tau_L","~tau_R");
@@ -116,6 +120,7 @@ namespace Gambit {
          pair_strings sup_gauge("~u_L","~u_R");
          pair_strings sdown_gauge("~d_L","~d_R");
          pair_strings selectron_gauge("~e_L","~e_R");
+
       
          /// index and type  
          p_int_string six_up_squark(6,"~u");
@@ -192,6 +197,8 @@ namespace Gambit {
          mass_label_to_index_type["~nu_2"] = two_sneutrino;
          mass_label_to_index_type["~nu_3"] = three_sneutrino;        
 
+         
+
          familystate_label["~t_1"] = stop1; 
          familystate_label["~t_2"] = stop2;
          familystate_label["~b_1"] = sbot1; 
@@ -254,7 +261,31 @@ namespace Gambit {
          family_state_to_gauge_state["~d_2"] = sdown_gauge;
          family_state_to_gauge_state["~e-_1"] = selectron_gauge;
          family_state_to_gauge_state["~e-_2"] = selectron_gauge;
-   
+         
+        
+         gauge_es_to_family_states["~t_L"] = std::make_pair("~t_1","~t_2");
+         gauge_es_to_family_states["~t_R"] = std::make_pair("~t_1","~t_2");
+         gauge_es_to_family_states["~b_L"] = std::make_pair("~b_1","~b_2");
+         gauge_es_to_family_states["~b_R"] = std::make_pair("~b_1","~b_2");
+         gauge_es_to_family_states["~tau_L"] = std::make_pair("~tau_1","~tau_2");
+         gauge_es_to_family_states["~tau_R"] = std::make_pair("~tau_1","~tau_2");
+
+         gauge_es_to_family_states["~c_L"] = std::make_pair("~c_1","~c_2");
+         gauge_es_to_family_states["~c_R"] = std::make_pair("~c_1","~c_2");
+         gauge_es_to_family_states["~s_L"] = std::make_pair("~s_1","~s_2");
+         gauge_es_to_family_states["~s_R"] = std::make_pair("~s_1","~s_2");
+         gauge_es_to_family_states["~mu_L"] = std::make_pair("~mu_1","~mu_2");
+         gauge_es_to_family_states["~mu_R"] = std::make_pair("~mu_1","~mu_2");
+
+         gauge_es_to_family_states["~u_L"] = std::make_pair("~u_1","~u_2");
+         gauge_es_to_family_states["~u_R"] = std::make_pair("~u_1","~u_2");
+         gauge_es_to_family_states["~d_L"] = std::make_pair("~d_1","~d_2");
+         gauge_es_to_family_states["~d_R"] = std::make_pair("~d_1","~d_2");
+         gauge_es_to_family_states["~e_L"] = std::make_pair("~e-_1","~e-_2");
+         gauge_es_to_family_states["~e_R"] = std::make_pair("~e-_1","~e-_2");
+
+
+
          /// map from string representing type (ie up-squarks, down-squarks or 
          /// charged selptons) to appropriate set of mass eigenstates
          type_to_set_of_mass_es["~u"] = up_squark_strs;
@@ -574,7 +605,7 @@ namespace Gambit {
 
 
 
-      /// indentify the two mass eigenstate corresponding to the approximate 
+      /// identify the two mass eigenstate corresponding to the approximate 
       /// family states, e.g. stops ("~u",3), smuons ("~mu", 2) etc 
       /// Note: when there is family mixing there's no good definition ~t_1, 
       //~t_2 etc if defined as the states you get from diagonalising a 2by2 
@@ -610,8 +641,9 @@ namespace Gambit {
          
          return answer;
       }
-           
-      /// overloaded version which takes string and returns only requested state
+
+      // identify the mass eigenstate corresponding to family state     
+      /// takes string and returns only requested state
       /// I suspect this is the more useful one
       str mass_es_closest_to_family(str familystate,
                                     const SubSpectrum* mssm)
@@ -821,7 +853,72 @@ namespace Gambit {
          return admix;      
       }
 
- 
+      /// returns family state that best matches the given mass_es
+      /// fills a double with the sum of the square mixings to gauge_es
+      /// of the matching family
+      /// and fills the mixing of the matching mass_es into gauge eigenstates 
+      str family_state_closest_to_mass_es(str mass_es, double & sum_sq_mix,
+                                          std::vector<double> & mass_comp,
+                                          const SubSpectrum* mssm)
+      {
+         /// get gauge_es with largest mixing to this mass_es  
+         str gauge_es = gauge_es_from_mass_es(mass_es, mass_comp, mssm);
+         /// get family states for the same generation as this gauge_es
+         pair_strings family_states = gauge_es_to_family_states[gauge_es];
+         str family_state1 = family_states.first;
+         str family_state2 = family_states.second;
+         pair_strings gauge_states = family_state_to_gauge_state[family_state1];
+         str gauge_es_L = gauge_states.first;
+         str gauge_es_R = gauge_states.second;
+         str mass_es_other;         
+         if(gauge_es == gauge_es_L) 
+            mass_es_other = mass_es_from_gauge_es(gauge_es_R, mssm);
+         else mass_es_other = mass_es_from_gauge_es(gauge_es_L, mssm);
+         /// extractindex of mass-es and mass_ess_other from strings 
+         int mass_index = (mass_label_to_index_type[mass_es]).first;
+         int mass_index_other = (mass_label_to_index_type[mass_es_other]).first;
+         str fam_state; 
+         /// choose mass ordering for family state which matches  
+         /// mass ordering of mass_es
+         if(mass_index < mass_index_other) fam_state = family_state1;
+         else fam_state = family_state2;
+         
+         //get gauge_indices to sum correct mixing elements
+         int gauge_index_L = (gauge_label_to_index_type[gauge_es_L]).first;
+         int gauge_index_R = (gauge_label_to_index_type[gauge_es_R]).first;
+         /// subrtact 1 fgrom indices to deal with different indexing 
+         sum_sq_mix = mass_comp[gauge_index_L-1] * mass_comp[gauge_index_L-1];
+         sum_sq_mix += mass_comp[gauge_index_R-1] * mass_comp[gauge_index_R-1];
+         
+         return fam_state;
+      }
+      
+      /// wrapper for overloaded version
+      /// returns family state that best matches the given mass_es
+      /// fills a double with the sum of the square mixings to gauge_es
+      /// of the matching family
+       str family_state_closest_to_mass_es(str mass_es, double & sum_sq_mix,
+                                           const SubSpectrum* mssm)
+       {
+          std::vector<double> mass_comp;
+          str fs = family_state_closest_to_mass_es(mass_es, sum_sq_mix, 
+                                                   mass_comp, mssm);
+          return fs;
+       }
+      
+      /// wrapper for overloaded version
+      /// returns family state that best matches the given mass_es
+      /// and fills the mixing of the matching mass_es into gauge eigenstates 
+       str family_state_closest_to_mass_es(str mass_es, 
+                                           std::vector<double> & mass_comp,
+                                           const SubSpectrum* mssm)
+       {
+          double max_mix;
+          str fs = family_state_closest_to_mass_es(mass_es, max_mix, mass_comp,
+                                                   mssm);
+          return fs;
+       }
+      
       
    }  // namespace slhahelp
 } //namespace gambit
