@@ -38,7 +38,7 @@ namespace slhahelp {
    /******************* gauge_es <-> mass_es helpers ****************/
 
    /// identifies the state with largest gauge_es content
-   /// also fills mlargest max_mixing and full gauge_composition
+   /// also fills largest max_mixing and full gauge_composition
    str mass_es_from_gauge_es(str gauge_es, double & max_mixing, 
                              std::vector<double> & gauge_composition, 
                              const SubSpectrum* mssm);
@@ -76,7 +76,7 @@ namespace slhahelp {
    str gauge_es_from_mass_es(str mass_es, const SubSpectrum* mssm);
 
 
-   /******************* family state -> mass_es, gauge_es  helpers ***********/
+   /******************* family state <-> mass_es, gauge_es  helpers ***********/
    
    /// Note: when there is family mixing there's no clear definition ~t_1, 
    /// ~t_2 etc as these are neither gauge_es nor mass_es

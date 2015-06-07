@@ -31,8 +31,8 @@ namespace Gambit {
 
       /// map from string representing type (ie up-squars, down-squars or 
       /// charged selptons) to appropriate set of mass eigenstates 
-      std::map<str,std::set<str>> type_to_set_of_mass_es;
-      std::map<str,std::set<str>> type_to_set_of_gauge_es;
+      std::map<str,std::vector<str>> type_to_set_of_mass_es;
+      std::map<str,std::vector<str>> type_to_set_of_gauge_es;
       ///maps between type and the sets of indices
       std::map<str,std::set<int>> type_to_set_of_row_indices;
       std::map<str,std::set<int>> type_to_set_of_col_indices;
@@ -43,22 +43,22 @@ namespace Gambit {
       void init_maps(){
     
          /// this is probably banned c++11, can uglify later if kept     
-         std::set<str> up_squark_strs   = {"~u_1", "~u_2", "~u_3", 
+         std::vector<str> up_squark_strs   = {"~u_1", "~u_2", "~u_3", 
                                                    "~u_4", "~u_5", "~u_6"}; 
-         std::set<str> down_squark_strs = {"~d_1", "~d_2", "~d_3", 
+         std::vector<str> down_squark_strs = {"~d_1", "~d_2", "~d_3", 
                                                    "~d_4", "~d_5", "~d_6"};
-         std::set<str> ch_slepton_strs  = {"~e-_1", "~e-_2", "~e-_3", 
+         std::vector<str> ch_slepton_strs  = {"~e-_1", "~e-_2", "~e-_3", 
                                                    "~e-_4", "~e-_5", "~e-_6"};
-         std::set<str> sneutrino_strs   = {"~nu_1", "~nu_2", "~nu_3"};
+         std::vector<str> sneutrino_strs   = {"~nu_1", "~nu_2", "~nu_3"};
 
          /// this is probably banned c++11, can uglify later if kept     
-         std::set<str> up_sq_gauge_strs   = {"~u_L", "~c_L", "~t_L", 
+         std::vector<str> up_sq_gauge_strs   = {"~u_L", "~c_L", "~t_L", 
                                                    "~u_R", "~c_R", "~t_R"}; 
-         std::set<str> down_sq_gauge_strs ={"~d_L", "~s_L", "~b_L", 
+         std::vector<str> down_sq_gauge_strs ={"~d_L", "~s_L", "~b_L", 
                                                    "~d_R", "~s_R", "~b_R"};
-         std::set<str> ch_sl_gauge_strs  = {"~e_L", "~mu_L", "~tau_L", 
+         std::vector<str> ch_sl_gauge_strs  = {"~e_L", "~mu_L", "~tau_L", 
                                                    "~e_R", "~mu_R", "~tau_R"};
-         std::set<str> sne_gauge_strs = {"~nu_e_L", "~nu_mu_L", "~nu_tau_L"};
+         std::vector<str> sne_gauge_strs = {"~nu_e_L", "~nu_mu_L", "~nu_tau_L"};
 
          
          /// for iterations over rows and columns
@@ -432,10 +432,10 @@ namespace Gambit {
          /// and choose which by type
          /// I am concerned about creating excessive numbers of internal code
          /// structures in terms of code readability though
-         std::set<str> mass_es_set = type_to_set_of_mass_es[type];
+         std::vector<str> mass_es_set = type_to_set_of_mass_es[type];
          /// c++11 would be cool here but I think is banned :(.
          // for(auto temp_mass_es : mass_es_set) { do stuff with temp_mass_es }
-         typedef std::set<str>::iterator iter;
+         typedef std::vector<str>::iterator iter;
          for(iter it = mass_es_set.begin(); it != mass_es_set.end(); ++it){
             temp_mass_es = *it;    
             temp_admix = get_mixing_element(gauge_es, temp_mass_es, 
@@ -526,13 +526,13 @@ namespace Gambit {
          /// and choose which by type
          /// I am concerned about creating excessive numbers of internal code
          /// structures in terms of code readability though
-         std::set<str> gauge_es_set = type_to_set_of_gauge_es[type];
+         std::vector<str> gauge_es_set = type_to_set_of_gauge_es[type];
          /// c++11 would be cool here but I think is banned :(.
          // for(auto temp_mass_es : mass_es_set) { do stuff with temp_mass_es }
-         typedef std::set<str>::iterator iter;
+         typedef std::vector<str>::iterator iter;
          for(iter it = gauge_es_set.begin(); it != gauge_es_set.end(); ++it){
-            temp_gauge_es = *it;    
-            temp_admix = get_mixing_element(temp_gauge_es, mass_es,  mssm);
+            temp_gauge_es = *it;   
+            temp_admix = get_mixing_element(temp_gauge_es, mass_es,  mssm); 
             mass_composition.push_back(temp_admix);
             //select largest 
             if(fabs(temp_admix) > fabs(max_mixing)) {
@@ -886,7 +886,7 @@ namespace Gambit {
          //get gauge_indices to sum correct mixing elements
          int gauge_index_L = (gauge_label_to_index_type[gauge_es_L]).first;
          int gauge_index_R = (gauge_label_to_index_type[gauge_es_R]).first;
-         /// subrtact 1 fgrom indices to deal with different indexing 
+         /// subrtact 1 fgrom indices to deal with different indexing
          sum_sq_mix = mass_comp[gauge_index_L-1] * mass_comp[gauge_index_L-1];
          sum_sq_mix += mass_comp[gauge_index_R-1] * mass_comp[gauge_index_R-1];
          
