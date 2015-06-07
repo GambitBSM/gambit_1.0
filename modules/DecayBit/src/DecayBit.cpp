@@ -80,15 +80,15 @@ namespace Gambit
      void fill_mass_es_psn_family(std::string & is, std::string & isbar,  
                                   std::string family_state,
                                   const SubSpectrum* mssm,
-                                  double tol) {
-        std::string mass_es; 
+                                  double tol) { 
         /// use slhahelp routine which first identifies the mass_es which 
         /// best matches the requested family state. then returns the
         /// decomposition of that mass_es state in terms of gauge states 
         /// from the same family as the family state
-        std::vector<double> wrong_fam_gauge_comp;
-        std::vector<double> right_fam_gauge_comp = 
-           slhahelp::family_state_mix_elements(family_state, mass_es, mssm);
+        std::vector<double> right_fam_gauge_comp; 
+        str mass_es = slhahelp::mass_es_closest_to_family(family_state, 
+                                                          right_fam_gauge_comp,
+                                                          mssm);
         /// Do very simple test for now, discuss best approach
         /// This is a question for decaybit
         double mix_mag_sq = 0.0;
@@ -115,10 +115,6 @@ namespace Gambit
         
         return;
  }
-
-
-     
- 
        
      void  mass_es_pseudonyms::test_print(const SubSpectrum* mssm) {
         std::cout.precision(8);
@@ -171,7 +167,6 @@ namespace Gambit
         std::cout << "isur = "  << isur << std::endl;
         std::cout << "isurbar = "  << isurbar << std::endl;
         
-
         std::cout << "issl = "  << issl << std::endl;
         std::cout << "isslbar = "  << isslbar << std::endl;
         std::cout << "issr = "  << issr << std::endl;
@@ -182,8 +177,6 @@ namespace Gambit
         std::cout << "iscr = "  << iscr << std::endl;
         std::cout << "iscrbar = "  << iscrbar << std::endl;
 
-
-
         std::cout << "isb1 = "  << isb1 << std::endl;
         std::cout << "isb1bar = "  << isb1bar << std::endl;
         std::cout << "isb2 = "  << isb2 << std::endl;
@@ -193,7 +186,6 @@ namespace Gambit
         std::cout << "ist1bar = "  << ist1bar << std::endl;
         std::cout << "ist2 = "  << ist2 << std::endl;
         std::cout << "ist2bar = "  << ist2bar << std::endl;
-
 
         std::cout << "isell = "  << isell << std::endl;
         std::cout << "isellbar = "  << isellbar << std::endl;

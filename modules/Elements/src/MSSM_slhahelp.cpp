@@ -477,7 +477,6 @@ namespace Gambit {
          return mass_es; 
       }
       
-
       /// identifies gauge_es with largest mass_es content
       /// also fills largest max_mixing and full mass_composition 
       str gauge_es_from_mass_es(str mass_es, double & max_mixing, 
@@ -611,13 +610,11 @@ namespace Gambit {
          
          return answer;
       }
-      
-      
-      
+           
       /// overloaded version which takes string and returns only requested state
       /// I suspect this is the more useful one
-      str identify_mass_es_closest_to_family(str familystate,
-                                                     const SubSpectrum* mssm)
+      str mass_es_closest_to_family(str familystate,
+                                    const SubSpectrum* mssm)
       {
          pair_strings family_gauge_states = 
             family_state_to_gauge_state[familystate];
@@ -654,7 +651,7 @@ namespace Gambit {
                                                           const SubSpectrum* mssm)
       {   
          //get mass_es using one of our routines
-         mass_es = identify_mass_es_closest_to_family(familystate, mssm);
+         mass_es = mass_es_closest_to_family(familystate, mssm);
          /// extract info from strings via maps
          int mass_index = (mass_label_to_index_type[mass_es]).first;
          pair_string_ints state_info = familystate_label[familystate];
@@ -667,22 +664,22 @@ namespace Gambit {
       }
 
 
-      /// identifies the mass_es which is the closest match to specified family state
-      /// then returns mass es's admixture of the two gauge states with same family
-      /// and stores the rest of the gauge content for this state in a std::vector
-      /// The latter should have entries which are zero in absense of family mixing
-      std::vector<double> family_state_mix_elements(str familystate,
-                                                       str & mass_es,
-                                                       const SubSpectrum* mssm)
+      /// identifies the mass_es that is closest match to specified family state
+      /// and fills mixture of the two gauge states with same family into
+      /// std::vector gauge_composition
+      /// also fills remaining off-family mixings into a second vector 
+      str mass_es_closest_to_family(str familystate,
+                                    std::vector<double> & gauge_composition,
+                                    std::vector<double> & off_family_mixing,
+                                    const SubSpectrum* mssm)
       {   
          //get mass_es using one of our routines
-         mass_es = identify_mass_es_closest_to_family(familystate, mssm);
+         str mass_es = mass_es_closest_to_family(familystate, mssm);
          /// extract info from strings via maps
          pair_strings gauge_states = family_state_to_gauge_state[familystate];
          str gauge_state_L = gauge_states.first;
          str gauge_state_R = gauge_states.second;
-         /// get index of right family states (ie gauge states with same family as
-         /// requested family state
+       
          p_int_string gauge_Lindex_type = 
             gauge_label_to_index_type[gauge_state_L];
          int gauge_L_index = gauge_Lindex_type.first;
@@ -690,20 +687,48 @@ namespace Gambit {
          int gauge_R_index = (gauge_label_to_index_type[gauge_state_R]).first;  
          int mass_index = (mass_label_to_index_type[mass_es]).first;   
          std::set<int> row_indices = type_to_set_of_row_indices[type];
-         //double row_length = row_indices.size();
-         std::vector<double> right_fam_gauge_content;
          
          for(iter it = row_indices.begin(); it != row_indices.end(); ++it)
             {
                double temp = mssm->phys.get_Pole_Mixing(type, mass_index, *it); 
                if(*it == gauge_L_index || *it == gauge_R_index) 
-                  right_fam_gauge_content.push_back(temp);
+                  gauge_composition.push_back(temp);
+               else off_family_mixing.push_back(temp);
             }
 
-         return right_fam_gauge_content;
+         return mass_es;
          
       }
-   
+      /// identifies the mass_es that is closest match to specified family state
+      /// and fills mixture of the two gauge states with same family into
+      /// std::vector gauge_composition 
+      str mass_es_closest_to_family(str familystate,
+                                    std::vector<double> & gauge_composition,
+                                    const SubSpectrum* mssm)
+      {   
+         std::vector<double> off_family_mixing;
+         str mass_es = mass_es_closest_to_family(familystate, gauge_composition,
+                                                 off_family_mixing, mssm);
+         return mass_es;
+
+      }
+      /// identifies the mass_es that is closest match to specified family state
+      /// and fills sqr_sum_mix with the square sum of each of the two mixings 
+      /// into gauge_es of that family
+      str mass_es_closest_to_family(str familystate,
+                                    double & sqr_sum_mix,
+                                    const SubSpectrum* mssm)
+      {   
+         std::vector<double> off_family_mixing;
+         std::vector<double>  gauge_composition;
+         str mass_es = mass_es_closest_to_family(familystate, gauge_composition,
+                                                 off_family_mixing, mssm);
+         sqr_sum_mix = gauge_composition[0] * gauge_composition[0];
+         sqr_sum_mix += gauge_composition[1] * gauge_composition[1];
+         return mass_es;
+
+      }
+
       /// identifies the two mass_es which best matches specified family state
       /// storing them in strings and then returns 
       /// the 2by2 mixing matrix for that family state in the form
@@ -788,7 +813,7 @@ namespace Gambit {
                utils_error().raise(LOCAL_INFO, "function get_gauge_admix_for_family_state called with type's for the family state and mass eigenstate that don't match.");
             }
          ///get mass_es using one of our routines
-         mass_es = identify_mass_es_closest_to_family(familystate, mssm);
+         mass_es = mass_es_closest_to_family(familystate, mssm);
          /// extract info from strings via maps
          int mass_index = (mass_label_to_index_type[mass_es]).first;   
          double admix = mssm->phys.get_Pole_Mixing(type_gauge, mass_index, 
