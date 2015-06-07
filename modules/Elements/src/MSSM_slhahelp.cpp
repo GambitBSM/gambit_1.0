@@ -365,9 +365,6 @@ namespace Gambit {
          return admix;
       }
       
-      
-
-
       /// returns vector representing composition of requested mass eigenstate
       /// in terms of the slha2 gauge eigenstates (~u_L,~c_L,...~t_R etc)
       /// which is just a row in the mixing matrix 
@@ -386,46 +383,8 @@ namespace Gambit {
          return mass_state_content;
       }
       
-      /// get largest admix and indentifies the state by filling mass_es
-      /// could pass tol for test here, but maybe better to leave til step after
-      double largest_mass_mixing_for_gauge(str gauge_es, 
-                                               str & mass_es, 
-                                               const SubSpectrum* mssm)
-      {
-         /// passed in massstate to be set
-         double temp_admix = 0.0;
-         double admix = 0.0;
-         /// retrive type from the gauge_es string
-         str type = (gauge_label_to_index_type[gauge_es]).second;
-         str temp_mass_es;
-         /// iterate over set of strings for mass states using temp_massstate
-         /// could create a set of strings for each type 
-         /// and choose which by type
-         /// I am concerned about creating excessive numbers of internal code
-         /// structures in terms of code readability though
-         std::set<str> mass_es_set = type_to_set_of_mass_es[type];
-         /// c++11 would be cool here but I think is banned :(.
-         // for(auto temp_mass_es : mass_es_set) { do stuff with temp_mass_es }
-         typedef std::set<str>::iterator iter;
-         for(iter it = mass_es_set.begin(); it != mass_es_set.end(); ++it){
-            temp_mass_es = *it;    
-            temp_admix = get_mixing_element(gauge_es, temp_mass_es, 
-                                                    mssm);
-            //select largest 
-            if(fabs(temp_admix) > fabs(admix)) {
-               admix = temp_admix; 
-               mass_es = temp_mass_es;
-            }
-         } //end iteration over temp_mass_es
-        
-         //return largest
-         return admix;
-      }
-
- 
-      
       /// indentifies the state with largest gauge_es content
-      /// also fills mlargest max_mixing and full gauge_composition 
+      /// also fills largest max_mixing and full gauge_composition 
       str mass_es_from_gauge_es(str gauge_es, double & max_mixing, 
                                 std::vector<double> & gauge_composition, 
                                 const SubSpectrum* mssm)
@@ -615,42 +574,6 @@ namespace Gambit {
       }
 
 
-      /// get largest admix and indentifies the state by filling gauge_es
-      double largest_gauge_mixing_for_mass(str mass_es, 
-                                           str & gauge_es, 
-                                           const SubSpectrum* mssm)
-      {
-         /// passed in massstate to be set
-         double temp_admix = 0.0;
-         double admix = 0.0;
-         /// retrive type from the gauge_es string
-         str type = (mass_label_to_index_type[mass_es]).second;
-         str temp_gauge_es;
-         /// iterate over set of strings for mass states using temp_massstate
-         /// could create a set of strings for each type 
-         /// and choose which by type
-         /// I am concerned about creating excessive numbers of internal code
-         /// structures in terms of code readability though
-         std::set<str> gauge_es_set = type_to_set_of_gauge_es[type];
-         /// c++11 would be cool here but I think is banned :(.
-         // for(auto temp_mass_es : mass_es_set) { do stuff with temp_mass_es }
-         typedef std::set<str>::iterator iter;
-         for(iter it = gauge_es_set.begin(); it != gauge_es_set.end(); ++it){
-            temp_gauge_es = *it;    
-            temp_admix = get_mixing_element(temp_gauge_es, mass_es, 
-                                                    mssm);
-            //select largest 
-            if(fabs(temp_admix) > fabs(admix)) {
-               admix = temp_admix; 
-               gauge_es = temp_gauge_es;
-            }
-         } //end iteration over temp_mass_es
-         
-         //return largest
-         return admix;
-      }
-      
-
 
       /// indentify the two mass eigenstate corresponding to the approximate 
       /// family states, e.g. stops ("~u",3), smuons ("~mu", 2) etc 
@@ -677,11 +600,6 @@ namespace Gambit {
          /// passed gauge_es
          str mass_esL = mass_es_from_gauge_es(gauge_esL, mssm);
          str mass_esR = mass_es_from_gauge_es(gauge_esR, mssm);
-         /// old way
-         // find largest admix for gauge states 
-         // str mass_esL, mass_esR;
-         // largest_mass_mixing_for_gauge(gauge_esL, mass_esL, mssm);
-         // largest_mass_mixing_for_gauge(gauge_esR, mass_esR, mssm);
          
          pair_strings answer;
          int mass_index_L = (mass_label_to_index_type[mass_esL]).first;

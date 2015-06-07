@@ -52,17 +52,7 @@ namespace slhahelp {
    /// really just wraps get_Pole_Mixing_col after extracting info from string
    std::vector<double> get_gauge_comp_for_mass(str mass_es,
                                                const SubSpectrum* mssm);
-      
-   // get largest admix and indentifies the state by filling mass_es
-   /// could pass tol for test here, but maybe better to leave til step after
-   double largest_mass_mixing_for_gauge(str gauge_es, 
-                                        str & mass_es,
-                                        const SubSpectrum* mssm);
-       /// get largest mixing and identifies the state by filling gauge_es
-   double largest_gauge_mixing_for_mass(str mass_es, 
-                                        str & gauge_es, 
-                                        const SubSpectrum* mssm);
-      
+     
 
    /******************* family state -> mass_es, gauge_es  helpers ***********/
    

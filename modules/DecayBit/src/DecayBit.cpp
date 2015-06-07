@@ -54,12 +54,10 @@ namespace Gambit
      void fill_mass_es_psn_gauge(std::string & is, std::string & isbar,  
                                  std::string gauge_es,
                                  const SubSpectrum* mssm,
-                                 double tol) {
-        std::string mass_es;
+                                 double tol) { 
         double max_mix = 0; 
-        max_mix = slhahelp::largest_mass_mixing_for_gauge(gauge_es,mass_es,
-                                                          mssm);
-       
+        std::string mass_es = slhahelp::mass_es_from_gauge_es(gauge_es, 
+                                                              max_mix, mssm);
         if((max_mix*max_mix) >= 1-tol){
            Models::partmap pm;
            is = mass_es;   
@@ -71,8 +69,7 @@ namespace Gambit
            
            /// can i write the deviation and the states in this message?  O
            /// or does it only accept string
-             
-           DecayBit_error().raise(LOCAL_INFO, "function fill_mass_es_psn_gauge has too large sfermion mixing for state that assumed to be a pure gauge state"); 
+           DecayBit_error().raise(LOCAL_INFO, "function fill_mass_es_psn_gauge has too large sfermion mixing for state that assumed to be a pure gauge state");
            DecayBit_warning().raise(LOCAL_INFO,
               "This point violates the assumption that certain sfermion states have no family mixing  by a degree larger than tol made in a DecayBit routine.");
            invalid_point().raise("This point violates the assumption that certain sfermion states have no family mixing  by a degree larger than tol made in a DecayBit routine.");
@@ -101,7 +98,7 @@ namespace Gambit
               double mix = *i;
               mix_mag_sq += mix*mix;
            }    
-        
+
         if(mix_mag_sq > 1-tol) 
            {
               Models::partmap pm;
