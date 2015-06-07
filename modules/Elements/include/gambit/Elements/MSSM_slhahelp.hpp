@@ -35,9 +35,6 @@ namespace slhahelp {
    typedef std::pair<str,str> pair_strings;
    typedef std::set<int>::iterator iter;
    
-   /// setup all the maps
-   void init_maps();
-
    /******************* gauge_es <-> mass_es helpers ****************/
 
    /// identifies the state with largest gauge_es content
