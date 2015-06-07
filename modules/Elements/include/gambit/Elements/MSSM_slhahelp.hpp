@@ -22,16 +22,18 @@
 #include <set>
 #include "gambit/Elements/SubSpectrum.hpp"
 #include "gambit/Elements/Spectrum.hpp"
+#include "gambit/Utils/util_types.hpp"
+
 
 namespace Gambit {
 
 namespace slhahelp {
 
    /// type defs for pair types etc that we will use in maps
-   typedef std::pair<int,std::string> p_int_string;
+   typedef std::pair<int,str> p_int_string;
    typedef std::pair<int,int> pair_ints;
-   typedef std::pair<std::string,pair_ints> pair_string_ints;
-   typedef std::pair<std::string,std::string> pair_strings;
+   typedef std::pair<str,pair_ints> pair_string_ints;
+   typedef std::pair<str,str> pair_strings;
    typedef std::set<int>::iterator iter;
    
    /// setup all the maps
@@ -42,23 +44,23 @@ namespace slhahelp {
    /// returns vector representing composition of requested gauge state
    /// in terms of the slha2 mass eigenstates (~u_1 ...~u_6 etc)
    /// which is just a column in the mixing matrix 
-   std::vector<double> get_mass_comp_for_gauge(std::string gauge_es,
+   std::vector<double> get_mass_comp_for_gauge(str gauge_es,
                                                const SubSpectrum* mssm);
    /// returns vector representing composition of requested mass eigenstate
    /// in terms of the slha2 gauge eigenstates (~u_L,~c_L,...~t_R etc)
    /// which is just a row in the mixing matrix 
    /// really just wraps get_Pole_Mixing_col after extracting info from string
-   std::vector<double> get_gauge_comp_for_mass(std::string mass_es,
+   std::vector<double> get_gauge_comp_for_mass(str mass_es,
                                                const SubSpectrum* mssm);
       
    // get largest admix and indentifies the state by filling mass_es
    /// could pass tol for test here, but maybe better to leave til step after
-   double largest_mass_mixing_for_gauge(std::string gauge_es, 
-                                        std::string & mass_es,
+   double largest_mass_mixing_for_gauge(str gauge_es, 
+                                        str & mass_es,
                                         const SubSpectrum* mssm);
        /// get largest mixing and identifies the state by filling gauge_es
-   double largest_gauge_mixing_for_mass(std::string mass_es, 
-                                        std::string & gauge_es, 
+   double largest_gauge_mixing_for_mass(str mass_es, 
+                                        str & gauge_es, 
                                         const SubSpectrum* mssm);
       
 
@@ -81,8 +83,8 @@ namespace slhahelp {
    /// thus it mirrors the get_gauge_comp_for_mass_es given earlier, but 
    /// fills an additional argument to tell the user what mass_es the family
    /// state is defined as
-   std::vector<double> get_gauge_comp_for_family_state(std::string familystate,
-                                                       std::string & mass_es,
+   std::vector<double> get_gauge_comp_for_family_state(str familystate,
+                                                       str & mass_es,
                                                        const SubSpectrum* mssm);
 
    /// identifies the mass_es which best matches specified family state
@@ -91,8 +93,8 @@ namespace slhahelp {
    /// to test against family mixing check the square sum of elements of the row
    /// are sufficiently close to 1, i.e. if(sqr(vec(1))+sqr(vec(2)) > 1-tol)
    /// where vec is the std::vector returned by this method
-   std::vector<double> family_state_mix_elements(std::string familystate,
-                                                 std::string & mass_es,
+   std::vector<double> family_state_mix_elements(str familystate,
+                                                 str & mass_es,
                                                  const SubSpectrum* mssm);
 
    /// identifies the two mass_es which best matches specified family state
@@ -103,14 +105,52 @@ namespace slhahelp {
    /// the squar some of each element is sufficently close to 1
    /// ie if(sqr(vec(1))+sqr(vec(2)) > 1-tol && sqr(vec(3))+sqr(vec(4)) > 1-tol)
    /// where vec is the std::vector returned by this method
-   std::vector<double> family_state_mix_matrix(std::string type,
+   std::vector<double> family_state_mix_matrix(str type,
                                                int family,
-                                               std::string & mass_es1,
-                                               std::string & mass_es2,
+                                               str & mass_es1,
+                                               str & mass_es2,
                                                const SubSpectrum* mssm);
    
-   
+  
+   /******************* closer to Pat's suggestions *********************/
 
+   /// identifies the state with largest gauge_es content
+   /// also fills mlargest max_mixing and full gauge_composition 
+   str mass_es_from_gauge_es(str gauge_es, double & max_mixing, 
+                             std::vector<double> & gauge_composition, 
+                             const SubSpectrum* mssm);
+   
+   /// as above but doesn't fill a gauge_composition vector 
+   /// would have a slight efficiency saving if we didn't use wrapper and 
+   /// avoided skipped gauge_composition entirely but at the cost of a lot of
+   /// code duplication
+   str mass_es_from_gauge_es(str gauge_es, double & max_mixing,
+                             const SubSpectrum* mssm);
+   
+   /// as above but doesn't fill max_mixing 
+   /// would have a slight efficiency saving if we didn't use wrapper and 
+   /// avoided skipped max_mixing entirely but at the cost of a lot of
+   /// code duplication
+   str mass_es_from_gauge_es(str gauge_es, 
+                             std::vector<double> & gauge_composition,
+                             const SubSpectrum* mssm);
+   
+   /// as above but do test against tol internally as Pat prefers
+   str mass_es_from_gauge_es(str gauge_es, const SubSpectrum* mssm, double tol);
+
+   /// mirrors of mass_es_from_gauge_es routines
+   str gauge_es_from_mass_es(str mass_es, double & max_mixing, 
+                             std::vector<double> & mass_composition,
+                             const SubSpectrum* mssm);
+   
+   str gauge_es_from_mass_es(str mass_es, double & max_mixing, 
+                             const SubSpectrum* mssm);
+   
+   str gauge_es_from_mass_es(str mass_es, 
+                             std::vector<double> & mass_composition, 
+                             const SubSpectrum* mssm); 
+   
+   str gauge_es_from_mass_es(str mass_es, const SubSpectrum* mssm);
       
    }  // namespace slhahelp
 } // namespace gambit

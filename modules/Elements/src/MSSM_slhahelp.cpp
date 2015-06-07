@@ -14,24 +14,24 @@
 namespace Gambit {
    namespace slhahelp {
     
-      std::map<std::string, p_int_string> gauge_label_to_index_type;
-      std::map<std::string, p_int_string> mass_label_to_index_type;
+      std::map<str, p_int_string> gauge_label_to_index_type;
+      std::map<str, p_int_string> mass_label_to_index_type;
       /// map to extract info from family state   
-      std::map<std::string, pair_string_ints> familystate_label;
+      std::map<str, pair_string_ints> familystate_label;
       
       ///map to obtain left_right gauge_pairs from state info
       /// helps us reuse other routiones with string arguments 
       std::map<p_int_string, pair_strings>  type_family_to_gauge_states;
       ///maps directly from family string to left_right gauge_pairs
       /// helps us reuse other routines that take string arguments 
-      std::map<std::string, pair_strings>  family_state_to_gauge_state;
+      std::map<str, pair_strings>  family_state_to_gauge_state;
       /// map from string representing type (ie up-squars, down-squars or 
       /// charged selptons) to appropriate set of mass eigenstates 
-      std::map<std::string,std::set<std::string>> type_to_set_of_mass_es;
-      std::map<std::string,std::set<std::string>> type_to_set_of_gauge_es;
+      std::map<str,std::set<str>> type_to_set_of_mass_es;
+      std::map<str,std::set<str>> type_to_set_of_gauge_es;
       ///maps between type and the sets of indices
-      std::map<std::string,std::set<int>> type_to_set_of_row_indices;
-      std::map<std::string,std::set<int>> type_to_set_of_col_indices;
+      std::map<str,std::set<int>> type_to_set_of_row_indices;
+      std::map<str,std::set<int>> type_to_set_of_col_indices;
 
       /// setup all the maps
       /// should be called somewhere in gambit setup like 
@@ -39,22 +39,22 @@ namespace Gambit {
       void init_maps(){
     
          /// this is probably banned c++11, can uglify later if kept     
-         std::set<std::string> up_squark_strs   = {"~u_1", "~u_2", "~u_3", 
+         std::set<str> up_squark_strs   = {"~u_1", "~u_2", "~u_3", 
                                                    "~u_4", "~u_5", "~u_6"}; 
-         std::set<std::string> down_squark_strs = {"~d_1", "~d_2", "~d_3", 
+         std::set<str> down_squark_strs = {"~d_1", "~d_2", "~d_3", 
                                                    "~d_4", "~d_5", "~d_6"};
-         std::set<std::string> ch_slepton_strs  = {"~e-_1", "~e-_2", "~e-_3", 
+         std::set<str> ch_slepton_strs  = {"~e-_1", "~e-_2", "~e-_3", 
                                                    "~e-_4", "~e-_5", "~e-_6"};
-         std::set<std::string> sneutrino_strs   = {"~nu_1", "~nu_2", "~nu_3"};
+         std::set<str> sneutrino_strs   = {"~nu_1", "~nu_2", "~nu_3"};
 
          /// this is probably banned c++11, can uglify later if kept     
-         std::set<std::string> up_sq_gauge_strs   = {"~u_L", "~c_L", "~t_L", 
+         std::set<str> up_sq_gauge_strs   = {"~u_L", "~c_L", "~t_L", 
                                                    "~u_R", "~c_R", "~t_R"}; 
-         std::set<std::string> down_sq_gauge_strs ={"~d_L", "~s_L", "~b_L", 
+         std::set<str> down_sq_gauge_strs ={"~d_L", "~s_L", "~b_L", 
                                                    "~d_R", "~s_R", "~b_R"};
-         std::set<std::string> ch_sl_gauge_strs  = {"~e_L", "~mu_L", "~tau_L", 
+         std::set<str> ch_sl_gauge_strs  = {"~e_L", "~mu_L", "~tau_L", 
                                                    "~e_R", "~mu_R", "~tau_R"};
-         std::set<std::string> sne_gauge_strs = {"~nu_e_L", "~nu_mu_L", "~nu_tau_L"};
+         std::set<str> sne_gauge_strs = {"~nu_e_L", "~nu_mu_L", "~nu_tau_L"};
 
          
          /// for iterations over rows and columns
@@ -283,7 +283,7 @@ namespace Gambit {
 
       // these two should be switched over to members of the sectrum object itself
       /// This will simplify things.
-      std::vector<double> get_Pole_Mixing_col(std::string type, 
+      std::vector<double> get_Pole_Mixing_col(str type, 
                                               int gauge_index, 
                                               const SubSpectrum* mssm)
       {
@@ -304,7 +304,7 @@ namespace Gambit {
       }
 
 /// This will simplify things.
-      std::vector<double> get_Pole_Mixing_row(std::string type, int mass_index, 
+      std::vector<double> get_Pole_Mixing_row(str type, int mass_index, 
                                               const SubSpectrum* mssm) 
       {
          std::set<int> row_indices = type_to_set_of_row_indices[type];
@@ -326,12 +326,12 @@ namespace Gambit {
       /// returns vector representing composition of requested gauge state
       /// in terms of the slha2 mass eigenstates (~u_1 ...~u_6 etc)
       /// which is just a column in the mixing matrix 
-      std::vector<double> get_mass_comp_for_gauge(std::string gauge_es, 
+      std::vector<double> get_mass_comp_for_gauge(str gauge_es, 
                                                   const SubSpectrum* mssm)
       {   
          /// extract info from string via map
          p_int_string index_type = gauge_label_to_index_type[gauge_es];        
-         std::string type = index_type.second;
+         str type = index_type.second;
          int gauge_index  = index_type.first; 
          
          std::vector<double> mass_state_content = 
@@ -342,8 +342,8 @@ namespace Gambit {
       
       ///routine to return mass state admixure for given gauge state
       /// in the end this is a trival routine but may help      
-      double get_mixing_element(std::string gauge_es, 
-                                       std::string mass_es, 
+      double get_mixing_element(str gauge_es, 
+                                       str mass_es, 
                                        const SubSpectrum* mssm)
       { 
          ///extract info from maps
@@ -352,8 +352,8 @@ namespace Gambit {
          int gauge_index = gauge_es_index_type.first;
          int mass_index = mass_es_index_type.first;
          /// type's should match but getting both allows us to throw error
-         std::string type = mass_es_index_type.second;
-         std::string type_gauge = gauge_es_index_type.second;
+         str type = mass_es_index_type.second;
+         str type_gauge = gauge_es_index_type.second;
          if(type!=type_gauge) 
             {
                /// throw exception in gambit
@@ -372,13 +372,13 @@ namespace Gambit {
       /// in terms of the slha2 gauge eigenstates (~u_L,~c_L,...~t_R etc)
       /// which is just a row in the mixing matrix 
       /// just wraps get_Pole_Mixing_col after extracting info from string
-      std::vector<double> get_gauge_comp_for_mass(std::string mass_es, 
+      std::vector<double> get_gauge_comp_for_mass(str mass_es, 
                                                   const SubSpectrum* mssm)
       {   
          /// extract info using map
          p_int_string index_type = mass_label_to_index_type[mass_es];
          int mass_index = index_type.first; 
-         std::string type = index_type.second;
+         str type = index_type.second;
          //fill vector with mixings
          std::vector<double> mass_state_content = 
             get_Pole_Mixing_col(type, mass_index, mssm);
@@ -388,25 +388,25 @@ namespace Gambit {
       
       /// get largest admix and indentifies the state by filling mass_es
       /// could pass tol for test here, but maybe better to leave til step after
-      double largest_mass_mixing_for_gauge(std::string gauge_es, 
-                                               std::string & mass_es, 
+      double largest_mass_mixing_for_gauge(str gauge_es, 
+                                               str & mass_es, 
                                                const SubSpectrum* mssm)
       {
          /// passed in massstate to be set
          double temp_admix = 0.0;
          double admix = 0.0;
          /// retrive type from the gauge_es string
-         std::string type = (gauge_label_to_index_type[gauge_es]).second;
-         std::string temp_mass_es;
+         str type = (gauge_label_to_index_type[gauge_es]).second;
+         str temp_mass_es;
          /// iterate over set of strings for mass states using temp_massstate
          /// could create a set of strings for each type 
          /// and choose which by type
          /// I am concerned about creating excessive numbers of internal code
          /// structures in terms of code readability though
-         std::set<std::string> mass_es_set = type_to_set_of_mass_es[type];
+         std::set<str> mass_es_set = type_to_set_of_mass_es[type];
          /// c++11 would be cool here but I think is banned :(.
          // for(auto temp_mass_es : mass_es_set) { do stuff with temp_mass_es }
-         typedef std::set<std::string>::iterator iter;
+         typedef std::set<str>::iterator iter;
          for(iter it = mass_es_set.begin(); it != mass_es_set.end(); ++it){
             temp_mass_es = *it;    
             temp_admix = get_mixing_element(gauge_es, temp_mass_es, 
@@ -417,32 +417,224 @@ namespace Gambit {
                mass_es = temp_mass_es;
             }
          } //end iteration over temp_mass_es
-         
+        
          //return largest
          return admix;
       }
 
  
+      
+      /// indentifies the state with largest gauge_es content
+      /// also fills mlargest max_mixing and full gauge_composition 
+      str mass_es_from_gauge_es(str gauge_es, double & max_mixing, 
+                                std::vector<double> & gauge_composition, 
+                                const SubSpectrum* mssm)
+      {
+         /// passed in massstate to be set
+         double temp_admix = 0.0;
+         /// make sure this is zero to start
+         max_mixing = 0;
+         /// retrive type from the gauge_es string
+         str type = (gauge_label_to_index_type[gauge_es]).second;
+         str mass_es, temp_mass_es;
+         /// iterate over set of strings for mass states using temp_massstate
+         /// could create a set of strings for each type 
+         /// and choose which by type
+         /// I am concerned about creating excessive numbers of internal code
+         /// structures in terms of code readability though
+         std::set<str> mass_es_set = type_to_set_of_mass_es[type];
+         /// c++11 would be cool here but I think is banned :(.
+         // for(auto temp_mass_es : mass_es_set) { do stuff with temp_mass_es }
+         typedef std::set<str>::iterator iter;
+         for(iter it = mass_es_set.begin(); it != mass_es_set.end(); ++it){
+            temp_mass_es = *it;    
+            temp_admix = get_mixing_element(gauge_es, temp_mass_es, 
+                                                    mssm);
+            gauge_composition.push_back(temp_admix);
+            //select largest 
+            if(fabs(temp_admix) > fabs(max_mixing)) {
+               max_mixing = temp_admix; 
+               mass_es = temp_mass_es;
+            }
+         } //end iteration over temp_mass_es
+         
+         return mass_es; 
+      }
+      /// as above but doesn't fill a gauge_composition vector 
+      /// would have a slight efficiency saving if we didn't use wrapper and 
+      /// avoided skipped gauge_composition entirely but at the cost of a lot of
+      /// code duplication
+      str mass_es_from_gauge_es(str gauge_es, double & max_mixing, 
+                                const SubSpectrum* mssm) 
+      {
+         std::vector<double> gauge_composition;
+         str mass_es = mass_es_from_gauge_es(gauge_es, max_mixing, 
+                                             gauge_composition, mssm);
+         return mass_es;
+         
+      }
+   
+      /// as above but doesn't fill max_mixing 
+      /// would have a slight efficiency saving if we didn't use wrapper and 
+      /// avoided skipped max_mixing entirely but at the cost of a lot of
+      /// code duplication
+      str mass_es_from_gauge_es(str gauge_es, 
+                                std::vector<double> & gauge_composition, 
+                                const SubSpectrum* mssm)
+      {
+         double max_mixing = 0;;
+         str mass_es =  mass_es_from_gauge_es(gauge_es, max_mixing, 
+                                              gauge_composition, mssm);
+         
+         return mass_es; 
+      }
+
+
+       /// as above but doesn't fill max_mixing or gauge_composition
+      /// would have a slight efficiency saving if we didn't use wrapper and 
+      /// avoided skipped max_mixing entirely but at the cost of a lot of
+      /// code duplication
+      str mass_es_from_gauge_es(str gauge_es, 
+                                const SubSpectrum* mssm)
+      {
+         double max_mixing = 0;
+         std::vector<double> gauge_composition;
+         str mass_es =  mass_es_from_gauge_es(gauge_es, max_mixing, 
+                                              gauge_composition, mssm);
+         return mass_es; 
+      }
+
+      /// as above but do test against tol internally
+      str mass_es_from_gauge_es(str gauge_es, const SubSpectrum* mssm, 
+                                double tol)
+      {
+         double max_mixing = 0;
+         std::vector<double> gauge_composition;
+         str mass_es = mass_es_from_gauge_es(gauge_es, max_mixing, 
+                                             gauge_composition, mssm);
+          if((max_mixing*max_mixing) <= 1-tol){
+            utils_error().raise(LOCAL_INFO, "mass_es from gauge requested when mxing away from closets gauge_es is greater than tol"); 
+          }
+         return mass_es; 
+      }
+      
+
+      /// identifies gauge_es with largest mass_es content
+      /// also fills largest max_mixing and full mass_composition 
+      str gauge_es_from_mass_es(str mass_es, double & max_mixing, 
+                                std::vector<double> & mass_composition,
+                                const SubSpectrum* mssm)
+      {
+         /// passed in massstate to be set
+         double temp_admix = 0.0;
+         /// start with zero
+         max_mixing = 0;
+         /// retrive type from the gauge_es string
+         str type = (mass_label_to_index_type[mass_es]).second;
+         str gauge_es, temp_gauge_es;
+         /// iterate over set of strings for mass states using temp_massstate
+         /// could create a set of strings for each type 
+         /// and choose which by type
+         /// I am concerned about creating excessive numbers of internal code
+         /// structures in terms of code readability though
+         std::set<str> gauge_es_set = type_to_set_of_gauge_es[type];
+         /// c++11 would be cool here but I think is banned :(.
+         // for(auto temp_mass_es : mass_es_set) { do stuff with temp_mass_es }
+         typedef std::set<str>::iterator iter;
+         for(iter it = gauge_es_set.begin(); it != gauge_es_set.end(); ++it){
+            temp_gauge_es = *it;    
+            temp_admix = get_mixing_element(temp_gauge_es, mass_es,  mssm);
+            mass_composition.push_back(temp_admix);
+            //select largest 
+            if(fabs(temp_admix) > fabs(max_mixing)) {
+               max_mixing = temp_admix; 
+               gauge_es = temp_gauge_es;
+            }
+         } //end iteration over temp_mass_es
+         
+         //return string for closest gauge_es
+         return gauge_es;
+      }
+      
+      /// as above but doesn't fill a gauge_composition vector 
+      /// would have a slight efficiency saving if we didn't use wrapper and 
+      /// avoided skipped gauge_composition entirely but at the cost of a lot of
+      /// code duplication
+      str gauge_es_from_mass_es(str mass_es, double & max_mixing, 
+                                const SubSpectrum* mssm) 
+      {
+         std::vector<double> mass_composition;
+         str gauge_es = gauge_es_from_mass_es(mass_es, max_mixing, 
+                                              mass_composition, mssm);
+         return gauge_es;
+         
+      }
+   
+      /// as above but doesn't fill max_mixing 
+      /// would have a slight efficiency saving if we didn't use wrapper and 
+      /// avoided skipped max_mixing entirely but at the cost of a lot of
+      /// code duplication
+      str gauge_es_from_mass_es(str mass_es, 
+                                std::vector<double> & mass_composition, 
+                                const SubSpectrum* mssm)
+      {
+         double max_mixing;
+         str gauge_es =  gauge_es_from_mass_es(mass_es, max_mixing, 
+                                           mass_composition, mssm);
+         
+         return gauge_es; 
+      }
+      
+      /// as above but doesn't fill max_mixing or gauge_composition
+      /// would have a slight efficiency saving if we didn't use wrapper and 
+      /// avoided skipped max_mixing entirely but at the cost of a lot of
+      /// code duplication
+      str gauge_es_from_mass_es(str mass_es, 
+                                const SubSpectrum* mssm)
+      {
+         double max_mixing;
+         std::vector<double> mass_composition;
+         str gauge_es =  gauge_es_from_mass_es(mass_es, max_mixing, 
+                                               mass_composition, mssm);
+         
+         return gauge_es; 
+      }
+
+      /// as above but do test against tol internally
+      str gauge_es_from_mass_es(str mass_es, const SubSpectrum* mssm, 
+                                double tol)
+      {
+         double max_mixing;
+         std::vector<double> mass_composition;
+         str gauge_es = gauge_es_from_mass_es(mass_es, max_mixing, 
+                                              mass_composition, mssm);
+         if((max_mixing*max_mixing) <= 1-tol){
+            utils_error().raise(LOCAL_INFO, "gauge_es from mass_es requested when mxing away from closest mass_es is greater than tol"); 
+         }
+         return gauge_es; 
+      }
+
+
       /// get largest admix and indentifies the state by filling gauge_es
-      double largest_gauge_mixing_for_mass(std::string mass_es, 
-                                           std::string & gauge_es, 
+      double largest_gauge_mixing_for_mass(str mass_es, 
+                                           str & gauge_es, 
                                            const SubSpectrum* mssm)
       {
          /// passed in massstate to be set
          double temp_admix = 0.0;
          double admix = 0.0;
          /// retrive type from the gauge_es string
-         std::string type = (mass_label_to_index_type[mass_es]).second;
-         std::string temp_gauge_es;
+         str type = (mass_label_to_index_type[mass_es]).second;
+         str temp_gauge_es;
          /// iterate over set of strings for mass states using temp_massstate
          /// could create a set of strings for each type 
          /// and choose which by type
          /// I am concerned about creating excessive numbers of internal code
          /// structures in terms of code readability though
-         std::set<std::string> gauge_es_set = type_to_set_of_gauge_es[type];
+         std::set<str> gauge_es_set = type_to_set_of_gauge_es[type];
          /// c++11 would be cool here but I think is banned :(.
          // for(auto temp_mass_es : mass_es_set) { do stuff with temp_mass_es }
-         typedef std::set<std::string>::iterator iter;
+         typedef std::set<str>::iterator iter;
          for(iter it = gauge_es_set.begin(); it != gauge_es_set.end(); ++it){
             temp_gauge_es = *it;    
             temp_admix = get_mixing_element(temp_gauge_es, mass_es, 
@@ -469,7 +661,7 @@ namespace Gambit {
       ///which is a better defined question when there is family mixing prsesent
       ///and more useful here anyway
       //returns a pair of strings labling the lighter one first 
-      pair_strings identify_mass_ess_for_family(std::string type, 
+      pair_strings identify_mass_ess_for_family(str type, 
                                                       int family,
                                                       const SubSpectrum* mssm)
       {
@@ -478,14 +670,18 @@ namespace Gambit {
          p_int_string gen_type(family,type);
          pair_strings gauge_states = 
             type_family_to_gauge_states[gen_type];
-         std::string gauge_esL=gauge_states.first;
-         std::string gauge_esR=gauge_states.second;
+         str gauge_esL=gauge_states.first;
+         str gauge_esR=gauge_states.second;
+        
+         /// finds the mass_es with the largets mixing to
+         /// passed gauge_es
+         str mass_esL = mass_es_from_gauge_es(gauge_esL, mssm);
+         str mass_esR = mass_es_from_gauge_es(gauge_esR, mssm);
+         /// old way
          // find largest admix for gauge states 
-         std::string mass_esL, mass_esR;
-         /// we don't need the return value of these
-         /// unless we want to do a test on them?
-         largest_mass_mixing_for_gauge(gauge_esL, mass_esL, mssm);
-         largest_mass_mixing_for_gauge(gauge_esR, mass_esR, mssm);
+         // str mass_esL, mass_esR;
+         // largest_mass_mixing_for_gauge(gauge_esL, mass_esL, mssm);
+         // largest_mass_mixing_for_gauge(gauge_esR, mass_esR, mssm);
          
          pair_strings answer;
          int mass_index_L = (mass_label_to_index_type[mass_esL]).first;
@@ -502,19 +698,19 @@ namespace Gambit {
       
       /// overloaded version which takes string and returns only requested state
       /// I suspect this is the more useful one
-      std::string identify_mass_es_closest_to_family(std::string familystate,
+      str identify_mass_es_closest_to_family(str familystate,
                                                      const SubSpectrum* mssm)
       {
          pair_strings family_gauge_states = 
             family_state_to_gauge_state[familystate];
-         std::string gauge_esL = family_gauge_states.first;
-         std::string gauge_esR = family_gauge_states.second;
-         // find largest admix for gauge states
-         std::string mass_esL, mass_esR;
-         /// we don't need the return value of these
-         /// unless we want to do a test on them?
-         largest_mass_mixing_for_gauge(gauge_esL, mass_esL, mssm);
-         largest_mass_mixing_for_gauge(gauge_esR, mass_esR, mssm);
+         str gauge_esL = family_gauge_states.first;
+         str gauge_esR = family_gauge_states.second;
+        
+         // finds the mass_es with the largets mixing to
+         // passed gauge_es
+         str mass_esL = mass_es_from_gauge_es(gauge_esL, mssm);
+         str mass_esR = mass_es_from_gauge_es(gauge_esR, mssm);
+         
          // extract mass order (1 or 2) from string via map
          pair_string_ints type_family_massorder = 
             familystate_label[familystate];
@@ -524,7 +720,7 @@ namespace Gambit {
          // with the lowest index else take highest
          int massorderL = (mass_label_to_index_type[mass_esL]).first;
          int massorderR = (mass_label_to_index_type[mass_esR]).first;
-         std::string answer;
+         str answer;
          if( (mass_order == 1 && massorderL < massorderR) ||  
              (mass_order == 2 && massorderL > massorderR) ) answer = mass_esL; 
          else answer = mass_esR;
@@ -535,8 +731,8 @@ namespace Gambit {
       /// returns vector with composition of closest the mass eigenstate 
       /// to give family state in terms of gauge eigenstates and stores
       /// mass eigenstate in mass_es
-      std::vector<double> get_gauge_comp_for_family_state(std::string familystate,
-                                                          std::string & mass_es,
+      std::vector<double> get_gauge_comp_for_family_state(str familystate,
+                                                          str & mass_es,
                                                           const SubSpectrum* mssm)
       {   
          //get mass_es using one of our routines
@@ -544,7 +740,7 @@ namespace Gambit {
          /// extract info from strings via maps
          int mass_index = (mass_label_to_index_type[mass_es]).first;
          pair_string_ints state_info = familystate_label[familystate];
-         std::string type = state_info.first;
+         str type = state_info.first;
          std::vector<double> gauge_es_content = 
             get_Pole_Mixing_row(type, mass_index,mssm);
          
@@ -557,27 +753,28 @@ namespace Gambit {
       /// then returns mass es's admixture of the two gauge states with same family
       /// and stores the rest of the gauge content for this state in a std::vector
       /// The latter should have entries which are zero in absense of family mixing
-      std::vector<double> family_state_mix_elements(std::string familystate,
-                                                       std::string & mass_es,
+      std::vector<double> family_state_mix_elements(str familystate,
+                                                       str & mass_es,
                                                        const SubSpectrum* mssm)
       {   
          //get mass_es using one of our routines
          mass_es = identify_mass_es_closest_to_family(familystate, mssm);
          /// extract info from strings via maps
          pair_strings gauge_states = family_state_to_gauge_state[familystate];
-         std::string gauge_state_L = gauge_states.first;
-         std::string gauge_state_R = gauge_states.second;
+         str gauge_state_L = gauge_states.first;
+         str gauge_state_R = gauge_states.second;
          /// get index of right family states (ie gauge states with same family as
          /// requested family state
          p_int_string gauge_Lindex_type = 
             gauge_label_to_index_type[gauge_state_L];
          int gauge_L_index = gauge_Lindex_type.first;
-         std::string type = gauge_Lindex_type.second;
-         int gauge_R_index = (gauge_label_to_index_type[gauge_state_R]).first;
-         int mass_index = (mass_label_to_index_type[mass_es]).first;          
+         str type = gauge_Lindex_type.second;
+         int gauge_R_index = (gauge_label_to_index_type[gauge_state_R]).first;  
+         int mass_index = (mass_label_to_index_type[mass_es]).first;   
          std::set<int> row_indices = type_to_set_of_row_indices[type];
          //double row_length = row_indices.size();
          std::vector<double> right_fam_gauge_content;
+         
          for(iter it = row_indices.begin(); it != row_indices.end(); ++it)
             {
                double temp = mssm->phys.get_Pole_Mixing(type, mass_index, *it); 
@@ -597,10 +794,10 @@ namespace Gambit {
       /// belong to the correct family for this state in a std::vector
       /// The latter should have entries which are zero in absense of 
       /// family mixing
-      std::vector<double> family_state_mix_matrix(std::string type,
+      std::vector<double> family_state_mix_matrix(str type,
                                                   int family,
-                                                  std::string & mass_es1,
-                                                  std::string & mass_es2,
+                                                  str & mass_es1,
+                                                  str & mass_es2,
                                                   const SubSpectrum* mssm) 
       {
          /// get mass_es using one of our routines
@@ -614,8 +811,8 @@ namespace Gambit {
          p_int_string gen_type(family,type);
          pair_strings gauge_states = 
             type_family_to_gauge_states[gen_type];
-         std::string gauge_es_L=gauge_states.first;
-         std::string gauge_es_R=gauge_states.second;
+         str gauge_es_L=gauge_states.first;
+         str gauge_es_R=gauge_states.second;
          
          
          /// get index of right family states (ie gauge states with same family as
@@ -625,8 +822,8 @@ namespace Gambit {
          int gauge_L_index = gauge_Lindex_type.first;
          int gauge_R_index = (gauge_label_to_index_type[gauge_es_R]).first;
          /// these should always match type - remove after testing
-         std::string type_L = gauge_Lindex_type.second;
-         std::string type_R = gauge_Lindex_type.second;
+         str type_L = gauge_Lindex_type.second;
+         str type_R = gauge_Lindex_type.second;
          
          int mass_index1 = (mass_label_to_index_type[mass_es1]).first;
          int mass_index2 = (mass_label_to_index_type[mass_es2]).first;
@@ -656,18 +853,18 @@ namespace Gambit {
       /// returns admix of gauge eigenstate in the mass eigenstate 
       /// closest to the given family state and stores
       /// mass eigenstate in mass_es
-      double get_gauge_admix_for_family_state(std::string familystate, 
-                                              std::string gauge_es,
-                                              std::string & mass_es,
+      double get_gauge_admix_for_family_state(str familystate, 
+                                              str gauge_es,
+                                              str & mass_es,
                                               const SubSpectrum* mssm) 
       {
          pair_string_ints type_family_massorder 
             = familystate_label[familystate];
-         std::string family_type = type_family_massorder.first;
+         str family_type = type_family_massorder.first;
          p_int_string gauge_es_index_type = gauge_label_to_index_type[gauge_es];
          int gauge_index = gauge_es_index_type.first;
          /// type's should match but getting both allows us to throw error
-         std::string type_gauge = gauge_es_index_type.second;
+         str type_gauge = gauge_es_index_type.second;
          if(family_type!=type_gauge) 
             { /// throw error in gambit
                utils_error().raise(LOCAL_INFO, "function get_gauge_admix_for_family_state called with type's for the family state and mass eigenstate that don't match.");
