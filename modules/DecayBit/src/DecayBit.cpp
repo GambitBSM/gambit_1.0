@@ -112,7 +112,17 @@ namespace Gambit
               "This point violates the assumption that certain sfermion states have no family mixing  by a degree larger than tol made in a DecayBit routine.");
            invalid_point().raise("This point violates the assumption that certain sfermion states have no family mixing  by a degree larger than tol made in a DecayBit routine.");
         }
-        
+
+        std::cout << "******** Extra test ********* " << std::endl;
+        std::cout << "family_state = "  << family_state <<std::endl;
+        std::cout << "mass_es obtained from family_state = "  << mass_es 
+                  << std::endl;
+        double sum_sq_mix;
+        str fs = slhahelp::family_state_closest_to_mass_es(mass_es, sum_sq_mix,
+                                                           mssm);
+        std::cout << "fs obtained from mass_es = " << fs << std::endl;
+        std::cout << "sum_sq_mix = " << sum_sq_mix << std::endl;
+        std::cout << "mix_mag_sq = " << mix_mag_sq << std::endl;                        if(fs != family_state)     std::cout << "holy fuck = " << std::endl;                               
         return;
  }
        
