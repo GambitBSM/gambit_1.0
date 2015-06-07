@@ -31,8 +31,8 @@ namespace Gambit {
 
       /// map from string representing type (ie up-squars, down-squars or 
       /// charged selptons) to appropriate set of mass eigenstates 
-      std::map<str,std::vector<str>> type_to_set_of_mass_es;
-      std::map<str,std::vector<str>> type_to_set_of_gauge_es;
+      std::map<str,std::vector<str>> type_to_vec_of_mass_es;
+      std::map<str,std::vector<str>> type_to_vec_of_gauge_es;
       ///maps between type and the sets of indices
       std::map<str,std::set<int>> type_to_set_of_row_indices;
       std::map<str,std::set<int>> type_to_set_of_col_indices;
@@ -288,15 +288,15 @@ namespace Gambit {
 
          /// map from string representing type (ie up-squarks, down-squarks or 
          /// charged selptons) to appropriate set of mass eigenstates
-         type_to_set_of_mass_es["~u"] = up_squark_strs;
-         type_to_set_of_mass_es["~d"] = down_squark_strs; 
-         type_to_set_of_mass_es["~e"] = ch_slepton_strs;
-         type_to_set_of_mass_es["~nu"] = sneutrino_strs;
+         type_to_vec_of_mass_es["~u"] = up_squark_strs;
+         type_to_vec_of_mass_es["~d"] = down_squark_strs; 
+         type_to_vec_of_mass_es["~e"] = ch_slepton_strs;
+         type_to_vec_of_mass_es["~nu"] = sneutrino_strs;
 
-         type_to_set_of_gauge_es["~u"] = up_sq_gauge_strs;
-         type_to_set_of_gauge_es["~d"] = down_sq_gauge_strs; 
-         type_to_set_of_gauge_es["~e"] = ch_sl_gauge_strs;
-         type_to_set_of_gauge_es["~nu"] = sne_gauge_strs;
+         type_to_vec_of_gauge_es["~u"] = up_sq_gauge_strs;
+         type_to_vec_of_gauge_es["~d"] = down_sq_gauge_strs; 
+         type_to_vec_of_gauge_es["~e"] = ch_sl_gauge_strs;
+         type_to_vec_of_gauge_es["~nu"] = sne_gauge_strs;
          
          type_to_set_of_row_indices["~u"] = up_squark_rows;
          type_to_set_of_row_indices["~d"] = down_squark_rows;
@@ -432,7 +432,7 @@ namespace Gambit {
          /// and choose which by type
          /// I am concerned about creating excessive numbers of internal code
          /// structures in terms of code readability though
-         std::vector<str> mass_es_set = type_to_set_of_mass_es[type];
+         std::vector<str> mass_es_set = type_to_vec_of_mass_es[type];
          /// c++11 would be cool here but I think is banned :(.
          // for(auto temp_mass_es : mass_es_set) { do stuff with temp_mass_es }
          typedef std::vector<str>::iterator iter;
@@ -526,7 +526,7 @@ namespace Gambit {
          /// and choose which by type
          /// I am concerned about creating excessive numbers of internal code
          /// structures in terms of code readability though
-         std::vector<str> gauge_es_set = type_to_set_of_gauge_es[type];
+         std::vector<str> gauge_es_set = type_to_vec_of_gauge_es[type];
          /// c++11 would be cool here but I think is banned :(.
          // for(auto temp_mass_es : mass_es_set) { do stuff with temp_mass_es }
          typedef std::vector<str>::iterator iter;
