@@ -125,18 +125,15 @@ namespace Gambit {
           if (runOptions->hasKey(*iter, pythiaConfigName))
             pythiaOptions = runOptions->getValue<std::vector<std::string>>(*iter, pythiaConfigName);
         }
-/// @TODO Replace SLHAea pseudo-code with actual code
-      /// @note The next line is actual code, so just uncomment it upon removal of slhaFilename...
-        /// pythiaOptions.push_back("SLHA:readFrom = 0");
-        pythiaOptions.push_back("SLHA:file = " + slhaFilename);
+        //pythiaOptions.push_back("SLHA:file = " + slhaFilename);
         pythiaOptions.push_back("Random:seed = " + std::to_string(12345 + omp_get_thread_num()));
 
         result.resetSpecialization(*iter);
-/// @TODO Replace SLHAea pseudo-code with actual code
-/// @note I think/hope that I can call our custom SLHAea init function *before* Pythia's usual init.
-        /// const SLHAea::Coll &slhaea = *Dep::SLHAeaFromSomewhere;
-/// @TODO Program the 'initSLHAea' function in the SpecializablePythia class.
-        /// result.initSLHAea(slhaea);
+        /// Init SLHAea testing object. TODO get it from SpecBit / DecayBit.
+        std::ifstream ifs(slhaFilename);
+        const SLHAea::Coll slhaea(slhaFilename);
+        //const SLHAea::Coll &slhaea = *Dep::SLHAeaFromSomewhere;
+        result.addSLHAea(slhaea);
         result.init(pythiaOptions);
         /// @TODO Can we test for xsec veto here? Might be analysis dependent, so see TODO below.
       }

@@ -31,7 +31,7 @@
 ///  Authors (add name and date if you modify):   
 ///                                               
 ///  \author The GAMBIT Collaboration            
-///  \date 06:33PM on May 23, 2015
+///  \date 01:35PM on June 05, 2015
 ///                                               
 ///  *********************************************
                                                   

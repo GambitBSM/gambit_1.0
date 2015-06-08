@@ -51,11 +51,14 @@ namespace Gambit {
         /// @brief Add a command to the list of settings used by "init"
         void addToSettings(const std::string& command) { _pythiaSettings.push_back(command); }
 
+        /// @brief Add a command to the list of settings used by "init"
+        /// @TODO For this to work, we must BOSS Pythia's SusyLesHouches class.
+        void addSLHAea(const SLHAea::Coll& slhaea) {
+          _pythiaInstance->slhaInterface.slha.setSLHAea(slhaea);
+        }
+
         /// @brief General init for any Pythia interface to Gambit.
         void init(const std::vector<std::string>&);
-
-        /// @brief Pre-initialization step for reading from an SLHAea object.
-        void initSLHAea(const SLHAea::Coll&);
 
         /// @brief Specialize this Pythia interface to Gambit with a specialization function.
         void resetSpecialization(const std::string&);
