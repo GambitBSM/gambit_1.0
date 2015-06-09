@@ -125,15 +125,15 @@ namespace Gambit {
           if (runOptions->hasKey(*iter, pythiaConfigName))
             pythiaOptions = runOptions->getValue<std::vector<std::string>>(*iter, pythiaConfigName);
         }
-        //pythiaOptions.push_back("SLHA:file = " + slhaFilename);
+        pythiaOptions.push_back("SLHA:file = " + slhaFilename);
         pythiaOptions.push_back("Random:seed = " + std::to_string(12345 + omp_get_thread_num()));
 
         result.resetSpecialization(*iter);
-        /// Init SLHAea testing object. TODO get it from SpecBit / DecayBit.
+/*      /// Init SLHAea testing object. TODO get it from SpecBit / DecayBit.
         std::ifstream ifs(slhaFilename);
         const SLHAea::Coll slhaea(slhaFilename);
         //const SLHAea::Coll &slhaea = *Dep::SLHAeaFromSomewhere;
-        result.addSLHAea(slhaea);
+        result.addSLHAea(slhaea);  */
         result.init(pythiaOptions);
         /// @TODO Can we test for xsec veto here? Might be analysis dependent, so see TODO below.
       }
