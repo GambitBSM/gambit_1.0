@@ -16,6 +16,7 @@
 
 #ifdef WITH_MPI // Contents of this file ignored if MPI not enabled
 
+#include <vector>
 #include "gambit/Utils/mpiwrapper.hpp"
 
 namespace Gambit {
@@ -23,9 +24,21 @@ namespace Gambit {
  
       /// @{ Main "Communicator" class
             
-      /// Constructor
-      Comm::Comm(MPI_Comm comm) : boundcomm(comm) {}
-        
+      /// @{ Constructors
+      /// Default (attaches to MPI_COMM_WORLD):
+      Comm::Comm()
+        : boundcomm(MPI_COMM_WORLD)
+      {
+      }
+
+      /// Duplicate input communicator (creates new context)
+      Comm::Comm(const MPI_Comm& comm) 
+      {
+         MPI_Comm_dup(comm, &boundcomm);
+      }
+
+      /// @}      
+  
       /// Get total number of MPI tasks in this communicator group
       int Comm::Get_size() const
       {
@@ -43,9 +56,6 @@ namespace Gambit {
       }
 
       /// @}
-
-      /// Global "World" communicator object
-      Comm COMM_WORLD(MPI_COMM_WORLD);
 
       /// Check if MPI_Init has been called (it is an error to call it twice)
       bool Is_initialized() 
@@ -77,6 +87,10 @@ namespace Gambit {
         // Do basic interrogation
         std::cout << "Hooking up to MPI..." << std::endl;
         MPI_Init(&argc,&argv); 
+
+        // Create communicator and check out basic info
+        Comm COMM_WORLD;
+
         std::cout << "  Process pool size : " << COMM_WORLD.Get_size() << std::endl;
         std::cout << "  I am process number " << COMM_WORLD.Get_rank() << std::endl;
 
@@ -102,6 +116,7 @@ namespace Gambit {
       
       /// Shut down MPI
       void Finalize() { 
+        Comm COMM_WORLD;
         std::cout << "Shutting down MPI (process "<< COMM_WORLD.Get_rank() <<")..." << std::endl;
         MPI_Finalize(); 
       }

@@ -42,13 +42,39 @@
 
 namespace Gambit {
    namespace GMPI {
- 
+
+      /// Mapping from (basic) C++ types to MPI datatypes
+      /// Idea based off of "get_hdf5_data_type" in hdf5tools.hpp
+
+      template<typename T> 
+      MPI_Datatype get_mpi_data_type();
+      // Left undefined because I want a compile error if specialisation doesn't exist.
+
+      template<> MPI_Datatype get_mpi_data_type<char>()              { return MPI_CHAR;               };
+      // bunch of types omitted in get_hdf5_data_type for reasons not totally clear to me...
+      template<> MPI_Datatype get_mpi_data_type<long long>()         { return MPI_LONG_LONG;          };
+      template<> MPI_Datatype get_mpi_data_type<unsigned long long>(){ return MPI_UNSIGNED_LONG_LONG; };
+      template<> MPI_Datatype get_mpi_data_type<int8_t>()            { return MPI_INT8_T;             };
+      template<> MPI_Datatype get_mpi_data_type<uint8_t>()           { return MPI_UINT8_T;            };
+      template<> MPI_Datatype get_mpi_data_type<int16_t>()           { return MPI_INT16_T;            };
+      template<> MPI_Datatype get_mpi_data_type<uint16_t>()          { return MPI_UINT16_T;           };
+      template<> MPI_Datatype get_mpi_data_type<int32_t>()           { return MPI_INT32_T;            };
+      template<> MPI_Datatype get_mpi_data_type<uint32_t>()          { return MPI_UINT32_T;           };
+      template<> MPI_Datatype get_mpi_data_type<int64_t>()           { return MPI_INT64_T;            };
+      template<> MPI_Datatype get_mpi_data_type<uint64_t>()          { return MPI_UINT64_T;           };
+      template<> MPI_Datatype get_mpi_data_type<float>()             { return MPI_FLOAT;              };
+      template<> MPI_Datatype get_mpi_data_type<double>()            { return MPI_DOUBLE;             };
+      template<> MPI_Datatype get_mpi_data_type<long double>()       { return MPI_LONG_DOUBLE;        };
+
       /// Main "Communicator" class
       class Comm
       {
          public:
-            /// Constructor
-            Comm(MPI_Comm comm);
+            /// Default Constructor
+            Comm();
+
+            /// Duplicate constructor
+            Comm(const MPI_Comm& comm);
         
             /// Get total number of MPI tasks in this communicator group
             int Get_size() const;
@@ -70,9 +96,9 @@ namespace Gambit {
                                   MPI_Status *status=NULL /*out*/)
             {
                int errflag;
-               MPI_Status def_status = MPI_STATUS_IGNORE; 
-               if(status!=NULL) status=&def_status;
-               errflag = MPI_Recv(buf, count, datatype, source, tag, boundcomm, status)
+               MPI_Status* def_status = MPI_STATUS_IGNORE; 
+               if(status!=NULL) status=def_status;
+               errflag = MPI_Recv(buf, count, datatype, source, tag, boundcomm, status);
             }
 
             /// Templated blocking receive to automatically determine types
@@ -81,7 +107,7 @@ namespace Gambit {
                       int source, int tag, 
                       MPI_Status *status=NULL /*out*/)
             {
-               static const int datatype = get_mpi_data_type<T>();
+               static const MPI_Datatype datatype = get_mpi_data_type<T>();
                Recv(buf, count, datatype, source, tag, status);
             }
 
@@ -98,7 +124,7 @@ namespace Gambit {
             void Send(T *buf, int count, 
                       int destination, int tag)
             {
-               static const int datatype = get_mpi_data_type<T>();
+               static const MPI_Datatype datatype = get_mpi_data_type<T>();
                Send(buf, count, datatype, destination, tag);
             }
 
@@ -118,7 +144,7 @@ namespace Gambit {
                       int destination, int tag, 
                       MPI_Request *request /*out*/)
             {
-               static const int datatype = get_mpi_data_type<T>();
+               static const MPI_Datatype datatype = get_mpi_data_type<T>();
                Isend(buf, count, datatype, destination, tag, request);
             }
 
@@ -132,21 +158,18 @@ namespace Gambit {
             bool Iprobe(int source, int tag, MPI_Status* status=NULL /*out*/)
             {
                int errflag;
-               bool you_have_mail;
-               MPI_Status def_status = MPI_STATUS_IGNORE; 
-               if(status!=NULL) status=&def_status;
-               errflag = MPI_Iprobe(source, tag, boundcomm, you_have_mail, status);
-               return you_have_mail;
+               int you_have_mail; // C does not have a bool type...
+               MPI_Status* def_status = MPI_STATUS_IGNORE; 
+               if(status!=NULL) status=def_status;
+               errflag = MPI_Iprobe(source, tag, boundcomm, &you_have_mail, status);
+               return (you_have_mail != 0);
             }
 
          private:
 
             // The MPI communicator to which the current object "talks".
-            const MPI_Comm boundcomm;
+            MPI_Comm boundcomm;
       };
-
-      /// Global "World" communicator object
-      extern Comm COMM_WORLD;
 
       /// Check if MPI_Init has been called (it is an error to call it twice)
       bool Is_initialized(); 
@@ -181,7 +204,7 @@ namespace Gambit {
           }
           std::string mylocation(){return location;}
           std::string myname    (){return name;}
-      }
+      };
 
       /// Struct for adding functions to the 'mpi_ini_functions' map
       ///
@@ -190,32 +213,9 @@ namespace Gambit {
       /// cause the functions to be run, just "queues them up" so to speak.
       struct AddMpiIniFunc {
         AddMpiIniFunc(std::string local_info, std::string name, void(*func)());
-      }
+      };
 
       /// @}
-
-      /// Mapping from (basic) C++ types to MPI datatypes
-      /// Idea based off of "get_hdf5_data_type" in hdf5tools.hpp
-
-      template<typename T> 
-      int get_mpi_data_type();
-      // Left undefined because I want a compile error if specialisation doesn't exist.
-
-      int get_mpi_data_type<char>              { return MPI_CHAR               };
-      // bunch of types omitted in get_hdf5_data_type for reasons not totally clear to me...
-      int get_mpi_data_type<long long>         { return MPI_LONG_LONG          };
-      int get_mpi_data_type<unsigned long long>{ return MPI_UNSIGNED_LONG_LONG };
-      int get_mpi_data_type<int8_t>            { return MPI_INT8_T             };
-      int get_mpi_data_type<uint8_t>           { return MPI_UINT8_T            };
-      int get_mpi_data_type<int16_t>           { return MPI_INT16_T            };
-      int get_mpi_data_type<uint16_t>          { return MPI_UINT16_T           };
-      int get_mpi_data_type<int32_t>           { return MPI_INT32_T            };
-      int get_mpi_data_type<uint32_t>          { return MPI_UINT32_T           };
-      int get_mpi_data_type<int64_t>           { return MPI_INT64_T            };
-      int get_mpi_data_type<uint64_t>          { return MPI_UINT64_T           };
-      int get_mpi_data_type<float>             { return MPI_FLOAT              };
-      int get_mpi_data_type<double>            { return MPI_DOUBLE             };
-      int get_mpi_data_type<long double>       { return MPI_LONG_DOUBLE        };
 
    }
 }

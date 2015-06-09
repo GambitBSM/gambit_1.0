@@ -25,6 +25,8 @@
 #include <sstream>
 #include <fstream>
 #include <iomanip>
+#include <pthread.h> // Using pthreads for MPI listener process
+#include <time.h> // For short sleeps in listener process 
 
 // Gambit
 #include "gambit/Printers/baseprinter.hpp"
@@ -53,20 +55,18 @@ namespace Gambit
     
     /// vertexID / sub-print index pair
     /// Identifies individual buffers (I call them VertexBuffer, but actually there can be more than one per vertex) 
-    typedef std::pair<int,uint> VBIDpair;
- 
-    /// Type of the global buffer map
-    typedef std::map<VBIDpair, VertexBufferBase*> BaseBufferMap;
-
-    /// Identifies individual buffers (I call them VertexBuffer, but actually there can be more than one per vertex) 
     //typedef std::pair<int,uint> VBIDpair;
     struct VBIDpair {
       int   vertexID;
       uint  index;
     };
+    // Needed by std::map for comparison of keys of type VBIDpair
+    inline bool operator<(const VBIDpair& l, const VBIDpair& r) {
+      return (l.vertexID<r.vertexID || (l.vertexID==r.vertexID && l.index<r.index));
+    }
     #ifdef WITH_MPI
     /// Define MPI datatype for struct VBIDpair
-    MPI_Datatype mpi_VBIDpair_type;
+    extern MPI_Datatype mpi_VBIDpair_type;
     void define_mpiVBIDpair()
     {
        const int nitems=2;
@@ -81,36 +81,17 @@ namespace Gambit
        MPI_Type_commit(&mpi_VBIDpair_type);
     }
     /// Add specialisation of get_mpi_data_type so that template MPI Send and Receive functions work.
-    /// (TODO: not sure if this will actually work... but it might.)
-    int GMPI::get_mpi_data_type<VBIDpair>  { return mpi_VBIDpair_type };
+    /// Note: has to be first declared in the GMPI namespace, so I do this in hdf5tools.hpp
+    /// Definition in hdf5printer.cpp 
 
     /// Queue up this function to run when MPI initialises
-    AddMpiIniFunc prepare_mpiVBIDpair(LOCAL_INFO, "define_mpiVBIDpair", &define_mpiVBIDpair);
+    GMPI::AddMpiIniFunc prepare_mpiVBIDpair(LOCAL_INFO, "define_mpiVBIDpair", &define_mpiVBIDpair);
     #endif
-    
+ 
     /// Type of the global buffer map
     typedef std::map<VBIDpair, VertexBufferBase*> BaseBufferMap;
 
     #ifdef WITH_MPI
-    /// Struct for a collection of MPI tags belonging to a single hdf5 buffer
-    struct BuffTags
-    {
-       int SYNC_data;   // message contains  T       buffer_entries[LENGTH]   
-       int SYNC_valid;  //    "       "      bool    buffer_valid[LENGTH]   
-       int RA_queue;    //    "       "      T       RA_write_queue[LENGTH]  
-       int RA_loc;      //    "       "      hsize_t RA_write_locations[LENGTH] 
-       int RA_length;   //    "       "      hsize_t RA_queue_length[LENGTH] 
-
-       BuffTags() {}
-       BuffTags(const int first_tag)
-          : SYNC_data (first_tag)
-          , SYNC_valid(first_tag+1)
-          , RA_queue  (first_tag+2)
-          , RA_loc    (first_tag+3)
-          , RA_length (first_tag+4)
-       {}
-    }
-
     /// Class for monitoring and issuing unique MPI tags for each hdf5 buffer object
     /// Need this in order to match the buffers from workers to the output datasets
     /// in the master process.
@@ -122,128 +103,47 @@ namespace Gambit
         const int TAGS_PER_BUFFER = 5; // Make sure this matches BuffTags
 
         /// Match buffer IDs to (first of an) MPI tag group
-        typedef std::map<VBIDpair, int> tags_from_VBID;
+        std::map<VBIDpair, int> tags_from_VBID;
 
         /// Reverse lookup; need to quickly figure out which VBIDpair an 
         /// individual tag belongs to.
         /// Note that there is an offset between the vector indices and the tag
         /// numbers, and that we only store one VBID per TAGS_PER_BUFFER tags.
-        typedef std::vector<VBIDpair> VBID_from_tag;
+        std::vector<VBIDpair> VBID_from_tag;
 
         /// MPI properties
-        uint mpiRank
+        GMPI::Comm& printerComm;
+        uint mpiRank;
         uint mpiSize;
- 
+
+        /// tag_daemon thread
+        pthread_t tag_daemon_thread;
+
         /// Flag to stop the tag_daemon thread
         bool stop_tag_daemon = false;
 
       public:
-        MPITagManager()
-           : mpiRank(GMPI::COMM_WORLD.Get_rank())
-           , mpiSize(GMPI::COMM_WORLD.Get_size())
-        {
-           if( mpiRank != 0 );
-           {
-              std::ostringstream errmsg;
-              errmsg << "Error! Worker process tried to construct an MPITagManager object (rank is "<<mpiRank<<")! This is forbidden; all tag management must be handled via the master process, and tags dispatched to workers.";
-              printer_error().raise(LOCAL_INFO, errmsg.str());
-           }
-
-           /// TODO: Start tag_daemon in new thread
-           //tag_daemon()
-
-        }
+        MPITagManager(GMPI::Comm& pComm);
 
         // Destructor, make sure to stop the tag_daemon
-        ~MPITagManager()
-        {
-           stop_tag_daemon = true;
-           /// TODO: re-join tag_daemon thread
-        }
-        
+        ~MPITagManager();
 
         /// Retrieve buffer tags from lookup map, or issue some if none yet reserved.
         /// Returned is the value of the first tag in the group; use the BuffTags
         /// constructor to get the rest (e.g. "BuffTags sometags(first_tag);")
-        int get_tags(const VBIDpair bufID)
-        {
-           std::map<VBIDpair, int>::iterator it = tag_map.find(bufID);
-           if(it==tag_map.end())
-           {
-              // No tags yet; register some.
-              int firstnewtag = next_tag;
-              tags_from_VBID[bufID] = firstnewtag;
-              // Increment reverse lookup and next_tag
-              VBID_from_tag.push_back(VBIDpair);
-              next_tag += TAGS_PER_BUFFER;
-              return firstnewtag;
-           }
-           else
-           {
-              return it->second;
-           }
-        }
+        int get_tags(const VBIDpair bufID);
 
         /// Retrieve VBIDpair match a specific tag from a BuffTags collection
-        VBIDpair get_VBID_from_tag(const int tag)   
-        {
-           // correct for non-zero first tag number and multiplicity
-           uint index = (tag - FIRST_EMPTY_TAG) / TAGS_PER_BUFFER; // chopping off remainder
-           if(index>=VBID_from_tag.size())
-           {
-              std::ostringstream errmsg;
-              errmsg << "Error! Invalid MPI tag received; tag '"<<tag<<"' is not registered with this MPITagManager."<<std::endl;
-              errmsg << "  Computed index ("<<index<<") >= VBID_from_tag.size() ("<<VBID_from_tag.size()<<")"<<std::end;
-              errmsg << "  index = (tag - FIRST_EMPTY_TAG) / TAGS_PER_BUFFER,  with: "<<std::endl;
-              errmsg << "    FIRST_EMPTY_TAG = "<<FIRST_EMPTY_TAG<<std::endl;
-              errmsg << "    TAGS_PER_BUFFER = "<<TAGS_PER_BUFFER<<std::endl;
-              printer_error().raise(LOCAL_INFO, errmsg.str());
-           }
-           return VBID_from_tag[index];
-        }
+        VBIDpair get_VBID_from_tag(const int tag); 
 
         /// Tag daemon function
         /// This is run in a separate thread on the master node, and just monitors
         /// for tag requests from the worker nodes. Thread is stopped and joined
         /// when the MPITagManager destructs.
-        void tag_daemon()
-        {
-           while(not stop_tag_daemon)
-           {
-              MPI_Status status;
-              while( GMPI::COMM_WORLD::Iprobe(MPI_ANY_SOURCE, TAG_REQ, &status) )
-              {
-                 // Returns true if there is a message waiting
-                 
-                 // Find out who sent the message
-                 int sender_rank = status.MPI_SOURCE;
-   
-                 // Receive the tag request message
-                 VBIDpair bufID;
-                 GMPI::COMM_WORLD::Recv(&bufID, 1, sender_rank, TAG_REQ);
-  
-                 // Do the tag lookup/issue
-                 int tag = get_tags(bufID);
-                   
-                 // Send the tag data back to the worker
-                 GMPI::COMM_WORLD::Send(&tag, 1, sender_rank, TAG_REQ);
-              }
-              // No more tag request messages waiting 
+        /// Has to have this funny function signature to work with pthreads
+        static void* tag_daemon(void* thisptr_void);
 
-              // Wait a little before checking again
-              if (tag_daemon_longsleep)
-              {
-                 // long sleep, do after all known tags are dispatched to workers
-              }
-              else
-              {
-                 // short sleep
-              }
-
-           }
-        }
-
-    }
+    };
     #endif
 
     /// @}
@@ -356,15 +256,11 @@ namespace Gambit
   
         #ifdef WITH_MPI
         /// Reserved tags for MPI messages
-        /// Need to avoid collisions with messages from scanner MPI, so pick a 
-        /// large number to start the tag numbering.
         /// First reserved tag is for messages registering/requesting a new tag.
-        enum Tags { TAG_REQ=8000; }
-        const int FIRST_EMPTY_TAG = TAG_REQ+1;
+        // enum Tags { TAG_REQ=0; } //defined in hdf5tools.hpp
 
-        /// Each buffer needs to send 4 kinds of messages, so we will 
-        /// assign tags in groups of 4.
-        //enum Tags { SYNC_data, SYNC_valid, RA_data, RA_valid };
+        /// Retrieve MPI communicator object used by this printer
+        GMPI::Comm& get_Comm() { return myComm; }
 
         /// Request existing buffer MPI-tag set or register a new set for a buffer
         BuffTags get_bufftags(VBIDpair);
@@ -562,6 +458,9 @@ namespace Gambit
         /// MPI rank and size
         uint myRank;  // Needed even without MPI available, for some default behaviour.
         #ifdef WITH_MPI
+        // Gambit MPI communicator context for use within the hdf5 printer system
+        GMPI::Comm myComm;
+ 
         uint mpiSize;
  
         /// Tag manager object

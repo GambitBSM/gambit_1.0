@@ -35,10 +35,20 @@
 // Gambit
 #include "gambit/Utils/standalone_error_handlers.hpp"
 
+// MPI bindings
+#include "gambit/Utils/mpiwrapper.hpp"
+
 //#define HDF5_DEBUG // Triggers debugging output
 #define DISABLED_FOR_NOW
+
+#define MPI_DEBUG
    
 namespace Gambit {
+  
+  /// Declarations needed for specialisation of GMPI::get_mpi_data_type<T>() to VBIDpair type
+  namespace Printers { struct VBIDpair; }
+  namespace GMPI { template<> MPI_Datatype get_mpi_data_type<Printers::VBIDpair>(); }
+
   namespace Printers {
 
       /// Typedefs for managed H5 pointers
@@ -125,6 +135,37 @@ namespace Gambit {
 
       //!_______________________________________________________________________________________
 
+      /// Reserved tags for MPI messages
+      /// First reserved tag is for messages registering/requesting a new tags
+      enum Tags { TAG_REQ=0 };
+      const int FIRST_EMPTY_TAG = TAG_REQ+1;
+
+      /// Struct for a collection of MPI tags belonging to a single hdf5 buffer
+      struct BuffTags
+      {
+         const int SYNC_data;   // message contains  T       buffer_entries[LENGTH]   
+         const int SYNC_valid;  //    "       "      bool    buffer_valid[LENGTH]   
+         const int RA_queue;    //    "       "      T       RA_write_queue[LENGTH]  
+         const int RA_loc;      //    "       "      hsize_t RA_write_locations[LENGTH] 
+         const int RA_length;   //    "       "      hsize_t RA_queue_length[LENGTH] //TODO err this is wrong 
+
+         BuffTags()
+            : SYNC_data (-1)
+            , SYNC_valid(-1)
+            , RA_queue  (-1)
+            , RA_loc    (-1)
+            , RA_length (-1)
+         {}
+
+         BuffTags(const int first_tag)
+            : SYNC_data (first_tag)
+            , SYNC_valid(first_tag+1)
+            , RA_queue  (first_tag+2)
+            , RA_loc    (first_tag+3)
+            , RA_length (first_tag+4)
+         {}
+      };
+
       /// VertexBuffer abstract interface base class
       class VertexBufferBase
       {
@@ -193,9 +234,11 @@ namespace Gambit {
             virtual void skip_append() = 0;           
 
             #ifdef DISABLED_FOR_NOW
+            #ifdef WITH_MPI
             // Retrieve buffer data from an MPI message
             // Should only be triggered if a valid message is known to exist to be retrieved!
-            virtual void get_mpi_message() = 0;
+            virtual void get_mpi_message(int) = 0;
+            #endif
             #endif   
 
             // getter for donethispoint
@@ -236,6 +279,9 @@ namespace Gambit {
 
           /// Buffers to store data waiting to be sent via MPI
           #ifdef WITH_MPI
+          BuffTags myTags; // Collection of MPI tags needed for passing messages
+          GMPI::Comm& printerComm; // MPI communicator object from printer
+
           bool  send_buffer_valid[LENGTH];
           T     send_buffer_entries[LENGTH];
           bool  send_buffer_ready = true; // flag to signal if send buffer can be filled with new data.
@@ -275,10 +321,23 @@ namespace Gambit {
             , nextempty(0)
           {}
 
-          VertexBufferNumeric1D(const std::string& label, const int vID, const unsigned int i, bool sync, bool sil)
-            : VertexBufferBase(label,vID,i,sync,sil)
+          VertexBufferNumeric1D(
+                const std::string& label 
+              , const int vID
+              , const unsigned int i
+              , bool sync
+              , bool sil
+              #ifdef WITH_MPI
+              , const BuffTags& tags
+              , GMPI::Comm& pComm
+              #endif
+           ): VertexBufferBase(label,vID,i,sync,sil)
             , buffer_valid() 
             , buffer_entries()
+            #ifdef WITH_MPI
+            , myTags(tags)
+            , printerComm(pComm)
+            #endif
             , nextempty(0)
           {}
 
@@ -297,11 +356,13 @@ namespace Gambit {
 
           #ifdef DISABLED_FOR_NOW
           // Write data from an arbitrary buffer to disk
-          virtual void flush_external(const T (&values)[CHUNKLENGTH], const bool (&isvalid)[CHUNKLENGTH]) = 0;
+          virtual void flush_external(const T (&values)[LENGTH], const bool (&isvalid)[LENGTH]) = 0;
 
+          #ifdef WITH_MPI
           // Retrieve buffer data from an MPI message
           // Should only be triggered if a valid message is known to exist to be retrieved!
-          virtual void get_mpi_message() = 0;
+          virtual void get_mpi_message(int);
+          #endif
           #endif
 
           /// Extract (copy) a record
@@ -335,11 +396,11 @@ namespace Gambit {
             {
                #ifdef WITH_MPI
                // Prepate to send buffer data to master node
-               myRank = 
-               masterRank = 0;
+               const int myRank = this->printerComm.Get_rank();
+               const int masterRank = 0;
                if(myRank!=masterRank)
                { // Worker node instructions
-                  if(not send_buffer_ready);
+                  if(not send_buffer_ready)
                   { 
                      // Make sure previous messages are out of the send buffer before sending new ones.
                      MPI_Wait(&req_valid, &stat_valid);
@@ -353,8 +414,11 @@ namespace Gambit {
                      send_buffer_entries[i] = buffer_entries[i];
                   }
                   /// Perform non-blocking sends
-                  GMPI::COMM_WORLD::Isend(send_buffer_valid,   bufferlength, masterRank, MPItags::SYNC_valid, &req_valid);
-                  GMPI::COMM_WORLD::Isend(send_buffer_entries, bufferlength, masterRank, MPItags::SYNC_data,  &req_entries);
+                  #ifdef HDF5_DEBUG
+                  std::cout<<"Isend-ing buffers from rank "<<myRank<<" to master"<<std::endl;
+                  #endif
+                  this->printerComm.Isend(send_buffer_valid,   bufferlength, masterRank, this->myTags.SYNC_valid, &req_valid);
+                  this->printerComm.Isend(send_buffer_entries, bufferlength, masterRank, this->myTags.SYNC_data,  &req_entries);
                   send_buffer_ready = false;
                }
                else
@@ -405,18 +469,12 @@ namespace Gambit {
       }
 
       #ifdef DISABLED_FOR_NOW
+      #ifdef WITH_MPI
       // Retrieve buffer data from an MPI message
-      // Should only be triggered if a valid message is known to exist to be retrieved!
-      template<class T, std::size_t L>
-      void VertexBufferNumeric1D<T,L>::get_mpi_message()
+      // Should only be triggered if a valid message is known to exist to be retrieved from the input source!
+      template<class T, std::size_t LENGTH>
+      void VertexBufferNumeric1D<T,LENGTH>::get_mpi_message(int source)
       {
-        #ifndef WITH_MPI
-        // This function should never be called when MPI is not available.
-        std::string errmsg = "Error! Attempted to retrieve MPI message with buffer data, but MPI is not active!";
-        printer_error().raise(LOCAL_INFO, errmsg);
-        #endif
-
-        #ifdef WITH_MPI
         // An MPI_Iprobe should have been done prior to calling this function, 
         // in order to trigger delivery of the message to the correct buffer. 
         // So now we trust that this buffer is indeed supposed to receive the 
@@ -427,8 +485,29 @@ namespace Gambit {
         bool  recv_buffer_valid[LENGTH];
         T     recv_buffer_entries[LENGTH];
 
-        GMPI::COMM_WORLD::Recv(&recv_buffer_valid, LENGTH, int source, int tag);
-        GMPI::COMM_WORLD::Recv(&recv_buffer_entries, LENGTH, int source, int tag);
+        #ifdef MPI_DEBUG
+        // Double check that a message is actually waiting to be sent
+        // There is a code bug if this is not the case
+        MPI_Status status;
+        bool message_waiting = printerComm.Iprobe(source, MPI_ANY_TAG, &status);
+        if(not message_waiting) {
+          std::ostringstream errmsg;
+          errmsg << "Error! get_mpi_message called with source="<<source<<", but there is no message waiting to be delivered from that process! This is a bug, please report it.";
+          printer_error().raise(LOCAL_INFO, errmsg.str());
+        }
+        int tag = status.MPI_TAG;
+        if(tag!=myTags.SYNC_valid or tag!=myTags.SYNC_data)
+        {
+          std::ostringstream errmsg;
+          errmsg << "Error! get_mpi_message called with source="<<source<<"; there is a message waiting, but the tag (="<<tag<<") is unrecognised. Tag should be one of the following: "<<std::endl
+                 <<"  myTags.SYNC_valid = "<<myTags.SYNC_valid<<std::endl
+                 <<"  myTags.SYNC_data  =" <<myTags.SYNC_data;
+          printer_error().raise(LOCAL_INFO, errmsg.str());
+        }
+        #endif
+
+        printerComm.Recv(&recv_buffer_valid,   LENGTH, source, myTags.SYNC_valid);
+        printerComm.Recv(&recv_buffer_entries, LENGTH, source, myTags.SYNC_data);
 
         // Write the buffers to disk
         flush_external(recv_buffer_entries,recv_buffer_valid);
@@ -441,8 +520,8 @@ namespace Gambit {
         //         master process map. Also means buffers will need to be passed this
         //         information, rather than just having the hdf5printer give them an
         //         absolute index...
-        #endif
       }
+      #endif
       #endif
 
       /// Extract (copy) a record
@@ -513,8 +592,17 @@ namespace Gambit {
              , dsetdata()
            {}
 
-           VertexBufferNumeric1D_HDF5(H5FGPtr location, const std::string& name, const int vID, const unsigned int i, bool sync, bool silence)
-             : VertexBufferNumeric1D<T,CHUNKLENGTH>(name,vID, i, sync, silence)
+           VertexBufferNumeric1D_HDF5(H5FGPtr location, const std::string& name, const int vID, const unsigned int i, bool sync, bool silence
+             #ifdef WITH_MPI
+             , const BuffTags& tags
+             , GMPI::Comm& pComm
+             #endif
+             )
+             : VertexBufferNumeric1D<T,CHUNKLENGTH>(name,vID, i, sync, silence
+               #ifdef WITH_MPI
+               , tags, pComm
+               #endif
+               )
              , dsetvalid()
              , dsetdata()
            {

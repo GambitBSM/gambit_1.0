@@ -95,7 +95,7 @@
 
 // Gambit
 #include "gambit/Printers/printers/hdf5printer.hpp"
-#include "gambit/Printers/hdf5tools.hpp"
+#include "gambit/Printers/printers/hdf5printer/hdf5tools.hpp"
 #include "gambit/Core/error_handlers.hpp"
 #include "gambit/Utils/stream_overloads.hpp"
 #include "gambit/Utils/util_functions.hpp"
@@ -117,18 +117,162 @@
 // Code!
 namespace Gambit
 {
+  #ifdef WITH_MPI
+  /// Definitions needed for specialisation of GMPI::get_mpi_data_type<T>() to VBIDpair type
+  MPI_Datatype Printers::mpi_VBIDpair_type;
+  template<> MPI_Datatype GMPI::get_mpi_data_type<Printers::VBIDpair>() { return Printers::mpi_VBIDpair_type; }
+  #endif
 
   namespace Printers 
   {
    
-     // We are going to have to combine this data with information from the 
-     // scanners (using the auxilliary printers). In order to do this efficiently,
-     // we will store the pointIDs and ranks in a dataset seperate from the
-     // bulk of the data (but correlated with it) so that we can quickly search
-     // for records by their pointID and rank, and then write new data to them.
-     //
-     // NOTE: will have to change the auxilliary printers a bit, so that they
-     // communicate what they intend to write back to the main printer... or something.
+    // We are going to have to combine this data with information from the 
+    // scanners (using the auxilliary printers). In order to do this efficiently,
+    // we will store the pointIDs and ranks in a dataset seperate from the
+    // bulk of the data (but correlated with it) so that we can quickly search
+    // for records by their pointID and rank, and then write new data to them.
+    //
+    // NOTE: will have to change the auxilliary printers a bit, so that they
+    // communicate what they intend to write back to the main printer... or something.
+
+
+    /// @{ MPITagManager member functions
+    #ifdef WITH_MPI    
+
+    /// Constructor   
+    MPITagManager::MPITagManager(GMPI::Comm& pComm)
+           : printerComm(pComm)
+           , mpiRank(pComm.Get_rank())
+           , mpiSize(pComm.Get_size())
+    {
+       if( mpiRank != 0 );
+       {
+          std::ostringstream errmsg;
+          errmsg << "Error! Worker process tried to construct an MPITagManager object (rank is "<<mpiRank<<")! This is forbidden; all tag management must be handled via the master process, and tags dispatched to workers.";
+          printer_error().raise(LOCAL_INFO, errmsg.str());
+       }
+
+       /// Start tag_daemon in new thread
+       /// args: thread, thread attributes, function to run, function args
+       int ret = pthread_create(&tag_daemon_thread, NULL, &MPITagManager::tag_daemon, this);
+       if(ret)
+       {
+          std::ostringstream errmsg;
+          errmsg << "Error creating tag_daemon thread! pthread_create() returned code: "<< ret; 
+          printer_error().raise(LOCAL_INFO, errmsg.str());
+       }
+    }
+
+    // Destructor, make sure to stop the tag_daemon
+    MPITagManager::~MPITagManager()
+    {
+       stop_tag_daemon = true;
+
+       /// Wait for it to finish, and re-join tag_daemon thread
+       pthread_join( tag_daemon_thread, NULL);
+    }
+    
+
+    /// Retrieve buffer tags from lookup map, or issue some if none yet reserved.
+    /// Returned is the value of the first tag in the group; use the BuffTags
+    /// constructor to get the rest (e.g. "BuffTags sometags(first_tag);")
+    int MPITagManager::get_tags(const VBIDpair bufID)
+    {
+       std::map<VBIDpair, int>::iterator it = tags_from_VBID.find(bufID);
+       if(it==tags_from_VBID.end())
+       {
+          // No tags yet; register some.
+          int firstnewtag = next_tag;
+          tags_from_VBID[bufID] = firstnewtag;
+          // Increment reverse lookup and next_tag
+          VBID_from_tag.push_back(VBIDpair);
+          next_tag += TAGS_PER_BUFFER;
+          return firstnewtag;
+       }
+       else
+       {
+          return it->second;
+       }
+    }
+
+    /// Retrieve VBIDpair match a specific tag from a BuffTags collection
+    VBIDpair MPITagManager::get_VBID_from_tag(const int tag)   
+    {
+       // correct for non-zero first tag number and multiplicity
+       uint index = (tag - FIRST_EMPTY_TAG) / TAGS_PER_BUFFER; // chopping off remainder
+       if(index>=VBID_from_tag.size())
+       {
+          std::ostringstream errmsg;
+          errmsg << "Error! Invalid MPI tag received; tag '"<<tag<<"' is not registered with this MPITagManager."<<std::endl;
+          errmsg << "  Computed index ("<<index<<") >= VBID_from_tag.size() ("<<VBID_from_tag.size()<<")"<<std::end;
+          errmsg << "  index = (tag - FIRST_EMPTY_TAG) / TAGS_PER_BUFFER,  with: "<<std::endl;
+          errmsg << "    FIRST_EMPTY_TAG = "<<FIRST_EMPTY_TAG<<std::endl;
+          errmsg << "    TAGS_PER_BUFFER = "<<TAGS_PER_BUFFER<<std::endl;
+          printer_error().raise(LOCAL_INFO, errmsg.str());
+       }
+       return VBID_from_tag[index];
+    }
+
+    /// Tag daemon function
+    /// This is run in a separate thread on the master node, and just monitors
+    /// for tag requests from the worker nodes. Thread is stopped and joined
+    /// when the MPITagManager destructs.
+    /// Has to have this funny function signature to work with pthreads
+    static void* MPITagManager::tag_daemon(void* thisptr_void)
+    {
+       /// Trick to bring the "this" pointer into this static function
+       MPITagManager* thisptr = (MPITagManager*)thisptr_void;
+
+       /// Set sleep times
+       struct timespec short_time, long_time;
+       short_time.tv_nsec = 10000000; // Hundreth of a second (10^7 nanoseconds)
+       long_time.tv_sec = 1; // 1 whole second 
+
+       while(not thisptr->stop_tag_daemon)
+       {
+          MPI_Status status;
+          while( printerComm.Iprobe(MPI_ANY_SOURCE, TAG_REQ, &status) )
+          {
+             // Returns true if there is a message waiting
+             
+             // Find out who sent the message
+             int sender_rank = status.MPI_SOURCE;
+                
+             // Receive the tag request message
+             VBIDpair bufID;
+             printerComm.Recv(&bufID, 1, sender_rank, TAG_REQ);
+ 
+             #ifdef MPI_DEBUG
+             std::cout<<"rank "<<mpiRank<<": Receiving tag request ("<<bufID.vertexID<<","<<bufID.index<<") from rank "<<sender_rank<<std::endl;
+             #endif
+ 
+             // Do the tag lookup/issue
+             int tag = thisptr->get_tags(bufID);
+   
+             #ifdef MPI_DEBUG
+             std::cout<<"rank "<<mpiRank<<": Sending first-tag ("<<tag<<") to rank "<<sender_rank<<std::endl;
+             #endif
+             // Send the tag data back to the worker
+             printerComm.Send(&tag, 1, sender_rank, TAG_REQ);
+          }
+          // No more tag request messages waiting 
+
+          // Wait a little before checking again
+          if (thisptr->tag_daemon_longsleep)
+          {
+             // long sleep, do after all known tags are dispatched to workers
+             nanosleep(&long_time,NULL);
+          }
+          else
+          {
+             // short sleep
+             nanosleep(&short_time,NULL);
+          }
+       }
+    }
+    #endif 
+    /// @}
+
 
 
     /// @{ H5P_LocalBufferManager member functions
@@ -188,25 +332,25 @@ namespace Gambit
           }
           else
           {
-             #ifdef WITH_MPI
-             // Retrieve/create MPI tags for this buffer
-             BuffTags printer->get_bufftags(key);
-             #endif
-          }            
-          local_buffers[key] = BuffType(printer->get_location(),label/*deconstruct?*/,vertexID,aux_i,synchronised,silence);
+             // Create the new buffer object
+             local_buffers[key] = BuffType( printer->get_location()
+                                          , label/*deconstruct?*/
+                                          , vertexID
+                                          , aux_i
+                                          , synchronised
+                                          , silence
+                                          #ifdef WITH_MPI
+                                          /* Retrieve/create MPI tags for this buffer */
+                                          , printer->get_bufftags(key);
+                                          , printer->get_Comm();
+                                          #endif
+                                          );
 
-          // Get the new buffer back out of the map
-          it = local_buffers.find(key);
+             // Get the new buffer back out of the map
+             it = local_buffers.find(key);
 
-          if(not silence) {
              // Add a pointer to the new buffer to the full list as well
-             if(printer!=NULL) {
-               printer->insert_buffer( key, it->second );
-             } else {
-               std::ostringstream errmsg;
-               errmsg << "Error! Tried to use H5P_LocalBufferManager before initialising it! This is a bug in the HDF5Printer class, please report it.";
-               printer_error().raise(LOCAL_INFO, errmsg.str());
-             }
+             printer->insert_buffer( key, it->second );
           }
        }
        return it->second; 
@@ -222,17 +366,26 @@ namespace Gambit
       : printer_name("Primary printer")
       , myRank(0)
      #ifdef WITH_MPI
+      , myComm(MPI_COMM_WORLD) // duplicates MPI_COMM_WORLD, creating new communicator context
       , mpiSize(1)
-      , tag_manager()
+      , tag_manager(myComm)
      #endif
      {
       #ifdef WITH_MPI
       // Do basic MPI checks
-      mpiSize = GMPI::COMM_WORLD.Get_size()
-      myRank = GMPI::COMM_WORLD.Get_rank(); 
+      mpiSize = myComm.Get_size()
+      myRank = myComm.Get_rank(); 
       std::cout << "Hooking up to MPI..." << std::endl;
       std::cout << " Size: " << mpiSize << std::endl;
       std::cout << " Rank: " << myRank << std::endl;
+
+      if(myRank==0) {
+         printer_name = "Master primary printer";
+      } else {
+         std::ostringstream ss;
+         ss << "Primary printer for rank " << myRank;
+         printer_name = ss.str();
+      }
       #endif
 
       // (Needs modifying when full MPI implentation is done)
@@ -242,7 +395,12 @@ namespace Gambit
       if(options.getValueOrDef<bool>(false,"auxilliary"))
       {
         // Set up this printer in auxilliary mode
-        printer_name = options.getValueOrDef<std::string>("Primary printer","name");
+        std::ostringstream ss;
+        ss << options.getValueOrDef<std::string>("Primary printer","name");
+        #ifdef WITH_MPI
+        ss << " for rank " << myRank;
+        #endif
+        printer_name = ss.str();
         synchronised = options.getValueOrDef<bool>(true,"synchronised");
         DBUG( std::cout << "Constructing Auxilliary HDF5Printer object (with name=\""<<printer_name<<"\" synchronised="<<synchronised<<")..." << std::endl; )
       } 
@@ -250,22 +408,25 @@ namespace Gambit
       {
         // Set up this printer in primary mode
         DBUG( std::cout << "Constructing Primary HDF5Printer object..." << std::endl; )
+          
+        if(myRank==0) // Only master node will actuall write to file
+        {  
+           std::string file = options.getValue<std::string>("output_file");
+           std::string group = options.getValueOrDef<std::string>("/","group");
+           bool overwrite = options.getValueOrDef<bool>(false,"delete_file_if_exists");
+
+           std::cout<<"overwrite? "<<overwrite<<std::endl;
+
+           // Open HDF5 file (create if non-existant)
+           Utils::ensure_path_exists(file);
+           fileptr = HDF5::openFile(file,overwrite);
  
-        std::string file = options.getValue<std::string>("output_file");
-        std::string group = options.getValueOrDef<std::string>("/","group");
-        bool overwrite = options.getValueOrDef<bool>(false,"delete_file_if_exists");
+           // Open requested group (creating it plus parents if needed)
+           groupptr = HDF5::openGroup(fileptr,group);
 
-        std::cout<<"overwrite? "<<overwrite<<std::endl;
-
-        // Open HDF5 file (create if non-existant)
-        Utils::ensure_path_exists(file);
-        fileptr = HDF5::openFile(file,overwrite);
- 
-        // Open requested group (creating it plus parents if needed)
-        groupptr = HDF5::openGroup(fileptr,group);
-
-        // Set the target dataset write location to the chosen group
-        location = groupptr;
+           // Set the target dataset write location to the chosen group
+           location = groupptr;
+        }
       } 
    }
 
@@ -457,14 +618,25 @@ namespace Gambit
        {
           // We are the master, just get the tags ourselves.
           first_tag_in_group = tag_manager.get_tags(bufID);
+          #ifdef MPI_DEBUG
+          std::cout<<"rank "<<mpiRank<<": Self-issued first tag ("<<first_tag_in_group<<") to bufID ("<<bufID.vertexID<<","<<bufID.index<<")"<<std::endl;
+          #endif
        }
        // Otherwise have to ask the master node for the tags
 
+       #ifdef MPI_DEBUG
+       std::cout<<"rank "<<mpiRank<<": Sending tag request ("<<bufID.vertexID<<","<<bufID.index<<") to master"<<std::endl;
+       #endif
+
        // Send request for new tag
-       GMPI::COMM_WORLD::Send(&bufID, 1, 0, TAG_REQ);
+       myComm.Send(&bufID, 1, 0, TAG_REQ);
 
        // Receive the new tag
-       GMPI::COMM_WORLD::Recv(&first_tag_in_group, 1, 0, TAG_REQ);
+       myComm.Recv(&first_tag_in_group, 1, 0, TAG_REQ);
+
+       #ifdef MPI_DEBUG
+       std::cout<<"rank "<<mpiRank<<": Received first-tag ("<<first_tag_in_group<<") from master"<<std::endl;
+       #endif
 
        // Reconstruct the whole tag group and return
        return BuffTags(first_tag_in_group);
@@ -488,18 +660,18 @@ namespace Gambit
       for(uint rank=1; rank<mpiSize; rank++)
       {
         // Check for tag request
-        bool message_waiting = GMPI::COMM_WORLD::Iprobe(rank, TAG_REQ);
+        bool message_waiting = myComm.Iprobe(rank, TAG_REQ);
         if( message_waiting )
         {
            // Get the tag request
            VBIDpair bufID;
-           GMPI::COMM_WORLD::Recv(&bufID, 1, rank, TAG_REQ);
+           myComm.Recv(&bufID, 1, rank, TAG_REQ);
   
            // Do the tag lookup/issue
            int tag = tag_manager.get_tags(bufID);
           
            // Send the tag back to the worker
-           GMPI::COMM_WORLD::Send(&tag, 1, rank, TAG_REQ);
+           myComm.Send(&tag, 1, rank, TAG_REQ);
         }        
       }
     }
