@@ -167,7 +167,7 @@ namespace Gambit
       const str path = Backends::backendInfo().corrected_path(be,ver);
       Backends::backendInfo().link_versions(be, ver, sv);
       pHandle = dlopen(path.c_str(), RTLD_LAZY);
-      if(not pHandle)
+      if (not pHandle)
       {
         std::ostringstream err;
         str error = dlerror();
@@ -180,8 +180,26 @@ namespace Gambit
         present = false;
       }
       else
-      {
-        logger() << "Succeeded in loading " << path << std::endl 
+      {       
+        link_map *map;
+        dlinfo(pHandle, RTLD_DI_LINKMAP, &map);
+        if (not map)
+        {
+          std::ostringstream err;
+          err << "Problem retrieving library path.  The sought lib is " << path << "." << endl
+              << "The path to this library has not been fully verified.";
+          backend_warning().raise(LOCAL_INFO,err.str());
+        }
+        char *fullname = realpath(map->l_name, NULL);
+        if (not fullname)
+        {
+          std::ostringstream err;
+          err << "Problem retrieving absolute library path.  The sought lib is " << map->l_name << "." << endl
+              << "The path to this library has not been fully determined.";
+          backend_warning().raise(LOCAL_INFO,err.str());
+        }
+        Backend::backendInfo.reset_path(be, ver, fullname);
+        logger() << "Succeeded in loading " << Backends::backendInfo().corrected_path(be,ver) << std::endl 
                  << LogTags::backends << LogTags::info << EOM;
         present = true;
       }
