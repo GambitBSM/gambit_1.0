@@ -81,7 +81,7 @@ namespace Gambit
         void link_versions(str, str, str);
 
         /// Override a backend's config file location
-        void override_path(str, str, str)
+        void override_path(str, str, str);
 
       private: 
         

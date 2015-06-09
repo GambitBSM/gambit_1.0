@@ -49,7 +49,7 @@ namespace Gambit
     str p;
     try
     {
-      p = bepathoverrides.at(be).at(ver).as<str>();
+      p = bepathoverrides.at(be).at(ver);
       if (p.substr(0,2) == "./") p = p.substr(2,p.npos);
     }
     catch (std::exception& e)
@@ -114,8 +114,10 @@ namespace Gambit
   }
 
   /// Override a backend's config file location
-  void override_path(str be, str v, str path)
+  void Backends::backend_info::override_path(str be, str ver, str path)
   {
+    int l = str(GAMBIT_DIR).length();
+    if (path.substr(0,l) == GAMBIT_DIR) path.replace(0, l, ".");
     bepathoverrides[be][ver] = path;
   }
 

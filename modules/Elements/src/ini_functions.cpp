@@ -18,6 +18,7 @@
 ///  *********************************************
 
 #include <dlfcn.h>
+#include <link.h>
 
 #include "gambit/Elements/ini_functions.hpp"
 #include "gambit/Utils/equivalency_singleton.hpp"
@@ -190,15 +191,21 @@ namespace Gambit
               << "The path to this library has not been fully verified.";
           backend_warning().raise(LOCAL_INFO,err.str());
         }
-        char *fullname = realpath(map->l_name, NULL);
-        if (not fullname)
+        else
         {
-          std::ostringstream err;
-          err << "Problem retrieving absolute library path.  The sought lib is " << map->l_name << "." << endl
-              << "The path to this library has not been fully determined.";
-          backend_warning().raise(LOCAL_INFO,err.str());
+          char *fullname = realpath(map->l_name, NULL);
+          if (not fullname)
+          {
+            std::ostringstream err;
+            err << "Problem retrieving absolute library path.  The sought lib is " << map->l_name << "." << endl
+                << "The path to this library has not been fully determined.";
+            backend_warning().raise(LOCAL_INFO,err.str());
+          }
+          else
+          {
+            Backends::backendInfo().override_path(be, ver, fullname);
+          }
         }
-        Backend::backendInfo.reset_path(be, ver, fullname);
         logger() << "Succeeded in loading " << Backends::backendInfo().corrected_path(be,ver) << std::endl 
                  << LogTags::backends << LogTags::info << EOM;
         present = true;
