@@ -5,27 +5,28 @@ op = optparse.OptionParser()
 op.add_option("-s", "--save", dest="SAVE", action="store_true", default=False)
 opts, args = op.parse_args()
 DIR = args[0]
-
+PROC = args[1].lower()
 
 ## Set up value arrays
 # TODO: automatically compute ranges and steps
 import numpy as np
-# MX_LABEL = "$M_0$"
-# MY_LABEL = "$M_{1/2}$"
-# mx_range = np.arange(300, 1551, 250)
-# my_range = np.arange(300,  871, 30)
-# # mx_range = np.arange(300, 5801, 500)
-# # my_range = np.arange(300, 841, 60)
-#
-# MX_LABEL = "$M_{\\tilde{g}}$"
-# MY_LABEL = "$M_{\\tilde{\\chi}}$"
-# mx_range = np.arange(200, 1601, 50)
-# my_range = np.arange(50, 801, 50)
-#
-MX_LABEL = "$M_{\\tilde{q}}$"
-MY_LABEL = "$M_{\\tilde{\\chi}}$"
-mx_range = np.arange(50, 1101, 50)
-my_range = np.arange(50, 551, 50)
+if PROC == "cmssm":
+    MX_LABEL = "$M_0$"
+    MY_LABEL = "$M_{1/2}$"
+    # mx_range = np.arange(300, 1551, 250)
+    # my_range = np.arange(300,  871, 30)
+    mx_range = np.arange(300, 5801, 500)
+    my_range = np.arange(300, 841, 60)
+elif PROC == "ggdcpl":
+    MX_LABEL = "$M_{\\tilde{g}}$"
+    MY_LABEL = "$M_{\\tilde{\\chi}}$"
+    mx_range = np.arange(200, 1601, 50)
+    my_range = np.arange(50, 801, 50)
+elif PROC == "qqdcpl":
+    MX_LABEL = "$M_{\\tilde{q}}$"
+    MY_LABEL = "$M_{\\tilde{\\chi}}$"
+    mx_range = np.arange(50, 1101, 50)
+    my_range = np.arange(50, 551, 50)
 
 
 xx, yy = np.meshgrid(mx_range, my_range)
@@ -39,7 +40,8 @@ import os, glob
 for i, mx in enumerate(mx_range):
     for j, my in enumerate(my_range):
         fglob = "results*-*_{0:04d}_{1:04d}*.dat".format(mx, my)
-        # fglob = "result*-*{0:d}_{1:d}*.dat".format(mx, my)
+        if PROC == "cmssm": #< Martin's naming
+            fglob = "result*-*{0:d}_{1:d}*.dat".format(mx, my)
         resfiles = glob.glob(os.path.join(DIR, fglob))
         if resfiles:
             with open(resfiles[0], "r") as rf:
