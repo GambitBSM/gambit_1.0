@@ -23,14 +23,17 @@
 #include <vector>
 #include <algorithm>
 #include <sstream>
+#include <iostream>
 #include <fstream>
 #include <iomanip>
-#include <pthread.h> // Using pthreads for MPI listener process
-#include <time.h> // For short sleeps in listener process 
 
 // Gambit
 #include "gambit/Printers/baseprinter.hpp"
+#include "gambit/Printers/new_mpi_datatypes.hpp"
+#include "gambit/Printers/MPITagManager.hpp"
+#include "gambit/Printers/VertexBufferBase.hpp"
 #include "gambit/Printers/printers/hdf5printer/hdf5tools.hpp"
+#include "gambit/Printers/printers/hdf5printer/VertexBufferNumeric1D_HDF5.hpp"
 #include "gambit/Utils/yaml_options.hpp"
 
 // MPI bindings
@@ -46,107 +49,19 @@ namespace Gambit
  
     // Parameter controlling the length of all the standard buffers
     static const std::size_t BUFFERLENGTH = 100; // Change to 10000 or something. Currently cannot change this dynamically though, sorry.
+    /// Reserved tags for MPI messages
+    /// First reserved tag is for messages registering/requesting a new tags
+    enum Tags { TAG_REQ=0 };
+    const int FIRST_EMPTY_TAG = TAG_REQ+1;
 
     /// @{ Helpful typedefs
 
     /// pointID / process number pair
     /// Used to identify a single parameter space point
     typedef std::pair<ulong,uint> PPIDpair;
-    
-    /// vertexID / sub-print index pair
-    /// Identifies individual buffers (I call them VertexBuffer, but actually there can be more than one per vertex) 
-    //typedef std::pair<int,uint> VBIDpair;
-    struct VBIDpair {
-      int   vertexID;
-      uint  index;
-    };
-    // Needed by std::map for comparison of keys of type VBIDpair
-    inline bool operator<(const VBIDpair& l, const VBIDpair& r) {
-      return (l.vertexID<r.vertexID || (l.vertexID==r.vertexID && l.index<r.index));
-    }
-    #ifdef WITH_MPI
-    /// Define MPI datatype for struct VBIDpair
-    extern MPI_Datatype mpi_VBIDpair_type;
-    void define_mpiVBIDpair()
-    {
-       const int nitems=2;
-       int          blocklengths[2] = {1,1};
-       MPI_Datatype types[2] = {MPI_INT, MPI_UNSIGNED};
-       MPI_Aint     offsets[2];
 
-       offsets[0] = offsetof(VBIDpair, vertexID);
-       offsets[1] = offsetof(VBIDpair, index);
-
-       MPI_Type_create_struct(nitems, blocklengths, offsets, types, &mpi_VBIDpair_type);
-       MPI_Type_commit(&mpi_VBIDpair_type);
-    }
-    /// Add specialisation of get_mpi_data_type so that template MPI Send and Receive functions work.
-    /// Note: has to be first declared in the GMPI namespace, so I do this in hdf5tools.hpp
-    /// Definition in hdf5printer.cpp 
-
-    /// Queue up this function to run when MPI initialises
-    GMPI::AddMpiIniFunc prepare_mpiVBIDpair(LOCAL_INFO, "define_mpiVBIDpair", &define_mpiVBIDpair);
-    #endif
- 
     /// Type of the global buffer map
     typedef std::map<VBIDpair, VertexBufferBase*> BaseBufferMap;
-
-    #ifdef WITH_MPI
-    /// Class for monitoring and issuing unique MPI tags for each hdf5 buffer object
-    /// Need this in order to match the buffers from workers to the output datasets
-    /// in the master process.
-    class MPITagManager
-    {
-      private:
-        /// Next unclaimed tag
-        int next_tag = FIRST_EMPTY_TAG;
-        const int TAGS_PER_BUFFER = 5; // Make sure this matches BuffTags
-
-        /// Match buffer IDs to (first of an) MPI tag group
-        std::map<VBIDpair, int> tags_from_VBID;
-
-        /// Reverse lookup; need to quickly figure out which VBIDpair an 
-        /// individual tag belongs to.
-        /// Note that there is an offset between the vector indices and the tag
-        /// numbers, and that we only store one VBID per TAGS_PER_BUFFER tags.
-        std::vector<VBIDpair> VBID_from_tag;
-
-        /// MPI properties
-        GMPI::Comm& printerComm;
-        uint mpiRank;
-        uint mpiSize;
-
-        /// tag_daemon thread
-        pthread_t tag_daemon_thread;
-
-        /// Flag to stop the tag_daemon thread
-        bool stop_tag_daemon = false;
-
-      public:
-        MPITagManager(GMPI::Comm& pComm);
-
-        // Destructor, make sure to stop the tag_daemon
-        ~MPITagManager();
-
-        /// Retrieve buffer tags from lookup map, or issue some if none yet reserved.
-        /// Returned is the value of the first tag in the group; use the BuffTags
-        /// constructor to get the rest (e.g. "BuffTags sometags(first_tag);")
-        int get_tags(const VBIDpair bufID);
-
-        /// Retrieve VBIDpair match a specific tag from a BuffTags collection
-        VBIDpair get_VBID_from_tag(const int tag); 
-
-        /// Tag daemon function
-        /// This is run in a separate thread on the master node, and just monitors
-        /// for tag requests from the worker nodes. Thread is stopped and joined
-        /// when the MPITagManager destructs.
-        /// Has to have this funny function signature to work with pthreads
-        static void* tag_daemon(void* thisptr_void);
-
-    };
-    #endif
-
-    /// @}
 
     /// Helper function to check if a VertexBuffer key already exists in a map
     template<class T, class U>

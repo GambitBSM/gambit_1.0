@@ -16,6 +16,7 @@
 
 #ifdef WITH_MPI // Contents of this file ignored if MPI not enabled
 
+#include <iostream>
 #include <vector>
 #include "gambit/Utils/mpiwrapper.hpp"
 

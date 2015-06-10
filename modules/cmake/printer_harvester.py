@@ -33,13 +33,19 @@ def main(argv):
 
     # Central un-ditchable printer components
     general_headers = set([
-       "include/gambit/Printers/basebaseprinter.hpp",
-       "include/gambit/Printers/baseprinter.hpp",
-       "include/gambit/Printers/baseprintermanager.hpp",
-       "include/gambit/Printers/printermanager.hpp"
+         "include/gambit/Printers/basebaseprinter.hpp",
+         "include/gambit/Printers/baseprinter.hpp",
+         "include/gambit/Printers/baseprintermanager.hpp",
+         "include/gambit/Printers/MPITagManager.hpp",
+         "include/gambit/Printers/new_mpi_datatypes.hpp",
+         "include/gambit/Printers/printermanager.hpp",
+         "include/gambit/Printers/VertexBufferBase.hpp",
+         "include/gambit/Printers/VertexBufferNumeric1D.hpp"
     ])
     general_source = set([
-      "src/printermanager.cpp"
+         "src/MPITagManager.cpp",
+         "src/new_mpi_datatypes.cpp",
+         "src/printermanager.cpp"
     ])
 
     printer_headers=set([])  # Printer definition headers
