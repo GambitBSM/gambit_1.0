@@ -34,7 +34,7 @@ LOAD_LIBRARY
 
 // Set models that this backend can be used with.  If absent, all models are allowed.
 //BE_ALLOW_MODELS(test_parent_I)  // Ben: disabled since no longer using CMSSM_demo
-BE_ALLOW_MODELS(CMSSM, CMSSM_demo, test_parent_I)  // CW: Added CMSSM_demo back, since it is still used by ExampleBits and spartan.yaml
+BE_ALLOW_MODELS(CMSSM, CMSSM_demo)  // CW: Added CMSSM_demo back, since it is still used by ExampleBits and spartan.yaml
 
 // Functions
 BE_FUNCTION(initialize, void, (int), "_Z10initializei", "LibFirst_initialize_capability")
@@ -76,9 +76,10 @@ BE_INI_FUNCTION
     *SomeDouble = 2.1;
     logger() << "Initialised someDouble to " << *SomeDouble << EOM;
   }
+  logger() << "M0 in libfirst v1.1 initialisation function: " << *Param["M0"] << EOM;
   awesomenessByAnders(*Dep::nevents); 
 }
-DONE
+END_BE_INI_FUNCTION
 
 // Convenience functions (definitions)
 BE_NAMESPACE
@@ -107,7 +108,7 @@ BE_NAMESPACE
   }
 
 }
-DONE
+END_BE_NAMESPACE
 
 // End
 #include "gambit/Backends/backend_undefs.hpp"

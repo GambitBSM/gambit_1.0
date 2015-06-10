@@ -125,16 +125,17 @@ namespace Gambit
 
         // Scanner-friendly types to print
         void print(int const&,                 const std::string& label, const int IDcode, const int rank, const int pointID);
-        void print(unsigned int const&,        const std::string& label, const int IDcode, const int rank, const int pointID);
         void print(double const&,              const std::string& label, const int IDcode, const int rank, const int pointID);
         void print(std::vector<double> const&, const std::string& label, const int IDcode, const int rank, const int pointID);
         void print(ModelParameters const&,     const std::string& label, const int IDcode, const int rank, const int pointID);
 
-        // Other types to print
-        #ifndef STANDALONE
-          // Add other print overloads here.
-        #endif
-      
+        // Scanner-unfriendly print functions
+        #ifndef STANDALONE  // Need to disable print functions for these if STANDALONE is defined (see baseprinter.hpp line ~41)
+        // unsigned int is chosen somewhat arbitrarily just to demonstrate this requirement. Will be more important if other
+        // fancier types need to be disabled.
+        void print(unsigned int const&,        const std::string& label, const int IDcode, const int rank, const int pointID);         
+        #endif      
+
         /// Helper print functions
         // Used to reduce repetition in definitions of virtual function overloads 
         // (useful since there is no automatic type conversion possible)

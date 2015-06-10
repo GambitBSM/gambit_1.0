@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Fri 16 Jan 2015 12:36:25
+// File generated at Mon 1 Jun 2015 12:48:04
 
 #include "MSSMNoFVatMGUT_two_scale_susy_scale_constraint.hpp"
 #include "MSSMNoFVatMGUT_two_scale_model.hpp"
@@ -32,11 +32,12 @@
 
 namespace flexiblesusy {
 
-#define INPUTPARAMETER(p) inputPars.p
+#define INPUTPARAMETER(p) model->get_input().p
 #define MODELPARAMETER(p) model->get_##p()
+#define PHASE(p) model->get_##p()
 #define BETAPARAMETER(p) beta_functions.get_##p()
 #define BETA(p) beta_##p
-#define SM(p) Electroweak_constants::p
+#define LowEnergyConstant(p) Electroweak_constants::p
 #define STANDARDDEVIATION(p) Electroweak_constants::Error_##p
 #define Pole(p) model->get_physical().p
 #define MODEL model
@@ -47,16 +48,13 @@ MSSMNoFVatMGUT_susy_scale_constraint<Two_scale>::MSSMNoFVatMGUT_susy_scale_const
    , scale(0.)
    , initial_scale_guess(0.)
    , model(0)
-   , inputPars()
 {
 }
 
 MSSMNoFVatMGUT_susy_scale_constraint<Two_scale>::MSSMNoFVatMGUT_susy_scale_constraint(
-   MSSMNoFVatMGUT<Two_scale>* model_,
-   const MSSMNoFVatMGUT_input_parameters& inputPars_)
+   MSSMNoFVatMGUT<Two_scale>* model_)
    : Constraint<Two_scale>()
    , model(model_)
-   , inputPars(inputPars_)
 {
    initialize();
 }
@@ -92,14 +90,22 @@ double MSSMNoFVatMGUT_susy_scale_constraint<Two_scale>::get_initial_scale_guess(
    return initial_scale_guess;
 }
 
+const MSSMNoFVatMGUT_input_parameters& MSSMNoFVatMGUT_susy_scale_constraint<Two_scale>::get_input_parameters() const
+{
+   assert(model && "Error: MSSMNoFVatMGUT_susy_scale_constraint::"
+          "get_input_parameters(): model pointer is zero.");
+
+   return model->get_input();
+}
+
+MSSMNoFVatMGUT<Two_scale>* MSSMNoFVatMGUT_susy_scale_constraint<Two_scale>::get_model() const
+{
+   return model;
+}
+
 void MSSMNoFVatMGUT_susy_scale_constraint<Two_scale>::set_model(Two_scale_model* model_)
 {
    model = cast_model<MSSMNoFVatMGUT<Two_scale>*>(model_);
-}
-
-void MSSMNoFVatMGUT_susy_scale_constraint<Two_scale>::set_input_parameters(const MSSMNoFVatMGUT_input_parameters& inputPars_)
-{
-   inputPars = inputPars_;
 }
 
 void MSSMNoFVatMGUT_susy_scale_constraint<Two_scale>::clear()
@@ -114,7 +120,7 @@ void MSSMNoFVatMGUT_susy_scale_constraint<Two_scale>::initialize()
    assert(model && "MSSMNoFVatMGUT_susy_scale_constraint<Two_scale>::"
           "initialize(): model pointer is zero.");
 
-   initial_scale_guess = SM(MZ);
+   initial_scale_guess = LowEnergyConstant(MZ);
 
    scale = initial_scale_guess;
 }

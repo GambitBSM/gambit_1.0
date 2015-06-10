@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Fri 16 Jan 2015 13:03:01
+// File generated at Mon 1 Jun 2015 13:22:04
 
 #include "MSSMatMGUT_two_scale_soft_parameters.hpp"
 #include "wrappers.hpp"
@@ -46,11 +46,11 @@ double MSSMatMGUT_soft_parameters::calc_beta_mHd2_one_loop(const Soft_traces& so
 
    double beta_mHd2;
 
-   beta_mHd2 = oneOver16PiSqr*(-0.7745966692414834*g1*Tr11 + 6*
+   beta_mHd2 = Re(oneOver16PiSqr*(-0.7745966692414834*g1*Tr11 + 6*
       traceconjTYdTpTYd + 2*traceconjTYeTpTYe + 6*tracemd2YdAdjYd + 2*
       traceme2YeAdjYe + 2*traceml2AdjYeYe + 6*tracemq2AdjYdYd + 6*mHd2*
       traceYdAdjYd + 2*mHd2*traceYeAdjYe - 1.2*AbsSqr(MassB)*Sqr(g1) - 6*AbsSqr
-      (MassWB)*Sqr(g2));
+      (MassWB)*Sqr(g2)));
 
 
    return beta_mHd2;
@@ -117,8 +117,8 @@ double MSSMatMGUT_soft_parameters::calc_beta_mHd2_two_loop(const Soft_traces& so
 
    double beta_mHd2;
 
-   beta_mHd2 = 0.04*twoLoop*(Conj(MassB)*Sqr(g1)*(20*traceAdjYdTYd - 60*
-      traceAdjYeTYe - 40*MassB*traceYdAdjYd + 120*MassB*traceYeAdjYe + 621*
+   beta_mHd2 = Re(0.04*twoLoop*(Conj(MassB)*Sqr(g1)*(20*traceAdjYdTYd -
+      60*traceAdjYeTYe - 40*MassB*traceYdAdjYd + 120*MassB*traceYeAdjYe + 621*
       MassB*Sqr(g1) + 90*MassB*Sqr(g2) + 45*MassWB*Sqr(g2)) + 15*Conj(MassWB)*
       Sqr(g2)*(3*(MassB + 2*MassWB)*Sqr(g1) + 55*MassWB*Sqr(g2)) + 10*(15*Power
       (g2,4)*Tr22 - 7.745966692414834*g1*Tr31 - 90*tracemd2YdAdjYdYdAdjYd - 15*
@@ -139,7 +139,7 @@ double MSSMatMGUT_soft_parameters::calc_beta_mHd2_two_loop(const Soft_traces& so
       traceconjTYdTpYd*Sqr(g3) + 80*tracemd2YdAdjYd*Sqr(g3) + 80*
       tracemq2AdjYdYd*Sqr(g3) - 80*traceAdjYdTYd*Conj(MassG)*Sqr(g3) +
       traceYdAdjYd*(-2*mHd2*Sqr(g1) + 80*mHd2*Sqr(g3) + 160*AbsSqr(MassG)*Sqr(
-      g3))));
+      g3)))));
 
 
    return beta_mHd2;

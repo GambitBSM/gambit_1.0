@@ -7,9 +7,15 @@
 #include "abstract_Pythia.h"
 #include "wrapper_Event_decl.h"
 #include "wrapper_Info_decl.h"
+#include "wrapper_Settings_decl.h"
+#include "wrapper_ParticleData_decl.h"
+#include "wrapper_Rndm_decl.h"
+#include "wrapper_Couplings_decl.h"
+#include "wrapper_SLHAinterface_decl.h"
 #include <string>
 #include "wrapper_Vec4_decl.h"
 #include <vector>
+#include "wrapper_PartonLevel_decl.h"
 #include <istream>
 #include <ostream>
 
@@ -24,38 +30,49 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         class Pythia : public WrapperBase<Pythia8::Abstract_Pythia>
         {
             public:
+                typedef WrapperBase<Pythia8::Abstract_Pythia> wrapperbase;
+        
                 // Member variables: 
+            public:
                 // -- Static factory pointers: 
-                static Pythia8::Abstract_Pythia* (*__factory0)(std::string, bool);
-                static Pythia8::Abstract_Pythia* (*__factory1)(std::string);
+                static Pythia8::Abstract_Pythia* (*__factory0)(std::basic_string<char,std::char_traits<char>,std::allocator<char> >, bool);
+                static Pythia8::Abstract_Pythia* (*__factory1)(std::basic_string<char,std::char_traits<char>,std::allocator<char> >);
                 static Pythia8::Abstract_Pythia* (*__factory2)();
+        
                 // -- Other member variables: 
+            public:
                 Pythia8::Event process;
                 Pythia8::Event event;
                 Pythia8::Info info;
+                Pythia8::Settings settings;
+                Pythia8::ParticleData particleData;
+                Pythia8::Rndm rndm;
+                Pythia8::Couplings couplings;
+                Pythia8::SLHAinterface slhaInterface;
         
                 // Member functions: 
-                bool readString(std::string arg_1, bool warn);
+            public:
+                bool readString(std::basic_string<char,std::char_traits<char>,std::allocator<char> > arg_1, bool warn);
         
-                bool readString(std::string arg_1);
+                bool readString(std::basic_string<char,std::char_traits<char>,std::allocator<char> > arg_1);
         
-                bool readFile(std::string fileName, bool warn, int subrun);
+                bool readFile(std::basic_string<char,std::char_traits<char>,std::allocator<char> > fileName, bool warn, int subrun);
         
-                bool readFile(std::string fileName, bool warn);
+                bool readFile(std::basic_string<char,std::char_traits<char>,std::allocator<char> > fileName, bool warn);
         
-                bool readFile(std::string fileName);
+                bool readFile(std::basic_string<char,std::char_traits<char>,std::allocator<char> > fileName);
         
-                bool readFile(std::string fileName, int subrun);
+                bool readFile(std::basic_string<char,std::char_traits<char>,std::allocator<char> > fileName, int subrun);
         
-                bool readFile(std::istream& is, bool warn, int subrun);
+                bool readFile(std::basic_istream<char,std::char_traits<char> >& is, bool warn, int subrun);
         
-                bool readFile(std::istream& is, bool warn);
+                bool readFile(std::basic_istream<char,std::char_traits<char> >& is, bool warn);
         
-                bool readFile(std::istream& is);
+                bool readFile(std::basic_istream<char,std::char_traits<char> >& is);
         
                 bool readFile();
         
-                bool readFile(std::istream& is, int subrun);
+                bool readFile(std::basic_istream<char,std::char_traits<char> >& is, int subrun);
         
                 bool init();
         
@@ -65,9 +82,9 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 bool init(int idAin, int idBin, double pxAin, double pyAin, double pzAin, double pxBin, double pyBin, double pzBin);
         
-                bool init(std::string LesHouchesEventFile, bool skipInit);
+                bool init(std::basic_string<char,std::char_traits<char>,std::allocator<char> > LesHouchesEventFile, bool skipInit);
         
-                bool init(std::string LesHouchesEventFile);
+                bool init(std::basic_string<char,std::char_traits<char>,std::allocator<char> > LesHouchesEventFile);
         
                 bool next();
         
@@ -83,7 +100,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 bool forceRHadronDecays();
         
-                void LHAeventList(std::ostream& os);
+                void LHAeventList(std::basic_ostream<char,std::char_traits<char> >& os);
         
                 void LHAeventList();
         
@@ -97,28 +114,33 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 void statistics();
         
-                bool flag(std::string key);
+                bool flag(std::basic_string<char,std::char_traits<char>,std::allocator<char> > key);
         
-                int mode(std::string key);
+                int mode(std::basic_string<char,std::char_traits<char>,std::allocator<char> > key);
         
-                double parm(std::string key);
+                double parm(std::basic_string<char,std::char_traits<char>,std::allocator<char> > key);
         
-                std::string word(std::string key);
+                std::basic_string<char,std::char_traits<char>,std::allocator<char> > word(std::basic_string<char,std::char_traits<char>,std::allocator<char> > key);
         
         
                 // Wrappers for original constructors: 
-                Pythia(std::string xmlDir, bool printBanner);
-                Pythia(std::string xmlDir);
+            public:
+                Pythia(std::basic_string<char,std::char_traits<char>,std::allocator<char> > xmlDir, bool printBanner);
+                Pythia(std::basic_string<char,std::char_traits<char>,std::allocator<char> > xmlDir);
                 Pythia();
         
                 // Special pointer-based constructor: 
-                Pythia(Pythia8::Abstract_Pythia* in, bool memvar_in=false);
+                Pythia(Pythia8::Abstract_Pythia* in);
+                Pythia(Pythia8::Abstract_Pythia* const & in, bool);
         
                 // Copy constructor: 
                 Pythia(const Pythia& in);
         
                 // Assignment operator: 
                 Pythia& operator=(const Pythia& in);
+        
+                // Destructor: 
+                ~Pythia();
         
         };
     }

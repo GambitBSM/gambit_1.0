@@ -105,8 +105,6 @@ namespace Gambit {
           }
           std::cout << "\n\n\n\n Operation of Pythia named " << *iter
                     << " number " << std::to_string(pythiaNumber) << " has finished." << std::endl;
-          for (size_t i = 0; i < (size_t) omp_get_max_threads(); ++i)
-            std::cout << "  Thread " << i << ": xsec = " << xsecArray[i] << " +- " << xsecerrArray[i] << " pb" << std::endl;
           #ifdef HESITATE
           std::cout<<"\n\n [Press Enter]";
           std::getchar();
@@ -149,7 +147,7 @@ namespace Gambit {
             pythiaOptions = runOptions->getValue<std::vector<std::string>>(*iter, pythiaConfigName);
         }
         pythiaOptions.push_back("SLHA:file = " + slhaFilename);
-        pythiaOptions.push_back("Random:seed = " + std::to_string(omp_get_thread_num()));
+        pythiaOptions.push_back("Random:seed = " + std::to_string(12345 + omp_get_thread_num()));
 
         /// Memory allocation: Pythia
         result = mkPythia(*iter, pythiaOptions);
@@ -627,7 +625,6 @@ namespace Gambit {
           /// @TODO Clean this crap up... xsecArrays should be more Gambity.
           /// @TODO THIS IS HARDCODED FOR ONLY ONE THREAD!!!
           /// @todo Shouldn't add_xsec really be set_xsec in this context? (It's not analysis combination)
-          cout << "Adding xsec = " << xsecArray[0] << " +- " << xsecerrArray[0] << " pb" << endl;
           (*anaPtr)->add_xsec(xsecArray[0], xsecerrArray[0]);
         }
 
@@ -638,7 +635,6 @@ namespace Gambit {
         for (auto anaPtr = Dep::ListOfAnalyses->begin(); anaPtr != Dep::ListOfAnalyses->end(); ++anaPtr)
         {
           cout << "Set xsec from ana = " << (*anaPtr)->xsec() << " pb" << endl;
-          cout << "SR number test " << (*anaPtr)->get_results()[0].n_signal << endl;
           result.push_back((*anaPtr)->get_results());
         }
 

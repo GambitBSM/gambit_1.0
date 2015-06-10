@@ -26,6 +26,7 @@
 
 #include <vector>
 #include <chrono> 
+#include <cmath>
 
 #include "gambit/Utils/util_types.hpp"
 
@@ -71,10 +72,10 @@ namespace Gambit
 
     /// Strip all whitespace except that following "const", 
     /// in which case the whitespace is replaced by a single space.
-    str strip_whitespace_except_after_const(str);
+    void strip_whitespace_except_after_const(str&);
 
     /// Strip Gambit namespace and clean out whitespace
-    inline str fix_type(str s) { return strip_leading_namespace(strip_whitespace_except_after_const(s), "Gambit"); } 
+    inline str fix_type(str s) { strip_whitespace_except_after_const(s); return strip_leading_namespace(s, "Gambit"); } 
 
     /// Strips leading and/or trailing parentheses from a string.
     void strip_parentheses(str&);
@@ -136,12 +137,21 @@ namespace Gambit
     /// Check if two strings are a "close" match
     /// Used for "did you mean?" type checking during command line argument processing
     bool are_similar(const std::string& s1, const std::string& s2);   
-    /// Sub-checks for the above:
+
+    /// Sub-check for are_similar.
     /// true if s1 can be obtained by deleting one character from s2
     bool check1(const std::string& s1, const std::string& s2);   
+
+    /// Sub-check for are_similar.
     /// true if s1 can be obtained from s2 by changing no more than X characters (X=2 for now)    
     bool check2(const std::string& s1, const std::string& s2);
- 
+
+    /// Local GAMBIT definition of isnan.  Could be redefined at a later point, depending on compiler support. 
+    using std::isnan;
+
+    /// Local GAMBIT definition of isinf.  Could be redefined at a later point, depending on compiler support. 
+    using std::isinf;
+
   }
 
 }
