@@ -130,6 +130,43 @@ namespace Gambit {
         }
         pythiaOptions.push_back("SLHA:file = " + slhaFilename);
         pythiaOptions.push_back("Random:seed = " + std::to_string(12345 + omp_get_thread_num()));
+// Pat: merge conflict resolved here by accepting from master.  Abram please check. <<<<<<< HEAD
+//=======
+
+        /// Memory allocation: Pythia
+        result = mkPythia(*iter, pythiaOptions);
+        pythiaOptions.clear();
+        resetPythiaFlag = false;
+
+      } else if (*Loop::iteration == END_SUBPROCESS) {
+
+        xsecArray[omp_get_thread_num()] = result->pythia()->info.sigmaGen() * 1e9; //< note converting Py8's mb to pb units
+        xsecerrArray[omp_get_thread_num()] = result->pythia()->info.sigmaErr() * 1e9; //< note converting Py8's mb to pb units
+        /// @todo Hackity hack of a exp(polynomial(mg)) fit to nllfast cross-sections, via a super-hacky mg.dat file... just for testing!
+        // std::cout << "XSEC_PY = " << xsecArray[omp_get_thread_num()] << " pb" << std::endl;
+        // const double mg = result->pythia()->particleData.particleDataEntryPtr(1000021)->m0();
+        // const double mg = result->pythia()->particleData.m0(1000021);
+        // std::ifstream mgf("mg.dat"); double mg; mgf >> mg; mgf.close();
+        // const double lxs = -1.031e-08*mg*mg*mg + 2.65e-05*mg*mg - 0.03222*mg + 12.24;
+        // const double xs = exp(lxs);
+        // std::cout << "MG = " << mg << " logXS = " << lxs << " XS = " << xs << " pb" << std::endl;
+        // xsecArray[omp_get_thread_num()] = xs;
+        // std::cout << "XSEC_NL = " << xsecArray[omp_get_thread_num()] << " pb" << std::endl;
+
+        /// Each thread gets its own Pythia instance.
+        /// Thus, the Pythia memory clean-up is *before* FINALIZE.
+        /// Memory clean-up: Pythia
+        delete result;
+        result = 0;
+        resetPythiaFlag = true;
+
+      } else if (*Loop::iteration == FINALIZE) {
+
+        /// Memory clean-up: xsecArrays
+        /// @TODO: where is the matching allocation? Careful with these deletes
+        delete[] xsecArray;
+        delete[] xsecerrArray;
+// Pat: merge conflict resolved to here by accepting from master.  Abram please check. >>>>>>> master
 
         result.resetSpecialization(*iter);
         result.init(pythiaOptions);
@@ -562,15 +599,40 @@ namespace Gambit {
     void runAnalyses(ColliderLogLikes& result)
     {
       using namespace Pipes::runAnalyses;
+<<<<<<< HEAD
       if (*Loop::iteration == FINALIZE) {
+=======
+
+      if (*Loop::iteration == INIT) {
+
+        // for (auto anaPtr = Dep::ListOfAnalyses->begin(); anaPtr != Dep::ListOfAnalyses->end(); ++anaPtr) {
+        //   (*anaPtr)->set_xsec(-1, -1);
+        // }
+
+      } else if (*Loop::iteration == END_SUBPROCESS) {
+
+        for (auto anaPtr = Dep::ListOfAnalyses->begin(); anaPtr != Dep::ListOfAnalyses->end(); ++anaPtr)
+        {
+          /// @TODO Clean this crap up... xsecArrays should be more Gambity.
+          /// @TODO THIS IS HARDCODED FOR ONLY ONE THREAD!!!
+          /// @todo Shouldn't add_xsec really be set_xsec in this context? (It's not analysis combination)
+          (*anaPtr)->add_xsec(xsecArray[0], xsecerrArray[0]);
+        }
+
+      } else if (*Loop::iteration == FINALIZE) {
+
+>>>>>>> master
         // The final iteration: get log likelihoods for the analyses
         result.clear();
         for (auto anaPtr = globalAnalyses->analyses.begin();
              anaPtr != globalAnalyses->analyses.end(); ++anaPtr)
         {
           cout << "Set xsec from ana = " << (*anaPtr)->xsec() << " pb" << endl;
+<<<<<<< HEAD
           // Finalize is currently only used to report a cut flow.... rename?
           (*anaPtr)->finalize();
+=======
+>>>>>>> master
           result.push_back((*anaPtr)->get_results());
         }
         return;

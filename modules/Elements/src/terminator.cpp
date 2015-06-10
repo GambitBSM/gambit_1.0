@@ -17,7 +17,7 @@
 
 void Gambit::terminator()
 {
-  std::cout << std::endl << "Gambit has encountered a fatal error." << std::endl;
+  std::cout << std::endl << "Gambit has encountered an uncaught error during initialisation." << std::endl;
   std::cout << std::endl << "Check the output logs for details." << std::endl;
   std::cout << std::endl << "(Check your yaml file if you can't recall where the logs are.)" << std::endl << std::endl;
   exit(1);

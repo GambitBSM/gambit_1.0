@@ -48,13 +48,18 @@ void shft3(double & a, double & b, double & c, double & d);
 
 /// For calculation of PV functions
 double integrandThreshbn(double x);
+/// For calculation of PV functions
+double integrandThreshbnr(double x, int n1, double p, double m1, double m2, double mt);
 /// Returns real part of b function, less accurate than analytic expressions
 double bIntegral(int n, double p, double m1, double m2, double mt);
+/// Returns real part of b function, less accurate than analytic expressions (thread-save version)
+double bIntegral_threadsave(int n, double p, double m1, double m2, double mt);
 // CHECK: is this function to be public?
 // DoubleVector dd(double x, const DoubleVector & y);
 
 /// Passarino-Veltman function definition
 double b0(double p, double m1, double m2, double q);
+double b0_fast(double p, double m1, double m2, double q);
 /// Passarino-Veltman function definition
 double b1(double p, double m1, double m2, double q);
 /// Passarino-Veltman function definition
@@ -104,6 +109,7 @@ double dilog(double x);
 
 double integrandThreshbnr(double x);
 Complex fnfn(double x);
+Complex fnfn(double x, int n1, double p, double m1, double m2, double mt);
 
 /// Gaussian deviated random number, mean 0 variance 1. Don't re-set idum once
 /// you've initially set it. Initialise with a NEGATIVE integer

@@ -36,76 +36,68 @@
 #include "lowe.h" ///TODO: wrap using BOSS at some point, i.e. get this from FlexibleSUSY or SoftSUSY
 
 namespace Gambit {
+   namespace SpecBit {
 
-   // Needed for typename aliases in Spec and MapTypes classes
-   struct QedQcdWrapperTraits
-   {
-      typedef softsusy::QedQcd Model;
-      typedef SMInputs         Input;
-   };
+      // Needed for typename aliases in Spec and MapTypes classes
+      struct QedQcdWrapperTraits
+      {
+         typedef softsusy::QedQcd Model;
+         typedef SMInputs         Input;
+      };
+       
+      class QedQcdWrapper : public Spec<QedQcdWrapper,QedQcdWrapperTraits> 
+      {
+         friend class RunparDer<QedQcdWrapper,QedQcdWrapperTraits>; /*P*/
+         friend class PhysDer  <QedQcdWrapper,QedQcdWrapperTraits>; /*P*/
+   
+         private:
+            typedef MapTypes<QedQcdWrapperTraits> MT; 
+   
+            // Keep copies of Model and Input objects internally
+            typename QedQcdWrapperTraits::Model qedqcd;
+            typename QedQcdWrapperTraits::Input sminputs;
+   
+         public:
+            // Constructors/destructors
+            QedQcdWrapper();
+            QedQcdWrapper(const softsusy::QedQcd&, const SMInputs&);
+            QedQcdWrapper(const QedQcdWrapper&);
+            virtual ~QedQcdWrapper();        /***/
     
-   class QedQcdWrapper : public Spec<QedQcdWrapper,QedQcdWrapperTraits> 
-   {
-      friend class RunparDer<QedQcdWrapper,QedQcdWrapperTraits>; /*P*/
-      friend class PhysDer  <QedQcdWrapper,QedQcdWrapperTraits>; /*P*/
-
-      private:
-         typedef MapTypes<QedQcdWrapperTraits> MT; 
-
-         // Keep copies of Model and Input objects internally
-         typename QedQcdWrapperTraits::Model qedqcd;
-         typename QedQcdWrapperTraits::Input sminputs;
-
-      public:
-         // Constructors/destructors
-         QedQcdWrapper();
-         QedQcdWrapper(const softsusy::QedQcd&, const SMInputs&);
-         QedQcdWrapper(const QedQcdWrapper&);
-         virtual ~QedQcdWrapper();        /***/
+            virtual int get_index_offset() const;  /***/   
+            virtual int get_numbers_stable_particles() const;  /***/
+   
+            /// RunningPars interface overrides
+            virtual double GetScale() const;      /***/
+            virtual void SetScale(double scale);  /***/
+            virtual void RunToScale(double);      /***/
+   
+            // Limits for running
+            double softup;
+            double hardup; // Be careful of order in constructor!
+   
+            // Limits for running
+            virtual double hard_upper() const {return hardup;} /*O*/
+            virtual double soft_upper() const {return softup;} /*O*/
+            virtual double soft_lower() const {return 0.;}     /*O*/
+            virtual double hard_lower() const {return 0.;}     /*O*/
+   
+         protected:
+            /// Map fillers
+            /// Used to initialise maps in the RunparDer and PhysDer classes
+            /// (specialisations created and stored automatically by Spec<QedQcdWrapper>)
+            
+            /// RunparDer overrides (access via spectrum.runningpar)
+            static typename MT::fmap_extraM fill_mass_map_extraM();   /*O*/
+            static typename MT::fmap_extraM fill_mass0_map_extraM();  /*O*/
+   
+            /// PhysDer overrides (access via spectrum.phys)
+            static typename MT::fmap        fill_PoleMass_map();        /*O*/
+            static typename MT::fmap_extraI fill_PoleMass_map_extraI(); /*O*/
+    
+      };
  
-         virtual int get_index_offset() const;  /***/   
-         virtual int get_numbers_stable_particles() const;  /***/
-
-         /// RunningPars interface overrides
-         virtual double GetScale() const;      /***/
-         virtual void SetScale(double scale);  /***/
-         virtual void RunToScale(double);      /***/
-
-         // Limits for running
-         double softup;
-         double hardup; // Be careful of order in constructor!
-
-         // Limits for running
-         virtual double hard_upper() const {return hardup;} /*O*/
-         virtual double soft_upper() const {return softup;} /*O*/
-         virtual double soft_lower() const {return 0.;}     /*O*/
-         virtual double hard_lower() const {return 0.;}     /*O*/
-
-      protected:
-         // These members are inherited from Spec<T> class! Make sure to
-         // initialise them from qedqcd and sminputs via Spec<T> constructor,
-         // so that they can be passed on through to the map functions.
-         // Model* model;          
-         // Input* input; 
-
-         // Note; make sure input (sminputs) matches the one used to set up qedqcd!
-
-         /// Map fillers
-         /// Used to initialise maps in the RunparDer and PhysDer classes
-         /// (specialisations created and stored automatically by Spec<QedQcdWrapper>)
-         
-         /// RunparDer overrides (access via spectrum.runningpar)
-         static typename MT::fmap_extraM fill_mass_map_extraM();   /*O*/
-         static typename MT::fmap_extraM fill_mass0_map_extraM();  /*O*/
-
-         /// PhysDer overrides (access via spectrum.phys)
-         static typename MT::fmap        fill_PoleMass_map();        /*O*/
-         static typename MT::fmap_extraI fill_PoleMass_map_extraI(); /*O*/
- 
-   };
- 
-
-
+   } // end SpecBit namespace
 } // end Gambit namespace
 
 #endif

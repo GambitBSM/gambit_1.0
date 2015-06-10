@@ -192,7 +192,7 @@ namespace __gambit_plugin_namespace__                                           
                 interface <void (void)> reg_init <void (void)>::reg(myData);                                            \
         }                                                                                                               \
 }                                                                                                                       \
-void __gambit_plugin_deconstructor__()                                                                                  \
+void PLUGIN_DECONSTRUCTOR()                                                                                  \
 
 #define __PLUGIN_MAIN_RET_VAL__(...)                                                                                    \
 decltype(__plugin_main_ret_val__(typename Gambit::Scanner::func_ptr_type<void (__VA_ARGS__)>::type()))                  \

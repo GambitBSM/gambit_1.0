@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Fri 16 Jan 2015 12:40:24
+// File generated at Mon 1 Jun 2015 12:48:08
 
 #ifndef MSSMNoFVatMGUT_SLHA_H
 #define MSSMNoFVatMGUT_SLHA_H

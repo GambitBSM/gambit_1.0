@@ -16,8 +16,28 @@
 #  \author Pat Scott
 #          (p.scott@imperial.ac.uk)              
 #  \date 2014 Nov, Dec
+#
+#  \author Ben Farmer
+#          (benjamin.farmer@fysik.su.se)
+#  \date 2015 May
 #                                               
 #************************************************
+
+# Check for MPI libraries
+option(MPI "Compile with MPI enabled" ON)
+# (Force no-MPI build with "cmake -DMPI=OFF ..")
+if(MPI)
+  find_package(MPI)
+  if(MPI_FOUND)
+    include_directories(${MPI_INCLUDE_PATH})
+    add_definitions(-DWITH_MPI)
+    message("${BoldYellow}-- MPI libraries found. Executables will be MPI-enabled.${ColourReset}")
+  else()
+    message("${Red} X MPI libraries NOT found. Executables may only be run in serial.${ColourReset}")
+  endif()
+else()
+  message("${BoldCyan} X MPI manually disabled! Executables may only be run in serial.${ColourReset}")
+endif()
 
 # Check for ROOT.
 find_package(ROOT)

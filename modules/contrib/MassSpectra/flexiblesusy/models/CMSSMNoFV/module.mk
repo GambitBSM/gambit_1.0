@@ -34,6 +34,7 @@ LIBCMSSMNoFV_HDR :=
 
 ifneq ($(findstring two_scale,$(ALGORITHMS)),)
 LIBCMSSMNoFV_SRC += \
+		$(DIR)/CMSSMNoFV_mass_eigenstates.cpp \
 		$(DIR)/CMSSMNoFV_info.cpp \
 		$(DIR)/CMSSMNoFV_input_parameters.cpp \
 		$(DIR)/CMSSMNoFV_slha_io.cpp \
@@ -55,6 +56,7 @@ EXECMSSMNoFV_SRC += \
 LIBCMSSMNoFV_HDR += \
 		$(DIR)/CMSSMNoFV_convergence_tester.hpp \
 		$(DIR)/CMSSMNoFV_high_scale_constraint.hpp \
+		$(DIR)/CMSSMNoFV_mass_eigenstates.hpp \
 		$(DIR)/CMSSMNoFV_info.hpp \
 		$(DIR)/CMSSMNoFV_initial_guesser.hpp \
 		$(DIR)/CMSSMNoFV_input_parameters.hpp \

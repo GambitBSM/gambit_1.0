@@ -54,15 +54,15 @@
 #include "gambit/Elements/types_rollcall.hpp"
 #include "gambit/Elements/module_macros_common.hpp"
 #include "gambit/Elements/safety_bucket.hpp"
+#include "gambit/Elements/ini_functions.hpp"
 #include "gambit/Elements/ini_code_struct.hpp"
 #include "gambit/Utils/static_members.hpp"
 #include "gambit/Utils/exceptions.hpp"
-#include "gambit/Logs/log.hpp"
 #include "gambit/Backends/backend_singleton.hpp"
 #include "gambit/Models/claw_singleton.hpp"
 #include "gambit/Models/safe_param_map.hpp"
 #ifndef STANDALONE
-  #include "gambit/Core/core_singleton.hpp"
+  #include "gambit/Core/ini_functions.hpp"
 #endif
 
 #include <boost/preprocessor/logical/bitand.hpp>
@@ -203,6 +203,10 @@
 /// should be activated if the model being scanned matches one of the models passed as an argument.
 #define ACTIVATE_FOR_MODELS(...)                          ACTIVATE_DEP_MODEL(MODULE, CAPABILITY, FUNCTION, CONDITIONAL_DEPENDENCY, #__VA_ARGS__)
 
+/// Quick, one-line declaration of model-conditional dependencies
+#define MODEL_CONDITIONAL_DEPENDENCY(DEP, TYPE, ...)      CORE_START_CONDITIONAL_DEPENDENCY(MODULE, CAPABILITY, FUNCTION, DEP, TYPE) \
+                                                          ACTIVATE_DEP_MODEL(MODULE, CAPABILITY, FUNCTION, DEP, #__VA_ARGS__)                        
+
 /// Indicate that the current \link FUNCTION() FUNCTION\endlink requires classes that
 /// must be loaded from \em BACKEND, version \em VERSION.  
 #define CLASSLOAD_NEEDED(BACKEND, VERSION)               CORE_CLASSLOAD_NEEDED(BACKEND, VERSION)
@@ -222,7 +226,7 @@
 #else
   #define CORE_START_MODULE_COMMON(MODULE)                                     \
           CORE_START_MODULE_COMMON_MAIN(MODULE)                                \
-          CORE_START_MODULE_COMMON_SUPP(MODULE)
+          const int module_registered = register_module(STRINGIFY(MODULE));    
 #endif
 
 /// Redirection of \link START_MODULE() START_MODULE\endlink when invoked from 
@@ -234,6 +238,7 @@
                                                                                \
   namespace Gambit                                                             \
   {                                                                            \
+                                                                               \
     namespace MODULE                                                           \
     {                                                                          \
                                                                                \
@@ -253,37 +258,13 @@
         return local;                                                          \
       }                                                                        \
                                                                                \
-      /* Register module errors and warnings */                                \
-      namespace Ini                                                            \
-      {                                                                        \
-        void CAT_3(register_,MODULE,_handlers)()                               \
-        {                                                                      \
-          error e = CAT(MODULE,_error)();                                      \
-          warning w = CAT(MODULE,_warning)();                                  \
-        }                                                                      \
-        ini_code CAT(MODULE,_handlers)                                         \
-         (LOCAL_INFO, &CAT_3(register_,MODULE,_handlers));                     \
-      }                                                                        \
+      /* Register the module with the log system.  Not done for models. */     \
+      const int log_registered = register_module_with_log(STRINGIFY(MODULE));  \
                                                                                \
       CORE_START_MODULE_COMMON(MODULE)                                         \
                                                                                \
-      /* Runtime registration of module with the log system */                 \
-      /* Not in CORE_START_MODULE_COMMON because we don't want models to have  \
-         their own logging tags... probably */                                 \
-      void rt_register_module_with_log ()                                      \
-      {                                                                        \
-        int mytag = Logging::getfreetag();                                     \
-        Logging::tag2str()[mytag] = STRINGIFY(MODULE);                         \
-        Logging::components().insert(mytag);                                   \
-      }                                                                        \
-                                                                               \
-      namespace Ini                                                            \
-      {                                                                        \
-        ini_code register_module_with_log                                      \
-         (LOCAL_INFO, &rt_register_module_with_log);                           \
-      }                                                                        \
-                                                                               \
     }                                                                          \
+                                                                               \
   }                                                                            \
 
 
@@ -422,31 +403,10 @@
         cout<<"have this backend requirement for this function.";              \
       }                                                                        \
                                                                                \
-      /* Runtime registration function for observable/likelihood function TAG*/\
-      template <typename TAG>                                                  \
-      void rt_register_function ()                                             \
-      {                                                                        \
-        cout<<"This tag is not supported by "<<STRINGIFY(MODULE)<<"."<<endl;   \
-      }                                                                        \
-                                                                               \
-      /* Supplementary version */                                              \
-      template <typename TAG>                                                  \
-      void rt_register_function_supp ()                                        \
-      {                                                                        \
-        cout<<"This tag is not supported by "<<STRINGIFY(MODULE)<<"."<<endl;   \
-      }                                                                        \
-                                                                               \
       /* Runtime registration function for nesting requirements of             \
       observable/likelihood function TAG*/                                     \
       template <typename TAG>                                                  \
       void rt_register_function_nesting ()                                     \
-      {                                                                        \
-        cout<<"This tag is not supported by "<<STRINGIFY(MODULE)<<"."<<endl;   \
-      }                                                                        \
-                                                                               \
-      /* Supplementary version */                                              \
-      template <typename TAG>                                                  \
-      void rt_register_function_nesting_supp ()                                \
       {                                                                        \
         cout<<"This tag is not supported by "<<STRINGIFY(MODULE)<<"."<<endl;   \
       }                                                                        \
@@ -482,25 +442,6 @@
         cout<<STRINGIFY(MODULE)<<" does not"<<endl;                            \
         cout<<"have this backend requirement for this function.";              \
       }                                                                        \
-
-
-/// Supplementary module definition macro, used by modules and models only if
-/// STANDALONE flag is not set.
-#define CORE_START_MODULE_COMMON_SUPP(MODULE)                                  \
-                                                                               \
-  /* Set up the supplementary commands to be called at runtime to register     \
-  the module*/                                                                 \
-  void CAT(rt_register_module_supp_,MODULE)()                                  \
-  {                                                                            \
-    Core().registerModule(STRINGIFY(MODULE));                                  \
-  }                                                                            \
-                                                                               \
-  /* Create the supplementary module initialisation object */                  \
-  namespace Ini                                                                \
-  {                                                                            \
-    ini_code CAT(MODULE,_supp)                                                 \
-     (LOCAL_INFO, &CAT(rt_register_module_supp_,MODULE));                      \
-  }                                                                            \
 
 
 /// Redirection of \link START_CAPABILITY() START_CAPABILITY\endlink when  
@@ -595,7 +536,8 @@
 #else
   #define MAKE_FUNCTOR(FUNCTION,TYPE,CAPABILITY,ORIGIN,CAN_MANAGE)             \
           MAKE_FUNCTOR_MAIN(FUNCTION,TYPE,CAPABILITY,ORIGIN,CAN_MANAGE)        \
-          MAKE_FUNCTOR_SUPP(FUNCTION)        
+          const int CAT(FUNCTION,_registered2) =                               \
+           register_module_functor_core(Functown::FUNCTION);
 #endif
 
 
@@ -628,6 +570,7 @@
                                                                                \
   namespace Pipes                                                              \
   {                                                                            \
+                                                                               \
     namespace FUNCTION                                                         \
     {                                                                          \
       /* Create a map to hold pointers to all the model parameters accessible  \
@@ -652,46 +595,15 @@
        }                                                                       \
       ,)                                                                       \
     }                                                                          \
+                                                                               \
   }                                                                            \
                                                                                \
-  /* Set up the commands to be called at runtime to register the function*/    \
-  template <>                                                                  \
-  void rt_register_function<Tags::FUNCTION> ()                                 \
-  {                                                                            \
-    BOOST_PP_IIF(CAN_MANAGE,                                                   \
-     Functown::FUNCTION.setCanBeLoopManager(true);                             \
-     Pipes::FUNCTION::Loop::done = Functown::FUNCTION.loopIsDone();            \
-    ,)                                                                         \
-    Accessors::map_bools[STRINGIFY(CAPABILITY)] =                              \
-     &Accessors::provides<Gambit::Tags::CAPABILITY>;                           \
-    Accessors::iCanDo[STRINGIFY(FUNCTION)] = STRINGIFY(TYPE);                  \
-    Pipes::FUNCTION::runOptions = Functown::FUNCTION.getOptions();             \
-  }                                                                            \
-                                                                               \
-  /* Create the function initialisation object */                              \
-  namespace Ini                                                                \
-  {                                                                            \
-    ini_code FUNCTION (LOCAL_INFO, &rt_register_function<Tags::FUNCTION>);     \
-  }                                                                            \
-
-
-/// Main parts of the functor creation
-#define MAKE_FUNCTOR_SUPP(FUNCTION)                                            \
-                                                                               \
-  /* Set up the supplementary commands to be called at runtime to register the \
-  function*/                                                                   \
-  template <>                                                                  \
-  void rt_register_function_supp<Tags::FUNCTION> ()                            \
-  {                                                                            \
-    Core().registerModuleFunctor(Functown::FUNCTION);                          \
-  }                                                                            \
-                                                                               \
-  /* Create the supplementary function initialisation object */                \
-  namespace Ini                                                                \
-  {                                                                            \
-    ini_code CAT(FUNCTION,_supp)                                               \
-     (LOCAL_INFO, &rt_register_function_supp<Tags::FUNCTION>);                 \
-  }                                                                            \
+  /* Register the function */                                                  \
+  const int CAT(FUNCTION,_registered1) = register_function(Functown::FUNCTION, \
+   CAN_MANAGE,                                                                 \
+   BOOST_PP_IIF(CAN_MANAGE, &Pipes::FUNCTION::Loop::done, NULL),               \
+   Accessors::iCanDo, Accessors::map_bools,                                    \
+   Accessors::provides<Gambit::Tags::CAPABILITY>, Pipes::FUNCTION::runOptions);\
 
 
 // Determine whether to make registration calls to the Core in the 
@@ -702,7 +614,8 @@
 #else
   #define CORE_NEEDS_MANAGER_WITH_CAPABILITY(LOOPMAN)                          \
           CORE_NEEDS_MANAGER_WITH_CAPABILITY_MAIN(LOOPMAN)                     \
-          CORE_NEEDS_MANAGER_WITH_CAPABILITY_SUPP(LOOPMAN)
+          namespace Gambit { namespace MODULE { const int CAT(FUNCTION,        \
+           _registered3) = register_management_req(Functown::FUNCTION); } } 
 #endif
 
 /// Main redirection of NEEDS_MANAGER_WITH_CAPABILITY(LOOPMAN) when invoked from 
@@ -754,36 +667,6 @@
          (LOCAL_INFO, &rt_register_function_nesting<Tags::FUNCTION>);          \
       }                                                                        \
     }                                                                          \
-  }                                                                            \
-
-
-/// Supplementray redirection of NEEDS_MANAGER_WITH_CAPABILITY(LOOPMAN) when 
-/// invoked from within the core.
-#define CORE_NEEDS_MANAGER_WITH_CAPABILITY_SUPP(LOOPMAN)                       \
-                                                                               \
-  namespace Gambit                                                             \
-  {                                                                            \
-                                                                               \
-    namespace MODULE                                                           \
-    {                                                                          \
-                                                                               \
-      /* Set up the supplementary runtime command that registers the fact that \
-      FUNCTION must be run inside a loop manager with capability LOOPMAN.*/    \
-      template <>                                                              \
-      void rt_register_function_nesting_supp<Tags::FUNCTION> ()                \
-      {                                                                        \
-        Core().registerNestedModuleFunctor(Functown::FUNCTION);                \
-      }                                                                        \
-                                                                               \
-      /* Create the corresponding supplementary initialisation object */       \
-      namespace Ini                                                            \
-      {                                                                        \
-        ini_code CAT(FUNCTION,_nesting_supp)                                   \
-         (LOCAL_INFO, &rt_register_function_nesting_supp<Tags::FUNCTION>);     \
-      }                                                                        \
-                                                                               \
-    }                                                                          \
-                                                                               \
   }                                                                            \
 
 
@@ -1523,24 +1406,11 @@
     namespace MODULE                                                           \
     {                                                                          \
                                                                                \
-      /* Set up the commands to be called at runtime to apply the rule.*/      \
-      void CAT_6(apply_rule_,FUNCTION,_,                                       \
+      /* Apply the rule.*/                                                     \
+      const int CAT_6(apply_rule_,FUNCTION,_,                                  \
        BOOST_PP_SEQ_CAT(BOOST_PP_TUPLE_TO_SEQ((STRIP_PARENS(MODELS)))),_,      \
-       BOOST_PP_SEQ_CAT(BOOST_PP_TUPLE_TO_SEQ((STRIP_PARENS(TAGS)))) ) ()      \
-      {                                                                        \
-        Functown::FUNCTION.makeBackendRuleForModel(#MODELS, #TAGS);            \
-      }                                                                        \
-                                                                               \
-      /* Create the rule's initialisation object. */                           \
-      namespace Ini                                                            \
-      {                                                                        \
-        ini_code CAT_5(FUNCTION,_,                                             \
-         BOOST_PP_SEQ_CAT(BOOST_PP_TUPLE_TO_SEQ((STRIP_PARENS(MODELS)))),_,    \
-         BOOST_PP_SEQ_CAT(BOOST_PP_TUPLE_TO_SEQ((STRIP_PARENS(TAGS)))) )       \
-         (LOCAL_INFO, &CAT_6(apply_rule_,FUNCTION,_,                           \
-         BOOST_PP_SEQ_CAT(BOOST_PP_TUPLE_TO_SEQ((STRIP_PARENS(MODELS)))),_,    \
-         BOOST_PP_SEQ_CAT(BOOST_PP_TUPLE_TO_SEQ((STRIP_PARENS(TAGS)))) ) );    \
-      }                                                                        \
+       BOOST_PP_SEQ_CAT(BOOST_PP_TUPLE_TO_SEQ((STRIP_PARENS(TAGS)))) ) =       \
+       set_backend_rule_for_model(Functown::FUNCTION,#MODELS,#TAGS);           \
                                                                                \
     }                                                                          \
                                                                                \
@@ -1636,25 +1506,9 @@
     namespace MODULE                                                           \
     {                                                                          \
                                                                                \
-      void CAT_4(classload_requirements_for_,FUNCTION,_from_,BACKEND)()        \
-      {                                                                        \
-        typedef std::vector<str> vec;                                          \
-        vec versions = Utils::delimiterSplit(VERSTRING, ",");                  \
-        for (vec::iterator it = versions.begin() ; it != versions.end(); ++it) \
-        {                                                                      \
-          if (*it == "default") *it = Backends::backendInfo().                 \
-           version_from_safe_version(STRINGIFY(BACKEND),                       \
-           STRINGIFY(CAT(Default_,BACKEND)));                                  \
-          Functown::FUNCTION.setRequiredClassloader(STRINGIFY(BACKEND),*it);   \
-        }                                                                      \
-      }                                                                        \
-                                                                               \
-      namespace ini                                                            \
-      {                                                                        \
-        ini_code CAT_4(ini_classload_req_rego_for_,FUNCTION,_from_,BACKEND)    \
-         (LOCAL_INFO,                                                          \
-          &CAT_4(classload_requirements_for_,FUNCTION,_from_,BACKEND));        \
-      }                                                                        \
+      const int CAT_4(classloading_from_,BACKEND,_for_,FUNCTION) =             \
+       set_classload_requirements(Functown::FUNCTION, STRINGIFY(BACKEND),      \
+       VERSTRING, STRINGIFY(CAT(Default_,BACKEND)));                           \
                                                                                \
     }                                                                          \
                                                                                \

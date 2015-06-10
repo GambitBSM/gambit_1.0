@@ -70,7 +70,7 @@ BE_FUNCTION(AI_BKstarmumu, double, (double, double, double*, double*, double*, s
 BE_FUNCTION(AI_BKstarmumu_zero, double, (double*, double*, double*, struct parameters*, double), "AI_BKstarmumu_zero", "AI_BKstarmumu_zero")
 
 BE_INI_FUNCTION{}
-DONE
+END_BE_INI_FUNCTION
 
 // Undefine macros to avoid conflict with other backends
 #include "gambit/Backends/backend_undefs.hpp"

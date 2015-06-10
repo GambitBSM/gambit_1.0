@@ -442,7 +442,7 @@ namespace Gambit
       void makeBackendMatchingRule(str tag);
 
       /// Add a rule indicating that classes from a given backend must be available
-      void setRequiredClassloader(str, str);
+      void setRequiredClassloader(str, str, str);
 
       /// Indicate to the functor which backends are actually loaded and working
       void notifyOfBackends(std::map<str, std::set<str> >);
@@ -453,7 +453,7 @@ namespace Gambit
       /// Resolve a dependency using a pointer to another functor object
       virtual void resolveDependency (functor* dep_functor);
 
-      // Set this functor's loop manager (if it has one)
+      /// Set this functor's loop manager (if it has one)
       virtual void resolveLoopManager (functor*);
 
       /// Resolve a backend requirement using a pointer to another functor object

@@ -111,8 +111,8 @@ double ReH0 (double p2, double m2a, double m2b, double scl2) PVATTR;
 double ReF0 (double p2, double m2a, double m2b, double scl2) PVATTR;
 double ReG0 (double p2, double m2a, double m2b, double scl2) PVATTR;
 
-}
+} // namespace passarino_veltman
 
-}
+} // namespace flexiblesusy
 
 #endif // pv_hpp

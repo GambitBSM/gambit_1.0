@@ -6,14 +6,15 @@
 class AbstractBase
 {
 	private:
-	    bool delete_wrapper;
-	    bool delete_me;
-	    bool wrapped;
+	    mutable bool delete_wrapper;
+	    mutable bool delete_me;
+	    mutable bool wrapped;
 
 	public:
 
     	AbstractBase() : delete_wrapper(false), delete_me(true), wrapped(false) {}
 
+		AbstractBase(const AbstractBase&) : delete_wrapper(false), delete_me(true), wrapped(false) {}
 
 	    bool can_delete_me()
 	    {

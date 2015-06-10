@@ -34,8 +34,12 @@
 #include "gambit/Utils/stream_overloads.hpp"
 #include "gambit/Utils/util_functions.hpp"
 
+// MPI bindings
+#include "gambit/Utils/mpiwrapper.hpp"
+
 // Switch for debugging output (manual at the moment)
-//#define DEBUG_MODE
+
+#define DEBUG_MODE
 
 #ifdef DEBUG_MODE 
   #define DBUG(x) x
@@ -80,6 +84,15 @@ namespace Gambit
     // Common constructor tasks
     void asciiPrinter::common_constructor()
     {
+      #ifdef WITH_MPI
+        // Do basic MPI check
+        //std::cout << "Hooking up to MPI..." << std::endl;
+        //std::cout << " Size: " << GMPI::COMM_WORLD.Get_size() << std::endl;
+        //std::cout << " Rank: " << GMPI::COMM_WORLD.Get_rank() << std::endl;
+ 
+        //std::exit(0);
+      #endif
+
       // (Needs modifying when full MPI implentation is done)
       // Initialise "lastPointID" map to -1 (i.e. no last point)
       lastPointID[0] = -1; // Only rank 0 process for now; parallel mode not implemented
@@ -442,10 +455,12 @@ is a unique record for every rank/pointID pair.";
 
     void asciiPrinter::print(int const& value, const std::string& label, const int IDcode, const int thread, const int pointID)
     { template_print(value,label,IDcode,thread,pointID); }
-    void asciiPrinter::print(unsigned int const& value, const std::string& label, const int IDcode, const int thread, const int pointID)
-    { template_print(value,label,IDcode,thread,pointID); }
     void asciiPrinter::print(double const& value, const std::string& label, const int IDcode, const int thread, const int pointID)
     { template_print(value,label,IDcode,thread,pointID); }
+    #ifndef STANDALONE  // Need to disable print functions for these if STANDALONE is defined (see baseprinter.hpp line ~41)
+    void asciiPrinter::print(unsigned int const& value, const std::string& label, const int IDcode, const int thread, const int pointID)
+    { template_print(value,label,IDcode,thread,pointID); }
+    #endif 
     // etc. as needed... 
 
     void asciiPrinter::print(std::vector<double> const& value, const std::string& label, const int IDcode, const int thread, const int pointID)

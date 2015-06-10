@@ -17,16 +17,21 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         class Vec4 : public WrapperBase<Pythia8::Abstract_Vec4>
         {
             public:
+                typedef WrapperBase<Pythia8::Abstract_Vec4> wrapperbase;
+        
                 // Member variables: 
+            public:
                 // -- Static factory pointers: 
                 static Pythia8::Abstract_Vec4* (*__factory0)(double, double, double, double);
                 static Pythia8::Abstract_Vec4* (*__factory1)(double, double, double);
                 static Pythia8::Abstract_Vec4* (*__factory2)(double, double);
                 static Pythia8::Abstract_Vec4* (*__factory3)(double);
                 static Pythia8::Abstract_Vec4* (*__factory4)();
+        
                 // -- Other member variables: 
         
                 // Member functions: 
+            public:
                 void reset();
         
                 void p(double xIn, double yIn, double zIn, double tIn);
@@ -117,6 +122,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
         
                 // Wrappers for original constructors: 
+            public:
                 Vec4(double xIn, double yIn, double zIn, double tIn);
                 Vec4(double xIn, double yIn, double zIn);
                 Vec4(double xIn, double yIn);
@@ -124,13 +130,17 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 Vec4();
         
                 // Special pointer-based constructor: 
-                Vec4(Pythia8::Abstract_Vec4* in, bool memvar_in=false);
+                Vec4(Pythia8::Abstract_Vec4* in);
+                Vec4(Pythia8::Abstract_Vec4* const & in, bool);
         
                 // Copy constructor: 
                 Vec4(const Vec4& in);
         
                 // Assignment operator: 
                 Vec4& operator=(const Vec4& in);
+        
+                // Destructor: 
+                ~Vec4();
         
         };
     }

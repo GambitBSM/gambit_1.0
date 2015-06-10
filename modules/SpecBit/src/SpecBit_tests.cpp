@@ -27,7 +27,7 @@
 // Flexible SUSY stuff (should not be needed by the rest of gambit)
 #include "gambit/SpecBit/model_files_and_boxes.hpp"
 #include "flexiblesusy/src/ew_input.hpp"
-#include "flexiblesusy/src/numerics.hpp"
+#include "flexiblesusy/src/numerics2.hpp"
 
 namespace Gambit
 {
@@ -151,12 +151,13 @@ namespace Gambit
     {
       // Requests a SubSpectrum object of capability SM_spectrum; test what we can retrieve from this
       using namespace Pipes::specbit_test_func3;
-      const SubSpectrum* spec = *Dep::SM_spectrum; //Test retrieve pointer to Spectrum object 
+      const SubSpectrum* spec = *Dep::SM_subspectrum; //Test retrieve pointer to Spectrum object 
 
       std::unique_ptr<SubSpectrum> spec2 = spec->clone(); 
 
       SM_checks(*spec2); // Run some tests on standard model parameters 
       logger() << EOM;
+      result = 0;
     }
 
     /// Test out consistency of Spectrum object (and pre-extracted SM SubSpectrum*)
@@ -164,10 +165,60 @@ namespace Gambit
     {
       using namespace Pipes::specbit_test_Spectrum;
       const Spectrum* matched_spectra = *Dep::MSSM_spectrum;
-      const SubSpectrum* sm = *Dep::SM_spectrum; 
- 
-      Spectrum_test(matched_spectra,sm); // Run consistency tests on Spectrum contents vs SMInputs 
+      const SubSpectrum* sm = *Dep::SM_subspectrum; 
+      bool noRGE = runOptions->getValueOrDef<bool>(0,"noRGE"); // don't test running on skeleton Spectrum wrappers 
+      logger() << "Running specbit_test_Spectrum with noRGE="<<noRGE<<std::endl;
       logger() << EOM;
+      Spectrum_test(matched_spectra,sm,noRGE); // Run consistency tests on Spectrum contents vs SMInputs 
+      logger() << EOM;
+      result = 0;
+    }
+
+    /// Display SMInputs values
+    void specbit_test_show_SMInputs(double &result)
+    {
+      using namespace Pipes::specbit_test_show_SMInputs;
+      const SMInputs sminputs = *Dep::SMINPUTS;
+      logger() << "Contents of SMInputs struct:" << std::endl;
+      logger() << "alphainv: " << sminputs.alphainv << std::endl; 
+      logger() << "GF      : " << sminputs.GF       << std::endl;
+      logger() << "alphaS  : " << sminputs.alphaS   << std::endl;
+      logger() << "mZ      : " << sminputs.mZ       << std::endl;
+      logger() << "mE      : " << sminputs.mE       << std::endl;
+      logger() << "mMu     : " << sminputs.mMu      << std::endl;
+      logger() << "mTau    : " << sminputs.mTau     << std::endl;
+      logger() << "mNu1    : " << sminputs.mNu1     << std::endl;
+      logger() << "mNu2    : " << sminputs.mNu2     << std::endl;
+      logger() << "mNu3    : " << sminputs.mNu3     << std::endl;
+      logger() << "mD      : " << sminputs.mD       << std::endl;
+      logger() << "mU      : " << sminputs.mU       << std::endl;
+      logger() << "mS      : " << sminputs.mS       << std::endl;
+      logger() << "mCmC    : " << sminputs.mCmC     << std::endl;
+      logger() << "mBmB    : " << sminputs.mBmB     << std::endl;
+      logger() << "mT      : " << sminputs.mT       << std::endl;
+      logger() << EOM;
+      result = 0;
+    }
+
+    /// Check that the SingletDM spectrum object is working
+    void test_Singlet_spectrum(bool &result)
+    {
+      using namespace Pipes::test_Singlet_spectrum;
+      const Spectrum* spec = *Dep::SingletDM_spectrum;
+      logger() << "Parameters from SingletDM_spectrum:" << std::endl;
+      logger() << "Higgs pole mass  : " << spec->get_Pole_Mass("h0") << std::endl; 
+      logger() << "Higgs VEV        : " << spec->get_UV()->runningpars.get_mass_parameter("v0") << std::endl; 
+      logger() << "Singlet pole mass: " << spec->get_Pole_Mass("S") << std::endl; 
+      logger() << EOM;
+
+      logger() << "Parameters directly from ModelParameters functors:" << std::endl;
+      logger() << "Higgs pole mass  : " << *Param.at("mH") << std::endl; 
+      logger() << "Higgs VEV        : " << *Param.at("vev") << std::endl; 
+      logger() << "Singlet pole mass: " << *Param.at("mass") << std::endl; 
+      logger() << EOM;
+
+      result = 0;
+
     }
 
   } // end namespace SpecBit
