@@ -15,6 +15,9 @@
 
 #include "gambit/Core/gambit_main.hpp"
 
+// MPI bindings
+#include "gambit/Utils/mpiwrapper.hpp"
+
 using namespace Gambit;
 using namespace LogTags;
 
@@ -22,6 +25,12 @@ using namespace LogTags;
 int main(int argc, char* argv[])
 {
   std::set_terminate(terminator);
+
+  #ifdef WITH_MPI
+    /// Needs to be done first, pretty much. Supply argc and argv, so that MPI
+    /// can fix up the command line arguments to match the non-mpi'd call. 
+    GMPI::Init(argc,argv);
+  #endif
 
   try
   {
@@ -58,15 +67,6 @@ int main(int argc, char* argv[])
 
     // Deactivate module functions reliant on classes from missing backends
     Core().accountForMissingClasses();
-
-    // Set up a printer object
-    // (will do this with a factory that reads the inifile, similar to the PriorManager)
-    // Printers::ostreamPrinter printer(cout,1); 
-    // For now the asciiPrinter can be constructed using any stream, so for file output
-    // we need to give it a file stream object.
-    //std::ofstream outfile("gambit_output.txt", std::ofstream::out);
-    //std::ofstream infofile("gambit_output.info", std::ofstream::out);
-    //Printers::asciiPrinter printer(outfile,infofile);
 
     // Set up the printer manager for redirection of scan output.
     Printers::PrinterManager printerManager(iniFile.getPrinterNode());
@@ -132,6 +132,11 @@ int main(int argc, char* argv[])
 
   // Free the memory held by the RNG
   Random::delete_rng_engine();
+
+  #ifdef WITH_MPI
+    /// Shut down MPI
+    GMPI::Finalize();
+  #endif
 
   return 0;
 
