@@ -39,23 +39,32 @@ namespace Gambit {
       /// with our other maps     
       void init_maps(){
     
-         /// this is probably banned c++11, can uglify later if kept     
-         std::vector<str> up_squark_strs   = {"~u_1", "~u_2", "~u_3", 
-                                                   "~u_4", "~u_5", "~u_6"}; 
-         std::vector<str> down_squark_strs = {"~d_1", "~d_2", "~d_3", 
-                                                   "~d_4", "~d_5", "~d_6"};
-         std::vector<str> ch_slepton_strs  = {"~e-_1", "~e-_2", "~e-_3", 
-                                                   "~e-_4", "~e-_5", "~e-_6"};
-         std::vector<str> sneutrino_strs   = {"~nu_1", "~nu_2", "~nu_3"};
+         str upsqst[]= {"~u_1", "~u_2", "~u_3", "~u_4", "~u_5", "~u_6"};
+         std::vector<str> up_squark_strs(upsqst, upsqst 
+                                         + sizeof(upsqst) / sizeof(str) ); 
+         str dsqst[]= {"~d_1", "~d_2", "~d_3", "~d_4", "~d_5", "~d_6"};
+         std::vector<str> down_squark_strs(dsqst, dsqst 
+                                           + sizeof(dsqst) / sizeof(str));
+         str cslst[] = {"~e-_1", "~e-_2", "~e-_3", "~e-_4", "~e-_5", "~e-_6"};
+         std::vector<str> ch_slepton_strs(cslst, cslst 
+                                           + sizeof(cslst) / sizeof(str) );
+         str snst[] = {"~nu_1", "~nu_2", "~nu_3"};
+         std::vector<str> sneutrino_strs(snst, snst 
+                                         + sizeof(snst) / sizeof(str) );
 
          /// this is probably banned c++11, can uglify later if kept     
-         std::vector<str> up_sq_gauge_strs   = {"~u_L", "~c_L", "~t_L", 
-                                                   "~u_R", "~c_R", "~t_R"}; 
-         std::vector<str> down_sq_gauge_strs ={"~d_L", "~s_L", "~b_L", 
-                                                   "~d_R", "~s_R", "~b_R"};
-         std::vector<str> ch_sl_gauge_strs  = {"~e_L", "~mu_L", "~tau_L", 
-                                                   "~e_R", "~mu_R", "~tau_R"};
-         std::vector<str> sne_gauge_strs = {"~nu_e_L", "~nu_mu_L", "~nu_tau_L"};
+         str upsqgst[] = {"~u_L", "~c_L", "~t_L", "~u_R", "~c_R", "~t_R"};
+         std::vector<str> up_sq_gauge_strs(upsqgst, upsqgst 
+                                         + sizeof(upsqgst) / sizeof(str) );  
+         str dsqgst[] = {"~d_L", "~s_L", "~b_L", "~d_R", "~s_R", "~b_R"};
+         std::vector<str> down_sq_gauge_strs(dsqgst, dsqgst 
+                                           + sizeof(dsqgst) / sizeof(str));
+         str cslgst[] ={"~e_L", "~mu_L", "~tau_L", "~e_R", "~mu_R", "~tau_R"};
+         std::vector<str> ch_sl_gauge_strs(cslgst, cslgst 
+                                           + sizeof(cslgst) / sizeof(str) ); 
+         str sngst[] =  {"~nu_e_L", "~nu_mu_L", "~nu_tau_L"};
+         std::vector<str> sne_gauge_strs(sngst, sngst 
+                                         + sizeof(sngst) / sizeof(str) ); 
   
          /// pairs etc that we need for maps 
          
