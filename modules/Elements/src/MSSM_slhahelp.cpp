@@ -33,9 +33,6 @@ namespace Gambit {
       /// charged selptons) to appropriate set of mass eigenstates 
       std::map<str,std::vector<str>> type_to_vec_of_mass_es;
       std::map<str,std::vector<str>> type_to_vec_of_gauge_es;
-      ///maps between type and the sets of indices
-      std::map<str,std::set<int>> type_to_set_of_row_indices;
-      std::map<str,std::set<int>> type_to_set_of_col_indices;
 
       /// setup all the maps
       /// should be called somewhere in gambit setup like 
@@ -59,21 +56,7 @@ namespace Gambit {
          std::vector<str> ch_sl_gauge_strs  = {"~e_L", "~mu_L", "~tau_L", 
                                                    "~e_R", "~mu_R", "~tau_R"};
          std::vector<str> sne_gauge_strs = {"~nu_e_L", "~nu_mu_L", "~nu_tau_L"};
-
-         
-         /// for iterations over rows and columns
-         /// all the same so only need one at most but this does
-         /// make it easier to generalise when adding new states etc
-         /// or change something via a hack
-         std::set<int> up_squark_rows = {1,2,3,4,5,6};
-         std::set<int> down_squark_rows = {1,2,3,4,5,6};
-         std::set<int> ch_slepton_rows = {1,2,3,4,5,6};
-         std::set<int> up_squark_cols = {1,2,3,4,5,6};
-         std::set<int> down_squark_cols = {1,2,3,4,5,6};
-         std::set<int> ch_slepton_cols = {1,2,3,4,5,6};    
-         std::set<int> sneutrino_rows = {1,2,3};
-         std::set<int> sneutrino_cols = {1,2,3};
-        
+  
          /// pairs etc that we need for maps 
          
          //pairs labeling family, mass
@@ -298,16 +281,6 @@ namespace Gambit {
          type_to_vec_of_gauge_es["~e"] = ch_sl_gauge_strs;
          type_to_vec_of_gauge_es["~nu"] = sne_gauge_strs;
          
-         type_to_set_of_row_indices["~u"] = up_squark_rows;
-         type_to_set_of_row_indices["~d"] = down_squark_rows;
-         type_to_set_of_row_indices["~e"] = ch_slepton_rows;
-         type_to_set_of_row_indices["~nu"] = sneutrino_rows;
-         
-         type_to_set_of_col_indices["~u"] = up_squark_cols;
-         type_to_set_of_col_indices["~d"] = down_squark_cols;
-         type_to_set_of_col_indices["~e"] = ch_slepton_cols;
-         type_to_set_of_col_indices["~nu"] = sneutrino_cols;
-
       }
       
       ini_code init_maps_call(LOCAL_INFO, init_maps);
@@ -319,18 +292,17 @@ namespace Gambit {
                                               const SubSpectrum* mssm)
       {
          //extract info about indices for type using map
-         std::set<int> col_indices = type_to_set_of_col_indices[type]; 
-         double column_length = col_indices.size();
-         std::vector<double> mass_state_content(column_length);
+         std::vector<str> mass_es_strs = type_to_vec_of_mass_es[type];
+         double col_length = mass_es_strs.size();
+         std::vector<double> mass_state_content(col_length);
          //iterate over collumn in some way, e..g
-         for(iter it = col_indices.begin(); it != col_indices.end(); ++it)
+         for(std::vector<int>::size_type i = 1; i <= col_length; i++) 
             {
                //Mix_{row, col}
                /// iterate through row indice with column indice fixed
-               mass_state_content[*it - 1] =  
-                  mssm->phys.get_Pole_Mixing(type, *it, gauge_index); /// fill         
-            }
-         
+               mass_state_content[i - 1] =  
+                  mssm->phys.get_Pole_Mixing(type, i, gauge_index); /// fill 
+           }
          return mass_state_content;
       }
 
@@ -338,15 +310,15 @@ namespace Gambit {
       std::vector<double> get_Pole_Mixing_row(str type, int mass_index, 
                                               const SubSpectrum* mssm) 
       {
-         std::set<int> row_indices = type_to_set_of_row_indices[type];
-         double row_length = row_indices.size();
+         std::vector<str> gauge_es_strs = type_to_vec_of_gauge_es[type];
+         double row_length = gauge_es_strs.size();
          std::vector<double> gauge_state_content(row_length);   
-         for(iter it = row_indices.begin(); it != row_indices.end(); ++it)
+         for(std::vector<int>::size_type i = 1; i <= row_length; i++) 
             {
                /// Mix_{row, col}
                /// iterate through column indice with row indice fixed
-               gauge_state_content[*it - 1] =  
-                  mssm->phys.get_Pole_Mixing(type, mass_index, *it); /// fill         
+               gauge_state_content[i - 1] =  
+                  mssm->phys.get_Pole_Mixing(type, mass_index, i); /// fill
             }
          return gauge_state_content;
       }
@@ -399,7 +371,7 @@ namespace Gambit {
       /// returns vector representing composition of requested mass eigenstate
       /// in terms of the slha2 gauge eigenstates (~u_L,~c_L,...~t_R etc)
       /// which is just a row in the mixing matrix 
-      /// just wraps get_Pole_Mixing_col after extracting info from string
+      /// just wraps get_Pole_Mixing_row after extracting info from string
       std::vector<double> get_gauge_comp_for_mass(str mass_es, 
                                                   const SubSpectrum* mssm)
       {   
@@ -409,7 +381,7 @@ namespace Gambit {
          str type = index_type.second;
          //fill vector with mixings
          std::vector<double> mass_state_content = 
-            get_Pole_Mixing_col(type, mass_index, mssm);
+            get_Pole_Mixing_row(type, mass_index, mssm);
          
          return mass_state_content;
       }
@@ -427,14 +399,8 @@ namespace Gambit {
          /// retrive type from the gauge_es string
          str type = (gauge_label_to_index_type[gauge_es]).second;
          str mass_es, temp_mass_es;
-         /// iterate over set of strings for mass states using temp_massstate
-         /// could create a set of strings for each type 
-         /// and choose which by type
-         /// I am concerned about creating excessive numbers of internal code
-         /// structures in terms of code readability though
+         /// iterate over vector of strings for mass states 
          std::vector<str> mass_es_set = type_to_vec_of_mass_es[type];
-         /// c++11 would be cool here but I think is banned :(.
-         // for(auto temp_mass_es : mass_es_set) { do stuff with temp_mass_es }
          typedef std::vector<str>::iterator iter;
          for(iter it = mass_es_set.begin(); it != mass_es_set.end(); ++it){
             temp_mass_es = *it;    
@@ -442,7 +408,8 @@ namespace Gambit {
                                                     mssm);
             gauge_composition.push_back(temp_admix);
             //select largest 
-            if(fabs(temp_admix) > fabs(max_mixing)) {
+            if(fabs(temp_admix) > fabs(max_mixing)) 
+               {
                max_mixing = temp_admix; 
                mass_es = temp_mass_es;
             }
@@ -521,24 +488,19 @@ namespace Gambit {
          /// retrive type from the gauge_es string
          str type = (mass_label_to_index_type[mass_es]).second;
          str gauge_es, temp_gauge_es;
-         /// iterate over set of strings for mass states using temp_massstate
-         /// could create a set of strings for each type 
-         /// and choose which by type
-         /// I am concerned about creating excessive numbers of internal code
-         /// structures in terms of code readability though
-         std::vector<str> gauge_es_set = type_to_vec_of_gauge_es[type];
-         /// c++11 would be cool here but I think is banned :(.
-         // for(auto temp_mass_es : mass_es_set) { do stuff with temp_mass_es }
+         /// iterate over vector of strings for mass states 
+         std::vector<str> gauge_es_vec = type_to_vec_of_gauge_es[type];
          typedef std::vector<str>::iterator iter;
-         for(iter it = gauge_es_set.begin(); it != gauge_es_set.end(); ++it){
+         for(iter it = gauge_es_vec.begin(); it != gauge_es_vec.end(); ++it){
             temp_gauge_es = *it;   
             temp_admix = get_mixing_element(temp_gauge_es, mass_es,  mssm); 
             mass_composition.push_back(temp_admix);
             //select largest 
-            if(fabs(temp_admix) > fabs(max_mixing)) {
+            if(fabs(temp_admix) > fabs(max_mixing)) 
+               {
                max_mixing = temp_admix; 
                gauge_es = temp_gauge_es;
-            }
+               }
          } //end iteration over temp_mass_es
          
          //return string for closest gauge_es
@@ -714,16 +676,17 @@ namespace Gambit {
        
          p_int_string gauge_Lindex_type = 
             gauge_label_to_index_type[gauge_state_L];
-         int gauge_L_index = gauge_Lindex_type.first;
+         unsigned int gauge_L_index = gauge_Lindex_type.first;
          str type = gauge_Lindex_type.second;
-         int gauge_R_index = (gauge_label_to_index_type[gauge_state_R]).first;  
+         unsigned int gauge_R_index 
+            = (gauge_label_to_index_type[gauge_state_R]).first;  
          int mass_index = (mass_label_to_index_type[mass_es]).first;   
-         std::set<int> row_indices = type_to_set_of_row_indices[type];
-         
-         for(iter it = row_indices.begin(); it != row_indices.end(); ++it)
+         std::vector<str> gauge_es_strs = type_to_vec_of_gauge_es[type];
+         double row_length = gauge_es_strs.size(); 
+         for(std::vector<int>::size_type i = 1; i <= row_length; i++) 
             {
-               double temp = mssm->phys.get_Pole_Mixing(type, mass_index, *it); 
-               if(*it == gauge_L_index || *it == gauge_R_index) 
+               double temp = mssm->phys.get_Pole_Mixing(type, mass_index, i); 
+               if(i == gauge_L_index || i == gauge_R_index) 
                   gauge_composition.push_back(temp);
                else off_family_mixing.push_back(temp);
             }
@@ -787,31 +750,27 @@ namespace Gambit {
          pair_strings gauge_states = 
             type_family_to_gauge_states[gen_type];
          str gauge_es_L=gauge_states.first;
-         str gauge_es_R=gauge_states.second;
-         
-         
-         /// get index of right family states (ie gauge states with same family as
-         /// requested family state
+         str gauge_es_R=gauge_states.second;        
+         /// get index of right family states (ie gauge states with 
+         ///same family as requested family state
          p_int_string gauge_Lindex_type = 
             gauge_label_to_index_type[gauge_es_L];
-         int gauge_L_index = gauge_Lindex_type.first;
-         int gauge_R_index = (gauge_label_to_index_type[gauge_es_R]).first;
-         /// these should always match type - remove after testing
+         unsigned int gauge_L_index = gauge_Lindex_type.first;
+         unsigned int gauge_R_index 
+            = (gauge_label_to_index_type[gauge_es_R]).first;
+        
          str type_L = gauge_Lindex_type.second;
-         str type_R = gauge_Lindex_type.second;
-         
          int mass_index1 = (mass_label_to_index_type[mass_es1]).first;
          int mass_index2 = (mass_label_to_index_type[mass_es2]).first;
-         std::set<int> row_indices = type_to_set_of_row_indices[type];
-         //double row_length = row_indices.size();
          std::vector<double> mix_row_1;
          std::vector<double> mix_row_2;
-            
-         for(iter it = row_indices.begin(); it != row_indices.end(); ++it)
-            {
-               double temp1 = mssm->phys.get_Pole_Mixing(type, mass_index1, *it);
-               double temp2 = mssm->phys.get_Pole_Mixing(type, mass_index2, *it);
-               if(*it == gauge_L_index || *it == gauge_R_index) 
+         std::vector<str> gauge_es_strs = type_to_vec_of_gauge_es[type];
+         double row_length = gauge_es_strs.size(); 
+         for(std::vector<int>::size_type i = 1; i <= row_length; i++) 
+            {   
+               double temp1 = mssm->phys.get_Pole_Mixing(type, mass_index1, i);
+               double temp2 = mssm->phys.get_Pole_Mixing(type, mass_index2, i);
+               if(i == gauge_L_index || i == gauge_R_index) 
                   {
                      mix_row_1.push_back(temp1);
                      mix_row_2.push_back(temp2);
