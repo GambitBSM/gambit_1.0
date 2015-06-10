@@ -18,7 +18,9 @@
 ///  *********************************************
 
 #include <dlfcn.h>
-#include <link.h>
+#ifdef HAVE_LINK_H
+  #include <link.h>
+#endif
 
 #include "gambit/Elements/ini_functions.hpp"
 #include "gambit/Utils/equivalency_singleton.hpp"
@@ -26,7 +28,24 @@
 
 namespace Gambit
 {
-    
+
+  #ifndef HAVE_LINK_H
+    /// Imitation of linking map structure normally provided by system header
+    /// link.h, just given directly here to cover cases where that header seems to be 
+    /// missing. l_name is the only thing from this that we use; the code should
+    /// be robust against external redifinitions of this struct so long as the l_addr
+    /// and l_name members are not modified.
+    struct link_map
+    {
+      unsigned long	l_addr;		  /* address at which object is mapped */
+      char         *l_name;	    /* full name of loaded object */ 
+      void	       *l_ld;		    /* dynamic structure of object */
+      link_map     *l_next;	    /* next link object */
+      link_map	   *l_prev;	    /* previous link object */
+      char		     *l_refname;	/* filters reference name */
+    }; 
+  #endif
+
   /// Get back the "::" from things that use NS_SEP instead
   str fixns(str s)
   {
