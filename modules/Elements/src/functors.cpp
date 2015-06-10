@@ -1773,17 +1773,15 @@ namespace Gambit
       func_capability, result_type, origin_name, origin_version, safe_version, claw) {}
 
     
-/// Instantiate the module functor templates for all required types
-#define INSTANTIATE_MODULE_FUNCTOR_TEMPLATE(r,x,TYPE)  template class module_functor<TYPE>;
-BOOST_PP_SEQ_FOR_EACH(INSTANTIATE_MODULE_FUNCTOR_TEMPLATE,,PRINTABLE_TYPES)
-INSTANTIATE_MODULE_FUNCTOR_TEMPLATE(,,void)
-
-// Issues: backend reqs of module functions.
-
-// Instantiate the backend functor templates for all required types 
-#define INSTANTIATE_BACKEND_FUNCTOR_TEMPLATE(r,x,TYPE_PACK)      \
- template class backend_functor_common<STRIP_PARENS(TYPE_PACK)>; \
- template class backend_functor<STRIP_PARENS(TYPE_PACK)>; 
-BOOST_PP_SEQ_FOR_EACH(INSTANTIATE_BACKEND_FUNCTOR_TEMPLATE,,BACKEND_FUNCTOR_TYPES)
+  /// Instantiate the module functor templates for all required types
+  #define INSTANTIATE_MODULE_FUNCTOR_TEMPLATE(r,x,TYPE)  template class module_functor<TYPE>;
+  BOOST_PP_SEQ_FOR_EACH(INSTANTIATE_MODULE_FUNCTOR_TEMPLATE,,PRINTABLE_TYPES)
+  INSTANTIATE_MODULE_FUNCTOR_TEMPLATE(,,void)
+  
+  /// Instantiate the backend functor templates for all required types 
+  #define INSTANTIATE_BACKEND_FUNCTOR_TEMPLATE(r,x,TYPE_PACK)      \
+   template class backend_functor_common<STRIP_PARENS(TYPE_PACK)>; \
+   template class backend_functor<STRIP_PARENS(TYPE_PACK)>; 
+  BOOST_PP_SEQ_FOR_EACH(INSTANTIATE_BACKEND_FUNCTOR_TEMPLATE,,BACKEND_FUNCTOR_TYPES)
 
 }
