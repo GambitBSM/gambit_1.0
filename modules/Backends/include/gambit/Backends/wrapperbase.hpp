@@ -42,12 +42,13 @@ class WrapperBase
         }
 
         // Destructor
-        ~WrapperBase()
+        virtual ~WrapperBase()
         {
             if (not skip_delete)
             {
                 if (BEptr->can_delete_me())
                 {
+                    BEptr->can_delete_wrapper(false);
                     delete BEptr;
                 }
             }
