@@ -114,7 +114,7 @@ namespace Gambit
   }
 
   /// Override a backend's config file location
-  void Backends::backend_info::override_path(str be, str ver, str path)
+  void Backends::backend_info::override_path(str& be, str& ver, str path)
   {
     int l = str(GAMBIT_DIR).length();
     if (path.substr(0,l) == GAMBIT_DIR) path.replace(0, l, ".");

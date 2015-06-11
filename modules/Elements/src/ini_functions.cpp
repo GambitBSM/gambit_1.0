@@ -29,23 +29,6 @@
 namespace Gambit
 {
 
-  #ifndef HAVE_LINK_H
-    /// Imitation of linking map structure normally provided by system header
-    /// link.h, just given directly here to cover cases where that header seems to be 
-    /// missing. l_name is the only thing from this that we use; the code should
-    /// be robust against external redifinitions of this struct so long as the l_addr
-    /// and l_name members are not modified.
-    struct link_map
-    {
-      unsigned long	l_addr;		  /* address at which object is mapped */
-      char         *l_name;	    /* full name of loaded object */ 
-      void	       *l_ld;		    /* dynamic structure of object */
-      link_map     *l_next;	    /* next link object */
-      link_map	   *l_prev;	    /* previous link object */
-      char		     *l_refname;	/* filters reference name */
-    }; 
-  #endif
-
   /// Get back the "::" from things that use NS_SEP instead
   str fixns(str s)
   {
@@ -180,6 +163,7 @@ namespace Gambit
     return 0;
   }
      
+  /// Load a backend library
   int loadLibrary(str be, str ver, str sv, void*& pHandle, bool& present, bool with_BOSS)
   {
     try
@@ -201,30 +185,24 @@ namespace Gambit
       }
       else
       {       
-        link_map *map;
-        dlinfo(pHandle, RTLD_DI_LINKMAP, &map);
-        if (not map)
-        {
-          std::ostringstream err;
-          err << "Problem retrieving library path.  The sought lib is " << path << "." << endl
-              << "The path to this library has not been fully verified.";
-          backend_warning().raise(LOCAL_INFO,err.str());
-        }
-        else
-        {
-          char *fullname = realpath(map->l_name, NULL);
-          if (not fullname)
+        // If dlinfo is available, use it to verify the path of the backend that was just loaded.
+        #ifdef HAVE_LINK_H
+          link_map *map;
+          dlinfo(pHandle, RTLD_DI_LINKMAP, &map);
+          if (not map)
           {
             std::ostringstream err;
-            err << "Problem retrieving absolute library path.  The sought lib is " << map->l_name << "." << endl
-                << "The path to this library has not been fully determined.";
+            err << "Problem retrieving library path.  The sought lib is " << path << "." << endl
+                << "The path to this library has not been fully verified.";
             backend_warning().raise(LOCAL_INFO,err.str());
           }
           else
           {
-            Backends::backendInfo().override_path(be, ver, fullname);
+            attempt_backend_path_override(be, ver, map->l_name);
           }
-        }
+        #else
+          Backends::backendInfo().override_path(be, ver, "system lacks dlinfo(); path unverifiable");
+        #endif
         logger() << "Succeeded in loading " << Backends::backendInfo().corrected_path(be,ver) << std::endl 
                  << LogTags::backends << LogTags::info << EOM;
         present = true;
@@ -236,7 +214,24 @@ namespace Gambit
     catch (std::exception& e) { ini_catch(e); }
     return 0;
   }
-  
+
+  /// Try to resolve a pointer to a partial path to a shared library and use it to override the stored backend path.  
+  void attempt_backend_path_override(str& be, str& ver, const char* name)
+  {
+    char *fullname = realpath(name, NULL);
+    if (not fullname)
+    {
+      std::ostringstream err;
+      err << "Problem retrieving absolute library path for " << be << " v" << ver << "." << endl
+          << "The path to this library has not been fully determined.";
+      backend_warning().raise(LOCAL_INFO,err.str());
+    }
+    else
+    {
+      Backends::backendInfo().override_path(be, ver, fullname);
+    }
+  }
+
   /// Register a backend with the logging system
   int register_backend_with_log(str s) 
   {
