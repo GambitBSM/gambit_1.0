@@ -197,13 +197,6 @@ retrieve_bits(GAMBIT_BITS ${PROJECT_SOURCE_DIR} "${itch}" "Loud")
 # Include contributed packages
 include(cmake/contrib.cmake)
 
-# Generate the CMakeLists.txt files for GAMBIT modules
-message("${Yellow}-- Updating GAMBIT module and backend CMake files.${ColourReset}")
-set(update_cmakelists ${PROJECT_SOURCE_DIR}/cmake/update_cmakelists.py -x __not_a_real_name__,${itch_with_commas})
-execute_process(RESULT_VARIABLE result COMMAND python ${update_cmakelists} WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
-check_result(${result} ${update_cmakelists}) 
-message("${Yellow}-- Updating GAMBIT module cmake files - done.${ColourReset}")
-
 # Generate the backend_locations.yaml file if there isn't one
 if(NOT EXISTS "${PROJECT_SOURCE_DIR}/config/backend_locations.yaml")
   configure_file("${PROJECT_SOURCE_DIR}/config/backend_locations.yaml.example" "${PROJECT_SOURCE_DIR}/config/backend_locations.yaml" COPYONLY)
@@ -216,29 +209,56 @@ set(MODULE_HARVESTER ${PROJECT_SOURCE_DIR}/Elements/scripts/module_harvester.py)
 set(HARVEST_TOOLS ${PROJECT_SOURCE_DIR}/Utils/scripts/harvesting_tools.py)
 
 # Create all_functor_types.hpp, module_rollcall.hpp, module_types_rollcall.hpp, models_rollcall.hpp,
-# model_types_rollcall.hpp, backend_rollcall.hpp and backend_types_rollcall.hpp
+# model_types_rollcall.hpp, backend_rollcall.hpp, backend_types_rollcall.hpp and the various standalone_functors.cpp.
 file(GLOB MODEL_HARVESTER_FILES   "${PROJECT_SOURCE_DIR}/Models/include/gambit/Models/models/*.hpp")
 file(GLOB BACKEND_HARVESTER_FILES "${PROJECT_SOURCE_DIR}/Backends/include/gambit/Backends/frontends/*.hpp")
 file(GLOB MODULE_HARVESTER_FILES  "${PROJECT_SOURCE_DIR}/*Bit*/include/gambit/*Bit*/*_rollcall.hpp"
+                                  "${PROJECT_SOURCE_DIR}/*Bit*/include/gambit/*Bit*/*_types.hpp"
                                   "${PROJECT_SOURCE_DIR}/Backends/include/gambit/Backends/frontends/*.hpp")
 list(REMOVE_ITEM MODULE_HARVESTER_FILES "${PROJECT_SOURCE_DIR}/ScannerBit//include//gambit//ScannerBit//priors_rollcall.hpp"
                                         "${PROJECT_SOURCE_DIR}/ScannerBit//include//gambit//ScannerBit//test_function_rollcall.hpp")
+foreach(bit ${GAMBIT_BITS})
+  set(STANDALONE_FUNCTOR_CPPS "${PROJECT_SOURCE_DIR}/${bit}/examples/standalone_functors.cpp")
+endforeach()
 
 add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/Models/include/gambit/Models/model_rollcall.hpp
                    COMMAND python ${MODEL_HARVESTER} -x __not_a_real_name__,${itch_with_commas}
                    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
-                   DEPENDS ${MODEL_HARVESTER} ${HARVEST_TOOLS} ${MODEL_HARVESTER_FILES} ${PROJECT_BINARY_DIR}/CMakeCache.txt)
+                   DEPENDS ${MODEL_HARVESTER}
+                           ${HARVEST_TOOLS}
+                           ${MODEL_HARVESTER_FILES}
+                           ${PROJECT_BINARY_DIR}/CMakeCache.txt)
 add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/Backends/include/gambit/Backends/backend_rollcall.hpp
                    COMMAND python ${BACKEND_HARVESTER} -x __not_a_real_name__,${itch_with_commas}
                    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
-                   DEPENDS ${BACKEND_HARVESTER} ${HARVEST_TOOLS} ${BACKEND_HARVESTER_FILES} ${PROJECT_BINARY_DIR}/CMakeCache.txt)
-add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/Elements/include/gambit/Elements/all_functor_types.hpp ${PROJECT_SOURCE_DIR}/Core/include/gambit/Core/module_rollcall.hpp ${PROJECT_SOURCE_DIR}/Elements/include/gambit/Elements/module_types_rollcall.hpp
+                   DEPENDS ${BACKEND_HARVESTER}
+                           ${HARVEST_TOOLS}
+                           ${BACKEND_HARVESTER_FILES}
+                           ${PROJECT_BINARY_DIR}/CMakeCache.txt)
+add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/Elements/include/gambit/Elements/all_functor_types.hpp
+                          ${PROJECT_SOURCE_DIR}/Core/include/gambit/Core/module_rollcall.hpp
+                          ${PROJECT_SOURCE_DIR}/Elements/include/gambit/Elements/module_types_rollcall.hpp
+                          ${STANDALONE_FUNCTOR_CPPS}
                    COMMAND python ${MODULE_HARVESTER} -x __not_a_real_name__,${itch_with_commas}
                    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
-                   DEPENDS ${MODULE_HARVESTER} ${HARVEST_TOOLS} ${MODULE_HARVESTER_FILES} ${PROJECT_BINARY_DIR}/CMakeCache.txt)
+                   DEPENDS ${MODULE_HARVESTER}
+                           ${HARVEST_TOOLS}
+                           ${MODULE_HARVESTER_FILES}
+                           ${PROJECT_BINARY_DIR}/CMakeCache.txt)
 add_custom_target(model_harvest   DEPENDS ${PROJECT_SOURCE_DIR}/Models/include/gambit/Models/model_rollcall.hpp ${MODEL_HARVESTER_FILES})
 add_custom_target(backend_harvest DEPENDS ${PROJECT_SOURCE_DIR}/Backends/include/gambit/Backends/backend_rollcall.hpp ${BACKEND_HARVESTER_FILES})
-add_custom_target(module_harvest DEPENDS ${PROJECT_SOURCE_DIR}/Elements/include/gambit/Elements/all_functor_types.hpp ${PROJECT_SOURCE_DIR}/Core/include/gambit/Core/module_rollcall.hpp ${PROJECT_SOURCE_DIR}/Elements/include/gambit/Elements/module_types_rollcall.hpp ${MODULE_HARVESTER_FILES} backend_harvest)
+add_custom_target(module_harvest  DEPENDS ${PROJECT_SOURCE_DIR}/Elements/include/gambit/Elements/all_functor_types.hpp 
+                                          ${PROJECT_SOURCE_DIR}/Core/include/gambit/Core/module_rollcall.hpp 
+                                          ${PROJECT_SOURCE_DIR}/Elements/include/gambit/Elements/module_types_rollcall.hpp
+                                          ${MODULE_HARVESTER_FILES}
+                                          backend_harvest)
+
+# Generate the CMakeLists.txt files for GAMBIT modules
+message("${Yellow}-- Updating GAMBIT module and backend CMake files.${ColourReset}")
+set(update_cmakelists ${PROJECT_SOURCE_DIR}/cmake/update_cmakelists.py -x __not_a_real_name__,${itch_with_commas})
+execute_process(RESULT_VARIABLE result COMMAND python ${update_cmakelists} WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
+check_result(${result} ${update_cmakelists}) 
+message("${Yellow}-- Updating GAMBIT module cmake files - done.${ColourReset}")
 
 # Include other cmake scripts
 include(cmake/warnings.cmake)

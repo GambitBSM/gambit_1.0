@@ -31,13 +31,15 @@ foreach(bit ${GAMBIT_BITS})
     set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/${bit}/CMakeLists.txt")
   endif()
 endforeach()
+set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Backends/CMakeLists.txt")
 
-# Arrange for removal of all_functor_types.hpp and other generated headers upon "make clean".
+# Arrange for removal of all_functor_types.hpp and other generated headers and source files upon "make clean".
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Backends/include/gambit/Backends/backend_rollcall.hpp")
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Models/include/gambit/Models/model_rollcall.hpp")
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Utils/include/gambit/Utils/all_functor_types.hpp")
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Core/include/gambit/Core/module_rollcall.hpp")
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/cmake/include/gambit/cmake/cmake_variables.hpp")
+set(clean_files ${clean_files} "${STANDALONE_FUNCTOR_CPPS}")
 
 # Add all the clean files
 set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${clean_files}")
