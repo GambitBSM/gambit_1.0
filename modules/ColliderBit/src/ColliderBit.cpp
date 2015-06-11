@@ -110,6 +110,7 @@ namespace Gambit {
       using namespace Pipes::getPythia;
 
       if (*Loop::iteration == START_SUBPROCESS) {
+        /// TODO Surely, I must call result.clear()?
         /// Each thread gets its own Pythia instance.
         /// Thus, the initialization is *after* INIT, within omp parallel.
         std::vector<std::string> pythiaOptions;
