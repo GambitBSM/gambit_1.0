@@ -1,1 +1,16 @@
+*~
+*.mod
+*.bak
 spartan_personal.yaml
+CMakeFiles
+CMakeLists.txt
+Makefile
+*.cmake
+*_rollcall.hpp
+scratch/**
+**/*_standalone
+*-prefix
+**/all_functor_types.hpp
+**/cmake_variables.hpp
+**/*_locations.yaml
+
