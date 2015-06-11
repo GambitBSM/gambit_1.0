@@ -8,17 +8,6 @@
 #include "gambit/ColliderBit/Py8Utils.hpp"
 #include "gambit/ColliderBit/ColliderBit_macros.hpp"
 
-#include "TROOT.h"
-#include "TTask.h"
-#include "TApplication.h"
-#include "TObjArray.h"
-#include "TDatabasePDG.h"
-#include "TParticlePDG.h"
-#include "TLorentzVector.h"
-#include "modules/Delphes.h"
-#include "classes/DelphesClasses.h"
-#include "classes/DelphesFactory.h"
-#include "ExRootAnalysis/ExRootConfReader.h"
 #include "HEPUtils/Event.h"
 #include "HEPUtils/Particle.h"
 #include "HEPUtils/Jet.h"
@@ -30,93 +19,35 @@ namespace Gambit {
 
     /// @note Abstract base class BaseDetector
     template <typename EventIn, typename EventOut>
-    class BaseDetector {
-    public:
-
-      typedef EventIn EventInType;
-      typedef EventOut EventOutType;
-      BaseDetector() {}
-      virtual ~BaseDetector() {}
-
-      /// @name Initialization functions
+    struct BaseDetector {
+      /// @name Member variables
       //@{
-      /// @brief Default settings for each sub-class.
-      virtual void defaults() = 0;
-      /// @brief Settings parsing and initialization for each sub-class.
-      virtual void init(const std::vector<std::string>& settings) = 0;
+        typedef EventIn EventInType;
+        typedef EventOut EventOutType;
       //@}
 
-      /// @name Event detection simulation. Pure virtual; must override.
+      /// @name Construction, Destruction, and Recycling
       //@{
-      virtual void processEvent(const EventIn&, EventOut&) = 0;
+        BaseDetector() {}
+        virtual ~BaseDetector() {}
+        /// @brief Reset this instance for reuse, avoiding the need for "new" or "delete".
+        virtual void clear() { }
       //@}
 
-    };
-
-
-    /// @note Abstract base class BuckFastBase
-    class BuckFastBase : public BaseDetector<HEPUtils::Event, HEPUtils::Event> {
-    public:
-
-      /// @name Initialization functions
+      /// @name Event detection simulation
       //@{
-      virtual void defaults() {}
-      virtual void init(const std::vector<std::string>&) {} // arg is a list of "settings"
-      virtual void init() {}
+        virtual void processEvent(const EventIn&, EventOut&) const = 0;
       //@}
 
-      /// @name Event detection simulation.
+      /// @name (Re-)Initialization functions
       //@{
-      virtual void processEvent(const HEPUtils::Event&, HEPUtils::Event&) = 0; //< @note Pure virtual.
-      //@}
-    };
-
-
-    /// @note Abstract base class Delphes_ToHEPUtilsBase
-    class DelphesBase : public BaseDetector<Pythia8::Event, HEPUtils::Event> {
-    protected:
-      /// @name Class variables
-      //@{
-      // Modularity of Delphes is set by Config File.
-      /// @note: init of modularDelphes left to subclasses.
-      Delphes *modularDelphes;
-      //@}
-
-    public:
-
-      /// @todo Move lots of this into the .cpp files
-      ///   -- it shouldn't be in the interface/base-class definitions.
-
-      /// @name Initialization functions
-      //@{
-      virtual void defaults() {}
-      virtual void init(const std::vector<std::string>&) = 0; //< @note Pure virtual.
-      //@}
-
-      /// @name Event detection simulation.
-      //@{
-      virtual void convertInput(const Pythia8::Event&) = 0; //< @note Pure virtual.
-      virtual void convertOutput(HEPUtils::Event&) = 0; //< @note Pure virtual.
-      virtual void processEvent(const Pythia8::Event& eventIn, HEPUtils::Event& eventOut)  {
-        try {
-          modularDelphes->Clear();
-          convertInput(eventIn);
-          modularDelphes->ProcessTask();
-          convertOutput(eventOut);
-        } catch(std::runtime_error &e) {
-          std::cerr << "** ERROR: " << e.what() << endl;
-          exit(EXIT_FAILURE);
-        }
-      }
+        /// @brief Settings parsing and initialization for each sub-class.
+        virtual void init(const std::vector<std::string>& settings) { };
+        /// @brief General init for any collider of this type - no settings version.
+        virtual void init() { };
       //@}
 
     };
-
-
-    /// @TODO subclass further to configure different detector configurations?
-    ///       Or just continue to use Delphes configuration file?
-    DelphesBase* mkDelphes(const std::string&, const std::vector<std::string>&);
-    BuckFastBase* mkBuckFast(const std::string&);
 
 
   }

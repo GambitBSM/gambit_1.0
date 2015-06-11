@@ -3,6 +3,7 @@
 
 #include <string>
 #include "wrapper_ParticleData_decl.h"
+#include "wrapper_DecayChannel_decl.h"
 #include "wrapper_Info_decl.h"
 #include "wrapper_Settings_decl.h"
 #include "wrapper_Couplings_decl.h"
@@ -461,6 +462,16 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             return wrapperbase::BEptr->sizeChannels();
         }
         
+        inline Pythia8::DecayChannel& ParticleDataEntry::channel(int i)
+        {
+            return wrapperbase::reference_returner< Pythia8::DecayChannel, Pythia8::Abstract_DecayChannel >( wrapperbase::BEptr->channel__BOSS(i) );
+        }
+        
+        inline const Pythia8::DecayChannel& ParticleDataEntry::channel(int i) const
+        {
+            return wrapperbase::reference_returner< Pythia8::DecayChannel, Pythia8::Abstract_DecayChannel >( const_cast<Pythia8::Abstract_DecayChannel*>(wrapperbase::BEptr->channel__BOSS(i)) );
+        }
+        
         inline void ParticleDataEntry::rescaleBR(double newSumBR)
         {
             wrapperbase::BEptr->rescaleBR(newSumBR);
@@ -484,6 +495,11 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         inline bool ParticleDataEntry::preparePick(int idSgn)
         {
             return wrapperbase::BEptr->preparePick__BOSS(idSgn);
+        }
+        
+        inline Pythia8::DecayChannel& ParticleDataEntry::pickChannel()
+        {
+            return wrapperbase::reference_returner< Pythia8::DecayChannel, Pythia8::Abstract_DecayChannel >( wrapperbase::BEptr->pickChannel__BOSS() );
         }
         
         inline void ParticleDataEntry::resInit(WrapperBase< Pythia8::Abstract_Info >* infoPtrIn, WrapperBase< Pythia8::Abstract_Settings >* settingsPtrIn, WrapperBase< Pythia8::Abstract_ParticleData >* particleDataPtrIn, WrapperBase< Pythia8::Abstract_Couplings >* couplingsPtrIn)
