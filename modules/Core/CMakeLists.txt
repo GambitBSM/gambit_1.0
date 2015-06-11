@@ -24,6 +24,7 @@ set(source_files src/container_factory.cpp
                  src/core_singleton.cpp
                  src/depresolver.cpp
                  src/error_handlers.cpp
+                 src/functors.cpp
                  src/gambit_core.cpp
                  src/ini_functions.cpp
                  src/likelihood_container.cpp

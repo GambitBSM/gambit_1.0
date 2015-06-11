@@ -14,19 +14,19 @@
 #
 #************************************************
 
-set(source_files src/functors.cpp
-                 src/decay_table.cpp
+set(source_files src/decay_table.cpp
                  src/ini_functions.cpp
                  src/SMInputs.cpp
                  src/Spectrum.cpp
                  src/terminator.cpp
-		 src/MSSM_slhahelp.cpp
+                 src/MSSM_slhahelp.cpp
                  src/virtual_higgs.cpp
 )
 
 set(header_files include/gambit/Elements/base_functions.hpp
                  include/gambit/Elements/decay_table.hpp
                  include/gambit/Elements/functors.hpp
+                 include/gambit/Elements/functor_definitions.hpp
                  include/gambit/Elements/funktions.hpp
                  include/gambit/Elements/gambit_module_headers.hpp
                  include/gambit/Elements/ini_code_struct.hpp
@@ -42,7 +42,7 @@ set(header_files include/gambit/Elements/base_functions.hpp
                  include/gambit/Elements/SubSpectrum.hpp
                  include/gambit/Elements/terminator.hpp
                  include/gambit/Elements/types_rollcall.hpp
-		 include/gambit/Elements/MSSM_slhahelp.hpp
+                 include/gambit/Elements/MSSM_slhahelp.hpp
                  include/gambit/Elements/virtual_higgs.hpp
 )
 

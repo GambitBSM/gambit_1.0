@@ -145,9 +145,11 @@ def main(argv):
     find_and_harvest_headers(rollcall_headers,full_rollcall_headers,exclude_header,verbose=verbose)
     if verbose: print "  Searching type headers..."
     find_and_harvest_headers(type_headers,full_type_headers,exclude_header,verbose=verbose)
-     
+
     # Search through rollcall headers and look for macro calls that create module_functors or safe pointers to them 
     types=set(["ModelParameters", "double", "float", "std::vector<double>", "std::vector<float>"]) #Manually add these, as they must always be included.
+    non_module_types=set([])
+    returned_types = { "all" : types, "non_module" : non_module_types }
     for header in full_rollcall_headers:
         with open(header) as f:
             if verbose: print "  Scanning header {0} for types used to instantiate module functor class templates".format(header)
@@ -159,14 +161,23 @@ def main(argv):
                 # If this line defines the module name, update it.
                 module = update_module(continued_line,module)
                 # Check for calls to module functor creation macros, and harvest the types used.
-                addiffunctormacro(continued_line,module,types,full_type_headers,intrinsic_types,exclude_types,equiv_classes,verbose=verbose)
+                addiffunctormacro(continued_line,module,returned_types,full_type_headers,module_type_headers,intrinsic_types,exclude_types,equiv_classes,verbose=verbose)
                 continued_line = ""
         
-    print "Found types for module funtions:"
+    print "Found types for module functions:"
     for t in types:
         print ' ',t
+
+    print "Found non-module types: "
+    for t in returned_types["non_module"]:
+        print ' ',t
+
+    print "DarkBit types: "
+    for t in returned_types["DarkBit"]:
+        print ' ',t
+
     
-    # Search through rollcall and frontend headers and look for macro calls that create module_functors, backend_functors or safe pointers to them 
+    # Search through rollcall and frontend headers and look for macro calls that create backend_functors or safe pointers to them 
     be_types=set()
     type_packs=set() 
     for header in full_rollcall_headers:
