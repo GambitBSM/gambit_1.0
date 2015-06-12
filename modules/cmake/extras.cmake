@@ -34,6 +34,9 @@
 
 include(ExternalProject)
 
+
+########### Utility commands #################
+
 # Define the sed command to use differently for OSX and linux
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   set(dashi "-i ''")
@@ -44,6 +47,38 @@ endif()
 # Define the newline strings to use for OSX-safe substitution.
 set(nl "___totally_unlikely_to_occur_naturally___")
 set(true_nl \"\\n\")
+
+# Define the module location switch differently depending on compiler
+if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel")
+  set(FMODULE "module")
+elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
+  set(FMODULE "J")
+endif()
+
+
+########### Scanners #########################
+
+# Diver
+set(diver_ver "1\\.0\\.0")
+set(diver_lib "libdiver")
+set(diver_dir "${PROJECT_SOURCE_DIR}/../extras/Diver")
+set(diver_short_dir "./../extras/Diver")
+set(diverFFLAGS "${CMAKE_Fortran_FLAGS}")
+ExternalProject_Add(diver
+  #URL 
+  #URL_MD5 
+  #DOWNLOAD_DIR ${diver_dir}
+  SOURCE_DIR ${diver_dir}
+  BUILD_IN_SOURCE 1
+  CONFIGURE_COMMAND ""
+  BUILD_COMMAND make ${diver_lib}.so DIVER_FF=${CMAKE_Fortran_COMPILER} DIVER_MODULE=${FMODULE} DIVER_FOPT=${diverFFLAGS} 
+  INSTALL_COMMAND ""
+)
+set_property(TARGET diver PROPERTY _EP_DOWNLOAD_ALWAYS 0)
+set(clean_files ${clean_files} "${diver_dir}/lib/${diver_lib}.so")
+
+
+########### Backends #########################
 
 # DarkSUSY
 set(remove_files_from_libdarksusy dssetdsinstall.o dssetdsversion.o ddilog.o drkstp.o eisrs1.o tql2.o tred2.o)
@@ -152,23 +187,22 @@ ExternalProject_Add(fastsim
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../extras/fast_sim/lib/libfastsim.so" "${PROJECT_SOURCE_DIR}/Backends/lib/libfastsim.so")
 
 # Nulike
-if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel")
-  set(FMODULE "module")
-elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
-  set(FMODULE "J")
-endif()
 set(nulike_ver "1\\.0\\.0")
 set(nulike_lib "libnulike")
 set(nulike_dir "${PROJECT_SOURCE_DIR}/../extras/nulike")
 set(nulike_short_dir "./../extras/nulike")
 set(nulikeFFLAGS "${CMAKE_Fortran_FLAGS} -I${nulike_dir}/include")
 ExternalProject_Add(nulike
+  #URL 
+  #URL_MD5 
+  #DOWNLOAD_DIR ${nulike_dir}
   SOURCE_DIR ${nulike_dir}
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND ""
   BUILD_COMMAND make ${nulike_lib}.so FC=${CMAKE_Fortran_COMPILER} FFLAGS=${nulikeFFLAGS} MODULE=${FMODULE} 
   INSTALL_COMMAND sed ${dashi} "s#${nulike_ver}:.*${nulike_lib}\\.so#${nulike_ver}:       ${nulike_short_dir}/lib/${nulike_lib}.so#g" ${PROJECT_SOURCE_DIR}/config/backend_locations.yaml
 )
+set_property(TARGET nulike PROPERTY _EP_DOWNLOAD_ALWAYS 0)
 set(clean_files ${clean_files} "${nulike_dir}/lib/${nulike_lib}.so")
 
 # SUSY-HIT
@@ -289,7 +323,7 @@ set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../extras/HiggsSignals/Hig
 
 
 set_target_properties(ddcalc gamlike darksusy micromegas superiso nulike pythia fastsim  
-                      higgssignals higgsbounds higgsbounds_tables feynhiggs susyhit PROPERTIES EXCLUDE_FROM_ALL 1)
+                      higgssignals higgsbounds higgsbounds_tables feynhiggs susyhit diver PROPERTIES EXCLUDE_FROM_ALL 1)
 
 add_custom_target(backends COMMAND make gamlike nulike ddcalc pythia darksusy superiso susyhit) #fastsim micromegas
 

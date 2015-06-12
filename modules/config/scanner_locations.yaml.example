@@ -18,3 +18,7 @@ MultiNest:
 square_grid:
   1.0.0:              
     - lib: ./ScannerBit/lib/doesntexist.so, /home/you/dunnaexisteither.so
+
+Diver:
+  1.0.0:
+    - lib: ../extras/Diver/lib/libdiver.so
