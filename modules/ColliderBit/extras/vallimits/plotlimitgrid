@@ -176,7 +176,8 @@ print "95%% contour DLL = %g" % contour_dlls[0]
 c = plt.contour(xx, yy, limit_dlls.T, contour_dlls, colors="white", linestyles="--") #, linewidths=["2"])
 plt.clabel(c, fmt="95%%", fontsize="smaller")
 
-## Write dLL text values on plot
+## Write SR values on plot
+ax.text(0.95, 0.95, "SR IDs", color="white", ha="right", va="top", transform=ax.transAxes)
 for i, mx in enumerate(mx_range):
     for j, my in enumerate(my_range):
         if True: #i % 2 == 0 and j % 2 == 0:
@@ -190,7 +191,7 @@ ax.set_ylabel(MY_LABEL, y=0.95, va="top", labelpad=16)
 
 # fig.tight_layout()
 if opts.SAVE:
-    fig.savefig("atlas0lep-%s-obsdll.pdf" % PROC)
+    fig.savefig("atlas0lep-%s-limit.pdf" % PROC)
 else:
     plt.show()
 
@@ -200,6 +201,7 @@ def plot_dlls(arr):
     plt.hold(True)
     plt.contourf(xx, yy, np.nan_to_num(np.log1p(arr.T)), range(0,9))
     plt.colorbar()
+    plt.text(0.95, 0.95, "$\\Delta{LL}$s", color="white", ha="right", va="top", transform=plt.gca().transAxes)
     for i, mx in enumerate(mx_range):
         for j, my in enumerate(my_range):
             dll = arr[i,j]
