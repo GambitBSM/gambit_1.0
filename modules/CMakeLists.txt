@@ -218,7 +218,9 @@ file(GLOB MODULE_HARVESTER_FILES  "${PROJECT_SOURCE_DIR}/*Bit*/include/gambit/*B
 list(REMOVE_ITEM MODULE_HARVESTER_FILES "${PROJECT_SOURCE_DIR}/ScannerBit//include//gambit//ScannerBit//priors_rollcall.hpp"
                                         "${PROJECT_SOURCE_DIR}/ScannerBit//include//gambit//ScannerBit//test_function_rollcall.hpp")
 foreach(bit ${GAMBIT_BITS})
-  set(STANDALONE_FUNCTOR_CPPS "${PROJECT_SOURCE_DIR}/${bit}/examples/standalone_functors.cpp")
+  if(NOT ScannerBit STREQUAL ${bit})
+    set(STANDALONE_FUNCTOR_CPPS ${STANDALONE_FUNCTOR_CPPS} "${PROJECT_SOURCE_DIR}/${bit}/examples/standalone_functors.cpp")
+  endif()
 endforeach()
 
 add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/Models/include/gambit/Models/model_rollcall.hpp
