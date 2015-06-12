@@ -127,7 +127,7 @@ namespace Gambit {
             pythiaOptions = runOptions->getValue<std::vector<std::string>>(*iter, pythiaConfigName);
         }
         pythiaOptions.push_back("SLHA:file = " + slhaFilename);
-        pythiaOptions.push_back("Random:seed = " + std::to_string(12345 + omp_get_thread_num()));
+        pythiaOptions.push_back("Random:seed = " + std::to_string(54321 + omp_get_thread_num()));
 // Pat: merge conflict resolved here by accepting from ColliderBit_development.  Abram please check. <<<<<<< HEAD
 //=======
 

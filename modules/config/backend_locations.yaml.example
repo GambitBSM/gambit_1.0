@@ -42,15 +42,7 @@ LibFortran:
 
 Pythia:
   8.186:       ./Backends/lib/libpythia8.so
-
-SuperIso:
-  3.4:         ./Backends/lib/libsuperiso.so
-
-gamLike:
-  1.0.0:       ./Backends/lib/libgamLike.so
-
-micromegas:
-  3.5.5:         ./Backends/lib/libmicromegas.so
+  8.209:       ./Backends/lib/libpythia8.so
 
 nulike:
   1.0.0:       ./../extras/nulike/libnulike.so

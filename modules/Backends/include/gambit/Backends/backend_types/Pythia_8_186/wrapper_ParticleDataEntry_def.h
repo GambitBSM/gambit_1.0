@@ -2,6 +2,7 @@
 #define __wrapper_ParticleDataEntry_def_Pythia_8_186_h__
 
 #include <string>
+#include "wrapper_ResonanceWidths_decl.h"
 #include "wrapper_ParticleData_decl.h"
 #include "wrapper_DecayChannel_decl.h"
 #include "wrapper_Info_decl.h"
@@ -500,6 +501,16 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         inline Pythia8::DecayChannel& ParticleDataEntry::pickChannel()
         {
             return wrapperbase::reference_returner< Pythia8::DecayChannel, Pythia8::Abstract_DecayChannel >( wrapperbase::BEptr->pickChannel__BOSS() );
+        }
+        
+        inline void ParticleDataEntry::setResonancePtr(WrapperBase< Pythia8::Abstract_ResonanceWidths >* resonancePtrIn)
+        {
+            wrapperbase::BEptr->setResonancePtr__BOSS((*resonancePtrIn).BEptr);
+        }
+        
+        inline Pythia8::ResonanceWidths* ParticleDataEntry::getResonancePtr()
+        {
+            return wrapperbase::pointer_returner< Pythia8::ResonanceWidths, Pythia8::Abstract_ResonanceWidths >( wrapperbase::BEptr->getResonancePtr__BOSS() );
         }
         
         inline void ParticleDataEntry::resInit(WrapperBase< Pythia8::Abstract_Info >* infoPtrIn, WrapperBase< Pythia8::Abstract_Settings >* settingsPtrIn, WrapperBase< Pythia8::Abstract_ParticleData >* particleDataPtrIn, WrapperBase< Pythia8::Abstract_Couplings >* couplingsPtrIn)
