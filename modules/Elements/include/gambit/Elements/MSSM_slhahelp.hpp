@@ -59,7 +59,8 @@ namespace slhahelp {
                              const SubSpectrum* mssm);
 
    /// as above but do test against tol internally as Pat prefers
-   str mass_es_from_gauge_es(str gauge_es, const SubSpectrum* mssm, double tol);
+   str mass_es_from_gauge_es(str gauge_es, const SubSpectrum* mssm, double tol,
+                             str context);
 
    /// mirrors of mass_es_from_gauge_es routines
    str gauge_es_from_mass_es(str mass_es, double & max_mixing,
@@ -72,9 +73,9 @@ namespace slhahelp {
    str gauge_es_from_mass_es(str mass_es,
                              std::vector<double> & mass_composition, 
                              const SubSpectrum* mssm); 
-   
-   str gauge_es_from_mass_es(str mass_es, const SubSpectrum* mssm);
 
+   str gauge_es_from_mass_es(str mass_es, const SubSpectrum* mssm,
+                             double tol, str context);
 
    /******************* family state <-> mass_es, gauge_es  helpers ***********/
    
@@ -82,8 +83,8 @@ namespace slhahelp {
    /// ~t_2 etc as these are neither gauge_es nor mass_es
    /// If defined as the states you get from diagonalising a 2by2 
    /// mass (sub)matrix then extensive manipulations would be required
-   /// Here we defone the family states to be the mass eigenstates made up 
-   /// predominatly of gauge states from the appropriate family, so ~t_1 is the
+   /// Here we define the family states to be the mass eigenstates made up 
+   /// predominantly of gauge states from the appropriate family, so ~t_1 is the
    /// lightest of the two mass_es which are made up predominatly of third 
    /// family squarks.
    /// This is moore useful for our purposes
@@ -112,6 +113,11 @@ namespace slhahelp {
                                  double & sqr_sum_mix,
                                  const SubSpectrum* mssm);
 
+   /// identifies the mass_es that is closest match to specified family
+   /// does tol-test internally to check correctness of assumptions
+   str mass_es_closest_to_family(str familystate, const SubSpectrum* mssm,
+                                 double tol, str context);
+
    /// returns family state that best matches the given mass_es
    /// fills a double with the sum of the square mixings to gauge_es
    /// of the matching family
@@ -130,7 +136,8 @@ namespace slhahelp {
                                        std::vector<double> & mass_comp,
                                        const SubSpectrum* mssm);   
       
-   
+    str family_state_closest_to_mass_es(str mass_es, const SubSpectrum* mssm,
+                                        double tol, str context);
    /// identifies the two mass_es which best matches specified family state
    /// storing them in strings and then returns 
    /// the 2by2 mixing matrix for that family state in the form

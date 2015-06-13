@@ -74,7 +74,31 @@ namespace Gambit
               "This point violates the assumption that certain sfermion states have no family mixing  by a degree larger than tol made in a DecayBit routine.");
            invalid_point().raise("This point violates the assumption that certain sfermion states have no family mixing  by a degree larger than tol made in a DecayBit routine.");
 }  
-        return;
+
+          std::cout << "******** Extra tests ********* " << std::endl;
+          std::cout << "gauge_es = " << gauge_es << std::endl;
+          std::cout << "mass_es = " << mass_es << std::endl;
+          double max_mix_r = 0.0;
+          std::string g_es = slhahelp::gauge_es_from_mass_es(mass_es, 
+                                                              max_mix_r, mssm);
+          std::cout << "g_es = " << g_es << std::endl;
+          std::cout << "max_mix = "  << max_mix<< std::endl;
+          std::cout << "max_mix_r = "  << max_mix_r << std::endl;
+          if(g_es != gauge_es) std::cout << "g_s error! " << std::endl;
+          if(max_mix_r != max_mix) std::cout << "g_s max_mix_r error! " 
+                                            << std::endl;
+          
+          std::string ges = slhahelp::gauge_es_from_mass_es(mass_es, mssm, 
+                                                             1e-3, LOCAL_INFO);
+          std::cout << "ges = "  << ges << std::endl;
+          if(ges != gauge_es) std::cout << "ges error! " << std::endl;
+          std::string mes = slhahelp::mass_es_from_gauge_es(gauge_es, mssm, 
+                                                             1e-3, LOCAL_INFO);
+          std::cout << "mes = "  << ges << std::endl;
+          if(mes != mass_es) std::cout << "mes error! " << std::endl;
+
+
+       return;
      }
 
      void fill_mass_es_psn_family(std::string & is, std::string & isbar,  
@@ -112,8 +136,9 @@ namespace Gambit
               "This point violates the assumption that certain sfermion states have no family mixing  by a degree larger than tol made in a DecayBit routine.");
            invalid_point().raise("This point violates the assumption that certain sfermion states have no family mixing  by a degree larger than tol made in a DecayBit routine.");
         }
+        
 
-        std::cout << "******** Extra test ********* " << std::endl;
+        std::cout << "******** Extra tests ********* " << std::endl;
         std::cout << "family_state = "  << family_state <<std::endl;
         std::cout << "mass_es obtained from family_state = "  << mass_es 
                   << std::endl;
@@ -122,7 +147,18 @@ namespace Gambit
                                                            mssm);
         std::cout << "fs obtained from mass_es = " << fs << std::endl;
         std::cout << "sum_sq_mix = " << sum_sq_mix << std::endl;
-        std::cout << "mix_mag_sq = " << mix_mag_sq << std::endl;                        if(fs != family_state)     std::cout << "holy fuck = " << std::endl;                               
+        std::cout << "mix_mag_sq = " << mix_mag_sq << std::endl; 
+        if(fs != family_state) std::cout << "fs error! = " << std::endl;
+        str f_s = slhahelp::family_state_closest_to_mass_es(mass_es, mssm,
+                                                            1e-3, LOCAL_INFO);
+        std::cout << "f_s obtained from mass_es = " << f_s << std::endl;
+        if(f_s != family_state) std::cout << "f_s error! = " << std::endl;
+
+        str m_es = slhahelp::mass_es_closest_to_family(family_state, mssm, tol, 
+                                                       LOCAL_INFO);
+        std::cout << "m_es = "  << m_es << std::endl;
+        if(m_es != mass_es) std::cout << "m_es error! = " << std::endl;
+                  
         return;
  }
        

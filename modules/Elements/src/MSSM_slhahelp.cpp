@@ -484,14 +484,15 @@ namespace Gambit {
 
       /// as above but do test against tol internally
       str mass_es_from_gauge_es(str gauge_es, const SubSpectrum* mssm, 
-                                double tol)
+                                double tol, str context)
       {
          double max_mixing = 0;
          std::vector<double> gauge_composition;
          str mass_es = mass_es_from_gauge_es(gauge_es, max_mixing, 
                                              gauge_composition, mssm);
-          if((max_mixing*max_mixing) <= 1-tol){
-            utils_error().raise(LOCAL_INFO, "mass_es from gauge requested when mxing away from closets gauge_es is greater than tol"); 
+         str full_context = LOCAL_INFO + " called from " + context;
+         if((max_mixing*max_mixing) <= 1-tol){
+            utils_error().raise(full_context, "mass_es from gauge requested when mxing away from closest gauge_es is greater than tol"); 
           }
          return mass_es; 
       }
@@ -572,16 +573,18 @@ namespace Gambit {
          return gauge_es; 
       }
 
+
       /// as above but do test against tol internally
       str gauge_es_from_mass_es(str mass_es, const SubSpectrum* mssm, 
-                                double tol)
+                                double tol, str context)
       {
          double max_mixing;
          std::vector<double> mass_composition;
          str gauge_es = gauge_es_from_mass_es(mass_es, max_mixing, 
                                               mass_composition, mssm);
+         str full_context = LOCAL_INFO + " called from " + context;
          if((max_mixing*max_mixing) <= 1-tol){
-            utils_error().raise(LOCAL_INFO, "gauge_es from mass_es requested when mxing away from closest mass_es is greater than tol"); 
+            utils_error().raise(full_context, "gauge_es from mass_es requested when mxing away from closest mass_es is greater than tol"); 
          }
          return gauge_es; 
       }
@@ -745,6 +748,28 @@ namespace Gambit {
 
       }
 
+      /// identifies the mass_es that is closest match to specified family
+      /// does tol-test internally to check correctness of assumptions
+      str mass_es_closest_to_family(str familystate, const SubSpectrum* mssm,
+                                    double tol, str context)
+      {   
+         std::vector<double> off_family_mixing;
+         std::vector<double>  gauge_composition;
+         str mass_es = mass_es_closest_to_family(familystate, gauge_composition,
+                                                 off_family_mixing, mssm);
+         double sqr_sum_mix = gauge_composition[0] * gauge_composition[0];
+         sqr_sum_mix += gauge_composition[1] * gauge_composition[1];
+         str full_context = LOCAL_INFO + " called from " + context;
+         if(sqr_sum_mix <= 1-tol){
+            utils_error().raise(full_context, " mass_es_closest_to_family requested when family mixing away from closest mass_es is greater than tol"); 
+         }
+
+         return mass_es;
+
+      }
+
+
+
       /// identifies the two mass_es which best matches specified family state
       /// storing them in strings and then returns 
       /// the 2by2 mixing matrix for that family state in the form
@@ -899,6 +924,27 @@ namespace Gambit {
           return fs;
        }
       
+      /// wrapper for overloaded version
+      /// returns family state that best matches the given mass_es
+      /// and fills the mixing of the matching mass_es into gauge eigenstates 
+      str family_state_closest_to_mass_es(str mass_es, const SubSpectrum* mssm,
+                                          double tol, str context)
+       {
+          double max_mix;
+          std::vector<double> mass_comp;
+          str fs = family_state_closest_to_mass_es(mass_es, max_mix, mass_comp,
+                                                   mssm);
+          str full_context = LOCAL_INFO + " called from " + context;
+          if(max_mix*max_mix <= 1-tol){
+             utils_error().raise(full_context, "family_state_closest_to_mass_es  called when family mixing away from closest mass_es is greater than tol"); 
+          }
+          return fs;
+       }
+
+      
+      
+       
+
       
    }  // namespace slhahelp
 } //namespace gambit
