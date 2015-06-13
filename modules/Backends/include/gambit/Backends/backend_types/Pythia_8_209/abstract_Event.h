@@ -32,18 +32,18 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         class Abstract_Event : virtual public AbstractBase
         {
             private:
-                // IGNORED: Variable  -- Name: IPERLINE  -- XML id: _27961
-                // IGNORED: Field  -- Name: startColTag  -- XML id: _27962
-                // IGNORED: Field  -- Name: entry  -- XML id: _27963
-                // IGNORED: Field  -- Name: junction  -- XML id: _27964
-                // IGNORED: Field  -- Name: maxColTag  -- XML id: _27965
-                // IGNORED: Field  -- Name: savedSize  -- XML id: _27966
-                // IGNORED: Field  -- Name: savedJunctionSize  -- XML id: _27967
-                // IGNORED: Field  -- Name: savedPartonLevelSize  -- XML id: _27968
-                // IGNORED: Field  -- Name: scaleSave  -- XML id: _27969
-                // IGNORED: Field  -- Name: scaleSecondSave  -- XML id: _27970
-                // IGNORED: Field  -- Name: headerList  -- XML id: _27971
-                // IGNORED: Field  -- Name: particleDataPtr  -- XML id: _27972
+                // IGNORED: Variable  -- Name: IPERLINE  -- XML id: _29368
+                // IGNORED: Field  -- Name: startColTag  -- XML id: _29369
+                // IGNORED: Field  -- Name: entry  -- XML id: _29370
+                // IGNORED: Field  -- Name: junction  -- XML id: _29371
+                // IGNORED: Field  -- Name: maxColTag  -- XML id: _29372
+                // IGNORED: Field  -- Name: savedSize  -- XML id: _29373
+                // IGNORED: Field  -- Name: savedJunctionSize  -- XML id: _29374
+                // IGNORED: Field  -- Name: savedPartonLevelSize  -- XML id: _29375
+                // IGNORED: Field  -- Name: scaleSave  -- XML id: _29376
+                // IGNORED: Field  -- Name: scaleSecondSave  -- XML id: _29377
+                // IGNORED: Field  -- Name: headerList  -- XML id: _29378
+                // IGNORED: Field  -- Name: particleDataPtr  -- XML id: _29379
             public:
     
                 virtual Pythia8::Abstract_Event* operator_equal__BOSS(const Pythia8::Abstract_Event&) =0;

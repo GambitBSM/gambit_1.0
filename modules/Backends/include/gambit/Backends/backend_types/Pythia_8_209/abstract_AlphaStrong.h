@@ -26,38 +26,38 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         class Abstract_AlphaStrong : virtual public AbstractBase
         {
             protected:
-                // IGNORED: Field  -- Name: isInit  -- XML id: _28417
-                // IGNORED: Field  -- Name: order  -- XML id: _28418
-                // IGNORED: Field  -- Name: nfmax  -- XML id: _28419
-                // IGNORED: Field  -- Name: Lambda3Save  -- XML id: _28420
-                // IGNORED: Field  -- Name: Lambda4Save  -- XML id: _28421
-                // IGNORED: Field  -- Name: Lambda5Save  -- XML id: _28422
-                // IGNORED: Field  -- Name: Lambda6Save  -- XML id: _28423
-                // IGNORED: Field  -- Name: Lambda3Save2  -- XML id: _28424
-                // IGNORED: Field  -- Name: Lambda4Save2  -- XML id: _28425
-                // IGNORED: Field  -- Name: Lambda5Save2  -- XML id: _28426
-                // IGNORED: Field  -- Name: Lambda6Save2  -- XML id: _28427
-                // IGNORED: Field  -- Name: scale2Min  -- XML id: _28428
-                // IGNORED: Variable  -- Name: MZ  -- XML id: _28429
-                // IGNORED: Field  -- Name: mc  -- XML id: _28430
-                // IGNORED: Field  -- Name: mb  -- XML id: _28431
-                // IGNORED: Field  -- Name: mt  -- XML id: _28432
-                // IGNORED: Field  -- Name: mc2  -- XML id: _28433
-                // IGNORED: Field  -- Name: mb2  -- XML id: _28434
-                // IGNORED: Field  -- Name: mt2  -- XML id: _28435
-                // IGNORED: Field  -- Name: useCMW  -- XML id: _28436
-                // IGNORED: Variable  -- Name: FACCMW3  -- XML id: _28437
-                // IGNORED: Variable  -- Name: FACCMW4  -- XML id: _28438
-                // IGNORED: Variable  -- Name: FACCMW5  -- XML id: _28439
-                // IGNORED: Variable  -- Name: FACCMW6  -- XML id: _28440
-                // IGNORED: Variable  -- Name: SAFETYMARGIN1  -- XML id: _28441
-                // IGNORED: Variable  -- Name: SAFETYMARGIN2  -- XML id: _28442
+                // IGNORED: Field  -- Name: isInit  -- XML id: _29668
+                // IGNORED: Field  -- Name: order  -- XML id: _29669
+                // IGNORED: Field  -- Name: nfmax  -- XML id: _29670
+                // IGNORED: Field  -- Name: Lambda3Save  -- XML id: _29671
+                // IGNORED: Field  -- Name: Lambda4Save  -- XML id: _29672
+                // IGNORED: Field  -- Name: Lambda5Save  -- XML id: _29673
+                // IGNORED: Field  -- Name: Lambda6Save  -- XML id: _29674
+                // IGNORED: Field  -- Name: Lambda3Save2  -- XML id: _29675
+                // IGNORED: Field  -- Name: Lambda4Save2  -- XML id: _29676
+                // IGNORED: Field  -- Name: Lambda5Save2  -- XML id: _29677
+                // IGNORED: Field  -- Name: Lambda6Save2  -- XML id: _29678
+                // IGNORED: Field  -- Name: scale2Min  -- XML id: _29679
+                // IGNORED: Variable  -- Name: MZ  -- XML id: _29680
+                // IGNORED: Field  -- Name: mc  -- XML id: _29681
+                // IGNORED: Field  -- Name: mb  -- XML id: _29682
+                // IGNORED: Field  -- Name: mt  -- XML id: _29683
+                // IGNORED: Field  -- Name: mc2  -- XML id: _29684
+                // IGNORED: Field  -- Name: mb2  -- XML id: _29685
+                // IGNORED: Field  -- Name: mt2  -- XML id: _29686
+                // IGNORED: Field  -- Name: useCMW  -- XML id: _29687
+                // IGNORED: Variable  -- Name: FACCMW3  -- XML id: _29688
+                // IGNORED: Variable  -- Name: FACCMW4  -- XML id: _29689
+                // IGNORED: Variable  -- Name: FACCMW5  -- XML id: _29690
+                // IGNORED: Variable  -- Name: FACCMW6  -- XML id: _29691
+                // IGNORED: Variable  -- Name: SAFETYMARGIN1  -- XML id: _29692
+                // IGNORED: Variable  -- Name: SAFETYMARGIN2  -- XML id: _29693
             private:
-                // IGNORED: Variable  -- Name: NITER  -- XML id: _28443
-                // IGNORED: Field  -- Name: lastCallToFull  -- XML id: _28444
-                // IGNORED: Field  -- Name: valueRef  -- XML id: _28445
-                // IGNORED: Field  -- Name: valueNow  -- XML id: _28446
-                // IGNORED: Field  -- Name: scale2Now  -- XML id: _28447
+                // IGNORED: Variable  -- Name: NITER  -- XML id: _29694
+                // IGNORED: Field  -- Name: lastCallToFull  -- XML id: _29695
+                // IGNORED: Field  -- Name: valueRef  -- XML id: _29696
+                // IGNORED: Field  -- Name: valueNow  -- XML id: _29697
+                // IGNORED: Field  -- Name: scale2Now  -- XML id: _29698
             public:
     
                 virtual void init(double, int, int, bool) =0;

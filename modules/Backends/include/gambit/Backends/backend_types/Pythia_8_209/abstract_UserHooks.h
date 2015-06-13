@@ -35,19 +35,19 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         class Abstract_UserHooks : virtual public AbstractBase
         {
             protected:
-                // IGNORED: Field  -- Name: infoPtr  -- XML id: _28047
-                // IGNORED: Field  -- Name: settingsPtr  -- XML id: _28048
-                // IGNORED: Field  -- Name: particleDataPtr  -- XML id: _28049
-                // IGNORED: Field  -- Name: rndmPtr  -- XML id: _28050
-                // IGNORED: Field  -- Name: beamAPtr  -- XML id: _28051
-                // IGNORED: Field  -- Name: beamBPtr  -- XML id: _28052
-                // IGNORED: Field  -- Name: beamPomAPtr  -- XML id: _28053
-                // IGNORED: Field  -- Name: beamPomBPtr  -- XML id: _28054
-                // IGNORED: Field  -- Name: coupSMPtr  -- XML id: _28055
-                // IGNORED: Field  -- Name: partonSystemsPtr  -- XML id: _28056
-                // IGNORED: Field  -- Name: sigmaTotPtr  -- XML id: _28057
-                // IGNORED: Field  -- Name: workEvent  -- XML id: _28058
-                // IGNORED: Field  -- Name: selBias  -- XML id: _28059
+                // IGNORED: Field  -- Name: infoPtr  -- XML id: _26114
+                // IGNORED: Field  -- Name: settingsPtr  -- XML id: _26115
+                // IGNORED: Field  -- Name: particleDataPtr  -- XML id: _26116
+                // IGNORED: Field  -- Name: rndmPtr  -- XML id: _26117
+                // IGNORED: Field  -- Name: beamAPtr  -- XML id: _26118
+                // IGNORED: Field  -- Name: beamBPtr  -- XML id: _26119
+                // IGNORED: Field  -- Name: beamPomAPtr  -- XML id: _26120
+                // IGNORED: Field  -- Name: beamPomBPtr  -- XML id: _26121
+                // IGNORED: Field  -- Name: coupSMPtr  -- XML id: _26122
+                // IGNORED: Field  -- Name: partonSystemsPtr  -- XML id: _26123
+                // IGNORED: Field  -- Name: sigmaTotPtr  -- XML id: _26124
+                // IGNORED: Field  -- Name: workEvent  -- XML id: _26125
+                // IGNORED: Field  -- Name: selBias  -- XML id: _26126
             public:
     
                 virtual bool initAfterBeams() =0;

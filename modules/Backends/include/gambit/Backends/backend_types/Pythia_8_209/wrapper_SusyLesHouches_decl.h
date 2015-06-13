@@ -54,6 +54,12 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         
                 int readFile(std::basic_istream<char,std::char_traits<char> >& arg_1);
         
+                int readSLHAea(int verboseIn, bool useDecayIn);
+        
+                int readSLHAea(int verboseIn);
+        
+                int readSLHAea();
+        
                 void printHeader();
         
                 void printFooter();

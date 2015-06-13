@@ -30,16 +30,16 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         class Abstract_Settings : virtual public AbstractBase
         {
             private:
-                // IGNORED: Field  -- Name: infoPtr  -- XML id: _25798
-                // IGNORED: Field  -- Name: flags  -- XML id: _25799
-                // IGNORED: Field  -- Name: modes  -- XML id: _25800
-                // IGNORED: Field  -- Name: parms  -- XML id: _25801
-                // IGNORED: Field  -- Name: words  -- XML id: _25802
-                // IGNORED: Field  -- Name: fvecs  -- XML id: _25803
-                // IGNORED: Field  -- Name: mvecs  -- XML id: _25804
-                // IGNORED: Field  -- Name: pvecs  -- XML id: _25805
-                // IGNORED: Field  -- Name: isInit  -- XML id: _25806
-                // IGNORED: Field  -- Name: readingFailedSave  -- XML id: _25807
+                // IGNORED: Field  -- Name: infoPtr  -- XML id: _24737
+                // IGNORED: Field  -- Name: flags  -- XML id: _24738
+                // IGNORED: Field  -- Name: modes  -- XML id: _24739
+                // IGNORED: Field  -- Name: parms  -- XML id: _24740
+                // IGNORED: Field  -- Name: words  -- XML id: _24741
+                // IGNORED: Field  -- Name: fvecs  -- XML id: _24742
+                // IGNORED: Field  -- Name: mvecs  -- XML id: _24743
+                // IGNORED: Field  -- Name: pvecs  -- XML id: _24744
+                // IGNORED: Field  -- Name: isInit  -- XML id: _24745
+                // IGNORED: Field  -- Name: readingFailedSave  -- XML id: _24746
             public:
     
                 virtual void initPtr__BOSS(Pythia8::Abstract_Info*) =0;

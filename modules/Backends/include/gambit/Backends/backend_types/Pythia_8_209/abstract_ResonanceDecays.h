@@ -31,24 +31,24 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         class Abstract_ResonanceDecays : virtual public AbstractBase
         {
             private:
-                // IGNORED: Variable  -- Name: NTRYCHANNEL  -- XML id: _21906
-                // IGNORED: Variable  -- Name: NTRYMASSES  -- XML id: _21907
-                // IGNORED: Variable  -- Name: MSAFETY  -- XML id: _21908
-                // IGNORED: Variable  -- Name: WIDTHCUT  -- XML id: _21909
-                // IGNORED: Variable  -- Name: TINY  -- XML id: _21910
-                // IGNORED: Variable  -- Name: TINYBWRANGE  -- XML id: _21911
-                // IGNORED: Variable  -- Name: WTCORRECTION  -- XML id: _21912
-                // IGNORED: Field  -- Name: infoPtr  -- XML id: _21913
-                // IGNORED: Field  -- Name: particleDataPtr  -- XML id: _21914
-                // IGNORED: Field  -- Name: rndmPtr  -- XML id: _21915
-                // IGNORED: Field  -- Name: id0  -- XML id: _21916
-                // IGNORED: Field  -- Name: mult  -- XML id: _21917
-                // IGNORED: Field  -- Name: m0  -- XML id: _21918
-                // IGNORED: Field  -- Name: idProd  -- XML id: _21919
-                // IGNORED: Field  -- Name: cols  -- XML id: _21920
-                // IGNORED: Field  -- Name: acols  -- XML id: _21921
-                // IGNORED: Field  -- Name: mProd  -- XML id: _21922
-                // IGNORED: Field  -- Name: pProd  -- XML id: _21923
+                // IGNORED: Variable  -- Name: NTRYCHANNEL  -- XML id: _26544
+                // IGNORED: Variable  -- Name: NTRYMASSES  -- XML id: _26545
+                // IGNORED: Variable  -- Name: MSAFETY  -- XML id: _26546
+                // IGNORED: Variable  -- Name: WIDTHCUT  -- XML id: _26547
+                // IGNORED: Variable  -- Name: TINY  -- XML id: _26548
+                // IGNORED: Variable  -- Name: TINYBWRANGE  -- XML id: _26549
+                // IGNORED: Variable  -- Name: WTCORRECTION  -- XML id: _26550
+                // IGNORED: Field  -- Name: infoPtr  -- XML id: _26551
+                // IGNORED: Field  -- Name: particleDataPtr  -- XML id: _26552
+                // IGNORED: Field  -- Name: rndmPtr  -- XML id: _26553
+                // IGNORED: Field  -- Name: id0  -- XML id: _26554
+                // IGNORED: Field  -- Name: mult  -- XML id: _26555
+                // IGNORED: Field  -- Name: m0  -- XML id: _26556
+                // IGNORED: Field  -- Name: idProd  -- XML id: _26557
+                // IGNORED: Field  -- Name: cols  -- XML id: _26558
+                // IGNORED: Field  -- Name: acols  -- XML id: _26559
+                // IGNORED: Field  -- Name: mProd  -- XML id: _26560
+                // IGNORED: Field  -- Name: pProd  -- XML id: _26561
             public:
     
                 virtual void init__BOSS(Pythia8::Abstract_Info*, Pythia8::Abstract_ParticleData*, Pythia8::Abstract_Rndm*) =0;

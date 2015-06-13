@@ -50,6 +50,21 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             return wrapperbase::BEptr->readFile__BOSS(arg_1);
         }
         
+        inline int SusyLesHouches::readSLHAea(int verboseIn, bool useDecayIn)
+        {
+            return wrapperbase::BEptr->readSLHAea(verboseIn, useDecayIn);
+        }
+        
+        inline int SusyLesHouches::readSLHAea(int verboseIn)
+        {
+            return wrapperbase::BEptr->readSLHAea__BOSS(verboseIn);
+        }
+        
+        inline int SusyLesHouches::readSLHAea()
+        {
+            return wrapperbase::BEptr->readSLHAea__BOSS();
+        }
+        
         inline void SusyLesHouches::printHeader()
         {
             wrapperbase::BEptr->printHeader();
