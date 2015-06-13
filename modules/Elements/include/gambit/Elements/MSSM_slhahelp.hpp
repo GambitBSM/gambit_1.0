@@ -27,13 +27,6 @@
 namespace Gambit {
 
 namespace slhahelp {
-
-   /// type defs for pair types etc that we will use in maps
-   typedef std::pair<int,str> p_int_string;
-   typedef std::pair<int,int> pair_ints;
-   typedef std::pair<str,pair_ints> pair_string_ints;
-   typedef std::pair<str,str> pair_strings;
-   typedef std::set<int>::iterator iter;
    
    /******************* gauge_es <-> mass_es helpers ****************/
 
@@ -89,9 +82,6 @@ namespace slhahelp {
    /// family squarks.
    /// This is moore useful for our purposes
 
-   /// identifies the mass_es which best matches specified family state
-   str mass_es_closest_to_family(str familystate, const SubSpectrum* mssm);
-   
    /// identifies the mass_es which best matches specified family state
    /// then fills the mixing elements to the two gauge es of that family into 
    /// std::vector gauge_composition (ie appropriate stop mixing matrix row) 
