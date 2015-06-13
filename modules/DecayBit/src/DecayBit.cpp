@@ -163,7 +163,8 @@ namespace Gambit
                   << std::endl;
         str mass_es1, mass_es2, type;
         /// this is banned but just for temp test
-        std::set<str> set_type = {"~u","~d", "~e"};
+        str types[] = {"~u","~d", "~e"};
+        std::set<str> set_type = {types, types+3};
         std::set<str>::iterator it;
         for (it = set_type.begin(); it != set_type.end(); ++it)
            {
