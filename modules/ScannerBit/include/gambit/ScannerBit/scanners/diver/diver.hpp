@@ -34,6 +34,7 @@ namespace Gambit
   namespace Diver
   {
     
+    /// Structure for passing likelihood and printer data through Diver to the objective function.
     struct diverScanData
     {
       Scanner::scan_ptr<double (const std::vector<double>&)> likelihood_function;

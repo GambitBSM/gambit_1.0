@@ -65,7 +65,7 @@ scanner_plugin(Diver, version(1, 0, 0))
     bool   partitionDiscrete   = get_inifile_value<bool>  ("partitionDiscrete",  false);  // Split the population evenly amongst discrete parameters and evolve separately
     int    maxciv              = get_inifile_value<int>   ("maxciv",             10);     // Maximum number of civilisations
     int    maxgen              = get_inifile_value<int>   ("maxgen",             200);    // Maximum number of generations per civilisation
-    int    NP                  = get_inifile_value<int>   ("NP"                  );       // Population size (individuals per generation)
+    int    NP                  = get_inifile_value<int>   ("NP");                         // Population size (individuals per generation)
     double Cr                  = get_inifile_value<double>("Cr",                 0.9);    // Crossover factor
     double lambda              = get_inifile_value<double>("lambda",             0.8);    // Mixing factor between best and rand/current
     bool   current             = get_inifile_value<bool>  ("current",            false);  // Use current vector for mutation
@@ -109,7 +109,7 @@ scanner_plugin(Diver, version(1, 0, 0))
     int discrete[nDiscrete];                                                              // Indices of discrete parameters, Fortran style, i.e. starting at 1!!
     for (int i = 0; i < nDiscrete; i++)
     {
-      discrete[i] = 0; //Needs to be set automatically somehow?  Not yet sure how to deal with discrete parameters.
+      discrete[i] = 0; //TODO Needs to be set automatically somehow?  Not yet sure how to deal with discrete parameters.
     }
 
     // Run Diver
@@ -124,7 +124,6 @@ scanner_plugin(Diver, version(1, 0, 0))
   }
 
 }
-
 
 /// =================================================
 /// Function definitions
@@ -150,7 +149,7 @@ namespace Gambit
       double lnlike = data->likelihood_function(param_vec);
 
       // Print the likelihood, unit cube parameters, thread number and point ID
-      int thread = 0; //FIXME not sure exactly what Ben has in mind for this
+      int thread = 0; //TODO Not sure exactly what Ben has in mind for this, or if it should always be zero.
       int pointID = data->likelihood_function->getPtID();
       Scanner::printer* txt_stream(data->printer->get_stream("txt"));
       txt_stream->print(lnlike,    "Ln(likelihood)",       -4, thread, pointID);
