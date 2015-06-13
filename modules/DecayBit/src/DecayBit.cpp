@@ -158,9 +158,38 @@ namespace Gambit
                                                        LOCAL_INFO);
         std::cout << "m_es = "  << m_es << std::endl;
         if(m_es != mass_es) std::cout << "m_es error! = " << std::endl;
-                  
+        
+        std::cout << "******** Special family_state_mix_matrix tests ********" 
+                  << std::endl;
+        str mass_es1, mass_es2, type;
+        /// this is banned but just for temp test
+        std::set<str> set_type = {"~u","~d", "~e"};
+        std::set<str>::iterator it;
+        for (it = set_type.begin(); it != set_type.end(); ++it)
+           {
+              type = *it;
+              for(int gen = 1;  gen <=3; gen++){
+                 std::cout << "entering type = " << type << " and gen " 
+                           << gen << std::endl;   
+                 std::vector<double> f_mix_matrix = 
+                    slhahelp::family_state_mix_matrix(type,gen, mass_es1, 
+                                                      mass_es2, mssm);
+                 std::cout << "mass_es1 = " << mass_es1 << std::endl;
+                 std::cout << "mass_es2 = " << mass_es2 << std::endl;
+                 for(int i = 0;  i<=3; i++){
+                    std::cout << "f_mix_matrix[" << i << "] = "  
+                              << f_mix_matrix[i] << std::endl;
+                 }
+                 double row1sq = f_mix_matrix[0] * f_mix_matrix[0];
+                 row1sq += f_mix_matrix[1] * f_mix_matrix[1];
+                 double row2sq = f_mix_matrix[2] * f_mix_matrix[2];
+                 row2sq += f_mix_matrix[3] * f_mix_matrix[3];
+                 std::cout << "row1sq = " <<  row1sq << "  row2sq = " 
+                           <<  row2sq << std::endl;
+              }
+           }
         return;
- }
+     }
        
      void  mass_es_pseudonyms::test_print(const SubSpectrum* mssm) {
         std::cout.precision(8);

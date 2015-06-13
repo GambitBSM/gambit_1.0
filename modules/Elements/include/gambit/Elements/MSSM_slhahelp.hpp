@@ -136,8 +136,8 @@ namespace slhahelp {
                                        std::vector<double> & mass_comp,
                                        const SubSpectrum* mssm);   
       
-    str family_state_closest_to_mass_es(str mass_es, const SubSpectrum* mssm,
-                                        double tol, str context);
+   str family_state_closest_to_mass_es(str mass_es, const SubSpectrum* mssm,
+                                       double tol, str context);
    /// identifies the two mass_es which best matches specified family state
    /// storing them in strings and then returns 
    /// the 2by2 mixing matrix for that family state in the form

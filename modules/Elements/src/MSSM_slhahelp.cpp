@@ -12,6 +12,12 @@
 
 namespace Gambit {
    namespace slhahelp {
+
+      /// type defs for pair types etc that we will use in maps
+      typedef std::pair<int,str> p_int_string;
+      typedef std::pair<int,int> pair_ints;
+      typedef std::pair<str,pair_ints> pair_string_ints;
+      typedef std::pair<str,str> pair_strings;
       
       std::map<str, p_int_string> init_gauge_label_to_index_type() 
       {
@@ -940,11 +946,6 @@ namespace Gambit {
           }
           return fs;
        }
-
-      
-      
-       
-
       
    }  // namespace slhahelp
 } //namespace gambit
