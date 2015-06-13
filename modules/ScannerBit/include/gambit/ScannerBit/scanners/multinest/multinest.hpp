@@ -9,7 +9,7 @@
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-//
+///
 ///  \author Ben Farmer
 ///          (ben.farmer@gmail.com)
 ///  \date 2015 January

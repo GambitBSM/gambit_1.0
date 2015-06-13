@@ -72,7 +72,7 @@ ExternalProject_Add(diver
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND ""
   BUILD_COMMAND make ${diver_lib}.so DIVER_FF=${CMAKE_Fortran_COMPILER} DIVER_MODULE=${FMODULE} DIVER_FOPT=${diverFFLAGS} 
-  INSTALL_COMMAND ""
+  INSTALL_COMMAND "" 
 )
 set_property(TARGET diver PROPERTY _EP_DOWNLOAD_ALWAYS 0)
 set(clean_files ${clean_files} "${diver_dir}/lib/${diver_lib}.so")
