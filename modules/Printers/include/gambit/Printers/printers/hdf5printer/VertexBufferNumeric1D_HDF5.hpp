@@ -53,19 +53,13 @@ namespace Gambit {
            DataSetInterfaceScalar<bool,CHUNKLENGTH> dsetvalid; // validity bools
            DataSetInterfaceScalar<T,CHUNKLENGTH>    dsetdata;  // actual data 
 
-           /// Private function to trigger buffer write to disk.
-           /// This is just to convince myself that the base virtual
-           /// function is not called accidentally
-           /// in certain places.
-           void private_flush();
-
          public:
            /// Constructors
            VertexBufferNumeric1D_HDF5();
            VertexBufferNumeric1D_HDF5(H5FGPtr location, const std::string& name, const int vID, const unsigned int i, bool sync, bool silence
              #ifdef WITH_MPI
              , const BuffTags& tags
-             , GMPI::Comm& pComm
+             , const GMPI::Comm& pComm
              #endif
              );
       
@@ -73,19 +67,17 @@ namespace Gambit {
            /// Make sure buffer contents are written to file when buffer object is destroyed
            ~VertexBufferNumeric1D_HDF5();
 
-           /// Override of buffer dump function to handle HDF5 output
-           virtual void flush();
+           /// Write sync buffer to HDF5 dataset
+           virtual void write_to_disk();
 
-           #ifdef DISABLED_FOR_NOW
-           /// Manual command to send an arbitrary buffer to be written to disk
-           virtual void flush_external(const T (&values)[CHUNKLENGTH], const bool (&isvalid)[CHUNKLENGTH]);
-           #endif
+           /// Write externally-supplied buffer to HDF5 dataset
+           virtual void write_external_to_disk(const T (&values)[CHUNKLENGTH], const bool (&isvalid)[CHUNKLENGTH]);
 
            /// Reset the output (non-synchronised datasets only)
            virtual void reset();
 
            /// Send random access write queue to dataset interfaces for writing
-           virtual void RA_flush();
+           virtual void RA_write_to_disk();
 
            /// Ensure dataset "write head" (i.e. next append) is prepared to
            /// write to the supplied absolute dataset index (e.g. by inserting
@@ -98,15 +90,6 @@ namespace Gambit {
 
       /// @{ VertexBufferNumeric1D_HDF5 member function definitions
  
-      template<class T, std::size_t L>
-      void VertexBufferNumeric1D_HDF5<T,L>::private_flush()
-      {
-        if(not this->is_silenced()) {
-           dsetvalid.writenewchunk(this->buffer_valid); 
-           dsetdata.writenewchunk(this->buffer_entries);
-        }
-      }
-
       /// Constructors
       template<class T, std::size_t CHUNKLENGTH>
       VertexBufferNumeric1D_HDF5<T,CHUNKLENGTH>::VertexBufferNumeric1D_HDF5()
@@ -119,7 +102,7 @@ namespace Gambit {
       VertexBufferNumeric1D_HDF5<T,CHUNKLENGTH>::VertexBufferNumeric1D_HDF5(H5FGPtr location, const std::string& name, const int vID, const unsigned int i, bool sync, bool silence
         #ifdef WITH_MPI
         , const BuffTags& tags
-        , GMPI::Comm& pComm
+        , const GMPI::Comm& pComm
         #endif
         )
         : VertexBufferNumeric1D<T,CHUNKLENGTH>(name,vID, i, sync, silence
@@ -142,33 +125,34 @@ namespace Gambit {
       template<class T, std::size_t L>
       VertexBufferNumeric1D_HDF5<T,L>::~VertexBufferNumeric1D_HDF5() 
       {
-         if(this->is_synchronised()) { private_flush(); }
-         else { RA_flush(); }
+         if(this->is_synchronised()) { write_to_disk(); }
+         else { RA_write_to_disk(); }
       }
 
       /// Override of buffer dump function to handle HDF5 output
       template<class T, std::size_t L>
-      void VertexBufferNumeric1D_HDF5<T,L>::flush() 
-      { 
-         if(this->is_synchronised()) { private_flush(); }
+      void VertexBufferNumeric1D_HDF5<T,L>::write_to_disk()
+      {
+         if(this->is_synchronised()) {
+           dsetvalid.writenewchunk(this->buffer_valid); 
+           dsetdata.writenewchunk(this->buffer_entries);
+         }
          else {
             std::ostringstream errmsg;
-            errmsg << "Error! Tried to flush() synchronised write buffer of buffer with name "<<this->get_label()<<", but buffer is not flagged as running in synchronised mode! Please report this bug.";
+            errmsg << "Error! Tried to write_to_disk() synchronised write buffer of buffer with name "<<this->get_label()<<", but buffer is not flagged as running in synchronised mode! Please report this bug.";
             printer_error().raise(LOCAL_INFO, errmsg.str()); 
          }
       }
 
-      #ifdef DISABLED_FOR_NOW
       /// Manual command to send an arbitrary buffer to be written to disk
       template<class T, std::size_t CHUNKLENGTH>
-      void VertexBufferNumeric1D_HDF5<T,CHUNKLENGTH>::flush_external(const T (&values)[CHUNKLENGTH], const bool (&isvalid)[CHUNKLENGTH])
+      void VertexBufferNumeric1D_HDF5<T,CHUNKLENGTH>::write_external_to_disk(const T (&values)[CHUNKLENGTH], const bool (&isvalid)[CHUNKLENGTH])
       {
          if(not this->is_silenced()) {
            dsetvalid.writenewchunk(isvalid); 
            dsetdata.writenewchunk(values);
          }
       }
-      #endif
 
       /// Reset the output (non-synchronised datasets only)
       template<class T, std::size_t L>
@@ -176,7 +160,7 @@ namespace Gambit {
 
       /// Send random access write queue to dataset interfaces for writing
       template<class T, std::size_t CHUNKLENGTH>
-      void VertexBufferNumeric1D_HDF5<T,CHUNKLENGTH>::RA_flush()
+      void VertexBufferNumeric1D_HDF5<T,CHUNKLENGTH>::RA_write_to_disk()
       {
          if((not this->is_silenced()) and (not this->RA_queue_length==0)) {
             bool valid[CHUNKLENGTH];

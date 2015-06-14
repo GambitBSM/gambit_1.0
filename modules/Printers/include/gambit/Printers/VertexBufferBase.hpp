@@ -41,16 +41,20 @@ namespace Gambit {
             int vertexID;
             uint index; // discriminator in case of multiple output streams from one vertex
              
-            // flag to trigger synchronised buffer writing
+            /// flag to trigger synchronised buffer writing
             bool synchronised;
  
-            // flag to disable any writing (turns this into a null buffer)
+            /// flag to disable any writing (turns this into a null buffer)
             bool silenced;
+
+         protected:
+            /// flag to indicate if the sync buffer is full (and ready for sending/dumping)
+            bool sync_buffer_full = false;
 
          public:
             VertexBufferBase()
               : donethispoint()
-              , label()
+              , label("None (Bug!)")
               , vertexID()
               , index()
               , synchronised()
@@ -74,20 +78,30 @@ namespace Gambit {
               #endif
             }
 
-            virtual ~VertexBufferBase() {}
+            virtual ~VertexBufferBase() 
+            {
+               std::cout<<"Destructing buffer name='"<<label<<"'"<<std::endl;
+            }
 
             // Metadata getters
-            int get_vertexID() { return vertexID; }
-            uint get_index()   { return index; }
-            std::string get_label() { return label; }
-            bool is_synchronised() { return synchronised; }
-            bool is_silenced() { return silenced; }
+            int  get_vertexID()       { return vertexID; }
+            uint get_index()          { return index; }
+            std::string get_label()   { return label; }
+            bool sync_buffer_is_full(){ return sync_buffer_full; }
+            bool is_synchronised()    { return synchronised; }
+            bool is_silenced()        { return silenced; }
 
-            // Needed to externally trigger buffer write to disk (e.g. at end of scan)
-            virtual void flush() = 0; ///TODO: write proper cleanout function = 0;            
+            // Trigger MPI send of sync buffer to master node, or write to disk
+            virtual void flush() = 0;
 
-            // Flush the random-access write queue (i.e. do the queued-up writes)
+            // Trigger MPI send of random-access buffer queue, or write to disk
             virtual void RA_flush() = 0;
+
+            // // Perform write to disk of sync buffer 
+            // virtual void write_to_disk() = 0;            
+
+            // // Perform write to disk of random-access buffer
+            // virtual void RA_write_to_disk() = 0;
 
             // Resets buffer and signals to printer to empty out the contents of the output
             // dataset in preparation of new writing.
@@ -96,13 +110,14 @@ namespace Gambit {
             // Needed to externally inform buffer of a skipped iteration (when no data to write)
             virtual void skip_append() = 0;           
 
-            #ifdef DISABLED_FOR_NOW
             #ifdef WITH_MPI
-            // Retrieve buffer data from an MPI message
+            // Probe for a sync buffer MPI message from a process
+            virtual bool probe_sync_mpi_message(int) = 0;
+
+            // Retrieve sync buffer data from an MPI message from a known process rank
             // Should only be triggered if a valid message is known to exist to be retrieved!
-            virtual void get_mpi_message(int) = 0;
+            virtual void get_sync_mpi_message(int) = 0;
             #endif
-            #endif   
 
             // getter for donethispoint
             bool donepoint() {return donethispoint;}

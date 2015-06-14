@@ -181,7 +181,11 @@ namespace Gambit
         BuffTags get_bufftags(VBIDpair);
 
         /// Check for tag requests from worker nodes
-        void check_for_bufftag_request();
+        void check_for_bufftag_requests();
+
+        // Check if the buffers are full and waiting to be emptied
+        // (this will trigger MPI sends if needed)
+        void empty_sync_buffers_if_full();
  
         /// Check for buffers waiting to be delivered from other processes 
         void collect_mpi_buffers();
@@ -197,6 +201,9 @@ namespace Gambit
 
         /// Retrieve index from global lookup table, with error checking
         ulong get_global_index(const ulong pointID, const uint mpirank);
+ 
+        /// Get the name of this printer
+        std::string get_printer_name() { return printer_name; }
 
         /// Retrieve a pointer to the primary printer object
         /// This is stored in the base class (BaseBasePrinter) as a pointer of type
@@ -347,6 +354,9 @@ namespace Gambit
         // (if this is an auxilliary printer, else it is "this" //NULL)
         HDF5Printer* primary_printer = this; //NULL;
 
+        /// Flag to specify if this is the primary printer or not
+        bool is_primary_printer = false;
+
         /// Map containing pointers to all VertexBuffers contained in this printer
         // Note: Each buffer contains a bool to indicate whether it has done an "append" for the point "lastPointID"
         BaseBufferMap all_my_buffers;
@@ -378,8 +388,8 @@ namespace Gambit
  
         uint mpiSize;
  
-        /// Tag manager object
-        MPITagManager tag_manager;
+        /// Tag manager object (only the primary printer on the master node has one of these) 
+        MPITagManager* tag_manager = NULL;
         #endif
 
         /// Flag to specify whether all buffers created by this printer 

@@ -48,7 +48,10 @@ namespace Gambit
 
   /// Definition needed for specialisation of GMPI::get_mpi_data_type<T>() to VBIDpair type
   /// so that template MPI Send and Receive functions work.
-  template<> MPI_Datatype GMPI::get_mpi_data_type<Printers::VBIDpair>() { return Printers::mpi_VBIDpair_type; }
+  //template<> MPI_Datatype GMPI::get_mpi_data_type<Printers::VBIDpair>() { return Printers::mpi_VBIDpair_type; }
+
+  MPI_Datatype GMPI::get_mpi_data_type<Printers::VBIDpair>::type() 
+  { return Printers::mpi_VBIDpair_type; } 
 
   #endif
 

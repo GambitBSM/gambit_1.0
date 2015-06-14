@@ -96,6 +96,9 @@ namespace Gambit
         /// Retrieve VBIDpair match a specific tag from a BuffTags collection
         VBIDpair get_VBID_from_tag(const int tag); 
 
+        /// Retrieve all the VBIDpairs known to this tag manager
+        const std::vector<VBIDpair>& get_all_known_VBIDpairs() { return VBID_from_tag;}
+
         /// Tag daemon function
         /// This is run in a separate thread on the master node, and just monitors
         /// for tag requests from the worker nodes. Thread is stopped and joined

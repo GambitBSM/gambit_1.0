@@ -58,14 +58,17 @@ namespace Gambit
           printer_error().raise(LOCAL_INFO, errmsg.str());
        }
 
-       /// Start tag_daemon in new thread
+       /// Start tag_daemon in new thread, if it is needed (i.e. if there is more than one process)
        /// args: thread, thread attributes, function to run, function args
-       int ret = pthread_create(&tag_daemon_thread, NULL, &MPITagManager::tag_daemon, this);
-       if(ret)
+       if( mpiSize>1 )
        {
-          std::ostringstream errmsg;
-          errmsg << "Error creating tag_daemon thread! pthread_create() returned code: "<< ret; 
-          printer_error().raise(LOCAL_INFO, errmsg.str());
+          int ret = pthread_create(&tag_daemon_thread, NULL, &MPITagManager::tag_daemon, this);
+          if(ret)
+          {
+             std::ostringstream errmsg;
+             errmsg << "Error creating tag_daemon thread! pthread_create() returned code: "<< ret; 
+             printer_error().raise(LOCAL_INFO, errmsg.str());
+          }
        }
     }
 
@@ -75,7 +78,7 @@ namespace Gambit
        stop_tag_daemon = true;
 
        /// Wait for it to finish, and re-join tag_daemon thread
-       pthread_join( tag_daemon_thread, NULL);
+       if( mpiSize>1 ) pthread_join(tag_daemon_thread, NULL);
     }
     
 
@@ -137,7 +140,7 @@ namespace Gambit
        while(not thisptr->stop_tag_daemon)
        {
           MPI_Status status;
-          while( thisptr->printerComm.Iprobe(MPI_ANY_SOURCE, thisptr->tag_req, &status) )
+          while(not thisptr->stop_tag_daemon and thisptr->printerComm.Iprobe(MPI_ANY_SOURCE, thisptr->tag_req, &status) )
           {
              // Returns true if there is a message waiting
              
@@ -174,7 +177,14 @@ namespace Gambit
              // short sleep
              nanosleep(&short_time,NULL);
           }
+          #ifdef MPI_DEBUG
+          std::cout<<"rank "<<mpiRank<<": tag_daemon noticed stop signal in Iprobe loop; abandoning message."<<std::endl;
+          #endif
        }
+       #ifdef MPI_DEBUG
+       std::cout<<"rank "<<mpiRank<<": tag_daemon noticed stop signal; ending listener loop."<<std::endl;
+       #endif
+
        // Finished! 
        return NULL;
     }

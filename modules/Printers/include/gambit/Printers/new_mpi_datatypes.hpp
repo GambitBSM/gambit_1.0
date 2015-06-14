@@ -42,8 +42,14 @@ namespace Gambit
   } // end namespace Printers
 
   #ifdef WITH_MPI
-  /// Declarations needed for specialisation of GMPI::get_mpi_data_type<T>() to VBIDpair type
-  namespace GMPI { template<> MPI_Datatype get_mpi_data_type<Printers::VBIDpair>(); }
+  /// Declarations needed for specialisation of GMPI::get_mpi_data_type<T>::type() to VBIDpair type
+  namespace GMPI { 
+     template<> 
+     struct get_mpi_data_type<Printers::VBIDpair> 
+     { 
+       static MPI_Datatype type();
+     }; 
+  }
   /// Declare MPI datatype for struct VBIDpair (which is what the above function will 'get')
   extern MPI_Datatype mpi_VBIDpair_type;
   #endif
