@@ -54,7 +54,7 @@ namespace Gambit {
         /// @brief Add a command to the list of settings used by "init"
         /// @TODO For this to work, we must BOSS Pythia's SusyLesHouches class.
         void addSLHAea(const SLHAea::Coll& slhaea) {
-          //_pythiaInstance->slhaInterface.slha.setSLHAea(slhaea);
+          _pythiaInstance->slhaInterface.slha.setSLHAea(slhaea);
         }
 
         /// @brief General init for any Pythia interface to Gambit.

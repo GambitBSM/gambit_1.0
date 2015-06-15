@@ -1,13 +1,14 @@
 // SusyLesHouches.h is a part of the PYTHIA event generator.
-// Copyright (C) 2014 Torbjorn Sjostrand.
+// Copyright (C) 2015 Torbjorn Sjostrand.
 // Main authors of this file: N. Desai, P. Skands
 // PYTHIA is licenced under the GNU GPL version 2, see COPYING for details.
 // Please respect the MCnet Guidelines, see GUIDELINES for details.
 
-// Header file for SUSY Les Houches Accord Interface
-// Is independent of the rest of the PYTHIA implementation and thus could
-// be re-used stand-alone or merged into other applications, subject to
-// the MCnet Guidelines mentioned above.
+// Header file for SUSY Les Houches Accord functionality
+// This part of the SLHA interface basically contains the Pythia-independent
+// SLHA read/write and processing utilities, which would be common to any
+// SLHA interface.
+// (The Pythia-specific components reside in the SLHAinterface class.)
 
 #ifndef SLHA_H
 #define SLHA_H
@@ -39,17 +40,17 @@ namespace Pythia8 {
   //class LHblock: the generic SLHA block (see below for matrices)
   //Explicit typing required, e.g. block<double> minpar;
   template <class T> class LHblock {
-    
+
   public:
-    
+
     //Constructor.
     LHblock<T>() : idnow(0) {} ;
-    
+
     //Does block exist?
     bool exists() { return int(entry.size()) == 0 ? false : true ; };
     //Clear block
     void clear() { entry.clear(); };
-    
+
     //set: set block entry values.
     //Possible return values from set:
     // 0: normal return. Entry did not previously exist and has been created.
@@ -114,7 +115,7 @@ namespace Pythia8 {
     // Special for DRbar running blocks.
     void setq(double qIn) { qDRbar=qIn; }
     double q() { return qDRbar; }
- 
+
   protected:
     map<int,T> entry;
 
@@ -130,7 +131,7 @@ namespace Pythia8 {
   class LHgenericBlock : public LHblock<string> {
 
   public:
-    
+
     //Constructor.
     LHgenericBlock() { } ;
 
@@ -139,7 +140,7 @@ namespace Pythia8 {
       entry[entry.size()] = lineIn;
       return 0;
     };
-    
+
   };
 
   // class LHmatrixBlock: the generic SLHA matrix
@@ -155,7 +156,7 @@ namespace Pythia8 {
         };
       };
     };
-    
+
     // Assignment
     LHmatrixBlock& operator=(const LHmatrixBlock& m) {
       if (this != &m) {
@@ -230,7 +231,7 @@ namespace Pythia8 {
         };
       };
     };
-    
+
     // Assignment
     LHtensor3Block& operator=(const LHtensor3Block& m) {
       if (this != &m) {
@@ -240,12 +241,12 @@ namespace Pythia8 {
         initialized = m.initialized;
       }
       return *this; };
-    
+
     // Does this matrix contain any entries?
     bool exists() { return initialized; };
     // Clear initialized flag
     void clear() { initialized=false; };
-    
+
     // Set matrix entry
     int set(int iIn,int jIn, int kIn, double valIn) {
       if (iIn>0 && jIn>0 && kIn>0 && iIn<=size && jIn<=size && kIn<=size) {
@@ -316,38 +317,38 @@ namespace Pythia8 {
     }
     void setBrat(double bratIn) {brat=bratIn;}
     void setIdDa(vector<int> idDaIn) {idDa = idDaIn;}
-    
+
     // Functions to get decay channel information
     double getBrat() {return brat;}
     int getNDa() {return int(idDa.size());}
     vector<int> getIdDa() {return idDa;}
     string getComment() {return comment;}
-    
+
   private:
     double brat;
     vector<int> idDa;
     string comment;
-      
+
   };
 
   class LHdecayTable {
   public:
-    
+
   LHdecayTable() : id(0), width(0.0) {};
   LHdecayTable(int idIn) : id(idIn), width(0.0) {};
   LHdecayTable(int idIn, double widthIn) : id(idIn), width(widthIn) {};
-    
+
     // Functions to get PDG code (id) and width
     int    getId() {return id;}
     double getWidth() {return width;}
-    
+
     // Functions to set PDG code (id) and width
     void setId(int idIn) {id = idIn;}
     void setWidth(double widthIn) {width=widthIn;}
 
     // Function to reset size and width (width -> 0 by default)
     void reset(double widthIn=0.0) {table.resize(0); width=widthIn;}
-    
+
     // Function to add another decay channel
     void addChannel(LHdecayChannel channelIn) {table.push_back(channelIn);}
     void addChannel(double bratIn, int nDaIn, vector<int> idDaIn,
@@ -385,7 +386,7 @@ namespace Pythia8 {
         return dum;
       }
     }
-    
+
   private:
     int id;
     double width;
@@ -403,15 +404,18 @@ public:
   SusyLesHouches(int verboseIn=1) : verboseSav(verboseIn),
     headerPrinted(false), footerPrinted(false), filePrinted(false),
     slhaRead(false), lhefRead(false), lhefSlha(false), useDecay(true),
-    slhaeaCollPtr(nullptr) {};
+    slhaeaCollPtr(NULL) {};
   SusyLesHouches(string filename, int verboseIn=1) : verboseSav(verboseIn),
     headerPrinted(false), footerPrinted(false), filePrinted(false),
     slhaRead(true), lhefRead(false), lhefSlha(false), useDecay(true),
-    slhaeaCollPtr(nullptr) {readFile(filename);};
+    slhaeaCollPtr(NULL) {readFile(filename);};
+
 
   //***************************** SLHA FILE I/O *****************************//
   // Read and write SLHA files
   int readFile(string slhaFileIn="slha.spc",int verboseIn=1,
+    bool useDecayIn=true);
+  int readFile(istream& ,int verboseIn=1,
     bool useDecayIn=true);
   //int writeFile(string filename): write SLHA file on filename
   // Read from SLHAea::Coll
@@ -425,19 +429,18 @@ public:
 
   // Check spectrum and decays
   int checkSpectrum();
-  int checkDecays();
 
   // File Name (can be either SLHA or LHEF)
   string slhaFile;
 
   // Class for SLHA data entry
   class Entry {
-    
+
   public:
     //Constructor.
     Entry() : isIntP(false), isDoubleP(false),
       isStringP(false), n(0), d(0.0), s(""), commentP("") {}
-    
+
     // Generic functions to inquire whether an int, double, or string
     bool isInt(){return isIntP;}
     bool isDouble(){return isDoubleP;}
@@ -456,7 +459,7 @@ public:
       s=val;isIntP=false;isDoubleP=false;isStringP=true;
       return *this;
     };
-    
+
     // Set and Get comment
     void setComment(string comment) {commentP=comment;}
     void getComment(string comment) {comment=commentP;}
@@ -472,7 +475,7 @@ public:
     double d;
     string s;
     string commentP;
-    
+
   };
 
   //*************************** THE SLHA1 BLOCKS ***************************//
@@ -551,7 +554,7 @@ public:
   LHmatrixBlock<3> snumix;   // The Re{} sneutrino mixing matrix
   LHmatrixBlock<3> snsmix;   // The scalar sneutrino mixing matrix
   LHmatrixBlock<3> snamix;   // The pseudoscalar neutrino mixing matrix
-  
+
   //RPV Input
   LHtensor3Block<3> rvlamllein; // The input LNV lambda couplings
   LHtensor3Block<3> rvlamlqdin; // The input LNV lambda' couplings
@@ -580,7 +583,7 @@ public:
   LHmatrixBlock<5> rvhmix;      // The RPV neutral scalar mixing matrix
   LHmatrixBlock<5> rvamix;      // The RPV neutral pseudoscalar mixing matrix
   LHmatrixBlock<8> rvlmix;      // The RPV charged fermion mixing matrix
-  
+
   //CPV Input
   LHblock<double> imminpar;
   LHblock<double> imextpar;
@@ -614,7 +617,7 @@ public:
   LHmatrixBlock<4> imnmix;   // The Im{} neutralino mixing matrix
   LHmatrixBlock<4> imumix;   // The Im{} chargino L mixing matrix
   LHmatrixBlock<4> imvmix;   // The Im{} chargino R mixing matrix
-  
+
   //NMSSM Input
   //    All input is in EXTPAR
   //NMSSM Output
@@ -623,7 +626,7 @@ public:
   LHmatrixBlock<3> nmamix;   // The NMSSM pseudoscalar Higgs mixing
   LHmatrixBlock<5> nmnmix;   // The NMSSM neutralino mixing
   LHmatrixBlock<5> imnmnmix; //   Im{} (for future use)
-  
+
   //*************************** SET BLOCK VALUE ****************************//
   template <class T> int set(string,T);
   template <class T> int set(string,int,T);
@@ -642,13 +645,17 @@ public:
   template <class T> bool getEntry(string, int, int, int, T&);
   template <class T> bool getEntry(string, vector<int>, T&);
 
-  // Access/change verbose setting  
-  int verbose() {return verboseSav;}  
-  void verbose(double verboseIn) {verboseSav = verboseIn;}
+  // Access/change verbose setting
+  int verbose() {return verboseSav;}
+  void verbose(int verboseIn) {verboseSav = verboseIn;}
 
   // Output of messages from SLHA interface
   void message(int, string,string ,int line=0);
-  
+
+  // Convert string to lowercase, removing junk characters
+  // Copied from PYTHIA 8 Settings class
+  void toLower(string& name);
+
   //***************************** SLHA PRIVATE *****************************//
 private:
   //SLHA I/O
@@ -667,8 +674,7 @@ private:
 template <class T> int SusyLesHouches::set(string blockName, T val) {
 
   // Make sure everything is interpreted as lower case (for safety)
-  for (int iC=0; iC<int(blockName.size()); ++iC)
-    blockName[iC] = tolower(blockName[iC]);
+  toLower(blockName);
 
   // Add new generic block if not already existing
   if (genericBlocks.find(blockName) == genericBlocks.end()) {
@@ -686,8 +692,7 @@ template <class T> int SusyLesHouches::set(string blockName, T val) {
 template <class T> int SusyLesHouches::set(string blockName, int indx, T val) {
 
   // Make sure everything is interpreted as lower case (for safety)
-  for (int iC=0; iC<int(blockName.size()); ++iC)
-    blockName[iC] = tolower(blockName[iC]);
+  toLower(blockName);
 
   // Add new generic block if not already existing
   if (genericBlocks.find(blockName) == genericBlocks.end()) {
@@ -706,8 +711,7 @@ template <class T> int SusyLesHouches::set(string blockName, int indx,
                                            int jndx, T val) {
 
   // Make sure everything is interpreted as lower case (for safety)
-  for (int iC=0; iC<int(blockName.size()); ++iC)
-    blockName[iC] = tolower(blockName[iC]);
+  toLower(blockName);
 
   // Add new generic block if not already existing
   if (genericBlocks.find(blockName) == genericBlocks.end()) {
@@ -726,8 +730,7 @@ template <class T> int SusyLesHouches::set(string blockName, int indx,
                                            int jndx, int kndx, T val) {
 
   // Make sure everything is interpreted as lower case (for safety)
-  for (int iC=0; iC<int(blockName.size()); ++iC)
-    blockName[iC] = tolower(blockName[iC]);
+  toLower(blockName);
 
   // Add new generic block if not already existing
   if (genericBlocks.find(blockName) == genericBlocks.end()) {
@@ -747,8 +750,7 @@ template <class T> int SusyLesHouches::set(string blockName, int indx,
 template <class T> bool SusyLesHouches::getEntry(string blockName, T& val) {
 
   // Make sure everything is interpret as lower case (for safety)
-  for (int iC=0; iC<int(blockName.size()); ++iC)
-    blockName[iC] = tolower(blockName[iC]);
+  toLower(blockName);
 
   // Safety checks
   if (genericBlocks.find(blockName) == genericBlocks.end()) {
@@ -784,8 +786,7 @@ template <class T> bool SusyLesHouches::getEntry(string blockName, int indx,
                                                  T& val) {
 
   // Make sure everything is interpret as lower case (for safety)
-  for (int iC=0; iC<int(blockName.size()); ++iC)
-    blockName[iC] = tolower(blockName[iC]);
+  toLower(blockName);
 
   // Safety checks
   if (genericBlocks.find(blockName) == genericBlocks.end()) {
@@ -823,8 +824,7 @@ template <class T> bool SusyLesHouches::getEntry(string blockName, int indx,
                                                  int jndx, T& val) {
 
   // Make sure everything is interpret as lower case (for safety)
-  for (int iC=0; iC<int(blockName.size()); ++iC)
-    blockName[iC] = tolower(blockName[iC]);
+  toLower(blockName);
 
   // Safety checks
   if (genericBlocks.find(blockName) == genericBlocks.end()) {
@@ -862,8 +862,7 @@ template <class T> bool SusyLesHouches::getEntry(string blockName, int indx,
                                                  int jndx, int kndx, T& val) {
 
   // Make sure everything is interpret as lower case (for safety)
-  for (int iC=0; iC<int(blockName.size()); ++iC)
-    blockName[iC] = tolower(blockName[iC]);
+  toLower(blockName);
 
   // Safety checks
   if (genericBlocks.find(blockName) == genericBlocks.end()) {
@@ -897,8 +896,6 @@ template <class T> bool SusyLesHouches::getEntry(string blockName, int indx,
   return false;
  }
 
-}
+} // end of namespace Pythia8
+
 #endif
-
-
-
