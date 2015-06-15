@@ -357,6 +357,10 @@ START_MODULE
       BACKEND_REQ(dsIBwhdxdy, (), double, (int&, double&, double&))
       BACKEND_REQ(dsIBwwdxdy, (), double, (int&, double&, double&))
       BACKEND_REQ(IBintvars, (), DS_IBINTVARS)
+
+      BACKEND_REQ(registerMassesForIB, (), void, 
+          (std::map<std::string, DarkBit::TH_ParticleProperty>&))
+      BACKEND_REQ(setMassesForIB, (), void, (bool))
     #undef FUNCTION
     #define FUNCTION TH_ProcessCatalog_SingletDM
       START_FUNCTION(DarkBit::TH_ProcessCatalog)

@@ -45,6 +45,8 @@
 #define VERSION 5.1.1
 #define SAFE_VERSION 5_1_1
 
+#include "gambit/DarkBit/ProcessCatalogue.hpp"
+
 // Load the library
 LOAD_LIBRARY
 
@@ -129,6 +131,9 @@ BE_CONV_FUNCTION(dsgenericwimp_nusetup, void, (const double(&)[29], const double
                                                const double(&)[3], const double&, const double&, const double&,
                                                const double&, const double&), "nuyield_setup")
 BE_CONV_FUNCTION(initFromSLHA, int, (eaSLHA), "initFromSLHA")
+BE_CONV_FUNCTION(registerMassesForIB, 
+    void, (std::map<std::string, DarkBit::TH_ParticleProperty>&), "registerMassesForIB")
+BE_CONV_FUNCTION(setMassesForIB, void, (bool), "setMassesForIB")
 
 // Initialisation function (definition)
 BE_INI_FUNCTION
@@ -252,6 +257,26 @@ BE_NAMESPACE
     return 0;  // everything OK
   }
 
+  void registerMassesForIB(
+      std::map<std::string, DarkBit::TH_ParticleProperty> & particleProperties)
+  {
+    // For TB: Save masses somewhere in global variables etc.
+    double mh = particleProperties.at("h0_1").mass;
+    // Note: Actually, it is not trivial to define some global variables here
+    // in the header.
+  }
+
+  void setMassesForIB(bool set)
+  {
+    if (set)
+    {
+      // For TB: Set masses in DS, using above global variables.
+    }
+    else
+    {
+      // For TB: Reset masses.
+    }
+  }
 }
 END_BE_NAMESPACE
 
