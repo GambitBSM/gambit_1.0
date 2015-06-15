@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Fri 16 Jan 2015 13:12:36
+// File generated at Mon 1 Jun 2015 13:31:59
 
 #ifndef MSSM_INPUT_PARAMETERS_H
 #define MSSM_INPUT_PARAMETERS_H
@@ -32,6 +32,9 @@ struct MSSM_input_parameters {
    double Qin;
    double mHd2IN;
    double mHu2IN;
+   Eigen::Matrix<double,3,3> Aeij;
+   Eigen::Matrix<double,3,3> Adij;
+   Eigen::Matrix<double,3,3> Auij;
    Eigen::Matrix<double,3,3> mq2Input;
    Eigen::Matrix<double,3,3> ml2Input;
    Eigen::Matrix<double,3,3> md2Input;
@@ -40,18 +43,15 @@ struct MSSM_input_parameters {
    double MassBInput;
    double MassWBInput;
    double MassGInput;
-   Eigen::Matrix<double,3,3> Aeij;
-   Eigen::Matrix<double,3,3> Adij;
-   Eigen::Matrix<double,3,3> Auij;
 
    MSSM_input_parameters()
-      : TanBeta(0), SignMu(1), Qin(0), mHd2IN(0), mHu2IN(0), mq2Input(
-   Eigen::Matrix<double,3,3>::Zero()), ml2Input(Eigen::Matrix<double,3,3>::Zero
-   ()), md2Input(Eigen::Matrix<double,3,3>::Zero()), mu2Input(Eigen::Matrix<
-   double,3,3>::Zero()), me2Input(Eigen::Matrix<double,3,3>::Zero()),
-   MassBInput(0), MassWBInput(0), MassGInput(0), Aeij(Eigen::Matrix<double,3,3>
-   ::Zero()), Adij(Eigen::Matrix<double,3,3>::Zero()), Auij(Eigen::Matrix<
-   double,3,3>::Zero())
+      : TanBeta(0), SignMu(1), Qin(0), mHd2IN(0), mHu2IN(0), Aeij(Eigen::Matrix<
+   double,3,3>::Zero()), Adij(Eigen::Matrix<double,3,3>::Zero()), Auij(
+   Eigen::Matrix<double,3,3>::Zero()), mq2Input(Eigen::Matrix<double,3,3>::Zero
+   ()), ml2Input(Eigen::Matrix<double,3,3>::Zero()), md2Input(Eigen::Matrix<
+   double,3,3>::Zero()), mu2Input(Eigen::Matrix<double,3,3>::Zero()), me2Input(
+   Eigen::Matrix<double,3,3>::Zero()), MassBInput(0), MassWBInput(0),
+   MassGInput(0)
 
    {}
 };

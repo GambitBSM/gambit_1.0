@@ -36,7 +36,8 @@
 // Flexible SUSY stuff (should not be needed by the rest of gambit)
 #include "flexiblesusy/src/ew_input.hpp"
 #include "flexiblesusy/src/lowe.h" // From softsusy; used by flexiblesusy
-#include "flexiblesusy/src/numerics.hpp"
+#include "flexiblesusy/src/numerics2.hpp"
+#include "flexiblesusy/src/two_loop_corrections.hpp"
 
 // Switch for debug mode
 #define SpecBit_DBUG 
@@ -134,18 +135,22 @@ namespace Gambit
       #undef SPECGEN_SET
 
       // Higgs loop corrections are a little different... sort them out now     
-      Higgs_2loop_corrections higgs_2loop_settings;
+      Two_loop_corrections two_loop_settings;
 
       // alpha_t alpha_s
       // alpha_b alpha_s
       // alpha_t^2 + alpha_t alpha_b + alpha_b^2
       // alpha_tau^2
-      higgs_2loop_settings.at_as     = runOptions.getValueOrDef<bool>(true,"use_higgs_2loop_at_as");
-      higgs_2loop_settings.ab_as     = runOptions.getValueOrDef<bool>(true,"use_higgs_2loop_ab_as");
-      higgs_2loop_settings.at_at     = runOptions.getValueOrDef<bool>(true,"use_higgs_2loop_at_at");
-      higgs_2loop_settings.atau_atau = runOptions.getValueOrDef<bool>(true,"use_higgs_2loop_atau_atau");
+      two_loop_settings.higgs_at_as
+         = runOptions.getValueOrDef<bool>(true,"use_higgs_2loop_at_as");
+      two_loop_settings.higgs_ab_as
+         = runOptions.getValueOrDef<bool>(true,"use_higgs_2loop_ab_as");
+      two_loop_settings.higgs_at_at
+         = runOptions.getValueOrDef<bool>(true,"use_higgs_2loop_at_at");
+      two_loop_settings.higgs_atau_atau
+         = runOptions.getValueOrDef<bool>(true,"use_higgs_2loop_atau_atau");
 
-      spectrum_generator.set_higgs_2loop_corrections(higgs_2loop_settings);
+      spectrum_generator.set_two_loop_corrections(two_loop_settings);
 
       // Generate spectrum
       spectrum_generator.run(oneset, input);

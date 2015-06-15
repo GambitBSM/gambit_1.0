@@ -18,7 +18,7 @@
 
 #include "two_scale_convergence_tester.hpp"
 
-#include "numerics.hpp"
+#include "numerics2.hpp"
 
 namespace flexiblesusy {
 
@@ -26,12 +26,12 @@ Convergence_tester<Two_scale>::~Convergence_tester()
 {
 }
 
-bool Convergence_tester<Two_scale>::is_equal(double a, double b) const
+bool Convergence_tester<Two_scale>::is_equal(double a, double b)
 {
    return flexiblesusy::is_equal(a, b);
 }
 
-bool Convergence_tester<Two_scale>::is_zero(double a) const
+bool Convergence_tester<Two_scale>::is_zero(double a)
 {
    return flexiblesusy::is_zero(a);
 }

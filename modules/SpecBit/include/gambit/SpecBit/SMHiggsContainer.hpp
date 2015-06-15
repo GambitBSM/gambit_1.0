@@ -119,8 +119,7 @@ namespace Gambit {
                typename MT::fmap tmp_map;
                Derived::derived_fill_mass_map(tmp_map);
     
-               tmp_map["<H>"]      = &Model::get_HiggsVEV;
-               tmp_map["Higgs_VEV"]= &Model::get_HiggsVEV;
+               tmp_map["vev"]      = &Model::get_HiggsVEV;
                return tmp_map;
             }
 

@@ -50,6 +50,9 @@ namespace Gambit
         /// Retrieve the PDG code and context integer, from the short name and index
         std::pair<int, int> pdg_pair(str,int);
 
+        /// Retrieve the PDG code and context integer, from the short name and index pair
+        std::pair<int, int> pdg_pair(std::pair<str,int>);
+
         /// Retrieve the long name, from the short name and index
         str long_name(str,int);
 
@@ -76,6 +79,30 @@ namespace Gambit
 
         /// Check if a particle is in the database, using the PDG code and context integer 
         bool has_particle(std::pair<int, int>);
+
+        /// Get the matching anti-particle long name for a particle in the database, using the long name 
+        str get_antiparticle(str);
+
+        /// Get the matching anti-particle short name and index for a particle in the database, using the short name and index 
+        std::pair<str, int> get_antiparticle(std::pair<str, int>);
+        std::pair<str, int> get_antiparticle(str, int);
+
+        /// Get the matching anti-particle PDG code and index for a particle in the database, using the PDG code and index 
+        /// Pretty trivial, just decides whether PDG code needs to have the sign flipped. Only used really to simplify
+        /// the other getters.
+        std::pair<int, int> get_antiparticle(std::pair<int, int>);
+        std::pair<int, int> get_antiparticle(int, int);
+
+        /// Check if a particle has a matching anti-particle in the database, using the long name 
+        bool has_antiparticle(str);
+
+        /// Check if a particle has a matching anti-particle in the database, using the short name and index 
+        bool has_antiparticle(std::pair<str, int>);
+        bool has_antiparticle(str, int);
+
+        /// Check if a particle has a matching anti-particle in the database, using the PDG code and context integer 
+        bool has_antiparticle(std::pair<int, int>);
+        bool has_antiparticle(int, int);
 
         /// Check if a particle has a short name, using the long name 
         bool has_short_name(str);

@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Fri 16 Jan 2015 13:11:27
+// File generated at Mon 1 Jun 2015 13:31:21
 
 #include "MSSM_two_scale_susy_parameters.hpp"
 #include "wrappers.hpp"
@@ -39,8 +39,8 @@ Eigen::Matrix<double,3,3> MSSM_susy_parameters::calc_beta_Ye_one_loop(const Susy
 
    Eigen::Matrix<double,3,3> beta_Ye;
 
-   beta_Ye = oneOver16PiSqr*(Ye*(3*traceYdAdjYd + traceYeAdjYe - 1.8*Sqr(
-      g1) - 3*Sqr(g2)) + 3*(Ye*Ye.adjoint()*Ye));
+   beta_Ye = (oneOver16PiSqr*(Ye*(3*traceYdAdjYd + traceYeAdjYe - 1.8*Sqr
+      (g1) - 3*Sqr(g2)) + 3*(Ye*Ye.adjoint()*Ye))).real();
 
 
    return beta_Ye;
@@ -62,11 +62,11 @@ Eigen::Matrix<double,3,3> MSSM_susy_parameters::calc_beta_Ye_two_loop(const Susy
 
    Eigen::Matrix<double,3,3> beta_Ye;
 
-   beta_Ye = twoLoop*(0.1*Ye*(3*(45*Power(g1,4) + 25*Power(g2,4) - 30*
+   beta_Ye = (twoLoop*(0.1*Ye*(3*(45*Power(g1,4) + 25*Power(g2,4) - 30*
       traceYdAdjYdYdAdjYd - 10*traceYdAdjYuYuAdjYd - 10*traceYeAdjYeYeAdjYe + 4
       *traceYeAdjYe*Sqr(g1) + 6*Sqr(g1)*Sqr(g2)) - 4*traceYdAdjYd*(Sqr(g1) - 40
       *Sqr(g3))) + (-9*traceYdAdjYd - 3*traceYeAdjYe + 6*Sqr(g2))*(Ye*
-      Ye.adjoint()*Ye) - 4*(Ye*Ye.adjoint()*Ye*Ye.adjoint()*Ye));
+      Ye.adjoint()*Ye) - 4*(Ye*Ye.adjoint()*Ye*Ye.adjoint()*Ye))).real();
 
 
    return beta_Ye;

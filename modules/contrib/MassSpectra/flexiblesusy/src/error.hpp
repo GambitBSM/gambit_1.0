@@ -58,9 +58,38 @@ public:
               << " after " << number_of_iterations << " iterations";
       return message.str();
    }
-   unsigned get_number_of_iterations() { return number_of_iterations; }
+   unsigned get_number_of_iterations() const { return number_of_iterations; }
 private:
    unsigned number_of_iterations;
+};
+
+/**
+ * @class NoRhoConvergenceError
+ * @brief No convergence while calculating the rho-hat parameter
+ */
+class NoRhoConvergenceError : public Error {
+public:
+   explicit NoRhoConvergenceError(unsigned number_of_iterations_,
+                                  double sin_theta_, double rho_hat_)
+      : number_of_iterations(number_of_iterations_)
+      , sin_theta(sin_theta_)
+      , rho_hat(rho_hat_)
+      {}
+   virtual ~NoRhoConvergenceError() {}
+   virtual std::string what() const {
+      std::stringstream message;
+      message << "RGFlow<Two_scale>::NoRhoConvergenceError: no convergence"
+              << " after " << number_of_iterations << " iterations "
+              << " (sin(theta)=" << sin_theta << ", rho-hat=" << rho_hat
+              << ")";
+      return message.str();
+   }
+   unsigned get_number_of_iterations() const { return number_of_iterations; }
+   double get_sin_theta() const { return sin_theta; }
+   double get_rho_hat() const { return rho_hat; }
+private:
+   unsigned number_of_iterations;
+   double sin_theta, rho_hat;
 };
 
 /**

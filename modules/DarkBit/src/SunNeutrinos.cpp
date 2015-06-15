@@ -80,7 +80,7 @@ namespace Gambit
       neutral_channels[2]  = initVector<str>("h0_2", "h0_2");
       neutral_channels[3]  = initVector<str>("A0", "A0");
       neutral_channels[4]  = initVector<str>("h0_1", "A0");
-      neutral_channels[5]  = initVector<str>("h0_2", "h0_1");
+      neutral_channels[5]  = initVector<str>("h0_2", "A0");
       neutral_channels[6]  = initVector<str>("H+", "H-");
       neutral_channels[7]  = initVector<str>("Z0", "h0_1");
       neutral_channels[8]  = initVector<str>("Z0", "h0_2");
