@@ -50,6 +50,7 @@ namespace Gambit {
          protected:
             /// flag to indicate if the sync buffer is full (and ready for sending/dumping)
             bool sync_buffer_full = false;
+            bool sync_buffer_empty = true;
 
          public:
             VertexBufferBase()
@@ -88,6 +89,7 @@ namespace Gambit {
             uint get_index()          { return index; }
             std::string get_label()   { return label; }
             bool sync_buffer_is_full(){ return sync_buffer_full; }
+            bool sync_buffer_is_empty(){ return sync_buffer_empty; }
             bool is_synchronised()    { return synchronised; }
             bool is_silenced()        { return silenced; }
 

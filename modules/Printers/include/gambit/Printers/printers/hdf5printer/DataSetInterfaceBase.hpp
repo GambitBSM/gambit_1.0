@@ -89,7 +89,8 @@ namespace Gambit {
          const hsize_t* get_chunkdims() const      { return chunkdims; }
          const hsize_t* get_slicedims() const      { return slicedims; }
          ulong get_nextemptyslab() const     { return dsetnextemptyslab; }
-  
+         ulong dset_length() const           { return dims[0]; }
+ 
          // Full accessor needed for dataset dimensions 
          // so that they can be updated when chunks are added
          hsize_t* dsetdims() { return dims; }
@@ -101,6 +102,8 @@ namespace Gambit {
          /// Create a (chunked) dataset 
          H5::DataSet createDataSet(H5FGPtr location, const std::string& name, const std::size_t rdims[DSETRANK]);
 
+         /// Extend dataset to nearest multiple of CHUNKLENGTH above supplied length
+         void extend_dset(const ulong i);
       };
 
 
@@ -184,6 +187,26 @@ namespace Gambit {
          return output;
       }
 
+      /// Extend dataset to nearest multiple of CHUNKLENGTH above supplied length
+      template<class T, std::size_t RR, std::size_t CHUNKLENGTH>
+      void DataSetInterfaceBase<T,RR,CHUNKLENGTH>::extend_dset(const ulong min_length)
+      {
+         if( min_length > this->dsetdims()[0] )
+         {
+            // Extend the dataset to the nearest multiple of CHUNKLENGTH above min_length,
+            // unless min_length is itself a multiple of CHUNKLENGTH.
+            std::size_t remainder = min_length % CHUNKLENGTH;
+            std::size_t newlength;
+            if(remainder==0) { newlength = min_length; } 
+            else             { newlength = min_length - remainder + CHUNKLENGTH; }
+            #ifdef HDF5_DEBUG
+            std::cout << "Requested min_length ("<<min_length<<") larger than current dataset length ("<<this->dsetdims()[0]<<") (dset name="<<this->get_myname()<<")" << std::endl
+                      << "Extending dataset to newlength="<<newlength<<std::endl;
+            #endif
+            this->dsetdims()[0] = newlength;
+            this->my_dataset.extend( this->dsetdims() );  
+         }
+      }
       /// @}
 
   }

@@ -108,8 +108,6 @@
 
 // Switch for debugging output (manual at the moment)
 
-//#define DEBUG_MODE
-
 #ifdef DEBUG_MODE 
   #define DBUG(x) x
 #else 
@@ -320,8 +318,8 @@ namespace Gambit
     {
       DBUG( std::cout << "Destructing HDF5Printer object (with name=\""<<printer_name<<"\")..." << std::endl; )
 
-      // Instruct all the buffers to do their final writes.
-      flush();
+      // Instruct all the buffers to do their final writes (and possibly MPI sends/receives).
+      finalise(); // TODO: ScannerBit should call this function on the printer!
 
       #ifdef WITH_MPI
       // Make sure to delete the MPITagManager that we created with 'new'
@@ -330,8 +328,25 @@ namespace Gambit
         delete tag_manager;
       }
       #endif
-   }
+    }
  
+    void HDF5Printer::finalise()
+    {
+      DBUG( std::cout << "Performing final writes for HDF5Printer object (with name=\""<<printer_name<<"\")..." << std::endl; )
+
+      // Make sure buffers are sync'd, to ensure that they all have the same final length
+      //{ This is a bit of a hack to force the printer to increment by one final (fake) point
+      //  so that the synchronisation works correctly.
+      if(is_primary_printer) //myRank==0?
+      {
+        reverse_global_index_lookup.push_back(std::make_pair(0,0));
+        synchronise_buffers();
+      }
+
+      // Instruct all the buffers to do their final writes.
+      flush();
+    }
+
     /// Retrieve pointer to HDF5 location to which datasets are added
     H5FGPtr HDF5Printer::get_location()
     {
@@ -438,19 +453,17 @@ namespace Gambit
       // The buffers should throw an error if we are accidentally telling them to go backwards
       // or skip too many points or anything they can't do.
       // Here though we should only be moving them forward by one position.
+      #ifdef DEBUG_MODE
+      std::cout<<"Synchronising buffers to position "<<i<<" (message from printer: "<<printer_name<<", is_auxilliary: "<<is_auxilliary_printer()<<", synchronised: "<<synchronised<<")"<<std::endl;
+      #endif 
       for (BaseBufferMap::iterator it = all_buffers.begin(); it != all_buffers.end(); it++)
       {
-        if(it->second->is_synchronised()) {
-           #ifdef DEBUG_MODE
-           std::cout<<"Synchronising buffer '"<<it->second->get_label()<<"' to position "<<sync_pos;
-           std::cout<<"(message from printer: "<<printer_name<<", is_auxilliary: "<<is_auxilliary_printer()<<", synchronised: "<<synchronised<<")"<<std::endl;
-           #endif
-           it->second->synchronise_output_to_position(sync_pos);
-        }
+        // If buffer isn't flagged for synchronisation, it will just take note of the
+        // new sync position for the purposes of keeping buffer lengths consistent. 
+        it->second->synchronise_output_to_position(sync_pos);
       }
     } 
 
-    // Check if the buffers are full and waiting to be emptied
     // (this will trigger MPI sends if needed)
     // Note that if one sync buffer is full, they should all be full!
     void HDF5Printer::empty_sync_buffers_if_full()
@@ -643,7 +656,7 @@ namespace Gambit
     /// This is only allowed if this is an auxilliary printer with global=true
     void HDF5Printer::reset()
     {
-      #ifdef HDFG_DEBUG
+      #ifdef DEBUG_MODE
       std::cout<<"is_auxilliary_printer() = "<<is_auxilliary_printer()<<std::endl;
       std::cout<<"synchronised            = "<<synchronised<<std::endl;
       std::cout<<"printer_name            = "<<printer_name<<std::endl;
@@ -727,7 +740,7 @@ namespace Gambit
        ulong dset_index;
        if(not synchronised) dset_index = get_global_index(pointID,mpirank);
 
-       #ifdef DEBUG_MODE
+       #ifdef HDEBUG_MODE
        std::cout<<"printing vector<double>: "<<label<<std::endl;
        std::cout<<"pointID: "<<pointID<<", mpirank: "<<mpirank<<std::endl;
        if(not synchronised) std::cout<<"dset position: "<<dset_index<<std::endl;

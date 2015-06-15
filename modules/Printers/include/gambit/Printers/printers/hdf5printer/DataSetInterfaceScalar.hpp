@@ -137,22 +137,7 @@ namespace Gambit {
          // Extend the dataset if needed
          // To do this need to know largest target coordinate
          ulong max_coord = *std::max_element(coords,coords+npoints);
-         if( max_coord >= this->dsetdims()[0] )
-         {
-           // Extend the dataset to the nearest multiple of CHUNKLENGTH above max_coord,
-           // unless max_coord is itself a multiple of CHUNKLENGTH.
-           std::size_t remainder = max_coord % CHUNKLENGTH;
-           std::size_t newlength;
-           if(remainder==0) { newlength = max_coord; } 
-           else             { newlength = max_coord - remainder + CHUNKLENGTH; }
-           #ifdef HDF5_DEBUG
-           std::cout << "Max coord ("<<max_coord<<") larger than current dataset length ("<<this->dsetdims()[0]<<") (dset name="<<this->get_myname()<<")" << std::endl
-                     << "Extending dataset to newlength="<<newlength<<std::endl
-                     << "npoints = "<< npoints << std::endl;
-           #endif
-           this->dsetdims()[0] = newlength;
-           this->my_dataset.extend( this->dsetdims() );  
-         }
+         this->extend_dset(max_coord);
 
          // Dataset size in memory
          static const std::size_t MDIM_RANK = 1; 

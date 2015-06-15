@@ -39,7 +39,8 @@
 // MPI bindings
 #include "gambit/Utils/mpiwrapper.hpp"
 
-//#define DEBUG_MODE
+#define DEBUG_MODE
+//#define HDEBUG_MODE // "High output" debug mode (info with every single print command)
 
 // Code!
 namespace Gambit
@@ -149,6 +150,10 @@ namespace Gambit
         void flush();
         void reset();
         int getRank();
+
+        // Not yet a virtual function but probably will become one
+        // Runs cleanup functions (better here than in destructor, since some MPI needed)
+        void finalise();
 
         ///@}
      
@@ -282,7 +287,7 @@ namespace Gambit
            // Extract a buffer from the manager corresponding to this 
            BuffType& selected_buffer = buffer_manager.get_buffer(IDcode, 0, label); 
 
-           #ifdef DEBUG_MODE
+           #ifdef HDEBUG_MODE
            std::cout<<"printing "<<typeid(T).name()<<": "<<label<<std::endl;
            std::cout<<"pointID: "<<pointID<<", mpirank: "<<mpirank<<std::endl;
            #endif
@@ -296,7 +301,7 @@ namespace Gambit
            {
              // Queue up a desynchronised ("random access") dataset write to previous scan iteration
              ulong dset_index = get_global_index(pointID,mpirank);
-             #ifdef DEBUG_MODE
+             #ifdef HDEBUG_MODE
              std::cout<<"dset_index: "<<dset_index<<std::endl;
              #endif
              selected_buffer.RA_write(value,dset_index); 

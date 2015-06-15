@@ -36,7 +36,7 @@
 // MPI bindings
 #include "gambit/Utils/mpiwrapper.hpp"
 
-//#define HDF5_DEBUG // Triggers debugging output
+#define HDF5_DEBUG // Triggers debugging output
 //#define DISABLED_FOR_NOW
 
 #define MPI_DEBUG
@@ -218,6 +218,7 @@ namespace Gambit {
             buffer_entries[nextempty] = data;
             buffer_valid[nextempty] = true;
             nextempty++;
+            this->sync_buffer_empty = false;
             if(nextempty==bufferlength) 
             {
                #ifdef HDF5_DEBUG
@@ -242,6 +243,7 @@ namespace Gambit {
             error_if_done(); // make sure buffer hasn't written to the current point already
             buffer_valid[nextempty] = false;
             nextempty++;
+            this->sync_buffer_empty = false;
             if(nextempty==bufferlength)
             {
                #ifdef HDF5_DEBUG
@@ -423,6 +425,7 @@ namespace Gambit {
             }
             nextempty=0; 
             this->sync_buffer_full = false;
+            this->sync_buffer_empty = true;
          }
       }
 
