@@ -128,6 +128,7 @@ BE_CONV_FUNCTION(neutrino_yield, double, (const double&, const int&, void*&), "n
 BE_CONV_FUNCTION(dsgenericwimp_nusetup, void, (const double(&)[29], const double(&)[29][3], const double(&)[15], 
                                                const double(&)[3], const double&, const double&, const double&,
                                                const double&, const double&), "nuyield_setup")
+BE_CONV_FUNCTION(initFromSLHA, int, (eaSLHA), "initFromSLHA")
 
 // Initialisation function (definition)
 BE_INI_FUNCTION
@@ -241,6 +242,14 @@ BE_NAMESPACE
     const char object[3] = "su";
     return 1e-30 * dsntmuonyield(pow(10.0,log10E),10.0,object[0],3,1,ptype,istat);
     if (istat != 0) invalid_point().raise("Model point failed neutrino flux calculation.");
+  }
+
+  int initFromSLHA(eaSLHA mySLHA)
+  {
+    // JE's Initialization routine
+    using SLHAea::to;
+    mssmpar->m2 = to<double>(mySLHA.at("MSOFT").at(36).at(1));
+    return 0;  // everything OK
   }
 
 }

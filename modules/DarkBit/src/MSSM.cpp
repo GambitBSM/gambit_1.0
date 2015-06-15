@@ -160,23 +160,36 @@ namespace Gambit {
         eaSLHA mySLHA = mySpec->getSLHAea();
 
         // Add model select block to inform DS about 6x6 mixing
+        // FIXME: Should be done somewhere upstream
         SLHAea::Block modsel_block("MODSEL");
         modsel_block.push_back("BLOCK MODSEL");
         modsel_block.push_back("6 3 # FV");
         mySLHA.push_back(modsel_block);
 
-        std::ofstream ofs("DarkBit_temp.slha");
-        ofs << mySLHA;
-        ofs.close();
+        if ( runOptions->getValueOrDef<bool>(false, "use_dsSLHAread") )
+        {
+          std::ofstream ofs("DarkBit_temp.slha");
+          ofs << mySLHA;
+          ofs.close();
 
-        // Initialize SUSY spectrum from SLHA
-        int len = 17;
-        int flag = 15;
-        const char * filename = "DarkBit_temp.slha";
-        logger() << "Initializing DarkSUSY via SLHA." << std::endl;
-        BEreq::dsSLHAread(byVal(filename),flag,byVal(len));
-        BEreq::dsprep();
-        result = true;
+          // Initialize SUSY spectrum from SLHA
+          int len = 17;
+          int flag = 15;
+          const char * filename = "DarkBit_temp.slha";
+          logger() << "Initializing DarkSUSY via SLHA." << std::endl;
+          BEreq::dsSLHAread(byVal(filename),flag,byVal(len));
+          BEreq::dsprep();
+          result = true;  // FIXME: Need some error checks
+        }
+        else
+        {
+          // JE's BE initialization happens here
+          if ( BEreq::initFromSLHA(byVal(mySLHA)) == 0 )
+          {
+            BEreq::dsprep();
+            result = true;
+          }
+        }
       }
 
       if (!result) {
