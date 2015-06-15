@@ -228,7 +228,8 @@ namespace Gambit                                                                
                                                                                                 \
       /* Get the pointer to the function in the shared library. */                              \
       extern const CAT(NAME,_type) NAME =                                                       \
-       load_backend_symbol<CAT(NAME,_type)>(pHandle, pSym, SYMBOLNAME);                         \
+       load_backend_symbol<CAT(NAME,_type)>(pHandle, pSym, SYMBOLNAME, STRINGIFY(BACKENDNAME),  \
+       STRINGIFY(VERSION));                                                                     \
                                                                                                 \
       /* Function to throw an error if a backend is absent. */                                  \
       ABSTRACT* CAT(backend_not_loaded_,NAME)CONVERT_VARIADIC_ARG(ARGS)                         \
@@ -297,7 +298,8 @@ namespace Gambit                                                              \
                                                                               \
       /* Set the variable pointer and the getptr function. */                 \
       extern TYPE* const NAME =                                               \
-       load_backend_symbol<TYPE*>(pHandle, pSym, SYMBOLNAME);                 \
+       load_backend_symbol<TYPE*>(pHandle, pSym, SYMBOLNAME,                  \
+       STRINGIFY(BACKENDNAME), STRINGIFY(VERSION));                           \
       TYPE* CAT(getptr,NAME)() { return NAME; }                               \
                                                                               \
       /* Create functor objects */                                            \
@@ -386,7 +388,8 @@ namespace Gambit                                                                
       typedef TYPE (*NAME##_type) CONVERT_VARIADIC_ARG(ARGLIST);                                \
                                                                                                 \
       /* Get the pointer to the function in the shared library. */                              \
-      extern const NAME##_type NAME = load_backend_symbol<NAME##_type>(pHandle,pSym,SYMBOLNAME);\
+      extern const NAME##_type NAME = load_backend_symbol<NAME##_type>(pHandle,pSym,SYMBOLNAME, \
+       STRINGIFY(BACKENDNAME), STRINGIFY(VERSION));                                             \
                                                                                                 \
       /* Create functor object */                                                               \
       namespace Functown                                                                        \
