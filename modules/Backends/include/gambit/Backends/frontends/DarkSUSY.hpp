@@ -31,6 +31,10 @@
 ///  \author Lars A. Dal  
 ///          (l.a.dal@fys.uio.no)
 ///  \date 2014 Mar
+///
+///  \author Joakim Edsjo
+///          (edsjo@fysik.su.se)
+///  \date 2015 May
 ///  *********************************************
 
 #ifdef BACKENDRENAME
@@ -74,17 +78,35 @@ BE_FUNCTION(dsntcapsuntab, double, (const double&, const double&, const double&)
 BE_FUNCTION(dsntmuonyield, double, (const double&, const double&, const char&, const int&, const int&, const int&, const int&), "dsntmuonyield_", "raw_muonyield")
 
 // Variables
+// Below are output (slightly modified) from cbgb.py, the ones already specified are commented out further below
+BE_VARIABLE(DS_PACODES, pacodes, "pacodes_", "pacodes")
+BE_VARIABLE(DS_MSPCTM, mspctm, "mspctm_", "mspctm")
+BE_VARIABLE(DS_WIDTHS, widths, "widths_", "widths")
+BE_VARIABLE(DS_INTDOF, intdof, "intdof_", "intdof")
+BE_VARIABLE(DS_VRTXS, vrtxs, "vrtxs_", "vrtxs")
+BE_VARIABLE(DS_SMRUSEFUL, smruseful, "smruseful_", "smruseful")
+BE_VARIABLE(DS_SMCUSEFUL, smcuseful, "smcuseful_", "smcuseful")
+BE_VARIABLE(DS_COUPLINGCONSTANTS, couplingconstants, "couplingconstants_", "couplingconstants")
+BE_VARIABLE(DS_SCKM, sckm, "sckm_", "sckm")
+BE_VARIABLE(DS_MIXING, mixing, "mixing_", "mixing")
+BE_VARIABLE(DS_MSSMTYPE, mssmtype, "mssmtype_", "mssmtype")
+BE_VARIABLE(DS_MSSMPAR, mssmpar, "mssmpar_", "mssmpar")
+BE_VARIABLE(DS_MSSMSWITCH, mssmswitch, "mssmswitch_", "mssmswitch")
+BE_VARIABLE(DS_SFERMIONMASS, sfermionmass, "sfermionmass_", "sfermionmass")
+BE_VARIABLE(DS_MSSMWIDTHS, mssmwidths, "mssmwidths_", "mssmwidths")
+BE_VARIABLE(DS_MSSMMIXING, mssmmixing, "mssmmixing_", "mssmmixing")
+
 // TODO: Replace darksusy types with appropriate commonblock representations and use FORT_COMMONB macros here
-BE_VARIABLE(DS_MSSMPAR, mssmpar,   "mssmpar_",   "mssmpar")   // Required to set up e.g. MSSM7
+//BE_VARIABLE(DS_MSSMPAR, mssmpar,   "mssmpar_",   "mssmpar")   // Required to set up e.g. MSSM7
 // Only read from
-BE_VARIABLE(DS_MSPCTM, mspctm,     "mspctm_",    "mspctm")    // Mass spectrum
-BE_VARIABLE(DS_INTDOF, intdof,     "intdof_",    "intdof")    // Particle degrees of freedom
-BE_VARIABLE(DS_PACODES, pacodes,   "pacodes_",   "pacodes")   // Particles codes (mapped onto mssmpar etc)
+//BE_VARIABLE(DS_MSPCTM, mspctm,     "mspctm_",    "mspctm")    // Mass spectrum
+//BE_VARIABLE(DS_INTDOF, intdof,     "intdof_",    "intdof")    // Particle degrees of freedom
+//BE_VARIABLE(DS_PACODES, pacodes,   "pacodes_",   "pacodes")   // Particles codes (mapped onto mssmpar etc)
 // Used in RD_eff_annrate_SUSY_DSprep_func, RD_oh2_general and RD_thresholds_resonances_SingletDM
 BE_VARIABLE(DS_RDMGEV, rdmgev,     "rdmgev_",    "rdmgev")    // more RD Contains information about coannihilation
 // Used in RD_oh2_general and RD_spectrum_SUSY
 // This is only written to for some narrow-width approximation to the SM higgs
-BE_VARIABLE(DS_WIDTHS, widths,     "widths_",    "widths")    // Particle widths
+//BE_VARIABLE(DS_WIDTHS, widths,     "widths_",    "widths")    // Particle widths
 // Appears only in RD_oh2_general
 BE_VARIABLE(DS_RDPTH, rdpth,       "rdpth_",     "rdpth")     // gRD thresholds
 BE_VARIABLE(DS_RDDOF, rddof,       "rddof_",     "rddof")     // gRD dofs
