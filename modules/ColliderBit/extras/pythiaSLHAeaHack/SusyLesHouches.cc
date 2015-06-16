@@ -707,6 +707,8 @@ int SusyLesHouches::readSLHAea(int verboseIn, bool useDecayIn) {
     message(2,"readSLHAea","has no SLHAea::Coll pointer",0);
     return -1;
     slhaRead=false;
+  } else {
+    cout<<"SusyLesHouches says that it has this SLHAea::Coll pointer: "<<slhaeaCollPtr<<endl;
   }
   if (verboseSav >= 3) {
     message(0,"readSLHAea","parsing SLHAea::Coll instance",0);
@@ -734,6 +736,7 @@ int SusyLesHouches::readSLHAea(int verboseIn, bool useDecayIn) {
     if (! headerPrinted) printHeader();
 
     const SLHAea::Block::const_iterator blockDefIter = blockIter->find_block_def();
+    if (blockDefIter == blockIter->end()) continue; // <-- Skip comment "blocks"
     string blockName = blockIter->name();
     string blockType = blockDefIter->at(0);
     toLower(blockName);
@@ -1056,7 +1059,7 @@ int SusyLesHouches::readSLHAea(int verboseIn, bool useDecayIn) {
           genericBlocks[blockName].set(lineIter->str());
 
           if(!lineIter->is_data_line()) continue;
-          ifail = alpha.set(0, SLHAea::to<double>(lineIter->at(1)));
+          ifail = alpha.set(0, SLHAea::to<double>(lineIter->at(0)));
           if (ifail == 1) {
             message(0,"readSLHAea",blockName+" existing entry overwritten",0);
           }
@@ -1423,6 +1426,12 @@ void SusyLesHouches::printFooter() {
 // Not yet fully implemented.
 
 void SusyLesHouches::printSpectrum(int ifail) {
+
+  // Print a debugging message
+  if (ifail == 999) {
+    std::cout<<"\n\n!! SusyLesHouches within libpythia has been touched. !!\n\n";
+    return;
+  }
 
   // Exit if output switched off
   if (verboseSav <= 0) return;

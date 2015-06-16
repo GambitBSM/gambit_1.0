@@ -420,7 +420,11 @@ public:
   //int writeFile(string filename): write SLHA file on filename
   // Read from SLHAea::Coll
   int readSLHAea(int verboseIn=1, bool useDecayIn=true);
-  void setSLHAea(const SLHAea::Coll* inputSLHAea) {slhaeaCollPtr = inputSLHAea;}
+  void setSLHAea(const SLHAea::Coll* inputSLHAea) {
+    cout<<"SusyLesHouches is setting this SLHAea::Coll pointer: "<<inputSLHAea<<endl;
+    slhaeaCollPtr = inputSLHAea;
+    cout<<"SusyLesHouches has set this SLHAea::Coll pointer: "<<slhaeaCollPtr<<endl;
+  }
 
   //Output utilities
   void printHeader();   // print Header
