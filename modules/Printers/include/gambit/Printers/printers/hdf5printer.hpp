@@ -32,6 +32,7 @@
 #include "gambit/Printers/new_mpi_datatypes.hpp"
 #include "gambit/Printers/MPITagManager.hpp"
 #include "gambit/Printers/VertexBufferBase.hpp"
+#include "gambit/Printers/VertexBuffer_mpitags.hpp"
 #include "gambit/Printers/printers/hdf5printer/hdf5tools.hpp"
 #include "gambit/Printers/printers/hdf5printer/VertexBufferNumeric1D_HDF5.hpp"
 #include "gambit/Utils/yaml_options.hpp"
@@ -39,7 +40,7 @@
 // MPI bindings
 #include "gambit/Utils/mpiwrapper.hpp"
 
-#define DEBUG_MODE
+//#define DEBUG_MODE
 //#define HDEBUG_MODE // "High output" debug mode (info with every single print command)
 
 // Code!
@@ -50,16 +51,8 @@ namespace Gambit
  
     // Parameter controlling the length of all the standard buffers
     static const std::size_t BUFFERLENGTH = 100; // Change to 10000 or something. Currently cannot change this dynamically though, sorry.
-    /// Reserved tags for MPI messages
-    /// First reserved tag is for messages registering/requesting a new tags
-    enum Tags { TAG_REQ=0 };
-    const int FIRST_EMPTY_TAG = TAG_REQ+1;
 
     /// @{ Helpful typedefs
-
-    /// pointID / process number pair
-    /// Used to identify a single parameter space point
-    typedef std::pair<ulong,uint> PPIDpair;
 
     /// Type of the global buffer map
     typedef std::map<VBIDpair, VertexBufferBase*> BaseBufferMap;
@@ -150,9 +143,6 @@ namespace Gambit
         void flush();
         void reset();
         int getRank();
-
-        // Not yet a virtual function but probably will become one
-        // Runs cleanup functions (better here than in destructor, since some MPI needed)
         void finalise();
 
         ///@}
@@ -171,6 +161,14 @@ namespace Gambit
         /// Add PPIDpair to global index list
         void add_PPID_to_list(const PPIDpair&);
 
+        #ifdef WITH_MPI
+        /// Send PPID lists to the master and clear them (master process should never do this!)
+        void send_PPID_lists();
+
+        /// Update the master node PPID lists with IDs from a worker node
+        void receive_PPID_list(uint source);
+        #endif
+
         /// Function to ensure buffers are all synchronised to the same absolute position
         void synchronise_buffers();
   
@@ -186,7 +184,7 @@ namespace Gambit
         BuffTags get_bufftags(VBIDpair);
 
         /// Check for tag requests from worker nodes
-        void check_for_bufftag_requests();
+        //void check_for_bufftag_requests();
 
         // Check if the buffers are full and waiting to be emptied
         // (this will trigger MPI sends if needed)
@@ -300,11 +298,7 @@ namespace Gambit
            else
            {
              // Queue up a desynchronised ("random access") dataset write to previous scan iteration
-             ulong dset_index = get_global_index(pointID,mpirank);
-             #ifdef HDEBUG_MODE
-             std::cout<<"dset_index: "<<dset_index<<std::endl;
-             #endif
-             selected_buffer.RA_write(value,dset_index); 
+             selected_buffer.RA_write(value,PPIDpair(pointID,mpirank),primary_printer->global_index_lookup); 
            }
         }
  
@@ -395,6 +389,19 @@ namespace Gambit
  
         /// Tag manager object (only the primary printer on the master node has one of these) 
         MPITagManager* tag_manager = NULL;
+
+        /// Buffer and flag for tracking the status of the PPIDpair Isend to master (in clear_PPID_lists)
+        PPIDpair PPID_send_buffer[BUFFERLENGTH];
+        bool PPID_send_buffer_ready = true;
+        /// Request and status handles for tracking status of the above message
+        MPI_Request req_PPIDsend = MPI_REQUEST_NULL;
+        MPI_Status stat_PPIDsend; 
+
+        /// Buffer, Flag, request, and status handles for N_buffers_sent messages
+        uint N_buffers_sent;
+        bool N_buffers_sent_buf_ready = true;
+        MPI_Request req_N_buffers_sent = MPI_REQUEST_NULL;
+        MPI_Status  stat_N_buffers_sent;
         #endif
 
         /// Flag to specify whether all buffers created by this printer 

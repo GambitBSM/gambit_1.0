@@ -143,23 +143,27 @@ namespace Gambit
           while(not thisptr->stop_tag_daemon and thisptr->printerComm.Iprobe(MPI_ANY_SOURCE, thisptr->tag_req, &status) )
           {
              // Returns true if there is a message waiting
-             
+  
              // Find out who sent the message
-             int sender_rank = status.MPI_SOURCE;
-                
+             int sender_rank(-1);
+             sender_rank = status.MPI_SOURCE;
+             #ifdef MPI_DEBUG
+             std::cout<<"rank "<<thisptr->mpiRank<<" (tag_daemon): Noticed tag request message from rank "<<sender_rank<<", triggering Recv..."<<std::endl;
+             #endif
+               
              // Receive the tag request message
              VBIDpair bufID;
              thisptr->printerComm.Recv(&bufID, 1, sender_rank, thisptr->tag_req);
  
              #ifdef MPI_DEBUG
-             std::cout<<"rank "<<mpiRank<<": Receiving tag request ("<<bufID.vertexID<<","<<bufID.index<<") from rank "<<sender_rank<<std::endl;
+             std::cout<<"rank "<<thisptr->mpiRank<<": Received tag request ("<<bufID.vertexID<<","<<bufID.index<<") from rank "<<sender_rank<<std::endl;
              #endif
  
              // Do the tag lookup/issue
              int tag = thisptr->get_tags(bufID);
    
              #ifdef MPI_DEBUG
-             std::cout<<"rank "<<mpiRank<<": Sending first-tag ("<<tag<<") to rank "<<sender_rank<<std::endl;
+             std::cout<<"rank "<<thisptr->mpiRank<<": Sending first-tag ("<<tag<<") to rank "<<sender_rank<<std::endl;
              #endif
              // Send the tag data back to the worker
              thisptr->printerComm.Send(&tag, 1, sender_rank, thisptr->tag_req);
@@ -177,16 +181,21 @@ namespace Gambit
              // short sleep
              nanosleep(&short_time,NULL);
           }
-          #ifdef MPI_DEBUG
-          std::cout<<"rank "<<mpiRank<<": tag_daemon noticed stop signal in Iprobe loop; abandoning message."<<std::endl;
-          #endif
+
+          if(thisptr->stop_tag_daemon)
+          {
+             #ifdef MPI_DEBUG
+             std::cout<<"rank "<<thisptr->mpiRank<<": tag_daemon noticed stop signal in Iprobe loop; abandoning message."<<std::endl;
+             #endif
+             // Should cause while condition to switch
+          }
        }
        #ifdef MPI_DEBUG
-       std::cout<<"rank "<<mpiRank<<": tag_daemon noticed stop signal; ending listener loop."<<std::endl;
+       std::cout<<"rank "<<thisptr->mpiRank<<": tag_daemon noticed stop signal; ending listener loop."<<std::endl;
        #endif
 
        // Finished! 
-       return NULL;
+       pthread_exit(NULL);  
     }
     #endif 
     /// @}

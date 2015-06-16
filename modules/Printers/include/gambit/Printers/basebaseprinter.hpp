@@ -54,6 +54,9 @@ namespace Gambit
         /// Retrieve MPI rank
         virtual int getRank() = 0;
 
+        /// Signal printer that scan is finished, and final output needs to be performed
+        virtual void finalise() = 0;
+
         /// Declarations of minimal print functions needed by ScannerBit
         #define SCANNER_PRINTABLE_TYPES \
           (bool)                     \

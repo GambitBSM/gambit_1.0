@@ -193,7 +193,13 @@ namespace Gambit
           #endif
 
           // Create the new buffer object
-          local_buffers[key] = BuffType( printer->get_location()
+          H5FGPtr loc(NULL);
+          if(printer->getRank()==0)
+          {
+             loc = printer->get_location();
+          } // else we give the new buffer the default (null) value, and expect that it will not use it.
+
+          local_buffers[key] = BuffType( loc
                                        , label/*deconstruct?*/
                                        , vertexID
                                        , aux_i
@@ -309,7 +315,9 @@ namespace Gambit
 
       // Retrieve the target location for adding new datasets from the primary
       // printer
-      location = primary_printer->get_location();
+      if(myRank==0) {
+         location = primary_printer->get_location();
+      }
     }
 
     /// Destructor
@@ -317,9 +325,6 @@ namespace Gambit
     HDF5Printer::~HDF5Printer()
     {
       DBUG( std::cout << "Destructing HDF5Printer object (with name=\""<<printer_name<<"\")..." << std::endl; )
-
-      // Instruct all the buffers to do their final writes (and possibly MPI sends/receives).
-      finalise(); // TODO: ScannerBit should call this function on the printer!
 
       #ifdef WITH_MPI
       // Make sure to delete the MPITagManager that we created with 'new'
@@ -334,12 +339,19 @@ namespace Gambit
     {
       DBUG( std::cout << "Performing final writes for HDF5Printer object (with name=\""<<printer_name<<"\")..." << std::endl; )
 
+      #ifdef WITH_MPI
+      // Trigger final sending and receiving of buffers
+      //uint null_message; 
+      //myComm.Send(&null_message, 1, masterRank, RA_BUFFERS_SENT, &req_RA_SENT);
+      myComm.Barrier(); 
+      #endif
+
       // Make sure buffers are sync'd, to ensure that they all have the same final length
-      //{ This is a bit of a hack to force the printer to increment by one final (fake) point
+      //  This is a bit of a hack to force the printer to increment by one final (fake) point
       //  so that the synchronisation works correctly.
       if(is_primary_printer) //myRank==0?
       {
-        reverse_global_index_lookup.push_back(std::make_pair(0,0));
+        reverse_global_index_lookup.push_back(PPIDpair(0,0));
         synchronise_buffers();
       }
 
@@ -410,14 +422,74 @@ namespace Gambit
       // Ok, now safe to add it 
       lookup[ppid] = reverse_lookup.size();
       reverse_lookup.push_back(ppid);
-    } 
+    }
+
+    #ifdef WITH_MPI
+    /// Clear index lists (master process should never do this!)
+    void HDF5Printer::send_PPID_lists()
+    {
+      if ( myRank==0 ) {
+         std::ostringstream errmsg;
+         errmsg << "Error! Master process hdf5printer tried to clear its PPID lists! This is not allowed.";
+         printer_error().raise(LOCAL_INFO, errmsg.str());
+      }
+
+      std::vector<PPIDpair>& reverse_lookup = primary_printer->reverse_global_index_lookup;
+      if ( reverse_lookup.size() != BUFFERLENGTH )
+      {
+         std::ostringstream errmsg;
+         errmsg << "Error! hdf5printer tried to clear PPID lists, but list size ("<<reverse_lookup.size()<<") was not equal to buffer size ("<<BUFFERLENGTH<<")! Should only be sending data to master node in chunks equal to BUFFERLENGTH.";
+         printer_error().raise(LOCAL_INFO, errmsg.str());
+      } 
+
+      /// Check that send buffer is ready for sending (i.e. previous send is finished)
+      if(not PPID_send_buffer_ready)
+      { 
+         // Make sure previous messages are out of the send buffer before sending new ones.
+         MPI_Wait(&req_PPIDsend, &stat_PPIDsend);
+         PPID_send_buffer_ready = true;
+      }
+
+      /// Copy message into send buffer
+      std::copy(reverse_lookup.begin(), reverse_lookup.end(), PPID_send_buffer);
+
+      /// Send the list to the master process
+      myComm.Isend(&PPID_send_buffer, BUFFERLENGTH, 0 /*master*/, PPID_SEND, &req_PPIDsend);
+      PPID_send_buffer_ready = false;
+
+      /// Reset the lists for this process
+      primary_printer->global_index_lookup.clear();
+      primary_printer->reverse_global_index_lookup.clear();
+    }
+
+    /// Update the master node PPID lists with IDs from a worker node
+    void HDF5Printer::receive_PPID_list(uint source)
+    {
+      if ( myRank!=0 ) {
+         std::ostringstream errmsg;
+         errmsg << "Error! Non-master process hdf5printer tried to call receive_PPID_list! This is forbidden.";
+         printer_error().raise(LOCAL_INFO, errmsg.str());
+      }
+
+      /// Receive the list
+      PPIDpair recv_buffer[BUFFERLENGTH];
+      myComm.Recv(&recv_buffer, BUFFERLENGTH, source, PPID_SEND);
+
+      /// Update the lists with the new PPIDs
+      for(uint i=0; i<BUFFERLENGTH; i++)
+      {
+         add_PPID_to_list(recv_buffer[i]);
+      }
+    }
+    #endif
+
 
     /// Retrieve index from global lookup table, with error checking
     ulong HDF5Printer::get_global_index(const ulong pointID, const uint mpirank)
     {
        std::map<PPIDpair, ulong>::iterator it;
        std::map<PPIDpair, ulong>& lookup = primary_printer->global_index_lookup;
-       it = lookup.find(std::make_pair(pointID,mpirank));
+       it = lookup.find(PPIDpair(pointID,mpirank));
        if ( it == lookup.end() ) 
        {
          #ifdef DEBUG_MODE    
@@ -496,6 +568,28 @@ namespace Gambit
          errmsg << "Error! Tried to empty all synchronised buffers, but some of them were not full! (N_were_full ("<<N_were_full<<") != N_sync_buffers ("<<N_sync_buffers<<"). This indicates that a loss of synchronisation has occurred, which is a bug in the hdf5printer system. Please report it. (Note: rank="<<myRank<<", printer_name="<<printer_name<<")"; 
          printer_error().raise(LOCAL_INFO, errmsg.str());
       }
+
+      #ifdef WITH_MPI
+      // Trigger send of the PPIDs associated with these sync writes
+      if(myRank != 0 and N_were_full != 0) 
+      {
+        send_PPID_lists();
+ 
+        // Let the master process know how many buffer messages it has been sent
+        N_buffers_sent = N_were_full;
+        if(not N_buffers_sent_buf_ready)
+        { 
+           // Make sure previous message is out of the send buffer before sending new one.
+           MPI_Wait(&req_N_buffers_sent, &stat_N_buffers_sent);
+           N_buffers_sent_buf_ready = true;
+        }
+        myComm.Isend(&N_buffers_sent, 1, 0, N_BUFFERS_SENT, &req_N_buffers_sent);
+        N_buffers_sent_buf_ready = false;
+        #ifdef MPI_DEBUG
+        std::cout<<"rank "<<myRank<<": Sent N_buffers_sent message to master (number was "<<N_buffers_sent<<")"<<std::endl;
+        #endif
+      }
+      #endif
     }
 
     #ifdef WITH_MPI
@@ -519,15 +613,17 @@ namespace Gambit
        // check for messages from only one process at a time, so that the output datasets
        // stay synchronised point-by-point
 
-       // First we will check if any messages at all are waiting.
-       if(myComm.Iprobe(MPI_ANY_SOURCE, MPI_ANY_TAG))
+       // First we will check if any BUFFER_SENT messages are waiting.
+       if(myComm.Iprobe(MPI_ANY_SOURCE, N_BUFFERS_SENT))
        {
-          for(uint rank=1; rank<mpiSize; rank++)
+          for(uint source_rank=1; source_rank<mpiSize; source_rank++)
           {
-             // If there are any messages waiting from a particular process, we
+             // If there is a N_BUFFERS_SENT message waiting from a particular process, we
              // will attempt to collect messages from all of the (synchronised) buffers.
-             if(myComm.Iprobe(rank, MPI_ANY_TAG))
+             if(myComm.Iprobe(source_rank, N_BUFFERS_SENT))
              {
+                // The N_BUFFERS_SENT message indicates that sync buffers are
+                // waiting to be retrieved, to check on these first.
                 uint N_buffers = 0;
                 uint N_buffers_with_msg = 0;
                 for(BaseBufferMap::iterator it = all_buffers.begin(); it != all_buffers.end(); it++)
@@ -535,26 +631,98 @@ namespace Gambit
                    VertexBufferBase* buf = it->second;
                    if(buf->is_synchronised())
                    {
-                      // Check for sync buffer messages from 'rank'
-                      if(buf->probe_sync_mpi_message(rank))
+                      // Check for sync buffer messages from 'source_rank'
+                      if(buf->probe_sync_mpi_message(source_rank))
                       {
-                         // Receive messages from 'rank'
-                         buf->get_sync_mpi_message(rank);
+                         // Receive messages from 'source_rank'
+                         // Will push all the received print data through the append system
+                         // Thus it needs to happen for *every* buffer at once.
+                         buf->get_sync_mpi_message(source_rank);
                          N_buffers_with_msg += 1;
                       }
                       N_buffers += 1;
                    }
                 }
                 // Check if any messages are missing...
-                // (but it is ok if there were zero messages, just means they were not sync messages waiting)
-                if(N_buffers_with_msg!=0 or N_buffers_with_msg!=N_buffers)
+                // (ask the source how many sync buffers were sent; 
+                //  this may be less than the master. If it is
+                //  more, then this is currently a problem. TODO: Need to
+                //  make this not a problem, but it is a little tricky
+                //  since the matching buffers will not exist on the
+                //  master to receive the data... need to create them
+                //  somehow...)
+                myComm.Recv(&N_buffers_sent, 1, source_rank, N_BUFFERS_SENT);
+                #ifdef MPI_DEBUG
+                std::cout<<"rank "<<myRank<<": Received N_buffers_sent message from process "<<source_rank<<" (number was "<<N_buffers_sent<<")"<<std::endl;
+                #endif
+
+                // TODO: Will need to skip ahead any sync buffers that didn't receive data from
+                // the worker.
+
+                // Zero messages is not ok, N_BUFFERS_SENT message indicates that at least one must be waiting.
+                if(N_buffers_with_msg!=N_buffers_sent)
                 {
                    std::ostringstream errmsg;
-                   errmsg << "Error in printer_name = "<<printer_name<<"! Tried to retrieve sync buffers from rank="<<rank<<" process via MPI, but some messages were missing! (N_buffers_with_msg ("<<N_buffers_with_msg<<") != N_buffers ("<<N_buffers<<") )";
+                   errmsg << "Error in printer_name = "<<printer_name<<"! Tried to retrieve sync buffers from rank="<<source_rank<<" process via MPI, but some messages were missing! (N_buffers_with_msg ("<<N_buffers_with_msg<<") != N_buffers_sent ("<<N_buffers_sent<<") )";
                    printer_error().raise(LOCAL_INFO, errmsg.str());
                 }
 
-                /// TODO: Check for RA messages...
+                #ifdef MPI_DEBUG
+                std::cout<<"rank "<<myRank<<": Check for worker sync buffer messages complete; received "<<N_buffers_with_msg<<" of expected "<<N_buffers<<" (synchronised) buffers from process "<<source_rank<<std::endl;
+                #endif
+
+                // Update master PPIDs with those from the worker node
+                // Will block until these are received; they should come right alongside the buffers themselves
+                receive_PPID_list(source_rank);
+                #ifdef MPI_DEBUG
+                std::cout<<"rank "<<myRank<<": Received new PPIDs from process "<<source_rank<<std::endl;
+                #endif
+
+                /// Now check for waiting RA messages from this same source_rank
+                /// Don't have to keep track of these so closely, they can come at
+                /// any time. 
+                /// TODO: but there will be a problem if they arrive before the PPIDs
+                /// to which they want to write become known to the master rank primary
+                /// printer. Need to figure out how to handle this case.
+                /// TODO: there may also be some issues with datasets that get reset; an
+                /// old message might come in after the reset occurs. Need to deal with
+                /// this too. I guess the reset should drain all the waiting messages 
+                /// first, or something.
+
+                // We will need to drain all waiting RA messages for each buffer.
+                // Though lets put a cap on the number of loops we do, to avoid getting
+                // stuck here if many workers are constantly sending buffers at us
+                // (but hopefully this process is much faster than the filling and 
+                //  sending of new RA buffers, even by many workers).
+  
+                uint loop_count = 0;
+                while( myComm.Iprobe(MPI_ANY_SOURCE, RA_BUFFERS_SENT) and loop_count<100 )
+                {
+                  loop_count++;
+
+                  uint N_RA_buffers_with_msg = 0;
+                  for(BaseBufferMap::iterator it = all_buffers.begin(); it != all_buffers.end(); it++)
+                  {
+                     VertexBufferBase* buf = it->second;
+                     if(not buf->is_synchronised()) // This time check the non-synchronised buffers
+                     {
+                        // Check for sync buffer messages from 'source_rank'
+                        if(buf->probe_RA_mpi_message(source_rank))
+                        {
+                           // Receive messages from 'source_rank'
+                           // Will push all the received print data through the RA_write commands
+                           buf->get_RA_mpi_message(source_rank, global_index_lookup);
+                           N_RA_buffers_with_msg += 1;
+                        }
+                     }
+                  }
+                  #ifdef MPI_DEBUG
+                  std::cout<<"rank "<<myRank<<": (loop "<<loop_count<<") Check for worker RA buffer messages complete; received messages for "<<N_RA_buffers_with_msg<<" non-synchronised buffers"<<std::endl;
+                  #endif               
+                }
+                #ifdef MPI_DEBUG
+                std::cout<<"rank "<<myRank<<": Exited checks for RA buffer messages after "<<loop_count<<" loop(s)."<<std::endl;
+                #endif                
              }
           }
        }
@@ -599,39 +767,40 @@ namespace Gambit
        return BuffTags(first_tag_in_group);
     }
 
+    /// REPLACED BY MPITagManager
     /// Check for tag requests from worker nodes
-    void HDF5Printer::check_for_bufftag_requests()
-    {
-      if(is_auxilliary_printer())
-      {
-         // Primary printer must handle the tag requests
-         primary_printer->check_for_bufftag_requests();
-      }
+    //void HDF5Printer::check_for_bufftag_requests()
+    //{
+    //  if(is_auxilliary_printer())
+    //  {
+    //     // Primary printer must handle the tag requests
+    //     primary_printer->check_for_bufftag_requests();
+    //  }
 
-      if(myRank!=0)
-      {
-          std::ostringstream errmsg;
-          errmsg << "Error! Called check_for_buftag_request() from non-master node! (myRank="<<myRank<<"). Only the master node may fulfil requests for new MPI tags.";
-          printer_error().raise(LOCAL_INFO, errmsg.str());
-      }
-      for(uint rank=1; rank<mpiSize; rank++)
-      {
-        // Check for tag request
-        bool message_waiting = myComm.Iprobe(rank, TAG_REQ);
-        if( message_waiting )
-        {
-           // Get the tag request
-           VBIDpair bufID;
-           myComm.Recv(&bufID, 1, rank, TAG_REQ);
+    //  if(myRank!=0)
+    //  {
+    //      std::ostringstream errmsg;
+    //      errmsg << "Error! Called check_for_buftag_request() from non-master node! (myRank="<<myRank<<"). Only the master node may fulfil requests for new MPI tags.";
+    //      printer_error().raise(LOCAL_INFO, errmsg.str());
+    //  }
+    //  for(uint rank=1; rank<mpiSize; rank++)
+    //  {
+    //    // Check for tag request
+    //    bool message_waiting = myComm.Iprobe(rank, TAG_REQ);
+    //    if( message_waiting )
+    //    {
+    //       // Get the tag request
+    //       VBIDpair bufID;
+    //       myComm.Recv(&bufID, 1, rank, TAG_REQ);
   
-           // Do the tag lookup/issue
-           int tag = tag_manager->get_tags(bufID);
-          
-           // Send the tag back to the worker
-           myComm.Send(&tag, 1, rank, TAG_REQ);
-        }        
-      }
-    }
+    //       // Do the tag lookup/issue
+    //       int tag = tag_manager->get_tags(bufID);
+    //      
+    //       // Send the tag back to the worker
+    //       myComm.Send(&tag, 1, rank, TAG_REQ);
+    //    }        
+    //  }
+    //}
     #endif
 
     /// Empty all the buffers to disk
@@ -646,7 +815,7 @@ namespace Gambit
           it->second->flush();
         }
         else {
-          it->second->RA_flush();
+          it->second->RA_flush(primary_printer->global_index_lookup);
         }
       }
     }
@@ -699,22 +868,42 @@ namespace Gambit
          // Yep the scanner has moved on, at least as far as the current process sees
          lastPointID[myRank] = candidate_newpoint;
 
-         // In principle this should only happen once per pointID/process rank pair.
-         // So add the new pair to the lookup table and register that we have moved to
-         // a new parameter space point.
-         add_PPID_to_list(std::make_pair(candidate_newpoint,mpirank));
- 
-         // Make sure all the buffers are synchronised at the new position.
-         synchronise_buffers();          
-         
          // Check if the buffers are full and waiting to be emptied
          // (this will trigger MPI sends if needed)
          empty_sync_buffers_if_full();
-
+          
          #ifdef WITH_MPI
          // Check for buffers waiting to be delivered from other processes
+         // (this will insert them into the local buffers BEFORE the first
+         // print command at the new point occurs, so the new PPID needs
+         // to also be added after the 'foreign' buffers are collected)
          if(myRank==0) collect_mpi_buffers();
          #endif
+
+         // In principle this should only happen once per pointID/process rank pair.
+         // So add the new pair to the lookup table and register that we have moved to
+         // a new parameter space point.
+         add_PPID_to_list(PPIDpair(candidate_newpoint,mpirank));
+ 
+         // Make sure all the buffers are synchronised at the new position.
+         synchronise_buffers();          
+
+         // Debugging only! check if buffers are somehow still full...
+         #ifdef MPI_DEBUG
+         for (BaseBufferMap::iterator it = all_my_buffers.begin(); it != all_my_buffers.end(); it++)
+         {
+           if(it->second->is_synchronised())
+           {
+             if(it->second->sync_buffer_is_full())
+             {
+                std::ostringstream errmsg;
+                errmsg << "rank "<<myRank<<": Error! sync buffer with label "<<it->second->get_label()<<" is full! Should not be full at this point (printer="<<printer_name<<")";
+                printer_error().raise(LOCAL_INFO, errmsg.str());
+             }
+           }
+         }
+         #endif
+
        }
     }
 
@@ -735,15 +924,9 @@ namespace Gambit
        typedef H5P_LocalBufferManager<BuffType> BuffMan;
        BuffMan& buffer_manager = get_mybuffermanager<BuffType>(pointID,mpirank);
 
-       //std::vector<std::string> labels;
-       //labels.reserve(value.size());
-       ulong dset_index;
-       if(not synchronised) dset_index = get_global_index(pointID,mpirank);
-
        #ifdef HDEBUG_MODE
        std::cout<<"printing vector<double>: "<<label<<std::endl;
        std::cout<<"pointID: "<<pointID<<", mpirank: "<<mpirank<<std::endl;
-       if(not synchronised) std::cout<<"dset position: "<<dset_index<<std::endl;
        #endif
  
        for(unsigned int i=0;i<value.size();i++)
@@ -763,7 +946,7 @@ namespace Gambit
          else
          {
            // Queue up a desynchronised ("random access") dataset write to previous scan iteration
-           buffer_manager.get_buffer(vID, i, ss.str()).RA_write(value[i],dset_index); 
+           buffer_manager.get_buffer(vID, i, ss.str()).RA_write(value[i],PPIDpair(pointID,mpirank),primary_printer->global_index_lookup); 
          }
        }
     }
@@ -779,9 +962,6 @@ namespace Gambit
 
        std::map<std::string, double> parameter_map = value.getValues();
  
-       ulong dset_index;
-       if(not synchronised) dset_index = get_global_index(pointID,mpirank);
-  
        uint i=0; // index for each buffer 
        for (std::map<std::string, double>::iterator 
          it = parameter_map.begin(); it != parameter_map.end(); it++)
@@ -799,7 +979,7 @@ namespace Gambit
          else
          {
            // Queue up a desynchronised ("random access") dataset write to previous scan iteration
-           buffer_manager.get_buffer(vID, i, ss.str()).RA_write(it->second,dset_index); 
+           buffer_manager.get_buffer(vID, i, ss.str()).RA_write(it->second,PPIDpair(pointID,mpirank),primary_printer->global_index_lookup); 
          }
          i++;
        }

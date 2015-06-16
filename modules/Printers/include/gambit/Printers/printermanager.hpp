@@ -61,7 +61,10 @@ namespace Gambit
 
         /// Getter for auxiliary printer objects
         BaseBasePrinter* get_stream(const std::string& = "");
-    };
+  
+        /// Instruct printers that scan has finished and to perform cleanup
+        void finalise();
+  };
 
 
   }

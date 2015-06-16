@@ -136,10 +136,8 @@ namespace Gambit
     // Overload the base class virtual destructor
     asciiPrinter::~asciiPrinter()
     {
-      // Make sure buffer is completely written to disk
+      // Make sure buffer is completely written to disk (MOVED TO FINALISE)
       DBUG( std::cout << "Destructing asciiPrinter object (with name=\""<<printer_name<<"\")..." << std::endl; )
-      dump_buffer(true);
-      DBUG( std::cout << "Buffer (of asciiPrinter with name=\""<<printer_name<<"\") successfully dumped..." << std::endl; )
     }
  
     /// Initialisation function
@@ -158,6 +156,13 @@ namespace Gambit
       //     buffer[i][*it];
       //   }
       // } 
+    }
+
+    /// Do final buffer dumps
+    void asciiPrinter::finalise()
+    {
+      dump_buffer(true);
+      DBUG( std::cout << "Buffer (of asciiPrinter with name=\""<<printer_name<<"\") successfully dumped..." << std::endl; )
     }
 
     /// Delete contents of output file (to be replaced/updated) and erase everything in the buffer

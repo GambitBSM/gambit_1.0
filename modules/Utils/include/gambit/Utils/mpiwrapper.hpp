@@ -40,6 +40,13 @@
 
 #include <mpi.h>
 
+// Can rip out the <sstream> and error handlers if you want these wrappers to be independent of gambit.
+#include <sstream>
+#include "gambit/Core/error_handlers.hpp"
+
+// Trigger debugging output in various places (specifically, hdf5 printer)
+#define MPI_DEBUG
+
 namespace Gambit {
    namespace GMPI {
 
@@ -106,10 +113,17 @@ namespace Gambit {
             /// Get "rank" (ID number) of current task in this communicator group
             int Get_rank() const;
 
+            /// Prevent further executation until all members of the bound communicator group enter the call
+            void Barrier()
+            {
+              int errflag;
+              errflag = MPI_Barrier(boundcomm);
+            }
+
             /// Blocking receive
             ///  void*        buf      - memory address in which to store received message
             ///  int          count    - number of elements in message
-            ///  MPI_Datatype datatpye - datatype of each message element
+            ///  MPI_Datatype datatype - datatype of each message element
             ///  int          source   - rank of sending (receiving?) process
             ///  int          tag      - message tag          
             ///  MPI_status*  status   - struct containing data about the received message
@@ -117,11 +131,11 @@ namespace Gambit {
             ///  MPI_status - struct containing data about the received message
             void Recv(void *buf /*out*/, int count, MPI_Datatype datatype, 
                                   int source, int tag, 
-                                  MPI_Status *status=NULL /*out*/)
+                                  MPI_Status *in_status=NULL /*out*/)
             {
                int errflag;
-               MPI_Status* def_status = MPI_STATUS_IGNORE; 
-               if(status!=NULL) status=def_status;
+               MPI_Status* status = MPI_STATUS_IGNORE; 
+               if(in_status!=NULL) status=in_status;
                errflag = MPI_Recv(buf, count, datatype, source, tag, boundcomm, status);
             }
 
@@ -179,13 +193,27 @@ namespace Gambit {
             // }
 
             // Probe for messages waiting to be delivered
-            bool Iprobe(int source, int tag, MPI_Status* status=NULL /*out*/)
+            bool Iprobe(int source, int tag, MPI_Status* in_status=NULL /*out*/)
             {
                int errflag;
                int you_have_mail; // C does not have a bool type...
-               MPI_Status* def_status = MPI_STATUS_IGNORE; 
-               if(status!=NULL) status=def_status;
+               MPI_Status* status = MPI_STATUS_IGNORE; 
+               if(in_status!=NULL) status=in_status;
                errflag = MPI_Iprobe(source, tag, boundcomm, &you_have_mail, status);
+               if(errflag!=0) {
+                 std::ostringstream errmsg;
+                 errmsg << "Error performing MPI_Iprobe! Received error flag: "<<errflag; 
+                 utils_error().raise(LOCAL_INFO, errmsg.str());
+               }
+               #ifdef MPI_DEBUG
+               if(you_have_mail!=0){
+                  if(in_status==NULL) {
+                     std::cout<<"Iprobe: Message waiting from unidentified process (possible source is "<<source<<", but no MPI_Status struct provided)"<<std::endl;
+                  } else {
+                     std::cout<<"Iprobe: Message waiting from process "<<status->MPI_SOURCE<<std::endl;
+                  }
+               }
+               #endif
                return (you_have_mail != 0);
             }
 

@@ -98,6 +98,7 @@ namespace Gambit
         void initialise(const std::vector<int>&);
         void reset();
         int getRank();
+        void finalise();
 
         ///@}
       

@@ -244,14 +244,16 @@ namespace Gambit {
          //   Cube[i] = physicalpars[i];
          //}
 
-         int thread  = 0;  // thread ID number ///TODO: need to implement parallel running for printers to do this.
-         int pointID = boundLogLike->getPtID(); // point ID number
+         // Extract the primary printer from the printer manager
+         printer* primary_stream( boundPrinter.get_stream() );
+
+         int thread  = primary_stream->getRank(); // mpi rank of this process (thread was a bad name choice, should change)
+         int pointID = boundLogLike->getPtID();   // point ID number
 
          Cube[ndim+0] = thread;
          Cube[ndim+1] = pointID;
 
          // Output these to the printer
-         printer* primary_stream( boundPrinter.get_stream() );
          primary_stream->print( thread,  "thread",  -7, thread, pointID);
          primary_stream->print( pointID, "pointID", -8, thread, pointID);
 

@@ -72,11 +72,11 @@ namespace Gambit
     {
       // Delete all the printer objects
       DBUG( std::cout << "PrinterManager: Destructing printers..." << std::endl; )
-      delete printerptr;
       typedef std::map<std::string, BasePrinter*>::iterator it_type;
       for(it_type it = auxprinters.begin(); it != auxprinters.end(); it++) {
          delete it->second; // Delete the printer to which this pointer points.
       } 
+      delete printerptr;
     }
 
     // Create new printer object (of the same type as the primary printer)
@@ -113,6 +113,16 @@ namespace Gambit
       }
     }
 
+    /// Instruct all printers that scan has finished and to perform cleanup
+    void PrinterManager::finalise()
+    {
+      typedef std::map<std::string, BasePrinter*>::iterator it_type;
+      for(it_type it = auxprinters.begin(); it != auxprinters.end(); it++) {
+         it->second->finalise();
+      } 
+      printerptr->finalise();
+    }
+ 
   }
 }
 
