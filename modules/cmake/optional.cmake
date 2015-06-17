@@ -23,24 +23,34 @@
 #                                               
 #************************************************
 
-# Check for MPI libraries
+# Check for MPI libraries; disable manually with "cmake -DMPI=OFF .."
 option(MPI "Compile with MPI enabled" ON)
-# (Force no-MPI build with "cmake -DMPI=OFF ..")
 if(MPI)
   find_package(MPI)
-  if(MPI_FOUND)
-    include_directories(${MPI_INCLUDE_PATH})
+  # Do things for GAMBIT itself
+  if(MPI_C_FOUND)
+    message("${BoldYellow}-- MPI C libraries found. GAMBIT will be MPI-enabled.${ColourReset}")
+    include_directories(${MPI_C_INCLUDE_PATH})
+    add_definitions(${MPI_C_COMPILE_FLAGS})
     add_definitions(-DWITH_MPI)
-    foreach(dir ${MPI_Fortran_INCLUDE_PATH})
-      set(GAMBIT_MPI_F_INC "${GAMBIT_MPI_F_INC} -I${dir}")
-    endforeach()
-    set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -DMPI ${GAMBIT_MPI_F_INC}")
-    message("${BoldYellow}-- MPI libraries found. Executables will be MPI-enabled.${ColourReset}")
   else()
-    message("${Red} X MPI libraries NOT found. Executables may only be run in serial.${ColourReset}")
+    message("${BoldRed}   Missing C MPI installation.  GAMBIT will not be MPI-enabled.${ColourReset}")
+  endif()
+  # Do things for Fortran backends and scanners
+  if(MPI_Fortran_FOUND)
+    if(MPI_C_FOUND)
+      message("${BoldYellow}-- MPI Fortran libraries found. Fortran scanners will be MPI-enabled.${ColourReset}") 
+      foreach(dir ${MPI_Fortran_INCLUDE_PATH})
+        set(GAMBIT_MPI_F_INC "${GAMBIT_MPI_F_INC} -I${dir}")
+      endforeach()
+      set(CMAKE_Fortran_MPI_FLAGS "${CMAKE_Fortran_FLAGS} ${MPI_Fortran_COMPILE_FLAGS} ${GAMBIT_MPI_F_INC} -DMPI")
+      set(CMAKE_Fortran_MPI_SO_LINK_FLAGS "${MPI_Fortran_LINK_FLAGS} ${MPI_Fortran_LIBRARIES}")
+    endif()
+  else()
+    message("${BoldRed}   Missing Fortran MPI installation.  Fortran scanners will not be MPI-enabled.${ColourReset}")
   endif()
 else()
-  message("${BoldCyan} X MPI manually disabled! Executables may only be run in serial.${ColourReset}")
+  message("${BoldCyan} X MPI manually disabled. Executables will not be parallelised via MPI.${ColourReset}")
 endif()
 
 # Check for ROOT.

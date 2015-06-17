@@ -63,7 +63,12 @@ set(diver_ver "1\\.0\\.0")
 set(diver_lib "libdiver")
 set(diver_dir "${PROJECT_SOURCE_DIR}/../extras/Diver")
 set(diver_short_dir "./../extras/Diver")
-set(diverFFLAGS "${CMAKE_Fortran_FLAGS}")
+set(diverSO_LINK_FLAGS "${CMAKE_Fortran_MPI_SO_LINK_FLAGS}")
+if(MPI_Fortran_FOUND)
+  set(diverFFLAGS "${CMAKE_Fortran_MPI_FLAGS}")
+else()
+  set(diverFFLAGS "${CMAKE_Fortran_FLAGS}")
+endif()
 ExternalProject_Add(diver
   #URL 
   #URL_MD5 
@@ -71,12 +76,11 @@ ExternalProject_Add(diver
   SOURCE_DIR ${diver_dir}
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND ""
-  BUILD_COMMAND make ${diver_lib}.so DIVER_FF=${CMAKE_Fortran_COMPILER} DIVER_MODULE=${FMODULE} DIVER_FOPT=${diverFFLAGS} 
+  BUILD_COMMAND make ${diver_lib}.so DIVER_FF=${CMAKE_Fortran_COMPILER} DIVER_MODULE=${FMODULE} DIVER_FOPT=${diverFFLAGS} DIVER_SO_LINK_FLAGS=${diverSO_LINK_FLAGS}$ 
   INSTALL_COMMAND "" 
 )
 set_property(TARGET diver PROPERTY _EP_DOWNLOAD_ALWAYS 0)
 set(clean_files ${clean_files} "${diver_dir}/lib/${diver_lib}.so")
-
 
 ########### Backends #########################
 
@@ -323,7 +327,7 @@ set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../extras/HiggsSignals/Hig
 
 
 set_target_properties(ddcalc gamlike darksusy micromegas superiso nulike pythia fastsim  
-                      higgssignals higgsbounds higgsbounds_tables feynhiggs susyhit diver PROPERTIES EXCLUDE_FROM_ALL 1)
+                      higgssignals higgsbounds higgsbounds_tables feynhiggs susyhit diver multinest PROPERTIES EXCLUDE_FROM_ALL 1)
 
 add_custom_target(backends COMMAND make gamlike nulike ddcalc pythia darksusy superiso susyhit) #fastsim micromegas
 

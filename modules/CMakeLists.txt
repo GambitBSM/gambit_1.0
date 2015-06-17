@@ -67,9 +67,6 @@ SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 # Include cmake utility scripts, including colour definitions.
 include(cmake/utilities.cmake)
 
-# Check for optional packages and disable sections of GAMBIT accordingly
-include(cmake/optional.cmake)
-
 # Check for Python and required libs
 include(FindPythonInterp)
 find_package(PythonInterp REQUIRED)
@@ -93,6 +90,9 @@ if(CMAKE_Fortran_COMPILER MATCHES "gfortran*" OR CMAKE_Fortran_COMPILER MATCHES 
 elseif(CMAKE_Fortran_COMPILER MATCHES "ifort*")
   set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -extend-source -fpp")
 endif()
+
+# Check for optional packages and disable sections of GAMBIT accordingly
+include(cmake/optional.cmake)
 
 # Set output paths
 set(mylibdir ${PROJECT_SOURCE_DIR}/lib)
