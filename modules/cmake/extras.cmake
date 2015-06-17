@@ -37,13 +37,11 @@ include(ExternalProject)
 
 ########### Utility commands #################
 
-# Define the sed and manual ccpforge download commands to use differently for OSX and linux
+# Define the sed command to use differently for OSX and linux
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   set(dashi "-i ''")
-  set(ccpforge "curl -u gambit_user:bsmorbust")
 else()
   set(dashi "-i")
-  set(ccpforge "wget --user gambit_user --password bsmorbust")
 endif()
 
 # Define the newline strings to use for OSX-safe substitution.
@@ -114,7 +112,7 @@ ExternalProject_Add(multinest
   INSTALL_COMMAND "" 
 )
 set_property(TARGET multinest PROPERTY _EP_DOWNLOAD_ALWAYS 0)
-set(clean_files ${clean_files} "${mn_dir}/lib/${mn_lib}.so")
+set(clean_files ${clean_files} "${mn_dir}/${mn_lib}.so")
 
 ########### Backends #########################
 
