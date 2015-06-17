@@ -45,11 +45,8 @@ foreach(p
   endif()
 endforeach()
 
-# Set the project name
-project(GAMBIT)
-
-# Enable Fortran compiler
-enable_language(Fortran)
+# Set the project name, enabling C, C++ and Fortran support
+project(GAMBIT C CXX Fortran)
 
 # Don't relink all binaries when shared lib changes (programs will be rebuilt anyway if used headers change)
 set(CMAKE_LINK_DEPENDS_NO_SHARED 1)
@@ -67,8 +64,7 @@ set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
 # Add the automatically determined parts of the RPATH that point to directories outside the build tree to the install RPATH
 SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
-# Include cmake utility scripts
-# Note: colors defined in here; colored output won't work before this!
+# Include cmake utility scripts, including colour definitions.
 include(cmake/utilities.cmake)
 
 # Check for optional packages and disable sections of GAMBIT accordingly
