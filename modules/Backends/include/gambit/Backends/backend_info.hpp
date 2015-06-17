@@ -80,10 +80,16 @@ namespace Gambit
         /// Link a backend's version and safe version
         void link_versions(str, str, str);
 
+        /// Override a backend's config file location
+        void override_path(str&, str&, str);
+
       private: 
         
         /// Map from backend names to maps between version and safe version
         std::map<str,std::pair<std::map<str,str>,std::map<str,str> > > safe_version_map;
+
+        /// Map from backend names to maps between version and paths found by dlinfo
+        std::map<str, std::map<str, str> > bepathoverrides;
 
         /// Filename in which to find the backend locations configuration file.
         const str filename;
