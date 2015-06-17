@@ -12,7 +12,7 @@
 
 
 MultiNest: 
-  3.9: 
+  3.9.0: 
     - lib: ../extras/MultiNest_v3.9/libnest3.so
 
 square_grid:
