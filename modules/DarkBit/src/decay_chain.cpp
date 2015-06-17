@@ -490,7 +490,7 @@ namespace Gambit
       DecayTable::DecayTable(const TH_ProcessCatalog &cat,
           const SimYieldTable &tab, set<string> disabledList)
       {
-        std::cout << "DecayTable initialization" << std::endl;
+        //std::cout << "DecayTable initialization" << std::endl;
         set<string> finalStates;
         // Register all decaying particles and their decays
         for(vector<TH_Process>::const_iterator it = cat.processList.begin();
@@ -501,9 +501,9 @@ namespace Gambit
           if(it->genRateTotal->hasArgs()) continue;
 
           string pID = it->particle1ID;
-          std::cout << "Address of genRateTotal: " << it->genRateTotal 
-            << std::endl;
-          std::cout << "Final state of interest: " << pID << std::endl;
+          //std::cout << "Address of genRateTotal: " << it->genRateTotal 
+          //  << std::endl;
+          // std::cout << "Final state of interest: " << pID << std::endl;
           double m = cat.getParticleProperty(pID).mass;
           bool stable = ((it->channelList).size()<1);
           if(disabledList.count(pID)==1) stable = true;
@@ -536,7 +536,7 @@ namespace Gambit
           // channels).
           entry.forceTotalWidth(true,it->genRateTotal->bind()->eval());
           addEntry(pID,entry);
-          std::cout << "Add entry for: " << table.begin()->first << std::endl;
+          // std::cout << "Add entry for: " << table.begin()->first << std::endl;
         }
         // Flag channels where all final final states are stable as endpoints.
         // Loop over all particles
@@ -576,8 +576,7 @@ namespace Gambit
         {
           if(!hasEntry(*it))
           {
-            // FIXME: Get correct particle masses from somewhere else
-            std::cout << "register: " << *it << std::endl;
+            // std::cout << "register: " << *it << std::endl;
             double m = cat.getParticleProperty(*it).mass;
             addEntry(*it,m,true);
           }
@@ -851,6 +850,14 @@ namespace Gambit
           return this;
         }            
       }        
+      const ChainParticle* ChainParticle::getParent() const
+      {
+        return parent;         
+      }       
+      double ChainParticle::E_parentFrame() const
+      {
+        return p_parent[0];
+      }
       void ChainParticle::printChain() const
       {
         cout << "*********************" << endl;

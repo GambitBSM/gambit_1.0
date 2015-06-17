@@ -119,10 +119,19 @@ BE_INI_FUNCTION
         std::cout << "DarkSUSY initialization" << std::endl;
         dsinit();
         dsrdinit();
+        
         // Initialize yield tables for use in cascade decays (initialize more if needed)
         dshainit(151); // Initialize positron tables
         dshainit(152); // Initialize gamma ray tables
-        dshainit(154); // Initialize antiproton tables        
+        dshainit(154); // Initialize antiproton tables      
+        // Call dshayield for first call initialization of variables
+        double tmp1 = 100.0;
+        double tmp2 = 10.0;
+        int tmp3 = 15;
+        int tmp4 = 152;
+        int tmp5 = 0; 
+        dshayield(tmp1,tmp2,tmp3,tmp4,tmp5); 
+        
         scan_level = false;
 
         if (runOptions->hasKey("dddn"))

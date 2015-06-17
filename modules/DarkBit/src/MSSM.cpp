@@ -486,7 +486,7 @@ namespace Gambit {
       double minBranching = runOptions->getValueOrDef<double>(0.0,
           "ProcessCatalog_MinBranching");
 
-      std::cout << "Importing decays..." << std::endl;
+      //std::cout << "Importing decays..." << std::endl;
       // Import relevant decays
       using DarkBit_utils::ImportDecays;
       if(annFinalStates.count("H+") == 1) 

@@ -64,7 +64,7 @@ namespace Gambit {
       std::set<std::string> disabled;
       // Force quarks and gluons to be stable in cascade context.
       // These spectra should be handled using SimYields.
-      if(runOptions->getValueOrDef<bool> (true, "cMC_noColoredDecays"))
+      if(runOptions->getValueOrDef<bool> (true, "cMC_noColoredSMdecays"))
       {
         disabled.insert("u");
         disabled.insert("ubar");     
@@ -81,7 +81,7 @@ namespace Gambit {
         disabled.insert("g");                        
       }
       table = DecayTable(*Dep::TH_ProcessCatalog, *Dep::SimYieldTable, disabled);
-      table.printTable();
+      //table.printTable();
     }
 
     // Loop manager for cascade decays
@@ -233,24 +233,42 @@ namespace Gambit {
     {
       //std::cout << "cascadeMC_sampleSimYield" << std::endl;          
       std::string p1,p2;
+      double gamma,beta;
+      double M;
       switch(endpoint->getnChildren())
       {
         case 0:
+        {
           p1 = endpoint->getpID();
-          p2 = "";  
+          p2 = "";
+          const DarkBit::DecayChain::ChainParticle* parent = endpoint->getParent();
+          if(parent == NULL)
+          {
+            endpoint->getBoost(gamma,beta);   
+            M = endpoint->m;
+          }
+          else
+          {
+            parent->getBoost(gamma,beta);  
+            M = endpoint->E_parentFrame();
+          }
           break;
+        }
         case 2:
+        {
           p1=(*endpoint)[0]->getpID();
           p2=(*endpoint)[1]->getpID();   
+          endpoint->getBoost(gamma,beta);  
+          M = endpoint->m; 
           break;
+        }
         default:
           DarkBit_error().raise(LOCAL_INFO,
               "cascadeMC_sampleSimYield called with invalid endpoint state.");
       }
       const SimYieldChannel &chn = table.getChannel(p1 , p2, finalState);
       // Get Lorentz boost information
-      double gamma,beta;
-      endpoint->getBoost(gamma,beta);    
+  
       const double gammaBeta = gamma*beta;              
       // Mass of final state squared
       const double m = catalog.particleProperties.at(finalState).mass;
@@ -272,7 +290,7 @@ namespace Gambit {
             // Highest energy in SimYieldChannel
             chn.Ecm_max ),
             // Estimate for highest kinematically allowed CoM energy
-          0.5*(endpoint->m*endpoint->m + msq)/endpoint->m );
+          0.5*(M*M + msq)/M );
       if(Ecmin>=Ecmax) return;    
       // TODO: Correct now?
       const double logmin = log(Ecmin);
@@ -280,8 +298,10 @@ namespace Gambit {
       const double dlogE=logmax-logmin;       
 
       // Some debug information
+      /*
       if(false)
       {
+        std::cout << M << std::endl;
         std::cout << endpoint->E_Lab() << std::endl;
         std::cout << endpoint->p_Lab() << std::endl;
         std::cout << "Lorentz factors gamma, beta: " << gamma << ", " 
@@ -299,6 +319,7 @@ namespace Gambit {
         std::cout << "Ecmin/max: " << Ecmin << " " << Ecmax << std::endl;
         std::cout << "Final state mass^2: " << msq << std::endl;
       }
+      */
 
       double specSum=0;
       int Nsampl=0;
@@ -315,7 +336,7 @@ namespace Gambit {
         // Draw an energy in the CoM frame of the endpoint. Logarithmic
         // sampling.
         double E_CoM= exp(logmin+(logmax-logmin)*Random::draw());
-        double dN_dE = chn.dNdE_bound->eval(E_CoM, endpoint->m);
+        double dN_dE = chn.dNdE_bound->eval(E_CoM, M);
 
         // Only accept point if dN_dE is above threshold value
         if(dN_dE > cMC_specValidThreshold)
@@ -383,12 +404,14 @@ namespace Gambit {
               Dep::cascadeMC_FinalStates->begin();
               it!=Dep::cascadeMC_FinalStates->end(); ++it)
           {
+            /*
             if(false)
             {
               std::cout << "Defining new histList entry!!!" << std::endl;
               std::cout << "for: " << *Dep::cascadeMC_InitialState 
                 << " " << *it << std::endl;
             }
+            */
             // FIXME: This defines 50 bins from 1e-3 to 1e3 GeV.
             // Should not be hardcoded.
             histList[*Dep::cascadeMC_InitialState][*it]=
@@ -420,14 +443,15 @@ namespace Gambit {
             it != endpoints.end(); it++)
         {
           //std::cout << "  working on endpoint:" << (*it)->getpID() << std::endl;
-          // (*it)->printChain();
+          //(*it)->printChain();
           //
-          // Get weighting factor (correction for mismatch between decay width
+          // Weighting factor (correction for mismatch between decay width
           // of available decay channels and total decay width)
-          double weight = (*it)->getWeight();                
+          double weight;        
           // Analyze single particle endpoints            
           if((*it)->getnChildren() ==0)
           {
+            weight = (*it)->getWeight();     
             // Check if the final state itself is the particle we are looking
             // for.
             if((*it)->getpID()==*pit)
@@ -450,6 +474,7 @@ namespace Gambit {
           // parent of final state particles).
           else
           {
+            weight = (*(*it))[0]->getWeight();     
             bool hasTabulated = false;
             if((*it)->getnChildren() == 2)
             {

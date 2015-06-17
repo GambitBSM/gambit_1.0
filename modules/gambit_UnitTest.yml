@@ -106,7 +106,7 @@ Rules:
   - capability: GA_AnnYield
     function: GA_AnnYield_General
     options:
-      debug_dump_spectra: true
+      debug_dump_spectra: false
       debug_spectrum_file: DarkBit/MSSM_debug_spectrum.yml
 
   - capability: SimYieldTable

@@ -284,31 +284,16 @@ namespace Gambit {
             spec1 = boost_dNdE(Dep::cascadeMC_gammaSpectra->at(it->finalStateIDs[1]), gamma1, 0.0);
           }
 
-          std::cout << it->finalStateIDs[0] << " " << it->finalStateIDs[1] << std::endl;
-          /*
-          std::cout << "Integrated spectra: " 
-                    << spec0->gsl_integration("E", 0.1, 10000)->set_epsabs(1000)->bind("v")->eval(0) << " "
-                    << spec1->gsl_integration("E", 0.1, 10000)->set_epsabs(1000)->bind("v")->eval(0) << std::endl;
-          std::cout << Ecm << " " << m0 << " " << m1 << std::endl;
-          std::cout << "b bbar integrated spectrum, m=762: ";
-          std::cout << (*Dep::SimYieldTable)("b", "bbar", "gamma")->gsl_integration("E", 0.1, 10000)->set_epsabs(1000)->set("Ecm",762)->bind("v")->eval(0) << std::endl;
-          std::cout << "t tbar integrated spectrum, m=762: ";
-          std::cout << (*Dep::SimYieldTable)("t", "tbar", "gamma")->gsl_integration("E", 0.1, 10000)->set_epsabs(1000)->set("Ecm",762)->bind("v")->eval(0) << std::endl;                 
-          std::cout << "t bbar integrated spectrum, m=762: ";
-          std::cout << (*Dep::SimYieldTable)("t", "bbar", "gamma")->gsl_integration("E", 0.1, 10000)->set_epsabs(1000)->set("Ecm",762)->bind("v")->eval(0) << std::endl;        
-          std::cout << "b tbar integrated spectrum, m=762: ";
-          std::cout << (*Dep::SimYieldTable)("b", "tbar", "gamma")->gsl_integration("E", 0.1, 10000)->set_epsabs(1000)->set("Ecm",762)->bind("v")->eval(0) << std::endl;       
-          */
+          //std::cout << it->finalStateIDs[0] << " " << it->finalStateIDs[1] << std::endl;
+          /*  
           
           //std::cout << "gammas: " << gamma0 << ", " << gamma1 << std::endl;
-          /*
+          
           if(debug)
           {
             Funk::Funk chnSpec = (Funk::zero("v", "E") 
-              + (boost_dNdE(spec0, gamma0, 0.0) 
-              +  boost_dNdE(spec1, gamma1, 0.0) 
-              +  spec2 
-              +  spec3) )-> set("v", 0.);
+              +  spec0 
+              +  spec1)-> set("v", 0.);
             std::vector<double> y = chnSpec->bind("E")->vect(x);
             os << it->finalStateIDs[0] << it->finalStateIDs[1] << ":\n";
             os << "  E: [";
@@ -328,7 +313,7 @@ namespace Gambit {
       }
           
       /*
-      if(false)
+      if(debug)
       {
           
         std::vector<std::string> test1 = initVector<std::string> ("h0_1_test","h0_2_test","h0_2_test","h0_1_test","WH_test", "A0_test", "h0_1_test", "W+");
@@ -602,7 +587,7 @@ namespace Gambit {
         
 // FIXME: Fix neutrino channels
 #define ADD_CHANNEL(ch, P1, P2, FINAL, EcmMin, EcmMax)                                                    \
-        dNdE = Funk::func(BEreq::dshayield.pointer(), Funk::var("mwimp"), Funk::var("E"), ch, yieldk, flag)->set("mwimp", Funk::var("Ecm")/2);  \
+        dNdE = Funk::func_fromThreadsafe(BEreq::dshayield.pointer(), Funk::var("mwimp"), Funk::var("E"), ch, yieldk, flag)->set("mwimp", Funk::var("Ecm")/2);  \
         result.addChannel(dNdE, P1, P2, FINAL, EcmMin, EcmMax);  // specifies also center of mass energy range
         ADD_CHANNEL(12, "Z0", "Z0", "gamma", 0., 10000.)
         ADD_CHANNEL(13, "W+", "W-", "gamma", 0., 10000.)
@@ -619,6 +604,7 @@ namespace Gambit {
         ADD_CHANNEL(24, "t", "tbar", "gamma", 0., 10000.)
         ADD_CHANNEL(25, "b", "bbar", "gamma", 0., 10000.)
         ADD_CHANNEL(26, "g", "g", "gamma", 0., 10000.)
+        
         /*
         ADD_CHANNEL(2, "h0_1_test", "h0_2_test", "gamma", 0., 10000.)      // FIXME: Remove.        
         ADD_CHANNEL(5, "h0_2_test", "A0_test", "gamma", 0., 10000.)        // FIXME: Remove.
@@ -627,32 +613,33 @@ namespace Gambit {
         ADD_CHANNEL(9, "h0_1_test", "Z0_test", "gamma", 0., 10000.)        // FIXME: Remove.        
         ADD_CHANNEL(10, "A0_test", "Z0_test", "gamma", 0., 10000.)         // FIXME: Remove.
         ADD_CHANNEL(11, "WH_test", "WH_test", "gamma", 0., 10000.)         // FIXME: Remove.      
-        */  
+        */
 #undef ADD_CHANNEL
 
         // Add approximations single-particle cases.
-        dNdE = Funk::func(BEreq::dshayield.pointer(), Funk::var("Ecm"), Funk::var("E"), 12, yieldk, flag);
+        dNdE = Funk::func_fromThreadsafe(BEreq::dshayield.pointer(), Funk::var("Ecm"), Funk::var("E"), 12, yieldk, flag);
         result.addChannel(dNdE/2, "Z0", "gamma", 0., 10000.);
-        dNdE = Funk::func(BEreq::dshayield.pointer(), Funk::var("Ecm"), Funk::var("E"), 13, yieldk, flag);
+        dNdE = Funk::func_fromThreadsafe(BEreq::dshayield.pointer(), Funk::var("Ecm"), Funk::var("E"), 13, yieldk, flag);
         result.addChannel(dNdE/2, "W+", "gamma", 0., 10000.);
         result.addChannel(dNdE/2, "W-", "gamma", 0., 10000.);
-        dNdE = Funk::func(BEreq::dshayield.pointer(), Funk::var("Ecm"), Funk::var("E"), 17, yieldk, flag);
+        dNdE = Funk::func_fromThreadsafe(BEreq::dshayield.pointer(), Funk::var("Ecm"), Funk::var("E"), 17, yieldk, flag);
         result.addChannel(dNdE/2, "mu+", "gamma", 0., 10000.);
         result.addChannel(dNdE/2, "mu-", "gamma", 0., 10000.);        
-        dNdE = Funk::func(BEreq::dshayield.pointer(), Funk::var("Ecm"), Funk::var("E"), 18, yieldk, flag);
+        dNdE = Funk::func_fromThreadsafe(BEreq::dshayield.pointer(), Funk::var("Ecm"), Funk::var("E"), 19, yieldk, flag);
         result.addChannel(dNdE/2, "tau+", "gamma", 0., 10000.);
         result.addChannel(dNdE/2, "tau-", "gamma", 0., 10000.);
-//        dNdE = Funk::func(BEreq::dshayield.pointer(), Funk::var("Ecm"), Funk::var("E"), 24, yieldk, flag);
-//        result.addChannel(dNdE/2, "t",    "gamma", 0., 10000.);
-//        result.addChannel(dNdE/2, "tbar", "gamma", 0., 10000.);        
+        // Add single particle lookup for t tbar to prevent them from being tagged as missing final states for cascades.
+        dNdE = Funk::func_fromThreadsafe(BEreq::dshayield.pointer(), Funk::var("Ecm"), Funk::var("E"), 24, yieldk, flag);
+        result.addChannel(dNdE/2, "t",    "gamma", 0., 10000.);
+        result.addChannel(dNdE/2, "tbar", "gamma", 0., 10000.);        
         
         // Approximations for mixed quark channels
-        Funk::Funk dNdE_u = Funk::func(BEreq::dshayield.pointer(), Funk::var("mwimp"), Funk::var("E"), 20, yieldk, flag)->set("mwimp", Funk::var("Ecm")/2);
-        Funk::Funk dNdE_d = Funk::func(BEreq::dshayield.pointer(), Funk::var("mwimp"), Funk::var("E"), 21, yieldk, flag)->set("mwimp", Funk::var("Ecm")/2);
-        Funk::Funk dNdE_c = Funk::func(BEreq::dshayield.pointer(), Funk::var("mwimp"), Funk::var("E"), 22, yieldk, flag)->set("mwimp", Funk::var("Ecm")/2);
-        Funk::Funk dNdE_s = Funk::func(BEreq::dshayield.pointer(), Funk::var("mwimp"), Funk::var("E"), 23, yieldk, flag)->set("mwimp", Funk::var("Ecm")/2);   
-        Funk::Funk dNdE_t = Funk::func(BEreq::dshayield.pointer(), Funk::var("mwimp"), Funk::var("E"), 24, yieldk, flag)->set("mwimp", Funk::var("Ecm")/2);
-        Funk::Funk dNdE_b = Funk::func(BEreq::dshayield.pointer(), Funk::var("mwimp"), Funk::var("E"), 25, yieldk, flag)->set("mwimp", Funk::var("Ecm")/2);  
+        Funk::Funk dNdE_u = Funk::func_fromThreadsafe(BEreq::dshayield.pointer(), Funk::var("mwimp"), Funk::var("E"), 20, yieldk, flag)->set("mwimp", Funk::var("Ecm")/2);
+        Funk::Funk dNdE_d = Funk::func_fromThreadsafe(BEreq::dshayield.pointer(), Funk::var("mwimp"), Funk::var("E"), 21, yieldk, flag)->set("mwimp", Funk::var("Ecm")/2);
+        Funk::Funk dNdE_c = Funk::func_fromThreadsafe(BEreq::dshayield.pointer(), Funk::var("mwimp"), Funk::var("E"), 22, yieldk, flag)->set("mwimp", Funk::var("Ecm")/2);
+        Funk::Funk dNdE_s = Funk::func_fromThreadsafe(BEreq::dshayield.pointer(), Funk::var("mwimp"), Funk::var("E"), 23, yieldk, flag)->set("mwimp", Funk::var("Ecm")/2);   
+        Funk::Funk dNdE_t = Funk::func_fromThreadsafe(BEreq::dshayield.pointer(), Funk::var("mwimp"), Funk::var("E"), 24, yieldk, flag)->set("mwimp", Funk::var("Ecm")/2);
+        Funk::Funk dNdE_b = Funk::func_fromThreadsafe(BEreq::dshayield.pointer(), Funk::var("mwimp"), Funk::var("E"), 25, yieldk, flag)->set("mwimp", Funk::var("Ecm")/2);  
                   
         result.addChannel(0.5*(dNdE_u+dNdE_d), "u", "dbar", "gamma", 0., 10000.); 
         result.addChannel(0.5*(dNdE_u+dNdE_s), "u", "sbar", "gamma", 0., 10000.); 
