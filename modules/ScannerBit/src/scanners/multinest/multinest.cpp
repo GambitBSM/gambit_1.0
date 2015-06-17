@@ -47,7 +47,7 @@ typedef Gambit::Scanner::scan_ptr<double (const std::vector<double>&)> scanPtr;
 /// Interface to ScannerBit
 /// =================================================
 
-scanner_plugin(MultiNest, version(3, 9))
+scanner_plugin(MultiNest, version(3, 9, 0))
 {
    // Error thrown if the following entries are not present in the inifile
    reqd_inifile_entries(); // None are absolutely required at the moment

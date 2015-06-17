@@ -84,23 +84,23 @@ ExternalProject_Add(diver
 set_property(TARGET diver PROPERTY _EP_DOWNLOAD_ALWAYS 0)
 set(clean_files ${clean_files} "${diver_dir}/lib/${diver_lib}.so")
 
-# MultiNest
-set(mn_ver "3\\.9")
-set(mn_lib "libnest3")
-set(mn_dir "${PROJECT_SOURCE_DIR}/../extras/MultiNest_v3.9")
-set(mn_short_dir "./../extras/MultiNest")
-set(mnSO_LINK "${CMAKE_Fortran_COMPILER} -shared ${CMAKE_Fortran_MPI_SO_LINK_FLAGS}")
-if(MPI_Fortran_FOUND)
-  set(mnFFLAGS "${CMAKE_Fortran_MPI_FLAGS}")
-else()
-  set(mnFFLAGS "${CMAKE_Fortran_FLAGS}")
-endif()
 #FIXME this should be made more central, and MN ditched if lapack cannot be found.
 include(FindLAPACK)
 foreach(lib ${LAPACK_LIBRARIES})
   set(LAPACK_LINKLIBS "${LAPACK_LINKLIBS} ${lib}")
 endforeach()
+# MultiNest
+set(mn_ver "3\\.9")
+set(mn_lib "libnest3")
+set(mn_dir "${PROJECT_SOURCE_DIR}/../extras/MultiNest_v3.9")
+set(mn_short_dir "./../extras/MultiNest")
 set(mnLAPACK "${LAPACK_LINKLIBS}")
+set(mnSO_LINK "${CMAKE_Fortran_COMPILER} -shared ${CMAKE_Fortran_MPI_SO_LINK_FLAGS} ${mnLAPACK}")
+if(MPI_Fortran_FOUND)
+  set(mnFFLAGS "${CMAKE_Fortran_MPI_FLAGS}")
+else()
+  set(mnFFLAGS "${CMAKE_Fortran_FLAGS}")
+endif()
 ExternalProject_Add(multinest 
   #FIXME automated download of multinest is not possible, as it is behind a login redirection wall.  Need to ask Farhan to fix.
   #URL http://ccpforge.cse.rl.ac.uk/gf/download/frsrelease/413/5871/MultiNest_v3.9.tar.gz
