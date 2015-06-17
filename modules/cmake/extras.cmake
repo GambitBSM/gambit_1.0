@@ -37,11 +37,13 @@ include(ExternalProject)
 
 ########### Utility commands #################
 
-# Define the sed command to use differently for OSX and linux
+# Define the sed and manual ccpforge download commands to use differently for OSX and linux
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   set(dashi "-i ''")
+  set(ccpforge "curl -u gambit_user:bsmorbust")
 else()
   set(dashi "-i")
+  set(ccpforge "wget --user gambit_user --password bsmorbust")
 endif()
 
 # Define the newline strings to use for OSX-safe substitution.
@@ -81,6 +83,38 @@ ExternalProject_Add(diver
 )
 set_property(TARGET diver PROPERTY _EP_DOWNLOAD_ALWAYS 0)
 set(clean_files ${clean_files} "${diver_dir}/lib/${diver_lib}.so")
+
+# MultiNest
+set(mn_ver "3\\.9")
+set(mn_lib "libnest3")
+set(mn_dir "${PROJECT_SOURCE_DIR}/../extras/MultiNest_v3.9")
+set(mn_short_dir "./../extras/MultiNest")
+set(mnSO_LINK "${CMAKE_Fortran_COMPILER} -shared ${CMAKE_Fortran_MPI_SO_LINK_FLAGS}")
+if(MPI_Fortran_FOUND)
+  set(mnFFLAGS "${CMAKE_Fortran_MPI_FLAGS}")
+else()
+  set(mnFFLAGS "${CMAKE_Fortran_FLAGS}")
+endif()
+#FIXME this should be made more central, and MN ditched if lapack cannot be found.
+include(FindLAPACK)
+foreach(lib ${LAPACK_LIBRARIES})
+  set(LAPACK_LINKLIBS "${LAPACK_LINKLIBS} ${lib}")
+endforeach()
+set(mnLAPACK "${LAPACK_LINKLIBS}")
+ExternalProject_Add(multinest 
+  #FIXME automated download of multinest is not possible, as it is behind a login redirection wall.  Need to ask Farhan to fix.
+  #URL http://ccpforge.cse.rl.ac.uk/gf/download/frsrelease/413/5871/MultiNest_v3.9.tar.gz
+  #URL_MD5 6c0c9e9ee0ac3c906109675302fb30f0
+  #DOWNLOAD_DIR ${mn_dir}
+  SOURCE_DIR ${mn_dir}
+  BUILD_IN_SOURCE 1
+  #CONFIGURE_COMMAND sed ${dashi} "s#nested.o[[:space:]]*$#nested.o cwrapper.o#g" <SOURCE_DIR>/Makefile
+  CONFIGURE_COMMAND ""
+  BUILD_COMMAND make ${mn_lib}.so FC=${CMAKE_Fortran_COMPILER} FFLAGS=${mnFFLAGS} LINKLIB=${mnSO_LINK}$ LAPACKLIB=${mnLAPACK} 
+  INSTALL_COMMAND "" 
+)
+set_property(TARGET multinest PROPERTY _EP_DOWNLOAD_ALWAYS 0)
+set(clean_files ${clean_files} "${mn_dir}/lib/${mn_lib}.so")
 
 ########### Backends #########################
 

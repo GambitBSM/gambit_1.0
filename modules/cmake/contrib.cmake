@@ -102,6 +102,7 @@ if(";${GAMBIT_BITS};" MATCHES ";SpecBit;")
   foreach(_LIB ${LAPACK_LIBRARIES})
     set(LAPACK_LIBS "${LAPACK_LIBS} -L${_LIB}")
   endforeach(_LIB)
+  #FIXME -- this adds the absolute paths to the libs to the variable ${LAPACK_LIBS}, not the dirs in which the .so files exist
   message("${BoldYellow}-- Adding LAPACK paths to FlexibleSUSY build: ${LAPACK_LIBS}${ColourReset}")
 
   # FlexibleSUSY configure options
