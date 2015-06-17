@@ -7,11 +7,6 @@
 #include "wrapper_ResonanceWidths_decl.h"
 #include <cstddef>
 
-#ifndef ENUMS_DECLARED
-#define ENUMS_DECLARED
-#include "enum_decl_copies.h"
-#endif
-
 #include "identification.hpp"
 
 // Forward declaration needed by the destructor pattern.
@@ -27,14 +22,14 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         class Abstract_ResonanceGmZ : virtual public AbstractBase, virtual public Pythia8::Abstract_ResonanceWidths
         {
             private:
-                // IGNORED: Field  -- Name: gmZmode  -- XML id: _26320
-                // IGNORED: Field  -- Name: thetaWRat  -- XML id: _26321
-                // IGNORED: Field  -- Name: ei2  -- XML id: _26322
-                // IGNORED: Field  -- Name: eivi  -- XML id: _26323
-                // IGNORED: Field  -- Name: vi2ai2  -- XML id: _26324
-                // IGNORED: Field  -- Name: gamNorm  -- XML id: _26325
-                // IGNORED: Field  -- Name: intNorm  -- XML id: _26326
-                // IGNORED: Field  -- Name: resNorm  -- XML id: _26327
+                // IGNORED: Field  -- Name: gmZmode  -- XML id: _28323
+                // IGNORED: Field  -- Name: thetaWRat  -- XML id: _28324
+                // IGNORED: Field  -- Name: ei2  -- XML id: _28325
+                // IGNORED: Field  -- Name: eivi  -- XML id: _28326
+                // IGNORED: Field  -- Name: vi2ai2  -- XML id: _28327
+                // IGNORED: Field  -- Name: gamNorm  -- XML id: _28328
+                // IGNORED: Field  -- Name: intNorm  -- XML id: _28329
+                // IGNORED: Field  -- Name: resNorm  -- XML id: _28330
             public:
             private:
     

@@ -6,11 +6,6 @@
 #include "forward_decls_wrapper_classes.h"
 #include <cstddef>
 
-#ifndef ENUMS_DECLARED
-#define ENUMS_DECLARED
-#include "enum_decl_copies.h"
-#endif
-
 #include "identification.hpp"
 
 // Forward declaration needed by the destructor pattern.
@@ -26,16 +21,16 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         class Abstract_DecayChannel : virtual public AbstractBase
         {
             private:
-                // IGNORED: Field  -- Name: onModeSave  -- XML id: _26283
-                // IGNORED: Field  -- Name: bRatioSave  -- XML id: _26284
-                // IGNORED: Field  -- Name: currentBRSave  -- XML id: _26285
-                // IGNORED: Field  -- Name: onShellWidthSave  -- XML id: _26286
-                // IGNORED: Field  -- Name: openSecPos  -- XML id: _26287
-                // IGNORED: Field  -- Name: openSecNeg  -- XML id: _26288
-                // IGNORED: Field  -- Name: meModeSave  -- XML id: _26289
-                // IGNORED: Field  -- Name: nProd  -- XML id: _26290
-                // IGNORED: Field  -- Name: prod  -- XML id: _26291
-                // IGNORED: Field  -- Name: hasChangedSave  -- XML id: _26292
+                // IGNORED: Field  -- Name: onModeSave  -- XML id: _24485
+                // IGNORED: Field  -- Name: bRatioSave  -- XML id: _24486
+                // IGNORED: Field  -- Name: currentBRSave  -- XML id: _24487
+                // IGNORED: Field  -- Name: onShellWidthSave  -- XML id: _24488
+                // IGNORED: Field  -- Name: openSecPos  -- XML id: _24489
+                // IGNORED: Field  -- Name: openSecNeg  -- XML id: _24490
+                // IGNORED: Field  -- Name: meModeSave  -- XML id: _24491
+                // IGNORED: Field  -- Name: nProd  -- XML id: _24492
+                // IGNORED: Field  -- Name: prod  -- XML id: _24493
+                // IGNORED: Field  -- Name: hasChangedSave  -- XML id: _24494
             public:
     
                 virtual void onMode(int) =0;

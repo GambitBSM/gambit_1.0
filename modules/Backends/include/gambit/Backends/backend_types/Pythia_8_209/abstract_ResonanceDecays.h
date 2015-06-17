@@ -11,11 +11,6 @@
 #include "wrapper_Event_decl.h"
 #include <cstddef>
 
-#ifndef ENUMS_DECLARED
-#define ENUMS_DECLARED
-#include "enum_decl_copies.h"
-#endif
-
 #include "identification.hpp"
 
 // Forward declaration needed by the destructor pattern.
@@ -31,24 +26,24 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         class Abstract_ResonanceDecays : virtual public AbstractBase
         {
             private:
-                // IGNORED: Variable  -- Name: NTRYCHANNEL  -- XML id: _21906
-                // IGNORED: Variable  -- Name: NTRYMASSES  -- XML id: _21907
-                // IGNORED: Variable  -- Name: MSAFETY  -- XML id: _21908
-                // IGNORED: Variable  -- Name: WIDTHCUT  -- XML id: _21909
-                // IGNORED: Variable  -- Name: TINY  -- XML id: _21910
-                // IGNORED: Variable  -- Name: TINYBWRANGE  -- XML id: _21911
-                // IGNORED: Variable  -- Name: WTCORRECTION  -- XML id: _21912
-                // IGNORED: Field  -- Name: infoPtr  -- XML id: _21913
-                // IGNORED: Field  -- Name: particleDataPtr  -- XML id: _21914
-                // IGNORED: Field  -- Name: rndmPtr  -- XML id: _21915
-                // IGNORED: Field  -- Name: id0  -- XML id: _21916
-                // IGNORED: Field  -- Name: mult  -- XML id: _21917
-                // IGNORED: Field  -- Name: m0  -- XML id: _21918
-                // IGNORED: Field  -- Name: idProd  -- XML id: _21919
-                // IGNORED: Field  -- Name: cols  -- XML id: _21920
-                // IGNORED: Field  -- Name: acols  -- XML id: _21921
-                // IGNORED: Field  -- Name: mProd  -- XML id: _21922
-                // IGNORED: Field  -- Name: pProd  -- XML id: _21923
+                // IGNORED: Variable  -- Name: NTRYCHANNEL  -- XML id: _26064
+                // IGNORED: Variable  -- Name: NTRYMASSES  -- XML id: _26065
+                // IGNORED: Variable  -- Name: MSAFETY  -- XML id: _26066
+                // IGNORED: Variable  -- Name: WIDTHCUT  -- XML id: _26067
+                // IGNORED: Variable  -- Name: TINY  -- XML id: _26068
+                // IGNORED: Variable  -- Name: TINYBWRANGE  -- XML id: _26069
+                // IGNORED: Variable  -- Name: WTCORRECTION  -- XML id: _26070
+                // IGNORED: Field  -- Name: infoPtr  -- XML id: _26071
+                // IGNORED: Field  -- Name: particleDataPtr  -- XML id: _26072
+                // IGNORED: Field  -- Name: rndmPtr  -- XML id: _26073
+                // IGNORED: Field  -- Name: id0  -- XML id: _26074
+                // IGNORED: Field  -- Name: mult  -- XML id: _26075
+                // IGNORED: Field  -- Name: m0  -- XML id: _26076
+                // IGNORED: Field  -- Name: idProd  -- XML id: _26077
+                // IGNORED: Field  -- Name: cols  -- XML id: _26078
+                // IGNORED: Field  -- Name: acols  -- XML id: _26079
+                // IGNORED: Field  -- Name: mProd  -- XML id: _26080
+                // IGNORED: Field  -- Name: pProd  -- XML id: _26081
             public:
     
                 virtual void init__BOSS(Pythia8::Abstract_Info*, Pythia8::Abstract_ParticleData*, Pythia8::Abstract_Rndm*) =0;

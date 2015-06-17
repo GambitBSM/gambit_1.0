@@ -8,11 +8,6 @@
 #include <string>
 #include <cstddef>
 
-#ifndef ENUMS_DECLARED
-#define ENUMS_DECLARED
-#include "enum_decl_copies.h"
-#endif
-
 #include "identification.hpp"
 
 // Forward declaration needed by the destructor pattern.
@@ -28,9 +23,9 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         class Abstract_LHdecayChannel : virtual public AbstractBase
         {
             private:
-                // IGNORED: Field  -- Name: brat  -- XML id: _28718
-                // IGNORED: Field  -- Name: idDa  -- XML id: _28719
-                // IGNORED: Field  -- Name: comment  -- XML id: _28720
+                // IGNORED: Field  -- Name: brat  -- XML id: _25745
+                // IGNORED: Field  -- Name: idDa  -- XML id: _25746
+                // IGNORED: Field  -- Name: comment  -- XML id: _25747
             public:
     
                 virtual void setChannel(double, int, std::vector<int,std::allocator<int> >, std::basic_string<char,std::char_traits<char>,std::allocator<char> >) =0;

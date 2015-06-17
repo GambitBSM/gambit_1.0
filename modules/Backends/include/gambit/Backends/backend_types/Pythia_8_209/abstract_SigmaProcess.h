@@ -19,11 +19,6 @@
 #include <string>
 #include <cstddef>
 
-#ifndef ENUMS_DECLARED
-#define ENUMS_DECLARED
-#include "enum_decl_copies.h"
-#endif
-
 #include "identification.hpp"
 
 // Forward declaration needed by the destructor pattern.
@@ -39,95 +34,95 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         class Abstract_SigmaProcess : virtual public AbstractBase
         {
             protected:
-                // IGNORED: Variable  -- Name: CONVERT2MB  -- XML id: _27662
-                // IGNORED: Variable  -- Name: MASSMARGIN  -- XML id: _27663
-                // IGNORED: Variable  -- Name: COMPRELERR  -- XML id: _27664
-                // IGNORED: Variable  -- Name: NCOMPSTEP  -- XML id: _27665
-                // IGNORED: Field  -- Name: infoPtr  -- XML id: _27666
-                // IGNORED: Field  -- Name: settingsPtr  -- XML id: _27667
-                // IGNORED: Field  -- Name: particleDataPtr  -- XML id: _27668
-                // IGNORED: Field  -- Name: rndmPtr  -- XML id: _27669
-                // IGNORED: Field  -- Name: beamAPtr  -- XML id: _27670
-                // IGNORED: Field  -- Name: beamBPtr  -- XML id: _27671
-                // IGNORED: Field  -- Name: couplingsPtr  -- XML id: _27672
-                // IGNORED: Field  -- Name: sigmaTotPtr  -- XML id: _27673
-                // IGNORED: Field  -- Name: slhaPtr  -- XML id: _27674
-                // IGNORED: Field  -- Name: lhaUpPtr  -- XML id: _27675
-                // IGNORED: Field  -- Name: nQuarkIn  -- XML id: _27676
-                // IGNORED: Field  -- Name: renormScale1  -- XML id: _27677
-                // IGNORED: Field  -- Name: renormScale2  -- XML id: _27678
-                // IGNORED: Field  -- Name: renormScale3  -- XML id: _27679
-                // IGNORED: Field  -- Name: renormScale3VV  -- XML id: _27680
-                // IGNORED: Field  -- Name: factorScale1  -- XML id: _27681
-                // IGNORED: Field  -- Name: factorScale2  -- XML id: _27682
-                // IGNORED: Field  -- Name: factorScale3  -- XML id: _27683
-                // IGNORED: Field  -- Name: factorScale3VV  -- XML id: _27684
-                // IGNORED: Field  -- Name: Kfactor  -- XML id: _27685
-                // IGNORED: Field  -- Name: mcME  -- XML id: _27686
-                // IGNORED: Field  -- Name: mbME  -- XML id: _27687
-                // IGNORED: Field  -- Name: mmuME  -- XML id: _27688
-                // IGNORED: Field  -- Name: mtauME  -- XML id: _27689
-                // IGNORED: Field  -- Name: renormMultFac  -- XML id: _27690
-                // IGNORED: Field  -- Name: renormFixScale  -- XML id: _27691
-                // IGNORED: Field  -- Name: factorMultFac  -- XML id: _27692
-                // IGNORED: Field  -- Name: factorFixScale  -- XML id: _27693
-                // IGNORED: Field  -- Name: higgsH1parity  -- XML id: _27694
-                // IGNORED: Field  -- Name: higgsH2parity  -- XML id: _27695
-                // IGNORED: Field  -- Name: higgsA3parity  -- XML id: _27696
-                // IGNORED: Field  -- Name: higgsH1eta  -- XML id: _27697
-                // IGNORED: Field  -- Name: higgsH2eta  -- XML id: _27698
-                // IGNORED: Field  -- Name: higgsA3eta  -- XML id: _27699
-                // IGNORED: Field  -- Name: higgsH1phi  -- XML id: _27700
-                // IGNORED: Field  -- Name: higgsH2phi  -- XML id: _27701
-                // IGNORED: Field  -- Name: higgsA3phi  -- XML id: _27702
-                // IGNORED: Field  -- Name: idA  -- XML id: _27703
-                // IGNORED: Field  -- Name: idB  -- XML id: _27704
-                // IGNORED: Field  -- Name: mA  -- XML id: _27705
-                // IGNORED: Field  -- Name: mB  -- XML id: _27706
-                // IGNORED: Field  -- Name: isLeptonA  -- XML id: _27707
-                // IGNORED: Field  -- Name: isLeptonB  -- XML id: _27708
-                // IGNORED: Field  -- Name: hasLeptonBeams  -- XML id: _27709
-                // IGNORED: Field  -- Name: inBeamA  -- XML id: _27710
-                // IGNORED: Field  -- Name: inBeamB  -- XML id: _27711
-                // IGNORED: Field  -- Name: inPair  -- XML id: _27712
-                // IGNORED: Field  -- Name: mH  -- XML id: _27713
-                // IGNORED: Field  -- Name: sH  -- XML id: _27714
-                // IGNORED: Field  -- Name: sH2  -- XML id: _27715
-                // IGNORED: Field  -- Name: Q2RenSave  -- XML id: _27716
-                // IGNORED: Field  -- Name: alpEM  -- XML id: _27717
-                // IGNORED: Field  -- Name: alpS  -- XML id: _27718
-                // IGNORED: Field  -- Name: Q2FacSave  -- XML id: _27719
-                // IGNORED: Field  -- Name: x1Save  -- XML id: _27720
-                // IGNORED: Field  -- Name: x2Save  -- XML id: _27721
-                // IGNORED: Field  -- Name: pdf1Save  -- XML id: _27722
-                // IGNORED: Field  -- Name: pdf2Save  -- XML id: _27723
-                // IGNORED: Field  -- Name: sigmaSumSave  -- XML id: _27724
-                // IGNORED: Field  -- Name: id1  -- XML id: _27725
-                // IGNORED: Field  -- Name: id2  -- XML id: _27726
-                // IGNORED: Field  -- Name: id3  -- XML id: _27727
-                // IGNORED: Field  -- Name: id4  -- XML id: _27728
-                // IGNORED: Field  -- Name: id5  -- XML id: _27729
-                // IGNORED: Field  -- Name: idSave  -- XML id: _27730
-                // IGNORED: Field  -- Name: colSave  -- XML id: _27731
-                // IGNORED: Field  -- Name: acolSave  -- XML id: _27732
-                // IGNORED: Field  -- Name: mSave  -- XML id: _27733
-                // IGNORED: Field  -- Name: cosTheta  -- XML id: _27734
-                // IGNORED: Field  -- Name: sinTheta  -- XML id: _27735
-                // IGNORED: Field  -- Name: phi  -- XML id: _27736
-                // IGNORED: Field  -- Name: sHMass  -- XML id: _27737
-                // IGNORED: Field  -- Name: sHBeta  -- XML id: _27738
-                // IGNORED: Field  -- Name: pT2Mass  -- XML id: _27739
-                // IGNORED: Field  -- Name: pTFin  -- XML id: _27740
-                // IGNORED: Field  -- Name: parton  -- XML id: _27741
-                // IGNORED: Field  -- Name: partonT  -- XML id: _27742
-                // IGNORED: Field  -- Name: mSaveT  -- XML id: _27743
-                // IGNORED: Field  -- Name: pTFinT  -- XML id: _27744
-                // IGNORED: Field  -- Name: cosThetaT  -- XML id: _27745
-                // IGNORED: Field  -- Name: sinThetaT  -- XML id: _27746
-                // IGNORED: Field  -- Name: phiT  -- XML id: _27747
-                // IGNORED: Field  -- Name: mME  -- XML id: _27748
-                // IGNORED: Field  -- Name: pME  -- XML id: _27749
-                // IGNORED: Field  -- Name: swapTU  -- XML id: _27750
+                // IGNORED: Variable  -- Name: CONVERT2MB  -- XML id: _25478
+                // IGNORED: Variable  -- Name: MASSMARGIN  -- XML id: _25479
+                // IGNORED: Variable  -- Name: COMPRELERR  -- XML id: _25480
+                // IGNORED: Variable  -- Name: NCOMPSTEP  -- XML id: _25481
+                // IGNORED: Field  -- Name: infoPtr  -- XML id: _25482
+                // IGNORED: Field  -- Name: settingsPtr  -- XML id: _25483
+                // IGNORED: Field  -- Name: particleDataPtr  -- XML id: _25484
+                // IGNORED: Field  -- Name: rndmPtr  -- XML id: _25485
+                // IGNORED: Field  -- Name: beamAPtr  -- XML id: _25486
+                // IGNORED: Field  -- Name: beamBPtr  -- XML id: _25487
+                // IGNORED: Field  -- Name: couplingsPtr  -- XML id: _25488
+                // IGNORED: Field  -- Name: sigmaTotPtr  -- XML id: _25489
+                // IGNORED: Field  -- Name: slhaPtr  -- XML id: _25490
+                // IGNORED: Field  -- Name: lhaUpPtr  -- XML id: _25491
+                // IGNORED: Field  -- Name: nQuarkIn  -- XML id: _25492
+                // IGNORED: Field  -- Name: renormScale1  -- XML id: _25493
+                // IGNORED: Field  -- Name: renormScale2  -- XML id: _25494
+                // IGNORED: Field  -- Name: renormScale3  -- XML id: _25495
+                // IGNORED: Field  -- Name: renormScale3VV  -- XML id: _25496
+                // IGNORED: Field  -- Name: factorScale1  -- XML id: _25497
+                // IGNORED: Field  -- Name: factorScale2  -- XML id: _25498
+                // IGNORED: Field  -- Name: factorScale3  -- XML id: _25499
+                // IGNORED: Field  -- Name: factorScale3VV  -- XML id: _25500
+                // IGNORED: Field  -- Name: Kfactor  -- XML id: _25501
+                // IGNORED: Field  -- Name: mcME  -- XML id: _25502
+                // IGNORED: Field  -- Name: mbME  -- XML id: _25503
+                // IGNORED: Field  -- Name: mmuME  -- XML id: _25504
+                // IGNORED: Field  -- Name: mtauME  -- XML id: _25505
+                // IGNORED: Field  -- Name: renormMultFac  -- XML id: _25506
+                // IGNORED: Field  -- Name: renormFixScale  -- XML id: _25507
+                // IGNORED: Field  -- Name: factorMultFac  -- XML id: _25508
+                // IGNORED: Field  -- Name: factorFixScale  -- XML id: _25509
+                // IGNORED: Field  -- Name: higgsH1parity  -- XML id: _25510
+                // IGNORED: Field  -- Name: higgsH2parity  -- XML id: _25511
+                // IGNORED: Field  -- Name: higgsA3parity  -- XML id: _25512
+                // IGNORED: Field  -- Name: higgsH1eta  -- XML id: _25513
+                // IGNORED: Field  -- Name: higgsH2eta  -- XML id: _25514
+                // IGNORED: Field  -- Name: higgsA3eta  -- XML id: _25515
+                // IGNORED: Field  -- Name: higgsH1phi  -- XML id: _25516
+                // IGNORED: Field  -- Name: higgsH2phi  -- XML id: _25517
+                // IGNORED: Field  -- Name: higgsA3phi  -- XML id: _25518
+                // IGNORED: Field  -- Name: idA  -- XML id: _25519
+                // IGNORED: Field  -- Name: idB  -- XML id: _25520
+                // IGNORED: Field  -- Name: mA  -- XML id: _25521
+                // IGNORED: Field  -- Name: mB  -- XML id: _25522
+                // IGNORED: Field  -- Name: isLeptonA  -- XML id: _25523
+                // IGNORED: Field  -- Name: isLeptonB  -- XML id: _25524
+                // IGNORED: Field  -- Name: hasLeptonBeams  -- XML id: _25525
+                // IGNORED: Field  -- Name: inBeamA  -- XML id: _25526
+                // IGNORED: Field  -- Name: inBeamB  -- XML id: _25527
+                // IGNORED: Field  -- Name: inPair  -- XML id: _25528
+                // IGNORED: Field  -- Name: mH  -- XML id: _25529
+                // IGNORED: Field  -- Name: sH  -- XML id: _25530
+                // IGNORED: Field  -- Name: sH2  -- XML id: _25531
+                // IGNORED: Field  -- Name: Q2RenSave  -- XML id: _25532
+                // IGNORED: Field  -- Name: alpEM  -- XML id: _25533
+                // IGNORED: Field  -- Name: alpS  -- XML id: _25534
+                // IGNORED: Field  -- Name: Q2FacSave  -- XML id: _25535
+                // IGNORED: Field  -- Name: x1Save  -- XML id: _25536
+                // IGNORED: Field  -- Name: x2Save  -- XML id: _25537
+                // IGNORED: Field  -- Name: pdf1Save  -- XML id: _25538
+                // IGNORED: Field  -- Name: pdf2Save  -- XML id: _25539
+                // IGNORED: Field  -- Name: sigmaSumSave  -- XML id: _25540
+                // IGNORED: Field  -- Name: id1  -- XML id: _25541
+                // IGNORED: Field  -- Name: id2  -- XML id: _25542
+                // IGNORED: Field  -- Name: id3  -- XML id: _25543
+                // IGNORED: Field  -- Name: id4  -- XML id: _25544
+                // IGNORED: Field  -- Name: id5  -- XML id: _25545
+                // IGNORED: Field  -- Name: idSave  -- XML id: _25546
+                // IGNORED: Field  -- Name: colSave  -- XML id: _25547
+                // IGNORED: Field  -- Name: acolSave  -- XML id: _25548
+                // IGNORED: Field  -- Name: mSave  -- XML id: _25549
+                // IGNORED: Field  -- Name: cosTheta  -- XML id: _25550
+                // IGNORED: Field  -- Name: sinTheta  -- XML id: _25551
+                // IGNORED: Field  -- Name: phi  -- XML id: _25552
+                // IGNORED: Field  -- Name: sHMass  -- XML id: _25553
+                // IGNORED: Field  -- Name: sHBeta  -- XML id: _25554
+                // IGNORED: Field  -- Name: pT2Mass  -- XML id: _25555
+                // IGNORED: Field  -- Name: pTFin  -- XML id: _25556
+                // IGNORED: Field  -- Name: parton  -- XML id: _25557
+                // IGNORED: Field  -- Name: partonT  -- XML id: _25558
+                // IGNORED: Field  -- Name: mSaveT  -- XML id: _25559
+                // IGNORED: Field  -- Name: pTFinT  -- XML id: _25560
+                // IGNORED: Field  -- Name: cosThetaT  -- XML id: _25561
+                // IGNORED: Field  -- Name: sinThetaT  -- XML id: _25562
+                // IGNORED: Field  -- Name: phiT  -- XML id: _25563
+                // IGNORED: Field  -- Name: mME  -- XML id: _25564
+                // IGNORED: Field  -- Name: pME  -- XML id: _25565
+                // IGNORED: Field  -- Name: swapTU  -- XML id: _25566
             public:
     
                 virtual void init__BOSS(Pythia8::Abstract_Info*, Pythia8::Abstract_Settings*, Pythia8::Abstract_ParticleData*, Pythia8::Abstract_Rndm*, Pythia8::Abstract_BeamParticle*, Pythia8::Abstract_BeamParticle*, Pythia8::Abstract_Couplings*, Pythia8::Abstract_SigmaTotal*, Pythia8::Abstract_SLHAinterface*) =0;

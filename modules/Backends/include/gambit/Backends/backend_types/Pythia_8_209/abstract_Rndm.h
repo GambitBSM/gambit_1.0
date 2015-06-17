@@ -8,11 +8,6 @@
 #include <string>
 #include <cstddef>
 
-#ifndef ENUMS_DECLARED
-#define ENUMS_DECLARED
-#include "enum_decl_copies.h"
-#endif
-
 #include "identification.hpp"
 
 // Forward declaration needed by the destructor pattern.
@@ -28,18 +23,18 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         class Abstract_Rndm : virtual public AbstractBase
         {
             private:
-                // IGNORED: Variable  -- Name: DEFAULTSEED  -- XML id: _21745
-                // IGNORED: Field  -- Name: initRndm  -- XML id: _21746
-                // IGNORED: Field  -- Name: i97  -- XML id: _21747
-                // IGNORED: Field  -- Name: j97  -- XML id: _21748
-                // IGNORED: Field  -- Name: seedSave  -- XML id: _21749
-                // IGNORED: Field  -- Name: sequence  -- XML id: _21750
-                // IGNORED: Field  -- Name: u  -- XML id: _21751
-                // IGNORED: Field  -- Name: c  -- XML id: _21752
-                // IGNORED: Field  -- Name: cd  -- XML id: _21753
-                // IGNORED: Field  -- Name: cm  -- XML id: _21754
-                // IGNORED: Field  -- Name: useExternalRndm  -- XML id: _21755
-                // IGNORED: Field  -- Name: rndmEngPtr  -- XML id: _21756
+                // IGNORED: Variable  -- Name: DEFAULTSEED  -- XML id: _25903
+                // IGNORED: Field  -- Name: initRndm  -- XML id: _25904
+                // IGNORED: Field  -- Name: i97  -- XML id: _25905
+                // IGNORED: Field  -- Name: j97  -- XML id: _25906
+                // IGNORED: Field  -- Name: seedSave  -- XML id: _25907
+                // IGNORED: Field  -- Name: sequence  -- XML id: _25908
+                // IGNORED: Field  -- Name: u  -- XML id: _25909
+                // IGNORED: Field  -- Name: c  -- XML id: _25910
+                // IGNORED: Field  -- Name: cd  -- XML id: _25911
+                // IGNORED: Field  -- Name: cm  -- XML id: _25912
+                // IGNORED: Field  -- Name: useExternalRndm  -- XML id: _25913
+                // IGNORED: Field  -- Name: rndmEngPtr  -- XML id: _25914
             public:
     
                 virtual void init(int) =0;

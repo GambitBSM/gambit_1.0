@@ -14,11 +14,6 @@
 #include "wrapper_Event_decl.h"
 #include <cstddef>
 
-#ifndef ENUMS_DECLARED
-#define ENUMS_DECLARED
-#include "enum_decl_copies.h"
-#endif
-
 #include "identification.hpp"
 
 // Forward declaration needed by the destructor pattern.
@@ -34,73 +29,73 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         class Abstract_BeamParticle : virtual public AbstractBase
         {
             private:
-                // IGNORED: Variable  -- Name: XMINUNRESOLVED  -- XML id: _24160
-                // IGNORED: Variable  -- Name: POMERONMASS  -- XML id: _24161
-                // IGNORED: Variable  -- Name: NMAX  -- XML id: _24162
-                // IGNORED: Variable  -- Name: NRANDOMTRIES  -- XML id: _24163
-                // IGNORED: Field  -- Name: infoPtr  -- XML id: _24164
-                // IGNORED: Field  -- Name: particleDataPtr  -- XML id: _24165
-                // IGNORED: Field  -- Name: rndmPtr  -- XML id: _24166
-                // IGNORED: Field  -- Name: pdfBeamPtr  -- XML id: _24167
-                // IGNORED: Field  -- Name: pdfHardBeamPtr  -- XML id: _24168
-                // IGNORED: Field  -- Name: flavSelPtr  -- XML id: _24169
-                // IGNORED: Field  -- Name: allowJunction  -- XML id: _24170
-                // IGNORED: Field  -- Name: beamJunction  -- XML id: _24171
-                // IGNORED: Field  -- Name: maxValQuark  -- XML id: _24172
-                // IGNORED: Field  -- Name: companionPower  -- XML id: _24173
-                // IGNORED: Field  -- Name: valencePowerMeson  -- XML id: _24174
-                // IGNORED: Field  -- Name: valencePowerUinP  -- XML id: _24175
-                // IGNORED: Field  -- Name: valencePowerDinP  -- XML id: _24176
-                // IGNORED: Field  -- Name: valenceDiqEnhance  -- XML id: _24177
-                // IGNORED: Field  -- Name: pickQuarkNorm  -- XML id: _24178
-                // IGNORED: Field  -- Name: pickQuarkPower  -- XML id: _24179
-                // IGNORED: Field  -- Name: diffPrimKTwidth  -- XML id: _24180
-                // IGNORED: Field  -- Name: diffLargeMassSuppress  -- XML id: _24181
-                // IGNORED: Field  -- Name: beamSat  -- XML id: _24182
-                // IGNORED: Field  -- Name: gluonPower  -- XML id: _24183
-                // IGNORED: Field  -- Name: xGluonCutoff  -- XML id: _24184
-                // IGNORED: Field  -- Name: idBeam  -- XML id: _24185
-                // IGNORED: Field  -- Name: idBeamAbs  -- XML id: _24186
-                // IGNORED: Field  -- Name: pBeam  -- XML id: _24187
-                // IGNORED: Field  -- Name: mBeam  -- XML id: _24188
-                // IGNORED: Field  -- Name: isUnresolvedBeam  -- XML id: _24189
-                // IGNORED: Field  -- Name: isLeptonBeam  -- XML id: _24190
-                // IGNORED: Field  -- Name: isHadronBeam  -- XML id: _24191
-                // IGNORED: Field  -- Name: isMesonBeam  -- XML id: _24192
-                // IGNORED: Field  -- Name: isBaryonBeam  -- XML id: _24193
-                // IGNORED: Field  -- Name: nValKinds  -- XML id: _24194
-                // IGNORED: Field  -- Name: idVal  -- XML id: _24195
-                // IGNORED: Field  -- Name: nVal  -- XML id: _24196
-                // IGNORED: Field  -- Name: idSave  -- XML id: _24197
-                // IGNORED: Field  -- Name: iSkipSave  -- XML id: _24198
-                // IGNORED: Field  -- Name: nValLeft  -- XML id: _24199
-                // IGNORED: Field  -- Name: xqgTot  -- XML id: _24200
-                // IGNORED: Field  -- Name: xqVal  -- XML id: _24201
-                // IGNORED: Field  -- Name: xqgSea  -- XML id: _24202
-                // IGNORED: Field  -- Name: xqCompSum  -- XML id: _24203
-                // IGNORED: Field  -- Name: resolved  -- XML id: _24204
-                // IGNORED: Field  -- Name: nInit  -- XML id: _24205
-                // IGNORED: Field  -- Name: hasJunctionBeam  -- XML id: _24206
-                // IGNORED: Field  -- Name: junCol  -- XML id: _24207
-                // IGNORED: Field  -- Name: colSetup  -- XML id: _24208
-                // IGNORED: Field  -- Name: acols  -- XML id: _24209
-                // IGNORED: Field  -- Name: cols  -- XML id: _24210
-                // IGNORED: Field  -- Name: usedCol  -- XML id: _24211
-                // IGNORED: Field  -- Name: usedAcol  -- XML id: _24212
-                // IGNORED: Field  -- Name: colUpdates  -- XML id: _24213
-                // IGNORED: Field  -- Name: nJuncs  -- XML id: _24214
-                // IGNORED: Field  -- Name: nAjuncs  -- XML id: _24215
-                // IGNORED: Field  -- Name: nDiffJuncs  -- XML id: _24216
-                // IGNORED: Field  -- Name: allowBeamJunctions  -- XML id: _24217
-                // IGNORED: Field  -- Name: Q2ValFracSav  -- XML id: _24218
-                // IGNORED: Field  -- Name: uValInt  -- XML id: _24219
-                // IGNORED: Field  -- Name: dValInt  -- XML id: _24220
-                // IGNORED: Field  -- Name: idVal1  -- XML id: _24221
-                // IGNORED: Field  -- Name: idVal2  -- XML id: _24222
-                // IGNORED: Field  -- Name: idVal3  -- XML id: _24223
-                // IGNORED: Field  -- Name: zRel  -- XML id: _24224
-                // IGNORED: Field  -- Name: pxRel  -- XML id: _24225
-                // IGNORED: Field  -- Name: pyRel  -- XML id: _24226
+                // IGNORED: Variable  -- Name: XMINUNRESOLVED  -- XML id: _27194
+                // IGNORED: Variable  -- Name: POMERONMASS  -- XML id: _27195
+                // IGNORED: Variable  -- Name: NMAX  -- XML id: _27196
+                // IGNORED: Variable  -- Name: NRANDOMTRIES  -- XML id: _27197
+                // IGNORED: Field  -- Name: infoPtr  -- XML id: _27198
+                // IGNORED: Field  -- Name: particleDataPtr  -- XML id: _27199
+                // IGNORED: Field  -- Name: rndmPtr  -- XML id: _27200
+                // IGNORED: Field  -- Name: pdfBeamPtr  -- XML id: _27201
+                // IGNORED: Field  -- Name: pdfHardBeamPtr  -- XML id: _27202
+                // IGNORED: Field  -- Name: flavSelPtr  -- XML id: _27203
+                // IGNORED: Field  -- Name: allowJunction  -- XML id: _27204
+                // IGNORED: Field  -- Name: beamJunction  -- XML id: _27205
+                // IGNORED: Field  -- Name: maxValQuark  -- XML id: _27206
+                // IGNORED: Field  -- Name: companionPower  -- XML id: _27207
+                // IGNORED: Field  -- Name: valencePowerMeson  -- XML id: _27208
+                // IGNORED: Field  -- Name: valencePowerUinP  -- XML id: _27209
+                // IGNORED: Field  -- Name: valencePowerDinP  -- XML id: _27210
+                // IGNORED: Field  -- Name: valenceDiqEnhance  -- XML id: _27211
+                // IGNORED: Field  -- Name: pickQuarkNorm  -- XML id: _27212
+                // IGNORED: Field  -- Name: pickQuarkPower  -- XML id: _27213
+                // IGNORED: Field  -- Name: diffPrimKTwidth  -- XML id: _27214
+                // IGNORED: Field  -- Name: diffLargeMassSuppress  -- XML id: _27215
+                // IGNORED: Field  -- Name: beamSat  -- XML id: _27216
+                // IGNORED: Field  -- Name: gluonPower  -- XML id: _27217
+                // IGNORED: Field  -- Name: xGluonCutoff  -- XML id: _27218
+                // IGNORED: Field  -- Name: idBeam  -- XML id: _27219
+                // IGNORED: Field  -- Name: idBeamAbs  -- XML id: _27220
+                // IGNORED: Field  -- Name: pBeam  -- XML id: _27221
+                // IGNORED: Field  -- Name: mBeam  -- XML id: _27222
+                // IGNORED: Field  -- Name: isUnresolvedBeam  -- XML id: _27223
+                // IGNORED: Field  -- Name: isLeptonBeam  -- XML id: _27224
+                // IGNORED: Field  -- Name: isHadronBeam  -- XML id: _27225
+                // IGNORED: Field  -- Name: isMesonBeam  -- XML id: _27226
+                // IGNORED: Field  -- Name: isBaryonBeam  -- XML id: _27227
+                // IGNORED: Field  -- Name: nValKinds  -- XML id: _27228
+                // IGNORED: Field  -- Name: idVal  -- XML id: _27229
+                // IGNORED: Field  -- Name: nVal  -- XML id: _27230
+                // IGNORED: Field  -- Name: idSave  -- XML id: _27231
+                // IGNORED: Field  -- Name: iSkipSave  -- XML id: _27232
+                // IGNORED: Field  -- Name: nValLeft  -- XML id: _27233
+                // IGNORED: Field  -- Name: xqgTot  -- XML id: _27234
+                // IGNORED: Field  -- Name: xqVal  -- XML id: _27235
+                // IGNORED: Field  -- Name: xqgSea  -- XML id: _27236
+                // IGNORED: Field  -- Name: xqCompSum  -- XML id: _27237
+                // IGNORED: Field  -- Name: resolved  -- XML id: _27238
+                // IGNORED: Field  -- Name: nInit  -- XML id: _27239
+                // IGNORED: Field  -- Name: hasJunctionBeam  -- XML id: _27240
+                // IGNORED: Field  -- Name: junCol  -- XML id: _27241
+                // IGNORED: Field  -- Name: colSetup  -- XML id: _27242
+                // IGNORED: Field  -- Name: acols  -- XML id: _27243
+                // IGNORED: Field  -- Name: cols  -- XML id: _27244
+                // IGNORED: Field  -- Name: usedCol  -- XML id: _27245
+                // IGNORED: Field  -- Name: usedAcol  -- XML id: _27246
+                // IGNORED: Field  -- Name: colUpdates  -- XML id: _27247
+                // IGNORED: Field  -- Name: nJuncs  -- XML id: _27248
+                // IGNORED: Field  -- Name: nAjuncs  -- XML id: _27249
+                // IGNORED: Field  -- Name: nDiffJuncs  -- XML id: _27250
+                // IGNORED: Field  -- Name: allowBeamJunctions  -- XML id: _27251
+                // IGNORED: Field  -- Name: Q2ValFracSav  -- XML id: _27252
+                // IGNORED: Field  -- Name: uValInt  -- XML id: _27253
+                // IGNORED: Field  -- Name: dValInt  -- XML id: _27254
+                // IGNORED: Field  -- Name: idVal1  -- XML id: _27255
+                // IGNORED: Field  -- Name: idVal2  -- XML id: _27256
+                // IGNORED: Field  -- Name: idVal3  -- XML id: _27257
+                // IGNORED: Field  -- Name: zRel  -- XML id: _27258
+                // IGNORED: Field  -- Name: pxRel  -- XML id: _27259
+                // IGNORED: Field  -- Name: pyRel  -- XML id: _27260
             public:
     
                 virtual void newValenceContent() =0;

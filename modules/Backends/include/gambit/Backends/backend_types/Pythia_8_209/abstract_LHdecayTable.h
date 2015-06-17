@@ -9,11 +9,6 @@
 #include <string>
 #include <cstddef>
 
-#ifndef ENUMS_DECLARED
-#define ENUMS_DECLARED
-#include "enum_decl_copies.h"
-#endif
-
 #include "identification.hpp"
 
 // Forward declaration needed by the destructor pattern.
@@ -29,9 +24,9 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         class Abstract_LHdecayTable : virtual public AbstractBase
         {
             private:
-                // IGNORED: Field  -- Name: id  -- XML id: _22103
-                // IGNORED: Field  -- Name: width  -- XML id: _22104
-                // IGNORED: Field  -- Name: table  -- XML id: _22105
+                // IGNORED: Field  -- Name: id  -- XML id: _25458
+                // IGNORED: Field  -- Name: width  -- XML id: _25459
+                // IGNORED: Field  -- Name: table  -- XML id: _25460
             public:
     
                 virtual int getId() =0;

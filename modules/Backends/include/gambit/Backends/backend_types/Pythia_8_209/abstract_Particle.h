@@ -11,11 +11,6 @@
 #include <string>
 #include <cstddef>
 
-#ifndef ENUMS_DECLARED
-#define ENUMS_DECLARED
-#include "enum_decl_copies.h"
-#endif
-
 #include "identification.hpp"
 
 // Forward declaration needed by the destructor pattern.
@@ -31,24 +26,24 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         class Abstract_Particle : virtual public AbstractBase
         {
             protected:
-                // IGNORED: Variable  -- Name: TINY  -- XML id: _22565
-                // IGNORED: Field  -- Name: idSave  -- XML id: _22566
-                // IGNORED: Field  -- Name: statusSave  -- XML id: _22567
-                // IGNORED: Field  -- Name: mother1Save  -- XML id: _22568
-                // IGNORED: Field  -- Name: mother2Save  -- XML id: _22569
-                // IGNORED: Field  -- Name: daughter1Save  -- XML id: _22570
-                // IGNORED: Field  -- Name: daughter2Save  -- XML id: _22571
-                // IGNORED: Field  -- Name: colSave  -- XML id: _22572
-                // IGNORED: Field  -- Name: acolSave  -- XML id: _22573
-                // IGNORED: Field  -- Name: pSave  -- XML id: _22574
-                // IGNORED: Field  -- Name: mSave  -- XML id: _22575
-                // IGNORED: Field  -- Name: scaleSave  -- XML id: _22576
-                // IGNORED: Field  -- Name: polSave  -- XML id: _22577
-                // IGNORED: Field  -- Name: hasVertexSave  -- XML id: _22578
-                // IGNORED: Field  -- Name: vProdSave  -- XML id: _22579
-                // IGNORED: Field  -- Name: tauSave  -- XML id: _22580
-                // IGNORED: Field  -- Name: pdePtr  -- XML id: _22581
-                // IGNORED: Field  -- Name: evtPtr  -- XML id: _22582
+                // IGNORED: Variable  -- Name: TINY  -- XML id: _26474
+                // IGNORED: Field  -- Name: idSave  -- XML id: _26475
+                // IGNORED: Field  -- Name: statusSave  -- XML id: _26476
+                // IGNORED: Field  -- Name: mother1Save  -- XML id: _26477
+                // IGNORED: Field  -- Name: mother2Save  -- XML id: _26478
+                // IGNORED: Field  -- Name: daughter1Save  -- XML id: _26479
+                // IGNORED: Field  -- Name: daughter2Save  -- XML id: _26480
+                // IGNORED: Field  -- Name: colSave  -- XML id: _26481
+                // IGNORED: Field  -- Name: acolSave  -- XML id: _26482
+                // IGNORED: Field  -- Name: pSave  -- XML id: _26483
+                // IGNORED: Field  -- Name: mSave  -- XML id: _26484
+                // IGNORED: Field  -- Name: scaleSave  -- XML id: _26485
+                // IGNORED: Field  -- Name: polSave  -- XML id: _26486
+                // IGNORED: Field  -- Name: hasVertexSave  -- XML id: _26487
+                // IGNORED: Field  -- Name: vProdSave  -- XML id: _26488
+                // IGNORED: Field  -- Name: tauSave  -- XML id: _26489
+                // IGNORED: Field  -- Name: pdePtr  -- XML id: _26490
+                // IGNORED: Field  -- Name: evtPtr  -- XML id: _26491
             public:
     
                 virtual Pythia8::Abstract_Particle* operator_equal__BOSS(const Pythia8::Abstract_Particle&) =0;

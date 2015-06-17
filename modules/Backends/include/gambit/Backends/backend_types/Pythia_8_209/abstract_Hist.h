@@ -9,11 +9,6 @@
 #include <ostream>
 #include <cstddef>
 
-#ifndef ENUMS_DECLARED
-#define ENUMS_DECLARED
-#include "enum_decl_copies.h"
-#endif
-
 #include "identification.hpp"
 
 // Forward declaration needed by the destructor pattern.
@@ -29,25 +24,25 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         class Abstract_Hist : virtual public AbstractBase
         {
             private:
-                // IGNORED: Variable  -- Name: NBINMAX  -- XML id: _26335
-                // IGNORED: Variable  -- Name: NCOLMAX  -- XML id: _26336
-                // IGNORED: Variable  -- Name: NLINES  -- XML id: _26337
-                // IGNORED: Variable  -- Name: TOLERANCE  -- XML id: _26338
-                // IGNORED: Variable  -- Name: TINY  -- XML id: _26339
-                // IGNORED: Variable  -- Name: LARGE  -- XML id: _26340
-                // IGNORED: Variable  -- Name: SMALLFRAC  -- XML id: _26341
-                // IGNORED: Variable  -- Name: DYAC  -- XML id: _26342
-                // IGNORED: Variable  -- Name: NUMBER  -- XML id: _26343
-                // IGNORED: Field  -- Name: title  -- XML id: _26344
-                // IGNORED: Field  -- Name: nBin  -- XML id: _26345
-                // IGNORED: Field  -- Name: nFill  -- XML id: _26346
-                // IGNORED: Field  -- Name: xMin  -- XML id: _26347
-                // IGNORED: Field  -- Name: xMax  -- XML id: _26348
-                // IGNORED: Field  -- Name: dx  -- XML id: _26349
-                // IGNORED: Field  -- Name: under  -- XML id: _26350
-                // IGNORED: Field  -- Name: inside  -- XML id: _26351
-                // IGNORED: Field  -- Name: over  -- XML id: _26352
-                // IGNORED: Field  -- Name: res  -- XML id: _26353
+                // IGNORED: Variable  -- Name: NBINMAX  -- XML id: _24741
+                // IGNORED: Variable  -- Name: NCOLMAX  -- XML id: _24742
+                // IGNORED: Variable  -- Name: NLINES  -- XML id: _24743
+                // IGNORED: Variable  -- Name: TOLERANCE  -- XML id: _24744
+                // IGNORED: Variable  -- Name: TINY  -- XML id: _24745
+                // IGNORED: Variable  -- Name: LARGE  -- XML id: _24746
+                // IGNORED: Variable  -- Name: SMALLFRAC  -- XML id: _24747
+                // IGNORED: Variable  -- Name: DYAC  -- XML id: _24748
+                // IGNORED: Variable  -- Name: NUMBER  -- XML id: _24749
+                // IGNORED: Field  -- Name: title  -- XML id: _24750
+                // IGNORED: Field  -- Name: nBin  -- XML id: _24751
+                // IGNORED: Field  -- Name: nFill  -- XML id: _24752
+                // IGNORED: Field  -- Name: xMin  -- XML id: _24753
+                // IGNORED: Field  -- Name: xMax  -- XML id: _24754
+                // IGNORED: Field  -- Name: dx  -- XML id: _24755
+                // IGNORED: Field  -- Name: under  -- XML id: _24756
+                // IGNORED: Field  -- Name: inside  -- XML id: _24757
+                // IGNORED: Field  -- Name: over  -- XML id: _24758
+                // IGNORED: Field  -- Name: res  -- XML id: _24759
             public:
     
                 virtual Pythia8::Abstract_Hist* operator_equal__BOSS(const Pythia8::Abstract_Hist&) =0;

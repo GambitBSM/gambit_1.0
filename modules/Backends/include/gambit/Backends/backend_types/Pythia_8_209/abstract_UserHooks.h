@@ -15,11 +15,6 @@
 #include "wrapper_SigmaProcess_decl.h"
 #include <cstddef>
 
-#ifndef ENUMS_DECLARED
-#define ENUMS_DECLARED
-#include "enum_decl_copies.h"
-#endif
-
 #include "identification.hpp"
 
 // Forward declaration needed by the destructor pattern.
@@ -35,19 +30,19 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         class Abstract_UserHooks : virtual public AbstractBase
         {
             protected:
-                // IGNORED: Field  -- Name: infoPtr  -- XML id: _28047
-                // IGNORED: Field  -- Name: settingsPtr  -- XML id: _28048
-                // IGNORED: Field  -- Name: particleDataPtr  -- XML id: _28049
-                // IGNORED: Field  -- Name: rndmPtr  -- XML id: _28050
-                // IGNORED: Field  -- Name: beamAPtr  -- XML id: _28051
-                // IGNORED: Field  -- Name: beamBPtr  -- XML id: _28052
-                // IGNORED: Field  -- Name: beamPomAPtr  -- XML id: _28053
-                // IGNORED: Field  -- Name: beamPomBPtr  -- XML id: _28054
-                // IGNORED: Field  -- Name: coupSMPtr  -- XML id: _28055
-                // IGNORED: Field  -- Name: partonSystemsPtr  -- XML id: _28056
-                // IGNORED: Field  -- Name: sigmaTotPtr  -- XML id: _28057
-                // IGNORED: Field  -- Name: workEvent  -- XML id: _28058
-                // IGNORED: Field  -- Name: selBias  -- XML id: _28059
+                // IGNORED: Field  -- Name: infoPtr  -- XML id: _25760
+                // IGNORED: Field  -- Name: settingsPtr  -- XML id: _25761
+                // IGNORED: Field  -- Name: particleDataPtr  -- XML id: _25762
+                // IGNORED: Field  -- Name: rndmPtr  -- XML id: _25763
+                // IGNORED: Field  -- Name: beamAPtr  -- XML id: _25764
+                // IGNORED: Field  -- Name: beamBPtr  -- XML id: _25765
+                // IGNORED: Field  -- Name: beamPomAPtr  -- XML id: _25766
+                // IGNORED: Field  -- Name: beamPomBPtr  -- XML id: _25767
+                // IGNORED: Field  -- Name: coupSMPtr  -- XML id: _25768
+                // IGNORED: Field  -- Name: partonSystemsPtr  -- XML id: _25769
+                // IGNORED: Field  -- Name: sigmaTotPtr  -- XML id: _25770
+                // IGNORED: Field  -- Name: workEvent  -- XML id: _25771
+                // IGNORED: Field  -- Name: selBias  -- XML id: _25772
             public:
     
                 virtual bool initAfterBeams() =0;

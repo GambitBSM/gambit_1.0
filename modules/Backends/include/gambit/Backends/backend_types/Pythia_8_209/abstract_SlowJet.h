@@ -10,11 +10,6 @@
 #include <ostream>
 #include <cstddef>
 
-#ifndef ENUMS_DECLARED
-#define ENUMS_DECLARED
-#include "enum_decl_copies.h"
-#endif
-
 #include "identification.hpp"
 
 // Forward declaration needed by the destructor pattern.
@@ -30,40 +25,40 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         class Abstract_SlowJet : virtual public AbstractBase
         {
             private:
-                // IGNORED: Variable  -- Name: TIMESTOPRINT  -- XML id: _24450
-                // IGNORED: Variable  -- Name: PIMASS  -- XML id: _24451
-                // IGNORED: Variable  -- Name: TINY  -- XML id: _24452
-                // IGNORED: Field  -- Name: power  -- XML id: _24453
-                // IGNORED: Field  -- Name: R  -- XML id: _24454
-                // IGNORED: Field  -- Name: pTjetMin  -- XML id: _24455
-                // IGNORED: Field  -- Name: etaMax  -- XML id: _24456
-                // IGNORED: Field  -- Name: R2  -- XML id: _24457
-                // IGNORED: Field  -- Name: pT2jetMin  -- XML id: _24458
-                // IGNORED: Field  -- Name: select  -- XML id: _24459
-                // IGNORED: Field  -- Name: massSet  -- XML id: _24460
-                // IGNORED: Field  -- Name: sjHookPtr  -- XML id: _24461
-                // IGNORED: Field  -- Name: useFJcore  -- XML id: _24462
-                // IGNORED: Field  -- Name: useStandardR  -- XML id: _24463
-                // IGNORED: Field  -- Name: isAnti  -- XML id: _24464
-                // IGNORED: Field  -- Name: isKT  -- XML id: _24465
-                // IGNORED: Field  -- Name: cutInEta  -- XML id: _24466
-                // IGNORED: Field  -- Name: chargedOnly  -- XML id: _24467
-                // IGNORED: Field  -- Name: visibleOnly  -- XML id: _24468
-                // IGNORED: Field  -- Name: modifyMass  -- XML id: _24469
-                // IGNORED: Field  -- Name: noHook  -- XML id: _24470
-                // IGNORED: Field  -- Name: clusters  -- XML id: _24471
-                // IGNORED: Field  -- Name: jets  -- XML id: _24472
-                // IGNORED: Field  -- Name: diB  -- XML id: _24473
-                // IGNORED: Field  -- Name: dij  -- XML id: _24474
-                // IGNORED: Field  -- Name: origSize  -- XML id: _24475
-                // IGNORED: Field  -- Name: clSize  -- XML id: _24476
-                // IGNORED: Field  -- Name: clLast  -- XML id: _24477
-                // IGNORED: Field  -- Name: jtSize  -- XML id: _24478
-                // IGNORED: Field  -- Name: iMin  -- XML id: _24479
-                // IGNORED: Field  -- Name: jMin  -- XML id: _24480
-                // IGNORED: Field  -- Name: dPhi  -- XML id: _24481
-                // IGNORED: Field  -- Name: dijTemp  -- XML id: _24482
-                // IGNORED: Field  -- Name: dMin  -- XML id: _24483
+                // IGNORED: Variable  -- Name: TIMESTOPRINT  -- XML id: _24965
+                // IGNORED: Variable  -- Name: PIMASS  -- XML id: _24966
+                // IGNORED: Variable  -- Name: TINY  -- XML id: _24967
+                // IGNORED: Field  -- Name: power  -- XML id: _24968
+                // IGNORED: Field  -- Name: R  -- XML id: _24969
+                // IGNORED: Field  -- Name: pTjetMin  -- XML id: _24970
+                // IGNORED: Field  -- Name: etaMax  -- XML id: _24971
+                // IGNORED: Field  -- Name: R2  -- XML id: _24972
+                // IGNORED: Field  -- Name: pT2jetMin  -- XML id: _24973
+                // IGNORED: Field  -- Name: select  -- XML id: _24974
+                // IGNORED: Field  -- Name: massSet  -- XML id: _24975
+                // IGNORED: Field  -- Name: sjHookPtr  -- XML id: _24976
+                // IGNORED: Field  -- Name: useFJcore  -- XML id: _24977
+                // IGNORED: Field  -- Name: useStandardR  -- XML id: _24978
+                // IGNORED: Field  -- Name: isAnti  -- XML id: _24979
+                // IGNORED: Field  -- Name: isKT  -- XML id: _24980
+                // IGNORED: Field  -- Name: cutInEta  -- XML id: _24981
+                // IGNORED: Field  -- Name: chargedOnly  -- XML id: _24982
+                // IGNORED: Field  -- Name: visibleOnly  -- XML id: _24983
+                // IGNORED: Field  -- Name: modifyMass  -- XML id: _24984
+                // IGNORED: Field  -- Name: noHook  -- XML id: _24985
+                // IGNORED: Field  -- Name: clusters  -- XML id: _24986
+                // IGNORED: Field  -- Name: jets  -- XML id: _24987
+                // IGNORED: Field  -- Name: diB  -- XML id: _24988
+                // IGNORED: Field  -- Name: dij  -- XML id: _24989
+                // IGNORED: Field  -- Name: origSize  -- XML id: _24990
+                // IGNORED: Field  -- Name: clSize  -- XML id: _24991
+                // IGNORED: Field  -- Name: clLast  -- XML id: _24992
+                // IGNORED: Field  -- Name: jtSize  -- XML id: _24993
+                // IGNORED: Field  -- Name: iMin  -- XML id: _24994
+                // IGNORED: Field  -- Name: jMin  -- XML id: _24995
+                // IGNORED: Field  -- Name: dPhi  -- XML id: _24996
+                // IGNORED: Field  -- Name: dijTemp  -- XML id: _24997
+                // IGNORED: Field  -- Name: dMin  -- XML id: _24998
             public:
     
                 virtual bool analyze__BOSS(const Pythia8::Abstract_Event&) =0;

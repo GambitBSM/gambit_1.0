@@ -12,11 +12,6 @@
 #include <vector>
 #include <cstddef>
 
-#ifndef ENUMS_DECLARED
-#define ENUMS_DECLARED
-#include "enum_decl_copies.h"
-#endif
-
 #include "identification.hpp"
 
 // Forward declaration needed by the destructor pattern.
@@ -32,18 +27,18 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         class Abstract_Event : virtual public AbstractBase
         {
             private:
-                // IGNORED: Variable  -- Name: IPERLINE  -- XML id: _27961
-                // IGNORED: Field  -- Name: startColTag  -- XML id: _27962
-                // IGNORED: Field  -- Name: entry  -- XML id: _27963
-                // IGNORED: Field  -- Name: junction  -- XML id: _27964
-                // IGNORED: Field  -- Name: maxColTag  -- XML id: _27965
-                // IGNORED: Field  -- Name: savedSize  -- XML id: _27966
-                // IGNORED: Field  -- Name: savedJunctionSize  -- XML id: _27967
-                // IGNORED: Field  -- Name: savedPartonLevelSize  -- XML id: _27968
-                // IGNORED: Field  -- Name: scaleSave  -- XML id: _27969
-                // IGNORED: Field  -- Name: scaleSecondSave  -- XML id: _27970
-                // IGNORED: Field  -- Name: headerList  -- XML id: _27971
-                // IGNORED: Field  -- Name: particleDataPtr  -- XML id: _27972
+                // IGNORED: Variable  -- Name: IPERLINE  -- XML id: _29158
+                // IGNORED: Field  -- Name: startColTag  -- XML id: _29159
+                // IGNORED: Field  -- Name: entry  -- XML id: _29160
+                // IGNORED: Field  -- Name: junction  -- XML id: _29161
+                // IGNORED: Field  -- Name: maxColTag  -- XML id: _29162
+                // IGNORED: Field  -- Name: savedSize  -- XML id: _29163
+                // IGNORED: Field  -- Name: savedJunctionSize  -- XML id: _29164
+                // IGNORED: Field  -- Name: savedPartonLevelSize  -- XML id: _29165
+                // IGNORED: Field  -- Name: scaleSave  -- XML id: _29166
+                // IGNORED: Field  -- Name: scaleSecondSave  -- XML id: _29167
+                // IGNORED: Field  -- Name: headerList  -- XML id: _29168
+                // IGNORED: Field  -- Name: particleDataPtr  -- XML id: _29169
             public:
     
                 virtual Pythia8::Abstract_Event* operator_equal__BOSS(const Pythia8::Abstract_Event&) =0;

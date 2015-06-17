@@ -10,11 +10,6 @@
 #include "wrapper_Settings_decl.h"
 #include <cstddef>
 
-#ifndef ENUMS_DECLARED
-#define ENUMS_DECLARED
-#include "enum_decl_copies.h"
-#endif
-
 #include "identification.hpp"
 
 // Forward declaration needed by the destructor pattern.
@@ -30,26 +25,26 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         class Abstract_CoupSM : virtual public AbstractBase
         {
             protected:
-                // IGNORED: Variable  -- Name: efSave  -- XML id: _24101
-                // IGNORED: Variable  -- Name: afSave  -- XML id: _24102
-                // IGNORED: Field  -- Name: s2tW  -- XML id: _24103
-                // IGNORED: Field  -- Name: c2tW  -- XML id: _24104
-                // IGNORED: Field  -- Name: s2tWbar  -- XML id: _24105
-                // IGNORED: Field  -- Name: GFermi  -- XML id: _24106
-                // IGNORED: Field  -- Name: vfSave  -- XML id: _24107
-                // IGNORED: Field  -- Name: lfSave  -- XML id: _24108
-                // IGNORED: Field  -- Name: rfSave  -- XML id: _24109
-                // IGNORED: Field  -- Name: ef2Save  -- XML id: _24110
-                // IGNORED: Field  -- Name: vf2Save  -- XML id: _24111
-                // IGNORED: Field  -- Name: af2Save  -- XML id: _24112
-                // IGNORED: Field  -- Name: efvfSave  -- XML id: _24113
-                // IGNORED: Field  -- Name: vf2af2Save  -- XML id: _24114
-                // IGNORED: Field  -- Name: VCKMsave  -- XML id: _24115
-                // IGNORED: Field  -- Name: V2CKMsave  -- XML id: _24116
-                // IGNORED: Field  -- Name: V2CKMout  -- XML id: _24117
-                // IGNORED: Field  -- Name: rndmPtr  -- XML id: _24118
-                // IGNORED: Field  -- Name: alphaSlocal  -- XML id: _24119
-                // IGNORED: Field  -- Name: alphaEMlocal  -- XML id: _24120
+                // IGNORED: Variable  -- Name: efSave  -- XML id: _27141
+                // IGNORED: Variable  -- Name: afSave  -- XML id: _27142
+                // IGNORED: Field  -- Name: s2tW  -- XML id: _27143
+                // IGNORED: Field  -- Name: c2tW  -- XML id: _27144
+                // IGNORED: Field  -- Name: s2tWbar  -- XML id: _27145
+                // IGNORED: Field  -- Name: GFermi  -- XML id: _27146
+                // IGNORED: Field  -- Name: vfSave  -- XML id: _27147
+                // IGNORED: Field  -- Name: lfSave  -- XML id: _27148
+                // IGNORED: Field  -- Name: rfSave  -- XML id: _27149
+                // IGNORED: Field  -- Name: ef2Save  -- XML id: _27150
+                // IGNORED: Field  -- Name: vf2Save  -- XML id: _27151
+                // IGNORED: Field  -- Name: af2Save  -- XML id: _27152
+                // IGNORED: Field  -- Name: efvfSave  -- XML id: _27153
+                // IGNORED: Field  -- Name: vf2af2Save  -- XML id: _27154
+                // IGNORED: Field  -- Name: VCKMsave  -- XML id: _27155
+                // IGNORED: Field  -- Name: V2CKMsave  -- XML id: _27156
+                // IGNORED: Field  -- Name: V2CKMout  -- XML id: _27157
+                // IGNORED: Field  -- Name: rndmPtr  -- XML id: _27158
+                // IGNORED: Field  -- Name: alphaSlocal  -- XML id: _27159
+                // IGNORED: Field  -- Name: alphaEMlocal  -- XML id: _27160
             public:
     
                 virtual void init__BOSS(Pythia8::Abstract_Settings&, Pythia8::Abstract_Rndm*) =0;

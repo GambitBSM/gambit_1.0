@@ -10,11 +10,6 @@
 #include <ostream>
 #include <cstddef>
 
-#ifndef ENUMS_DECLARED
-#define ENUMS_DECLARED
-#include "enum_decl_copies.h"
-#endif
-
 #include "identification.hpp"
 
 // Forward declaration needed by the destructor pattern.
@@ -34,122 +29,122 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 virtual int& LHEFversionSave_ref__BOSS() =0;
     
                 virtual std::vector<double,std::allocator<double> >& sigmaLHEFSave_ref__BOSS() =0;
-                // IGNORED: Field  -- Name: initrwgt  -- XML id: _24923
-                // IGNORED: Field  -- Name: generators  -- XML id: _24924
-                // IGNORED: Field  -- Name: weightgroups  -- XML id: _24925
-                // IGNORED: Field  -- Name: init_weights  -- XML id: _24926
+                // IGNORED: Field  -- Name: initrwgt  -- XML id: _24072
+                // IGNORED: Field  -- Name: generators  -- XML id: _24073
+                // IGNORED: Field  -- Name: weightgroups  -- XML id: _24074
+                // IGNORED: Field  -- Name: init_weights  -- XML id: _24075
     
                 virtual std::map<std::basic_string<char, std::char_traits<char>, std::allocator<char> >,std::basic_string<char, std::char_traits<char>, std::allocator<char> >,std::less<std::basic_string<char, std::char_traits<char>, std::allocator<char> > >,std::allocator<std::pair<const std::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::basic_string<char, std::char_traits<char>, std::allocator<char> > > > >*& eventAttributes_ref__BOSS() =0;
     
                 virtual std::map<std::basic_string<char, std::char_traits<char>, std::allocator<char> >,double,std::less<std::basic_string<char, std::char_traits<char>, std::allocator<char> > >,std::allocator<std::pair<const std::basic_string<char, std::char_traits<char>, std::allocator<char> >, double> > >*& weights_detailed_ref__BOSS() =0;
     
                 virtual std::vector<double,std::allocator<double> >*& weights_compressed_ref__BOSS() =0;
-                // IGNORED: Field  -- Name: scales  -- XML id: _24930
-                // IGNORED: Field  -- Name: weights  -- XML id: _24931
-                // IGNORED: Field  -- Name: rwgt  -- XML id: _24932
+                // IGNORED: Field  -- Name: scales  -- XML id: _24079
+                // IGNORED: Field  -- Name: weights  -- XML id: _24080
+                // IGNORED: Field  -- Name: rwgt  -- XML id: _24081
             private:
-                // IGNORED: Variable  -- Name: TIMESTOPRINT  -- XML id: _24933
-                // IGNORED: Variable  -- Name: CONVERTMB2PB  -- XML id: _24934
-                // IGNORED: Field  -- Name: idASave  -- XML id: _24935
-                // IGNORED: Field  -- Name: idBSave  -- XML id: _24936
-                // IGNORED: Field  -- Name: pzASave  -- XML id: _24937
-                // IGNORED: Field  -- Name: eASave  -- XML id: _24938
-                // IGNORED: Field  -- Name: mASave  -- XML id: _24939
-                // IGNORED: Field  -- Name: pzBSave  -- XML id: _24940
-                // IGNORED: Field  -- Name: eBSave  -- XML id: _24941
-                // IGNORED: Field  -- Name: mBSave  -- XML id: _24942
-                // IGNORED: Field  -- Name: eCMSave  -- XML id: _24943
-                // IGNORED: Field  -- Name: sSave  -- XML id: _24944
-                // IGNORED: Field  -- Name: lowPTmin  -- XML id: _24945
-                // IGNORED: Field  -- Name: nTry  -- XML id: _24946
-                // IGNORED: Field  -- Name: nSel  -- XML id: _24947
-                // IGNORED: Field  -- Name: nAcc  -- XML id: _24948
-                // IGNORED: Field  -- Name: sigGen  -- XML id: _24949
-                // IGNORED: Field  -- Name: sigErr  -- XML id: _24950
-                // IGNORED: Field  -- Name: wtAccSum  -- XML id: _24951
-                // IGNORED: Field  -- Name: procNameM  -- XML id: _24952
-                // IGNORED: Field  -- Name: nTryM  -- XML id: _24953
-                // IGNORED: Field  -- Name: nSelM  -- XML id: _24954
-                // IGNORED: Field  -- Name: nAccM  -- XML id: _24955
-                // IGNORED: Field  -- Name: sigGenM  -- XML id: _24956
-                // IGNORED: Field  -- Name: sigErrM  -- XML id: _24957
-                // IGNORED: Field  -- Name: lhaStrategySave  -- XML id: _24958
-                // IGNORED: Field  -- Name: a0MPISave  -- XML id: _24959
-                // IGNORED: Field  -- Name: isRes  -- XML id: _24960
-                // IGNORED: Field  -- Name: isDiffA  -- XML id: _24961
-                // IGNORED: Field  -- Name: isDiffB  -- XML id: _24962
-                // IGNORED: Field  -- Name: isDiffC  -- XML id: _24963
-                // IGNORED: Field  -- Name: isND  -- XML id: _24964
-                // IGNORED: Field  -- Name: isLH  -- XML id: _24965
-                // IGNORED: Field  -- Name: hasSubSave  -- XML id: _24966
-                // IGNORED: Field  -- Name: bIsSet  -- XML id: _24967
-                // IGNORED: Field  -- Name: evolIsSet  -- XML id: _24968
-                // IGNORED: Field  -- Name: atEOF  -- XML id: _24969
-                // IGNORED: Field  -- Name: isVal1  -- XML id: _24970
-                // IGNORED: Field  -- Name: isVal2  -- XML id: _24971
-                // IGNORED: Field  -- Name: hasHistorySave  -- XML id: _24972
-                // IGNORED: Field  -- Name: abortPartonLevel  -- XML id: _24973
-                // IGNORED: Field  -- Name: isHardDiffA  -- XML id: _24974
-                // IGNORED: Field  -- Name: isHardDiffB  -- XML id: _24975
-                // IGNORED: Field  -- Name: hasUnresBeams  -- XML id: _24976
-                // IGNORED: Field  -- Name: codeSave  -- XML id: _24977
-                // IGNORED: Field  -- Name: codeSubSave  -- XML id: _24978
-                // IGNORED: Field  -- Name: nFinalSave  -- XML id: _24979
-                // IGNORED: Field  -- Name: nFinalSubSave  -- XML id: _24980
-                // IGNORED: Field  -- Name: nTotal  -- XML id: _24981
-                // IGNORED: Field  -- Name: id1Save  -- XML id: _24982
-                // IGNORED: Field  -- Name: id2Save  -- XML id: _24983
-                // IGNORED: Field  -- Name: id1pdfSave  -- XML id: _24984
-                // IGNORED: Field  -- Name: id2pdfSave  -- XML id: _24985
-                // IGNORED: Field  -- Name: nMPISave  -- XML id: _24986
-                // IGNORED: Field  -- Name: nISRSave  -- XML id: _24987
-                // IGNORED: Field  -- Name: nFSRinProcSave  -- XML id: _24988
-                // IGNORED: Field  -- Name: nFSRinResSave  -- XML id: _24989
-                // IGNORED: Field  -- Name: x1Save  -- XML id: _24990
-                // IGNORED: Field  -- Name: x2Save  -- XML id: _24991
-                // IGNORED: Field  -- Name: x1pdfSave  -- XML id: _24992
-                // IGNORED: Field  -- Name: x2pdfSave  -- XML id: _24993
-                // IGNORED: Field  -- Name: pdf1Save  -- XML id: _24994
-                // IGNORED: Field  -- Name: pdf2Save  -- XML id: _24995
-                // IGNORED: Field  -- Name: Q2FacSave  -- XML id: _24996
-                // IGNORED: Field  -- Name: alphaEMSave  -- XML id: _24997
-                // IGNORED: Field  -- Name: alphaSSave  -- XML id: _24998
-                // IGNORED: Field  -- Name: Q2RenSave  -- XML id: _24999
-                // IGNORED: Field  -- Name: scalupSave  -- XML id: _25000
-                // IGNORED: Field  -- Name: sH  -- XML id: _25001
-                // IGNORED: Field  -- Name: tH  -- XML id: _25002
-                // IGNORED: Field  -- Name: uH  -- XML id: _25003
-                // IGNORED: Field  -- Name: pTH  -- XML id: _25004
-                // IGNORED: Field  -- Name: m3H  -- XML id: _25005
-                // IGNORED: Field  -- Name: m4H  -- XML id: _25006
-                // IGNORED: Field  -- Name: thetaH  -- XML id: _25007
-                // IGNORED: Field  -- Name: phiH  -- XML id: _25008
-                // IGNORED: Field  -- Name: weightSave  -- XML id: _25009
-                // IGNORED: Field  -- Name: bMPISave  -- XML id: _25010
-                // IGNORED: Field  -- Name: enhanceMPISave  -- XML id: _25011
-                // IGNORED: Field  -- Name: pTmaxMPISave  -- XML id: _25012
-                // IGNORED: Field  -- Name: pTmaxISRSave  -- XML id: _25013
-                // IGNORED: Field  -- Name: pTmaxFSRSave  -- XML id: _25014
-                // IGNORED: Field  -- Name: pTnowSave  -- XML id: _25015
-                // IGNORED: Field  -- Name: zNowISRSave  -- XML id: _25016
-                // IGNORED: Field  -- Name: pT2NowISRSave  -- XML id: _25017
-                // IGNORED: Field  -- Name: xPomA  -- XML id: _25018
-                // IGNORED: Field  -- Name: xPomB  -- XML id: _25019
-                // IGNORED: Field  -- Name: tPomA  -- XML id: _25020
-                // IGNORED: Field  -- Name: tPomB  -- XML id: _25021
-                // IGNORED: Field  -- Name: nameSave  -- XML id: _25022
-                // IGNORED: Field  -- Name: nameSubSave  -- XML id: _25023
-                // IGNORED: Field  -- Name: codeMPISave  -- XML id: _25024
-                // IGNORED: Field  -- Name: iAMPISave  -- XML id: _25025
-                // IGNORED: Field  -- Name: iBMPISave  -- XML id: _25026
-                // IGNORED: Field  -- Name: pTMPISave  -- XML id: _25027
-                // IGNORED: Field  -- Name: eMPISave  -- XML id: _25028
-                // IGNORED: Field  -- Name: counters  -- XML id: _25029
-                // IGNORED: Field  -- Name: messages  -- XML id: _25030
-                // IGNORED: Field  -- Name: headers  -- XML id: _25031
-                // IGNORED: Field  -- Name: plugins  -- XML id: _25032
-                // IGNORED: Field  -- Name: weightCKKWLSave  -- XML id: _25033
-                // IGNORED: Field  -- Name: weightFIRSTSave  -- XML id: _25034
+                // IGNORED: Variable  -- Name: TIMESTOPRINT  -- XML id: _24082
+                // IGNORED: Variable  -- Name: CONVERTMB2PB  -- XML id: _24083
+                // IGNORED: Field  -- Name: idASave  -- XML id: _24084
+                // IGNORED: Field  -- Name: idBSave  -- XML id: _24085
+                // IGNORED: Field  -- Name: pzASave  -- XML id: _24086
+                // IGNORED: Field  -- Name: eASave  -- XML id: _24087
+                // IGNORED: Field  -- Name: mASave  -- XML id: _24088
+                // IGNORED: Field  -- Name: pzBSave  -- XML id: _24089
+                // IGNORED: Field  -- Name: eBSave  -- XML id: _24090
+                // IGNORED: Field  -- Name: mBSave  -- XML id: _24091
+                // IGNORED: Field  -- Name: eCMSave  -- XML id: _24092
+                // IGNORED: Field  -- Name: sSave  -- XML id: _24093
+                // IGNORED: Field  -- Name: lowPTmin  -- XML id: _24094
+                // IGNORED: Field  -- Name: nTry  -- XML id: _24095
+                // IGNORED: Field  -- Name: nSel  -- XML id: _24096
+                // IGNORED: Field  -- Name: nAcc  -- XML id: _24097
+                // IGNORED: Field  -- Name: sigGen  -- XML id: _24098
+                // IGNORED: Field  -- Name: sigErr  -- XML id: _24099
+                // IGNORED: Field  -- Name: wtAccSum  -- XML id: _24100
+                // IGNORED: Field  -- Name: procNameM  -- XML id: _24101
+                // IGNORED: Field  -- Name: nTryM  -- XML id: _24102
+                // IGNORED: Field  -- Name: nSelM  -- XML id: _24103
+                // IGNORED: Field  -- Name: nAccM  -- XML id: _24104
+                // IGNORED: Field  -- Name: sigGenM  -- XML id: _24105
+                // IGNORED: Field  -- Name: sigErrM  -- XML id: _24106
+                // IGNORED: Field  -- Name: lhaStrategySave  -- XML id: _24107
+                // IGNORED: Field  -- Name: a0MPISave  -- XML id: _24108
+                // IGNORED: Field  -- Name: isRes  -- XML id: _24109
+                // IGNORED: Field  -- Name: isDiffA  -- XML id: _24110
+                // IGNORED: Field  -- Name: isDiffB  -- XML id: _24111
+                // IGNORED: Field  -- Name: isDiffC  -- XML id: _24112
+                // IGNORED: Field  -- Name: isND  -- XML id: _24113
+                // IGNORED: Field  -- Name: isLH  -- XML id: _24114
+                // IGNORED: Field  -- Name: hasSubSave  -- XML id: _24115
+                // IGNORED: Field  -- Name: bIsSet  -- XML id: _24116
+                // IGNORED: Field  -- Name: evolIsSet  -- XML id: _24117
+                // IGNORED: Field  -- Name: atEOF  -- XML id: _24118
+                // IGNORED: Field  -- Name: isVal1  -- XML id: _24119
+                // IGNORED: Field  -- Name: isVal2  -- XML id: _24120
+                // IGNORED: Field  -- Name: hasHistorySave  -- XML id: _24121
+                // IGNORED: Field  -- Name: abortPartonLevel  -- XML id: _24122
+                // IGNORED: Field  -- Name: isHardDiffA  -- XML id: _24123
+                // IGNORED: Field  -- Name: isHardDiffB  -- XML id: _24124
+                // IGNORED: Field  -- Name: hasUnresBeams  -- XML id: _24125
+                // IGNORED: Field  -- Name: codeSave  -- XML id: _24126
+                // IGNORED: Field  -- Name: codeSubSave  -- XML id: _24127
+                // IGNORED: Field  -- Name: nFinalSave  -- XML id: _24128
+                // IGNORED: Field  -- Name: nFinalSubSave  -- XML id: _24129
+                // IGNORED: Field  -- Name: nTotal  -- XML id: _24130
+                // IGNORED: Field  -- Name: id1Save  -- XML id: _24131
+                // IGNORED: Field  -- Name: id2Save  -- XML id: _24132
+                // IGNORED: Field  -- Name: id1pdfSave  -- XML id: _24133
+                // IGNORED: Field  -- Name: id2pdfSave  -- XML id: _24134
+                // IGNORED: Field  -- Name: nMPISave  -- XML id: _24135
+                // IGNORED: Field  -- Name: nISRSave  -- XML id: _24136
+                // IGNORED: Field  -- Name: nFSRinProcSave  -- XML id: _24137
+                // IGNORED: Field  -- Name: nFSRinResSave  -- XML id: _24138
+                // IGNORED: Field  -- Name: x1Save  -- XML id: _24139
+                // IGNORED: Field  -- Name: x2Save  -- XML id: _24140
+                // IGNORED: Field  -- Name: x1pdfSave  -- XML id: _24141
+                // IGNORED: Field  -- Name: x2pdfSave  -- XML id: _24142
+                // IGNORED: Field  -- Name: pdf1Save  -- XML id: _24143
+                // IGNORED: Field  -- Name: pdf2Save  -- XML id: _24144
+                // IGNORED: Field  -- Name: Q2FacSave  -- XML id: _24145
+                // IGNORED: Field  -- Name: alphaEMSave  -- XML id: _24146
+                // IGNORED: Field  -- Name: alphaSSave  -- XML id: _24147
+                // IGNORED: Field  -- Name: Q2RenSave  -- XML id: _24148
+                // IGNORED: Field  -- Name: scalupSave  -- XML id: _24149
+                // IGNORED: Field  -- Name: sH  -- XML id: _24150
+                // IGNORED: Field  -- Name: tH  -- XML id: _24151
+                // IGNORED: Field  -- Name: uH  -- XML id: _24152
+                // IGNORED: Field  -- Name: pTH  -- XML id: _24153
+                // IGNORED: Field  -- Name: m3H  -- XML id: _24154
+                // IGNORED: Field  -- Name: m4H  -- XML id: _24155
+                // IGNORED: Field  -- Name: thetaH  -- XML id: _24156
+                // IGNORED: Field  -- Name: phiH  -- XML id: _24157
+                // IGNORED: Field  -- Name: weightSave  -- XML id: _24158
+                // IGNORED: Field  -- Name: bMPISave  -- XML id: _24159
+                // IGNORED: Field  -- Name: enhanceMPISave  -- XML id: _24160
+                // IGNORED: Field  -- Name: pTmaxMPISave  -- XML id: _24161
+                // IGNORED: Field  -- Name: pTmaxISRSave  -- XML id: _24162
+                // IGNORED: Field  -- Name: pTmaxFSRSave  -- XML id: _24163
+                // IGNORED: Field  -- Name: pTnowSave  -- XML id: _24164
+                // IGNORED: Field  -- Name: zNowISRSave  -- XML id: _24165
+                // IGNORED: Field  -- Name: pT2NowISRSave  -- XML id: _24166
+                // IGNORED: Field  -- Name: xPomA  -- XML id: _24167
+                // IGNORED: Field  -- Name: xPomB  -- XML id: _24168
+                // IGNORED: Field  -- Name: tPomA  -- XML id: _24169
+                // IGNORED: Field  -- Name: tPomB  -- XML id: _24170
+                // IGNORED: Field  -- Name: nameSave  -- XML id: _24171
+                // IGNORED: Field  -- Name: nameSubSave  -- XML id: _24172
+                // IGNORED: Field  -- Name: codeMPISave  -- XML id: _24173
+                // IGNORED: Field  -- Name: iAMPISave  -- XML id: _24174
+                // IGNORED: Field  -- Name: iBMPISave  -- XML id: _24175
+                // IGNORED: Field  -- Name: pTMPISave  -- XML id: _24176
+                // IGNORED: Field  -- Name: eMPISave  -- XML id: _24177
+                // IGNORED: Field  -- Name: counters  -- XML id: _24178
+                // IGNORED: Field  -- Name: messages  -- XML id: _24179
+                // IGNORED: Field  -- Name: headers  -- XML id: _24180
+                // IGNORED: Field  -- Name: plugins  -- XML id: _24181
+                // IGNORED: Field  -- Name: weightCKKWLSave  -- XML id: _24182
+                // IGNORED: Field  -- Name: weightFIRSTSave  -- XML id: _24183
             public:
     
                 virtual void list(std::basic_ostream<char,std::char_traits<char> >&) const =0;

@@ -6,11 +6,6 @@
 #include "forward_decls_wrapper_classes.h"
 #include <cstddef>
 
-#ifndef ENUMS_DECLARED
-#define ENUMS_DECLARED
-#include "enum_decl_copies.h"
-#endif
-
 #include "identification.hpp"
 
 // Forward declaration needed by the destructor pattern.
@@ -26,11 +21,11 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         class Abstract_Vec4 : virtual public AbstractBase
         {
             private:
-                // IGNORED: Variable  -- Name: TINY  -- XML id: _26045
-                // IGNORED: Field  -- Name: xx  -- XML id: _26046
-                // IGNORED: Field  -- Name: yy  -- XML id: _26047
-                // IGNORED: Field  -- Name: zz  -- XML id: _26048
-                // IGNORED: Field  -- Name: tt  -- XML id: _26049
+                // IGNORED: Variable  -- Name: TINY  -- XML id: _24673
+                // IGNORED: Field  -- Name: xx  -- XML id: _24674
+                // IGNORED: Field  -- Name: yy  -- XML id: _24675
+                // IGNORED: Field  -- Name: zz  -- XML id: _24676
+                // IGNORED: Field  -- Name: tt  -- XML id: _24677
             public:
     
                 virtual Pythia8::Abstract_Vec4* operator_equal__BOSS(const Pythia8::Abstract_Vec4&) =0;
