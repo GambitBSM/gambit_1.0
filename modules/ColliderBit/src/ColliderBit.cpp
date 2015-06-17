@@ -132,7 +132,7 @@ namespace Gambit {
         result.resetSpecialization(*iter);
         /// Init SLHAea testing object. TODO get it from SpecBit / DecayBit.
         std::ifstream ifs(slhaFilename);
-        const SLHAea::Coll slhaea(ifs);
+        const SLHAea::Coll* slhaea = new SLHAea::Coll(ifs);
         //const SLHAea::Coll &slhaea = *Dep::SLHAeaFromSomewhere;
         result.addSLHAea(slhaea);
         result.init(pythiaOptions);
