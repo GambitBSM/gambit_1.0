@@ -36,6 +36,7 @@ Beta_function::Beta_function()
    , scale(0.0)
    , tolerance(1.e-4)
    , min_tolerance(1.0e-11)
+   , zero_threshold(1.e-11)
 {
 }
 
@@ -47,6 +48,7 @@ void Beta_function::reset()
    scale = 0.0;
    tolerance = 1.e-4;
    min_tolerance = 1.0e-11;
+   zero_threshold = 1.e-11;
 }
 
 /**

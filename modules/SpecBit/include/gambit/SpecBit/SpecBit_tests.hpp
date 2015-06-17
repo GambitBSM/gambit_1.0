@@ -29,7 +29,7 @@
 
 // Flexible SUSY stuff (should not be needed by the rest of gambit)
 #include "flexiblesusy/src/ew_input.hpp"
-#include "flexiblesusy/src/numerics.hpp"
+#include "flexiblesusy/src/numerics2.hpp"
 #include "flexiblesusy/src/wrappers.hpp"
 
 // Switch test output depending on where this is being compiled

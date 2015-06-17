@@ -80,10 +80,39 @@ void SLHA_io::read_modsel()
 
 void SLHA_io::fill(QedQcd& oneset) const
 {
+   CKM_wolfenstein ckm_wolfenstein;
+   PMNS_parameters pmns_parameters;
+
    SLHA_io::Tuple_processor sminputs_processor
       = boost::bind(&SLHA_io::process_sminputs_tuple, boost::ref(oneset), _1, _2);
 
    read_block("SMINPUTS", sminputs_processor);
+
+   if (modsel.quark_flavour_violated) {
+      SLHA_io::Tuple_processor vckmin_processor
+         = boost::bind(&SLHA_io::process_vckmin_tuple, boost::ref(ckm_wolfenstein), _1, _2);
+
+      read_block("VCKMIN", vckmin_processor);
+   }
+
+   if (modsel.lepton_flavour_violated) {
+      SLHA_io::Tuple_processor upmnsin_processor
+         = boost::bind(&SLHA_io::process_upmnsin_tuple, boost::ref(pmns_parameters), _1, _2);
+
+      read_block("UPMNSIN", upmnsin_processor);
+   }
+
+   // fill CKM parameters in oneset
+   CKM_parameters ckm_parameters;
+   ckm_parameters.set_from_wolfenstein(
+      ckm_wolfenstein.lambdaW,
+      ckm_wolfenstein.aCkm,
+      ckm_wolfenstein.rhobar,
+      ckm_wolfenstein.etabar);
+   oneset.setCKM(ckm_parameters);
+
+   // fill PMNS parameters in oneset
+   oneset.setPMNS(pmns_parameters);
 }
 
 /**
@@ -288,18 +317,18 @@ void SLHA_io::set_sminputs(const softsusy::QedQcd& qedqcd_)
 
    ss << "Block SMINPUTS\n";
    ss << FORMAT_ELEMENT( 1, alphaEmInv                   , "alpha^(-1) SM MSbar(MZ)");
-   ss << FORMAT_ELEMENT( 2, 1.166370000e-05              , "G_Fermi");
+   ss << FORMAT_ELEMENT( 2, qedqcd.displayFermiConstant(), "G_Fermi");
    ss << FORMAT_ELEMENT( 3, qedqcd.displayAlpha(ALPHAS)  , "alpha_s(MZ) SM MSbar");
    ss << FORMAT_ELEMENT( 4, qedqcd.displayPoleMZ()       , "MZ(pole)");
    ss << FORMAT_ELEMENT( 5, qedqcd.displayMbMb()         , "mb(mb) SM MSbar");
    ss << FORMAT_ELEMENT( 6, qedqcd.displayPoleMt()       , "mtop(pole)");
    ss << FORMAT_ELEMENT( 7, qedqcd.displayPoleMtau()     , "mtau(pole)");
-   ss << FORMAT_ELEMENT( 8, 0                            , "mnu3(pole)");
+   ss << FORMAT_ELEMENT( 8, qedqcd.displayNeutrinoPoleMass(3), "mnu3(pole)");
    ss << FORMAT_ELEMENT( 9, qedqcd.displayPoleMW()       , "MW(pole)");
    ss << FORMAT_ELEMENT(11, qedqcd.displayMass(mElectron), "melectron(pole)");
-   ss << FORMAT_ELEMENT(12, 0                            , "mnu1(pole)");
+   ss << FORMAT_ELEMENT(12, qedqcd.displayNeutrinoPoleMass(1), "mnu1(pole)");
    ss << FORMAT_ELEMENT(13, qedqcd.displayMass(mMuon)    , "mmuon(pole)");
-   ss << FORMAT_ELEMENT(14, 0                            , "mnu2(pole)");
+   ss << FORMAT_ELEMENT(14, qedqcd.displayNeutrinoPoleMass(2), "mnu2(pole)");
 
    // recalculate mc(mc)^MS-bar
    double mc = qedqcd.displayMass(mCharm);
@@ -344,10 +373,20 @@ void SLHA_io::process_modsel_tuple(Modsel& modsel, int key, double value)
    case 3: // SUSY model (defined in SARAH model file)
    case 4: // R-parity violation (defined in SARAH model file)
    case 5: // CP-parity violation (defined in SARAH model file)
-   case 6: // Flavour violation (defined in SARAH model file)
    case 11:
    case 21:
       WARNING("Key " << key << " in Block MODSEL currently not supported");
+      break;
+   case 6: // Flavour violation (defined in SARAH model file)
+   {
+      const int ivalue = Round(value);
+
+      if (ivalue < 0 || ivalue > 3)
+         WARNING("Value " << ivalue << " in MODSEL block entry 6 out of range");
+
+      modsel.quark_flavour_violated = ivalue & 0x1;
+      modsel.lepton_flavour_violated = ivalue & 0x2;
+   }
       break;
    case 12:
       modsel.parameter_output_scale = value;
@@ -372,7 +411,7 @@ void SLHA_io::process_sminputs_tuple(QedQcd& oneset, int key, double value)
       oneset.setAlpha(ALPHA, 1.0 / value);
       break;
    case 2:
-      // Gmu cannot be set yet
+      oneset.setFermiConstant(value);
       break;
    case 3:
       oneset.setAlpha(ALPHAS, value);
@@ -392,6 +431,7 @@ void SLHA_io::process_sminputs_tuple(QedQcd& oneset, int key, double value)
       oneset.setPoleMtau(value);
       break;
    case 8:
+      oneset.setNeutrinoPoleMass(3, value);
       break;
    case 9:
       oneset.setPoleMW(value);
@@ -400,11 +440,13 @@ void SLHA_io::process_sminputs_tuple(QedQcd& oneset, int key, double value)
       oneset.setMass(mElectron, value);
       break;
    case 12:
+      oneset.setNeutrinoPoleMass(1, value);
       break;
    case 13:
       oneset.setMass(mMuon, value);
       break;
    case 14:
+      oneset.setNeutrinoPoleMass(2, value);
       break;
    case 21:
       oneset.setMass(mDown, value);
@@ -420,6 +462,67 @@ void SLHA_io::process_sminputs_tuple(QedQcd& oneset, int key, double value)
       break;
    default:
       WARNING("Unrecognized key in SMINPUTS: " << key);
+      break;
+   }
+}
+
+/**
+ * fill CKM_wolfenstein from given key - value pair
+ *
+ * @param ckm_wolfenstein Wolfenstein parameters
+ * @param key SLHA key in SMINPUTS
+ * @param value value corresponding to key
+ */
+void SLHA_io::process_vckmin_tuple(CKM_wolfenstein& ckm_wolfenstein, int key, double value)
+{
+   switch (key) {
+   case 1:
+      ckm_wolfenstein.lambdaW = value;
+      break;
+   case 2:
+      ckm_wolfenstein.aCkm = value;
+      break;
+   case 3:
+      ckm_wolfenstein.rhobar = value;
+      break;
+   case 4:
+      ckm_wolfenstein.etabar = value;
+      break;
+   default:
+      WARNING("Unrecognized key in VCKMIN: " << key);
+      break;
+   }
+}
+
+/**
+ * fill PMNS_parameters from given key - value pair
+ *
+ * @param pmns_parameters PMNS matrix parameters
+ * @param key SLHA key in SMINPUTS
+ * @param value value corresponding to key
+ */
+void SLHA_io::process_upmnsin_tuple(PMNS_parameters& pmns_parameters, int key, double value)
+{
+   switch (key) {
+   case 1:
+      pmns_parameters.theta_12 = value;
+      break;
+   case 2:
+      pmns_parameters.theta_23 = value;
+      break;
+   case 3:
+      pmns_parameters.theta_13 = value;
+      break;
+   case 4:
+      pmns_parameters.delta = value;
+      break;
+   case 5:
+      pmns_parameters.alpha_1 = value;
+   case 6:
+      pmns_parameters.alpha_2 = value;
+      break;
+   default:
+      WARNING("Unrecognized key in UPMNSIN: " << key);
       break;
    }
 }

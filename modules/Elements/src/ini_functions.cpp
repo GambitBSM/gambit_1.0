@@ -18,6 +18,9 @@
 ///  *********************************************
 
 #include <dlfcn.h>
+#ifdef HAVE_LINK_H
+  #include <link.h>
+#endif
 
 #include "gambit/Elements/ini_functions.hpp"
 #include "gambit/Utils/equivalency_singleton.hpp"
@@ -25,7 +28,7 @@
 
 namespace Gambit
 {
-    
+
   /// Get back the "::" from things that use NS_SEP instead
   str fixns(str s)
   {
@@ -160,6 +163,7 @@ namespace Gambit
     return 0;
   }
      
+  /// Load a backend library
   int loadLibrary(str be, str ver, str sv, void*& pHandle, bool& present, bool with_BOSS)
   {
     try
@@ -167,7 +171,7 @@ namespace Gambit
       const str path = Backends::backendInfo().corrected_path(be,ver);
       Backends::backendInfo().link_versions(be, ver, sv);
       pHandle = dlopen(path.c_str(), RTLD_LAZY);
-      if(not pHandle)
+      if (not pHandle)
       {
         std::ostringstream err;
         str error = dlerror();
@@ -180,8 +184,26 @@ namespace Gambit
         present = false;
       }
       else
-      {
-        logger() << "Succeeded in loading " << path << std::endl 
+      {       
+        // If dlinfo is available, use it to verify the path of the backend that was just loaded.
+        #ifdef HAVE_LINK_H
+          link_map *map;
+          dlinfo(pHandle, RTLD_DI_LINKMAP, &map);
+          if (not map)
+          {
+            std::ostringstream err;
+            err << "Problem retrieving library path.  The sought lib is " << path << "." << endl
+                << "The path to this library has not been fully verified.";
+            backend_warning().raise(LOCAL_INFO,err.str());
+          }
+          else
+          {
+            attempt_backend_path_override(be, ver, map->l_name);
+          }
+        #else
+          Backends::backendInfo().override_path(be, ver, "system lacks dlinfo(); path unverifiable");
+        #endif
+        logger() << "Succeeded in loading " << Backends::backendInfo().corrected_path(be,ver) << std::endl 
                  << LogTags::backends << LogTags::info << EOM;
         present = true;
       }
@@ -192,7 +214,24 @@ namespace Gambit
     catch (std::exception& e) { ini_catch(e); }
     return 0;
   }
-  
+
+  /// Try to resolve a pointer to a partial path to a shared library and use it to override the stored backend path.  
+  void attempt_backend_path_override(str& be, str& ver, const char* name)
+  {
+    char *fullname = realpath(name, NULL);
+    if (not fullname)
+    {
+      std::ostringstream err;
+      err << "Problem retrieving absolute library path for " << be << " v" << ver << "." << endl
+          << "The path to this library has not been fully determined.";
+      backend_warning().raise(LOCAL_INFO,err.str());
+    }
+    else
+    {
+      Backends::backendInfo().override_path(be, ver, fullname);
+    }
+  }
+
   /// Register a backend with the logging system
   int register_backend_with_log(str s) 
   {

@@ -101,8 +101,9 @@ scanner_plugin(MultiNest, version(0, 0, 0, bens_version))
       int fb (		get_inifile_value<int>("fb", 1) );		// need feedback on standard output?
       int resume (	get_inifile_value<int>("resume", 1) );		// resume from a previous job?
       int outfile (	get_inifile_value<int>("outfile", 0) );		// write output files?
-      int initMPI (	get_inifile_value<int>("initMPI", 1) );		// initialize MPI routines?, relevant only if compiling with MPI
+      // int initMPI (	get_inifile_value<int>("initMPI", 1) );		// initialize MPI routines?, relevant only if compiling with MPI
       									// set it to F if you want your main program to handle MPI initialization
+      int initMPI(0); //TODO: This is handled by Gambit now. Might want to coordinate this via ScannerBit though, in case Gambit is not what we are hooked up to.
       double logZero (	get_inifile_value<double>("logZero", -1E90) );	// points with loglike < logZero will be ignored by MultiNest
       int maxiter (	get_inifile_value<int>("maxiter", 0) );		// max no. of iterations, a non-positive value means infinity. MultiNest will terminate if either it 
       									// has done max no. of iterations or convergence criterion (defined through tol) has been satisfied

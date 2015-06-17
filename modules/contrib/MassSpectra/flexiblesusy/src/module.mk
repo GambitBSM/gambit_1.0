@@ -7,6 +7,7 @@ LIBFLEXI_MK  := \
 LIBFLEXI_SRC := \
 		$(DIR)/betafunction.cpp \
 		$(DIR)/build_info.cpp \
+		$(DIR)/ckm.cpp \
 		$(DIR)/command_line_options.cpp \
 		$(DIR)/def.cpp \
 		$(DIR)/dilog.f \
@@ -18,19 +19,23 @@ LIBFLEXI_SRC := \
 		$(DIR)/mssm_twoloophiggs.f \
 		$(DIR)/nmssm2loop.f \
 		$(DIR)/numerics.cpp \
+		$(DIR)/numerics2.cpp \
 		$(DIR)/spectrum_generator_settings.cpp \
+		$(DIR)/pmns.cpp \
 		$(DIR)/pv.cpp \
 		$(DIR)/rge.cpp \
 		$(DIR)/rk.cpp \
 		$(DIR)/scan.cpp \
 		$(DIR)/slha_io.cpp \
 		$(DIR)/utils.cpp \
+		$(DIR)/weinberg_angle.cpp \
 		$(DIR)/wrappers.cpp
 
 LIBFLEXI_HDR := \
 		$(DIR)/betafunction.hpp \
 		$(DIR)/build_info.hpp \
 		$(DIR)/cextensions.hpp \
+		$(DIR)/ckm.hpp \
 		$(DIR)/command_line_options.hpp \
 		$(DIR)/compare.hpp \
 		$(DIR)/composite_convergence_tester.hpp \
@@ -41,13 +46,15 @@ LIBFLEXI_HDR := \
 		$(DIR)/coupling_monitor.hpp \
 		$(DIR)/def.h \
 		$(DIR)/dilog.h \
+		$(DIR)/eigen_utils.hpp \
 		$(DIR)/error.hpp \
 		$(DIR)/ew_input.hpp \
 		$(DIR)/ewsb_solver.hpp \
 		$(DIR)/fixed_point_iterator.hpp \
+		$(DIR)/functors.hpp \
 		$(DIR)/gsl_utils.hpp \
 		$(DIR)/gut_scale_calculator.hpp \
-		$(DIR)/higgs_2loop_corrections.hpp \
+		$(DIR)/two_loop_corrections.hpp \
 		$(DIR)/initial_guesser.hpp \
 		$(DIR)/linalg2.hpp \
 		$(DIR)/linalg.h \
@@ -60,7 +67,8 @@ LIBFLEXI_HDR := \
 		$(DIR)/nmssm2loop.h \
 		$(DIR)/nmssm_twoloophiggs.h \
 		$(DIR)/numerics.h \
-		$(DIR)/numerics.hpp \
+		$(DIR)/numerics2.hpp \
+		$(DIR)/pmns.hpp \
 		$(DIR)/problems.hpp \
 		$(DIR)/pv.hpp \
 		$(DIR)/rge.h \
@@ -71,7 +79,9 @@ LIBFLEXI_HDR := \
 		$(DIR)/sfermions.hpp \
 		$(DIR)/slha_io.hpp \
 		$(DIR)/spectrum_generator_settings.hpp \
+		$(DIR)/sum.hpp \
 		$(DIR)/utils.h \
+		$(DIR)/weinberg_angle.hpp \
 		$(DIR)/wrappers.hpp \
 		$(DIR)/xpr-base.h \
 		$(DIR)/xpr-matrix.h \
