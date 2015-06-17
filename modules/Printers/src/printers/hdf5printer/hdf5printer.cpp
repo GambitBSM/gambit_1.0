@@ -340,10 +340,15 @@ namespace Gambit
       DBUG( std::cout << "Performing final writes for HDF5Printer object (with name=\""<<printer_name<<"\")..." << std::endl; )
 
       #ifdef WITH_MPI
-      // Trigger final sending and receiving of buffers
-      //uint null_message; 
-      //myComm.Send(&null_message, 1, masterRank, RA_BUFFERS_SENT, &req_RA_SENT);
+      // Wait here for all processes to get the signal from the scanner that the scan is done.
       myComm.Barrier(); 
+
+      // Begin final sending and receiving of buffers
+      
+
+
+      uint null_message; 
+      myComm.Send(&null_message, 1, masterRank, RA_BUFFERS_SENT, &req_RA_SENT);
       #endif
 
       // Make sure buffers are sync'd, to ensure that they all have the same final length
