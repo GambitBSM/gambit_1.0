@@ -67,6 +67,9 @@ namespace Gambit
   /// Load a backend library
   int loadLibrary(str, str, str, void*&, bool&, bool);
   
+  /// Try to resolve a pointer to a partial path to a shared library and use it to override the stored backend path.  
+  void attempt_backend_path_override(str&, str&, const char*);
+
   /// Register a backend with the logging system
   int register_backend_with_log(str);
 

@@ -26,20 +26,17 @@
 ///
 ///  *********************************************
 
-#include <sstream>
-#include <fstream>
-
-#include <gambit/cmake/cmake_variables.hpp>
-
-#ifdef HAVE_REGEX_H
-#include <regex>
-#endif
-
 #include "gambit/Core/depresolver.hpp"
 #include "gambit/Models/models.hpp"
 #include "gambit/Logs/log.hpp"
 #include "gambit/Utils/stream_overloads.hpp"
 #include "gambit/cmake/cmake_variables.hpp"
+
+#include <sstream>
+#include <fstream>
+#ifdef HAVE_REGEX_H
+  #include <regex>
+#endif
 
 #include <boost/format.hpp>
 #include <boost/graph/graphviz.hpp>
