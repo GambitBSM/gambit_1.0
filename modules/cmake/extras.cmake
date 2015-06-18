@@ -64,6 +64,7 @@ set(diver_lib "libdiver")
 set(diver_dir "${PROJECT_SOURCE_DIR}/../extras/Diver")
 set(diver_short_dir "./../extras/Diver")
 set(diverSO_LINK_FLAGS "${CMAKE_Fortran_MPI_SO_LINK_FLAGS}")
+message(${diverSO_LINK_FLAGS})
 if(MPI_Fortran_FOUND)
   set(diverFFLAGS "${CMAKE_Fortran_MPI_FLAGS}")
 else()
@@ -76,7 +77,7 @@ ExternalProject_Add(diver
   SOURCE_DIR ${diver_dir}
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND ""
-  BUILD_COMMAND make ${diver_lib}.so DIVER_FF=${CMAKE_Fortran_COMPILER} DIVER_MODULE=${FMODULE} DIVER_FOPT=${diverFFLAGS} DIVER_SO_LINK_FLAGS=${diverSO_LINK_FLAGS}$ 
+  BUILD_COMMAND make ${diver_lib}.so DIVER_FF=${CMAKE_Fortran_COMPILER} DIVER_MODULE=${FMODULE} DIVER_FOPT=${diverFFLAGS} DIVER_SO_LINK_FLAGS=${diverSO_LINK_FLAGS} 
   INSTALL_COMMAND "" 
 )
 set_property(TARGET diver PROPERTY _EP_DOWNLOAD_ALWAYS 0)
