@@ -444,11 +444,15 @@ namespace Gambit {
         }
         #endif
 
+        #ifdef MPI_DEBUG
+        std::cout<<"rank "<<myRank<<": Collecting sync buffer ("<<this->get_label()<<") from process "<<source<<std::endl;
+        #endif
+
         printerComm.Recv(&recv_buffer_valid,   LENGTH, source, myTags.SYNC_valid);
         printerComm.Recv(&recv_buffer_entries, LENGTH, source, myTags.SYNC_data);
 
         #ifdef MPI_DEBUG
-        std::cout<<"rank "<<this->printerComm.Get_rank()<<"; buffer '"<<this->get_label()<<"': Received sync buffer from rank "<<source<<". Appending received data to my sync buffers."<<std::endl;
+        std::cout<<"rank "<<myRank<<"; buffer '"<<this->get_label()<<"': Received sync buffer from rank "<<source<<". Appending received data to my sync buffers."<<std::endl;
         #endif
 
         // Write the buffers to disk
@@ -523,7 +527,7 @@ namespace Gambit {
         printerComm.Recv(&null_message,             1,      source, RA_BUFFERS_SENT); // absorbs one off the queue if there are several
 
         #ifdef MPI_DEBUG
-        std::cout<<"rank "<<this->printerComm.Get_rank()<<"; buffer '"<<this->get_label()<<"': Received random-access buffer from rank "<<source<<". Sending write commands through my RA buffers."<<std::endl;
+        std::cout<<"rank "<<myRank<<"; buffer '"<<this->get_label()<<"': Received random-access buffer from rank "<<source<<". Sending write commands through my RA buffers."<<std::endl;
         #endif
 
         // feed all write commands through the master process RA_write commands

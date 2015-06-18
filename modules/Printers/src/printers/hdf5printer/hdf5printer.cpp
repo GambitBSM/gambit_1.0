@@ -334,34 +334,58 @@ namespace Gambit
       }
       #endif
     }
- 
+
+    /// Perform final cleanup and write tasks 
     void HDF5Printer::finalise()
     {
       DBUG( std::cout << "Performing final writes for HDF5Printer object (with name=\""<<printer_name<<"\")..." << std::endl; )
 
       #ifdef WITH_MPI
-      // Wait here for all processes to get the signal from the scanner that the scan is done.
-      myComm.Barrier(); 
-
-      // Begin final sending and receiving of buffers
-      
-
-
-      uint null_message; 
-      myComm.Send(&null_message, 1, masterRank, RA_BUFFERS_SENT, &req_RA_SENT);
-      #endif
-
-      // Make sure buffers are sync'd, to ensure that they all have the same final length
-      //  This is a bit of a hack to force the printer to increment by one final (fake) point
-      //  so that the synchronisation works correctly.
-      if(is_primary_printer) //myRank==0?
+      // Trigger all worker buffers to send to master
+      if(myRank!=0) 
       {
-        reverse_global_index_lookup.push_back(PPIDpair(0,0));
-        synchronise_buffers();
+         flush();
+         #ifdef MPI_DEBUG
+         std::cout << "rank "<<myRank<<": Sent all buffers to master ("<<printer_name<<")"<<std::endl;
+         #endif
       }
 
-      // Instruct all the buffers to do their final writes.
-      flush();
+      // Wait for all the nodes to do their final sends
+      #ifdef MPI_DEBUG
+      std::cout << "rank "<<myRank<<": Waiting at barrier in finalise() ("<<printer_name<<")"<<std::endl;
+      #endif
+      myComm.Barrier(); 
+      #ifdef MPI_DEBUG
+      std::cout << "rank "<<myRank<<": Barrier passed ("<<printer_name<<")"<<std::endl;
+      #endif
+
+      #endif
+
+      if(myRank==0)
+      {
+         // Collect the worker buffers and fix up synchronisation
+         if(is_primary_printer)
+         {
+           #ifdef MPI_DEBUG
+           std::cout << "rank "<<myRank<<": collect_mpi_buffers() ("<<printer_name<<")"<<std::endl;
+           #endif
+           #ifdef WITH_MPI
+           collect_mpi_buffers();
+           #endif
+
+           // Make sure buffers are sync'd, to ensure that they all have the same final length
+           //  This is a bit of a hack to force the printer to increment by one final (fake) point
+           //  so that the synchronisation works correctly.
+           reverse_global_index_lookup.push_back(PPIDpair(0,0));
+           synchronise_buffers();
+         }
+ 
+         // Very very last write to disk
+         #ifdef MPI_DEBUG
+         std::cout << "rank "<<myRank<<": Doing very last buffer flush ("<<printer_name<<")"<<std::endl;
+         #endif
+         flush();
+      }
     }
 
     /// Retrieve pointer to HDF5 location to which datasets are added
@@ -618,6 +642,10 @@ namespace Gambit
        // check for messages from only one process at a time, so that the output datasets
        // stay synchronised point-by-point
 
+       #ifdef MPI_DEBUG
+       std::cout<<"rank "<<myRank<<": Collecting mpi buffers..."<<std::endl;
+       #endif
+
        // First we will check if any BUFFER_SENT messages are waiting.
        if(myComm.Iprobe(MPI_ANY_SOURCE, N_BUFFERS_SENT))
        {
@@ -627,6 +655,10 @@ namespace Gambit
              // will attempt to collect messages from all of the (synchronised) buffers.
              if(myComm.Iprobe(source_rank, N_BUFFERS_SENT))
              {
+                #ifdef MPI_DEBUG
+                std::cout<<"rank "<<myRank<<": Collecting buffers from process "<<source_rank<<std::endl;
+                #endif
+
                 // The N_BUFFERS_SENT message indicates that sync buffers are
                 // waiting to be retrieved, to check on these first.
                 uint N_buffers = 0;
@@ -639,6 +671,9 @@ namespace Gambit
                       // Check for sync buffer messages from 'source_rank'
                       if(buf->probe_sync_mpi_message(source_rank))
                       {
+                         #ifdef MPI_DEBUG
+                         std::cout<<"rank "<<myRank<<": Collecting buffers from process "<<source_rank<<std::endl;
+                         #endif
                          // Receive messages from 'source_rank'
                          // Will push all the received print data through the append system
                          // Thus it needs to happen for *every* buffer at once.
