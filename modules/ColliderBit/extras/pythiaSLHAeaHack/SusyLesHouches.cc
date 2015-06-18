@@ -707,9 +707,8 @@ int SusyLesHouches::readSLHAea(int verboseIn, bool useDecayIn) {
     message(2,"readSLHAea","has no SLHAea::Coll pointer",0);
     return -1;
     slhaRead=false;
-  } else {
-    cout<<"SusyLesHouches says that it has this SLHAea::Coll pointer: "<<slhaeaCollPtr<<endl;
   }
+
   if (verboseSav >= 3) {
     message(0,"readSLHAea","parsing SLHAea::Coll instance",0);
     filePrinted = true;
@@ -725,7 +724,6 @@ int SusyLesHouches::readSLHAea(int verboseIn, bool useDecayIn) {
   slhaRead=true;
   lhefRead=false;
   lhefSlha=false;
-  /// @TODO Get other variables from the original function as needed
   string newName, newAntiName;
   int ifail;
 
@@ -821,57 +819,60 @@ int SusyLesHouches::readSLHAea(int verboseIn, bool useDecayIn) {
       genericBlocks[blockName]=gBlock;
 
       //Find Q=... for DRbar running blocks
-      if (blockDefIter->data_size() > 3
-          && (blockDefIter->at(2) == "q=" || blockDefIter->at(2) == "q=")) {
-        const double q = SLHAea::to<double>(blockDefIter->at(3));
-        // SLHA1 running blocks
-        if (blockName=="hmix") hmix.setq(q);
-        else if (blockName=="yu") yu.setq(q);
-        else if (blockName=="yd") yd.setq(q);
-        else if (blockName=="ye") ye.setq(q);
-        else if (blockName=="au") au.setq(q);
-        else if (blockName=="ad") ad.setq(q);
-        else if (blockName=="ae") ae.setq(q);
-        else if (blockName=="msoft") msoft.setq(q);
-        else if (blockName=="gauge") gauge.setq(q);
-        // SLHA2 running blocks
-        else if (blockName=="vckm") vckm.setq(q);
-        else if (blockName=="upmns") upmns.setq(q);
-        else if (blockName=="msq2") msq2.setq(q);
-        else if (blockName=="msu2") msu2.setq(q);
-        else if (blockName=="msd2") msd2.setq(q);
-        else if (blockName=="msl2") msl2.setq(q);
-        else if (blockName=="mse2") mse2.setq(q);
-        else if (blockName=="tu") tu.setq(q);
-        else if (blockName=="td") td.setq(q);
-        else if (blockName=="te") te.setq(q);
-        else if (blockName=="rvlamlle") rvlamlle.setq(q);
-        else if (blockName=="rvlamlqd") rvlamlqd.setq(q);
-        else if (blockName=="rvlamudd") rvlamudd.setq(q);
-        else if (blockName=="rvtlle") rvtlle.setq(q);
-        else if (blockName=="rvtlqd") rvtlqd.setq(q);
-        else if (blockName=="rvtudd") rvtudd.setq(q);
-        else if (blockName=="rvkappa") rvkappa.setq(q);
-        else if (blockName=="rvd") rvd.setq(q);
-        else if (blockName=="rvm2lh1") rvm2lh1.setq(q);
-        else if (blockName=="rvsnvev") rvsnvev.setq(q);
-        else if (blockName=="imau") imau.setq(q);
-        else if (blockName=="imad") imad.setq(q);
-        else if (blockName=="imae") imae.setq(q);
-        else if (blockName=="imhmix") imhmix.setq(q);
-        else if (blockName=="immsoft") immsoft.setq(q);
-        else if (blockName=="imtu") imtu.setq(q);
-        else if (blockName=="imtd") imtd.setq(q);
-        else if (blockName=="imte") imte.setq(q);
-        else if (blockName=="imvckm") imvckm.setq(q);
-        else if (blockName=="imupmns") imupmns.setq(q);
-        else if (blockName=="immsq2") immsq2.setq(q);
-        else if (blockName=="immsu2") immsu2.setq(q);
-        else if (blockName=="immsd2") immsd2.setq(q);
-        else if (blockName=="immsl2") immsl2.setq(q);
-        else if (blockName=="immse2") immse2.setq(q);
-        else if (blockName=="nmssmrun") nmssmrun.setq(q);
-        else message(0,"readSLHAea",blockName+" ignoring Q scale",0);  \
+      if (blockDefIter->data_size() > 3) {
+        string qEquals = blockDefIter->at(2);
+        toLower(qEquals);
+        if (qEquals == "q=") {
+          const double q = SLHAea::to<double>(blockDefIter->at(3));
+          // SLHA1 running blocks
+          if (blockName=="hmix") hmix.setq(q);
+          else if (blockName=="yu") yu.setq(q);
+          else if (blockName=="yd") yd.setq(q);
+          else if (blockName=="ye") ye.setq(q);
+          else if (blockName=="au") au.setq(q);
+          else if (blockName=="ad") ad.setq(q);
+          else if (blockName=="ae") ae.setq(q);
+          else if (blockName=="msoft") msoft.setq(q);
+          else if (blockName=="gauge") gauge.setq(q);
+          // SLHA2 running blocks
+          else if (blockName=="vckm") vckm.setq(q);
+          else if (blockName=="upmns") upmns.setq(q);
+          else if (blockName=="msq2") msq2.setq(q);
+          else if (blockName=="msu2") msu2.setq(q);
+          else if (blockName=="msd2") msd2.setq(q);
+          else if (blockName=="msl2") msl2.setq(q);
+          else if (blockName=="mse2") mse2.setq(q);
+          else if (blockName=="tu") tu.setq(q);
+          else if (blockName=="td") td.setq(q);
+          else if (blockName=="te") te.setq(q);
+          else if (blockName=="rvlamlle") rvlamlle.setq(q);
+          else if (blockName=="rvlamlqd") rvlamlqd.setq(q);
+          else if (blockName=="rvlamudd") rvlamudd.setq(q);
+          else if (blockName=="rvtlle") rvtlle.setq(q);
+          else if (blockName=="rvtlqd") rvtlqd.setq(q);
+          else if (blockName=="rvtudd") rvtudd.setq(q);
+          else if (blockName=="rvkappa") rvkappa.setq(q);
+          else if (blockName=="rvd") rvd.setq(q);
+          else if (blockName=="rvm2lh1") rvm2lh1.setq(q);
+          else if (blockName=="rvsnvev") rvsnvev.setq(q);
+          else if (blockName=="imau") imau.setq(q);
+          else if (blockName=="imad") imad.setq(q);
+          else if (blockName=="imae") imae.setq(q);
+          else if (blockName=="imhmix") imhmix.setq(q);
+          else if (blockName=="immsoft") immsoft.setq(q);
+          else if (blockName=="imtu") imtu.setq(q);
+          else if (blockName=="imtd") imtd.setq(q);
+          else if (blockName=="imte") imte.setq(q);
+          else if (blockName=="imvckm") imvckm.setq(q);
+          else if (blockName=="imupmns") imupmns.setq(q);
+          else if (blockName=="immsq2") immsq2.setq(q);
+          else if (blockName=="immsu2") immsu2.setq(q);
+          else if (blockName=="immsd2") immsd2.setq(q);
+          else if (blockName=="immsl2") immsl2.setq(q);
+          else if (blockName=="immse2") immse2.setq(q);
+          else if (blockName=="nmssmrun") nmssmrun.setq(q);
+          else message(0,"readSLHAea",blockName+" ignoring Q scale",0);  \
+        }
       }
 
       // MODEL
@@ -886,14 +887,15 @@ int SusyLesHouches::readSLHAea(int verboseIn, bool useDecayIn) {
         } catch (std::out_of_range& e) {}
 
         try {
-          ifail = modsel.set(0, SLHAea::to<int>(blockIter->at(1).at(1)));
+          ifail = modsel.set(SLHAea::to<int>(blockIter->at(1).at(0)),
+                             SLHAea::to<int>(blockIter->at(1).at(1)));
         } catch (std::out_of_range& e) {}
 
         if (ifail == -1) {
-          message(1,"readFile","read error or empty line",0);
+          message(1,"readSLHAea","read error or empty line",0);
         }
         if (ifail == 1) {
-          message(0,"readFile",blockName+" existing entry overwritten",0);
+          message(0,"readSLHAea",blockName+" existing entry overwritten",0);
         }
       }
 
