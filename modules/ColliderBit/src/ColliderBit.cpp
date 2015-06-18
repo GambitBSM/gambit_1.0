@@ -138,9 +138,9 @@ namespace Gambit {
         result.resetSpecialization(*iter);
         //const SLHAea::Coll &slhaea = *Dep::SLHAeaFromSomewhere;
 // The following line runs Pythia which reads the SLHA file normally.
-        result.init(pythiaOptions, slhaea);
-// The following line runs Pythia which reads the SLHAea::Coll instance.
         // result.init(pythiaOptions);
+// The following line runs Pythia which reads the SLHAea::Coll instance.
+        result.init(pythiaOptions, slhaea);
         /// @TODO Can we test for xsec veto here? Might be analysis dependent, so see TODO below.
       }
     }
