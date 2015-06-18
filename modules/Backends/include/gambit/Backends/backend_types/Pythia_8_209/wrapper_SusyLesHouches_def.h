@@ -4,6 +4,7 @@
 #include <string>
 #include <map>
 #include <vector>
+#include "SLHAea/slhaea.h"
 #include <istream>
 
 #include "identification.hpp"
@@ -63,6 +64,11 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         inline int SusyLesHouches::readSLHAea()
         {
             return wrapperbase::BEptr->readSLHAea__BOSS();
+        }
+        
+        inline void SusyLesHouches::setSLHAea(const ::SLHAea::Coll* inputSLHAea)
+        {
+            wrapperbase::BEptr->setSLHAea(inputSLHAea);
         }
         
         inline void SusyLesHouches::printHeader()

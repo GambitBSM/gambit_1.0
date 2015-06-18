@@ -44,10 +44,11 @@ namespace Gambit {
     /// Pythia stuff
     std::vector<std::string> pythiaNames;
     std::vector<std::string>::const_iterator iter;
-    int pythiaConfigurations, pythiaNumber;
     std::string slhaFilename;
+    const SLHAea::Coll* slhaea = nullptr;
+    int pythiaConfigurations, pythiaNumber;
     /// General collider sim info stuff
-    #define SHARED_OVER_OMP iter,pythiaNumber,pythiaConfigurations,globalAnalyses
+    #define SHARED_OVER_OMP iter,pythiaNumber,pythiaConfigurations,globalAnalyses,slhaea
 
 
     /// *************************************************
@@ -68,6 +69,10 @@ namespace Gambit {
         GET_COLLIDER_RUNOPTION(nEvents, int);
         /// @todo Get the Spectrum and Decay info from SpecBit and DecayBit
         GET_COLLIDER_RUNOPTION(slhaFilename, std::string);
+        std::ifstream ifs(slhaFilename);
+        delete slhaea;
+        slhaea = new SLHAea::Coll(ifs);
+        ifs.close();
       }
 
       /// For every collider requested in the yaml file:
@@ -126,16 +131,13 @@ namespace Gambit {
           if (runOptions->hasKey(*iter, pythiaConfigName))
             pythiaOptions = runOptions->getValue<std::vector<std::string>>(*iter, pythiaConfigName);
         }
-//        pythiaOptions.push_back("SLHA:file = " + slhaFilename);
+        /// @note Pythia still needs to know the filename in order to call readSLHA
+        pythiaOptions.push_back("SLHA:file = " + slhaFilename);
         pythiaOptions.push_back("Random:seed = " + std::to_string(54321 + omp_get_thread_num()));
 
         result.resetSpecialization(*iter);
-        /// Init SLHAea testing object. TODO get it from SpecBit / DecayBit.
-        std::ifstream ifs(slhaFilename);
-        const SLHAea::Coll* slhaea = new SLHAea::Coll(ifs);
         //const SLHAea::Coll &slhaea = *Dep::SLHAeaFromSomewhere;
-        result.addSLHAea(slhaea);
-        result.init(pythiaOptions);
+        result.init(pythiaOptions, slhaea);
         /// @TODO Can we test for xsec veto here? Might be analysis dependent, so see TODO below.
       }
     }

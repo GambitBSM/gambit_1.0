@@ -8,6 +8,7 @@
 #include <string>
 #include <map>
 #include <vector>
+#include "SLHAea/slhaea.h"
 #include <istream>
 
 #include "identification.hpp"
@@ -59,6 +60,8 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 int readSLHAea(int verboseIn);
         
                 int readSLHAea();
+        
+                void setSLHAea(const ::SLHAea::Coll* inputSLHAea);
         
                 void printHeader();
         

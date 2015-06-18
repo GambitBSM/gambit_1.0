@@ -7,13 +7,9 @@
 #include <string>
 #include <map>
 #include <vector>
+#include "SLHAea/slhaea.h"
 #include <istream>
 #include <cstddef>
-
-#ifndef ENUMS_DECLARED
-#define ENUMS_DECLARED
-#include "enum_decl_copies.h"
-#endif
 
 #include "identification.hpp"
 
@@ -193,6 +189,8 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 virtual int readSLHAea__BOSS(int) =0;
     
                 virtual int readSLHAea__BOSS() =0;
+    
+                virtual void setSLHAea(const ::SLHAea::Coll*) =0;
     
                 virtual void printHeader() =0;
     

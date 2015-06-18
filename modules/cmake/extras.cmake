@@ -141,7 +141,7 @@ endif()
 string(REGEX REPLACE "(-std=c\\+\\+11)" "" pythia_CXXFLAGS ${CMAKE_CXX_FLAGS})
 
 # - Suppress warnings from -Wextra when building Pythia. 
-set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -Wno-extra")
+set(pythia_CXXFLAGS "${pythia_CXXFLAGS} -Wno-extra -I${Boost_INCLUDE_DIR} -I${PROJECT_SOURCE_DIR}/contrib/slhaea/include")
 
 ExternalProject_Add(pythia
   SOURCE_DIR ${PROJECT_SOURCE_DIR}/../extras/boss/bossed_pythia_source
