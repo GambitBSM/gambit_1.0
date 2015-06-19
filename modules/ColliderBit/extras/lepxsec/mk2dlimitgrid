@@ -3,15 +3,88 @@
 import numpy as np
 from matplotlib import pyplot as plt
 
-### TODO: Implement this psuedo-code:
+from p2 import P2, LineSegment
+
+### Set the grid:
+class Grid(object):
+    xvalues_using_arange = ('xmin', 'xmax', 'xstep')
+    yvalues_using_arange = ('ymin', 'ymax', 'ystep')
+    xvalues_using_linspace = ('xmin', 'xmax', 'nx')
+    yvalues_using_linspace = ('ymin', 'ymax', 'ny')
+
+    def __init__(self, **kwargs):
+        # initialize xvalues
+        if all([arg in kwargs.keys() for arg in Grid.xvalues_using_linspace]):
+            self.xvalues = np.linspace(kwargs['xmin'], kwargs['xmax'], kwargs['nx'])
+        elif all([arg in kwargs.keys() for arg in Grid.xvalues_using_arange]):
+            self.xvalues = np.arange(kwargs['xmin'], kwargs['xmax'], kwargs['xstep'])
+        elif 'xvalues' in kwargs.keys():
+            self.xvalues = kwargs['xvalues']
+        else:
+            print 'Grid needs info on how to construct its x values! For example:'
+            print '        Grid(xmin=0, xmax=10, xstep=0.1, ...)'
+            print '        Grid(xmin=0, xmax=10, nx=100, ...)'
+            print '        Grid(xvalues=np.arange(0,10,0.1), ...)'
+            raise ValueError('Grid cannot construct xvalues.')
+        # initialize yvalues
+        if all([arg in kwargs.keys() for arg in Grid.yvalues_using_linspace]):
+            self.yvalues = np.linspace(kwargs['ymin'], kwargs['ymax'], kwargs['ny'])
+        elif all([arg in kwargs.keys() for arg in Grid.yvalues_using_arange]):
+            self.yvalues = np.arange(kwargs['ymin'], kwargs['ymax'], kwargs['ystep'])
+        elif 'yvalues' in kwargs.keys():
+            self.yvalues = kwargs['yvalues']
+        else:
+            print 'Grid needs info on how to construct its y values! For example:'
+            print '        Grid(ymin=0, ymax=10, ystep=0.1, ...)'
+            print '        Grid(ymin=0, ymax=10, ny=100, ...)'
+            print '        Grid(yvalues=np.arange(0,10,0.1), ...)'
+            raise ValueError('Grid cannot construct yvalues.')
+
+    def nextX(self):
+        for x in self.xvalues:
+            yield x
+
+    def nextY(self):
+        for y in self.yvalues:
+            yield y
+
+    def nextGridPoint(self):
+        for x in self.xvalues:
+            for y in self.yvalues:
+                yield P2(x, y)
+
+
+
+class Limit(object):
+    def __init__(self):
+        self.contours = {}
+
+    def addSegment(self, xsec, segment):
+        if not type(segment) == LineSegment:
+            raise TypeError("Please use Abram's nifty LineSegment class.")
+        self.contours.setdefault(xsec, []).append(segment)
+
+    def readLimitsFile(self, filename):
+        ### TODO: seems like a good place for this... Implement!
+        pass
+
+
+
+### TODO: For a twoPi average, fully implement this psuedo-code:
 for point in grid:
-  for degree in threesixty:
-    ray = (1000. * cos(degree), 1000. * sin(degree)) + point
-    rmin = np.infty
-    for segment in limitContours:
-      intersection = ray.intersectsAt(segment)
-      raydius = len(lineSegment(point, intersection))
-      if raydius < rmin:
-        ray = lineSegment(point, intersection)
-        rmin = raydius
-        # TODO: also, need to keep track of which xsec this ray intersects with
+    for angle in twoPi:
+        ray = LineSegment(point, P2(1000. * cos(angle), 1000. * sin(angle)) + point)
+        rmin = np.infty
+        xsecmin = 0.
+        for xsec in limit.contours.keys():
+            for segment in limit.contours[xsec]:
+                intersection = ray.intersectsAt(segment)
+                raydius = len(LineSegment(point, intersection))
+                if raydius < rmin:
+                    ray = LineSegment(point, intersection)
+                    rmin = raydius
+                    xsecmin = xsec
+                    ### TODO: Is this the proper thing to use for the uncertainty of the masses?
+                    raySigma = len(P2(0.05 * intersection.x * cos(angle),
+                                      0.05 * intersection.y * sin(angle)))
+

@@ -66,7 +66,7 @@ def unitnormal(pt1, pt2):
         return -sgn * P2(norm, -norm*dxdy) #< TODO: signs and orientability
 
 
-class lineSegment(object):
+class LineSegment(object):
     def __init__(self, pt1, pt2):
         if any([not type(pt1) == P2, not type(pt2) == P2]):
             raise TypeError("Please use Andy's nifty P2 class for the endpoints")
@@ -100,14 +100,14 @@ class lineSegment(object):
             return (pt2.y - pt1.y) / (pt2.x - pt1.x)
 
     def intersectsAt(self, *args):
-        # Ready the other lineSegment
+        # Ready the other LineSegment
+        other = None
         if len(args) == 1:
             other = args[0]
         elif len(args) == 2:
-            other = lineSegment(args[0], args[1])
-        else:
-            raise ValueError("Not sure how to determine intersection with "
-                             + str(args))
+            other = LineSegment(args[0], args[1])
+        if not type(other) == LineSegment:
+            raise ValueError("Not sure how to determine intersection with " + str(args))
 
         # If the slopes are equal, they will never intercept
         if self.slope() == other.slope():
