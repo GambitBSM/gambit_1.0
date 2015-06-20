@@ -31,9 +31,17 @@
 #include <math.h>
 
 // Pick up from model instead?
+static const double pi = 3.1;
 static const double G_F = 1.1663787e-5;
 static const double alpha = 1./1.277E2;        // Set at mZ-scale. Is that the best scale? Take from model?
 static const double mZ = 91.1876;
+static const double gZ =  2.4952;
+static const double sin2thetaW = 0.23126;    // MSbar at mZ
+/*
+static const double sin2thetaW = 0.225; // Value for testing used in BFM
+static const double mZ = 93.0;          // Value for testing used in BFM
+static const double gZ = 3.0;           // Value for testing used in BFM
+*/
 
 using namespace std;
 
@@ -69,6 +77,9 @@ int main(){
   // File object for storing
   ofstream out;
   
+  /////////////////////////////
+  // Chargino pair production
+  /////////////////////////////
   // This corresponds to Model i) in Fig. 3a of Z. Phys. C30 (1986) 441.
   MixMatrix VV(2,vector<double>(2));
   MixMatrix UU(2,vector<double>(2));
@@ -83,7 +94,6 @@ int main(){
   // BFM2SLHA_VV(VV);
   // Close file
   out.close();
-
   // This corresponds to Model ii) in Fig. 3b of Z. Phys. C30 (1986) 441.
   VV[0][0] = 0.91; VV[0][1] = 0.41; VV[1][0] =  0.41; VV[1][1] = -0.91;
   UU[0][0] = 0.93; UU[0][1] = 0.37; UU[1][0] = -0.37; UU[1][1] =  0.93;
@@ -141,34 +151,44 @@ int main(){
   }
   // Close file
   out.close();
+  // Scenario (iv) in A. Bartl, H. Fraas, W. Majerotto, Nucl. Phys. B278 (1986) 1
+  NN[0][0] = -0.37; NN[0][1] = 0.77; NN[0][2] = -0.53; NN[0][3] = -0.05;
+  NN[1][0] = 0.93; NN[1][1] = 0.25; NN[1][2] = -0.28; NN[1][3] = -0.02;
+  NN[2][0] = 0.00; NN[2][1] = 0.02; NN[2][2] = -0.06; NN[2][3] = 1.00;
+  NN[3][0] = -0.08; NN[3][1] = -0.59; NN[3][2] = -0.80; NN[3][3] = -0.03;
+  // Open file for writing
+  out.open("neutralino_iv.txt");
+  for(int i = 0; i < 100; i ++){
+    out << 80+i << " " << xsec_neuineuj(1000022, 1000023, 80+i, 12.7, 63.0, NN, mS, 0.9) <<  " ";
+    out << xsec_neuineuj(1000023, 1000023,  80+i, 63.0, 63.0, NN, mS, 0.9) << endl;
+  }
+  // Close file
+  out.close();
   
+  /////////////////////////////
   // Selectron pair production
+  /////////////////////////////
   // Parameters chosen to match scenario A in A. Bartl, H. Fraas, W. Majerotto, Z. Phys. C34 (1987) 411
   double mN[4];
   mN[0] = 9.7; mN[1] = -49.5; mN[2] = -81.5; mN[3] = 145.2;
-  /*
-  // Photino, zino, H_a, H_b basis
-  MixMatrix NN(4,vector<double>(4));
   NN[0][0] = 1.00; NN[0][1] = 0.03; NN[0][2] = -0.04; NN[0][3] = 0.00;
   NN[1][0] = -0.05; NN[1][1] = 0.81; NN[1][2] = -0.56; NN[1][3] = -0.15;
   NN[2][0] = 0.00; NN[2][1] = 0.11; NN[2][2] = -0.11; NN[2][3] = 0.99;
   NN[3][0] = -0.02; NN[3][1] = -0.57; NN[3][2] = -0.81; NN[3][3] = -0.03;
-   */
-  // Selectron mass matrix
+  // Selectron mixing matrix
   MixMatrix FF(2,vector<double>(2));
   FF[0][0] = 1.00; FF[0][1] = 0.00; FF[1][0] =  0.00; FF[1][1] = 1.00;
   // Open file for writing
   out.open("slepton_a.txt");
   for(int i = 1; i < 120; i++){
-    out << 70+i << " " << xsec_sleislej(1000011, -1000011, 70+i, 35., 35., FF, NN, mN) << " ";
-    out << xsec_sleislej(2000011, -2000011, 70+i, 35., 35., FF, NN, mN) << " ";
-    out << xsec_sleislej(1000011, -2000011, 70+i, 35., 35., FF, NN, mN) << endl;
+    out << 71+i << " " << xsec_sleislej(1000011, -1000011, 71+i, 35., 35., FF, NN, mN) << " ";
+    out << xsec_sleislej(2000011, -2000011, 71+i, 35., 35., FF, NN, mN) << " ";
+    out << xsec_sleislej(1000011, -2000011, 71+i, 35., 35., FF, NN, mN) << endl;
   }
   // Change to SLHA conventions (prints out matrices as a check)
   //BFM2SLHA_NN(NN, 1./0.9);
   // Close file
   out.close();
-  
   // Parameters chosen to match scenario B in A. Bartl, H. Fraas, W. Majerotto, Z. Phys. C34 (1987) 411
   mN[0] = -12.1; mN[1] = 46.6; mN[2] = -55.7; mN[3] = 140.5;
   NN[0][0] = 0.00; NN[0][1] = -0.02; NN[0][2] = 0.02; NN[0][3] = 1.00;
@@ -178,13 +198,12 @@ int main(){
   // Open file for writing
   out.open("slepton_b.txt");
   for(int i = 1; i < 120; i++){
-    out << 70+i << " " << xsec_sleislej(1000011, -1000011, 70+i, 35., 35., FF, NN, mN) << " ";
-    out << xsec_sleislej(2000011, -2000011, 70+i, 35., 35., FF, NN, mN) << " ";
-    out << xsec_sleislej(1000011, -2000011, 70+i, 35., 35., FF, NN, mN) << endl;
+    out << 71+i << " " << xsec_sleislej(1000011, -1000011, 71+i, 35., 35., FF, NN, mN) << " ";
+    out << xsec_sleislej(2000011, -2000011, 71+i, 35., 35., FF, NN, mN) << " ";
+    out << xsec_sleislej(1000011, -2000011, 71+i, 35., 35., FF, NN, mN) << endl;
   }
   // Close file
   out.close();
-
   // Parameters chosen to match scenario C in A. Bartl, H. Fraas, W. Majerotto, Z. Phys. C34 (1987) 411
   mN[0] = 12.7; mN[1] = 63.0; mN[2] = -145.9; mN[3] = 213.3;
   NN[0][0] = -0.37; NN[0][1] = 0.77; NN[0][2] = -0.53; NN[0][3] = -0.05;
@@ -194,9 +213,19 @@ int main(){
   // Open file for writing
   out.open("slepton_c.txt");
   for(int i = 1; i < 120; i++){
-    out << 70+i << " " << xsec_sleislej(1000011, -1000011, 70+i, 35., 35., FF, NN, mN) << " ";
-    out << xsec_sleislej(2000011, -2000011, 70+i, 35., 35., FF, NN, mN) << " ";
-    out << xsec_sleislej(1000011, -2000011, 70+i, 35., 35., FF, NN, mN) << endl;
+    out << 71+i << " " << xsec_sleislej(1000011, -1000011, 71+i, 35., 35., FF, NN, mN) << " ";
+    out << xsec_sleislej(2000011, -2000011, 71+i, 35., 35., FF, NN, mN) << " ";
+    out << xsec_sleislej(1000011, -2000011, 71+i, 35., 35., FF, NN, mN) << endl;
+  }
+  // Close file
+  out.close();
+  // Test integral functions
+  // Open file for writing
+  out.open("integrals.txt");
+  for(int i = 1; i < 120; i++){
+    out << 70+i << " " << I1(pow2(70.+i), 35., 35., 9.7, -49.5) << " ";
+    out << I2(pow2(70.+i), 35., 35., 9.7, -49.5) << " ";
+    out << I3(pow2(70.+i), 35., 35., 9.7) << endl;
   }
   // Close file
   out.close();
@@ -204,12 +233,13 @@ int main(){
 }
 
 ////////////////////////////////////////////////////////////////////////
-// Cross section in pb for e^+e^- -> \tilde l_i \tilde l_j^*
+// Cross section [pb] for e^+e^- -> \tilde l_i \tilde l_j^*
 ////////////////////////////////////////////////////////////////////////
 // To use, call SLHA2BFM first on SLHA mixing matrices constructed as a vector of vectors
 ////////////////////////////////////////////////////////////////////////
 double xsec_sleislej(int pid1, int pid2, double sqrts, double m1, double m2, MixMatrix F, MixMatrix N, double mN[4]){
-  // Slepton mixing (fix later to actually use matrices?)
+
+  // Slepton mixing (fix to actually use matrices?)
   double cosphi = F[0][0];
   double sinphi = F[0][1];
   
@@ -281,12 +311,7 @@ double xsec_sleislej(int pid1, int pid2, double sqrts, double m1, double m2, Mix
     return -1;
   }
   
-  // Constants
-  double pi = 3.141593;
-  double gZ = 2.4952;
-  
   // Couplings
-  double sin2thetaW = 0.23126;    // MSbar at mZ
   double T3l = -0.5;
   double Le = T3l+sin2thetaW;
   double Re = sin2thetaW;
@@ -313,7 +338,7 @@ double xsec_sleislej(int pid1, int pid2, double sqrts, double m1, double m2, Mix
   sigma_g = 2.*pi*pow(alpha,2)/pow(s,4) * pow(S,3)/6.;
   // Z
   sigma_Z = pi*pow(alpha,2)/pow(s,2)/pow(sin2thetaW,2)/pow(1.-sin2thetaW,2) *  DZ2 * pow(S,3)/6.;
-  sigma_Z *= (pow(Le,2)+pow(Re,2))*pow(Le*cos2phi+Re*sin2phi,2);
+  sigma_Z *= (pow2(Le)+pow2(Re))*pow2(Le*cos2phi+Re*sin2phi);
   sigma_Z_mix = sigma_Z/pow(Le*cos2phi+Re*sin2phi,2)*pow(Le-Re,2)*cos2phi*sin2phi;
   // Interference
   sigma_gZ = 2*pi*pow(alpha,2)/pow(s,3)/sin2thetaW/(1.-sin2thetaW) * ReDZ;
@@ -325,7 +350,7 @@ double xsec_sleislej(int pid1, int pid2, double sqrts, double m1, double m2, Mix
     for(int l = 0; l < 4; l++){
       sigma_N += pow2(cos2phi)*I1(s,m1,m2,mN[k],mN[l])*pow2(fL[k]*fL[l]);
       sigma_N += pow2(sin2phi)*I1(s,m1,m2,mN[k],mN[l])*pow2(fR[k]*fR[l]);
-      sigma_N += 2*cos2phi*sin2phi*s*mN[k]*mN[l]*I2(s,m1,m2,mN[k],mN[l])*fL[k]*fL[l]*fR[k]*fR[l];
+      sigma_N += 2.*cos2phi*sin2phi*s*mN[k]*mN[l]*I2(s,m1,m2,mN[k],mN[l])*fL[k]*fL[l]*fR[k]*fR[l];
     }
   }
   sigma_N *= pi*pow(alpha,2)/4./pow(sin2thetaW,2)/pow(s,2);
@@ -335,7 +360,9 @@ double xsec_sleislej(int pid1, int pid2, double sqrts, double m1, double m2, Mix
       sigma_N_mix += cos2phi*sin2phi*I1(s,m1,m2,mN[k],mN[l])*pow2(fL[k]*fL[l]);
       sigma_N_mix += cos2phi*sin2phi*I1(s,m1,m2,mN[k],mN[l])*pow2(fR[k]*fR[l]);
       sigma_N_mix += (pow2(cos2phi)+pow2(sin2phi))*s*mN[k]*mN[l]*I2(s,m1,m2,mN[k],mN[l])*fL[k]*fL[l]*fR[k]*fR[l];
-      //cout << k << " " << mN[k] << " " << fR[k] << " " << l << " " << mN[l] << " " << fR[l] << " " << sigma_N_mix << endl;
+      if(mN[0] == 9.7){
+      //cout << k << " " << mN[k] << " " << fR[k] << " " << l << " " << mN[l] << " " << fR[l] << " " << (pow2(cos2phi)+pow2(sin2phi))*s*mN[k]*mN[l]*I2(s,m1,m2,mN[k],mN[l])*fL[k]*fL[l]*fR[k]*fR[l] << endl;
+      }
     }
   }
   sigma_N_mix *= pi*pow(alpha,2)/4./pow(sin2thetaW,2)/pow(s,2);
@@ -359,10 +386,8 @@ double xsec_sleislej(int pid1, int pid2, double sqrts, double m1, double m2, Mix
   // Total cross section
   if( bMixed ) { sigma = sigma_Z_mix; }
   else { sigma = sigma_g + sigma_Z + sigma_gZ; }
-  if( bSelectron && !bMixed ) { sigma += sigma_N ;}//+ sigma_gN + sigma_ZN; }
-  else if( bSelectron && bMixed ) { sigma += sigma_N_mix ;}//+ sigma_ZN_mix; }//cout << sigma_g*0.389379338*1.0e9 << " "; }
-  
-  //cout << sigma << " " << sigma_Z_mix << " " << sigma_N_mix  << " " << sigma_ZN_mix << endl;
+  if( bSelectron && !bMixed ) { sigma += sigma_N + sigma_gN + sigma_ZN; }
+  else if( bSelectron && bMixed ) { sigma += sigma_N_mix + sigma_ZN_mix; }
   
   // Fix units
   sigma *= 0.389379338*1.0e9;  // Cross section in pb, (\hbar c)^2 = 0.389379338 GeV^2 mb
@@ -384,7 +409,7 @@ double I1(double s, double m1, double m2, double mk, double ml){
   double I1 = 0;
   // Careful with degenerate masses!
   if( fabs(mksq-mlsq) < 0.1 ){
-    I1 = (m1sq+m2sq-2.*mksq-s)*log((m1sq+m2sq-2.*mksq-s+S)/(m1sq+m2sq-2.*mksq-s-S))-4*S*((m1sq-mksq)*(m2sq-mksq)-mksq*s)/(m1sq+m2sq-2.*mksq-s-S)/(m1sq+m2sq-2.*mksq-s+S)-S;
+    I1 = (m1sq+m2sq-2.*mksq-s)*log((m1sq+m2sq-2.*mksq-s+S)/(m1sq+m2sq-2.*mksq-s-S))-4*S*((m1sq-mksq)*(m2sq-mksq)+mksq*s)/(m1sq+m2sq-2.*mksq-s-S)/(m1sq+m2sq-2.*mksq-s+S)-S;
   }
   else{
     I1 = (m1sq*(m2sq-mksq)+mksq*(mksq-m2sq+s))/(mksq-mlsq)*log((m1sq+m2sq-2.*mksq-s-S)/(m1sq+m2sq-2.*mksq-s+S));
@@ -393,7 +418,6 @@ double I1(double s, double m1, double m2, double mk, double ml){
   }
   return I1;
 }
-
 double I2(double s, double m1, double m2, double mk, double ml){
   double S = sqrt(s-pow(m1+m2,2))*sqrt(s-pow(m1-m2,2));
   double m1sq = pow(m1,2);
@@ -405,7 +429,7 @@ double I2(double s, double m1, double m2, double mk, double ml){
   // Careful with degenerate masses!
   if( fabs(mksq-mlsq) < 0.1 ){
     I2 = S/(m1sq*(m2sq-mksq)+mksq*(-m2sq+mksq+s));
-    //cout << mk << " I2 (degenerate masses) " << I2 << endl;
+    //cout << s << " " << S << " " << m1 << " " << m2 << " " << mk << " " << ml << " I2 (degenerate masses) " << I2 << endl;
   }
   else{
     I2 = log((m1sq+m2sq-2.*mksq-(s-S))/(m1sq+m2sq-2.*mksq-(s+S)));
@@ -415,7 +439,6 @@ double I2(double s, double m1, double m2, double mk, double ml){
   }
   return I2;
 }
-
 double I3(double s, double m1, double m2, double mk){
   double S = sqrt(s-pow(m1+m2,2))*sqrt(s-pow(m1-m2,2));
   double m1sq = pow(m1,2);
@@ -431,7 +454,7 @@ double I3(double s, double m1, double m2, double mk){
 
 
 ////////////////////////////////////////////////////////////////////////
-// Cross section in pb for e^+e^- -> \tilde\chi^0_i \tilde\chi^0_j
+// Cross section [pb] for e^+e^- -> \tilde\chi^0_i \tilde\chi^0_j
 ////////////////////////////////////////////////////////////////////////
 // Masses mi and mj for the neutralinos are signed. mS are the selectron masses (left = 0, right = 1).
 // Warning! BFM uses inverted \tan\beta! Use tanb = 1 / tanb in converting from SLHA.
@@ -455,16 +478,11 @@ double xsec_neuineuj(int pid1, int pid2, double sqrts, double mi, double mj, Mix
   double msL = mS[0];
   double msR = mS[1];
   
-  // Constants
-  double pi = 3.141593;
-  double gZ = 2.4952;
-
   // Couplings
   // e = g \sin\theta_W = g' \cos\theta_W
   // alpha = e^2 / 4\pi
   int deltaij = 0;
   if (i == j) deltaij = 1;
-  double sin2thetaW = 0.23126;    // MSbar at mZ
   double cos2b = (1.-pow2(tanb))/(1.+pow2(tanb));
   double sin2b = 2.*tanb/(1.+pow2(tanb));
   double T3l = -0.5;
@@ -521,7 +539,7 @@ double xsec_neuineuj(int pid1, int pid2, double sqrts, double mi, double mj, Mix
 
 
 ////////////////////////////////////////////////////////////////////////
-// Cross section in pb for e^+e^- -> \tilde\chi^+_i \tilde\chi^-_j
+// Cross section [pb] for e^+e^- -> \tilde\chi^+_i \tilde\chi^-_j
 ////////////////////////////////////////////////////////////////////////
 // Masses mi and mj for the charginos are signed. ms is electron sneutrino mass.
 ////////////////////////////////////////////////////////////////////////
@@ -537,17 +555,10 @@ double xsec_chaichaj(int pid1, int pid2, double sqrts, double mi, double mj, Mix
   else if(pid2 == 1000037) j = 0;
   else{ cout << "Invalid final state chargino PDG code " << pid2 << endl; return -1; }
   
-  // Constants
-  double pi = 3.141593;
-  double gZ = 2.4952;
-  
   // Couplings
   int deltaij = 0;
   if (i == j) deltaij = 1;
-  int etaij = 1;
-  if((mi > 0 && mj < 0) || (mi < 0 && mj > 0)) etaij = -1;
   // e = g \sin\theta_W = g' \cos\theta_W
-  double sin2thetaW = 0.23126;    // MSbar at mZ
   double T3l = -0.5;
   double Le = T3l+sin2thetaW;
   double Re = sin2thetaW;
@@ -561,44 +572,39 @@ double xsec_chaichaj(int pid1, int pid2, double sqrts, double mi, double mj, Mix
   
   // Kinematics
   double s, q, Ei, Ej, DZ2, ReDZ;
-  // Begin by unsigning chargino masses
-  mi = fabs(mi); mj = fabs(mj);
-  s = pow(sqrts,2);
-  Ei = (s+pow(mi,2)-pow(mj,2))/2./sqrts;  // Energy of \tilde\chi^+_i in e+e- CoM system
-  q = sqrt(pow(Ei,2)-pow(mi,2));          // Momentum of \tilde\chi^+_i in e+e- CoM system
-  Ej = sqrt(pow(q,2)+pow(mj,2));
-  DZ2 = 1./(pow(s-pow(mZ,2),2)+pow(mZ*gZ,2)); // Breit-Wigner for Z
-  ReDZ = (s-pow(mZ,2))*DZ2;
-  //cout << Ei << " " << q << " " << endl;
+  s = pow2(sqrts);
+  Ei = (s+pow2(mi)-pow2(mj))/2./sqrts;  // Energy of \tilde\chi^+_i in e+e- CoM system
+  q = sqrt(pow2(Ei)-pow2(mi));          // Momentum of \tilde\chi^+_i in e+e- CoM system
+  Ej = sqrt(pow2(q)+pow2(mj));
+  DZ2 = 1./(pow2(s-pow2(mZ))+pow2(mZ*gZ)); // Breit-Wigner for Z
+  ReDZ = (s-pow2(mZ))*DZ2;
   
   double aL, bL, h;
-  aL = 1./2./pow(ms,2)*(2*pow(ms,2)+s-pow(mi,2)-pow(mj,2));
-  bL = q*sqrts/pow(ms,2);
-  h = 2.*q*sqrts-2.*pow(q,2)*aL/bL+(Ei*Ej+pow(q*aL/bL,2)-q*sqrts*aL/bL)*log((aL+bL)/(aL-bL));
+  aL = 0.5/pow2(ms)*(2*pow2(ms)+s-pow2(mi)-pow2(mj));
+  bL = q*sqrts/pow2(ms);
+  h = 2.*q*sqrts-2.*pow2(q)*aL/bL+(Ei*Ej+pow2(q*aL/bL)-q*sqrts*aL/bL)*log(fabs((aL+bL)/(aL-bL)));
   //cout << aL << " " << bL << endl;
   
   // Cross sections per diagram and interference terms
   double sigma, sigma_g, sigma_Z, sigma_s, sigma_gZ, sigma_gs, sigma_Zs;
   // Gamma
-  sigma_g = 8*pi*pow(alpha,2) * q*sqrts/pow(s,3) * deltaij * (Ei*Ej+pow(q,3)/3.+mi*mj);
+  sigma_g = 8*pi*pow2(alpha) * q*sqrts/pow(s,3) * deltaij * (Ei*Ej+pow2(q)/3.+fabs(mi*mj));
   // Z
-  sigma_Z = 2.*pi*pow(alpha,2)/pow(sin2thetaW,2)/pow(1.-sin2thetaW,2) * q/sqrts * DZ2;
-  sigma_Z *= (pow(OL[i][j],2)+pow(OR[i][j],2))*(pow(Le,2)+pow(Re,2))*(Ei*Ej+pow(q,2)/3.)+2.*(pow(Le,2)+pow(Re,2))*OL[i][j]*OR[i][j]*etaij*mi*mj;
+  sigma_Z = 2.*pi*pow2(alpha)/pow2(sin2thetaW)/pow2(1.-sin2thetaW) * q/sqrts * DZ2;
+  sigma_Z *= (pow2(OL[i][j])+pow2(OR[i][j]))*(pow2(Le)+pow2(Re))*(Ei*Ej+pow2(q)/3.)+2.*(pow2(Le)+pow2(Re))*OL[i][j]*OR[i][j]*mi*mj;
   // Sneutrino
-  sigma_s = pi*pow(alpha,2)/2./pow(sin2thetaW,2)*pow(V[i][0]*V[j][0],2)/pow(ms,4) * q/sqrts;
-  sigma_s *= (Ei*Ej+pow(q,2)-q*sqrts*aL/bL)/(pow(aL,2)-pow(bL,2)) + 2.*pow(q/bL,2) + 0.5/pow(bL,2)*(q*sqrts-2.*pow(q,2)*aL/bL)*log(fabs((aL+bL)/(aL-bL)));
+  sigma_s = pi*pow2(alpha)/2./pow2(sin2thetaW)*pow2(V[i][0]*V[j][0])/pow(ms,4) * q/sqrts;
+  sigma_s *= (Ei*Ej+pow2(q)-q*sqrts*aL/bL)/(pow2(aL)-pow2(bL)) + 2.*pow2(q/bL) + 0.5/pow2(bL)*(q*sqrts-2.*pow2(q)*aL/bL)*log(fabs((aL+bL)/(aL-bL)));
   // Interference
-  sigma_gZ = 4*pi*pow(alpha,2)/(1.-sin2thetaW)/sin2thetaW * q*sqrts/pow(s,2)*ReDZ*deltaij*(Le+Re);
-  sigma_gZ *= (OL[i][j]+OR[i][j])*(Ei*Ej+pow(q,3)/3.+mi*mj);
-  sigma_gs = -pow(alpha,2)*pi/sin2thetaW*pow(V[i][0],2) * deltaij/pow(s,2);
-  sigma_gs *= h + mi*mj*log(fabs((aL+bL)/(aL-bL)));
-  sigma_Zs = -pi*pow(alpha,2)/pow(sin2thetaW,2)/(1.-sin2thetaW)*V[i][0]*V[j][0] * ReDZ/s * Le;
-  sigma_Zs *= OL[i][j]*h + OR[i][j]*etaij*mi*mj*log(fabs((aL+bL)/(aL-bL)));
+  sigma_gZ = 4*pi*pow2(alpha)/(1.-sin2thetaW)/sin2thetaW * q*sqrts/pow2(s)*ReDZ*deltaij*(Le+Re);
+  sigma_gZ *= (OL[i][j]+OR[i][j])*(Ei*Ej+pow2(q)/3.+fabs(mi*mj));
+  sigma_gs = -pi*pow2(alpha)/sin2thetaW*pow2(V[i][0]) * deltaij/pow2(s);
+  sigma_gs *= h + fabs(mi*mj)*log(fabs((aL+bL)/(aL-bL)));
+  sigma_Zs = -pi*pow2(alpha)/pow2(sin2thetaW)/(1.-sin2thetaW)*V[i][0]*V[j][0] * ReDZ/s * Le;
+  sigma_Zs *= OL[i][j]*h + OR[i][j]*mi*mj*log(fabs((aL+bL)/(aL-bL)));
   
   // Total cross section with interference terms
   sigma = sigma_g + sigma_Z + sigma_s+ sigma_gZ + sigma_gs + sigma_Zs;
-  cout << 0.389379338*1.0e6*sigma_g << " " << 0.389379338*1.0e6*sigma_Z << " ";
-  cout << 0.389379338*1.0e6*sigma_s << " ";
   
   // Units
   sigma *= 0.389379338*1.0e9;   // Cross section in pb, (\hbar c)^2 = 0.389379338 GeV^2 mb
