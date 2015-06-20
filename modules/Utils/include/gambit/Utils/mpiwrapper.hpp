@@ -197,8 +197,14 @@ namespace Gambit {
             {
                int errflag;
                int you_have_mail; // C does not have a bool type...
-               MPI_Status* status = MPI_STATUS_IGNORE; 
-               if(in_status!=NULL) status=in_status;
+               MPI_Status def_status;
+               MPI_Status* status;
+               if(in_status!=NULL) {
+                 status = in_status;
+               } else {
+                 status = &def_status;
+               }
+               MPI_Iprobe(source, 1, boundcomm, &you_have_mail, status);
                errflag = MPI_Iprobe(source, tag, boundcomm, &you_have_mail, status);
                if(errflag!=0) {
                  std::ostringstream errmsg;
@@ -206,12 +212,8 @@ namespace Gambit {
                  utils_error().raise(LOCAL_INFO, errmsg.str());
                }
                #ifdef MPI_DEBUG
-               if(you_have_mail!=0){
-                  if(in_status==NULL) {
-                     std::cout<<"Iprobe: Message waiting from unidentified process (possible source is "<<source<<", but no MPI_Status struct provided)"<<std::endl;
-                  } else {
+               if(you_have_mail!=0) {
                      std::cout<<"Iprobe: Message waiting from process "<<status->MPI_SOURCE<<std::endl;
-                  }
                }
                #endif
                return (you_have_mail != 0);

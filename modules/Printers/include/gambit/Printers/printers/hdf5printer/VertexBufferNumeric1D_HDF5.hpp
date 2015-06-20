@@ -36,7 +36,7 @@
 // MPI bindings
 #include "gambit/Utils/mpiwrapper.hpp"
 
-//#define DEBUG_MODE
+#define DEBUG_MODE
    
 namespace Gambit {
   
@@ -258,6 +258,7 @@ namespace Gambit {
             {
                #ifdef DEBUG_MODE
                std::cout<<"Synchronising buffer '"<<this->get_label()<<"' to position "<<i<<std::endl;
+               //std::cout<<"(# unwritten slots left in buffer = "<i<<")"std::endl;         
                #endif 
 
                ulong nextemptyslab = 0;
@@ -307,6 +308,10 @@ namespace Gambit {
                    errmsg << "Error! Attempted to move HDF5 write position by >1 slots ("<<movediff<<") in buffer with label '"<<this->get_label()<<"'. Buffer synchronisation should only happen one slot at a time. This is a bug in the VertexBufferNumeric1D_HDF5 class or in a class which uses it (probably HDF5Printer). Please report it.";
                    printer_error().raise(LOCAL_INFO, errmsg.str());
                }
+
+               #ifdef DEBUG_MODE
+               std::cout<<"Moved "<<movediff<<" slot(s). # unwritten slots left in buffer = "<<(L - this->get_nextempty())<<". buffer_is_full = "<<this->sync_buffer_is_full()<<std::endl;         
+               #endif 
             }
             // Update the variable which tracks the current sync position.
             // (do this regardless of whether this is a sync buffer or not)

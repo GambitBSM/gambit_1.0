@@ -134,8 +134,13 @@ namespace Gambit
 
        /// Set sleep times
        struct timespec short_time, long_time;
-       short_time.tv_nsec = 10000000; // Hundreth of a second (10^7 nanoseconds)
+       //short_time.tv_nsec = 10000000; // Hundreth of a second (10^7 nanoseconds)
+       short_time.tv_nsec = 100000000; // Tenth of a second (10^8 nanoseconds)
        long_time.tv_sec = 1; // 1 whole second 
+
+       #ifdef MPI_DEBUG
+       std::cout<<"rank "<<thisptr->mpiRank<<": (Tag daemon) checking for incoming tag requests..."<<std::endl;
+       #endif
 
        while(not thisptr->stop_tag_daemon)
        {

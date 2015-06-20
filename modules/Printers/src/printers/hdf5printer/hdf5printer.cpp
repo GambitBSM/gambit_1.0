@@ -581,9 +581,9 @@ namespace Gambit
           N_sync_buffers += 1;
           if(it->second->sync_buffer_is_full())
           {
-            #ifdef DEBUG_MODE
+            //#ifdef DEBUG_MODE
             std::cout<<"Emptying sync buffer "<<it->second->get_label()<<std::endl;
-            #endif
+            //#endif
             N_were_full += 1;    
             it->second->flush();
           }
@@ -905,6 +905,11 @@ namespace Gambit
        // Check that we are still writing to the same output "slot" as during the last print call
        if(candidate_newpoint!=lastPointID.at(myRank))
        {
+         #ifdef MPI_DEBUG
+         std::cout<<"rank "<<myRank<<": New point detected (lastPointID="<<lastPointID.at(myRank)<<", candidate_newpoint="<<candidate_newpoint<<")"<<std::endl;
+         std::cout<<"rank "<<myRank<<": sync_pos="<<reverse_global_index_lookup.size()-1<<std::endl;
+         #endif
+
          // Yep the scanner has moved on, at least as far as the current process sees
          lastPointID[myRank] = candidate_newpoint;
 
@@ -927,6 +932,9 @@ namespace Gambit
  
          // Make sure all the buffers are synchronised at the new position.
          synchronise_buffers();          
+
+         // TODO: This shouldn't be needed but for some reason it seems to be...
+         empty_sync_buffers_if_full();
 
          // Debugging only! check if buffers are somehow still full...
          #ifdef MPI_DEBUG

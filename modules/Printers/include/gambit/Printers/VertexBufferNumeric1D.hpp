@@ -465,6 +465,7 @@ namespace Gambit {
         {
           if(sync_buffer_is_full())
           {
+            std::cout<<"rank "<<myRank<<": During get_sync_mpi_message; Buffer "<<this->get_label()<<" full, emptying it..."<<std::endl;
             flush();
           } 
           else if(recv_buffer_valid[i])
