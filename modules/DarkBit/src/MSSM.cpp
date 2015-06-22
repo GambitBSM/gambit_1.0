@@ -160,23 +160,36 @@ namespace Gambit {
         eaSLHA mySLHA = mySpec->getSLHAea();
 
         // Add model select block to inform DS about 6x6 mixing
+        // FIXME: Should be done somewhere upstream
         SLHAea::Block modsel_block("MODSEL");
         modsel_block.push_back("BLOCK MODSEL");
         modsel_block.push_back("6 3 # FV");
         mySLHA.push_back(modsel_block);
 
-        std::ofstream ofs("DarkBit_temp.slha");
-        ofs << mySLHA;
-        ofs.close();
+        if ( runOptions->getValueOrDef<bool>(false, "use_dsSLHAread") )
+        {
+          std::ofstream ofs("DarkBit_temp.slha");
+          ofs << mySLHA;
+          ofs.close();
 
-        // Initialize SUSY spectrum from SLHA
-        int len = 17;
-        int flag = 15;
-        const char * filename = "DarkBit_temp.slha";
-        logger() << "Initializing DarkSUSY via SLHA." << std::endl;
-        BEreq::dsSLHAread(byVal(filename),flag,byVal(len));
-        BEreq::dsprep();
-        result = true;
+          // Initialize SUSY spectrum from SLHA
+          int len = 17;
+          int flag = 15;
+          const char * filename = "DarkBit_temp.slha";
+          logger() << "Initializing DarkSUSY via SLHA." << std::endl;
+          BEreq::dsSLHAread(byVal(filename),flag,byVal(len));
+          BEreq::dsprep();
+          result = true;  // FIXME: Need some error checks
+        }
+        else
+        {
+          // JE's BE initialization happens here
+          if ( BEreq::initFromSLHA(byVal(mySLHA)) == 0 )
+          {
+            BEreq::dsprep();
+            result = true;
+          }
+        }
       }
 
       if (!result) {
@@ -194,8 +207,9 @@ namespace Gambit {
     //////////////////////////////////////////////////////////////////////////
 
     /// Wrapper around DarkSUSY kinematic functions
-    double DSgamma3bdy(double(*IBfunc)(int&,double&,double&), int IBch,
-        double Eg, double E1, double M_DM, double m_1, double m_2)
+    double DSgamma3bdy(double(*IBfunc)(int&,double&,double&),
+        void(*setMassesForIB)(bool), int IBch, double Eg, double
+        E1, double M_DM, double m_1, double m_2)
     {
       double E2 = 2*M_DM - Eg - E1;  
       double p12 = E1*E1-m_1*m_1;
@@ -212,7 +226,11 @@ namespace Gambit {
       // Here, y = (p+k)^2/(4 mx^2), where p denotes the W+ momentum and k the
       // photon momentum.  (note that the expressions above and below only
       // apply to the v->0 limit)
+
+      setMassesForIB(true);
       double result = IBfunc(IBch,x,y);          
+      setMassesForIB(false);
+
       /*
          logger() << "  x, y = " << x << ", " << y << std::endl;
          logger() << "  E, E1, E2 = " << Eg << ", " << E1 << ", " 
@@ -410,6 +428,8 @@ namespace Gambit {
       // Import three-body annihilation process
       ///////////////////////////////////////////
 
+      BEreq::registerMassesForIB(catalog.particleProperties);
+
       // Macro for setting up 3-body decays with gammas
 #define SETUP_DS_PROCESS_GAMMA3BODY(NAME,IBCH,P1,P2,IBFUNC,SV_IDX,PREFACTOR) \
       /* Check if process is kinematically allowed */                        \
@@ -421,7 +441,7 @@ namespace Gambit {
         /* TODO: Check whether this works */                                 \
         sv = PREFACTOR*BEreq::dssigmav(index);                               \
         Funk::Funk CAT(kinematicFunction_,NAME) = sv*Funk::func(DSgamma3bdy, \
-            STRIP_PARENS(IBFUNC), IBCH, Funk::var("E"), Funk::var("E1"),     \
+            STRIP_PARENS(IBFUNC), BEreq::setMassesForIB.pointer(), IBCH, Funk::var("E"), Funk::var("E1"),     \
             M_DM, m_1, m_2);                                                 \
         /* Create channel identifier string */                               \
         std::vector<std::string> CAT(finalStates_,NAME);                     \
@@ -486,7 +506,7 @@ namespace Gambit {
       double minBranching = runOptions->getValueOrDef<double>(0.0,
           "ProcessCatalog_MinBranching");
 
-      std::cout << "Importing decays..." << std::endl;
+      //std::cout << "Importing decays..." << std::endl;
       // Import relevant decays
       using DarkBit_utils::ImportDecays;
       if(annFinalStates.count("H+") == 1) 

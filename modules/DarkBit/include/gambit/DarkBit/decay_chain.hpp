@@ -265,7 +265,11 @@ namespace Gambit
                     // Get number of child particles
                     int getnChildren() const {return nChildren;}
                     // Get child particle
-                    const ChainParticle* operator[](int i) const;     
+                    const ChainParticle* operator[](int i) const;  
+                    // Get parent particle
+                    const ChainParticle* getParent() const;   
+                    // Get energy in parent frame
+                    double E_parentFrame() const;
                     // Get particle ID
                     string getpID() const {return pID;}
                     // Print the decay chain (to cout)

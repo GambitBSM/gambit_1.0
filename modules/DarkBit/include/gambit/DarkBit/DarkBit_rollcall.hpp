@@ -83,6 +83,8 @@ START_MODULE
       // Initialize DarkSUSY with SLHA file
       BACKEND_REQ(dsSLHAread, (), void, (const char*, int&, int))
       BACKEND_REQ(dsprep, (), void, ())
+      // Initialize DarkSUSY with SLHA object (convenience function)
+      BACKEND_REQ(initFromSLHA, (), int, (eaSLHA))
       // Print higgs widths
       BACKEND_REQ(dswwidth, (), void, (int&))
     #undef FUNCTION
@@ -355,6 +357,10 @@ START_MODULE
       BACKEND_REQ(dsIBwhdxdy, (), double, (int&, double&, double&))
       BACKEND_REQ(dsIBwwdxdy, (), double, (int&, double&, double&))
       BACKEND_REQ(IBintvars, (), DS_IBINTVARS)
+
+      BACKEND_REQ(registerMassesForIB, (), void, 
+          (std::map<std::string, DarkBit::TH_ParticleProperty>&))
+      BACKEND_REQ(setMassesForIB, (), void, (bool))
     #undef FUNCTION
     #define FUNCTION TH_ProcessCatalog_SingletDM
       START_FUNCTION(DarkBit::TH_ProcessCatalog)
