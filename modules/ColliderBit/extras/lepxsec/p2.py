@@ -21,7 +21,7 @@ class P2(object):
         if i == 0: self.x = v
         if i == 1: self.y = v
 
-    def __len__(self):
+    def __abs__(self):
         return math.sqrt(self.x**2 + self.y**2)
 
     def __add__(self, other):
@@ -70,34 +70,46 @@ class LineSegment(object):
     def __init__(self, pt1, pt2):
         if any([not type(pt1) == P2, not type(pt2) == P2]):
             raise TypeError("Please use Andy's nifty P2 class for the endpoints")
-        if pt1.x > pt2.x:
+        if pt1.x > pt2.x or (pt1.x == pt2.x and pt1.y > pt2.y):
           self.pt2 = pt1
           self.pt1 = pt2
-        elif pt1.x == pt2.x:
-          if pt1.y > pt2.y:
-            self.pt2 = pt1
-            self.pt1 = pt2
-          else:
-            self.pt1 = pt1
-            self.pt2 = pt2
         else:
           self.pt1 = pt1
           self.pt2 = pt2
 
-    def __len__(self):
-        return len(self.pt2 - self.pt1)
+    def __abs__(self):
+        return abs(self.pt2 - self.pt1)
+
+    def __repr__(self):
+        return repr(self.pt1) + " - " + repr(self.pt2)
 
     def endpoints(self):
         return self.pt1, self.pt2
-
     def midpoint(self):
         return (self.pt1 + self.pt2)/2.0
+    def allpoints(self, nsteps):
+        xList = []
+        yList = []
+        for t in np.linspace(0., 1., nsteps):
+            xList.append(self.pt1.x * t + self.pt2.x * (1. - t))
+            yList.append(self.pt1.y * t + self.pt2.y * (1. - t))
+        return np.array(xList), np.array(yList)
 
-    def slope(self):
-        if pt1.x == pt2.x:
+    def b(self):
+        return self.intercept()
+    def intercept(self):
+        if self.pt1.x == self.pt2.x:
             return np.inf
         else:
-            return (pt2.y - pt1.y) / (pt2.x - pt1.x)
+            return self.pt1.y - self.m() * self.pt1.x
+
+    def m(self):
+        return self.slope()
+    def slope(self):
+        if self.pt1.x == self.pt2.x:
+            return np.inf
+        else:
+            return (self.pt2.y - self.pt1.y) / (self.pt2.x - self.pt1.x)
 
     def intersectsAt(self, *args):
         # Ready the other LineSegment
@@ -109,31 +121,36 @@ class LineSegment(object):
         if not type(other) == LineSegment:
             raise ValueError("Not sure how to determine intersection with " + str(args))
 
-        # If the slopes are equal, they will never intercept
+        # If the slopes are equal, they will never intersect
         if self.slope() == other.slope():
             return P2(np.inf, np.inf)
 
         # If self or other has an infinite slope, change the intercept calculation
         if self.slope() == np.inf:
+            assert self.pt2.y >= self.pt1.y
+            assert other.pt2.x > other.pt1.x
             xintersect = self.pt1.x
-            yintersect = other.slope() * (xintersect - other.pt1.x) + other.pt1.y
+            yintersect = other.m() * xintersect + other.b()
             if all([xintersect >= other.pt1.x, xintersect <= other.pt2.x,
-                    yintersect >= self.pt1.y, yintersect <= self.pt1.y]):
+                    yintersect >= self.pt1.y, yintersect <= self.pt2.y]):
                 return P2(xintersect, yintersect)
             else:
                 return P2(np.inf, np.inf)
         elif other.slope() == np.inf:
+            assert other.pt2.y >= other.pt1.y
+            assert self.pt2.x > self.pt1.x
             xintersect = other.pt1.x
-            yintersect = self.slope() * (xintersect - self.pt1.x) + self.pt1.y
+            yintersect = self.m() * xintersect + self.b()
             if all([xintersect >= self.pt1.x, xintersect <= self.pt2.x,
-                    yintersect >= other.pt1.y, yintersect <= other.pt1.y]):
+                    yintersect >= other.pt1.y, yintersect <= other.pt2.y]):
                 return P2(xintersect, yintersect)
             else:
                 return P2(np.inf, np.inf)
         else:   # Regular intercept calculation
-            xintersect = (other.pt1.y - other.slope()*other.pt1.x - self.pt.y
-                        + self.slope()*self.pt1.x) / (self.slope() - other.slope())
-            yintersect = self.slope() * (xintersect - self.pt1.x) + self.pt1.y
+            assert self.pt2.x > self.pt1.x
+            assert other.pt2.x > other.pt1.x
+            xintersect = (other.b() - self.b()) / (self.m() - other.m())
+            yintersect = self.m() * xintersect + self.b()
             if all([xintersect >= self.pt1.x, xintersect <= self.pt2.x,
                     xintersect >= other.pt1.x, xintersect <= other.pt2.x]):
                 return P2(xintersect, yintersect)
