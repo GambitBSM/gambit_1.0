@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Fri 16 Jan 2015 13:02:09
+// File generated at Mon 1 Jun 2015 13:21:38
 
 #include "MSSMatMGUT_two_scale_susy_parameters.hpp"
 #include "wrappers.hpp"
@@ -37,7 +37,7 @@ double MSSMatMGUT_susy_parameters::calc_beta_g2_one_loop(const Susy_traces& susy
 
    double beta_g2;
 
-   beta_g2 = Power(g2,3)*oneOver16PiSqr;
+   beta_g2 = Re(Power(g2,3)*oneOver16PiSqr);
 
 
    return beta_g2;
@@ -57,8 +57,8 @@ double MSSMatMGUT_susy_parameters::calc_beta_g2_two_loop(const Susy_traces& susy
 
    double beta_g2;
 
-   beta_g2 = 0.2*Power(g2,3)*twoLoop*(-30*traceYdAdjYd - 10*traceYeAdjYe
-      - 30*traceYuAdjYu + 9*Sqr(g1) + 125*Sqr(g2) + 120*Sqr(g3));
+   beta_g2 = Re(0.2*Power(g2,3)*twoLoop*(-30*traceYdAdjYd - 10*
+      traceYeAdjYe - 30*traceYuAdjYu + 9*Sqr(g1) + 125*Sqr(g2) + 120*Sqr(g3)));
 
 
    return beta_g2;

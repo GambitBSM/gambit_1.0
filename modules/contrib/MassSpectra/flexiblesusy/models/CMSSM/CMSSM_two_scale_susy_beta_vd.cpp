@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Fri 16 Jan 2015 13:06:52
+// File generated at Mon 1 Jun 2015 13:26:36
 
 #include "CMSSM_two_scale_susy_parameters.hpp"
 #include "wrappers.hpp"
@@ -39,8 +39,8 @@ double CMSSM_susy_parameters::calc_beta_vd_one_loop(const Susy_traces& susy_trac
 
    double beta_vd;
 
-   beta_vd = 0.1*oneOver16PiSqr*vd*(-30*traceYdAdjYd - 10*traceYeAdjYe +
-      3*(Sqr(g1) + 5*Sqr(g2)));
+   beta_vd = Re(0.1*oneOver16PiSqr*vd*(-30*traceYdAdjYd - 10*traceYeAdjYe
+      + 3*(Sqr(g1) + 5*Sqr(g2))));
 
 
    return beta_vd;
@@ -62,10 +62,10 @@ double CMSSM_susy_parameters::calc_beta_vd_two_loop(const Susy_traces& susy_trac
 
    double beta_vd;
 
-   beta_vd = -0.005*twoLoop*vd*(207*Power(g1,4) + 275*Power(g2,4) - 1800*
-      traceYdAdjYdYdAdjYd - 600*traceYdAdjYuYuAdjYd - 600*traceYeAdjYeYeAdjYe +
-      90*Sqr(g1)*Sqr(g2) + 300*traceYeAdjYe*(Sqr(g1) + Sqr(g2)) + 100*
-      traceYdAdjYd*(Sqr(g1) + 9*Sqr(g2) + 32*Sqr(g3)));
+   beta_vd = Re(-0.005*twoLoop*vd*(207*Power(g1,4) + 275*Power(g2,4) -
+      1800*traceYdAdjYdYdAdjYd - 600*traceYdAdjYuYuAdjYd - 600*
+      traceYeAdjYeYeAdjYe + 90*Sqr(g1)*Sqr(g2) + 300*traceYeAdjYe*(Sqr(g1) +
+      Sqr(g2)) + 100*traceYdAdjYd*(Sqr(g1) + 9*Sqr(g2) + 32*Sqr(g3))));
 
 
    return beta_vd;

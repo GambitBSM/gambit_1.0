@@ -44,6 +44,9 @@ if(EXISTS "${PROJECT_SOURCE_DIR}/Core/")
   if (NOT EXCLUDE_DELPHES)
     add_dependencies(gambit delphes)
   endif()
+  if(MPI_FOUND)
+    target_link_libraries(gambit ${MPI_LIBRARIES})
+  endif()
 endif()
 
 # Add the ExampleBit_A_standalone executable
@@ -94,5 +97,9 @@ if(EXISTS "${PROJECT_SOURCE_DIR}/ScannerBit/")
   else()
     # Make sure the printers compile OK if the rest of GAMBIT is missing
     add_definitions(-DSTANDALONE=1)
+  endif()
+  # Probably don't need this? Don't think it will hurt though.
+  if(MPI_FOUND)
+    target_link_libraries(ExampleBit_A_standalone ${MPI_LIBRARIES})
   endif()
 endif()

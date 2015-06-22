@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Fri 16 Jan 2015 14:37:07
+// File generated at Mon 1 Jun 2015 13:11:53
 
 #ifndef NUHMSSM_TWO_SCALE_soft_parameters_H
 #define NUHMSSM_TWO_SCALE_soft_parameters_H
@@ -210,5 +210,7 @@ private:
 std::ostream& operator<<(std::ostream&, const NUHMSSM_soft_parameters&);
 
 } // namespace flexiblesusy
+
+#undef TRACE_STRUCT_TYPE
 
 #endif

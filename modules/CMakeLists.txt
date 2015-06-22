@@ -48,6 +48,9 @@ endforeach()
 # Set the project name
 project(GAMBIT)
 
+# Enable Fortran compiler
+enable_language(Fortran)
+
 # Don't relink all binaries when shared lib changes (programs will be rebuilt anyway if used headers change)
 set(CMAKE_LINK_DEPENDS_NO_SHARED 1)
 
@@ -65,6 +68,7 @@ set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
 SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 # Include cmake utility scripts
+# Note: colors defined in here; colored output won't work before this!
 include(cmake/utilities.cmake)
 
 # Check for optional packages and disable sections of GAMBIT accordingly
@@ -79,9 +83,6 @@ endforeach()
 
 # Do OSX checks
 include(cmake/MacOSX.cmake)
-
-# Enable Fortran compiler
-enable_language(Fortran)
 
 # Add -fPIC for 64 bit systems
 if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64")

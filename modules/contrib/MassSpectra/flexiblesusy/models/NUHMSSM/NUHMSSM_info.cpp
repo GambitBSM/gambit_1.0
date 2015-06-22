@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Fri 16 Jan 2015 14:37:43
+// File generated at Mon 1 Jun 2015 13:12:25
 
 #include "NUHMSSM_info.hpp"
 
@@ -25,6 +25,10 @@
 namespace flexiblesusy {
 
 namespace NUHMSSM_info {
+   const double normalization_g1 = 0.7745966692414834;
+   const double normalization_g2 = 1;
+   const double normalization_g3 = 1;
+
    const unsigned particle_multiplicities[NUMBER_OF_PARTICLES] = {1, 1, 3, 1, 1
       , 6, 3, 6, 6, 2, 2, 2, 4, 2, 3, 3, 3, 1};
 
