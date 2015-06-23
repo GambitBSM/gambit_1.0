@@ -1,0 +1,109 @@
+#! /usr/bin/env python
+
+from __future__ import division
+from time import time
+import numpy as np
+from matplotlib import pyplot as plt
+
+from p2 import P2, LineSegment
+
+import optparse
+op = optparse.OptionParser()
+opts, args = op.parse_args()
+
+## Limit contours read from file. Plot limits read from extremum of the data.
+limitContours = {}
+
+# For the xsection limit plot: x = some mass, y = some other mass, z = xsec limit
+xmin = np.inf
+xmax = -np.inf
+ymin = np.inf
+ymax = -np.inf
+zmin = 0.
+zmax = -np.inf
+
+for a in args:
+    fname, xsec = a.split(":")
+    limitContours[xsec] = []
+    limitPoints = []
+    if xsec > zmax:
+        zmax = xsec
+    with open(fname) as f:
+        for line in f:
+            xy = [float(i) for i in line.strip().split()]
+            if xy[0] > xmax:
+                xmax = xy[0]
+            if xy[0] < xmin:
+                xmin = xy[0]
+            if xy[1] > ymax:
+                ymax = xy[1]
+            if xy[1] < ymin:
+                ymin = xy[1]
+            limitPoints.append(P2(xy[0], xy[1]))
+    for i in xrange(len(limitPoints) - 1):
+        limitContours[xsec].append(LineSegment(limitPoints[i], limitPoints[i+1]))
+    # NOTE: The data will enforce closed contours, so this is unneccessary
+    ###### limitContours[xsec].append(LineSegment(limitPoints[-1], limitPoints[0]))
+
+print "Input check:"
+print
+for key in limitContours.keys():
+    print key
+    print limitContours[key]
+    print
+print
+print "Ready for the loop..."
+
+if xmin < 0.:
+    xmin = 0.01
+if ymin < 0.:
+    ymin = 0.01
+
+x = np.linspace(xmin, xmax, 100)
+y = np.linspace(ymin, ymax, 100)
+xx, yy = np.meshgrid(x, y, indexing='ij')
+zz = np.zeros_like(xx)
+
+nMonteCarloTrials = 100
+t = time()
+
+for i in xrange(len(x)):
+  for j in xrange(len(y)):
+    zz[i,j] = np.nan
+    if yy[i,j] > xx[i,j]:
+        continue
+    point = P2(xx[i,j], yy[i,j])
+    xseclimit = 0.
+    nWithin = 0
+    for mcCoords in zip(np.random.normal(point.x, point.x * 0.05, nMonteCarloTrials),
+                        np.random.normal(point.y, point.y * 0.05, nMonteCarloTrials)):
+        mcPoint = P2(mcCoords[0], mcCoords[1])
+        ray = LineSegment(point, P2(-100., -100.))
+        withinDict = {}
+        for xsec in limitContours.keys():
+            withinDict[xsec] = False
+            for segment in limitContours[xsec]:
+                intersection = ray.intersectsAt(segment)
+                if abs(intersection) < np.inf:
+                    withinDict[xsec] = not withinDict[xsec]
+        if any(withinDict.values()):
+            nWithin += 1
+            xsecWithinMin = np.inf
+            for xsec in withinDict.keys():
+                if withinDict[xsec] and float(xsec) < xsecWithinMin:
+                    xsecWithinMin = float(xsec)
+            xseclimit += xsecWithinMin
+    if xseclimit > 0. and nWithin > 0:
+        zz[i,j] = xseclimit / nWithin
+
+print "Loop finished in this many seconds:", str(time() - t)
+
+fig, axes = plt.subplots(figsize=(11,7), facecolor='#ffffff')
+levels = np.linspace(0, 2, 21)
+contours = plt.contourf(xx, yy, zz, levels, cmap=plt.get_cmap('Dark2'))
+for xsec in limitContours.keys():
+    for segment in limitContours[xsec]:
+        x, y = segment.allpoints(1000)
+        plt.plot(x, y, linewidth=2, color='black', alpha=0.4, zorder=20)
+cb = fig.colorbar(contours, cmap=plt.get_cmap('Dark2'))
+fig.savefig("xsecGridWithMonteCarlo.pdf")
