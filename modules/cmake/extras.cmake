@@ -64,7 +64,6 @@ set(diver_lib "libdiver")
 set(diver_dir "${PROJECT_SOURCE_DIR}/../extras/Diver")
 set(diver_short_dir "./../extras/Diver")
 set(diverSO_LINK_FLAGS "${CMAKE_Fortran_MPI_SO_LINK_FLAGS}")
-message(${diverSO_LINK_FLAGS})
 if(MPI_Fortran_FOUND)
   set(diverFFLAGS "${CMAKE_Fortran_MPI_FLAGS}")
 else()
@@ -101,7 +100,6 @@ if(MPI_Fortran_FOUND)
 else()
   set(mnFFLAGS "${CMAKE_Fortran_FLAGS}")
 endif()
-message("${mnSO_LINK}")
 ExternalProject_Add(multinest 
   #FIXME automated download of multinest is not possible, as it is behind a login redirection wall.  Need to ask Farhan to fix.
   #URL http://ccpforge.cse.rl.ac.uk/gf/download/frsrelease/413/5871/MultiNest_v3.9.tar.gz
