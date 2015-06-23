@@ -42,4 +42,7 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -mmacosx-version-min=10.7")
     set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} -mmacosx-version-min=10.7")
   endif()
+  # Tell cmake to look for things installed by macports
+  list(APPEND CMAKE_INCLUDE_PATH /opt/local/include)
+  list(APPEND CMAKE_LIBRARY_PATH /opt/local/lib)
 endif()
