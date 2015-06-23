@@ -88,6 +88,7 @@ include(FindLAPACK)
 foreach(lib ${LAPACK_LIBRARIES})
   set(LAPACK_LINKLIBS "${LAPACK_LINKLIBS} ${lib}")
 endforeach()
+string(STRIP "${LAPACK_LINKLIBS}" LAPACK_LINKLIBS)
 # MultiNest
 set(mn_ver "3\\.9")
 set(mn_lib "libnest3")
@@ -100,6 +101,7 @@ if(MPI_Fortran_FOUND)
 else()
   set(mnFFLAGS "${CMAKE_Fortran_FLAGS}")
 endif()
+message("${mnSO_LINK}")
 ExternalProject_Add(multinest 
   #FIXME automated download of multinest is not possible, as it is behind a login redirection wall.  Need to ask Farhan to fix.
   #URL http://ccpforge.cse.rl.ac.uk/gf/download/frsrelease/413/5871/MultiNest_v3.9.tar.gz
