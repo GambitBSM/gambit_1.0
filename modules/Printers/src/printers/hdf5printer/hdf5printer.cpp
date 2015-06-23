@@ -114,6 +114,7 @@
   #define DBUG(x)
 #endif
 
+#define CHECK_SYNC 
 
 // Code!
 namespace Gambit
@@ -370,14 +371,17 @@ namespace Gambit
            std::cout << "rank "<<myRank<<": collect_mpi_buffers() ("<<printer_name<<")"<<std::endl;
            #endif
            #ifdef WITH_MPI
-           collect_mpi_buffers();
+           if( collect_mpi_buffers() ) 
+           {
+             std::cout << "rank "<<myRank<<": Syncing after FINAL collect_mpi_buffers() call (in "<<printer_name<<")"<<std::endl;
+             synchronise_buffers();
+           }
            #endif
 
            // Make sure buffers are sync'd, to ensure that they all have the same final length
            //  This is a bit of a hack to force the printer to increment by one final (fake) point
            //  so that the synchronisation works correctly.
-           reverse_global_index_lookup.push_back(PPIDpair(0,0));
-           synchronise_buffers();
+           //reverse_global_index_lookup.push_back(PPIDpair(0,0));
          }
  
          // Very very last write to disk
@@ -547,16 +551,17 @@ namespace Gambit
 	 printer_error().raise(LOCAL_INFO, errmsg.str());
       }
 
-      // Determine the new sync position
+      // Determine the desired sync position
+      // (i.e. look up how many parameter points have been generated)
       const ulong sync_pos = reverse_global_index_lookup.size()-1;  
 
       // Cycle through all buffers and tell them to ensure they are at the right position
       // The buffers should throw an error if we are accidentally telling them to go backwards
       // or skip too many points or anything they can't do.
       // Here though we should only be moving them forward by one position.
-      #ifdef DEBUG_MODE
-      std::cout<<"Synchronising buffers to position "<<i<<" (message from printer: "<<printer_name<<", is_auxilliary: "<<is_auxilliary_printer()<<", synchronised: "<<synchronised<<")"<<std::endl;
-      #endif 
+      //#ifdef DEBUG_MODE
+      std::cout<<"rank "<<myRank<<": Synchronising buffers to position "<<sync_pos<<" (message from printer: "<<printer_name<<", is_auxilliary: "<<is_auxilliary_printer()<<", synchronised: "<<synchronised<<")"<<std::endl;
+      //#endif 
       for (BaseBufferMap::iterator it = all_buffers.begin(); it != all_buffers.end(); it++)
       {
         // If buffer isn't flagged for synchronisation, it will just take note of the
@@ -569,9 +574,9 @@ namespace Gambit
     // Note that if one sync buffer is full, they should all be full!
     void HDF5Printer::empty_sync_buffers_if_full()
     {
-      #ifdef DEBUG_MODE
-      std::cout<<"Emptying sync buffers (if full)..."<<std::endl;
-      #endif
+      //#ifdef DEBUG_MODE
+      std::cout<<"rank "<<myRank<<": Emptying sync buffers (if full)..."<<std::endl;
+      //#endif
       uint N_sync_buffers = 0;
       uint N_were_full = 0;
       for (BaseBufferMap::iterator it = all_my_buffers.begin(); it != all_my_buffers.end(); it++)
@@ -582,7 +587,7 @@ namespace Gambit
           if(it->second->sync_buffer_is_full())
           {
             //#ifdef DEBUG_MODE
-            std::cout<<"Emptying sync buffer "<<it->second->get_label()<<std::endl;
+            std::cout<<"rank "<<myRank<<": Emptying sync buffer "<<it->second->get_label()<<std::endl;
             //#endif
             N_were_full += 1;    
             it->second->flush();
@@ -623,8 +628,11 @@ namespace Gambit
 
     #ifdef WITH_MPI
     /// Check for buffers waiting to be delivered from other processes 
-    void HDF5Printer::collect_mpi_buffers()
+    /// Returns true if sync buffers are collected, but not if RA buffers
+    /// are collected (since a resync is not required in the latter case).
+    bool HDF5Printer::collect_mpi_buffers()
     {
+       bool collected_sync_buffers = false;
        if(is_auxilliary_printer())
        {
           std::ostringstream errmsg;
@@ -642,13 +650,14 @@ namespace Gambit
        // check for messages from only one process at a time, so that the output datasets
        // stay synchronised point-by-point
 
-       #ifdef MPI_DEBUG
+       //#ifdef MPI_DEBUG
        std::cout<<"rank "<<myRank<<": Collecting mpi buffers..."<<std::endl;
-       #endif
+       //#endif
 
        // First we will check if any BUFFER_SENT messages are waiting.
        if(myComm.Iprobe(MPI_ANY_SOURCE, N_BUFFERS_SENT))
        {
+          collected_sync_buffers = true;
           for(uint source_rank=1; source_rank<mpiSize; source_rank++)
           {
              // If there is a N_BUFFERS_SENT message waiting from a particular process, we
@@ -692,9 +701,9 @@ namespace Gambit
                 //  master to receive the data... need to create them
                 //  somehow...)
                 myComm.Recv(&N_buffers_sent, 1, source_rank, N_BUFFERS_SENT);
-                #ifdef MPI_DEBUG
+                //#ifdef MPI_DEBUG
                 std::cout<<"rank "<<myRank<<": Received N_buffers_sent message from process "<<source_rank<<" (number was "<<N_buffers_sent<<")"<<std::endl;
-                #endif
+                //#endif
 
                 // TODO: Will need to skip ahead any sync buffers that didn't receive data from
                 // the worker.
@@ -713,10 +722,19 @@ namespace Gambit
 
                 // Update master PPIDs with those from the worker node
                 // Will block until these are received; they should come right alongside the buffers themselves
+                //#ifdef MPI_DEBUG
+                long npoints_init = primary_printer->reverse_global_index_lookup.size();
+                std::cout<<"rank "<<myRank<<": npoints_init = "<<npoints_init<<std::endl;
+                //#endif
+
                 receive_PPID_list(source_rank);
-                #ifdef MPI_DEBUG
-                std::cout<<"rank "<<myRank<<": Received new PPIDs from process "<<source_rank<<std::endl;
-                #endif
+
+                //#ifdef MPI_DEBUG
+               
+                long npoints_final = primary_printer->reverse_global_index_lookup.size();
+                std::cout<<"rank "<<myRank<<": npoints_final = "<<npoints_final<<std::endl;
+                std::cout<<"rank "<<myRank<<": Received "<<npoints_final-npoints_init<<" new PPIDs from process "<<source_rank<<std::endl;
+                //#endif
 
                 /// Now check for waiting RA messages from this same source_rank
                 /// Don't have to keep track of these so closely, they can come at
@@ -766,6 +784,7 @@ namespace Gambit
              }
           }
        }
+       return collected_sync_buffers;
     }
 
     /// Request existing tag or register a new MPI tag for a buffer
@@ -902,12 +921,98 @@ namespace Gambit
           primary_printer->check_for_new_point(candidate_newpoint, mpirank);
        }
 
-       // Check that we are still writing to the same output "slot" as during the last print call
+       // Check if we have changed target PointIDs since the last print call
        if(candidate_newpoint!=lastPointID.at(myRank))
        {
-         #ifdef MPI_DEBUG
+         //#ifdef MPI_DEBUG
          std::cout<<"rank "<<myRank<<": New point detected (lastPointID="<<lastPointID.at(myRank)<<", candidate_newpoint="<<candidate_newpoint<<")"<<std::endl;
-         std::cout<<"rank "<<myRank<<": sync_pos="<<reverse_global_index_lookup.size()-1<<std::endl;
+         std::cout<<"rank "<<myRank<<": sync_pos="<<reverse_global_index_lookup.size()<<std::endl;
+         //#endif
+ 
+         // Explicitly check up on the synchronisation of all the buffers and their
+         // associated datasets
+
+         // When a new point is detected, the "sync position" should be the
+         // largest index which has a pointID assigned, which will match the
+         // head_pos of any buffers which didn't write to that point.
+         // The other buffers are allowed to be AT MOST one slot ahead of this,
+         // having done a write for the last point and moved ahead one slot.
+         //
+         // At the end of this routine, all the buffers should once again
+         // have their write heads pointing to both the same buffer index, and
+         // the same output dataset index, and this index should be equal to
+         // the number of pointIDs collected so far, minus 1 for the zero indexing
+         // (with the last ID being the point from which the next print statements 
+         // will arrive).
+         //
+         // So, in the end, with sync_pos = reverse_global_index_lookup.size() - 1
+         // we require 
+         //   dset_head_pos() == sync_pos
+         // for every buffer.
+         // However, at the beginning, we may have
+         //   dset_head_pos() == sync_pos + 1
+         // for some buffers, which, after sync_pos is incremented with the new
+         // pointID, will match the new sync_pos, and the other buffers will need
+         // to be caught up. Any other state is an error.
+         // So, in debug mode, we will check this first.
+ 
+         #ifdef CHECK_SYNC
+         // Explicitly check up on the synchronisation of all the buffers and their
+         // associated datasets
+         std::cout<<"rank "<<myRank<<": Prelim sync check (in check_for_new_point)"<<std::endl;
+         for (BaseBufferMap::iterator it = all_my_buffers.begin(); it != all_my_buffers.end(); it++)
+         {
+           unsigned long head_pos = it->second->dset_head_pos();
+           std::string name       = it->second->get_label();
+           unsigned long sync_pos_plus1 = reverse_global_index_lookup.size();
+           if(head_pos+1 < sync_pos_plus1)
+           {
+              std::ostringstream errmsg;
+              errmsg << "rank "<<myRank<<": Error! (pre sync check) Buffers have gone out of sync in printer '"<<printer_name<<"'!"<<std::endl;
+              errmsg << "   head_pos = " << head_pos << "; name = " << name << std::endl;
+              errmsg << "   sync_pos = " << sync_pos_plus1-1 << std::endl;
+              errmsg << " (head_pos < syncpos) " << std::endl;
+              printer_error().raise(LOCAL_INFO, errmsg.str());
+           } else if (head_pos > sync_pos_plus1) 
+           {
+              std::ostringstream errmsg;
+              errmsg << "rank "<<myRank<<": Error! (sync check) Buffers have gone out of sync in printer '"<<printer_name<<"'!"<<std::endl;
+              errmsg << "   head_pos = " << head_pos << "; name = " << name << std::endl;
+              errmsg << "   sync_pos = " << sync_pos_plus1-1 << std::endl;
+              errmsg << " (head_pos > syncpos + 1) " << std::endl;
+              printer_error().raise(LOCAL_INFO, errmsg.str());
+           }  // else ok.   
+           std::cout << "   head_pos = " << head_pos << "; name = " << name << std::endl;
+           std::cout << "   sync_pos = " << sync_pos_plus1-1 << std::endl;
+           //it->second->sync_report();
+         }
+         #endif
+
+         // Make sure all the buffers are caught up at the old position.
+         synchronise_buffers();          
+
+         #ifdef CHECK_SYNC
+         // Explicitly check up on the synchronisation of all the buffers and their
+         // associated datasets
+         std::cout<<"rank "<<myRank<<": Mid-synchronise sync check (in check_for_new_point)"<<std::endl;
+         for (BaseBufferMap::iterator it = all_my_buffers.begin(); it != all_my_buffers.end(); it++)
+         {
+           unsigned long head_pos = it->second->dset_head_pos();
+           std::string name       = it->second->get_label();
+           unsigned long sync_pos = reverse_global_index_lookup.size()-1;
+           if(head_pos != sync_pos + 1)
+           {
+              std::ostringstream errmsg;
+              errmsg << "rank "<<myRank<<": Error! (mid sync check) Buffers have gone out of sync in printer '"<<printer_name<<"'!"<<std::endl;
+              errmsg << "   head_pos = " << head_pos << "; name = " << name << std::endl;
+              errmsg << "   sync_pos = " << sync_pos << std::endl;
+              errmsg << " (head_pos != syncpos + 1) " << std::endl;
+              printer_error().raise(LOCAL_INFO, errmsg.str());
+           }
+           std::cout << "   head_pos = " << head_pos << "; name = " << name << std::endl;
+           std::cout << "   sync_pos = " << sync_pos << std::endl;
+           //it->second->sync_report();
+         }
          #endif
 
          // Yep the scanner has moved on, at least as far as the current process sees
@@ -922,19 +1027,52 @@ namespace Gambit
          // (this will insert them into the local buffers BEFORE the first
          // print command at the new point occurs, so the new PPID needs
          // to also be added after the 'foreign' buffers are collected)
-         if(myRank==0) collect_mpi_buffers();
+         if(myRank==0) 
+         {
+           std::cout<<"rank "<<myRank<<": collect_mpi_buffers() called in check_for_new_point()"<<std::endl;
+           if( collect_mpi_buffers() )
+           {
+             std::cout<<"rank "<<myRank<<": Performing sync after collecting mpi buffers"<<std::endl;
+             synchronise_buffers();          
+           }
+         }
          #endif
 
          // In principle this should only happen once per pointID/process rank pair.
          // So add the new pair to the lookup table and register that we have moved to
          // a new parameter space point.
+         // Note that this increases the sync_pos by 1.
          add_PPID_to_list(PPIDpair(candidate_newpoint,mpirank));
- 
-         // Make sure all the buffers are synchronised at the new position.
-         synchronise_buffers();          
+  
+         // Now the buffers should all be synchronised; check this in debug mode.
+
+         // #ifdef CHECK_SYNC
+         // // Explicitly check up on the synchronisation of all the buffers and their
+         // // associated datasets
+         // std::cout<<"rank "<<myRank<<": Post-synchronise sync check (in check_for_new_point)"<<std::endl;
+         // for (BaseBufferMap::iterator it = all_my_buffers.begin(); it != all_my_buffers.end(); it++)
+         // {
+         //   unsigned long head_pos = it->second->dset_head_pos();
+         //   std::string name       = it->second->get_label();
+         //   unsigned long sync_pos = reverse_global_index_lookup.size()-1;
+         //   if(head_pos != sync_pos)
+         //   {
+         //      std::ostringstream errmsg;
+         //      errmsg << "rank "<<myRank<<": Error! (post sync check) Buffers have gone out of sync in printer '"<<printer_name<<"'!"<<std::endl;
+         //      errmsg << "   head_pos = " << head_pos << "; name = " << name << std::endl;
+         //      errmsg << "   sync_pos = " << sync_pos << std::endl;
+         //      errmsg << " (head_pos != syncpos) " << std::endl;
+         //      printer_error().raise(LOCAL_INFO, errmsg.str());
+         //   }
+         //   std::cout << "   head_pos = " << head_pos << "; name = " << name << std::endl;
+         //   std::cout << "   sync_pos = " << sync_pos << std::endl;
+         //   //it->second->sync_report();
+         // }
+         // #endif
+
 
          // TODO: This shouldn't be needed but for some reason it seems to be...
-         empty_sync_buffers_if_full();
+         //empty_sync_buffers_if_full();
 
          // Debugging only! check if buffers are somehow still full...
          #ifdef MPI_DEBUG

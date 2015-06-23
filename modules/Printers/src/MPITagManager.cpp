@@ -25,6 +25,7 @@
 #include <time.h> // For short sleeps in listener process 
 
 // Gambit
+#include "gambit/Logs/log.hpp"
 #include "gambit/Printers/MPITagManager.hpp"
 #include "gambit/Printers/new_mpi_datatypes.hpp"
 #include "gambit/Core/error_handlers.hpp"
@@ -132,6 +133,8 @@ namespace Gambit
        /// Trick to bring the "this" pointer into this static function
        MPITagManager* thisptr = (MPITagManager*)thisptr_void;
 
+       logger() << LogTags::printers << "rank "<<thisptr->mpiRank<<": Starting MPITagManager::tag_daemon thread" << EOM;
+
        /// Set sleep times
        struct timespec short_time, long_time;
        //short_time.tv_nsec = 10000000; // Hundreth of a second (10^7 nanoseconds)
@@ -198,6 +201,8 @@ namespace Gambit
        #ifdef MPI_DEBUG
        std::cout<<"rank "<<thisptr->mpiRank<<": tag_daemon noticed stop signal; ending listener loop."<<std::endl;
        #endif
+
+       logger() << LogTags::printers << "rank "<<thisptr->mpiRank<<": Terminating MPITagManager::tag_daemon thread" << EOM;
 
        // Finished! 
        pthread_exit(NULL);  

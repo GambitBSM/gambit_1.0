@@ -191,7 +191,7 @@ namespace Gambit
         void empty_sync_buffers_if_full();
  
         /// Check for buffers waiting to be delivered from other processes 
-        void collect_mpi_buffers();
+        bool collect_mpi_buffers();
         #endif  
 
         /// Check whether printing to a new parameter space point is about to occur

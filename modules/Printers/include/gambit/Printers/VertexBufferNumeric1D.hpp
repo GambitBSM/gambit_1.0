@@ -37,8 +37,8 @@
 // MPI bindings
 #include "gambit/Utils/mpiwrapper.hpp"
 
-
-//#define HDF5_DEBUG // Triggers debugging output
+#define BUF_DEBUG /* Triggers debugging output */
+#define MONITOR_BUF "pointID" /* String ID of buffer to monitor. */
    
 namespace Gambit {
   
@@ -135,19 +135,14 @@ namespace Gambit {
           uint myRank = 0;
 
         private:
-          unsigned int nextempty; // index of the next free buffer slot
-
           static const std::size_t bufferlength = LENGTH;
 
         public:
-          unsigned int get_nextempty() { return nextempty; } 
-
           /// Constructors
           VertexBufferNumeric1D()
             : VertexBufferBase()
             , buffer_valid()
             , buffer_entries()
-            , nextempty(0)
           {}
 
           VertexBufferNumeric1D(
@@ -167,7 +162,6 @@ namespace Gambit {
             , myTags(tags)
             , printerComm(pComm)
             #endif
-            , nextempty(0)
           {
              #ifdef WITH_MPI
              myRank = pComm.Get_rank();
@@ -180,6 +174,9 @@ namespace Gambit {
 
           /// Append a record to the buffer
           void append(const T& data);
+
+          /// For debugging; find out what the absolute sync position is from the derived class.
+          virtual unsigned long dset_head_pos() = 0;
 
           /// Queue up a desynchronised ("random access") dataset write to previous scan iteration
           void RA_write(const T& value, const PPIDpair pID, const std::map<PPIDpair, ulong>& PPID_to_dsetindex);
@@ -241,25 +238,39 @@ namespace Gambit {
             }
 
             // Debug dump
-            #ifdef HDF5_DEBUG
-            std::cout<<"-------------------------------------"<<std::endl;
-            std::cout<<"Dump from buffer '"<<this->get_label()<<"'"<<std::endl;
-            std::cout<<"nextempty   = "<<nextempty<<std::endl;
-            std::cout<<"donepoint() = "<<this->donepoint()<<std::endl;
+            #ifdef BUF_DEBUG
+            #ifdef MONITOR_BUF
+            if(this->get_label()==MONITOR_BUF) {
             #endif
-            
+            std::cout<<"-------------------------------------"<<std::endl;
+            std::cout<<"rank "<<myRank<<": Called 'VertexBufferNumeric1D<T,L>::append'"<<std::endl;
+            std::cout<<"rank "<<myRank<<": Dump from buffer '"<<this->get_label()<<"'"<<std::endl;
+            std::cout<<"rank "<<myRank<<": dset_head_pos()  = "<<dset_head_pos()<<std::endl;
+            std::cout<<"rank "<<myRank<<": donepoint() = "<<this->donepoint()<<std::endl;
+            std::cout<<"rank "<<myRank<<": After write, will increment head_position: "<<this->get_head_position()<<" --> "<<this->get_head_position()+1<<std::endl;
+            #ifdef MONITOR_BUF
+            }           
+            #endif
+            #endif
+      
             error_if_done(); // make sure buffer hasn't written to the current point already
-            buffer_entries[nextempty] = data;
-            buffer_valid[nextempty] = true;
-            nextempty++;
+            buffer_entries[this->get_head_position()] = data;
+            buffer_valid[this->get_head_position()] = true;
+            this->move_head_to_next_slot();
             this->sync_buffer_empty = false;
-            if(nextempty==bufferlength) 
+            if(this->get_head_position()==bufferlength) 
             {
-               #ifdef HDF5_DEBUG
-               std::cout<<"Buffer "<<this->get_label()<<": nextempty ("<<nextempty<<") == bufferlength ("<<bufferlength<<"); setting sync_buffer_full=true."<<std::endl;
+               #ifdef BUF_DEBUG
+               #ifdef MONITOR_BUF
+               if(this->get_label()==MONITOR_BUF) {
                #endif
-               this->sync_buffer_full = true;
-            }
+               std::cout<<"rank "<<myRank<<": Buffer "<<this->get_label()<<": head_position ("<<this->get_head_position()<<") == bufferlength ("<<bufferlength<<"); setting sync_buffer_full=true."<<std::endl;
+               #ifdef MONITOR_BUF
+               }
+               #endif
+               #endif
+              this->sync_buffer_full = true;
+           }
          }   
       }
 
@@ -275,13 +286,19 @@ namespace Gambit {
                printer_error().raise(LOCAL_INFO, errmsg.str());
             }
             error_if_done(); // make sure buffer hasn't written to the current point already
-            buffer_valid[nextempty] = false;
-            nextempty++;
+            buffer_valid[this->get_head_position()] = false;
+            this->move_head_to_next_slot();
             this->sync_buffer_empty = false;
-            if(nextempty==bufferlength)
+            if(this->get_head_position()==bufferlength)
             {
-               #ifdef HDF5_DEBUG
-               std::cout<<"Buffer "<<this->get_label()<<": nextempty ("<<nextempty<<") == bufferlength ("<<bufferlength<<"); setting sync_buffer_full=true."<<std::endl;
+               #ifdef BUF_DEBUG
+               #ifdef MONITOR_BUF
+               if(this->get_label()==MONITOR_BUF) {
+               #endif
+               std::cout<<"rank "<<myRank<<": Buffer "<<this->get_label()<<": head_position ("<<this->get_head_position()<<") == bufferlength ("<<bufferlength<<"); setting sync_buffer_full=true."<<std::endl;
+               #ifdef MONITOR_BUF
+               }
+               #endif
                #endif
                this->sync_buffer_full = true;
             }
@@ -327,7 +344,6 @@ namespace Gambit {
             write_to_disk();
             #endif
             clear();
-            nextempty=0;
          }
       } 
 
@@ -465,7 +481,9 @@ namespace Gambit {
         {
           if(sync_buffer_is_full())
           {
+            #ifdef MPI_DEBUG
             std::cout<<"rank "<<myRank<<": During get_sync_mpi_message; Buffer "<<this->get_label()<<" full, emptying it..."<<std::endl;
+            #endif
             flush();
           } 
           else if(recv_buffer_valid[i])
@@ -563,8 +581,14 @@ namespace Gambit {
       void VertexBufferNumeric1D<T,L>::clear()
       {
          if(not this->is_silenced()) {
-            #ifdef HDF5_DEBUG
-            std::cout<<"Buffer "<<this->get_label()<<": clear()"<<std::endl;
+            #ifdef BUF_DEBUG
+            #ifdef MONITOR_BUF
+            if(this->get_label()==MONITOR_BUF) {
+            #endif
+            std::cout<<"rank "<<myRank<<": Buffer "<<this->get_label()<<": clear()"<<std::endl;
+            #ifdef MONITOR_BUF
+            }
+            #endif
             #endif
 
             for(std::size_t i=0; i<bufferlength; i++)
@@ -572,7 +596,7 @@ namespace Gambit {
                buffer_valid[i] = false;
                buffer_entries[i] = 0;
             }
-            nextempty=0; 
+            this->reset_head(); 
             this->sync_buffer_full = false;
             this->sync_buffer_empty = true;
          }

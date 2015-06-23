@@ -45,7 +45,7 @@
 #include "gambit/Core/error_handlers.hpp"
 
 // Trigger debugging output in various places (specifically, hdf5 printer)
-#define MPI_DEBUG
+//#define MPI_DEBUG
 
 namespace Gambit {
    namespace GMPI {
@@ -217,6 +217,17 @@ namespace Gambit {
                }
                #endif
                return (you_have_mail != 0);
+            }
+
+            // Force all processes in this group (possibly all processes in
+            // the "WORLD"; implementation dependent) to stop executing.
+            // Useful for abnormal termination (since if one processes throws
+            // an exception then the others can easily get stuck waiting
+            // for messages that will never arrive).
+            void Abort()
+            {
+              std::cout << "rank "<<Get_rank()<<": MPI_Abort command received, attempting to terminate all processes..." << std::endl;
+              MPI_Abort(boundcomm, 1);
             }
 
          private:

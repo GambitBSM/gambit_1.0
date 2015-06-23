@@ -34,13 +34,16 @@ namespace Gambit {
       {
          private:
             // flag to indicate whether an append or skip_append has been done for a given point
-            bool donethispoint;
+            bool donethispoint = false;
 
             // Metadata
             std::string label;
             int vertexID;
             uint index; // discriminator in case of multiple output streams from one vertex
-             
+
+            // buffer index to which "append" is targeted. 
+            unsigned int head_position = 0;
+
             /// flag to trigger synchronised buffer writing
             bool synchronised;
  
@@ -54,8 +57,7 @@ namespace Gambit {
 
          public:
             VertexBufferBase()
-              : donethispoint()
-              , label("None (Bug!)")
+              : label("None (Bug!)")
               , vertexID()
               , index()
               , synchronised()
@@ -67,8 +69,7 @@ namespace Gambit {
             }   
 
             VertexBufferBase(const std::string& l, const int vID, const uint i, const bool sync, const bool sil) 
-              : donethispoint(false)
-              , label(l)
+              : label(l)
               , vertexID(vID)
               , index(i)
               , synchronised(sync)
@@ -81,17 +82,28 @@ namespace Gambit {
 
             virtual ~VertexBufferBase() 
             {
+               #ifdef HDF5_DEBUG
                std::cout<<"Destructing buffer name='"<<label<<"'"<<std::endl;
+               #endif
             }
 
             // Metadata getters
             int  get_vertexID()       { return vertexID; }
             uint get_index()          { return index; }
             std::string get_label()   { return label; }
+
+            // Buffer status getters
             bool sync_buffer_is_full(){ return sync_buffer_full; }
             bool sync_buffer_is_empty(){ return sync_buffer_empty; }
             bool is_synchronised()    { return synchronised; }
             bool is_silenced()        { return silenced; }
+            unsigned int get_head_position() { return head_position; }
+
+            // Get the current head position in the output dataset  
+            virtual unsigned long dset_head_pos() = 0;
+
+            // Print to std::cout a report on the sync status of this buffer
+            virtual void sync_report() = 0;
 
             // Trigger MPI send of sync buffer to master node, or write to disk
             virtual void flush() = 0;
@@ -136,13 +148,19 @@ namespace Gambit {
             // setter for donethispoint
             void set_donepoint(bool flag) {donethispoint=flag;}
 
+            // Move buffer write head to next position
+            void move_head_to_next_slot() { head_position++; }
+
+            // Rewind buffer head to start of buffer
+            void reset_head() { head_position = 0; }
+
             // Error thrower for when append is attempted with point already set to "done"
             void error_if_done()
             {
                if(donethispoint)
                { 
                   std::ostringstream errmsg;
-                  errmsg << "Error! VertexBuffer set to 'done'! Append may have been attempted without \"unlocking\" the buffer.";
+                  errmsg << "Error! VertexBuffer set to 'done'! Append may have been attempted without moving the buffer write head forward (.";
                   printer_error().raise(LOCAL_INFO, errmsg.str());
                }
             }
