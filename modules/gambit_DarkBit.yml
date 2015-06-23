@@ -6,6 +6,9 @@
 
 Parameters: 
     StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
+    StandardModel_Higgs:
+      mH: 125
+      vev: 238
     SingletDM:
         lambda:
             range: [0.001, 1]

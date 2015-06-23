@@ -571,7 +571,6 @@ START_MODULE
 
     #define FUNCTION all_decays
     START_FUNCTION(DecayTable)
-    DEPENDENCY(SLHA_pseudonyms, DecayBit::mass_es_pseudonyms)
     DEPENDENCY(Higgs_decay_rates, DecayTable::Entry) 
     DEPENDENCY(W_minus_decay_rates, DecayTable::Entry)
     DEPENDENCY(W_plus_decay_rates, DecayTable::Entry)
@@ -590,6 +589,7 @@ START_MODULE
     DEPENDENCY(rho_minus_decay_rates, DecayTable::Entry)
     DEPENDENCY(rho_plus_decay_rates, DecayTable::Entry)
     DEPENDENCY(omega_decay_rates, DecayTable::Entry)
+    MODEL_CONDITIONAL_DEPENDENCY(SLHA_pseudonyms, DecayBit::mass_es_pseudonyms, MSSM78atQ, MSSM78atMGUT)
     MODEL_CONDITIONAL_DEPENDENCY(h0_2_decay_rates, DecayTable::Entry, MSSM78atQ, MSSM78atMGUT) 
     MODEL_CONDITIONAL_DEPENDENCY(A0_decay_rates, DecayTable::Entry, MSSM78atQ, MSSM78atMGUT) 
     MODEL_CONDITIONAL_DEPENDENCY(Hplus_decay_rates, DecayTable::Entry, MSSM78atQ, MSSM78atMGUT) 

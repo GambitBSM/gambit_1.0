@@ -263,7 +263,7 @@ namespace Gambit
 
       // FIXME: Update "<H>" etc
       double mH = spec->get_Pole_Mass("h0_1");
-      double v = spec_uv->runningpars.get_mass_parameter("<H>");
+      double v = spec_uv->runningpars.get_mass_parameter("vev");
 
       // Get SM pole masses
 #define getSMmass(Name, spinX2)                                                \

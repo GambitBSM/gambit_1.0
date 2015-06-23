@@ -2585,7 +2585,6 @@ namespace Gambit
     void all_decays (DecayTable &decays) 
     {
       using namespace Pipes::all_decays;
-      mass_es_pseudonyms psn = *(Dep::SLHA_pseudonyms);
 
       decays("h0_1") = *Dep::Higgs_decay_rates;     // Add the Higgs decays.
       decays("Z0") = *Dep::W_minus_decay_rates;     // Add the Z decays
@@ -2619,6 +2618,8 @@ namespace Gambit
       // MSSM-specific
       if (ModelInUse("MSSM78atQ") or ModelInUse("MSSM78atMGUT"))
       {
+        mass_es_pseudonyms psn = *(Dep::SLHA_pseudonyms);
+
         decays("h0_2") = *Dep::h0_2_decay_rates;            // Add the h0_2 decays.
         decays("A0") = *Dep::A0_decay_rates;                // Add the A0 decays.
         decays("H+") = *Dep::Hplus_decay_rates;             // Add the H+ decays.       
