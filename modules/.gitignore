@@ -1,1 +1,16 @@
-spartan_personal.yaml
+*.slha
+*.mod
+*_personal.yaml
+gambit_example_minimal
+Example_SUSYspecBit
+CMakeFiles
+CMakeLists.txt
+Makefile
+*.cmake
+*_rollcall.hpp
+scratch/**
+**/*_standalone
+*-prefix
+**/all_functor_types.hpp
+**/cmake_variables.hpp
+**/*_locations.yaml
