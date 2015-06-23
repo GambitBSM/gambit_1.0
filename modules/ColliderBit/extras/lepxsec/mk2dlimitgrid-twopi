@@ -18,15 +18,22 @@ xmin = np.inf
 xmax = -np.inf
 ymin = np.inf
 ymax = -np.inf
-zmin = 0.
+zmin = np.inf
 zmax = -np.inf
 
 for a in args:
+    try:
+        # NOTE: An input of the lowest xsec limit...
+        if float(a) < zmin:
+            zmin = float(a)
+        continue
+    except:
+        pass
     fname, xsec = a.split(":")
     limitContours[xsec] = []
     limitPoints = []
-    if xsec > zmax:
-        zmax = xsec
+    if float(xsec) > zmax:
+        zmax = float(xsec)
     with open(fname) as f:
         for line in f:
             xy = [float(i) for i in line.strip().split()]
@@ -44,22 +51,10 @@ for a in args:
     # NOTE: The data will enforce closed contours, so this is unneccessary
     ###### limitContours[xsec].append(LineSegment(limitPoints[-1], limitPoints[0]))
 
-print "Input check:"
-print
-for key in limitContours.keys():
-  print key
-  print limitContours[key]
-  print
-print
-print "Ready for the loop..."
-
 if xmin < 0.:
-  xmin = 0.
+    xmin = 0.
 if ymin < 0.:
-  ymin = 0.
-#### TODO: This is hard coded for the L3 plot Andy and I have been using for testing.
-####       Must be changed. Input option, perhaps.
-xmax = 94.
+    ymin = 0.
 
 x = np.linspace(xmin, xmax, 100)
 y = np.linspace(ymin, ymax, 100)
@@ -87,8 +82,8 @@ for i in xrange(100):
                     rmin = raydius
                     xsec_at_rmin = float(xsec)
                     ### TODO: Is this the proper thing to use for the uncertainty of the masses?
-                    sigma_at_rmin = abs(P2(0.05 * intersection.x * np.cos(angle),
-                                      0.05 * intersection.y * np.sin(angle)))
+                    sigma_at_rmin = abs(P2(0.03 * intersection.x * np.cos(angle),
+                                      0.03 * intersection.y * np.sin(angle)))
         if rmin < np.inf:
             rayCollection.append((xsec_at_rmin, rmin, sigma_at_rmin))
     # The maximum xsec of all rayResults is what the sigmoid will "decay" to
