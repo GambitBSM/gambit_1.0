@@ -45,5 +45,5 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   # Tell cmake to look for things installed by macports
   list(APPEND CMAKE_INCLUDE_PATH /opt/local/include)
   list(APPEND CMAKE_LIBRARY_PATH /opt/local/lib)
-  message("${CMAKE_LIBRARY_PATH}")
+  list(APPEND CMAKE_LIBRARY_PATH /opt/local/share)
 endif()
