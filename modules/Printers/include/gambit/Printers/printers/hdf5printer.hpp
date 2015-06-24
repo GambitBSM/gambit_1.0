@@ -171,7 +171,13 @@ namespace Gambit
 
         /// Function to ensure buffers are all synchronised to the same absolute position
         void synchronise_buffers();
-  
+ 
+        /// For debugging: check that buffers are synced correctly
+        /// Flag sets whether "perfect" sync is required, or whether
+        /// some buffers can be ahead by one slot (due to having
+        /// performed prints that other buffers have not yet done)
+        void check_sync(const std::string& label, const int sync_type);
+ 
         #ifdef WITH_MPI
         /// Reserved tags for MPI messages
         /// First reserved tag is for messages registering/requesting a new tag.

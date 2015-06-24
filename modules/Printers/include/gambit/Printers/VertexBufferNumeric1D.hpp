@@ -37,8 +37,8 @@
 // MPI bindings
 #include "gambit/Utils/mpiwrapper.hpp"
 
-#define BUF_DEBUG /* Triggers debugging output */
-#define MONITOR_BUF "pointID" /* String ID of buffer to monitor. */
+//#define BUF_DEBUG /* Triggers debugging output */
+//#define MONITOR_BUF "pointID" /* String ID of buffer to monitor. */
    
 namespace Gambit {
   
@@ -175,8 +175,11 @@ namespace Gambit {
           /// Append a record to the buffer
           void append(const T& data);
 
-          /// For debugging; find out what the absolute sync position is from the derived class.
+          /// Virtual for debugging; find out what the absolute sync position is from the derived class.
           virtual unsigned long dset_head_pos() = 0;
+
+          /// Virtual for debugging: Update the variables needed to track the currently target dset slot
+          virtual void update_dset_head_pos() = 0;
 
           /// Queue up a desynchronised ("random access") dataset write to previous scan iteration
           void RA_write(const T& value, const PPIDpair pID, const std::map<PPIDpair, ulong>& PPID_to_dsetindex);
@@ -269,7 +272,7 @@ namespace Gambit {
                }
                #endif
                #endif
-              this->sync_buffer_full = true;
+               this->sync_buffer_full = true;
            }
          }   
       }
@@ -355,7 +358,11 @@ namespace Gambit {
             #ifdef WITH_MPI
             // Prepate to send buffer data to master node
             const int masterRank = 0;
-            if(myRank!=masterRank)
+            if(myRank==masterRank)
+            { // Master node instructions
+               RA_write_to_disk(PPID_to_dsetindex);
+            }
+            else if(RA_queue_length!=0)
             { // Worker node instructions
                if(not RA_send_buffer_ready)
                { 
@@ -383,10 +390,6 @@ namespace Gambit {
                this->printerComm.Isend(&null_message,             1,            masterRank, RA_BUFFERS_SENT, &req_RA_SENT);
                RA_send_buffer_ready = false;
 
-            }
-            else
-            { // Master node instructions
-               RA_write_to_disk(PPID_to_dsetindex);
             }
             #else
             RA_write_to_disk(PPID_to_dsetindex);
@@ -478,15 +481,9 @@ namespace Gambit {
         // everything through the normal "append" system.
 
         for(uint i=0; i<LENGTH; i++)
-        {
-          if(sync_buffer_is_full())
-          {
-            #ifdef MPI_DEBUG
-            std::cout<<"rank "<<myRank<<": During get_sync_mpi_message; Buffer "<<this->get_label()<<" full, emptying it..."<<std::endl;
-            #endif
-            flush();
-          } 
-          else if(recv_buffer_valid[i])
+        {          
+          // Push an element of the received data into the buffer
+          if(recv_buffer_valid[i])
           {
             append(recv_buffer_entries[i]);
           }
@@ -494,6 +491,20 @@ namespace Gambit {
           {
             skip_append();
           }         
+
+          // Check if we need to do a write to disk 
+          // Note; the buffer should have been emptied (if needed)
+          // BEFORE get_sync_mpi_message() was called, so the if the 
+          // first append in this loop fails due to the buffer
+          // being full then this indicates that that was 
+          // probably not done.
+          if(sync_buffer_is_full())
+          {
+            #ifdef MPI_DEBUG
+            std::cout<<"rank "<<myRank<<": During get_sync_mpi_message; Buffer "<<this->get_label()<<" full, emptying it..."<<std::endl;
+            #endif
+            flush();
+          } 
         }
 
         // Update sync information (outside class?)

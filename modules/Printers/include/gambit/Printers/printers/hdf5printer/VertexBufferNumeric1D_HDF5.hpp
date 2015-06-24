@@ -36,8 +36,8 @@
 // MPI bindings
 #include "gambit/Utils/mpiwrapper.hpp"
 
-#define HDF5_BUF_DEBUG /* Triggers debugging output */
-#define MONITOR_BUF "pointID" /* String ID of buffer to monitor. */
+//#define HDF5_BUF_DEBUG /* Triggers debugging output */
+//#define MONITOR_BUF "pointID" /* String ID of buffer to monitor. */
  
 namespace Gambit {
   
@@ -97,6 +97,23 @@ namespace Gambit {
 
            /// Send random access write queue to dataset interfaces for writing
            virtual void RA_write_to_disk(const std::map<PPIDpair, ulong>& PPID_to_dsetindex);
+
+           /// Update the variables needed to tracks the currently target dset slot
+           /// (really just updates the nextemptyslab variable)
+           virtual void update_dset_head_pos()
+           {
+              if(this->myRank==0) // Only the master process has access to this information
+              {
+                if(dsetvalid().get_nextemptyslab() != dsetdata().get_nextemptyslab())
+                {
+                  // The two datasets controlled by this buffer should always remain synchronised!
+                  std::ostringstream errmsg;
+                  errmsg << "rank "<<this->myRank<<": Error! Validity and Data datasets have gone out of sync in buffer with label '"<<this->get_label()<<"'! This is a bug in the VertexBufferNumeric1D_HDF5 class. Please report it.";
+                  printer_error().raise(LOCAL_INFO, errmsg.str()); 
+                }
+                nextemptyslab = dsetvalid().get_nextemptyslab();
+              }
+           }
 
            /// Ensure dataset "write head" (i.e. next append) is prepared to
            /// write to the supplied absolute dataset index (e.g. by inserting
@@ -218,8 +235,9 @@ namespace Gambit {
            {
              dsetvalid().writenewchunk(this->buffer_valid); 
              dsetdata().writenewchunk(this->buffer_entries);
+             // Update the head tracking variables to reflect the new dset chunk
+             update_dset_head_pos();
            }
-           // else we shouldn't need to do anything
          }
          else {
             std::ostringstream errmsg;
@@ -235,9 +253,9 @@ namespace Gambit {
          if(not this->is_silenced()) {
            dsetvalid().writenewchunk(isvalid); 
            dsetdata().writenewchunk(values);
+           // Update sync information to reflect the presence of the new chunk
+           update_dset_head_pos();
          }
-         // Update sync information to reflect the presence of the new chunk
-         nextemptyslab = dsetvalid().get_nextemptyslab();
       }
 
       /// Reset the output (non-synchronised datasets only)
@@ -252,6 +270,11 @@ namespace Gambit {
          {
             dsetvalid().extend_dset(target_sync_pos);
             dsetdata().extend_dset(target_sync_pos);
+
+            #ifdef DEBUG_MODE
+            std::cout<<"rank "<<this->myRank<<": Extended RA dset '"<<this->get_label()<<"' to size "<<target_sync_pos<<std::endl; 
+            #endif
+
             if (this->RA_queue_length!=0) 
             {
                bool valid[CHUNKLENGTH];
@@ -284,41 +307,39 @@ namespace Gambit {
       /// Ensure that the supplied index has been written to, and that the
       /// next append will happen to the next index above it.
       template<class T, std::size_t L>
-      void VertexBufferNumeric1D_HDF5<T,L>::synchronise_output_to_position(const ulong i)
+      void VertexBufferNumeric1D_HDF5<T,L>::synchronise_output_to_position(const ulong sync_pos)
       {
          if(not this->is_silenced()) 
          {
+            // Make sure the correct dset_head_pos() is known
+            update_dset_head_pos();
+
+            // Update the variable which tracks the current sync position.
+            // (do this regardless of whether this is a sync buffer or not)
+            target_sync_pos = sync_pos;
+
+            #ifdef HDF5_BUF_DEBUG
+            std::cout<<"rank "<<this->myRank<<": Updated target_sync_pos to '"<<target_sync_pos<<" in buffer "<<this->get_label()<<std::endl; 
+            #endif
+
             if(this->is_synchronised()) 
             {
                #ifdef HDF5_BUF_DEBUG
                #ifdef MONITOR_BUF
                if(this->get_label()==MONITOR_BUF) {
                #endif
-               std::cout<<"rank "<<this->myRank<<": Synchronising buffer '"<<this->get_label()<<"' to position "<<i<<" (current dset_head_pos() = "<<this->dset_head_pos()<<")"<<std::endl;
+               std::cout<<"rank "<<this->myRank<<": Synchronising buffer '"<<this->get_label()<<"' to position "<<sync_pos<<" (current dset_head_pos() = "<<this->dset_head_pos()<<")"<<std::endl;
                #ifdef MONITOR_BUF
                }
                #endif
                #endif 
 
-               // Only the master process keeps track of the actual dataset
-               // position. Other processes work at the buffer level only.
-               if(this->myRank==0) 
-               {
-                 if(dsetvalid().get_nextemptyslab() != dsetdata().get_nextemptyslab())
-                 {
-                   // The two datasets controlled by this buffer should always remain synchronised!
-                   std::ostringstream errmsg;
-                   errmsg << "rank "<<this->myRank<<": Error! Validity and Data datasets have gone out of sync in buffer with label '"<<this->get_label()<<"'! This is a bug in the VertexBufferNumeric1D_HDF5 class. Please report it.";
-                   printer_error().raise(LOCAL_INFO, errmsg.str()); 
-                 }
-                 nextemptyslab = dsetvalid().get_nextemptyslab();
-               }
-
                // Compare target position to current sync position and see what we need to do
-               // The minus one is because the head_pos should be one larger than the sync_pos
+               // The plus one is because the head_pos should be one larger than the sync_pos
                // for buffers who already did an append to the sync_pos; these buffers therefore
                // do not need to move.
-               const long movediff = i - (this->dset_head_pos()-1);
+               //
+               const long movediff = sync_pos+1 - this->dset_head_pos();
                if(movediff==1)             
                {
                    // Set the current point as having no valid data and move to the next
@@ -327,7 +348,7 @@ namespace Gambit {
                else if(movediff<0)
                {
                    std::ostringstream errmsg;
-                   errmsg << "rank "<<this->myRank<<": Error! Attempted to move HDF5 write position backwards in buffer with label '"<<this->get_label()<<"'! (movediff ("<<movediff<<") = i ("<<i<<") - (dset_head_pos() ("<<this->dset_head_pos()<<")-1)) This is a bug in the VertexBufferNumeric1D_HDF5 class or in a class which uses it (probably HDF5Printer). Please report it. (Note, writing to old points can be done but requires using special write functions).";
+                   errmsg << "rank "<<this->myRank<<": Error! Attempted to move HDF5 write position backwards in buffer with label '"<<this->get_label()<<"'! (movediff ("<<movediff<<") = sync_pos ("<<sync_pos<<")+1 - dset_head_pos() ("<<this->dset_head_pos()<<")) This is a bug in the VertexBufferNumeric1D_HDF5 class or in a class which uses it (probably HDF5Printer). Please report it. (Note, writing to old points can be done but requires using special write functions).";
                    printer_error().raise(LOCAL_INFO, errmsg.str());
                } 
                else if (movediff==0)
@@ -335,7 +356,7 @@ namespace Gambit {
                  if(this->donepoint())
                  {
                    std::ostringstream errmsg;
-                   errmsg << "rank "<<this->myRank<<": Error! Attempted to move HDF5 write position by 0 slots in buffer with label '"<<this->get_label()<<"' (movediff ("<<movediff<<") = i ("<<i<<") - (dset_head_pos ("<<this->dset_head_pos()<<")-1)); this part is fine, however the buffer indicates that this position has already received a write (donepoint()==true) so it should have moved forward! This is a bug in the VertexBufferNumeric1D_HDF5 class or in a class which uses it (probably HDF5Printer). Please report it.";
+                   errmsg << "rank "<<this->myRank<<": Error! Attempted to move HDF5 write position by 0 slots in buffer with label '"<<this->get_label()<<"' (movediff ("<<movediff<<") = sync_pos ("<<sync_pos<<")+1 - dset_head_pos ("<<this->dset_head_pos()<<")); this part is fine, however the buffer indicates that this position has already received a write (donepoint()==true) so it should have moved forward! This is a bug in the VertexBufferNumeric1D_HDF5 class or in a class which uses it (probably HDF5Printer). Please report it.";
                    printer_error().raise(LOCAL_INFO, errmsg.str());
                  }
                  // otherwise no problem; carry on.
@@ -343,7 +364,7 @@ namespace Gambit {
                else if (movediff>1) // and movediff!=CHUNKLENGTH+1) 
                {
                    std::ostringstream errmsg;
-                   errmsg << "rank "<<this->myRank<<": Error! Attempted to move HDF5 write position by >1 slots ("<<movediff<<") in buffer with label '"<<this->get_label()<<"' (movediff ("<<movediff<<") = i ("<<i<<") - (dset_head_pos() ("<<this->dset_head_pos()<<")-1)). Buffer synchronisation should only happen one slot at a time. This is a bug in the VertexBufferNumeric1D_HDF5 class or in a class which uses it (probably HDF5Printer). Please report it.";
+                   errmsg << "rank "<<this->myRank<<": Error! Attempted to move HDF5 write position by >1 slots ("<<movediff<<") in buffer with label '"<<this->get_label()<<"' (movediff ("<<movediff<<") = sync_pos ("<<sync_pos<<")+1 - dset_head_pos() ("<<this->dset_head_pos()<<")). Buffer synchronisation should only happen one slot at a time. This is a bug in the VertexBufferNumeric1D_HDF5 class or in a class which uses it (probably HDF5Printer). Please report it.";
                    printer_error().raise(LOCAL_INFO, errmsg.str());
                }
 
@@ -363,9 +384,6 @@ namespace Gambit {
                #endif
                #endif 
             }
-            // Update the variable which tracks the current sync position.
-            // (do this regardless of whether this is a sync buffer or not)
-            target_sync_pos = i;
          }
       }
  
