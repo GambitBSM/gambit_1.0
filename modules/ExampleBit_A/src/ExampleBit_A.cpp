@@ -349,7 +349,7 @@ namespace Gambit
       // Example on how to pass an farray to a Fortran function that is declared to take Fdouble* instead of Farray< Fdouble,1,3>&
       // This should only be necessary in very special cases, where you need to pass arrays with different index ranges than those specified in the function.
       cout << "Calling doubleFuncArray2 with commonblock element b as argument..." << endl;
-      tmp = BEreq::libFarrayTest_doubleFuncArray2(commonBlock->b.array);
+      tmp = BEreq::libFarrayTest_doubleFuncArray2(&(commonBlock->b.array[0]));
       cout << "Returned value: " << tmp << endl;
       
       cout << endl << "Calling fptrRoutine with commonblock elements b and c and function doubleFuncArray as arguments..." << endl;
