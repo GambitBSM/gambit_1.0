@@ -1634,7 +1634,7 @@ check_blas_libs_using_options() {
     if test "x$found_lib" = "x" ; then
         message "Error: libblas must be installed!"
         message "  It can be downloaded from http://www.netlib.org/blas"
-        exit 1
+        #exit 1
     else
         local BLASLIBS_=-lblas
         if [ -z "$blas_lib_dir" ]; then
@@ -1654,7 +1654,7 @@ check_lapack_libs_using_options() {
     if test "x$found_lib" = "x" ; then
         message "Error: liblapack must be installed!"
         message "  It can be downloaded from http://www.netlib.org/lapack"
-        exit 1
+        #exit 1
     else
         local LAPACKLIBS_=-llapack
         if [ -z "$lapack_lib_dir" ]; then
