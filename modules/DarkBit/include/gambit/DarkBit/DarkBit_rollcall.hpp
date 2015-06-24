@@ -31,6 +31,7 @@
 ///  \author Christopher Savage
 ///          (chris@savage.name)
 ///  \date 2014 Oct, Dec
+///  \date 2015 June
 ///
 ///  \author Antje Putze
 ///          (antje.putze@lapth.cnrs.fr)
@@ -510,6 +511,28 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
+  // Perform rate calculations for the SuperCDMS 2014 result
+  // at the current model point.
+  #define CAPABILITY CalcRates_SuperCDMS_2014_DDCalc0
+  START_CAPABILITY
+    #define FUNCTION CalcRates_SuperCDMS_2014_DDCalc0
+      START_FUNCTION(bool)
+      DEPENDENCY(SetWIMP_DDCalc0, bool)
+      BACKEND_REQ(DDCalc0_SuperCDMS_2014_CalcRates, (DDCalc0), void, ())
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  // Perform rate calculations for the SIMPLE 2014 result
+  // at the current model point.
+  #define CAPABILITY CalcRates_SIMPLE_2014_DDCalc0
+  START_CAPABILITY
+    #define FUNCTION CalcRates_SIMPLE_2014_DDCalc0
+      START_FUNCTION(bool)
+      DEPENDENCY(SetWIMP_DDCalc0, bool)
+      BACKEND_REQ(DDCalc0_SIMPLE_2014_CalcRates, (DDCalc0), void, ())
+    #undef FUNCTION
+  #undef CAPABILITY
+
   // Perform rate calculations for the future argon-based DARWIN
   // experiment (estimated sensitivity, as of 2015) at the current
   // model point.
@@ -659,6 +682,134 @@ START_MODULE
       START_FUNCTION(double)
       DEPENDENCY(CalcRates_LUX_2013_DDCalc0, bool)
       BACKEND_REQ(DDCalc0_LUX_2013_SignalSD, (DDCalc0), double, ())
+    #undef FUNCTION
+  #undef CAPABILITY
+
+
+  // SuperCDMS 2014 likelihood/observables -----------------
+  // Agnese et al., PRL 112, 241302 (2014) [arxiv:1402.7137]
+ 
+  // Log-likelihood
+  #define CAPABILITY lnL_SuperCDMS_2014
+  START_CAPABILITY
+    #define FUNCTION SuperCDMS_2014_LogLikelihood_DDCalc0
+      START_FUNCTION(double)
+      DEPENDENCY(CalcRates_SuperCDMS_2014_DDCalc0, bool)
+      BACKEND_REQ(DDCalc0_SuperCDMS_2014_LogLikelihood, (DDCalc0), double, ())
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  // Observed events (integer)
+  #define CAPABILITY SuperCDMS_2014_Events
+  START_CAPABILITY
+    #define FUNCTION SuperCDMS_2014_Events_DDCalc0
+      START_FUNCTION(int)
+      DEPENDENCY(CalcRates_SuperCDMS_2014_DDCalc0, bool)
+      BACKEND_REQ(DDCalc0_SuperCDMS_2014_Events, (DDCalc0), int, ())
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  // Background expectation
+  #define CAPABILITY SuperCDMS_2014_Background
+  START_CAPABILITY
+    #define FUNCTION SuperCDMS_2014_Background_DDCalc0
+      START_FUNCTION(double)
+      DEPENDENCY(CalcRates_SuperCDMS_2014_DDCalc0, bool)
+      BACKEND_REQ(DDCalc0_SuperCDMS_2014_Background, (DDCalc0), double, ())
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  // Signal expectation
+  #define CAPABILITY SuperCDMS_2014_Signal
+  START_CAPABILITY
+    #define FUNCTION SuperCDMS_2014_Signal_DDCalc0
+      START_FUNCTION(double)
+      DEPENDENCY(CalcRates_SuperCDMS_2014_DDCalc0, bool)
+      BACKEND_REQ(DDCalc0_SuperCDMS_2014_Signal, (DDCalc0), double, ())
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  // Signal expectation (spin-independent)
+  #define CAPABILITY SuperCDMS_2014_SignalSI
+  START_CAPABILITY
+    #define FUNCTION SuperCDMS_2014_SignalSI_DDCalc0
+      START_FUNCTION(double)
+      DEPENDENCY(CalcRates_SuperCDMS_2014_DDCalc0, bool)
+      BACKEND_REQ(DDCalc0_SuperCDMS_2014_SignalSI, (DDCalc0), double, ())
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  // Signal expectation (spin-dependent)
+  #define CAPABILITY SuperCDMS_2014_SignalSD
+  START_CAPABILITY
+    #define FUNCTION SuperCDMS_2014_SignalSD_DDCalc0
+      START_FUNCTION(double)
+      DEPENDENCY(CalcRates_SuperCDMS_2014_DDCalc0, bool)
+      BACKEND_REQ(DDCalc0_SuperCDMS_2014_SignalSD, (DDCalc0), double, ())
+    #undef FUNCTION
+  #undef CAPABILITY
+
+
+  // SIMPLE 2014 likelihood/observables --------------------
+  // Felizardo et al., PRD 89, 072013 (2014) [arxiv:1404.4309]
+ 
+  // Log-likelihood
+  #define CAPABILITY lnL_SIMPLE_2014
+  START_CAPABILITY
+    #define FUNCTION SIMPLE_2014_LogLikelihood_DDCalc0
+      START_FUNCTION(double)
+      DEPENDENCY(CalcRates_SIMPLE_2014_DDCalc0, bool)
+      BACKEND_REQ(DDCalc0_SIMPLE_2014_LogLikelihood, (DDCalc0), double, ())
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  // Observed events (integer)
+  #define CAPABILITY SIMPLE_2014_Events
+  START_CAPABILITY
+    #define FUNCTION SIMPLE_2014_Events_DDCalc0
+      START_FUNCTION(int)
+      DEPENDENCY(CalcRates_SIMPLE_2014_DDCalc0, bool)
+      BACKEND_REQ(DDCalc0_SIMPLE_2014_Events, (DDCalc0), int, ())
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  // Background expectation
+  #define CAPABILITY SIMPLE_2014_Background
+  START_CAPABILITY
+    #define FUNCTION SIMPLE_2014_Background_DDCalc0
+      START_FUNCTION(double)
+      DEPENDENCY(CalcRates_SIMPLE_2014_DDCalc0, bool)
+      BACKEND_REQ(DDCalc0_SIMPLE_2014_Background, (DDCalc0), double, ())
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  // Signal expectation
+  #define CAPABILITY SIMPLE_2014_Signal
+  START_CAPABILITY
+    #define FUNCTION SIMPLE_2014_Signal_DDCalc0
+      START_FUNCTION(double)
+      DEPENDENCY(CalcRates_SIMPLE_2014_DDCalc0, bool)
+      BACKEND_REQ(DDCalc0_SIMPLE_2014_Signal, (DDCalc0), double, ())
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  // Signal expectation (spin-independent)
+  #define CAPABILITY SIMPLE_2014_SignalSI
+  START_CAPABILITY
+    #define FUNCTION SIMPLE_2014_SignalSI_DDCalc0
+      START_FUNCTION(double)
+      DEPENDENCY(CalcRates_SIMPLE_2014_DDCalc0, bool)
+      BACKEND_REQ(DDCalc0_SIMPLE_2014_SignalSI, (DDCalc0), double, ())
+    #undef FUNCTION
+  #undef CAPABILITY
+
+  // Signal expectation (spin-dependent)
+  #define CAPABILITY SIMPLE_2014_SignalSD
+  START_CAPABILITY
+    #define FUNCTION SIMPLE_2014_SignalSD_DDCalc0
+      START_FUNCTION(double)
+      DEPENDENCY(CalcRates_SIMPLE_2014_DDCalc0, bool)
+      BACKEND_REQ(DDCalc0_SIMPLE_2014_SignalSD, (DDCalc0), double, ())
     #undef FUNCTION
   #undef CAPABILITY
 

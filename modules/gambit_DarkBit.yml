@@ -271,6 +271,12 @@ ObsLikes:
 # LUX 2013 direct detection likelihood
     - capability: lnL_LUX_2013
       purpose:  Likelihood
+# SuperCDMS 2014 direct detection likelihood
+    - capability: lnL_SuperCDMS_2014
+      purpose:  Likelihood
+# SIMPLE 2014 direct detection likelihood
+    - capability: lnL_SIMPLE_2014
+      purpose:  Likelihood
 # DARWIN argon-based proposal (2015 estimate) direct detection likelihood
 # NOTE: treated as observable!
     - capability: lnL_DARWIN_Ar_2015
