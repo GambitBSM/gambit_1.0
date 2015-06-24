@@ -111,8 +111,8 @@ if(";${GAMBIT_BITS};" MATCHES ";SpecBit;")
        --with-eigen-incdir=${EIGEN3_DIR}
        --with-boost-libdir=${Boost_LIBRARY_DIR}
        --with-boost-incdir=${Boost_INCLUDE_DIR}
-       --with-blas-libdir=${BLAS_LAPACK_LOCATION}
-       --with-lapack-libdir=${BLAS_LAPACK_LOCATION}
+       #--with-blas-libdir=${BLAS_LAPACK_LOCATION}
+       #--with-lapack-libdir=${BLAS_LAPACK_LOCATION}
      )
   #--enable-verbose flag causes verbose output at runtime as well. Set it dynamically somehow.
 
