@@ -349,6 +349,15 @@ Rules:
         # Direct Detection Settings
         ddpole: 1 # Include squark pole in scattering amplitude
         dddn: 1 # Treat heavy quarks and gluons as in Drees & Nojiri 1993 (implies ddpole=1)
+  # MicrOmegasMSSM ----------------------
+  - capability: MicrOmegas_3_5_5_init # Initialization of MicrOmegas MSSM backend
+    options:
+        # Flavour Mixing Tolerance
+        # The MicrOmegas MSSM backend cannot handle models with significant flavour mixing in the
+        # mass eigenstates. The variable below sets a tolerance for how much flavour mixing is
+        # allowed before an error is thrown. A model point is within tolearance if
+        # Mix{n1}^2 + Mix{n2}^2 >= 1 - tolerance.
+        flavour_mixing_tolerance: .01
   # Gamma-rays -------------------------
   - capability: gamLike_1_0_0_init  # Initialization of gamLike backend
     options:
