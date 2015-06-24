@@ -82,12 +82,6 @@ ExternalProject_Add(diver
 set_property(TARGET diver PROPERTY _EP_DOWNLOAD_ALWAYS 0)
 set(clean_files ${clean_files} "${diver_dir}/lib/${diver_lib}.so")
 
-#FIXME this should be made more central, and MN ditched if lapack cannot be found.
-include(FindLAPACK)
-foreach(lib ${LAPACK_LIBRARIES})
-  set(LAPACK_LINKLIBS "${LAPACK_LINKLIBS} ${lib}")
-endforeach()
-string(STRIP "${LAPACK_LINKLIBS}" LAPACK_LINKLIBS)
 # MultiNest
 set(mn_ver "3\\.9")
 set(mn_lib "libnest3")
@@ -101,7 +95,7 @@ else()
   set(mnFFLAGS "${CMAKE_Fortran_FLAGS}")
 endif()
 ExternalProject_Add(multinest 
-  #FIXME automated download of multinest is not possible, as it is behind a login redirection wall.  Need to ask Farhan to fix.
+  #FIXME automated download of multinest is not possible, as it is behind a login redirection wall.  Need to ask CCPForge for a solution.
   #URL http://ccpforge.cse.rl.ac.uk/gf/download/frsrelease/413/5871/MultiNest_v3.9.tar.gz
   #URL_MD5 6c0c9e9ee0ac3c906109675302fb30f0
   #DOWNLOAD_DIR ${mn_dir}

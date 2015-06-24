@@ -98,12 +98,7 @@ if(";${GAMBIT_BITS};" MATCHES ";SpecBit;")
   include_directories("${EIGEN3_DIR}")
 
   # The flexiblesusy configure script doesn't always find all the lapack libs, so use CMake to find them instead
-  include(FindLAPACK)
-  foreach(_LIB ${LAPACK_LIBRARIES})
-    set(LAPACK_LIBS "${LAPACK_LIBS} -L${_LIB}")
-  endforeach(_LIB)
-  #FIXME -- this adds the absolute paths to the libs to the variable ${LAPACK_LIBS}, not the dirs in which the .so files exist
-  message("${BoldYellow}-- Adding LAPACK paths to FlexibleSUSY build: ${LAPACK_LIBS}${ColourReset}")
+  message("${BoldYellow}-- Adding LAPACK paths to FlexibleSUSY build: ${LAPACK_LINKLIBS}${ColourReset}")
 
   # FlexibleSUSY configure options
   set(FS_OPTIONS ${FS_OPTIONS} --with-cxx=${CMAKE_CXX_COMPILER}
@@ -140,7 +135,7 @@ if(";${GAMBIT_BITS};" MATCHES ";SpecBit;")
   ExternalProject_Add(flexiblesusy
     SOURCE_DIR ${MASS_SPECTRA_DIR}/flexiblesusy
     BUILD_IN_SOURCE 1
-    BUILD_COMMAND $(MAKE) alllib LAPACKLIBS=${LAPACK_LIBS}
+    BUILD_COMMAND $(MAKE) alllib LAPACKLIBS=${LAPACK_LINKLIBS}
     CONFIGURE_COMMAND ""
     INSTALL_COMMAND ""
   )

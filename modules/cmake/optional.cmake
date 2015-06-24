@@ -60,6 +60,23 @@ else()
   message("${BoldCyan} X MPI manually disabled. Executables will not be parallelised via MPI.${ColourReset}")
 endif()
 
+# Check for LAPACK
+find_package(LAPACK)
+if(NOT LAPACK_FOUND)
+  message(FATAL_ERROR "${BoldRed}    LAPACK is currently required in order to build GAMBIT.  This will change in a future release.")
+  # In future MN and FS need to be ditched if lapack cannot be found, and the build allowed to continue.
+  message("${BoldRed}   No LAPACK installation found. Excluding FlexibleSUSY and MultiNest from GAMBIT configuration. ${ColourReset}")
+else()
+  foreach(lib ${LAPACK_LIBRARIES})
+    string(FIND "${lib}" ".framework" IS_FRAMEWORK)
+    if(NOT "${IS_FRAMEWORK}" STREQUAL "-1")
+      string(REGEX REPLACE "^(.*)/(.*)\\.framework.*$" "-F\\1 -framework \\2" lib ${lib})
+    endif()
+    set(LAPACK_LINKLIBS "${LAPACK_LINKLIBS} ${lib}")
+  endforeach()
+  string(STRIP "${LAPACK_LINKLIBS}" LAPACK_LINKLIBS)
+endif()
+
 # Check for ROOT.
 find_package(ROOT)
 if (NOT ROOT_FOUND)
