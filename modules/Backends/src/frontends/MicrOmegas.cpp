@@ -22,6 +22,7 @@
 
 #include "gambit/Backends/frontend_macros.hpp"
 #include "gambit/Backends/frontends/micromegas.hpp"
+#include "gambit/Elements/MSSM_slhahelp.hpp"
 
 // Convenience functions (definitions)
 BE_NAMESPACE
@@ -53,27 +54,52 @@ BE_INI_FUNCTION
     const Spectrum* mySpec = *Dep::MSSM_spectrum;
     SLHAstruct mySLHA = mySpec->getSLHAea();
 
-    // STOPMIX and SBOTMIX blocks are constructed asssuming mass eigenstates 1 and 2 are
-    // predominantly made up of stops and sbottoms respectively
+    std::vector<double> mix_matrix_stop, mix_matrix_sbottom, mix_matrix_stau;
+    std::string mass_es1, mass_es2;
+    double tol = runOptions->getValueOrDef<double>(.01, "flavour_mixing_tolerance");
+
+    mix_matrix_stop = Gambit::slhahelp::family_state_mix_matrix("~u", 3, mass_es1, mass_es2, mySpec->get_UV());
+
     mySLHA["STOPMIX"][""] << "Block"<< "STOPMIX";
-    mySLHA["STOPMIX"][""] << 1 << 1 << to<double>(mySLHA.at("USQMIX").at(1, 3).at(2));
-    mySLHA["STOPMIX"][""] << 1 << 2 << to<double>(mySLHA.at("USQMIX").at(1, 6).at(2));
-    mySLHA["STOPMIX"][""] << 2 << 1 << to<double>(mySLHA.at("USQMIX").at(2, 3).at(2));
-    mySLHA["STOPMIX"][""] << 2 << 2 << to<double>(mySLHA.at("USQMIX").at(2, 6).at(2));
+    mySLHA["STOPMIX"][""] << 1 << 1 << mix_matrix_stop[0];
+    mySLHA["STOPMIX"][""] << 1 << 2 << mix_matrix_stop[1];
+    mySLHA["STOPMIX"][""] << 2 << 1 << mix_matrix_stop[2];
+    mySLHA["STOPMIX"][""] << 2 << 2 << mix_matrix_stop[3];
+
+    mix_matrix_sbottom = Gambit::slhahelp::family_state_mix_matrix("~d", 3, mass_es1, mass_es2, mySpec->get_UV());
 
     mySLHA["SBOTMIX"][""] << "Block"<< "SBOTMIX";
-    mySLHA["SBOTMIX"][""] << 1 << 1 << to<double>(mySLHA.at("DSQMIX").at(1, 3).at(2));
-    mySLHA["SBOTMIX"][""] << 1 << 2 << to<double>(mySLHA.at("DSQMIX").at(1, 6).at(2));
-    mySLHA["SBOTMIX"][""] << 2 << 1 << to<double>(mySLHA.at("DSQMIX").at(2, 3).at(2));
-    mySLHA["SBOTMIX"][""] << 2 << 2 << to<double>(mySLHA.at("DSQMIX").at(2, 6).at(2));
+    mySLHA["SBOTMIX"][""] << 1 << 1 << mix_matrix_sbottom[0];
+    mySLHA["SBOTMIX"][""] << 1 << 2 << mix_matrix_sbottom[1];
+    mySLHA["SBOTMIX"][""] << 2 << 1 << mix_matrix_sbottom[2];
+    mySLHA["SBOTMIX"][""] << 2 << 2 << mix_matrix_sbottom[3];
 
-    // STAUMIX block is constructed assuming mass eigenstates 1 and 6 are predominantly
-    // made up of staus
+    mix_matrix_stau = Gambit::slhahelp::family_state_mix_matrix("~e", 3, mass_es1, mass_es2, mySpec->get_UV());
+
     mySLHA["STAUMIX"][""] << "Block"<< "STAUMIX";
-    mySLHA["STAUMIX"][""] << 1 << 1 << to<double>(mySLHA.at("SELMIX").at(1, 3).at(2));
-    mySLHA["STAUMIX"][""] << 1 << 2 << to<double>(mySLHA.at("SELMIX").at(1, 6).at(2));
-    mySLHA["STAUMIX"][""] << 2 << 1 << to<double>(mySLHA.at("SELMIX").at(6, 3).at(2));
-    mySLHA["STAUMIX"][""] << 2 << 2 << to<double>(mySLHA.at("SELMIX").at(6, 6).at(2));
+    mySLHA["STAUXMIX"][""] << 1 << 1 << mix_matrix_stau[0];
+    mySLHA["STAUXMIX"][""] << 1 << 2 << mix_matrix_stau[1];
+    mySLHA["STAUXMIX"][""] << 2 << 1 << mix_matrix_stau[2];
+    mySLHA["STAUXMIX"][""] << 2 << 2 << mix_matrix_stau[3];
+
+    // Check for too much flavour mixing
+    if ((mix_matrix_stop[0]*mix_matrix_stop[0] + mix_matrix_stop[1]*mix_matrix_stop[1]) < (1. - tol) ||
+            (mix_matrix_stop[2]*mix_matrix_stop[2] + mix_matrix_stop[3]*mix_matrix_stop[3]) < (1. - tol) ||
+            (mix_matrix_sbottom[0]*mix_matrix_sbottom[0] + mix_matrix_sbottom[1]*mix_matrix_sbottom[1]) < (1. - tol) ||
+            (mix_matrix_sbottom[2]*mix_matrix_sbottom[2] + mix_matrix_sbottom[3]*mix_matrix_sbottom[3]) < (1. - tol) ||
+            (mix_matrix_stau[0]*mix_matrix_stau[0] + mix_matrix_stau[1]*mix_matrix_stau[1]) < (1. - tol) ||
+            (mix_matrix_stau[2]*mix_matrix_stau[2] + mix_matrix_stau[3]*mix_matrix_stau[3]) < (1. - tol))
+    {
+        std::stringstream tol_string;
+        std::ofstream SLHAerror("DarkBitError.slha");
+        SLHAerror << mySLHA;
+        SLHAerror.close();
+        tol_string << tol;
+        backend_error().raise(LOCAL_INFO,
+                "Flavour mixing is in excess of what is allowed by MicrOmegas flavour_mixing_tolerance\n"
+                "parameter (currently set to " + tol_string.str() + "). Mixing matrices outputted to "
+                "DarkBitError.slha");
+    }
 
     std::ofstream ofs(filename);
     ofs << mySLHA;
