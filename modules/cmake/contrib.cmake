@@ -101,7 +101,8 @@ if(";${GAMBIT_BITS};" MATCHES ";SpecBit;")
   message("${BoldYellow}-- Adding LAPACK paths to FlexibleSUSY build: ${LAPACK_LINKLIBS}${ColourReset}")
 
   # FlexibleSUSY configure options
-  set(FS_OPTIONS ${FS_OPTIONS} --with-cxx=${CMAKE_CXX_COMPILER}
+  set(FS_OPTIONS ${FS_OPTIONS} 
+       --with-cxx=${CMAKE_CXX_COMPILER}
        --with-cxx-dep-gen=${CMAKE_CXX_COMPILER}
        --with-cxxflags=${CMAKE_CXX_FLAGS}
        --with-fc=${CMAKE_Fortran_COMPILER}
@@ -110,6 +111,8 @@ if(";${GAMBIT_BITS};" MATCHES ";SpecBit;")
        --with-eigen-incdir=${EIGEN3_DIR}
        --with-boost-libdir=${Boost_LIBRARY_DIR}
        --with-boost-incdir=${Boost_INCLUDE_DIR}
+       --with-blas-libdir=${BLAS_LAPACK_LOCATION}
+       --with-lapack-libdir=${BLAS_LAPACK_LOCATION}
      )
   #--enable-verbose flag causes verbose output at runtime as well. Set it dynamically somehow.
 
