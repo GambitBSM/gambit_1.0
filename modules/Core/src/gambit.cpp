@@ -27,9 +27,9 @@ int main(int argc, char* argv[])
   std::set_terminate(terminator);
 
   #ifdef WITH_MPI
-    /// Needs to be done first, pretty much. Supply argc and argv, so that MPI
-    /// can fix up the command line arguments to match the non-mpi'd call. 
-    GMPI::Init(argc,argv);
+  /// Needs to be done first, pretty much. Supply argc and argv, so that MPI
+  /// can fix up the command line arguments to match the non-mpi'd call. 
+  GMPI::Init(argc,argv);
   #endif
 
   try

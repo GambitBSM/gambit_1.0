@@ -63,7 +63,7 @@ namespace Gambit {
       { 
         int flag;
         MPI_Initialized(&flag);
-        return flag;
+        return (flag!=0);
       }
 
       /// @{ Helpers for registration of compound datatypes
@@ -87,7 +87,16 @@ namespace Gambit {
       void Init(int& argc, char**& argv) {
         // Do basic interrogation
         std::cout << "Hooking up to MPI..." << std::endl;
-        MPI_Init(&argc,&argv); 
+        if(Is_initialized())
+        {
+           std::ostringstream errmsg;
+           errmsg << "Error initialising MPI! It is already initialised!"; 
+           utils_error().raise(LOCAL_INFO, errmsg.str());
+        } 
+        else
+        {
+           MPI_Init(&argc,&argv); 
+        }
 
         // Create communicator and check out basic info
         Comm COMM_WORLD;

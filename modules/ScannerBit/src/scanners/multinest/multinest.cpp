@@ -154,6 +154,14 @@ scanner_plugin(MultiNest, version(0, 0, 0, bens_version))
 
       //Run MultiNest (supplying callback functions which hook into the interface object, which they know about via the 'context' void pointer)
       std::cout << "Starting MultiNest run..." << std::endl;
+      // Debugging!
+      std::cout << "Is MPI initialised? answer=" << get_printer().Is_MPI_initialized() << std::endl;
+      if(not get_printer().Is_MPI_initialized())
+      {
+        std::cout << "Error! MPI is not initialised!" << std::endl;
+        exit(0);
+      }
+      // end debugging
       run(IS, mmodal, ceff, nlive, tol, efr, ndims, nPar, nClsPar, maxModes, updInt, Ztol, root, seed, pWrap, fb, resume, outfile, initMPI, logZero, maxiter, ::Gambit::MultiNest::callback_loglike, ::Gambit::MultiNest::callback_dumper, context);
       std::cout << "Multinest run finished!" << std::endl;
 
