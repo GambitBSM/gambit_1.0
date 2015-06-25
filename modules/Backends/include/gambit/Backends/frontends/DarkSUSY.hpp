@@ -46,6 +46,8 @@
 #define SAFE_VERSION 5_1_1
 
 #include "gambit/DarkBit/ProcessCatalogue.hpp"
+#include "gambit/Elements/funktions.hpp"
+#include "gambit/DarkBit/DarkBit_utils.hpp"
 
 // Load the library
 LOAD_LIBRARY
@@ -270,9 +272,27 @@ BE_NAMESPACE
       std::map<std::string, DarkBit::TH_ParticleProperty> & particleProperties)
   {
     // For TB: Save masses somewhere in global variables etc.
-    double mh = particleProperties.at("h0_1").mass;
+//    double mh = particleProperties.at("h0_1").mass;
     // Note: Actually, it is not trivial to define some global variables here
     // in the header.
+    // Note(TB): I don't think it makes sense to store the GAMBIT-internal masses
+    // anywhere -- they should always be provided by the spectrum object and
+    // cannot change while calling the IB routines. Hence I only add code to read 
+    // out the values from DS:
+
+    // These are all final states relevant for photon IB 
+    // -> maybe make this list globally available, too!?   
+    auto IBfinalstate = 
+        Funk::vec<string>("e-","mu-","tau-","u","d","c","s","t","b","W+","H+");
+    std::vector<double> DSparticle_mass;
+    DSparticle_mass.clear();
+    for ( int i = 0; i < IBfinalstate.size(); i++ )
+    {
+      DSparticle_mass.push_back(
+         mspctm->mass(DarkBit_utils::DSparticle_code(IBfinalstate[i])));
+    }
+
+    
   }
 
   void setMassesForIB(bool set)
