@@ -48,6 +48,7 @@
 #include "gambit/DarkBit/ProcessCatalogue.hpp"
 #include "gambit/Elements/funktions.hpp"
 #include "gambit/DarkBit/DarkBit_utils.hpp"
+#include <string>
 
 // Load the library
 LOAD_LIBRARY
@@ -282,8 +283,8 @@ BE_NAMESPACE
 
     // These are all final states relevant for photon IB 
     // -> maybe make this list globally available, too!?   
-//    auto IBfinalstate = 
-//        Funk::vec<string>("e-","mu-","tau-","u","d","c","s","t","b","W+","H+");
+    std::vector<std::string> IBfinalstate = 
+        Funk::vec<std::string>("e-","mu-","tau-","u","d","c","s","t","b","W+","H+");
 //    std::vector<double> DSparticle_mass;
 //    DSparticle_mass.clear();
 //    for ( int i = 0; i < IBfinalstate.size(); i++ )

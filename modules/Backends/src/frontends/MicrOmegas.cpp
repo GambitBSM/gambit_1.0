@@ -21,7 +21,7 @@
 ///  *********************************************
 
 #include "gambit/Backends/frontend_macros.hpp"
-#include "gambit/Backends/frontends/micromegas.hpp"
+#include "gambit/Backends/frontends/MicrOmegas.hpp"
 #include "gambit/Elements/MSSM_slhahelp.hpp"
 
 // Convenience functions (definitions)
