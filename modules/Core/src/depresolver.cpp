@@ -26,20 +26,17 @@
 ///
 ///  *********************************************
 
-#include <sstream>
-#include <fstream>
-
-#include <gambit/cmake/cmake_variables.hpp>
-
-#ifdef HAVE_REGEX_H
-#include <regex>
-#endif
-
 #include "gambit/Core/depresolver.hpp"
 #include "gambit/Models/models.hpp"
 #include "gambit/Logs/log.hpp"
 #include "gambit/Utils/stream_overloads.hpp"
 #include "gambit/cmake/cmake_variables.hpp"
+
+#include <sstream>
+#include <fstream>
+#ifdef HAVE_REGEX_H
+  #include <regex>
+#endif
 
 #include <boost/format.hpp>
 #include <boost/graph/graphviz.hpp>
@@ -548,7 +545,7 @@ namespace Gambit
           }
         }
         double prop = masterGraph[*it_min]->getInvalidationRate();
-        logger() << LogTags::dependency_resolver << "Estimated T [ns]: " << t2p_min*prop << EOM;
+        logger() << LogTags::dependency_resolver << "Estimated T [s]: " << t2p_min*prop << EOM;
         logger() << LogTags::dependency_resolver << "Estimated p: " << prop<< EOM;
         sorted.push_back(*it_min);
         unsorted.erase(it_min);
@@ -575,6 +572,13 @@ namespace Gambit
         ss << "Calling " << masterGraph[*it]->name() << " from " << masterGraph[*it]->origin() << "...";
         logger() << LogTags::dependency_resolver << LogTags::info << ss.str() << EOM;
         masterGraph[*it]->calculate();
+        if (boundIniFile->getValueOrDef<bool>(
+              false, "dependency_resolution", "log_runtime") )
+        {
+          double T = masterGraph[*it]->getRuntimeAverage();
+          logger() << LogTags::dependency_resolver << LogTags::info << 
+            "Runtime, averaged over multiple calls [s]: " << T << EOM;
+        }
         invalid_point_exception* e = masterGraph[*it]->retrieve_invalid_point_exception();
         if (e != NULL) throw(*e);
         // TODO: Need to deal with different options for output

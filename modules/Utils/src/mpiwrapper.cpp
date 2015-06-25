@@ -19,6 +19,7 @@
 #include <iostream>
 #include <vector>
 #include "gambit/Utils/mpiwrapper.hpp"
+#include <iostream>
 
 namespace Gambit {
    namespace GMPI {

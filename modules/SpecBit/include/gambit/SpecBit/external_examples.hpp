@@ -6,7 +6,7 @@
 
 // FlexibleSUSY headers
 #include "flexiblesusy/src/ew_input.hpp"
-#include "flexiblesusy/src/numerics.hpp"
+#include "flexiblesusy/src/numerics2.hpp"
 #include "flexiblesusy/src/wrappers.hpp"
 #include "flexiblesusy/models/CMSSM/CMSSM_two_scale_model.hpp"
 #include "flexiblesusy/models/CMSSM/CMSSM_two_scale_model_slha.hpp"

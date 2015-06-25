@@ -48,6 +48,9 @@ endforeach()
 # Set the project name, enabling C, C++ and Fortran support
 project(GAMBIT C CXX Fortran)
 
+# Enable Fortran compiler
+enable_language(Fortran)
+
 # Don't relink all binaries when shared lib changes (programs will be rebuilt anyway if used headers change)
 set(CMAKE_LINK_DEPENDS_NO_SHARED 1)
 

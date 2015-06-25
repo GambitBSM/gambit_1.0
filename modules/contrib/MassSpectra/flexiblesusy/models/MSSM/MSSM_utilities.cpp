@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Fri 16 Jan 2015 13:12:41
+// File generated at Mon 1 Jun 2015 13:32:04
 
 #include "MSSM_utilities.hpp"
 #include "MSSM_input_parameters.hpp"
@@ -27,6 +27,9 @@
 #include <sstream>
 #include <iostream>
 #include <iomanip>
+
+#define PHYSICAL(p) model.get_physical().p
+#define MODELPARAMETER(p) model.get_##p()
 
 using namespace softsusy;
 

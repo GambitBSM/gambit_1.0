@@ -61,8 +61,10 @@ Printer:
 
 Scanner:
 
-  use_objectives: object_detection
-  use_scanner: gnest, bin_grid_greg
+  use_objectives: EggBox
+  #object_detection
+  use_scanner: ransample
+  #gnest, bin_grid_greg
 
   scanners:
   
@@ -140,6 +142,24 @@ Scanner:
         selected_pts: [0, 1]
         mult: 0
         flags: ["linear"]
+        
+    find_kernel:
+      plugin: find_shift
+      options:
+        input_files:
+          - "/home/gmartine/Downloads/drop/no7/efit_.txt"
+          - "/home/gmartine/Downloads/drop/no9/efit_.txt"
+          - "/home/gmartine/Downloads/drop/no10/efit_.txt"
+          - "/home/gmartine/Downloads/drop/no12/efit_.txt"
+          - "/home/gmartine/Downloads/drop/no15/efit_.txt"
+          - "/home/gmartine/Downloads/drop/no17/efit_.txt"
+          - "/home/gmartine/Downloads/drop/no28/efit_.txt"
+        output_file: "average_output.txt"
+        mult: 0
+        loglike: 1
+        main_file: "/home/gmartine/Downloads/drop/efit_.txt"
+        opt: "average"
+        labels: [M, x0, y0, vx, vy, vz, R0, Mext, Periapse, alpha, Omega, omega, i, P, T0, e]
     
   objectives:
   

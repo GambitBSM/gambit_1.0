@@ -10,7 +10,7 @@ Homepage:                https://flexiblesusy.hepforge.org
 Mailing list:            flexiblesusy@projects.hepforge.org
 Source code repository:  https://github.com/FlexibleSUSY
 Bug reports:             https://github.com/FlexibleSUSY/FlexibleSUSY/issues
-References:              arxiv:1406:2319 [hep-ph]
+References:              CPC 190 (2015) 139-172 (arxiv:1406.2319 [hep-ph])
 
 
 Requirements
@@ -38,9 +38,9 @@ the Needs["SARAH`"] command from inside Mathematica.  We recommend the
 following setup:
 
    $ cd ~/.Mathematica/Applications/
-   $ wget https://www.hepforge.org/archive/sarah/SARAH-4.2.3.tar.gz
-   $ tar -xf SARAH-4.2.3.tar.gz
-   $ ln -s $PWD/SARAH-4.2.3/ SARAH
+   $ wget https://www.hepforge.org/archive/sarah/SARAH-4.4.6.tar.gz
+   $ tar -xf SARAH-4.4.6.tar.gz
+   $ ln -s $PWD/SARAH-4.4.6/ SARAH
 
    $ cd ~/.Mathematica/Kernel/
    $ echo "AppendTo[\$Path, \"$HOME/.Mathematica/Applications/SARAH/\"];" \

@@ -249,8 +249,8 @@ HighScaleInput = {
    {MassG, m12}
 };
 
-LowScale = SM[MZ];                          (* scale definition *)
-LowScaleFirstGuess = SM[MZ];                (* first scale guess *)
+LowScale = LowEnergyConstant[MZ];           (* scale definition *)
+LowScaleFirstGuess = LowEnergyConstant[MZ]; (* first scale guess *)
 LowScaleInput = {
    {vd, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2] Cos[ArcTan[TanBeta]]},
    {vu, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2] Sin[ArcTan[TanBeta]]}
@@ -262,8 +262,8 @@ LowScaleInput = {
 model parameters.  This can be done via
 \begin{lstlisting}[language=Mathematica]
 InitialGuessAtLowScale = {
-   {vd, SM[vev] Cos[ArcTan[TanBeta]]},
-   {vu, SM[vev] Sin[ArcTan[TanBeta]]}
+   {vd, LowEnergyConstant[vev] Cos[ArcTan[TanBeta]]},
+   {vu, LowEnergyConstant[vev] Sin[ArcTan[TanBeta]]}
 };
 
 InitialGuessAtHighScale = {
@@ -295,8 +295,8 @@ TreeLevelEWSBSolution = {
     OnlyLowEnergyFlexibleSUSY & False & low-energy model \\
     MINPAR & \{\} & list of input parameters in SLHA MINPAR block \\
     EXTPAR & \{\} & list of input parameters in SLHA EXTPAR block \\
-    LowScale & SM[MZ] & Standard Model matching scale (in GeV) \\
-    LowScaleFirstGuess & SM[MZ] & first guess for the Standard Model matching scale (in GeV) \\
+    LowScale & LowEnergyConstant[MZ] & Standard Model matching scale (in GeV) \\
+    LowScaleFirstGuess & LowEnergyConstant[MZ] & first guess for the Standard Model matching scale (in GeV) \\
     LowScaleInput & \{\} & settings applied at the low scale \\
     SUSYScale & 1000 & scale of supersymmetric particle masses (in GeV) \\
     SUSYScaleFirstGuess & 1000 & first guess for the susy scale (in GeV) \\

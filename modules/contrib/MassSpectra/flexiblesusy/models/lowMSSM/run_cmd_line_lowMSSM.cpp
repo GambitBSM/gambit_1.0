@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Fri 16 Jan 2015 13:00:26
+// File generated at Mon 1 Jun 2015 13:19:15
 
 #include "lowMSSM_input_parameters.hpp"
 #include "lowMSSM_spectrum_generator.hpp"
@@ -37,6 +37,11 @@ void print_usage()
       "Usage: run_cmd_line_lowMSSM.x [options]\n"
       "Options:\n"
       "  --TanBeta=<value>\n"
+      "  --MuInput=<value>\n"
+      "  --BMuInput=<value>\n"
+      "  --MassBInput=<value>\n"
+      "  --MassWBInput=<value>\n"
+      "  --MassGInput=<value>\n"
 
       "  --help,-h                         print this help message"
              << std::endl;
@@ -49,6 +54,21 @@ void set_command_line_parameters(int argc, char* argv[],
       const char* option = argv[i];
 
       if(Command_line_options::get_parameter_value(option, "--TanBeta=", input.TanBeta))
+         continue;
+
+      if(Command_line_options::get_parameter_value(option, "--MuInput=", input.MuInput))
+         continue;
+
+      if(Command_line_options::get_parameter_value(option, "--BMuInput=", input.BMuInput))
+         continue;
+
+      if(Command_line_options::get_parameter_value(option, "--MassBInput=", input.MassBInput))
+         continue;
+
+      if(Command_line_options::get_parameter_value(option, "--MassWBInput=", input.MassWBInput))
+         continue;
+
+      if(Command_line_options::get_parameter_value(option, "--MassGInput=", input.MassGInput))
          continue;
 
       
@@ -79,6 +99,7 @@ int main(int argc, char* argv[])
 
    lowMSSM_spectrum_generator<algorithm_type> spectrum_generator;
    spectrum_generator.set_precision_goal(1.0e-4);
+   spectrum_generator.set_beta_zero_threshold(1e-11);
    spectrum_generator.set_max_iterations(0);         // 0 == automatic
    spectrum_generator.set_calculate_sm_masses(0);    // 0 == no
    spectrum_generator.set_parameter_output_scale(0); // 0 == susy scale

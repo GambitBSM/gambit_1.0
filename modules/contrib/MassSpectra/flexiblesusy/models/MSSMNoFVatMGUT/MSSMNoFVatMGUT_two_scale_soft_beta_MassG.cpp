@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Fri 16 Jan 2015 12:36:11
+// File generated at Mon 1 Jun 2015 12:47:49
 
 #include "MSSMNoFVatMGUT_two_scale_soft_parameters.hpp"
 #include "wrappers.hpp"
@@ -37,7 +37,7 @@ double MSSMNoFVatMGUT_soft_parameters::calc_beta_MassG_one_loop(const Soft_trace
 
    double beta_MassG;
 
-   beta_MassG = -6*MassG*oneOver16PiSqr*Sqr(g3);
+   beta_MassG = Re(-6*MassG*oneOver16PiSqr*Sqr(g3));
 
 
    return beta_MassG;
@@ -58,10 +58,10 @@ double MSSMNoFVatMGUT_soft_parameters::calc_beta_MassG_two_loop(const Soft_trace
 
    double beta_MassG;
 
-   beta_MassG = 0.4*twoLoop*Sqr(g3)*(20*traceAdjYdTYd + 20*traceAdjYuTYu
-      - 20*MassG*traceYdAdjYd - 20*MassG*traceYuAdjYu + 11*MassB*Sqr(g1) + 11*
-      MassG*Sqr(g1) + 45*MassG*Sqr(g2) + 45*MassWB*Sqr(g2) + 140*MassG*Sqr(g3))
-      ;
+   beta_MassG = Re(0.4*twoLoop*Sqr(g3)*(20*traceAdjYdTYd + 20*
+      traceAdjYuTYu - 20*MassG*traceYdAdjYd - 20*MassG*traceYuAdjYu + 11*MassB*
+      Sqr(g1) + 11*MassG*Sqr(g1) + 45*MassG*Sqr(g2) + 45*MassWB*Sqr(g2) + 140*
+      MassG*Sqr(g3)));
 
 
    return beta_MassG;

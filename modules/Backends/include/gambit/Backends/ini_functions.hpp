@@ -47,7 +47,7 @@ namespace Gambit
 
     /// Get the pointer to the backend function.
     template <typename T>
-    T load_backend_symbol(void* pHandle, void_voidFptr pSym, str symbol_name)
+    T load_backend_symbol(void* pHandle, void_voidFptr pSym, str symbol_name, str be, str ver)
     {
       T result;
       try
@@ -56,8 +56,23 @@ namespace Gambit
         dlerror();
         // Obtain a void pointer (pSym) to the library symbol.
         pSym.ptr = dlsym(pHandle, symbol_name.c_str());
+        // If using backwards systems missing dlinfo(), like OSX, determine the path to the library with dladdr()
+        #ifndef HAVE_LINK_H
+          // Don't bother trying if the symbol wasn't found in the library anyway.
+          if (pSym.ptr != NULL)
+          {
+            Dl_info info;
+            int dladdr_result = dladdr(pSym.ptr, &info);
+            // Try overriding the path to the library if dladdr seemed to return OK.
+            if (dladdr_result) attempt_backend_path_override(be, ver, info.dli_fname);
+          }        
+        #else
+          // Do something inconsequential with the last two args to skip compiler warnings.
+          (void)be;
+          (void)ver;
+        #endif
         // Hand over the pointer
-        result = reinterpret_cast<T>(pSym.fptr);
+        result = reinterpret_cast<T>(pSym.fptr);        
       }
       catch (std::exception& e) { ini_catch(e); }
       return result;
