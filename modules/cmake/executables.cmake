@@ -89,7 +89,7 @@ if(EXISTS "${PROJECT_SOURCE_DIR}/ScannerBit/")
       add_dependencies(ScannerBit_standalone flexiblesusy)
     endif()
     if (NOT EXCLUDE_DELPHES)
-      add_dependencies(ExampleBit_A_standalone delphes)
+      add_dependencies(ScannerBit_standalone delphes)
     endif()
   else()
     # Make sure the printers compile OK if the rest of GAMBIT is missing

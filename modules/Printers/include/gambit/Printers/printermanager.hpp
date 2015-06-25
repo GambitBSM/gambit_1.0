@@ -23,6 +23,7 @@
 #include <map>
 #include "gambit/Printers/baseprintermanager.hpp"
 #include "gambit/Utils/yaml_options.hpp"
+#include "gambit/Utils/mpiwrapper.hpp" // for debugging
 
 namespace Gambit
 {
@@ -61,7 +62,14 @@ namespace Gambit
 
         /// Getter for auxiliary printer objects
         BaseBasePrinter* get_stream(const std::string& = "");
-    };
+  
+        /// Instruct printers that scan has finished and to perform cleanup
+        void finalise();
+
+        /// For debugging: check up on MPI
+        bool Is_MPI_initialized()  { return GMPI::Is_initialized(); }
+
+  };
 
 
   }

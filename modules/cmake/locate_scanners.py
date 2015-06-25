@@ -68,7 +68,7 @@ def main(argv):
     verbose = False
     try:
         build_dir = argv[0]
-        opts, args = getopt.getopt(argv,"vx:",["verbose","exclude-scanners="])
+        opts, args = getopt.gnu_getopt(argv,"vx:",["verbose","exclude-scanners="])
     except getopt.GetoptError:
         print 'Usage: locate_scanners.py build_dir [flags]'
         print ' flags:'

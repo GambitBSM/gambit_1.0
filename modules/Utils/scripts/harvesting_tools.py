@@ -69,6 +69,13 @@ def readlines_nocomments(f):
 def neatsplit(regex,string):
     return [x for x in re.split(regex,string) if x != '']
 
+# Nice sorting function (from http://stackoverflow.com/a/2669120/1447953)
+def sorted_nicely( l ): 
+    """ Sort the given iterable in the way that humans expect.""" 
+    convert = lambda text: int(text) if text.isdigit() else text 
+    alphanum_key = lambda key: [ convert(c) for c in re.split('([0-9]+)', key) ] 
+    return sorted(l, key = alphanum_key)
+
 # Parse a string to see if it has a class, struct or typedef declaration
 def check_for_declaration(input_snippet,module,local_namespace,candidate_type):
     splitline = neatsplit('\s|\(|\)|\*|\&|\;',input_snippet)
@@ -337,6 +344,17 @@ def retrieve_module_type_headers(verbose,install_dir,excludes):
                     rel_name = re.sub(".*?/include/", "", os.path.relpath(os.path.join(root,name),install_dir))
                     type_headers+=[rel_name]
     return type_headers
+
+#Get all files in a directory tree with one of a given set of extensions
+def get_all_files_with_ext(verbose,starting_dir,ext_set,kind):
+    results=[]
+    for root,dirs,files in os.walk(starting_dir):
+        for name in files:
+            for ext in ext_set:
+                if name.endswith(ext):
+                    if verbose: print "  Located "+kind+" file '{0}' at path '{1}'".format(name,os.path.join(root,name))
+                    results+=[os.path.join(root, name)]
+    return results
 
 #Search a directory for headers that are not excluded.
 def retrieve_generic_headers(verbose,starting_dir,kind,excludes):
