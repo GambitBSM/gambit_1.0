@@ -282,15 +282,15 @@ BE_NAMESPACE
 
     // These are all final states relevant for photon IB 
     // -> maybe make this list globally available, too!?   
-    auto IBfinalstate = 
-        Funk::vec<string>("e-","mu-","tau-","u","d","c","s","t","b","W+","H+");
-    std::vector<double> DSparticle_mass;
-    DSparticle_mass.clear();
-    for ( int i = 0; i < IBfinalstate.size(); i++ )
-    {
-      DSparticle_mass.push_back(
-         mspctm->mass(DarkBit_utils::DSparticle_code(IBfinalstate[i])));
-    }
+//    auto IBfinalstate = 
+//        Funk::vec<string>("e-","mu-","tau-","u","d","c","s","t","b","W+","H+");
+//    std::vector<double> DSparticle_mass;
+//    DSparticle_mass.clear();
+//    for ( int i = 0; i < IBfinalstate.size(); i++ )
+//    {
+//      DSparticle_mass.push_back(
+//         mspctm->mass(DarkBit_utils::DSparticle_code(IBfinalstate[i])));
+//    }
 
     
   }
