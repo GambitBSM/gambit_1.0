@@ -28,7 +28,8 @@ namespace Gambit
     namespace DarkBit_utils
     {
       //TODO: add channel codes!
-      int DSparticle_code(const str particleID) 
+//      int DSparticle_code(const str particleID) 
+      int DSparticle_code(std::string particleID) 
       {
        int kpart;
        if (particleID=="nu_e" or particleID=="nubar_e"){

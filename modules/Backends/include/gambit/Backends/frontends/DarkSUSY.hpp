@@ -197,7 +197,7 @@ BE_NAMESPACE
 {
 
   /// Function dsgenericwimp_nusetup sets DarkSUSY's internal common
-  /// blocks with all the prpoerties required to compute neutrino
+  /// blocks with all the properties required to compute neutrino
   /// yields for a generic WIMP.
   void dsgenericwimp_nusetup(const double (&annihilation_bf)[29], const double (&Higgs_decay_BFs_neutral)[29][3],
    const double (&Higgs_decay_BFs_charged)[15], const double (&Higgs_masses_neutral)[3], const double &Higgs_mass_charged,
@@ -272,39 +272,56 @@ BE_NAMESPACE
   void registerMassesForIB(
       std::map<std::string, DarkBit::TH_ParticleProperty> & particleProperties)
   {
-    // For TB: Save masses somewhere in global variables etc.
-//    double mh = particleProperties.at("h0_1").mass;
+    // Save masses somewhere in global variables etc.
     // Note: Actually, it is not trivial to define some global variables here
     // in the header.
-    // Note(TB): I don't think it makes sense to store the GAMBIT-internal masses
-    // anywhere -- they should always be provided by the spectrum object and
-    // cannot change while calling the IB routines. Hence I only add code to read 
-    // out the values from DS:
 
-    // These are all final states relevant for photon IB 
-    // -> maybe make this list globally available, too!?   
+
+    //For CW: Those three lists need to be promoted to global variables
     std::vector<std::string> IBfinalstate = 
-        Funk::vec<std::string>("e-","mu-","tau-","u","d","c","s","t","b","W+","H+");
-//    std::vector<double> DSparticle_mass;
-//    DSparticle_mass.clear();
-//    for ( int i = 0; i < IBfinalstate.size(); i++ )
-//    {
-//      DSparticle_mass.push_back(
-//         mspctm->mass(DarkBit_utils::DSparticle_code(IBfinalstate[i])));
-//    }
+        Funk::vec<std::string>("e-","mu-","tau-","u","d","c","s","t","b","W+","H+"); 
+    std::vector<double> DSparticle_mass;
+    std::vector<double> GAMBITparticle_mass;    
+    DSparticle_mass.clear();
+    GAMBITparticle_mass.clear();
+    for (int i = 0; i < IBfinalstate.size(); i++ )
+    {
+      DSparticle_mass.push_back(
+//         mspctm->mass(DarkBit::DarkBit_utils::DSparticle_code(IBfinalstate[i])));
+
+//For CW/PS: The above line sets masses in the desired way, but does not compile. It seems 
+//        that I don't have access to the function DSparticle_code, and I have no clue why
+//        given that the error is reported as a linking problem, maybe something about
+//        in which order the makefile sets up things??
+
+      GAMBITparticle_mass.push_back(particleProperties.at(IBfinalstate[i]).mass);
+    }
 
     
   }
 
   void setMassesForIB(bool set)
   {
+     //For CW: obviously, all this will only work once we have access to global variables
+     //        (and the linking problem is solved)
     if (set)
     {
-      // For TB: Set masses in DS, using above global variables.
+      // Set masses in DS, using above global variables.
+//      for (int i = 0; i < IBfinalstate.size(); i++ )
+//      {
+//        mspctm->mass(DarkBit::DarkBit_utils::DSparticle_code(IBfinalstate[i])))=
+//          particleProperties.at(IBfinalstate[i]).mass;
+//      }
+
     }
     else
     {
-      // For TB: Reset masses.
+      // Reset masses.
+//      for (int i = 0; i < IBfinalstate.size(); i++ )
+//      {
+//        particleProperties.at(IBfinalstate[i]).mass=
+//            mspctm->mass(DarkBit::DarkBit_utils::DSparticle_code(IBfinalstate[i])));
+//      }
     }
   }
 }
