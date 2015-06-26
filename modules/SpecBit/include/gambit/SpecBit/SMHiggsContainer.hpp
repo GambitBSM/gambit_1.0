@@ -53,7 +53,7 @@ namespace Gambit {
         friend class PhysDer  <Derived,DerivedTraits>;
  
         protected:
-            typedef MapTypes<DerivedTraits> MT; 
+            typedef MapTypes<DerivedTraits,MapTag::Get> MT; 
             typedef typename DerivedTraits::Model Model;
  
             /// Actual model object stored here
@@ -104,29 +104,29 @@ namespace Gambit {
          protected:
             /// Map fillers
             // (just listed here to help bookkeeping)
-            //static typename MT::fmap  fill_mass_map(); 
-            //static typename MT::fmap  fill_PoleMass_map();
+            //static typename MT::fmap  fill_mass_map_Get(); 
+            //static typename MT::fmap  fill_PoleMass_map_Get();
 
             /// Map fillers for derived classes to statically overload
             /// (so that the "real" map fillers here can add their
             /// extra information into the final wrapper)
-            static void derived_fill_mass_map    (typename MT::fmap& in) {}
-            static void derived_fill_PoleMass_map(typename MT::fmap& in) {}             
+            static void derived_fill_mass_map_Get    (typename MT::fmap& in) {}
+            static void derived_fill_PoleMass_map_Get(typename MT::fmap& in) {}             
  
             /// Definitions of map fillers
-            static typename MT::fmap fill_mass_map() 
+            static typename MT::fmap fill_mass_map_Get() 
             {
                typename MT::fmap tmp_map;
-               Derived::derived_fill_mass_map(tmp_map);
+               Derived::derived_fill_mass_map_Get(tmp_map);
     
                tmp_map["vev"]      = &Model::get_HiggsVEV;
                return tmp_map;
             }
 
-            static typename MT::fmap fill_PoleMass_map()
+            static typename MT::fmap fill_PoleMass_map_Get()
             {
                typename MT::fmap tmp_map;
-               Derived::derived_fill_PoleMass_map(tmp_map);
+               Derived::derived_fill_PoleMass_map_Get(tmp_map);
  
                tmp_map["h0"]   = &Model::get_HiggsPoleMass; 
                tmp_map["h0_1"] = &Model::get_HiggsPoleMass;   
@@ -141,7 +141,7 @@ namespace Gambit {
          protected:
             typedef SMHiggsContainer   This;
             typedef SMHiggsModelTraits Traits;
-            typedef MapTypes<Traits> MT; 
+            typedef MapTypes<Traits,MapTag::Get> MT; 
 
          public:
             /// @{ Constructors/destructors

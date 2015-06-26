@@ -206,7 +206,7 @@ namespace Gambit {
         
       // Function to initialise mass2_map
       template <class MI>
-      typename MapTypes<MSSMSpecTraits<MI>>::fmap MSSMSpec<MI>::fill_mass2_map() 
+      typename MapTypes<MSSMSpecTraits<MI>,MapTag::Get>::fmap MSSMSpec<MI>::fill_mass2_map_Get() 
       {
          typedef typename MI::Model Model;
          typename MT::fmap tmp_map;
@@ -219,7 +219,7 @@ namespace Gambit {
       
       // Function to initialise mass2_map2
       template <class MI>
-      typename MapTypes<MSSMSpecTraits<MI>>::fmap2 MSSMSpec<MI>::fill_mass2_map2() 
+      typename MapTypes<MSSMSpecTraits<MI>,MapTag::Get>::fmap2 MSSMSpec<MI>::fill_mass2_map2_Get() 
       {
          typedef typename MI::Model Model;
          typedef typename MT::FInfo2 FInfo2;
@@ -240,7 +240,7 @@ namespace Gambit {
       
       // Function to initialise mass_map
       template <class MI>
-      typename MapTypes<MSSMSpecTraits<MI>>::fmap MSSMSpec<MI>::fill_mass_map() 
+      typename MapTypes<MSSMSpecTraits<MI>,MapTag::Get>::fmap MSSMSpec<MI>::fill_mass_map_Get() 
       {
          typedef typename MI::Model Model;
          typename MT::fmap tmp_map;
@@ -255,7 +255,7 @@ namespace Gambit {
 
       // Function to initialise mass_map2
       template <class MI>
-      typename MapTypes<MSSMSpecTraits<MI>>::fmap2 MSSMSpec<MI>::fill_mass_map2() 
+      typename MapTypes<MSSMSpecTraits<MI>,MapTag::Get>::fmap2 MSSMSpec<MI>::fill_mass_map2_Get() 
       {
          typedef typename MI::Model Model;
          typedef typename MT::FInfo2 FInfo2;
@@ -276,7 +276,7 @@ namespace Gambit {
       
       // Function to initialise mass0_map
       template <class MI>
-      typename MapTypes<MSSMSpecTraits<MI>>::fmap MSSMSpec<MI>::fill_mass0_map() 
+      typename MapTypes<MSSMSpecTraits<MI>,MapTag::Get>::fmap MSSMSpec<MI>::fill_mass0_map_Get() 
       {
          typedef typename MI::Model Model;
          typename MT::fmap tmp_map;
@@ -296,7 +296,7 @@ namespace Gambit {
  
       // Function to initialise mass0_map_extraM
       template <class MI>
-      typename MapTypes<MSSMSpecTraits<MI>>::fmap_extraM MSSMSpec<MI>::fill_mass0_map_extraM() 
+      typename MapTypes<MSSMSpecTraits<MI>,MapTag::Get>::fmap_extraM MSSMSpec<MI>::fill_mass0_map_extraM_Get() 
       {
          typedef typename MI::Model Model;
          typename MT::fmap_extraM tmp_map;
@@ -307,7 +307,7 @@ namespace Gambit {
  
       // Function to initialise mass0_map2
       template <class MI>
-      typename MapTypes<MSSMSpecTraits<MI>>::fmap2 MSSMSpec<MI>::fill_mass0_map2() 
+      typename MapTypes<MSSMSpecTraits<MI>,MapTag::Get>::fmap2 MSSMSpec<MI>::fill_mass0_map2_Get() 
       {
          typedef typename MI::Model Model;
          typedef typename MT::FInfo2 FInfo2;
@@ -324,7 +324,7 @@ namespace Gambit {
       }
       
       template <class MI>
-      typename MapTypes<MSSMSpecTraits<MI>>::fmap MSSMSpec<MI>::fill_mass_eigenstate_map()
+      typename MapTypes<MSSMSpecTraits<MI>,MapTag::Get>::fmap MSSMSpec<MI>::fill_mass_eigenstate_map_Get()
       {
          typedef typename MI::Model Model;
          typename MT::fmap tmp_map;
@@ -356,7 +356,7 @@ namespace Gambit {
 
       //map for string access with an index supplied
       template <class MI>
-      typename MapTypes<MSSMSpecTraits<MI>>::fmap1 MSSMSpec<MI>::fill_mass_eigenstate_map1()
+      typename MapTypes<MSSMSpecTraits<MI>,MapTag::Get>::fmap1 MSSMSpec<MI>::fill_mass_eigenstate_map1_Get()
       {
          typedef typename MI::Model Model;
          typedef typename MT::FInfo1 FInfo1;
@@ -400,7 +400,7 @@ namespace Gambit {
       }
   
       template <class MI>
-      typename MapTypes<MSSMSpecTraits<MI>>::fmap MSSMSpec<MI>::fill_PoleMass_map()
+      typename MapTypes<MSSMSpecTraits<MI>,MapTag::Get>::fmap MSSMSpec<MI>::fill_PoleMass_map_Get()
       {
          typedef typename MI::Model Model;
          typename MT::fmap tmp_map;
@@ -447,11 +447,11 @@ namespace Gambit {
       // e.g.
       // get_Pole_Mass(name)
       // draws upon three maps, filled by the filling functions
-      // fill_PoleMass_map()           call signature: model.func() -- i.e. 'native' member functions
-      // fill_PoleMass_map_extraM()    call signature: func(Model& model) -- extras using model info
-      // fill_PoleMass_map_extraI()    call signature: func(Input& input) -- extras using input info
+      // fill_PoleMass_map_Get()           call signature: model.func() -- i.e. 'native' member functions
+      // fill_PoleMass_map_extraM_Get()    call signature: func(Model& model) -- extras using model info
+      // fill_PoleMass_map_extraI_Get()    call signature: func(Input& input) -- extras using input info
       template <class MI>  
-      typename MapTypes<MSSMSpecTraits<MI>>::fmap_extraM MSSMSpec<MI>::fill_PoleMass_map_extraM()
+      typename MapTypes<MSSMSpecTraits<MI>,MapTag::Get>::fmap_extraM MSSMSpec<MI>::fill_PoleMass_map_extraM_Get()
       {
          typedef typename MI::Model Model;
          typename MT::fmap_extraM tmp_map;
@@ -467,7 +467,7 @@ namespace Gambit {
       }
 
       template <class MI>
-      typename MapTypes<MSSMSpecTraits<MI>>::fmap1 MSSMSpec<MI>::fill_PoleMass_map1()
+      typename MapTypes<MSSMSpecTraits<MI>,MapTag::Get>::fmap1 MSSMSpec<MI>::fill_PoleMass_map1_Get()
       {
          typedef typename MI::Model Model;
          typedef typename MT::FInfo1 FInfo1;
@@ -524,7 +524,7 @@ namespace Gambit {
       }
          
       template <class MI>
-      typename MapTypes<MSSMSpecTraits<MI>>::fmap2 MSSMSpec<MI>::fill_PoleMixing_map2()
+      typename MapTypes<MSSMSpecTraits<MI>,MapTag::Get>::fmap2 MSSMSpec<MI>::fill_PoleMixing_map2_Get()
       {
          typedef typename MI::Model Model;
          typedef typename MT::FInfo2 FInfo2;

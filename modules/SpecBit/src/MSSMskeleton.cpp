@@ -29,7 +29,7 @@ namespace Gambit {
    namespace SpecBit {
 
       /// Simplify access to map types in this file
-      typedef MapTypes<SLHAskeletonTraits<MSSMea>> MT; 
+      typedef MapTypes<SLHAskeletonTraits<MSSMea>,MapTag::Get> MT; 
 
       /// @{ Member functions for SLHAeaModel class
            
@@ -194,8 +194,8 @@ namespace Gambit {
  
       // Map fillers
 
-      // Function to initialise mass2_map
-      MT::fmap MSSMskeleton::fill_mass2_map() 
+      // Function to initialise mass2_map_Get
+      MT::fmap MSSMskeleton::fill_mass2_map_Get() 
       {
          MT::fmap tmp_map;
          tmp_map["BMu"] = &Model::get_BMu;
@@ -205,8 +205,8 @@ namespace Gambit {
          return tmp_map;
       }
       
-      // Function to initialise mass2_map2
-      MT::fmap2 MSSMskeleton::fill_mass2_map2() 
+      // Function to initialise mass2_map2_Get
+      MT::fmap2 MSSMskeleton::fill_mass2_map2_Get() 
       {
          typedef MT::FInfo2 FInfo2;
          MT::fmap2 tmp_map;
@@ -224,8 +224,8 @@ namespace Gambit {
          return tmp_map;
       }
       
-      // Function to initialise mass_map
-      MT::fmap MSSMskeleton::fill_mass_map() 
+      // Function to initialise mass_map_Get
+      MT::fmap MSSMskeleton::fill_mass_map_Get() 
       {
          MT::fmap tmp_map;
          tmp_map["M1"]= &Model::get_MassB;
@@ -237,8 +237,8 @@ namespace Gambit {
          return tmp_map;
       }
 
-      // Function to initialise mass_map2
-      MT::fmap2 MSSMskeleton::fill_mass_map2() 
+      // Function to initialise mass_map2_Get
+      MT::fmap2 MSSMskeleton::fill_mass_map2_Get() 
       {
          typedef MT::FInfo2 FInfo2;
          MT::fmap2 tmp_map;
@@ -256,8 +256,8 @@ namespace Gambit {
          return tmp_map;
       }
       
-      // Function to initialise mass0_map
-      MT::fmap MSSMskeleton::fill_mass0_map() 
+      // Function to initialise mass0_map_Get
+      MT::fmap MSSMskeleton::fill_mass0_map_Get() 
       {
          MT::fmap tmp_map;
          tmp_map["g1"]= &Model::get_g1;
@@ -269,8 +269,8 @@ namespace Gambit {
       }
       
 
-      // Function to initialise mass0_map2
-      MT::fmap2 MSSMskeleton::fill_mass0_map2() 
+      // Function to initialise mass0_map2_Get
+      MT::fmap2 MSSMskeleton::fill_mass0_map2_Get() 
       {
          typedef MT::FInfo2 FInfo2;
          MT::fmap2 tmp_map;
@@ -285,7 +285,7 @@ namespace Gambit {
          return tmp_map;
       }
  
-      MT::fmap MSSMskeleton::fill_PoleMass_map()
+      MT::fmap MSSMskeleton::fill_PoleMass_map_Get()
       {
          MT::fmap tmp_map;
         
@@ -299,7 +299,7 @@ namespace Gambit {
          return tmp_map;
       }
       
-      MT::fmap1 MSSMskeleton::fill_PoleMass_map1()
+      MT::fmap1 MSSMskeleton::fill_PoleMass_map1_Get()
       {
          typedef MT::FInfo1 FInfo1;
          MT::fmap1 tmp_map;
@@ -335,7 +335,7 @@ namespace Gambit {
          return tmp_map;
       }
          
-      MT::fmap2 MSSMskeleton::fill_PoleMixing_map2()
+      MT::fmap2 MSSMskeleton::fill_PoleMixing_map2_Get()
       {
          typedef MT::FInfo2 FInfo2;
          MT::fmap2 tmp_map;

@@ -55,7 +55,7 @@ namespace Gambit {
       class SLHAskeleton : public Spec<Derived,DerivedTraits> 
       {
          private:
-            typedef MapTypes<DerivedTraits> MT; 
+            typedef MapTypes<DerivedTraits,MapTag::Get> MT; 
 
          protected:
             // Store SLHAea object internally (via wrapper)

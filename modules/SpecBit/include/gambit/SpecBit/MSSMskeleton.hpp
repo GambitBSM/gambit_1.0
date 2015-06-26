@@ -98,7 +98,7 @@ namespace Gambit {
          friend class PhysDer  <MSSMskeleton,SLHAskeletonTraits<MSSMea>>;
 
          private:
-            typedef MapTypes<SLHAskeletonTraits<MSSMea>> MT; 
+            typedef MapTypes<SLHAskeletonTraits<MSSMea>,MapTag::Get> MT; 
             typedef MSSMea Model; 
 
          public:
@@ -114,15 +114,15 @@ namespace Gambit {
  
          protected:
             /// Map fillers
-            static typename MT::fmap  fill_mass2_map(); 
-            static typename MT::fmap2 fill_mass2_map2(); 
-            static typename MT::fmap  fill_mass_map(); 
-            static typename MT::fmap2 fill_mass_map2(); 
-            static typename MT::fmap  fill_mass0_map(); 
-            static typename MT::fmap2 fill_mass0_map2(); 
-            static typename MT::fmap  fill_PoleMass_map();
-            static typename MT::fmap1 fill_PoleMass_map1();
-            static typename MT::fmap2 fill_PoleMixing_map2();
+            static typename MT::fmap  fill_mass2_map_Get(); 
+            static typename MT::fmap2 fill_mass2_map2_Get(); 
+            static typename MT::fmap  fill_mass_map_Get(); 
+            static typename MT::fmap2 fill_mass_map2_Get(); 
+            static typename MT::fmap  fill_mass0_map_Get(); 
+            static typename MT::fmap2 fill_mass0_map2_Get(); 
+            static typename MT::fmap  fill_PoleMass_map_Get();
+            static typename MT::fmap1 fill_PoleMass_map1_Get();
+            static typename MT::fmap2 fill_PoleMixing_map2_Get();
       };
 
    } // end SpecBit namespace

@@ -66,7 +66,7 @@ namespace Gambit {
          friend class PhysDer  <SMskeleton,SLHAskeletonTraits<SMea>>;
 
          private:
-            typedef MapTypes<SLHAskeletonTraits<SMea>> MT; 
+            typedef MapTypes<SLHAskeletonTraits<SMea>,MapTag::Get> MT; 
 
          public:
             // Constructors/destructors
@@ -82,10 +82,10 @@ namespace Gambit {
             /// Used to initialise maps in the RunparDer and PhysDer classes
             
             /// RunparDer overrides (access via spectrum.runningpar)
-            static typename MT::fmap fill_mass_map();
+            static typename MT::fmap fill_mass_map_Get();
 
             /// PhysDer overrides (access via spectrum.phys)
-            static typename MT::fmap fill_PoleMass_map();
+            static typename MT::fmap fill_PoleMass_map_Get();
 
       };
  

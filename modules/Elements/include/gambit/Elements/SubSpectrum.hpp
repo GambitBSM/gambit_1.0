@@ -132,9 +132,9 @@ namespace Gambit {
    
    /// Getter and checker overloads for easier interaction with particle database
    /// @{
-   
+
    #define DECLARE_PDG_GETTERS(FUNC) \
-      /* Overloads of these functions to allow access using PDG codes */ \
+      /* Overloads of getter/checker functions to allow access using PDG codes */ \
       /* as defined in Models/src/particle_database.cpp */ \
       /* These don't have to be virtual; they just call the virtual functions in the end. */ \
       bool   CAT(has_,FUNC)(const int, const int) const;     /* Input PDG code plus context integer */ \
@@ -144,6 +144,34 @@ namespace Gambit {
       bool   CAT(has_,FUNC)(const std::pair<str,int>) const; /* Input short name plus index */         \
       double CAT(get_,FUNC)(const std::pair<str,int>) const; /* Input short name plus index */
    
+   #define DECLARE_GETTERS(FUNC) \
+      /* Getters and checker declarations for parameter retrieval with zero, one, and two indices */ \
+      virtual bool   CAT(has_,FUNC)(const std::string&) const = 0; \
+      virtual double CAT(get_,FUNC)(const std::string&) const = 0; \
+      virtual bool   CAT(has_,FUNC)(const std::string&, int) const = 0; \
+      virtual double CAT(get_,FUNC)(const std::string&, int) const = 0; \
+      virtual bool   CAT(has_,FUNC)(const std::string&, int, int) const = 0; \
+      virtual double CAT(get_,FUNC)(const std::string&, int, int) const = 0; \
+      /* Might as well declare the PDG overloads at the same time */ \
+      DECLARE_PDG_GETTERS(FUNC) \
+
+   #define DECLARE_SETTERS(FUNC) \
+      /* Setter declarations, for setting parameters in a derived model object,
+         and for overriding model object values with values stored outside
+         the model object (for when values cannot be inserted back into the
+         model object)
+         Note; these are NON-CONST */ \
+      virtual void CAT(set_,FUNC)(const double, const std::string&) = 0; \
+      virtual void CAT(set_,FUNC)(const double, const std::string&, int) = 0; \
+      virtual void CAT(set_,FUNC)(const double, const std::string&, int, int) = 0; \
+      /* The parameter overrides are handled entirely by this base class, so
+         they are not virtual */ \
+      /* TODO: Implement this system! */ \
+      void CAT(set_override_,FUNC)(const double, const std::string&) {}; \
+      void CAT(set_override_,FUNC)(const double, const std::string&, int) {}; \
+      void CAT(set_override_,FUNC)(const double, const std::string&, int, int) {}; \
+      /* TODO: Do we want PDG versions of these too? I guess maybe... */
+
    #define DEFINE_PDG_GETTERS(CLASS,FUNC)                                          \
       inline bool   CLASS::CAT(has_,FUNC)(const std::pair<str,int> shortpr) const  \
       {                                                                            \
@@ -271,49 +299,20 @@ namespace Gambit {
          virtual double hard_lower() const = 0; 
     
          /// getters using map (and "checkers")
-         virtual bool   has_mass4_parameter(const std::string&) const = 0;
-         virtual double get_mass4_parameter(const std::string&) const = 0;
-         virtual bool   has_mass4_parameter(const std::string&, int) const = 0;
-         virtual double get_mass4_parameter(const std::string&, int) const = 0;
-         virtual bool   has_mass4_parameter(const std::string&, int, int) const = 0;
-         virtual double get_mass4_parameter(const std::string&, int, int) const = 0;
-         virtual bool   has_mass3_parameter(const std::string&) const = 0;
-         virtual double get_mass3_parameter(const std::string&) const = 0;
-         virtual bool   has_mass3_parameter(const std::string&, int) const = 0;
-         virtual double get_mass3_parameter(const std::string&, int) const = 0;
-         virtual bool   has_mass3_parameter(const std::string&, int, int) const = 0;
-         virtual double get_mass3_parameter(const std::string&, int, int) const = 0;
-         virtual bool   has_mass2_parameter(const std::string&) const = 0;
-         virtual double get_mass2_parameter(const std::string&) const = 0;
-         virtual bool   has_mass2_parameter(const std::string&, int) const = 0;
-         virtual double get_mass2_parameter(const std::string&, int) const = 0;
-         virtual bool   has_mass2_parameter(const std::string&, int, int) const = 0;
-         virtual double get_mass2_parameter(const std::string&, int, int) const = 0;
-         virtual bool   has_mass_parameter(const std::string&) const = 0;
-         virtual double get_mass_parameter(const std::string&) const = 0;
-         virtual bool   has_mass_parameter(const std::string&, int) const = 0;
-         virtual double get_mass_parameter(const std::string&, int) const = 0;
-         virtual bool   has_mass_parameter(const std::string&, int, int) const = 0;
-         virtual double get_mass_parameter(const std::string&, int, int) const = 0;
-         virtual bool   has_dimensionless_parameter(const std::string&) const = 0;
-         virtual double get_dimensionless_parameter(const std::string&) const = 0;
-         virtual bool   has_dimensionless_parameter(const std::string&, int) const = 0;
-         virtual double get_dimensionless_parameter(const std::string&, int) const = 0;
-         virtual bool   has_dimensionless_parameter(const std::string&, int, int) const = 0;
-         virtual double get_dimensionless_parameter(const std::string&, int, int) const = 0;
-         virtual bool   has_mass_eigenstate(const std::string&) const = 0;
-         virtual double get_mass_eigenstate(const std::string&) const = 0;
-         virtual bool   has_mass_eigenstate(const std::string&, int) const = 0;
-         virtual double get_mass_eigenstate(const std::string&, int) const = 0;
-         virtual bool   has_mass_eigenstate(const std::string&, int, int) const = 0;
-         virtual double get_mass_eigenstate(const std::string&, int, int) const = 0;
-   
-         DECLARE_PDG_GETTERS(mass4_parameter)
-         DECLARE_PDG_GETTERS(mass3_parameter)
-         DECLARE_PDG_GETTERS(mass2_parameter)
-         DECLARE_PDG_GETTERS(mass_parameter)
-         DECLARE_PDG_GETTERS(dimensionless_parameter)
-         DECLARE_PDG_GETTERS(mass_eigenstate)
+         DECLARE_GETTERS(mass4_parameter)
+         DECLARE_GETTERS(mass3_parameter)
+         DECLARE_GETTERS(mass2_parameter)
+         DECLARE_GETTERS(mass_parameter)
+         DECLARE_GETTERS(dimensionless_parameter)
+         DECLARE_GETTERS(mass_eigenstate)
+
+         /// setters (and parameter overrides)
+         DECLARE_SETTERS(mass4_parameter)
+         DECLARE_SETTERS(mass3_parameter)
+         DECLARE_SETTERS(mass2_parameter)
+         DECLARE_SETTERS(mass_parameter)
+         DECLARE_SETTERS(dimensionless_parameter)
+         DECLARE_SETTERS(mass_eigenstate)
    };
    DEFINE_PDG_GETTERS(RunningPars,mass_parameter)
    DEFINE_PDG_GETTERS(RunningPars,mass2_parameter)
@@ -329,6 +328,11 @@ namespace Gambit {
          Phys() {}
          virtual ~Phys() {}      
    
+         /// @{ The analogues of thesese are declared via macros in the RunningPars class,
+         ///    but I split them out here because there aren't so many,
+         ///    and because the Pole_Mass functions don't conform to
+         ///    the pattern due to not having two-index versions. 
+
          /// map based getters
          virtual bool   has_Pole_Mass(const std::string&) const = 0;
          virtual double get_Pole_Mass(const std::string&) const = 0;
@@ -340,7 +344,25 @@ namespace Gambit {
          virtual double get_Pole_Mixing(const std::string&, int) const = 0;
          virtual bool   has_Pole_Mixing(const std::string&, int, int) const = 0;
          virtual double get_Pole_Mixing(const std::string&, int, int) const = 0;
-   
+
+         /// map based setters
+         virtual void set_Pole_Mass(const double, const std::string&) = 0;
+         virtual void set_Pole_Mass(const double, const std::string&, int) = 0;
+         virtual void set_Pole_Mixing(const double, const std::string&) = 0;
+         virtual void set_Pole_Mixing(const double, const std::string&, int) = 0;
+         virtual void set_Pole_Mixing(const double, const std::string&, int, int) = 0;
+
+         /* The parameter overrides are handled entirely by this base class, so
+            they are not virtual */
+         /* TODO: Implement this system! */
+         void set_override_Pole_Mass(const double, const std::string&) {};
+         void set_override_Pole_Mass(const double, const std::string&, int) {};
+         void set_override_Pole_Mixing(const double, const std::string&) {};
+         void set_override_Pole_Mixing(const double, const std::string&, int) {};
+         void set_override_Pole_Mixing(const double, const std::string&, int, int) {};
+ 
+         /// @}
+
          DECLARE_PDG_GETTERS(Pole_Mass)
          DECLARE_PDG_GETTERS(Pole_Mixing)
    };
@@ -382,12 +404,23 @@ namespace Gambit {
    /// @}
    
    /// @{ Traits structs for function pointer maps
-   /// Get the types like this: MapTypes<WrapTraits>::fmap
-   
-   /// Types needed for "normal" function pointer maps
-   /// i.e. maps containing pointers to member functions of Model
+   /// Get the types like this: MapTypes<WrapTraits,MapTag::Get>::fmap
+   ///                 or this: MapTypes<WrapTraits,MapTag::Set>::fmap
+  
+   /// Tags
+   struct MapTag {
+     struct Get {};
+     struct Set {};
+   };
+
+   /// Fully unspecialised MapTypes declaration
+   template <class DerivedSpecTraits, class GetOrSet>
+   struct MapTypes;
+
+   /// Types needed for function pointer maps
+   /// Partial specialisation for "getter" maps
    template <class DerivedSpecTraits>
-   struct MapTypes
+   struct MapTypes<DerivedSpecTraits, MapTag::Get>
    {
       // Typedef collection
       typedef typename DerivedSpecTraits::Model Model;
@@ -410,16 +443,53 @@ namespace Gambit {
       static const fmap1       map1_empty;
       static const fmap2       map2_empty;
       static const fmap_extraM map_extraM_empty;
-      static const fmap_extraI map_extraI_empty;
-   
+      static const fmap_extraI map_extraI_empty;   
    };
    // Need to initialise the maps above or else we get "undefined reference to..."
    // errors when we try to access them.
-   template <class DT> const typename MapTypes<DT>::fmap        MapTypes<DT>::map_empty;
-   template <class DT> const typename MapTypes<DT>::fmap1       MapTypes<DT>::map1_empty;
-   template <class DT> const typename MapTypes<DT>::fmap2       MapTypes<DT>::map2_empty;
-   template <class DT> const typename MapTypes<DT>::fmap_extraM MapTypes<DT>::map_extraM_empty;
-   template <class DT> const typename MapTypes<DT>::fmap_extraI MapTypes<DT>::map_extraI_empty;
+   template <class DT> const typename MapTypes<DT,MapTag::Get>::fmap        MapTypes<DT,MapTag::Get>::map_empty;
+   template <class DT> const typename MapTypes<DT,MapTag::Get>::fmap1       MapTypes<DT,MapTag::Get>::map1_empty;
+   template <class DT> const typename MapTypes<DT,MapTag::Get>::fmap2       MapTypes<DT,MapTag::Get>::map2_empty;
+   template <class DT> const typename MapTypes<DT,MapTag::Get>::fmap_extraM MapTypes<DT,MapTag::Get>::map_extraM_empty;
+   template <class DT> const typename MapTypes<DT,MapTag::Get>::fmap_extraI MapTypes<DT,MapTag::Get>::map_extraI_empty;
+
+   /// Types needed for function pointer maps
+   /// Partial specialisation for "setter" maps
+   template <class DerivedSpecTraits>
+   struct MapTypes<DerivedSpecTraits, MapTag::Set>
+   {
+      // Typedef collection
+      typedef typename DerivedSpecTraits::Model Model;
+      typedef typename DerivedSpecTraits::Input Input;
+      typedef void(Model::*FSptr)(double) const; /* Function pointer signature for Model object member functions with no arguments */
+      typedef void(Model::*FSptr1)(double,int) const; /* Function pointer signature for Model object member functions with one argument */
+      typedef void(Model::*FSptr2)(double,int,int) const; /* Function pointer signature for Model object member functions with two arguments */
+      typedef void(*plainfptrM)(Model&, double); /* Function pointer for plain functions; used for custom functions */
+      typedef void(*plainfptrI)(Input&, double); /* Function pointer for plain functions; used for custom functions */
+      typedef FcnInfo1<FSptr1> FInfo1; // Structs to help specify valid indices for functions
+      typedef FcnInfo2<FSptr2> FInfo2; //    "              " 
+      typedef std::map<std::string, FSptr> fmap; /* Typedef for map of strings to function pointers */
+      typedef std::map<std::string, FInfo1> fmap1;/*with an index*/
+      typedef std::map<std::string, FInfo2> fmap2; /*with 2 indices */
+      typedef std::map<std::string, plainfptrM> fmap_extraM;  /* map of plain function pointers */
+      typedef std::map<std::string, plainfptrI> fmap_extraI; /* map of plain function pointers */
+   
+      // Empty maps for default return values
+      static const fmap        map_empty;
+      static const fmap1       map1_empty;
+      static const fmap2       map2_empty;
+      static const fmap_extraM map_extraM_empty;
+      static const fmap_extraI map_extraI_empty;   
+   };
+   // Need to initialise the maps above or else we get "undefined reference to..."
+   // errors when we try to access them.
+   template <class DT> const typename MapTypes<DT,MapTag::Set>::fmap        MapTypes<DT,MapTag::Set>::map_empty;
+   template <class DT> const typename MapTypes<DT,MapTag::Set>::fmap1       MapTypes<DT,MapTag::Set>::map1_empty;
+   template <class DT> const typename MapTypes<DT,MapTag::Set>::fmap2       MapTypes<DT,MapTag::Set>::map2_empty;
+   template <class DT> const typename MapTypes<DT,MapTag::Set>::fmap_extraM MapTypes<DT,MapTag::Set>::map_extraM_empty;
+   template <class DT> const typename MapTypes<DT,MapTag::Set>::fmap_extraI MapTypes<DT,MapTag::Set>::map_extraI_empty;
+ 
+
    /// @}
    
    /// Need to forward declare Spec class
@@ -433,23 +503,28 @@ namespace Gambit {
    /// Maps empty by default. Overload the filler function for the ones you need
    /// in the derived SubSpectrum class (accessed here like parent.filler)
    #define DECLARE_MAP(NAME,TAG) \
-      static typename MT::CAT(f,TAG)   CAT_3(NAME,_,TAG); /* map */\
-      /* getter */ \
-      const  typename MT::CAT(f,TAG)&  CAT_4(get_,NAME,_,TAG)() const \
+      static typename MTget::CAT(f,TAG)   CAT_4(NAME,_,TAG,_Get); /* getter map */\
+      static typename MTset::CAT(f,TAG)   CAT_4(NAME,_,TAG,_Set); /* setter map */\
+      /* getter for fptr getter map*/ \
+      const typename MTget::CAT(f,TAG)&  CAT_5(get_,NAME,_,TAG,_Get)() const \
       { \
-         return CAT_3(NAME,_,TAG); \
+         return CAT_4(NAME,_,TAG,_Get); \
+      }; \
+      /* getter for fptr setter map */ \
+      const typename MTset::CAT(f,TAG)&  CAT_5(get_,NAME,_,TAG,_Set)() const \
+      { \
+         return CAT_4(NAME,_,TAG,_Set); \
       }; \
    
    #define DECLARE_MAP_COLLECTION(NAME) \
       DECLARE_MAP(NAME,map) /* no indices */ \
       /* Expands to (e.g. NAME=mass0):
-         // MAP
-         static typename MT::fmap  mass0_map;
-         // GETTER
-         const  typename MT::fmap& get_mass0_map() const { return mass0_map; }
-         {
-           return fmap;
-         }; 
+         // MAPS
+         static typename MTget::fmap  mass0_map_Get;
+         static typename MTset::fmap  mass0_map_Set;
+         // GETTERS
+         const typename MTget::fmap& get_mass0_map_Get() const { return mass0_map_Get; }
+         const typename MTset::fmap& get_mass0_map_Set() const { return mass0_map_Set; }
       */ \
       DECLARE_MAP(NAME,map_extraM);  /* no indices, custom functions (argument=Model&) */ \
       DECLARE_MAP(NAME,map_extraI); /* no indices, custom functions (argument=Input&) */ \
@@ -468,23 +543,27 @@ namespace Gambit {
    /// Note that thanks to the CRTP (used in Spec<T>, from which D is derived) we
    /// can access the map fillers from the derived classes, letting us use these
    /// static class functions in a polymorphic manner. 
-   #define FILL_MAP(CLASS,NAME,TAG) \
+   #define FILL_MAPS(CLASS,NAME,TAG) \
       template <class D, class DT> \
-      typename MapTypes<DT>::CAT(f,TAG) CLASS<D,DT>::CAT_3(NAME,_,TAG)( D::CAT_4(fill_,NAME,_,TAG)() );
+      typename MapTypes<DT,MapTag::Get>::CAT(f,TAG) CLASS<D,DT>::CAT_4(NAME,_,TAG,_Get)( D::CAT_5(fill_,NAME,_,TAG,_Get)() ); \
+      template <class D, class DT> \
+      typename MapTypes<DT,MapTag::Set>::CAT(f,TAG) CLASS<D,DT>::CAT_4(NAME,_,TAG,_Set)( D::CAT_5(fill_,NAME,_,TAG,_Set)() );
    
    #define FILL_MAP_COLLECTION(CLASS,NAME) \
-      FILL_MAP(CLASS,NAME,map) \
+      FILL_MAPS(CLASS,NAME,map) \
       /* Expands to (e.g. CLASS=RunparDer, NAME=mass0)
-         template <class D, class DT> \
-         typename MapTypes<DT>::fmap RunparDer<D,DT>::PoleMass_map(D::fill_mass0_map());
+         template <class D, class DT>
+         typename MapTypes<DT,MapTag::Get>::fmap RunparDer<D,DT>::PoleMass_map_Get(D::fill_mass0_map_Get());
+         template <class D, class DT>
+         typename MapTypes<DT,MapTag::Set>::fmap RunparDer<D,DT>::PoleMass_map_Set(D::fill_mass0_map_Set());
       */ \
-      FILL_MAP(CLASS,NAME,map_extraM) \
-      FILL_MAP(CLASS,NAME,map_extraI) \
-      FILL_MAP(CLASS,NAME,map1) 
+      FILL_MAPS(CLASS,NAME,map_extraM) \
+      FILL_MAPS(CLASS,NAME,map_extraI) \
+      FILL_MAPS(CLASS,NAME,map1) 
    
    #define FILL_MAP_COLLECTION2(CLASS,NAME) \
       FILL_MAP_COLLECTION(CLASS,NAME) \
-      FILL_MAP(CLASS,NAME,map2) 
+      FILL_MAPS(CLASS,NAME,map2) 
    
    /// @}
    
@@ -492,21 +571,24 @@ namespace Gambit {
    ///    These are the functions to actually be overridden in the derived 
    ///    SubSpectrum class in order to fill the maps with useful things.
    #define DECLARE_MAP_FILLER(NAME,TAG) \
-      static typename MT::CAT(f,TAG) CAT_4(fill_,NAME,_,TAG)() \
+      static typename MTget::CAT(f,TAG) CAT_5(fill_,NAME,_,TAG,_Get)() \
       { \
         /* Returns empty map by default */ \
-        return MT::CAT(TAG,_empty); \
+        return MTget::CAT(TAG,_empty); \
+      } \
+      static typename MTset::CAT(f,TAG) CAT_5(fill_,NAME,_,TAG,_Set)() \
+      { \
+        /* Returns empty map by default */ \
+        return MTset::CAT(TAG,_empty); \
       } \
    
    #define DECLARE_MAP_FILLER_COLLECTION(NAME) \
       DECLARE_MAP_FILLER(NAME,map) \
       /* Expands to (e.g. NAME=mass0):
          (note: template parameter names simplified)
-         static const typename MT::fmap mass0_map_empty; \
-         static typename MT::fmap fill_mass0_map()
-         {
-           return MT::map_empty;
-         }
+                    //// Doesn't do this??? static const typename MT::fmap mass0_map_empty; \
+         static typename MTget::fmap fill_mass0_map_Get() { return MTget::map_empty; }
+         static typename MTset::fmap fill_mass0_map_Set() { return MTset::map_empty; }
       */ \
       DECLARE_MAP_FILLER(NAME,map_extraM) \
       DECLARE_MAP_FILLER(NAME,map_extraI) \
@@ -518,8 +600,9 @@ namespace Gambit {
    /// @}
    
    /// Forward declarations related to FptrFinder class
-   template<class,class> class SetMaps;
-   template<class,class> class FptrFinder;  
+   template<class,class,class> class SetMaps;
+   template<class,class,class> class FptrFinder;  
+   template<class,class,class> class CallFcn;  
    
    template <class DerivedSpec, class DerivedSpecTraits>
    class PhysDer : public Phys 
@@ -527,9 +610,13 @@ namespace Gambit {
          typedef DerivedSpec D;
          typedef DerivedSpecTraits DT;
          typedef PhysDer<D,DT> Self;
-         typedef MapTypes<DT> MT; 
+         typedef MapTypes<DT,MapTag::Get> MTget; 
+         typedef MapTypes<DT,MapTag::Set> MTset; 
          friend class Spec<D,DT>;
-         friend class FptrFinder<DT,Self>;
+         friend class FptrFinder<DT,Self,MapTag::Get>;
+         friend class FptrFinder<DT,Self,MapTag::Set>;
+         friend class CallFcn<DT,Self,MapTag::Get>;
+         friend class CallFcn<DT,Self,MapTag::Set>;
          using Phys::get_Pole_Mass; // Need to expose the base class function overloads with this name
   
       protected:
@@ -546,17 +633,32 @@ namespace Gambit {
          // During construction, link the object to its "parent"
          PhysDer(Spec<D,DT>& s) : parent(s) {}
          virtual ~PhysDer() {}    
+
+         // Written out checkers, getters, and setter declarations in full.
+         // This will make Peter happier :).
+         // Note again: set_override functions are entirely handled by the
+         // base class, don't worry about them here nor in the fully
+         // derived classes.
    
          virtual bool   has_Pole_Mass(const std::string&) const;
          virtual double get_Pole_Mass(const std::string&) const;
+         virtual void   set_Pole_Mass(const double, const std::string&);
+
          virtual bool   has_Pole_Mass(const std::string&, int) const;
          virtual double get_Pole_Mass(const std::string&, int) const;
+         virtual void   set_Pole_Mass(const double, const std::string&, int);
+
          virtual bool   has_Pole_Mixing(const std::string&) const;
          virtual double get_Pole_Mixing(const std::string&) const;
+         virtual void   set_Pole_Mixing(const double, const std::string&);
+
          virtual bool   has_Pole_Mixing(const std::string&, int) const;
          virtual double get_Pole_Mixing(const std::string&, int) const;
+         virtual void   set_Pole_Mixing(const double, const std::string&, int);
+
          virtual bool   has_Pole_Mixing(const std::string&, int, int) const;
          virtual double get_Pole_Mixing(const std::string&, int, int) const;
+         virtual void   set_Pole_Mixing(const double, const std::string&, int, int);
    };
    /// Initialise maps (using filler overrides from DerivedSpec if defined)
    FILL_MAP_COLLECTION(PhysDer,PoleMass)
@@ -568,10 +670,14 @@ namespace Gambit {
         typedef DerivedSpec D;
         typedef DerivedSpecTraits DT;
         typedef RunparDer<D,DT> Self;
-        typedef MapTypes<DT> MT; 
+        typedef MapTypes<DT,MapTag::Get> MTget; 
+        typedef MapTypes<DT,MapTag::Set> MTset; 
         friend class Spec<D,DT>;
-        friend class FptrFinder<DT,Self>;
-   
+        friend class FptrFinder<DT,Self,MapTag::Get>;
+        friend class FptrFinder<DT,Self,MapTag::Set>;
+        friend class CallFcn<DT,Self,MapTag::Get>;
+        friend class CallFcn<DT,Self,MapTag::Set>;
+
       protected:
          /// Needed for access to "parent" object member functions
          /// Needs to be protected so that derived classes can access it
@@ -600,42 +706,81 @@ namespace Gambit {
          virtual double hard_lower() const { return parent.hard_lower(); }
     
          /// Public interface functions
+         /// TODO: currently the "checker" only checks the getter maps,
+         /// not the setter maps, and there is nothing to force these
+         /// maps to match. I guess a corresponding "has_setter" is
+         /// perhaps needed...
          virtual bool   has_mass4_parameter(const std::string&) const;
          virtual double get_mass4_parameter(const std::string&) const;
+         virtual void   set_mass4_parameter(const double, const std::string&);
+
          virtual bool   has_mass4_parameter(const std::string&, int) const;
          virtual double get_mass4_parameter(const std::string&, int) const;
+         virtual void   set_mass4_parameter(const double, const std::string&, int);
+
          virtual bool   has_mass4_parameter(const std::string&, int, int) const;
          virtual double get_mass4_parameter(const std::string&, int, int) const;
+         virtual void   set_mass4_parameter(const double, const std::string&, int, int);
+
          virtual bool   has_mass3_parameter(const std::string&) const;
          virtual double get_mass3_parameter(const std::string&) const;
+         virtual void   set_mass3_parameter(const double, const std::string&);
+
          virtual bool   has_mass3_parameter(const std::string&, int) const;
          virtual double get_mass3_parameter(const std::string&, int) const;
+         virtual void   set_mass3_parameter(const double, const std::string&, int);
+
          virtual bool   has_mass3_parameter(const std::string&, int, int) const;
          virtual double get_mass3_parameter(const std::string&, int, int) const;
+         virtual void   set_mass3_parameter(const double, const std::string&, int, int);
+
          virtual bool   has_mass2_parameter(const std::string&) const;
          virtual double get_mass2_parameter(const std::string&) const;
+         virtual void   set_mass2_parameter(const double, const std::string&);
+
          virtual bool   has_mass2_parameter(const std::string&, int) const;
          virtual double get_mass2_parameter(const std::string&, int) const;
+         virtual void   set_mass2_parameter(const double, const std::string&, int);
+
          virtual bool   has_mass2_parameter(const std::string&, int, int) const;
          virtual double get_mass2_parameter(const std::string&, int, int) const;
+         virtual void   set_mass2_parameter(const double, const std::string&, int, int);
+
          virtual bool   has_mass_parameter(const std::string&) const;
          virtual double get_mass_parameter(const std::string&) const;
+         virtual void   set_mass_parameter(const double, const std::string&);
+
          virtual bool   has_mass_parameter(const std::string&, int) const;
          virtual double get_mass_parameter(const std::string&, int) const;
+         virtual void   set_mass_parameter(const double, const std::string&, int);
+
          virtual bool   has_mass_parameter(const std::string&, int, int) const;
          virtual double get_mass_parameter(const std::string&, int, int) const;
+         virtual void   set_mass_parameter(const double, const std::string&, int, int);
+
          virtual bool   has_dimensionless_parameter(const std::string&) const;
          virtual double get_dimensionless_parameter(const std::string&) const;
+         virtual void   set_dimensionless_parameter(const double, const std::string&);
+
          virtual bool   has_dimensionless_parameter(const std::string&, int) const;
          virtual double get_dimensionless_parameter(const std::string&, int) const;
+         virtual void   set_dimensionless_parameter(const double, const std::string&, int);
+
          virtual bool   has_dimensionless_parameter(const std::string&, int, int) const;
          virtual double get_dimensionless_parameter(const std::string&, int, int) const;
+         virtual void   set_dimensionless_parameter(const double, const std::string&, int, int);
+
          virtual bool   has_mass_eigenstate(const std::string&) const;
          virtual double get_mass_eigenstate(const std::string&) const;
+         virtual void   set_mass_eigenstate(const double, const std::string&);
+
          virtual bool   has_mass_eigenstate(const std::string&, int) const;
          virtual double get_mass_eigenstate(const std::string&, int) const;
+         virtual void   set_mass_eigenstate(const double, const std::string&, int);
+
          virtual bool   has_mass_eigenstate(const std::string&, int, int) const;
          virtual double get_mass_eigenstate(const std::string&, int, int) const;
+         virtual void   set_mass_eigenstate(const double, const std::string&, int, int);
    };
    /// Initialise maps (using filler overrides from DerivedSpec if defined)
    FILL_MAP_COLLECTION2(RunparDer,mass0)           
@@ -655,8 +800,9 @@ namespace Gambit {
          friend class PhysDer<D,DT>;
     
       private:   
-         typedef MapTypes<DT> MT; 
-   
+         typedef MapTypes<DT,MapTag::Get> MTget; 
+         typedef MapTypes<DT,MapTag::Set> MTset; 
+  
          /// Note: DerivedSpecTraits will need to typedef Model and Input
          /// Also make sure to initialise the members "model" and "input" in the 
          /// derived class via this class's full constructor.
@@ -690,16 +836,25 @@ namespace Gambit {
          /// @}
       
          /// Function overrides that will work with the above macros:
-         /// e.g. (with typedef MapTypes<DerivedSpec> MT)
-         /// (virtual) typename MT::fmap        fill_mass0_map();        /* no indices */
-         /// (virtual) typename MT::fmap_extraM fill_mass0_map_extraM(); /* no indices, custom functions (argument=Model&) */
-         /// (virtual) typename MT::fmap_extraI fill_mass0_map_extraI(); /* no indices, custom functions (argument=Input&) */
-         /// (virtual) typename MT::fmap1       fill_mass0_map1();       /* one index */
-         /// (virtual) typename MT::fmap2       fill_mass0_map2(); **    /* two indices */
+         /// e.g. (with typedef MapTypes<DerivedSpec,MapTag::Get> MTget)
+         /// (virtual) typename MTget::fmap        fill_mass0_map_Get();        /* no indices */
+         /// (virtual) typename MTget::fmap_extraM fill_mass0_map_extraM_Get(); /* no indices, custom functions (argument=Model&) */
+         /// (virtual) typename MTget::fmap_extraI fill_mass0_map_extraI_Get(); /* no indices, custom functions (argument=Input&) */
+         /// (virtual) typename MTget::fmap1       fill_mass0_map1_Get();       /* one index */
+         /// (virtual) typename MTget::fmap2       fill_mass0_map2_Get(); **    /* two indices */
          ///          
          /// Note: virtual keyword optional                                                                      
          /// ** Note: 2-index getters not available for PoleMass, since these are assumed
          /// to be mass-ordered (i.e. a mass matrix wouldn't make sense)
+         ///
+         /// Similarly, for the setters there are the following functions:
+         /// e.g. (with typedef MapTypes<DerivedSpec,MapTag::Set> MTset)
+         /// typename MTset::fmap        fill_mass0_map_Set();        /* no indices */
+         /// typename MTset::fmap_extraM fill_mass0_map_extraM_Set(); /* no indices, custom functions (argument=Model&) */
+         /// typename MTset::fmap_extraI fill_mass0_map_extraI_Set(); /* no indices, custom functions (argument=Input&) */
+         /// typename MTset::fmap1       fill_mass0_map1_Set();       /* one index */
+         /// typename MTset::fmap2       fill_mass0_map2_Set(); **    /* two indices */
+
          
       public: 
          /// Minimal constructor used in default constructors of derived classes
@@ -760,7 +915,7 @@ namespace Gambit {
    class DummyInput {};
 
    /// FptrFinder friend class for implementing named parameter idiom
-   template<class DT, class This>
+   template<class DT, class This, class MTag>
    class SetMaps
    {
       public:
@@ -773,31 +928,35 @@ namespace Gambit {
           , map1_(NULL)
           , map2_(NULL)
          {}
-         SetMaps& map (const typename MapTypes<DT>::fmap&        map) { map_=&map;   return *this; }
-         SetMaps& mapM(const typename MapTypes<DT>::fmap_extraM& mapM){ mapM_=&mapM; return *this; }
-         SetMaps& mapI(const typename MapTypes<DT>::fmap_extraI& mapI){ mapI_=&mapI; return *this; }
-         SetMaps& map1(const typename MapTypes<DT>::fmap1&       map1){ map1_=&map1; return *this; }
-         SetMaps& map2(const typename MapTypes<DT>::fmap2&       map2){ map2_=&map2; return *this; }
+         SetMaps& map (const typename MapTypes<DT,MTag>::fmap&        map) { map_=&map;   return *this; }
+         SetMaps& mapM(const typename MapTypes<DT,MTag>::fmap_extraM& mapM){ mapM_=&mapM; return *this; }
+         SetMaps& mapI(const typename MapTypes<DT,MTag>::fmap_extraI& mapI){ mapI_=&mapI; return *this; }
+         SetMaps& map1(const typename MapTypes<DT,MTag>::fmap1&       map1){ map1_=&map1; return *this; }
+         SetMaps& map2(const typename MapTypes<DT,MTag>::fmap2&       map2){ map2_=&map2; return *this; }
 
       private:
-         friend class FptrFinder<DT,This>; 
+         friend class FptrFinder<DT,This,MTag>; 
          const std::string label_;
          const This* const fakethis_;
-         const typename MapTypes<DT>::fmap*        map_;
-         const typename MapTypes<DT>::fmap_extraM* mapM_; 
-         const typename MapTypes<DT>::fmap_extraI* mapI_; 
-         const typename MapTypes<DT>::fmap1*       map1_; 
-         const typename MapTypes<DT>::fmap2*       map2_; 
+         const typename MapTypes<DT,MTag>::fmap*        map_;
+         const typename MapTypes<DT,MTag>::fmap_extraM* mapM_; 
+         const typename MapTypes<DT,MTag>::fmap_extraI* mapI_; 
+         const typename MapTypes<DT,MTag>::fmap1*       map1_; 
+         const typename MapTypes<DT,MTag>::fmap2*       map2_; 
           
    }; 
  
+   /// Helper class for calling function pointers found by FptrFinder
+   template<class DT, class This, class MTag>
+   struct CallFcn;
 
    /// Helper class for locating the function pointer corresponding to a 
    /// requested string, from amongst the various different maps in which
    /// it could be located.
-   template<class DT, class This>
+   template<class DT, class This, class MTag>
    class FptrFinder
    {
+      friend struct CallFcn<DT,This,MTag>;
       private:
          /// Label to help track down errors if they occur
          const std::string label;
@@ -809,18 +968,18 @@ namespace Gambit {
          const This* const fakethis;
 
          /// Pointers to const maps to use for search
-         const typename MapTypes<DT>::fmap*        map_;
-         const typename MapTypes<DT>::fmap_extraM* mapM_; 
-         const typename MapTypes<DT>::fmap_extraI* mapI_; 
-         const typename MapTypes<DT>::fmap1*       map1_; 
-         const typename MapTypes<DT>::fmap2*       map2_; 
+         const typename MapTypes<DT,MTag>::fmap*        map_;
+         const typename MapTypes<DT,MTag>::fmap_extraM* mapM_; 
+         const typename MapTypes<DT,MTag>::fmap_extraI* mapI_; 
+         const typename MapTypes<DT,MTag>::fmap1*       map1_; 
+         const typename MapTypes<DT,MTag>::fmap2*       map2_; 
 
          /// Iterators needed for to locate search result
-         typename MapTypes<DT>::fmap::const_iterator        it;  // 0
-         typename MapTypes<DT>::fmap_extraM::const_iterator itM; // 1
-         typename MapTypes<DT>::fmap_extraI::const_iterator itI; // 2
-         typename MapTypes<DT>::fmap1::const_iterator       it1; // 3
-         typename MapTypes<DT>::fmap2::const_iterator       it2; // 4
+         typename MapTypes<DT,MTag>::fmap::const_iterator        it;  // 0
+         typename MapTypes<DT,MTag>::fmap_extraM::const_iterator itM; // 1
+         typename MapTypes<DT,MTag>::fmap_extraI::const_iterator itI; // 2
+         typename MapTypes<DT,MTag>::fmap1::const_iterator       it1; // 3
+         typename MapTypes<DT,MTag>::fmap2::const_iterator       it2; // 4
 
          /// Booleans to indicate whether or not it is safe to dereference
          /// the above iterators
@@ -849,8 +1008,16 @@ namespace Gambit {
          static const std::map<int, const std::string> error_msg; 
 
       public:
+         /// Caller for whatever function was found
+         /// This has to work slightly differently depending on whether FptrFinder is
+         /// specialised for MapTag::Get or MapTag::Set, so we just declare it here and
+         /// do the specialisation after the class declaration.
+         /// This has to be a struct, since we partial specialisation of functions is
+         /// not allowed in C++, but it is treated like a member function.
+         CallFcn<DT,This,MTag> callfcn;
+
          // Constructor utilising named "parameters"
-         FptrFinder(const SetMaps<DT,This>& params)
+         FptrFinder(const SetMaps<DT,This,MTag>& params)
            : label(params.label_)
            , lastname("NONE")
            , fakethis(params.fakethis_)
@@ -872,7 +1039,8 @@ namespace Gambit {
            , whichiter(-1)
            , index1(-1)
            , index2(-1)
-           , error_code(-1) 
+           , error_code(-1)
+           , callfcn(this)
          {}
 
          /// @{ Error reporting
@@ -1041,77 +1209,156 @@ namespace Gambit {
             return found;
          }
 
-         /// Call whatever function was found
-         double callfcn()
-         {
-            double result(-1); // should not be returned in this state
-            if(error_code==0)
-            {
-               typename DT::Model* model = fakethis->parent.get_Model();
-               typename DT::Input* input = fakethis->parent.get_Input();
-               switch( whichiter )
-               {
-                  case 1: {
-                    check(it_safe);
-                    typename MapTypes<DT>::FSptr f = it->second;
-                    result = (model->*f)();
-                    break;}
-                  case 2: {
-                    check(itM_safe);
-                    typename MapTypes<DT>::plainfptrM f = itM->second;
-                    result = (*f)(*model);
-                    break;}
-                  case 3: {
-                    check(itI_safe);
-                    typename MapTypes<DT>::plainfptrI f = itI->second;
-                    result = (*f)(*input);
-                    break;}
-                  case 4: {
-                    check(it1_safe);
-                    typename MapTypes<DT>::FSptr1 f = it1->second.fptr;
-                    result = (model->*f)(index1);
-                    break;}
-                  case 5: {
-                    check(it2_safe);
-                    typename MapTypes<DT>::FSptr2 f = it2->second.fptr;
-                    result = (model->*f)(index1,index2);
-                    break;}
-                  default:{
-                    std::ostringstream errmsg;
-                    errmsg << "Error! Unanticipated whichiter code received while trying to call a function from SubSpectrum maps. This indicates a bug in the FptrFinder class. Please report it! (this FptrFinder has label="<<label<<", current error_code="<<error_code<<", whichiter="<<whichiter<<")"<<std::endl;
-                    utils_error().forced_throw(LOCAL_INFO,errmsg.str());  
-                    }
-               }
-            } else if(error_code==-1) 
-            {
-              std::ostringstream errmsg;
-              errmsg << "Error! Tried to call function from SubSpectrum maps without first finding the function! This indicates a bug, probably in the Spectrum or SubSpectrum classes. Please report it! (this FptrFinder has label="<<label<<", current error_code="<<error_code<<")"<<std::endl;
-              utils_error().forced_throw(LOCAL_INFO,errmsg.str());  
-            } else {
-              std::ostringstream errmsg;
-              errmsg << "Error! Unanticipated error code received while trying to call a function from SubSpectrum maps. This indicates a bug in the FptrFinder class. Please report it! (this FptrFinder has label="<<label<<", current error_code="<<error_code<<")"<<std::endl;
-              utils_error().forced_throw(LOCAL_INFO,errmsg.str());  
-            }
-            return result;
-         }
+   }; // end class FptrFinder
 
-    }; // end class FptrFinder
+   /// Specialisation of CallFcn for calling 'getter' functions
+   template<class DT, class This>
+   struct CallFcn<DT,This,MapTag::Get>
+   {
+     private:
+      typedef MapTypes<DT,MapTag::Get> MT;
+      FptrFinder<DT,This,MapTag::Get>* ff;
+
+     public: 
+      CallFcn(FptrFinder<DT,This,MapTag::Get>* host) 
+        : ff(host) 
+      {}
+
+      double operator()()
+      {
+         double result(-1); // should not be returned in this state
+         if(ff->error_code==0)
+         {
+            typename DT::Model* model = ff->fakethis->parent.get_Model();
+            typename DT::Input* input = ff->fakethis->parent.get_Input();
+            switch( ff->whichiter )
+            {
+               case 1: {
+                 ff->check(ff->it_safe);
+                 typename MT::FSptr f = ff->it->second;
+                 result = (model->*f)();
+                 break;}
+               case 2: {
+                 ff->check(ff->itM_safe);
+                 typename MT::plainfptrM f = ff->itM->second;
+                 result = (*f)(*model);
+                 break;}
+               case 3: {
+                 ff->check(ff->itI_safe);
+                 typename MT::plainfptrI f = ff->itI->second;
+                 result = (*f)(*input);
+                 break;}
+               case 4: {
+                 ff->check(ff->it1_safe);
+                 typename MT::FSptr1 f = ff->it1->second.fptr;
+                 result = (model->*f)(ff->index1);
+                 break;}
+               case 5: {
+                 ff->check(ff->it2_safe);
+                 typename MT::FSptr2 f = ff->it2->second.fptr;
+                 result = (model->*f)(ff->index1,ff->index2);
+                 break;}
+               default:{
+                 std::ostringstream errmsg;
+                 errmsg << "Error! Unanticipated whichiter code received while trying to call a function from SubSpectrum maps. This indicates a bug in the FptrFinder class. Please report it! (this FptrFinder has label="<<ff->label<<" and is specialised for Getter maps, current error_code="<<ff->error_code<<", whichiter="<<ff->whichiter<<")"<<std::endl;
+                 utils_error().forced_throw(LOCAL_INFO,errmsg.str());  
+                 }
+            }
+         } else if(ff->error_code==-1) 
+         {
+           std::ostringstream errmsg;
+           errmsg << "Error! Tried to call function from SubSpectrum maps without first finding the function! This indicates a bug, probably in the Spectrum or SubSpectrum classes. Please report it! (this FptrFinder has label="<<ff->label<<" and is specialised for Getter maps, current error_code="<<ff->error_code<<")"<<std::endl;
+           utils_error().forced_throw(LOCAL_INFO,errmsg.str());  
+         } else {
+           std::ostringstream errmsg;
+           errmsg << "Error! Unanticipated error code received while trying to call a function from SubSpectrum maps. This indicates a bug in the FptrFinder class. Please report it! (this FptrFinder has label="<<ff->label<<" and is specialised for Getter maps, current error_code="<<ff->error_code<<")"<<std::endl;
+           utils_error().forced_throw(LOCAL_INFO,errmsg.str());  
+         }
+         return result;
+      }
+   };
+
+   /// Specialisation of CallFcn for calling 'setter' functions
+   template<class DT, class This>
+   struct CallFcn<DT,This,MapTag::Set>
+   {
+     private:
+      typedef MapTypes<DT,MapTag::Set> MT;
+      FptrFinder<DT,This,MapTag::Set>* ff;
+
+     public: 
+      CallFcn(FptrFinder<DT,This,MapTag::Set>* host) 
+        : ff(host) 
+      {}
+
+      void operator()(const double set_value)
+      {
+         if(ff->error_code==0)
+         {
+            typename DT::Model* model = ff->fakethis->parent.get_Model();
+            typename DT::Input* input = ff->fakethis->parent.get_Input();
+            switch( ff->whichiter )
+            {
+               case 1: {
+                 ff->check(ff->it_safe);
+                 typename MT::FSptr f = ff->it->second;
+                 (model->*f)(set_value);
+                 break;}
+               case 2: {
+                 ff->check(ff->itM_safe);
+                 typename MT::plainfptrM f = ff->itM->second;
+                 (*f)(*model,set_value);
+                 break;}
+               case 3: {
+                 ff->check(ff->itI_safe);
+                 typename MT::plainfptrI f = ff->itI->second;
+                 (*f)(*input,set_value);
+                 break;}
+               case 4: {
+                 ff->check(ff->it1_safe);
+                 typename MT::FSptr1 f = ff->it1->second.fptr;
+                 (model->*f)(set_value,ff->index1);
+                 break;}
+               case 5: {
+                 ff->check(ff->it2_safe);
+                 typename MT::FSptr2 f = ff->it2->second.fptr;
+                 (model->*f)(set_value,ff->index1,ff->index2);
+                 break;}
+               default:{
+                 std::ostringstream errmsg;
+                 errmsg << "Error! Unanticipated whichiter code received while trying to call a function from SubSpectrum maps. This indicates a bug in the FptrFinder class. Please report it! (this FptrFinder has label="<<ff->label<<" and is specialised for Getter maps, current error_code="<<ff->error_code<<", whichiter="<<ff->whichiter<<")"<<std::endl;
+                 utils_error().forced_throw(LOCAL_INFO,errmsg.str());  
+                 }
+            }
+         } else if(ff->error_code==-1) 
+         {
+           std::ostringstream errmsg;
+           errmsg << "Error! Tried to call function from SubSpectrum maps without first finding the function! This indicates a bug, probably in the Spectrum or SubSpectrum classes. Please report it! (this FptrFinder has label="<<ff->label<<" and is specialised for Getter maps, current error_code="<<ff->error_code<<")"<<std::endl;
+           utils_error().forced_throw(LOCAL_INFO,errmsg.str());  
+         } else {
+           std::ostringstream errmsg;
+           errmsg << "Error! Unanticipated error code received while trying to call a function from SubSpectrum maps. This indicates a bug in the FptrFinder class. Please report it! (this FptrFinder has label="<<ff->label<<" and is specialised for Getter maps, current error_code="<<ff->error_code<<")"<<std::endl;
+           utils_error().forced_throw(LOCAL_INFO,errmsg.str());  
+         }
+      }
+   };
 
  
    /// @{ Getter and checker function definitions
  
    /// @{ Macros to define parameter checker and getter functions
    // No indices
-   #define DEFINE_GETTERS(CLASS,FLABEL,MLABEL)                                   \
+   #define DEFINE_GETTERS_AND_SETTERS(CLASS,FLABEL,MLABEL)                       \
       template<class D, class DT>                                                \
-      bool CLASS<D,DT>::CAT(has_,FLABEL)(const str& name) const       \
+      bool CLASS<D,DT>::CAT(has_,FLABEL)(const str& name) const                  \
       {                                                                          \
          /* Create finder object, tell it what maps to search, and do the search */\
-         FptrFinder<DT,CLASS> finder = SetMaps<DT,CLASS>(STRINGIFY(FLABEL),this) \
-                                 .map(  CAT_3(get_,MLABEL,_map)() )               \
-                                 .mapM( CAT_3(get_,MLABEL,_map_extraM)() )        \
-                                 .mapI( CAT_3(get_,MLABEL,_map_extraI)() )        \
-                                 .map1( CAT_3(get_,MLABEL,_map1)() );             \
+         FptrFinder<DT,CLASS,MapTag::Get> finder =                                \
+                          SetMaps<DT,CLASS,MapTag::Get>(STRINGIFY(FLABEL),this)              \
+                                 .map(  CAT_3(get_,MLABEL,_map_Get)() )               \
+                                 .mapM( CAT_3(get_,MLABEL,_map_extraM_Get)() )        \
+                                 .mapI( CAT_3(get_,MLABEL,_map_extraI_Get)() )        \
+                                 .map1( CAT_3(get_,MLABEL,_map1_Get)() );             \
          return finder.find(name);                                               \
       }                                                                          \
                                                                                  \
@@ -1120,26 +1367,42 @@ namespace Gambit {
       {                                                                          \
          double result;                                                          \
          /* Create finder object, tell it what maps to search, and do the search */\
-         FptrFinder<DT,CLASS> finder = SetMaps<DT,CLASS>(STRINGIFY(FLABEL),this) \
-                                 .map(  CAT_3(get_,MLABEL,_map)() )               \
-                                 .mapM( CAT_3(get_,MLABEL,_map_extraM)() )        \
-                                 .mapI( CAT_3(get_,MLABEL,_map_extraI)() )        \
-                                 .map1( CAT_3(get_,MLABEL,_map1)() );             \
+         FptrFinder<DT,CLASS,MapTag::Get> finder =                                \
+                          SetMaps<DT,CLASS,MapTag::Get>(STRINGIFY(FLABEL),this)               \
+                                 .map(  CAT_3(get_,MLABEL,_map_Get)() )               \
+                                 .mapM( CAT_3(get_,MLABEL,_map_extraM_Get)() )        \
+                                 .mapI( CAT_3(get_,MLABEL,_map_extraI_Get)() )        \
+                                 .map1( CAT_3(get_,MLABEL,_map1_Get)() );             \
          if( finder.find(name) ){ result = finder.callfcn(); }                   \
          else { finder.raise_error(LOCAL_INFO); }                                \
          return result;                                                          \
+      }                                                                          \
+                                                                                 \
+      template<class D, class DT>                                                \
+      void CLASS<D,DT>::CAT(set_,FLABEL)(const double set_value, const str& name) \
+      {                                                                          \
+         /* Create finder object, tell it what maps to search, and do the search */\
+         FptrFinder<DT,CLASS,MapTag::Set> finder =                               \
+                          SetMaps<DT,CLASS,MapTag::Set>(STRINGIFY(FLABEL),this)               \
+                                 .map(  CAT_3(get_,MLABEL,_map_Set)() )               \
+                                 .mapM( CAT_3(get_,MLABEL,_map_extraM_Set)() )        \
+                                 .mapI( CAT_3(get_,MLABEL,_map_extraI_Set)() )        \
+                                 .map1( CAT_3(get_,MLABEL,_map1_Set)() );             \
+         if( finder.find(name) ){ finder.callfcn(set_value); }                   \
+         else { finder.raise_error(LOCAL_INFO); }                                \
       }                                                                              
 
-   #define DEFINE_GETTERS1(CLASS,FLABEL,MLABEL)                                  \
+   #define DEFINE_GETTERS_AND_SETTERS1(CLASS,FLABEL,MLABEL)                                  \
       template<class D, class DT>                                                \
       bool CLASS<D,DT>::CAT(has_,FLABEL)(const str& name, int i) const\
       {                                                                          \
          /* Create finder object, tell it what maps to search, and do the search */\
-         FptrFinder<DT,CLASS> finder = SetMaps<DT,CLASS>(STRINGIFY(FLABEL),this)  \
-                                 .map(  CAT_3(get_,MLABEL,_map)() )               \
-                                 .mapM( CAT_3(get_,MLABEL,_map_extraM)() )        \
-                                 .mapI( CAT_3(get_,MLABEL,_map_extraI)() )        \
-                                 .map1( CAT_3(get_,MLABEL,_map1)() );             \
+         FptrFinder<DT,CLASS,MapTag::Get> finder =                               \
+                          SetMaps<DT,CLASS,MapTag::Get>(STRINGIFY(FLABEL),this)              \
+                                 .map(  CAT_3(get_,MLABEL,_map_Get)() )               \
+                                 .mapM( CAT_3(get_,MLABEL,_map_extraM_Get)() )        \
+                                 .mapI( CAT_3(get_,MLABEL,_map_extraI_Get)() )        \
+                                 .map1( CAT_3(get_,MLABEL,_map1_Get)() );             \
          return finder.find(name,i);                                             \
       }                                                                          \
                                                                                  \
@@ -1148,23 +1411,39 @@ namespace Gambit {
       {                                                                          \
          double result;                                                          \
          /* Create finder object, tell it what maps to search, and do the search */\
-         FptrFinder<DT,CLASS> finder = SetMaps<DT,CLASS>(STRINGIFY(FLABEL),this) \
-                                 .map(  CAT_3(get_,MLABEL,_map)() )               \
-                                 .mapM( CAT_3(get_,MLABEL,_map_extraM)() )        \
-                                 .mapI( CAT_3(get_,MLABEL,_map_extraI)() )        \
-                                 .map1( CAT_3(get_,MLABEL,_map1)() );             \
+         FptrFinder<DT,CLASS,MapTag::Get> finder = \
+                          SetMaps<DT,CLASS,MapTag::Get>(STRINGIFY(FLABEL),this) \
+                                 .map(  CAT_3(get_,MLABEL,_map_Get)() )               \
+                                 .mapM( CAT_3(get_,MLABEL,_map_extraM_Get)() )        \
+                                 .mapI( CAT_3(get_,MLABEL,_map_extraI_Get)() )        \
+                                 .map1( CAT_3(get_,MLABEL,_map1_Get)() );             \
          if( finder.find(name,i) ){ result = finder.callfcn(); }                 \
          else { finder.raise_error(LOCAL_INFO); }                                \
          return result;                                                          \
+      }                                                                          \
+                                                                                 \
+      template<class D, class DT>                                                \
+      void CLASS<D,DT>::CAT(set_,FLABEL)(const double set_value, const str& name, int i) \
+      {                                                                          \
+         /* Create finder object, tell it what maps to search, and do the search */\
+         FptrFinder<DT,CLASS,MapTag::Set> finder =                               \
+                          SetMaps<DT,CLASS,MapTag::Set>(STRINGIFY(FLABEL),this)               \
+                                 .map(  CAT_3(get_,MLABEL,_map_Set)() )               \
+                                 .mapM( CAT_3(get_,MLABEL,_map_extraM_Set)() )        \
+                                 .mapI( CAT_3(get_,MLABEL,_map_extraI_Set)() )        \
+                                 .map1( CAT_3(get_,MLABEL,_map1_Set)() );             \
+         if( finder.find(name,i) ){ finder.callfcn(set_value); }                   \
+         else { finder.raise_error(LOCAL_INFO); }                                \
       }                                                                              
 
-   #define DEFINE_GETTERS2(CLASS,FLABEL,MLABEL)                                  \
+   #define DEFINE_GETTERS_AND_SETTERS2(CLASS,FLABEL,MLABEL)                                  \
       template<class D, class DT>                                                \
       bool CLASS<D,DT>::CAT(has_,FLABEL)(const str& name, int i, int j) const\
       {                                                                          \
          /* Create finder object, tell it what maps to search, and do the search */\
-         FptrFinder<DT,CLASS> finder = SetMaps<DT,CLASS>(STRINGIFY(FLABEL),this) \
-                                 .map2( CAT_3(get_,MLABEL,_map2)() );             \
+         FptrFinder<DT,CLASS,MapTag::Get> finder =  \
+                          SetMaps<DT,CLASS,MapTag::Get>(STRINGIFY(FLABEL),this) \
+                                 .map2( CAT_3(get_,MLABEL,_map2_Get)() );             \
          return finder.find(name,i,j);                                           \
       }                                                                          \
                                                                                  \
@@ -1173,47 +1452,62 @@ namespace Gambit {
       {                                                                          \
          double result;                                                          \
          /* Create finder object, tell it what maps to search, and do the search */\
-         FptrFinder<DT,CLASS> finder = SetMaps<DT,CLASS>(STRINGIFY(FLABEL),this)  \
-                                 .map2( CAT_3(get_,MLABEL,_map2)() );             \
+         FptrFinder<DT,CLASS,MapTag::Get> finder =  \
+                          SetMaps<DT,CLASS,MapTag::Get>(STRINGIFY(FLABEL),this)  \
+                                 .map2( CAT_3(get_,MLABEL,_map2_Get)() );             \
          if( finder.find(name,i,j) ){ result = finder.callfcn(); }               \
          else { finder.raise_error(LOCAL_INFO); }                                \
          return result;                                                          \
+      }                                                                          \
+                                                                                 \
+      template<class D, class DT>                                                \
+      void CLASS<D,DT>::CAT(set_,FLABEL)(const double set_value, const str& name, int i, int j) \
+      {                                                                          \
+         /* Create finder object, tell it what maps to search, and do the search */\
+         FptrFinder<DT,CLASS,MapTag::Set> finder =                               \
+                          SetMaps<DT,CLASS,MapTag::Set>(STRINGIFY(FLABEL),this)               \
+                                 .map(  CAT_3(get_,MLABEL,_map_Set)() )               \
+                                 .mapM( CAT_3(get_,MLABEL,_map_extraM_Set)() )        \
+                                 .mapI( CAT_3(get_,MLABEL,_map_extraI_Set)() )        \
+                                 .map1( CAT_3(get_,MLABEL,_map1_Set)() );             \
+         if( finder.find(name,i,j) ){ finder.callfcn(set_value); }                   \
+         else { finder.raise_error(LOCAL_INFO); }                                \
       }                                                                              
 
       /// @}
 
       // mass^4
-      DEFINE_GETTERS(RunparDer,mass4_parameter,mass4) 
-      DEFINE_GETTERS1(RunparDer,mass4_parameter,mass4) 
-      DEFINE_GETTERS2(RunparDer,mass4_parameter,mass4) 
+      DEFINE_GETTERS_AND_SETTERS(RunparDer,mass4_parameter,mass4) 
+      DEFINE_GETTERS_AND_SETTERS1(RunparDer,mass4_parameter,mass4) 
+      DEFINE_GETTERS_AND_SETTERS2(RunparDer,mass4_parameter,mass4) 
       // mass^3
-      DEFINE_GETTERS(RunparDer,mass3_parameter,mass3) 
-      DEFINE_GETTERS1(RunparDer,mass3_parameter,mass3) 
-      DEFINE_GETTERS2(RunparDer,mass3_parameter,mass3) 
+      DEFINE_GETTERS_AND_SETTERS(RunparDer,mass3_parameter,mass3) 
+      DEFINE_GETTERS_AND_SETTERS1(RunparDer,mass3_parameter,mass3) 
+      DEFINE_GETTERS_AND_SETTERS2(RunparDer,mass3_parameter,mass3) 
       // mass^2
-      DEFINE_GETTERS(RunparDer,mass2_parameter,mass2) 
-      DEFINE_GETTERS1(RunparDer,mass2_parameter,mass2) 
-      DEFINE_GETTERS2(RunparDer,mass2_parameter,mass2) 
+      DEFINE_GETTERS_AND_SETTERS(RunparDer,mass2_parameter,mass2) 
+      DEFINE_GETTERS_AND_SETTERS1(RunparDer,mass2_parameter,mass2) 
+      DEFINE_GETTERS_AND_SETTERS2(RunparDer,mass2_parameter,mass2) 
       // mass^1
-      DEFINE_GETTERS(RunparDer,mass_parameter,mass) 
-      DEFINE_GETTERS1(RunparDer,mass_parameter,mass) 
-      DEFINE_GETTERS2(RunparDer,mass_parameter,mass) 
+      DEFINE_GETTERS_AND_SETTERS(RunparDer,mass_parameter,mass) 
+      DEFINE_GETTERS_AND_SETTERS1(RunparDer,mass_parameter,mass) 
+      DEFINE_GETTERS_AND_SETTERS2(RunparDer,mass_parameter,mass) 
       // mass0
-      DEFINE_GETTERS(RunparDer,dimensionless_parameter,mass0) 
-      DEFINE_GETTERS1(RunparDer,dimensionless_parameter,mass0) 
-      DEFINE_GETTERS2(RunparDer,dimensionless_parameter,mass0) 
+      DEFINE_GETTERS_AND_SETTERS(RunparDer,dimensionless_parameter,mass0) 
+      DEFINE_GETTERS_AND_SETTERS1(RunparDer,dimensionless_parameter,mass0) 
+      DEFINE_GETTERS_AND_SETTERS2(RunparDer,dimensionless_parameter,mass0) 
       // mass eigenstate
-      DEFINE_GETTERS(RunparDer,mass_eigenstate,mass_eigenstate) 
-      DEFINE_GETTERS1(RunparDer,mass_eigenstate,mass_eigenstate) 
-      DEFINE_GETTERS2(RunparDer,mass_eigenstate,mass_eigenstate) 
+      DEFINE_GETTERS_AND_SETTERS(RunparDer,mass_eigenstate,mass_eigenstate) 
+      DEFINE_GETTERS_AND_SETTERS1(RunparDer,mass_eigenstate,mass_eigenstate) 
+      DEFINE_GETTERS_AND_SETTERS2(RunparDer,mass_eigenstate,mass_eigenstate) 
       // Pole masses
-      DEFINE_GETTERS(PhysDer,Pole_Mass,PoleMass) 
-      DEFINE_GETTERS1(PhysDer,Pole_Mass,PoleMass) 
-      /* no two-index pole mass getters */
+      DEFINE_GETTERS_AND_SETTERS(PhysDer,Pole_Mass,PoleMass) 
+      DEFINE_GETTERS_AND_SETTERS1(PhysDer,Pole_Mass,PoleMass) 
+      /* no two-index pole mass getters/setters */
       // Pole mixings
-      DEFINE_GETTERS(PhysDer,Pole_Mixing,PoleMixing) 
-      DEFINE_GETTERS1(PhysDer,Pole_Mixing,PoleMixing) 
-      DEFINE_GETTERS2(PhysDer,Pole_Mixing,PoleMixing) 
+      DEFINE_GETTERS_AND_SETTERS(PhysDer,Pole_Mixing,PoleMixing) 
+      DEFINE_GETTERS_AND_SETTERS1(PhysDer,Pole_Mixing,PoleMixing) 
+      DEFINE_GETTERS_AND_SETTERS2(PhysDer,Pole_Mixing,PoleMixing) 
 
    /// @}
 
@@ -1221,6 +1515,8 @@ namespace Gambit {
 
 // Undef the various helper macros to avoid contaminating other files
 #undef PDB
+#undef DECLARE_GETTERS
+#undef DECLARE_SETTERS
 #undef DECLARE_MAP
 #undef DECLARE_MAP_COLLECTION
 #undef DECLARE_MAP_COLLECTION2

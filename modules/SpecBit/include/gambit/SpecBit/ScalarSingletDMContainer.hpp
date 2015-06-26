@@ -48,7 +48,7 @@ namespace Gambit {
         private:
             typedef SingletDMContainer   This;
             typedef SingletDMModelTraits Traits;
-            typedef MapTypes<Traits> MT; 
+            typedef MapTypes<Traits,MapTag::Get> MT; 
 
          public:
             /// @{ Constructors/destructors
@@ -75,16 +75,16 @@ namespace Gambit {
             /// to add the extra values into the maps stored there.
 
             // Fillers listed here for bookkeeping: they are actually defined below
-            // static void derived_fill_mass_map    (MT::fmap& in);
-            // static void derived_fill_PoleMass_map(MT::fmap& in);
+            // static void derived_fill_mass_map_Get    (MT::fmap& in);
+            // static void derived_fill_PoleMass_map_Get(MT::fmap& in);
  
             /// Definitions of map fillers
-            static void derived_fill_mass_map(MT::fmap& in_map) 
+            static void derived_fill_mass_map_Get(MT::fmap& in_map) 
             {
                /* nothing so far */
             }
 
-            static void derived_fill_PoleMass_map(MT::fmap& in_map)
+            static void derived_fill_PoleMass_map_Get(MT::fmap& in_map)
             {
                in_map["S"]       = &Model::get_SingletPoleMass; 
                in_map["Singlet"] = &Model::get_SingletPoleMass; 

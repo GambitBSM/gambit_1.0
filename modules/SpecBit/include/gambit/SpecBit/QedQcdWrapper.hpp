@@ -51,7 +51,8 @@ namespace Gambit {
          friend class PhysDer  <QedQcdWrapper,QedQcdWrapperTraits>; /*P*/
    
          private:
-            typedef MapTypes<QedQcdWrapperTraits> MT; 
+            typedef MapTypes<QedQcdWrapperTraits,MapTag::Get> MTget; 
+            typedef MapTypes<QedQcdWrapperTraits,MapTag::Set> MTset; 
    
             // Keep copies of Model and Input objects internally
             typename QedQcdWrapperTraits::Model qedqcd;
@@ -88,12 +89,16 @@ namespace Gambit {
             /// (specialisations created and stored automatically by Spec<QedQcdWrapper>)
             
             /// RunparDer overrides (access via spectrum.runningpar)
-            static typename MT::fmap_extraM fill_mass_map_extraM();   /*O*/
-            static typename MT::fmap_extraM fill_mass0_map_extraM();  /*O*/
+            static typename MTget::fmap_extraM fill_mass_map_extraM_Get();   /*O*/
+            static typename MTget::fmap_extraM fill_mass0_map_extraM_Get();  /*O*/
    
             /// PhysDer overrides (access via spectrum.phys)
-            static typename MT::fmap        fill_PoleMass_map();        /*O*/
-            static typename MT::fmap_extraI fill_PoleMass_map_extraI(); /*O*/
+            static typename MTget::fmap        fill_PoleMass_map_Get();        /*O*/
+            static typename MTget::fmap_extraI fill_PoleMass_map_extraI_Get(); /*O*/
+
+            /// PhysDer setters
+            static typename MTset::fmap        fill_PoleMass_map_Set();        /*O*/
+            static typename MTset::fmap_extraI fill_PoleMass_map_extraI_Set(); /*O*/
     
       };
  

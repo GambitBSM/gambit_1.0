@@ -43,7 +43,7 @@ namespace Gambit {
    namespace SpecBit {
 
       /// Simplify access to map types in this file
-      typedef MapTypes<SLHAskeletonTraits<SMea>> MT; 
+      typedef MapTypes<SLHAskeletonTraits<SMea>,MapTag::Get> MT; 
 
       /// @{ Member functions for SLHAeaModel class
            
@@ -130,7 +130,7 @@ namespace Gambit {
       // Map fillers
 
       /// Filler for Pole_mass_map (from Model object)
-      MT::fmap SMskeleton::fill_PoleMass_map()
+      MT::fmap SMskeleton::fill_PoleMass_map_Get()
       {
          MT::fmap tmp_map;
       
@@ -153,7 +153,7 @@ namespace Gambit {
       }
 
       /// Filler for mass_map 
-      MT::fmap SMskeleton::fill_mass_map()
+      MT::fmap SMskeleton::fill_mass_map_Get()
       {
          MT::fmap tmp_map;
 

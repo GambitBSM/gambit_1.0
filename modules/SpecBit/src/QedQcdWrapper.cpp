@@ -46,7 +46,8 @@ namespace Gambit {
    namespace SpecBit {
 
       /// Simplify access to map types in this file
-      typedef MapTypes<QedQcdWrapperTraits> MT; 
+      typedef MapTypes<QedQcdWrapperTraits,MapTag::Get> MTget; 
+      typedef MapTypes<QedQcdWrapperTraits,MapTag::Set> MTset; 
 
       /// @{ QedQcdWrapper member functions
       
@@ -117,9 +118,9 @@ namespace Gambit {
       double get_mGluon   (const softsusy::QedQcd&) { return 0.; }
 
       /// Filler for mass_map
-      MT::fmap_extraM QedQcdWrapper::fill_mass_map_extraM()
+      MTget::fmap_extraM QedQcdWrapper::fill_mass_map_extraM_Get()
       {
-         MT::fmap_extraM tmp_map;
+         MTget::fmap_extraM tmp_map;
 
          addtomap(("u", "ubar", "u_1", "ubar_1"), &get_mUp);
          addtomap(("c", "cbar", "u_2", "ubar_2"), &get_mCharm);
@@ -166,10 +167,10 @@ namespace Gambit {
          //QedQcd::getGaugeMu(const double m2, const double sinth)
       }
 
-      /// Filler for mass_map
-      MT::fmap_extraM QedQcdWrapper::fill_mass0_map_extraM()
+      /// Filler for mass_map_Get
+      MTget::fmap_extraM QedQcdWrapper::fill_mass0_map_extraM_Get()
       {
-         MT::fmap_extraM tmp_map;
+         MTget::fmap_extraM tmp_map;
 
          tmp_map["alpha"]  = &get_alpha;
          tmp_map["alphaS"] = &get_alphaS;
@@ -180,10 +181,10 @@ namespace Gambit {
       // String names correspond to those defined in particle_database.cpp. If
       // there is a mismatch, please change the ones here!
 
-      /// Filler for PoleMass_map
-      MT::fmap QedQcdWrapper::fill_PoleMass_map()
+      /// Filler for PoleMass_map_Get
+      MTget::fmap QedQcdWrapper::fill_PoleMass_map_Get()
       {
-         MT::fmap tmp_map;
+         MTget::fmap tmp_map;
       
          addtomap(("Z0", "Z"),       &softsusy::QedQcd::displayPoleMZ);
          addtomap(("W+", "W-", "W"), &softsusy::QedQcd::displayPoleMW);
@@ -206,15 +207,15 @@ namespace Gambit {
       double get_Pole_mPhoton  (const SMInputs&) { return 0.; }
       double get_Pole_mGluon   (const SMInputs&) { return 0.; }
 
-      /// Filler for Pole_mass_map 
+      /// Filler for Pole_mass_map_Get
       /// Note the I for "Inputs"; changes the argument of the function pointers.
       /// "Inputs" is intended as a generic container for anything needed to
       /// compute the function results. Could have used this exclusively, rather
       /// than having "extra" and "extraI" versions of these functions, but it
       /// seemed nicer to have a version dedicated to the host Model class.
-      MT::fmap_extraI QedQcdWrapper::fill_PoleMass_map_extraI()
+      MTget::fmap_extraI QedQcdWrapper::fill_PoleMass_map_extraI_Get()
       {
-         MT::fmap_extraI tmp_map;
+         MTget::fmap_extraI tmp_map;
 
          addtomap(("e-",   "e+",   "e",   "e-_1", "e+_1", "e_1"), &get_Pole_mElectron);
          addtomap(("mu-",  "mu+",  "mu",  "e-_2", "e+_2", "e_2"), &get_Pole_mMuon);
@@ -227,6 +228,36 @@ namespace Gambit {
 
          return tmp_map; 
       }
+
+      /// Filler for PoleMass_map_Set
+      MTset::fmap QedQcdWrapper::fill_PoleMass_map_Set()
+      {
+         MTset::fmap tmp_map;
+     
+         // Do something like this, though the demo function here is a getter
+         // not a setter so you can't use that one of course :). If the
+         // function signature doesn't match what you need I can change it,
+         // otherwise need to use one of the "extra" map fillers, see e.g.
+         // below (there is also one that takes the model object as an
+         // input, as in the getter case)
+         //addtomap(("Z0", "Z"),       &softsusy::QedQcd::displayPoleMZ);
+            
+         return tmp_map;
+      }
+
+      /// Plain C-function wrappers for extra pole mass setters (manually specified masses)
+      void set_Pole_mElectron(SMInputs& inputs, double set_value) { inputs.mE = set_value; }
+
+      /// Filler for Pole_mass_map_Set
+      MTset::fmap_extraI QedQcdWrapper::fill_PoleMass_map_extraI_Set()
+      {
+         MTset::fmap_extraI tmp_map;
+
+         addtomap(("e-",   "e+",   "e",   "e-_1", "e+_1", "e_1"), &set_Pole_mElectron);
+      
+         return tmp_map; 
+      }
+
 
    } // end SpecBit namespace    
 } // end Gambit namespace
