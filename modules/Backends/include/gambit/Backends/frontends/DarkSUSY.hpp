@@ -286,7 +286,7 @@ BE_NAMESPACE
     GAMBITparticle_mass.clear();
     for (int i = 0; i < IBfinalstate.size(); i++ )
     {
-      DSparticle_mass.push_back(
+//      DSparticle_mass.push_back(
 //         mspctm->mass(DarkBit::DarkBit_utils::DSparticle_code(IBfinalstate[i])));
 
 //For CW/PS: The above line sets masses in the desired way, but does not compile. It seems 
