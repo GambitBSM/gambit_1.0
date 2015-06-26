@@ -44,7 +44,8 @@ namespace Gambit {
 
     /// @name SpecializablePythia definitions
     //@{
-      void SpecializablePythia::init(const std::vector<std::string>& externalSettings) {
+      void SpecializablePythia::init(const std::vector<std::string>& externalSettings,
+                                     const SLHAea::Coll* slhaea) {
         // Settings acquired externally (ex from a gambit yaml file)
         for(const auto command : externalSettings) {
           _pythiaSettings.push_back(command);
@@ -61,6 +62,11 @@ namespace Gambit {
             _pythiaInstance->readString(command);
 
         if(!_pythiaInstance) throw InitializationError();
+
+        // Send along the SLHAea::Coll pointer, if it exists
+        if(slhaea)
+          _pythiaInstance->slhaInterface.slha.setSLHAea(slhaea);
+
         _pythiaInstance->init();
       }
 

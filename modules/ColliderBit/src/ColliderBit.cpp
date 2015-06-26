@@ -44,10 +44,11 @@ namespace Gambit {
     /// Pythia stuff
     std::vector<std::string> pythiaNames;
     std::vector<std::string>::const_iterator iter;
-    int pythiaConfigurations, pythiaNumber;
     std::string slhaFilename;
+    const SLHAea::Coll* slhaea = nullptr;
+    int pythiaConfigurations, pythiaNumber;
     /// General collider sim info stuff
-    #define SHARED_OVER_OMP iter,pythiaNumber,pythiaConfigurations,globalAnalyses
+    #define SHARED_OVER_OMP iter,pythiaNumber,pythiaConfigurations,globalAnalyses,slhaea
 
 
     /// *************************************************
@@ -68,6 +69,10 @@ namespace Gambit {
         GET_COLLIDER_RUNOPTION(nEvents, int);
         /// @todo Get the Spectrum and Decay info from SpecBit and DecayBit
         GET_COLLIDER_RUNOPTION(slhaFilename, std::string);
+        std::ifstream ifs(slhaFilename);
+        delete slhaea;
+        slhaea = new SLHAea::Coll(ifs);
+        ifs.close();
       }
 
       /// For every collider requested in the yaml file:
@@ -126,53 +131,16 @@ namespace Gambit {
           if (runOptions->hasKey(*iter, pythiaConfigName))
             pythiaOptions = runOptions->getValue<std::vector<std::string>>(*iter, pythiaConfigName);
         }
+        /// @note Pythia still needs to know the filename in order to call readSLHA
         pythiaOptions.push_back("SLHA:file = " + slhaFilename);
-        pythiaOptions.push_back("Random:seed = " + std::to_string(12345 + omp_get_thread_num()));
-// Pat: merge conflict resolved here by accepting from ColliderBit_development.  Abram please check. <<<<<<< HEAD
-//=======
-
-        ///// Memory allocation: Pythia
-        //result = mkPythia(*iter, pythiaOptions);
-        //pythiaOptions.clear();
-        //resetPythiaFlag = false;
-
-      //} else if (*Loop::iteration == END_SUBPROCESS) {
-
-        //xsecArray[omp_get_thread_num()] = result->pythia()->info.sigmaGen() * 1e9; //< note converting Py8's mb to pb units
-        //xsecerrArray[omp_get_thread_num()] = result->pythia()->info.sigmaErr() * 1e9; //< note converting Py8's mb to pb units
-        ///// @todo Hackity hack of a exp(polynomial(mg)) fit to nllfast cross-sections, via a super-hacky mg.dat file... just for testing!
-        //// std::cout << "XSEC_PY = " << xsecArray[omp_get_thread_num()] << " pb" << std::endl;
-        //// const double mg = result->pythia()->particleData.particleDataEntryPtr(1000021)->m0();
-        //// const double mg = result->pythia()->particleData.m0(1000021);
-        //// std::ifstream mgf("mg.dat"); double mg; mgf >> mg; mgf.close();
-        //// const double lxs = -1.031e-08*mg*mg*mg + 2.65e-05*mg*mg - 0.03222*mg + 12.24;
-        //// const double xs = exp(lxs);
-        //// std::cout << "MG = " << mg << " logXS = " << lxs << " XS = " << xs << " pb" << std::endl;
-        //// xsecArray[omp_get_thread_num()] = xs;
-        //// std::cout << "XSEC_NL = " << xsecArray[omp_get_thread_num()] << " pb" << std::endl;
-
-        ///// Each thread gets its own Pythia instance.
-        ///// Thus, the Pythia memory clean-up is *before* FINALIZE.
-        ///// Memory clean-up: Pythia
-        //delete result;
-        //result = 0;
-        //resetPythiaFlag = true;
-
-      //} else if (*Loop::iteration == FINALIZE) {
-
-        ///// Memory clean-up: xsecArrays
-        ///// @TODO: where is the matching allocation? Careful with these deletes
-        //delete[] xsecArray;
-        //delete[] xsecerrArray;
-// Pat: merge conflict resolved to here by accepting from ColliderBit.  Abram please check. >>>>>>> master
+        pythiaOptions.push_back("Random:seed = " + std::to_string(54321 + omp_get_thread_num()));
 
         result.resetSpecialization(*iter);
-/*      /// Init SLHAea testing object. TODO get it from SpecBit / DecayBit.
-        std::ifstream ifs(slhaFilename);
-        const SLHAea::Coll slhaea(slhaFilename);
         //const SLHAea::Coll &slhaea = *Dep::SLHAeaFromSomewhere;
-        result.addSLHAea(slhaea);  */
-        result.init(pythiaOptions);
+// The following line runs Pythia which reads the SLHA file normally.
+        // result.init(pythiaOptions);
+// The following line runs Pythia which reads the SLHAea::Coll instance.
+        result.init(pythiaOptions, slhaea);
         /// @TODO Can we test for xsec veto here? Might be analysis dependent, so see TODO below.
       }
     }

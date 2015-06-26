@@ -5,6 +5,7 @@
 #include "forward_decls_abstract_classes.h"
 #include "forward_decls_wrapper_classes.h"
 #include <string>
+#include "wrapper_ResonanceWidths_decl.h"
 #include "wrapper_ParticleData_decl.h"
 #include "wrapper_DecayChannel_decl.h"
 #include "wrapper_Info_decl.h"
@@ -261,6 +262,10 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 virtual bool preparePick__BOSS(int) =0;
     
                 virtual Pythia8::Abstract_DecayChannel* pickChannel__BOSS() =0;
+    
+                virtual void setResonancePtr__BOSS(Pythia8::Abstract_ResonanceWidths*) =0;
+    
+                virtual Pythia8::Abstract_ResonanceWidths* getResonancePtr__BOSS() =0;
     
                 virtual void resInit__BOSS(Pythia8::Abstract_Info*, Pythia8::Abstract_Settings*, Pythia8::Abstract_ParticleData*, Pythia8::Abstract_Couplings*) =0;
     
