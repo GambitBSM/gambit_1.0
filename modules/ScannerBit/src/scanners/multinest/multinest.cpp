@@ -28,6 +28,7 @@
 #include "gambit/ScannerBit/scanner_plugin.hpp"
 #include "gambit/ScannerBit/scanners/multinest/multinest.hpp"
 #include "gambit/Utils/yaml_options.hpp"
+#include "gambit/Utils/util_functions.hpp"
 //#include "gambit/Printers/basebaseprinter.hpp"
 
 #include <iomanip>  // For debugging only
@@ -95,7 +96,8 @@ scanner_plugin(MultiNest, version(3, 9, 0))
          
       std::string root_str ( get_inifile_value<std::string>("root", "chains/") ); // root for output files
       char root[100];
-      root_str.copy(root,100,0);  // copy std::string into char array for transport to fortran/
+      // copy std::string into char array for transport to fortran
+      Gambit::Utils::strcpy2f(root, 100, root_str);       
 
       int seed (	get_inifile_value<int>("seed", -1) );		// random no. generator seed, if < 0 then take the seed from system clock
       int fb (		get_inifile_value<int>("fb", 1) );		// need feedback on standard output?
@@ -117,7 +119,9 @@ scanner_plugin(MultiNest, version(3, 9, 0))
       Gambit::Options stats_options = get_inifile_node("aux_printer_stats_options");
       Gambit::Options live_options  = get_inifile_node("aux_printer_live_options");
 
-      stats_options.setValue("global",1); // Option to set this stream to "global" mode, i.e. it does not operated on a point-by-point basis. Therefore no thread or point number is needed when printing.
+      stats_options.setValue("synchronised",false); // Option to desynchronised this print stream from the main Gambit iterations. This allows for random access writing, or writing of global scan data.
+      txt_options.setValue("synchronised",false);
+      live_options.setValue("synchronised",false);
 
       // Initialise auxiliary print streams
       get_printer().new_stream("txt",txt_options);
@@ -150,6 +154,14 @@ scanner_plugin(MultiNest, version(3, 9, 0))
 
       //Run MultiNest (supplying callback functions which hook into the interface object, which they know about via the 'context' void pointer)
       std::cout << "Starting MultiNest run..." << std::endl;
+      // Debugging!
+      std::cout << "DEBUG: Is MPI initialised? answer=" << get_printer().Is_MPI_initialized() << std::endl;
+      if(not get_printer().Is_MPI_initialized())
+      {
+        std::cout << "DEBUG: Error! MPI is not initialised!" << std::endl;
+        exit(0);
+      }
+      // end debugging
       run(IS, mmodal, ceff, nlive, tol, efr, ndims, nPar, nClsPar, maxModes, updInt, Ztol, root, seed, pWrap, fb, resume, outfile, initMPI, logZero, maxiter, ::Gambit::MultiNest::callback_loglike, ::Gambit::MultiNest::callback_dumper, context);
       std::cout << "Multinest run finished!" << std::endl;
 
@@ -240,14 +252,16 @@ namespace Gambit {
          //   Cube[i] = physicalpars[i];
          //}
 
-         int thread  = 0;  // thread ID number ///TODO: need to implement parallel running for printers to do this.
-         int pointID = boundLogLike->getPtID(); // point ID number
+         // Extract the primary printer from the printer manager
+         printer* primary_stream( boundPrinter.get_stream() );
+
+         int thread  = primary_stream->getRank(); // mpi rank of this process (thread was a bad name choice, should change)
+         int pointID = boundLogLike->getPtID();   // point ID number
 
          Cube[ndim+0] = thread;
          Cube[ndim+1] = pointID;
 
          // Output these to the printer
-         printer* primary_stream( boundPrinter.get_stream() );
          primary_stream->print( thread,  "thread",  -7, thread, pointID);
          primary_stream->print( pointID, "pointID", -8, thread, pointID);
 
@@ -323,10 +337,12 @@ namespace Gambit {
           //                  Quantity    Label         IDcode	thread	pointID
           // stats file stuff
           // For now, thread set to 0 and pointID set to -1, as not needed. Might change how this works later.
-          stats_stream->print(maxLogLike, "maxLogLike", -1,	0,	-1);
-          stats_stream->print(logZ,       "logZ",       -2,	0,	-1);
-          stats_stream->print(logZerr,    "logZerr",    -3,	0,	-1);
-          stats_stream->flush(); // Empty printer buffer
+
+          // Disabled while testing hdf5printer...
+          //stats_stream->print(maxLogLike, "maxLogLike", -1,	0,	-1);
+          //stats_stream->print(logZ,       "logZ",       -2,	0,	-1);
+          //stats_stream->print(logZerr,    "logZerr",    -3,	0,	-1);
+          //stats_stream->flush(); // Empty printer buffer
 
           // txt file stuff
           // Send info for each point to printer one command at a time

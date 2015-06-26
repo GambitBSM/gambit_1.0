@@ -163,6 +163,7 @@ Rules:
     - {capability: "nevents", module: "ExampleBit_A"}  
 
   - capability:    "nevents_postcuts"
+    type: "int*"
     dependencies:
     - {capability: "id", module: "ExampleBit_B"}
 

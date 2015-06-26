@@ -111,10 +111,6 @@ namespace Gambit
     asciiPrinter::asciiPrinter(const Options& options)
       : output_file( Utils::ensure_path_exists(options.getValue<std::string>("output_file")) )
       , info_file( Utils::ensure_path_exists(options.getValue<std::string>("info_file")) )
-      , bufferlength(1000)
-      , myRank(0)
-      , precision(10)
-      , info_file_written(false)
       , global(false)
       , printer_name("Primary")
     {
@@ -126,13 +122,11 @@ namespace Gambit
     asciiPrinter::asciiPrinter(const Options& options, std::string& name, bool globalIN)
       : output_file( Utils::ensure_path_exists(options.getValue<std::string>("output_file")) )
       , info_file( Utils::ensure_path_exists(options.getValue<std::string>("info_file")) )
-      , bufferlength(1000)
-      , myRank(0)
-      , precision(10)
-      , info_file_written(false)
       , global(globalIN)
       , printer_name(name)
     {
+      std::cout << "does this ever get called???" << std::endl;
+      exit(0);
       // Could set these things via options also if we like.
       DBUG( std::cout << "Constructing Auxilliary asciiPrinter object (with name=\""<<printer_name<<"\")..." << std::endl; )
       common_constructor();
@@ -142,10 +136,8 @@ namespace Gambit
     // Overload the base class virtual destructor
     asciiPrinter::~asciiPrinter()
     {
-      // Make sure buffer is completely written to disk
+      // Make sure buffer is completely written to disk (MOVED TO FINALISE)
       DBUG( std::cout << "Destructing asciiPrinter object (with name=\""<<printer_name<<"\")..." << std::endl; )
-      dump_buffer(true);
-      DBUG( std::cout << "Buffer (of asciiPrinter with name=\""<<printer_name<<"\") successfully dumped..." << std::endl; )
     }
  
     /// Initialisation function
@@ -166,7 +158,12 @@ namespace Gambit
       // } 
     }
 
-    void asciiPrinter::flush() {}
+    /// Do final buffer dumps
+    void asciiPrinter::finalise()
+    {
+      dump_buffer(true);
+      DBUG( std::cout << "Buffer (of asciiPrinter with name=\""<<printer_name<<"\") successfully dumped..." << std::endl; )
+    }
 
     /// Delete contents of output file (to be replaced/updated) and erase everything in the buffer
     void asciiPrinter::reset() 
@@ -446,24 +443,24 @@ is a unique record for every rank/pointID pair.";
    
     // Template for print functions of "easy" types
     template<class T>
-    void asciiPrinter::template_print(T const& value, const std::string& label, const int IDcode, const int thread, const int pointID)
+    void asciiPrinter::template_print(T const& value, const std::string& label, const int IDcode, const uint thread, const ulong pointID)
     {
       std::vector<double> vdvalue(1,value); // For now everything has to end up as a vector of doubles
       std::vector<std::string> labels(1,label);
       addtobuffer(vdvalue,labels,IDcode,thread,pointID);       
     }
 
-    void asciiPrinter::print(int const& value, const std::string& label, const int IDcode, const int thread, const int pointID)
+    void asciiPrinter::print(int const& value, const std::string& label, const int IDcode, const uint thread, const ulong pointID)
     { template_print(value,label,IDcode,thread,pointID); }
-    void asciiPrinter::print(double const& value, const std::string& label, const int IDcode, const int thread, const int pointID)
+    void asciiPrinter::print(double const& value, const std::string& label, const int IDcode, const uint thread, const ulong pointID)
     { template_print(value,label,IDcode,thread,pointID); }
     #ifndef STANDALONE  // Need to disable print functions for these if STANDALONE is defined (see baseprinter.hpp line ~41)
-    void asciiPrinter::print(unsigned int const& value, const std::string& label, const int IDcode, const int thread, const int pointID)
+    void asciiPrinter::print(unsigned int const& value, const std::string& label, const int IDcode, const uint thread, const ulong pointID)
     { template_print(value,label,IDcode,thread,pointID); }
     #endif 
     // etc. as needed... 
 
-    void asciiPrinter::print(std::vector<double> const& value, const std::string& label, const int IDcode, const int thread, const int pointID)
+    void asciiPrinter::print(std::vector<double> const& value, const std::string& label, const int IDcode, const uint thread, const ulong pointID)
     {
       std::vector<std::string> labels;
       labels.reserve(value.size());
@@ -477,7 +474,7 @@ is a unique record for every rank/pointID pair.";
       addtobuffer(value,labels,IDcode,thread,pointID);
     }
    
-    void asciiPrinter::print(ModelParameters const& value, const std::string& label, const int IDcode, const int thread, const int pointID)
+    void asciiPrinter::print(ModelParameters const& value, const std::string& label, const int IDcode, const uint thread, const ulong pointID)
     {
       std::map<std::string, double> parameter_map = value.getValues();
       std::vector<std::string> names;

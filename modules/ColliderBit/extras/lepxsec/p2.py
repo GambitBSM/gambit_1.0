@@ -67,15 +67,19 @@ def unitnormal(pt1, pt2):
 
 
 class LineSegment(object):
-    def __init__(self, pt1, pt2):
+    def __init__(self, pt1, pt2, tolerance=0):
         if any([not type(pt1) == P2, not type(pt2) == P2]):
             raise TypeError("Please use Andy's nifty P2 class for the endpoints")
+        tolerance = abs(tolerance)
         if pt1.x > pt2.x or (pt1.x == pt2.x and pt1.y > pt2.y):
-          self.pt2 = pt1
-          self.pt1 = pt2
+            rawpt2 = pt1
+            rawpt1 = pt2
         else:
-          self.pt1 = pt1
-          self.pt2 = pt2
+            rawpt1 = pt1
+            rawpt2 = pt2
+        adjustEnds = (rawpt2 - rawpt1) * tolerance
+        self.pt2 = rawpt2 + adjustEnds
+        self.pt1 = rawpt1 - adjustEnds
 
     def __abs__(self):
         return abs(self.pt2 - self.pt1)
@@ -111,13 +115,7 @@ class LineSegment(object):
         else:
             return (self.pt2.y - self.pt1.y) / (self.pt2.x - self.pt1.x)
 
-    def intersectsAt(self, *args):
-        # Ready the other LineSegment
-        other = None
-        if len(args) == 1:
-            other = args[0]
-        elif len(args) == 2:
-            other = LineSegment(args[0], args[1])
+    def intersectsAt(self, other):
         if not type(other) == LineSegment:
             raise ValueError("Not sure how to determine intersection with " + str(args))
 
