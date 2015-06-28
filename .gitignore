@@ -1,3 +1,17 @@
+# Backup files
+*~
+*.bak*
+\#*#
+
+# Log files
+*.log
+
+# ROOT files (unless explicitly added)
+*.root
+
+# A user run dir
+run
+
 # Compiled Object files
 *.slo
 *.lo
