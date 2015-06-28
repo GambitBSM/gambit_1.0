@@ -327,8 +327,8 @@ def main(argv):
             if yaml_file:
                 if plugin_name in yaml_file and plugin[1] == plugin_type:
                     version_bits = plugin[2]
-                    maj_version = ".".join([x for x in version_bits[0:1] if x != ""])
-                    min_version = ".".join([x for x in version_bits[0:2] if x != ""])
+                    maj_version = int(".".join([x for x in version_bits[0:1] if x != ""]))
+                    min_version = float(".".join([x for x in version_bits[0:2] if x != ""]))
                     pat_version = ".".join([x for x in version_bits[0:3] if x != ""])
                     ful_version = "-".join([pat_version, version_bits[3]])
                     version = ".".join([x for x in version_bits[0:3] if x != ""])
@@ -345,6 +345,9 @@ def main(argv):
                         ini_version = maj_version
                     elif "any_version" in yaml_file[plugin_name]:
                         ini_version = "any_version"
+                    else:
+                        print "no version thingy"
+                        print yaml_file[plugin_name]
                     if ini_version != "":
                         options_list = yaml_file[plugin_name][ini_version]
                         if type(options_list) is dict: #not list:
@@ -357,7 +360,7 @@ def main(argv):
                                         for lib in libs:
                                             if os.path.isfile(lib):
                                                 lib_full = os.path.abspath(lib)
-                                                print "   Found library {0} needed for ScannerBit plugin {1} v{2}".format(lib,plugin_name,ini_version)
+                                                print "   Found library {0} needed for ScannerBit plugin {1} v{2}".format(lib,plugin_name,version)
                                                 if lib_full.endswith(".a"):
                                                     static_links += lib_full + " "
                                                     [libdir, lib] = os.path.split(lib_full)
