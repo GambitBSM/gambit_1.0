@@ -327,11 +327,22 @@ def main(argv):
             if yaml_file:
                 if plugin_name in yaml_file and plugin[1] == plugin_type:
                     version_bits = plugin[2]
+                    maj_version = ".".join([x for x in version_bits[0:1] if x != ""])
+                    min_version = ".".join([x for x in version_bits[0:2] if x != ""])
+                    pat_version = ".".join([x for x in version_bits[0:3] if x != ""])
+                    ful_version = "-".join([pat_version, version_bits[3]])
                     version = ".".join([x for x in version_bits[0:3] if x != ""])
-                    if version_bits[3] != "": version = "-".join([version, version_bits[3]])
+                    if (version_bits[3] != ""):
+                        version = "-".join([version, version_bits[3]])
                     ini_version = ""
-                    if version in yaml_file[plugin_name]:
-                        ini_version = version
+                    if ful_version in yaml_file[plugin_name]:
+                        ini_version = ful_version
+                    elif pat_version in yaml_file[plugin_name]:
+                        ini_version = pat_version
+                    elif min_version in yaml_file[plugin_name]:
+                        ini_version = min_version
+                    elif maj_version in yaml_file[plugin_name]:
+                        ini_version = maj_version
                     elif "any_version" in yaml_file[plugin_name]:
                         ini_version = "any_version"
                     if ini_version != "":
@@ -346,7 +357,7 @@ def main(argv):
                                         for lib in libs:
                                             if os.path.isfile(lib):
                                                 lib_full = os.path.abspath(lib)
-                                                print "   Found library {0} needed for ScannerBit plugin {1} v{2}".format(lib,plugin_name,version)
+                                                print "   Found library {0} needed for ScannerBit plugin {1} v{2}".format(lib,plugin_name,ini_version)
                                                 if lib_full.endswith(".a"):
                                                     static_links += lib_full + " "
                                                     [libdir, lib] = os.path.split(lib_full)
@@ -716,7 +727,7 @@ set( exclude_lib_output )                        \n\n"
                 towrite += " "*23 + "LINK_FLAGS \"-dynamiclib\"\n"# ${" + plug_type[i] + "_plugin_libraries_" + directory + "}\"\n"
             else:
                 towrite += " "*23 + "LINK_FLAGS \"-rdynamic\"\n"# ${" + plug_type[i] + "_plugin_libraries_" + directory + "}\"\n"
-            #towrite += " "*23 + "INSTALL_RPATH \"${" + plug_type[i] + "_plugin_rpath_" + directory + "}\"\n";
+            towrite += " "*23 + "INSTALL_RPATH \"${" + plug_type[i] + "_plugin_rpath_" + directory + "}\"\n";
             if sys.platform == "darwin":
                 cflags = "-dynamiclib"
             else:
