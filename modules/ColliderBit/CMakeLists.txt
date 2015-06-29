@@ -17,62 +17,62 @@
 #  Authors:                                     
 #                                               
 #  \author The GAMBIT Collaboration            
-#  \date 11:17AM on June 18, 2015
+#  \date 04:09PM on June 29, 2015
 #                                               
 #***********************************************
                                                 
 set(source_files                                
 src/ColliderBit.cpp
-src/analyses/Analysis_ATLAS_1LEPStop_20invfb.cpp
-src/analyses/Analysis_ATLAS_0LEP_20invfb.cpp
-src/analyses/mt2w.cc
-src/analyses/mt2w_bisect.cpp
-src/analyses/mt2_bisect.cpp
-src/analyses/Analysis_ATLAS_0LEP_XXinvfb.cpp
-src/analyses/Analysis_CMS_3LEPEW_20invfb.cpp
+src/analyses/Analysis_ATLAS_3LEPEW_CONF_20invfb.cpp
+src/analyses/Analysis_ATLAS_0LEPStop_20invfb.cpp
+src/analyses/Analysis_ATLAS_2LEPStop_20invfb.cpp
+src/analyses/Analysis_Perf.cpp
 src/analyses/Analysis_CMS_MONOJET_20invfb.cpp
 src/analyses/HEPUtilsAnalysisContainer.cpp
-src/analyses/Analysis_ATLAS_2LEPStop_20invfb.cpp
-src/analyses/Analysis_CMS_1LEPDMTOP_20invfb.cpp
-src/analyses/Analysis_ATLAS_0LEPStop_20invfb.cpp
-src/analyses/Analysis_Perf.cpp
-src/analyses/Analysis_ATLAS_3LEPEW_CONF_20invfb.cpp
-src/analyses/Analysis_CMS_2LEPDMTOP_20invfb.cpp
-src/analyses/Analysis_ATLAS_2bStop_20invfb.cpp
-src/analyses/Analysis_ATLAS_3LEPEW_20invfb.cpp
 src/analyses/Analysis_ATLAS_2LEPEW_20invfb.cpp
-src/delphes/AbsoluteIsolationModule.cc
-src/delphes/BTaggingWithTruthModule.cc
+src/analyses/mt2_bisect.cpp
+src/analyses/Analysis_ATLAS_0LEP_XXinvfb.cpp
+src/analyses/Analysis_ATLAS_2bStop_20invfb.cpp
+src/analyses/Analysis_CMS_3LEPEW_20invfb.cpp
+src/analyses/Analysis_CMS_1LEPDMTOP_20invfb.cpp
+src/analyses/Analysis_ATLAS_1LEPStop_20invfb.cpp
+src/analyses/Analysis_CMS_2LEPDMTOP_20invfb.cpp
+src/analyses/Analysis_ATLAS_3LEPEW_20invfb.cpp
+src/analyses/mt2w_bisect.cpp
+src/analyses/Analysis_ATLAS_0LEP_20invfb.cpp
+src/analyses/mt2w.cc
 src/delphes/BTaggingWithTruthModule_dict.cc
 src/delphes/AbsoluteIsolationModule_dict.cc
+src/delphes/AbsoluteIsolationModule.cc
+src/delphes/BTaggingWithTruthModule.cc
 src/colliders/SpecializablePythia.cpp
 src/detectors/BuckFastSmear.cpp
 src/detectors/DelphesVanilla.cpp
 )
 
 set(header_files
-include/gambit/ColliderBit/Py8Utils.hpp
-include/gambit/ColliderBit/ColliderBit_macros.hpp
-include/gambit/ColliderBit/ATLASEfficiencies.hpp
-include/gambit/ColliderBit/mt2_bisect.h
-include/gambit/ColliderBit/ColliderBit_types.hpp
 include/gambit/ColliderBit/mt2w.h
-include/gambit/ColliderBit/ColliderBit_rollcall.hpp
 include/gambit/ColliderBit/Utils.hpp
+include/gambit/ColliderBit/Py8Utils.hpp
+include/gambit/ColliderBit/ColliderBit_types.hpp
+include/gambit/ColliderBit/mt2_bisect.h
 include/gambit/ColliderBit/mt2w_bisect.h
+include/gambit/ColliderBit/ColliderBit_rollcall.hpp
+include/gambit/ColliderBit/ATLASEfficiencies.hpp
+include/gambit/ColliderBit/ColliderBit_macros.hpp
 include/gambit/ColliderBit/analyses/HEPUtilsAnalysisContainer.hpp
 include/gambit/ColliderBit/analyses/BaseAnalysis.hpp
+include/gambit/ColliderBit/delphes/BTaggingWithTruthModule.h
+include/gambit/ColliderBit/delphes/AbsoluteIsolationModule.h
 include/gambit/ColliderBit/delphes/BTaggingWithTruthModuleLinkDef.h
 include/gambit/ColliderBit/delphes/AbsoluteIsolationModule_dict.h
-include/gambit/ColliderBit/delphes/AbsoluteIsolationModule.h
 include/gambit/ColliderBit/delphes/AbsoluteIsolationModuleLinkDef.h
 include/gambit/ColliderBit/delphes/BTaggingWithTruthModule_dict.h
-include/gambit/ColliderBit/delphes/BTaggingWithTruthModule.h
 include/gambit/ColliderBit/colliders/BaseCollider.hpp
 include/gambit/ColliderBit/colliders/SpecializablePythia.hpp
+include/gambit/ColliderBit/detectors/BuckFastSmear.hpp
 include/gambit/ColliderBit/detectors/BaseDetector.hpp
 include/gambit/ColliderBit/detectors/DelphesVanilla.hpp
-include/gambit/ColliderBit/detectors/BuckFastSmear.hpp
 )
 
 add_gambit_library(ColliderBit OPTION OBJECT SOURCES ${source_files} HEADERS ${header_files})
