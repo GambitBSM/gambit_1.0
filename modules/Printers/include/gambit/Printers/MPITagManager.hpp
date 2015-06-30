@@ -69,8 +69,8 @@ namespace Gambit
 
         /// MPI properties
         GMPI::Comm& printerComm;
-        uint mpiRank;
-        uint mpiSize;
+        unsigned int mpiRank;
+        unsigned int mpiSize;
 
         /// tag_daemon thread
         pthread_t tag_daemon_thread;
@@ -83,7 +83,7 @@ namespace Gambit
         bool stop_tag_daemon = false;
 
       public:
-        MPITagManager(GMPI::Comm& pComm, int first_free_tag, int tag_req, uint tags_per_buffer);
+        MPITagManager(GMPI::Comm& pComm, int first_free_tag, int tag_req, unsigned int tags_per_buffer);
 
         // Destructor, make sure to stop the tag_daemon
         ~MPITagManager();

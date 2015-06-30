@@ -32,7 +32,7 @@ namespace Gambit
     //typedef std::pair<int,unsigned int> VBIDpair;
     struct VBIDpair {
       int   vertexID;
-      uint  index;
+      unsigned int  index;
       VBIDpair() {}
       VBIDpair(int v, unsigned int i)
         : vertexID(v)
@@ -46,12 +46,12 @@ namespace Gambit
 
     /// pointID / process number pair
     /// Used to identify a single parameter space point
-    //typedef std::pair<unsigned long, unsigned int> PPIDpair;
+    //typedef std::pair<unsigned long int, unsigned int> PPIDpair;
     struct PPIDpair {
-      unsigned long pointID;
+      unsigned long int pointID;
       unsigned int  rank;
       PPIDpair() {}
-      PPIDpair(unsigned long p, unsigned int r)
+      PPIDpair(unsigned long int p, unsigned int r)
         : pointID(p)
         , rank(r)
       {}

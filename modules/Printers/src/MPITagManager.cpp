@@ -43,7 +43,7 @@ namespace Gambit
     #ifdef WITH_MPI    
 
     /// Constructor   
-    MPITagManager::MPITagManager(GMPI::Comm& pComm, int first_tag, int t_req, uint ntags)
+    MPITagManager::MPITagManager(GMPI::Comm& pComm, int first_tag, int t_req, unsigned int ntags)
            : first_empty_tag(first_tag)
            , next_tag(first_tag)
            , tags_per_buffer(ntags)
@@ -109,7 +109,7 @@ namespace Gambit
     VBIDpair MPITagManager::get_VBID_from_tag(const int tag)   
     {
        // correct for non-zero first tag number and multiplicity
-       uint index = (tag - first_empty_tag) / tags_per_buffer; // chopping off remainder
+       unsigned int index = (tag - first_empty_tag) / tags_per_buffer; // chopping off remainder
        if(index>=VBID_from_tag.size())
        {
           std::ostringstream errmsg;
