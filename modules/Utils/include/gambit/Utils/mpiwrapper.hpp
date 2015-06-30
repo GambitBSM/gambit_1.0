@@ -21,6 +21,9 @@
 ///  There is also boost/mpi, but it is a compiled
 ///  library and we have been avoiding those.  
 ///
+///  You can remove the error handlers if you want
+///  these wrappers to be independent of GAMBIT.
+///
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
@@ -28,6 +31,10 @@
 ///  \author Ben Farmer
 ///          (benjamin.farmer@fysik.su.se)
 ///  \date 2015 Apr
+///
+///  \author Pat Scott
+///          (p.scott@imperial.ac.uk)
+///  \date 2015 Jun
 ///
 ///  *********************************************
 
@@ -41,63 +48,79 @@
 
 #include <sstream>
 #include <iostream>
-#include <mpi.h>
+#include <type_traits>
 
 #include "gambit/Core/error_handlers.hpp"
-// You can remove the error handlers if you want these wrappers to be independent of gambit.
 
-// Trigger debugging output in various places (specifically, hdf5 printer)
+#include <mpi.h>
+#include <boost/utility/enable_if.hpp>
+
+/// Provide template specialisation of get_mpi_data_type only if the requested type hasn't been used to define one already.
+#define SPECIALISE_MPI_DATA_TYPE_IF_NEEDED(TYPEDEFD_TYPE, RETURN_MPI_TYPE)                                                   \
+      template<typename T>                                                                                                   \
+      struct get_mpi_data_type<T, typename boost::enable_if_c< std::is_same<T, TYPEDEFD_TYPE>::value                      && \
+                                                               !std::is_same<char, TYPEDEFD_TYPE>::value                  && \
+                                                               !std::is_same<bool, TYPEDEFD_TYPE>::value                  && \
+                                                               !std::is_same<int, TYPEDEFD_TYPE>::value                   && \
+                                                               !std::is_same<long, TYPEDEFD_TYPE>::value                  && \
+                                                               !std::is_same<long long, TYPEDEFD_TYPE>::value             && \
+                                                               !std::is_same<unsigned int, TYPEDEFD_TYPE>::value          && \
+                                                               !std::is_same<unsigned long, TYPEDEFD_TYPE>::value         && \
+                                                               !std::is_same<unsigned long long, TYPEDEFD_TYPE>::value    && \
+                                                               !std::is_same<float, TYPEDEFD_TYPE>::value                 && \
+                                                               !std::is_same<double, TYPEDEFD_TYPE>::value                && \
+                                                               !std::is_same<long double, TYPEDEFD_TYPE>::value>::type >     \
+      {                                                                                                                      \
+          static MPI_Datatype type() { return RETURN_MPI_TYPE; }                                                             \
+      };                                                                                                                     \
+
+/// Trigger debugging output in various places (specifically, hdf5 printer)
 //#define MPI_DEBUG
 
-namespace Gambit {
-   namespace GMPI {
+
+namespace Gambit
+{
+
+   namespace GMPI
+   {
 
       /// Mapping from (basic) C++ types to MPI datatypes
-      /// Idea based off of "get_hdf5_data_type" in hdf5tools.hpp
-
-      template<typename T>
+      /// Based on of "get_hdf5_data_type" in hdf5tools.hpp
+      /// Base template is left undefined in order to raise 
+      /// a compile error if specialisation doesn't exist.
+      template<typename T, typename Enable=void>
       struct get_mpi_data_type;
-       // Left undefined because I want a compile error if specialisation doesn't exist.
 
-      // Overload to work with arrays
+      /// Overload to work with arrays
       template<typename T, size_t SIZE> 
       struct get_mpi_data_type<T[SIZE]> { static MPI_Datatype type() { return get_mpi_data_type<T>::type(); } };
 
-      // /// TODO: don't seem to work for arrays, need overloads?
-      // template<> inline MPI_Datatype get_mpi_data_type<char>()                { return MPI_CHAR;               };
-      // // bunch of types omitted in get_hdf5_data_type for reasons not totally clear to me...
-      // template<> inline MPI_Datatype get_mpi_data_type<long long>()           { return MPI_LONG_LONG;          };
-      // template<> inline MPI_Datatype get_mpi_data_type<unsigned long long>()  { return MPI_UNSIGNED_LONG_LONG; };
-      // template<> inline MPI_Datatype get_mpi_data_type<int8_t>()              { return MPI_INT8_T;             };
-      // template<> inline MPI_Datatype get_mpi_data_type<uint8_t>()             { return MPI_UINT8_T;            };
-      // template<> inline MPI_Datatype get_mpi_data_type<int16_t>()             { return MPI_INT16_T;            };
-      // template<> inline MPI_Datatype get_mpi_data_type<uint16_t>()            { return MPI_UINT16_T;           };
-      // template<> inline MPI_Datatype get_mpi_data_type<int32_t>()             { return MPI_INT32_T;            };
-      // template<> inline MPI_Datatype get_mpi_data_type<uint32_t>()            { return MPI_UINT32_T;           };
-      // template<> inline MPI_Datatype get_mpi_data_type<int64_t>()             { return MPI_INT64_T;            };
-      // template<> inline MPI_Datatype get_mpi_data_type<uint64_t>()            { return MPI_UINT64_T;           };
-      // template<> inline MPI_Datatype get_mpi_data_type<float>()               { return MPI_FLOAT;              };
-      // template<> inline MPI_Datatype get_mpi_data_type<double>()              { return MPI_DOUBLE;             };
-      // template<> inline MPI_Datatype get_mpi_data_type<long double>()         { return MPI_LONG_DOUBLE;        };
-
+      /// True types
+      /// @{
       template<> struct get_mpi_data_type<char>              { static MPI_Datatype type() { return MPI_CHAR;       } };
-      // bunch of types omitted in get_hdf5_data_type for reasons not totally clear to me...
+      template<> struct get_mpi_data_type<bool>              { static MPI_Datatype type() { return MPI_UINT8_T;    } };
+      template<> struct get_mpi_data_type<int>               { static MPI_Datatype type() { return MPI_INT;        } };
+      template<> struct get_mpi_data_type<long>              { static MPI_Datatype type() { return MPI_LONG;       } };
       template<> struct get_mpi_data_type<long long>         { static MPI_Datatype type() { return MPI_LONG_LONG;  } };
+      template<> struct get_mpi_data_type<unsigned int>      { static MPI_Datatype type() { return MPI_UNSIGNED;   } };
+      template<> struct get_mpi_data_type<unsigned long>     { static MPI_Datatype type() { return MPI_UNSIGNED_LONG; } };
       template<> struct get_mpi_data_type<unsigned long long>{ static MPI_Datatype type() { return MPI_UNSIGNED_LONG_LONG; } };
-      template<> struct get_mpi_data_type<int8_t>            { static MPI_Datatype type() { return MPI_INT8_T;     } };
-      template<> struct get_mpi_data_type<uint8_t>           { static MPI_Datatype type() { return MPI_UINT8_T;    } };
-      template<> struct get_mpi_data_type<int16_t>           { static MPI_Datatype type() { return MPI_INT16_T;    } };
-      template<> struct get_mpi_data_type<uint16_t>          { static MPI_Datatype type() { return MPI_UINT16_T;   } };
-      template<> struct get_mpi_data_type<int32_t>           { static MPI_Datatype type() { return MPI_INT32_T;    } };
-      template<> struct get_mpi_data_type<uint32_t>          { static MPI_Datatype type() { return MPI_UINT32_T;   } };
-      template<> struct get_mpi_data_type<int64_t>           { static MPI_Datatype type() { return MPI_INT64_T;    } };
-      template<> struct get_mpi_data_type<uint64_t>          { static MPI_Datatype type() { return MPI_UINT64_T;   } };
       template<> struct get_mpi_data_type<float>             { static MPI_Datatype type() { return MPI_FLOAT;      } };
       template<> struct get_mpi_data_type<double>            { static MPI_Datatype type() { return MPI_DOUBLE;     } };
       template<> struct get_mpi_data_type<long double>       { static MPI_Datatype type() { return MPI_LONG_DOUBLE;} };
+      /// @}
 
-      // Doing same thing with bools (which C does not have) as in the hdf5 case:
-      template<> struct get_mpi_data_type<bool>              { static MPI_Datatype type() { return MPI_UINT8_T;    } };
+      /// Typedef'd types; enabled only where they differ from the true types.
+      /// @{
+      SPECIALISE_MPI_DATA_TYPE_IF_NEEDED( int8_t   , MPI_INT8_T   )
+      SPECIALISE_MPI_DATA_TYPE_IF_NEEDED( uint8_t  , MPI_UINT8_T  )
+      SPECIALISE_MPI_DATA_TYPE_IF_NEEDED( int16_t  , MPI_INT16_T  )
+      SPECIALISE_MPI_DATA_TYPE_IF_NEEDED( uint16_t , MPI_UINT16_T )
+      SPECIALISE_MPI_DATA_TYPE_IF_NEEDED( int32_t  , MPI_INT32_T  )
+      SPECIALISE_MPI_DATA_TYPE_IF_NEEDED( uint32_t , MPI_UINT32_T )
+      SPECIALISE_MPI_DATA_TYPE_IF_NEEDED( int64_t  , MPI_INT64_T  )
+      SPECIALISE_MPI_DATA_TYPE_IF_NEEDED( uint64_t , MPI_UINT64_T )
+      /// @}
 
       /// Main "Communicator" class
       class Comm

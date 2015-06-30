@@ -11,18 +11,22 @@
 ///  \author Ben Farmer
 ///          (benjamin.farmer@fysik.su.se)
 ///  \date 2015 Apr
-///
 ///  *********************************************
 
 #ifdef WITH_MPI // Contents of this file ignored if MPI not enabled
 
 #include <iostream>
 #include <vector>
-#include "gambit/Utils/mpiwrapper.hpp"
 #include <iostream>
 
-namespace Gambit {
-   namespace GMPI {
+#include "gambit/Utils/mpiwrapper.hpp"
+
+
+namespace Gambit
+{
+
+   namespace GMPI
+   {
  
       /// @{ Main "Communicator" class
             
