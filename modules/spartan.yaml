@@ -151,6 +151,10 @@ ObsLikes:
     capability:   test_vector
     type:         std::vector<double>
 
+  # Test passing of arrays to backends
+  - purpose:      Observable
+    capability:   BE_Array_tester
+
 
 #########################
 # Auxiliary entries

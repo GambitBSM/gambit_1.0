@@ -28,4 +28,5 @@
 
 [std::string, str]
 ["double(*)(double&, int&, void*)", nuyield_functype]
-
+[FcomplexT<double>, Fdouble_complex]
+[double, Fdouble, Fdouble_precision, Fdoubleprecision]
