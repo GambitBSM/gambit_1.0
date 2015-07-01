@@ -68,7 +68,7 @@ def main(argv):
     verbose = False
     try:
         build_dir = argv[0]
-        opts, args = getopt.gnu_getopt(argv,"vx:",["verbose","exclude-scanners="])
+        opts, args = getopt.getopt(argv,"vx:",["verbose","exclude-scanners="])
     except getopt.GetoptError:
         print 'Usage: locate_scanners.py build_dir [flags]'
         print ' flags:'
@@ -101,6 +101,7 @@ def main(argv):
     scanbit_link_libs = dict()
     scanbit_lib_hints = dict()
     scanbit_inc_files = dict()
+    scanbit_flags = dict()
     #scanbit_static_links = dict()
 
     ## begin adding scannerbit files to CMakeLists.txt ##
@@ -167,6 +168,7 @@ def main(argv):
         scanbit_link_libs[plug_type[i]] = dict()
         scanbit_lib_hints[plug_type[i]] = dict()
         scanbit_inc_files[plug_type[i]] = dict()
+        scanbit_flags[plug_type[i]] = dict()
         #scanbit_static_links[plug_type[i]] = dict()
 
     # loop through the different plugin types
@@ -204,7 +206,9 @@ def main(argv):
                     lib_finds = [[m.span()[0], -2, re.sub(r'\s', '', m.group())] for m in it]
                     it = re.finditer(r'\breqd_headers\s*?\(.*?\)|\bREQD_HEADERS\s*?\(.*?\)', text, re.DOTALL)
                     inc_finds = [[m.span()[0], -3, re.sub(r'\s', '', m.group())] for m in it]
-                    all_finds  = sorted(scan_finds + obj_finds + ini_finds + lib_finds + inc_finds)
+                    it = re.finditer(r'\bset_flag\s*?\(.*?\)|\bSET_FLAG\s*?\(.*?\)', text, re.DOTALL)
+                    flag_finds = [[m.span()[0], -4, re.sub(r'\s', '', m.group())] for m in it]
+                    all_finds  = sorted(scan_finds + obj_finds + ini_finds + lib_finds + inc_finds + flag_finds)
                     for find in all_finds:
                         if find[1] >= 0:
                             processed = False
@@ -280,6 +284,16 @@ def main(argv):
                             if (not processed) and (last_plugin_file[3] != "excluded"):
                                 processed = True
                                 plugins += [last_plugin_file]
+                                
+                        elif find[1] == -4:
+                            flags = neatsplit(",", find[2][9:-1]);
+                            if len(flags) > 0:
+                                if not scanbit_flags[plug_type[i]].has_key(last_plugin):
+                                    scanbit_flags[plug_type[i]][last_plugin] = dict()
+                                if not scanbit_flags[plug_type[i]][last_plugin].has_key(last_version):
+                                    scanbit_flags[plug_type[i]][last_plugin][last_version] = dict()
+                                    scanbit_flags[plug_type[i]][last_plugin][last_version][flags[0]] = []
+                                scanbit_flags[plug_type[i]][last_plugin][last_version][flags[0]] += flags[1:]
 
             ## begin adding plugin files to CMakeLists.txt ##
                 cmakelist_txt_out += " "*16 + "src/" + source.split('/ScannerBit/src/')[1] + "\n"
@@ -313,13 +327,27 @@ def main(argv):
             if yaml_file:
                 if plugin_name in yaml_file and plugin[1] == plugin_type:
                     version_bits = plugin[2]
+                    maj_version = int(".".join([x for x in version_bits[0:1] if x != ""]))
+                    min_version = float(".".join([x for x in version_bits[0:2] if x != ""]))
+                    pat_version = ".".join([x for x in version_bits[0:3] if x != ""])
+                    ful_version = "-".join([pat_version, version_bits[3]])
                     version = ".".join([x for x in version_bits[0:3] if x != ""])
-                    if version_bits[3] != "": version = "-".join([version, version_bits[3]])
+                    if (version_bits[3] != ""):
+                        version = "-".join([version, version_bits[3]])
                     ini_version = ""
-                    if version in yaml_file[plugin_name]:
-                        ini_version = version
+                    if ful_version in yaml_file[plugin_name]:
+                        ini_version = ful_version
+                    elif pat_version in yaml_file[plugin_name]:
+                        ini_version = pat_version
+                    elif min_version in yaml_file[plugin_name]:
+                        ini_version = min_version
+                    elif maj_version in yaml_file[plugin_name]:
+                        ini_version = maj_version
                     elif "any_version" in yaml_file[plugin_name]:
                         ini_version = "any_version"
+                    else:
+                        print "no version thingy"
+                        print yaml_file[plugin_name]
                     if ini_version != "":
                         options_list = yaml_file[plugin_name][ini_version]
                         if type(options_list) is dict: #not list:
@@ -694,19 +722,22 @@ set( exclude_lib_output )                        \n\n"
             towrite += "endif()\n\n"
 
             towrite += "if ( " + plug_type[i] + "_compile_flag_" + directory + " STREQUAL \"\" )\n"
-            towrite += " "*4 + "add_gambit_library( " + plug_type[i] + "_" + directory + " OPTION SHARED SOURCES ${"
+            towrite += " "*4 + "add_gambit_library( " + plug_type[i] + "_" + directory + " OPTION MODULE SOURCES ${"
             towrite += plug_type[i] + "_plugin_sources_" + directory + "} HEADERS ${"
             towrite += plug_type[i] + "_plugin_headers_" + directory + "} )\n"
             towrite += " "*4 + "set_target_properties( " + plug_type[i] + "_" + directory + "\n" + " "*23 + "PROPERTIES\n"
             if sys.platform == "darwin":
                 towrite += " "*23 + "LINK_FLAGS \"-dynamiclib\"\n"# ${" + plug_type[i] + "_plugin_libraries_" + directory + "}\"\n"
+                towrite += " "*23 + "INSTALL_NAME_DIR \"${" + plug_type[i] + "_plugin_rpath_" + directory + "}\"\n";
             else:
                 towrite += " "*23 + "LINK_FLAGS \"-rdynamic\"\n"# ${" + plug_type[i] + "_plugin_libraries_" + directory + "}\"\n"
-            #towrite += " "*23 + "INSTALL_RPATH \"${" + plug_type[i] + "_plugin_rpath_" + directory + "}\"\n";
+                towrite += " "*23 + "INSTALL_RPATH \"${" + plug_type[i] + "_plugin_rpath_" + directory + "}\"\n";
+                
             if sys.platform == "darwin":
                 cflags = "-dynamiclib"
             else:
                 cflags = "-rdynamic"
+                
             #if scanbit_static_links.has_key(plug_type[i]):
             #    if scanbit_static_links[plug_type[i]].has_key(directory):
             #        if (len(scanbit_static_links[plug_type[i]][directory]) != 0):
@@ -719,6 +750,8 @@ set( exclude_lib_output )                        \n\n"
             towrite += " "*23 + "LIBRARY_OUTPUT_DIRECTORY \"${CMAKE_CURRENT_SOURCE_DIR}/lib\")\n"
             towrite += " "*4 + "target_link_libraries( " + plug_type[i] + "_" + directory + " ${" + plug_type[i] + "_plugin_lib_full_paths_" + directory + "})\n"
             #towrite += "target_include_directories( " + inc_dirs ")\n\n"
+            #towrite += " "*4 + "add_dependencies(gambit " + plug_type[i] + "_" + directory + ")\n"
+            towrite += " "*4 + "set (SCANNERBIT_PLUGINS " + " ${SCANNERBIT_PLUGINS} " + plug_type[i] + "_" + directory + ")\n"
             towrite += "else()\n"
             towrite += " "*4 + "set ( exclude_lib_output \"${exclude_lib_output}lib" + plug_type[i] + "_" + directory + ".so:\\n"
             towrite += "  plugins:\\n"
@@ -727,9 +760,10 @@ set( exclude_lib_output )                        \n\n"
             towrite += "  reason: \\n${" + plug_type[i] + "_compile_flag_" + directory + "}\\n\" )\n"
             towrite += "endif()\n\n"
 
+    towrite += "set(SCANNERBIT_PLUGINS ${SCANNERBIT_PLUGINS} PARENT_SCOPE)\n"
     towrite += "file( WRITE ${PROJECT_SOURCE_DIR}/scratch/scanbit_excluded_libs.yaml \"${exclude_lib_output}\" )\n"
     towrite += "file( WRITE ${PROJECT_SOURCE_DIR}/scratch/scanbit_linked_libs.yaml \"${reqd_lib_output}\" )\n\n"
-
+    
     cmake = "./ScannerBit/CMakeLists.txt"
     candidate = build_dir+"/ScannerBit_CMakeLists.txt.candidate"
     with open(candidate,"w") as f: f.write(towrite)
@@ -780,6 +814,46 @@ set( exclude_lib_output )                        \n\n"
     update_cmakelists.update_only_if_different(req_entries, candidate)
 
     if verbose: print "Finished writing scratch/scanbit_reqd_entries.yaml"
+
+    # Make a candidate scanbit_reqd_entries.yaml file
+    towrite = "\
+# GAMBIT: Global and Modular BSM Inference Tool  \n\
+#************************************************\n\
+# \\file                                         \n\
+#                                                \n\
+#  Scanner flags for GAMBIT.                     \n\
+#                                                \n\
+#  This file has been automatically generated by \n\
+#  locate_scanners.py.  Please do not modify.    \n\
+#                                                \n\
+#************************************************\n\
+#                                                \n\
+#  Authors:                                      \n\
+#                                                \n\
+#  \\author The GAMBIT Collaboration             \n\
+#  \\date "+datetime.datetime.now().strftime("%I:%M%p on %B %d, %Y")+"\n\
+#                                                \n\
+#************************************************\n\n"
+
+    for type_key in scanbit_flags:
+        towrite += type_key + ":\n"
+        for plug_key in scanbit_flags[type_key]:
+            towrite += " "*2 + plug_key + ":\n"
+            for version_key in scanbit_flags[type_key][plug_key]:
+                towrite += " "*4 + version_key + ":\n"
+                for flag in scanbit_flags[type_key][plug_key][version_key]:
+                    if len(scanbit_flags[type_key][plug_key][version_key][flag]) > 1:
+                        towrite += " "*6 + flag + ": [" + ", ".join(scanbit_flags[type_key][plug_key][version_key][flag]) + "]\n"
+                    else:
+                        towrite += " "*6 + flag + ": " + scanbit_flags[type_key][plug_key][version_key][flag][0] + "\n"
+        towrite += "\n"
+
+    flag_entries = "./scratch/scanbit_flags.yaml"
+    candidate = build_dir+"/scanbit_flags.yaml.candidate"
+    with open(candidate,"w") as f: f.write(towrite)
+    update_cmakelists.update_only_if_different(flag_entries, candidate)
+
+    if verbose: print "Finished writing scratch/scanbit_flags.yaml"
 
     # Make a candidate linkedout.cmake file
     towrite = "\
