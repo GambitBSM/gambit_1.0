@@ -58,6 +58,7 @@ namespace Gambit {
         
          private:
             typedef MapTypes<MSSMSpecTraits<MI>,MapTag::Get> MT; 
+            typedef MapTypes<MSSMSpecTraits<MI>,MapTag::Set> MTSet; 
             int index_offset;
             virtual int get_index_offset() const {return index_offset;}
 
@@ -137,12 +138,22 @@ namespace Gambit {
             static typename MT::fmap2       fill_mass2_map2_Get();       /*O*/
             static typename MT::fmap        fill_mass_eigenstate_map_Get();  /*O*/
             static typename MT::fmap1       fill_mass_eigenstate_map1_Get(); /*O*/
+            static typename MTSet::fmap        fill_mass_map_Set();         /*O*/
+            static typename MTSet::fmap2       fill_mass_map2_Set();        /*O*/
+            static typename MTSet::fmap        fill_mass0_map_Set();        /*O*/
+            // static typename MTSet::fmap_extraM fill_mass0_map_extraM_Set(); /*O*/
+            static typename MTSet::fmap2       fill_mass0_map2_Set();       /*O*/
+            static typename MTSet::fmap     fill_mass2_map_Set();        /*O*/
+            static typename MTSet::fmap2       fill_mass2_map2_Set();       /*O*/
+            // static typename MTSet::fmap        fill_mass_eigenstate_map_Set();  /*O*/
+            // static typename MTSet::fmap1       fill_mass_eigenstate_map1_Set(); /*O*/
 
             /// PhysDer overrides (access via spectrum.phys)
             static typename MT::fmap        fill_PoleMass_map_Get();        /*O*/
             static typename MT::fmap_extraM fill_PoleMass_map_extraM_Get(); /*O*/
             static typename MT::fmap1       fill_PoleMass_map1_Get();       /*O*/
             static typename MT::fmap2       fill_PoleMixing_map2_Get();     /*O*/
+            
 
       };
    } // end SpecBit namespace

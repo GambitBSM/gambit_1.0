@@ -217,6 +217,20 @@ namespace Gambit {
          return tmp_map;
       }
       
+       // Function to initialise mass2_map
+      template <class MI>
+      typename MapTypes<MSSMSpecTraits<MI>,MapTag::Set>::fmap MSSMSpec<MI>::fill_mass2_map_Set() 
+      {
+         typedef typename MI::Model Model;
+         typename MTSet::fmap tmp_map;
+         tmp_map["BMu"] = &Model::set_BMu;
+         tmp_map["mHd2"] = &Model::set_mHd2;
+         tmp_map["mHu2"] = &Model::set_mHu2;
+      
+         return tmp_map;
+      }
+      
+
       // Function to initialise mass2_map2
       template <class MI>
       typename MapTypes<MSSMSpecTraits<MI>,MapTag::Get>::fmap2 MSSMSpec<MI>::fill_mass2_map2_Get() 
@@ -237,6 +251,28 @@ namespace Gambit {
         
          return tmp_map;
       }
+
+
+       // Function to initialise mass2_map2
+      template <class MI>
+      typename MapTypes<MSSMSpecTraits<MI>,MapTag::Set>::fmap2 MSSMSpec<MI>::fill_mass2_map2_Set() 
+      {
+         typedef typename MI::Model Model;
+         typedef typename MTSet::FInfo2 FInfo2;
+         typename MTSet::fmap2 tmp_map;
+
+         // Can't use c++11 initialise lists, se have to initialise the index sets like this.
+         static const int i012v[] = {0,1,2};
+         static const std::set<int> i012(i012v, Utils::endA(i012v));
+
+         tmp_map["mq2"] = FInfo2( &Model::set_mq2, i012, i012);
+         tmp_map["ml2"] = FInfo2( &Model::set_ml2, i012, i012);
+         tmp_map["md2"] = FInfo2( &Model::set_md2, i012, i012);
+         tmp_map["mu2"] = FInfo2( &Model::set_mu2, i012, i012);
+         tmp_map["me2"] = FInfo2( &Model::set_me2, i012, i012);
+        
+         return tmp_map;
+      }
       
       // Function to initialise mass_map
       template <class MI>
@@ -250,6 +286,21 @@ namespace Gambit {
          tmp_map["Mu"]= &Model::get_Mu;
          tmp_map["vu"]= &Model::get_vu;
          tmp_map["vd"]= &Model::get_vd;
+         return tmp_map;
+      }
+
+
+      template <class MI>
+      typename MapTypes<MSSMSpecTraits<MI>,MapTag::Set>::fmap MSSMSpec<MI>::fill_mass_map_Set() 
+      {
+         typedef typename MI::Model Model;
+         typename MTSet::fmap tmp_map;
+         tmp_map["M1"]= &Model::set_MassB;
+         tmp_map["M2"]= &Model::set_MassWB;
+         tmp_map["M3"]= &Model::set_MassG;
+         tmp_map["Mu"]= &Model::set_Mu;
+         tmp_map["vu"]= &Model::set_vu;
+         tmp_map["vd"]= &Model::set_vd;
          return tmp_map;
       }
 
@@ -273,6 +324,28 @@ namespace Gambit {
       
          return tmp_map;
       }
+
+
+      // Function to initialise mass_map2
+      template <class MI>
+      typename MapTypes<MSSMSpecTraits<MI>,MapTag::Set>::fmap2 MSSMSpec<MI>::fill_mass_map2_Set() 
+      {
+         typedef typename MI::Model Model;
+         typedef typename MTSet::FInfo2 FInfo2;
+         typename MTSet::fmap2 tmp_map;
+
+         static const int i012v[] = {0,1,2};
+         static const std::set<int> i012(i012v, Utils::endA(i012v));
+
+         tmp_map["TYd"]= FInfo2( &Model::set_TYd, i012, i012);
+         tmp_map["TYe"]= FInfo2( &Model::set_TYe, i012, i012);
+         tmp_map["TYu"]= FInfo2( &Model::set_TYu, i012, i012);
+         tmp_map["ad"] = FInfo2( &Model::set_TYd, i012, i012);
+         tmp_map["ae"] = FInfo2( &Model::set_TYe, i012, i012);
+         tmp_map["au"] = FInfo2( &Model::set_TYu, i012, i012);
+      
+         return tmp_map;
+      }
       
       // Function to initialise mass0_map
       template <class MI>
@@ -283,6 +356,20 @@ namespace Gambit {
          tmp_map["g1"]= &Model::get_g1;
          tmp_map["g2"]= &Model::get_g2;
          tmp_map["g3"]= &Model::get_g3;
+        
+         return tmp_map;
+      }
+
+
+       // Function to initialise mass0_map
+      template <class MI>
+      typename MapTypes<MSSMSpecTraits<MI>,MapTag::Set>::fmap MSSMSpec<MI>::fill_mass0_map_Set() 
+      {
+         typedef typename MI::Model Model;
+         typename MTSet::fmap tmp_map;
+         tmp_map["g1"]= &Model::set_g1;
+         tmp_map["g2"]= &Model::set_g2;
+         tmp_map["g3"]= &Model::set_g3;
         
          return tmp_map;
       }
@@ -304,6 +391,7 @@ namespace Gambit {
          
          return tmp_map;
       }
+      
  
       // Function to initialise mass0_map2
       template <class MI>
@@ -322,6 +410,26 @@ namespace Gambit {
  
          return tmp_map;
       }
+
+
+       // Function to initialise mass0_map2
+      template <class MI>
+      typename MapTypes<MSSMSpecTraits<MI>,MapTag::Set>::fmap2 MSSMSpec<MI>::fill_mass0_map2_Set() 
+      {
+         typedef typename MI::Model Model;
+         typedef typename MTSet::FInfo2 FInfo2;
+         typename MTSet::fmap2 tmp_map;
+        
+         static const int i012v[] = {0,1,2};
+         static const std::set<int> i012(i012v, Utils::endA(i012v));
+
+         tmp_map["Yd"]= FInfo2( &Model::set_Yd, i012, i012);
+         tmp_map["Yu"]= FInfo2( &Model::set_Yu, i012, i012);
+         tmp_map["Ye"]= FInfo2( &Model::set_Ye, i012, i012);
+ 
+         return tmp_map;
+      }
+
       
       template <class MI>
       typename MapTypes<MSSMSpecTraits<MI>,MapTag::Get>::fmap MSSMSpec<MI>::fill_mass_eigenstate_map_Get()
