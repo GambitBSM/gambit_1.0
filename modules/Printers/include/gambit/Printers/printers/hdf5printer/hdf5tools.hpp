@@ -130,14 +130,14 @@ namespace Gambit {
 
       /// Typedef'd types; enabled only where they differ from the true types.
       /// @{      
-      SPECIALISE_get_hdf5_data_type_IF_NEEDED(int8_t,   H5::PredType::NATIVE_INT8)
-      SPECIALISE_get_hdf5_data_type_IF_NEEDED(uint8_t,  H5::PredType::NATIVE_UINT8)
-      SPECIALISE_get_hdf5_data_type_IF_NEEDED(int16_t,  H5::PredType::NATIVE_INT16)
-      SPECIALISE_get_hdf5_data_type_IF_NEEDED(uint16_t, H5::PredType::NATIVE_UINT16)
-      SPECIALISE_get_hdf5_data_type_IF_NEEDED(int32_t,  H5::PredType::NATIVE_INT32)
-      SPECIALISE_get_hdf5_data_type_IF_NEEDED(uint32_t, H5::PredType::NATIVE_UINT32)
-      SPECIALISE_get_hdf5_data_type_IF_NEEDED(int64_t,  H5::PredType::NATIVE_INT64)
-      SPECIALISE_get_hdf5_data_type_IF_NEEDED(uint64_t, H5::PredType::NATIVE_UINT64)
+      SPECIALISE_HDF5_DATA_TYPE_IF_NEEDED(int8_t,   H5::PredType::NATIVE_INT8)
+      SPECIALISE_HDF5_DATA_TYPE_IF_NEEDED(uint8_t,  H5::PredType::NATIVE_UINT8)
+      SPECIALISE_HDF5_DATA_TYPE_IF_NEEDED(int16_t,  H5::PredType::NATIVE_INT16)
+      SPECIALISE_HDF5_DATA_TYPE_IF_NEEDED(uint16_t, H5::PredType::NATIVE_UINT16)
+      SPECIALISE_HDF5_DATA_TYPE_IF_NEEDED(int32_t,  H5::PredType::NATIVE_INT32)
+      SPECIALISE_HDF5_DATA_TYPE_IF_NEEDED(uint32_t, H5::PredType::NATIVE_UINT32)
+      SPECIALISE_HDF5_DATA_TYPE_IF_NEEDED(int64_t,  H5::PredType::NATIVE_INT64)
+      SPECIALISE_HDF5_DATA_TYPE_IF_NEEDED(uint64_t, H5::PredType::NATIVE_UINT64)
       /// @}
 
       //!_______________________________________________________________________________________
