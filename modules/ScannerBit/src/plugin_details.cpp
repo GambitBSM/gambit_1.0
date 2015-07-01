@@ -26,7 +26,7 @@
 
 #include "gambit/ScannerBit/scanner_utils.hpp"
 #include "gambit/ScannerBit/plugin_details.hpp"
-
+#include "gambit/cmake/cmake_variables.hpp"
 namespace Gambit
 {
 
@@ -67,7 +67,7 @@ namespace Gambit
                                         version += "-" + release_version;
                         }
                         
-                        void Plugin_Details::get_status(const YAML::Node &libNode, const YAML::Node &plugNode)
+                        void Plugin_Details::get_status(const YAML::Node &libNode, const YAML::Node &plugNode, const YAML::Node &flagNode)
                         {
                                 std::vector<std::string> linked_libs_plug, found_incs_plug;
                                 
@@ -151,6 +151,14 @@ namespace Gambit
                                                 }
                                                 
                                                 reqd_incs_not_found = found_temp;
+                                        }
+                                }
+                                
+                                if (flagNode.IsMap())
+                                {
+                                        if (flagNode[type] && flagNode[type][plugin] && flagNode[type][plugin][version] && flagNode[type][plugin][version].IsMap())
+                                        {
+                                                flags = flagNode[type][plugin][version];
                                         }
                                 }
                         }

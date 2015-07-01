@@ -187,6 +187,12 @@ namespace Gambit
                         scan_for(pluginName, pluginNames)
                         {
                                 Plugins::Plugin_Interface<int ()> plugin_interface("scanner", pluginName, dim, *factory);
+                                
+                                if(plugin_interface["initialize_mpi"] && plugin_interface["initialize_mpi"].as<bool>())
+                                {
+                                        std::cout << "do mpi stuff ..." << std::endl;
+                                }
+                                
                                 plugin_interface();
                         }
  

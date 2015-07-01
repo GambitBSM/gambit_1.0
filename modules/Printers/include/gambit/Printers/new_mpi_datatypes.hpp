@@ -29,12 +29,12 @@ namespace Gambit
   {
     /// vertexID / sub-print index pair
     /// Identifies individual buffers (I call them VertexBuffer, but actually there can be more than one per vertex) 
-    //typedef std::pair<int,uint> VBIDpair;
+    //typedef std::pair<int,unsigned int> VBIDpair;
     struct VBIDpair {
       int   vertexID;
-      uint  index;
+      unsigned int  index;
       VBIDpair() {}
-      VBIDpair(int v, uint i)
+      VBIDpair(int v, unsigned int i)
         : vertexID(v)
         , index(i)
       {}
@@ -46,12 +46,12 @@ namespace Gambit
 
     /// pointID / process number pair
     /// Used to identify a single parameter space point
-    //typedef std::pair<ulong,uint> PPIDpair;
+    //typedef std::pair<unsigned long int, unsigned int> PPIDpair;
     struct PPIDpair {
-      ulong pointID;
-      uint  rank;
+      unsigned long int pointID;
+      unsigned int  rank;
       PPIDpair() {}
-      PPIDpair(ulong p, uint r)
+      PPIDpair(unsigned long int p, unsigned int r)
         : pointID(p)
         , rank(r)
       {}

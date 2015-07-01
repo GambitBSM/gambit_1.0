@@ -101,7 +101,9 @@ ExternalProject_Add(multinest
   #DOWNLOAD_DIR ${mn_dir}
   SOURCE_DIR ${mn_dir}
   BUILD_IN_SOURCE 1
-  #CONFIGURE_COMMAND sed ${dashi} "s#nested.o[[:space:]]*$#nested.o cwrapper.o#g" <SOURCE_DIR>/Makefile
+  #CONFIGURE_COMMAND sed ${dashi} -e "s#nested.o[[:space:]]*$#nested.o cwrapper.o#g" <SOURCE_DIR>/Makefile 
+  #                               -e "s#function[[:space:]]*loglike_proto(Cube,n_dim,nPar,context)[[:space:]]*$#function loglike_proto(Cube,n_dim,nPar,context) bind(c)#g"
+  #                               -e "s#subroutine[[:space:]]*dumper_proto(nSamples,nlive,nPar,physLive,posterior,paramConstr,maxLogLike,logZ,INSlogZ,logZerr,context)[[:space:]]*$#subroutine dumper_proto(nSamples,nlive,nPar,physLive,posterior,paramConstr,maxLogLike,logZ,INSlogZ,logZerr,context) bind(c)#g" <SOURCE_DIR>/cwrapper.f90
   CONFIGURE_COMMAND ""
   BUILD_COMMAND make ${mn_lib}.so FC=${CMAKE_Fortran_COMPILER} FFLAGS=${mnFFLAGS} LINKLIB=${mnSO_LINK}$ LAPACKLIB=${mnLAPACK} 
   INSTALL_COMMAND "" 
@@ -129,8 +131,11 @@ ExternalProject_Add(darksusy
   SOURCE_DIR ${PROJECT_SOURCE_DIR}/../extras/DarkSUSY/DarkSUSY
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND <SOURCE_DIR>/configure FC=${CMAKE_Fortran_COMPILER} FCFLAGS=${CMAKE_Fortran_FLAGS} FFLAGS=${CMAKE_Fortran_FLAGS} CC=${CMAKE_C_COMPILER} CFLAGS=${CMAKE_C_FLAGS} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${CMAKE_CXX_FLAGS}
-  BUILD_COMMAND make COMMAND ar d <SOURCE_DIR>/lib/libdarksusy.a ${remove_files_from_libdarksusy} COMMAND ar d <SOURCE_DIR>/lib/libisajet.a ${remove_files_from_libisajet}
-  INSTALL_COMMAND ${CMAKE_Fortran_COMPILER} -shared ${libs} -o <SOURCE_DIR>/lib/libdarksusy.so COMMAND cp <SOURCE_DIR>/lib/libdarksusy.so ${PROJECT_SOURCE_DIR}/Backends/lib/.
+  BUILD_COMMAND make 
+        COMMAND ar d <SOURCE_DIR>/lib/libdarksusy.a ${remove_files_from_libdarksusy} 
+        COMMAND ar d <SOURCE_DIR>/lib/libisajet.a ${remove_files_from_libisajet}
+  INSTALL_COMMAND ${CMAKE_Fortran_COMPILER} -shared ${libs} -o <SOURCE_DIR>/lib/libdarksusy.so 
+          COMMAND cp <SOURCE_DIR>/lib/libdarksusy.so ${PROJECT_SOURCE_DIR}/Backends/lib/.
 )
 set_property(TARGET darksusy PROPERTY _EP_DOWNLOAD_ALWAYS 0)
 set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/Backends/lib/libdarksusy.so")
@@ -143,7 +148,13 @@ ExternalProject_Add(superiso
   SOURCE_DIR ${PROJECT_SOURCE_DIR}/../extras/SuperIso/SuperIso
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND ""
-  BUILD_COMMAND sed ${dashi} "s#CC = gcc#CC = ${CMAKE_C_COMPILER}#g" <SOURCE_DIR>/Makefile COMMAND sed ${dashi} "s/CFLAGS= -O3 -pipe -fomit-frame-pointer/CFLAGS= -lm -fPIC ${CMAKE_C_FLAGS}/g" <SOURCE_DIR>/Makefile COMMAND make COMMAND ar x <SOURCE_DIR>/src/libisospin.a COMMAND echo "${CMAKE_C_COMPILER} -shared -o libsuperiso.so *.o -lm" > make_so.sh COMMAND chmod u+x make_so.sh COMMAND ./make_so.sh
+  BUILD_COMMAND sed ${dashi} "s#CC = gcc#CC = ${CMAKE_C_COMPILER}#g" <SOURCE_DIR>/Makefile 
+        COMMAND sed ${dashi} "s/CFLAGS= -O3 -pipe -fomit-frame-pointer/CFLAGS= -lm -fPIC ${CMAKE_C_FLAGS}/g" <SOURCE_DIR>/Makefile
+        COMMAND make 
+        COMMAND ar x <SOURCE_DIR>/src/libisospin.a
+        COMMAND echo "${CMAKE_C_COMPILER} -shared -o libsuperiso.so *.o -lm" > make_so.sh
+        COMMAND chmod u+x make_so.sh
+        COMMAND ./make_so.sh
   INSTALL_COMMAND cp <SOURCE_DIR>/libsuperiso.so ${PROJECT_SOURCE_DIR}/Backends/lib/.
 )
 set_property(TARGET superiso PROPERTY _EP_DOWNLOAD_ALWAYS 0)
