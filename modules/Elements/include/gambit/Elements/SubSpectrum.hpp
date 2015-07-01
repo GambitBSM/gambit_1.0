@@ -461,9 +461,9 @@ namespace Gambit {
       // Typedef collection
       typedef typename DerivedSpecTraits::Model Model;
       typedef typename DerivedSpecTraits::Input Input;
-      typedef void(Model::*FSptr)(double) const; /* Function pointer signature for Model object member functions with no arguments */
-      typedef void(Model::*FSptr1)(double,int) const; /* Function pointer signature for Model object member functions with one argument */
-      typedef void(Model::*FSptr2)(double,int,int) const; /* Function pointer signature for Model object member functions with two arguments */
+      typedef void(Model::*FSptr)(double); /* Function pointer signature for Model object member functions with no arguments */
+      typedef void(Model::*FSptr1)(int,double); /* Function pointer signature for Model object member functions with one argument */
+      typedef void(Model::*FSptr2)(int,int,double); /* Function pointer signature for Model object member functions with two arguments */
       typedef void(*plainfptrM)(Model&, double); /* Function pointer for plain functions; used for custom functions */
       typedef void(*plainfptrI)(Input&, double); /* Function pointer for plain functions; used for custom functions */
       typedef FcnInfo1<FSptr1> FInfo1; // Structs to help specify valid indices for functions
@@ -1317,12 +1317,12 @@ namespace Gambit {
                case 4: {
                  ff->check(ff->it1_safe);
                  typename MT::FSptr1 f = ff->it1->second.fptr;
-                 (model->*f)(set_value,ff->index1);
+                 (model->*f)(ff->index1, set_value);
                  break;}
                case 5: {
                  ff->check(ff->it2_safe);
                  typename MT::FSptr2 f = ff->it2->second.fptr;
-                 (model->*f)(set_value,ff->index1,ff->index2);
+                 (model->*f)(ff->index1,ff->index2,set_value);
                  break;}
                default:{
                  std::ostringstream errmsg;
