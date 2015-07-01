@@ -60,16 +60,19 @@
       template<typename T>                                                                                                   \
       struct get_mpi_data_type<T, typename boost::enable_if_c< std::is_same<T, TYPEDEFD_TYPE>::value                      && \
                                                                !std::is_same<char, TYPEDEFD_TYPE>::value                  && \
-                                                               !std::is_same<bool, TYPEDEFD_TYPE>::value                  && \
+                                                               !std::is_same<short, TYPEDEFD_TYPE>::value                 && \
                                                                !std::is_same<int, TYPEDEFD_TYPE>::value                   && \
                                                                !std::is_same<long, TYPEDEFD_TYPE>::value                  && \
                                                                !std::is_same<long long, TYPEDEFD_TYPE>::value             && \
+                                                               !std::is_same<unsigned char, TYPEDEFD_TYPE>::value         && \
+                                                               !std::is_same<unsigned short, TYPEDEFD_TYPE>::value        && \
                                                                !std::is_same<unsigned int, TYPEDEFD_TYPE>::value          && \
                                                                !std::is_same<unsigned long, TYPEDEFD_TYPE>::value         && \
                                                                !std::is_same<unsigned long long, TYPEDEFD_TYPE>::value    && \
                                                                !std::is_same<float, TYPEDEFD_TYPE>::value                 && \
                                                                !std::is_same<double, TYPEDEFD_TYPE>::value                && \
-                                                               !std::is_same<long double, TYPEDEFD_TYPE>::value>::type >     \
+                                                               !std::is_same<long double, TYPEDEFD_TYPE>::value           && \
+                                                               !std::is_same<bool, TYPEDEFD_TYPE>::value>::type >            \
       {                                                                                                                      \
           static MPI_Datatype type() { return RETURN_MPI_TYPE; }                                                             \
       };                                                                                                                     \
@@ -98,16 +101,19 @@ namespace Gambit
       /// True types
       /// @{
       template<> struct get_mpi_data_type<char>              { static MPI_Datatype type() { return MPI_CHAR;       } };
-      template<> struct get_mpi_data_type<bool>              { static MPI_Datatype type() { return MPI_UINT8_T;    } };
+      template<> struct get_mpi_data_type<short>             { static MPI_Datatype type() { return MPI_SHORT;      } };
       template<> struct get_mpi_data_type<int>               { static MPI_Datatype type() { return MPI_INT;        } };
       template<> struct get_mpi_data_type<long>              { static MPI_Datatype type() { return MPI_LONG;       } };
       template<> struct get_mpi_data_type<long long>         { static MPI_Datatype type() { return MPI_LONG_LONG;  } };
-      template<> struct get_mpi_data_type<unsigned int>      { static MPI_Datatype type() { return MPI_UNSIGNED;   } };
-      template<> struct get_mpi_data_type<unsigned long>     { static MPI_Datatype type() { return MPI_UNSIGNED_LONG; } };
+      template<> struct get_mpi_data_type<unsigned char>     { static MPI_Datatype type() { return MPI_UNSIGNED_CHAR;      } };
+      template<> struct get_mpi_data_type<unsigned short>    { static MPI_Datatype type() { return MPI_UNSIGNED_SHORT;     } };
+      template<> struct get_mpi_data_type<unsigned int>      { static MPI_Datatype type() { return MPI_UNSIGNED;           } };
+      template<> struct get_mpi_data_type<unsigned long>     { static MPI_Datatype type() { return MPI_UNSIGNED_LONG;      } };
       template<> struct get_mpi_data_type<unsigned long long>{ static MPI_Datatype type() { return MPI_UNSIGNED_LONG_LONG; } };
       template<> struct get_mpi_data_type<float>             { static MPI_Datatype type() { return MPI_FLOAT;      } };
       template<> struct get_mpi_data_type<double>            { static MPI_Datatype type() { return MPI_DOUBLE;     } };
       template<> struct get_mpi_data_type<long double>       { static MPI_Datatype type() { return MPI_LONG_DOUBLE;} };
+      template<> struct get_mpi_data_type<bool>              { static MPI_Datatype type() { return MPI_UINT8_T;    } };
       /// @}
 
       /// Typedef'd types; enabled only where they differ from the true types.
