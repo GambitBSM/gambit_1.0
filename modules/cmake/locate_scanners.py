@@ -68,7 +68,7 @@ def main(argv):
     verbose = False
     try:
         build_dir = argv[0]
-        opts, args = getopt.gnu_getopt(argv,"vx:",["verbose","exclude-scanners="])
+        opts, args = getopt.getopt(argv,"vx:",["verbose","exclude-scanners="])
     except getopt.GetoptError:
         print 'Usage: locate_scanners.py build_dir [flags]'
         print ' flags:'
@@ -346,9 +346,7 @@ def main(argv):
                         ini_version = maj_version
                     elif "any_version" in yaml_file[plugin_name]:
                         ini_version = "any_version"
-                    else:
-                        print "no version thingy"
-                        print yaml_file[plugin_name]
+                        
                     if ini_version != "":
                         options_list = yaml_file[plugin_name][ini_version]
                         if type(options_list) is dict: #not list:
@@ -729,13 +727,16 @@ set( exclude_lib_output )                        \n\n"
             towrite += " "*4 + "set_target_properties( " + plug_type[i] + "_" + directory + "\n" + " "*23 + "PROPERTIES\n"
             if sys.platform == "darwin":
                 towrite += " "*23 + "LINK_FLAGS \"-dynamiclib\"\n"# ${" + plug_type[i] + "_plugin_libraries_" + directory + "}\"\n"
+                towrite += " "*23 + "INSTALL_NAME_DIR \"${" + plug_type[i] + "_plugin_rpath_" + directory + "}\"\n";
             else:
                 towrite += " "*23 + "LINK_FLAGS \"-rdynamic\"\n"# ${" + plug_type[i] + "_plugin_libraries_" + directory + "}\"\n"
-            towrite += " "*23 + "INSTALL_RPATH \"${" + plug_type[i] + "_plugin_rpath_" + directory + "}\"\n";
+                towrite += " "*23 + "INSTALL_RPATH \"${" + plug_type[i] + "_plugin_rpath_" + directory + "}\"\n";
+               
             if sys.platform == "darwin":
                 cflags = "-dynamiclib"
             else:
                 cflags = "-rdynamic"
+                
             #if scanbit_static_links.has_key(plug_type[i]):
             #    if scanbit_static_links[plug_type[i]].has_key(directory):
             #        if (len(scanbit_static_links[plug_type[i]][directory]) != 0):
