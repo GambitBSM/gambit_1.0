@@ -733,10 +733,10 @@ set( exclude_lib_output )                        \n\n"
             else:
                 towrite += " "*23 + "LINK_FLAGS \"-rdynamic\"\n"# ${" + plug_type[i] + "_plugin_libraries_" + directory + "}\"\n"
                 towrite += " "*23 + "INSTALL_RPATH \"${" + plug_type[i] + "_plugin_rpath_" + directory + "}\"\n";
-                
-            if sys.platform != "darwin":
-                #cflags = "-dynamiclib"
-            #else:
+               
+            if sys.platform == "darwin":
+                cflags = ""#"-dynamiclib"
+            else:
                 cflags = "-rdynamic"
                 
             #if scanbit_static_links.has_key(plug_type[i]):
