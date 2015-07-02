@@ -11,8 +11,15 @@
 ///  \author Pat Scott
 ///          (p.scott@imperial.ac.uk)
 ///  \date 2014 Aug
+///  \date 2015 Mar-May
+///
 ///  \author Csaba Balazs
+///          (csaba.balazs@monash.edu) 
 ///  \date 2015 Jan-May
+///
+///  \author Peter Athron  
+///          (peter.athron@coepp.org.au)
+///  \date 2015 Jun 
 ///
 ///  *********************************************
 
@@ -331,9 +338,9 @@ namespace Gambit
         filled=true;
 
         return;
-     }
+    }
 
-     /////////////// Standard Model ///////////////////
+    /////////////// Standard Model ///////////////////
 
     /// SM decays: W+/W-
     void W_plus_decays (DecayTable::Entry& result) 
