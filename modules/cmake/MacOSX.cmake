@@ -22,9 +22,9 @@
 # Set a consistent MACOSX_RPATH default across all CMake versions.
 # When CMake 2.8.12 is required, change this default to 1.
 # When CMake 3.0.0 is required, remove this block (see CMP0042).
-if(NOT DEFINED CMAKE_MACOSX_RPATH)
-  set(CMAKE_MACOSX_RPATH 0)
-endif()
+#if(NOT DEFINED CMAKE_MACOSX_RPATH)
+set(CMAKE_MACOSX_RPATH 1)
+#endif()
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   # Tell the OSX linker not to whinge about missing symbols when just making a library. 
@@ -42,7 +42,4 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -mmacosx-version-min=10.7")
     set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} -mmacosx-version-min=10.7")
   endif()
-  # Tell cmake to look for things installed by macports
-  list(APPEND CMAKE_INCLUDE_PATH /opt/local/include)
-  list(APPEND CMAKE_LIBRARY_PATH /opt/local/lib)
 endif()
