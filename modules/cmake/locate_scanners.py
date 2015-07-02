@@ -346,9 +346,7 @@ def main(argv):
                         ini_version = maj_version
                     elif "any_version" in yaml_file[plugin_name]:
                         ini_version = "any_version"
-                    else:
-                        print "no version thingy"
-                        print yaml_file[plugin_name]
+                        
                     if ini_version != "":
                         options_list = yaml_file[plugin_name][ini_version]
                         if type(options_list) is dict: #not list:
@@ -723,19 +721,19 @@ set( exclude_lib_output )                        \n\n"
             towrite += "endif()\n\n"
 
             towrite += "if ( " + plug_type[i] + "_compile_flag_" + directory + " STREQUAL \"\" )\n"
-            towrite += " "*4 + "add_gambit_library( " + plug_type[i] + "_" + directory + " OPTION MODULE SOURCES ${"
+            towrite += " "*4 + "add_gambit_library( " + plug_type[i] + "_" + directory + " OPTION SHARED SOURCES ${"
             towrite += plug_type[i] + "_plugin_sources_" + directory + "} HEADERS ${"
             towrite += plug_type[i] + "_plugin_headers_" + directory + "} )\n"
             towrite += " "*4 + "set_target_properties( " + plug_type[i] + "_" + directory + "\n" + " "*23 + "PROPERTIES\n"
             if sys.platform == "darwin":
-                # ${" + plug_type[i] + "_plugin_libraries_" + directory + "}\"\n"
+                towrite += " "*23 + "LINK_FLAGS \"-dynamiclib\"\n"# ${" + plug_type[i] + "_plugin_libraries_" + directory + "}\"\n"
                 towrite += " "*23 + "INSTALL_NAME_DIR \"${" + plug_type[i] + "_plugin_rpath_" + directory + "}\"\n";
             else:
                 towrite += " "*23 + "LINK_FLAGS \"-rdynamic\"\n"# ${" + plug_type[i] + "_plugin_libraries_" + directory + "}\"\n"
                 towrite += " "*23 + "INSTALL_RPATH \"${" + plug_type[i] + "_plugin_rpath_" + directory + "}\"\n";
                
             if sys.platform == "darwin":
-                cflags = ""#"-dynamiclib"
+                cflags = "-dynamiclib"
             else:
                 cflags = "-rdynamic"
                 
