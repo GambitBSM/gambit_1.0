@@ -43,9 +43,9 @@ BE_FUNCTION(returnResult, double, (), "_Z12returnResultv","LibFirst_returnResult
 BE_FUNCTION(byRefExample, double, (double&), "_Z12byRefExampleRd", "refex")
 BE_FUNCTION(byRefExample2, void, (double&, double), "_Z13byRefExample2Rdd", "refex2")
 BE_FUNCTION(nastyExample, double, (int, etc), "_Z12nastyExampleiz", "varex")
-BE_FUNCTION(arrayarg_1D, int, (double*), "_Z11arrayarg_1DPd", "example_be_array_1D")
-BE_FUNCTION(arrayarg_2D, int, (double(*)[10]), "_Z11arrayarg_2DPA10_d", "example_be_array_2D")
-BE_FUNCTION(arrayarg_3D, int, (double(*)[10][10]), "_Z11arrayarg_3DPA10_A10_d", "example_be_array_3D")
+BE_FUNCTION(arrayarg_1D, double, (double*), "_Z11arrayarg_1DPd", "example_be_array_1D")
+BE_FUNCTION(arrayarg_2D, double, (double(*)[10]), "_Z11arrayarg_2DPA10_d", "example_be_array_2D")
+BE_FUNCTION(arrayarg_3D, double, (double(*)[10][10]), "_Z11arrayarg_3DPA10_A10_d", "example_be_array_3D")
 
 // Variables
 BE_VARIABLE(int,SomeInt, "someInt", "SomeInt", (CMSSM, UED))

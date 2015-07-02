@@ -222,9 +222,9 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION Backend_array_test
     START_FUNCTION(double)   
-    BACKEND_REQ(example_be_array_1D, (), int, (double*))
-    BACKEND_REQ(example_be_array_2D, (), int, (double(*)[10]))
-    BACKEND_REQ(example_be_array_3D, (), int, (double(*)[10][10]))
+    BACKEND_REQ(example_be_array_1D, (), double, (double*))
+    BACKEND_REQ(example_be_array_2D, (), double, (double(*)[10]))
+    BACKEND_REQ(example_be_array_3D, (), double, (double(*)[10][10]))
     #undef FUNCTION
   #undef CAPABILITY
 
