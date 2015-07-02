@@ -43,302 +43,6 @@ namespace Gambit
 
     /// \name DecayBit module functions
     /// @{
-   
-     /// this is hideous at the moment, I need a global tol
-     /// to keep it the same in each function
-     double tol = 1e-2;
-     
-     mass_es_pseudonyms::mass_es_pseudonyms(const SubSpectrum* mssm,
-                                              double tol)
-     {
-        filled = false;
-        fill_mass_es_psns(mssm, tol);
-        filled = true;
-     }
-
-     /// just leave these as regular functions just now
-     /// in case we change approach or test alternative
-     void fill_mass_es_psn_gauge(std::string & is, std::string & isbar,  
-                                 std::string gauge_es,
-                                 const SubSpectrum* mssm,
-                                 double tol) { 
-        double max_mix = 0; 
-        std::string mass_es = slhahelp::mass_es_from_gauge_es(gauge_es, 
-                                                              max_mix, mssm);
-        if((max_mix*max_mix) >= 1-tol){
-           Models::partmap pm;
-           is = mass_es;   
-           isbar = pm.get_antiparticle(mass_es);
-        }
-        else {/// throw exception in gambit
-           /// I am actually not sure if this is code error or a problem point
-           /// to be flagged
-           
-           /// can i write the deviation and the states in this message?  O
-           /// or does it only accept string
-           DecayBit_error().raise(LOCAL_INFO, "function fill_mass_es_psn_gauge has too large sfermion mixing for state that assumed to be a pure gauge state");
-           DecayBit_warning().raise(LOCAL_INFO,
-              "This point violates the assumption that certain sfermion states have no family mixing  by a degree larger than tol made in a DecayBit routine.");
-           invalid_point().raise("This point violates the assumption that certain sfermion states have no family mixing  by a degree larger than tol made in a DecayBit routine.");
-}  
-
-          std::cout << "******** Extra tests ********* " << std::endl;
-          std::cout << "gauge_es = " << gauge_es << std::endl;
-          std::cout << "mass_es = " << mass_es << std::endl;
-          double max_mix_r = 0.0;
-          std::string g_es = slhahelp::gauge_es_from_mass_es(mass_es, 
-                                                              max_mix_r, mssm);
-          std::cout << "g_es = " << g_es << std::endl;
-          std::cout << "max_mix = "  << max_mix<< std::endl;
-          std::cout << "max_mix_r = "  << max_mix_r << std::endl;
-          if(g_es != gauge_es) std::cout << "g_s error! " << std::endl;
-          if(max_mix_r != max_mix) std::cout << "g_s max_mix_r error! " 
-                                            << std::endl;
-          
-          std::string ges = slhahelp::gauge_es_from_mass_es(mass_es, mssm, 
-                                                             1e-3, LOCAL_INFO);
-          std::cout << "ges = "  << ges << std::endl;
-          if(ges != gauge_es) std::cout << "ges error! " << std::endl;
-          std::string mes = slhahelp::mass_es_from_gauge_es(gauge_es, mssm, 
-                                                             1e-3, LOCAL_INFO);
-          std::cout << "mes = "  << ges << std::endl;
-          if(mes != mass_es) std::cout << "mes error! " << std::endl;
-
-
-       return;
-     }
-
-     void fill_mass_es_psn_family(std::string & is, std::string & isbar,  
-                                  std::string family_state,
-                                  const SubSpectrum* mssm,
-                                  double tol) { 
-        /// use slhahelp routine which first identifies the mass_es which 
-        /// best matches the requested family state. then returns the
-        /// decomposition of that mass_es state in terms of gauge states 
-        /// from the same family as the family state
-        std::vector<double> right_fam_gauge_comp; 
-        str mass_es = slhahelp::mass_es_closest_to_family(family_state, 
-                                                          right_fam_gauge_comp,
-                                                          mssm);
-        /// Do very simple test for now, discuss best approach
-        /// This is a question for decaybit
-        double mix_mag_sq = 0.0;
-        for(auto i = right_fam_gauge_comp.begin(); 
-            i != right_fam_gauge_comp.end(); i++)
-           {
-              double mix = *i;
-              mix_mag_sq += mix*mix;
-           }    
-
-        if(mix_mag_sq > 1-tol) 
-           {
-              Models::partmap pm;
-              is = mass_es;
-              isbar = pm.get_antiparticle(mass_es);
-           }
-        else 
-           {
-           DecayBit_error().raise(LOCAL_INFO, "function get_mass_admix_for_gauge called with type's for the gauge eigenstate and mass eigenstate that don't match."); 
-           DecayBit_warning().raise(LOCAL_INFO,
-              "This point violates the assumption that certain sfermion states have no family mixing  by a degree larger than tol made in a DecayBit routine.");
-           invalid_point().raise("This point violates the assumption that certain sfermion states have no family mixing  by a degree larger than tol made in a DecayBit routine.");
-        }
-        
-
-        std::cout << "******** Extra tests ********* " << std::endl;
-        std::cout << "family_state = "  << family_state <<std::endl;
-        std::cout << "mass_es obtained from family_state = "  << mass_es 
-                  << std::endl;
-        double sum_sq_mix;
-        str fs = slhahelp::family_state_closest_to_mass_es(mass_es, sum_sq_mix,
-                                                           mssm);
-        std::cout << "fs obtained from mass_es = " << fs << std::endl;
-        std::cout << "sum_sq_mix = " << sum_sq_mix << std::endl;
-        std::cout << "mix_mag_sq = " << mix_mag_sq << std::endl; 
-        if(fs != family_state) std::cout << "fs error! = " << std::endl;
-        str f_s = slhahelp::family_state_closest_to_mass_es(mass_es, mssm,
-                                                            1e-3, LOCAL_INFO);
-        std::cout << "f_s obtained from mass_es = " << f_s << std::endl;
-        if(f_s != family_state) std::cout << "f_s error! = " << std::endl;
-
-        str m_es = slhahelp::mass_es_closest_to_family(family_state, mssm, tol, 
-                                                       LOCAL_INFO);
-        std::cout << "m_es = "  << m_es << std::endl;
-        if(m_es != mass_es) std::cout << "m_es error! = " << std::endl;
-        
-        std::cout << "******** Special family_state_mix_matrix tests ********" 
-                  << std::endl;
-        str mass_es1, mass_es2, type;
-        /// this is banned but just for temp test
-        str types[] = {"~u","~d", "~e"};
-        std::set<str> set_type = {types, types+3};
-        std::set<str>::iterator it;
-        for (it = set_type.begin(); it != set_type.end(); ++it)
-           {
-              type = *it;
-              for(int gen = 1;  gen <=3; gen++){
-                 std::cout << "entering type = " << type << " and gen " 
-                           << gen << std::endl;   
-                 std::vector<double> f_mix_matrix = 
-                    slhahelp::family_state_mix_matrix(type,gen, mass_es1, 
-                                                      mass_es2, mssm);
-                 std::cout << "mass_es1 = " << mass_es1 << std::endl;
-                 std::cout << "mass_es2 = " << mass_es2 << std::endl;
-                 for(int i = 0;  i<=3; i++){
-                    std::cout << "f_mix_matrix[" << i << "] = "  
-                              << f_mix_matrix[i] << std::endl;
-                 }
-                 double row1sq = f_mix_matrix[0] * f_mix_matrix[0];
-                 row1sq += f_mix_matrix[1] * f_mix_matrix[1];
-                 double row2sq = f_mix_matrix[2] * f_mix_matrix[2];
-                 row2sq += f_mix_matrix[3] * f_mix_matrix[3];
-                 std::cout << "row1sq = " <<  row1sq << "  row2sq = " 
-                           <<  row2sq << std::endl;
-              }
-           }
-        return;
-     }
-       
-     void  mass_es_pseudonyms::test_print(const SubSpectrum* mssm) {
-        std::cout.precision(8);
-        std::cout << "Dmix :" << std::endl;;
-        for(int i = 1; i <=6; i++){
-           for(int j = 1; j <=6; j++){
-              std::cout << "     " << i << j << " = "  
-                        << std::scientific << std::setw(10)  
-                        <<  mssm->phys.get_Pole_Mixing("~d", i, j);
-           }
-           std::cout << std::endl;
-        }
-        
-        std::cout << "Umix :" << std::endl;;
-        for(int i = 1; i <=6; i++){
-           for(int j = 1; j <=6; j++){
-              std::cout << "     " << i << j << " = "  
-                        << mssm->phys.get_Pole_Mixing("~u", i, j);
-           }
-           std::cout << std::endl;
-        }
-        
-        
-        std::cout << "Emix :" << std::endl;;
-        for(int i = 1; i <=6; i++){
-           for(int j = 1; j <=6; j++){
-              std::cout << "     " << i << j << " = "  
-                        << mssm->phys.get_Pole_Mixing("~e", i, j);
-            }
-           std::cout << std::endl;
-        }
-
-         std::cout << "NUmix :" << std::endl;;
-        for(int i = 1; i <=3; i++){
-           for(int j = 1; j <=3; j++){
-              std::cout << "     " << i << j << " = "  
-                        << mssm->phys.get_Pole_Mixing("~nu", i, j);
-            }
-           std::cout << std::endl;
-        }
-        
-        
-        std::cout << "isdl = "  << isdl << std::endl;
-        std::cout << "isdlbar = "  << isdlbar << std::endl;
-        std::cout << "isdr = "  << isdr << std::endl;
-        std::cout << "isdrbar = "  << isdrbar << std::endl;
-        
-        std::cout << "isul = "  << isul << std::endl;
-        std::cout << "isulbar = "  << isulbar << std::endl;
-        std::cout << "isur = "  << isur << std::endl;
-        std::cout << "isurbar = "  << isurbar << std::endl;
-        
-        std::cout << "issl = "  << issl << std::endl;
-        std::cout << "isslbar = "  << isslbar << std::endl;
-        std::cout << "issr = "  << issr << std::endl;
-        std::cout << "issrbar = "  << issrbar << std::endl;
-
-        std::cout << "iscl = "  << iscl << std::endl;
-        std::cout << "isclbar = "  << isclbar << std::endl;
-        std::cout << "iscr = "  << iscr << std::endl;
-        std::cout << "iscrbar = "  << iscrbar << std::endl;
-
-        std::cout << "isb1 = "  << isb1 << std::endl;
-        std::cout << "isb1bar = "  << isb1bar << std::endl;
-        std::cout << "isb2 = "  << isb2 << std::endl;
-        std::cout << "isb2bar = "  << isb2bar << std::endl;
-
-        std::cout << "ist1 = "  << ist1 << std::endl;
-        std::cout << "ist1bar = "  << ist1bar << std::endl;
-        std::cout << "ist2 = "  << ist2 << std::endl;
-        std::cout << "ist2bar = "  << ist2bar << std::endl;
-
-        std::cout << "isell = "  << isell << std::endl;
-        std::cout << "isellbar = "  << isellbar << std::endl;
-        std::cout << "iselr = "  << iselr << std::endl;
-        std::cout << "iselrbar = "  << iselrbar << std::endl;
-
-        std::cout << "isnel = "  << isnel << std::endl;
-        std::cout << "isnelbar = "  << isnelbar << std::endl;
-
-        std::cout << "ismul = "  << ismul << std::endl;
-        std::cout << "ismulbar = "  << ismulbar << std::endl;
-        std::cout << "ismur = "  << ismur << std::endl;
-        std::cout << "ismurbar = "  << ismurbar << std::endl;
-
-        std::cout << "isnmull = "  << isnmul << std::endl;
-        std::cout << "isnmullbar = "  << isnmulbar << std::endl;
-
-        std::cout << "istau1 = "  << istau1 << std::endl;
-        std::cout << "istau1bar = "  << istau1bar << std::endl;
-        std::cout << "istau2 = "  << istau2 << std::endl;
-        std::cout << "istau2bar = "  << istau2bar << std::endl;
-
-        std::cout << "isntau1 = "  << isntau1 << std::endl;
-        std::cout << "isntau1bar = "  << isntau1bar << std::endl;
-
-
-     }
-     
-     /// fill strings in struct
-     void  mass_es_pseudonyms::fill_mass_es_psns(const SubSpectrum* mssm,
-                                                  double tol) 
-     {
-        if(filled == true) return;  // don't repeat unless necessary
-       
-        fill_mass_es_psn_gauge(isdl, isdlbar, "~d_L", mssm, tol);
-        fill_mass_es_psn_gauge(isul, isulbar, "~u_L", mssm, tol);
-        fill_mass_es_psn_gauge(issl, isslbar, "~s_L", mssm, tol);
-        fill_mass_es_psn_gauge(iscl, isclbar, "~c_L", mssm, tol);
-        fill_mass_es_psn_family(isb1, isb1bar, "~b_1", mssm, tol);
-        fill_mass_es_psn_family(ist1, ist1bar, "~t_1", mssm, tol);
-        
-        fill_mass_es_psn_gauge(isell, isellbar, "~e_L", mssm, tol);
-        fill_mass_es_psn_gauge(isnel, isnelbar, "~nu_e_L", mssm, tol);
-        fill_mass_es_psn_gauge(ismul, ismulbar, "~mu_L", mssm, tol);
-        fill_mass_es_psn_gauge(isnmul, isnmulbar, "~nu_mu_L", mssm, tol);
-        fill_mass_es_psn_family(istau1, istau1bar, "~tau_1", mssm, tol);
-        // why on earth do we or they have a family state for the tau neutrino 
-        /// what does that mean?  Either the left handed states mix amongst 
-        /// each other or they don't, there are no right handed sneutrinos
-        /// because the mssm has no right neutrino superfields.
-        /// I will pretend these are Left states for jsut now but leave the
-        /// confusing name
-        fill_mass_es_psn_gauge(isntau1, isntau1bar, "~nu_tau_L", mssm, tol);
-
-        fill_mass_es_psn_gauge(isdr, isdrbar, "~d_R", mssm, tol);
-        fill_mass_es_psn_gauge(isur, isurbar, "~u_R", mssm, tol);
-        fill_mass_es_psn_gauge(issr, issrbar, "~s_R", mssm, tol);
-        fill_mass_es_psn_gauge(iscr, iscrbar, "~c_R", mssm, tol);
-        fill_mass_es_psn_family(isb2, isb2bar, "~b_2", mssm, tol);
-        fill_mass_es_psn_family(ist2, ist2bar, "~t_2", mssm, tol);
-        fill_mass_es_psn_gauge(iselr, iselrbar, "~e_R", mssm, tol);
-        fill_mass_es_psn_gauge(ismur, ismurbar, "~mu_R", mssm, tol);
-        fill_mass_es_psn_family(istau2, istau2bar, "~tau_2", mssm, tol);
-        
-        test_print(mssm);
-        
-        filled=true;
-
-        return;
-    }
 
     /////////////// Standard Model ///////////////////
 
@@ -526,14 +230,6 @@ namespace Gambit
       result.set_BF(FH_input.gammas[tBF(2)-1], 0.0, "H+", "b");
     }
 
-     void Get_psns (mass_es_pseudonyms & result)
-     {
-        using namespace Pipes::Get_psns;
-        const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_UV();
-        mass_es_pseudonyms psn(mssm, tol);
-        result = psn;   
-     }
-
     /// MSSM decays: h0_1
     void MSSM_h0_1_decays (DecayTable::Entry& result) 
     {
@@ -595,7 +291,7 @@ namespace Gambit
       result.set_BF(BEreq::cb_wisfer_hdec->bhlslnl/3.0, 0.0, psn.isnmul, psn.isnmulbar);
       result.set_BF(BEreq::cb_wisfer_hdec->bhlslnl/3.0, 0.0, psn.isntau1, psn.isntau1bar);
      
-      ///cout << "h0_1 total width: " << result.width_in_GeV << endl;
+      // cout << "h0_1 total width: " << result.width_in_GeV << endl;
       // cout << "BR(h0_1 -> gamma gamma): " << BEreq::cb_widthhl_hdec->hlbrga << endl;
       // cout << "BR(h0_1 -> ~u_L ~u_L_bar): " << BEreq::cb_wisfer_hdec->bhlsqul/2.0 << endl;
       // cout << "BR(h0_1 -> ~tau-_L ~e+_5): " << BEreq::cb_wisfer_hdec->bhlstau(1,1) << endl;
@@ -605,16 +301,15 @@ namespace Gambit
     void FH_MSSM_h0_1_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::FH_MSSM_h0_1_decays;
+
+      // Get the mass pseudonyms for the gauge eigenstates
+      mass_es_pseudonyms psn = *(Dep::SLHA_pseudonyms);
       
       // unpack FeynHiggs Couplings
       fh_Couplings FH_input = *Dep::FH_Couplings;
-
-      int iH = 0; // h0_1
-      
-      mass_es_pseudonyms psn = *(Dep::SLHA_pseudonyms);
-      
-      
-      
+      // Specify that we're talking about h0_1
+      int iH = 0;     
+      // Set the total Higgs width
       result.width_in_GeV = FH_input.gammas[iH];
 
       // vector-boson pair decays
@@ -670,9 +365,6 @@ namespace Gambit
       result.set_BF(FH_input.gammas[H0HH(iH,1,3)+BRoffset], 0.0, "h0_1", "A0");
       result.set_BF(FH_input.gammas[H0HH(iH,2,3)+BRoffset], 0.0, "h0_2", "A0");
 
-      
-
-
       // sfermion decays
       result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,1,1)+BRoffset], 0.0, psn.isnel, psn.isnelbar);
       result.set_BF(FH_input.gammas[H0SfSf(iH,1,1,1,2)+BRoffset], 0.0, psn.isnmul, psn.isnmulbar);
@@ -722,7 +414,6 @@ namespace Gambit
     {
       using namespace Pipes::h0_2_decays;
       mass_es_pseudonyms psn = *(Dep::SLHA_pseudonyms);
-     
 
       result.width_in_GeV = BEreq::cb_widthhh_hdec->hhwdth;
       result.set_BF(BEreq::cb_widthhh_hdec->hhbrb, 0.0, "b", "bbar");
@@ -790,14 +481,15 @@ namespace Gambit
     void FH_h0_2_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::FH_h0_2_decays;
-      mass_es_pseudonyms psn = *(Dep::SLHA_pseudonyms);
       
+      // Get the mass pseudonyms for the gauge eigenstates
+      mass_es_pseudonyms psn = *(Dep::SLHA_pseudonyms);
+
       // unpack FeynHiggs Couplings
-
       fh_Couplings FH_input = *Dep::FH_Couplings;
-
-      int iH = 1; // h0_2
-
+      // Specify that we're talking about h0_2
+      int iH = 1;
+      // Set the total second Higgs width
       result.width_in_GeV = FH_input.gammas[iH];
 
       // vector-boson pair decays
@@ -948,13 +640,15 @@ namespace Gambit
     void FH_A0_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::FH_A0_decays;
+
+      // Get the mass pseudonyms for the gauge eigenstates
       mass_es_pseudonyms psn = *(Dep::SLHA_pseudonyms);
 
       // unpack FeynHiggs Couplings
       fh_Couplings FH_input = *Dep::FH_Couplings;
-
-      int iH = 2; // A0
-
+      // Specify that we're talking about A0
+      int iH = 2;
+      // Set the total A0 Higgs width
       result.width_in_GeV = FH_input.gammas[iH];
 
       // vector-boson pair decays
@@ -1095,12 +789,16 @@ namespace Gambit
     void FH_Hplus_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::FH_Hplus_decays;
+
+      // Get the mass pseudonyms for the gauge eigenstates
       mass_es_pseudonyms psn = *(Dep::SLHA_pseudonyms);
 
       // unpack FeynHiggs Couplings
       fh_Couplings FH_input = *Dep::FH_Couplings;
-
-      result.width_in_GeV = FH_input.gammas[3];
+      // Specify that we're talking about H+
+      int iH = 3;
+      // Set the total charged Higgs width
+      result.width_in_GeV = FH_input.gammas[iH];
 
       int offset = BRoffset-1;
 
@@ -2592,7 +2290,6 @@ namespace Gambit
     void all_decays (DecayTable &decays) 
     {
       using namespace Pipes::all_decays;
-      mass_es_pseudonyms psn = *(Dep::SLHA_pseudonyms);
 
       decays("h0_1") = *Dep::Higgs_decay_rates;     // Add the Higgs decays.
       decays("Z0") = *Dep::W_minus_decay_rates;     // Add the Z decays
@@ -2626,62 +2323,63 @@ namespace Gambit
       // MSSM-specific
       if (ModelInUse("MSSM78atQ") or ModelInUse("MSSM78atMGUT"))
       {
-        decays("h0_2") = *Dep::h0_2_decay_rates;            // Add the h0_2 decays.
-        decays("A0") = *Dep::A0_decay_rates;                // Add the A0 decays.
-        decays("H+") = *Dep::Hplus_decay_rates;             // Add the H+ decays.       
-        decays("H-") = *Dep::Hminus_decay_rates;            // Add the H+ decays.       
+        mass_es_pseudonyms psn = *(Dep::SLHA_pseudonyms);
+        decays("h0_2") = *Dep::h0_2_decay_rates;                 // Add the h0_2 decays.
+        decays("A0") = *Dep::A0_decay_rates;                     // Add the A0 decays.
+        decays("H+") = *Dep::Hplus_decay_rates;                  // Add the H+ decays.       
+        decays("H-") = *Dep::Hminus_decay_rates;                 // Add the H+ decays.       
 
-        decays("~g") = *Dep::gluino_decay_rates;            // Add the gluino decays.
+        decays("~g") = *Dep::gluino_decay_rates;                 // Add the gluino decays.
 
-        decays("~chi+_1") = *Dep::charginoplus_1_decay_rates;  // Add the ~chi+_1 decays.
-        decays("~chi-_1") = *Dep::charginominus_1_decay_rates; // Add the ~chi+_1 decays.
-        decays("~chi+_2") = *Dep::charginoplus_2_decay_rates;  // Add the ~chi+_2 decays.
-        decays("~chi-_2") = *Dep::charginominus_2_decay_rates; // Add the ~chi+_2 decays.
-        decays("~chi0_1") = *Dep::neutralino_1_decay_rates;    // Add the ~chi0_1 decays.
-        decays("~chi0_2") = *Dep::neutralino_2_decay_rates;    // Add the ~chi0_2 decays.
-        decays("~chi0_3") = *Dep::neutralino_3_decay_rates;    // Add the ~chi0_3 decays.
-        decays("~chi0_4") = *Dep::neutralino_4_decay_rates;    // Add the ~chi0_4 decays.
+        decays("~chi+_1") = *Dep::charginoplus_1_decay_rates;    // Add the ~chi+_1 decays.
+        decays("~chi-_1") = *Dep::charginominus_1_decay_rates;   // Add the ~chi+_1 decays.
+        decays("~chi+_2") = *Dep::charginoplus_2_decay_rates;    // Add the ~chi+_2 decays.
+        decays("~chi-_2") = *Dep::charginominus_2_decay_rates;   // Add the ~chi+_2 decays.
+        decays("~chi0_1") = *Dep::neutralino_1_decay_rates;      // Add the ~chi0_1 decays.
+        decays("~chi0_2") = *Dep::neutralino_2_decay_rates;      // Add the ~chi0_2 decays.
+        decays("~chi0_3") = *Dep::neutralino_3_decay_rates;      // Add the ~chi0_3 decays.
+        decays("~chi0_4") = *Dep::neutralino_4_decay_rates;      // Add the ~chi0_4 decays.
 
-        decays(psn.ist1) = *Dep::stop_1_decay_rates;            // Add the ~t_1 decays.
-        decays(psn.ist2) = *Dep::stop_2_decay_rates;            // Add the ~t_2 decays.
-        decays(psn.isb1) = *Dep::sbottom_1_decay_rates;         // Add the ~b_1 decays.
-        decays(psn.isb2) = *Dep::sbottom_2_decay_rates;         // Add the ~b_2 decays.
-        decays(psn.isul) = *Dep::sup_l_decay_rates;             // Add the ~u_L decays.
-        decays(psn.isur) = *Dep::sup_r_decay_rates;             // Add the ~u_R decays.
-        decays(psn.isdl) = *Dep::sdown_l_decay_rates;           // Add the ~d_L decays.
-        decays(psn.isdr) = *Dep::sdown_r_decay_rates;           // Add the ~d_R decays.
-        decays(psn.iscl) = *Dep::scharm_l_decay_rates;          // Add the ~c_L decays.
-        decays(psn.iscr) = *Dep::scharm_r_decay_rates;          // Add the ~c_R decays.
-        decays(psn.issl) = *Dep::sstrange_l_decay_rates;        // Add the ~s_L decays.
-        decays(psn.issr) = *Dep::sstrange_r_decay_rates;        // Add the ~s_R decays.
-        decays(psn.isell) = *Dep::selectron_l_decay_rates;      // Add the ~e-_L decays.
-        decays(psn.iselr) = *Dep::selectron_r_decay_rates;      // Add the ~e-_R decays.
-        decays(psn.ismul) = *Dep::smuon_l_decay_rates;          // Add the ~mu-_L decays.
-        decays(psn.ismur) = *Dep::smuon_r_decay_rates;          // Add the ~mu-_R decays.
-        decays(psn.istau1) = *Dep::stau_1_decay_rates;          // Add the ~tau_1 decays.
-        decays(psn.istau2) = *Dep::stau_2_decay_rates;          // Add the ~tau_2 decays.
+        decays(psn.ist1) = *Dep::stop_1_decay_rates;             // Add the ~t_1 decays.
+        decays(psn.ist2) = *Dep::stop_2_decay_rates;             // Add the ~t_2 decays.
+        decays(psn.isb1) = *Dep::sbottom_1_decay_rates;          // Add the ~b_1 decays.
+        decays(psn.isb2) = *Dep::sbottom_2_decay_rates;          // Add the ~b_2 decays.
+        decays(psn.isul) = *Dep::sup_l_decay_rates;              // Add the ~u_L decays.
+        decays(psn.isur) = *Dep::sup_r_decay_rates;              // Add the ~u_R decays.
+        decays(psn.isdl) = *Dep::sdown_l_decay_rates;            // Add the ~d_L decays.
+        decays(psn.isdr) = *Dep::sdown_r_decay_rates;            // Add the ~d_R decays.
+        decays(psn.iscl) = *Dep::scharm_l_decay_rates;           // Add the ~c_L decays.
+        decays(psn.iscr) = *Dep::scharm_r_decay_rates;           // Add the ~c_R decays.
+        decays(psn.issl) = *Dep::sstrange_l_decay_rates;         // Add the ~s_L decays.
+        decays(psn.issr) = *Dep::sstrange_r_decay_rates;         // Add the ~s_R decays.
+        decays(psn.isell) = *Dep::selectron_l_decay_rates;       // Add the ~e-_L decays.
+        decays(psn.iselr) = *Dep::selectron_r_decay_rates;       // Add the ~e-_R decays.
+        decays(psn.ismul) = *Dep::smuon_l_decay_rates;           // Add the ~mu-_L decays.
+        decays(psn.ismur) = *Dep::smuon_r_decay_rates;           // Add the ~mu-_R decays.
+        decays(psn.istau1) = *Dep::stau_1_decay_rates;           // Add the ~tau_1 decays.
+        decays(psn.istau2) = *Dep::stau_2_decay_rates;           // Add the ~tau_2 decays.
         decays(psn.isnel) = *Dep::snu_electronl_decay_rates;     // Add the ~nu_e decays.
         decays(psn.isnmul) = *Dep::snu_muonl_decay_rates;        // Add the ~nu_mu decays.
         decays(psn.isntau1) = *Dep::snu_taul_decay_rates;        // Add the ~nu_tau decays.
 
-        decays(psn.ist1bar) = *Dep::stopbar_1_decay_rates;      // Add the ~tbar_1 decays.
-        decays(psn.ist2bar) = *Dep::stopbar_2_decay_rates;      // Add the ~tbar_2 decays.
-        decays(psn.isb1bar) = *Dep::sbottombar_1_decay_rates;   // Add the ~bbar_1 decays.
-        decays(psn.isb2bar) = *Dep::sbottombar_2_decay_rates;   // Add the ~bbar_2 decays.
-        decays(psn.isulbar) = *Dep::supbar_l_decay_rates;       // Add the ~ubar_L decays.
-        decays(psn.isurbar) = *Dep::supbar_r_decay_rates;       // Add the ~ubar_R decays.
-        decays(psn.isdlbar) = *Dep::sdownbar_l_decay_rates;     // Add the ~dbar_L decays.
-        decays(psn.isdrbar) = *Dep::sdownbar_r_decay_rates;     // Add the ~dbar_R decays.
-        decays(psn.isclbar) = *Dep::scharmbar_l_decay_rates;    // Add the ~cbar_L decays.
-        decays(psn.iscrbar) = *Dep::scharmbar_r_decay_rates;    // Add the ~cbar_R decays.
-        decays(psn.isslbar) = *Dep::sstrangebar_l_decay_rates;  // Add the ~sbar_L decays.
-        decays(psn.issrbar) = *Dep::sstrangebar_r_decay_rates;  // Add the ~sbar_R decays.
-        decays(psn.isellbar) = *Dep::selectronbar_l_decay_rates;// Add the ~e+_L decays.
-        decays(psn.iselrbar) = *Dep::selectronbar_r_decay_rates;// Add the ~e+_R decays.
-        decays(psn.ismulbar) = *Dep::smuonbar_l_decay_rates;    // Add the ~mu+_L decays.
-        decays(psn.ismurbar) = *Dep::smuonbar_r_decay_rates;    // Add the ~mu+_R decays.
-        decays(psn.istau1bar) = *Dep::staubar_1_decay_rates;    // Add the ~taubar_1 decays.
-        decays(psn.istau2bar) = *Dep::staubar_2_decay_rates;    // Add the ~taubar_2 decays.
+        decays(psn.ist1bar) = *Dep::stopbar_1_decay_rates;       // Add the ~tbar_1 decays.
+        decays(psn.ist2bar) = *Dep::stopbar_2_decay_rates;       // Add the ~tbar_2 decays.
+        decays(psn.isb1bar) = *Dep::sbottombar_1_decay_rates;    // Add the ~bbar_1 decays.
+        decays(psn.isb2bar) = *Dep::sbottombar_2_decay_rates;    // Add the ~bbar_2 decays.
+        decays(psn.isulbar) = *Dep::supbar_l_decay_rates;        // Add the ~ubar_L decays.
+        decays(psn.isurbar) = *Dep::supbar_r_decay_rates;        // Add the ~ubar_R decays.
+        decays(psn.isdlbar) = *Dep::sdownbar_l_decay_rates;      // Add the ~dbar_L decays.
+        decays(psn.isdrbar) = *Dep::sdownbar_r_decay_rates;      // Add the ~dbar_R decays.
+        decays(psn.isclbar) = *Dep::scharmbar_l_decay_rates;     // Add the ~cbar_L decays.
+        decays(psn.iscrbar) = *Dep::scharmbar_r_decay_rates;     // Add the ~cbar_R decays.
+        decays(psn.isslbar) = *Dep::sstrangebar_l_decay_rates;   // Add the ~sbar_L decays.
+        decays(psn.issrbar) = *Dep::sstrangebar_r_decay_rates;   // Add the ~sbar_R decays.
+        decays(psn.isellbar) = *Dep::selectronbar_l_decay_rates; // Add the ~e+_L decays.
+        decays(psn.iselrbar) = *Dep::selectronbar_r_decay_rates; // Add the ~e+_R decays.
+        decays(psn.ismulbar) = *Dep::smuonbar_l_decay_rates;     // Add the ~mu+_L decays.
+        decays(psn.ismurbar) = *Dep::smuonbar_r_decay_rates;     // Add the ~mu+_R decays.
+        decays(psn.istau1bar) = *Dep::staubar_1_decay_rates;     // Add the ~taubar_1 decays.
+        decays(psn.istau2bar) = *Dep::staubar_2_decay_rates;     // Add the ~taubar_2 decays.
         decays(psn.isnelbar)= *Dep::snubar_electronl_decay_rates;// Add the ~nu_e decays.
         decays(psn.isnmulbar) = *Dep::snubar_muonl_decay_rates;  // Add the ~nu_mu decays.
         decays(psn.isntau1bar) = *Dep::snubar_taul_decay_rates;  // Add the ~nu_tau decays.
@@ -2689,7 +2387,333 @@ namespace Gambit
 
     }
 
+    /// Get MSSM mass eigenstate pseudonyms for the gauge eigenstates
+    void Get_psns (mass_es_pseudonyms& result)
+    {
+      using namespace Pipes::Get_psns;
+      const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_UV();
+      mass_es_pseudonyms psn(mssm, runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance"));
+      result = psn;   
+    }
+
     /// @}
+
+
+    /*************************************************************************/
+    /// Helper functions for filling maps from MSSM gauge to mass eigenstates.
+    /// @{
+
+
+    /// Constructor    
+    mass_es_pseudonyms::mass_es_pseudonyms(const SubSpectrum* mssm, double tol)
+    {
+      filled = false;
+      fill_mass_es_psns(mssm, tol);
+      filled = true;
+    }
+
+
+    /// just leave these as regular functions just now
+    /// in case we change approach or test alternative
+    void fill_mass_es_psn_gauge(std::string & is, std::string & isbar,  
+                                std::string gauge_es,
+                                const SubSpectrum* mssm,
+                                double tol)
+    { 
+      double max_mix = 0; 
+      std::string mass_es = slhahelp::mass_es_from_gauge_es(gauge_es, max_mix, mssm);
+      if((max_mix*max_mix) >= 1-tol)
+      {
+         Models::partmap pm;
+         is = mass_es;   
+         isbar = pm.get_antiparticle(mass_es);
+      }
+      else
+      {
+         /// FIXME decide on error vs warning vs invalid_point
+         /// FIXME add deviation and states to exception message        
+         DecayBit_error().raise(LOCAL_INFO, "function fill_mass_es_psn_gauge has"
+          "too large sfermion mixing for state that assumed to be a pure gauge state");
+         DecayBit_warning().raise(LOCAL_INFO, "This point violates the assumption that "
+          "certain sfermion states have no family mixing by a degree larger than tol "
+          "made in a DecayBit routine.");
+         invalid_point().raise("This point violates the assumption that certain sfermion"
+          " states have no family mixing  by a degree larger than tol made in a DecayBit routine.");
+      }  
+
+      std::cout << "******** Extra tests ********* " << std::endl;
+      std::cout << "gauge_es = " << gauge_es << std::endl;
+      std::cout << "mass_es = " << mass_es << std::endl;
+      double max_mix_r = 0.0;
+      std::string g_es = slhahelp::gauge_es_from_mass_es(mass_es, 
+                                                          max_mix_r, mssm);
+      std::cout << "g_es = " << g_es << std::endl;
+      std::cout << "max_mix = "  << max_mix<< std::endl;
+      std::cout << "max_mix_r = "  << max_mix_r << std::endl;
+      if(g_es != gauge_es) std::cout << "g_s error! " << std::endl;
+      if(max_mix_r != max_mix) std::cout << "g_s max_mix_r error! " 
+                                        << std::endl;
+      
+      std::string ges = slhahelp::gauge_es_from_mass_es(mass_es, mssm, 
+                                                         1e-3, LOCAL_INFO);
+      std::cout << "ges = "  << ges << std::endl;
+      if(ges != gauge_es) std::cout << "ges error! " << std::endl;
+      std::string mes = slhahelp::mass_es_from_gauge_es(gauge_es, mssm, 
+                                                         1e-3, LOCAL_INFO);
+      std::cout << "mes = "  << ges << std::endl;
+      if(mes != mass_es) std::cout << "mes error! " << std::endl;
+
+      return;
+
+    }
+
+
+    void fill_mass_es_psn_family(std::string & is, std::string & isbar,  
+                                 std::string family_state,
+                                 const SubSpectrum* mssm,
+                                 double tol)
+    { 
+      /// use slhahelp routine which first identifies the mass_es which 
+      /// best matches the requested family state. then returns the
+      /// decomposition of that mass_es state in terms of gauge states 
+      /// from the same family as the family state
+      std::vector<double> right_fam_gauge_comp; 
+      str mass_es = slhahelp::mass_es_closest_to_family(family_state, 
+                                                        right_fam_gauge_comp,
+                                                        mssm);
+      /// Do very simple test for now, discuss best approach
+      /// This is a question for decaybit
+      double mix_mag_sq = 0.0;
+      for(auto i = right_fam_gauge_comp.begin(); 
+          i != right_fam_gauge_comp.end(); i++)
+      {
+         double mix = *i;
+         mix_mag_sq += mix*mix;
+      }    
+
+      if(mix_mag_sq > 1-tol) 
+      {
+        Models::partmap pm;
+        is = mass_es;
+        isbar = pm.get_antiparticle(mass_es);
+      }
+      else 
+      {
+        DecayBit_error().raise(LOCAL_INFO, "function get_mass_admix_for_gauge "
+         "called with types for the gauge eigenstate and mass eigenstate that don't match."); 
+        DecayBit_warning().raise(LOCAL_INFO,
+         "This point violates the assumption that certain sfermion states have "
+         "no family mixing  by a degree larger than tol made in a DecayBit routine.");
+        invalid_point().raise("This point violates the assumption that certain sfermion "
+         "states have no family mixing  by a degree larger than tol made in a DecayBit routine.");
+      }
+      
+      // Debug code
+      if (false)
+      {
+        std::cout << "******** Extra tests ********* " << std::endl;
+        std::cout << "family_state = "  << family_state <<std::endl;
+        std::cout << "mass_es obtained from family_state = "  << mass_es 
+                  << std::endl;
+        double sum_sq_mix;
+        str fs = slhahelp::family_state_closest_to_mass_es(mass_es, sum_sq_mix,
+                                                           mssm);
+        std::cout << "fs obtained from mass_es = " << fs << std::endl;
+        std::cout << "sum_sq_mix = " << sum_sq_mix << std::endl;
+        std::cout << "mix_mag_sq = " << mix_mag_sq << std::endl; 
+        if(fs != family_state) std::cout << "fs error! = " << std::endl;
+        str f_s = slhahelp::family_state_closest_to_mass_es(mass_es, mssm,
+                                                            1e-3, LOCAL_INFO);
+        std::cout << "f_s obtained from mass_es = " << f_s << std::endl;
+        if(f_s != family_state) std::cout << "f_s error! = " << std::endl;
+  
+        str m_es = slhahelp::mass_es_closest_to_family(family_state, mssm, tol, 
+                                                       LOCAL_INFO);
+        std::cout << "m_es = "  << m_es << std::endl;
+        if(m_es != mass_es) std::cout << "m_es error! = " << std::endl;
+        
+        std::cout << "******** Special family_state_mix_matrix tests ********" 
+                  << std::endl;
+        str mass_es1, mass_es2, type;
+        // this is banned but just for temp test
+        str types[] = {"~u","~d", "~e"};
+        std::set<str> set_type = {types, types+3};
+        std::set<str>::iterator it;
+        for (it = set_type.begin(); it != set_type.end(); ++it)
+        {
+          type = *it;
+          for(int gen = 1;  gen <=3; gen++)
+          {
+            std::cout << "entering type = " << type << " and gen " 
+                     << gen << std::endl;   
+            std::vector<double> f_mix_matrix = slhahelp::family_state_mix_matrix(type,gen, mass_es1, mass_es2, mssm);
+            std::cout << "mass_es1 = " << mass_es1 << std::endl;
+            std::cout << "mass_es2 = " << mass_es2 << std::endl;
+            for(int i = 0;  i<=3; i++)
+            {
+              std::cout << "f_mix_matrix[" << i << "] = "  
+                        << f_mix_matrix[i] << std::endl;
+            }
+            double row1sq = f_mix_matrix[0] * f_mix_matrix[0];
+            row1sq += f_mix_matrix[1] * f_mix_matrix[1];
+            double row2sq = f_mix_matrix[2] * f_mix_matrix[2];
+            row2sq += f_mix_matrix[3] * f_mix_matrix[3];
+            std::cout << "row1sq = " <<  row1sq << "  row2sq = " 
+                      <<  row2sq << std::endl;
+          }
+        }
+      }
+      
+      return;
+    }
+
+       
+    void  mass_es_pseudonyms::test_print(const SubSpectrum* mssm)
+    {
+      std::cout.precision(8);
+      std::cout << "Dmix :" << std::endl;;
+      for(int i = 1; i <=6; i++)
+      {
+        for(int j = 1; j <=6; j++)
+        {
+          std::cout << "     " << i << j << " = "  
+                    << std::scientific << std::setw(10)  
+                    <<  mssm->phys.get_Pole_Mixing("~d", i, j);
+        }
+        std::cout << std::endl;
+      }
+        
+      std::cout << "Umix :" << std::endl;;
+      for(int i = 1; i <=6; i++)
+      {
+        for(int j = 1; j <=6; j++)
+        {
+          std::cout << "     " << i << j << " = "  
+                    << mssm->phys.get_Pole_Mixing("~u", i, j);
+        }
+        std::cout << std::endl;
+      }
+               
+      std::cout << "Emix :" << std::endl;;
+      for(int i = 1; i <=6; i++)
+      {
+        for(int j = 1; j <=6; j++)
+        {
+          std::cout << "     " << i << j << " = "  
+                    << mssm->phys.get_Pole_Mixing("~e", i, j);
+        }
+        std::cout << std::endl;
+      }
+
+      std::cout << "NUmix :" << std::endl;;
+      for(int i = 1; i <=3; i++)
+      {
+        for(int j = 1; j <=3; j++)
+        {
+         std::cout << "     " << i << j << " = "  
+                   << mssm->phys.get_Pole_Mixing("~nu", i, j);
+        }
+        std::cout << std::endl;
+      }
+
+      std::cout << "isdl = "  << isdl << std::endl;
+      std::cout << "isdlbar = "  << isdlbar << std::endl;
+      std::cout << "isdr = "  << isdr << std::endl;
+      std::cout << "isdrbar = "  << isdrbar << std::endl;
+      
+      std::cout << "isul = "  << isul << std::endl;
+      std::cout << "isulbar = "  << isulbar << std::endl;
+      std::cout << "isur = "  << isur << std::endl;
+      std::cout << "isurbar = "  << isurbar << std::endl;
+      
+      std::cout << "issl = "  << issl << std::endl;
+      std::cout << "isslbar = "  << isslbar << std::endl;
+      std::cout << "issr = "  << issr << std::endl;
+      std::cout << "issrbar = "  << issrbar << std::endl;
+      
+      std::cout << "iscl = "  << iscl << std::endl;
+      std::cout << "isclbar = "  << isclbar << std::endl;
+      std::cout << "iscr = "  << iscr << std::endl;
+      std::cout << "iscrbar = "  << iscrbar << std::endl;
+      
+      std::cout << "isb1 = "  << isb1 << std::endl;
+      std::cout << "isb1bar = "  << isb1bar << std::endl;
+      std::cout << "isb2 = "  << isb2 << std::endl;
+      std::cout << "isb2bar = "  << isb2bar << std::endl;
+      
+      std::cout << "ist1 = "  << ist1 << std::endl;
+      std::cout << "ist1bar = "  << ist1bar << std::endl;
+      std::cout << "ist2 = "  << ist2 << std::endl;
+      std::cout << "ist2bar = "  << ist2bar << std::endl;
+      
+      std::cout << "isell = "  << isell << std::endl;
+      std::cout << "isellbar = "  << isellbar << std::endl;
+      std::cout << "iselr = "  << iselr << std::endl;
+      std::cout << "iselrbar = "  << iselrbar << std::endl;
+      
+      std::cout << "isnel = "  << isnel << std::endl;
+      std::cout << "isnelbar = "  << isnelbar << std::endl;
+      
+      std::cout << "ismul = "  << ismul << std::endl;
+      std::cout << "ismulbar = "  << ismulbar << std::endl;
+      std::cout << "ismur = "  << ismur << std::endl;
+      std::cout << "ismurbar = "  << ismurbar << std::endl;
+      
+      std::cout << "isnmull = "  << isnmul << std::endl;
+      std::cout << "isnmullbar = "  << isnmulbar << std::endl;
+      
+      std::cout << "istau1 = "  << istau1 << std::endl;
+      std::cout << "istau1bar = "  << istau1bar << std::endl;
+      std::cout << "istau2 = "  << istau2 << std::endl;
+      std::cout << "istau2bar = "  << istau2bar << std::endl;
+      
+      std::cout << "isntau1 = "  << isntau1 << std::endl;
+      std::cout << "isntau1bar = "  << isntau1bar << std::endl;
+
+    }
+
+     
+    /// fill strings in struct
+    void  mass_es_pseudonyms::fill_mass_es_psns(const SubSpectrum* mssm, double tol) 
+    {
+      if(filled == true) return;  // don't repeat unless necessary
+     
+      fill_mass_es_psn_gauge(isdl, isdlbar, "~d_L", mssm, tol);
+      fill_mass_es_psn_gauge(isul, isulbar, "~u_L", mssm, tol);
+      fill_mass_es_psn_gauge(issl, isslbar, "~s_L", mssm, tol);
+      fill_mass_es_psn_gauge(iscl, isclbar, "~c_L", mssm, tol);
+      fill_mass_es_psn_family(isb1, isb1bar, "~b_1", mssm, tol);
+      fill_mass_es_psn_family(ist1, ist1bar, "~t_1", mssm, tol);
+      
+      fill_mass_es_psn_gauge(isell, isellbar, "~e_L", mssm, tol);
+      fill_mass_es_psn_gauge(isnel, isnelbar, "~nu_e_L", mssm, tol);
+      fill_mass_es_psn_gauge(ismul, ismulbar, "~mu_L", mssm, tol);
+      fill_mass_es_psn_gauge(isnmul, isnmulbar, "~nu_mu_L", mssm, tol);
+      fill_mass_es_psn_family(istau1, istau1bar, "~tau_1", mssm, tol);
+      // why on earth do we or they have a family state for the tau neutrino 
+      /// what does that mean?  Either the left handed states mix amongst 
+      /// each other or they don't, there are no right handed sneutrinos
+      /// because the mssm has no right neutrino superfields.
+      /// I will pretend these are Left states for jsut now but leave the
+      /// confusing name
+      fill_mass_es_psn_gauge(isntau1, isntau1bar, "~nu_tau_L", mssm, tol);
+  
+      fill_mass_es_psn_gauge(isdr, isdrbar, "~d_R", mssm, tol);
+      fill_mass_es_psn_gauge(isur, isurbar, "~u_R", mssm, tol);
+      fill_mass_es_psn_gauge(issr, issrbar, "~s_R", mssm, tol);
+      fill_mass_es_psn_gauge(iscr, iscrbar, "~c_R", mssm, tol);
+      fill_mass_es_psn_family(isb2, isb2bar, "~b_2", mssm, tol);
+      fill_mass_es_psn_family(ist2, ist2bar, "~t_2", mssm, tol);
+      fill_mass_es_psn_gauge(iselr, iselrbar, "~e_R", mssm, tol);
+      fill_mass_es_psn_gauge(ismur, ismurbar, "~mu_R", mssm, tol);
+      fill_mass_es_psn_family(istau2, istau2bar, "~tau_2", mssm, tol);
+      
+      test_print(mssm);
+      
+      filled=true;
+  
+      return;
+    }
 
   }
 

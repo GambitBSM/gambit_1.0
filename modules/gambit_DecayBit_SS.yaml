@@ -9,8 +9,6 @@
 ###################################
 
 Parameters:
-  #StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
-  #MSSM25atQ: !import LesHouches.in.MSSM_1.yaml
   SingletDM:
       mass:
           range: [45, 100]
@@ -20,7 +18,7 @@ Parameters:
           prior_type: log
 
 Priors:
-    # none: all parameters fixed in this example.
+    # set in parameters section
 
 Scanner:
 
@@ -41,17 +39,9 @@ ObsLikes:
     type:         DecayTable
 
 Rules:
-
-#  - capability: MSSM_spectrum 
-#    function: get_MSSMatQ_spectrum  
-#    options:
-#      invalid_point_fatal: true
+  # none
       
-#  - function: SUSY_HIT_1_5_init
-#    options:
-#      debug_SLHA_filenames:
-#        - slha1.exampleout
-      
+            
 ##############################
 # Printer setup
 ##############################
