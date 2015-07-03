@@ -7,11 +7,23 @@
 ///  and SLHA1 (or similar) sfermions 
 ///
 ///  *********************************************
+///
+///  Authors: 
+///  <!-- add name and date if you modify -->
+///   
+///  \author Peter Athron  
+///          (peter.athron@coepp.org.au)
+///  \date 2015 
+///
+///  *********************************************
 
 #include "gambit/Elements/MSSM_slhahelp.hpp"
 
-namespace Gambit {
-   namespace slhahelp {
+namespace Gambit
+{
+
+   namespace slhahelp
+   {
 
       /// type defs for pair types etc that we will use in maps
       typedef std::pair<int,str> p_int_string;
@@ -50,10 +62,9 @@ namespace Gambit {
          
          return gauge_label_to_index_type;
       }
-
-      
       std::map<str, p_int_string> gauge_label_to_index_type =
          init_gauge_label_to_index_type();
+
       std::map<str, p_int_string> init_mass_label_to_index_type()
       {
          std::map<str, p_int_string> mass_label_to_index_type;
@@ -84,7 +95,6 @@ namespace Gambit {
          
          return  mass_label_to_index_type;
       }
-      
       std::map<str, p_int_string> mass_label_to_index_type 
       = init_mass_label_to_index_type();
 
@@ -93,7 +103,7 @@ namespace Gambit {
       {
          std::map<str, pair_string_ints> familystate_label;
         
-          //pairs labeling family, mass
+         //pairs labeling family, mass
          pair_ints const three_one(3,1);
          pair_ints const three_two(3,2);
          pair_ints const two_one(3,1);
@@ -101,7 +111,7 @@ namespace Gambit {
          pair_ints const one_one(3,1);
          pair_ints const one_two(3,2);
       
-         ///triple labelling type, generation and mass order of family states
+         //triple labelling type, generation and mass order of family states
          pair_string_ints const stop1("~u",three_one);
          pair_string_ints const stop2("~u",three_two);
          pair_string_ints const sbot1("~d",three_one);
@@ -120,7 +130,7 @@ namespace Gambit {
          pair_string_ints const sdown2("~d",one_two);
          pair_string_ints const selectron1("~e",one_one);
          pair_string_ints const selectron2("~e",one_two);
-         /// only have left handed sneutrinos in MSSM
+         // only have left handed sneutrinos in MSSM
          pair_string_ints const snue1("~nu",three_one);
          pair_string_ints const snumu1("~nu",two_one);
          pair_string_ints const snutau1("~nu",one_one);
@@ -139,14 +149,14 @@ namespace Gambit {
          familystate_label["~muon_1"] = smuon1; 
          familystate_label["~muon_2"] = smuon2;
          
-         ///  maybe we shouldn't do first gen it's confusing
+         //  maybe we shouldn't do first gen it's confusing
          familystate_label["~u_1"] = sup1; 
          familystate_label["~u_2"] = sup2;
          familystate_label["~d_1"] = sdown1; 
          familystate_label["~d_2"] = sdown2; 
          familystate_label["~e-_1"] = selectron1; 
          familystate_label["~e-_2"] = selectron2;
-         /// these are even less needed since no l-r mixing without r state
+         // these are even less needed since no l-r mixing without r state
          familystate_label["~nu_1"] = snue1;
          familystate_label["~nu_2"] = snumu1;
          familystate_label["~nu_3"] = snutau1;
@@ -154,7 +164,6 @@ namespace Gambit {
          return familystate_label;
 
       }
-      
       std::map<str, pair_string_ints> familystate_label 
       = init_familystate_label();
       
@@ -185,14 +194,11 @@ namespace Gambit {
          //no sneutrino gauges pairs as no right sneutrino
          return type_family_to_gauge_states;
  
-      }
-      
-       
+      }    
       std::map<p_int_string, pair_strings>  type_family_to_gauge_states 
       = init_type_family_to_gauge_states();
 
-
-      ///maps directly from family string to left_right gauge_pairs
+      /// maps directly from family string to left_right gauge_pairs
       /// helps us reuse other routines that take string arguments 
       std::map<str, pair_strings> init_family_state_to_gauge_state()
       {
@@ -224,7 +230,7 @@ namespace Gambit {
       std::map<str, pair_strings>  family_state_to_gauge_state 
       = init_family_state_to_gauge_state();
       
-       ///maps directly from gauge_es string to familystates
+      ///maps directly from gauge_es string to familystates
       /// helps us reuse other routines that take string arguments 
       std::map<str, pair_strings>  init_gauge_es_to_family_states()
       {
@@ -281,7 +287,6 @@ namespace Gambit {
          
          return type_to_vec_of_mass_es;
       }
-
       std::map<str,std::vector<str>> type_to_vec_of_mass_es 
          = init_type_to_vec_of_mass_es();
       
@@ -312,7 +317,7 @@ namespace Gambit {
       std::map<str,std::vector<str>> type_to_vec_of_gauge_es 
          = init_type_to_vec_of_gauge_es();
 
-      // these two should be switched over to members of the sectrum object itself
+      // FIXME: these two should be switched over to members of the sectrum object itself
       /// This will simplify things.
       std::vector<double> get_Pole_Mixing_col(str type, 
                                               int gauge_index, 
@@ -333,7 +338,7 @@ namespace Gambit {
          return mass_state_content;
       }
 
-/// This will simplify things.
+      /// This will simplify things.
       std::vector<double> get_Pole_Mixing_row(str type, int mass_index, 
                                               const SubSpectrum* mssm) 
       {
@@ -351,7 +356,7 @@ namespace Gambit {
       }
 
       
-      /// the rest of these belong here as they are MSSM specific things
+      // FIXME: The rest of these belong here as they are MSSM specific things
       
       /// returns vector representing composition of requested gauge state
       /// in terms of the slha2 mass eigenstates (~u_1 ...~u_6 etc)
@@ -381,13 +386,14 @@ namespace Gambit {
          p_int_string gauge_es_index_type = gauge_label_to_index_type[gauge_es];
          int gauge_index = gauge_es_index_type.first;
          int mass_index = mass_es_index_type.first;
-         /// type's should match but getting both allows us to throw error
+         /// types should match but getting both allows us to throw error
          str type = mass_es_index_type.second;
          str type_gauge = gauge_es_index_type.second;
          if(type!=type_gauge) 
             {
                /// throw exception in gambit
-               utils_error().raise(LOCAL_INFO, "function get_mixing_element called with type's for the gauge eigenstate and mass eigenstate that don't match.");
+               utils_error().raise(LOCAL_INFO, "function get_mixing_element "
+               "called with types for the gauge eigenstate and mass eigenstate that don't match.");
             }
          /// will need to add mssm object to cal method in gambit
          double admix = mssm->phys.get_Pole_Mixing(type, mass_index, 
@@ -444,6 +450,7 @@ namespace Gambit {
          
          return mass_es; 
       }
+      
       /// as above but doesn't fill a gauge_composition vector 
       /// would have a slight efficiency saving if we didn't use wrapper and 
       /// avoided skipped gauge_composition entirely but at the cost of a lot of
@@ -473,8 +480,7 @@ namespace Gambit {
          return mass_es; 
       }
 
-
-       /// as above but doesn't fill max_mixing or gauge_composition
+      /// as above but doesn't fill max_mixing or gauge_composition
       /// would have a slight efficiency saving if we didn't use wrapper and 
       /// avoided skipped max_mixing entirely but at the cost of a lot of
       /// code duplication
@@ -498,7 +504,8 @@ namespace Gambit {
                                              gauge_composition, mssm);
          str full_context = LOCAL_INFO + " called from " + context;
          if((max_mixing*max_mixing) <= 1-tol){
-            utils_error().raise(full_context, "mass_es from gauge requested when mxing away from closest gauge_es is greater than tol"); 
+            utils_error().raise(full_context, "mass_es from gauge requested "
+            "when mxing away from closest gauge_es is greater than tol"); 
           }
          return mass_es; 
       }
@@ -579,7 +586,6 @@ namespace Gambit {
          return gauge_es; 
       }
 
-
       /// as above but do test against tol internally
       str gauge_es_from_mass_es(str mass_es, const SubSpectrum* mssm, 
                                 double tol, str context)
@@ -590,22 +596,21 @@ namespace Gambit {
                                               mass_composition, mssm);
          str full_context = LOCAL_INFO + " called from " + context;
          if((max_mixing*max_mixing) <= 1-tol){
-            utils_error().raise(full_context, "gauge_es from mass_es requested when mxing away from closest mass_es is greater than tol"); 
+            utils_error().raise(full_context, "gauge_es from mass_es requested "
+            "when mxing away from closest mass_es is greater than tol"); 
          }
          return gauge_es; 
       }
 
-
-
       /// identify the two mass eigenstate corresponding to the approximate 
       /// family states, e.g. stops ("~u",3), smuons ("~mu", 2) etc 
       /// Note: when there is family mixing there's no good definition ~t_1, 
-      //~t_2 etc if defined as the states you get from diagonalising a 2by2 
+      /// ~t_2 etc if defined as the states you get from diagonalising a 2by2 
       /// mass (sub)matrix then extensive manipulations would be required
       /// So here we identify the mass eigenstates closest to the family ones 
-      ///which is a better defined question when there is family mixing prsesent
-      ///and more useful here anyway
-      //returns a pair of strings labling the lighter one first 
+      /// which is a better defined question when there is family mixing prsesent
+      /// and more useful here anyway
+      /// returns a pair of strings labling the lighter one first 
       pair_strings identify_mass_ess_for_family(str type, 
                                                       int family,
                                                       const SubSpectrum* mssm)
@@ -634,7 +639,7 @@ namespace Gambit {
          return answer;
       }
 
-      // identify the mass eigenstate corresponding to family state     
+      /// identify the mass eigenstate corresponding to family state     
       /// takes string and returns only requested state
       /// I suspect this is the more useful one
       str mass_es_closest_to_family(str familystate,
@@ -687,7 +692,6 @@ namespace Gambit {
          
       }
 
-
       /// identifies the mass_es that is closest match to specified family state
       /// and fills mixture of the two gauge states with same family into
       /// std::vector gauge_composition
@@ -724,6 +728,7 @@ namespace Gambit {
          return mass_es;
          
       }
+
       /// identifies the mass_es that is closest match to specified family state
       /// and fills mixture of the two gauge states with same family into
       /// std::vector gauge_composition 
@@ -737,6 +742,7 @@ namespace Gambit {
          return mass_es;
 
       }
+
       /// identifies the mass_es that is closest match to specified family state
       /// and fills sqr_sum_mix with the square sum of each of the two mixings 
       /// into gauge_es of that family
@@ -767,14 +773,13 @@ namespace Gambit {
          sqr_sum_mix += gauge_composition[1] * gauge_composition[1];
          str full_context = LOCAL_INFO + " called from " + context;
          if(sqr_sum_mix <= 1-tol){
-            utils_error().raise(full_context, " mass_es_closest_to_family requested when family mixing away from closest mass_es is greater than tol"); 
+            utils_error().raise(full_context, " mass_es_closest_to_family requested "
+            "when family mixing away from closest mass_es is greater than tol"); 
          }
 
          return mass_es;
 
       }
-
-
 
       /// identifies the two mass_es which best matches specified family state
       /// storing them in strings and then returns 
@@ -835,7 +840,6 @@ namespace Gambit {
          return mix_row_1;
       }
 
-
       /// returns admix of gauge eigenstate in the mass eigenstate 
       /// closest to the given family state and stores
       /// mass eigenstate in mass_es
@@ -849,11 +853,12 @@ namespace Gambit {
          str family_type = type_family_massorder.first;
          p_int_string gauge_es_index_type = gauge_label_to_index_type[gauge_es];
          int gauge_index = gauge_es_index_type.first;
-         /// type's should match but getting both allows us to throw error
+         /// types should match but getting both allows us to throw error
          str type_gauge = gauge_es_index_type.second;
          if(family_type!=type_gauge) 
             { /// throw error in gambit
-               utils_error().raise(LOCAL_INFO, "function get_gauge_admix_for_family_state called with type's for the family state and mass eigenstate that don't match.");
+               utils_error().raise(LOCAL_INFO, "function get_gauge_admix_for_family_state "
+                "called with types for the family state and mass eigenstate that don't match.");
             }
          ///get mass_es using one of our routines
          mass_es = mass_es_closest_to_family(familystate, mssm);
@@ -908,44 +913,46 @@ namespace Gambit {
       /// returns family state that best matches the given mass_es
       /// fills a double with the sum of the square mixings to gauge_es
       /// of the matching family
-       str family_state_closest_to_mass_es(str mass_es, double & sum_sq_mix,
+      str family_state_closest_to_mass_es(str mass_es, double & sum_sq_mix,
                                            const SubSpectrum* mssm)
-       {
-          std::vector<double> mass_comp;
-          str fs = family_state_closest_to_mass_es(mass_es, sum_sq_mix, 
-                                                   mass_comp, mssm);
-          return fs;
-       }
+      {
+         std::vector<double> mass_comp;
+         str fs = family_state_closest_to_mass_es(mass_es, sum_sq_mix, 
+                                                  mass_comp, mssm);
+         return fs;
+      }
       
       /// wrapper for overloaded version
       /// returns family state that best matches the given mass_es
       /// and fills the mixing of the matching mass_es into gauge eigenstates 
-       str family_state_closest_to_mass_es(str mass_es, 
+      str family_state_closest_to_mass_es(str mass_es, 
                                            std::vector<double> & mass_comp,
                                            const SubSpectrum* mssm)
-       {
-          double max_mix;
-          str fs = family_state_closest_to_mass_es(mass_es, max_mix, mass_comp,
-                                                   mssm);
-          return fs;
-       }
+      {
+         double max_mix;
+         str fs = family_state_closest_to_mass_es(mass_es, max_mix, mass_comp,
+                                                  mssm);
+         return fs;
+      }
       
       /// wrapper for overloaded version
       /// returns family state that best matches the given mass_es
       /// and fills the mixing of the matching mass_es into gauge eigenstates 
       str family_state_closest_to_mass_es(str mass_es, const SubSpectrum* mssm,
                                           double tol, str context)
-       {
-          double max_mix;
-          std::vector<double> mass_comp;
-          str fs = family_state_closest_to_mass_es(mass_es, max_mix, mass_comp,
-                                                   mssm);
-          str full_context = LOCAL_INFO + " called from " + context;
-          if(max_mix*max_mix <= 1-tol){
-             utils_error().raise(full_context, "family_state_closest_to_mass_es  called when family mixing away from closest mass_es is greater than tol"); 
-          }
-          return fs;
-       }
+      {
+         double max_mix;
+         std::vector<double> mass_comp;
+         str fs = family_state_closest_to_mass_es(mass_es, max_mix, mass_comp,
+                                                  mssm);
+         str full_context = LOCAL_INFO + " called from " + context;
+         if(max_mix*max_mix <= 1-tol){
+            utils_error().raise(full_context, "family_state_closest_to_mass_es "
+            "called when family mixing away from closest mass_es is greater than tol"); 
+         }
+         return fs;
+      }
       
    }  // namespace slhahelp
+
 } //namespace gambit
