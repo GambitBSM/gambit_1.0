@@ -74,7 +74,7 @@
                                                                !std::is_same<long double, TYPEDEFD_TYPE>::value           && \
                                                                !std::is_same<bool, TYPEDEFD_TYPE>::value>::type >            \
       {                                                                                                                      \
-          static MPI_Datatype type() { return RETURN_MPI_TYPE; }                                                             \
+         static MPI_Datatype type() { return RETURN_MPI_TYPE; }                                                              \
       };                                                                                                                     \
 
 /// Trigger debugging output in various places (specifically, hdf5 printer)
@@ -100,32 +100,32 @@ namespace Gambit
 
       /// True types
       /// @{
-      template<> struct get_mpi_data_type<char>              { static MPI_Datatype type() { return MPI_CHAR;       } };
-      template<> struct get_mpi_data_type<short>             { static MPI_Datatype type() { return MPI_SHORT;      } };
-      template<> struct get_mpi_data_type<int>               { static MPI_Datatype type() { return MPI_INT;        } };
-      template<> struct get_mpi_data_type<long>              { static MPI_Datatype type() { return MPI_LONG;       } };
-      template<> struct get_mpi_data_type<long long>         { static MPI_Datatype type() { return MPI_LONG_LONG;  } };
+      template<> struct get_mpi_data_type<char>              { static MPI_Datatype type() { return MPI_CHAR;               } };
+      template<> struct get_mpi_data_type<short>             { static MPI_Datatype type() { return MPI_SHORT;              } };
+      template<> struct get_mpi_data_type<int>               { static MPI_Datatype type() { return MPI_INT;                } };
+      template<> struct get_mpi_data_type<long>              { static MPI_Datatype type() { return MPI_LONG;               } };
+      template<> struct get_mpi_data_type<long long>         { static MPI_Datatype type() { return MPI_LONG_LONG;          } };
       template<> struct get_mpi_data_type<unsigned char>     { static MPI_Datatype type() { return MPI_UNSIGNED_CHAR;      } };
       template<> struct get_mpi_data_type<unsigned short>    { static MPI_Datatype type() { return MPI_UNSIGNED_SHORT;     } };
       template<> struct get_mpi_data_type<unsigned int>      { static MPI_Datatype type() { return MPI_UNSIGNED;           } };
       template<> struct get_mpi_data_type<unsigned long>     { static MPI_Datatype type() { return MPI_UNSIGNED_LONG;      } };
       template<> struct get_mpi_data_type<unsigned long long>{ static MPI_Datatype type() { return MPI_UNSIGNED_LONG_LONG; } };
-      template<> struct get_mpi_data_type<float>             { static MPI_Datatype type() { return MPI_FLOAT;      } };
-      template<> struct get_mpi_data_type<double>            { static MPI_Datatype type() { return MPI_DOUBLE;     } };
-      template<> struct get_mpi_data_type<long double>       { static MPI_Datatype type() { return MPI_LONG_DOUBLE;} };
-      template<> struct get_mpi_data_type<bool>              { static MPI_Datatype type() { return MPI_UINT8_T;    } };
+      template<> struct get_mpi_data_type<float>             { static MPI_Datatype type() { return MPI_FLOAT;              } };
+      template<> struct get_mpi_data_type<double>            { static MPI_Datatype type() { return MPI_DOUBLE;             } };
+      template<> struct get_mpi_data_type<long double>       { static MPI_Datatype type() { return MPI_LONG_DOUBLE;        } };
+      template<> struct get_mpi_data_type<bool>              { static MPI_Datatype type() { return MPI_UINT8_T;            } };
       /// @}
 
       /// Typedef'd types; enabled only where they differ from the true types.
       /// @{
-      SPECIALISE_MPI_DATA_TYPE_IF_NEEDED( int8_t   , MPI_INT8_T   )
-      SPECIALISE_MPI_DATA_TYPE_IF_NEEDED( uint8_t  , MPI_UINT8_T  )
-      SPECIALISE_MPI_DATA_TYPE_IF_NEEDED( int16_t  , MPI_INT16_T  )
-      SPECIALISE_MPI_DATA_TYPE_IF_NEEDED( uint16_t , MPI_UINT16_T )
-      SPECIALISE_MPI_DATA_TYPE_IF_NEEDED( int32_t  , MPI_INT32_T  )
-      SPECIALISE_MPI_DATA_TYPE_IF_NEEDED( uint32_t , MPI_UINT32_T )
-      SPECIALISE_MPI_DATA_TYPE_IF_NEEDED( int64_t  , MPI_INT64_T  )
-      SPECIALISE_MPI_DATA_TYPE_IF_NEEDED( uint64_t , MPI_UINT64_T )
+      SPECIALISE_MPI_DATA_TYPE_IF_NEEDED(int8_t,   MPI_INT8_T  )
+      SPECIALISE_MPI_DATA_TYPE_IF_NEEDED(uint8_t,  MPI_UINT8_T )
+      SPECIALISE_MPI_DATA_TYPE_IF_NEEDED(int16_t,  MPI_INT16_T )
+      SPECIALISE_MPI_DATA_TYPE_IF_NEEDED(uint16_t, MPI_UINT16_T)
+      SPECIALISE_MPI_DATA_TYPE_IF_NEEDED(int32_t,  MPI_INT32_T )
+      SPECIALISE_MPI_DATA_TYPE_IF_NEEDED(uint32_t, MPI_UINT32_T)
+      SPECIALISE_MPI_DATA_TYPE_IF_NEEDED(int64_t,  MPI_INT64_T )
+      SPECIALISE_MPI_DATA_TYPE_IF_NEEDED(uint64_t, MPI_UINT64_T)
       /// @}
 
       /// Main "Communicator" class

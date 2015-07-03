@@ -43,7 +43,7 @@
 #include "gambit/Utils/mpiwrapper.hpp"
 
 /// Provide template specialisation of get_hdf5_data_type only if the requested type hasn't been used to define one already.
-#define SPECIALISE_HDF5_DATA_TYPE_IF_NEEDED(TYPEDEFD_TYPE, RETURN_HDF5_TYPE)                                                 \
+#define SPECIALISE_HDF5_DATA_TYPE_IF_NEEDED(TYPE_CATEGORY, TYPEDEFD_TYPE, RETURN_HDF5_TYPE)                                  \
       template<typename T>                                                                                                   \
       struct get_hdf5_data_type<T, typename boost::enable_if_c< std::is_same<T, TYPEDEFD_TYPE>::value                     && \
                                                                !std::is_same<char, TYPEDEFD_TYPE>::value                  && \
@@ -61,13 +61,15 @@
                                                                !std::is_same<long double, TYPEDEFD_TYPE>::value           && \
                                                                !std::is_same<bool, TYPEDEFD_TYPE>::value>::type >            \
       {                                                                                                                      \
-          H5::IntType type() const { return RETURN_HDF5_TYPE; }                                                              \
+         static TYPE_CATEGORY type() { return RETURN_HDF5_TYPE; }                                                            \
       };                                                                                                                     \
 
 
-namespace Gambit {
+namespace Gambit
+{
   
-  namespace Printers {
+  namespace Printers
+  {
 
       /// Typedefs for managed H5 pointers
       typedef std::shared_ptr<H5::CommonFG> H5FGPtr; // common ancestor of H5File and Group
@@ -109,20 +111,20 @@ namespace Gambit {
 
       /// True types
       /// @{
-      template<> struct get_hdf5_data_type<char>              { H5::IntType type()   const { return H5::PredType::NATIVE_CHAR   ; } };
-      template<> struct get_hdf5_data_type<short>             { H5::IntType type()   const { return H5::PredType::NATIVE_SHORT  ; } };
-      template<> struct get_hdf5_data_type<int>               { H5::IntType type()   const { return H5::PredType::NATIVE_INT    ; } };
-      template<> struct get_hdf5_data_type<long>              { H5::IntType type()   const { return H5::PredType::NATIVE_LONG   ; } };
-      template<> struct get_hdf5_data_type<long long>         { H5::IntType type()   const { return H5::PredType::NATIVE_LLONG  ; } };
-      template<> struct get_hdf5_data_type<unsigned char>     { H5::IntType type()   const { return H5::PredType::NATIVE_UCHAR  ; } };
-      template<> struct get_hdf5_data_type<unsigned short>    { H5::IntType type()   const { return H5::PredType::NATIVE_USHORT ; } };
-      template<> struct get_hdf5_data_type<unsigned int>      { H5::IntType type()   const { return H5::PredType::NATIVE_UINT   ; } };
-      template<> struct get_hdf5_data_type<unsigned long>     { H5::IntType type()   const { return H5::PredType::NATIVE_ULONG  ; } };
-      template<> struct get_hdf5_data_type<unsigned long long>{ H5::IntType type()   const { return H5::PredType::NATIVE_ULLONG ; } };
-      template<> struct get_hdf5_data_type<float>             { H5::FloatType type() const { return H5::PredType::NATIVE_FLOAT  ; } };
-      template<> struct get_hdf5_data_type<double>            { H5::FloatType type() const { return H5::PredType::NATIVE_DOUBLE ; } };
-      template<> struct get_hdf5_data_type<long double>       { H5::FloatType type() const { return H5::PredType::NATIVE_LDOUBLE; } };
-      template<> struct get_hdf5_data_type<bool>              { H5::IntType type()   const { return H5::PredType::NATIVE_UINT8  ; } };
+      template<> struct get_hdf5_data_type<char>              { static H5::IntType   type() { return H5::PredType::NATIVE_CHAR   ; } };
+      template<> struct get_hdf5_data_type<short>             { static H5::IntType   type() { return H5::PredType::NATIVE_SHORT  ; } };
+      template<> struct get_hdf5_data_type<int>               { static H5::IntType   type() { return H5::PredType::NATIVE_INT    ; } };
+      template<> struct get_hdf5_data_type<long>              { static H5::IntType   type() { return H5::PredType::NATIVE_LONG   ; } };
+      template<> struct get_hdf5_data_type<long long>         { static H5::IntType   type() { return H5::PredType::NATIVE_LLONG  ; } };
+      template<> struct get_hdf5_data_type<unsigned char>     { static H5::IntType   type() { return H5::PredType::NATIVE_UCHAR  ; } };
+      template<> struct get_hdf5_data_type<unsigned short>    { static H5::IntType   type() { return H5::PredType::NATIVE_USHORT ; } };
+      template<> struct get_hdf5_data_type<unsigned int>      { static H5::IntType   type() { return H5::PredType::NATIVE_UINT   ; } };
+      template<> struct get_hdf5_data_type<unsigned long>     { static H5::IntType   type() { return H5::PredType::NATIVE_ULONG  ; } };
+      template<> struct get_hdf5_data_type<unsigned long long>{ static H5::IntType   type() { return H5::PredType::NATIVE_ULLONG ; } };
+      template<> struct get_hdf5_data_type<float>             { static H5::FloatType type() { return H5::PredType::NATIVE_FLOAT  ; } };
+      template<> struct get_hdf5_data_type<double>            { static H5::FloatType type() { return H5::PredType::NATIVE_DOUBLE ; } };
+      template<> struct get_hdf5_data_type<long double>       { static H5::FloatType type() { return H5::PredType::NATIVE_LDOUBLE; } };
+      template<> struct get_hdf5_data_type<bool>              { static H5::IntType   type() { return H5::PredType::NATIVE_UINT8  ; } };
       // Bools are a bit trickier because C has no built-in boolean type (until recently; anyway 
       // the HDF5 libraries were written in C before this existed). We also want something that
       // will be recognised as a bool by h5py. For now we just use an unsigned int.
@@ -130,14 +132,14 @@ namespace Gambit {
 
       /// Typedef'd types; enabled only where they differ from the true types.
       /// @{      
-      SPECIALISE_HDF5_DATA_TYPE_IF_NEEDED(int8_t,   H5::PredType::NATIVE_INT8)
-      SPECIALISE_HDF5_DATA_TYPE_IF_NEEDED(uint8_t,  H5::PredType::NATIVE_UINT8)
-      SPECIALISE_HDF5_DATA_TYPE_IF_NEEDED(int16_t,  H5::PredType::NATIVE_INT16)
-      SPECIALISE_HDF5_DATA_TYPE_IF_NEEDED(uint16_t, H5::PredType::NATIVE_UINT16)
-      SPECIALISE_HDF5_DATA_TYPE_IF_NEEDED(int32_t,  H5::PredType::NATIVE_INT32)
-      SPECIALISE_HDF5_DATA_TYPE_IF_NEEDED(uint32_t, H5::PredType::NATIVE_UINT32)
-      SPECIALISE_HDF5_DATA_TYPE_IF_NEEDED(int64_t,  H5::PredType::NATIVE_INT64)
-      SPECIALISE_HDF5_DATA_TYPE_IF_NEEDED(uint64_t, H5::PredType::NATIVE_UINT64)
+      SPECIALISE_HDF5_DATA_TYPE_IF_NEEDED(H5::IntType, int8_t,   H5::PredType::NATIVE_INT8)
+      SPECIALISE_HDF5_DATA_TYPE_IF_NEEDED(H5::IntType, uint8_t,  H5::PredType::NATIVE_UINT8)
+      SPECIALISE_HDF5_DATA_TYPE_IF_NEEDED(H5::IntType, int16_t,  H5::PredType::NATIVE_INT16)
+      SPECIALISE_HDF5_DATA_TYPE_IF_NEEDED(H5::IntType, uint16_t, H5::PredType::NATIVE_UINT16)
+      SPECIALISE_HDF5_DATA_TYPE_IF_NEEDED(H5::IntType, int32_t,  H5::PredType::NATIVE_INT32)
+      SPECIALISE_HDF5_DATA_TYPE_IF_NEEDED(H5::IntType, uint32_t, H5::PredType::NATIVE_UINT32)
+      SPECIALISE_HDF5_DATA_TYPE_IF_NEEDED(H5::IntType, int64_t,  H5::PredType::NATIVE_INT64)
+      SPECIALISE_HDF5_DATA_TYPE_IF_NEEDED(H5::IntType, uint64_t, H5::PredType::NATIVE_UINT64)
       /// @}
 
       //!_______________________________________________________________________________________

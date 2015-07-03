@@ -62,7 +62,6 @@ endif()
 set(diver_ver "1\\.0\\.0")
 set(diver_lib "libdiver")
 set(diver_dir "${PROJECT_SOURCE_DIR}/../extras/Diver")
-set(diver_short_dir "./../extras/Diver")
 set(diverSO_LINK_FLAGS "${CMAKE_Fortran_MPI_SO_LINK_FLAGS}")
 if(MPI_Fortran_FOUND)
   set(diverFFLAGS "${CMAKE_Fortran_MPI_FLAGS}")
@@ -86,7 +85,6 @@ set(clean_files ${clean_files} "${diver_dir}/lib/${diver_lib}.so")
 set(mn_ver "3\\.9")
 set(mn_lib "libnest3")
 set(mn_dir "${PROJECT_SOURCE_DIR}/../extras/MultiNest_v3.9")
-set(mn_short_dir "./../extras/MultiNest")
 set(mnLAPACK "${LAPACK_LINKLIBS}")
 set(mnSO_LINK "${CMAKE_Fortran_COMPILER} -shared ${CMAKE_Fortran_MPI_SO_LINK_FLAGS} ${mnLAPACK}")
 if(MPI_Fortran_FOUND)
@@ -101,11 +99,11 @@ ExternalProject_Add(multinest
   #DOWNLOAD_DIR ${mn_dir}
   SOURCE_DIR ${mn_dir}
   BUILD_IN_SOURCE 1
-  #CONFIGURE_COMMAND sed ${dashi} -e "s#nested.o[[:space:]]*$#nested.o cwrapper.o#g" <SOURCE_DIR>/Makefile 
-  #                               -e "s#function[[:space:]]*loglike_proto(Cube,n_dim,nPar,context)[[:space:]]*$#function loglike_proto(Cube,n_dim,nPar,context) bind(c)#g"
-  #                               -e "s#subroutine[[:space:]]*dumper_proto(nSamples,nlive,nPar,physLive,posterior,paramConstr,maxLogLike,logZ,INSlogZ,logZerr,context)[[:space:]]*$#subroutine dumper_proto(nSamples,nlive,nPar,physLive,posterior,paramConstr,maxLogLike,logZ,INSlogZ,logZerr,context) bind(c)#g" <SOURCE_DIR>/cwrapper.f90
-  CONFIGURE_COMMAND ""
-  BUILD_COMMAND make ${mn_lib}.so FC=${CMAKE_Fortran_COMPILER} FFLAGS=${mnFFLAGS} LINKLIB=${mnSO_LINK}$ LAPACKLIB=${mnLAPACK} 
+  CONFIGURE_COMMAND sed ${dashi} -e "s#nested.o[[:space:]]*$#nested.o cwrapper.o#g"
+                                 -e "s#-o[[:space:]]*\\(\\$\\)(LIBS)[[:space:]]*\\$@#-o \\$\\(LIBS\\)\\$@#g" <SOURCE_DIR>/Makefile 
+                                 -e "s#function[[:space:]]*loglike_proto(Cube,n_dim,nPar,context)[[:space:]]*$#function loglike_proto(Cube,n_dim,nPar,context) bind(c)#g"
+                                 -e "s#subroutine[[:space:]]*dumper_proto(nSamples,nlive,nPar,physLive,posterior,paramConstr,maxLogLike,logZ,INSlogZ,logZerr,context)[[:space:]]*$#subroutine dumper_proto(nSamples,nlive,nPar,physLive,posterior,paramConstr,maxLogLike,logZ,INSlogZ,logZerr,context) bind(c)#g" <SOURCE_DIR>/cwrapper.f90
+  BUILD_COMMAND make ${mn_lib}.so FC=${CMAKE_Fortran_COMPILER} FFLAGS=${mnFFLAGS} LINKLIB=${mnSO_LINK}$ LAPACKLIB=${mnLAPACK} LIBS=${mn_dir}/ 
   INSTALL_COMMAND "" 
 )
 set_property(TARGET multinest PROPERTY _EP_DOWNLOAD_ALWAYS 0)
