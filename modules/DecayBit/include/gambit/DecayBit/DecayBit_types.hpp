@@ -44,8 +44,14 @@ namespace Gambit
      {
 
      public:
-        mass_es_pseudonyms(){filled = false;}
-        mass_es_pseudonyms(const SubSpectrum* mssm, double tol);
+
+        /// Constructor
+        mass_es_pseudonyms() : filled (false) {}
+        
+        /// Known pseudonym strings
+        /// @{
+        ///   Particles
+        ///   @{      
         str isdl;
         str isul;
         str issl;
@@ -70,7 +76,9 @@ namespace Gambit
         //str iner;   uncomment to add right-handed nus
         //str inmur;  uncomment to add right-handed nus
         //str intaur; uncomment to add right-handed nus
-        
+        ///   @}
+        ///   Anti-particles
+        ///   @{             
         str isdlbar;
         str isulbar;
         str isslbar;
@@ -95,14 +103,37 @@ namespace Gambit
         //str inerbar;   uncomment to add right-handed nus
         //str inmurbar;  uncomment to add right-handed nus
         //str intaurbar; uncomment to add right-handed nus
+        ///   @}
+        /// @}        
         
-        void fill_mass_es_psns(const SubSpectrum* mssm, double tol);
-        void test_print(const SubSpectrum* mssm);
+        /// Fill strings in struct
+        void fill(const SubSpectrum*, double, bool, bool);
+
+        /// Refill string in struct
+        void refill(const SubSpectrum*, double, bool, bool);
+
+        /// Debug printer for pseudonyms      
+        void debug_print(const SubSpectrum*);
+
+        /// Gauge state debug printer for pseudonyms
+        void debug_print_gauge(const SubSpectrum*, str&, str&, double&);
+
+        /// Family state debug printer for pseudonyms
+        void debug_print_family(const SubSpectrum*, str&, str&, double&, double&);
+
 
      private:
+
+        /// Struct has already been filled or not.
         bool filled; 
 
-     };
+        /// Helper functions for filling maps from MSSM gauge eigenstates to mass eigenstates.
+        /// @{
+        void fill_mass_es_psn_gauge(str&, str&, str, const SubSpectrum*, double, bool, bool);
+        void fill_mass_es_psn_family(str&, str&, str, const SubSpectrum*, double, bool, bool);
+        /// @} 
+
+      };
     
   }
 

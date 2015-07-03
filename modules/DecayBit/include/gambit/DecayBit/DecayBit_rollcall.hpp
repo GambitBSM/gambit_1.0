@@ -638,7 +638,7 @@ START_MODULE
 
   #define CAPABILITY SLHA_pseudonyms
   START_CAPABILITY
-    #define FUNCTION Get_psns
+    #define FUNCTION get_mass_es_pseudonyms
     START_FUNCTION(DecayBit::mass_es_pseudonyms)
     DEPENDENCY(MSSM_spectrum, const Spectrum*)
     #undef FUNCTION

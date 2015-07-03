@@ -215,7 +215,7 @@ namespace Gambit
     }
      
      
-     //////////// MSSM /////////////////////   
+    //////////// MSSM /////////////////////   
     	
     /// FeynHiggs MSSM decays: t
     void FH_t_decays (DecayTable::Entry& result) 
@@ -295,7 +295,7 @@ namespace Gambit
       // cout << "BR(h0_1 -> ~tau-_L ~e+_5): " << BEreq::cb_wisfer_hdec->bhlstau(1,1) << endl;
     }
 
-     /// FeynHiggs MSSM decays: h0_1
+    /// FeynHiggs MSSM decays: h0_1
     void FH_MSSM_h0_1_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::FH_MSSM_h0_1_decays;
@@ -2254,7 +2254,7 @@ namespace Gambit
     }
 
 	
-//////////// Singlet DM /////////////////////
+    //////////// Singlet DM /////////////////////
 
     /// Add the decay of Higgs to singlets for the SingletDM model
     void SS_Higgs_decays (DecayTable::Entry& result)
@@ -2283,7 +2283,7 @@ namespace Gambit
     }
   
 
-//////////// Everything ///////////////////
+    //////////// Everything ///////////////////
   
     /// Collect all the DecayTable entries into an actual DecayTable 
     void all_decays (DecayTable &decays) 
@@ -2387,12 +2387,14 @@ namespace Gambit
     }
 
     /// Get MSSM mass eigenstate pseudonyms for the gauge eigenstates
-    void Get_psns (mass_es_pseudonyms& result)
+    void get_mass_es_pseudonyms(mass_es_pseudonyms& result)
     {
-      using namespace Pipes::Get_psns;
+      using namespace Pipes::get_mass_es_pseudonyms;
       const SubSpectrum* mssm = (*Dep::MSSM_spectrum)->get_UV();
-      mass_es_pseudonyms psn(mssm, runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance"));
-      result = psn;   
+      double tol = runOptions->getValueOrDef<double>(1e-2, "off_diagonal_tolerance");
+      bool hard_error = runOptions->getValueOrDef<bool>(true, "hard_error_on_mixing_failure");
+      bool debug = runOptions->getValueOrDef<bool>(false, "debug");
+      result.refill(mssm, tol, hard_error, debug);
     }
 
     /// @}
