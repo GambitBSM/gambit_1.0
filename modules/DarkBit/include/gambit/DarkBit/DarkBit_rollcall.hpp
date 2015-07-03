@@ -54,7 +54,7 @@ START_MODULE
   #define CAPABILITY MSSM_spectrum
   START_CAPABILITY
     #define FUNCTION get_MSSM_spectrum_from_file
-      START_FUNCTION(eaSLHA)
+      START_FUNCTION(SLHAstruct)
       ALLOW_MODELS(MSSM25atQ)
     #undef FUNCTION
   #undef CAPABILITY
@@ -72,7 +72,7 @@ START_MODULE
     // (probably always true)
     #define FUNCTION DarkSUSY_PointInit_MSSM
       START_FUNCTION(bool)
-      DEPENDENCY(MSSM_spectrum, eaSLHA) 
+      DEPENDENCY(MSSM_spectrum, SLHAstruct) 
       ALLOW_MODELS(CMSSM,MSSM25atQ)
       // CMSSM
       BACKEND_REQ(dsgive_model_isasugra, (), void, (double&,double&,double&,double&,double&))
@@ -349,7 +349,7 @@ START_MODULE
       START_FUNCTION(Gambit::DarkBit::TH_ProcessCatalog)
       //ALLOW_MODELS(CMSSM, MSSM25atQ)
       DEPENDENCY(DarkSUSY_PointInit, bool)
-      DEPENDENCY(MSSM_spectrum, eaSLHA) 
+      DEPENDENCY(MSSM_spectrum, SLHAstruct) 
       DEPENDENCY(DarkMatter_ID, DarkMatter_ID_type)
       BACKEND_REQ(mspctm, (), DS_MSPCTM)
       BACKEND_REQ(dssigmav, (), double, (int&))

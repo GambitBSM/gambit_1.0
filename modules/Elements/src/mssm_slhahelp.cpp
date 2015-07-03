@@ -17,7 +17,8 @@
 ///
 ///  *********************************************
 
-#include "gambit/Elements/MSSM_slhahelp.hpp"
+#include "gambit/Elements/mssm_slhahelp.hpp"
+
 
 namespace Gambit
 {

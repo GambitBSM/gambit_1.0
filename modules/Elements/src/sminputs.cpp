@@ -16,7 +16,7 @@
 ///  *********************************************
 
 #include "gambit/Utils/standalone_error_handlers.hpp"
-#include "gambit/Elements/SMInputs.hpp"
+#include "gambit/Elements/sminputs.hpp"
 
 namespace Gambit {
 

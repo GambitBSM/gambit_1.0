@@ -21,7 +21,7 @@
 #include <sstream>
 
 #include "gambit/Elements/gambit_module_headers.hpp"
-#include "gambit/Elements/Spectrum.hpp"
+#include "gambit/Elements/spectrum.hpp"
 #include "gambit/Utils/stream_overloads.hpp" // Just for more convenient output to logger
 #include "gambit/Utils/util_macros.hpp"
 #include "gambit/SpecBit/SpecBit_rollcall.hpp"

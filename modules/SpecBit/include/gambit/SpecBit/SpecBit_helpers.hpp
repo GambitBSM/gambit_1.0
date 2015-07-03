@@ -19,7 +19,7 @@
 #ifndef __SpecBit_helpers_hpp__
 #define __SpecBit_helpers_hpp__
 
-#include "gambit/Elements/SMInputs.hpp"
+#include "gambit/Elements/sminputs.hpp"
 
 // Flexible SUSY stuff (should not be needed by the rest of gambit)
 //#include "flexiblesusy/src/ew_input.hpp"

@@ -32,6 +32,7 @@
 
 #include "gambit/DecayBit/DecayBit_types.hpp"
 
+
 #define MODULE DecayBit
 START_MODULE
 
