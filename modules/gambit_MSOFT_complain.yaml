@@ -13,7 +13,50 @@
 ###################################
 
 Parameters: 
- !import parameters.yaml
+  StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
+
+  CMSSM:
+    A0:
+    #  range: [-1000, 1000]
+    M0:
+      prior_type: log
+      range: [0.001,1000]
+    M12:
+    #  same_as: CMSSM::M0
+    signmu:
+      range: [-1, 1]
+      fixed_value: 1
+    tanb:
+    #  fixed_value: 1
+
+  NormalDist:
+    mu:
+      fixed_value: 1
+    sigma:
+      fixed_value: 1
+
+  nuclear_params_fnq:
+    # proton hadronic matrix elements
+    fpd:
+      fixed_value: 0.0191
+    fpu:
+      fixed_value: 0.0153
+    fps:
+      fixed_value: 0.0447
+    # neutron hadronic matrix elements
+    fnd:
+      fixed_value: 0.0273
+    fnu:
+      fixed_value: 0.011
+    fns:
+      fixed_value: 0.0447
+    # proton spin content
+    deltad:
+      fixed_value: -0.427
+    deltau:
+      fixed_value: 0.842
+    deltas:
+      fixed_value: -0.085
 
 
 ##############################
@@ -192,8 +235,8 @@ ObsLikes:
   #  function:     IC79_loglike
 
   # Uncomment to test DD likelihoods
-#  - purpose:      Likelihood
-#    capability:   lnL_LUX_2013
+  - purpose:      Likelihood
+    capability:   lnL_LUX_2013
 
   # Uncomment to test FastSim
   #- purpose:      Likelihood
@@ -336,7 +379,7 @@ Rules:
       use_higgs_2loop_ab_as: true
       use_higgs_2loop_at_at: true
       use_higgs_2loop_atau_atau: true
-      invalid_point_fatal: true
+      invalid_point_fatal: false
 
   - capability: DD_couplings
     function: DD_couplings_DarkSUSY
