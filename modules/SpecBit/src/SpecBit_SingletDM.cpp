@@ -21,7 +21,6 @@
 #include <sstream>
 
 #include "gambit/Elements/gambit_module_headers.hpp"
-#include "gambit/Elements/Spectrum.hpp"
 #include "gambit/SpecBit/SpecBit_rollcall.hpp"
 #include "gambit/SpecBit/SpecBit_helpers.hpp"
 #include "gambit/SpecBit/QedQcdWrapper.hpp"

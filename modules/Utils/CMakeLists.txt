@@ -20,7 +20,7 @@
 #
 #************************************************
 
-set(source_files src/ASCIItableReader.cpp
+set(source_files src/ascii_table_reader.cpp
                  src/equivalency_singleton.cpp
                  src/exceptions.cpp
                  src/mpiwrapper.cpp
@@ -33,7 +33,7 @@ set(source_files src/ASCIItableReader.cpp
                  src/yaml_parser_base.cpp
 )                 
 
-set(header_files include/gambit/Utils/ASCIItableReader.hpp
+set(header_files include/gambit/Utils/ascii_table_reader.hpp
                  include/gambit/Utils/boost_fallbacks.hpp
                  include/gambit/Utils/cats.hpp
                  include/gambit/Utils/equivalency_singleton.hpp

@@ -2,7 +2,7 @@
 //   *********************************************
 ///  \file
 ///
-///  Type definition header for DecayBit.
+///  Type declaration header for DecayBit.
 ///
 ///  Compile-time registration of type definitions 
 ///  required for the rest of the code to
@@ -21,11 +21,17 @@
 ///          (p.scott@imperial.ac.uk)
 ///  \date 2014 Aug
 ///
+///  \author Peter Athron  
+///          (peter.athron@coepp.org.au)
+///  \date 2015 Jun 
+///
 ///  *********************************************
-
 
 #ifndef __DecayBit_types_hpp__
 #define __DecayBit_types_hpp__
+
+#include "gambit/Utils/util_types.hpp"
+#include "gambit/Elements/subspectrum.hpp"
 
 namespace Gambit
 {
@@ -33,75 +39,101 @@ namespace Gambit
   namespace DecayBit
   {
    
-     /// put in a strict at least instead of global variables
-     struct mass_es_pseudonyms {
-     public:
-        mass_es_pseudonyms(){filled = false;}
-        mass_es_pseudonyms(const SubSpectrum* mssm, double tol);
-        std::string isdl;
-        std::string isul;
-        std::string issl;
-        std::string iscl;
-        std::string isb1;
-        std::string ist1;
-        std::string isell;
-        std::string isnel;
-        std::string ismul;
-        std::string isnmul;
-        std::string istau1;
-        std::string isntau1;
-        std::string isdr;
-        std::string isur;
-        std::string issr;
-        std::string iscr;
-        std::string isb2;
-        std::string ist2;
-        std::string iselr;
-        /// This doesn't exist in the MSSM why is it here?
-        ///std::string iner; // 2000012 until we don't have RHNs in particle_database
-        std::string ismur;
-        /// This doesn't exist in the MSSM why is it here?
-        ///  std::string inmur; // 2000014
-        std::string istau2;
-        /// This doesn't exist in the MSSM why is it here?
-        /// std::string intau2; // 2000016
-        
-        std::string isdlbar;
-        std::string isulbar;
-        std::string isslbar;
-        std::string isclbar;
-        std::string isb1bar;
-        std::string ist1bar;
-        std::string isellbar;
-        std::string isnelbar;  //need to add sneutrinos to helpers
-        std::string ismulbar;
-        std::string isnmulbar;
-        std::string istau1bar;
-        std::string isntau1bar;
-        std::string isdrbar;
-        std::string isurbar;
-        std::string issrbar;
-        std::string iscrbar;
-        std::string isb2bar;
-        std::string ist2bar;
-        std::string iselrbar;
-        /// This doesn't exist in the MSSM why is it here?
-        ///std::string isnerbar;// -2000012 until we don't have RHNs in particle_database
-        std::string ismurbar;
-        /// This doesn't exist in the MSSM why is it here?
-        /// std::string isnmurbar; // -2000014
-        std::string istau2bar;
-        /// This doesn't exist in the MSSM why is it here?
-        ///std::string isntau2bar; // -2000016
-        
-        void fill_mass_es_psns(const SubSpectrum* mssm, double tol);
-        void test_print(const SubSpectrum* mssm);
-     private:
-        bool filled; 
-     };
+     /// Structure to hold mass eigenstate pseudonyms for gauge eigenstates
+     struct mass_es_pseudonyms
+     {
 
-     
-     
+     public:
+
+        /// Constructor
+        mass_es_pseudonyms() : filled (false) {}
+        
+        /// Known pseudonym strings
+        /// @{
+        ///   Particles
+        ///   @{      
+        str isdl;
+        str isul;
+        str issl;
+        str iscl;
+        str isb1;
+        str ist1;
+        str isell;
+        str isnel;
+        str ismul;
+        str isnmul;
+        str istau1;
+        str isntaul;
+        str isdr;
+        str isur;
+        str issr;
+        str iscr;
+        str isb2;
+        str ist2;
+        str iselr;
+        str ismur;
+        str istau2;
+        //str iner;   uncomment to add right-handed nus
+        //str inmur;  uncomment to add right-handed nus
+        //str intaur; uncomment to add right-handed nus
+        ///   @}
+        ///   Anti-particles
+        ///   @{             
+        str isdlbar;
+        str isulbar;
+        str isslbar;
+        str isclbar;
+        str isb1bar;
+        str ist1bar;
+        str isellbar;
+        str isnelbar;
+        str ismulbar;
+        str isnmulbar;
+        str istau1bar;
+        str isntaulbar;
+        str isdrbar;
+        str isurbar;
+        str issrbar;
+        str iscrbar;
+        str isb2bar;
+        str ist2bar;
+        str iselrbar;
+        str ismurbar;
+        str istau2bar;
+        //str inerbar;   uncomment to add right-handed nus
+        //str inmurbar;  uncomment to add right-handed nus
+        //str intaurbar; uncomment to add right-handed nus
+        ///   @}
+        /// @}        
+        
+        /// Fill strings in struct
+        void fill(const SubSpectrum*, double, bool, bool);
+
+        /// Refill string in struct
+        void refill(const SubSpectrum*, double, bool, bool);
+
+        /// Debug printer for pseudonyms      
+        void debug_print(const SubSpectrum*);
+
+        /// Gauge state debug printer for pseudonyms
+        void debug_print_gauge(const SubSpectrum*, str&, str&, double&);
+
+        /// Family state debug printer for pseudonyms
+        void debug_print_family(const SubSpectrum*, str&, str&, double&, double&);
+
+
+     private:
+
+        /// Struct has already been filled or not.
+        bool filled; 
+
+        /// Helper functions for filling maps from MSSM gauge eigenstates to mass eigenstates.
+        /// @{
+        void fill_mass_es_psn_gauge(str&, str&, str, const SubSpectrum*, double, bool, bool);
+        void fill_mass_es_psn_family(str&, str&, str, const SubSpectrum*, double, bool, bool);
+        /// @} 
+
+      };
     
   }
 
