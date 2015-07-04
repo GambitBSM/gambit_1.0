@@ -519,14 +519,15 @@ namespace Gambit {
          /// iterate over vector of strings for mass states 
          std::vector<str> gauge_es_vec = type_to_vec_of_gauge_es[type];
          typedef std::vector<str>::iterator iter;
-         for(iter it = gauge_es_vec.begin(); it != gauge_es_vec.end(); ++it){
-            temp_gauge_es = *it;   
-            temp_admix = get_mixing_element(temp_gauge_es, mass_es,  mssm); 
+         for(iter it = gauge_es_vec.begin(); it != gauge_es_vec.end(); ++it)
+            {
+            temp_gauge_es = *it;
+            temp_admix = get_mixing_element(temp_gauge_es, mass_es,  mssm);
             mass_composition.push_back(temp_admix);
             //select largest 
             if(fabs(temp_admix) > fabs(max_mixing)) 
                {
-               max_mixing = temp_admix; 
+               max_mixing = temp_admix;
                gauge_es = temp_gauge_es;
                }
          } //end iteration over temp_mass_es
