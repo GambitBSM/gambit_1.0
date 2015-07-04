@@ -85,7 +85,7 @@ START_MODULE
       BACKEND_REQ(dsSLHAread, (), void, (const char*, int&, int))
       BACKEND_REQ(dsprep, (), void, ())
       // Initialize DarkSUSY with SLHA object (convenience function)
-      BACKEND_REQ(initFromSLHA, (), int, (eaSLHA))
+      BACKEND_REQ(initFromSLHA, (), int, (SLHAstruct))
       // Print higgs widths
       BACKEND_REQ(dswwidth, (), void, (int&))
     #undef FUNCTION

@@ -154,10 +154,9 @@ namespace Gambit {
       // use SLHA for initialization initialization of MSSM25atQ or CMSSM
       else if (ModelInUse("MSSM25atQ") or ModelInUse("CMSSM"))
       {
-        // Save eaSLHA file to disk
-        //eaSLHA mySLHA = *Dep::MSSM_spectrum;
+        // Save SLHA file to disk
         const Spectrum* mySpec = *Dep::MSSM_spectrum;
-        eaSLHA mySLHA = mySpec->getSLHAea();
+        SLHAstruct mySLHA = mySpec->getSLHAea();
 
         // Add model select block to inform DS about 6x6 mixing
         // FIXME: Should be done somewhere upstream

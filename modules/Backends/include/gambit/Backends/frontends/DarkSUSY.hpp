@@ -133,7 +133,7 @@ BE_CONV_FUNCTION(neutrino_yield, double, (const double&, const int&, void*&), "n
 BE_CONV_FUNCTION(dsgenericwimp_nusetup, void, (const double(&)[29], const double(&)[29][3], const double(&)[15], 
                                                const double(&)[3], const double&, const double&, const double&,
                                                const double&, const double&), "nuyield_setup")
-BE_CONV_FUNCTION(initFromSLHA, int, (eaSLHA), "initFromSLHA")
+BE_CONV_FUNCTION(initFromSLHA, int, (SLHAstruct), "initFromSLHA")
 BE_CONV_FUNCTION(registerMassesForIB, 
     void, (std::map<std::string, DarkBit::TH_ParticleProperty>&), "registerMassesForIB")
 BE_CONV_FUNCTION(setMassesForIB, void, (bool), "setMassesForIB")
@@ -261,7 +261,7 @@ BE_NAMESPACE
     if (istat != 0) invalid_point().raise("Model point failed neutrino flux calculation.");
   }
 
-  int initFromSLHA(eaSLHA mySLHA)
+  int initFromSLHA(SLHAstruct mySLHA)
   {
     // JE's Initialization routine
     using SLHAea::to;

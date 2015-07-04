@@ -24,7 +24,7 @@
 #include "gambit/Elements/gambit_module_headers.hpp"
 #include "gambit/Elements/virtual_higgs.hpp"
 #include "gambit/DarkBit/DarkBit_rollcall.hpp"
-#include "gambit/Utils/ASCIItableReader.hpp"
+#include "gambit/Utils/ascii_table_reader.hpp"
 #include "boost/make_shared.hpp"
 #include "gambit/DarkBit/DarkBit_utils.hpp"
 

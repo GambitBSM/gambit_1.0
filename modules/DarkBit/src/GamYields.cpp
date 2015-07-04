@@ -17,7 +17,7 @@
 
 #include "gambit/Elements/gambit_module_headers.hpp"
 #include "gambit/DarkBit/DarkBit_rollcall.hpp"
-#include "gambit/Utils/ASCIItableReader.hpp"
+#include "gambit/Utils/ascii_table_reader.hpp"
 
 namespace Gambit {
   namespace DarkBit {
