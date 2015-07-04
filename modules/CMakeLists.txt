@@ -45,11 +45,8 @@ foreach(p
   endif()
 endforeach()
 
-# Set the project name
-project(GAMBIT)
-
-# Enable Fortran compiler
-enable_language(Fortran)
+# Set the project name, enabling C, C++ and Fortran support
+project(GAMBIT C CXX Fortran)
 
 # Don't relink all binaries when shared lib changes (programs will be rebuilt anyway if used headers change)
 set(CMAKE_LINK_DEPENDS_NO_SHARED 1)
@@ -67,12 +64,8 @@ set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
 # Add the automatically determined parts of the RPATH that point to directories outside the build tree to the install RPATH
 SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
-# Include cmake utility scripts
-# Note: colors defined in here; colored output won't work before this!
+# Include cmake utility scripts, including colour definitions.
 include(cmake/utilities.cmake)
-
-# Check for optional packages and disable sections of GAMBIT accordingly
-include(cmake/optional.cmake)
 
 # Check for Python and required libs
 include(FindPythonInterp)
@@ -93,10 +86,13 @@ endif()
 
 # Add some Fortran compiler flags
 if(CMAKE_Fortran_COMPILER MATCHES "gfortran*" OR CMAKE_Fortran_COMPILER MATCHES "f95*")
-  set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -ffixed-line-length-none")
+  set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -ffree-line-length-none -ffixed-line-length-none -cpp")
 elseif(CMAKE_Fortran_COMPILER MATCHES "ifort*")
-  set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -extend-source")
+  set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -extend-source -fpp")
 endif()
+
+# Check for optional packages and disable sections of GAMBIT accordingly
+include(cmake/optional.cmake)
 
 # Set output paths
 set(mylibdir ${PROJECT_SOURCE_DIR}/lib)
@@ -188,6 +184,14 @@ execute_process(RESULT_VARIABLE result COMMAND python ${locate_scanners} WORKING
 check_result(${result} ${locate_scanners}) 
 message("${Yellow}-- Updating GAMBIT scanner cmake and related files - done.${ColourReset}")
 
+# FIXME this should be removed, and the generation of Printers/CMakeLists.txt shifted into cmake/update_cmakelists.py
+# Generate the Printer compilation files
+message("${Yellow}-- Updating GAMBIT printer cmake and related files${ColourReset}")
+set(harvest_printers ${PROJECT_SOURCE_DIR}/cmake/printer_harvester.py ${PROJECT_BINARY_DIR} -x __not_a_real_name__,${itch_with_commas})
+execute_process(RESULT_VARIABLE result COMMAND python ${harvest_printers} WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
+check_result(${result} ${harvest_printers}) 
+message("${Yellow}-- Updating GAMBIT printer cmake and related files - done.${ColourReset}")
+
 # Add a true clean target that can have dependencies, to allow us to trigger cleaning of external projects (or run any other custom commands)
 add_custom_target(distclean COMMAND ${CMAKE_MAKE_PROGRAM} clean)
 
@@ -197,6 +201,7 @@ retrieve_bits(GAMBIT_BITS ${PROJECT_SOURCE_DIR} "${itch}" "Loud")
 # Include contributed packages
 include(cmake/contrib.cmake)
 
+# FIXME this should also generate the CMakeLists.txt file for the printers
 # Generate the CMakeLists.txt files for GAMBIT modules
 message("${Yellow}-- Updating GAMBIT module and backend CMake files.${ColourReset}")
 set(update_cmakelists ${PROJECT_SOURCE_DIR}/cmake/update_cmakelists.py -x __not_a_real_name__,${itch_with_commas})
@@ -213,12 +218,15 @@ endif()
 set(MODEL_HARVESTER ${PROJECT_SOURCE_DIR}/Models/scripts/model_harvester.py)
 set(BACKEND_HARVESTER ${PROJECT_SOURCE_DIR}/Backends/scripts/backend_harvester.py)
 set(MODULE_HARVESTER ${PROJECT_SOURCE_DIR}/Elements/scripts/module_harvester.py)
+# FIXME printer_harvester.py should live in Printers/scripts, and should not generate a CMakeLists.txt file
+set(PRINTER_HARVESTER ${PROJECT_SOURCE_DIR}/cmake/printer_harvester.py)
 set(HARVEST_TOOLS ${PROJECT_SOURCE_DIR}/Utils/scripts/harvesting_tools.py)
 
 # Create all_functor_types.hpp, module_rollcall.hpp, module_types_rollcall.hpp, models_rollcall.hpp,
-# model_types_rollcall.hpp, backend_rollcall.hpp and backend_types_rollcall.hpp
+# model_types_rollcall.hpp, backend_rollcall.hpp, backend_types_rollcall.hpp and printer_rollcall.hpp.
 file(GLOB MODEL_HARVESTER_FILES   "${PROJECT_SOURCE_DIR}/Models/include/gambit/Models/models/*.hpp")
 file(GLOB BACKEND_HARVESTER_FILES "${PROJECT_SOURCE_DIR}/Backends/include/gambit/Backends/frontends/*.hpp")
+file(GLOB PRINTER_HARVESTER_FILES "${PROJECT_SOURCE_DIR}/Printers/include/gambit/Printers/printers/*.hpp")
 file(GLOB MODULE_HARVESTER_FILES  "${PROJECT_SOURCE_DIR}/*Bit*/include/gambit/*Bit*/*_rollcall.hpp"
                                   "${PROJECT_SOURCE_DIR}/Backends/include/gambit/Backends/frontends/*.hpp")
 list(REMOVE_ITEM MODULE_HARVESTER_FILES "${PROJECT_SOURCE_DIR}/ScannerBit//include//gambit//ScannerBit//priors_rollcall.hpp"
@@ -239,6 +247,16 @@ add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/Backends/include/gambit/Backends
                            ${HARVEST_TOOLS}
                            ${BACKEND_HARVESTER_FILES} 
                            ${PROJECT_BINARY_DIR}/CMakeCache.txt)
+                           
+# FIXME printer_harvester.py should not generate a CMakeLists.txt file
+add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/Printers/include/gambit/Printers/printer_rollcall.hpp 
+                          ${PROJECT_SOURCE_DIR}/Printers/CMakeLists.txt
+                   COMMAND python ${PRINTER_HARVESTER} -x __not_a_real_name__,${itch_with_commas}
+                   WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+                   DEPENDS ${PRINTER_HARVESTER}
+                           ${HARVEST_TOOLS}
+                           ${PRINTER_HARVESTER_FILES}
+                           ${PROJECT_BINARY_DIR}/CMakeCache.txt)
 
 add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/Elements/include/gambit/Elements/all_functor_types.hpp
                           ${PROJECT_SOURCE_DIR}/Core/include/gambit/Core/module_rollcall.hpp
@@ -256,6 +274,10 @@ add_custom_target(model_harvest   DEPENDS ${PROJECT_SOURCE_DIR}/Models/include/g
 
 add_custom_target(backend_harvest DEPENDS ${PROJECT_SOURCE_DIR}/Backends/include/gambit/Backends/backend_rollcall.hpp
                                           ${PROJECT_SOURCE_DIR}/Elements/include/gambit/Elements/all_functor_types.hpp)
+
+# FIXME printer_harvest should not depend on Printers/CMakeLists.txt (as printer_harvesters.py should not generate this file)
+add_custom_target(printer_harvest DEPENDS ${PROJECT_SOURCE_DIR}/Printers/include/gambit/Printers/printer_rollcall.hpp
+                                          ${PRINTER_HARVESTER_FILES} ${PROJECT_SOURCE_DIR}/Printers/CMakeLists.txt)
 
 add_custom_target(module_harvest  DEPENDS ${PROJECT_SOURCE_DIR}/Elements/include/gambit/Elements/all_functor_types.hpp
                                           ${PROJECT_SOURCE_DIR}/Core/include/gambit/Core/module_rollcall.hpp

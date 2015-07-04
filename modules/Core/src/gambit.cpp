@@ -27,9 +27,9 @@ int main(int argc, char* argv[])
   std::set_terminate(terminator);
 
   #ifdef WITH_MPI
-    /// Needs to be done first, pretty much. Supply argc and argv, so that MPI
-    /// can fix up the command line arguments to match the non-mpi'd call. 
-    GMPI::Init(argc,argv);
+  /// Needs to be done first, pretty much. Supply argc and argv, so that MPI
+  /// can fix up the command line arguments to match the non-mpi'd call. 
+  GMPI::Init(argc,argv);
   #endif
 
   try
@@ -116,7 +116,13 @@ int main(int argc, char* argv[])
       cout << endl << " \033[00;31;1mFATAL ERROR\033[00m" << endl << endl;
       cout << "GAMBIT has exited with fatal exception: " << e.what() << endl;
     }
-      
+ 
+    #ifdef WITH_MPI
+    // Finalise will probably get stuck due to the abnormal termination
+    // on one process, so need to call an MPI_Abort.
+    GMPI::Comm COMM_WORLD;
+    COMM_WORLD.Abort();
+    #endif     
   }
 
   catch (str& e)
@@ -128,14 +134,21 @@ int main(int argc, char* argv[])
     cout << "If you are the author of the backend, please throw only " << endl;
     cout << "exceptions that inheret from std::exception.  Error string: " << endl;
     cout << e << endl;
+
+    #ifdef WITH_MPI
+    // Finalise will probably get stuck due to the abnormal termination
+    // on one process, so need to call an MPI_Abort.
+    GMPI::Comm COMM_WORLD;
+    COMM_WORLD.Abort();
+    #endif     
   }
 
   // Free the memory held by the RNG
   Random::delete_rng_engine();
 
   #ifdef WITH_MPI
-    /// Shut down MPI
-    GMPI::Finalize();
+  /// Shut down MPI cleanly
+  GMPI::Finalize();
   #endif
 
   return 0;
