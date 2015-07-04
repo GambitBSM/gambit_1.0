@@ -227,18 +227,40 @@ list(REMOVE_ITEM MODULE_HARVESTER_FILES "${PROJECT_SOURCE_DIR}/ScannerBit//inclu
 add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/Models/include/gambit/Models/model_rollcall.hpp
                    COMMAND python ${MODEL_HARVESTER} -x __not_a_real_name__,${itch_with_commas}
                    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
-                   DEPENDS ${MODEL_HARVESTER} ${HARVEST_TOOLS} ${MODEL_HARVESTER_FILES} ${PROJECT_BINARY_DIR}/CMakeCache.txt)
+                   DEPENDS ${MODEL_HARVESTER} 
+                           ${HARVEST_TOOLS}
+                           ${MODEL_HARVESTER_FILES}
+                           ${PROJECT_BINARY_DIR}/CMakeCache.txt)
+
 add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/Backends/include/gambit/Backends/backend_rollcall.hpp
                    COMMAND python ${BACKEND_HARVESTER} -x __not_a_real_name__,${itch_with_commas}
                    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
-                   DEPENDS ${BACKEND_HARVESTER} ${HARVEST_TOOLS} ${BACKEND_HARVESTER_FILES} ${PROJECT_BINARY_DIR}/CMakeCache.txt)
-add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/Elements/include/gambit/Elements/all_functor_types.hpp ${PROJECT_SOURCE_DIR}/Core/include/gambit/Core/module_rollcall.hpp ${PROJECT_SOURCE_DIR}/Elements/include/gambit/Elements/module_types_rollcall.hpp
+                   DEPENDS ${BACKEND_HARVESTER}
+                           ${HARVEST_TOOLS}
+                           ${BACKEND_HARVESTER_FILES} 
+                           ${PROJECT_BINARY_DIR}/CMakeCache.txt)
+
+add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/Elements/include/gambit/Elements/all_functor_types.hpp
+                          ${PROJECT_SOURCE_DIR}/Core/include/gambit/Core/module_rollcall.hpp
+                          ${PROJECT_SOURCE_DIR}/Elements/include/gambit/Elements/module_types_rollcall.hpp
                    COMMAND python ${MODULE_HARVESTER} -x __not_a_real_name__,${itch_with_commas}
                    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
-                   DEPENDS ${MODULE_HARVESTER} ${HARVEST_TOOLS} ${MODULE_HARVESTER_FILES} ${PROJECT_BINARY_DIR}/CMakeCache.txt)
-add_custom_target(model_harvest   DEPENDS ${PROJECT_SOURCE_DIR}/Models/include/gambit/Models/model_rollcall.hpp ${MODEL_HARVESTER_FILES})
-add_custom_target(backend_harvest DEPENDS ${PROJECT_SOURCE_DIR}/Backends/include/gambit/Backends/backend_rollcall.hpp ${BACKEND_HARVESTER_FILES})
-add_custom_target(module_harvest DEPENDS ${PROJECT_SOURCE_DIR}/Elements/include/gambit/Elements/all_functor_types.hpp ${PROJECT_SOURCE_DIR}/Core/include/gambit/Core/module_rollcall.hpp ${PROJECT_SOURCE_DIR}/Elements/include/gambit/Elements/module_types_rollcall.hpp ${MODULE_HARVESTER_FILES} backend_harvest)
+                   DEPENDS ${MODULE_HARVESTER} 
+                           ${HARVEST_TOOLS} 
+                           ${MODULE_HARVESTER_FILES} 
+                           ${BACKEND_HARVESTER_FILES} 
+                           ${PROJECT_BINARY_DIR}/CMakeCache.txt
+                           ${PROJECT_SOURCE_DIR}/config/resolution_type_equivalency_classes.yaml)
+
+add_custom_target(model_harvest   DEPENDS ${PROJECT_SOURCE_DIR}/Models/include/gambit/Models/model_rollcall.hpp)
+
+add_custom_target(backend_harvest DEPENDS ${PROJECT_SOURCE_DIR}/Backends/include/gambit/Backends/backend_rollcall.hpp
+                                          ${PROJECT_SOURCE_DIR}/Elements/include/gambit/Elements/all_functor_types.hpp)
+
+add_custom_target(module_harvest  DEPENDS ${PROJECT_SOURCE_DIR}/Elements/include/gambit/Elements/all_functor_types.hpp
+                                          ${PROJECT_SOURCE_DIR}/Core/include/gambit/Core/module_rollcall.hpp
+                                          ${PROJECT_SOURCE_DIR}/Elements/include/gambit/Elements/module_types_rollcall.hpp
+                                          backend_harvest)
 
 # Include other cmake scripts
 include(cmake/warnings.cmake)

@@ -55,7 +55,6 @@ namespace Gambit
     /// Add a new particle to the database with a short name and an index
     void partmap::add_with_short_pair(str long_name, std::pair<int, int> pdgpr, std::pair<str, int> shortpr)
     {
-      // debug:
       add(long_name, pdgpr);
       short_name_pair_to_pdg_pair[shortpr] = pdgpr;
       short_name_pair_to_long_name[shortpr] = long_name;
@@ -198,6 +197,7 @@ namespace Gambit
     }
 
     /// Get the matching anti-particle short name and index for a particle in the database, using the short name and index 
+    /// @{
     std::pair<str, int> partmap::get_antiparticle(std::pair<str, int> shortpr)
     {
       return short_name_pair(get_antiparticle(pdg_pair(shortpr)));
@@ -206,11 +206,10 @@ namespace Gambit
     {
       return get_antiparticle(std::make_pair(name,index));
     }
-
+    /// @}
 
     /// Get the matching anti-particle PDG code and index for a particle in the database, using the PDG code and index 
-    /// Pretty trivial, just decides whether PDG code needs to have the sign flipped. Only used really to simplify
-    /// the other getters.
+    /// @{
     std::pair<int, int> partmap::get_antiparticle(std::pair<int, int> pdgpr)
     {
       if (has_antiparticle(pdgpr))
@@ -226,6 +225,7 @@ namespace Gambit
     {
       return get_antiparticle(std::make_pair(pdgcode,context));
     }
+    /// @}
 
     /// Check if a particle has a matching anti-particle in the database, using the long name 
     bool partmap::has_antiparticle(str long_name)
@@ -233,7 +233,8 @@ namespace Gambit
       return has_antiparticle(pdg_pair(long_name)); 
     }
 
-    /// Check if a particle has a matching anti-particle in the database, using the short name and index 
+    /// Check if a particle has a matching anti-particle in the database, using the short name and index
+    /// @{
     bool partmap::has_antiparticle(std::pair<str, int> shortpr)
     {
       return has_antiparticle(pdg_pair(shortpr)); 
@@ -242,8 +243,10 @@ namespace Gambit
     {
       return has_antiparticle(std::make_pair(name,index));
     }
+    /// @}
 
     /// Check if a particle has a matching anti-particle in the database, using the PDG code and context integer 
+    /// @{
     bool partmap::has_antiparticle(std::pair<int, int> pdgpr)
     {
       /// Antiparticles are identified by having the opposite sign PDG code to a particle
@@ -254,6 +257,7 @@ namespace Gambit
     {
       return has_antiparticle(std::make_pair(pdgcode,context));
     }
+    /// @}
 
     /// For debugging: use to check the contents of the particle database
     void partmap::check_contents()
