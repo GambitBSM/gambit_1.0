@@ -271,28 +271,23 @@ namespace Gambit
        typedef std::map<std::pair<str, int>, str>::iterator                  it_short_name_pair_to_long_name;
 
        cout << "PDB: long name as key" << endl;
-       #define IT_OBJ long_name_to_pdg_pair
-       for(it_long_name_to_pdg_pair it = IT_OBJ.begin(); it != IT_OBJ.end(); it++) {
+       for(it_long_name_to_pdg_pair it = long_name_to_pdg_pair.begin(); it != long_name_to_pdg_pair.end(); it++) {
            cout   << "  long_name_to_pdg_pair       [" << it->first << "] => " << it->second << endl;
            if(has_short_name(it->first))
            { cout << "  long_name_to_short_name_pair[" << it->first << "] => " << long_name_to_short_name_pair[it->first] << endl; }
            else
            { cout << "  long_name_to_short_name_pair[" << it->first << "] => " << "Has no short name!" << endl; }
        }
-       #undef IT_OBJ
-       #define IT_OBJ pdg_pair_to_long_name
        cout << endl << "PDB: pdg_pair as key" << endl;
-       for(it_pdg_pair_to_long_name it = IT_OBJ.begin(); it != IT_OBJ.end(); it++) {
+       for(it_pdg_pair_to_long_name it = pdg_pair_to_long_name.begin(); it != pdg_pair_to_long_name.end(); it++) {
            cout   << "  pdg_pair_to_long_name [" << it->first << "] => " << it->second << endl;
            if(has_short_name(it->second))
            { cout << "  pdg_pair_to_short_name[" << it->first << "] => " << pdg_pair_to_short_name_pair[it->first] << endl; }
            else
            { cout << "  pdg_pair_to_short_name[" << it->first << "] => " << "Has no short name!" << endl; }
        }
-       #undef IT_OBJ
-       #define IT_OBJ short_name_pair_to_long_name
        cout << endl << "PDB: short name pair as key" << endl;
-       for(it_short_name_pair_to_long_name it = IT_OBJ.begin(); it != IT_OBJ.end(); it++) {
+       for(it_short_name_pair_to_long_name it = short_name_pair_to_long_name.begin(); it != short_name_pair_to_long_name.end(); it++) {
            cout << "  short_name_pair_to_long_name[" << it->first << "] => " << it->second << endl;
            cout << "  short_name_pair_to_pdg_pair [" << it->first << "] => " << short_name_pair_to_pdg_pair[it->first] << endl;
        }

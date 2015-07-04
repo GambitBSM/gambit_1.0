@@ -35,8 +35,8 @@
 
 #include <complex>
 
-#include "gambit/Elements/SMInputs.hpp"
-#include "gambit/Elements/SubSpectrum.hpp"
+#include "gambit/Elements/sminputs.hpp"
+#include "gambit/Elements/subspectrum.hpp"
 #include "gambit/Models/partmap.hpp"
 #include "SLHAea/slhaea.h"
 
@@ -135,7 +135,7 @@ namespace Gambit
    };
    /// Overloads for PDG types
    /// These just convert the types and then call the properly defined functions
-   /// (Note; they are inline due to their use in SubSpectrum.hpp, so need to be in header)
+   /// (Note; they are inline due to their use in subspectrum.hpp, so need to be in header)
    DEFINE_PDG_GETTERS(Spectrum,Pole_Mass)
 
 } // end namespace Gambit

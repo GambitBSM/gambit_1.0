@@ -2,7 +2,7 @@
 //   *********************************************
 ///  \file
 ///
-///  Header file for MSSM_slhahelp.cpp 
+///  Header file for mss_slhahelp.cpp 
 ///  with routines to help users / Bits 
 ///  translate between SLHA2 sfermions 
 ///  and SLHA1 (or similar) sfermions 
@@ -30,8 +30,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <set>
-#include "gambit/Elements/SubSpectrum.hpp"
-#include "gambit/Elements/Spectrum.hpp"
+#include "gambit/Elements/subspectrum.hpp"
+#include "gambit/Elements/spectrum.hpp"
 #include "gambit/Utils/util_types.hpp"
 
 namespace Gambit

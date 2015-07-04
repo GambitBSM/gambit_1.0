@@ -19,11 +19,13 @@
 #ifndef __SingletDMContainer_hpp__
 #define __SingletDMContainer_hpp__
 
-#include "gambit/Elements/SubSpectrum.hpp"
+#include "gambit/Elements/subspectrum.hpp"
 #include "gambit/SpecBit/SMHiggsContainer.hpp"
 
-namespace Gambit {
-   namespace SpecBit {
+namespace Gambit
+{     
+   namespace SpecBit
+   {
 
       /// Simple extension for the SMHiggs container "model object"
       /// to include scalar singlet DM parameters
