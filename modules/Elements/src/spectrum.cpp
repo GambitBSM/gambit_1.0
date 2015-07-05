@@ -30,7 +30,7 @@
 ///
 ///  *********************************************
 
-#include "gambit/Elements/Spectrum.hpp"
+#include "gambit/Elements/spectrum.hpp"
 #include "gambit/Utils/standalone_error_handlers.hpp"
 
 namespace Gambit

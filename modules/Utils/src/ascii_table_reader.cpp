@@ -7,14 +7,14 @@
 ///  *********************************************
 ///
 ///  Authors (add name and date if you modify):
-//
+///
 ///  \author Christoph Weniger
 ///          <c.weniger@uva.nl>
 ///  \date Dec 2014
 ///
 ///  *********************************************
 
-#include "gambit/Utils/ASCIItableReader.hpp"
+#include "gambit/Utils/ascii_table_reader.hpp"
 
 namespace Gambit
 {

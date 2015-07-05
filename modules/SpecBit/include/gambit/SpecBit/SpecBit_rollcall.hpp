@@ -59,7 +59,7 @@ START_MODULE
 
   //   #define FUNCTION get_LSP_mass                      // Retrieves the LSP mass from a Spectrum object
   //   START_FUNCTION(double)                  
-  //   DEPENDENCY(particle_spectrum, SpectrumPtr)            // Takes a Spectrum object and returns an eaSLHA object
+  //   DEPENDENCY(particle_spectrum, SpectrumPtr)            // Takes a Spectrum object and returns an SLHAstruct
   //   ALLOW_MODELS(MSSM24, CMSSM)
   //   #undef FUNCTION
 

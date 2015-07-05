@@ -43,7 +43,7 @@ namespace Gambit
 	  	  
       char name[]="FlavBit/example.lha";
 
-      eaSLHA spectrum;
+      SLHAstruct spectrum;
       std::ifstream ifs(name);
       ifs >> spectrum;
       ifs.close();

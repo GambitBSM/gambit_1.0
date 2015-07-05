@@ -113,19 +113,36 @@ namespace Gambit
       template<> struct get_mpi_data_type<float>             { static MPI_Datatype type() { return MPI_FLOAT;              } };
       template<> struct get_mpi_data_type<double>            { static MPI_Datatype type() { return MPI_DOUBLE;             } };
       template<> struct get_mpi_data_type<long double>       { static MPI_Datatype type() { return MPI_LONG_DOUBLE;        } };
-      template<> struct get_mpi_data_type<bool>              { static MPI_Datatype type() { return MPI_UINT8_T;            } };
+      template<> struct get_mpi_data_type<bool>              { static MPI_Datatype type() { return MPI_UNSIGNED;           } };
       /// @}
 
-      /// Typedef'd types; enabled only where they differ from the true types.
+      /// Typedef'd types; enabled only where they differ from the true types, and where the relevant constants have been
+      /// defined in the linked MPI implementation.
       /// @{
-      SPECIALISE_MPI_DATA_TYPE_IF_NEEDED(int8_t,   MPI_INT8_T  )
-      SPECIALISE_MPI_DATA_TYPE_IF_NEEDED(uint8_t,  MPI_UINT8_T )
-      SPECIALISE_MPI_DATA_TYPE_IF_NEEDED(int16_t,  MPI_INT16_T )
-      SPECIALISE_MPI_DATA_TYPE_IF_NEEDED(uint16_t, MPI_UINT16_T)
-      SPECIALISE_MPI_DATA_TYPE_IF_NEEDED(int32_t,  MPI_INT32_T )
-      SPECIALISE_MPI_DATA_TYPE_IF_NEEDED(uint32_t, MPI_UINT32_T)
-      SPECIALISE_MPI_DATA_TYPE_IF_NEEDED(int64_t,  MPI_INT64_T )
-      SPECIALISE_MPI_DATA_TYPE_IF_NEEDED(uint64_t, MPI_UINT64_T)
+      #ifdef MPI_INT8_T
+        SPECIALISE_MPI_DATA_TYPE_IF_NEEDED(int8_t,   MPI_INT8_T  )
+      #endif
+      #ifdef MPI_UINT8_T
+        SPECIALISE_MPI_DATA_TYPE_IF_NEEDED(uint8_t,  MPI_UINT8_T )
+      #endif
+      #ifdef MPI_INT16_T
+        SPECIALISE_MPI_DATA_TYPE_IF_NEEDED(int16_t,  MPI_INT16_T )
+      #endif
+      #ifdef MPI_UINT16_T
+        SPECIALISE_MPI_DATA_TYPE_IF_NEEDED(uint16_t, MPI_UINT16_T)
+      #endif
+      #ifdef MPI_INT32_T 
+        SPECIALISE_MPI_DATA_TYPE_IF_NEEDED(int32_t,  MPI_INT32_T )
+      #endif
+      #ifdef MPI_UINT32_T
+        SPECIALISE_MPI_DATA_TYPE_IF_NEEDED(uint32_t, MPI_UINT32_T)
+      #endif
+      #ifdef MPI_INT64_T
+        SPECIALISE_MPI_DATA_TYPE_IF_NEEDED(int64_t,  MPI_INT64_T )
+      #endif
+      #ifdef MPI_UINT64_T
+        SPECIALISE_MPI_DATA_TYPE_IF_NEEDED(uint64_t, MPI_UINT64_T)
+      #endif
       /// @}
 
       /// Main "Communicator" class

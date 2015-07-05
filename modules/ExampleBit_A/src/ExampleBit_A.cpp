@@ -487,11 +487,11 @@ namespace Gambit
       arr3D[0][0][0] = 5;
       arr3D[9][0][0] = 2;
       arr3D[9][9][9] = 8;
-      double test1 = BEreq::example_be_array_1D(arr1D);
+      double test1 = BEreq::example_be_array_1D(&arr1D[0]);
       cout << "TEST 1 in array_test: " << test1 << endl;
-      double test2 = BEreq::example_be_array_2D(arr2D);
+      double test2 = BEreq::example_be_array_2D(&arr2D[0]);
       cout << "TEST 2 in array_test: " << test2 << endl;
-      double test3 = BEreq::example_be_array_3D(arr3D);
+      double test3 = BEreq::example_be_array_3D(&arr3D[0]);
       cout << "TEST 3 in array_test: " << test3 << endl;
       result = test3;
     } 

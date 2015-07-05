@@ -72,8 +72,8 @@
 
     // Get MSSM spectrum as an SLHAea object
     #define FUNCTION get_MSSM_spectrum_as_SLHAea
-    START_FUNCTION(eaSLHA)                  
-    DEPENDENCY(MSSM_subspectrum, const SubSpectrum*)           // Takes a (pointer to a) SubSpectrum object and returns an eaSLHA object
+    START_FUNCTION(SLHAstruct)                  
+    DEPENDENCY(MSSM_subspectrum, const SubSpectrum*)           // Takes a (pointer to a) SubSpectrum object and returns an SLHAstruct
     #undef FUNCTION
 
   #undef CAPABILITY
