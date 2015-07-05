@@ -130,7 +130,7 @@ ExternalProject_Add(darksusy
   DOWNLOAD_DIR ${PROJECT_SOURCE_DIR}/../extras/DarkSUSY
   SOURCE_DIR ${PROJECT_SOURCE_DIR}/../extras/DarkSUSY/DarkSUSY
   BUILD_IN_SOURCE 1
-  PATCH_COMMAND patch -b -p1 -d src < ../patchDS.dif
+  PATCH_COMMAND patch -b -p1 -d src < ../patchDS.dif COMMAND patch -b -p1 -d contrib/isajet781-for-darksusy  < ../patchISA.dif
   CONFIGURE_COMMAND <SOURCE_DIR>/configure FC=${CMAKE_Fortran_COMPILER} FCFLAGS=${CMAKE_Fortran_FLAGS} FFLAGS=${CMAKE_Fortran_FLAGS} CC=${CMAKE_C_COMPILER} CFLAGS=${CMAKE_C_FLAGS} CXX=${CMAKE_CXX_COMPILER} CXXFLAGS=${CMAKE_CXX_FLAGS}
   BUILD_COMMAND make 
         COMMAND ar d <SOURCE_DIR>/lib/libdarksusy.a ${remove_files_from_libdarksusy} 
