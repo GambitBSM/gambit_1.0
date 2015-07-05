@@ -83,6 +83,9 @@ Release:
 * tarball release for module standalone release, git + tarball release for main gambit release
 
 cmake:
+* general stocktake of backend make system
+* info message about things not reverted/deleted after make distclean
+* make clean_backends (Pat)
 * switching off openmp (Antje, Pat)
 
 

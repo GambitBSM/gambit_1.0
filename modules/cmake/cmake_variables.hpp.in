@@ -28,4 +28,7 @@
 /// Found regex in STL
 #cmakedefine HAVE_REGEX_H 1
 
+/// Found link.h in system paths
+#cmakedefine HAVE_LINK_H 1
+
 #endif //// #defined__cmake_variables_hpp__
