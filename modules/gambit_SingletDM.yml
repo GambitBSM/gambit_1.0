@@ -5,12 +5,18 @@
 ###################################
 
 Parameters: 
+    StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
+
+    StandardModel_Higgs:
+      mH: 125
+      vev: 238
+
     SingletDM:
         mass:
-            range: [45, 100]
+            range: [45.001, 100]
             prior_type: log
         lambda:
-            range: [0.005, 0.5]
+            range: [0.002, 0.5]
             #fixed_value: 0.0366524 
             prior_type: log
     nuclear_params_fnq:
@@ -35,6 +41,9 @@ Parameters:
         fixed_value: 0.842
       deltas:
         fixed_value: -0.085
+
+#   Uncomment the below to use DarkSUSY nuclear parameters.
+#    nuclear_params_fnq: !import NuclearParams_fnq_DarkSUSY.yml
 
 ##############################
 # Prior setup
@@ -91,9 +100,9 @@ ObsLikes:
 #          nbins: 20
 
 # Fermi LAT dwarf limits
-    - capability: lnL_FermiLATdwarfs
-      function: lnL_FermiLATdwarfs_gamLike
-      purpose:  Likelihood
+#    - capability: lnL_FermiLATdwarfs
+#      function: lnL_FermiLATdwarfs_gamLike
+#      purpose:  Likelihood
 # Simple gaussian relic density likelihood
     - capability: RD_oh2
       purpose: Observable
@@ -116,6 +125,9 @@ ObsLikes:
 #      purpose:  Observable
       
 Rules:
+  # SM information from SpecBit
+  - capability: SM_spectrum 
+    function: get_QedQcd_spectrum  # Use this function to compute this capability
   # Gamma-rays -------------------------
   - capability: UnitTest_DarkBit
     options:
@@ -159,6 +171,9 @@ Rules:
   - capability: RD_spectrum
     options: 
       CoannMaxMass: 1.01 # include only co-annihilating particles up to this mass
+
+#  - capability: RD_thresholds_resonances
+#    function: RD_thresholds_resonances_from_spectrum
       
   - capability: lnL_oh2
     options:
@@ -203,13 +218,13 @@ Logger:
 
   prefix : "runs/DarkBit_SingletDM/logs/"
   redirection:
-    [Debug] : "debug.log"
-    [Default] : "default.log"
-    [Error] : "errors.log"
-    [Warning] : "warnings.log"
-    [Core,Error] : "core_errors.log"
-    [Core,Error,Fatal] : "fatal_core_errors.log"
-    [Dependency Resolver] : "stdout"
+    [Debug] : stdout #"debug.log"
+    [Default] : stdout #"default.log"
+    [Error] : stdout #"errors.log"
+    [Warning] : stdout #"warnings.log"
+    [Core,Error] : stdout #"core_errors.log"
+    [Core,Error,Fatal] : stdout #"fatal_core_errors.log"
+    [Dependency Resolver] : stdout #"stdout"
     [ExampleBit_A] : "ExampleBit_A.log"
     [ExampleBit_B] : "ExampleBit_B.log"
     [BackendIniBit]: "BackendIniBit.log"

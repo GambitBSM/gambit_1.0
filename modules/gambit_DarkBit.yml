@@ -5,6 +5,10 @@
 ###################################
 
 Parameters: 
+    StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
+    StandardModel_Higgs:
+      mH: 125
+      vev: 238
     SingletDM:
         lambda:
             range: [0.001, 1]
@@ -123,8 +127,6 @@ Parameters:
 
 #    The nuclear parameters below are set to the values from micrOMEGAs 3.5.5
 #    The three different sets of parameters are equivalent.
-#    This model is only used if micrOMEGAs or DarkSUSY is being
-#    used to calculate direct detection couplings.
 
     nuclear_params_fnq:
       # proton hadronic matrix elements
@@ -148,6 +150,7 @@ Parameters:
         fixed_value: 0.842
       deltas:
         fixed_value: -0.085
+
 
 #    nuclear_params_sigma0_SigmaPiN:
 #      sigma0:
@@ -174,6 +177,9 @@ Parameters:
 #        fixed_value: 0.842
 #      deltas:
 #        fixed_value: -0.085
+
+#   Uncomment the below to use DarkSUSY nuclear parameters.
+#    nuclear_params_fnq: !import NuclearParams_fnq_DarkSUSY.yml
 
 ##############################
 # Prior setup
@@ -265,6 +271,12 @@ ObsLikes:
 # LUX 2013 direct detection likelihood
     - capability: lnL_LUX_2013
       purpose:  Likelihood
+# SuperCDMS 2014 direct detection likelihood
+    - capability: lnL_SuperCDMS_2014
+      purpose:  Likelihood
+# SIMPLE 2014 direct detection likelihood
+    - capability: lnL_SIMPLE_2014
+      purpose:  Likelihood
 # DARWIN argon-based proposal (2015 estimate) direct detection likelihood
 # NOTE: treated as observable!
     - capability: lnL_DARWIN_Ar_2015
@@ -327,6 +339,9 @@ Rules:
             - bbar
         test_printMore:         false
 
+  # SM information from SpecBit
+  - capability: SM_spectrum 
+    function: get_QedQcd_spectrum  # Use this function to compute this capability
 
   # DarkSUSY ---------------------------
   - capability: DarkSUSY_5_1_1_init # Initialization of DarkSUSY backend
@@ -334,6 +349,15 @@ Rules:
         # Direct Detection Settings
         ddpole: 1 # Include squark pole in scattering amplitude
         dddn: 1 # Treat heavy quarks and gluons as in Drees & Nojiri 1993 (implies ddpole=1)
+  # MicrOmegasMSSM ----------------------
+  - capability: MicrOmegas_3_5_5_init # Initialization of MicrOmegas MSSM backend
+    options:
+        # Flavour Mixing Tolerance
+        # The MicrOmegas MSSM backend cannot handle models with significant flavour mixing in the
+        # mass eigenstates. The variable below sets a tolerance for how much flavour mixing is
+        # allowed before an error is thrown. A model point is within tolearance if
+        # Mix{n1}^2 + Mix{n2}^2 >= 1 - tolerance.
+        flavour_mixing_tolerance: .01
   # Gamma-rays -------------------------
   - capability: gamLike_1_0_0_init  # Initialization of gamLike backend
     options:
@@ -378,11 +402,9 @@ Rules:
        oh2_mean: 0.11
        oh2_err: 0.01
   # Direct detection -------------------
-  # For MSSM-based models, which of the DarkSUSY or MicrOmegas routines
-  # to use must be explicitly specified here (uncomment the desired one).
-  # The SingletDM function can be explicitly specified for the SingletDM
-  # model, but the dependency resolver will choose it by default as it
-  # is the only one available for that model.
+  # For MSSM-based models, which of the DarkSUSY, MicrOmegas, or internal
+  # SingletDM routines to use must be explicitly specified here (uncomment
+  # the desired one).
   - capability: DD_couplings
     #function: DD_couplings_DarkSUSY    # couplings from darksusy backend
     #function: DD_couplings_MicrOmegas  # couplings from micromegas backend

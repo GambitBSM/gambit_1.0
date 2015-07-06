@@ -21,6 +21,7 @@
 #include <vector>
 #include <unordered_map>
 #include <string>
+#include <set>
 #include <boost/shared_ptr.hpp>
 #include "gambit/Utils/threadsafe_rng.hpp"
 
@@ -39,6 +40,7 @@ namespace Gambit
             using std::string;
             using boost::shared_ptr;
             using std::unordered_map;
+            using std::set;
             
             //  *********************************************
             //  Generic 3-vector class
@@ -215,7 +217,7 @@ namespace Gambit
             class DecayTable
             {
                 public:
-                    DecayTable(const TH_ProcessCatalog &cat, const SimYieldTable &tab);
+                    DecayTable(const TH_ProcessCatalog &cat, const SimYieldTable &tab, set<string> disabledList);
                     DecayTable(){};
                     bool hasEntry(string) const;
                     // Add particle to decay table, specifying particle ID, mass and whether or not it should be decayed in decay chains
@@ -263,7 +265,11 @@ namespace Gambit
                     // Get number of child particles
                     int getnChildren() const {return nChildren;}
                     // Get child particle
-                    const ChainParticle* operator[](int i) const;     
+                    const ChainParticle* operator[](int i) const;  
+                    // Get parent particle
+                    const ChainParticle* getParent() const;   
+                    // Get energy in parent frame
+                    double E_parentFrame() const;
                     // Get particle ID
                     string getpID() const {return pID;}
                     // Print the decay chain (to cout)

@@ -27,12 +27,15 @@
 
 // C++ prototypes for the main run function for multinest, as well as the 
 // loglike and dumper functions
-extern "C" void run(bool, bool, bool, int, double, double, int, int, int, int, int,
+extern "C"
+{
+        void run(bool, bool, bool, int, double, double, int, int, int, int, int,
                     double, char[], int, int[], bool, bool, bool, bool, double, int, 
                     double (*)(double*,int,int,void*),    
                     void (*)(int,int,int,double*,double*,double*,double,double,
                       double,void*),
                     void *);
+}
 //extern "C" double loglike(double*, int, int, void *);
 //extern "C" void dumper(int, int, int, double*, double*, double*,
 //                       double, double, double, void*);

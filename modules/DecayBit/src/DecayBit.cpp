@@ -2318,11 +2318,12 @@ namespace Gambit
       decays("rho+") = *Dep::rho_plus_decay_rates;  // Add the rho+ decays.
       decays("rho-") = *Dep::rho_minus_decay_rates; // Add the rho- decays.
       decays("omega") = *Dep::omega_decay_rates;    // Add the omega meson decays.
-      
+
       // MSSM-specific
       if (ModelInUse("MSSM78atQ") or ModelInUse("MSSM78atMGUT"))
       {
         mass_es_pseudonyms psn = *(Dep::SLHA_pseudonyms);
+
         decays("h0_2") = *Dep::h0_2_decay_rates;                 // Add the h0_2 decays.
         decays("A0") = *Dep::A0_decay_rates;                     // Add the A0 decays.
         decays("H+") = *Dep::Hplus_decay_rates;                  // Add the H+ decays.       
@@ -2357,6 +2358,7 @@ namespace Gambit
         decays(psn.ismur) = *Dep::smuon_r_decay_rates;           // Add the ~mu-_R decays.
         decays(psn.istau1) = *Dep::stau_1_decay_rates;           // Add the ~tau_1 decays.
         decays(psn.istau2) = *Dep::stau_2_decay_rates;           // Add the ~tau_2 decays.
+
         decays(psn.isnel) = *Dep::snu_electronl_decay_rates;     // Add the ~nu_e decays.
         decays(psn.isnmul) = *Dep::snu_muonl_decay_rates;        // Add the ~nu_mu decays.
         decays(psn.isntaul) = *Dep::snu_taul_decay_rates;        // Add the ~nu_tau decays.

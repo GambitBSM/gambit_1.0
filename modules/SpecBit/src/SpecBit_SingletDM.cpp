@@ -40,7 +40,7 @@ namespace Gambit
     /// Get a Spectrum object wrapper for the SingletDM model
     void get_SingletDM_spectrum(const Spectrum* &result)
     {
-      namespace myPipe = Pipes::get_SM_spectrum;
+      namespace myPipe = Pipes::get_SingletDM_spectrum;
       const SMInputs& sminputs = *myPipe::Dep::SMINPUTS;
 
       // SoftSUSY object used to set quark and lepton masses and gauge

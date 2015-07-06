@@ -28,7 +28,6 @@ namespace Gambit
   {
     namespace DecayChain
     {
-      using namespace Gambit::BF;
       using std::ostringstream;
       using std::set;        
       using std::cout;
@@ -489,9 +488,9 @@ namespace Gambit
       //  *********************************************
 
       DecayTable::DecayTable(const TH_ProcessCatalog &cat,
-          const SimYieldTable &tab)
+          const SimYieldTable &tab, set<string> disabledList)
       {
-        std::cout << "DecayTable initialization" << std::endl;
+        //std::cout << "DecayTable initialization" << std::endl;
         set<string> finalStates;
         // Register all decaying particles and their decays
         for(vector<TH_Process>::const_iterator it = cat.processList.begin();
@@ -502,11 +501,12 @@ namespace Gambit
           if(it->genRateTotal->hasArgs()) continue;
 
           string pID = it->particle1ID;
-          std::cout << "Address of genRateTotal: " << it->genRateTotal 
-            << std::endl;
-          std::cout << "Final state of interest: " << pID << std::endl;
+          //std::cout << "Address of genRateTotal: " << it->genRateTotal 
+          //  << std::endl;
+          // std::cout << "Final state of interest: " << pID << std::endl;
           double m = cat.getParticleProperty(pID).mass;
           bool stable = ((it->channelList).size()<1);
+          if(disabledList.count(pID)==1) stable = true;
           // If tabulated spectra exist for decays of this particle, consider
           // it stable for the purpose of decay chain generation.
           if(tab.hasAnyChannel(pID)) stable = true;             
@@ -536,7 +536,7 @@ namespace Gambit
           // channels).
           entry.forceTotalWidth(true,it->genRateTotal->bind()->eval());
           addEntry(pID,entry);
-          std::cout << "Add entry for: " << table.begin()->first << std::endl;
+          // std::cout << "Add entry for: " << table.begin()->first << std::endl;
         }
         // Flag channels where all final final states are stable as endpoints.
         // Loop over all particles
@@ -558,8 +558,11 @@ namespace Gambit
               // particle is registered, it's not stable.
               if(hasEntry(*it3))
               {
-                isEndpoint = false;
-                break;
+                if(!table[*it3].stable)
+                {
+                  isEndpoint = false;
+                  break;
+                }
               }
             }
             it->second.endpointFlags[*it2] = isEndpoint;
@@ -573,8 +576,7 @@ namespace Gambit
         {
           if(!hasEntry(*it))
           {
-            // FIXME: Get correct particle masses from somewhere else
-            std::cout << "register: " << *it << std::endl;
+            // std::cout << "register: " << *it << std::endl;
             double m = cat.getParticleProperty(*it).mass;
             addEntry(*it,m,true);
           }
@@ -632,6 +634,7 @@ namespace Gambit
             it = table.begin(); it != table.end(); ++it)
         {
           cout << "Particle: " <<(it->first) << endl;
+          cout << "Set stable: " << (it->second).stable << endl;
           cout << "Mass: " <<(it->second).m << endl;
           cout << "Total width: " << (it->second.getTotalWidth())<< endl;
           cout << "Enabled branching ratio: " 
@@ -713,27 +716,14 @@ namespace Gambit
             abortedDecay = true;
             return;
           }
-          int failed = 0;
           // Only 2-body decays are currently allowed
-          while((chn->nFinalStates) != 2)
+          if((chn->nFinalStates) != 2)
           {
-            if(failed ==0)
-            {
-              string wrn;
-              wrn = "Invalid decay channel in decay chain.\n";
-              wrn+= "N!=2 body decays are currently not supported.\n";
-              wrn+= "Trying to pick new decay channel.";
-              DarkBit_warning().raise(LOCAL_INFO, wrn);
-            }
-            canDecay = decayTable->randomDecay(pID, chn);
-            failed++;
-            if(failed >= 100 or !canDecay)
-            {
-              DarkBit_warning().raise(LOCAL_INFO,
-                  "Unable to pick allowed decay. Keeping particle stable.");
-              abortedDecay = true;
-              return;
-            }
+            string err;
+            err = "Invalid decay channel in decay table.\n";
+            err+= "N!=2 body decays are currently not supported in cascade decays.\n";
+            DarkBit_error().raise(LOCAL_INFO, err);
+            return;
           }
           nChildren = 2; // chn->nFinalStates;
           // Kinematics for 2-body decays
@@ -743,9 +733,11 @@ namespace Gambit
           {
             ostringstream err;
             err <<  
-              "Kinematically impossible decay in decay chain.\n"
+              "Kinematically impossible decay in decay chain:\n" <<
+              pID << "-> " << 
+              ((chn->finalStateIDs)[0]) << ", " << ((chn->finalStateIDs)[1]) << "\n" <<
               "Please check your process catalog." << endl;
-            err << "Relevant particle masses: " << m1 << " " << m2 << " " << m;
+            err << "Relevant particle masses: " << m << " -> " << m1 << " + " << m2;
             DarkBit_error().raise(LOCAL_INFO, err.str());
           }           
           const double &Etot = m;
@@ -858,19 +850,27 @@ namespace Gambit
           return this;
         }            
       }        
+      const ChainParticle* ChainParticle::getParent() const
+      {
+        return parent;         
+      }       
+      double ChainParticle::E_parentFrame() const
+      {
+        return p_parent[0];
+      }
       void ChainParticle::printChain() const
       {
         cout << "*********************" << endl;
         cout << "Decay chain printout:" << endl;
         cout << "---------------------" << endl;
-        cout << "Generation 0:"         << endl;
+        cout << "Generation " << chainGeneration << ":" << endl;
         cout << "0  " << pID << ", p = " << p_Lab() << 
           ", Weight: " << weight  << endl;
         cout << "---------------------" << endl;
         if(nChildren>0)
         {
           bool run = false;
-          int gen = 1;
+          int gen = chainGeneration+1;
           do
           {
             cout << "Generation " << gen <<":" << endl;

@@ -47,11 +47,14 @@ SuperIso:
   3.4:         ./Backends/lib/libsuperiso.so
 
 gamLike:
-  1.0.0:       ./Backends/lib/libgamLike.so
+  1.0.0:       ../extras/gamLike/gamLike.so
 
-micromegas:
-  3.5.5:         ./Backends/lib/libmicromegas.so
+MicrOmegas:
+  3.5.5:       ./Backends/lib/libmicromegas.so
 
+MicrOmegasSingletDM:
+  3.5.5:       ./Backends/lib/libmicromegasSingletDM.so
+  
 nulike:
   1.0.0:       ./../extras/nulike/libnulike.so
 
