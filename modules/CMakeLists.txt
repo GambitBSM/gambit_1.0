@@ -24,8 +24,8 @@
 #
 #************************************************
 
-# Require a minimum cmake version of 2.6.0
-cmake_minimum_required(VERSION 2.6.0 FATAL_ERROR)
+# Require a minimum cmake version of 2.8.0
+cmake_minimum_required(VERSION 2.8.0 FATAL_ERROR)
 
 if(NOT CMAKE_BUILD_TYPE)
   SET(CMAKE_BUILD_TYPE Debug CACHE STRING
@@ -34,6 +34,7 @@ endif()
 
 # Set certain policies to NEW
 foreach(p
+  CMP0003 # CMake 2.6.0
   CMP0012 # CMake 2.8.0
   CMP0022 # CMake 2.8.12
   CMP0025 # CMake 3.0

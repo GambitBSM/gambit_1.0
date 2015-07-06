@@ -26,6 +26,7 @@
 # Check for MPI libraries; disable manually with "cmake -DMPI=OFF .."
 option(MPI "Compile with MPI enabled" ON)
 if(MPI)
+  # If this is finding the wrong MPI installation, set your environment variable MPI_DIR to the location of your MPI libs.
   find_package(MPI)
   # Do things for GAMBIT itself
   if(MPI_C_FOUND OR MPI_CXX_FOUND)
@@ -126,7 +127,6 @@ if(HDF5_FOUND)
     endif()
   endif()
   if(HDF5_CPP)
-    link_directories(${HDF5_LIBRARY_DIRS})
     include_directories(${HDF5_INCLUDE_DIR})
     message("-- Found HDF5 libraries")  
   else()
