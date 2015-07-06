@@ -22,11 +22,10 @@
 #include <string>
 #include <sstream>
 
+#include "gambit/Elements/slhaea_alias.hpp"
 #include "gambit/Utils/util_types.hpp"
 #include "gambit/Utils/standalone_error_handlers.hpp"
 #include "gambit/Models/partmap.hpp"
-
-#include "SLHAea/slhaea.h"
 
 namespace Gambit
 {
@@ -43,12 +42,19 @@ namespace Gambit
       /// @{
       /// Default constructor
       DecayTable() {}
-      /// Create a DecayTable from an SLHAea DECAY block
-      DecayTable(SLHAea::Block&);
+      /// Create a DecayTable from an SLHAea object containing DECAY blocks
+      DecayTable(SLHAstruct&);
       /// @}
 
-      /// Output entire decay table as an SLHAea DECAY block
-      SLHAea::Block as_slhaea_block();
+      /// Output entire decay table as an SLHAea file full of DECAY blocks
+      SLHAstruct as_slhaea(bool include_zero_bfs=false);
+    
+      /// Output a decay table entry as an SLHAea DECAY block, using input parameter to identify the entry.
+      /// @{
+      SLHAea::Block as_slhaea_block(std::pair<int,int>, bool include_zero_bfs=false);
+      SLHAea::Block as_slhaea_block(str, bool include_zero_bfs=false);
+      SLHAea::Block as_slhaea_block(str, int, bool include_zero_bfs=false);
+      /// @}
 
       /// Get entry in decay table for a given particle, adding the particle to the table if it is absent.
       /// Three access methods: PDG-context integer pair, full particle name, short particle name + index integer.
@@ -71,7 +77,7 @@ namespace Gambit
       const Entry& at(str) const;
       const Entry& at(str, int) const;
       /// @}
-    
+      
       /// The actual underlying map.  Just iterate over this directly if you need to iterate over all particles in the table.
       std::map< std::pair<int,int>, Entry > particles;
 
@@ -221,6 +227,13 @@ namespace Gambit
             }
             return channels.at(key);
           }
+          /// @}
+
+          /// Output this entry as an SLHAea DECAY block, using input parameter to identify the mother particle.
+          /// @{
+          SLHAea::Block as_slhaea_block(str, bool include_zero_bfs=false);
+          SLHAea::Block as_slhaea_block(str, int, bool include_zero_bfs=false);
+          SLHAea::Block as_slhaea_block(std::pair<int,int>, bool include_zero_bfs=false);
           /// @}
 
           /// Sum up the partial widths and return the result.

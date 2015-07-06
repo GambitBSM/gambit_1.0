@@ -288,11 +288,6 @@ namespace Gambit
       result.set_BF(BEreq::cb_wisfer_hdec->bhlslnl/3.0, 0.0, psn.isnel, psn.isnelbar);
       result.set_BF(BEreq::cb_wisfer_hdec->bhlslnl/3.0, 0.0, psn.isnmul, psn.isnmulbar);
       result.set_BF(BEreq::cb_wisfer_hdec->bhlslnl/3.0, 0.0, psn.isntaul, psn.isntaulbar);
-     
-      // cout << "h0_1 total width: " << result.width_in_GeV << endl;
-      // cout << "BR(h0_1 -> gamma gamma): " << BEreq::cb_widthhl_hdec->hlbrga << endl;
-      // cout << "BR(h0_1 -> ~u_L ~u_L_bar): " << BEreq::cb_wisfer_hdec->bhlsqul/2.0 << endl;
-      // cout << "BR(h0_1 -> ~tau-_L ~e+_5): " << BEreq::cb_wisfer_hdec->bhlstau(1,1) << endl;
     }
 
     /// FeynHiggs MSSM decays: h0_1
@@ -403,8 +398,6 @@ namespace Gambit
       result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,3,3)+BRoffset], 0.0, psn.isb1, psn.isb2bar);
       result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,3,3)+BRoffset], 0.0, psn.isb2, psn.isb1bar);
       result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,3,3)+BRoffset], 0.0, psn.isb2, psn.isb2bar);
-
-      cout << "h0_1 total width: " << result.width_in_GeV << endl;
     }
 
     /// MSSM decays: h0_2
@@ -471,8 +464,6 @@ namespace Gambit
       result.set_BF(BEreq::cb_wisfer_hdec->bhhslnl/3.0, 0.0, psn.isnel, psn.isnelbar);
       result.set_BF(BEreq::cb_wisfer_hdec->bhhslnl/3.0, 0.0, psn.isnmul, psn.isnmulbar);
       result.set_BF(BEreq::cb_wisfer_hdec->bhhslnl/3.0, 0.0, psn.isntaul, psn.isntaulbar);
-
-      // cout << "h0_2 total width: " << result.width_in_GeV << endl;
     }
 
     /// FeynHiggs MSSM decays: h0_2
@@ -583,8 +574,6 @@ namespace Gambit
       result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,3,3)+BRoffset], 0.0, psn.isb1, psn.isb2bar);
       result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,3,3)+BRoffset], 0.0, psn.isb2, psn.isb1bar);
       result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,3,3)+BRoffset], 0.0, psn.isb2, psn.isb2bar);
-
-      cout << "h0_2 total width: " << result.width_in_GeV << endl;
     }
 
     /// MSSM decays: A0
@@ -631,7 +620,6 @@ namespace Gambit
       result.set_BF(BEreq::cb_wisusy_hdec->habrsb/2.0, 0.0, psn.isb1bar, psn.isb2);
       result.set_BF(BEreq::cb_wisusy_hdec->habrsl/2.0, 0.0, psn.istau1, psn.istau2bar);
       result.set_BF(BEreq::cb_wisusy_hdec->habrsl/2.0, 0.0, psn.istau1bar, psn.istau2);
-      // cout << "A0 total width: " << result.width_in_GeV << endl;
     }
 
     /// FeynHiggs MSSM decays: A0
@@ -742,8 +730,6 @@ namespace Gambit
       result.set_BF(FH_input.gammas[H0SfSf(iH,1,2,3,3)+BRoffset], 0.0, psn.isb1, psn.isb2bar);
       result.set_BF(FH_input.gammas[H0SfSf(iH,2,1,3,3)+BRoffset], 0.0, psn.isb2, psn.isb1bar);
       result.set_BF(FH_input.gammas[H0SfSf(iH,2,2,3,3)+BRoffset], 0.0, psn.isb2, psn.isb2bar);
-
-      cout << "A0 total width: " << result.width_in_GeV << endl;
     }
 
     /// MSSM decays: Hplus
@@ -780,7 +766,9 @@ namespace Gambit
       result.set_BF(BEreq::cb_wisusy_hdec->hcbrstb(2,2), 0.0, psn.ist2, psn.isb2bar);
       result.set_BF(BEreq::cb_wisusy_hdec->hcbrstb(1,2), 0.0, psn.ist1, psn.isb2bar);
       result.set_BF(BEreq::cb_wisusy_hdec->hcbrstb(2,1), 0.0, psn.ist2, psn.isb1bar);
-      // cout << "Hplus total width: " << result.width_in_GeV << endl;
+
+      cout <<  "H+ Decay Table entry as an SLHA DECAY block: \n" << result.as_slhaea_block("H+") << endl;
+      
     }
 
     /// FeynHiggs MSSM decays: H+
@@ -871,7 +859,8 @@ namespace Gambit
       result.set_BF(FH_input.gammas[HpSfSf(2,1,2,3,3)+offset], 0.0, psn.ist2, psn.isb1bar);
       result.set_BF(FH_input.gammas[HpSfSf(2,2,2,3,3)+offset], 0.0, psn.ist2, psn.isb2bar);
 
-      cout << "H+ total width: " << result.width_in_GeV << endl;
+      cout <<  "H+ Decay Table entry as an SLHA DECAY block: \n" << result.as_slhaea_block("H+") << endl;
+      
     }
 
     /// MSSM decays: Hminus
@@ -955,7 +944,6 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_glui3body->brwst1b, 0.0, psn.ist1bar, "b", "W+");
       result.set_BF(BEreq::cb_sd_glui3body->brhcst1b, 0.0, psn.ist1, "bbar", "H-");
       result.set_BF(BEreq::cb_sd_glui3body->brhcst1b, 0.0, psn.ist1bar, "b", "H+");
-      cout << "gluino total width: " << result.width_in_GeV << endl;
     }
 
     /// MSSM decays: stop_1
@@ -1010,7 +998,6 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_stop3body->brstelsbnu(1,2), 0.0, psn.isb2, "e+", "nu_e");
       result.set_BF(BEreq::cb_sd_stop3body->brstelsbnu(1,1), 0.0, psn.isb1, "mu+", "nu_mu");
       result.set_BF(BEreq::cb_sd_stop3body->brstelsbnu(1,2), 0.0, psn.isb2, "mu+", "nu_mu");
-      cout << "stop_1 total width: " << result.width_in_GeV << endl;
     }
 
     /// MSSM decays: stopbar_1
@@ -1085,7 +1072,6 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_stop3body->brst2st1nunu, 0.0, psn.ist1, "nu_e", "nubar_e");
       result.set_BF(BEreq::cb_sd_stop3body->brst2st1nunu, 0.0, psn.ist1, "nu_mu", "nubar_mu");
       result.set_BF(BEreq::cb_sd_stop3body->brst2st1nunu, 0.0, psn.ist1, "nu_tau", "nubar_tau");
-      cout << "stop_2 total width: " << result.width_in_GeV << endl;
     }
 
     /// MSSM decays: stopbar_2
@@ -1135,7 +1121,6 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_sbot3body->brsbelstnu(1,2), 0.0, psn.ist1, "e-", "nubar_e");
       result.set_BF(BEreq::cb_sd_sbot3body->brsbelstnu(1,1), 0.0, psn.ist1, "mu-", "nubar_mu");
       result.set_BF(BEreq::cb_sd_sbot3body->brsbelstnu(1,2), 0.0, psn.ist1, "mu-", "nubar_mu");
-      cout << "sbottom_1 total width: " << result.width_in_GeV << endl;
     }
 
     /// MSSM decays: sbottombar_1
@@ -1202,7 +1187,6 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_sbot3body->brsb2sb1nunu, 0.0, psn.isb1, "nu_e", "nubar_e");
       result.set_BF(BEreq::cb_sd_sbot3body->brsb2sb1nunu, 0.0, psn.isb1, "nu_mu", "nubar_mu");
       result.set_BF(BEreq::cb_sd_sbot3body->brsb2sb1nunu, 0.0, psn.isb1, "nu_tau", "nubar_tau");
-      cout << "sbottom_2 total width: " << result.width_in_GeV << endl;
     }
 
     /// MSSM decays: sbottombar_2
@@ -1223,7 +1207,6 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_sup2body->brsuplcdow(1), 0.0, "~chi+_1", "d");
       result.set_BF(BEreq::cb_sd_sup2body->brsuplcdow(2), 0.0, "~chi+_2", "d");
       result.set_BF(BEreq::cb_sd_sup2body->brsuplglui, 0.0, "~g", "u");
-      // cout << "sup_l total width: " << result.width_in_GeV << endl;
     }
 
     /// MSSM decays: supbar_l
@@ -1244,7 +1227,6 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_sup2body->brsuprcdow(1), 0.0, "~chi+_1", "d");
       result.set_BF(BEreq::cb_sd_sup2body->brsuprcdow(2), 0.0, "~chi+_2", "d");
       result.set_BF(BEreq::cb_sd_sup2body->brsuprglui, 0.0, "~g", "u");
-      // cout << "sup_r total width: " << result.width_in_GeV << endl;
     }
 
     /// MSSM decays: supbar_r
@@ -1265,7 +1247,6 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_sdown2body->brsdowlchup(1), 0.0, "~chi-_1", "u");
       result.set_BF(BEreq::cb_sd_sdown2body->brsdowlchup(2), 0.0, "~chi-_2", "u");
       result.set_BF(BEreq::cb_sd_sdown2body->brsdowlglui, 0.0, "~g", "d");
-      // cout << "sdown_l total width: " << result.width_in_GeV << endl;
     }
 
     /// MSSM decays: sdownbar_l
@@ -1286,7 +1267,6 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_sdown2body->brsdowrchup(1), 0.0, "~chi-_1", "u");
       result.set_BF(BEreq::cb_sd_sdown2body->brsdowrchup(2), 0.0, "~chi-_2", "u");
       result.set_BF(BEreq::cb_sd_sdown2body->brsdowrglui, 0.0, "~g", "d");
-      // cout << "sdown_r total width: " << result.width_in_GeV << endl;
     }
 
     /// MSSM decays: sdownbar_r
@@ -1307,7 +1287,6 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_sup2body->brsuplcdow(1), 0.0, "~chi+_1", "s");
       result.set_BF(BEreq::cb_sd_sup2body->brsuplcdow(2), 0.0, "~chi+_2", "s");
       result.set_BF(BEreq::cb_sd_sup2body->brsuplglui, 0.0, "~g", "c");
-      // cout << "scharm_l total width: " << result.width_in_GeV << endl;
     }
 
     /// MSSM decays: scharmbar_l
@@ -1328,7 +1307,6 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_sup2body->brsuprcdow(1), 0.0, "~chi+_1", "s");
       result.set_BF(BEreq::cb_sd_sup2body->brsuprcdow(2), 0.0, "~chi+_2", "s");
       result.set_BF(BEreq::cb_sd_sup2body->brsuprglui, 0.0, "~g", "c");
-      // cout << "scharm_r total width: " << result.width_in_GeV << endl;
     }
 
     /// MSSM decays: scharmbar_r
@@ -1349,7 +1327,6 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_sdown2body->brsdowlchup(1), 0.0, "~chi-_1", "c");
       result.set_BF(BEreq::cb_sd_sdown2body->brsdowlchup(2), 0.0, "~chi-_2", "c");
       result.set_BF(BEreq::cb_sd_sdown2body->brsdowlglui, 0.0, "~g", "s");
-      // cout << "sstrange_l total width: " << result.width_in_GeV << endl;
     }
 
     /// MSSM decays: sstrangebar_l
@@ -1370,7 +1347,6 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_sdown2body->brsdowrchup(1), 0.0, "~chi-_1", "c");
       result.set_BF(BEreq::cb_sd_sdown2body->brsdowrchup(2), 0.0, "~chi-_2", "c");
       result.set_BF(BEreq::cb_sd_sdown2body->brsdowrglui, 0.0, "~g", "s");
-      // cout << "sstrange_r total width: " << result.width_in_GeV << endl;
     }
 
     /// MSSM decays: sstrangebar_r
@@ -1390,7 +1366,6 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_sel2body->brsellneute(4), 0.0, "~chi0_4", "e-");
       result.set_BF(BEreq::cb_sd_sel2body->brsellcharnue(1), 0.0, "~chi-_1", "nu_e");
       result.set_BF(BEreq::cb_sd_sel2body->brsellcharnue(2), 0.0, "~chi-_2", "nu_e");
-      // cout << "selectron_l total width: " << result.width_in_GeV << endl;
     }
 
     /// MSSM decays: selectronbar_l
@@ -1410,7 +1385,6 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_sel2body->brselrneute(4), 0.0, "~chi0_4", "e-");
       result.set_BF(BEreq::cb_sd_sel2body->brselrcharnue(1), 0.0, "~chi-_1", "nu_e");
       result.set_BF(BEreq::cb_sd_sel2body->brselrcharnue(2), 0.0, "~chi-_2", "nu_e");
-      // cout << "selectron_r total width: " << result.width_in_GeV << endl;
     }
 
     /// MSSM decays: selectronbar_r
@@ -1430,7 +1404,6 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_sel2body->brsellneute(4), 0.0, "~chi0_4", "mu-");
       result.set_BF(BEreq::cb_sd_sel2body->brsellcharnue(1), 0.0, "~chi-_1", "nu_mu");
       result.set_BF(BEreq::cb_sd_sel2body->brsellcharnue(2), 0.0, "~chi-_2", "nu_mu");
-      // cout << "smuon_l total width: " << result.width_in_GeV << endl;
     }
 
     /// MSSM decays: smuonbar_l
@@ -1450,7 +1423,6 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_sel2body->brselrneute(4), 0.0, "~chi0_4", "mu-");
       result.set_BF(BEreq::cb_sd_sel2body->brselrcharnue(1), 0.0, "~chi-_1", "nu_mu");
       result.set_BF(BEreq::cb_sd_sel2body->brselrcharnue(2), 0.0, "~chi-_2", "nu_mu");
-      // cout << "smuon_r total width: " << result.width_in_GeV << endl;
     }
   
     /// MSSM decays: smuonbar_r
@@ -1475,7 +1447,6 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_stau2body->brstau1hcsn(1), 0.0, psn.isntaul, "H-");
       result.set_BF(BEreq::cb_sd_stau2body->brstau1wsn(1), 0.0, psn.isntaul, "W-");
       result.set_BF(BEreq::cb_sd_stau2bodygrav->brstautaugrav, 0.0, "~G", "tau-");
-      // cout << "stau_1 total width: " << result.width_in_GeV << endl;
     }
 
     /// MSSM decays: staubar_1
@@ -1503,7 +1474,6 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_stau2body->brstau2hh, 0.0, psn.istau1, "h0_2");
       result.set_BF(BEreq::cb_sd_stau2body->brstau2ha, 0.0, psn.istau1, "A0");
       result.set_BF(BEreq::cb_sd_stau2body->brstau2ztau, 0.0, psn.istau1, "Z0");
-      // cout << "stau_2 total width: " << result.width_in_GeV << endl;
     }
      
     /// MSSM decays: staubar_2
@@ -1523,7 +1493,6 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_snel2body->brsnellneut(4), 0.0, "~chi0_4", "nu_e");
       result.set_BF(BEreq::cb_sd_snel2body->brsnellchar(1), 0.0, "~chi+_1", "e-");
       result.set_BF(BEreq::cb_sd_snel2body->brsnellchar(2), 0.0, "~chi+_2", "e-");
-      // cout << "snu_electronl total width: " << result.width_in_GeV << endl;
     }
 
     /// MSSM decays: snubar_electronl
@@ -1543,7 +1512,6 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_snel2body->brsnellneut(4), 0.0, "~chi0_4", "nu_mu");
       result.set_BF(BEreq::cb_sd_snel2body->brsnellchar(1), 0.0, "~chi+_1", "mu-");
       result.set_BF(BEreq::cb_sd_snel2body->brsnellchar(2), 0.0, "~chi+_2", "mu-");
-      // cout << "snu_muonl total width: " << result.width_in_GeV << endl;
     }
 
     /// MSSM decays: snubar_muonl
@@ -1570,7 +1538,6 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_sntau2body->brsntau1hcstau(2), 0.0, psn.istau2bar, "H-");
       result.set_BF(BEreq::cb_sd_sntau2body->brsntau1wstau(1), 0.0, psn.istau1bar, "W-");
       result.set_BF(BEreq::cb_sd_sntau2body->brsntau1wstau(2), 0.0, psn.istau2bar, "W-");
-      // cout << "snu_taul total width: " << result.width_in_GeV << endl;
     }
 
     /// MSSM decays: snubar_taul
@@ -1646,7 +1613,6 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_char3body->brglupdb(1), 0.0, "~g", "u", "dbar");
       result.set_BF(BEreq::cb_sd_char3body->brglchsb(1), 0.0, "~g", "c", "sbar");
       result.set_BF(BEreq::cb_sd_char3body->brgltopbb(1), 0.0, "~g", "t", "bbar");
-      // cout << "charginoplus_1 total width: " << result.width_in_GeV << endl;
     }
 
     /// MSSM decays: charginominus_1
@@ -1738,7 +1704,6 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_char3body->brglupdb(2), 0.0, "~g", "u", "dbar");
       result.set_BF(BEreq::cb_sd_char3body->brglchsb(2), 0.0, "~g", "c", "sbar");
       result.set_BF(BEreq::cb_sd_char3body->brgltopbb(2), 0.0, "~g", "t", "bbar");
-      // cout << "charginoplus_2 total width: " << result.width_in_GeV << endl;
     }
   
 
@@ -1845,7 +1810,6 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_neut3body->brglst(1), 0.0, "~g", "sbar", "s");
       result.set_BF(BEreq::cb_sd_neut3body->brgltop(1), 0.0, "~g", "tbar", "t");
       result.set_BF(BEreq::cb_sd_neut3body->brglbot(1), 0.0, "~g", "bbar", "b");
-      cout << "neutralino_1 total width: " << result.width_in_GeV << endl;
     }
   
 
@@ -1963,7 +1927,6 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_neut3body->brglst(2), 0.0, "~g", "sbar", "s");
       result.set_BF(BEreq::cb_sd_neut3body->brgltop(2), 0.0, "~g", "tbar", "t");
       result.set_BF(BEreq::cb_sd_neut3body->brglbot(2), 0.0, "~g", "bbar", "b");
-      // cout << "neutralino_2 total width: " << result.width_in_GeV << endl;
     }
   
 
@@ -2098,7 +2061,6 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_neut3body->brglst(3), 0.0, "~g", "sbar", "s");
       result.set_BF(BEreq::cb_sd_neut3body->brgltop(3), 0.0, "~g", "tbar", "t");
       result.set_BF(BEreq::cb_sd_neut3body->brglbot(3), 0.0, "~g", "bbar", "b");
-      // cout << "neutralino_3 total width: " << result.width_in_GeV << endl;
     }
   
 
@@ -2250,7 +2212,6 @@ namespace Gambit
       result.set_BF(BEreq::cb_sd_neut3body->brglst(4), 0.0, "~g", "sbar", "s");
       result.set_BF(BEreq::cb_sd_neut3body->brgltop(4), 0.0, "~g", "tbar", "t");
       result.set_BF(BEreq::cb_sd_neut3body->brglbot(4), 0.0, "~g", "bbar", "b");
-      // cout << "neutralino_4 total width: " << result.width_in_GeV << endl;
     }
 
 	
@@ -2384,8 +2345,11 @@ namespace Gambit
         decays(psn.isnelbar)= *Dep::snubar_electronl_decay_rates;// Add the ~nu_e decays.
         decays(psn.isnmulbar) = *Dep::snubar_muonl_decay_rates;  // Add the ~nu_mu decays.
         decays(psn.isntaulbar) = *Dep::snubar_taul_decay_rates;  // Add the ~nu_tau decays.
+        
       }
 
+      cout <<  "Full Decay Table as an SLHAea structure: \n" << decays.as_slhaea() << endl;
+ 
     }
 
     /// Get MSSM mass eigenstate pseudonyms for the gauge eigenstates

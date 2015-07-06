@@ -15,21 +15,86 @@
 ///  *********************************************
 
 #include "gambit/Elements/decay_table.hpp"
+#include "gambit/Utils/util_functions.hpp"
 
 namespace Gambit
 {
 
-  /// Create a DecayTable from an SLHAea DECAY block
-  DecayTable::DecayTable(SLHAea::Block& block)
+  /// Create a DecayTable from an SLHAea object containing DECAY blocks
+  DecayTable::DecayTable(SLHAstruct& slha)
   {
-    //do cool things here
+    //tomorrow; also add calculator info (SUSY-HIT <version> via GAMBIT <version>)
   }
 
-  /// Output entire decay table as an SLHAea DECAY block
-  SLHAea::Block DecayTable::as_slhaea_block()
+  /// Output entire decay table as an SLHAea file full of DECAY blocks
+  SLHAstruct DecayTable::as_slhaea(bool include_zero_bfs)
   {
-    //do cool things here
+    SLHAstruct slha;
+    for (auto particle = particles.begin(); particle != particles.end(); ++particle)  
+    {
+      slha.push_back(particle->second.as_slhaea_block(particle->first, include_zero_bfs));
+    }
+    return slha;
   }
+
+  /// Output a decay table entry as an SLHAea DECAY block
+  /// @{
+  SLHAea::Block DecayTable::as_slhaea_block(std::pair<int,int> p, bool z) { return particles[p].as_slhaea_block(Models::ParticleDB().long_name(p), z); }
+  SLHAea::Block DecayTable::as_slhaea_block(str p, bool z)                { return particles[Models::ParticleDB().pdg_pair(p)].as_slhaea_block(p, z); }
+  SLHAea::Block DecayTable::as_slhaea_block(str p, int i, bool z)         { return particles[Models::ParticleDB().pdg_pair(p,i)].as_slhaea_block(Models::ParticleDB().long_name(p,i), z); }
+  SLHAea::Block DecayTable::Entry::as_slhaea_block(str p, bool z)         { return as_slhaea_block(Models::ParticleDB().pdg_pair(p), z); }
+  SLHAea::Block DecayTable::Entry::as_slhaea_block(str p, int i, bool z)  { return as_slhaea_block(Models::ParticleDB().pdg_pair(p,i), z); }
+  SLHAea::Block DecayTable::Entry::as_slhaea_block(std::pair<int,int> p, bool include_zero_bfs)
+  {
+    // Make sure the particle actually exists in the database
+    if (not Models::ParticleDB().has_particle(p))
+    {
+      std::stringstream ss;
+      ss << "GAMBIT particle database does not have particle with (PDG,context) codes (" << p.first << "," << p.second << ").";
+      utils_error().raise(LOCAL_INFO, ss.str()); 
+    }
+
+    // Add the info about the decay in general
+    str long_name = Models::ParticleDB().long_name(p);
+    SLHAea::Block block;   
+    block.push_back("#     PDG         Width (GeV)");
+    SLHAea::Line line;
+    line << "DECAY" << p.first << this->width_in_GeV << "# " + long_name + " decays";
+    block.push_back(line);
+    block.push_back("#          BF              NDA Daughter PDG codes");
+
+    // Add the branching fraction and daughter particle PDG codes for each decay channel
+    for (auto channel = channels.begin(); channel != channels.end(); ++channel)  
+    {
+      // Skip this channel if its BF is NaN (undefined) or zero (on request)
+      double BF = (channel->second).first;
+      if (not Utils::isnan(BF))
+      {
+        if (BF > 0.0 or include_zero_bfs)
+        {
+          auto daughters = channel->first;
+          str comment = "# BF(" + long_name + " --> ";
+          line.clear();
+          // Get the branching fraction and number of particles in the final state
+          line << BF << daughters.size();
+          // Get the PDG code for each daughter particle
+          for (auto daughter = daughters.begin(); daughter != daughters.end(); ++daughter)
+          {
+            line << daughter->first;
+            comment += Models::ParticleDB().long_name(*daughter) + " ";        
+          }
+          comment.replace(comment.size()-1, 1, ")");
+          line << comment;
+          block.push_back(line);
+        }
+      }
+    }
+
+    return block;
+
+  }
+  /// @}
+
 
   /// Get entry in decay table for a given particle, adding the particle to the table if it is absent.
   /// Three access methods: PDG-context integer pair, full particle name, short particle name + index integer.
