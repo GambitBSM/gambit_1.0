@@ -24,41 +24,42 @@ namespace Gambit
 {
         namespace Priors
         {
-                namespace plugin_prior_utils
+                class Plugin : public BasePrior
                 {
-                        inline std::string inputName(const Options& options)
+                private:
+                        std::vector<std::string> param_names;
+                        typedef Scanner::Plugins::Plugin_Interface<double (const std::vector<double> &), void (const std::vector<double> &, std::unordered_map<std::string,double> &)> plugin_type;
+                        mutable plugin_type *plugin;
+                        
+                public:
+                        Plugin(const std::vector<std::string>& params, const Options& options)
                         {
+                                std::string plugin_name;
                                 if (options.hasKey("plugin"))
                                 {
-                                        return options.getValue<std::string>("plugin");
+                                        plugin_name = options.getValue<std::string>("plugin");
                                 }
                                 else
                                 {
                                         scan_err << "Plugin prior:  need to specify plugin with \"plugin\" tag." << scan_end;
-                                        return "";
+                                        plugin_name = "";
                                 }
-                        }
-                }
-                
-                class Plugin : public BasePrior, public Scanner::Plugins::Plugin_Interface<double (const std::vector<double> &), void (const std::vector<double> &, std::unordered_map<std::string,double> &)>
-                {
-                private:
-                        std::vector<std::string> param_names;
-                        
-                public:
-                        Plugin(const std::vector<std::string>& params, const Options& options) : 
-                                Scanner::Plugins::Plugin_Interface<double (const std::vector<double>&), void (const std::vector<double> &, std::unordered_map<std::string,double> &)>("objective", plugin_prior_utils::inputName(options), params, sizeRef())
-                        {
+                                plugin = new plugin_type("objective", plugin_name, params, sizeRef());
                         }
                         
                         void transform(const std::vector<double> &unitpars, std::unordered_map<std::string,double> &outputMap) const
                         {
-                                return const_cast<Plugin *>(this)->Scanner::Plugins::Plugin_Interface<double (const std::vector<double>&), void (const std::vector<double> &, std::unordered_map<std::string,double> &)>::operator()(unitpars, outputMap);
+                                return (*plugin)(unitpars, outputMap);
                         }
                         
                         double operator()(const std::vector<double>& vec) const
                         {
-                                return const_cast<Plugin *>(this)->Scanner::Plugins::Plugin_Interface<double (const std::vector<double>&), void (const std::vector<double> &, std::unordered_map<std::string,double> &)>::operator()(vec);
+                                return (*plugin)(vec);
+                        }
+                        
+                        ~Plugin()
+                        {
+                                delete plugin;
                         }
                 };
                 
