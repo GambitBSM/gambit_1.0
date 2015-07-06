@@ -39,8 +39,8 @@ namespace Gambit
       public:
         /// Initialize SingletDM object (branching ratios etc)
         SingletDM(
-            TH_ProcessCatalog* catalog,
-            std::map<std::string, Funk::Funk> & arg_f_vs_mass)
+            TH_ProcessCatalog* const catalog,
+            const std::map<std::string, Funk::Funk> & arg_f_vs_mass)
         {
           mh   = catalog->getParticleProperty("h0_1").mass;
           // FIXME: This should not be hard-coded
