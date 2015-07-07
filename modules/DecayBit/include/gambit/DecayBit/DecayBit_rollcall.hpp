@@ -56,7 +56,7 @@ START_MODULE
 
     #define FUNCTION SM_Higgs_decays
     START_FUNCTION(DecayTable::Entry)
-    //DEPENDENCY(SM_Spectrum, const Spectrum*)
+    DEPENDENCY(SM_spectrum, const Spectrum*)
     #undef FUNCTION
 
     #define FUNCTION MSSM_h0_1_decays
@@ -78,7 +78,7 @@ START_MODULE
 
     #define FUNCTION SS_Higgs_decays
     START_FUNCTION(DecayTable::Entry)
-    //DEPENDENCY(SS_Spectrum, const Spectrum*) 
+    DEPENDENCY(SingletDM_spectrum, const Spectrum*) 
     DEPENDENCY(Higgs_decay_rates, DecayTable::Entry)
     ALLOW_MODEL(SingletDM)
     #undef FUNCTION
