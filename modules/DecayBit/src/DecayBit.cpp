@@ -27,6 +27,7 @@
 #include "gambit/Elements/virtual_higgs.hpp"
 #include "gambit/DecayBit/DecayBit_rollcall.hpp"
 #include "gambit/DecayBit/decay_utils.hpp"
+#include "gambit/Utils/version.hpp"
 
 #include <string>
 #include <map>
@@ -47,6 +48,8 @@ namespace Gambit
     /// SM decays: W+/W-
     void W_plus_decays (DecayTable::Entry& result) 
     {
+      result.calculator = "GAMBIT::DecayBit";
+      result.calculator_version = version;
       result.width_in_GeV = 2.08;                    
       result.positive_error = 4.0e-02;
       result.negative_error = 4.0e-02;
@@ -64,6 +67,8 @@ namespace Gambit
     /// SM decays: Z
     void Z_decays (DecayTable::Entry& result) 
     {
+      result.calculator = "GAMBIT::DecayBit";
+      result.calculator_version = version;
       result.width_in_GeV = 2.4952;                    
       result.positive_error = 2.3e-03;
       result.negative_error = 2.3e-03;
@@ -77,6 +82,8 @@ namespace Gambit
     /// SM decays: t
     void t_decays (DecayTable::Entry& result) 
     {
+      result.calculator = "GAMBIT::DecayBit";
+      result.calculator_version = version;
       result.width_in_GeV = 2.0;                    
       result.positive_error = 5.0e-01;
       result.negative_error = 5.0e-01;
@@ -92,6 +99,8 @@ namespace Gambit
     /// SM decays: mu+
     void mu_plus_decays (DecayTable::Entry& result) 
     {
+      result.calculator = "GAMBIT::DecayBit";
+      result.calculator_version = version;
       result.width_in_GeV = 2.9959847e-19;                    
       result.positive_error = 3.0e-25;
       result.negative_error = 3.0e-25;
@@ -107,6 +116,8 @@ namespace Gambit
     /// SM decays: tau+
     void tau_plus_decays (DecayTable::Entry& result) 
     {
+      result.calculator = "GAMBIT::DecayBit";
+      result.calculator_version = version;
       result.width_in_GeV = 2.267E-12;                    
       result.positive_error = 4.0e-15;
       result.negative_error = 4.0e-15;
@@ -129,6 +140,8 @@ namespace Gambit
     /// SM decays: pi0
     void pi_0_decays (DecayTable::Entry& result) 
     {
+      result.calculator = "GAMBIT::DecayBit";
+      result.calculator_version = version;
       result.width_in_GeV = 7.73e-09;                    
       result.positive_error = 1.7e-10;
       result.negative_error = 1.7e-10;
@@ -141,6 +154,8 @@ namespace Gambit
     /// SM decays: pi+
     void pi_plus_decays (DecayTable::Entry& result) 
     {
+      result.calculator = "GAMBIT::DecayBit";
+      result.calculator_version = version;
       result.width_in_GeV = 2.5284e-17;                    
       result.positive_error = 5.0e-21;
       result.negative_error = 5.0e-21;
@@ -157,6 +172,8 @@ namespace Gambit
     /// SM decays: eta
     void eta_decays (DecayTable::Entry& result) 
     {
+      result.calculator = "GAMBIT::DecayBit";
+      result.calculator_version = version;
       result.width_in_GeV = 1.31e-06;                    
       result.positive_error = 5.0e-08;
       result.negative_error = 5.0e-08;
@@ -166,6 +183,8 @@ namespace Gambit
     /// SM decays: rho0
     void rho_0_decays (DecayTable::Entry& result) 
     {
+      result.calculator = "GAMBIT::DecayBit";
+      result.calculator_version = version;
       result.width_in_GeV = 1.491e-01;                    
       result.positive_error = 8.0e-04;
       result.negative_error = 8.0e-04;
@@ -175,6 +194,8 @@ namespace Gambit
     /// SM decays: rho+
     void rho_plus_decays (DecayTable::Entry& result) 
     {
+      result.calculator = "GAMBIT::DecayBit";
+      result.calculator_version = version;
       result.width_in_GeV = 1.491e-01;                    
       result.positive_error = 8.0e-04;
       result.negative_error = 8.0e-04;
@@ -190,6 +211,8 @@ namespace Gambit
     /// SM decays: omega
     void omega_decays (DecayTable::Entry& result) 
     {
+      result.calculator = "GAMBIT::DecayBit";
+      result.calculator_version = version;
       result.width_in_GeV = 8.49e-03;                    
       result.positive_error = 8.0e-05;
       result.negative_error = 8.0e-05;
@@ -200,6 +223,8 @@ namespace Gambit
     void SM_Higgs_decays (DecayTable::Entry& result)
     {
       double mh = 125.0; // *Dep::SM_Spectrum->get_Pole_Mass("h0_1"); //FIXME
+      result.calculator = "GAMBIT::DecayBit";
+      result.calculator_version = version;
       result.width_in_GeV = virtual_SMHiggs_widths("Gamma",mh);   
       result.set_BF(virtual_SMHiggs_widths("bb",mh), 0.0, "b", "bbar");
       result.set_BF(virtual_SMHiggs_widths("tautau",mh), 0.0, "tau+", "tau-");
@@ -221,6 +246,10 @@ namespace Gambit
     void FH_t_decays (DecayTable::Entry& result) 
     {
       fh_Couplings FH_input = *Pipes::FH_t_decays::Dep::FH_Couplings;
+      result.calculator = FH_input.calculator;
+      result.calculator_version = FH_input.calculator_version;
+      result.calculator = FH_input.calculator;
+      result.calculator_version = FH_input.calculator_version;
       result.width_in_GeV = 2.0;                    
       result.positive_error = 5.0e-01;
       result.negative_error = 5.0e-01;
@@ -233,6 +262,9 @@ namespace Gambit
     {
       using namespace Pipes::MSSM_h0_1_decays;
       mass_es_pseudonyms psn = *(Dep::SLHA_pseudonyms);
+
+      result.calculator = BEreq::cb_widthhl_hdec.origin();
+      result.calculator_version = BEreq::cb_widthhl_hdec.version();
 
       result.width_in_GeV = BEreq::cb_widthhl_hdec->hlwdth;  
       result.set_BF(BEreq::cb_widthhl_hdec->hlbrb, 0.0, "b", "bbar");
@@ -300,6 +332,8 @@ namespace Gambit
       
       // unpack FeynHiggs Couplings
       fh_Couplings FH_input = *Dep::FH_Couplings;
+      result.calculator = FH_input.calculator;
+      result.calculator_version = FH_input.calculator_version;
       // Specify that we're talking about h0_1
       int iH = 0;     
       // Set the total Higgs width
@@ -406,6 +440,9 @@ namespace Gambit
       using namespace Pipes::h0_2_decays;
       mass_es_pseudonyms psn = *(Dep::SLHA_pseudonyms);
 
+      result.calculator = BEreq::cb_widthhh_hdec.origin();
+      result.calculator_version = BEreq::cb_widthhh_hdec.version();
+
       result.width_in_GeV = BEreq::cb_widthhh_hdec->hhwdth;
       result.set_BF(BEreq::cb_widthhh_hdec->hhbrb, 0.0, "b", "bbar");
       result.set_BF(BEreq::cb_widthhh_hdec->hhbrl, 0.0, "tau+", "tau-");
@@ -476,6 +513,8 @@ namespace Gambit
 
       // unpack FeynHiggs Couplings
       fh_Couplings FH_input = *Dep::FH_Couplings;
+      result.calculator = FH_input.calculator;
+      result.calculator_version = FH_input.calculator_version;
       // Specify that we're talking about h0_2
       int iH = 1;
       // Set the total second Higgs width
@@ -582,6 +621,9 @@ namespace Gambit
       using namespace Pipes::A0_decays;
       mass_es_pseudonyms psn = *(Dep::SLHA_pseudonyms);
 
+      result.calculator = BEreq::cb_widtha_hdec.origin();
+      result.calculator_version = BEreq::cb_widtha_hdec.version();
+
       result.width_in_GeV = BEreq::cb_widtha_hdec->awdth;
       result.set_BF(BEreq::cb_widtha_hdec->abrb, 0.0, "b", "bbar");
       result.set_BF(BEreq::cb_widtha_hdec->abrl, 0.0, "tau+", "tau-");
@@ -632,6 +674,8 @@ namespace Gambit
 
       // unpack FeynHiggs Couplings
       fh_Couplings FH_input = *Dep::FH_Couplings;
+      result.calculator = FH_input.calculator;
+      result.calculator_version = FH_input.calculator_version;
       // Specify that we're talking about A0
       int iH = 2;
       // Set the total A0 Higgs width
@@ -738,6 +782,9 @@ namespace Gambit
       using namespace Pipes::Hplus_decays;
       mass_es_pseudonyms psn = *(Dep::SLHA_pseudonyms);
      
+      result.calculator = BEreq::cb_widthhc_hdec.origin();
+      result.calculator_version = BEreq::cb_widthhc_hdec.version();
+
       result.width_in_GeV = BEreq::cb_widthhc_hdec->hcwdth;
       result.set_BF(BEreq::cb_widthhc_hdec->hcbrb, 0.0, "c", "bbar");
       result.set_BF(BEreq::cb_widthhc_hdec->hcbrl, 0.0, "tau+", "nu_tau");
@@ -781,6 +828,8 @@ namespace Gambit
 
       // unpack FeynHiggs Couplings
       fh_Couplings FH_input = *Dep::FH_Couplings;
+      result.calculator = FH_input.calculator;
+      result.calculator_version = FH_input.calculator_version;
       // Specify that we're talking about H+
       int iH = 3;
       // Set the total charged Higgs width
@@ -875,6 +924,9 @@ namespace Gambit
       using namespace Pipes::gluino_decays;
       mass_es_pseudonyms psn = *(Dep::SLHA_pseudonyms);
 
+      result.calculator = BEreq::cb_sd_gluiwidth.origin();
+      result.calculator_version = BEreq::cb_sd_gluiwidth.version();
+
       result.width_in_GeV = BEreq::cb_sd_gluiwidth->gluitot;
       result.set_BF(BEreq::cb_sd_glui2body->brgsdownl, 0.0, psn.isdl, "dbar");
       result.set_BF(BEreq::cb_sd_glui2body->brgsdownl, 0.0, psn.isdlbar, "d");
@@ -952,6 +1004,9 @@ namespace Gambit
       using namespace Pipes::stop_1_decays;
       mass_es_pseudonyms psn = *(Dep::SLHA_pseudonyms);
      
+      result.calculator = BEreq::cb_sd_stopwidth.origin();
+      result.calculator_version = BEreq::cb_sd_stopwidth.version();
+
       result.width_in_GeV = BEreq::cb_sd_stopwidth->stoptot(1);
       result.set_BF(BEreq::cb_sd_stop2body->brst1neutt(1), 0.0, "~chi0_1", "t");
       result.set_BF(BEreq::cb_sd_stop2body->brst1neutt(2), 0.0, "~chi0_2", "t");
@@ -1011,6 +1066,9 @@ namespace Gambit
     {
       using namespace Pipes::stop_2_decays;
       mass_es_pseudonyms psn = *(Dep::SLHA_pseudonyms);
+
+      result.calculator = BEreq::cb_sd_stopwidth.origin();
+      result.calculator_version = BEreq::cb_sd_stopwidth.version();
 
       result.width_in_GeV = BEreq::cb_sd_stopwidth->stoptot(2);
       result.set_BF(BEreq::cb_sd_stop2body->brst2neutt(1), 0.0, "~chi0_1", "t");
@@ -1086,6 +1144,9 @@ namespace Gambit
       using namespace Pipes::sbottom_1_decays;
       mass_es_pseudonyms psn = *(Dep::SLHA_pseudonyms);
 
+      result.calculator = BEreq::cb_sd_sbotwidth.origin();
+      result.calculator_version = BEreq::cb_sd_sbotwidth.version();
+
       result.width_in_GeV = BEreq::cb_sd_sbotwidth->sbottot(1);
       result.set_BF(BEreq::cb_sd_sbot2body->brsb1neutt(1), 0.0, "~chi0_1", "b");
       result.set_BF(BEreq::cb_sd_sbot2body->brsb1neutt(2), 0.0, "~chi0_2", "b");
@@ -1135,6 +1196,9 @@ namespace Gambit
       using namespace Pipes::sbottom_2_decays;
       mass_es_pseudonyms psn = *(Dep::SLHA_pseudonyms);
      
+      result.calculator = BEreq::cb_sd_sbotwidth.origin();
+      result.calculator_version = BEreq::cb_sd_sbotwidth.version();
+
       result.width_in_GeV = BEreq::cb_sd_sbotwidth->sbottot(2);
       result.set_BF(BEreq::cb_sd_sbot2body->brsb2neutt(1), 0.0, "~chi0_1", "b");
       result.set_BF(BEreq::cb_sd_sbot2body->brsb2neutt(2), 0.0, "~chi0_2", "b");
@@ -1199,6 +1263,10 @@ namespace Gambit
     void sup_l_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::sup_l_decays;
+
+      result.calculator = BEreq::cb_sd_supwidth.origin();
+      result.calculator_version = BEreq::cb_sd_supwidth.version();
+
       result.width_in_GeV = BEreq::cb_sd_supwidth->supltot2;
       result.set_BF(BEreq::cb_sd_sup2body->brsuplnup(1), 0.0, "~chi0_1", "u");
       result.set_BF(BEreq::cb_sd_sup2body->brsuplnup(2), 0.0, "~chi0_2", "u");
@@ -1219,6 +1287,8 @@ namespace Gambit
     void sup_r_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::sup_r_decays;
+      result.calculator = BEreq::cb_sd_supwidth.origin();
+      result.calculator_version = BEreq::cb_sd_supwidth.version();
       result.width_in_GeV = BEreq::cb_sd_supwidth->suprtot2;
       result.set_BF(BEreq::cb_sd_sup2body->brsuprnup(1), 0.0, "~chi0_1", "u");
       result.set_BF(BEreq::cb_sd_sup2body->brsuprnup(2), 0.0, "~chi0_2", "u");
@@ -1239,6 +1309,8 @@ namespace Gambit
     void sdown_l_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::sdown_l_decays;
+      result.calculator = BEreq::cb_sd_sdownwidth.origin();
+      result.calculator_version = BEreq::cb_sd_sdownwidth.version();
       result.width_in_GeV = BEreq::cb_sd_sdownwidth->sdowltot2;
       result.set_BF(BEreq::cb_sd_sdown2body->brsdowlndow(1), 0.0, "~chi0_1", "d");
       result.set_BF(BEreq::cb_sd_sdown2body->brsdowlndow(2), 0.0, "~chi0_2", "d");
@@ -1259,6 +1331,8 @@ namespace Gambit
     void sdown_r_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::sdown_r_decays;
+      result.calculator = BEreq::cb_sd_sdownwidth.origin();
+      result.calculator_version = BEreq::cb_sd_sdownwidth.version();
       result.width_in_GeV = BEreq::cb_sd_sdownwidth->sdowrtot2;
       result.set_BF(BEreq::cb_sd_sdown2body->brsdowrndow(1), 0.0, "~chi0_1", "d");
       result.set_BF(BEreq::cb_sd_sdown2body->brsdowrndow(2), 0.0, "~chi0_2", "d");
@@ -1279,6 +1353,8 @@ namespace Gambit
     void scharm_l_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::scharm_l_decays;
+      result.calculator = BEreq::cb_sd_supwidth.origin();
+      result.calculator_version = BEreq::cb_sd_supwidth.version();
       result.width_in_GeV = BEreq::cb_sd_supwidth->supltot2;
       result.set_BF(BEreq::cb_sd_sup2body->brsuplnup(1), 0.0, "~chi0_1", "c");
       result.set_BF(BEreq::cb_sd_sup2body->brsuplnup(2), 0.0, "~chi0_2", "c");
@@ -1299,6 +1375,8 @@ namespace Gambit
     void scharm_r_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::scharm_r_decays;
+      result.calculator = BEreq::cb_sd_supwidth.origin();
+      result.calculator_version = BEreq::cb_sd_supwidth.version();
       result.width_in_GeV = BEreq::cb_sd_supwidth->suprtot2;
       result.set_BF(BEreq::cb_sd_sup2body->brsuprnup(1), 0.0, "~chi0_1", "c");
       result.set_BF(BEreq::cb_sd_sup2body->brsuprnup(2), 0.0, "~chi0_2", "c");
@@ -1319,6 +1397,8 @@ namespace Gambit
     void sstrange_l_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::sstrange_l_decays;
+      result.calculator = BEreq::cb_sd_sdownwidth.origin();
+      result.calculator_version = BEreq::cb_sd_sdownwidth.version();
       result.width_in_GeV = BEreq::cb_sd_sdownwidth->sdowltot2;
       result.set_BF(BEreq::cb_sd_sdown2body->brsdowlndow(1), 0.0, "~chi0_1", "s");
       result.set_BF(BEreq::cb_sd_sdown2body->brsdowlndow(2), 0.0, "~chi0_2", "s");
@@ -1339,6 +1419,8 @@ namespace Gambit
     void sstrange_r_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::sstrange_r_decays;
+      result.calculator = BEreq::cb_sd_sdownwidth.origin();
+      result.calculator_version = BEreq::cb_sd_sdownwidth.version();
       result.width_in_GeV = BEreq::cb_sd_sdownwidth->sdowrtot2;
       result.set_BF(BEreq::cb_sd_sdown2body->brsdowrndow(1), 0.0, "~chi0_1", "s");
       result.set_BF(BEreq::cb_sd_sdown2body->brsdowrndow(2), 0.0, "~chi0_2", "s");
@@ -1359,6 +1441,8 @@ namespace Gambit
     void selectron_l_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::selectron_l_decays;
+      result.calculator = BEreq::cb_sd_selwidth.origin();
+      result.calculator_version = BEreq::cb_sd_selwidth.version();
       result.width_in_GeV = BEreq::cb_sd_selwidth->selltot2;
       result.set_BF(BEreq::cb_sd_sel2body->brsellneute(1), 0.0, "~chi0_1", "e-");
       result.set_BF(BEreq::cb_sd_sel2body->brsellneute(2), 0.0, "~chi0_2", "e-");
@@ -1378,6 +1462,8 @@ namespace Gambit
     void selectron_r_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::selectron_r_decays;
+      result.calculator = BEreq::cb_sd_selwidth.origin();
+      result.calculator_version = BEreq::cb_sd_selwidth.version();
       result.width_in_GeV = BEreq::cb_sd_selwidth->selrtot2;
       result.set_BF(BEreq::cb_sd_sel2body->brselrneute(1), 0.0, "~chi0_1", "e-");
       result.set_BF(BEreq::cb_sd_sel2body->brselrneute(2), 0.0, "~chi0_2", "e-");
@@ -1397,6 +1483,8 @@ namespace Gambit
     void smuon_l_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::smuon_l_decays;
+      result.calculator = BEreq::cb_sd_selwidth.origin();
+      result.calculator_version = BEreq::cb_sd_selwidth.version();
       result.width_in_GeV = BEreq::cb_sd_selwidth->selltot2;
       result.set_BF(BEreq::cb_sd_sel2body->brsellneute(1), 0.0, "~chi0_1", "mu-");
       result.set_BF(BEreq::cb_sd_sel2body->brsellneute(2), 0.0, "~chi0_2", "mu-");
@@ -1416,6 +1504,8 @@ namespace Gambit
     void smuon_r_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::smuon_r_decays;
+      result.calculator = BEreq::cb_sd_selwidth.origin();
+      result.calculator_version = BEreq::cb_sd_selwidth.version();
       result.width_in_GeV = BEreq::cb_sd_selwidth->selrtot2;
       result.set_BF(BEreq::cb_sd_sel2body->brselrneute(1), 0.0, "~chi0_1", "mu-");
       result.set_BF(BEreq::cb_sd_sel2body->brselrneute(2), 0.0, "~chi0_2", "mu-");
@@ -1437,6 +1527,9 @@ namespace Gambit
       using namespace Pipes::stau_1_decays;
       mass_es_pseudonyms psn = *(Dep::SLHA_pseudonyms);
       
+      result.calculator = BEreq::cb_sd_stauwidth.origin();
+      result.calculator_version = BEreq::cb_sd_stauwidth.version();
+
       result.width_in_GeV = BEreq::cb_sd_stauwidth->stau1tot2;
       result.set_BF(BEreq::cb_sd_stau2body->brstau1neut(1), 0.0, "~chi0_1", "tau-");
       result.set_BF(BEreq::cb_sd_stau2body->brstau1neut(2), 0.0, "~chi0_2", "tau-");
@@ -1461,6 +1554,9 @@ namespace Gambit
       using namespace Pipes::stau_2_decays;
       mass_es_pseudonyms psn = *(Dep::SLHA_pseudonyms);
       
+      result.calculator = BEreq::cb_sd_stauwidth.origin();
+      result.calculator_version = BEreq::cb_sd_stauwidth.version();
+
       result.width_in_GeV = BEreq::cb_sd_stauwidth->stau2tot2;
       result.set_BF(BEreq::cb_sd_stau2body->brstau2neut(1), 0.0, "~chi0_1", "tau-");
       result.set_BF(BEreq::cb_sd_stau2body->brstau2neut(2), 0.0, "~chi0_2", "tau-");
@@ -1486,6 +1582,8 @@ namespace Gambit
     void snu_electronl_decays (DecayTable::Entry& result) 
     {      
       using namespace Pipes::snu_electronl_decays;
+      result.calculator = BEreq::cb_sd_snelwidth.origin();
+      result.calculator_version = BEreq::cb_sd_snelwidth.version();
       result.width_in_GeV = BEreq::cb_sd_snelwidth->sneltot2;
       result.set_BF(BEreq::cb_sd_snel2body->brsnellneut(1), 0.0, "~chi0_1", "nu_e");
       result.set_BF(BEreq::cb_sd_snel2body->brsnellneut(2), 0.0, "~chi0_2", "nu_e");
@@ -1505,6 +1603,8 @@ namespace Gambit
     void snu_muonl_decays (DecayTable::Entry& result) 
     {
       using namespace Pipes::snu_muonl_decays;
+      result.calculator = BEreq::cb_sd_snelwidth.origin();
+      result.calculator_version = BEreq::cb_sd_snelwidth.version();
       result.width_in_GeV = BEreq::cb_sd_snelwidth->sneltot2;
       result.set_BF(BEreq::cb_sd_snel2body->brsnellneut(1), 0.0, "~chi0_1", "nu_mu");
       result.set_BF(BEreq::cb_sd_snel2body->brsnellneut(2), 0.0, "~chi0_2", "nu_mu");
@@ -1526,6 +1626,9 @@ namespace Gambit
     {
       using namespace Pipes::snu_taul_decays;
       mass_es_pseudonyms psn = *(Dep::SLHA_pseudonyms);
+
+      result.calculator = BEreq::cb_sd_sntauwidth.origin();
+      result.calculator_version = BEreq::cb_sd_sntauwidth.version();
 
       result.width_in_GeV = BEreq::cb_sd_sntauwidth->sntautot2;
       result.set_BF(BEreq::cb_sd_sntau2body->brsntauneut(1), 0.0, "~chi0_1", "nu_tau");
@@ -1551,6 +1654,9 @@ namespace Gambit
     {
       using namespace Pipes::charginoplus_1_decays;
       mass_es_pseudonyms psn = *(Dep::SLHA_pseudonyms);
+
+      result.calculator = BEreq::cb_sd_charwidth.origin();
+      result.calculator_version = BEreq::cb_sd_charwidth.version();
 
       result.width_in_GeV = BEreq::cb_sd_charwidth->chartot(1);
       result.set_BF(BEreq::cb_sd_char2body->brcharsupl(1), 0.0, psn.isul, "dbar");
@@ -1627,6 +1733,9 @@ namespace Gambit
       using namespace Pipes::charginoplus_2_decays;
       mass_es_pseudonyms psn = *(Dep::SLHA_pseudonyms);
       
+      result.calculator = BEreq::cb_sd_charwidth.origin();
+      result.calculator_version = BEreq::cb_sd_charwidth.version();
+
       result.width_in_GeV = BEreq::cb_sd_charwidth->chartot(2);
       result.set_BF(BEreq::cb_sd_char2body->brcharsupl(2), 0.0, psn.isul, "dbar");
       result.set_BF(BEreq::cb_sd_char2body->brcharsupr(2), 0.0, psn.isur, "dbar");
@@ -1718,6 +1827,9 @@ namespace Gambit
     {
       using namespace Pipes::neutralino_1_decays;
       mass_es_pseudonyms psn = *(Dep::SLHA_pseudonyms);
+
+      result.calculator = BEreq::cb_sd_neutwidth.origin();
+      result.calculator_version = BEreq::cb_sd_neutwidth.version();
 
       result.width_in_GeV = BEreq::cb_sd_neutwidth->neuttot(1);
       result.set_BF(BEreq::cb_sd_neut2body->brneutwchar(1,1), 0.0, "~chi+_1", "W-");
@@ -1819,6 +1931,9 @@ namespace Gambit
       using namespace Pipes::neutralino_2_decays;
       mass_es_pseudonyms psn = *(Dep::SLHA_pseudonyms);
       
+      result.calculator = BEreq::cb_sd_neutwidth.origin();
+      result.calculator_version = BEreq::cb_sd_neutwidth.version();
+
       result.width_in_GeV = BEreq::cb_sd_neutwidth->neuttot(2);
       result.set_BF(BEreq::cb_sd_neut2body->brneutzneut(2,1), 0.0, "~chi0_1", "Z0");
       result.set_BF(BEreq::cb_sd_neut2body->brneutwchar(2,1), 0.0, "~chi+_1", "W-");
@@ -1936,6 +2051,9 @@ namespace Gambit
       using namespace Pipes::neutralino_3_decays;
       mass_es_pseudonyms psn = *(Dep::SLHA_pseudonyms);
       
+      result.calculator = BEreq::cb_sd_neutwidth.origin();
+      result.calculator_version = BEreq::cb_sd_neutwidth.version();
+
       result.width_in_GeV = BEreq::cb_sd_neutwidth->neuttot(3);
       result.set_BF(BEreq::cb_sd_neut2body->brneutzneut(3,1), 0.0, "~chi0_1", "Z0");
       result.set_BF(BEreq::cb_sd_neut2body->brneutzneut(3,2), 0.0, "~chi0_2", "Z0");
@@ -2070,6 +2188,9 @@ namespace Gambit
       using namespace Pipes::neutralino_4_decays;
       mass_es_pseudonyms psn = *(Dep::SLHA_pseudonyms);
      
+      result.calculator = BEreq::cb_sd_neutwidth.origin();
+      result.calculator_version = BEreq::cb_sd_neutwidth.version();
+
       result.width_in_GeV = BEreq::cb_sd_neutwidth->neuttot(4);
       result.set_BF(BEreq::cb_sd_neut2body->brneutzneut(4,1), 0.0, "~chi0_1", "Z0");
       result.set_BF(BEreq::cb_sd_neut2body->brneutzneut(4,2), 0.0, "~chi0_2", "Z0");
@@ -2241,6 +2362,9 @@ namespace Gambit
       {                                     
         result.channels[it->first] = std::pair<double, double>(it->second.first*wscaling, it->second.second*wscaling);
       }
+      // Log calculator
+      result.calculator = "GAMBIT::DecayBit";
+      result.calculator_version = version;
     }
   
 
@@ -2348,10 +2472,30 @@ namespace Gambit
         
       }
 
-      cout <<  "Full Decay Table as an SLHAea structure: \n" << decays.as_slhaea() << endl;
- 
+      cout << "Full Decay Table as an SLHAea structure: \n" << decays.as_slhaea() << endl;
+  
     }
 
+    /// Read an SLHA file in and use it to create a GAMBIT DecayTable 
+    void all_decays_from_SLHA(DecayTable& decays)
+    {
+      using namespace Pipes::all_decays_from_SLHA;
+      if (not runOptions->hasKey("SLHA_decay_filenames"))
+      {
+        DecayBit_error().raise(LOCAL_INFO, "Option \"SLHA_decay_filenames\" is required to use this function.");
+      }
+      static unsigned int counter = 0;
+      std::vector<str> filenames = runOptions->getValue<std::vector<str> >("SLHA_decay_filenames");
+      logger() << "Reading SLHA file: " << filenames[counter] << std::endl;
+      std::ifstream ifs(filenames[counter]);
+      if(!ifs.good()) backend_error().raise(LOCAL_INFO, "SLHA file not found.");
+      SLHAstruct slha(ifs);
+      ifs.close();
+      counter++;
+      if (counter >= filenames.size()) counter = 0;
+      decays = DecayTable(slha);
+    }
+ 
     /// Get MSSM mass eigenstate pseudonyms for the gauge eigenstates
     void get_mass_es_pseudonyms(mass_es_pseudonyms& result)
     {

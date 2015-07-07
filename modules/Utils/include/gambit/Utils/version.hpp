@@ -26,7 +26,7 @@ namespace Gambit
   const int minor =     1; // 0 to 99
   const int revision =  0; // 0 to 99
   const int int_version =  10000*major + 100*minor + revision;
-  str get_version() { std::ostringstream ss; ss << major << "." << minor << "." << revision; return ss.str(); }
+  inline str get_version() { std::ostringstream ss; ss << major << "." << minor << "." << revision; return ss.str(); }
   const str version = get_version();
 
 }

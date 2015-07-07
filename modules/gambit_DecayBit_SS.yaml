@@ -39,7 +39,10 @@ ObsLikes:
     type:         DecayTable
 
 Rules:
-  # none
+
+  - capability: decay_rates
+    function: all_decays
+
       
             
 ##############################

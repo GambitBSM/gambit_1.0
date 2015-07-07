@@ -191,6 +191,9 @@ Rules:
     function: DD_couplings_SingletDM   # couplings for singlet DM model
     options:
         rescale_couplings: 1  # For unit tests: rescale couplings
+  # Decays
+  - capability: decay_rates
+    function: all_decays
   # Miscellaneous ----------------------
   - capability: MSSMspectrum
     function: getMSSMspectrum  # For unit test: reads in spectrum from SLHA file
@@ -204,6 +207,7 @@ Rules:
             #- DarkBit/slha-benchmarks/14-12-2014_joakim/JE67B_006998.slha
             #- DarkBit/slha-benchmarks/14-12-2014_joakim/JE67D_001840.slha
             #- DarkBit/slha-benchmarks/14-12-2014_joakim/JE87O_006600.slha
+
 
 #########################
 # Logging setup
