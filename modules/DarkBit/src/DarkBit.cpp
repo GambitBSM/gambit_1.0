@@ -56,9 +56,10 @@ namespace Gambit {
     }
 
     /// Retrieve the DM mass in GeV for the scalar singlet model (GeV)
+    // FIXME can this be deleted now?
     void mwimp_SingletDM(double &result) 
     { 
-      result = *Pipes::mwimp_SingletDM::Param["mass"]; 
+      result = *Pipes::mwimp_SingletDM::Param["mS"]; 
     }
 
     /*! \brief Retrieve the total thermally-averaged annihilation cross-section
