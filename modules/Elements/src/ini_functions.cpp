@@ -519,36 +519,7 @@ namespace Gambit
        return familystate_label;
   
     }
-    
-    ///map to obtain left_right gauge_pairs from state info
-    /// helps us reuse other routiones with string arguments 
-    std::map<p_int_string, pair_strings>  init_type_family_to_gauge_states()
-    {
-       std::map<p_int_string, pair_strings> type_family_to_gauge_states;
       
-       type_family_to_gauge_states[std::make_pair(3,"~u")] 
-          = std::make_pair("~t_L","~t_R");
-       type_family_to_gauge_states[std::make_pair(3,"~d")] 
-          = std::make_pair("~b_L","~b_R");
-       type_family_to_gauge_states[std::make_pair(3,"~e")] 
-          = std::make_pair("~tau_L","~tau_R");
-       type_family_to_gauge_states[std::make_pair(2,"~u")] 
-          = std::make_pair("~c_L","~c_R");
-       type_family_to_gauge_states[std::make_pair(2,"~d")] 
-          = std::make_pair("~s_L","~s_R");
-       type_family_to_gauge_states[std::make_pair(2,"~e")] 
-          = std::make_pair("~mu_L","~mu_R");
-       type_family_to_gauge_states[std::make_pair(1,"~u")] 
-          = std::make_pair("~u_L","~u_R");
-       type_family_to_gauge_states[std::make_pair(1,"~d")] 
-          = std::make_pair("~d_L","~d_R");
-       type_family_to_gauge_states[std::make_pair(1,"~e")] 
-          = std::make_pair("~e_L","~e_R"); 
-       //no sneutrino gauges pairs as no right sneutrino
-       return type_family_to_gauge_states;
-  
-    }    
-  
     /// maps directly from family string to left_right gauge_pairs
     /// helps us reuse other routines that take string arguments 
     std::map<str, pair_strings> init_family_state_to_gauge_state()
@@ -661,6 +632,35 @@ namespace Gambit
        return type_to_vec_of_gauge_es;
   
     }
+
+    ///map to obtain left_right gauge_pairs from state info
+    /// helps us reuse other routiones with string arguments 
+    std::map<p_int_string, pair_strings>  init_type_family_to_gauge_states()
+    {
+       std::map<p_int_string, pair_strings> type_family_to_gauge_states;
+      
+       type_family_to_gauge_states[std::make_pair(3,"~u")] 
+          = std::make_pair("~t_L","~t_R");
+       type_family_to_gauge_states[std::make_pair(3,"~d")] 
+          = std::make_pair("~b_L","~b_R");
+       type_family_to_gauge_states[std::make_pair(3,"~e")] 
+          = std::make_pair("~tau_L","~tau_R");
+       type_family_to_gauge_states[std::make_pair(2,"~u")] 
+          = std::make_pair("~c_L","~c_R");
+       type_family_to_gauge_states[std::make_pair(2,"~d")] 
+          = std::make_pair("~s_L","~s_R");
+       type_family_to_gauge_states[std::make_pair(2,"~e")] 
+          = std::make_pair("~mu_L","~mu_R");
+       type_family_to_gauge_states[std::make_pair(1,"~u")] 
+          = std::make_pair("~u_L","~u_R");
+       type_family_to_gauge_states[std::make_pair(1,"~d")] 
+          = std::make_pair("~d_L","~d_R");
+       type_family_to_gauge_states[std::make_pair(1,"~e")] 
+          = std::make_pair("~e_L","~e_R"); 
+       //no sneutrino gauges pairs as no right sneutrino
+       return type_family_to_gauge_states;
+  
+    }    
 
   }
 
