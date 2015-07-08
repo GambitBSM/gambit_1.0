@@ -425,6 +425,12 @@ Rules:
             #- DarkBit/slha-benchmarks/14-12-2014_joakim/JE67D_001840.slha
             #- DarkBit/slha-benchmarks/14-12-2014_joakim/JE87O_006600.slha
 
+  # Decays
+  - capability: decay_rates
+    function: all_decays
+
+
+
 #########################
 # Logging setup
 #########################

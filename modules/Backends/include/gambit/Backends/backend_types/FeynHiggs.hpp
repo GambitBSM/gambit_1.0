@@ -143,6 +143,8 @@ namespace Gambit
     fh_complex couplings_sm[231];
     fh_real gammas[978];
     fh_real gammas_sm[250];
+    str calculator;
+    str calculator_version;
   };
 
   // Container for FeynHiggs Higgs prod xsecs (from FHHiggsProd backend function)

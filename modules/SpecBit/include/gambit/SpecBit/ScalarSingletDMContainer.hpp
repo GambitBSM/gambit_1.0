@@ -32,8 +32,9 @@ namespace Gambit
       struct SingletDMModel : public SMHiggsModel
       {
          double SingletPoleMass;
-
+         double SingletLambda;
          double get_SingletPoleMass() const { return SingletPoleMass; } 
+         double get_lambda() const { return SingletLambda; } 
       };
 
       // Needed for typename aliases in Spec and MapTypes classes
@@ -83,7 +84,7 @@ namespace Gambit
             /// Definitions of map fillers
             static void derived_fill_mass_map(MT::fmap& in_map) 
             {
-               /* nothing so far */
+               in_map["lambda"] = &Model::get_lambda;
             }
 
             static void derived_fill_PoleMass_map(MT::fmap& in_map)

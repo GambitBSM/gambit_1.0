@@ -34,7 +34,7 @@ namespace Gambit
       out.positive_error = in.positive_error;
       out.negative_error = out.negative_error;
       out.calculator = in.calculator;
-      out.calculator_version = in.calculator;
+      out.calculator_version = in.calculator_version;
       out.warnings = in.warnings;
       out.errors = in.errors;
 

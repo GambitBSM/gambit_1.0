@@ -9,13 +9,22 @@
 ###################################
 
 Parameters:
+
+  StandardModel_SLHA2: !import StandardModel_SLHA2_defaults.yaml
+
+  StandardModel_Higgs:
+    mH:
+      fixed_value: 125.9
+    vev:
+      fixed_value: 246.0
+
   SingletDM:
-      mass:
-          range: [45, 100]
-          prior_type: log
-      lambda:
-          range: [0.005, 0.5]
-          prior_type: log
+    mass:
+      range: [45, 100]
+      prior_type: log
+    lambda:
+      range: [0.005, 0.5]
+      prior_type: log
 
 Priors:
     # set in parameters section
@@ -39,7 +48,10 @@ ObsLikes:
     type:         DecayTable
 
 Rules:
-  # none
+
+  - capability: decay_rates
+    function: all_decays
+
       
             
 ##############################
