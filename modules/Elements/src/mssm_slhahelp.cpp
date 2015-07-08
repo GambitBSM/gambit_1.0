@@ -35,9 +35,9 @@ namespace Gambit
       std::map<str, p_int_string> gauge_label_to_index_type = init_gauge_label_to_index_type();
       std::map<str, p_int_string> mass_label_to_index_type = init_mass_label_to_index_type();
       std::map<str, pair_string_ints> familystate_label = init_familystate_label();
-      std::map<p_int_string, pair_strings>  type_family_to_gauge_states = init_type_family_to_gauge_states();
-      std::map<str, pair_strings>  family_state_to_gauge_state = init_family_state_to_gauge_state();
-      std::map<str, pair_strings>  gauge_es_to_family_states = init_gauge_es_to_family_states() ;
+      std::map<p_int_string, std::vector<str> > type_family_to_gauge_states = init_type_family_to_gauge_states();
+      std::map<str,std::vector<str> > family_state_to_gauge_state = init_family_state_to_gauge_state();
+      std::map<str,std::vector<str> > gauge_es_to_family_states = init_gauge_es_to_family_states() ;
       std::map<str,std::vector<str> > type_to_vec_of_mass_es = init_type_to_vec_of_mass_es();
       std::map<str,std::vector<str> > type_to_vec_of_gauge_es = init_type_to_vec_of_gauge_es();
 
@@ -335,24 +335,23 @@ namespace Gambit
       /// which is a better defined question when there is family mixing prsesent
       /// and more useful here anyway
       /// returns a pair of strings labling the lighter one first 
-      pair_strings identify_mass_ess_for_family(str type, 
-                                                      int family,
-                                                      const SubSpectrum* mssm)
+      sspair identify_mass_ess_for_family(str type,
+                                          int family,
+                                          const SubSpectrum* mssm)
       {
          /// need to turn type and family into a string
          /// need to simplify the number of translations we do.
          p_int_string gen_type(family,type);
-         pair_strings gauge_states = 
-            type_family_to_gauge_states[gen_type];
-         str gauge_esL=gauge_states.first;
-         str gauge_esR=gauge_states.second;
+         std::vector<str> gauge_states = type_family_to_gauge_states[gen_type];
+         str gauge_esL=gauge_states[0];
+         str gauge_esR=gauge_states[1];
         
          /// finds the mass_es with the largets mixing to
          /// passed gauge_es
          str mass_esL = mass_es_from_gauge_es(gauge_esL, mssm);
          str mass_esR = mass_es_from_gauge_es(gauge_esR, mssm);
          
-         pair_strings answer;
+         sspair answer;
          int mass_index_L = (mass_label_to_index_type[mass_esL]).first;
          int mass_index_R = (mass_label_to_index_type[mass_esR]).first;
          // order pair by mass
@@ -369,10 +368,9 @@ namespace Gambit
       str mass_es_closest_to_family(str familystate,
                                     const SubSpectrum* mssm)
       {
-         pair_strings family_gauge_states = 
-            family_state_to_gauge_state[familystate];
-         str gauge_esL = family_gauge_states.first;
-         str gauge_esR = family_gauge_states.second;
+         std::vector<str> family_gauge_states = family_state_to_gauge_state[familystate];
+         str gauge_esL = family_gauge_states[0];
+         str gauge_esR = family_gauge_states[1];
         
          // finds the mass_es with the largets mixing to
          // passed gauge_es
@@ -428,9 +426,9 @@ namespace Gambit
          //get mass_es using one of our routines
          str mass_es = mass_es_closest_to_family(familystate, mssm);
          /// extract info from strings via maps
-         pair_strings gauge_states = family_state_to_gauge_state[familystate];
-         str gauge_state_L = gauge_states.first;
-         str gauge_state_R = gauge_states.second;
+         std::vector<str> gauge_states = family_state_to_gauge_state[familystate];
+         str gauge_state_L = gauge_states[0];
+         str gauge_state_R = gauge_states[1];
        
          p_int_string gauge_Lindex_type = 
             gauge_label_to_index_type[gauge_state_L];
@@ -520,18 +518,16 @@ namespace Gambit
                                                   const SubSpectrum* mssm) 
       {
          /// get mass_es using one of our routines
-         pair_strings mass_ess =
-            identify_mass_ess_for_family(type, family, mssm);
+         sspair mass_ess = identify_mass_ess_for_family(type, family, mssm);
          mass_es1 = mass_ess.first;
          mass_es2 = mass_ess.second;
 
          /// need to turn type and family into a string
          /// should simplify the number of translations we do!
          p_int_string gen_type(family,type);
-         pair_strings gauge_states = 
-            type_family_to_gauge_states[gen_type];
-         str gauge_es_L=gauge_states.first;
-         str gauge_es_R=gauge_states.second;        
+         std::vector<str> gauge_states = type_family_to_gauge_states[gen_type];
+         str gauge_es_L=gauge_states[0];
+         str gauge_es_R=gauge_states[1];        
          /// get index of right family states (ie gauge states with 
          ///same family as requested family state
          p_int_string gauge_Lindex_type = 
@@ -604,12 +600,12 @@ namespace Gambit
          /// get gauge_es with largest mixing to this mass_es  
          str gauge_es = gauge_es_from_mass_es(mass_es, mass_comp, mssm);
          /// get family states for the same generation as this gauge_es
-         pair_strings family_states = gauge_es_to_family_states[gauge_es];
-         str family_state1 = family_states.first;
-         str family_state2 = family_states.second;
-         pair_strings gauge_states = family_state_to_gauge_state[family_state1];
-         str gauge_es_L = gauge_states.first;
-         str gauge_es_R = gauge_states.second;
+         std::vector<str> family_states = gauge_es_to_family_states[gauge_es];
+         str family_state1 = family_states[0];
+         str family_state2 = family_states[1];
+         std::vector<str> gauge_states = family_state_to_gauge_state[family_state1];
+         str gauge_es_L = gauge_states[0];
+         str gauge_es_R = gauge_states[1];
          str mass_es_other;         
          if(gauge_es == gauge_es_L) 
             mass_es_other = mass_es_from_gauge_es(gauge_es_R, mssm);

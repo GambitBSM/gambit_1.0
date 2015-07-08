@@ -118,15 +118,15 @@ namespace Gambit
     
     ///map to obtain left_right gauge_pairs from state info
     /// helps us reuse other routiones with string arguments 
-    std::map<p_int_string, pair_strings>  init_type_family_to_gauge_states();
+    std::map<p_int_string, std::vector<str> > init_type_family_to_gauge_states();
   
     /// maps directly from family string to left_right gauge_pairs
     /// helps us reuse other routines that take string arguments 
-    std::map<str, pair_strings> init_family_state_to_gauge_state();
+    std::map<str,std::vector<str> > init_family_state_to_gauge_state();
     
     ///maps directly from gauge_es string to familystates
     /// helps us reuse other routines that take string arguments 
-    std::map<str, pair_strings>  init_gauge_es_to_family_states();
+    std::map<str,std::vector<str> > init_gauge_es_to_family_states();
   
     /// map from string representing type (ie up-squarks, down-squarks or 
     /// charged sleptons) to appropriate set of mass eigenstates 
