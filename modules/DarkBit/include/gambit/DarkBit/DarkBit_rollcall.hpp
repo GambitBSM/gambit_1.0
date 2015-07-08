@@ -420,9 +420,6 @@ START_MODULE
   QUICK_FUNCTION(DarkBit, mwimp, NEW_CAPABILITY, mwimp_generic, double, (),
       (TH_ProcessCatalog, DarkBit::TH_ProcessCatalog), (DarkMatter_ID, std::string))
 
-  // Retrieve the DM mass in GeV for the scalar singlet model
-  QUICK_FUNCTION(DarkBit, mwimp, OLD_CAPABILITY, mwimp_SingletDM, double, (SingletDM))
-
   // Retrieve the total thermally-averaged annihilation cross-section for indirect detection (cm^3 / s)
   QUICK_FUNCTION(DarkBit, sigmav, NEW_CAPABILITY, sigmav_late_universe, double, (),
       (TH_ProcessCatalog, DarkBit::TH_ProcessCatalog), (DarkMatter_ID, std::string))

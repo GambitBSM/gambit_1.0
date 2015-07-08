@@ -55,13 +55,6 @@ namespace Gambit {
       result = Dep::TH_ProcessCatalog->getParticleProperty(*Dep::DarkMatter_ID).mass; 
     }
 
-    /// Retrieve the DM mass in GeV for the scalar singlet model (GeV)
-    // FIXME can this be deleted now?
-    void mwimp_SingletDM(double &result) 
-    { 
-      result = *Pipes::mwimp_SingletDM::Param["mS"]; 
-    }
-
     /*! \brief Retrieve the total thermally-averaged annihilation cross-section
      * for indirect detection (cm^3 / s).
      */
