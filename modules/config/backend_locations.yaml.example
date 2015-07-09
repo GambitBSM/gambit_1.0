@@ -25,7 +25,7 @@ HiggsSignals:
   1.2:         ./Backends/lib/libhiggssignals.so
 
 FeynHiggs:
-  2.10.4:      ./Backends/lib/libFH.so
+  2.10:        ./Backends/lib/libFH.so
 
 LibFarrayTest:
   1.0:         ./Backends/lib/libFarrayTest.so
