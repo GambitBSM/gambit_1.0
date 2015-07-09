@@ -930,6 +930,37 @@ namespace Gambit
       printf("A_I(B->K* mu mu)_zero=%.3e\n",result);
     }
 
+     /// *************************************************
+     
+    void FH_FlavorObs(fh_FlavorObs &result) 
+    {
+      using namespace Pipes::FH_FlavorObs;
+
+      cout << "****** calling FH_FlavorObs ******" << endl;
+      
+      fh_real bsgMSSM;     // B -> Xs gamma in MSSM
+      fh_real bsgSM;       // B -> Xs gamma in SM
+      fh_real deltaMsMSSM; // delta Ms in MSSM
+      fh_real deltaMsSM;   // delta Ms in SM
+      fh_real bsmumuMSSM;  // Bs -> mu mu in MSSM
+      fh_real bsmumuSM;    // Bs -> mu mu in SM
+
+      int error = 1;
+      BEreq::FHFlavour(error, bsgMSSM, bsgSM,
+		       deltaMsMSSM, deltaMsSM,
+		       bsmumuMSSM, bsmumuSM);
+
+      fh_FlavorObs FlavorObs;
+      FlavorObs.Bsg_MSSM = bsgMSSM;     
+      FlavorObs.Bsg_SM = bsgSM;       
+      FlavorObs.deltaMs_MSSM = deltaMsMSSM; 
+      FlavorObs.deltaMs_SM = deltaMsSM;   
+      FlavorObs.Bsmumu_MSSM = bsmumuMSSM;  
+      FlavorObs.Bsmumu_SM = bsmumuSM;    
+
+      result = FlavorObs;
+    }
+
   
   }
 

@@ -79,18 +79,6 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY 
 
-  // FIXME goes in FlavBit
-  #define CAPABILITY FH_FlavorObs               // FeynHiggs flavor observables
-  START_CAPABILITY
-    #define FUNCTION FH_FlavorObs
-    START_FUNCTION(fh_FlavorObs)
-    DEPENDENCY(FH_HiggsMasses, fh_HiggsMassObs)
-      BACKEND_REQ(FHFlavour, (libfeynhiggs), void, (int&,fh_real&,fh_real&,fh_real&,fh_real&,fh_real&,fh_real&))
-      BACKEND_OPTION( (FeynHiggs, 2.10), (libfeynhiggs) )
-    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
-    #undef FUNCTION
-  #undef CAPABILITY 
-
   // FIXME goes in SpecBit
   #define CAPABILITY FH_HiggsMasses               // Higgs masses and mixings with theoretical uncertainties
   START_CAPABILITY
@@ -108,6 +96,7 @@ BACKEND_REQ(FHUncertainties, (libfeynhiggs), void, (int&, Farray< fh_real,1,4>&,
     #undef FUNCTION
   #undef CAPABILITY 
 
+  // FIXME goes in SpecBit
   #define CAPABILITY FH_Couplings            // FeynHiggs Higgs couplings
   START_CAPABILITY
     #define FUNCTION FH_Couplings
@@ -118,18 +107,6 @@ BACKEND_REQ(FHUncertainties, (libfeynhiggs), void, (int&, Farray< fh_real,1,4>&,
                                                       Farray< fh_complex,1,231>&,
                                                       Farray< fh_real,1,978>&,
                                                       Farray< fh_real,1,250>&, int&))
-      BACKEND_OPTION( (FeynHiggs, 2.10), (libfeynhiggs) )
-    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
-    #undef FUNCTION
-  #undef CAPABILITY
-
-  // FIXME goes in ColliderBit
-  #define CAPABILITY FH_HiggsProd            // FeynHiggs Higgs prod xsecs
-  START_CAPABILITY
-    #define FUNCTION FH_HiggsProd
-    START_FUNCTION(fh_HiggsProd)
-    DEPENDENCY(FH_Couplings, fh_Couplings)
-      BACKEND_REQ(FHHiggsProd, (libfeynhiggs), void, (int&, fh_real&, Farray< fh_real,1,52>&))
       BACKEND_OPTION( (FeynHiggs, 2.10), (libfeynhiggs) )
     ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
     #undef FUNCTION

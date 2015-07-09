@@ -167,35 +167,6 @@ namespace Gambit
       result = PrecisionObs;
     }
 
-    void FH_FlavorObs(fh_FlavorObs &result) 
-    {
-      using namespace Pipes::FH_FlavorObs;
-
-      cout << "****** calling FH_FlavorObs ******" << endl;
-      
-      fh_real bsgMSSM;     // B -> Xs gamma in MSSM
-      fh_real bsgSM;       // B -> Xs gamma in SM
-      fh_real deltaMsMSSM; // delta Ms in MSSM
-      fh_real deltaMsSM;   // delta Ms in SM
-      fh_real bsmumuMSSM;  // Bs -> mu mu in MSSM
-      fh_real bsmumuSM;    // Bs -> mu mu in SM
-
-      int error = 1;
-      BEreq::FHFlavour(error, bsgMSSM, bsgSM,
-		       deltaMsMSSM, deltaMsSM,
-		       bsmumuMSSM, bsmumuSM);
-
-      fh_FlavorObs FlavorObs;
-      FlavorObs.Bsg_MSSM = bsgMSSM;     
-      FlavorObs.Bsg_SM = bsgSM;       
-      FlavorObs.deltaMs_MSSM = deltaMsMSSM; 
-      FlavorObs.deltaMs_SM = deltaMsSM;   
-      FlavorObs.Bsmumu_MSSM = bsmumuMSSM;  
-      FlavorObs.Bsmumu_SM = bsmumuSM;    
-
-      result = FlavorObs;
-    }
-
     void FH_HiggsMasses(fh_HiggsMassObs &result) 
     {
       using namespace Pipes::FH_HiggsMasses;
@@ -291,37 +262,6 @@ namespace Gambit
       for(int i = 0; i < 250; i++) Couplings.gammas_sm[i] = gammas_sm(i+1);
 
       result = Couplings;
-    }
-
-    void FH_HiggsProd(fh_HiggsProd &result) 
-    {
-      using namespace Pipes::FH_HiggsProd;
-      
-      cout << "****** calling FH_HiggsProd ******" << endl;
-
-      Farray<fh_real, 1,52> prodxs;
-
-      fh_HiggsProd HiggsProd;
-      int error;
-      fh_real sqrts;
-
-      // Tevatron
-      sqrts = 2.;
-      error = 1;
-      BEreq::FHHiggsProd(error, sqrts, prodxs);
-      for(int i = 0; i < 52; i++) HiggsProd.prodxs_Tev[i] = prodxs(i+1);
-      // LHC7
-      sqrts = 7.;
-      error = 1;
-      BEreq::FHHiggsProd(error, sqrts, prodxs);
-      for(int i = 0; i < 52; i++) HiggsProd.prodxs_LHC7[i] = prodxs(i+1);
-      // LHC8
-      sqrts = 8.;
-      error = 1;
-      BEreq::FHHiggsProd(error, sqrts, prodxs);
-      for(int i = 0; i < 52; i++) HiggsProd.prodxs_LHC8[i] = prodxs(i+1);
-
-      result = HiggsProd;
     }
 
      
