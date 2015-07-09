@@ -51,6 +51,7 @@ set(header_files include/gambit/Utils/ascii_table_reader.hpp
                  include/gambit/Utils/util_functions.hpp
                  include/gambit/Utils/util_macros.hpp
                  include/gambit/Utils/util_types.hpp
+                 include/gambit/Utils/version.hpp
                  include/gambit/Utils/variadic_functions.hpp
                  include/gambit/Utils/yaml_options.hpp
                  include/gambit/Utils/yaml_parser_base.hpp
