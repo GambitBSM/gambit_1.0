@@ -97,3 +97,21 @@ double nastyExample(int count, ...)
   va_end(args);
   return result;
 }
+
+// an example function taking a 1D array as an argument
+double arrayarg_1D(double arg[10])
+{
+  return arg[0]*arg[9]; 
+}
+
+// an example function taking a 1D array as an argument
+double arrayarg_2D(double arg[10][10])
+{
+  return arg[0][0]*arg[9][0]*arg[9][9]; 
+}
+
+// an example function taking a 1D array as an argument
+double arrayarg_3D(double arg[10][10][10])
+{
+  return arg[0][0][0]*arg[9][0][0]*arg[9][9][9]; 
+}

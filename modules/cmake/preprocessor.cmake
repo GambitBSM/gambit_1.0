@@ -18,13 +18,17 @@
 #                                               
 #************************************************
 
+include(CheckIncludeFiles)
+
 message("${Yellow}-- Updating GAMBIT with config data${ColourReset}")
 
 # Check for STL regex
-include(CheckIncludeFiles)
 if(COMPILER_SUPPORTS_CXX11 OR COMPILER_SUPPORTS_CXX0X)
   check_include_files(regex.h HAVE_REGEX_H)
 endif()
+
+# Check for link.h
+check_include_files(link.h HAVE_LINK_H)
 
 # Configure the file
 set(outhdr "${PROJECT_SOURCE_DIR}/cmake/include/gambit/cmake/cmake_variables.hpp")

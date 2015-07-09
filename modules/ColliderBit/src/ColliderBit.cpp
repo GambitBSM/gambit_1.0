@@ -18,6 +18,10 @@
 ///  \date 2014 Aug
 ///  \date 2015 May
 ///
+///  \author Pat Scott
+///          (p.scott@imperial.ac.uk)
+///  \date 2015 Jul
+///
 ///  *********************************************
 
 #include <string>
@@ -52,11 +56,9 @@ namespace Gambit
     /// Pythia stuff
     std::vector<std::string> pythiaNames;
     std::vector<std::string>::const_iterator iter;
-    std::string slhaFilename;
-    const SLHAea::Coll* slhaea = nullptr;
     int pythiaConfigurations, pythiaNumber;
     /// General collider sim info stuff
-    #define SHARED_OVER_OMP iter,pythiaNumber,pythiaConfigurations,globalAnalyses,slhaea
+    #define SHARED_OVER_OMP iter,pythiaNumber,pythiaConfigurations,globalAnalyses
 
 
     /// *************************************************
@@ -75,12 +77,6 @@ namespace Gambit
         GET_COLLIDER_RUNOPTION(pythiaNames, std::vector<std::string>);
         /// @todo Subprocess specific nEvents
         GET_COLLIDER_RUNOPTION(nEvents, int);
-        /// @todo Get the Spectrum and Decay info from SpecBit and DecayBit
-        GET_COLLIDER_RUNOPTION(slhaFilename, std::string);
-        std::ifstream ifs(slhaFilename);
-        delete slhaea;
-        slhaea = new SLHAea::Coll(ifs);
-        ifs.close();
       }
 
       /// For every collider requested in the yaml file:
@@ -139,16 +135,32 @@ namespace Gambit
           if (runOptions->hasKey(*iter, pythiaConfigName))
             pythiaOptions = runOptions->getValue<std::vector<std::string>>(*iter, pythiaConfigName);
         }
-        /// @note Pythia still needs to know the filename in order to call readSLHA
-        pythiaOptions.push_back("SLHA:file = " + slhaFilename);
         pythiaOptions.push_back("Random:seed = " + std::to_string(54321 + omp_get_thread_num()));
 
         result.resetSpecialization(*iter);
-        //const SLHAea::Coll &slhaea = *Dep::SLHAeaFromSomewhere;
-// The following line runs Pythia which reads the SLHA file normally.
-        // result.init(pythiaOptions);
-// The following line runs Pythia which reads the SLHAea::Coll instance.
-        result.init(pythiaOptions, slhaea);
+
+        if (false) //FIXME add debug option to read slha file specified in yaml
+        {
+          // Run Pythia reading an SLHA file.
+          //pythiaOptions.push_back("SLHA:file = " + slhaFilename);
+          result.init(pythiaOptions);
+        }
+        else
+        {
+          // Run Pythia using an SLHAea object constructed from dependencies on the spectrum and decays.
+          SLHAstruct slha = Dep::decay_rates->as_slhaea();
+          if (ModelInUse("MSSM78atQ") or ModelInUse("MSSM78atMGUT"))
+          {
+            // MSSM-specific
+            SLHAstruct spectrum = Dep::MSSM_spectrum->getSLHAea();
+            slha.insert(slha.begin(), spectrum.begin(), spectrum.end());
+          }
+          else
+          {
+            ColliderBit_error().raise(LOCAL_INFO, "No spectrum object available for this model."); 
+          }
+          result.init(pythiaOptions, slha);
+        }
         /// @TODO Can we test for xsec veto here? Might be analysis dependent, so see TODO below.
       }
     }

@@ -97,6 +97,7 @@ namespace Gambit
                         {
                         private:
                                 void *plugin;
+                                YAML::Node flags;
                                 std::vector<void *> input;
                                 std::string tag;
                                 typedef const std::map<type_index, void *> &(*initFuncType)(const std::string &, const YAML::Node &, const printer_interface &, std::vector<void *> &);                              
@@ -109,6 +110,7 @@ namespace Gambit
                                 const std::map<type_index, void *> &initPlugin(const std::string &type, const std::string &name, const plug_args&... inputs) 
                                 {
                                         Plugin_Interface_Details details = plugin_info(type, name);
+                                        flags = details.flags;
                                         plugin = dlopen (details.path.c_str(), RTLD_LAZY);
                                         
                                         if (bool(plugin))
@@ -139,6 +141,8 @@ namespace Gambit
                                 
                         public:
                                 Plugin_Interface_Base() : plugin(0), initFunc(0), getFunc(0) {}
+                                
+                                YAML::Node operator[](const std::string &key){return flags[key];}
                                 
                                 ~Plugin_Interface_Base()
                                 {

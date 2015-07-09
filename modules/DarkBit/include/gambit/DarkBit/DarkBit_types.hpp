@@ -61,7 +61,6 @@
 #include "gambit/DarkBit/decay_chain.hpp"
 #include "gambit/DarkBit/SimpleHist.hpp"
 #include "gambit/DarkBit/ProcessCatalogue.hpp"
-#include "gambit/Elements/base_functions.hpp"
 #include "gambit/Elements/funktions.hpp"
 
 #include <boost/enable_shared_from_this.hpp>
@@ -80,8 +79,6 @@ namespace Gambit
     using boost::dynamic_pointer_cast;
     using boost::static_pointer_cast;
     using boost::enable_shared_from_this;
-    //using Gambit::BF::intLimitFunc;
-    //using Gambit::BF::BFargVec;
 
     /*
     // Integration limits for E1 for the DS gamma 3-body decays.
@@ -169,6 +166,7 @@ namespace Gambit
     };
     */
 
+    /*
     /// Dark matter particle identity
     class DarkMatter_ID_type
     {
@@ -211,6 +209,7 @@ namespace Gambit
       private:
         std::set<std::string> particle_ids;
     };
+    */
 
     // A simple example
     struct Wstruct
@@ -220,24 +219,9 @@ namespace Gambit
     };
 
 
-    // Obsolete structure; replaced with RD_spectrum_type
-    struct RDspectype
-    {
-    //coannihilating particles
-      int n_co;
-      int part_co[1000],dof_co[1000];
-      double mass_co[1000];
-    //location and type of resonances
-      int n_res;
-      int part_res[10]; // never used. Do we need this?
-      double mass_res[10], width_res[10];
-    //location of thresholds
-      int n_thr;
-      double E_thr[100];
-    };
-
     struct RD_coannihilating_particle
     {
+      RD_coannihilating_particle() {}
       RD_coannihilating_particle(const unsigned int & index, const unsigned int & dof, const double & mass) : index(index), degreesOfFreedom(dof), mass(mass) {}
 
       unsigned int index;
@@ -254,6 +238,17 @@ namespace Gambit
       std::vector<TH_Resonance> resonances;
       std::vector<double> threshold_energy;
     };
+
+
+//    struct RD_Boltzmann_type
+//    {
+//      RD_Boltzmann_type() {}
+//      RD_Boltzmann_type(const RD_coannihilating_particle & DMPart, const std::vector<TH_Resonance> & res, const std::vector<double> & thresholds) : DMParticle(DMPart), resonances(res), threshold_energy(thresholds) {}
+
+//      RD_coannihilating_particle DMParticle;
+//      std::vector<TH_Resonance> resonances;
+//      std::vector<double> threshold_energy;
+//    };
     
 
     // A double in, double out function pointer.  FIXME Probably actually better if this goes in
@@ -470,7 +465,6 @@ namespace Gambit
     // GAMBIT development; to be superceded by structures below.
     struct DD_couplings
     {
-      double M_DM;
       double gps;
       double gns;
       double gpa;

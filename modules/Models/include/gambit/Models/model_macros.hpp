@@ -50,6 +50,7 @@
   #define INTERPRET_AS_PARENT__FUNCTION(FUNC)                     CORE_INTERPRET_AS_PARENT__FUNCTION(FUNC)
   #define INTERPRET_AS_X__DEPENDENCY(MODEL_X, DEP, TYPE)          CORE_INTERPRET_AS_X__DEPENDENCY(MODEL_X, DEP, TYPE)
 #else
+  #include "gambit/Elements/module_macros_inmodule.hpp"
   #define START_MODEL                                             MODULE_START_MODEL
   #define DEFINEPARS(...)                                         /* Do nothing */
   #define MAP_TO_CAPABILITY(PARAMETER,CAPABILITY)                 /* Do nothing */
@@ -118,27 +119,7 @@
 
 /// "In module" version of the INTERPRET_AS_X__DEPENDENCY macro
 #define MODULE_INTERPRET_AS_X__DEPENDENCY(MODEL_X, DEP, TYPE)                  \
-  namespace Gambit                                                             \
-  {                                                                            \
-    namespace Models                                                           \
-    {                                                                          \
-      namespace MODEL                                                          \
-      {                                                                        \
-        /* Given that TYPE is not void, create a safety_bucket for the         \
-        dependency result. To be initialized automatically at runtime          \
-        when the dependency is resolved. */                                    \
-        namespace Pipes                                                        \
-        {                                                                      \
-          namespace CAT(MODEL_X,_parameters)                                  \
-          {                                                                    \
-            BOOST_PP_IIF(IS_TYPE(void,TYPE),,                                  \
-              namespace Dep { extern dep_bucket<TYPE> DEP; } )                 \
-          }                                                                    \
-                                                                               \
-        }                                                                      \
-      }                                                                        \
-    }                                                                          \
-  }                                                                            
+  MODULE_DEPENDENCY(DEP, TYPE, MODEL, CAT(MODEL_X,_parameters), IS_MODEL)
 
 
 /// Piggybacks off the CORE_START_MODULE_COMMON macro, as we need all the same 

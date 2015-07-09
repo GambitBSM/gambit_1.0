@@ -47,19 +47,37 @@ namespace Gambit
   {
     const str default_path("no path in config/backend_locations.yaml"); 
     str p;
-    if (bepathfile[be][ver])
+    auto be_it = bepathoverrides.find(be);
+    bool override_present = (be_it != bepathoverrides.end()); 
+    if (override_present)
     {
-      p = bepathfile[be][ver].as<str>();
-      if (p.substr(0,2) == "./") p = p.substr(2,p.npos);
-    }
-    else
-    {      
-      p = default_path;
-      std::ostringstream msg;
-      msg << "Could not find path for backend "<< be <<" v" << ver << endl;
-      msg << "in " << filename << "." << endl;
-      msg << "Setting path to \"" << default_path << "\".";
-      utils_warning().raise(LOCAL_INFO,msg.str());
+      auto ver_it = be_it->second.find(ver);
+      if (ver_it != be_it->second.end())
+      {
+        p = ver_it->second;
+        if (p.substr(0,2) == "./") p = p.substr(2,p.npos);
+      }
+      else 
+      {
+        override_present = false;
+      }
+    }  
+    if (not override_present)
+    {
+      if (bepathfile[be][ver])
+      {
+        p = bepathfile[be][ver].as<str>();
+        if (p.substr(0,2) == "./") p = p.substr(2,p.npos);
+      }
+      else
+      {      
+        p = default_path;
+        std::ostringstream msg;
+        msg << "Could not find path for backend "<< be <<" v" << ver << endl;
+        msg << "in " << filename << "." << endl;
+        msg << "Setting path to \"" << default_path << "\".";
+        utils_warning().raise(LOCAL_INFO,msg.str());
+      }
     }
     return p;
   }
@@ -103,6 +121,14 @@ namespace Gambit
   {
     safe_version_map[be].first[sv] = v;
     safe_version_map[be].second[v] = sv;
+  }
+
+  /// Override a backend's config file location
+  void Backends::backend_info::override_path(str& be, str& ver, str path)
+  {
+    int l = str(GAMBIT_DIR).length();
+    if (path.substr(0,l) == GAMBIT_DIR) path.replace(0, l, ".");
+    bepathoverrides[be][ver] = path;
   }
 
 }

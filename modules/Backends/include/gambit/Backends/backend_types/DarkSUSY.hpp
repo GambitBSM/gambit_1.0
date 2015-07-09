@@ -25,6 +25,10 @@
 ///          (jcornell@ucsc.edu)
 ///  \date 2014 Oct
 ///
+///  \author Joakim Edsjo
+///          (edsjo@fysik.su.se)
+///  \date 2015 May
+///
 ///  *********************************************
 
 #include "gambit/Utils/util_types.hpp"    
@@ -72,6 +76,114 @@ namespace Gambit
       Farray<Finteger,1,6> ksnu,ksl,ksqu,ksqd;
 //      character*8 pname(0:numpartspecies)
   };
+
+    struct DS_VRTXS
+    {
+        Farray< Fdouble_complex,1,50,1,50,1,50 > gl;
+        Farray< Fdouble_complex,1,50,1,50,1,50 > gr;
+    };
+    struct DS_SMRUSEFUL
+    {
+        Fdouble s2thw;
+        Fdouble sinthw;
+        Fdouble costhw;
+        Fdouble delrho;
+        Fdouble alph3mz;
+        Fdouble gfermi;
+        Fdouble s2wmz;
+        Fdouble swmz;
+        Fdouble cwmz;
+    };
+    struct DS_SMCUSEFUL
+    {
+        Fstring<5> roption;
+    };
+    struct DS_COUPLINGCONSTANTS
+    {
+        Fdouble g2weak;
+        Fdouble gyweak;
+        Fdouble g3stro;
+        Fdouble alphem;
+        Fdouble alph3;
+        Farray< Fdouble,1,12 > yukawa;
+        Fdouble g2wmz;
+        Fdouble gywmz;
+    };
+    struct DS_SCKM
+    {
+        Fdouble ckms12;
+        Fdouble ckms23;
+        Fdouble ckms13;
+        Fdouble ckmdelta;
+    };
+    struct DS_MIXING
+    {
+        Farray< Fdouble_complex,1,3,1,3 > ckm;
+    };
+    struct DS_MSSMTYPE
+    {
+        Finteger modeltype;
+    };
+  /*    struct DS_MSSMPAR
+    {
+        Fdouble tanbe;
+        Fdouble mu;
+        Fdouble m2;
+        Fdouble m1;
+        Fdouble m3;
+        Fdouble ma;
+        Farray< Fdouble,1,3 > mass2u;
+        Farray< Fdouble,1,3 > mass2q;
+        Farray< Fdouble,1,3 > mass2d;
+        Farray< Fdouble,1,3 > mass2l;
+        Farray< Fdouble,1,3 > mass2e;
+        Farray< Fdouble,1,3 > asoftu;
+        Farray< Fdouble,1,3 > asoftd;
+        Farray< Fdouble,1,3 > asofte;
+	}; */
+    struct DS_MSSMSWITCH
+    {
+        Fdouble msquarks;
+        Fdouble msleptons;
+        Finteger higloop;
+        Finteger neuloop;
+        Finteger bsgqcd;
+        Finteger higwid;
+    };
+    struct DS_SFERMIONMASS
+    {
+        Farray< Fdouble,1,3 > massup1;
+        Farray< Fdouble,1,3 > massup2;
+        Farray< Fdouble,1,3 > thetamixu;
+        Farray< Fdouble,1,3 > massdn1;
+        Farray< Fdouble,1,3 > massdn2;
+        Farray< Fdouble,1,3 > thetamixd;
+        Farray< Fdouble,1,3 > masssn;
+        Farray< Fdouble,1,3 > masssl1;
+        Farray< Fdouble,1,3 > masssl2;
+        Farray< Fdouble,1,3 > thetamixsl;
+    };
+    struct DS_MSSMWIDTHS
+    {
+        Farray< Fdouble,1,32,1,4 > hdwidth;
+    };
+    struct DS_MSSMMIXING
+    {
+        Farray< Fdouble_complex,1,4,1,4 > neunmx;
+        Farray< Fdouble_complex,1,2,1,2 > chaumx;
+        Farray< Fdouble_complex,1,2,1,2 > chavmx;
+        Farray< Fdouble_complex,1,3,1,3 > slulmx;
+        Farray< Fdouble_complex,1,6,1,3 > sldlmx;
+        Farray< Fdouble_complex,1,6,1,3 > sldrmx;
+        Farray< Fdouble_complex,1,6,1,3 > squlmx;
+        Farray< Fdouble_complex,1,6,1,3 > squrmx;
+        Farray< Fdouble_complex,1,6,1,3 > sqdlmx;
+        Farray< Fdouble_complex,1,6,1,3 > sqdrmx;
+        Fdouble alpha;
+        Fdouble mix_stop;
+        Fdouble mix_sbot;
+        Fdouble mix_stau;
+    };
 
   struct DS_RDMGEV
   {

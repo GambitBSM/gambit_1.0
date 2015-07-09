@@ -24,9 +24,8 @@ namespace Gambit
 {
         namespace Priors
         {
-                class Plugin : public BasePrior, public Scanner::Plugins::Plugin_Interface<double (const std::vector<double> &), void (const std::vector<double> &, std::unordered_map<std::string,double> &)>
+                namespace plugin_prior_utils
                 {
-                private:
                         inline std::string inputName(const Options& options)
                         {
                                 if (options.hasKey("plugin"))
@@ -39,12 +38,16 @@ namespace Gambit
                                         return "";
                                 }
                         }
-                        
+                }
+                
+                class Plugin : public BasePrior, public Scanner::Plugins::Plugin_Interface<double (const std::vector<double> &), void (const std::vector<double> &, std::unordered_map<std::string,double> &)>
+                {
+                private:
                         std::vector<std::string> param_names;
                         
-                public: 
+                public:
                         Plugin(const std::vector<std::string>& params, const Options& options) : 
-                                Scanner::Plugins::Plugin_Interface<double (const std::vector<double>&), void (const std::vector<double> &, std::unordered_map<std::string,double> &)>("objective", inputName(options), params, sizeRef())
+                                Scanner::Plugins::Plugin_Interface<double (const std::vector<double>&), void (const std::vector<double> &, std::unordered_map<std::string,double> &)>("objective", plugin_prior_utils::inputName(options), params, sizeRef())
                         {
                         }
                         

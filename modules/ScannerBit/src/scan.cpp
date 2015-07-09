@@ -187,9 +187,23 @@ namespace Gambit
                         scan_for(pluginName, pluginNames)
                         {
                                 Plugins::Plugin_Interface<int ()> plugin_interface("scanner", pluginName, dim, *factory);
+                                
+                                if(plugin_interface["initialize_mpi"] && plugin_interface["initialize_mpi"].as<bool>())
+                                {
+                                        std::cout << "do mpi stuff ..." << std::endl;
+                                }
+                                
                                 plugin_interface();
                         }
-                        
+ 
+                        /// From Ben: To Greg: This is a command I added to the 
+                        /// printer base class which instructs the printers
+                        /// to perform final output tasks (emptying buffers
+                        /// to file and so on). It just needs to happen
+                        /// when the scan is done; feel free to move it to
+                        /// wherever you like.
+                        printerInterface->finalise();
+
                         return 0;
                 }
                 

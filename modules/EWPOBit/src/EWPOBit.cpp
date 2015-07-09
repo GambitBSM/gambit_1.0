@@ -260,6 +260,8 @@ namespace Gambit
       for(int i = 0; i < 231; i++) Couplings.couplings_sm[i] = couplings_sm(i+1);
       for(int i = 0; i < 978; i++) Couplings.gammas[i] = gammas(i+1);
       for(int i = 0; i < 250; i++) Couplings.gammas_sm[i] = gammas_sm(i+1);
+      Couplings.calculator = BEreq::FHCouplings.origin();
+      Couplings.calculator_version = BEreq::FHCouplings.version();
 
       result = Couplings;
     }
