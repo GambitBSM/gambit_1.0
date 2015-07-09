@@ -62,6 +62,7 @@ START_MODULE
   #undef CAPABILITY 
 
 
+  // FIXME goes in SpecBit
   #define CAPABILITY FH_MSSMMasses              // FeynHiggs SUSY masses and mixings
   START_CAPABILITY
     #define FUNCTION FH_MSSMMasses
@@ -78,6 +79,7 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY 
 
+  // FIXME goes in FlavBit
   #define CAPABILITY FH_FlavorObs               // FeynHiggs flavor observables
   START_CAPABILITY
     #define FUNCTION FH_FlavorObs
@@ -89,6 +91,7 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY 
 
+  // FIXME goes in SpecBit
   #define CAPABILITY FH_HiggsMasses               // Higgs masses and mixings with theoretical uncertainties
   START_CAPABILITY
     #define FUNCTION FH_HiggsMasses
@@ -120,6 +123,7 @@ BACKEND_REQ(FHUncertainties, (libfeynhiggs), void, (int&, Farray< fh_real,1,4>&,
     #undef FUNCTION
   #undef CAPABILITY
 
+  // FIXME goes in ColliderBit
   #define CAPABILITY FH_HiggsProd            // FeynHiggs Higgs prod xsecs
   START_CAPABILITY
     #define FUNCTION FH_HiggsProd
