@@ -152,14 +152,15 @@ namespace Gambit
           if (ModelInUse("MSSM78atQ") or ModelInUse("MSSM78atMGUT"))
           {
             // MSSM-specific
-            SLHAstruct spectrum = Dep::MSSM_spectrum->getSLHAea();
+            SLHAstruct spectrum = (*Dep::MSSM_spectrum)->getSLHAea();
             slha.insert(slha.begin(), spectrum.begin(), spectrum.end());
           }
           else
           {
             ColliderBit_error().raise(LOCAL_INFO, "No spectrum object available for this model."); 
           }
-          result.init(pythiaOptions, slha);
+          //cout << slha << endl;
+          result.init(pythiaOptions, &slha);
         }
         /// @TODO Can we test for xsec veto here? Might be analysis dependent, so see TODO below.
       }

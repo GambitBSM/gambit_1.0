@@ -202,7 +202,6 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION runAnalyses
     START_FUNCTION(ColliderLogLikes) //return type is ColliderLogLikes struct
-    ALLOW_MODELS(NormalDist)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
     DEPENDENCY(ReconstructedEvent, HEPUtils::Event)
     DEPENDENCY(HardScatteringSim, Gambit::ColliderBit::SpecializablePythia)
@@ -218,7 +217,6 @@ START_MODULE
   START_CAPABILITY
     #define FUNCTION calcLogLike
     START_FUNCTION(double)
-    ALLOW_MODELS(NormalDist)
     DEPENDENCY(AnalysisNumbers, ColliderLogLikes)
     BACKEND_REQ_FROM_GROUP(lnlike_marg_poisson, lnlike_marg_poisson_lognormal_error, (), double, (const int&, const double&, const double&, const double&) )
     BACKEND_REQ_FROM_GROUP(lnlike_marg_poisson, lnlike_marg_poisson_gaussian_error, (), double, (const int&, const double&, const double&, const double&) )
@@ -233,7 +231,6 @@ START_MODULE
     /// \todo Make a group of analyses rather than a simple counter.
     #define FUNCTION simpleCounter
     START_FUNCTION(double)   /// Could be a scaled number of events, so double
-    ALLOW_MODELS(NormalDist)
     NEEDS_MANAGER_WITH_CAPABILITY(ColliderOperator)
     DEPENDENCY(ReconstructedEvent, HEPUtils::Event)
     #undef FUNCTION
