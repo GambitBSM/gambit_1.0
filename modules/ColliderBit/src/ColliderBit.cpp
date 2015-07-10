@@ -139,10 +139,14 @@ namespace Gambit
 
         result.resetSpecialization(*iter);
 
-        if (false) //FIXME add debug option to read slha file specified in yaml
+        if (runOptions->hasKey("debug_SLHA_filenames"))
         {
           // Run Pythia reading an SLHA file.
-          //pythiaOptions.push_back("SLHA:file = " + slhaFilename);
+          static unsigned int counter = 0;
+          std::vector<str> filenames = runOptions->getValue<std::vector<str> >("debug_SLHA_filenames");
+          logger() << "Reading SLHA file: " << filenames[counter] << std::endl;
+          pythiaOptions.push_back("SLHA:file = " + filenames[counter]);
+          counter++;
           result.init(pythiaOptions);
         }
         else
@@ -160,6 +164,7 @@ namespace Gambit
             ColliderBit_error().raise(LOCAL_INFO, "No spectrum object available for this model."); 
           }
           //cout << slha << endl;
+          pythiaOptions.push_back("SLHA:file = slhaea");
           result.init(pythiaOptions, &slha);
         }
         /// @TODO Can we test for xsec veto here? Might be analysis dependent, so see TODO below.

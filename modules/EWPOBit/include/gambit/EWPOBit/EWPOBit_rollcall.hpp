@@ -31,10 +31,10 @@
 #ifndef __EWPOBit_rollcall_hpp__
 #define __EWPOBit_rollcall_hpp__
 
-#include "gambit/EWPOBit/EWPOBit_types.hpp"
 
 #define MODULE EWPOBit
 START_MODULE
+
 
   // FeynHiggs EWK precision observables
   #define CAPABILITY FH_PrecisionObs            
@@ -49,8 +49,8 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY 
 
-
-  #define CAPABILITY SP_PrecisionObs // SUSYPOPE EWK precision observables
+  // SUSYPOPE EWK precision observables
+  #define CAPABILITY SP_PrecisionObs
   START_CAPABILITY
     #define FUNCTION SP_PrecisionObs
     START_FUNCTION(double)
@@ -62,56 +62,6 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY 
 
-
-  // FIXME goes in SpecBit
-  #define CAPABILITY FH_MSSMMasses              // FeynHiggs SUSY masses and mixings
-  START_CAPABILITY
-    #define FUNCTION FH_MSSMMasses
-    START_FUNCTION(fh_MSSMMassObs)
-    BACKEND_REQ(FHGetPara, (libfeynhiggs), void, (int&,int&,
-                Farray<fh_real, 1,2, 1,5, 1,3>&, Farray<fh_complex, 1,2, 1,2, 1,5, 1,3>&,
-                Farray<fh_real, 1,6, 1,5>&, Farray<fh_complex, 1,36, 1,5>&,
-                Farray< fh_real,1,2>&, Farray< fh_complex,1,4>&,
-                Farray< fh_complex,1,4>&, Farray< fh_real,1,4>&,
-                Farray< fh_complex,1,16>&, fh_complex&, fh_real&,
-                Farray< fh_real,1,4>&, fh_real&))
-    BACKEND_OPTION( (FeynHiggs, 2.10), (libfeynhiggs) )
-    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
-    #undef FUNCTION
-  #undef CAPABILITY 
-
-  // FIXME goes in SpecBit
-  #define CAPABILITY FH_HiggsMasses               // Higgs masses and mixings with theoretical uncertainties
-  START_CAPABILITY
-    #define FUNCTION FH_HiggsMasses
-    START_FUNCTION(fh_HiggsMassObs)
-    DEPENDENCY(FH_MSSMMasses, fh_MSSMMassObs)
-    BACKEND_REQ(FHHiggsCorr, (libfeynhiggs), void, (int&, Farray< fh_real,1,4>&, fh_complex&, 
-                Farray<fh_complex, 1,3, 1,3>&, 
-                Farray<fh_complex, 1,3, 1,3>&))
-    BACKEND_REQ(FHUncertainties, (libfeynhiggs), void, (int&, Farray< fh_real,1,4>&, fh_complex&, 
-                Farray<fh_complex, 1,3, 1,3>&, 
-                Farray<fh_complex, 1,3, 1,3>&))
-    BACKEND_OPTION( (FeynHiggs, 2.10), (libfeynhiggs) )
-    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
-    #undef FUNCTION
-  #undef CAPABILITY 
-
-  // FIXME goes in SpecBit
-  #define CAPABILITY FH_Couplings            // FeynHiggs Higgs couplings
-  START_CAPABILITY
-    #define FUNCTION FH_Couplings
-    START_FUNCTION(fh_Couplings)
-    DEPENDENCY(FH_HiggsMasses, fh_HiggsMassObs)
-    BACKEND_REQ(FHSelectUZ, (libfeynhiggs), void, (int&,int&,int&,int&))
-    BACKEND_REQ(FHCouplings, (libfeynhiggs), void, (int&, Farray< fh_complex,1,681>&,
-                                                    Farray< fh_complex,1,231>&,
-                                                    Farray< fh_real,1,978>&,
-                                                    Farray< fh_real,1,250>&, int&))
-    BACKEND_OPTION( (FeynHiggs, 2.10), (libfeynhiggs) )
-    ALLOW_MODELS(MSSM78atQ, MSSM78atMGUT)
-    #undef FUNCTION
-  #undef CAPABILITY
 
 #undef MODULE
 

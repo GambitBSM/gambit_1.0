@@ -289,7 +289,7 @@ add_custom_target(module_harvest  DEPENDS ${PROJECT_SOURCE_DIR}/Elements/include
 message("${Yellow}-- Updating GAMBIT module and backend CMake files.${ColourReset}")
 set(update_cmakelists ${PROJECT_SOURCE_DIR}/cmake/update_cmakelists.py -x __not_a_real_name__,${itch_with_commas})
 execute_process(RESULT_VARIABLE result COMMAND python ${update_cmakelists} WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
-check_result(${result} ${update_cmakelists}) 
+check_result(${result} ${update_cmakelists})
 message("${Yellow}-- Updating GAMBIT module cmake files - done.${ColourReset}")
 
 # Include other cmake scripts
