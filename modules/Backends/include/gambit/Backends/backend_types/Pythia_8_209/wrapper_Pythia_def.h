@@ -193,8 +193,8 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             (process).wrapperbase::BEptr->can_delete_me(false);
             (event).wrapperbase::BEptr->can_delete_wrapper(false);
             (event).wrapperbase::BEptr->can_delete_me(false);
-            (info).wrapperbase::BEptr->can_delete_wrapper(false);
-            (info).wrapperbase::BEptr->can_delete_me(false);
+            (info).WrapperBase<Pythia8::Abstract_Info>::BEptr->can_delete_wrapper(false);
+            (info).WrapperBase<Pythia8::Abstract_Info>::BEptr->can_delete_me(false);
             (settings).wrapperbase::BEptr->can_delete_wrapper(false);
             (settings).wrapperbase::BEptr->can_delete_me(false);
             (particleData).wrapperbase::BEptr->can_delete_wrapper(false);
@@ -224,8 +224,8 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             (process).wrapperbase::BEptr->can_delete_me(false);
             (event).wrapperbase::BEptr->can_delete_wrapper(false);
             (event).wrapperbase::BEptr->can_delete_me(false);
-            (info).wrapperbase::BEptr->can_delete_wrapper(false);
-            (info).wrapperbase::BEptr->can_delete_me(false);
+            (info).WrapperBase<Pythia8::Abstract_Info>::BEptr->can_delete_wrapper(false);
+            (info).WrapperBase<Pythia8::Abstract_Info>::BEptr->can_delete_me(false);
             (settings).wrapperbase::BEptr->can_delete_wrapper(false);
             (settings).wrapperbase::BEptr->can_delete_me(false);
             (particleData).wrapperbase::BEptr->can_delete_wrapper(false);
@@ -255,8 +255,8 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             (process).wrapperbase::BEptr->can_delete_me(false);
             (event).wrapperbase::BEptr->can_delete_wrapper(false);
             (event).wrapperbase::BEptr->can_delete_me(false);
-            (info).wrapperbase::BEptr->can_delete_wrapper(false);
-            (info).wrapperbase::BEptr->can_delete_me(false);
+            (info).WrapperBase<Pythia8::Abstract_Info>::BEptr->can_delete_wrapper(false);
+            (info).WrapperBase<Pythia8::Abstract_Info>::BEptr->can_delete_me(false);
             (settings).wrapperbase::BEptr->can_delete_wrapper(false);
             (settings).wrapperbase::BEptr->can_delete_me(false);
             (particleData).wrapperbase::BEptr->can_delete_wrapper(false);
@@ -287,8 +287,8 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             (process).wrapperbase::BEptr->can_delete_me(false);
             (event).wrapperbase::BEptr->can_delete_wrapper(false);
             (event).wrapperbase::BEptr->can_delete_me(false);
-            (info).wrapperbase::BEptr->can_delete_wrapper(false);
-            (info).wrapperbase::BEptr->can_delete_me(false);
+            (info).WrapperBase<Pythia8::Abstract_Info>::BEptr->can_delete_wrapper(false);
+            (info).WrapperBase<Pythia8::Abstract_Info>::BEptr->can_delete_me(false);
             (settings).wrapperbase::BEptr->can_delete_wrapper(false);
             (settings).wrapperbase::BEptr->can_delete_me(false);
             (particleData).wrapperbase::BEptr->can_delete_wrapper(false);
@@ -318,8 +318,8 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             (process).wrapperbase::BEptr->can_delete_me(false);
             (event).wrapperbase::BEptr->can_delete_wrapper(false);
             (event).wrapperbase::BEptr->can_delete_me(false);
-            (info).wrapperbase::BEptr->can_delete_wrapper(false);
-            (info).wrapperbase::BEptr->can_delete_me(false);
+            (info).WrapperBase<Pythia8::Abstract_Info>::BEptr->can_delete_wrapper(false);
+            (info).WrapperBase<Pythia8::Abstract_Info>::BEptr->can_delete_me(false);
             (settings).wrapperbase::BEptr->can_delete_wrapper(false);
             (settings).wrapperbase::BEptr->can_delete_me(false);
             (particleData).wrapperbase::BEptr->can_delete_wrapper(false);
@@ -351,8 +351,8 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             (process).wrapperbase::BEptr->can_delete_me(false);
             (event).wrapperbase::BEptr->can_delete_wrapper(false);
             (event).wrapperbase::BEptr->can_delete_me(false);
-            (info).wrapperbase::BEptr->can_delete_wrapper(false);
-            (info).wrapperbase::BEptr->can_delete_me(false);
+            (info).WrapperBase<Pythia8::Abstract_Info>::BEptr->can_delete_wrapper(false);
+            (info).WrapperBase<Pythia8::Abstract_Info>::BEptr->can_delete_me(false);
             (settings).wrapperbase::BEptr->can_delete_wrapper(false);
             (settings).wrapperbase::BEptr->can_delete_me(false);
             (particleData).wrapperbase::BEptr->can_delete_wrapper(false);
