@@ -116,20 +116,20 @@ Rules:
     options:
       Pythia_glusq_LHC_8TeV:
         # Change to absolute paths below when running outside of the gambit/modules directory
-        pythiaOptions_1: ["../extras/boss/bossed_pythia_source/xmldoc/",
+        pythiaOptions_1: ["../extras/boss/bossed_pythia_source/share/Pythia8/xmldoc/",
                           "PartonLevel:MPI = off",
                           "PartonLevel:ISR = on",
                           "PartonLevel:FSR = off",
                           "HadronLevel:all = off"]
       Pythia_SUSY_LHC_8TeV:
-        pythiaOptions_1: ["../extras/boss/bossed_pythia_source/xmldoc/",
+        pythiaOptions_1: ["../extras/boss/bossed_pythia_source/share/Pythia8/xmldoc/",
                           "PartonLevel:MPI = off",
                           "PartonLevel:ISR = on",
                           "PartonLevel:FSR = off",
                           "HadronLevel:all = off",
                           "SUSY:idA = 1000021",
                           "SUSY:idB = 1000021"]
-        pythiaOptions_2: ["../extras/boss/bossed_pythia_source/xmldoc/",
+        pythiaOptions_2: ["../extras/boss/bossed_pythia_source/share/Pythia8/xmldoc/",
                           "PartonLevel:MPI = off",
                           "PartonLevel:ISR = on",
                           "PartonLevel:FSR = off",
