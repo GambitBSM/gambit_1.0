@@ -181,6 +181,13 @@ string (REPLACE ";" "," itch_with_commas "${itch}")
 # Generate the cmake_variables.hpp file
 include(cmake/preprocessor.cmake)
 
+# Generate the CMakeLists.txt files for GAMBIT modules
+message("${Yellow}-- Updating GAMBIT module and backend CMake files.${ColourReset}")
+set(update_cmakelists ${PROJECT_SOURCE_DIR}/cmake/update_cmakelists.py -x __not_a_real_name__,${itch_with_commas})
+execute_process(RESULT_VARIABLE result COMMAND python ${update_cmakelists} WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
+check_result(${result} ${update_cmakelists}) 
+message("${Yellow}-- Updating GAMBIT module cmake files - done.${ColourReset}")
+
 # Generate the ScannerBit compilation files
 message("${Yellow}-- Updating GAMBIT scanner cmake and related files${ColourReset}")
 set(locate_scanners ${PROJECT_SOURCE_DIR}/cmake/locate_scanners.py ${PROJECT_BINARY_DIR} -x __not_a_real_name__,${itch_with_commas})
@@ -254,13 +261,6 @@ add_custom_target(module_harvest  DEPENDS ${PROJECT_SOURCE_DIR}/Elements/include
                                           ${PROJECT_SOURCE_DIR}/Elements/include/gambit/Elements/module_types_rollcall.hpp
                                           ${MODULE_HARVESTER_FILES}
                                           backend_harvest)
-
-# Generate the CMakeLists.txt files for GAMBIT modules
-message("${Yellow}-- Updating GAMBIT module and backend CMake files.${ColourReset}")
-set(update_cmakelists ${PROJECT_SOURCE_DIR}/cmake/update_cmakelists.py -x __not_a_real_name__,${itch_with_commas})
-execute_process(RESULT_VARIABLE result COMMAND python ${update_cmakelists} WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
-check_result(${result} ${update_cmakelists}) 
-message("${Yellow}-- Updating GAMBIT module cmake files - done.${ColourReset}")
 
 # Include other cmake scripts
 include(cmake/warnings.cmake)
