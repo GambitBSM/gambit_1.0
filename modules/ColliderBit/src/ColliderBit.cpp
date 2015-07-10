@@ -123,6 +123,8 @@ namespace Gambit
         /// Each thread gets its own Pythia instance.
         /// Thus, the initialization is *after* INIT, within omp parallel.
         std::vector<std::string> pythiaOptions;
+        std::vector<std::string> filenames;
+        bool debug_SLHA_filenames;
         std::string pythiaConfigName;
 
         /// Setup new Pythia
@@ -134,16 +136,19 @@ namespace Gambit
         {
           if (runOptions->hasKey(*iter, pythiaConfigName))
             pythiaOptions = runOptions->getValue<std::vector<std::string>>(*iter, pythiaConfigName);
+          if (runOptions->hasKey("debug_SLHA_filenames")) {
+            debug_SLHA_filenames = true;
+            filenames = runOptions->getValue<std::vector<str> >("debug_SLHA_filenames");
+          }
         }
         pythiaOptions.push_back("Random:seed = " + std::to_string(54321 + omp_get_thread_num()));
 
         result.resetSpecialization(*iter);
 
-        if (runOptions->hasKey("debug_SLHA_filenames"))
+        if (debug_SLHA_filenames)
         {
           // Run Pythia reading an SLHA file.
           static unsigned int counter = 0;
-          std::vector<str> filenames = runOptions->getValue<std::vector<str> >("debug_SLHA_filenames");
           logger() << "Reading SLHA file: " << filenames[counter] << std::endl;
           pythiaOptions.push_back("SLHA:file = " + filenames[counter]);
           counter++;
