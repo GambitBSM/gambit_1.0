@@ -89,7 +89,7 @@ namespace Gambit
       /// @}
 
       /// Initialise MPI
-      void Init(int& argc, char**& argv) {
+      void Init(int argc, char* argv[]) {
         // Do basic interrogation
         std::cout << "Hooking up to MPI..." << std::endl;
         if(Is_initialized())

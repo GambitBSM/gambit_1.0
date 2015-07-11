@@ -291,7 +291,7 @@ namespace Gambit
       /// The arguments are required in order to "fix up" the command line 
       /// arguments so that they match their positions when the "mpirun -n X" 
       /// wrapper call is absent.
-      void Init(int& argc, char**& argv);
+      void Init(int argc, char* argv[]);
 
       /// Shut down MPI
       void Finalize();
