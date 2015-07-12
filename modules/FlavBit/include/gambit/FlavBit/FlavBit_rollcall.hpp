@@ -375,6 +375,11 @@ START_MODULE
     #undef FUNCTION
   #undef CAPABILITY
 
+  #define CAPABILITY 
+
+
+
+
 #undef MODULE
 
 #endif // defined(__FlavBit_rollcall_hpp__)
