@@ -108,6 +108,10 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
                 // Destructor: 
                 ~CoupSM();
         
+            private:
+                // Member variable initialiser: 
+                void _memberVariablesInit();
+        
         };
     }
     

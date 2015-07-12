@@ -64,6 +64,12 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             WrapperBase<Pythia8::Abstract_ResonanceWidths>::skip_delete = true;
         }
         
+        
+        // Member variable initialiser: 
+        inline void Pythia8::ResonanceGmZ::_memberVariablesInit()
+        {
+        }
+        
     }
     
 }

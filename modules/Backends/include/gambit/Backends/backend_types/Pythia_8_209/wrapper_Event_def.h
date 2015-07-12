@@ -475,6 +475,12 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         {
         }
         
+        
+        // Member variable initialiser: 
+        inline void Pythia8::Event::_memberVariablesInit()
+        {
+        }
+        
     }
     
 }

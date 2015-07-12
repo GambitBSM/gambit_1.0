@@ -48,10 +48,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         {
             wrapperbase::BEptr->wrapper__BOSS(this);
             wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
-            (slha).WrapperBase<Pythia8::Abstract_SusyLesHouches>::BEptr->can_delete_wrapper(false);
-            (slha).WrapperBase<Pythia8::Abstract_SusyLesHouches>::BEptr->can_delete_me(false);
-            (coupSUSY).WrapperBase<Pythia8::Abstract_CoupSUSY>::BEptr->can_delete_wrapper(false);
-            (coupSUSY).WrapperBase<Pythia8::Abstract_CoupSUSY>::BEptr->can_delete_me(false);
+            _memberVariablesInit();
         }
         
         // Special pointer-based constructor: 
@@ -63,10 +60,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         {
             wrapperbase::BEptr->wrapper__BOSS(this);
             wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
-            (slha).WrapperBase<Pythia8::Abstract_SusyLesHouches>::BEptr->can_delete_wrapper(false);
-            (slha).WrapperBase<Pythia8::Abstract_SusyLesHouches>::BEptr->can_delete_me(false);
-            (coupSUSY).WrapperBase<Pythia8::Abstract_CoupSUSY>::BEptr->can_delete_wrapper(false);
-            (coupSUSY).WrapperBase<Pythia8::Abstract_CoupSUSY>::BEptr->can_delete_me(false);
+            _memberVariablesInit();
         }
         
         inline Pythia8::SLHAinterface::SLHAinterface(Pythia8::Abstract_SLHAinterface* const & in, bool) :
@@ -77,10 +71,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         {
             wrapperbase::BEptr->wrapper__BOSS(this);
             wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
-            (slha).WrapperBase<Pythia8::Abstract_SusyLesHouches>::BEptr->can_delete_wrapper(false);
-            (slha).WrapperBase<Pythia8::Abstract_SusyLesHouches>::BEptr->can_delete_me(false);
-            (coupSUSY).WrapperBase<Pythia8::Abstract_CoupSUSY>::BEptr->can_delete_wrapper(false);
-            (coupSUSY).WrapperBase<Pythia8::Abstract_CoupSUSY>::BEptr->can_delete_me(false);
+            _memberVariablesInit();
         }
         
         // Copy constructor: 
@@ -93,10 +84,7 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
             wrapperbase::BEptr->can_delete_me(true);
             wrapperbase::BEptr->wrapper__BOSS(this);
             wrapperbase::BEptr->can_delete_wrapper(false);  // Override setting in wrapper__BOSS
-            (slha).WrapperBase<Pythia8::Abstract_SusyLesHouches>::BEptr->can_delete_wrapper(false);
-            (slha).WrapperBase<Pythia8::Abstract_SusyLesHouches>::BEptr->can_delete_me(false);
-            (coupSUSY).WrapperBase<Pythia8::Abstract_CoupSUSY>::BEptr->can_delete_wrapper(false);
-            (coupSUSY).WrapperBase<Pythia8::Abstract_CoupSUSY>::BEptr->can_delete_me(false);
+            _memberVariablesInit();
         }
         
         // Assignment operator: 
@@ -110,6 +98,16 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         // Destructor: 
         inline Pythia8::SLHAinterface::~SLHAinterface()
         {
+        }
+        
+        
+        // Member variable initialiser: 
+        inline void Pythia8::SLHAinterface::_memberVariablesInit()
+        {
+            (slha).WrapperBase<Pythia8::Abstract_SusyLesHouches>::BEptr->can_delete_wrapper(false);
+            (slha).WrapperBase<Pythia8::Abstract_SusyLesHouches>::BEptr->can_delete_me(false);
+            (coupSUSY).WrapperBase<Pythia8::Abstract_CoupSUSY>::BEptr->can_delete_wrapper(false);
+            (coupSUSY).WrapperBase<Pythia8::Abstract_CoupSUSY>::BEptr->can_delete_me(false);
         }
         
     }

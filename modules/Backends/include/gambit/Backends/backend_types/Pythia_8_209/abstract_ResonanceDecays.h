@@ -26,24 +26,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         class Abstract_ResonanceDecays : virtual public AbstractBase
         {
             private:
-                // IGNORED: Variable  -- Name: NTRYCHANNEL  -- XML id: _26064
-                // IGNORED: Variable  -- Name: NTRYMASSES  -- XML id: _26065
-                // IGNORED: Variable  -- Name: MSAFETY  -- XML id: _26066
-                // IGNORED: Variable  -- Name: WIDTHCUT  -- XML id: _26067
-                // IGNORED: Variable  -- Name: TINY  -- XML id: _26068
-                // IGNORED: Variable  -- Name: TINYBWRANGE  -- XML id: _26069
-                // IGNORED: Variable  -- Name: WTCORRECTION  -- XML id: _26070
-                // IGNORED: Field  -- Name: infoPtr  -- XML id: _26071
-                // IGNORED: Field  -- Name: particleDataPtr  -- XML id: _26072
-                // IGNORED: Field  -- Name: rndmPtr  -- XML id: _26073
-                // IGNORED: Field  -- Name: id0  -- XML id: _26074
-                // IGNORED: Field  -- Name: mult  -- XML id: _26075
-                // IGNORED: Field  -- Name: m0  -- XML id: _26076
-                // IGNORED: Field  -- Name: idProd  -- XML id: _26077
-                // IGNORED: Field  -- Name: cols  -- XML id: _26078
-                // IGNORED: Field  -- Name: acols  -- XML id: _26079
-                // IGNORED: Field  -- Name: mProd  -- XML id: _26080
-                // IGNORED: Field  -- Name: pProd  -- XML id: _26081
             public:
     
                 virtual void init__BOSS(Pythia8::Abstract_Info*, Pythia8::Abstract_ParticleData*, Pythia8::Abstract_Rndm*) =0;

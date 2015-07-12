@@ -30,19 +30,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         class Abstract_UserHooks : virtual public AbstractBase
         {
             protected:
-                // IGNORED: Field  -- Name: infoPtr  -- XML id: _25760
-                // IGNORED: Field  -- Name: settingsPtr  -- XML id: _25761
-                // IGNORED: Field  -- Name: particleDataPtr  -- XML id: _25762
-                // IGNORED: Field  -- Name: rndmPtr  -- XML id: _25763
-                // IGNORED: Field  -- Name: beamAPtr  -- XML id: _25764
-                // IGNORED: Field  -- Name: beamBPtr  -- XML id: _25765
-                // IGNORED: Field  -- Name: beamPomAPtr  -- XML id: _25766
-                // IGNORED: Field  -- Name: beamPomBPtr  -- XML id: _25767
-                // IGNORED: Field  -- Name: coupSMPtr  -- XML id: _25768
-                // IGNORED: Field  -- Name: partonSystemsPtr  -- XML id: _25769
-                // IGNORED: Field  -- Name: sigmaTotPtr  -- XML id: _25770
-                // IGNORED: Field  -- Name: workEvent  -- XML id: _25771
-                // IGNORED: Field  -- Name: selBias  -- XML id: _25772
             public:
     
                 virtual bool initAfterBeams() =0;

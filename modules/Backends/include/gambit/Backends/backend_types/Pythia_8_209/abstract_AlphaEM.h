@@ -22,15 +22,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         class Abstract_AlphaEM : virtual public AbstractBase
         {
             private:
-                // IGNORED: Variable  -- Name: MZ  -- XML id: _28796
-                // IGNORED: Variable  -- Name: Q2STEP  -- XML id: _28797
-                // IGNORED: Variable  -- Name: BRUNDEF  -- XML id: _28798
-                // IGNORED: Field  -- Name: order  -- XML id: _28799
-                // IGNORED: Field  -- Name: alpEM0  -- XML id: _28800
-                // IGNORED: Field  -- Name: alpEMmZ  -- XML id: _28801
-                // IGNORED: Field  -- Name: mZ2  -- XML id: _28802
-                // IGNORED: Field  -- Name: bRun  -- XML id: _28803
-                // IGNORED: Field  -- Name: alpEMstep  -- XML id: _28804
             public:
     
                 virtual void init__BOSS(int, Pythia8::Abstract_Settings*) =0;

@@ -21,11 +21,6 @@ namespace CAT_3(BACKENDNAME,_,SAFE_VERSION)
         class Abstract_Vec4 : virtual public AbstractBase
         {
             private:
-                // IGNORED: Variable  -- Name: TINY  -- XML id: _24673
-                // IGNORED: Field  -- Name: xx  -- XML id: _24674
-                // IGNORED: Field  -- Name: yy  -- XML id: _24675
-                // IGNORED: Field  -- Name: zz  -- XML id: _24676
-                // IGNORED: Field  -- Name: tt  -- XML id: _24677
             public:
     
                 virtual Pythia8::Abstract_Vec4* operator_equal__BOSS(const Pythia8::Abstract_Vec4&) =0;
