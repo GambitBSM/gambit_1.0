@@ -135,7 +135,7 @@ set(clean_files ${clean_files} "${PROJECT_SOURCE_DIR}/../extras/micromegas/libmi
 # Pythia
 # - Enable 64bits flags?
 if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64")
-  set(pythia_CONFIGURE_EXTRAS "--enable-64bits")
+  set(pythia_CONFIGURE_EXTRAS "--enable-64bit")
 endif()
 
 # - Pythia will not accept the -std=c++11 flag. Create a special pythia_CXXFLAGS variable without it. 
