@@ -69,7 +69,7 @@ namespace Gambit
   }
 
   /// Output entire decay table as an SLHAea file full of DECAY blocks
-  SLHAstruct DecayTable::as_slhaea(bool include_zero_bfs)
+  SLHAstruct DecayTable::as_slhaea(bool include_zero_bfs) const
   {
     SLHAstruct slha;
     std::map<str, std::set<str> > calculator_map;
@@ -118,9 +118,9 @@ namespace Gambit
 
   /// Output a decay table entry as an SLHAea DECAY block
   /// @{
-  SLHAea::Block DecayTable::as_slhaea_block(std::pair<int,int> p, bool z) { return particles[p].as_slhaea_block(Models::ParticleDB().long_name(p), z); }
-  SLHAea::Block DecayTable::as_slhaea_block(str p, bool z)                { return particles[Models::ParticleDB().pdg_pair(p)].as_slhaea_block(p, z); }
-  SLHAea::Block DecayTable::as_slhaea_block(str p, int i, bool z)         { return particles[Models::ParticleDB().pdg_pair(p,i)].as_slhaea_block(Models::ParticleDB().long_name(p,i), z); }
+  SLHAea::Block DecayTable::as_slhaea_block(std::pair<int,int> p, bool z) const { return particles.at(p).as_slhaea_block(Models::ParticleDB().long_name(p), z); }
+  SLHAea::Block DecayTable::as_slhaea_block(str p, bool z)                const { return particles.at(Models::ParticleDB().pdg_pair(p)).as_slhaea_block(p, z); }
+  SLHAea::Block DecayTable::as_slhaea_block(str p, int i, bool z)         const { return particles.at(Models::ParticleDB().pdg_pair(p,i)).as_slhaea_block(Models::ParticleDB().long_name(p,i), z); }
   /// @}
 
 
@@ -178,7 +178,7 @@ namespace Gambit
   }
 
   /// Make sure all particles listed in a set are actually known to the GAMBIT particle database
-  void DecayTable::Entry::check_particles_exist(std::multiset< std::pair<int,int> >& particles)
+  void DecayTable::Entry::check_particles_exist(std::multiset< std::pair<int,int> >& particles) const
   {
     for (auto final_state = particles.begin(); final_state != particles.end(); ++final_state)
     {
@@ -203,9 +203,9 @@ namespace Gambit
 
   /// Output a decay table entry as an SLHAea DECAY block
   /// @{
-  SLHAea::Block DecayTable::Entry::as_slhaea_block(str p, bool z)         { return as_slhaea_block(Models::ParticleDB().pdg_pair(p), z); }
-  SLHAea::Block DecayTable::Entry::as_slhaea_block(str p, int i, bool z)  { return as_slhaea_block(Models::ParticleDB().pdg_pair(p,i), z); }
-  SLHAea::Block DecayTable::Entry::as_slhaea_block(std::pair<int,int> p, bool include_zero_bfs)
+  SLHAea::Block DecayTable::Entry::as_slhaea_block(str p, bool z)         const { return as_slhaea_block(Models::ParticleDB().pdg_pair(p), z); }
+  SLHAea::Block DecayTable::Entry::as_slhaea_block(str p, int i, bool z)  const { return as_slhaea_block(Models::ParticleDB().pdg_pair(p,i), z); }
+  SLHAea::Block DecayTable::Entry::as_slhaea_block(std::pair<int,int> p, bool include_zero_bfs) const
   {
     // Make sure the particle actually exists in the database
     if (not Models::ParticleDB().has_particle(p))
